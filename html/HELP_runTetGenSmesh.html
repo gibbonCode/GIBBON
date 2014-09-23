@@ -1,0 +1,682 @@
+
+<!DOCTYPE html
+  PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html><head>
+      <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+   <!--
+This HTML was auto-generated from MATLAB code.
+To make changes, update the MATLAB code and republish this document.
+      --><title>runTetGenSmesh</title><meta name="generator" content="MATLAB 8.4"><link rel="schema.DC" href="http://purl.org/dc/elements/1.1/"><meta name="DC.date" content="2014-09-16"><meta name="DC.source" content="HELP_runTetGenSmesh.m"><style type="text/css">
+html,body,div,span,applet,object,iframe,h1,h2,h3,h4,h5,h6,p,blockquote,pre,a,abbr,acronym,address,big,cite,code,del,dfn,em,font,img,ins,kbd,q,s,samp,small,strike,strong,sub,sup,tt,var,b,u,i,center,dl,dt,dd,ol,ul,li,fieldset,form,label,legend,table,caption,tbody,tfoot,thead,tr,th,td{margin:0;padding:0;border:0;outline:0;font-size:100%;vertical-align:baseline;background:transparent}body{line-height:1}ol,ul{list-style:none}blockquote,q{quotes:none}blockquote:before,blockquote:after,q:before,q:after{content:'';content:none}:focus{outine:0}ins{text-decoration:none}del{text-decoration:line-through}table{border-collapse:collapse;border-spacing:0}
+
+html { min-height:100%; margin-bottom:1px; }
+html body { height:100%; margin:0px; font-family:Arial, Helvetica, sans-serif; font-size:10px; color:#000; line-height:140%; background:#fff none; overflow-y:scroll; }
+html body td { vertical-align:top; text-align:left; }
+
+h1 { padding:0px; margin:0px 0px 25px; font-family:Arial, Helvetica, sans-serif; font-size:1.5em; color:#d55000; line-height:100%; font-weight:normal; }
+h2 { padding:0px; margin:0px 0px 8px; font-family:Arial, Helvetica, sans-serif; font-size:1.2em; color:#000; font-weight:bold; line-height:140%; border-bottom:1px solid #d6d4d4; display:block; }
+h3 { padding:0px; margin:0px 0px 5px; font-family:Arial, Helvetica, sans-serif; font-size:1.1em; color:#000; font-weight:bold; line-height:140%; }
+
+a { color:#005fce; text-decoration:none; }
+a:hover { color:#005fce; text-decoration:underline; }
+a:visited { color:#004aa0; text-decoration:none; }
+
+p { padding:0px; margin:0px 0px 20px; }
+img { padding:0px; margin:0px 0px 20px; border:none; }
+p img, pre img, tt img, li img, h1 img, h2 img { margin-bottom:0px; } 
+
+ul { padding:0px; margin:0px 0px 20px 23px; list-style:square; }
+ul li { padding:0px; margin:0px 0px 7px 0px; }
+ul li ul { padding:5px 0px 0px; margin:0px 0px 7px 23px; }
+ul li ol li { list-style:decimal; }
+ol { padding:0px; margin:0px 0px 20px 0px; list-style:decimal; }
+ol li { padding:0px; margin:0px 0px 7px 23px; list-style-type:decimal; }
+ol li ol { padding:5px 0px 0px; margin:0px 0px 7px 0px; }
+ol li ol li { list-style-type:lower-alpha; }
+ol li ul { padding-top:7px; }
+ol li ul li { list-style:square; }
+
+.content { font-size:1.2em; line-height:140%; padding: 20px; }
+
+pre, code { font-size:12px; }
+tt { font-size: 1.2em; }
+pre { margin:0px 0px 20px; }
+pre.codeinput { padding:10px; border:1px solid #d3d3d3; background:#f7f7f7; }
+pre.codeoutput { padding:10px 11px; margin:0px 0px 20px; color:#4c4c4c; }
+pre.error { color:red; }
+
+@media print { pre.codeinput, pre.codeoutput { word-wrap:break-word; width:100%; } }
+
+span.keyword { color:#0000FF }
+span.comment { color:#228B22 }
+span.string { color:#A020F0 }
+span.untermstring { color:#B20000 }
+span.syscmd { color:#B28C00 }
+
+.footer { width:auto; padding:10px 0px; margin:25px 0px 0px; border-top:1px dotted #878787; font-size:0.8em; line-height:140%; font-style:italic; color:#878787; text-align:left; float:none; }
+.footer p { margin:0px; }
+.footer a { color:#878787; }
+.footer a:hover { color:#878787; text-decoration:underline; }
+.footer a:visited { color:#878787; }
+
+table th { padding:7px 5px; text-align:left; vertical-align:middle; border: 1px solid #d6d4d4; font-weight:bold; }
+table td { padding:7px 5px; text-align:left; vertical-align:top; border:1px solid #d6d4d4; }
+
+
+
+
+
+  </style></head><body><div class="content"><h1>runTetGenSmesh</h1><!--introduction--><p>Below is a demonstration of the features of the <tt>runTetGenSmesh</tt> function</p><!--/introduction--><h2>Contents</h2><div><ul><li><a href="#3">MESHING A SINGLE REGION MODEL</a></li><li><a href="#14">VIEWING THE MODEL IN TETVIEW</a></li><li><a href="#16">MESHING A MULTI-REGION MODEL</a></li><li><a href="#27">MESHING A MULTI-REGION MODEL CONTAINING HOLES</a></li></ul></div><pre class="codeinput">clear <span class="string">all</span>; close <span class="string">all</span>; clc;
+</pre><p>Plot settings</p><pre class="codeinput">fig_color=<span class="string">'w'</span>; fig_colordef=<span class="string">'white'</span>;
+fontSize=15;
+faceAlpha1=0.5;
+faceAlpha2=1;
+edgeColor=0.25*ones(1,3);
+edgeWidth=1.5;
+patchColor=[1 0.5 0];
+</pre><h2>MESHING A SINGLE REGION MODEL<a name="3"></a></h2><p>Building a geodesic dome surface model</p><pre class="codeinput">[F,V,~]=geoSphere(2,1);
+</pre><p>Plotting model</p><pre class="codeinput">hf=figuremax(fig_color,fig_colordef);
+title(<span class="string">'Surface model'</span>,<span class="string">'FontSize'</span>,fontSize);
+xlabel(<span class="string">'X'</span>,<span class="string">'FontSize'</span>,fontSize); ylabel(<span class="string">'Y'</span>,<span class="string">'FontSize'</span>,fontSize); zlabel(<span class="string">'Z'</span>,<span class="string">'FontSize'</span>,fontSize);
+hold <span class="string">on</span>;
+
+hp=patch(<span class="string">'Faces'</span>,F,<span class="string">'Vertices'</span>,V);
+set(hp,<span class="string">'FaceColor'</span>,patchColor,<span class="string">'FaceAlpha'</span>,faceAlpha1,<span class="string">'lineWidth'</span>,edgeWidth,<span class="string">'edgeColor'</span>,edgeColor);
+camlight <span class="string">headlight</span>;
+set(gca,<span class="string">'FontSize'</span>,fontSize);
+view(3); axis <span class="string">tight</span>;  axis <span class="string">equal</span>;  grid <span class="string">on</span>;
+</pre><img vspace="5" hspace="5" src="HELP_runTetGenSmesh_01.png" alt=""> <p>DEFINE FACE BOUNDARY MARKERS</p><pre class="codeinput">faceBoundaryMarker=ones(size(F,1),1);
+</pre><p>Define region points</p><pre class="codeinput">V_regions=[0 0 0];
+</pre><p>Define hole points</p><pre class="codeinput">V_holes=[];
+</pre><p>Regional mesh volume parameter</p><pre class="codeinput">[regionA]=tetVolMeanEst(F,V); <span class="comment">%Volume for regular tets</span>
+</pre><p>CREATING THE SMESH STRUCTURE</p><pre class="codeinput">stringOpt=<span class="string">'-pq1.2AaYQ'</span>;
+modelName=<span class="string">'tetGenModel'</span>;
+smeshName=[modelName,<span class="string">'.smesh'</span>];
+
+smeshStruct.stringOpt=stringOpt;
+smeshStruct.Faces=F;
+smeshStruct.Nodes=V;
+smeshStruct.holePoints=V_holes;
+smeshStruct.faceBoundaryMarker=faceBoundaryMarker; <span class="comment">%Face boundary markers</span>
+smeshStruct.regionPoints=V_regions; <span class="comment">%region points</span>
+smeshStruct.regionA=regionA;
+smeshStruct.minRegionMarker=2; <span class="comment">%Minimum region marker</span>
+smeshStruct.smeshName=smeshName;
+</pre><p>Mesh model using tetrahedral elements using tetGen (see: <a href="http://wias-berlin.de/software/tetgen/">http://wias-berlin.de/software/tetgen/</a>)</p><pre class="codeinput">[meshOutput]=runTetGenSmesh(smeshStruct); <span class="comment">%Run tetGen</span>
+</pre><pre class="codeoutput"> 
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+--- TETGEN Tetrahedral meshing --- 16-Sep-2014 13:41:44
+ 
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+--- Writing SMESH file --- 16-Sep-2014 13:41:44
+----&gt; Adding node field
+----&gt; Adding facet field
+----&gt; Adding holes specification
+----&gt; Adding region specification
+--- Done --- 16-Sep-2014 13:41:44
+--- Running TetGen for meshing --- 16-Sep-2014 13:41:44
+Opening tetGenModel.smesh. 
+--- Done --- 16-Sep-2014 13:41:44
+ 
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+--- Importing TetGen files --- 16-Sep-2014 13:41:44
+--- Done --- 16-Sep-2014 13:41:44
+</pre><p>Access model element and patch data</p><pre class="codeinput">F=meshOutput.faces;
+V=meshOutput.nodes;
+C=meshOutput.faceMaterialID;
+E=meshOutput.elements;
+</pre><p>PLOTTING MODEL</p><pre class="codeinput"><span class="comment">%Selecting half of the model to see interior</span>
+Y=V(:,2); YE=mean(Y(E),2);
+L=YE&gt;mean(Y);
+[Fs,Cs]=element2patch(E(L,:),C(L));
+
+hf1=figuremax(fig_color,fig_colordef);
+subplot(1,2,1);
+title(<span class="string">'Solid tetrahedral mesh model'</span>,<span class="string">'FontSize'</span>,fontSize);
+xlabel(<span class="string">'X'</span>,<span class="string">'FontSize'</span>,fontSize); ylabel(<span class="string">'Y'</span>,<span class="string">'FontSize'</span>,fontSize); zlabel(<span class="string">'Z'</span>,<span class="string">'FontSize'</span>,fontSize); hold <span class="string">on</span>;
+hps=patch(<span class="string">'Faces'</span>,F,<span class="string">'Vertices'</span>,V,<span class="string">'FaceColor'</span>,<span class="string">'flat'</span>,<span class="string">'CData'</span>,C,<span class="string">'lineWidth'</span>,edgeWidth,<span class="string">'edgeColor'</span>,edgeColor);
+view(3); axis <span class="string">tight</span>;  axis <span class="string">equal</span>;  grid <span class="string">on</span>;
+colormap(autumn);
+camlight <span class="string">headlight</span>;
+set(gca,<span class="string">'FontSize'</span>,fontSize);
+subplot(1,2,2);
+title(<span class="string">'Cut view of Solid tetrahedral mesh model'</span>,<span class="string">'FontSize'</span>,fontSize);
+xlabel(<span class="string">'X'</span>,<span class="string">'FontSize'</span>,fontSize); ylabel(<span class="string">'Y'</span>,<span class="string">'FontSize'</span>,fontSize); zlabel(<span class="string">'Z'</span>,<span class="string">'FontSize'</span>,fontSize); hold <span class="string">on</span>;
+hps=patch(<span class="string">'Faces'</span>,Fs,<span class="string">'Vertices'</span>,V,<span class="string">'FaceColor'</span>,<span class="string">'flat'</span>,<span class="string">'CData'</span>,Cs,<span class="string">'lineWidth'</span>,edgeWidth,<span class="string">'edgeColor'</span>,edgeColor);
+view(3); axis <span class="string">tight</span>;  axis <span class="string">equal</span>;  grid <span class="string">on</span>;
+colormap(autumn);
+camlight <span class="string">headlight</span>;
+set(gca,<span class="string">'FontSize'</span>,fontSize);
+drawnow;
+</pre><img vspace="5" hspace="5" src="HELP_runTetGenSmesh_02.png" alt=""> <h2>VIEWING THE MODEL IN TETVIEW<a name="14"></a></h2><p>TetView is an external (non-MATLAB) program for viewing TetGen meshes. The runTetGenSmesh function also copies the mesh output files to the tetView directory. TetView is usually found here: ...\gibbon\trunk\lib_ext\tetGen You can run TetView seperately or use the following to view the model in TetView:</p><pre class="codeinput">runTetView(meshOutput.loadNameStruct.loadName_ele);
+</pre><p>Here is an example screeshot for viewing models in tetView:</p><p><img vspace="5" hspace="5" src="tetView_screenshot.jpg" alt=""> </p><h2>MESHING A MULTI-REGION MODEL<a name="16"></a></h2><p>Simulating a multiregion mesh</p><pre class="codeinput">[F1,V1]=parasaurolophus; <span class="comment">%A dino</span>
+[F2,V2,~]=geoSphere(2,0.4); <span class="comment">%An internal region</span>
+V2(:,1)=2*V2(:,1);
+V_centre=[0.75 0 0.25];
+V2=V2+V_centre(ones(size(V2,1),1),:);
+
+<span class="comment">%Joining surface sets</span>
+F=[F1;F2+size(V1,1)];
+V=[V1;V2];
+C=[ones(size(F1,1),1);2*ones(size(F2,1),1)]; <span class="comment">%Surface marker colors</span>
+</pre><p>Plotting model</p><pre class="codeinput">hf=figuremax(fig_color,fig_colordef);
+title(<span class="string">'Multi-region surface model'</span>,<span class="string">'FontSize'</span>,fontSize);
+xlabel(<span class="string">'X'</span>,<span class="string">'FontSize'</span>,fontSize); ylabel(<span class="string">'Y'</span>,<span class="string">'FontSize'</span>,fontSize); zlabel(<span class="string">'Z'</span>,<span class="string">'FontSize'</span>,fontSize);
+hold <span class="string">on</span>;
+
+hp=patch(<span class="string">'Faces'</span>,F,<span class="string">'Vertices'</span>,V);
+set(hp,<span class="string">'FaceColor'</span>,<span class="string">'flat'</span>,<span class="string">'CData'</span>,C,<span class="string">'FaceAlpha'</span>,faceAlpha1,<span class="string">'lineWidth'</span>,edgeWidth,<span class="string">'edgeColor'</span>,edgeColor);
+camlight <span class="string">headlight</span>;
+colormap <span class="string">autumn</span>;
+set(gca,<span class="string">'FontSize'</span>,fontSize);
+view(3); axis <span class="string">tight</span>;  axis <span class="string">equal</span>;  grid <span class="string">on</span>;
+</pre><img vspace="5" hspace="5" src="HELP_runTetGenSmesh_03.png" alt=""> <p>DEFINE FACE BOUNDARY MARKERS</p><pre class="codeinput">faceBoundaryMarker=C;
+</pre><p>Define region points</p><pre class="codeinput">V_regions=[0.5 0 0;V_centre];
+</pre><p>Define hole points</p><pre class="codeinput">V_holes=[];
+</pre><p>Regional mesh parameters</p><pre class="codeinput">[A]=tetVolMeanEst(F,V);
+regionA=[A A*3];
+</pre><p>CREATING THE SMESH STRUCTURE</p><pre class="codeinput">stringOpt=<span class="string">'-pq1.2AaYQ'</span>;
+modelName=<span class="string">'tetGenModel'</span>;
+smeshName=[modelName,<span class="string">'.smesh'</span>];
+
+smeshStruct.stringOpt=stringOpt;
+smeshStruct.Faces=F;
+smeshStruct.Nodes=V;
+smeshStruct.holePoints=V_holes;
+smeshStruct.faceBoundaryMarker=faceBoundaryMarker; <span class="comment">%Face boundary markers</span>
+smeshStruct.regionPoints=V_regions; <span class="comment">%region points</span>
+smeshStruct.regionA=regionA;
+smeshStruct.minRegionMarker=2; <span class="comment">%Minimum region marker</span>
+smeshStruct.smeshName=smeshName;
+</pre><p>Mesh model using tetrahedral elements using tetGen (see: <a href="http://wias-berlin.de/software/tetgen/">http://wias-berlin.de/software/tetgen/</a>)</p><pre class="codeinput">[meshOutput]=runTetGenSmesh(smeshStruct); <span class="comment">%Run tetGen</span>
+</pre><pre class="codeoutput"> 
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+--- TETGEN Tetrahedral meshing --- 16-Sep-2014 13:41:49
+ 
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+--- Writing SMESH file --- 16-Sep-2014 13:41:49
+----&gt; Adding node field
+----&gt; Adding facet field
+----&gt; Adding holes specification
+----&gt; Adding region specification
+--- Done --- 16-Sep-2014 13:41:49
+--- Running TetGen for meshing --- 16-Sep-2014 13:41:49
+Opening tetGenModel.smesh. 
+--- Done --- 16-Sep-2014 13:41:49
+ 
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+--- Importing TetGen files --- 16-Sep-2014 13:41:49
+--- Done --- 16-Sep-2014 13:41:49
+</pre><p>Access model element and patch data</p><pre class="codeinput">F=meshOutput.faces;
+V=meshOutput.nodes;
+C=meshOutput.faceMaterialID;
+E=meshOutput.elements;
+</pre><p>PLOTTING MODEL</p><pre class="codeinput"><span class="comment">%Selecting half of the model to see interior</span>
+Y=V(:,2); YE=mean(Y(E),2);
+L=YE&gt;mean(Y);
+[Fs,Cs]=element2patch(E(L,:),C(L));
+
+hf1=figuremax(fig_color,fig_colordef);
+subplot(1,2,1);
+title(<span class="string">'Solid tetrahedral mesh model'</span>,<span class="string">'FontSize'</span>,fontSize);
+xlabel(<span class="string">'X'</span>,<span class="string">'FontSize'</span>,fontSize); ylabel(<span class="string">'Y'</span>,<span class="string">'FontSize'</span>,fontSize); zlabel(<span class="string">'Z'</span>,<span class="string">'FontSize'</span>,fontSize); hold <span class="string">on</span>;
+hps=patch(<span class="string">'Faces'</span>,F,<span class="string">'Vertices'</span>,V,<span class="string">'FaceColor'</span>,<span class="string">'flat'</span>,<span class="string">'CData'</span>,C,<span class="string">'lineWidth'</span>,edgeWidth,<span class="string">'edgeColor'</span>,edgeColor);
+view(3); axis <span class="string">tight</span>;  axis <span class="string">equal</span>;  grid <span class="string">on</span>;
+colormap(autumn);
+camlight <span class="string">headlight</span>;
+set(gca,<span class="string">'FontSize'</span>,fontSize);
+subplot(1,2,2);
+title(<span class="string">'Cut view of Solid tetrahedral mesh model'</span>,<span class="string">'FontSize'</span>,fontSize);
+xlabel(<span class="string">'X'</span>,<span class="string">'FontSize'</span>,fontSize); ylabel(<span class="string">'Y'</span>,<span class="string">'FontSize'</span>,fontSize); zlabel(<span class="string">'Z'</span>,<span class="string">'FontSize'</span>,fontSize); hold <span class="string">on</span>;
+hps=patch(<span class="string">'Faces'</span>,Fs,<span class="string">'Vertices'</span>,V,<span class="string">'FaceColor'</span>,<span class="string">'flat'</span>,<span class="string">'CData'</span>,Cs,<span class="string">'lineWidth'</span>,edgeWidth,<span class="string">'edgeColor'</span>,edgeColor);
+view(3); axis <span class="string">tight</span>;  axis <span class="string">equal</span>;  grid <span class="string">on</span>;
+colormap(autumn);
+camlight <span class="string">headlight</span>;
+set(gca,<span class="string">'FontSize'</span>,fontSize);
+drawnow;
+</pre><img vspace="5" hspace="5" src="HELP_runTetGenSmesh_04.png" alt=""> <h2>MESHING A MULTI-REGION MODEL CONTAINING HOLES<a name="27"></a></h2><p>Simulating a multiregion mesh</p><pre class="codeinput"><span class="comment">%A dino</span>
+[F1,V1]=parasaurolophus;
+
+<span class="comment">%An internal region</span>
+[F2,V2,~]=geoSphere(2,0.5);
+V2(:,1)=2*V2(:,1);
+
+<span class="comment">%An internal hole</span>
+[F3,V3,~]=geoSphere(3,0.35);
+
+<span class="comment">%Centering internal structures</span>
+V_centre=[0.75 0 0.25];
+V2=V2+V_centre(ones(size(V2,1),1),:);
+V3=V3+V_centre(ones(size(V3,1),1),:);
+
+<span class="comment">%Joining surface sets</span>
+F=[F1;F2+size(V1,1);F3+size(V1,1)+size(V2,1)];
+V=[V1;V2;V3];
+C=[ones(size(F1,1),1);2*ones(size(F2,1),1);3*ones(size(F3,1),1)]; <span class="comment">%Surface marker colors</span>
+</pre><p>Plotting model</p><pre class="codeinput">hf=figuremax(fig_color,fig_colordef);
+title(<span class="string">'Multi-region surface model'</span>,<span class="string">'FontSize'</span>,fontSize);
+xlabel(<span class="string">'X'</span>,<span class="string">'FontSize'</span>,fontSize); ylabel(<span class="string">'Y'</span>,<span class="string">'FontSize'</span>,fontSize); zlabel(<span class="string">'Z'</span>,<span class="string">'FontSize'</span>,fontSize);
+hold <span class="string">on</span>;
+
+hp=patch(<span class="string">'Faces'</span>,F,<span class="string">'Vertices'</span>,V);
+set(hp,<span class="string">'FaceColor'</span>,<span class="string">'flat'</span>,<span class="string">'CData'</span>,C,<span class="string">'FaceAlpha'</span>,faceAlpha1,<span class="string">'lineWidth'</span>,edgeWidth,<span class="string">'edgeColor'</span>,edgeColor);
+camlight <span class="string">headlight</span>;
+colormap <span class="string">autumn</span>;
+set(gca,<span class="string">'FontSize'</span>,fontSize);
+view(3); axis <span class="string">tight</span>;  axis <span class="string">equal</span>;  grid <span class="string">on</span>;
+</pre><img vspace="5" hspace="5" src="HELP_runTetGenSmesh_05.png" alt=""> <p>DEFINE FACE BOUNDARY MARKERS</p><pre class="codeinput">faceBoundaryMarker=C;
+</pre><p>Define region points</p><pre class="codeinput">V_regions=[0.5 0 0; 0 0 0];
+</pre><p>Define hole points</p><pre class="codeinput">V_holes=[V_centre];
+</pre><p>Regional mesh parameters</p><pre class="codeinput">[A]=tetVolMeanEst(F,V);
+regionA=[A A/2];
+</pre><p>CREATING THE SMESH STRUCTURE, meshing without the surface constraints imposed by the -Y this time.</p><pre class="codeinput">stringOpt=<span class="string">'-pq1.3AaQ'</span>;
+
+modelName=<span class="string">'tetGenModel'</span>;
+smeshName=[modelName,<span class="string">'.smesh'</span>];
+
+smeshStruct.stringOpt=stringOpt;
+smeshStruct.Faces=F;
+smeshStruct.Nodes=V;
+smeshStruct.holePoints=V_holes;
+smeshStruct.faceBoundaryMarker=faceBoundaryMarker; <span class="comment">%Face boundary markers</span>
+smeshStruct.regionPoints=V_regions; <span class="comment">%region points</span>
+smeshStruct.regionA=regionA;
+smeshStruct.minRegionMarker=2; <span class="comment">%Minimum region marker</span>
+smeshStruct.smeshName=smeshName;
+</pre><p>Mesh model using tetrahedral elements using tetGen (see: <a href="http://wias-berlin.de/software/tetgen/">http://wias-berlin.de/software/tetgen/</a>)</p><pre class="codeinput">[meshOutput]=runTetGenSmesh(smeshStruct); <span class="comment">%Run tetGen</span>
+</pre><pre class="codeoutput"> 
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+--- TETGEN Tetrahedral meshing --- 16-Sep-2014 13:41:53
+ 
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+--- Writing SMESH file --- 16-Sep-2014 13:41:53
+----&gt; Adding node field
+----&gt; Adding facet field
+----&gt; Adding holes specification
+----&gt; Adding region specification
+--- Done --- 16-Sep-2014 13:41:53
+--- Running TetGen for meshing --- 16-Sep-2014 13:41:53
+Opening tetGenModel.smesh. 
+--- Done --- 16-Sep-2014 13:41:56
+ 
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+--- Importing TetGen files --- 16-Sep-2014 13:41:56
+--- Done --- 16-Sep-2014 13:41:56
+</pre><p>Access model element and patch data</p><pre class="codeinput">F=meshOutput.faces;
+V=meshOutput.nodes;
+C=meshOutput.faceMaterialID;
+E=meshOutput.elements;
+</pre><p>PLOTTING MODEL</p><pre class="codeinput"><span class="comment">%Selecting half of the model to see interior</span>
+Y=V(:,2); YE=mean(Y(E),2);
+L=YE&gt;mean(Y);
+[Fs,Cs]=element2patch(E(L,:),C(L));
+
+hf1=figuremax(fig_color,fig_colordef);
+subplot(1,2,1);
+title(<span class="string">'Solid tetrahedral mesh model'</span>,<span class="string">'FontSize'</span>,fontSize);
+xlabel(<span class="string">'X'</span>,<span class="string">'FontSize'</span>,fontSize); ylabel(<span class="string">'Y'</span>,<span class="string">'FontSize'</span>,fontSize); zlabel(<span class="string">'Z'</span>,<span class="string">'FontSize'</span>,fontSize); hold <span class="string">on</span>;
+hps=patch(<span class="string">'Faces'</span>,F,<span class="string">'Vertices'</span>,V,<span class="string">'FaceColor'</span>,<span class="string">'flat'</span>,<span class="string">'CData'</span>,C,<span class="string">'lineWidth'</span>,edgeWidth,<span class="string">'edgeColor'</span>,edgeColor);
+view(3); axis <span class="string">tight</span>;  axis <span class="string">equal</span>;  grid <span class="string">on</span>;
+colormap(autumn);
+camlight <span class="string">headlight</span>;
+set(gca,<span class="string">'FontSize'</span>,fontSize);
+subplot(1,2,2);
+title(<span class="string">'Cut view of Solid tetrahedral mesh model'</span>,<span class="string">'FontSize'</span>,fontSize);
+xlabel(<span class="string">'X'</span>,<span class="string">'FontSize'</span>,fontSize); ylabel(<span class="string">'Y'</span>,<span class="string">'FontSize'</span>,fontSize); zlabel(<span class="string">'Z'</span>,<span class="string">'FontSize'</span>,fontSize); hold <span class="string">on</span>;
+hps=patch(<span class="string">'Faces'</span>,Fs,<span class="string">'Vertices'</span>,V,<span class="string">'FaceColor'</span>,<span class="string">'flat'</span>,<span class="string">'CData'</span>,Cs,<span class="string">'lineWidth'</span>,edgeWidth,<span class="string">'edgeColor'</span>,edgeColor);
+view(3); axis <span class="string">tight</span>;  axis <span class="string">equal</span>;  grid <span class="string">on</span>;
+colormap(autumn);
+camlight <span class="string">headlight</span>;
+set(gca,<span class="string">'FontSize'</span>,fontSize);
+drawnow;
+</pre><img vspace="5" hspace="5" src="HELP_runTetGenSmesh_06.png" alt=""> <p><img vspace="5" hspace="5" src="gibbVerySmall.gif" alt=""> </p><p>GIBBON</p><p>Kevin M. Moerman (<a href="mailto:kevinmoerman@hotmail.com">kevinmoerman@hotmail.com</a>)</p><p class="footer"><br><a href="http://www.mathworks.com/products/matlab/">Published with MATLAB&reg; R2014b</a><br></p></div><!--
+##### SOURCE BEGIN #####
+%% runTetGenSmesh
+% Below is a demonstration of the features of the |runTetGenSmesh| function
+%%
+%%
+clear all; close all; clc;
+
+%%
+% Plot settings
+fig_color='w'; fig_colordef='white';
+fontSize=15;
+faceAlpha1=0.5;
+faceAlpha2=1;
+edgeColor=0.25*ones(1,3);
+edgeWidth=1.5;
+patchColor=[1 0.5 0];
+
+%% MESHING A SINGLE REGION MODEL
+
+%%
+% Building a geodesic dome surface model
+[F,V,~]=geoSphere(2,1);
+
+%%
+% Plotting model
+hf=figuremax(fig_color,fig_colordef);
+title('Surface model','FontSize',fontSize);
+xlabel('X','FontSize',fontSize); ylabel('Y','FontSize',fontSize); zlabel('Z','FontSize',fontSize);
+hold on;
+
+hp=patch('Faces',F,'Vertices',V);
+set(hp,'FaceColor',patchColor,'FaceAlpha',faceAlpha1,'lineWidth',edgeWidth,'edgeColor',edgeColor);
+camlight headlight;
+set(gca,'FontSize',fontSize);
+view(3); axis tight;  axis equal;  grid on;
+
+%%
+% DEFINE FACE BOUNDARY MARKERS
+faceBoundaryMarker=ones(size(F,1),1);
+
+%%
+% Define region points
+V_regions=[0 0 0];
+
+%%
+% Define hole points
+V_holes=[];
+
+%% 
+% Regional mesh volume parameter
+[regionA]=tetVolMeanEst(F,V); %Volume for regular tets
+
+%% 
+% CREATING THE SMESH STRUCTURE
+
+stringOpt='-pq1.2AaYQ';
+modelName='tetGenModel';
+smeshName=[modelName,'.smesh'];
+
+smeshStruct.stringOpt=stringOpt;
+smeshStruct.Faces=F;
+smeshStruct.Nodes=V;
+smeshStruct.holePoints=V_holes;
+smeshStruct.faceBoundaryMarker=faceBoundaryMarker; %Face boundary markers
+smeshStruct.regionPoints=V_regions; %region points
+smeshStruct.regionA=regionA;
+smeshStruct.minRegionMarker=2; %Minimum region marker
+smeshStruct.smeshName=smeshName;
+
+%% 
+% Mesh model using tetrahedral elements using tetGen (see:
+% <http://wias-berlin.de/software/tetgen/>)
+
+[meshOutput]=runTetGenSmesh(smeshStruct); %Run tetGen 
+
+%% 
+% Access model element and patch data
+F=meshOutput.faces;
+V=meshOutput.nodes;
+C=meshOutput.faceMaterialID;
+E=meshOutput.elements;
+
+%% 
+% PLOTTING MODEL 
+
+%Selecting half of the model to see interior
+Y=V(:,2); YE=mean(Y(E),2);
+L=YE>mean(Y);
+[Fs,Cs]=element2patch(E(L,:),C(L));
+
+hf1=figuremax(fig_color,fig_colordef);
+subplot(1,2,1);
+title('Solid tetrahedral mesh model','FontSize',fontSize);
+xlabel('X','FontSize',fontSize); ylabel('Y','FontSize',fontSize); zlabel('Z','FontSize',fontSize); hold on;
+hps=patch('Faces',F,'Vertices',V,'FaceColor','flat','CData',C,'lineWidth',edgeWidth,'edgeColor',edgeColor);
+view(3); axis tight;  axis equal;  grid on;
+colormap(autumn); 
+camlight headlight;
+set(gca,'FontSize',fontSize);
+subplot(1,2,2);
+title('Cut view of Solid tetrahedral mesh model','FontSize',fontSize);
+xlabel('X','FontSize',fontSize); ylabel('Y','FontSize',fontSize); zlabel('Z','FontSize',fontSize); hold on;
+hps=patch('Faces',Fs,'Vertices',V,'FaceColor','flat','CData',Cs,'lineWidth',edgeWidth,'edgeColor',edgeColor);
+view(3); axis tight;  axis equal;  grid on;
+colormap(autumn); 
+camlight headlight;
+set(gca,'FontSize',fontSize);
+drawnow;
+
+%% VIEWING THE MODEL IN TETVIEW
+% TetView is an external (non-MATLAB) program for viewing TetGen meshes.
+% The runTetGenSmesh function also copies the mesh output files to the
+% tetView directory. TetView is usually found here:
+% ...\gibbon\trunk\lib_ext\tetGen
+% You can run TetView seperately or use the following to view the model in TetView:
+runTetView(meshOutput.loadNameStruct.loadName_ele);
+
+%% 
+% Here is an example screeshot for viewing models in tetView:
+% 
+% <<tetView_screenshot.jpg>>
+%
+%% MESHING A MULTI-REGION MODEL
+
+%%
+% Simulating a multiregion mesh
+[F1,V1]=parasaurolophus; %A dino
+[F2,V2,~]=geoSphere(2,0.4); %An internal region
+V2(:,1)=2*V2(:,1);
+V_centre=[0.75 0 0.25];
+V2=V2+V_centre(ones(size(V2,1),1),:);
+
+%Joining surface sets
+F=[F1;F2+size(V1,1)];
+V=[V1;V2];
+C=[ones(size(F1,1),1);2*ones(size(F2,1),1)]; %Surface marker colors
+
+%%
+% Plotting model
+hf=figuremax(fig_color,fig_colordef);
+title('Multi-region surface model','FontSize',fontSize);
+xlabel('X','FontSize',fontSize); ylabel('Y','FontSize',fontSize); zlabel('Z','FontSize',fontSize);
+hold on;
+
+hp=patch('Faces',F,'Vertices',V);
+set(hp,'FaceColor','flat','CData',C,'FaceAlpha',faceAlpha1,'lineWidth',edgeWidth,'edgeColor',edgeColor);
+camlight headlight;
+colormap autumn; 
+set(gca,'FontSize',fontSize);
+view(3); axis tight;  axis equal;  grid on;
+
+%%
+% DEFINE FACE BOUNDARY MARKERS
+faceBoundaryMarker=C;
+
+%%
+% Define region points
+V_regions=[0.5 0 0;V_centre];
+
+%%
+% Define hole points
+V_holes=[];
+
+%% 
+% Regional mesh parameters
+[A]=tetVolMeanEst(F,V);
+regionA=[A A*3];
+
+%% 
+% CREATING THE SMESH STRUCTURE
+
+stringOpt='-pq1.2AaYQ';
+modelName='tetGenModel';
+smeshName=[modelName,'.smesh'];
+
+smeshStruct.stringOpt=stringOpt;
+smeshStruct.Faces=F;
+smeshStruct.Nodes=V;
+smeshStruct.holePoints=V_holes;
+smeshStruct.faceBoundaryMarker=faceBoundaryMarker; %Face boundary markers
+smeshStruct.regionPoints=V_regions; %region points
+smeshStruct.regionA=regionA;
+smeshStruct.minRegionMarker=2; %Minimum region marker
+smeshStruct.smeshName=smeshName;
+
+%% 
+% Mesh model using tetrahedral elements using tetGen (see:
+% <http://wias-berlin.de/software/tetgen/>)
+
+[meshOutput]=runTetGenSmesh(smeshStruct); %Run tetGen 
+
+%% 
+% Access model element and patch data
+F=meshOutput.faces;
+V=meshOutput.nodes;
+C=meshOutput.faceMaterialID;
+E=meshOutput.elements;
+
+%% 
+% PLOTTING MODEL 
+
+%Selecting half of the model to see interior
+Y=V(:,2); YE=mean(Y(E),2);
+L=YE>mean(Y);
+[Fs,Cs]=element2patch(E(L,:),C(L));
+
+hf1=figuremax(fig_color,fig_colordef);
+subplot(1,2,1);
+title('Solid tetrahedral mesh model','FontSize',fontSize);
+xlabel('X','FontSize',fontSize); ylabel('Y','FontSize',fontSize); zlabel('Z','FontSize',fontSize); hold on;
+hps=patch('Faces',F,'Vertices',V,'FaceColor','flat','CData',C,'lineWidth',edgeWidth,'edgeColor',edgeColor);
+view(3); axis tight;  axis equal;  grid on;
+colormap(autumn); 
+camlight headlight;
+set(gca,'FontSize',fontSize);
+subplot(1,2,2);
+title('Cut view of Solid tetrahedral mesh model','FontSize',fontSize);
+xlabel('X','FontSize',fontSize); ylabel('Y','FontSize',fontSize); zlabel('Z','FontSize',fontSize); hold on;
+hps=patch('Faces',Fs,'Vertices',V,'FaceColor','flat','CData',Cs,'lineWidth',edgeWidth,'edgeColor',edgeColor);
+view(3); axis tight;  axis equal;  grid on;
+colormap(autumn); 
+camlight headlight;
+set(gca,'FontSize',fontSize);
+drawnow;
+
+%% MESHING A MULTI-REGION MODEL CONTAINING HOLES 
+
+%%
+% Simulating a multiregion mesh
+
+%A dino
+[F1,V1]=parasaurolophus; 
+
+%An internal region
+[F2,V2,~]=geoSphere(2,0.5); 
+V2(:,1)=2*V2(:,1);
+
+%An internal hole
+[F3,V3,~]=geoSphere(3,0.35); 
+
+%Centering internal structures
+V_centre=[0.75 0 0.25];
+V2=V2+V_centre(ones(size(V2,1),1),:);
+V3=V3+V_centre(ones(size(V3,1),1),:);
+
+%Joining surface sets
+F=[F1;F2+size(V1,1);F3+size(V1,1)+size(V2,1)];
+V=[V1;V2;V3];
+C=[ones(size(F1,1),1);2*ones(size(F2,1),1);3*ones(size(F3,1),1)]; %Surface marker colors
+
+%%
+% Plotting model
+hf=figuremax(fig_color,fig_colordef);
+title('Multi-region surface model','FontSize',fontSize);
+xlabel('X','FontSize',fontSize); ylabel('Y','FontSize',fontSize); zlabel('Z','FontSize',fontSize);
+hold on;
+
+hp=patch('Faces',F,'Vertices',V);
+set(hp,'FaceColor','flat','CData',C,'FaceAlpha',faceAlpha1,'lineWidth',edgeWidth,'edgeColor',edgeColor);
+camlight headlight;
+colormap autumn; 
+set(gca,'FontSize',fontSize);
+view(3); axis tight;  axis equal;  grid on;
+
+%%
+% DEFINE FACE BOUNDARY MARKERS
+faceBoundaryMarker=C;
+
+%%
+% Define region points
+V_regions=[0.5 0 0; 0 0 0];
+
+%%
+% Define hole points
+V_holes=[V_centre];
+
+%% 
+% Regional mesh parameters
+[A]=tetVolMeanEst(F,V);
+regionA=[A A/2];
+
+%% 
+% CREATING THE SMESH STRUCTURE, meshing without the surface constraints
+% imposed by the -Y this time. 
+
+stringOpt='-pq1.3AaQ';
+
+modelName='tetGenModel';
+smeshName=[modelName,'.smesh'];
+
+smeshStruct.stringOpt=stringOpt;
+smeshStruct.Faces=F;
+smeshStruct.Nodes=V;
+smeshStruct.holePoints=V_holes;
+smeshStruct.faceBoundaryMarker=faceBoundaryMarker; %Face boundary markers
+smeshStruct.regionPoints=V_regions; %region points
+smeshStruct.regionA=regionA;
+smeshStruct.minRegionMarker=2; %Minimum region marker
+smeshStruct.smeshName=smeshName;
+
+%% 
+% Mesh model using tetrahedral elements using tetGen (see:
+% <http://wias-berlin.de/software/tetgen/>)
+
+[meshOutput]=runTetGenSmesh(smeshStruct); %Run tetGen 
+
+%% 
+% Access model element and patch data
+F=meshOutput.faces;
+V=meshOutput.nodes;
+C=meshOutput.faceMaterialID;
+E=meshOutput.elements;
+
+%% 
+% PLOTTING MODEL 
+
+%Selecting half of the model to see interior
+Y=V(:,2); YE=mean(Y(E),2);
+L=YE>mean(Y);
+[Fs,Cs]=element2patch(E(L,:),C(L));
+
+hf1=figuremax(fig_color,fig_colordef);
+subplot(1,2,1);
+title('Solid tetrahedral mesh model','FontSize',fontSize);
+xlabel('X','FontSize',fontSize); ylabel('Y','FontSize',fontSize); zlabel('Z','FontSize',fontSize); hold on;
+hps=patch('Faces',F,'Vertices',V,'FaceColor','flat','CData',C,'lineWidth',edgeWidth,'edgeColor',edgeColor);
+view(3); axis tight;  axis equal;  grid on;
+colormap(autumn); 
+camlight headlight;
+set(gca,'FontSize',fontSize);
+subplot(1,2,2);
+title('Cut view of Solid tetrahedral mesh model','FontSize',fontSize);
+xlabel('X','FontSize',fontSize); ylabel('Y','FontSize',fontSize); zlabel('Z','FontSize',fontSize); hold on;
+hps=patch('Faces',Fs,'Vertices',V,'FaceColor','flat','CData',Cs,'lineWidth',edgeWidth,'edgeColor',edgeColor);
+view(3); axis tight;  axis equal;  grid on;
+colormap(autumn); 
+camlight headlight;
+set(gca,'FontSize',fontSize);
+drawnow;
+
+%%
+%
+% <<gibbVerySmall.gif>>
+%
+% GIBBON
+%
+% Kevin M. Moerman (kevinmoerman@hotmail.com)
+
+##### SOURCE END #####
+--></body></html>

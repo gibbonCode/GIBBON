@@ -1,0 +1,182 @@
+
+<!DOCTYPE html
+  PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html><head>
+      <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+   <!--
+This HTML was auto-generated from MATLAB code.
+To make changes, update the MATLAB code and republish this document.
+      --><title>triSurfRemoveThreeConnect</title><meta name="generator" content="MATLAB 8.3"><link rel="schema.DC" href="http://purl.org/dc/elements/1.1/"><meta name="DC.date" content="2014-06-03"><meta name="DC.source" content="HELP_triSurfRemoveThreeConnect.m"><style type="text/css">
+html,body,div,span,applet,object,iframe,h1,h2,h3,h4,h5,h6,p,blockquote,pre,a,abbr,acronym,address,big,cite,code,del,dfn,em,font,img,ins,kbd,q,s,samp,small,strike,strong,sub,sup,tt,var,b,u,i,center,dl,dt,dd,ol,ul,li,fieldset,form,label,legend,table,caption,tbody,tfoot,thead,tr,th,td{margin:0;padding:0;border:0;outline:0;font-size:100%;vertical-align:baseline;background:transparent}body{line-height:1}ol,ul{list-style:none}blockquote,q{quotes:none}blockquote:before,blockquote:after,q:before,q:after{content:'';content:none}:focus{outine:0}ins{text-decoration:none}del{text-decoration:line-through}table{border-collapse:collapse;border-spacing:0}
+
+html { min-height:100%; margin-bottom:1px; }
+html body { height:100%; margin:0px; font-family:Arial, Helvetica, sans-serif; font-size:10px; color:#000; line-height:140%; background:#fff none; overflow-y:scroll; }
+html body td { vertical-align:top; text-align:left; }
+
+h1 { padding:0px; margin:0px 0px 25px; font-family:Arial, Helvetica, sans-serif; font-size:1.5em; color:#d55000; line-height:100%; font-weight:normal; }
+h2 { padding:0px; margin:0px 0px 8px; font-family:Arial, Helvetica, sans-serif; font-size:1.2em; color:#000; font-weight:bold; line-height:140%; border-bottom:1px solid #d6d4d4; display:block; }
+h3 { padding:0px; margin:0px 0px 5px; font-family:Arial, Helvetica, sans-serif; font-size:1.1em; color:#000; font-weight:bold; line-height:140%; }
+
+a { color:#005fce; text-decoration:none; }
+a:hover { color:#005fce; text-decoration:underline; }
+a:visited { color:#004aa0; text-decoration:none; }
+
+p { padding:0px; margin:0px 0px 20px; }
+img { padding:0px; margin:0px 0px 20px; border:none; }
+p img, pre img, tt img, li img, h1 img, h2 img { margin-bottom:0px; } 
+
+ul { padding:0px; margin:0px 0px 20px 23px; list-style:square; }
+ul li { padding:0px; margin:0px 0px 7px 0px; }
+ul li ul { padding:5px 0px 0px; margin:0px 0px 7px 23px; }
+ul li ol li { list-style:decimal; }
+ol { padding:0px; margin:0px 0px 20px 0px; list-style:decimal; }
+ol li { padding:0px; margin:0px 0px 7px 23px; list-style-type:decimal; }
+ol li ol { padding:5px 0px 0px; margin:0px 0px 7px 0px; }
+ol li ol li { list-style-type:lower-alpha; }
+ol li ul { padding-top:7px; }
+ol li ul li { list-style:square; }
+
+.content { font-size:1.2em; line-height:140%; padding: 20px; }
+
+pre, code { font-size:12px; }
+tt { font-size: 1.2em; }
+pre { margin:0px 0px 20px; }
+pre.codeinput { padding:10px; border:1px solid #d3d3d3; background:#f7f7f7; }
+pre.codeoutput { padding:10px 11px; margin:0px 0px 20px; color:#4c4c4c; }
+pre.error { color:red; }
+
+@media print { pre.codeinput, pre.codeoutput { word-wrap:break-word; width:100%; } }
+
+span.keyword { color:#0000FF }
+span.comment { color:#228B22 }
+span.string { color:#A020F0 }
+span.untermstring { color:#B20000 }
+span.syscmd { color:#B28C00 }
+
+.footer { width:auto; padding:10px 0px; margin:25px 0px 0px; border-top:1px dotted #878787; font-size:0.8em; line-height:140%; font-style:italic; color:#878787; text-align:left; float:none; }
+.footer p { margin:0px; }
+.footer a { color:#878787; }
+.footer a:hover { color:#878787; text-decoration:underline; }
+.footer a:visited { color:#878787; }
+
+table th { padding:7px 5px; text-align:left; vertical-align:middle; border: 1px solid #d6d4d4; font-weight:bold; }
+table td { padding:7px 5px; text-align:left; vertical-align:top; border:1px solid #d6d4d4; }
+
+
+
+
+
+  </style></head><body><div class="content"><h1>triSurfRemoveThreeConnect</h1><!--introduction--><p>Below is a demonstration of the features of the <tt>triSurfRemoveThreeConnect</tt> function</p><!--/introduction--><h2>Contents</h2><div><ul><li><a href="#3">Removing "3-connected" vertices and replacing associated faces</a></li></ul></div><pre class="codeinput">clear <span class="string">all</span>; close <span class="string">all</span>; clc;
+
+<span class="comment">% Plot settings</span>
+fig_color=<span class="string">'w'</span>; fig_colordef=<span class="string">'white'</span>;
+fontSize=15;
+faceColor=<span class="string">'b'</span>;
+faceAlpha=0.8;
+edgeColor=0.3*ones(1,3);
+edgeWidth=2;
+markerSize=5;
+</pre><p>Creating example geometry</p><pre class="codeinput">[F,V]=geoSphere(2,1);
+indRand=randperm(size(F,1),round(size(F,1)/5));
+L=false(size(F,1),1);
+L(indRand)=1;
+C=double(L);
+
+<span class="comment">% Create mid-triangle coordinates and subtriangles</span>
+[Fn,Vn]=subTriCentre(F,V,L);
+Ln=false(size(Fn,1),1); Ln(end-nnz(L)*3:end)=1;
+Cn=double(Ln);
+</pre><h2>Removing "3-connected" vertices and replacing associated faces<a name="3"></a></h2><p>In a surface triangulation "3-connected" locations often contain poor quality triangles of a locally smaller area then the rest of the surface. Smoothening does not resolve this issue since the quality is not great improved even after vertex is at the centre of its neighbouring nodes. Hence the function triSurfRemoveThreeConnect instead removes the central nodes and groups the affected triangles into a single triangle.</p><pre class="codeinput">[Ft,Vt,Ct]=triSurfRemoveThreeConnect(Fn,Vn,Cn);
+</pre><p>Plotting results</p><pre class="codeinput">hf=figuremax(fig_color,fig_colordef); hold <span class="string">on</span>;
+subplot(1,2,1);
+title(<span class="string">'Surface containing split triangles'</span>,<span class="string">'FontSize'</span>,fontSize);
+xlabel(<span class="string">'X'</span>,<span class="string">'FontSize'</span>,fontSize); ylabel(<span class="string">'Y'</span>,<span class="string">'FontSize'</span>,fontSize); zlabel(<span class="string">'Z'</span>,<span class="string">'FontSize'</span>,fontSize);
+hp=patch(<span class="string">'Faces'</span>,Fn,<span class="string">'Vertices'</span>,Vn,<span class="string">'FaceColor'</span>,<span class="string">'flat'</span>,<span class="string">'CData'</span>,Cn,<span class="string">'FaceAlpha'</span>,faceAlpha,<span class="string">'lineWidth'</span>,edgeWidth,<span class="string">'edgeColor'</span>,edgeColor);
+set(gca,<span class="string">'FontSize'</span>,fontSize);
+view(3); axis <span class="string">tight</span>;  axis <span class="string">equal</span>;  axis <span class="string">vis3d</span>; axis <span class="string">off</span>;
+colormap <span class="string">autumn</span>;
+camlight(<span class="string">'headlight'</span>); lighting <span class="string">flat</span>;
+drawnow;
+subplot(1,2,2);
+title(<span class="string">'Restored surface'</span>,<span class="string">'FontSize'</span>,fontSize);
+xlabel(<span class="string">'X'</span>,<span class="string">'FontSize'</span>,fontSize); ylabel(<span class="string">'Y'</span>,<span class="string">'FontSize'</span>,fontSize); zlabel(<span class="string">'Z'</span>,<span class="string">'FontSize'</span>,fontSize);
+hp=patch(<span class="string">'Faces'</span>,Ft,<span class="string">'Vertices'</span>,Vt,<span class="string">'FaceColor'</span>,<span class="string">'flat'</span>,<span class="string">'CData'</span>,Ct,<span class="string">'FaceAlpha'</span>,faceAlpha,<span class="string">'lineWidth'</span>,edgeWidth,<span class="string">'edgeColor'</span>,edgeColor);
+<span class="comment">% [hp]=patchNormPlot(Ft,Vt,0.25);</span>
+set(gca,<span class="string">'FontSize'</span>,fontSize);
+view(3); axis <span class="string">tight</span>;  axis <span class="string">equal</span>;  axis <span class="string">vis3d</span>; axis <span class="string">off</span>;
+colormap <span class="string">autumn</span>;
+camlight(<span class="string">'headlight'</span>); lighting <span class="string">flat</span>;
+drawnow;
+</pre><img vspace="5" hspace="5" src="HELP_triSurfRemoveThreeConnect_01.png" alt=""> <p><img vspace="5" hspace="5" src="gibbVerySmall.gif" alt=""> </p><p>GIBBON</p><p>Kevin M. Moerman (<a href="mailto:kevinmoerman@hotmail.com">kevinmoerman@hotmail.com</a>)</p><p class="footer"><br><a href="http://www.mathworks.com/products/matlab/">Published with MATLAB&reg; R2014a</a><br></p></div><!--
+##### SOURCE BEGIN #####
+%% triSurfRemoveThreeConnect
+% Below is a demonstration of the features of the |triSurfRemoveThreeConnect| function
+
+%%
+clear all; close all; clc; 
+
+% Plot settings
+fig_color='w'; fig_colordef='white';
+fontSize=15;
+faceColor='b';
+faceAlpha=0.8;
+edgeColor=0.3*ones(1,3);
+edgeWidth=2;
+markerSize=5;
+
+%% 
+% Creating example geometry
+[F,V]=geoSphere(2,1); 
+indRand=randperm(size(F,1),round(size(F,1)/5));
+L=false(size(F,1),1); 
+L(indRand)=1;
+C=double(L);
+
+% Create mid-triangle coordinates and subtriangles
+[Fn,Vn]=subTriCentre(F,V,L);
+Ln=false(size(Fn,1),1); Ln(end-nnz(L)*3:end)=1;
+Cn=double(Ln);
+
+%% Removing "3-connected" vertices and replacing associated faces
+% In a surface triangulation "3-connected" locations often contain poor
+% quality triangles of a locally smaller area then the rest of the surface.
+% Smoothening does not resolve this issue since the quality is not great
+% improved even after vertex is at the centre of its neighbouring nodes.
+% Hence the function triSurfRemoveThreeConnect instead removes the central
+% nodes and groups the affected triangles into a single triangle. 
+
+[Ft,Vt,Ct]=triSurfRemoveThreeConnect(Fn,Vn,Cn);
+
+%%
+% Plotting results
+
+hf=figuremax(fig_color,fig_colordef); hold on;
+subplot(1,2,1); 
+title('Surface containing split triangles','FontSize',fontSize);
+xlabel('X','FontSize',fontSize); ylabel('Y','FontSize',fontSize); zlabel('Z','FontSize',fontSize);
+hp=patch('Faces',Fn,'Vertices',Vn,'FaceColor','flat','CData',Cn,'FaceAlpha',faceAlpha,'lineWidth',edgeWidth,'edgeColor',edgeColor);
+set(gca,'FontSize',fontSize);
+view(3); axis tight;  axis equal;  axis vis3d; axis off;
+colormap autumn; 
+camlight('headlight'); lighting flat;
+drawnow; 
+subplot(1,2,2); 
+title('Restored surface','FontSize',fontSize);
+xlabel('X','FontSize',fontSize); ylabel('Y','FontSize',fontSize); zlabel('Z','FontSize',fontSize);
+hp=patch('Faces',Ft,'Vertices',Vt,'FaceColor','flat','CData',Ct,'FaceAlpha',faceAlpha,'lineWidth',edgeWidth,'edgeColor',edgeColor);
+% [hp]=patchNormPlot(Ft,Vt,0.25);
+set(gca,'FontSize',fontSize);
+view(3); axis tight;  axis equal;  axis vis3d; axis off;
+colormap autumn; 
+camlight('headlight'); lighting flat;
+drawnow; 
+
+%% 
+%
+% <<gibbVerySmall.gif>>
+% 
+% GIBBON 
+% 
+% Kevin M. Moerman (kevinmoerman@hotmail.com)
+##### SOURCE END #####
+--></body></html>

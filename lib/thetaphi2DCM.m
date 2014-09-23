@@ -1,0 +1,13 @@
+function [R,Ri]=thetaphi2DCM(theta,phi)
+
+Ry=[cos(phi_f) 0 sin(phi_f);...
+    0 1 0;...
+    -sin(phi_f) 0 cos(phi_f)];
+Rz=[cos(theta_f) -sin(theta_f) 0;...
+    sin(theta_f) cos(theta_f) 0;...
+    0 0 1];
+
+R=Rx*Ry*Rz;
+Ri=inv(Rf);
+
+

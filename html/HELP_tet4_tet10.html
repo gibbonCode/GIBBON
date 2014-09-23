@@ -1,0 +1,343 @@
+
+<!DOCTYPE html
+  PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html><head>
+      <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+   <!--
+This HTML was auto-generated from MATLAB code.
+To make changes, update the MATLAB code and republish this document.
+      --><title>tet4_tet10</title><meta name="generator" content="MATLAB 8.4"><link rel="schema.DC" href="http://purl.org/dc/elements/1.1/"><meta name="DC.date" content="2014-09-22"><meta name="DC.source" content="HELP_tet4_tet10.m"><style type="text/css">
+html,body,div,span,applet,object,iframe,h1,h2,h3,h4,h5,h6,p,blockquote,pre,a,abbr,acronym,address,big,cite,code,del,dfn,em,font,img,ins,kbd,q,s,samp,small,strike,strong,sub,sup,tt,var,b,u,i,center,dl,dt,dd,ol,ul,li,fieldset,form,label,legend,table,caption,tbody,tfoot,thead,tr,th,td{margin:0;padding:0;border:0;outline:0;font-size:100%;vertical-align:baseline;background:transparent}body{line-height:1}ol,ul{list-style:none}blockquote,q{quotes:none}blockquote:before,blockquote:after,q:before,q:after{content:'';content:none}:focus{outine:0}ins{text-decoration:none}del{text-decoration:line-through}table{border-collapse:collapse;border-spacing:0}
+
+html { min-height:100%; margin-bottom:1px; }
+html body { height:100%; margin:0px; font-family:Arial, Helvetica, sans-serif; font-size:10px; color:#000; line-height:140%; background:#fff none; overflow-y:scroll; }
+html body td { vertical-align:top; text-align:left; }
+
+h1 { padding:0px; margin:0px 0px 25px; font-family:Arial, Helvetica, sans-serif; font-size:1.5em; color:#d55000; line-height:100%; font-weight:normal; }
+h2 { padding:0px; margin:0px 0px 8px; font-family:Arial, Helvetica, sans-serif; font-size:1.2em; color:#000; font-weight:bold; line-height:140%; border-bottom:1px solid #d6d4d4; display:block; }
+h3 { padding:0px; margin:0px 0px 5px; font-family:Arial, Helvetica, sans-serif; font-size:1.1em; color:#000; font-weight:bold; line-height:140%; }
+
+a { color:#005fce; text-decoration:none; }
+a:hover { color:#005fce; text-decoration:underline; }
+a:visited { color:#004aa0; text-decoration:none; }
+
+p { padding:0px; margin:0px 0px 20px; }
+img { padding:0px; margin:0px 0px 20px; border:none; }
+p img, pre img, tt img, li img, h1 img, h2 img { margin-bottom:0px; } 
+
+ul { padding:0px; margin:0px 0px 20px 23px; list-style:square; }
+ul li { padding:0px; margin:0px 0px 7px 0px; }
+ul li ul { padding:5px 0px 0px; margin:0px 0px 7px 23px; }
+ul li ol li { list-style:decimal; }
+ol { padding:0px; margin:0px 0px 20px 0px; list-style:decimal; }
+ol li { padding:0px; margin:0px 0px 7px 23px; list-style-type:decimal; }
+ol li ol { padding:5px 0px 0px; margin:0px 0px 7px 0px; }
+ol li ol li { list-style-type:lower-alpha; }
+ol li ul { padding-top:7px; }
+ol li ul li { list-style:square; }
+
+.content { font-size:1.2em; line-height:140%; padding: 20px; }
+
+pre, code { font-size:12px; }
+tt { font-size: 1.2em; }
+pre { margin:0px 0px 20px; }
+pre.codeinput { padding:10px; border:1px solid #d3d3d3; background:#f7f7f7; }
+pre.codeoutput { padding:10px 11px; margin:0px 0px 20px; color:#4c4c4c; }
+pre.error { color:red; }
+
+@media print { pre.codeinput, pre.codeoutput { word-wrap:break-word; width:100%; } }
+
+span.keyword { color:#0000FF }
+span.comment { color:#228B22 }
+span.string { color:#A020F0 }
+span.untermstring { color:#B20000 }
+span.syscmd { color:#B28C00 }
+
+.footer { width:auto; padding:10px 0px; margin:25px 0px 0px; border-top:1px dotted #878787; font-size:0.8em; line-height:140%; font-style:italic; color:#878787; text-align:left; float:none; }
+.footer p { margin:0px; }
+.footer a { color:#878787; }
+.footer a:hover { color:#878787; text-decoration:underline; }
+.footer a:visited { color:#878787; }
+
+table th { padding:7px 5px; text-align:left; vertical-align:middle; border: 1px solid #d6d4d4; font-weight:bold; }
+table td { padding:7px 5px; text-align:left; vertical-align:top; border:1px solid #d6d4d4; }
+
+
+
+
+
+  </style></head><body><div class="content"><h1>tet4_tet10</h1><!--introduction--><p>Below is a demonstration of the features of the <tt>tet4_tet10</tt> function</p><!--/introduction--><h2>Contents</h2><div><ul><li><a href="#2">CONVERSION FROM TET4 TO TET10, EXAMPLE FOR A SINGLE TETRAHEDRON</a></li><li><a href="#5">CONVERSION FROM TET4 TO TET10, EXAMPLE FOR A TETRAHEDRON MESH WITH NODAL PARAMETERS</a></li></ul></div><pre class="codeinput">clear; close <span class="string">all</span>; clc;
+
+<span class="comment">% Plot settings</span>
+fig_color=<span class="string">'w'</span>; fig_colordef=<span class="string">'white'</span>;
+fontSize=15;
+faceColor=<span class="string">'b'</span>;
+faceAlpha=0.75;
+edgeColor=<span class="string">'k'</span>;
+edgeWidth1=2;
+edgeWidth2=1;
+markerSize1=75;
+markerSize2=10;
+</pre><h2>CONVERSION FROM TET4 TO TET10, EXAMPLE FOR A SINGLE TETRAHEDRON<a name="2"></a></h2><p>Creating a single 4-node tetrahedron</p><pre class="codeinput">[V4,~]=platonic_solid(1,1); <span class="comment">%q indicates solid type, r is the radius</span>
+TET4=[1:4];
+[F4,~]=element2patch(TET4,[],<span class="string">'tet4'</span>);
+</pre><p>Converting to a single 10-node tetrahedron</p><pre class="codeinput">[TET10,V10,~]=tet4_tet10(TET4,V4,{});
+[F10,~]=element2patch(TET10,[],<span class="string">'tet10'</span>);
+</pre><p>Plotting elements</p><pre class="codeinput">hf=figuremax(fig_color,fig_colordef); <span class="comment">% Open figure for plotting</span>
+subplot(1,2,1); hold <span class="string">on</span>;
+title(<span class="string">'A linear tetrahedron'</span>,<span class="string">'FontSize'</span>,fontSize);
+xlabel(<span class="string">'X'</span>,<span class="string">'FontSize'</span>,fontSize); ylabel(<span class="string">'Y'</span>,<span class="string">'FontSize'</span>,fontSize); zlabel(<span class="string">'Z'</span>,<span class="string">'FontSize'</span>,fontSize);
+
+hp=patch(<span class="string">'Faces'</span>,F4,<span class="string">'Vertices'</span>,V4);
+set(hp,<span class="string">'FaceColor'</span>,<span class="string">'g'</span>,<span class="string">'FaceAlpha'</span>,faceAlpha,<span class="string">'lineWidth'</span>,edgeWidth1,<span class="string">'edgeColor'</span>,edgeColor,<span class="string">'Marker'</span>,<span class="string">'.'</span>,<span class="string">'MarkerSize'</span>,markerSize1);
+[hn]=patchNormPlot(F4,V4,0.25); <span class="comment">%Plotting face normals</span>
+
+<span class="keyword">for</span> q=1:1:size(TET4,2)
+    text(V4(TET4(1,q),1),V4(TET4(1,q),2),V4(TET4(1,q),3),[<span class="string">' '</span>,num2str(q)],<span class="string">'FontSize'</span>,50);
+<span class="keyword">end</span>
+
+set(gca,<span class="string">'FontSize'</span>,fontSize);
+view(3); axis <span class="string">tight</span>;  axis <span class="string">equal</span>;  axis <span class="string">vis3d</span>; axis <span class="string">off</span>;
+camlight(<span class="string">'headlight'</span>); lighting <span class="string">flat</span>;
+
+subplot(1,2,2); hold <span class="string">on</span>;
+title(<span class="string">'A quadratic tetrahedron'</span>,<span class="string">'FontSize'</span>,fontSize);
+xlabel(<span class="string">'X'</span>,<span class="string">'FontSize'</span>,fontSize); ylabel(<span class="string">'Y'</span>,<span class="string">'FontSize'</span>,fontSize); zlabel(<span class="string">'Z'</span>,<span class="string">'FontSize'</span>,fontSize);
+
+hp=patch(<span class="string">'Faces'</span>,F10,<span class="string">'Vertices'</span>,V10);
+set(hp,<span class="string">'FaceColor'</span>,<span class="string">'r'</span>,<span class="string">'FaceAlpha'</span>,faceAlpha,<span class="string">'lineWidth'</span>,edgeWidth1,<span class="string">'edgeColor'</span>,edgeColor,<span class="string">'Marker'</span>,<span class="string">'.'</span>,<span class="string">'MarkerSize'</span>,markerSize1);
+[hn]=patchNormPlot(F10,V10,0.25); <span class="comment">%Plotting face normals</span>
+
+<span class="keyword">for</span> q=1:1:size(TET10,2)
+    text(V10(TET10(1,q),1),V10(TET10(1,q),2),V10(TET10(1,q),3),[<span class="string">' '</span>,num2str(q)],<span class="string">'FontSize'</span>,50);
+<span class="keyword">end</span>
+
+set(gca,<span class="string">'FontSize'</span>,fontSize);
+view(3); axis <span class="string">tight</span>;  axis <span class="string">equal</span>;  axis <span class="string">vis3d</span>; axis <span class="string">off</span>;
+camlight(<span class="string">'headlight'</span>); lighting <span class="string">flat</span>;
+
+drawnow;
+</pre><img vspace="5" hspace="5" src="HELP_tet4_tet10_01.png" alt=""> <h2>CONVERSION FROM TET4 TO TET10, EXAMPLE FOR A TETRAHEDRON MESH WITH NODAL PARAMETERS<a name="5"></a></h2><pre class="codeinput">n=3;
+<span class="keyword">for</span> q=1:1:n
+    [TET4,V4]=subTet(TET4,V4,1);
+<span class="keyword">end</span>
+
+[F4,~]=element2patch(TET4,[],<span class="string">'tet4'</span>);
+
+<span class="comment">%Create nodal result e.g. displacement and color</span>
+V4d=V4;
+V4d(:,1)=V4d(:,1)+0.5.*sin(pi*V4d(:,3));
+V4d(:,2)=V4d(:,2)+0.5.*cos(pi*V4d(:,3));
+D4=V4d-V4;
+
+C4=V4(:,1); <span class="comment">%Color towards X</span>
+</pre><p>Converting to a single 10-node tetrahedron</p><pre class="codeinput">tet4_cell={D4,C4};
+[TET10,V10,tet10_cell]=tet4_tet10(TET4,V4,tet4_cell);
+[F10,~]=element2patch(TET10,[],<span class="string">'tet10'</span>);
+D10=tet10_cell{1};
+C10=tet10_cell{2};
+V10d=V10+D10;
+</pre><p>Plotting elements</p><pre class="codeinput">hf=figuremax(fig_color,fig_colordef); <span class="comment">% Open figure for plotting</span>
+subplot(2,2,1); hold <span class="string">on</span>;
+title(<span class="string">'A linear tetrahedron mesh'</span>,<span class="string">'FontSize'</span>,fontSize);
+xlabel(<span class="string">'X'</span>,<span class="string">'FontSize'</span>,fontSize); ylabel(<span class="string">'Y'</span>,<span class="string">'FontSize'</span>,fontSize); zlabel(<span class="string">'Z'</span>,<span class="string">'FontSize'</span>,fontSize);
+
+hp=patch(<span class="string">'Faces'</span>,F4,<span class="string">'Vertices'</span>,V4);
+set(hp,<span class="string">'FaceColor'</span>,<span class="string">'g'</span>,<span class="string">'FaceAlpha'</span>,faceAlpha,<span class="string">'lineWidth'</span>,edgeWidth2,<span class="string">'edgeColor'</span>,edgeColor,<span class="string">'Marker'</span>,<span class="string">'.'</span>,<span class="string">'MarkerSize'</span>,markerSize2);
+
+set(gca,<span class="string">'FontSize'</span>,fontSize);
+view(3); axis <span class="string">tight</span>;  axis <span class="string">equal</span>;  axis <span class="string">vis3d</span>; axis <span class="string">off</span>;
+view([-50,12])
+camlight(<span class="string">'headlight'</span>); lighting <span class="string">flat</span>;
+
+subplot(2,2,3); hold <span class="string">on</span>;
+title(<span class="string">'Data on linear tetrahedron mesh'</span>,<span class="string">'FontSize'</span>,fontSize);
+xlabel(<span class="string">'X'</span>,<span class="string">'FontSize'</span>,fontSize); ylabel(<span class="string">'Y'</span>,<span class="string">'FontSize'</span>,fontSize); zlabel(<span class="string">'Z'</span>,<span class="string">'FontSize'</span>,fontSize);
+
+hp=patch(<span class="string">'Faces'</span>,F4,<span class="string">'Vertices'</span>,V4d);
+set(hp,<span class="string">'FaceColor'</span>,<span class="string">'flat'</span>,<span class="string">'CData'</span>,C4,<span class="string">'FaceAlpha'</span>,faceAlpha,<span class="string">'lineWidth'</span>,edgeWidth2,<span class="string">'edgeColor'</span>,edgeColor,<span class="string">'Marker'</span>,<span class="string">'.'</span>,<span class="string">'MarkerSize'</span>,markerSize2);
+
+set(gca,<span class="string">'FontSize'</span>,fontSize);
+view(3); axis <span class="string">tight</span>;  axis <span class="string">equal</span>;  axis <span class="string">vis3d</span>; axis <span class="string">off</span>;
+view([-50,12])
+camlight(<span class="string">'headlight'</span>); lighting <span class="string">flat</span>;
+
+subplot(2,2,2); hold <span class="string">on</span>;
+title(<span class="string">'A quadratic tetrahedron mesh'</span>,<span class="string">'FontSize'</span>,fontSize);
+xlabel(<span class="string">'X'</span>,<span class="string">'FontSize'</span>,fontSize); ylabel(<span class="string">'Y'</span>,<span class="string">'FontSize'</span>,fontSize); zlabel(<span class="string">'Z'</span>,<span class="string">'FontSize'</span>,fontSize);
+
+hp=patch(<span class="string">'Faces'</span>,F10,<span class="string">'Vertices'</span>,V10);
+set(hp,<span class="string">'FaceColor'</span>,<span class="string">'r'</span>,<span class="string">'FaceAlpha'</span>,faceAlpha,<span class="string">'lineWidth'</span>,edgeWidth2,<span class="string">'edgeColor'</span>,edgeColor,<span class="string">'Marker'</span>,<span class="string">'.'</span>,<span class="string">'MarkerSize'</span>,markerSize2);
+
+set(gca,<span class="string">'FontSize'</span>,fontSize);
+view(3); axis <span class="string">tight</span>;  axis <span class="string">equal</span>;  axis <span class="string">vis3d</span>; axis <span class="string">off</span>;
+view([-50,12])
+camlight(<span class="string">'headlight'</span>); lighting <span class="string">flat</span>;
+
+subplot(2,2,4); hold <span class="string">on</span>;
+title(<span class="string">'Mapped data on quadratic tetrahedron mesh'</span>,<span class="string">'FontSize'</span>,fontSize);
+xlabel(<span class="string">'X'</span>,<span class="string">'FontSize'</span>,fontSize); ylabel(<span class="string">'Y'</span>,<span class="string">'FontSize'</span>,fontSize); zlabel(<span class="string">'Z'</span>,<span class="string">'FontSize'</span>,fontSize);
+
+hp=patch(<span class="string">'Faces'</span>,F10,<span class="string">'Vertices'</span>,V10d);
+set(hp,<span class="string">'FaceColor'</span>,<span class="string">'flat'</span>,<span class="string">'CData'</span>,C10,<span class="string">'FaceAlpha'</span>,faceAlpha,<span class="string">'lineWidth'</span>,edgeWidth2,<span class="string">'edgeColor'</span>,edgeColor,<span class="string">'Marker'</span>,<span class="string">'.'</span>,<span class="string">'MarkerSize'</span>,markerSize2);
+colormap <span class="string">jet</span>;
+set(gca,<span class="string">'FontSize'</span>,fontSize);
+view(3); axis <span class="string">tight</span>;  axis <span class="string">equal</span>;  axis <span class="string">vis3d</span>; axis <span class="string">off</span>;
+view([-50,12])
+camlight(<span class="string">'headlight'</span>); lighting <span class="string">flat</span>;
+
+drawnow;
+</pre><img vspace="5" hspace="5" src="HELP_tet4_tet10_02.png" alt=""> <p><img vspace="5" hspace="5" src="gibbVerySmall.gif" alt=""> </p><p>GIBBON</p><p>Kevin M. Moerman (<a href="mailto:kevinmoerman@hotmail.com">kevinmoerman@hotmail.com</a>)</p><p class="footer"><br><a href="http://www.mathworks.com/products/matlab/">Published with MATLAB&reg; R2014b</a><br></p></div><!--
+##### SOURCE BEGIN #####
+%% tet4_tet10
+% Below is a demonstration of the features of the |tet4_tet10| function
+
+%%
+clear; close all; clc;
+
+% Plot settings
+fig_color='w'; fig_colordef='white';
+fontSize=15;
+faceColor='b';
+faceAlpha=0.75;
+edgeColor='k';
+edgeWidth1=2;
+edgeWidth2=1;
+markerSize1=75;
+markerSize2=10;
+
+%% CONVERSION FROM TET4 TO TET10, EXAMPLE FOR A SINGLE TETRAHEDRON
+% Creating a single 4-node tetrahedron
+[V4,~]=platonic_solid(1,1); %q indicates solid type, r is the radius
+TET4=[1:4];
+[F4,~]=element2patch(TET4,[],'tet4');
+
+%%
+% Converting to a single 10-node tetrahedron
+[TET10,V10,~]=tet4_tet10(TET4,V4,{});
+[F10,~]=element2patch(TET10,[],'tet10');
+
+%%
+% Plotting elements
+hf=figuremax(fig_color,fig_colordef); % Open figure for plotting
+subplot(1,2,1); hold on;
+title('A linear tetrahedron','FontSize',fontSize);
+xlabel('X','FontSize',fontSize); ylabel('Y','FontSize',fontSize); zlabel('Z','FontSize',fontSize);
+
+hp=patch('Faces',F4,'Vertices',V4);
+set(hp,'FaceColor','g','FaceAlpha',faceAlpha,'lineWidth',edgeWidth1,'edgeColor',edgeColor,'Marker','.','MarkerSize',markerSize1);
+[hn]=patchNormPlot(F4,V4,0.25); %Plotting face normals
+
+for q=1:1:size(TET4,2)
+    text(V4(TET4(1,q),1),V4(TET4(1,q),2),V4(TET4(1,q),3),[' ',num2str(q)],'FontSize',50);
+end
+
+set(gca,'FontSize',fontSize);
+view(3); axis tight;  axis equal;  axis vis3d; axis off;
+camlight('headlight'); lighting flat;
+
+subplot(1,2,2); hold on;
+title('A quadratic tetrahedron','FontSize',fontSize);
+xlabel('X','FontSize',fontSize); ylabel('Y','FontSize',fontSize); zlabel('Z','FontSize',fontSize);
+
+hp=patch('Faces',F10,'Vertices',V10);
+set(hp,'FaceColor','r','FaceAlpha',faceAlpha,'lineWidth',edgeWidth1,'edgeColor',edgeColor,'Marker','.','MarkerSize',markerSize1);
+[hn]=patchNormPlot(F10,V10,0.25); %Plotting face normals
+
+for q=1:1:size(TET10,2)
+    text(V10(TET10(1,q),1),V10(TET10(1,q),2),V10(TET10(1,q),3),[' ',num2str(q)],'FontSize',50);
+end
+
+set(gca,'FontSize',fontSize);
+view(3); axis tight;  axis equal;  axis vis3d; axis off;
+camlight('headlight'); lighting flat;
+
+drawnow; 
+
+%% CONVERSION FROM TET4 TO TET10, EXAMPLE FOR A TETRAHEDRON MESH WITH NODAL PARAMETERS
+n=3;
+for q=1:1:n
+    [TET4,V4]=subTet(TET4,V4,1);
+end
+
+[F4,~]=element2patch(TET4,[],'tet4');
+
+%Create nodal result e.g. displacement and color
+V4d=V4;
+V4d(:,1)=V4d(:,1)+0.5.*sin(pi*V4d(:,3));
+V4d(:,2)=V4d(:,2)+0.5.*cos(pi*V4d(:,3));
+D4=V4d-V4;
+
+C4=V4(:,1); %Color towards X
+
+%%
+% Converting to a single 10-node tetrahedron
+tet4_cell={D4,C4};
+[TET10,V10,tet10_cell]=tet4_tet10(TET4,V4,tet4_cell);
+[F10,~]=element2patch(TET10,[],'tet10');
+D10=tet10_cell{1};
+C10=tet10_cell{2};
+V10d=V10+D10;
+
+%%
+% Plotting elements
+hf=figuremax(fig_color,fig_colordef); % Open figure for plotting
+subplot(2,2,1); hold on;
+title('A linear tetrahedron mesh','FontSize',fontSize);
+xlabel('X','FontSize',fontSize); ylabel('Y','FontSize',fontSize); zlabel('Z','FontSize',fontSize);
+
+hp=patch('Faces',F4,'Vertices',V4);
+set(hp,'FaceColor','g','FaceAlpha',faceAlpha,'lineWidth',edgeWidth2,'edgeColor',edgeColor,'Marker','.','MarkerSize',markerSize2);
+
+set(gca,'FontSize',fontSize);
+view(3); axis tight;  axis equal;  axis vis3d; axis off;
+view([-50,12])
+camlight('headlight'); lighting flat;
+
+subplot(2,2,3); hold on;
+title('Data on linear tetrahedron mesh','FontSize',fontSize);
+xlabel('X','FontSize',fontSize); ylabel('Y','FontSize',fontSize); zlabel('Z','FontSize',fontSize);
+
+hp=patch('Faces',F4,'Vertices',V4d);
+set(hp,'FaceColor','flat','CData',C4,'FaceAlpha',faceAlpha,'lineWidth',edgeWidth2,'edgeColor',edgeColor,'Marker','.','MarkerSize',markerSize2);
+
+set(gca,'FontSize',fontSize);
+view(3); axis tight;  axis equal;  axis vis3d; axis off;
+view([-50,12])
+camlight('headlight'); lighting flat;
+
+subplot(2,2,2); hold on;
+title('A quadratic tetrahedron mesh','FontSize',fontSize);
+xlabel('X','FontSize',fontSize); ylabel('Y','FontSize',fontSize); zlabel('Z','FontSize',fontSize);
+
+hp=patch('Faces',F10,'Vertices',V10);
+set(hp,'FaceColor','r','FaceAlpha',faceAlpha,'lineWidth',edgeWidth2,'edgeColor',edgeColor,'Marker','.','MarkerSize',markerSize2);
+
+set(gca,'FontSize',fontSize);
+view(3); axis tight;  axis equal;  axis vis3d; axis off;
+view([-50,12])
+camlight('headlight'); lighting flat;
+
+subplot(2,2,4); hold on;
+title('Mapped data on quadratic tetrahedron mesh','FontSize',fontSize);
+xlabel('X','FontSize',fontSize); ylabel('Y','FontSize',fontSize); zlabel('Z','FontSize',fontSize);
+
+hp=patch('Faces',F10,'Vertices',V10d);
+set(hp,'FaceColor','flat','CData',C10,'FaceAlpha',faceAlpha,'lineWidth',edgeWidth2,'edgeColor',edgeColor,'Marker','.','MarkerSize',markerSize2);
+colormap jet; 
+set(gca,'FontSize',fontSize);
+view(3); axis tight;  axis equal;  axis vis3d; axis off;
+view([-50,12])
+camlight('headlight'); lighting flat;
+
+drawnow; 
+
+%%
+%
+% <<gibbVerySmall.gif>>
+%
+% GIBBON
+%
+% Kevin M. Moerman (kevinmoerman@hotmail.com)
+##### SOURCE END #####
+--></body></html>

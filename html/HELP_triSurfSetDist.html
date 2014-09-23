@@ -1,0 +1,383 @@
+
+<!DOCTYPE html
+  PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html><head>
+      <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+   <!--
+This HTML was auto-generated from MATLAB code.
+To make changes, update the MATLAB code and republish this document.
+      --><title>triSurfSetDist</title><meta name="generator" content="MATLAB 8.3"><link rel="schema.DC" href="http://purl.org/dc/elements/1.1/"><meta name="DC.date" content="2014-04-15"><meta name="DC.source" content="HELP_triSurfSetDist.m"><style type="text/css">
+html,body,div,span,applet,object,iframe,h1,h2,h3,h4,h5,h6,p,blockquote,pre,a,abbr,acronym,address,big,cite,code,del,dfn,em,font,img,ins,kbd,q,s,samp,small,strike,strong,sub,sup,tt,var,b,u,i,center,dl,dt,dd,ol,ul,li,fieldset,form,label,legend,table,caption,tbody,tfoot,thead,tr,th,td{margin:0;padding:0;border:0;outline:0;font-size:100%;vertical-align:baseline;background:transparent}body{line-height:1}ol,ul{list-style:none}blockquote,q{quotes:none}blockquote:before,blockquote:after,q:before,q:after{content:'';content:none}:focus{outine:0}ins{text-decoration:none}del{text-decoration:line-through}table{border-collapse:collapse;border-spacing:0}
+
+html { min-height:100%; margin-bottom:1px; }
+html body { height:100%; margin:0px; font-family:Arial, Helvetica, sans-serif; font-size:10px; color:#000; line-height:140%; background:#fff none; overflow-y:scroll; }
+html body td { vertical-align:top; text-align:left; }
+
+h1 { padding:0px; margin:0px 0px 25px; font-family:Arial, Helvetica, sans-serif; font-size:1.5em; color:#d55000; line-height:100%; font-weight:normal; }
+h2 { padding:0px; margin:0px 0px 8px; font-family:Arial, Helvetica, sans-serif; font-size:1.2em; color:#000; font-weight:bold; line-height:140%; border-bottom:1px solid #d6d4d4; display:block; }
+h3 { padding:0px; margin:0px 0px 5px; font-family:Arial, Helvetica, sans-serif; font-size:1.1em; color:#000; font-weight:bold; line-height:140%; }
+
+a { color:#005fce; text-decoration:none; }
+a:hover { color:#005fce; text-decoration:underline; }
+a:visited { color:#004aa0; text-decoration:none; }
+
+p { padding:0px; margin:0px 0px 20px; }
+img { padding:0px; margin:0px 0px 20px; border:none; }
+p img, pre img, tt img, li img, h1 img, h2 img { margin-bottom:0px; } 
+
+ul { padding:0px; margin:0px 0px 20px 23px; list-style:square; }
+ul li { padding:0px; margin:0px 0px 7px 0px; }
+ul li ul { padding:5px 0px 0px; margin:0px 0px 7px 23px; }
+ul li ol li { list-style:decimal; }
+ol { padding:0px; margin:0px 0px 20px 0px; list-style:decimal; }
+ol li { padding:0px; margin:0px 0px 7px 23px; list-style-type:decimal; }
+ol li ol { padding:5px 0px 0px; margin:0px 0px 7px 0px; }
+ol li ol li { list-style-type:lower-alpha; }
+ol li ul { padding-top:7px; }
+ol li ul li { list-style:square; }
+
+.content { font-size:1.2em; line-height:140%; padding: 20px; }
+
+pre, code { font-size:12px; }
+tt { font-size: 1.2em; }
+pre { margin:0px 0px 20px; }
+pre.codeinput { padding:10px; border:1px solid #d3d3d3; background:#f7f7f7; }
+pre.codeoutput { padding:10px 11px; margin:0px 0px 20px; color:#4c4c4c; }
+pre.error { color:red; }
+
+@media print { pre.codeinput, pre.codeoutput { word-wrap:break-word; width:100%; } }
+
+span.keyword { color:#0000FF }
+span.comment { color:#228B22 }
+span.string { color:#A020F0 }
+span.untermstring { color:#B20000 }
+span.syscmd { color:#B28C00 }
+
+.footer { width:auto; padding:10px 0px; margin:25px 0px 0px; border-top:1px dotted #878787; font-size:0.8em; line-height:140%; font-style:italic; color:#878787; text-align:left; float:none; }
+.footer p { margin:0px; }
+.footer a { color:#878787; }
+.footer a:hover { color:#878787; text-decoration:underline; }
+.footer a:visited { color:#878787; }
+
+table th { padding:7px 5px; text-align:left; vertical-align:middle; border: 1px solid #d6d4d4; font-weight:bold; }
+table td { padding:7px 5px; text-align:left; vertical-align:top; border:1px solid #d6d4d4; }
+
+
+
+
+
+  </style></head><body><div class="content"><h1>triSurfSetDist</h1><!--introduction--><p>Below is a demonstration of the features of the <tt>triSurfSetDist</tt> function</p><!--/introduction--><h2>Contents</h2><div><ul><li><a href="#5">CLOSEST POINT BASED DISTANCE METRIC</a></li><li><a href="#8">RAY TRACING DISTANCE METRIC</a></li><li><a href="#10">NOTE ON RAY TRACING DISTANCE METRIC AND NORMAL DIRECTIONS THAT DO NOT INTERSECT</a></li><li><a href="#12">EXAMPLE TO FIX NAN's</a></li><li><a href="#14">EXAMPLE OF "HYBRID APPROACH"</a></li></ul></div><pre class="codeinput">closeFall;
+</pre><p>PLOT SETTINGS</p><pre class="codeinput">fig_color=<span class="string">'w'</span>; fig_colordef=<span class="string">'white'</span>;
+font_size=20;
+cmap=gray(250);
+falpha=1;
+patch_types={<span class="string">'sx'</span>,<span class="string">'sy'</span>,<span class="string">'sz'</span>,<span class="string">'v'</span>};
+ptype=3;
+no_slices=4;
+mark_siz1=20;
+mark_siz2=5;
+mark_siz3=50;
+line_width1=2;
+F_alpha1=0.5;
+F_alpha2=1;
+</pre><p>Building test surfaces</p><pre class="codeinput"><span class="comment">%Defining shape 1 as a sphere</span>
+[F1,V1,~]=geoSphere(2,1);
+
+<span class="comment">%Defining shape 2 as a deformed sphere</span>
+[F2,V2,Vs]=geoSphere(3,1);
+freqDef=3;
+ampDef=0.25;
+ampDefDiff=0.25;
+n1=Vs(:,3)+(ampDef-ampDefDiff)+ampDef*sin(freqDef*Vs(:,1));
+[V2(:,1),V2(:,2),~]=sph2cart(Vs(:,1),Vs(:,2),n1);
+</pre><p>Plotting surfaces</p><pre class="codeinput">hf1=figuremax(fig_color,fig_colordef);
+title(<span class="string">'The two surfaces'</span>,<span class="string">'FontSize'</span>,font_size);
+xlabel(<span class="string">'X'</span>,<span class="string">'FontSize'</span>,font_size);ylabel(<span class="string">'Y'</span>,<span class="string">'FontSize'</span>,font_size);zlabel(<span class="string">'Z'</span>,<span class="string">'FontSize'</span>,font_size);
+hold <span class="string">on</span>;
+patch(<span class="string">'faces'</span>,F1,<span class="string">'vertices'</span>,V1,<span class="string">'FaceColor'</span>,<span class="string">'g'</span>,<span class="string">'FaceAlpha'</span>,F_alpha1);
+patch(<span class="string">'faces'</span>,F2,<span class="string">'vertices'</span>,V2,<span class="string">'FaceColor'</span>,<span class="string">'b'</span>,<span class="string">'FaceAlpha'</span>,F_alpha1);
+
+axis <span class="string">equal</span>; view(3); axis <span class="string">tight</span>; grid <span class="string">on</span>;
+set(gca,<span class="string">'FontSize'</span>,font_size);
+camlight <span class="string">headlight</span>;
+drawnow;
+</pre><img vspace="5" hspace="5" src="HELP_triSurfSetDist_01.png" alt=""> <h2>CLOSEST POINT BASED DISTANCE METRIC<a name="5"></a></h2><pre class="codeinput">[D2]=triSurfSetDist(F2,V2,F1,V1,<span class="string">'dist'</span>);
+</pre><p>The above is equivalent to:</p><pre class="codeinput">D2=minDist(V2,V1);
+</pre><p>Plotting results</p><pre class="codeinput">[CF]=vertexToFaceMeasure(F2,D2);
+
+hf2=figuremax(fig_color,fig_colordef);
+title(<span class="string">'Closest point distance metric on surface 2'</span>,<span class="string">'FontSize'</span>,font_size);
+xlabel(<span class="string">'X'</span>,<span class="string">'FontSize'</span>,font_size);ylabel(<span class="string">'Y'</span>,<span class="string">'FontSize'</span>,font_size);zlabel(<span class="string">'Z'</span>,<span class="string">'FontSize'</span>,font_size);
+hold <span class="string">on</span>;
+patch(<span class="string">'faces'</span>,F2,<span class="string">'vertices'</span>,V2,<span class="string">'FaceColor'</span>,<span class="string">'flat'</span>,<span class="string">'CData'</span>,CF);
+patch(<span class="string">'faces'</span>,F1,<span class="string">'vertices'</span>,V1,<span class="string">'FaceColor'</span>,0.5.*ones(1,3),<span class="string">'FaceAlpha'</span>,F_alpha1,<span class="string">'EdgeColor'</span>,<span class="string">'None'</span>);
+
+colormap <span class="string">jet</span>; colorbar;
+axis <span class="string">equal</span>; view(3); axis <span class="string">tight</span>; axis <span class="string">off</span>;
+set(gca,<span class="string">'FontSize'</span>,font_size);
+camlight <span class="string">headlight</span>;
+drawnow;
+</pre><img vspace="5" hspace="5" src="HELP_triSurfSetDist_02.png" alt=""> <h2>RAY TRACING DISTANCE METRIC<a name="8"></a></h2><pre class="codeinput">[D2]=triSurfSetDist(F2,V2,F1,V1,<span class="string">'ray'</span>);
+</pre><p>Plotting results</p><pre class="codeinput">[CF]=vertexToFaceMeasure(F2,D2);
+L=~isnan(CF); <span class="comment">%Check for NaN's</span>
+
+hf3=figuremax(fig_color,fig_colordef);
+title(<span class="string">'Ray-traced distance metric on surface 2'</span>,<span class="string">'FontSize'</span>,font_size);
+xlabel(<span class="string">'X'</span>,<span class="string">'FontSize'</span>,font_size);ylabel(<span class="string">'Y'</span>,<span class="string">'FontSize'</span>,font_size);zlabel(<span class="string">'Z'</span>,<span class="string">'FontSize'</span>,font_size);
+hold <span class="string">on</span>;
+patch(<span class="string">'faces'</span>,F2(L,:),<span class="string">'vertices'</span>,V2,<span class="string">'FaceColor'</span>,<span class="string">'flat'</span>,<span class="string">'CData'</span>,CF(L));
+patch(<span class="string">'faces'</span>,F1,<span class="string">'vertices'</span>,V1,<span class="string">'FaceColor'</span>,0.5.*ones(1,3),<span class="string">'FaceAlpha'</span>,F_alpha1,<span class="string">'EdgeColor'</span>,<span class="string">'None'</span>);
+
+colormap <span class="string">jet</span>; colorbar;
+axis <span class="string">equal</span>; view(3); axis <span class="string">tight</span>; axis <span class="string">off</span>;
+set(gca,<span class="string">'FontSize'</span>,font_size);
+camlight <span class="string">headlight</span>;
+drawnow;
+</pre><img vspace="5" hspace="5" src="HELP_triSurfSetDist_03.png" alt=""> <h2>NOTE ON RAY TRACING DISTANCE METRIC AND NORMAL DIRECTIONS THAT DO NOT INTERSECT<a name="10"></a></h2><p>The 'dist' method always finds a closest distance result for all points of the surface. However for the ray method the surface normals do not always trace to the other surface. The below example illustrates this. The curvature of the top and bottom regions means the normal direction rays do not intersect with the surface 1.</p><pre class="codeinput"><span class="comment">%Stretching shape in Z-direction</span>
+V2(:,3)=V2(:,3)*2;
+
+<span class="comment">%Compute distance metric</span>
+[D2]=triSurfSetDist(F2,V2,F1,V1,<span class="string">'ray'</span>);
+</pre><p>Plotting results</p><pre class="codeinput">[CF]=vertexToFaceMeasure(F2,D2);
+L=~isnan(CF); <span class="comment">%Check for NaN's</span>
+
+hf3=figuremax(fig_color,fig_colordef);
+title(<span class="string">'Ray-traced distance metric on surface 2'</span>,<span class="string">'FontSize'</span>,font_size);
+xlabel(<span class="string">'X'</span>,<span class="string">'FontSize'</span>,font_size);ylabel(<span class="string">'Y'</span>,<span class="string">'FontSize'</span>,font_size);zlabel(<span class="string">'Z'</span>,<span class="string">'FontSize'</span>,font_size);
+hold <span class="string">on</span>;
+patch(<span class="string">'faces'</span>,F2(L,:),<span class="string">'vertices'</span>,V2,<span class="string">'FaceColor'</span>,<span class="string">'flat'</span>,<span class="string">'CData'</span>,CF(L));
+patch(<span class="string">'faces'</span>,F1,<span class="string">'vertices'</span>,V1,<span class="string">'FaceColor'</span>,0.5.*ones(1,3),<span class="string">'FaceAlpha'</span>,F_alpha1,<span class="string">'EdgeColor'</span>,<span class="string">'None'</span>);
+
+colormap <span class="string">jet</span>; colorbar;
+axis <span class="string">equal</span>; view(3); axis <span class="string">tight</span>; axis <span class="string">off</span>;
+set(gca,<span class="string">'FontSize'</span>,font_size);
+camlight <span class="string">headlight</span>;
+drawnow;
+</pre><img vspace="5" hspace="5" src="HELP_triSurfSetDist_04.png" alt=""> <h2>EXAMPLE TO FIX NAN's<a name="12"></a></h2><pre class="codeinput"><span class="comment">%Logic for NaN's</span>
+L=isnan(D2);
+
+<span class="comment">%Use dist method where NaN occured</span>
+[D2_nan]=triSurfSetDist(F2,V2(L,:),F1,V1,<span class="string">'dist'</span>);
+D2(L)=D2_nan;
+</pre><p>Plotting results</p><pre class="codeinput">[CF]=vertexToFaceMeasure(F2,D2);
+
+hf3=figuremax(fig_color,fig_colordef);
+title(<span class="string">'Combined distance metric on surface 2'</span>,<span class="string">'FontSize'</span>,font_size);
+xlabel(<span class="string">'X'</span>,<span class="string">'FontSize'</span>,font_size);ylabel(<span class="string">'Y'</span>,<span class="string">'FontSize'</span>,font_size);zlabel(<span class="string">'Z'</span>,<span class="string">'FontSize'</span>,font_size);
+hold <span class="string">on</span>;
+patch(<span class="string">'faces'</span>,F2,<span class="string">'vertices'</span>,V2,<span class="string">'FaceColor'</span>,<span class="string">'flat'</span>,<span class="string">'CData'</span>,CF);
+patch(<span class="string">'faces'</span>,F1,<span class="string">'vertices'</span>,V1,<span class="string">'FaceColor'</span>,0.5.*ones(1,3),<span class="string">'FaceAlpha'</span>,F_alpha1,<span class="string">'EdgeColor'</span>,<span class="string">'None'</span>);
+
+colormap <span class="string">jet</span>; colorbar;
+axis <span class="string">equal</span>; view(3); axis <span class="string">tight</span>; axis <span class="string">off</span>;
+set(gca,<span class="string">'FontSize'</span>,font_size);
+camlight <span class="string">headlight</span>;
+drawnow;
+</pre><img vspace="5" hspace="5" src="HELP_triSurfSetDist_05.png" alt=""> <h2>EXAMPLE OF "HYBRID APPROACH"<a name="14"></a></h2><p>A hybrid approach is also possible whereby the output is the smallest distance for the two methods (nanmin is used so NaN values due to ray tracing enforces the distance method on these locations instead).</p><pre class="codeinput"><span class="comment">%Compute distance metric</span>
+[D2]=triSurfSetDist(F2,V2,F1,V1,<span class="string">'dist-ray'</span>);
+</pre><p>Plotting results</p><pre class="codeinput">[CF]=vertexToFaceMeasure(F2,D2);
+
+hf3=figuremax(fig_color,fig_colordef);
+title(<span class="string">'Minimum metric between "closest point" and "ray-traced distance" on surface 2'</span>,<span class="string">'FontSize'</span>,font_size);
+xlabel(<span class="string">'X'</span>,<span class="string">'FontSize'</span>,font_size);ylabel(<span class="string">'Y'</span>,<span class="string">'FontSize'</span>,font_size);zlabel(<span class="string">'Z'</span>,<span class="string">'FontSize'</span>,font_size);
+hold <span class="string">on</span>;
+patch(<span class="string">'faces'</span>,F2,<span class="string">'vertices'</span>,V2,<span class="string">'FaceColor'</span>,<span class="string">'flat'</span>,<span class="string">'CData'</span>,CF);
+patch(<span class="string">'faces'</span>,F1,<span class="string">'vertices'</span>,V1,<span class="string">'FaceColor'</span>,0.5.*ones(1,3),<span class="string">'FaceAlpha'</span>,F_alpha1,<span class="string">'EdgeColor'</span>,<span class="string">'None'</span>);
+
+colormap <span class="string">jet</span>; colorbar;
+axis <span class="string">equal</span>; view(3); axis <span class="string">tight</span>; axis <span class="string">off</span>;
+set(gca,<span class="string">'FontSize'</span>,font_size);
+camlight <span class="string">headlight</span>;
+drawnow;
+</pre><img vspace="5" hspace="5" src="HELP_triSurfSetDist_06.png" alt=""> <p class="footer"><br><a href="http://www.mathworks.com/products/matlab/">Published with MATLAB&reg; R2014a</a><br></p></div><!--
+##### SOURCE BEGIN #####
+%% triSurfSetDist
+% Below is a demonstration of the features of the |triSurfSetDist| function
+
+%%
+closeFall;
+
+%%
+% PLOT SETTINGS
+fig_color='w'; fig_colordef='white';
+font_size=20;
+cmap=gray(250);
+falpha=1;
+patch_types={'sx','sy','sz','v'};
+ptype=3;
+no_slices=4;
+mark_siz1=20;
+mark_siz2=5;
+mark_siz3=50;
+line_width1=2;
+F_alpha1=0.5;
+F_alpha2=1;
+
+%%
+% Building test surfaces
+
+%Defining shape 1 as a sphere
+[F1,V1,~]=geoSphere(2,1);
+
+%Defining shape 2 as a deformed sphere
+[F2,V2,Vs]=geoSphere(3,1);
+freqDef=3;
+ampDef=0.25;
+ampDefDiff=0.25;
+n1=Vs(:,3)+(ampDef-ampDefDiff)+ampDef*sin(freqDef*Vs(:,1));
+[V2(:,1),V2(:,2),~]=sph2cart(Vs(:,1),Vs(:,2),n1);
+
+%%
+% Plotting surfaces
+
+hf1=figuremax(fig_color,fig_colordef);
+title('The two surfaces','FontSize',font_size);
+xlabel('X','FontSize',font_size);ylabel('Y','FontSize',font_size);zlabel('Z','FontSize',font_size); 
+hold on; 
+patch('faces',F1,'vertices',V1,'FaceColor','g','FaceAlpha',F_alpha1);
+patch('faces',F2,'vertices',V2,'FaceColor','b','FaceAlpha',F_alpha1);
+
+axis equal; view(3); axis tight; grid on;
+set(gca,'FontSize',font_size); 
+camlight headlight; 
+drawnow;
+
+%% CLOSEST POINT BASED DISTANCE METRIC
+
+[D2]=triSurfSetDist(F2,V2,F1,V1,'dist');
+
+%%
+% The above is equivalent to: 
+D2=minDist(V2,V1);
+
+%%
+% Plotting results
+
+[CF]=vertexToFaceMeasure(F2,D2);
+
+hf2=figuremax(fig_color,fig_colordef);
+title('Closest point distance metric on surface 2','FontSize',font_size);
+xlabel('X','FontSize',font_size);ylabel('Y','FontSize',font_size);zlabel('Z','FontSize',font_size); 
+hold on; 
+patch('faces',F2,'vertices',V2,'FaceColor','flat','CData',CF);
+patch('faces',F1,'vertices',V1,'FaceColor',0.5.*ones(1,3),'FaceAlpha',F_alpha1,'EdgeColor','None');
+
+colormap jet; colorbar;
+axis equal; view(3); axis tight; axis off; 
+set(gca,'FontSize',font_size); 
+camlight headlight; 
+drawnow;
+
+%% RAY TRACING DISTANCE METRIC
+
+[D2]=triSurfSetDist(F2,V2,F1,V1,'ray');
+
+%%
+% Plotting results
+
+[CF]=vertexToFaceMeasure(F2,D2);
+L=~isnan(CF); %Check for NaN's
+
+hf3=figuremax(fig_color,fig_colordef);
+title('Ray-traced distance metric on surface 2','FontSize',font_size);
+xlabel('X','FontSize',font_size);ylabel('Y','FontSize',font_size);zlabel('Z','FontSize',font_size); 
+hold on; 
+patch('faces',F2(L,:),'vertices',V2,'FaceColor','flat','CData',CF(L));
+patch('faces',F1,'vertices',V1,'FaceColor',0.5.*ones(1,3),'FaceAlpha',F_alpha1,'EdgeColor','None');
+
+colormap jet; colorbar;
+axis equal; view(3); axis tight; axis off; 
+set(gca,'FontSize',font_size); 
+camlight headlight; 
+drawnow;
+
+%% NOTE ON RAY TRACING DISTANCE METRIC AND NORMAL DIRECTIONS THAT DO NOT INTERSECT
+% The 'dist' method always finds a closest distance result for all points
+% of the surface. However for the ray method the surface normals do not
+% always trace to the other surface. The below example illustrates this.
+% The curvature of the top and bottom regions means the normal direction
+% rays do not intersect with the surface 1. 
+
+%Stretching shape in Z-direction 
+V2(:,3)=V2(:,3)*2;
+
+%Compute distance metric
+[D2]=triSurfSetDist(F2,V2,F1,V1,'ray');
+
+%%
+% Plotting results
+
+[CF]=vertexToFaceMeasure(F2,D2);
+L=~isnan(CF); %Check for NaN's
+
+hf3=figuremax(fig_color,fig_colordef);
+title('Ray-traced distance metric on surface 2','FontSize',font_size);
+xlabel('X','FontSize',font_size);ylabel('Y','FontSize',font_size);zlabel('Z','FontSize',font_size); 
+hold on; 
+patch('faces',F2(L,:),'vertices',V2,'FaceColor','flat','CData',CF(L));
+patch('faces',F1,'vertices',V1,'FaceColor',0.5.*ones(1,3),'FaceAlpha',F_alpha1,'EdgeColor','None');
+
+colormap jet; colorbar;
+axis equal; view(3); axis tight; axis off; 
+set(gca,'FontSize',font_size); 
+camlight headlight; 
+drawnow;
+
+%% EXAMPLE TO FIX NAN's
+
+%Logic for NaN's
+L=isnan(D2); 
+
+%Use dist method where NaN occured
+[D2_nan]=triSurfSetDist(F2,V2(L,:),F1,V1,'dist');
+D2(L)=D2_nan; 
+
+%%
+% Plotting results
+
+[CF]=vertexToFaceMeasure(F2,D2);
+
+hf3=figuremax(fig_color,fig_colordef);
+title('Combined distance metric on surface 2','FontSize',font_size);
+xlabel('X','FontSize',font_size);ylabel('Y','FontSize',font_size);zlabel('Z','FontSize',font_size); 
+hold on; 
+patch('faces',F2,'vertices',V2,'FaceColor','flat','CData',CF);
+patch('faces',F1,'vertices',V1,'FaceColor',0.5.*ones(1,3),'FaceAlpha',F_alpha1,'EdgeColor','None');
+
+colormap jet; colorbar;
+axis equal; view(3); axis tight; axis off; 
+set(gca,'FontSize',font_size); 
+camlight headlight; 
+drawnow;
+
+%% EXAMPLE OF "HYBRID APPROACH" 
+% A hybrid approach is also possible whereby the output is the smallest
+% distance for the two methods (nanmin is used so NaN values due to ray
+% tracing enforces the distance method on these locations instead). 
+
+%Compute distance metric
+[D2]=triSurfSetDist(F2,V2,F1,V1,'dist-ray');
+
+%%
+% Plotting results
+[CF]=vertexToFaceMeasure(F2,D2);
+
+hf3=figuremax(fig_color,fig_colordef);
+title('Minimum metric between "closest point" and "ray-traced distance" on surface 2','FontSize',font_size);
+xlabel('X','FontSize',font_size);ylabel('Y','FontSize',font_size);zlabel('Z','FontSize',font_size); 
+hold on; 
+patch('faces',F2,'vertices',V2,'FaceColor','flat','CData',CF);
+patch('faces',F1,'vertices',V1,'FaceColor',0.5.*ones(1,3),'FaceAlpha',F_alpha1,'EdgeColor','None');
+
+colormap jet; colorbar;
+axis equal; view(3); axis tight; axis off; 
+set(gca,'FontSize',font_size); 
+camlight headlight; 
+drawnow;
+
+
+
+
+
+##### SOURCE END #####
+--></body></html>

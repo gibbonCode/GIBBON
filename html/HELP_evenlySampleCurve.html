@@ -1,0 +1,190 @@
+
+<!DOCTYPE html
+  PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html><head>
+      <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+   <!--
+This HTML was auto-generated from MATLAB code.
+To make changes, update the MATLAB code and republish this document.
+      --><title>evenlySampleCurve</title><meta name="generator" content="MATLAB 8.3"><link rel="schema.DC" href="http://purl.org/dc/elements/1.1/"><meta name="DC.date" content="2014-06-20"><meta name="DC.source" content="HELP_evenlySampleCurve.m"><style type="text/css">
+html,body,div,span,applet,object,iframe,h1,h2,h3,h4,h5,h6,p,blockquote,pre,a,abbr,acronym,address,big,cite,code,del,dfn,em,font,img,ins,kbd,q,s,samp,small,strike,strong,sub,sup,tt,var,b,u,i,center,dl,dt,dd,ol,ul,li,fieldset,form,label,legend,table,caption,tbody,tfoot,thead,tr,th,td{margin:0;padding:0;border:0;outline:0;font-size:100%;vertical-align:baseline;background:transparent}body{line-height:1}ol,ul{list-style:none}blockquote,q{quotes:none}blockquote:before,blockquote:after,q:before,q:after{content:'';content:none}:focus{outine:0}ins{text-decoration:none}del{text-decoration:line-through}table{border-collapse:collapse;border-spacing:0}
+
+html { min-height:100%; margin-bottom:1px; }
+html body { height:100%; margin:0px; font-family:Arial, Helvetica, sans-serif; font-size:10px; color:#000; line-height:140%; background:#fff none; overflow-y:scroll; }
+html body td { vertical-align:top; text-align:left; }
+
+h1 { padding:0px; margin:0px 0px 25px; font-family:Arial, Helvetica, sans-serif; font-size:1.5em; color:#d55000; line-height:100%; font-weight:normal; }
+h2 { padding:0px; margin:0px 0px 8px; font-family:Arial, Helvetica, sans-serif; font-size:1.2em; color:#000; font-weight:bold; line-height:140%; border-bottom:1px solid #d6d4d4; display:block; }
+h3 { padding:0px; margin:0px 0px 5px; font-family:Arial, Helvetica, sans-serif; font-size:1.1em; color:#000; font-weight:bold; line-height:140%; }
+
+a { color:#005fce; text-decoration:none; }
+a:hover { color:#005fce; text-decoration:underline; }
+a:visited { color:#004aa0; text-decoration:none; }
+
+p { padding:0px; margin:0px 0px 20px; }
+img { padding:0px; margin:0px 0px 20px; border:none; }
+p img, pre img, tt img, li img, h1 img, h2 img { margin-bottom:0px; } 
+
+ul { padding:0px; margin:0px 0px 20px 23px; list-style:square; }
+ul li { padding:0px; margin:0px 0px 7px 0px; }
+ul li ul { padding:5px 0px 0px; margin:0px 0px 7px 23px; }
+ul li ol li { list-style:decimal; }
+ol { padding:0px; margin:0px 0px 20px 0px; list-style:decimal; }
+ol li { padding:0px; margin:0px 0px 7px 23px; list-style-type:decimal; }
+ol li ol { padding:5px 0px 0px; margin:0px 0px 7px 0px; }
+ol li ol li { list-style-type:lower-alpha; }
+ol li ul { padding-top:7px; }
+ol li ul li { list-style:square; }
+
+.content { font-size:1.2em; line-height:140%; padding: 20px; }
+
+pre, code { font-size:12px; }
+tt { font-size: 1.2em; }
+pre { margin:0px 0px 20px; }
+pre.codeinput { padding:10px; border:1px solid #d3d3d3; background:#f7f7f7; }
+pre.codeoutput { padding:10px 11px; margin:0px 0px 20px; color:#4c4c4c; }
+pre.error { color:red; }
+
+@media print { pre.codeinput, pre.codeoutput { word-wrap:break-word; width:100%; } }
+
+span.keyword { color:#0000FF }
+span.comment { color:#228B22 }
+span.string { color:#A020F0 }
+span.untermstring { color:#B20000 }
+span.syscmd { color:#B28C00 }
+
+.footer { width:auto; padding:10px 0px; margin:25px 0px 0px; border-top:1px dotted #878787; font-size:0.8em; line-height:140%; font-style:italic; color:#878787; text-align:left; float:none; }
+.footer p { margin:0px; }
+.footer a { color:#878787; }
+.footer a:hover { color:#878787; text-decoration:underline; }
+.footer a:visited { color:#878787; }
+
+table th { padding:7px 5px; text-align:left; vertical-align:middle; border: 1px solid #d6d4d4; font-weight:bold; }
+table td { padding:7px 5px; text-align:left; vertical-align:top; border:1px solid #d6d4d4; }
+
+
+
+
+
+  </style></head><body><div class="content"><h1>evenlySampleCurve</h1><!--introduction--><p>Below is a basic demonstration of the features of the <tt>evenlySampleCurve</tt> function.</p><!--/introduction--><h2>Contents</h2><div><ul><li><a href="#2">EXAMPLE USING NORMAL INTERPOLATION</a></li><li><a href="#3">EXAMPLE USING CSAPS</a></li></ul></div><pre class="codeinput">clear <span class="string">all</span>; close <span class="string">all</span>; clc;
+
+<span class="comment">% PLOT SETTINGS</span>
+fig_color=<span class="string">'w'</span>; fig_colordef=<span class="string">'white'</span>;
+markerSize=15;
+lineWidth=2;
+</pre><h2>EXAMPLE USING NORMAL INTERPOLATION<a name="2"></a></h2><pre class="codeinput"><span class="comment">%Simulating the case of an unevenly sampled loop curve</span>
+ns=150;
+t=sort(linspace(0,2*pi,ns)+pi/10*rand(1,ns));
+t=unique(t); <span class="comment">%removing double points</span>
+t=t(t&lt;2*pi);<span class="comment">%Removing 2*pi points since they are the same as the 0 point</span>
+r=3+2.*sin(5*t);
+[x,y] = pol2cart(t,r);
+z=y;
+V=[x(:) y(:) z(:)];
+
+interpMethod=<span class="string">'pchip'</span>;
+closeLoopOpt=1;
+n=200;
+[Vg]=evenlySampleCurve(V,n,interpMethod,closeLoopOpt);
+
+hf1=figuremax(fig_color,fig_colordef);
+subplot(1,2,1); hold <span class="string">on</span>;
+title(<span class="string">'Unevenly sampled'</span>);
+plot3(V(:,1),V(:,2),V(:,3),<span class="string">'r.-'</span>,<span class="string">'MarkerSize'</span>,markerSize);
+drawnow; view(3); grid <span class="string">on</span>; axis <span class="string">equal</span>; axis <span class="string">tight</span>;
+subplot(1,2,2); hold <span class="string">on</span>;
+title(<span class="string">'Evenly sampled allong curve'</span>);
+plot3(Vg(:,1),Vg(:,2),Vg(:,3),<span class="string">'g.-'</span>,<span class="string">'MarkerSize'</span>,markerSize);
+plot3(Vg(1,1),Vg(1,2),Vg(1,3),<span class="string">'r.'</span>,<span class="string">'MarkerSize'</span>,2*markerSize,<span class="string">'lineWidth'</span>,lineWidth);
+plot3(Vg(end,1),Vg(end,2),Vg(end,3),<span class="string">'b.'</span>,<span class="string">'MarkerSize'</span>,2*markerSize,<span class="string">'lineWidth'</span>,lineWidth);
+drawnow; view(3); grid <span class="string">on</span>; axis <span class="string">equal</span>; axis <span class="string">tight</span>;
+</pre><img vspace="5" hspace="5" src="HELP_evenlySampleCurve_01.png" alt=""> <h2>EXAMPLE USING CSAPS<a name="3"></a></h2><pre class="codeinput"><span class="comment">%Adding noise</span>
+V=V+0.2.*randn(size(V));
+
+interpMethod=0.7;
+closeLoopOpt=1;
+[Vg]=evenlySampleCurve(V,n,interpMethod,closeLoopOpt);
+
+hf1=figuremax(fig_color,fig_colordef);
+subplot(1,2,1); hold <span class="string">on</span>;
+title(<span class="string">'Unevenly sampled'</span>);
+plot3(V(:,1),V(:,2),V(:,3),<span class="string">'r.-'</span>,<span class="string">'MarkerSize'</span>,markerSize);
+drawnow; view(3); grid <span class="string">on</span>; axis <span class="string">equal</span>; axis <span class="string">tight</span>;
+subplot(1,2,2); hold <span class="string">on</span>;
+title(<span class="string">'Evenly sampled allong curve and smoothened'</span>);
+plot3(Vg(:,1),Vg(:,2),Vg(:,3),<span class="string">'g.-'</span>,<span class="string">'MarkerSize'</span>,markerSize,<span class="string">'lineWidth'</span>,lineWidth);
+plot3(Vg(1,1),Vg(1,2),Vg(1,3),<span class="string">'r.'</span>,<span class="string">'MarkerSize'</span>,2*markerSize,<span class="string">'lineWidth'</span>,lineWidth);
+plot3(Vg(end,1),Vg(end,2),Vg(end,3),<span class="string">'b.'</span>,<span class="string">'MarkerSize'</span>,2*markerSize,<span class="string">'lineWidth'</span>,lineWidth);
+drawnow; view(3); grid <span class="string">on</span>; axis <span class="string">equal</span>; axis <span class="string">tight</span>;
+</pre><img vspace="5" hspace="5" src="HELP_evenlySampleCurve_02.png" alt=""> <p><img vspace="5" hspace="5" src="gibbVerySmall.gif" alt=""> </p><p>GIBBON</p><p>Kevin M. Moerman (<a href="mailto:kevinmoerman@hotmail.com">kevinmoerman@hotmail.com</a>)</p><p class="footer"><br><a href="http://www.mathworks.com/products/matlab/">Published with MATLAB&reg; R2014a</a><br></p></div><!--
+##### SOURCE BEGIN #####
+%% evenlySampleCurve
+% Below is a basic demonstration of the features of the |evenlySampleCurve| function.
+
+%%
+clear all; close all; clc;
+
+% PLOT SETTINGS
+fig_color='w'; fig_colordef='white';
+markerSize=15;
+lineWidth=2;
+
+%% EXAMPLE USING NORMAL INTERPOLATION
+
+%Simulating the case of an unevenly sampled loop curve
+ns=150;
+t=sort(linspace(0,2*pi,ns)+pi/10*rand(1,ns));
+t=unique(t); %removing double points
+t=t(t<2*pi);%Removing 2*pi points since they are the same as the 0 point
+r=3+2.*sin(5*t);
+[x,y] = pol2cart(t,r);
+z=y;
+V=[x(:) y(:) z(:)];
+
+interpMethod='pchip';
+closeLoopOpt=1;
+n=200;
+[Vg]=evenlySampleCurve(V,n,interpMethod,closeLoopOpt);
+
+hf1=figuremax(fig_color,fig_colordef);
+subplot(1,2,1); hold on;
+title('Unevenly sampled');
+plot3(V(:,1),V(:,2),V(:,3),'r.-','MarkerSize',markerSize);
+drawnow; view(3); grid on; axis equal; axis tight; 
+subplot(1,2,2); hold on;
+title('Evenly sampled allong curve');
+plot3(Vg(:,1),Vg(:,2),Vg(:,3),'g.-','MarkerSize',markerSize);
+plot3(Vg(1,1),Vg(1,2),Vg(1,3),'r.','MarkerSize',2*markerSize,'lineWidth',lineWidth);
+plot3(Vg(end,1),Vg(end,2),Vg(end,3),'b.','MarkerSize',2*markerSize,'lineWidth',lineWidth);
+drawnow; view(3); grid on; axis equal; axis tight; 
+
+%% EXAMPLE USING CSAPS
+
+%Adding noise
+V=V+0.2.*randn(size(V));
+
+interpMethod=0.7;
+closeLoopOpt=1;
+[Vg]=evenlySampleCurve(V,n,interpMethod,closeLoopOpt);
+
+hf1=figuremax(fig_color,fig_colordef);
+subplot(1,2,1); hold on;
+title('Unevenly sampled');
+plot3(V(:,1),V(:,2),V(:,3),'r.-','MarkerSize',markerSize);
+drawnow; view(3); grid on; axis equal; axis tight; 
+subplot(1,2,2); hold on;
+title('Evenly sampled allong curve and smoothened');
+plot3(Vg(:,1),Vg(:,2),Vg(:,3),'g.-','MarkerSize',markerSize,'lineWidth',lineWidth);
+plot3(Vg(1,1),Vg(1,2),Vg(1,3),'r.','MarkerSize',2*markerSize,'lineWidth',lineWidth);
+plot3(Vg(end,1),Vg(end,2),Vg(end,3),'b.','MarkerSize',2*markerSize,'lineWidth',lineWidth);
+drawnow; view(3); grid on; axis equal; axis tight; 
+
+%% 
+%
+% <<gibbVerySmall.gif>>
+% 
+% GIBBON 
+% 
+% Kevin M. Moerman (kevinmoerman@hotmail.com)
+##### SOURCE END #####
+--></body></html>

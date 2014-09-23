@@ -1,0 +1,49 @@
+function [L]=intriangle(TRI,N,V,P,d)
+
+% clear all; close all; clc;
+% TRI=[1 2 3];
+% V=eye(3,3);
+% V(3,3)=0;
+% [N,Vn]=trinorm(TRI,V);
+% %In, on edge, along edge
+% % P=[0.25 0.25 0;];
+% P=[0.9 0 0;];
+% % P=[ 1.1 0 0;];
+% d=5;
+% [L]=intriangle(TRI,N,V,P,d)
+% 
+% figure; plot3(V(:,1),V(:,2),V(:,3),'b-');view(2); grid on; hold on; 
+% plot3(P(1),P(2),P(3),'r.');
+% A-----B
+%  \    /
+%   \  /
+%    C
+
+A=V(TRI(:,1),:); B=V(TRI(:,2),:); C=V(TRI(:,3),:);
+% [N,Vn]=trinorm(TRI,V);
+
+AB=vec_normalize(B-A);
+AP=vec_normalize(P-A);
+
+BC=vec_normalize(C-B);
+BP=vec_normalize(P-B);
+
+CA=vec_normalize(A-C);
+CP=vec_normalize(P-C);
+
+c1=vec_normalize(cross(AB,AP,2));
+c2=vec_normalize(cross(BC,BP,2));
+c3=vec_normalize(cross(CA,CP,2));
+
+C=[sum(c1,2) sum(c2,2) sum(c3,2)]; 
+C(isnan(C))=0;
+C=pround(C,d); 
+Lc=(any(C==0,2)& all(C>=0,2));
+
+dot_1=pround(dot(c1,N,2),d); 
+dot_2=pround(dot(c2,N,2),d); 
+dot_3=pround(dot(c3,N,2),d); 
+Ld=(dot_1==1) & (dot_2==1) & (dot_3==1);
+
+L=Lc | Ld;
+end

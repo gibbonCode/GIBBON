@@ -1,0 +1,13 @@
+function x=pp_x_at_y(pp,y,x0,max_iter)
+
+max_fun_eval=max_iter*10;
+disp_iter='iter';
+OPT_options = optimset( 'MaxFunEvals',max_fun_eval,...
+    'MaxIter',max_iter,...
+    'TolFun',1e-25,...
+    'TolX',1e-25,...
+    'Display','off');
+[x,OPT_out.resnorm,OPT_out.residual]= fminsearch(@(x) fmin_fvalfind_ppform(pp,x,y),x0,OPT_options);
+
+end
+

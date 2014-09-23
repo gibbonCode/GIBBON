@@ -1,0 +1,334 @@
+
+<!DOCTYPE html
+  PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html><head>
+      <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+   <!--
+This HTML was auto-generated from MATLAB code.
+To make changes, update the MATLAB code and republish this document.
+      --><title>minPolyTwist</title><meta name="generator" content="MATLAB 8.3"><link rel="schema.DC" href="http://purl.org/dc/elements/1.1/"><meta name="DC.date" content="2014-05-06"><meta name="DC.source" content="HELP_minPolyTwist.m"><style type="text/css">
+html,body,div,span,applet,object,iframe,h1,h2,h3,h4,h5,h6,p,blockquote,pre,a,abbr,acronym,address,big,cite,code,del,dfn,em,font,img,ins,kbd,q,s,samp,small,strike,strong,sub,sup,tt,var,b,u,i,center,dl,dt,dd,ol,ul,li,fieldset,form,label,legend,table,caption,tbody,tfoot,thead,tr,th,td{margin:0;padding:0;border:0;outline:0;font-size:100%;vertical-align:baseline;background:transparent}body{line-height:1}ol,ul{list-style:none}blockquote,q{quotes:none}blockquote:before,blockquote:after,q:before,q:after{content:'';content:none}:focus{outine:0}ins{text-decoration:none}del{text-decoration:line-through}table{border-collapse:collapse;border-spacing:0}
+
+html { min-height:100%; margin-bottom:1px; }
+html body { height:100%; margin:0px; font-family:Arial, Helvetica, sans-serif; font-size:10px; color:#000; line-height:140%; background:#fff none; overflow-y:scroll; }
+html body td { vertical-align:top; text-align:left; }
+
+h1 { padding:0px; margin:0px 0px 25px; font-family:Arial, Helvetica, sans-serif; font-size:1.5em; color:#d55000; line-height:100%; font-weight:normal; }
+h2 { padding:0px; margin:0px 0px 8px; font-family:Arial, Helvetica, sans-serif; font-size:1.2em; color:#000; font-weight:bold; line-height:140%; border-bottom:1px solid #d6d4d4; display:block; }
+h3 { padding:0px; margin:0px 0px 5px; font-family:Arial, Helvetica, sans-serif; font-size:1.1em; color:#000; font-weight:bold; line-height:140%; }
+
+a { color:#005fce; text-decoration:none; }
+a:hover { color:#005fce; text-decoration:underline; }
+a:visited { color:#004aa0; text-decoration:none; }
+
+p { padding:0px; margin:0px 0px 20px; }
+img { padding:0px; margin:0px 0px 20px; border:none; }
+p img, pre img, tt img, li img, h1 img, h2 img { margin-bottom:0px; } 
+
+ul { padding:0px; margin:0px 0px 20px 23px; list-style:square; }
+ul li { padding:0px; margin:0px 0px 7px 0px; }
+ul li ul { padding:5px 0px 0px; margin:0px 0px 7px 23px; }
+ul li ol li { list-style:decimal; }
+ol { padding:0px; margin:0px 0px 20px 0px; list-style:decimal; }
+ol li { padding:0px; margin:0px 0px 7px 23px; list-style-type:decimal; }
+ol li ol { padding:5px 0px 0px; margin:0px 0px 7px 0px; }
+ol li ol li { list-style-type:lower-alpha; }
+ol li ul { padding-top:7px; }
+ol li ul li { list-style:square; }
+
+.content { font-size:1.2em; line-height:140%; padding: 20px; }
+
+pre, code { font-size:12px; }
+tt { font-size: 1.2em; }
+pre { margin:0px 0px 20px; }
+pre.codeinput { padding:10px; border:1px solid #d3d3d3; background:#f7f7f7; }
+pre.codeoutput { padding:10px 11px; margin:0px 0px 20px; color:#4c4c4c; }
+pre.error { color:red; }
+
+@media print { pre.codeinput, pre.codeoutput { word-wrap:break-word; width:100%; } }
+
+span.keyword { color:#0000FF }
+span.comment { color:#228B22 }
+span.string { color:#A020F0 }
+span.untermstring { color:#B20000 }
+span.syscmd { color:#B28C00 }
+
+.footer { width:auto; padding:10px 0px; margin:25px 0px 0px; border-top:1px dotted #878787; font-size:0.8em; line-height:140%; font-style:italic; color:#878787; text-align:left; float:none; }
+.footer p { margin:0px; }
+.footer a { color:#878787; }
+.footer a:hover { color:#878787; text-decoration:underline; }
+.footer a:visited { color:#878787; }
+
+table th { padding:7px 5px; text-align:left; vertical-align:middle; border: 1px solid #d6d4d4; font-weight:bold; }
+table td { padding:7px 5px; text-align:left; vertical-align:top; border:1px solid #d6d4d4; }
+
+
+
+
+
+  </style></head><body><div class="content"><h1>minPolyTwist</h1><!--introduction--><p>Below is a demonstration of the features of the <tt>minPolyTwist</tt> function</p><!--/introduction--><h2>Contents</h2><div><ul><li><a href="#5">FIXING CURVE POINT ORDER TO MINIMIZE TWIST</a></li><li><a href="#7">EXAMPLE FOR FIXING TWIST AND DIRECTION</a></li></ul></div><pre class="codeinput">closeFall;
+</pre><p>PLOT SETTINGS</p><pre class="codeinput">figColor=<span class="string">'w'</span>; figColorDef=<span class="string">'white'</span>;
+fontSize=15;
+faceAlpha1=1;
+faceAlpha2=0.5;
+edgeColor=0.25*ones(1,3);
+edgeWidth=1.5;
+markerSize1=50;
+</pre><p>Creating example curves.</p><pre class="codeinput"><span class="comment">%Creating circle 1 0-2*pi</span>
+t=linspace(0,2*pi,25);
+t=t(1:end-1);
+x=sin(t);
+y=cos(t);
+z=zeros(size(x));
+V1=[x(:) y(:) z(:)];
+
+<span class="comment">%Creating circle 2 0.25*pi-2.25 pi</span>
+t=linspace(0.25*pi,2.25*pi,25);
+t=t(1:end-1);
+x=sin(t);
+y=cos(t);
+z=ones(size(x));
+V2=[x(:) y(:) z(:)];
+
+<span class="comment">%Also distoring curve direction</span>
+<span class="comment">% V2=flipud(V2);</span>
+</pre><h2>FIXING CURVE POINT ORDER TO MINIMIZE TWIST<a name="5"></a></h2><pre class="codeinput">[V2f,indSort]=minPolyTwist(V1,V2);
+</pre><p>Plotting results</p><pre class="codeinput">hf1=figuremax(figColor,figColorDef);
+subplot(1,2,1);
+title(<span class="string">'Twisted connectivity'</span>,<span class="string">'FontSize'</span>,fontSize);
+xlabel(<span class="string">'X'</span>,<span class="string">'FontSize'</span>,fontSize);ylabel(<span class="string">'Y'</span>,<span class="string">'FontSize'</span>,fontSize); zlabel(<span class="string">'Z'</span>,<span class="string">'FontSize'</span>,fontSize);
+hold <span class="string">on</span>;
+
+<span class="comment">% Create patch data to vizualise twist</span>
+X=linspacen(V1(:,1),V2(:,1),2)';
+Y=linspacen(V1(:,2),V2(:,2),2)';
+Z=linspacen(V1(:,3),V2(:,3),2)';
+[F,V,~]=patchCylSurfClose(X,Y,Z,[]);
+
+hpy=patch(<span class="string">'Faces'</span>,F,<span class="string">'Vertices'</span>,V,<span class="string">'EdgeColor'</span>,<span class="string">'k'</span>,<span class="string">'FaceColor'</span>,<span class="string">'r'</span>,<span class="string">'FaceAlpha'</span>,faceAlpha1);
+
+plotV(V1,<span class="string">'b.-'</span>,<span class="string">'MarkerSize'</span>,25);
+plotV(V2,<span class="string">'b.-'</span>,<span class="string">'MarkerSize'</span>,25);
+
+axis <span class="string">equal</span>; axis <span class="string">tight</span>; view(3); grid <span class="string">on</span>; set(gca,<span class="string">'FontSize'</span>,fontSize);
+camlight <span class="string">headlight</span>;
+drawnow;
+
+<span class="comment">% Create patch data to vizualise twist</span>
+X=linspacen(V1(:,1),V2f(:,1),2)';
+Y=linspacen(V1(:,2),V2f(:,2),2)';
+Z=linspacen(V1(:,3),V2f(:,3),2)';
+[F,V,~]=patchCylSurfClose(X,Y,Z,[]);
+
+<span class="comment">% Plotting results</span>
+subplot(1,2,2);
+title(<span class="string">'Connectivity after order fixing'</span>,<span class="string">'FontSize'</span>,fontSize);
+xlabel(<span class="string">'X'</span>,<span class="string">'FontSize'</span>,fontSize);ylabel(<span class="string">'Y'</span>,<span class="string">'FontSize'</span>,fontSize); zlabel(<span class="string">'Z'</span>,<span class="string">'FontSize'</span>,fontSize);
+hold <span class="string">on</span>;
+
+hpy=patch(<span class="string">'Faces'</span>,F,<span class="string">'Vertices'</span>,V,<span class="string">'EdgeColor'</span>,<span class="string">'k'</span>,<span class="string">'FaceColor'</span>,<span class="string">'g'</span>,<span class="string">'FaceAlpha'</span>,faceAlpha1);
+
+plotV(V1,<span class="string">'b.-'</span>,<span class="string">'MarkerSize'</span>,25);
+plotV(V2f,<span class="string">'b.-'</span>,<span class="string">'MarkerSize'</span>,25);
+
+axis <span class="string">equal</span>; axis <span class="string">tight</span>; view(3); grid <span class="string">on</span>; set(gca,<span class="string">'FontSize'</span>,fontSize);
+camlight <span class="string">headlight</span>;
+drawnow;
+</pre><img vspace="5" hspace="5" src="HELP_minPolyTwist_01.png" alt=""> <h2>EXAMPLE FOR FIXING TWIST AND DIRECTION<a name="7"></a></h2><pre class="codeinput"><span class="comment">% Also distoring curve direction</span>
+V2=flipud(V2);
+
+<span class="comment">% Fixing flipped curve direction and order</span>
+[V2f,indSort]=minPolyTwist(V1,V2);
+</pre><p>Plotting results</p><pre class="codeinput">hf1=figuremax(figColor,figColorDef);
+subplot(1,2,1);
+title(<span class="string">'Twisted connectivity'</span>,<span class="string">'FontSize'</span>,fontSize);
+xlabel(<span class="string">'X'</span>,<span class="string">'FontSize'</span>,fontSize);ylabel(<span class="string">'Y'</span>,<span class="string">'FontSize'</span>,fontSize); zlabel(<span class="string">'Z'</span>,<span class="string">'FontSize'</span>,fontSize);
+hold <span class="string">on</span>;
+
+<span class="comment">% Create patch data to vizualise twist</span>
+X=linspacen(V1(:,1),V2(:,1),2)';
+Y=linspacen(V1(:,2),V2(:,2),2)';
+Z=linspacen(V1(:,3),V2(:,3),2)';
+[F,V,~]=patchCylSurfClose(X,Y,Z,[]);
+
+hpy=patch(<span class="string">'Faces'</span>,F,<span class="string">'Vertices'</span>,V,<span class="string">'EdgeColor'</span>,<span class="string">'k'</span>,<span class="string">'FaceColor'</span>,<span class="string">'r'</span>,<span class="string">'FaceAlpha'</span>,faceAlpha1);
+
+plotV(V1,<span class="string">'b.-'</span>,<span class="string">'MarkerSize'</span>,25);
+plotV(V2,<span class="string">'b.-'</span>,<span class="string">'MarkerSize'</span>,25);
+
+axis <span class="string">equal</span>; axis <span class="string">tight</span>; view(3); grid <span class="string">on</span>; set(gca,<span class="string">'FontSize'</span>,fontSize);
+camlight <span class="string">headlight</span>;
+drawnow;
+
+<span class="comment">% Create patch data to vizualise twist</span>
+X=linspacen(V1(:,1),V2f(:,1),2)';
+Y=linspacen(V1(:,2),V2f(:,2),2)';
+Z=linspacen(V1(:,3),V2f(:,3),2)';
+[F,V,~]=patchCylSurfClose(X,Y,Z,[]);
+
+<span class="comment">% Plotting results</span>
+subplot(1,2,2);
+title(<span class="string">'Connectivity after order fixing'</span>,<span class="string">'FontSize'</span>,fontSize);
+xlabel(<span class="string">'X'</span>,<span class="string">'FontSize'</span>,fontSize);ylabel(<span class="string">'Y'</span>,<span class="string">'FontSize'</span>,fontSize); zlabel(<span class="string">'Z'</span>,<span class="string">'FontSize'</span>,fontSize);
+hold <span class="string">on</span>;
+
+hpy=patch(<span class="string">'Faces'</span>,F,<span class="string">'Vertices'</span>,V,<span class="string">'EdgeColor'</span>,<span class="string">'k'</span>,<span class="string">'FaceColor'</span>,<span class="string">'g'</span>,<span class="string">'FaceAlpha'</span>,faceAlpha1);
+
+plotV(V1,<span class="string">'b.-'</span>,<span class="string">'MarkerSize'</span>,25);
+plotV(V2f,<span class="string">'b.-'</span>,<span class="string">'MarkerSize'</span>,25);
+
+axis <span class="string">equal</span>; axis <span class="string">tight</span>; view(3); grid <span class="string">on</span>; set(gca,<span class="string">'FontSize'</span>,fontSize);
+camlight <span class="string">headlight</span>;
+drawnow;
+</pre><img vspace="5" hspace="5" src="HELP_minPolyTwist_02.png" alt=""> <p><img vspace="5" hspace="5" src="gibbVerySmall.gif" alt=""> </p><p>GIBBON</p><p>Kevin M. Moerman (<a href="mailto:kevinmoerman@hotmail.com">kevinmoerman@hotmail.com</a>)</p><p class="footer"><br><a href="http://www.mathworks.com/products/matlab/">Published with MATLAB&reg; R2014a</a><br></p></div><!--
+##### SOURCE BEGIN #####
+%% minPolyTwist
+% Below is a demonstration of the features of the |minPolyTwist| function
+
+%%
+closeFall; 
+
+%%
+% PLOT SETTINGS
+figColor='w'; figColorDef='white';
+fontSize=15;
+faceAlpha1=1;
+faceAlpha2=0.5;
+edgeColor=0.25*ones(1,3);
+edgeWidth=1.5;
+markerSize1=50;
+
+%%
+% Creating example curves.
+
+%Creating circle 1 0-2*pi
+t=linspace(0,2*pi,25);
+t=t(1:end-1);
+x=sin(t);
+y=cos(t);
+z=zeros(size(x));
+V1=[x(:) y(:) z(:)];
+
+%Creating circle 2 0.25*pi-2.25 pi
+t=linspace(0.25*pi,2.25*pi,25);
+t=t(1:end-1);
+x=sin(t);
+y=cos(t);
+z=ones(size(x));
+V2=[x(:) y(:) z(:)];
+
+%Also distoring curve direction
+% V2=flipud(V2);
+
+%%
+
+
+%% FIXING CURVE POINT ORDER TO MINIMIZE TWIST
+
+[V2f,indSort]=minPolyTwist(V1,V2);
+
+%%
+% Plotting results
+hf1=figuremax(figColor,figColorDef);
+subplot(1,2,1);
+title('Twisted connectivity','FontSize',fontSize);
+xlabel('X','FontSize',fontSize);ylabel('Y','FontSize',fontSize); zlabel('Z','FontSize',fontSize);
+hold on;
+
+% Create patch data to vizualise twist
+X=linspacen(V1(:,1),V2(:,1),2)';
+Y=linspacen(V1(:,2),V2(:,2),2)';
+Z=linspacen(V1(:,3),V2(:,3),2)';
+[F,V,~]=patchCylSurfClose(X,Y,Z,[]);
+
+hpy=patch('Faces',F,'Vertices',V,'EdgeColor','k','FaceColor','r','FaceAlpha',faceAlpha1);
+
+plotV(V1,'b.-','MarkerSize',25);
+plotV(V2,'b.-','MarkerSize',25);
+
+axis equal; axis tight; view(3); grid on; set(gca,'FontSize',fontSize);
+camlight headlight;
+drawnow;
+
+% Create patch data to vizualise twist
+X=linspacen(V1(:,1),V2f(:,1),2)';
+Y=linspacen(V1(:,2),V2f(:,2),2)';
+Z=linspacen(V1(:,3),V2f(:,3),2)';
+[F,V,~]=patchCylSurfClose(X,Y,Z,[]);
+
+% Plotting results
+subplot(1,2,2);
+title('Connectivity after order fixing','FontSize',fontSize);
+xlabel('X','FontSize',fontSize);ylabel('Y','FontSize',fontSize); zlabel('Z','FontSize',fontSize);
+hold on;
+
+hpy=patch('Faces',F,'Vertices',V,'EdgeColor','k','FaceColor','g','FaceAlpha',faceAlpha1);
+
+plotV(V1,'b.-','MarkerSize',25);
+plotV(V2f,'b.-','MarkerSize',25);
+
+axis equal; axis tight; view(3); grid on; set(gca,'FontSize',fontSize);
+camlight headlight;
+drawnow;
+
+%% EXAMPLE FOR FIXING TWIST AND DIRECTION
+
+% Also distoring curve direction
+V2=flipud(V2);
+
+% Fixing flipped curve direction and order
+[V2f,indSort]=minPolyTwist(V1,V2);
+
+%%
+% Plotting results
+hf1=figuremax(figColor,figColorDef);
+subplot(1,2,1);
+title('Twisted connectivity','FontSize',fontSize);
+xlabel('X','FontSize',fontSize);ylabel('Y','FontSize',fontSize); zlabel('Z','FontSize',fontSize);
+hold on;
+
+% Create patch data to vizualise twist
+X=linspacen(V1(:,1),V2(:,1),2)';
+Y=linspacen(V1(:,2),V2(:,2),2)';
+Z=linspacen(V1(:,3),V2(:,3),2)';
+[F,V,~]=patchCylSurfClose(X,Y,Z,[]);
+
+hpy=patch('Faces',F,'Vertices',V,'EdgeColor','k','FaceColor','r','FaceAlpha',faceAlpha1);
+
+plotV(V1,'b.-','MarkerSize',25);
+plotV(V2,'b.-','MarkerSize',25);
+
+axis equal; axis tight; view(3); grid on; set(gca,'FontSize',fontSize);
+camlight headlight;
+drawnow;
+
+% Create patch data to vizualise twist
+X=linspacen(V1(:,1),V2f(:,1),2)';
+Y=linspacen(V1(:,2),V2f(:,2),2)';
+Z=linspacen(V1(:,3),V2f(:,3),2)';
+[F,V,~]=patchCylSurfClose(X,Y,Z,[]);
+
+% Plotting results
+subplot(1,2,2);
+title('Connectivity after order fixing','FontSize',fontSize);
+xlabel('X','FontSize',fontSize);ylabel('Y','FontSize',fontSize); zlabel('Z','FontSize',fontSize);
+hold on;
+
+hpy=patch('Faces',F,'Vertices',V,'EdgeColor','k','FaceColor','g','FaceAlpha',faceAlpha1);
+
+plotV(V1,'b.-','MarkerSize',25);
+plotV(V2f,'b.-','MarkerSize',25);
+
+axis equal; axis tight; view(3); grid on; set(gca,'FontSize',fontSize);
+camlight headlight;
+drawnow;
+
+%% 
+%
+% <<gibbVerySmall.gif>>
+% 
+% GIBBON 
+% 
+% Kevin M. Moerman (kevinmoerman@hotmail.com)
+##### SOURCE END #####
+--></body></html>

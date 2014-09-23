@@ -1,0 +1,170 @@
+
+<!DOCTYPE html
+  PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html><head>
+      <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+   <!--
+This HTML was auto-generated from MATLAB code.
+To make changes, update the MATLAB code and republish this document.
+      --><title>uiContourSegment</title><meta name="generator" content="MATLAB 8.3"><link rel="schema.DC" href="http://purl.org/dc/elements/1.1/"><meta name="DC.date" content="2014-03-18"><meta name="DC.source" content="HELP_uiContourSegment.m"><style type="text/css">
+html,body,div,span,applet,object,iframe,h1,h2,h3,h4,h5,h6,p,blockquote,pre,a,abbr,acronym,address,big,cite,code,del,dfn,em,font,img,ins,kbd,q,s,samp,small,strike,strong,sub,sup,tt,var,b,u,i,center,dl,dt,dd,ol,ul,li,fieldset,form,label,legend,table,caption,tbody,tfoot,thead,tr,th,td{margin:0;padding:0;border:0;outline:0;font-size:100%;vertical-align:baseline;background:transparent}body{line-height:1}ol,ul{list-style:none}blockquote,q{quotes:none}blockquote:before,blockquote:after,q:before,q:after{content:'';content:none}:focus{outine:0}ins{text-decoration:none}del{text-decoration:line-through}table{border-collapse:collapse;border-spacing:0}
+
+html { min-height:100%; margin-bottom:1px; }
+html body { height:100%; margin:0px; font-family:Arial, Helvetica, sans-serif; font-size:10px; color:#000; line-height:140%; background:#fff none; overflow-y:scroll; }
+html body td { vertical-align:top; text-align:left; }
+
+h1 { padding:0px; margin:0px 0px 25px; font-family:Arial, Helvetica, sans-serif; font-size:1.5em; color:#d55000; line-height:100%; font-weight:normal; }
+h2 { padding:0px; margin:0px 0px 8px; font-family:Arial, Helvetica, sans-serif; font-size:1.2em; color:#000; font-weight:bold; line-height:140%; border-bottom:1px solid #d6d4d4; display:block; }
+h3 { padding:0px; margin:0px 0px 5px; font-family:Arial, Helvetica, sans-serif; font-size:1.1em; color:#000; font-weight:bold; line-height:140%; }
+
+a { color:#005fce; text-decoration:none; }
+a:hover { color:#005fce; text-decoration:underline; }
+a:visited { color:#004aa0; text-decoration:none; }
+
+p { padding:0px; margin:0px 0px 20px; }
+img { padding:0px; margin:0px 0px 20px; border:none; }
+p img, pre img, tt img, li img, h1 img, h2 img { margin-bottom:0px; } 
+
+ul { padding:0px; margin:0px 0px 20px 23px; list-style:square; }
+ul li { padding:0px; margin:0px 0px 7px 0px; }
+ul li ul { padding:5px 0px 0px; margin:0px 0px 7px 23px; }
+ul li ol li { list-style:decimal; }
+ol { padding:0px; margin:0px 0px 20px 0px; list-style:decimal; }
+ol li { padding:0px; margin:0px 0px 7px 23px; list-style-type:decimal; }
+ol li ol { padding:5px 0px 0px; margin:0px 0px 7px 0px; }
+ol li ol li { list-style-type:lower-alpha; }
+ol li ul { padding-top:7px; }
+ol li ul li { list-style:square; }
+
+.content { font-size:1.2em; line-height:140%; padding: 20px; }
+
+pre, code { font-size:12px; }
+tt { font-size: 1.2em; }
+pre { margin:0px 0px 20px; }
+pre.codeinput { padding:10px; border:1px solid #d3d3d3; background:#f7f7f7; }
+pre.codeoutput { padding:10px 11px; margin:0px 0px 20px; color:#4c4c4c; }
+pre.error { color:red; }
+
+@media print { pre.codeinput, pre.codeoutput { word-wrap:break-word; width:100%; } }
+
+span.keyword { color:#0000FF }
+span.comment { color:#228B22 }
+span.string { color:#A020F0 }
+span.untermstring { color:#B20000 }
+span.syscmd { color:#B28C00 }
+
+.footer { width:auto; padding:10px 0px; margin:25px 0px 0px; border-top:1px dotted #878787; font-size:0.8em; line-height:140%; font-style:italic; color:#878787; text-align:left; float:none; }
+.footer p { margin:0px; }
+.footer a { color:#878787; }
+.footer a:hover { color:#878787; text-decoration:underline; }
+.footer a:visited { color:#878787; }
+
+table th { padding:7px 5px; text-align:left; vertical-align:middle; border: 1px solid #d6d4d4; font-weight:bold; }
+table td { padding:7px 5px; text-align:left; vertical-align:top; border:1px solid #d6d4d4; }
+
+
+
+
+
+  </style></head><body><div class="content"><h1>uiContourSegment</h1><!--introduction--><p>Below is a demonstration of the features of the <tt>uiContourSegment</tt> function</p><!--/introduction--><h2>Contents</h2><div><ul><li><a href="#2">Loading example image data</a></li><li><a href="#3">Visualizing data</a></li><li><a href="#4">REMOVING BACKGROUND THROUGH THRESHOLDING/DILATION PROCEDURE</a></li><li><a href="#5">SETTING CONTROL PARAMETERS</a></li><li><a href="#6">SEGMENTING CONTOURS</a></li></ul></div><pre class="codeinput">clear <span class="string">all</span>; close <span class="string">all</span>; clc;
+</pre><h2>Loading example image data<a name="2"></a></h2><p>Loading MRI data</p><pre class="codeinput">toolboxPath=fileparts(mfilename(<span class="string">'fullpath'</span>));
+
+imageFolder=fullfile(toolboxPath,<span class="string">'data'</span>,<span class="string">'DICOM'</span>,<span class="string">'KNEE_UTE'</span>,<span class="string">'IMDAT'</span>);
+loadName=fullfile(imageFolder,<span class="string">'IMDAT.mat'</span>);
+IMDAT_set=load(loadName);
+M=double(IMDAT_set.type_1);
+M_info=IMDAT_set.type_1_info(1);
+[v,OR,r,c]=dicom3Dpar(M_info);
+</pre><h2>Visualizing data<a name="3"></a></h2><p>See <tt>ind2patch</tt> function for more information on visualization</p><pre class="codeinput">logicVoxels=false(size(M));
+logicVoxels(round(size(M,1)/2),:,:)=1;
+logicVoxels(:,round(size(M,2)/2),:)=1;
+logicVoxels(:,:,round(size(M,3)/2))=1;
+logicVoxels=logicVoxels &amp; M&gt;0;
+[F,V,C]=ind2patch(logicVoxels,M,<span class="string">'vb'</span>);
+[V(:,1),V(:,2),V(:,3)]=im2cart(V(:,2),V(:,1),V(:,3),v);
+
+h1=figuremax(<span class="string">'w'</span>,<span class="string">'white'</span>);
+xlabel(<span class="string">'X (mm)'</span>);ylabel(<span class="string">'Y (mm)'</span>); zlabel(<span class="string">'Z (mm)'</span>); hold <span class="string">on</span>;
+hp1= patch(<span class="string">'Faces'</span>,F,<span class="string">'Vertices'</span>,V,<span class="string">'FaceColor'</span>,<span class="string">'flat'</span>,<span class="string">'CData'</span>,C,<span class="string">'EdgeColor'</span>,<span class="string">'none'</span>);
+axis <span class="string">equal</span>; view(3); axis <span class="string">tight</span>; axis <span class="string">vis3d</span>; grid <span class="string">on</span>;
+colormap <span class="string">gray</span>; colorbar;
+drawnow;
+</pre><img vspace="5" hspace="5" src="HELP_uiContourSegment_01.png" alt=""> <h2>REMOVING BACKGROUND THROUGH THRESHOLDING/DILATION PROCEDURE<a name="4"></a></h2><p>Removal of background may be useful see <tt>uiThreshErode</tt></p><pre class="codeinput">L_BG=true(size(M)); <span class="comment">%In this example background is not removed</span>
+</pre><h2>SETTING CONTROL PARAMETERS<a name="5"></a></h2><pre class="codeinput">cPar.minContourSize=250;            <span class="comment">%Minimal size of detected contour</span>
+cPar.smoothFactor=0.5;              <span class="comment">%Degree of smoothing csaps function (cubic smoothing spline)</span>
+cPar.pointReductionFactor=20;        <span class="comment">%Reduction factor for contour smoothening</span>
+cPar.logicBackGround=L_BG;   <span class="comment">%Ones (white) describe image data regions of interest i.e. a mask</span>
+cPar.v=v;                           <span class="comment">%Voxel size</span>
+saveName=[];                        <span class="comment">%If not empty this is where the contours are saved</span>
+</pre><h2>SEGMENTING CONTOURS<a name="6"></a></h2><p>Run the following code: <tt>[Vcs]=uiContourSegment(M,cPar,saveName)</tt>; Use the various options to try to segment the outer skin contour, press H to reveal the help window.</p><p>Example contour process:</p><p><img vspace="5" hspace="5" src="contour_1.png" alt=""> </p><p>Clearly only features "detectable" with contour levels can be segmented or otherwise manual drawing is needed.</p><p><img vspace="5" hspace="5" src="gibbVerySmall.gif" alt=""> </p><p>GIBBON</p><p>Kevin M. Moerman (<a href="mailto:kevinmoerman@hotmail.com">kevinmoerman@hotmail.com</a>)</p><p class="footer"><br><a href="http://www.mathworks.com/products/matlab/">Published with MATLAB&reg; R2014a</a><br></p></div><!--
+##### SOURCE BEGIN #####
+%% uiContourSegment
+% Below is a demonstration of the features of the |uiContourSegment| function
+
+%%
+clear all; close all; clc;
+
+%% Loading example image data
+% Loading MRI data
+toolboxPath=fileparts(mfilename('fullpath'));
+
+imageFolder=fullfile(toolboxPath,'data','DICOM','KNEE_UTE','IMDAT');
+loadName=fullfile(imageFolder,'IMDAT.mat');
+IMDAT_set=load(loadName);
+M=double(IMDAT_set.type_1);
+M_info=IMDAT_set.type_1_info(1);
+[v,OR,r,c]=dicom3Dpar(M_info);
+
+%% Visualizing data
+% See |ind2patch| function for more information on visualization
+logicVoxels=false(size(M));
+logicVoxels(round(size(M,1)/2),:,:)=1;
+logicVoxels(:,round(size(M,2)/2),:)=1;
+logicVoxels(:,:,round(size(M,3)/2))=1;
+logicVoxels=logicVoxels & M>0;
+[F,V,C]=ind2patch(logicVoxels,M,'vb');
+[V(:,1),V(:,2),V(:,3)]=im2cart(V(:,2),V(:,1),V(:,3),v);
+
+h1=figuremax('w','white');
+xlabel('X (mm)');ylabel('Y (mm)'); zlabel('Z (mm)'); hold on;
+hp1= patch('Faces',F,'Vertices',V,'FaceColor','flat','CData',C,'EdgeColor','none');
+axis equal; view(3); axis tight; axis vis3d; grid on;
+colormap gray; colorbar;
+drawnow;
+
+%% REMOVING BACKGROUND THROUGH THRESHOLDING/DILATION PROCEDURE
+% Removal of background may be useful see |uiThreshErode|
+L_BG=true(size(M)); %In this example background is not removed
+
+%% SETTING CONTROL PARAMETERS
+cPar.minContourSize=250;            %Minimal size of detected contour
+cPar.smoothFactor=0.5;              %Degree of smoothing csaps function (cubic smoothing spline)
+cPar.pointReductionFactor=20;        %Reduction factor for contour smoothening
+cPar.logicBackGround=L_BG;   %Ones (white) describe image data regions of interest i.e. a mask
+cPar.v=v;                           %Voxel size
+saveName=[];                        %If not empty this is where the contours are saved
+ 
+%% SEGMENTING CONTOURS
+% Run the following code:
+% |[Vcs]=uiContourSegment(M,cPar,saveName)|;
+% Use the various options to try to segment the outer skin contour, press H
+% to reveal the help window. 
+
+%% 
+% Example contour process: 
+% 
+% <<contour_1.png>>
+
+%%
+% Clearly only features "detectable" with contour levels can be segmented or
+% otherwise manual drawing is needed.
+
+%% 
+%
+% <<gibbVerySmall.gif>>
+% 
+% GIBBON 
+% 
+% Kevin M. Moerman (kevinmoerman@hotmail.com)
+##### SOURCE END #####
+--></body></html>

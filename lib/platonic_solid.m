@@ -1,0 +1,86 @@
+function [V,F]=platonic_solid(n,r)
+
+% function [V,F]=platonic_solid(n,r)
+% ------------------------------------------------------------------------
+% PLATONIC_SOLID Creates the PATCH data, the vertices (V) and faces (F) for
+% a given platonic solid (according to "n" see below) with radius (r)
+%
+% n=1 -> Tetrahedron
+% n=2 -> Cube
+% n=3 -> Octahedron
+% n=4 -> Icosahedron
+% n=5 -> Dodecahedron
+%
+% %%%Example
+% clear all; close all; clc;
+% 
+% r=1;
+% figure; hold on; 
+% 
+% [V,F]=platonic_solid(1,r);
+% subplot(2,3,1);
+% patch('Faces',F,'Vertices',V,'FaceColor','b','FaceAlpha',0.6,'EdgeColor','k','LineWidth',2); axis equal tight; grid on; hold on; view(3); 
+% 
+% [V,F]=platonic_solid(2,r);
+% subplot(2,3,2);
+% patch('Faces',F,'Vertices',V,'FaceColor','b','FaceAlpha',0.6,'EdgeColor','k','LineWidth',2); axis equal tight; grid on; hold on; view(3); 
+% 
+% [V,F]=platonic_solid(3,r);
+% subplot(2,3,3);
+% patch('Faces',F,'Vertices',V,'FaceColor','b','FaceAlpha',0.6,'EdgeColor','k','LineWidth',2); axis equal tight; grid on; hold on; view(3); 
+% 
+% [V,F]=platonic_solid(4,r);
+% subplot(2,3,4);
+% patch('Faces',F,'Vertices',V,'FaceColor','b','FaceAlpha',0.6,'EdgeColor','k','LineWidth',2); axis equal tight; grid on; hold on; view(3); 
+% 
+% [V,F]=platonic_solid(5,r);
+% subplot(2,3,5);
+% patch('Faces',F,'Vertices',V,'FaceColor','b','FaceAlpha',0.6,'EdgeColor','k','LineWidth',2); axis equal tight; grid on; hold on; view(3); 
+%
+%
+% Kevin Mattheus Moerman
+% kevinmoerman@hotmail.com
+% 13/11/2009
+% ------------------------------------------------------------------------
+
+switch n
+    case 1 % Tetrahedron
+        X=[-0.5;0.5;0;0;];
+        Y=[-sqrt(3)/6;  -sqrt(3)/6; sqrt(3)/3; 0];
+        Z=[-0.25.*sqrt(2/3); -0.25.*sqrt(2/3); -0.25.*sqrt(2/3);  0.75.*sqrt(2/3)];
+        F=[3,2,1;1,2,4;2,3,4;4,3,1;];
+    case 2 % Cube
+        X=[-1;  1; 1; -1; -1;  1; 1; -1;];
+        Y=[-1; -1; 1;  1; -1; -1; 1;  1;];
+        Z=[-1; -1;-1; -1;  1;  1; 1;  1;];
+        F=[4,3,2,1;
+            1,2,6,5;
+            2,3,7,6;
+            3,4,8,7;
+            4,1,5,8;
+            5,6,7,8;];
+    case 3 % Octahedron
+        X=[-1;  1; 1; -1;  0;   0;];
+        Y=[-1; -1; 1;  1;  0;   0;];
+        Z=[ 0;   0; 0;  0; -1;  1;];
+        F=[5,2,1;5,3,2;5,4,3;5,1,4;1,2,6;2,3,6;3,4,6;4,1,6;];        
+    case 4 % Icosahedron
+        phi=(1+sqrt(5))/2;
+        X=[0;0;0;0;-1;-1;1;1;-phi;phi;phi;-phi;];
+        Y=[-1;-1;1;1;-phi;phi;phi;-phi;0;0;0;0;];
+        Z=[-phi;phi;phi;-phi;0;0;0;0;-1;-1;1;1;];
+        F=[9,4,1;1,5,9;1,8,5;10,8,1;4,10,1;5,2,12;12,2,3;12,3,6;12,6,9;12,9,5;10,7,11;8,10,11;2,8,11;3,2,11;7,3,11;2,5,8;10,4,7;7,6,3;6,7,4;6,4,9;];
+    case 5 % Dodecahedron
+        phi=(1+sqrt(5))/2;
+        X=[1;(1/phi);-phi;phi;-1;0;-phi;1;-1;-1;1;(1/phi);-1;0;0;-(1/phi);phi;-(1/phi);1;0;];
+        Y=[1;0;-(1/phi);(1/phi);1;-phi;(1/phi);-1;1;-1;-1;0;-1;-phi;phi;0;-(1/phi);0;1;phi;];
+        Z=[1;phi;0;0;-1;-(1/phi);0;1;1;1;-1;-phi;-1;(1/phi);-(1/phi);phi;0;-phi;-1;(1/phi);];
+        F=[20,9,16,2,1;2,16,10,14,8;16,9,7,3,10;7,9,20,15,5;18,13,3,7,5;3,13,6,14,10;6,13,18,12,11;6,11,17,8,14;11,12,19,4,17;1,2,8,17,4;1,4,19,15,20;12,18,5,15,19;];
+    otherwise
+        warning('False input for n')
+end
+
+%Altering radius
+[THETA,PHI,~]=cart2sph(X,Y,Z);
+[X,Y,Z]=sph2cart(THETA,PHI,r.*ones(size(X(:,1))));
+V=[X Y Z];
