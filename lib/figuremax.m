@@ -17,15 +17,15 @@ switch nargin
     case 0
         Cbg='w';
         Cdef='white';
-        scr_offset=45; %e.g. quick and dirty way to cope with bottom taskbar in windows
+        scr_offset=60; %e.g. quick and dirty way to cope with bottom taskbar in windows
     case 1
         Cbg=varargin{1};
         Cdef='white';
-        scr_offset=45; %e.g. quick and dirty way to cope with bottom taskbar in windows
+        scr_offset=60; %e.g. quick and dirty way to cope with bottom taskbar in windows
     case 2
         Cbg=varargin{1};
         Cdef=varargin{2};
-        scr_offset=45; %e.g. quick and dirty way to cope with bottom taskbar in windows        
+        scr_offset=60; %e.g. quick and dirty way to cope with bottom taskbar in windows        
     case 3
         Cbg=varargin{1};
         Cdef=varargin{2};

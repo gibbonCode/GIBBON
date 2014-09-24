@@ -9,8 +9,13 @@ if FEBioRunStruct.disp_on==1;
 end
 
 %% Removing existing log-file
-if exist(FEBioRunStruct.run_logname,'file')
+if exist(FEBioRunStruct.run_logname,'file')>0
     delete(FEBioRunStruct.run_logname);
+    
+    %Check if its gone
+    if exist(FEBioRunStruct.run_logname,'file')>0
+        error('Log file deletion not succesful or the file location is not specific enough');
+    end
 end
 
 %%

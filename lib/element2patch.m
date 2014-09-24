@@ -1,4 +1,4 @@
-function [F,C]=element2patch(varargin)
+function [varargout]=element2patch(varargin)
 
 %%
 % ------------------------------------------------------------------------
@@ -72,7 +72,7 @@ switch elementType
             E(:,[2 6 3 10 4 9 ]);... %face 2 3 4
             E(:,[3 7 1 8  4 10])];   %face 1 3 4        
         F=fliplr(F);
-        C=repmat(C,4*4,1); %Replicate color data
+        C=repmat(C,4,1); %Replicate color data
     case 'hex8' %Hexahedral elements
         F =[E(:,[4 3 2 1]);... %top
             E(:,[5 6 7 8]);... %bottom
@@ -85,5 +85,8 @@ switch elementType
         %TO DO
 end
 
-%%
+%% Compose output
+varargout{1}=F; 
+varargout{2}=C; 
+
 end

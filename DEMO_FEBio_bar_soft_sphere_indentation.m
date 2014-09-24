@@ -24,7 +24,6 @@ markerSize=25;
 % path names
 filePath=mfilename('fullpath');
 savePath=fullfile(fileparts(filePath),'data','temp');
-
 modelName=fullfile(savePath,'tempModel');
 
 %Specifying dimensions and number of elements

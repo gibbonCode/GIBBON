@@ -31,7 +31,7 @@ F(faceID,:)=double([A{2} A{3} A{4}]);
 faceBoundaryID=double(A{5});
 
 %% CONVERT ELEMENTS TO FACES
-[FE,faceMaterialID]=element2patch(E,elementMaterialID);
+[FE,faceMaterialID]=element2patch(E,elementMaterialID,'tet4');
 
 %% Create meshOutput structure
 meshOutput.nodes=V; 
@@ -41,6 +41,7 @@ meshOutput.faces=FE;
 meshOutput.elements=E; 
 meshOutput.elementMaterialID=elementMaterialID; 
 meshOutput.faceMaterialID=faceMaterialID; 
+meshOutput.loadNameStruct=loadNameStruct;
 
 %%
 disp(['--- Done --- ',datestr(now)]);

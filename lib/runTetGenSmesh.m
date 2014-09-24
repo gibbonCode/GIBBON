@@ -91,6 +91,23 @@ function [meshOutput]=runTetGenSmesh(smeshStruct)
 % 2014/03/05
 %------------------------------------------------------------------------
 
+%% PARSE INPUT
+
+if ~isfield(smeshStruct,'tetType')
+    smeshStruct.tetType='tet4'; %Revert to default if missing
+elseif isempty(smeshStruct.tetType)
+    smeshStruct.tetType='tet4'; %Revert to default if missing
+end
+
+switch smeshStruct.tetType
+    case 'tet4' %Linear tetrahedral elements
+
+    case 'tet10' %Quadratic tetrahedral elements
+
+    otherwise
+        error('Wrong element type specified, valid options are tet4 or tet10, for other element types use converions (e.g. tet2hex)');
+end
+
 %%
 
 dispStartTitleGibbonCode('TETGEN Tetrahedral meshing');
@@ -116,14 +133,23 @@ loadNameStruct.loadName_edge=loadName_edge;
 writeBasicSmesh(smeshStruct);
 
 %% SETTING TETGEN PATHNAMES
-% try
-%     pathNameTetGen='C:\Users\kmmoerman\00_WORK\SOURCE_CODES\tetGen\tetgen1.5.0\Release';
-%     pathNameTetView='C:\Users\kmmoerman\00_WORK\SOURCE_CODES\tetGen\tetView';
-% catch
-    pathNameTetGen=fullfile(fileparts(fileparts(mfilename('fullpath'))),'lib_ext','tetGen');
-    pathNameTetView=pathNameTetGen;
-% end
-runNameTetGen=fullfile(pathNameTetGen,'tetgen.exe');
+
+compString=computer; 
+switch compString
+    case 'PCWIN' %Windows 32-bit
+        error('PCWIN 32-bit is not supported. Compile tetGen from the source and alter the code here');
+    case 'PCWIN64' %Windows 64-bit
+        pathNameTetGen=fullfile(fileparts(fileparts(mfilename('fullpath'))),'lib_ext','tetGen','win64');
+        runNameTetGen=fullfile(pathNameTetGen,'tetgen.exe');
+    case 'GLNXA64'
+        error('GLNXA64 is not supported. Compile tetGen from the source and alter the code here');
+%         pathNameTetGen=fullfile(fileparts(fileparts(mfilename('fullpath'))),'lib_ext','tetGen','lin64');
+%         runNameTetGen=fullfile(pathNameTetGen,'tetgen.exe');
+    case 'MACI64'
+        error('MACI64 is not supported. Compile tetGen from the source and alter the code here');
+%         pathNameTetGen=fullfile(fileparts(fileparts(mfilename('fullpath'))),'lib_ext','tetGen','mac64');
+%         runNameTetGen=fullfile(pathNameTetGen,'tetgen.exe');
+end
 
 %% DELETE POSSIBLE EXISTING TETGEN FILES
 
@@ -145,24 +171,51 @@ runString=[runNameTetGen,' ',stringOpt,' ',smeshName];
 system(runString);
 dispDoneGibbonCode;
 
-% %% COPY OUTPUT FILES TO TETVIEW DIRECTORY
-% smeshName_copy=fullfile(pathNameTetView,[modelFileName,'.smesh']);
-% copyfile(smeshName,smeshName_copy);
-% loadName_ele_copy=fullfile(pathNameTetView,[modelFileName,'.1.ele']);
-% copyfile(loadName_ele,loadName_ele_copy);
-% loadName_node_copy=fullfile(pathNameTetView,[modelFileName,'.1.node']);
-% copyfile(loadName_node,loadName_node_copy);
-% loadName_face_copy=fullfile(pathNameTetView,[modelFileName,'.1.face']);
-% copyfile(loadName_face,loadName_face_copy);
-% loadName_edge_copy=fullfile(pathNameTetView,[modelFileName,'.1.edge']);
-% copyfile(loadName_edge,loadName_edge_copy);
-
 %% IMPORT TETGEN FILES
 
 try
-    [meshOutput]=importTETGEN(loadNameStruct);
-    meshOutput.loadNameStruct=loadNameStruct;
+    [meshOutput]=importTETGEN(loadNameStruct); 
+%     meshOutput.nodes=V;
+%     meshOutput.facesBoundary=F;
+%     meshOutput.boundaryMarker=faceBoundaryID;
+%     meshOutput.faces=FE;
+%     meshOutput.elements=E;
+%     meshOutput.elementMaterialID=elementMaterialID;
+%     meshOutput.faceMaterialID=faceMaterialID;
+%     meshOutput.loadNameStruct=loadNameStruct;
 catch
    error('TetGen output not found!');
 end
+
+%% Convert element type if required
+
+switch smeshStruct.tetType
+    case 'tet4' %Linear tetrahedral elements
+        %Keep as is
+    case 'tet10' %Quadratic tetrahedral elements
+        TET4=meshOutput.elements;
+        V4=meshOutput.nodes;
+        elementMaterialID=meshOutput.elementMaterialID;        
+        [TET10,V10,~]=tet4_tet10(TET4,V4,{});        
+        [F10,faceMaterialID]=element2patch(TET10,elementMaterialID,'tet10');   
+        matLabels=unique(elementMaterialID(:));
+        Fb=[];
+        faceBoundaryID=[];
+        for q=1:1:numel(matLabels)
+            matLabel=matLabels(q);
+            [Fbn,~,Cb]=meshBoundary(TET10(elementMaterialID==matLabel,:),'tet10',elementMaterialID(elementMaterialID==matLabel));
+            faceBoundaryIDn=Cb;
+            Fb=[Fb;Fbn];
+            faceBoundaryID=[faceBoundaryID;faceBoundaryIDn];            
+        end
+        
+        meshOutput.nodes=V10;
+        meshOutput.facesBoundary=Fb;
+        meshOutput.boundaryMarker=faceBoundaryID; 
+        meshOutput.faces=F10;
+        meshOutput.elements=TET10;
+%         meshOutput.elementMaterialID=elementMaterialID; %Remains valid
+        meshOutput.faceMaterialID=faceMaterialID;     
+end
+
 
