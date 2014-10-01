@@ -6,19 +6,10 @@ clear; close all; clc;
 
 %%
 % PLOT SETTINGS
-fig_color='w'; fig_colordef='white';
-font_size=20;
-cmap=gray(250);
-falpha=1;
-patch_types={'sx','sy','sz','v'};
-ptype=3;
-no_slices=4;
-mark_siz1=25;
-mark_siz2=25;
-mark_siz3=15;
-line_width1=2;
-F_alpha1=0.4;
-F_alpha2=0.75;
+figColor='w'; 
+figColorDef='white';
+fontSize=10;
+faceAlpha1=0.4;
 
 %% BUILDING EXAMPLE MODEL
 
@@ -33,14 +24,14 @@ ptype='tri';
 
 %%
 % Plottting model
-hf1=figuremax(fig_color,fig_colordef);
-title('Regular cylinder from patchcylinder','FontSize',font_size);
-xlabel('X','FontSize',font_size);ylabel('Y','FontSize',font_size); zlabel('Z','FontSize',font_size);
+hf1=figuremax(figColor,figColorDef);
+title('Regular cylinder from patchcylinder','FontSize',fontSize);
+xlabel('X','FontSize',fontSize);ylabel('Y','FontSize',fontSize); zlabel('Z','FontSize',fontSize);
 hold on;
-hpm=patch('Faces',F,'Vertices',V,'EdgeColor','k','FaceColor','g','FaceAlpha',F_alpha1);
+hpm=patch('Faces',F,'Vertices',V,'EdgeColor','k','FaceColor','g','FaceAlpha',faceAlpha1);
 axis equal; view(3); axis tight;  grid on; 
 camlight headlight;
-set(gca,'FontSize',font_size);
+set(gca,'FontSize',fontSize);
 drawnow;
 
 %% 
@@ -65,14 +56,14 @@ V2=V;
 
 %% 
 % Plotting walls
-hf2=figuremax(fig_color,fig_colordef);
-title('Two seperate walls','FontSize',font_size);
-xlabel('X','FontSize',font_size);ylabel('Y','FontSize',font_size); zlabel('Z','FontSize',font_size);
+hf2=figuremax(figColor,figColorDef);
+title('Two seperate walls','FontSize',fontSize);
+xlabel('X','FontSize',fontSize);ylabel('Y','FontSize',fontSize); zlabel('Z','FontSize',fontSize);
 hold on;
 hpm1=patch('Faces',F,'Vertices',V,'EdgeColor','k','FaceColor','r','FaceAlpha',0.5);
 hpm2=patch('Faces',F,'Vertices',V2,'EdgeColor','k','FaceColor','b','FaceAlpha',0.5);
 axis equal; view(3); axis tight;  grid on; 
-set(gca,'FontSize',font_size);
+set(gca,'FontSize',fontSize);
 camlight headlight;
 drawnow;
 
@@ -80,12 +71,12 @@ drawnow;
 
 [Fm,Vm]=cap_patchcylinder(F,V,F,V2,nr,nz);
 
-hf3=figuremax(fig_color,fig_colordef);
-title('Closed (capped) vessel model','FontSize',font_size);
-xlabel('X','FontSize',font_size);ylabel('Y','FontSize',font_size); zlabel('Z','FontSize',font_size);
+hf3=figuremax(figColor,figColorDef);
+title('Closed (capped) vessel model','FontSize',fontSize);
+xlabel('X','FontSize',fontSize);ylabel('Y','FontSize',fontSize); zlabel('Z','FontSize',fontSize);
 hold on;
 hpm3=patch('Faces',Fm,'Vertices',Vm,'EdgeColor','k','FaceColor','r','FaceAlpha',1);
-axis equal; view(3); axis tight;  grid on; set(gca,'FontSize',font_size);
+axis equal; view(3); axis tight;  grid on; set(gca,'FontSize',fontSize);
 lighting flat; camlight('headlight');
 drawnow;
 

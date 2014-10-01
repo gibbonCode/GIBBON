@@ -8,7 +8,7 @@ clear; close all; clc;
 % Plot Settings
 figColor='w'; 
 figColorDef='white';
-fontSize=20;
+fontSize=10;
 markerSize=50;
 faceAlpha=0.25; 
 faceAlpha2=1;
@@ -278,11 +278,12 @@ plotV(V(indVertices,:),'r.','MarkerSize',markerSize);
 view(3); axis equal; axis tight; grid on; 
 drawnow; 
 
-%%
+%% 
 %
 % <<gibbVerySmall.gif>>
 % 
-% GIBBON 
+% _*GIBBON*_ 
+% <www.gibboncode.org>
 % 
-% Kevin M. Moerman (kevinmoerman@hotmail.com)
+% _Kevin Mattheus Moerman_, <gibbon.toolbox@gmail.com>
     

@@ -2,37 +2,32 @@
 % Below is a demonstration of the features of the |import_FEB| function
 
 %%
-clear all; close all; clc; 
+clear; close all; clc;
 
 %%
 % Plot settings
 figColor='w'; figColorDef='white';
-fontSize=15;
-faceAlpha1=0.5;
-faceAlpha2=0.5;
+fontSize=10;
 edgeColor=0.25*ones(1,3);
 edgeWidth=1.5;
-markerSize1=50; 
-
 
 %% Importing a FEB file
 
 %Set main folder
 defaultFolder = fileparts(mfilename('fullpath'));
-pathName=fullfile(defaultFolder,'data','FEB'); 
+pathName=fullfile(defaultFolder,'data','FEB');
 
 febFileNamePart='tetGenModel.feb';
 febFileName=fullfile(pathName,febFileNamePart);
 [febXML,nodeStruct,elementCell]=import_FEB(febFileName);
 
-%% 
 %%
 % Content:
 
 nodeStruct
 elementCell{1}
 
-V=nodeStruct.N; 
+V=nodeStruct.N;
 
 %% Plotting model
 
@@ -48,49 +43,50 @@ for q=1:1:numel(elementCell)
     uniqueMaterialIndices=unique([uniqueMaterialIndices(:); elementCell{q}.E_mat(:)]);
     E=elementCell{q}.E;
     switch elementCell{q}.E_type
-        case {'tri3', 'quad4'}            
+        case {'tri3', 'quad4'}
             F=E;
             V=nodeStruct.N;
-            C=elementCell{q}.E_mat;            
-       case {'hex8', 'tet4'}
-           E=elementCell{q}.E;
+            C=elementCell{q}.E_mat;
+        case {'hex8', 'tet4'}
+            E=elementCell{q}.E;
             [F,C]=element2patch(E,elementCell{q}.E_mat); %Creates faces and colors (e.g. stress) for patch based plotting
     end
     
-    hp=patch('Faces',F,'Vertices',V,'EdgeColor','k','FaceColor','flat','Cdata',C,'FaceAlpha',0.8);   
+    hp=patch('Faces',F,'Vertices',V,'EdgeColor','k','FaceColor','flat','Cdata',C,'FaceAlpha',0.8);
     
-subplot(1,2,1);
-
-title('Full model','FontSize',fontSize);
-xlabel('X','FontSize',fontSize); ylabel('Y','FontSize',fontSize); zlabel('Z','FontSize',fontSize); hold on;
-hp=patch('Faces',F,'Vertices',V,'EdgeColor','k','FaceColor','flat','Cdata',C,'FaceAlpha',1);   
-view(3); axis tight;  axis equal;  grid on;
-colormap(autumn);
-camlight headlight;
-set(gca,'FontSize',fontSize);
-
-subplot(1,2,2);
-
-%Selecting half of the model to see interior
-Y=V(:,2); YE=mean(Y(E),2);
-L=YE>mean(Y);
-[Fs,Cs]=element2patch(E(L,:),C(L));
-
-title('Cut view of model','FontSize',fontSize);
-xlabel('X','FontSize',fontSize); ylabel('Y','FontSize',fontSize); zlabel('Z','FontSize',fontSize); hold on;
-hps=patch('Faces',Fs,'Vertices',V,'FaceColor','flat','CData',Cs,'lineWidth',edgeWidth,'edgeColor',edgeColor);
-view(3); axis tight;  axis equal;  grid on;
-colormap(autumn);
-camlight headlight;
-set(gca,'FontSize',fontSize);
-drawnow;
-
+    subplot(1,2,1);
+    
+    title('Full model','FontSize',fontSize);
+    xlabel('X','FontSize',fontSize); ylabel('Y','FontSize',fontSize); zlabel('Z','FontSize',fontSize); hold on;
+    hp=patch('Faces',F,'Vertices',V,'EdgeColor','k','FaceColor','flat','Cdata',C,'FaceAlpha',1);
+    view(3); axis tight;  axis equal;  grid on;
+    colormap(autumn);
+    camlight headlight;
+    set(gca,'FontSize',fontSize);
+    
+    subplot(1,2,2);
+    
+    %Selecting half of the model to see interior
+    Y=V(:,2); YE=mean(Y(E),2);
+    L=YE>mean(Y);
+    [Fs,Cs]=element2patch(E(L,:),C(L));
+    
+    title('Cut view of model','FontSize',fontSize);
+    xlabel('X','FontSize',fontSize); ylabel('Y','FontSize',fontSize); zlabel('Z','FontSize',fontSize); hold on;
+    hps=patch('Faces',Fs,'Vertices',V,'FaceColor','flat','CData',Cs,'lineWidth',edgeWidth,'edgeColor',edgeColor);
+    view(3); axis tight;  axis equal;  grid on;
+    colormap(autumn);
+    camlight headlight;
+    set(gca,'FontSize',fontSize);
+    drawnow;
+    
 end
 
-%% 
+%%
 %
 % <<gibbVerySmall.gif>>
-% 
-% GIBBON 
-% 
-% Kevin M. Moerman (kevinmoerman@hotmail.com)
+%
+% _*GIBBON*_
+% <www.gibboncode.org>
+%
+% _Kevin Mattheus Moerman_, <gibbon.toolbox@gmail.com>

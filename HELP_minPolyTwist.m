@@ -2,7 +2,7 @@
 % Below is a demonstration of the features of the |minPolyTwist| function
 
 %%
-closeFall; 
+clear; close all; clc; 
 
 %%
 % PLOT SETTINGS
@@ -139,10 +139,11 @@ axis equal; axis tight; view(3); grid on; set(gca,'FontSize',fontSize);
 camlight headlight;
 drawnow;
 
-%% 
+%%
 %
 % <<gibbVerySmall.gif>>
-% 
-% GIBBON 
-% 
-% Kevin M. Moerman (kevinmoerman@hotmail.com)
+%
+% _*GIBBON*_
+% <www.gibboncode.org>
+%
+% _Kevin Mattheus Moerman_, <gibbon.toolbox@gmail.com>

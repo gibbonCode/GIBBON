@@ -8,7 +8,6 @@
 %%
 
 clear; close all; clc;
-warning off;
 
 %%
 % Plot settings
@@ -291,10 +290,12 @@ if runFlag==1 %i.e. a succesful run
     drawnow;
     
 end
-%%
+
+%% 
 %
 % <<gibbVerySmall.gif>>
-%
-% GIBBON
-%
-% Kevin M. Moerman (kevinmoerman@hotmail.com)
+% 
+% _*GIBBON*_ 
+% <www.gibboncode.org>
+% 
+% _Kevin Mattheus Moerman_, <gibbon.toolbox@gmail.com>

@@ -6,7 +6,7 @@
    <!--
 This HTML was auto-generated from MATLAB code.
 To make changes, update the MATLAB code and republish this document.
-      --><title>runTetGenSmesh</title><meta name="generator" content="MATLAB 8.4"><link rel="schema.DC" href="http://purl.org/dc/elements/1.1/"><meta name="DC.date" content="2014-09-16"><meta name="DC.source" content="HELP_runTetGenSmesh.m"><style type="text/css">
+      --><title>runTetGenSmesh</title><meta name="generator" content="MATLAB 8.4"><link rel="schema.DC" href="http://purl.org/dc/elements/1.1/"><meta name="DC.date" content="2014-10-01"><meta name="DC.source" content="HELP_runTetGenSmesh.m"><style type="text/css">
 html,body,div,span,applet,object,iframe,h1,h2,h3,h4,h5,h6,p,blockquote,pre,a,abbr,acronym,address,big,cite,code,del,dfn,em,font,img,ins,kbd,q,s,samp,small,strike,strong,sub,sup,tt,var,b,u,i,center,dl,dt,dd,ol,ul,li,fieldset,form,label,legend,table,caption,tbody,tfoot,thead,tr,th,td{margin:0;padding:0;border:0;outline:0;font-size:100%;vertical-align:baseline;background:transparent}body{line-height:1}ol,ul{list-style:none}blockquote,q{quotes:none}blockquote:before,blockquote:after,q:before,q:after{content:'';content:none}:focus{outine:0}ins{text-decoration:none}del{text-decoration:line-through}table{border-collapse:collapse;border-spacing:0}
 
 html { min-height:100%; margin-bottom:1px; }
@@ -66,7 +66,7 @@ table td { padding:7px 5px; text-align:left; vertical-align:top; border:1px soli
 
 
 
-  </style></head><body><div class="content"><h1>runTetGenSmesh</h1><!--introduction--><p>Below is a demonstration of the features of the <tt>runTetGenSmesh</tt> function</p><!--/introduction--><h2>Contents</h2><div><ul><li><a href="#3">MESHING A SINGLE REGION MODEL</a></li><li><a href="#14">VIEWING THE MODEL IN TETVIEW</a></li><li><a href="#16">MESHING A MULTI-REGION MODEL</a></li><li><a href="#27">MESHING A MULTI-REGION MODEL CONTAINING HOLES</a></li></ul></div><pre class="codeinput">clear <span class="string">all</span>; close <span class="string">all</span>; clc;
+  </style></head><body><div class="content"><h1>runTetGenSmesh</h1><!--introduction--><p>Below is a demonstration of the features of the <tt>runTetGenSmesh</tt> function</p><!--/introduction--><h2>Contents</h2><div><ul><li><a href="#3">MESHING A SINGLE REGION MODEL</a></li><li><a href="#14">VIEWING THE MODEL IN TETVIEW</a></li><li><a href="#16">MESHING A MULTI-REGION MODEL</a></li><li><a href="#27">MESHING A MULTI-REGION MODEL CONTAINING HOLES</a></li></ul></div><pre class="codeinput">clear; close <span class="string">all</span>; clc;
 </pre><p>Plot settings</p><pre class="codeinput">fig_color=<span class="string">'w'</span>; fig_colordef=<span class="string">'white'</span>;
 fontSize=15;
 faceAlpha1=0.5;
@@ -105,22 +105,22 @@ smeshStruct.smeshName=smeshName;
 </pre><p>Mesh model using tetrahedral elements using tetGen (see: <a href="http://wias-berlin.de/software/tetgen/">http://wias-berlin.de/software/tetgen/</a>)</p><pre class="codeinput">[meshOutput]=runTetGenSmesh(smeshStruct); <span class="comment">%Run tetGen</span>
 </pre><pre class="codeoutput"> 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
---- TETGEN Tetrahedral meshing --- 16-Sep-2014 13:41:44
+--- TETGEN Tetrahedral meshing --- 01-Oct-2014 15:29:05
  
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
---- Writing SMESH file --- 16-Sep-2014 13:41:44
+--- Writing SMESH file --- 01-Oct-2014 15:29:05
 ----&gt; Adding node field
 ----&gt; Adding facet field
 ----&gt; Adding holes specification
 ----&gt; Adding region specification
---- Done --- 16-Sep-2014 13:41:44
---- Running TetGen for meshing --- 16-Sep-2014 13:41:44
-Opening tetGenModel.smesh. 
---- Done --- 16-Sep-2014 13:41:44
+--- Done --- 01-Oct-2014 15:29:05
+--- Running TetGen for meshing --- 01-Oct-2014 15:29:05
+Opening tetGenModel.smesh.
+--- Done --- 01-Oct-2014 15:29:06
  
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
---- Importing TetGen files --- 16-Sep-2014 13:41:44
---- Done --- 16-Sep-2014 13:41:44
+--- Importing TetGen files --- 01-Oct-2014 15:29:06
+--- Done --- 01-Oct-2014 15:29:06
 </pre><p>Access model element and patch data</p><pre class="codeinput">F=meshOutput.faces;
 V=meshOutput.nodes;
 C=meshOutput.faceMaterialID;
@@ -148,7 +148,13 @@ colormap(autumn);
 camlight <span class="string">headlight</span>;
 set(gca,<span class="string">'FontSize'</span>,fontSize);
 drawnow;
+</pre><pre class="codeoutput">Warning: tet4 elements assumed, for other elements please specify elementType 
 </pre><img vspace="5" hspace="5" src="HELP_runTetGenSmesh_02.png" alt=""> <h2>VIEWING THE MODEL IN TETVIEW<a name="14"></a></h2><p>TetView is an external (non-MATLAB) program for viewing TetGen meshes. The runTetGenSmesh function also copies the mesh output files to the tetView directory. TetView is usually found here: ...\gibbon\trunk\lib_ext\tetGen You can run TetView seperately or use the following to view the model in TetView:</p><pre class="codeinput">runTetView(meshOutput.loadNameStruct.loadName_ele);
+</pre><pre class="codeoutput">
+runString =
+
+/data/MATLAB/GIBBON/trunk/lib_ext/tetGen/lin64/tetview-linux tetGenModel.1.ele &amp; 
+
 </pre><p>Here is an example screeshot for viewing models in tetView:</p><p><img vspace="5" hspace="5" src="tetView_screenshot.jpg" alt=""> </p><h2>MESHING A MULTI-REGION MODEL<a name="16"></a></h2><p>Simulating a multiregion mesh</p><pre class="codeinput">[F1,V1]=parasaurolophus; <span class="comment">%A dino</span>
 [F2,V2,~]=geoSphere(2,0.4); <span class="comment">%An internal region</span>
 V2(:,1)=2*V2(:,1);
@@ -191,22 +197,22 @@ smeshStruct.smeshName=smeshName;
 </pre><p>Mesh model using tetrahedral elements using tetGen (see: <a href="http://wias-berlin.de/software/tetgen/">http://wias-berlin.de/software/tetgen/</a>)</p><pre class="codeinput">[meshOutput]=runTetGenSmesh(smeshStruct); <span class="comment">%Run tetGen</span>
 </pre><pre class="codeoutput"> 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
---- TETGEN Tetrahedral meshing --- 16-Sep-2014 13:41:49
+--- TETGEN Tetrahedral meshing --- 01-Oct-2014 15:29:08
  
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
---- Writing SMESH file --- 16-Sep-2014 13:41:49
+--- Writing SMESH file --- 01-Oct-2014 15:29:08
 ----&gt; Adding node field
 ----&gt; Adding facet field
 ----&gt; Adding holes specification
 ----&gt; Adding region specification
---- Done --- 16-Sep-2014 13:41:49
---- Running TetGen for meshing --- 16-Sep-2014 13:41:49
-Opening tetGenModel.smesh. 
---- Done --- 16-Sep-2014 13:41:49
+--- Done --- 01-Oct-2014 15:29:08
+--- Running TetGen for meshing --- 01-Oct-2014 15:29:08
+Opening tetGenModel.smesh.
+--- Done --- 01-Oct-2014 15:29:08
  
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
---- Importing TetGen files --- 16-Sep-2014 13:41:49
---- Done --- 16-Sep-2014 13:41:49
+--- Importing TetGen files --- 01-Oct-2014 15:29:08
+--- Done --- 01-Oct-2014 15:29:08
 </pre><p>Access model element and patch data</p><pre class="codeinput">F=meshOutput.faces;
 V=meshOutput.nodes;
 C=meshOutput.faceMaterialID;
@@ -234,6 +240,7 @@ colormap(autumn);
 camlight <span class="string">headlight</span>;
 set(gca,<span class="string">'FontSize'</span>,fontSize);
 drawnow;
+</pre><pre class="codeoutput">Warning: tet4 elements assumed, for other elements please specify elementType 
 </pre><img vspace="5" hspace="5" src="HELP_runTetGenSmesh_04.png" alt=""> <h2>MESHING A MULTI-REGION MODEL CONTAINING HOLES<a name="27"></a></h2><p>Simulating a multiregion mesh</p><pre class="codeinput"><span class="comment">%A dino</span>
 [F1,V1]=parasaurolophus;
 
@@ -286,22 +293,22 @@ smeshStruct.smeshName=smeshName;
 </pre><p>Mesh model using tetrahedral elements using tetGen (see: <a href="http://wias-berlin.de/software/tetgen/">http://wias-berlin.de/software/tetgen/</a>)</p><pre class="codeinput">[meshOutput]=runTetGenSmesh(smeshStruct); <span class="comment">%Run tetGen</span>
 </pre><pre class="codeoutput"> 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
---- TETGEN Tetrahedral meshing --- 16-Sep-2014 13:41:53
+--- TETGEN Tetrahedral meshing --- 01-Oct-2014 15:29:11
  
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
---- Writing SMESH file --- 16-Sep-2014 13:41:53
+--- Writing SMESH file --- 01-Oct-2014 15:29:11
 ----&gt; Adding node field
 ----&gt; Adding facet field
 ----&gt; Adding holes specification
 ----&gt; Adding region specification
---- Done --- 16-Sep-2014 13:41:53
---- Running TetGen for meshing --- 16-Sep-2014 13:41:53
-Opening tetGenModel.smesh. 
---- Done --- 16-Sep-2014 13:41:56
+--- Done --- 01-Oct-2014 15:29:12
+--- Running TetGen for meshing --- 01-Oct-2014 15:29:12
+Opening tetGenModel.smesh.
+--- Done --- 01-Oct-2014 15:29:13
  
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
---- Importing TetGen files --- 16-Sep-2014 13:41:56
---- Done --- 16-Sep-2014 13:41:56
+--- Importing TetGen files --- 01-Oct-2014 15:29:13
+--- Done --- 01-Oct-2014 15:29:13
 </pre><p>Access model element and patch data</p><pre class="codeinput">F=meshOutput.faces;
 V=meshOutput.nodes;
 C=meshOutput.faceMaterialID;
@@ -329,13 +336,15 @@ colormap(autumn);
 camlight <span class="string">headlight</span>;
 set(gca,<span class="string">'FontSize'</span>,fontSize);
 drawnow;
-</pre><img vspace="5" hspace="5" src="HELP_runTetGenSmesh_06.png" alt=""> <p><img vspace="5" hspace="5" src="gibbVerySmall.gif" alt=""> </p><p>GIBBON</p><p>Kevin M. Moerman (<a href="mailto:kevinmoerman@hotmail.com">kevinmoerman@hotmail.com</a>)</p><p class="footer"><br><a href="http://www.mathworks.com/products/matlab/">Published with MATLAB&reg; R2014b</a><br></p></div><!--
+</pre><pre class="codeoutput">Warning: tet4 elements assumed, for other elements please specify elementType 
+</pre><img vspace="5" hspace="5" src="HELP_runTetGenSmesh_06.png" alt=""> <p><img vspace="5" hspace="5" src="gibbVerySmall.gif" alt=""> </p><p><i><b>GIBBON</b></i> <a href="www.gibboncode.org">www.gibboncode.org</a></p><p><i>Kevin Mattheus Moerman</i>, <a href="gibbon.toolbox@gmail.com">gibbon.toolbox@gmail.com</a></p><p class="footer"><br><a href="http://www.mathworks.com/products/matlab/">Published with MATLAB&reg; R2014b</a><br></p></div><!--
 ##### SOURCE BEGIN #####
 %% runTetGenSmesh
 % Below is a demonstration of the features of the |runTetGenSmesh| function
+%
 %%
-%%
-clear all; close all; clc;
+
+clear; close all; clc;
 
 %%
 % Plot settings
@@ -670,13 +679,14 @@ camlight headlight;
 set(gca,'FontSize',fontSize);
 drawnow;
 
-%%
+%% 
 %
 % <<gibbVerySmall.gif>>
-%
-% GIBBON
-%
-% Kevin M. Moerman (kevinmoerman@hotmail.com)
+% 
+% _*GIBBON*_ 
+% <www.gibboncode.org>
+% 
+% _Kevin Mattheus Moerman_, <gibbon.toolbox@gmail.com>
 
 ##### SOURCE END #####
 --></body></html>

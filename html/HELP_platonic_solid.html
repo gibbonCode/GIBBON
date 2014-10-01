@@ -6,7 +6,7 @@
    <!--
 This HTML was auto-generated from MATLAB code.
 To make changes, update the MATLAB code and republish this document.
-      --><title>platonic_solid</title><meta name="generator" content="MATLAB 8.3"><link rel="schema.DC" href="http://purl.org/dc/elements/1.1/"><meta name="DC.date" content="2014-03-18"><meta name="DC.source" content="HELP_platonic_solid.m"><style type="text/css">
+      --><title>platonic_solid</title><meta name="generator" content="MATLAB 8.4"><link rel="schema.DC" href="http://purl.org/dc/elements/1.1/"><meta name="DC.date" content="2014-10-01"><meta name="DC.source" content="HELP_platonic_solid.m"><style type="text/css">
 html,body,div,span,applet,object,iframe,h1,h2,h3,h4,h5,h6,p,blockquote,pre,a,abbr,acronym,address,big,cite,code,del,dfn,em,font,img,ins,kbd,q,s,samp,small,strike,strong,sub,sup,tt,var,b,u,i,center,dl,dt,dd,ol,ul,li,fieldset,form,label,legend,table,caption,tbody,tfoot,thead,tr,th,td{margin:0;padding:0;border:0;outline:0;font-size:100%;vertical-align:baseline;background:transparent}body{line-height:1}ol,ul{list-style:none}blockquote,q{quotes:none}blockquote:before,blockquote:after,q:before,q:after{content:'';content:none}:focus{outine:0}ins{text-decoration:none}del{text-decoration:line-through}table{border-collapse:collapse;border-spacing:0}
 
 html { min-height:100%; margin-bottom:1px; }
@@ -66,10 +66,8 @@ table td { padding:7px 5px; text-align:left; vertical-align:top; border:1px soli
 
 
 
-  </style></head><body><div class="content"><h1>platonic_solid</h1><!--introduction--><p>Below is a demonstration of the features of the <tt>platonic_solid</tt> function</p><!--/introduction--><pre class="codeinput">clear <span class="string">all</span>; close <span class="string">all</span>; clc;
-
-<span class="comment">% Plot settings</span>
-fig_color=<span class="string">'w'</span>; fig_colordef=<span class="string">'white'</span>;
+  </style></head><body><div class="content"><h1>platonic_solid</h1><!--introduction--><p>Below is a demonstration of the features of the <tt>platonic_solid</tt> function</p><!--/introduction--><pre class="codeinput">clear; close <span class="string">all</span>; clc;
+</pre><p>Plot settings</p><pre class="codeinput">fig_color=<span class="string">'w'</span>; fig_colordef=<span class="string">'white'</span>;
 fontSize=15;
 faceColor=<span class="string">'b'</span>;
 faceAlpha=0.75;
@@ -77,38 +75,32 @@ edgeColor=<span class="string">'k'</span>;
 edgeWidth=2;
 markerSize=5;
 </pre><pre class="codeinput">hf=figuremax(fig_color,fig_colordef); <span class="comment">% Open figure for plotting</span>
-labelCell={<span class="string">'Tetrahedron'</span>,<span class="string">'Cube'</span>,<span class="string">'Octahedron'</span>,<span class="string">'Icosahedron'</span>,<span class="string">'Dodecahedron'</span>};
-
-<span class="comment">%Defining geodesic dome</span>
-r=1; <span class="comment">%circum-sphere radius</span>
-pColors=autumn(5);
-<span class="keyword">for</span> q=1:1:5;
-
+pColor=jet(5);
+<span class="keyword">for</span> q=1:1:5
     <span class="comment">%Defining the faces (F) and vertices (V) of a platonic solid</span>
-    [V,F]=platonic_solid(q,r); <span class="comment">%q indicates solid type, r is the radius</span>
+    [V,F]=platonic_solid(q,1); <span class="comment">%q indicates solid type, r is the radius</span>
 
-    <span class="comment">%Plotting the platonic solids</span>
     subplot(2,3,q); hold <span class="string">on</span>;
-    title(labelCell{q},<span class="string">'FontSize'</span>,fontSize);
     xlabel(<span class="string">'X'</span>,<span class="string">'FontSize'</span>,fontSize); ylabel(<span class="string">'Y'</span>,<span class="string">'FontSize'</span>,fontSize); zlabel(<span class="string">'Z'</span>,<span class="string">'FontSize'</span>,fontSize);
     hp=patch(<span class="string">'Faces'</span>,F,<span class="string">'Vertices'</span>,V);
-    set(hp,<span class="string">'FaceColor'</span>,pColors(q,:),<span class="string">'FaceAlpha'</span>,faceAlpha,<span class="string">'lineWidth'</span>,edgeWidth,<span class="string">'edgeColor'</span>,edgeColor);
+    set(hp,<span class="string">'FaceColor'</span>,pColor(q,:),<span class="string">'FaceAlpha'</span>,faceAlpha,<span class="string">'lineWidth'</span>,edgeWidth,<span class="string">'edgeColor'</span>,edgeColor);
 
     <span class="comment">%Plotting face normals</span>
-    [hn]=patchNormPlot(F,V,0.5);
+    [hn]=patchNormPlot(F,V,1);
 
     set(gca,<span class="string">'FontSize'</span>,fontSize);
     view(3); axis <span class="string">tight</span>;  axis <span class="string">equal</span>;  axis <span class="string">vis3d</span>; axis <span class="string">off</span>;
     camlight(<span class="string">'headlight'</span>); lighting <span class="string">flat</span>;
 <span class="keyword">end</span>
-</pre><img vspace="5" hspace="5" src="HELP_platonic_solid_01.png" alt=""> <p><img vspace="5" hspace="5" src="gibbVerySmall.gif" alt=""> </p><p>GIBBON</p><p>Kevin M. Moerman (<a href="mailto:kevinmoerman@hotmail.com">kevinmoerman@hotmail.com</a>)</p><p class="footer"><br><a href="http://www.mathworks.com/products/matlab/">Published with MATLAB&reg; R2014a</a><br></p></div><!--
+</pre><img vspace="5" hspace="5" src="HELP_platonic_solid_01.png" alt=""> <p><img vspace="5" hspace="5" src="gibbVerySmall.gif" alt=""> </p><p><i><b>GIBBON</b></i> <a href="www.gibboncode.org">www.gibboncode.org</a></p><p><i>Kevin Mattheus Moerman</i>, <a href="gibbon.toolbox@gmail.com">gibbon.toolbox@gmail.com</a></p><p class="footer"><br><a href="http://www.mathworks.com/products/matlab/">Published with MATLAB&reg; R2014b</a><br></p></div><!--
 ##### SOURCE BEGIN #####
 %% platonic_solid
 % Below is a demonstration of the features of the |platonic_solid| function
 
 %%
-clear all; close all; clc; 
+clear; close all; clc;
 
+%%
 % Plot settings
 fig_color='w'; fig_colordef='white';
 fontSize=15;
@@ -118,40 +110,34 @@ edgeColor='k';
 edgeWidth=2;
 markerSize=5;
 
-%% 
+%%
 
 hf=figuremax(fig_color,fig_colordef); % Open figure for plotting
-labelCell={'Tetrahedron','Cube','Octahedron','Icosahedron','Dodecahedron'};
-
-%Defining geodesic dome
-r=1; %circum-sphere radius
-pColors=autumn(5);
-for q=1:1:5;
-    
+pColor=jet(5);
+for q=1:1:5
     %Defining the faces (F) and vertices (V) of a platonic solid
-    [V,F]=platonic_solid(q,r); %q indicates solid type, r is the radius
+    [V,F]=platonic_solid(q,1); %q indicates solid type, r is the radius
     
-    %Plotting the platonic solids
     subplot(2,3,q); hold on;
-    title(labelCell{q},'FontSize',fontSize);
     xlabel('X','FontSize',fontSize); ylabel('Y','FontSize',fontSize); zlabel('Z','FontSize',fontSize);
     hp=patch('Faces',F,'Vertices',V);
-    set(hp,'FaceColor',pColors(q,:),'FaceAlpha',faceAlpha,'lineWidth',edgeWidth,'edgeColor',edgeColor);
+    set(hp,'FaceColor',pColor(q,:),'FaceAlpha',faceAlpha,'lineWidth',edgeWidth,'edgeColor',edgeColor);
     
     %Plotting face normals
-    [hn]=patchNormPlot(F,V,0.5);
+    [hn]=patchNormPlot(F,V,1);
     
     set(gca,'FontSize',fontSize);
-    view(3); axis tight;  axis equal;  axis vis3d; axis off; 
-    camlight('headlight'); lighting flat; 
+    view(3); axis tight;  axis equal;  axis vis3d; axis off;
+    camlight('headlight'); lighting flat;
 end
 
-%% 
+%%
 %
 % <<gibbVerySmall.gif>>
-% 
-% GIBBON 
-% 
-% Kevin M. Moerman (kevinmoerman@hotmail.com)
+%
+% _*GIBBON*_
+% <www.gibboncode.org>
+%
+% _Kevin Mattheus Moerman_, <gibbon.toolbox@gmail.com>
 ##### SOURCE END #####
 --></body></html>

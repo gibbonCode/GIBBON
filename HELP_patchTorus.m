@@ -2,12 +2,12 @@
 % Below is a demonstration of the features of the |patchTorus| function
 
 %%
-clear all; close all; clc; 
+clear; close all; clc; 
 
-%
+%% 
 % Plot settings
 fig_color='w'; fig_colordef='white';
-fontSize=15;
+fontSize=10;
 faceColor='b';
 faceAlpha=1;
 edgeColor='k';
@@ -42,10 +42,11 @@ for q=1:1:4;
     view(3); axis tight;  axis equal;  grid on;
 end
 
-%% 
+%%
 %
 % <<gibbVerySmall.gif>>
-% 
-% GIBBON 
-% 
-% Kevin M. Moerman (kevinmoerman@hotmail.com)
+%
+% _*GIBBON*_
+% <www.gibboncode.org>
+%
+% _Kevin Mattheus Moerman_, <gibbon.toolbox@gmail.com>

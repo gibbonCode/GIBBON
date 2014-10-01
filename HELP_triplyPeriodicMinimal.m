@@ -2,7 +2,7 @@
 % Below is a demonstration of the features of the |triplyPeriodicMinimal| function
 
 %%
-clear all; close all; clc; 
+clear; close all; clc; 
 
 %%
 % Plot settings
@@ -12,7 +12,7 @@ faceAlpha1=1;
 faceAlpha2=0.65;
 edgeColor1='none';
 edgeColor2='none';
-fontSize=25; 
+fontSize=15; 
 
 %% SURFACE VISUALIZATIONS
 
@@ -130,14 +130,11 @@ set(gca,'FontSize',fontSize);
 
 drawnow;
 
-
-%%
-
-
 %% 
 %
 % <<gibbVerySmall.gif>>
 % 
-% GIBBON 
+% _*GIBBON*_ 
+% <www.gibboncode.org>
 % 
-% Kevin M. Moerman (kevinmoerman@hotmail.com)
+% _Kevin Mattheus Moerman_, <gibbon.toolbox@gmail.com>

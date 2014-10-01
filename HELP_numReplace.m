@@ -2,7 +2,7 @@
 % Below is a demonstration of the features of the |numReplace| function
 
 %%
-clear all; close all; clc; 
+clear; close all; clc; 
 
 %% REPLACING NUMBERS IN ARRAYS
 %%
@@ -29,10 +29,11 @@ B=numReplace(A,a,b)
 logicMember=ismember(pi,pi+eps(pi))
 logicMember=ismember(pi,pi+eps(pi)/10)
 
-%% 
+%%
 %
 % <<gibbVerySmall.gif>>
-% 
-% GIBBON 
-% 
-% Kevin M. Moerman (kevinmoerman@hotmail.com)
+%
+% _*GIBBON*_
+% <www.gibboncode.org>
+%
+% _Kevin Mattheus Moerman_, <gibbon.toolbox@gmail.com>

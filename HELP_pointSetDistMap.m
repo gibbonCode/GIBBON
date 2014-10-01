@@ -3,14 +3,14 @@
 
 %%
 
-clear all; close all; clc;
+clear; close all; clc;
 
 % PLOT SETTINGS
 fig_color='w'; fig_colordef='white';
-markerSize1=10;
-markerSize2=15;
+markerSize1=5;
+markerSize2=5;
 lineWidth=2;
-fontSize=20;
+fontSize=10;
 faceAlpha=0.8; 
 
 %% DEFORMING A 2D MESH
@@ -174,6 +174,7 @@ drawnow;
 %
 % <<gibbVerySmall.gif>>
 % 
-% GIBBON 
+% _*GIBBON*_ 
+% <www.gibboncode.org>
 % 
-% Kevin M. Moerman (kevinmoerman@hotmail.com)
+% _Kevin Mattheus Moerman_, <gibbon.toolbox@gmail.com>

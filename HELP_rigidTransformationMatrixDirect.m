@@ -2,7 +2,7 @@
 % Below is a demonstration of the features of the |rigidTransformationMatrixDirect| function
 
 %%
-clear all; close all; clc;
+clear; close all; clc;
 
 %%
 % Plot settings
@@ -83,10 +83,11 @@ set(gca,'FontSize',fontSize);
 view(3); axis tight;  axis equal; 
 drawnow; 
 
-%%
+%% 
 %
 % <<gibbVerySmall.gif>>
-%
-% GIBBON
-%
-% Kevin M. Moerman (kevinmoerman@hotmail.com)
+% 
+% _*GIBBON*_ 
+% <www.gibboncode.org>
+% 
+% _Kevin Mattheus Moerman_, <gibbon.toolbox@gmail.com>

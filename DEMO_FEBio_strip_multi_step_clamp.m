@@ -49,7 +49,7 @@ elementSizeClamped=sampleClampedHeight/numElementsClampedHeight;
 
 clampCompressiveStrain=0.375;
 clampCompressiveDisplacement=(sampleThickness.*clampCompressiveStrain)/2;
-tensileStretch=1.1;
+tensileStretch=1.3;
 clampTensionDisplacement=(sampleGripGripHeight.*tensileStretch)-sampleGripGripHeight;
 
 %% CREATING 3 MESHED BOXES
@@ -347,18 +347,6 @@ DN_magnitude=sqrt(sum(DN.^2,2));
 %% IMPORT NODAL FORCE RESULTS
 
 [~, N_force_mat,~]=importFEBio_logfile(FEB_struct.run_output_names{2}); %Nodal forces
-%%
-FN=N_force_mat(:,2:end,end);
-
-indForce=[bcPrescribeList1;bcPrescribeList2];
-
-FN_sum=sum(FN(indForce,:),1);
-
-A0=sampleThickness*sampleWidth;
-
-cauchyUniaxial=(tensileStretch/A0)*FN_sum(3)
-
-% ; %Final nodal displacements
 
 %%
 % Plotting the deformed model
@@ -381,6 +369,7 @@ drawnow;
 %
 % <<gibbVerySmall.gif>>
 % 
-% GIBBON 
+% _*GIBBON*_ 
+% <www.gibboncode.org>
 % 
-% Kevin M. Moerman (kevinmoerman@hotmail.com)
+% _Kevin Mattheus Moerman_, <gibbon.toolbox@gmail.com>

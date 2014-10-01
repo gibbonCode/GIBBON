@@ -35,7 +35,7 @@ function [F,V,regionInd]=multiRegionTriMeshUneven2D(regionSpec,BoundaryPointSpac
 %% PLOT SETTINGS
 if plotOn==1;     
     figColor='w'; figColorDef='white';
-    fontSize=20;    
+    fontSize=10;    
     fAlpha=1;    
     markerSize=20;       
     faceColor='r';

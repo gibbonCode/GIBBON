@@ -14,9 +14,8 @@ if nargin>=3
     maxVarSize=varargin{3};
 else
     %Max variable size available
-    mem_struct=memory;
-    num_bytes=mem_struct.MaxPossibleArrayBytes;    
-    maxVarSize=num_bytes/2;    
+    [numFreeBytes]=freeMemory;
+    maxVarSize=numFreeBytes/2;    
 end
 
 %Derive class dependent variable size

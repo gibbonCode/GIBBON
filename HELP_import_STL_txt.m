@@ -2,14 +2,14 @@
 % Below is a demonstration of the features of the |import_STL_txt| function
 
 %%
-clear all; close all; clc; 
+clear; close all; clc; 
 
 %%
 % Plot settings
 fig_color='w'; 
 fig_colordef='white'; 
 faceAlpha=0.5;
-fontSize=25; 
+fontSize=10; 
 
 %% Import STL file as patch data
 
@@ -36,10 +36,11 @@ camlight('headlight');
 lighting phong; axis off; 
 drawnow;
 
-%% 
+%%
 %
 % <<gibbVerySmall.gif>>
-% 
-% GIBBON 
-% 
-% Kevin M. Moerman (kevinmoerman@hotmail.com)
+%
+% _*GIBBON*_
+% <www.gibboncode.org>
+%
+% _Kevin Mattheus Moerman_, <gibbon.toolbox@gmail.com>

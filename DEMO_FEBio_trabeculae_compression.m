@@ -5,7 +5,6 @@
 
 %%
 clear; close all; clc; 
-warning off;
 
 %%
 % Plot settings
@@ -286,10 +285,11 @@ colormap jet; colorbar;
 set(gca,'FontSize',fontSize);
 drawnow;
 
-%%
+%% 
 %
 % <<gibbVerySmall.gif>>
 % 
-% GIBBON 
+% _*GIBBON*_ 
+% <www.gibboncode.org>
 % 
-% Kevin M. Moerman (kevinmoerman@hotmail.com)
+% _Kevin Mattheus Moerman_, <gibbon.toolbox@gmail.com>

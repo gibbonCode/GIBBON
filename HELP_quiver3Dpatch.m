@@ -2,7 +2,7 @@
 % Below is a demonstration of the features of the |quiver3Dpatch| function
 
 %%
-clear all; close all; clc; 
+clear; close all; clc; 
 
 %%
 % Plot settings
@@ -14,7 +14,7 @@ edgeColor1='none';
 edgeColor2='none';
 cMap1=jet(250);
 cMap2=gray(250);
-fontSize=20; 
+fontSize=8; 
 
 %% Plotting a vector
 % Below is a visualisation of the basec vector style
@@ -31,11 +31,11 @@ a=[min(G(:)) max(G(:))]; %Arrow length scaling to magnitude range
 
 h1=figuremax(fig_color,fig_colordef);
 title('Basic vector style using 7 vertices and 6 faces');
-xlabel('X','FontSize',10);ylabel('Y','FontSize',10);zlabel('Z','FontSize',10);
+xlabel('X','FontSize',fontSize);ylabel('Y','FontSize',fontSize);zlabel('Z','FontSize',fontSize);
 patch('Faces',F1,'Vertices',V1,'EdgeColor','k', 'CData',C1,'FaceColor','flat','FaceAlpha',0.5,'Marker','.','MarkerSize',25); 
 colormap(cMap1); colorbar; caxis(cLim);
 view(3); grid on; axis equal; axis tight; axis vis3d; 
-set(gca,'FontSize',10);
+set(gca,'FontSize',fontSize);
 
 %% Defining vector lengths and colours
 
@@ -54,34 +54,34 @@ C4=gray2RGBColorMap(C3,cMap2,cLim);
 h1=figuremax(fig_color,fig_colordef);
 subplot(2,2,1);
 title('Vector with length and color according to magnitude');
-xlabel('X','FontSize',10);ylabel('Y','FontSize',10);zlabel('Z','FontSize',10);
+xlabel('X','FontSize',fontSize);ylabel('Y','FontSize',fontSize);zlabel('Z','FontSize',fontSize);
 patch('Faces',F1,'Vertices',V1,'EdgeColor','k', 'CData',C1,'FaceColor','flat','FaceAlpha',1); 
 colormap(cMap1); colorbar; caxis(cLim);
 view(3); grid on; axis equal; axis tight; axis vis3d; 
-set(gca,'FontSize',10);
+set(gca,'FontSize',fontSize);
 
 subplot(2,2,2);
 title('Vector with a scaled length but color according to magnitude');
-xlabel('X','FontSize',10);ylabel('Y','FontSize',10);zlabel('Z','FontSize',10);
+xlabel('X','FontSize',fontSize);ylabel('Y','FontSize',fontSize);zlabel('Z','FontSize',fontSize);
 patch('Faces',F2,'Vertices',V2,'EdgeColor','k', 'CData',C2,'FaceColor','flat','FaceAlpha',1); 
 colormap(cMap1); colorbar; caxis(cLim);
 view(3); grid on; axis equal; axis tight; axis vis3d; 
-set(gca,'FontSize',10);
+set(gca,'FontSize',fontSize);
 
 subplot(2,2,3);
 title('Vector with length according to magnitude a user specified colormapo driven color');
-xlabel('X','FontSize',10);ylabel('Y','FontSize',10);zlabel('Z','FontSize',10);
+xlabel('X','FontSize',fontSize);ylabel('Y','FontSize',fontSize);zlabel('Z','FontSize',fontSize);
 patch('Faces',F3,'Vertices',V3,'EdgeColor','k', 'CData',C3,'FaceColor','flat','FaceAlpha',1); 
 colormap(cMap1); colorbar; caxis(cLim);
 view(3); grid on; axis equal; axis tight; axis vis3d; 
-set(gca,'FontSize',10);
+set(gca,'FontSize',fontSize);
 
 subplot(2,2,4);
 title('Vector with length according to magnitude and user specified RGB driven color');
-xlabel('X','FontSize',10);ylabel('Y','FontSize',10);zlabel('Z','FontSize',10);
+xlabel('X','FontSize',fontSize);ylabel('Y','FontSize',fontSize);zlabel('Z','FontSize',fontSize);
 patch('Faces',F3,'Vertices',V3,'EdgeColor','k', 'FaceVertexCData',C4,'FaceColor','flat','FaceAlpha',1); 
 view(3); grid on; axis equal; axis tight; axis vis3d; 
-set(gca,'FontSize',10);
+set(gca,'FontSize',fontSize);
 camlight headlight; lighting phong
 drawnow;
 
@@ -99,12 +99,12 @@ C2=[5 4 3];
 [Fc2,Vc2,Cc2]=quiver3Dpatch(originBasis2(1)*ones(1,3), originBasis2(2)*ones(1,3), originBasis2(3)*ones(1,3),E2(:,1),E2(:,2),E2(:,3),C2,[1 1]);
 
 h1=figuremax(fig_color,fig_colordef);
-xlabel('X','FontSize',10);ylabel('Y','FontSize',10);zlabel('Z','FontSize',10);
-title('Visualizing base vectors','FontSize',15);
+xlabel('X','FontSize',fontSize);ylabel('Y','FontSize',fontSize);zlabel('Z','FontSize',fontSize);
+title('Visualizing base vectors','FontSize',fontSize);
 hp1=patch('Faces',Fc1,'Vertices',Vc1,'EdgeColor','k','FaceColor','flat','FaceVertexCData',Cc1,'FaceAlpha',1); hold on;
 hp1=patch('Faces',Fc2,'Vertices',Vc2,'EdgeColor','k','FaceColor','flat','FaceVertexCData',Cc2,'FaceAlpha',0.5); hold on;
 view(3); grid on; axis equal; axis vis3d; view([137.5,24]);
-set(gca,'FontSize',10);
+set(gca,'FontSize',fontSize);
 drawnow;
 
 %% Example visualising face normals of patch data
@@ -149,14 +149,14 @@ cLim=[min(M(:)) max(M(:))]; %Colorbar limits
 [Ci2n]=gray2RGBColorMap(Ci2,cMap2,cLim);
 
 h1=figuremax(fig_color,fig_colordef);
-xlabel('X','FontSize',10);ylabel('Y','FontSize',10);zlabel('Z','FontSize',10);
-title('Colormap driven vector colors and RGB driven isosurfaces','FontSize',15);
+xlabel('X','FontSize',fontSize);ylabel('Y','FontSize',fontSize);zlabel('Z','FontSize',fontSize);
+title('Colormap driven vector colors and RGB driven isosurfaces','FontSize',fontSize);
 patch('Faces',Fv,'Vertices',Vv,'EdgeColor',edgeColor1, 'CData',Cv,'FaceColor','flat','FaceAlpha',1); 
 patch('Faces',Fi1,'Vertices',Vi1,'FaceColor','flat','FaceVertexCData',Ci1n,'EdgeColor',edgeColor2,'FaceAlpha',faceAlpha2); hold on;
 patch('Faces',Fi2,'Vertices',Vi2,'FaceColor','flat','FaceVertexCData',Ci2n,'EdgeColor',edgeColor2,'FaceAlpha',faceAlpha2); hold on;
 colormap(cMap1); colorbar; caxis([min(Cv(:)) max(Cv(:))]);
 view(3); grid on; axis equal; axis vis3d; 
-set(gca,'FontSize',10);
+set(gca,'FontSize',fontSize);
 camlight headlight; lighting phong
 drawnow;
 
@@ -181,15 +181,15 @@ C=[mean(Xs(F),2) mean(Ys(F),2) mean(Zs(F),2)]; %color for angles
 
 h1=figuremax(fig_color,fig_colordef);
 subplot(1,2,1);
-xlabel('X','FontSize',10);ylabel('Y','FontSize',10);zlabel('Z','FontSize',10);
-title('RGB driven vector colors and colormap driven isosurfaces','FontSize',15);
+xlabel('X','FontSize',fontSize);ylabel('Y','FontSize',fontSize);zlabel('Z','FontSize',fontSize);
+title('RGB driven vector colors and colormap driven isosurfaces','FontSize',fontSize);
 
 Cv=vecnormalize(Vv);
 patch('Faces',Fv,'Vertices',Vv,'EdgeColor','none', 'FaceVertexCData',Crgb,'FaceColor','flat','FaceAlpha',1); 
 patch('Faces',Fi1,'Vertices',Vi1,'FaceColor','flat','CData',Ci1,'EdgeColor',edgeColor2,'FaceAlpha',faceAlpha2); hold on;
 patch('Faces',Fi2,'Vertices',Vi2,'FaceColor','flat','CData',Ci2,'EdgeColor',edgeColor2,'FaceAlpha',faceAlpha2); hold on;
 view(3); grid on; axis equal; axis vis3d; 
-set(gca,'FontSize',10);
+set(gca,'FontSize',fontSize);
 colormap(cMap2); colorbar; 
 camlight headlight; lighting phong
 
@@ -202,7 +202,7 @@ origin=[0 0 0];
 hp2=patch('Faces',Fa,'Vertices',Va,'EdgeColor','k','FaceColor','flat','FaceVertexCData',repmat(eye(3,3),6,1),'FaceAlpha',1); hold on;
 
 view(3); axis tight; axis square; axis vis3d; view(-45,30);
-set(gca,'FontSize',10); drawnow;
+set(gca,'FontSize',fontSize); drawnow;
 axis off; 
 drawnow;
 
@@ -210,6 +210,7 @@ drawnow;
 %
 % <<gibbVerySmall.gif>>
 % 
-% GIBBON 
+% _*GIBBON*_ 
+% <www.gibboncode.org>
 % 
-% Kevin M. Moerman (kevinmoerman@hotmail.com)
+% _Kevin Mattheus Moerman_, <gibbon.toolbox@gmail.com>

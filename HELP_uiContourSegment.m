@@ -2,7 +2,7 @@
 % Below is a demonstration of the features of the |uiContourSegment| function
 
 %%
-clear all; close all; clc;
+clear; close all; clc;
 
 %% Loading example image data
 % Loading MRI data
@@ -63,6 +63,7 @@ saveName=[];                        %If not empty this is where the contours are
 %
 % <<gibbVerySmall.gif>>
 % 
-% GIBBON 
+% _*GIBBON*_ 
+% <www.gibboncode.org>
 % 
-% Kevin M. Moerman (kevinmoerman@hotmail.com)
+% _Kevin Mattheus Moerman_, <gibbon.toolbox@gmail.com>

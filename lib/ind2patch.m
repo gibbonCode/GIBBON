@@ -3,12 +3,12 @@ function [F,V,C]=ind2patch(IND,M,ptype)
 % function [F,V,C]=ind2patch(IND,M,ptype)
 % ------------------------------------------------------------------------
 %
-% This function generates patch data (faces �F�, vertices �V� and color
-% data �C�) for 3D images. The patches are only generated for the voxels
-% specified by the linear indices in �IND�. The variable �ptype� indicates
+% This function generates patch data (faces 'F', vertices 'V' and color
+% data 'C') for 3D images. The patches are only generated for the voxels
+% specified by the linear indices in 'IND'. The variable 'ptype' indicates
 % the type of patch:
 %
-% �v�               Voxel patch data with unshared vertices and faces
+% 'v'               Voxel patch data with unshared vertices and faces
 %                  such that each voxel has 8 unshared vertices and 6
 %                  unshared faces (may be faster than 'vu' and 'vb'
 %                  options which require UNIQUE costly computations).
@@ -20,9 +20,9 @@ function [F,V,C]=ind2patch(IND,M,ptype)
 %                  faces e.g. only boundary for enclosed volume (plotted
 %                  data is visually equivalent to 'v' and 'vu' options when
 %                  FaceAlpha is 1)
-% �si�, �sj�, �sk�    Mid-voxel slice patch data for i, j and k direction
+% 'si', 'sj', 'sk'    Mid-voxel slice patch data for i, j and k direction
 %                  respectively
-% �siu�, �sju�, �sku� Same as �si�, �sj�, �sk� but with double points
+% 'siu', 'sju', 'sku' Same as 'si', 'sj', 'sk' but with double points
 %                  removed.
 %
 %%% EXAMPLE

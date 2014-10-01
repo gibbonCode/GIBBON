@@ -147,6 +147,8 @@ switch compString
     case 'MACI64'        
         pathNameTetGen=fullfile(fileparts(fileparts(mfilename('fullpath'))),'lib_ext','tetGen','mac64');
         runNameTetGen=fullfile(pathNameTetGen,'tetgen');
+    otherwise
+        error('Your platform does not seem to be supported. Code your own solution or contact support.')
 end
 
 %% DELETE POSSIBLE EXISTING TETGEN FILES

@@ -6,7 +6,7 @@
    <!--
 This HTML was auto-generated from MATLAB code.
 To make changes, update the MATLAB code and republish this document.
-      --><title>cap_patchCylinder</title><meta name="generator" content="MATLAB 8.4"><link rel="schema.DC" href="http://purl.org/dc/elements/1.1/"><meta name="DC.date" content="2014-09-26"><meta name="DC.source" content="HELP_cap_patchcylinder.m"><style type="text/css">
+      --><title>cap_patchCylinder</title><meta name="generator" content="MATLAB 8.4"><link rel="schema.DC" href="http://purl.org/dc/elements/1.1/"><meta name="DC.date" content="2014-10-01"><meta name="DC.source" content="HELP_cap_patchcylinder.m"><style type="text/css">
 html,body,div,span,applet,object,iframe,h1,h2,h3,h4,h5,h6,p,blockquote,pre,a,abbr,acronym,address,big,cite,code,del,dfn,em,font,img,ins,kbd,q,s,samp,small,strike,strong,sub,sup,tt,var,b,u,i,center,dl,dt,dd,ol,ul,li,fieldset,form,label,legend,table,caption,tbody,tfoot,thead,tr,th,td{margin:0;padding:0;border:0;outline:0;font-size:100%;vertical-align:baseline;background:transparent}body{line-height:1}ol,ul{list-style:none}blockquote,q{quotes:none}blockquote:before,blockquote:after,q:before,q:after{content:'';content:none}:focus{outine:0}ins{text-decoration:none}del{text-decoration:line-through}table{border-collapse:collapse;border-spacing:0}
 
 html { min-height:100%; margin-bottom:1px; }
@@ -67,33 +67,24 @@ table td { padding:7px 5px; text-align:left; vertical-align:top; border:1px soli
 
 
   </style></head><body><div class="content"><h1>cap_patchCylinder</h1><!--introduction--><p>Below is a demonstration of the features of the <tt>cap_patchCylinder</tt> function</p><!--/introduction--><h2>Contents</h2><div><ul><li><a href="#3">BUILDING EXAMPLE MODEL</a></li><li><a href="#9">CAPPING A SET OF TWO "CYLINDRICAL" SURFACES</a></li></ul></div><pre class="codeinput">clear; close <span class="string">all</span>; clc;
-</pre><p>PLOT SETTINGS</p><pre class="codeinput">fig_color=<span class="string">'w'</span>; fig_colordef=<span class="string">'white'</span>;
-font_size=20;
-cmap=gray(250);
-falpha=1;
-patch_types={<span class="string">'sx'</span>,<span class="string">'sy'</span>,<span class="string">'sz'</span>,<span class="string">'v'</span>};
-ptype=3;
-no_slices=4;
-mark_siz1=25;
-mark_siz2=25;
-mark_siz3=15;
-line_width1=2;
-F_alpha1=0.4;
-F_alpha2=0.75;
+</pre><p>PLOT SETTINGS</p><pre class="codeinput">figColor=<span class="string">'w'</span>;
+figColorDef=<span class="string">'white'</span>;
+fontSize=10;
+faceAlpha1=0.4;
 </pre><h2>BUILDING EXAMPLE MODEL<a name="3"></a></h2><p>Construct regular cylinder</p><pre class="codeinput">r=10;
 nr=40;
 h=35;
 nz=35;
 ptype=<span class="string">'tri'</span>;
 [F,V]=patchcylinder(r,nr,h,nz,ptype);
-</pre><p>Plottting model</p><pre class="codeinput">hf1=figuremax(fig_color,fig_colordef);
-title(<span class="string">'Regular cylinder from patchcylinder'</span>,<span class="string">'FontSize'</span>,font_size);
-xlabel(<span class="string">'X'</span>,<span class="string">'FontSize'</span>,font_size);ylabel(<span class="string">'Y'</span>,<span class="string">'FontSize'</span>,font_size); zlabel(<span class="string">'Z'</span>,<span class="string">'FontSize'</span>,font_size);
+</pre><p>Plottting model</p><pre class="codeinput">hf1=figuremax(figColor,figColorDef);
+title(<span class="string">'Regular cylinder from patchcylinder'</span>,<span class="string">'FontSize'</span>,fontSize);
+xlabel(<span class="string">'X'</span>,<span class="string">'FontSize'</span>,fontSize);ylabel(<span class="string">'Y'</span>,<span class="string">'FontSize'</span>,fontSize); zlabel(<span class="string">'Z'</span>,<span class="string">'FontSize'</span>,fontSize);
 hold <span class="string">on</span>;
-hpm=patch(<span class="string">'Faces'</span>,F,<span class="string">'Vertices'</span>,V,<span class="string">'EdgeColor'</span>,<span class="string">'k'</span>,<span class="string">'FaceColor'</span>,<span class="string">'g'</span>,<span class="string">'FaceAlpha'</span>,F_alpha1);
+hpm=patch(<span class="string">'Faces'</span>,F,<span class="string">'Vertices'</span>,V,<span class="string">'EdgeColor'</span>,<span class="string">'k'</span>,<span class="string">'FaceColor'</span>,<span class="string">'g'</span>,<span class="string">'FaceAlpha'</span>,faceAlpha1);
 axis <span class="string">equal</span>; view(3); axis <span class="string">tight</span>;  grid <span class="string">on</span>;
 camlight <span class="string">headlight</span>;
-set(gca,<span class="string">'FontSize'</span>,font_size);
+set(gca,<span class="string">'FontSize'</span>,fontSize);
 drawnow;
 </pre><img vspace="5" hspace="5" src="HELP_cap_patchcylinder_01.png" alt=""> <p>Deforming regular cylinder to create outer wall</p><pre class="codeinput">[T,R,Z]=cart2pol(V(:,1),V(:,2),V(:,3));
 R_add=2.*cos(2*pi.*V(:,3).*2.*(1/(h)));
@@ -109,24 +100,24 @@ R_sub=b+(a+a.*cos(2*pi.*V(:,3).*3.*(1/(h))));
 R2=R-R_sub;
 V2=V;
 [V2(:,1),V2(:,2),V2(:,3)]=pol2cart(T,R2,Z);
-</pre><p>Plotting walls</p><pre class="codeinput">hf2=figuremax(fig_color,fig_colordef);
-title(<span class="string">'Two seperate walls'</span>,<span class="string">'FontSize'</span>,font_size);
-xlabel(<span class="string">'X'</span>,<span class="string">'FontSize'</span>,font_size);ylabel(<span class="string">'Y'</span>,<span class="string">'FontSize'</span>,font_size); zlabel(<span class="string">'Z'</span>,<span class="string">'FontSize'</span>,font_size);
+</pre><p>Plotting walls</p><pre class="codeinput">hf2=figuremax(figColor,figColorDef);
+title(<span class="string">'Two seperate walls'</span>,<span class="string">'FontSize'</span>,fontSize);
+xlabel(<span class="string">'X'</span>,<span class="string">'FontSize'</span>,fontSize);ylabel(<span class="string">'Y'</span>,<span class="string">'FontSize'</span>,fontSize); zlabel(<span class="string">'Z'</span>,<span class="string">'FontSize'</span>,fontSize);
 hold <span class="string">on</span>;
 hpm1=patch(<span class="string">'Faces'</span>,F,<span class="string">'Vertices'</span>,V,<span class="string">'EdgeColor'</span>,<span class="string">'k'</span>,<span class="string">'FaceColor'</span>,<span class="string">'r'</span>,<span class="string">'FaceAlpha'</span>,0.5);
 hpm2=patch(<span class="string">'Faces'</span>,F,<span class="string">'Vertices'</span>,V2,<span class="string">'EdgeColor'</span>,<span class="string">'k'</span>,<span class="string">'FaceColor'</span>,<span class="string">'b'</span>,<span class="string">'FaceAlpha'</span>,0.5);
 axis <span class="string">equal</span>; view(3); axis <span class="string">tight</span>;  grid <span class="string">on</span>;
-set(gca,<span class="string">'FontSize'</span>,font_size);
+set(gca,<span class="string">'FontSize'</span>,fontSize);
 camlight <span class="string">headlight</span>;
 drawnow;
 </pre><img vspace="5" hspace="5" src="HELP_cap_patchcylinder_02.png" alt=""> <h2>CAPPING A SET OF TWO "CYLINDRICAL" SURFACES<a name="9"></a></h2><pre class="codeinput">[Fm,Vm]=cap_patchcylinder(F,V,F,V2,nr,nz);
 
-hf3=figuremax(fig_color,fig_colordef);
-title(<span class="string">'Closed (capped) vessel model'</span>,<span class="string">'FontSize'</span>,font_size);
-xlabel(<span class="string">'X'</span>,<span class="string">'FontSize'</span>,font_size);ylabel(<span class="string">'Y'</span>,<span class="string">'FontSize'</span>,font_size); zlabel(<span class="string">'Z'</span>,<span class="string">'FontSize'</span>,font_size);
+hf3=figuremax(figColor,figColorDef);
+title(<span class="string">'Closed (capped) vessel model'</span>,<span class="string">'FontSize'</span>,fontSize);
+xlabel(<span class="string">'X'</span>,<span class="string">'FontSize'</span>,fontSize);ylabel(<span class="string">'Y'</span>,<span class="string">'FontSize'</span>,fontSize); zlabel(<span class="string">'Z'</span>,<span class="string">'FontSize'</span>,fontSize);
 hold <span class="string">on</span>;
 hpm3=patch(<span class="string">'Faces'</span>,Fm,<span class="string">'Vertices'</span>,Vm,<span class="string">'EdgeColor'</span>,<span class="string">'k'</span>,<span class="string">'FaceColor'</span>,<span class="string">'r'</span>,<span class="string">'FaceAlpha'</span>,1);
-axis <span class="string">equal</span>; view(3); axis <span class="string">tight</span>;  grid <span class="string">on</span>; set(gca,<span class="string">'FontSize'</span>,font_size);
+axis <span class="string">equal</span>; view(3); axis <span class="string">tight</span>;  grid <span class="string">on</span>; set(gca,<span class="string">'FontSize'</span>,fontSize);
 lighting <span class="string">flat</span>; camlight(<span class="string">'headlight'</span>);
 drawnow;
 </pre><img vspace="5" hspace="5" src="HELP_cap_patchcylinder_03.png" alt=""> <p><img vspace="5" hspace="5" src="gibbVerySmall.gif" alt=""> </p><p><i><b>GIBBON</b></i> <a href="www.gibboncode.org">www.gibboncode.org</a></p><p><i>Kevin Mattheus Moerman</i>, <a href="gibbon.toolbox@gmail.com">gibbon.toolbox@gmail.com</a></p><p class="footer"><br><a href="http://www.mathworks.com/products/matlab/">Published with MATLAB&reg; R2014b</a><br></p></div><!--
@@ -139,19 +130,10 @@ clear; close all; clc;
 
 %%
 % PLOT SETTINGS
-fig_color='w'; fig_colordef='white';
-font_size=20;
-cmap=gray(250);
-falpha=1;
-patch_types={'sx','sy','sz','v'};
-ptype=3;
-no_slices=4;
-mark_siz1=25;
-mark_siz2=25;
-mark_siz3=15;
-line_width1=2;
-F_alpha1=0.4;
-F_alpha2=0.75;
+figColor='w'; 
+figColorDef='white';
+fontSize=10;
+faceAlpha1=0.4;
 
 %% BUILDING EXAMPLE MODEL
 
@@ -166,14 +148,14 @@ ptype='tri';
 
 %%
 % Plottting model
-hf1=figuremax(fig_color,fig_colordef);
-title('Regular cylinder from patchcylinder','FontSize',font_size);
-xlabel('X','FontSize',font_size);ylabel('Y','FontSize',font_size); zlabel('Z','FontSize',font_size);
+hf1=figuremax(figColor,figColorDef);
+title('Regular cylinder from patchcylinder','FontSize',fontSize);
+xlabel('X','FontSize',fontSize);ylabel('Y','FontSize',fontSize); zlabel('Z','FontSize',fontSize);
 hold on;
-hpm=patch('Faces',F,'Vertices',V,'EdgeColor','k','FaceColor','g','FaceAlpha',F_alpha1);
+hpm=patch('Faces',F,'Vertices',V,'EdgeColor','k','FaceColor','g','FaceAlpha',faceAlpha1);
 axis equal; view(3); axis tight;  grid on; 
 camlight headlight;
-set(gca,'FontSize',font_size);
+set(gca,'FontSize',fontSize);
 drawnow;
 
 %% 
@@ -198,14 +180,14 @@ V2=V;
 
 %% 
 % Plotting walls
-hf2=figuremax(fig_color,fig_colordef);
-title('Two seperate walls','FontSize',font_size);
-xlabel('X','FontSize',font_size);ylabel('Y','FontSize',font_size); zlabel('Z','FontSize',font_size);
+hf2=figuremax(figColor,figColorDef);
+title('Two seperate walls','FontSize',fontSize);
+xlabel('X','FontSize',fontSize);ylabel('Y','FontSize',fontSize); zlabel('Z','FontSize',fontSize);
 hold on;
 hpm1=patch('Faces',F,'Vertices',V,'EdgeColor','k','FaceColor','r','FaceAlpha',0.5);
 hpm2=patch('Faces',F,'Vertices',V2,'EdgeColor','k','FaceColor','b','FaceAlpha',0.5);
 axis equal; view(3); axis tight;  grid on; 
-set(gca,'FontSize',font_size);
+set(gca,'FontSize',fontSize);
 camlight headlight;
 drawnow;
 
@@ -213,12 +195,12 @@ drawnow;
 
 [Fm,Vm]=cap_patchcylinder(F,V,F,V2,nr,nz);
 
-hf3=figuremax(fig_color,fig_colordef);
-title('Closed (capped) vessel model','FontSize',font_size);
-xlabel('X','FontSize',font_size);ylabel('Y','FontSize',font_size); zlabel('Z','FontSize',font_size);
+hf3=figuremax(figColor,figColorDef);
+title('Closed (capped) vessel model','FontSize',fontSize);
+xlabel('X','FontSize',fontSize);ylabel('Y','FontSize',fontSize); zlabel('Z','FontSize',fontSize);
 hold on;
 hpm3=patch('Faces',Fm,'Vertices',Vm,'EdgeColor','k','FaceColor','r','FaceAlpha',1);
-axis equal; view(3); axis tight;  grid on; set(gca,'FontSize',font_size);
+axis equal; view(3); axis tight;  grid on; set(gca,'FontSize',fontSize);
 lighting flat; camlight('headlight');
 drawnow;
 

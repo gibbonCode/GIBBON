@@ -2,19 +2,12 @@
 % Below is a demonstration of the features of the |interp_spherical| function
 
 %%
-clear all; close all; clc;
+clear; close all; clc;
 
 %% PLOT SETTINGS
-fig_color='k'; fig_colordef='black';
-font_size=15;
-cmap=jet(250);
-falpha=0.75;
-patch_types={'sx','sy','sz','v'};
-ptype=3;
-edge_width=2;
-line_width=2;
-marker_size=25;
-marker_size2=75;
+fig_color='w'; 
+fig_colordef='white';
+font_size=10;
 
 %% Simulating sparse sampling of complex spherical function
 
@@ -86,10 +79,11 @@ drawnow;
 %% Animation of build in demo for |interp_spherical|
 interp_spherical;
 
-%% 
+%%
 %
 % <<gibbVerySmall.gif>>
-% 
-% GIBBON 
-% 
-% Kevin M. Moerman (kevinmoerman@hotmail.com)
+%
+% _*GIBBON*_
+% <www.gibboncode.org>
+%
+% _Kevin Mattheus Moerman_, <gibbon.toolbox@gmail.com>

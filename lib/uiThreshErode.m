@@ -2,7 +2,7 @@ function [L_BG]=uiThreshErode(M,thresholdInitial,blurKernelSize,groupCropOption)
 
 %% PLOT SETTINGS
 figColor='w'; fig_colordef='white';
-fontSize=20;
+fontSize=10;
 cMap=autumn(250);
 falpha=1;
 patchTypes={'sj','si','sk','v'};
@@ -66,8 +66,8 @@ while done==0
             Vs(:,3)=sliceScale.*Vs(:,3);
             
             hf1=figuremax(figColor,fig_colordef);
-            title(['Threshold is ',num2str(T_threshold),'*mean, press up to increase or down to decrease (by 10%), press space to keep and continue'],'FontSize',20);
-            hold on; xlabel('X-J','FontSize',20);ylabel('Y-I','FontSize',20);zlabel('Z-K','FontSize',20);
+            title(['Threshold is ',num2str(T_threshold),'*mean, press up to increase or down to decrease (by 10%), press space to keep and continue'],'FontSize',fontSize);
+            hold on; xlabel('X-J','FontSize',fontSize);ylabel('Y-I','FontSize',fontSize);zlabel('Z-K','FontSize',fontSize);
             hs=patch('Faces',Fs,'Vertices',Vs,'EdgeColor','none', 'CData',C_slice,'FaceColor','flat');
             set(hs,'FaceAlpha',falpha); hold on; grid on;  view(3); axis equal; axis tight; axis vis3d;  colormap(cMap); colorbar; 
             set(gca,'FontSize',fontSize);
@@ -85,9 +85,9 @@ while done==0
             
             %patch again
             if runMode==1
-                title(['Threshold is ',num2str(T_threshold),'*mean, press up to increase or down to decrease (by 10%), press space to keep and continue'],'FontSize',20);
+                title(['Threshold is ',num2str(T_threshold),'*mean, press up to increase or down to decrease (by 10%), press space to keep and continue'],'FontSize',fontSize);
             else
-                title('Current cropping press up/down to dilate/erode, WARNING EROSION MAY REMOVE ENTIRE SLICES','FontSize',20);
+                title('Current cropping press up/down to dilate/erode, WARNING EROSION MAY REMOVE ENTIRE SLICES','FontSize',fontSize);
             end
             
             hs=patch('Faces',Fs,'Vertices',Vs,'EdgeColor','none', 'CData',C_slice,'FaceColor','flat');
@@ -145,7 +145,7 @@ while done==0
         [Fs,Vs,C_slice]=ind2patch(IND_slices,M_original,patchTypes{ptype});
         Vs(:,3)=sliceScale.*Vs(:,3);
                 
-        title('Grouping result','FontSize',20);
+        title('Grouping result','FontSize',fontSize);
                
         hs=patch('Faces',Fs,'Vertices',Vs,'EdgeColor','none', 'CData',C_slice,'FaceColor','flat');
         set(hs,'FaceAlpha',falpha); hold on; grid on;  view(3); axis equal; axis tight; axis vis3d;  colormap(cMap); 

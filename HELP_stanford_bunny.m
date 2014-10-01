@@ -2,7 +2,7 @@
 % Below is a demonstration of the |stanford_bunny| function
 
 %%
-clear all; close all; clc; 
+clear; close all; clc; 
 
 % Plot settings
 fig_color='w'; fig_colordef='white';
@@ -29,8 +29,8 @@ edgeWidth=1;
 %
 % Turk G, Levoy M. Zippered polygon meshes from range images.
 % Proceedings of the 21st annual conference on Computer graphics and
-% interactive techniques - SIGGRAPH  ’94 [Internet]. New York, New York,
-% USA: ACM Press; 1994;311–8. Available from:
+% interactive techniques - SIGGRAPH  ï¿½94 [Internet]. New York, New York,
+% USA: ACM Press; 1994;311ï¿½8. Available from:
 % http://portal.acm.org/citation.cfm?doid=192161.192241
 
 %Obtaining patch data
@@ -67,6 +67,7 @@ view(24.5,-44);
 %
 % <<gibbVerySmall.gif>>
 % 
-% GIBBON 
+% _*GIBBON*_ 
+% <www.gibboncode.org>
 % 
-% Kevin M. Moerman (kevinmoerman@hotmail.com)
+% _Kevin Mattheus Moerman_, <gibbon.toolbox@gmail.com>

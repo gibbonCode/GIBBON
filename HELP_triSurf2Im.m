@@ -2,13 +2,14 @@
 % Below is a demonstration of the features of the |triSurf2Im| function
 
 %% 
-% 
-clear all; close all; clc;
 
+clear; close all; clc;
+
+%%
 % Plot settings for the examples below
 figColor='w'; 
 figColorDef='white';
-fontSize=20;
+fontSize=10;
 faceAlpha1=1;
 faceAlpha2=0.3;
 
@@ -212,6 +213,7 @@ drawnow;
 %
 % <<gibbVerySmall.gif>>
 % 
-% GIBBON 
+% _*GIBBON*_ 
+% <www.gibboncode.org>
 % 
-% Kevin M. Moerman (kevinmoerman@hotmail.com)
+% _Kevin Mattheus Moerman_, <gibbon.toolbox@gmail.com>

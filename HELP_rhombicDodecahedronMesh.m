@@ -2,12 +2,12 @@
 % Below is a demonstration of the features of the |rhombicDodecahedronMesh| function
 
 %%
-closeFall;
+clear; close all; clc; 
 
 %% 
 % Plot settings
 figColor='w'; figColorDef='white';
-fontSize=20;
+fontSize=10;
 cmap=gray(250);
 faceAlpha1=1;
 faceAlpha2=0.25;
@@ -120,6 +120,7 @@ drawnow;
 %
 % <<gibbVerySmall.gif>>
 % 
-% GIBBON 
+% _*GIBBON*_ 
+% <www.gibboncode.org>
 % 
-% Kevin M. Moerman (kevinmoerman@hotmail.com)
+% _Kevin Mattheus Moerman_, <gibbon.toolbox@gmail.com>

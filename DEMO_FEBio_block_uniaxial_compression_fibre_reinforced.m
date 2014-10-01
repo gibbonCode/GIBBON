@@ -8,7 +8,6 @@
 %%
 
 clear; close all; clc;
-warning off;
 
 %%
 % Plot settings
@@ -255,8 +254,6 @@ febStruct2febFile(FEB_struct);
 
 %% RUNNING FEBIO JOB
 
-% FEBioRunStruct.FEBioPath='C:\Program Files\febio-2.1.1\bin\FEBio2.exe';
-% FEBioRunStruct.FEBioPath='C:\Users\kmmoerman\00_WORK\SOURCE_CODES\FEBio\VS2010\x64\Release\FEBio2x64.exe';
 FEBioRunStruct.run_filename=FEB_struct.run_filename;
 FEBioRunStruct.run_logname=FEB_struct.run_logname;
 FEBioRunStruct.disp_on=1;
@@ -335,10 +332,11 @@ if runFlag==1 %i.e. a succesful run
     
 end
 
-%%
+%% 
 %
 % <<gibbVerySmall.gif>>
-%
-% GIBBON
-%
-% Kevin M. Moerman (kevinmoerman@hotmail.com)
+% 
+% _*GIBBON*_ 
+% <www.gibboncode.org>
+% 
+% _Kevin Mattheus Moerman_, <gibbon.toolbox@gmail.com>

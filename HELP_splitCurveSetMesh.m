@@ -2,7 +2,7 @@
 % Below is a demonstration of the features of the |splitCurveSetMesh| function
 
 %%
-closeFall; 
+clear; close all; clc;
 
 %%
 % PLOT SETTINGS
@@ -214,11 +214,11 @@ hpy=patch('Faces',F_2,'Vertices',V_2,'EdgeColor','k','FaceColor','flat','CData',
 axis equal; axis tight; view(3); grid on; set(gca,'FontSize',fontSize);
 drawnow;
 
-
 %% 
 %
 % <<gibbVerySmall.gif>>
 % 
-% GIBBON 
+% _*GIBBON*_ 
+% <www.gibboncode.org>
 % 
-% Kevin M. Moerman (kevinmoerman@hotmail.com)
+% _Kevin Mattheus Moerman_, <gibbon.toolbox@gmail.com>

@@ -6,7 +6,7 @@
    <!--
 This HTML was auto-generated from MATLAB code.
 To make changes, update the MATLAB code and republish this document.
-      --><title>DEMO_trabeculae_compression</title><meta name="generator" content="MATLAB 8.4"><link rel="schema.DC" href="http://purl.org/dc/elements/1.1/"><meta name="DC.date" content="2014-09-23"><meta name="DC.source" content="DEMO_FEBio_trabeculae_compression.m"><style type="text/css">
+      --><title>DEMO_trabeculae_compression</title><meta name="generator" content="MATLAB 8.4"><link rel="schema.DC" href="http://purl.org/dc/elements/1.1/"><meta name="DC.date" content="2014-10-01"><meta name="DC.source" content="DEMO_FEBio_trabeculae_compression.m"><style type="text/css">
 html,body,div,span,applet,object,iframe,h1,h2,h3,h4,h5,h6,p,blockquote,pre,a,abbr,acronym,address,big,cite,code,del,dfn,em,font,img,ins,kbd,q,s,samp,small,strike,strong,sub,sup,tt,var,b,u,i,center,dl,dt,dd,ol,ul,li,fieldset,form,label,legend,table,caption,tbody,tfoot,thead,tr,th,td{margin:0;padding:0;border:0;outline:0;font-size:100%;vertical-align:baseline;background:transparent}body{line-height:1}ol,ul{list-style:none}blockquote,q{quotes:none}blockquote:before,blockquote:after,q:before,q:after{content:'';content:none}:focus{outine:0}ins{text-decoration:none}del{text-decoration:line-through}table{border-collapse:collapse;border-spacing:0}
 
 html { min-height:100%; margin-bottom:1px; }
@@ -67,7 +67,6 @@ table td { padding:7px 5px; text-align:left; vertical-align:top; border:1px soli
 
 
   </style></head><body><div class="content"><h1>DEMO_trabeculae_compression</h1><!--introduction--><p>This demonstration shows the creation of a trabacular structure model derived from a triply periodic equation. The structure is meshed using tetrahedral elements and subjected to compression.</p><!--/introduction--><h2>Contents</h2><div><ul><li><a href="#4">DEFINING GEOMETRY</a></li><li><a href="#6">DEFINE SMESH STRUCT FOR MESHING</a></li><li><a href="#7">MESH MODEL USING TETGEN</a></li><li><a href="#8">SET UP BOUNDARY CONDITIONS</a></li><li><a href="#10">CONSTRUCTING FEB MODEL</a></li><li><a href="#11">SAVING .FEB FILE</a></li><li><a href="#12">RUNNING FEBIO JOB</a></li><li><a href="#13">IMPORTING NODAL DISPLACEMENT RESULTS</a></li><li><a href="#14">CREATING NODE SET IN DEFORMED STATE</a></li></ul></div><pre class="codeinput">clear; close <span class="string">all</span>; clc;
-warning <span class="string">off</span>;
 </pre><p>Plot settings</p><pre class="codeinput">figColor=<span class="string">'w'</span>; figColorDef=<span class="string">'white'</span>;
 fontSize=15;
 faceAlpha1=1;
@@ -172,22 +171,22 @@ E=meshOutput.elements;
 elementMaterialIndices=meshOutput.elementMaterialID;
 </pre><pre class="codeoutput"> 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
---- TETGEN Tetrahedral meshing --- 23-Sep-2014 13:19:54
+--- TETGEN Tetrahedral meshing --- 01-Oct-2014 14:40:33
  
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
---- Writing SMESH file --- 23-Sep-2014 13:19:54
+--- Writing SMESH file --- 01-Oct-2014 14:40:33
 ----&gt; Adding node field
 ----&gt; Adding facet field
 ----&gt; Adding holes specification
 ----&gt; Adding region specification
---- Done --- 23-Sep-2014 13:19:55
---- Running TetGen for meshing --- 23-Sep-2014 13:19:55
-Opening C:\Users\kmmoerman\00_WORK\05_MATLAB\gibbon\trunk\data\temp\tempModel.smesh. 
---- Done --- 23-Sep-2014 13:19:55
+--- Done --- 01-Oct-2014 14:40:33
+--- Running TetGen for meshing --- 01-Oct-2014 14:40:33
+Opening /data/MATLAB/GIBBON/trunk/data/temp/tempModel.smesh.
+--- Done --- 01-Oct-2014 14:40:34
  
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
---- Importing TetGen files --- 23-Sep-2014 13:19:55
---- Done --- 23-Sep-2014 13:19:56
+--- Importing TetGen files --- 01-Oct-2014 14:40:34
+--- Done --- 01-Oct-2014 14:40:34
 </pre><h2>SET UP BOUNDARY CONDITIONS<a name="8"></a></h2><pre class="codeinput"><span class="comment">%List of nodes to fix</span>
 bcFixList=Fb(Cb==3,:);
 bcFixList=unique(bcFixList(:));
@@ -294,7 +293,7 @@ FEB_struct.data_types={<span class="string">'ux;uy;uz'</span>};
 febStruct2febFile(FEB_struct);
 </pre><pre class="codeoutput"> 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
---- Writing FEBio XML object --- 23-Sep-2014 13:19:57
+--- Writing FEBio XML object --- 01-Oct-2014 14:40:35
 Adding Module level
 Adding Control level
 Adding Globals level
@@ -313,7 +312,7 @@ Adding Output level
 ----&gt; Adding plotfile field
 ----&gt; Adding logfile field
 Writing .feb file
---- Done --- 23-Sep-2014 13:20:15
+--- Done --- 01-Oct-2014 14:40:52
 </pre><h2>RUNNING FEBIO JOB<a name="12"></a></h2><pre class="codeinput"><span class="comment">% FEBioRunStruct.FEBioPath='C:\Program Files\febio-2.1.1\bin\FEBio2.exe';</span>
 FEBioRunStruct.run_filename=FEB_struct.run_filename;
 FEBioRunStruct.run_logname=FEB_struct.run_logname;
@@ -327,9 +326,14 @@ FEBioRunStruct.maxLogCheckTime=3; <span class="comment">%Max log file checking t
 [runFlag]=runMonitorFEBio(FEBioRunStruct);<span class="comment">%START FEBio NOW!!!!!!!!</span>
 </pre><pre class="codeoutput"> 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
---- STARTING FEBIO JOB --- 23-Sep-2014 13:20:15
+--- STARTING FEBIO JOB --- 01-Oct-2014 14:40:52
+
+ans =
+
+"/data/Code/C/FEBIO_linux/bin/febio2.lnx64" -i "/data/MATLAB/GIBBON/trunk/data/temp/tempModel.feb" -o "/data/MATLAB/GIBBON/trunk/data/temp/tempModel.txt" &amp;
+
 Waiting for log file...
-Proceeding to check log file...23-Sep-2014 13:20:17
+Proceeding to check log file...01-Oct-2014 14:40:53
 ------- converged at time : 0.05
 ------- converged at time : 0.1
 ------- converged at time : 0.15
@@ -350,7 +354,7 @@ Proceeding to check log file...23-Sep-2014 13:20:17
 ------- converged at time : 0.9
 ------- converged at time : 0.95
 ------- converged at time : 1
---- Done --- 23-Sep-2014 13:20:50
+--- Done --- 01-Oct-2014 14:41:21
 </pre><h2>IMPORTING NODAL DISPLACEMENT RESULTS<a name="13"></a></h2><p>Importing nodal displacements from a log file</p><pre class="codeinput">[~, N_disp_mat,~]=importFEBio_logfile(FEB_struct.run_output_names{1}); <span class="comment">%Nodal displacements</span>
 
 DN=N_disp_mat(:,2:end,end); <span class="comment">%Final nodal displacements</span>
@@ -369,7 +373,7 @@ colormap <span class="string">jet</span>; colorbar;
 <span class="comment">% camlight headlight;</span>
 set(gca,<span class="string">'FontSize'</span>,fontSize);
 drawnow;
-</pre><img vspace="5" hspace="5" src="DEMO_FEBio_trabeculae_compression_04.png" alt=""> <p><img vspace="5" hspace="5" src="gibbVerySmall.gif" alt=""> </p><p>GIBBON</p><p>Kevin M. Moerman (<a href="mailto:kevinmoerman@hotmail.com">kevinmoerman@hotmail.com</a>)</p><p class="footer"><br><a href="http://www.mathworks.com/products/matlab/">Published with MATLAB&reg; R2014b</a><br></p></div><!--
+</pre><img vspace="5" hspace="5" src="DEMO_FEBio_trabeculae_compression_04.png" alt=""> <p><img vspace="5" hspace="5" src="gibbVerySmall.gif" alt=""> </p><p><i><b>GIBBON</b></i> <a href="www.gibboncode.org">www.gibboncode.org</a></p><p><i>Kevin Mattheus Moerman</i>, <a href="gibbon.toolbox@gmail.com">gibbon.toolbox@gmail.com</a></p><p class="footer"><br><a href="http://www.mathworks.com/products/matlab/">Published with MATLAB&reg; R2014b</a><br></p></div><!--
 ##### SOURCE BEGIN #####
 %% DEMO_trabeculae_compression
 % This demonstration shows the creation of a trabacular structure model
@@ -378,7 +382,6 @@ drawnow;
 
 %%
 clear; close all; clc; 
-warning off;
 
 %%
 % Plot settings
@@ -659,12 +662,13 @@ colormap jet; colorbar;
 set(gca,'FontSize',fontSize);
 drawnow;
 
-%%
+%% 
 %
 % <<gibbVerySmall.gif>>
 % 
-% GIBBON 
+% _*GIBBON*_ 
+% <www.gibboncode.org>
 % 
-% Kevin M. Moerman (kevinmoerman@hotmail.com)
+% _Kevin Mattheus Moerman_, <gibbon.toolbox@gmail.com>
 ##### SOURCE END #####
 --></body></html>

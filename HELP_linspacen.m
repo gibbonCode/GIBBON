@@ -16,13 +16,9 @@ clear; close all; clc;
 
 %%
 % PLOT SETTINGS
-figColor='w'; figColorDef='white';
-fontSize=15;
-markerSize1=45;
-lineWidth1=2;
-lineWidth2=5;
-lineWidth3=2;
-faceAlpha=0.5;
+figColor='w'; 
+figColorDef='white';
+fontSize=10;
 cMap=jet(250);
 
 %% Control parameters for examples
@@ -133,12 +129,11 @@ set(gca,'FontSize',fontSize);
 
 drawnow;
 
-%% 
+%%
 %
 % <<gibbVerySmall.gif>>
-% 
-% GIBBON 
-% 
-% Kevin M. Moerman (kevinmoerman@hotmail.com)
-
-%%
+%
+% _*GIBBON*_
+% <www.gibboncode.org>
+%
+% _Kevin Mattheus Moerman_, <gibbon.toolbox@gmail.com>

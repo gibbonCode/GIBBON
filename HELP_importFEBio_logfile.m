@@ -2,18 +2,15 @@
 % Below is a demonstration of the features of the |import_FEB| function
 
 %%
-clear all; close all; clc;
+clear; close all; clc;
 
 %%
 % Plot settings
-figColor='w'; figColorDef='white';
-fontSize=15;
-faceAlpha1=0.5;
-faceAlpha2=0.5;
+figColor='w'; 
+figColorDef='white';
+fontSize=10;
 edgeColor=0.25*ones(1,3);
 edgeWidth=1.5;
-markerSize1=50;
-
 
 %% Importing a FEB file
 
@@ -120,11 +117,11 @@ camlight headlight;
 set(gca,'FontSize',fontSize);
 drawnow;
 
-
 %%
 %
 % <<gibbVerySmall.gif>>
 %
-% GIBBON
+% _*GIBBON*_
+% <www.gibboncode.org>
 %
-% Kevin M. Moerman (kevinmoerman@hotmail.com)
+% _Kevin Mattheus Moerman_, <gibbon.toolbox@gmail.com>

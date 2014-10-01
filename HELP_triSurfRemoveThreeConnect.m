@@ -2,11 +2,12 @@
 % Below is a demonstration of the features of the |triSurfRemoveThreeConnect| function
 
 %%
-clear all; close all; clc; 
+clear; close all; clc; 
 
+%%
 % Plot settings
 fig_color='w'; fig_colordef='white';
-fontSize=15;
+fontSize=10;
 faceColor='b';
 faceAlpha=0.8;
 edgeColor=0.3*ones(1,3);
@@ -64,6 +65,7 @@ drawnow;
 %
 % <<gibbVerySmall.gif>>
 % 
-% GIBBON 
+% _*GIBBON*_ 
+% <www.gibboncode.org>
 % 
-% Kevin M. Moerman (kevinmoerman@hotmail.com)
+% _Kevin Mattheus Moerman_, <gibbon.toolbox@gmail.com>

@@ -6,13 +6,9 @@ clear; close all; clc;
 
 %% 
 % Plot settings
-fig_color='w'; fig_colordef='white';
-fontSize=15;
-faceColor='b';
-faceAlpha=0.75;
-edgeColor='k';
-edgeWidth=2;
-markerSize=5;
+figColor='w';
+figColorDef='white';
+fontSize=10;
 
 %% Using |adjacentdircount| to compute "connectivity" 
 % The |adjacentdircount| function computes the number of adjacent elements
@@ -78,7 +74,7 @@ L=m>0;
 
 %%
 % Plotting the results
-hf=figuremax(fig_color,fig_colordef); 
+hf=figuremax(figColor,figColorDef); 
 hold on; 
 subplot(1,3,1);
 imagesc(L);
@@ -116,7 +112,7 @@ logicPatch(:,:,midInd:end)=0; %Crop off half to visualize interior
 [F2,V2,C2]=ind2patch(logicPatch,Lc2,'vb');
 [F3,V3,C3]=ind2patch(logicPatch,Lc3,'vb');
 
-figuremax(fig_color,fig_colordef);
+figuremax(figColor,figColorDef);
 subplot(2,2,1);
 xlabel('J');ylabel('I'); zlabel('K'); hold on;
 patch('Faces',F,'Vertices',V,'FaceColor','flat','CData',C,'EdgeColor','k');

@@ -1,7 +1,7 @@
 %% multiRegionTriMesh2D
 % Below is a basic demonstration of the features of the |multiRegionTriMesh2D| function.
 %% 
-clear all; close all; clc;
+clear; close all; clc;
 
 %% SIMULATING BOUNDARY CURVES
 
@@ -66,10 +66,11 @@ plotV(V5,'b-','LineWidth',2);
 plotV(V6,'b-','LineWidth',2);
 axis tight; 
 
-%% 
+%%
 %
 % <<gibbVerySmall.gif>>
-% 
-% GIBBON 
-% 
-% Kevin M. Moerman (kevinmoerman@hotmail.com)
+%
+% _*GIBBON*_
+% <www.gibboncode.org>
+%
+% _Kevin Mattheus Moerman_, <gibbon.toolbox@gmail.com>

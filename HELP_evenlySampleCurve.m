@@ -6,7 +6,8 @@ clear; close all; clc;
 
 %%
 % PLOT SETTINGS
-fig_color='w'; fig_colordef='white';
+fig_color='w'; 
+fig_colordef='white';
 markerSize=15;
 lineWidth=2;
 

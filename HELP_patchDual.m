@@ -2,8 +2,9 @@
 % Below is a demonstration of the features of the |patch_dual| function
 
 %%
-clear all; close all; clc; 
+clear; close all; clc; 
 
+%%
 % Plot settings
 figColor='w'; figColorDef='white';
 fontSize=15;
@@ -12,7 +13,7 @@ faceAlpha=0.5;
 plotColor1=0.2.*ones(1,3);
 plotColor2=0.5.*ones(1,3);
 edgeWidth=3;
-markerSize=10;
+markerSize=5;
 cmap=autumn(250);
 
 %% EXAMPLE: The "Buckminster Fuller" dome triangulation and its dual
@@ -49,12 +50,14 @@ end
 colormap(cmap);
 axis equal; axis tight; view(3); axis vis3d; axis off; 
 set(gca,'FontSize',fontSize);
+camlight headlight;
 drawnow;
 
-%% 
+%%
 %
 % <<gibbVerySmall.gif>>
-% 
-% GIBBON 
-% 
-% Kevin M. Moerman (kevinmoerman@hotmail.com)
+%
+% _*GIBBON*_
+% <www.gibboncode.org>
+%
+% _Kevin Mattheus Moerman_, <gibbon.toolbox@gmail.com>

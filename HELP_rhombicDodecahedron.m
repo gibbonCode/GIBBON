@@ -2,7 +2,7 @@
 % Below is a demonstration of the features of the |rhombicDodecahedron| function
 
 %%
-closeFall;
+clear; close all; clc; 
 
 %% 
 % Plot settings
@@ -12,7 +12,6 @@ faceAlpha1=0.8;
 edgeColor=0.6*ones(1,3);
 lineWidth1=2;
 markerSize=25;
-
 
 %% Creating a patch model of a rhombic dodecahedron
 
@@ -38,6 +37,7 @@ camlight('headlight'); lighting flat;
 %
 % <<gibbVerySmall.gif>>
 % 
-% GIBBON 
+% _*GIBBON*_ 
+% <www.gibboncode.org>
 % 
-% Kevin M. Moerman (kevinmoerman@hotmail.com)
+% _Kevin Mattheus Moerman_, <gibbon.toolbox@gmail.com>

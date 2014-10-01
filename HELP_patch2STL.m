@@ -2,7 +2,7 @@
 % Below is a demonstration of the features of the |patch2STL| function
 
 %%
-clear all; close all; clc; 
+clear; close all; clc; 
 
 %%
 % Plot settings
@@ -36,10 +36,11 @@ fileName=fullfile(pathName,'standford_bunny.stl');
 
 patch2STL(fileName,V,F,[],'standford_bunny');
 
-%% 
+%%
 %
 % <<gibbVerySmall.gif>>
-% 
-% GIBBON 
-% 
-% Kevin M. Moerman (kevinmoerman@hotmail.com)
+%
+% _*GIBBON*_
+% <www.gibboncode.org>
+%
+% _Kevin Mattheus Moerman_, <gibbon.toolbox@gmail.com>

@@ -2,7 +2,7 @@
 % Below is a demonstration of the features of the |uiThreshErode| function
 
 %%
-clear all; close all; clc; 
+clear; close all; clc; 
 
 %%
 % Plot settings
@@ -75,11 +75,11 @@ axis equal; view(3); axis tight; axis vis3d; grid on;
 colormap(cMap); colorbar; 
 drawnow;
 
-
 %% 
 %
 % <<gibbVerySmall.gif>>
 % 
-% GIBBON 
+% _*GIBBON*_ 
+% <www.gibboncode.org>
 % 
-% Kevin M. Moerman (kevinmoerman@hotmail.com)
+% _Kevin Mattheus Moerman_, <gibbon.toolbox@gmail.com>

@@ -73,7 +73,7 @@ if NumberOfFiles>0
     
     %% Creating output file name and folder
     fName='IMDAT';
-    foldername_out=fullfile(PathName,fName,'\');
+    foldername_out=fullfile(PathName,fName,filesep);
     if ~exist(foldername_out,'dir') %create output folder if it does not exist already
         mkdir(foldername_out);
     end

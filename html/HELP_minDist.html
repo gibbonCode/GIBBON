@@ -6,7 +6,7 @@
    <!--
 This HTML was auto-generated from MATLAB code.
 To make changes, update the MATLAB code and republish this document.
-      --><title>minDist</title><meta name="generator" content="MATLAB 8.3"><link rel="schema.DC" href="http://purl.org/dc/elements/1.1/"><meta name="DC.date" content="2014-04-16"><meta name="DC.source" content="HELP_minDist.m"><style type="text/css">
+      --><title>minDist</title><meta name="generator" content="MATLAB 8.4"><link rel="schema.DC" href="http://purl.org/dc/elements/1.1/"><meta name="DC.date" content="2014-10-01"><meta name="DC.source" content="HELP_minDist.m"><style type="text/css">
 html,body,div,span,applet,object,iframe,h1,h2,h3,h4,h5,h6,p,blockquote,pre,a,abbr,acronym,address,big,cite,code,del,dfn,em,font,img,ins,kbd,q,s,samp,small,strike,strong,sub,sup,tt,var,b,u,i,center,dl,dt,dd,ol,ul,li,fieldset,form,label,legend,table,caption,tbody,tfoot,thead,tr,th,td{margin:0;padding:0;border:0;outline:0;font-size:100%;vertical-align:baseline;background:transparent}body{line-height:1}ol,ul{list-style:none}blockquote,q{quotes:none}blockquote:before,blockquote:after,q:before,q:after{content:'';content:none}:focus{outine:0}ins{text-decoration:none}del{text-decoration:line-through}table{border-collapse:collapse;border-spacing:0}
 
 html { min-height:100%; margin-bottom:1px; }
@@ -66,20 +66,13 @@ table td { padding:7px 5px; text-align:left; vertical-align:top; border:1px soli
 
 
 
-  </style></head><body><div class="content"><h1>minDist</h1><!--introduction--><p>Below is a demonstration of the features of the <tt>minDist</tt> function</p><!--/introduction--><h2>Contents</h2><div><ul><li><a href="#3">EXAMPLE FOR POINT CLOUD OR SURFACE DISTANCE COMPUTATION</a></li><li><a href="#9">EXAMPLE FOR NEAREST NEIGHBOUR SEARCH AND INTERPOLATION</a></li></ul></div><pre class="codeinput">closeFall;
-</pre><p>PLOT SETTINGS</p><pre class="codeinput">fig_color=<span class="string">'w'</span>; fig_colordef=<span class="string">'white'</span>;
-font_size=15;
+  </style></head><body><div class="content"><h1>minDist</h1><!--introduction--><p>Below is a demonstration of the features of the <tt>minDist</tt> function</p><!--/introduction--><h2>Contents</h2><div><ul><li><a href="#3">EXAMPLE FOR POINT CLOUD OR SURFACE DISTANCE COMPUTATION</a></li><li><a href="#9">EXAMPLE FOR NEAREST NEIGHBOUR SEARCH AND INTERPOLATION</a></li></ul></div><pre class="codeinput">clear; close <span class="string">all</span>; clc;
+</pre><p>PLOT SETTINGS</p><pre class="codeinput">figColor=<span class="string">'w'</span>;
+figColorDef=<span class="string">'white'</span>;
+fontSize=10;
 cmap=gray(250);
-falpha=1;
-patch_types={<span class="string">'sx'</span>,<span class="string">'sy'</span>,<span class="string">'sz'</span>,<span class="string">'v'</span>};
-ptype=3;
-no_slices=4;
-mark_siz1=20;
-mark_siz2=5;
-mark_siz3=50;
-line_width1=2;
-F_alpha1=0.5;
-F_alpha2=1;
+faceAlpha1=0.5;
+faceAlpha2=1;
 </pre><h2>EXAMPLE FOR POINT CLOUD OR SURFACE DISTANCE COMPUTATION<a name="3"></a></h2><p>Building test surfaces</p><pre class="codeinput"><span class="comment">%Defining shape 1 as a sphere</span>
 [F1,V1,~]=geoSphere(2,1);
 
@@ -90,37 +83,37 @@ ampDef=0.25;
 ampDefDiff=0.25;
 n1=Vs(:,3)+(ampDef-ampDefDiff)+ampDef*sin(freqDef*Vs(:,1));
 [V2(:,1),V2(:,2),~]=sph2cart(Vs(:,1),Vs(:,2),n1);
-</pre><p>Plotting surfaces</p><pre class="codeinput">hf1=figuremax(fig_color,fig_colordef);
-title(<span class="string">'The two surfaces'</span>,<span class="string">'FontSize'</span>,font_size);
-xlabel(<span class="string">'X'</span>,<span class="string">'FontSize'</span>,font_size);ylabel(<span class="string">'Y'</span>,<span class="string">'FontSize'</span>,font_size);zlabel(<span class="string">'Z'</span>,<span class="string">'FontSize'</span>,font_size);
+</pre><p>Plotting surfaces</p><pre class="codeinput">hf1=figuremax(figColor,figColorDef);
+title(<span class="string">'The two surfaces'</span>,<span class="string">'FontSize'</span>,fontSize);
+xlabel(<span class="string">'X'</span>,<span class="string">'FontSize'</span>,fontSize);ylabel(<span class="string">'Y'</span>,<span class="string">'FontSize'</span>,fontSize);zlabel(<span class="string">'Z'</span>,<span class="string">'FontSize'</span>,fontSize);
 hold <span class="string">on</span>;
-patch(<span class="string">'faces'</span>,F1,<span class="string">'vertices'</span>,V1,<span class="string">'FaceColor'</span>,<span class="string">'g'</span>,<span class="string">'FaceAlpha'</span>,F_alpha1);
-patch(<span class="string">'faces'</span>,F2,<span class="string">'vertices'</span>,V2,<span class="string">'FaceColor'</span>,<span class="string">'b'</span>,<span class="string">'FaceAlpha'</span>,F_alpha1);
+patch(<span class="string">'faces'</span>,F1,<span class="string">'vertices'</span>,V1,<span class="string">'FaceColor'</span>,<span class="string">'g'</span>,<span class="string">'FaceAlpha'</span>,faceAlpha1);
+patch(<span class="string">'faces'</span>,F2,<span class="string">'vertices'</span>,V2,<span class="string">'FaceColor'</span>,<span class="string">'b'</span>,<span class="string">'FaceAlpha'</span>,faceAlpha1);
 
 axis <span class="string">equal</span>; view(3); axis <span class="string">tight</span>; grid <span class="string">on</span>;
-set(gca,<span class="string">'FontSize'</span>,font_size);
+set(gca,<span class="string">'FontSize'</span>,fontSize);
 camlight <span class="string">headlight</span>;
 drawnow;
 </pre><img vspace="5" hspace="5" src="HELP_minDist_01.png" alt=""> <p>Get closest point based distance metric</p><pre class="codeinput">D2=minDist(V2,V1);
 </pre><p>On this type of use see also the <tt>triSurfSetDist</tt> function</p><p>Plotting results</p><pre class="codeinput">[CF]=vertexToFaceMeasure(F2,D2);
 
-hf2=figuremax(fig_color,fig_colordef);
-title(<span class="string">'Closest point distance metric on surface 2'</span>,<span class="string">'FontSize'</span>,font_size);
-xlabel(<span class="string">'X'</span>,<span class="string">'FontSize'</span>,font_size);ylabel(<span class="string">'Y'</span>,<span class="string">'FontSize'</span>,font_size);zlabel(<span class="string">'Z'</span>,<span class="string">'FontSize'</span>,font_size);
+hf2=figuremax(figColor,figColorDef);
+title(<span class="string">'Closest point distance metric on surface 2'</span>,<span class="string">'FontSize'</span>,fontSize);
+xlabel(<span class="string">'X'</span>,<span class="string">'FontSize'</span>,fontSize);ylabel(<span class="string">'Y'</span>,<span class="string">'FontSize'</span>,fontSize);zlabel(<span class="string">'Z'</span>,<span class="string">'FontSize'</span>,fontSize);
 hold <span class="string">on</span>;
 patch(<span class="string">'faces'</span>,F2,<span class="string">'vertices'</span>,V2,<span class="string">'FaceColor'</span>,<span class="string">'flat'</span>,<span class="string">'CData'</span>,CF);
-patch(<span class="string">'faces'</span>,F1,<span class="string">'vertices'</span>,V1,<span class="string">'FaceColor'</span>,0.5.*ones(1,3),<span class="string">'FaceAlpha'</span>,F_alpha1,<span class="string">'EdgeColor'</span>,<span class="string">'None'</span>);
+patch(<span class="string">'faces'</span>,F1,<span class="string">'vertices'</span>,V1,<span class="string">'FaceColor'</span>,0.5.*ones(1,3),<span class="string">'FaceAlpha'</span>,faceAlpha1,<span class="string">'EdgeColor'</span>,<span class="string">'None'</span>);
 
 colormap <span class="string">jet</span>; colorbar;
 axis <span class="string">equal</span>; view(3); axis <span class="string">tight</span>; axis <span class="string">off</span>;
-set(gca,<span class="string">'FontSize'</span>,font_size);
+set(gca,<span class="string">'FontSize'</span>,fontSize);
 camlight <span class="string">headlight</span>;
 drawnow;
 </pre><img vspace="5" hspace="5" src="HELP_minDist_02.png" alt=""> <h2>EXAMPLE FOR NEAREST NEIGHBOUR SEARCH AND INTERPOLATION<a name="9"></a></h2><p>Building test surfaces</p><pre class="codeinput"><span class="comment">%Defining shape 1 as a sphere</span>
-[F1,V1,~]=geoSphere(3,1);
+[F1,V1,~]=geoSphere(2,1);
 
 <span class="comment">%Defining shape 2 as a denser sphere</span>
-[F2,V2,Vs]=geoSphere(5,1);
+[F2,V2,Vs]=geoSphere(4,1);
 
 <span class="comment">%Simulate some kind of result on the coarse sphere</span>
 C1=triplyPeriodicMinimal(6.*V1,<span class="string">'g'</span>);
@@ -131,64 +124,57 @@ C1=triplyPeriodicMinimal(6.*V1,<span class="string">'g'</span>);
 [CF2]=vertexToFaceMeasure(F2,C2);
 [CF2_true]=vertexToFaceMeasure(F2,C2_true);
 
-hf2=figuremax(fig_color,fig_colordef);
+hf2=figuremax(figColor,figColorDef);
 subplot(1,3,1);
-title(<span class="string">'Coarse input'</span>,<span class="string">'FontSize'</span>,font_size);
-xlabel(<span class="string">'X'</span>,<span class="string">'FontSize'</span>,font_size);ylabel(<span class="string">'Y'</span>,<span class="string">'FontSize'</span>,font_size);zlabel(<span class="string">'Z'</span>,<span class="string">'FontSize'</span>,font_size);
+title(<span class="string">'Coarse input'</span>,<span class="string">'FontSize'</span>,fontSize);
+xlabel(<span class="string">'X'</span>,<span class="string">'FontSize'</span>,fontSize);ylabel(<span class="string">'Y'</span>,<span class="string">'FontSize'</span>,fontSize);zlabel(<span class="string">'Z'</span>,<span class="string">'FontSize'</span>,fontSize);
 hold <span class="string">on</span>;
-patch(<span class="string">'faces'</span>,F1,<span class="string">'vertices'</span>,V1,<span class="string">'FaceColor'</span>,<span class="string">'flat'</span>,<span class="string">'CData'</span>,CF1,<span class="string">'FaceAlpha'</span>,F_alpha2,<span class="string">'EdgeColor'</span>,<span class="string">'k'</span>);
+patch(<span class="string">'faces'</span>,F1,<span class="string">'vertices'</span>,V1,<span class="string">'FaceColor'</span>,<span class="string">'flat'</span>,<span class="string">'CData'</span>,CF1,<span class="string">'FaceAlpha'</span>,faceAlpha2,<span class="string">'EdgeColor'</span>,<span class="string">'k'</span>);
 
 colormap <span class="string">jet</span>; colorbar;
 axis <span class="string">equal</span>; view(3); axis <span class="string">tight</span>; axis <span class="string">off</span>;
-set(gca,<span class="string">'FontSize'</span>,font_size);
+set(gca,<span class="string">'FontSize'</span>,fontSize);
 camlight <span class="string">headlight</span>;
 
 subplot(1,3,2);
-title(<span class="string">'Upsampled using nearest neighbours'</span>,<span class="string">'FontSize'</span>,font_size);
-xlabel(<span class="string">'X'</span>,<span class="string">'FontSize'</span>,font_size);ylabel(<span class="string">'Y'</span>,<span class="string">'FontSize'</span>,font_size);zlabel(<span class="string">'Z'</span>,<span class="string">'FontSize'</span>,font_size);
+title(<span class="string">'Upsampled using nearest neighbours'</span>,<span class="string">'FontSize'</span>,fontSize);
+xlabel(<span class="string">'X'</span>,<span class="string">'FontSize'</span>,fontSize);ylabel(<span class="string">'Y'</span>,<span class="string">'FontSize'</span>,fontSize);zlabel(<span class="string">'Z'</span>,<span class="string">'FontSize'</span>,fontSize);
 hold <span class="string">on</span>;
-patch(<span class="string">'faces'</span>,F2,<span class="string">'vertices'</span>,V2,<span class="string">'FaceColor'</span>,<span class="string">'flat'</span>,<span class="string">'CData'</span>,CF2,<span class="string">'FaceAlpha'</span>,F_alpha2,<span class="string">'EdgeColor'</span>,<span class="string">'k'</span>);
+patch(<span class="string">'faces'</span>,F2,<span class="string">'vertices'</span>,V2,<span class="string">'FaceColor'</span>,<span class="string">'flat'</span>,<span class="string">'CData'</span>,CF2,<span class="string">'FaceAlpha'</span>,faceAlpha2,<span class="string">'EdgeColor'</span>,<span class="string">'k'</span>);
 
 colormap <span class="string">jet</span>; colorbar;
 axis <span class="string">equal</span>; view(3); axis <span class="string">tight</span>; axis <span class="string">off</span>;
-set(gca,<span class="string">'FontSize'</span>,font_size);
+set(gca,<span class="string">'FontSize'</span>,fontSize);
 camlight <span class="string">headlight</span>;
 
 subplot(1,3,3);
-title(<span class="string">'Truth'</span>,<span class="string">'FontSize'</span>,font_size);
-xlabel(<span class="string">'X'</span>,<span class="string">'FontSize'</span>,font_size);ylabel(<span class="string">'Y'</span>,<span class="string">'FontSize'</span>,font_size);zlabel(<span class="string">'Z'</span>,<span class="string">'FontSize'</span>,font_size);
+title(<span class="string">'Truth'</span>,<span class="string">'FontSize'</span>,fontSize);
+xlabel(<span class="string">'X'</span>,<span class="string">'FontSize'</span>,fontSize);ylabel(<span class="string">'Y'</span>,<span class="string">'FontSize'</span>,fontSize);zlabel(<span class="string">'Z'</span>,<span class="string">'FontSize'</span>,fontSize);
 hold <span class="string">on</span>;
-patch(<span class="string">'faces'</span>,F2,<span class="string">'vertices'</span>,V2,<span class="string">'FaceColor'</span>,<span class="string">'flat'</span>,<span class="string">'CData'</span>,CF2_true,<span class="string">'FaceAlpha'</span>,F_alpha2,<span class="string">'EdgeColor'</span>,<span class="string">'none'</span>);
+patch(<span class="string">'faces'</span>,F2,<span class="string">'vertices'</span>,V2,<span class="string">'FaceColor'</span>,<span class="string">'flat'</span>,<span class="string">'CData'</span>,CF2_true,<span class="string">'FaceAlpha'</span>,faceAlpha2,<span class="string">'EdgeColor'</span>,<span class="string">'none'</span>);
 
 colormap <span class="string">jet</span>; colorbar;
 axis <span class="string">equal</span>; view(3); axis <span class="string">tight</span>; axis <span class="string">off</span>;
-set(gca,<span class="string">'FontSize'</span>,font_size);
+set(gca,<span class="string">'FontSize'</span>,fontSize);
 camlight <span class="string">headlight</span>;
 
 drawnow;
-</pre><img vspace="5" hspace="5" src="HELP_minDist_03.png" alt=""> <p><img vspace="5" hspace="5" src="gibbVerySmall.gif" alt=""> </p><p>GIBBON</p><p>Kevin M. Moerman (<a href="mailto:kevinmoerman@hotmail.com">kevinmoerman@hotmail.com</a>)</p><p class="footer"><br><a href="http://www.mathworks.com/products/matlab/">Published with MATLAB&reg; R2014a</a><br></p></div><!--
+</pre><img vspace="5" hspace="5" src="HELP_minDist_03.png" alt=""> <p><img vspace="5" hspace="5" src="gibbVerySmall.gif" alt=""> </p><p><i><b>GIBBON</b></i> <a href="www.gibboncode.org">www.gibboncode.org</a></p><p><i>Kevin Mattheus Moerman</i>, <a href="gibbon.toolbox@gmail.com">gibbon.toolbox@gmail.com</a></p><p class="footer"><br><a href="http://www.mathworks.com/products/matlab/">Published with MATLAB&reg; R2014b</a><br></p></div><!--
 ##### SOURCE BEGIN #####
 %% minDist
 % Below is a demonstration of the features of the |minDist| function
 
 %%
-closeFall;
+clear; close all; clc; 
 
 %%
 % PLOT SETTINGS
-fig_color='w'; fig_colordef='white';
-font_size=15;
+figColor='w'; 
+figColorDef='white';
+fontSize=10;
 cmap=gray(250);
-falpha=1;
-patch_types={'sx','sy','sz','v'};
-ptype=3;
-no_slices=4;
-mark_siz1=20;
-mark_siz2=5;
-mark_siz3=50;
-line_width1=2;
-F_alpha1=0.5;
-F_alpha2=1;
+faceAlpha1=0.5;
+faceAlpha2=1;
 
 %% EXAMPLE FOR POINT CLOUD OR SURFACE DISTANCE COMPUTATION
 
@@ -209,15 +195,15 @@ n1=Vs(:,3)+(ampDef-ampDefDiff)+ampDef*sin(freqDef*Vs(:,1));
 %%
 % Plotting surfaces
 
-hf1=figuremax(fig_color,fig_colordef);
-title('The two surfaces','FontSize',font_size);
-xlabel('X','FontSize',font_size);ylabel('Y','FontSize',font_size);zlabel('Z','FontSize',font_size); 
+hf1=figuremax(figColor,figColorDef);
+title('The two surfaces','FontSize',fontSize);
+xlabel('X','FontSize',fontSize);ylabel('Y','FontSize',fontSize);zlabel('Z','FontSize',fontSize); 
 hold on; 
-patch('faces',F1,'vertices',V1,'FaceColor','g','FaceAlpha',F_alpha1);
-patch('faces',F2,'vertices',V2,'FaceColor','b','FaceAlpha',F_alpha1);
+patch('faces',F1,'vertices',V1,'FaceColor','g','FaceAlpha',faceAlpha1);
+patch('faces',F2,'vertices',V2,'FaceColor','b','FaceAlpha',faceAlpha1);
 
 axis equal; view(3); axis tight; grid on;
-set(gca,'FontSize',font_size); 
+set(gca,'FontSize',fontSize); 
 camlight headlight; 
 drawnow;
 
@@ -233,16 +219,16 @@ D2=minDist(V2,V1);
 
 [CF]=vertexToFaceMeasure(F2,D2);
 
-hf2=figuremax(fig_color,fig_colordef);
-title('Closest point distance metric on surface 2','FontSize',font_size);
-xlabel('X','FontSize',font_size);ylabel('Y','FontSize',font_size);zlabel('Z','FontSize',font_size); 
+hf2=figuremax(figColor,figColorDef);
+title('Closest point distance metric on surface 2','FontSize',fontSize);
+xlabel('X','FontSize',fontSize);ylabel('Y','FontSize',fontSize);zlabel('Z','FontSize',fontSize); 
 hold on; 
 patch('faces',F2,'vertices',V2,'FaceColor','flat','CData',CF);
-patch('faces',F1,'vertices',V1,'FaceColor',0.5.*ones(1,3),'FaceAlpha',F_alpha1,'EdgeColor','None');
+patch('faces',F1,'vertices',V1,'FaceColor',0.5.*ones(1,3),'FaceAlpha',faceAlpha1,'EdgeColor','None');
 
 colormap jet; colorbar;
 axis equal; view(3); axis tight; axis off; 
-set(gca,'FontSize',font_size); 
+set(gca,'FontSize',fontSize); 
 camlight headlight; 
 drawnow;
 
@@ -252,10 +238,10 @@ drawnow;
 % Building test surfaces
 
 %Defining shape 1 as a sphere
-[F1,V1,~]=geoSphere(3,1);
+[F1,V1,~]=geoSphere(2,1);
 
 %Defining shape 2 as a denser sphere
-[F2,V2,Vs]=geoSphere(5,1);
+[F2,V2,Vs]=geoSphere(4,1);
 
 %Simulate some kind of result on the coarse sphere
 C1=triplyPeriodicMinimal(6.*V1,'g');
@@ -278,38 +264,38 @@ C2_true=triplyPeriodicMinimal(6.*V2,'g');
 [CF2]=vertexToFaceMeasure(F2,C2);
 [CF2_true]=vertexToFaceMeasure(F2,C2_true);
 
-hf2=figuremax(fig_color,fig_colordef);
+hf2=figuremax(figColor,figColorDef);
 subplot(1,3,1);
-title('Coarse input','FontSize',font_size);
-xlabel('X','FontSize',font_size);ylabel('Y','FontSize',font_size);zlabel('Z','FontSize',font_size); 
+title('Coarse input','FontSize',fontSize);
+xlabel('X','FontSize',fontSize);ylabel('Y','FontSize',fontSize);zlabel('Z','FontSize',fontSize); 
 hold on; 
-patch('faces',F1,'vertices',V1,'FaceColor','flat','CData',CF1,'FaceAlpha',F_alpha2,'EdgeColor','k');
+patch('faces',F1,'vertices',V1,'FaceColor','flat','CData',CF1,'FaceAlpha',faceAlpha2,'EdgeColor','k');
 
 colormap jet; colorbar;
 axis equal; view(3); axis tight; axis off; 
-set(gca,'FontSize',font_size); 
+set(gca,'FontSize',fontSize); 
 camlight headlight; 
 
 subplot(1,3,2);
-title('Upsampled using nearest neighbours','FontSize',font_size);
-xlabel('X','FontSize',font_size);ylabel('Y','FontSize',font_size);zlabel('Z','FontSize',font_size); 
+title('Upsampled using nearest neighbours','FontSize',fontSize);
+xlabel('X','FontSize',fontSize);ylabel('Y','FontSize',fontSize);zlabel('Z','FontSize',fontSize); 
 hold on; 
-patch('faces',F2,'vertices',V2,'FaceColor','flat','CData',CF2,'FaceAlpha',F_alpha2,'EdgeColor','k');
+patch('faces',F2,'vertices',V2,'FaceColor','flat','CData',CF2,'FaceAlpha',faceAlpha2,'EdgeColor','k');
 
 colormap jet; colorbar;
 axis equal; view(3); axis tight; axis off; 
-set(gca,'FontSize',font_size); 
+set(gca,'FontSize',fontSize); 
 camlight headlight; 
 
 subplot(1,3,3);
-title('Truth','FontSize',font_size);
-xlabel('X','FontSize',font_size);ylabel('Y','FontSize',font_size);zlabel('Z','FontSize',font_size); 
+title('Truth','FontSize',fontSize);
+xlabel('X','FontSize',fontSize);ylabel('Y','FontSize',fontSize);zlabel('Z','FontSize',fontSize); 
 hold on; 
-patch('faces',F2,'vertices',V2,'FaceColor','flat','CData',CF2_true,'FaceAlpha',F_alpha2,'EdgeColor','none');
+patch('faces',F2,'vertices',V2,'FaceColor','flat','CData',CF2_true,'FaceAlpha',faceAlpha2,'EdgeColor','none');
 
 colormap jet; colorbar;
 axis equal; view(3); axis tight; axis off; 
-set(gca,'FontSize',font_size); 
+set(gca,'FontSize',fontSize); 
 camlight headlight; 
 
 drawnow;
@@ -317,10 +303,11 @@ drawnow;
 %%
 %
 % <<gibbVerySmall.gif>>
-% 
-% GIBBON 
-% 
-% Kevin M. Moerman (kevinmoerman@hotmail.com)
+%
+% _*GIBBON*_
+% <www.gibboncode.org>
+%
+% _Kevin Mattheus Moerman_, <gibbon.toolbox@gmail.com>
 
 ##### SOURCE END #####
 --></body></html>

@@ -2,12 +2,12 @@
 % Below is a demonstration of the features of the |triSurfSetDist| function
 
 %%
-closeFall;
+clear; close all; clc;
 
 %%
 % PLOT SETTINGS
 fig_color='w'; fig_colordef='white';
-font_size=20;
+font_size=10;
 cmap=gray(250);
 falpha=1;
 patch_types={'sx','sy','sz','v'};
@@ -182,6 +182,11 @@ set(gca,'FontSize',font_size);
 camlight headlight; 
 drawnow;
 
-
-
-
+%% 
+%
+% <<gibbVerySmall.gif>>
+% 
+% _*GIBBON*_ 
+% <www.gibboncode.org>
+% 
+% _Kevin Mattheus Moerman_, <gibbon.toolbox@gmail.com>

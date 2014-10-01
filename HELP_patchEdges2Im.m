@@ -3,12 +3,12 @@
 
 %% 
 % 
-clear all; close all; clc;
+clear; close all; clc;
 
 % Plot settings for the examples below
 figColor='w'; 
 figColorDef='white';
-fontSize=20;
+fontSize=10;
 faceAlpha1=1;
 faceAlpha2=0.3;
 
@@ -133,10 +133,11 @@ camlight('headlight'); lighting phong;
 axis equal; view(3); axis tight;  grid on;  set(gca,'FontSize',fontSize);
 drawnow;
 
-%% 
+%%
 %
 % <<gibbVerySmall.gif>>
-% 
-% GIBBON 
-% 
-% Kevin M. Moerman (kevinmoerman@hotmail.com)
+%
+% _*GIBBON*_
+% <www.gibboncode.org>
+%
+% _Kevin Mattheus Moerman_, <gibbon.toolbox@gmail.com>

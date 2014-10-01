@@ -2,7 +2,7 @@
 % Below is a demonstration of the features of the |import_INP| function
 
 %%
-clear all; close all; clc; 
+clear; close all; clc; 
 
 %%
 % Plot settings
@@ -18,7 +18,7 @@ defaultFolder = fileparts(mfilename('fullpath'));
 pathName=fullfile(defaultFolder,'data','INP'); 
 
 %Set model
-testCase=4;
+testCase=3;
 switch testCase
     case 1 %Triangular elements
         fileNameEnd='example_TRI.inp';
@@ -64,10 +64,11 @@ hpm=patch('Faces',F,'Vertices',V,'EdgeColor','k','FaceColor','g','FaceAlpha',1);
 view(3); axis equal; axis tight; axis vis3d; grid on; 
 drawnow;
 
-%% 
+%%
 %
 % <<gibbVerySmall.gif>>
-% 
-% GIBBON 
-% 
-% Kevin M. Moerman (kevinmoerman@hotmail.com)
+%
+% _*GIBBON*_
+% <www.gibboncode.org>
+%
+% _Kevin Mattheus Moerman_, <gibbon.toolbox@gmail.com>

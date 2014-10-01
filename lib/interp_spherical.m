@@ -85,8 +85,9 @@ end
 %% DEMO functions
     function [hp2,Fp,Tp,Pp]=demoFunction1
         %% Plot settings
-        fig_color='k'; fig_colordef='black';
-        font_size=20;
+        figColor='w'; 
+        figColorDef='white';
+        font_size=10;
         
         %% Creating source vertices
         %Start with sphere triangulation (Buckminster-Fuller type)
@@ -109,7 +110,7 @@ end
 
         %%
         
-        figuremax(fig_color,fig_colordef);        
+        figuremax(figColor,figColorDef);        
         for q1=1:3
             subplot(1,3,q1);
             hold on;

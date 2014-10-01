@@ -1,8 +1,9 @@
 %% runTetGenSmesh
 % Below is a demonstration of the features of the |runTetGenSmesh| function
+%
 %%
-%%
-clear all; close all; clc;
+
+clear; close all; clc;
 
 %%
 % Plot settings
@@ -337,10 +338,11 @@ camlight headlight;
 set(gca,'FontSize',fontSize);
 drawnow;
 
-%%
+%% 
 %
 % <<gibbVerySmall.gif>>
-%
-% GIBBON
-%
-% Kevin M. Moerman (kevinmoerman@hotmail.com)
+% 
+% _*GIBBON*_ 
+% <www.gibboncode.org>
+% 
+% _Kevin Mattheus Moerman_, <gibbon.toolbox@gmail.com>

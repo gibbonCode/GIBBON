@@ -4,7 +4,7 @@
 
 %%
 
-clear all; close all; clc;
+clear; close all; clc;
 
 %%
 % Plot settings
@@ -79,3 +79,12 @@ for q=1:1:numel(elementCell)
     end
     export_INP(elementStruct,nodeStruct,inpFileName);
 end
+
+%% 
+%
+% <<gibbVerySmall.gif>>
+% 
+% _*GIBBON*_ 
+% <www.gibboncode.org>
+% 
+% _Kevin Mattheus Moerman_, <gibbon.toolbox@gmail.com>

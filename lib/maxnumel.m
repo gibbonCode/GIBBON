@@ -1,20 +1,20 @@
 function [varargout]=maxnumel(a)
 
 %Max variable size available
-mem_struct=memory;
-num_bytes=mem_struct.MaxPossibleArrayBytes;
+[numFreeBytes]=freeMemory;
 
 %Size of input variable
+sizA=size(a);
 whos_struct=whos('a');
-num_bytes_type=whos_struct.bytes;
+numBytesType=whos_struct.bytes;
 
 %Max number of input type available
-n=floor(num_bytes./num_bytes_type);
+n=floor(numFreeBytes./numBytesType);
 
 varargout{1}=n;
 switch nargout    
     case 2
-        varargout{2}=num_bytes_type;
+        varargout{2}=numBytesType;
 end
     
 end

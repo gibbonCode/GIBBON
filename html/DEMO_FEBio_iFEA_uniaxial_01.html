@@ -6,7 +6,7 @@
    <!--
 This HTML was auto-generated from MATLAB code.
 To make changes, update the MATLAB code and republish this document.
-      --><title>DEMO_FEBio_iFEA_uniaxial_01</title><meta name="generator" content="MATLAB 8.4"><link rel="schema.DC" href="http://purl.org/dc/elements/1.1/"><meta name="DC.date" content="2014-09-23"><meta name="DC.source" content="DEMO_FEBio_iFEA_uniaxial_01.m"><style type="text/css">
+      --><title>DEMO_FEBio_iFEA_uniaxial_01</title><meta name="generator" content="MATLAB 8.4"><link rel="schema.DC" href="http://purl.org/dc/elements/1.1/"><meta name="DC.date" content="2014-10-01"><meta name="DC.source" content="DEMO_FEBio_iFEA_uniaxial_01.m"><style type="text/css">
 html,body,div,span,applet,object,iframe,h1,h2,h3,h4,h5,h6,p,blockquote,pre,a,abbr,acronym,address,big,cite,code,del,dfn,em,font,img,ins,kbd,q,s,samp,small,strike,strong,sub,sup,tt,var,b,u,i,center,dl,dt,dd,ol,ul,li,fieldset,form,label,legend,table,caption,tbody,tfoot,thead,tr,th,td{margin:0;padding:0;border:0;outline:0;font-size:100%;vertical-align:baseline;background:transparent}body{line-height:1}ol,ul{list-style:none}blockquote,q{quotes:none}blockquote:before,blockquote:after,q:before,q:after{content:'';content:none}:focus{outine:0}ins{text-decoration:none}del{text-decoration:line-through}table{border-collapse:collapse;border-spacing:0}
 
 html { min-height:100%; margin-bottom:1px; }
@@ -67,7 +67,6 @@ table td { padding:7px 5px; text-align:left; vertical-align:top; border:1px soli
 
 
   </style></head><body><div class="content"><h1>DEMO_FEBio_iFEA_uniaxial_01</h1><!--introduction--><p>Below is a demonstration for: 1) Inverse FEA based material parameter optimisation</p><!--/introduction--><h2>Contents</h2><div><ul><li><a href="#4">SIMULATE EXPERIMENTAL DATA</a></li><li><a href="#5">CREATING MESHED BOX</a></li><li><a href="#7">DEFINE BC's</a></li><li><a href="#9">CONSTRUCTING FEB MODEL</a></li><li><a href="#10">SAVING .FEB FILE</a></li><li><a href="#11">RUNNING FEBIO JOB</a></li><li><a href="#12">IMPORTING NODAL DISPLACEMENT RESULTS</a></li><li><a href="#13">CREATING NODE SET IN DEFORMED STATE</a></li><li><a href="#15">IMPORTING NODAL FORCES</a></li><li><a href="#18">CREATE STRUCTURES FOR OPTIMISATION</a></li><li><a href="#19">PARAMETER BOUNDS</a></li><li><a href="#20">STARTING OPTIMISATION</a></li></ul></div><pre class="codeinput">clear; close <span class="string">all</span>; clc;
-warning <span class="string">off</span>;
 </pre><p>Plot settings</p><pre class="codeinput">figColor=<span class="string">'w'</span>; figColorDef=<span class="string">'white'</span>;
 fontSize=20;
 faceAlpha1=0.8;
@@ -123,6 +122,8 @@ stretch_exp=stretch_exp_n;
 <span class="comment">%Add noise</span>
 stdNoise=0.01; <span class="comment">%Standard deviation in units of stress</span>
 stress_cauchy_exp_n=stress_cauchy_exp_n+stdNoise.*randn(size(stress_cauchy_exp_n));
+</pre><pre class="codeoutput">Warning: INTERP1(...,'CUBIC') will change in a future release. Use
+INTERP1(...,'PCHIP') instead. 
 </pre><h2>CREATING MESHED BOX<a name="5"></a></h2><pre class="codeinput"><span class="comment">%Create box 1</span>
 boxDim=[sampleWidth sampleThickness sampleHeight]; <span class="comment">%Dimensions</span>
 boxEl=[numElementsWidth numElementsThickness numElementsHeight]; <span class="comment">%Number of elements</span>
@@ -256,7 +257,7 @@ FEB_struct.data_types={<span class="string">'ux;uy;uz'</span>,<span class="strin
 febStruct2febFile(FEB_struct);
 </pre><pre class="codeoutput"> 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
---- Writing FEBio XML object --- 23-Sep-2014 12:38:31
+--- Writing FEBio XML object --- 01-Oct-2014 14:55:14
 Adding Module level
 Adding Control level
 Adding Globals level
@@ -275,7 +276,7 @@ Adding Output level
 ----&gt; Adding plotfile field
 ----&gt; Adding logfile field
 Writing .feb file
---- Done --- 23-Sep-2014 12:38:31
+--- Done --- 01-Oct-2014 14:55:14
 </pre><h2>RUNNING FEBIO JOB<a name="11"></a></h2><pre class="codeinput"><span class="comment">% FEBioRunStruct.FEBioPath='C:\Program Files\febio-2.1.0\bin\FEBio2.exe';</span>
 FEBioRunStruct.run_filename=FEB_struct.run_filename;
 FEBioRunStruct.run_logname=FEB_struct.run_logname;
@@ -289,46 +290,44 @@ FEBioRunStruct.maxLogCheckTime=3; <span class="comment">%Max log file checking t
 [runFlag]=runMonitorFEBio(FEBioRunStruct);<span class="comment">%START FEBio NOW!!!!!!!!</span>
 </pre><pre class="codeoutput"> 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
---- STARTING FEBIO JOB --- 23-Sep-2014 12:38:31
+--- STARTING FEBIO JOB --- 01-Oct-2014 14:55:14
+
+ans =
+
+"/data/Code/C/FEBIO_linux/bin/febio2.lnx64" -i "/data/MATLAB/GIBBON/trunk/data/temp/iFEA_tempModel.feb" -o "/data/MATLAB/GIBBON/trunk/data/temp/iFEA_tempModel.txt" &amp;
+
 Waiting for log file...
-Proceeding to check log file...23-Sep-2014 12:38:32
+Proceeding to check log file...01-Oct-2014 14:55:14
 ------- converged at time : 0.05
 ------- converged at time : 0.1
-------- converged at time : 0.125
-------- converged at time : 0.155
-------- converged at time : 0.189
-------- converged at time : 0.221422
-------- converged at time : 0.239391
-------- converged at time : 0.253618
-------- converged at time : 0.274999
-------- converged at time : 0.302104
-------- converged at time : 0.333788
-------- converged at time : 0.342625
-------- converged at time : 0.348251
-------- converged at time : 0.362751
-------- converged at time : 0.384352
-------- converged at time : 0.411632
-------- converged at time : 0.443456
-------- converged at time : 0.478916
-------- converged at time : 0.515162
-------- converged at time : 0.554158
-------- converged at time : 0.591345
-------- converged at time : 0.631094
-------- converged at time : 0.672054
-------- converged at time : 0.693437
-------- converged at time : 0.712967
-------- converged at time : 0.73859
-------- converged at time : 0.746215
-------- converged at time : 0.753839
-------- converged at time : 0.769939
-------- converged at time : 0.792819
-------- converged at time : 0.821123
-------- converged at time : 0.853766
-------- converged at time : 0.88988
-------- converged at time : 0.928772
-------- converged at time : 0.969885
+------- converged at time : 0.15
+------- converged at time : 0.2
+------- converged at time : 0.25
+------- converged at time : 0.3
+------- converged at time : 0.35
+------- converged at time : 0.4
+------- converged at time : 0.45
+------- converged at time : 0.5
+------- converged at time : 0.525
+------- converged at time : 0.538975
+------- converged at time : 0.560156
+------- converged at time : 0.5871
+------- converged at time : 0.618655
+------- converged at time : 0.6539
+------- converged at time : 0.692095
+------- converged at time : 0.732652
+------- converged at time : 0.737957
+------- converged at time : 0.743021
+------- converged at time : 0.757071
+------- converged at time : 0.778312
+------- converged at time : 0.805304
+------- converged at time : 0.836898
+------- converged at time : 0.872173
+------- converged at time : 0.910394
+------- converged at time : 0.95097
+------- converged at time : 0.993431
 ------- converged at time : 1
---- Done --- 23-Sep-2014 12:38:35
+--- Done --- 01-Oct-2014 14:55:17
 </pre><h2>IMPORTING NODAL DISPLACEMENT RESULTS<a name="12"></a></h2><p>Importing nodal displacements from a log file</p><pre class="codeinput">[~, N_disp_mat,~]=importFEBio_logfile(FEB_struct.run_output_names{1}); <span class="comment">%Nodal displacements</span>
 
 DN=N_disp_mat(:,2:end,end); <span class="comment">%Final nodal displacements</span>
@@ -367,6 +366,8 @@ stress_cauchy_sim=stress_cauchy_sim.*1e3; <span class="comment">%Scale to kPa</s
 
 <span class="comment">%Interpolate experiment onto simulated points</span>
 stress_cauchy_exp_sim = interp1(stretch_exp,stress_cauchy_exp,stretch_sim,<span class="string">'cubic'</span>);
+</pre><pre class="codeoutput">Warning: INTERP1(...,'CUBIC') will change in a future release. Use
+INTERP1(...,'PCHIP') instead. 
 </pre><pre class="codeinput">hf1=figuremax(figColor,figColorDef);
 title(<span class="string">'Stretch stress curves, initial differences between simulation and experiment'</span>,<span class="string">'FontSize'</span>,fontSize);
 xlabel(<span class="string">'\lambda Stretch [.]'</span>,<span class="string">'FontSize'</span>,fontSize); ylabel(<span class="string">'\sigma Cauchy stress [kPa]'</span>,<span class="string">'FontSize'</span>,fontSize); zlabel(<span class="string">'Z'</span>,<span class="string">'FontSize'</span>,fontSize); hold <span class="string">on</span>;
@@ -443,140 +444,488 @@ Pb=zeros(size(P));
 type(fullfile(fileparts(filePath),<span class="string">'obj_DEMO_FEBio_iFEA_uniaxial_01'</span>))
 </pre><pre class="codeoutput">SETTING MATERIAL PARAMETERS...
 P=4.9999999999999491e-04,1.9000000000000000e+01
+
+ans =
+
+"/data/Code/C/FEBIO_linux/bin/febio2.lnx64" -i "/data/MATLAB/GIBBON/trunk/data/temp/iFEA_tempModel.feb" -o "/data/MATLAB/GIBBON/trunk/data/temp/iFEA_tempModel.txt" &amp;
+
+Warning: INTERP1(...,'CUBIC') will change in a future release. Use
+INTERP1(...,'PCHIP') instead. 
  
  Iteration   Func-count     min f(x)         Procedure
-     0            1         0.429713         
+     0            1         0.429719         
 SETTING MATERIAL PARAMETERS...
 P=4.7620536132347293e-04,1.9000000000000000e+01
+
+ans =
+
+"/data/Code/C/FEBIO_linux/bin/febio2.lnx64" -i "/data/MATLAB/GIBBON/trunk/data/temp/iFEA_tempModel.feb" -o "/data/MATLAB/GIBBON/trunk/data/temp/iFEA_tempModel.txt" &amp;
+
+Warning: INTERP1(...,'CUBIC') will change in a future release. Use
+INTERP1(...,'PCHIP') instead. 
 SETTING MATERIAL PARAMETERS...
 P=4.9999999999999491e-04,1.9449093797277914e+01
-     1            3         0.413514         initial simplex
+
+ans =
+
+"/data/Code/C/FEBIO_linux/bin/febio2.lnx64" -i "/data/MATLAB/GIBBON/trunk/data/temp/iFEA_tempModel.feb" -o "/data/MATLAB/GIBBON/trunk/data/temp/iFEA_tempModel.txt" &amp;
+
+     1            3         0.429719         initial simplex
 SETTING MATERIAL PARAMETERS...
-P=5.2629737880616201e-04,1.9449093797277914e+01
+P=4.7620536132347293e-04,1.8379477844554128e+01
+
+ans =
+
+"/data/Code/C/FEBIO_linux/bin/febio2.lnx64" -i "/data/MATLAB/GIBBON/trunk/data/temp/iFEA_tempModel.feb" -o "/data/MATLAB/GIBBON/trunk/data/temp/iFEA_tempModel.txt" &amp;
+
+Warning: INTERP1(...,'CUBIC') will change in a future release. Use
+INTERP1(...,'PCHIP') instead. 
 SETTING MATERIAL PARAMETERS...
-P=5.5551423447968156e-04,1.9628952188266517e+01
-     2            5         0.393962         reflect
+P=4.9383118010473681e-04,1.9241562013762504e+01
+
+ans =
+
+"/data/Code/C/FEBIO_linux/bin/febio2.lnx64" -i "/data/MATLAB/GIBBON/trunk/data/temp/iFEA_tempModel.feb" -o "/data/MATLAB/GIBBON/trunk/data/temp/iFEA_tempModel.txt" &amp;
+
+Warning: INTERP1(...,'CUBIC') will change in a future release. Use
+INTERP1(...,'PCHIP') instead. 
 SETTING MATERIAL PARAMETERS...
-P=5.2629737880616201e-04,1.9786088930837408e+01
+P=4.8781271067843137e-04,1.9000000000000000e+01
+
+ans =
+
+"/data/Code/C/FEBIO_linux/bin/febio2.lnx64" -i "/data/MATLAB/GIBBON/trunk/data/temp/iFEA_tempModel.feb" -o "/data/MATLAB/GIBBON/trunk/data/temp/iFEA_tempModel.txt" &amp;
+
 SETTING MATERIAL PARAMETERS...
-P=5.0632487511882989e-04,1.9241562013762504e+01
-     3            7         0.393962         contract inside
+P=4.9999999999999491e-04,1.9241562013762504e+01
+
+ans =
+
+"/data/Code/C/FEBIO_linux/bin/febio2.lnx64" -i "/data/MATLAB/GIBBON/trunk/data/temp/iFEA_tempModel.feb" -o "/data/MATLAB/GIBBON/trunk/data/temp/iFEA_tempModel.txt" &amp;
+
+Warning: INTERP1(...,'CUBIC') will change in a future release. Use
+INTERP1(...,'PCHIP') instead. 
+     2            7         0.416423         shrink
 SETTING MATERIAL PARAMETERS...
-P=5.3330966145687662e-04,1.9241562013762504e+01
+P=5.1281180249522224e-04,1.9241562013762508e+01
+
+ans =
+
+"/data/Code/C/FEBIO_linux/bin/febio2.lnx64" -i "/data/MATLAB/GIBBON/trunk/data/temp/iFEA_tempModel.feb" -o "/data/MATLAB/GIBBON/trunk/data/temp/iFEA_tempModel.txt" &amp;
+
+Warning: INTERP1(...,'CUBIC') will change in a future release. Use
+INTERP1(...,'PCHIP') instead. 
 SETTING MATERIAL PARAMETERS...
-P=5.5168596762143480e-04,1.9125498549088075e+01
-     4            9         0.366009         expand
+P=5.2629737880616201e-04,1.9349146721670994e+01
+
+ans =
+
+"/data/Code/C/FEBIO_linux/bin/febio2.lnx64" -i "/data/MATLAB/GIBBON/trunk/data/temp/iFEA_tempModel.feb" -o "/data/MATLAB/GIBBON/trunk/data/temp/iFEA_tempModel.txt" &amp;
+
+Warning: INTERP1(...,'CUBIC') will change in a future release. Use
+INTERP1(...,'PCHIP') instead. 
+     3            9         0.384274         expand
 SETTING MATERIAL PARAMETERS...
-P=5.7548107875163290e-04,1.9349146721670991e+01
+P=5.2629737880616201e-04,1.9542144260413963e+01
+
+ans =
+
+"/data/Code/C/FEBIO_linux/bin/febio2.lnx64" -i "/data/MATLAB/GIBBON/trunk/data/temp/iFEA_tempModel.feb" -o "/data/MATLAB/GIBBON/trunk/data/temp/iFEA_tempModel.txt" &amp;
+
+Warning: INTERP1(...,'CUBIC') will change in a future release. Use
+INTERP1(...,'PCHIP') instead. 
+     4           10         0.384274         reflect
 SETTING MATERIAL PARAMETERS...
-P=5.2200757300061018e-04,1.9269218372207050e+01
-     5           11         0.366009         contract inside
+P=5.5551423447968156e-04,1.9628952188266524e+01
+
+ans =
+
+"/data/Code/C/FEBIO_linux/bin/febio2.lnx64" -i "/data/MATLAB/GIBBON/trunk/data/temp/iFEA_tempModel.feb" -o "/data/MATLAB/GIBBON/trunk/data/temp/iFEA_tempModel.txt" &amp;
+
+Warning: INTERP1(...,'CUBIC') will change in a future release. Use
+INTERP1(...,'PCHIP') instead. 
 SETTING MATERIAL PARAMETERS...
-P=5.4697419272429777e-04,1.8899034901191282e+01
+P=5.1281180249522224e-04,1.9349146721670991e+01
+
+ans =
+
+"/data/Code/C/FEBIO_linux/bin/febio2.lnx64" -i "/data/MATLAB/GIBBON/trunk/data/temp/iFEA_tempModel.feb" -o "/data/MATLAB/GIBBON/trunk/data/temp/iFEA_tempModel.txt" &amp;
+
+Warning: INTERP1(...,'CUBIC') will change in a future release. Use
+INTERP1(...,'PCHIP') instead. 
+     5           12         0.384274         contract inside
 SETTING MATERIAL PARAMETERS...
-P=5.5793399625689852e-04,1.8534102635957460e+01
-     6           13         0.319506         expand
+P=5.1281180249522224e-04,1.9125498549088078e+01
+
+ans =
+
+"/data/Code/C/FEBIO_linux/bin/febio2.lnx64" -i "/data/MATLAB/GIBBON/trunk/data/temp/iFEA_tempModel.feb" -o "/data/MATLAB/GIBBON/trunk/data/temp/iFEA_tempModel.txt" &amp;
+
+Warning: INTERP1(...,'CUBIC') will change in a future release. Use
+INTERP1(...,'PCHIP') instead. 
+     6           13         0.384274         reflect
 SETTING MATERIAL PARAMETERS...
-P=5.9197079666493133e-04,1.8309394330674259e+01
+P=5.2629737880616201e-04,1.9125498549088082e+01
+
+ans =
+
+"/data/Code/C/FEBIO_linux/bin/febio2.lnx64" -i "/data/MATLAB/GIBBON/trunk/data/temp/iFEA_tempModel.feb" -o "/data/MATLAB/GIBBON/trunk/data/temp/iFEA_tempModel.txt" &amp;
+
+Warning: INTERP1(...,'CUBIC') will change in a future release. Use
+INTERP1(...,'PCHIP') instead. 
 SETTING MATERIAL PARAMETERS...
-P=6.3448928245363190e-04,1.7570992694693725e+01
-     7           15         0.229257         expand
+P=5.3330966145687662e-04,1.9000000000000007e+01
+
+ans =
+
+"/data/Code/C/FEBIO_linux/bin/febio2.lnx64" -i "/data/MATLAB/GIBBON/trunk/data/temp/iFEA_tempModel.feb" -o "/data/MATLAB/GIBBON/trunk/data/temp/iFEA_tempModel.txt" &amp;
+
+Warning: INTERP1(...,'CUBIC') will change in a future release. Use
+INTERP1(...,'PCHIP') instead. 
+     7           15         0.359467         expand
 SETTING MATERIAL PARAMETERS...
-P=6.4276740967252890e-04,1.6245406646358191e+01
-     8           16         0.229257         reflect
+P=5.4791009863973676e-04,1.9241562013762515e+01
+
+ans =
+
+"/data/Code/C/FEBIO_linux/bin/febio2.lnx64" -i "/data/MATLAB/GIBBON/trunk/data/temp/iFEA_tempModel.feb" -o "/data/MATLAB/GIBBON/trunk/data/temp/iFEA_tempModel.txt" &amp;
+
+Warning: INTERP1(...,'CUBIC') will change in a future release. Use
+INTERP1(...,'PCHIP') instead. 
+     8           16         0.359467         reflect
 SETTING MATERIAL PARAMETERS...
-P=7.4653288508632623e-04,1.4047334211553881e+01
+P=5.5551423447968156e-04,1.8863977666517968e+01
+
+ans =
+
+"/data/Code/C/FEBIO_linux/bin/febio2.lnx64" -i "/data/MATLAB/GIBBON/trunk/data/temp/iFEA_tempModel.feb" -o "/data/MATLAB/GIBBON/trunk/data/temp/iFEA_tempModel.txt" &amp;
+
 SETTING MATERIAL PARAMETERS...
-P=8.9835624098952857e-04,9.9933013770713490e+00
-     9           18         0.224649         reflect
+P=5.3330966145687662e-04,1.9241562013762511e+01
+
+ans =
+
+"/data/Code/C/FEBIO_linux/bin/febio2.lnx64" -i "/data/MATLAB/GIBBON/trunk/data/temp/iFEA_tempModel.feb" -o "/data/MATLAB/GIBBON/trunk/data/temp/iFEA_tempModel.txt" &amp;
+
+Warning: INTERP1(...,'CUBIC') will change in a future release. Use
+INTERP1(...,'PCHIP') instead. 
+     9           18         0.359467         contract inside
 SETTING MATERIAL PARAMETERS...
-P=7.3538992925490938e-04,1.6070631271161130e+01
+P=5.1946709040211485e-04,1.9000000000000007e+01
+
+ans =
+
+"/data/Code/C/FEBIO_linux/bin/febio2.lnx64" -i "/data/MATLAB/GIBBON/trunk/data/temp/iFEA_tempModel.feb" -o "/data/MATLAB/GIBBON/trunk/data/temp/iFEA_tempModel.txt" &amp;
+
+Warning: INTERP1(...,'CUBIC') will change in a future release. Use
+INTERP1(...,'PCHIP') instead. 
 SETTING MATERIAL PARAMETERS...
-P=7.9248633887606947e-04,1.5980465618454014e+01
-    10           20          0.12547         reflect
+P=5.4051130976479620e-04,1.9184647005553991e+01
+
+ans =
+
+"/data/Code/C/FEBIO_linux/bin/febio2.lnx64" -i "/data/MATLAB/GIBBON/trunk/data/temp/iFEA_tempModel.feb" -o "/data/MATLAB/GIBBON/trunk/data/temp/iFEA_tempModel.txt" &amp;
+
+Warning: INTERP1(...,'CUBIC') will change in a future release. Use
+INTERP1(...,'PCHIP') instead. 
+    10           20         0.359467         contract inside
 SETTING MATERIAL PARAMETERS...
-P=8.9024057923483559e-04,1.1234375125658248e+01
+P=5.4051130976479620e-04,1.8933378033723649e+01
+
+ans =
+
+"/data/Code/C/FEBIO_linux/bin/febio2.lnx64" -i "/data/MATLAB/GIBBON/trunk/data/temp/iFEA_tempModel.feb" -o "/data/MATLAB/GIBBON/trunk/data/temp/iFEA_tempModel.txt" &amp;
+
+Warning: INTERP1(...,'CUBIC') will change in a future release. Use
+INTERP1(...,'PCHIP') instead. 
 SETTING MATERIAL PARAMETERS...
-P=6.8358720625516511e-04,1.6550951256273557e+01
-    11           22          0.12547         contract inside
+P=5.4418555918810954e-04,1.8754314830447541e+01
+
+ans =
+
+"/data/Code/C/FEBIO_linux/bin/febio2.lnx64" -i "/data/MATLAB/GIBBON/trunk/data/temp/iFEA_tempModel.feb" -o "/data/MATLAB/GIBBON/trunk/data/temp/iFEA_tempModel.txt" &amp;
+
+Warning: INTERP1(...,'CUBIC') will change in a future release. Use
+INTERP1(...,'PCHIP') instead. 
+    11           22         0.340428         expand
 SETTING MATERIAL PARAMETERS...
-P=6.7423207871725741e-04,1.7774272576293967e+01
+P=5.3688633874584006e-04,1.8512743690582102e+01
+
+ans =
+
+"/data/Code/C/FEBIO_linux/bin/febio2.lnx64" -i "/data/MATLAB/GIBBON/trunk/data/temp/iFEA_tempModel.feb" -o "/data/MATLAB/GIBBON/trunk/data/temp/iFEA_tempModel.txt" &amp;
+
+Warning: INTERP1(...,'CUBIC') will change in a future release. Use
+INTERP1(...,'PCHIP') instead. 
+    12           23         0.340428         reflect
 SETTING MATERIAL PARAMETERS...
-P=7.2704217290290869e-04,1.5295687489187756e+01
-    12           24          0.12547         contract inside
+P=5.4791009863973676e-04,1.8187115521144232e+01
+
+ans =
+
+"/data/Code/C/FEBIO_linux/bin/febio2.lnx64" -i "/data/MATLAB/GIBBON/trunk/data/temp/iFEA_tempModel.feb" -o "/data/MATLAB/GIBBON/trunk/data/temp/iFEA_tempModel.txt" &amp;
+
+Warning: INTERP1(...,'CUBIC') will change in a future release. Use
+INTERP1(...,'PCHIP') instead. 
+    13           24         0.340428         reflect
 SETTING MATERIAL PARAMETERS...
-P=7.8592254118038944e-04,1.4666019801156949e+01
+P=5.5551423447968156e-04,1.8469309686313252e+01
+
+ans =
+
+"/data/Code/C/FEBIO_linux/bin/febio2.lnx64" -i "/data/MATLAB/GIBBON/trunk/data/temp/iFEA_tempModel.feb" -o "/data/MATLAB/GIBBON/trunk/data/temp/iFEA_tempModel.txt" &amp;
+
+Warning: INTERP1(...,'CUBIC') will change in a future release. Use
+INTERP1(...,'PCHIP') instead. 
 SETTING MATERIAL PARAMETERS...
-P=8.4950684874780531e-04,1.3461256753090328e+01
-    13           26         0.054901         expand
+P=5.6532142557923497e-04,1.8447227613017631e+01
+
+ans =
+
+"/data/Code/C/FEBIO_linux/bin/febio2.lnx64" -i "/data/MATLAB/GIBBON/trunk/data/temp/iFEA_tempModel.feb" -o "/data/MATLAB/GIBBON/trunk/data/temp/iFEA_tempModel.txt" &amp;
+
+Warning: INTERP1(...,'CUBIC') will change in a future release. Use
+INTERP1(...,'PCHIP') instead. 
+    14           26         0.309426         expand
 SETTING MATERIAL PARAMETERS...
-P=8.6092502104772044e-04,1.4465022947340248e+01
+P=5.6135729151498561e-04,1.8950287980313615e+01
+
+ans =
+
+"/data/Code/C/FEBIO_linux/bin/febio2.lnx64" -i "/data/MATLAB/GIBBON/trunk/data/temp/iFEA_tempModel.feb" -o "/data/MATLAB/GIBBON/trunk/data/temp/iFEA_tempModel.txt" &amp;
+
+Warning: INTERP1(...,'CUBIC') will change in a future release. Use
+INTERP1(...,'PCHIP') instead. 
 SETTING MATERIAL PARAMETERS...
-P=9.4822619506012011e-04,1.4011630459308730e+01
-    14           28        0.0534792         reflect
+P=5.5121114068207853e-04,1.8407984681499670e+01
+
+ans =
+
+"/data/Code/C/FEBIO_linux/bin/febio2.lnx64" -i "/data/MATLAB/GIBBON/trunk/data/temp/iFEA_tempModel.feb" -o "/data/MATLAB/GIBBON/trunk/data/temp/iFEA_tempModel.txt" &amp;
+
+Warning: INTERP1(...,'CUBIC') will change in a future release. Use
+INTERP1(...,'PCHIP') instead. 
+    15           28         0.309426         contract inside
 SETTING MATERIAL PARAMETERS...
-P=1.0215679714094983e-03,1.1351692332346587e+01
+P=5.7290708779302870e-04,1.8037447208469970e+01
+
+ans =
+
+"/data/Code/C/FEBIO_linux/bin/febio2.lnx64" -i "/data/MATLAB/GIBBON/trunk/data/temp/iFEA_tempModel.feb" -o "/data/MATLAB/GIBBON/trunk/data/temp/iFEA_tempModel.txt" &amp;
+
+Warning: INTERP1(...,'CUBIC') will change in a future release. Use
+INTERP1(...,'PCHIP') instead. 
 SETTING MATERIAL PARAMETERS...
-P=1.2683051548957602e-03,8.9217804652593884e+00
-    15           30       0.00627733         reflect
+P=5.8843545350110169e-04,1.7566923476080493e+01
+
+ans =
+
+"/data/Code/C/FEBIO_linux/bin/febio2.lnx64" -i "/data/MATLAB/GIBBON/trunk/data/temp/iFEA_tempModel.feb" -o "/data/MATLAB/GIBBON/trunk/data/temp/iFEA_tempModel.txt" &amp;
+
+    16           30         0.296697         reflect
 SETTING MATERIAL PARAMETERS...
-P=1.0381231353120358e-03,1.2457262022400922e+01
-    16           31       0.00627733         reflect
+P=5.8816525208280632e-04,1.8084068761375093e+01
+
+ans =
+
+"/data/Code/C/FEBIO_linux/bin/febio2.lnx64" -i "/data/MATLAB/GIBBON/trunk/data/temp/iFEA_tempModel.feb" -o "/data/MATLAB/GIBBON/trunk/data/temp/iFEA_tempModel.txt" &amp;
+
+Warning: INTERP1(...,'CUBIC') will change in a future release. Use
+INTERP1(...,'PCHIP') instead. 
 SETTING MATERIAL PARAMETERS...
-P=1.2809838379581884e-03,9.3716800795088044e+00
+P=6.0856461761780176e-04,1.7902371361888697e+01
+
+ans =
+
+"/data/Code/C/FEBIO_linux/bin/febio2.lnx64" -i "/data/MATLAB/GIBBON/trunk/data/temp/iFEA_tempModel.feb" -o "/data/MATLAB/GIBBON/trunk/data/temp/iFEA_tempModel.txt" &amp;
+
+Warning: INTERP1(...,'CUBIC') will change in a future release. Use
+INTERP1(...,'PCHIP') instead. 
+    17           32         0.256701         expand
 SETTING MATERIAL PARAMETERS...
-P=9.3781425027776317e-04,1.3234213998883277e+01
-    17           33       0.00627733         contract inside
+P=6.1736404651146495e-04,1.7372822825281190e+01
+
+ans =
+
+"/data/Code/C/FEBIO_linux/bin/febio2.lnx64" -i "/data/MATLAB/GIBBON/trunk/data/temp/iFEA_tempModel.feb" -o "/data/MATLAB/GIBBON/trunk/data/temp/iFEA_tempModel.txt" &amp;
+
+Warning: INTERP1(...,'CUBIC') will change in a future release. Use
+INTERP1(...,'PCHIP') instead. 
 SETTING MATERIAL PARAMETERS...
-P=9.2428211280556893e-04,1.2141281624299905e+01
+P=6.4715143426306030e-04,1.6615297217056501e+01
+
+ans =
+
+"/data/Code/C/FEBIO_linux/bin/febio2.lnx64" -i "/data/MATLAB/GIBBON/trunk/data/temp/iFEA_tempModel.feb" -o "/data/MATLAB/GIBBON/trunk/data/temp/iFEA_tempModel.txt" &amp;
+
+Warning: INTERP1(...,'CUBIC') will change in a future release. Use
+INTERP1(...,'PCHIP') instead. 
+    18           34          0.20839         expand
 SETTING MATERIAL PARAMETERS...
-P=9.5033638079548572e-04,1.2220403015174242e+01
-    18           35       0.00627733         contract outside
+P=6.9301803448970081e-04,1.6392389138677281e+01
+
+ans =
+
+"/data/Code/C/FEBIO_linux/bin/febio2.lnx64" -i "/data/MATLAB/GIBBON/trunk/data/temp/iFEA_tempModel.feb" -o "/data/MATLAB/GIBBON/trunk/data/temp/iFEA_tempModel.txt" &amp;
+
 SETTING MATERIAL PARAMETERS...
-P=1.0364435206743018e-03,1.0357464532382828e+01
+P=5.9885531416085664e-04,1.7708127712162305e+01
+
+ans =
+
+"/data/Code/C/FEBIO_linux/bin/febio2.lnx64" -i "/data/MATLAB/GIBBON/trunk/data/temp/iFEA_tempModel.feb" -o "/data/MATLAB/GIBBON/trunk/data/temp/iFEA_tempModel.txt" &amp;
+
+Warning: INTERP1(...,'CUBIC') will change in a future release. Use
+INTERP1(...,'PCHIP') instead. 
+    19           36          0.20839         contract inside
 SETTING MATERIAL PARAMETERS...
-P=9.6066941233802217e-04,1.2516304753461913e+01
-    19           37        0.0024727         contract inside
+P=6.5850455756119033e-04,1.6894297036833418e+01
+
+ans =
+
+"/data/Code/C/FEBIO_linux/bin/febio2.lnx64" -i "/data/MATLAB/GIBBON/trunk/data/temp/iFEA_tempModel.feb" -o "/data/MATLAB/GIBBON/trunk/data/temp/iFEA_tempModel.txt" &amp;
+
+Warning: INTERP1(...,'CUBIC') will change in a future release. Use
+INTERP1(...,'PCHIP') instead. 
 SETTING MATERIAL PARAMETERS...
-P=1.0335172315461161e-03,1.1646753475466559e+01
+P=6.9301803448970081e-04,1.6392389138677281e+01
+
+ans =
+
+"/data/Code/C/FEBIO_linux/bin/febio2.lnx64" -i "/data/MATLAB/GIBBON/trunk/data/temp/iFEA_tempModel.feb" -o "/data/MATLAB/GIBBON/trunk/data/temp/iFEA_tempModel.txt" &amp;
+
+Warning: INTERP1(...,'CUBIC') will change in a future release. Use
+INTERP1(...,'PCHIP') instead. 
+    20           38         0.151057         expand
 SETTING MATERIAL PARAMETERS...
-P=1.0808158485901165e-03,1.1361489855456643e+01
-    20           39        0.0022504         reflect
+P=7.4349978038314450e-04,1.4302123317751100e+01
+
+ans =
+
+"/data/Code/C/FEBIO_linux/bin/febio2.lnx64" -i "/data/MATLAB/GIBBON/trunk/data/temp/iFEA_tempModel.feb" -o "/data/MATLAB/GIBBON/trunk/data/temp/iFEA_tempModel.txt" &amp;
+
+Warning: INTERP1(...,'CUBIC') will change in a future release. Use
+INTERP1(...,'PCHIP') instead. 
+    21           39         0.151057         reflect
 SETTING MATERIAL PARAMETERS...
-P=9.7122954606024270e-04,1.2809989074825380e+01
+P=8.0468270066035301e-04,1.3957828916684246e+01
+
+ans =
+
+"/data/Code/C/FEBIO_linux/bin/febio2.lnx64" -i "/data/MATLAB/GIBBON/trunk/data/temp/iFEA_tempModel.feb" -o "/data/MATLAB/GIBBON/trunk/data/temp/iFEA_tempModel.txt" &amp;
+
+Warning: INTERP1(...,'CUBIC') will change in a future release. Use
+INTERP1(...,'PCHIP') instead. 
 SETTING MATERIAL PARAMETERS...
-P=1.0085005930330516e-03,1.1715867309363617e+01
-    21           41       0.00147326         contract inside
+P=9.1618478727356623e-04,1.2212987898956808e+01
+
+ans =
+
+"/data/Code/C/FEBIO_linux/bin/febio2.lnx64" -i "/data/MATLAB/GIBBON/trunk/data/temp/iFEA_tempModel.feb" -o "/data/MATLAB/GIBBON/trunk/data/temp/iFEA_tempModel.txt" &amp;
+
+Warning: INTERP1(...,'CUBIC') will change in a future release. Use
+INTERP1(...,'PCHIP') instead. 
+    22           41        0.0519329         expand
 SETTING MATERIAL PARAMETERS...
-P=1.0890843426852093e-03,1.0857069116590949e+01
+P=8.4072595480538803e-04,1.4851478970104464e+01
+
+ans =
+
+"/data/Code/C/FEBIO_linux/bin/febio2.lnx64" -i "/data/MATLAB/GIBBON/trunk/data/temp/iFEA_tempModel.feb" -o "/data/MATLAB/GIBBON/trunk/data/temp/iFEA_tempModel.txt" &amp;
+
+Warning: INTERP1(...,'CUBIC') will change in a future release. Use
+INTERP1(...,'PCHIP') instead. 
+    23           42        0.0519329         reflect
 SETTING MATERIAL PARAMETERS...
-P=9.8984882241313628e-04,1.2099229068007528e+01
+P=1.1933034708853263e-03,1.0078663976177046e+01
+
+ans =
+
+"/data/Code/C/FEBIO_linux/bin/febio2.lnx64" -i "/data/MATLAB/GIBBON/trunk/data/temp/iFEA_tempModel.feb" -o "/data/MATLAB/GIBBON/trunk/data/temp/iFEA_tempModel.txt" &amp;
+
+Warning: INTERP1(...,'CUBIC') will change in a future release. Use
+INTERP1(...,'PCHIP') instead. 
 SETTING MATERIAL PARAMETERS...
-P=1.0208557261586538e-03,1.1681300994118347e+01
+P=1.0108878193324179e-03,1.1827076763384527e+01
+
+ans =
+
+"/data/Code/C/FEBIO_linux/bin/febio2.lnx64" -i "/data/MATLAB/GIBBON/trunk/data/temp/iFEA_tempModel.feb" -o "/data/MATLAB/GIBBON/trunk/data/temp/iFEA_tempModel.txt" &amp;
+
+Warning: INTERP1(...,'CUBIC') will change in a future release. Use
+INTERP1(...,'PCHIP') instead. 
+    24           44      0.000244653         contract outside
 SETTING MATERIAL PARAMETERS...
-P=9.8400427755340205e-04,1.2116546084534907e+01
-    22           45       0.00080353         shrink
+P=1.1219871362426470e-03,9.1811812158562791e+00
+
+ans =
+
+"/data/Code/C/FEBIO_linux/bin/febio2.lnx64" -i "/data/MATLAB/GIBBON/trunk/data/temp/iFEA_tempModel.feb" -o "/data/MATLAB/GIBBON/trunk/data/temp/iFEA_tempModel.txt" &amp;
+
+Warning: INTERP1(...,'CUBIC') will change in a future release. Use
+INTERP1(...,'PCHIP') instead. 
 SETTING MATERIAL PARAMETERS...
-P=9.9576318728295541e-04,1.2081910582805021e+01
+P=1.0353965177316627e-03,1.0527497703032086e+01
+
+ans =
+
+"/data/Code/C/FEBIO_linux/bin/febio2.lnx64" -i "/data/MATLAB/GIBBON/trunk/data/temp/iFEA_tempModel.feb" -o "/data/MATLAB/GIBBON/trunk/data/temp/iFEA_tempModel.txt" &amp;
+
+Warning: INTERP1(...,'CUBIC') will change in a future release. Use
+INTERP1(...,'PCHIP') instead. 
+    25           46      0.000244653         contract outside
 SETTING MATERIAL PARAMETERS...
-P=9.8951434410832770e-04,1.2264880448801430e+01
-    23           47      4.84663e-05         reflect
+P=1.1579846300011464e-03,1.0167019985397760e+01
+
+ans =
+
+"/data/Code/C/FEBIO_linux/bin/febio2.lnx64" -i "/data/MATLAB/GIBBON/trunk/data/temp/iFEA_tempModel.feb" -o "/data/MATLAB/GIBBON/trunk/data/temp/iFEA_tempModel.txt" &amp;
+
+Warning: INTERP1(...,'CUBIC') will change in a future release. Use
+INTERP1(...,'PCHIP') instead. 
 SETTING MATERIAL PARAMETERS...
-P=1.0335172315461161e-03,1.1646753475466559e+01
+P=1.0863141623157879e-03,1.0659413148853965e+01
+
+ans =
+
+"/data/Code/C/FEBIO_linux/bin/febio2.lnx64" -i "/data/MATLAB/GIBBON/trunk/data/temp/iFEA_tempModel.feb" -o "/data/MATLAB/GIBBON/trunk/data/temp/iFEA_tempModel.txt" &amp;
+
+Warning: INTERP1(...,'CUBIC') will change in a future release. Use
+INTERP1(...,'PCHIP') instead. 
+    26           48      0.000244653         contract outside
 SETTING MATERIAL PARAMETERS...
-P=9.9593251623556487e-04,1.1999016952617250e+01
+P=1.0593679350007713e-03,1.1965610569747801e+01
+
+ans =
+
+"/data/Code/C/FEBIO_linux/bin/febio2.lnx64" -i "/data/MATLAB/GIBBON/trunk/data/temp/iFEA_tempModel.feb" -o "/data/MATLAB/GIBBON/trunk/data/temp/iFEA_tempModel.txt" &amp;
+
+Warning: INTERP1(...,'CUBIC') will change in a future release. Use
+INTERP1(...,'PCHIP') instead. 
 SETTING MATERIAL PARAMETERS...
-P=1.0081533972502777e-03,1.1881488490712925e+01
-SETTING MATERIAL PARAMETERS...
-P=9.8984882241313628e-04,1.2099229068007528e+01
-    24           51      4.84663e-05         shrink
+P=1.0532716577125734e-03,1.1599901232568746e+01
+
+ans =
+
+"/data/Code/C/FEBIO_linux/bin/febio2.lnx64" -i "/data/MATLAB/GIBBON/trunk/data/temp/iFEA_tempModel.feb" -o "/data/MATLAB/GIBBON/trunk/data/temp/iFEA_tempModel.txt" &amp;
+
+Warning: INTERP1(...,'CUBIC') will change in a future release. Use
+INTERP1(...,'PCHIP') instead. 
+    27           50      0.000244653         contract outside
  
 Exiting: Maximum number of function evaluations has been exceeded
          - increase MaxFunEvals option.
-         Current function value: 0.000048 
+         Current function value: 0.000245 
 
 SETTING MATERIAL PARAMETERS...
-P=9.9576318728295541e-04,1.2081910582805021e+01
+P=1.0108878193324179e-03,1.1827076763384527e+01
+
+ans =
+
+"/data/Code/C/FEBIO_linux/bin/febio2.lnx64" -i "/data/MATLAB/GIBBON/trunk/data/temp/iFEA_tempModel.feb" -o "/data/MATLAB/GIBBON/trunk/data/temp/iFEA_tempModel.txt" &amp;
+
+Warning: INTERP1(...,'CUBIC') will change in a future release. Use
+INTERP1(...,'PCHIP') instead. 
 
 function [Fopt,OPT_stats_out]=obj_DEMO_FEBio_iFEA_uniaxial_01(Pb,objectiveStruct)
 
@@ -680,7 +1029,7 @@ end
 
 disp_text=sprintf(<span class="string">'%6.16e,'</span>,P_opt); disp_text=disp_text(1:end-1);
 disp([<span class="string">'P_opt='</span>,disp_text]);
-</pre><pre class="codeoutput">P_opt=9.9576318728295541e-04,1.2081910582805021e+01
+</pre><pre class="codeoutput">P_opt=1.0108878193324179e-03,1.1827076763384527e+01
 </pre><pre class="codeinput">hf1=figuremax(figColor,figColorDef);
 title(<span class="string">'Stretch stress curves optimised'</span>,<span class="string">'FontSize'</span>,fontSize);
 xlabel(<span class="string">'\lambda Stretch [.]'</span>,<span class="string">'FontSize'</span>,fontSize); ylabel(<span class="string">'\sigma Cauchy stress [kPa]'</span>,<span class="string">'FontSize'</span>,fontSize); zlabel(<span class="string">'Z'</span>,<span class="string">'FontSize'</span>,fontSize); hold <span class="string">on</span>;
@@ -692,7 +1041,8 @@ legend(H,{<span class="string">'Simulation'</span>,<span class="string">'Experim
 view(2); axis <span class="string">tight</span>;  grid <span class="string">on</span>;
 set(gca,<span class="string">'FontSize'</span>,fontSize);
 drawnow;
-</pre><img vspace="5" hspace="5" src="DEMO_FEBio_iFEA_uniaxial_01_05.png" alt=""> <p><img vspace="5" hspace="5" src="gibbVerySmall.gif" alt=""> </p><p>GIBBON</p><p>Kevin M. Moerman (<a href="mailto:kevinmoerman@hotmail.com">kevinmoerman@hotmail.com</a>)</p><p class="footer"><br><a href="http://www.mathworks.com/products/matlab/">Published with MATLAB&reg; R2014b</a><br></p></div><!--
+</pre><pre class="codeoutput">Warning: Ignoring extra legend entries. 
+</pre><img vspace="5" hspace="5" src="DEMO_FEBio_iFEA_uniaxial_01_05.png" alt=""> <p><img vspace="5" hspace="5" src="gibbVerySmall.gif" alt=""> </p><p><i><b>GIBBON</b></i> <a href="www.gibboncode.org">www.gibboncode.org</a></p><p><i>Kevin Mattheus Moerman</i>, <a href="gibbon.toolbox@gmail.com">gibbon.toolbox@gmail.com</a></p><p class="footer"><br><a href="http://www.mathworks.com/products/matlab/">Published with MATLAB&reg; R2014b</a><br></p></div><!--
 ##### SOURCE BEGIN #####
 %% DEMO_FEBio_iFEA_uniaxial_01
 % Below is a demonstration for: 
@@ -701,7 +1051,6 @@ drawnow;
 %%
 
 clear; close all; clc; 
-warning off;
 
 %%
 % Plot settings
@@ -1100,9 +1449,10 @@ drawnow;
 %
 % <<gibbVerySmall.gif>>
 % 
-% GIBBON 
+% _*GIBBON*_ 
+% <www.gibboncode.org>
 % 
-% Kevin M. Moerman (kevinmoerman@hotmail.com)
+% _Kevin Mattheus Moerman_, <gibbon.toolbox@gmail.com>
 
 ##### SOURCE END #####
 --></body></html>

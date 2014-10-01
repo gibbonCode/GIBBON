@@ -7,7 +7,7 @@
 
 %%
 
-clear all; close all; clc;
+clear; close all; clc;
 
 %%
 % Plot settings
@@ -468,22 +468,20 @@ FEB_struct.LoadData.LoadCurves.loadPoints={[0 0;1 1];[0 0;1 0;2 1];};
 %% SAVING .FEB FILE
 
 FEB_struct.disp_opt=0; %Display waitbars option
-febStruct2febFile(FEB_struct);
+febStruct2febFile_v1p2(FEB_struct);
 
 %% RUNNING FEBIO JOB
 
-% FEBioRunStruct.FEBioPath='C:\Progra~1\FEBio1p8\febio.exe';
-% FEBioRunStruct.FEBioPath='C:\Progra~1\FEBio2p0\bin\FEBio2x64.exe';
 FEBioRunStruct.run_filename=FEB_struct.run_filename;
 FEBioRunStruct.run_logname=FEB_struct.run_logname;
-FEBioRunStruct.disp_on=1; 
-FEBioRunStruct.disp_log_on=1; 
+FEBioRunStruct.disp_on=1;
+FEBioRunStruct.disp_log_on=1;
+FEBioRunStruct.runMode='external';%'internal';
 FEBioRunStruct.t_check=0.25; %Time for checking log file (dont set too small)
 FEBioRunStruct.maxtpi=1e99; %Max analysis time
+FEBioRunStruct.maxLogCheckTime=3; %Max log file checking time
 
-%-------------------------------------------------------------------
-[rundFlag]=runMonitorFEBio(FEBioRunStruct);%START FEBio NOW!!!!!!!!
-%------------------------------------------------------------------
+[runFlag]=runMonitorFEBio(FEBioRunStruct);%START FEBio NOW!!!!!!!!
 
 %% IMPORTING NODAL DISPLACEMENT RESULTS
 % Importing nodal displacements from a log file
@@ -516,6 +514,7 @@ drawnow;
 %
 % <<gibbVerySmall.gif>>
 % 
-% GIBBON 
+% _*GIBBON*_ 
+% <www.gibboncode.org>
 % 
-% Kevin M. Moerman (kevinmoerman@hotmail.com)
+% _Kevin Mattheus Moerman_, <gibbon.toolbox@gmail.com>
