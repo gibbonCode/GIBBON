@@ -36,7 +36,7 @@ for qC=1:1:numel(FEB_struct.Constraints)
     
     %Set prescribed constraints
     if isfield(FEB_struct.Constraints{qC},'Prescribe');
-        for q=1:1:numel(FEB_struct.Constraints{qC}.Fix)
+        for q=1:1:numel(FEB_struct.Constraints{qC}.Prescribe)
             
             currentBC=FEB_struct.Constraints{qC}.Prescribe{q}.bc;
             currentLC=FEB_struct.Constraints{qC}.Prescribe{q}.lc;

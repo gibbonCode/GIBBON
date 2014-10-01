@@ -1,10 +1,11 @@
 %% DEMO_FEBio_bar_sphere_indentation_multi_generation
 % Below is a demonstration for:
-% 1) The creation of an FEBio model for spherical indentation
-% 2) The use of multiple generations where stiffness is initially low
+% 
+% * The creation of an FEBio model for spherical indentation
+% * The use of multiple generations where stiffness is initially low
 % depending on step
-% 4) Running an FEBio job with MATLAB
-% 5) Importing FEBio results into MATLAB
+% * Running an FEBio job with MATLAB
+% * Importing FEBio results into MATLAB
 
 %%
 
@@ -337,10 +338,11 @@ if runFlag==1 %i.e. a succesful run
     
 end
 
-%%
+%% 
 %
 % <<gibbVerySmall.gif>>
-%
-% GIBBON
-%
-% Kevin M. Moerman (kevinmoerman@hotmail.com)
+% 
+% _*GIBBON*_ 
+% <www.gibboncode.org>
+% 
+% _Kevin Mattheus Moerman_, <gibbon.toolbox@gmail.com>

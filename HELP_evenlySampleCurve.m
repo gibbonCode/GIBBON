@@ -2,8 +2,9 @@
 % Below is a basic demonstration of the features of the |evenlySampleCurve| function.
 
 %%
-clear all; close all; clc;
+clear; close all; clc;
 
+%%
 % PLOT SETTINGS
 fig_color='w'; fig_colordef='white';
 markerSize=15;
@@ -63,6 +64,7 @@ drawnow; view(3); grid on; axis equal; axis tight;
 %
 % <<gibbVerySmall.gif>>
 % 
-% GIBBON 
+% _*GIBBON*_ 
+% <www.gibboncode.org>
 % 
-% Kevin M. Moerman (kevinmoerman@hotmail.com)
+% _Kevin Mattheus Moerman_, <gibbon.toolbox@gmail.com>

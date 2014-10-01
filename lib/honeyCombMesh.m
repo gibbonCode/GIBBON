@@ -1,7 +1,5 @@
 function [Fh,Vh]=honeyCombMesh(minV,maxV,pointSpacing)
 
-
-
 %% CREATE TRIANGULATION
 
 maxV(2)=maxV(2)+pointSpacing; 

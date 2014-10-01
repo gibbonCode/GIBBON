@@ -2,7 +2,7 @@
 % Below is a demonstration of the features of the |export_STL_txt| function
 
 %%
-clear all; close all; clc; 
+clear; close all; clc; 
 
 %%
 % Plot settings
@@ -15,12 +15,15 @@ fontSize=25;
 [F1,V1]=stanford_bunny;
 meanV=mean(V1,1);
 V1=V1-meanV(ones(1,size(V1,1)),:);
-F2=F1; 
-V2=V1/2;
+V1=V1./max(V1(:))/2;
+[F2,V2]=parasaurolophus;
+meanV=mean(V2,1);
+V2=V2-meanV(ones(1,size(V2,1)),:);
+V2=V2./max(V2(:));
 
 %% Create the stlStruct
 
-stlStruct.solidNames={'standford_bunny_big','standford_bunny_small'};
+stlStruct.solidNames={'standford_bunny','parasaurolophus'};
 stlStruct.solidVertices={V1,V2};
 stlStruct.solidFaces={F1,F2};
 stlStruct.solidNormals={[],[]};
@@ -55,6 +58,7 @@ export_STL_txt(fileName,stlStruct);
 %
 % <<gibbVerySmall.gif>>
 % 
-% GIBBON 
+% _*GIBBON*_ 
+% <www.gibboncode.org>
 % 
-% Kevin M. Moerman (kevinmoerman@hotmail.com)
+% _Kevin Mattheus Moerman_, <gibbon.toolbox@gmail.com>

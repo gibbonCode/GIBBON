@@ -6,7 +6,7 @@
    <!--
 This HTML was auto-generated from MATLAB code.
 To make changes, update the MATLAB code and republish this document.
-      --><title>adjacentdircount</title><meta name="generator" content="MATLAB 8.3"><link rel="schema.DC" href="http://purl.org/dc/elements/1.1/"><meta name="DC.date" content="2014-03-18"><meta name="DC.source" content="HELP_adjacentdircount.m"><style type="text/css">
+      --><title>adjacentdircount</title><meta name="generator" content="MATLAB 8.4"><link rel="schema.DC" href="http://purl.org/dc/elements/1.1/"><meta name="DC.date" content="2014-09-26"><meta name="DC.source" content="HELP_adjacentdircount.m"><style type="text/css">
 html,body,div,span,applet,object,iframe,h1,h2,h3,h4,h5,h6,p,blockquote,pre,a,abbr,acronym,address,big,cite,code,del,dfn,em,font,img,ins,kbd,q,s,samp,small,strike,strong,sub,sup,tt,var,b,u,i,center,dl,dt,dd,ol,ul,li,fieldset,form,label,legend,table,caption,tbody,tfoot,thead,tr,th,td{margin:0;padding:0;border:0;outline:0;font-size:100%;vertical-align:baseline;background:transparent}body{line-height:1}ol,ul{list-style:none}blockquote,q{quotes:none}blockquote:before,blockquote:after,q:before,q:after{content:'';content:none}:focus{outine:0}ins{text-decoration:none}del{text-decoration:line-through}table{border-collapse:collapse;border-spacing:0}
 
 html { min-height:100%; margin-bottom:1px; }
@@ -66,18 +66,15 @@ table td { padding:7px 5px; text-align:left; vertical-align:top; border:1px soli
 
 
 
-  </style></head><body><div class="content"><h1>adjacentdircount</h1><!--introduction--><p>Below is a demonstration of the features of the <tt>adjacentdircount</tt> function</p><!--/introduction--><h2>Contents</h2><div><ul><li><a href="#2">Using <tt>adjacentdircount</tt> to compute "connectivity"</a></li><li><a href="#6">Use for 3D arrays</a></li><li><a href="#8">EXAMPLE: Studying object line feature thickness</a></li></ul></div><pre class="codeinput">clear <span class="string">all</span>; close <span class="string">all</span>; clc;
-
-<span class="comment">%</span>
-<span class="comment">% Plot settings</span>
-fig_color=<span class="string">'w'</span>; fig_colordef=<span class="string">'white'</span>;
+  </style></head><body><div class="content"><h1>adjacentdircount</h1><!--introduction--><p>Below is a demonstration of the features of the <tt>adjacentdircount</tt> function</p><!--/introduction--><h2>Contents</h2><div><ul><li><a href="#3">Using <tt>adjacentdircount</tt> to compute "connectivity"</a></li><li><a href="#7">Use for 3D arrays</a></li><li><a href="#9">EXAMPLE: Studying object line feature thickness</a></li></ul></div><pre class="codeinput">clear; close <span class="string">all</span>; clc;
+</pre><p>Plot settings</p><pre class="codeinput">fig_color=<span class="string">'w'</span>; fig_colordef=<span class="string">'white'</span>;
 fontSize=15;
 faceColor=<span class="string">'b'</span>;
 faceAlpha=0.75;
 edgeColor=<span class="string">'k'</span>;
 edgeWidth=2;
 markerSize=5;
-</pre><h2>Using <tt>adjacentdircount</tt> to compute "connectivity"<a name="2"></a></h2><p>The <tt>adjacentdircount</tt> function computes the number of adjacent elements in the input array that have the value 1. As such it computes a type of connectivity or "thickness" of structures in the logic arrays allong a certain dimension.</p><p>Lets consider the following array:</p><pre class="codeinput">L=[0 1 1 0 0 1;<span class="keyword">...</span>
+</pre><h2>Using <tt>adjacentdircount</tt> to compute "connectivity"<a name="3"></a></h2><p>The <tt>adjacentdircount</tt> function computes the number of adjacent elements in the input array that have the value 1. As such it computes a type of connectivity or "thickness" of structures in the logic arrays allong a certain dimension.</p><p>Lets consider the following array:</p><pre class="codeinput">L=[0 1 1 0 0 1;<span class="keyword">...</span>
    0 0 1 0 0 1;<span class="keyword">...</span>
    1 0 0 1 1 1]; <span class="comment">%A logic array or an array containing ones</span>
 </pre><p>Now view the output of the <tt>adjacentdircount</tt> function for n=1:</p><pre class="codeinput">n=1; <span class="comment">%Row direction (i.e. thickness orthogonal to rows)</span>
@@ -100,7 +97,7 @@ Lc =
      0     0     1     0     0     1
      1     0     0     3     3     3
 
-</pre><h2>Use for 3D arrays<a name="6"></a></h2><p>Create a 3D example array, here L is copied upside down into a second "slice" and again for the third slice.</p><pre class="codeinput">L(:,:,2)=flipud(L);
+</pre><h2>Use for 3D arrays<a name="7"></a></h2><p>Create a 3D example array, here L is copied upside down into a second "slice" and again for the third slice.</p><pre class="codeinput">L(:,:,2)=flipud(L);
 L(:,:,3)=flipud(L(:,:,1));
 </pre><pre class="codeinput">n=3; <span class="comment">%Slice direction (i.e. thickness orthogonal to slices)</span>
 [Lc]=adjacentdircount(L,n);
@@ -126,7 +123,7 @@ Lc(:,:,3) =
      0     0     3     0     0     3
      0     2     2     0     0     3
 
-</pre><h2>EXAMPLE: Studying object line feature thickness<a name="8"></a></h2><pre class="codeinput"><span class="comment">% Simulating a striped image in 3D</span>
+</pre><h2>EXAMPLE: Studying object line feature thickness<a name="9"></a></h2><pre class="codeinput"><span class="comment">% Simulating a striped image in 3D</span>
 np=45;
 [X,Y,Z]=meshgrid(linspace(-5*pi,5*pi,np));
 R=sqrt(X.^2+Y.^2+Z.^2); <span class="comment">%Radii</span>
@@ -201,15 +198,15 @@ colormap <span class="string">jet</span>; colorbar;
 set(gca,<span class="string">'FontSize'</span>,fontSize);
 
 drawnow;
-</pre><img vspace="5" hspace="5" src="HELP_adjacentdircount_02.png" alt=""> <p><img vspace="5" hspace="5" src="gibbVerySmall.gif" alt=""> </p><p>GIBBON</p><p>Kevin M. Moerman (<a href="mailto:kevinmoerman@hotmail.com">kevinmoerman@hotmail.com</a>)</p><p class="footer"><br><a href="http://www.mathworks.com/products/matlab/">Published with MATLAB&reg; R2014a</a><br></p></div><!--
+</pre><img vspace="5" hspace="5" src="HELP_adjacentdircount_02.png" alt=""> <p><img vspace="5" hspace="5" src="gibbVerySmall.gif" alt=""> </p><p><i><b>GIBBON</b></i> <a href="www.gibboncode.org">www.gibboncode.org</a></p><p><i>Kevin Mattheus Moerman</i>, <a href="gibbon.toolbox@gmail.com">gibbon.toolbox@gmail.com</a></p><p class="footer"><br><a href="http://www.mathworks.com/products/matlab/">Published with MATLAB&reg; R2014b</a><br></p></div><!--
 ##### SOURCE BEGIN #####
 %% adjacentdircount
 % Below is a demonstration of the features of the |adjacentdircount| function
 
 %%
-clear all; close all; clc; 
+clear; close all; clc; 
 
-%
+%% 
 % Plot settings
 fig_color='w'; fig_colordef='white';
 fontSize=15;
@@ -356,8 +353,9 @@ drawnow;
 %
 % <<gibbVerySmall.gif>>
 % 
-% GIBBON 
+% _*GIBBON*_ 
+% <www.gibboncode.org>
 % 
-% Kevin M. Moerman (kevinmoerman@hotmail.com)
+% _Kevin Mattheus Moerman_, <gibbon.toolbox@gmail.com>
 ##### SOURCE END #####
 --></body></html>

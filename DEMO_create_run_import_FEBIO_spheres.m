@@ -1,15 +1,15 @@
 %% DEMO_create_run_import_FEBIO_spheres
 % Below is a demonstration for:
-% 1) The use of TETgen for meshing based on surface geometry
-% 2) The specification of boundary conditions for FEBio
-% 3) The exporting of .feb files
-% 4) Running an FEBio job with MATLAB
-% 5) Importing FEBio results into MATLAB
+% 
+% * The use of TETgen for meshing based on surface geometry
+% * The specification of boundary conditions for FEBio
+% * The exporting of .feb files
+% * Running an FEBio job with MATLAB
+% * Importing FEBio results into MATLAB
 
 %%
 
 clear; close all; clc;
-warning off; 
 
 %%
 % Plot settings
@@ -306,6 +306,7 @@ febStruct2febFile(FEB_struct);
 FEBioRunStruct.run_filename=FEB_struct.run_filename;
 FEBioRunStruct.run_logname=FEB_struct.run_logname;
 FEBioRunStruct.disp_on=1;
+FEBioRunStruct.FEBioPath='/data/Code/C/FEBIO_linux/bin/febio2.lnx64';
 FEBioRunStruct.disp_log_on=1;
 FEBioRunStruct.runMode='external';%'internal';
 FEBioRunStruct.t_check=0.25; %Time for checking log file (dont set too small)
@@ -379,10 +380,11 @@ if runFlag==1 %i.e. a succesful run
     drawnow;
 end
 
-%%
+%% 
 %
 % <<gibbVerySmall.gif>>
-%
-% GIBBON
-%
-% Kevin M. Moerman (kevinmoerman@hotmail.com)
+% 
+% _*GIBBON*_ 
+% <www.gibboncode.org>
+% 
+% _Kevin Mattheus Moerman_, <gibbon.toolbox@gmail.com>

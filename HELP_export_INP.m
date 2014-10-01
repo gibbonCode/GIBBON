@@ -2,7 +2,7 @@
 % Below is a demonstration of the features of the |export_INP| function
 
 %%
-clear all; close all; clc; 
+clear; close all; clc; 
 
 %%
 % Plot settings
@@ -94,6 +94,7 @@ export_INP(elementStruct,nodeStruct,inpName);
 %
 % <<gibbVerySmall.gif>>
 % 
-% GIBBON 
+% _*GIBBON*_ 
+% <www.gibboncode.org>
 % 
-% Kevin M. Moerman (kevinmoerman@hotmail.com)
+% _Kevin Mattheus Moerman_, <gibbon.toolbox@gmail.com>

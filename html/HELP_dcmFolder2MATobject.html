@@ -6,7 +6,7 @@
    <!--
 This HTML was auto-generated from MATLAB code.
 To make changes, update the MATLAB code and republish this document.
-      --><title>dcmFolder2MATobject</title><meta name="generator" content="MATLAB 8.3"><link rel="schema.DC" href="http://purl.org/dc/elements/1.1/"><meta name="DC.date" content="2014-03-18"><meta name="DC.source" content="HELP_dcmFolder2MATobject.m"><style type="text/css">
+      --><title>dcmFolder2MATobject</title><meta name="generator" content="MATLAB 8.4"><link rel="schema.DC" href="http://purl.org/dc/elements/1.1/"><meta name="DC.date" content="2014-09-26"><meta name="DC.source" content="HELP_dcmFolder2MATobject.m"><style type="text/css">
 html,body,div,span,applet,object,iframe,h1,h2,h3,h4,h5,h6,p,blockquote,pre,a,abbr,acronym,address,big,cite,code,del,dfn,em,font,img,ins,kbd,q,s,samp,small,strike,strong,sub,sup,tt,var,b,u,i,center,dl,dt,dd,ol,ul,li,fieldset,form,label,legend,table,caption,tbody,tfoot,thead,tr,th,td{margin:0;padding:0;border:0;outline:0;font-size:100%;vertical-align:baseline;background:transparent}body{line-height:1}ol,ul{list-style:none}blockquote,q{quotes:none}blockquote:before,blockquote:after,q:before,q:after{content:'';content:none}:focus{outine:0}ins{text-decoration:none}del{text-decoration:line-through}table{border-collapse:collapse;border-spacing:0}
 
 html { min-height:100%; margin-bottom:1px; }
@@ -66,7 +66,7 @@ table td { padding:7px 5px; text-align:left; vertical-align:top; border:1px soli
 
 
 
-  </style></head><body><div class="content"><h1>dcmFolder2MATobject</h1><!--introduction--><p>Below is a demonstration of the features of the <tt>dcmFolder2MATobject</tt> function</p><!--/introduction--><h2>Contents</h2><div><ul><li><a href="#2">CONVERTING DICOM IMAGE DATA TO A MAT OBJECT</a></li><li><a href="#4">LOADING OR HANDLING THE MAT OBJECT</a></li><li><a href="#5">Indexing into the MAT object to avoid loading entire structure</a></li><li><a href="#6">Viewing the image data</a></li><li><a href="#7">Viewing the image data using <tt>ind2patch</tt></a></li></ul></div><pre class="codeinput">clear <span class="string">all</span>; close <span class="string">all</span>; clc;
+  </style></head><body><div class="content"><h1>dcmFolder2MATobject</h1><!--introduction--><p>Below is a demonstration of the features of the <tt>dcmFolder2MATobject</tt> function</p><!--/introduction--><h2>Contents</h2><div><ul><li><a href="#2">CONVERTING DICOM IMAGE DATA TO A MAT OBJECT</a></li><li><a href="#4">LOADING OR HANDLING THE MAT OBJECT</a></li><li><a href="#5">Indexing into the MAT object to avoid loading entire structure</a></li><li><a href="#6">Viewing the image data</a></li><li><a href="#7">Viewing the image data using <tt>ind2patch</tt></a></li></ul></div><pre class="codeinput">clear; close <span class="string">all</span>; clc;
 
 <span class="comment">% Plot settings</span>
 fig_color=<span class="string">'w'</span>; fig_colordef=<span class="string">'white'</span>;
@@ -104,13 +104,6 @@ numberOfFolders=numel(pathNames);
 <span class="keyword">end</span>
 </pre><pre class="codeoutput">Detected SIEMENS files
 DICOM dictionary set to: dicom-dict-siemens.txt
-Warning: The field "TriggerTime" was not found! Assuming single dynamic at
-time=0 
-Warning: The field "NumberOfTemporalPositions" was not found! Assuming single
-dynamic at time=0 
-Warning: Folder
-C:\Users\kmmoerman\00_WORK\05_MATLAB\gibbon\trunk\data\DICOM\KNEE_UTE\IMPOST
-skipped since it does not contain .dcm files 
 </pre><h2>LOADING OR HANDLING THE MAT OBJECT<a name="4"></a></h2><p>Here is an example for loading in the entire data structure</p><pre class="codeinput">loadName=fullfile(pathName,<span class="string">'IMDAT'</span>,<span class="string">'IMDAT.mat'</span>);
 IMDAT_struct=load(loadName);
 </pre><h2>Indexing into the MAT object to avoid loading entire structure<a name="5"></a></h2><p>In somecases it is not desirable to load in the entire data set but only say a certain slice. In this case the MAT object allows for indexing as shows below. See also the help documentation for <tt>matfile</tt> Although this type of indexing can be slow it does allow one to only select a subset of the data which in some cases helps to save memory</p><pre class="codeinput">matObj = matfile(loadName);
@@ -124,14 +117,14 @@ xlabel(<span class="string">'J'</span>);ylabel(<span class="string">'I'</span>);
 imagesc(midSlice);
 axis <span class="string">equal</span>; axis <span class="string">tight</span>; colormap <span class="string">gray</span>; colorbar;
 drawnow;
-</pre><img vspace="5" hspace="5" src="HELP_dcmFolder2MATobject_01.png" alt=""> <h2>Viewing the image data using <tt>ind2patch</tt><a name="7"></a></h2><p>Alternatively the image data can be viewed using the <tt>ind2patch</tt> function. See the associated help for more information.</p><p><img vspace="5" hspace="5" src="gibbVerySmall.gif" alt=""> </p><p>GIBBON</p><p>Kevin M. Moerman (<a href="mailto:kevinmoerman@hotmail.com">kevinmoerman@hotmail.com</a>)</p><p class="footer"><br><a href="http://www.mathworks.com/products/matlab/">Published with MATLAB&reg; R2014a</a><br></p></div><!--
+</pre><img vspace="5" hspace="5" src="HELP_dcmFolder2MATobject_01.png" alt=""> <h2>Viewing the image data using <tt>ind2patch</tt><a name="7"></a></h2><p>Alternatively the image data can be viewed using the <tt>ind2patch</tt> function. See the associated help for more information.</p><p><img vspace="5" hspace="5" src="gibbVerySmall.gif" alt=""> </p><p><i><b>GIBBON</b></i> <a href="www.gibboncode.org">www.gibboncode.org</a></p><p><i>Kevin Mattheus Moerman</i>, <a href="gibbon.toolbox@gmail.com">gibbon.toolbox@gmail.com</a></p><p class="footer"><br><a href="http://www.mathworks.com/products/matlab/">Published with MATLAB&reg; R2014b</a><br></p></div><!--
 ##### SOURCE BEGIN #####
 %% dcmFolder2MATobject
 % Below is a demonstration of the features of the |dcmFolder2MATobject| function
 
 %%
 
-clear all; close all; clc;
+clear; close all; clc;
 
 % Plot settings
 fig_color='w'; fig_colordef='white'; 
@@ -228,8 +221,9 @@ drawnow;
 %
 % <<gibbVerySmall.gif>>
 % 
-% GIBBON 
+% _*GIBBON*_ 
+% <www.gibboncode.org>
 % 
-% Kevin M. Moerman (kevinmoerman@hotmail.com)
+% _Kevin Mattheus Moerman_, <gibbon.toolbox@gmail.com>
 ##### SOURCE END #####
 --></body></html>

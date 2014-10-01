@@ -141,10 +141,9 @@ switch compString
     case 'PCWIN64' %Windows 64-bit
         pathNameTetGen=fullfile(fileparts(fileparts(mfilename('fullpath'))),'lib_ext','tetGen','win64');
         runNameTetGen=fullfile(pathNameTetGen,'tetgen.exe');
-    case 'GLNXA64'
-        error('GLNXA64 is not supported yet. Compile tetGen from the source and alter the code here');
-%         pathNameTetGen=fullfile(fileparts(fileparts(mfilename('fullpath'))),'lib_ext','tetGen','lin64');
-%         runNameTetGen=fullfile(pathNameTetGen,'tetgen.exe');
+    case 'GLNXA64'        
+        pathNameTetGen=fullfile(fileparts(fileparts(mfilename('fullpath'))),'lib_ext','tetGen','lin64');
+        runNameTetGen=fullfile(pathNameTetGen,'tetgen');
     case 'MACI64'        
         pathNameTetGen=fullfile(fileparts(fileparts(mfilename('fullpath'))),'lib_ext','tetGen','mac64');
         runNameTetGen=fullfile(pathNameTetGen,'tetgen');

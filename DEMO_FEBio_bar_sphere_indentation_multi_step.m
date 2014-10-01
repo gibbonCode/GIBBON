@@ -1,15 +1,15 @@
 %% DEMO_FEBio_bar_sphere_indentation_multi_step
 % Below is a demonstration for: 
-% 1) The creation of an FEBio model for spherical indentation
-% 2) The use of multiple steps where contact is switched on and off
+%
+% * The creation of an FEBio model for spherical indentation
+% * The use of multiple steps where contact is switched on and off
 % depending on step
-% 4) Running an FEBio job with MATLAB
-% 5) Importing FEBio results into MATLAB
+% * Running an FEBio job with MATLAB
+% * Importing FEBio results into MATLAB
 
 %%
 
 clear; close all; clc; 
-warning off; 
 
 %%
 % Plot settings
@@ -333,6 +333,7 @@ end
 %
 % <<gibbVerySmall.gif>>
 % 
-% GIBBON 
+% _*GIBBON*_ 
+% <www.gibboncode.org>
 % 
-% Kevin M. Moerman (kevinmoerman@hotmail.com)
+% _Kevin Mattheus Moerman_, <gibbon.toolbox@gmail.com>

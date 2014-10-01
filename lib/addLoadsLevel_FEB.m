@@ -107,10 +107,11 @@ if isfield(FEB_struct.Loads,'Surface_load')
             end
             
         else
-            error('Specify either SetName of Set not both');
+            error('Specify either SetName or Set not both');
         end
     end
 end
+
 %% Adding nodal loads
 
 if  isfield(FEB_struct.Loads,'Nodal_load')

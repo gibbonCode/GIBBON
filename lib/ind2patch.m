@@ -3,12 +3,12 @@ function [F,V,C]=ind2patch(IND,M,ptype)
 % function [F,V,C]=ind2patch(IND,M,ptype)
 % ------------------------------------------------------------------------
 %
-% This function generates patch data (faces “F”, vertices “V” and color
-% data “C”) for 3D images. The patches are only generated for the voxels
-% specified by the linear indices in “IND”. The variable “ptype” indicates
+% This function generates patch data (faces ï¿½Fï¿½, vertices ï¿½Vï¿½ and color
+% data ï¿½Cï¿½) for 3D images. The patches are only generated for the voxels
+% specified by the linear indices in ï¿½INDï¿½. The variable ï¿½ptypeï¿½ indicates
 % the type of patch:
 %
-% ‘v’               Voxel patch data with unshared vertices and faces
+% ï¿½vï¿½               Voxel patch data with unshared vertices and faces
 %                  such that each voxel has 8 unshared vertices and 6
 %                  unshared faces (may be faster than 'vu' and 'vb'
 %                  options which require UNIQUE costly computations).
@@ -20,9 +20,9 @@ function [F,V,C]=ind2patch(IND,M,ptype)
 %                  faces e.g. only boundary for enclosed volume (plotted
 %                  data is visually equivalent to 'v' and 'vu' options when
 %                  FaceAlpha is 1)
-% ‘si’, ‘sj’, ‘sk’    Mid-voxel slice patch data for i, j and k direction
+% ï¿½siï¿½, ï¿½sjï¿½, ï¿½skï¿½    Mid-voxel slice patch data for i, j and k direction
 %                  respectively
-% ‘siu’, ‘sju’, ‘sku’ Same as ‘si’, ‘sj’, ‘sk’ but with double points
+% ï¿½siuï¿½, ï¿½sjuï¿½, ï¿½skuï¿½ Same as ï¿½siï¿½, ï¿½sjï¿½, ï¿½skï¿½ but with double points
 %                  removed.
 %
 %%% EXAMPLE
@@ -74,8 +74,9 @@ function [F,V,C]=ind2patch(IND,M,ptype)
 % set(gca,'FontSize',20);
 %
 % Kevin Mattheus Moerman
-% kevinmoerman@hotmail.com
-% 2014/01/13
+% gibbon.toolbox@gmail.com
+% 
+% 2014/09/25
 %------------------------------------------------------------------------
 
 %% PARSING INPUT

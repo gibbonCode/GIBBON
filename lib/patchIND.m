@@ -1,6 +1,6 @@
 function [IND_F,IND_V]=patchIND(F,V,formOpt)
 
-% function [F,V,C]=ind2patch(IND,M,ptype)
+% function [IND_F,IND_V]=patchIND(F,V,formOpt)
 % ------------------------------------------------------------------------
 %
 % This function computes the neighbouring faces (read elements in the case

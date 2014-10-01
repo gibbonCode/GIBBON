@@ -16,6 +16,7 @@ catch
     try
         v(3)=D.SliceThickness;
     catch
+        v(3)=1;
         warning('Missing field SpacingBetweenSlices and SliceThickness, assuming 1!');
     end
 end

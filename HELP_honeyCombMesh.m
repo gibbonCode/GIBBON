@@ -2,7 +2,7 @@
 % Below is a demonstration of the features of the |honeyCombMesh| function
 
 %%
-clear all; close all; clc; 
+clear; close all; clc; 
 
 %%
 % PLOT SETTINGS
@@ -31,6 +31,7 @@ maxV=[10 10];
 minV=[-10 -10];
 
 %% CREATING A HONEY-COMB MESH
+
 [Fh,Vh]=honeyCombMesh(minV,maxV,pointSpacing);
 
 %%
@@ -47,10 +48,12 @@ axis equal; view(3); axis tight;  grid on;
 set(gca,'FontSize',font_size);
 drawnow;
 view(2);
+
 %% 
 %
 % <<gibbVerySmall.gif>>
 % 
-% GIBBON 
+% _*GIBBON*_ 
+% <www.gibboncode.org>
 % 
-% Kevin M. Moerman (kevinmoerman@hotmail.com)
+% _Kevin Mattheus Moerman_, <gibbon.toolbox@gmail.com>

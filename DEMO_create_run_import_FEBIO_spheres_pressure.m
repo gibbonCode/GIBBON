@@ -1,16 +1,16 @@
 %% DEMO_create_run_import_FEBIO_spheres_pressure
 % Below is a demonstration for:
-% 1) The use of TETgen for meshing based on surface geometry
-% 2) The specification of boundary conditions for FEBio including pressure
+% 
+% * The use of TETgen for meshing based on surface geometry
+% * The specification of boundary conditions for FEBio including pressure
 % loading
-% 3) The exporting of .feb files
-% 4) Running an FEBio job with MATLAB
-% 5) Importing FEBio results into MATLAB
+% *  The exporting of .feb files
+% * Running an FEBio job with MATLAB
+% * Importing FEBio results into MATLAB
 
 %%
 
 clear; close all; clc;
-warning off; 
 
 %%
 % Plot settings
@@ -371,10 +371,12 @@ if runFlag==1 %i.e. a succesful run
     drawnow;
     
 end
-%%
+
+%% 
 %
 % <<gibbVerySmall.gif>>
-%
-% GIBBON
-%
-% Kevin M. Moerman (kevinmoerman@hotmail.com)
+% 
+% _*GIBBON*_ 
+% <www.gibboncode.org>
+% 
+% _Kevin Mattheus Moerman_, <gibbon.toolbox@gmail.com>

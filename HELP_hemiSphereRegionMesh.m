@@ -2,8 +2,9 @@
 % Below is a demonstration of the features of the |hemiSphereRegionMesh| function 
 
 %%
-clear all; close all; clc; 
+clear; close all; clc; 
 
+%%
 % Plot settings
 figColor='w'; figColorDef='white';
 fontSize=25;
@@ -68,6 +69,7 @@ export_INP(elementStruct,nodeStruct,'C:\Users\kmmoerman\Desktop\temp2.inp');
 %
 % <<gibbVerySmall.gif>>
 % 
-% GIBBON 
+% _*GIBBON*_ 
+% <www.gibboncode.org>
 % 
-% Kevin M. Moerman (kevinmoerman@hotmail.com)
+% _Kevin Mattheus Moerman_, <gibbon.toolbox@gmail.com>

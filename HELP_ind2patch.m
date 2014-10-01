@@ -1,8 +1,8 @@
 %% ind2patch
 % Below is a demonstration of the features of the |ind2patch| function
-
+%
 %%
-clear all; close all; clc; 
+clear; close all; clc; 
 
 %% Plotting a selection of voxels and slices
 
@@ -127,6 +127,9 @@ drawnow;
 % The path type s*u are simular to s* but use shared vertices
 
 %% Comparison to standard MATLAB |imagesc| function and the patch type MATLAB functions |slice| and |pcolor|
+% The comparison is what motivates the choice of coordinate system for
+% ind2patch i.e. that it is meant to aid in the visualization of image data
+% as is expected of image data. 
 
 figuremax(fig_color,fig_colordef);
 subplot(2,2,1);
@@ -161,7 +164,7 @@ drawnow;
 %%
 % Note that the image size is wrong for the |slice| and |pcolor| commands.
 % This is because intensities appear to be defined on voxels vertices (and
-% are reinterpolated onto faces) for these function instead of voxels
+% are reinterpolated onto faces) for these functions instead of voxels
 % centres as should be the case for image data. 
 
 %% Creating and plotting combined voxel and slice patch data
@@ -321,6 +324,7 @@ drawnow;
 %
 % <<gibbVerySmall.gif>>
 % 
-% GIBBON 
+% _*GIBBON*_ 
+% <www.gibboncode.org>
 % 
-% Kevin M. Moerman (kevinmoerman@hotmail.com)
+% _Kevin Mattheus Moerman_, <gibbon.toolbox@gmail.com>

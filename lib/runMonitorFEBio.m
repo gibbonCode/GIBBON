@@ -38,8 +38,13 @@ if ~isfield(FEBioRunStruct,'run_string')
             FEBioRunStruct.run_string=['"',FEBioRunStruct.FEBioPath,'" -i "',FEBioRunStruct.run_filename,'" -o "',FEBioRunStruct.run_logname,'" &'];
             runExternal=1;
         case 'external'
-            FEBioRunStruct.run_string=['start /min "GIBBON - FEBio" "',FEBioRunStruct.FEBioPath,'"',' -i "',FEBioRunStruct.run_filename,'" -o "',FEBioRunStruct.run_logname,'"'];
-            runExternal=1;
+            if ispc
+                FEBioRunStruct.run_string=['start /min "GIBBON - FEBio" "',FEBioRunStruct.FEBioPath,'"',' -i "',FEBioRunStruct.run_filename,'" -o "',FEBioRunStruct.run_logname,'"'];
+                runExternal=1;
+            else
+                FEBioRunStruct.run_string=['"',FEBioRunStruct.FEBioPath,'"',' -i "',FEBioRunStruct.run_filename,'" -o "',FEBioRunStruct.run_logname,'" &'];
+                runExternal=1;
+            end
         case 'internal'
             FEBioRunStruct.run_string=['"',FEBioRunStruct.FEBioPath,'" -i "',FEBioRunStruct.run_filename,'" -o "',FEBioRunStruct.run_logname,'"'];
             runExternal=0;
@@ -49,6 +54,8 @@ end
 if ~isfield(FEBioRunStruct,'run_string_quit')
     FEBioRunStruct.run_string_quit='taskkill /F /IM FEBio.exe /T';
 end
+
+FEBioRunStruct.run_string
 
 %% Starting FEBio job
 

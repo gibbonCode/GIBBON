@@ -60,7 +60,7 @@ end
 %% PLOT SETTINGS
 figColor='k'; figColorDef='black';
 fontSize=10;
-mark_siz1=10;
+mark_siz1=2;
 mark_siz2=50;
 lineWidth1=1;
 lineWidth2=2;
@@ -100,6 +100,20 @@ else
     logicBackGround=true(siz); %DEFAULT
 end
 
+%Check padOn option
+if isfield(cPar,'padOn')
+    padOn=cPar.padOn;
+else
+    padOn=1; %DEFAULT
+end
+
+%Check recoverOn options
+if isfield(cPar,'recoverOn')
+    recoverOn=cPar.recoverOn;
+else
+    recoverOn=1; %DEFAULT
+end
+
 %Get voxel size
 if isfield(cPar,'v')
     v=cPar.v;
@@ -109,6 +123,19 @@ end
 
 %Distance thresholds for curve spacing, higher spacings are considered gaps for instance
 distThresh=2*max(v(1:2));
+
+%% Pad arrays to cope with open ended contours
+if padOn==1
+    M_p=zeros(siz+2);
+    M_p(2:end-1,2:end-1,2:end-1)=M;
+    M=M_p;
+    
+    logicBackGround_p=zeros(siz+2);
+    logicBackGround_p(2:end-1,2:end-1,2:end-1)=logicBackGround;
+    logicBackGround=logicBackGround_p;
+    
+    siz=siz+2;
+end
 
 %% SET-UP IMAGE AND IMAGE COORDINATES
 
@@ -159,8 +186,6 @@ colormap(cMap); colorbar; caxis([0 1]);
 drawnow;
 
 setDefaultPointer; %Set default pointer
-
-    
     
 minC=0;
 maxC=1;
@@ -179,15 +204,17 @@ for is=sliceRange
     
     %Check for recovery file
     recoveryFileName=['temp_recover_uiContourSegment_',num2str(is),'.mat'];
-    if exist(recoveryFileName,'file') %Initialize based on recovery file
-        load(recoveryFileName);
-        Vcs{is}=recoveryStruct.Vcs; 
-        splitInd=recoveryStruct.splitInd;
-        V=recoveryStruct.V;
-        C=recoveryStruct.C;        
-        ic=recoveryStruct.ic;
-        ic_old=recoveryStruct.ic_old;        
-        caxis([recoveryStruct.minC recoveryStruct.maxC]); %Set axis limits        
+    if recoverOn==1 %Initialize with recovered metrics
+        if exist(recoveryFileName,'file') %Initialize based on recovery file
+            load(recoveryFileName);
+            Vcs{is}=recoveryStruct.Vcs;
+            splitInd=recoveryStruct.splitInd;
+            V=recoveryStruct.V;
+            C=recoveryStruct.C;
+            ic=recoveryStruct.ic;
+            ic_old=recoveryStruct.ic_old;
+            caxis([recoveryStruct.minC recoveryStruct.maxC]); %Set axis limits
+        end
     else %Initialize normally
         Vcs{is}{1}=[]; %Initialise first contour as empty for each slice
         splitInd=1; %Initialise to 1 for each slice        

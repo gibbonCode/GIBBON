@@ -6,7 +6,7 @@
    <!--
 This HTML was auto-generated from MATLAB code.
 To make changes, update the MATLAB code and republish this document.
-      --><title>DEMO_FEBio_bar_force</title><meta name="generator" content="MATLAB 8.4"><link rel="schema.DC" href="http://purl.org/dc/elements/1.1/"><meta name="DC.date" content="2014-09-23"><meta name="DC.source" content="DEMO_FEBio_bar_force_v1p2.m"><style type="text/css">
+      --><title>DEMO_FEBio_bar_force</title><meta name="generator" content="MATLAB 8.4"><link rel="schema.DC" href="http://purl.org/dc/elements/1.1/"><meta name="DC.date" content="2014-09-26"><meta name="DC.source" content="DEMO_FEBio_bar_force_v1p2.m"><style type="text/css">
 html,body,div,span,applet,object,iframe,h1,h2,h3,h4,h5,h6,p,blockquote,pre,a,abbr,acronym,address,big,cite,code,del,dfn,em,font,img,ins,kbd,q,s,samp,small,strike,strong,sub,sup,tt,var,b,u,i,center,dl,dt,dd,ol,ul,li,fieldset,form,label,legend,table,caption,tbody,tfoot,thead,tr,th,td{margin:0;padding:0;border:0;outline:0;font-size:100%;vertical-align:baseline;background:transparent}body{line-height:1}ol,ul{list-style:none}blockquote,q{quotes:none}blockquote:before,blockquote:after,q:before,q:after{content:'';content:none}:focus{outine:0}ins{text-decoration:none}del{text-decoration:line-through}table{border-collapse:collapse;border-spacing:0}
 
 html { min-height:100%; margin-bottom:1px; }
@@ -66,7 +66,7 @@ table td { padding:7px 5px; text-align:left; vertical-align:top; border:1px soli
 
 
 
-  </style></head><body><div class="content"><h1>DEMO_FEBio_bar_force</h1><!--introduction--><p>Below is a demonstration for: 1) The creation of an FEBio model whereby force is applied to a selection of nodes, in this case to the end of a bar 2) Running an FEBio job with MATLAB 3) Importing FEBio results into MATLAB</p><!--/introduction--><h2>Contents</h2><div><ul><li><a href="#4">CREATING MESHED BOX</a></li><li><a href="#6">DEFINE BC's</a></li><li><a href="#8">CONSTRUCTING FEB MODEL</a></li><li><a href="#9">SAVING .FEB FILE</a></li><li><a href="#10">RUNNING FEBIO JOB</a></li><li><a href="#11">IMPORTING NODAL DISPLACEMENT RESULTS</a></li><li><a href="#12">CREATING NODE SET IN DEFORMED STATE</a></li></ul></div><pre class="codeinput">clear <span class="string">all</span>; close <span class="string">all</span>; clc;
+  </style></head><body><div class="content"><h1>DEMO_FEBio_bar_force</h1><!--introduction--><p>Below is a demonstration for:</p><div><ul><li>The creation of an FEBio model whereby force is applied to a selection of nodes, in this case to the end of a bar</li><li>Running an FEBio job with MATLAB</li><li>Importing FEBio results into MATLAB</li></ul></div><!--/introduction--><h2>Contents</h2><div><ul><li><a href="#4">CREATING MESHED BOX</a></li><li><a href="#6">DEFINE BC's</a></li><li><a href="#8">CONSTRUCTING FEB MODEL</a></li><li><a href="#9">SAVING .FEB FILE</a></li><li><a href="#10">RUNNING FEBIO JOB</a></li><li><a href="#11">IMPORTING NODAL DISPLACEMENT RESULTS</a></li><li><a href="#12">CREATING NODE SET IN DEFORMED STATE</a></li></ul></div><pre class="codeinput">clear <span class="string">all</span>; close <span class="string">all</span>; clc;
 </pre><p>Plot settings</p><pre class="codeinput">figColor=<span class="string">'w'</span>; figColorDef=<span class="string">'white'</span>;
 fontSize=15;
 faceAlpha1=0.8;
@@ -201,7 +201,7 @@ FEB_struct.data_types={<span class="string">'ux;uy;uz'</span>};
 febStruct2febFile_v1p2(FEB_struct);
 </pre><pre class="codeoutput"> 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
---- Writing FEBio XML object --- 23-Sep-2014 12:23:03
+--- Writing FEBio XML object --- 26-Sep-2014 21:29:43
 Adding Module level
 Adding Globals level
 Adding Material level
@@ -222,7 +222,7 @@ Adding Loads level
 Adding LoadData level
 ----&gt; Defining load curves
 Writing .feb file
---- Done --- 23-Sep-2014 12:23:04
+--- Done --- 26-Sep-2014 21:29:44
 </pre><h2>RUNNING FEBIO JOB<a name="10"></a></h2><pre class="codeinput"><span class="comment">% FEBioRunStruct.FEBioPath='C:\Progra~1\FEBio1p8\febio.exe';</span>
 <span class="comment">% FEBioRunStruct.FEBioPath='C:\Progra~1\FEBio2p0\bin\FEBio2x64.exe';</span>
 FEBioRunStruct.run_filename=FEB_struct.run_filename;
@@ -239,9 +239,9 @@ FEBioRunStruct.maxLogCheckTime=3;
 <span class="comment">%-------------------------------------------------------------------</span>
 </pre><pre class="codeoutput"> 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
---- STARTING FEBIO JOB --- 23-Sep-2014 12:23:04
+--- STARTING FEBIO JOB --- 26-Sep-2014 21:29:44
 Waiting for log file...
-Proceeding to check log file...23-Sep-2014 12:23:04
+Proceeding to check log file...26-Sep-2014 21:29:44
 ------- converged at time : 0.1
 ------- converged at time : 0.170714
 ------- converged at time : 0.22662
@@ -276,7 +276,7 @@ Proceeding to check log file...23-Sep-2014 12:23:04
 ------- converged at time : 0.975519
 ------- converged at time : 0.998634
 ------- converged at time : 1
---- Done --- 23-Sep-2014 12:23:12
+--- Done --- 26-Sep-2014 21:29:53
 </pre><h2>IMPORTING NODAL DISPLACEMENT RESULTS<a name="11"></a></h2><p>Importing nodal displacements from a log file</p><pre class="codeinput">[~, N_disp_mat,~]=importFEBio_logfile(FEB_struct.run_output_names{1}); <span class="comment">%Nodal displacements</span>
 
 DN=N_disp_mat(:,2:end,end); <span class="comment">%Final nodal displacements</span>
@@ -295,14 +295,15 @@ colormap <span class="string">jet</span>; colorbar;
 <span class="comment">% camlight headlight;</span>
 set(gca,<span class="string">'FontSize'</span>,fontSize);
 drawnow;
-</pre><img vspace="5" hspace="5" src="DEMO_FEBio_bar_force_v1p2_03.png" alt=""> <p><img vspace="5" hspace="5" src="gibbVerySmall.gif" alt=""> </p><p>GIBBON</p><p>Kevin M. Moerman (<a href="mailto:kevinmoerman@hotmail.com">kevinmoerman@hotmail.com</a>)</p><p class="footer"><br><a href="http://www.mathworks.com/products/matlab/">Published with MATLAB&reg; R2014b</a><br></p></div><!--
+</pre><img vspace="5" hspace="5" src="DEMO_FEBio_bar_force_v1p2_03.png" alt=""> <p><img vspace="5" hspace="5" src="gibbVerySmall.gif" alt=""> </p><p><i><b>GIBBON</b></i> <a href="www.gibboncode.org">www.gibboncode.org</a></p><p><i>Kevin Mattheus Moerman</i>, <a href="gibbon.toolbox@gmail.com">gibbon.toolbox@gmail.com</a></p><p class="footer"><br><a href="http://www.mathworks.com/products/matlab/">Published with MATLAB&reg; R2014b</a><br></p></div><!--
 ##### SOURCE BEGIN #####
 %% DEMO_FEBio_bar_force
 % Below is a demonstration for: 
-% 1) The creation of an FEBio model whereby force is applied to a selection
+% 
+% * The creation of an FEBio model whereby force is applied to a selection
 % of nodes, in this case to the end of a bar
-% 2) Running an FEBio job with MATLAB
-% 3) Importing FEBio results into MATLAB
+% * Running an FEBio job with MATLAB
+% * Importing FEBio results into MATLAB
 
 %%
 
@@ -509,13 +510,15 @@ colormap jet; colorbar;
 set(gca,'FontSize',fontSize);
 drawnow;
 
+
 %% 
 %
 % <<gibbVerySmall.gif>>
 % 
-% GIBBON 
+% _*GIBBON*_ 
+% <www.gibboncode.org>
 % 
-% Kevin M. Moerman (kevinmoerman@hotmail.com)
+% _Kevin Mattheus Moerman_, <gibbon.toolbox@gmail.com>
 
 ##### SOURCE END #####
 --></body></html>

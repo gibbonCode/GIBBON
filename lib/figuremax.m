@@ -1,4 +1,4 @@
-function [fig]=figuremax(varargin)
+function [hf]=figuremax(varargin)
 
 % function [fig]=figuremax(Cbg,Cdef)
 % ------------------------------------------------------------------------
@@ -7,45 +7,61 @@ function [fig]=figuremax(varargin)
 % specified.
 % 
 %
+%
 % Kevin Mattheus Moerman
-% kevinmoerman@hotmail.com
-% Last update 14/03/2012
+% gibbon.toolbox@gmail.com
+% 
+% 30/09/2014
 %------------------------------------------------------------------------
+
 %%
 
 switch nargin
     case 0
         Cbg='w';
         Cdef='white';
-        scr_offset=60; %e.g. quick and dirty way to cope with bottom taskbar in windows
+        scr_offset=75; %e.g. quick and dirty way to cope with bottom taskbar in windows
     case 1
         Cbg=varargin{1};
         Cdef='white';
-        scr_offset=60; %e.g. quick and dirty way to cope with bottom taskbar in windows
+        scr_offset=75; %e.g. quick and dirty way to cope with bottom taskbar in windows
     case 2
         Cbg=varargin{1};
         Cdef=varargin{2};
-        scr_offset=60; %e.g. quick and dirty way to cope with bottom taskbar in windows        
+        scr_offset=75; %e.g. quick and dirty way to cope with bottom taskbar in windows        
     case 3
         Cbg=varargin{1};
         Cdef=varargin{2};
         scr_offset=varargin{3}; %e.g. quick and dirty way to cope with bottom taskbar in windows        
 end
-%Open figure with handle
-fig=figure; 
-set(fig,'renderer','OpenGL'); %Default renderer changed, options: painters | zbuffer | OpenGL
 
-%Setting renderer. For RGB and colormap driven There are some bugs for the hardware option, hence changed here
-opengl software; 
+%Open figure with handle
+hf=figure; 
+set(hf,'name','GIBBON');
+set(hf,'renderer','OpenGL'); %Default renderer changed, options: painters | zbuffer | OpenGL
 
 %Specify color scheme
-colordef (fig,Cdef); 
+colordef(hf,Cdef); 
+set(hf,'Color',Cbg);
+
+%Setting renderer. For RGB and colormap driven There are some bugs for the hardware option, hence changed here
+if ispc
+    opengl software;
+    %On UNIX systems, start MATLAB with the command, matlab softwareopengl
+end
 
 %Set renderer, set background color, maximize figure size
-% set(fig,'Color',Cbg,'units','normalized','outerposition',[0 0 1 1]);
+if scr_offset==0
+    try 
+        maxFig(hf);
+    catch
+        set(hf,'units','normalized','outerposition',[0 0 1 1]);
+    end
+else
+    scrsz = get(0,'ScreenSize');
+    set(hf,'units','pixels','outerposition',[scr_offset scr_offset scrsz(3)-2*scr_offset scrsz(4)-2*scr_offset]);
+end
 
-scrsz = get(0,'ScreenSize'); 
-set(fig,'Color',Cbg,'units','pixels','outerposition',[1+scr_offset scr_offset scrsz(3)-2*scr_offset scrsz(4)-2*scr_offset]);
 hold off;
  
 end

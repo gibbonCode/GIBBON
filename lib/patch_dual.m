@@ -20,7 +20,7 @@ function [Vd,Fd]=patch_dual(V,F)
 [~,~,Nv]=patchNormal(F,V);
 
 %Create patch indices
-[IND_F,~]=patchIND(F,V);
+[IND_F]=patchIND_old(F,V);
 
 %Face centre point coordinates
 X=V(:,1); Y=V(:,2); Z=V(:,3);
@@ -34,17 +34,17 @@ Zfd=accumarray({I,J},Vd(v,3),size(IND_F),[],NaN); Zfd=Zfd-nanmean(Zfd,2)*ones(1,
 
 %Determine face order
 Xfdn=Xfd; Yfdn=Yfd; Zfdn=Zfd;
-for i=1:1:size(Xfd,1)
-    Vc=[Xfd(i,:); Yfd(i,:); Zfd(i,:)];
-    v1=[Xfd(i,1),Yfd(i,1),Zfd(i,1)]-[Xfd(i,2),Yfd(i,2),Zfd(i,2)]; [v1]=vecnormalize(v1);
-    v2=[Xfd(i,2),Yfd(i,2),Zfd(i,2)]-[Xfd(i,3),Yfd(i,3),Zfd(i,3)]; [v2]=vecnormalize(v2);
+for q=1:1:size(Xfd,1)
+    Vc=[Xfd(q,:); Yfd(q,:); Zfd(q,:)];
+    v1=[Xfd(q,1),Yfd(q,1),Zfd(q,1)]-[Xfd(q,2),Yfd(q,2),Zfd(q,2)]; [v1]=vecnormalize(v1);
+    v2=[Xfd(q,2),Yfd(q,2),Zfd(q,2)]-[Xfd(q,3),Yfd(q,3),Zfd(q,3)]; [v2]=vecnormalize(v2);
     v3=cross(v1,v2); [v3]=vecnormalize(v3);
     v2=cross(v1,v3); [v2]=vecnormalize(v2);
     DCM=[v1; v2; v3];
     Vcn=(DCM*Vc)';
-    Xfdn(i,:)=Vcn(:,1);
-    Yfdn(i,:)=Vcn(:,2);
-    Zfdn(i,:)=Vcn(:,3);
+    Xfdn(q,:)=Vcn(:,1);
+    Yfdn(q,:)=Vcn(:,2);
+    Zfdn(q,:)=Vcn(:,3);
 end
 
 %Fix face order
@@ -61,10 +61,10 @@ n_sum=sum(Fds>0,2);
 face_num_types=unique(n_sum);
 face_num_types=face_num_types(face_num_types>0);
 Fd=cell(1,numel(face_num_types));
-for i=1:1:numel(face_num_types)
+for q=1:1:numel(face_num_types)
     %Get faces
-    Lf=(n_sum==face_num_types(i)); %logic for current faces    
-    F_now=Fds(Lf,1:face_num_types(i)); %The current face set
+    Lf=(n_sum==face_num_types(q)); %logic for current faces    
+    F_now=Fds(Lf,1:face_num_types(q)); %The current face set
     
     %Flip face orientation if required
     Nv_now=Nv(Lf,:); %Appropriate face normals based on input mesh    
@@ -74,6 +74,6 @@ for i=1:1:numel(face_num_types)
     F_now(logicFlip,:)=fliplr(F_now(logicFlip,:)); %Flip faces
     
     %Store faces in cell array    
-    Fd{i}=F_now; 
+    Fd{q}=F_now; 
 end
 

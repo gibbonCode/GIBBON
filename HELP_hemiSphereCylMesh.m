@@ -2,11 +2,11 @@
 % Below is a demonstration of the features of the |hemiSphereCylMesh| function
 
 %%
-clear all; close all; clc; 
+clear; close all; clc; 
 
 %% Plot settings
 figColor='w'; figColorDef='white';
-fontSize=15;
+fontSize=8;
 faceAlpha=1;
 lineWidth=1;
 markerSize1=10;
@@ -84,6 +84,7 @@ drawnow;
 %
 % <<gibbVerySmall.gif>>
 % 
-% GIBBON 
+% _*GIBBON*_ 
+% <www.gibboncode.org>
 % 
-% Kevin M. Moerman (kevinmoerman@hotmail.com)
+% _Kevin Mattheus Moerman_, <gibbon.toolbox@gmail.com>

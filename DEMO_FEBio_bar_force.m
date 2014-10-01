@@ -1,13 +1,14 @@
 %% DEMO_FEBio_bar_force
 % Below is a demonstration for: 
-% 1) The creation of an FEBio model whereby force is applied to a selection
+%
+% * The creation of an FEBio model whereby force is applied to a selection
 % of nodes, in this case to the end of a bar
-% 2) Running an FEBio job with MATLAB
-% 3) Importing FEBio results into MATLAB
+% *  Running an FEBio job with MATLAB
+% *  Importing FEBio results into MATLAB
 
 %%
 
-clear all; close all; clc;
+clear; close all; clc;
 
 %%
 % Plot settings
@@ -228,10 +229,12 @@ if runFlag==1 %i.e. a succesful run
     set(gca,'FontSize',fontSize);
     drawnow;
 end
+
 %% 
 %
 % <<gibbVerySmall.gif>>
 % 
-% GIBBON 
+% _*GIBBON*_ 
+% <www.gibboncode.org>
 % 
-% Kevin M. Moerman (kevinmoerman@hotmail.com)
+% _Kevin Mattheus Moerman_, <gibbon.toolbox@gmail.com>

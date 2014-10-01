@@ -1,8 +1,9 @@
 %% DEMO_FEBio_bar_sphere_indentation
 % Below is a demonstration for: 
-% 1) The creation of an FEBio model for spherical indentation
-% 2) Running an FEBio job with MATLAB
-% 3) Importing FEBio results into MATLAB
+% 
+% * The creation of an FEBio model for spherical indentation
+% * Running an FEBio job with MATLAB
+% * Importing FEBio results into MATLAB
 
 %%
 
@@ -321,6 +322,7 @@ end
 %
 % <<gibbVerySmall.gif>>
 % 
-% GIBBON 
+% _*GIBBON*_ 
+% <www.gibboncode.org>
 % 
-% Kevin M. Moerman (kevinmoerman@hotmail.com)
+% _Kevin Mattheus Moerman_, <gibbon.toolbox@gmail.com>

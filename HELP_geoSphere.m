@@ -2,7 +2,7 @@
 % Below is a demonstration of the features of the |geoSphere| function
 
 %%
-clear all; close all; clc; 
+clear; close all; clc; 
 
 %% 
 % Plot settings
@@ -44,6 +44,7 @@ end
 %
 % <<gibbVerySmall.gif>>
 % 
-% GIBBON 
+% _*GIBBON*_ 
+% <www.gibboncode.org>
 % 
-% Kevin M. Moerman (kevinmoerman@hotmail.com)
+% _Kevin Mattheus Moerman_, <gibbon.toolbox@gmail.com>

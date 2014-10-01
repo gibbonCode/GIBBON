@@ -6,7 +6,7 @@
    <!--
 This HTML was auto-generated from MATLAB code.
 To make changes, update the MATLAB code and republish this document.
-      --><title>ind2patch</title><meta name="generator" content="MATLAB 8.3"><link rel="schema.DC" href="http://purl.org/dc/elements/1.1/"><meta name="DC.date" content="2014-07-07"><meta name="DC.source" content="HELP_ind2patch.m"><style type="text/css">
+      --><title>ind2patch</title><meta name="generator" content="MATLAB 8.4"><link rel="schema.DC" href="http://purl.org/dc/elements/1.1/"><meta name="DC.date" content="2014-09-26"><meta name="DC.source" content="HELP_ind2patch.m"><style type="text/css">
 html,body,div,span,applet,object,iframe,h1,h2,h3,h4,h5,h6,p,blockquote,pre,a,abbr,acronym,address,big,cite,code,del,dfn,em,font,img,ins,kbd,q,s,samp,small,strike,strong,sub,sup,tt,var,b,u,i,center,dl,dt,dd,ol,ul,li,fieldset,form,label,legend,table,caption,tbody,tfoot,thead,tr,th,td{margin:0;padding:0;border:0;outline:0;font-size:100%;vertical-align:baseline;background:transparent}body{line-height:1}ol,ul{list-style:none}blockquote,q{quotes:none}blockquote:before,blockquote:after,q:before,q:after{content:'';content:none}:focus{outine:0}ins{text-decoration:none}del{text-decoration:line-through}table{border-collapse:collapse;border-spacing:0}
 
 html { min-height:100%; margin-bottom:1px; }
@@ -66,7 +66,7 @@ table td { padding:7px 5px; text-align:left; vertical-align:top; border:1px soli
 
 
 
-  </style></head><body><div class="content"><h1>ind2patch</h1><!--introduction--><p>Below is a demonstration of the features of the <tt>ind2patch</tt> function</p><!--/introduction--><h2>Contents</h2><div><ul><li><a href="#2">Plotting a selection of voxels and slices</a></li><li><a href="#5">Introduction to using <tt>ind2patch</tt> for voxel plotting</a></li><li><a href="#12">Introduction to using <tt>ind2patch</tt> for slice plotting</a></li><li><a href="#14">Comparison to standard MATLAB <tt>imagesc</tt> function and the patch type MATLAB functions <tt>slice</tt> and <tt>pcolor</tt></a></li><li><a href="#16">Creating and plotting combined voxel and slice patch data</a></li><li><a href="#19">Shrinking patch data through combination with <tt>scalePatch</tt> function</a></li><li><a href="#21">Example medical image data and coordinate manipulation due to voxel size</a></li><li><a href="#24">Combining colormap and RGB driven patch colours</a></li></ul></div><pre class="codeinput">clear <span class="string">all</span>; close <span class="string">all</span>; clc;
+  </style></head><body><div class="content"><h1>ind2patch</h1><!--introduction--><p>Below is a demonstration of the features of the <tt>ind2patch</tt> function</p><!--/introduction--><h2>Contents</h2><div><ul><li><a href="#2">Plotting a selection of voxels and slices</a></li><li><a href="#5">Introduction to using <tt>ind2patch</tt> for voxel plotting</a></li><li><a href="#12">Introduction to using <tt>ind2patch</tt> for slice plotting</a></li><li><a href="#14">Comparison to standard MATLAB <tt>imagesc</tt> function and the patch type MATLAB functions <tt>slice</tt> and <tt>pcolor</tt></a></li><li><a href="#16">Creating and plotting combined voxel and slice patch data</a></li><li><a href="#19">Shrinking patch data through combination with <tt>scalePatch</tt> function</a></li><li><a href="#21">Example medical image data and coordinate manipulation due to voxel size</a></li><li><a href="#24">Combining colormap and RGB driven patch colours</a></li></ul></div><pre class="codeinput">clear; close <span class="string">all</span>; clc;
 </pre><h2>Plotting a selection of voxels and slices<a name="2"></a></h2><p>Plot settings</p><pre class="codeinput">fig_color=<span class="string">'w'</span>; fig_colordef=<span class="string">'white'</span>;
 cMap=jet(250);
 faceAlpha1=1;
@@ -143,7 +143,7 @@ hs=patch(<span class="string">'Faces'</span>,F,<span class="string">'Vertices'</
 axis <span class="string">equal</span>; view(3); axis <span class="string">tight</span>; axis <span class="string">vis3d</span>; grid <span class="string">on</span>;
 colormap(cMap); caxis([min(M(:)) max(M(:))]);
 drawnow;
-</pre><img vspace="5" hspace="5" src="HELP_ind2patch_04.png" alt=""> <p>The path type s*u are simular to s* but use shared vertices</p><h2>Comparison to standard MATLAB <tt>imagesc</tt> function and the patch type MATLAB functions <tt>slice</tt> and <tt>pcolor</tt><a name="14"></a></h2><pre class="codeinput">figuremax(fig_color,fig_colordef);
+</pre><img vspace="5" hspace="5" src="HELP_ind2patch_04.png" alt=""> <p>The path type s*u are simular to s* but use shared vertices</p><h2>Comparison to standard MATLAB <tt>imagesc</tt> function and the patch type MATLAB functions <tt>slice</tt> and <tt>pcolor</tt><a name="14"></a></h2><p>The comparison is what motivates the choice of coordinate system for ind2patch i.e. that it is meant to aid in the visualization of image data as is expected of image data.</p><pre class="codeinput">figuremax(fig_color,fig_colordef);
 subplot(2,2,1);
 title(<span class="string">'MATLAB imagesc function'</span>);
 xlabel(<span class="string">'J - columns'</span>);ylabel(<span class="string">'I - rows'</span>); zlabel(<span class="string">'K - slices'</span>); hold <span class="string">on</span>;
@@ -172,7 +172,7 @@ hs=patch(<span class="string">'Faces'</span>,F,<span class="string">'Vertices'</
 axis <span class="string">equal</span>; view(2); axis <span class="string">tight</span>; axis <span class="string">vis3d</span>; grid <span class="string">on</span>;
 colormap(cMap); caxis([min(M(:)) max(M(:))]);
 drawnow;
-</pre><img vspace="5" hspace="5" src="HELP_ind2patch_05.png" alt=""> <p>Note that the image size is wrong for the <tt>slice</tt> and <tt>pcolor</tt> commands. This is because intensities appear to be defined on voxels vertices (and are reinterpolated onto faces) for these function instead of voxels centres as should be the case for image data.</p><h2>Creating and plotting combined voxel and slice patch data<a name="16"></a></h2><p>Simulating 3D image</p><pre class="codeinput">[X,Y,Z]=meshgrid(linspace(-4.77,4.77,25));
+</pre><img vspace="5" hspace="5" src="HELP_ind2patch_05.png" alt=""> <p>Note that the image size is wrong for the <tt>slice</tt> and <tt>pcolor</tt> commands. This is because intensities appear to be defined on voxels vertices (and are reinterpolated onto faces) for these functions instead of voxels centres as should be the case for image data.</p><h2>Creating and plotting combined voxel and slice patch data<a name="16"></a></h2><p>Simulating 3D image</p><pre class="codeinput">[X,Y,Z]=meshgrid(linspace(-4.77,4.77,25));
 phi=(1+sqrt(5))/2;
 M=1/6*(2 - (cos(X + phi*Y) + cos(X - phi*Y) + cos(Y + phi*Z) + cos(Y - phi*Z) + cos(Z - phi*X) + cos(Z + phi*X)));
 </pre><p>Creating and plotting patch data. Last example illustrates the use of a specific logic description (i.e. a mask) for the voxels of interest</p><pre class="codeinput">figuremax(fig_color,fig_colordef);
@@ -214,6 +214,7 @@ axis <span class="string">equal</span>; view(3); axis <span class="string">tight
 [Ev,Vv,Cv]=ind2patch(L_mask,M,<span class="string">'h'</span>); <span class="comment">%This creates a hexahedral element for each voxel</span>
 [Evs,Vvs,Cvs]=scalePatch(Ev,Vv,Cv,0.5); <span class="comment">%Apply voxel element scaling</span>
 [Fvs,Cvs]=element2patch(Evs,Cvs); <span class="comment">%Convert to quad faces for plotting</span>
+</pre><pre class="codeoutput">Warning: hex8 elements assumed, for other elements please specify elementType 
 </pre><p>Plotting the voxels</p><pre class="codeinput">h1=figuremax(fig_color,fig_colordef);
 title(<span class="string">'Scaled (shrunk) patch data'</span>);
 xlabel(<span class="string">'J - columns'</span>);ylabel(<span class="string">'I - rows'</span>); zlabel(<span class="string">'K - slices'</span>); hold <span class="string">on</span>;
@@ -280,13 +281,13 @@ axis <span class="string">equal</span>; view(3); axis <span class="string">tight
 colormap(cMap); colorbar;
 
 drawnow;
-</pre><img vspace="5" hspace="5" src="HELP_ind2patch_09.png" alt=""> <p><img vspace="5" hspace="5" src="gibbVerySmall.gif" alt=""> </p><p>GIBBON</p><p>Kevin M. Moerman (<a href="mailto:kevinmoerman@hotmail.com">kevinmoerman@hotmail.com</a>)</p><p class="footer"><br><a href="http://www.mathworks.com/products/matlab/">Published with MATLAB&reg; R2014a</a><br></p></div><!--
+</pre><img vspace="5" hspace="5" src="HELP_ind2patch_09.png" alt=""> <p><img vspace="5" hspace="5" src="gibbVerySmall.gif" alt=""> </p><p><i><b>GIBBON</b></i> <a href="www.gibboncode.org">www.gibboncode.org</a></p><p><i>Kevin Mattheus Moerman</i>, <a href="gibbon.toolbox@gmail.com">gibbon.toolbox@gmail.com</a></p><p class="footer"><br><a href="http://www.mathworks.com/products/matlab/">Published with MATLAB&reg; R2014b</a><br></p></div><!--
 ##### SOURCE BEGIN #####
 %% ind2patch
 % Below is a demonstration of the features of the |ind2patch| function
-
+%
 %%
-clear all; close all; clc; 
+clear; close all; clc; 
 
 %% Plotting a selection of voxels and slices
 
@@ -411,6 +412,9 @@ drawnow;
 % The path type s*u are simular to s* but use shared vertices
 
 %% Comparison to standard MATLAB |imagesc| function and the patch type MATLAB functions |slice| and |pcolor|
+% The comparison is what motivates the choice of coordinate system for
+% ind2patch i.e. that it is meant to aid in the visualization of image data
+% as is expected of image data. 
 
 figuremax(fig_color,fig_colordef);
 subplot(2,2,1);
@@ -445,7 +449,7 @@ drawnow;
 %%
 % Note that the image size is wrong for the |slice| and |pcolor| commands.
 % This is because intensities appear to be defined on voxels vertices (and
-% are reinterpolated onto faces) for these function instead of voxels
+% are reinterpolated onto faces) for these functions instead of voxels
 % centres as should be the case for image data. 
 
 %% Creating and plotting combined voxel and slice patch data
@@ -605,8 +609,9 @@ drawnow;
 %
 % <<gibbVerySmall.gif>>
 % 
-% GIBBON 
+% _*GIBBON*_ 
+% <www.gibboncode.org>
 % 
-% Kevin M. Moerman (kevinmoerman@hotmail.com)
+% _Kevin Mattheus Moerman_, <gibbon.toolbox@gmail.com>
 ##### SOURCE END #####
 --></body></html>
