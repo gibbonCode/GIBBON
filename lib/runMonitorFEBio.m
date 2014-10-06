@@ -9,12 +9,12 @@ if FEBioRunStruct.disp_on==1;
 end
 
 %% Removing existing log-file
-if exist(FEBioRunStruct.run_logname,'file')>0
+if exist(FEBioRunStruct.run_logname,'file')==2
     delete(FEBioRunStruct.run_logname);
     
     %Check if its gone
-    if exist(FEBioRunStruct.run_logname,'file')>0
-        error('Log file deletion not succesful or the file location is not specific enough');
+    if exist(FEBioRunStruct.run_logname,'file')==2
+        error('Log file deletion not succesful check user permissions');
     end
 end
 
@@ -54,8 +54,6 @@ end
 if ~isfield(FEBioRunStruct,'run_string_quit')
     FEBioRunStruct.run_string_quit='taskkill /F /IM FEBio.exe /T';
 end
-
-FEBioRunStruct.run_string
 
 %% Starting FEBio job
 

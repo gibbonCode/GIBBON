@@ -8,14 +8,6 @@ clear; close all; clc;
 % PLOT SETTINGS
 fig_color='w'; fig_colordef='white';
 fontSize=20;
-cmap=gray(250);
-falpha=1;
-patch_types={'sx','sy','sz','v'};
-ptype=3;
-no_slices=4;
-mark_siz1=25;
-mark_siz2=25;
-mark_siz3=15;
 edgeWidth=2;
 edgeColor=0.7*ones(1,3);
 faceAlpha1=1;

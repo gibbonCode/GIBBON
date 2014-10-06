@@ -1,5 +1,19 @@
 function [Fm,Vm]=cap_patchcylinder(F1,V1,F2,V2,nr,nz)
 
+% function [Fm,Vm]=cap_patchcylinder(F1,V1,F2,V2,nr,nz)
+% ------------------------------------------------------------------------
+% This function assumes the inputs F1, V1 and F2, V2 define the faces and
+% vertices of two cylinders and closes to top and bottom faces by
+% connecting the cylinders together. The input nr defines the number
+% of radial points to add for the connection. The input nz defines the
+% number of steps used in the z-direction for the cylinders. 
+%
+% Kevin Mattheus Moerman
+% gibbon.toolbox@gmail.com
+% 
+% 2014/09/25
+%------------------------------------------------------------------------
+
 Fm=[F1; (F2+size(V1,1))]; 
 Vm=[V1; V2];
 

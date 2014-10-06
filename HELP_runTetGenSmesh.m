@@ -338,6 +338,81 @@ camlight headlight;
 set(gca,'FontSize',fontSize);
 drawnow;
 
+%% Meshing from a quadrilateral input surface
+% Build a quadrilateral surface
+
+boxDim=[4 5 6];
+boxEl=[4 5 6];
+[Fq,Vq,faceBoundaryMarker_q]=quadBox(boxDim,boxEl);
+
+%%
+% Create smesh structure
+
+[regionA]=tetVolMeanEst(Fq,Vq); %Volume for regular tets
+
+stringOpt='-pq1.2AaYQV';
+modelName='tempModel';
+smeshName=[modelName,'.smesh'];
+
+smeshStruct.stringOpt=stringOpt;
+smeshStruct.Faces=Fq;
+smeshStruct.Nodes=Vq;
+smeshStruct.holePoints=[];
+smeshStruct.faceBoundaryMarker=faceBoundaryMarker_q; %Face boundary markers
+smeshStruct.regionPoints=[0 0 0]; %region points
+smeshStruct.regionA=regionA;
+smeshStruct.minRegionMarker=2; %Minimum region marker
+smeshStruct.smeshName=smeshName;
+
+%% 
+% Mesh model using tetrahedral elements using tetGen (see:
+% <http://wias-berlin.de/software/tetgen/>)
+
+[meshOutput]=runTetGenSmesh(smeshStruct); %Run tetGen 
+
+%% 
+% Access model element and patch data
+F=meshOutput.faces;
+V=meshOutput.nodes;
+C=meshOutput.faceMaterialID;
+E=meshOutput.elements;
+
+%% 
+% PLOTTING MODEL 
+
+%Selecting half of the model to see interior
+Y=V(:,2); YE=mean(Y(E),2);
+L=YE>mean(Y);
+[Fs,Cs]=element2patch(E(L,:),C(L));
+
+hf1=figuremax(fig_color,fig_colordef);
+subplot(1,3,1);
+title('The quadrilateral surface model','FontSize',fontSize);
+patch('Faces',Fq,'Vertices',Vq,'FaceColor','flat','CData',faceBoundaryMarker_q,'FaceAlpha',faceAlpha1,'lineWidth',edgeWidth,'edgeColor',edgeColor);
+
+colormap(jet(6)); colorbar; 
+set(gca,'FontSize',fontSize);
+view(3); axis tight;  axis equal;  grid on;
+
+subplot(1,3,2);
+title('Solid tetrahedral mesh model','FontSize',fontSize);
+xlabel('X','FontSize',fontSize); ylabel('Y','FontSize',fontSize); zlabel('Z','FontSize',fontSize); hold on;
+hps=patch('Faces',F,'Vertices',V,'FaceColor','flat','CData',C,'lineWidth',edgeWidth,'edgeColor',edgeColor);
+view(3); axis tight;  axis equal;  grid on;
+colormap(autumn); 
+camlight headlight;
+set(gca,'FontSize',fontSize);
+subplot(1,3,3);
+title('Cut view of Solid tetrahedral mesh model','FontSize',fontSize);
+xlabel('X','FontSize',fontSize); ylabel('Y','FontSize',fontSize); zlabel('Z','FontSize',fontSize); hold on;
+hps=patch('Faces',Fs,'Vertices',V,'FaceColor','flat','CData',Cs,'lineWidth',edgeWidth,'edgeColor',edgeColor);
+view(3); axis tight;  axis equal;  grid on;
+colormap(autumn); 
+camlight headlight;
+set(gca,'FontSize',fontSize);
+drawnow;
+
+
 %% 
 %
 % <<gibbVerySmall.gif>>

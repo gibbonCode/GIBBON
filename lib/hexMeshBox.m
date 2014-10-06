@@ -1,5 +1,15 @@
 function [meshStruct]=hexMeshBox(boxDim,boxEl)
 
+% function [meshStruct]=hexMeshBox(boxDim,boxEl)
+% ------------------------------------------------------------------------
+%
+%
+% Kevin Mattheus Moerman
+% gibbon.toolbox@gmail.com
+% 
+% 2014/09/25
+%------------------------------------------------------------------------
+
 dX=boxDim(1); 
 dY=boxDim(2);
 dZ=boxDim(3);

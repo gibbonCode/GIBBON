@@ -1,14 +1,35 @@
-function [TET10,V10,VX10C]=tet4_tet10(TET4,V4,VXC)
+function [varargout]=tet4_tet10(varargin)
 
-% function [TET10,V10]=tet4_tet10(TET4,V4)
-% 
+% function [TET10,V10,VX10C]=tet4_tet10(TET4,V4,VXC)
+% ------------------------------------------------------------------------
 % This function converts 4 node (e.g. linear) tetrahedral elements into 10
 % node (e.g. quadratic) tetrahedral elements compatible with FEBio. 
 %
-% 09/12/2013, Kevin Mattheus Moerman
-% kevinmoerman@hotmail.com.com
-%----------------------------------------------------------------------
+%
+%
+% Kevin Mattheus Moerman
+% gibbon.toolbox@gmail.com
+% 
+% 2014/09/25
+%------------------------------------------------------------------------
 %%
+
+%% Parse input
+switch nargin
+    case 2
+        TET4=varargin{1};
+        V4=varargin{2};
+        VXC={};        
+    case 3
+        TET4=varargin{1};
+        V4=varargin{2};
+        VXC=varargin{3};
+    otherwise
+        error('wrong number of input arguments');
+end
+
+%%
+
 %Collect nodes
 V_1_4=V4;
 V_5 =0.5.*(V4(TET4(:,1),:)+V4(TET4(:,2),:));
@@ -60,7 +81,9 @@ else
     VX10C={};
 end
 
-
-
-
+%% Compose output
+varargout{1}=TET10;
+varargout{2}=V10;
+varargout{3}=VX10C;
+varargout{4}=ind_uni_2;
    
