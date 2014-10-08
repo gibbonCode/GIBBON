@@ -47,9 +47,9 @@ am=sqrt(sum(a.^2));
 bm=sqrt(sum(b.^2));
 cm=sqrt(sum(c.^2));
 
-phi=acos(dot(a,b)./(am*bm));
+phi=abs(acos(dot(a,b)./(am*bm)));
 phi=mod(phi,pi); %Angle between 2 1 and 6 1 edge 
-theta=acos(dot(a,c)./(am*cm));
+theta=abs(acos(dot(a,c)./(am*cm)));
 theta=mod(theta,pi); %Angle between 2 1 and 3 2 edge 
 
 if phi>theta
