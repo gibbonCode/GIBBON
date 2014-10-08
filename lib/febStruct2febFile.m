@@ -45,7 +45,7 @@ docNode=addGlobalsLevel_FEB(docNode,FEB_struct);
 docNode=addMaterialLevel_FEB(docNode,FEB_struct);
 
 %% DEFINING GEOMETRY LEVEL
-writeMethod=2;
+writeMethod=1;
 switch writeMethod
     case 1 % TEXT FILE PARSING (faster for large arrays)
         docNode=addGeometryLevel_TXT(docNode,FEB_struct);

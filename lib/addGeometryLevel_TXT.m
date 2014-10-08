@@ -282,7 +282,7 @@ if isfield(FEB_struct.Geometry,'NodeSet');
         
         %         textSetCell=textscan(textSet,'%s','delimiter', '\n','Whitespace','');
         
-        T_nodeSet(1,1)={['		<NodeSet name="',nodeSetName,'">',textSet,'</NodeSet>']}; %      <NodeSet name="bcRigidList"> 
+        T_surf(end+1,1)={['		<NodeSet name="',nodeSetName,'">',textSet,'</NodeSet>']}; %      <NodeSet name="bcRigidList"> 
     end    
 end
 

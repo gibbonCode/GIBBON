@@ -162,7 +162,7 @@ subplot(1,3,3);
 %Selecting half of the model to see interior
 Y=VT(:,2); YE=mean(Y(E),2);
 L=YE>mean(Y);
-[Fs,Cs]=element2patch(E(L,:),C(L));
+[Fs,Cs]=element2patch(E(L,:),C(L),'tet4');
 
 title('Cut view of solid tetrahedral mesh model','FontSize',fontSize);
 xlabel('X','FontSize',fontSize); ylabel('Y','FontSize',fontSize); zlabel('Z','FontSize',fontSize); hold on;
@@ -324,7 +324,7 @@ if runFlag==1 %i.e. a succesful run
     %Selecting half of the model to see interior
     Z=VT(:,3); ZE=mean(Z(E),2);
     L=ZE<mean(Z);
-    [Fs,~]=element2patch(E(L,:),[]);
+    [Fs,~]=element2patch(E(L,:),[],'tet4');
     
     Cs=sqrt(sum(DN.^2,2)); %Color towards displacement magnitude
     
