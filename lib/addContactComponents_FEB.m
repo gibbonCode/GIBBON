@@ -2,13 +2,13 @@ function [docNode]=addContactComponents_FEB(docNode,contactNode,FEB_struct)
 
 %%
 
-%Create contact field within Contact
-contactContactNode = docNode.createElement('contact');
-contactContactNode = contactNode.appendChild(contactContactNode);
-
 disp('----> Defining contact')
 
 for q_contact=1:1:numel(FEB_struct.Contact)
+    
+    %Create contact field within Contact
+    contactContactNode = docNode.createElement('contact');
+    contactContactNode = contactNode.appendChild(contactContactNode);
     
     %Setting Contact Type
     contactType=FEB_struct.Contact{q_contact}.Type;
