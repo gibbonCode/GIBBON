@@ -307,6 +307,8 @@ FEB_struct.LoadData.LoadCurves.loadPoints={[0 0;1 1];};
 FEB_struct.disp_opt=0; %Display waitbars option
 febStruct2febFile(FEB_struct);
 
+fdsfas
+
 %% RUNNING FEBIO JOB
 
 % FEBioRunStruct.FEBioPath='C:\Program Files\febio-2.1.1\bin\FEBio2.exe';

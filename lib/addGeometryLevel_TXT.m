@@ -8,9 +8,10 @@ rootNode = docNode.getDocumentElement;
 geometryNode = docNode.createElement('Geometry');
 geometryNode = rootNode.appendChild(geometryNode);
 
-%%
+%% Adding node field
 
-geometryNode = docNode.getElementsByTagName('Geometry').item(0);
+disp('----> Adding node field');
+
 parent_node = docNode.createElement('Nodes');
 parent_node = geometryNode.appendChild(parent_node);
 
@@ -18,11 +19,8 @@ xmlwrite(FEB_struct.run_filename,docNode); %Export to text file
 [T]=txtfile2cell(FEB_struct.run_filename); %Import back into cell array
 
 T_top=T(1:end-3);
-
 T_end=T(end-1:end);
 
-%NODE FIELD
-disp('----> Adding node field')
 if FEB_struct.disp_opt==1;
     hw = waitbar(0,'Adding node entries....');
 end
@@ -42,48 +40,75 @@ if FEB_struct.disp_opt==1;
     close(hw); drawnow; 
 end
 
-% ELEMENT FIELD
+%% Adding element field
+
 disp('----> Adding element field')
 
 numElementsPerSet=cellfun(@(x) size(x,1),FEB_struct.Geometry.Elements);
-numElements=sum(numElementsPerSet);
 startInds=[0 cumsum(numElementsPerSet(1:end-1))]+1;
 endInds=cumsum(numElementsPerSet);
-
-T_elem=cell(numElements+2,1);
-T_elem(1,1)={'		<Elements>'};
-
-for q_e1=1:1:numel(FEB_struct.Geometry.Elements)
-    elementIndices=startInds(q_e1):endInds(q_e1);
+T_elem={};
+for q_e1=1:1:numel(FEB_struct.Geometry.Elements) %for all element sets
     
-    E=FEB_struct.Geometry.Elements{q_e1};
-    t_form=repmat('   %u,',1,size(E,2)); t_form=t_form(1:end-1); %text format for sprintf for current element type
-    E_type=FEB_struct.Geometry.ElementType{q_e1};
-    M=FEB_struct.Geometry.ElementMat{q_e1};
+    E_type=FEB_struct.Geometry.ElementType{q_e1}; %Element type for current set
+    partName=FEB_struct.Geometry.ElementsPartName{q_e1}; %Element set part name
     
     if FEB_struct.disp_opt==1;
         hw = waitbar(0,['Adding ',E_type,' element entries....']);
     end
     disp(['----> Adding ',E_type,' element entries....']);
     
-    n_steps=size(E,1);
-    for q_e2=1:1:n_steps
-        e_ind=elementIndices(q_e2);
-        
-        T_elem(e_ind+1,1)={['			<',E_type,' id="',sprintf('%u',e_ind),'" mat="',sprintf('%u',M(q_e2)),'">',sprintf(t_form,E(q_e2,:)),'</',E_type,'>']};
-        
-        if FEB_struct.disp_opt==1 && rem(q_e2,round(n_steps/10))==0;
-            waitbar(q_e2/n_steps);
-        end
-    end
+    elementIndices=startInds(q_e1):endInds(q_e1);
     
+    E=FEB_struct.Geometry.Elements{q_e1}; %The current element set
+    
+    t_form=repmat('   %u,',1,size(E,2)); t_form=t_form(1:end-1); %text format for sprintf for current element type
+    
+    M=FEB_struct.Geometry.ElementMat{q_e1}; %Current elements set's material indices
+    matIdSet=unique(M(:)); %Set of unique material indices
+    numMat=numel(matIdSet);
+        
+    for q_mat=1:1:numMat
+        
+        matId=matIdSet(q_mat);
+        logicMat=M==matId; %Logic for all elements for matId
+        E_mat=E(logicMat,:);
+        elementIndices_mat=elementIndices(logicMat);
+        
+        n_steps=size(E_mat,1);
+        
+        if numMat>1
+            partNameSet=[partName,'_',sprintf('%u',matId)];
+        else
+            partNameSet=partName;
+        end
+        
+        T_elem_sub=cell(n_steps+2,1);
+        T_elem_sub(1,1)={['		<Elements mat="',sprintf('%u',matId),'" name="',partNameSet,'" type="',E_type,'">']};
+        %               <Elements mat="1" name="Cube_1" type="hex8">
+        for q_e2=1:1:n_steps
+            %              <elem id="11">   13,   19,   20,   14,   49,   55,   56,   50</elem>
+            
+            e_ind=elementIndices_mat(q_e2);
+            
+            T_elem_sub(q_e2+1,1)={['			<elem id="',sprintf('%u',e_ind),'">',sprintf(t_form,E_mat(q_e2,:)),'</elem>']};
+            
+            if FEB_struct.disp_opt==1 && rem(q_e2,round(n_steps/10))==0;
+                waitbar(q_e2/n_steps);
+            end
+        end
+        T_elem_sub(end,1)={'		</Elements>'};
+        
+        T_elem(end+1:end+numel(T_elem_sub),1)=T_elem_sub;
+    end
+        
     if FEB_struct.disp_opt==1;
-        close(hw); drawnow; 
+        close(hw); drawnow;
     end
 end
-T_elem(end,1)={'		</Elements>'};
 
-% ELEMENT DATA FIELD
+%% ElementData for thickness / mataxis information
+
 if isfield(FEB_struct.Geometry,'ElementData');
     disp('----> Adding element data field');
     
@@ -144,7 +169,7 @@ if isfield(FEB_struct.Geometry,'ElementData');
             thicknessEntryText=sprintf(t_form,thicknessData);
              
             c=c+1;
-            T_elementDataMiddle(c,1)={['            <thickness> ',thicknessEntryText,'</thickness>']};
+            T_elementDataMiddle(c,1)={['            <thickness>',thicknessEntryText,'</thickness>']};
 
         end %IF Thickness
         
@@ -192,15 +217,94 @@ else
     T_elementData={};
 end %IF ElementData
 
+%% Adding surface field
 
+T_surf={};
+if isfield(FEB_struct.Geometry,'Surface');
+    disp('----> Adding surface field');
+    
+    for q_set=1:1:numel(FEB_struct.Geometry.Surface)
+        
+        F=FEB_struct.Geometry.Surface{q_set}.Set; %Faces
+        numFaces=size(F,1);
+        surfaceType=FEB_struct.Geometry.Surface{q_set}.Type; %Surface type
+                
+        %Create surface level                
+        if ~isfield(FEB_struct.Geometry.Surface{q_set},'Name')
+            FEB_struct.Geometry.Surface{q_set}.Name=['Surface_',sprintf('%u',q_set)]; %Surface type                  
+        end        
+        surfaceName=FEB_struct.Geometry.Surface{q_set}.Name; %Surface type
+                        
+        T_surf_sub=cell(numFaces+2,1);
+        T_surf_sub(1,1)={['		<Surface name="',surfaceName,'">']}; %      <Surface name="Contact_master">
+                        
+        for q_face=1:1:numFaces %For all faces
+            t_form=repmat('   %u,',1,size(F,2)); t_form=t_form(1:end-1); %text format for sprintf for current element type
+            T_surf_sub(q_face+1,1)={['         <',surfaceType,' id="',sprintf('%u',q_face),'">',sprintf(t_form,F(q_face,:)),'</',surfaceType,'>']}; %          <tri3 id="1">   4906,   5101,   5100</tri3>
+        end 
+        T_surf_sub(end,1)={'		</Surface>'};
+        
+        T_surf(end+1:end+numel(T_surf_sub),1)=T_surf_sub;
+        
+    end
+else
+    T_surf={};
+end
+
+%% Adding NodeSet section
+
+if isfield(FEB_struct.Geometry,'NodeSet');
+    disp('----> Adding NodeSet field');
+    
+    T_nodeSet={};
+
+    for q_set=1:1:numel(FEB_struct.Geometry.NodeSet)
+        
+        nodeSetIndices=FEB_struct.Geometry.NodeSet{q_set}.Set; %Node indices
+        nodeSetIndices=nodeSetIndices(:)'; %Row vector
+                
+        if ~isfield(FEB_struct.Geometry.NodeSet{q_set},'Name')
+            FEB_struct.Geometry.NodeSet{q_set}.Name=['NodeSet_',sprintf('%u',q_set)]; %Surface type                    
+        end
+        nodeSetName=FEB_struct.Geometry.NodeSet{q_set}.Name; %Node set name              
+
+        %Add node index text field        
+        maxWidth=25;
+        maxCharLength=numel(sprintf('%u',max(nodeSetIndices)));
+        t_form_sub=['%',sprintf('%u',maxCharLength+1),'u,'];
+        t_form=[repmat(t_form_sub,1,maxWidth),'\n'];
+        textSet=sprintf(t_form,nodeSetIndices);        
+        if mod(numel(nodeSetIndices),maxWidth)==0 %Devisable by 5 so a , and \n appear at the end
+            textSet=textSet(1:end-2);%Take away last \n and ,
+        elseif mod(numel(nodeSetIndices),maxWidth)~=0 %A remainder leading to only an extra ,
+            textSet=textSet(1:end-1); %Take away last ,
+        end
+        
+        %         textSetCell=textscan(textSet,'%s','delimiter', '\n','Whitespace','');
+        
+        T_nodeSet(1,1)={['		<NodeSet name="',nodeSetName,'">',textSet,'</NodeSet>']}; %      <NodeSet name="bcRigidList"> 
+    end    
+end
+
+%%
 
 %Compose text cell
 totalTextCell=T_top;
 totalTextCell(end+1:end+numel(T_node))=T_node;
 totalTextCell(end+1:end+numel(T_elem))=T_elem;
+
 if ~isempty(T_elementData)
     totalTextCell(end+1:end+numel(T_elementData))=T_elementData;
 end
+
+if ~isempty(T_surf)
+    totalTextCell(end+1:end+numel(T_surf))=T_surf;
+end
+
+if ~isempty(T_nodeSet)
+    totalTextCell(end+1:end+numel(T_nodeSet))=T_nodeSet;
+end
+
 totalTextCell(end+1:end+numel(T_end))=T_end;
 
 cell2txtfile(FEB_struct.run_filename,totalTextCell,1); %Export to text file

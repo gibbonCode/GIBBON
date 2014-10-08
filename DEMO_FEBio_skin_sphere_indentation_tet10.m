@@ -167,7 +167,7 @@ drawnow;
 
 %% Create shell layer based on contact layer 
 %Convert tri6 boundary faces to 
-[Fc2_shell]=tri6_subtri3(Fc2);
+[Fc2_shell]=tri6_subtri3(Fc2,V);
 
 %%
 % Plotting surface models
@@ -175,7 +175,7 @@ hf=figuremax(figColor,figColorDef);
 title('Shell layer','FontSize',fontSize);
 xlabel('X','FontSize',fontSize); ylabel('Y','FontSize',fontSize); zlabel('Z','FontSize',fontSize);
 hold on;
-patch('Faces',Fb1,'Vertices',V,'FaceColor','b','FaceAlpha',0.2,'edgeColor','none');
+patch('Faces',Fb1,'Vertices',V,'FaceColor','b','FaceAlpha',0.2,'edgeColor','k');
 
 patch('Faces',Fc1,'Vertices',V,'FaceColor','g','FaceAlpha',1,'lineWidth',edgeWidth,'edgeColor',edgeColor);
 % [hp]=patchNormPlot(Fc1,V,pointSpacing/2);

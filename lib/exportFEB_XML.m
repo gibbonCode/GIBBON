@@ -10,7 +10,7 @@ xmlwrite(save_name,XDOC);
 TT=cell(1,1);
 TT(1,1)=T(1,1);
 TT(2,1)={'<!-- '};
-TT(3,1)={['Created using GIBBON, Kevin M. Moerman, ',datestr(now)]};
+TT(3,1)={['Created using GIBBON, ',datestr(now)]};
 TT(4,1)={'-->'};
 TT(end+1:end+size(T,1)-1)=T(2:end);
 

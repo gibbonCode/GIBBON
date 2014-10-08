@@ -55,8 +55,6 @@ for q_e1=1:1:numel(FEB_struct.Geometry.Elements) %for all element sets
     end
     disp(['----> Adding ',E_type,' element entries....']);
     
-    
-    
     elementIndices=startInds(q_e1):endInds(q_e1);
     
     E=FEB_struct.Geometry.Elements{q_e1}; %The current element set
@@ -124,7 +122,6 @@ for q_e1=1:1:numel(FEB_struct.Geometry.Elements) %for all element sets
     end
 end
 
-
 %% ElementData for thickness
 
 if isfield(FEB_struct.Geometry,'ElementData');
@@ -189,7 +186,7 @@ if isfield(FEB_struct.Geometry,'ElementData');
     end
 end
 
-%%
+%% ElementData for fibre directions and MatAxis
 
 % Checking for fiber / mat_axis information
 if isfield(FEB_struct.Geometry,'ElementData') %If ElementData exists
@@ -221,7 +218,8 @@ if isfield(FEB_struct.Geometry,'Surface');
         attr.setNodeValue(surfaceName); %Set id text
         parent_node.setAttributeNode(attr); %Add id attribute
         
-        for q_face=1:1:size(F,1) %For all faces
+        numFaces=size(F,1);
+        for q_face=1:1:numFaces %For all faces
             
             %Add element entry
             element_node = docNode.createElement(surfaceType);

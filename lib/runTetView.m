@@ -23,7 +23,7 @@ modelName=regexprep(modelName,'\','/');
 %% RUN TETVIEW
 % cd(pathNameTetView);
 
-runString=[runNameTetView,' ',modelName,' & ']
+runString=[runNameTetView,' ',modelName,' & '];
 
 system(runString);
 
