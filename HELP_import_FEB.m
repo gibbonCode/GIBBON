@@ -17,7 +17,13 @@ edgeWidth=1.5;
 defaultFolder = fileparts(mfilename('fullpath'));
 pathName=fullfile(defaultFolder,'data','FEB');
 
-febFileNamePart='tetGenModel.feb';
+testCase=2; 
+switch testCase
+    case 1
+        febFileNamePart='tetGenModel.feb'; %febio_spec 1.2
+    case 2
+        febFileNamePart='tempModel_2p0.feb'; %febio_spec 2.0
+end
 febFileName=fullfile(pathName,febFileNamePart);
 [febXML,nodeStruct,elementCell]=import_FEB(febFileName);
 
@@ -25,7 +31,7 @@ febFileName=fullfile(pathName,febFileNamePart);
 % Content:
 
 nodeStruct
-elementCell{1}
+elementCell{:}
 
 V=nodeStruct.N;
 
@@ -38,21 +44,15 @@ title('Visualizing fullmodel','FontSize',fontSize);
 xlabel('X','FontSize',fontSize);ylabel('Y','FontSize',fontSize); zlabel('Z','FontSize',fontSize);
 hold on;
 
-uniqueMaterialIndices=[];
 for q=1:1:numel(elementCell)
-    uniqueMaterialIndices=unique([uniqueMaterialIndices(:); elementCell{q}.E_mat(:)]);
+
     E=elementCell{q}.E;
-    switch elementCell{q}.E_type
-        case {'tri3', 'quad4'}
-            F=E;
-            V=nodeStruct.N;
-            C=elementCell{q}.E_mat;
-        case {'hex8', 'tet4'}
-            E=elementCell{q}.E;
-            [F,C]=element2patch(E,elementCell{q}.E_mat); %Creates faces and colors (e.g. stress) for patch based plotting
+    C=elementCell{q}.E_mat;
+    if numel(C)==1
+        C=C.*ones(size(E,1),1);
     end
-    
-    hp=patch('Faces',F,'Vertices',V,'EdgeColor','k','FaceColor','flat','Cdata',C,'FaceAlpha',0.8);
+        
+    [F,C]=element2patch(E,C); 
     
     subplot(1,2,1);
     
@@ -60,8 +60,7 @@ for q=1:1:numel(elementCell)
     xlabel('X','FontSize',fontSize); ylabel('Y','FontSize',fontSize); zlabel('Z','FontSize',fontSize); hold on;
     hp=patch('Faces',F,'Vertices',V,'EdgeColor','k','FaceColor','flat','Cdata',C,'FaceAlpha',1);
     view(3); axis tight;  axis equal;  grid on;
-    colormap(autumn);
-    camlight headlight;
+    colormap(autumn);   
     set(gca,'FontSize',fontSize);
     
     subplot(1,2,2);
@@ -76,10 +75,10 @@ for q=1:1:numel(elementCell)
     hps=patch('Faces',Fs,'Vertices',V,'FaceColor','flat','CData',Cs,'lineWidth',edgeWidth,'edgeColor',edgeColor);
     view(3); axis tight;  axis equal;  grid on;
     colormap(autumn);
-    camlight headlight;
     set(gca,'FontSize',fontSize);
-    drawnow;
     
+    drawnow;
+
 end
 
 %%

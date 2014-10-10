@@ -6,7 +6,7 @@
    <!--
 This HTML was auto-generated from MATLAB code.
 To make changes, update the MATLAB code and republish this document.
-      --><title>import_FEB</title><meta name="generator" content="MATLAB 8.4"><link rel="schema.DC" href="http://purl.org/dc/elements/1.1/"><meta name="DC.date" content="2014-10-01"><meta name="DC.source" content="HELP_import_FEB.m"><style type="text/css">
+      --><title>import_FEB</title><meta name="generator" content="MATLAB 8.4"><link rel="schema.DC" href="http://purl.org/dc/elements/1.1/"><meta name="DC.date" content="2014-10-10"><meta name="DC.source" content="HELP_import_FEB.m"><style type="text/css">
 html,body,div,span,applet,object,iframe,h1,h2,h3,h4,h5,h6,p,blockquote,pre,a,abbr,acronym,address,big,cite,code,del,dfn,em,font,img,ins,kbd,q,s,samp,small,strike,strong,sub,sup,tt,var,b,u,i,center,dl,dt,dd,ol,ul,li,fieldset,form,label,legend,table,caption,tbody,tfoot,thead,tr,th,td{margin:0;padding:0;border:0;outline:0;font-size:100%;vertical-align:baseline;background:transparent}body{line-height:1}ol,ul{list-style:none}blockquote,q{quotes:none}blockquote:before,blockquote:after,q:before,q:after{content:'';content:none}:focus{outine:0}ins{text-decoration:none}del{text-decoration:line-through}table{border-collapse:collapse;border-spacing:0}
 
 html { min-height:100%; margin-bottom:1px; }
@@ -75,33 +75,48 @@ edgeWidth=1.5;
 defaultFolder = fileparts(mfilename(<span class="string">'fullpath'</span>));
 pathName=fullfile(defaultFolder,<span class="string">'data'</span>,<span class="string">'FEB'</span>);
 
-febFileNamePart=<span class="string">'tetGenModel.feb'</span>;
+testCase=2;
+<span class="keyword">switch</span> testCase
+    <span class="keyword">case</span> 1
+        febFileNamePart=<span class="string">'tetGenModel.feb'</span>; <span class="comment">%febio_spec 1.2</span>
+    <span class="keyword">case</span> 2
+        febFileNamePart=<span class="string">'tempModel_2p0.feb'</span>; <span class="comment">%febio_spec 2.0</span>
+<span class="keyword">end</span>
 febFileName=fullfile(pathName,febFileNamePart);
 [febXML,nodeStruct,elementCell]=import_FEB(febFileName);
 </pre><pre class="codeoutput">--- import_FEB ---
 IMPORTING .FEB XML
-RETRIEVING NODAL DATA
----&gt; Imported 2001 nodes
-RETRIEVING ELEMENT DATA
----&gt; Imported 10547 tet4 elements
+---&gt; Getting nodes
+---&gt; Imported 1368 nodes
+---&gt; Getting elements
+---&gt; Imported 500 hex8 elements
+---&gt; Imported 1280 tri3 elements
 DONE!
 </pre><p>Content:</p><pre class="codeinput">nodeStruct
-elementCell{1}
+elementCell{:}
 
 V=nodeStruct.N;
 </pre><pre class="codeoutput">
 nodeStruct = 
 
-        N: [2001x3 double]
-    N_ind: [2001x1 double]
+        N: [1368x3 double]
+    N_ind: [1368x1 double]
 
 
 ans = 
 
-    E_type: 'tet4'
-         E: [10547x4 double]
-     E_ind: [10547x1 double]
-     E_mat: [10547x1 double]
+    E_type: 'hex8'
+     E_mat: 1
+         E: [500x8 double]
+     E_ind: [500x1 double]
+
+
+ans = 
+
+    E_type: 'tri3'
+     E_mat: 2
+         E: [1280x3 double]
+     E_ind: [1280x1 double]
 
 </pre><h2>Plotting model<a name="5"></a></h2><pre class="codeinput"><span class="comment">% Plotting the example model surfaces</span>
 hf1=figuremax(figColor,figColorDef);
@@ -110,21 +125,15 @@ title(<span class="string">'Visualizing fullmodel'</span>,<span class="string">'
 xlabel(<span class="string">'X'</span>,<span class="string">'FontSize'</span>,fontSize);ylabel(<span class="string">'Y'</span>,<span class="string">'FontSize'</span>,fontSize); zlabel(<span class="string">'Z'</span>,<span class="string">'FontSize'</span>,fontSize);
 hold <span class="string">on</span>;
 
-uniqueMaterialIndices=[];
 <span class="keyword">for</span> q=1:1:numel(elementCell)
-    uniqueMaterialIndices=unique([uniqueMaterialIndices(:); elementCell{q}.E_mat(:)]);
+
     E=elementCell{q}.E;
-    <span class="keyword">switch</span> elementCell{q}.E_type
-        <span class="keyword">case</span> {<span class="string">'tri3'</span>, <span class="string">'quad4'</span>}
-            F=E;
-            V=nodeStruct.N;
-            C=elementCell{q}.E_mat;
-        <span class="keyword">case</span> {<span class="string">'hex8'</span>, <span class="string">'tet4'</span>}
-            E=elementCell{q}.E;
-            [F,C]=element2patch(E,elementCell{q}.E_mat); <span class="comment">%Creates faces and colors (e.g. stress) for patch based plotting</span>
+    C=elementCell{q}.E_mat;
+    <span class="keyword">if</span> numel(C)==1
+        C=C.*ones(size(E,1),1);
     <span class="keyword">end</span>
 
-    hp=patch(<span class="string">'Faces'</span>,F,<span class="string">'Vertices'</span>,V,<span class="string">'EdgeColor'</span>,<span class="string">'k'</span>,<span class="string">'FaceColor'</span>,<span class="string">'flat'</span>,<span class="string">'Cdata'</span>,C,<span class="string">'FaceAlpha'</span>,0.8);
+    [F,C]=element2patch(E,C);
 
     subplot(1,2,1);
 
@@ -133,7 +142,6 @@ uniqueMaterialIndices=[];
     hp=patch(<span class="string">'Faces'</span>,F,<span class="string">'Vertices'</span>,V,<span class="string">'EdgeColor'</span>,<span class="string">'k'</span>,<span class="string">'FaceColor'</span>,<span class="string">'flat'</span>,<span class="string">'Cdata'</span>,C,<span class="string">'FaceAlpha'</span>,1);
     view(3); axis <span class="string">tight</span>;  axis <span class="string">equal</span>;  grid <span class="string">on</span>;
     colormap(autumn);
-    camlight <span class="string">headlight</span>;
     set(gca,<span class="string">'FontSize'</span>,fontSize);
 
     subplot(1,2,2);
@@ -148,13 +156,15 @@ uniqueMaterialIndices=[];
     hps=patch(<span class="string">'Faces'</span>,Fs,<span class="string">'Vertices'</span>,V,<span class="string">'FaceColor'</span>,<span class="string">'flat'</span>,<span class="string">'CData'</span>,Cs,<span class="string">'lineWidth'</span>,edgeWidth,<span class="string">'edgeColor'</span>,edgeColor);
     view(3); axis <span class="string">tight</span>;  axis <span class="string">equal</span>;  grid <span class="string">on</span>;
     colormap(autumn);
-    camlight <span class="string">headlight</span>;
     set(gca,<span class="string">'FontSize'</span>,fontSize);
+
     drawnow;
 
 <span class="keyword">end</span>
-</pre><pre class="codeoutput">Warning: tet4 elements assumed, for other elements please specify elementType 
-Warning: tet4 elements assumed, for other elements please specify elementType 
+</pre><pre class="codeoutput">hex8 elements assumed, for other elements please specify elementType
+hex8 elements assumed, for other elements please specify elementType
+tri3 elements assumed, for other elements please specify elementType
+tri3 elements assumed, for other elements please specify elementType
 </pre><img vspace="5" hspace="5" src="HELP_import_FEB_01.png" alt=""> <p><img vspace="5" hspace="5" src="gibbVerySmall.gif" alt=""> </p><p><i><b>GIBBON</b></i> <a href="www.gibboncode.org">www.gibboncode.org</a></p><p><i>Kevin Mattheus Moerman</i>, <a href="gibbon.toolbox@gmail.com">gibbon.toolbox@gmail.com</a></p><p class="footer"><br><a href="http://www.mathworks.com/products/matlab/">Published with MATLAB&reg; R2014b</a><br></p></div><!--
 ##### SOURCE BEGIN #####
 %% import_FEB
@@ -176,7 +186,13 @@ edgeWidth=1.5;
 defaultFolder = fileparts(mfilename('fullpath'));
 pathName=fullfile(defaultFolder,'data','FEB');
 
-febFileNamePart='tetGenModel.feb';
+testCase=2; 
+switch testCase
+    case 1
+        febFileNamePart='tetGenModel.feb'; %febio_spec 1.2
+    case 2
+        febFileNamePart='tempModel_2p0.feb'; %febio_spec 2.0
+end
 febFileName=fullfile(pathName,febFileNamePart);
 [febXML,nodeStruct,elementCell]=import_FEB(febFileName);
 
@@ -184,7 +200,7 @@ febFileName=fullfile(pathName,febFileNamePart);
 % Content:
 
 nodeStruct
-elementCell{1}
+elementCell{:}
 
 V=nodeStruct.N;
 
@@ -197,21 +213,15 @@ title('Visualizing fullmodel','FontSize',fontSize);
 xlabel('X','FontSize',fontSize);ylabel('Y','FontSize',fontSize); zlabel('Z','FontSize',fontSize);
 hold on;
 
-uniqueMaterialIndices=[];
 for q=1:1:numel(elementCell)
-    uniqueMaterialIndices=unique([uniqueMaterialIndices(:); elementCell{q}.E_mat(:)]);
+
     E=elementCell{q}.E;
-    switch elementCell{q}.E_type
-        case {'tri3', 'quad4'}
-            F=E;
-            V=nodeStruct.N;
-            C=elementCell{q}.E_mat;
-        case {'hex8', 'tet4'}
-            E=elementCell{q}.E;
-            [F,C]=element2patch(E,elementCell{q}.E_mat); %Creates faces and colors (e.g. stress) for patch based plotting
+    C=elementCell{q}.E_mat;
+    if numel(C)==1
+        C=C.*ones(size(E,1),1);
     end
-    
-    hp=patch('Faces',F,'Vertices',V,'EdgeColor','k','FaceColor','flat','Cdata',C,'FaceAlpha',0.8);
+        
+    [F,C]=element2patch(E,C); 
     
     subplot(1,2,1);
     
@@ -219,8 +229,7 @@ for q=1:1:numel(elementCell)
     xlabel('X','FontSize',fontSize); ylabel('Y','FontSize',fontSize); zlabel('Z','FontSize',fontSize); hold on;
     hp=patch('Faces',F,'Vertices',V,'EdgeColor','k','FaceColor','flat','Cdata',C,'FaceAlpha',1);
     view(3); axis tight;  axis equal;  grid on;
-    colormap(autumn);
-    camlight headlight;
+    colormap(autumn);   
     set(gca,'FontSize',fontSize);
     
     subplot(1,2,2);
@@ -235,10 +244,10 @@ for q=1:1:numel(elementCell)
     hps=patch('Faces',Fs,'Vertices',V,'FaceColor','flat','CData',Cs,'lineWidth',edgeWidth,'edgeColor',edgeColor);
     view(3); axis tight;  axis equal;  grid on;
     colormap(autumn);
-    camlight headlight;
     set(gca,'FontSize',fontSize);
-    drawnow;
     
+    drawnow;
+
 end
 
 %%

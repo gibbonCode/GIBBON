@@ -30,7 +30,7 @@ end
 numNodes=size(E,2);
 
 if isempty(elementType) %have to assume defaults    
-    switch numNodes
+    switch numNodes             
         case 8 %Hexahedral elements
             elementType='hex8';            
         case 20 %Hexahedral elements
@@ -41,8 +41,10 @@ if isempty(elementType) %have to assume defaults
             elementType='tet10';
         case 6 %Quadratic triangles
             elementType='tri6';
+        case 3
+            elementType='tri3';
     end    
-    warning([elementType,' elements assumed, for other elements please specify elementType']);
+    disp([elementType,' elements assumed, for other elements please specify elementType']);
 end
 
 %%

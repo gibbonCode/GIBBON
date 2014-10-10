@@ -18,7 +18,11 @@ function [febXML,nodeStruct,elementCell]=import_FEB(febFileName)
 %       E: [4536x4 double] An array of the nodal connectivity
 %       E_ind: [4536x1 double] The element indices
 %       E_mat: [4536x1 double] The element material indices
-%       
+%  
+%
+% Change log:
+% 23/08/2012 Created
+% 2014/10/10 Updated for febio_spec 2.0
 %
 % Kevin Mattheus Moerman
 % kevinmoerman@hotmail.com
@@ -31,9 +35,32 @@ disp('--- import_FEB ---');
 %% IMPORTING .FEB XML
 disp('IMPORTING .FEB XML');
 febXML = xmlread(febFileName);
+[febio_spec]=getFebioSpecVersion(febXML);
 
 %% RETRIEVING NODAL DATA
-disp('RETRIEVING NODAL DATA');
+
+[nodeStruct]=get_FEB_nodes(febXML);
+
+%% RETRIEVING ELEMENT DATA
+
+
+switch febio_spec
+    case '2.0'
+        [elementCell]=get_FEB_elements(febXML);
+    otherwise % assume compatible with 1.2
+        [elementCell]=get_FEB_elements_v1p2(febXML);
+end
+
+%%
+
+disp('DONE!');
+
+end
+
+%%
+function [nodeStruct]=get_FEB_nodes(febXML)
+
+disp('---> Getting nodes');
 
 GEO_FEB_XML = febXML.getElementsByTagName('Geometry');
 NODES_FEB_XML = GEO_FEB_XML.item(0).getElementsByTagName('Nodes');
@@ -49,8 +76,18 @@ for q=0:1:no_nodes-1
 end
 disp(['---> Imported ',num2str(no_nodes),' nodes']);
 
-%% RETRIEVING ELEMENT DATA
-disp('RETRIEVING ELEMENT DATA');
+end
+
+%%
+
+function [elementCell]=get_FEB_elements_v1p2(febXML)
+
+disp('---> Getting elements');
+
+GEO_FEB_XML = febXML.getElementsByTagName('Geometry');
+NODES_FEB_XML = GEO_FEB_XML.item(0).getElementsByTagName('Nodes');
+node_FEB_XML = NODES_FEB_XML.item(0).getElementsByTagName('node');
+no_nodes=node_FEB_XML.getLength;
 
 ELEMENTS_FEB_XML = GEO_FEB_XML.item(0).getElementsByTagName('Elements');
 elementTypes={'tri3','quad4','tet4','penta6','hex8'}; %Element type strings, these need to match targets in FEB file, adjust for other types
@@ -86,7 +123,41 @@ for q=indexElementTypes;
     elementType=elementType+1; %increase elementTypeIndex
     disp(['---> Imported ',num2str(numberElementEntries(q)),' ',elementTypes{q},' elements']);
 end
-disp('DONE!');
 
 end
+%%
+
+function [elementCell]=get_FEB_elements(febXML)
+
+disp('---> Getting elements');
+
+GEO_FEB_XML = febXML.getElementsByTagName('Geometry');
+Elements_FEB_XML = GEO_FEB_XML.item(0).getElementsByTagName('Elements');
+
+numElementsSets=Elements_FEB_XML.getLength; %Number of Elements sets
+
+elementCell=cell(numElementsSets,1);
+for q=1:1:numElementsSets    
+    Elements_Set_FEB_XML = Elements_FEB_XML.item(q-1); %The current Elements set    
+    
+    elementStruct.E_type=Elements_Set_FEB_XML.getAttribute('type').toCharArray()';
+    elementStruct.E_mat=str2double(Elements_Set_FEB_XML.getAttribute('mat'));
+    
+    elem_FEB_XML = Elements_Set_FEB_XML.getElementsByTagName('elem'); %The current elem set
+    numElem=elem_FEB_XML.getLength; %Number of elem entries in the current Elements set
+    numNodesElement=numel(sscanf(elem_FEB_XML.item(0).getFirstChild.getData.toCharArray()','%d,')); %Get num. nodes per element using first
+    
+    elementStruct.E=zeros(numElem,numNodesElement);
+    elementStruct.E_ind=zeros(numElem,1);
+    for qe=1:1:numElem        
+        elementStruct.E(qe,:)=sscanf(elem_FEB_XML.item(qe-1).getFirstChild.getData.toCharArray()','%d,'); %Element nodes
+        elementStruct.E_ind(qe)=sscanf(elem_FEB_XML.item(qe-1).getAttribute('id').toCharArray()','%d'); %Element nodes
+    end
+    elementCell{q}=elementStruct;
+    disp(['---> Imported ',num2str(numElem),' ',elementStruct.E_type,' elements']);
+end
+
+
+end
+
 

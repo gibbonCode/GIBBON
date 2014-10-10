@@ -59,7 +59,7 @@ if runFlag==1
     stress_cauchy_sim=stress_cauchy_sim.*1e3; %Scale to kPa
     
     %Interpolate experiment onto simulated points
-    stress_cauchy_sim_exp = interp1(stretch_sim,stress_cauchy_sim,stretch_exp,'cubic');
+    stress_cauchy_sim_exp = interp1(stretch_sim,stress_cauchy_sim,stretch_exp,'pchip');
     
     %Derive Fopt
     stressDev=stress_cauchy_exp-stress_cauchy_sim_exp;  

@@ -61,7 +61,7 @@ stretch_exp=[1;0.970000000000000;0.940000000000000;0.910000000000000;0.880000000
 %Interpolate to higher sampling
 n=100;
 stretch_exp_n=linspace(1,stretchLoad,n);
-stress_cauchy_exp_n = interp1(stretch_exp,stress_cauchy_exp,stretch_exp_n,'cubic');
+stress_cauchy_exp_n = interp1(stretch_exp,stress_cauchy_exp,stretch_exp_n,'pchip');
 
 %Override variables
 stress_cauchy_exp=stress_cauchy_exp_n;
@@ -284,7 +284,7 @@ stress_cauchy_sim=FZ./currentArea; %Cauchy stress
 stress_cauchy_sim=stress_cauchy_sim.*1e3; %Scale to kPa
 
 %Interpolate experiment onto simulated points
-stress_cauchy_exp_sim = interp1(stretch_exp,stress_cauchy_exp,stretch_sim,'cubic');
+stress_cauchy_exp_sim = interp1(stretch_exp,stress_cauchy_exp,stretch_sim,'pchip');
 
 %%
 
