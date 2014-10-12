@@ -6,7 +6,7 @@
    <!--
 This HTML was auto-generated from MATLAB code.
 To make changes, update the MATLAB code and republish this document.
-      --><title>import_STL_txt</title><meta name="generator" content="MATLAB 8.4"><link rel="schema.DC" href="http://purl.org/dc/elements/1.1/"><meta name="DC.date" content="2014-10-01"><meta name="DC.source" content="HELP_import_STL_txt.m"><style type="text/css">
+      --><title>import_STL_txt</title><meta name="generator" content="MATLAB 8.4"><link rel="schema.DC" href="http://purl.org/dc/elements/1.1/"><meta name="DC.date" content="2014-10-12"><meta name="DC.source" content="HELP_import_STL_txt.m"><style type="text/css">
 html,body,div,span,applet,object,iframe,h1,h2,h3,h4,h5,h6,p,blockquote,pre,a,abbr,acronym,address,big,cite,code,del,dfn,em,font,img,ins,kbd,q,s,samp,small,strike,strong,sub,sup,tt,var,b,u,i,center,dl,dt,dd,ol,ul,li,fieldset,form,label,legend,table,caption,tbody,tfoot,thead,tr,th,td{margin:0;padding:0;border:0;outline:0;font-size:100%;vertical-align:baseline;background:transparent}body{line-height:1}ol,ul{list-style:none}blockquote,q{quotes:none}blockquote:before,blockquote:after,q:before,q:after{content:'';content:none}:focus{outine:0}ins{text-decoration:none}del{text-decoration:line-through}table{border-collapse:collapse;border-spacing:0}
 
 html { min-height:100%; margin-bottom:1px; }
@@ -74,7 +74,16 @@ fontSize=10;
 </pre><h2>Import STL file as patch data<a name="3"></a></h2><pre class="codeinput"><span class="comment">%Set main folder</span>
 defaultFolder = fileparts(mfilename(<span class="string">'fullpath'</span>));
 pathName=fullfile(defaultFolder,<span class="string">'data'</span>,<span class="string">'STL'</span>);
-fileName=fullfile(pathName,<span class="string">'standford_bunny_multi.stl'</span>);
+testCase=1;
+<span class="keyword">switch</span> testCase
+    <span class="keyword">case</span> 1
+        stlName=<span class="string">'standford_bunny_multi.stl'</span>;
+    <span class="keyword">case</span> 2
+        stlName=<span class="string">'femur.stl'</span>;
+    <span class="keyword">case</span> 3
+        stlName=<span class="string">'hip_implant.stl'</span>;
+<span class="keyword">end</span>
+fileName=fullfile(pathName,stlName);
 [stlStruct] = import_STL_txt(fileName);
 </pre><p>Plotting the models</p><pre class="codeinput">pColors=autumn(numel(stlStruct.solidNames));
 
@@ -88,7 +97,7 @@ xlabel(<span class="string">'X'</span>,<span class="string">'fontSize'</span>,fo
 <span class="keyword">end</span>
 view(3); axis <span class="string">equal</span>; axis <span class="string">tight</span>; axis <span class="string">vis3d</span>; grid <span class="string">on</span>;
 camlight(<span class="string">'headlight'</span>);
-lighting <span class="string">phong</span>; axis <span class="string">off</span>;
+lighting <span class="string">flat</span>;
 drawnow;
 </pre><img vspace="5" hspace="5" src="HELP_import_STL_txt_01.png" alt=""> <p><img vspace="5" hspace="5" src="gibbVerySmall.gif" alt=""> </p><p><i><b>GIBBON</b></i> <a href="www.gibboncode.org">www.gibboncode.org</a></p><p><i>Kevin Mattheus Moerman</i>, <a href="gibbon.toolbox@gmail.com">gibbon.toolbox@gmail.com</a></p><p class="footer"><br><a href="http://www.mathworks.com/products/matlab/">Published with MATLAB&reg; R2014b</a><br></p></div><!--
 ##### SOURCE BEGIN #####
@@ -110,7 +119,16 @@ fontSize=10;
 %Set main folder
 defaultFolder = fileparts(mfilename('fullpath'));
 pathName=fullfile(defaultFolder,'data','STL'); 
-fileName=fullfile(pathName,'standford_bunny_multi.stl'); 
+testCase=1; 
+switch testCase
+    case 1
+        stlName='standford_bunny_multi.stl';
+    case 2
+        stlName='femur.stl';
+    case 3
+        stlName='hip_implant.stl';
+end
+fileName=fullfile(pathName,stlName); 
 [stlStruct] = import_STL_txt(fileName);
 
 %%
@@ -127,7 +145,7 @@ for q=1:1:numel(stlStruct.solidNames)
 end
 view(3); axis equal; axis tight; axis vis3d; grid on; 
 camlight('headlight');
-lighting phong; axis off; 
+lighting flat;
 drawnow;
 
 %%

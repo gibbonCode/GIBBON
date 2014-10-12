@@ -6,7 +6,7 @@
    <!--
 This HTML was auto-generated from MATLAB code.
 To make changes, update the MATLAB code and republish this document.
-      --><title>triSurf2Im</title><meta name="generator" content="MATLAB 8.4"><link rel="schema.DC" href="http://purl.org/dc/elements/1.1/"><meta name="DC.date" content="2014-10-01"><meta name="DC.source" content="HELP_triSurf2Im.m"><style type="text/css">
+      --><title>triSurf2Im</title><meta name="generator" content="MATLAB 8.4"><link rel="schema.DC" href="http://purl.org/dc/elements/1.1/"><meta name="DC.date" content="2014-10-12"><meta name="DC.source" content="HELP_triSurf2Im.m"><style type="text/css">
 html,body,div,span,applet,object,iframe,h1,h2,h3,h4,h5,h6,p,blockquote,pre,a,abbr,acronym,address,big,cite,code,del,dfn,em,font,img,ins,kbd,q,s,samp,small,strike,strong,sub,sup,tt,var,b,u,i,center,dl,dt,dd,ol,ul,li,fieldset,form,label,legend,table,caption,tbody,tfoot,thead,tr,th,td{margin:0;padding:0;border:0;outline:0;font-size:100%;vertical-align:baseline;background:transparent}body{line-height:1}ol,ul{list-style:none}blockquote,q{quotes:none}blockquote:before,blockquote:after,q:before,q:after{content:'';content:none}:focus{outine:0}ins{text-decoration:none}del{text-decoration:line-through}table{border-collapse:collapse;border-spacing:0}
 
 html { min-height:100%; margin-bottom:1px; }
@@ -66,7 +66,7 @@ table td { padding:7px 5px; text-align:left; vertical-align:top; border:1px soli
 
 
 
-  </style></head><body><div class="content"><h1>triSurf2Im</h1><!--introduction--><p>Below is a demonstration of the features of the <tt>triSurf2Im</tt> function</p><!--/introduction--><h2>Contents</h2><div><ul><li><a href="#3">EXAMPLE 1: CONVERTING A TRIANGULATED SURFACE TO AN IMAGE WITH DESIRED SIZE, VOXEL SIZE AND ORIGIN</a></li><li><a href="#6">EXAMPLE 2: CONVERTING A TRIANGULATED SURFACE TO AN IMAGE WITHOUT SPECIFYING DESIRED SIZE, VOXEL SIZE AND ORIGIN</a></li><li><a href="#8">EXAMPLE 3: CONVERTING A TRIANGULATED SURFACE MODEL TO A VOXEL BASED HEXAHEDRAL MESH MODEL</a></li></ul></div><pre class="codeinput">clear; close <span class="string">all</span>; clc;
+  </style></head><body><div class="content"><h1>triSurf2Im</h1><!--introduction--><p>Below is a demonstration of the features of the <tt>triSurf2Im</tt> function</p><!--/introduction--><h2>Contents</h2><div><ul><li><a href="#3">EXAMPLE 1: CONVERTING A TRIANGULATED SURFACE TO AN IMAGE WITH DESIRED SIZE, VOXEL SIZE AND ORIGIN</a></li><li><a href="#6">EXAMPLE 2: CONVERTING A TRIANGULATED SURFACE TO AN IMAGE WITHOUT SPECIFYING DESIRED SIZE, VOXEL SIZE AND ORIGIN</a></li><li><a href="#8">EXAMPLE 3: CONVERTING A TRIANGULATED SURFACE MODEL TO A VOXEL BASED HEXAHEDRAL MESH MODEL</a></li><li><a href="#10">EXAMPLE 4: Using <tt>triSurf2Im</tt> combined with <tt>logic2isosurface</tt> to resample a surface</a></li></ul></div><pre class="codeinput">clear; close <span class="string">all</span>; clc;
 </pre><p>Plot settings for the examples below</p><pre class="codeinput">figColor=<span class="string">'w'</span>;
 figColorDef=<span class="string">'white'</span>;
 fontSize=10;
@@ -199,7 +199,7 @@ V_hex=V_hex+imOrigin(ones(size(V_hex,1),1),:);
 
 <span class="comment">% Use element2patch to get patch data to plot the model</span>
 [F_hex,C_hex_F]=element2patch(E_hex,C_hex);
-</pre><pre class="codeoutput">Warning: hex8 elements assumed, for other elements please specify elementType 
+</pre><pre class="codeoutput">hex8 elements assumed, for other elements please specify elementType
 </pre><p>Plotting results</p><pre class="codeinput">hf3=figuremax(figColor,figColorDef);
 subplot(1,2,1);
 title(<span class="string">'Full hexahedral model view'</span>,<span class="string">'FontSize'</span>,fontSize);
@@ -234,8 +234,99 @@ patch(<span class="string">'Faces'</span>,Fp,<span class="string">'Vertices'</sp
 
 axis <span class="string">equal</span>; view(3); axis <span class="string">tight</span>;  grid <span class="string">on</span>;  set(gca,<span class="string">'FontSize'</span>,fontSize);
 drawnow;
-</pre><pre class="codeoutput">Warning: hex8 elements assumed, for other elements please specify elementType 
-</pre><img vspace="5" hspace="5" src="HELP_triSurf2Im_03.png" alt=""> <p><img vspace="5" hspace="5" src="gibbVerySmall.gif" alt=""> </p><p><i><b>GIBBON</b></i> <a href="www.gibboncode.org">www.gibboncode.org</a></p><p><i>Kevin Mattheus Moerman</i>, <a href="gibbon.toolbox@gmail.com">gibbon.toolbox@gmail.com</a></p><p class="footer"><br><a href="http://www.mathworks.com/products/matlab/">Published with MATLAB&reg; R2014b</a><br></p></div><!--
+</pre><pre class="codeoutput">hex8 elements assumed, for other elements please specify elementType
+</pre><img vspace="5" hspace="5" src="HELP_triSurf2Im_03.png" alt=""> <h2>EXAMPLE 4: Using <tt>triSurf2Im</tt> combined with <tt>logic2isosurface</tt> to resample a surface<a name="10"></a></h2><p>Load surface geometry</p><pre class="codeinput">defaultFolder = fileparts(mfilename(<span class="string">'fullpath'</span>));
+pathName=fullfile(defaultFolder,<span class="string">'data'</span>,<span class="string">'STL'</span>);
+stlName=<span class="string">'hip_implant_new.stl'</span>;
+fileName=fullfile(pathName,stlName);
+
+[stlStruct] = import_STL_txt(fileName);
+
+F=stlStruct.solidFaces{1};
+V=stlStruct.solidVertices{1};
+</pre><p>Setting control parameters</p><pre class="codeinput"><span class="comment">% Defining the full set of possible control parameters</span>
+voxelSize=6; <span class="comment">% The output image voxel size.</span>
+imOrigin=min(V,[],1)-voxelSize;
+imMax=max(V,[],1)+voxelSize;
+imSiz=round((imMax-imOrigin)/voxelSize);
+imSiz=imSiz([2 1 3]); <span class="comment">%Image size (x, y corresponds to j,i in image coordinates, hence the permutation)</span>
+
+<span class="comment">% Using |triSurf2Im| function to convert patch data to image data</span>
+[M,~]=triSurf2Im(F,V,voxelSize,imOrigin,imSiz);
+</pre><p>Plotting the results</p><pre class="codeinput">hf1=figuremax(figColor,figColorDef);
+subplot(1,2,1);
+title(<span class="string">'Closed triangulated surface'</span>,<span class="string">'FontSize'</span>,fontSize);
+xlabel(<span class="string">'X'</span>,<span class="string">'FontSize'</span>,fontSize);ylabel(<span class="string">'Y'</span>,<span class="string">'FontSize'</span>,fontSize); zlabel(<span class="string">'Z'</span>,<span class="string">'FontSize'</span>,fontSize);
+hold <span class="string">on</span>;
+patch(<span class="string">'Faces'</span>,F,<span class="string">'Vertices'</span>,V,<span class="string">'FaceColor'</span>,<span class="string">'g'</span>,<span class="string">'EdgeColor'</span>,<span class="string">'k'</span>,<span class="string">'FaceAlpha'</span>,faceAlpha1);
+camlight(<span class="string">'headlight'</span>); lighting <span class="string">flat</span>;
+axis <span class="string">equal</span>; view(3); axis <span class="string">tight</span>;  grid <span class="string">on</span>;  set(gca,<span class="string">'FontSize'</span>,fontSize);
+
+subplot(1,2,2);
+title(<span class="string">'Boundary, intertior and exterior image'</span>,<span class="string">'FontSize'</span>,fontSize);
+xlabel(<span class="string">'X'</span>,<span class="string">'FontSize'</span>,fontSize);ylabel(<span class="string">'Y'</span>,<span class="string">'FontSize'</span>,fontSize); zlabel(<span class="string">'Z'</span>,<span class="string">'FontSize'</span>,fontSize);
+hold <span class="string">on</span>;
+
+patch(<span class="string">'Faces'</span>,F,<span class="string">'Vertices'</span>,V,<span class="string">'FaceColor'</span>,<span class="string">'g'</span>,<span class="string">'EdgeColor'</span>,<span class="string">'none'</span>,<span class="string">'FaceAlpha'</span>,faceAlpha2);
+L_plot=false(size(M));
+L_plot(:,:,round(size(M,3)/2))=1;
+[Fm,Vm,Cm]=ind2patch(L_plot,double(M),<span class="string">'sk'</span>);
+[Vm(:,1),Vm(:,2),Vm(:,3)]=im2cart(Vm(:,2),Vm(:,1),Vm(:,3),voxelSize*ones(1,3));
+Vm=Vm+imOrigin(ones(size(Vm,1),1),:);
+patch(<span class="string">'Faces'</span>,Fm,<span class="string">'Vertices'</span>,Vm,<span class="string">'FaceColor'</span>,<span class="string">'flat'</span>,<span class="string">'CData'</span>,Cm,<span class="string">'EdgeColor'</span>,<span class="string">'k'</span>,<span class="string">'FaceAlpha'</span>,faceAlpha1);
+
+L_plot=false(size(M));L_plot(round(size(M,1)/2),:,:)=1;
+[Fm,Vm,Cm]=ind2patch(L_plot,M,<span class="string">'si'</span>);
+[Vm(:,1),Vm(:,2),Vm(:,3)]=im2cart(Vm(:,2),Vm(:,1),Vm(:,3),voxelSize*ones(1,3));
+Vm=Vm+imOrigin(ones(size(Vm,1),1),:);
+patch(<span class="string">'Faces'</span>,Fm,<span class="string">'Vertices'</span>,Vm,<span class="string">'FaceColor'</span>,<span class="string">'flat'</span>,<span class="string">'CData'</span>,Cm,<span class="string">'EdgeColor'</span>,<span class="string">'k'</span>,<span class="string">'FaceAlpha'</span>,faceAlpha1);
+
+L_plot=false(size(M));L_plot(:,round(size(M,2)/2),:)=1;
+[Fm,Vm,Cm]=ind2patch(L_plot,M,<span class="string">'sj'</span>);
+[Vm(:,1),Vm(:,2),Vm(:,3)]=im2cart(Vm(:,2),Vm(:,1),Vm(:,3),voxelSize*ones(1,3));
+Vm=Vm+imOrigin(ones(size(Vm,1),1),:);
+patch(<span class="string">'Faces'</span>,Fm,<span class="string">'Vertices'</span>,Vm,<span class="string">'FaceColor'</span>,<span class="string">'flat'</span>,<span class="string">'CData'</span>,Cm,<span class="string">'EdgeColor'</span>,<span class="string">'k'</span>,<span class="string">'FaceAlpha'</span>,faceAlpha1);
+
+colormap(gray(3)); caxis([0 2]);
+hc=colorbar;
+set(hc,<span class="string">'YTick'</span>,[1/3 1 5/3]);
+set(hc,<span class="string">'YTickLabel'</span>,{<span class="string">'Exterior'</span>,<span class="string">'Boundary'</span>,<span class="string">'Intertior'</span>});
+axis <span class="string">equal</span>; view(3); axis <span class="string">tight</span>;  grid <span class="string">on</span>;  set(gca,<span class="string">'FontSize'</span>,fontSize);
+drawnow;
+</pre><img vspace="5" hspace="5" src="HELP_triSurf2Im_04.png" alt=""> <p>Construct iso-surface using <tt>logic2isosurface</tt> function</p><pre class="codeinput">L=M&gt;0;
+controlPar.kernelSize=3;
+controlPar.contourLevel=0.5;
+controlPar.voxelSize=voxelSize*ones(1,3);
+
+[Fn,Vn]=logic2isosurface(L,controlPar);
+Vn=Vn+imOrigin(ones(size(Vn,1),1),:);
+</pre><p>Smooth surface using <tt>patchSmooth</tt> function</p><pre class="codeinput">cPar.Method=<span class="string">'HC'</span>;
+cPar.n=50;
+[Vn]=patchSmooth(Fn,Vn,[],cPar);
+</pre><pre class="codeinput">figuremax(figColor,figColorDef);
+
+subplot(1,2,1);
+title([<span class="string">'Original mesh '</span>,num2str(size(F,1)),<span class="string">' triangles'</span>],<span class="string">'fontSize'</span>,fontSize);
+xlabel(<span class="string">'X'</span>,<span class="string">'fontSize'</span>,fontSize);ylabel(<span class="string">'Y'</span>,<span class="string">'fontSize'</span>,fontSize); zlabel(<span class="string">'Z'</span>,<span class="string">'fontSize'</span>,fontSize); hold <span class="string">on</span>;
+
+patch(<span class="string">'Faces'</span>,F,<span class="string">'Vertices'</span>,V,<span class="string">'FaceColor'</span>,<span class="string">'g'</span>,<span class="string">'EdgeColor'</span>,<span class="string">'k'</span>,<span class="string">'FaceAlpha'</span>,faceAlpha1);
+
+view(3); axis <span class="string">equal</span>; axis <span class="string">tight</span>; axis <span class="string">vis3d</span>; grid <span class="string">on</span>;
+camlight(<span class="string">'headlight'</span>);
+lighting <span class="string">flat</span>;
+
+subplot(1,2,2);
+title([<span class="string">'Resampled mesh '</span>,num2str(size(Fn,1)),<span class="string">' triangles'</span>],<span class="string">'fontSize'</span>,fontSize);
+xlabel(<span class="string">'X'</span>,<span class="string">'fontSize'</span>,fontSize);ylabel(<span class="string">'Y'</span>,<span class="string">'fontSize'</span>,fontSize); zlabel(<span class="string">'Z'</span>,<span class="string">'fontSize'</span>,fontSize); hold <span class="string">on</span>;
+
+patch(<span class="string">'Faces'</span>,Fn,<span class="string">'Vertices'</span>,Vn,<span class="string">'FaceColor'</span>,<span class="string">'r'</span>,<span class="string">'EdgeColor'</span>,<span class="string">'k'</span>,<span class="string">'FaceAlpha'</span>,faceAlpha1);
+patch(<span class="string">'Faces'</span>,F,<span class="string">'Vertices'</span>,V,<span class="string">'FaceColor'</span>,<span class="string">'g'</span>,<span class="string">'EdgeColor'</span>,<span class="string">'none'</span>,<span class="string">'FaceAlpha'</span>,faceAlpha2);
+
+view(3); axis <span class="string">equal</span>; axis <span class="string">tight</span>; axis <span class="string">vis3d</span>; grid <span class="string">on</span>;
+camlight(<span class="string">'headlight'</span>);
+lighting <span class="string">flat</span>;
+drawnow;
+</pre><img vspace="5" hspace="5" src="HELP_triSurf2Im_05.png" alt=""> <p><img vspace="5" hspace="5" src="gibbVerySmall.gif" alt=""> </p><p><i><b>GIBBON</b></i> <a href="www.gibboncode.org">www.gibboncode.org</a></p><p><i>Kevin Mattheus Moerman</i>, <a href="gibbon.toolbox@gmail.com">gibbon.toolbox@gmail.com</a></p><p class="footer"><br><a href="http://www.mathworks.com/products/matlab/">Published with MATLAB&reg; R2014b</a><br></p></div><!--
 ##### SOURCE BEGIN #####
 %% triSurf2Im
 % Below is a demonstration of the features of the |triSurf2Im| function
@@ -446,6 +537,120 @@ patch('Faces',F,'Vertices',V,'FaceColor','g','EdgeColor','none','FaceAlpha',face
 patch('Faces',Fp,'Vertices',Vp,'FaceColor','r','EdgeColor','k','FaceAlpha',faceAlpha1);
 
 axis equal; view(3); axis tight;  grid on;  set(gca,'FontSize',fontSize);
+drawnow;
+
+%% EXAMPLE 4: Using |triSurf2Im| combined with |logic2isosurface| to resample a surface
+
+%%
+% Load surface geometry
+defaultFolder = fileparts(mfilename('fullpath'));
+pathName=fullfile(defaultFolder,'data','STL'); 
+stlName='hip_implant_new.stl';
+fileName=fullfile(pathName,stlName); 
+
+[stlStruct] = import_STL_txt(fileName);
+
+F=stlStruct.solidFaces{1};
+V=stlStruct.solidVertices{1};
+
+%% 
+% Setting control parameters
+
+% Defining the full set of possible control parameters
+voxelSize=6; % The output image voxel size.  
+imOrigin=min(V,[],1)-voxelSize;
+imMax=max(V,[],1)+voxelSize;
+imSiz=round((imMax-imOrigin)/voxelSize);
+imSiz=imSiz([2 1 3]); %Image size (x, y corresponds to j,i in image coordinates, hence the permutation)
+
+% Using |triSurf2Im| function to convert patch data to image data
+[M,~]=triSurf2Im(F,V,voxelSize,imOrigin,imSiz);
+
+%%
+% Plotting the results
+
+hf1=figuremax(figColor,figColorDef);
+subplot(1,2,1);
+title('Closed triangulated surface','FontSize',fontSize);
+xlabel('X','FontSize',fontSize);ylabel('Y','FontSize',fontSize); zlabel('Z','FontSize',fontSize);
+hold on;
+patch('Faces',F,'Vertices',V,'FaceColor','g','EdgeColor','k','FaceAlpha',faceAlpha1);
+camlight('headlight'); lighting flat;
+axis equal; view(3); axis tight;  grid on;  set(gca,'FontSize',fontSize);
+
+subplot(1,2,2);
+title('Boundary, intertior and exterior image','FontSize',fontSize);
+xlabel('X','FontSize',fontSize);ylabel('Y','FontSize',fontSize); zlabel('Z','FontSize',fontSize);
+hold on;
+
+patch('Faces',F,'Vertices',V,'FaceColor','g','EdgeColor','none','FaceAlpha',faceAlpha2);
+L_plot=false(size(M));
+L_plot(:,:,round(size(M,3)/2))=1;
+[Fm,Vm,Cm]=ind2patch(L_plot,double(M),'sk');
+[Vm(:,1),Vm(:,2),Vm(:,3)]=im2cart(Vm(:,2),Vm(:,1),Vm(:,3),voxelSize*ones(1,3));
+Vm=Vm+imOrigin(ones(size(Vm,1),1),:);
+patch('Faces',Fm,'Vertices',Vm,'FaceColor','flat','CData',Cm,'EdgeColor','k','FaceAlpha',faceAlpha1);
+
+L_plot=false(size(M));L_plot(round(size(M,1)/2),:,:)=1;
+[Fm,Vm,Cm]=ind2patch(L_plot,M,'si');
+[Vm(:,1),Vm(:,2),Vm(:,3)]=im2cart(Vm(:,2),Vm(:,1),Vm(:,3),voxelSize*ones(1,3));
+Vm=Vm+imOrigin(ones(size(Vm,1),1),:);
+patch('Faces',Fm,'Vertices',Vm,'FaceColor','flat','CData',Cm,'EdgeColor','k','FaceAlpha',faceAlpha1);
+
+L_plot=false(size(M));L_plot(:,round(size(M,2)/2),:)=1;
+[Fm,Vm,Cm]=ind2patch(L_plot,M,'sj');
+[Vm(:,1),Vm(:,2),Vm(:,3)]=im2cart(Vm(:,2),Vm(:,1),Vm(:,3),voxelSize*ones(1,3));
+Vm=Vm+imOrigin(ones(size(Vm,1),1),:);
+patch('Faces',Fm,'Vertices',Vm,'FaceColor','flat','CData',Cm,'EdgeColor','k','FaceAlpha',faceAlpha1);
+
+colormap(gray(3)); caxis([0 2]);
+hc=colorbar;
+set(hc,'YTick',[1/3 1 5/3]);
+set(hc,'YTickLabel',{'Exterior','Boundary','Intertior'});
+axis equal; view(3); axis tight;  grid on;  set(gca,'FontSize',fontSize);
+drawnow;
+
+%%
+% Construct iso-surface using |logic2isosurface| function
+
+L=M>0;
+controlPar.kernelSize=3;
+controlPar.contourLevel=0.5;
+controlPar.voxelSize=voxelSize*ones(1,3);
+
+[Fn,Vn]=logic2isosurface(L,controlPar);
+Vn=Vn+imOrigin(ones(size(Vn,1),1),:);
+
+%%
+% Smooth surface using |patchSmooth| function
+cPar.Method='HC';
+cPar.n=50;
+[Vn]=patchSmooth(Fn,Vn,[],cPar);
+
+%%
+
+figuremax(figColor,figColorDef);
+
+subplot(1,2,1);
+title(['Original mesh ',num2str(size(F,1)),' triangles'],'fontSize',fontSize);
+xlabel('X','fontSize',fontSize);ylabel('Y','fontSize',fontSize); zlabel('Z','fontSize',fontSize); hold on;
+
+patch('Faces',F,'Vertices',V,'FaceColor','g','EdgeColor','k','FaceAlpha',faceAlpha1);
+
+view(3); axis equal; axis tight; axis vis3d; grid on; 
+camlight('headlight');
+lighting flat;
+
+subplot(1,2,2);
+title(['Resampled mesh ',num2str(size(Fn,1)),' triangles'],'fontSize',fontSize);
+xlabel('X','fontSize',fontSize);ylabel('Y','fontSize',fontSize); zlabel('Z','fontSize',fontSize); hold on;
+
+patch('Faces',Fn,'Vertices',Vn,'FaceColor','r','EdgeColor','k','FaceAlpha',faceAlpha1);
+patch('Faces',F,'Vertices',V,'FaceColor','g','EdgeColor','none','FaceAlpha',faceAlpha2);
+
+view(3); axis equal; axis tight; axis vis3d; grid on; 
+camlight('headlight');
+lighting flat;
 drawnow;
 
 %% 

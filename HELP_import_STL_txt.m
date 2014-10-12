@@ -16,7 +16,16 @@ fontSize=10;
 %Set main folder
 defaultFolder = fileparts(mfilename('fullpath'));
 pathName=fullfile(defaultFolder,'data','STL'); 
-fileName=fullfile(pathName,'standford_bunny_multi.stl'); 
+testCase=1; 
+switch testCase
+    case 1
+        stlName='standford_bunny_multi.stl';
+    case 2
+        stlName='femur.stl';
+    case 3
+        stlName='hip_implant.stl';
+end
+fileName=fullfile(pathName,stlName); 
 [stlStruct] = import_STL_txt(fileName);
 
 %%
@@ -33,7 +42,7 @@ for q=1:1:numel(stlStruct.solidNames)
 end
 view(3); axis equal; axis tight; axis vis3d; grid on; 
 camlight('headlight');
-lighting phong; axis off; 
+lighting flat;
 drawnow;
 
 %%

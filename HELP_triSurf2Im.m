@@ -209,6 +209,120 @@ patch('Faces',Fp,'Vertices',Vp,'FaceColor','r','EdgeColor','k','FaceAlpha',faceA
 axis equal; view(3); axis tight;  grid on;  set(gca,'FontSize',fontSize);
 drawnow;
 
+%% EXAMPLE 4: Using |triSurf2Im| combined with |logic2isosurface| to resample a surface
+
+%%
+% Load surface geometry
+defaultFolder = fileparts(mfilename('fullpath'));
+pathName=fullfile(defaultFolder,'data','STL'); 
+stlName='hip_implant_new.stl';
+fileName=fullfile(pathName,stlName); 
+
+[stlStruct] = import_STL_txt(fileName);
+
+F=stlStruct.solidFaces{1};
+V=stlStruct.solidVertices{1};
+
+%% 
+% Setting control parameters
+
+% Defining the full set of possible control parameters
+voxelSize=4; % The output image voxel size.  
+imOrigin=min(V,[],1)-voxelSize;
+imMax=max(V,[],1)+voxelSize;
+imSiz=round((imMax-imOrigin)/voxelSize);
+imSiz=imSiz([2 1 3]); %Image size (x, y corresponds to j,i in image coordinates, hence the permutation)
+
+% Using |triSurf2Im| function to convert patch data to image data
+[M,~]=triSurf2Im(F,V,voxelSize,imOrigin,imSiz);
+
+%%
+% Plotting the results
+
+hf1=figuremax(figColor,figColorDef);
+subplot(1,2,1);
+title('Closed triangulated surface','FontSize',fontSize);
+xlabel('X','FontSize',fontSize);ylabel('Y','FontSize',fontSize); zlabel('Z','FontSize',fontSize);
+hold on;
+patch('Faces',F,'Vertices',V,'FaceColor','g','EdgeColor','k','FaceAlpha',faceAlpha1);
+camlight('headlight'); lighting flat;
+axis equal; view(3); axis tight;  grid on;  set(gca,'FontSize',fontSize);
+
+subplot(1,2,2);
+title('Boundary, intertior and exterior image','FontSize',fontSize);
+xlabel('X','FontSize',fontSize);ylabel('Y','FontSize',fontSize); zlabel('Z','FontSize',fontSize);
+hold on;
+
+patch('Faces',F,'Vertices',V,'FaceColor','g','EdgeColor','none','FaceAlpha',faceAlpha2);
+L_plot=false(size(M));
+L_plot(:,:,round(size(M,3)/2))=1;
+[Fm,Vm,Cm]=ind2patch(L_plot,double(M),'sk');
+[Vm(:,1),Vm(:,2),Vm(:,3)]=im2cart(Vm(:,2),Vm(:,1),Vm(:,3),voxelSize*ones(1,3));
+Vm=Vm+imOrigin(ones(size(Vm,1),1),:);
+patch('Faces',Fm,'Vertices',Vm,'FaceColor','flat','CData',Cm,'EdgeColor','k','FaceAlpha',faceAlpha1);
+
+L_plot=false(size(M));L_plot(round(size(M,1)/2),:,:)=1;
+[Fm,Vm,Cm]=ind2patch(L_plot,M,'si');
+[Vm(:,1),Vm(:,2),Vm(:,3)]=im2cart(Vm(:,2),Vm(:,1),Vm(:,3),voxelSize*ones(1,3));
+Vm=Vm+imOrigin(ones(size(Vm,1),1),:);
+patch('Faces',Fm,'Vertices',Vm,'FaceColor','flat','CData',Cm,'EdgeColor','k','FaceAlpha',faceAlpha1);
+
+L_plot=false(size(M));L_plot(:,round(size(M,2)/2),:)=1;
+[Fm,Vm,Cm]=ind2patch(L_plot,M,'sj');
+[Vm(:,1),Vm(:,2),Vm(:,3)]=im2cart(Vm(:,2),Vm(:,1),Vm(:,3),voxelSize*ones(1,3));
+Vm=Vm+imOrigin(ones(size(Vm,1),1),:);
+patch('Faces',Fm,'Vertices',Vm,'FaceColor','flat','CData',Cm,'EdgeColor','k','FaceAlpha',faceAlpha1);
+
+colormap(gray(3)); caxis([0 2]);
+hc=colorbar;
+set(hc,'YTick',[1/3 1 5/3]);
+set(hc,'YTickLabel',{'Exterior','Boundary','Intertior'});
+axis equal; view(3); axis tight;  grid on;  set(gca,'FontSize',fontSize);
+drawnow;
+
+%%
+% Construct iso-surface using |logic2isosurface| function
+
+L=M>0;
+controlPar.kernelSize=3;
+controlPar.contourLevel=0.5;
+controlPar.voxelSize=voxelSize*ones(1,3);
+
+[Fn,Vn]=logic2isosurface(L,controlPar);
+Vn=Vn+imOrigin(ones(size(Vn,1),1),:);
+
+%%
+% Smooth surface using |patchSmooth| function
+cPar.Method='HC';
+cPar.n=50;
+[Vn]=patchSmooth(Fn,Vn,[],cPar);
+
+%%
+
+figuremax(figColor,figColorDef);
+
+subplot(1,2,1);
+title(['Original mesh ',num2str(size(F,1)),' triangles'],'fontSize',fontSize);
+xlabel('X','fontSize',fontSize);ylabel('Y','fontSize',fontSize); zlabel('Z','fontSize',fontSize); hold on;
+
+patch('Faces',F,'Vertices',V,'FaceColor','g','EdgeColor','k','FaceAlpha',faceAlpha1);
+
+view(3); axis equal; axis tight; axis vis3d; grid on; 
+camlight('headlight');
+lighting flat;
+
+subplot(1,2,2);
+title(['Resampled mesh ',num2str(size(Fn,1)),' triangles'],'fontSize',fontSize);
+xlabel('X','fontSize',fontSize);ylabel('Y','fontSize',fontSize); zlabel('Z','fontSize',fontSize); hold on;
+
+patch('Faces',Fn,'Vertices',Vn,'FaceColor','r','EdgeColor','k','FaceAlpha',faceAlpha1);
+patch('Faces',F,'Vertices',V,'FaceColor','g','EdgeColor','none','FaceAlpha',faceAlpha2);
+
+view(3); axis equal; axis tight; axis vis3d; grid on; 
+camlight('headlight');
+lighting flat;
+drawnow;
+
 %% 
 %
 % <<gibbVerySmall.gif>>

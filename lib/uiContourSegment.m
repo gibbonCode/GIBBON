@@ -205,7 +205,7 @@ for is=sliceRange
     %Check for recovery file
     recoveryFileName=['temp_recover_uiContourSegment_',num2str(is),'.mat'];
     if recoverOn==1 %Initialize with recovered metrics
-        if exist(recoveryFileName,'file') %Initialize based on recovery file
+        if exist(recoveryFileName,'file')==2 %Initialize based on recovery file
             load(recoveryFileName);
             Vcs{is}=recoveryStruct.Vcs;
             splitInd=recoveryStruct.splitInd;
@@ -214,6 +214,10 @@ for is=sliceRange
             ic=recoveryStruct.ic;
             ic_old=recoveryStruct.ic_old;
             caxis([recoveryStruct.minC recoveryStruct.maxC]); %Set axis limits
+        else
+            Vcs{is}{1}=[]; %Initialise first contour as empty for each slice
+            splitInd=1; %Initialise to 1 for each slice
+            ic_old=NaN;
         end
     else %Initialize normally
         Vcs{is}{1}=[]; %Initialise first contour as empty for each slice
@@ -623,7 +627,7 @@ end
 %% DELETING RECOVERY FILES
 for is=sliceRange
     recoveryFileName=['recoverFile_uiContourSegment_',num2str(is)];
-    if exist(recoveryFileName,'file')
+    if exist(recoveryFileName,'file')==2
         delete(recoveryFileName);
     end
 end
