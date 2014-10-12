@@ -44,6 +44,8 @@ cPar.logicBackGround=L_BG;   %Ones (white) describe image data regions of intere
 cPar.v=v;                           %Voxel size
 saveName=[];                        %If not empty this is where the contours are saved
  
+[Vcs]=uiContourSegment(M,cPar,[]);
+
 %% SEGMENTING CONTOURS
 % Run the following code:
 % |[Vcs]=uiContourSegment(M,cPar,saveName)|;

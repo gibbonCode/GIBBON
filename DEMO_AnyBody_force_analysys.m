@@ -207,7 +207,7 @@ smeshStruct.smeshName=smeshName;
 %% MESH MODEL USING TETGEN
 
 [meshOutput]=runTetGenSmesh(smeshStruct);
-% runTetView(meshOutput.loadNameStruct.loadName_ele);
+runTetView(meshOutput.loadNameStruct.loadName_ele);
 
 %% 
 % Access model element and patch data
@@ -409,7 +409,7 @@ FEBioRunStruct.t_check=0.25; %Time for checking log file (dont set too small)
 FEBioRunStruct.maxtpi=1e99; %Max analysis time
 FEBioRunStruct.maxLogCheckTime=3; %Max log file checking time
 
-[runFlag]=runMonitorFEBio(FEBioRunStruct);%START FEBio NOW!!!!!!!!
+%[runFlag]=runMonitorFEBio(FEBioRunStruct);%START FEBio NOW!!!!!!!!
 
 %%
 if runFlag==1 %i.e. a succesful run

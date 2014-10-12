@@ -3,11 +3,11 @@ function [varargout]=meshBoundary(varargin)
 switch nargin
     case 1
         E=varargin{1};
-        [F]=element2patch(E); %Get mesh faces
+        [F,CF]=element2patch(E,[]); %Get mesh faces
     case 2
         E=varargin{1};
         elementType=varargin{2};
-        [F]=element2patch(E,[],elementType); %Get mesh faces
+        [F,CF]=element2patch(E,[],elementType); %Get mesh faces
     case 3        
         E=varargin{1};        
         elementType=varargin{2};        
@@ -17,9 +17,14 @@ switch nargin
         error('Wrong number of input arguments');
 end
 
+if isempty(CF)
+    CF=zeros(size(F,1),1);
+end
+
 %Check shared faces faces
 numFacesIni=size(F,1);
 [F_uni,indF,IND_F_2]=uniqueIntegerRow(F);
+
 CF=CF(indF,:);
 numFacesUni=size(F_uni,1);
 
