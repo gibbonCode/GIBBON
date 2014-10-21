@@ -72,7 +72,10 @@ end
 cPar.cParSmooth.RigidConstraints=unique(FTb(:));
 
 [F,~,~]=uniqueIntegerRow(FT);
-[VT]=tesSmooth(F,VT,[],cPar.cParSmooth);
+
+if cPar.cParSmooth.n>0
+    [VT]=tesSmooth(F,VT,[],cPar.cParSmooth);
+end
 
 %% Collect output
 

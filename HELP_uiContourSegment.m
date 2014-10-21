@@ -42,6 +42,7 @@ cPar.smoothFactor=0.5;              %Degree of smoothing csaps function (cubic s
 cPar.pointReductionFactor=20;        %Reduction factor for contour smoothening
 cPar.logicBackGround=L_BG;   %Ones (white) describe image data regions of interest i.e. a mask
 cPar.v=v;                           %Voxel size
+cPar.recoverOn=0; 
 saveName=[];                        %If not empty this is where the contours are saved
  
 [Vcs]=uiContourSegment(M,cPar,[]);

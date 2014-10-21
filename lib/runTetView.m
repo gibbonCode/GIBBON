@@ -21,11 +21,7 @@ end
 modelName=regexprep(modelName,'\','/');
 
 %% RUN TETVIEW
-% cd(pathNameTetView);
 
 runString=[runNameTetView,' ',modelName,' & '];
-
-system(runString);
-
-% cd(cdNow);
+[runStatus,runCmdHist]=system(runString);
 

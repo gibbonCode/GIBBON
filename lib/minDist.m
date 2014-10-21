@@ -1,6 +1,6 @@
 function varargout=minDist(varargin)
 
-% function [D1,minIND]=minDist(V1,V2,maxVarSize)
+% function [D1,minIND]=minDist(V1,V2,maxVarSize,selfAvoid)
 
 %% Parse input
 if nargin<2
@@ -9,13 +9,22 @@ end
 
 V1=varargin{1};
 V2=varargin{2};
+switch nargin
+    case 2        
+        maxVarSize=[]; %Empty will force calucation below
+        selfAvoid=0; 
+    case 3
+        maxVarSize=varargin{3};
+        selfAvoid=0; 
+    case 4
+        maxVarSize=varargin{3};
+        selfAvoid=varargin{4};        
+end
 
-if nargin>=3
-    maxVarSize=varargin{3};
-else
-    %Max variable size available
+%Get max variable size available        
+if isempty(maxVarSize)
     [numFreeBytes]=freeMemory;
-    maxVarSize=numFreeBytes/2;    
+    maxVarSize=numFreeBytes/2;
 end
 
 %Derive class dependent variable size
@@ -40,6 +49,16 @@ if numSteps>1 %In steps
         catch
             d=distND(v1,V2); %GIBBON's dist function
         end
+        if selfAvoid
+            %Set "diagonal" to something too large so self is avoided in
+            %minimum (could use NaN and nanmin but the latter is a toolbox
+            %function)
+            I=1:size(v1,1);
+            J=indSteps(q)+1:indSteps(q+1);
+            ind=sub2ind(size(d),I,J); %Indices of selfies            
+            d(ind)=1+max(d(:)); %Overide selfies
+        end
+        
         [min_d,min_ind]=min(d,[],2);
         D1(indSteps(q)+1:indSteps(q+1))=min_d;
         minIND(indSteps(q)+1:indSteps(q+1))=min_ind;        
@@ -49,6 +68,13 @@ else %In one go
         D=dist(V1,V2'); %dist from Neural network toolbox
     catch
         D=distND(V1,V2); %GIBBON's dist function
+    end    
+    if selfAvoid
+        %Set "diagonal" to something too large so self is avoided in
+        %minimum (could use NaN and nanmin but the latter is a toolbox
+        %function) 
+        L=eye(size(D))>0;
+        D(L)=1+max(D(:));
     end
     [D1,minIND]=min(D,[],2);         
     D1=D1(:);

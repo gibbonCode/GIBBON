@@ -89,7 +89,8 @@ V_holes=[]; %Define hole points
 
 %%
 % For each region the mesh density parameter can be specified
-regionA=[0.005 0.005]; % Regional mesh parameters
+[v]=tetVolMeanEst(F,V); %Estimate volume of ideal tetrahedron
+regionA=[v v]; % Regional mesh parameters
 
 %%
 % CREATING THE SMESH STRUCTURE.
@@ -100,23 +101,22 @@ regionA=[0.005 0.005]; % Regional mesh parameters
 
 stringOpt='-pq1.2AaYQ';
 modelName=fullfile(savePath,'tempModel');
-smeshName=[modelName,'.smesh'];
 
-smeshStruct.stringOpt=stringOpt;
-smeshStruct.Faces=F;
-smeshStruct.Nodes=V;
-smeshStruct.holePoints=V_holes;
-smeshStruct.faceBoundaryMarker=faceBoundaryMarker; %Face boundary markers
-smeshStruct.regionPoints=V_regions; %region points
-smeshStruct.regionA=regionA;
-smeshStruct.minRegionMarker=2; %Minimum region marker
-smeshStruct.smeshName=smeshName;
+inputStruct.stringOpt=stringOpt;
+inputStruct.Faces=F;
+inputStruct.Nodes=V;
+inputStruct.holePoints=V_holes;
+inputStruct.faceBoundaryMarker=faceBoundaryMarker; %Face boundary markers
+inputStruct.regionPoints=V_regions; %region points
+inputStruct.regionA=regionA;
+inputStruct.minRegionMarker=2; %Minimum region marker
+inputStruct.modelName=modelName;
 
 %%
 % Mesh model using tetrahedral elements using tetGen (see:
 % <http://wias-berlin.de/software/tetgen/>)
 
-[meshOutput]=runTetGenSmesh(smeshStruct); %Run tetGen
+[meshOutput]=runTetGen(inputStruct); %Run tetGen
 
 %%
 % Accessing the model element and patch data
@@ -306,7 +306,7 @@ febStruct2febFile(FEB_struct);
 FEBioRunStruct.run_filename=FEB_struct.run_filename;
 FEBioRunStruct.run_logname=FEB_struct.run_logname;
 FEBioRunStruct.disp_on=1;
-FEBioRunStruct.FEBioPath='/data/Code/C/FEBIO_linux/bin/febio2.lnx64';
+% FEBioRunStruct.FEBioPath='/data/Code/C/FEBIO_linux/bin/febio2.lnx64';
 FEBioRunStruct.disp_log_on=1;
 FEBioRunStruct.runMode='external';%'internal';
 FEBioRunStruct.t_check=0.25; %Time for checking log file (dont set too small)

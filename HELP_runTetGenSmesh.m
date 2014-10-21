@@ -2,7 +2,6 @@
 % Below is a demonstration of the features of the |runTetGenSmesh| function
 %
 %%
-
 clear; close all; clc;
 
 %%
