@@ -6,7 +6,7 @@
    <!--
 This HTML was auto-generated from MATLAB code.
 To make changes, update the MATLAB code and republish this document.
-      --><title>uiContourSegment</title><meta name="generator" content="MATLAB 8.4"><link rel="schema.DC" href="http://purl.org/dc/elements/1.1/"><meta name="DC.date" content="2014-10-01"><meta name="DC.source" content="HELP_uiContourSegment.m"><style type="text/css">
+      --><title>uiContourSegment</title><meta name="generator" content="MATLAB 8.4"><link rel="schema.DC" href="http://purl.org/dc/elements/1.1/"><meta name="DC.date" content="2014-10-22"><meta name="DC.source" content="HELP_uiContourSegment.m"><style type="text/css">
 html,body,div,span,applet,object,iframe,h1,h2,h3,h4,h5,h6,p,blockquote,pre,a,abbr,acronym,address,big,cite,code,del,dfn,em,font,img,ins,kbd,q,s,samp,small,strike,strong,sub,sup,tt,var,b,u,i,center,dl,dt,dd,ol,ul,li,fieldset,form,label,legend,table,caption,tbody,tfoot,thead,tr,th,td{margin:0;padding:0;border:0;outline:0;font-size:100%;vertical-align:baseline;background:transparent}body{line-height:1}ol,ul{list-style:none}blockquote,q{quotes:none}blockquote:before,blockquote:after,q:before,q:after{content:'';content:none}:focus{outine:0}ins{text-decoration:none}del{text-decoration:line-through}table{border-collapse:collapse;border-spacing:0}
 
 html { min-height:100%; margin-bottom:1px; }
@@ -91,10 +91,12 @@ colormap <span class="string">gray</span>; colorbar;
 drawnow;
 </pre><img vspace="5" hspace="5" src="HELP_uiContourSegment_01.png" alt=""> <h2>REMOVING BACKGROUND THROUGH THRESHOLDING/DILATION PROCEDURE<a name="4"></a></h2><p>Removal of background may be useful see <tt>uiThreshErode</tt></p><pre class="codeinput">L_BG=true(size(M)); <span class="comment">%In this example background is not removed</span>
 </pre><h2>SETTING CONTROL PARAMETERS<a name="5"></a></h2><pre class="codeinput">cPar.minContourSize=250;            <span class="comment">%Minimal size of detected contour</span>
-cPar.smoothFactor=0.5;              <span class="comment">%Degree of smoothing csaps function (cubic smoothing spline)</span>
+cPar.smoothFactor=0.1;              <span class="comment">%Degree of smoothing csaps function (cubic smoothing spline)</span>
 cPar.pointReductionFactor=20;        <span class="comment">%Reduction factor for contour smoothening</span>
 cPar.logicBackGround=L_BG;   <span class="comment">%Ones (white) describe image data regions of interest i.e. a mask</span>
 cPar.v=v;                           <span class="comment">%Voxel size</span>
+cPar.recoverOn=0; <span class="comment">%Turn on or off file recovery mode</span>
+cPar.sliceRange=80:size(M,3); <span class="comment">%This can be a custom range. For unvisited slices the contour is empty</span>
 saveName=[];                        <span class="comment">%If not empty this is where the contours are saved</span>
 </pre><h2>SEGMENTING CONTOURS<a name="6"></a></h2><p>Run the following code: <tt>[Vcs]=uiContourSegment(M,cPar,saveName)</tt>; Use the various options to try to segment the outer skin contour, press H to reveal the help window.</p><p>Example contour process:</p><p><img vspace="5" hspace="5" src="contour_1.png" alt=""> </p><p>Clearly only features "detectable" with contour levels can be segmented or otherwise manual drawing is needed.</p><p><img vspace="5" hspace="5" src="gibbVerySmall.gif" alt=""> </p><p><i><b>GIBBON</b></i> <a href="www.gibboncode.org">www.gibboncode.org</a></p><p><i>Kevin Mattheus Moerman</i>, <a href="gibbon.toolbox@gmail.com">gibbon.toolbox@gmail.com</a></p><p class="footer"><br><a href="http://www.mathworks.com/products/matlab/">Published with MATLAB&reg; R2014b</a><br></p></div><!--
 ##### SOURCE BEGIN #####
@@ -138,12 +140,14 @@ L_BG=true(size(M)); %In this example background is not removed
 
 %% SETTING CONTROL PARAMETERS
 cPar.minContourSize=250;            %Minimal size of detected contour
-cPar.smoothFactor=0.5;              %Degree of smoothing csaps function (cubic smoothing spline)
+cPar.smoothFactor=0.1;              %Degree of smoothing csaps function (cubic smoothing spline)
 cPar.pointReductionFactor=20;        %Reduction factor for contour smoothening
 cPar.logicBackGround=L_BG;   %Ones (white) describe image data regions of interest i.e. a mask
 cPar.v=v;                           %Voxel size
+cPar.recoverOn=0; %Turn on or off file recovery mode 
+cPar.sliceRange=80:size(M,3); %This can be a custom range. For unvisited slices the contour is empty
 saveName=[];                        %If not empty this is where the contours are saved
- 
+
 %% SEGMENTING CONTOURS
 % Run the following code:
 % |[Vcs]=uiContourSegment(M,cPar,saveName)|;

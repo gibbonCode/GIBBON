@@ -121,6 +121,13 @@ else
     v=[1 1 1]; %DEFAULT
 end
 
+%Get slice range
+if isfield(cPar,'sliceRange')
+    sliceRangeUser=cPar.sliceRange;
+else
+    sliceRangeUser=1:1:siz(3); %DEFAULT
+end
+
 %Distance thresholds for curve spacing, higher spacings are considered gaps for instance
 distThresh=2*max(v(1:2));
 
@@ -152,15 +159,16 @@ M(~logicBackGround)=0;
 [X,Y,Z]=im2cart(I,J,K,v);
 
 
-%% Creating logic for slice plotting
+%% Creating slice range and logic for slice plotting
 
 %Based on background logic if provided
 IND_BG = find(logicBackGround);
 [~,~,Kbg] = ind2sub(siz,IND_BG);
-sliceRange=unique(Kbg(:))';
-sliceMinInd=min(Kbg(:)); 
-sliceMaxInd=max(Kbg(:));
-L_slice=any(logicBackGround,3);
+sliceRange=unique(Kbg(:))'; %Slice range based on background logic
+logicSliceRange=ismember(sliceRange,sliceRangeUser);
+sliceRange=sliceRange(logicSliceRange); %Slices to analyse based on input and logic
+sliceMinInd=min(sliceRange(:)); %sliceMaxInd=max(sliceRange(:));
+L_slice=any(logicBackGround,3); %logic for slice plotting
 
 %%
 
@@ -193,7 +201,9 @@ maxC=1;
 Vcs=cell(1,siz(3)); 
 Vcs{sliceMinInd}{1}=[]; %Result cell array
 hc=[]; hvcs=[]; hvcs_guide=[]; %Initialise graphic handles
-Tc=linspace(0,1,500); %The contour level range
+stepSize_tc=0.05;
+n_tc=round(1/stepSize_tc);
+Tc=linspace(0,1,n_tc); %The contour level range
 ic=round(numel(Tc)/6); %The initial contour index
 z_offset=0.01; %Arbitrary offset ensuring curves are above slice during plotting
 
@@ -338,6 +348,20 @@ for is=sliceRange
         [xc,yc,b]=qginput(1);
 
         switch b %Switch structure for various inputs
+            case 106 %J key 
+                %Change contour increment size
+                prompt = {'Change contour increment size e.g. 0.05 (0-1):'};
+                dlg_title = 'Input';
+                num_lines = 1;
+                def = {'0.05'};
+                IC_answer = inputdlg(prompt,dlg_title,num_lines,def);
+                if ~isempty(IC_answer)
+                    stepSize_tc=str2double(IC_answer{1});                   
+                end
+                tcc=Tc(ic); %The current level                
+                n_tc=round(1/stepSize_tc); %Number of steps
+                Tc=linspace(0,1,n_tc); %The contour level range
+                [~,ic]=min(abs(Tc-tcc)); %Adjusted index ic to keep current level 
             case 109 %M key
                 prompt = {'Enter caxis min level:','Enter caxis max level:'};
                 dlg_title = 'Input';
@@ -595,6 +619,7 @@ for is=sliceRange
                     'H               -> Display help',... 
                     'M               -> Alter colorbar limits',...
                     'L               -> Jump to contour level',...
+                    'J               -> Change contour increment size (increment when up key is pressed)',...
                     };
                 helpButton = questdlg(msgText,'Help information','OK','OK');
             otherwise
