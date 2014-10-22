@@ -1,7 +1,18 @@
 function [F,V] = import_off(fileName)
+
+% function [F,V] = import_off(fileName)
+% ------------------------------------------------------------------------
+% This function imports http://www.geomview.org/ type .off files specifying
+% a surface mesh (provided all faces are of the same type!). The output
+% consists of (patch data) faces F and vertices V. 
+% 
 %
-% OFF
-% numVertices numFaces 0
+% Kevin Mattheus Moerman
+% gibbon.toolbox@gmail.com
+% 
+% 2014/10/22
+%------------------------------------------------------------------------
+
 %%
 
 %Get file ID
@@ -19,15 +30,33 @@ if isempty(strfind(firstLine, 'OFF'))
 end
 
 %Access number of faces and vertices
-numFacesVertices = str2num(fgets(fid));
-numVertices=numFacesVertices(1);
-numFaces=numFacesVertices(2);
+done=0; 
+while done==0
+    currentLine=fgets(fid);
+    if ~isempty(currentLine)
+        numFacesVertices = str2num(currentLine);
+        if numel(numFacesVertices)==3
+            numVertices=numFacesVertices(1);
+            numFaces=numFacesVertices(2);
+            done=1; 
+        end
+    end
+end
 
 %Get vertices
-[V] = fscanf(fid,'%f %f %f',[3 numVertices])';
+[V] = fscanf(fid,'%f %f %f\n',[3 numVertices])';
 
-% read Face 1  1088 480 1022
-[F_set] = fscanf(fid,'%d %d %d %d\n',[4 numFaces])';
+%Read next line which is for the face set
+currentPosition = ftell(fid); %Get current position
+currentLine=fgets(fid); %First face line
+fseek(fid,currentPosition,-1); %Put back position
+currentLineDouble=str2num(currentLine); %Current line converted to numbers
+numVerticesPerFace=currentLineDouble(1); %First number is number of vertices per face e.g. 3 for a triangle
+
+%Get faces (currently assuming all faces are of the same type!)
+t_form=repmat('%d ',1,numVerticesPerFace+1); 
+t_form=[t_form(1:end-1),'\n'];
+[F_set] = fscanf(fid,t_form,[numVerticesPerFace+1 numFaces])';
 F = F_set(:,2:end)+1;
 
 fclose(fid);

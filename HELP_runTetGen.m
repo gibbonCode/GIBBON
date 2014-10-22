@@ -88,7 +88,7 @@ E=meshOutput.elements;
 %Selecting half of the model to see interior
 Y=V(:,2); YE=mean(Y(E),2);
 L=YE>mean(Y);
-[Fs,Cs]=element2patch(E(L,:),C(L));
+[Fs,Cs]=element2patch(E(L,:),C(L),'tet4');
 
 hf1=figuremax(fig_color,fig_colordef);
 subplot(1,2,1);
@@ -202,7 +202,7 @@ E=meshOutput.elements;
 %Selecting half of the model to see interior
 Y=V(:,2); YE=mean(Y(E),2);
 L=YE>mean(Y);
-[Fs,Cs]=element2patch(E(L,:),C(L));
+[Fs,Cs]=element2patch(E(L,:),C(L),'tet4');
 
 hf1=figuremax(fig_color,fig_colordef);
 subplot(1,2,1);
@@ -313,7 +313,7 @@ E=meshOutput.elements;
 %Selecting half of the model to see interior
 Y=V(:,2); YE=mean(Y(E),2);
 L=YE>mean(Y);
-[Fs,Cs]=element2patch(E(L,:),C(L));
+[Fs,Cs]=element2patch(E(L,:),C(L),'tet4');
 
 hf1=figuremax(fig_color,fig_colordef);
 subplot(1,2,1);
@@ -377,7 +377,7 @@ E=meshOutput.elements;
 %Selecting half of the model to see interior
 Y=V(:,2); YE=mean(Y(E),2);
 L=YE>mean(Y);
-[Fs,Cs]=element2patch(E(L,:),C(L));
+[Fs,Cs]=element2patch(E(L,:),C(L),'tet4');
 
 hf1=figuremax(fig_color,fig_colordef);
 subplot(1,3,1);
