@@ -1,7 +1,7 @@
 %% DEMO_tetGen_mesh_sizing_function_1
 % Below is a demonstration for:
 % 
-% * The use of TETgen for meshing based on surface geometry
+% * The use of TetGen for meshing based on surface geometry
 % * Biasing the mesh density using a size function specified on the
 % boundary nodes
 

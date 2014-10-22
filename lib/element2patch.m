@@ -1,12 +1,20 @@
 function [varargout]=element2patch(varargin)
 
-%%
+% function [F,C]=element2patch(E,C,elementType);
 % ------------------------------------------------------------------------
-% This function generates FACE data for patch grapics display of elements
+% This function generates faces F for the input elements E such that the
+% elements can be visualized using patch graphics. Color data C on the
+% elements can also be provided which will be used to define the colors C
+% for the faces. A large array of element types are supported ranging from
+% the trivial triangular and quadrilateral faces (linear and quadratic) to
+% linear and quadratic hexahedral and tetrahedral elements. 
+% 
 %
-%N.B. This function assumes a node order whereby 1 2 3 4 described the top
-%face and 5 6 7 8 the bottom face for hexahedral elements
-% ------------------------------------------------------------------------
+% Kevin Mattheus Moerman
+% gibbon.toolbox@gmail.com
+% 
+% 2014/10/22
+%------------------------------------------------------------------------
 
 %% PARSE INPUT
 
@@ -59,8 +67,9 @@ switch elementType
     case 'quad4' %Linear quadrangles
         F=E;
         C=C;
-    case 'quad8' %Quadratic quadrangles
-        %TO DO
+    case 'quad8' %Quadratic quadrangles        
+         F=E(:,[1 5 2 6 3 7 4 8]); 
+         C=C; 
     case 'tet4' %Linear tets
         F=[E(:,[2 1 3]);... %face 1 2 3
             E(:,[1 2 4]);... %face 1 2 4
@@ -85,6 +94,7 @@ switch elementType
         C=repmat(C,6,1);
     case 'hex20' %Hexahedral elements
         %TO DO
+        error('hex20 elements not implemented yet');
 end
 
 %% Compose output

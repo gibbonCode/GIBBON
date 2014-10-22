@@ -256,7 +256,15 @@ if sizingOn
         bOpt=1;
         
         %Compute Delauney tesselation first
-        runString=[runNameTetGen,' ','',' ',runModelName];
+        
+        %Pass on only Q option if provided
+        if strfind(inputStruct.stringOpt,'Q')
+            strOpt='-Q';
+        else
+            strOpt='';
+        end
+        
+        runString=[runNameTetGen,' ',strOpt,' ',runModelName];
         disp(['--- Running TetGen to compute Delaunay tesselation of input set --- ',datestr(now)]);
         [runStatus,runOut]=system(runString,'-echo');
         dispDoneGibbonCode;
