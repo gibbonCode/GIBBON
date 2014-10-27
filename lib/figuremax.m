@@ -40,7 +40,7 @@ end
 %Open figure with handle
 hf=figure; 
 set(hf,'name','GIBBON');
-set(hf,'renderer','OpenGL'); %Default renderer changed, options: painters | zbuffer | OpenGL
+% set(hf,'renderer','OpenGL'); %Default renderer changed, options: painters | zbuffer | OpenGL
 
 %Specify color scheme
 colordef(hf,Cdef); 
