@@ -68,7 +68,7 @@ if  isfield(FEB_struct.Boundary,'PrescribeList')
         end
         nodeList=FEB_struct.Boundary.PrescribeList{q1};
         preType=FEB_struct.Boundary.PrescribeType{q1};
-        prePropValSet=prePropVals{q1}
+        prePropValSet=prePropVals{q1};
         for q2=1:1:numel(nodeList);
             
             node_node = docNode.createElement('node'); %create node entry
@@ -86,13 +86,8 @@ if  isfield(FEB_struct.Boundary,'PrescribeList')
             attr.setNodeValue(num2str(loadCurves(q1))); %Set text
             node_node.setAttributeNode(attr); %Add attribute
             
-            prePropValSet(q2,:)
-       
             t_form=repmat('%f, ',1,size(prePropValSet(q2,:),2));
-            t_form=t_form(1:end-2);
-            
-            sprintf(t_form,prePropValSet(q2,:))
-           
+            t_form=t_form(1:end-2);                       
       
             node_node.appendChild(docNode.createTextNode(sprintf(t_form,prePropValSet(q2,:)))); %append data text child
         end
