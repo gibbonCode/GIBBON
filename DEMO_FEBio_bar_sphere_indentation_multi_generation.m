@@ -293,7 +293,7 @@ febStruct2febFile(FEB_struct);
 
 %% RUNNING FEBIO JOB
 
-% FEBioRunStruct.FEBioPath='C:\Program Files\febio-2.1.0\bin\FEBio2.exe';
+FEBioRunStruct.FEBioPath='C:\Program Files\febio-2.1.0\bin\FEBio2.exe';
 FEBioRunStruct.run_filename=FEB_struct.run_filename;
 FEBioRunStruct.run_logname=FEB_struct.run_logname;
 FEBioRunStruct.disp_on=1;
@@ -305,6 +305,7 @@ FEBioRunStruct.maxLogCheckTime=3; %Max log file checking time
 
 [runFlag]=runMonitorFEBio(FEBioRunStruct);%START FEBio NOW!!!!!!!!
 
+%%
 if runFlag==1 %i.e. a succesful run
     
     %% IMPORTING NODAL DISPLACEMENT RESULTS

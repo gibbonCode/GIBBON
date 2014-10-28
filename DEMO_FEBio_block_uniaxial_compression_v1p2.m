@@ -186,20 +186,17 @@ febStruct2febFile_v1p2(FEB_struct);
 
 %% RUNNING FEBIO JOB
 
-% FEBioRunStruct.FEBioPath='C:\Progra~1\FEBio1p8\febio.exe';
-% FEBioRunStruct.FEBioPath='C:\Progra~1\FEBio2p0\bin\FEBio2x64.exe';
+FEBioRunStruct.FEBioPath='C:\Program Files\febio-2.1.0\bin\FEBio2.exe';
 FEBioRunStruct.run_filename=FEB_struct.run_filename;
 FEBioRunStruct.run_logname=FEB_struct.run_logname;
-FEBioRunStruct.disp_on=1; 
-FEBioRunStruct.disp_log_on=1; 
-% FEBioRunStruct.run_string_quit=run_string_quit; 
+FEBioRunStruct.disp_on=1;
+FEBioRunStruct.disp_log_on=1;
+FEBioRunStruct.runMode='external';%'internal';
 FEBioRunStruct.t_check=0.25; %Time for checking log file (dont set too small)
 FEBioRunStruct.maxtpi=1e99; %Max analysis time
 FEBioRunStruct.maxLogCheckTime=3; %Max log file checking time
 
-%-------------------------------------------------------------------
-[rundFlag]=runMonitorFEBio(FEBioRunStruct);%START FEBio NOW!!!!!!!!
-%-------------------------------------------------------------------
+[runFlag]=runMonitorFEBio(FEBioRunStruct);%START FEBio NOW!!!!!!!!
 
 %% IMPORTING NODAL DISPLACEMENT RESULTS
 % Importing nodal displacements from a log file

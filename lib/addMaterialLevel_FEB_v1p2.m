@@ -30,7 +30,7 @@ for i=1:1:numel(mat_ind)
         case {'uncoupled solid mixture','solid mixture'}
             
             %%
-
+            
             %Mat ID
             attr = docNode.createAttribute('id'); %Create attribute
             attr.setNodeValue(num2str(mat_ind(i))); %Set text
@@ -46,21 +46,51 @@ for i=1:1:numel(mat_ind)
             attr.setNodeValue(mat_type); %Set text
             material_node.setAttributeNode(attr); %Add attribute
             
-            if isfield('props',Mat_i)
+            %Mat properties and attributes
+            if isfield(Mat_i,'props')
                 mat_props=Mat_i.props;
                 mat_prop_vals=Mat_i.vals;
                 
+                %Access property attributes
+                if isfield(Mat_i,'PropAttrName')
+                    mat_prop_attr_name=Mat_i.PropAttrName;
+                    mat_prop_attr_val=Mat_i.PropAttrVal;
+                else
+                    mat_prop_attr_name=[];
+                    mat_prop_attr_val=[];
+                end
+                
                 %Material properties
-                for p=1:1:numel(mat_props)
-                    mat_prop=mat_props{p};
-                    mat_prop_val=mat_prop_vals{p};
+                for q=1:1:numel(mat_props)
+                    mat_prop=mat_props{q};
+                    mat_prop_val=mat_prop_vals{q};
                     prop_node = docNode.createElement(mat_prop); %create entry
                     prop_node = material_node.appendChild(prop_node); %add entry
                     t_form=repmat('%6.7e, ',1,size(mat_prop_val,2)); t_form=t_form(1:end-2);
                     prop_node.appendChild(docNode.createTextNode(sprintf(t_form,mat_prop_val))); %append data text child
+                    
+                    %Add potential property attributes (e.g. property load curves)
+                    if ~isempty(mat_prop_attr_name)
+                        if q<=numel(mat_prop_attr_name)
+                            currentPropAttrName=mat_prop_attr_name{q};
+                            if ~isempty(currentPropAttrName)
+                                currentPropAttrVal=mat_prop_attr_val{q};
+                                
+                                t_form=repmat('%6.7e, ',1,size(currentPropAttrVal,2));
+                                t_form=t_form(1:end-2);
+                                
+                                attr = docNode.createAttribute(currentPropAttrName); %Create attribute
+                                attr.setNodeValue(sprintf(t_form,currentPropAttrVal)); %Set text
+                                prop_node.setAttributeNode(attr); %Add attribute
+                            end
+                        end
+                    end
+                    
                 end
             end
-            if isfield('aniso_type',Mat_i)
+            
+            %Mat aniso_type
+            if isfield(Mat_i,'aniso_type')
                 mat_aniso_type=Mat_i.aniso_type;
                 switch mat_aniso_type
                     case 'none'
@@ -96,18 +126,62 @@ for i=1:1:numel(mat_ind)
                 attr.setNodeValue(num2str(j)); %Set text
                 solid_node.setAttributeNode(attr); %Add attribute
                 
-                mat_props=Mat_i.Mats{j}.props;
-                mat_prop_vals=Mat_i.Mats{j}.vals;
-                %Material properties
-                for p=1:1:numel(mat_props)
-                    mat_prop=mat_props{p};
-                    mat_prop_val=mat_prop_vals{p};
-                    prop_node = docNode.createElement(mat_prop); %create entry
-                    prop_node = solid_node.appendChild(prop_node); %add entry
-                    t_form=repmat('%6.7e, ',1,size(mat_prop_val,2)); t_form=t_form(1:end-2);
-                    prop_node.appendChild(docNode.createTextNode(sprintf(t_form,mat_prop_val))); %append data text child
+                %%
+                %                 mat_props=Mat_i.Mats{j}.props;
+                %                 mat_prop_vals=Mat_i.Mats{j}.vals;
+                %                 %Material properties
+                %                 for q=1:1:numel(mat_props)
+                %                     mat_prop=mat_props{q};
+                %                     mat_prop_val=mat_prop_vals{q};
+                %                     prop_node = docNode.createElement(mat_prop); %create entry
+                %                     prop_node = solid_node.appendChild(prop_node); %add entry
+                %                     t_form=repmat('%6.7e, ',1,size(mat_prop_val,2)); t_form=t_form(1:end-2);
+                %                     prop_node.appendChild(docNode.createTextNode(sprintf(t_form,mat_prop_val))); %append data text child
+                %                 end
+                
+                %Mat properties and attributes
+                if isfield(Mat_i.Mats{j},'props')
+                    mat_props=Mat_i.Mats{j}.props;
+                    mat_prop_vals=Mat_i.Mats{j}.vals;
+                    
+                    %Access property attributes
+                    if isfield(Mat_i.Mats{j},'PropAttrName')
+                        mat_prop_attr_name=Mat_i.Mats{j}.PropAttrName;
+                        mat_prop_attr_val=Mat_i.Mats{j}.PropAttrVal;
+                    else
+                        mat_prop_attr_name=[];
+                        mat_prop_attr_val=[];
+                    end
+                    
+                    %Material properties
+                    for q=1:1:numel(mat_props)
+                        mat_prop=mat_props{q};
+                        mat_prop_val=mat_prop_vals{q};
+                        prop_node = docNode.createElement(mat_prop); %create entry
+                        prop_node = solid_node.appendChild(prop_node); %add entry
+                        t_form=repmat('%6.7e, ',1,size(mat_prop_val,2)); t_form=t_form(1:end-2);
+                        prop_node.appendChild(docNode.createTextNode(sprintf(t_form,mat_prop_val))); %append data text child
+                        
+                        %Add potential property attributes (e.g. property load curves)
+                        if ~isempty(mat_prop_attr_name)
+                            if q<=numel(mat_prop_attr_name)
+                                currentPropAttrName=mat_prop_attr_name{q};
+                                if ~isempty(currentPropAttrName)
+                                    currentPropAttrVal=mat_prop_attr_val{q};
+                                    
+                                    t_form=repmat('%6.7e, ',1,size(currentPropAttrVal,2));
+                                    t_form=t_form(1:end-2);
+                                    
+                                    attr = docNode.createAttribute(currentPropAttrName); %Create attribute
+                                    attr.setNodeValue(sprintf(t_form,currentPropAttrVal)); %Set text
+                                    prop_node.setAttributeNode(attr); %Add attribute
+                                end
+                            end
+                        end
+                    end
                 end
                 
+                %%
                 %Fiber spec
                 mat_aniso_type=Mat_i.Mats{j}.aniso_type;
                 switch mat_aniso_type
@@ -168,17 +242,63 @@ for i=1:1:numel(mat_ind)
                     attr.setNodeValue(num2str(j)); %Set text
                     solid_node.setAttributeNode(attr); %Add attribute
                     
-                    mat_props=Mat_i.Mats{j}.props;
-                    mat_prop_vals=Mat_i.Mats{j}.vals;
-                    %Material properties
-                    for p=1:1:numel(mat_props)
-                        mat_prop=mat_props{p};
-                        mat_prop_val=mat_prop_vals{p};
-                        prop_node = docNode.createElement(mat_prop); %create entry
-                        prop_node = solid_node.appendChild(prop_node); %add entry
-                        t_form=repmat('%6.7e, ',1,size(mat_prop_val,2)); t_form=t_form(1:end-2);
-                        prop_node.appendChild(docNode.createTextNode(sprintf(t_form,mat_prop_val))); %append data text child
+                    %%
+                    %                     mat_props=Mat_i.Mats{j}.props;
+                    %                     mat_prop_vals=Mat_i.Mats{j}.vals;
+                    %                     %Material properties
+                    %                     for q=1:1:numel(mat_props)
+                    %                         mat_prop=mat_props{q};
+                    %                         mat_prop_val=mat_prop_vals{q};
+                    %                         prop_node = docNode.createElement(mat_prop); %create entry
+                    %                         prop_node = solid_node.appendChild(prop_node); %add entry
+                    %                         t_form=repmat('%6.7e, ',1,size(mat_prop_val,2)); t_form=t_form(1:end-2);
+                    %                         prop_node.appendChild(docNode.createTextNode(sprintf(t_form,mat_prop_val))); %append data text child
+                    %                     end
+                    
+                    %Mat properties and attributes
+                    if isfield(Mat_i.Mats{j},'props')
+                        mat_props=Mat_i.Mats{j}.props;
+                        mat_prop_vals=Mat_i.Mats{j}.vals;
+                        
+                        %Access property attributes
+                        if isfield(Mat_i.Mats{j},'PropAttrName')
+                            mat_prop_attr_name=Mat_i.Mats{j}.PropAttrName;
+                            mat_prop_attr_val=Mat_i.Mats{j}.PropAttrVal;
+                        else
+                            mat_prop_attr_name=[];
+                            mat_prop_attr_val=[];
+                        end
+                        
+                        %Material properties
+                        for q=1:1:numel(mat_props)
+                            mat_prop=mat_props{q};
+                            mat_prop_val=mat_prop_vals{q};
+                            prop_node = docNode.createElement(mat_prop); %create entry
+                            prop_node = solid_node.appendChild(prop_node); %add entry
+                            t_form=repmat('%6.7e, ',1,size(mat_prop_val,2)); t_form=t_form(1:end-2);
+                            prop_node.appendChild(docNode.createTextNode(sprintf(t_form,mat_prop_val))); %append data text child
+                            
+                            %Add potential property attributes (e.g. property load curves)
+                            if ~isempty(mat_prop_attr_name)
+                                if q<=numel(mat_prop_attr_name)
+                                    currentPropAttrName=mat_prop_attr_name{q};
+                                    if ~isempty(currentPropAttrName)
+                                        currentPropAttrVal=mat_prop_attr_val{q};
+                                        
+                                        t_form=repmat('%6.7e, ',1,size(currentPropAttrVal,2));
+                                        t_form=t_form(1:end-2);
+                                        
+                                        attr = docNode.createAttribute(currentPropAttrName); %Create attribute
+                                        attr.setNodeValue(sprintf(t_form,currentPropAttrVal)); %Set text
+                                        prop_node.setAttributeNode(attr); %Add attribute
+                                    end
+                                end
+                            end
+                        end
                     end
+                    
+                    %%
+                    
                     %Fiber spec
                     mat_aniso_type=Mat_i.Mats{j}.aniso_type;
                     switch mat_aniso_type
@@ -244,17 +364,63 @@ for i=1:1:numel(mat_ind)
                     attr.setNodeValue(Mat_i.Mats{j}.type); %Set text
                     solid_node.setAttributeNode(attr); %Add attribute
                     
-                    mat_props=Mat_i.Mats{j}.props;
-                    mat_prop_vals=Mat_i.Mats{j}.vals;
-                    %Material properties
-                    for p=1:1:numel(mat_props)
-                        mat_prop=mat_props{p};
-                        mat_prop_val=mat_prop_vals{p};
-                        prop_node = docNode.createElement(mat_prop); %create entry
-                        prop_node = solid_node.appendChild(prop_node); %add entry
-                        t_form=repmat('%6.7e, ',1,size(mat_prop_val,2)); t_form=t_form(1:end-2);
-                        prop_node.appendChild(docNode.createTextNode(sprintf(t_form,mat_prop_val))); %append data text child
+                    %%
+                    %                     mat_props=Mat_i.Mats{j}.props;
+                    %                     mat_prop_vals=Mat_i.Mats{j}.vals;
+                    %
+                    %                     %Material properties
+                    %                     for q=1:1:numel(mat_props)
+                    %                         mat_prop=mat_props{q};
+                    %                         mat_prop_val=mat_prop_vals{q};
+                    %                         prop_node = docNode.createElement(mat_prop); %create entry
+                    %                         prop_node = solid_node.appendChild(prop_node); %add entry
+                    %                         t_form=repmat('%6.7e, ',1,size(mat_prop_val,2)); t_form=t_form(1:end-2);
+                    %                         prop_node.appendChild(docNode.createTextNode(sprintf(t_form,mat_prop_val))); %append data text child
+                    %                     end
+                    
+                    %Mat properties and attributes
+                    if isfield(Mat_i.Mats{j},'props')
+                        mat_props=Mat_i.Mats{j}.props;
+                        mat_prop_vals=Mat_i.Mats{j}.vals;
+                        
+                        %Access property attributes
+                        if isfield(Mat_i.Mats{j},'PropAttrName')
+                            mat_prop_attr_name=Mat_i.Mats{j}.PropAttrName;
+                            mat_prop_attr_val=Mat_i.Mats{j}.PropAttrVal;
+                        else
+                            mat_prop_attr_name=[];
+                            mat_prop_attr_val=[];
+                        end
+                        
+                        %Material properties
+                        for q=1:1:numel(mat_props)
+                            mat_prop=mat_props{q};
+                            mat_prop_val=mat_prop_vals{q};
+                            prop_node = docNode.createElement(mat_prop); %create entry
+                            prop_node = solid_node.appendChild(prop_node); %add entry
+                            t_form=repmat('%6.7e, ',1,size(mat_prop_val,2)); t_form=t_form(1:end-2);
+                            prop_node.appendChild(docNode.createTextNode(sprintf(t_form,mat_prop_val))); %append data text child
+                            
+                            %Add potential property attributes (e.g. property load curves)
+                            if ~isempty(mat_prop_attr_name)
+                                if q<=numel(mat_prop_attr_name)
+                                    currentPropAttrName=mat_prop_attr_name{q};
+                                    if ~isempty(currentPropAttrName)
+                                        currentPropAttrVal=mat_prop_attr_val{q};
+                                        
+                                        t_form=repmat('%6.7e, ',1,size(currentPropAttrVal,2));
+                                        t_form=t_form(1:end-2);
+                                        
+                                        attr = docNode.createAttribute(currentPropAttrName); %Create attribute
+                                        attr.setNodeValue(sprintf(t_form,currentPropAttrVal)); %Set text
+                                        prop_node.setAttributeNode(attr); %Add attribute
+                                    end
+                                end
+                            end
+                        end
                     end
+                    
+                    %%
                     
                     %Fiber spec
                     mat_aniso_type=Mat_i.Mats{j}.aniso_type;
@@ -281,10 +447,6 @@ for i=1:1:numel(mat_ind)
             %%
         otherwise
             
-            mat_props=Mat_i.props;
-            mat_prop_vals=Mat_i.vals;
-            mat_aniso_type=Mat_i.aniso_type;
-            
             %Mat ID
             attr = docNode.createAttribute('id'); %Create attribute
             attr.setNodeValue(num2str(mat_ind(i))); %Set text
@@ -299,17 +461,55 @@ for i=1:1:numel(mat_ind)
             attr = docNode.createAttribute('type'); %Create attribute
             attr.setNodeValue(mat_type); %Set text
             material_node.setAttributeNode(attr); %Add attribute
+           
+            mat_aniso_type=Mat_i.aniso_type;
+  
+            %%
             
-            %Material properties
-            for p=1:1:numel(mat_props)
-                mat_prop=mat_props{p};
-                mat_prop_val=mat_prop_vals{p};
-                prop_node = docNode.createElement(mat_prop); %create entry
-                prop_node = material_node.appendChild(prop_node); %add entry
-                t_form=repmat('%6.7e, ',1,size(mat_prop_val,2)); t_form=t_form(1:end-2);
-                prop_node.appendChild(docNode.createTextNode(sprintf(t_form,mat_prop_val))); %append data text child
+            %Mat properties and attributes
+            if isfield(Mat_i,'props')
+                mat_props=Mat_i.props;
+                mat_prop_vals=Mat_i.vals;
+                
+                %Access property attributes
+                if isfield(Mat_i,'PropAttrName')
+                    mat_prop_attr_name=Mat_i.PropAttrName;
+                    mat_prop_attr_val=Mat_i.PropAttrVal;
+                else
+                    mat_prop_attr_name=[];
+                    mat_prop_attr_val=[];
+                end
+                
+                %Material properties
+                for q=1:1:numel(mat_props)
+                    mat_prop=mat_props{q};
+                    mat_prop_val=mat_prop_vals{q};
+                    prop_node = docNode.createElement(mat_prop); %create entry
+                    prop_node = material_node.appendChild(prop_node); %add entry
+                    t_form=repmat('%6.7e, ',1,size(mat_prop_val,2)); t_form=t_form(1:end-2);
+                    prop_node.appendChild(docNode.createTextNode(sprintf(t_form,mat_prop_val))); %append data text child
+                    
+                    %Add potential property attributes (e.g. property load curves)
+                    if ~isempty(mat_prop_attr_name)
+                        if q<=numel(mat_prop_attr_name)
+                            currentPropAttrName=mat_prop_attr_name{q};
+                            if ~isempty(currentPropAttrName)
+                                currentPropAttrVal=mat_prop_attr_val{q};
+                                
+                                t_form=repmat('%6.7e, ',1,size(currentPropAttrVal,2));
+                                t_form=t_form(1:end-2);
+                                
+                                attr = docNode.createAttribute(currentPropAttrName); %Create attribute
+                                attr.setNodeValue(sprintf(t_form,currentPropAttrVal)); %Set text
+                                prop_node.setAttributeNode(attr); %Add attribute
+                            end
+                        end
+                    end
+                    
+                end
             end
             
+            %%
             %Fiber spec
             switch mat_aniso_type
                 case 'none' %No fibre type specified, do nothing

@@ -228,10 +228,6 @@ FEB_struct.Boundary.Prescribe{1}.bc='z';
 FEB_struct.Boundary.Prescribe{1}.lc=1;
 FEB_struct.Boundary.Prescribe{1}.Type='relative';
 
-% FEB_struct.Boundary.Prescribe{1}.Set=bcPrescribeList;
-% FEB_struct.Boundary.Prescribe{1}.nodeScale=displacementMagnitude(ones(numel(bcPrescribeList),1),3);
-% FEB_struct.Boundary.PrescribeTypes={'relative'};
-
 %Load curves
 FEB_struct.LoadData.LoadCurves.id=1;
 FEB_struct.LoadData.LoadCurves.type={'linear'};
@@ -254,6 +250,7 @@ febStruct2febFile(FEB_struct);
 
 %% RUNNING FEBIO JOB
 
+FEBioRunStruct.FEBioPath='C:\Program Files\febio-2.1.0\bin\FEBio2.exe';
 FEBioRunStruct.run_filename=FEB_struct.run_filename;
 FEBioRunStruct.run_logname=FEB_struct.run_logname;
 FEBioRunStruct.disp_on=1;

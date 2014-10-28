@@ -47,10 +47,10 @@ colordef(hf,Cdef);
 set(hf,'Color',Cbg);
 
 %Setting renderer. For RGB and colormap driven There are some bugs for the hardware option, hence changed here
-if ispc
-%     opengl software;
+% if ispc
+    %opengl software;
     %On UNIX systems, start MATLAB with the command, matlab softwareopengl
-end
+% end
 
 %Set renderer, set background color, maximize figure size
 if scr_offset==0

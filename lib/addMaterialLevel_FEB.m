@@ -145,9 +145,19 @@ end
 
 %% PROPERTIES
 if isfield(inputStruct,'Properties')
+    
     %Access properties and values
     mat_props=inputStruct.Properties;
     mat_prop_vals=inputStruct.Values;
+    
+    %Access property attributes
+    if isfield(inputStruct,'PropAttrName') 
+        mat_prop_attr_name=inputStruct.PropAttrName;
+        mat_prop_attr_val=inputStruct.PropAttrVal;
+    else        
+        mat_prop_attr_name=[];
+        mat_prop_attr_val=[];
+    end
     
     %Set property values
     for q=1:1:numel(mat_props)
@@ -157,7 +167,25 @@ if isfield(inputStruct,'Properties')
         prop_node = levelNode.appendChild(prop_node); %add entry
         t_form=repmat('%6.7e, ',1,size(currentVal,2)); t_form=t_form(1:end-2);
         prop_node.appendChild(docNode.createTextNode(sprintf(t_form,currentVal))); %append data text child
+        
+        %Add potential property attributes (e.g. property load curves)
+        if ~isempty(mat_prop_attr_name) 
+            if q<=numel(mat_prop_attr_name)
+                currentPropAttrName=mat_prop_attr_name{q};
+                if ~isempty(currentPropAttrName)
+                    currentPropAttrVal=mat_prop_attr_val{q};
+                    
+                    t_form=repmat('%6.7e, ',1,size(currentPropAttrVal,2));
+                    t_form=t_form(1:end-2);
+                    
+                    attr = docNode.createAttribute(currentPropAttrName); %Create attribute
+                    attr.setNodeValue(sprintf(t_form,currentPropAttrVal)); %Set text
+                    prop_node.setAttributeNode(attr); %Add attribute
+                end
+            end
+        end
     end
+    
 end
 
 end

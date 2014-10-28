@@ -91,7 +91,11 @@ docNode=addOutputLevel_FEB(docNode,FEB_struct);
 switch nargout
     case 0
         disp('Writing .feb file');
-        exportFEB_XML(FEB_struct.run_filename,docNode)% Saving XML file
+        if isfield(FEB_struct,'topCommentLine')
+            exportFEB_XML(FEB_struct.run_filename,docNode,FEB_struct.topCommentLine); % Saving XML file
+        else
+            exportFEB_XML(FEB_struct.run_filename,docNode); % Saving XML file
+        end
     case 1
         varargout{1}=docNode;
 end
