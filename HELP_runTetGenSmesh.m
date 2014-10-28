@@ -14,6 +14,12 @@ edgeColor=0.25*ones(1,3);
 edgeWidth=1.5;
 patchColor=[1 0.5 0];
 
+%%
+% path names
+filePath=mfilename('fullpath');
+savePath=fullfile(fileparts(filePath),'data','temp');
+modelName=fullfile(savePath,'tetgenmodel');
+
 %% MESHING A SINGLE REGION MODEL
 
 %%
@@ -52,8 +58,7 @@ V_holes=[];
 %% 
 % CREATING THE SMESH STRUCTURE
 
-stringOpt='-pq1.2AaYQ';
-modelName='tetGenModel';
+stringOpt='-pq1.2AaYQV';
 smeshName=[modelName,'.smesh'];
 
 smeshStruct.stringOpt=stringOpt;
@@ -169,7 +174,6 @@ regionA=[A A*3];
 % CREATING THE SMESH STRUCTURE
 
 stringOpt='-pq1.2AaYQ';
-modelName='tetGenModel';
 smeshName=[modelName,'.smesh'];
 
 smeshStruct.stringOpt=stringOpt;
@@ -283,8 +287,6 @@ regionA=[A A/2];
 % imposed by the -Y this time. 
 
 stringOpt='-pq1.3AaQ';
-
-modelName='tetGenModel';
 smeshName=[modelName,'.smesh'];
 
 smeshStruct.stringOpt=stringOpt;
@@ -350,7 +352,6 @@ boxEl=[4 5 6];
 [regionA]=tetVolMeanEst(Fq,Vq); %Volume for regular tets
 
 stringOpt='-pq1.2AaYQV';
-modelName='tempModel';
 smeshName=[modelName,'.smesh'];
 
 smeshStruct.stringOpt=stringOpt;

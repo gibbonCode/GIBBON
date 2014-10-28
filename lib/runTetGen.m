@@ -199,7 +199,11 @@ end
 modelName=fullfile(savePathStr,modelNameClean);
 modelNameTemp=fullfile(pathNameTempFiles,modelNameClean);
 
-inputStruct.modelName=modelNameTemp; 
+inputStruct.modelName=modelNameTemp;
+if isfield(inputStruct,'smeshName'); %WILL BE REMOVED
+    inputStruct.smeshName=modelNameTemp;
+end
+% inputStruct = rmfield(inputStruct,'smeshName');
 
 cleanUpTetGen(pathNameTempFiles); % Clean up temp directory
 
