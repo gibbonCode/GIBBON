@@ -32,7 +32,7 @@ modelName=fullfile(savePath,'tempModel');
 sampleWidth=5;
 sampleThickness=5; 
 sampleHeight=3;
-pointSpacing=0.33;
+pointSpacing=0.75/2;
 
 numElementsWidth=round(sampleWidth/pointSpacing);
 numElementsThickness=round(sampleThickness/pointSpacing);
@@ -307,11 +307,9 @@ FEB_struct.LoadData.LoadCurves.loadPoints={[0 0;1 1];};
 FEB_struct.disp_opt=0; %Display waitbars option
 febStruct2febFile(FEB_struct);
 
-fdsfas
-
 %% RUNNING FEBIO JOB
 
-% FEBioRunStruct.FEBioPath='C:\Program Files\febio-2.1.1\bin\FEBio2.exe';
+FEBioRunStruct.FEBioPath='C:\Program Files\febio-2.1.1\bin\FEBio2.exe';
 FEBioRunStruct.run_filename=FEB_struct.run_filename;
 FEBioRunStruct.run_logname=FEB_struct.run_logname;
 FEBioRunStruct.disp_on=1;
