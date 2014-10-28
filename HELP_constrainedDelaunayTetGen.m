@@ -13,7 +13,7 @@ figColor='w'; figColorDef='white';
 fontSize=15;
 faceAlpha1=1;
 faceAlpha2=0.5;
-edgeColor=0.25*ones(1,3);
+edgeColor=0.25*ones(1,3); 
 edgeWidth=1.5;
 markerSize=25; 
 

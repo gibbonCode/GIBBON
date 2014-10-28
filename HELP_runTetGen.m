@@ -76,7 +76,7 @@ inputStruct.modelName=modelName;
 [meshOutput]=runTetGen(inputStruct); %Run tetGen 
 
 %% 
-% Access model element and patch data
+% Access model element and patch data 
 F=meshOutput.faces;
 V=meshOutput.nodes;
 C=meshOutput.faceMaterialID;

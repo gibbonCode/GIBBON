@@ -198,7 +198,7 @@ F=meshOutput.faces;
 V=meshOutput.nodes;
 C=meshOutput.faceMaterialID;
 E=meshOutput.elements;
-
+ 
 %% 
 % PLOTTING MODEL 
 

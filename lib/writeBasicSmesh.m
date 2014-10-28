@@ -1,7 +1,7 @@
 function [T]=writeBasicSmesh(smeshStruct)
 
 %%
-
+ 
 dispStartTitleGibbonCode('Writing SMESH file');
 
 %% PARSE INPUT STRUCTURE
@@ -24,7 +24,7 @@ end
 %Force extension to be .smesh
 [pathstr,name,~] = fileparts(smeshName);
 smeshName=fullfile(pathstr,[name,'.smesh']);
-
+ 
 %% PART 1 NODES
 disp('----> Adding node field');
 

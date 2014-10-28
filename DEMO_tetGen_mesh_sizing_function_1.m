@@ -16,7 +16,7 @@ fontSize=15;
 faceAlpha1=0.5;
 faceAlpha2=0.5;
 edgeColor=0.25*ones(1,3);
-edgeWidth=1.5;
+edgeWidth=1.5; 
 
 % path names
 filePath=mfilename('fullpath');
