@@ -167,6 +167,7 @@ if ~isfield(inputStruct,'modelName');
     if isfield(inputStruct,'smeshName'); %WILL BE REMOVED
         inputStruct.modelName=inputStruct.smeshName;
         warning('smeshStruct.smeshName input will be replaced by smeshStruct.modelName in future releases!');    
+        copyFiles=1;
     else
         inputStruct.modelName=[]; 
         copyFiles=0;
