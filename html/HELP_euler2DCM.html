@@ -1,0 +1,295 @@
+
+<!DOCTYPE html
+  PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html><head>
+      <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+   <!--
+This HTML was auto-generated from MATLAB code.
+To make changes, update the MATLAB code and republish this document.
+      --><title>HELP_euler2DCM</title><meta name="generator" content="MATLAB 8.4"><link rel="schema.DC" href="http://purl.org/dc/elements/1.1/"><meta name="DC.date" content="2014-10-29"><meta name="DC.source" content="HELP_euler2DCM.m"><style type="text/css">
+html,body,div,span,applet,object,iframe,h1,h2,h3,h4,h5,h6,p,blockquote,pre,a,abbr,acronym,address,big,cite,code,del,dfn,em,font,img,ins,kbd,q,s,samp,small,strike,strong,sub,sup,tt,var,b,u,i,center,dl,dt,dd,ol,ul,li,fieldset,form,label,legend,table,caption,tbody,tfoot,thead,tr,th,td{margin:0;padding:0;border:0;outline:0;font-size:100%;vertical-align:baseline;background:transparent}body{line-height:1}ol,ul{list-style:none}blockquote,q{quotes:none}blockquote:before,blockquote:after,q:before,q:after{content:'';content:none}:focus{outine:0}ins{text-decoration:none}del{text-decoration:line-through}table{border-collapse:collapse;border-spacing:0}
+
+html { min-height:100%; margin-bottom:1px; }
+html body { height:100%; margin:0px; font-family:Arial, Helvetica, sans-serif; font-size:10px; color:#000; line-height:140%; background:#fff none; overflow-y:scroll; }
+html body td { vertical-align:top; text-align:left; }
+
+h1 { padding:0px; margin:0px 0px 25px; font-family:Arial, Helvetica, sans-serif; font-size:1.5em; color:#d55000; line-height:100%; font-weight:normal; }
+h2 { padding:0px; margin:0px 0px 8px; font-family:Arial, Helvetica, sans-serif; font-size:1.2em; color:#000; font-weight:bold; line-height:140%; border-bottom:1px solid #d6d4d4; display:block; }
+h3 { padding:0px; margin:0px 0px 5px; font-family:Arial, Helvetica, sans-serif; font-size:1.1em; color:#000; font-weight:bold; line-height:140%; }
+
+a { color:#005fce; text-decoration:none; }
+a:hover { color:#005fce; text-decoration:underline; }
+a:visited { color:#004aa0; text-decoration:none; }
+
+p { padding:0px; margin:0px 0px 20px; }
+img { padding:0px; margin:0px 0px 20px; border:none; }
+p img, pre img, tt img, li img, h1 img, h2 img { margin-bottom:0px; } 
+
+ul { padding:0px; margin:0px 0px 20px 23px; list-style:square; }
+ul li { padding:0px; margin:0px 0px 7px 0px; }
+ul li ul { padding:5px 0px 0px; margin:0px 0px 7px 23px; }
+ul li ol li { list-style:decimal; }
+ol { padding:0px; margin:0px 0px 20px 0px; list-style:decimal; }
+ol li { padding:0px; margin:0px 0px 7px 23px; list-style-type:decimal; }
+ol li ol { padding:5px 0px 0px; margin:0px 0px 7px 0px; }
+ol li ol li { list-style-type:lower-alpha; }
+ol li ul { padding-top:7px; }
+ol li ul li { list-style:square; }
+
+.content { font-size:1.2em; line-height:140%; padding: 20px; }
+
+pre, code { font-size:12px; }
+tt { font-size: 1.2em; }
+pre { margin:0px 0px 20px; }
+pre.codeinput { padding:10px; border:1px solid #d3d3d3; background:#f7f7f7; }
+pre.codeoutput { padding:10px 11px; margin:0px 0px 20px; color:#4c4c4c; }
+pre.error { color:red; }
+
+@media print { pre.codeinput, pre.codeoutput { word-wrap:break-word; width:100%; } }
+
+span.keyword { color:#0000FF }
+span.comment { color:#228B22 }
+span.string { color:#A020F0 }
+span.untermstring { color:#B20000 }
+span.syscmd { color:#B28C00 }
+
+.footer { width:auto; padding:10px 0px; margin:25px 0px 0px; border-top:1px dotted #878787; font-size:0.8em; line-height:140%; font-style:italic; color:#878787; text-align:left; float:none; }
+.footer p { margin:0px; }
+.footer a { color:#878787; }
+.footer a:hover { color:#878787; text-decoration:underline; }
+.footer a:visited { color:#878787; }
+
+table th { padding:7px 5px; text-align:left; vertical-align:middle; border: 1px solid #d6d4d4; font-weight:bold; }
+table td { padding:7px 5px; text-align:left; vertical-align:top; border:1px solid #d6d4d4; }
+
+
+
+
+
+  </style></head><body><div class="content"><h1>HELP_euler2DCM</h1><!--introduction--><p>Below is a demonstration of the features of the <tt>euler2DCM</tt> function</p><!--/introduction--><h2>Contents</h2><div><ul><li><a href="#3">Creating a rotation matrix using Euler angles</a></li><li><a href="#12">Creating multiple rotation matrices</a></li></ul></div><pre class="codeinput">clear; close <span class="string">all</span>; clc;
+</pre><p>Plot settings</p><pre class="codeinput">fig_color=<span class="string">'w'</span>; fig_colordef=<span class="string">'white'</span>;
+fontSize=15;
+faceAlpha=1;
+edgeColor=0*ones(1,3);
+edgeWidth=1;
+</pre><h2>Creating a rotation matrix using Euler angles<a name="3"></a></h2><p>Search wikipedia for information on Euler angles to define a rotation or direction cosine matrix (DCM).</p><p>Load example patch data</p><pre class="codeinput">[F,V]=parasaurolophus;
+</pre><p>Defining sets of Euler angles for X, Y and Z axis rotation</p><pre class="codeinput">E1=[0.5*pi 0 0];
+E2=[0 0.5*pi 0];
+E3=[0 0 0.5*pi];
+E4=[0.25*pi 0.25*pi 0.25*pi];
+</pre><p>Use <tt>euler2DCM</tt> function to define the rotation matrices</p><pre class="codeinput">[R1]=euler2DCM(E1);
+[R2]=euler2DCM(E2);
+[R3]=euler2DCM(E3);
+[R4]=euler2DCM(E4);
+</pre><p>Rotate the coordinates</p><pre class="codeinput">V1=(R1*V')';
+V2=(R2*V')';
+V3=(R3*V')';
+V4=(R4*V')';
+</pre><p>Plotting data</p><pre class="codeinput">hf=figuremax(fig_color,fig_colordef);
+
+subplot(2,2,1);
+title(<span class="string">'X-axis rotation'</span>,<span class="string">'FontSize'</span>,fontSize);
+xlabel(<span class="string">'X'</span>,<span class="string">'FontSize'</span>,fontSize); ylabel(<span class="string">'Y'</span>,<span class="string">'FontSize'</span>,fontSize); zlabel(<span class="string">'Z'</span>,<span class="string">'FontSize'</span>,fontSize);
+hp=patch(<span class="string">'Faces'</span>,F,<span class="string">'Vertices'</span>,V,<span class="string">'FaceColor'</span>,0.5*ones(1,3),<span class="string">'FaceAlpha'</span>,faceAlpha,<span class="string">'lineWidth'</span>,edgeWidth,<span class="string">'edgeColor'</span>,edgeColor);
+hp=patch(<span class="string">'Faces'</span>,F,<span class="string">'Vertices'</span>,V1,<span class="string">'FaceColor'</span>,<span class="string">'r'</span>,<span class="string">'FaceAlpha'</span>,faceAlpha,<span class="string">'lineWidth'</span>,edgeWidth,<span class="string">'edgeColor'</span>,edgeColor);
+camlight <span class="string">headlight</span>;
+set(gca,<span class="string">'FontSize'</span>,fontSize);
+view(3); axis <span class="string">tight</span>;  axis <span class="string">equal</span>;
+
+subplot(2,2,2);
+title(<span class="string">'Y-axis rotation'</span>,<span class="string">'FontSize'</span>,fontSize);
+xlabel(<span class="string">'X'</span>,<span class="string">'FontSize'</span>,fontSize); ylabel(<span class="string">'Y'</span>,<span class="string">'FontSize'</span>,fontSize); zlabel(<span class="string">'Z'</span>,<span class="string">'FontSize'</span>,fontSize);
+hp=patch(<span class="string">'Faces'</span>,F,<span class="string">'Vertices'</span>,V,<span class="string">'FaceColor'</span>,0.5*ones(1,3),<span class="string">'FaceAlpha'</span>,faceAlpha,<span class="string">'lineWidth'</span>,edgeWidth,<span class="string">'edgeColor'</span>,edgeColor);
+hp=patch(<span class="string">'Faces'</span>,F,<span class="string">'Vertices'</span>,V2,<span class="string">'FaceColor'</span>,<span class="string">'g'</span>,<span class="string">'FaceAlpha'</span>,faceAlpha,<span class="string">'lineWidth'</span>,edgeWidth,<span class="string">'edgeColor'</span>,edgeColor);
+camlight <span class="string">headlight</span>;
+set(gca,<span class="string">'FontSize'</span>,fontSize);
+view(3); axis <span class="string">tight</span>;  axis <span class="string">equal</span>;
+
+subplot(2,2,3);
+title(<span class="string">'Z-axis rotation'</span>,<span class="string">'FontSize'</span>,fontSize);
+xlabel(<span class="string">'X'</span>,<span class="string">'FontSize'</span>,fontSize); ylabel(<span class="string">'Y'</span>,<span class="string">'FontSize'</span>,fontSize); zlabel(<span class="string">'Z'</span>,<span class="string">'FontSize'</span>,fontSize);
+hp=patch(<span class="string">'Faces'</span>,F,<span class="string">'Vertices'</span>,V,<span class="string">'FaceColor'</span>,0.5*ones(1,3),<span class="string">'FaceAlpha'</span>,faceAlpha,<span class="string">'lineWidth'</span>,edgeWidth,<span class="string">'edgeColor'</span>,edgeColor);
+hp=patch(<span class="string">'Faces'</span>,F,<span class="string">'Vertices'</span>,V3,<span class="string">'FaceColor'</span>,<span class="string">'b'</span>,<span class="string">'FaceAlpha'</span>,faceAlpha,<span class="string">'lineWidth'</span>,edgeWidth,<span class="string">'edgeColor'</span>,edgeColor);
+camlight <span class="string">headlight</span>;
+set(gca,<span class="string">'FontSize'</span>,fontSize);
+view(3); axis <span class="string">tight</span>;  axis <span class="string">equal</span>;
+
+subplot(2,2,4);
+title(<span class="string">'Off-axis rotation'</span>,<span class="string">'FontSize'</span>,fontSize);
+xlabel(<span class="string">'X'</span>,<span class="string">'FontSize'</span>,fontSize); ylabel(<span class="string">'Y'</span>,<span class="string">'FontSize'</span>,fontSize); zlabel(<span class="string">'Z'</span>,<span class="string">'FontSize'</span>,fontSize);
+hp=patch(<span class="string">'Faces'</span>,F,<span class="string">'Vertices'</span>,V,<span class="string">'FaceColor'</span>,0.5*ones(1,3),<span class="string">'FaceAlpha'</span>,faceAlpha,<span class="string">'lineWidth'</span>,edgeWidth,<span class="string">'edgeColor'</span>,edgeColor);
+hp=patch(<span class="string">'Faces'</span>,F,<span class="string">'Vertices'</span>,V4,<span class="string">'FaceColor'</span>,<span class="string">'y'</span>,<span class="string">'FaceAlpha'</span>,faceAlpha,<span class="string">'lineWidth'</span>,edgeWidth,<span class="string">'edgeColor'</span>,edgeColor);
+camlight <span class="string">headlight</span>;
+set(gca,<span class="string">'FontSize'</span>,fontSize);
+view(3); axis <span class="string">tight</span>;  axis <span class="string">equal</span>;
+
+drawnow;
+</pre><img vspace="5" hspace="5" src="HELP_euler2DCM_01.png" alt=""> <p>A second output can also be requested which is the inverse rotation matrix.</p><pre class="codeinput">[R,Ri]=euler2DCM([randn(1,3)*pi]);
+R
+Ri
+</pre><pre class="codeoutput">
+R =
+
+   -0.4735    0.3738    0.7976
+    0.1516   -0.8574    0.4918
+    0.8677    0.3538    0.3493
+
+
+Ri =
+
+   -0.4735    0.1516    0.8677
+    0.3738   -0.8574    0.3538
+    0.7976    0.4918    0.3493
+
+</pre><p>i.e. such that the following :</p><pre class="codeinput">Vr=(R*V')'; <span class="comment">%The rotated coordinates</span>
+Vn=(Ri*Vr')'; <span class="comment">%The normal coordinates after transforming back the rotated coordinates using inverse matrix</span>
+</pre><p>Note that the sum of squared differences for instance is nearly zero</p><pre class="codeinput">D=sum((V(:)-Vn(:)).^2)
+</pre><pre class="codeoutput">
+D =
+
+   7.7439e-29
+
+</pre><h2>Creating multiple rotation matrices<a name="12"></a></h2><p>It is possible to define multiple rotation matrices at once by specifying a multi-row angle set</p><pre class="codeinput">E=[0.25*pi 0 0; 0 0.5*pi 0]; <span class="comment">%E.g. two angle sets are specified, 1 for each row</span>
+</pre><p>In this case the rotation matrices are stacked in the 3rd dimension</p><pre class="codeinput">[R]=euler2DCM(E)
+</pre><pre class="codeoutput">
+R(:,:,1) =
+
+    1.0000         0         0
+         0    0.7071   -0.7071
+         0    0.7071    0.7071
+
+
+R(:,:,2) =
+
+    0.0000         0    1.0000
+         0    1.0000         0
+   -1.0000         0    0.0000
+
+</pre><p><img vspace="5" hspace="5" src="gibbVerySmall.gif" alt=""> </p><p><i><b>GIBBON</b></i> <a href="www.gibboncode.org">www.gibboncode.org</a></p><p><i>Kevin Mattheus Moerman</i>, <a href="gibbon.toolbox@gmail.com">gibbon.toolbox@gmail.com</a></p><p class="footer"><br><a href="http://www.mathworks.com/products/matlab/">Published with MATLAB&reg; R2014b</a><br></p></div><!--
+##### SOURCE BEGIN #####
+%% HELP_euler2DCM
+% Below is a demonstration of the features of the |euler2DCM| function
+
+%%
+clear; close all; clc;
+
+%%
+% Plot settings
+fig_color='w'; fig_colordef='white';
+fontSize=15;
+faceAlpha=1;
+edgeColor=0*ones(1,3);
+edgeWidth=1;
+
+%% Creating a rotation matrix using Euler angles
+% Search wikipedia for information on Euler angles to define a rotation or
+% direction cosine matrix (DCM). 
+
+%% 
+% Load example patch data
+[F,V]=parasaurolophus;
+
+%%
+% Defining sets of Euler angles for X, Y and Z axis rotation
+
+E1=[0.5*pi 0 0]; 
+E2=[0 0.5*pi 0]; 
+E3=[0 0 0.5*pi]; 
+E4=[0.25*pi 0.25*pi 0.25*pi]; 
+
+%%
+% Use |euler2DCM| function to define the rotation matrices
+
+[R1]=euler2DCM(E1);
+[R2]=euler2DCM(E2);
+[R3]=euler2DCM(E3);
+[R4]=euler2DCM(E4);
+
+%%
+% Rotate the coordinates
+
+V1=(R1*V')'; 
+V2=(R2*V')'; 
+V3=(R3*V')'; 
+V4=(R4*V')'; 
+
+%%
+% Plotting data
+
+hf=figuremax(fig_color,fig_colordef);
+
+subplot(2,2,1);
+title('X-axis rotation','FontSize',fontSize);
+xlabel('X','FontSize',fontSize); ylabel('Y','FontSize',fontSize); zlabel('Z','FontSize',fontSize);
+hp=patch('Faces',F,'Vertices',V,'FaceColor',0.5*ones(1,3),'FaceAlpha',faceAlpha,'lineWidth',edgeWidth,'edgeColor',edgeColor);
+hp=patch('Faces',F,'Vertices',V1,'FaceColor','r','FaceAlpha',faceAlpha,'lineWidth',edgeWidth,'edgeColor',edgeColor);
+camlight headlight;
+set(gca,'FontSize',fontSize);
+view(3); axis tight;  axis equal; 
+
+subplot(2,2,2);
+title('Y-axis rotation','FontSize',fontSize);
+xlabel('X','FontSize',fontSize); ylabel('Y','FontSize',fontSize); zlabel('Z','FontSize',fontSize);
+hp=patch('Faces',F,'Vertices',V,'FaceColor',0.5*ones(1,3),'FaceAlpha',faceAlpha,'lineWidth',edgeWidth,'edgeColor',edgeColor);
+hp=patch('Faces',F,'Vertices',V2,'FaceColor','g','FaceAlpha',faceAlpha,'lineWidth',edgeWidth,'edgeColor',edgeColor);
+camlight headlight;
+set(gca,'FontSize',fontSize);
+view(3); axis tight;  axis equal; 
+
+subplot(2,2,3);
+title('Z-axis rotation','FontSize',fontSize);
+xlabel('X','FontSize',fontSize); ylabel('Y','FontSize',fontSize); zlabel('Z','FontSize',fontSize);
+hp=patch('Faces',F,'Vertices',V,'FaceColor',0.5*ones(1,3),'FaceAlpha',faceAlpha,'lineWidth',edgeWidth,'edgeColor',edgeColor);
+hp=patch('Faces',F,'Vertices',V3,'FaceColor','b','FaceAlpha',faceAlpha,'lineWidth',edgeWidth,'edgeColor',edgeColor);
+camlight headlight;
+set(gca,'FontSize',fontSize);
+view(3); axis tight;  axis equal; 
+
+subplot(2,2,4);
+title('Off-axis rotation','FontSize',fontSize);
+xlabel('X','FontSize',fontSize); ylabel('Y','FontSize',fontSize); zlabel('Z','FontSize',fontSize);
+hp=patch('Faces',F,'Vertices',V,'FaceColor',0.5*ones(1,3),'FaceAlpha',faceAlpha,'lineWidth',edgeWidth,'edgeColor',edgeColor);
+hp=patch('Faces',F,'Vertices',V4,'FaceColor','y','FaceAlpha',faceAlpha,'lineWidth',edgeWidth,'edgeColor',edgeColor);
+camlight headlight;
+set(gca,'FontSize',fontSize);
+view(3); axis tight;  axis equal; 
+
+drawnow; 
+
+%%
+% A second output can also be requested which is the inverse rotation matrix. 
+[R,Ri]=euler2DCM([randn(1,3)*pi]);
+R
+Ri
+
+%%
+% i.e. such that the following :
+
+Vr=(R*V')'; %The rotated coordinates
+Vn=(Ri*Vr')'; %The normal coordinates after transforming back the rotated coordinates using inverse matrix
+
+%%
+% Note that the sum of squared differences for instance is nearly zero 
+D=sum((V(:)-Vn(:)).^2)
+
+%% Creating multiple rotation matrices
+% It is possible to define multiple rotation matrices at once by specifying
+% a multi-row angle set
+
+E=[0.25*pi 0 0; 0 0.5*pi 0]; %E.g. two angle sets are specified, 1 for each row
+
+%%
+% In this case the rotation matrices are stacked in the 3rd dimension
+
+[R]=euler2DCM(E)
+
+%% 
+%
+% <<gibbVerySmall.gif>>
+% 
+% _*GIBBON*_ 
+% <www.gibboncode.org>
+% 
+% _Kevin Mattheus Moerman_, <gibbon.toolbox@gmail.com>
+##### SOURCE END #####
+--></body></html>

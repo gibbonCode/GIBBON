@@ -1,6 +1,6 @@
 function [varargout]=tet4_tet10(varargin)
 
-% function [TET10,V10,VX10C]=tet4_tet10(TET4,V4,VXC)
+% function [TET10,V10,VX10C,ind_uni_2]=tet4_tet10(TET4,V4,VXC)
 % ------------------------------------------------------------------------
 % This function converts 4 node (e.g. linear) tetrahedral elements into 10
 % node (e.g. quadratic) tetrahedral elements compatible with FEBio. 

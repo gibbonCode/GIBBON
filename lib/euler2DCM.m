@@ -1,4 +1,4 @@
-function [R,Ri]=euler2DCM(E)
+function [varargout]=euler2DCM(E)
 
 % ----------------------------------------------------------------------
 % function [R,Ri]=euler2DCM(E)
@@ -19,25 +19,28 @@ switch class(E)
 end
 Ri=R;
 
-for i=1:1:size(E,1);
+for q=1:1:size(E,1);
     
     Rx=[1        0        0;...
-        0        cos(E(i,1))  -sin(E(i,1));...
-        0        sin(E(i,1))  cos(E(i,1))];
+        0        cos(E(q,1))  -sin(E(q,1));...
+        0        sin(E(q,1))  cos(E(q,1))];
     
-    Ry=[cos(E(i,2))  0        sin(E(i,2));...
+    Ry=[cos(E(q,2))  0        sin(E(q,2));...
         0        1        0;...
-        -sin(E(i,2)) 0        cos(E(i,2))];
+        -sin(E(q,2)) 0        cos(E(q,2))];
     
-    Rz=[cos(E(i,3))  -sin(E(i,3)) 0;...
-        sin(E(i,3))  cos(E(i,3))  0;...
+    Rz=[cos(E(q,3))  -sin(E(q,3)) 0;...
+        sin(E(q,3))  cos(E(q,3))  0;...
         0        0        1];
     
     Rxyz=Rx*Ry*Rz;
-    R(:,:,i)=Rxyz;
-    Ri(:,:,i)=inv(Rxyz);
+    R(:,:,q)=Rxyz;
     
+    Ri(:,:,q)=inv(Rxyz);
 end
+
+varargout{1}=R; 
+varargout{2}=Ri; 
 
 end
 

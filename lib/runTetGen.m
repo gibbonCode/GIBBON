@@ -335,33 +335,51 @@ catch
    error('Error importing TetGen output files. Check file names.');
 end
 
+
 %% Convert element type if required
 
 switch inputStruct.tetType
     case 'tet4' %Linear tetrahedral elements
         %Keep as is
     case 'tet10' %Quadratic tetrahedral elements
-        TET4=meshOutput.elements;
-        V4=meshOutput.nodes;
-        elementMaterialID=meshOutput.elementMaterialID;        
-        [TET10,V10,~]=tet4_tet10(TET4,V4,{});        
-        [F10,faceMaterialID]=element2patch(TET10,elementMaterialID,'tet10');   
-        matLabels=unique(elementMaterialID(:));
-        Fb=[];
-        faceBoundaryID=[];
-        for q=1:1:numel(matLabels)
-            matLabel=matLabels(q);
-            [Fbn,~,Cb]=meshBoundary(TET10(elementMaterialID==matLabel,:),'tet10',elementMaterialID(elementMaterialID==matLabel));
-            faceBoundaryIDn=Cb;
-            Fb=[Fb;Fbn];
-            faceBoundaryID=[faceBoundaryID;faceBoundaryIDn];            
-        end
+        E_tet4=meshOutput.elements;
+        V_tet4=meshOutput.nodes;        
         
-        meshOutput.nodes=V10;
-        meshOutput.facesBoundary=Fb;
-        meshOutput.boundaryMarker=faceBoundaryID; 
-        meshOutput.faces=F10;
-        meshOutput.elements=TET10;
+        Fb_tet4=meshOutput.facesBoundary;
+        Cb_tet4=meshOutput.boundaryMarker;
+        Cb_tet10=Cb_tet4;
+        
+        elementMaterialID=meshOutput.elementMaterialID;        
+        [E_tet10,V_tet10,~,ind_uni_2]=tet4_tet10(E_tet4,V_tet4);        
+        Fb_tet4_tet10=ind_uni_2(Fb_tet4); %Tet4 boundary faces with fixed indices
+        
+        [F_tet10,faceMaterialID]=element2patch(E_tet10,elementMaterialID,'tet10');   
+        
+        [F_tet10_tet4]=element2patch(E_tet10(:,1:4),elementMaterialID,'tet4');
+        
+        Fb_tet10_sort=sort(F_tet10_tet4,2); %Sorted tet4 part
+        Fb_tet4_sort=sort(Fb_tet4_tet10,2); %Sorted faces
+        
+        sizVirt=max([Fb_tet10_sort(:); Fb_tet4_tet10(:);])*ones(1,3);
+        I10=Fb_tet10_sort(:,1);
+        J10=Fb_tet10_sort(:,2);
+        K10=Fb_tet10_sort(:,3);
+        ind_F10=sub2ind(sizVirt,I10,J10,K10);
+        
+        I4=Fb_tet4_sort(:,1);
+        J4=Fb_tet4_sort(:,2);
+        K4=Fb_tet4_sort(:,3);
+        ind_F4=sub2ind(sizVirt,I4,J4,K4);
+
+        [~,minIND]=minDist(ind_F4,ind_F10);
+
+        Fb_tet10=F_tet10(minIND,:);
+          
+        meshOutput.nodes=V_tet10;
+        meshOutput.facesBoundary=Fb_tet10;
+%         meshOutput.boundaryMarker=faceBoundaryID; %Remains valid
+        meshOutput.faces=F_tet10;
+        meshOutput.elements=E_tet10;        
 %         meshOutput.elementMaterialID=elementMaterialID; %Remains valid
         meshOutput.faceMaterialID=faceMaterialID;     
 end
