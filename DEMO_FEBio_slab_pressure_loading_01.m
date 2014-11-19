@@ -42,12 +42,12 @@ nRefine=2;
 sphereRadius=sampleWidth/7;
 sphereShift=sphereRadius*1.4; 
 
-sideSupportOn=1; 
+sideSupportOn=0; 
 
 if sideSupportOn
-    pressureLevel=-2e-1; %Much higher since now bulk modulus has a dominant response
+    pressureLevel=-3e-1; %Much higher since now bulk modulus has a dominant response
 else
-    pressureLevel=-1e-3; %Low 
+    pressureLevel=-2e-3; %Low 
 end
 
 %% Creating a meshed box (4-node tetrahedral elements)

@@ -45,7 +45,7 @@ sphereShift=sphereRadius*1.5;
 
 sideSupportOn=1; 
 
-displacementMag=-0.2; 
+displacementMag=-0.3; 
 
 tetType='tet4';
 

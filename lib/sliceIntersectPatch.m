@@ -28,11 +28,11 @@ else
         %Creating slice plane for plotting
         F_slicePlane=[1 2 3 4];
     end
-    if isfield(plotOptions,'saveFrames')
-        saveOn=1;
-    else
-        saveOn=0;
-    end
+%     if isfield(plotOptions,'saveFrames')
+%         saveOn=1;
+%     else
+%         saveOn=0;
+%     end
     
 end
 
@@ -325,12 +325,12 @@ for q=1:1:numSlices;
             curveGroupCount=curveGroupCount+1;
         end
     end
-    if plotOn==1 && saveOn==1;
-        saveName=[plotOptions.saveFrames(1:end-4),'_',num2str(q),plotOptions.saveFrames(end-3:end)];
-        axis off;
-        export_fig(saveName,'-r100');
-        axis on;
-    end
+%     if plotOn==1 && saveOn==1;
+%         saveName=[plotOptions.saveFrames(1:end-4),'_',num2str(q),plotOptions.saveFrames(end-3:end)];
+%         axis off;
+%         export_fig(saveName,'-r100');
+%         axis on;
+%     end
 end
 
 if plotOn==1;

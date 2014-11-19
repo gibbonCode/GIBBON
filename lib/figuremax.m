@@ -16,7 +16,7 @@ function [hf]=figuremax(varargin)
 
 %%
 
-scr_offset_default= round(max(get(0,'ScreenSize'))/15);
+scr_offset_default= round(max(get(0,'ScreenSize'))/25);
 
 switch nargin
     case 0

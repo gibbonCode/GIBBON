@@ -91,6 +91,8 @@ cPar.pointSpacing=10;
 cPar.depth=450; 
 cPar.patchType='tri'; 
 cPar.dir=0;
+cPar.n=[0 0 1];
+cPar.closeLoopOpt=0; 
 [F_tri,V_tri]=polyExtrude(Vc,cPar);
 
 %% 
@@ -103,7 +105,7 @@ hold on;
 hp=patch('faces',F_tri,'Vertices',V_tri);
 % [hp2]=patchNormPlot(F_tri,V_tri,2*pointSpacing);
 
-set(hp,'FaceColor','g','EdgeColor','k','FaceAlpha',faceAlpha,'LineWidth',lineWidth3);
+set(hp,'FaceColor','g','EdgeColor','k','FaceAlpha',faceAlpha);
 camlight headlight;
 axis equal; view(3); axis tight;  grid on;  set(gca,'FontSize',fontSize);
 drawnow;

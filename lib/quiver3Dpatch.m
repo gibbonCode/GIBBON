@@ -1,4 +1,4 @@
-function [F,V,C]=quiver3Dpatch(x,y,z,ux,uy,uz,c,a)
+function [varargout]=quiver3Dpatch(x,y,z,ux,uy,uz,c,a)
 
 % function [F,V,C]=quiver3Dpatch(x,y,z,ux,uy,uz,c,a)
 % ------------------------------------------------------------------------
@@ -49,13 +49,14 @@ function [F,V,C]=quiver3Dpatch(x,y,z,ux,uy,uz,c,a)
 % Kevin Mattheus Moerman
 % kevinmoerman@hotmail.com
 % 2014/01/13 %Updated example in help
+% 2014/11/11 %Updated to allow for RGB color input data (e.g. C is an nx3 array)
 %------------------------------------------------------------------------
 
 %% 
 
 %Convert to columns
 x=x(:); y=y(:); z=z(:); 
-ux=ux(:); uy=uy(:); uz=uz(:); c=c(:);
+ux=ux(:); uy=uy(:); uz=uz(:); 
 
 %Spherical coordinates
 [THETA_vec,PHI_vec,R_vec] = cart2sph(ux,uy,uz);
@@ -137,13 +138,21 @@ end
 %     b=repmat(((no_nodes.*(0:1:numel(x)-1)')*ones(1,3)),[6,1]);
 %     F=F_order+b;
 
-%% Color specification
+%% Collect face and vertex output
+varargout{1}=F;
+varargout{2}=V;
 
-if isempty(c); %If empty specify vector magnitudes as color
-    C=repmat(R_vec,[size(F_order,1),1]);
-else %If user specified color replicate to match # of added faces for arrow
-    C=repmat(c,[size(F_order,1),1]);   
-end    
+%% Add color specification if requested
+
+if nargout==3
+    if isempty(c); %If empty specify vector magnitudes as colormap driven color
+        C=repmat(R_vec,[size(F_order,1),1]);
+    else %If user specified color replicate to match # of added faces for arrow
+        %c my be an nx3 array to allow for RGB type color data
+        C=repmat(c,[size(F_order,1),1]);
+    end
+    varargout{3}=C;
+end
 
 end
 

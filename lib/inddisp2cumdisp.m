@@ -52,10 +52,10 @@ for i_dyn=3:n_disp;
     L_valid_3=L_valid_INI{i_dyn} & L_valid_1; %Logic for valid initial points AND valid displacements
     
     if strcmp(interp_method,'v4'); %biharmonic spline based
-        DX_m=biharm_spline_fit_ND(X(L_valid_3,:),DX(L_valid_3,1),XI(LXI_inchull,:));
-        DY_m=biharm_spline_fit_ND(X(L_valid_3,:),DX(L_valid_3,2),XI(LXI_inchull,:));
-        DZ_m=biharm_spline_fit_ND(X(L_valid_3,:),DX(L_valid_3,3),XI(LXI_inchull,:));
-        DI_inchull=[DX_m DY_m DZ_m];
+%         DX_m=biharm_spline_fit_ND(X(L_valid_3,:),DX(L_valid_3,1),XI(LXI_inchull,:));
+%         DY_m=biharm_spline_fit_ND(X(L_valid_3,:),DX(L_valid_3,2),XI(LXI_inchull,:));
+%         DZ_m=biharm_spline_fit_ND(X(L_valid_3,:),DX(L_valid_3,3),XI(LXI_inchull,:));
+%         DI_inchull=[DX_m DY_m DZ_m];
     elseif strcmp(interp_method,'nat_near');
         %         DT=delaunayTriangulation(X(L_valid_3,:));
         %         [Dx,Lnn]=TriScatteredInterp_nat_near(X(L_valid_3,:),DX(L_valid_3,1),XI(LXI_inchull,:));
