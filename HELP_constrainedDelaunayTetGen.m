@@ -1,10 +1,18 @@
 %% constrainedDelaunayTetGen
 % Below is a demonstration of the features of the
-% |constrainedDelaunayTetGen| function
+% |constrainedDelaunayTetGen| function 
 % 
 
-%%
+%% Syntax
+% |[TR]=constrainedDelaunayTetGen(V,C);|
 
+%% Description 
+% The |constrainedDelaunayTetGen| function uses TetGen to create the
+% constrained 3D Delaunay tesselation of point sets. 
+
+%% Examples
+
+%%
 clear; close all; clc; 
 
 %%
@@ -46,12 +54,11 @@ hold on;
 
 patch('Faces',F,'Vertices',V,'FaceColor','g','FaceAlpha',faceAlpha1,'lineWidth',edgeWidth,'edgeColor',edgeColor);
 
-colorbar;
 camlight headlight;
 set(gca,'FontSize',fontSize);
 view(3); axis tight;  axis equal;  grid on;
 
-%% Using MATLAB's |delaunayTriangulation| to compute the unconstrained 3D Delaunay tesselation 
+%% Example: Using MATLAB's |delaunayTriangulation| to compute the unconstrained 3D Delaunay tesselation 
 % Computing the unconstrained 3D Delaunay tesselation of point set
 
 [DT]=delaunayTriangulation(V); 
@@ -62,7 +69,7 @@ TET1=DT.ConnectivityList;
 V1=DT.Points; 
 [F1]=element2patch(TET1,[],'tet4');
 
-%% Using TetGen based |constrainedDelaunayTetGen|  to compute the unconstrained 3D Delaunay tesselation 
+%% Example: Using TetGen based |constrainedDelaunayTetGen| to compute the unconstrained 3D Delaunay tesselation 
 % Computing the constrained 3D Delaunay tesselation of point set (i.e.
 % faces are matched)
 
@@ -81,7 +88,6 @@ title('The unconstrained MATLAB tesselation','FontSize',fontSize);
 xlabel('X','FontSize',fontSize); ylabel('Y','FontSize',fontSize); zlabel('Z','FontSize',fontSize);
 hold on;
 patch('Faces',F1,'Vertices',V1,'FaceColor','r','FaceAlpha',faceAlpha2,'lineWidth',edgeWidth,'edgeColor',edgeColor);
-colorbar;
 camlight headlight;
 set(gca,'FontSize',fontSize);
 view(3); axis tight;  axis equal;  grid on;
@@ -91,13 +97,11 @@ title('The unconstrained TetGen tesselation','FontSize',fontSize);
 xlabel('X','FontSize',fontSize); ylabel('Y','FontSize',fontSize); zlabel('Z','FontSize',fontSize);
 hold on;
 patch('Faces',F2,'Vertices',V2,'FaceColor','g','FaceAlpha',faceAlpha2,'lineWidth',edgeWidth,'edgeColor',edgeColor);
-colorbar;
 camlight headlight;
 set(gca,'FontSize',fontSize);
 view(3); axis tight;  axis equal;  grid on;
 
-
-%% Using TetGen based |constrainedDelaunayTetGen| to compute the unconstrained 3D Delaunay tesselation 
+%% Example: Using TetGen based |constrainedDelaunayTetGen| to compute the constrained 3D Delaunay tesselation 
 % Computing the constrained 3D Delaunay tesselation of point set (i.e.
 % faces are matched)
 
@@ -116,7 +120,6 @@ title('The unconstrained tesselation (convex hull)','FontSize',fontSize);
 xlabel('X','FontSize',fontSize); ylabel('Y','FontSize',fontSize); zlabel('Z','FontSize',fontSize);
 hold on;
 patch('Faces',F1,'Vertices',V1,'FaceColor','r','FaceAlpha',faceAlpha2,'lineWidth',edgeWidth,'edgeColor',edgeColor);
-colorbar;
 camlight headlight;
 set(gca,'FontSize',fontSize);
 view(3); axis tight;  axis equal;  grid on;
@@ -126,12 +129,11 @@ title('The constrained TetGen tesselation','FontSize',fontSize);
 xlabel('X','FontSize',fontSize); ylabel('Y','FontSize',fontSize); zlabel('Z','FontSize',fontSize);
 hold on;
 patch('Faces',F2,'Vertices',V2,'FaceColor','g','FaceAlpha',faceAlpha2,'lineWidth',edgeWidth,'edgeColor',edgeColor);
-colorbar;
 camlight headlight;
 set(gca,'FontSize',fontSize);
 view(3); axis tight;  axis equal;  grid on;
 
-%% Computing constrained 3D Delaunay tesselations with interior points
+%% Example: Computing constrained 3D Delaunay tesselations with interior points
 
 %% 
 % First the |triSurf2Im| function is used to mesh the interior
@@ -208,8 +210,6 @@ hold on;
 patch('Faces',F,'Vertices',V,'FaceColor',0.5*ones(1,3),'FaceAlpha',0.1,'edgeColor','none');
 plotV(Vi,'k.','MarkerSize',markerSize);
 
-colormap(jet(250));
-colorbar;
 camlight headlight;
 set(gca,'FontSize',fontSize);
 view(2); axis tight;  axis equal;  grid on;
@@ -238,7 +238,6 @@ title('The full constrained tesselation','FontSize',fontSize);
 xlabel('X','FontSize',fontSize); ylabel('Y','FontSize',fontSize); zlabel('Z','FontSize',fontSize);
 hold on;
 patch('Faces',F3,'Vertices',V3,'FaceColor','g','FaceAlpha',faceAlpha1,'lineWidth',edgeWidth,'edgeColor',edgeColor);
-colorbar;
 camlight headlight;
 set(gca,'FontSize',fontSize);
 view(3); axis tight;  axis equal;  grid on;
@@ -248,7 +247,6 @@ title('Cut view of interior mesh','FontSize',fontSize);
 xlabel('X','FontSize',fontSize); ylabel('Y','FontSize',fontSize); zlabel('Z','FontSize',fontSize);
 hold on;
 patch('Faces',F3c,'Vertices',V3,'FaceColor','g','FaceAlpha',faceAlpha1,'lineWidth',edgeWidth,'edgeColor',edgeColor);
-colorbar;
 camlight headlight;
 set(gca,'FontSize',fontSize);
 view(2); axis tight;  axis equal;  grid on;

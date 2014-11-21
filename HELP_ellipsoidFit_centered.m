@@ -1,7 +1,17 @@
 %% HELP_ellipsoidFit_centered
 % Below is a demonstration of the features of the |ellipsoidFit_centered| function
 
-%%
+%% Syntax
+% |[M,ellipStretch,R,MU]=ellipsoidFit_centered(X,MU);|
+
+%% Description 
+% The |ellipsoidFit_centered| function fits an ellipsoid to data when the
+% ellipsoid centre is known. If the centre is not provided the mean of the
+% input point set will be assumed to be the centre. 
+
+%% Examples
+
+%% 
 clear; close all; clc;
 
 %%
@@ -11,7 +21,7 @@ figColor='w';
 figColorDef='white';
 fontSize=11;
 
-%% Using |ellipsoidFit_centered| to fit an ellipsoid to a point cloud with known centre
+%% Example: Using |ellipsoidFit_centered| to fit an ellipsoid to a point cloud with known centre
 
 %%
 % Simulating an ellipsoid with known directions

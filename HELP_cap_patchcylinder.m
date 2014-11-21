@@ -1,19 +1,26 @@
 %% cap_patchCylinder
 % Below is a demonstration of the features of the |cap_patchCylinder| function
 
+%% Syntax
+% |[Fm,Vm]=cap_patchcylinder(F,V,F,V2,nr,nz);|
+
+%% Description 
+% The |cap_patchCylinder| function closes (or caps) the patch data from a
+% set of cylinders. 
+
+%% Examples
+
 %%
 clear; close all; clc; 
 
 %%
-% PLOT SETTINGS
+% Plot settings
 figColor='w'; 
 figColorDef='white';
 fontSize=10;
 faceAlpha1=0.4;
 
-%% BUILDING EXAMPLE MODEL
-
-%%
+%% Example: Creating input geometry
 % Construct regular cylinder
 r=10; 
 nr=40; 
@@ -67,7 +74,7 @@ set(gca,'FontSize',fontSize);
 camlight headlight;
 drawnow;
 
-%% CAPPING A SET OF TWO "CYLINDRICAL" SURFACES
+%% Example: Capping the cylinder geometry
 
 [Fm,Vm]=cap_patchcylinder(F,V,F,V2,nr,nz);
 

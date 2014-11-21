@@ -1,7 +1,14 @@
 %% dcmFolder2MATobject
 % Below is a demonstration of the features of the |dcmFolder2MATobject| function
 
-%%
+%% Syntax
+% |dcmFolder2MATobject(PathName,MaxVarSize);|
+
+%% Description 
+% The |dcmFolder2MATobject| function converts DICOM data to a MATLAB mat (object and
+% or) file. 
+
+%% Examples
 
 clear; close all; clc;
 
@@ -9,7 +16,7 @@ clear; close all; clc;
 % Plot settings
 fig_color='w'; fig_colordef='white';
 
-%% CONVERTING DICOM IMAGE DATA TO A MAT OBJECT
+%% Example: CONVERTING DICOM IMAGE DATA TO A MAT OBJECT
 % Below some example code is shown to convert all DICOM files inside a
 % folder (including its subfolders) to the IMDAT format. The function
 % |dcmFolder2MATobject| converts the DICOM data to a matlab MAT object and
@@ -66,13 +73,14 @@ for q=1:1:numberOfFolders
     end
 end
 
-%% LOADING OR HANDLING THE MAT OBJECT
+%% Example: LOADING OR HANDLING THE MAT OBJECT
 % Here is an example for loading in the entire data structure
 
 loadName=fullfile(pathName,'IMDAT','IMDAT.mat');
 IMDAT_struct=load(loadName);
 
-%% Indexing into the MAT object to avoid loading entire structure
+%%
+% Indexing into the MAT object to avoid loading entire structure
 % In somecases it is not desirable to load in the entire data set but only
 % say a certain slice. In this case the MAT object allows for indexing as
 % shows below. See also the help documentation for |matfile|
@@ -85,7 +93,8 @@ G = matObj.G;
 midSliceNum=round(matObj.ImageSize(1,3)/2);
 midSlice = matObj.type_1(:,:,midSliceNum,1);
 
-%% Viewing the image data
+%% 
+% Viewing the image data
 
 %Plotting the slice
 figuremax(fig_color,fig_colordef);
@@ -94,7 +103,8 @@ imagesc(midSlice);
 axis equal; axis tight; colormap gray; colorbar;
 drawnow;
 
-%% Viewing the image data using |ind2patch|
+%% 
+% Viewing the image data using |ind2patch|
 % Alternatively the image data can be viewed using the |ind2patch|
 % function. See the associated help for more information.
 

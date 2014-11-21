@@ -1,11 +1,20 @@
 %% polyExtrude
 % Below is a demonstration of the features of the |polyExtrude| function
-%%
 
+%% Syntax
+% |[F_tri,V_tri]=polyExtrude(Vc,cPar);|
+
+%% Description
+% The |polyExtrude| function can be used to extrude polygons to obtain
+% patch data and generate CAD like model geometry. 
+
+%% Examples
+
+%%
 clear; close all; clc;
 
 %%
-% PLOT SETTINGS
+% Plot settings
 figColor='w'; 
 figColorDef='white';
 fontSize=15;
@@ -13,7 +22,7 @@ markerSize1=45;
 lineWidth1=4;
 faceAlpha=0.5;
 
-%% EXTRUDING A PLANAR POLYGON
+%% Example: EXTRUDING A PLANAR POLYGON
 
 %Sketching profile
 ns=150;
@@ -61,12 +70,12 @@ axis equal; view(3); axis tight;  grid on;  set(gca,'FontSize',fontSize);
 camlight headlight;
 drawnow;
 
-%% EXTRUDING A TILTED PLANAR POLYGON
+%% Example: EXTRUDING A TILTED PLANAR POLYGON
 
-%Create Euler angles to set directions
-E=[0.25*pi 0 0]; 
-[R,~]=euler2DCM(E); %The true directions for X, Y and Z axis
-Vc=(R*Vc')'; %Rotate polyhedron
+%Create rotation matrix
+E=[0.25*pi 0 0]; %Euler angles
+[R,~]=euler2DCM(E); %The rotation matrix
+Vc=(R*Vc')'; %Rotate polygon
 
 %%
 % Plotting sketch
@@ -132,7 +141,7 @@ axis equal; view(3); axis tight;  grid on;  set(gca,'FontSize',fontSize);
 camlight headlight;
 drawnow;
 
-%% EXTRUDING A NON-PLANAR POLYGON
+%% Example: EXTRUDING A NON-PLANAR POLYGON
 
 %Sketching profile
 ns=150;

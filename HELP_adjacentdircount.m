@@ -1,6 +1,15 @@
 %% adjacentdircount
 % Below is a demonstration of the features of the |adjacentdircount| function
 
+%% Syntax
+% |[Lc]=adjacentdircount(L,n);|
+
+%% Description 
+% The |adjacentdircount| function calculates the number of adjacent entries
+% of an input logic array allong a specified direction. 
+
+%% Examples
+
 %%
 clear; close all; clc; 
 
@@ -10,7 +19,7 @@ figColor='w';
 figColorDef='white';
 fontSize=10;
 
-%% Using |adjacentdircount| to compute "connectivity" 
+%% Example: Using |adjacentdircount| to compute "connectivity" 
 % The |adjacentdircount| function computes the number of adjacent elements
 % in the input array that have the value 1. As such it computes a type of
 % connectivity or "thickness" of structures in the logic arrays allong a
@@ -35,7 +44,7 @@ n=2; %Column direction (i.e. thickness orthogonal to columns)
 [Lc]=adjacentdircount(L,n);
 Lc
 
-%% Use for 3D arrays
+%% Example: Use for 3D arrays
 % Create a 3D example array, here L is copied upside down into a second
 % "slice" and again for the third slice.
 L(:,:,2)=flipud(L);
@@ -47,8 +56,7 @@ n=3; %Slice direction (i.e. thickness orthogonal to slices)
 [Lc]=adjacentdircount(L,n);
 Lc
 
-
-%% EXAMPLE: Studying object line feature thickness
+%% Example: Studying object line feature thickness
 
 % Simulating a striped image in 3D
 np=45; 

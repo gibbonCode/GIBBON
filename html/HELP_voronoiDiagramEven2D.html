@@ -6,7 +6,7 @@
    <!--
 This HTML was auto-generated from MATLAB code.
 To make changes, update the MATLAB code and republish this document.
-      --><title>voronoiDiagramEven2D</title><meta name="generator" content="MATLAB 8.4"><link rel="schema.DC" href="http://purl.org/dc/elements/1.1/"><meta name="DC.date" content="2014-10-01"><meta name="DC.source" content="HELP_voronoiDiagramEven2D.m"><style type="text/css">
+      --><title>voronoiDiagramEven2D</title><meta name="generator" content="MATLAB 8.4"><link rel="schema.DC" href="http://purl.org/dc/elements/1.1/"><meta name="DC.date" content="2014-11-20"><meta name="DC.source" content="HELP_voronoiDiagramEven2D.m"><style type="text/css">
 html,body,div,span,applet,object,iframe,h1,h2,h3,h4,h5,h6,p,blockquote,pre,a,abbr,acronym,address,big,cite,code,del,dfn,em,font,img,ins,kbd,q,s,samp,small,strike,strong,sub,sup,tt,var,b,u,i,center,dl,dt,dd,ol,ul,li,fieldset,form,label,legend,table,caption,tbody,tfoot,thead,tr,th,td{margin:0;padding:0;border:0;outline:0;font-size:100%;vertical-align:baseline;background:transparent}body{line-height:1}ol,ul{list-style:none}blockquote,q{quotes:none}blockquote:before,blockquote:after,q:before,q:after{content:'';content:none}:focus{outine:0}ins{text-decoration:none}del{text-decoration:line-through}table{border-collapse:collapse;border-spacing:0}
 
 html { min-height:100%; margin-bottom:1px; }
@@ -66,7 +66,7 @@ table td { padding:7px 5px; text-align:left; vertical-align:top; border:1px soli
 
 
 
-  </style></head><body><div class="content"><h1>voronoiDiagramEven2D</h1><!--introduction--><p>Below is a basic demonstration of the features of the <tt>voronoiDiagramEven2D</tt> function.</p><!--/introduction--><h2>Contents</h2><div><ul><li><a href="#2">EXAMPLE DELAUNAY TRIANGULATION</a></li><li><a href="#3">COMPUTE NORMAL VORONOI TESSELATION REQUIRING LOOP FOR PLOTTING</a></li></ul></div><pre class="codeinput">clear <span class="string">all</span>; close <span class="string">all</span>; clc;
+  </style></head><body><div class="content"><h1>voronoiDiagramEven2D</h1><!--introduction--><p>Below is a basic demonstration of the features of the <tt>voronoiDiagramEven2D</tt> function.</p><!--/introduction--><h2>Contents</h2><div><ul><li><a href="#1">Syntax</a></li><li><a href="#2">Description</a></li><li><a href="#3">Examples</a></li><li><a href="#5">Example: Sampling Voronoi cells with the same amount of points</a></li></ul></div><h2>Syntax<a name="1"></a></h2><p><tt>[Vv,Fv]=voronoiDiagramEven2D(DT,numPointsVoronoi);</tt></p><h2>Description<a name="2"></a></h2><p>Samples the cells of a Voronoi tesselation using the same amount of points</p><h2>Examples<a name="3"></a></h2><pre class="codeinput">clear; close <span class="string">all</span>; clc;
 
 <span class="comment">% PLOT SETTINGS</span>
 figColor=<span class="string">'w'</span>; figColorDef=<span class="string">'white'</span>;
@@ -77,7 +77,7 @@ fAlpha1=0.25;
 fAlpha2=0.8;
 lineWidth1=1;
 lineWidth2=3;
-</pre><h2>EXAMPLE DELAUNAY TRIANGULATION<a name="2"></a></h2><pre class="codeinput"><span class="comment">%Boundary and mesh parameters</span>
+</pre><h2>Example: Sampling Voronoi cells with the same amount of points<a name="5"></a></h2><p>EXAMPLE DELAUNAY TRIANGULATION</p><pre class="codeinput"><span class="comment">%Boundary and mesh parameters</span>
 ns=50; <span class="comment">%Number of points on outer boundary (defines how well the circle is sampled)</span>
 rOut=1; <span class="comment">%Outer radius of circular boundary</span>
 pointSpacing=rOut/5; <span class="comment">%Approximate initial point spacing for point seeding</span>
@@ -93,7 +93,7 @@ Vb=[x(:) y(:)];
 <span class="comment">%Create Delaunay derived mesh</span>
 regionCell={Vb};
 [Ft,Vt,~,DT]=regionTriMeshRand2D(regionCell,pointSpacing,stdP,1,0);
-</pre><h2>COMPUTE NORMAL VORONOI TESSELATION REQUIRING LOOP FOR PLOTTING<a name="3"></a></h2><pre class="codeinput">[Vv,Fv_cell] =voronoiDiagram(DT);
+</pre><p>COMPUTE NORMAL VORONOI TESSELATION REQUIRING LOOP FOR PLOTTING</p><pre class="codeinput">[Vv,Fv_cell] =voronoiDiagram(DT);
 Vv(isinf(Vv))=NaN;
 
 hf1=figuremax(figColor,figColorDef);
@@ -112,8 +112,7 @@ patch(<span class="string">'faces'</span>,Ft,<span class="string">'vertices'</sp
 
 axis <span class="string">equal</span>; view(2); axis <span class="string">tight</span>;  set(gca,<span class="string">'FontSize'</span>,fontSize); grid <span class="string">on</span>;
 drawnow;
-</pre><img vspace="5" hspace="5" src="HELP_voronoiDiagramEven2D_01.png" alt=""> <pre class="codeinput"><span class="comment">%Sample all cells with same amount of points</span>
-numPointsVoronoi1=3;
+</pre><img vspace="5" hspace="5" src="HELP_voronoiDiagramEven2D_01.png" alt=""> <p>Use <tt>voronoiDiagramEven2D</tt> to sample all cells with same amount of points</p><pre class="codeinput">numPointsVoronoi1=3;
 numPointsVoronoi2=5;
 numPointsVoronoi3=11;
 numPointsVoronoi4=25;
@@ -122,7 +121,7 @@ numPointsVoronoi4=25;
 [Vv2,Fv2]=voronoiDiagramEven2D(DT,numPointsVoronoi2);
 [Vv3,Fv3]=voronoiDiagramEven2D(DT,numPointsVoronoi3);
 [Vv4,Fv4]=voronoiDiagramEven2D(DT,numPointsVoronoi4);
-</pre><pre class="codeinput">hf1=figuremax(figColor,figColorDef);
+</pre><p>Now for loops can be avoided for plotting</p><pre class="codeinput">hf1=figuremax(figColor,figColorDef);
 subplot(2,2,1);
 title([<span class="string">'Sampled using '</span>,num2str(numPointsVoronoi1),<span class="string">' points'</span>],<span class="string">'FontSize'</span>,fontSize);
 xlabel(<span class="string">'X'</span>,<span class="string">'FontSize'</span>,fontSize);ylabel(<span class="string">'Y'</span>,<span class="string">'FontSize'</span>,fontSize);
@@ -160,8 +159,17 @@ drawnow;
 %% voronoiDiagramEven2D
 % Below is a basic demonstration of the features of the |voronoiDiagramEven2D| function.
 
+%% Syntax
+% |[Vv,Fv]=voronoiDiagramEven2D(DT,numPointsVoronoi);|
+
+%% Description
+% Samples the cells of a Voronoi tesselation using the same amount of
+% points
+
+%% Examples
+
 %%
-clear all; close all; clc;
+clear; close all; clc;
 
 % PLOT SETTINGS
 figColor='w'; figColorDef='white';
@@ -173,7 +181,10 @@ fAlpha2=0.8;
 lineWidth1=1; 
 lineWidth2=3; 
 
-%% EXAMPLE DELAUNAY TRIANGULATION
+%% Example: Sampling Voronoi cells with the same amount of points
+
+%%
+% EXAMPLE DELAUNAY TRIANGULATION
 
 %Boundary and mesh parameters
 ns=50; %Number of points on outer boundary (defines how well the circle is sampled)
@@ -192,7 +203,8 @@ Vb=[x(:) y(:)];
 regionCell={Vb};
 [Ft,Vt,~,DT]=regionTriMeshRand2D(regionCell,pointSpacing,stdP,1,0);
 
-%% COMPUTE NORMAL VORONOI TESSELATION REQUIRING LOOP FOR PLOTTING
+%% 
+% COMPUTE NORMAL VORONOI TESSELATION REQUIRING LOOP FOR PLOTTING
 
 [Vv,Fv_cell] =voronoiDiagram(DT);
 Vv(isinf(Vv))=NaN;
@@ -214,9 +226,9 @@ end
 axis equal; view(2); axis tight;  set(gca,'FontSize',fontSize); grid on;
 drawnow;
 
-
 %%
-%Sample all cells with same amount of points
+% Use |voronoiDiagramEven2D| to sample all cells with same amount of points
+
 numPointsVoronoi1=3; 
 numPointsVoronoi2=5; 
 numPointsVoronoi3=11; 
@@ -228,6 +240,7 @@ numPointsVoronoi4=25;
 [Vv4,Fv4]=voronoiDiagramEven2D(DT,numPointsVoronoi4);
 
 %%
+% Now for loops can be avoided for plotting
 
 hf1=figuremax(figColor,figColorDef);
 subplot(2,2,1);

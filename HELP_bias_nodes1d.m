@@ -1,16 +1,25 @@
 %% bias_nodes1d
 % Below is a demonstration of the features of the |bias_nodes1d| function
-%%
 
+%% Syntax
+% |[xb]=bias_nodes1d(x,f_bias);|
+
+%% Description 
+% The |bias_nodes1d| function is able to adjust the point (or node) spacing
+% of a curve based on a bias factor and biasing scheme.
+
+%% Examples
+
+%%
 clear; close all; clc;
 
 %%
-% PLOT SETTINGS
+% Plot settings
 figColor='w'; figColorDef='white';
 fontSize=15;
 markerSize1=25;
 
-%% Biasing node spacing allong a curve
+%% Example: Biasing node spacing allong a curve
 
 f_bias=1.8; %Bias factor
 n=15; %Number of steps

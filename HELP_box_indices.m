@@ -1,6 +1,17 @@
 %% box_indices
 % Below is a demonstration of the features of the |box_indices| function
 %
+
+%% Syntax
+% |[IND]=box_indices(siz);|
+
+%% Description 
+% The |box_indices| function returns the indices of the outer boundary
+% elements of an array (which can be thought of as defining a box), i.e.
+% the indices of the first and last row, columsn, slice, etc.. 
+
+%% Examples
+
 %%
 clear; close all; clc; 
 
@@ -12,7 +23,7 @@ faceAlpha2=0.65;
 edgeColor1='none';
 edgeColor2='none';
 
-%% |box_indices| for 2D arrays
+%% Example: |box_indices| for 2D arrays
 
 siz=[25 25];
 M=ones(siz);
@@ -28,7 +39,7 @@ axis equal; axis tight; axis vis3d; grid off;
 colormap gray; caxis([0 1]); colorbar;
 drawnow;
 
-%% |box_indices| for 3D arrays
+%% Example: |box_indices| for 3D arrays
 
 siz=[25 25 25];
 M=ones(siz);

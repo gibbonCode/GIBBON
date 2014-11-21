@@ -1,10 +1,19 @@
 %% ind2patch
 % Below is a demonstration of the features of the |ind2patch| function
-%
+
 %%
 clear; close all; clc; 
 
-%% Plotting a selection of voxels and slices
+%% Syntax
+% |[F,V,C]=ind2patch(IND,M,ptype);|
+
+%% Description
+% This function generates patch data for 3D images. The patch data is only
+% generated for the voxels specified by the indices (logic or linear
+% indices). The patch data is created according to the patch type desired
+% (e.g. voxel type of slice type).
+
+%% Examples
 
 %%
 % Plot settings
@@ -15,14 +24,12 @@ faceAlpha2=0.65;
 edgeColor1='none';
 edgeColor2='none';
 
-%%
-% Simulating an image
-M=rand(2,3,4);
-
-%% Introduction to using |ind2patch| for voxel plotting
+%% Example: Introduction to using |ind2patch| for voxel plotting
 % The voxel for which patch data is to be specified can be defined by
 % supplying linear indices or a logic array. 
 
+% Simulating an image
+M=rand(2,3,4);
 % Example supplying linear indices, here all voxels
 indPatch=1:numel(M); 
 
@@ -92,7 +99,7 @@ drawnow;
 disp(num2str(size(F)));
 disp(num2str(size(V)));
 
-%% Introduction to using |ind2patch| for slice plotting
+%% Example: Introduction to using |ind2patch| for slice plotting
 
 figuremax(fig_color,fig_colordef);
 title('patch type: si, sj, sk');
@@ -126,7 +133,7 @@ drawnow;
 %%
 % The path type s*u are simular to s* but use shared vertices
 
-%% Comparison to standard MATLAB |imagesc| function and the patch type MATLAB functions |slice| and |pcolor|
+%% Example: Comparison to standard MATLAB |imagesc| function and the patch type MATLAB functions |slice| and |pcolor|
 % The comparison is what motivates the choice of coordinate system for
 % ind2patch i.e. that it is meant to aid in the visualization of image data
 % as is expected of image data. 
@@ -167,7 +174,7 @@ drawnow;
 % are reinterpolated onto faces) for these functions instead of voxels
 % centres as should be the case for image data. 
 
-%% Creating and plotting combined voxel and slice patch data
+%% Example: Creating and plotting combined voxel and slice patch data
 
 %%
 % Simulating 3D image
@@ -212,7 +219,7 @@ hs=patch('Faces',F,'Vertices',V,'EdgeColor','k', 'CData',C,'FaceColor','flat','F
 colormap(cMap); colorbar; caxis([min(M(:)) max(M(:))]);
 axis equal; view(3); axis tight; colormap jet; grid on;
 
-%% Shrinking patch data through combination with |scalePatch| function
+%% Example: Shrinking patch data through combination with |scalePatch| function
 
 % Using the function |scalePatch| patch data can be shrunk to aid
 % visualisation (can be a tool to avoid memory costly transparency for
@@ -232,7 +239,7 @@ axis equal; view(3); axis tight; axis vis3d; grid on;
 colormap(cMap); colorbar; caxis([min(M(:)) max(M(:))]);
 drawnow;
 
-%% Example medical image data and coordinate manipulation due to voxel size
+%% Example: Medical image data and coordinate manipulation due to voxel size
 
 % Get a 3D image
 load mri;
@@ -297,7 +304,7 @@ axis equal; view(3); axis tight; axis vis3d; grid on;
 colormap(cMap); colorbar; 
 drawnow;
 
-%% Combining colormap and RGB driven patch colours 
+%% Example: Combining colormap and RGB driven patch colours 
 % N.B. The figure renderer might have to be set to OPENGL. This is the
 % default renderer for the |figuremax| function
 

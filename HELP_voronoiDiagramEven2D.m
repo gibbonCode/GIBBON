@@ -1,8 +1,17 @@
 %% voronoiDiagramEven2D
 % Below is a basic demonstration of the features of the |voronoiDiagramEven2D| function.
 
+%% Syntax
+% |[Vv,Fv]=voronoiDiagramEven2D(DT,numPointsVoronoi);|
+
+%% Description
+% Samples the cells of a Voronoi tesselation using the same amount of
+% points
+
+%% Examples
+
 %%
-clear all; close all; clc;
+clear; close all; clc;
 
 % PLOT SETTINGS
 figColor='w'; figColorDef='white';
@@ -14,7 +23,10 @@ fAlpha2=0.8;
 lineWidth1=1; 
 lineWidth2=3; 
 
-%% EXAMPLE DELAUNAY TRIANGULATION
+%% Example: Sampling Voronoi cells with the same amount of points
+
+%%
+% EXAMPLE DELAUNAY TRIANGULATION
 
 %Boundary and mesh parameters
 ns=50; %Number of points on outer boundary (defines how well the circle is sampled)
@@ -33,7 +45,8 @@ Vb=[x(:) y(:)];
 regionCell={Vb};
 [Ft,Vt,~,DT]=regionTriMeshRand2D(regionCell,pointSpacing,stdP,1,0);
 
-%% COMPUTE NORMAL VORONOI TESSELATION REQUIRING LOOP FOR PLOTTING
+%% 
+% COMPUTE NORMAL VORONOI TESSELATION REQUIRING LOOP FOR PLOTTING
 
 [Vv,Fv_cell] =voronoiDiagram(DT);
 Vv(isinf(Vv))=NaN;
@@ -55,9 +68,9 @@ end
 axis equal; view(2); axis tight;  set(gca,'FontSize',fontSize); grid on;
 drawnow;
 
-
 %%
-%Sample all cells with same amount of points
+% Use |voronoiDiagramEven2D| to sample all cells with same amount of points
+
 numPointsVoronoi1=3; 
 numPointsVoronoi2=5; 
 numPointsVoronoi3=11; 
@@ -69,6 +82,7 @@ numPointsVoronoi4=25;
 [Vv4,Fv4]=voronoiDiagramEven2D(DT,numPointsVoronoi4);
 
 %%
+% Now for loops can be avoided for plotting
 
 hf1=figuremax(figColor,figColorDef);
 subplot(2,2,1);

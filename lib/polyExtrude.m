@@ -52,8 +52,6 @@ if ~isfield(cPar,'closeLoopOpt');
     cPar.closeLoopOpt=0; %Default off
 end
 
-
-
 %% Extruding the skethed profile
 
 switch extrudeMode

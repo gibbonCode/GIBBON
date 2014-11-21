@@ -182,13 +182,12 @@ else
     smoothPar.n=250;
     smoothPar.Tolerance=0.01;
     smoothPar.RigidConstraints=boundaryInd;
-    [V]=tesSmooth(F,V,[],smoothPar);
-    
+    [V]=tesSmooth(F,V,[],smoothPar);    
     
     %% PLOTTING
     if plotOn==1
         figuremax(figColor,figColorDef);
-        title('Smoothened triangulated mesh','FontSize',fontSize);
+        title('The meshed model','FontSize',fontSize);
         xlabel('X','FontSize',fontSize);ylabel('Y','FontSize',fontSize);zlabel('Z','FontSize',fontSize);
         hold on;
         patch('faces',F,'vertices',V,'FaceColor',faceColor,'FaceAlpha',fAlpha);

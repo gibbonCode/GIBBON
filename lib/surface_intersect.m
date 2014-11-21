@@ -1,6 +1,6 @@
-function [Vi]=surfaceIntersect(X1,Y1,Z1,X2,Y2,Z2,X3,Y3,Z3,interpMethod)
+function [Vi]=surface_intersect(X1,Y1,Z1,X2,Y2,Z2,X3,Y3,Z3,interpMethod)
 
-% function [Xi1,Yi1,Zi1]=surface_intersect(X1,Y1,Z1,X2,Y2,Z2,X3,Y3,Z3)
+% function [Xi1,Yi1,Zi1]=surface_intersect(X1,Y1,Z1,X2,Y2,Z2,X3,Y3,Z3,interpMethod)
 % ------------------------------------------------------------------------
 % Determines the intersection points of 3 surfaces. X1, Y1, Z1 need to be a
 % monotonic plaid surface.
