@@ -3,8 +3,7 @@ function [varargout]=febStruct2febFile(FEB_struct)
 % function [varargout]=febStruct2febFile(FEB_struct)
 % ------------------------------------------------------------------------
 %
-% This function uses the input FEB_struct to generate a basic .feb
-% file suitable for import into PreView. 
+% This function uses the input FEB_struct to generate an FEBio .feb file. 
 %
 % 
 % 
@@ -29,6 +28,15 @@ elseif ~isfield(FEB_struct.febio_spec,'version')
     FEB_struct.febio_spec.version='2.0';
 end
 febio_spec.setAttribute('version',FEB_struct.febio_spec.version); %Adding version attribute 
+
+%% Add comment if present
+if isfield(FEB_struct,'commentField')
+    commentString = FEB_struct.commentField; 
+else %Default comment
+    commentString = docNode.createComment(['Created using GIBBON, ',datestr(now)]);    
+end
+commentNode = docNode.createComment(commentString);
+febio_spec.appendChild(commentNode);
 
 %% DEFINING MODULE LEVEL
 docNode=addModuleLevel_FEB(docNode,FEB_struct);
