@@ -132,7 +132,8 @@ V=DT.Points;
 F=DT.ConnectivityList;
 
 %Remove poorly connected points associated with poor triangles
-[~,IND_V]=patchIND(F,V);
+[~,IND_V]=tesIND(F,V,0); % [~,IND_V]=patchIND(F,V);
+
 connectivityCount=sum(IND_V>0,2);
 logicPoorConnectivity=connectivityCount<=minConnectivity;
 logicConstraints=false(size(logicPoorConnectivity));

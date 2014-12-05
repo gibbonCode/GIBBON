@@ -13,7 +13,7 @@ faceAlpha=0.5;
 plotColor1=0.2.*ones(1,3);
 plotColor2=0.5.*ones(1,3);
 edgeWidth=3;
-markerSize=5;
+markerSize=10;
 cmap=autumn(250);
 
 %% EXAMPLE: The "Buckminster Fuller" dome triangulation and its dual
@@ -29,7 +29,6 @@ n=2; %Refinements
 
 %Deriving the dual of the patch
 [Vd,Fd]=patch_dual(V,F);
-
 
 %Plotting results
 hf=figuremax(figColor,figColorDef);

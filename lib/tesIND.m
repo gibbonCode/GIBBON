@@ -92,6 +92,15 @@ if ~isempty(IND_F)
         [~,J,~] = find(IND_F);
         IND_F=IND_F(:,min(J):end);
         IND_F=full(IND_F);
+        
+        %Move possible zeros to the final columns
+        L=IND_F==0; 
+        if any(L(:))            
+            maxLevel=max(IND_F(:))+1;
+            IND_F(L)=maxLevel;
+            IND_F=sort(IND_F,2);
+            IND_F(IND_F==maxLevel)=0;
+        end
     end
 end
 

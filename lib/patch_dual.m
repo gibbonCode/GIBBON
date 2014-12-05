@@ -6,10 +6,6 @@ function [Vd,Fd]=patch_dual(V,F)
 % faces F. 
 %
 %
-%
-% TO DO: FIX FACE NORMALS, hint use vertex/face normals duality and assume
-% original F dirs are correct
-%
 % Kevin Mattheus Moerman
 % kevinmoerman@hotmail.com
 % 2014/04/28
@@ -20,7 +16,7 @@ function [Vd,Fd]=patch_dual(V,F)
 [~,~,Nv]=patchNormal(F,V);
 
 %Create patch indices
-[IND_F]=patchIND_old(F,V);
+[IND_F]=tesIND(F,V,0);
 
 %Face centre point coordinates
 X=V(:,1); Y=V(:,2); Z=V(:,3);

@@ -1,4 +1,4 @@
-function [v,OR,r,c]=dicom3Dpar(D)
+function [varargout]=dicom3Dpar(D)
 
 %Gets the 3D parameters from the DICOM info file
 try
@@ -40,11 +40,17 @@ catch
     warning('Missing field ImageOrientationPatient, assuming [1 0 0 0 1 0]!');
 end
 
-if nargout==1 %If only one output argument is requested then create structure
-   G.v=v; 
-   G.OR=OR;
-   G.r=r;
-   G.c=c;
-   v=G;
+switch nargout
+    case 1 %If only one output argument is requested then create structure
+        G.v=v;
+        G.OR=OR;
+        G.r=r;
+        G.c=c;
+        varargout{1}=G; 
+    otherwise
+        varargout{1}=v;
+        varargout{2}=OR;
+        varargout{3}=r;
+        varargout{4}=c;
 end
 
