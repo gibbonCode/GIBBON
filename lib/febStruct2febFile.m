@@ -33,7 +33,7 @@ febio_spec.setAttribute('version',FEB_struct.febio_spec.version); %Adding versio
 if isfield(FEB_struct,'commentField')
     commentString = FEB_struct.commentField; 
 else %Default comment
-    commentString = docNode.createComment(['Created using GIBBON, ',datestr(now)]);    
+    commentString = ['Created using GIBBON, ',datestr(now)];
 end
 commentNode = docNode.createComment(commentString);
 febio_spec.appendChild(commentNode);
