@@ -39,10 +39,11 @@ function [V,F]=platonic_solid(n,r)
 %
 %
 % Kevin Mattheus Moerman
-% kevinmoerman@hotmail.com
-% 13/11/2009
-% ------------------------------------------------------------------------
-
+% gibbon.toolbox@gmail.com
+% 
+% 13/11/2009 Updated for GIBBON
+% 12/08/2014 Added custom solidType and updated using varargin, varargout
+%------------------------------------------------------------------------
 switch n
     case 1 % Tetrahedron
         X=[-0.5;0.5;0;0;];
