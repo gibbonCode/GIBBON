@@ -79,8 +79,8 @@ if nDims<=3
             [dUdzdx,dUdzdy,dUdzdz] = gradient(dUdz,v(1),v(2),v(3));
             
             H_mat=[dUdxdx(:) dUdxdy(:) dUdxdz(:)...
-                dUdydx(:) dUdydy(:) dUdydz(:)...
-                dUdzdx(:) dUdzdy(:) dUdzdz(:)];
+                   dUdydx(:) dUdydy(:) dUdydz(:)...
+                   dUdzdx(:) dUdzdy(:) dUdzdz(:)];
     end
     
     if cellOpt==1
