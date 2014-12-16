@@ -2,7 +2,7 @@ function [dY,fft_dY]=FFT_derivative(Y,X,d,pCutOff)
 
 siz=size(Y);
 
-N=siz(d); %Number of points
+N=siz(d); 
 sampleStepSize = (max(X(:))-min(X(:)))/(N-1); %Sampling step size
 samplingFrequency = 1/sampleStepSize; %Sampling frequency
 
