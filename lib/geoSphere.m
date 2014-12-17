@@ -1,6 +1,6 @@
 function [varargout]=geoSphere(varargin)
 
-% function [F,V,Vs]=geoSphere(n,r)
+% function [F,V,Vs]=geoSphere(n,r,solidType)
 % ------------------------------------------------------------------------
 % This function generates an approximately geodesic triangulation of a
 % sphere with radius r. The initial mesh is based on the icosahedron which

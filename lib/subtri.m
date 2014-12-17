@@ -58,8 +58,7 @@ end
 
 switch subMethod
     case 'split' %iteratively split edges (no double points created, unique operation avoided)
-    % Based on: https://www.ceremade.dauphine.fr/~peyre/numerical-tour/tours/meshwav_2_subdivision_surfaces/
-        Fs=F; Vs=V;
+            Fs=F; Vs=V;
         for q=1:1:nSplitIterations
             F=Fs; V=Vs;
             E=[F(:,[1 2]); F(:,[2 3]);  F(:,[3 1])]; %Edges matrix
