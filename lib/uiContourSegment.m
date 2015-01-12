@@ -111,7 +111,7 @@ end
 if isfield(cPar,'recoverOn')
     recoverOn=cPar.recoverOn;
 else
-    recoverOn=1; %DEFAULT
+    recoverOn=0; %DEFAULT
 end
 
 %Get voxel size

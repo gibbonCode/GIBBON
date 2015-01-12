@@ -1,4 +1,4 @@
-function [Vd,Fd]=patch_dual(V,F)
+function [varargout]=patch_dual(V,F)
 
 % function [Vd,Fd]=patch_dual(V,F)
 % ------------------------------------------------------------------------
@@ -22,11 +22,19 @@ function [Vd,Fd]=patch_dual(V,F)
 X=V(:,1); Y=V(:,2); Z=V(:,3);
 Vd=[mean(X(F),2) mean(Y(F),2) mean(Z(F),2)];
 
-%Creating sparse arrays for faces
+%Creating arrays for faces
 [I,J,v] = find(IND_F);
-Xfd=accumarray({I,J},Vd(v,1),size(IND_F),[],NaN); Xfd=Xfd-nanmean(Xfd,2)*ones(1,(size(Xfd,2)));
-Yfd=accumarray({I,J},Vd(v,2),size(IND_F),[],NaN); Yfd=Yfd-nanmean(Yfd,2)*ones(1,(size(Yfd,2)));
-Zfd=accumarray({I,J},Vd(v,3),size(IND_F),[],NaN); Zfd=Zfd-nanmean(Zfd,2)*ones(1,(size(Zfd,2)));
+Xfd=accumarray({I,J},Vd(v,1),size(IND_F),[],NaN); 
+Yfd=accumarray({I,J},Vd(v,2),size(IND_F),[],NaN); 
+Zfd=accumarray({I,J},Vd(v,3),size(IND_F),[],NaN); 
+
+Xfd_mean=nanmean(Xfd,2); 
+Yfd_mean=nanmean(Yfd,2); 
+Zfd_mean=nanmean(Zfd,2); 
+
+Xfd=Xfd-Xfd_mean(:,ones(1,(size(Xfd,2))));
+Yfd=Yfd-Yfd_mean(:,ones(1,(size(Yfd,2))));
+Zfd=Zfd-Zfd_mean(:,ones(1,(size(Zfd,2))));
 
 %Determine face order
 Xfdn=Xfd; Yfdn=Yfd; Zfdn=Zfd;
@@ -46,7 +54,9 @@ end
 %Fix face order
 theta_n=atan2(Yfdn,Xfdn); %[theta_n,~,~] = cart2pol(Xfdn,Yfdn,Zfdn);
 [~,J_sort]=sort(theta_n,2);
-I_sort=(1:1:size(J_sort,1))'*ones(1,size(J_sort,2));
+% I_sort=(1:1:size(J_sort,1))'*ones(1,size(J_sort,2));
+I_sort=(1:1:size(J_sort,1))'; 
+I_sort=I_sort(:,ones(1,size(J_sort,2)));
 IND_sort = sub2ind(size(J_sort),I_sort,J_sort);
 
 % Creating faces matrix
@@ -69,7 +79,14 @@ for q=1:1:numel(face_num_types)
     logicFlip=D>1;%max(eps(N_now(:))); %Logic for faces that require flipping    
     F_now(logicFlip,:)=fliplr(F_now(logicFlip,:)); %Flip faces
     
+    ind_f=find(Lf); 
+    indFlip=ind_f(logicFlip);
+    Fds(indFlip,1:face_num_types(q))=fliplr(Fds(indFlip,1:face_num_types(q))); 
+    
     %Store faces in cell array    
     Fd{q}=F_now; 
 end
 
+varargout{1}=Vd;
+varargout{2}=Fd;
+varargout{3}=Fds;
