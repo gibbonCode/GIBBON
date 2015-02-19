@@ -122,11 +122,11 @@ end
 
 fieldSet = fieldnames(figStruct); % Cell containing all structure field names
 for q=1:1:numel(fieldSet)
+    fieldNameCurrent=fieldSet{q};
     try
         if isOld
             set(h,fieldNameCurrent,figStruct.(fieldNameCurrent));
-        else %ASSUMED NEWER VERSION
-            fieldNameCurrent=fieldSet{q};
+        else %ASSUMED NEWER VERSION            
             h.(fieldNameCurrent)=figStruct.(fieldNameCurrent);
         end
     catch errorMsg
