@@ -83,6 +83,10 @@ switch nargin
         end
 end
 
+%%
+
+v=version; 
+
 %% Create a hidden figure
 
 h = figure('Visible', 'off'); %create an invisible figure
@@ -99,13 +103,15 @@ if isfield(figStruct,'ScreenOffset');
     screenSizeGroot=screenSizeGroot(3:4); % width, height
     figSizeEdgeOffset=figStruct.ScreenOffset; % Figure offset from border
     figSize=screenSizeGroot-figSizeEdgeOffset; % width, height
-    try %new
-        h.units='pixels';
-        h.outerPosition=[(screenSizeGroot(1)-figSize(1))/2 (screenSizeGroot(2)-figSize(2))/2 figSize(1) figSize(2)]; % left bottom width height
-    catch %old        
+   
+    if strfind(v,'R2012') || strfind(v,'R2013') || strfind(v,'R2014a')
         set(h,'units','pixels');
         set(h,'outerPosition',[(screenSizeGroot(1)-figSize(1))/2 (screenSizeGroot(2)-figSize(2))/2 figSize(1) figSize(2)]); % left bottom width height
+    else %ASSUMED NEWER VERSION
+        h.units='pixels';
+        h.outerPosition=[(screenSizeGroot(1)-figSize(1))/2 (screenSizeGroot(2)-figSize(2))/2 figSize(1) figSize(2)]; % left bottom width height
     end
+    
     figStruct=rmfield(figStruct,'ScreenOffset'); %Remove field from structure array   
 end
 
@@ -115,15 +121,15 @@ end
 
 fieldSet = fieldnames(figStruct); % Cell containing all structure field names
 for q=1:1:numel(fieldSet)
-    try %new
-        fieldNameCurrent=fieldSet{q};
-        h.(fieldNameCurrent)=figStruct.(fieldNameCurrent);
-    catch %old
+    if strfind(v,'R2012') || strfind(v,'R2013') || strfind(v,'R2014a')
         try  
             set(h,fieldNameCurrent,figStruct.(fieldNameCurrent));
         catch errorMsg
             rethrow(errorMsg); %likely false option
         end        
+    else %ASSUMED NEWER VERSION
+        fieldNameCurrent=fieldSet{q};
+        h.(fieldNameCurrent)=figStruct.(fieldNameCurrent);
     end
 end
 

@@ -17,24 +17,16 @@ switch nargin
 end
 
 %% Make figure(s) visible
-
-v=version; 
-v_end=v(end-2:end-1);
+v=version;
 for q=1:1:numel(H)
     h=H(q);
-%     try %new        
-%         h.Visible='On';
-%     catch %old        
-%         set(h,'Visible','On');
-%     end
-switch v_end    
-    case {'3a','3b'}
+    
+    if strfind(v,'R2012') || strfind(v,'R2013') || strfind(v,'R2014a')
         set(h,'Visible','On');
-%     case {'4b','5a'}
-%         h.Visible='On';
-    otherwise
-        h.Visible='On';        
-end
-drawnow; 
+    else %ASSUMED NEWER VERSION
+        h.Visible='On';
+    end
+
+    drawnow;
 
 end
