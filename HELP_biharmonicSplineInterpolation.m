@@ -12,7 +12,10 @@ clear; close all; clc;
 % n-dimensions and scattered data of the biharmonic spline interpolation
 % method of the |griddata| function (method 'v4').
 % The examples are for 1D up to 3D (providing for straightforward
-% visualization) but the function operations on ND data as well. 
+% visualization) but the function operates on ND data as well. This type of
+% interpolation does not require gridded data and is therefore suitable for
+% scattered data. It also does not require a tesselation. A downside of
+% this method is the 
 
 %%
 % Reference:  David T. Sandwell, Biharmonic spline interpolation of

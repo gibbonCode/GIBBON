@@ -20,13 +20,14 @@ function VI=biharmonicSplineInterpolation(X,V,XI)
 %------------------------------------------------------------------------
 
 %%
+% Convert row to column data
 
-if isvector(XI) && size(XI,1)==1
-   XI=XI(:); 
+if isrow(XI)
+   XI=XI'; 
 end
 
-if isvector(X) && size(X,1)==1
-   X=X(:); 
+if isrow(X)
+    X=X'; 
 end
 
 %% Distances from all points in X to all points in X
