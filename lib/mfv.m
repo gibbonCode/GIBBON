@@ -17,15 +17,13 @@ switch nargin
 end
 
 %% Make figure(s) visible
-v=version; 
-isOld=~isempty(strfind(v,'R2011')) || ~isempty(strfind(v,'R2012')) || ~isempty(strfind(v,'R2013')) || ~isempty(strfind(v,'R2014a')); 
 
 for q=1:1:numel(H)
     h=H(q);
     
-    if isOld
+    if verLessThan('matlab', '8.4.0.150421 (R2014b)')
         set(h,'Visible','On');
-    else %ASSUMED NEWER VERSION
+    else 
         h.Visible='On';
     end
 
