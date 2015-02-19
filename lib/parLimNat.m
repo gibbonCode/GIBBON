@@ -10,6 +10,7 @@ wp=abs(xxlim(2)-xx_c);
 %%
 
 nc=6; 
+
 xtn=linspace(xx_c-2*wn,xx_c,nc);
 xtp=linspace(xx_c,xx_c+2*wp,nc);
 xt=[xtn xtp(2:end)];

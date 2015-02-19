@@ -33,5 +33,11 @@ switch distMetric
     case 'dist-ray'
         [D1d]=triSurfSetDist(F1,V1,F2,V2,'dist');
         [D1r]=triSurfSetDist(F1,V1,F2,V2,'ray');
-        D1=nanmin([D1d D1r],[],2);        
+        D1=nanmin([D1d D1r],[],2);     
+    case 'near-norm'
+        [~,indMin]=minDist(V1,V2);
+        [~,~,Nv]=patchNormal(F2,V2);
+        N=Nv(indMin,:);
+        W=V1-V2(indMin,:);
+        D1=abs(dot(N,W,2));
 end

@@ -1,4 +1,4 @@
-function runTetView(modelName)
+function [varargout]=runTetView(modelName)
 
 %% SETTING TETGEN PATHNAMES
 
@@ -22,6 +22,9 @@ modelName=regexprep(modelName,'\','/');
 
 %% RUN TETVIEW
 
-runString=[runNameTetView,' ',modelName,' & '];
+runString=['"',runNameTetView,'" "',modelName,'" & '];
 [runStatus,runCmdHist]=system(runString);
+
+varargout{1}=runStatus;
+varargout{2}=runCmdHist;
 

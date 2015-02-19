@@ -115,7 +115,7 @@ drawnow;
 % tetView directory. TetView is usually found here:
 % ...\gibbon\trunk\lib_ext\tetGen
 % You can run TetView seperately or use the following to view the model in TetView:
-runTetView(meshOutput.loadNameStruct.loadName_ele);
+[runStatus,runCmdHist]=runTetView(meshOutput.loadNameStruct.loadName_ele);
 
 %% 
 % Here is an example screeshot for viewing models in tetView:
