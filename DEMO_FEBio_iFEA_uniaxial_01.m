@@ -318,66 +318,63 @@ objectiveStruct.FEBioRunStruct=FEBioRunStruct;
 objectiveStruct.FEB_struct=FEB_struct;
 objectiveStruct.mat_struct=mat_struct;
 objectiveStruct.k_factor=k_factor;
-objectiveStruct.P_ini=P;
 objectiveStruct.initialArea=initialArea;
 objectiveStruct.sampleHeight=sampleHeight;
+objectiveStruct.parNormFactors=P; %This will normalize the paramters to ones(size(P))
+objectiveStruct.Pb_struct.xx_c=P; %Parameter constraining centre
+objectiveStruct.Pb_struct.xxlim=[[P(1)/100 2]' [P(1)*100 50]']; %Parameter bounds
 
 %Optimisation settings
-maxNumberIterations=50; %Maximum number of iterations
-maxNumberFunctionEvaluations=maxNumberIterations; %Maximum number of function evaluations, N.B. multiple evaluations are used per iteration
-functionTolerance=1e-3; %Tolerance on objective function value
-parameterTolerance=1e-3; %Tolerance on parameter variation
+maxNumberIterations=30; %Maximum number of optimization iterations
+maxNumberFunctionEvaluations=maxNumberIterations*10; %Maximum number of function evaluations, N.B. multiple evaluations are used per iteration
+functionTolerance=1e-2; %Tolerance on objective function value
+parameterTolerance=1e-2; %Tolerance on parameter variation
 displayTypeIterations='iter';
-OPT_options = optimset('MaxFunEvals',maxNumberFunctionEvaluations,...
-                       'MaxIter',maxNumberIterations,...
-                       'TolFun',functionTolerance,...
-                       'TolX',parameterTolerance,...
-                       'Display',displayTypeIterations);
+
 objectiveStruct.method=1; 
 
 %File names of output files
 objectiveStruct.run_output_names=FEB_struct.run_output_names;
 
-%% PARAMETER BOUNDS
-
-Ps.f=1;
-Ps.t=0.9;
-Ps.ub=[0.1  22];
-Ps.lb=[0  2];
-Ps.c=P;
-objectiveStruct.Ps=Ps;
-
-Pb=zeros(size(P));
-for q=1:1:numel(P);
-    Psn=objectiveStruct.Ps;
-    Psn.ub=objectiveStruct.Ps.ub(q);
-    Psn.lb=objectiveStruct.Ps.lb(q);
-    Psn.c=objectiveStruct.Ps.c(q);
-    Pb(q)=inv_parbound(P(q),Psn);
-end
-
 %% STARTING OPTIMISATION
+
+Pn=P./objectiveStruct.parNormFactors;
 
 switch objectiveStruct.method
     case 1 %fminsearch and Nelder-Mead
-        [Pb_opt,OPT_out.fval,OPT_out.exitflag,OPT_out.output]= fminsearch(@(Pb) obj_DEMO_FEBio_iFEA_uniaxial_01(Pb,objectiveStruct),Pb,OPT_options);
+        OPT_options=optimset('fminsearch'); % 'Nelder-Mead simplex direct search'
+        OPT_options = optimset(OPT_options,'MaxFunEvals',maxNumberFunctionEvaluations,...
+            'MaxIter',maxNumberIterations,...
+            'TolFun',functionTolerance,...
+            'TolX',parameterTolerance,...
+            'Display',displayTypeIterations,...
+            'FinDiffRelStep',1e-3,...
+            'DiffMaxChange',0.5);
+        [Pn_opt,OPT_out.fval,OPT_out.exitflag,OPT_out.output]= fminsearch(@(Pn) obj_DEMO_FEBio_iFEA_uniaxial_01(Pn,objectiveStruct),Pn,OPT_options);
     case 2 %lsqnonlin and Levenberg-Marquardt
-        OPT_options = optimset(OPT_options,'Algorithm',{'levenberg-marquardt',.01}); %Specifically setting algorithm
-        [Pb_opt,OPT_out.resnorm,OPT_out.residual]= lsqnonlin(@(Pb) obj_DEMO_FEBio_iFEA_uniaxial_01(Pb,objectiveStruct),Pb,[],[],OPT_options);    
+        OPT_options = optimoptions(@lsqnonlin,'Algorithm','levenberg-marquardt');
+        OPT_options = optimoptions(OPT_options,'MaxFunEvals',maxNumberFunctionEvaluations,...
+            'MaxIter',maxNumberIterations,...
+            'TolFun',functionTolerance,...
+            'TolX',parameterTolerance,...
+            'Display',displayTypeIterations,...
+            'FinDiffRelStep',1e-3,...
+            'DiffMaxChange',0.5);
+        [Pn_opt,OPT_out.resnorm,OPT_out.residual]= lsqnonlin(@(Pn) obj_DEMO_FEBio_iFEA_uniaxial_01(Pn,objectiveStruct),Pn,[],[],OPT_options);    
 end
 
-[Fopt,OPT_stats_out]=obj_DEMO_FEBio_iFEA_uniaxial_01(Pb_opt,objectiveStruct);
-
-type(fullfile(fileparts(filePath),'obj_DEMO_FEBio_iFEA_uniaxial_01'))
-
 %%
-P_opt=zeros(size(P));
-for q=1:1:numel(P);
-    Psn=objectiveStruct.Ps;
-    Psn.ub=objectiveStruct.Ps.ub(q);
-    Psn.lb=objectiveStruct.Ps.lb(q);
-    Psn.c=objectiveStruct.Ps.c(q);
-    P_opt(q)=parbound(Pb_opt(q),Psn);
+[Fopt,OPT_stats_out]=obj_DEMO_FEBio_iFEA_uniaxial_01(Pn_opt,objectiveStruct);
+
+% type(fullfile(fileparts(filePath),'obj_DEMO_FEBio_iFEA_uniaxial_01'))
+
+%% Unnormalize and constrain parameters
+
+P_opt=Pn_opt.*objectiveStruct.parNormFactors; %Scale back, undo normalization
+
+%Constraining parameters
+for q=1:1:numel(P_opt);
+    [P_opt(q)]=parLimNat(objectiveStruct.Pb_struct.xx_c(q),objectiveStruct.Pb_struct.xxlim(q,:),P_opt(q));
 end
 
 disp_text=sprintf('%6.16e,',P_opt); disp_text=disp_text(1:end-1);
@@ -389,10 +386,10 @@ hf1=figuremax(figColor,figColorDef);
 title('Stretch stress curves optimised','FontSize',fontSize);
 xlabel('\lambda Stretch [.]','FontSize',fontSize); ylabel('\sigma Cauchy stress [kPa]','FontSize',fontSize); zlabel('Z','FontSize',fontSize); hold on;
 
-H(1)=plot(OPT_stats_out.stretch_sim,OPT_stats_out.stress_cauchy_sim,'r.-','lineWidth',lineWidth,'markerSize',markerSize);
-H(2)=plot(stretch_exp,stress_cauchy_exp,'g-','lineWidth',lineWidth);
+Hn(1)=plot(OPT_stats_out.stretch_sim,OPT_stats_out.stress_cauchy_sim,'r.-','lineWidth',lineWidth,'markerSize',markerSize);
+Hn(2)=plot(stretch_exp,stress_cauchy_exp,'g-','lineWidth',lineWidth);
 
-legend(H,{'Simulation','Experiment'},'Location','northwest');
+legend(Hn,{'Simulation','Experiment'},'Location','northwest');
 view(2); axis tight;  grid on;
 set(gca,'FontSize',fontSize);
 drawnow;
