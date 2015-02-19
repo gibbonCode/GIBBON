@@ -18,13 +18,22 @@ end
 
 %% Make figure(s) visible
 
+v=version; 
+v_end=v(end-2:end-1);
 for q=1:1:numel(H)
     h=H(q);
-    try %new        
-        h.Visible='On';
-    catch %old        
+%     try %new        
+%         h.Visible='On';
+%     catch %old        
+%         set(h,'Visible','On');
+%     end
+switch v_end    
+    case {'3a','3b'}
         set(h,'Visible','On');
-    end
+%     case {'4b','5a'}
+%         h.Visible='On';
+    otherwise
+        h.Visible='On';        
 end
 drawnow; 
 
