@@ -1,14 +1,13 @@
-function [Fopt,OPT_stats_out]=obj_DEMO_FEBio_iFEA_uniaxial_01(Pb,objectiveStruct)
+function [Fopt,OPT_stats_out]=obj_DEMO_FEBio_iFEA_uniaxial_01(Pn,objectiveStruct)
 
-%% PARAMETER BOUNDS
+%% Unnormalize and constrain parameters
 
-P=zeros(size(Pb));
+P=Pn.*objectiveStruct.parNormFactors; %Scale back, undo normalization
+P_in=P; %Proposed P
+
+%Constraining parameters
 for q=1:1:numel(P);
-    Psn=objectiveStruct.Ps;
-    Psn.ub=objectiveStruct.Ps.ub(q);
-    Psn.lb=objectiveStruct.Ps.lb(q);
-    Psn.c=objectiveStruct.Ps.c(q);
-    P(q)=parbound(Pb(q),Psn);
+    [P(q)]=parLimNat(objectiveStruct.Pb_struct.xx_c(q),objectiveStruct.Pb_struct.xxlim(q,:),P(q));
 end
 
 %% SETTING MATERIAL PARAMETERS
@@ -18,11 +17,14 @@ mat_struct=objectiveStruct.mat_struct;
 mat_struct.par_values={P(1) P(2) P(1)*objectiveStruct.k_factor}; 
 
 disp('SETTING MATERIAL PARAMETERS...');
-disp_text=sprintf('%6.16e,',P); disp_text=disp_text(1:end-1);
-disp(['P=',disp_text]);
+disp(['Normalized: ',sprintf(repmat('%6.16e ',[1,numel(Pn)]),Pn)]);
+disp(['Proposed: ',sprintf(repmat('%6.16e ',[1,numel(P_in)]),P_in)]);
+disp(['Set: ',sprintf(repmat('%6.16e ',[1,numel(P)]),P)]);
 
 %Assign material parameters
 set_mat_par_FEBIO(objectiveStruct.FEB_struct.run_filename,objectiveStruct.FEB_struct.run_filename,{mat_struct});
+
+disp('Done')
 
 %% START FEBio NOW
 
