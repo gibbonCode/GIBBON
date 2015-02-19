@@ -107,9 +107,9 @@ if isfield(figStruct,'ScreenOffset');
     if isOld
         set(h,'units','pixels');
         set(h,'outerPosition',[(screenSizeGroot(1)-figSize(1))/2 (screenSizeGroot(2)-figSize(2))/2 figSize(1) figSize(2)]); % left bottom width height
-    else 
-        h.units='pixels';
-        h.outerPosition=[(screenSizeGroot(1)-figSize(1))/2 (screenSizeGroot(2)-figSize(2))/2 figSize(1) figSize(2)]; % left bottom width height
+    else
+        h.Units='pixels';
+        h.Position=[(screenSizeGroot(1)-figSize(1))/2 (screenSizeGroot(2)-figSize(2))/2 figSize(1) figSize(2)]; % left bottom width height
     end
     
     figStruct=rmfield(figStruct,'ScreenOffset'); %Remove field from structure array   
