@@ -17,11 +17,13 @@ switch nargin
 end
 
 %% Make figure(s) visible
-v=version;
+v=version; 
+isOld=~isempty(strfind(v,'R2011')) || ~isempty(strfind(v,'R2012')) || ~isempty(strfind(v,'R2013')) || ~isempty(strfind(v,'R2014a')); 
+
 for q=1:1:numel(H)
     h=H(q);
     
-    if strfind(v,'R2012') || strfind(v,'R2013') || strfind(v,'R2014a')
+    if isOld
         set(h,'Visible','On');
     else %ASSUMED NEWER VERSION
         h.Visible='On';

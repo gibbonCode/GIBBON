@@ -86,6 +86,7 @@ end
 %%
 
 v=version; 
+isOld=~isempty(strfind(v,'R2011')) || ~isempty(strfind(v,'R2012')) || ~isempty(strfind(v,'R2013')) || ~isempty(strfind(v,'R2014a')); 
 
 %% Create a hidden figure
 
@@ -104,7 +105,7 @@ if isfield(figStruct,'ScreenOffset');
     figSizeEdgeOffset=figStruct.ScreenOffset; % Figure offset from border
     figSize=screenSizeGroot-figSizeEdgeOffset; % width, height
    
-    if strfind(v,'R2012') || strfind(v,'R2013') || strfind(v,'R2014a')
+    if isOld
         set(h,'units','pixels');
         set(h,'outerPosition',[(screenSizeGroot(1)-figSize(1))/2 (screenSizeGroot(2)-figSize(2))/2 figSize(1) figSize(2)]); % left bottom width height
     else %ASSUMED NEWER VERSION
@@ -121,15 +122,15 @@ end
 
 fieldSet = fieldnames(figStruct); % Cell containing all structure field names
 for q=1:1:numel(fieldSet)
-    if strfind(v,'R2012') || strfind(v,'R2013') || strfind(v,'R2014a')
-        try  
+    try
+        if isOld
             set(h,fieldNameCurrent,figStruct.(fieldNameCurrent));
-        catch errorMsg
-            rethrow(errorMsg); %likely false option
-        end        
-    else %ASSUMED NEWER VERSION
-        fieldNameCurrent=fieldSet{q};
-        h.(fieldNameCurrent)=figStruct.(fieldNameCurrent);
+        else %ASSUMED NEWER VERSION
+            fieldNameCurrent=fieldSet{q};
+            h.(fieldNameCurrent)=figStruct.(fieldNameCurrent);
+        end
+    catch errorMsg
+        rethrow(errorMsg); %likely false option
     end
 end
 
