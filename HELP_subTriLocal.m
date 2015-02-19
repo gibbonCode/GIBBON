@@ -23,7 +23,6 @@ clear; close all; clc;
 
 %%
 % Plot settings
-fig_color='w'; fig_colordef='white';
 fontSize=15;
 faceAlpha=1;
 edgeColor=0.*ones(1,3);
@@ -61,7 +60,7 @@ Cq=outputStruct.faceTypeLabel;
 C=ones(size(F,1),1);
 C(indFaces)=2;
 
-hf=figuremax(fig_color,fig_colordef); 
+hf=cFigure; 
 subplot(1,2,1); hold on; 
 xlabel('X','FontSize',fontSize); ylabel('Y','FontSize',fontSize); zlabel('Z','FontSize',fontSize);
 hp=patch('Faces',F,'Vertices',V,'FaceColor','flat','CData',C,'FaceAlpha',faceAlpha,'lineWidth',edgeWidth,'edgeColor',edgeColor);
@@ -100,7 +99,7 @@ Cq=outputStruct.faceTypeLabel;
 C=ones(size(F,1),1);
 C(indFaces)=2;
 
-hf=figuremax(fig_color,fig_colordef); 
+hf=cFigure; 
 subplot(1,2,1); hold on; 
 title('Initial','FontSize',fontSize);
 xlabel('X','FontSize',fontSize); ylabel('Y','FontSize',fontSize); zlabel('Z','FontSize',fontSize);
@@ -152,7 +151,7 @@ smoothPar.RigidConstraints=indInitial;
 C=ones(size(F,1),1);
 C(indFaces)=2;
 
-hf=figuremax(fig_color,fig_colordef); 
+hf=cFigure; 
 subplot(1,2,1); hold on; 
 title('Initial','FontSize',fontSize);
 xlabel('X','FontSize',fontSize); ylabel('Y','FontSize',fontSize); zlabel('Z','FontSize',fontSize);
@@ -190,7 +189,7 @@ Cq=outputStruct.C;
 %%
 % Plotting results
 
-hf=figuremax(fig_color,fig_colordef); 
+hf=cFigure; 
 subplot(1,2,1); hold on; 
 title('Initial','FontSize',fontSize);
 xlabel('X','FontSize',fontSize); ylabel('Y','FontSize',fontSize); zlabel('Z','FontSize',fontSize);

@@ -7,8 +7,6 @@ clear; close all; clc;
 
 %%
 % Plot settings for the examples below
-figColor='w'; 
-figColorDef='white';
 fontSize=10;
 faceAlpha1=1;
 faceAlpha2=0.3;
@@ -44,7 +42,7 @@ imSiz=imSiz([2 1 3]); %Image size (x, y corresponds to j,i in image coordinates,
 %%
 % Plotting the results
 
-hf1=figuremax(figColor,figColorDef);
+hf1=cFigure;
 subplot(1,2,1);
 title('Closed triangulated surface','FontSize',fontSize);
 xlabel('X','FontSize',fontSize);ylabel('Y','FontSize',fontSize); zlabel('Z','FontSize',fontSize);
@@ -107,7 +105,7 @@ imOrigin=G.origin; %Image origin can be used to allign image with surface
 
 %% 
 % Plotting the results
-hf2=figuremax(figColor,figColorDef);
+hf2=cFigure;
 subplot(1,2,1);
 title('Closed triangulated surface','FontSize',fontSize);
 xlabel('X','FontSize',fontSize);ylabel('Y','FontSize',fontSize); zlabel('Z','FontSize',fontSize);
@@ -174,7 +172,7 @@ V_hex=V_hex+imOrigin(ones(size(V_hex,1),1),:);
 
 %% 
 % Plotting results
-hf3=figuremax(figColor,figColorDef);
+hf3=cFigure;
 subplot(1,2,1);
 title('Full hexahedral model view','FontSize',fontSize);
 xlabel('X','FontSize',fontSize);ylabel('Y','FontSize',fontSize); zlabel('Z','FontSize',fontSize);
@@ -239,7 +237,7 @@ imSiz=imSiz([2 1 3]); %Image size (x, y corresponds to j,i in image coordinates,
 %%
 % Plotting the results
 
-hf1=figuremax(figColor,figColorDef);
+hf1=cFigure;
 subplot(1,2,1);
 title('Closed triangulated surface','FontSize',fontSize);
 xlabel('X','FontSize',fontSize);ylabel('Y','FontSize',fontSize); zlabel('Z','FontSize',fontSize);
@@ -299,7 +297,7 @@ cPar.n=50;
 
 %%
 
-figuremax(figColor,figColorDef);
+cFigure;
 
 subplot(1,2,1);
 title(['Original mesh ',num2str(size(F,1)),' triangles'],'fontSize',fontSize);

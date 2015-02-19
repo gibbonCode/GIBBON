@@ -6,7 +6,7 @@
    <!--
 This HTML was auto-generated from MATLAB code.
 To make changes, update the MATLAB code and republish this document.
-      --><title>triSurf2Im</title><meta name="generator" content="MATLAB 8.4"><link rel="schema.DC" href="http://purl.org/dc/elements/1.1/"><meta name="DC.date" content="2014-10-12"><meta name="DC.source" content="HELP_triSurf2Im.m"><style type="text/css">
+      --><title>triSurf2Im</title><meta name="generator" content="MATLAB 8.4"><link rel="schema.DC" href="http://purl.org/dc/elements/1.1/"><meta name="DC.date" content="2015-02-19"><meta name="DC.source" content="HELP_triSurf2Im.m"><style type="text/css">
 html,body,div,span,applet,object,iframe,h1,h2,h3,h4,h5,h6,p,blockquote,pre,a,abbr,acronym,address,big,cite,code,del,dfn,em,font,img,ins,kbd,q,s,samp,small,strike,strong,sub,sup,tt,var,b,u,i,center,dl,dt,dd,ol,ul,li,fieldset,form,label,legend,table,caption,tbody,tfoot,thead,tr,th,td{margin:0;padding:0;border:0;outline:0;font-size:100%;vertical-align:baseline;background:transparent}body{line-height:1}ol,ul{list-style:none}blockquote,q{quotes:none}blockquote:before,blockquote:after,q:before,q:after{content:'';content:none}:focus{outine:0}ins{text-decoration:none}del{text-decoration:line-through}table{border-collapse:collapse;border-spacing:0}
 
 html { min-height:100%; margin-bottom:1px; }
@@ -67,9 +67,7 @@ table td { padding:7px 5px; text-align:left; vertical-align:top; border:1px soli
 
 
   </style></head><body><div class="content"><h1>triSurf2Im</h1><!--introduction--><p>Below is a demonstration of the features of the <tt>triSurf2Im</tt> function</p><!--/introduction--><h2>Contents</h2><div><ul><li><a href="#3">EXAMPLE 1: CONVERTING A TRIANGULATED SURFACE TO AN IMAGE WITH DESIRED SIZE, VOXEL SIZE AND ORIGIN</a></li><li><a href="#6">EXAMPLE 2: CONVERTING A TRIANGULATED SURFACE TO AN IMAGE WITHOUT SPECIFYING DESIRED SIZE, VOXEL SIZE AND ORIGIN</a></li><li><a href="#8">EXAMPLE 3: CONVERTING A TRIANGULATED SURFACE MODEL TO A VOXEL BASED HEXAHEDRAL MESH MODEL</a></li><li><a href="#10">EXAMPLE 4: Using <tt>triSurf2Im</tt> combined with <tt>logic2isosurface</tt> to resample a surface</a></li></ul></div><pre class="codeinput">clear; close <span class="string">all</span>; clc;
-</pre><p>Plot settings for the examples below</p><pre class="codeinput">figColor=<span class="string">'w'</span>;
-figColorDef=<span class="string">'white'</span>;
-fontSize=10;
+</pre><p>Plot settings for the examples below</p><pre class="codeinput">fontSize=10;
 faceAlpha1=1;
 faceAlpha2=0.3;
 </pre><h2>EXAMPLE 1: CONVERTING A TRIANGULATED SURFACE TO AN IMAGE WITH DESIRED SIZE, VOXEL SIZE AND ORIGIN<a name="3"></a></h2><p>Defining an example triangulated surface model</p><pre class="codeinput"><span class="comment">% Defining a deformed and rotated torus shape</span>
@@ -92,7 +90,7 @@ imSiz=imSiz([2 1 3]); <span class="comment">%Image size (x, y corresponds to j,i
 
 <span class="comment">% Using |triSurf2Im| function to convert patch data to image data</span>
 [M,~]=triSurf2Im(F,V,voxelSize,imOrigin,imSiz);
-</pre><p>Plotting the results</p><pre class="codeinput">hf1=figuremax(figColor,figColorDef);
+</pre><p>Plotting the results</p><pre class="codeinput">hf1=cFigure;
 subplot(1,2,1);
 title(<span class="string">'Closed triangulated surface'</span>,<span class="string">'FontSize'</span>,fontSize);
 xlabel(<span class="string">'X'</span>,<span class="string">'FontSize'</span>,fontSize);ylabel(<span class="string">'Y'</span>,<span class="string">'FontSize'</span>,fontSize); zlabel(<span class="string">'Z'</span>,<span class="string">'FontSize'</span>,fontSize);
@@ -142,7 +140,7 @@ drawnow;
 voxelSize=G.voxelSize; <span class="comment">%Equal to input if specified</span>
 imOrigin=G.origin; <span class="comment">%Image origin can be used to allign image with surface</span>
 <span class="comment">% size is clearly just size(M) in this case</span>
-</pre><p>Plotting the results</p><pre class="codeinput">hf2=figuremax(figColor,figColorDef);
+</pre><p>Plotting the results</p><pre class="codeinput">hf2=cFigure;
 subplot(1,2,1);
 title(<span class="string">'Closed triangulated surface'</span>,<span class="string">'FontSize'</span>,fontSize);
 xlabel(<span class="string">'X'</span>,<span class="string">'FontSize'</span>,fontSize);ylabel(<span class="string">'Y'</span>,<span class="string">'FontSize'</span>,fontSize); zlabel(<span class="string">'Z'</span>,<span class="string">'FontSize'</span>,fontSize);
@@ -200,7 +198,7 @@ V_hex=V_hex+imOrigin(ones(size(V_hex,1),1),:);
 <span class="comment">% Use element2patch to get patch data to plot the model</span>
 [F_hex,C_hex_F]=element2patch(E_hex,C_hex);
 </pre><pre class="codeoutput">hex8 elements assumed, for other elements please specify elementType
-</pre><p>Plotting results</p><pre class="codeinput">hf3=figuremax(figColor,figColorDef);
+</pre><p>Plotting results</p><pre class="codeinput">hf3=cFigure;
 subplot(1,2,1);
 title(<span class="string">'Full hexahedral model view'</span>,<span class="string">'FontSize'</span>,fontSize);
 xlabel(<span class="string">'X'</span>,<span class="string">'FontSize'</span>,fontSize);ylabel(<span class="string">'Y'</span>,<span class="string">'FontSize'</span>,fontSize); zlabel(<span class="string">'Z'</span>,<span class="string">'FontSize'</span>,fontSize);
@@ -245,7 +243,7 @@ fileName=fullfile(pathName,stlName);
 F=stlStruct.solidFaces{1};
 V=stlStruct.solidVertices{1};
 </pre><p>Setting control parameters</p><pre class="codeinput"><span class="comment">% Defining the full set of possible control parameters</span>
-voxelSize=6; <span class="comment">% The output image voxel size.</span>
+voxelSize=4; <span class="comment">% The output image voxel size.</span>
 imOrigin=min(V,[],1)-voxelSize;
 imMax=max(V,[],1)+voxelSize;
 imSiz=round((imMax-imOrigin)/voxelSize);
@@ -253,7 +251,7 @@ imSiz=imSiz([2 1 3]); <span class="comment">%Image size (x, y corresponds to j,i
 
 <span class="comment">% Using |triSurf2Im| function to convert patch data to image data</span>
 [M,~]=triSurf2Im(F,V,voxelSize,imOrigin,imSiz);
-</pre><p>Plotting the results</p><pre class="codeinput">hf1=figuremax(figColor,figColorDef);
+</pre><p>Plotting the results</p><pre class="codeinput">hf1=cFigure;
 subplot(1,2,1);
 title(<span class="string">'Closed triangulated surface'</span>,<span class="string">'FontSize'</span>,fontSize);
 xlabel(<span class="string">'X'</span>,<span class="string">'FontSize'</span>,fontSize);ylabel(<span class="string">'Y'</span>,<span class="string">'FontSize'</span>,fontSize); zlabel(<span class="string">'Z'</span>,<span class="string">'FontSize'</span>,fontSize);
@@ -303,7 +301,7 @@ Vn=Vn+imOrigin(ones(size(Vn,1),1),:);
 </pre><p>Smooth surface using <tt>patchSmooth</tt> function</p><pre class="codeinput">cPar.Method=<span class="string">'HC'</span>;
 cPar.n=50;
 [Vn]=patchSmooth(Fn,Vn,[],cPar);
-</pre><pre class="codeinput">figuremax(figColor,figColorDef);
+</pre><pre class="codeinput">cFigure;
 
 subplot(1,2,1);
 title([<span class="string">'Original mesh '</span>,num2str(size(F,1)),<span class="string">' triangles'</span>],<span class="string">'fontSize'</span>,fontSize);
@@ -337,8 +335,6 @@ clear; close all; clc;
 
 %%
 % Plot settings for the examples below
-figColor='w'; 
-figColorDef='white';
 fontSize=10;
 faceAlpha1=1;
 faceAlpha2=0.3;
@@ -374,7 +370,7 @@ imSiz=imSiz([2 1 3]); %Image size (x, y corresponds to j,i in image coordinates,
 %%
 % Plotting the results
 
-hf1=figuremax(figColor,figColorDef);
+hf1=cFigure;
 subplot(1,2,1);
 title('Closed triangulated surface','FontSize',fontSize);
 xlabel('X','FontSize',fontSize);ylabel('Y','FontSize',fontSize); zlabel('Z','FontSize',fontSize);
@@ -437,7 +433,7 @@ imOrigin=G.origin; %Image origin can be used to allign image with surface
 
 %% 
 % Plotting the results
-hf2=figuremax(figColor,figColorDef);
+hf2=cFigure;
 subplot(1,2,1);
 title('Closed triangulated surface','FontSize',fontSize);
 xlabel('X','FontSize',fontSize);ylabel('Y','FontSize',fontSize); zlabel('Z','FontSize',fontSize);
@@ -504,7 +500,7 @@ V_hex=V_hex+imOrigin(ones(size(V_hex,1),1),:);
 
 %% 
 % Plotting results
-hf3=figuremax(figColor,figColorDef);
+hf3=cFigure;
 subplot(1,2,1);
 title('Full hexahedral model view','FontSize',fontSize);
 xlabel('X','FontSize',fontSize);ylabel('Y','FontSize',fontSize); zlabel('Z','FontSize',fontSize);
@@ -557,7 +553,7 @@ V=stlStruct.solidVertices{1};
 % Setting control parameters
 
 % Defining the full set of possible control parameters
-voxelSize=6; % The output image voxel size.  
+voxelSize=4; % The output image voxel size.  
 imOrigin=min(V,[],1)-voxelSize;
 imMax=max(V,[],1)+voxelSize;
 imSiz=round((imMax-imOrigin)/voxelSize);
@@ -569,7 +565,7 @@ imSiz=imSiz([2 1 3]); %Image size (x, y corresponds to j,i in image coordinates,
 %%
 % Plotting the results
 
-hf1=figuremax(figColor,figColorDef);
+hf1=cFigure;
 subplot(1,2,1);
 title('Closed triangulated surface','FontSize',fontSize);
 xlabel('X','FontSize',fontSize);ylabel('Y','FontSize',fontSize); zlabel('Z','FontSize',fontSize);
@@ -629,7 +625,7 @@ cPar.n=50;
 
 %%
 
-figuremax(figColor,figColorDef);
+cFigure;
 
 subplot(1,2,1);
 title(['Original mesh ',num2str(size(F,1)),' triangles'],'fontSize',fontSize);

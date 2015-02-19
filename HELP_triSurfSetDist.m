@@ -6,19 +6,10 @@ clear; close all; clc;
 
 %%
 % PLOT SETTINGS
-fig_color='w'; fig_colordef='white';
 font_size=10;
 cmap=gray(250);
 falpha=1;
-patch_types={'sx','sy','sz','v'};
-ptype=3;
-no_slices=4;
-mark_siz1=20;
-mark_siz2=5;
-mark_siz3=50;
-line_width1=2;
-F_alpha1=0.5;
-F_alpha2=1;
+faceAlpha1=0.5;
 
 %%
 % Building test surfaces
@@ -37,12 +28,12 @@ n1=Vs(:,3)+(ampDef-ampDefDiff)+ampDef*sin(freqDef*Vs(:,1));
 %%
 % Plotting surfaces
 
-hf1=figuremax(fig_color,fig_colordef);
+hf1=cFigure;
 title('The two surfaces','FontSize',font_size);
 xlabel('X','FontSize',font_size);ylabel('Y','FontSize',font_size);zlabel('Z','FontSize',font_size); 
 hold on; 
-patch('faces',F1,'vertices',V1,'FaceColor','g','FaceAlpha',F_alpha1);
-patch('faces',F2,'vertices',V2,'FaceColor','b','FaceAlpha',F_alpha1);
+patch('faces',F1,'vertices',V1,'FaceColor','g','FaceAlpha',faceAlpha1);
+patch('faces',F2,'vertices',V2,'FaceColor','b','FaceAlpha',faceAlpha1);
 
 axis equal; view(3); axis tight; grid on;
 set(gca,'FontSize',font_size); 
@@ -62,12 +53,12 @@ D2=minDist(V2,V1);
 
 [CF]=vertexToFaceMeasure(F2,D2);
 
-hf2=figuremax(fig_color,fig_colordef);
+hf2=cFigure;
 title('Closest point distance metric on surface 2','FontSize',font_size);
 xlabel('X','FontSize',font_size);ylabel('Y','FontSize',font_size);zlabel('Z','FontSize',font_size); 
 hold on; 
 patch('faces',F2,'vertices',V2,'FaceColor','flat','CData',CF);
-patch('faces',F1,'vertices',V1,'FaceColor',0.5.*ones(1,3),'FaceAlpha',F_alpha1,'EdgeColor','None');
+patch('faces',F1,'vertices',V1,'FaceColor',0.5.*ones(1,3),'FaceAlpha',faceAlpha1,'EdgeColor','None');
 
 colormap jet; colorbar;
 axis equal; view(3); axis tight; axis off; 
@@ -85,12 +76,12 @@ drawnow;
 [CF]=vertexToFaceMeasure(F2,D2);
 L=~isnan(CF); %Check for NaN's
 
-hf3=figuremax(fig_color,fig_colordef);
+hf3=cFigure;
 title('Ray-traced distance metric on surface 2','FontSize',font_size);
 xlabel('X','FontSize',font_size);ylabel('Y','FontSize',font_size);zlabel('Z','FontSize',font_size); 
 hold on; 
 patch('faces',F2(L,:),'vertices',V2,'FaceColor','flat','CData',CF(L));
-patch('faces',F1,'vertices',V1,'FaceColor',0.5.*ones(1,3),'FaceAlpha',F_alpha1,'EdgeColor','None');
+patch('faces',F1,'vertices',V1,'FaceColor',0.5.*ones(1,3),'FaceAlpha',faceAlpha1,'EdgeColor','None');
 
 colormap jet; colorbar;
 axis equal; view(3); axis tight; axis off; 
@@ -117,12 +108,12 @@ V2(:,3)=V2(:,3)*2;
 [CF]=vertexToFaceMeasure(F2,D2);
 L=~isnan(CF); %Check for NaN's
 
-hf3=figuremax(fig_color,fig_colordef);
+hf3=cFigure;
 title('Ray-traced distance metric on surface 2','FontSize',font_size);
 xlabel('X','FontSize',font_size);ylabel('Y','FontSize',font_size);zlabel('Z','FontSize',font_size); 
 hold on; 
 patch('faces',F2(L,:),'vertices',V2,'FaceColor','flat','CData',CF(L));
-patch('faces',F1,'vertices',V1,'FaceColor',0.5.*ones(1,3),'FaceAlpha',F_alpha1,'EdgeColor','None');
+patch('faces',F1,'vertices',V1,'FaceColor',0.5.*ones(1,3),'FaceAlpha',faceAlpha1,'EdgeColor','None');
 
 colormap jet; colorbar;
 axis equal; view(3); axis tight; axis off; 
@@ -144,12 +135,12 @@ D2(L)=D2_nan;
 
 [CF]=vertexToFaceMeasure(F2,D2);
 
-hf3=figuremax(fig_color,fig_colordef);
+hf3=cFigure;
 title('Combined distance metric on surface 2','FontSize',font_size);
 xlabel('X','FontSize',font_size);ylabel('Y','FontSize',font_size);zlabel('Z','FontSize',font_size); 
 hold on; 
 patch('faces',F2,'vertices',V2,'FaceColor','flat','CData',CF);
-patch('faces',F1,'vertices',V1,'FaceColor',0.5.*ones(1,3),'FaceAlpha',F_alpha1,'EdgeColor','None');
+patch('faces',F1,'vertices',V1,'FaceColor',0.5.*ones(1,3),'FaceAlpha',faceAlpha1,'EdgeColor','None');
 
 colormap jet; colorbar;
 axis equal; view(3); axis tight; axis off; 
@@ -169,12 +160,12 @@ drawnow;
 % Plotting results
 [CF]=vertexToFaceMeasure(F2,D2);
 
-hf3=figuremax(fig_color,fig_colordef);
+hf3=cFigure;
 title('Minimum metric between "closest point" and "ray-traced distance" on surface 2','FontSize',font_size);
 xlabel('X','FontSize',font_size);ylabel('Y','FontSize',font_size);zlabel('Z','FontSize',font_size); 
 hold on; 
 patch('faces',F2,'vertices',V2,'FaceColor','flat','CData',CF);
-patch('faces',F1,'vertices',V1,'FaceColor',0.5.*ones(1,3),'FaceAlpha',F_alpha1,'EdgeColor','None');
+patch('faces',F1,'vertices',V1,'FaceColor',0.5.*ones(1,3),'FaceAlpha',faceAlpha1,'EdgeColor','None');
 
 colormap jet; colorbar;
 axis equal; view(3); axis tight; axis off; 

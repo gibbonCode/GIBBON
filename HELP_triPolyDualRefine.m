@@ -17,7 +17,6 @@ clear; close all; clc;
 %%
 % Plot settings
 
-fig_color='w'; fig_colordef='white';
 fontSize=15;
 faceAlpha=1;
 edgeColor=0.*ones(1,3);
@@ -41,7 +40,7 @@ n=2; %Refinements
 
 %%
 
-hf=figuremax(fig_color,fig_colordef); 
+hf=cFigure; 
 subplot(1,2,1); hold on; 
 title('Original','FontSize',fontSize); 
 xlabel('X','FontSize',fontSize); ylabel('Y','FontSize',fontSize); zlabel('Z','FontSize',fontSize);
@@ -73,7 +72,7 @@ view(3); axis tight;  axis equal;  grid on; axis vis3d;
 
 %%
 
-hf=figuremax(fig_color,fig_colordef); 
+hf=cFigure; 
 subplot(1,2,1); hold on; 
 title('Original','FontSize',fontSize); 
 xlabel('X','FontSize',fontSize); ylabel('Y','FontSize',fontSize); zlabel('Z','FontSize',fontSize);

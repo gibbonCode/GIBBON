@@ -6,7 +6,6 @@ clear; close all; clc;
 
 %%
 % Plot settings
-fig_color='w'; fig_colordef='white'; 
 cMap=jet(250);
 faceAlpha1=1;
 faceAlpha2=0.65;
@@ -18,7 +17,7 @@ fontSize=15;
 
 n=50;
 
-figuremax(fig_color,fig_colordef);
+cFigure;
 
 [X,Y,Z]=meshgrid(linspace(-pi,pi,n));
 S=triplyPeriodicMinimal(X,Y,Z,'p');
@@ -109,7 +108,7 @@ L=S<(max(S(:))*T);
 [F2,V2,C2]=ind2patch(L,S,'vb'); 
 
 
-figuremax(fig_color,fig_colordef);
+cFigure;
 subplot(1,2,1);
 title('Gyroid based "network"','FontSize',fontSize);
 xlabel('J','FontSize',fontSize);ylabel('I','FontSize',fontSize); zlabel('K','FontSize',fontSize); hold on;

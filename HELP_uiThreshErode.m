@@ -6,7 +6,6 @@ clear; close all; clc;
 
 %%
 % Plot settings
-fig_color='w'; fig_colordef='white'; 
 cMap=gray(250);
 faceAlpha1=1;
 edgeColor1='none';
@@ -61,7 +60,7 @@ logicVoxels2=logicVoxels & L_BG;
 [F2,V2,C2]=ind2patch(logicVoxels2,M,'vb');
 [V2(:,1),V2(:,2),V2(:,3)]=im2cart(V2(:,2),V2(:,1),V2(:,3),v); 
 
-h1=figuremax(fig_color,fig_colordef);
+h1=cFigure;
 
 subplot(1,2,1);title('Original');
 xlabel('X (mm)');ylabel('Y (mm)'); zlabel('Z (mm)'); hold on;

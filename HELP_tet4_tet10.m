@@ -5,7 +5,6 @@
 clear; close all; clc;
 
 % Plot settings
-fig_color='w'; fig_colordef='white';
 fontSize=15;
 faceColor='b';
 faceAlpha=0.75;
@@ -28,7 +27,7 @@ TET4=[1:4];
 
 %%
 % Plotting elements
-hf=figuremax(fig_color,fig_colordef); % Open figure for plotting
+hf=cFigure; % Open figure for plotting
 subplot(1,2,1); hold on;
 title('A linear tetrahedron','FontSize',fontSize);
 xlabel('X','FontSize',fontSize); ylabel('Y','FontSize',fontSize); zlabel('Z','FontSize',fontSize);
@@ -90,7 +89,7 @@ V10d=V10+D10;
 
 %%
 % Plotting elements
-hf=figuremax(fig_color,fig_colordef); % Open figure for plotting
+hf=cFigure; % Open figure for plotting
 subplot(2,2,1); hold on;
 title('A linear tetrahedron mesh','FontSize',fontSize);
 xlabel('X','FontSize',fontSize); ylabel('Y','FontSize',fontSize); zlabel('Z','FontSize',fontSize);

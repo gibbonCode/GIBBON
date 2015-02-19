@@ -33,6 +33,7 @@ title('A curve tube with color representing curve distance','fontSize',fontSize)
 hp=patch('Faces',Fs,'Vertices',Vs,'EdgeColor','none','FaceColor','flat','CData',Cs_d,'FaceAlpha',1);
 camlight headlight;
 lighting phong; 
+colormap jet; 
 drawnow; view(3); grid on; axis equal; axis tight; 
 
 hf1=figuremax(fig_color,fig_colordef); hold on;

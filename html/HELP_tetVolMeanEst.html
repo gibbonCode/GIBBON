@@ -6,7 +6,7 @@
    <!--
 This HTML was auto-generated from MATLAB code.
 To make changes, update the MATLAB code and republish this document.
-      --><title>tetVolMeanEst</title><meta name="generator" content="MATLAB 8.4"><link rel="schema.DC" href="http://purl.org/dc/elements/1.1/"><meta name="DC.date" content="2014-10-21"><meta name="DC.source" content="HELP_tetVolMeanEst.m"><style type="text/css">
+      --><title>tetVolMeanEst</title><meta name="generator" content="MATLAB 8.4"><link rel="schema.DC" href="http://purl.org/dc/elements/1.1/"><meta name="DC.date" content="2015-02-19"><meta name="DC.source" content="HELP_tetVolMeanEst.m"><style type="text/css">
 html,body,div,span,applet,object,iframe,h1,h2,h3,h4,h5,h6,p,blockquote,pre,a,abbr,acronym,address,big,cite,code,del,dfn,em,font,img,ins,kbd,q,s,samp,small,strike,strong,sub,sup,tt,var,b,u,i,center,dl,dt,dd,ol,ul,li,fieldset,form,label,legend,table,caption,tbody,tfoot,thead,tr,th,td{margin:0;padding:0;border:0;outline:0;font-size:100%;vertical-align:baseline;background:transparent}body{line-height:1}ol,ul{list-style:none}blockquote,q{quotes:none}blockquote:before,blockquote:after,q:before,q:after{content:'';content:none}:focus{outine:0}ins{text-decoration:none}del{text-decoration:line-through}table{border-collapse:collapse;border-spacing:0}
 
 html { min-height:100%; margin-bottom:1px; }
@@ -67,8 +67,7 @@ table td { padding:7px 5px; text-align:left; vertical-align:top; border:1px soli
 
 
   </style></head><body><div class="content"><h1>tetVolMeanEst</h1><!--introduction--><p>Below is a demonstration of the features of the <tt>tetVolMeanEst</tt> function</p><!--/introduction--><h2>Contents</h2><div><ul><li><a href="#3">Estimaging tetrahedral volume based on mean edge length and regular face assumption</a></li><li><a href="#6">Using <tt>tetVolMeanEst</tt> to set desired mesh volume for tetgen meshing</a></li></ul></div><pre class="codeinput">clear; close <span class="string">all</span>; clc;
-</pre><p>Plot settings</p><pre class="codeinput">fig_color=<span class="string">'w'</span>; fig_colordef=<span class="string">'white'</span>;
-fontSize=15;
+</pre><p>Plot settings</p><pre class="codeinput">fontSize=15;
 faceAlpha1=0.5;
 faceAlpha2=1;
 edgeColor=0.25*ones(1,3);
@@ -92,7 +91,7 @@ VE_est =
 
     0.5132
 
-</pre><p>Plotting model</p><pre class="codeinput">hf=figuremax(fig_color,fig_colordef);
+</pre><p>Plotting model</p><pre class="codeinput">hf=cFigure;
 title(<span class="string">'A regular tetrahedron'</span>,<span class="string">'FontSize'</span>,fontSize);
 xlabel(<span class="string">'X'</span>,<span class="string">'FontSize'</span>,fontSize); ylabel(<span class="string">'Y'</span>,<span class="string">'FontSize'</span>,fontSize); zlabel(<span class="string">'Z'</span>,<span class="string">'FontSize'</span>,fontSize);
 hold <span class="string">on</span>;
@@ -103,7 +102,7 @@ camlight <span class="string">headlight</span>;
 set(gca,<span class="string">'FontSize'</span>,fontSize);
 view(3); axis <span class="string">tight</span>;  axis <span class="string">equal</span>;  grid <span class="string">on</span>;
 </pre><img vspace="5" hspace="5" src="HELP_tetVolMeanEst_01.png" alt=""> <p>The two metrics coincide in this case but for irregular meshes they may divergerge.</p><h2>Using <tt>tetVolMeanEst</tt> to set desired mesh volume for tetgen meshing<a name="6"></a></h2><p>For tetrahedral meshing schemes surface geometry is usually provided. For instance triangulated surface data. If the desired element volume can be specified then in this case <tt>tetVolMeanEst</tt> can be used to estimate the desired element volume given the input surface mesh (provided the surface mesh is not remeshed). This is highlighted in the following example.</p><p>Building a geodesic dome surface model</p><pre class="codeinput">[F,V,~]=geoSphere(2,1);
-</pre><p>Plotting model</p><pre class="codeinput">hf=figuremax(fig_color,fig_colordef);
+</pre><p>Plotting model</p><pre class="codeinput">hf=cFigure;
 title(<span class="string">'A triangulated surface model'</span>,<span class="string">'FontSize'</span>,fontSize);
 xlabel(<span class="string">'X'</span>,<span class="string">'FontSize'</span>,fontSize); ylabel(<span class="string">'Y'</span>,<span class="string">'FontSize'</span>,fontSize); zlabel(<span class="string">'Z'</span>,<span class="string">'FontSize'</span>,fontSize);
 hold <span class="string">on</span>;
@@ -125,22 +124,22 @@ inputStruct.minRegionMarker=2; <span class="comment">%Minimum region marker</spa
 </pre><p>Mesh model using tetrahedral elements using tetGen</p><pre class="codeinput">[meshOutput]=runTetGen(inputStruct); <span class="comment">%Run tetGen</span>
 </pre><pre class="codeoutput"> 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
---- TETGEN Tetrahedral meshing --- 21-Oct-2014 16:52:15
+--- TETGEN Tetrahedral meshing --- 19-Feb-2015 21:48:27
  
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
---- Writing SMESH file --- 21-Oct-2014 16:52:15
+--- Writing SMESH file --- 19-Feb-2015 21:48:27
 ----&gt; Adding node field
 ----&gt; Adding facet field
 ----&gt; Adding holes specification
 ----&gt; Adding region specification
---- Done --- 21-Oct-2014 16:52:16
---- Running TetGen to mesh input boundary--- 21-Oct-2014 16:52:16
+--- Done --- 19-Feb-2015 21:48:27
+--- Running TetGen to mesh input boundary--- 19-Feb-2015 21:48:27
 Opening D:\MATLAB\GIBBON\trunk\lib_ext\tetGen\tempFiles\temp.smesh. 
---- Done --- 21-Oct-2014 16:52:16
+--- Done --- 19-Feb-2015 21:48:27
  
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
---- Importing TetGen files --- 21-Oct-2014 16:52:16
---- Done --- 21-Oct-2014 16:52:16
+--- Importing TetGen files --- 19-Feb-2015 21:48:27
+--- Done --- 19-Feb-2015 21:48:27
 </pre><p>Access model element and patch data</p><pre class="codeinput">F=meshOutput.faces;
 V=meshOutput.nodes;
 C=meshOutput.faceMaterialID;
@@ -150,7 +149,7 @@ Y=V(:,2); YE=mean(Y(E),2);
 L=YE&gt;mean(Y);
 [Fs,Cs]=element2patch(E(L,:),C(L));
 
-hf1=figuremax(fig_color,fig_colordef);
+hf1=cFigure;
 subplot(1,2,1);
 title(<span class="string">'Solid tetrahedral mesh model'</span>,<span class="string">'FontSize'</span>,fontSize);
 xlabel(<span class="string">'X'</span>,<span class="string">'FontSize'</span>,fontSize); ylabel(<span class="string">'Y'</span>,<span class="string">'FontSize'</span>,fontSize); zlabel(<span class="string">'Z'</span>,<span class="string">'FontSize'</span>,fontSize); hold <span class="string">on</span>;
@@ -179,7 +178,6 @@ clear; close all; clc;
 
 %%
 % Plot settings
-fig_color='w'; fig_colordef='white';
 fontSize=15;
 faceAlpha1=0.5;
 faceAlpha2=1;
@@ -201,7 +199,7 @@ VE=tetVol([1 2 3 4],V)
 
 %%
 % Plotting model
-hf=figuremax(fig_color,fig_colordef);
+hf=cFigure;
 title('A regular tetrahedron','FontSize',fontSize);
 xlabel('X','FontSize',fontSize); ylabel('Y','FontSize',fontSize); zlabel('Z','FontSize',fontSize);
 hold on;
@@ -229,7 +227,7 @@ view(3); axis tight;  axis equal;  grid on;
 
 %%
 % Plotting model
-hf=figuremax(fig_color,fig_colordef);
+hf=cFigure;
 title('A triangulated surface model','FontSize',fontSize);
 xlabel('X','FontSize',fontSize); ylabel('Y','FontSize',fontSize); zlabel('Z','FontSize',fontSize);
 hold on;
@@ -275,7 +273,7 @@ Y=V(:,2); YE=mean(Y(E),2);
 L=YE>mean(Y);
 [Fs,Cs]=element2patch(E(L,:),C(L));
 
-hf1=figuremax(fig_color,fig_colordef);
+hf1=cFigure;
 subplot(1,2,1);
 title('Solid tetrahedral mesh model','FontSize',fontSize);
 xlabel('X','FontSize',fontSize); ylabel('Y','FontSize',fontSize); zlabel('Z','FontSize',fontSize); hold on;

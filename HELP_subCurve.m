@@ -15,7 +15,6 @@ clear; close all; clc;
 
 %%
 % PLOT SETTINGS
-figColor='w'; figColorDef='white';
 fontSize=15;
 markerSize1=45;
 lineWidth1=2;
@@ -36,7 +35,7 @@ np=3; %Number of desired intermediate points to be added
 
 %%
 % Plotting results
-hf1=figuremax(figColor,figColorDef);
+hf1=cFigure;
 title('A linearly upsampled curve','FontSize',fontSize);
 xlabel('X','FontSize',fontSize);ylabel('Y','FontSize',fontSize); zlabel('Z','FontSize',fontSize);
 hold on;
@@ -57,7 +56,7 @@ closeLoopOpt=1; %Enable closed loop option
 
 %%
 % Plotting results
-hf1=figuremax(figColor,figColorDef);
+hf1=cFigure;
 title('A linearly upsampled curve with closed end condition','FontSize',fontSize);
 xlabel('X','FontSize',fontSize);ylabel('Y','FontSize',fontSize); zlabel('Z','FontSize',fontSize);
 hold on;

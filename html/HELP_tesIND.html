@@ -6,7 +6,7 @@
    <!--
 This HTML was auto-generated from MATLAB code.
 To make changes, update the MATLAB code and republish this document.
-      --><title>tesIND</title><meta name="generator" content="MATLAB 8.4"><link rel="schema.DC" href="http://purl.org/dc/elements/1.1/"><meta name="DC.date" content="2014-10-01"><meta name="DC.source" content="HELP_tesIND.m"><style type="text/css">
+      --><title>tesIND</title><meta name="generator" content="MATLAB 8.4"><link rel="schema.DC" href="http://purl.org/dc/elements/1.1/"><meta name="DC.date" content="2015-02-19"><meta name="DC.source" content="HELP_tesIND.m"><style type="text/css">
 html,body,div,span,applet,object,iframe,h1,h2,h3,h4,h5,h6,p,blockquote,pre,a,abbr,acronym,address,big,cite,code,del,dfn,em,font,img,ins,kbd,q,s,samp,small,strike,strong,sub,sup,tt,var,b,u,i,center,dl,dt,dd,ol,ul,li,fieldset,form,label,legend,table,caption,tbody,tfoot,thead,tr,th,td{margin:0;padding:0;border:0;outline:0;font-size:100%;vertical-align:baseline;background:transparent}body{line-height:1}ol,ul{list-style:none}blockquote,q{quotes:none}blockquote:before,blockquote:after,q:before,q:after{content:'';content:none}:focus{outine:0}ins{text-decoration:none}del{text-decoration:line-through}table{border-collapse:collapse;border-spacing:0}
 
 html { min-height:100%; margin-bottom:1px; }
@@ -67,9 +67,7 @@ table td { padding:7px 5px; text-align:left; vertical-align:top; border:1px soli
 
 
   </style></head><body><div class="content"><h1>tesIND</h1><!--introduction--><p>Below is a demonstration of the features of the <tt>tesIND</tt> function</p><!--/introduction--><h2>Contents</h2><div><ul><li><a href="#3">Studying connectivity on quadrangulated patch data</a></li><li><a href="#11">Studying connectivity on triangulated patch data</a></li><li><a href="#17">Studying connectivity of faces and vertices on hexahedral mesh</a></li><li><a href="#21">Studying connectivity of elements on hexahedral mesh</a></li><li><a href="#24">Studying connectivity on tetrahedral mesh</a></li></ul></div><pre class="codeinput">clear; close <span class="string">all</span>; clc;
-</pre><p>Plot Settings</p><pre class="codeinput">figColor=<span class="string">'w'</span>;
-figColorDef=<span class="string">'white'</span>;
-fontSize=10;
+</pre><p>Plot Settings</p><pre class="codeinput">fontSize=10;
 markerSize=50;
 faceAlpha=0.25;
 faceAlpha2=1;
@@ -77,14 +75,14 @@ faceAlpha2=1;
 M=zeros(n,n,1);
 [F,V,~]=ind2patch(M==0,M,<span class="string">'sku'</span>);
 </pre><p>Compute connectivity using <tt>tesIND</tt></p><pre class="codeinput">[IND_F,IND_V,IND_FF]=tesIND(F,[],1);
-</pre><p>Visualizing the sparse face connectivity matrix</p><pre class="codeinput">hf1=figuremax(figColor,figColorDef); hold <span class="string">on</span>;
+</pre><p>Visualizing the sparse face connectivity matrix</p><pre class="codeinput">hf1=cFigure; hold <span class="string">on</span>;
 title(<span class="string">'Connected face indices per vertex'</span>,<span class="string">'FontSize'</span>,fontSize);
 xlabel(<span class="string">'F id'</span>,<span class="string">'FontSize'</span>,fontSize);ylabel(<span class="string">'V id'</span>,<span class="string">'FontSize'</span>,fontSize);
 imagesc(full(IND_F));
 axis <span class="string">equal</span>; axis <span class="string">tight</span>; axis <span class="string">ij</span>;
 colorbar;
 drawnow;
-</pre><img vspace="5" hspace="5" src="HELP_tesIND_01.png" alt=""> <p>Visualizing the sparse vertex connectivity matrix</p><pre class="codeinput">hf2=figuremax(figColor,figColorDef); hold <span class="string">on</span>;
+</pre><img vspace="5" hspace="5" src="HELP_tesIND_01.png" alt=""> <p>Visualizing the sparse vertex connectivity matrix</p><pre class="codeinput">hf2=cFigure; hold <span class="string">on</span>;
 title(<span class="string">'Connected vertex indices per vertex'</span>,<span class="string">'FontSize'</span>,fontSize);
 xlabel(<span class="string">'F id'</span>,<span class="string">'FontSize'</span>,fontSize);ylabel(<span class="string">'V id'</span>,<span class="string">'FontSize'</span>,fontSize);
 imagesc(full(IND_V));
@@ -102,7 +100,7 @@ indFaces=indFaces(indFaces&gt;0);
 <span class="comment">%The vertices attached by an edge to this vertex</span>
 indVertices=IND_V(indPick,:);
 indVertices=indVertices(indVertices&gt;0);
-</pre><p>Show results</p><pre class="codeinput">hf3=figuremax(figColor,figColorDef); hold <span class="string">on</span>;
+</pre><p>Show results</p><pre class="codeinput">hf3=cFigure; hold <span class="string">on</span>;
 title(<span class="string">'Vertex-face and vertex-vertex connectivity on a quadrangulated surface'</span>,<span class="string">'FontSize'</span>,fontSize);
 xlabel(<span class="string">'X'</span>,<span class="string">'FontSize'</span>,fontSize);ylabel(<span class="string">'Y'</span>,<span class="string">'FontSize'</span>,fontSize); zlabel(<span class="string">'Z'</span>,<span class="string">'FontSize'</span>,fontSize);
 patch(<span class="string">'Faces'</span>,F,<span class="string">'Vertices'</span>,V,<span class="string">'FaceColor'</span>,<span class="string">'g'</span>,<span class="string">'FaceAlpha'</span>,faceAlpha);
@@ -118,7 +116,7 @@ logicValid=IND_FF&gt;0;
 <span class="comment">%The faces sharing this vertex</span>
 indFaces=IND_FF(indPick,:);
 indFaces=indFaces(indFaces&gt;0);
-</pre><p>Show results</p><pre class="codeinput">hf3=figuremax(figColor,figColorDef); hold <span class="string">on</span>;
+</pre><p>Show results</p><pre class="codeinput">hf3=cFigure; hold <span class="string">on</span>;
 title(<span class="string">'Face-face connectivity on a quadrangulated surface'</span>,<span class="string">'FontSize'</span>,fontSize);
 xlabel(<span class="string">'X'</span>,<span class="string">'FontSize'</span>,fontSize);ylabel(<span class="string">'Y'</span>,<span class="string">'FontSize'</span>,fontSize); zlabel(<span class="string">'Z'</span>,<span class="string">'FontSize'</span>,fontSize);
 patch(<span class="string">'Faces'</span>,F,<span class="string">'Vertices'</span>,V,<span class="string">'FaceColor'</span>,<span class="string">'g'</span>,<span class="string">'FaceAlpha'</span>,faceAlpha);
@@ -148,7 +146,7 @@ indFaces=indFaces(indFaces&gt;0);
 <span class="comment">%The vertices attached by an edge to this vertex</span>
 indVertices=IND_V(indPick,:);
 indVertices=indVertices(indVertices&gt;0);
-</pre><p>Show results</p><pre class="codeinput">hf3=figuremax(figColor,figColorDef); hold <span class="string">on</span>;
+</pre><p>Show results</p><pre class="codeinput">hf3=cFigure; hold <span class="string">on</span>;
 title(<span class="string">'Vertex-Face and vertex-vertex connectivity on a triangulated surface'</span>,<span class="string">'FontSize'</span>,fontSize);
 xlabel(<span class="string">'X'</span>,<span class="string">'FontSize'</span>,fontSize);ylabel(<span class="string">'Y'</span>,<span class="string">'FontSize'</span>,fontSize); zlabel(<span class="string">'Z'</span>,<span class="string">'FontSize'</span>,fontSize);
 patch(<span class="string">'Faces'</span>,F,<span class="string">'Vertices'</span>,V,<span class="string">'FaceColor'</span>,<span class="string">'g'</span>,<span class="string">'FaceAlpha'</span>,faceAlpha);
@@ -164,7 +162,7 @@ logicValid=IND_FF&gt;0;
 <span class="comment">%The faces sharing this vertex</span>
 indFaces=IND_FF(indPick,:);
 indFaces=indFaces(indFaces&gt;0);
-</pre><p>Show results</p><pre class="codeinput">hf3=figuremax(figColor,figColorDef); hold <span class="string">on</span>;
+</pre><p>Show results</p><pre class="codeinput">hf3=cFigure; hold <span class="string">on</span>;
 title(<span class="string">'Face-face connectivity on a triangulated surface'</span>,<span class="string">'FontSize'</span>,fontSize);
 xlabel(<span class="string">'X'</span>,<span class="string">'FontSize'</span>,fontSize);ylabel(<span class="string">'Y'</span>,<span class="string">'FontSize'</span>,fontSize); zlabel(<span class="string">'Z'</span>,<span class="string">'FontSize'</span>,fontSize);
 patch(<span class="string">'Faces'</span>,F,<span class="string">'Vertices'</span>,V,<span class="string">'FaceColor'</span>,<span class="string">'g'</span>,<span class="string">'FaceAlpha'</span>,faceAlpha);
@@ -178,7 +176,7 @@ n=2;
 M=zeros(n,n,n);
 [E,V,C]=ind2patch(M==0,M,<span class="string">'hu'</span>);
 [F,~]=element2patch(E,[]); <span class="comment">%Get faces</span>
-</pre><pre class="codeoutput">Warning: hex8 elements assumed, for other elements please specify elementType 
+</pre><pre class="codeoutput">hex8 elements assumed, for other elements please specify elementType
 </pre><p>Compute connectivity using <tt>tesIND</tt></p><pre class="codeinput">[IND_F,IND_V]=tesIND(F,[],1);
 </pre><pre class="codeinput"><span class="comment">% Select a vertex for visualization</span>
 logicValid=IND_F&gt;0;
@@ -191,7 +189,7 @@ indFaces=indFaces(indFaces&gt;0);
 <span class="comment">%The vertices attached by an edge to this vertex</span>
 indVertices=IND_V(indPick,:);
 indVertices=indVertices(indVertices&gt;0);
-</pre><p>Show results</p><pre class="codeinput">hf3=figuremax(figColor,figColorDef); hold <span class="string">on</span>;
+</pre><p>Show results</p><pre class="codeinput">hf3=cFigure; hold <span class="string">on</span>;
 title(<span class="string">'Connectivity on a hexahedral mesh'</span>,<span class="string">'FontSize'</span>,fontSize);
 xlabel(<span class="string">'X'</span>,<span class="string">'FontSize'</span>,fontSize);ylabel(<span class="string">'Y'</span>,<span class="string">'FontSize'</span>,fontSize); zlabel(<span class="string">'Z'</span>,<span class="string">'FontSize'</span>,fontSize);
 patch(<span class="string">'Faces'</span>,F,<span class="string">'Vertices'</span>,V,<span class="string">'FaceColor'</span>,<span class="string">'g'</span>,<span class="string">'FaceAlpha'</span>,faceAlpha);
@@ -205,7 +203,7 @@ n=5;
 M=zeros(n,n,n);
 [E,V,C]=ind2patch(M==0,M,<span class="string">'hu'</span>);
 [F,~]=element2patch(E,[]); <span class="comment">%Get faces</span>
-</pre><pre class="codeoutput">Warning: hex8 elements assumed, for other elements please specify elementType 
+</pre><pre class="codeoutput">hex8 elements assumed, for other elements please specify elementType
 </pre><p>Compute connectivity using <tt>tesIND</tt></p><pre class="codeinput">[IND_F,IND_V,IND_FF]=tesIND(E,[],1);
 
 <span class="comment">% Select a vertex for visualization</span>
@@ -218,9 +216,9 @@ indElements=indElements(indElements&gt;0);
 
 [F1,~]=element2patch(E(indPick,:),[]); <span class="comment">%Get faces</span>
 [F2,~]=element2patch(E(indElements,:),[]); <span class="comment">%Get faces</span>
-</pre><pre class="codeoutput">Warning: hex8 elements assumed, for other elements please specify elementType 
-Warning: hex8 elements assumed, for other elements please specify elementType 
-</pre><p>Show results</p><pre class="codeinput">hf3=figuremax(figColor,figColorDef); hold <span class="string">on</span>;
+</pre><pre class="codeoutput">hex8 elements assumed, for other elements please specify elementType
+hex8 elements assumed, for other elements please specify elementType
+</pre><p>Show results</p><pre class="codeinput">hf3=cFigure; hold <span class="string">on</span>;
 title(<span class="string">'Connectivity on a hexahedral mesh'</span>,<span class="string">'FontSize'</span>,fontSize);
 xlabel(<span class="string">'X'</span>,<span class="string">'FontSize'</span>,fontSize);ylabel(<span class="string">'Y'</span>,<span class="string">'FontSize'</span>,fontSize); zlabel(<span class="string">'Z'</span>,<span class="string">'FontSize'</span>,fontSize);
 patch(<span class="string">'Faces'</span>,F,<span class="string">'Vertices'</span>,V,<span class="string">'FaceColor'</span>,<span class="string">'g'</span>,<span class="string">'FaceAlpha'</span>,faceAlpha);
@@ -237,7 +235,7 @@ E=[1 2 3 4];
 <span class="keyword">end</span>
 
 [F,~]=element2patch(E,[]); <span class="comment">%Get faces</span>
-</pre><pre class="codeoutput">Warning: tet4 elements assumed, for other elements please specify elementType 
+</pre><pre class="codeoutput">tet4 elements assumed, for other elements please specify elementType
 </pre><p>Compute connectivity using <tt>tesIND</tt></p><pre class="codeinput">[IND_F,IND_V]=tesIND(F,[],1);
 </pre><pre class="codeinput"><span class="comment">% Select a vertex for visualization</span>
 logicValid=IND_F&gt;0;
@@ -250,7 +248,7 @@ indFaces=indFaces(indFaces&gt;0);
 <span class="comment">%The vertices attached by an edge to this vertex</span>
 indVertices=IND_V(indPick,:);
 indVertices=indVertices(indVertices&gt;0);
-</pre><p>Show results</p><pre class="codeinput">hf3=figuremax(figColor,figColorDef); hold <span class="string">on</span>;
+</pre><p>Show results</p><pre class="codeinput">hf3=cFigure; hold <span class="string">on</span>;
 title(<span class="string">'Connectivity in a tetrahedral mesh'</span>,<span class="string">'FontSize'</span>,fontSize);
 xlabel(<span class="string">'X'</span>,<span class="string">'FontSize'</span>,fontSize);ylabel(<span class="string">'Y'</span>,<span class="string">'FontSize'</span>,fontSize); zlabel(<span class="string">'Z'</span>,<span class="string">'FontSize'</span>,fontSize);
 patch(<span class="string">'Faces'</span>,F,<span class="string">'Vertices'</span>,V,<span class="string">'FaceColor'</span>,<span class="string">'g'</span>,<span class="string">'FaceAlpha'</span>,faceAlpha);
@@ -269,8 +267,6 @@ clear; close all; clc;
 
 %% 
 % Plot Settings
-figColor='w'; 
-figColorDef='white';
 fontSize=10;
 markerSize=50;
 faceAlpha=0.25; 
@@ -289,7 +285,7 @@ M=zeros(n,n,1);
 %%
 % Visualizing the sparse face connectivity matrix
 
-hf1=figuremax(figColor,figColorDef); hold on; 
+hf1=cFigure; hold on; 
 title('Connected face indices per vertex','FontSize',fontSize);
 xlabel('F id','FontSize',fontSize);ylabel('V id','FontSize',fontSize); 
 imagesc(full(IND_F));
@@ -300,7 +296,7 @@ drawnow;
 %% 
 % Visualizing the sparse vertex connectivity matrix
 
-hf2=figuremax(figColor,figColorDef); hold on; 
+hf2=cFigure; hold on; 
 title('Connected vertex indices per vertex','FontSize',fontSize);
 xlabel('F id','FontSize',fontSize);ylabel('V id','FontSize',fontSize); 
 imagesc(full(IND_V));
@@ -325,7 +321,7 @@ indVertices=indVertices(indVertices>0);
 %%
 % Show results 
 
-hf3=figuremax(figColor,figColorDef); hold on; 
+hf3=cFigure; hold on; 
 title('Vertex-face and vertex-vertex connectivity on a quadrangulated surface','FontSize',fontSize);
 xlabel('X','FontSize',fontSize);ylabel('Y','FontSize',fontSize); zlabel('Z','FontSize',fontSize); 
 patch('Faces',F,'Vertices',V,'FaceColor','g','FaceAlpha',faceAlpha);
@@ -348,7 +344,7 @@ indFaces=indFaces(indFaces>0);
 %%
 % Show results 
 
-hf3=figuremax(figColor,figColorDef); hold on; 
+hf3=cFigure; hold on; 
 title('Face-face connectivity on a quadrangulated surface','FontSize',fontSize);
 xlabel('X','FontSize',fontSize);ylabel('Y','FontSize',fontSize); zlabel('Z','FontSize',fontSize); 
 patch('Faces',F,'Vertices',V,'FaceColor','g','FaceAlpha',faceAlpha);
@@ -391,7 +387,7 @@ indVertices=indVertices(indVertices>0);
 %%
 % Show results 
 
-hf3=figuremax(figColor,figColorDef); hold on; 
+hf3=cFigure; hold on; 
 title('Vertex-Face and vertex-vertex connectivity on a triangulated surface','FontSize',fontSize);
 xlabel('X','FontSize',fontSize);ylabel('Y','FontSize',fontSize); zlabel('Z','FontSize',fontSize); 
 patch('Faces',F,'Vertices',V,'FaceColor','g','FaceAlpha',faceAlpha);
@@ -414,7 +410,7 @@ indFaces=indFaces(indFaces>0);
 %%
 % Show results 
 
-hf3=figuremax(figColor,figColorDef); hold on; 
+hf3=cFigure; hold on; 
 title('Face-face connectivity on a triangulated surface','FontSize',fontSize);
 xlabel('X','FontSize',fontSize);ylabel('Y','FontSize',fontSize); zlabel('Z','FontSize',fontSize); 
 patch('Faces',F,'Vertices',V,'FaceColor','g','FaceAlpha',faceAlpha);
@@ -453,7 +449,7 @@ indVertices=indVertices(indVertices>0);
 %%
 % Show results 
 
-hf3=figuremax(figColor,figColorDef); hold on; 
+hf3=cFigure; hold on; 
 title('Connectivity on a hexahedral mesh','FontSize',fontSize);
 xlabel('X','FontSize',fontSize);ylabel('Y','FontSize',fontSize); zlabel('Z','FontSize',fontSize); 
 patch('Faces',F,'Vertices',V,'FaceColor','g','FaceAlpha',faceAlpha);
@@ -489,7 +485,7 @@ indElements=indElements(indElements>0);
 %%
 % Show results 
 
-hf3=figuremax(figColor,figColorDef); hold on; 
+hf3=cFigure; hold on; 
 title('Connectivity on a hexahedral mesh','FontSize',fontSize);
 xlabel('X','FontSize',fontSize);ylabel('Y','FontSize',fontSize); zlabel('Z','FontSize',fontSize); 
 patch('Faces',F,'Vertices',V,'FaceColor','g','FaceAlpha',faceAlpha);
@@ -531,7 +527,7 @@ indVertices=indVertices(indVertices>0);
 %%
 % Show results 
 
-hf3=figuremax(figColor,figColorDef); hold on; 
+hf3=cFigure; hold on; 
 title('Connectivity in a tetrahedral mesh','FontSize',fontSize);
 xlabel('X','FontSize',fontSize);ylabel('Y','FontSize',fontSize); zlabel('Z','FontSize',fontSize); 
 patch('Faces',F,'Vertices',V,'FaceColor','g','FaceAlpha',faceAlpha);

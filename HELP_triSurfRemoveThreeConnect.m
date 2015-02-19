@@ -6,10 +6,9 @@ clear; close all; clc;
 
 %%
 % Plot settings
-fig_color='w'; fig_colordef='white';
 fontSize=10;
 faceColor='b';
-faceAlpha=0.8;
+faceAlpha=1;
 edgeColor=0.3*ones(1,3);
 edgeWidth=2;
 markerSize=5;
@@ -40,7 +39,7 @@ Cn=double(Ln);
 %%
 % Plotting results
 
-hf=figuremax(fig_color,fig_colordef); hold on;
+hf=cFigure; hold on;
 subplot(1,2,1); 
 title('Surface containing split triangles','FontSize',fontSize);
 xlabel('X','FontSize',fontSize); ylabel('Y','FontSize',fontSize); zlabel('Z','FontSize',fontSize);

@@ -25,7 +25,7 @@ logicVoxels=logicVoxels & M>0;
 [F,V,C]=ind2patch(logicVoxels,M,'vb');
 [V(:,1),V(:,2),V(:,3)]=im2cart(V(:,2),V(:,1),V(:,3),v);
 
-h1=figuremax('w','white');
+h1=cFigure;
 xlabel('X (mm)');ylabel('Y (mm)'); zlabel('Z (mm)'); hold on;
 hp1= patch('Faces',F,'Vertices',V,'FaceColor','flat','CData',C,'EdgeColor','none');
 axis equal; view(3); axis tight; axis vis3d; grid on;

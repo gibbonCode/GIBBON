@@ -6,7 +6,7 @@
    <!--
 This HTML was auto-generated from MATLAB code.
 To make changes, update the MATLAB code and republish this document.
-      --><title>triSurfSetDist</title><meta name="generator" content="MATLAB 8.4"><link rel="schema.DC" href="http://purl.org/dc/elements/1.1/"><meta name="DC.date" content="2014-10-01"><meta name="DC.source" content="HELP_triSurfSetDist.m"><style type="text/css">
+      --><title>triSurfSetDist</title><meta name="generator" content="MATLAB 8.4"><link rel="schema.DC" href="http://purl.org/dc/elements/1.1/"><meta name="DC.date" content="2015-02-19"><meta name="DC.source" content="HELP_triSurfSetDist.m"><style type="text/css">
 html,body,div,span,applet,object,iframe,h1,h2,h3,h4,h5,h6,p,blockquote,pre,a,abbr,acronym,address,big,cite,code,del,dfn,em,font,img,ins,kbd,q,s,samp,small,strike,strong,sub,sup,tt,var,b,u,i,center,dl,dt,dd,ol,ul,li,fieldset,form,label,legend,table,caption,tbody,tfoot,thead,tr,th,td{margin:0;padding:0;border:0;outline:0;font-size:100%;vertical-align:baseline;background:transparent}body{line-height:1}ol,ul{list-style:none}blockquote,q{quotes:none}blockquote:before,blockquote:after,q:before,q:after{content:'';content:none}:focus{outine:0}ins{text-decoration:none}del{text-decoration:line-through}table{border-collapse:collapse;border-spacing:0}
 
 html { min-height:100%; margin-bottom:1px; }
@@ -67,19 +67,10 @@ table td { padding:7px 5px; text-align:left; vertical-align:top; border:1px soli
 
 
   </style></head><body><div class="content"><h1>triSurfSetDist</h1><!--introduction--><p>Below is a demonstration of the features of the <tt>triSurfSetDist</tt> function</p><!--/introduction--><h2>Contents</h2><div><ul><li><a href="#5">CLOSEST POINT BASED DISTANCE METRIC</a></li><li><a href="#8">RAY TRACING DISTANCE METRIC</a></li><li><a href="#10">NOTE ON RAY TRACING DISTANCE METRIC AND NORMAL DIRECTIONS THAT DO NOT INTERSECT</a></li><li><a href="#12">EXAMPLE TO FIX NAN's</a></li><li><a href="#14">EXAMPLE OF "HYBRID APPROACH"</a></li></ul></div><pre class="codeinput">clear; close <span class="string">all</span>; clc;
-</pre><p>PLOT SETTINGS</p><pre class="codeinput">fig_color=<span class="string">'w'</span>; fig_colordef=<span class="string">'white'</span>;
-font_size=10;
+</pre><p>PLOT SETTINGS</p><pre class="codeinput">font_size=10;
 cmap=gray(250);
 falpha=1;
-patch_types={<span class="string">'sx'</span>,<span class="string">'sy'</span>,<span class="string">'sz'</span>,<span class="string">'v'</span>};
-ptype=3;
-no_slices=4;
-mark_siz1=20;
-mark_siz2=5;
-mark_siz3=50;
-line_width1=2;
-F_alpha1=0.5;
-F_alpha2=1;
+faceAlpha1=0.5;
 </pre><p>Building test surfaces</p><pre class="codeinput"><span class="comment">%Defining shape 1 as a sphere</span>
 [F1,V1,~]=geoSphere(2,1);
 
@@ -90,12 +81,12 @@ ampDef=0.25;
 ampDefDiff=0.25;
 n1=Vs(:,3)+(ampDef-ampDefDiff)+ampDef*sin(freqDef*Vs(:,1));
 [V2(:,1),V2(:,2),~]=sph2cart(Vs(:,1),Vs(:,2),n1);
-</pre><p>Plotting surfaces</p><pre class="codeinput">hf1=figuremax(fig_color,fig_colordef);
+</pre><p>Plotting surfaces</p><pre class="codeinput">hf1=cFigure;
 title(<span class="string">'The two surfaces'</span>,<span class="string">'FontSize'</span>,font_size);
 xlabel(<span class="string">'X'</span>,<span class="string">'FontSize'</span>,font_size);ylabel(<span class="string">'Y'</span>,<span class="string">'FontSize'</span>,font_size);zlabel(<span class="string">'Z'</span>,<span class="string">'FontSize'</span>,font_size);
 hold <span class="string">on</span>;
-patch(<span class="string">'faces'</span>,F1,<span class="string">'vertices'</span>,V1,<span class="string">'FaceColor'</span>,<span class="string">'g'</span>,<span class="string">'FaceAlpha'</span>,F_alpha1);
-patch(<span class="string">'faces'</span>,F2,<span class="string">'vertices'</span>,V2,<span class="string">'FaceColor'</span>,<span class="string">'b'</span>,<span class="string">'FaceAlpha'</span>,F_alpha1);
+patch(<span class="string">'faces'</span>,F1,<span class="string">'vertices'</span>,V1,<span class="string">'FaceColor'</span>,<span class="string">'g'</span>,<span class="string">'FaceAlpha'</span>,faceAlpha1);
+patch(<span class="string">'faces'</span>,F2,<span class="string">'vertices'</span>,V2,<span class="string">'FaceColor'</span>,<span class="string">'b'</span>,<span class="string">'FaceAlpha'</span>,faceAlpha1);
 
 axis <span class="string">equal</span>; view(3); axis <span class="string">tight</span>; grid <span class="string">on</span>;
 set(gca,<span class="string">'FontSize'</span>,font_size);
@@ -105,12 +96,12 @@ drawnow;
 </pre><p>The above is equivalent to:</p><pre class="codeinput">D2=minDist(V2,V1);
 </pre><p>Plotting results</p><pre class="codeinput">[CF]=vertexToFaceMeasure(F2,D2);
 
-hf2=figuremax(fig_color,fig_colordef);
+hf2=cFigure;
 title(<span class="string">'Closest point distance metric on surface 2'</span>,<span class="string">'FontSize'</span>,font_size);
 xlabel(<span class="string">'X'</span>,<span class="string">'FontSize'</span>,font_size);ylabel(<span class="string">'Y'</span>,<span class="string">'FontSize'</span>,font_size);zlabel(<span class="string">'Z'</span>,<span class="string">'FontSize'</span>,font_size);
 hold <span class="string">on</span>;
 patch(<span class="string">'faces'</span>,F2,<span class="string">'vertices'</span>,V2,<span class="string">'FaceColor'</span>,<span class="string">'flat'</span>,<span class="string">'CData'</span>,CF);
-patch(<span class="string">'faces'</span>,F1,<span class="string">'vertices'</span>,V1,<span class="string">'FaceColor'</span>,0.5.*ones(1,3),<span class="string">'FaceAlpha'</span>,F_alpha1,<span class="string">'EdgeColor'</span>,<span class="string">'None'</span>);
+patch(<span class="string">'faces'</span>,F1,<span class="string">'vertices'</span>,V1,<span class="string">'FaceColor'</span>,0.5.*ones(1,3),<span class="string">'FaceAlpha'</span>,faceAlpha1,<span class="string">'EdgeColor'</span>,<span class="string">'None'</span>);
 
 colormap <span class="string">jet</span>; colorbar;
 axis <span class="string">equal</span>; view(3); axis <span class="string">tight</span>; axis <span class="string">off</span>;
@@ -121,12 +112,12 @@ drawnow;
 </pre><p>Plotting results</p><pre class="codeinput">[CF]=vertexToFaceMeasure(F2,D2);
 L=~isnan(CF); <span class="comment">%Check for NaN's</span>
 
-hf3=figuremax(fig_color,fig_colordef);
+hf3=cFigure;
 title(<span class="string">'Ray-traced distance metric on surface 2'</span>,<span class="string">'FontSize'</span>,font_size);
 xlabel(<span class="string">'X'</span>,<span class="string">'FontSize'</span>,font_size);ylabel(<span class="string">'Y'</span>,<span class="string">'FontSize'</span>,font_size);zlabel(<span class="string">'Z'</span>,<span class="string">'FontSize'</span>,font_size);
 hold <span class="string">on</span>;
 patch(<span class="string">'faces'</span>,F2(L,:),<span class="string">'vertices'</span>,V2,<span class="string">'FaceColor'</span>,<span class="string">'flat'</span>,<span class="string">'CData'</span>,CF(L));
-patch(<span class="string">'faces'</span>,F1,<span class="string">'vertices'</span>,V1,<span class="string">'FaceColor'</span>,0.5.*ones(1,3),<span class="string">'FaceAlpha'</span>,F_alpha1,<span class="string">'EdgeColor'</span>,<span class="string">'None'</span>);
+patch(<span class="string">'faces'</span>,F1,<span class="string">'vertices'</span>,V1,<span class="string">'FaceColor'</span>,0.5.*ones(1,3),<span class="string">'FaceAlpha'</span>,faceAlpha1,<span class="string">'EdgeColor'</span>,<span class="string">'None'</span>);
 
 colormap <span class="string">jet</span>; colorbar;
 axis <span class="string">equal</span>; view(3); axis <span class="string">tight</span>; axis <span class="string">off</span>;
@@ -141,12 +132,12 @@ V2(:,3)=V2(:,3)*2;
 </pre><p>Plotting results</p><pre class="codeinput">[CF]=vertexToFaceMeasure(F2,D2);
 L=~isnan(CF); <span class="comment">%Check for NaN's</span>
 
-hf3=figuremax(fig_color,fig_colordef);
+hf3=cFigure;
 title(<span class="string">'Ray-traced distance metric on surface 2'</span>,<span class="string">'FontSize'</span>,font_size);
 xlabel(<span class="string">'X'</span>,<span class="string">'FontSize'</span>,font_size);ylabel(<span class="string">'Y'</span>,<span class="string">'FontSize'</span>,font_size);zlabel(<span class="string">'Z'</span>,<span class="string">'FontSize'</span>,font_size);
 hold <span class="string">on</span>;
 patch(<span class="string">'faces'</span>,F2(L,:),<span class="string">'vertices'</span>,V2,<span class="string">'FaceColor'</span>,<span class="string">'flat'</span>,<span class="string">'CData'</span>,CF(L));
-patch(<span class="string">'faces'</span>,F1,<span class="string">'vertices'</span>,V1,<span class="string">'FaceColor'</span>,0.5.*ones(1,3),<span class="string">'FaceAlpha'</span>,F_alpha1,<span class="string">'EdgeColor'</span>,<span class="string">'None'</span>);
+patch(<span class="string">'faces'</span>,F1,<span class="string">'vertices'</span>,V1,<span class="string">'FaceColor'</span>,0.5.*ones(1,3),<span class="string">'FaceAlpha'</span>,faceAlpha1,<span class="string">'EdgeColor'</span>,<span class="string">'None'</span>);
 
 colormap <span class="string">jet</span>; colorbar;
 axis <span class="string">equal</span>; view(3); axis <span class="string">tight</span>; axis <span class="string">off</span>;
@@ -161,12 +152,12 @@ L=isnan(D2);
 D2(L)=D2_nan;
 </pre><p>Plotting results</p><pre class="codeinput">[CF]=vertexToFaceMeasure(F2,D2);
 
-hf3=figuremax(fig_color,fig_colordef);
+hf3=cFigure;
 title(<span class="string">'Combined distance metric on surface 2'</span>,<span class="string">'FontSize'</span>,font_size);
 xlabel(<span class="string">'X'</span>,<span class="string">'FontSize'</span>,font_size);ylabel(<span class="string">'Y'</span>,<span class="string">'FontSize'</span>,font_size);zlabel(<span class="string">'Z'</span>,<span class="string">'FontSize'</span>,font_size);
 hold <span class="string">on</span>;
 patch(<span class="string">'faces'</span>,F2,<span class="string">'vertices'</span>,V2,<span class="string">'FaceColor'</span>,<span class="string">'flat'</span>,<span class="string">'CData'</span>,CF);
-patch(<span class="string">'faces'</span>,F1,<span class="string">'vertices'</span>,V1,<span class="string">'FaceColor'</span>,0.5.*ones(1,3),<span class="string">'FaceAlpha'</span>,F_alpha1,<span class="string">'EdgeColor'</span>,<span class="string">'None'</span>);
+patch(<span class="string">'faces'</span>,F1,<span class="string">'vertices'</span>,V1,<span class="string">'FaceColor'</span>,0.5.*ones(1,3),<span class="string">'FaceAlpha'</span>,faceAlpha1,<span class="string">'EdgeColor'</span>,<span class="string">'None'</span>);
 
 colormap <span class="string">jet</span>; colorbar;
 axis <span class="string">equal</span>; view(3); axis <span class="string">tight</span>; axis <span class="string">off</span>;
@@ -177,12 +168,12 @@ drawnow;
 [D2]=triSurfSetDist(F2,V2,F1,V1,<span class="string">'dist-ray'</span>);
 </pre><p>Plotting results</p><pre class="codeinput">[CF]=vertexToFaceMeasure(F2,D2);
 
-hf3=figuremax(fig_color,fig_colordef);
+hf3=cFigure;
 title(<span class="string">'Minimum metric between "closest point" and "ray-traced distance" on surface 2'</span>,<span class="string">'FontSize'</span>,font_size);
 xlabel(<span class="string">'X'</span>,<span class="string">'FontSize'</span>,font_size);ylabel(<span class="string">'Y'</span>,<span class="string">'FontSize'</span>,font_size);zlabel(<span class="string">'Z'</span>,<span class="string">'FontSize'</span>,font_size);
 hold <span class="string">on</span>;
 patch(<span class="string">'faces'</span>,F2,<span class="string">'vertices'</span>,V2,<span class="string">'FaceColor'</span>,<span class="string">'flat'</span>,<span class="string">'CData'</span>,CF);
-patch(<span class="string">'faces'</span>,F1,<span class="string">'vertices'</span>,V1,<span class="string">'FaceColor'</span>,0.5.*ones(1,3),<span class="string">'FaceAlpha'</span>,F_alpha1,<span class="string">'EdgeColor'</span>,<span class="string">'None'</span>);
+patch(<span class="string">'faces'</span>,F1,<span class="string">'vertices'</span>,V1,<span class="string">'FaceColor'</span>,0.5.*ones(1,3),<span class="string">'FaceAlpha'</span>,faceAlpha1,<span class="string">'EdgeColor'</span>,<span class="string">'None'</span>);
 
 colormap <span class="string">jet</span>; colorbar;
 axis <span class="string">equal</span>; view(3); axis <span class="string">tight</span>; axis <span class="string">off</span>;
@@ -199,19 +190,10 @@ clear; close all; clc;
 
 %%
 % PLOT SETTINGS
-fig_color='w'; fig_colordef='white';
 font_size=10;
 cmap=gray(250);
 falpha=1;
-patch_types={'sx','sy','sz','v'};
-ptype=3;
-no_slices=4;
-mark_siz1=20;
-mark_siz2=5;
-mark_siz3=50;
-line_width1=2;
-F_alpha1=0.5;
-F_alpha2=1;
+faceAlpha1=0.5;
 
 %%
 % Building test surfaces
@@ -230,12 +212,12 @@ n1=Vs(:,3)+(ampDef-ampDefDiff)+ampDef*sin(freqDef*Vs(:,1));
 %%
 % Plotting surfaces
 
-hf1=figuremax(fig_color,fig_colordef);
+hf1=cFigure;
 title('The two surfaces','FontSize',font_size);
 xlabel('X','FontSize',font_size);ylabel('Y','FontSize',font_size);zlabel('Z','FontSize',font_size); 
 hold on; 
-patch('faces',F1,'vertices',V1,'FaceColor','g','FaceAlpha',F_alpha1);
-patch('faces',F2,'vertices',V2,'FaceColor','b','FaceAlpha',F_alpha1);
+patch('faces',F1,'vertices',V1,'FaceColor','g','FaceAlpha',faceAlpha1);
+patch('faces',F2,'vertices',V2,'FaceColor','b','FaceAlpha',faceAlpha1);
 
 axis equal; view(3); axis tight; grid on;
 set(gca,'FontSize',font_size); 
@@ -255,12 +237,12 @@ D2=minDist(V2,V1);
 
 [CF]=vertexToFaceMeasure(F2,D2);
 
-hf2=figuremax(fig_color,fig_colordef);
+hf2=cFigure;
 title('Closest point distance metric on surface 2','FontSize',font_size);
 xlabel('X','FontSize',font_size);ylabel('Y','FontSize',font_size);zlabel('Z','FontSize',font_size); 
 hold on; 
 patch('faces',F2,'vertices',V2,'FaceColor','flat','CData',CF);
-patch('faces',F1,'vertices',V1,'FaceColor',0.5.*ones(1,3),'FaceAlpha',F_alpha1,'EdgeColor','None');
+patch('faces',F1,'vertices',V1,'FaceColor',0.5.*ones(1,3),'FaceAlpha',faceAlpha1,'EdgeColor','None');
 
 colormap jet; colorbar;
 axis equal; view(3); axis tight; axis off; 
@@ -278,12 +260,12 @@ drawnow;
 [CF]=vertexToFaceMeasure(F2,D2);
 L=~isnan(CF); %Check for NaN's
 
-hf3=figuremax(fig_color,fig_colordef);
+hf3=cFigure;
 title('Ray-traced distance metric on surface 2','FontSize',font_size);
 xlabel('X','FontSize',font_size);ylabel('Y','FontSize',font_size);zlabel('Z','FontSize',font_size); 
 hold on; 
 patch('faces',F2(L,:),'vertices',V2,'FaceColor','flat','CData',CF(L));
-patch('faces',F1,'vertices',V1,'FaceColor',0.5.*ones(1,3),'FaceAlpha',F_alpha1,'EdgeColor','None');
+patch('faces',F1,'vertices',V1,'FaceColor',0.5.*ones(1,3),'FaceAlpha',faceAlpha1,'EdgeColor','None');
 
 colormap jet; colorbar;
 axis equal; view(3); axis tight; axis off; 
@@ -310,12 +292,12 @@ V2(:,3)=V2(:,3)*2;
 [CF]=vertexToFaceMeasure(F2,D2);
 L=~isnan(CF); %Check for NaN's
 
-hf3=figuremax(fig_color,fig_colordef);
+hf3=cFigure;
 title('Ray-traced distance metric on surface 2','FontSize',font_size);
 xlabel('X','FontSize',font_size);ylabel('Y','FontSize',font_size);zlabel('Z','FontSize',font_size); 
 hold on; 
 patch('faces',F2(L,:),'vertices',V2,'FaceColor','flat','CData',CF(L));
-patch('faces',F1,'vertices',V1,'FaceColor',0.5.*ones(1,3),'FaceAlpha',F_alpha1,'EdgeColor','None');
+patch('faces',F1,'vertices',V1,'FaceColor',0.5.*ones(1,3),'FaceAlpha',faceAlpha1,'EdgeColor','None');
 
 colormap jet; colorbar;
 axis equal; view(3); axis tight; axis off; 
@@ -337,12 +319,12 @@ D2(L)=D2_nan;
 
 [CF]=vertexToFaceMeasure(F2,D2);
 
-hf3=figuremax(fig_color,fig_colordef);
+hf3=cFigure;
 title('Combined distance metric on surface 2','FontSize',font_size);
 xlabel('X','FontSize',font_size);ylabel('Y','FontSize',font_size);zlabel('Z','FontSize',font_size); 
 hold on; 
 patch('faces',F2,'vertices',V2,'FaceColor','flat','CData',CF);
-patch('faces',F1,'vertices',V1,'FaceColor',0.5.*ones(1,3),'FaceAlpha',F_alpha1,'EdgeColor','None');
+patch('faces',F1,'vertices',V1,'FaceColor',0.5.*ones(1,3),'FaceAlpha',faceAlpha1,'EdgeColor','None');
 
 colormap jet; colorbar;
 axis equal; view(3); axis tight; axis off; 
@@ -362,12 +344,12 @@ drawnow;
 % Plotting results
 [CF]=vertexToFaceMeasure(F2,D2);
 
-hf3=figuremax(fig_color,fig_colordef);
+hf3=cFigure;
 title('Minimum metric between "closest point" and "ray-traced distance" on surface 2','FontSize',font_size);
 xlabel('X','FontSize',font_size);ylabel('Y','FontSize',font_size);zlabel('Z','FontSize',font_size); 
 hold on; 
 patch('faces',F2,'vertices',V2,'FaceColor','flat','CData',CF);
-patch('faces',F1,'vertices',V1,'FaceColor',0.5.*ones(1,3),'FaceAlpha',F_alpha1,'EdgeColor','None');
+patch('faces',F1,'vertices',V1,'FaceColor',0.5.*ones(1,3),'FaceAlpha',faceAlpha1,'EdgeColor','None');
 
 colormap jet; colorbar;
 axis equal; view(3); axis tight; axis off; 

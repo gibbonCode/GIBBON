@@ -6,7 +6,6 @@ clear; close all; clc;
 
 %%
 % Plot settings
-fig_color='w'; fig_colordef='white';
 fontSize=15;
 faceAlpha1=0.5;
 faceAlpha2=1;
@@ -28,7 +27,7 @@ VE=tetVol([1 2 3 4],V)
 
 %%
 % Plotting model
-hf=figuremax(fig_color,fig_colordef);
+hf=cFigure;
 title('A regular tetrahedron','FontSize',fontSize);
 xlabel('X','FontSize',fontSize); ylabel('Y','FontSize',fontSize); zlabel('Z','FontSize',fontSize);
 hold on;
@@ -56,7 +55,7 @@ view(3); axis tight;  axis equal;  grid on;
 
 %%
 % Plotting model
-hf=figuremax(fig_color,fig_colordef);
+hf=cFigure;
 title('A triangulated surface model','FontSize',fontSize);
 xlabel('X','FontSize',fontSize); ylabel('Y','FontSize',fontSize); zlabel('Z','FontSize',fontSize);
 hold on;
@@ -102,7 +101,7 @@ Y=V(:,2); YE=mean(Y(E),2);
 L=YE>mean(Y);
 [Fs,Cs]=element2patch(E(L,:),C(L));
 
-hf1=figuremax(fig_color,fig_colordef);
+hf1=cFigure;
 subplot(1,2,1);
 title('Solid tetrahedral mesh model','FontSize',fontSize);
 xlabel('X','FontSize',fontSize); ylabel('Y','FontSize',fontSize); zlabel('Z','FontSize',fontSize); hold on;

@@ -6,7 +6,7 @@
    <!--
 This HTML was auto-generated from MATLAB code.
 To make changes, update the MATLAB code and republish this document.
-      --><title>triSurfRemoveThreeConnect</title><meta name="generator" content="MATLAB 8.4"><link rel="schema.DC" href="http://purl.org/dc/elements/1.1/"><meta name="DC.date" content="2014-10-01"><meta name="DC.source" content="HELP_triSurfRemoveThreeConnect.m"><style type="text/css">
+      --><title>triSurfRemoveThreeConnect</title><meta name="generator" content="MATLAB 8.4"><link rel="schema.DC" href="http://purl.org/dc/elements/1.1/"><meta name="DC.date" content="2015-02-19"><meta name="DC.source" content="HELP_triSurfRemoveThreeConnect.m"><style type="text/css">
 html,body,div,span,applet,object,iframe,h1,h2,h3,h4,h5,h6,p,blockquote,pre,a,abbr,acronym,address,big,cite,code,del,dfn,em,font,img,ins,kbd,q,s,samp,small,strike,strong,sub,sup,tt,var,b,u,i,center,dl,dt,dd,ol,ul,li,fieldset,form,label,legend,table,caption,tbody,tfoot,thead,tr,th,td{margin:0;padding:0;border:0;outline:0;font-size:100%;vertical-align:baseline;background:transparent}body{line-height:1}ol,ul{list-style:none}blockquote,q{quotes:none}blockquote:before,blockquote:after,q:before,q:after{content:'';content:none}:focus{outine:0}ins{text-decoration:none}del{text-decoration:line-through}table{border-collapse:collapse;border-spacing:0}
 
 html { min-height:100%; margin-bottom:1px; }
@@ -67,10 +67,9 @@ table td { padding:7px 5px; text-align:left; vertical-align:top; border:1px soli
 
 
   </style></head><body><div class="content"><h1>triSurfRemoveThreeConnect</h1><!--introduction--><p>Below is a demonstration of the features of the <tt>triSurfRemoveThreeConnect</tt> function</p><!--/introduction--><h2>Contents</h2><div><ul><li><a href="#4">Removing "3-connected" vertices and replacing associated faces</a></li></ul></div><pre class="codeinput">clear; close <span class="string">all</span>; clc;
-</pre><p>Plot settings</p><pre class="codeinput">fig_color=<span class="string">'w'</span>; fig_colordef=<span class="string">'white'</span>;
-fontSize=10;
+</pre><p>Plot settings</p><pre class="codeinput">fontSize=10;
 faceColor=<span class="string">'b'</span>;
-faceAlpha=0.8;
+faceAlpha=1;
 edgeColor=0.3*ones(1,3);
 edgeWidth=2;
 markerSize=5;
@@ -85,7 +84,7 @@ C=double(L);
 Ln=false(size(Fn,1),1); Ln(end-nnz(L)*3:end)=1;
 Cn=double(Ln);
 </pre><h2>Removing "3-connected" vertices and replacing associated faces<a name="4"></a></h2><p>In a surface triangulation "3-connected" locations often contain poor quality triangles of a locally smaller area then the rest of the surface. Smoothening does not resolve this issue since the quality is not great improved even after vertex is at the centre of its neighbouring nodes. Hence the function triSurfRemoveThreeConnect instead removes the central nodes and groups the affected triangles into a single triangle.</p><pre class="codeinput">[Ft,Vt,Ct]=triSurfRemoveThreeConnect(Fn,Vn,Cn);
-</pre><p>Plotting results</p><pre class="codeinput">hf=figuremax(fig_color,fig_colordef); hold <span class="string">on</span>;
+</pre><p>Plotting results</p><pre class="codeinput">hf=cFigure; hold <span class="string">on</span>;
 subplot(1,2,1);
 title(<span class="string">'Surface containing split triangles'</span>,<span class="string">'FontSize'</span>,fontSize);
 xlabel(<span class="string">'X'</span>,<span class="string">'FontSize'</span>,fontSize); ylabel(<span class="string">'Y'</span>,<span class="string">'FontSize'</span>,fontSize); zlabel(<span class="string">'Z'</span>,<span class="string">'FontSize'</span>,fontSize);
@@ -115,10 +114,9 @@ clear; close all; clc;
 
 %%
 % Plot settings
-fig_color='w'; fig_colordef='white';
 fontSize=10;
 faceColor='b';
-faceAlpha=0.8;
+faceAlpha=1;
 edgeColor=0.3*ones(1,3);
 edgeWidth=2;
 markerSize=5;
@@ -149,7 +147,7 @@ Cn=double(Ln);
 %%
 % Plotting results
 
-hf=figuremax(fig_color,fig_colordef); hold on;
+hf=cFigure; hold on;
 subplot(1,2,1); 
 title('Surface containing split triangles','FontSize',fontSize);
 xlabel('X','FontSize',fontSize); ylabel('Y','FontSize',fontSize); zlabel('Z','FontSize',fontSize);

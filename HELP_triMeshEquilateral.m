@@ -6,7 +6,6 @@ clear; close all; clc;
 
 %%
 % PLOT SETTINGS
-fig_color='w'; fig_colordef='white';
 font_size=20;
 cmap=gray(250);
 falpha=1;
@@ -36,7 +35,7 @@ minV=[-5 -5];
 
 %%
 % Plottting mesh
-hf1=figuremax(fig_color,fig_colordef);
+hf1=cFigure;
 title('Equilateral mesh','FontSize',font_size);
 xlabel('X','FontSize',font_size);ylabel('Y','FontSize',font_size); zlabel('Z','FontSize',font_size);
 hold on;

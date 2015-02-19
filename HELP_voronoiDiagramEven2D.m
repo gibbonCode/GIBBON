@@ -14,7 +14,6 @@
 clear; close all; clc;
 
 % PLOT SETTINGS
-figColor='w'; figColorDef='white';
 markerSize=15;
 lineWidth=2;
 fontSize=15; 
@@ -51,7 +50,7 @@ regionCell={Vb};
 [Vv,Fv_cell] =voronoiDiagram(DT);
 Vv(isinf(Vv))=NaN;
 
-hf1=figuremax(figColor,figColorDef);
+hf1=cFigure;
 title('Normal Voronoi tesselation','FontSize',fontSize);
 xlabel('X','FontSize',fontSize);ylabel('Y','FontSize',fontSize);zlabel('Z','FontSize',fontSize);
 hold on;
@@ -84,7 +83,7 @@ numPointsVoronoi4=25;
 %%
 % Now for loops can be avoided for plotting
 
-hf1=figuremax(figColor,figColorDef);
+hf1=cFigure;
 subplot(2,2,1);
 title(['Sampled using ',num2str(numPointsVoronoi1),' points'],'FontSize',fontSize);
 xlabel('X','FontSize',fontSize);ylabel('Y','FontSize',fontSize);

@@ -6,7 +6,6 @@ clear; close all; clc;
 
 %%
 % Plot settings
-fig_color='w'; fig_colordef='white';
 fontSize=10;
 faceAlpha=1;
 edgeColor=0.3*ones(1,3);
@@ -33,7 +32,7 @@ C=[ones(size(F,1),1) zeros(size(F,1),1) zeros(size(F,1),1)];
 C(L,1)=0;
 C(L,2)=1;
 
-hf=figuremax(fig_color,fig_colordef);
+hf=cFigure;
 subplot(1,2,1);
 title('The original surface. Green faces need splitting','FontSize',fontSize);
 xlabel('X','FontSize',fontSize); ylabel('Y','FontSize',fontSize); zlabel('Z','FontSize',fontSize);
@@ -92,7 +91,7 @@ C=[ones(size(F,1),1) zeros(size(F,1),1) zeros(size(F,1),1)];
 C(Ln,1)=0;
 C(Ln,2)=1;
 
-hf=figuremax(fig_color,fig_colordef);
+hf=cFigure;
 subplot(1,2,1);
 title('The original surface. Green faces need splitting','FontSize',fontSize);
 xlabel('X','FontSize',fontSize); ylabel('Y','FontSize',fontSize); zlabel('Z','FontSize',fontSize);
@@ -126,7 +125,7 @@ drawnow;
 %%
 % Plotting model
 
-hf=figuremax(fig_color,fig_colordef);
+hf=cFigure;
 subplot(1,2,1);
 title('The original surface and its surface area distribution','FontSize',fontSize);
 xlabel('X','FontSize',fontSize); ylabel('Y','FontSize',fontSize); zlabel('Z','FontSize',fontSize);
