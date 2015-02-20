@@ -8,13 +8,43 @@ if FEBioRunStruct.disp_on==1;
     disp(['--- STARTING FEBIO JOB --- ',datestr(now)]);
 end
 
-%% Removing existing log-file
+%% Removing pre-existing files (e.g. from previsous FEBio job with same name) 
+
+%Remove log file
 if exist(FEBioRunStruct.run_logname,'file')==2
     delete(FEBioRunStruct.run_logname);
     
     %Check if its gone
     if exist(FEBioRunStruct.run_logname,'file')==2
-        error('Log file deletion not succesful check user permissions');
+        error(['Deletion of ',FEBioRunStruct.run_logname,' not succesful, check user permissions']);
+    end
+end
+
+% Remove .xplot file
+[filePath,fileName,~]=fileparts(FEBioRunStruct.run_filename);
+fileName_plot=fullfile(filePath,[fileName,'.xplt']);
+if exist(fileName_plot,'file')==2
+    delete(fileName_plot);
+    %Check if its gone
+    if exist(fileName_plot,'file')==2
+        error(['Deletion of ',fileName_plot,' not succesful, check user permissions']);
+    end
+end
+
+%Remove other requested files (e.g. output files)
+if ~isfield(FEBioRunStruct,'cleanUpFileList');
+    FEBioRunStruct.cleanUpFileList={}; 
+end
+
+if ~isempty(FEBioRunStruct.cleanUpFileList)
+    for q=1:1:numel(FEBioRunStruct.cleanUpFileList)
+        fileToRemove=FEBioRunStruct.cleanUpFileList{q};
+        delete(fileToRemove);        
+        
+        %Check if its gone
+        if exist(fileToRemove,'file')==2
+            error(['Deletion of ',fileToRemove,' not succesful, check user permissions']);
+        end
     end
 end
 

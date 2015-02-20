@@ -169,9 +169,10 @@ FEB_struct.Control.AnalysisType='static';
 FEB_struct.Control.Properties={'time_steps','step_size',...
     'max_refs','max_ups',...
     'dtol','etol','rtol','lstol'};
-FEB_struct.Control.Values={20,0.05,25,0,0.001,0.01,0,0.9};
+numSteps=20;
+FEB_struct.Control.Values={numSteps,1/numSteps,25,5,0.001,0.01,0,0.9};
 FEB_struct.Control.TimeStepperProperties={'dtmin','dtmax','max_retries','opt_iter','aggressiveness'};
-FEB_struct.Control.TimeStepperValues={1e-4,0.05,5,10,1};
+FEB_struct.Control.TimeStepperValues={(1/(100*numSteps)),1/numSteps,5,10,1};
 
 %Defining node sets
 FEB_struct.Geometry.NodeSet{1}.Set=bcSupportList_X;
@@ -204,7 +205,7 @@ FEB_struct.LoadData.LoadCurves.type={'linear'};
 FEB_struct.LoadData.LoadCurves.loadPoints={[0 0;1 1;]};
 
 %Adding output requests
-FEB_struct.Output.VarTypes={'displacement','stress','relative volume','shell thickness'};
+FEB_struct.Output.VarTypes={'displacement','stress','relative volume'};
 
 %Specify log file output
 run_disp_output_name=[FEB_struct.run_filename(1:end-4),'_node_out.txt'];
@@ -227,7 +228,8 @@ FEBioRunStruct.disp_log_on=1;
 FEBioRunStruct.runMode='external';%'internal';
 FEBioRunStruct.t_check=0.25; %Time for checking log file (dont set too small)
 FEBioRunStruct.maxtpi=1e99; %Max analysis time
-FEBioRunStruct.maxLogCheckTime=3; %Max log file checking time
+FEBioRunStruct.maxLogCheckTime=5; %Max log file checking time
+FEBioRunStruct.cleanUpFileList=FEB_struct.run_output_names; %Files to remove prior to starting each job.
 
 [runFlag]=runMonitorFEBio(FEBioRunStruct);%START FEBio NOW!!!!!!!!
 

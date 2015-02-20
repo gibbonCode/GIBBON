@@ -17,9 +17,9 @@ mat_struct=objectiveStruct.mat_struct;
 mat_struct.par_values={P(1) P(2) P(1)*objectiveStruct.k_factor}; 
 
 disp('SETTING MATERIAL PARAMETERS...');
-disp(['Normalized: ',sprintf(repmat('%6.16e ',[1,numel(Pn)]),Pn)]);
-disp(['Proposed: ',sprintf(repmat('%6.16e ',[1,numel(P_in)]),P_in)]);
-disp(['Set: ',sprintf(repmat('%6.16e ',[1,numel(P)]),P)]);
+disp(['Proposed (norm.): ',sprintf(repmat('%6.16e ',[1,numel(Pn)]),Pn)]);
+disp(['Proposed        : ',sprintf(repmat('%6.16e ',[1,numel(P_in)]),P_in)]);
+disp(['Set (constr.)   : ',sprintf(repmat('%6.16e ',[1,numel(P)]),P)]);
 
 %Assign material parameters
 set_mat_par_FEBIO(objectiveStruct.FEB_struct.run_filename,objectiveStruct.FEB_struct.run_filename,{mat_struct});
