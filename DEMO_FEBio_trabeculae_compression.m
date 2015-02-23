@@ -8,7 +8,6 @@ clear; close all; clc;
 
 %%
 % Plot settings
-figColor='w'; figColorDef='white';
 fontSize=15;
 faceAlpha1=1;
 faceAlpha2=0.5;
@@ -67,7 +66,7 @@ cPar.Method='tHC';
 [~,IND_V]=patchIND(F,V,2);
 [V]=patchSmooth(F,V,IND_V,cPar);
 
-figuremax(figColor,figColorDef);
+cFigure;
 title('Gyroid derived model of trabecular structure','FontSize',fontSize);
 xlabel('X','FontSize',fontSize);ylabel('Y','FontSize',fontSize); zlabel('Z','FontSize',fontSize); hold on;
 patch('Faces',F,'Vertices',V,'FaceColor',boneColor,'edgeColor',edgeColor,'lineWidth',edgeWidth,'FaceAlpha',1);
@@ -88,7 +87,7 @@ faceBoundaryMarker=ones(size(F,1),1);
 faceBoundaryMarker(logicTop)=2; 
 faceBoundaryMarker(logicBottom)=3; 
 
-figuremax(figColor,figColorDef);
+cFigure;
 title('Inner point visualization','FontSize',fontSize);
 xlabel('X','FontSize',fontSize);ylabel('Y','FontSize',fontSize); zlabel('Z','FontSize',fontSize); hold on;
 patch('Faces',F,'Vertices',V,'FaceColor',boneColor,'edgeColor','none','FaceAlpha',0.5);
@@ -144,7 +143,7 @@ displacementMagnitude=[0 0 -1.5];
 
 %%
 %Plot model boundaries
-hf1=figuremax(figColor,figColorDef);
+hf1=cFigure;
 title('Model boundaries and BC nodes','FontSize',fontSize);
 xlabel('X','FontSize',fontSize); ylabel('Y','FontSize',fontSize); zlabel('Z','FontSize',fontSize); hold on;
 hps=patch('Faces',Fb,'Vertices',VT,'FaceColor','flat','CData',Cb,'lineWidth',edgeWidth,'edgeColor',edgeColor,'FaceAlpha',faceAlpha1);
@@ -246,7 +245,7 @@ febStruct2febFile(FEB_struct);
 
 %% RUNNING FEBIO JOB
 
-% FEBioRunStruct.FEBioPath='C:\Program Files\febio-2.1.1\bin\FEBio2.exe';
+FEBioRunStruct.FEBioPath='C:\Program Files\febio-2.2.2\bin\FEBio2.exe';
 FEBioRunStruct.run_filename=FEB_struct.run_filename;
 FEBioRunStruct.run_logname=FEB_struct.run_logname;
 FEBioRunStruct.disp_on=1;
@@ -273,7 +272,7 @@ DN_magnitude=sqrt(sum(DN.^2,2));
 
 [CF]=vertexToFaceMeasure(F,DN_magnitude);
 
-hf1=figuremax(figColor,figColorDef);
+hf1=cFigure;
 title('The deformed model','FontSize',fontSize);
 xlabel('X','FontSize',fontSize); ylabel('Y','FontSize',fontSize); zlabel('Z','FontSize',fontSize); hold on;
 

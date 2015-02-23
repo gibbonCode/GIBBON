@@ -9,8 +9,6 @@ clear; close all; clc;
 
 %%
 % Plot settings for the examples below
-figColor='w'; 
-figColorDef='white';
 fontSize=20;
 faceAlpha1=1;
 faceAlpha2=0.3;
@@ -52,7 +50,7 @@ imSiz=imSiz([2 1 3]); %Image size (x, y corresponds to j,i in image coordinates,
 %%
 % Plotting the results
 
-hf1=figuremax(figColor,figColorDef);
+hf1=cFigure;
 subplot(1,2,1);
 title('Closed triangulated surface','FontSize',fontSize);
 xlabel('X','FontSize',fontSize);ylabel('Y','FontSize',fontSize); zlabel('Z','FontSize',fontSize);
@@ -136,7 +134,7 @@ Vq=Vp;
 %%
 % Plotting the results
 
-hf1=figuremax(figColor,figColorDef);
+hf1=cFigure;
 title('Visualizing internal voxels=hexahedral elements','FontSize',fontSize);
 xlabel('X','FontSize',fontSize);ylabel('Y','FontSize',fontSize); zlabel('Z','FontSize',fontSize);
 hold on;
@@ -241,7 +239,7 @@ E={E_tet, E_hex};
 %% 
 % PLOTTING MODEL 
 
-hf1=figuremax(figColor,figColorDef);
+hf1=cFigure;
 % subplot(1,2,1);
 title('XY cut view of mixed mesh','FontSize',fontSize);
 xlabel('X','FontSize',fontSize); ylabel('Y','FontSize',fontSize); zlabel('Z','FontSize',fontSize); hold on;
@@ -264,7 +262,7 @@ camlight headlight;
 set(gca,'FontSize',fontSize);
 drawnow; 
 
-hf1=figuremax(figColor,figColorDef);
+hf1=cFigure;
 % subplot(1,2,2);
 title('XZ cut view of mixed mesh','FontSize',fontSize);
 xlabel('X','FontSize',fontSize); ylabel('Y','FontSize',fontSize); zlabel('Z','FontSize',fontSize); hold on;
@@ -309,7 +307,7 @@ IND_V=[IND_V1 IND_V2];
 %% 
 % PLOTTING MODEL 
 
-hf1=figuremax(figColor,figColorDef);
+hf1=cFigure;
 % subplot(1,2,1);
 title('XY cut view of mixed mesh','FontSize',fontSize);
 xlabel('X','FontSize',fontSize); ylabel('Y','FontSize',fontSize); zlabel('Z','FontSize',fontSize); hold on;
@@ -332,7 +330,7 @@ camlight headlight;
 set(gca,'FontSize',fontSize);
 drawnow; 
 
-hf1=figuremax(figColor,figColorDef);
+hf1=cFigure;
 % subplot(1,2,2);
 title('XZ cut view of mixed mesh','FontSize',fontSize);
 xlabel('X','FontSize',fontSize); ylabel('Y','FontSize',fontSize); zlabel('Z','FontSize',fontSize); hold on;

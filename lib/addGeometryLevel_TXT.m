@@ -253,42 +253,66 @@ end
 
 %% Adding NodeSet section
 
+writeNodeSetType=1; %Override as 2 if the old format is desired which has the form form: <NodeSet name="bcSupportList_Z">  1,  2,  3,  4,  5,  6 </NodeSet>
+
 if isfield(FEB_struct.Geometry,'NodeSet');
     disp('----> Adding NodeSet field');
     
     T_nodeSet={};
-
-    for q_set=1:1:numel(FEB_struct.Geometry.NodeSet)
-        
-        nodeSetIndices=FEB_struct.Geometry.NodeSet{q_set}.Set; %Node indices
-        nodeSetIndices=nodeSetIndices(:)'; %Row vector
+    switch writeNodeSetType
+        case 1 %New since FEBio 2.2
+            for q_set=1:1:numel(FEB_struct.Geometry.NodeSet)
                 
-        if ~isfield(FEB_struct.Geometry.NodeSet{q_set},'Name')
-            FEB_struct.Geometry.NodeSet{q_set}.Name=['NodeSet_',sprintf('%u',q_set)]; %Surface type                    
-        end
-        nodeSetName=FEB_struct.Geometry.NodeSet{q_set}.Name; %Node set name              
-
-        %Add node index text field        
-        maxWidth=25;
-        maxCharLength=numel(sprintf('%u',max(nodeSetIndices)));
-        t_form_sub=['%',sprintf('%u',maxCharLength+1),'u,'];
-        t_form=[repmat(t_form_sub,1,maxWidth),'\n'];
-        textSet=sprintf(t_form,nodeSetIndices);        
-        if mod(numel(nodeSetIndices),maxWidth)==0 %Devisable by 5 so a , and \n appear at the end
-            textSet=textSet(1:end-2);%Take away last \n and ,
-        elseif mod(numel(nodeSetIndices),maxWidth)~=0 %A remainder leading to only an extra ,
-            textSet=textSet(1:end-1); %Take away last ,
-        end
-        
-        %         textSetCell=textscan(textSet,'%s','delimiter', '\n','Whitespace','');
-        
-        T_nodeSet(end+1,1)={['		<NodeSet name="',nodeSetName,'">',textSet,'</NodeSet>']}; %      <NodeSet name="bcRigidList"> 
-    end    
+                nodeSetIndices=FEB_struct.Geometry.NodeSet{q_set}.Set; %Node indices
+                nodeSetIndices=nodeSetIndices(:)'; %Row vector
+                numNodes=numel(nodeSetIndices);
+                
+                if ~isfield(FEB_struct.Geometry.NodeSet{q_set},'Name')
+                    FEB_struct.Geometry.NodeSet{q_set}.Name=['NodeSet_',sprintf('%u',q_set)]; %Surface type
+                end
+                nodeSetName=FEB_struct.Geometry.NodeSet{q_set}.Name; %Node set name
+                
+                T_nodeSet_sub=cell(numNodes+2,1);
+                T_nodeSet_sub(1,1)={['		<NodeSet name="',nodeSetName,'">']}; %      <Surface name="Contact_master">
+                
+                for q_node=1:1:numNodes %For all faces
+                    T_nodeSet_sub(q_node+1,1)={['         <node id="',sprintf('%u',nodeSetIndices(q_node)),'"/>']}; % <node id="1"/>
+                end
+                T_nodeSet_sub(end,1)={'		</NodeSet>'};                
+                T_nodeSet(end+1:end+numel(T_nodeSet_sub),1)=T_nodeSet_sub;
+                
+            end
+        case 2 %OLD : Will be removed in future releases
+            for q_set=1:1:numel(FEB_struct.Geometry.NodeSet)
+                
+                nodeSetIndices=FEB_struct.Geometry.NodeSet{q_set}.Set; %Node indices
+                nodeSetIndices=nodeSetIndices(:)'; %Row vector
+                
+                if ~isfield(FEB_struct.Geometry.NodeSet{q_set},'Name')
+                    FEB_struct.Geometry.NodeSet{q_set}.Name=['NodeSet_',sprintf('%u',q_set)]; %Surface type
+                end
+                nodeSetName=FEB_struct.Geometry.NodeSet{q_set}.Name; %Node set name
+                
+                %Add node index text field
+                maxWidth=25;
+                maxCharLength=numel(sprintf('%u',max(nodeSetIndices)));
+                t_form_sub=['%',sprintf('%u',maxCharLength+1),'u,'];
+                t_form=[repmat(t_form_sub,1,maxWidth),'\n'];
+                textSet=sprintf(t_form,nodeSetIndices);
+                if mod(numel(nodeSetIndices),maxWidth)==0 %Devisable by 5 so a , and \n appear at the end
+                    textSet=textSet(1:end-2);%Take away last \n and ,
+                elseif mod(numel(nodeSetIndices),maxWidth)~=0 %A remainder leading to only an extra ,
+                    textSet=textSet(1:end-1); %Take away last ,
+                end
+                
+                %         textSetCell=textscan(textSet,'%s','delimiter', '\n','Whitespace','');
+                
+                T_nodeSet(end+1,1)={['		<NodeSet name="',nodeSetName,'">',textSet,'</NodeSet>']}; %      <NodeSet name="bcRigidList">
+            end
+    end
 end
 
-%%
-
-%Compose text cell
+%% Compose text cell
 totalTextCell=T_top;
 totalTextCell(end+1:end+numel(T_node))=T_node;
 totalTextCell(end+1:end+numel(T_elem))=T_elem;
@@ -307,7 +331,10 @@ end
 
 totalTextCell(end+1:end+numel(T_end))=T_end;
 
+%% Export text cell to .feb file
 cell2txtfile(FEB_struct.run_filename,totalTextCell,1); %Export to text file
+
+%% Reimport XML type
 docNode = xmlread(FEB_struct.run_filename); %Reimport docNode
 
 end

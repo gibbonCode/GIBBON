@@ -210,10 +210,10 @@ if isfield(FEB_struct.Geometry,'Surface');
         parent_node = geometryNode.appendChild(parent_node);
         
         if ~isfield(FEB_struct.Geometry.Surface{q_set},'Name')
-            FEB_struct.Geometry.Surface{q_set}.Name=['Surface_',sprintf('%u',q_set)]; %Surface type                  
+            FEB_struct.Geometry.Surface{q_set}.Name=['Surface_',sprintf('%u',q_set)]; %Surface type
         end
         surfaceName=FEB_struct.Geometry.Surface{q_set}.Name; %Surface type
-            
+        
         attr = docNode.createAttribute('name'); %Create id attribute
         attr.setNodeValue(surfaceName); %Set id text
         parent_node.setAttributeNode(attr); %Add id attribute
@@ -234,11 +234,20 @@ if isfield(FEB_struct.Geometry,'Surface');
             t_form=repmat('   %u,',1,size(F,2)); t_form=t_form(1:end-1); %text format for sprintf for current element type
             element_node.appendChild(docNode.createTextNode(sprintf(t_form,F(q_face,:)))); %append data text child
             
-        end        
+        end
     end
 end
 
 %% Adding NodeSet section
+
+% <NodeSet name="nodeset1">
+%       <node id="1"/>
+%       <node id="2"/>
+%       <node id="101"/>
+%       <node id="102"/>
+% </NodeSet>
+
+writeNodeSetType=1; %Override as 2 if the old format is desired which has the form form: <NodeSet name="bcSupportList_Z">  1,  2,  3,  4,  5,  6 </NodeSet>
 
 if isfield(FEB_struct.Geometry,'NodeSet');
     disp('----> Adding NodeSet field');
@@ -247,34 +256,50 @@ if isfield(FEB_struct.Geometry,'NodeSet');
         
         nodeSetIndices=FEB_struct.Geometry.NodeSet{q_set}.Set; %Node indices
         nodeSetIndices=nodeSetIndices(:)'; %Row vector
-                
-        if ~isfield(FEB_struct.Geometry.NodeSet{q_set},'Name')
-            FEB_struct.Geometry.NodeSet{q_set}.Name=['NodeSet_',sprintf('%u',q_set)]; %Surface type                    
-        end
-        nodeSetName=FEB_struct.Geometry.NodeSet{q_set}.Name; %Node set name
         
         %Create NodeSet level
         parent_node = docNode.createElement('NodeSet');
         parent_node = geometryNode.appendChild(parent_node);
         
+        if ~isfield(FEB_struct.Geometry.NodeSet{q_set},'Name')
+            FEB_struct.Geometry.NodeSet{q_set}.Name=['NodeSet_',sprintf('%u',q_set)]; %Surface type
+        end
+        nodeSetName=FEB_struct.Geometry.NodeSet{q_set}.Name; %Node set name
+        
         attr = docNode.createAttribute('name'); %Create id attribute
         attr.setNodeValue(nodeSetName); %Set id text
         parent_node.setAttributeNode(attr); %Add id attribute
         
-        %Add node index text field        
-        maxWidth=25;
-        maxCharLength=numel(sprintf('%u',max(nodeSetIndices)));
-        t_form_sub=['%',sprintf('%u',maxCharLength+1),'u,'];
-        t_form=[repmat(t_form_sub,1,maxWidth),'\n'];
-        textSet=sprintf(t_form,nodeSetIndices);        
-        if mod(numel(nodeSetIndices),maxWidth)==0 %Devisable by 5 so a , and \n appear at the end
-            textSet=textSet(1:end-2);%Take away last \n and ,
-        elseif mod(numel(nodeSetIndices),maxWidth)~=0 %A remainder leading to only an extra ,
-            textSet=textSet(1:end-1); %Take away last ,
-        end                   
-        parent_node.appendChild(docNode.createTextNode(textSet)); %append data text child        
-    end
-    
+        switch writeNodeSetType
+            case 1 %New since FEBio 2.2
+                numNodes=numel(nodeSetIndices);
+                for q_node=1:1:numNodes %For all nodes
+                    
+                    %Add element entry
+                    element_node = docNode.createElement('node');
+                    element_node = parent_node.appendChild(element_node);
+                    
+                    %Add id attribute
+                    attr = docNode.createAttribute('id'); %Create id attribute
+                    attr.setNodeValue(sprintf('%u',q_node)); %Set id text
+                    element_node.setAttributeNode(attr); %Add id attribute
+                end
+            case 2 %OLD : Will be removed in future releases
+                %Add node index text field
+                maxWidth=25;
+                maxCharLength=numel(sprintf('%u',max(nodeSetIndices)));
+                t_form_sub=['%',sprintf('%u',maxCharLength+1),'u,'];
+                t_form=[repmat(t_form_sub,1,maxWidth),'\n'];
+                textSet=sprintf(t_form,nodeSetIndices);
+                if mod(numel(nodeSetIndices),maxWidth)==0 %Devisable by 5 so a , and \n appear at the end
+                    textSet=textSet(1:end-2);%Take away last \n and ,
+                elseif mod(numel(nodeSetIndices),maxWidth)~=0 %A remainder leading to only an extra ,
+                    textSet=textSet(1:end-1); %Take away last ,
+                end
+                parent_node.appendChild(docNode.createTextNode(textSet)); %append data text child
+        end
+        
+    end    
 end
 
 end

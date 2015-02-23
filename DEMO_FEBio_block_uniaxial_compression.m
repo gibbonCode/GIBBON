@@ -11,13 +11,12 @@ clear; close all; clc;
 
 %%
 % Plot settings
-figColor='w'; figColorDef='white';
 fontSize=20;
 faceAlpha1=0.8;
 faceAlpha2=1;
 edgeColor=0.25*ones(1,3);
 edgeWidth=1.5;
-markerSize=25;
+markerSize=40;
 lineWidth=3;
 
 %%
@@ -70,7 +69,7 @@ elementMaterialIndices=ones(size(E,1),1);
 %%
 
 % Plotting boundary surfaces
-hf=figuremax(figColor,figColorDef);
+hf=cFigure;
 title('Model surfaces','FontSize',fontSize);
 xlabel('X','FontSize',fontSize); ylabel('Y','FontSize',fontSize); zlabel('Z','FontSize',fontSize);
 hold on;
@@ -108,7 +107,7 @@ bcPrescribeMagnitudes=displacementMagnitude(ones(1,numel(bcPrescribeList)),:);
 
 %%
 % Visualize BC's
-hf=figuremax(figColor,figColorDef);
+hf=cFigure;
 title('Model BCs','FontSize',fontSize);
 xlabel('X','FontSize',fontSize); ylabel('Y','FontSize',fontSize); zlabel('Z','FontSize',fontSize);
 hold on;
@@ -117,8 +116,8 @@ patch('Faces',Fb,'Vertices',V,'FaceColor','flat','CData',faceBoundaryMarker,'Fac
 
 plotV(V(bcSupportList_Z,:),'b.','MarkerSize',markerSize);
 plotV(V(bcPrescribeList,:),'k.','MarkerSize',markerSize);
-plotV(V(bcSupportList_X_axis,:),'g.','MarkerSize',markerSize*2);
-plotV(V(bcSupportList_Y_axis,:),'r.','MarkerSize',markerSize*2);
+plotV(V(bcSupportList_X_axis,:),'g.','MarkerSize',markerSize);
+plotV(V(bcSupportList_Y_axis,:),'r.','MarkerSize',markerSize);
 
 set(gca,'FontSize',fontSize);
 colormap(jet(6)); colorbar;
@@ -212,7 +211,7 @@ febStruct2febFile(FEB_struct);
 
 %% RUNNING FEBIO JOB
 
-FEBioRunStruct.FEBioPath='C:\Program Files\febio-2.1.0\bin\FEBio2.exe';
+FEBioRunStruct.FEBioPath='C:\Program Files\febio-2.2.2\bin\FEBio2.exe';
 FEBioRunStruct.run_filename=FEB_struct.run_filename;
 FEBioRunStruct.run_logname=FEB_struct.run_logname;
 FEBioRunStruct.disp_on=1;
@@ -242,7 +241,7 @@ if runFlag==1 %i.e. a succesful run
     
     [CF]=vertexToFaceMeasure(Fb,DN_magnitude);
     
-    hf1=figuremax(figColor,figColorDef);
+    hf1=cFigure;
     title('The deformed model','FontSize',fontSize);
     xlabel('X','FontSize',fontSize); ylabel('Y','FontSize',fontSize); zlabel('Z','FontSize',fontSize); hold on;
     
@@ -279,7 +278,7 @@ if runFlag==1 %i.e. a succesful run
     
     %%
     
-    hf1=figuremax(figColor,figColorDef);
+    hf1=cFigure;
     title('Stretch stress curves','FontSize',fontSize);
     xlabel('\lambda Stretch [.]','FontSize',fontSize); ylabel('\sigma Cauchy stress [kPa]','FontSize',fontSize); zlabel('Z','FontSize',fontSize); hold on;
     
