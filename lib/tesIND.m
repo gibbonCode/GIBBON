@@ -1,5 +1,15 @@
 function [varargout]=tesIND(varargin)
 
+% function [IND_F,IND_V,IND_FF]=tesIND(F,V,sparseOpt);
+% ------------------------------------------------------------------------
+%
+%
+% Kevin Mattheus Moerman
+% gibbon.toolbox@gmail.com
+% 
+% 2015/02/23
+%------------------------------------------------------------------------
+
 %% PARSE INPUT
 
 switch nargin

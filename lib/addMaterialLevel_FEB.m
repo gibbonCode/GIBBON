@@ -159,6 +159,15 @@ if isfield(inputStruct,'Properties')
         mat_prop_attr_val=[];
     end
     
+    %Access property parameters
+    if isfield(inputStruct,'PropParName')
+        mat_prop_par_name=inputStruct.PropParName;
+        mat_prop_par_val=inputStruct.PropParVal;
+    else
+        mat_prop_par_name=cell(1,numel(mat_props));
+        mat_prop_par_val=cell(1,numel(mat_props));
+    end
+    
     %Set property values
     for q=1:1:numel(mat_props)
         currentProp=mat_props{q};
@@ -173,17 +182,58 @@ if isfield(inputStruct,'Properties')
             if q<=numel(mat_prop_attr_name)
                 currentPropAttrName=mat_prop_attr_name{q};
                 if ~isempty(currentPropAttrName)
-                    currentPropAttrVal=mat_prop_attr_val{q};
-                    
-                    t_form=repmat('%6.7e, ',1,size(currentPropAttrVal,2));
-                    t_form=t_form(1:end-2);
+                    currentPropAttrVal=mat_prop_attr_val{q}; 
                     
                     attr = docNode.createAttribute(currentPropAttrName); %Create attribute
-                    attr.setNodeValue(sprintf(t_form,currentPropAttrVal)); %Set text
+                    if isfloat(currentPropAttrVal)
+                        t_form=repmat('%6.7e, ',1,size(currentPropAttrVal,2));
+                        t_form=t_form(1:end-2);
+                        strEntry=sprintf(t_form,currentPropAttrVal);
+                    elseif isa(currentPropAttrVal,'char')
+                        strEntry=currentPropAttrVal;
+                    else
+                        error('Unknown class for currentPropAttrVal');
+                    end
+                    attr.setNodeValue(strEntry); %Set text
                     prop_node.setAttributeNode(attr); %Add attribute
                 end
             end
         end
+        
+        %Add potential property parameters
+        if ~isempty(mat_prop_par_name{q})
+            for qp=1:1:numel(mat_prop_par_name{q})
+                currentProp=mat_prop_par_name{q}{qp};
+                currentVal=mat_prop_par_val{q}{qp};
+                if ~isempty(currentProp)
+                    prop_node_sub = docNode.createElement(currentProp); %create entry
+                    prop_node_sub = prop_node.appendChild(prop_node_sub); %add entry
+                    t_form=repmat('%6.7e, ',1,size(currentVal,2)); t_form=t_form(1:end-2);
+                    prop_node_sub.appendChild(docNode.createTextNode(sprintf(t_form,currentVal))); %append data text child
+                end
+            end
+            
+%             if q<=numel(mat_prop_par_name)
+%                 currentPropParName=mat_prop_par_name{q};
+%                 if ~isempty(currentPropParName)
+%                     currentPropParVal=mat_prop_par_val{q}; 
+%                     
+%                     attr = docNode.createAttribute(currentPropParName); %Create attribute
+%                     if isfloat(currentPropParVal)
+%                         t_form=repmat('%6.7e, ',1,size(currentPropParVal,2));
+%                         t_form=t_form(1:end-2);
+%                         strEntry=sprintf(t_form,currentPropParVal);
+%                     elseif isa(currentPropParVal,'char')
+%                         strEntry=currentPropParVal;
+%                     else
+%                         error('Unknown class for currentPropParVal');
+%                     end
+%                     attr.setNodeValue(strEntry); %Set text
+%                     prop_node.setAttributeNode(attr); %Add attribute
+%                 end
+%             end
+        end
+        
     end
     
 end

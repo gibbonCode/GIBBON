@@ -6,7 +6,7 @@
    <!--
 This HTML was auto-generated from MATLAB code.
 To make changes, update the MATLAB code and republish this document.
-      --><title>tesIND</title><meta name="generator" content="MATLAB 8.4"><link rel="schema.DC" href="http://purl.org/dc/elements/1.1/"><meta name="DC.date" content="2015-02-19"><meta name="DC.source" content="HELP_tesIND.m"><style type="text/css">
+      --><title>HELP_tesIND</title><meta name="generator" content="MATLAB 8.5"><link rel="schema.DC" href="http://purl.org/dc/elements/1.1/"><meta name="DC.date" content="2015-02-23"><meta name="DC.source" content="HELP_tesIND.m"><style type="text/css">
 html,body,div,span,applet,object,iframe,h1,h2,h3,h4,h5,h6,p,blockquote,pre,a,abbr,acronym,address,big,cite,code,del,dfn,em,font,img,ins,kbd,q,s,samp,small,strike,strong,sub,sup,tt,var,b,u,i,center,dl,dt,dd,ol,ul,li,fieldset,form,label,legend,table,caption,tbody,tfoot,thead,tr,th,td{margin:0;padding:0;border:0;outline:0;font-size:100%;vertical-align:baseline;background:transparent}body{line-height:1}ol,ul{list-style:none}blockquote,q{quotes:none}blockquote:before,blockquote:after,q:before,q:after{content:'';content:none}:focus{outine:0}ins{text-decoration:none}del{text-decoration:line-through}table{border-collapse:collapse;border-spacing:0}
 
 html { min-height:100%; margin-bottom:1px; }
@@ -66,12 +66,12 @@ table td { padding:7px 5px; text-align:left; vertical-align:top; border:1px soli
 
 
 
-  </style></head><body><div class="content"><h1>tesIND</h1><!--introduction--><p>Below is a demonstration of the features of the <tt>tesIND</tt> function</p><!--/introduction--><h2>Contents</h2><div><ul><li><a href="#3">Studying connectivity on quadrangulated patch data</a></li><li><a href="#11">Studying connectivity on triangulated patch data</a></li><li><a href="#17">Studying connectivity of faces and vertices on hexahedral mesh</a></li><li><a href="#21">Studying connectivity of elements on hexahedral mesh</a></li><li><a href="#24">Studying connectivity on tetrahedral mesh</a></li></ul></div><pre class="codeinput">clear; close <span class="string">all</span>; clc;
+  </style></head><body><div class="content"><h1></h1><!--introduction--><!--/introduction--><h2>Contents</h2><div><ul><li><a href="#1">tesIND</a></li><li><a href="#2">Syntax</a></li><li><a href="#3">Description</a></li><li><a href="#4">Examples</a></li><li><a href="#6">Studying connectivity on quadrangulated patch data</a></li><li><a href="#14">Studying connectivity on triangulated patch data</a></li><li><a href="#20">Studying connectivity of faces and vertices on hexahedral mesh</a></li><li><a href="#24">Studying connectivity of elements on hexahedral mesh</a></li><li><a href="#27">Studying connectivity on tetrahedral mesh</a></li></ul></div><h2>tesIND<a name="1"></a></h2><p>Below is a demonstration of the features of the <tt>tesIND</tt> function</p><h2>Syntax<a name="2"></a></h2><p><tt>[IND_F,IND_V,IND_FF]=tesIND(F,V,sparseOpt);</tt></p><h2>Description<a name="3"></a></h2><p>The <tt>tesIND</tt> function provides a description of indices of tesselated entities with respect to associated nodes and visa versa.</p><h2>Examples<a name="4"></a></h2><pre class="codeinput">clear; close <span class="string">all</span>; clc;
 </pre><p>Plot Settings</p><pre class="codeinput">fontSize=10;
 markerSize=50;
 faceAlpha=0.25;
 faceAlpha2=1;
-</pre><h2>Studying connectivity on quadrangulated patch data<a name="3"></a></h2><p>Create example data</p><pre class="codeinput">n=4;
+</pre><h2>Studying connectivity on quadrangulated patch data<a name="6"></a></h2><p>Create example data</p><pre class="codeinput">n=4;
 M=zeros(n,n,1);
 [F,V,~]=ind2patch(M==0,M,<span class="string">'sku'</span>);
 </pre><p>Compute connectivity using <tt>tesIND</tt></p><pre class="codeinput">[IND_F,IND_V,IND_FF]=tesIND(F,[],1);
@@ -80,14 +80,14 @@ title(<span class="string">'Connected face indices per vertex'</span>,<span clas
 xlabel(<span class="string">'F id'</span>,<span class="string">'FontSize'</span>,fontSize);ylabel(<span class="string">'V id'</span>,<span class="string">'FontSize'</span>,fontSize);
 imagesc(full(IND_F));
 axis <span class="string">equal</span>; axis <span class="string">tight</span>; axis <span class="string">ij</span>;
-colorbar;
+colorbar; colormap <span class="string">jet</span>;
 drawnow;
 </pre><img vspace="5" hspace="5" src="HELP_tesIND_01.png" alt=""> <p>Visualizing the sparse vertex connectivity matrix</p><pre class="codeinput">hf2=cFigure; hold <span class="string">on</span>;
 title(<span class="string">'Connected vertex indices per vertex'</span>,<span class="string">'FontSize'</span>,fontSize);
 xlabel(<span class="string">'F id'</span>,<span class="string">'FontSize'</span>,fontSize);ylabel(<span class="string">'V id'</span>,<span class="string">'FontSize'</span>,fontSize);
 imagesc(full(IND_V));
 axis <span class="string">equal</span>; axis <span class="string">tight</span>; axis <span class="string">ij</span>;
-colorbar;
+colorbar; colormap <span class="string">jet</span>;
 drawnow;
 </pre><img vspace="5" hspace="5" src="HELP_tesIND_02.png" alt=""> <pre class="codeinput"><span class="comment">% Select a vertex for visualization</span>
 logicValid=IND_F&gt;0;
@@ -125,7 +125,7 @@ patch(<span class="string">'Faces'</span>,F(indPick,:),<span class="string">'Ver
 patch(<span class="string">'Faces'</span>,F(indFaces,:),<span class="string">'Vertices'</span>,V,<span class="string">'FaceColor'</span>,<span class="string">'b'</span>,<span class="string">'FaceAlpha'</span>,faceAlpha2);
 view(3); axis <span class="string">equal</span>; axis <span class="string">tight</span>; grid <span class="string">on</span>;
 drawnow;
-</pre><img vspace="5" hspace="5" src="HELP_tesIND_04.png" alt=""> <h2>Studying connectivity on triangulated patch data<a name="11"></a></h2><p>Create example data</p><pre class="codeinput">n=25;
+</pre><img vspace="5" hspace="5" src="HELP_tesIND_04.png" alt=""> <h2>Studying connectivity on triangulated patch data<a name="14"></a></h2><p>Create example data</p><pre class="codeinput">n=25;
 t=linspace(0,2*pi,n);
 t=t(1:end-1);
 x=sin(t);
@@ -171,7 +171,7 @@ patch(<span class="string">'Faces'</span>,F(indPick,:),<span class="string">'Ver
 patch(<span class="string">'Faces'</span>,F(indFaces,:),<span class="string">'Vertices'</span>,V,<span class="string">'FaceColor'</span>,<span class="string">'b'</span>,<span class="string">'FaceAlpha'</span>,faceAlpha2);
 view(3); axis <span class="string">equal</span>; axis <span class="string">tight</span>; grid <span class="string">on</span>;
 drawnow;
-</pre><img vspace="5" hspace="5" src="HELP_tesIND_06.png" alt=""> <h2>Studying connectivity of faces and vertices on hexahedral mesh<a name="17"></a></h2><pre class="codeinput"><span class="comment">% Create example data</span>
+</pre><img vspace="5" hspace="5" src="HELP_tesIND_06.png" alt=""> <h2>Studying connectivity of faces and vertices on hexahedral mesh<a name="20"></a></h2><pre class="codeinput"><span class="comment">% Create example data</span>
 n=2;
 M=zeros(n,n,n);
 [E,V,C]=ind2patch(M==0,M,<span class="string">'hu'</span>);
@@ -198,7 +198,7 @@ patch(<span class="string">'Faces'</span>,F(indFaces,:),<span class="string">'Ve
 plotV(V(indVertices,:),<span class="string">'r.'</span>,<span class="string">'MarkerSize'</span>,markerSize);
 view(3); axis <span class="string">equal</span>; axis <span class="string">tight</span>; grid <span class="string">on</span>;
 drawnow;
-</pre><img vspace="5" hspace="5" src="HELP_tesIND_07.png" alt=""> <h2>Studying connectivity of elements on hexahedral mesh<a name="21"></a></h2><pre class="codeinput"><span class="comment">% Create example data</span>
+</pre><img vspace="5" hspace="5" src="HELP_tesIND_07.png" alt=""> <h2>Studying connectivity of elements on hexahedral mesh<a name="24"></a></h2><pre class="codeinput"><span class="comment">% Create example data</span>
 n=5;
 M=zeros(n,n,n);
 [E,V,C]=ind2patch(M==0,M,<span class="string">'hu'</span>);
@@ -226,7 +226,7 @@ patch(<span class="string">'Faces'</span>,F1,<span class="string">'Vertices'</sp
 patch(<span class="string">'Faces'</span>,F2,<span class="string">'Vertices'</span>,V,<span class="string">'FaceColor'</span>,<span class="string">'b'</span>,<span class="string">'FaceAlpha'</span>,faceAlpha);
 view(3); axis <span class="string">equal</span>; axis <span class="string">tight</span>; grid <span class="string">on</span>;
 drawnow;
-</pre><img vspace="5" hspace="5" src="HELP_tesIND_08.png" alt=""> <h2>Studying connectivity on tetrahedral mesh<a name="24"></a></h2><pre class="codeinput"><span class="comment">% Create example data</span>
+</pre><img vspace="5" hspace="5" src="HELP_tesIND_08.png" alt=""> <h2>Studying connectivity on tetrahedral mesh<a name="27"></a></h2><pre class="codeinput"><span class="comment">% Create example data</span>
 [V,~]=platonic_solid(1,1); <span class="comment">%Create single tet</span>
 E=[1 2 3 4];
 <span class="comment">%Split the tet</span>
@@ -257,12 +257,21 @@ patch(<span class="string">'Faces'</span>,F(indFaces,:),<span class="string">'Ve
 plotV(V(indVertices,:),<span class="string">'r.'</span>,<span class="string">'MarkerSize'</span>,markerSize);
 view(3); axis <span class="string">equal</span>; axis <span class="string">tight</span>; grid <span class="string">on</span>;
 drawnow;
-</pre><img vspace="5" hspace="5" src="HELP_tesIND_09.png" alt=""> <p><img vspace="5" hspace="5" src="gibbVerySmall.gif" alt=""> </p><p><i><b>GIBBON</b></i> <a href="www.gibboncode.org">www.gibboncode.org</a></p><p><i>Kevin Mattheus Moerman</i>, <a href="gibbon.toolbox@gmail.com">gibbon.toolbox@gmail.com</a></p><p class="footer"><br><a href="http://www.mathworks.com/products/matlab/">Published with MATLAB&reg; R2014b</a><br></p></div><!--
+</pre><img vspace="5" hspace="5" src="HELP_tesIND_09.png" alt=""> <p><img vspace="5" hspace="5" src="gibbVerySmall.gif" alt=""> </p><p><i><b>GIBBON</b></i> <a href="www.gibboncode.org">www.gibboncode.org</a></p><p><i>Kevin Mattheus Moerman</i>, <a href="gibbon.toolbox@gmail.com">gibbon.toolbox@gmail.com</a></p><p class="footer"><br><a href="http://www.mathworks.com/products/matlab/">Published with MATLAB&reg; R2015a</a><br></p></div><!--
 ##### SOURCE BEGIN #####
+
 %% tesIND
 % Below is a demonstration of the features of the |tesIND| function
 
-%%
+%% Syntax
+% |[IND_F,IND_V,IND_FF]=tesIND(F,V,sparseOpt);|
+
+%% Description
+% The |tesIND| function provides a description of indices of tesselated
+% entities with respect to associated nodes and visa versa.
+
+%% Examples
+
 clear; close all; clc;
 
 %% 
@@ -290,7 +299,7 @@ title('Connected face indices per vertex','FontSize',fontSize);
 xlabel('F id','FontSize',fontSize);ylabel('V id','FontSize',fontSize); 
 imagesc(full(IND_F));
 axis equal; axis tight; axis ij; 
-colorbar;
+colorbar; colormap jet; 
 drawnow; 
 
 %% 
@@ -301,7 +310,7 @@ title('Connected vertex indices per vertex','FontSize',fontSize);
 xlabel('F id','FontSize',fontSize);ylabel('V id','FontSize',fontSize); 
 imagesc(full(IND_V));
 axis equal; axis tight; axis ij; 
-colorbar;
+colorbar; colormap jet; 
 drawnow; 
 
 %%

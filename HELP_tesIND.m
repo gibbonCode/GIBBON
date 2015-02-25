@@ -1,7 +1,16 @@
+
 %% tesIND
 % Below is a demonstration of the features of the |tesIND| function
 
-%%
+%% Syntax
+% |[IND_F,IND_V,IND_FF]=tesIND(F,V,sparseOpt);|
+
+%% Description
+% The |tesIND| function provides a description of indices of tesselated
+% entities with respect to associated nodes and visa versa.
+
+%% Examples
+
 clear; close all; clc;
 
 %% 
@@ -29,7 +38,7 @@ title('Connected face indices per vertex','FontSize',fontSize);
 xlabel('F id','FontSize',fontSize);ylabel('V id','FontSize',fontSize); 
 imagesc(full(IND_F));
 axis equal; axis tight; axis ij; 
-colorbar;
+colorbar; colormap jet; 
 drawnow; 
 
 %% 
@@ -40,7 +49,7 @@ title('Connected vertex indices per vertex','FontSize',fontSize);
 xlabel('F id','FontSize',fontSize);ylabel('V id','FontSize',fontSize); 
 imagesc(full(IND_V));
 axis equal; axis tight; axis ij; 
-colorbar;
+colorbar; colormap jet; 
 drawnow; 
 
 %%

@@ -1,7 +1,15 @@
 %% subTriCentre
 % Below is a demonstration of the features of the |subTriCentre| function
 
-%%
+%% Syntax
+% |[Fn,Vn]=subTriCentre(F,V,L);|
+
+%% Description
+% This |subTriCentre| function splits the faces defined by L up into three
+% by introducing a central node. 
+
+%% Examples
+
 clear; close all; clc;
 
 %%
@@ -11,7 +19,7 @@ faceAlpha=1;
 edgeColor=0.3*ones(1,3);
 edgeWidth=1.5;
 
-%% SPLITTING A SELECTION OF TRIANGLES
+%% Example: Splitting a selection of triangles
 %%
 % Building example patch data
 [V,F]=platonic_solid(4,1);
