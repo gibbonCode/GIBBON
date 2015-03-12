@@ -56,7 +56,7 @@ t_load=0.5; %Time from start to max load
 t_step_ini=1e-3; %Initial desired step size
 t_step_max=0.05; %Maximum step size
 
-multiStep=0; 
+analysisType='dynamic'; 
 
 uncoupledLaw=1; %1=uncoupled, 2=coupled
 
@@ -182,7 +182,7 @@ end
 %Step specific control sections
 n=round(t_total/t_step_ini);
 t_step=t_total/n;
-FEB_struct.Control.AnalysisType='static';
+FEB_struct.Control.AnalysisType=analysisType;
 FEB_struct.Control.Properties={'time_steps','step_size',...
     'max_refs','max_ups',...
     'dtol','etol','rtol','lstol'};
