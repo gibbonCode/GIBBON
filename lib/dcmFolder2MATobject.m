@@ -26,6 +26,7 @@ files=sort(files(:));
 NumberOfFiles=numel(files);
 
 %%
+
 firstWarning_TriggerTime=0;
 firstWarning_Rotation=0;
 if NumberOfFiles>0
@@ -122,13 +123,10 @@ if NumberOfFiles>0
     end
     
     %% LOADING DICOM INFO
-    hw = waitbar(0,'Loading DICOM info...');
-    
-    %%
-    
+    hw = waitbar(0,'Loading DICOM info...');    
     for c=1:1:numel(files)
-        fName=fullfile(PathName,files{c});        
-%         dicomdict('get');        
+        fName=fullfile(PathName,files{c});
+        %         dicomdict('get');
         dcmInfo_full=dicominfo(fName);
         dcmInfo_full.Basename=fName; %Add custom field
         iFields = find(isfield(dcmInfo_full,collectTags)); %indices of existing fields
@@ -174,7 +172,7 @@ if NumberOfFiles>0
     
     %% LOADING IMAGE DATA
     
-    if isfield(dcmInfo,'EchoTime')    
+    if isfield(dcmInfo,'EchoTime')
         EchoTimesAll=[dcmInfo(:).EchoTime];
     else
         EchoTimesAll=nan;
@@ -182,7 +180,7 @@ if NumberOfFiles>0
     EchoTimesUni=unique(EchoTimesAll);
     matObj.EchoTimesUni=EchoTimesUni;
     NumEchoTimes=numel(EchoTimesUni);
-
+    
     %Get image types
     ImageTypesAll={dcmInfo.ImageType};
     ImageTypesUni=unique(ImageTypesAll);
@@ -216,8 +214,8 @@ if NumberOfFiles>0
     NumberOfFilesPerType=NumberOfSlices*NumberOfTemporalPositions;
     switch dictSetting
         case 1 %PHILIPS
-%             NumberOfRows=double(dcmInfo(1).Width);
-%             NumberOfColumns=double(dcmInfo(1).Height);
+            %             NumberOfRows=double(dcmInfo(1).Width);
+            %             NumberOfColumns=double(dcmInfo(1).Height);
             NumberOfRows=double(dcmInfo(1).Rows);
             NumberOfColumns=double(dcmInfo(1).Columns);
         case 2 % SIEMENS
@@ -226,8 +224,8 @@ if NumberOfFiles>0
         case 3 %FACTORY
             NumberOfRows=double(dcmInfo(1).Rows);
             NumberOfColumns=double(dcmInfo(1).Columns);
-%             NumberOfRows=double(dcmInfo(1).Width);
-%             NumberOfColumns=double(dcmInfo(1).Height);
+            %             NumberOfRows=double(dcmInfo(1).Width);
+            %             NumberOfColumns=double(dcmInfo(1).Height);
     end
     ImageSize=[NumberOfRows NumberOfColumns NumberOfSlices NumberOfTemporalPositions];
     matObj.ImageSize=ImageSize;
@@ -239,20 +237,20 @@ if NumberOfFiles>0
     for iEcho=1:NumEchoTimes
         %Finding files for current EchoTime
         EchoTimeNow=EchoTimesUni(iEcho); %The current echo time
-        L_Echo=EchoTimesAll==EchoTimeNow; 
+        L_Echo=EchoTimesAll==EchoTimeNow;
         
         %String to add to type spec
         if NumEchoTimes==1
             echoNameAppend=[];
         else
-            echoNameAppend=['_EchoTime_',num2str(iEcho)];            
+            echoNameAppend=['_EchoTime_',num2str(iEcho)];
         end
         
         for iType=1:NumImageTypes
             
             %Finding files for current type
             ImageTypeNow=ImageTypesUni(iType); %The current image type
-            L_Type=strcmpi(ImageTypesAll,ImageTypeNow); 
+            L_Type=strcmpi(ImageTypesAll,ImageTypeNow);
             
             %Fix L_Echo in case EchoTIme is not defined
             if isnan(EchoTimesAll)
@@ -334,3 +332,4 @@ end
 
 dicomdict('factory');
 
+end

@@ -5,7 +5,7 @@
 % |[Fn,Vn]=subTriCentre(F,V,L);|
 
 %% Description
-% This |subTriCentre| function splits the faces defined by L up into three
+% The |subTriCentre| function splits the faces defined by L up into three
 % by introducing a central node. 
 
 %% Examples

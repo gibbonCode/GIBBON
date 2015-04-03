@@ -1,22 +1,27 @@
-function [dY,fft_dY]=FFT_derivative(Y,X,d,pCutOff)
+function [dY,fft_dY]=FFT_derivative(Y,t,dimDir,derOrder)
 
-siz=size(Y);
+N=size(Y,dimDir); 
 
-N=siz(d); 
-sampleStepSize = (max(X(:))-min(X(:)))/(N-1); %Sampling step size
-samplingFrequency = 1/sampleStepSize; %Sampling frequency
+dt=diff(t,1,dimDir);
+dt=dt(1);
 
-dimsY=1:ndims(Y);
-dimsYd=dimsY(dimsY~=d);
-
-sizLinspacen=[siz(dimsYd) 1];
-
-k=linspacen(-samplingFrequency/2.*ones(sizLinspacen),samplingFrequency/2.*ones(sizLinspacen),N); %Frequencies space
-k=permute(k,[dimsYd d]);
-
-fft_Y=fftshift(fft(Y,[],d)); %Fourier transform of input
-fft_dY=1i.*2*pi*k.*fft_Y; %Fourier transform of derivative
-if ~isempty(pCutOff) %filter option
-    fft_dY(abs(k)>(pCutOff.*(samplingFrequency/2)))=0; %Remove frequencies above kc
+%Calculate frequencies
+if iseven(N)    
+    nx = ((-N/2:N/2-1)/N);
+else    
+    nx = ((-(N-1)/2:(N-1)/2)/N);
 end
-dY=ifft(ifftshift(fft_dY),[],d); %Obtain derivative through inverse Fourier transform
+kx = ifftshift((2*pi/dt).*nx); 
+
+%Reshape for bsxfun
+if dimDir == 1
+    kx = reshape(kx, N, 1);
+else
+    kx = reshape(kx, [ones(1,dimDir-1), N]);
+end
+
+fft_dY=bsxfun(@times,(1i*kx).^derOrder,fft(Y,[],dimDir));
+
+dY=ifft(fft_dY,[],dimDir,'symmetric');
+
+
