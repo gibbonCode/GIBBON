@@ -1,9 +1,6 @@
-function [dY,fft_dY]=FFT_derivative(Y,t,dimDir,derOrder)
+function [dY,fft_dY]=FFT_derivative(Y,dt,dimDir,derOrder)
 
 N=size(Y,dimDir); 
-
-dt=diff(t,1,dimDir);
-dt=dt(1);
 
 %Calculate frequencies
 if iseven(N)    

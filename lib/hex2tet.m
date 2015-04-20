@@ -4,7 +4,7 @@ C=C(:);
 switch tetOpt
     case 1 %Add central node and cross side faces
         
-        [F,~]=element2patch(HEX,C);
+        [F,~]=element2patch(HEX,C,'hex8');
         
         numV=size(V,1);
         numE=size(HEX,1);
@@ -46,7 +46,7 @@ switch tetOpt
         %Fix color information
         C=repmat(C,size(TET_format,1),1);        
         
-    case 2 %Delaunay of single hex applied to all
+    case 2 %Delaunay based 6 tetrahedron decomposition of cube applied to all
         HEX=HEX(:,[1 2 4 3 5 6 8 7]);
         tetInd =[5     1     2     3;...
             6     5     2     3;...
@@ -63,12 +63,11 @@ switch tetOpt
             C=C(:);
         end
         Vtet=V;
-    case 3 %Same as 2 flip top to bottom
+    case 3 %Same as 2 but flipped top to bottom
         
         %Switch top and bottom
-        HEX=HEX(:,[8:-1:5 4:-1:1]);
-        
-        HEX=HEX(:,[1 2 4 3 5 6 8 7]);
+        HEX=HEX(:,[8 7 5 6 4 3 1 2]);
+
         tetInd =[5     1     2     3;...
             6     5     2     3;...
             6     7     5     3;...
@@ -81,6 +80,31 @@ switch tetOpt
         TET=reshape(A',4,6.*size(HEX,1))';
         if ~isempty(C)
             C=(ones(6,1)*C');
+            C=C(:);
+        end
+        Vtet=V;
+    case 4 % 5 tetrahedron decomposition of cube
+        tetInd=[1 8 6 5; 7 8 6 3; 2 1 3 6; 4 8 3 1; 6 3 8 1];      
+        a=tetInd';
+        a=a(:)';
+        A=HEX(:,a);
+        TET=reshape(A',4,5.*size(HEX,1))';
+        if ~isempty(C)
+            C=(ones(5,1)*C');
+            C=C(:);
+        end
+        Vtet=V;
+    case 5 %Same as 4 but flipped top to bottom
+        %Switch top and bottom
+        HEX=(HEX(:,[4 3 7 8 1 2 6 5 ]));
+
+        tetInd=[1 8 6 5; 7 8 6 3; 2 1 3 6; 4 8 3 1; 6 3 8 1];
+        a=tetInd';
+        a=a(:)';
+        A=HEX(:,a);
+        TET=reshape(A',4,5.*size(HEX,1))';
+        if ~isempty(C)
+            C=(ones(5,1)*C');
             C=C(:);
         end
         Vtet=V;

@@ -95,8 +95,8 @@ originBasis2=[0 0 0];
 E2=[2/3 -1/3  2/3; 2/3 2/3 -1/3; -1/3 2/3 2/3];
 C2=[5 4 3];
 
-[Fc1,Vc1,Cc1]=quiver3Dpatch(originBasis1(1)*ones(1,3), originBasis1(2)*ones(1,3), originBasis1(3)*ones(1,3),E1(:,1),E1(:,2),E1(:,3),C1,[1 1]);
-[Fc2,Vc2,Cc2]=quiver3Dpatch(originBasis2(1)*ones(1,3), originBasis2(2)*ones(1,3), originBasis2(3)*ones(1,3),E2(:,1),E2(:,2),E2(:,3),C2,[1 1]);
+[Fc1,Vc1,Cc1]=quiver3Dpatch(originBasis1(1)*ones(1,3), originBasis1(2)*ones(1,3), originBasis1(3)*ones(1,3),E1(:,1),E1(:,2),E1(:,3),C1',[1 1]);
+[Fc2,Vc2,Cc2]=quiver3Dpatch(originBasis2(1)*ones(1,3), originBasis2(2)*ones(1,3), originBasis2(3)*ones(1,3),E2(:,1),E2(:,2),E2(:,3),C2',[1 1]);
 
 h1=figuremax(fig_color,fig_colordef);
 xlabel('X','FontSize',fontSize);ylabel('Y','FontSize',fontSize);zlabel('Z','FontSize',fontSize);
@@ -105,6 +105,7 @@ hp1=patch('Faces',Fc1,'Vertices',Vc1,'EdgeColor','k','FaceColor','flat','FaceVer
 hp1=patch('Faces',Fc2,'Vertices',Vc2,'EdgeColor','k','FaceColor','flat','FaceVertexCData',Cc2,'FaceAlpha',0.5); hold on;
 view(3); grid on; axis equal; axis vis3d; view([137.5,24]);
 set(gca,'FontSize',fontSize);
+colormap jet; 
 drawnow;
 
 %% Example visualising face normals of patch data
@@ -195,7 +196,7 @@ camlight headlight; lighting phong
 
 subplot(1,2,2);
 hp=patch('Faces',F,'Vertices',V);
-set(hp,'FaceColor','flat','FaceVertexCData',abs(C),'EdgeColor','none','FaceAlpha',0.8);
+set(hp,'FaceColor','flat','FaceVertexCData',abs(C),'EdgeColor','none','FaceAlpha',1);
 DCM=eye(3,3);
 origin=[0 0 0];
 [Fa,Va,Ca]=quiver3Dpatch(origin(1)*ones(1,3), origin(2)*ones(1,3), origin(3)*ones(1,3),-DCM(:,1),-DCM(:,2),DCM(:,3),[],[3,3]);

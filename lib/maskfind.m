@@ -13,6 +13,9 @@ function [IND_mask]=maskfind(M,IND,MASK_I,MASK_J,MASK_K)
 
 %%
 siz=size(M);
+if ndims(M)==2
+    siz(3)=1;
+end
 if size(MASK_I,1)>1; MASK_I=MASK_I'; MASK_J=MASK_J'; MASK_K=MASK_K'; end
 
 [Im,Jm,Km]=ind2sub(siz,IND);

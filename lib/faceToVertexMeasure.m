@@ -1,6 +1,6 @@
 function [CV]=faceToVertexMeasure(F,V,CF)
 
-[IND_F]=tesIND(F,V,0); % [IND_F,~]=patchIND(F,V,2);
+[IND_F]=tesIND(F,V,0);
 
 L=IND_F>0;
 

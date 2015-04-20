@@ -91,6 +91,16 @@ hs=surf(peaks(25)); axis equal; axis tight; colormap winter;
 %Now show the figures
 mfv; %If this is used instead of mfv(H) then all hidden figures are shown
 
+%% Using the preloaded view control widget (vcw) 
+% Location of the view control widget (vcw) activation button in the menubar: 
+% 
+% <<vcw_icon_menubar.png>>
+
+%% 
+% Press v key to activate widget, press i to show help information
+% 
+% <<vcw_help_show.png>>
+
 %% 
 %
 % <<gibbVerySmall.gif>>
