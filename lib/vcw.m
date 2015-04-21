@@ -236,6 +236,7 @@ if ismember('alt', eventData.Modifier)
     linkedOn=1;
     set(hf,'MenuBar','none');
     t = uitoolbar;
+    set(t,'Tag','emptyBar_vcw');
 else
     linkedOn=0;
 end
@@ -407,8 +408,9 @@ switch eventData.Key
         close(hf);
 end
 set(hf,'MenuBar','figure');
-if exist('t','var')
-    delete(t);
+h1 = findobj(hf,'Tag','emptyBar_vcw');
+if ~isempty(h1)
+    delete(h1);
 end
 return
 

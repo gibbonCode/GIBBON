@@ -56,7 +56,7 @@ t_load=0.5; %Time from start to max load
 t_step_ini=1e-3; %Initial desired step size
 t_step_max=0.05; %Maximum step size
 
-analysisType='dynamic'; 
+analysisType='static'; 
 
 uncoupledLaw=1; %1=uncoupled, 2=coupled
 
