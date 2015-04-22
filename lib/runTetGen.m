@@ -93,6 +93,7 @@ function [meshOutput]=runTetGen(inputStruct)
 % .node file instead of a smesh file. These changes are made to allow for
 % sizing function specification on the initial delaunay mesh.
 %
+% To do: Fix tet10 and boundaryMarker handling!
 %
 % Kevin Mattheus Moerman
 % gibbon.toolbox@gmail.com

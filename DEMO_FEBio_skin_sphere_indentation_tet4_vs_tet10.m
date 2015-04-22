@@ -26,7 +26,7 @@ markerSize1=25;
 
 %%
 % Setting element type for demonstration
-tetType='tet10'; %Use 'tet10' or 'tet4'
+tetType='tet4'; %Use 'tet10' or 'tet4'
 
 %%
 
@@ -45,7 +45,7 @@ sampleHeight=3;
 nodeSpacingTet=0.75; %Node spacing between corner nodes (so actual spacing is half this value)
 switch tetType
     case 'tet4'
-        pointSpacing=nodeSpacingTet/2; %Half the density to roughly match spacing of quadratic nodes
+        pointSpacing=nodeSpacingTet;%/2; %Half the density to roughly match spacing of quadratic nodes
     case 'tet10'
         pointSpacing=nodeSpacingTet;
 end
@@ -365,7 +365,7 @@ febStruct2febFile(FEB_struct);
 
 %% RUNNING FEBIO JOB
 
-FEBioRunStruct.FEBioPath='C:\Program Files\febio-2.1.1\bin\FEBio2.exe';
+% FEBioRunStruct.FEBioPath='C:\Program Files\febio2-2.2.6\bin\febio2.exe';
 FEBioRunStruct.run_filename=FEB_struct.run_filename;
 FEBioRunStruct.run_logname=FEB_struct.run_logname;
 FEBioRunStruct.disp_on=1;

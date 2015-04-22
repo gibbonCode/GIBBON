@@ -188,7 +188,6 @@ febStruct2febFile(FEB_struct);
 
 %% RUNNING FEBIO JOB
 
-FEBioRunStruct.FEBioPath='C:\Program Files\febio-2.1.0\bin\FEBio2.exe';
 FEBioRunStruct.run_filename=FEB_struct.run_filename;
 FEBioRunStruct.run_logname=FEB_struct.run_logname;
 FEBioRunStruct.disp_on=1;

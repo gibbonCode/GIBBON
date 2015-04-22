@@ -306,7 +306,6 @@ febStruct2febFile(FEB_struct);
 FEBioRunStruct.run_filename=FEB_struct.run_filename;
 FEBioRunStruct.run_logname=FEB_struct.run_logname;
 FEBioRunStruct.disp_on=1;
-% FEBioRunStruct.FEBioPath='/data/Code/C/FEBIO_linux/bin/febio2.lnx64';
 FEBioRunStruct.disp_log_on=1;
 FEBioRunStruct.runMode='external';%'internal';
 FEBioRunStruct.t_check=0.25; %Time for checking log file (dont set too small)

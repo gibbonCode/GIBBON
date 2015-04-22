@@ -17,7 +17,7 @@ end
 try
     [~,V]=importNodeFile_tetGen(loadNameStruct.loadName_node);
 catch
-    disp([loadNameStruct.loadName_node,' import unsuccesful']);
+    warning([loadNameStruct.loadName_node,' import unsuccesful']);
     V=[];
 end
 
@@ -25,7 +25,7 @@ end
 try
     [~,F,faceBoundaryID]=importFaceFile_tetGen(loadNameStruct.loadName_face);
 catch
-%     disp([loadNameStruct.loadName_face,' import unsuccesful']);
+%     warning([loadNameStruct.loadName_face,' import unsuccesful']);
     F=[];
     faceBoundaryID=[];
 end

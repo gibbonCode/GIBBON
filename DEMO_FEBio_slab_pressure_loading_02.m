@@ -79,6 +79,7 @@ Vsp(:,1)=Vsp(:,1)-sphereShift;
 %% MERGING NODE SETS
 V=[Vt;Vsp;]; %Nodes
 F=[Ft; Fsp+size(Vt,1)];
+Fsp_fix=Fsp+size(Vt,1);
 faceBoundaryMarker=[faceBoundaryMarker_t; max(faceBoundaryMarker_t(:))+ones(size(Fsp,1),1)];
 
 %%
@@ -267,7 +268,7 @@ febStruct2febFile(FEB_struct);
 
 %% RUNNING FEBIO JOB
 
-FEBioRunStruct.FEBioPath='C:\Program Files\febio-2.1.1\bin\FEBio2.exe';
+% FEBioRunStruct.FEBioPath='C:\Program Files\febio2-2.2.6\bin\FEBio2.exe';
 FEBioRunStruct.run_filename=FEB_struct.run_filename;
 FEBioRunStruct.run_logname=FEB_struct.run_logname;
 FEBioRunStruct.disp_on=1;
@@ -292,7 +293,6 @@ if runFlag==1 %i.e. a succesful run
     V_def=VT+DN;
     DN_magnitude=sqrt(sum(DN.^2,2));
     
- 
     % Plotting the deformed model
     
     [CF]=vertexToFaceMeasure(Fb,DN_magnitude);
@@ -302,7 +302,7 @@ if runFlag==1 %i.e. a succesful run
     xlabel('X','FontSize',fontSize); ylabel('Y','FontSize',fontSize); zlabel('Z','FontSize',fontSize); hold on;
     
     hps=patch('Faces',Fb,'Vertices',V_def,'FaceColor','flat','CData',CF);
-    hps=patch('Faces',Fsp,'Vertices',V_def,'FaceColor',0.5*ones(1,3),'EdgeColor','none','FaceAlpha',0.25);
+    hps2=patch('Faces',Fsp_fix,'Vertices',V_def,'FaceColor',0.5*ones(1,3),'EdgeColor','none','FaceAlpha',0.25);
     
     view(3); axis tight;  axis equal;  grid on;
     colormap jet; colorbar;
