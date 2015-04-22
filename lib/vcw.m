@@ -51,6 +51,7 @@ function vcw(varargin)
 % uppon keypress, 8) Altered keypress functions and behaviour with SHIFT,
 % also added i to display help information for the vcw function. 
 % 2015/04/20 Added to GIBBON toolbox
+% 2015/04/22 Added JavaFrame handling of mnemonics
 %
 % TO DO: 1) Improved handling of colorbars. Currently requires colorbar
 % locations to be set to 'manual' for vcw. However this causes the figure
@@ -175,20 +176,6 @@ if ~isempty(initialState.toolbar)
     set (initialState.ptButtons,'Enable','off');
 end
 
-
-% Try to turn off menu Mnemonics
-% try
-%     jFrame = get(handle(hf),'JavaFrame');
-%     jMenuBar=jFrame.fHG2Client.getMenuBar;
-%     for q=0:1:jMenuBar.getComponentCount-1;
-%         jComp=jMenuBar.getComponent(q);
-%         jComp.setMnemonic(' ');
-%     end
-% catch 
-%     Remove toolbar
-%     set(hf,'MenuBar','none');
-% end
-
 % For each set of axes
 cax=gca;
 
@@ -232,11 +219,27 @@ if ismember('control', eventData.Modifier)
     step = step * 4; %Increase speed
 end
 
+mnemOff=1; 
 if ismember('alt', eventData.Modifier)
     linkedOn=1;
-    set(hf,'MenuBar','none');
-    t = uitoolbar;
-    set(t,'Tag','emptyBar_vcw');
+    % Try to turn off menu Mnemonics
+    try
+        warning off; %Stop jframe warning
+        jFrame = get(handle(hf),'JavaFrame');
+        jMenuBar=jFrame.fHG2Client.getMenuBar;
+        for q=0:1:jMenuBar.getComponentCount-1;
+            jComp=jMenuBar.getComponent(q);
+            jComp.setMnemonic(' ');
+        end
+        mnemOff=1;
+        warning on; 
+    catch
+        %Remove toolbar when ALT is pressed (QUICK FIX)
+        mnemOff=0;
+        set(hf,'MenuBar','none');
+        t = uitoolbar;
+        set(t,'Tag','emptyBar_vcw');
+    end        
 else
     linkedOn=0;
 end
@@ -407,10 +410,12 @@ switch eventData.Key
     case 'escape'
         close(hf);
 end
-set(hf,'MenuBar','figure');
-h1 = findobj(hf,'Tag','emptyBar_vcw');
-if ~isempty(h1)
-    delete(h1);
+if mnemOff==0
+    set(hf,'MenuBar','figure');
+    h1 = findobj(hf,'Tag','emptyBar_vcw');
+    if ~isempty(h1)
+        delete(h1);
+    end
 end
 return
 
