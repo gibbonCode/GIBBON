@@ -9,7 +9,7 @@ function export_STL_txt(fileName,stlStruct)
 % Example if the structure array for a single solid:
 %
 % stlStruct =
-%    solidNames: {'standford_bunny'} %Cell containing solid names
+%    solidNames: {'stanford_bunny'} %Cell containing solid names
 % solidVertices: {[8745x3 double]} %Cell constaining vertices for each solid
 %    solidFaces: {[2915x3 double]} %Cell containing faces for each solid
 %  solidNormals: {[2915x3 double]} %Cell containing normals for each solid

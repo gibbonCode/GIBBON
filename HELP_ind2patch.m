@@ -17,7 +17,6 @@ clear; close all; clc;
 
 %%
 % Plot settings
-fig_color='w'; fig_colordef='white'; 
 cMap=jet(250);
 faceAlpha1=1;
 faceAlpha2=0.65;
@@ -37,7 +36,7 @@ indPatch=1:numel(M);
 % Creating patch data for voxel display
 [F,V,C]=ind2patch(indPatch,M,'v'); 
 
-figuremax(fig_color,fig_colordef);
+h1=cFigure;
 title('patch type: v');
 xlabel('J - columns');ylabel('I - rows'); zlabel('K - slices'); hold on;
 patch('Faces',F,'Vertices',V,'FaceColor','flat','CData',C,'EdgeColor','k','FaceAlpha',0.5);
@@ -57,7 +56,7 @@ disp(num2str(size(V)));
 % removed
 [F,V,C]=ind2patch(indPatch,M,'vu'); 
 
-figuremax(fig_color,fig_colordef);
+h2=cFigure;
 title('patch type: vu');
 xlabel('J - columns');ylabel('I - rows'); zlabel('K - slices'); hold on;
 patch('Faces',F,'Vertices',V,'FaceColor','flat','CData',C,'EdgeColor','k','FaceAlpha',0.5);
@@ -81,7 +80,7 @@ disp(num2str(size(V)));
 % vertices
 [F,V,C]=ind2patch(indPatch,M,'vb'); 
 
-figuremax(fig_color,fig_colordef);
+h3=cFigure;
 title('patch type: vb');
 xlabel('J - columns');ylabel('I - rows'); zlabel('K - slices'); hold on;
 patch('Faces',F,'Vertices',V,'FaceColor','flat','CData',C,'EdgeColor','k','FaceAlpha',0.5);
@@ -101,7 +100,7 @@ disp(num2str(size(V)));
 
 %% Example: Introduction to using |ind2patch| for slice plotting
 
-figuremax(fig_color,fig_colordef);
+h4=cFigure;
 title('patch type: si, sj, sk');
 xlabel('J - columns');ylabel('I - rows'); zlabel('K - slices'); hold on;
 
@@ -138,7 +137,7 @@ drawnow;
 % ind2patch i.e. that it is meant to aid in the visualization of image data
 % as is expected of image data. 
 
-figuremax(fig_color,fig_colordef);
+h5=cFigure;
 subplot(2,2,1);
 title('MATLAB imagesc function');
 xlabel('J - columns');ylabel('I - rows'); zlabel('K - slices'); hold on;
@@ -186,7 +185,7 @@ M=1/6*(2 - (cos(X + phi*Y) + cos(X - phi*Y) + cos(Y + phi*Z) + cos(Y - phi*Z) + 
 % Creating and plotting patch data. Last example illustrates the use of a
 % specific logic description (i.e. a mask) for the voxels of interest
 
-figuremax(fig_color,fig_colordef);
+h6=cFigure;
 title('patch type: si, sj, sk, vb');
 xlabel('J - columns');ylabel('I - rows'); zlabel('K - slices'); hold on;
 
@@ -231,7 +230,7 @@ axis equal; view(3); axis tight; colormap jet; grid on;
 
 %%
 % Plotting the voxels
-h1=figuremax(fig_color,fig_colordef);
+h7=cFigure;
 title('Scaled (shrunk) patch data');
 xlabel('J - columns');ylabel('I - rows'); zlabel('K - slices'); hold on;
 hp1= patch('Faces',Fvs,'Vertices',Vvs,'FaceColor','flat','CData',Cvs,'EdgeColor','k','FaceAlpha',faceAlpha1);
@@ -293,7 +292,7 @@ logicVoxels(:,1:sliceIndexJ,:)=0;
 [Vy(:,1),Vy(:,2),Vy(:,3)]=im2cart(Vy(:,2),Vy(:,1),Vy(:,3),v);
 [Vz(:,1),Vz(:,2),Vz(:,3)]=im2cart(Vz(:,2),Vz(:,1),Vz(:,3),v);
 
-h1=figuremax(fig_color,fig_colordef);
+h8=cFigure;
 title('MRI visualisation, slices and voxels in cartesian coordinates with aid of voxel size');
 xlabel('X (mm)');ylabel('Y (mm)'); zlabel('Z (mm)'); hold on;
 hp1= patch('Faces',Fv,'Vertices',Vv,'FaceColor','flat','CData',Cv,'EdgeColor',edgeColor1,'FaceAlpha',faceAlpha1);
@@ -315,7 +314,7 @@ Cv=(Cv*ones(1,3))./max(Cv(:));
 
 %%
 % Plotting the voxels
-h1=figuremax(fig_color,fig_colordef);
+h9=cFigure;
 title('MRI visualisation, slices and voxels, colormap and RGB driven respectively');
 xlabel('X (mm)');ylabel('Y (mm)'); zlabel('Z (mm)'); hold on;
 hp1= patch('Faces',Fv,'Vertices',Vv,'FaceColor','flat','FaceVertexCData',Cv,'EdgeColor',edgeColor1,'FaceAlpha',faceAlpha2);

@@ -23,7 +23,7 @@ V2=V2./max(V2(:));
 
 %% Create the stlStruct
 
-stlStruct.solidNames={'standford_bunny','parasaurolophus'};
+stlStruct.solidNames={'stanford_bunny','parasaurolophus'};
 stlStruct.solidVertices={V1,V2};
 stlStruct.solidFaces={F1,F2};
 stlStruct.solidNormals={[],[]};
@@ -50,7 +50,7 @@ drawnow;
 %Set main folder and fileName
 defaultFolder = fileparts(mfilename('fullpath'));
 pathName=fullfile(defaultFolder,'data','STL'); 
-fileName=fullfile(pathName,'standford_bunny_multi.stl'); 
+fileName=fullfile(pathName,'stanford_bunny_multi.stl'); 
 
 export_STL_txt(fileName,stlStruct);
 

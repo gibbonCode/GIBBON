@@ -6,7 +6,7 @@
    <!--
 This HTML was auto-generated from MATLAB code.
 To make changes, update the MATLAB code and republish this document.
-      --><title>geoSphere</title><meta name="generator" content="MATLAB 8.4"><link rel="schema.DC" href="http://purl.org/dc/elements/1.1/"><meta name="DC.date" content="2014-10-01"><meta name="DC.source" content="HELP_geoSphere.m"><style type="text/css">
+      --><title>geoSphere</title><meta name="generator" content="MATLAB 8.5"><link rel="schema.DC" href="http://purl.org/dc/elements/1.1/"><meta name="DC.date" content="2015-04-25"><meta name="DC.source" content="HELP_geoSphere.m"><style type="text/css">
 html,body,div,span,applet,object,iframe,h1,h2,h3,h4,h5,h6,p,blockquote,pre,a,abbr,acronym,address,big,cite,code,del,dfn,em,font,img,ins,kbd,q,s,samp,small,strike,strong,sub,sup,tt,var,b,u,i,center,dl,dt,dd,ol,ul,li,fieldset,form,label,legend,table,caption,tbody,tfoot,thead,tr,th,td{margin:0;padding:0;border:0;outline:0;font-size:100%;vertical-align:baseline;background:transparent}body{line-height:1}ol,ul{list-style:none}blockquote,q{quotes:none}blockquote:before,blockquote:after,q:before,q:after{content:'';content:none}:focus{outine:0}ins{text-decoration:none}del{text-decoration:line-through}table{border-collapse:collapse;border-spacing:0}
 
 html { min-height:100%; margin-bottom:1px; }
@@ -66,16 +66,14 @@ table td { padding:7px 5px; text-align:left; vertical-align:top; border:1px soli
 
 
 
-  </style></head><body><div class="content"><h1>geoSphere</h1><!--introduction--><p>Below is a demonstration of the features of the <tt>geoSphere</tt> function</p><!--/introduction--><h2>Contents</h2><div><ul><li><a href="#3">Building a geodesic dome</a></li></ul></div><pre class="codeinput">clear; close <span class="string">all</span>; clc;
-</pre><p>Plot settings</p><pre class="codeinput">fig_color=<span class="string">'w'</span>; fig_colordef=<span class="string">'white'</span>;
-fontSize=15;
-faceAlpha=0.75;
-edgeColor=0.3*ones(1,3);
+  </style></head><body><div class="content"><h1>geoSphere</h1><!--introduction--><p>Below is a demonstration of the features of the <tt>geoSphere</tt> function</p><!--/introduction--><h2>Contents</h2><div><ul><li><a href="#1">Syntax</a></li><li><a href="#2">Description</a></li><li><a href="#3">Examples</a></li><li><a href="#5">Building a geodesic dome based on the icosahedron</a></li><li><a href="#6">Using other solid types</a></li></ul></div><h2>Syntax<a name="1"></a></h2><p><tt>[F,V,Vs]=geoSphere(n,r,solidType);</tt></p><h2>Description<a name="2"></a></h2><p>Use <tt>geoSphere</tt> to generate triangulated spheres with nearly geodesic triangle distributions. The density of the triangulation can be controlled through a particular choice of n (number of mesh refinement steps).</p><h2>Examples<a name="3"></a></h2><pre class="codeinput">clear; close <span class="string">all</span>; clc;
+</pre><p>Plot Settings</p><pre class="codeinput">fontSize=15;
+faceAlpha=1;
+edgeColor=0.2*ones(1,3);
 edgeWidth=1.5;
-</pre><h2>Building a geodesic dome<a name="3"></a></h2><p>The function inputs are n and r which define the mesh refinement and radius respectively. The mesh refinement number n defines the number of subtriangulation (see function <tt>subTri</tt>) iterations performed on an icosahedron. Below is a visualisation for n=0:1:3. The function outputs the geodesic dome faces (F) and vertices (V) and also the spherical coordinates of the vertices (Vs) (this output is suppressed in the example below).</p><pre class="codeinput"><span class="comment">% Open figure for plotting</span>
-hf=figuremax(fig_color,fig_colordef);
+</pre><h2>Building a geodesic dome based on the icosahedron<a name="5"></a></h2><p>The function inputs are n and r which define the mesh refinement and radius respectively. The mesh refinement number n defines the number of subtriangulation (see function <tt>subTri</tt>) iterations performed on an icosahedron. Below is a visualisation for n=0:1:3. The function outputs the geodesic dome faces (F) and vertices (V) and also the spherical coordinates of the vertices (Vs) (this output is suppressed in the example below).</p><pre class="codeinput">hf=cFigure; <span class="comment">% Open figure for plotting</span>
 
-<span class="comment">%Defining geodesic dome</span>
+<span class="comment">%Defining triangulated geodesic domes with different densities</span>
 r=1; <span class="comment">%sphere radius</span>
 n=0:1:3; <span class="comment">%Refinements</span>
 pColors=autumn(numel(n));
@@ -90,23 +88,50 @@ pColors=autumn(numel(n));
     set(gca,<span class="string">'FontSize'</span>,fontSize);
     view(3); axis <span class="string">tight</span>;  axis <span class="string">equal</span>;  grid <span class="string">on</span>;
 <span class="keyword">end</span>
-</pre><img vspace="5" hspace="5" src="HELP_geoSphere_01.png" alt=""> <p><img vspace="5" hspace="5" src="gibbVerySmall.gif" alt=""> </p><p><i><b>GIBBON</b></i> <a href="www.gibboncode.org">www.gibboncode.org</a></p><p><i>Kevin Mattheus Moerman</i>, <a href="gibbon.toolbox@gmail.com">gibbon.toolbox@gmail.com</a></p><p class="footer"><br><a href="http://www.mathworks.com/products/matlab/">Published with MATLAB&reg; R2014b</a><br></p></div><!--
+</pre><img vspace="5" hspace="5" src="HELP_geoSphere_01.png" alt=""> <h2>Using other solid types<a name="6"></a></h2><p>Other platonic solids can also be used as a starting tesselation. However these may not be as geodesic as the result for the icosahedron and dodecahedron.</p><pre class="codeinput"><span class="comment">%e.g. using a cube</span>
+solidTypes=1:5;
+
+hf=cFigure; <span class="comment">% Open figure for plotting</span>
+titleCell={<span class="string">'tetrahedron'</span>,<span class="string">'cube'</span>,<span class="string">'octahedron'</span>,<span class="string">'icosahedron'</span>,<span class="string">'dodecahedron'</span>};
+n=0; <span class="comment">%Refinements</span>
+pColors=autumn(numel(n));
+<span class="keyword">for</span> solidType=solidTypes;
+    [F,V,~]=geoSphere(0,r,solidType);
+    subplot(2,3,solidType); hold <span class="string">on</span>;
+    title([<span class="string">'Based on: '</span>,titleCell{solidType}],<span class="string">'FontSize'</span>,fontSize);
+    xlabel(<span class="string">'X'</span>,<span class="string">'FontSize'</span>,fontSize); ylabel(<span class="string">'Y'</span>,<span class="string">'FontSize'</span>,fontSize); zlabel(<span class="string">'Z'</span>,<span class="string">'FontSize'</span>,fontSize);
+    hp=patch(<span class="string">'Faces'</span>,F,<span class="string">'Vertices'</span>,V);
+    set(hp,<span class="string">'FaceColor'</span>,<span class="string">'b'</span>,<span class="string">'FaceAlpha'</span>,faceAlpha,<span class="string">'lineWidth'</span>,edgeWidth,<span class="string">'edgeColor'</span>,edgeColor);
+    camlight <span class="string">headlight</span>;
+    set(gca,<span class="string">'FontSize'</span>,fontSize);
+    view(3); axis <span class="string">tight</span>;  axis <span class="string">equal</span>;  grid <span class="string">on</span>;
+<span class="keyword">end</span>
+</pre><img vspace="5" hspace="5" src="HELP_geoSphere_02.png" alt=""> <p><img vspace="5" hspace="5" src="gibbVerySmall.gif" alt=""> </p><p><i><b>GIBBON</b></i> <a href="www.gibboncode.org">www.gibboncode.org</a></p><p><i>Kevin Mattheus Moerman</i>, <a href="gibbon.toolbox@gmail.com">gibbon.toolbox@gmail.com</a></p><p class="footer"><br><a href="http://www.mathworks.com/products/matlab/">Published with MATLAB&reg; R2015a</a><br></p></div><!--
 ##### SOURCE BEGIN #####
 %% geoSphere
 % Below is a demonstration of the features of the |geoSphere| function
 
-%%
-clear; close all; clc; 
+%% Syntax
+% |[F,V,Vs]=geoSphere(n,r,solidType);|
+
+%% Description
+% Use |geoSphere| to generate triangulated spheres with nearly geodesic
+% triangle distributions. The density of the triangulation can be
+% controlled through a particular choice of n (number of mesh refinement
+% steps).
+
+%% Examples
+
+clear; close all; clc;
 
 %% 
-% Plot settings
-fig_color='w'; fig_colordef='white';
+% Plot Settings
 fontSize=15;
-faceAlpha=0.75;
-edgeColor=0.3*ones(1,3);
+faceAlpha=1;
+edgeColor=0.2*ones(1,3);
 edgeWidth=1.5;
 
-%% Building a geodesic dome
+%% Building a geodesic dome based on the icosahedron
 % The function inputs are n and r which define the mesh refinement and
 % radius respectively. The mesh refinement number n defines the number of
 % subtriangulation (see function |subTri|) iterations performed on an
@@ -115,10 +140,9 @@ edgeWidth=1.5;
 % coordinates of the vertices (Vs) (this output is suppressed in the
 % example below).
 
-% Open figure for plotting
-hf=figuremax(fig_color,fig_colordef); 
+hf=cFigure; % Open figure for plotting
 
-%Defining geodesic dome
+%Defining triangulated geodesic domes with different densities
 r=1; %sphere radius
 n=0:1:3; %Refinements   
 pColors=autumn(numel(n));
@@ -129,6 +153,30 @@ for q=1:1:numel(n);
     xlabel('X','FontSize',fontSize); ylabel('Y','FontSize',fontSize); zlabel('Z','FontSize',fontSize);
     hp=patch('Faces',F,'Vertices',V);
     set(hp,'FaceColor',pColors(q,:),'FaceAlpha',faceAlpha,'lineWidth',edgeWidth,'edgeColor',edgeColor);
+    camlight headlight; 
+    set(gca,'FontSize',fontSize);
+    view(3); axis tight;  axis equal;  grid on;
+end
+
+%% Using other solid types
+% Other platonic solids can also be used as a starting tesselation. However
+% these may not be as geodesic as the result for the icosahedron and
+% dodecahedron. 
+
+%e.g. using a cube
+solidTypes=1:5;
+
+hf=cFigure; % Open figure for plotting
+titleCell={'tetrahedron','cube','octahedron','icosahedron','dodecahedron'};
+n=0; %Refinements   
+pColors=autumn(numel(n));
+for solidType=solidTypes;
+    [F,V,~]=geoSphere(0,r,solidType); 
+    subplot(2,3,solidType); hold on;
+    title(['Based on: ',titleCell{solidType}],'FontSize',fontSize);
+    xlabel('X','FontSize',fontSize); ylabel('Y','FontSize',fontSize); zlabel('Z','FontSize',fontSize);
+    hp=patch('Faces',F,'Vertices',V);
+    set(hp,'FaceColor','b','FaceAlpha',faceAlpha,'lineWidth',edgeWidth,'edgeColor',edgeColor);
     camlight headlight; 
     set(gca,'FontSize',fontSize);
     view(3); axis tight;  axis equal;  grid on;

@@ -9,7 +9,7 @@ Vc=Vc./(ones(size(Vc,1),1)*max(Vc,[],1)); %Scale coordinates
 %Get octahedron
 [Vo,~]=platonic_solid(3,1);
 Vo=Vo.*2; %Scale coordinates
-[R,Ri]=euler2DCM([0 0 0.25*pi]); %Define rotation
+[R,~]=euler2DCM([0 0 0.25*pi]); %Define rotation
 Vo=Vo*R; %Rotate coordinates
 
 %Compose VERTICES of rhombic dodecahedron

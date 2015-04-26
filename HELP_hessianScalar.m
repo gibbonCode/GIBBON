@@ -5,10 +5,25 @@
 %%
 clear; close all; clc; 
 
+%% Syntax
+% |H=hessianScalar(M,voxelSize,cellOpt);|
+
+%% Description
+% This function computes the Hessian matrix of the scalar function U for
+% each point in U. U may be a vector, a 2D matrix or a 3D matrix. The
+% vector v denotes the points spacing between the data entries in U. If v
+% is not supplied the spacing is assumed to be homogeneous and unity. If
+% the input is n dimensional array consisting of m entries then the output
+% is a matrix (if cellOpt==0) the size of mx(n^2) (whereby the colum
+% entries define the entries in a Hessian matrix and row entries relate to
+% elements in the input array). If cellOpt==1 then the output is reformed
+% into a cell array that matches the size of the input aray. Each cell
+% entry then contains the nxn Hessian matrix. 
+
+%% Examples
+
 %%
 % Plot settings
-figColor='w'; 
-figColorDef='white'; 
 faceAlpha1=1;
 faceAlpha2=0.3;
 fontSize=10; 
@@ -55,7 +70,7 @@ Mh_trace=reshape(H(:,1)+H(:,end),size(M)); %Compute trace for visualization
 %%
 % Visualize results
 
-figuremax(figColor,figColorDef);
+cFigure;
 
 subplot(1,2,1); hold on; 
 title('Original image','fontSize',fontSize);
@@ -110,7 +125,7 @@ Mh_trace=cellTrace(H);
 %%
 % Visualize results
 
-figuremax(figColor,figColorDef);
+cFigure;
 
 subplot(1,2,1); hold on; 
 title('Hessian 1st eigenvalue','fontSize',fontSize);

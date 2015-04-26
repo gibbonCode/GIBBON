@@ -1,18 +1,27 @@
 %% geoSphere
 % Below is a demonstration of the features of the |geoSphere| function
 
-%%
-clear; close all; clc; 
+%% Syntax
+% |[F,V,Vs]=geoSphere(n,r,solidType);|
+
+%% Description
+% Use |geoSphere| to generate triangulated spheres with nearly geodesic
+% triangle distributions. The density of the triangulation can be
+% controlled through a particular choice of n (number of mesh refinement
+% steps).
+
+%% Examples
+
+clear; close all; clc;
 
 %% 
-% Plot settings
-fig_color='w'; fig_colordef='white';
+% Plot Settings
 fontSize=15;
-faceAlpha=0.75;
-edgeColor=0.3*ones(1,3);
+faceAlpha=1;
+edgeColor=0.2*ones(1,3);
 edgeWidth=1.5;
 
-%% Building a geodesic dome
+%% Building a geodesic dome based on the icosahedron
 % The function inputs are n and r which define the mesh refinement and
 % radius respectively. The mesh refinement number n defines the number of
 % subtriangulation (see function |subTri|) iterations performed on an
@@ -21,10 +30,9 @@ edgeWidth=1.5;
 % coordinates of the vertices (Vs) (this output is suppressed in the
 % example below).
 
-% Open figure for plotting
-hf=figuremax(fig_color,fig_colordef); 
+hf=cFigure; % Open figure for plotting
 
-%Defining geodesic dome
+%Defining triangulated geodesic domes with different densities
 r=1; %sphere radius
 n=0:1:3; %Refinements   
 pColors=autumn(numel(n));
@@ -35,6 +43,30 @@ for q=1:1:numel(n);
     xlabel('X','FontSize',fontSize); ylabel('Y','FontSize',fontSize); zlabel('Z','FontSize',fontSize);
     hp=patch('Faces',F,'Vertices',V);
     set(hp,'FaceColor',pColors(q,:),'FaceAlpha',faceAlpha,'lineWidth',edgeWidth,'edgeColor',edgeColor);
+    camlight headlight; 
+    set(gca,'FontSize',fontSize);
+    view(3); axis tight;  axis equal;  grid on;
+end
+
+%% Using other solid types
+% Other platonic solids can also be used as a starting tesselation. However
+% these may not be as geodesic as the result for the icosahedron and
+% dodecahedron. 
+
+%e.g. using a cube
+solidTypes=1:5;
+
+hf=cFigure; % Open figure for plotting
+titleCell={'tetrahedron','cube','octahedron','icosahedron','dodecahedron'};
+n=0; %Refinements   
+pColors=autumn(numel(n));
+for solidType=solidTypes;
+    [F,V,~]=geoSphere(0,r,solidType); 
+    subplot(2,3,solidType); hold on;
+    title(['Based on: ',titleCell{solidType}],'FontSize',fontSize);
+    xlabel('X','FontSize',fontSize); ylabel('Y','FontSize',fontSize); zlabel('Z','FontSize',fontSize);
+    hp=patch('Faces',F,'Vertices',V);
+    set(hp,'FaceColor','b','FaceAlpha',faceAlpha,'lineWidth',edgeWidth,'edgeColor',edgeColor);
     camlight headlight; 
     set(gca,'FontSize',fontSize);
     view(3); axis tight;  axis equal;  grid on;

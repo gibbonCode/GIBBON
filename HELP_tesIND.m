@@ -1,4 +1,3 @@
-
 %% tesIND
 % Below is a demonstration of the features of the |tesIND| function
 

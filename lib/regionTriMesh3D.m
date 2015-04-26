@@ -1,6 +1,6 @@
 function [F,V]=regionTriMesh3D(regionCell,pointSpacing,resampleCurveOpt,interpMethod)
 
-% function [F,V]=regionTriMesh3D(regionCell,pointSpacing,plotOn)
+% function [F,V]=regionTriMesh3D(regionCell,pointSpacing,resampleCurveOpt,interpMethod)
 % ------------------------------------------------------------------------
 % This function creates a 3D triangulation for the region specified in the
 % variable regionCell. The mesh aims to obtain a point spacing as defined
@@ -88,5 +88,6 @@ smoothPar.Tolerance=0.001;
 smoothPar.RigidConstraints=boundaryInd;
 smoothPar.smoothMethod='HC';
 [V]=tesSmooth(F,V,[],smoothPar);
+
 
 

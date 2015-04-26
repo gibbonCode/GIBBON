@@ -14,6 +14,7 @@ function [varargout]=geoSphere(varargin)
 % 
 % 08/04/2013 Updated for GIBBON
 % 12/08/2014 Added custom solidType and updated using varargin, varargout
+% 2015/04/25 Added dodecahedron solidType
 %------------------------------------------------------------------------
 
 %% Parse input
@@ -37,10 +38,6 @@ end
 
 %%
 
-if solidType==5
-    error('Tesselation based on dodecahedron not implemented yet, use icosahedron for instance');
-end
-
 %Get initial icosahedron
 [V,F]=platonic_solid(solidType,r); 
 
@@ -51,7 +48,33 @@ end
 
 %Treat dodecahedron case 
 if size(F,2)==5 
-    
+          Vm=zeros(size(F,1),size(V,2));
+        for q=1:1:size(V,2)
+            X=V(:,q);
+            FX=X(F);
+            if size(F,1)==1 %Treat special case of single face
+                FX=FX';
+            end
+            Vm(:,q)=mean(FX,2);
+        end
+        %Join point sets
+        Vt=[V;Vm];
+        
+        indVm=(size(V,1)+1):size(Vt,1);
+        
+        %Create faces
+        Ft=[F(:,1) F(:,2) indVm(:);...
+            F(:,2) F(:,3) indVm(:);...
+            F(:,3) F(:,4) indVm(:);...
+            F(:,4) F(:,5) indVm(:);...
+            F(:,5) F(:,1) indVm(:)];
+        V=Vt;
+        F=Ft;
+end
+
+if solidType~=4
+    [T,P,R] = cart2sph(V(:,1),V(:,2),V(:,3)); %Convert to spherical coordinates
+    [V(:,1),V(:,2),V(:,3)] = sph2cart(T,P,r.*ones(size(R)));  %Push back radii
 end
 
 % Sub-triangulate the icosahedron for geodesic sphere triangulation

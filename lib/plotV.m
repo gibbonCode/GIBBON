@@ -9,12 +9,6 @@ end
 
 hp=plot3(V(:,1),V(:,2),V(:,3),varargin{:});
 
-if nDims==2
-    view(2);
-else
-    view(3); 
-end
-
 % varargout{1}=hp;
 switch nargout
     case 1

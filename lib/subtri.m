@@ -1,6 +1,6 @@
 function [Fs,Vs]=subtri(F,V,n,uniqueOpt)
 
-% function [Fs,Vs]=subtri(F,V,n)
+% function [Fs,Vs]=subtri(F,V,n,uniqueOpt)
 % ------------------------------------------------------------------------
 % Sub-triangulates the triangles defined by the patch format data F (faces)
 % and V (vertices). Creates n addition points on the edges of the initial

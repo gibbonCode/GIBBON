@@ -1,13 +1,19 @@
 %% import_STL_txt
 % Below is a demonstration of the features of the |import_STL_txt| function
 
-%%
-clear; close all; clc; 
+%% Syntax
+% |[stlStruct] = import_STL_txt(fileName);|
+
+%% Description
+% Use |import_STL_txt| to import .txt type (as apposed to binary) STL
+% files. The function supports multi-solid STL. 
+
+%% Examples
+
+clear; close all; clc;
 
 %%
 % Plot settings
-fig_color='w'; 
-fig_colordef='white'; 
 faceAlpha1=1;
 faceAlpha2=0.5;
 fontSize=25; 
@@ -26,7 +32,7 @@ V=stlStruct.solidVertices{1};
 %%
 % Plotting the model
 
-figuremax(fig_color,fig_colordef);
+cFigure;
 title('Imported patch data from STL','fontSize',fontSize);
 xlabel('X','fontSize',fontSize);ylabel('Y','fontSize',fontSize); zlabel('Z','fontSize',fontSize); hold on;
 
@@ -42,14 +48,14 @@ drawnow;
 %Set main folder
 defaultFolder = fileparts(mfilename('fullpath'));
 pathName=fullfile(defaultFolder,'data','STL'); 
-fileName=fullfile(pathName,'standford_bunny_multi.stl'); 
+fileName=fullfile(pathName,'stanford_bunny_multi.stl'); 
 [stlStruct] = import_STL_txt(fileName);
 
 %%
 % Plotting the models 
 pColors=autumn(numel(stlStruct.solidNames));
 
-figuremax(fig_color,fig_colordef);
+cFigure;
 title('Imported patch data from multi-solid STL','fontSize',fontSize);
 xlabel('X','fontSize',fontSize);ylabel('Y','fontSize',fontSize); zlabel('Z','fontSize',fontSize); hold on;
 for q=1:1:numel(stlStruct.solidNames)
