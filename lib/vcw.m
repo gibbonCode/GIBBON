@@ -90,8 +90,7 @@ hb = findall(hf,'Type','uitoolbar');
 
 %Check for presence of a vcw button
 hp = findobj(hb,'Tag','tBar');
-
-if isempty(hp); %If vcw button is not present create one and wiat for key/button press
+if isempty(hp); %If vcw button is not present create one and wait for key/button press
     
     % Build icon
     s=[ NaN,NaN,1  ,1  ,1  ,1  ,NaN,NaN,NaN,NaN,NaN,NaN,NaN,NaN,NaN,NaN;...
