@@ -1,6 +1,5 @@
 function vcw(varargin)
 
-
 % function vcw(hf,buttonOpt)
 % ------------------------------------------------------------------------
 % vcw, View Control Widget, Allows users to manipulate a view in 3D using key and button presses
@@ -35,7 +34,7 @@ function vcw(varargin)
 %
 % Kevin Mattheus Moerman
 % gibbon.toolbox@gmail.com
-% 
+%
 % 2015/04/15 %Copied from fcw and renamed to vcw due to planning revision
 % 2015/04/15 %Added: 1) handing of colorbars (bug in fcw when view(2) is
 % used combined with panning which induced zooming and panning), 2) overobj
@@ -49,16 +48,20 @@ function vcw(varargin)
 % tools and buttons are disabled (to avoid interference with vcw), 7) Added
 % "linked" mode by using ALT button to alter views for all axes in figure
 % uppon keypress, 8) Altered keypress functions and behaviour with SHIFT,
-% also added i to display help information for the vcw function. 
+% also added i to display help information for the vcw function.
 % 2015/04/20 Added to GIBBON toolbox
-% 2015/04/22 Added JavaFrame handling of mnemonics
+% 2015/04/22 Added JavaFrame handling of ALT related mnemonics
+% 2015/04/28 Fixed behaviour for repated vcw; commands (only generate a
+% single vcw button even if vcw is called multiple times). 
+% 2015/04/28 Fixed behaviour for figures without axes. I.e. vcw will only
+% start if an axis is present. 
 %
 % TO DO: 1) Improved handling of colorbars. Currently requires colorbar
 % locations to be set to 'manual' for vcw. However this causes the figure
 % to rescale/adjust after deactivation/activation of vcw. It would be best
 % if the colorbar locations settings could remain constant. 2) Proper
 % restoring of all figure properties. Currently defaults are set manually
-% which could remove user defined figure features. 
+% which could remove user defined figure features.
 %------------------------------------------------------------------------
 
 %% Parse input arguments
@@ -77,69 +80,75 @@ switch nargin
 end
 
 if ~ishandle(hf)
-    buttonOpt=hf; 
+    buttonOpt=hf;
     hf = gcf;
 end
 
 
-%% Wait for start using key-press
+%% Initialise button and button/keypress wait
 hb = findall(hf,'Type','uitoolbar');
 
-% Build icon
-s=[ NaN,NaN,1  ,1  ,1  ,1  ,NaN,NaN,NaN,NaN,NaN,NaN,NaN,NaN,NaN,NaN;...
-    NaN,NaN,NaN,1  ,1  ,1  ,NaN,NaN,NaN,NaN,NaN,NaN,NaN,NaN,NaN,NaN;...
-    NaN,NaN,1  ,1  ,1  ,1  ,NaN,NaN,NaN,NaN,1  ,1  ,NaN,NaN,NaN,NaN;...
-    NaN,1  ,1  ,1  ,NaN,1  ,NaN,NaN,NaN,NaN,1  ,1  ,1  ,NaN,NaN,NaN;...
-    NaN,1  ,1  ,NaN,NaN,NaN,NaN,NaN,NaN,NaN,NaN,1  ,1  ,1  ,NaN,NaN;...
-    1,1  ,NaN,NaN,NaN,NaN,NaN,NaN,NaN,NaN,NaN,NaN,NaN,1  ,1  ,NaN;...
-    1,1  ,NaN,NaN,NaN,1  ,NaN,NaN,NaN,NaN,1  ,NaN,NaN,1  ,1  ,NaN;...
-    1,1  ,NaN,NaN,NaN,1  ,1  ,NaN,NaN,1  ,1  ,NaN,NaN,NaN,1  ,1  ;...
-    1,1  ,NaN,NaN,NaN,NaN,1  ,NaN,NaN,1  ,NaN,NaN,NaN,NaN,1  ,1  ;...
-    NaN,1  ,1  ,NaN,NaN,NaN,1  ,1  ,1  ,1  ,NaN,NaN,NaN,NaN,1  ,1  ;...
-    NaN,1  ,1  ,NaN,NaN,NaN,NaN,1  ,1  ,NaN,NaN,NaN,NaN,NaN,1  ,1  ;...
-    NaN,NaN,1  ,1  ,1  ,NaN,NaN,NaN,NaN,NaN,NaN,NaN,NaN,1  ,1  ,NaN;...
-    NaN,NaN,NaN,1  ,1  ,1  ,NaN,NaN,NaN,NaN,1  ,NaN,1  ,1  ,1  ,NaN;...
-    NaN,NaN,NaN,NaN,1  ,1  ,NaN,NaN,NaN,NaN,1  ,1  ,1  ,1  ,NaN,NaN;...
-    NaN,NaN,NaN,NaN,NaN,NaN,NaN,NaN,NaN,NaN,1  ,1  ,1  ,NaN,NaN,NaN;...
-    NaN,NaN,NaN,NaN,NaN,NaN,NaN,NaN,NaN,NaN,1  ,1  ,1  ,1  ,NaN,NaN];
+%Check for presence of a vcw button
+hp = findobj(hb,'Tag','tBar');
 
-S=zeros(16,16,3);
-S(:,:,1)=0.7.*s; 
-S(:,:,2)=0.25.*s;  
-S(:,:,3)=0.05.*s; 
-
-% Create a uipushtool in the toolbar
-hp=uitoggletool(hb,'TooltipString','Activate View Control Widget (or enter v)','CData',S,'Tag','tBar');                   
-set(hp,'OnCallback',{@start_vcw_toggle,{hf,buttonOpt,hp}});
-set(hp,'OffCallback',{@quit_vcw_toggle,{hf,buttonOpt,hp}});
-        
-%% Wait for start using key-press
-
-set(hf,'KeyPressFcn', {@keyPress_wait,buttonOpt,hp},'BusyAction','cancel');
-
-
+if isempty(hp); %If vcw button is not present create one and wiat for key/button press
+    
+    % Build icon
+    s=[ NaN,NaN,1  ,1  ,1  ,1  ,NaN,NaN,NaN,NaN,NaN,NaN,NaN,NaN,NaN,NaN;...
+        NaN,NaN,NaN,1  ,1  ,1  ,NaN,NaN,NaN,NaN,NaN,NaN,NaN,NaN,NaN,NaN;...
+        NaN,NaN,1  ,1  ,1  ,1  ,NaN,NaN,NaN,NaN,1  ,1  ,NaN,NaN,NaN,NaN;...
+        NaN,1  ,1  ,1  ,NaN,1  ,NaN,NaN,NaN,NaN,1  ,1  ,1  ,NaN,NaN,NaN;...
+        NaN,1  ,1  ,NaN,NaN,NaN,NaN,NaN,NaN,NaN,NaN,1  ,1  ,1  ,NaN,NaN;...
+        1,1  ,NaN,NaN,NaN,NaN,NaN,NaN,NaN,NaN,NaN,NaN,NaN,1  ,1  ,NaN;...
+        1,1  ,NaN,NaN,NaN,1  ,NaN,NaN,NaN,NaN,1  ,NaN,NaN,1  ,1  ,NaN;...
+        1,1  ,NaN,NaN,NaN,1  ,1  ,NaN,NaN,1  ,1  ,NaN,NaN,NaN,1  ,1  ;...
+        1,1  ,NaN,NaN,NaN,NaN,1  ,NaN,NaN,1  ,NaN,NaN,NaN,NaN,1  ,1  ;...
+        NaN,1  ,1  ,NaN,NaN,NaN,1  ,1  ,1  ,1  ,NaN,NaN,NaN,NaN,1  ,1  ;...
+        NaN,1  ,1  ,NaN,NaN,NaN,NaN,1  ,1  ,NaN,NaN,NaN,NaN,NaN,1  ,1  ;...
+        NaN,NaN,1  ,1  ,1  ,NaN,NaN,NaN,NaN,NaN,NaN,NaN,NaN,1  ,1  ,NaN;...
+        NaN,NaN,NaN,1  ,1  ,1  ,NaN,NaN,NaN,NaN,1  ,NaN,1  ,1  ,1  ,NaN;...
+        NaN,NaN,NaN,NaN,1  ,1  ,NaN,NaN,NaN,NaN,1  ,1  ,1  ,1  ,NaN,NaN;...
+        NaN,NaN,NaN,NaN,NaN,NaN,NaN,NaN,NaN,NaN,1  ,1  ,1  ,NaN,NaN,NaN;...
+        NaN,NaN,NaN,NaN,NaN,NaN,NaN,NaN,NaN,NaN,1  ,1  ,1  ,1  ,NaN,NaN];
+    
+    S=zeros(16,16,3);
+    S(:,:,1)=0.7.*s;
+    S(:,:,2)=0.25.*s;
+    S(:,:,3)=0.05.*s;
+    
+    % Create a uipushtool in the toolbar
+    hp=uitoggletool(hb,'TooltipString','Activate View Control Widget (or enter v)','CData',S,'Tag','tBar');
+    set(hp,'OnCallback',{@start_vcw_toggle,{hf,buttonOpt,hp}});
+    set(hp,'OffCallback',{@quit_vcw_toggle,{hf,buttonOpt,hp}});
+    
+    %% Wait for start using key-press
+    
+    set(hf,'KeyPressFcn', {@keyPress_wait,buttonOpt,hp},'BusyAction','cancel');
+    
+end
 return
 
 function start_vcw_toggle(hObject,callbackdata,x)
-    start_vcw(x{1},x{2},x{3});    
+start_vcw(x{1},x{2},x{3});
 return
 
 function keyPress_wait(src,eventData,buttonOpt,hp)
 hf = ancestor(src, 'figure');
 cax = overobj2('axes');
 if isempty(cax)
-    cax = get(hf, 'CurrentAxes');
+%     cax=gca; %this gets current axis or if none exists creates one
+cax = get(hf, 'CurrentAxes');
 else
     axes(cax)
 end
 if isempty(cax)
-    return;
+    return
 end
 
 %Key actions
 switch eventData.Key
-    case {'v'} %Start vcw                
-        start_vcw(hf,buttonOpt,hp);        
+    case {'v'} %Start vcw
+        start_vcw(hf,buttonOpt,hp);
 end
 return
 
@@ -171,23 +180,36 @@ if ~isempty(initialState.toolbar)
         uigettool(initialState.toolbar,'Exploration.Pan'),...
         uigettool(initialState.toolbar,'Exploration.ZoomIn'),...
         uigettool(initialState.toolbar,'Exploration.ZoomOut'),...
-                              ];
+        ];
     initialState.ptState = get (initialState.ptButtons,'Enable');
     set (initialState.ptButtons,'Enable','off');
 end
 
 % For each set of axes
-cax=gca;
-
-for h = findobj(hf, 'Type', 'axes', '-depth', 1)'
-    % Set everything to manual
-    set(h, 'CameraViewAngleMode', 'manual', 'CameraTargetMode', 'manual', 'CameraPositionMode', 'manual');
-    % Store the camera viewpoint
-    axes(h); axis vis3d;
-    caxUserDataStruct.defaultView=camview(h);
-    set(h, 'UserData',caxUserDataStruct);
+cax = get(hf,'CurrentAxes');
+% cax=gca; %this gets current axis or if none exists creates one
+if isempty(cax)
+    set(hp,'State','Off');
+    set(hp,'TooltipString','Activate View Control Widget (or enter v)');
+    return
 end
-axes(cax);
+h = findobj(hf, 'Type', 'axes', '-depth', 1)'; %All axis handles
+
+if ~isempty(h)
+    for h = findobj(hf, 'Type', 'axes', '-depth', 1)';
+        % Set everything to manual
+        set(h, 'CameraViewAngleMode', 'manual', 'CameraTargetMode', 'manual', 'CameraPositionMode', 'manual');
+        % Store the camera viewpoint
+        axes(h); axis vis3d;
+        caxUserDataStruct.defaultView=camview(h);
+        set(h, 'UserData',caxUserDataStruct);
+    end
+    axes(cax);
+else
+    set(hp,'State','Off');
+    set(hp,'TooltipString','Activate View Control Widget (or enter v)');
+    return
+end
 
 % Initialize the callbacks
 set(hf, 'WindowButtonDownFcn', {@mousedown, {str2func(['vcw_' buttonOpt{1}]), str2func(['vcw_' buttonOpt{2}]), str2func(['vcw_' buttonOpt{3}])}}, ...
@@ -219,7 +241,7 @@ if ismember('control', eventData.Modifier)
     step = step * 4; %Increase speed
 end
 
-mnemOff=1; 
+mnemOff=1;
 if ismember('alt', eventData.Modifier)
     linkedOn=1;
     % Try to turn off menu Mnemonics
@@ -232,14 +254,14 @@ if ismember('alt', eventData.Modifier)
             jComp.setMnemonic(' ');
         end
         mnemOff=1;
-        warning on; 
+        warning on;
     catch
         %Remove toolbar when ALT is pressed (QUICK FIX)
         mnemOff=0;
         set(hf,'MenuBar','none');
         t = uitoolbar;
         set(t,'Tag','emptyBar_vcw');
-    end        
+    end
 else
     linkedOn=0;
 end
@@ -394,7 +416,7 @@ switch eventData.Key
             'f,h,t,b,l,r = Set front, hind, top, bottom, left, or right view respectively',...
             's = Store current view states as default (return to default using d)',...
             'd = Restore/reset to default view',...
-            'v = activate/deactivate vcw mode',...            
+            'v = activate/deactivate vcw mode',...
             'q = Deactivate vcw mode and unable/remove widget from current figure',...
             'i = Display help information',...
             'The key inputs and mouse scroll work in the axis defined by mouse pointer location (overobj)',...
@@ -402,7 +424,7 @@ switch eventData.Key
             '------------------------------------------------------------------------',...
             };
         helpButton = questdlg(msgText,'Help for vcw','OK','OK');
-    case 'v' % Quit vcw mode        
+    case 'v' % Quit vcw mode
         quit_vcw(hf,buttonOpt,hp);
     case 'q' % Quit vcw mode
         quit_vcw(hf,buttonOpt,hp);
@@ -609,73 +631,73 @@ end
 return
 
 function quit_vcw_toggle(hObject,callbackdata,x)
-       quit_vcw(x{1},x{2},x{3})
+quit_vcw(x{1},x{2},x{3})
 return
 
 function quit_vcw(hf,buttonOpt,hp)
 
-       % Restore figure settings except for key press to allow reactivation
-       set(hf, 'WindowButtonDownFcn',[], ...
-            'WindowButtonUpFcn',[], ...
-            'KeyPressFcn',{@keyPress_wait,buttonOpt,hp}, ...
-            'WindowScrollWheelFcn',[], ...
-            'BusyAction','cancel',...
-            'MenuBar','figure');
-        
-        % Restore colorbar state
-        figUserDataStruct=get(hf,'UserData');        
-        colorbarLocSet(hf,figUserDataStruct.colorbarLocSet);
-        
-        % Enable Plottools Buttons and Exploration Buttons
-        initialState.toolbar = findobj(allchild(hf),'flat','Type','uitoolbar');
-        if ~isempty(initialState.toolbar)
-            initialState.ptButtons = [uigettool(initialState.toolbar,'Plottools.PlottoolsOff'), ...
-                uigettool(initialState.toolbar,'Plottools.PlottoolsOn'),...
-                uigettool(initialState.toolbar,'Exploration.Rotate'), ...
-                uigettool(initialState.toolbar,'Exploration.Pan'),...
-                uigettool(initialState.toolbar,'Exploration.ZoomIn'),...
-                uigettool(initialState.toolbar,'Exploration.ZoomOut'),...
-                ];
-            initialState.ptState = get (initialState.ptButtons,'Enable');
-            set (initialState.ptButtons,'Enable','on');
-        end
-        
+% Restore figure settings except for key press to allow reactivation
+set(hf, 'WindowButtonDownFcn',[], ...
+    'WindowButtonUpFcn',[], ...
+    'KeyPressFcn',{@keyPress_wait,buttonOpt,hp}, ...
+    'WindowScrollWheelFcn',[], ...
+    'BusyAction','cancel',...
+    'MenuBar','figure');
+
+% Restore colorbar state
+figUserDataStruct=get(hf,'UserData');
+colorbarLocSet(hf,figUserDataStruct.colorbarLocSet);
+
+% Enable Plottools Buttons and Exploration Buttons
+initialState.toolbar = findobj(allchild(hf),'flat','Type','uitoolbar');
+if ~isempty(initialState.toolbar)
+    initialState.ptButtons = [uigettool(initialState.toolbar,'Plottools.PlottoolsOff'), ...
+        uigettool(initialState.toolbar,'Plottools.PlottoolsOn'),...
+        uigettool(initialState.toolbar,'Exploration.Rotate'), ...
+        uigettool(initialState.toolbar,'Exploration.Pan'),...
+        uigettool(initialState.toolbar,'Exploration.ZoomIn'),...
+        uigettool(initialState.toolbar,'Exploration.ZoomOut'),...
+        ];
+    initialState.ptState = get (initialState.ptButtons,'Enable');
+    set (initialState.ptButtons,'Enable','on');
+end
+
 %         hp=findobj(hf,'Tag','tBar');
-        set(hp,'State','Off');
-        set(hp,'TooltipString','Activate View Control Widget (or enter v)');
-        
+set(hp,'State','Off');
+set(hp,'TooltipString','Activate View Control Widget (or enter v)');
+
 return
 
 function close_vcw(hf,hp)
 
-       % Restore figure settings
-       set(hf, 'WindowButtonDownFcn',[], ...
-            'WindowButtonUpFcn',[], ...
-            'KeyPressFcn',[], ...
-            'WindowScrollWheelFcn',[], ...
-            'BusyAction','queue',...            
-            'MenuBar','figure');
-        
-        % Restore colorbar state
-        figUserDataStruct=get(hf,'UserData');        
-        colorbarLocSet(hf,figUserDataStruct.colorbarLocSet);
-        
-        % Enable Plottools Buttons and Exploration Buttons
-        initialState.toolbar = findobj(allchild(hf),'flat','Type','uitoolbar');
-        if ~isempty(initialState.toolbar)
-            initialState.ptButtons = [uigettool(initialState.toolbar,'Plottools.PlottoolsOff'), ...
-                uigettool(initialState.toolbar,'Plottools.PlottoolsOn'),...
-                uigettool(initialState.toolbar,'Exploration.Rotate'), ...
-                uigettool(initialState.toolbar,'Exploration.Pan'),...
-                uigettool(initialState.toolbar,'Exploration.ZoomIn'),...
-                uigettool(initialState.toolbar,'Exploration.ZoomOut'),...
-                ];
-            initialState.ptState = get (initialState.ptButtons,'Enable');
-            set (initialState.ptButtons,'Enable','on');
-        end
+% Restore figure settings
+set(hf, 'WindowButtonDownFcn',[], ...
+    'WindowButtonUpFcn',[], ...
+    'KeyPressFcn',[], ...
+    'WindowScrollWheelFcn',[], ...
+    'BusyAction','queue',...
+    'MenuBar','figure');
+
+% Restore colorbar state
+figUserDataStruct=get(hf,'UserData');
+colorbarLocSet(hf,figUserDataStruct.colorbarLocSet);
+
+% Enable Plottools Buttons and Exploration Buttons
+initialState.toolbar = findobj(allchild(hf),'flat','Type','uitoolbar');
+if ~isempty(initialState.toolbar)
+    initialState.ptButtons = [uigettool(initialState.toolbar,'Plottools.PlottoolsOff'), ...
+        uigettool(initialState.toolbar,'Plottools.PlottoolsOn'),...
+        uigettool(initialState.toolbar,'Exploration.Rotate'), ...
+        uigettool(initialState.toolbar,'Exploration.Pan'),...
+        uigettool(initialState.toolbar,'Exploration.ZoomIn'),...
+        uigettool(initialState.toolbar,'Exploration.ZoomOut'),...
+        ];
+    initialState.ptState = get (initialState.ptButtons,'Enable');
+    set (initialState.ptButtons,'Enable','on');
+end
 
 %         hp=findobj(hf,'Tag','tBar');
-        set(hp,'State','Off');
-        set(hp,'TooltipString','Activate View Control Widget (or enter v)');
-        delete(hp);
+set(hp,'State','Off');
+set(hp,'TooltipString','Activate View Control Widget (or enter v)');
+delete(hp);
 return
