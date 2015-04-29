@@ -1,5 +1,8 @@
 function Vo = camview(varargin)
-%CAMVIEW  Records or sets the viewpoint of the current axes
+
+% function Vo = camview([hAx], [Vi])
+% ------------------------------------------------------------------------
+% CAMVIEW  Records or sets the viewpoint of the current axes
 %
 %   Vo = camview([hAx], [Vi])
 %
@@ -22,7 +25,19 @@ function Vo = camview(varargin)
 % OUT:
 %    Vo - 4x4 matrix specifying the viewpoint of the current axes just
 %         prior to the function being called.
+%
+% This code was written by Oliver Woodford and obtained from:
+% http://www.mathworks.com/matlabcentral/fileexchange/34883-camview
+%
+% (C) Copyright Oliver Woodford 2006-2015
+%
+% Kevin Mattheus Moerman
+% gibbon.toolbox@gmail.com
+%
+% 2015/04/15 %Added to external library for GIBBON toolbox
+% ------------------------------------------------------------------------
 
+%%
 % Set default inputs
 hAx = gca;
 Vi = [];
@@ -47,6 +62,7 @@ if nargout > 0
     Vo = K * R' * [eye(3) -t'];
     Vo(4,:) = [norm(d) 0 0 strcmp(get(hAx, 'Projection'), 'perspective')];
 end
+
 if ~isempty(Vi)
     % Decompose the projection matrix
     st = @(M) M(end:-1:1,end:-1:1)';
@@ -67,4 +83,5 @@ if ~isempty(Vi)
              'CameraViewAngle', atan(1/K(5))*360/pi, ...
              'Projection', projection{(Vi(16)==0)+1});
 end
+
 return

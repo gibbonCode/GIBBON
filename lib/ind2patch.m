@@ -24,6 +24,9 @@ function [F,V,C]=ind2patch(IND,M,ptype)
 %                  respectively
 % 'siu', 'sju', 'sku' Same as 'si', 'sj', 'sk' but with double points
 %                  removed.
+% 'h'              Creates a hexahedral element description instead (e.g
+%                  nx8) element data.
+% 'hu'             Same as 'h' but with shared unique nodes.
 %
 %%% EXAMPLE
 % clear all; close all; clc; 

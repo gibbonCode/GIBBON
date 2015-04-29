@@ -41,8 +41,7 @@ function [V,F]=platonic_solid(n,r)
 % Kevin Mattheus Moerman
 % gibbon.toolbox@gmail.com
 % 
-% 13/11/2009 Updated for GIBBON
-% 12/08/2014 Added custom solidType and updated using varargin, varargout
+% 12/08/2014 Updated for GIBBON
 %------------------------------------------------------------------------
 switch n
     case 1 % Tetrahedron

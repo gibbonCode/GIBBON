@@ -12,32 +12,29 @@ function [Fs,Vs]=subtri(F,V,n,uniqueOpt)
 % points. However if uniqueOpt is 1 (default if not provided) these points
 % are suppressed using the unique command. 
 % 
-% Below is an example where |subtri| is used to increase the density of an
-% icosahedron to create an aproximaly evenly sampled sphere triangulation
-% with desired density.
 %
-% %% EXAMPLE
-% [X,Y] = meshgrid(linspace(-10,10,15));
-% Z = sinc(sqrt((X/pi).^2+(Y/pi).^2));
+% %% EXAMPLE 
+% [X,Y] = meshgrid(linspace(-10,10,15)); 
+% Z = sinc(sqrt((X/pi).^2+(Y/pi).^2)); 
 % F = delaunay(X,Y); V=[X(:) Y(:) Z(:)]; C=mean(Z(F),2);
-%
-% n=2;
-% [Fs,Vs]=subtri(F,V,n);
+% 
+% n=2; 
+% [Fs,Vs]=subtri(F,V,n); 
 % Vs(:,3)=sinc(sqrt((Vs(:,1)/pi).^2+(Vs(:,2)/pi).^2)); Z=Vs(:,3);Cs=mean(Z(Fs),2);
-%
-% figure('units','normalized','Position',[0 0 1 1],'Color','w'); colordef('white');
-% subplot(1,2,1);patch('Faces',F,'Vertices',V,'FaceColor','flat','CData',C,'FaceAlpha',0.5,'EdgeColor','k','LineWidth',2); hold on;
-% axis tight; axis square; grid on; hold on; view(3); axis off;
-% title('Original','FontSize',20);
-% subplot(1,2,2);patch('Faces',Fs,'Vertices',Vs,'FaceColor','flat','CData',Cs,'FaceAlpha',0.5,'EdgeColor','k','LineWidth',0.5); hold on;
-% axis tight; axis square; grid on; hold on; view(3); axis off;
+% 
+% figure('units','normalized','Position',[0 0 1 1],'Color','w'); colordef('white'); 
+% subplot(1,2,1);patch('Faces',F,'Vertices',V,'FaceColor','flat','CData',C,'FaceAlpha',0.5,'EdgeColor','k','LineWidth',2); hold on; 
+% axis tight; axis square; grid on; hold on; view(3); axis off; 
+% title('Original','FontSize',20); 
+% subplot(1,2,2);patch('Faces',Fs,'Vertices',Vs,'FaceColor','flat','CData',Cs,'FaceAlpha',0.5,'EdgeColor','k','LineWidth',0.5); hold on; 
+% axis tight; axis square; grid on; hold on; view(3); axis off; 
 % title(['n=',num2str(n)],'FontSize',20);
 %
 % Kevin Mattheus Moerman
-% kevinmoerman@hotmail.com
-% 01/06/2010
+% gibbon.toolbox@gmail.com
 %
-% 2014/02/27 Adding splitting method
+% 2010/06/01 Created
+% 2014/02/27 Added splitting method
 % ------------------------------------------------------------------------
 
 if nargin==3
@@ -172,9 +169,14 @@ switch subMethod
         
         Vs=[Xi(:) Yi(:) Zi(:)];
         
-        if uniqueOpt
-            % [~,ind_uni_1,ind_uni_2]=uniqueEps(Vs,'rows',4); %N.B. not fully tested yet
-            [~,ind_uni_1,ind_uni_2]=unique(pround(Vs,5),'rows');
+        if uniqueOpt 
+            %this is based on rounding to 5th decimal place after scaling
+            %to avoid this use the split method
+            try
+                [~,ind_uni_1,ind_uni_2]=unique(round(Vs,5),'rows');
+            catch
+                [~,ind_uni_1,ind_uni_2]=unique(round(Vs*(10.^5)),'rows');
+            end
             Vs=Vs(ind_uni_1,:);
             Fs=ind_uni_2(Fs);
         end

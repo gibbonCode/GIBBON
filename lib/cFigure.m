@@ -62,6 +62,7 @@ switch nargin
         screenSizeGroot = get(groot,'ScreenSize');
         figStruct.ScreenOffset=round(max(screenSizeGroot)*0.1); %i.e. figures are spaced around 10% of the sreensize from the edges
         vcwOpt={'pan','rot','zoomz','zoomz'};
+        efwOpt=1;
     case 1
         %Use custom
         figStruct=varargin{1};
@@ -89,6 +90,13 @@ switch nargin
         else
             vcwOpt=figStruct.vcw;
             figStruct=rmfield(figStruct,'vcw'); %Remove field from structure array
+        end
+        
+        if ~isfield(figStruct,'efw');
+            efwOpt=1;
+        else
+            efwOpt=figStruct.efw;
+            figStruct=rmfield(figStruct,'efw'); %Remove field from structure array
         end
         
 end
@@ -148,3 +156,9 @@ end
 if isa(vcwOpt,'cell') %Allow enabling of vcw mode
     vcw(hf,vcwOpt);
 end
+
+%% Check for activation of efw
+if efwOpt
+    efw; 
+end
+

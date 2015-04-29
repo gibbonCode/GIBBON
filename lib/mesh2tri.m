@@ -64,7 +64,8 @@ function [F,V]=mesh2tri(X,Y,Z,tri_type)
 %
 %
 % Kevin Mattheus Moerman
-% kevinmoerman@hotmail.com
+% gibbon.toolbox@gmail.com
+%
 % 15/07/2010
 %------------------------------------------------------------------------
 

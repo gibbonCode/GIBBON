@@ -2,7 +2,8 @@ function vcw(varargin)
 
 % function vcw(hf,buttonOpt)
 % ------------------------------------------------------------------------
-% vcw, View Control Widget, Allows users to manipulate a view in 3D using key and button presses
+% vcw, View Control Widget, Allows users to manipulate a view in 3D using
+% key and button presses
 %
 %   vcw(hf,buttonOpt)
 %
@@ -29,7 +30,8 @@ function vcw(varargin)
 % based on Torsten Vogel's view3d function, which was in turn inspired by
 % rotate3d from The MathWorks, Inc.).
 %
-% The vcw function differs from the fcw function in the following:
+% See modification log below to see how vcw function differs from the fcw
+% function. 
 %
 %
 % Kevin Mattheus Moerman
@@ -43,12 +45,12 @@ function vcw(varargin)
 % and deactivation in the figure toolbar, 4) ability to start vcw before
 % objects are plotted, 5) "proper" closure of the vcw widget, in fcw the q
 % button did not exit the keyDown functions such as panning etc. Now the
-% quit action deactivates the widget and waits for reactivation, 6) Uppon
-% activation of the vcw widget the plotting and default view manipulation
-% tools and buttons are disabled (to avoid interference with vcw), 7) Added
-% "linked" mode by using ALT button to alter views for all axes in figure
-% uppon keypress, 8) Altered keypress functions and behaviour with SHIFT,
-% also added i to display help information for the vcw function.
+% quit action deactivates the widget, 6) Uppon activation of the vcw widget
+% the plotting and default view manipulation tools and buttons are disabled
+% (to avoid interference with vcw), 7) Added "linked" mode by using ALT
+% button to alter views for all axes in figure uppon keypress, 8) Altered
+% keypress functions and behaviour with SHIFT, also added i to display help
+% information for the vcw function.
 % 2015/04/20 Added to GIBBON toolbox
 % 2015/04/22 Added JavaFrame handling of ALT related mnemonics
 % 2015/04/28 Fixed behaviour for repated vcw; commands (only generate a

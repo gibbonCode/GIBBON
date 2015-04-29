@@ -14,8 +14,8 @@ function [varargout]=quiver3Dpatch(x,y,z,ux,uy,uz,c,a)
 % [F,V,C]=quiver3Dpatch(x,y,z,ux,uy,uz,a)
 % patch('Faces',F,'Vertices',V,'CData',C,'FaceColor','flat'); 
 %
-% Below is a detailed example illustrating color specifications for
-% (combined) patch data. 
+% Below is an example illustrating color specifications for (combined)
+% patch data.  
 %
 %%% EXAMPLE
 % % Simulating 3D volume and vector data
@@ -47,7 +47,8 @@ function [varargout]=quiver3Dpatch(x,y,z,ux,uy,uz,c,a)
 %
 %
 % Kevin Mattheus Moerman
-% kevinmoerman@hotmail.com
+% gibbon.toolbox@gmail.com
+%
 % 2014/01/13 %Updated example in help
 % 2014/11/11 %Updated to allow for RGB color input data (e.g. C is an nx3 array)
 %------------------------------------------------------------------------
