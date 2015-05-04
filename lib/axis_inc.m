@@ -9,10 +9,15 @@ function h=axis_inc(s)
 h=axis;
 
 %Calculate increments
-wx=h(2)-h(1); h_inc_x=wx*(s-1); %Axis limit increment
-wy=h(4)-h(3); h_inc_y=wy*(s-1); %Axis limit increment
+wx=h(2)-h(1); 
+h_inc_x=wx*(s-1); %Axis limit increment
+
+wy=h(4)-h(3); 
+h_inc_y=wy*(s-1); %Axis limit increment
+
 if numel(h)==6
-    wz=h(6)-h(5); h_inc_z=wz*(s-1); %Axis limit increments
+    wz=h(6)-h(5);
+    h_inc_z=wz*(s-1); %Axis limit increments
 end
 
 %Adjusting extrema

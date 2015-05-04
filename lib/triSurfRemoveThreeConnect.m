@@ -1,4 +1,4 @@
-function [varargout]=triSurfRemoveThreeConnect(Fd,Vd,Cd)
+function [varargout]=triSurfRemoveThreeConnect(varargin)
 
 % function [Ft,Vt,Ct,L]=triSurfRemoveThreeConnect(Fd,Vd,Cd)
 % ------------------------------------------------------------------------
@@ -15,15 +15,29 @@ function [varargout]=triSurfRemoveThreeConnect(Fd,Vd,Cd)
 % consist of [Ft,Vt] or [Ft,Vt,Ct] or [Ft,Vt,Ct,L].
 % The last nnz(L)/3 faces in Ft represent the fixed faces.
 %
+%
 % Kevin Mattheus Moerman
-% kevinmoerman@hotmail.com
-% 2014/06/03
+% gibbon.toolbox@gmail.com
+% 
+% 2014/06/03 Created
+% 2015/05/01 Updated with varagin type input
 %------------------------------------------------------------------------
 
-%%
+%% Parse input
+Fd=varargin{1};
+Vd=varargin{2};
+
+if nargin==3
+    Cd=varargin{3};
+else
+    Cd=[];
+end
+
 if isempty(Cd)
     Cd=(1:1:size(Fd,1))';
 end
+
+%%
 
 %Get patch face/vertex connectivity matrices
 [IND_F,IND_V]=patchIND(Fd,Vd,1);

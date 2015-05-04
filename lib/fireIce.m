@@ -1,4 +1,18 @@
-function cMap=fireIce(varargin)
+function [cMap]=fireIce(varargin)
+
+% function [cMap]=fireIce(n)
+% ------------------------------------------------------------------------
+% Creates the colormap data for n levels for the fire and ice colormap. Low
+% values define a cold blue color while high values define a warm/hot
+% color. The extrema of the colordata are the same color. Therefore this
+% map is suitable for angular data where 360 may be equivalent to 0
+% degrees.
+%
+% Kevin Mattheus Moerman
+% gibbon.toolbox@gmail.com
+% 
+% 2015/01/01
+%------------------------------------------------------------------------
 
 switch nargin
     case 0

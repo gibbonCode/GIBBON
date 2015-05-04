@@ -5,14 +5,14 @@
 % |efw(hf);|
 
 %% Description
-% The efw function, the export figure widget, adds a push button to a
-% figure toolbar to link with the export_fig function. Press the button to
-% start exporting a figure users can specify file names, formats,
+% The |efw| function, the export figure widget, adds a push button to a
+% figure toolbar to link with the |export_fig| function. Press the button
+% to start exporting a figure. Users can specify file names, formats,
 % resolution and also additional export_fig options. 
 %% 
-% The Export Figure Widget requires the external code export_fig created by
-% Oliver Woodford and Yair Altman. It can be obtained from the Mathworks
-% Central File Exchange: 
+% The Export Figure Widget requires the external function |export_fig|
+% created by Oliver Woodford and Yair Altman. It can be obtained from the
+% Mathworks Central File Exchange: 
 %%
 % <http://www.mathworks.com/matlabcentral/fileexchange/23629-export-fig>
 

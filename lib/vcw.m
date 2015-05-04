@@ -86,6 +86,47 @@ if ~ishandle(hf)
     hf = gcf;
 end
 
+%% Check axis limits
+
+h = findobj(hf, 'Type', 'axes', '-depth', 1)'; %All axis handles
+if ~isempty(h)
+    for h = findobj(hf, 'Type', 'axes', '-depth', 1)';
+        axis(h);
+        
+        xLim=get(h,'xlim');
+        yLim=get(h,'ylim');
+        zLim=get(h,'zlim');
+        
+        wx=abs(diff(xlim));
+        wy=abs(diff(ylim));
+        wz=abs(diff(zlim));
+        
+        w_max=max([wx wy wz]);
+        min_w=0.1;
+        if w_max<min_w
+            w_max=min_w;
+        end
+        
+        w_min=w_max/10;
+        if w_min<min_w
+            w_min=min_w;
+        end
+        w_add=[-w_min w_min]/2;       
+        
+        if wx<w_min
+            set(h,'xlim',xLim+w_add);
+        end
+        
+        if wy<w_min
+            set(h,'ylim',yLim+w_add);
+        end
+        
+        if wz<w_min
+            set(h,'zlim',zLim+w_add);
+        end              
+    end
+end
+
 
 %% Initialise button and button/keypress wait
 hb = findall(hf,'Type','uitoolbar');
@@ -124,18 +165,19 @@ if isempty(hp); %If vcw button is not present create one and wait for key/button
     
     %% Wait for start using key-press
     
-    set(hf,'KeyPressFcn', {@keyPress_wait,buttonOpt,hp},'BusyAction','cancel');
+    set(hf,'KeyPressFcn', {@keyPress_wait,buttonOpt,hp,hf},'BusyAction','cancel');
     
 end
 return
 
-function start_vcw_toggle(hObject,callbackdata,x)
-start_vcw(x{1},x{2},x{3});
+function start_vcw_toggle(hObject,callbackdata,indputCell)
+start_vcw(indputCell{1},indputCell{2},indputCell{3});
 return
 
-function keyPress_wait(src,eventData,buttonOpt,hp)
-hf = ancestor(src, 'figure');
+function keyPress_wait(src,eventData,buttonOpt,hp,hf)
+
 cax = overobj2('axes');
+
 if isempty(cax)
 %     cax=gca; %this gets current axis or if none exists creates one
 cax = get(hf, 'CurrentAxes');
@@ -148,12 +190,14 @@ end
 
 %Key actions
 switch eventData.Key
-    case {'v'} %Start vcw
+    case {'v'} %Start vcw        
         start_vcw(hf,buttonOpt,hp);
 end
 return
 
 function start_vcw(hf,buttonOpt,hp)
+
+checkAxisLimits(hf);
 
 set(hp,'State','On');
 set(hp,'TooltipString','Dectivate View Control Widget (or enter v)');
@@ -164,13 +208,13 @@ zoom(hf, 'off');
 rotate3d(hf, 'off');
 
 %Quick fix for colorbars
-H=findobj(gcf,'Type','colorbar'); %Handle set
+H=findobj(hf,'Type','colorbar'); %Handle set
 figUserDataStruct=get(hf,'UserData');
 if isempty(figUserDataStruct)
     figUserDataStruct.colorbarLocSet=get(H,'Location');
     set(hf,'UserData',figUserDataStruct);
 end
-colorbarLocSet(gcf,'manual');
+colorbarLocSet(hf,'manual');
 
 % Disable Plottools Buttons and Exploration Buttons
 initialState.toolbar = findobj(allchild(hf),'flat','Type','uitoolbar');
@@ -213,16 +257,15 @@ else
 end
 
 % Initialize the callbacks
-set(hf, 'WindowButtonDownFcn', {@mousedown, {str2func(['vcw_' buttonOpt{1}]), str2func(['vcw_' buttonOpt{2}]), str2func(['vcw_' buttonOpt{3}])}}, ...
-    'WindowButtonUpFcn', @mouseup, ...
-    'KeyPressFcn', {@keypress,buttonOpt,hp}, ...
+set(hf, 'WindowButtonDownFcn', {@mousedown, {str2func(['vcw_' buttonOpt{1}]), str2func(['vcw_' buttonOpt{2}]), str2func(['vcw_' buttonOpt{3}])},hf}, ...
+    'WindowButtonUpFcn', {@mouseup,hf}, ...
+    'KeyPressFcn', {@keypress,buttonOpt,hp,hf}, ...
     'WindowScrollWheelFcn', {@scroll, str2func(['vcw_' buttonOpt{4}])}, ...
     'BusyAction', 'cancel');
 return
 
-function keypress(src, eventData,buttonOpt,hp)
+function keypress(src, eventData,buttonOpt,hp,hf)
 
-hf = ancestor(src, 'figure');
 cax = overobj2('axes');
 if isempty(cax)
     cax = get(hf, 'CurrentAxes');
@@ -232,6 +275,8 @@ end
 if isempty(cax)
     return;
 end
+
+% checkAxisLimits(hf);
 
 step = 1;
 if ismember('shift', eventData.Modifier)
@@ -442,14 +487,17 @@ if mnemOff==0
 end
 return
 
-function mousedown(src, eventData, funcs)
+function mousedown(src, eventData, funcs, hf)
 
 % Get the button pressed
-hf = ancestor(src, 'figure');
+% cax = overobj2('axes');
+
 cax = get(hf, 'CurrentAxes');
 if isempty(cax)
     return;
 end
+
+% checkAxisLimits(hf);
 
 switch get(hf, 'SelectionType')
     case 'extend' % Middle button
@@ -525,18 +573,17 @@ end
 global VCW_POS
 VCW_POS = get(0, 'PointerLocation');
 % Set the cursor and callback
-set(ancestor(src, 'figure'), 'Pointer', 'custom', 'pointershapecdata', shape, 'WindowButtonMotionFcn', {method, cax});
+set(hf, 'Pointer', 'custom', 'pointershapecdata', shape, 'WindowButtonMotionFcn', {method, cax});
 
 return
 
-function mouseup(src, eventData)
+function mouseup(src, eventData,hf)
 % Clear the cursor and callback
-set(ancestor(src, 'figure'), 'WindowButtonMotionFcn', '', 'Pointer', 'arrow');
+set(hf, 'WindowButtonMotionFcn', '', 'Pointer', 'arrow');
 return
 
-function scroll(src, eventData, func)
+function scroll(src, eventData, func, hf)
 % Get the axes handle
-hf = ancestor(src, 'figure');
 cax = overobj2('axes');
 if isempty(cax)
     cax = get(hf, 'CurrentAxes');
@@ -563,29 +610,29 @@ end
 return
 
 % Figure manipulation functions
-function vcw_rot(s, d, cax)
+function vcw_rot(s, d, cax, hf)
 d = check_vals(s, d);
 try
     % Rotate XY
     camorbit(cax, d(1), d(2), 'camera', [0 0 1]);
 catch
     % Error, so release mouse down
-    mouseup(cax)
+    mouseup(hf);
 end
 return
 
-function vcw_rotz(s, d, cax)
+function vcw_rotz(s, d, cax, hf)
 d = check_vals(s, d);
 try
     % Rotate Z
     camroll(cax, d(2));
 catch
     % Error, so release mouse down
-    mouseup(cax)
+    mouseup(hf);
 end
 return
 
-function vcw_zoom(s, d, cax)
+function vcw_zoom(s, d, cax, hf)
 d = check_vals(s, d);
 % Zoom
 d = (1 - 0.01 * sign(d(2))) ^ abs(d(2));
@@ -593,11 +640,11 @@ try
     camzoom(cax, d);
 catch
     % Error, so release mouse down
-    mouseup(cax)
+    mouseup(hf);
 end
 return
 
-function vcw_zoomz(s, d, cax)
+function vcw_zoomz(s, d, cax, hf)
 d = check_vals(s, d);
 % Zoom by moving towards the camera
 d = (1 - 0.01 * sign(d(2))) ^ abs(d(2)) - 1;
@@ -605,18 +652,18 @@ try
     camdolly(cax, 0, 0, d, 'fixtarget', 'camera');
 catch
     % Error, so release mouse down
-    mouseup(cax)
+    mouseup(hf);
 end
 return
 
-function vcw_pan(s, d, cax)
+function vcw_pan(s, d, cax, hf)
 d = check_vals(s, d);
 try
     % Pan
     camdolly(cax, d(1), d(2), 0, 'movetarget', 'pixels');
 catch
     % Error, so release mouse down
-    mouseup(cax)
+    mouseup(hf);
 end
 return
 
@@ -631,8 +678,8 @@ for q=1:1:numel(H)
 end
 return
 
-function quit_vcw_toggle(hObject,callbackdata,x)
-quit_vcw(x{1},x{2},x{3})
+function quit_vcw_toggle(hObject,callbackdata,indputCell)
+quit_vcw(indputCell{1},indputCell{2},indputCell{3})
 return
 
 function quit_vcw(hf,buttonOpt,hp)
@@ -640,7 +687,7 @@ function quit_vcw(hf,buttonOpt,hp)
 % Restore figure settings except for key press to allow reactivation
 set(hf, 'WindowButtonDownFcn',[], ...
     'WindowButtonUpFcn',[], ...
-    'KeyPressFcn',{@keyPress_wait,buttonOpt,hp}, ...
+    'KeyPressFcn',{@keyPress_wait,buttonOpt,hp,hf}, ...
     'WindowScrollWheelFcn',[], ...
     'BusyAction','cancel',...
     'MenuBar','figure');
@@ -701,4 +748,48 @@ end
 set(hp,'State','Off');
 set(hp,'TooltipString','Activate View Control Widget (or enter v)');
 delete(hp);
+return
+
+function checkAxisLimits(hf)
+
+h = findobj(hf, 'Type', 'axes', '-depth', 1)'; %All axis handles
+if ~isempty(h)
+    for h = findobj(hf, 'Type', 'axes', '-depth', 1)';
+        axis(h);
+        
+        xLim=get(h,'xlim');
+        yLim=get(h,'ylim');
+        zLim=get(h,'zlim');
+        
+        wx=abs(diff(xlim));
+        wy=abs(diff(ylim));
+        wz=abs(diff(zlim));
+        
+        w_max=max([wx wy wz]);
+        min_w=1e-3;
+        if w_max<min_w
+            w_max=min_w;
+        end
+        
+        w_min=w_max/10;
+        if w_min<min_w
+            w_min=min_w;
+        end
+        w_add=[-w_min w_min]/2;       
+        
+        if wx<w_min
+            set(h,'xlim',xLim+w_add);
+        end
+        
+        if wy<w_min
+            set(h,'ylim',yLim+w_add);
+        end
+        
+        if wz<w_min
+            set(h,'zlim',zLim+w_add);
+        end              
+    end
+    drawnow; 
+end
+
 return

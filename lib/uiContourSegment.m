@@ -58,7 +58,11 @@ if ismatrix(M)
 end
 
 %% PLOT SETTINGS
-figColor='k'; figColorDef='black';
+
+figStruct.Name='GIBBON'; %Figure name
+figStruct.Color='k'; %Figure background color
+figStruct.ColorDef='black'; %Setting colordefinitions to black
+figStruct.ScreenOffset=0; %Setting spacing of figure with respect to screen edges
 fontSize=10;
 mark_siz1=2;
 mark_siz2=50;
@@ -181,7 +185,7 @@ IND_slice=find(L);
 Vs(:,3)=0; %The z-level for this function will be zero for all plotting
 
 %Plotting image
-hf1=figuremax(figColor,figColorDef);
+hf1=cFigure(figStruct);
 figNameString=' --- SEGMENTING CONTOURS --- ';
 titleStringAdd=' ';
 set(hf1,'Name',figNameString);
@@ -274,10 +278,10 @@ for is=sliceRange
             [C,C_siz]=contour_group(X,Y,Z,M,[],[],zs,[Tc(ic) Tc(ic)]);
             
             C=C(C_siz>minContourSize); %Discarding contours that are too smalls
-            
+  
             %Smooth and resample contours
             if pointReductionFactor>1 || smoothFactor<1
-                for q_smooth=2:numel(C)
+                for q_smooth=1:numel(C)
                     
                     V=C{q_smooth};
                     nV=size(V,1);
@@ -296,7 +300,7 @@ for is=sliceRange
                     else
                         V=V(1:end-1,:); %Trim off last point
                     end
-                    
+           
                     %Smoothening
                     if smoothFactor<1
                         [V]=evenlySampleCurve(V,nV,smoothFactor,1);

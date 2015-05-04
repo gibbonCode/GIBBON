@@ -19,14 +19,11 @@ end
 %% Make figure(s) visible
 
 for q=1:1:numel(H)
-    h=H(q);
-    
+    h=H(q);    
     if verLessThan('matlab', '8.4.0.150421 (R2014b)')
         set(h,'Visible','On');
     else 
         h.Visible='On';
     end
-
     drawnow;
-
 end

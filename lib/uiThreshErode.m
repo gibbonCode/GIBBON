@@ -1,14 +1,68 @@
-function [L_BG]=uiThreshErode(M,thresholdInitial,blurKernelSize,groupCropOption)
+function [L_BG]=uiThreshErode(varargin)
 
+% function [L_BG]=uiThreshErode(M,thresholdInitial,blurKernelSize,groupCropOption,inConvexHull)
+
+
+%% Parse input
+
+thresholdInitial=[];
+blurKernelSize=[];
+groupCropOpt=[];
+inConvexHullOpt=[];
+switch nargin
+    case 1
+        M=varargin{1};
+    case 2
+        M=varargin{1};
+        thresholdInitial=varargin{2};
+    case 3
+        M=varargin{1};
+        thresholdInitial=varargin{2};
+        blurKernelSize=varargin{3};
+    case 4
+        M=varargin{1};
+        thresholdInitial=varargin{2};
+        blurKernelSize=varargin{3};
+        groupCropOpt=varargin{4};
+    case 5
+        M=varargin{1};
+        thresholdInitial=varargin{2};
+        blurKernelSize=varargin{3};
+        groupCropOpt=varargin{4};
+        inConvexHullOpt=varargin{5};
+end
+
+%Set defaults
+if isempty(thresholdInitial)
+     thresholdInitial=0.1;
+end
+
+%Quick fix for low thresholds 
+if thresholdInitial<0.01
+    thresholdInitial=0.01;
+end
+
+if isempty(blurKernelSize)
+     blurKernelSize=ndims(M);
+end
+
+if isempty(groupCropOpt)
+     groupCropOpt=0;
+end
+
+if isempty(inConvexHullOpt)
+     inConvexHullOpt=0;
+end
 %% PLOT SETTINGS
+
 fontSize=10;
-cMap=autumn(250);
+cMap=jet(250);
 falpha=1;
-patchTypes={'sj','si','sk','v'};
-ptype=3;
-sliceScale=2;
-noSlices=7;
-S=round(linspace(1,size(M,3),noSlices)); %Slice indices for plotting
+
+logicVoxels=false(size(M));
+logicVoxels(round(size(M,1)/2),:,:)=1;
+logicVoxels(:,round(size(M,2)/2),:)=1;
+logicVoxels(:,:,round(size(M,3)/2))=1;
 
 %%
 M_original=M;
@@ -57,17 +111,13 @@ while done==0
         
         if qc==1; %Plot figure on first iteration
             
-            %Cropped image
-            L_slices=false(size(M));
-            L_slices(:,:,S)=L_BG(:,:,S);
-            IND_slices=find(L_slices); clear L_slices;
-            [Fs,Vs,C_slice]=ind2patch(IND_slices,M_original,patchTypes{ptype});
-            Vs(:,3)=sliceScale.*Vs(:,3);
+            %Cropped image            
+            [Fs,Vs,Cs]=ind2patch(logicVoxels&L_BG,M_original,'v');
             
             hf1=cFigure;
             title(['Threshold is ',num2str(T_threshold),'*mean, press up to increase or down to decrease (by 10%), press space to keep and continue'],'FontSize',fontSize);
             hold on; xlabel('X-J','FontSize',fontSize);ylabel('Y-I','FontSize',fontSize);zlabel('Z-K','FontSize',fontSize);
-            hs=patch('Faces',Fs,'Vertices',Vs,'EdgeColor','none', 'CData',C_slice,'FaceColor','flat');
+            hs=patch('Faces',Fs,'Vertices',Vs,'EdgeColor','none', 'CData',Cs,'FaceColor','flat');
             set(hs,'FaceAlpha',falpha); hold on; grid on;  view(3); axis equal; axis tight; axis vis3d;  colormap(cMap); colorbar; 
             set(gca,'FontSize',fontSize);
             drawnow;
@@ -76,11 +126,7 @@ while done==0
             delete(hs); %remove patch data from figure
             
             %redefine patch data for the cropped image
-            L_slices=false(size(M));
-            L_slices(:,:,S)=L_BG(:,:,S);
-            IND_slices=find(L_slices); clear L_slices;
-            [Fs,Vs,C_slice]=ind2patch(IND_slices,M_original,patchTypes{ptype});
-            Vs(:,3)=sliceScale.*Vs(:,3);
+            [Fs,Vs,Cs]=ind2patch(logicVoxels&L_BG,M_original,'v');
             
             %patch again
             if runMode==1
@@ -89,7 +135,7 @@ while done==0
                 title('Current cropping press up/down to dilate/erode, WARNING EROSION MAY REMOVE ENTIRE SLICES','FontSize',fontSize);
             end
             
-            hs=patch('Faces',Fs,'Vertices',Vs,'EdgeColor','none', 'CData',C_slice,'FaceColor','flat');
+            hs=patch('Faces',Fs,'Vertices',Vs,'EdgeColor','none', 'CData',Cs,'FaceColor','flat');
             set(hs,'FaceAlpha',falpha); hold on; grid on;  view(3); axis equal; axis tight; axis vis3d;  colormap(cMap); colorbar; 
             set(gca,'FontSize',fontSize);
             drawnow;
@@ -120,7 +166,7 @@ while done==0
     end
     
     %% GROUPING BASED CROPPING
-    if groupCropOption==1
+    if groupCropOpt==1
         
         GROUP_STRUCT = bwconncomp(L_BG,6);
         IMAGE_OBJECTS=GROUP_STRUCT.PixelIdxList;
@@ -138,20 +184,50 @@ while done==0
         delete(hs); %remove patch data from figure
         
         %redefine patch data for the cropped image
-        L_slices=false(size(M));
-        L_slices(:,:,S)=L_BG(:,:,S);
-        IND_slices=find(L_slices); clear L_slices;
-        [Fs,Vs,C_slice]=ind2patch(IND_slices,M_original,patchTypes{ptype});
-        Vs(:,3)=sliceScale.*Vs(:,3);
+        [Fs,Vs,Cs]=ind2patch(logicVoxels&L_BG,M_original,'v');
                 
         title('Grouping result','FontSize',fontSize);
                
-        hs=patch('Faces',Fs,'Vertices',Vs,'EdgeColor','none', 'CData',C_slice,'FaceColor','flat');
+        hs=patch('Faces',Fs,'Vertices',Vs,'EdgeColor','none', 'CData',Cs,'FaceColor','flat');
         set(hs,'FaceAlpha',falpha); hold on; grid on;  view(3); axis equal; axis tight; axis vis3d;  colormap(cMap); 
         set(gca,'FontSize',fontSize);
         drawnow;
     end
 
+    %% Convex hull based filling
+    if inConvexHullOpt==1
+        [I,J]=ndgrid(1:1:size(M,1),1:1:size(M,2));
+        for q=1:1:size(M,3);           
+            l_bg=L_BG(:,:,q);            
+            if nnz(l_bg)>0
+                if nnz(l_bg)>3
+                    try
+                        P=[I(l_bg) J(l_bg)];
+                        K = convhull(P(:,1),P(:,2));
+                        indNot=find(~l_bg);
+                        [Lp,~] = inpolygon(I(indNot),J(indNot),P(K,1),P(K,2));
+                        indAdd=indNot(Lp);
+                        L=false(size(M,1),size(M,2));
+                        L(indAdd)=1;
+                        L_BG(:,:,q)=L_BG(:,:,q) | L;
+                    end
+                end
+            else
+               L_BG(:,:,q)=0; 
+            end
+        end
+        
+        title('Convexhull fill result','FontSize',fontSize);
+        delete(hs); %remove patch data from figure
+        %redefine patch data for the cropped image
+        [Fs,Vs,Cs]=ind2patch(logicVoxels&L_BG,M_original,'v');
+
+        hs=patch('Faces',Fs,'Vertices',Vs,'EdgeColor','none', 'CData',Cs,'FaceColor','flat');
+        set(hs,'FaceAlpha',falpha); hold on; grid on;  view(3); axis equal; axis tight; axis vis3d;  colormap(cMap);
+        set(gca,'FontSize',fontSize);
+        drawnow;
+    end
+    
     %%
     Q = questdlg('Would you like to keep this result?','Keep result?','YES','NO','YES');
     switch Q
