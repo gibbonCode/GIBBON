@@ -75,15 +75,14 @@ if isempty(hp); %If efw button is not present create one
     defStruct=get(hb,'UserData');
     if isempty(defStruct)
         defStruct.defaultPath=cd;
-%         defStruct.defaultPath=fullfile(cd,'efw');
+        defStruct.defaultPath=fullfile(cd,'efw');
         defStruct.imName=['figure',num2str(get(hf,'Number'))];
         defStruct.imExt='all';
         defStruct.imRes='600';
         defStruct.exportFigOpt='';
         set(hb,'UserData',defStruct);
     end
-    set(hp,'ClickedCallback',{@start_efw_push,{hf,hb}});  
-    
+    set(hp,'ClickedCallback',{@start_efw_push,{hf,hb}});      
 end
 
 return
@@ -106,16 +105,17 @@ if ~isempty(Q)
     if isempty(Q{1})
         Q{1}=uigetdir(defStruct.defaultPath,'Select save path');
         if Q{1}==0
-            Q{1}=[];
+            return; 
         end
+    end    
+    
+    if ~exist(Q{1},'dir') %create output folder if it does not exist already
+        mkdir(Q{1});
     end
     
-    if all(~cellfun(@isempty,Q(1:end-1)))
+    if all(~cellfun(@isempty,Q(1:end-1)))        
         
-
-        
-        fileName=fullfile(Q{1},Q{2});
-        
+        fileName=fullfile(Q{1},Q{2});        
         inputCell{1,1}=fullfile(Q{1},Q{2});
                 
         if strcmp(Q{3},'all')
@@ -128,10 +128,6 @@ if ~isempty(Q)
             savefig(hf,fileName); %Save figure in .fig file
         else
             inputCell{1,end+1}=['-',Q{3}];
-        end
-        
-        if isempty(Q{3}) && isempty(Q{5})
-            
         end
         
         figRes=['-r',Q{4}];
@@ -151,6 +147,14 @@ if ~isempty(Q)
         end
         
         export_fig(inputCell{:});
+        
+        %Override defaults
+        defStruct.defaultPath=Q{1};
+        defStruct.imName=Q{2};
+        defStruct.imExt=Q{3};
+        defStruct.imRes=Q{4};
+        defStruct.exportFigOpt=Q{5};
+        set(hb,'UserData',defStruct);
         
     else
         return

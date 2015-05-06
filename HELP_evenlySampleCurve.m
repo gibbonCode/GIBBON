@@ -1,13 +1,30 @@
 %% evenlySampleCurve
 % Below is a basic demonstration of the features of the |evenlySampleCurve| function.
+%% ind2patch
+% Below is a demonstration of the features of the |ind2patch| function
 
 %%
-clear; close all; clc;
+clear; close all; clc; 
+
+%% Syntax
+% |[Vg] = evenlySampleCurve(V,n,interpPar,closeLoopOpt);|
+
+%% Description
+% The |evenlySampleCurve| function samples a curve evenly in n points. The
+% curve is parameterized using curve distance and can be closed loop if
+% closeLoopOpt==1 (default=0). The resampling is performed using
+% interpolation based on the method specified by interpPar. 
+% Available methods are those associated with interp1 i.e.: 'linear',
+% 'nearest', 'next', 'previous', 'spline', 'pchip' (default), 'cubic'.
+% Alternatively interpPar my be set as a scalar in the range 0-1 to use the
+% csaps method for cubic spline based smoothening.
+%
+% See also: |interp1|, |csaps|
+
+%% Examples
 
 %%
-% PLOT SETTINGS
-fig_color='w'; 
-fig_colordef='white';
+% Plot settings
 markerSize=15;
 lineWidth=2;
 
@@ -28,7 +45,7 @@ closeLoopOpt=1;
 n=200;
 [Vg]=evenlySampleCurve(V,n,interpMethod,closeLoopOpt);
 
-hf1=figuremax(fig_color,fig_colordef);
+hf1=cFigure;
 subplot(1,2,1); hold on;
 title('Unevenly sampled');
 plot3(V(:,1),V(:,2),V(:,3),'r.-','MarkerSize',markerSize);
@@ -49,7 +66,7 @@ interpMethod=0.7;
 closeLoopOpt=1;
 [Vg]=evenlySampleCurve(V,n,interpMethod,closeLoopOpt);
 
-hf1=figuremax(fig_color,fig_colordef);
+hf1=cFigure;
 subplot(1,2,1); hold on;
 title('Unevenly sampled');
 plot3(V(:,1),V(:,2),V(:,3),'r.-','MarkerSize',markerSize);
