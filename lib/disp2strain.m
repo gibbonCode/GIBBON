@@ -46,10 +46,11 @@ for i=1:1:size(UG,1);
                 Up_ijk=sqrt(Lpsq_ijk); %Right stretch tensor in principal space
                 Cp(i,j,k)={Lpsq_ijk};
                 switch strain_type
-                    case 1 %Principal infinitesimal strain tensor
+                    case 1 %Principal Biot strain tensor
                         Ep_ijk=(Up_ijk)-1; 
-                    case 2 %Principal logarithmic strain tensor
-                        Ep_ijk=log(Up_ijk); 
+                    case 2 %Principal logarithmic or Hencky strain tensor                        
+                        Ep_ijk=I_unity; 
+                        Ep_ijk(I_unity>0)=log(diag(Up)); %Log on eigenvalues avoids log(0)=-inf related issues
                     case 3 %Principal Green-Lagrange strain tensor
                         Ep_ijk=0.5.*((Up_ijk.^2)-1); 
                 end

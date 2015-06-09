@@ -17,8 +17,6 @@ clear; close all; clc;
 
 %%
 % Plot settings
-figColor='w';
-figColorDef='white';
 fontSize=15;
 markerSize1=45;
 lineWidth1=4;
@@ -75,7 +73,7 @@ interpMethod='linear'; %or 'natural'
 
 %%
 % Plotting meshed model
-hf2=figuremax(figColor,figColorDef);
+hf1=cFigure;
 title('The meshed model','FontSize',fontSize);
 xlabel('X','FontSize',fontSize);ylabel('Y','FontSize',fontSize); zlabel('Z','FontSize',fontSize);
 hold on;

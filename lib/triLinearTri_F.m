@@ -1,22 +1,22 @@
-function F_cell=triLinearTet_F(VX,Vx,TET)
+function F_cell=triLinearTri_F(VX,Vx,TRI)
 
-F_cell=cell(size(TET,1),1);
+F_cell=cell(size(TRI,1),1);
 for qc=1:1:numel(F_cell);
-    indNow=TET(qc,:);
+    indNow=TRI(qc,:);
     X=VX(indNow,:); %Initial coordinates
     x=Vx(indNow,:); %Current coordinates
-    F=triLinearTet_subF(X,x); %The deformation gradient tensor
+    F=triLinearTri_subF(X,x); %The deformation gradient tensor
     F_cell{qc}=F; %Store in cell array
 end
 
     
 end
 
-function F=triLinearTet_subF(X,x)
+function F=triLinearTri_subF(X,x)
 %% Define shape function set
 
-% syms r s t;
-% N=[1-r-s-t; r; s; t];
+% syms r s;
+% N=[1-r-s; r; s;];
 
 %% COMPUTE DERIVATIVES
 
@@ -27,10 +27,9 @@ function F=triLinearTet_subF(X,x)
 % end
 
 %Hardcoded derivative
-dN_dRST =[-1    -1    -1;...
-           1     0     0;...
-           0     1     0;...
-           0     0     1;];
+dN_dRST =[-1    -1 ;...
+           1     0 ;...
+           0     1 ;];
 
 %Compute derivatives of initial position vectors with respect to shape functions
 dX_dRST=zeros(3,3);

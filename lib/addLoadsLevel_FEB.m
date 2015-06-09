@@ -1,6 +1,19 @@
 function [docNode]=addLoadsLevel_FEB(docNode,FEB_struct)
 
-
+% function [docNode]=addLoadsLevel_FEB(docNode,FEB_struct)
+% ------------------------------------------------------------------------
+%
+% This function adds the loads information to the docNode for an FEBio .feb
+% file.
+%
+%
+%
+% Kevin Mattheus Moerman
+% gibbon.toolbox@gmail.com
+% 
+% 2014/05/27: Updated for GIBBON
+% 2015/06/09: Added body loads, user request jschabs
+%------------------------------------------------------------------------
 %%
 
 disp('Adding Loads level');
@@ -170,4 +183,57 @@ if  isfield(FEB_struct.Loads,'Nodal_load')
     end
 end
 
+%% Adding body loads
+
+if  isfield(FEB_struct.Loads,'Body_load')
+    
+    disp('----> Defining body loads')
+    
+    for q1=1:1:numel(FEB_struct.Loads.Body_load) %For all Body_loads
+        
+        %Create body_load level
+        body_load_node = docNode.createElement('body_load'); %create entry
+        body_load_node = loadsNode.appendChild(body_load_node); %add entry
+        
+        %Add type attribute
+        currentType=FEB_struct.Loads.Body_load{q1}.Type;
+        attr = docNode.createAttribute('type'); %Create attribute
+        attr.setNodeValue(currentType); %Set text
+        body_load_node.setAttributeNode(attr); %Add attribute        
+        
+        switch FEB_struct.Loads.Body_load{q1}.Type
+            case 'const'
+                %Check load curves, add if missing
+                if ~isfield(FEB_struct.Loads.Body_load{q1},'lc')     
+                    FEB_struct.Loads.Body_load{q1}.lc=[1 1 1];
+                end
+        end
+                
+        for q2=1:numel(FEB_struct.Loads.Body_load{q1}.Properties)
+            %Add property node
+            node_node = docNode.createElement(FEB_struct.Loads.Body_load{q1}.Properties{q2}); %create node entry
+            node_node = body_load_node.appendChild(node_node); %add node entry
+            
+            switch FEB_struct.Loads.Body_load{q1}.Type
+                case 'const'
+                    %Add lc attribute
+                    attr = docNode.createAttribute('lc'); %Create id attribute
+                    attr.setNodeValue(sprintf('%u',FEB_struct.Loads.Body_load{q1}.lc(q2))); %Set id text
+                    node_node.setAttributeNode(attr); %Add id attribute
+                case 'non-const'                                        
+
+                case 'centrifugal'
+
+            end
+            
+            %Set value
+            if ischar(FEB_struct.Loads.Body_load{q1}.Values{q2}) %text
+                node_node.appendChild(docNode.createTextNode(FEB_struct.Loads.Body_load{q1}.Values{q2})); %append data text child
+            else %Assume numeric
+                node_node.appendChild(docNode.createTextNode(sprintf('%6.7e',FEB_struct.Loads.Body_load{q1}.Values{q2}))); %append data text child
+            end
+        end
+  
+    end
+end
 

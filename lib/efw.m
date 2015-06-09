@@ -77,8 +77,8 @@ if isempty(hp); %If efw button is not present create one
         defStruct.defaultPath=cd;
         defStruct.defaultPath=fullfile(cd,'efw');
         defStruct.imName=['figure',num2str(get(hf,'Number'))];
-        defStruct.imExt='all';
-        defStruct.imRes='600';
+        defStruct.imExt='png';
+        defStruct.imRes='300';
         defStruct.exportFigOpt='';
         set(hb,'UserData',defStruct);
     end

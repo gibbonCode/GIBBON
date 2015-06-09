@@ -1,8 +1,8 @@
-%% DEMO_create_run_import_FEBIO_spheres_pressure
+%% DEMO_create_run_import_FEBIO_spheres_traction
 % Below is a demonstration for:
 % 
 % * The use of TETgen for meshing based on surface geometry
-% * The specification of boundary conditions for FEBio including pressure
+% * The specification of boundary conditions for FEBio including traction
 % loading
 % *  The exporting of .feb files
 % * Running an FEBio job with MATLAB
@@ -32,7 +32,7 @@ savePath=fullfile(fileparts(filePath),'data','temp');
 %%
 % Control parameters for surface models
 r1=2; %Outer sphere radius
-numRefine1=2; %Number of refinement steps from icosahedron
+numRefine1=3; %Number of refinement steps from icosahedron
 faceBoundMarker1=2; %Face marker for outer sphere
 
 r2=1.25; %Inner sphere radius
@@ -173,8 +173,8 @@ camlight headlight;
 set(gca,'FontSize',fontSize);
 drawnow;
 
-%% DEFINE FACES FOR PRESSURE
-% For this example the outer sphere nodes are subjected to a pressure
+%% DEFINE FACES FOR traction
+% For this example the outer sphere nodes are subjected to a traction
 
 %Get outer surface (numbering may have altered due to tetgen behaviour so
 %redefined here)
@@ -190,10 +190,19 @@ hold on;
 
 patch('Faces',F1,'Vertices',VT,'FaceColor','flat','CData',Cb(Cb==2),'FaceAlpha',0.5);
 [hp]=patchNormPlot(F1,VT,0.5);
+[N,Vn,Nv]=patchNormal(F1,VT);
+
 colormap jet; colorbar;
 camlight headlight;
 set(gca,'FontSize',fontSize);
 view(3); axis tight;  axis equal;  grid on;
+drawnow; 
+
+%%
+
+p=0.05; 
+[A]=patch_area(F1,VT); %Surface element areas
+T=p.*A; 
 
 %% Define node numbers for rigid support
 
@@ -240,7 +249,7 @@ FEB_struct.Materials{2}.Values={c1,0,k};
 %Defining surfaces
 FEB_struct.Geometry.Surface{1}.Set=F1;
 FEB_struct.Geometry.Surface{1}.Type='tri3';
-FEB_struct.Geometry.Surface{1}.Name='Pressure_surface';
+FEB_struct.Geometry.Surface{1}.Name='traction_surface';
 
 %Defining node sets
 FEB_struct.Geometry.NodeSet{1}.Set=boundaryConditionNodeList;
@@ -255,20 +264,17 @@ FEB_struct.Boundary.Fix{3}.bc='z';
 FEB_struct.Boundary.Fix{3}.SetName=FEB_struct.Geometry.NodeSet{1}.Name;
 
 %Adding load information
-% FEB_struct.Loads.Surface_load{1}.Type='pressure';
-% % FEB_struct.Loads.Surface_load{1}.Set=F1;
-% FEB_struct.Loads.Surface_load{1}.SetName=FEB_struct.Geometry.Surface{1}.Name;
-% FEB_struct.Loads.Surface_load{1}.lcPar='pressure';
-% FEB_struct.Loads.Surface_load{1}.lcParValue=0.5;
-% FEB_struct.Loads.Surface_load{1}.lc=1;
 
-FEB_struct.Loads.Surface_load{1}.Type='pressure';
-% FEB_struct.Loads.Surface_load{1}.Set=F1;
-FEB_struct.Loads.Surface_load{1}.SetName=FEB_struct.Geometry.Surface{1}.Name;
-FEB_struct.Loads.Surface_load{1}.lcPar='pressure';
-FEB_struct.Loads.Surface_load{1}.lcParValue=0.5;
-FEB_struct.Loads.Surface_load{1}.lc=1;
-
+for q=1:1:size(F1,1)
+    FEB_struct.Loads.Surface_load{q}.Type='traction';
+    FEB_struct.Loads.Surface_load{q}.Set=F1(q,:);
+    % FEB_struct.Loads.Surface_load{1}.SetName=FEB_struct.Geometry.Surface{1}.Name;
+    FEB_struct.Loads.Surface_load{q}.lcPar='scale';
+    FEB_struct.Loads.Surface_load{q}.lcParValue=T(q);
+    FEB_struct.Loads.Surface_load{q}.Properties={'traction'};
+    FEB_struct.Loads.Surface_load{q}.Values={-N(q,:)};
+    FEB_struct.Loads.Surface_load{q}.lc=1;
+end
 
 %Adding output requests
 FEB_struct.Output.VarTypes={'displacement','stress','relative volume','shell thickness'};

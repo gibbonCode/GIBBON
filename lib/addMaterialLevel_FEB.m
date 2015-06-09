@@ -39,7 +39,7 @@ for q_mat=1:1:numel(matIndicesUnique)
     %% Adding fields for solid mixture or multigeneration materials
     
     switch currentMaterialStruct.Type
-        case {'uncoupled solid mixture','solid mixture'}
+        case {'uncoupled solid mixture','solid mixture','biphasic'}
             numSolids=numel(currentMaterialStruct.Solid);
             for q_sol=1:1:numSolids
                 %Add solid level

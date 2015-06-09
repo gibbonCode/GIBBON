@@ -3,14 +3,16 @@ function [varargout]=febStruct2febFile(FEB_struct)
 % function [varargout]=febStruct2febFile(FEB_struct)
 % ------------------------------------------------------------------------
 %
-% This function uses the input FEB_struct to generate an FEBio .feb file. 
+% This function uses the input FEB_struct to generate an FEBio .feb file.
 %
-% 
-% 
+%
 %
 % Kevin Mattheus Moerman
-% kevinmoerman@hotmail.com
-% 2014/05/27
+% gibbon.toolbox@gmail.com
+% 
+% 2014/05/27: Updated for GIBBON
+% 2015/05/09: Added biphasic capabilities
+% 2015/05/10: Added traction load capabilities
 %------------------------------------------------------------------------
 
 %%
@@ -27,11 +29,11 @@ if ~isfield(FEB_struct,'febio_spec')
 elseif ~isfield(FEB_struct.febio_spec,'version')
     FEB_struct.febio_spec.version='2.0';
 end
-febio_spec.setAttribute('version',FEB_struct.febio_spec.version); %Adding version attribute 
+febio_spec.setAttribute('version',FEB_struct.febio_spec.version); %Adding version attribute
 
 %% Add comment if present
 if isfield(FEB_struct,'commentField')
-    commentString = FEB_struct.commentField; 
+    commentString = FEB_struct.commentField;
 else %Default comment
     commentString = ['Created using GIBBON, ',datestr(now)];
 end
@@ -39,11 +41,13 @@ commentNode = docNode.createComment(commentString);
 febio_spec.appendChild(commentNode);
 
 %% DEFINING MODULE LEVEL
-docNode=addModuleLevel_FEB(docNode,FEB_struct);
+if isfield(FEB_struct,'Module');
+    docNode=addModuleLevel_FEB(docNode,FEB_struct);
+end
 
 %% DEFINE CONTROL SECTION
 if isfield(FEB_struct,'Control');
-    docNode=addControlLevel_FEB(docNode,FEB_struct);    
+    docNode=addControlLevel_FEB(docNode,FEB_struct);
 end
 
 %% DEFINING GLOBALS LEVEL
@@ -68,7 +72,7 @@ end
 
 %% DEFINE LOAD LEVEL
 if isfield(FEB_struct,'Loads')
-[docNode]=addLoadsLevel_FEB(docNode,FEB_struct);
+    [docNode]=addLoadsLevel_FEB(docNode,FEB_struct);
 end
 
 %% DEFINE CONTACT
@@ -94,7 +98,7 @@ end
 %% DEFINE OUTPUT LEVEL
 docNode=addOutputLevel_FEB(docNode,FEB_struct);
 
-%% CREATE OUTPUT OR EXPORT XML FILE 
+%% CREATE OUTPUT OR EXPORT XML FILE
 
 switch nargout
     case 0

@@ -153,7 +153,7 @@ end
 
 %% Check for activation of vcw
 
-if isa(vcwOpt,'cell') %Allow enabling of vcw mode
+if isa(vcwOpt,'cell') %Allow enabling of vcw mode    
     vcw(hf,vcwOpt);
 end
 

@@ -6,7 +6,7 @@
    <!--
 This HTML was auto-generated from MATLAB code.
 To make changes, update the MATLAB code and republish this document.
-      --><title>regionTriMesh3D</title><meta name="generator" content="MATLAB 8.4"><link rel="schema.DC" href="http://purl.org/dc/elements/1.1/"><meta name="DC.date" content="2014-11-21"><meta name="DC.source" content="HELP_regionTriMesh3D.m"><style type="text/css">
+      --><title>regionTriMesh3D</title><meta name="generator" content="MATLAB 8.5"><link rel="schema.DC" href="http://purl.org/dc/elements/1.1/"><meta name="DC.date" content="2015-05-23"><meta name="DC.source" content="HELP_regionTriMesh3D.m"><style type="text/css">
 html,body,div,span,applet,object,iframe,h1,h2,h3,h4,h5,h6,p,blockquote,pre,a,abbr,acronym,address,big,cite,code,del,dfn,em,font,img,ins,kbd,q,s,samp,small,strike,strong,sub,sup,tt,var,b,u,i,center,dl,dt,dd,ol,ul,li,fieldset,form,label,legend,table,caption,tbody,tfoot,thead,tr,th,td{margin:0;padding:0;border:0;outline:0;font-size:100%;vertical-align:baseline;background:transparent}body{line-height:1}ol,ul{list-style:none}blockquote,q{quotes:none}blockquote:before,blockquote:after,q:before,q:after{content:'';content:none}:focus{outine:0}ins{text-decoration:none}del{text-decoration:line-through}table{border-collapse:collapse;border-spacing:0}
 
 html { min-height:100%; margin-bottom:1px; }
@@ -67,9 +67,7 @@ table td { padding:7px 5px; text-align:left; vertical-align:top; border:1px soli
 
 
   </style></head><body><div class="content"><h1>regionTriMesh3D</h1><!--introduction--><p>Below is a basic demonstration of the features of the <tt>regionTriMesh3D</tt> function.</p><!--/introduction--><h2>Contents</h2><div><ul><li><a href="#1">Syntax</a></li><li><a href="#2">Description</a></li><li><a href="#3">Examples</a></li><li><a href="#6">Example: Meshing a 3D region</a></li></ul></div><h2>Syntax<a name="1"></a></h2><p><tt>[F,V]=regionTriMesh3D(regionCell,pointSpacing,resampleCurveOpt,interpMethod);</tt></p><h2>Description<a name="2"></a></h2><p>This function meshes a 3D region. It is conceptually similar to regionTrimMesh2D. The 3D regions are rigidly transformed to a nearly 2D form and <tt>regionTrimMesh2D</tt> is then used for 2D meshing. Then interpolation is to get the coordinates in the 3rd dimension.</p><h2>Examples<a name="3"></a></h2><pre class="codeinput">clear; close <span class="string">all</span>; clc;
-</pre><p>Plot settings</p><pre class="codeinput">figColor=<span class="string">'w'</span>;
-figColorDef=<span class="string">'white'</span>;
-fontSize=15;
+</pre><p>Plot settings</p><pre class="codeinput">fontSize=15;
 markerSize1=45;
 lineWidth1=4;
 faceAlpha=0.5;
@@ -112,7 +110,7 @@ pointSpacing=0.5; <span class="comment">%Desired point spacing</span>
 resampleCurveOpt=1;
 interpMethod=<span class="string">'linear'</span>; <span class="comment">%or 'natural'</span>
 [F,V]=regionTriMesh3D(regionCell,pointSpacing,resampleCurveOpt,interpMethod);
-</pre><p>Plotting meshed model</p><pre class="codeinput">hf2=figuremax(figColor,figColorDef);
+</pre><p>Plotting meshed model</p><pre class="codeinput">hf1=cFigure;
 title(<span class="string">'The meshed model'</span>,<span class="string">'FontSize'</span>,fontSize);
 xlabel(<span class="string">'X'</span>,<span class="string">'FontSize'</span>,fontSize);ylabel(<span class="string">'Y'</span>,<span class="string">'FontSize'</span>,fontSize); zlabel(<span class="string">'Z'</span>,<span class="string">'FontSize'</span>,fontSize);
 hold <span class="string">on</span>;
@@ -126,7 +124,7 @@ plotV(V3,<span class="string">'b-'</span>,<span class="string">'LineWidth'</span
 axis <span class="string">equal</span>; view(3); axis <span class="string">tight</span>;  grid <span class="string">on</span>;  set(gca,<span class="string">'FontSize'</span>,fontSize);
 camlight <span class="string">headlight</span>;
 drawnow;
-</pre><img vspace="5" hspace="5" src="HELP_regionTriMesh3D_01.png" alt=""> <p><img vspace="5" hspace="5" src="gibbVerySmall.gif" alt=""> </p><p><i><b>GIBBON</b></i> <a href="www.gibboncode.org">www.gibboncode.org</a></p><p><i>Kevin Mattheus Moerman</i>, <a href="gibbon.toolbox@gmail.com">gibbon.toolbox@gmail.com</a></p><p class="footer"><br><a href="http://www.mathworks.com/products/matlab/">Published with MATLAB&reg; R2014b</a><br></p></div><!--
+</pre><img vspace="5" hspace="5" src="HELP_regionTriMesh3D_01.png" alt=""> <p><img vspace="5" hspace="5" src="gibbVerySmall.gif" alt=""> </p><p><i><b>GIBBON</b></i> <a href="www.gibboncode.org">www.gibboncode.org</a></p><p><i>Kevin Mattheus Moerman</i>, <a href="gibbon.toolbox@gmail.com">gibbon.toolbox@gmail.com</a></p><p class="footer"><br><a href="http://www.mathworks.com/products/matlab/">Published with MATLAB&reg; R2015a</a><br></p></div><!--
 ##### SOURCE BEGIN #####
 %% regionTriMesh3D
 % Below is a basic demonstration of the features of the |regionTriMesh3D| function.
@@ -147,8 +145,6 @@ clear; close all; clc;
 
 %%
 % Plot settings
-figColor='w';
-figColorDef='white';
 fontSize=15;
 markerSize1=45;
 lineWidth1=4;
@@ -205,7 +201,7 @@ interpMethod='linear'; %or 'natural'
 
 %%
 % Plotting meshed model
-hf2=figuremax(figColor,figColorDef);
+hf1=cFigure;
 title('The meshed model','FontSize',fontSize);
 xlabel('X','FontSize',fontSize);ylabel('Y','FontSize',fontSize); zlabel('Z','FontSize',fontSize);
 hold on;
