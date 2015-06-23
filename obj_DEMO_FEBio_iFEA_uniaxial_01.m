@@ -14,7 +14,7 @@ end
 
 %Acces material parameters
 mat_struct=objectiveStruct.mat_struct;
-mat_struct.par_values={P(1) P(2) P(1)*objectiveStruct.k_factor}; 
+mat_struct.par_values={P(1) P(2) P(1) -P(2) P(1)*objectiveStruct.k_factor}; 
 
 disp('SETTING MATERIAL PARAMETERS...');
 disp(['Proposed (norm.): ',sprintf(repmat('%6.16e ',[1,numel(Pn)]),Pn)]);

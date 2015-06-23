@@ -48,13 +48,13 @@ c1=1e-3; %ogden c1
 m1=3; %ogden m1
 k_factor=1000; %Bulk modulus factor
 k=c1*k_factor; %The bulk modulus
-g1=1; %Viscoelastic QLV proportional coefficient
-t1=0.25; %Viscoelastic QLV time coefficient
+g1=1/2; %Viscoelastic QLV proportional coefficient
+t1=12; %Viscoelastic QLV time coefficient
 d=1e-9; %Density (not required for static analysis)
-t_total=5; %Total simulation time
-t_load=0.5; %Time from start to max load
+t_total=100; %Total simulation time
+t_load=2; %Time from start to max load
 t_step_ini=1e-3; %Initial desired step size
-t_step_max=0.05; %Maximum step size
+t_step_max=0.5; %Maximum step size
 
 analysisType='static'; 
 

@@ -8,22 +8,35 @@ switch nargin
         V=varargin{2};
         numSeeds=varargin{3};
         startInds=1; %Use first point as only start 
+        W=ones(size(V,1),1);
     case 4
         F=varargin{1};
         V=varargin{2};
         numSeeds=varargin{3};
         startInds=varargin{4}; 
         numStarts=numel(startInds);
+        W=ones(size(V,1),1);
         if numSeeds<numStarts
             warning('numSeeds<numel(startInds) assuming numSeeds should be numSeeds=numSeeds+numel(startInds)');
             numSeeds=numSeeds+numStarts;
         end            
+    case 5
+        F=varargin{1};
+        V=varargin{2};
+        numSeeds=varargin{3};
+        startInds=varargin{4};
+        numStarts=numel(startInds);
+        if numSeeds<numStarts
+            warning('numSeeds<numel(startInds) assuming numSeeds should be numSeeds=numSeeds+numel(startInds)');
+            numSeeds=numSeeds+numStarts;
+        end
+        W=varargin{5};
     otherwise
         error('Wrong number of input arguments!')
 end
 
-%% COMPUTER SURFACE SEEDS AND VERTEX SEED INDICES
-[indSeed,~,seedIndex]=patchMarchDistMapPointSeed(F,V,startInds,numSeeds);
+%% COMPUTE SURFACE SEEDS AND VERTEX SEED INDICES
+[indSeed,~,seedIndex]=patchMarchDistMapPointSeed(F,V,startInds,numSeeds,W);
 
 numPoints=size(V,1);
 

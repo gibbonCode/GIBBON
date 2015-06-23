@@ -14,7 +14,6 @@ clear; close all; clc;
 
 %%
 % Plot settings
-figColor='w'; figColorDef='white';
 fontSize=15;
 faceAlpha1=0.8;
 faceAlpha2=1;
@@ -112,7 +111,7 @@ V2(:,3)=V2(:,3)-minZ+(sampleHeight/2)+contactInitialOffset;
 
 %%
 % Plotting surface models
-hf=figuremax(figColor,figColorDef);
+hf=cFigure;
 title('Model surfaces','FontSize',fontSize);
 xlabel('X','FontSize',fontSize); ylabel('Y','FontSize',fontSize); zlabel('Z','FontSize',fontSize);
 hold on;
@@ -133,7 +132,7 @@ E2=E2+size(V1,1);
 
 %%
 % Plotting surface models
-hf=figuremax(figColor,figColorDef);
+hf=cFigure;
 title('Merged node sets','FontSize',fontSize);
 xlabel('X','FontSize',fontSize); ylabel('Y','FontSize',fontSize); zlabel('Z','FontSize',fontSize);
 hold on;
@@ -152,7 +151,7 @@ logicContactSurf1=faceBoundaryMarker==2;
 Fc2=fliplr(Fb1(logicContactSurf1,:));
 
 % Plotting surface models
-hf=figuremax(figColor,figColorDef);
+hf=cFigure;
 title('Contact sets','FontSize',fontSize);
 xlabel('X','FontSize',fontSize); ylabel('Y','FontSize',fontSize); zlabel('Z','FontSize',fontSize);
 hold on;
@@ -182,7 +181,7 @@ end
 
 %%
 % Plotting surface models
-hf=figuremax(figColor,figColorDef);
+hf=cFigure;
 title('The shell layer','FontSize',fontSize);
 xlabel('X','FontSize',fontSize); ylabel('Y','FontSize',fontSize); zlabel('Z','FontSize',fontSize);
 hold on;
@@ -208,7 +207,7 @@ bcPrescribeMagnitudes=[0 0 -(sphereDisplacement+contactInitialOffset)];
 
 %%
 % Visualize BC's
-hf=figuremax(figColor,figColorDef);
+hf=cFigure;
 title('Complete model','FontSize',fontSize);
 xlabel('X','FontSize',fontSize); ylabel('Y','FontSize',fontSize); zlabel('Z','FontSize',fontSize);
 hold on;
@@ -395,7 +394,7 @@ if runFlag==1 %i.e. a succesful run
     
     [CF]=vertexToFaceMeasure(Fb1,DN_magnitude);
     
-    hf1=figuremax(figColor,figColorDef);
+    hf1=cFigure;
     title('The deformed model','FontSize',fontSize);
     xlabel('X','FontSize',fontSize); ylabel('Y','FontSize',fontSize); zlabel('Z','FontSize',fontSize); hold on;
     

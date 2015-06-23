@@ -1,13 +1,13 @@
-function [indSeed,D_map,seedIndex]=patchMarchDistMapPointSeed(F,V,indStart,n)
+function [indSeed,D_map,seedIndex]=patchMarchDistMapPointSeed(F,V,indStart,n,W)
 
 %%
 numStarts=numel(indStart);
 indSeed=zeros(n,1);
 indSeed(1:numStarts)=indStart; 
-
+options.W=W; 
 if n>numel(indStart)
     
-    [D_map,~] = patchMarchDistMap(F,V,indStart,[]);
+    [D_map,~] = patchMarchDistMap(F,V,indStart,options);
     
     D_map_now=D_map;
     

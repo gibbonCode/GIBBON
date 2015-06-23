@@ -1,5 +1,20 @@
 function docNode=addMaterialLevel_FEB(docNode,FEB_struct)
 
+% function docNode=addMaterialLevel_FEB(docNode,FEB_struct)
+% ------------------------------------------------------------------------
+%
+% This function uses the input FEB_struct to add the material section to a
+% docNode for an FEBio .feb file.
+%
+%
+%
+% Kevin Mattheus Moerman
+% gibbon.toolbox@gmail.com
+%
+% Change log:
+% 2015/06/16: Altered the way viscoelasticity is defined to accomodate
+% viscoelasticity for solid mixtures
+%------------------------------------------------------------------------
 
 %%
 
@@ -75,6 +90,38 @@ for q_mat=1:1:numel(matIndicesUnique)
                     [docNode]=setMaterialEntries(docNode,solid_node,currentSolidStruct);
                 end
             end
+        case {'uncoupled viscoelastic','viscoelastic'}
+            if isfield(currentMaterialStruct,'Elastic')
+                %Add elastic level
+                elastic_node = docNode.createElement('elastic'); %create entry
+                elastic_node = material_node.appendChild(elastic_node); %add entry
+                
+                %Get material structure for elastic
+                elasticStruct=currentMaterialStruct.Elastic;
+                
+                %Setting elastic material Type
+                attr = docNode.createAttribute('type'); %Create attribute
+                attr.setNodeValue(elasticStruct.Type); %Set text
+                elastic_node.setAttributeNode(attr); %Add attribute
+                
+                switch elasticStruct.Type
+                    case {'uncoupled solid mixture','solid mixture'}
+                        numSolids=numel(elasticStruct.Solid);
+                        for q_sol=1:1:numSolids
+                            %Add solid level
+                            solid_node = docNode.createElement('solid'); %create entry
+                            solid_node = elastic_node.appendChild(solid_node); %add entry
+                            
+                            %Set parameters
+                            currentSolidStruct=elasticStruct.Solid{q_sol};
+                            [docNode]=setMaterialEntries(docNode,solid_node,currentSolidStruct);
+                        end
+                    otherwise
+                        [docNode]=setMaterialEntries(docNode,elastic_node,elasticStruct);
+                end
+            else
+                warning('Elastic field (containing material structure) missing. Assuming "old" viscoelastic specification type. It is recommended to update code.')
+            end
     end
     
     if FEB_struct.disp_opt==1;
@@ -104,7 +151,7 @@ if isfield(inputStruct,'id')
 end
 
 if isfield(inputStruct,'Type')
-    %Setting material  Type
+    %Setting material Type
     attr = docNode.createAttribute('type'); %Create attribute
     attr.setNodeValue(inputStruct.Type); %Set text
     levelNode.setAttributeNode(attr); %Add attribute
@@ -151,10 +198,10 @@ if isfield(inputStruct,'Properties')
     mat_prop_vals=inputStruct.Values;
     
     %Access property attributes
-    if isfield(inputStruct,'PropAttrName') 
+    if isfield(inputStruct,'PropAttrName')
         mat_prop_attr_name=inputStruct.PropAttrName;
         mat_prop_attr_val=inputStruct.PropAttrVal;
-    else        
+    else
         mat_prop_attr_name=[];
         mat_prop_attr_val=[];
     end
@@ -178,11 +225,11 @@ if isfield(inputStruct,'Properties')
         prop_node.appendChild(docNode.createTextNode(sprintf(t_form,currentVal))); %append data text child
         
         %Add potential property attributes (e.g. property load curves)
-        if ~isempty(mat_prop_attr_name) 
+        if ~isempty(mat_prop_attr_name)
             if q<=numel(mat_prop_attr_name)
                 currentPropAttrName=mat_prop_attr_name{q};
                 if ~isempty(currentPropAttrName)
-                    currentPropAttrVal=mat_prop_attr_val{q}; 
+                    currentPropAttrVal=mat_prop_attr_val{q};
                     
                     attr = docNode.createAttribute(currentPropAttrName); %Create attribute
                     if isfloat(currentPropAttrVal)
@@ -212,30 +259,9 @@ if isfield(inputStruct,'Properties')
                     prop_node_sub.appendChild(docNode.createTextNode(sprintf(t_form,currentVal))); %append data text child
                 end
             end
-            
-%             if q<=numel(mat_prop_par_name)
-%                 currentPropParName=mat_prop_par_name{q};
-%                 if ~isempty(currentPropParName)
-%                     currentPropParVal=mat_prop_par_val{q}; 
-%                     
-%                     attr = docNode.createAttribute(currentPropParName); %Create attribute
-%                     if isfloat(currentPropParVal)
-%                         t_form=repmat('%6.7e, ',1,size(currentPropParVal,2));
-%                         t_form=t_form(1:end-2);
-%                         strEntry=sprintf(t_form,currentPropParVal);
-%                     elseif isa(currentPropParVal,'char')
-%                         strEntry=currentPropParVal;
-%                     else
-%                         error('Unknown class for currentPropParVal');
-%                     end
-%                     attr.setNodeValue(strEntry); %Set text
-%                     prop_node.setAttributeNode(attr); %Add attribute
-%                 end
-%             end
         end
         
     end
-    
 end
 
 end
