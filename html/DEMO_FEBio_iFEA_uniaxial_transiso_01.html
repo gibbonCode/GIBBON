@@ -1,0 +1,1735 @@
+
+<!DOCTYPE html
+  PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html><head>
+      <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+   <!--
+This HTML was auto-generated from MATLAB code.
+To make changes, update the MATLAB code and republish this document.
+      --><title>DEMO_FEBio_iFEA_uniaxial_transiso_01.m</title><meta name="generator" content="MATLAB 8.6"><link rel="schema.DC" href="http://purl.org/dc/elements/1.1/"><meta name="DC.date" content="2015-06-26"><meta name="DC.source" content="DEMO_FEBio_iFEA_uniaxial_transiso_01.m"><style type="text/css">
+html,body,div,span,applet,object,iframe,h1,h2,h3,h4,h5,h6,p,blockquote,pre,a,abbr,acronym,address,big,cite,code,del,dfn,em,font,img,ins,kbd,q,s,samp,small,strike,strong,sub,sup,tt,var,b,u,i,center,dl,dt,dd,ol,ul,li,fieldset,form,label,legend,table,caption,tbody,tfoot,thead,tr,th,td{margin:0;padding:0;border:0;outline:0;font-size:100%;vertical-align:baseline;background:transparent}body{line-height:1}ol,ul{list-style:none}blockquote,q{quotes:none}blockquote:before,blockquote:after,q:before,q:after{content:'';content:none}:focus{outine:0}ins{text-decoration:none}del{text-decoration:line-through}table{border-collapse:collapse;border-spacing:0}
+
+html { min-height:100%; margin-bottom:1px; }
+html body { height:100%; margin:0px; font-family:Arial, Helvetica, sans-serif; font-size:10px; color:#000; line-height:140%; background:#fff none; overflow-y:scroll; }
+html body td { vertical-align:top; text-align:left; }
+
+h1 { padding:0px; margin:0px 0px 25px; font-family:Arial, Helvetica, sans-serif; font-size:1.5em; color:#d55000; line-height:100%; font-weight:normal; }
+h2 { padding:0px; margin:0px 0px 8px; font-family:Arial, Helvetica, sans-serif; font-size:1.2em; color:#000; font-weight:bold; line-height:140%; border-bottom:1px solid #d6d4d4; display:block; }
+h3 { padding:0px; margin:0px 0px 5px; font-family:Arial, Helvetica, sans-serif; font-size:1.1em; color:#000; font-weight:bold; line-height:140%; }
+
+a { color:#005fce; text-decoration:none; }
+a:hover { color:#005fce; text-decoration:underline; }
+a:visited { color:#004aa0; text-decoration:none; }
+
+p { padding:0px; margin:0px 0px 20px; }
+img { padding:0px; margin:0px 0px 20px; border:none; }
+p img, pre img, tt img, li img, h1 img, h2 img { margin-bottom:0px; } 
+
+ul { padding:0px; margin:0px 0px 20px 23px; list-style:square; }
+ul li { padding:0px; margin:0px 0px 7px 0px; }
+ul li ul { padding:5px 0px 0px; margin:0px 0px 7px 23px; }
+ul li ol li { list-style:decimal; }
+ol { padding:0px; margin:0px 0px 20px 0px; list-style:decimal; }
+ol li { padding:0px; margin:0px 0px 7px 23px; list-style-type:decimal; }
+ol li ol { padding:5px 0px 0px; margin:0px 0px 7px 0px; }
+ol li ol li { list-style-type:lower-alpha; }
+ol li ul { padding-top:7px; }
+ol li ul li { list-style:square; }
+
+.content { font-size:1.2em; line-height:140%; padding: 20px; }
+
+pre, code { font-size:12px; }
+tt { font-size: 1.2em; }
+pre { margin:0px 0px 20px; }
+pre.codeinput { padding:10px; border:1px solid #d3d3d3; background:#f7f7f7; }
+pre.codeoutput { padding:10px 11px; margin:0px 0px 20px; color:#4c4c4c; }
+pre.error { color:red; }
+
+@media print { pre.codeinput, pre.codeoutput { word-wrap:break-word; width:100%; } }
+
+span.keyword { color:#0000FF }
+span.comment { color:#228B22 }
+span.string { color:#A020F0 }
+span.untermstring { color:#B20000 }
+span.syscmd { color:#B28C00 }
+
+.footer { width:auto; padding:10px 0px; margin:25px 0px 0px; border-top:1px dotted #878787; font-size:0.8em; line-height:140%; font-style:italic; color:#878787; text-align:left; float:none; }
+.footer p { margin:0px; }
+.footer a { color:#878787; }
+.footer a:hover { color:#878787; text-decoration:underline; }
+.footer a:visited { color:#878787; }
+
+table th { padding:7px 5px; text-align:left; vertical-align:middle; border: 1px solid #d6d4d4; font-weight:bold; }
+table td { padding:7px 5px; text-align:left; vertical-align:top; border:1px solid #d6d4d4; }
+
+
+
+
+
+  </style></head><body><div class="content"><h1>DEMO_FEBio_iFEA_uniaxial_transiso_01.m</h1><!--introduction--><p>Below is a demonstration for: 1) Inverse FEA based material parameter optimisation</p><!--/introduction--><h2>Contents</h2><div><ul><li><a href="#4">LOAD EXPERIMENTAL DATA</a></li><li><a href="#5">Plotting experimental data</a></li><li><a href="#6">CREATING MESHED BOX</a></li><li><a href="#8">DEFINE BC's</a></li><li><a href="#10">DEFINE FIBRE DIRECTIONS</a></li><li><a href="#12">CONSTRUCTING FEB MODEL</a></li><li><a href="#13">SAVING .FEB FILE</a></li><li><a href="#18">STARTING OPTIMISATION OF GROUND MATRIX</a></li><li><a href="#19">Unnormalize and constrain parameters</a></li><li><a href="#22">Plotting experimental data</a></li></ul></div><pre class="codeinput">clear; close <span class="string">all</span>; clc;
+</pre><p>Plot settings</p><pre class="codeinput">fontSize=25;
+fontSize2=30;
+faceAlpha1=0.5;
+faceAlpha2=1;
+faceAlpha3=0.1;
+edgeColor=0.25*ones(1,3);
+edgeWidth=1.5;
+markerSize=25;
+lineWidth1=4;
+lineWidth2=3;
+fcolor1=0.2.*ones(1,3);
+fcolor2=0.5.*ones(1,3);
+</pre><p>Control parameters</p><pre class="codeinput"><span class="comment">% path names</span>
+filePath=mfilename(<span class="string">'fullpath'</span>);
+savePath=fullfile(fileparts(filePath),<span class="string">'data'</span>,<span class="string">'temp'</span>);
+
+modelName=fullfile(savePath,<span class="string">'iFEA_tempModel'</span>);
+
+<span class="comment">%Specifying dimensions and number of elements</span>
+sampleWidth=10;
+sampleThickness=10;
+sampleHeight=10;
+pointSpacings=2*ones(1,3);
+initialArea=sampleWidth*sampleThickness;
+
+numElementsWidth=round(sampleWidth/pointSpacings(1));
+numElementsThickness=round(sampleThickness/pointSpacings(2));
+numElementsHeight=round(sampleHeight/pointSpacings(3));
+
+stretchLoad=0.7;
+displacementMagnitude=[0 0 (stretchLoad*sampleHeight)-sampleHeight];
+
+<span class="comment">%Initial material parameter set</span>
+<span class="comment">%  0.000321611705072   5.970490065051994   0.579248837701591   3.379481260524639</span>
+<span class="comment">%  0.000320483810205   6.040154883512212  27.139247008198858   4.271586878831325</span>
+c1_ini= 0.000320483810205;
+m1_ini= 6.040154883512212;
+ksi_ini=0.579248837701591;
+beta_ini=3.379481260524639;
+k_factor=500;
+k_ini=(c1_ini+ksi_ini)*k_factor;
+P_ini=[c1_ini m1_ini ksi_ini beta_ini];
+
+alphaFib=0.25*pi;
+
+optimMethod=2;
+optimOpt=1;
+</pre><h2>LOAD EXPERIMENTAL DATA<a name="4"></a></h2><pre class="codeinput"><span class="comment">% Set folder and file name</span>
+defaultFolder = fileparts(mfilename(<span class="string">'fullpath'</span>));
+pathName=fullfile(defaultFolder,<span class="string">'data'</span>,<span class="string">'Loocke_2006'</span>);
+fileName=fullfile(pathName,<span class="string">'LOOCKE_FIBRE_LANDSCAPE_CAUCHY.mat'</span>);
+
+load(fileName);
+
+stretch_exp=ELAS_regular.L_DATA(:,1);
+stress_cauchy_exp=ELAS_regular.STRESS_DATA(:,[1 5]);
+stress_cauchy_exp_SD=ELAS_regular.SD_DATA(:,[1 5]);
+
+
+V_sd1=[[stretch_exp;flipud(stretch_exp)] [stress_cauchy_exp(:,1)-stress_cauchy_exp_SD(:,1);flipud(stress_cauchy_exp(:,1)+stress_cauchy_exp_SD(:,1))]];
+F_sd1=1:size(V_sd1,1);
+
+V_sd2=[[stretch_exp;flipud(stretch_exp)] [stress_cauchy_exp(:,2)-stress_cauchy_exp_SD(:,2);flipud(stress_cauchy_exp(:,2)+stress_cauchy_exp_SD(:,2))]];
+F_sd2=1:size(V_sd2,1);
+</pre><h2>Plotting experimental data<a name="5"></a></h2><pre class="codeinput">pColors=gjet(2);
+cFigure; hold <span class="string">on</span>;
+title(<span class="string">'Experimental data'</span>,<span class="string">'FontSize'</span>,fontSize2);
+xlabel(<span class="string">'$$\lambda$$'</span>,<span class="string">'FontSize'</span>,fontSize2,<span class="string">'Interpreter'</span>,<span class="string">'Latex'</span>);
+ylabel(<span class="string">'$$\sigma(kPa)$$'</span>,<span class="string">'FontSize'</span>,fontSize2,<span class="string">'Interpreter'</span>,<span class="string">'Latex'</span>);
+
+patch(<span class="string">'Faces'</span>,F_sd1,<span class="string">'Vertices'</span>,V_sd1,<span class="string">'EdgeColor'</span>,<span class="string">'none'</span>,<span class="string">'FaceColor'</span>,pColors(1,:),<span class="string">'FaceAlpha'</span>,faceAlpha3);
+patch(<span class="string">'Faces'</span>,F_sd2,<span class="string">'Vertices'</span>,V_sd2,<span class="string">'EdgeColor'</span>,<span class="string">'none'</span>,<span class="string">'FaceColor'</span>,pColors(2,:),<span class="string">'FaceAlpha'</span>,faceAlpha3);
+
+hp(1)=plot(stretch_exp,stress_cauchy_exp(:,1),<span class="string">'k--'</span>,<span class="string">'LineWidth'</span>,lineWidth1);
+set(hp(1),<span class="string">'Color'</span>,pColors(1,:));
+hp(2)=plot(stretch_exp,stress_cauchy_exp(:,2),<span class="string">'k--'</span>,<span class="string">'LineWidth'</span>,lineWidth1);
+set(hp(2),<span class="string">'Color'</span>,pColors(2,:));
+
+h=legend(hp,<span class="string">'$$\alpha=0$$'</span>,<span class="string">'$$\alpha=90$$'</span>,<span class="string">'Location'</span>,<span class="string">'SouthEast'</span>);
+set(h,<span class="string">'Interpreter'</span>,<span class="string">'Latex'</span>,<span class="string">'FontSize'</span>,fontSize2);
+
+
+axis <span class="string">tight</span>;
+set(gca,<span class="string">'FontSize'</span>,fontSize);
+box <span class="string">on</span>; grid <span class="string">on</span>;
+drawnow;
+</pre><img vspace="5" hspace="5" src="DEMO_FEBio_iFEA_uniaxial_transiso_01_01.png" alt=""> <h2>CREATING MESHED BOX<a name="6"></a></h2><pre class="codeinput"><span class="comment">%Create box 1</span>
+boxDim=[sampleWidth sampleThickness sampleHeight]; <span class="comment">%Dimensions</span>
+boxEl=[numElementsWidth numElementsThickness numElementsHeight]; <span class="comment">%Number of elements</span>
+[box1]=hexMeshBox(boxDim,boxEl);
+E=box1.E;
+V=box1.V;
+Fb=box1.Fb;
+faceBoundaryMarker=box1.faceBoundaryMarker;
+
+X=V(:,1); Y=V(:,2); Z=V(:,3);
+VE=[mean(X(E),2) mean(Y(E),2) mean(Z(E),2)];
+
+elementMaterialIndices=ones(size(E,1),1);
+</pre><pre class="codeinput"><span class="comment">% Plotting boundary surfaces</span>
+hf=cFigure;
+title(<span class="string">'Model surfaces'</span>,<span class="string">'FontSize'</span>,fontSize);
+xlabel(<span class="string">'X'</span>,<span class="string">'FontSize'</span>,fontSize); ylabel(<span class="string">'Y'</span>,<span class="string">'FontSize'</span>,fontSize); zlabel(<span class="string">'Z'</span>,<span class="string">'FontSize'</span>,fontSize);
+hold <span class="string">on</span>;
+patch(<span class="string">'Faces'</span>,Fb,<span class="string">'Vertices'</span>,V,<span class="string">'FaceColor'</span>,<span class="string">'flat'</span>,<span class="string">'CData'</span>,faceBoundaryMarker,<span class="string">'FaceAlpha'</span>,faceAlpha2,<span class="string">'lineWidth'</span>,edgeWidth,<span class="string">'edgeColor'</span>,edgeColor);
+
+colormap(gjet(6)); colorbar;
+set(gca,<span class="string">'FontSize'</span>,fontSize);
+view(3); axis <span class="string">tight</span>;  axis <span class="string">equal</span>;  grid <span class="string">on</span>;
+drawnow;
+</pre><img vspace="5" hspace="5" src="DEMO_FEBio_iFEA_uniaxial_transiso_01_02.png" alt=""> <h2>DEFINE BC's<a name="8"></a></h2><pre class="codeinput"><span class="comment">%Define supported node sets</span>
+logicFace=faceBoundaryMarker==1;
+Fr=Fb(logicFace,:);
+bcSupportList_X=unique(Fr(:));
+
+logicFace=faceBoundaryMarker==3;
+Fr=Fb(logicFace,:);
+bcSupportList_Y=unique(Fr(:));
+
+logicFace=faceBoundaryMarker==5;
+Fr=Fb(logicFace,:);
+bcSupportList_Z=unique(Fr(:));
+
+<span class="comment">%Prescribed displacement nodes</span>
+logicPrescribe=faceBoundaryMarker==6;
+Fr=Fb(logicPrescribe,:);
+bcPrescribeList=unique(Fr(:));
+bcPrescribeMagnitudes=displacementMagnitude(ones(1,numel(bcPrescribeList)),:);
+</pre><p>Visualize BC's</p><pre class="codeinput">hf=cFigure;
+title(<span class="string">'BCs'</span>,<span class="string">'FontSize'</span>,fontSize);
+xlabel(<span class="string">'X'</span>,<span class="string">'FontSize'</span>,fontSize); ylabel(<span class="string">'Y'</span>,<span class="string">'FontSize'</span>,fontSize); zlabel(<span class="string">'Z'</span>,<span class="string">'FontSize'</span>,fontSize);
+hold <span class="string">on</span>;
+
+patch(<span class="string">'Faces'</span>,Fb,<span class="string">'Vertices'</span>,V,<span class="string">'FaceColor'</span>,<span class="string">'flat'</span>,<span class="string">'CData'</span>,faceBoundaryMarker,<span class="string">'FaceAlpha'</span>,faceAlpha2,<span class="string">'lineWidth'</span>,edgeWidth,<span class="string">'edgeColor'</span>,edgeColor);
+plotV(V(bcSupportList_X,:),<span class="string">'r.'</span>,<span class="string">'MarkerSize'</span>,markerSize);
+plotV(V(bcSupportList_Y,:),<span class="string">'g.'</span>,<span class="string">'MarkerSize'</span>,markerSize);
+plotV(V(bcSupportList_Z,:),<span class="string">'b.'</span>,<span class="string">'MarkerSize'</span>,markerSize);
+plotV(V(bcPrescribeList,:),<span class="string">'k.'</span>,<span class="string">'MarkerSize'</span>,markerSize);
+set(gca,<span class="string">'FontSize'</span>,fontSize);
+
+colormap(gjet(6)); colorbar;
+set(gca,<span class="string">'FontSize'</span>,fontSize);
+view(3); axis <span class="string">tight</span>;  axis <span class="string">equal</span>;  grid <span class="string">on</span>;
+drawnow;
+</pre><img vspace="5" hspace="5" src="DEMO_FEBio_iFEA_uniaxial_transiso_01_03.png" alt=""> <h2>DEFINE FIBRE DIRECTIONS<a name="10"></a></h2><pre class="codeinput">[R,~]=euler2DCM([0,alphaFib,0]);
+v_fib=(R*[0 0 1]')';
+
+V_fib=v_fib(ones(size(E,1),1),:);
+</pre><p>Visualize fibre direction vectors</p><pre class="codeinput">[Ff,Vf,Cf]=quiver3Dpatch(VE(:,1),VE(:,2),VE(:,3),V_fib(:,1),V_fib(:,2),V_fib(:,3),ones(size(V_fib,1),1),min(pointSpacings).*ones(1,2));
+
+hf=cFigure;
+title(<span class="string">'Fibre vectors'</span>,<span class="string">'FontSize'</span>,fontSize);
+xlabel(<span class="string">'X'</span>,<span class="string">'FontSize'</span>,fontSize); ylabel(<span class="string">'Y'</span>,<span class="string">'FontSize'</span>,fontSize); zlabel(<span class="string">'Z'</span>,<span class="string">'FontSize'</span>,fontSize);
+hold <span class="string">on</span>;
+
+patch(<span class="string">'Faces'</span>,Fb,<span class="string">'Vertices'</span>,V,<span class="string">'FaceColor'</span>,0.5.*ones(1,3),<span class="string">'FaceAlpha'</span>,faceAlpha1,<span class="string">'edgeColor'</span>,<span class="string">'k'</span>);
+patch(<span class="string">'Faces'</span>,Ff,<span class="string">'Vertices'</span>,Vf,<span class="string">'FaceColor'</span>,<span class="string">'k'</span>,<span class="string">'FaceAlpha'</span>,1,<span class="string">'edgeColor'</span>,<span class="string">'none'</span>);
+
+set(gca,<span class="string">'FontSize'</span>,fontSize);
+set(gca,<span class="string">'FontSize'</span>,fontSize);
+view(3); axis <span class="string">tight</span>;  axis <span class="string">equal</span>;  grid <span class="string">on</span>;
+drawnow;
+</pre><img vspace="5" hspace="5" src="DEMO_FEBio_iFEA_uniaxial_transiso_01_04.png" alt=""> <h2>CONSTRUCTING FEB MODEL<a name="12"></a></h2><pre class="codeinput">FEB_struct.febio_spec.version=<span class="string">'2.0'</span>;
+
+<span class="comment">% Defining file names</span>
+FEB_struct.run_filename=[modelName,<span class="string">'.feb'</span>]; <span class="comment">%FEB file name</span>
+FEB_struct.run_logname=[modelName,<span class="string">'.txt'</span>]; <span class="comment">%FEBio log file name</span>
+
+<span class="comment">%Geometry section</span>
+FEB_struct.Geometry.Nodes=V;
+FEB_struct.Geometry.Elements={E}; <span class="comment">%The element sets</span>
+FEB_struct.Geometry.ElementType={<span class="string">'hex8'</span>}; <span class="comment">%The element types</span>
+FEB_struct.Geometry.ElementMat={elementMaterialIndices};
+FEB_struct.Geometry.ElementsPartName={<span class="string">'Block'</span>};
+
+<span class="comment">%Adding fibre direction, construct local orthonormal basis vectors</span>
+[a,d]=vectorOrthogonalPair(V_fib);
+
+VF_E=zeros(size(V_fib,1),size(V_fib,2),2);
+VF_E(:,:,1)=a; <span class="comment">%a1 ~ e1 ~ X or first direction</span>
+VF_E(:,:,2)=d; <span class="comment">%a2 ~ e2 ~ Y or second direction</span>
+<span class="comment">%Vf_E %a3 ~ e3 ~ Z, third direction, or fibre direction</span>
+
+FEB_struct.Geometry.ElementData.MatAxis.ElementIndices=1:1:size(E,1);
+FEB_struct.Geometry.ElementData.MatAxis.Basis=VF_E;
+
+<span class="comment">%Material section</span>
+FEB_struct.Materials{1}.Type=<span class="string">'solid mixture'</span>;
+<span class="comment">% FEB_struct.Materials{1}.AnisoType='mat_axis';</span>
+FEB_struct.Materials{1}.Solid{1}.Type=<span class="string">'Ogden unconstrained'</span>;
+FEB_struct.Materials{1}.Solid{1}.Properties={<span class="string">'c1'</span>,<span class="string">'m1'</span>,<span class="string">'c2'</span>,<span class="string">'m2'</span>,<span class="string">'cp'</span>};
+FEB_struct.Materials{1}.Solid{1}.Values={c1_ini,m1_ini,c1_ini,-m1_ini,k_ini};
+FEB_struct.Materials{1}.Solid{2}.Type=<span class="string">'fiber-exp-pow'</span>;
+FEB_struct.Materials{1}.Solid{2}.Properties={<span class="string">'ksi'</span>,<span class="string">'alpha'</span>,<span class="string">'beta'</span>,<span class="string">'theta'</span>,<span class="string">'phi'</span>};
+FEB_struct.Materials{1}.Solid{2}.Values={ksi_ini,0,beta_ini,0,0};
+FEB_struct.Materials{1}.Solid{2}.AnisoType=<span class="string">'mat_axis'</span>;
+
+<span class="comment">%Control section</span>
+FEB_struct.Control.AnalysisType=<span class="string">'static'</span>;
+FEB_struct.Control.Properties={<span class="string">'time_steps'</span>,<span class="string">'step_size'</span>,<span class="keyword">...</span>
+    <span class="string">'max_refs'</span>,<span class="string">'max_ups'</span>,<span class="keyword">...</span>
+    <span class="string">'dtol'</span>,<span class="string">'etol'</span>,<span class="string">'rtol'</span>,<span class="string">'lstol'</span>};
+numSteps=25;
+FEB_struct.Control.Values={numSteps,1/numSteps,25,0,0.001,0.01,0,0.9};
+FEB_struct.Control.TimeStepperProperties={<span class="string">'dtmin'</span>,<span class="string">'dtmax'</span>,<span class="string">'max_retries'</span>,<span class="string">'opt_iter'</span>,<span class="string">'aggressiveness'</span>};
+FEB_struct.Control.TimeStepperValues={(1/(100*numSteps)),1/numSteps,5,10,1};
+
+<span class="comment">%Defining node sets</span>
+FEB_struct.Geometry.NodeSet{1}.Set=bcSupportList_X;
+FEB_struct.Geometry.NodeSet{1}.Name=<span class="string">'bcSupportList_X'</span>;
+FEB_struct.Geometry.NodeSet{2}.Set=bcSupportList_Y;
+FEB_struct.Geometry.NodeSet{2}.Name=<span class="string">'bcSupportList_Y'</span>;
+FEB_struct.Geometry.NodeSet{3}.Set=bcSupportList_Z;
+FEB_struct.Geometry.NodeSet{3}.Name=<span class="string">'bcSupportList_Z'</span>;
+<span class="comment">% FEB_struct.Geometry.NodeSet{4}.Set=bcPrescribeList;</span>
+<span class="comment">% FEB_struct.Geometry.NodeSet{4}.Name='bcPrescribeList';</span>
+
+<span class="comment">%Adding BC information</span>
+FEB_struct.Boundary.Fix{1}.bc=<span class="string">'x'</span>;
+FEB_struct.Boundary.Fix{1}.SetName=FEB_struct.Geometry.NodeSet{1}.Name;
+FEB_struct.Boundary.Fix{2}.bc=<span class="string">'y'</span>;
+FEB_struct.Boundary.Fix{2}.SetName=FEB_struct.Geometry.NodeSet{2}.Name;
+FEB_struct.Boundary.Fix{3}.bc=<span class="string">'z'</span>;
+FEB_struct.Boundary.Fix{3}.SetName=FEB_struct.Geometry.NodeSet{3}.Name;
+
+<span class="comment">%Prescribed BC's</span>
+FEB_struct.Boundary.Prescribe{1}.Set=bcPrescribeList;
+FEB_struct.Boundary.Prescribe{1}.bc=<span class="string">'z'</span>;
+FEB_struct.Boundary.Prescribe{1}.lc=1;
+FEB_struct.Boundary.Prescribe{1}.nodeScale=displacementMagnitude(ones(numel(bcPrescribeList),1),3);
+FEB_struct.Boundary.Prescribe{1}.Type=<span class="string">'relative'</span>;
+
+<span class="comment">%Load curves</span>
+FEB_struct.LoadData.LoadCurves.id=1;
+FEB_struct.LoadData.LoadCurves.type={<span class="string">'linear'</span>};
+FEB_struct.LoadData.LoadCurves.loadPoints={[0 0;1 1;]};
+
+<span class="comment">%Adding output requests</span>
+FEB_struct.Output.VarTypes={<span class="string">'displacement'</span>,<span class="string">'stress'</span>,<span class="string">'relative volume'</span>};
+
+<span class="comment">%Specify log file output</span>
+run_disp_output_name=[FEB_struct.run_filename(1:end-4),<span class="string">'_node_out.txt'</span>];
+run_stress_output_name=[FEB_struct.run_filename(1:end-4),<span class="string">'_stress_out.txt'</span>];
+FEB_struct.run_output_names={run_disp_output_name,run_stress_output_name};
+FEB_struct.output_types={<span class="string">'node_data'</span>,<span class="string">'element_data'</span>};
+FEB_struct.data_types={<span class="string">'ux;uy;uz'</span>,<span class="string">'sz'</span>};
+</pre><h2>SAVING .FEB FILE<a name="13"></a></h2><pre class="codeinput">FEB_struct.disp_opt=0; <span class="comment">%Display waitbars option</span>
+febStruct2febFile(FEB_struct);
+</pre><pre class="codeoutput"> 
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+--- Writing FEBio XML object --- 26-Jun-2015 08:04:20
+Adding Control level
+Adding Globals level
+Adding Material level
+Adding Geometry level
+----&gt; Adding node field
+----&gt; Adding element field
+----&gt; Adding hex8 element entries....
+----&gt; Adding element data field
+----&gt; MatAxis data entries found
+----&gt; Adding NodeSet field
+Adding Boundary level
+----&gt; Defining fix type boundary conditions
+----&gt; Defining prescribe type boundary conditions
+Adding LoadData level
+----&gt; Defining load curves
+Adding Output level
+----&gt; Adding plotfile field
+----&gt; Adding logfile field
+Writing .feb file
+--- Done --- 26-Jun-2015 08:04:21
+</pre><p>FEBioRunStruct.FEBioPath='C:\Program Files\febio2-2.2.6\bin\febio2.exe';</p><pre class="codeinput">FEBioRunStruct.run_filename=FEB_struct.run_filename;
+FEBioRunStruct.run_logname=FEB_struct.run_logname;
+FEBioRunStruct.disp_on=0;
+FEBioRunStruct.disp_log_on=0;
+FEBioRunStruct.runMode=<span class="string">'external'</span>;<span class="comment">%'internal';</span>
+FEBioRunStruct.t_check=0.25; <span class="comment">%Time for checking log file (dont set too small)</span>
+FEBioRunStruct.maxtpi=1e99; <span class="comment">%Max analysis time</span>
+FEBioRunStruct.maxLogCheckTime=5; <span class="comment">%Max log file checking time</span>
+FEBioRunStruct.cleanUpFileList=FEB_struct.run_output_names; <span class="comment">%Files to remove prior to starting each job.</span>
+</pre><pre class="codeinput">objectiveStruct.P_ini=P_ini;
+objectiveStruct.bcPrescribeList=bcPrescribeList;
+objectiveStruct.sampleHeight=sampleHeight;
+objectiveStruct.stretch_exp=stretch_exp;
+objectiveStruct.FEBioRunStruct=FEBioRunStruct;
+objectiveStruct.FEB_struct=FEB_struct;
+objectiveStruct.k_factor=k_factor;
+objectiveStruct.method=optimMethod;
+objectiveStruct.run_output_names=FEB_struct.run_output_names;
+</pre><pre class="codeinput"><span class="keyword">if</span> optimOpt==1
+    <span class="comment">%Optimisation settings</span>
+    maxNumberIterations=50; <span class="comment">%Maximum number of optimization iterations</span>
+    maxNumberFunctionEvaluations=maxNumberIterations*10; <span class="comment">%Maximum number of function evaluations, N.B. multiple evaluations are used per iteration</span>
+    functionTolerance=1e-3; <span class="comment">%Tolerance on objective function value</span>
+    parameterTolerance=1e-3; <span class="comment">%Tolerance on parameter variation</span>
+    displayTypeIterations=<span class="string">'iter'</span>;
+
+    <span class="keyword">for</span> dirCase=1:2;
+</pre><pre class="codeinput">        objectiveStruct.dirCase=dirCase;
+        objectiveStruct.stress_cauchy_exp=stress_cauchy_exp(:,objectiveStruct.dirCase);
+
+        <span class="comment">%Initial parameters</span>
+        <span class="keyword">if</span> dirCase==1
+            P=objectiveStruct.P_ini(1:2);
+            objectiveStruct.Pb_struct.xxlim=[[P(1)/100 2]' [P(1)*100 50]']; <span class="comment">%Parameter bounds</span>
+        <span class="keyword">elseif</span> dirCase==2
+            P=objectiveStruct.P_ini(3:4);
+            objectiveStruct.Pb_struct.xxlim=[[P(1)/100 2]' [P(1)*100 50]']; <span class="comment">%Parameter bounds</span>
+        <span class="keyword">end</span>
+
+        objectiveStruct.parNormFactors=P; <span class="comment">%This will normalize the paramters to ones(size(P))</span>
+        objectiveStruct.Pb_struct.xx_c=P; <span class="comment">%Parameter constraining centre</span>
+
+        Pn=P./objectiveStruct.parNormFactors;
+</pre><h2>STARTING OPTIMISATION OF GROUND MATRIX<a name="18"></a></h2><pre class="codeinput">        <span class="keyword">switch</span> objectiveStruct.method
+            <span class="keyword">case</span> 1 <span class="comment">%fminsearch and Nelder-Mead</span>
+                OPT_options=optimset(<span class="string">'fminsearch'</span>); <span class="comment">% 'Nelder-Mead simplex direct search'</span>
+                OPT_options = optimset(OPT_options,<span class="string">'MaxFunEvals'</span>,maxNumberFunctionEvaluations,<span class="keyword">...</span>
+                    <span class="string">'MaxIter'</span>,maxNumberIterations,<span class="keyword">...</span>
+                    <span class="string">'TolFun'</span>,functionTolerance,<span class="keyword">...</span>
+                    <span class="string">'TolX'</span>,parameterTolerance,<span class="keyword">...</span>
+                    <span class="string">'Display'</span>,displayTypeIterations,<span class="keyword">...</span>
+                    <span class="string">'FinDiffRelStep'</span>,1e-3,<span class="keyword">...</span>
+                    <span class="string">'DiffMaxChange'</span>,0.5);
+                [Pn_opt,OPT_out.fval,OPT_out.exitflag,OPT_out.output]= fminsearch(@(Pn) obj_DEMO_FEBio_iFEA_uniaxial_transiso_01(Pn,objectiveStruct),Pn,OPT_options);
+            <span class="keyword">case</span> 2 <span class="comment">%lsqnonlin and Levenberg-Marquardt</span>
+                OPT_options = optimoptions(@lsqnonlin,<span class="string">'Algorithm'</span>,<span class="string">'levenberg-marquardt'</span>);
+                OPT_options = optimoptions(OPT_options,<span class="string">'MaxFunEvals'</span>,maxNumberFunctionEvaluations,<span class="keyword">...</span>
+                    <span class="string">'MaxIter'</span>,maxNumberIterations,<span class="keyword">...</span>
+                    <span class="string">'TolFun'</span>,functionTolerance,<span class="keyword">...</span>
+                    <span class="string">'TolX'</span>,parameterTolerance,<span class="keyword">...</span>
+                    <span class="string">'Display'</span>,displayTypeIterations,<span class="keyword">...</span>
+                    <span class="string">'FinDiffRelStep'</span>,1e-3,<span class="keyword">...</span>
+                    <span class="string">'DiffMaxChange'</span>,0.5);
+                [Pn_opt,OPT_out.resnorm,OPT_out.residual]= lsqnonlin(@(Pn) obj_DEMO_FEBio_iFEA_uniaxial_transiso_01(Pn,objectiveStruct),Pn,[],[],OPT_options);
+        <span class="keyword">end</span>
+</pre><pre class="codeoutput">SETTING MATERIAL PARAMETERS...
+Proposed (norm.): 1.0000000000000000e+00 1.0000000000000000e+00 
+Proposed        : 3.2048381020499997e-04 6.0401548835122121e+00 
+Set (constr.)   : 3.2048381020499997e-04 6.0401548835122121e+00 
+Done
+SETTING FIBRE DIRECTIONS...
+----&gt; Creating MatAxis entries
+Done
+SETTING MATERIAL PARAMETERS...
+Proposed (norm.): 1.0009999999999999e+00 1.0000000000000000e+00 
+Proposed        : 3.2080429401520492e-04 6.0401548835122121e+00 
+Set (constr.)   : 3.2107839637655655e-04 6.0401548835122121e+00 
+Done
+SETTING FIBRE DIRECTIONS...
+----&gt; Creating MatAxis entries
+Done
+SETTING MATERIAL PARAMETERS...
+Proposed (norm.): 1.0000000000000000e+00 1.0009999999999999e+00 
+Proposed        : 3.2048381020499997e-04 6.0461950383957239e+00 
+Set (constr.)   : 3.2048381020499997e-04 6.0513628969820843e+00 
+Done
+SETTING FIBRE DIRECTIONS...
+----&gt; Creating MatAxis entries
+Done
+
+                                        First-Order                    Norm of 
+ Iteration  Func-count    Residual       optimality      Lambda           step
+     0           3     2.00271e-06        1.62e-07         0.01
+SETTING MATERIAL PARAMETERS...
+Proposed (norm.): 9.9999177131074424e-01 1.0000031498166260e+00 
+Proposed        : 3.2048117304331428e-04 6.0401739088924877e+00 
+Set (constr.)   : 3.2047891755154127e-04 6.0401901804147178e+00 
+Done
+SETTING FIBRE DIRECTIONS...
+----&gt; Creating MatAxis entries
+Done
+
+Local minimum possible.
+
+lsqnonlin stopped because the relative size of the current step is less than
+the selected value of the step size tolerance.
+
+
+
+</pre><pre class="codeoutput">SETTING MATERIAL PARAMETERS...
+Proposed (norm.): 1.0000000000000000e+00 1.0000000000000000e+00 
+Proposed        : 5.7924883770159097e-01 3.3794812605246389e+00 
+Set (constr.)   : 5.7924883770159097e-01 3.3794812605246389e+00 
+Done
+SETTING FIBRE DIRECTIONS...
+----&gt; Creating MatAxis entries
+Done
+SETTING MATERIAL PARAMETERS...
+Proposed (norm.): 1.0009999999999999e+00 1.0000000000000000e+00 
+Proposed        : 5.7982808653929252e-01 3.3794812605246389e+00 
+Set (constr.)   : 5.8032350462023286e-01 3.3794812605246389e+00 
+Done
+SETTING FIBRE DIRECTIONS...
+----&gt; Creating MatAxis entries
+Done
+SETTING MATERIAL PARAMETERS...
+Proposed (norm.): 1.0000000000000000e+00 1.0009999999999999e+00 
+Proposed        : 5.7924883770159097e-01 3.3828607417851631e+00 
+Set (constr.)   : 5.7924883770159097e-01 3.3857516421932434e+00 
+Done
+SETTING FIBRE DIRECTIONS...
+----&gt; Creating MatAxis entries
+Done
+
+                                        First-Order                    Norm of 
+ Iteration  Func-count    Residual       optimality      Lambda           step
+     0           3       1.514e-05        0.000157         0.01
+SETTING MATERIAL PARAMETERS...
+Proposed (norm.): 1.0009622169904238e+00 9.8977293202587535e-01 
+Proposed        : 5.7980620077491063e-01 3.3449190759559730e+00 
+Set (constr.)   : 5.8028289995659232e-01 3.3134014193703036e+00 
+Done
+SETTING FIBRE DIRECTIONS...
+----&gt; Creating MatAxis entries
+Done
+SETTING MATERIAL PARAMETERS...
+Proposed (norm.): 1.0019631792074142e+00 9.8977293202587535e-01 
+Proposed        : 5.8038600697568554e-01 3.3449190759559730e+00 
+Set (constr.)   : 5.8135862814071237e-01 3.3134014193703036e+00 
+Done
+SETTING FIBRE DIRECTIONS...
+----&gt; Creating MatAxis entries
+Done
+SETTING MATERIAL PARAMETERS...
+Proposed (norm.): 1.0009622169904238e+00 9.9077293202587535e-01 
+Proposed        : 5.7980620077491063e-01 3.3482985572164976e+00 
+Set (constr.)   : 5.8028289995659232e-01 3.3200250295622866e+00 
+Done
+SETTING FIBRE DIRECTIONS...
+----&gt; Creating MatAxis entries
+Done
+     1           6     1.26843e-05        8.36e-05        0.001      0.0102722
+SETTING MATERIAL PARAMETERS...
+Proposed (norm.): 1.0026878347539387e+00 9.7577053328005436e-01 
+Proposed        : 5.8080576285874397e-01 3.2975982317920773e+00 
+Set (constr.)   : 5.8213742882666764e-01 3.2175816768440515e+00 
+Done
+SETTING FIBRE DIRECTIONS...
+----&gt; Creating MatAxis entries
+Done
+SETTING MATERIAL PARAMETERS...
+Proposed (norm.): 1.0036905225886927e+00 9.7577053328005436e-01 
+Proposed        : 5.8138656862160265e-01 3.2975982317920773e+00 
+Set (constr.)   : 5.8321506038584592e-01 3.2175816768440515e+00 
+Done
+SETTING FIBRE DIRECTIONS...
+----&gt; Creating MatAxis entries
+Done
+SETTING MATERIAL PARAMETERS...
+Proposed (norm.): 1.0026878347539387e+00 9.7677053328005436e-01 
+Proposed        : 5.8080576285874397e-01 3.3009777130526019e+00 
+Set (constr.)   : 5.8213742882666764e-01 3.2245927242824592e+00 
+Done
+SETTING FIBRE DIRECTIONS...
+----&gt; Creating MatAxis entries
+Done
+     2           9     1.17157e-05         1.1e-05       0.0001      0.0141083
+SETTING MATERIAL PARAMETERS...
+Proposed (norm.): 1.0093996966478793e+00 9.7874102950232444e-01 
+Proposed        : 5.8469360105962265e-01 3.3076369681096982e+00 
+Set (constr.)   : 5.8935149495200001e-01 3.2383402580824892e+00 
+Done
+SETTING FIBRE DIRECTIONS...
+----&gt; Creating MatAxis entries
+Done
+SETTING MATERIAL PARAMETERS...
+Proposed (norm.): 1.0104090963445271e+00 9.7874102950232444e-01 
+Proposed        : 5.8527829466068215e-01 3.3076369681096982e+00 
+Set (constr.)   : 5.9043653130556661e-01 3.2383402580824892e+00 
+Done
+SETTING FIBRE DIRECTIONS...
+----&gt; Creating MatAxis entries
+Done
+SETTING MATERIAL PARAMETERS...
+Proposed (norm.): 1.0093996966478793e+00 9.7974102950232445e-01 
+Proposed        : 5.8469360105962265e-01 3.3110164493702228e+00 
+Set (constr.)   : 5.8935149495200001e-01 3.2452811402334802e+00 
+Done
+SETTING FIBRE DIRECTIONS...
+----&gt; Creating MatAxis entries
+Done
+     3          12     1.16843e-05        4.62e-06        1e-05     0.00733982
+SETTING MATERIAL PARAMETERS...
+Proposed (norm.): 1.0727869212279424e+00 9.8205769629369388e-01 
+Proposed        : 6.2141057722275383e-01 3.3188455813785356e+00 
+Set (constr.)   : 6.5754415397942645e-01 3.2612632695198021e+00 
+Done
+SETTING FIBRE DIRECTIONS...
+----&gt; Creating MatAxis entries
+Done
+SETTING MATERIAL PARAMETERS...
+Proposed (norm.): 1.0738597081491703e+00 9.8205769629369388e-01 
+Proposed        : 6.2203198779997659e-01 3.3188455813785356e+00 
+Set (constr.)   : 6.5869924199552377e-01 3.2612632695198021e+00 
+Done
+SETTING FIBRE DIRECTIONS...
+----&gt; Creating MatAxis entries
+Done
+SETTING MATERIAL PARAMETERS...
+Proposed (norm.): 1.0727869212279424e+00 9.8305769629369388e-01 
+Proposed        : 6.2141057722275383e-01 3.3222250626390601e+00 
+Set (constr.)   : 6.5754415397942645e-01 3.2681181569111737e+00 
+Done
+SETTING FIBRE DIRECTIONS...
+----&gt; Creating MatAxis entries
+Done
+     4          15     1.15951e-05        1.59e-06        1e-06      0.0634739
+SETTING MATERIAL PARAMETERS...
+Proposed (norm.): 1.8146922311455869e+00 1.0304975065875150e+00 
+Proposed        : 1.0511583656771881e+00 3.4825470125298725e+00 
+Set (constr.)   : 1.4639363910646526e+00 3.5712409106761260e+00 
+Done
+SETTING FIBRE DIRECTIONS...
+----&gt; Creating MatAxis entries
+Done
+SETTING MATERIAL PARAMETERS...
+Proposed (norm.): 1.1513944162907397e+00 9.8752728034088766e-01 
+Proposed        : 6.6694387737251271e-01 3.3373299381688915e+00 
+Set (constr.)   : 7.4226757344256877e-01 3.2984099833926668e+00 
+Done
+SETTING FIBRE DIRECTIONS...
+----&gt; Creating MatAxis entries
+Done
+SETTING MATERIAL PARAMETERS...
+Proposed (norm.): 1.1525458107070303e+00 9.8752728034088766e-01 
+Proposed        : 6.6761082124988524e-01 3.3373299381688915e+00 
+Set (constr.)   : 7.4350983415237781e-01 3.2984099833926668e+00 
+Done
+SETTING FIBRE DIRECTIONS...
+----&gt; Creating MatAxis entries
+Done
+SETTING MATERIAL PARAMETERS...
+Proposed (norm.): 1.1513944162907397e+00 9.8852728034088766e-01 
+Proposed        : 6.6694387737251271e-01 3.3407094194294160e+00 
+Set (constr.)   : 7.4226757344256877e-01 3.3051054184611304e+00 
+Done
+SETTING FIBRE DIRECTIONS...
+----&gt; Creating MatAxis entries
+Done
+     5          19     1.14989e-05         1.8e-06        1e-05      0.0787976
+SETTING MATERIAL PARAMETERS...
+Proposed (norm.): 1.2134562301274441e+00 9.9063161412775824e-01 
+Proposed        : 7.0289311090307627e-01 3.3478209760280340e+00 
+Set (constr.)   : 8.0927987475226659e-01 3.3190909908020796e+00 
+Done
+SETTING FIBRE DIRECTIONS...
+----&gt; Creating MatAxis entries
+Done
+SETTING MATERIAL PARAMETERS...
+Proposed (norm.): 1.2146696863575714e+00 9.9063161412775824e-01 
+Proposed        : 7.0359600401397926e-01 3.3478209760280340e+00 
+Set (constr.)   : 8.1059119277739655e-01 3.3190909908020796e+00 
+Done
+SETTING FIBRE DIRECTIONS...
+----&gt; Creating MatAxis entries
+Done
+SETTING MATERIAL PARAMETERS...
+Proposed (norm.): 1.2134562301274441e+00 9.9163161412775824e-01 
+Proposed        : 7.0289311090307627e-01 3.3512004572885590e+00 
+Set (constr.)   : 8.0927987475226659e-01 3.3256861586569388e+00 
+Done
+SETTING FIBRE DIRECTIONS...
+----&gt; Creating MatAxis entries
+Done
+     6          22     1.14327e-05         5.1e-07        1e-06      0.0621394
+SETTING MATERIAL PARAMETERS...
+Proposed (norm.): 1.7195777341439329e+00 1.0179297658943962e+00 
+Proposed        : 9.9606340384040848e-01 3.4400745683703446e+00 
+Set (constr.)   : 1.3597213222099924e+00 3.4920865216344219e+00 
+Done
+SETTING FIBRE DIRECTIONS...
+----&gt; Creating MatAxis entries
+Done
+SETTING MATERIAL PARAMETERS...
+Proposed (norm.): 1.7212973118780768e+00 1.0179297658943962e+00 
+Proposed        : 9.9705946724424888e-01 3.4400745683703446e+00 
+Set (constr.)   : 1.3616032915695921e+00 3.4920865216344219e+00 
+Done
+SETTING FIBRE DIRECTIONS...
+----&gt; Creating MatAxis entries
+Done
+SETTING MATERIAL PARAMETERS...
+Proposed (norm.): 1.7195777341439329e+00 1.0189476956602905e+00 
+Proposed        : 9.9606340384040848e-01 3.4435146429387147e+00 
+Set (constr.)   : 1.3597213222099924e+00 3.4984908030179369e+00 
+Done
+SETTING FIBRE DIRECTIONS...
+----&gt; Creating MatAxis entries
+Done
+     7          25     1.11679e-05        2.24e-05        1e-07       0.506857
+SETTING MATERIAL PARAMETERS...
+Proposed (norm.): 4.8674726897477321e+00 1.1171202015842123e+00 
+Proposed        : 2.8194778980806103e+00 3.7752867870073525e+00 
+Set (constr.)   : 4.9259544471216046e+00 4.1217354052962900e+00 
+Done
+SETTING FIBRE DIRECTIONS...
+----&gt; Creating MatAxis entries
+Done
+SETTING MATERIAL PARAMETERS...
+Proposed (norm.): 2.0823718267385090e+00 1.0230484724490665e+00 
+Proposed        : 1.2062114603008200e+00 3.4573731412499775e+00 
+Set (constr.)   : 1.7585078632111970e+00 3.5243030156617894e+00 
+Done
+SETTING FIBRE DIRECTIONS...
+----&gt; Creating MatAxis entries
+Done
+SETTING MATERIAL PARAMETERS...
+Proposed (norm.): 2.0844541985652474e+00 1.0230484724490665e+00 
+Proposed        : 1.2074176717611209e+00 3.4573731412499775e+00 
+Set (constr.)   : 1.7608067686924038e+00 3.5243030156617894e+00 
+Done
+SETTING FIBRE DIRECTIONS...
+----&gt; Creating MatAxis entries
+Done
+SETTING MATERIAL PARAMETERS...
+Proposed (norm.): 2.0823718267385090e+00 1.0240715209215157e+00 
+Proposed        : 1.2062114603008200e+00 3.4608305143912279e+00 
+Set (constr.)   : 1.7585078632111970e+00 3.5307456235943513e+00 
+Done
+SETTING FIBRE DIRECTIONS...
+----&gt; Creating MatAxis entries
+Done
+     8          29     1.09028e-05         3.8e-06        1e-06        0.36283
+SETTING MATERIAL PARAMETERS...
+Proposed (norm.): 2.2276953422495733e+00 1.0282531918240314e+00 
+Proposed        : 1.2903899377513133e+00 3.4749623928439610e+00 
+Set (constr.)   : 1.9192113718770387e+00 3.5570922207627649e+00 
+Done
+SETTING FIBRE DIRECTIONS...
+----&gt; Creating MatAxis entries
+Done
+SETTING MATERIAL PARAMETERS...
+Proposed (norm.): 2.2299230375918229e+00 1.0282531918240314e+00 
+Proposed        : 1.2916803276890645e+00 3.4749623928439610e+00 
+Set (constr.)   : 1.9216790555228225e+00 3.5570922207627649e+00 
+Done
+SETTING FIBRE DIRECTIONS...
+----&gt; Creating MatAxis entries
+Done
+SETTING MATERIAL PARAMETERS...
+Proposed (norm.): 2.2276953422495733e+00 1.0292814450158554e+00 
+Proposed        : 1.2903899377513133e+00 3.4784373552368049e+00 
+Set (constr.)   : 1.9192113718770387e+00 3.5635738443167888e+00 
+Done
+SETTING FIBRE DIRECTIONS...
+----&gt; Creating MatAxis entries
+Done
+     9          32     1.08439e-05        2.15e-06        1e-07       0.145417
+SETTING MATERIAL PARAMETERS...
+Proposed (norm.): 2.9258282388938022e+00 1.0447646630204783e+00 
+Proposed        : 1.6947826066937277e+00 3.5307626003360455e+00 
+Set (constr.)   : 2.6986525429991688e+00 3.6613210467946371e+00 
+Done
+SETTING FIBRE DIRECTIONS...
+----&gt; Creating MatAxis entries
+Done
+SETTING MATERIAL PARAMETERS...
+Proposed (norm.): 2.9287540671326959e+00 1.0447646630204783e+00 
+Proposed        : 1.6964773893004215e+00 3.5307626003360455e+00 
+Set (constr.)   : 2.7019443668844354e+00 3.6613210467946371e+00 
+Done
+SETTING FIBRE DIRECTIONS...
+----&gt; Creating MatAxis entries
+Done
+SETTING MATERIAL PARAMETERS...
+Proposed (norm.): 2.9258282388938022e+00 1.0458094276834988e+00 
+Proposed        : 1.6947826066937277e+00 3.5342933629363817e+00 
+Set (constr.)   : 2.6986525429991688e+00 3.6679267411779053e+00 
+Done
+SETTING FIBRE DIRECTIONS...
+----&gt; Creating MatAxis entries
+Done
+    10          35       1.066e-05        8.63e-06        1e-08       0.698328
+SETTING MATERIAL PARAMETERS...
+Proposed (norm.): 1.4040197472958663e+01 1.2389576690234225e+00 
+Proposed        : 8.1327680673121208e+00 4.1870342250479444e+00 
+Set (constr.)   : 1.6202854955554155e+01 4.9099819250974583e+00 
+Done
+SETTING FIBRE DIRECTIONS...
+----&gt; Creating MatAxis entries
+Done
+SETTING MATERIAL PARAMETERS...
+Proposed (norm.): 4.5841928312650193e+00 1.0709207312050955e+00 
+Proposed        : 2.6553883693102280e+00 3.6191565426149639e+00 
+Set (constr.)   : 4.5959370432345263e+00 3.8270738653879146e+00 
+Done
+SETTING FIBRE DIRECTIONS...
+----&gt; Creating MatAxis entries
+Done
+SETTING MATERIAL PARAMETERS...
+Proposed (norm.): 4.5887770240962844e+00 1.0709207312050955e+00 
+Proposed        : 2.6580437576795384e+00 3.6191565426149639e+00 
+Set (constr.)   : 4.6012645627518189e+00 3.8270738653879146e+00 
+Done
+SETTING FIBRE DIRECTIONS...
+----&gt; Creating MatAxis entries
+Done
+SETTING MATERIAL PARAMETERS...
+Proposed (norm.): 4.5841928312650193e+00 1.0719916519363006e+00 
+Proposed        : 2.6553883693102280e+00 3.6227756991575792e+00 
+Set (constr.)   : 4.5959370432345263e+00 3.8338770110721345e+00 
+Done
+SETTING FIBRE DIRECTIONS...
+----&gt; Creating MatAxis entries
+Done
+    11          39     1.04611e-05           2e-05        1e-07        1.65857
+SETTING MATERIAL PARAMETERS...
+Proposed (norm.): 4.9908030868155677e+00 1.0671457365414481e+00 
+Proposed        : 2.8909168872354298e+00 3.6063990188905870e+00 
+Set (constr.)   : 5.0701361107557297e+00 3.8031031827325275e+00 
+Done
+SETTING FIBRE DIRECTIONS...
+----&gt; Creating MatAxis entries
+Done
+SETTING MATERIAL PARAMETERS...
+Proposed (norm.): 4.9957938899023837e+00 1.0671457365414481e+00 
+Proposed        : 2.8938078041226656e+00 3.6063990188905870e+00 
+Set (constr.)   : 5.0759770347014790e+00 3.8031031827325275e+00 
+Done
+SETTING FIBRE DIRECTIONS...
+----&gt; Creating MatAxis entries
+Done
+SETTING MATERIAL PARAMETERS...
+Proposed (norm.): 4.9908030868155677e+00 1.0682128822779895e+00 
+Proposed        : 2.8909168872354298e+00 3.6100054179094778e+00 
+Set (constr.)   : 5.0701361107557297e+00 3.8098777633580552e+00 
+Done
+SETTING FIBRE DIRECTIONS...
+----&gt; Creating MatAxis entries
+Done
+    12          42     1.03253e-05        7.41e-06        1e-08       0.406628
+SETTING MATERIAL PARAMETERS...
+Proposed (norm.): 1.1928478691773257e+01 1.1399247059862314e+00 
+Proposed        : 6.9095574177578536e+00 3.8523541822895280e+00 
+Set (constr.)   : 1.3544192349790087e+01 4.2680579335473947e+00 
+Done
+SETTING FIBRE DIRECTIONS...
+----&gt; Creating MatAxis entries
+Done
+SETTING MATERIAL PARAMETERS...
+Proposed (norm.): 5.7574276005427016e+00 1.0782166822609804e+00 
+Proposed        : 3.3349832457654198e+00 3.6438130724860325e+00 
+Set (constr.)   : 5.9729351250703253e+00 3.8734479906825685e+00 
+Done
+SETTING FIBRE DIRECTIONS...
+----&gt; Creating MatAxis entries
+Done
+SETTING MATERIAL PARAMETERS...
+Proposed (norm.): 5.7631850281432442e+00 1.0782166822609804e+00 
+Proposed        : 3.3383182290111852e+00 3.6438130724860325e+00 
+Set (constr.)   : 5.9797565914194681e+00 3.8734479906825685e+00 
+Done
+SETTING FIBRE DIRECTIONS...
+----&gt; Creating MatAxis entries
+Done
+SETTING MATERIAL PARAMETERS...
+Proposed (norm.): 5.7574276005427016e+00 1.0792948989432414e+00 
+Proposed        : 3.3349832457654198e+00 3.6474568855585181e+00 
+Set (constr.)   : 5.9729351250703253e+00 3.8803064080980150e+00 
+Done
+SETTING FIBRE DIRECTIONS...
+----&gt; Creating MatAxis entries
+Done
+    13          46     1.02346e-05         5.8e-06        1e-07       0.766704
+SETTING MATERIAL PARAMETERS...
+Proposed (norm.): 6.3163331766112547e+00 1.0803031854545717e+00 
+Proposed        : 3.6587286510880670e+00 3.6508643709287987e+00 
+Set (constr.)   : 6.6378618211173865e+00 3.8867211971979314e+00 
+Done
+SETTING FIBRE DIRECTIONS...
+----&gt; Creating MatAxis entries
+Done
+SETTING MATERIAL PARAMETERS...
+Proposed (norm.): 6.3226495097878663e+00 1.0803031854545717e+00 
+Proposed        : 3.6623873797391555e+00 3.6508643709287987e+00 
+Set (constr.)   : 6.6454071275095856e+00 3.8867211971979314e+00 
+Done
+SETTING FIBRE DIRECTIONS...
+----&gt; Creating MatAxis entries
+Done
+SETTING MATERIAL PARAMETERS...
+Proposed (norm.): 6.3163331766112547e+00 1.0813834886400262e+00 
+Proposed        : 3.6587286510880670e+00 3.6545152352997272e+00 
+Set (constr.)   : 6.6378618211173865e+00 3.8935954366810646e+00 
+Done
+SETTING FIBRE DIRECTIONS...
+----&gt; Creating MatAxis entries
+Done
+    14          49     1.01772e-05         1.9e-06        1e-08       0.558909
+SETTING MATERIAL PARAMETERS...
+Proposed (norm.): 7.2820230740628835e+00 1.0882860265557102e+00 
+Proposed        : 4.2181034017670918e+00 3.6778422328358422e+00 
+Set (constr.)   : 7.7989362905961563e+00 3.9375491034412677e+00 
+Done
+SETTING FIBRE DIRECTIONS...
+----&gt; Creating MatAxis entries
+Done
+SETTING MATERIAL PARAMETERS...
+Proposed (norm.): 7.2893050971369462e+00 1.0882860265557102e+00 
+Proposed        : 4.2223215051688587e+00 3.6778422328358422e+00 
+Set (constr.)   : 7.8077464958610712e+00 3.9375491034412677e+00 
+Done
+SETTING FIBRE DIRECTIONS...
+----&gt; Creating MatAxis entries
+Done
+SETTING MATERIAL PARAMETERS...
+Proposed (norm.): 7.2820230740628835e+00 1.0893743125822659e+00 
+Proposed        : 4.2181034017670918e+00 3.6815200750686778e+00 
+Set (constr.)   : 7.7989362905961563e+00 3.9444839400454867e+00 
+Done
+SETTING FIBRE DIRECTIONS...
+----&gt; Creating MatAxis entries
+Done
+    15          52     1.01013e-05        1.56e-06        1e-09       0.965723
+SETTING MATERIAL PARAMETERS...
+Proposed (norm.): 3.3553526815953582e+01 1.2598640685899301e+00 
+Proposed        : 1.9435841408930276e+01 4.2576870106079969e+00 
+Set (constr.)   : 3.8224811939003061e+01 5.0468060145389515e+00 
+Done
+SETTING FIBRE DIRECTIONS...
+----&gt; Creating MatAxis entries
+Done
+SETTING MATERIAL PARAMETERS...
+Proposed (norm.): 1.0690669139074434e+01 1.1098966725259856e+00 
+Proposed        : 6.1925576730611338e+00 3.7508750059202201e+00 
+Set (constr.)   : 1.1994564819423070e+01 4.0755061181236307e+00 
+Done
+SETTING FIBRE DIRECTIONS...
+----&gt; Creating MatAxis entries
+Done
+SETTING MATERIAL PARAMETERS...
+Proposed (norm.): 1.0701359808213509e+01 1.1098966725259856e+00 
+Proposed        : 6.1987502307341957e+00 3.7508750059202201e+00 
+Set (constr.)   : 1.2007905193130791e+01 4.0755061181236307e+00 
+Done
+SETTING FIBRE DIRECTIONS...
+----&gt; Creating MatAxis entries
+Done
+SETTING MATERIAL PARAMETERS...
+Proposed (norm.): 1.0690669139074434e+01 1.1110065691985116e+00 
+Proposed        : 6.1925576730611338e+00 3.7546258809261404e+00 
+Set (constr.)   : 1.1994564819423070e+01 4.0826054925875637e+00 
+Done
+SETTING FIBRE DIRECTIONS...
+----&gt; Creating MatAxis entries
+Done
+    16          56     9.95032e-06        1.14e-05        1e-08        3.40871
+SETTING MATERIAL PARAMETERS...
+Proposed (norm.): 1.0585266701190029e+01 1.1038091602070370e+00 
+Proposed        : 6.1315034334256788e+00 3.7303023721151205e+00 
+Set (constr.)   : 1.1863084502623773e+01 4.0365921533616387e+00 
+Done
+SETTING FIBRE DIRECTIONS...
+----&gt; Creating MatAxis entries
+Done
+SETTING MATERIAL PARAMETERS...
+Proposed (norm.): 1.0595851967891219e+01 1.1038091602070370e+00 
+Proposed        : 6.1376349368591043e+00 3.7303023721151205e+00 
+Set (constr.)   : 1.1876284858246800e+01 4.0365921533616387e+00 
+Done
+SETTING FIBRE DIRECTIONS...
+----&gt; Creating MatAxis entries
+Done
+SETTING MATERIAL PARAMETERS...
+Proposed (norm.): 1.0585266701190029e+01 1.1049129693672441e+00 
+Proposed        : 6.1315034334256788e+00 3.7340326744872359e+00 
+Set (constr.)   : 1.1863084502623773e+01 4.0436451069321988e+00 
+Done
+SETTING FIBRE DIRECTIONS...
+----&gt; Creating MatAxis entries
+Done
+    17          59     9.92722e-06        5.06e-06        1e-09       0.105578
+SETTING MATERIAL PARAMETERS...
+Proposed (norm.): 2.4646435454309852e+01 1.1704060487067436e+00 
+Proposed        : 1.4276419090396265e+01 3.9553653088091276e+00 
+Set (constr.)   : 2.9170762668193525e+01 4.4645236107769497e+00 
+Done
+SETTING FIBRE DIRECTIONS...
+----&gt; Creating MatAxis entries
+Done
+SETTING MATERIAL PARAMETERS...
+Proposed (norm.): 1.2159114649250402e+01 1.1136508905499327e+00 
+Proposed        : 7.0431530280586827e+00 3.7635623153800735e+00 
+Set (constr.)   : 1.3833872344537097e+01 4.0995252159711653e+00 
+Done
+SETTING FIBRE DIRECTIONS...
+----&gt; Creating MatAxis entries
+Done
+SETTING MATERIAL PARAMETERS...
+Proposed (norm.): 1.2171273763899652e+01 1.1136508905499327e+00 
+Proposed        : 7.0501961810867417e+00 3.7635623153800735e+00 
+Set (constr.)   : 1.3849150930480883e+01 4.0995252159711653e+00 
+Done
+SETTING FIBRE DIRECTIONS...
+----&gt; Creating MatAxis entries
+Done
+SETTING MATERIAL PARAMETERS...
+Proposed (norm.): 1.2159114649250402e+01 1.1147645414404825e+00 
+Proposed        : 7.0431530280586827e+00 3.7673258776954528e+00 
+Set (constr.)   : 1.3833872344537097e+01 4.1066532464845853e+00 
+Done
+SETTING FIBRE DIRECTIONS...
+----&gt; Creating MatAxis entries
+Done
+    18          63     9.85807e-06        4.29e-06        1e-08        1.57388
+SETTING MATERIAL PARAMETERS...
+Proposed (norm.): 1.3986625999028231e+01 1.1186737997056682e+00 
+Proposed        : 8.1017368533039562e+00 3.7805371427451990e+00 
+Set (constr.)   : 1.6135304306615513e+01 4.1316857082290142e+00 
+Done
+SETTING FIBRE DIRECTIONS...
+----&gt; Creating MatAxis entries
+Done
+SETTING MATERIAL PARAMETERS...
+Proposed (norm.): 1.4000612625027259e+01 1.1186737997056682e+00 
+Proposed        : 8.1098385901572598e+00 3.7805371427451990e+00 
+Set (constr.)   : 1.6152940551053391e+01 4.1316857082290142e+00 
+Done
+SETTING FIBRE DIRECTIONS...
+----&gt; Creating MatAxis entries
+Done
+SETTING MATERIAL PARAMETERS...
+Proposed (norm.): 1.3986625999028231e+01 1.1197924735053739e+00 
+Proposed        : 8.1017368533039562e+00 3.7843176798879443e+00 
+Set (constr.)   : 1.6135304306615513e+01 4.1388521118374051e+00 
+Done
+SETTING FIBRE DIRECTIONS...
+----&gt; Creating MatAxis entries
+Done
+    19          66     9.79027e-06        3.45e-07        1e-09        1.82752
+SETTING MATERIAL PARAMETERS...
+Proposed (norm.): 1.7893191551829268e+01 1.1311867270736586e+00 
+Proposed        : 1.0364610409169030e+01 3.8228243462996288e+00 
+Set (constr.)   : 2.1043452857562521e+01 4.2119241455480134e+00 
+Done
+SETTING FIBRE DIRECTIONS...
+----&gt; Creating MatAxis entries
+Done
+SETTING MATERIAL PARAMETERS...
+Proposed (norm.): 1.7911084743381096e+01 1.1311867270736586e+00 
+Proposed        : 1.0374975019578198e+01 3.8228243462996288e+00 
+Set (constr.)   : 2.1065753590902915e+01 4.2119241455480134e+00 
+Done
+SETTING FIBRE DIRECTIONS...
+----&gt; Creating MatAxis entries
+Done
+SETTING MATERIAL PARAMETERS...
+Proposed (norm.): 1.7893191551829268e+01 1.1323179138007322e+00 
+Proposed        : 1.0364610409169030e+01 3.8266471706459280e+00 
+Set (constr.)   : 2.1043452857562521e+01 4.2191863063070389e+00 
+Done
+SETTING FIBRE DIRECTIONS...
+----&gt; Creating MatAxis entries
+Done
+    20          69     9.69185e-06         3.8e-06        1e-10        3.90659
+SETTING MATERIAL PARAMETERS...
+Proposed (norm.): 1.1318711587310793e+02 1.3671225649478229e+00 
+Proposed        : 6.5563505312293060e+01 4.6201650890815458e+00 
+Set (constr.)   : 5.7834408482561102e+01 5.7556199042614136e+00 
+Done
+SETTING FIBRE DIRECTIONS...
+----&gt; Creating MatAxis entries
+Done
+SETTING MATERIAL PARAMETERS...
+Proposed (norm.): 3.5189510498740752e+01 1.1722649432854007e+00 
+Proposed        : 2.0383483055683513e+01 3.9616474082029902e+00 
+Set (constr.)   : 3.9575516826822529e+01 4.4765374277789594e+00 
+Done
+SETTING FIBRE DIRECTIONS...
+----&gt; Creating MatAxis entries
+Done
+SETTING MATERIAL PARAMETERS...
+Proposed (norm.): 1.9776311301086377e+01 1.1337589083936244e+00 
+Proposed        : 1.1455405335179123e+01 3.8315169848691242e+00 
+Set (constr.)   : 2.3374179904327814e+01 4.2284394505658494e+00 
+Done
+SETTING FIBRE DIRECTIONS...
+----&gt; Creating MatAxis entries
+Done
+SETTING MATERIAL PARAMETERS...
+Proposed (norm.): 1.9796087612387463e+01 1.1337589083936244e+00 
+Proposed        : 1.1466860740514301e+01 3.8315169848691242e+00 
+Set (constr.)   : 2.3398457523757529e+01 4.2284394505658494e+00 
+Done
+SETTING FIBRE DIRECTIONS...
+----&gt; Creating MatAxis entries
+Done
+SETTING MATERIAL PARAMETERS...
+Proposed (norm.): 1.9776311301086377e+01 1.1348926673020181e+00 
+Proposed        : 1.1455405335179123e+01 3.8353485018539937e+00 
+Set (constr.)   : 2.3374179904327814e+01 4.2357213239557625e+00 
+Done
+SETTING FIBRE DIRECTIONS...
+----&gt; Creating MatAxis entries
+Done
+    21          74     9.65123e-06         1.1e-06        1e-08        1.88312
+SETTING MATERIAL PARAMETERS...
+Proposed (norm.): 2.0421280480394469e+01 1.1358564451317681e+00 
+Proposed        : 1.1829002982646683e+01 3.8386055709689431e+00 
+Set (constr.)   : 2.4163451141613116e+01 4.2419125550612211e+00 
+Done
+SETTING FIBRE DIRECTIONS...
+----&gt; Creating MatAxis entries
+Done
+SETTING MATERIAL PARAMETERS...
+Proposed (norm.): 2.0441701760874864e+01 1.1358564451317681e+00 
+Proposed        : 1.1840831985629331e+01 3.8386055709689431e+00 
+Set (constr.)   : 2.4188353997763667e+01 4.2419125550612211e+00 
+Done
+SETTING FIBRE DIRECTIONS...
+----&gt; Creating MatAxis entries
+Done
+SETTING MATERIAL PARAMETERS...
+Proposed (norm.): 2.0421280480394469e+01 1.1369923015768999e+00 
+Proposed        : 1.1829002982646683e+01 3.8424441765399120e+00 
+Set (constr.)   : 2.4163451141613116e+01 4.2492105106779556e+00 
+Done
+SETTING FIBRE DIRECTIONS...
+----&gt; Creating MatAxis entries
+Done
+    22          77     9.63876e-06         4.7e-07        1e-09       0.644973
+SETTING MATERIAL PARAMETERS...
+Proposed (norm.): 2.8783467937074228e+01 1.1510635364481598e+00 
+Proposed        : 1.6672790347571258e+01 3.8899976510997760e+00 
+Set (constr.)   : 3.3688260672166678e+01 4.3397359121700099e+00 
+Done
+SETTING FIBRE DIRECTIONS...
+----&gt; Creating MatAxis entries
+Done
+SETTING MATERIAL PARAMETERS...
+Proposed (norm.): 2.8812251405011303e+01 1.1510635364481598e+00 
+Proposed        : 1.6689463137918828e+01 3.8899976510997760e+00 
+Set (constr.)   : 3.3717996850543621e+01 4.3397359121700099e+00 
+Done
+SETTING FIBRE DIRECTIONS...
+----&gt; Creating MatAxis entries
+Done
+SETTING MATERIAL PARAMETERS...
+Proposed (norm.): 2.8783467937074228e+01 1.1522145999846081e+00 
+Proposed        : 1.6672790347571258e+01 3.8938876487508760e+00 
+Set (constr.)   : 3.3688260672166678e+01 4.3471506544276384e+00 
+Done
+SETTING FIBRE DIRECTIONS...
+----&gt; Creating MatAxis entries
+Done
+    23          80     9.52031e-06        3.12e-06        1e-10         8.3622
+SETTING MATERIAL PARAMETERS...
+Proposed (norm.): 9.9273548799462816e+01 1.2409849761580070e+00 
+Proposed        : 5.7504087756601010e+01 4.1938854715186000e+00 
+Set (constr.)   : 5.7492022681621528e+01 4.9232302581635992e+00 
+Done
+SETTING FIBRE DIRECTIONS...
+----&gt; Creating MatAxis entries
+Done
+SETTING MATERIAL PARAMETERS...
+Proposed (norm.): 3.7579874570163646e+01 1.1606203760195717e+00 
+Proposed        : 2.1768098665738869e+01 3.9222948113412026e+00 
+Set (constr.)   : 4.1330438869405157e+01 4.4013411630603718e+00 
+Done
+SETTING FIBRE DIRECTIONS...
+----&gt; Creating MatAxis entries
+Done
+SETTING MATERIAL PARAMETERS...
+Proposed (norm.): 3.7617454444733809e+01 1.1606203760195717e+00 
+Proposed        : 2.1789866764404607e+01 3.9222948113412026e+00 
+Set (constr.)   : 4.1355823997530010e+01 4.4013411630603718e+00 
+Done
+SETTING FIBRE DIRECTIONS...
+----&gt; Creating MatAxis entries
+Done
+SETTING MATERIAL PARAMETERS...
+Proposed (norm.): 3.7579874570163646e+01 1.1617809963955912e+00 
+Proposed        : 2.1768098665738869e+01 3.9262171061525435e+00 
+Set (constr.)   : 4.1330438869405157e+01 4.4088294690669576e+00 
+Done
+SETTING FIBRE DIRECTIONS...
+----&gt; Creating MatAxis entries
+Done
+    24          84     9.47684e-06        5.51e-06        1e-09        8.79641
+SETTING MATERIAL PARAMETERS...
+Proposed (norm.): 3.6802251190415809e+01 1.1566127683944409e+00 
+Proposed        : 2.1317661226850351e+01 3.9087511764725376e+00 
+Set (constr.)   : 4.0789473797296310e+01 4.3754953148155877e+00 
+Done
+SETTING FIBRE DIRECTIONS...
+----&gt; Creating MatAxis entries
+Done
+SETTING MATERIAL PARAMETERS...
+Proposed (norm.): 3.6839053441606225e+01 1.1566127683944409e+00 
+Proposed        : 2.1338978888077200e+01 3.9087511764725376e+00 
+Set (constr.)   : 4.0815742716256665e+01 4.3754953148155877e+00 
+Done
+SETTING FIBRE DIRECTIONS...
+----&gt; Creating MatAxis entries
+Done
+SETTING MATERIAL PARAMETERS...
+Proposed (norm.): 3.6802251190415809e+01 1.1577693811628353e+00 
+Proposed        : 2.1317661226850351e+01 3.9126599276490097e+00 
+Set (constr.)   : 4.0789473797296310e+01 4.3829527564816697e+00 
+Done
+SETTING FIBRE DIRECTIONS...
+----&gt; Creating MatAxis entries
+Done
+    25          87     9.47347e-06        2.74e-06        1e-10       0.777634
+
+Local minimum possible.
+
+lsqnonlin stopped because the final change in the sum of squares relative to 
+its initial value is less than the selected value of the function tolerance.
+
+
+
+</pre><h2>Unnormalize and constrain parameters<a name="19"></a></h2><pre class="codeinput">        P_opt=Pn_opt.*objectiveStruct.parNormFactors; <span class="comment">%Scale back, undo normalization</span>
+
+        <span class="comment">%Constraining parameters</span>
+        <span class="keyword">for</span> q=1:1:numel(P_opt);
+            [P_opt(q)]=parLimNat(objectiveStruct.Pb_struct.xx_c(q),objectiveStruct.Pb_struct.xxlim(q,:),P_opt(q));
+        <span class="keyword">end</span>
+
+        disp_text=sprintf(<span class="string">'%6.16e,'</span>,P_opt); disp_text=disp_text(1:end-1);
+        disp([<span class="string">'P_opt='</span>,disp_text]);
+
+        <span class="keyword">if</span> dirCase==1
+            objectiveStruct.P_ini(1:2)=P_opt;
+        <span class="keyword">elseif</span> dirCase==2
+            objectiveStruct.P_ini(3:4)=P_opt;
+        <span class="keyword">end</span>
+</pre><pre class="codeoutput">P_opt=3.2048381020499997e-04,6.0401548835122121e+00
+</pre><pre class="codeoutput">P_opt=4.0789473797296310e+01,4.3754953148155877e+00
+</pre><pre class="codeinput">    <span class="keyword">end</span>
+<span class="keyword">end</span>
+</pre><pre class="codeinput">stretch_sim=cell(1,2);
+stress_cauchy_sim=cell(1,2);
+<span class="keyword">for</span> dirCase=1:2;
+
+    <span class="comment">%Initial parameters</span>
+    <span class="keyword">if</span> dirCase==1
+        P=objectiveStruct.P_ini(1:2);
+        objectiveStruct.Pb_struct.xxlim=[[P(1)/100 2]' [P(1)*100 50]']; <span class="comment">%Parameter bounds</span>
+    <span class="keyword">elseif</span> dirCase==2
+        P=objectiveStruct.P_ini(3:4);
+        objectiveStruct.Pb_struct.xxlim=[[P(1)/100 2]' [P(1)*100 50]']; <span class="comment">%Parameter bounds</span>
+    <span class="keyword">end</span>
+
+    objectiveStruct.parNormFactors=P; <span class="comment">%This will normalize the paramters to ones(size(P))</span>
+    objectiveStruct.Pb_struct.xx_c=P; <span class="comment">%Parameter constraining centre</span>
+
+    Pn=P./objectiveStruct.parNormFactors;
+
+    objectiveStruct.dirCase=dirCase;
+    objectiveStruct.stress_cauchy_exp=stress_cauchy_exp(:,objectiveStruct.dirCase);
+
+    [Fopt,OPT_stats_out]=obj_DEMO_FEBio_iFEA_uniaxial_transiso_01(Pn,objectiveStruct);
+
+    stretch_sim{dirCase}=OPT_stats_out.stretch_sim;
+    stress_cauchy_sim{dirCase}=OPT_stats_out.stress_cauchy_sim;
+
+<span class="keyword">end</span>
+</pre><pre class="codeoutput">SETTING MATERIAL PARAMETERS...
+Proposed (norm.): 1.0000000000000000e+00 1.0000000000000000e+00 
+Proposed        : 3.2048381020499997e-04 6.0401548835122121e+00 
+Set (constr.)   : 3.2048381020499997e-04 6.0401548835122121e+00 
+Done
+SETTING FIBRE DIRECTIONS...
+----&gt; Creating MatAxis entries
+Done
+SETTING MATERIAL PARAMETERS...
+Proposed (norm.): 1.0000000000000000e+00 1.0000000000000000e+00 
+Proposed        : 4.0789473797296310e+01 4.3754953148155877e+00 
+Set (constr.)   : 4.0789473797296310e+01 4.3754953148155877e+00 
+Done
+SETTING FIBRE DIRECTIONS...
+----&gt; Creating MatAxis entries
+Done
+</pre><h2>Plotting experimental data<a name="22"></a></h2><pre class="codeinput">pColors=gjet(2);
+cFigure; hold <span class="string">on</span>;
+<span class="comment">% title('Experimental data','FontSize',fontSize2);</span>
+xlabel(<span class="string">'$$\lambda$$'</span>,<span class="string">'FontSize'</span>,fontSize2,<span class="string">'Interpreter'</span>,<span class="string">'Latex'</span>);
+ylabel(<span class="string">'$$\sigma(kPa)$$'</span>,<span class="string">'FontSize'</span>,fontSize2,<span class="string">'Interpreter'</span>,<span class="string">'Latex'</span>);
+
+patch(<span class="string">'Faces'</span>,F_sd1,<span class="string">'Vertices'</span>,V_sd1,<span class="string">'EdgeColor'</span>,<span class="string">'none'</span>,<span class="string">'FaceColor'</span>,pColors(1,:),<span class="string">'FaceAlpha'</span>,faceAlpha3);
+patch(<span class="string">'Faces'</span>,F_sd2,<span class="string">'Vertices'</span>,V_sd2,<span class="string">'EdgeColor'</span>,<span class="string">'none'</span>,<span class="string">'FaceColor'</span>,pColors(2,:),<span class="string">'FaceAlpha'</span>,faceAlpha3);
+
+hp(1)=plot(stretch_exp,stress_cauchy_exp(:,1),<span class="string">'k:'</span>,<span class="string">'LineWidth'</span>,lineWidth2);
+set(hp(1),<span class="string">'Color'</span>,pColors(1,:));
+hp(2)=plot(stretch_exp,stress_cauchy_exp(:,2),<span class="string">'k:'</span>,<span class="string">'LineWidth'</span>,lineWidth2);
+set(hp(2),<span class="string">'Color'</span>,pColors(2,:));
+
+
+hp(3)=plot(stretch_sim{1},stress_cauchy_sim{1},<span class="string">'k-'</span>,<span class="string">'LineWidth'</span>,lineWidth1);
+set(hp(3),<span class="string">'Color'</span>,pColors(1,:));
+hp(4)=plot(stretch_sim{2},stress_cauchy_sim{2},<span class="string">'k-'</span>,<span class="string">'LineWidth'</span>,lineWidth1);
+set(hp(4),<span class="string">'Color'</span>,pColors(2,:));
+
+h=legend(hp,<span class="string">'Exp. Fibre'</span>,<span class="string">'Exp. Cross-Fibre'</span>,<span class="string">'Sim. Fibre'</span>,<span class="string">'Sim. Cross-Fibre'</span>,<span class="string">'Location'</span>,<span class="string">'SouthEast'</span>);
+set(h,<span class="string">'Interpreter'</span>,<span class="string">'Latex'</span>,<span class="string">'FontSize'</span>,fontSize2);
+
+axis <span class="string">tight</span>;
+set(gca,<span class="string">'FontSize'</span>,fontSize);
+box <span class="string">on</span>; grid <span class="string">on</span>;
+drawnow;
+</pre><img vspace="5" hspace="5" src="DEMO_FEBio_iFEA_uniaxial_transiso_01_05.png" alt=""> <p><img vspace="5" hspace="5" src="gibbVerySmall.gif" alt=""> </p><p><i><b>GIBBON</b></i> <a href="www.gibboncode.org">www.gibboncode.org</a></p><p><i>Kevin Mattheus Moerman</i>, <a href="gibbon.toolbox@gmail.com">gibbon.toolbox@gmail.com</a></p><p class="footer"><br><a href="http://www.mathworks.com/products/matlab/">Published with MATLAB&reg; R2015b</a><br></p></div><!--
+##### SOURCE BEGIN #####
+%% DEMO_FEBio_iFEA_uniaxial_transiso_01.m
+% Below is a demonstration for:
+% 1) Inverse FEA based material parameter optimisation
+
+%%
+
+clear; close all; clc;
+
+%%
+% Plot settings
+fontSize=25;
+fontSize2=30;
+faceAlpha1=0.5;
+faceAlpha2=1;
+faceAlpha3=0.1;
+edgeColor=0.25*ones(1,3);
+edgeWidth=1.5;
+markerSize=25;
+lineWidth1=4;
+lineWidth2=3;
+fcolor1=0.2.*ones(1,3);
+fcolor2=0.5.*ones(1,3);
+
+%%
+% Control parameters
+
+% path names
+filePath=mfilename('fullpath');
+savePath=fullfile(fileparts(filePath),'data','temp');
+
+modelName=fullfile(savePath,'iFEA_tempModel');
+
+%Specifying dimensions and number of elements
+sampleWidth=10;
+sampleThickness=10;
+sampleHeight=10;
+pointSpacings=2*ones(1,3);
+initialArea=sampleWidth*sampleThickness;
+
+numElementsWidth=round(sampleWidth/pointSpacings(1));
+numElementsThickness=round(sampleThickness/pointSpacings(2));
+numElementsHeight=round(sampleHeight/pointSpacings(3));
+
+stretchLoad=0.7;
+displacementMagnitude=[0 0 (stretchLoad*sampleHeight)-sampleHeight];
+
+%Initial material parameter set
+%  0.000321611705072   5.970490065051994   0.579248837701591   3.379481260524639
+%  0.000320483810205   6.040154883512212  27.139247008198858   4.271586878831325
+c1_ini= 0.000320483810205;
+m1_ini= 6.040154883512212;
+ksi_ini=0.579248837701591;
+beta_ini=3.379481260524639;
+k_factor=500;
+k_ini=(c1_ini+ksi_ini)*k_factor;
+P_ini=[c1_ini m1_ini ksi_ini beta_ini];
+
+alphaFib=0.25*pi;
+
+optimMethod=2;
+optimOpt=1; 
+
+%% LOAD EXPERIMENTAL DATA
+
+% Set folder and file name
+defaultFolder = fileparts(mfilename('fullpath'));
+pathName=fullfile(defaultFolder,'data','Loocke_2006');
+fileName=fullfile(pathName,'LOOCKE_FIBRE_LANDSCAPE_CAUCHY.mat');
+
+load(fileName);
+
+stretch_exp=ELAS_regular.L_DATA(:,1);
+stress_cauchy_exp=ELAS_regular.STRESS_DATA(:,[1 5]);
+stress_cauchy_exp_SD=ELAS_regular.SD_DATA(:,[1 5]);
+
+
+V_sd1=[[stretch_exp;flipud(stretch_exp)] [stress_cauchy_exp(:,1)-stress_cauchy_exp_SD(:,1);flipud(stress_cauchy_exp(:,1)+stress_cauchy_exp_SD(:,1))]];
+F_sd1=1:size(V_sd1,1);
+
+V_sd2=[[stretch_exp;flipud(stretch_exp)] [stress_cauchy_exp(:,2)-stress_cauchy_exp_SD(:,2);flipud(stress_cauchy_exp(:,2)+stress_cauchy_exp_SD(:,2))]];
+F_sd2=1:size(V_sd2,1);
+
+%% Plotting experimental data
+
+pColors=gjet(2);
+cFigure; hold on;
+title('Experimental data','FontSize',fontSize2);
+xlabel('$$\lambda$$','FontSize',fontSize2,'Interpreter','Latex');
+ylabel('$$\sigma(kPa)$$','FontSize',fontSize2,'Interpreter','Latex');
+
+patch('Faces',F_sd1,'Vertices',V_sd1,'EdgeColor','none','FaceColor',pColors(1,:),'FaceAlpha',faceAlpha3);
+patch('Faces',F_sd2,'Vertices',V_sd2,'EdgeColor','none','FaceColor',pColors(2,:),'FaceAlpha',faceAlpha3);
+
+hp(1)=plot(stretch_exp,stress_cauchy_exp(:,1),'kREPLACE_WITH_DASH_DASH','LineWidth',lineWidth1);
+set(hp(1),'Color',pColors(1,:));
+hp(2)=plot(stretch_exp,stress_cauchy_exp(:,2),'kREPLACE_WITH_DASH_DASH','LineWidth',lineWidth1);
+set(hp(2),'Color',pColors(2,:));
+
+h=legend(hp,'$$\alpha=0$$','$$\alpha=90$$','Location','SouthEast');
+set(h,'Interpreter','Latex','FontSize',fontSize2);
+
+
+axis tight;
+set(gca,'FontSize',fontSize);
+box on; grid on;
+drawnow;
+
+
+%% CREATING MESHED BOX
+
+%Create box 1
+boxDim=[sampleWidth sampleThickness sampleHeight]; %Dimensions
+boxEl=[numElementsWidth numElementsThickness numElementsHeight]; %Number of elements
+[box1]=hexMeshBox(boxDim,boxEl);
+E=box1.E;
+V=box1.V;
+Fb=box1.Fb;
+faceBoundaryMarker=box1.faceBoundaryMarker;
+
+X=V(:,1); Y=V(:,2); Z=V(:,3);
+VE=[mean(X(E),2) mean(Y(E),2) mean(Z(E),2)];
+
+elementMaterialIndices=ones(size(E,1),1);
+
+%%
+
+% Plotting boundary surfaces
+hf=cFigure;
+title('Model surfaces','FontSize',fontSize);
+xlabel('X','FontSize',fontSize); ylabel('Y','FontSize',fontSize); zlabel('Z','FontSize',fontSize);
+hold on;
+patch('Faces',Fb,'Vertices',V,'FaceColor','flat','CData',faceBoundaryMarker,'FaceAlpha',faceAlpha2,'lineWidth',edgeWidth,'edgeColor',edgeColor);
+
+colormap(gjet(6)); colorbar;
+set(gca,'FontSize',fontSize);
+view(3); axis tight;  axis equal;  grid on;
+drawnow;
+
+%% DEFINE BC's
+
+%Define supported node sets
+logicFace=faceBoundaryMarker==1;
+Fr=Fb(logicFace,:);
+bcSupportList_X=unique(Fr(:));
+
+logicFace=faceBoundaryMarker==3;
+Fr=Fb(logicFace,:);
+bcSupportList_Y=unique(Fr(:));
+
+logicFace=faceBoundaryMarker==5;
+Fr=Fb(logicFace,:);
+bcSupportList_Z=unique(Fr(:));
+
+%Prescribed displacement nodes
+logicPrescribe=faceBoundaryMarker==6;
+Fr=Fb(logicPrescribe,:);
+bcPrescribeList=unique(Fr(:));
+bcPrescribeMagnitudes=displacementMagnitude(ones(1,numel(bcPrescribeList)),:);
+
+%%
+% Visualize BC's
+hf=cFigure;
+title('BCs','FontSize',fontSize);
+xlabel('X','FontSize',fontSize); ylabel('Y','FontSize',fontSize); zlabel('Z','FontSize',fontSize);
+hold on;
+
+patch('Faces',Fb,'Vertices',V,'FaceColor','flat','CData',faceBoundaryMarker,'FaceAlpha',faceAlpha2,'lineWidth',edgeWidth,'edgeColor',edgeColor);
+plotV(V(bcSupportList_X,:),'r.','MarkerSize',markerSize);
+plotV(V(bcSupportList_Y,:),'g.','MarkerSize',markerSize);
+plotV(V(bcSupportList_Z,:),'b.','MarkerSize',markerSize);
+plotV(V(bcPrescribeList,:),'k.','MarkerSize',markerSize);
+set(gca,'FontSize',fontSize);
+
+colormap(gjet(6)); colorbar;
+set(gca,'FontSize',fontSize);
+view(3); axis tight;  axis equal;  grid on;
+drawnow;
+
+%% DEFINE FIBRE DIRECTIONS
+
+[R,~]=euler2DCM([0,alphaFib,0]);
+v_fib=(R*[0 0 1]')';
+
+V_fib=v_fib(ones(size(E,1),1),:);
+
+%%
+% Visualize fibre direction vectors
+
+[Ff,Vf,Cf]=quiver3Dpatch(VE(:,1),VE(:,2),VE(:,3),V_fib(:,1),V_fib(:,2),V_fib(:,3),ones(size(V_fib,1),1),min(pointSpacings).*ones(1,2));
+
+hf=cFigure;
+title('Fibre vectors','FontSize',fontSize);
+xlabel('X','FontSize',fontSize); ylabel('Y','FontSize',fontSize); zlabel('Z','FontSize',fontSize);
+hold on;
+
+patch('Faces',Fb,'Vertices',V,'FaceColor',0.5.*ones(1,3),'FaceAlpha',faceAlpha1,'edgeColor','k');
+patch('Faces',Ff,'Vertices',Vf,'FaceColor','k','FaceAlpha',1,'edgeColor','none');
+
+set(gca,'FontSize',fontSize);
+set(gca,'FontSize',fontSize);
+view(3); axis tight;  axis equal;  grid on;
+drawnow;
+
+%% CONSTRUCTING FEB MODEL
+
+FEB_struct.febio_spec.version='2.0';
+
+% Defining file names
+FEB_struct.run_filename=[modelName,'.feb']; %FEB file name
+FEB_struct.run_logname=[modelName,'.txt']; %FEBio log file name
+
+%Geometry section
+FEB_struct.Geometry.Nodes=V;
+FEB_struct.Geometry.Elements={E}; %The element sets
+FEB_struct.Geometry.ElementType={'hex8'}; %The element types
+FEB_struct.Geometry.ElementMat={elementMaterialIndices};
+FEB_struct.Geometry.ElementsPartName={'Block'};
+
+%Adding fibre direction, construct local orthonormal basis vectors
+[a,d]=vectorOrthogonalPair(V_fib);
+
+VF_E=zeros(size(V_fib,1),size(V_fib,2),2);
+VF_E(:,:,1)=a; %a1 ~ e1 ~ X or first direction
+VF_E(:,:,2)=d; %a2 ~ e2 ~ Y or second direction
+%Vf_E %a3 ~ e3 ~ Z, third direction, or fibre direction
+
+FEB_struct.Geometry.ElementData.MatAxis.ElementIndices=1:1:size(E,1);
+FEB_struct.Geometry.ElementData.MatAxis.Basis=VF_E;
+
+%Material section
+FEB_struct.Materials{1}.Type='solid mixture';
+% FEB_struct.Materials{1}.AnisoType='mat_axis';
+FEB_struct.Materials{1}.Solid{1}.Type='Ogden unconstrained';
+FEB_struct.Materials{1}.Solid{1}.Properties={'c1','m1','c2','m2','cp'};
+FEB_struct.Materials{1}.Solid{1}.Values={c1_ini,m1_ini,c1_ini,-m1_ini,k_ini};
+FEB_struct.Materials{1}.Solid{2}.Type='fiber-exp-pow';
+FEB_struct.Materials{1}.Solid{2}.Properties={'ksi','alpha','beta','theta','phi'};
+FEB_struct.Materials{1}.Solid{2}.Values={ksi_ini,0,beta_ini,0,0};
+FEB_struct.Materials{1}.Solid{2}.AnisoType='mat_axis';
+
+%Control section
+FEB_struct.Control.AnalysisType='static';
+FEB_struct.Control.Properties={'time_steps','step_size',...
+    'max_refs','max_ups',...
+    'dtol','etol','rtol','lstol'};
+numSteps=25;
+FEB_struct.Control.Values={numSteps,1/numSteps,25,0,0.001,0.01,0,0.9};
+FEB_struct.Control.TimeStepperProperties={'dtmin','dtmax','max_retries','opt_iter','aggressiveness'};
+FEB_struct.Control.TimeStepperValues={(1/(100*numSteps)),1/numSteps,5,10,1};
+
+%Defining node sets
+FEB_struct.Geometry.NodeSet{1}.Set=bcSupportList_X;
+FEB_struct.Geometry.NodeSet{1}.Name='bcSupportList_X';
+FEB_struct.Geometry.NodeSet{2}.Set=bcSupportList_Y;
+FEB_struct.Geometry.NodeSet{2}.Name='bcSupportList_Y';
+FEB_struct.Geometry.NodeSet{3}.Set=bcSupportList_Z;
+FEB_struct.Geometry.NodeSet{3}.Name='bcSupportList_Z';
+% FEB_struct.Geometry.NodeSet{4}.Set=bcPrescribeList;
+% FEB_struct.Geometry.NodeSet{4}.Name='bcPrescribeList';
+
+%Adding BC information
+FEB_struct.Boundary.Fix{1}.bc='x';
+FEB_struct.Boundary.Fix{1}.SetName=FEB_struct.Geometry.NodeSet{1}.Name;
+FEB_struct.Boundary.Fix{2}.bc='y';
+FEB_struct.Boundary.Fix{2}.SetName=FEB_struct.Geometry.NodeSet{2}.Name;
+FEB_struct.Boundary.Fix{3}.bc='z';
+FEB_struct.Boundary.Fix{3}.SetName=FEB_struct.Geometry.NodeSet{3}.Name;
+
+%Prescribed BC's
+FEB_struct.Boundary.Prescribe{1}.Set=bcPrescribeList;
+FEB_struct.Boundary.Prescribe{1}.bc='z';
+FEB_struct.Boundary.Prescribe{1}.lc=1;
+FEB_struct.Boundary.Prescribe{1}.nodeScale=displacementMagnitude(ones(numel(bcPrescribeList),1),3);
+FEB_struct.Boundary.Prescribe{1}.Type='relative';
+
+%Load curves
+FEB_struct.LoadData.LoadCurves.id=1;
+FEB_struct.LoadData.LoadCurves.type={'linear'};
+FEB_struct.LoadData.LoadCurves.loadPoints={[0 0;1 1;]};
+
+%Adding output requests
+FEB_struct.Output.VarTypes={'displacement','stress','relative volume'};
+
+%Specify log file output
+run_disp_output_name=[FEB_struct.run_filename(1:end-4),'_node_out.txt'];
+run_stress_output_name=[FEB_struct.run_filename(1:end-4),'_stress_out.txt'];
+FEB_struct.run_output_names={run_disp_output_name,run_stress_output_name};
+FEB_struct.output_types={'node_data','element_data'};
+FEB_struct.data_types={'ux;uy;uz','sz'};
+
+%% SAVING .FEB FILE
+FEB_struct.disp_opt=0; %Display waitbars option
+febStruct2febFile(FEB_struct);
+
+%%
+% FEBioRunStruct.FEBioPath='C:\Program Files\febio2-2.2.6\bin\febio2.exe';
+FEBioRunStruct.run_filename=FEB_struct.run_filename;
+FEBioRunStruct.run_logname=FEB_struct.run_logname;
+FEBioRunStruct.disp_on=0;
+FEBioRunStruct.disp_log_on=0;
+FEBioRunStruct.runMode='external';%'internal';
+FEBioRunStruct.t_check=0.25; %Time for checking log file (dont set too small)
+FEBioRunStruct.maxtpi=1e99; %Max analysis time
+FEBioRunStruct.maxLogCheckTime=5; %Max log file checking time
+FEBioRunStruct.cleanUpFileList=FEB_struct.run_output_names; %Files to remove prior to starting each job.
+
+%%
+
+objectiveStruct.P_ini=P_ini;
+objectiveStruct.bcPrescribeList=bcPrescribeList;
+objectiveStruct.sampleHeight=sampleHeight;
+objectiveStruct.stretch_exp=stretch_exp;
+objectiveStruct.FEBioRunStruct=FEBioRunStruct;
+objectiveStruct.FEB_struct=FEB_struct;
+objectiveStruct.k_factor=k_factor;
+objectiveStruct.method=optimMethod;
+objectiveStruct.run_output_names=FEB_struct.run_output_names;
+
+%%
+if optimOpt==1
+    %Optimisation settings
+    maxNumberIterations=50; %Maximum number of optimization iterations
+    maxNumberFunctionEvaluations=maxNumberIterations*10; %Maximum number of function evaluations, N.B. multiple evaluations are used per iteration
+    functionTolerance=1e-3; %Tolerance on objective function value
+    parameterTolerance=1e-3; %Tolerance on parameter variation
+    displayTypeIterations='iter';
+    
+    for dirCase=1:2;
+        
+        objectiveStruct.dirCase=dirCase;
+        objectiveStruct.stress_cauchy_exp=stress_cauchy_exp(:,objectiveStruct.dirCase);
+        
+        %Initial parameters
+        if dirCase==1
+            P=objectiveStruct.P_ini(1:2);
+            objectiveStruct.Pb_struct.xxlim=[[P(1)/100 2]' [P(1)*100 50]']; %Parameter bounds
+        elseif dirCase==2
+            P=objectiveStruct.P_ini(3:4);
+            objectiveStruct.Pb_struct.xxlim=[[P(1)/100 2]' [P(1)*100 50]']; %Parameter bounds
+        end
+        
+        objectiveStruct.parNormFactors=P; %This will normalize the paramters to ones(size(P))
+        objectiveStruct.Pb_struct.xx_c=P; %Parameter constraining centre
+        
+        Pn=P./objectiveStruct.parNormFactors;
+        
+        
+        %% STARTING OPTIMISATION OF GROUND MATRIX
+        
+        switch objectiveStruct.method
+            case 1 %fminsearch and Nelder-Mead
+                OPT_options=optimset('fminsearch'); % 'Nelder-Mead simplex direct search'
+                OPT_options = optimset(OPT_options,'MaxFunEvals',maxNumberFunctionEvaluations,...
+                    'MaxIter',maxNumberIterations,...
+                    'TolFun',functionTolerance,...
+                    'TolX',parameterTolerance,...
+                    'Display',displayTypeIterations,...
+                    'FinDiffRelStep',1e-3,...
+                    'DiffMaxChange',0.5);
+                [Pn_opt,OPT_out.fval,OPT_out.exitflag,OPT_out.output]= fminsearch(@(Pn) obj_DEMO_FEBio_iFEA_uniaxial_transiso_01(Pn,objectiveStruct),Pn,OPT_options);
+            case 2 %lsqnonlin and Levenberg-Marquardt
+                OPT_options = optimoptions(@lsqnonlin,'Algorithm','levenberg-marquardt');
+                OPT_options = optimoptions(OPT_options,'MaxFunEvals',maxNumberFunctionEvaluations,...
+                    'MaxIter',maxNumberIterations,...
+                    'TolFun',functionTolerance,...
+                    'TolX',parameterTolerance,...
+                    'Display',displayTypeIterations,...
+                    'FinDiffRelStep',1e-3,...
+                    'DiffMaxChange',0.5);
+                [Pn_opt,OPT_out.resnorm,OPT_out.residual]= lsqnonlin(@(Pn) obj_DEMO_FEBio_iFEA_uniaxial_transiso_01(Pn,objectiveStruct),Pn,[],[],OPT_options);
+        end
+        
+        %% Unnormalize and constrain parameters
+        P_opt=Pn_opt.*objectiveStruct.parNormFactors; %Scale back, undo normalization
+        
+        %Constraining parameters
+        for q=1:1:numel(P_opt);
+            [P_opt(q)]=parLimNat(objectiveStruct.Pb_struct.xx_c(q),objectiveStruct.Pb_struct.xxlim(q,:),P_opt(q));
+        end
+        
+        disp_text=sprintf('%6.16e,',P_opt); disp_text=disp_text(1:end-1);
+        disp(['P_opt=',disp_text]);
+        
+        if dirCase==1
+            objectiveStruct.P_ini(1:2)=P_opt;
+        elseif dirCase==2
+            objectiveStruct.P_ini(3:4)=P_opt;
+        end
+        
+    end
+end
+
+%%
+stretch_sim=cell(1,2);
+stress_cauchy_sim=cell(1,2);
+for dirCase=1:2;
+    
+    %Initial parameters
+    if dirCase==1
+        P=objectiveStruct.P_ini(1:2);
+        objectiveStruct.Pb_struct.xxlim=[[P(1)/100 2]' [P(1)*100 50]']; %Parameter bounds
+    elseif dirCase==2
+        P=objectiveStruct.P_ini(3:4);
+        objectiveStruct.Pb_struct.xxlim=[[P(1)/100 2]' [P(1)*100 50]']; %Parameter bounds
+    end
+    
+    objectiveStruct.parNormFactors=P; %This will normalize the paramters to ones(size(P))
+    objectiveStruct.Pb_struct.xx_c=P; %Parameter constraining centre
+    
+    Pn=P./objectiveStruct.parNormFactors;
+    
+    objectiveStruct.dirCase=dirCase;
+    objectiveStruct.stress_cauchy_exp=stress_cauchy_exp(:,objectiveStruct.dirCase);
+    
+    [Fopt,OPT_stats_out]=obj_DEMO_FEBio_iFEA_uniaxial_transiso_01(Pn,objectiveStruct);
+    
+    stretch_sim{dirCase}=OPT_stats_out.stretch_sim;
+    stress_cauchy_sim{dirCase}=OPT_stats_out.stress_cauchy_sim;
+    
+end
+
+%% Plotting experimental data
+
+pColors=gjet(2);
+cFigure; hold on;
+% title('Experimental data','FontSize',fontSize2);
+xlabel('$$\lambda$$','FontSize',fontSize2,'Interpreter','Latex');
+ylabel('$$\sigma(kPa)$$','FontSize',fontSize2,'Interpreter','Latex');
+
+patch('Faces',F_sd1,'Vertices',V_sd1,'EdgeColor','none','FaceColor',pColors(1,:),'FaceAlpha',faceAlpha3);
+patch('Faces',F_sd2,'Vertices',V_sd2,'EdgeColor','none','FaceColor',pColors(2,:),'FaceAlpha',faceAlpha3);
+
+hp(1)=plot(stretch_exp,stress_cauchy_exp(:,1),'k:','LineWidth',lineWidth2);
+set(hp(1),'Color',pColors(1,:));
+hp(2)=plot(stretch_exp,stress_cauchy_exp(:,2),'k:','LineWidth',lineWidth2);
+set(hp(2),'Color',pColors(2,:));
+
+
+hp(3)=plot(stretch_sim{1},stress_cauchy_sim{1},'k-','LineWidth',lineWidth1);
+set(hp(3),'Color',pColors(1,:));
+hp(4)=plot(stretch_sim{2},stress_cauchy_sim{2},'k-','LineWidth',lineWidth1);
+set(hp(4),'Color',pColors(2,:));
+
+h=legend(hp,'Exp. Fibre','Exp. Cross-Fibre','Sim. Fibre','Sim. Cross-Fibre','Location','SouthEast');
+set(h,'Interpreter','Latex','FontSize',fontSize2);
+
+axis tight;
+set(gca,'FontSize',fontSize);
+box on; grid on;
+drawnow;
+
+%%
+%
+% <<gibbVerySmall.gif>>
+%
+% _*GIBBON*_
+% <www.gibboncode.org>
+%
+% _Kevin Mattheus Moerman_, <gibbon.toolbox@gmail.com>
+
+##### SOURCE END #####
+--></body></html>

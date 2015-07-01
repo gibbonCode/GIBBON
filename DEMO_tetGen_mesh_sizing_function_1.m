@@ -11,7 +11,6 @@ clear; close all; clc;
 
 %%
 % Plot settings
-figColor='w'; figColorDef='white';
 fontSize=15;
 faceAlpha1=0.5;
 faceAlpha2=0.5;
@@ -48,7 +47,7 @@ faceBoundaryMarker=faceBoundMarker1*ones(size(F,1),1); %Create boundary markers 
 
 %%
 % Plotting surface models
-hf=figuremax(figColor,figColorDef);
+hf=cFigure;
 title('The surface model','FontSize',fontSize);
 xlabel('X','FontSize',fontSize); ylabel('Y','FontSize',fontSize); zlabel('Z','FontSize',fontSize);
 hold on;
@@ -77,7 +76,7 @@ edgeSizeField=(edgeSizeField*minEdgeSize);
 
 %%
 % Plotting surface models
-hf=figuremax(figColor,figColorDef);
+hf=cFigure;
 title('Boundary points where desired element size is specified','FontSize',fontSize);
 xlabel('X','FontSize',fontSize); ylabel('Y','FontSize',fontSize); zlabel('Z','FontSize',fontSize);
 hold on;
@@ -127,7 +126,7 @@ X=VT(:,3); XE=mean(X(E),2);
 L=XE<mean(X(:));
 [Fs,Cs]=element2patch(E(L,:),C(L),'tet4');
 
-hf1=figuremax(figColor,figColorDef);
+hf1=cFigure;
 
 title('Cut view of biased mesh','FontSize',fontSize);
 xlabel('X','FontSize',fontSize); ylabel('Y','FontSize',fontSize); zlabel('Z','FontSize',fontSize); hold on;

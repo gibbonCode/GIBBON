@@ -1,33 +1,87 @@
 function [varargout]=parLimNat(xx_c,xxlim,x)
 
-% [xx,S]=parLimNat(xx_c,[xx_min xx_max],x);
+% function [xx,S]=parLimNat(xx_c,[xx_min xx_max],x);
+% ------------------------------------------------------------------------
+%
+%
+%
+% Kevin Mattheus Moerman
+% gibbon.toolbox@gmail.com
+% 
+% 2015/06/30 Updated for GIBBON, fixed case for limits equal to centre
+%------------------------------------------------------------------------
+
+%%
+
+if isempty(xx_c)
+    xx_c=mean(xxlim);
+end
+
+if diff(xxlim)<eps(xx_c)
+    error('Limits xxlim are too similar');
+end
+
+if xxlim(1)>xx_c
+    error('Lower limit should be lower or equal to centre');
+end
+
+if xxlim(2)<xx_c
+    error('Upper limit should be higher or equal to centre');
+end
 
 %%
 
 wn=abs(xx_c-xxlim(1));
+L_wn=wn<eps(xx_c);
+if L_wn
+   warning('Centre should not coincide with lower limit. Transition will not be smooth'); 
+end
+
 wp=abs(xxlim(2)-xx_c);
+L_wp=wp<eps(xx_c);
+if L_wp
+   warning('Centre should not coincide with upper limit. Transition will not be smooth'); 
+end
 
 %%
 
 nc=6; 
 
-xtn=linspace(xx_c-2*wn,xx_c,nc);
-xtp=linspace(xx_c,xx_c+2*wp,nc);
+if L_wn
+    xtn=xx_c;
+else
+    xtn=linspace(xx_c-2*wn,xx_c,nc);
+end
+
+if L_wp
+    xtp=xx_c;
+else
+    xtp=linspace(xx_c,xx_c+2*wp,nc);
+end
+
 xt=[xtn xtp(2:end)];
 xtlim=[min(xt(:)) max(xt(:))];
 
 xxt=xt;
 
 Ln=xt<=xx_c;
+if L_wn
+    xxt(Ln)=0;
+else
+    xxt(Ln)=erf(1/wn*2*(xt(Ln)-xx_c));
+    xxt(Ln)=xxt(Ln)*wn;
+end
+
 Lp=xt>xx_c;
-xxt(Ln)=erf(1/wn*2*(xt(Ln)-xx_c));
-xxt(Ln)=xxt(Ln)*wn;
-xxt(Lp)=erf(1/wp*2*(xt(Lp)-xx_c));
-xxt(Lp)=xxt(Lp)*wp;
+if  L_wp
+    xxt(Lp)=[];
+else
+    xxt(Lp)=erf(1/wp*2*(xt(Lp)-xx_c));
+    xxt(Lp)=xxt(Lp)*wp;
+end
 xxt=xxt+xx_c;
 
 %% Construct and evaluate Piecewise Cubic Hermite Interpolating Polynomial 
-
 pp = pchip(xt,xxt); 
 xx=ppval_extrapVal(pp,x,xtlim,xxlim);
 

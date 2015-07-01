@@ -95,7 +95,7 @@ end
 %% Starting FEBio job
 
 FEBio_go=0; %i.e. not stopped
-
+% FEBioRunStruct.run_string
 system(FEBioRunStruct.run_string); %START FEBio NOW!!!!!!!!
 tic; %Start time (after starting FEBio to cope with "internal" mode)
 

@@ -6,7 +6,7 @@
    <!--
 This HTML was auto-generated from MATLAB code.
 To make changes, update the MATLAB code and republish this document.
-      --><title>DEMO_tetGen_mesh_sizing_function_1</title><meta name="generator" content="MATLAB 8.4"><link rel="schema.DC" href="http://purl.org/dc/elements/1.1/"><meta name="DC.date" content="2014-10-21"><meta name="DC.source" content="DEMO_tetGen_mesh_sizing_function_1.m"><style type="text/css">
+      --><title>DEMO_tetGen_mesh_sizing_function_1</title><meta name="generator" content="MATLAB 8.5"><link rel="schema.DC" href="http://purl.org/dc/elements/1.1/"><meta name="DC.date" content="2015-06-30"><meta name="DC.source" content="DEMO_tetGen_mesh_sizing_function_1.m"><style type="text/css">
 html,body,div,span,applet,object,iframe,h1,h2,h3,h4,h5,h6,p,blockquote,pre,a,abbr,acronym,address,big,cite,code,del,dfn,em,font,img,ins,kbd,q,s,samp,small,strike,strong,sub,sup,tt,var,b,u,i,center,dl,dt,dd,ol,ul,li,fieldset,form,label,legend,table,caption,tbody,tfoot,thead,tr,th,td{margin:0;padding:0;border:0;outline:0;font-size:100%;vertical-align:baseline;background:transparent}body{line-height:1}ol,ul{list-style:none}blockquote,q{quotes:none}blockquote:before,blockquote:after,q:before,q:after{content:'';content:none}:focus{outine:0}ins{text-decoration:none}del{text-decoration:line-through}table{border-collapse:collapse;border-spacing:0}
 
 html { min-height:100%; margin-bottom:1px; }
@@ -66,9 +66,8 @@ table td { padding:7px 5px; text-align:left; vertical-align:top; border:1px soli
 
 
 
-  </style></head><body><div class="content"><h1>DEMO_tetGen_mesh_sizing_function_1</h1><!--introduction--><p>Below is a demonstration for:</p><div><ul><li>The use of TETgen for meshing based on surface geometry</li><li>Biasing the mesh density using a size function specified on the boundary nodes</li></ul></div><!--/introduction--><h2>Contents</h2><div><ul><li><a href="#4">Defining the surface models</a></li><li><a href="#6">Defining a size function on the boundary nodes</a></li><li><a href="#8">CREATING A SOLID TETRAHEDRAL MESH USING TETGEN</a></li></ul></div><pre class="codeinput">clear; close <span class="string">all</span>; clc;
-</pre><p>Plot settings</p><pre class="codeinput">figColor=<span class="string">'w'</span>; figColorDef=<span class="string">'white'</span>;
-fontSize=15;
+  </style></head><body><div class="content"><h1>DEMO_tetGen_mesh_sizing_function_1</h1><!--introduction--><p>Below is a demonstration for:</p><div><ul><li>The use of TetGen for meshing based on surface geometry</li><li>Biasing the mesh density using a size function specified on the boundary nodes</li></ul></div><!--/introduction--><h2>Contents</h2><div><ul><li><a href="#4">Defining the surface models</a></li><li><a href="#6">Defining a size function on the boundary nodes</a></li><li><a href="#8">CREATING A SOLID TETRAHEDRAL MESH USING TETGEN</a></li></ul></div><pre class="codeinput">clear; close <span class="string">all</span>; clc;
+</pre><p>Plot settings</p><pre class="codeinput">fontSize=15;
 faceAlpha1=0.5;
 faceAlpha2=0.5;
 edgeColor=0.25*ones(1,3);
@@ -94,7 +93,7 @@ boxEl=[numElementsWidth numElementsThickness numElementsHeight]; <span class="co
 
 faceBoundMarker1=2;
 faceBoundaryMarker=faceBoundMarker1*ones(size(F,1),1); <span class="comment">%Create boundary markers for faces</span>
-</pre><p>Plotting surface models</p><pre class="codeinput">hf=figuremax(figColor,figColorDef);
+</pre><p>Plotting surface models</p><pre class="codeinput">hf=cFigure;
 title(<span class="string">'The surface model'</span>,<span class="string">'FontSize'</span>,fontSize);
 xlabel(<span class="string">'X'</span>,<span class="string">'FontSize'</span>,fontSize); ylabel(<span class="string">'Y'</span>,<span class="string">'FontSize'</span>,fontSize); zlabel(<span class="string">'Z'</span>,<span class="string">'FontSize'</span>,fontSize);
 hold <span class="string">on</span>;
@@ -117,7 +116,7 @@ edgeSizeField=edgeSizeField-min(edgeSizeField(:));
 edgeSizeField=edgeSizeField./max(edgeSizeField(:));
 edgeSizeField=(edgeSizeField*(n-1))+1; <span class="comment">%Range from 0-n depending on V(:,1) i.e. X-dir</span>
 edgeSizeField=(edgeSizeField*minEdgeSize);
-</pre><p>Plotting surface models</p><pre class="codeinput">hf=figuremax(figColor,figColorDef);
+</pre><p>Plotting surface models</p><pre class="codeinput">hf=cFigure;
 title(<span class="string">'Boundary points where desired element size is specified'</span>,<span class="string">'FontSize'</span>,fontSize);
 xlabel(<span class="string">'X'</span>,<span class="string">'FontSize'</span>,fontSize); ylabel(<span class="string">'Y'</span>,<span class="string">'FontSize'</span>,fontSize); zlabel(<span class="string">'Z'</span>,<span class="string">'FontSize'</span>,fontSize);
 hold <span class="string">on</span>;
@@ -140,33 +139,33 @@ inputStruct.regionPoints=[0 0 0]; <span class="comment">%region points</span>
 </pre><p>Mesh model using tetrahedral elements using tetGen</p><pre class="codeinput">[meshOutput]=runTetGen(inputStruct); <span class="comment">%Run tetGen</span>
 </pre><pre class="codeoutput"> 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
---- TETGEN Tetrahedral meshing --- 21-Oct-2014 16:32:54
+--- TETGEN Tetrahedral meshing --- 30-Jun-2015 21:21:48
  
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
---- Writing SMESH file --- 21-Oct-2014 16:32:54
+--- Writing SMESH file --- 30-Jun-2015 21:21:48
 ----&gt; Adding node field
 ----&gt; Adding facet field
 ----&gt; Adding holes specification
 ----&gt; Adding region specification
---- Done --- 21-Oct-2014 16:32:54
---- Writing MTR file --- 21-Oct-2014 16:32:54
---- Running TetGen to mesh initial Delaunay tesselation using sizing function--- 21-Oct-2014 16:32:54
+--- Done --- 30-Jun-2015 21:21:48
+--- Writing MTR file --- 30-Jun-2015 21:21:48
+--- Running TetGen to mesh initial Delaunay tesselation using sizing function--- 30-Jun-2015 21:21:48
 Opening D:\MATLAB\GIBBON\trunk\lib_ext\tetGen\tempFiles\temp.smesh. 
 Opening D:\MATLAB\GIBBON\trunk\lib_ext\tetGen\tempFiles\temp.mtr. 
   Cannot access file D:\MATLAB\GIBBON\trunk\lib_ext\tetGen\tempFiles\temp.b.node. 
 Delaunizing vertices... 
-Delaunay seconds:  0.012 
+Delaunay seconds:  0.013 
 Creating surface mesh ... 
-Surface mesh seconds:  0.002 
+Surface mesh seconds:  0.003 
 Constrained Delaunay... 
 Constrained Delaunay seconds:  0.004 
 Removing exterior tetrahedra ... 
 Spreading region attributes. 
 Exterior tets removal seconds:  0 
 Refining mesh... 
-Refinement seconds:  0.115 
+Refinement seconds:  0.116 
 Optimizing mesh... 
-Optimization seconds:  0.018 
+Optimization seconds:  0.015 
  
 Writing D:\MATLAB\GIBBON\trunk\lib_ext\tetGen\tempFiles\temp.1.node. 
 Writing D:\MATLAB\GIBBON\trunk\lib_ext\tetGen\tempFiles\temp.1.ele. 
@@ -175,8 +174,8 @@ Writing D:\MATLAB\GIBBON\trunk\lib_ext\tetGen\tempFiles\temp.1.edge.
 Writing D:\MATLAB\GIBBON\trunk\lib_ext\tetGen\tempFiles\temp.1.mtr. 
 Writing D:\MATLAB\GIBBON\trunk\lib_ext\tetGen\tempFiles\temp.1.p2t. 
  
-Output seconds:  0.089 
-Total running seconds:  0.24 
+Output seconds:  0.071 
+Total running seconds:  0.222 
  
 Statistics: 
  
@@ -196,11 +195,11 @@ Statistics:
   Steiner points on input segments:  61 
   Steiner points inside domain: 3500 
  
---- Done --- 21-Oct-2014 16:32:54
+--- Done --- 30-Jun-2015 21:21:48
  
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
---- Importing TetGen files --- 21-Oct-2014 16:32:54
---- Done --- 21-Oct-2014 16:32:54
+--- Importing TetGen files --- 30-Jun-2015 21:21:48
+--- Done --- 30-Jun-2015 21:21:49
 </pre><p>Accessing the model element and patch data</p><pre class="codeinput">FT=meshOutput.faces;
 Fb=meshOutput.facesBoundary;
 Cb=meshOutput.boundaryMarker;
@@ -213,7 +212,7 @@ X=VT(:,3); XE=mean(X(E),2);
 L=XE&lt;mean(X(:));
 [Fs,Cs]=element2patch(E(L,:),C(L),<span class="string">'tet4'</span>);
 
-hf1=figuremax(figColor,figColorDef);
+hf1=cFigure;
 
 title(<span class="string">'Cut view of biased mesh'</span>,<span class="string">'FontSize'</span>,fontSize);
 xlabel(<span class="string">'X'</span>,<span class="string">'FontSize'</span>,fontSize); ylabel(<span class="string">'Y'</span>,<span class="string">'FontSize'</span>,fontSize); zlabel(<span class="string">'Z'</span>,<span class="string">'FontSize'</span>,fontSize); hold <span class="string">on</span>;
@@ -224,12 +223,12 @@ colormap(jet); colorbar;
 camlight <span class="string">headlight</span>;
 set(gca,<span class="string">'FontSize'</span>,fontSize);
 drawnow;
-</pre><img vspace="5" hspace="5" src="DEMO_tetGen_mesh_sizing_function_1_03.png" alt=""> <p><img vspace="5" hspace="5" src="gibbVerySmall.gif" alt=""> </p><p><i><b>GIBBON</b></i> <a href="www.gibboncode.org">www.gibboncode.org</a></p><p><i>Kevin Mattheus Moerman</i>, <a href="gibbon.toolbox@gmail.com">gibbon.toolbox@gmail.com</a></p><p class="footer"><br><a href="http://www.mathworks.com/products/matlab/">Published with MATLAB&reg; R2014b</a><br></p></div><!--
+</pre><img vspace="5" hspace="5" src="DEMO_tetGen_mesh_sizing_function_1_03.png" alt=""> <p><img vspace="5" hspace="5" src="gibbVerySmall.gif" alt=""> </p><p><i><b>GIBBON</b></i> <a href="www.gibboncode.org">www.gibboncode.org</a></p><p><i>Kevin Mattheus Moerman</i>, <a href="gibbon.toolbox@gmail.com">gibbon.toolbox@gmail.com</a></p><p class="footer"><br><a href="http://www.mathworks.com/products/matlab/">Published with MATLAB&reg; R2015a</a><br></p></div><!--
 ##### SOURCE BEGIN #####
 %% DEMO_tetGen_mesh_sizing_function_1
 % Below is a demonstration for:
 % 
-% * The use of TETgen for meshing based on surface geometry
+% * The use of TetGen for meshing based on surface geometry
 % * Biasing the mesh density using a size function specified on the
 % boundary nodes
 
@@ -239,12 +238,11 @@ clear; close all; clc;
 
 %%
 % Plot settings
-figColor='w'; figColorDef='white';
 fontSize=15;
 faceAlpha1=0.5;
 faceAlpha2=0.5;
 edgeColor=0.25*ones(1,3);
-edgeWidth=1.5;
+edgeWidth=1.5; 
 
 % path names
 filePath=mfilename('fullpath');
@@ -276,7 +274,7 @@ faceBoundaryMarker=faceBoundMarker1*ones(size(F,1),1); %Create boundary markers 
 
 %%
 % Plotting surface models
-hf=figuremax(figColor,figColorDef);
+hf=cFigure;
 title('The surface model','FontSize',fontSize);
 xlabel('X','FontSize',fontSize); ylabel('Y','FontSize',fontSize); zlabel('Z','FontSize',fontSize);
 hold on;
@@ -305,7 +303,7 @@ edgeSizeField=(edgeSizeField*minEdgeSize);
 
 %%
 % Plotting surface models
-hf=figuremax(figColor,figColorDef);
+hf=cFigure;
 title('Boundary points where desired element size is specified','FontSize',fontSize);
 xlabel('X','FontSize',fontSize); ylabel('Y','FontSize',fontSize); zlabel('Z','FontSize',fontSize);
 hold on;
@@ -355,7 +353,7 @@ X=VT(:,3); XE=mean(X(E),2);
 L=XE<mean(X(:));
 [Fs,Cs]=element2patch(E(L,:),C(L),'tet4');
 
-hf1=figuremax(figColor,figColorDef);
+hf1=cFigure;
 
 title('Cut view of biased mesh','FontSize',fontSize);
 xlabel('X','FontSize',fontSize); ylabel('Y','FontSize',fontSize); zlabel('Z','FontSize',fontSize); hold on;

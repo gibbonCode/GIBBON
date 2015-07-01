@@ -62,6 +62,7 @@ C(indFaces)=2;
 
 hf=cFigure; 
 subplot(1,2,1); hold on; 
+title('Initial','FontSize',fontSize);
 xlabel('X','FontSize',fontSize); ylabel('Y','FontSize',fontSize); zlabel('Z','FontSize',fontSize);
 hp=patch('Faces',F,'Vertices',V,'FaceColor','flat','CData',C,'FaceAlpha',faceAlpha,'lineWidth',edgeWidth,'edgeColor',edgeColor);
 % [hp]=patchNormPlot(Fq,Vq,0.2);
@@ -70,6 +71,7 @@ set(gca,'FontSize',fontSize);
 view(3); axis tight;  axis equal;  grid on;
 
 subplot(1,2,2); hold on; 
+title('Refined','FontSize',fontSize);
 xlabel('X','FontSize',fontSize); ylabel('Y','FontSize',fontSize); zlabel('Z','FontSize',fontSize);
 hp=patch('Faces',Fq,'Vertices',Vq,'FaceColor','flat','CData',Cq,'FaceAlpha',faceAlpha,'lineWidth',edgeWidth,'edgeColor',edgeColor);
 % [hp]=patchNormPlot(Fq,Vq,0.2);

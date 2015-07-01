@@ -24,9 +24,9 @@ lineWidth2=1;
 
 %% Example: Constraining parameters (normal centre)
 xx_c=5;
-xx_min=0;
+xx_min=4;
 xx_max=10;
-x=linspace(xx_c-10,xx_c+10,100);
+x=linspace(xx_c-10,xx_c+10,250);
 [xx,S]=parLimNat(xx_c,[xx_min xx_max],x);
 
 hf1=cFigure; hold on; grid on;

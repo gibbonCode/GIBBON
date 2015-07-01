@@ -11,7 +11,6 @@ clear; close all; clc;
 
 %%
 % Plot settings
-figColor='w'; figColorDef='white';
 fontSize=20;
 faceAlpha1=0.8;
 faceAlpha2=1;
@@ -71,13 +70,13 @@ elementMaterialIndices=ones(size(E,1),1);
 %%
 
 % Plotting boundary surfaces
-hf=figuremax(figColor,figColorDef);
+hf=cFigure;
 title('Model surfaces','FontSize',fontSize);
 xlabel('X','FontSize',fontSize); ylabel('Y','FontSize',fontSize); zlabel('Z','FontSize',fontSize);
 hold on;
 patch('Faces',Fb,'Vertices',V,'FaceColor','flat','CData',faceBoundaryMarker,'FaceAlpha',faceAlpha2,'lineWidth',edgeWidth,'edgeColor',edgeColor);
 
-colormap(jet(6)); colorbar;
+colormap(gjet(6)); colorbar;
 set(gca,'FontSize',fontSize);
 view(3); axis tight;  axis equal;  grid on;
 drawnow;
@@ -109,7 +108,7 @@ bcPrescribeMagnitudes=displacementMagnitude(ones(1,numel(bcPrescribeList)),:);
 
 %%
 % Visualize BC's
-hf=figuremax(figColor,figColorDef);
+hf=cFigure;
 title('Model BCs','FontSize',fontSize);
 xlabel('X','FontSize',fontSize); ylabel('Y','FontSize',fontSize); zlabel('Z','FontSize',fontSize);
 hold on;
@@ -122,7 +121,7 @@ plotV(V(bcSupportList_X_axis,:),'g.','MarkerSize',markerSize*2);
 plotV(V(bcSupportList_Y_axis,:),'r.','MarkerSize',markerSize*2);
 
 set(gca,'FontSize',fontSize);
-colormap(jet(6)); colorbar;
+colormap(gjet(6)); colorbar;
 set(gca,'FontSize',fontSize);
 view(3); axis tight;  axis equal;  grid on;
 drawnow;
@@ -139,7 +138,7 @@ V_fib=v_fib(ones(size(E,1),1),:);
 
 [Ff,Vf,Cf]=quiver3Dpatch(VE(:,1),VE(:,2),VE(:,3),V_fib(:,1),V_fib(:,2),V_fib(:,3),ones(size(V_fib,1),1),min(pointSpacings).*ones(1,2));
 
-hf=figuremax(figColor,figColorDef);
+hf=cFigure;
 title('Fibre vectors','FontSize',fontSize);
 xlabel('X','FontSize',fontSize); ylabel('Y','FontSize',fontSize); zlabel('Z','FontSize',fontSize);
 hold on;
@@ -148,7 +147,7 @@ patch('Faces',Fb,'Vertices',V,'FaceColor',0.5.*ones(1,3),'FaceAlpha',faceAlpha1,
 patch('Faces',Ff,'Vertices',Vf,'FaceColor','k','FaceAlpha',1,'edgeColor','none');
 
 set(gca,'FontSize',fontSize);
-colormap(jet(6)); colorbar;
+colormap(gjet(6)); colorbar;
 set(gca,'FontSize',fontSize);
 view(3); axis tight;  axis equal;  grid on;
 drawnow;
@@ -279,14 +278,14 @@ if runFlag==1 %i.e. a succesful run
     
     [CF]=vertexToFaceMeasure(Fb,DN_magnitude);
     
-    hf1=figuremax(figColor,figColorDef);
+    hf1=cFigure;
     title('The deformed model','FontSize',fontSize);
     xlabel('X','FontSize',fontSize); ylabel('Y','FontSize',fontSize); zlabel('Z','FontSize',fontSize); hold on;
     
     hps=patch('Faces',Fb,'Vertices',V_def,'FaceColor','flat','CData',CF);
     
     view(3); axis tight;  axis equal;  grid on;
-    colormap jet; colorbar;
+    colormap gjet; colorbar;
     % camlight headlight;
     set(gca,'FontSize',fontSize);
     drawnow;
@@ -316,7 +315,7 @@ if runFlag==1 %i.e. a succesful run
     
     %%
     
-    hf1=figuremax(figColor,figColorDef);
+    hf1=cFigure;
     title('Stretch stress curves','FontSize',fontSize);
     xlabel('\lambda Stretch [.]','FontSize',fontSize); ylabel('\sigma Cauchy stress [kPa]','FontSize',fontSize); zlabel('Z','FontSize',fontSize); hold on;
     
