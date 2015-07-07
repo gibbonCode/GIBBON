@@ -6,7 +6,6 @@ clear; close all; clc;
 
 %%
 % Plot settings
-figColor='w'; figColorDef='white';
 fontSize=15;
 faceColor='b';
 faceAlpha=0.5;
@@ -31,7 +30,7 @@ n=2; %Refinements
 [Vd,Fd]=patch_dual(V,F);
 
 %Plotting results
-hf=figuremax(figColor,figColorDef);
+hf=cFigure;
 hold on;
 title('A geodesic sphere triangulation and its dual consisting of pentagons and hexagons','FontSize',fontSize);
 xlabel('X','FontSize',fontSize); ylabel('Y','FontSize',fontSize); zlabel('Z','FontSize',fontSize);

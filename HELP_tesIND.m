@@ -32,7 +32,7 @@ M=zeros(n,n,1);
 %%
 % Visualizing the sparse face connectivity matrix
 
-hf1=cFigure; hold on; 
+cFigure; hold on; 
 title('Connected face indices per vertex','FontSize',fontSize);
 xlabel('F id','FontSize',fontSize);ylabel('V id','FontSize',fontSize); 
 imagesc(full(IND_F));
@@ -43,7 +43,7 @@ drawnow;
 %% 
 % Visualizing the sparse vertex connectivity matrix
 
-hf2=cFigure; hold on; 
+cFigure; hold on; 
 title('Connected vertex indices per vertex','FontSize',fontSize);
 xlabel('F id','FontSize',fontSize);ylabel('V id','FontSize',fontSize); 
 imagesc(full(IND_V));
@@ -68,7 +68,7 @@ indVertices=indVertices(indVertices>0);
 %%
 % Show results 
 
-hf3=cFigure; hold on; 
+cFigure; hold on; 
 title('Vertex-face and vertex-vertex connectivity on a quadrangulated surface','FontSize',fontSize);
 xlabel('X','FontSize',fontSize);ylabel('Y','FontSize',fontSize); zlabel('Z','FontSize',fontSize); 
 patch('Faces',F,'Vertices',V,'FaceColor','g','FaceAlpha',faceAlpha);
@@ -91,7 +91,7 @@ indFaces=indFaces(indFaces>0);
 %%
 % Show results 
 
-hf3=cFigure; hold on; 
+cFigure; hold on; 
 title('Face-face connectivity on a quadrangulated surface','FontSize',fontSize);
 xlabel('X','FontSize',fontSize);ylabel('Y','FontSize',fontSize); zlabel('Z','FontSize',fontSize); 
 patch('Faces',F,'Vertices',V,'FaceColor','g','FaceAlpha',faceAlpha);
@@ -134,7 +134,7 @@ indVertices=indVertices(indVertices>0);
 %%
 % Show results 
 
-hf3=cFigure; hold on; 
+cFigure; hold on; 
 title('Vertex-Face and vertex-vertex connectivity on a triangulated surface','FontSize',fontSize);
 xlabel('X','FontSize',fontSize);ylabel('Y','FontSize',fontSize); zlabel('Z','FontSize',fontSize); 
 patch('Faces',F,'Vertices',V,'FaceColor','g','FaceAlpha',faceAlpha);
@@ -157,7 +157,7 @@ indFaces=indFaces(indFaces>0);
 %%
 % Show results 
 
-hf3=cFigure; hold on; 
+cFigure; hold on; 
 title('Face-face connectivity on a triangulated surface','FontSize',fontSize);
 xlabel('X','FontSize',fontSize);ylabel('Y','FontSize',fontSize); zlabel('Z','FontSize',fontSize); 
 patch('Faces',F,'Vertices',V,'FaceColor','g','FaceAlpha',faceAlpha);
@@ -196,7 +196,7 @@ indVertices=indVertices(indVertices>0);
 %%
 % Show results 
 
-hf3=cFigure; hold on; 
+cFigure; hold on; 
 title('Connectivity on a hexahedral mesh','FontSize',fontSize);
 xlabel('X','FontSize',fontSize);ylabel('Y','FontSize',fontSize); zlabel('Z','FontSize',fontSize); 
 patch('Faces',F,'Vertices',V,'FaceColor','g','FaceAlpha',faceAlpha);
@@ -232,7 +232,7 @@ indElements=indElements(indElements>0);
 %%
 % Show results 
 
-hf3=cFigure; hold on; 
+cFigure; hold on; 
 title('Connectivity on a hexahedral mesh','FontSize',fontSize);
 xlabel('X','FontSize',fontSize);ylabel('Y','FontSize',fontSize); zlabel('Z','FontSize',fontSize); 
 patch('Faces',F,'Vertices',V,'FaceColor','g','FaceAlpha',faceAlpha);
@@ -274,7 +274,7 @@ indVertices=indVertices(indVertices>0);
 %%
 % Show results 
 
-hf3=cFigure; hold on; 
+cFigure; hold on; 
 title('Connectivity in a tetrahedral mesh','FontSize',fontSize);
 xlabel('X','FontSize',fontSize);ylabel('Y','FontSize',fontSize); zlabel('Z','FontSize',fontSize); 
 patch('Faces',F,'Vertices',V,'FaceColor','g','FaceAlpha',faceAlpha);

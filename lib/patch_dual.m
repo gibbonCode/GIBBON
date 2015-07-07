@@ -1,16 +1,21 @@
 function [varargout]=patch_dual(V,F)
 
-% function [Vd,Fd]=patch_dual(V,F)
+% function [Vd,Fd,Fds]=patch_dual(V,F)
 % ------------------------------------------------------------------------
 % Computes the dual of the input tesselation defined by the vertices V and
 % faces F. 
 %
 %
+% 
 % Kevin Mattheus Moerman
-% kevinmoerman@hotmail.com
-% 2014/04/28
+% gibbon.toolbox@gmail.com
+% 
+% 2013/04/28
+% 2015/07/07 Updated for GIBBON
+%
+% TO DO allow multiple iterations. Add "book keeping" of color/index data
 %------------------------------------------------------------------------
-
+%%
 
 %Get input tesselation vertex-normals
 [~,~,Nv]=patchNormal(F,V);

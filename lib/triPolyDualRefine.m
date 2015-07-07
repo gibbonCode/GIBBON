@@ -15,14 +15,15 @@ function [varargout]=triPolyDualRefine(varargin)
 
 %% Parse input
 
-F=varargin{1}; %Faces
-V=varargin{2}; %Vertices
-
-% %Number of iterations
-% if nargin==3
-%     n=varargin{3};
-% else
-%     n=1;
+% switch nargin
+%     case 2
+        F=varargin{1}; %Faces
+        V=varargin{2}; %Vertices
+%         CF=ones(size(F,1),1); %Color data
+%     case 3        
+%         F=varargin{1}; %Faces
+%         V=varargin{2}; %Vertices
+%         CF=varargin{3}; %Color data
 % end
 
 %%
