@@ -96,8 +96,9 @@ end
 
 FEBio_go=0; %i.e. not stopped
 % FEBioRunStruct.run_string
+tPre=tic; 
 system(FEBioRunStruct.run_string); %START FEBio NOW!!!!!!!!
-tic; %Start time (after starting FEBio to cope with "internal" mode)
+tPost=tic;
 
 %% Wait for log file
 
@@ -112,18 +113,23 @@ while fileFound==0
         [T_log]=txtfile2cell(FEBioRunStruct.run_logname);
         fileFound=1;
     end
+    t_fea=toc(tPre); %Current time since start
 
-    t_fea=toc; %Current time since start
-    if t_fea>=FEBioRunStruct.maxLogCheckTime %&& logTimingError==1
-        runFlag=0;
-        FEBio_go=1;
-        if FEBioRunStruct.disp_on==1; 
-            disp(['--- FAILED: Log file was not created in time. FEBio likely failed proir to logfile creation! --- ',datestr(now)]);
-            if runExternal==1
-                disp('Try setting FEBioRunStruct.runMode to "internal" to see potential errors prior to log file creation');
+    switch FEBioRunStruct.runMode
+        case 'internal'
+            
+        otherwise                        
+            if t_fea>=FEBioRunStruct.maxLogCheckTime %&& logTimingError==1
+                runFlag=0;
+                FEBio_go=1;
+                if FEBioRunStruct.disp_on==1;
+                    warning(['--- FAILED: Log file was not created in time. FEBio likely failed proir to logfile creation! --- ',datestr(now)]);
+                    if runExternal==1
+                        warning('Try setting FEBioRunStruct.runMode to "internal" to see potential errors prior to log file creation');
+                    end
+                end
+                break
             end
-        end
-        break
     end
 end
 
@@ -183,12 +189,16 @@ if FEBio_go==0
             line_count=line_count+1;
         end
         
-        if FEBio_go==0
-            %Police timing
-            t_fea=toc; %Current time since start
-            [runFlag,FEBio_go]=policeFEBioJob(FEBioRunStruct,t_fea);
+        switch FEBioRunStruct.runMode
+            case 'internal'
+                
+            otherwise
+                if FEBio_go==0
+                    %Police timing
+                    t_fea=toc(tPre); %Current time since start
+                    [runFlag,FEBio_go]=policeFEBioJob(FEBioRunStruct,t_fea);
+                end
         end
-        
     end    
 end
 

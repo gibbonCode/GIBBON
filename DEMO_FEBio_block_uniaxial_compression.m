@@ -44,7 +44,7 @@ displacementMagnitude=[0 0 (stretchLoad*sampleHeight)-sampleHeight];
 
 %Material parameter set
 c1=1e-3;
-m1=12;
+m1=6;
 k_factor=100;
 
 %% CREATING MESHED BOX
@@ -144,8 +144,8 @@ k=c1*k_factor;
 %Material section
 FEB_struct.Materials{1}.Type='Ogden';
 FEB_struct.Materials{1}.Name='Block_material';
-FEB_struct.Materials{1}.Properties={'c1','m1','k'};
-FEB_struct.Materials{1}.Values={c1,m1,k};
+FEB_struct.Materials{1}.Properties={'c1','m1','c1','m1','k'};
+FEB_struct.Materials{1}.Values={c1,m1,c1,-m1,k};
 
 %Step specific control sections
 FEB_struct.Control.AnalysisType='static';

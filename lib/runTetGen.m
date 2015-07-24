@@ -100,6 +100,7 @@ function [meshOutput]=runTetGen(inputStruct)
 % 
 % 2014/10/20
 % 2015/06/23 Fixed tet10 and boundaryMarker handling
+% 2015/07/10 Fixed handling of spaces in paths
 %------------------------------------------------------------------------
 
 %% PARSE INPUT
@@ -271,7 +272,8 @@ if sizingOn
             strOpt='';
         end
         
-        runString=[runNameTetGen,' ',strOpt,' ',runModelName];
+        runString=['"',runNameTetGen,'" ',strOpt,' "',runModelName,'"']; % Old which may not work with paths with spaces:  runString=[runNameTetGen,' ',strOpt,' ',runModelName];
+        
         disp(['--- Running TetGen to compute Delaunay tesselation of input set --- ',datestr(now)]);
         [runStatus,runOut]=system(runString,'-echo');
         dispDoneGibbonCode;
@@ -316,13 +318,15 @@ if sizingOn
     writeMtrFile_tetGen(inputStruct,bOpt);
     
     %Compute Delauney tesselation / Mesh using tetgen
-    runString=[runNameTetGen,' ',[inputStruct.stringOpt,'m'],' ',runModelName];
+
+    runString=['"',runNameTetGen,'" ',[inputStruct.stringOpt,'m'],' "',runModelName,'"']; % Old which may not work with paths with spaces:  %     runString=[runNameTetGen,' ',[inputStruct.stringOpt,'m'],' ',runModelName];
+            
     disp(['--- Running TetGen to mesh initial Delaunay tesselation using sizing function--- ',datestr(now)]);
     [runStatus,runOut]=system(runString,'-echo');
     dispDoneGibbonCode;
 else
     %Compute Delauney tesselation / Mesh using tetgen
-    runString=[runNameTetGen,' ',inputStruct.stringOpt,' ',runModelName];
+    runString=['"',runNameTetGen,'" ',inputStruct.stringOpt,' "',runModelName,'"']; %runString=[runNameTetGen,' ',inputStruct.stringOpt,' ',runModelName];
     disp(['--- Running TetGen to mesh input boundary--- ',datestr(now)]);
     [runStatus,runOut]=system(runString,'-echo');
     dispDoneGibbonCode;
@@ -364,9 +368,25 @@ switch inputStruct.tetType
         for q_tet=1:1:size(Fb_tet4_tet10,1);
            fb_tet4=Fb_tet4_tet10(q_tet,:);
            logicMatch=sum(ismember(F_tet10,fb_tet4),2)==3;
-            Fb_tet10(q_tet,:)=F_tet10(logicMatch,:);
+           indMatch=find(logicMatch);
+           indMatch=indMatch(1); %Select first since faces might be shared
+            Fb_tet10(q_tet,:)=F_tet10(indMatch,:);
         end
-                
+
+%         c_uni=unique(Cb_tet4(:));
+%         Fb_tet10=zeros(size(Fb_tet4_tet10,1),6);
+%         for qc=1:1:numel(c_uni)
+%             logicCurrentColor=Cb_tet4==c_uni(qc);
+%             fb_tet4=Fb_tet4_tet10(logicCurrentColor,:);
+%             logicMatch=sum(ismember(F_tet10,fb_tet4),2)==3;
+%             nnz(logicMatch)
+%             nnz(logicCurrentColor)
+%             size(Cb_tet4)
+%             size(Fb_tet4)
+%             size(F_tet10)
+%             Fb_tet10(logicCurrentColor,:)=F_tet10(logicMatch,:);
+%         end
+             
         % Compose output          
         meshOutput.nodes=V_tet10;
         meshOutput.facesBoundary=Fb_tet10;

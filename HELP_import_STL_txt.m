@@ -24,6 +24,7 @@ fontSize=25;
 defaultFolder = fileparts(mfilename('fullpath'));
 pathName=fullfile(defaultFolder,'data','STL'); 
 fileName=fullfile(pathName,'femur.stl'); 
+% fileName=fullfile(pathName,'Panthera_pardus_AMNH11374.stl'); 
 [stlStruct] = import_STL_txt(fileName);
 
 F=stlStruct.solidFaces{1};
