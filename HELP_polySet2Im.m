@@ -96,6 +96,7 @@ r=10+7.*sin(8*t);
 [x,y] = pol2cart(t,r);
 z=7*cos(10.*t);
 V=[x(:) y(:) z(:)];
+
 ind1=1:size(V,1)-1;
 ind2=2:size(V,1);
 E=[ind1(:) ind2(:)];

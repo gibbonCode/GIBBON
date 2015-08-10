@@ -100,7 +100,8 @@ regionA=[v v]; % Regional mesh parameters
 % TetGen.
 
 stringOpt='-pq1.2AaYQ';
-modelName=fullfile(savePath,'tempModel');
+modelNameEnd='tempModel';
+modelName=fullfile(savePath,modelNameEnd);
 
 inputStruct.stringOpt=stringOpt;
 inputStruct.Faces=F;
@@ -275,7 +276,7 @@ FEB_struct.Boundary.Prescribe{3}.nodeScale=bcPrescribedMagnitudes(:,3);
 FEB_struct.Output.VarTypes={'displacement','stress','relative volume','shell thickness'};
 
 %Specify log file output
-run_node_output_name=[FEB_struct.run_filename(1:end-4),'_node_out.txt'];
+run_node_output_name=[modelNameEnd,'_node_out.txt'];
 FEB_struct.run_output_names={run_node_output_name};
 FEB_struct.output_types={'node_data'};
 FEB_struct.data_types={'ux;uy;uz'};

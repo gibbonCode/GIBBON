@@ -70,7 +70,7 @@ if runFlag==1
         case 1
             Fopt=sum((stressDev).^2); %Sum of squared differences
         case 2
-            Fopt=(stressDev).^2; %Squared differences
+            Fopt=stressDev;%(stressDev).^2; %Squared differences
     end
     
     OPT_stats_out.stress_cauchy_sim=stress_cauchy_sim;

@@ -327,13 +327,13 @@ objectiveStruct.Pb_struct.xx_c=P; %Parameter constraining centre
 objectiveStruct.Pb_struct.xxlim=[[P(1)/100 2]' [P(1)*100 50]']; %Parameter bounds
 
 %Optimisation settings
-maxNumberIterations=30; %Maximum number of optimization iterations
+maxNumberIterations=45; %Maximum number of optimization iterations
 maxNumberFunctionEvaluations=maxNumberIterations*10; %Maximum number of function evaluations, N.B. multiple evaluations are used per iteration
 functionTolerance=1e-2; %Tolerance on objective function value
 parameterTolerance=1e-2; %Tolerance on parameter variation
 displayTypeIterations='iter';
 
-objectiveStruct.method=1; 
+objectiveStruct.method=2; 
 
 %File names of output files
 objectiveStruct.run_output_names=FEB_struct.run_output_names;

@@ -25,7 +25,8 @@ markerSize=50;
 filePath=mfilename('fullpath');
 savePath=fullfile(fileparts(filePath),'data','temp');
 
-modelName=fullfile(savePath,'tempModel');
+modelNameEnd='tempModel';
+modelName=fullfile(savePath,modelNameEnd);
 
 %Specifying dimensions and number of elements
 sampleWidth=5;
@@ -225,7 +226,7 @@ FEB_struct.LoadData.LoadCurves.loadPoints={[0 0;1 1; 2 0;];};
 FEB_struct.Output.VarTypes={'displacement','stress','relative volume','shell thickness'};
 
 %Specify log file output
-run_node_output_name=[FEB_struct.run_filename(1:end-4),'_node_out.txt'];
+run_node_output_name=[modelNameEnd,'_node_out.txt'];
 FEB_struct.run_output_names={run_node_output_name};
 FEB_struct.output_types={'node_data'};
 FEB_struct.data_types={'ux;uy;uz'};

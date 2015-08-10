@@ -28,7 +28,8 @@ fcolor2=0.5.*ones(1,3);
 filePath=mfilename('fullpath');
 savePath=fullfile(fileparts(filePath),'data','temp');
 
-modelName=fullfile(savePath,'iFEA_tempModel');
+modelEndName='iFEA_tempModel';
+modelName=fullfile(savePath,modelEndName);
 
 %Specifying dimensions and number of elements
 sampleWidth=10;
@@ -45,7 +46,9 @@ stretchLoad=0.7;
 displacementMagnitude=[0 0 (stretchLoad*sampleHeight)-sampleHeight];
 
 %Initial material parameter set
-c1_ini=0.0003057450402;
+Q=0.5; 
+c=6.114900804000000e-04;
+c1_ini=Q*c;
 m1_ini=2.0065098364182;
 ksi_ini=0.0000905896368;
 beta_ini=3.2942189118588;
@@ -57,7 +60,7 @@ P_ini=[c1_ini m1_ini ksi_ini f_ini beta_ini];
 alphaFib=0.5*pi;
 
 optimMethod=2;
-optimOpt=1;
+optimOpt=0;
 
 %% LOAD EXPERIMENTAL DATA
 
@@ -290,8 +293,8 @@ FEB_struct.LoadData.LoadCurves.loadPoints={[0 0;1 1;]};
 FEB_struct.Output.VarTypes={'displacement','stress','relative volume'};
 
 %Specify log file output
-run_disp_output_name=[FEB_struct.run_filename(1:end-4),'_strain_out.txt'];
-run_stress_output_name=[FEB_struct.run_filename(1:end-4),'_stress_out.txt'];
+run_disp_output_name=[modelEndName,'_strain_out.txt'];
+run_stress_output_name=[modelEndName,'_stress_out.txt'];
 FEB_struct.run_output_names={run_disp_output_name,run_stress_output_name};
 FEB_struct.output_types={'element_data','element_data'};
 FEB_struct.data_types={'E1;E2;E3','sz'};
@@ -310,7 +313,7 @@ FEBioRunStruct.runMode='external';%'internal';
 FEBioRunStruct.t_check=0.25; %Time for checking log file (dont set too small)
 FEBioRunStruct.maxtpi=1e99; %Max analysis time
 FEBioRunStruct.maxLogCheckTime=5; %Max log file checking time
-FEBioRunStruct.cleanUpFileList=FEB_struct.run_output_names; %Files to remove prior to starting each job.
+% FEBioRunStruct.cleanUpFileList=FEB_struct.run_output_names; %Files to remove prior to starting each job.
 
 %% STARTING OPTIMISATION
 

@@ -144,7 +144,7 @@ k=c1*k_factor;
 %Material section
 FEB_struct.Materials{1}.Type='Ogden';
 FEB_struct.Materials{1}.Name='Block_material';
-FEB_struct.Materials{1}.Properties={'c1','m1','c1','m1','k'};
+FEB_struct.Materials{1}.Properties={'c1','m1','c2','m2','k'};
 FEB_struct.Materials{1}.Values={c1,m1,c1,-m1,k};
 
 %Step specific control sections
