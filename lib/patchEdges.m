@@ -11,7 +11,8 @@ function E=patchEdges(varargin)
 %
 %
 % Kevin Mattheus Moerman
-% kevinmoerman@hotmail.com
+% gibbon.toolbox@gmail.com
+% 
 % 2014/03/17
 %------------------------------------------------------------------------
 

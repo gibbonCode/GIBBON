@@ -1,4 +1,4 @@
-function [varargout]=parLimNat(xx_c,xxlim,x)
+function [varargout]=parLimNat(varargin)
 
 % function [xx,S]=parLimNat(xx_c,[xx_min xx_max],x);
 % ------------------------------------------------------------------------
@@ -9,7 +9,20 @@ function [varargout]=parLimNat(xx_c,xxlim,x)
 % gibbon.toolbox@gmail.com
 % 
 % 2015/06/30 Updated for GIBBON, fixed case for limits equal to centre
+% 2015/08/31 Fixed behaviour for empty x, changed to varargin
 %------------------------------------------------------------------------
+
+%%
+
+xx_c=varargin{1};
+xxlim=varargin{2};
+
+switch nargin       
+    case 2
+        x=[];
+    case 3 
+        x=varargin{3};
+end
 
 %%
 
@@ -83,7 +96,11 @@ xxt=xxt+xx_c;
 
 %% Construct and evaluate Piecewise Cubic Hermite Interpolating Polynomial 
 pp = pchip(xt,xxt); 
-xx=ppval_extrapVal(pp,x,xtlim,xxlim);
+if ~isempty(x)
+    xx=ppval_extrapVal(pp,x,xtlim,xxlim);
+else
+    xx=[];
+end
 
 %% Create output
 varargout{1}=xx; 
