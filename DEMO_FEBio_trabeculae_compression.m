@@ -12,9 +12,9 @@ fontSize=15;
 faceAlpha1=1;
 faceAlpha2=0.5;
 edgeColor=0.25*ones(1,3);
-edgeWidth=1.5;
+edgeWidth=1;
 markerSize1=25;
-boneColor=[1 0.9 0.8];
+boneColor=[1 0.8 0.7]*0.7;
 
 %%
 % path names
@@ -101,7 +101,8 @@ drawnow;
 %% DEFINE SMESH STRUCT FOR MESHING
 
 stringOpt='-pq1.2AaYQ';
-modelName=fullfile(savePath,'tempModel');
+modelNameEnd='tempModel';
+modelName=fullfile(savePath,modelNameEnd);
 smeshName=[modelName,'.smesh'];
 
 smeshStruct.stringOpt=stringOpt;
@@ -230,10 +231,10 @@ FEB_struct.LoadData.LoadCurves.type={'linear'};
 FEB_struct.LoadData.LoadCurves.loadPoints={[0 0;1 1;]};
 
 %Adding output requests
-FEB_struct.Output.VarTypes={'displacement','stress','relative volume','shell thickness'};
+FEB_struct.Output.VarTypes={'displacement','stress','relative volume'};
 
 %Specify log file output
-run_node_output_name=[FEB_struct.run_filename(1:end-4),'_node_out.txt'];
+run_node_output_name=[modelNameEnd,'_node_out.txt'];
 FEB_struct.run_output_names={run_node_output_name};
 FEB_struct.output_types={'node_data'};
 FEB_struct.data_types={'ux;uy;uz'};
@@ -259,7 +260,8 @@ FEBioRunStruct.maxLogCheckTime=3; %Max log file checking time
 
 %% IMPORTING NODAL DISPLACEMENT RESULTS
 % Importing nodal displacements from a log file
-[~, N_disp_mat,~]=importFEBio_logfile(FEB_struct.run_output_names{1}); %Nodal displacements
+ fName=fullfile(savePath,FEB_struct.run_output_names{1});
+[~, N_disp_mat,~]=importFEBio_logfile(fName); %Nodal displacements
 
 DN=N_disp_mat(:,2:end,end); %Final nodal displacements
 
@@ -280,7 +282,7 @@ hps=patch('Faces',F,'Vertices',VT_def,'FaceColor','flat','CData',CF,'lineWidth',
 
 view(3); axis tight;  axis equal;  grid on;
 colormap jet; colorbar;
-% camlight headlight;
+camlight headlight;
 set(gca,'FontSize',fontSize);
 drawnow;
 

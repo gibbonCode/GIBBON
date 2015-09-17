@@ -6,7 +6,7 @@
    <!--
 This HTML was auto-generated from MATLAB code.
 To make changes, update the MATLAB code and republish this document.
-      --><title>DEMO_vessel_FEBIO_fibre_mapping</title><meta name="generator" content="MATLAB 8.4"><link rel="schema.DC" href="http://purl.org/dc/elements/1.1/"><meta name="DC.date" content="2014-10-01"><meta name="DC.source" content="DEMO_vessel_FEBIO_fibre_mapping.m"><style type="text/css">
+      --><title>DEMO_vessel_FEBIO_fibre_mapping</title><meta name="generator" content="MATLAB 8.5"><link rel="schema.DC" href="http://purl.org/dc/elements/1.1/"><meta name="DC.date" content="2015-09-16"><meta name="DC.source" content="DEMO_vessel_FEBIO_fibre_mapping.m"><style type="text/css">
 html,body,div,span,applet,object,iframe,h1,h2,h3,h4,h5,h6,p,blockquote,pre,a,abbr,acronym,address,big,cite,code,del,dfn,em,font,img,ins,kbd,q,s,samp,small,strike,strong,sub,sup,tt,var,b,u,i,center,dl,dt,dd,ol,ul,li,fieldset,form,label,legend,table,caption,tbody,tfoot,thead,tr,th,td{margin:0;padding:0;border:0;outline:0;font-size:100%;vertical-align:baseline;background:transparent}body{line-height:1}ol,ul{list-style:none}blockquote,q{quotes:none}blockquote:before,blockquote:after,q:before,q:after{content:'';content:none}:focus{outine:0}ins{text-decoration:none}del{text-decoration:line-through}table{border-collapse:collapse;border-spacing:0}
 
 html { min-height:100%; margin-bottom:1px; }
@@ -192,39 +192,39 @@ drawnow;
 </pre><img vspace="5" hspace="5" src="DEMO_vessel_FEBIO_fibre_mapping_04.png" alt=""> <pre class="codeinput">V_regions=[V_in_1;V_in_2;]; <span class="comment">% Define region points</span>
 V_holes=[ ]; <span class="comment">%Define holes</span>
 regionA=[0.2 0.2]; <span class="comment">% Regional mesh parameters</span>
-</pre><p>CREATING THE SMESH STRUCTURE. TetGen can mesh geometries from various mesh file formats. For the GIBBON toolbox .smesh files have been implemented. Below a structure is created that fully defines such as smesh file and the meshing settings for TetGen.</p><pre class="codeinput">stringOpt=<span class="string">'-pq1.2AaYQ'</span>;
-modelName=fullfile(savePath,<span class="string">'tempModel'</span>);
-smeshName=[modelName,<span class="string">'.smesh'</span>];
+</pre><p>CREATING THE model STRUCTURE. TetGen can mesh geometries from various mesh file formats. For the GIBBON toolbox .model files have been implemented. Below a structure is created that fully defines such as model file and the meshing settings for TetGen.</p><pre class="codeinput">stringOpt=<span class="string">'-pq1.2AaYQ'</span>;
+modelNameEnd=<span class="string">'tempModel'</span>;
+modelName=fullfile(savePath,modelNameEnd);
 
-smeshStruct.stringOpt=stringOpt;
-smeshStruct.Faces=F;
-smeshStruct.Nodes=V;
-smeshStruct.holePoints=V_holes;
-smeshStruct.faceBoundaryMarker=faceBoundaryMarker; <span class="comment">%Face boundary markers</span>
-smeshStruct.regionPoints=V_regions; <span class="comment">%region points</span>
-smeshStruct.regionA=regionA;
-smeshStruct.minRegionMarker=2; <span class="comment">%Minimum region marker</span>
-smeshStruct.smeshName=smeshName;
-</pre><p>Mesh model using tetrahedral elements using tetGen (see: <a href="http://wias-berlin.de/software/tetgen/">http://wias-berlin.de/software/tetgen/</a>)</p><pre class="codeinput">[meshOutput]=runTetGenSmesh(smeshStruct); <span class="comment">%Run tetGen</span>
+modelStruct.stringOpt=stringOpt;
+modelStruct.Faces=F;
+modelStruct.Nodes=V;
+modelStruct.holePoints=V_holes;
+modelStruct.faceBoundaryMarker=faceBoundaryMarker; <span class="comment">%Face boundary markers</span>
+modelStruct.regionPoints=V_regions; <span class="comment">%region points</span>
+modelStruct.regionA=regionA;
+modelStruct.minRegionMarker=2; <span class="comment">%Minimum region marker</span>
+modelStruct.modelName=modelName;
+</pre><p>Mesh model using tetrahedral elements using tetGen (see: <a href="http://wias-berlin.de/software/tetgen/">http://wias-berlin.de/software/tetgen/</a>)</p><pre class="codeinput">[meshOutput]=runTetGen(modelStruct); <span class="comment">%Run tetGen</span>
 <span class="comment">% runTetView(meshOutput.loadNameStruct.loadName_ele);</span>
 </pre><pre class="codeoutput"> 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
---- TETGEN Tetrahedral meshing --- 01-Oct-2014 14:31:41
+--- TETGEN Tetrahedral meshing --- 16-Sep-2015 20:31:07
  
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
---- Writing SMESH file --- 01-Oct-2014 14:31:41
+--- Writing SMESH file --- 16-Sep-2015 20:31:07
 ----&gt; Adding node field
 ----&gt; Adding facet field
 ----&gt; Adding holes specification
 ----&gt; Adding region specification
---- Done --- 01-Oct-2014 14:31:41
---- Running TetGen for meshing --- 01-Oct-2014 14:31:41
-Opening /data/MATLAB/GIBBON/trunk/data/temp/tempModel.smesh.
---- Done --- 01-Oct-2014 14:31:42
+--- Done --- 16-Sep-2015 20:31:07
+--- Running TetGen to mesh input boundary--- 16-Sep-2015 20:31:07
+Opening D:\MATLAB\GIBBON\trunk\lib_ext\tetGen\tempFiles\tempModel.smesh. 
+--- Done --- 16-Sep-2015 20:31:08
  
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
---- Importing TetGen files --- 01-Oct-2014 14:31:42
---- Done --- 01-Oct-2014 14:31:42
+--- Importing TetGen files --- 16-Sep-2015 20:31:08
+--- Done --- 16-Sep-2015 20:31:08
 </pre><pre class="codeinput"><span class="comment">% Accessing the model element and patch data</span>
 FT=meshOutput.faces;
 Fb=meshOutput.facesBoundary;
@@ -263,7 +263,7 @@ set(gca,<span class="string">'FontSize'</span>,fontSize);
 
 colormap(autumn);
 drawnow;
-</pre><pre class="codeoutput">Warning: tet4 elements assumed, for other elements please specify elementType 
+</pre><pre class="codeoutput">tet4 elements assumed, for other elements please specify elementType
 </pre><img vspace="5" hspace="5" src="DEMO_vessel_FEBIO_fibre_mapping_05.png" alt=""> <h2>CREATING FIBRE DIRECTIONS<a name="17"></a></h2><pre class="codeinput"><span class="comment">%Compute coordinates at the centre of elements for fibre origings</span>
 X=VT(:,1); Y=VT(:,2); Z=VT(:,3);
 XE=mean(X(E),2); YE=mean(Y(E),2); ZE=mean(Z(E),2);
@@ -418,8 +418,8 @@ FEB_struct.Boundary.LoadCurveIds=[1 1 1];
 FEB_struct.Output.VarTypes={<span class="string">'displacement'</span>,<span class="string">'stress'</span>,<span class="string">'relative volume'</span>,<span class="string">'shell thickness'</span>};
 
 <span class="comment">%Specify log file output</span>
-run_output_name1=[FEB_struct.run_filename(1:end-4),<span class="string">'_node_out.txt'</span>];
-run_output_name2=[FEB_struct.run_filename(1:end-4),<span class="string">'_F_out.txt'</span>];
+run_output_name1=[modelNameEnd,<span class="string">'_node_out.txt'</span>];
+run_output_name2=[modelNameEnd,<span class="string">'_F_out.txt'</span>];
 FEB_struct.run_output_names={run_output_name1,run_output_name2};
 FEB_struct.output_types={<span class="string">'node_data'</span>,<span class="string">'element_data'</span>};
 FEB_struct.data_types={<span class="string">'ux;uy;uz'</span>,<span class="string">'Fxx;Fxy;Fxz;Fyx;Fyy;Fyz;Fzx;Fzy;Fzz'</span>};
@@ -443,7 +443,7 @@ FEB_struct.LoadData.LoadCurves.loadPoints={[0 0;1 1]};
 febStruct2febFile_v1p2(FEB_struct);
 </pre><pre class="codeoutput"> 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
---- Writing FEBio XML object --- 01-Oct-2014 14:31:46
+--- Writing FEBio XML object --- 16-Sep-2015 20:31:10
 Adding Module level
 Adding Globals level
 Adding Material level
@@ -462,7 +462,7 @@ Adding Boundary level
 Adding LoadData level
 ----&gt; Defining load curves
 Writing .feb file
---- Done --- 01-Oct-2014 14:31:51
+--- Done --- 16-Sep-2015 20:31:14
 </pre><h2>RUNNING FEBIO JOB<a name="24"></a></h2><pre class="codeinput">FEBioRunStruct.run_filename=FEB_struct.run_filename;
 FEBioRunStruct.run_logname=FEB_struct.run_logname;
 FEBioRunStruct.disp_on=1;
@@ -475,14 +475,9 @@ FEBioRunStruct.maxLogCheckTime=3; <span class="comment">%Max log file checking t
 [runFlag]=runMonitorFEBio(FEBioRunStruct);<span class="comment">%START FEBio NOW!!!!!!!!</span>
 </pre><pre class="codeoutput"> 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
---- STARTING FEBIO JOB --- 01-Oct-2014 14:31:52
-
-ans =
-
-"/data/Code/C/FEBIO_linux/bin/febio2.lnx64" -i "/data/MATLAB/GIBBON/trunk/data/temp/tempModel.feb" -o "/data/MATLAB/GIBBON/trunk/data/temp/tempModel.txt" &amp;
-
+--- STARTING FEBIO JOB --- 16-Sep-2015 20:31:14
 Waiting for log file...
-Proceeding to check log file...01-Oct-2014 14:31:52
+Proceeding to check log file...16-Sep-2015 20:31:14
 ------- converged at time : 0.1
 ------- converged at time : 0.184517
 ------- converged at time : 0.261671
@@ -495,12 +490,12 @@ Proceeding to check log file...01-Oct-2014 14:31:52
 ------- converged at time : 0.848463
 ------- converged at time : 0.938979
 ------- converged at time : 1
---- Done --- 01-Oct-2014 14:31:56
-</pre><h2>IMPORTING NODAL DISPLACEMENT RESULTS<a name="25"></a></h2><p>Importing nodal displacements from a log file</p><pre class="codeinput">[~, N_disp_mat,~]=importFEBio_logfile(FEB_struct.run_output_names{1}); <span class="comment">%Nodal displacements</span>
+--- Done --- 16-Sep-2015 20:31:17
+</pre><h2>IMPORTING NODAL DISPLACEMENT RESULTS<a name="25"></a></h2><p>Importing nodal displacements from a log file</p><pre class="codeinput">[~, N_disp_mat,~]=importFEBio_logfile(fullfile(savePath,FEB_struct.run_output_names{1})); <span class="comment">%Nodal displacements</span>
 DN=N_disp_mat(:,2:end,end); <span class="comment">%Final nodal displacements</span>
 
 <span class="comment">%Import deformation gradient tensors</span>
-[~,FG_mat,~]=importFEBio_logfile(FEB_struct.run_output_names{2}); <span class="comment">%Deformation gradient tensors</span>
+[~,FG_mat,~]=importFEBio_logfile(fullfile(savePath,FEB_struct.run_output_names{2})); <span class="comment">%Deformation gradient tensors</span>
 FG=FG_mat(:,2:end,end);
 </pre><h2>CREATING NODE SET IN DEFORMED STATE<a name="26"></a></h2><pre class="codeinput">VT_def=VT+DN;
 </pre><p>Plotting the FEA results</p><pre class="codeinput">hf=figuremax(figColor,figColorDef);
@@ -529,7 +524,7 @@ colormap <span class="string">jet</span>; colorbar;
 camlight <span class="string">headlight</span>;
 set(gca,<span class="string">'FontSize'</span>,fontSize);
 drawnow;
-</pre><pre class="codeoutput">Warning: tet4 elements assumed, for other elements please specify elementType 
+</pre><pre class="codeoutput">tet4 elements assumed, for other elements please specify elementType
 </pre><img vspace="5" hspace="5" src="DEMO_vessel_FEBIO_fibre_mapping_09.png" alt=""> <h2>DERIVE FIBRE DIRECTIONS IN DEFORMED STATE<a name="28"></a></h2><pre class="codeinput"><span class="comment">%Compute coordinates at the centre of elements for fibre origings</span>
 X=VT_def(:,1); Y=VT_def(:,2); Z=VT_def(:,3);
 XE=mean(X(E),2); YE=mean(Y(E),2); ZE=mean(Z(E),2);
@@ -557,7 +552,7 @@ axis <span class="string">equal</span>; view(3); axis <span class="string">tight
 colormap <span class="string">hsv</span>; colorbar;
 set(gca,<span class="string">'FontSize'</span>,fontSize);
 drawnow;
-</pre><img vspace="5" hspace="5" src="DEMO_vessel_FEBIO_fibre_mapping_10.png" alt=""> <p><img vspace="5" hspace="5" src="gibbVerySmall.gif" alt=""> </p><p><i><b>GIBBON</b></i> <a href="www.gibboncode.org">www.gibboncode.org</a></p><p><i>Kevin Mattheus Moerman</i>, <a href="gibbon.toolbox@gmail.com">gibbon.toolbox@gmail.com</a></p><p class="footer"><br><a href="http://www.mathworks.com/products/matlab/">Published with MATLAB&reg; R2014b</a><br></p></div><!--
+</pre><img vspace="5" hspace="5" src="DEMO_vessel_FEBIO_fibre_mapping_10.png" alt=""> <p><img vspace="5" hspace="5" src="gibbVerySmall.gif" alt=""> </p><p><i><b>GIBBON</b></i> <a href="www.gibboncode.org">www.gibboncode.org</a></p><p><i>Kevin Mattheus Moerman</i>, <a href="gibbon.toolbox@gmail.com">gibbon.toolbox@gmail.com</a></p><p class="footer"><br><a href="http://www.mathworks.com/products/matlab/">Published with MATLAB&reg; R2015a</a><br></p></div><!--
 ##### SOURCE BEGIN #####
 %% DEMO_vessel_FEBIO_fibre_mapping
 % Below is a demonstration of how to map, set and import fibre directions
@@ -730,31 +725,31 @@ V_holes=[ ]; %Define holes
 regionA=[0.2 0.2]; % Regional mesh parameters
 
 %%
-% CREATING THE SMESH STRUCTURE. 
+% CREATING THE model STRUCTURE. 
 % TetGen can mesh geometries from various mesh file formats. For the GIBBON
-% toolbox .smesh files have been implemented. Below a structure is created
-% that fully defines such as smesh file and the meshing settings for
+% toolbox .model files have been implemented. Below a structure is created
+% that fully defines such as model file and the meshing settings for
 % TetGen. 
 
 stringOpt='-pq1.2AaYQ';
-modelName=fullfile(savePath,'tempModel');
-smeshName=[modelName,'.smesh'];
+modelNameEnd='tempModel';
+modelName=fullfile(savePath,modelNameEnd);
 
-smeshStruct.stringOpt=stringOpt;
-smeshStruct.Faces=F;
-smeshStruct.Nodes=V;
-smeshStruct.holePoints=V_holes;
-smeshStruct.faceBoundaryMarker=faceBoundaryMarker; %Face boundary markers
-smeshStruct.regionPoints=V_regions; %region points
-smeshStruct.regionA=regionA;
-smeshStruct.minRegionMarker=2; %Minimum region marker
-smeshStruct.smeshName=smeshName;
+modelStruct.stringOpt=stringOpt;
+modelStruct.Faces=F;
+modelStruct.Nodes=V;
+modelStruct.holePoints=V_holes;
+modelStruct.faceBoundaryMarker=faceBoundaryMarker; %Face boundary markers
+modelStruct.regionPoints=V_regions; %region points
+modelStruct.regionA=regionA;
+modelStruct.minRegionMarker=2; %Minimum region marker
+modelStruct.modelName=modelName;
 
 %% 
 % Mesh model using tetrahedral elements using tetGen (see:
 % <http://wias-berlin.de/software/tetgen/>)
 
-[meshOutput]=runTetGenSmesh(smeshStruct); %Run tetGen
+[meshOutput]=runTetGen(modelStruct); %Run tetGen
 % runTetView(meshOutput.loadNameStruct.loadName_ele);
 
 %%
@@ -973,8 +968,8 @@ FEB_struct.Boundary.LoadCurveIds=[1 1 1];
 FEB_struct.Output.VarTypes={'displacement','stress','relative volume','shell thickness'};
 
 %Specify log file output
-run_output_name1=[FEB_struct.run_filename(1:end-4),'_node_out.txt'];
-run_output_name2=[FEB_struct.run_filename(1:end-4),'_F_out.txt'];
+run_output_name1=[modelNameEnd,'_node_out.txt'];
+run_output_name2=[modelNameEnd,'_F_out.txt'];
 FEB_struct.run_output_names={run_output_name1,run_output_name2};
 FEB_struct.output_types={'node_data','element_data'};
 FEB_struct.data_types={'ux;uy;uz','Fxx;Fxy;Fxz;Fyx;Fyy;Fyz;Fzx;Fzy;Fzz'};
@@ -1016,11 +1011,11 @@ FEBioRunStruct.maxLogCheckTime=3; %Max log file checking time
 
 %% IMPORTING NODAL DISPLACEMENT RESULTS
 % Importing nodal displacements from a log file
-[~, N_disp_mat,~]=importFEBio_logfile(FEB_struct.run_output_names{1}); %Nodal displacements
+[~, N_disp_mat,~]=importFEBio_logfile(fullfile(savePath,FEB_struct.run_output_names{1})); %Nodal displacements
 DN=N_disp_mat(:,2:end,end); %Final nodal displacements
 
 %Import deformation gradient tensors
-[~,FG_mat,~]=importFEBio_logfile(FEB_struct.run_output_names{2}); %Deformation gradient tensors
+[~,FG_mat,~]=importFEBio_logfile(fullfile(savePath,FEB_struct.run_output_names{2})); %Deformation gradient tensors
 FG=FG_mat(:,2:end,end);
 
 %% CREATING NODE SET IN DEFORMED STATE

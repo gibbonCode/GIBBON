@@ -169,31 +169,31 @@ V_holes=[ ]; %Define holes
 regionA=[0.2 0.2]; % Regional mesh parameters
 
 %%
-% CREATING THE SMESH STRUCTURE. 
+% CREATING THE model STRUCTURE. 
 % TetGen can mesh geometries from various mesh file formats. For the GIBBON
-% toolbox .smesh files have been implemented. Below a structure is created
-% that fully defines such as smesh file and the meshing settings for
+% toolbox .model files have been implemented. Below a structure is created
+% that fully defines such as model file and the meshing settings for
 % TetGen. 
 
 stringOpt='-pq1.2AaYQ';
-modelName=fullfile(savePath,'tempModel');
-smeshName=[modelName,'.smesh'];
+modelNameEnd='tempModel';
+modelName=fullfile(savePath,modelNameEnd);
 
-smeshStruct.stringOpt=stringOpt;
-smeshStruct.Faces=F;
-smeshStruct.Nodes=V;
-smeshStruct.holePoints=V_holes;
-smeshStruct.faceBoundaryMarker=faceBoundaryMarker; %Face boundary markers
-smeshStruct.regionPoints=V_regions; %region points
-smeshStruct.regionA=regionA;
-smeshStruct.minRegionMarker=2; %Minimum region marker
-smeshStruct.smeshName=smeshName;
+modelStruct.stringOpt=stringOpt;
+modelStruct.Faces=F;
+modelStruct.Nodes=V;
+modelStruct.holePoints=V_holes;
+modelStruct.faceBoundaryMarker=faceBoundaryMarker; %Face boundary markers
+modelStruct.regionPoints=V_regions; %region points
+modelStruct.regionA=regionA;
+modelStruct.minRegionMarker=2; %Minimum region marker
+modelStruct.modelName=modelName;
 
 %% 
 % Mesh model using tetrahedral elements using tetGen (see:
 % <http://wias-berlin.de/software/tetgen/>)
 
-[meshOutput]=runTetGenSmesh(smeshStruct); %Run tetGen
+[meshOutput]=runTetGen(modelStruct); %Run tetGen
 % runTetView(meshOutput.loadNameStruct.loadName_ele);
 
 %%
@@ -412,8 +412,8 @@ FEB_struct.Boundary.LoadCurveIds=[1 1 1];
 FEB_struct.Output.VarTypes={'displacement','stress','relative volume','shell thickness'};
 
 %Specify log file output
-run_output_name1=[FEB_struct.run_filename(1:end-4),'_node_out.txt'];
-run_output_name2=[FEB_struct.run_filename(1:end-4),'_F_out.txt'];
+run_output_name1=[modelNameEnd,'_node_out.txt'];
+run_output_name2=[modelNameEnd,'_F_out.txt'];
 FEB_struct.run_output_names={run_output_name1,run_output_name2};
 FEB_struct.output_types={'node_data','element_data'};
 FEB_struct.data_types={'ux;uy;uz','Fxx;Fxy;Fxz;Fyx;Fyy;Fyz;Fzx;Fzy;Fzz'};
@@ -455,11 +455,11 @@ FEBioRunStruct.maxLogCheckTime=3; %Max log file checking time
 
 %% IMPORTING NODAL DISPLACEMENT RESULTS
 % Importing nodal displacements from a log file
-[~, N_disp_mat,~]=importFEBio_logfile(FEB_struct.run_output_names{1}); %Nodal displacements
+[~, N_disp_mat,~]=importFEBio_logfile(fullfile(savePath,FEB_struct.run_output_names{1})); %Nodal displacements
 DN=N_disp_mat(:,2:end,end); %Final nodal displacements
 
 %Import deformation gradient tensors
-[~,FG_mat,~]=importFEBio_logfile(FEB_struct.run_output_names{2}); %Deformation gradient tensors
+[~,FG_mat,~]=importFEBio_logfile(fullfile(savePath,FEB_struct.run_output_names{2})); %Deformation gradient tensors
 FG=FG_mat(:,2:end,end);
 
 %% CREATING NODE SET IN DEFORMED STATE
