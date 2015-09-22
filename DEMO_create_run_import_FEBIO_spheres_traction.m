@@ -14,7 +14,6 @@ clear; close all; clc;
 
 %%
 % Plot settings
-figColor='w'; figColorDef='white';
 fontSize=15;
 faceAlpha1=0.5;
 faceAlpha2=0.5;
@@ -52,7 +51,7 @@ faceBoundaryMarker=[faceBoundMarker1*ones(size(F1,1),1); faceBoundMarker2*ones(s
 
 %%
 % Plotting surface models
-hf=figuremax(figColor,figColorDef);
+hf=cFigure;
 title('Surface models','FontSize',fontSize);
 xlabel('X','FontSize',fontSize); ylabel('Y','FontSize',fontSize); zlabel('Z','FontSize',fontSize);
 hold on;
@@ -100,31 +99,32 @@ region2_A=0.5.*meanProposedVolume;
 regionA=[region1_A region2_A];
 
 %%
-% CREATING THE SMESH STRUCTURE.
+% CREATING THE model STRUCTURE.
 % TetGen can mesh geometries from various mesh file formats. For the GIBBON
-% toolbox .smesh files have been implemented. Below a structure is created
-% that fully defines such as smesh file and the meshing settings for
+% toolbox .model files have been implemented. Below a structure is created
+% that fully defines such as model file and the meshing settings for
 % TetGen.
 
 stringOpt='-pq1.2AaYQ';
-modelName=fullfile(savePath,'tempModel');
-smeshName=[modelName,'.smesh'];
 
-smeshStruct.stringOpt=stringOpt;
-smeshStruct.Faces=F;
-smeshStruct.Nodes=V;
-smeshStruct.holePoints=V_holes;
-smeshStruct.faceBoundaryMarker=faceBoundaryMarker; %Face boundary markers
-smeshStruct.regionPoints=V_regions; %region points
-smeshStruct.regionA=regionA;
-smeshStruct.minRegionMarker=2; %Minimum region marker
-smeshStruct.smeshName=smeshName;
+modelNameEnd='tempModel';
+modelName=fullfile(savePath,modelNameEnd);
+
+modelStruct.stringOpt=stringOpt;
+modelStruct.Faces=F;
+modelStruct.Nodes=V;
+modelStruct.holePoints=V_holes;
+modelStruct.faceBoundaryMarker=faceBoundaryMarker; %Face boundary markers
+modelStruct.regionPoints=V_regions; %region points
+modelStruct.regionA=regionA;
+modelStruct.minRegionMarker=2; %Minimum region marker
+modelStruct.modelName=modelName;
 
 %%
 % Mesh model using tetrahedral elements using tetGen (see:
 % <http://wias-berlin.de/software/tetgen/>)
 
-[meshOutput]=runTetGenSmesh(smeshStruct); %Run tetGen
+[meshOutput]=runTetGen(modelStruct); %Run tetGen
 
 %%
 % Accessing the model element and patch data
@@ -139,7 +139,7 @@ elementMaterialIndices=meshOutput.elementMaterialID;
 %%
 % Plotting the meshed geometry
 
-hf1=figuremax(figColor,figColorDef);
+hf1=cFigure;
 subplot(1,3,1);
 title('Solid tetrahedral mesh model','FontSize',fontSize);
 xlabel('X','FontSize',fontSize); ylabel('Y','FontSize',fontSize); zlabel('Z','FontSize',fontSize); hold on;
@@ -183,7 +183,7 @@ F1=fliplr(F1);
 
 %%
 
-hf=figuremax(figColor,figColorDef);
+hf=cFigure;
 title('The outer surface','FontSize',fontSize);
 xlabel('X','FontSize',fontSize); ylabel('Y','FontSize',fontSize); zlabel('Z','FontSize',fontSize);
 hold on;
@@ -277,10 +277,10 @@ for q=1:1:size(F1,1)
 end
 
 %Adding output requests
-FEB_struct.Output.VarTypes={'displacement','stress','relative volume','shell thickness'};
+FEB_struct.Output.VarTypes={'displacement','stress','relative volume'};
 
 %Specify log file output
-run_node_output_name=[FEB_struct.run_filename(1:end-4),'_node_out.txt'];
+run_node_output_name=[modelNameEnd,'_node_out.txt'];
 FEB_struct.run_output_names={run_node_output_name};
 FEB_struct.output_types={'node_data'};
 FEB_struct.data_types={'ux;uy;uz'};
@@ -324,7 +324,7 @@ if runFlag==1 %i.e. a succesful run
     
     %% IMPORTING NODAL DISPLACEMENT RESULTS
     % Importing nodal displacements from a log file
-    [~, N_disp_mat,~]=importFEBio_logfile(FEB_struct.run_output_names{1}); %Nodal displacements
+    [~, N_disp_mat,~]=importFEBio_logfile(fullfile(savePath,FEB_struct.run_output_names{1})); %Nodal displacements
     
     DN=N_disp_mat(:,2:end,end); %Final nodal displacements
     
@@ -341,7 +341,7 @@ if runFlag==1 %i.e. a succesful run
     
     Cs=sqrt(sum(DN.^2,2)); %Color towards displacement magnitude
     
-    hf1=figuremax(figColor,figColorDef);
+    hf1=cFigure;
     title('Cut view of deformed model showing internal results','FontSize',fontSize);
     xlabel('X','FontSize',fontSize); ylabel('Y','FontSize',fontSize); zlabel('Z','FontSize',fontSize); hold on;
     
@@ -370,7 +370,7 @@ if runFlag==1 %i.e. a succesful run
     C(ind_V_free)=D; %Set color for point selection
     [CF]=vertexToFaceMeasure(F_free,C); %Convert vertex to face color measure
     
-    hf1=figuremax(figColor,figColorDef);
+    hf1=cFigure;
     title('Outer surface only with distance metric','FontSize',fontSize);
     xlabel('X','FontSize',fontSize); ylabel('Y','FontSize',fontSize); zlabel('Z','FontSize',fontSize); hold on;
     

@@ -18,7 +18,6 @@ clear; close all; clc;
 
 %%
 % Plot settings
-fig_color='w'; fig_colordef='white';
 fontSize=10;
 faceColor1='r';
 faceColor2='g';
@@ -51,7 +50,7 @@ fileName=fullfile(pathName,'femur.stl');
 %% Visualizing imported surface mesh
 % Plotting the model
 
-figuremax(fig_color,fig_colordef);
+cFigure;
 title('Imported patch data from multi-solid STL','fontSize',fontSize);
 xlabel('X','fontSize',fontSize);ylabel('Y','fontSize',fontSize); zlabel('Z','fontSize',fontSize); hold on;
 for q=1:1:numel(stlStruct.solidNames)
@@ -88,7 +87,7 @@ logicThree=N==3;
 %%
 % Plotting three connected points (some may be boundary points)
 
-figuremax(fig_color,fig_colordef);
+cFigure;
 title('Highlighted points that are "three-connected"','fontSize',fontSize);
 xlabel('X','fontSize',fontSize);ylabel('Y','fontSize',fontSize); zlabel('Z','fontSize',fontSize); hold on;
 
@@ -114,7 +113,7 @@ C=double(L);
 %%
 % Plotting results
 
-hf=figuremax(fig_color,fig_colordef); hold on;
+hf=cFigure; hold on;
 subplot(1,2,1); 
 title('Surface containing split triangles','FontSize',fontSize);
 xlabel('X','FontSize',fontSize); ylabel('Y','FontSize',fontSize); zlabel('Z','FontSize',fontSize);
@@ -146,7 +145,7 @@ cPar.Method='HC';
 %%
 % Plotting smoothing results
 
-hf=figuremax(fig_color,fig_colordef); hold on;
+hf=cFigure; hold on;
 subplot(1,2,1); 
 title('Unsmoothened surface','FontSize',fontSize);
 xlabel('X','FontSize',fontSize); ylabel('Y','FontSize',fontSize); zlabel('Z','FontSize',fontSize);
@@ -173,7 +172,7 @@ searchRadius=5;
 voxelSize=3; 
 [V_in_1]=getInnerPoint(Ft,Vt,searchRadius,voxelSize,0);
 
-hf=figuremax(fig_color,fig_colordef); hold on;
+hf=cFigure; hold on;
 title('Surface model and interior point','FontSize',fontSize);
 xlabel('X','FontSize',fontSize); ylabel('Y','FontSize',fontSize); zlabel('Z','FontSize',fontSize);
 hp=patch('Faces',Ft,'Vertices',Vt,'FaceColor',faceColor2,'FaceAlpha',faceAlpha2,'edgeColor','none');
@@ -226,7 +225,7 @@ Z=V(:,3); ZE=mean(Z(E),2);
 logicCut=ZE<mean(Z);
 [Fs,Cs]=element2patch(E(logicCut,:),C(logicCut));
 
-hf1=figuremax(fig_color,fig_colordef);
+hf1=cFigure;
 title('Cut view of Solid tetrahedral mesh model','FontSize',fontSize);
 xlabel('X','FontSize',fontSize); ylabel('Y','FontSize',fontSize); zlabel('Z','FontSize',fontSize); hold on;
 patch('Faces',Fs,'Vertices',V,'FaceColor',faceColor1,'lineWidth',edgeWidth,'edgeColor',edgeColor);
@@ -254,7 +253,7 @@ logicRelevant=Fm>(max(Fm)/100); %Make a selection of higher forces for now
 a=150*[min(Fm(logicRelevant)) max(Fm(logicRelevant))]./max(Fm(logicRelevant)); %Arrow length scaling to magnitude range
 [Ff,Vf,Cf]=quiver3Dpatch(V_vec(logicRelevant,1),V_vec(logicRelevant,2),V_vec(logicRelevant,3),F_vec(logicRelevant,1),F_vec(logicRelevant,2),F_vec(logicRelevant,3),Fm(logicRelevant),a);
 
-hf1=figuremax(fig_color,fig_colordef);
+hf1=cFigure;
 title('Model surface and force vectors','FontSize',fontSize);
 xlabel('X','FontSize',fontSize); ylabel('Y','FontSize',fontSize); zlabel('Z','FontSize',fontSize); hold on;
 patch('Faces',Ft,'Vertices',Vt,'FaceColor',faceColor2,'FaceAlpha',faceAlpha2,'edgeColor','none');
@@ -291,7 +290,7 @@ Vm=mean(V,1);
 [~,bcRigidList2]=min(V(:,2));
 bcRigidList=[bcRigidList1; bcRigidList2];
 
-hf1=figuremax(fig_color,fig_colordef);
+hf1=cFigure;
 title('Model surface and supported node','FontSize',fontSize);
 xlabel('X','FontSize',fontSize); ylabel('Y','FontSize',fontSize); zlabel('Z','FontSize',fontSize); hold on;
 patch('Faces',Ft,'Vertices',Vt,'FaceColor',faceColor2,'FaceAlpha',faceAlpha2,'edgeColor','none');
@@ -403,42 +402,42 @@ FEBioRunStruct.run_filename=FEB_struct.run_filename;
 FEBioRunStruct.run_logname=FEB_struct.run_logname;
 FEBioRunStruct.disp_on=1;
 FEBioRunStruct.disp_log_on=1;
-FEBioRunStruct.runMode='internal';%'internal';
+FEBioRunStruct.runMode='external';%'internal';
 FEBioRunStruct.t_check=0.25; %Time for checking log file (dont set too small)
 FEBioRunStruct.maxtpi=1e99; %Max analysis time
 FEBioRunStruct.maxLogCheckTime=3; %Max log file checking time
 
-%[runFlag]=runMonitorFEBio(FEBioRunStruct);%START FEBio NOW!!!!!!!!
+% [runFlag]=runMonitorFEBio(FEBioRunStruct);%START FEBio NOW!!!!!!!!
 
 %%
-if runFlag==1 %i.e. a succesful run
-    %% IMPORTING NODAL DISPLACEMENT RESULTS
-    % Importing nodal displacements from a log file
-    [~, N_disp_mat,~]=importFEBio_logfile(FEB_struct.run_output_names{1}); %Nodal displacements
-    
-    DN=N_disp_mat(:,2:end,end); %Final nodal displacements
-    
-    %% CREATING NODE SET IN DEFORMED STATE
-    V_def=V+DN;
-    DN_magnitude=sqrt(sum(DN.^2,2));
-    
-    %%
-    % Plotting the deformed model
-    
-    [CF]=vertexToFaceMeasure(Fb,DN_magnitude);
-    
-    hf1=figuremax(figColor,figColorDef);
-    title('The deformed model','FontSize',fontSize);
-    xlabel('X','FontSize',fontSize); ylabel('Y','FontSize',fontSize); zlabel('Z','FontSize',fontSize); hold on;
-    
-    hps=patch('Faces',Fb,'Vertices',V_def,'FaceColor','flat','CData',CF);
-    
-    view(3); axis tight;  axis equal;  grid on;
-    colormap jet; colorbar;
-    % camlight headlight;
-    set(gca,'FontSize',fontSize);
-    drawnow;
-end
+% if runFlag==1 %i.e. a succesful run
+%     %% IMPORTING NODAL DISPLACEMENT RESULTS
+%     % Importing nodal displacements from a log file
+%     [~, N_disp_mat,~]=importFEBio_logfile(FEB_struct.run_output_names{1}); %Nodal displacements
+%     
+%     DN=N_disp_mat(:,2:end,end); %Final nodal displacements
+%     
+%     %% CREATING NODE SET IN DEFORMED STATE
+%     V_def=V+DN;
+%     DN_magnitude=sqrt(sum(DN.^2,2));
+%     
+%     %%
+%     % Plotting the deformed model
+%     
+%     [CF]=vertexToFaceMeasure(Fb,DN_magnitude);
+%     
+%     hf1=figuremax(figColor,figColorDef);
+%     title('The deformed model','FontSize',fontSize);
+%     xlabel('X','FontSize',fontSize); ylabel('Y','FontSize',fontSize); zlabel('Z','FontSize',fontSize); hold on;
+%     
+%     hps=patch('Faces',Fb,'Vertices',V_def,'FaceColor','flat','CData',CF);
+%     
+%     view(3); axis tight;  axis equal;  grid on;
+%     colormap jet; colorbar;
+%     % camlight headlight;
+%     set(gca,'FontSize',fontSize);
+%     drawnow;
+% end
 
 %% 
 %
