@@ -7,7 +7,7 @@ clear; close all; clc;
 % Plot settings
 fontSize=15;
 faceColor='b';
-faceAlpha=0.75;
+faceAlpha=0.5;
 edgeColor='k';
 edgeWidth1=2;
 edgeWidth2=1;
@@ -139,6 +139,9 @@ view([-50,12])
 camlight('headlight'); lighting flat;
 
 drawnow; 
+
+%%
+
 
 %% 
 %

@@ -7,13 +7,22 @@ function [varargout]=patchNormal(F,V)
 % the face. 
 %
 %
+% To do: Check for co-linear edges ?
 %
 % Kevin Mattheus Moerman
-% kevinmoerman@hotmail.com
+% gibbon.toolbox@gmail.com
+%
 % 2014/06/02 %Updated general lay-out and commenting
+% 2015/09/22 %Fixed to allow for 2D patch data
+
 %------------------------------------------------------------------------
 
 %%
+
+%Deal with 2D patch data
+if size(V,2)==2
+    V(:,3)=0; 
+end
 
 %Get vertices
 Vp=V; %The input vertices (the original V is used later on)

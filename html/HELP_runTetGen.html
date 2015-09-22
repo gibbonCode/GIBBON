@@ -6,7 +6,7 @@
    <!--
 This HTML was auto-generated from MATLAB code.
 To make changes, update the MATLAB code and republish this document.
-      --><title>runTetGen</title><meta name="generator" content="MATLAB 8.4"><link rel="schema.DC" href="http://purl.org/dc/elements/1.1/"><meta name="DC.date" content="2014-10-22"><meta name="DC.source" content="HELP_runTetGen.m"><style type="text/css">
+      --><title>runTetGen</title><meta name="generator" content="MATLAB 8.6"><link rel="schema.DC" href="http://purl.org/dc/elements/1.1/"><meta name="DC.date" content="2015-09-22"><meta name="DC.source" content="HELP_runTetGen.m"><style type="text/css">
 html,body,div,span,applet,object,iframe,h1,h2,h3,h4,h5,h6,p,blockquote,pre,a,abbr,acronym,address,big,cite,code,del,dfn,em,font,img,ins,kbd,q,s,samp,small,strike,strong,sub,sup,tt,var,b,u,i,center,dl,dt,dd,ol,ul,li,fieldset,form,label,legend,table,caption,tbody,tfoot,thead,tr,th,td{margin:0;padding:0;border:0;outline:0;font-size:100%;vertical-align:baseline;background:transparent}body{line-height:1}ol,ul{list-style:none}blockquote,q{quotes:none}blockquote:before,blockquote:after,q:before,q:after{content:'';content:none}:focus{outine:0}ins{text-decoration:none}del{text-decoration:line-through}table{border-collapse:collapse;border-spacing:0}
 
 html { min-height:100%; margin-bottom:1px; }
@@ -66,19 +66,20 @@ table td { padding:7px 5px; text-align:left; vertical-align:top; border:1px soli
 
 
 
-  </style></head><body><div class="content"><h1>runTetGen</h1><!--introduction--><p>Below is a demonstration of the features of the <tt>runTetGen</tt> function</p><!--/introduction--><h2>Contents</h2><div><ul><li><a href="#4">MESHING A SINGLE REGION MODEL</a></li><li><a href="#15">VIEWING THE MODEL IN TETVIEW</a></li><li><a href="#17">MESHING A MULTI-REGION MODEL</a></li><li><a href="#28">MESHING A MULTI-REGION MODEL CONTAINING HOLES</a></li><li><a href="#39">Meshing from a quadrilateral input surface</a></li></ul></div><pre class="codeinput">clear; close <span class="string">all</span>; clc;
-</pre><p>Plot settings</p><pre class="codeinput">fig_color=<span class="string">'w'</span>; fig_colordef=<span class="string">'white'</span>;
-fontSize=15;
+  </style></head><body><div class="content"><h1>runTetGen</h1><!--introduction--><p>Below is a demonstration of the features of the <tt>runTetGen</tt> function</p><!--/introduction--><h2>Contents</h2><div><ul><li><a href="#4">MESHING A SINGLE REGION MODEL</a></li><li><a href="#15">VIEWING THE MODEL IN TETVIEW</a></li><li><a href="#17">MESHING A MULTI-REGION MODEL</a></li><li><a href="#28">MESHING A MULTI-REGION MODEL CONTAINING HOLES</a></li><li><a href="#39">Meshing from a quadrilateral input surface</a></li><li><a href="#44">Meshing 10-node (i.e. quadratic) tetrahedral elements</a></li></ul></div><pre class="codeinput">clear; close <span class="string">all</span>; clc;
+</pre><p>Plot settings</p><pre class="codeinput">fontSize=15;
 faceAlpha1=0.5;
 faceAlpha2=1;
 edgeColor=0.25*ones(1,3);
 edgeWidth=1.5;
 patchColor=[1 0.5 0];
+markerSize=15;
+cMap=gjet(250);
 </pre><p>path names</p><pre class="codeinput">filePath=mfilename(<span class="string">'fullpath'</span>);
 savePath=fullfile(fileparts(filePath),<span class="string">'data'</span>,<span class="string">'temp'</span>);
 modelName=fullfile(savePath,<span class="string">'tetgenmodel'</span>);
 </pre><h2>MESHING A SINGLE REGION MODEL<a name="4"></a></h2><p>Building a geodesic dome surface model</p><pre class="codeinput">[F,V,~]=geoSphere(2,1);
-</pre><p>Plotting model</p><pre class="codeinput">hf=figuremax(fig_color,fig_colordef);
+</pre><p>Plotting model</p><pre class="codeinput">hf=cFigure;
 title(<span class="string">'Surface model'</span>,<span class="string">'FontSize'</span>,fontSize);
 xlabel(<span class="string">'X'</span>,<span class="string">'FontSize'</span>,fontSize); ylabel(<span class="string">'Y'</span>,<span class="string">'FontSize'</span>,fontSize); zlabel(<span class="string">'Z'</span>,<span class="string">'FontSize'</span>,fontSize);
 hold <span class="string">on</span>;
@@ -106,40 +107,40 @@ inputStruct.modelName=modelName;
 </pre><p>Mesh model using tetrahedral elements using tetGen (see: <a href="http://wias-berlin.de/software/tetgen/">http://wias-berlin.de/software/tetgen/</a>)</p><pre class="codeinput">[meshOutput]=runTetGen(inputStruct); <span class="comment">%Run tetGen</span>
 </pre><pre class="codeoutput"> 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
---- TETGEN Tetrahedral meshing --- 22-Oct-2014 14:11:21
+--- TETGEN Tetrahedral meshing --- 22-Sep-2015 20:24:20
  
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
---- Writing SMESH file --- 22-Oct-2014 14:11:21
+--- Writing SMESH file --- 22-Sep-2015 20:24:20
 ----&gt; Adding node field
 ----&gt; Adding facet field
 ----&gt; Adding holes specification
 ----&gt; Adding region specification
---- Done --- 22-Oct-2014 14:11:21
---- Running TetGen to mesh input boundary--- 22-Oct-2014 14:11:21
-Opening D:\MATLAB\GIBBON\trunk\lib_ext\tetGen\tempFiles\tetgenmodel.smesh. 
+--- Done --- 22-Sep-2015 20:24:20
+--- Running TetGen to mesh input boundary--- 22-Sep-2015 20:24:20
+Opening D:\MATLAB\GIBBON\lib_ext\tetGen\tempFiles\tetgenmodel.smesh. 
 Delaunizing vertices... 
-Delaunay seconds:  0.02 
+Delaunay seconds:  0.012 
 Creating surface mesh ... 
-Surface mesh seconds:  0.01 
+Surface mesh seconds:  0 
 Recovering boundaries... 
 Boundary recovery seconds:  0 
 Removing exterior tetrahedra ... 
 Spreading region attributes. 
-Exterior tets removal seconds:  0 
+Exterior tets removal seconds:  0.001 
 Recovering Delaunayness... 
-Delaunay recovery seconds:  0.01 
+Delaunay recovery seconds:  0.003 
 Refining mesh... 
-Refinement seconds:  0.01 
+Refinement seconds:  0.004 
 Optimizing mesh... 
-Optimization seconds:  0 
+Optimization seconds:  0.001 
  
-Writing D:\MATLAB\GIBBON\trunk\lib_ext\tetGen\tempFiles\tetgenmodel.1.node. 
-Writing D:\MATLAB\GIBBON\trunk\lib_ext\tetGen\tempFiles\tetgenmodel.1.ele. 
-Writing D:\MATLAB\GIBBON\trunk\lib_ext\tetGen\tempFiles\tetgenmodel.1.face. 
-Writing D:\MATLAB\GIBBON\trunk\lib_ext\tetGen\tempFiles\tetgenmodel.1.edge. 
+Writing D:\MATLAB\GIBBON\lib_ext\tetGen\tempFiles\tetgenmodel.1.node. 
+Writing D:\MATLAB\GIBBON\lib_ext\tetGen\tempFiles\tetgenmodel.1.ele. 
+Writing D:\MATLAB\GIBBON\lib_ext\tetGen\tempFiles\tetgenmodel.1.face. 
+Writing D:\MATLAB\GIBBON\lib_ext\tetGen\tempFiles\tetgenmodel.1.edge. 
  
-Output seconds:  0.02 
-Total running seconds:  0.07 
+Output seconds:  0.005 
+Total running seconds:  0.026 
  
 Statistics: 
  
@@ -157,11 +158,11 @@ Statistics:
   Mesh edges on input segments: 480 
   Steiner points inside domain: 247 
  
---- Done --- 22-Oct-2014 14:11:21
+--- Done --- 22-Sep-2015 20:24:21
  
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
---- Importing TetGen files --- 22-Oct-2014 14:11:21
---- Done --- 22-Oct-2014 14:11:21
+--- Importing TetGen files --- 22-Sep-2015 20:24:21
+--- Done --- 22-Sep-2015 20:24:21
 </pre><p>Access model element and patch data</p><pre class="codeinput">F=meshOutput.faces;
 V=meshOutput.nodes;
 C=meshOutput.faceMaterialID;
@@ -171,13 +172,13 @@ Y=V(:,2); YE=mean(Y(E),2);
 L=YE&gt;mean(Y);
 [Fs,Cs]=element2patch(E(L,:),C(L),<span class="string">'tet4'</span>);
 
-hf1=figuremax(fig_color,fig_colordef);
+hf1=cFigure;
 subplot(1,2,1);
 title(<span class="string">'Solid tetrahedral mesh model'</span>,<span class="string">'FontSize'</span>,fontSize);
 xlabel(<span class="string">'X'</span>,<span class="string">'FontSize'</span>,fontSize); ylabel(<span class="string">'Y'</span>,<span class="string">'FontSize'</span>,fontSize); zlabel(<span class="string">'Z'</span>,<span class="string">'FontSize'</span>,fontSize); hold <span class="string">on</span>;
 hps=patch(<span class="string">'Faces'</span>,F,<span class="string">'Vertices'</span>,V,<span class="string">'FaceColor'</span>,<span class="string">'flat'</span>,<span class="string">'CData'</span>,C,<span class="string">'lineWidth'</span>,edgeWidth,<span class="string">'edgeColor'</span>,edgeColor);
 view(3); axis <span class="string">tight</span>;  axis <span class="string">equal</span>;  grid <span class="string">on</span>;
-colormap(autumn);
+colormap(cMap);
 camlight <span class="string">headlight</span>;
 set(gca,<span class="string">'FontSize'</span>,fontSize);
 subplot(1,2,2);
@@ -185,11 +186,11 @@ title(<span class="string">'Cut view of Solid tetrahedral mesh model'</span>,<sp
 xlabel(<span class="string">'X'</span>,<span class="string">'FontSize'</span>,fontSize); ylabel(<span class="string">'Y'</span>,<span class="string">'FontSize'</span>,fontSize); zlabel(<span class="string">'Z'</span>,<span class="string">'FontSize'</span>,fontSize); hold <span class="string">on</span>;
 hps=patch(<span class="string">'Faces'</span>,Fs,<span class="string">'Vertices'</span>,V,<span class="string">'FaceColor'</span>,<span class="string">'flat'</span>,<span class="string">'CData'</span>,Cs,<span class="string">'lineWidth'</span>,edgeWidth,<span class="string">'edgeColor'</span>,edgeColor);
 view(3); axis <span class="string">tight</span>;  axis <span class="string">equal</span>;  grid <span class="string">on</span>;
-colormap(autumn);
+colormap(cMap);
 camlight <span class="string">headlight</span>;
 set(gca,<span class="string">'FontSize'</span>,fontSize);
 drawnow;
-</pre><img vspace="5" hspace="5" src="HELP_runTetGen_02.png" alt=""> <h2>VIEWING THE MODEL IN TETVIEW<a name="15"></a></h2><p>TetView is an external (non-MATLAB) program for viewing TetGen meshes. The runTetGen function also copies the mesh output files to the tetView directory. TetView is usually found here: ...\gibbon\trunk\lib_ext\tetGen You can run TetView seperately or use the following to view the model in TetView:</p><pre class="codeinput">runTetView(meshOutput.loadNameStruct.loadName_ele);
+</pre><img vspace="5" hspace="5" src="HELP_runTetGen_02.png" alt=""> <h2>VIEWING THE MODEL IN TETVIEW<a name="15"></a></h2><p>TetView is an external (non-MATLAB) program for viewing TetGen meshes. The runTetGen function also copies the mesh output files to the tetView directory. TetView is usually found here: ...\gibbon\trunk\lib_ext\tetGen You can run TetView seperately or use the following to view the model in TetView:</p><pre class="codeinput">[runStatus,runCmdHist]=runTetView(meshOutput.loadNameStruct.loadName_ele);
 </pre><p>Here is an example screeshot for viewing models in tetView:</p><p><img vspace="5" hspace="5" src="tetView_screenshot.jpg" alt=""> </p><h2>MESHING A MULTI-REGION MODEL<a name="17"></a></h2><p>Simulating a multiregion mesh</p><pre class="codeinput">[F1,V1]=parasaurolophus; <span class="comment">%A dino</span>
 [F2,V2,~]=geoSphere(2,0.4); <span class="comment">%An internal region</span>
 V2(:,1)=2*V2(:,1);
@@ -200,7 +201,7 @@ V2=V2+V_centre(ones(size(V2,1),1),:);
 F=[F1;F2+size(V1,1)];
 V=[V1;V2];
 C=[ones(size(F1,1),1);2*ones(size(F2,1),1)]; <span class="comment">%Surface marker colors</span>
-</pre><p>Plotting model</p><pre class="codeinput">hf=figuremax(fig_color,fig_colordef);
+</pre><p>Plotting model</p><pre class="codeinput">hf=cFigure;
 title(<span class="string">'Multi-region surface model'</span>,<span class="string">'FontSize'</span>,fontSize);
 xlabel(<span class="string">'X'</span>,<span class="string">'FontSize'</span>,fontSize); ylabel(<span class="string">'Y'</span>,<span class="string">'FontSize'</span>,fontSize); zlabel(<span class="string">'Z'</span>,<span class="string">'FontSize'</span>,fontSize);
 hold <span class="string">on</span>;
@@ -208,7 +209,7 @@ hold <span class="string">on</span>;
 hp=patch(<span class="string">'Faces'</span>,F,<span class="string">'Vertices'</span>,V);
 set(hp,<span class="string">'FaceColor'</span>,<span class="string">'flat'</span>,<span class="string">'CData'</span>,C,<span class="string">'FaceAlpha'</span>,faceAlpha1,<span class="string">'lineWidth'</span>,edgeWidth,<span class="string">'edgeColor'</span>,edgeColor);
 camlight <span class="string">headlight</span>;
-colormap <span class="string">autumn</span>;
+colormap(cMap);
 set(gca,<span class="string">'FontSize'</span>,fontSize);
 view(3); axis <span class="string">tight</span>;  axis <span class="string">equal</span>;  grid <span class="string">on</span>;
 </pre><img vspace="5" hspace="5" src="HELP_runTetGen_03.png" alt=""> <p>DEFINE FACE BOUNDARY MARKERS</p><pre class="codeinput">faceBoundaryMarker=C;
@@ -229,22 +230,22 @@ inputStruct.modelName=modelName;
 </pre><p>Mesh model using tetrahedral elements using tetGen (see: <a href="http://wias-berlin.de/software/tetgen/">http://wias-berlin.de/software/tetgen/</a>)</p><pre class="codeinput">[meshOutput]=runTetGen(inputStruct); <span class="comment">%Run tetGen</span>
 </pre><pre class="codeoutput"> 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
---- TETGEN Tetrahedral meshing --- 22-Oct-2014 14:11:25
+--- TETGEN Tetrahedral meshing --- 22-Sep-2015 20:24:23
  
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
---- Writing SMESH file --- 22-Oct-2014 14:11:25
+--- Writing SMESH file --- 22-Sep-2015 20:24:23
 ----&gt; Adding node field
 ----&gt; Adding facet field
 ----&gt; Adding holes specification
 ----&gt; Adding region specification
---- Done --- 22-Oct-2014 14:11:25
---- Running TetGen to mesh input boundary--- 22-Oct-2014 14:11:25
-Opening D:\MATLAB\GIBBON\trunk\lib_ext\tetGen\tempFiles\tetgenmodel.smesh. 
---- Done --- 22-Oct-2014 14:11:26
+--- Done --- 22-Sep-2015 20:24:23
+--- Running TetGen to mesh input boundary--- 22-Sep-2015 20:24:23
+Opening D:\MATLAB\GIBBON\lib_ext\tetGen\tempFiles\tetgenmodel.smesh. 
+--- Done --- 22-Sep-2015 20:24:24
  
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
---- Importing TetGen files --- 22-Oct-2014 14:11:26
---- Done --- 22-Oct-2014 14:11:26
+--- Importing TetGen files --- 22-Sep-2015 20:24:24
+--- Done --- 22-Sep-2015 20:24:24
 </pre><p>Access model element and patch data</p><pre class="codeinput">F=meshOutput.faces;
 V=meshOutput.nodes;
 C=meshOutput.faceMaterialID;
@@ -254,13 +255,13 @@ Y=V(:,2); YE=mean(Y(E),2);
 L=YE&gt;mean(Y);
 [Fs,Cs]=element2patch(E(L,:),C(L),<span class="string">'tet4'</span>);
 
-hf1=figuremax(fig_color,fig_colordef);
+hf1=cFigure;
 subplot(1,2,1);
 title(<span class="string">'Solid tetrahedral mesh model'</span>,<span class="string">'FontSize'</span>,fontSize);
 xlabel(<span class="string">'X'</span>,<span class="string">'FontSize'</span>,fontSize); ylabel(<span class="string">'Y'</span>,<span class="string">'FontSize'</span>,fontSize); zlabel(<span class="string">'Z'</span>,<span class="string">'FontSize'</span>,fontSize); hold <span class="string">on</span>;
 hps=patch(<span class="string">'Faces'</span>,F,<span class="string">'Vertices'</span>,V,<span class="string">'FaceColor'</span>,<span class="string">'flat'</span>,<span class="string">'CData'</span>,C,<span class="string">'lineWidth'</span>,edgeWidth,<span class="string">'edgeColor'</span>,edgeColor);
 view(3); axis <span class="string">tight</span>;  axis <span class="string">equal</span>;  grid <span class="string">on</span>;
-colormap(autumn);
+colormap(cMap);
 camlight <span class="string">headlight</span>;
 set(gca,<span class="string">'FontSize'</span>,fontSize);
 subplot(1,2,2);
@@ -268,7 +269,7 @@ title(<span class="string">'Cut view of Solid tetrahedral mesh model'</span>,<sp
 xlabel(<span class="string">'X'</span>,<span class="string">'FontSize'</span>,fontSize); ylabel(<span class="string">'Y'</span>,<span class="string">'FontSize'</span>,fontSize); zlabel(<span class="string">'Z'</span>,<span class="string">'FontSize'</span>,fontSize); hold <span class="string">on</span>;
 hps=patch(<span class="string">'Faces'</span>,Fs,<span class="string">'Vertices'</span>,V,<span class="string">'FaceColor'</span>,<span class="string">'flat'</span>,<span class="string">'CData'</span>,Cs,<span class="string">'lineWidth'</span>,edgeWidth,<span class="string">'edgeColor'</span>,edgeColor);
 view(3); axis <span class="string">tight</span>;  axis <span class="string">equal</span>;  grid <span class="string">on</span>;
-colormap(autumn);
+colormap(cMap);
 camlight <span class="string">headlight</span>;
 set(gca,<span class="string">'FontSize'</span>,fontSize);
 drawnow;
@@ -291,7 +292,7 @@ V3=V3+V_centre(ones(size(V3,1),1),:);
 F=[F1;F2+size(V1,1);F3+size(V1,1)+size(V2,1)];
 V=[V1;V2;V3];
 C=[ones(size(F1,1),1);2*ones(size(F2,1),1);3*ones(size(F3,1),1)]; <span class="comment">%Surface marker colors</span>
-</pre><p>Plotting model</p><pre class="codeinput">hf=figuremax(fig_color,fig_colordef);
+</pre><p>Plotting model</p><pre class="codeinput">hf=cFigure;
 title(<span class="string">'Multi-region surface model'</span>,<span class="string">'FontSize'</span>,fontSize);
 xlabel(<span class="string">'X'</span>,<span class="string">'FontSize'</span>,fontSize); ylabel(<span class="string">'Y'</span>,<span class="string">'FontSize'</span>,fontSize); zlabel(<span class="string">'Z'</span>,<span class="string">'FontSize'</span>,fontSize);
 hold <span class="string">on</span>;
@@ -299,7 +300,7 @@ hold <span class="string">on</span>;
 hp=patch(<span class="string">'Faces'</span>,F,<span class="string">'Vertices'</span>,V);
 set(hp,<span class="string">'FaceColor'</span>,<span class="string">'flat'</span>,<span class="string">'CData'</span>,C,<span class="string">'FaceAlpha'</span>,faceAlpha1,<span class="string">'lineWidth'</span>,edgeWidth,<span class="string">'edgeColor'</span>,edgeColor);
 camlight <span class="string">headlight</span>;
-colormap <span class="string">autumn</span>;
+colormap(cMap);
 set(gca,<span class="string">'FontSize'</span>,fontSize);
 view(3); axis <span class="string">tight</span>;  axis <span class="string">equal</span>;  grid <span class="string">on</span>;
 </pre><img vspace="5" hspace="5" src="HELP_runTetGen_05.png" alt=""> <p>DEFINE FACE BOUNDARY MARKERS</p><pre class="codeinput">faceBoundaryMarker=C;
@@ -321,22 +322,22 @@ inputStruct.modelName=modelName;
 </pre><p>Mesh model using tetrahedral elements using tetGen (see: <a href="http://wias-berlin.de/software/tetgen/">http://wias-berlin.de/software/tetgen/</a>)</p><pre class="codeinput">[meshOutput]=runTetGen(inputStruct); <span class="comment">%Run tetGen</span>
 </pre><pre class="codeoutput"> 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
---- TETGEN Tetrahedral meshing --- 22-Oct-2014 14:11:29
+--- TETGEN Tetrahedral meshing --- 22-Sep-2015 20:24:26
  
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
---- Writing SMESH file --- 22-Oct-2014 14:11:29
+--- Writing SMESH file --- 22-Sep-2015 20:24:26
 ----&gt; Adding node field
 ----&gt; Adding facet field
 ----&gt; Adding holes specification
 ----&gt; Adding region specification
---- Done --- 22-Oct-2014 14:11:29
---- Running TetGen to mesh input boundary--- 22-Oct-2014 14:11:29
-Opening D:\MATLAB\GIBBON\trunk\lib_ext\tetGen\tempFiles\tetgenmodel.smesh. 
---- Done --- 22-Oct-2014 14:11:30
+--- Done --- 22-Sep-2015 20:24:26
+--- Running TetGen to mesh input boundary--- 22-Sep-2015 20:24:26
+Opening D:\MATLAB\GIBBON\lib_ext\tetGen\tempFiles\tetgenmodel.smesh. 
+--- Done --- 22-Sep-2015 20:24:26
  
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
---- Importing TetGen files --- 22-Oct-2014 14:11:30
---- Done --- 22-Oct-2014 14:11:30
+--- Importing TetGen files --- 22-Sep-2015 20:24:26
+--- Done --- 22-Sep-2015 20:24:26
 </pre><p>Access model element and patch data</p><pre class="codeinput">F=meshOutput.faces;
 V=meshOutput.nodes;
 C=meshOutput.faceMaterialID;
@@ -346,13 +347,13 @@ Y=V(:,2); YE=mean(Y(E),2);
 L=YE&gt;mean(Y);
 [Fs,Cs]=element2patch(E(L,:),C(L),<span class="string">'tet4'</span>);
 
-hf1=figuremax(fig_color,fig_colordef);
+hf1=cFigure;
 subplot(1,2,1);
 title(<span class="string">'Solid tetrahedral mesh model'</span>,<span class="string">'FontSize'</span>,fontSize);
 xlabel(<span class="string">'X'</span>,<span class="string">'FontSize'</span>,fontSize); ylabel(<span class="string">'Y'</span>,<span class="string">'FontSize'</span>,fontSize); zlabel(<span class="string">'Z'</span>,<span class="string">'FontSize'</span>,fontSize); hold <span class="string">on</span>;
 hps=patch(<span class="string">'Faces'</span>,F,<span class="string">'Vertices'</span>,V,<span class="string">'FaceColor'</span>,<span class="string">'flat'</span>,<span class="string">'CData'</span>,C,<span class="string">'lineWidth'</span>,edgeWidth,<span class="string">'edgeColor'</span>,edgeColor);
 view(3); axis <span class="string">tight</span>;  axis <span class="string">equal</span>;  grid <span class="string">on</span>;
-colormap(autumn);
+colormap(cMap);
 camlight <span class="string">headlight</span>;
 set(gca,<span class="string">'FontSize'</span>,fontSize);
 subplot(1,2,2);
@@ -360,7 +361,7 @@ title(<span class="string">'Cut view of Solid tetrahedral mesh model'</span>,<sp
 xlabel(<span class="string">'X'</span>,<span class="string">'FontSize'</span>,fontSize); ylabel(<span class="string">'Y'</span>,<span class="string">'FontSize'</span>,fontSize); zlabel(<span class="string">'Z'</span>,<span class="string">'FontSize'</span>,fontSize); hold <span class="string">on</span>;
 hps=patch(<span class="string">'Faces'</span>,Fs,<span class="string">'Vertices'</span>,V,<span class="string">'FaceColor'</span>,<span class="string">'flat'</span>,<span class="string">'CData'</span>,Cs,<span class="string">'lineWidth'</span>,edgeWidth,<span class="string">'edgeColor'</span>,edgeColor);
 view(3); axis <span class="string">tight</span>;  axis <span class="string">equal</span>;  grid <span class="string">on</span>;
-colormap(autumn);
+colormap(cMap);
 camlight <span class="string">headlight</span>;
 set(gca,<span class="string">'FontSize'</span>,fontSize);
 drawnow;
@@ -383,22 +384,22 @@ inputStruct.modelName=modelName;
 </pre><p>Mesh model using tetrahedral elements using tetGen (see: <a href="http://wias-berlin.de/software/tetgen/">http://wias-berlin.de/software/tetgen/</a>)</p><pre class="codeinput">[meshOutput]=runTetGen(inputStruct); <span class="comment">%Run tetGen</span>
 </pre><pre class="codeoutput"> 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
---- TETGEN Tetrahedral meshing --- 22-Oct-2014 14:11:33
+--- TETGEN Tetrahedral meshing --- 22-Sep-2015 20:24:28
  
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
---- Writing SMESH file --- 22-Oct-2014 14:11:33
+--- Writing SMESH file --- 22-Sep-2015 20:24:28
 ----&gt; Adding node field
 ----&gt; Adding facet field
 ----&gt; Adding holes specification
 ----&gt; Adding region specification
---- Done --- 22-Oct-2014 14:11:33
---- Running TetGen to mesh input boundary--- 22-Oct-2014 14:11:33
-Opening D:\MATLAB\GIBBON\trunk\lib_ext\tetGen\tempFiles\tetgenmodel.smesh. 
---- Done --- 22-Oct-2014 14:11:33
+--- Done --- 22-Sep-2015 20:24:28
+--- Running TetGen to mesh input boundary--- 22-Sep-2015 20:24:28
+Opening D:\MATLAB\GIBBON\lib_ext\tetGen\tempFiles\tetgenmodel.smesh. 
+--- Done --- 22-Sep-2015 20:24:29
  
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
---- Importing TetGen files --- 22-Oct-2014 14:11:33
---- Done --- 22-Oct-2014 14:11:33
+--- Importing TetGen files --- 22-Sep-2015 20:24:29
+--- Done --- 22-Sep-2015 20:24:29
 </pre><p>Access model element and patch data</p><pre class="codeinput">F=meshOutput.faces;
 V=meshOutput.nodes;
 C=meshOutput.faceMaterialID;
@@ -408,7 +409,7 @@ Y=V(:,2); YE=mean(Y(E),2);
 L=YE&gt;mean(Y);
 [Fs,Cs]=element2patch(E(L,:),C(L),<span class="string">'tet4'</span>);
 
-hf1=figuremax(fig_color,fig_colordef);
+hf1=cFigure;
 subplot(1,3,1);
 title(<span class="string">'The quadrilateral surface model'</span>,<span class="string">'FontSize'</span>,fontSize);
 patch(<span class="string">'Faces'</span>,Fq,<span class="string">'Vertices'</span>,Vq,<span class="string">'FaceColor'</span>,<span class="string">'flat'</span>,<span class="string">'CData'</span>,faceBoundaryMarker_q,<span class="string">'FaceAlpha'</span>,faceAlpha1,<span class="string">'lineWidth'</span>,edgeWidth,<span class="string">'edgeColor'</span>,edgeColor);
@@ -422,7 +423,7 @@ title(<span class="string">'Solid tetrahedral mesh model'</span>,<span class="st
 xlabel(<span class="string">'X'</span>,<span class="string">'FontSize'</span>,fontSize); ylabel(<span class="string">'Y'</span>,<span class="string">'FontSize'</span>,fontSize); zlabel(<span class="string">'Z'</span>,<span class="string">'FontSize'</span>,fontSize); hold <span class="string">on</span>;
 hps=patch(<span class="string">'Faces'</span>,F,<span class="string">'Vertices'</span>,V,<span class="string">'FaceColor'</span>,<span class="string">'flat'</span>,<span class="string">'CData'</span>,C,<span class="string">'lineWidth'</span>,edgeWidth,<span class="string">'edgeColor'</span>,edgeColor);
 view(3); axis <span class="string">tight</span>;  axis <span class="string">equal</span>;  grid <span class="string">on</span>;
-colormap(autumn);
+colormap(cMap);
 camlight <span class="string">headlight</span>;
 set(gca,<span class="string">'FontSize'</span>,fontSize);
 subplot(1,3,3);
@@ -430,11 +431,104 @@ title(<span class="string">'Cut view of Solid tetrahedral mesh model'</span>,<sp
 xlabel(<span class="string">'X'</span>,<span class="string">'FontSize'</span>,fontSize); ylabel(<span class="string">'Y'</span>,<span class="string">'FontSize'</span>,fontSize); zlabel(<span class="string">'Z'</span>,<span class="string">'FontSize'</span>,fontSize); hold <span class="string">on</span>;
 hps=patch(<span class="string">'Faces'</span>,Fs,<span class="string">'Vertices'</span>,V,<span class="string">'FaceColor'</span>,<span class="string">'flat'</span>,<span class="string">'CData'</span>,Cs,<span class="string">'lineWidth'</span>,edgeWidth,<span class="string">'edgeColor'</span>,edgeColor);
 view(3); axis <span class="string">tight</span>;  axis <span class="string">equal</span>;  grid <span class="string">on</span>;
-colormap(autumn);
+colormap(cMap);
 camlight <span class="string">headlight</span>;
 set(gca,<span class="string">'FontSize'</span>,fontSize);
 drawnow;
-</pre><img vspace="5" hspace="5" src="HELP_runTetGen_07.png" alt=""> <p><img vspace="5" hspace="5" src="gibbVerySmall.gif" alt=""> </p><p><i><b>GIBBON</b></i> <a href="www.gibboncode.org">www.gibboncode.org</a></p><p><i>Kevin Mattheus Moerman</i>, <a href="gibbon.toolbox@gmail.com">gibbon.toolbox@gmail.com</a></p><p class="footer"><br><a href="http://www.mathworks.com/products/matlab/">Published with MATLAB&reg; R2014b</a><br></p></div><!--
+</pre><img vspace="5" hspace="5" src="HELP_runTetGen_07.png" alt=""> <h2>Meshing 10-node (i.e. quadratic) tetrahedral elements<a name="44"></a></h2><pre class="codeinput"><span class="comment">% Building spherical surface models</span>
+r1=1;
+r2=2*(r1/3);
+r3=r1/3;
+[F_sphere,V_sphere,~]=geoSphere(2,r1);
+[F_core,V_core,~]=geoSphere(1,r2);
+[F_core2,V_core2,~]=geoSphere(1,r3);
+
+<span class="comment">% Merging node sets</span>
+V1=[V_sphere;V_core;V_core2];
+V1(end+1:end+5,:)=rand(5,3);
+
+F1=[F_sphere;F_core+size(V_sphere,1);F_core2+size(V_sphere,1)+size(V_core,1)];
+
+<span class="comment">% Face boundary markers</span>
+faceBoundaryMarker=[ones(size(F_sphere,1),1); 2*ones(size(F_core,1),1);  3*ones(size(F_core2,1),1)];
+</pre><p>Define region point</p><pre class="codeinput">V_regions=[0 0 (r1+r2)/2;0 0 (r2+r3)/2;];
+
+<span class="comment">% Define hole points</span>
+V_holes=[0 0 0];
+
+<span class="comment">% Regional mesh parameter (desired volume)</span>
+[A]=tetVolMeanEst(F1,V1);
+regionA=A*ones(1,2);
+
+stringOpt=<span class="string">'-pq1.2AaYQ'</span>;
+
+inputStruct.stringOpt=stringOpt;
+inputStruct.Faces=F1;
+inputStruct.Nodes=V1;
+inputStruct.holePoints=V_holes;
+inputStruct.faceBoundaryMarker=faceBoundaryMarker; <span class="comment">%Face boundary markers</span>
+inputStruct.regionPoints=V_regions; <span class="comment">%region points</span>
+inputStruct.regionA=regionA;
+inputStruct.minRegionMarker=2; <span class="comment">%Minimum region marker</span>
+inputStruct.modelName=modelName;
+</pre><p>Setting desired element type to tet10 (default is tet4)</p><pre class="codeinput">inputStruct.tetType=<span class="string">'tet10'</span>;
+</pre><p>Mesh model using tetrahedral elements using tetGen (see: <a href="http://wias-berlin.de/software/tetgen/">http://wias-berlin.de/software/tetgen/</a>)</p><pre class="codeinput">[meshOutput]=runTetGen(inputStruct); <span class="comment">%Run tetGen</span>
+</pre><pre class="codeoutput"> 
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+--- TETGEN Tetrahedral meshing --- 22-Sep-2015 20:24:29
+ 
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+--- Writing SMESH file --- 22-Sep-2015 20:24:29
+----&gt; Adding node field
+----&gt; Adding facet field
+----&gt; Adding holes specification
+----&gt; Adding region specification
+--- Done --- 22-Sep-2015 20:24:29
+--- Running TetGen to mesh input boundary--- 22-Sep-2015 20:24:29
+Opening D:\MATLAB\GIBBON\lib_ext\tetGen\tempFiles\tetgenmodel.smesh. 
+--- Done --- 22-Sep-2015 20:24:30
+ 
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+--- Importing TetGen files --- 22-Sep-2015 20:24:30
+--- Done --- 22-Sep-2015 20:24:30
+</pre><p>Access model element and patch data</p><pre class="codeinput">F=meshOutput.faces;
+V=meshOutput.nodes;
+C=meshOutput.faceMaterialID;
+E=meshOutput.elements;
+</pre><p>PLOTTING MODEL</p><pre class="codeinput"><span class="comment">%Selecting half of the model to see interior</span>
+Y=V(:,2); YE=mean(Y(E),2);
+L=YE&gt;mean(Y);
+[Fs,Cs]=element2patch(E(L,:),C(L),<span class="string">'tet10'</span>);
+
+hf1=cFigure;
+subplot(1,3,1);
+title(<span class="string">'Surface model'</span>,<span class="string">'FontSize'</span>,fontSize);
+patch(<span class="string">'Faces'</span>,F1,<span class="string">'Vertices'</span>,V1,<span class="string">'FaceColor'</span>,<span class="string">'flat'</span>,<span class="string">'CData'</span>,faceBoundaryMarker,<span class="string">'FaceAlpha'</span>,faceAlpha1,<span class="string">'lineWidth'</span>,edgeWidth,<span class="string">'edgeColor'</span>,edgeColor);
+
+colormap(jet(6)); colorbar;
+set(gca,<span class="string">'FontSize'</span>,fontSize);
+view(3); axis <span class="string">tight</span>;  axis <span class="string">equal</span>;  grid <span class="string">on</span>;
+
+subplot(1,3,2);
+title(<span class="string">'10-node tet. mesh model'</span>,<span class="string">'FontSize'</span>,fontSize);
+xlabel(<span class="string">'X'</span>,<span class="string">'FontSize'</span>,fontSize); ylabel(<span class="string">'Y'</span>,<span class="string">'FontSize'</span>,fontSize); zlabel(<span class="string">'Z'</span>,<span class="string">'FontSize'</span>,fontSize); hold <span class="string">on</span>;
+hps=patch(<span class="string">'Faces'</span>,F,<span class="string">'Vertices'</span>,V,<span class="string">'FaceColor'</span>,<span class="string">'flat'</span>,<span class="string">'CData'</span>,C,<span class="string">'lineWidth'</span>,edgeWidth,<span class="string">'edgeColor'</span>,edgeColor,<span class="string">'Marker'</span>,<span class="string">'.'</span>,<span class="string">'MarkerEdgeColor'</span>,<span class="string">'k'</span>,<span class="string">'MarkerSize'</span>,markerSize);
+
+view(3); axis <span class="string">tight</span>;  axis <span class="string">equal</span>;  grid <span class="string">on</span>;
+colormap(cMap);
+camlight <span class="string">headlight</span>;
+set(gca,<span class="string">'FontSize'</span>,fontSize);
+subplot(1,3,3);
+title(<span class="string">'Cut view 10-node tet. mesh model'</span>,<span class="string">'FontSize'</span>,fontSize);
+xlabel(<span class="string">'X'</span>,<span class="string">'FontSize'</span>,fontSize); ylabel(<span class="string">'Y'</span>,<span class="string">'FontSize'</span>,fontSize); zlabel(<span class="string">'Z'</span>,<span class="string">'FontSize'</span>,fontSize); hold <span class="string">on</span>;
+hps=patch(<span class="string">'Faces'</span>,Fs,<span class="string">'Vertices'</span>,V,<span class="string">'FaceColor'</span>,<span class="string">'flat'</span>,<span class="string">'CData'</span>,Cs,<span class="string">'lineWidth'</span>,edgeWidth,<span class="string">'edgeColor'</span>,edgeColor,<span class="string">'Marker'</span>,<span class="string">'.'</span>,<span class="string">'MarkerEdgeColor'</span>,<span class="string">'k'</span>,<span class="string">'MarkerSize'</span>,markerSize);
+
+view(3); axis <span class="string">tight</span>;  axis <span class="string">equal</span>;  grid <span class="string">on</span>;
+colormap(cMap);
+camlight <span class="string">headlight</span>;
+set(gca,<span class="string">'FontSize'</span>,fontSize);
+drawnow;
+</pre><img vspace="5" hspace="5" src="HELP_runTetGen_08.png" alt=""> <p><img vspace="5" hspace="5" src="gibbVerySmall.gif" alt=""> </p><p><i><b>GIBBON</b></i> <a href="www.gibboncode.org">www.gibboncode.org</a></p><p><i>Kevin Mattheus Moerman</i>, <a href="gibbon.toolbox@gmail.com">gibbon.toolbox@gmail.com</a></p><p class="footer"><br><a href="http://www.mathworks.com/products/matlab/">Published with MATLAB&reg; R2015b</a><br></p></div><!--
 ##### SOURCE BEGIN #####
 %% runTetGen
 % Below is a demonstration of the features of the |runTetGen| function
@@ -444,13 +538,14 @@ clear; close all; clc;
 
 %%
 % Plot settings
-fig_color='w'; fig_colordef='white';
 fontSize=15;
 faceAlpha1=0.5;
 faceAlpha2=1;
 edgeColor=0.25*ones(1,3);
 edgeWidth=1.5;
 patchColor=[1 0.5 0];
+markerSize=15; 
+cMap=gjet(250); 
 
 %%
 % path names
@@ -466,7 +561,7 @@ modelName=fullfile(savePath,'tetgenmodel');
 
 %%
 % Plotting model
-hf=figuremax(fig_color,fig_colordef);
+hf=cFigure;
 title('Surface model','FontSize',fontSize);
 xlabel('X','FontSize',fontSize); ylabel('Y','FontSize',fontSize); zlabel('Z','FontSize',fontSize);
 hold on;
@@ -514,7 +609,7 @@ inputStruct.modelName=modelName;
 [meshOutput]=runTetGen(inputStruct); %Run tetGen 
 
 %% 
-% Access model element and patch data
+% Access model element and patch data 
 F=meshOutput.faces;
 V=meshOutput.nodes;
 C=meshOutput.faceMaterialID;
@@ -528,13 +623,13 @@ Y=V(:,2); YE=mean(Y(E),2);
 L=YE>mean(Y);
 [Fs,Cs]=element2patch(E(L,:),C(L),'tet4');
 
-hf1=figuremax(fig_color,fig_colordef);
+hf1=cFigure;
 subplot(1,2,1);
 title('Solid tetrahedral mesh model','FontSize',fontSize);
 xlabel('X','FontSize',fontSize); ylabel('Y','FontSize',fontSize); zlabel('Z','FontSize',fontSize); hold on;
 hps=patch('Faces',F,'Vertices',V,'FaceColor','flat','CData',C,'lineWidth',edgeWidth,'edgeColor',edgeColor);
 view(3); axis tight;  axis equal;  grid on;
-colormap(autumn); 
+colormap(cMap); 
 camlight headlight;
 set(gca,'FontSize',fontSize);
 subplot(1,2,2);
@@ -542,7 +637,7 @@ title('Cut view of Solid tetrahedral mesh model','FontSize',fontSize);
 xlabel('X','FontSize',fontSize); ylabel('Y','FontSize',fontSize); zlabel('Z','FontSize',fontSize); hold on;
 hps=patch('Faces',Fs,'Vertices',V,'FaceColor','flat','CData',Cs,'lineWidth',edgeWidth,'edgeColor',edgeColor);
 view(3); axis tight;  axis equal;  grid on;
-colormap(autumn); 
+colormap(cMap); 
 camlight headlight;
 set(gca,'FontSize',fontSize);
 drawnow;
@@ -553,7 +648,7 @@ drawnow;
 % tetView directory. TetView is usually found here:
 % ...\gibbon\trunk\lib_ext\tetGen
 % You can run TetView seperately or use the following to view the model in TetView:
-runTetView(meshOutput.loadNameStruct.loadName_ele);
+[runStatus,runCmdHist]=runTetView(meshOutput.loadNameStruct.loadName_ele);
 
 %% 
 % Here is an example screeshot for viewing models in tetView:
@@ -577,7 +672,7 @@ C=[ones(size(F1,1),1);2*ones(size(F2,1),1)]; %Surface marker colors
 
 %%
 % Plotting model
-hf=figuremax(fig_color,fig_colordef);
+hf=cFigure;
 title('Multi-region surface model','FontSize',fontSize);
 xlabel('X','FontSize',fontSize); ylabel('Y','FontSize',fontSize); zlabel('Z','FontSize',fontSize);
 hold on;
@@ -585,7 +680,7 @@ hold on;
 hp=patch('Faces',F,'Vertices',V);
 set(hp,'FaceColor','flat','CData',C,'FaceAlpha',faceAlpha1,'lineWidth',edgeWidth,'edgeColor',edgeColor);
 camlight headlight;
-colormap autumn; 
+colormap(cMap); 
 set(gca,'FontSize',fontSize);
 view(3); axis tight;  axis equal;  grid on;
 
@@ -642,13 +737,13 @@ Y=V(:,2); YE=mean(Y(E),2);
 L=YE>mean(Y);
 [Fs,Cs]=element2patch(E(L,:),C(L),'tet4');
 
-hf1=figuremax(fig_color,fig_colordef);
+hf1=cFigure;
 subplot(1,2,1);
 title('Solid tetrahedral mesh model','FontSize',fontSize);
 xlabel('X','FontSize',fontSize); ylabel('Y','FontSize',fontSize); zlabel('Z','FontSize',fontSize); hold on;
 hps=patch('Faces',F,'Vertices',V,'FaceColor','flat','CData',C,'lineWidth',edgeWidth,'edgeColor',edgeColor);
 view(3); axis tight;  axis equal;  grid on;
-colormap(autumn); 
+colormap(cMap); 
 camlight headlight;
 set(gca,'FontSize',fontSize);
 subplot(1,2,2);
@@ -656,7 +751,7 @@ title('Cut view of Solid tetrahedral mesh model','FontSize',fontSize);
 xlabel('X','FontSize',fontSize); ylabel('Y','FontSize',fontSize); zlabel('Z','FontSize',fontSize); hold on;
 hps=patch('Faces',Fs,'Vertices',V,'FaceColor','flat','CData',Cs,'lineWidth',edgeWidth,'edgeColor',edgeColor);
 view(3); axis tight;  axis equal;  grid on;
-colormap(autumn); 
+colormap(cMap); 
 camlight headlight;
 set(gca,'FontSize',fontSize);
 drawnow;
@@ -688,7 +783,7 @@ C=[ones(size(F1,1),1);2*ones(size(F2,1),1);3*ones(size(F3,1),1)]; %Surface marke
 
 %%
 % Plotting model
-hf=figuremax(fig_color,fig_colordef);
+hf=cFigure;
 title('Multi-region surface model','FontSize',fontSize);
 xlabel('X','FontSize',fontSize); ylabel('Y','FontSize',fontSize); zlabel('Z','FontSize',fontSize);
 hold on;
@@ -696,7 +791,7 @@ hold on;
 hp=patch('Faces',F,'Vertices',V);
 set(hp,'FaceColor','flat','CData',C,'FaceAlpha',faceAlpha1,'lineWidth',edgeWidth,'edgeColor',edgeColor);
 camlight headlight;
-colormap autumn; 
+colormap(cMap); 
 set(gca,'FontSize',fontSize);
 view(3); axis tight;  axis equal;  grid on;
 
@@ -753,13 +848,13 @@ Y=V(:,2); YE=mean(Y(E),2);
 L=YE>mean(Y);
 [Fs,Cs]=element2patch(E(L,:),C(L),'tet4');
 
-hf1=figuremax(fig_color,fig_colordef);
+hf1=cFigure;
 subplot(1,2,1);
 title('Solid tetrahedral mesh model','FontSize',fontSize);
 xlabel('X','FontSize',fontSize); ylabel('Y','FontSize',fontSize); zlabel('Z','FontSize',fontSize); hold on;
 hps=patch('Faces',F,'Vertices',V,'FaceColor','flat','CData',C,'lineWidth',edgeWidth,'edgeColor',edgeColor);
 view(3); axis tight;  axis equal;  grid on;
-colormap(autumn); 
+colormap(cMap); 
 camlight headlight;
 set(gca,'FontSize',fontSize);
 subplot(1,2,2);
@@ -767,7 +862,7 @@ title('Cut view of Solid tetrahedral mesh model','FontSize',fontSize);
 xlabel('X','FontSize',fontSize); ylabel('Y','FontSize',fontSize); zlabel('Z','FontSize',fontSize); hold on;
 hps=patch('Faces',Fs,'Vertices',V,'FaceColor','flat','CData',Cs,'lineWidth',edgeWidth,'edgeColor',edgeColor);
 view(3); axis tight;  axis equal;  grid on;
-colormap(autumn); 
+colormap(cMap); 
 camlight headlight;
 set(gca,'FontSize',fontSize);
 drawnow;
@@ -817,7 +912,7 @@ Y=V(:,2); YE=mean(Y(E),2);
 L=YE>mean(Y);
 [Fs,Cs]=element2patch(E(L,:),C(L),'tet4');
 
-hf1=figuremax(fig_color,fig_colordef);
+hf1=cFigure;
 subplot(1,3,1);
 title('The quadrilateral surface model','FontSize',fontSize);
 patch('Faces',Fq,'Vertices',Vq,'FaceColor','flat','CData',faceBoundaryMarker_q,'FaceAlpha',faceAlpha1,'lineWidth',edgeWidth,'edgeColor',edgeColor);
@@ -831,7 +926,7 @@ title('Solid tetrahedral mesh model','FontSize',fontSize);
 xlabel('X','FontSize',fontSize); ylabel('Y','FontSize',fontSize); zlabel('Z','FontSize',fontSize); hold on;
 hps=patch('Faces',F,'Vertices',V,'FaceColor','flat','CData',C,'lineWidth',edgeWidth,'edgeColor',edgeColor);
 view(3); axis tight;  axis equal;  grid on;
-colormap(autumn); 
+colormap(cMap); 
 camlight headlight;
 set(gca,'FontSize',fontSize);
 subplot(1,3,3);
@@ -839,7 +934,103 @@ title('Cut view of Solid tetrahedral mesh model','FontSize',fontSize);
 xlabel('X','FontSize',fontSize); ylabel('Y','FontSize',fontSize); zlabel('Z','FontSize',fontSize); hold on;
 hps=patch('Faces',Fs,'Vertices',V,'FaceColor','flat','CData',Cs,'lineWidth',edgeWidth,'edgeColor',edgeColor);
 view(3); axis tight;  axis equal;  grid on;
-colormap(autumn); 
+colormap(cMap); 
+camlight headlight;
+set(gca,'FontSize',fontSize);
+drawnow;
+
+%% Meshing 10-node (i.e. quadratic) tetrahedral elements
+
+% Building spherical surface models
+r1=1;
+r2=2*(r1/3);
+r3=r1/3;
+[F_sphere,V_sphere,~]=geoSphere(2,r1);
+[F_core,V_core,~]=geoSphere(1,r2);
+[F_core2,V_core2,~]=geoSphere(1,r3);
+
+% Merging node sets
+V1=[V_sphere;V_core;V_core2];
+V1(end+1:end+5,:)=rand(5,3);
+
+F1=[F_sphere;F_core+size(V_sphere,1);F_core2+size(V_sphere,1)+size(V_core,1)];
+
+% Face boundary markers
+faceBoundaryMarker=[ones(size(F_sphere,1),1); 2*ones(size(F_core,1),1);  3*ones(size(F_core2,1),1)];
+
+%%
+% Define region point
+V_regions=[0 0 (r1+r2)/2;0 0 (r2+r3)/2;];
+
+% Define hole points
+V_holes=[0 0 0];
+
+% Regional mesh parameter (desired volume)
+[A]=tetVolMeanEst(F1,V1);
+regionA=A*ones(1,2); 
+
+stringOpt='-pq1.2AaYQ';
+
+inputStruct.stringOpt=stringOpt;
+inputStruct.Faces=F1;
+inputStruct.Nodes=V1;
+inputStruct.holePoints=V_holes;
+inputStruct.faceBoundaryMarker=faceBoundaryMarker; %Face boundary markers
+inputStruct.regionPoints=V_regions; %region points
+inputStruct.regionA=regionA;
+inputStruct.minRegionMarker=2; %Minimum region marker
+inputStruct.modelName=modelName;
+
+%%
+% Setting desired element type to tet10 (default is tet4)
+inputStruct.tetType='tet10';
+
+%% 
+% Mesh model using tetrahedral elements using tetGen (see:
+% <http://wias-berlin.de/software/tetgen/>)
+
+[meshOutput]=runTetGen(inputStruct); %Run tetGen 
+
+%% 
+% Access model element and patch data
+F=meshOutput.faces;
+V=meshOutput.nodes;
+C=meshOutput.faceMaterialID;
+E=meshOutput.elements;
+
+%% 
+% PLOTTING MODEL 
+
+%Selecting half of the model to see interior
+Y=V(:,2); YE=mean(Y(E),2);
+L=YE>mean(Y);
+[Fs,Cs]=element2patch(E(L,:),C(L),'tet10');
+
+hf1=cFigure;
+subplot(1,3,1);
+title('Surface model','FontSize',fontSize);
+patch('Faces',F1,'Vertices',V1,'FaceColor','flat','CData',faceBoundaryMarker,'FaceAlpha',faceAlpha1,'lineWidth',edgeWidth,'edgeColor',edgeColor);
+
+colormap(jet(6)); colorbar; 
+set(gca,'FontSize',fontSize);
+view(3); axis tight;  axis equal;  grid on;
+
+subplot(1,3,2);
+title('10-node tet. mesh model','FontSize',fontSize);
+xlabel('X','FontSize',fontSize); ylabel('Y','FontSize',fontSize); zlabel('Z','FontSize',fontSize); hold on;
+hps=patch('Faces',F,'Vertices',V,'FaceColor','flat','CData',C,'lineWidth',edgeWidth,'edgeColor',edgeColor,'Marker','.','MarkerEdgeColor','k','MarkerSize',markerSize);
+
+view(3); axis tight;  axis equal;  grid on;
+colormap(cMap); 
+camlight headlight;
+set(gca,'FontSize',fontSize);
+subplot(1,3,3);
+title('Cut view 10-node tet. mesh model','FontSize',fontSize);
+xlabel('X','FontSize',fontSize); ylabel('Y','FontSize',fontSize); zlabel('Z','FontSize',fontSize); hold on;
+hps=patch('Faces',Fs,'Vertices',V,'FaceColor','flat','CData',Cs,'lineWidth',edgeWidth,'edgeColor',edgeColor,'Marker','.','MarkerEdgeColor','k','MarkerSize',markerSize);
+
+view(3); axis tight;  axis equal;  grid on;
+colormap(cMap); 
 camlight headlight;
 set(gca,'FontSize',fontSize);
 drawnow;

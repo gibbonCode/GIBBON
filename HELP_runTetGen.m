@@ -6,13 +6,14 @@ clear; close all; clc;
 
 %%
 % Plot settings
-fig_color='w'; fig_colordef='white';
 fontSize=15;
 faceAlpha1=0.5;
 faceAlpha2=1;
 edgeColor=0.25*ones(1,3);
 edgeWidth=1.5;
 patchColor=[1 0.5 0];
+markerSize=15; 
+cMap=gjet(250); 
 
 %%
 % path names
@@ -28,7 +29,7 @@ modelName=fullfile(savePath,'tetgenmodel');
 
 %%
 % Plotting model
-hf=figuremax(fig_color,fig_colordef);
+hf=cFigure;
 title('Surface model','FontSize',fontSize);
 xlabel('X','FontSize',fontSize); ylabel('Y','FontSize',fontSize); zlabel('Z','FontSize',fontSize);
 hold on;
@@ -90,13 +91,13 @@ Y=V(:,2); YE=mean(Y(E),2);
 L=YE>mean(Y);
 [Fs,Cs]=element2patch(E(L,:),C(L),'tet4');
 
-hf1=figuremax(fig_color,fig_colordef);
+hf1=cFigure;
 subplot(1,2,1);
 title('Solid tetrahedral mesh model','FontSize',fontSize);
 xlabel('X','FontSize',fontSize); ylabel('Y','FontSize',fontSize); zlabel('Z','FontSize',fontSize); hold on;
 hps=patch('Faces',F,'Vertices',V,'FaceColor','flat','CData',C,'lineWidth',edgeWidth,'edgeColor',edgeColor);
 view(3); axis tight;  axis equal;  grid on;
-colormap(autumn); 
+colormap(cMap); 
 camlight headlight;
 set(gca,'FontSize',fontSize);
 subplot(1,2,2);
@@ -104,7 +105,7 @@ title('Cut view of Solid tetrahedral mesh model','FontSize',fontSize);
 xlabel('X','FontSize',fontSize); ylabel('Y','FontSize',fontSize); zlabel('Z','FontSize',fontSize); hold on;
 hps=patch('Faces',Fs,'Vertices',V,'FaceColor','flat','CData',Cs,'lineWidth',edgeWidth,'edgeColor',edgeColor);
 view(3); axis tight;  axis equal;  grid on;
-colormap(autumn); 
+colormap(cMap); 
 camlight headlight;
 set(gca,'FontSize',fontSize);
 drawnow;
@@ -139,7 +140,7 @@ C=[ones(size(F1,1),1);2*ones(size(F2,1),1)]; %Surface marker colors
 
 %%
 % Plotting model
-hf=figuremax(fig_color,fig_colordef);
+hf=cFigure;
 title('Multi-region surface model','FontSize',fontSize);
 xlabel('X','FontSize',fontSize); ylabel('Y','FontSize',fontSize); zlabel('Z','FontSize',fontSize);
 hold on;
@@ -147,7 +148,7 @@ hold on;
 hp=patch('Faces',F,'Vertices',V);
 set(hp,'FaceColor','flat','CData',C,'FaceAlpha',faceAlpha1,'lineWidth',edgeWidth,'edgeColor',edgeColor);
 camlight headlight;
-colormap autumn; 
+colormap(cMap); 
 set(gca,'FontSize',fontSize);
 view(3); axis tight;  axis equal;  grid on;
 
@@ -204,13 +205,13 @@ Y=V(:,2); YE=mean(Y(E),2);
 L=YE>mean(Y);
 [Fs,Cs]=element2patch(E(L,:),C(L),'tet4');
 
-hf1=figuremax(fig_color,fig_colordef);
+hf1=cFigure;
 subplot(1,2,1);
 title('Solid tetrahedral mesh model','FontSize',fontSize);
 xlabel('X','FontSize',fontSize); ylabel('Y','FontSize',fontSize); zlabel('Z','FontSize',fontSize); hold on;
 hps=patch('Faces',F,'Vertices',V,'FaceColor','flat','CData',C,'lineWidth',edgeWidth,'edgeColor',edgeColor);
 view(3); axis tight;  axis equal;  grid on;
-colormap(autumn); 
+colormap(cMap); 
 camlight headlight;
 set(gca,'FontSize',fontSize);
 subplot(1,2,2);
@@ -218,7 +219,7 @@ title('Cut view of Solid tetrahedral mesh model','FontSize',fontSize);
 xlabel('X','FontSize',fontSize); ylabel('Y','FontSize',fontSize); zlabel('Z','FontSize',fontSize); hold on;
 hps=patch('Faces',Fs,'Vertices',V,'FaceColor','flat','CData',Cs,'lineWidth',edgeWidth,'edgeColor',edgeColor);
 view(3); axis tight;  axis equal;  grid on;
-colormap(autumn); 
+colormap(cMap); 
 camlight headlight;
 set(gca,'FontSize',fontSize);
 drawnow;
@@ -250,7 +251,7 @@ C=[ones(size(F1,1),1);2*ones(size(F2,1),1);3*ones(size(F3,1),1)]; %Surface marke
 
 %%
 % Plotting model
-hf=figuremax(fig_color,fig_colordef);
+hf=cFigure;
 title('Multi-region surface model','FontSize',fontSize);
 xlabel('X','FontSize',fontSize); ylabel('Y','FontSize',fontSize); zlabel('Z','FontSize',fontSize);
 hold on;
@@ -258,7 +259,7 @@ hold on;
 hp=patch('Faces',F,'Vertices',V);
 set(hp,'FaceColor','flat','CData',C,'FaceAlpha',faceAlpha1,'lineWidth',edgeWidth,'edgeColor',edgeColor);
 camlight headlight;
-colormap autumn; 
+colormap(cMap); 
 set(gca,'FontSize',fontSize);
 view(3); axis tight;  axis equal;  grid on;
 
@@ -315,13 +316,13 @@ Y=V(:,2); YE=mean(Y(E),2);
 L=YE>mean(Y);
 [Fs,Cs]=element2patch(E(L,:),C(L),'tet4');
 
-hf1=figuremax(fig_color,fig_colordef);
+hf1=cFigure;
 subplot(1,2,1);
 title('Solid tetrahedral mesh model','FontSize',fontSize);
 xlabel('X','FontSize',fontSize); ylabel('Y','FontSize',fontSize); zlabel('Z','FontSize',fontSize); hold on;
 hps=patch('Faces',F,'Vertices',V,'FaceColor','flat','CData',C,'lineWidth',edgeWidth,'edgeColor',edgeColor);
 view(3); axis tight;  axis equal;  grid on;
-colormap(autumn); 
+colormap(cMap); 
 camlight headlight;
 set(gca,'FontSize',fontSize);
 subplot(1,2,2);
@@ -329,7 +330,7 @@ title('Cut view of Solid tetrahedral mesh model','FontSize',fontSize);
 xlabel('X','FontSize',fontSize); ylabel('Y','FontSize',fontSize); zlabel('Z','FontSize',fontSize); hold on;
 hps=patch('Faces',Fs,'Vertices',V,'FaceColor','flat','CData',Cs,'lineWidth',edgeWidth,'edgeColor',edgeColor);
 view(3); axis tight;  axis equal;  grid on;
-colormap(autumn); 
+colormap(cMap); 
 camlight headlight;
 set(gca,'FontSize',fontSize);
 drawnow;
@@ -379,7 +380,7 @@ Y=V(:,2); YE=mean(Y(E),2);
 L=YE>mean(Y);
 [Fs,Cs]=element2patch(E(L,:),C(L),'tet4');
 
-hf1=figuremax(fig_color,fig_colordef);
+hf1=cFigure;
 subplot(1,3,1);
 title('The quadrilateral surface model','FontSize',fontSize);
 patch('Faces',Fq,'Vertices',Vq,'FaceColor','flat','CData',faceBoundaryMarker_q,'FaceAlpha',faceAlpha1,'lineWidth',edgeWidth,'edgeColor',edgeColor);
@@ -393,7 +394,7 @@ title('Solid tetrahedral mesh model','FontSize',fontSize);
 xlabel('X','FontSize',fontSize); ylabel('Y','FontSize',fontSize); zlabel('Z','FontSize',fontSize); hold on;
 hps=patch('Faces',F,'Vertices',V,'FaceColor','flat','CData',C,'lineWidth',edgeWidth,'edgeColor',edgeColor);
 view(3); axis tight;  axis equal;  grid on;
-colormap(autumn); 
+colormap(cMap); 
 camlight headlight;
 set(gca,'FontSize',fontSize);
 subplot(1,3,3);
@@ -401,7 +402,103 @@ title('Cut view of Solid tetrahedral mesh model','FontSize',fontSize);
 xlabel('X','FontSize',fontSize); ylabel('Y','FontSize',fontSize); zlabel('Z','FontSize',fontSize); hold on;
 hps=patch('Faces',Fs,'Vertices',V,'FaceColor','flat','CData',Cs,'lineWidth',edgeWidth,'edgeColor',edgeColor);
 view(3); axis tight;  axis equal;  grid on;
-colormap(autumn); 
+colormap(cMap); 
+camlight headlight;
+set(gca,'FontSize',fontSize);
+drawnow;
+
+%% Meshing 10-node (i.e. quadratic) tetrahedral elements
+
+% Building spherical surface models
+r1=1;
+r2=2*(r1/3);
+r3=r1/3;
+[F_sphere,V_sphere,~]=geoSphere(2,r1);
+[F_core,V_core,~]=geoSphere(1,r2);
+[F_core2,V_core2,~]=geoSphere(1,r3);
+
+% Merging node sets
+V1=[V_sphere;V_core;V_core2];
+V1(end+1:end+5,:)=rand(5,3);
+
+F1=[F_sphere;F_core+size(V_sphere,1);F_core2+size(V_sphere,1)+size(V_core,1)];
+
+% Face boundary markers
+faceBoundaryMarker=[ones(size(F_sphere,1),1); 2*ones(size(F_core,1),1);  3*ones(size(F_core2,1),1)];
+
+%%
+% Define region point
+V_regions=[0 0 (r1+r2)/2;0 0 (r2+r3)/2;];
+
+% Define hole points
+V_holes=[0 0 0];
+
+% Regional mesh parameter (desired volume)
+[A]=tetVolMeanEst(F1,V1);
+regionA=A*ones(1,2); 
+
+stringOpt='-pq1.2AaYQ';
+
+inputStruct.stringOpt=stringOpt;
+inputStruct.Faces=F1;
+inputStruct.Nodes=V1;
+inputStruct.holePoints=V_holes;
+inputStruct.faceBoundaryMarker=faceBoundaryMarker; %Face boundary markers
+inputStruct.regionPoints=V_regions; %region points
+inputStruct.regionA=regionA;
+inputStruct.minRegionMarker=2; %Minimum region marker
+inputStruct.modelName=modelName;
+
+%%
+% Setting desired element type to tet10 (default is tet4)
+inputStruct.tetType='tet10';
+
+%% 
+% Mesh model using tetrahedral elements using tetGen (see:
+% <http://wias-berlin.de/software/tetgen/>)
+
+[meshOutput]=runTetGen(inputStruct); %Run tetGen 
+
+%% 
+% Access model element and patch data
+F=meshOutput.faces;
+V=meshOutput.nodes;
+C=meshOutput.faceMaterialID;
+E=meshOutput.elements;
+
+%% 
+% PLOTTING MODEL 
+
+%Selecting half of the model to see interior
+Y=V(:,2); YE=mean(Y(E),2);
+L=YE>mean(Y);
+[Fs,Cs]=element2patch(E(L,:),C(L),'tet10');
+
+hf1=cFigure;
+subplot(1,3,1);
+title('Surface model','FontSize',fontSize);
+patch('Faces',F1,'Vertices',V1,'FaceColor','flat','CData',faceBoundaryMarker,'FaceAlpha',faceAlpha1,'lineWidth',edgeWidth,'edgeColor',edgeColor);
+
+colormap(jet(6)); colorbar; 
+set(gca,'FontSize',fontSize);
+view(3); axis tight;  axis equal;  grid on;
+
+subplot(1,3,2);
+title('10-node tet. mesh model','FontSize',fontSize);
+xlabel('X','FontSize',fontSize); ylabel('Y','FontSize',fontSize); zlabel('Z','FontSize',fontSize); hold on;
+hps=patch('Faces',F,'Vertices',V,'FaceColor','flat','CData',C,'lineWidth',edgeWidth,'edgeColor',edgeColor,'Marker','.','MarkerEdgeColor','k','MarkerSize',markerSize);
+
+view(3); axis tight;  axis equal;  grid on;
+colormap(cMap); 
+camlight headlight;
+set(gca,'FontSize',fontSize);
+subplot(1,3,3);
+title('Cut view 10-node tet. mesh model','FontSize',fontSize);
+xlabel('X','FontSize',fontSize); ylabel('Y','FontSize',fontSize); zlabel('Z','FontSize',fontSize); hold on;
+hps=patch('Faces',Fs,'Vertices',V,'FaceColor','flat','CData',Cs,'lineWidth',edgeWidth,'edgeColor',edgeColor,'Marker','.','MarkerEdgeColor','k','MarkerSize',markerSize);
+
+view(3); axis tight;  axis equal;  grid on;
+colormap(cMap); 
 camlight headlight;
 set(gca,'FontSize',fontSize);
 drawnow;
