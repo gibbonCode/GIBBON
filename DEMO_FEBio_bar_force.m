@@ -12,7 +12,6 @@ clear; close all; clc;
 
 %%
 % Plot settings
-figColor='w'; figColorDef='white';
 fontSize=15;
 faceAlpha1=0.8;
 faceAlpha2=1;
@@ -60,7 +59,7 @@ elementMaterialIndices=ones(size(E,1),1);
 %%
 
 % Plotting boundary surfaces
-hf=figuremax(figColor,figColorDef);
+hf=cFigure;
 title('Model surfaces','FontSize',fontSize);
 xlabel('X','FontSize',fontSize); ylabel('Y','FontSize',fontSize); zlabel('Z','FontSize',fontSize);
 hold on;
@@ -87,7 +86,7 @@ bcPrescribeMagnitudes=forceMagnitude(ones(1,numel(bcPrescribeList)),:);
 
 %%
 % Visualize BC's
-hf=figuremax(figColor,figColorDef);
+hf=cFigure;
 title('Complete model','FontSize',fontSize);
 xlabel('X','FontSize',fontSize); ylabel('Y','FontSize',fontSize); zlabel('Z','FontSize',fontSize);
 hold on;
@@ -216,7 +215,7 @@ if runFlag==1 %i.e. a succesful run
     
     [CF]=vertexToFaceMeasure(Fb,DN_magnitude);
     
-    hf1=figuremax(figColor,figColorDef);
+    hf1=cFigure;
     title('The deformed model','FontSize',fontSize);
     xlabel('X','FontSize',fontSize); ylabel('Y','FontSize',fontSize); zlabel('Z','FontSize',fontSize); hold on;
     

@@ -55,6 +55,13 @@ if isfield(FEB_struct,'run_output_names')
         output_type=output_types{q};
         logfile_name=logfile_names{q};
         data_type=data_types{q};
+
+        %Remove path from filename is present
+        [pathName,fileName,fileExtension] = fileparts(logfile_name);
+        if ~isempty(pathName)
+            warning('Provided path of logfile is replaced by .feb file path. Only provide filename to avoid this warning');
+            logfile_name=[fileName,fileExtension]; %Combine only name and extension
+        end
         
         %Adding output_type level
         output_type_node = docNode.createElement(output_type);
