@@ -15,7 +15,9 @@ fontSize=15;
 
 %% SURFACE VISUALIZATIONS
 
-n=50;
+pColors=gjet(6);
+
+n=35;
 
 cFigure;
 
@@ -26,10 +28,11 @@ S=triplyPeriodicMinimal(X,Y,Z,'p');
 subplot(2,3,1);
 title('Schwarz P-surface','FontSize',fontSize);
 xlabel('X','FontSize',fontSize);ylabel('Y','FontSize',fontSize); zlabel('Z','FontSize',fontSize); hold on;
-patch('Faces',F,'Vertices',V,'FaceColor','b','EdgeColor','none','FaceAlpha',1);
+patch('Faces',F,'Vertices',V,'FaceColor',pColors(1,:),'EdgeColor','none','FaceAlpha',1);
 axis equal; view(3); axis tight; axis vis3d; grid on;  
 set(gca,'FontSize',fontSize);
-camlight headlight; 
+camlight headlight; lighting phong;
+view(-50,30);
 
 [X,Y,Z]=meshgrid(linspace(-pi,pi,n));
 S=triplyPeriodicMinimal(X,Y,Z,'d');
@@ -38,10 +41,11 @@ S=triplyPeriodicMinimal(X,Y,Z,'d');
 subplot(2,3,2);
 title('d','FontSize',fontSize);
 xlabel('X','FontSize',fontSize);ylabel('Y','FontSize',fontSize); zlabel('Z','FontSize',fontSize); hold on;
-patch('Faces',F,'Vertices',V,'FaceColor','b','EdgeColor','none','FaceAlpha',1);
+patch('Faces',F,'Vertices',V,'FaceColor',pColors(2,:),'EdgeColor','none','FaceAlpha',1);
 axis equal; view(3); axis tight; axis vis3d; grid on;  
 set(gca,'FontSize',fontSize);
-camlight headlight; 
+camlight headlight; lighting phong;
+view(-50,30);
 
 [X,Y,Z]=meshgrid(linspace(-2*pi,2*pi,n));
 S=triplyPeriodicMinimal(X,Y,Z,'g');
@@ -50,10 +54,11 @@ S=triplyPeriodicMinimal(X,Y,Z,'g');
 subplot(2,3,3);
 title('Gyroid','FontSize',fontSize);
 xlabel('X','FontSize',fontSize);ylabel('Y','FontSize',fontSize); zlabel('Z','FontSize',fontSize); hold on;
-patch('Faces',F,'Vertices',V,'FaceColor','b','EdgeColor','none','FaceAlpha',1);
+patch('Faces',F,'Vertices',V,'FaceColor',pColors(3,:),'EdgeColor','none','FaceAlpha',1);
 axis equal; view(3); axis tight; axis vis3d; grid on;  
 set(gca,'FontSize',fontSize);
-camlight headlight; 
+camlight headlight; lighting phong;
+view(-50,30);
 
 [X,Y,Z]=meshgrid(linspace(-pi,pi,n));
 S=triplyPeriodicMinimal(X,Y,Z,'n');
@@ -62,10 +67,11 @@ S=triplyPeriodicMinimal(X,Y,Z,'n');
 subplot(2,3,4);
 title('Neovius','FontSize',fontSize);
 xlabel('X','FontSize',fontSize);ylabel('Y','FontSize',fontSize); zlabel('Z','FontSize',fontSize); hold on;
-patch('Faces',F,'Vertices',V,'FaceColor','b','EdgeColor','none','FaceAlpha',1);
+patch('Faces',F,'Vertices',V,'FaceColor',pColors(4,:),'EdgeColor','none','FaceAlpha',1);
 axis equal; view(3); axis tight; axis vis3d; grid on;  
 set(gca,'FontSize',fontSize);
-camlight headlight; 
+camlight headlight; lighting phong;
+view(-50,30);
 
 [X,Y,Z]=meshgrid(linspace(-pi,pi,n));
 S=triplyPeriodicMinimal(X,Y,Z,'w');
@@ -74,10 +80,11 @@ S=triplyPeriodicMinimal(X,Y,Z,'w');
 subplot(2,3,5);
 title('w','FontSize',fontSize);
 xlabel('X','FontSize',fontSize);ylabel('Y','FontSize',fontSize); zlabel('Z','FontSize',fontSize); hold on;
-patch('Faces',F,'Vertices',V,'FaceColor','b','EdgeColor','none','FaceAlpha',1);
+patch('Faces',F,'Vertices',V,'FaceColor',pColors(5,:),'EdgeColor','none','FaceAlpha',1);
 axis equal; view(3); axis tight; axis vis3d; grid on;  
 set(gca,'FontSize',fontSize);
-camlight headlight; 
+camlight headlight; lighting phong;
+view(-50,30);
 
 [X,Y,Z]=meshgrid(linspace(-pi,pi,n));
 S=triplyPeriodicMinimal(X,Y,Z,'pw');
@@ -86,10 +93,11 @@ S=triplyPeriodicMinimal(X,Y,Z,'pw');
 subplot(2,3,6);
 title('pw','FontSize',fontSize);
 xlabel('X','FontSize',fontSize);ylabel('Y','FontSize',fontSize); zlabel('Z','FontSize',fontSize); hold on;
-patch('Faces',F,'Vertices',V,'FaceColor','b','EdgeColor','none','FaceAlpha',1);
+patch('Faces',F,'Vertices',V,'FaceColor',pColors(6,:),'EdgeColor','none','FaceAlpha',1);
 axis equal; view(3); axis tight; axis vis3d; grid on;  
 set(gca,'FontSize',fontSize);
-camlight headlight; 
+camlight headlight; lighting phong;
+view(-50,30);
 
 drawnow;
 

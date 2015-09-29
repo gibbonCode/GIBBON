@@ -6,7 +6,7 @@
    <!--
 This HTML was auto-generated from MATLAB code.
 To make changes, update the MATLAB code and republish this document.
-      --><title>triplyPeriodicMinimal</title><meta name="generator" content="MATLAB 8.4"><link rel="schema.DC" href="http://purl.org/dc/elements/1.1/"><meta name="DC.date" content="2015-02-19"><meta name="DC.source" content="HELP_triplyPeriodicMinimal.m"><style type="text/css">
+      --><title>triplyPeriodicMinimal</title><meta name="generator" content="MATLAB 8.6"><link rel="schema.DC" href="http://purl.org/dc/elements/1.1/"><meta name="DC.date" content="2015-09-28"><meta name="DC.source" content="HELP_triplyPeriodicMinimal.m"><style type="text/css">
 html,body,div,span,applet,object,iframe,h1,h2,h3,h4,h5,h6,p,blockquote,pre,a,abbr,acronym,address,big,cite,code,del,dfn,em,font,img,ins,kbd,q,s,samp,small,strike,strong,sub,sup,tt,var,b,u,i,center,dl,dt,dd,ol,ul,li,fieldset,form,label,legend,table,caption,tbody,tfoot,thead,tr,th,td{margin:0;padding:0;border:0;outline:0;font-size:100%;vertical-align:baseline;background:transparent}body{line-height:1}ol,ul{list-style:none}blockquote,q{quotes:none}blockquote:before,blockquote:after,q:before,q:after{content:'';content:none}:focus{outine:0}ins{text-decoration:none}del{text-decoration:line-through}table{border-collapse:collapse;border-spacing:0}
 
 html { min-height:100%; margin-bottom:1px; }
@@ -73,7 +73,9 @@ faceAlpha2=0.65;
 edgeColor1=<span class="string">'none'</span>;
 edgeColor2=<span class="string">'none'</span>;
 fontSize=15;
-</pre><h2>SURFACE VISUALIZATIONS<a name="3"></a></h2><pre class="codeinput">n=50;
+</pre><h2>SURFACE VISUALIZATIONS<a name="3"></a></h2><pre class="codeinput">pColors=gjet(6);
+
+n=35;
 
 cFigure;
 
@@ -84,10 +86,11 @@ S=triplyPeriodicMinimal(X,Y,Z,<span class="string">'p'</span>);
 subplot(2,3,1);
 title(<span class="string">'Schwarz P-surface'</span>,<span class="string">'FontSize'</span>,fontSize);
 xlabel(<span class="string">'X'</span>,<span class="string">'FontSize'</span>,fontSize);ylabel(<span class="string">'Y'</span>,<span class="string">'FontSize'</span>,fontSize); zlabel(<span class="string">'Z'</span>,<span class="string">'FontSize'</span>,fontSize); hold <span class="string">on</span>;
-patch(<span class="string">'Faces'</span>,F,<span class="string">'Vertices'</span>,V,<span class="string">'FaceColor'</span>,<span class="string">'b'</span>,<span class="string">'EdgeColor'</span>,<span class="string">'none'</span>,<span class="string">'FaceAlpha'</span>,1);
+patch(<span class="string">'Faces'</span>,F,<span class="string">'Vertices'</span>,V,<span class="string">'FaceColor'</span>,pColors(1,:),<span class="string">'EdgeColor'</span>,<span class="string">'none'</span>,<span class="string">'FaceAlpha'</span>,1);
 axis <span class="string">equal</span>; view(3); axis <span class="string">tight</span>; axis <span class="string">vis3d</span>; grid <span class="string">on</span>;
 set(gca,<span class="string">'FontSize'</span>,fontSize);
-camlight <span class="string">headlight</span>;
+camlight <span class="string">headlight</span>; lighting <span class="string">phong</span>;
+view(-50,30);
 
 [X,Y,Z]=meshgrid(linspace(-pi,pi,n));
 S=triplyPeriodicMinimal(X,Y,Z,<span class="string">'d'</span>);
@@ -96,10 +99,11 @@ S=triplyPeriodicMinimal(X,Y,Z,<span class="string">'d'</span>);
 subplot(2,3,2);
 title(<span class="string">'d'</span>,<span class="string">'FontSize'</span>,fontSize);
 xlabel(<span class="string">'X'</span>,<span class="string">'FontSize'</span>,fontSize);ylabel(<span class="string">'Y'</span>,<span class="string">'FontSize'</span>,fontSize); zlabel(<span class="string">'Z'</span>,<span class="string">'FontSize'</span>,fontSize); hold <span class="string">on</span>;
-patch(<span class="string">'Faces'</span>,F,<span class="string">'Vertices'</span>,V,<span class="string">'FaceColor'</span>,<span class="string">'b'</span>,<span class="string">'EdgeColor'</span>,<span class="string">'none'</span>,<span class="string">'FaceAlpha'</span>,1);
+patch(<span class="string">'Faces'</span>,F,<span class="string">'Vertices'</span>,V,<span class="string">'FaceColor'</span>,pColors(2,:),<span class="string">'EdgeColor'</span>,<span class="string">'none'</span>,<span class="string">'FaceAlpha'</span>,1);
 axis <span class="string">equal</span>; view(3); axis <span class="string">tight</span>; axis <span class="string">vis3d</span>; grid <span class="string">on</span>;
 set(gca,<span class="string">'FontSize'</span>,fontSize);
-camlight <span class="string">headlight</span>;
+camlight <span class="string">headlight</span>; lighting <span class="string">phong</span>;
+view(-50,30);
 
 [X,Y,Z]=meshgrid(linspace(-2*pi,2*pi,n));
 S=triplyPeriodicMinimal(X,Y,Z,<span class="string">'g'</span>);
@@ -108,10 +112,11 @@ S=triplyPeriodicMinimal(X,Y,Z,<span class="string">'g'</span>);
 subplot(2,3,3);
 title(<span class="string">'Gyroid'</span>,<span class="string">'FontSize'</span>,fontSize);
 xlabel(<span class="string">'X'</span>,<span class="string">'FontSize'</span>,fontSize);ylabel(<span class="string">'Y'</span>,<span class="string">'FontSize'</span>,fontSize); zlabel(<span class="string">'Z'</span>,<span class="string">'FontSize'</span>,fontSize); hold <span class="string">on</span>;
-patch(<span class="string">'Faces'</span>,F,<span class="string">'Vertices'</span>,V,<span class="string">'FaceColor'</span>,<span class="string">'b'</span>,<span class="string">'EdgeColor'</span>,<span class="string">'none'</span>,<span class="string">'FaceAlpha'</span>,1);
+patch(<span class="string">'Faces'</span>,F,<span class="string">'Vertices'</span>,V,<span class="string">'FaceColor'</span>,pColors(3,:),<span class="string">'EdgeColor'</span>,<span class="string">'none'</span>,<span class="string">'FaceAlpha'</span>,1);
 axis <span class="string">equal</span>; view(3); axis <span class="string">tight</span>; axis <span class="string">vis3d</span>; grid <span class="string">on</span>;
 set(gca,<span class="string">'FontSize'</span>,fontSize);
-camlight <span class="string">headlight</span>;
+camlight <span class="string">headlight</span>; lighting <span class="string">phong</span>;
+view(-50,30);
 
 [X,Y,Z]=meshgrid(linspace(-pi,pi,n));
 S=triplyPeriodicMinimal(X,Y,Z,<span class="string">'n'</span>);
@@ -120,10 +125,11 @@ S=triplyPeriodicMinimal(X,Y,Z,<span class="string">'n'</span>);
 subplot(2,3,4);
 title(<span class="string">'Neovius'</span>,<span class="string">'FontSize'</span>,fontSize);
 xlabel(<span class="string">'X'</span>,<span class="string">'FontSize'</span>,fontSize);ylabel(<span class="string">'Y'</span>,<span class="string">'FontSize'</span>,fontSize); zlabel(<span class="string">'Z'</span>,<span class="string">'FontSize'</span>,fontSize); hold <span class="string">on</span>;
-patch(<span class="string">'Faces'</span>,F,<span class="string">'Vertices'</span>,V,<span class="string">'FaceColor'</span>,<span class="string">'b'</span>,<span class="string">'EdgeColor'</span>,<span class="string">'none'</span>,<span class="string">'FaceAlpha'</span>,1);
+patch(<span class="string">'Faces'</span>,F,<span class="string">'Vertices'</span>,V,<span class="string">'FaceColor'</span>,pColors(4,:),<span class="string">'EdgeColor'</span>,<span class="string">'none'</span>,<span class="string">'FaceAlpha'</span>,1);
 axis <span class="string">equal</span>; view(3); axis <span class="string">tight</span>; axis <span class="string">vis3d</span>; grid <span class="string">on</span>;
 set(gca,<span class="string">'FontSize'</span>,fontSize);
-camlight <span class="string">headlight</span>;
+camlight <span class="string">headlight</span>; lighting <span class="string">phong</span>;
+view(-50,30);
 
 [X,Y,Z]=meshgrid(linspace(-pi,pi,n));
 S=triplyPeriodicMinimal(X,Y,Z,<span class="string">'w'</span>);
@@ -132,10 +138,11 @@ S=triplyPeriodicMinimal(X,Y,Z,<span class="string">'w'</span>);
 subplot(2,3,5);
 title(<span class="string">'w'</span>,<span class="string">'FontSize'</span>,fontSize);
 xlabel(<span class="string">'X'</span>,<span class="string">'FontSize'</span>,fontSize);ylabel(<span class="string">'Y'</span>,<span class="string">'FontSize'</span>,fontSize); zlabel(<span class="string">'Z'</span>,<span class="string">'FontSize'</span>,fontSize); hold <span class="string">on</span>;
-patch(<span class="string">'Faces'</span>,F,<span class="string">'Vertices'</span>,V,<span class="string">'FaceColor'</span>,<span class="string">'b'</span>,<span class="string">'EdgeColor'</span>,<span class="string">'none'</span>,<span class="string">'FaceAlpha'</span>,1);
+patch(<span class="string">'Faces'</span>,F,<span class="string">'Vertices'</span>,V,<span class="string">'FaceColor'</span>,pColors(5,:),<span class="string">'EdgeColor'</span>,<span class="string">'none'</span>,<span class="string">'FaceAlpha'</span>,1);
 axis <span class="string">equal</span>; view(3); axis <span class="string">tight</span>; axis <span class="string">vis3d</span>; grid <span class="string">on</span>;
 set(gca,<span class="string">'FontSize'</span>,fontSize);
-camlight <span class="string">headlight</span>;
+camlight <span class="string">headlight</span>; lighting <span class="string">phong</span>;
+view(-50,30);
 
 [X,Y,Z]=meshgrid(linspace(-pi,pi,n));
 S=triplyPeriodicMinimal(X,Y,Z,<span class="string">'pw'</span>);
@@ -144,10 +151,11 @@ S=triplyPeriodicMinimal(X,Y,Z,<span class="string">'pw'</span>);
 subplot(2,3,6);
 title(<span class="string">'pw'</span>,<span class="string">'FontSize'</span>,fontSize);
 xlabel(<span class="string">'X'</span>,<span class="string">'FontSize'</span>,fontSize);ylabel(<span class="string">'Y'</span>,<span class="string">'FontSize'</span>,fontSize); zlabel(<span class="string">'Z'</span>,<span class="string">'FontSize'</span>,fontSize); hold <span class="string">on</span>;
-patch(<span class="string">'Faces'</span>,F,<span class="string">'Vertices'</span>,V,<span class="string">'FaceColor'</span>,<span class="string">'b'</span>,<span class="string">'EdgeColor'</span>,<span class="string">'none'</span>,<span class="string">'FaceAlpha'</span>,1);
+patch(<span class="string">'Faces'</span>,F,<span class="string">'Vertices'</span>,V,<span class="string">'FaceColor'</span>,pColors(6,:),<span class="string">'EdgeColor'</span>,<span class="string">'none'</span>,<span class="string">'FaceAlpha'</span>,1);
 axis <span class="string">equal</span>; view(3); axis <span class="string">tight</span>; axis <span class="string">vis3d</span>; grid <span class="string">on</span>;
 set(gca,<span class="string">'FontSize'</span>,fontSize);
-camlight <span class="string">headlight</span>;
+camlight <span class="string">headlight</span>; lighting <span class="string">phong</span>;
+view(-50,30);
 
 drawnow;
 </pre><img vspace="5" hspace="5" src="HELP_triplyPeriodicMinimal_01.png" alt=""> <h2>EXAMPLE SIMULATING REGULARIZED TRABECULAE OR POROUS MEDIA<a name="4"></a></h2><pre class="codeinput">n=50;
@@ -183,7 +191,7 @@ caxis([min(S(:)) max(S(:))]);
 set(gca,<span class="string">'FontSize'</span>,fontSize);
 
 drawnow;
-</pre><img vspace="5" hspace="5" src="HELP_triplyPeriodicMinimal_02.png" alt=""> <p><img vspace="5" hspace="5" src="gibbVerySmall.gif" alt=""> </p><p><i><b>GIBBON</b></i> <a href="www.gibboncode.org">www.gibboncode.org</a></p><p><i>Kevin Mattheus Moerman</i>, <a href="gibbon.toolbox@gmail.com">gibbon.toolbox@gmail.com</a></p><p class="footer"><br><a href="http://www.mathworks.com/products/matlab/">Published with MATLAB&reg; R2014b</a><br></p></div><!--
+</pre><img vspace="5" hspace="5" src="HELP_triplyPeriodicMinimal_02.png" alt=""> <p><img vspace="5" hspace="5" src="gibbVerySmall.gif" alt=""> </p><p><i><b>GIBBON</b></i> <a href="www.gibboncode.org">www.gibboncode.org</a></p><p><i>Kevin Mattheus Moerman</i>, <a href="gibbon.toolbox@gmail.com">gibbon.toolbox@gmail.com</a></p><p class="footer"><br><a href="http://www.mathworks.com/products/matlab/">Published with MATLAB&reg; R2015b</a><br></p></div><!--
 ##### SOURCE BEGIN #####
 %% triplyPeriodicMinimal
 % Below is a demonstration of the features of the |triplyPeriodicMinimal| function
@@ -202,7 +210,9 @@ fontSize=15;
 
 %% SURFACE VISUALIZATIONS
 
-n=50;
+pColors=gjet(6);
+
+n=35;
 
 cFigure;
 
@@ -213,10 +223,11 @@ S=triplyPeriodicMinimal(X,Y,Z,'p');
 subplot(2,3,1);
 title('Schwarz P-surface','FontSize',fontSize);
 xlabel('X','FontSize',fontSize);ylabel('Y','FontSize',fontSize); zlabel('Z','FontSize',fontSize); hold on;
-patch('Faces',F,'Vertices',V,'FaceColor','b','EdgeColor','none','FaceAlpha',1);
+patch('Faces',F,'Vertices',V,'FaceColor',pColors(1,:),'EdgeColor','none','FaceAlpha',1);
 axis equal; view(3); axis tight; axis vis3d; grid on;  
 set(gca,'FontSize',fontSize);
-camlight headlight; 
+camlight headlight; lighting phong;
+view(-50,30);
 
 [X,Y,Z]=meshgrid(linspace(-pi,pi,n));
 S=triplyPeriodicMinimal(X,Y,Z,'d');
@@ -225,10 +236,11 @@ S=triplyPeriodicMinimal(X,Y,Z,'d');
 subplot(2,3,2);
 title('d','FontSize',fontSize);
 xlabel('X','FontSize',fontSize);ylabel('Y','FontSize',fontSize); zlabel('Z','FontSize',fontSize); hold on;
-patch('Faces',F,'Vertices',V,'FaceColor','b','EdgeColor','none','FaceAlpha',1);
+patch('Faces',F,'Vertices',V,'FaceColor',pColors(2,:),'EdgeColor','none','FaceAlpha',1);
 axis equal; view(3); axis tight; axis vis3d; grid on;  
 set(gca,'FontSize',fontSize);
-camlight headlight; 
+camlight headlight; lighting phong;
+view(-50,30);
 
 [X,Y,Z]=meshgrid(linspace(-2*pi,2*pi,n));
 S=triplyPeriodicMinimal(X,Y,Z,'g');
@@ -237,10 +249,11 @@ S=triplyPeriodicMinimal(X,Y,Z,'g');
 subplot(2,3,3);
 title('Gyroid','FontSize',fontSize);
 xlabel('X','FontSize',fontSize);ylabel('Y','FontSize',fontSize); zlabel('Z','FontSize',fontSize); hold on;
-patch('Faces',F,'Vertices',V,'FaceColor','b','EdgeColor','none','FaceAlpha',1);
+patch('Faces',F,'Vertices',V,'FaceColor',pColors(3,:),'EdgeColor','none','FaceAlpha',1);
 axis equal; view(3); axis tight; axis vis3d; grid on;  
 set(gca,'FontSize',fontSize);
-camlight headlight; 
+camlight headlight; lighting phong;
+view(-50,30);
 
 [X,Y,Z]=meshgrid(linspace(-pi,pi,n));
 S=triplyPeriodicMinimal(X,Y,Z,'n');
@@ -249,10 +262,11 @@ S=triplyPeriodicMinimal(X,Y,Z,'n');
 subplot(2,3,4);
 title('Neovius','FontSize',fontSize);
 xlabel('X','FontSize',fontSize);ylabel('Y','FontSize',fontSize); zlabel('Z','FontSize',fontSize); hold on;
-patch('Faces',F,'Vertices',V,'FaceColor','b','EdgeColor','none','FaceAlpha',1);
+patch('Faces',F,'Vertices',V,'FaceColor',pColors(4,:),'EdgeColor','none','FaceAlpha',1);
 axis equal; view(3); axis tight; axis vis3d; grid on;  
 set(gca,'FontSize',fontSize);
-camlight headlight; 
+camlight headlight; lighting phong;
+view(-50,30);
 
 [X,Y,Z]=meshgrid(linspace(-pi,pi,n));
 S=triplyPeriodicMinimal(X,Y,Z,'w');
@@ -261,10 +275,11 @@ S=triplyPeriodicMinimal(X,Y,Z,'w');
 subplot(2,3,5);
 title('w','FontSize',fontSize);
 xlabel('X','FontSize',fontSize);ylabel('Y','FontSize',fontSize); zlabel('Z','FontSize',fontSize); hold on;
-patch('Faces',F,'Vertices',V,'FaceColor','b','EdgeColor','none','FaceAlpha',1);
+patch('Faces',F,'Vertices',V,'FaceColor',pColors(5,:),'EdgeColor','none','FaceAlpha',1);
 axis equal; view(3); axis tight; axis vis3d; grid on;  
 set(gca,'FontSize',fontSize);
-camlight headlight; 
+camlight headlight; lighting phong;
+view(-50,30);
 
 [X,Y,Z]=meshgrid(linspace(-pi,pi,n));
 S=triplyPeriodicMinimal(X,Y,Z,'pw');
@@ -273,10 +288,11 @@ S=triplyPeriodicMinimal(X,Y,Z,'pw');
 subplot(2,3,6);
 title('pw','FontSize',fontSize);
 xlabel('X','FontSize',fontSize);ylabel('Y','FontSize',fontSize); zlabel('Z','FontSize',fontSize); hold on;
-patch('Faces',F,'Vertices',V,'FaceColor','b','EdgeColor','none','FaceAlpha',1);
+patch('Faces',F,'Vertices',V,'FaceColor',pColors(6,:),'EdgeColor','none','FaceAlpha',1);
 axis equal; view(3); axis tight; axis vis3d; grid on;  
 set(gca,'FontSize',fontSize);
-camlight headlight; 
+camlight headlight; lighting phong;
+view(-50,30);
 
 drawnow;
 

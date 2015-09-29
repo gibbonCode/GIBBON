@@ -26,18 +26,18 @@ gelRadius=119/2;
 gelHeight=100;
 
 sphereRadius=30/2; % The radius of the hemi-spher portion
-nRefine=2;  % Number of |subtri| refinements for icosahedron
+nRefine=1;  % Number of |subtri| refinements for icosahedron
 cylinderHeight=55/2;  % height of the cylinder part
-pointSpacing=10; % Aproximate node spacing for cylinder portion
+pointSpacing=15; % Aproximate node spacing for cylinder portion
 distanceSplitSteps=[45 25];
 minEdgeSizeFactor=0.2;
-maxEdgeSizeFactor=4;
+maxEdgeSizeFactor=3;
 sizeFactor=3;
 initialSpacing=0.1;
 bcPrescribeMagnitudes=[0 0 -15-initialSpacing]; %NB desired and effect of initial spacing
 indentorShellThickness=0.01;
 
-contactType=2; %1=sticky, 2=sliding/friction
+contactType=2; %1=sticky, 2=facet to facet sliding, 3=sliding_with_gaps
 
 tetTypeOpt=1; %Element type
 switch tetTypeOpt
@@ -49,15 +49,16 @@ switch tetTypeOpt
         nSteps=10;
         max_refs=25;
         max_ups=10;
-
+        contactPenalty=100;
     case 2
         tetType='tet10';
         triSurfType='tri6';
         
         %Control settings
-        nSteps=30;
+        nSteps=20;
         max_refs=25;
-        max_ups=0;
+        max_ups=10;
+        contactPenalty=50;
 end
 
 
@@ -97,10 +98,19 @@ Vs=[V1;V2];
 Fs=[F1;F2+size(V1,1);];
 [~,ind1,ind2]=unique(pround(Vs,5),'rows');
 Fs=ind2(Fs);
+ind=ind2(indList(1:end-1));
 Vs=Vs(ind1,:);
 
 %Shift so sphere tip is at 0,0,0
 Vs(:,3)=Vs(:,3)-min(Vs(:,3))+initialSpacing;
+
+%Smoothen transition region (only move shared nodes)
+L=true(size(Vs,1),1);
+L(ind)=0;
+cParSmooth.Method='HC';
+cParSmooth.n=50;
+cParSmooth.RigidConstraints=find(L);
+[Vs]=tesSmooth(Fs,Vs,[],cParSmooth);
 
 %%
 
@@ -114,6 +124,9 @@ hp=patchNormPlot(Fs,Vs,2); %Show face normals
 
 % patch('Faces',F1,'Vertices',V1,'FaceColor','g','EdgeColor','k');
 % patch('Faces',F2,'Vertices',V2,'FaceColor','r','EdgeColor','k');
+% ind=[1:cPar.numSteps:100];
+
+% plotV(Vs(L,:),'r.','MarkerSize',25);
 
 axis equal; view(3); axis tight;  axis vis3d; grid off;  set(gca,'FontSize',fontSize);
 camlight headlight;
@@ -313,6 +326,7 @@ patch('Faces',Fm_contact,'Vertices',V,'FaceColor','none','edgeColor','g','lineWi
 plotV(V(indBC_fix,:),'r.','lineWidth',lineWidth1,'MarkerSize',markerSize1);
 plotV(V(indIndentor,:),'k.','lineWidth',lineWidth1,'MarkerSize',markerSize1);
 axis equal; view(3); axis tight;  axis vis3d; grid off;  set(gca,'FontSize',fontSize);
+camlight headlight;
 
 subplot(1,2,2);
 title('Cut view of Solid tetrahedral mesh model','FontSize',fontSize);
@@ -348,7 +362,7 @@ FEB_struct.Geometry.ElementsPartName={'Gel','Indentor'};
 
 %Material 1: Gel
 c1=1e-3;
-k=c1*1e3;
+k=c1*50;
 FEB_struct.Materials{1}.Type='Ogden';
 FEB_struct.Materials{1}.Name='gel_mat';
 FEB_struct.Materials{1}.Properties={'c1','m1','k'};
@@ -395,7 +409,7 @@ switch contactType
     case 1 %STICKY
         FEB_struct.Contact{1}.Type='sticky';
         FEB_struct.Contact{1}.Properties={'laugon','tolerance','penalty','minaug','maxaug','search_tolerance','max_traction','snap_tol'};
-        FEB_struct.Contact{1}.Values={0,0.1,100,0,10,0.01,0,0.01};
+        FEB_struct.Contact{1}.Values={0,0.1,contactPenalty,0,10,0.01,0,0.01};
     case 2 %SLIDING facet-facet
         FEB_struct.Contact{1}.Type='facet-to-facet sliding';
         FEB_struct.Contact{1}.Properties={'penalty','auto_penalty','two_pass',...
@@ -403,7 +417,7 @@ switch contactType
             'gaptol','minaug','maxaug',...
             'seg_up',...
             'search_tol'};
-        FEB_struct.Contact{1}.Values={100,1,0,...
+        FEB_struct.Contact{1}.Values={contactPenalty,1,0,...
             0,0.1,...
             0,0,10,...
             0,...
@@ -416,7 +430,7 @@ switch contactType
             'fric_coeff','fric_penalty',...
             'seg_up',...
             'search_tol'};
-        FEB_struct.Contact{1}.Values={50,1,0,...
+        FEB_struct.Contact{1}.Values={contactPenalty,1,0,...
             0,0.1,...
             0,0,10,...
             0,1,...
@@ -510,6 +524,7 @@ patch('Faces',Fb,'Vertices',V_def,'FaceColor','flat','CData',Cb,'EdgeColor','k')
 
 patch('Faces',Fm_contact,'Vertices',V_def,'FaceColor','none','edgeColor','g','lineWidth',lineWidth1);
 axis equal; view(3); axis tight;  axis vis3d; grid off;  set(gca,'FontSize',fontSize);
+camlight headlight;
 
 subplot(1,2,2);
 title('Cut view of Solid tetrahedral mesh model','FontSize',fontSize);
