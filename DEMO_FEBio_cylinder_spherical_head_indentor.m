@@ -61,8 +61,6 @@ switch tetTypeOpt
         contactPenalty=50;
 end
 
-
-
 %% Build indentor sphere
 
 hemiStruct.sphereRadius=sphereRadius; %Sphere radius
@@ -277,7 +275,7 @@ inputStruct.tetType=tetType; %Element type
 
 %%
 % Call TetView to view the model
-% runTetView(meshOutput.loadNameStruct.loadName_ele);
+runTetView(meshOutput.loadNameStruct.loadName_ele);
 
 %%
 % Access model element and patch data

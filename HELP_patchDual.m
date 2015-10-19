@@ -12,8 +12,10 @@ faceAlpha=0.5;
 plotColor1=0.2.*ones(1,3);
 plotColor2=0.5.*ones(1,3);
 edgeWidth=3;
-markerSize=10;
+markerSize=15;
 cmap=autumn(250);
+figStruct.ColorDef='black';
+figStruct.Color='k';
 
 %% EXAMPLE: The "Buckminster Fuller" dome triangulation and its dual
 % The patch_dual function assumes that a valid and appropriate dual exists
@@ -30,12 +32,12 @@ n=2; %Refinements
 [Vd,Fd]=patch_dual(V,F);
 
 %Plotting results
-hf=cFigure;
+hf=cFigure(figStruct);
 hold on;
-title('A geodesic sphere triangulation and its dual consisting of pentagons and hexagons','FontSize',fontSize);
+% title('A geodesic sphere triangulation and its dual consisting of pentagons and hexagons','FontSize',fontSize);
 xlabel('X','FontSize',fontSize); ylabel('Y','FontSize',fontSize); zlabel('Z','FontSize',fontSize);
 hp=patch('Faces',F,'Vertices',V);
-set(hp,'FaceColor','none','EdgeColor',plotColor1,'LineWidth',2,'Marker','o','MarkerFaceColor',plotColor1,'MarkerEdgeColor','none','MarkerSize',markerSize);
+set(hp,'FaceColor','none','EdgeColor',plotColor2,'LineWidth',edgeWidth,'Marker','o','MarkerFaceColor',plotColor1,'MarkerEdgeColor','none','MarkerSize',markerSize);
 
 %Splitting up the plotting due to difference is face types (e.g.
 %pentagons,or hexagons)
@@ -43,12 +45,12 @@ for i=1:1:numel(Fd);
     Ft=Fd{i};
     hp=patch('Faces',Ft,'Vertices',Vd);
     C=rand(size(Ft,1),1); %Create random color
-    set(hp,'FaceColor','flat','CData',C,'FaceAlpha',0.7,'EdgeColor',plotColor2,'LineWidth',2,'Marker','o','MarkerFaceColor',plotColor2,'MarkerEdgeColor','none','MarkerSize',markerSize);
+    set(hp,'FaceColor','flat','CData',C,'FaceAlpha',0.6,'EdgeColor',plotColor2,'LineWidth',edgeWidth,'Marker','o','MarkerFaceColor',plotColor2,'MarkerEdgeColor','none','MarkerSize',markerSize);
 end
 colormap(cmap);
 axis equal; axis tight; view(3); axis vis3d; axis off; 
 set(gca,'FontSize',fontSize);
-camlight headlight;
+camlight headlight; lighting flat; 
 drawnow;
 
 %%
