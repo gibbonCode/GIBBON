@@ -5,7 +5,40 @@
 
 clear; close all; clc;
 
-%% SIMULATING BOUNDARY CURVES
+%% CREATING A REGION MESH
+
+%% 
+% Creating boundary curves 
+V1=[-1 -1; -1 1; 1 1; 1 -1];
+
+%% 
+% Meshing the region
+
+% The input variable regionCell is a cell array containing all the boundary
+% curves, e.g. for a two curve region 1 we would have something like
+% regionSpec{1}={V1,V2} where V1 and V2 are the boundary curves. Multiple
+% curves may be given here. The first curve should form the outer boundary
+% of the entire region, the curves that follow should define holes inside
+% this boundary and the space inside them is therefore not meshed. 
+
+%Defining a region
+regionCell={V1}; %A region between V1 and V2 (V2 forms a hole inside V1)
+
+plotOn=1; %This turns on/off plotting
+
+%Desired point spacing
+pointSpacing=0.1; 
+
+[F,V]=regionTriMesh2D(regionCell,pointSpacing,1,plotOn);
+plotV(V1,'b-','LineWidth',2);
+
+axis tight; view(3);
+zlim([0 eps(pi)/1000]);
+
+%% CREATING A REGION MESH WITH HOLES
+
+%% 
+% Creating boundary curves 
 
 %Boundary 1
 ns=150;
@@ -23,7 +56,9 @@ V2=[x(:) y(:)+4];
 [x,y] = pol2cart(t,2*ones(size(t)));
 V3=[x(:) y(:)-0.5];
 
-%% CREATING A REGION MESH
+%%
+% Meshing the region
+
 % The input variable regionCell is a cell array containing all the boundary
 % curves, e.g. for a two curve region 1 we would have something like
 % regionSpec{1}={V1,V2} where V1 and V2 are the boundary curves. Multiple

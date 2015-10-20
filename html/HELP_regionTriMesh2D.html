@@ -6,7 +6,7 @@
    <!--
 This HTML was auto-generated from MATLAB code.
 To make changes, update the MATLAB code and republish this document.
-      --><title>regionTriMesh2D</title><meta name="generator" content="MATLAB 8.4"><link rel="schema.DC" href="http://purl.org/dc/elements/1.1/"><meta name="DC.date" content="2014-10-01"><meta name="DC.source" content="HELP_regionTriMesh2D.m"><style type="text/css">
+      --><title>regionTriMesh2D</title><meta name="generator" content="MATLAB 8.6"><link rel="schema.DC" href="http://purl.org/dc/elements/1.1/"><meta name="DC.date" content="2015-10-20"><meta name="DC.source" content="HELP_regionTriMesh2D.m"><style type="text/css">
 html,body,div,span,applet,object,iframe,h1,h2,h3,h4,h5,h6,p,blockquote,pre,a,abbr,acronym,address,big,cite,code,del,dfn,em,font,img,ins,kbd,q,s,samp,small,strike,strong,sub,sup,tt,var,b,u,i,center,dl,dt,dd,ol,ul,li,fieldset,form,label,legend,table,caption,tbody,tfoot,thead,tr,th,td{margin:0;padding:0;border:0;outline:0;font-size:100%;vertical-align:baseline;background:transparent}body{line-height:1}ol,ul{list-style:none}blockquote,q{quotes:none}blockquote:before,blockquote:after,q:before,q:after{content:'';content:none}:focus{outine:0}ins{text-decoration:none}del{text-decoration:line-through}table{border-collapse:collapse;border-spacing:0}
 
 html { min-height:100%; margin-bottom:1px; }
@@ -66,8 +66,29 @@ table td { padding:7px 5px; text-align:left; vertical-align:top; border:1px soli
 
 
 
-  </style></head><body><div class="content"><h1>regionTriMesh2D</h1><!--introduction--><p>Below is a basic demonstration of the features of the <tt>regionTriMesh2D</tt> function.</p><!--/introduction--><h2>Contents</h2><div><ul><li><a href="#2">SIMULATING BOUNDARY CURVES</a></li><li><a href="#3">CREATING A REGION MESH</a></li></ul></div><pre class="codeinput">clear; close <span class="string">all</span>; clc;
-</pre><h2>SIMULATING BOUNDARY CURVES<a name="2"></a></h2><pre class="codeinput"><span class="comment">%Boundary 1</span>
+  </style></head><body><div class="content"><h1>regionTriMesh2D</h1><!--introduction--><p>Below is a basic demonstration of the features of the <tt>regionTriMesh2D</tt> function.</p><!--/introduction--><h2>Contents</h2><div><ul><li><a href="#2">CREATING A REGION MESH</a></li><li><a href="#5">CREATING A REGION MESH WITH HOLES</a></li></ul></div><pre class="codeinput">clear; close <span class="string">all</span>; clc;
+</pre><h2>CREATING A REGION MESH<a name="2"></a></h2><p>Creating boundary curves</p><pre class="codeinput">V1=[-1 -1; -1 1; 1 1; 1 -1];
+</pre><p>Meshing the region</p><pre class="codeinput"><span class="comment">% The input variable regionCell is a cell array containing all the boundary</span>
+<span class="comment">% curves, e.g. for a two curve region 1 we would have something like</span>
+<span class="comment">% regionSpec{1}={V1,V2} where V1 and V2 are the boundary curves. Multiple</span>
+<span class="comment">% curves may be given here. The first curve should form the outer boundary</span>
+<span class="comment">% of the entire region, the curves that follow should define holes inside</span>
+<span class="comment">% this boundary and the space inside them is therefore not meshed.</span>
+
+<span class="comment">%Defining a region</span>
+regionCell={V1}; <span class="comment">%A region between V1 and V2 (V2 forms a hole inside V1)</span>
+
+plotOn=1; <span class="comment">%This turns on/off plotting</span>
+
+<span class="comment">%Desired point spacing</span>
+pointSpacing=0.1;
+
+[F,V]=regionTriMesh2D(regionCell,pointSpacing,1,plotOn);
+plotV(V1,<span class="string">'b-'</span>,<span class="string">'LineWidth'</span>,2);
+
+axis <span class="string">tight</span>; view(3);
+zlim([0 eps(pi)/1000]);
+</pre><img vspace="5" hspace="5" src="HELP_regionTriMesh2D_01.png" alt=""> <h2>CREATING A REGION MESH WITH HOLES<a name="5"></a></h2><p>Creating boundary curves</p><pre class="codeinput"><span class="comment">%Boundary 1</span>
 ns=150;
 t=linspace(0,2*pi,ns);
 t=t(1:end-1);
@@ -82,7 +103,14 @@ V2=[x(:) y(:)+4];
 <span class="comment">%Boundary 3</span>
 [x,y] = pol2cart(t,2*ones(size(t)));
 V3=[x(:) y(:)-0.5];
-</pre><h2>CREATING A REGION MESH<a name="3"></a></h2><p>The input variable regionCell is a cell array containing all the boundary curves, e.g. for a two curve region 1 we would have something like regionSpec{1}={V1,V2} where V1 and V2 are the boundary curves. Multiple curves may be given here. The first curve should form the outer boundary of the entire region, the curves that follow should define holes inside this boundary and the space inside them is therefore not meshed.</p><pre class="codeinput"><span class="comment">%Defining a region</span>
+</pre><p>Meshing the region</p><pre class="codeinput"><span class="comment">% The input variable regionCell is a cell array containing all the boundary</span>
+<span class="comment">% curves, e.g. for a two curve region 1 we would have something like</span>
+<span class="comment">% regionSpec{1}={V1,V2} where V1 and V2 are the boundary curves. Multiple</span>
+<span class="comment">% curves may be given here. The first curve should form the outer boundary</span>
+<span class="comment">% of the entire region, the curves that follow should define holes inside</span>
+<span class="comment">% this boundary and the space inside them is therefore not meshed.</span>
+
+<span class="comment">%Defining a region</span>
 regionCell={V1,V2,V3}; <span class="comment">%A region between V1 and V2 (V2 forms a hole inside V1)</span>
 
 plotOn=1; <span class="comment">%This turns on/off plotting</span>
@@ -94,8 +122,9 @@ pointSpacing=0.5;
 plotV(V1,<span class="string">'b-'</span>,<span class="string">'LineWidth'</span>,2);
 plotV(V2,<span class="string">'b-'</span>,<span class="string">'LineWidth'</span>,2);
 plotV(V3,<span class="string">'b-'</span>,<span class="string">'LineWidth'</span>,2);
-axis <span class="string">tight</span>;
-</pre><img vspace="5" hspace="5" src="HELP_regionTriMesh2D_01.png" alt=""> <p><img vspace="5" hspace="5" src="gibbVerySmall.gif" alt=""> </p><p><i><b>GIBBON</b></i> <a href="www.gibboncode.org">www.gibboncode.org</a></p><p><i>Kevin Mattheus Moerman</i>, <a href="gibbon.toolbox@gmail.com">gibbon.toolbox@gmail.com</a></p><p class="footer"><br><a href="http://www.mathworks.com/products/matlab/">Published with MATLAB&reg; R2014b</a><br></p></div><!--
+axis <span class="string">tight</span>; view(3);
+zlim([0 eps(pi)/1000]);
+</pre><img vspace="5" hspace="5" src="HELP_regionTriMesh2D_02.png" alt=""> <p><img vspace="5" hspace="5" src="gibbVerySmall.gif" alt=""> </p><p><i><b>GIBBON</b></i> <a href="www.gibboncode.org">www.gibboncode.org</a></p><p><i>Kevin Mattheus Moerman</i>, <a href="gibbon.toolbox@gmail.com">gibbon.toolbox@gmail.com</a></p><p class="footer"><br><a href="http://www.mathworks.com/products/matlab/">Published with MATLAB&reg; R2015b</a><br></p></div><!--
 ##### SOURCE BEGIN #####
 %% regionTriMesh2D
 % Below is a basic demonstration of the features of the |regionTriMesh2D| function.
@@ -104,7 +133,40 @@ axis <span class="string">tight</span>;
 
 clear; close all; clc;
 
-%% SIMULATING BOUNDARY CURVES
+%% CREATING A REGION MESH
+
+%% 
+% Creating boundary curves 
+V1=[-1 -1; -1 1; 1 1; 1 -1];
+
+%% 
+% Meshing the region
+
+% The input variable regionCell is a cell array containing all the boundary
+% curves, e.g. for a two curve region 1 we would have something like
+% regionSpec{1}={V1,V2} where V1 and V2 are the boundary curves. Multiple
+% curves may be given here. The first curve should form the outer boundary
+% of the entire region, the curves that follow should define holes inside
+% this boundary and the space inside them is therefore not meshed. 
+
+%Defining a region
+regionCell={V1}; %A region between V1 and V2 (V2 forms a hole inside V1)
+
+plotOn=1; %This turns on/off plotting
+
+%Desired point spacing
+pointSpacing=0.1; 
+
+[F,V]=regionTriMesh2D(regionCell,pointSpacing,1,plotOn);
+plotV(V1,'b-','LineWidth',2);
+
+axis tight; view(3);
+zlim([0 eps(pi)/1000]);
+
+%% CREATING A REGION MESH WITH HOLES
+
+%% 
+% Creating boundary curves 
 
 %Boundary 1
 ns=150;
@@ -122,7 +184,9 @@ V2=[x(:) y(:)+4];
 [x,y] = pol2cart(t,2*ones(size(t)));
 V3=[x(:) y(:)-0.5];
 
-%% CREATING A REGION MESH
+%%
+% Meshing the region
+
 % The input variable regionCell is a cell array containing all the boundary
 % curves, e.g. for a two curve region 1 we would have something like
 % regionSpec{1}={V1,V2} where V1 and V2 are the boundary curves. Multiple
@@ -142,7 +206,8 @@ pointSpacing=0.5;
 plotV(V1,'b-','LineWidth',2);
 plotV(V2,'b-','LineWidth',2);
 plotV(V3,'b-','LineWidth',2);
-axis tight; 
+axis tight; view(3);
+zlim([0 eps(pi)/1000]);
 
 %% 
 %
