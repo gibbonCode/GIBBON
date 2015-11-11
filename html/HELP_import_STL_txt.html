@@ -6,7 +6,7 @@
    <!--
 This HTML was auto-generated from MATLAB code.
 To make changes, update the MATLAB code and republish this document.
-      --><title>import_STL_txt</title><meta name="generator" content="MATLAB 8.5"><link rel="schema.DC" href="http://purl.org/dc/elements/1.1/"><meta name="DC.date" content="2015-04-26"><meta name="DC.source" content="HELP_import_STL_txt.m"><style type="text/css">
+      --><title>import_STL_txt</title><meta name="generator" content="MATLAB 8.6"><link rel="schema.DC" href="http://purl.org/dc/elements/1.1/"><meta name="DC.date" content="2015-11-05"><meta name="DC.source" content="HELP_import_STL_txt.m"><style type="text/css">
 html,body,div,span,applet,object,iframe,h1,h2,h3,h4,h5,h6,p,blockquote,pre,a,abbr,acronym,address,big,cite,code,del,dfn,em,font,img,ins,kbd,q,s,samp,small,strike,strong,sub,sup,tt,var,b,u,i,center,dl,dt,dd,ol,ul,li,fieldset,form,label,legend,table,caption,tbody,tfoot,thead,tr,th,td{margin:0;padding:0;border:0;outline:0;font-size:100%;vertical-align:baseline;background:transparent}body{line-height:1}ol,ul{list-style:none}blockquote,q{quotes:none}blockquote:before,blockquote:after,q:before,q:after{content:'';content:none}:focus{outine:0}ins{text-decoration:none}del{text-decoration:line-through}table{border-collapse:collapse;border-spacing:0}
 
 html { min-height:100%; margin-bottom:1px; }
@@ -66,7 +66,7 @@ table td { padding:7px 5px; text-align:left; vertical-align:top; border:1px soli
 
 
 
-  </style></head><body><div class="content"><h1>import_STL_txt</h1><!--introduction--><p>Below is a demonstration of the features of the <tt>import_STL_txt</tt> function</p><!--/introduction--><h2>Contents</h2><div><ul><li><a href="#1">Syntax</a></li><li><a href="#2">Description</a></li><li><a href="#3">Examples</a></li><li><a href="#5">Import STL file as patch data</a></li><li><a href="#7">Importing a multi-solid STL file as patch data</a></li></ul></div><h2>Syntax<a name="1"></a></h2><p><tt>[stlStruct] = import_STL_txt(fileName);</tt></p><h2>Description<a name="2"></a></h2><p>Use <tt>import_STL_txt</tt> to import .txt type (as apposed to binary) STL files. The function supports multi-solid STL.</p><h2>Examples<a name="3"></a></h2><pre class="codeinput">clear; close <span class="string">all</span>; clc;
+  </style></head><body><div class="content"><h1>import_STL_txt</h1><!--introduction--><p>Below is a demonstration of the features of the <tt>import_STL_txt</tt> function</p><!--/introduction--><h2>Contents</h2><div><ul><li><a href="#1">Syntax</a></li><li><a href="#2">Description</a></li><li><a href="#3">Examples</a></li><li><a href="#5">Import STL file as patch data</a></li><li><a href="#8">Importing a multi-solid STL file as patch data</a></li></ul></div><h2>Syntax<a name="1"></a></h2><p><tt>[stlStruct] = import_STL_txt(fileName);</tt></p><h2>Description<a name="2"></a></h2><p>Use <tt>import_STL_txt</tt> to import .txt type (as apposed to binary) STL files. The function supports multi-solid STL.</p><h2>Examples<a name="3"></a></h2><pre class="codeinput">clear; close <span class="string">all</span>; clc;
 </pre><p>Plot settings</p><pre class="codeinput">faceAlpha1=1;
 faceAlpha2=0.5;
 fontSize=25;
@@ -74,10 +74,14 @@ fontSize=25;
 defaultFolder = fileparts(mfilename(<span class="string">'fullpath'</span>));
 pathName=fullfile(defaultFolder,<span class="string">'data'</span>,<span class="string">'STL'</span>);
 fileName=fullfile(pathName,<span class="string">'femur.stl'</span>);
+<span class="comment">% fileName=fullfile(pathName,'Panthera_pardus_AMNH11374.stl');</span>
 [stlStruct] = import_STL_txt(fileName);
 
 F=stlStruct.solidFaces{1};
 V=stlStruct.solidVertices{1};
+</pre><p>Merging nodes example</p><pre class="codeinput">[~,ind1,ind2]=unique(pround(V,5),<span class="string">'rows'</span>);
+V=V(ind1,:);
+F=ind2(F);
 </pre><p>Plotting the model</p><pre class="codeinput">cFigure;
 title(<span class="string">'Imported patch data from STL'</span>,<span class="string">'fontSize'</span>,fontSize);
 xlabel(<span class="string">'X'</span>,<span class="string">'fontSize'</span>,fontSize);ylabel(<span class="string">'Y'</span>,<span class="string">'fontSize'</span>,fontSize); zlabel(<span class="string">'Z'</span>,<span class="string">'fontSize'</span>,fontSize); hold <span class="string">on</span>;
@@ -88,7 +92,13 @@ view(3); axis <span class="string">equal</span>; axis <span class="string">tight
 camlight(<span class="string">'headlight'</span>);
 lighting <span class="string">phong</span>; axis <span class="string">off</span>;
 drawnow;
-</pre><img vspace="5" hspace="5" src="HELP_import_STL_txt_01.png" alt=""> <h2>Importing a multi-solid STL file as patch data<a name="7"></a></h2><pre class="codeinput"><span class="comment">%Set main folder</span>
+
+fdsafas
+</pre><pre class="codeoutput error">Undefined function or variable 'fdsafas'.
+
+Error in HELP_import_STL_txt (line 53)
+fdsafas
+</pre><h2>Importing a multi-solid STL file as patch data<a name="8"></a></h2><pre class="codeinput"><span class="comment">%Set main folder</span>
 defaultFolder = fileparts(mfilename(<span class="string">'fullpath'</span>));
 pathName=fullfile(defaultFolder,<span class="string">'data'</span>,<span class="string">'STL'</span>);
 fileName=fullfile(pathName,<span class="string">'stanford_bunny_multi.stl'</span>);
@@ -107,7 +117,7 @@ view(3); axis <span class="string">equal</span>; axis <span class="string">tight
 camlight(<span class="string">'headlight'</span>);
 lighting <span class="string">phong</span>; axis <span class="string">off</span>;
 drawnow;
-</pre><img vspace="5" hspace="5" src="HELP_import_STL_txt_02.png" alt=""> <p><img vspace="5" hspace="5" src="gibbVerySmall.gif" alt=""> </p><p><i><b>GIBBON</b></i> <a href="www.gibboncode.org">www.gibboncode.org</a></p><p><i>Kevin Mattheus Moerman</i>, <a href="gibbon.toolbox@gmail.com">gibbon.toolbox@gmail.com</a></p><p class="footer"><br><a href="http://www.mathworks.com/products/matlab/">Published with MATLAB&reg; R2015a</a><br></p></div><!--
+</pre><p><img vspace="5" hspace="5" src="gibbVerySmall.gif" alt=""> </p><p><i><b>GIBBON</b></i> <a href="www.gibboncode.org">www.gibboncode.org</a></p><p><i>Kevin Mattheus Moerman</i>, <a href="gibbon.toolbox@gmail.com">gibbon.toolbox@gmail.com</a></p><p class="footer"><br><a href="http://www.mathworks.com/products/matlab/">Published with MATLAB&reg; R2015b</a><br></p></div><!--
 ##### SOURCE BEGIN #####
 %% import_STL_txt
 % Below is a demonstration of the features of the |import_STL_txt| function
@@ -135,10 +145,17 @@ fontSize=25;
 defaultFolder = fileparts(mfilename('fullpath'));
 pathName=fullfile(defaultFolder,'data','STL'); 
 fileName=fullfile(pathName,'femur.stl'); 
+% fileName=fullfile(pathName,'Panthera_pardus_AMNH11374.stl'); 
 [stlStruct] = import_STL_txt(fileName);
 
 F=stlStruct.solidFaces{1};
 V=stlStruct.solidVertices{1};
+
+%%
+% Merging nodes example
+[~,ind1,ind2]=unique(pround(V,5),'rows');
+V=V(ind1,:);
+F=ind2(F);
 
 %%
 % Plotting the model
@@ -153,6 +170,8 @@ view(3); axis equal; axis tight; axis vis3d; grid on;
 camlight('headlight');
 lighting phong; axis off; 
 drawnow;
+
+fdsafas
 
 %% Importing a multi-solid STL file as patch data
 

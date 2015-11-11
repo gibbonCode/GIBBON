@@ -31,6 +31,12 @@ F=stlStruct.solidFaces{1};
 V=stlStruct.solidVertices{1};
 
 %%
+% Merging nodes example
+[~,ind1,ind2]=unique(pround(V,5),'rows');
+V=V(ind1,:);
+F=ind2(F);
+
+%%
 % Plotting the model
 
 cFigure;
@@ -43,6 +49,8 @@ view(3); axis equal; axis tight; axis vis3d; grid on;
 camlight('headlight');
 lighting phong; axis off; 
 drawnow;
+
+fdsafas
 
 %% Importing a multi-solid STL file as patch data
 
