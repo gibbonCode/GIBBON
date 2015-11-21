@@ -91,14 +91,14 @@ for q=1:1:2 %Direction cases
         E_mat=E_mat(:,2:end,:);
         
         %Derive x stretch
-        EX_mat=E_mat(:,2,:);
+        EX_mat=E_mat(:,1,:);
         EX_mat=squeeze(mean(EX_mat,1)); %Mean across elements
         stretch_sim_X=sqrt(2*EX_mat+1);
         stretch_sim_X=[1; stretch_sim_X(:)];
         stretch_sim_X_end=(stretch_sim_X(end));
         
         %Derive y stretch
-        EY_mat=E_mat(:,1,:);
+        EY_mat=E_mat(:,2,:);
         EY_mat=squeeze(mean(EY_mat,1)); %Mean across elements
         stretch_sim_Y=sqrt(2*EY_mat+1);
         stretch_sim_Y=[1; stretch_sim_Y(:)];
@@ -118,9 +118,17 @@ for q=1:1:2 %Direction cases
         stressDev=stress_cauchy_exp-stress_cauchy_sim_exp;        
         Fopt_stress=mean(abs(stressDev)./max(abs(stress_cauchy_exp)));
 
-        stretchDev=[exp(log(stretch_sim_Z_end)*-0.36) exp(log(stretch_sim_Z_end)*-0.65)]-[stretch_sim_X_end stretch_sim_Y_end];
+        switch q
+            case 1
+                stretchDev=[1./(sqrt(0.7)) 1./(sqrt(0.7))]-[stretch_sim_X_end stretch_sim_Y_end];
+            case 2
+                stretchDev=[exp(log(stretch_sim_Z_end)*-0.36) exp(log(stretch_sim_Z_end)*-0.65)]-[stretch_sim_X_end stretch_sim_Y_end];
+        end
+        
         Fopt_stretch=mean(abs(stretchDev));
         
+        [R_sq]=R_squared(stress_cauchy_sim_exp,stress_cauchy_exp);
+
     else %Output NaN
         stress_cauchy_sim=NaN(size(stretch_exp));
         stretch_sim_Z=NaN(size(stretch_exp));
@@ -136,6 +144,7 @@ for q=1:1:2 %Direction cases
     OPT_stats_out.stressDev{q}=stressDev;
     OPT_stats_out.stretchDev{q}=stretchDev;
     OPT_stats_out.Fopt(:,q)=[Fopt_stress Fopt_stretch];
+    OPT_stats_out.R_sq(q)=R_squared(stress_cauchy_exp,stress_cauchy_sim_exp);
     
 end
 

@@ -6,7 +6,7 @@
    <!--
 This HTML was auto-generated from MATLAB code.
 To make changes, update the MATLAB code and republish this document.
-      --><title>DEMO_FEBio_iFEA_uniaxial_transiso_02.m</title><meta name="generator" content="MATLAB 8.6"><link rel="schema.DC" href="http://purl.org/dc/elements/1.1/"><meta name="DC.date" content="2015-06-29"><meta name="DC.source" content="DEMO_FEBio_iFEA_uniaxial_transiso_02.m"><style type="text/css">
+      --><title>DEMO_FEBio_iFEA_uniaxial_transiso_02.m</title><meta name="generator" content="MATLAB 8.6"><link rel="schema.DC" href="http://purl.org/dc/elements/1.1/"><meta name="DC.date" content="2015-11-20"><meta name="DC.source" content="DEMO_FEBio_iFEA_uniaxial_transiso_02.m"><style type="text/css">
 html,body,div,span,applet,object,iframe,h1,h2,h3,h4,h5,h6,p,blockquote,pre,a,abbr,acronym,address,big,cite,code,del,dfn,em,font,img,ins,kbd,q,s,samp,small,strike,strong,sub,sup,tt,var,b,u,i,center,dl,dt,dd,ol,ul,li,fieldset,form,label,legend,table,caption,tbody,tfoot,thead,tr,th,td{margin:0;padding:0;border:0;outline:0;font-size:100%;vertical-align:baseline;background:transparent}body{line-height:1}ol,ul{list-style:none}blockquote,q{quotes:none}blockquote:before,blockquote:after,q:before,q:after{content:'';content:none}:focus{outine:0}ins{text-decoration:none}del{text-decoration:line-through}table{border-collapse:collapse;border-spacing:0}
 
 html { min-height:100%; margin-bottom:1px; }
@@ -83,7 +83,8 @@ fcolor2=0.5.*ones(1,3);
 filePath=mfilename(<span class="string">'fullpath'</span>);
 savePath=fullfile(fileparts(filePath),<span class="string">'data'</span>,<span class="string">'temp'</span>);
 
-modelName=fullfile(savePath,<span class="string">'iFEA_tempModel'</span>);
+modelEndName=<span class="string">'iFEA_tempModel'</span>;
+modelName=fullfile(savePath,modelEndName);
 
 <span class="comment">%Specifying dimensions and number of elements</span>
 sampleWidth=10;
@@ -100,11 +101,14 @@ stretchLoad=0.7;
 displacementMagnitude=[0 0 (stretchLoad*sampleHeight)-sampleHeight];
 
 <span class="comment">%Initial material parameter set</span>
-c1_ini=0.0003057450402;
-m1_ini=2.0065098364182;
-ksi_ini=0.0000905896368;
-beta_ini=3.2942189118588;
-f_ini=235.0920070558627 ;
+Q=0.5;
+
+c=6.115e-04;
+c1_ini=Q*c;
+m1_ini=2.007;
+ksi_ini=9.0590e-05;
+beta_ini=3.294;
+f_ini=235.1;
 
 k_factor=500;
 k_ini=(2*c1_ini+ksi_ini)*k_factor;
@@ -310,22 +314,23 @@ FEB_struct.Boundary.Prescribe{1}.Type=<span class="string">'relative'</span>;
 <span class="comment">%Load curves</span>
 FEB_struct.LoadData.LoadCurves.id=1;
 FEB_struct.LoadData.LoadCurves.type={<span class="string">'linear'</span>};
-FEB_struct.LoadData.LoadCurves.loadPoints={[0 0;1 1;]};
+<span class="comment">% FEB_struct.LoadData.LoadCurves.loadPoints={[0 0; 1/3 -1; 2/3 0; 1 1;]};</span>
+FEB_struct.LoadData.LoadCurves.loadPoints={[0 0; 1 1;]};
 
 <span class="comment">%Adding output requests</span>
 FEB_struct.Output.VarTypes={<span class="string">'displacement'</span>,<span class="string">'stress'</span>,<span class="string">'relative volume'</span>};
 
 <span class="comment">%Specify log file output</span>
-run_disp_output_name=[FEB_struct.run_filename(1:end-4),<span class="string">'_strain_out.txt'</span>];
-run_stress_output_name=[FEB_struct.run_filename(1:end-4),<span class="string">'_stress_out.txt'</span>];
+run_disp_output_name=[modelEndName,<span class="string">'_strain_out.txt'</span>];
+run_stress_output_name=[modelEndName,<span class="string">'_stress_out.txt'</span>];
 FEB_struct.run_output_names={run_disp_output_name,run_stress_output_name};
 FEB_struct.output_types={<span class="string">'element_data'</span>,<span class="string">'element_data'</span>};
-FEB_struct.data_types={<span class="string">'E1;E2;E3'</span>,<span class="string">'sz'</span>};
+FEB_struct.data_types={<span class="string">'Ex;Ey;Ez'</span>,<span class="string">'sz'</span>};
 </pre><h2>SAVING .FEB FILE<a name="13"></a></h2><pre class="codeinput">FEB_struct.disp_opt=0; <span class="comment">%Display waitbars option</span>
 febStruct2febFile(FEB_struct);
 </pre><pre class="codeoutput"> 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
---- Writing FEBio XML object --- 29-Jun-2015 14:28:04
+--- Writing FEBio XML object --- 20-Nov-2015 21:54:17
 Adding Control level
 Adding Globals level
 Adding Material level
@@ -345,7 +350,7 @@ Adding Output level
 ----&gt; Adding plotfile field
 ----&gt; Adding logfile field
 Writing .feb file
---- Done --- 29-Jun-2015 14:28:04
+--- Done --- 20-Nov-2015 21:54:17
 </pre><p>FEBioRunStruct.FEBioPath='C:\Program Files\febio2-2.2.6\bin\febio2.exe';</p><pre class="codeinput">FEBioRunStruct.run_filename=FEB_struct.run_filename;
 FEBioRunStruct.run_logname=FEB_struct.run_logname;
 FEBioRunStruct.disp_on=0;
@@ -354,7 +359,7 @@ FEBioRunStruct.runMode=<span class="string">'external'</span>;<span class="comme
 FEBioRunStruct.t_check=0.25; <span class="comment">%Time for checking log file (dont set too small)</span>
 FEBioRunStruct.maxtpi=1e99; <span class="comment">%Max analysis time</span>
 FEBioRunStruct.maxLogCheckTime=5; <span class="comment">%Max log file checking time</span>
-FEBioRunStruct.cleanUpFileList=FEB_struct.run_output_names; <span class="comment">%Files to remove prior to starting each job.</span>
+<span class="comment">% FEBioRunStruct.cleanUpFileList=FEB_struct.run_output_names; %Files to remove prior to starting each job.</span>
 </pre><h2>STARTING OPTIMISATION<a name="15"></a></h2><pre class="codeinput">objectiveStruct.P_ini=P_ini;
 objectiveStruct.stretch_exp=stretch_exp;
 objectiveStruct.FEBioRunStruct=FEBioRunStruct;
@@ -364,7 +369,7 @@ objectiveStruct.method=optimMethod;
 objectiveStruct.run_output_names=FEB_struct.run_output_names;
 objectiveStruct.stress_cauchy_exp=stress_cauchy_exp;
 P=objectiveStruct.P_ini;    <span class="comment">%Initial parameters</span>
-objectiveStruct.Pb_struct.xxlim=[[P(1)/100 2 P(2)/100 1 2]' [P(1)*100 50 P(2)*100 1e3 50]']; <span class="comment">%Parameter bounds</span>
+objectiveStruct.Pb_struct.xxlim=[[P(1)/100 2 P(3)/100 1 2]' [P(1)*100 50 P(3)*100 1e3 50]']; <span class="comment">%Parameter bounds</span>
 objectiveStruct.parNormFactors=P; <span class="comment">%This will normalize the paramters to ones(size(P))</span>
 objectiveStruct.Pb_struct.xx_c=P; <span class="comment">%Parameter constraining centre</span>
 
@@ -374,11 +379,9 @@ Pn=P./objectiveStruct.parNormFactors;
     <span class="comment">%Optimisation settings</span>
     maxNumberIterations=100; <span class="comment">%Maximum number of optimization iterations</span>
     maxNumberFunctionEvaluations=maxNumberIterations*10; <span class="comment">%Maximum number of function evaluations, N.B. multiple evaluations are used per iteration</span>
-    functionTolerance=1e-4; <span class="comment">%Tolerance on objective function value</span>
-    parameterTolerance=1e-4; <span class="comment">%Tolerance on parameter variation</span>
+    functionTolerance=1e-6; <span class="comment">%Tolerance on objective function value</span>
+    parameterTolerance=1e-6; <span class="comment">%Tolerance on parameter variation</span>
     displayTypeIterations=<span class="string">'iter'</span>;
-
-
 
     <span class="keyword">switch</span> objectiveStruct.method
         <span class="keyword">case</span> 1 <span class="comment">%fminsearch and Nelder-Mead</span>
@@ -388,8 +391,8 @@ Pn=P./objectiveStruct.parNormFactors;
                 <span class="string">'TolFun'</span>,functionTolerance,<span class="keyword">...</span>
                 <span class="string">'TolX'</span>,parameterTolerance,<span class="keyword">...</span>
                 <span class="string">'Display'</span>,displayTypeIterations,<span class="keyword">...</span>
-                <span class="string">'FinDiffRelStep'</span>,0.01,<span class="keyword">...</span>
-                <span class="string">'DiffMaxChange'</span>,0.5);
+                <span class="string">'FinDiffRelStep'</span>,0.05,<span class="keyword">...</span>
+                <span class="string">'DiffMaxChange'</span>,0.75);
             [Pn_opt,OPT_out.fval,OPT_out.exitflag,OPT_out.output]= fminsearch(@(Pn) obj_DEMO_FEBio_iFEA_uniaxial_transiso_02(Pn,objectiveStruct),Pn,OPT_options);
         <span class="keyword">case</span> 2 <span class="comment">%lsqnonlin and Levenberg-Marquardt</span>
             OPT_options = optimoptions(@lsqnonlin,<span class="string">'Algorithm'</span>,<span class="string">'levenberg-marquardt'</span>);
@@ -398,8 +401,8 @@ Pn=P./objectiveStruct.parNormFactors;
                 <span class="string">'TolFun'</span>,functionTolerance,<span class="keyword">...</span>
                 <span class="string">'TolX'</span>,parameterTolerance,<span class="keyword">...</span>
                 <span class="string">'Display'</span>,displayTypeIterations,<span class="keyword">...</span>
-                <span class="string">'FinDiffRelStep'</span>,0.01,<span class="keyword">...</span>
-                <span class="string">'DiffMaxChange'</span>,0.5);
+                <span class="string">'FinDiffRelStep'</span>,0.05,<span class="keyword">...</span>
+                <span class="string">'DiffMaxChange'</span>,0.75);
             [Pn_opt,OPT_out.resnorm,OPT_out.residual]= lsqnonlin(@(Pn) obj_DEMO_FEBio_iFEA_uniaxial_transiso_02(Pn,objectiveStruct),Pn,[],[],OPT_options);
     <span class="keyword">end</span>
 
@@ -421,6 +424,7 @@ Pn=P./objectiveStruct.parNormFactors;
 
 objectiveStruct.parNormFactors=P; <span class="comment">%This will normalize the paramters to ones(size(P))</span>
 objectiveStruct.Pb_struct.xx_c=P; <span class="comment">%Parameter constraining centre</span>
+<span class="comment">% objectiveStruct.Pb_struct.xxlim=[[P(1)/100 2 P(3)/100 1 2]' [P(1)*100 50 P(3)*100 1e3 50]']; %Parameter bounds</span>
 
 Pn=P./objectiveStruct.parNormFactors;
 
@@ -432,8 +436,8 @@ stretch_sim=OPT_stats_out.stretch_sim;
 stress_cauchy_sim=OPT_stats_out.stress_cauchy_sim;
 </pre><pre class="codeoutput">SETTING MATERIAL PARAMETERS...
 Proposed (norm.): 1.0000000000000000e+00 1.0000000000000000e+00 1.0000000000000000e+00 1.0000000000000000e+00 1.0000000000000000e+00 
-Proposed        : 3.0574504020000002e-04 2.0065098364181999e+00 9.0589636800000002e-05 2.3509200705586269e+02 3.2942189118587999e+00 
-Set (constr.)   : 3.0574504020000002e-04 2.0065098364181999e+00 9.0589636800000002e-05 2.3509200705586269e+02 3.2942189118587999e+00 
+Proposed        : 3.0574999999999998e-04 2.0070000000000001e+00 9.0589999999999998e-05 2.3509999999999999e+02 3.2940000000000000e+00 
+Set (constr.)   : 3.0574999999999998e-04 2.0070000000000001e+00 9.0589999999999998e-05 2.3509999999999999e+02 3.2940000000000000e+00 
 Done
 SETTING FIBRE DIRECTIONS...
 ----&gt; Creating MatAxis entries
@@ -444,8 +448,8 @@ Done
 
 ans =
 
-   1.195171954155551   1.195171954155551   0.700000000000001
-   1.131727882487659   1.262074482746562   0.700000000000001
+    1.1952    1.1952    0.7000
+    1.1317    1.2621    0.7000
 
 </pre><h2>Plotting experimental data<a name="17"></a></h2><pre class="codeinput">pColors=gjet(2);
 cFigure; hold <span class="string">on</span>;
@@ -506,7 +510,8 @@ fcolor2=0.5.*ones(1,3);
 filePath=mfilename('fullpath');
 savePath=fullfile(fileparts(filePath),'data','temp');
 
-modelName=fullfile(savePath,'iFEA_tempModel');
+modelEndName='iFEA_tempModel';
+modelName=fullfile(savePath,modelEndName);
 
 %Specifying dimensions and number of elements
 sampleWidth=10;
@@ -523,11 +528,14 @@ stretchLoad=0.7;
 displacementMagnitude=[0 0 (stretchLoad*sampleHeight)-sampleHeight];
 
 %Initial material parameter set
-c1_ini=0.0003057450402;
-m1_ini=2.0065098364182;
-ksi_ini=0.0000905896368;
-beta_ini=3.2942189118588;
-f_ini=235.0920070558627 ;
+Q=0.5; 
+
+c=6.115e-04;
+c1_ini=Q*c;
+m1_ini=2.007;
+ksi_ini=9.0590e-05;
+beta_ini=3.294;
+f_ini=235.1;
 
 k_factor=500;
 k_ini=(2*c1_ini+ksi_ini)*k_factor;
@@ -763,17 +771,18 @@ FEB_struct.Boundary.Prescribe{1}.Type='relative';
 %Load curves
 FEB_struct.LoadData.LoadCurves.id=1;
 FEB_struct.LoadData.LoadCurves.type={'linear'};
-FEB_struct.LoadData.LoadCurves.loadPoints={[0 0;1 1;]};
+% FEB_struct.LoadData.LoadCurves.loadPoints={[0 0; 1/3 -1; 2/3 0; 1 1;]};
+FEB_struct.LoadData.LoadCurves.loadPoints={[0 0; 1 1;]};
 
 %Adding output requests
 FEB_struct.Output.VarTypes={'displacement','stress','relative volume'};
 
 %Specify log file output
-run_disp_output_name=[FEB_struct.run_filename(1:end-4),'_strain_out.txt'];
-run_stress_output_name=[FEB_struct.run_filename(1:end-4),'_stress_out.txt'];
+run_disp_output_name=[modelEndName,'_strain_out.txt'];
+run_stress_output_name=[modelEndName,'_stress_out.txt'];
 FEB_struct.run_output_names={run_disp_output_name,run_stress_output_name};
 FEB_struct.output_types={'element_data','element_data'};
-FEB_struct.data_types={'E1;E2;E3','sz'};
+FEB_struct.data_types={'Ex;Ey;Ez','sz'};
 
 %% SAVING .FEB FILE
 FEB_struct.disp_opt=0; %Display waitbars option
@@ -789,7 +798,7 @@ FEBioRunStruct.runMode='external';%'internal';
 FEBioRunStruct.t_check=0.25; %Time for checking log file (dont set too small)
 FEBioRunStruct.maxtpi=1e99; %Max analysis time
 FEBioRunStruct.maxLogCheckTime=5; %Max log file checking time
-FEBioRunStruct.cleanUpFileList=FEB_struct.run_output_names; %Files to remove prior to starting each job.
+% FEBioRunStruct.cleanUpFileList=FEB_struct.run_output_names; %Files to remove prior to starting each job.
 
 %% STARTING OPTIMISATION
 
@@ -802,7 +811,7 @@ objectiveStruct.method=optimMethod;
 objectiveStruct.run_output_names=FEB_struct.run_output_names;
 objectiveStruct.stress_cauchy_exp=stress_cauchy_exp;
 P=objectiveStruct.P_ini;    %Initial parameters
-objectiveStruct.Pb_struct.xxlim=[[P(1)/100 2 P(2)/100 1 2]' [P(1)*100 50 P(2)*100 1e3 50]']; %Parameter bounds
+objectiveStruct.Pb_struct.xxlim=[[P(1)/100 2 P(3)/100 1 2]' [P(1)*100 50 P(3)*100 1e3 50]']; %Parameter bounds
 objectiveStruct.parNormFactors=P; %This will normalize the paramters to ones(size(P))
 objectiveStruct.Pb_struct.xx_c=P; %Parameter constraining centre
 
@@ -812,12 +821,10 @@ if optimOpt==1
     %Optimisation settings
     maxNumberIterations=100; %Maximum number of optimization iterations
     maxNumberFunctionEvaluations=maxNumberIterations*10; %Maximum number of function evaluations, N.B. multiple evaluations are used per iteration
-    functionTolerance=1e-4; %Tolerance on objective function value
-    parameterTolerance=1e-4; %Tolerance on parameter variation
+    functionTolerance=1e-6; %Tolerance on objective function value
+    parameterTolerance=1e-6; %Tolerance on parameter variation
     displayTypeIterations='iter';
-    
-
-    
+       
     switch objectiveStruct.method
         case 1 %fminsearch and Nelder-Mead
             OPT_options=optimset('fminsearch'); % 'Nelder-Mead simplex direct search'
@@ -826,8 +833,8 @@ if optimOpt==1
                 'TolFun',functionTolerance,...
                 'TolX',parameterTolerance,...
                 'Display',displayTypeIterations,...
-                'FinDiffRelStep',0.01,...
-                'DiffMaxChange',0.5);
+                'FinDiffRelStep',0.05,...
+                'DiffMaxChange',0.75);
             [Pn_opt,OPT_out.fval,OPT_out.exitflag,OPT_out.output]= fminsearch(@(Pn) obj_DEMO_FEBio_iFEA_uniaxial_transiso_02(Pn,objectiveStruct),Pn,OPT_options);
         case 2 %lsqnonlin and Levenberg-Marquardt
             OPT_options = optimoptions(@lsqnonlin,'Algorithm','levenberg-marquardt');
@@ -836,8 +843,8 @@ if optimOpt==1
                 'TolFun',functionTolerance,...
                 'TolX',parameterTolerance,...
                 'Display',displayTypeIterations,...
-                'FinDiffRelStep',0.01,...
-                'DiffMaxChange',0.5);
+                'FinDiffRelStep',0.05,...
+                'DiffMaxChange',0.75);
             [Pn_opt,OPT_out.resnorm,OPT_out.residual]= lsqnonlin(@(Pn) obj_DEMO_FEBio_iFEA_uniaxial_transiso_02(Pn,objectiveStruct),Pn,[],[],OPT_options);
     end
     
@@ -862,6 +869,7 @@ P=objectiveStruct.P_ini;
 
 objectiveStruct.parNormFactors=P; %This will normalize the paramters to ones(size(P))
 objectiveStruct.Pb_struct.xx_c=P; %Parameter constraining centre
+% objectiveStruct.Pb_struct.xxlim=[[P(1)/100 2 P(3)/100 1 2]' [P(1)*100 50 P(3)*100 1e3 50]']; %Parameter bounds
 
 Pn=P./objectiveStruct.parNormFactors;
 

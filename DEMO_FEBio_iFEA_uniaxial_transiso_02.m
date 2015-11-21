@@ -47,12 +47,14 @@ displacementMagnitude=[0 0 (stretchLoad*sampleHeight)-sampleHeight];
 
 %Initial material parameter set
 Q=0.5; 
-c=6.114900804000000e-04;
+
+c=6.115e-04;
 c1_ini=Q*c;
-m1_ini=2.0065098364182;
-ksi_ini=0.0000905896368;
-beta_ini=3.2942189118588;
-f_ini=235.0920070558627;
+m1_ini=2.007;
+ksi_ini=9.0590e-05;
+beta_ini=3.294;
+f_ini=235.1;
+
 k_factor=500;
 k_ini=(2*c1_ini+ksi_ini)*k_factor;
 P_ini=[c1_ini m1_ini ksi_ini f_ini beta_ini];
@@ -287,7 +289,8 @@ FEB_struct.Boundary.Prescribe{1}.Type='relative';
 %Load curves
 FEB_struct.LoadData.LoadCurves.id=1;
 FEB_struct.LoadData.LoadCurves.type={'linear'};
-FEB_struct.LoadData.LoadCurves.loadPoints={[0 0;1 1;]};
+% FEB_struct.LoadData.LoadCurves.loadPoints={[0 0; 1/3 -1; 2/3 0; 1 1;]};
+FEB_struct.LoadData.LoadCurves.loadPoints={[0 0; 1 1;]};
 
 %Adding output requests
 FEB_struct.Output.VarTypes={'displacement','stress','relative volume'};
@@ -297,7 +300,7 @@ run_disp_output_name=[modelEndName,'_strain_out.txt'];
 run_stress_output_name=[modelEndName,'_stress_out.txt'];
 FEB_struct.run_output_names={run_disp_output_name,run_stress_output_name};
 FEB_struct.output_types={'element_data','element_data'};
-FEB_struct.data_types={'E1;E2;E3','sz'};
+FEB_struct.data_types={'Ex;Ey;Ez','sz'};
 
 %% SAVING .FEB FILE
 FEB_struct.disp_opt=0; %Display waitbars option
@@ -336,8 +339,8 @@ if optimOpt==1
     %Optimisation settings
     maxNumberIterations=100; %Maximum number of optimization iterations
     maxNumberFunctionEvaluations=maxNumberIterations*10; %Maximum number of function evaluations, N.B. multiple evaluations are used per iteration
-    functionTolerance=1e-4; %Tolerance on objective function value
-    parameterTolerance=1e-4; %Tolerance on parameter variation
+    functionTolerance=1e-6; %Tolerance on objective function value
+    parameterTolerance=1e-6; %Tolerance on parameter variation
     displayTypeIterations='iter';
        
     switch objectiveStruct.method
@@ -384,7 +387,7 @@ P=objectiveStruct.P_ini;
 
 objectiveStruct.parNormFactors=P; %This will normalize the paramters to ones(size(P))
 objectiveStruct.Pb_struct.xx_c=P; %Parameter constraining centre
-objectiveStruct.Pb_struct.xxlim=[[P(1)/100 2 P(3)/100 1 2]' [P(1)*100 50 P(3)*100 1e3 50]']; %Parameter bounds
+% objectiveStruct.Pb_struct.xxlim=[[P(1)/100 2 P(3)/100 1 2]' [P(1)*100 50 P(3)*100 1e3 50]']; %Parameter bounds
 
 Pn=P./objectiveStruct.parNormFactors;
 

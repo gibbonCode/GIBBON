@@ -7,6 +7,10 @@ numFacesIni=size(F,1);
 
 %Removing double vertices
 [V_uni,IND_V,IND_IND]=uniqueEps(V,'rows',epsOrderDiff);
+
+% [~,IND_V,IND_IND]=unique(pround(V,epsOrderDiff),'rows');
+% V_uni=V(IND_V,:);
+
 F=IND_IND(F); %Fix indices in F
 
 %Removing double FACES
