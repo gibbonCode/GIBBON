@@ -41,6 +41,9 @@ switch modelID
     case 6
         fileName=fullfile(pathName,'hip_implant.mat');
         D=load(fileName);
+    case 7 
+        fileName=fullfile(pathName,'elephant.mat');
+        D=load(fileName);
 end
 
 F=D.F;

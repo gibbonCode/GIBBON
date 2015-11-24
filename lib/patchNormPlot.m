@@ -19,6 +19,11 @@ function [hp]=patchNormPlot(varargin)
 %%
 
 switch nargin
+    case 2
+        F=varargin{1};
+        V=varargin{2};
+        a=[];
+        patchType='f'; 
     case 3
         F=varargin{1};
         V=varargin{2};
@@ -42,6 +47,12 @@ switch patchType
         Vn=V;
     otherwise
         error('Wrong patchType specified!');
+end
+
+%Check if a is empty, if so replace  length by mean edge length of surface
+if isempty(a);
+    [A]=patchEdgeLengths(F,V);
+    a=mean(A); 
 end
 
 %Derive quiver patch data

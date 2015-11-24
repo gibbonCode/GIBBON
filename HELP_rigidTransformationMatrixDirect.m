@@ -16,6 +16,9 @@ edgeWidth=1.5;
 % Load example patch data
 [F,V1]=parasaurolophus;
 
+V2=V1;
+% V2(:,1)=V2(:,1)/2; 
+
 %%
 % Create a test tranformation matrix
 
@@ -31,7 +34,7 @@ T(4,:)=0;
 T(4,4)=1;
 
 %Transform
-VV=V1; 
+VV=V2; 
 VV(:,4)=1; 
 VT=(T*VV')'; 
 V2=VT(:,[1 2 3]);
@@ -77,7 +80,7 @@ xlabel('X','FontSize',fontSize); ylabel('Y','FontSize',fontSize); zlabel('Z','Fo
 
 hp=patch('Faces',F,'Vertices',V1,'FaceColor','g','FaceAlpha',0.5,'lineWidth',edgeWidth,'edgeColor',edgeColor);
 
-hp=patch('Faces',F,'Vertices',V1f,'FaceColor','r','FaceAlpha',0.5,'lineWidth',edgeWidth,'edgeColor',edgeColor);
+hp=patch('Faces',F,'Vertices',V1f,'FaceColor','none','FaceAlpha',0.5,'lineWidth',edgeWidth*2,'edgeColor','r');
 
 set(gca,'FontSize',fontSize);
 view(3); axis tight;  axis equal; 
