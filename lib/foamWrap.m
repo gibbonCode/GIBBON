@@ -8,16 +8,25 @@ switch nargin
         V=varargin{2};
         C=(1:1:size(F,1))';        
         cPar=[];
+        L_remove=false(size(F,1),1);
     case 3
         F=varargin{1};
         V=varargin{2};
         C=varargin{3};                
         cPar=[];
+        L_remove=false(size(F,1),1);
     case 4
         F=varargin{1};
         V=varargin{2};
         C=varargin{3};
         cPar=varargin{4};
+        L_remove=false(size(F,1),1);
+    case 5
+        F=varargin{1};
+        V=varargin{2};
+        C=varargin{3};
+        cPar=varargin{4};
+        L_remove=varargin{5};
 end
 
 if isempty(cPar); %Use defaults
@@ -75,11 +84,18 @@ Ci=(1:size(F,1))';
 switch  subMethod
     case 'split'
         Cs=repmat(Ci,[1,size(Fs,1)./size(F,1)]);
+        L_remove_s=repmat(L_remove,[1,size(Fs,1)./size(F,1)]);
+        L_remove_s=L_remove_s(:);
     case 'seed'
         Cs=Ci;
         Cs=Cs(:,ones(1,size(Fs,1)./size(F,1)));
         Cs=Cs';
         Cs=Cs(:);
+        
+        L_remove_s=L_remove;
+        L_remove_s=L_remove_s(:,ones(1,size(Fs,1)./size(F,1)));
+        L_remove_s=L_remove_s';
+        L_remove_s=L_remove_s(:);
 end
 Cs=C(Cs);
 
@@ -95,14 +111,20 @@ logicMulti=~(Cv_max==Cv_min);
 
 %%
 
+% XX=Vs(:,3);
+% XX_F=mean(XX(Fs),2);
+% logicLowFaces=XX_F<30; 
+% lowColors=unique(Cs(logicLowFaces));
+% logicLowFaceCells=ismember(Cs,lowColors);
 %%
+
+
 logicMultiFaces=any(logicMulti(Fs),2);
 
 Fse=Fs(logicMultiFaces,:); 
 Fsi=Fs(~logicMultiFaces,:); 
 Fss=[Fse;Fsi];
 Css=[ones(size(Fse,1),1);2*ones(size(Fsi,1),1)];
-
 
 indVe=unique(Fse);
 logicIndVe=false(size(Vs,1),1);
@@ -167,7 +189,7 @@ indRigid=find(L);
 indRigid=[indRigid;indBoundaryVertices1; indStripVertices(:)];
 indBlack=unique(indRigid);
 
-cParSmooth.RigidConstraints=indRigid;
+cParSmooth.RigidConstraints=indBlack;
 [VT]=patchSmooth(FT,VT,[],cParSmooth);
 
 %%

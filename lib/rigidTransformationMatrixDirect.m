@@ -10,27 +10,19 @@ if size(V2,2)==2;
     V2(:,3)=0; 
 end
 
-%% Use Kabsch algorithm
+[Q]=kabschRotationMatrix(V1,V2);
 
-%Force input to 3D
-if size(V1,2)==2; 
-    V1(:,3)=0; 
-end
+V1_m=mean(V1,1);
+V2_m=mean(V2,1);
 
-if size(V2,2)==2; 
-    V2(:,3)=0; 
-end
+T1=eye(4,4);
+T1(1:3,end)=V2_m(:);
 
-A=V1'*V2;
+R=eye(4,4);
+R(1:3,1:3)=Q;
 
-[U,~,V] = svd(A);
+T2=eye(4,4);
+T2(1:3,end)=-V1_m;
 
-q=sign(det(U'*V));
-Q=eye(3,3);
-Q(3,3)=q; 
-R=V*Q*U';
-
-T=eye(4,4);
-T(1:3,1:3)=R; 
-T(1:3,4)=mean(V2)-mean(V1);
+T=T1*R*T2;
 

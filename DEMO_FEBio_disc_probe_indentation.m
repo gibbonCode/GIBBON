@@ -1,4 +1,4 @@
-%% DEMO_FEBio_cylinder_spherical_head_indentor
+%% DEMO_FEBio_disc_probe_indentation
 %
 
 %%
@@ -22,34 +22,33 @@ filePath=mfilename('fullpath');
 savePath=fullfile(fileparts(filePath),'data','temp');
 
 %%
-gelRadius=119/2;
-gelHeight=100;
+gelRadius=200/2;
+gelHeight=50;
 
-sphereRadius=30/2; % The radius of the hemi-spher portion
-nRefine=1;  % Number of |subtri| refinements for icosahedron
-cylinderHeight=55/2;  % height of the cylinder part
 pointSpacing=15; % Aproximate node spacing for cylinder portion
-distanceSplitSteps=[45 25];
+distanceSplitSteps=[30];
 minEdgeSizeFactor=0.2;
 maxEdgeSizeFactor=3;
 sizeFactor=3;
 initialSpacing=0.1;
-bcPrescribeMagnitudes=[0 0 -15-initialSpacing]; %NB desired and effect of initial spacing
+indentorDisplacement=15;
+bcPrescribeMagnitudes=[0 0 -indentorDisplacement-initialSpacing]; %NB desired and effect of initial spacing
 indentorShellThickness=0.01;
+probeHeightKeep=1.2*indentorDisplacement; %Use NaN to use full indentor, use 15 to only use lower 15 mm of indentor
 
-contactType=2; %1=sticky, 2=facet to facet sliding, 3=sliding_with_gaps
+contactType=1; %1=sticky, 2=facet to facet sliding, 3=sliding_with_gaps
 
 tetTypeOpt=1; %Element type
 switch tetTypeOpt
-    case 1 
+    case 1
         tetType='tet4';
         triSurfType='tri3';
         
         %Control settings
         nSteps=10;
         max_refs=25;
-        max_ups=10;
-        contactPenalty=100;
+        max_ups=0;
+        contactPenalty=50;
     case 2
         tetType='tet10';
         triSurfType='tri6';
@@ -61,54 +60,53 @@ switch tetTypeOpt
         contactPenalty=50;
 end
 
-%% Build indentor sphere
+c1_gel=1e-3;
+m1_gel=6;
+k_factor_gel=50;
+k_gel=c1_gel*k_factor_gel;
 
-hemiStruct.sphereRadius=sphereRadius; %Sphere radius
-hemiStruct.nRefineRegions=nRefine; %Number of refinement steps for regions
-hemiStruct.nRefineMesh=1; %Number of refinement steps for mesh
-[F1,V1,~]=hemiSphereRegionMesh(hemiStruct);
-F1=fliplr(F1); %flip face orientation
-V1(:,3)=-V1(:,3); %Flip
+%% Import probe model
 
-% Find hemi-sphere edge
-TR =triangulation(F1,V1);
-E = freeBoundary(TR);
-[indList]=edgeListToCurve(E);
+%% LOADING PROBE MODEL
 
-%% Build indentor shaft
+%Set main folder
+defaultFolder = fileparts(mfilename('fullpath'));
+pathName=fullfile(defaultFolder,'data','STL');
+fileName=fullfile(pathName,'stl_cephasnics.stl');
+% fileName=fullfile(pathName,'Panthera_pardus_AMNH11374.stl');
+[stlStruct] = import_STL_txt(fileName);
 
-Vc=V1(indList(1:end-1),:);
+Fs=stlStruct.solidFaces{1};
+Vs=stlStruct.solidVertices{1};
 
-[D]=patchEdgeLengths(F1,V1);
-
-% Extruding model
-cPar.numSteps=round(cylinderHeight/mean(D(:)));
-cPar.depth=cylinderHeight;
-cPar.patchType='tri';
-cPar.dir=1;
-cPar.closeLoopOpt=1;
-[F2,V2]=polyExtrude(Vc,cPar);
-
-%% Compose indentor
-
-%Merge sets
-Vs=[V1;V2];
-Fs=[F1;F2+size(V1,1);];
-[~,ind1,ind2]=unique(pround(Vs,5),'rows');
-Fs=ind2(Fs);
-ind=ind2(indList(1:end-1));
+% Merging nodes
+[~,ind1,ind2]=unique(pround(Vs,3),'rows');
 Vs=Vs(ind1,:);
+Fs=ind2(Fs);
+[R,~]=euler2DCM([0 0.5*pi 0]); %Define rotation tensor to reorient model
+Vs=(R*Vs')';
+V2m=mean(Vs,1);
+Vs=Vs-V2m(ones(size(Vs,1),1),:);
+Vs(:,3)=Vs(:,3)-min(Vs(:,3)); %Shift so sphere tip is at 0,0,0
 
-%Shift so sphere tip is at 0,0,0
-Vs(:,3)=Vs(:,3)-min(Vs(:,3))+initialSpacing;
+[Fs,Vs,~,~]=triSurfRemoveThreeConnect(Fs,Vs,[]);
 
-%Smoothen transition region (only move shared nodes)
-L=true(size(Vs,1),1);
-L(ind)=0;
 cParSmooth.Method='HC';
-cParSmooth.n=50;
-cParSmooth.RigidConstraints=find(L);
+cParSmooth.n=5;
 [Vs]=tesSmooth(Fs,Vs,[],cParSmooth);
+
+Fs_full=Fs;
+Vs_full=Vs;
+
+if ~isnan(probeHeightKeep);
+    Z=Vs(:,3);
+    ZF=mean(Z(Fs),2);
+    logicKeep=ZF<probeHeightKeep;
+    Fs=Fs(logicKeep,:);
+    [Fs,Vs]=patchCleanUnused(Fs,Vs);
+end
+
+Vs(:,3)=Vs(:,3)+initialSpacing; %Shift for initial contact seperation
 
 %%
 
@@ -117,8 +115,9 @@ title('Indentor surface model','FontSize',fontSize);
 xlabel('X','FontSize',fontSize); ylabel('Y','FontSize',fontSize); zlabel('Z','FontSize',fontSize)
 hold on;
 
-patch('Faces',Fs,'Vertices',Vs,'FaceColor',0.5*ones(1,3),'EdgeColor','k');
-hp=patchNormPlot(Fs,Vs,2); %Show face normals
+patch('Faces',Fs_full,'Vertices',Vs_full,'FaceColor',0.5*ones(1,3),'EdgeColor','none','FaceAlpha',0.2);
+patch('Faces',Fs,'Vertices',Vs,'FaceColor',0.5*ones(1,3),'EdgeColor','k','FaceAlpha',1);
+% hp=patchNormPlot(Fs,Vs,2); %Show face normals
 
 % patch('Faces',F1,'Vertices',V1,'FaceColor','g','EdgeColor','k');
 % patch('Faces',F2,'Vertices',V2,'FaceColor','r','EdgeColor','k');
@@ -171,7 +170,8 @@ Vb(:,3)=mean(Vgb(:,3));
 
 if ~any(isnan(distanceSplitSteps))
     for q=1:numel(distanceSplitSteps)
-        D=sqrt(sum(Vt(:,1:2).^2,2));
+        %         D=sqrt(sum(Vt(:,1:2).^2,2));
+        [D,~]=minDist(Vt,Vs);
         [DF]=vertexToFaceMeasure(Ft,D);
         
         logicFaces=DF<(distanceSplitSteps(q));
@@ -218,7 +218,7 @@ title('Gel surface model','FontSize',fontSize);
 xlabel('X','FontSize',fontSize); ylabel('Y','FontSize',fontSize); zlabel('Z','FontSize',fontSize)
 hold on;
 
-patch('Faces',F_gel,'Vertices',V_gel,'FaceColor','flat','CData',C_gel,'EdgeColor','k','FaceAlpha',0.75);
+patch('Faces',F_gel,'Vertices',V_gel,'FaceColor','flat','CData',C_gel,'EdgeColor','k','FaceAlpha',1);
 % hp=patchNormPlot(F_gel,V_gel,5); %Show face normals
 
 % patch('Faces',Ft,'Vertices',Vt,'FaceColor','b','EdgeColor','k');
@@ -244,7 +244,7 @@ D=minDist(V_gel,Vs);
 edgeSizeField=D.^2;
 edgeSizeField=edgeSizeField-min(edgeSizeField(:)); %Range from 0-..
 edgeSizeField=edgeSizeField./max(edgeSizeField(:)); %Range from 0-1
-edgeSizeField=(edgeSizeField*(maxEdgeSize-minEdgeSize))+minEdgeSize; %Range from minEdgeSize-maxEdgeSize  
+edgeSizeField=(edgeSizeField*(maxEdgeSize-minEdgeSize))+minEdgeSize; %Range from minEdgeSize-maxEdgeSize
 
 %% Mesh solid using tetgen
 
@@ -265,8 +265,8 @@ inputStruct.regionA=regionA*sizeFactor; %Desired volume for tets
 inputStruct.minRegionMarker=2; %Minimum region marker
 inputStruct.modelName=modelName;
 inputStruct.tetType=tetType; %Element type
- inputStruct.sizeData=edgeSizeField;
- 
+inputStruct.sizeData=edgeSizeField;
+
 %%
 % Mesh model using tetrahedral elements using tetGen (see:
 % <http://wias-berlin.de/software/tetgen/>)
@@ -275,7 +275,7 @@ inputStruct.tetType=tetType; %Element type
 
 %%
 % Call TetView to view the model
-runTetView(meshOutput.loadNameStruct.loadName_ele);
+% runTetView(meshOutput.loadNameStruct.loadName_ele);
 
 %%
 % Access model element and patch data
@@ -359,12 +359,10 @@ FEB_struct.Geometry.ElementsPartName={'Gel','Indentor'};
 % DEFINING MATERIALS
 
 %Material 1: Gel
-c1=1e-3;
-k=c1*50;
 FEB_struct.Materials{1}.Type='Ogden';
 FEB_struct.Materials{1}.Name='gel_mat';
-FEB_struct.Materials{1}.Properties={'c1','m1','k'};
-FEB_struct.Materials{1}.Values={c1,2,k};
+FEB_struct.Materials{1}.Properties={'c1','m1','c2','m2','k'};
+FEB_struct.Materials{1}.Values={c1_gel,m1_gel,c1_gel,-m1_gel,k_gel};
 
 %Material 2: Indentor
 FEB_struct.Materials{2}.Type='rigid body';
@@ -473,9 +471,10 @@ FEB_struct.Output.VarTypes={'displacement','stress','relative volume'};
 
 %Specify log file output
 run_node_output_name=[FEB_struct.run_filename(1:end-4),'_node_out.txt'];
-FEB_struct.run_output_names={run_node_output_name};
-FEB_struct.output_types={'node_data'};
-FEB_struct.data_types={'ux;uy;uz'};
+run_force_output_name=[FEB_struct.run_filename(1:end-4),'_force_out.txt'];
+FEB_struct.run_output_names={run_node_output_name,run_force_output_name};
+FEB_struct.output_types={'node_data','rigid_body_data'};
+FEB_struct.data_types={'ux;uy;uz','Fx;Fy;Fz'};
 
 %% SAVING .FEB FILE
 
@@ -532,6 +531,37 @@ hps=patch('Faces',Fc,'Vertices',V_def,'FaceColor','flat','CData',CF,'edgeColor',
 view(3); axis tight;  axis equal;  grid on;
 colormap jet; colorbar;
 camlight headlight;
+set(gca,'FontSize',fontSize);
+drawnow;
+
+%% IMPORTING FORCE RESULTS
+% Importing nodal displacements from a log file
+[tFEA,F_mat,~]=importFEBio_logfile(FEB_struct.run_output_names{2}); %Forces
+
+F_mat=F_mat(:,2:end);
+
+FX=F_mat(:,1); 
+FX=[0;FX(:)]; %X force
+FY=F_mat(:,2); 
+FY=[0;FY(:)]; %Y force
+FZ=F_mat(:,3); 
+FZ=[0;FZ(:)]; %Z force
+
+tFEA=[0;tFEA(:)]; %Time
+uFEA=indentorDisplacement.*tFEA; %Displacement
+
+%%
+% Plot forces
+
+cFigure; hold on; 
+title('Force displacement curve','FontSize',fontSize);
+xlabel('Displacement [mm]','FontSize',fontSize); ylabel('Force [N]','FontSize',fontSize); 
+
+% plot(uFEA,FX,'r-','lineWidth',3);
+% plot(uFEA,FY,'g-','lineWidth',3);
+plot(uFEA,FZ,'b-','lineWidth',3);
+
+view(2); axis tight; grid on;
 set(gca,'FontSize',fontSize);
 drawnow;
 
