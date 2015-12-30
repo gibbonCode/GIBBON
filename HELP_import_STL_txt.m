@@ -50,8 +50,6 @@ camlight('headlight');
 lighting phong; axis off; 
 drawnow;
 
-fdsafas
-
 %% Importing a multi-solid STL file as patch data
 
 %Set main folder

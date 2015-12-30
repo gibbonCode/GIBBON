@@ -1,12 +1,19 @@
 %% triSurf2Im
 % Below is a demonstration of the features of the |triSurf2Im| function
 
-%% 
+%%
+clear; close all; clc; 
 
-clear; close all; clc;
+%% Syntax
+% |[M,G,bwLabels]=triSurf2Im(F,V,voxelSize,imOrigin,imSiz);|
+
+%% Description
+% This function converts triangulates surface data to images
+
+%% Examples
 
 %%
-% Plot settings for the examples below
+% Plot settings
 fontSize=10;
 faceAlpha1=1;
 faceAlpha2=0.3;
@@ -84,7 +91,7 @@ axis equal; view(3); axis tight;  grid on;  set(gca,'FontSize',fontSize);
 drawnow;
 
 %% EXAMPLE 2: CONVERTING A TRIANGULATED SURFACE TO AN IMAGE WITHOUT SPECIFYING DESIRED SIZE, VOXEL SIZE AND ORIGIN
-% In example all default settings are used. If the voxel size is not
+% In this example all default settings are used. If the voxel size is not
 % specified it is set equal to the mean edge length of the model. The
 % origin and image sizes then follow to fit the object with an aditional
 % voxel surrounding the model in all directions. The used voxel size and

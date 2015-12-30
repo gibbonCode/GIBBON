@@ -6,7 +6,6 @@ clear; close all; clc;
 
 %% 
 % Plot settings
-fig_color='w'; fig_colordef='white';
 fontSize=15;
 faceAlpha=0.75;
 edgeColor=0.3*ones(1,3);
@@ -31,7 +30,7 @@ edgeWidth=1.5;
 % Below is a visualisation for n=0:1:3 for the cube as initial solid. 
 
 % Open figure for plotting
-hf=figuremax(fig_color,fig_colordef); 
+hf=cFigure; 
 
 %Defining geodesic dome
 r=1; %sphere radius
@@ -52,7 +51,7 @@ end
 
 %% Demo showing initial shapes and subquadrangulated results
 
-hf=figuremax(fig_color,fig_colordef); 
+hf=cFigure; 
 
 [F,V]=quadSphere(0,r,2);   
 subplot(2,3,1); hold on;

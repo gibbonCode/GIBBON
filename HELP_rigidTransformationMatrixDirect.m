@@ -6,12 +6,9 @@ clear; close all; clc;
 
 %%
 % Plot settings
-fig_color='w'; fig_colordef='white';
 fontSize=15;
 faceAlpha=1;
-edgeColor=0.3*ones(1,3);
-edgeWidth=1;
-
+edgeColor='k';
 %% 
 % Load example patch data
 [F,Vd]=parasaurolophus;
@@ -20,20 +17,20 @@ edgeWidth=1;
 a=[-0.25*pi 0.75*pi 0.1*pi]; 
 [R,~]=euler2DCM(a);
 
-V1=Vd+2;
+V1=Vd+0.5;
 
-V2=tform(R,Vd)-1.5;
+V2=tform(R,Vd)-1;
 
 %%
 % Plotting data
 
-hf=figuremax(fig_color,fig_colordef);
+hf=cFigure;
 title('The untransformed surfaces','FontSize',fontSize);
 xlabel('X','FontSize',fontSize); ylabel('Y','FontSize',fontSize); zlabel('Z','FontSize',fontSize);
 
-hp=patch('Faces',F,'Vertices',V1,'FaceColor','g','FaceAlpha',faceAlpha,'lineWidth',edgeWidth,'edgeColor',edgeColor);
+hp=patch('Faces',F,'Vertices',V1,'FaceColor','g','FaceAlpha',faceAlpha);
 
-hp=patch('Faces',F,'Vertices',V2,'FaceColor','r','FaceAlpha',faceAlpha,'lineWidth',edgeWidth,'edgeColor',edgeColor);
+hp=patch('Faces',F,'Vertices',V2,'FaceColor','r','FaceAlpha',faceAlpha,'edgeColor',edgeColor);
 
 camlight headlight;
 set(gca,'FontSize',fontSize);
@@ -49,14 +46,14 @@ V1f=tform((M),V1);
 %%
 % Plotting data
 
-hf=figuremax(fig_color,fig_colordef);
+hf=cFigure;
 title('The green surfaces transformed towards the red','FontSize',fontSize);
 xlabel('X','FontSize',fontSize); ylabel('Y','FontSize',fontSize); zlabel('Z','FontSize',fontSize);
 
-hp=patch('Faces',F,'Vertices',V2,'FaceColor','r','FaceAlpha',0.5,'lineWidth',edgeWidth,'edgeColor',edgeColor);
+hp=patch('Faces',F,'Vertices',V2,'FaceColor','r','FaceAlpha',0.5,'edgeColor',edgeColor);
 
-hp=patch('Faces',F,'Vertices',V1f,'FaceColor','none','FaceAlpha',0.5,'lineWidth',edgeWidth,'edgeColor','g');
-% hp=patch('Faces',F,'Vertices',V2ff,'FaceColor','none','FaceAlpha',0.5,'lineWidth',edgeWidth*2,'edgeColor','b');
+hp=patch('Faces',F,'Vertices',V1f,'FaceColor','none','FaceAlpha',0.5,'edgeColor','g');
+% hp=patch('Faces',F,'Vertices',V2ff,'FaceColor','none','FaceAlpha',0.5*2,'edgeColor','b');
 
 set(gca,'FontSize',fontSize);
 view(3); axis tight;  axis equal; 

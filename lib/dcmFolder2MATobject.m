@@ -94,7 +94,10 @@ if NumberOfFiles>0
     
     %% SETTING DICOM DICTIONARY
     fName=fullfile(PathName,files{1});
-    dcmInfo_full=dicominfo(fName);
+    
+    %First import using factory settings
+    dicomdict('factory');
+    dcmInfo_full=dicominfo(fName);    
     try
         if ~isempty(strfind(lower(dcmInfo_full.Manufacturer),'philips'))
             disp(['Detected ',dcmInfo_full.Manufacturer,' files']);
@@ -116,17 +119,21 @@ if NumberOfFiles>0
             warning('Unknown vendor, using DICOM dictionary factory settings');
             dictSetting=3;
         end
+        %Test info import with new dictionary (if this fails we resume with
+        % factory
+        dcmInfo_full=dicominfo(fName);        
     catch %e.g. if the manufacturer field is missing
         dicomdict('factory');
         warning('Unknown vendor, using DICOM dictionary factory settings');
         dictSetting=3;
+        dcmInfo_full=dicominfo(fName);  
     end
     
     %% LOADING DICOM INFO
     hw = waitbar(0,'Loading DICOM info...');    
     for c=1:1:numel(files)
         fName=fullfile(PathName,files{c});
-        %         dicomdict('get');
+        %dicomdict('get');
         dcmInfo_full=dicominfo(fName);
         dcmInfo_full.Basename=fName; %Add custom field
         iFields = find(isfield(dcmInfo_full,collectTags)); %indices of existing fields

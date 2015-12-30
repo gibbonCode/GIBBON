@@ -9,16 +9,10 @@ function [T]=txtfile2cell(fileName)
 % Kevin Mattheus Moerman
 % gibbon.toolbox@gmail.com
 %
-% 2014/10/10
+% 2015/102/10
 %------------------------------------------------------------------------
 
 fid=fopen(fileName);
-
-if ~isempty(strfind(version,'R2014a'))
-    T=textscan(fid,'%s','delimiter', '\n','Whitespace','','bufsize',1e6);
-else
-    T=textscan(fid,'%s','delimiter', '\n','Whitespace','');
-end
-
+T=textscan(fid,'%s','delimiter', '\n','Whitespace','');
 T=T{1,1};
 fclose(fid);

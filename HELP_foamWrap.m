@@ -21,7 +21,7 @@ figStruct.ColorDef='white'; %Setting colordefinitions to black
 figStruct.ScreenOffset=0; %Setting sp
 
 %Defining geodesic dome
-r=1; %sphere radius
+r=40; %sphere radius
 
 [F,V,~]=geoSphere(2,r);
 % [F,V]=parasaurolophus;
@@ -30,27 +30,28 @@ r=1; %sphere radius
 % [F,V]=stanford_bunny;
 
 % nc=6;
-cmap=gjet(4);
-% [C,logicConverged]=triSurfPermuteColor(F,V,nc);
+cmap=gjet(250);
+% [C,logicConverged]=triSurfPermuteColor(F,V,4);
+
+
+[F,V,C,indIni]=triPolyDualRefine(F,V);
 
 %%
 cFigure(figStruct); 
 xlabel('X','FontSize',fontSize); ylabel('Y','FontSize',fontSize); zlabel('Z','FontSize',fontSize);
 % patch('Faces',F,'Vertices',V,'FaceColor','flat','CData',C,'FaceAlpha',faceAlpha,'lineWidth',edgeWidth,'edgeColor',edgeColor);
 % [hp]=patchNormPlot(F,V,r/3);
-patch('Faces',F,'Vertices',V,'FaceColor',[84 22 180]./256,'FaceAlpha',faceAlpha,'lineWidth',edgeWidth,'edgeColor','k');
+patch('Faces',F,'Vertices',V,'FaceColor','flat','CData',C,'FaceAlpha',faceAlpha,'lineWidth',edgeWidth,'edgeColor','k');
 
 camlight headlight; 
 colormap(cmap);
 set(gca,'FontSize',fontSize);
 view(3); axis tight;  axis equal;  grid on; axis off; 
 
-
 %%
 
-% [F,V,C,indIni]=triPolyDualRefine(F,V);
 
-C=[1:size(F,1)]';
+% C=[1:size(F,1)]';
 
 n=1; 
 for q=1:1:n
@@ -77,9 +78,9 @@ view(3); axis tight;  axis equal;  grid on; axis off;
 
 %%
 
-cPar.n=3; 
+cPar.n=1; 
 cPar.dirFlip=1; 
-% cPar.foamThickness=0.02;
+cPar.foamThickness=3;
 cParSmooth.Method='HC';
 cParSmooth.n=25;
 cPar.Smooth=cParSmooth; 
@@ -93,8 +94,9 @@ cFigure(figStruct);  hold on;
 xlabel('X','FontSize',fontSize); ylabel('Y','FontSize',fontSize); zlabel('Z','FontSize',fontSize);
 
 % hp=patch('Faces',FT(CT==1,:),'Vertices',VT,'FaceColor','flat','CData',CT(CT==1,:),'FaceAlpha',faceAlpha,'lineWidth',edgeWidth,'edgeColor',edgeColor);
-hp=patch('Faces',FT(CT==1,:),'Vertices',VT,'FaceColor','flat','CData',CT(CT==1),'FaceAlpha',faceAlpha,'lineWidth',edgeWidth,'edgeColor',edgeColor);
-hp=patch('Faces',FT(CT==2,:),'Vertices',VT,'FaceColor','flat','CData',CT(CT==2),'FaceAlpha',1,'lineWidth',edgeWidth,'edgeColor',edgeColor);
+% hp=patch('Faces',FT(CT==1,:),'Vertices',VT,'FaceColor','flat','CData',CT(CT==1),'FaceAlpha',faceAlpha,'lineWidth',edgeWidth,'edgeColor',edgeColor);
+hp=patch('Faces',FT(CT==1,:),'Vertices',VT,'FaceColor','r','FaceAlpha',faceAlpha,'lineWidth',edgeWidth,'edgeColor','none');
+% hp=patch('Faces',FT(CT==2,:),'Vertices',VT,'FaceColor','flat','CData',CT(CT==2),'FaceAlpha',1,'lineWidth',edgeWidth,'edgeColor',edgeColor);
 % hp=patch('Faces',FT(CT==1,:),'Vertices',VT,'FaceColor','w','FaceAlpha',faceAlpha,'lineWidth',4,'edgeColor',edgeColor);
 % hp=patch('Faces',FT(CT==2,:),'Vertices',VT,'FaceColor',0.75.*[180 64 16]./255,'FaceAlpha',faceAlpha,'lineWidth',4,'edgeColor',edgeColor);
 % plotV(VT(indRigid,:),'r.','MarkerSize',35);
@@ -105,6 +107,22 @@ colormap((gray(2)));
 set(gca,'FontSize',fontSize);
 view(3); axis tight;  axis equal;  grid on;
 axis off;
+
+%%
+
+[Fc,Vc,indFix2]=patchCleanUnused(FT(CT==1,:),VT);
+
+stlStruct.solidNames={'ball'};
+stlStruct.solidVertices={Vc};
+stlStruct.solidFaces={Fc};
+stlStruct.solidNormals={[],[]};
+
+%Set main folder and fileName
+defaultFolder = fileparts(mfilename('fullpath'));
+pathName=fullfile(defaultFolder,'data','STL'); 
+fileName=fullfile(pathName,'ball.stl'); 
+
+export_STL_txt(fileName,stlStruct);
 
 
 %% 

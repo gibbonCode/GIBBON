@@ -6,7 +6,7 @@
    <!--
 This HTML was auto-generated from MATLAB code.
 To make changes, update the MATLAB code and republish this document.
-      --><title>HELP_rigidTransformationMatrixDirect</title><meta name="generator" content="MATLAB 8.6"><link rel="schema.DC" href="http://purl.org/dc/elements/1.1/"><meta name="DC.date" content="2015-12-01"><meta name="DC.source" content="HELP_rigidTransformationMatrixDirect.m"><style type="text/css">
+      --><title>HELP_rigidTransformationMatrixDirect</title><meta name="generator" content="MATLAB 8.6"><link rel="schema.DC" href="http://purl.org/dc/elements/1.1/"><meta name="DC.date" content="2015-12-07"><meta name="DC.source" content="HELP_rigidTransformationMatrixDirect.m"><style type="text/css">
 html,body,div,span,applet,object,iframe,h1,h2,h3,h4,h5,h6,p,blockquote,pre,a,abbr,acronym,address,big,cite,code,del,dfn,em,font,img,ins,kbd,q,s,samp,small,strike,strong,sub,sup,tt,var,b,u,i,center,dl,dt,dd,ol,ul,li,fieldset,form,label,legend,table,caption,tbody,tfoot,thead,tr,th,td{margin:0;padding:0;border:0;outline:0;font-size:100%;vertical-align:baseline;background:transparent}body{line-height:1}ol,ul{list-style:none}blockquote,q{quotes:none}blockquote:before,blockquote:after,q:before,q:after{content:'';content:none}:focus{outine:0}ins{text-decoration:none}del{text-decoration:line-through}table{border-collapse:collapse;border-spacing:0}
 
 html { min-height:100%; margin-bottom:1px; }
@@ -67,27 +67,25 @@ table td { padding:7px 5px; text-align:left; vertical-align:top; border:1px soli
 
 
   </style></head><body><div class="content"><h1>HELP_rigidTransformationMatrixDirect</h1><!--introduction--><p>Below is a demonstration of the features of the <tt>rigidTransformationMatrixDirect</tt> function</p><!--/introduction--><h2>Contents</h2><div><ul><li><a href="#5">Get the transformation matrix for the point matched data using <tt>rigidTransformationMatrixDirect</tt></a></li></ul></div><pre class="codeinput">clear; close <span class="string">all</span>; clc;
-</pre><p>Plot settings</p><pre class="codeinput">fig_color=<span class="string">'w'</span>; fig_colordef=<span class="string">'white'</span>;
-fontSize=15;
+</pre><p>Plot settings</p><pre class="codeinput">fontSize=15;
 faceAlpha=1;
-edgeColor=0.3*ones(1,3);
-edgeWidth=1;
+edgeColor=<span class="string">'k'</span>;
 </pre><p>Load example patch data</p><pre class="codeinput">[F,Vd]=parasaurolophus;
 
 <span class="comment">%Define a rotation</span>
 a=[-0.25*pi 0.75*pi 0.1*pi];
 [R,~]=euler2DCM(a);
 
-V1=Vd+2;
+V1=Vd+0.5;
 
-V2=tform(R,Vd)-1.5;
-</pre><p>Plotting data</p><pre class="codeinput">hf=figuremax(fig_color,fig_colordef);
+V2=tform(R,Vd)-1;
+</pre><p>Plotting data</p><pre class="codeinput">hf=cFigure;
 title(<span class="string">'The untransformed surfaces'</span>,<span class="string">'FontSize'</span>,fontSize);
 xlabel(<span class="string">'X'</span>,<span class="string">'FontSize'</span>,fontSize); ylabel(<span class="string">'Y'</span>,<span class="string">'FontSize'</span>,fontSize); zlabel(<span class="string">'Z'</span>,<span class="string">'FontSize'</span>,fontSize);
 
-hp=patch(<span class="string">'Faces'</span>,F,<span class="string">'Vertices'</span>,V1,<span class="string">'FaceColor'</span>,<span class="string">'g'</span>,<span class="string">'FaceAlpha'</span>,faceAlpha,<span class="string">'lineWidth'</span>,edgeWidth,<span class="string">'edgeColor'</span>,edgeColor);
+hp=patch(<span class="string">'Faces'</span>,F,<span class="string">'Vertices'</span>,V1,<span class="string">'FaceColor'</span>,<span class="string">'g'</span>,<span class="string">'FaceAlpha'</span>,faceAlpha);
 
-hp=patch(<span class="string">'Faces'</span>,F,<span class="string">'Vertices'</span>,V2,<span class="string">'FaceColor'</span>,<span class="string">'r'</span>,<span class="string">'FaceAlpha'</span>,faceAlpha,<span class="string">'lineWidth'</span>,edgeWidth,<span class="string">'edgeColor'</span>,edgeColor);
+hp=patch(<span class="string">'Faces'</span>,F,<span class="string">'Vertices'</span>,V2,<span class="string">'FaceColor'</span>,<span class="string">'r'</span>,<span class="string">'FaceAlpha'</span>,faceAlpha,<span class="string">'edgeColor'</span>,edgeColor);
 
 camlight <span class="string">headlight</span>;
 set(gca,<span class="string">'FontSize'</span>,fontSize);
@@ -96,14 +94,14 @@ drawnow;
 </pre><img vspace="5" hspace="5" src="HELP_rigidTransformationMatrixDirect_01.png" alt=""> <h2>Get the transformation matrix for the point matched data using <tt>rigidTransformationMatrixDirect</tt><a name="5"></a></h2><pre class="codeinput">[M]=rigidTransformationMatrixDirect(V1,V2);
 
 V1f=tform((M),V1);
-</pre><p>Plotting data</p><pre class="codeinput">hf=figuremax(fig_color,fig_colordef);
+</pre><p>Plotting data</p><pre class="codeinput">hf=cFigure;
 title(<span class="string">'The green surfaces transformed towards the red'</span>,<span class="string">'FontSize'</span>,fontSize);
 xlabel(<span class="string">'X'</span>,<span class="string">'FontSize'</span>,fontSize); ylabel(<span class="string">'Y'</span>,<span class="string">'FontSize'</span>,fontSize); zlabel(<span class="string">'Z'</span>,<span class="string">'FontSize'</span>,fontSize);
 
-hp=patch(<span class="string">'Faces'</span>,F,<span class="string">'Vertices'</span>,V2,<span class="string">'FaceColor'</span>,<span class="string">'r'</span>,<span class="string">'FaceAlpha'</span>,0.5,<span class="string">'lineWidth'</span>,edgeWidth,<span class="string">'edgeColor'</span>,edgeColor);
+hp=patch(<span class="string">'Faces'</span>,F,<span class="string">'Vertices'</span>,V2,<span class="string">'FaceColor'</span>,<span class="string">'r'</span>,<span class="string">'FaceAlpha'</span>,0.5,<span class="string">'edgeColor'</span>,edgeColor);
 
-hp=patch(<span class="string">'Faces'</span>,F,<span class="string">'Vertices'</span>,V1f,<span class="string">'FaceColor'</span>,<span class="string">'none'</span>,<span class="string">'FaceAlpha'</span>,0.5,<span class="string">'lineWidth'</span>,edgeWidth,<span class="string">'edgeColor'</span>,<span class="string">'g'</span>);
-<span class="comment">% hp=patch('Faces',F,'Vertices',V2ff,'FaceColor','none','FaceAlpha',0.5,'lineWidth',edgeWidth*2,'edgeColor','b');</span>
+hp=patch(<span class="string">'Faces'</span>,F,<span class="string">'Vertices'</span>,V1f,<span class="string">'FaceColor'</span>,<span class="string">'none'</span>,<span class="string">'FaceAlpha'</span>,0.5,<span class="string">'edgeColor'</span>,<span class="string">'g'</span>);
+<span class="comment">% hp=patch('Faces',F,'Vertices',V2ff,'FaceColor','none','FaceAlpha',0.5*2,'edgeColor','b');</span>
 
 set(gca,<span class="string">'FontSize'</span>,fontSize);
 view(3); axis <span class="string">tight</span>;  axis <span class="string">equal</span>;
@@ -118,12 +116,9 @@ clear; close all; clc;
 
 %%
 % Plot settings
-fig_color='w'; fig_colordef='white';
 fontSize=15;
 faceAlpha=1;
-edgeColor=0.3*ones(1,3);
-edgeWidth=1;
-
+edgeColor='k';
 %% 
 % Load example patch data
 [F,Vd]=parasaurolophus;
@@ -132,20 +127,20 @@ edgeWidth=1;
 a=[-0.25*pi 0.75*pi 0.1*pi]; 
 [R,~]=euler2DCM(a);
 
-V1=Vd+2;
+V1=Vd+0.5;
 
-V2=tform(R,Vd)-1.5;
+V2=tform(R,Vd)-1;
 
 %%
 % Plotting data
 
-hf=figuremax(fig_color,fig_colordef);
+hf=cFigure;
 title('The untransformed surfaces','FontSize',fontSize);
 xlabel('X','FontSize',fontSize); ylabel('Y','FontSize',fontSize); zlabel('Z','FontSize',fontSize);
 
-hp=patch('Faces',F,'Vertices',V1,'FaceColor','g','FaceAlpha',faceAlpha,'lineWidth',edgeWidth,'edgeColor',edgeColor);
+hp=patch('Faces',F,'Vertices',V1,'FaceColor','g','FaceAlpha',faceAlpha);
 
-hp=patch('Faces',F,'Vertices',V2,'FaceColor','r','FaceAlpha',faceAlpha,'lineWidth',edgeWidth,'edgeColor',edgeColor);
+hp=patch('Faces',F,'Vertices',V2,'FaceColor','r','FaceAlpha',faceAlpha,'edgeColor',edgeColor);
 
 camlight headlight;
 set(gca,'FontSize',fontSize);
@@ -161,14 +156,14 @@ V1f=tform((M),V1);
 %%
 % Plotting data
 
-hf=figuremax(fig_color,fig_colordef);
+hf=cFigure;
 title('The green surfaces transformed towards the red','FontSize',fontSize);
 xlabel('X','FontSize',fontSize); ylabel('Y','FontSize',fontSize); zlabel('Z','FontSize',fontSize);
 
-hp=patch('Faces',F,'Vertices',V2,'FaceColor','r','FaceAlpha',0.5,'lineWidth',edgeWidth,'edgeColor',edgeColor);
+hp=patch('Faces',F,'Vertices',V2,'FaceColor','r','FaceAlpha',0.5,'edgeColor',edgeColor);
 
-hp=patch('Faces',F,'Vertices',V1f,'FaceColor','none','FaceAlpha',0.5,'lineWidth',edgeWidth,'edgeColor','g');
-% hp=patch('Faces',F,'Vertices',V2ff,'FaceColor','none','FaceAlpha',0.5,'lineWidth',edgeWidth*2,'edgeColor','b');
+hp=patch('Faces',F,'Vertices',V1f,'FaceColor','none','FaceAlpha',0.5,'edgeColor','g');
+% hp=patch('Faces',F,'Vertices',V2ff,'FaceColor','none','FaceAlpha',0.5*2,'edgeColor','b');
 
 set(gca,'FontSize',fontSize);
 view(3); axis tight;  axis equal; 

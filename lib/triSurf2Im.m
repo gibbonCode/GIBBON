@@ -20,10 +20,15 @@ function [varargout]=triSurf2Im(varargin)
 % 
 % 
 %
+%
 % Kevin Mattheus Moerman
-% kevinmoerman@hotmail.com
-% 28/08/2013
+% gibbon.toolbox@gmail.com
+% 
+% 28/08/2013 Updated for GIBBON
+% 2015/12/28 Updated input parsing
 %------------------------------------------------------------------------
+
+%%
 
 if nargin<2 || nargin>5
         error('Wrong number of input arguments!');
@@ -32,6 +37,11 @@ end
 %Get faces and vertices
 F=varargin{1};
 V=varargin{2};
+
+%Initialize other inputs as empty
+voxelSize=[];
+imOrigin=[];
+siz=[];
 
 %Removing unused points
 [F,V]=removeNotIndexed(F,V);
@@ -42,22 +52,29 @@ V=varargin{2};
 maxEdgeLength=max(edgeLengths(:));
 meanEdgeLength=mean(edgeLengths(:));
 
-if nargin >2
-    voxelSize=varargin{3};
-else
+switch nargin
+    case 3
+        voxelSize=varargin{3};
+    case 4
+        voxelSize=varargin{3};
+        imOrigin=varargin{4};
+    case 5
+        voxelSize=varargin{3};
+        imOrigin=varargin{4};
+        siz=varargin{5};
+end
+
+if isempty(voxelSize);
     voxelSize=meanEdgeLength;
 end
 
-if nargin >3
-    imOrigin=varargin{4};
-else
+if isempty(imOrigin)
     %Determine surface set coordinate minima
     minV=min(V,[],1);
     
     %Determine shift so all coordinates are positive
     imOrigin=(minV-voxelSize);
 end
-
     
 %%
 
@@ -79,11 +96,9 @@ V_IJK=V;
 V_IJK=round(V_IJK);
 
 %Determine image size if not provided
-if nargin<5    
+if isempty(siz)    
     siz=max(V_IJK,[],1)+1;
 else
-    siz=varargin{5};
-    
     %Remove invalid indices
     V_IJK=V_IJK(V_IJK(:,1)<=siz(1) & V_IJK(:,1)>=1,:);
     V_IJK=V_IJK(V_IJK(:,2)<=siz(2) & V_IJK(:,2)>=1,:);
