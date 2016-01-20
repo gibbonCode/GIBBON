@@ -205,7 +205,7 @@ maxC=1;
 Vcs=cell(1,siz(3)); 
 Vcs{sliceMinInd}{1}=[]; %Result cell array
 hc=[]; hvcs=[]; hvcs_guide=[]; %Initialise graphic handles
-stepSize_tc=0.05;
+stepSize_tc=0.025; %Contour level step increment size
 n_tc=round(1/stepSize_tc);
 Tc=linspace(0,1,n_tc); %The contour level range
 ic=round(numel(Tc)/6); %The initial contour index

@@ -1,6 +1,6 @@
-function E=patchEdges(varargin)
+function varargout=patchEdges(varargin)
 
-% function E=patchEdges(varargin)
+% function [E,indUni1,indUni2]=patchEdges(F,uniOpt)
 % -----------------------------------------------------------------------
 % E=patchEdges(F,uniOpt)
 % Uses the input faces array F to compute an edge array E. If uniOpt==1
@@ -14,6 +14,7 @@ function E=patchEdges(varargin)
 % gibbon.toolbox@gmail.com
 % 
 % 2014/03/17
+% 2016/01/19 Added additional output in relation to unique operation
 %------------------------------------------------------------------------
 
 %% PARSE INPUT
@@ -35,7 +36,17 @@ E=[E1(:) E2(:)];
 
 if uniOpt==1
     Es=sort(E,2); %Sorted so [1 4] and [4 1] are seen as the same edge
-    [~,indUni,~]=unique(Es,'rows'); %Get indices for unique edges
-    E=E(indUni,:);
+    [~,indUni1,indUni2]=unique(Es,'rows'); %Get indices for unique edges
+    E=E(indUni1,:);    
 end
 
+%% Collect output
+
+varargout{1}=E; 
+
+if nargout>1 && uniOpt==1
+    varargout{2}=indUni1;
+    varargout{3}=indUni2;
+elseif nargout>1 && uniOpt~=1
+    error('Multiple outputs only available if uniOpt=1');
+end

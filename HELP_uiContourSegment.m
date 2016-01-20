@@ -34,16 +34,21 @@ drawnow;
 
 %% REMOVING BACKGROUND THROUGH THRESHOLDING/DILATION PROCEDURE
 % Removal of background may be useful see |uiThreshErode|
-L_BG=true(size(M)); %In this example background is not removed
+% L_BG=true(size(M)); %In this example background is not removed
+
+thresholdInitial=0.1; %with respect to normalised image
+preBlurKernalSize=0; %with respect to normalised image
+groupCropOption=0;
+[L_BG]=uiThreshErode(M,thresholdInitial,preBlurKernalSize,groupCropOption);
 
 %% SETTING CONTROL PARAMETERS
 cPar.minContourSize=250;            %Minimal size of detected contour
-cPar.smoothFactor=0.1;              %Degree of smoothing csaps function (cubic smoothing spline)
+cPar.smoothFactor=0.5;              %Degree of smoothing csaps function (cubic smoothing spline)
 cPar.pointReductionFactor=20;        %Reduction factor for contour smoothening
 cPar.logicBackGround=L_BG;   %Ones (white) describe image data regions of interest i.e. a mask
 cPar.v=v;                           %Voxel size
 cPar.recoverOn=0; %Turn on or off file recovery mode 
-cPar.sliceRange=80:size(M,3); %This can be a custom range. For unvisited slices the contour is empty
+cPar.sliceRange=104:size(M,3); %This can be a custom range. For unvisited slices the contour is empty
 saveName=[];                        %If not empty this is where the contours are saved
 
 %% SEGMENTING CONTOURS
@@ -51,6 +56,8 @@ saveName=[];                        %If not empty this is where the contours are
 % |[Vcs]=uiContourSegment(M,cPar,saveName)|;
 % Use the various options to try to segment the outer skin contour, press H
 % to reveal the help window. 
+
+[Vcs]=uiContourSegment(M,cPar,saveName);
 
 %% 
 % Example contour process: 

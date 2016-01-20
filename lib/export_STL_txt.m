@@ -16,20 +16,23 @@ function export_STL_txt(fileName,stlStruct)
 %
 %
 % Kevin Mattheus Moerman
-% kevinmoerman@hotmail.com
-% 2014/04/08
-%
+% gibbon.toolbox@gmail.com
+% 
 % CHANGE LOG:
-% 2014/04/08
-% * Created
-%
+% 2014/04/08 Created
+% 2016/01/13 Added check for file deletion
 % ------------------------------------------------------------------------
 
 %% Write STL file in txt format
 
-%Remove file if it exists
+%Remove file if it exists (in some cases data is appended to file if it
+%exists already)
 if exist(fileName,'file')==2; 
-    delete(fileName);
+    delete(fileName);    
+    %Check if its gone
+    if exist(fileName,'file')==2
+        error(['Existing file with name: ',fileName,' found. Deletion not succesful, check user/file permissions']);
+    end
 end
 
 %Append STLs to file

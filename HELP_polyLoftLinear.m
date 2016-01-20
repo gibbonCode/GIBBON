@@ -19,15 +19,15 @@ clear; close all; clc;
 figColor='w'; 
 figColorDef='white';
 fontSize=15;
-markerSize1=45;
-lineWidth1=4;
+markerSize1=25;
+lineWidth1=3;
 faceAlpha=0.5;
 
 %% Creating a loft feature
 
 %% 
 % Sketching profile 1
-ns=150;
+ns=75;
 t=linspace(0,2*pi,ns);
 t=t(1:end-1);
 r=5;
@@ -43,14 +43,14 @@ t=t(1:end-1);
 r=6+2.*sin(5*t);
 [x,y] = pol2cart(t,r);
 V_top=[x(:) y(:) z(:)];
-R=euler2DCM([0 -0.1*pi 0]);
+R=euler2DCM([0 -0.2*pi 0]);
 V_top=(R*V_top')';
 V_top(:,3)=V_top(:,3)+6; 
 V_top(:,1)=V_top(:,1)+3; 
 
 %% 
 % Create loft
-cPar.numSteps=15; 
+% cPar.numSteps=17; 
 cPar.closeLoopOpt=1; 
 cPar.patchType='tri_slash';
 [F_tri,V_tri]=polyLoftLinear(V_bottom,V_top,cPar);
@@ -74,6 +74,9 @@ title('The lofted feature','FontSize',fontSize);
 xlabel('X','FontSize',fontSize);ylabel('Y','FontSize',fontSize); zlabel('Z','FontSize',fontSize);
 hold on;
 hp=patch('faces',F_tri,'Vertices',V_tri); set(hp,'FaceColor','g','EdgeColor','k','FaceAlpha',1);
+
+plotV(V_bottom,'r.-','lineWidth',lineWidth1,'MarkerSize',markerSize1);
+plotV(V_top,'b.-','lineWidth',lineWidth1,'MarkerSize',markerSize1);
 
 axis equal; view(3); axis tight;  grid on;  set(gca,'FontSize',fontSize);
 camlight headlight; lighting phong;

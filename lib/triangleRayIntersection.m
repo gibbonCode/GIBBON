@@ -1,7 +1,7 @@
 function [V_intersect,L_intersect,T] = triangleRayIntersection (V_ori,R,V,F,optStruct)
 
 %
-% Ray/triangle intersection using the algorithm proposed by Möller and
+% Ray/triangle intersection using the algorithm proposed by Mï¿½ller and
 % Trumbore (1997)
 % 
 % Based on implementation by: Jarek Tuszynski (jaroslaw.w.tuszynski@saic.com)
@@ -51,7 +51,7 @@ function [V_intersect,L_intersect,T] = triangleRayIntersection (V_ori,R,V,F,optS
 %   * u,v - barycentric coordinates of the intersection point units
 %
 % Based on:
-%  *"Fast, minimum storage ray-triangle intersection". Tomas Möller and
+%  *"Fast, minimum storage ray-triangle intersection". Tomas Muller and
 %    Ben Trumbore. Journal of Graphics Tools, 2(1):21--28, 1997.
 %    http://www.graphics.cornell.edu/pubs/1997/MT97.pdf
 %  * http://fileadmin.cs.lth.se/cs/Personal/Tomas_Akenine-Moller/raytri/

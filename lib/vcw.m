@@ -57,6 +57,7 @@ function vcw(varargin)
 % single vcw button even if vcw is called multiple times). 
 % 2015/04/28 Fixed behaviour for figures without axes. I.e. vcw will only
 % start if an axis is present. 
+% 2016/01/13 Added that clipping is turned off
 %
 % TO DO: 1) Improved handling of colorbars. Currently requires colorbar
 % locations to be set to 'manual' for vcw. However this causes the figure
@@ -64,6 +65,7 @@ function vcw(varargin)
 % if the colorbar locations settings could remain constant. 2) Proper
 % restoring of all figure properties. Currently defaults are set manually
 % which could remove user defined figure features.
+% 2) Turn back the clipping type after exciting vcw
 %------------------------------------------------------------------------
 
 %% Parse input arguments
@@ -184,6 +186,7 @@ cax = get(hf, 'CurrentAxes');
 else
     axes(cax)
 end
+
 if isempty(cax)
     return
 end
@@ -248,6 +251,8 @@ if ~isempty(h)
         axes(h); axis vis3d;
         caxUserDataStruct.defaultView=camview(h);
         set(h, 'UserData',caxUserDataStruct);
+        %Turn clipping off
+        set(h,'Clipping','off');   
     end
     axes(cax);
 else

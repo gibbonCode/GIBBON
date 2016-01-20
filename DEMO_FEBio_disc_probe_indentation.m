@@ -48,6 +48,8 @@ switch tetTypeOpt
         nSteps=10;
         max_refs=25;
         max_ups=0;
+        max_retries=25; 
+        opt_iter=6; 
         contactPenalty=50;
     case 2
         tetType='tet10';
@@ -56,6 +58,8 @@ switch tetTypeOpt
         %Control settings
         nSteps=20;
         max_refs=25;
+        max_retries=25;
+        opt_iter=10;
         max_ups=10;
         contactPenalty=50;
 end
@@ -379,7 +383,7 @@ FEB_struct.Control.Values={nSteps,1/nSteps,...
     max_refs,max_ups,...
     0.001,0.01,0,0.9};
 FEB_struct.Control.TimeStepperProperties={'dtmin','dtmax','max_retries','opt_iter'};
-FEB_struct.Control.TimeStepperValues={(1/nSteps)/100,1/nSteps,5,5};
+FEB_struct.Control.TimeStepperValues={(1/nSteps)/100,1/nSteps,max_retries,opt_iter};
 
 %Defining node sets
 FEB_struct.Geometry.NodeSet{1}.Set=indBC_fix;
