@@ -1,6 +1,6 @@
-function dcmFolder2MATobject(PathName,MaxVarSize)
+function dcmFolder2MATobject(varargin)
 
-% function dcmFolder2MATobject(PathName,MaxVarSize)
+% function dcmFolder2MATobject(PathName,MaxVarSize,reOrderOpt)
 % ------------------------------------------------------------------------
 % This function converts the DICOM files in the folder PathName to a MAT
 % object which is stored as a file called IMDAT in a new subfolder called
@@ -8,9 +8,28 @@ function dcmFolder2MATobject(PathName,MaxVarSize)
 %
 %
 % Kevin Mattheus Moerman
-% kevinmoerman@hotmail.com
+% gibbon.toolbox@gmail.com
+%
 % 23/10/2013
+% 2016/01/22 
 %------------------------------------------------------------------------
+
+%% PARSE INPUT
+
+switch nargin
+    case 1
+        PathName=varargin{1};
+        MaxVarSize=[];
+        reOrderOpt=0;
+    case 2
+        PathName=varargin{1};
+        MaxVarSize=varargin{2};
+        reOrderOpt=0;
+    case 3
+        PathName=varargin{1};
+        MaxVarSize=varargin{2};
+        reOrderOpt=varargin{3};
+end
 
 %%
 %Get/set maximum variable size (sets save steps in case the variable size
@@ -114,6 +133,10 @@ if NumberOfFiles>0
             dicomdict('set','dicom-dict-siemens.txt');
             disp('DICOM dictionary set to: dicom-dict-siemens.txt');
             dictSetting=2;
+        elseif ~isempty(strfind(lower(dcmInfo_full.Manufacturer),'GE MEDICAL SYSTEMS'))
+            disp(['Detected ',dcmInfo_full.Manufacturer,' files']);
+            warning('No settings for this vendor using DICOM dictionary factory settings');
+            dictSetting=3;
         else
             dicomdict('factory');
             warning('Unknown vendor, using DICOM dictionary factory settings');
@@ -150,6 +173,15 @@ if NumberOfFiles>0
     % matObj.dcmInfo=dcmInfo;
     close(hw);
     
+    %% Reorder files based on InstanceNumber (file naming may deviate from slice order) 
+    if reOrderOpt
+        [~,indSort]=sort([dcmInfo(:).InstanceNumber]);        
+        files=files(indSort);
+        dcmInfo=dcmInfo(indSort);
+    end
+    
+    %%
+
     %Geometry information based on first info file
     [G]=dicom3Dpar(dcmInfo(1));
     matObj.G=G; %Saving geometry information

@@ -53,7 +53,7 @@ V_top(:,1)=V_top(:,1)+3;
 % cPar.numSteps=17; 
 cPar.closeLoopOpt=1; 
 cPar.patchType='tri_slash';
-[F_tri,V_tri]=polyLoftLinear(V_bottom,V_top,cPar);
+[F,V]=polyLoftLinear(V_bottom,V_top,cPar);
 
 %%
 % Plotting results
@@ -73,8 +73,8 @@ subplot(1,2,2);
 title('The lofted feature','FontSize',fontSize);
 xlabel('X','FontSize',fontSize);ylabel('Y','FontSize',fontSize); zlabel('Z','FontSize',fontSize);
 hold on;
-hp=patch('faces',F_tri,'Vertices',V_tri); set(hp,'FaceColor','g','EdgeColor','k','FaceAlpha',1);
-
+hp=patch('faces',F,'Vertices',V); set(hp,'FaceColor','g','EdgeColor','k','FaceAlpha',1);
+patchNormPlot(F,V);
 plotV(V_bottom,'r.-','lineWidth',lineWidth1,'MarkerSize',markerSize1);
 plotV(V_top,'b.-','lineWidth',lineWidth1,'MarkerSize',markerSize1);
 

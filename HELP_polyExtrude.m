@@ -53,7 +53,7 @@ cPar.depth=7;
 cPar.patchType='quad'; 
 cPar.dir=0;
 cPar.closeLoopOpt=1; 
-[F_tri,V_tri]=polyExtrude(Vc,cPar);
+[F,V]=polyExtrude(Vc,cPar);
 
 %% 
 % Plotting meshed model
@@ -62,8 +62,8 @@ title('The extruded planar polygon','FontSize',fontSize);
 xlabel('X','FontSize',fontSize);ylabel('Y','FontSize',fontSize); zlabel('Z','FontSize',fontSize);
 hold on;
 
-hp=patch('faces',F_tri,'Vertices',V_tri); set(hp,'FaceColor','g','EdgeColor','k','FaceAlpha',faceAlpha);
-
+hp=patch('faces',F,'Vertices',V); set(hp,'FaceColor','g','EdgeColor','k','FaceAlpha',faceAlpha);
+% patchNormPlot(F_tri,V_tri);
 plotV(Vc,'r-','lineWidth',lineWidth1,'MarkerSize',markerSize1);
 
 axis equal; view(3); axis tight;  grid on;  set(gca,'FontSize',fontSize);
@@ -97,7 +97,7 @@ cPar.depth=7;
 cPar.patchType='tri_slash'; 
 cPar.dir=0;
 cPar.closeLoopOpt=1; 
-[F_tri,V_tri]=polyExtrude(Vc,cPar);
+[F,V]=polyExtrude(Vc,cPar);
 
 %% 
 % Plotting meshed model
@@ -106,7 +106,7 @@ title('The extruded planar polygon normal to polygon','FontSize',fontSize);
 xlabel('X','FontSize',fontSize);ylabel('Y','FontSize',fontSize); zlabel('Z','FontSize',fontSize);
 hold on;
 
-hp=patch('faces',F_tri,'Vertices',V_tri); set(hp,'FaceColor','g','EdgeColor','k','FaceAlpha',faceAlpha);
+hp=patch('faces',F,'Vertices',V); set(hp,'FaceColor','g','EdgeColor','k','FaceAlpha',faceAlpha);
 
 plotV(Vc,'r-','lineWidth',lineWidth1,'MarkerSize',markerSize1);
 
@@ -124,7 +124,7 @@ cPar.patchType='tri';
 cPar.dir=0;
 cPar.n=[0 0 1];
 cPar.closeLoopOpt=1; 
-[F_tri,V_tri]=polyExtrude(Vc,cPar);
+[F,V]=polyExtrude(Vc,cPar);
 
 %% 
 % Plotting meshed model
@@ -133,7 +133,7 @@ title('The extruded planar polygon in z-dir','FontSize',fontSize);
 xlabel('X','FontSize',fontSize);ylabel('Y','FontSize',fontSize); zlabel('Z','FontSize',fontSize);
 hold on;
 
-hp=patch('faces',F_tri,'Vertices',V_tri); set(hp,'FaceColor','g','EdgeColor','k','FaceAlpha',faceAlpha);
+hp=patch('faces',F,'Vertices',V); set(hp,'FaceColor','g','EdgeColor','k','FaceAlpha',faceAlpha);
 
 plotV(Vc,'r-','lineWidth',lineWidth1,'MarkerSize',markerSize1);
 
@@ -173,7 +173,7 @@ cPar.depth=7;
 cPar.patchType='tri'; 
 cPar.dir=0;
 cPar.closeLoopOpt=1; 
-[F_tri,V_tri]=polyExtrude(Vc,cPar);
+[F,V]=polyExtrude(Vc,cPar);
 
 %% 
 % Plotting meshed model
@@ -182,7 +182,7 @@ title('The extruded non-planar polygon normal to polygon','FontSize',fontSize);
 xlabel('X','FontSize',fontSize);ylabel('Y','FontSize',fontSize); zlabel('Z','FontSize',fontSize);
 hold on;
 
-hp=patch('faces',F_tri,'Vertices',V_tri); set(hp,'FaceColor','g','EdgeColor','k','FaceAlpha',faceAlpha);
+hp=patch('faces',F,'Vertices',V); set(hp,'FaceColor','g','EdgeColor','k','FaceAlpha',faceAlpha);
 
 plotV(Vc,'r-','lineWidth',lineWidth1,'MarkerSize',markerSize1);
 
