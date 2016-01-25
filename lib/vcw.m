@@ -699,8 +699,9 @@ set(hf, 'WindowButtonDownFcn',[], ...
 
 % Restore colorbar state
 figUserDataStruct=get(hf,'UserData');
-colorbarLocSet(hf,figUserDataStruct.colorbarLocSet);
-
+if isfield(figUserDataStruct,'colorbarLocSet')
+    colorbarLocSet(hf,figUserDataStruct.colorbarLocSet);
+end
 % Enable Plottools Buttons and Exploration Buttons
 initialState.toolbar = findobj(allchild(hf),'flat','Type','uitoolbar');
 if ~isempty(initialState.toolbar)

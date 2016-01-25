@@ -59,8 +59,18 @@ if isfield(FEB_struct,'run_output_names')
         %Remove path from filename is present
         [pathName,fileName,fileExtension] = fileparts(logfile_name);
         if ~isempty(pathName)
-            warning('Provided path of logfile is replaced by .feb file path. Only provide filename to avoid this warning');
-            logfile_name=[fileName,fileExtension]; %Combine only name and extension
+            
+            %TEMPORARY FIX TO COPE WITH OLDER FEBIO VERSIONS
+            if ~isfield(FEB_struct,'ignoreLogPathIssue')
+                removePath=1;
+            else
+                removePath=~FEB_struct.ignoreLogPathIssue;
+            end
+            if removePath==1
+                warning('Provided path of logfile is replaced by .feb file path. Only provide filename to avoid this warning');
+                logfile_name=[fileName,fileExtension]; %Combine only name and extension
+            end
+            
         end
         
         %Adding output_type level
