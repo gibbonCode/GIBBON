@@ -1,4 +1,4 @@
-function [F,V]=polyLoftLinear(Vc_start,Vc_end,cPar)
+function [F,V]=polyLoftLinear(varargin)
 
 % function [F,V]=polyLoftLinear(Vc_start,Vc_end,cPar)
 % ------------------------------------------------------------------------
@@ -19,6 +19,21 @@ function [F,V]=polyLoftLinear(Vc_start,Vc_end,cPar)
 
 %% Parse input
 
+switch nargin    
+    case 3
+        Vc_start=varargin{1};
+        Vc_end=varargin{2}; 
+        cPar=varargin{3}; 
+        untwistOpt=0;
+    case 4
+        Vc_start=varargin{1};
+        Vc_end=varargin{2};
+        cPar=varargin{3};
+        untwistOpt=varargin{4};
+    otherwise
+        error('Wrong number of input arguments');        
+end
+
 if isfield(cPar,'numSteps')
     numSteps=cPar.numSteps; 
 else
@@ -34,22 +49,15 @@ if isempty(numSteps)
     numSteps=round(dd./d)+1;
 end
 
+%% Remove twist
+if untwistOpt    
+        [Vc_end,~,~]=minPolyTwist(Vc_start,Vc_end);        
+end
+
 %% Create coordinates "mesh"
 X=linspacen(Vc_start(:,1),Vc_end(:,1),numSteps)';
 Y=linspacen(Vc_start(:,2),Vc_end(:,2),numSteps)';
 Z=linspacen(Vc_start(:,3),Vc_end(:,3),numSteps)';
-
-%%
-% 
-% %Remove twist
-% for q=2:1:size(numSteps,1);
-%     v1=[X(q-1,:)' Y(q-1,:)' Z(q-1,:)'];
-%     v2=[X(q,:)' Y(q,:)' Z(q,:)'];
-%     [v2f,~,~]=minPolyTwist(v1,v2);
-%     X(q,:)=v2f(:,1);
-%     Y(q,:)=v2f(:,2);
-%     Z(q,:)=v2f(:,3);
-% end
 
 %%
 c=(1:1:size(Z,1))';
