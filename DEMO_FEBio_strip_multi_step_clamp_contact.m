@@ -11,7 +11,6 @@ clear; close all; clc;
 
 %%
 % Plot settings
-figColor='w'; figColorDef='white';
 fontSize=15;
 faceAlpha1=0.5;
 faceAlpha2=1;
@@ -26,7 +25,8 @@ markerSize=50;
 filePath=mfilename('fullpath');
 savePath=fullfile(fileparts(filePath),'data','temp');
 
-modelName=fullfile(savePath,'tempModel');
+modelName='tempModel';
+modelNameFull=fullfile(savePath,modelName);
 
 pointspacing=0.75; 
 
@@ -94,7 +94,7 @@ faceBoundaryMarker2=box2.faceBoundaryMarker;
 
 %%
 % Plotting surface models
-hf=figuremax(figColor,figColorDef);
+hf=cFigure;
 title('Box sets','FontSize',fontSize);
 xlabel('X','FontSize',fontSize); ylabel('Y','FontSize',fontSize); zlabel('Z','FontSize',fontSize);
 hold on;
@@ -126,7 +126,7 @@ Fb=ind2(Fb);
 
 %%
 % Plotting surface models
-hf=figuremax(figColor,figColorDef);
+hf=cFigure;
 title('Merged box sets','FontSize',fontSize);
 xlabel('X','FontSize',fontSize); ylabel('Y','FontSize',fontSize); zlabel('Z','FontSize',fontSize);
 hold on;
@@ -172,7 +172,7 @@ Vr4=-Vr2;
 
 %%
 % Plotting surface models
-hf=figuremax(figColor,figColorDef);
+hf=cFigure;
 title('Sample with rigid body clamps','FontSize',fontSize);
 xlabel('X','FontSize',fontSize); ylabel('Y','FontSize',fontSize); zlabel('Z','FontSize',fontSize);
 hold on;
@@ -206,7 +206,7 @@ logicContactSurf4=faceBoundaryMarker_all==3 & faceBoundaryMarker_ind==3;
 Fc4=Fb(logicContactSurf4,:);
 
 % Plotting surface models
-hf=figuremax(figColor,figColorDef);
+hf=cFigure;
 title('Contact sets','FontSize',fontSize);
 xlabel('X','FontSize',fontSize); ylabel('Y','FontSize',fontSize); zlabel('Z','FontSize',fontSize);
 hold on;
@@ -265,7 +265,7 @@ bcPrescribeMagnitudesRB4(:,2)=clampCompressiveDisplacement+contactInitialOffset;
 bcPrescribeMagnitudesRB4(:,3)=0; %In step 2
 
 % Plotting surface models
-hf=figuremax(figColor,figColorDef);
+hf=cFigure;
 title('Complete model','FontSize',fontSize);
 xlabel('X','FontSize',fontSize); ylabel('Y','FontSize',fontSize); zlabel('Z','FontSize',fontSize);
 hold on;
@@ -285,8 +285,8 @@ drawnow;
 %% CONSTRUCTING FEB MODEL
 
 % Defining file names
-FEB_struct.run_filename=[modelName,'.feb']; %FEB file name
-FEB_struct.run_logname=[modelName,'.txt']; %FEBio log file name
+FEB_struct.run_filename=[modelNameFull,'.feb']; %FEB file name
+FEB_struct.run_logname=[modelNameFull,'.txt']; %FEBio log file name
 
 %Creating FEB_struct
 FEB_struct.Geometry.Nodes=VT;
@@ -454,8 +454,8 @@ FEB_struct.Boundary.Contact{4}.Surfaces.elements={Eq4,Fc4};
 FEB_struct.Output.VarTypes={'displacement','stress','relative volume','shell thickness','contact force','reaction forces'};
 
 %Specify log file output
-run_output_name_disp=[FEB_struct.run_filename(1:end-4),'_node_out.txt'];
-run_output_name_force=[FEB_struct.run_filename(1:end-4),'_force_out.txt'];
+run_output_name_disp=[modelName,'_node_out.txt'];
+run_output_name_force=[modelName,'_force_out.txt'];
 FEB_struct.run_output_names={run_output_name_disp,run_output_name_force};
 FEB_struct.output_types={'node_data','rigid_body_data'};
 FEB_struct.data_types={'ux;uy;uz','Fx;Fy;Fz'};
@@ -498,7 +498,7 @@ DN_magnitude=sqrt(sum(DN.^2,2));
 
 [CF]=vertexToFaceMeasure(F,DN_magnitude);
 
-hf1=figuremax(figColor,figColorDef);
+hf1=cFigure;
 title('The deformed model','FontSize',fontSize);
 xlabel('X','FontSize',fontSize); ylabel('Y','FontSize',fontSize); zlabel('Z','FontSize',fontSize); hold on;
 

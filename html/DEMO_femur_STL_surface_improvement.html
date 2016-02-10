@@ -6,7 +6,7 @@
    <!--
 This HTML was auto-generated from MATLAB code.
 To make changes, update the MATLAB code and republish this document.
-      --><title>DEMO_femur_STL_surface_improvement.m</title><meta name="generator" content="MATLAB 8.4"><link rel="schema.DC" href="http://purl.org/dc/elements/1.1/"><meta name="DC.date" content="2014-10-09"><meta name="DC.source" content="DEMO_femur_STL_surface_improvement.m"><style type="text/css">
+      --><title>DEMO_femur_STL_surface_improvement.m</title><meta name="generator" content="MATLAB 9.0"><link rel="schema.DC" href="http://purl.org/dc/elements/1.1/"><meta name="DC.date" content="2016-02-01"><meta name="DC.source" content="DEMO_femur_STL_surface_improvement.m"><style type="text/css">
 html,body,div,span,applet,object,iframe,h1,h2,h3,h4,h5,h6,p,blockquote,pre,a,abbr,acronym,address,big,cite,code,del,dfn,em,font,img,ins,kbd,q,s,samp,small,strike,strong,sub,sup,tt,var,b,u,i,center,dl,dt,dd,ol,ul,li,fieldset,form,label,legend,table,caption,tbody,tfoot,thead,tr,th,td{margin:0;padding:0;border:0;outline:0;font-size:100%;vertical-align:baseline;background:transparent}body{line-height:1}ol,ul{list-style:none}blockquote,q{quotes:none}blockquote:before,blockquote:after,q:before,q:after{content:'';content:none}:focus{outine:0}ins{text-decoration:none}del{text-decoration:line-through}table{border-collapse:collapse;border-spacing:0}
 
 html { min-height:100%; margin-bottom:1px; }
@@ -67,8 +67,7 @@ table td { padding:7px 5px; text-align:left; vertical-align:top; border:1px soli
 
 
   </style></head><body><div class="content"><h1>DEMO_femur_STL_surface_improvement.m</h1><!--introduction--><p>Below is a demonstration on the improvement of imported surface triangulations based on smoothening and the <tt>triSurfRemoveThreeConnect</tt> function. See also: <tt>triSurfRemoveThreeConnect</tt> and <tt>HELP_triSurfRemoveThreeConnect</tt></p><!--/introduction--><h2>Contents</h2><div><ul><li><a href="#3">Importing STL surface triangulation</a></li><li><a href="#4">Visualizing imported surface mesh</a></li><li><a href="#5">Merging nodes</a></li><li><a href="#6">Search for "three-connected" points</a></li><li><a href="#8">Removing "3-connected" vertices in the middle of faces and replacing associated faces by a single face</a></li><li><a href="#10">Surface smoothening</a></li><li><a href="#12">Compare surface sets</a></li></ul></div><pre class="codeinput">clear; close <span class="string">all</span>; clc;
-</pre><p>Plot settings</p><pre class="codeinput">fig_color=<span class="string">'w'</span>; fig_colordef=<span class="string">'white'</span>;
-fontSize=10;
+</pre><p>Plot settings</p><pre class="codeinput">fontSize=10;
 faceColor1=<span class="string">'r'</span>;
 faceColor2=<span class="string">'g'</span>;
 faceAlpha1=1;
@@ -85,7 +84,7 @@ fileName=fullfile(pathName,<span class="string">'femur.stl'</span>);
 
 <span class="comment">% Import STL</span>
 [stlStruct] = import_STL_txt(fileName);
-</pre><h2>Visualizing imported surface mesh<a name="4"></a></h2><p>Plotting the model</p><pre class="codeinput">figuremax(fig_color,fig_colordef);
+</pre><h2>Visualizing imported surface mesh<a name="4"></a></h2><p>Plotting the model</p><pre class="codeinput">cFigure;
 title(<span class="string">'Imported patch data from multi-solid STL'</span>,<span class="string">'fontSize'</span>,fontSize);
 xlabel(<span class="string">'X'</span>,<span class="string">'fontSize'</span>,fontSize);ylabel(<span class="string">'Y'</span>,<span class="string">'fontSize'</span>,fontSize); zlabel(<span class="string">'Z'</span>,<span class="string">'fontSize'</span>,fontSize); hold <span class="string">on</span>;
 <span class="keyword">for</span> q=1:1:numel(stlStruct.solidNames)
@@ -104,7 +103,7 @@ V=V(ind1,:);
 F=ind2(F);
 </pre><h2>Search for "three-connected" points<a name="6"></a></h2><p>A common issue in triangulated surfaces are "three-connected" nodes. These may be undesirable and can easily be identified and removed.</p><pre class="codeinput">[N]=numConnect(F,V);
 logicThree=N==3;
-</pre><p>Plotting three connected points (some may be boundary points)</p><pre class="codeinput">figuremax(fig_color,fig_colordef);
+</pre><p>Plotting three connected points (some may be boundary points)</p><pre class="codeinput">cFigure;
 title(<span class="string">'Highlighted points that are "three-connected"'</span>,<span class="string">'fontSize'</span>,fontSize);
 xlabel(<span class="string">'X'</span>,<span class="string">'fontSize'</span>,fontSize);ylabel(<span class="string">'Y'</span>,<span class="string">'fontSize'</span>,fontSize); zlabel(<span class="string">'Z'</span>,<span class="string">'fontSize'</span>,fontSize); hold <span class="string">on</span>;
 
@@ -118,7 +117,7 @@ lighting <span class="string">phong</span>;
 drawnow;
 </pre><img vspace="5" hspace="5" src="DEMO_femur_STL_surface_improvement_02.png" alt=""> <h2>Removing "3-connected" vertices in the middle of faces and replacing associated faces by a single face<a name="8"></a></h2><p>In a surface triangulation "3-connected" locations often contain poor quality triangles of a locally smaller area then the rest of the surface. Smoothening does not resolve this issue since the quality is not great improved even after vertex is at the centre of its neighbouring nodes. Hence the function triSurfRemoveThreeConnect instead removes the central nodes and groups the affected triangles into a single triangle.</p><pre class="codeinput">[Ft,Vt,~,L]=triSurfRemoveThreeConnect(F,V,[]);
 C=double(L);
-</pre><p>Plotting results</p><pre class="codeinput">hf=figuremax(fig_color,fig_colordef); hold <span class="string">on</span>;
+</pre><p>Plotting results</p><pre class="codeinput">hf=cFigure; hold <span class="string">on</span>;
 subplot(1,2,1);
 title(<span class="string">'Surface containing split triangles'</span>,<span class="string">'FontSize'</span>,fontSize);
 xlabel(<span class="string">'X'</span>,<span class="string">'FontSize'</span>,fontSize); ylabel(<span class="string">'Y'</span>,<span class="string">'FontSize'</span>,fontSize); zlabel(<span class="string">'Z'</span>,<span class="string">'FontSize'</span>,fontSize);
@@ -144,7 +143,7 @@ drawnow;
 </pre><img vspace="5" hspace="5" src="DEMO_femur_STL_surface_improvement_03.png" alt=""> <h2>Surface smoothening<a name="10"></a></h2><pre class="codeinput">cPar.n=25;
 cPar.Method=<span class="string">'HC'</span>;
 [Vt]=patchSmooth(Ft,Vt,[],cPar);
-</pre><p>Plotting smoothing results</p><pre class="codeinput">hf=figuremax(fig_color,fig_colordef); hold <span class="string">on</span>;
+</pre><p>Plotting smoothing results</p><pre class="codeinput">hf=cFigure; hold <span class="string">on</span>;
 subplot(1,2,1);
 title(<span class="string">'Unsmoothened surface'</span>,<span class="string">'FontSize'</span>,fontSize);
 xlabel(<span class="string">'X'</span>,<span class="string">'FontSize'</span>,fontSize); ylabel(<span class="string">'Y'</span>,<span class="string">'FontSize'</span>,fontSize); zlabel(<span class="string">'Z'</span>,<span class="string">'FontSize'</span>,fontSize);
@@ -166,7 +165,7 @@ colormap <span class="string">autumn</span>;
 camlight(<span class="string">'headlight'</span>); lighting <span class="string">flat</span>;
 drawnow;
 
-hf=figuremax(fig_color,fig_colordef); hold <span class="string">on</span>;
+hf=cFigure; hold <span class="string">on</span>;
 title(<span class="string">'Smoothened surface'</span>,<span class="string">'FontSize'</span>,fontSize);
 xlabel(<span class="string">'X'</span>,<span class="string">'FontSize'</span>,fontSize); ylabel(<span class="string">'Y'</span>,<span class="string">'FontSize'</span>,fontSize); zlabel(<span class="string">'Z'</span>,<span class="string">'FontSize'</span>,fontSize);
 hp=patch(<span class="string">'Faces'</span>,Ft,<span class="string">'Vertices'</span>,Vt,<span class="string">'FaceColor'</span>,faceColor2,<span class="string">'FaceAlpha'</span>,faceAlpha1,<span class="string">'lineWidth'</span>,edgeWidth,<span class="string">'edgeColor'</span>,edgeColor);
@@ -177,7 +176,7 @@ colormap <span class="string">autumn</span>;
 camlight(<span class="string">'headlight'</span>); lighting <span class="string">flat</span>;
 drawnow;
 </pre><img vspace="5" hspace="5" src="DEMO_femur_STL_surface_improvement_04.png" alt=""> <img vspace="5" hspace="5" src="DEMO_femur_STL_surface_improvement_05.png" alt=""> <h2>Compare surface sets<a name="12"></a></h2><p>Compute a surface distance metric</p><pre class="codeinput">[D]=minDist(Vt,V);
-</pre><p>Plot results</p><pre class="codeinput">figuremax(fig_color,fig_colordef);
+</pre><p>Plot results</p><pre class="codeinput">cFigure;
 title(<span class="string">'Distance based surface comparison'</span>,<span class="string">'fontSize'</span>,fontSize);
 xlabel(<span class="string">'X'</span>,<span class="string">'fontSize'</span>,fontSize);ylabel(<span class="string">'Y'</span>,<span class="string">'fontSize'</span>,fontSize); zlabel(<span class="string">'Z'</span>,<span class="string">'fontSize'</span>,fontSize); hold <span class="string">on</span>;
 
@@ -191,7 +190,7 @@ view(viewAz,vieEl);
 camlight(<span class="string">'headlight'</span>);
 lighting <span class="string">phong</span>;
 drawnow;
-</pre><img vspace="5" hspace="5" src="DEMO_femur_STL_surface_improvement_06.png" alt=""> <p><img vspace="5" hspace="5" src="gibbVerySmall.gif" alt=""> </p><p><i><b>GIBBON</b></i> <a href="www.gibboncode.org">www.gibboncode.org</a></p><p><i>Kevin Mattheus Moerman</i>, <a href="gibbon.toolbox@gmail.com">gibbon.toolbox@gmail.com</a></p><p class="footer"><br><a href="http://www.mathworks.com/products/matlab/">Published with MATLAB&reg; R2014b</a><br></p></div><!--
+</pre><img vspace="5" hspace="5" src="DEMO_femur_STL_surface_improvement_06.png" alt=""> <p><img vspace="5" hspace="5" src="gibbVerySmall.gif" alt=""> </p><p><i><b>GIBBON</b></i> <a href="www.gibboncode.org">www.gibboncode.org</a></p><p><i>Kevin Mattheus Moerman</i>, <a href="gibbon.toolbox@gmail.com">gibbon.toolbox@gmail.com</a></p><p class="footer"><br><a href="http://www.mathworks.com/products/matlab/">Published with MATLAB&reg; R2016a</a><br></p></div><!--
 ##### SOURCE BEGIN #####
 %% DEMO_femur_STL_surface_improvement.m
 % Below is a demonstration on the improvement of imported surface
@@ -205,7 +204,6 @@ clear; close all; clc;
 
 %%
 % Plot settings
-fig_color='w'; fig_colordef='white';
 fontSize=10;
 faceColor1='r';
 faceColor2='g';
@@ -230,7 +228,7 @@ fileName=fullfile(pathName,'femur.stl');
 %% Visualizing imported surface mesh
 % Plotting the model
 
-figuremax(fig_color,fig_colordef);
+cFigure;
 title('Imported patch data from multi-solid STL','fontSize',fontSize);
 xlabel('X','fontSize',fontSize);ylabel('Y','fontSize',fontSize); zlabel('Z','fontSize',fontSize); hold on;
 for q=1:1:numel(stlStruct.solidNames)
@@ -267,7 +265,7 @@ logicThree=N==3;
 %%
 % Plotting three connected points (some may be boundary points)
 
-figuremax(fig_color,fig_colordef);
+cFigure;
 title('Highlighted points that are "three-connected"','fontSize',fontSize);
 xlabel('X','fontSize',fontSize);ylabel('Y','fontSize',fontSize); zlabel('Z','fontSize',fontSize); hold on;
 
@@ -294,7 +292,7 @@ C=double(L);
 %%
 % Plotting results
 
-hf=figuremax(fig_color,fig_colordef); hold on;
+hf=cFigure; hold on;
 subplot(1,2,1); 
 title('Surface containing split triangles','FontSize',fontSize);
 xlabel('X','FontSize',fontSize); ylabel('Y','FontSize',fontSize); zlabel('Z','FontSize',fontSize);
@@ -327,7 +325,7 @@ cPar.Method='HC';
 %%
 % Plotting smoothing results
 
-hf=figuremax(fig_color,fig_colordef); hold on;
+hf=cFigure; hold on;
 subplot(1,2,1); 
 title('Unsmoothened surface','FontSize',fontSize);
 xlabel('X','FontSize',fontSize); ylabel('Y','FontSize',fontSize); zlabel('Z','FontSize',fontSize);
@@ -349,7 +347,7 @@ colormap autumn;
 camlight('headlight'); lighting flat;
 drawnow; 
 
-hf=figuremax(fig_color,fig_colordef); hold on;
+hf=cFigure; hold on;
 title('Smoothened surface','FontSize',fontSize);
 xlabel('X','FontSize',fontSize); ylabel('Y','FontSize',fontSize); zlabel('Z','FontSize',fontSize);
 hp=patch('Faces',Ft,'Vertices',Vt,'FaceColor',faceColor2,'FaceAlpha',faceAlpha1,'lineWidth',edgeWidth,'edgeColor',edgeColor);
@@ -368,7 +366,7 @@ drawnow;
 %%
 % Plot results
 
-figuremax(fig_color,fig_colordef);
+cFigure;
 title('Distance based surface comparison','fontSize',fontSize);
 xlabel('X','fontSize',fontSize);ylabel('Y','fontSize',fontSize); zlabel('Z','fontSize',fontSize); hold on;
 

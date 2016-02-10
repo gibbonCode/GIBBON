@@ -1,4 +1,4 @@
-function hf=sv3(M,v)
+function hf=sv3(varargin)
 
 %% Parse input
 

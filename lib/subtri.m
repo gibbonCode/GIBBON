@@ -91,6 +91,11 @@ switch subMethod
             Vs = [V; Vn]; %Join point sets
         end
     case 'seed' %Seed edge points and remove doubles (more memory intensive)
+        nDim=size(V,2);
+        if nDim==2
+            V(:,3)=0;
+        end
+        
         no_faces=size(F,1);
         
         EF=edges(triangulation(F,V));
@@ -181,6 +186,9 @@ switch subMethod
             Fs=ind_uni_2(Fs);
         end
         Vs=Vs./scaleFactor;
+        if nDim==2
+           Vs=Vs(:,[1 2]); 
+        end
 end
 
 end

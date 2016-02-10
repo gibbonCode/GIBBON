@@ -16,7 +16,6 @@ clear; close all; clc;
 
 %%
 % Plot settings
-figColor='w'; figColorDef='white';
 fontSize=15;
 faceAlpha1=0.5;
 faceAlpha2=0.5;
@@ -39,12 +38,12 @@ ptype='tri';
 [Fc,Vc]=patchcylinder(r,nr,h,nz,ptype);
 
 %Top edge indices
-It=ones(nr-1,1); Jt=(1:1:nr-1)';
-INDt=sub2ind([nz,nr-1],It,Jt);
+It=ones(nr,1); Jt=(1:1:nr)';
+INDt=sub2ind([nz,nr],It,Jt);
 
 %Bottom edge indices
-Ib=nz.*ones(nr-1,1); Jb=(1:1:nr-1)';
-INDb=sub2ind([nz,nr-1],Ib,Jb);
+Ib=nz.*ones(nr,1); Jb=(1:1:nr)';
+INDb=sub2ind([nz,nr],Ib,Jb);
 
 % Deforming regular cylinder to create outer wall
 V1=Vc; 
@@ -66,13 +65,18 @@ F3=Fc;
 
 %%
 % Plotting the example model surfaces
-hf1=figuremax(figColor,figColorDef);
+hf1=cFigure;
 title('Cylindrical surfaces of the model','FontSize',fontSize);
 xlabel('X','FontSize',fontSize);ylabel('Y','FontSize',fontSize); zlabel('Z','FontSize',fontSize);
 hold on;
 patch('Faces',F1,'Vertices',V1,'EdgeColor','k','FaceColor','r','FaceAlpha',1);
 patch('Faces',F2,'Vertices',V2,'EdgeColor','k','FaceColor','g','FaceAlpha',1);
 patch('Faces',F3,'Vertices',V3,'EdgeColor','k','FaceColor','b','FaceAlpha',1);
+
+% patchNormPlot(F1,V1);
+% patchNormPlot(F2,V2);
+% patchNormPlot(F3,V3);
+
 axis equal; view(3); axis tight;  grid on; set(gca,'FontSize',fontSize);
 camlight('headlight');
 drawnow;
@@ -92,16 +96,24 @@ Vb(:,3)=max(V1(:,3));
 
 %%
 % Plotting the example model surfaces
-hf1=figuremax(figColor,figColorDef);
+hf1=cFigure;
 title('Capped model','FontSize',fontSize);
 xlabel('X','FontSize',fontSize);ylabel('Y','FontSize',fontSize); zlabel('Z','FontSize',fontSize);
 hold on;
 
 patch('Faces',F1,'Vertices',V1,'EdgeColor','k','FaceColor','r','FaceAlpha',faceAlpha1);
+plotV(V1(INDb,:),'b.-','MarkerSize',25,'LineWidth',3);
+plotV(V1(INDt,:),'b.-','MarkerSize',25,'LineWidth',3);
 patch('Faces',F2,'Vertices',V2,'EdgeColor','k','FaceColor','g','FaceAlpha',faceAlpha1);
 patch('Faces',F3,'Vertices',V3,'EdgeColor','k','FaceColor','b','FaceAlpha',faceAlpha1);
 patch('Faces',Ft,'Vertices',Vt,'EdgeColor','k','FaceColor','y','FaceAlpha',faceAlpha1);
 patch('Faces',Fb,'Vertices',Vb,'EdgeColor','k','FaceColor','y','FaceAlpha',faceAlpha1);
+
+% patchNormPlot(F1,V1);
+% patchNormPlot(F2,V2);
+% patchNormPlot(F3,V3);
+% patchNormPlot(Ft,Vt);
+% patchNormPlot(Fb,Vb);
 
 axis equal; view(3); axis tight;  grid on; set(gca,'FontSize',fontSize);
 camlight('headlight');
@@ -114,9 +126,13 @@ V=[V1;V2;V3;Vt;Vb];
 
 F=[F1;... %Outer surface
     F2+size(V1,1);... %First inner surface
-    F3+size(V1,1)+size(V2,1);... %Second inner surface
-    Ft+size(V1,1)+size(V2,1)+size(V3,1);... %Caps top
+    fliplr(F3)+size(V1,1)+size(V2,1);... %Second inner surface
+    fliplr(Ft)+size(V1,1)+size(V2,1)+size(V3,1);... %Caps top
     Fb+size(V1,1)+size(V2,1)+size(V3,1)+size(Vt,1)]; %Caps bottom
+
+[~,ind1,ind2]=unique(pround(V,5),'rows');
+V=V(ind1,:); 
+F=ind2(F);
 
 faceBoundaryMarker=[1*ones(size(F1,1),1);... 
                     2*ones(size(F2,1),1);... 
@@ -129,11 +145,13 @@ faceBoundaryMarker=[1*ones(size(F1,1),1);...
 
 %%
 % Plotting the example model
-hf1=figuremax(figColor,figColorDef);
+hf1=cFigure;
 title('Merged model','FontSize',fontSize);
 xlabel('X','FontSize',fontSize);ylabel('Y','FontSize',fontSize); zlabel('Z','FontSize',fontSize);
 hold on;
 hp=patch('Faces',F,'Vertices',V,'EdgeColor','none','FaceColor','flat','CData',faceBoundaryMarker,'FaceAlpha',faceAlpha2);
+% patchNormPlot(F,V);
+
 axis equal; view(3); axis tight;  grid on; set(gca,'FontSize',fontSize);
 colormap jet; colorbar; 
 camlight('headlight');
@@ -194,7 +212,7 @@ modelStruct.modelName=modelName;
 % <http://wias-berlin.de/software/tetgen/>)
 
 [meshOutput]=runTetGen(modelStruct); %Run tetGen
-% runTetView(meshOutput.loadNameStruct.loadName_ele);
+runTetView(meshOutput.loadNameStruct.loadName_ele);
 
 %%
 
@@ -210,7 +228,7 @@ elementMaterialIndices=meshOutput.elementMaterialID;
 %%
 % Plotting the meshed geometry
 
-hf1=figuremax(figColor,figColorDef);
+hf1=cFigure;
 subplot(1,3,1);
 title('Solid tetrahedral mesh model','FontSize',fontSize);
 xlabel('X','FontSize',fontSize); ylabel('Y','FontSize',fontSize); zlabel('Z','FontSize',fontSize); hold on;
@@ -266,7 +284,7 @@ Vf_E=vecnormalize(Vf_E);
 
 %%
 % Plotting the example model
-hf1=figuremax(figColor,figColorDef);
+hf1=cFigure;
 title('Fibre directions clockwise and counter clockwise depending on layer','FontSize',fontSize);
 xlabel('X','FontSize',fontSize);ylabel('Y','FontSize',fontSize); zlabel('Z','FontSize',fontSize);
 hold on;
@@ -318,7 +336,7 @@ CV(indInner)=C_inner;
 VT_def=VT; 
 VT_def(indInner,:)=V_inner_def; 
 
-figuremax(figColor,figColorDef); hold on;
+cFigure; hold on;
 title('The deformed inner surface','FontSize',fontSize);
 xlabel('X','FontSize',fontSize); ylabel('Y','FontSize',fontSize); zlabel('Z','FontSize',fontSize);
 
@@ -468,7 +486,7 @@ VT_def=VT+DN;
 %%
 % Plotting the FEA results
 
-hf=figuremax(figColor,figColorDef);
+hf=cFigure;
 subplot(1,2,1);
 xlabel('X','FontSize',fontSize); ylabel('Y','FontSize',fontSize); zlabel('Z','FontSize',fontSize); hold on;
 C=sqrt(sum(DN.^2,2)); %Color towards displacement magnitude
@@ -516,7 +534,7 @@ end
 
 %%
 % Plotting the example model
-hf1=figuremax(figColor,figColorDef);
+hf1=cFigure;
 title('Fibre directions in the deformed state','FontSize',fontSize);
 xlabel('X','FontSize',fontSize);ylabel('Y','FontSize',fontSize); zlabel('Z','FontSize',fontSize);
 hold on;

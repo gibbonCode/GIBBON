@@ -6,7 +6,7 @@
    <!--
 This HTML was auto-generated from MATLAB code.
 To make changes, update the MATLAB code and republish this document.
-      --><title>DEMO_create_run_import_FEBIO_spheres</title><meta name="generator" content="MATLAB 8.4"><link rel="schema.DC" href="http://purl.org/dc/elements/1.1/"><meta name="DC.date" content="2014-10-01"><meta name="DC.source" content="DEMO_create_run_import_FEBIO_spheres.m"><style type="text/css">
+      --><title>DEMO_create_run_import_FEBIO_spheres</title><meta name="generator" content="MATLAB 9.0"><link rel="schema.DC" href="http://purl.org/dc/elements/1.1/"><meta name="DC.date" content="2016-01-29"><meta name="DC.source" content="DEMO_create_run_import_FEBIO_spheres.m"><style type="text/css">
 html,body,div,span,applet,object,iframe,h1,h2,h3,h4,h5,h6,p,blockquote,pre,a,abbr,acronym,address,big,cite,code,del,dfn,em,font,img,ins,kbd,q,s,samp,small,strike,strong,sub,sup,tt,var,b,u,i,center,dl,dt,dd,ol,ul,li,fieldset,form,label,legend,table,caption,tbody,tfoot,thead,tr,th,td{margin:0;padding:0;border:0;outline:0;font-size:100%;vertical-align:baseline;background:transparent}body{line-height:1}ol,ul{list-style:none}blockquote,q{quotes:none}blockquote:before,blockquote:after,q:before,q:after{content:'';content:none}:focus{outine:0}ins{text-decoration:none}del{text-decoration:line-through}table{border-collapse:collapse;border-spacing:0}
 
 html { min-height:100%; margin-bottom:1px; }
@@ -67,8 +67,7 @@ table td { padding:7px 5px; text-align:left; vertical-align:top; border:1px soli
 
 
   </style></head><body><div class="content"><h1>DEMO_create_run_import_FEBIO_spheres</h1><!--introduction--><p>Below is a demonstration for:</p><div><ul><li>The use of TETgen for meshing based on surface geometry</li><li>The specification of boundary conditions for FEBio</li><li>The exporting of .feb files</li><li>Running an FEBio job with MATLAB</li><li>Importing FEBio results into MATLAB</li></ul></div><!--/introduction--><h2>Contents</h2><div><ul><li><a href="#3">Defining the surface models</a></li><li><a href="#7">CREATING A SOLID TETRAHEDRAL MESH USING TETGEN</a></li><li><a href="#15">DEFINE PRESCRIBED DISPLACEMENTS</a></li><li><a href="#17">CONSTRUCTING FEB MODEL</a></li><li><a href="#18">SAVING .FEB FILE</a></li><li><a href="#19">RUNNING FEBIO JOB</a></li><li><a href="#22">IMPORTING NODAL DISPLACEMENT RESULTS</a></li><li><a href="#23">CREATING NODE SET IN DEFORMED STATE</a></li><li><a href="#25">EXAMPLE FOR VISUALIZATION OF MODEL OUTER SURFACE ONLY</a></li></ul></div><pre class="codeinput">clear; close <span class="string">all</span>; clc;
-</pre><p>Plot settings</p><pre class="codeinput">figColor=<span class="string">'w'</span>; figColorDef=<span class="string">'white'</span>;
-fontSize=15;
+</pre><p>Plot settings</p><pre class="codeinput">fontSize=15;
 faceAlpha1=0.5;
 faceAlpha2=0.5;
 edgeColor=0.25*ones(1,3);
@@ -93,7 +92,7 @@ faceBoundMarker2=3; <span class="comment">%Face marker for inner sphere</span>
 V=[V1;V2]; <span class="comment">%Joining nodes</span>
 F=[F1;F2+size(V1,1)]; <span class="comment">%Joining faces</span>
 faceBoundaryMarker=[faceBoundMarker1*ones(size(F1,1),1); faceBoundMarker2*ones(size(F2,1),1)]; <span class="comment">%Create boundary markers for faces</span>
-</pre><p>Plotting surface models</p><pre class="codeinput">hf=figuremax(figColor,figColorDef);
+</pre><p>Plotting surface models</p><pre class="codeinput">hf=cFigure;
 title(<span class="string">'Surface models'</span>,<span class="string">'FontSize'</span>,fontSize);
 xlabel(<span class="string">'X'</span>,<span class="string">'FontSize'</span>,fontSize); ylabel(<span class="string">'Y'</span>,<span class="string">'FontSize'</span>,fontSize); zlabel(<span class="string">'Z'</span>,<span class="string">'FontSize'</span>,fontSize);
 hold <span class="string">on</span>;
@@ -108,39 +107,40 @@ set(gca,<span class="string">'FontSize'</span>,fontSize);
 view(3); axis <span class="string">tight</span>;  axis <span class="string">equal</span>;  grid <span class="string">on</span>;
 </pre><img vspace="5" hspace="5" src="DEMO_create_run_import_FEBIO_spheres_01.png" alt=""> <h2>CREATING A SOLID TETRAHEDRAL MESH USING TETGEN<a name="7"></a></h2><p>First region points need to be defined. These represent a list of arbitrary coordinates for points inside the regions. 1 point per region is specified. For the example here the points are easily specified. Sometimes a raytracing algorythm or the use of the <tt>triSurf2Im</tt> function is required to find interior points.</p><pre class="codeinput">V_regions=[0 0 (r1+r2)/2;0 0 0;]; <span class="comment">% Define region points</span>
 </pre><p>Next holes are defined. These are similar to regions. However holes, as the name suggests, are regions that a not meshed and are left empty. This model does not contain holes so the list is empty</p><pre class="codeinput">V_holes=[]; <span class="comment">%Define hole points</span>
-</pre><p>For each region the mesh density parameter can be specified</p><pre class="codeinput">regionA=[0.005 0.005]; <span class="comment">% Regional mesh parameters</span>
+</pre><p>For each region the mesh density parameter can be specified</p><pre class="codeinput">[v]=tetVolMeanEst(F,V); <span class="comment">%Estimate volume of ideal tetrahedron</span>
+regionA=[v v]; <span class="comment">% Regional mesh parameters</span>
 </pre><p>CREATING THE SMESH STRUCTURE. TetGen can mesh geometries from various mesh file formats. For the GIBBON toolbox .smesh files have been implemented. Below a structure is created that fully defines such as smesh file and the meshing settings for TetGen.</p><pre class="codeinput">stringOpt=<span class="string">'-pq1.2AaYQ'</span>;
-modelName=fullfile(savePath,<span class="string">'tempModel'</span>);
-smeshName=[modelName,<span class="string">'.smesh'</span>];
+modelNameEnd=<span class="string">'tempModel'</span>;
+modelName=fullfile(savePath,modelNameEnd);
 
-smeshStruct.stringOpt=stringOpt;
-smeshStruct.Faces=F;
-smeshStruct.Nodes=V;
-smeshStruct.holePoints=V_holes;
-smeshStruct.faceBoundaryMarker=faceBoundaryMarker; <span class="comment">%Face boundary markers</span>
-smeshStruct.regionPoints=V_regions; <span class="comment">%region points</span>
-smeshStruct.regionA=regionA;
-smeshStruct.minRegionMarker=2; <span class="comment">%Minimum region marker</span>
-smeshStruct.smeshName=smeshName;
-</pre><p>Mesh model using tetrahedral elements using tetGen (see: <a href="http://wias-berlin.de/software/tetgen/">http://wias-berlin.de/software/tetgen/</a>)</p><pre class="codeinput">[meshOutput]=runTetGenSmesh(smeshStruct); <span class="comment">%Run tetGen</span>
+inputStruct.stringOpt=stringOpt;
+inputStruct.Faces=F;
+inputStruct.Nodes=V;
+inputStruct.holePoints=V_holes;
+inputStruct.faceBoundaryMarker=faceBoundaryMarker; <span class="comment">%Face boundary markers</span>
+inputStruct.regionPoints=V_regions; <span class="comment">%region points</span>
+inputStruct.regionA=regionA;
+inputStruct.minRegionMarker=2; <span class="comment">%Minimum region marker</span>
+inputStruct.modelName=modelName;
+</pre><p>Mesh model using tetrahedral elements using tetGen (see: <a href="http://wias-berlin.de/software/tetgen/">http://wias-berlin.de/software/tetgen/</a>)</p><pre class="codeinput">[meshOutput]=runTetGen(inputStruct); <span class="comment">%Run tetGen</span>
 </pre><pre class="codeoutput"> 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
---- TETGEN Tetrahedral meshing --- 01-Oct-2014 15:16:17
+--- TETGEN Tetrahedral meshing --- 29-Jan-2016 15:04:23
  
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
---- Writing SMESH file --- 01-Oct-2014 15:16:17
+--- Writing SMESH file --- 29-Jan-2016 15:04:23
 ----&gt; Adding node field
 ----&gt; Adding facet field
 ----&gt; Adding holes specification
 ----&gt; Adding region specification
---- Done --- 01-Oct-2014 15:16:17
---- Running TetGen for meshing --- 01-Oct-2014 15:16:17
-Opening /data/MATLAB/GIBBON/trunk/data/temp/tempModel.smesh.
---- Done --- 01-Oct-2014 15:16:18
+--- Done --- 29-Jan-2016 15:04:23
+--- Running TetGen to mesh input boundary--- 29-Jan-2016 15:04:23
+Opening D:\MATLAB\GIBBON\lib_ext\tetGen\tempFiles\tempModel.smesh. 
+--- Done --- 29-Jan-2016 15:04:24
  
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
---- Importing TetGen files --- 01-Oct-2014 15:16:18
---- Done --- 01-Oct-2014 15:16:18
+--- Importing TetGen files --- 29-Jan-2016 15:04:24
+--- Done --- 29-Jan-2016 15:04:24
 </pre><p>Accessing the model element and patch data</p><pre class="codeinput">FT=meshOutput.faces;
 Fb=meshOutput.facesBoundary;
 Cb=meshOutput.boundaryMarker;
@@ -148,7 +148,7 @@ VT=meshOutput.nodes;
 C=meshOutput.faceMaterialID;
 E=meshOutput.elements;
 elementMaterialIndices=meshOutput.elementMaterialID;
-</pre><p>Plotting the meshed geometry</p><pre class="codeinput">hf1=figuremax(figColor,figColorDef);
+</pre><p>Plotting the meshed geometry</p><pre class="codeinput">hf1=cFigure;
 subplot(1,3,1);
 title(<span class="string">'Solid tetrahedral mesh model'</span>,<span class="string">'FontSize'</span>,fontSize);
 xlabel(<span class="string">'X'</span>,<span class="string">'FontSize'</span>,fontSize); ylabel(<span class="string">'Y'</span>,<span class="string">'FontSize'</span>,fontSize); zlabel(<span class="string">'Z'</span>,<span class="string">'FontSize'</span>,fontSize); hold <span class="string">on</span>;
@@ -185,7 +185,7 @@ colormap(autumn);
 <span class="comment">% camlight headlight;</span>
 set(gca,<span class="string">'FontSize'</span>,fontSize);
 drawnow;
-</pre><pre class="codeoutput">Warning: tet4 elements assumed, for other elements please specify elementType 
+</pre><pre class="codeoutput">tet4 elements assumed, for other elements please specify elementType
 </pre><img vspace="5" hspace="5" src="DEMO_create_run_import_FEBIO_spheres_02.png" alt=""> <h2>DEFINE PRESCRIBED DISPLACEMENTS<a name="15"></a></h2><p>For this example the outer sphere nodes are subjected to a prescribed displacement</p><pre class="codeinput"><span class="comment">%Get outer surface (numbering may have altered due to tetgen behaviour so</span>
 <span class="comment">%redefined here)</span>
 F1=Fb(Cb==2,:);
@@ -214,7 +214,7 @@ CV(indOuter)=C_outer;
 VT_def=VT;
 VT_def(indOuter,:)=V1_def;
 
-hf=figuremax(figColor,figColorDef);
+hf=cFigure;
 title(<span class="string">'The deformed outer surface'</span>,<span class="string">'FontSize'</span>,fontSize);
 xlabel(<span class="string">'X'</span>,<span class="string">'FontSize'</span>,fontSize); ylabel(<span class="string">'Y'</span>,<span class="string">'FontSize'</span>,fontSize); zlabel(<span class="string">'Z'</span>,<span class="string">'FontSize'</span>,fontSize);
 hold <span class="string">on</span>;
@@ -283,7 +283,7 @@ FEB_struct.Boundary.Prescribe{3}.nodeScale=bcPrescribedMagnitudes(:,3);
 FEB_struct.Output.VarTypes={<span class="string">'displacement'</span>,<span class="string">'stress'</span>,<span class="string">'relative volume'</span>,<span class="string">'shell thickness'</span>};
 
 <span class="comment">%Specify log file output</span>
-run_node_output_name=[FEB_struct.run_filename(1:end-4),<span class="string">'_node_out.txt'</span>];
+run_node_output_name=[modelNameEnd,<span class="string">'_node_out.txt'</span>];
 FEB_struct.run_output_names={run_node_output_name};
 FEB_struct.output_types={<span class="string">'node_data'</span>};
 FEB_struct.data_types={<span class="string">'ux;uy;uz'</span>};
@@ -307,7 +307,7 @@ FEB_struct.LoadData.LoadCurves.loadPoints={[0 0;1 1]};
 febStruct2febFile(FEB_struct);
 </pre><pre class="codeoutput"> 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
---- Writing FEBio XML object --- 01-Oct-2014 15:16:20
+--- Writing FEBio XML object --- 29-Jan-2016 15:04:26
 Adding Module level
 Adding Control level
 Adding Globals level
@@ -325,11 +325,10 @@ Adding Output level
 ----&gt; Adding plotfile field
 ----&gt; Adding logfile field
 Writing .feb file
---- Done --- 01-Oct-2014 15:16:27
+--- Done --- 29-Jan-2016 15:04:28
 </pre><h2>RUNNING FEBIO JOB<a name="19"></a></h2><pre class="codeinput">FEBioRunStruct.run_filename=FEB_struct.run_filename;
 FEBioRunStruct.run_logname=FEB_struct.run_logname;
 FEBioRunStruct.disp_on=1;
-FEBioRunStruct.FEBioPath=<span class="string">'/data/Code/C/FEBIO_linux/bin/febio2.lnx64'</span>;
 FEBioRunStruct.disp_log_on=1;
 FEBioRunStruct.runMode=<span class="string">'external'</span>;<span class="comment">%'internal';</span>
 FEBioRunStruct.t_check=0.25; <span class="comment">%Time for checking log file (dont set too small)</span>
@@ -339,14 +338,9 @@ FEBioRunStruct.maxLogCheckTime=3; <span class="comment">%Max log file checking t
 [runFlag]=runMonitorFEBio(FEBioRunStruct);<span class="comment">%START FEBio NOW!!!!!!!!</span>
 </pre><pre class="codeoutput"> 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
---- STARTING FEBIO JOB --- 01-Oct-2014 15:16:27
-
-ans =
-
-"/data/Code/C/FEBIO_linux/bin/febio2.lnx64" -i "/data/MATLAB/GIBBON/trunk/data/temp/tempModel.feb" -o "/data/MATLAB/GIBBON/trunk/data/temp/tempModel.txt" &amp;
-
+--- STARTING FEBIO JOB --- 29-Jan-2016 15:04:28
 Waiting for log file...
-Proceeding to check log file...01-Oct-2014 15:16:27
+Proceeding to check log file...29-Jan-2016 15:04:29
 ------- converged at time : 0.1
 ------- converged at time : 0.2
 ------- converged at time : 0.3
@@ -357,7 +351,7 @@ Proceeding to check log file...01-Oct-2014 15:16:27
 ------- converged at time : 0.8
 ------- converged at time : 0.9
 ------- converged at time : 1
---- Done --- 01-Oct-2014 15:16:34
+--- Done --- 29-Jan-2016 15:04:34
 </pre><pre class="codeinput"><span class="keyword">if</span> runFlag==1 <span class="comment">%i.e. a succesful run</span>
 </pre><h2>IMPORTING NODAL DISPLACEMENT RESULTS<a name="22"></a></h2><p>Importing nodal displacements from a log file</p><pre class="codeinput">    [~, N_disp_mat,~]=importFEBio_logfile(FEB_struct.run_output_names{1}); <span class="comment">%Nodal displacements</span>
 
@@ -370,7 +364,7 @@ Proceeding to check log file...01-Oct-2014 15:16:27
 
     Cs=sqrt(sum(DN.^2,2)); <span class="comment">%Color towards displacement magnitude</span>
 
-    hf1=figuremax(figColor,figColorDef);
+    hf1=cFigure;
     title(<span class="string">'Cut view of deformed model showing internal results'</span>,<span class="string">'FontSize'</span>,fontSize);
     xlabel(<span class="string">'X'</span>,<span class="string">'FontSize'</span>,fontSize); ylabel(<span class="string">'Y'</span>,<span class="string">'FontSize'</span>,fontSize); zlabel(<span class="string">'Z'</span>,<span class="string">'FontSize'</span>,fontSize); hold <span class="string">on</span>;
 
@@ -381,7 +375,7 @@ Proceeding to check log file...01-Oct-2014 15:16:27
     <span class="comment">% camlight headlight;</span>
     set(gca,<span class="string">'FontSize'</span>,fontSize);
     drawnow;
-</pre><pre class="codeoutput">Warning: tet4 elements assumed, for other elements please specify elementType 
+</pre><pre class="codeoutput">tet4 elements assumed, for other elements please specify elementType
 </pre><img vspace="5" hspace="5" src="DEMO_create_run_import_FEBIO_spheres_04.png" alt=""> <h2>EXAMPLE FOR VISUALIZATION OF MODEL OUTER SURFACE ONLY<a name="25"></a></h2><p>Visualizing the outer surface only is less memory intensive for large models</p><pre class="codeinput">    <span class="comment">%Get free faces</span>
     TR = triangulation(E,VT_def); <span class="comment">%"Triangulation" representation</span>
     F_free = freeBoundary(TR); <span class="comment">%Free boundary triangles i.e. outer surface</span>
@@ -396,7 +390,7 @@ Proceeding to check log file...01-Oct-2014 15:16:27
     C(ind_V_free)=D; <span class="comment">%Set color for point selection</span>
     [CF]=vertexToFaceMeasure(F_free,C); <span class="comment">%Convert vertex to face color measure</span>
 
-    hf1=figuremax(figColor,figColorDef);
+    hf1=cFigure;
     title(<span class="string">'Outer surface only with distance metric'</span>,<span class="string">'FontSize'</span>,fontSize);
     xlabel(<span class="string">'X'</span>,<span class="string">'FontSize'</span>,fontSize); ylabel(<span class="string">'Y'</span>,<span class="string">'FontSize'</span>,fontSize); zlabel(<span class="string">'Z'</span>,<span class="string">'FontSize'</span>,fontSize); hold <span class="string">on</span>;
 
@@ -409,7 +403,7 @@ Proceeding to check log file...01-Oct-2014 15:16:27
     set(gca,<span class="string">'FontSize'</span>,fontSize);
     drawnow;
 </pre><img vspace="5" hspace="5" src="DEMO_create_run_import_FEBIO_spheres_05.png" alt=""> <pre class="codeinput"><span class="keyword">end</span>
-</pre><p><img vspace="5" hspace="5" src="gibbVerySmall.gif" alt=""> </p><p><i><b>GIBBON</b></i> <a href="www.gibboncode.org">www.gibboncode.org</a></p><p><i>Kevin Mattheus Moerman</i>, <a href="gibbon.toolbox@gmail.com">gibbon.toolbox@gmail.com</a></p><p class="footer"><br><a href="http://www.mathworks.com/products/matlab/">Published with MATLAB&reg; R2014b</a><br></p></div><!--
+</pre><p><img vspace="5" hspace="5" src="gibbVerySmall.gif" alt=""> </p><p><i><b>GIBBON</b></i> <a href="www.gibboncode.org">www.gibboncode.org</a></p><p><i>Kevin Mattheus Moerman</i>, <a href="gibbon.toolbox@gmail.com">gibbon.toolbox@gmail.com</a></p><p class="footer"><br><a href="http://www.mathworks.com/products/matlab/">Published with MATLAB&reg; R2016a</a><br></p></div><!--
 ##### SOURCE BEGIN #####
 %% DEMO_create_run_import_FEBIO_spheres
 % Below is a demonstration for:
@@ -426,7 +420,6 @@ clear; close all; clc;
 
 %%
 % Plot settings
-figColor='w'; figColorDef='white';
 fontSize=15;
 faceAlpha1=0.5;
 faceAlpha2=0.5;
@@ -466,7 +459,7 @@ faceBoundaryMarker=[faceBoundMarker1*ones(size(F1,1),1); faceBoundMarker2*ones(s
 
 %%
 % Plotting surface models
-hf=figuremax(figColor,figColorDef);
+hf=cFigure;
 title('Surface models','FontSize',fontSize);
 xlabel('X','FontSize',fontSize); ylabel('Y','FontSize',fontSize); zlabel('Z','FontSize',fontSize);
 hold on;
@@ -502,7 +495,8 @@ V_holes=[]; %Define hole points
 
 %%
 % For each region the mesh density parameter can be specified
-regionA=[0.005 0.005]; % Regional mesh parameters
+[v]=tetVolMeanEst(F,V); %Estimate volume of ideal tetrahedron
+regionA=[v v]; % Regional mesh parameters
 
 %%
 % CREATING THE SMESH STRUCTURE.
@@ -512,24 +506,24 @@ regionA=[0.005 0.005]; % Regional mesh parameters
 % TetGen.
 
 stringOpt='-pq1.2AaYQ';
-modelName=fullfile(savePath,'tempModel');
-smeshName=[modelName,'.smesh'];
+modelNameEnd='tempModel';
+modelName=fullfile(savePath,modelNameEnd);
 
-smeshStruct.stringOpt=stringOpt;
-smeshStruct.Faces=F;
-smeshStruct.Nodes=V;
-smeshStruct.holePoints=V_holes;
-smeshStruct.faceBoundaryMarker=faceBoundaryMarker; %Face boundary markers
-smeshStruct.regionPoints=V_regions; %region points
-smeshStruct.regionA=regionA;
-smeshStruct.minRegionMarker=2; %Minimum region marker
-smeshStruct.smeshName=smeshName;
+inputStruct.stringOpt=stringOpt;
+inputStruct.Faces=F;
+inputStruct.Nodes=V;
+inputStruct.holePoints=V_holes;
+inputStruct.faceBoundaryMarker=faceBoundaryMarker; %Face boundary markers
+inputStruct.regionPoints=V_regions; %region points
+inputStruct.regionA=regionA;
+inputStruct.minRegionMarker=2; %Minimum region marker
+inputStruct.modelName=modelName;
 
 %%
 % Mesh model using tetrahedral elements using tetGen (see:
 % <http://wias-berlin.de/software/tetgen/>)
 
-[meshOutput]=runTetGenSmesh(smeshStruct); %Run tetGen
+[meshOutput]=runTetGen(inputStruct); %Run tetGen
 
 %%
 % Accessing the model element and patch data
@@ -544,7 +538,7 @@ elementMaterialIndices=meshOutput.elementMaterialID;
 %%
 % Plotting the meshed geometry
 
-hf1=figuremax(figColor,figColorDef);
+hf1=cFigure;
 subplot(1,3,1);
 title('Solid tetrahedral mesh model','FontSize',fontSize);
 xlabel('X','FontSize',fontSize); ylabel('Y','FontSize',fontSize); zlabel('Z','FontSize',fontSize); hold on;
@@ -616,7 +610,7 @@ CV(indOuter)=C_outer;
 VT_def=VT;
 VT_def(indOuter,:)=V1_def;
 
-hf=figuremax(figColor,figColorDef);
+hf=cFigure;
 title('The deformed outer surface','FontSize',fontSize);
 xlabel('X','FontSize',fontSize); ylabel('Y','FontSize',fontSize); zlabel('Z','FontSize',fontSize);
 hold on;
@@ -688,7 +682,7 @@ FEB_struct.Boundary.Prescribe{3}.nodeScale=bcPrescribedMagnitudes(:,3);
 FEB_struct.Output.VarTypes={'displacement','stress','relative volume','shell thickness'};
 
 %Specify log file output
-run_node_output_name=[FEB_struct.run_filename(1:end-4),'_node_out.txt'];
+run_node_output_name=[modelNameEnd,'_node_out.txt'];
 FEB_struct.run_output_names={run_node_output_name};
 FEB_struct.output_types={'node_data'};
 FEB_struct.data_types={'ux;uy;uz'};
@@ -719,7 +713,6 @@ febStruct2febFile(FEB_struct);
 FEBioRunStruct.run_filename=FEB_struct.run_filename;
 FEBioRunStruct.run_logname=FEB_struct.run_logname;
 FEBioRunStruct.disp_on=1;
-FEBioRunStruct.FEBioPath='/data/Code/C/FEBIO_linux/bin/febio2.lnx64';
 FEBioRunStruct.disp_log_on=1;
 FEBioRunStruct.runMode='external';%'internal';
 FEBioRunStruct.t_check=0.25; %Time for checking log file (dont set too small)
@@ -750,7 +743,7 @@ if runFlag==1 %i.e. a succesful run
     
     Cs=sqrt(sum(DN.^2,2)); %Color towards displacement magnitude
     
-    hf1=figuremax(figColor,figColorDef);
+    hf1=cFigure;
     title('Cut view of deformed model showing internal results','FontSize',fontSize);
     xlabel('X','FontSize',fontSize); ylabel('Y','FontSize',fontSize); zlabel('Z','FontSize',fontSize); hold on;
     
@@ -779,7 +772,7 @@ if runFlag==1 %i.e. a succesful run
     C(ind_V_free)=D; %Set color for point selection
     [CF]=vertexToFaceMeasure(F_free,C); %Convert vertex to face color measure
     
-    hf1=figuremax(figColor,figColorDef);
+    hf1=cFigure;
     title('Outer surface only with distance metric','FontSize',fontSize);
     xlabel('X','FontSize',fontSize); ylabel('Y','FontSize',fontSize); zlabel('Z','FontSize',fontSize); hold on;
     

@@ -6,7 +6,7 @@
    <!--
 This HTML was auto-generated from MATLAB code.
 To make changes, update the MATLAB code and republish this document.
-      --><title>DEMO_vessel_FEBIO_fibre_mapping</title><meta name="generator" content="MATLAB 8.5"><link rel="schema.DC" href="http://purl.org/dc/elements/1.1/"><meta name="DC.date" content="2015-09-16"><meta name="DC.source" content="DEMO_vessel_FEBIO_fibre_mapping.m"><style type="text/css">
+      --><title>DEMO_vessel_FEBIO_fibre_mapping</title><meta name="generator" content="MATLAB 9.0"><link rel="schema.DC" href="http://purl.org/dc/elements/1.1/"><meta name="DC.date" content="2016-02-01"><meta name="DC.source" content="DEMO_vessel_FEBIO_fibre_mapping.m"><style type="text/css">
 html,body,div,span,applet,object,iframe,h1,h2,h3,h4,h5,h6,p,blockquote,pre,a,abbr,acronym,address,big,cite,code,del,dfn,em,font,img,ins,kbd,q,s,samp,small,strike,strong,sub,sup,tt,var,b,u,i,center,dl,dt,dd,ol,ul,li,fieldset,form,label,legend,table,caption,tbody,tfoot,thead,tr,th,td{margin:0;padding:0;border:0;outline:0;font-size:100%;vertical-align:baseline;background:transparent}body{line-height:1}ol,ul{list-style:none}blockquote,q{quotes:none}blockquote:before,blockquote:after,q:before,q:after{content:'';content:none}:focus{outine:0}ins{text-decoration:none}del{text-decoration:line-through}table{border-collapse:collapse;border-spacing:0}
 
 html { min-height:100%; margin-bottom:1px; }
@@ -67,8 +67,7 @@ table td { padding:7px 5px; text-align:left; vertical-align:top; border:1px soli
 
 
   </style></head><body><div class="content"><h1>DEMO_vessel_FEBIO_fibre_mapping</h1><!--introduction--><p>Below is a demonstration of how to map, set and import fibre directions for FEBio.</p><!--/introduction--><h2>Contents</h2><div><ul><li><a href="#4">BUILDING EXAMPLE SURFACE GEOMETRY</a></li><li><a href="#6">CAPPING MODEL</a></li><li><a href="#8">JOINING MODEL COMPONENTS</a></li><li><a href="#10">MESHING THE MODEL</a></li><li><a href="#17">CREATING FIBRE DIRECTIONS</a></li><li><a href="#19">DEFINE PRESCRIBED DISPLACEMENTS</a></li><li><a href="#20">DEFINE BOUNDARY CONDITIONS</a></li><li><a href="#22">CONSTRUCTING FEB MODEL</a></li><li><a href="#23">SAVING .FEB FILE</a></li><li><a href="#24">RUNNING FEBIO JOB</a></li><li><a href="#25">IMPORTING NODAL DISPLACEMENT RESULTS</a></li><li><a href="#26">CREATING NODE SET IN DEFORMED STATE</a></li><li><a href="#28">DERIVE FIBRE DIRECTIONS IN DEFORMED STATE</a></li></ul></div><p>A vessel model is constructed consisting of two layers with different mechanical properties and fibre directions. The inner wall of the vessel is subjected to a prescribed displacement. Fibre directions are set in the .feb file, the model is run in FEBio, results are exported and the fibre directions in the deformed state are derived from the imported model results.</p><pre class="codeinput">clear; close <span class="string">all</span>; clc;
-</pre><p>Plot settings</p><pre class="codeinput">figColor=<span class="string">'w'</span>; figColorDef=<span class="string">'white'</span>;
-fontSize=15;
+</pre><p>Plot settings</p><pre class="codeinput">fontSize=15;
 faceAlpha1=0.5;
 faceAlpha2=0.5;
 edgeColor=0.25*ones(1,3);
@@ -87,12 +86,12 @@ ptype=<span class="string">'tri'</span>;
 [Fc,Vc]=patchcylinder(r,nr,h,nz,ptype);
 
 <span class="comment">%Top edge indices</span>
-It=ones(nr-1,1); Jt=(1:1:nr-1)';
-INDt=sub2ind([nz,nr-1],It,Jt);
+It=ones(nr,1); Jt=(1:1:nr)';
+INDt=sub2ind([nz,nr],It,Jt);
 
 <span class="comment">%Bottom edge indices</span>
-Ib=nz.*ones(nr-1,1); Jb=(1:1:nr-1)';
-INDb=sub2ind([nz,nr-1],Ib,Jb);
+Ib=nz.*ones(nr,1); Jb=(1:1:nr)';
+INDb=sub2ind([nz,nr],Ib,Jb);
 
 <span class="comment">% Deforming regular cylinder to create outer wall</span>
 V1=Vc;
@@ -111,13 +110,18 @@ R3=R-2;
 V3=V2;
 F3=Fc;
 [V3(:,1),V3(:,2),V3(:,3)]=pol2cart(T,R3,Z);
-</pre><p>Plotting the example model surfaces</p><pre class="codeinput">hf1=figuremax(figColor,figColorDef);
+</pre><p>Plotting the example model surfaces</p><pre class="codeinput">hf1=cFigure;
 title(<span class="string">'Cylindrical surfaces of the model'</span>,<span class="string">'FontSize'</span>,fontSize);
 xlabel(<span class="string">'X'</span>,<span class="string">'FontSize'</span>,fontSize);ylabel(<span class="string">'Y'</span>,<span class="string">'FontSize'</span>,fontSize); zlabel(<span class="string">'Z'</span>,<span class="string">'FontSize'</span>,fontSize);
 hold <span class="string">on</span>;
 patch(<span class="string">'Faces'</span>,F1,<span class="string">'Vertices'</span>,V1,<span class="string">'EdgeColor'</span>,<span class="string">'k'</span>,<span class="string">'FaceColor'</span>,<span class="string">'r'</span>,<span class="string">'FaceAlpha'</span>,1);
 patch(<span class="string">'Faces'</span>,F2,<span class="string">'Vertices'</span>,V2,<span class="string">'EdgeColor'</span>,<span class="string">'k'</span>,<span class="string">'FaceColor'</span>,<span class="string">'g'</span>,<span class="string">'FaceAlpha'</span>,1);
 patch(<span class="string">'Faces'</span>,F3,<span class="string">'Vertices'</span>,V3,<span class="string">'EdgeColor'</span>,<span class="string">'k'</span>,<span class="string">'FaceColor'</span>,<span class="string">'b'</span>,<span class="string">'FaceAlpha'</span>,1);
+
+<span class="comment">% patchNormPlot(F1,V1);</span>
+<span class="comment">% patchNormPlot(F2,V2);</span>
+<span class="comment">% patchNormPlot(F3,V3);</span>
+
 axis <span class="string">equal</span>; view(3); axis <span class="string">tight</span>;  grid <span class="string">on</span>; set(gca,<span class="string">'FontSize'</span>,fontSize);
 camlight(<span class="string">'headlight'</span>);
 drawnow;
@@ -131,16 +135,24 @@ regionSpec{1}={V1(INDb,[1 2]),V2(INDb,[1 2])};
 regionSpec{2}={V2(INDb,[1 2]),V3(INDb,[1 2])};
 [Fb,Vb,regionInd_b]=multiRegionTriMesh2D(regionSpec,pointSpacingCap,0,0);
 Vb(:,3)=max(V1(:,3));
-</pre><p>Plotting the example model surfaces</p><pre class="codeinput">hf1=figuremax(figColor,figColorDef);
+</pre><p>Plotting the example model surfaces</p><pre class="codeinput">hf1=cFigure;
 title(<span class="string">'Capped model'</span>,<span class="string">'FontSize'</span>,fontSize);
 xlabel(<span class="string">'X'</span>,<span class="string">'FontSize'</span>,fontSize);ylabel(<span class="string">'Y'</span>,<span class="string">'FontSize'</span>,fontSize); zlabel(<span class="string">'Z'</span>,<span class="string">'FontSize'</span>,fontSize);
 hold <span class="string">on</span>;
 
 patch(<span class="string">'Faces'</span>,F1,<span class="string">'Vertices'</span>,V1,<span class="string">'EdgeColor'</span>,<span class="string">'k'</span>,<span class="string">'FaceColor'</span>,<span class="string">'r'</span>,<span class="string">'FaceAlpha'</span>,faceAlpha1);
+plotV(V1(INDb,:),<span class="string">'b.-'</span>,<span class="string">'MarkerSize'</span>,25,<span class="string">'LineWidth'</span>,3);
+plotV(V1(INDt,:),<span class="string">'b.-'</span>,<span class="string">'MarkerSize'</span>,25,<span class="string">'LineWidth'</span>,3);
 patch(<span class="string">'Faces'</span>,F2,<span class="string">'Vertices'</span>,V2,<span class="string">'EdgeColor'</span>,<span class="string">'k'</span>,<span class="string">'FaceColor'</span>,<span class="string">'g'</span>,<span class="string">'FaceAlpha'</span>,faceAlpha1);
 patch(<span class="string">'Faces'</span>,F3,<span class="string">'Vertices'</span>,V3,<span class="string">'EdgeColor'</span>,<span class="string">'k'</span>,<span class="string">'FaceColor'</span>,<span class="string">'b'</span>,<span class="string">'FaceAlpha'</span>,faceAlpha1);
 patch(<span class="string">'Faces'</span>,Ft,<span class="string">'Vertices'</span>,Vt,<span class="string">'EdgeColor'</span>,<span class="string">'k'</span>,<span class="string">'FaceColor'</span>,<span class="string">'y'</span>,<span class="string">'FaceAlpha'</span>,faceAlpha1);
 patch(<span class="string">'Faces'</span>,Fb,<span class="string">'Vertices'</span>,Vb,<span class="string">'EdgeColor'</span>,<span class="string">'k'</span>,<span class="string">'FaceColor'</span>,<span class="string">'y'</span>,<span class="string">'FaceAlpha'</span>,faceAlpha1);
+
+<span class="comment">% patchNormPlot(F1,V1);</span>
+<span class="comment">% patchNormPlot(F2,V2);</span>
+<span class="comment">% patchNormPlot(F3,V3);</span>
+<span class="comment">% patchNormPlot(Ft,Vt);</span>
+<span class="comment">% patchNormPlot(Fb,Vb);</span>
 
 axis <span class="string">equal</span>; view(3); axis <span class="string">tight</span>;  grid <span class="string">on</span>; set(gca,<span class="string">'FontSize'</span>,fontSize);
 camlight(<span class="string">'headlight'</span>);
@@ -150,9 +162,13 @@ V=[V1;V2;V3;Vt;Vb];
 
 F=[F1;<span class="keyword">...</span><span class="comment"> %Outer surface</span>
     F2+size(V1,1);<span class="keyword">...</span><span class="comment"> %First inner surface</span>
-    F3+size(V1,1)+size(V2,1);<span class="keyword">...</span><span class="comment"> %Second inner surface</span>
-    Ft+size(V1,1)+size(V2,1)+size(V3,1);<span class="keyword">...</span><span class="comment"> %Caps top</span>
+    fliplr(F3)+size(V1,1)+size(V2,1);<span class="keyword">...</span><span class="comment"> %Second inner surface</span>
+    fliplr(Ft)+size(V1,1)+size(V2,1)+size(V3,1);<span class="keyword">...</span><span class="comment"> %Caps top</span>
     Fb+size(V1,1)+size(V2,1)+size(V3,1)+size(Vt,1)]; <span class="comment">%Caps bottom</span>
+
+[~,ind1,ind2]=unique(pround(V,5),<span class="string">'rows'</span>);
+V=V(ind1,:);
+F=ind2(F);
 
 faceBoundaryMarker=[1*ones(size(F1,1),1);<span class="keyword">...</span>
                     2*ones(size(F2,1),1);<span class="keyword">...</span>
@@ -162,11 +178,13 @@ faceBoundaryMarker=[1*ones(size(F1,1),1);<span class="keyword">...</span>
                     6*ones(nnz(regionInd_b==1),1);<span class="keyword">...</span>
                     7*ones(nnz(regionInd_b==2),1);<span class="keyword">...</span>
                     ];
-</pre><p>Plotting the example model</p><pre class="codeinput">hf1=figuremax(figColor,figColorDef);
+</pre><p>Plotting the example model</p><pre class="codeinput">hf1=cFigure;
 title(<span class="string">'Merged model'</span>,<span class="string">'FontSize'</span>,fontSize);
 xlabel(<span class="string">'X'</span>,<span class="string">'FontSize'</span>,fontSize);ylabel(<span class="string">'Y'</span>,<span class="string">'FontSize'</span>,fontSize); zlabel(<span class="string">'Z'</span>,<span class="string">'FontSize'</span>,fontSize);
 hold <span class="string">on</span>;
 hp=patch(<span class="string">'Faces'</span>,F,<span class="string">'Vertices'</span>,V,<span class="string">'EdgeColor'</span>,<span class="string">'none'</span>,<span class="string">'FaceColor'</span>,<span class="string">'flat'</span>,<span class="string">'CData'</span>,faceBoundaryMarker,<span class="string">'FaceAlpha'</span>,faceAlpha2);
+<span class="comment">% patchNormPlot(F,V);</span>
+
 axis <span class="string">equal</span>; view(3); axis <span class="string">tight</span>;  grid <span class="string">on</span>; set(gca,<span class="string">'FontSize'</span>,fontSize);
 colormap <span class="string">jet</span>; colorbar;
 camlight(<span class="string">'headlight'</span>);
@@ -206,25 +224,25 @@ modelStruct.regionA=regionA;
 modelStruct.minRegionMarker=2; <span class="comment">%Minimum region marker</span>
 modelStruct.modelName=modelName;
 </pre><p>Mesh model using tetrahedral elements using tetGen (see: <a href="http://wias-berlin.de/software/tetgen/">http://wias-berlin.de/software/tetgen/</a>)</p><pre class="codeinput">[meshOutput]=runTetGen(modelStruct); <span class="comment">%Run tetGen</span>
-<span class="comment">% runTetView(meshOutput.loadNameStruct.loadName_ele);</span>
+runTetView(meshOutput.loadNameStruct.loadName_ele);
 </pre><pre class="codeoutput"> 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
---- TETGEN Tetrahedral meshing --- 16-Sep-2015 20:31:07
+--- TETGEN Tetrahedral meshing --- 01-Feb-2016 12:27:19
  
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
---- Writing SMESH file --- 16-Sep-2015 20:31:07
+--- Writing SMESH file --- 01-Feb-2016 12:27:19
 ----&gt; Adding node field
 ----&gt; Adding facet field
 ----&gt; Adding holes specification
 ----&gt; Adding region specification
---- Done --- 16-Sep-2015 20:31:07
---- Running TetGen to mesh input boundary--- 16-Sep-2015 20:31:07
-Opening D:\MATLAB\GIBBON\trunk\lib_ext\tetGen\tempFiles\tempModel.smesh. 
---- Done --- 16-Sep-2015 20:31:08
+--- Done --- 01-Feb-2016 12:27:19
+--- Running TetGen to mesh input boundary--- 01-Feb-2016 12:27:19
+Opening D:\MATLAB\GIBBON\lib_ext\tetGen\tempFiles\tempModel.smesh. 
+--- Done --- 01-Feb-2016 12:27:19
  
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
---- Importing TetGen files --- 16-Sep-2015 20:31:08
---- Done --- 16-Sep-2015 20:31:08
+--- Importing TetGen files --- 01-Feb-2016 12:27:19
+--- Done --- 01-Feb-2016 12:27:19
 </pre><pre class="codeinput"><span class="comment">% Accessing the model element and patch data</span>
 FT=meshOutput.faces;
 Fb=meshOutput.facesBoundary;
@@ -233,7 +251,7 @@ VT=meshOutput.nodes;
 C=meshOutput.faceMaterialID;
 E=meshOutput.elements;
 elementMaterialIndices=meshOutput.elementMaterialID;
-</pre><p>Plotting the meshed geometry</p><pre class="codeinput">hf1=figuremax(figColor,figColorDef);
+</pre><p>Plotting the meshed geometry</p><pre class="codeinput">hf1=cFigure;
 subplot(1,3,1);
 title(<span class="string">'Solid tetrahedral mesh model'</span>,<span class="string">'FontSize'</span>,fontSize);
 xlabel(<span class="string">'X'</span>,<span class="string">'FontSize'</span>,fontSize); ylabel(<span class="string">'Y'</span>,<span class="string">'FontSize'</span>,fontSize); zlabel(<span class="string">'Z'</span>,<span class="string">'FontSize'</span>,fontSize); hold <span class="string">on</span>;
@@ -284,7 +302,7 @@ Vf_E=vecnormalize(Vf_E);
 
 <span class="comment">%Create patch data for fibres</span>
 [Ff,Vf,Cf]=quiver3Dpatch(VE(:,1),VE(:,2),VE(:,3),Vf_E(:,1),Vf_E(:,2),Vf_E(:,3),ones(size(Vf_E,1),1),[1 1]);
-</pre><p>Plotting the example model</p><pre class="codeinput">hf1=figuremax(figColor,figColorDef);
+</pre><p>Plotting the example model</p><pre class="codeinput">hf1=cFigure;
 title(<span class="string">'Fibre directions clockwise and counter clockwise depending on layer'</span>,<span class="string">'FontSize'</span>,fontSize);
 xlabel(<span class="string">'X'</span>,<span class="string">'FontSize'</span>,fontSize);ylabel(<span class="string">'Y'</span>,<span class="string">'FontSize'</span>,fontSize); zlabel(<span class="string">'Z'</span>,<span class="string">'FontSize'</span>,fontSize);
 hold <span class="string">on</span>;
@@ -327,7 +345,7 @@ CV(indInner)=C_inner;
 VT_def=VT;
 VT_def(indInner,:)=V_inner_def;
 
-figuremax(figColor,figColorDef); hold <span class="string">on</span>;
+cFigure; hold <span class="string">on</span>;
 title(<span class="string">'The deformed inner surface'</span>,<span class="string">'FontSize'</span>,fontSize);
 xlabel(<span class="string">'X'</span>,<span class="string">'FontSize'</span>,fontSize); ylabel(<span class="string">'Y'</span>,<span class="string">'FontSize'</span>,fontSize); zlabel(<span class="string">'Z'</span>,<span class="string">'FontSize'</span>,fontSize);
 
@@ -443,7 +461,7 @@ FEB_struct.LoadData.LoadCurves.loadPoints={[0 0;1 1]};
 febStruct2febFile_v1p2(FEB_struct);
 </pre><pre class="codeoutput"> 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
---- Writing FEBio XML object --- 16-Sep-2015 20:31:10
+--- Writing FEBio XML object --- 01-Feb-2016 12:27:23
 Adding Module level
 Adding Globals level
 Adding Material level
@@ -462,7 +480,7 @@ Adding Boundary level
 Adding LoadData level
 ----&gt; Defining load curves
 Writing .feb file
---- Done --- 16-Sep-2015 20:31:14
+--- Done --- 01-Feb-2016 12:27:25
 </pre><h2>RUNNING FEBIO JOB<a name="24"></a></h2><pre class="codeinput">FEBioRunStruct.run_filename=FEB_struct.run_filename;
 FEBioRunStruct.run_logname=FEB_struct.run_logname;
 FEBioRunStruct.disp_on=1;
@@ -475,22 +493,21 @@ FEBioRunStruct.maxLogCheckTime=3; <span class="comment">%Max log file checking t
 [runFlag]=runMonitorFEBio(FEBioRunStruct);<span class="comment">%START FEBio NOW!!!!!!!!</span>
 </pre><pre class="codeoutput"> 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
---- STARTING FEBIO JOB --- 16-Sep-2015 20:31:14
+--- STARTING FEBIO JOB --- 01-Feb-2016 12:27:26
 Waiting for log file...
-Proceeding to check log file...16-Sep-2015 20:31:14
+Proceeding to check log file...01-Feb-2016 12:27:27
 ------- converged at time : 0.1
-------- converged at time : 0.184517
-------- converged at time : 0.261671
-------- converged at time : 0.338825
-------- converged at time : 0.418675
-------- converged at time : 0.500904
-------- converged at time : 0.585231
-------- converged at time : 0.671407
-------- converged at time : 0.759215
-------- converged at time : 0.848463
-------- converged at time : 0.938979
+------- converged at time : 0.2
+------- converged at time : 0.3
+------- converged at time : 0.391288
+------- converged at time : 0.482576
+------- converged at time : 0.573864
+------- converged at time : 0.657199
+------- converged at time : 0.742501
+------- converged at time : 0.829538
+------- converged at time : 0.918105
 ------- converged at time : 1
---- Done --- 16-Sep-2015 20:31:17
+--- Done --- 01-Feb-2016 12:27:29
 </pre><h2>IMPORTING NODAL DISPLACEMENT RESULTS<a name="25"></a></h2><p>Importing nodal displacements from a log file</p><pre class="codeinput">[~, N_disp_mat,~]=importFEBio_logfile(fullfile(savePath,FEB_struct.run_output_names{1})); <span class="comment">%Nodal displacements</span>
 DN=N_disp_mat(:,2:end,end); <span class="comment">%Final nodal displacements</span>
 
@@ -498,7 +515,7 @@ DN=N_disp_mat(:,2:end,end); <span class="comment">%Final nodal displacements</sp
 [~,FG_mat,~]=importFEBio_logfile(fullfile(savePath,FEB_struct.run_output_names{2})); <span class="comment">%Deformation gradient tensors</span>
 FG=FG_mat(:,2:end,end);
 </pre><h2>CREATING NODE SET IN DEFORMED STATE<a name="26"></a></h2><pre class="codeinput">VT_def=VT+DN;
-</pre><p>Plotting the FEA results</p><pre class="codeinput">hf=figuremax(figColor,figColorDef);
+</pre><p>Plotting the FEA results</p><pre class="codeinput">hf=cFigure;
 subplot(1,2,1);
 xlabel(<span class="string">'X'</span>,<span class="string">'FontSize'</span>,fontSize); ylabel(<span class="string">'Y'</span>,<span class="string">'FontSize'</span>,fontSize); zlabel(<span class="string">'Z'</span>,<span class="string">'FontSize'</span>,fontSize); hold <span class="string">on</span>;
 C=sqrt(sum(DN.^2,2)); <span class="comment">%Color towards displacement magnitude</span>
@@ -541,7 +558,7 @@ Vf_E_def=Vf_E;
 
 <span class="comment">%Create patch data for fibres</span>
 [Ff_def,Vf_def,Cf_def]=quiver3Dpatch(VE_def(:,1),VE_def(:,2),VE_def(:,3),Vf_E_def(:,1),Vf_E_def(:,2),Vf_E_def(:,3),ones(size(Vf_E_def,1),1),[1 1]);
-</pre><p>Plotting the example model</p><pre class="codeinput">hf1=figuremax(figColor,figColorDef);
+</pre><p>Plotting the example model</p><pre class="codeinput">hf1=cFigure;
 title(<span class="string">'Fibre directions in the deformed state'</span>,<span class="string">'FontSize'</span>,fontSize);
 xlabel(<span class="string">'X'</span>,<span class="string">'FontSize'</span>,fontSize);ylabel(<span class="string">'Y'</span>,<span class="string">'FontSize'</span>,fontSize); zlabel(<span class="string">'Z'</span>,<span class="string">'FontSize'</span>,fontSize);
 hold <span class="string">on</span>;
@@ -552,7 +569,7 @@ axis <span class="string">equal</span>; view(3); axis <span class="string">tight
 colormap <span class="string">hsv</span>; colorbar;
 set(gca,<span class="string">'FontSize'</span>,fontSize);
 drawnow;
-</pre><img vspace="5" hspace="5" src="DEMO_vessel_FEBIO_fibre_mapping_10.png" alt=""> <p><img vspace="5" hspace="5" src="gibbVerySmall.gif" alt=""> </p><p><i><b>GIBBON</b></i> <a href="www.gibboncode.org">www.gibboncode.org</a></p><p><i>Kevin Mattheus Moerman</i>, <a href="gibbon.toolbox@gmail.com">gibbon.toolbox@gmail.com</a></p><p class="footer"><br><a href="http://www.mathworks.com/products/matlab/">Published with MATLAB&reg; R2015a</a><br></p></div><!--
+</pre><img vspace="5" hspace="5" src="DEMO_vessel_FEBIO_fibre_mapping_10.png" alt=""> <p><img vspace="5" hspace="5" src="gibbVerySmall.gif" alt=""> </p><p><i><b>GIBBON</b></i> <a href="www.gibboncode.org">www.gibboncode.org</a></p><p><i>Kevin Mattheus Moerman</i>, <a href="gibbon.toolbox@gmail.com">gibbon.toolbox@gmail.com</a></p><p class="footer"><br><a href="http://www.mathworks.com/products/matlab/">Published with MATLAB&reg; R2016a</a><br></p></div><!--
 ##### SOURCE BEGIN #####
 %% DEMO_vessel_FEBIO_fibre_mapping
 % Below is a demonstration of how to map, set and import fibre directions
@@ -572,7 +589,6 @@ clear; close all; clc;
 
 %%
 % Plot settings
-figColor='w'; figColorDef='white';
 fontSize=15;
 faceAlpha1=0.5;
 faceAlpha2=0.5;
@@ -595,12 +611,12 @@ ptype='tri';
 [Fc,Vc]=patchcylinder(r,nr,h,nz,ptype);
 
 %Top edge indices
-It=ones(nr-1,1); Jt=(1:1:nr-1)';
-INDt=sub2ind([nz,nr-1],It,Jt);
+It=ones(nr,1); Jt=(1:1:nr)';
+INDt=sub2ind([nz,nr],It,Jt);
 
 %Bottom edge indices
-Ib=nz.*ones(nr-1,1); Jb=(1:1:nr-1)';
-INDb=sub2ind([nz,nr-1],Ib,Jb);
+Ib=nz.*ones(nr,1); Jb=(1:1:nr)';
+INDb=sub2ind([nz,nr],Ib,Jb);
 
 % Deforming regular cylinder to create outer wall
 V1=Vc; 
@@ -622,13 +638,18 @@ F3=Fc;
 
 %%
 % Plotting the example model surfaces
-hf1=figuremax(figColor,figColorDef);
+hf1=cFigure;
 title('Cylindrical surfaces of the model','FontSize',fontSize);
 xlabel('X','FontSize',fontSize);ylabel('Y','FontSize',fontSize); zlabel('Z','FontSize',fontSize);
 hold on;
 patch('Faces',F1,'Vertices',V1,'EdgeColor','k','FaceColor','r','FaceAlpha',1);
 patch('Faces',F2,'Vertices',V2,'EdgeColor','k','FaceColor','g','FaceAlpha',1);
 patch('Faces',F3,'Vertices',V3,'EdgeColor','k','FaceColor','b','FaceAlpha',1);
+
+% patchNormPlot(F1,V1);
+% patchNormPlot(F2,V2);
+% patchNormPlot(F3,V3);
+
 axis equal; view(3); axis tight;  grid on; set(gca,'FontSize',fontSize);
 camlight('headlight');
 drawnow;
@@ -648,16 +669,24 @@ Vb(:,3)=max(V1(:,3));
 
 %%
 % Plotting the example model surfaces
-hf1=figuremax(figColor,figColorDef);
+hf1=cFigure;
 title('Capped model','FontSize',fontSize);
 xlabel('X','FontSize',fontSize);ylabel('Y','FontSize',fontSize); zlabel('Z','FontSize',fontSize);
 hold on;
 
 patch('Faces',F1,'Vertices',V1,'EdgeColor','k','FaceColor','r','FaceAlpha',faceAlpha1);
+plotV(V1(INDb,:),'b.-','MarkerSize',25,'LineWidth',3);
+plotV(V1(INDt,:),'b.-','MarkerSize',25,'LineWidth',3);
 patch('Faces',F2,'Vertices',V2,'EdgeColor','k','FaceColor','g','FaceAlpha',faceAlpha1);
 patch('Faces',F3,'Vertices',V3,'EdgeColor','k','FaceColor','b','FaceAlpha',faceAlpha1);
 patch('Faces',Ft,'Vertices',Vt,'EdgeColor','k','FaceColor','y','FaceAlpha',faceAlpha1);
 patch('Faces',Fb,'Vertices',Vb,'EdgeColor','k','FaceColor','y','FaceAlpha',faceAlpha1);
+
+% patchNormPlot(F1,V1);
+% patchNormPlot(F2,V2);
+% patchNormPlot(F3,V3);
+% patchNormPlot(Ft,Vt);
+% patchNormPlot(Fb,Vb);
 
 axis equal; view(3); axis tight;  grid on; set(gca,'FontSize',fontSize);
 camlight('headlight');
@@ -670,9 +699,13 @@ V=[V1;V2;V3;Vt;Vb];
 
 F=[F1;... %Outer surface
     F2+size(V1,1);... %First inner surface
-    F3+size(V1,1)+size(V2,1);... %Second inner surface
-    Ft+size(V1,1)+size(V2,1)+size(V3,1);... %Caps top
+    fliplr(F3)+size(V1,1)+size(V2,1);... %Second inner surface
+    fliplr(Ft)+size(V1,1)+size(V2,1)+size(V3,1);... %Caps top
     Fb+size(V1,1)+size(V2,1)+size(V3,1)+size(Vt,1)]; %Caps bottom
+
+[~,ind1,ind2]=unique(pround(V,5),'rows');
+V=V(ind1,:); 
+F=ind2(F);
 
 faceBoundaryMarker=[1*ones(size(F1,1),1);... 
                     2*ones(size(F2,1),1);... 
@@ -685,11 +718,13 @@ faceBoundaryMarker=[1*ones(size(F1,1),1);...
 
 %%
 % Plotting the example model
-hf1=figuremax(figColor,figColorDef);
+hf1=cFigure;
 title('Merged model','FontSize',fontSize);
 xlabel('X','FontSize',fontSize);ylabel('Y','FontSize',fontSize); zlabel('Z','FontSize',fontSize);
 hold on;
 hp=patch('Faces',F,'Vertices',V,'EdgeColor','none','FaceColor','flat','CData',faceBoundaryMarker,'FaceAlpha',faceAlpha2);
+% patchNormPlot(F,V);
+
 axis equal; view(3); axis tight;  grid on; set(gca,'FontSize',fontSize);
 colormap jet; colorbar; 
 camlight('headlight');
@@ -750,7 +785,7 @@ modelStruct.modelName=modelName;
 % <http://wias-berlin.de/software/tetgen/>)
 
 [meshOutput]=runTetGen(modelStruct); %Run tetGen
-% runTetView(meshOutput.loadNameStruct.loadName_ele);
+runTetView(meshOutput.loadNameStruct.loadName_ele);
 
 %%
 
@@ -766,7 +801,7 @@ elementMaterialIndices=meshOutput.elementMaterialID;
 %%
 % Plotting the meshed geometry
 
-hf1=figuremax(figColor,figColorDef);
+hf1=cFigure;
 subplot(1,3,1);
 title('Solid tetrahedral mesh model','FontSize',fontSize);
 xlabel('X','FontSize',fontSize); ylabel('Y','FontSize',fontSize); zlabel('Z','FontSize',fontSize); hold on;
@@ -822,7 +857,7 @@ Vf_E=vecnormalize(Vf_E);
 
 %%
 % Plotting the example model
-hf1=figuremax(figColor,figColorDef);
+hf1=cFigure;
 title('Fibre directions clockwise and counter clockwise depending on layer','FontSize',fontSize);
 xlabel('X','FontSize',fontSize);ylabel('Y','FontSize',fontSize); zlabel('Z','FontSize',fontSize);
 hold on;
@@ -874,7 +909,7 @@ CV(indInner)=C_inner;
 VT_def=VT; 
 VT_def(indInner,:)=V_inner_def; 
 
-figuremax(figColor,figColorDef); hold on;
+cFigure; hold on;
 title('The deformed inner surface','FontSize',fontSize);
 xlabel('X','FontSize',fontSize); ylabel('Y','FontSize',fontSize); zlabel('Z','FontSize',fontSize);
 
@@ -1024,7 +1059,7 @@ VT_def=VT+DN;
 %%
 % Plotting the FEA results
 
-hf=figuremax(figColor,figColorDef);
+hf=cFigure;
 subplot(1,2,1);
 xlabel('X','FontSize',fontSize); ylabel('Y','FontSize',fontSize); zlabel('Z','FontSize',fontSize); hold on;
 C=sqrt(sum(DN.^2,2)); %Color towards displacement magnitude
@@ -1072,7 +1107,7 @@ end
 
 %%
 % Plotting the example model
-hf1=figuremax(figColor,figColorDef);
+hf1=cFigure;
 title('Fibre directions in the deformed state','FontSize',fontSize);
 xlabel('X','FontSize',fontSize);ylabel('Y','FontSize',fontSize); zlabel('Z','FontSize',fontSize);
 hold on;

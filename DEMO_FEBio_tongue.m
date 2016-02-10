@@ -11,7 +11,6 @@ clear; close all; clc;
 
 %%
 % Plot settings
-figColor='w'; figColorDef='white';
 fontSize=15;
 faceAlpha1=0.2;
 faceAlpha2=1;
@@ -85,7 +84,7 @@ E=[fliplr(E(:,1:4)) fliplr(E(:,5:end))];
 %% VISUALIZING MODEL
 
 % Plotting model
-hf=figuremax(figColor,figColorDef);
+hf=cFigure;
 title('Tongue model geometry and fibres','FontSize',fontSize);
 xlabel('X','FontSize',fontSize); ylabel('Y','FontSize',fontSize); zlabel('Z','FontSize',fontSize);
 hold on;
@@ -225,7 +224,7 @@ DN_magnitude=sqrt(sum(DN.^2,2));
 
 [CF]=vertexToFaceMeasure(F,DN_magnitude);
 
-hf1=figuremax(figColor,figColorDef);
+hf1=cFigure;
 title('The deformed model','FontSize',fontSize);
 xlabel('X','FontSize',fontSize); ylabel('Y','FontSize',fontSize); zlabel('Z','FontSize',fontSize); hold on;
 

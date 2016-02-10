@@ -10,7 +10,6 @@ clear; close all; clc;
 
 %%
 % Plot settings
-fig_color='w'; fig_colordef='white';
 fontSize=10;
 faceColor1='r';
 faceColor2='g';
@@ -35,7 +34,7 @@ fileName=fullfile(pathName,'femur.stl');
 %% Visualizing imported surface mesh
 % Plotting the model
 
-figuremax(fig_color,fig_colordef);
+cFigure;
 title('Imported patch data from multi-solid STL','fontSize',fontSize);
 xlabel('X','fontSize',fontSize);ylabel('Y','fontSize',fontSize); zlabel('Z','fontSize',fontSize); hold on;
 for q=1:1:numel(stlStruct.solidNames)
@@ -72,7 +71,7 @@ logicThree=N==3;
 %%
 % Plotting three connected points (some may be boundary points)
 
-figuremax(fig_color,fig_colordef);
+cFigure;
 title('Highlighted points that are "three-connected"','fontSize',fontSize);
 xlabel('X','fontSize',fontSize);ylabel('Y','fontSize',fontSize); zlabel('Z','fontSize',fontSize); hold on;
 
@@ -99,7 +98,7 @@ C=double(L);
 %%
 % Plotting results
 
-hf=figuremax(fig_color,fig_colordef); hold on;
+hf=cFigure; hold on;
 subplot(1,2,1); 
 title('Surface containing split triangles','FontSize',fontSize);
 xlabel('X','FontSize',fontSize); ylabel('Y','FontSize',fontSize); zlabel('Z','FontSize',fontSize);
@@ -132,7 +131,7 @@ cPar.Method='HC';
 %%
 % Plotting smoothing results
 
-hf=figuremax(fig_color,fig_colordef); hold on;
+hf=cFigure; hold on;
 subplot(1,2,1); 
 title('Unsmoothened surface','FontSize',fontSize);
 xlabel('X','FontSize',fontSize); ylabel('Y','FontSize',fontSize); zlabel('Z','FontSize',fontSize);
@@ -154,7 +153,7 @@ colormap autumn;
 camlight('headlight'); lighting flat;
 drawnow; 
 
-hf=figuremax(fig_color,fig_colordef); hold on;
+hf=cFigure; hold on;
 title('Smoothened surface','FontSize',fontSize);
 xlabel('X','FontSize',fontSize); ylabel('Y','FontSize',fontSize); zlabel('Z','FontSize',fontSize);
 hp=patch('Faces',Ft,'Vertices',Vt,'FaceColor',faceColor2,'FaceAlpha',faceAlpha1,'lineWidth',edgeWidth,'edgeColor',edgeColor);
@@ -173,7 +172,7 @@ drawnow;
 %%
 % Plot results
 
-figuremax(fig_color,fig_colordef);
+cFigure;
 title('Distance based surface comparison','fontSize',fontSize);
 xlabel('X','fontSize',fontSize);ylabel('Y','fontSize',fontSize); zlabel('Z','fontSize',fontSize); hold on;
 

@@ -13,7 +13,6 @@ clear; close all; clc;
 
 %%
 % Plot settings
-figColor='w'; figColorDef='white';
 fontSize=15;
 faceAlpha1=0.5;
 faceAlpha2=0.5;
@@ -53,7 +52,7 @@ faceBoundaryMarker=[faceBoundMarker1*ones(size(F1,1),1); faceBoundMarker2*ones(s
 
 %%
 % Plotting surface models
-hf=figuremax(figColor,figColorDef);
+hf=cFigure;
 title('Surface models','FontSize',fontSize);
 xlabel('X','FontSize',fontSize); ylabel('Y','FontSize',fontSize); zlabel('Z','FontSize',fontSize);
 hold on;
@@ -132,7 +131,7 @@ elementMaterialIndices=meshOutput.elementMaterialID;
 %%
 % Plotting the meshed geometry
 
-hf1=figuremax(figColor,figColorDef);
+hf1=cFigure;
 subplot(1,3,1);
 title('Solid tetrahedral mesh model','FontSize',fontSize);
 xlabel('X','FontSize',fontSize); ylabel('Y','FontSize',fontSize); zlabel('Z','FontSize',fontSize); hold on;
@@ -204,7 +203,7 @@ CV(indOuter)=C_outer;
 VT_def=VT;
 VT_def(indOuter,:)=V1_def;
 
-hf=figuremax(figColor,figColorDef);
+hf=cFigure;
 title('The deformed outer surface','FontSize',fontSize);
 xlabel('X','FontSize',fontSize); ylabel('Y','FontSize',fontSize); zlabel('Z','FontSize',fontSize);
 hold on;
@@ -337,7 +336,7 @@ if runFlag==1 %i.e. a succesful run
     
     Cs=sqrt(sum(DN.^2,2)); %Color towards displacement magnitude
     
-    hf1=figuremax(figColor,figColorDef);
+    hf1=cFigure;
     title('Cut view of deformed model showing internal results','FontSize',fontSize);
     xlabel('X','FontSize',fontSize); ylabel('Y','FontSize',fontSize); zlabel('Z','FontSize',fontSize); hold on;
     
@@ -366,7 +365,7 @@ if runFlag==1 %i.e. a succesful run
     C(ind_V_free)=D; %Set color for point selection
     [CF]=vertexToFaceMeasure(F_free,C); %Convert vertex to face color measure
     
-    hf1=figuremax(figColor,figColorDef);
+    hf1=cFigure;
     title('Outer surface only with distance metric','FontSize',fontSize);
     xlabel('X','FontSize',fontSize); ylabel('Y','FontSize',fontSize); zlabel('Z','FontSize',fontSize); hold on;
     

@@ -462,10 +462,6 @@ FEBioRunStruct.maxLogCheckTime=3; %Max log file checking time
 
 [runFlag]=runMonitorFEBio(FEBioRunStruct);%START FEBio NOW!!!!!!!!
 
-
-fdsafas
-
-
 %%
 if runFlag==1 %i.e. a succesful run
     

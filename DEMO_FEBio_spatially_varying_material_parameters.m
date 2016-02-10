@@ -7,7 +7,6 @@ clear; close all; clc;
 
 %%
 % Plot settings
-figColor='w'; figColorDef='white';
 fontSize=15;
 faceAlpha1=1;
 faceAlpha2=0.5;
@@ -53,7 +52,7 @@ S=reshape(S,size(X));
 [Fs1,Vs1,Cs1]=ind2patch(S>=0.6,S,'vb'); 
 [Fs2,Vs2,Cs2]=ind2patch(S<0.6,S,'vb'); 
 
-figuremax(figColor,figColorDef);
+cFigure;
 
 subplot(1,2,1);
 title('Stiff network','FontSize',fontSize);
@@ -91,7 +90,7 @@ logicTopNodes=abs(V(:,3)-max(V(:,3)))<=max(eps(V(:,3)));
 logicBottomNodes=abs(V(:,3)-min(V(:,3)))<=max(eps(V(:,3)));
 
 
-figuremax(figColor,figColorDef);
+cFigure;
 title('Gyroid derived model of trabecular structure','FontSize',fontSize);
 xlabel('X','FontSize',fontSize);ylabel('Y','FontSize',fontSize); zlabel('Z','FontSize',fontSize); hold on;
 patch('Faces',F,'Vertices',V,'FaceColor','flat','CData',PF,'edgeColor',edgeColor,'lineWidth',edgeWidth,'FaceAlpha',1);
@@ -229,7 +228,7 @@ DN_magnitude=sqrt(sum(DN.^2,2));
 
 [CF]=vertexToFaceMeasure(F,DN_magnitude);
 
-hf1=figuremax(figColor,figColorDef);
+hf1=cFigure;
 title('The deformed model','FontSize',fontSize);
 xlabel('X','FontSize',fontSize); ylabel('Y','FontSize',fontSize); zlabel('Z','FontSize',fontSize); hold on;
 

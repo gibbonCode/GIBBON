@@ -11,7 +11,6 @@ clear; close all; clc;
 
 %%
 % Plot settings
-figColor='w'; figColorDef='white';
 fontSize=15;
 faceAlpha1=0.8;
 faceAlpha2=0.25;
@@ -83,7 +82,7 @@ Vsp(:,1)=Vsp(:,1)-sphereShift;
 
 %%
 % Plotting surface models
-hf=figuremax(figColor,figColorDef);
+hf=cFigure;
 title('Model surfaces','FontSize',fontSize);
 xlabel('X','FontSize',fontSize); ylabel('Y','FontSize',fontSize); zlabel('Z','FontSize',fontSize);
 hold on;
@@ -132,7 +131,7 @@ faceBoundaryMarker=meshOutput.boundaryMarker;
 
 %%
 % Plotting surface models
-hf=figuremax(figColor,figColorDef);
+hf=cFigure;
 title('Model surfaces','FontSize',fontSize);
 xlabel('X','FontSize',fontSize); ylabel('Y','FontSize',fontSize); zlabel('Z','FontSize',fontSize);
 hold on;
@@ -146,7 +145,7 @@ drawnow;
 %%
 % % Plotting the meshed geometry
 % 
-% hf1=figuremax(figColor,figColorDef);
+% hf1=cFigure;
 % subplot(1,2,1);
 % 
 % title('Model boundaries','FontSize',fontSize);
@@ -198,7 +197,7 @@ bcPrescribedMagnitudes=bcPrescribedMagnitudes(ones(size(bcIndicesPrescribed,1),1
 
 %%
 % Visualize BC's
-hf=figuremax(figColor,figColorDef);
+hf=cFigure;
 title('Boundary condition nodes','FontSize',fontSize);
 xlabel('X','FontSize',fontSize); ylabel('Y','FontSize',fontSize); zlabel('Z','FontSize',fontSize);
 hold on;
@@ -353,7 +352,7 @@ if runFlag==1 %i.e. a succesful run
     
     [CF]=vertexToFaceMeasure(Fb,DN_magnitude);
     
-    hf1=figuremax(figColor,figColorDef);
+    hf1=cFigure;
     title('The deformed model','FontSize',fontSize);
     xlabel('X','FontSize',fontSize); ylabel('Y','FontSize',fontSize); zlabel('Z','FontSize',fontSize); hold on;
     

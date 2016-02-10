@@ -8,7 +8,6 @@ clear; close all; clc;
 
 %%
 % Plot settings
-figColor='w'; figColorDef='white';
 fontSize=15;
 faceAlpha1=0.5;
 faceAlpha2=0.5;
@@ -30,7 +29,7 @@ febFileName=fullfile(pathName_FEB,febFileNamePart);
 %% Plotting model
 
 % Plotting the example model surfaces
-hf1=figuremax(figColor,figColorDef);
+hf1=cFigure;
 title('Visualizing model','FontSize',fontSize);
 xlabel('X','FontSize',fontSize);ylabel('Y','FontSize',fontSize); zlabel('Z','FontSize',fontSize);
 hold on;
