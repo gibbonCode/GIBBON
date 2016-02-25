@@ -1,5 +1,15 @@
 function [stlStruct] = import_STL_txt(fileName)
 
+% function [stlStruct] = import_STL_txt(fileName)
+% ------------------------------------------------------------------------
+%
+%
+% Kevin Mattheus Moerman
+% gibbon.toolbox@gmail.com
+% 
+% 2014/09/25
+% 2016/02/24 Updated commenting and header
+%------------------------------------------------------------------------
 
 T=txtfile2cell(fileName);
 

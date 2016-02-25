@@ -15,6 +15,7 @@ M=double(M);
 
 %%
 % Plot settings
+fontColor='w';
 fontSize=20;
 cMap=gray(250);
 
@@ -32,13 +33,17 @@ sliceIndexK=round(size(M,3)/2); %(close to) middle slice
 
 Tf=[0 100]; %Threshold
 
+nTickMajor=20;
+tickSizeMajor_I=round(size(M,1)/nTickMajor);
+tickSizeMajor_J=round(size(M,2)/nTickMajor);
+tickSizeMajor_K=round(size(M,3)/nTickMajor);
+
 %%
 
 [ax,ay,az]=im2cart([size(M,1)+1 0],[size(M,2)+1 0],[size(M,3)+1 0],v);
 
 hf=cFigure(figStruct);
-
-axis equal; axis tight; view(3);  axis vis3d; axis([ax(2) ax(1) ay(2) ay(1) az(2) az(1)]); grid on; box on;
+axis equal; axis tight; view(3);  axis vis3d; axis([ax(2) ax(1) ay(2) ay(1) az(2) az(1)]); grid on; box on; hold on;
 colormap(cMap); colorbar;
 caxis([min(M(:)) max(M(:))]);
 set(gca,'fontSize',fontSize);
@@ -47,17 +52,17 @@ drawnow;
 w=50; %Scrollbar width
 jSlider_I = javax.swing.JSlider(1,size(M,1));
 javacomponent(jSlider_I,[0,0,w,round(hf.Position(4))]);
-set(jSlider_I, 'MajorTickSpacing',4, 'MinorTickSpacing',1, 'PaintTicks',true, 'PaintLabels',true,...
+set(jSlider_I, 'MajorTickSpacing',tickSizeMajor_I, 'MinorTickSpacing',1, 'PaintTicks',true, 'PaintLabels',true,...
     'Background',java.awt.Color.white, 'snapToTicks',true, 'StateChangedCallback',{@plotSlice,{hf,jSlider_I,1}},'Orientation',jSlider_I.VERTICAL);
 
 jSlider_J = javax.swing.JSlider(1,size(M,2));
 javacomponent(jSlider_J,[1*w,0,w,round(hf.Position(4))]);
-set(jSlider_J, 'MajorTickSpacing',4, 'MinorTickSpacing',1, 'PaintTicks',true, 'PaintLabels',true,...
+set(jSlider_J, 'MajorTickSpacing',tickSizeMajor_J, 'MinorTickSpacing',1, 'PaintTicks',true, 'PaintLabels',true,...
     'Background',java.awt.Color.white, 'snapToTicks',true, 'StateChangedCallback',{@plotSlice,{hf,jSlider_J,2}},'Orientation',jSlider_J.VERTICAL);
 
 jSlider_K = javax.swing.JSlider(1,size(M,3));
 javacomponent(jSlider_K,[2*w,0,w,round(hf.Position(4))]);
-set(jSlider_K, 'MajorTickSpacing',4, 'MinorTickSpacing',1, 'PaintTicks',true, 'PaintLabels',true,...
+set(jSlider_K, 'MajorTickSpacing',tickSizeMajor_K, 'MinorTickSpacing',1, 'PaintTicks',true, 'PaintLabels',true,...
     'Background',java.awt.Color.white, 'snapToTicks',true, 'StateChangedCallback',{@plotSlice,{hf,jSlider_K,3}},'Orientation',jSlider_K.VERTICAL);
 
 jSlider_T = com.jidesoft.swing.RangeSlider(0,100,Tf(1),Tf(2));  % min,max,low,high
@@ -73,7 +78,8 @@ set(hf,'ResizeFcn',{@setScrollSizeFunc,{hf,w,jSlider_T,jSlider_I,jSlider_J,jSlid
 hf.UserData.M=M;
 hf.UserData.v=v;
 hf.UserData.patchTypes={'si','sj','sk'};
-
+hf.UserData.sliceIndices=[sliceIndexI sliceIndexJ sliceIndexK];
+hf.UserData.fontColor=fontColor;
 %%
 set(jSlider_I,'Value',sliceIndexI);
 set(jSlider_J,'Value',sliceIndexJ);
@@ -91,6 +97,8 @@ hf=inputCell{1};
 jSlider=inputCell{2};
 dirOpt=inputCell{3};
 sliceIndex = get(jSlider,'Value');
+hf.UserData.sliceIndices(dirOpt)=sliceIndex;
+sliceIndices=hf.UserData.sliceIndices;
 
 M=hf.UserData.M;
 logicThreshold=hf.UserData.logicThreshold;
@@ -119,6 +127,9 @@ if isfield(hf.UserData,'hp');
 end
 
 hf.UserData.hp(dirOpt)= patch('Faces',F,'Vertices',V,'FaceColor','flat','CData',C,'EdgeColor','none');
+
+title(['IJK-view ',num2str(sliceIndices(1)),' ',num2str(sliceIndices(2)),' ',num2str(sliceIndices(3))],'color',hf.UserData.fontColor);
+
 drawnow;
 
 end

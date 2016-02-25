@@ -29,7 +29,9 @@ function [Vcs]=uiContourSegment(varargin)
 %
 % Kevin Mattheus Moerman
 % kevinmoerman@hotmail.com
-% 23/10/2013
+% 2013/10/23
+% 2016/02/25 Fixed bug in relation to padding when combined with a user
+% specified slice range. 
 % ------------------------------------------------------------------------
 
 %%
@@ -129,7 +131,9 @@ end
 if isfield(cPar,'sliceRange')
     sliceRangeUser=cPar.sliceRange;
 else
-    sliceRangeUser=1:1:siz(3); %DEFAULT
+    ind=find(logicBackGround);
+    [~,~,k]=ind2sub(size(logicBackGround),ind);
+    sliceRangeUser=sort(unique(k(:))); %DEFAULT
 end
 
 %Distance thresholds for curve spacing, higher spacings are considered gaps for instance
@@ -137,15 +141,17 @@ distThresh=2*max(v(1:2));
 
 %% Pad arrays to cope with open ended contours
 if padOn==1
-    M_p=zeros(siz+2);
-    M_p(2:end-1,2:end-1,2:end-1)=M;
-    M=M_p;
     
-    logicBackGround_p=zeros(siz+2);
-    logicBackGround_p(2:end-1,2:end-1,2:end-1)=logicBackGround;
-    logicBackGround=logicBackGround_p;
+    M_p=zeros(siz(1)+2,siz(2)+2,siz(3)); %Padded in row and column direction
+    M_p(2:end-1,2:end-1,:)=M; %Assign image data in the middle
+    M=M_p; %Override M
+    siz=size(M); %Overide size
     
-    siz=siz+2;
+    %Fix background logic
+    logicBackGround_p=false(size(M));
+    logicBackGround_p(2:end-1,2:end-1,:)=logicBackGround;
+    logicBackGround=logicBackGround_p; %Overide background logic    
+    
 end
 
 %% SET-UP IMAGE AND IMAGE COORDINATES
@@ -176,6 +182,8 @@ L_slice=any(logicBackGround,3); %logic for slice plotting
 
 %%
 
+sliceMinInd
+
 %Plotting first slice
 L=false(siz);
 L(:,:,sliceMinInd)=L_slice;
@@ -197,6 +205,8 @@ axis equal; view(2); axis tight;  set(gca,'FontSize',fontSize);
 colormap(cMap); colorbar; caxis([0 1]);
 drawnow;
 
+fdsadfas
+
 setDefaultPointer; %Set default pointer
     
 minC=0;
@@ -214,14 +224,15 @@ z_offset=0.01; %Arbitrary offset ensuring curves are above slice during plotting
 V=[];
 % ic_old=ic; 
 
-for is=sliceRange
+for qSlice=sliceRange
+    qSlice
     
     %Check for recovery file
-    recoveryFileName=['temp_recover_uiContourSegment_',num2str(is),'.mat'];
+    recoveryFileName=['temp_recover_uiContourSegment_',num2str(qSlice),'.mat'];
     if recoverOn==1 %Initialize with recovered metrics
         if exist(recoveryFileName,'file')==2 %Initialize based on recovery file
             load(recoveryFileName);
-            Vcs{is}=recoveryStruct.Vcs;
+            Vcs{qSlice}=recoveryStruct.Vcs;
             splitInd=recoveryStruct.splitInd;
             V=recoveryStruct.V;
             C=recoveryStruct.C;
@@ -229,12 +240,12 @@ for is=sliceRange
             ic_old=recoveryStruct.ic_old;
             caxis([recoveryStruct.minC recoveryStruct.maxC]); %Set axis limits
         else
-            Vcs{is}{1}=[]; %Initialise first contour as empty for each slice
+            Vcs{qSlice}{1}=[]; %Initialise first contour as empty for each slice
             splitInd=1; %Initialise to 1 for each slice
             ic_old=NaN;
         end
     else %Initialize normally
-        Vcs{is}{1}=[]; %Initialise first contour as empty for each slice
+        Vcs{qSlice}{1}=[]; %Initialise first contour as empty for each slice
         splitInd=1; %Initialise to 1 for each slice        
         ic_old=NaN;
     end    
@@ -242,10 +253,10 @@ for is=sliceRange
     %Plot new slices    
     %Redefine CData
     L=false(siz); 
-    L(:,:,is)=L_slice;
+    L(:,:,qSlice)=L_slice;
     [~,~,C_data]=ind2patch(L,M,'sk');        
     set(hp1,'CData',C_data); %Set FaceVertexCData
-    zs=(is-0.5).*v(3); %z-level for contourslice
+    zs=(qSlice-0.5).*v(3); %z-level for contourslice
     
     %Plot guide contours
     if ~isempty(guideContourCell)
@@ -257,10 +268,10 @@ for is=sliceRange
         %Plot guide contours
         for q_guide=1:1:numel(guideContourCell)
             Vcs_guide=guideContourCell{q_guide};
-            if ~isempty(Vcs_guide{is})
-                for qc=1:numel(Vcs_guide{is})
-                    if ~isempty(Vcs_guide{is}{qc})
-                        Vp=Vcs_guide{is}{qc};
+            if ~isempty(Vcs_guide{qSlice})
+                for qc=1:numel(Vcs_guide{qSlice})
+                    if ~isempty(Vcs_guide{qSlice}{qc})
+                        Vp=Vcs_guide{qSlice}{qc};
                         hvcsq_guide=plot3(Vp(:,1),Vp(:,2),z_offset.*ones(size(Vp(:,1))),'g-','lineWidth',lineWidth2); hold on;
                         hvcs_guide=[hvcs_guide hvcsq_guide];
                     end
@@ -316,11 +327,11 @@ for is=sliceRange
             delete(hvcs); hvcs=[];
         end
 
-        if ~isempty(Vcs{is})
+        if ~isempty(Vcs{qSlice})
             hvcs=[];
-            for qc=1:numel(Vcs{is})
-                if ~isempty(Vcs{is}{qc})
-                    Vp=Vcs{is}{qc};
+            for qc=1:numel(Vcs{qSlice})
+                if ~isempty(Vcs{qSlice}{qc})
+                    Vp=Vcs{qSlice}{qc};
                     hvcsq=plot3(Vp(:,1),Vp(:,2),z_offset.*ones(size(Vp(:,1))),'b.-','MarkerSize',mark_siz1,'lineWidth',lineWidth2); hold on; 
                     hvcs=[hvcs hvcsq];
                 end
@@ -346,7 +357,7 @@ for is=sliceRange
         end
         axis equal; view(2); axis tight;  zlim([-1 1]); set(gca,'FontSize',fontSize);
         drawnow;
-        title(['Contour slice:',num2str(is),' Tc=',num2str(Tc(ic)),titleStringAdd]);
+        title(['Contour slice:',num2str(qSlice),' Tc=',num2str(Tc(ic)),titleStringAdd]);
         
         %GET GINPUT
         [xc,yc,b]=qginput(1);
@@ -516,12 +527,12 @@ for is=sliceRange
                 Lg=true(1,numel(C)); Lg(indMin)=0;
                 C=C(Lg);
                 
-                if ~isempty(Vcs{is}{splitInd})
+                if ~isempty(Vcs{qSlice}{splitInd})
                     %Reorder selection before adding to maintain overall
                     %contour point order.
                     
                     %See if start or end is closest to current contour end
-                    V_now=Vcs{is}{splitInd}; %The contour so far
+                    V_now=Vcs{qSlice}{splitInd}; %The contour so far
                     
                     V_now_start_end=V_now([1 size(V_now,1)],:);
                     V_add_start_end=V_add([1 size(V_add,1)],:);
@@ -535,29 +546,29 @@ for is=sliceRange
                     switch indMin_lin
                         case 1 %1 1 -> starts are close, add in front and flip
                             V_add=flipud(V_add);
-                            Vcs{is}{splitInd}=[V_add; V_now];
+                            Vcs{qSlice}{splitInd}=[V_add; V_now];
                         case 2 %2 1 -> start is close to end, just add behind
-                            Vcs{is}{splitInd}=[V_now; V_add];
+                            Vcs{qSlice}{splitInd}=[V_now; V_add];
                         case 3 %1 2 -> end is close to start, just add in fron
-                            Vcs{is}{splitInd}=[V_add; V_now];
+                            Vcs{qSlice}{splitInd}=[V_add; V_now];
                         case 4 %2 2 -> ends are clsoe, add behind and flip
                             V_add=flipud(V_add);
-                            Vcs{is}{splitInd}=[V_now; V_add];
+                            Vcs{qSlice}{splitInd}=[V_now; V_add];
                     end
                 else
-                    Vcs{is}{splitInd}=V_add; %Add selected group to Vcs{is}{splitInd}
+                    Vcs{qSlice}{splitInd}=V_add; %Add selected group to Vcs{is}{splitInd}
                 end
             case 111 %The O key -> Fix contour point order SLOW PROCESS
                 title('Reordering points, may be slow, please wait...');
-                [Vcs{is}{splitInd},~]=curvePathOrderFix(Vcs{is}{splitInd});
+                [Vcs{qSlice}{splitInd},~]=curvePathOrderFix(Vcs{qSlice}{splitInd});
                 titleStringAdd=' Reordered points';
             case 118 %The V key -> Add contour from previous slice
                 titleStringAdd=' Added contour from previous slice';
-                if is>1
-                    if ~isempty(Vcs{is-1})                                                
-                        for qc=1:numel(Vcs{is-1})
-                            if ~isempty(Vcs{is-1}{qc})
-                                V_add=Vcs{is-1}{qc};
+                if qSlice>1
+                    if ~isempty(Vcs{qSlice-1})                                                
+                        for qc=1:numel(Vcs{qSlice-1})
+                            if ~isempty(Vcs{qSlice-1}{qc})
+                                V_add=Vcs{qSlice-1}{qc};
                                 V_add(:,3)=zs; %Fix z coordinate for current slice
                                 C{end+1}=V_add;
                             end
@@ -576,11 +587,11 @@ for is=sliceRange
                 C=C(Lg);
             case 114 %The R key -> Reset/clear (remove all) selected contours
                 titleStringAdd=' Resetted contours';
-                Vcs{is}{splitInd}=[];
+                Vcs{qSlice}{splitInd}=[];
             case 115 %The S key -> Split contour into cells
                 titleStringAdd=' Splitting contour adding additional contour entry for this slice';
                 splitInd=splitInd+1;
-                Vcs{is}{splitInd}=[];
+                Vcs{qSlice}{splitInd}=[];
             case 100 %The D key -> Draw points as seperate contour
                 title('Draw manual points, left click to draw, right to finish');
                 [mousePointerType]=specialPointerShape('pen');
@@ -631,9 +642,9 @@ for is=sliceRange
         end
     end
     
-    if ~isempty(Vcs{is}) %Save if not empty
+    if ~isempty(Vcs{qSlice}) %Save if not empty
         %Recovery operations
-        recoveryStruct.Vcs=Vcs{is};
+        recoveryStruct.Vcs=Vcs{qSlice};
         recoveryStruct.splitInd=splitInd;
         recoveryStruct.V=V;
         recoveryStruct.C=C;
@@ -654,8 +665,8 @@ if ~isempty(saveName)
 end
 
 %% DELETING RECOVERY FILES
-for is=sliceRange
-    recoveryFileName=['recoverFile_uiContourSegment_',num2str(is)];
+for qSlice=sliceRange
+    recoveryFileName=['recoverFile_uiContourSegment_',num2str(qSlice)];
     if exist(recoveryFileName,'file')==2
         delete(recoveryFileName);
     end
