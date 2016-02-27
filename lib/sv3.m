@@ -76,6 +76,7 @@ set(hf,'ResizeFcn',{@setScrollSizeFunc,{hf,w,jSlider_T,jSlider_I,jSlider_J,jSlid
 
 %%
 hf.UserData.M=M;
+hf.UserData.Name=figStruct.Name;
 hf.UserData.v=v;
 hf.UserData.patchTypes={'si','sj','sk'};
 hf.UserData.sliceIndices=[sliceIndexI sliceIndexJ sliceIndexK];
@@ -128,8 +129,9 @@ end
 
 hf.UserData.hp(dirOpt)= patch('Faces',F,'Vertices',V,'FaceColor','flat','CData',C,'EdgeColor','none');
 
-title(['IJK-view ',num2str(sliceIndices(1)),' ',num2str(sliceIndices(2)),' ',num2str(sliceIndices(3))],'color',hf.UserData.fontColor);
-
+navString=['I: ',num2str(sliceIndices(1)),', J:  ',num2str(sliceIndices(2)),', K: ',num2str(sliceIndices(3))];
+title(navString,'color',hf.UserData.fontColor);
+hf.Name=[hf.UserData.Name,' ',navString];
 drawnow;
 
 end

@@ -182,8 +182,6 @@ L_slice=any(logicBackGround,3); %logic for slice plotting
 
 %%
 
-sliceMinInd
-
 %Plotting first slice
 L=false(siz);
 L(:,:,sliceMinInd)=L_slice;
@@ -205,8 +203,6 @@ axis equal; view(2); axis tight;  set(gca,'FontSize',fontSize);
 colormap(cMap); colorbar; caxis([0 1]);
 drawnow;
 
-fdsadfas
-
 setDefaultPointer; %Set default pointer
     
 minC=0;
@@ -225,7 +221,6 @@ V=[];
 % ic_old=ic; 
 
 for qSlice=sliceRange
-    qSlice
     
     %Check for recovery file
     recoveryFileName=['temp_recover_uiContourSegment_',num2str(qSlice),'.mat'];

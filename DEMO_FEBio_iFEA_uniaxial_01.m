@@ -8,7 +8,6 @@ clear; close all; clc;
 
 %%
 % Plot settings
-figColor='w'; figColorDef='white';
 fontSize=20;
 faceAlpha1=0.8;
 faceAlpha2=1;
@@ -24,7 +23,8 @@ lineWidth=3;
 filePath=mfilename('fullpath');
 savePath=fullfile(fileparts(filePath),'data','temp');
 
-modelName=fullfile(savePath,'iFEA_tempModel');
+modelNameEnd='iFEA_tempModel';
+modelName=fullfile(savePath,modelNameEnd);
 
 %Specifying dimensions and number of elements
 sampleWidth=10;
@@ -41,7 +41,7 @@ stretchLoad=0.7;
 displacementMagnitude=[0 0 (stretchLoad*sampleHeight)-sampleHeight];
 
 %True material parameter set
-k_factor=1e4;
+k_factor=1e2;
 c1_true=0.000322322142618; 
 m1_true=6;
 k_true=c1_true*k_factor; 
@@ -90,7 +90,7 @@ elementMaterialIndices=ones(size(E,1),1);
 %%
 
 % Plotting boundary surfaces
-hf=figuremax(figColor,figColorDef);
+hf=cFigure;
 title('Model surfaces','FontSize',fontSize);
 xlabel('X','FontSize',fontSize); ylabel('Y','FontSize',fontSize); zlabel('Z','FontSize',fontSize);
 hold on;
@@ -124,7 +124,7 @@ bcPrescribeMagnitudes=displacementMagnitude(ones(1,numel(bcPrescribeList)),:);
 
 %%
 % Visualize BC's
-hf=figuremax(figColor,figColorDef);
+hf=cFigure;
 title('Complete model','FontSize',fontSize);
 xlabel('X','FontSize',fontSize); ylabel('Y','FontSize',fontSize); zlabel('Z','FontSize',fontSize);
 hold on;
@@ -144,6 +144,7 @@ drawnow;
 %% CONSTRUCTING FEB MODEL
 
 FEB_struct.febio_spec.version='2.0';
+FEB_struct.Module.Type='solid';
 
 % Defining file names
 FEB_struct.run_filename=[modelName,'.feb']; %FEB file name
@@ -160,11 +161,11 @@ FEB_struct.Geometry.ElementsPartName={'Block'};
 
 %Material 1 uncoupled hyperelastic
 FEB_struct.Materials{1}.Type='Ogden';
-FEB_struct.Materials{1}.Name='Block_mat';
+FEB_struct.Materials{1}.Name='Block_material';
 FEB_struct.Materials{1}.Properties={'c1','m1','c2','m2','k'};
 FEB_struct.Materials{1}.Values={c1_ini,m1_ini,c1_ini,-m1_ini,k_ini};
 
-%Control section
+% %Control section
 FEB_struct.Control.AnalysisType='static';
 FEB_struct.Control.Properties={'time_steps','step_size',...
     'max_refs','max_ups',...
@@ -208,8 +209,8 @@ FEB_struct.LoadData.LoadCurves.loadPoints={[0 0;1 1;]};
 FEB_struct.Output.VarTypes={'displacement','stress','relative volume'};
 
 %Specify log file output
-run_disp_output_name=[FEB_struct.run_filename(1:end-4),'_node_out.txt'];
-run_force_output_name=[FEB_struct.run_filename(1:end-4),'_force_out.txt'];
+run_disp_output_name=[modelNameEnd,'_node_out.txt'];
+run_force_output_name=[modelNameEnd,'_force_out.txt'];
 FEB_struct.run_output_names={run_disp_output_name,run_force_output_name};
 FEB_struct.output_types={'node_data','node_data'};
 FEB_struct.data_types={'ux;uy;uz','Rx;Ry;Rz'};
@@ -230,6 +231,8 @@ FEBioRunStruct.t_check=0.25; %Time for checking log file (dont set too small)
 FEBioRunStruct.maxtpi=1e99; %Max analysis time
 FEBioRunStruct.maxLogCheckTime=5; %Max log file checking time
 FEBioRunStruct.cleanUpFileList=FEB_struct.run_output_names; %Files to remove prior to starting each job.
+FEBioRunStruct.FEBioPath='C:\Program Files\febio-2.4.2\bin\febio2.exe';
+% FEBioRunStruct.FEBioPath='C:\Program Files\febio-2.3.1\bin\febio2.exe';
 
 [runFlag]=runMonitorFEBio(FEBioRunStruct);%START FEBio NOW!!!!!!!!
 
@@ -248,7 +251,7 @@ DN_magnitude=sqrt(sum(DN.^2,2));
 
 [CF]=vertexToFaceMeasure(Fb,DN_magnitude);
 
-hf1=figuremax(figColor,figColorDef);
+hf1=cFigure;
 title('The deformed model','FontSize',fontSize);
 xlabel('X','FontSize',fontSize); ylabel('Y','FontSize',fontSize); zlabel('Z','FontSize',fontSize); hold on;
 
@@ -288,7 +291,7 @@ stress_cauchy_exp_sim = interp1(stretch_exp,stress_cauchy_exp,stretch_sim,'pchip
 
 %%
 
-hf1=figuremax(figColor,figColorDef);
+hf1=cFigure;
 title('Stretch stress curves, initial differences between simulation and experiment','FontSize',fontSize);
 xlabel('\lambda Stretch [.]','FontSize',fontSize); ylabel('\sigma Cauchy stress [kPa]','FontSize',fontSize); zlabel('Z','FontSize',fontSize); hold on;
 
@@ -384,7 +387,7 @@ disp(['P_opt=',disp_text]);
 
 %%
 
-hf1=figuremax(figColor,figColorDef);
+hf1=cFigure;
 title('Stretch stress curves optimised','FontSize',fontSize);
 xlabel('\lambda Stretch [.]','FontSize',fontSize); ylabel('\sigma Cauchy stress [kPa]','FontSize',fontSize); zlabel('Z','FontSize',fontSize); hold on;
 

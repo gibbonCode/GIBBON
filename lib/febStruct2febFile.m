@@ -41,9 +41,10 @@ commentNode = docNode.createComment(commentString);
 febio_spec.appendChild(commentNode);
 
 %% DEFINING MODULE LEVEL
-if isfield(FEB_struct,'Module');
-    docNode=addModuleLevel_FEB(docNode,FEB_struct);
+if ~isfield(FEB_struct,'Module');
+    FEB_struct.Module.Type='solid'; %Use solid as default module
 end
+docNode=addModuleLevel_FEB(docNode,FEB_struct);
 
 %% DEFINE CONTROL SECTION
 if isfield(FEB_struct,'Control');

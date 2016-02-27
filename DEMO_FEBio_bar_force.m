@@ -99,6 +99,7 @@ set(gca,'FontSize',fontSize);
 view(3); axis tight;  axis equal;  grid on;
 drawnow; 
 
+
 %% CONSTRUCTING FEB MODEL
 
 FEB_struct.febio_spec.version='2.0';

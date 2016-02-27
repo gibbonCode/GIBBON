@@ -22,6 +22,7 @@ end
 
 % Remove .xplot file
 [filePath,fileName,~]=fileparts(FEBioRunStruct.run_filename);
+
 fileName_plot=fullfile(filePath,[fileName,'.xplt']);
 if exist(fileName_plot,'file')==2
     delete(fileName_plot);
@@ -39,8 +40,12 @@ end
 if ~isempty(FEBioRunStruct.cleanUpFileList)
     for q=1:1:numel(FEBioRunStruct.cleanUpFileList)
         fileToRemove=FEBioRunStruct.cleanUpFileList{q};
-        delete(fileToRemove);        
-        
+        [fileToRemovePath,~,~]=fileparts(fileToRemove);
+        if isempty(fileToRemovePath) %Since FEBio 2.4.0 path is the same as .feb files path
+            delete(fullfile(filePath,fileToRemove));
+        else %For older versions path can be different
+            delete(fileToRemove);
+        end
         %Check if its gone
         if exist(fileToRemove,'file')==2
             error(['Deletion of ',fileToRemove,' not succesful, check user permissions']);

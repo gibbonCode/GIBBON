@@ -26,11 +26,12 @@ lineWidth=3;
 filePath=mfilename('fullpath');
 savePath=fullfile(fileparts(filePath),'data','temp');
 
-modelName=fullfile(savePath,'tempModel');
+modelNameEnd='tempModel';
+modelName=fullfile(savePath,modelNameEnd);
 
 %Specifying dimensions and number of elements
 sampleWidth=10;
-sampleThickness=10;
+sampleThickness=10; 
 sampleHeight=10;
 pointSpacings=2*ones(1,3);
 initialArea=sampleWidth*sampleThickness;
@@ -43,9 +44,20 @@ stretchLoad=0.7;
 displacementMagnitude=[0 0 (stretchLoad*sampleHeight)-sampleHeight];
 
 %Material parameter set
-c1=1e-3;
-m1=6;
-k_factor=100;
+% c1=1e-3;
+% m1=6;
+% k_factor=100;
+
+%True material parameter set
+k_factor=1e2;
+c1_true=0.000322322142618; 
+m1_true=6;
+k_true=c1_true*k_factor; 
+
+%Initial material parameter set
+c1=c1_true*2; 
+m1=m1_true/2;
+k=c1*k_factor; 
 
 %% CREATING MESHED BOX
 
@@ -79,7 +91,7 @@ drawnow;
 
 %% DEFINE BC's
 
-%Define faces
+%Define supported node sets
 logicFace=faceBoundaryMarker==1;
 Fr=Fb(logicFace,:);
 bcSupportList_X=unique(Fr(:));
@@ -92,10 +104,6 @@ logicFace=faceBoundaryMarker==5;
 Fr=Fb(logicFace,:);
 bcSupportList_Z=unique(Fr(:));
 
-%Define line support
-bcSupportList_X_axis=bcSupportList_Y(ismember(bcSupportList_Y,bcSupportList_Z));
-bcSupportList_Y_axis=bcSupportList_X(ismember(bcSupportList_X,bcSupportList_Z));
-
 %Prescribed displacement nodes
 logicPrescribe=faceBoundaryMarker==6;
 Fr=Fb(logicPrescribe,:);
@@ -105,22 +113,21 @@ bcPrescribeMagnitudes=displacementMagnitude(ones(1,numel(bcPrescribeList)),:);
 %%
 % Visualize BC's
 hf=cFigure;
-title('Model BCs','FontSize',fontSize);
+title('Complete model','FontSize',fontSize);
 xlabel('X','FontSize',fontSize); ylabel('Y','FontSize',fontSize); zlabel('Z','FontSize',fontSize);
 hold on;
 
 patch('Faces',Fb,'Vertices',V,'FaceColor','flat','CData',faceBoundaryMarker,'FaceAlpha',faceAlpha2,'lineWidth',edgeWidth,'edgeColor',edgeColor);
-
+plotV(V(bcSupportList_X,:),'r.','MarkerSize',markerSize);
+plotV(V(bcSupportList_Y,:),'g.','MarkerSize',markerSize);
 plotV(V(bcSupportList_Z,:),'b.','MarkerSize',markerSize);
 plotV(V(bcPrescribeList,:),'k.','MarkerSize',markerSize);
-plotV(V(bcSupportList_X_axis,:),'g.','MarkerSize',markerSize);
-plotV(V(bcSupportList_Y_axis,:),'r.','MarkerSize',markerSize);
-
 set(gca,'FontSize',fontSize);
-colormap(jet(6)); colorbar;
+
+colormap(jet(6)); colorbar; 
 set(gca,'FontSize',fontSize);
 view(3); axis tight;  axis equal;  grid on;
-drawnow;
+drawnow; 
 
 %% CONSTRUCTING FEB MODEL
 
@@ -152,21 +159,20 @@ FEB_struct.Control.AnalysisType='static';
 FEB_struct.Control.Properties={'time_steps','step_size',...
     'max_refs','max_ups',...
     'dtol','etol','rtol','lstol'};
-FEB_struct.Control.Values={10,0.1,...
-    15,0,...
-    0.001,0.01,0,0.9};
+numSteps=20;
+FEB_struct.Control.Values={numSteps,1/numSteps,25,5,0.001,0.01,0,0.9};
 FEB_struct.Control.TimeStepperProperties={'dtmin','dtmax','max_retries','opt_iter','aggressiveness'};
-FEB_struct.Control.TimeStepperValues={1e-5,0.1,10,10,1};
+FEB_struct.Control.TimeStepperValues={(1/(100*numSteps)),1/numSteps,5,10,1};
 
 %Defining node sets
-FEB_struct.Geometry.NodeSet{1}.Set=bcSupportList_Y_axis;
-FEB_struct.Geometry.NodeSet{1}.Name='bcSupportList_Y_axis';
-FEB_struct.Geometry.NodeSet{2}.Set=bcSupportList_X_axis;
-FEB_struct.Geometry.NodeSet{2}.Name='bcSupportList_X_axis';
+FEB_struct.Geometry.NodeSet{1}.Set=bcSupportList_X;
+FEB_struct.Geometry.NodeSet{1}.Name='bcSupportList_X';
+FEB_struct.Geometry.NodeSet{2}.Set=bcSupportList_Y;
+FEB_struct.Geometry.NodeSet{2}.Name='bcSupportList_Y';
 FEB_struct.Geometry.NodeSet{3}.Set=bcSupportList_Z;
 FEB_struct.Geometry.NodeSet{3}.Name='bcSupportList_Z';
-FEB_struct.Geometry.NodeSet{4}.Set=bcPrescribeList;
-FEB_struct.Geometry.NodeSet{4}.Name='bcPrescribeList';
+% FEB_struct.Geometry.NodeSet{4}.Set=bcPrescribeList;
+% FEB_struct.Geometry.NodeSet{4}.Name='bcPrescribeList';
 
 %Adding BC information
 FEB_struct.Boundary.Fix{1}.bc='x';
@@ -176,15 +182,12 @@ FEB_struct.Boundary.Fix{2}.SetName=FEB_struct.Geometry.NodeSet{2}.Name;
 FEB_struct.Boundary.Fix{3}.bc='z';
 FEB_struct.Boundary.Fix{3}.SetName=FEB_struct.Geometry.NodeSet{3}.Name;
 
-FEB_struct.Boundary.Prescribe{1}.SetName=FEB_struct.Geometry.NodeSet{4}.Name;
-FEB_struct.Boundary.Prescribe{1}.Scale=displacementMagnitude(3);
+%Prescribed BC's
+FEB_struct.Boundary.Prescribe{1}.Set=bcPrescribeList;
 FEB_struct.Boundary.Prescribe{1}.bc='z';
 FEB_struct.Boundary.Prescribe{1}.lc=1;
+FEB_struct.Boundary.Prescribe{1}.nodeScale=displacementMagnitude(ones(numel(bcPrescribeList),1),3);
 FEB_struct.Boundary.Prescribe{1}.Type='relative';
-
-% FEB_struct.Boundary.Prescribe{1}.Set=bcPrescribeList;
-% FEB_struct.Boundary.Prescribe{1}.nodeScale=displacementMagnitude(ones(numel(bcPrescribeList),1),3);
-% FEB_struct.Boundary.PrescribeTypes={'relative'};
 
 %Load curves
 FEB_struct.LoadData.LoadCurves.id=1;
@@ -192,11 +195,11 @@ FEB_struct.LoadData.LoadCurves.type={'linear'};
 FEB_struct.LoadData.LoadCurves.loadPoints={[0 0;1 1;]};
 
 %Adding output requests
-FEB_struct.Output.VarTypes={'displacement','stress','relative volume','shell thickness'};
+FEB_struct.Output.VarTypes={'displacement','stress','relative volume'};
 
 %Specify log file output
-run_disp_output_name=[FEB_struct.run_filename(1:end-4),'_node_out.txt'];
-run_force_output_name=[FEB_struct.run_filename(1:end-4),'_force_out.txt'];
+run_disp_output_name=[modelNameEnd,'_node_out.txt'];
+run_force_output_name=[modelNameEnd,'_force_out.txt'];
 FEB_struct.run_output_names={run_disp_output_name,run_force_output_name};
 FEB_struct.output_types={'node_data','node_data'};
 FEB_struct.data_types={'ux;uy;uz','Rx;Ry;Rz'};
