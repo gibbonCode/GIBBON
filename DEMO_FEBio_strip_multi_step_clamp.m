@@ -52,6 +52,19 @@ clampCompressiveDisplacement=(sampleThickness.*clampCompressiveStrain)/2;
 tensileStretch=1.3;
 clampTensionDisplacement=(sampleGripGripHeight.*tensileStretch)-sampleGripGripHeight;
 
+%Initial material parameter set
+Q=0.5; 
+
+c=6.115e-04;
+c1_ini=Q*c;
+m1_ini=2.007;
+ksi_ini=9.0590e-05;
+beta_ini=3.294;
+f_ini=235.1;
+
+k_factor=100;
+k_ini=(2*c1_ini+ksi_ini)*k_factor;
+
 %% CREATING 3 MESHED BOXES
 
 %Create box 1
@@ -209,8 +222,9 @@ drawnow;
 
 %% CONSTRUCTING FEB MODEL
 
-FEB_struct.febio_spec.version='1.2';
-FEB_struct.Module.Type='solid';
+%% CONSTRUCTING FEB MODEL
+
+FEB_struct.febio_spec.version='2.0';
 
 % Defining file names
 FEB_struct.run_filename=[modelNameFull,'.feb']; %FEB file name
@@ -221,88 +235,210 @@ FEB_struct.Geometry.Nodes=V;
 FEB_struct.Geometry.Elements={E}; %The element sets
 FEB_struct.Geometry.ElementType={'hex8'}; %The element types
 FEB_struct.Geometry.ElementMat={[ones(1,size(E,1))];};
+FEB_struct.Geometry.ElementsPartName={'Strip'};
 
 %Adding fibre direction, construct local orthonormal basis vectors
-Vf_E=zeros(size(E,1),3);
-Vf_E(:,3)=1; %Z-axis fibres
-% Vf_E(:,1)=1; %X-axis fibres
-[a,d]=vectorOrthogonalPair(Vf_E);
+V_fib=zeros(size(E,1),3);
+V_fib(:,3)=1; 
+[a,d]=vectorOrthogonalPair(V_fib);
 
-VF_E=nan(size(Vf_E,1),size(Vf_E,2),2);
+VF_E=zeros(size(V_fib,1),size(V_fib,2),2);
 VF_E(:,:,1)=a; %a1 ~ e1 ~ X or first direction
 VF_E(:,:,2)=d; %a2 ~ e2 ~ Y or second direction
 %Vf_E %a3 ~ e3 ~ Z, third direction, or fibre direction
 
-FEB_struct.Geometry.ElementData.MatAxis.ElementIndices=(1:1:size(E,1));
+FEB_struct.Geometry.ElementData.MatAxis.ElementIndices=1:1:size(E,1);
 FEB_struct.Geometry.ElementData.MatAxis.Basis=VF_E;
 
-% DEFINING MATERIALS
+%Material section
+FEB_struct.Materials{1}.Type='solid mixture';
+% FEB_struct.Materials{1}.AnisoType='mat_axis';
+FEB_struct.Materials{1}.Solid{1}.Type='Ogden unconstrained';
+FEB_struct.Materials{1}.Solid{1}.Properties={'c1','m1','c2','m2','cp'};
+FEB_struct.Materials{1}.Solid{1}.Values={c1_ini,m1_ini,c1_ini,-m1_ini,k_ini};
 
-% c1=1e-3;
-% k=c1*100;
-% Mat5.type='Mooney-Rivlin';
-% Mat5.props={'c1','c2','k'};
-% Mat5.vals={c1,0,k};
-% Mat5.aniso_type='none';
+% FEB_struct.Materials{1}.Solid{2}.Type='fiber-exp-pow';
+% FEB_struct.Materials{1}.Solid{2}.Properties={'ksi','alpha','beta','theta','phi'};
+% FEB_struct.Materials{1}.Solid{2}.Values={ksi_ini,0,beta_ini,0,0};
+% FEB_struct.Materials{1}.Solid{2}.AnisoType='mat_axis';
 
-c1=2.309;
-m1=9.421;
-ksi=22.499;
-beta=2.387;
-k=(0.5.*(c1+ksi))*100;% 20;
-Mat1.type='uncoupled solid mixture';
-Mat11.type='Ogden';
-Mat11.props={'c1','m1','k'};
-Mat11.vals={c1,m1,k};
-Mat11.aniso_type='none';
-Mat12.type='fiber-exp-pow-uncoupled';
-Mat12.props={'ksi','alpha','beta','theta','phi','k'};
-Mat12.vals={ksi,1e-25,beta,0,0,k};
-Mat12.aniso_type='none';
-Mat1.Mats={Mat11 Mat12};
+FEB_struct.Materials{1}.Solid{2}.Type='ellipsoidal fiber distribution';
+FEB_struct.Materials{1}.Solid{2}.Properties={'ksi','beta'};
+FEB_struct.Materials{1}.Solid{2}.Values={[ksi_ini ksi_ini f_ini*ksi_ini],[beta_ini beta_ini beta_ini]};
+FEB_struct.Materials{1}.Solid{2}.AnisoType='mat_axis';
 
-FEB_struct.Materials={Mat1};
-
-%Step specific BC's
-FEB_struct.Step(1).Boundary.PrescribeList={bcPrescribeList1,bcPrescribeList1,bcPrescribeList1,...
-                                           bcPrescribeList2,bcPrescribeList2,bcPrescribeList2,...
-                                           bcPrescribeList3,bcPrescribeList3,bcPrescribeList3,...
-                                           bcPrescribeList4,bcPrescribeList4,bcPrescribeList4};
-FEB_struct.Step(1).Boundary.PrescribeType={'x','y','z','x','y','z','x','y','z','x','y','z'};
-FEB_struct.Step(1).Boundary.PrescribeValues={bcPrescribeMagnitudes11(:,1),bcPrescribeMagnitudes11(:,2),bcPrescribeMagnitudes11(:,3),...
-                                             bcPrescribeMagnitudes21(:,1),bcPrescribeMagnitudes21(:,2),bcPrescribeMagnitudes21(:,3),...
-                                             bcPrescribeMagnitudes31(:,1),bcPrescribeMagnitudes31(:,2),bcPrescribeMagnitudes31(:,3),...
-                                             bcPrescribeMagnitudes41(:,1),bcPrescribeMagnitudes41(:,2),bcPrescribeMagnitudes41(:,3)};
-FEB_struct.Step(1).Boundary.PrescribeTypes={'relative','relative','relative','relative','relative','relative','relative','relative','relative','relative','relative','relative'};
-FEB_struct.Step(1).Boundary.LoadCurveIds=ones(1,3*4);
-
-FEB_struct.Step(2).Boundary.PrescribeList={bcPrescribeList1,bcPrescribeList1,bcPrescribeList1,...
-                                           bcPrescribeList2,bcPrescribeList2,bcPrescribeList2,...
-                                           bcPrescribeList3,bcPrescribeList3,bcPrescribeList3,...
-                                           bcPrescribeList4,bcPrescribeList4,bcPrescribeList4};
-FEB_struct.Step(2).Boundary.PrescribeType={'x','y','z','x','y','z','x','y','z','x','y','z'};
-FEB_struct.Step(2).Boundary.PrescribeValues={bcPrescribeMagnitudes12(:,1),bcPrescribeMagnitudes12(:,2),bcPrescribeMagnitudes12(:,3),...
-                                             bcPrescribeMagnitudes22(:,1),bcPrescribeMagnitudes22(:,2),bcPrescribeMagnitudes22(:,3),...
-                                             bcPrescribeMagnitudes32(:,1),bcPrescribeMagnitudes32(:,2),bcPrescribeMagnitudes32(:,3),...
-                                             bcPrescribeMagnitudes42(:,1),bcPrescribeMagnitudes42(:,2),bcPrescribeMagnitudes42(:,3)};
-FEB_struct.Step(2).Boundary.PrescribeTypes={'relative','relative','relative','relative','relative','relative','relative','relative','relative','relative','relative','relative'};
-FEB_struct.Step(2).Boundary.LoadCurveIds=2*ones(1,3*4);
+%Defining node sets
+FEB_struct.Geometry.NodeSet{1}.Set=bcPrescribeList1;
+FEB_struct.Geometry.NodeSet{1}.Name='bcPrescribeList1';
+FEB_struct.Geometry.NodeSet{2}.Set=bcPrescribeList2;
+FEB_struct.Geometry.NodeSet{2}.Name='bcPrescribeList2';
+FEB_struct.Geometry.NodeSet{3}.Set=bcPrescribeList3;
+FEB_struct.Geometry.NodeSet{3}.Name='bcPrescribeList3';
+FEB_struct.Geometry.NodeSet{4}.Set=bcPrescribeList4;
+FEB_struct.Geometry.NodeSet{4}.Name='bcPrescribeList4';
 
 %Step specific control sections
-FEB_struct.Step(1).Control.AnalysisType='static';
-FEB_struct.Step(1).Control.Properties={'time_steps','step_size',...
+FEB_struct.Step{1}.Control.AnalysisType='static';
+FEB_struct.Step{1}.Control.Properties={'time_steps','step_size',...
     'max_refs','max_ups',...
     'dtol','etol','rtol','lstol'};
-FEB_struct.Step(1).Control.Values={10,0.1,...
+FEB_struct.Step{1}.Control.Values={20,0.05,...
     25,0,...
     0.001,0.01,0,0.9};
-FEB_struct.Step(1).Control.TimeStepperProperties={'dtmin','dtmax','max_retries','opt_iter','aggressiveness'};
-FEB_struct.Step(1).Control.TimeStepperValues={1e-5, 0.1, 5, 5, 1};
+FEB_struct.Step{1}.Control.TimeStepperProperties={'dtmin','dtmax','max_retries','opt_iter'};
+FEB_struct.Step{1}.Control.TimeStepperValues={1e-4,0.05,5,10};
+FEB_struct.Step{2}.Control=FEB_struct.Step{1}.Control;
 
-FEB_struct.Step(2).Control=FEB_struct.Step(1).Control;
+%Step specific BC's
+
+%STEP 1
+FEB_struct.Step{1}.Boundary.Prescribe{1}.Set=bcPrescribeList1;
+FEB_struct.Step{1}.Boundary.Prescribe{1}.bc='x';
+FEB_struct.Step{1}.Boundary.Prescribe{1}.lc=1;
+FEB_struct.Step{1}.Boundary.Prescribe{1}.nodeScale=bcPrescribeMagnitudes11(:,1);
+FEB_struct.Step{1}.Boundary.Prescribe{1}.Type='relative';
+
+FEB_struct.Step{1}.Boundary.Prescribe{2}.Set=bcPrescribeList1;
+FEB_struct.Step{1}.Boundary.Prescribe{2}.bc='y';
+FEB_struct.Step{1}.Boundary.Prescribe{2}.lc=1;
+FEB_struct.Step{1}.Boundary.Prescribe{2}.nodeScale=bcPrescribeMagnitudes11(:,2);
+FEB_struct.Step{1}.Boundary.Prescribe{2}.Type='relative';
+
+FEB_struct.Step{1}.Boundary.Prescribe{3}.Set=bcPrescribeList1;
+FEB_struct.Step{1}.Boundary.Prescribe{3}.bc='z';
+FEB_struct.Step{1}.Boundary.Prescribe{3}.lc=1;
+FEB_struct.Step{1}.Boundary.Prescribe{3}.nodeScale=bcPrescribeMagnitudes11(:,3);
+FEB_struct.Step{1}.Boundary.Prescribe{3}.Type='relative';
+
+FEB_struct.Step{1}.Boundary.Prescribe{4}.Set=bcPrescribeList2;
+FEB_struct.Step{1}.Boundary.Prescribe{4}.bc='x';
+FEB_struct.Step{1}.Boundary.Prescribe{4}.lc=1;
+FEB_struct.Step{1}.Boundary.Prescribe{4}.nodeScale=bcPrescribeMagnitudes21(:,1);
+FEB_struct.Step{1}.Boundary.Prescribe{4}.Type='relative';
+
+FEB_struct.Step{1}.Boundary.Prescribe{5}.Set=bcPrescribeList2;
+FEB_struct.Step{1}.Boundary.Prescribe{5}.bc='y';
+FEB_struct.Step{1}.Boundary.Prescribe{5}.lc=1;
+FEB_struct.Step{1}.Boundary.Prescribe{5}.nodeScale=bcPrescribeMagnitudes21(:,2);
+FEB_struct.Step{1}.Boundary.Prescribe{5}.Type='relative';
+
+FEB_struct.Step{1}.Boundary.Prescribe{6}.Set=bcPrescribeList2;
+FEB_struct.Step{1}.Boundary.Prescribe{6}.bc='z';
+FEB_struct.Step{1}.Boundary.Prescribe{6}.lc=1;
+FEB_struct.Step{1}.Boundary.Prescribe{6}.nodeScale=bcPrescribeMagnitudes21(:,3);
+FEB_struct.Step{1}.Boundary.Prescribe{6}.Type='relative';
+
+FEB_struct.Step{1}.Boundary.Prescribe{7}.Set=bcPrescribeList3;
+FEB_struct.Step{1}.Boundary.Prescribe{7}.bc='x';
+FEB_struct.Step{1}.Boundary.Prescribe{7}.lc=1;
+FEB_struct.Step{1}.Boundary.Prescribe{7}.nodeScale=bcPrescribeMagnitudes31(:,1);
+FEB_struct.Step{1}.Boundary.Prescribe{7}.Type='relative';
+
+FEB_struct.Step{1}.Boundary.Prescribe{8}.Set=bcPrescribeList3;
+FEB_struct.Step{1}.Boundary.Prescribe{8}.bc='y';
+FEB_struct.Step{1}.Boundary.Prescribe{8}.lc=1;
+FEB_struct.Step{1}.Boundary.Prescribe{8}.nodeScale=bcPrescribeMagnitudes31(:,2);
+FEB_struct.Step{1}.Boundary.Prescribe{8}.Type='relative';
+
+FEB_struct.Step{1}.Boundary.Prescribe{9}.Set=bcPrescribeList3;
+FEB_struct.Step{1}.Boundary.Prescribe{9}.bc='z';
+FEB_struct.Step{1}.Boundary.Prescribe{9}.lc=1;
+FEB_struct.Step{1}.Boundary.Prescribe{9}.nodeScale=bcPrescribeMagnitudes31(:,3);
+FEB_struct.Step{1}.Boundary.Prescribe{9}.Type='relative';
+
+FEB_struct.Step{1}.Boundary.Prescribe{10}.Set=bcPrescribeList4;
+FEB_struct.Step{1}.Boundary.Prescribe{10}.bc='x';
+FEB_struct.Step{1}.Boundary.Prescribe{10}.lc=1;
+FEB_struct.Step{1}.Boundary.Prescribe{10}.nodeScale=bcPrescribeMagnitudes41(:,1);
+FEB_struct.Step{1}.Boundary.Prescribe{10}.Type='relative';
+
+FEB_struct.Step{1}.Boundary.Prescribe{11}.Set=bcPrescribeList4;
+FEB_struct.Step{1}.Boundary.Prescribe{11}.bc='y';
+FEB_struct.Step{1}.Boundary.Prescribe{11}.lc=1;
+FEB_struct.Step{1}.Boundary.Prescribe{11}.nodeScale=bcPrescribeMagnitudes41(:,2);
+FEB_struct.Step{1}.Boundary.Prescribe{11}.Type='relative';
+
+FEB_struct.Step{1}.Boundary.Prescribe{12}.Set=bcPrescribeList4;
+FEB_struct.Step{1}.Boundary.Prescribe{12}.bc='z';
+FEB_struct.Step{1}.Boundary.Prescribe{12}.lc=1;
+FEB_struct.Step{1}.Boundary.Prescribe{12}.nodeScale=bcPrescribeMagnitudes41(:,3);
+FEB_struct.Step{1}.Boundary.Prescribe{12}.Type='relative';
+
+%STEP 2
+FEB_struct.Step{2}.Boundary.Prescribe{1}.Set=bcPrescribeList1;
+FEB_struct.Step{2}.Boundary.Prescribe{1}.bc='x';
+FEB_struct.Step{2}.Boundary.Prescribe{1}.lc=2;
+FEB_struct.Step{2}.Boundary.Prescribe{1}.nodeScale=bcPrescribeMagnitudes12(:,1);
+FEB_struct.Step{2}.Boundary.Prescribe{1}.Type='relative';
+
+FEB_struct.Step{2}.Boundary.Prescribe{2}.Set=bcPrescribeList1;
+FEB_struct.Step{2}.Boundary.Prescribe{2}.bc='y';
+FEB_struct.Step{2}.Boundary.Prescribe{2}.lc=2;
+FEB_struct.Step{2}.Boundary.Prescribe{2}.nodeScale=bcPrescribeMagnitudes12(:,2);
+FEB_struct.Step{2}.Boundary.Prescribe{2}.Type='relative';
+
+FEB_struct.Step{2}.Boundary.Prescribe{3}.Set=bcPrescribeList1;
+FEB_struct.Step{2}.Boundary.Prescribe{3}.bc='z';
+FEB_struct.Step{2}.Boundary.Prescribe{3}.lc=2;
+FEB_struct.Step{2}.Boundary.Prescribe{3}.nodeScale=bcPrescribeMagnitudes12(:,3);
+FEB_struct.Step{2}.Boundary.Prescribe{3}.Type='relative';
+
+FEB_struct.Step{2}.Boundary.Prescribe{4}.Set=bcPrescribeList2;
+FEB_struct.Step{2}.Boundary.Prescribe{4}.bc='x';
+FEB_struct.Step{2}.Boundary.Prescribe{4}.lc=2;
+FEB_struct.Step{2}.Boundary.Prescribe{4}.nodeScale=bcPrescribeMagnitudes22(:,1);
+FEB_struct.Step{2}.Boundary.Prescribe{4}.Type='relative';
+
+FEB_struct.Step{2}.Boundary.Prescribe{5}.Set=bcPrescribeList2;
+FEB_struct.Step{2}.Boundary.Prescribe{5}.bc='y';
+FEB_struct.Step{2}.Boundary.Prescribe{5}.lc=2;
+FEB_struct.Step{2}.Boundary.Prescribe{5}.nodeScale=bcPrescribeMagnitudes22(:,2);
+FEB_struct.Step{2}.Boundary.Prescribe{5}.Type='relative';
+
+FEB_struct.Step{2}.Boundary.Prescribe{6}.Set=bcPrescribeList2;
+FEB_struct.Step{2}.Boundary.Prescribe{6}.bc='z';
+FEB_struct.Step{2}.Boundary.Prescribe{6}.lc=2;
+FEB_struct.Step{2}.Boundary.Prescribe{6}.nodeScale=bcPrescribeMagnitudes22(:,3);
+FEB_struct.Step{2}.Boundary.Prescribe{6}.Type='relative';
+
+FEB_struct.Step{2}.Boundary.Prescribe{7}.Set=bcPrescribeList3;
+FEB_struct.Step{2}.Boundary.Prescribe{7}.bc='x';
+FEB_struct.Step{2}.Boundary.Prescribe{7}.lc=2;
+FEB_struct.Step{2}.Boundary.Prescribe{7}.nodeScale=bcPrescribeMagnitudes32(:,1);
+FEB_struct.Step{2}.Boundary.Prescribe{7}.Type='relative';
+
+FEB_struct.Step{2}.Boundary.Prescribe{8}.Set=bcPrescribeList3;
+FEB_struct.Step{2}.Boundary.Prescribe{8}.bc='y';
+FEB_struct.Step{2}.Boundary.Prescribe{8}.lc=2;
+FEB_struct.Step{2}.Boundary.Prescribe{8}.nodeScale=bcPrescribeMagnitudes32(:,2);
+FEB_struct.Step{2}.Boundary.Prescribe{8}.Type='relative';
+
+FEB_struct.Step{2}.Boundary.Prescribe{9}.Set=bcPrescribeList3;
+FEB_struct.Step{2}.Boundary.Prescribe{9}.bc='z';
+FEB_struct.Step{2}.Boundary.Prescribe{9}.lc=2;
+FEB_struct.Step{2}.Boundary.Prescribe{9}.nodeScale=bcPrescribeMagnitudes32(:,3);
+FEB_struct.Step{2}.Boundary.Prescribe{9}.Type='relative';
+
+FEB_struct.Step{2}.Boundary.Prescribe{10}.Set=bcPrescribeList4;
+FEB_struct.Step{2}.Boundary.Prescribe{10}.bc='x';
+FEB_struct.Step{2}.Boundary.Prescribe{10}.lc=2;
+FEB_struct.Step{2}.Boundary.Prescribe{10}.nodeScale=bcPrescribeMagnitudes42(:,1);
+FEB_struct.Step{2}.Boundary.Prescribe{10}.Type='relative';
+
+FEB_struct.Step{2}.Boundary.Prescribe{11}.Set=bcPrescribeList4;
+FEB_struct.Step{2}.Boundary.Prescribe{11}.bc='y';
+FEB_struct.Step{2}.Boundary.Prescribe{11}.lc=2;
+FEB_struct.Step{2}.Boundary.Prescribe{11}.nodeScale=bcPrescribeMagnitudes42(:,2);
+FEB_struct.Step{2}.Boundary.Prescribe{11}.Type='relative';
+
+FEB_struct.Step{2}.Boundary.Prescribe{12}.Set=bcPrescribeList4;
+FEB_struct.Step{2}.Boundary.Prescribe{12}.bc='z';
+FEB_struct.Step{2}.Boundary.Prescribe{12}.lc=2;
+FEB_struct.Step{2}.Boundary.Prescribe{12}.nodeScale=bcPrescribeMagnitudes42(:,3);
+FEB_struct.Step{2}.Boundary.Prescribe{12}.Type='relative';
 
 %Adding output requests
-FEB_struct.Output.VarTypes={'displacement','stress','relative volume','shell thickness','contact force','reaction forces'};
+FEB_struct.Output.VarTypes={'displacement','stress','relative volume','contact force','reaction forces'};
 
 %Specify log file output
 run_output_name_disp=[modelName,'_node_out.txt'];
@@ -316,10 +452,11 @@ FEB_struct.LoadData.LoadCurves.id=[1 2];
 FEB_struct.LoadData.LoadCurves.type={'linear','linear'};
 FEB_struct.LoadData.LoadCurves.loadPoints={[0 0;1 1];[0 0;1 0;2 1];};
 
+FEB_struct.disp_opt=1; %Display waitbars option
+
 %% SAVING .FEB FILE
 
-FEB_struct.disp_opt=0; %Display waitbars option
-febStruct2febFile_v1p2(FEB_struct);
+febStruct2febFile(FEB_struct);
 
 %% RUNNING FEBIO JOB
 
