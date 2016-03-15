@@ -1,4 +1,4 @@
-%% DEMO_trabeculae_compression
+%% DEMO_FEBio_trabeculae_compression
 % This demonstration shows the creation of a trabacular structure model
 % derived from a triply periodic equation. The structure is meshed using
 % tetrahedral elements and subjected to compression. 
