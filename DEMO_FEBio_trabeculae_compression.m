@@ -27,17 +27,33 @@ savePath=fullfile(fileparts(filePath),'data','temp');
 
 %Get periodic surface
 n=25;
-isoLevel=0.6; %Iso-surface level
+isoLevel=0.5; %Iso-surface level
 [X,Y,Z]=meshgrid(linspace(-1.95*pi,1.95*pi,n));
 V=[X(:) Y(:) Z(:)];
 [R,~]=euler2DCM([0.25*pi 0.25*pi 0.25*pi]);
+
 V=(R*V')';
 S=triplyPeriodicMinimal(V(:,1),V(:,2),V(:,3),'g');
 S=reshape(S,size(X));
 [Fi,Vi] = isosurface(X,Y,Z,S,isoLevel); %main isosurface
 Fi=fliplr(Fi); %Flip so normal faces outward
+
+%Merge nodes
+[~,ind1,ind2]=unique(pround(Vi,5),'rows');
+Vi=Vi(ind1,:);
+Fi=ind2(Fi);
+logicInvalid=any(diff(sort(Fi,2),[],2)==0,2);
+Fi=Fi(~logicInvalid,:);
+
 [Fc,Vc] = isocaps(X,Y,Z,S,isoLevel); %Caps to close the shape
 Fc=fliplr(Fc); %Flip so normal faces outward
+
+%Merge nodes
+[~,ind1,ind2]=unique(pround(Vc,5),'rows');
+Vc=Vc(ind1,:);
+Fc=ind2(Fc);
+logicInvalid=any(diff(sort(Fc,2),[],2)==0,2);
+Fc=Fc(~logicInvalid,:);
 
 %Join model segments
 V=[Vi;Vc];
@@ -72,7 +88,7 @@ xlabel('X','FontSize',fontSize);ylabel('Y','FontSize',fontSize); zlabel('Z','Fon
 patch('Faces',F,'Vertices',V,'FaceColor',boneColor,'edgeColor',edgeColor,'lineWidth',edgeWidth,'FaceAlpha',1);
 patch('Faces',F(logicTop,:),'Vertices',V,'FaceColor','none','EdgeColor','r','lineWidth',edgeWidth,'FaceAlpha',1);
 patch('Faces',F(logicBottom,:),'Vertices',V,'FaceColor','none','EdgeColor','b','lineWidth',edgeWidth,'FaceAlpha',1);
-% plotV(V(indRigid,:),'k.','MarkerSize',markerSize1);
+plotV(V(indRigid,:),'k.','MarkerSize',markerSize1);
 axis equal; view(3); axis tight; axis vis3d; grid on;  
 set(gca,'FontSize',fontSize);
 camlight headlight; 

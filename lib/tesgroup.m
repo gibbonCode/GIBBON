@@ -1,6 +1,6 @@
 function varargout=tesgroup(F)
 
-% function G=tesgroup(F)
+% function [G,G_iter]=tesgroup(F)
 % ------------------------------------------------------------------------
 %
 % This function finds groups in the tesselation defined by F. F may
