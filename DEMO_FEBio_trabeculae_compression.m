@@ -28,11 +28,12 @@ savePath=fullfile(fileparts(filePath),'data','temp');
 %Get periodic surface
 n=25;
 isoLevel=0.5; %Iso-surface level
-[X,Y,Z]=meshgrid(linspace(-1.95*pi,1.95*pi,n));
+[X,Y,Z]=meshgrid(linspace(-2*pi,2*pi,n));
 V=[X(:) Y(:) Z(:)];
-[R,~]=euler2DCM([0.25*pi 0.25*pi 0.25*pi]);
 
-V=(R*V')';
+% [R,~]=euler2DCM([0.25*pi 0.25*pi 0.25*pi]);
+% V=(R*V')';
+
 S=triplyPeriodicMinimal(V(:,1),V(:,2),V(:,3),'g');
 S=reshape(S,size(X));
 [Fi,Vi] = isosurface(X,Y,Z,S,isoLevel); %main isosurface

@@ -6,7 +6,7 @@
    <!--
 This HTML was auto-generated from MATLAB code.
 To make changes, update the MATLAB code and republish this document.
-      --><title>uiContourSegment</title><meta name="generator" content="MATLAB 8.4"><link rel="schema.DC" href="http://purl.org/dc/elements/1.1/"><meta name="DC.date" content="2015-02-19"><meta name="DC.source" content="HELP_uiContourSegment.m"><style type="text/css">
+      --><title>uiContourSegment</title><meta name="generator" content="MATLAB 9.0"><link rel="schema.DC" href="http://purl.org/dc/elements/1.1/"><meta name="DC.date" content="2016-03-29"><meta name="DC.source" content="HELP_uiContourSegment.m"><style type="text/css">
 html,body,div,span,applet,object,iframe,h1,h2,h3,h4,h5,h6,p,blockquote,pre,a,abbr,acronym,address,big,cite,code,del,dfn,em,font,img,ins,kbd,q,s,samp,small,strike,strong,sub,sup,tt,var,b,u,i,center,dl,dt,dd,ol,ul,li,fieldset,form,label,legend,table,caption,tbody,tfoot,thead,tr,th,td{margin:0;padding:0;border:0;outline:0;font-size:100%;vertical-align:baseline;background:transparent}body{line-height:1}ol,ul{list-style:none}blockquote,q{quotes:none}blockquote:before,blockquote:after,q:before,q:after{content:'';content:none}:focus{outine:0}ins{text-decoration:none}del{text-decoration:line-through}table{border-collapse:collapse;border-spacing:0}
 
 html { min-height:100%; margin-bottom:1px; }
@@ -66,7 +66,7 @@ table td { padding:7px 5px; text-align:left; vertical-align:top; border:1px soli
 
 
 
-  </style></head><body><div class="content"><h1>uiContourSegment</h1><!--introduction--><p>Below is a demonstration of the features of the <tt>uiContourSegment</tt> function</p><!--/introduction--><h2>Contents</h2><div><ul><li><a href="#2">Loading example image data</a></li><li><a href="#3">Visualizing data</a></li><li><a href="#4">REMOVING BACKGROUND THROUGH THRESHOLDING/DILATION PROCEDURE</a></li><li><a href="#5">SETTING CONTROL PARAMETERS</a></li><li><a href="#6">SEGMENTING CONTOURS</a></li></ul></div><pre class="codeinput">clear; close <span class="string">all</span>; clc;
+  </style></head><body><div class="content"><h1>uiContourSegment</h1><!--introduction--><p>Below is a demonstration of the features of the <tt>uiContourSegment</tt> function</p><!--/introduction--><h2>Contents</h2><div><ul><li><a href="#2">Loading example image data</a></li><li><a href="#3">Visualizing data</a></li><li><a href="#4">REMOVING BACKGROUND THROUGH THRESHOLDING/DILATION PROCEDURE</a></li><li><a href="#5">SETTING CONTROL PARAMETERS</a></li><li><a href="#7">SEGMENTING CONTOURS</a></li></ul></div><pre class="codeinput">clear; close <span class="string">all</span>; clc;
 </pre><h2>Loading example image data<a name="2"></a></h2><p>Loading MRI data</p><pre class="codeinput">toolboxPath=fileparts(mfilename(<span class="string">'fullpath'</span>));
 
 imageFolder=fullfile(toolboxPath,<span class="string">'data'</span>,<span class="string">'DICOM'</span>,<span class="string">'KNEE_UTE'</span>,<span class="string">'IMDAT'</span>);
@@ -89,16 +89,21 @@ hp1= patch(<span class="string">'Faces'</span>,F,<span class="string">'Vertices'
 axis <span class="string">equal</span>; view(3); axis <span class="string">tight</span>; axis <span class="string">vis3d</span>; grid <span class="string">on</span>;
 colormap <span class="string">gray</span>; colorbar;
 drawnow;
-</pre><img vspace="5" hspace="5" src="HELP_uiContourSegment_01.png" alt=""> <h2>REMOVING BACKGROUND THROUGH THRESHOLDING/DILATION PROCEDURE<a name="4"></a></h2><p>Removal of background may be useful see <tt>uiThreshErode</tt></p><pre class="codeinput">L_BG=true(size(M)); <span class="comment">%In this example background is not removed</span>
-</pre><h2>SETTING CONTROL PARAMETERS<a name="5"></a></h2><pre class="codeinput">cPar.minContourSize=250;            <span class="comment">%Minimal size of detected contour</span>
-cPar.smoothFactor=0.1;              <span class="comment">%Degree of smoothing csaps function (cubic smoothing spline)</span>
-cPar.pointReductionFactor=20;        <span class="comment">%Reduction factor for contour smoothening</span>
+</pre><img vspace="5" hspace="5" src="HELP_uiContourSegment_01.png" alt=""> <h2>REMOVING BACKGROUND THROUGH THRESHOLDING/DILATION PROCEDURE<a name="4"></a></h2><p>Removal of background may be useful see <tt>uiThreshErode</tt> L_BG=true(size(M)); %In this example background is not removed</p><pre class="codeinput">thresholdInitial=0.1; <span class="comment">%with respect to normalised image</span>
+preBlurKernalSize=0; <span class="comment">%with respect to normalised image</span>
+groupCropOption=0;
+[L_BG]=uiThreshErode(M,thresholdInitial,preBlurKernalSize,groupCropOption);
+</pre><h2>SETTING CONTROL PARAMETERS<a name="5"></a></h2><pre class="codeinput">cPar.minContourSize=25;            <span class="comment">%Minimal size of detected contour</span>
+cPar.smoothFactor=0.5;              <span class="comment">%Degree of smoothing csaps function (cubic smoothing spline)</span>
+cPar.pointReductionFactor=1;        <span class="comment">%Reduction factor for contour smoothening</span>
 cPar.logicBackGround=L_BG;   <span class="comment">%Ones (white) describe image data regions of interest i.e. a mask</span>
 cPar.v=v;                           <span class="comment">%Voxel size</span>
 cPar.recoverOn=0; <span class="comment">%Turn on or off file recovery mode</span>
-cPar.sliceRange=80:size(M,3); <span class="comment">%This can be a custom range. For unvisited slices the contour is empty</span>
+cPar.sliceRange=98:104; <span class="comment">%This can be a custom range. For unvisited slices the contour is empty</span>
 saveName=[];                        <span class="comment">%If not empty this is where the contours are saved</span>
-</pre><h2>SEGMENTING CONTOURS<a name="6"></a></h2><p>Run the following code: <tt>[Vcs]=uiContourSegment(M,cPar,saveName)</tt>; Use the various options to try to segment the outer skin contour, press H to reveal the help window.</p><p>Example contour process:</p><p><img vspace="5" hspace="5" src="contour_1.png" alt=""> </p><p>Clearly only features "detectable" with contour levels can be segmented or otherwise manual drawing is needed.</p><p><img vspace="5" hspace="5" src="gibbVerySmall.gif" alt=""> </p><p><i><b>GIBBON</b></i> <a href="www.gibboncode.org">www.gibboncode.org</a></p><p><i>Kevin Mattheus Moerman</i>, <a href="gibbon.toolbox@gmail.com">gibbon.toolbox@gmail.com</a></p><p class="footer"><br><a href="http://www.mathworks.com/products/matlab/">Published with MATLAB&reg; R2014b</a><br></p></div><!--
+</pre><pre class="codeinput">hf=sliceViewer(M,v,2);
+</pre><img vspace="5" hspace="5" src="HELP_uiContourSegment_02.png" alt=""> <h2>SEGMENTING CONTOURS<a name="7"></a></h2><p>Run the following code: <tt>[Vcs]=uiContourSegment(M,cPar,saveName)</tt>; Use the various options to try to segment the outer skin contour, press H to reveal the help window.</p><pre class="codeinput"><span class="comment">% [Vcs]=uiContourSegment(M,cPar,saveName);</span>
+</pre><p>Example contour process:</p><p><img vspace="5" hspace="5" src="contour_1.png" alt=""> </p><p>Clearly only features "detectable" with contour levels can be segmented or otherwise manual drawing is needed.</p><p><img vspace="5" hspace="5" src="gibbVerySmall.gif" alt=""> </p><p><i><b>GIBBON</b></i> <a href="www.gibboncode.org">www.gibboncode.org</a></p><p><i>Kevin Mattheus Moerman</i>, <a href="gibbon.toolbox@gmail.com">gibbon.toolbox@gmail.com</a></p><p class="footer"><br><a href="http://www.mathworks.com/products/matlab/">Published with MATLAB&reg; R2016a</a><br></p></div><!--
 ##### SOURCE BEGIN #####
 %% uiContourSegment
 % Below is a demonstration of the features of the |uiContourSegment| function
@@ -136,23 +141,34 @@ drawnow;
 
 %% REMOVING BACKGROUND THROUGH THRESHOLDING/DILATION PROCEDURE
 % Removal of background may be useful see |uiThreshErode|
-L_BG=true(size(M)); %In this example background is not removed
+% L_BG=true(size(M)); %In this example background is not removed
+
+thresholdInitial=0.1; %with respect to normalised image
+preBlurKernalSize=0; %with respect to normalised image
+groupCropOption=0;
+[L_BG]=uiThreshErode(M,thresholdInitial,preBlurKernalSize,groupCropOption);
 
 %% SETTING CONTROL PARAMETERS
-cPar.minContourSize=250;            %Minimal size of detected contour
-cPar.smoothFactor=0.1;              %Degree of smoothing csaps function (cubic smoothing spline)
-cPar.pointReductionFactor=20;        %Reduction factor for contour smoothening
+cPar.minContourSize=25;            %Minimal size of detected contour
+cPar.smoothFactor=0.5;              %Degree of smoothing csaps function (cubic smoothing spline)
+cPar.pointReductionFactor=1;        %Reduction factor for contour smoothening
 cPar.logicBackGround=L_BG;   %Ones (white) describe image data regions of interest i.e. a mask
 cPar.v=v;                           %Voxel size
 cPar.recoverOn=0; %Turn on or off file recovery mode 
-cPar.sliceRange=80:size(M,3); %This can be a custom range. For unvisited slices the contour is empty
+cPar.sliceRange=98:104; %This can be a custom range. For unvisited slices the contour is empty
 saveName=[];                        %If not empty this is where the contours are saved
+
+%%
+
+hf=sliceViewer(M,v,2);
 
 %% SEGMENTING CONTOURS
 % Run the following code:
 % |[Vcs]=uiContourSegment(M,cPar,saveName)|;
 % Use the various options to try to segment the outer skin contour, press H
 % to reveal the help window. 
+
+% [Vcs]=uiContourSegment(M,cPar,saveName);
 
 %% 
 % Example contour process: 
