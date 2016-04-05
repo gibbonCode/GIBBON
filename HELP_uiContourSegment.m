@@ -49,7 +49,7 @@ cPar.logicBackGround=L_BG;   %Ones (white) describe image data regions of intere
 cPar.v=v;                           %Voxel size
 cPar.recoverOn=0; %Turn on or off file recovery mode 
 cPar.sliceRange=98:104; %This can be a custom range. For unvisited slices the contour is empty
-saveName=[];                        %If not empty this is where the contours are saved
+saveName='fibula';                        %If not empty this is where the contours are saved
 
 %%
 

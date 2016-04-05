@@ -1,4 +1,4 @@
-function [F,V]=discQuadMesh(nElements,r,f)
+function [varargout]=discQuadMesh(nElements,r,f)
 
 
 %% Creating central regular quad mesh
@@ -36,26 +36,31 @@ RadiusEdge=RadiusEdge(sortInd);
 [Xr]=linspacen(V_innerEdge(:,1),V_outerEdge(:,1),nElements/2+1); Xr(end+1,:)=Xr(1,:);
 [Yr]=linspacen(V_innerEdge(:,2),V_outerEdge(:,2),nElements/2+1); Yr(end+1,:)=Yr(1,:);
 
-logicEdge=false(size(Xr));logicEdge(:,end)=1;
-[Fs2,Vs2,logicEdge] = surf2patch(Xr,Yr,zeros(size(Xr)),logicEdge);
+[Fs2,Vs2] = surf2patch(Xr,Yr,zeros(size(Xr)));
 Vs2=Vs2(:,1:2);
 
 V=[V_centralMesh;Vs2];
 F=[F_centralMesh;Fs2+size(V_centralMesh,1)];
-logicEdge=[false(size(V_centralMesh,1),1); logicEdge];
+C=[ones(size(F_centralMesh,1),1); 2*ones(size(Fs2,1),1); ];
+
+indEdge=((size(V,1)-size(Xr,1))+1):size(V,1);
 
 %% Removing double points
 
 [~,IND_V,IND_IND]=unique(pround(V,5),'rows'); %N.B. note 5th decimal rounding used here
 V=V(IND_V,:);
 F=IND_IND(F);
+indEdge=IND_IND(indEdge(1:end-1));
 
 %Scaling radius
 [ThetaMesh,RadiusMesh]=cart2pol(V(:,1),V(:,2));
 RadiusMesh=r*RadiusMesh;
 [V(:,1),V(:,2)]=pol2cart(ThetaMesh,RadiusMesh);
 
-end
+varargout{1}=F; 
+varargout{2}=V; 
+varargout{3}=C; 
+varargout{4}=indEdge; 
 
 
 

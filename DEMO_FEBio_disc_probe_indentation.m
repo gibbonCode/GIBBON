@@ -73,22 +73,33 @@ k_gel=c1_gel*k_factor_gel;
 
 %% LOADING PROBE MODEL
 
+probeType=2; 
+
 %Set main folder
 defaultFolder = fileparts(mfilename('fullpath'));
 pathName=fullfile(defaultFolder,'data','STL');
-fileName=fullfile(pathName,'stl_cephasnics.stl');
-% fileName=fullfile(pathName,'Panthera_pardus_AMNH11374.stl');
-[stlStruct] = import_STL_txt(fileName);
-
-Fs=stlStruct.solidFaces{1};
-Vs=stlStruct.solidVertices{1};
+switch probeType
+    case 1    
+        fileName=fullfile(pathName,'stl_cephasnics.stl');
+        [stlStruct] = import_STL_txt(fileName);
+        Fs=stlStruct.solidFaces{1};
+        Vs=stlStruct.solidVertices{1};
+        [R,~]=euler2DCM([0 0.5*pi 0]); %Define rotation tensor to reorient model
+    case 2
+        fileName=fullfile(pathName,'CephasonicsLinear.STL');   
+        [stlStruct] = import_STL_txt(fileName);
+        Fs=stlStruct.solidFaces{1};
+        Vs=stlStruct.solidVertices{1};        
+        [R,~]=euler2DCM([0.5*pi 0 0]); %Define rotation tensor to reorient model
+end
 
 % Merging nodes
 [~,ind1,ind2]=unique(pround(Vs,3),'rows');
 Vs=Vs(ind1,:);
 Fs=ind2(Fs);
-[R,~]=euler2DCM([0 0.5*pi 0]); %Define rotation tensor to reorient model
-Vs=(R*Vs')';
+
+Vs=(R*Vs')'; %Rotate model
+
 V2m=mean(Vs,1);
 Vs=Vs-V2m(ones(size(Vs,1),1),:);
 Vs(:,3)=Vs(:,3)-min(Vs(:,3)); %Shift so sphere tip is at 0,0,0
@@ -120,7 +131,7 @@ xlabel('X','FontSize',fontSize); ylabel('Y','FontSize',fontSize); zlabel('Z','Fo
 hold on;
 
 patch('Faces',Fs_full,'Vertices',Vs_full,'FaceColor',0.5*ones(1,3),'EdgeColor','none','FaceAlpha',0.2);
-patch('Faces',Fs,'Vertices',Vs,'FaceColor',0.5*ones(1,3),'EdgeColor','k','FaceAlpha',1);
+patch('Faces',Fs,'Vertices',Vs,'FaceColor',0.5*ones(1,3),'EdgeColor','none','FaceAlpha',1);
 % hp=patchNormPlot(Fs,Vs,2); %Show face normals
 
 % patch('Faces',F1,'Vertices',V1,'FaceColor','g','EdgeColor','k');
@@ -130,7 +141,7 @@ patch('Faces',Fs,'Vertices',Vs,'FaceColor',0.5*ones(1,3),'EdgeColor','k','FaceAl
 % plotV(Vs(L,:),'r.','MarkerSize',25);
 
 axis equal; view(3); axis tight;  axis vis3d; grid off;  set(gca,'FontSize',fontSize);
-camlight headlight;
+camlight headlight; lighting phong;
 drawnow;
 
 %% Build gel

@@ -6,7 +6,7 @@
    <!--
 This HTML was auto-generated from MATLAB code.
 To make changes, update the MATLAB code and republish this document.
-      --><title>DEMO_FEBio_trabeculae_compression</title><meta name="generator" content="MATLAB 9.0"><link rel="schema.DC" href="http://purl.org/dc/elements/1.1/"><meta name="DC.date" content="2016-03-18"><meta name="DC.source" content="DEMO_FEBio_trabeculae_compression.m"><style type="text/css">
+      --><title>DEMO_FEBio_trabeculae_compression</title><meta name="generator" content="MATLAB 9.0"><link rel="schema.DC" href="http://purl.org/dc/elements/1.1/"><meta name="DC.date" content="2016-04-05"><meta name="DC.source" content="DEMO_FEBio_trabeculae_compression.m"><style type="text/css">
 html,body,div,span,applet,object,iframe,h1,h2,h3,h4,h5,h6,p,blockquote,pre,a,abbr,acronym,address,big,cite,code,del,dfn,em,font,img,ins,kbd,q,s,samp,small,strike,strong,sub,sup,tt,var,b,u,i,center,dl,dt,dd,ol,ul,li,fieldset,form,label,legend,table,caption,tbody,tfoot,thead,tr,th,td{margin:0;padding:0;border:0;outline:0;font-size:100%;vertical-align:baseline;background:transparent}body{line-height:1}ol,ul{list-style:none}blockquote,q{quotes:none}blockquote:before,blockquote:after,q:before,q:after{content:'';content:none}:focus{outine:0}ins{text-decoration:none}del{text-decoration:line-through}table{border-collapse:collapse;border-spacing:0}
 
 html { min-height:100%; margin-bottom:1px; }
@@ -76,16 +76,62 @@ markerSize1=25;
 boneColor=[1 0.8 0.7]*0.7;
 </pre><p>path names</p><pre class="codeinput">filePath=mfilename(<span class="string">'fullpath'</span>);
 savePath=fullfile(fileparts(filePath),<span class="string">'data'</span>,<span class="string">'temp'</span>);
-</pre><h2>DEFINING GEOMETRY<a name="4"></a></h2><p>The trabecular structure is here simulated using isosurfaces on the the "Gyroid triply periodic surface" function.</p><pre class="codeinput"><span class="comment">%Get periodic surface</span>
-n=25;
-isoLevel=0.5; <span class="comment">%Iso-surface level</span>
-[X,Y,Z]=meshgrid(linspace(-1.95*pi,1.95*pi,n));
-V=[X(:) Y(:) Z(:)];
-[R,~]=euler2DCM([0.25*pi 0.25*pi 0.25*pi]);
+</pre><h2>DEFINING GEOMETRY<a name="4"></a></h2><p>The trabecular structure is here simulated using isosurfaces on triply periodic minimal surfaces functions.</p><pre class="codeinput"><span class="comment">%Get periodic surface</span>
+porousGeometryCase=<span class="string">'g'</span>;
+ns=10; <span class="comment">%Number of voxel steps across period for image data (roughly number of points on mesh period)</span>
+<span class="keyword">switch</span> porousGeometryCase
+    <span class="keyword">case</span> <span class="string">'g'</span> <span class="comment">%Gyroid</span>
+        nPeriods=[2 2 2]; <span class="comment">%Number of periods in each direction</span>
+        n=nPeriods*ns; <span class="comment">%Number of sample points</span>
+        isoLevel=0.; <span class="comment">%Iso-surface level</span>
 
-V=(R*V')';
-S=triplyPeriodicMinimal(V(:,1),V(:,2),V(:,3),<span class="string">'g'</span>);
+        cutOffset=1/3*pi; <span class="comment">%Cut level such that data "ends well"</span>
+
+        <span class="comment">%Define coordinate limits</span>
+        xMin=0*pi;
+        xMax=(xMin+2*pi*nPeriods(1))-cutOffset;
+        yMin=0*pi;
+        yMax=(yMin+2*pi*nPeriods(2))-cutOffset;
+        zMin=0*pi;
+        zMax=(zMin+2*pi*nPeriods(3))-cutOffset;
+    <span class="keyword">case</span> <span class="string">'p'</span> <span class="comment">%Schwarz P</span>
+        nPeriods=[2 2 2]; <span class="comment">%Number of periods in each direction</span>
+        n=nPeriods*ns; <span class="comment">%Number of sample points</span>
+        isoLevel=0.; <span class="comment">%Iso-surface level</span>
+
+        <span class="comment">%Define coordinate limits</span>
+        xMin=0*pi;
+        xMax=xMin+2*pi*nPeriods(1);
+        yMin=0*pi;
+        yMax=yMin+2*pi*nPeriods(2);
+        zMin=0*pi;
+        zMax=zMin+2*pi*nPeriods(3);
+    <span class="keyword">case</span> <span class="string">'d'</span> <span class="comment">%Schwarz D</span>
+        nPeriods=[2 2 2]; <span class="comment">%Number of periods in each direction</span>
+        n=nPeriods*ns; <span class="comment">%Number of sample points</span>
+        isoLevel=0.; <span class="comment">%Iso-surface level</span>
+
+        <span class="comment">%Define coordinate limits</span>
+        xMin=0*pi;
+        xMax=xMin+2*pi*nPeriods(1);
+        yMin=0*pi;
+        yMax=yMin+2*pi*nPeriods(2);
+        zMin=0*pi;
+        zMax=zMin+2*pi*nPeriods(3);
+<span class="keyword">end</span>
+
+<span class="comment">%Create coordinates</span>
+xRange=linspace(xMin,xMax,n(1));
+yRange=linspace(yMin,yMax,n(2));
+zRange=linspace(zMin,zMax,n(3));
+[X,Y,Z]=meshgrid(xRange,yRange,zRange);
+V=[X(:) Y(:) Z(:)];
+
+<span class="comment">%Calculate 3D image data</span>
+S=triplyPeriodicMinimal(V(:,1),V(:,2),V(:,3),porousGeometryCase);
 S=reshape(S,size(X));
+
+<span class="comment">%Compute isosurface</span>
 [Fi,Vi] = isosurface(X,Y,Z,S,isoLevel); <span class="comment">%main isosurface</span>
 Fi=fliplr(Fi); <span class="comment">%Flip so normal faces outward</span>
 
@@ -96,6 +142,7 @@ Fi=ind2(Fi);
 logicInvalid=any(diff(sort(Fi,2),[],2)==0,2);
 Fi=Fi(~logicInvalid,:);
 
+<span class="comment">%Compute caps (to create closed surface)</span>
 [Fc,Vc] = isocaps(X,Y,Z,S,isoLevel); <span class="comment">%Caps to close the shape</span>
 Fc=fliplr(Fc); <span class="comment">%Flip so normal faces outward</span>
 
@@ -106,7 +153,7 @@ Fc=ind2(Fc);
 logicInvalid=any(diff(sort(Fc,2),[],2)==0,2);
 Fc=Fc(~logicInvalid,:);
 
-<span class="comment">%Join model segments</span>
+<span class="comment">%Join model segments (isosurface and caps)</span>
 V=[Vi;Vc];
 F=[Fi;Fc+size(Vi,1)];
 
@@ -189,26 +236,26 @@ elementMaterialIndices=meshOutput.elementMaterialID;
 removed in future releases. 
  
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
---- TETGEN Tetrahedral meshing --- 18-Mar-2016 15:18:06
+--- TETGEN Tetrahedral meshing --- 05-Apr-2016 14:17:30
 Warning: smeshStruct.smeshName input will be replaced by smeshStruct.modelName
 in future releases! 
  
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
---- Writing SMESH file --- 18-Mar-2016 15:18:06
+--- Writing SMESH file --- 05-Apr-2016 14:17:30
 Warning: smeshStruct.smeshName input will be replaced by smeshStruct.modelName
 in future releases! 
 ----&gt; Adding node field
 ----&gt; Adding facet field
 ----&gt; Adding holes specification
 ----&gt; Adding region specification
---- Done --- 18-Mar-2016 15:18:06
---- Running TetGen to mesh input boundary--- 18-Mar-2016 15:18:06
+--- Done --- 05-Apr-2016 14:17:30
+--- Running TetGen to mesh input boundary--- 05-Apr-2016 14:17:30
 Opening D:\MATLAB\GIBBON\lib_ext\tetGen\tempFiles\tempModel.smesh. 
---- Done --- 18-Mar-2016 15:18:07
+--- Done --- 05-Apr-2016 14:17:31
  
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
---- Importing TetGen files --- 18-Mar-2016 15:18:07
---- Done --- 18-Mar-2016 15:18:07
+--- Importing TetGen files --- 05-Apr-2016 14:17:31
+--- Done --- 05-Apr-2016 14:17:31
 </pre><h2>SET UP BOUNDARY CONDITIONS<a name="8"></a></h2><pre class="codeinput"><span class="comment">%List of nodes to fix</span>
 bcFixList=Fb(Cb==3,:);
 bcFixList=unique(bcFixList(:));
@@ -315,7 +362,7 @@ FEB_struct.data_types={<span class="string">'ux;uy;uz'</span>};
 febStruct2febFile(FEB_struct);
 </pre><pre class="codeoutput"> 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
---- Writing FEBio XML object --- 18-Mar-2016 15:18:08
+--- Writing FEBio XML object --- 05-Apr-2016 14:17:31
 Adding Module level
 Adding Control level
 Adding Globals level
@@ -334,7 +381,7 @@ Adding Output level
 ----&gt; Adding plotfile field
 ----&gt; Adding logfile field
 Writing .feb file
---- Done --- 18-Mar-2016 15:18:10
+--- Done --- 05-Apr-2016 14:17:33
 </pre><h2>RUNNING FEBIO JOB<a name="12"></a></h2><pre class="codeinput"><span class="comment">% FEBioRunStruct.FEBioPath='C:\Program Files\febio2-2.2.6\bin\FEBio2.exe';</span>
 FEBioRunStruct.run_filename=FEB_struct.run_filename;
 FEBioRunStruct.run_logname=FEB_struct.run_logname;
@@ -348,9 +395,9 @@ FEBioRunStruct.maxLogCheckTime=3; <span class="comment">%Max log file checking t
 [runFlag]=runMonitorFEBio(FEBioRunStruct);<span class="comment">%START FEBio NOW!!!!!!!!</span>
 </pre><pre class="codeoutput"> 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
---- STARTING FEBIO JOB --- 18-Mar-2016 15:18:10
+--- STARTING FEBIO JOB --- 05-Apr-2016 14:17:33
 Waiting for log file...
-Proceeding to check log file...18-Mar-2016 15:18:11
+Proceeding to check log file...05-Apr-2016 14:17:34
 ------- converged at time : 0.05
 ------- converged at time : 0.1
 ------- converged at time : 0.15
@@ -371,7 +418,7 @@ Proceeding to check log file...18-Mar-2016 15:18:11
 ------- converged at time : 0.9
 ------- converged at time : 0.95
 ------- converged at time : 1
---- Done --- 18-Mar-2016 15:18:32
+--- Done --- 05-Apr-2016 14:17:48
 </pre><h2>IMPORTING NODAL DISPLACEMENT RESULTS<a name="13"></a></h2><p>Importing nodal displacements from a log file</p><pre class="codeinput"> fName=fullfile(savePath,FEB_struct.run_output_names{1});
 [~, N_disp_mat,~]=importFEBio_logfile(fName); <span class="comment">%Nodal displacements</span>
 
@@ -417,19 +464,65 @@ filePath=mfilename('fullpath');
 savePath=fullfile(fileparts(filePath),'data','temp');
 
 %% DEFINING GEOMETRY
-% The trabecular structure is here simulated using isosurfaces on the the
-% "Gyroid triply periodic surface" function. 
+% The trabecular structure is here simulated using isosurfaces on triply
+% periodic minimal surfaces functions. 
 
 %Get periodic surface
-n=25;
-isoLevel=0.5; %Iso-surface level
-[X,Y,Z]=meshgrid(linspace(-1.95*pi,1.95*pi,n));
-V=[X(:) Y(:) Z(:)];
-[R,~]=euler2DCM([0.25*pi 0.25*pi 0.25*pi]);
+porousGeometryCase='g'; 
+ns=10; %Number of voxel steps across period for image data (roughly number of points on mesh period)
+switch porousGeometryCase
+    case 'g' %Gyroid
+        nPeriods=[2 2 2]; %Number of periods in each direction
+        n=nPeriods*ns; %Number of sample points
+        isoLevel=0.; %Iso-surface level
+        
+        cutOffset=1/3*pi; %Cut level such that data "ends well"
+        
+        %Define coordinate limits
+        xMin=0*pi;
+        xMax=(xMin+2*pi*nPeriods(1))-cutOffset;
+        yMin=0*pi;
+        yMax=(yMin+2*pi*nPeriods(2))-cutOffset;
+        zMin=0*pi;
+        zMax=(zMin+2*pi*nPeriods(3))-cutOffset;                
+    case 'p' %Schwarz P      
+        nPeriods=[2 2 2]; %Number of periods in each direction
+        n=nPeriods*ns; %Number of sample points
+        isoLevel=0.; %Iso-surface level
+        
+        %Define coordinate limits
+        xMin=0*pi;
+        xMax=xMin+2*pi*nPeriods(1);
+        yMin=0*pi;
+        yMax=yMin+2*pi*nPeriods(2);
+        zMin=0*pi;
+        zMax=zMin+2*pi*nPeriods(3);
+    case 'd' %Schwarz D
+        nPeriods=[2 2 2]; %Number of periods in each direction
+        n=nPeriods*ns; %Number of sample points
+        isoLevel=0.; %Iso-surface level
+        
+        %Define coordinate limits
+        xMin=0*pi;
+        xMax=xMin+2*pi*nPeriods(1);
+        yMin=0*pi;
+        yMax=yMin+2*pi*nPeriods(2);
+        zMin=0*pi;
+        zMax=zMin+2*pi*nPeriods(3);
+end
 
-V=(R*V')';
-S=triplyPeriodicMinimal(V(:,1),V(:,2),V(:,3),'g');
+%Create coordinates
+xRange=linspace(xMin,xMax,n(1));
+yRange=linspace(yMin,yMax,n(2));
+zRange=linspace(zMin,zMax,n(3));
+[X,Y,Z]=meshgrid(xRange,yRange,zRange);
+V=[X(:) Y(:) Z(:)];
+
+%Calculate 3D image data
+S=triplyPeriodicMinimal(V(:,1),V(:,2),V(:,3),porousGeometryCase);        
 S=reshape(S,size(X));
+
+%Compute isosurface
 [Fi,Vi] = isosurface(X,Y,Z,S,isoLevel); %main isosurface
 Fi=fliplr(Fi); %Flip so normal faces outward
 
@@ -440,6 +533,7 @@ Fi=ind2(Fi);
 logicInvalid=any(diff(sort(Fi,2),[],2)==0,2);
 Fi=Fi(~logicInvalid,:);
 
+%Compute caps (to create closed surface)
 [Fc,Vc] = isocaps(X,Y,Z,S,isoLevel); %Caps to close the shape
 Fc=fliplr(Fc); %Flip so normal faces outward
 
@@ -450,7 +544,7 @@ Fc=ind2(Fc);
 logicInvalid=any(diff(sort(Fc,2),[],2)==0,2);
 Fc=Fc(~logicInvalid,:);
 
-%Join model segments
+%Join model segments (isosurface and caps)
 V=[Vi;Vc];
 F=[Fi;Fc+size(Vi,1)];
 

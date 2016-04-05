@@ -22,20 +22,65 @@ filePath=mfilename('fullpath');
 savePath=fullfile(fileparts(filePath),'data','temp');
 
 %% DEFINING GEOMETRY
-% The trabecular structure is here simulated using isosurfaces on the the
-% "Gyroid triply periodic surface" function. 
+% The trabecular structure is here simulated using isosurfaces on triply
+% periodic minimal surfaces functions. 
 
 %Get periodic surface
-n=25;
-isoLevel=0.5; %Iso-surface level
-[X,Y,Z]=meshgrid(linspace(-2*pi,2*pi,n));
+porousGeometryCase='g'; 
+ns=10; %Number of voxel steps across period for image data (roughly number of points on mesh period)
+switch porousGeometryCase
+    case 'g' %Gyroid
+        nPeriods=[2 2 2]; %Number of periods in each direction
+        n=nPeriods*ns; %Number of sample points
+        isoLevel=0.; %Iso-surface level
+        
+        cutOffset=1/3*pi; %Cut level such that data "ends well"
+        
+        %Define coordinate limits
+        xMin=0*pi;
+        xMax=(xMin+2*pi*nPeriods(1))-cutOffset;
+        yMin=0*pi;
+        yMax=(yMin+2*pi*nPeriods(2))-cutOffset;
+        zMin=0*pi;
+        zMax=(zMin+2*pi*nPeriods(3))-cutOffset;                
+    case 'p' %Schwarz P      
+        nPeriods=[2 2 2]; %Number of periods in each direction
+        n=nPeriods*ns; %Number of sample points
+        isoLevel=0.; %Iso-surface level
+        
+        %Define coordinate limits
+        xMin=0*pi;
+        xMax=xMin+2*pi*nPeriods(1);
+        yMin=0*pi;
+        yMax=yMin+2*pi*nPeriods(2);
+        zMin=0*pi;
+        zMax=zMin+2*pi*nPeriods(3);
+    case 'd' %Schwarz D
+        nPeriods=[2 2 2]; %Number of periods in each direction
+        n=nPeriods*ns; %Number of sample points
+        isoLevel=0.; %Iso-surface level
+        
+        %Define coordinate limits
+        xMin=0*pi;
+        xMax=xMin+2*pi*nPeriods(1);
+        yMin=0*pi;
+        yMax=yMin+2*pi*nPeriods(2);
+        zMin=0*pi;
+        zMax=zMin+2*pi*nPeriods(3);
+end
+
+%Create coordinates
+xRange=linspace(xMin,xMax,n(1));
+yRange=linspace(yMin,yMax,n(2));
+zRange=linspace(zMin,zMax,n(3));
+[X,Y,Z]=meshgrid(xRange,yRange,zRange);
 V=[X(:) Y(:) Z(:)];
 
-% [R,~]=euler2DCM([0.25*pi 0.25*pi 0.25*pi]);
-% V=(R*V')';
-
-S=triplyPeriodicMinimal(V(:,1),V(:,2),V(:,3),'g');
+%Calculate 3D image data
+S=triplyPeriodicMinimal(V(:,1),V(:,2),V(:,3),porousGeometryCase);        
 S=reshape(S,size(X));
+
+%Compute isosurface
 [Fi,Vi] = isosurface(X,Y,Z,S,isoLevel); %main isosurface
 Fi=fliplr(Fi); %Flip so normal faces outward
 
@@ -46,6 +91,7 @@ Fi=ind2(Fi);
 logicInvalid=any(diff(sort(Fi,2),[],2)==0,2);
 Fi=Fi(~logicInvalid,:);
 
+%Compute caps (to create closed surface)
 [Fc,Vc] = isocaps(X,Y,Z,S,isoLevel); %Caps to close the shape
 Fc=fliplr(Fc); %Flip so normal faces outward
 
@@ -56,7 +102,7 @@ Fc=ind2(Fc);
 logicInvalid=any(diff(sort(Fc,2),[],2)==0,2);
 Fc=Fc(~logicInvalid,:);
 
-%Join model segments
+%Join model segments (isosurface and caps)
 V=[Vi;Vc];
 F=[Fi;Fc+size(Vi,1)];
 
