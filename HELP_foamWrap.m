@@ -1,46 +1,40 @@
-%% geoSphere
-% Below is a demonstration of the features of the |geoSphere| function
+%% foamWrap
+% Below is a demonstration of the features of the |foamWrap| function
 
-%clear; close all; clc;
+%% Syntax
+% |[FT,VT,CT,CT_c]=foamWrap(F,V,C,cPar);|
+
+%% Description
+% Use |foamWrap| to generate a foam like structure on top of an input mesh
+
+%% Examples
 
 clear; close all; clc;
 
-%%
-% Plot settings
+%% 
+% Plot Settings
+
 fontSize=15;
 faceAlpha=1;
 edgeColor=0.1*ones(1,3);
 edgeWidth=1;
+cmap=gjet(250);
 
-%Modifying standard figure properties
-figStruct.Name='GIBBON'; %Figure name
-figStruct.Color='w'; %Figure background color
+%% 
+% Create surface model 
 
-%Custom figure properties
-figStruct.ColorDef='white'; %Setting colordefinitions to black
-figStruct.ScreenOffset=0; %Setting sp
-
-%Defining geodesic dome
-r=40; %sphere radius
-
-[F,V,~]=geoSphere(2,r);
+[F,V,~]=geoSphere(0,1); %Geodesic sphere
 % [F,V]=parasaurolophus;
 % [F,V]=cow;
 % [F,V]=graphicsModels(4);
 % [F,V]=stanford_bunny;
 
-% nc=6;
-cmap=gjet(250);
-% [C,logicConverged]=triSurfPermuteColor(F,V,4);
-
-
 [F,V,C,indIni]=triPolyDualRefine(F,V);
 
 %%
-cFigure(figStruct); 
+cFigure;
 xlabel('X','FontSize',fontSize); ylabel('Y','FontSize',fontSize); zlabel('Z','FontSize',fontSize);
-% patch('Faces',F,'Vertices',V,'FaceColor','flat','CData',C,'FaceAlpha',faceAlpha,'lineWidth',edgeWidth,'edgeColor',edgeColor);
-% [hp]=patchNormPlot(F,V,r/3);
+
 patch('Faces',F,'Vertices',V,'FaceColor','flat','CData',C,'FaceAlpha',faceAlpha,'lineWidth',edgeWidth,'edgeColor','k');
 
 camlight headlight; 
@@ -48,82 +42,35 @@ colormap(cmap);
 set(gca,'FontSize',fontSize);
 view(3); axis tight;  axis equal;  grid on; axis off; 
 
-%%
-
-
-% C=[1:size(F,1)]';
-
-n=1; 
-for q=1:1:n
-    [F,V]=subtri(F,V,1);
-    C=repmat(C,[4 1]);
-end
-
-Z=V(:,3);
-ZF=mean(Z(F),2);
-logicTop=ZF>0; 
-% C(logicTop)=0; 
-
-
-%%
-cFigure(figStruct); 
-xlabel('X','FontSize',fontSize); ylabel('Y','FontSize',fontSize); zlabel('Z','FontSize',fontSize);
-
-patch('Faces',F,'Vertices',V,'FaceColor','flat','CData',C,'FaceAlpha',faceAlpha,'lineWidth',edgeWidth,'edgeColor','none');
-
-camlight headlight; lighting phong; 
-colormap(cmap);
-set(gca,'FontSize',fontSize);
-view(3); axis tight;  axis equal;  grid on; axis off; 
 
 %%
 
-cPar.n=1; 
+cPar.n=3; 
 cPar.dirFlip=1; 
-cPar.foamThickness=3;
+cPar.foamThickness=[]; %Empty uses default which is mean edgelength based
 cParSmooth.Method='HC';
 cParSmooth.n=25;
-cPar.Smooth=cParSmooth; 
+cPar.cParSmooth=cParSmooth; 
 
 %%
 L_remove=true(size(F,1),1);
-[FT,VT,CT]=foamWrap(F,V,C,cPar,logicTop);
+[FT,VT,CT,CT_c]=foamWrap(F,V,C,cPar);
 
 %%
-cFigure(figStruct);  hold on; 
+cFigure; hold on; 
 xlabel('X','FontSize',fontSize); ylabel('Y','FontSize',fontSize); zlabel('Z','FontSize',fontSize);
 
-% hp=patch('Faces',FT(CT==1,:),'Vertices',VT,'FaceColor','flat','CData',CT(CT==1,:),'FaceAlpha',faceAlpha,'lineWidth',edgeWidth,'edgeColor',edgeColor);
-% hp=patch('Faces',FT(CT==1,:),'Vertices',VT,'FaceColor','flat','CData',CT(CT==1),'FaceAlpha',faceAlpha,'lineWidth',edgeWidth,'edgeColor',edgeColor);
-hp=patch('Faces',FT(CT==1,:),'Vertices',VT,'FaceColor','r','FaceAlpha',faceAlpha,'lineWidth',edgeWidth,'edgeColor','none');
-% hp=patch('Faces',FT(CT==2,:),'Vertices',VT,'FaceColor','flat','CData',CT(CT==2),'FaceAlpha',1,'lineWidth',edgeWidth,'edgeColor',edgeColor);
-% hp=patch('Faces',FT(CT==1,:),'Vertices',VT,'FaceColor','w','FaceAlpha',faceAlpha,'lineWidth',4,'edgeColor',edgeColor);
-% hp=patch('Faces',FT(CT==2,:),'Vertices',VT,'FaceColor',0.75.*[180 64 16]./255,'FaceAlpha',faceAlpha,'lineWidth',4,'edgeColor',edgeColor);
-% plotV(VT(indRigid,:),'r.','MarkerSize',35);
+hp=patch('Faces',FT(CT_c==1,:),'Vertices',VT,'FaceColor','flat','CData',CT_c(CT_c==1),'FaceAlpha',1,'lineWidth',edgeWidth,'edgeColor','none');
+hp=patch('Faces',FT(CT_c~=1,:),'Vertices',VT,'FaceColor','flat','CData',CT_c(CT_c~=1),'FaceAlpha',1,'lineWidth',edgeWidth,'edgeColor','none');
 
 camlight headlight; 
 % lighting phong;
-colormap((gray(2))); 
+colormap(gjet(numel(unique(CT_c)))); colorbar;
+
+
 set(gca,'FontSize',fontSize);
 view(3); axis tight;  axis equal;  grid on;
 axis off;
-
-%%
-
-[Fc,Vc,indFix2]=patchCleanUnused(FT(CT==1,:),VT);
-
-stlStruct.solidNames={'ball'};
-stlStruct.solidVertices={Vc};
-stlStruct.solidFaces={Fc};
-stlStruct.solidNormals={[],[]};
-
-%Set main folder and fileName
-defaultFolder = fileparts(mfilename('fullpath'));
-pathName=fullfile(defaultFolder,'data','STL'); 
-fileName=fullfile(pathName,'ball.stl'); 
-
-export_STL_txt(fileName,stlStruct);
-
 
 %% 
 %

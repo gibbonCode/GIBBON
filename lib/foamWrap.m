@@ -1,5 +1,16 @@
-function [FT,VT,CT]=foamWrap(varargin)
+function [varargout]=foamWrap(varargin)
 
+% function [FT,VT,CT,CT_c]=foamWrap(F,V,C,cPar)
+% ------------------------------------------------------------------------
+%
+% Adds a foam like structural offset from input mesh. 
+%
+% Kevin Mattheus Moerman
+% gibbon.toolbox@gmail.com
+% 
+% 2015
+% 2016/04/19: Updated with surface color book keeping
+%------------------------------------------------------------------------
 %% Parse input
 
 switch nargin
@@ -7,26 +18,17 @@ switch nargin
         F=varargin{1};
         V=varargin{2};
         C=(1:1:size(F,1))';        
-        cPar=[];
-        L_remove=false(size(F,1),1);
+        cPar=[];        
     case 3
         F=varargin{1};
         V=varargin{2};
         C=varargin{3};                
-        cPar=[];
-        L_remove=false(size(F,1),1);
+        cPar=[];        
     case 4
         F=varargin{1};
         V=varargin{2};
         C=varargin{3};
-        cPar=varargin{4};
-        L_remove=false(size(F,1),1);
-    case 5
-        F=varargin{1};
-        V=varargin{2};
-        C=varargin{3};
-        cPar=varargin{4};
-        L_remove=varargin{5};
+        cPar=varargin{4};            
 end
 
 if isempty(cPar); %Use defaults
@@ -39,11 +41,15 @@ if isempty(cPar); %Use defaults
     cPar.foamThickness=mean(D)/3; %1/3 of the mean edge length
 end
 
-if ~isfield(cPar,'n');
+if ~isfield(cPar,'n')
+    cPar.n=4;
+elseif isempty(cPar.n);
     cPar.n=4;
 end
 
 if ~isfield(cPar,'dirFlip');
+    cPar.dirFlip=1;
+elseif isempty(cPar.dirFlip);    
     cPar.dirFlip=1;
 end
 
@@ -51,12 +57,17 @@ if ~isfield(cPar,'Smooth');
     cParSmooth.Method='HC';
     cParSmooth.n=50;    
     cPar.Smooth=cParSmooth;
+elseif  isempty(cPar.cParSmooth);
 end
 
 if ~isfield(cPar,'foamThickness');
     [D]=patchEdgeLengths(F,V); %Edge lengths
-    cPar.foamThickness=mean(D)/3; %1/3 of the mean edge length
+    cPar.foamThickness=mean(D)/2; %1/2 of the mean edge length
+elseif  isempty(cPar.foamThickness);
+    [D]=patchEdgeLengths(F,V); %Edge lengths
+    cPar.foamThickness=mean(D)/2; %1/2 of the mean edge length
 end
+
 
 %% Get settings
 
@@ -84,18 +95,11 @@ Ci=(1:size(F,1))';
 switch  subMethod
     case 'split'
         Cs=repmat(Ci,[1,size(Fs,1)./size(F,1)]);
-        L_remove_s=repmat(L_remove,[1,size(Fs,1)./size(F,1)]);
-        L_remove_s=L_remove_s(:);
     case 'seed'
         Cs=Ci;
         Cs=Cs(:,ones(1,size(Fs,1)./size(F,1)));
         Cs=Cs';
         Cs=Cs(:);
-        
-        L_remove_s=L_remove;
-        L_remove_s=L_remove_s(:,ones(1,size(Fs,1)./size(F,1)));
-        L_remove_s=L_remove_s';
-        L_remove_s=L_remove_s(:);
 end
 Cs=C(Cs);
 
@@ -165,6 +169,7 @@ logicBoundary=all(ismember(E,indBoundary),2);
 Vn=[Vss; VT2(indStripVertices,:)];
 Fn=[Fss; Fss(indFaces,:)+size(Vss,1)];
 Cn=[Css; 1*ones(numel(indFaces),1)];
+Cn_c=[Css; 4*ones(numel(indFaces),1)];
 indBoundaryVertices1=indBoundary;
 indBoundaryVertices2=indBoundary+size(Vss,1);
 Eb1=E(logicBoundary,:);
@@ -177,6 +182,10 @@ Ftn=[Fq(:,[1 2 3]); Fq(:,[3 4 1]);];
 VT=Vn;
 FT=[Fn;Ftn];
 CT=[Cn;ones(size(Ftn,1),1);];
+CT_c=[Cn_c; 3*ones(size(Ftn,1),1);];
+CT_cc=CT_c;
+CT_c(CT_cc==1)=2; 
+CT_c(CT_cc==2)=1; 
 
 %%
 
@@ -193,3 +202,9 @@ cParSmooth.RigidConstraints=indBlack;
 [VT]=patchSmooth(FT,VT,[],cParSmooth);
 
 %%
+
+varargout{1}=FT; %Faces 
+varargout{2}=VT; %Vertices
+varargout{3}=CT; %Two colors
+varargout{4}=CT_c; %Four colors 1=input, 2=base for offset, 3=sides for offset, 4=top for offset
+

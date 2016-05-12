@@ -23,7 +23,7 @@ for q=1:1:numel(files)
                 if strcmp(extFile,extOld);
                     movefileNow(oldNameFull,newNameFull);
                 end
-            else
+            else                
                 movefileNow(oldNameFull,newNameFull);
             end
         end

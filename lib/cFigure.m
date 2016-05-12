@@ -101,6 +101,10 @@ switch nargin
         
 end
 
+% if ~isfield(figStruct,'Clipping');
+%     figStruct.Clipping='off';
+% end
+
 %%
 
 isOld=verLessThan('matlab', '8.4.0.150421 (R2014b)');

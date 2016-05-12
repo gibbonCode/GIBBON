@@ -1,6 +1,6 @@
 function dcmFolder2MATobject(varargin)
 
-% function dcmFolder2MATobject(PathName,MaxVarSize,reOrderOpt)
+% function dcmFolder2MATobject(PathName,MaxVarSize,reOrderOpt,dicomDictType)
 % ------------------------------------------------------------------------
 % This function converts the DICOM files in the folder PathName to a MAT
 % object which is stored as a file called IMDAT in a new subfolder called
@@ -21,14 +21,22 @@ switch nargin
         PathName=varargin{1};
         MaxVarSize=[];
         reOrderOpt=0;
+        dicomDictFactory=0;
     case 2
         PathName=varargin{1};
         MaxVarSize=varargin{2};
         reOrderOpt=0;
+        dicomDictFactory=0;
     case 3
         PathName=varargin{1};
         MaxVarSize=varargin{2};
         reOrderOpt=varargin{3};
+        dicomDictFactory=0;
+    case 4
+        PathName=varargin{1};
+        MaxVarSize=varargin{2};
+        reOrderOpt=varargin{3};
+        dicomDictFactory=varargin{4};
 end
 
 %%
@@ -117,41 +125,49 @@ if NumberOfFiles>0
     %First import using factory settings
     dicomdict('factory');
     dcmInfo_full=dicominfo(fName);    
-    try
-        if ~isempty(strfind(lower(dcmInfo_full.Manufacturer),'philips'))
-            disp(['Detected ',dcmInfo_full.Manufacturer,' files']);
-            dicomdict('set','gibbon_dict.txt');
-            disp('DICOM dictionary set to: gibbon_dict.txt');
-            dictSetting=1;
-        elseif ~isempty(strfind(lower(dcmInfo_full.Manufacturer),'pms'))
-            disp(['Detected ',dcmInfo_full.Manufacturer,' files']);
-            dicomdict('set','gibbon_dict.txt');
-            disp('DICOM dictionary set to: gibbon_dict.txt');
-            dictSetting=1;
-        elseif ~isempty(strfind(lower(dcmInfo_full.Manufacturer),'siemens'))
-            disp(['Detected ',dcmInfo_full.Manufacturer,' files']);
-            dicomdict('set','dicom-dict-siemens.txt');
-            disp('DICOM dictionary set to: dicom-dict-siemens.txt');
-            dictSetting=2;
-        elseif ~isempty(strfind(lower(dcmInfo_full.Manufacturer),'GE MEDICAL SYSTEMS'))
-            disp(['Detected ',dcmInfo_full.Manufacturer,' files']);
-            warning('No settings for this vendor using DICOM dictionary factory settings');
-            dictSetting=3;
-        else
+    dictSetting=3;
+    
+    if dicomDictFactory==0
+        try
+            if ~isempty(strfind(lower(dcmInfo_full.Manufacturer),'philips'))
+                disp(['Detected ',dcmInfo_full.Manufacturer,' files']);
+                dicomdict('set','gibbon_dict.txt');
+                disp('DICOM dictionary set to: gibbon_dict.txt');
+                dictSetting=1;
+            elseif ~isempty(strfind(lower(dcmInfo_full.Manufacturer),'pms'))
+                disp(['Detected ',dcmInfo_full.Manufacturer,' files']);
+                dicomdict('set','gibbon_dict.txt');
+                disp('DICOM dictionary set to: gibbon_dict.txt');
+                dictSetting=1;
+            elseif ~isempty(strfind(lower(dcmInfo_full.Manufacturer),'siemens'))
+                disp(['Detected ',dcmInfo_full.Manufacturer,' files']);
+                dicomdict('set','dicom-dict-siemens.txt');
+                disp('DICOM dictionary set to: dicom-dict-siemens.txt');
+                dictSetting=2;
+            elseif ~isempty(strfind(lower(dcmInfo_full.Manufacturer),'GE MEDICAL SYSTEMS'))
+                disp(['Detected ',dcmInfo_full.Manufacturer,' files']);
+                warning('No settings for this vendor using DICOM dictionary factory settings');
+                dictSetting=3;
+            else
+                dicomdict('factory');
+                warning('Unknown vendor, using DICOM dictionary factory settings');
+                dictSetting=3;
+            end
+            %Test info import with new dictionary (if this fails we resume with
+            % factory
+            dcmInfo_full=dicominfo(fName);
+        catch %e.g. if the manufacturer field is missing
             dicomdict('factory');
             warning('Unknown vendor, using DICOM dictionary factory settings');
             dictSetting=3;
+            dcmInfo_full=dicominfo(fName);
         end
-        %Test info import with new dictionary (if this fails we resume with
-        % factory
-        dcmInfo_full=dicominfo(fName);        
-    catch %e.g. if the manufacturer field is missing
-        dicomdict('factory');
-        warning('Unknown vendor, using DICOM dictionary factory settings');
-        dictSetting=3;
-        dcmInfo_full=dicominfo(fName);  
+    elseif dicomDictFactory==1
+%         dicomdict('factory');
+%         dcmInfo_full=dicominfo(fName);
+%         dictSetting=3;
     end
-    
+        
     %% LOADING DICOM INFO
     hw = waitbar(0,'Loading DICOM info...');    
     for c=1:1:numel(files)
@@ -217,6 +233,7 @@ if NumberOfFiles>0
         EchoTimesAll=nan;
     end
     EchoTimesUni=unique(EchoTimesAll);
+
     matObj.EchoTimesUni=EchoTimesUni;
     NumEchoTimes=numel(EchoTimesUni);
     
@@ -250,6 +267,7 @@ if NumberOfFiles>0
     end
     
     NumberOfSlices=NumberOfFiles/NumImageTypes/NumEchoTimes/NumberOfTemporalPositions; %NumberOfSlicesMR
+    
     NumberOfFilesPerType=NumberOfSlices*NumberOfTemporalPositions;
     switch dictSetting
         case 1 %PHILIPS
@@ -273,9 +291,11 @@ if NumberOfFiles>0
     
     c=0;
     hw = waitbar(0,'Loading DICOM info...');
+    
     for iEcho=1:NumEchoTimes
         %Finding files for current EchoTime
         EchoTimeNow=EchoTimesUni(iEcho); %The current echo time
+        
         L_Echo=EchoTimesAll==EchoTimeNow;
         
         %String to add to type spec
@@ -354,6 +374,8 @@ if NumberOfFiles>0
                         end
                         c=c+1;
                     end
+                    size(N)
+                    size(M)
                     N(:,:,:,iTemp)=M;
                 end
                 waitbar(c/numel(files),hw,['Saving DICOM image data to MAT-file...',num2str(round(100.*c/numel(files))),'%']);

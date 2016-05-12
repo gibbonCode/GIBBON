@@ -22,7 +22,9 @@ function efw(varargin)
 %
 % Kevin Mattheus Moerman
 % gibbon.toolbox@gmail.com
-% Created: 2015/04/29 
+% 2015/04/29 Created
+% 2015/04/29 Updated to support export of multiple image formats e.g. pdf,
+% eps
 %------------------------------------------------------------------------
 
 %% Parse input arguments
@@ -94,9 +96,10 @@ return
 function start_efw(hf,hb)
 figure(hf);
 defStruct=get(hb,'UserData');
-prompt = {'Save path (leave empty to browse to desired folder instead):','Image name:','Image extension (i.e. png, jpg, pdf, eps, bmp, tif, fig, all):','Image resolution (e.g. 120. Ignored for fig):','Extra export_fig options (comma seperated, no spaces e.g. -nocrop,-transparent,-painters):'};
+prompt = {'Save path (leave empty to browse to desired folder instead):','Image name:','Image extension (i.e. png,jpg, pdf, eps, bmp, tif, fig, all):','Image resolution (e.g. 120. Ignored for fig):','Extra export_fig options (comma seperated, no spaces e.g. -nocrop,-transparent,-painters):'};
 dlg_title = 'Export Figure Widget (see: help efw and help export_fig)';
 defaultOptions = {defStruct.defaultPath,defStruct.imName,defStruct.imExt,defStruct.imRes,defStruct.exportFigOpt};
+
 s=25+max([cellfun(@numel,prompt) cellfun(@numel,defaultOptions)]);
 
 Q = inputdlg(prompt,dlg_title,[1 s],defaultOptions);
@@ -121,22 +124,35 @@ if ~isempty(Q)
         if strcmp(Q{3},'all')
             formatAll={'-png','-jpg','-tiff','-bmp','-eps','-pdf'};
             for q=1:1:numel(formatAll)
-                inputCell{end+1}=formatAll{q};
+                inputCell{1,end+1}=formatAll{q};
             end
             savefig(hf,fileName); %Save figure in .fig file
         elseif strcmp(Q{3},'fig') %Just figure
             savefig(hf,fileName); %Save figure in .fig file
         else
-            inputCell{1,end+1}=['-',Q{3}];
+            stringSet=Q{3}; %The set of potentially multiple image formats
+            stringSetSep = strsplit(stringSet,','); %Split into seperate cell components using commas
+            for q=1:1:numel(stringSetSep) 
+                stringNoSpaces=regexprep(stringSetSep{q},'[^\w'']',''); %Remove potential extra spaces
+                if ~strcmp(stringNoSpaces(1),'-') %If first character is not '-'                
+                    stringNoSpaces=['-',stringNoSpaces]; %Add '-' to start, e.g. 'jpg' becomes '-jpg'
+                end
+                inputCell{1,end+1}=stringNoSpaces; %Add to input list
+            end                                    
         end
         
         figRes=['-r',Q{4}];
         inputCell{1,end+1}=figRes;
         
         if ~isempty(Q{5})
-            inputCellExtra = strsplit(Q{5},',');
-            for q=1:1:numel(inputCellExtra)
-                inputCell{1,end+1}=inputCellExtra{q};
+            stringSet=Q{5}; %The set of potentially multiple options
+            stringSetSep = strsplit(stringSet,',');
+            for q=1:1:numel(stringSetSep)
+                stringNoSpaces=regexprep(stringSetSep{q},'[^\w'']',''); %Remove potential extra spaces
+                if ~strcmp(stringNoSpaces(1),'-') %If first character is not '-'
+                    stringNoSpaces=['-',stringNoSpaces]; %Add '-' to start, e.g. 'jpg' becomes '-jpg'
+                end
+                inputCell{1,end+1}=stringNoSpaces; %Add to input list
             end
         end
         

@@ -28,7 +28,8 @@ fcolor2=0.5.*ones(1,3);
 filePath=mfilename('fullpath');
 savePath=fullfile(fileparts(filePath),'data','temp');
 
-modelName=fullfile(savePath,'iFEA_tempModel');
+modelEndName='iFEA_tempModel';
+modelName=fullfile(savePath,modelEndName);
 
 %Specifying dimensions and number of elements
 sampleWidth=10;
@@ -54,6 +55,20 @@ f_ini=235.0920070558627 ;
 k_factor=500;
 k_ini=(2*c1_ini+ksi_ini)*k_factor;
 P_ini=[c1_ini m1_ini ksi_ini f_ini beta_ini];
+
+% %Initial material parameter set
+% Q=0.5; 
+% 
+% c=6.115e-04;
+% c1_ini=Q*c;
+% m1_ini=2.007;
+% ksi_ini=9.0590e-05;
+% beta_ini=3.294;
+% f_ini=235.1;
+% 
+% k_factor=500;
+% k_ini=(2*c1_ini+ksi_ini)*k_factor;
+% P_ini=[c1_ini m1_ini ksi_ini f_ini beta_ini];
 
 alphaFib=0.5*pi;
 
@@ -291,8 +306,8 @@ FEB_struct.LoadData.LoadCurves.loadPoints={[0 0;1 1;]};
 FEB_struct.Output.VarTypes={'displacement','stress','relative volume'};
 
 %Specify log file output
-run_disp_output_name=[FEB_struct.run_filename(1:end-4),'_strain_out.txt'];
-run_stress_output_name=[FEB_struct.run_filename(1:end-4),'_stress_out.txt'];
+run_disp_output_name=[modelEndName,'_strain_out.txt'];
+run_stress_output_name=[modelEndName,'_stress_out.txt'];
 FEB_struct.run_output_names={run_disp_output_name,run_stress_output_name};
 FEB_struct.output_types={'element_data','element_data'};
 FEB_struct.data_types={'E1;E2;E3','sz'};
@@ -324,7 +339,8 @@ objectiveStruct.method=optimMethod;
 objectiveStruct.run_output_names=FEB_struct.run_output_names;
 objectiveStruct.stress_cauchy_exp=stress_cauchy_exp;
 P=objectiveStruct.P_ini;    %Initial parameters
-objectiveStruct.Pb_struct.xxlim=[[P(1)/100 2 P(2)/100 1 2]' [P(1)*100 50 P(2)*100 1e3 50]']; %Parameter bounds
+% objectiveStruct.Pb_struct.xxlim=[[P(1)/100 2 P(2)/100 1 2]' [P(1)*100 50 P(2)*100 1e3 50]']; %Parameter bounds
+objectiveStruct.Pb_struct.xxlim=[[P(1)/100 2 P(3)/100 1 2]' [P(1)*100 50 P(3)*100 1e3 50]']; %Parameter bounds
 objectiveStruct.parNormFactors=P; %This will normalize the paramters to ones(size(P))
 objectiveStruct.Pb_struct.xx_c=P; %Parameter constraining centre
 

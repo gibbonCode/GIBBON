@@ -37,7 +37,7 @@ initialSpacing=0.1;
 bcPrescribeMagnitudes=[0 0 -15-initialSpacing]; %NB desired and effect of initial spacing
 indentorShellThickness=0.01;
 
-contactType=2; %1=sticky, 2=facet to facet sliding, 3=sliding_with_gaps
+contactType=1; %1=sticky, 2=facet to facet sliding, 3=sliding_with_gaps
 
 tetTypeOpt=1; %Element type
 switch tetTypeOpt
@@ -48,7 +48,7 @@ switch tetTypeOpt
         %Control settings
         nSteps=10;
         max_refs=25;
-        max_ups=10;
+        max_ups=0;
         contactPenalty=100;
     case 2
         tetType='tet10';
@@ -88,6 +88,7 @@ cPar.patchType='tri';
 cPar.dir=1;
 cPar.closeLoopOpt=1;
 [F2,V2]=polyExtrude(Vc,cPar);
+F2=fliplr(F2);
 
 %% Compose indentor
 
@@ -151,6 +152,7 @@ cPar.patchType='tri';
 cPar.dir=-1;
 cPar.closeLoopOpt=1;
 [Fg,Vg]=polyExtrude(Vc,cPar);
+Fg=fliplr(Fg);
 
 Vgb=Vg(cPar.numSteps:cPar.numSteps:end,:);
 
@@ -219,7 +221,7 @@ xlabel('X','FontSize',fontSize); ylabel('Y','FontSize',fontSize); zlabel('Z','Fo
 hold on;
 
 patch('Faces',F_gel,'Vertices',V_gel,'FaceColor','flat','CData',C_gel,'EdgeColor','k','FaceAlpha',0.75);
-% hp=patchNormPlot(F_gel,V_gel,5); %Show face normals
+hp=patchNormPlot(F_gel,V_gel,5); %Show face normals
 
 % patch('Faces',Ft,'Vertices',Vt,'FaceColor','b','EdgeColor','k');
 % patch('Faces',Fb,'Vertices',Vb,'FaceColor','g','EdgeColor','k');
@@ -250,7 +252,7 @@ edgeSizeField=(edgeSizeField*(maxEdgeSize-minEdgeSize))+minEdgeSize; %Range from
 
 %%
 % Create tetgen meshing input structure
-modelName=fullfile(savePath,'tempModel');
+modelName=fullfile(savePath,'tempModel1');
 
 % Regional mesh volume parameter
 [regionA]=tetVolMeanEst(F_gel,V_gel); %Volume for a regular tet based on edge lengths

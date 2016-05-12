@@ -316,7 +316,7 @@ FEBioRunStruct.runMode='external';%'internal';
 FEBioRunStruct.t_check=0.25; %Time for checking log file (dont set too small)
 FEBioRunStruct.maxtpi=1e99; %Max analysis time
 FEBioRunStruct.maxLogCheckTime=5; %Max log file checking time
-% FEBioRunStruct.cleanUpFileList=FEB_struct.run_output_names; %Files to remove prior to starting each job.
+FEBioRunStruct.cleanUpFileList=FEB_struct.run_output_names; %Files to remove prior to starting each job.
 
 %% STARTING OPTIMISATION
 

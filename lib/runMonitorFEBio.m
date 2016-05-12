@@ -1,6 +1,18 @@
 function [runFlag]=runMonitorFEBio(FEBioRunStruct)
 
-%%
+% function [runFlag]=runMonitorFEBio(FEBioRunStruct)
+% ------------------------------------------------------------------------
+%
+%
+% Kevin Mattheus Moerman
+% gibbon.toolbox@gmail.com
+% 
+% 2013/04/01 Updated for GIBBON
+% 2016/05/23 Fixed bug in relation to path names for FEBioRunStruct.cleanUpFileList
+%------------------------------------------------------------------------
+
+%% 
+
 lineSep=repmat('%',1,45);
 if FEBioRunStruct.disp_on==1;
     disp(' '); %Empty line
@@ -39,17 +51,23 @@ end
 
 if ~isempty(FEBioRunStruct.cleanUpFileList)
     for q=1:1:numel(FEBioRunStruct.cleanUpFileList)
+        
         fileToRemove=FEBioRunStruct.cleanUpFileList{q};
+        
         [fileToRemovePath,~,~]=fileparts(fileToRemove);
+        
         if isempty(fileToRemovePath) %Since FEBio 2.4.0 path is the same as .feb files path
-            delete(fullfile(filePath,fileToRemove));
-        else %For older versions path can be different
-            delete(fileToRemove);
+            fileToRemove=fullfile(filePath,fileToRemove); %Create full path name
         end
-        %Check if its gone
+        
+        %Delete file if it exists
         if exist(fileToRemove,'file')==2
-            error(['Deletion of ',fileToRemove,' not succesful, check user permissions']);
-        end
+            delete(fileToRemove);
+            %Check if its gone
+            if exist(fileToRemove,'file')==2
+                error(['Deletion of ',fileToRemove,' not succesful, check user permissions']);
+            end
+        end        
     end
 end
 

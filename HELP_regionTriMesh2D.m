@@ -33,7 +33,6 @@ pointSpacing=0.1;
 plotV(V1,'b-','LineWidth',2);
 
 axis tight; view(3);
-zlim([0 eps(pi)/1000]);
 
 %% CREATING A REGION MESH WITH HOLES
 
@@ -79,7 +78,6 @@ plotV(V1,'b-','LineWidth',2);
 plotV(V2,'b-','LineWidth',2);
 plotV(V3,'b-','LineWidth',2);
 axis tight; view(3);
-zlim([0 eps(pi)/1000]);
 
 %% 
 %

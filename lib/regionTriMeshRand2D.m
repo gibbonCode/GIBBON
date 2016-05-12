@@ -1,6 +1,6 @@
 function [F,V,C,DT]=regionTriMeshRand2D(regionCell,pointSpacing,SD,resampleCurveOpt,plotOn)
 
-% function [F,V]=regionTriMesh2D(regionCell,pointSpacing,plotOn)
+% function [F,V,C,DT]=regionTriMesh2D(regionCell,pointSpacing,plotOn)
 % ------------------------------------------------------------------------
 % This function creates a 2D triangulation for the region specified in the
 % variable regionCell. The mesh aims to obtain a point spacing as defined

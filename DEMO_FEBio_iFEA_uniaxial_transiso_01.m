@@ -45,7 +45,6 @@ numElementsHeight=round(sampleHeight/pointSpacings(3));
 stretchLoad=0.7;
 displacementMagnitude=[0 0 (stretchLoad*sampleHeight)-sampleHeight];
 
-
 %Initial material parameter set
 c1_ini=0.0006618290645;
 m1_ini=2.0000011857416;

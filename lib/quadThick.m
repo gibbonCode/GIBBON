@@ -8,12 +8,12 @@ function [varargout]=quadThick(Fq,Vq,dirFlip,elementThickness,ns)
 Nv=Nv.*dirFlip;
 
 %Thicken inwards
-VT2=Vq+elementThickness.*Nv;
+Vq2=Vq+elementThickness.*Nv;
 
 %Get coordinates
-X=linspacen(Vq(:,1),VT2(:,1),ns+1);
-Y=linspacen(Vq(:,2),VT2(:,2),ns+1);
-Z=linspacen(Vq(:,3),VT2(:,3),ns+1);
+X=linspacen(Vq(:,1),Vq2(:,1),ns+1);
+Y=linspacen(Vq(:,2),Vq2(:,2),ns+1);
+Z=linspacen(Vq(:,3),Vq2(:,3),ns+1);
 
 %Collect node set
 V=[X(:) Y(:) Z(:)];

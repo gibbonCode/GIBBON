@@ -66,7 +66,7 @@ for q=1:1:2 %Direction cases
     VF_E(:,:,2)=d; %a2 ~ e2 ~ Y or second direction
     %Vf_E %a3 ~ e3 ~ Z, third direction, or fibre direction
     objectiveStruct.FEB_struct.Geometry.ElementData.MatAxis.Basis=VF_E;
-    docNode=add_fiber_dir_FEB(docNode,objectiveStruct.FEB_struct,0);
+    docNode=addMatAxisFibreElementData_FEB(docNode,objectiveStruct.FEB_struct);
     write_XML_no_extra_lines(objectiveStruct.FEB_struct.run_filename,docNode)% Saving XML file
     disp('Done')
     

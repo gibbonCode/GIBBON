@@ -25,12 +25,14 @@ savePath=fullfile(fileparts(filePath),'data','temp');
 % The trabecular structure is here simulated using isosurfaces on triply
 % periodic minimal surfaces functions. 
 
+samplePeriodSize=3; 
+
 %Get periodic surface
-porousGeometryCase='g'; 
+porousGeometryCase='d'; 
 ns=10; %Number of voxel steps across period for image data (roughly number of points on mesh period)
+nPeriods=[2 2 2]; %Number of periods in each direction
 switch porousGeometryCase
-    case 'g' %Gyroid
-        nPeriods=[2 2 2]; %Number of periods in each direction
+    case 'g' %Gyroid        
         n=nPeriods*ns; %Number of sample points
         isoLevel=0.; %Iso-surface level
         
@@ -43,8 +45,7 @@ switch porousGeometryCase
         yMax=(yMin+2*pi*nPeriods(2))-cutOffset;
         zMin=0*pi;
         zMax=(zMin+2*pi*nPeriods(3))-cutOffset;                
-    case 'p' %Schwarz P      
-        nPeriods=[2 2 2]; %Number of periods in each direction
+    case 'p' %Schwarz P              
         n=nPeriods*ns; %Number of sample points
         isoLevel=0.; %Iso-surface level
         
@@ -55,8 +56,7 @@ switch porousGeometryCase
         yMax=yMin+2*pi*nPeriods(2);
         zMin=0*pi;
         zMax=zMin+2*pi*nPeriods(3);
-    case 'd' %Schwarz D
-        nPeriods=[2 2 2]; %Number of periods in each direction
+    case 'd' %Schwarz D        
         n=nPeriods*ns; %Number of sample points
         isoLevel=0.; %Iso-surface level
         
@@ -79,6 +79,11 @@ V=[X(:) Y(:) Z(:)];
 %Calculate 3D image data
 S=triplyPeriodicMinimal(V(:,1),V(:,2),V(:,3),porousGeometryCase);        
 S=reshape(S,size(X));
+
+%Scaling coordinates
+X=(X./abs(xMax-xMin)).*samplePeriodSize.*nPeriods(1);
+Y=(Y./abs(yMax-yMin)).*samplePeriodSize.*nPeriods(2);
+Z=(Z./abs(zMax-zMin)).*samplePeriodSize.*nPeriods(3);
 
 %Compute isosurface
 [Fi,Vi] = isosurface(X,Y,Z,S,isoLevel); %main isosurface
@@ -139,6 +144,18 @@ plotV(V(indRigid,:),'k.','MarkerSize',markerSize1);
 axis equal; view(3); axis tight; axis vis3d; grid on;  
 set(gca,'FontSize',fontSize);
 camlight headlight; 
+
+%% Save STL
+
+% stlStruct.solidNames={'part'};
+% stlStruct.solidVertices={V};
+% stlStruct.solidFaces={F};
+% stlStruct.solidNormals={[]};
+% 
+% %Set main folder and fileName
+% fileName=fullfile('C:\Users\kmoerman\Desktop\STL',['part_',porousGeometryCase,'.stl']); 
+% 
+% export_STL_txt(fileName,stlStruct);
 
 %% 
 % Prepare for meshing by finding interior point
