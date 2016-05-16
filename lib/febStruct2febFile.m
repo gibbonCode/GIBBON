@@ -19,6 +19,11 @@ function [varargout]=febStruct2febFile(FEB_struct)
 
 dispStartTitleGibbonCode('Writing FEBio XML object');
 
+%% Set default display setting if missing
+if ~isfield(FEB_struct,'disp_opt')    
+    FEB_struct.disp_opt=0; 
+end
+
 %% Initialize docNode object
 docNode = com.mathworks.xml.XMLUtils.createDocument('febio_spec'); %Create the overall febio_spec field
 

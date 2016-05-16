@@ -2,6 +2,12 @@ function docNode=addGeometryLevel_FEB(docNode,FEB_struct)
 
 %%
 
+%% Set default display setting if missing
+if ~isfield(FEB_struct,'disp_opt')    
+    FEB_struct.disp_opt=0; 
+end
+
+%%
 disp('Adding Geometry level');
 
 rootNode = docNode.getDocumentElement;
