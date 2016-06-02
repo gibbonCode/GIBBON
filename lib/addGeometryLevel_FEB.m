@@ -1,6 +1,16 @@
-function docNode=addGeometryLevel_FEB(docNode,FEB_struct)
+function domNode=addGeometryLevel_FEB(domNode,FEB_struct)
 
-%%
+% function [domNode]=addGeometryLevel_FEB(domNode,FEB_struct)
+% ------------------------------------------------------------------------
+% Adds control Geometry to the XML object domNode based on
+% the FEBio structure FEB_struct. 
+% 
+%
+% Kevin Mattheus Moerman
+% gibbon.toolbox@gmail.com
+% 
+% 2016/06/02
+%------------------------------------------------------------------------
 
 %% Set default display setting if missing
 if ~isfield(FEB_struct,'disp_opt')    
@@ -10,15 +20,15 @@ end
 %%
 disp('Adding Geometry level');
 
-rootNode = docNode.getDocumentElement;
-geometryNode = docNode.createElement('Geometry');
+rootNode = domNode.getDocumentElement;
+geometryNode = domNode.createElement('Geometry');
 geometryNode = rootNode.appendChild(geometryNode);
 
 %% Adding node field
 
 disp('----> Adding node field');
 
-parent_node = docNode.createElement('Nodes');
+parent_node = domNode.createElement('Nodes');
 parent_node = geometryNode.appendChild(parent_node);
 
 if FEB_struct.disp_opt==1;
@@ -26,12 +36,12 @@ if FEB_struct.disp_opt==1;
 end
 n_steps=size(FEB_struct.Geometry.Nodes,1);
 for q_n=1:1:n_steps
-    node_node = docNode.createElement('node'); %create node entry
+    node_node = domNode.createElement('node'); %create node entry
     node_node = parent_node.appendChild(node_node); %add node entry
-    attr = docNode.createAttribute('id'); %Create id attribute
+    attr = domNode.createAttribute('id'); %Create id attribute
     attr.setNodeValue(sprintf('%u',q_n)); %Set id text
     node_node.setAttributeNode(attr); %Add id attribute
-    node_node.appendChild(docNode.createTextNode(sprintf('%6.7e, %6.7e, %6.7e',FEB_struct.Geometry.Nodes(q_n,:)))); %append data text child
+    node_node.appendChild(domNode.createTextNode(sprintf('%6.7e, %6.7e, %6.7e',FEB_struct.Geometry.Nodes(q_n,:)))); %append data text child
     if FEB_struct.disp_opt==1 && rem(q_n,round(n_steps/10))==0;
         waitbar(q_n/n_steps);
     end
@@ -45,7 +55,7 @@ end
 
 disp('----> Adding element field')
 
-geometryNode = docNode.getElementsByTagName('Geometry').item(0); %Get GEONode
+geometryNode = domNode.getElementsByTagName('Geometry').item(0); %Get GEONode
 
 numElementsPerSet=cellfun(@(x) size(x,1),FEB_struct.Geometry.Elements);
 startInds=[0 cumsum(numElementsPerSet(1:end-1))]+1;
@@ -85,21 +95,21 @@ for q_e1=1:1:numel(FEB_struct.Geometry.Elements) %for all element sets
         end
         
         %Add Elements field
-        parent_node = docNode.createElement('Elements');
+        parent_node = domNode.createElement('Elements');
         parent_node = geometryNode.appendChild(parent_node);
         
         %Set type attribute
-        attr = docNode.createAttribute('type'); %Create id attribute
+        attr = domNode.createAttribute('type'); %Create id attribute
         attr.setNodeValue(E_type); %Set id text
         parent_node.setAttributeNode(attr); %Add id attribute
         
         %Set mat attribute
-        attr = docNode.createAttribute('mat'); %Create id attribute
+        attr = domNode.createAttribute('mat'); %Create id attribute
         attr.setNodeValue(sprintf('%u',matId)); %Set id text
         parent_node.setAttributeNode(attr); %Add id attribute
         
         %Set mat attribute
-        attr = docNode.createAttribute('name'); %Create id attribute
+        attr = domNode.createAttribute('name'); %Create id attribute
         attr.setNodeValue(partNameSet); %Set id text
         parent_node.setAttributeNode(attr); %Add id attribute
         
@@ -107,14 +117,14 @@ for q_e1=1:1:numel(FEB_struct.Geometry.Elements) %for all element sets
         for q_e2=1:1:n_steps
             e_ind=elementIndices_mat(q_e2);
             
-            element_node= docNode.createElement('elem');
+            element_node= domNode.createElement('elem');
             element_node = parent_node.appendChild(element_node);
             
-            attr = docNode.createAttribute('id'); %Create id attribute
+            attr = domNode.createAttribute('id'); %Create id attribute
             attr.setNodeValue(sprintf('%u',e_ind)); %Set id text
             element_node.setAttributeNode(attr); %Add id attribute
             
-            element_node.appendChild(docNode.createTextNode(sprintf(t_form,E_mat(q_e2,:)))); %append data text child
+            element_node.appendChild(domNode.createTextNode(sprintf(t_form,E_mat(q_e2,:)))); %append data text child
             
             if FEB_struct.disp_opt==1 && rem(q_e2,round(n_steps/10))==0;
                 waitbar(q_e2/n_steps);
@@ -132,7 +142,7 @@ end
 
 if isfield(FEB_struct.Geometry,'ElementData');
     if isfield(FEB_struct.Geometry.ElementData,'Thickness');
-        geometryNode = docNode.getElementsByTagName('Geometry').item(0); %Get GEONode
+        geometryNode = domNode.getElementsByTagName('Geometry').item(0); %Get GEONode
         
         numElementsPerSet=cellfun(@(x) size(x,1),FEB_struct.Geometry.Elements);
         startInds=[0 cumsum(numElementsPerSet(1:end-1))]+1;
@@ -158,15 +168,15 @@ if isfield(FEB_struct.Geometry,'ElementData');
                 for e_ind=elementIndices(logicThicknessSet)
                     
                     if addedElementDataField==0
-                        parent_node1 = docNode.createElement('ElementData');
+                        parent_node1 = domNode.createElement('ElementData');
                         parent_node1 = geometryNode.appendChild(parent_node1);
                         addedElementDataField=1;
                     end
                     
                     %Creating ElementData entries
-                    element_node = docNode.createElement('element');
+                    element_node = domNode.createElement('element');
                     element_node = parent_node1.appendChild(element_node);
-                    attr = docNode.createAttribute('id');
+                    attr = domNode.createAttribute('id');
                     attr.setNodeValue(sprintf('%u',e_ind));
                     element_node.setAttributeNode(attr);
                     
@@ -174,9 +184,9 @@ if isfield(FEB_struct.Geometry,'ElementData');
                     t_form=repmat(' %6.7e,',1,size(E,2)); t_form=t_form(1:end-1); %text format for sprintf for current element type
                     
                     v_text=sprintf(t_form,FEB_struct.Geometry.ElementData.Thickness(FEB_struct.Geometry.ElementData.IndicesForThickness==e_ind)*ones(1,size(E,2)));
-                    thickness_node = docNode.createElement('thickness');
+                    thickness_node = domNode.createElement('thickness');
                     element_node.appendChild(thickness_node);
-                    thickness_node.appendChild(docNode.createTextNode(v_text)); %Adding thickness data text
+                    thickness_node.appendChild(domNode.createTextNode(v_text)); %Adding thickness data text
                     
                     if FEB_struct.disp_opt==1 && rem(c,round(n_steps/10))==0;
                         waitbar(c/n_steps);
@@ -197,7 +207,7 @@ end
 % Checking for fiber / mat_axis information
 if isfield(FEB_struct.Geometry,'ElementData') %If ElementData exists
     if isfield(FEB_struct.Geometry.ElementData,'MatAxis') %If MatAxis data exists
-        docNode=addMatAxisFibreElementData_FEB(docNode,FEB_struct);
+        domNode=addMatAxisFibreElementData_FEB(domNode,FEB_struct);
     end
 end
 
@@ -212,7 +222,7 @@ if isfield(FEB_struct.Geometry,'Surface');
         
         
         %Create surface level
-        parent_node = docNode.createElement('Surface');
+        parent_node = domNode.createElement('Surface');
         parent_node = geometryNode.appendChild(parent_node);
         
         if ~isfield(FEB_struct.Geometry.Surface{q_set},'Name')
@@ -220,7 +230,7 @@ if isfield(FEB_struct.Geometry,'Surface');
         end
         surfaceName=FEB_struct.Geometry.Surface{q_set}.Name; %Surface type
         
-        attr = docNode.createAttribute('name'); %Create id attribute
+        attr = domNode.createAttribute('name'); %Create id attribute
         attr.setNodeValue(surfaceName); %Set id text
         parent_node.setAttributeNode(attr); %Add id attribute
         
@@ -228,17 +238,17 @@ if isfield(FEB_struct.Geometry,'Surface');
         for q_face=1:1:numFaces %For all faces
             
             %Add element entry
-            element_node = docNode.createElement(surfaceType);
+            element_node = domNode.createElement(surfaceType);
             element_node = parent_node.appendChild(element_node);
             
             %Add id attribute
-            attr = docNode.createAttribute('id'); %Create id attribute
+            attr = domNode.createAttribute('id'); %Create id attribute
             attr.setNodeValue(sprintf('%u',q_face)); %Set id text
             element_node.setAttributeNode(attr); %Add id attribute
             
             %Add node indices for surface element
             t_form=repmat('   %u,',1,size(F,2)); t_form=t_form(1:end-1); %text format for sprintf for current element type
-            element_node.appendChild(docNode.createTextNode(sprintf(t_form,F(q_face,:)))); %append data text child
+            element_node.appendChild(domNode.createTextNode(sprintf(t_form,F(q_face,:)))); %append data text child
             
         end
     end
@@ -264,7 +274,7 @@ if isfield(FEB_struct.Geometry,'NodeSet');
         nodeSetIndices=nodeSetIndices(:)'; %Row vector
         
         %Create NodeSet level
-        parent_node = docNode.createElement('NodeSet');
+        parent_node = domNode.createElement('NodeSet');
         parent_node = geometryNode.appendChild(parent_node);
         
         if ~isfield(FEB_struct.Geometry.NodeSet{q_set},'Name')
@@ -272,7 +282,7 @@ if isfield(FEB_struct.Geometry,'NodeSet');
         end
         nodeSetName=FEB_struct.Geometry.NodeSet{q_set}.Name; %Node set name
         
-        attr = docNode.createAttribute('name'); %Create id attribute
+        attr = domNode.createAttribute('name'); %Create id attribute
         attr.setNodeValue(nodeSetName); %Set id text
         parent_node.setAttributeNode(attr); %Add id attribute
         
@@ -282,11 +292,11 @@ if isfield(FEB_struct.Geometry,'NodeSet');
                 for q_node=1:1:numNodes %For all nodes
                     
                     %Add element entry
-                    element_node = docNode.createElement('node');
+                    element_node = domNode.createElement('node');
                     element_node = parent_node.appendChild(element_node);
                     
                     %Add id attribute
-                    attr = docNode.createAttribute('id'); %Create id attribute
+                    attr = domNode.createAttribute('id'); %Create id attribute
                     attr.setNodeValue(sprintf('%u',q_node)); %Set id text
                     element_node.setAttributeNode(attr); %Add id attribute
                 end
@@ -302,7 +312,7 @@ if isfield(FEB_struct.Geometry,'NodeSet');
                 elseif mod(numel(nodeSetIndices),maxWidth)~=0 %A remainder leading to only an extra ,
                     textSet=textSet(1:end-1); %Take away last ,
                 end
-                parent_node.appendChild(docNode.createTextNode(textSet)); %append data text child
+                parent_node.appendChild(domNode.createTextNode(textSet)); %append data text child
         end
         
     end    

@@ -1,35 +1,28 @@
-function [docNode]=addBoundaryLevel_FEB(docNode,FEB_struct)
+function [domNode]=addBoundaryLevel_FEB(domNode,FEB_struct)
 
-% if  isfield(FEB_struct,'Boundary')
-%     
-%     disp('Adding Boundary level')
-%     febio_spec = docNode.getDocumentElement;
-%     
-%     %Check for/create Boundary level
-%     if docNode.getElementsByTagName('Boundary').getLength==0; %level does not exist yet
-%         ElementAddNode = docNode.createElement('Boundary');
-%         febio_spec.appendChild(ElementAddNode);
-%         BoundaryNode = docNode.getElementsByTagName('Boundary').item(0);
-%         IsBoundaryNodeNew=1;
-%     else
-%         BoundaryNode = docNode.getElementsByTagName('Boundary').item(0);
-%         IsBoundaryNodeNew=0;
-%     end
-%     
-%     %% Adding boundary components
-%     
-%     [docNode]=addBoundaryComponents_FEB(docNode,BoundaryNode,FEB_struct);       
-%     
-% end
+% function [domNode]=addBoundaryLevel_FEB(domNode,FEB_struct)
+% ------------------------------------------------------------------------
+% Adds boundary condition information to the XML object domNode based on
+% the FEBio structure FEB_struct. 
+% 
+% Fixed and prescribed boundary conditions are supported
+%
+% Kevin Mattheus Moerman
+% gibbon.toolbox@gmail.com
+% 
+% 2016/06/02
+%------------------------------------------------------------------------
+
+%%
 
 disp('Adding Boundary level')
 
-rootNode = docNode.getDocumentElement;
+rootNode = domNode.getDocumentElement;
 
-boundaryNode = docNode.createElement('Boundary');
+boundaryNode = domNode.createElement('Boundary');
 boundaryNode = rootNode.appendChild(boundaryNode);
 
 %% Adding boundary components
 
-[docNode]=addBoundaryComponents_FEB(docNode,boundaryNode,FEB_struct);
+[domNode]=addBoundaryComponents_FEB(domNode,boundaryNode,FEB_struct);
 

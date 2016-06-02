@@ -9,7 +9,7 @@ clear; close all; clc;
 
 %% Description
 % This function adds the boundary condition information to the input XML
-% data (docNode) based on the input febio structure (FEB_struct).
+% data (domNode) based on the input febio structure (FEB_struct).
 
 %% Examples
 

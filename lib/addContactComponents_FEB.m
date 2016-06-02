@@ -2,6 +2,10 @@ function [docNode]=addContactComponents_FEB(docNode,contactNode,FEB_struct)
 
 %%
 
+if ~isfield(FEB_struct,'disp_opt');
+    FEB_struct.disp_opt=0; 
+end
+
 disp('----> Defining contact')
 
 for q_contact=1:1:numel(FEB_struct.Contact)
