@@ -112,7 +112,7 @@ if ~isfield(FEBioRunStruct,'run_string')
 end
 
 if ~isfield(FEBioRunStruct,'run_string_quit')
-    FEBioRunStruct.run_string_quit='taskkill /F /IM FEBio.exe /T';
+    FEBioRunStruct.run_string_quit='taskkill /F /IM FEBio2.exe /T';
 end
 
 %% Starting FEBio job
