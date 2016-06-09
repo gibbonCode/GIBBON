@@ -16,21 +16,8 @@ M_info=IMDAT_set.type_1_info(1);
 [v,OR,r,c]=dicom3Dpar(M_info);
 
 %% Visualizing data
-% See |ind2patch| function for more information on visualization
-logicVoxels=false(size(M));
-logicVoxels(round(size(M,1)/2),:,:)=1;
-logicVoxels(:,round(size(M,2)/2),:)=1;
-logicVoxels(:,:,round(size(M,3)/2))=1;
-logicVoxels=logicVoxels & M>0;
-[F,V,C]=ind2patch(logicVoxels,M,'vb');
-[V(:,1),V(:,2),V(:,3)]=im2cart(V(:,2),V(:,1),V(:,3),v);
 
-h1=cFigure;
-xlabel('X (mm)');ylabel('Y (mm)'); zlabel('Z (mm)'); hold on;
-hp1= patch('Faces',F,'Vertices',V,'FaceColor','flat','CData',C,'EdgeColor','none');
-axis equal; view(3); axis tight; axis vis3d; grid on;
-colormap gray; colorbar;
-drawnow;
+hf=sliceViewer(M,v,2);
 
 %% REMOVING BACKGROUND THROUGH THRESHOLDING/DILATION PROCEDURE
 % Removal of background may be useful see |uiThreshErode|
@@ -43,17 +30,13 @@ groupCropOption=0;
 
 %% SETTING CONTROL PARAMETERS
 cPar.minContourSize=25;            %Minimal size of detected contour
-cPar.smoothFactor=0.5;              %Degree of smoothing csaps function (cubic smoothing spline)
+cPar.smoothFactor=0.15;              %Degree of smoothing csaps function (cubic smoothing spline)
 cPar.pointReductionFactor=1;        %Reduction factor for contour smoothening
 cPar.logicBackGround=L_BG;   %Ones (white) describe image data regions of interest i.e. a mask
 cPar.v=v;                           %Voxel size
 cPar.recoverOn=0; %Turn on or off file recovery mode 
-cPar.sliceRange=98:104; %This can be a custom range. For unvisited slices the contour is empty
+cPar.sliceRange=98:144; %This can be a custom range. For unvisited slices the contour is empty
 saveName='fibula';                        %If not empty this is where the contours are saved
-
-%%
-
-hf=sliceViewer(M,v,2);
 
 %% SEGMENTING CONTOURS
 % Run the following code:

@@ -77,6 +77,8 @@ for qC=1:1:numel(FEB_struct.Constraints)
         for q=1:1:numel(FEB_struct.Constraints{qC}.Force)
                         
             currentBC=FEB_struct.Constraints{qC}.Force{q}.bc;
+            currentLC=FEB_struct.Constraints{qC}.Force{q}.lc;
+            currentValue=FEB_struct.Constraints{qC}.Force{q}.Scale;
 
             force_node = domNode.createElement('force'); %create entry
             force_node = rigid_node.appendChild(force_node); %add entry
@@ -84,6 +86,12 @@ for qC=1:1:numel(FEB_struct.Constraints)
             attr = domNode.createAttribute('bc'); %Create attribute
             attr.setNodeValue(currentBC); %Set text
             force_node.setAttributeNode(attr); %Add attribute
+            
+            attr = domNode.createAttribute('lc'); %Create attribute
+            attr.setNodeValue(sprintf('%u',currentLC)); %Set text
+            force_node.setAttributeNode(attr); %Add attribute
+            
+            force_node.appendChild(domNode.createTextNode(sprintf('%6.7e',currentValue))); %append data text child
         end
     end
     

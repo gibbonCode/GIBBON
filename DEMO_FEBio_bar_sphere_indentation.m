@@ -257,9 +257,10 @@ FEB_struct.Output.VarTypes={'displacement','stress','relative volume','shell thi
 
 %Specify log file output
 run_node_output_name=[FEB_struct.run_filename(1:end-4),'_node_out.txt'];
-FEB_struct.run_output_names={run_node_output_name};
-FEB_struct.output_types={'node_data'};
-FEB_struct.data_types={'ux;uy;uz'};
+run_stress_output_name=[FEB_struct.run_filename(1:end-4),'_stress_out.txt'];
+FEB_struct.run_output_names={run_node_output_name,run_stress_output_name};
+FEB_struct.output_types={'node_data','element_data'};
+FEB_struct.data_types={'ux;uy;uz','sz'};
 
 %Load curves
 FEB_struct.LoadData.LoadCurves.id=1;
@@ -287,7 +288,7 @@ FEBioRunStruct.maxLogCheckTime=3; %Max log file checking time
 %%
 if runFlag==1 %i.e. a succesful run
     
-    %IMPORTING NODAL DISPLACEMENT RESULTS
+    %% IMPORTING NODAL DISPLACEMENT RESULTS
     % Importing nodal displacements from a log file
     [~, N_disp_mat,~]=importFEBio_logfile(FEB_struct.run_output_names{1}); %Nodal displacements
     
@@ -314,6 +315,7 @@ if runFlag==1 %i.e. a succesful run
     % camlight headlight;
     set(gca,'FontSize',fontSize);
     drawnow;
+
 end
 
 %% 
