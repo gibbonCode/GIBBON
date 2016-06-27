@@ -29,7 +29,7 @@ samplePeriodSize=3;
 
 %Get periodic surface
 porousGeometryCase='d'; 
-ns=10; %Number of voxel steps across period for image data (roughly number of points on mesh period)
+ns=12; %Number of voxel steps across period for image data (roughly number of points on mesh period)
 nPeriods=[2 2 2]; %Number of periods in each direction
 switch porousGeometryCase
     case 'g' %Gyroid        

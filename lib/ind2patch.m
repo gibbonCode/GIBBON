@@ -80,9 +80,17 @@ function [F,V,C]=ind2patch(IND,M,ptype)
 % gibbon.toolbox@gmail.com
 % 
 % 2014/09/25
+% 2016/06/10 Added input parsing for IND, i.e. handling empty index set.
+% IND will now default to all voxels if input is empty
+%
 %------------------------------------------------------------------------
 
 %% PARSING INPUT
+
+%Deal with empty index set
+if isempty(IND)
+    IND=1:numel(M); %Use all voxels if IND is empty
+end
 
 %Get indices to patch
 if islogical(IND) %treated as a logic index and converted to linear indices

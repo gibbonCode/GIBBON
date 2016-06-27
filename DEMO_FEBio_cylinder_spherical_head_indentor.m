@@ -176,7 +176,7 @@ if ~any(isnan(distanceSplitSteps))
         D=sqrt(sum(Vt(:,1:2).^2,2));
         [DF]=vertexToFaceMeasure(Ft,D);
         
-        logicFaces=DF<(distanceSplitSteps(q));
+        logicFaces=DF<distanceSplitSteps(q);
         indNodesFaces=Ft(logicFaces,:);
         indNodesFaces=unique(indNodesFaces(:))+size(Ft,1);
         [Ft,Vt,Ct,indIni]=subTriDual(Ft,Vt,logicFaces);

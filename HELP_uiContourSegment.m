@@ -9,6 +9,7 @@ clear; close all; clc;
 toolboxPath=fileparts(mfilename('fullpath'));
 
 imageFolder=fullfile(toolboxPath,'data','DICOM','KNEE_UTE','IMDAT');
+
 loadName=fullfile(imageFolder,'IMDAT.mat');
 IMDAT_set=load(loadName);
 M=double(IMDAT_set.type_1);
@@ -21,12 +22,12 @@ hf=sliceViewer(M,v,2);
 
 %% REMOVING BACKGROUND THROUGH THRESHOLDING/DILATION PROCEDURE
 % Removal of background may be useful see |uiThreshErode|
-% L_BG=true(size(M)); %In this example background is not removed
+L_BG=true(size(M)); %In this example background is not removed
 
 thresholdInitial=0.1; %with respect to normalised image
 preBlurKernalSize=0; %with respect to normalised image
 groupCropOption=0;
-[L_BG]=uiThreshErode(M,thresholdInitial,preBlurKernalSize,groupCropOption);
+% [L_BG]=uiThreshErode(M,thresholdInitial,preBlurKernalSize,groupCropOption);
 
 %% SETTING CONTROL PARAMETERS
 cPar.minContourSize=25;            %Minimal size of detected contour
@@ -36,7 +37,7 @@ cPar.logicBackGround=L_BG;   %Ones (white) describe image data regions of intere
 cPar.v=v;                           %Voxel size
 cPar.recoverOn=0; %Turn on or off file recovery mode 
 cPar.sliceRange=98:144; %This can be a custom range. For unvisited slices the contour is empty
-saveName='fibula';                        %If not empty this is where the contours are saved
+saveName=[];%'fibula';                        %If not empty this is where the contours are saved
 
 %% SEGMENTING CONTOURS
 % Run the following code:

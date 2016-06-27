@@ -128,7 +128,7 @@ smoothPar.n=5;
 smoothPar.RigidConstraints=indBarBottom;%indBoundary;
 nSmooth=20;
 
-ns=20;
+ns=10;
 XX=linspacen(X,Xn,ns+1); XX=XX(:,2:end);
 YY=linspacen(Y,Yn,ns+1); YY=YY(:,2:end);
 ZZ=linspacen(Z,Zn,ns+1); ZZ=ZZ(:,2:end);

@@ -2,18 +2,22 @@ function [out1,out2,out3] = qginput(varargin)
 
 % [out1,out2,out3] = qginput(varargin)
 % ------------------------------------------------------------------------
-% Modified version of |ginput| function. Only difference is that this
+% Modified version of |ginput| function. The difference is that this
 % function lets you specify the mouse pointer type and by default avoids the
 % use of the 'fullcrosshair' mouse pointer since it seems to cause errors
-% when combined with patch graphics. 
+% when combined with patch graphics. Another difference is the exit key.
+% For MATLAB's ginput the Enter key will exit ginput. For qginput this has
+% been replaced by the Esc key. 
 % varargin{1} is assumed similar to the input n for ginput while
 % varargin{2} if present will be the mouse pointer type. If not present
-% then the mousePointer variable will be set to the default: 'cross'.
+% then the mousePointer variable will be set to the default: 'smallHand'.
 %
 %
 % Kevin Mattheus Moerman
-% kevinmoerman@hotmail.com
-% 03/10/2014
+% gibbon.toolbox@gmail.com
+% 
+% 2014/03/10
+% 2016/06/27 KMM Changed "break" char to Esc rather than Enter
 %------------------------------------------------------------------------
 
 %% 
@@ -151,17 +155,31 @@ while how_many ~= 0
         pt = get(axes_handle, 'CurrentPoint');
         
         how_many = how_many - 1;
-        
-        if(char == 13) % & how_many ~= 0)
-            % if the return key was pressed, char will == 13,
+
+        %% KMM Changed "break" char to Esc rather than Enter
+        if(char == 27) % & how_many ~= 0)
+            % if the ESC key was pressed, char will ==27,
             % and that's our signal to break out of here whether
             % or not we have collected all the requested data
             % points.
             % If this was an early breakout, don't include
-            % the <Return> key info in the return arrays.
-            % We will no longer count it if it's the last input.
-            break;
+            % the <Esc> key info in the return arrays.
+            % We will no longer count it if it's the last input.            
+            break; 
         end
+        %% OLD VERSION
+%         if(char == 13) % & how_many ~= 0)
+%             % if the return key was pressed, char will == 13,
+%             % and that's our signal to break out of here whether
+%             % or not we have collected all the requested data
+%             % points.
+%             % If this was an early breakout, don't include
+%             % the <Return> key info in the return arrays.
+%             % We will no longer count it if it's the last input.
+%             
+%             break; 
+%         end
+%%
         
         out1 = [out1;pt(1,1)]; %#ok<AGROW>
         y = [y;pt(1,2)]; %#ok<AGROW>
