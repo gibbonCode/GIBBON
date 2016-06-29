@@ -319,7 +319,7 @@ if NumberOfFiles>0
             L_now=L_Echo&L_Type;
             
             TypeFiles=files(L_now);
-            iStart=((iType-1)*NumberOfFilesPerType)+1; %     iEnd=iStart-1+NumberOfFilesPerType;
+%             iStart=((iType-1)*NumberOfFilesPerType)+1; %     iEnd=iStart-1+NumberOfFilesPerType;
             
             TypeName=['type_',num2str(iType),echoNameAppend];
             TypeNameDcmInfo=[TypeName,'_info'];
@@ -331,7 +331,7 @@ if NumberOfFiles>0
                 else
                     matObj.(TypeName)=zeros(ImageSize,NumClass);
                 end
-                for iTemp=1:1:NumberOfTemporalPositions;
+                for iTemp=1:1:NumberOfTemporalPositions
                     %Finding files for current temporal position
                     TriggerTimesType=TriggerTimesAll(L_now);%[dcmInfo(L_now).TriggerTime];
                     TriggerTime=TriggerTimesUni(iTemp);
@@ -350,7 +350,7 @@ if NumberOfFiles>0
                 end
             else %create 4D array and save whole array to MAT-file
                 N=zeros(ImageSize,NumClass);
-                for iTemp=1:1:NumberOfTemporalPositions;
+                for iTemp=1:1:NumberOfTemporalPositions
                     %Finding files for current temporal position
                     TriggerTimesType=TriggerTimesAll(L_now);%[dcmInfo(L_now).TriggerTime];
                     TriggerTime=TriggerTimesUni(iTemp);
@@ -366,16 +366,14 @@ if NumberOfFiles>0
                             M(:,:,iSlice)=m'; %Try transpose
                             %TO DO! add proper warning here
                             if firstWarning_Rotation==0
-                                warning(['Image data was rotated to match expected image size!']);
+                                warning('Image data was rotated to match expected image size!');
                                 firstWarning_Rotation=1;
                             end
                         else
                             M(:,:,iSlice)=m;
                         end
                         c=c+1;
-                    end
-                    size(N)
-                    size(M)
+                    end 
                     N(:,:,:,iTemp)=M;
                 end
                 waitbar(c/numel(files),hw,['Saving DICOM image data to MAT-file...',num2str(round(100.*c/numel(files))),'%']);

@@ -1,6 +1,6 @@
 function [Vcs]=uiContourSegment(varargin)
 
-% function [Vcs]=uiContourSegment(M,cPar,saveName)
+% function [Vcs]=uiContourSegment(M,cPar,saveName,guideContourCell)
 % ------------------------------------------------------------------------
 % Uppon running this function a basic user interface segmentation program
 % is started. Users can step through the slices of the image volume M and
