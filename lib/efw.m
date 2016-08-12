@@ -80,8 +80,8 @@ if isempty(hp); %If efw button is not present create one
         defStruct.defaultPath=fullfile(cd,'efw');
         defStruct.imName=['figure',num2str(get(hf,'Number'))];
         defStruct.imExt='png';
-        defStruct.imRes='300';
-        defStruct.exportFigOpt='';
+        defStruct.imRes='100';
+        defStruct.exportFigOpt='-transparent';
         set(hb,'UserData',defStruct);
     end
     set(hp,'ClickedCallback',{@start_efw_push,{hf,hb}});      

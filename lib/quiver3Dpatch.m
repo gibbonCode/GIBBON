@@ -49,8 +49,10 @@ function [varargout]=quiver3Dpatch(x,y,z,ux,uy,uz,c,a)
 % Kevin Mattheus Moerman
 % gibbon.toolbox@gmail.com
 %
-% 2014/01/13 %Updated example in help
-% 2014/11/11 %Updated to allow for RGB color input data (e.g. C is an nx3 array)
+% 2014/01/13 Updated example in help
+% 2014/11/11 Updated to allow for RGB color input data (e.g. C is an nx3 array)
+% 2016/06/30 Added handling of empty "a" parameter. Reverts to default
+% normal length range. 
 %------------------------------------------------------------------------
 
 %% 
@@ -63,6 +65,10 @@ ux=ux(:); uy=uy(:); uz=uz(:);
 [THETA_vec,PHI_vec,R_vec] = cart2sph(ux,uy,uz);
   
 %% Setting arrow size properties
+
+if isempty(a)
+    a=[min(R_vec(:)) max(R_vec(:))];
+end
 
 %Arrow length
 if  min(R_vec(:))==max(R_vec(:)) %If all radii are equal, or if just 1 vector is used

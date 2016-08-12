@@ -46,13 +46,13 @@ commentNode = docNode.createComment(commentString);
 febio_spec.appendChild(commentNode);
 
 %% DEFINING MODULE LEVEL
-if ~isfield(FEB_struct,'Module');
+if ~isfield(FEB_struct,'Module')
     FEB_struct.Module.Type='solid'; %Use solid as default module
 end
 docNode=addModuleLevel_FEB(docNode,FEB_struct);
 
 %% DEFINE CONTROL SECTION
-if isfield(FEB_struct,'Control');
+if isfield(FEB_struct,'Control')
     docNode=addControlLevel_FEB(docNode,FEB_struct);
 end
 
@@ -87,7 +87,7 @@ if isfield(FEB_struct,'Contact')
 end
 
 %% DEFINE CONSTRAINTS LEVEL
-if isfield(FEB_struct,'Constraints');
+if isfield(FEB_struct,'Constraints')
     [docNode]=addConstraintsLevel_FEB(docNode,FEB_struct);
 end
 
@@ -97,7 +97,7 @@ if isfield(FEB_struct,'LoadData')
 end
 
 %% DEFINE STEP LEVEL
-if isfield(FEB_struct,'Step');
+if isfield(FEB_struct,'Step')
     [docNode]=addStepLevel_FEB(docNode,FEB_struct);
 end
 

@@ -25,9 +25,9 @@ loadsNode = rootNode.appendChild(loadsNode);
 
 %% Adding surface loads
 if isfield(FEB_struct.Loads,'Surface_load')
+    disp('----> Defining surface loads')
     for q_sl=1:1:numel(FEB_struct.Loads.Surface_load) %For all surface_loads
-        
-        disp('----> Defining surface loads')
+                
         
         %Create surface_load level
         surfaceLoadNode = docNode.createElement('surface_load');
@@ -68,7 +68,7 @@ if isfield(FEB_struct.Loads,'Surface_load')
         end
         
         %Create surface_load level
-        disp('----> Adding loaded surface');
+%         disp('----> Adding loaded surface');
         surfaceNode = docNode.createElement('surface');
         surfaceNode = surfaceLoadNode.appendChild(surfaceNode);
         if isfield(FEB_struct.Loads.Surface_load{q_sl},'SetName') && ~isfield(FEB_struct.Loads.Surface_load{q_sl},'Set')
@@ -83,7 +83,7 @@ if isfield(FEB_struct.Loads,'Surface_load')
             n_steps=size(E,1); %Number of surface elements
             
             %Define waitbar
-            if FEB_struct.disp_opt==1;
+            if FEB_struct.disp_opt==1
                 hw = waitbar(0,'Adding contact element entries....');
             end
             for q_e=1:1:n_steps
@@ -110,12 +110,12 @@ if isfield(FEB_struct.Loads,'Surface_load')
                 element_node.appendChild(docNode.createTextNode(sprintf(t_form,E(q_e,:)))); %append data text child
                 
                 %Increment waitbar
-                if FEB_struct.disp_opt==1 && rem(q_e,round(n_steps/10))==0;
+                if FEB_struct.disp_opt==1 && rem(q_e,round(n_steps/10))==0
                     waitbar(q_e/n_steps);
                 end
             end
             
-            if FEB_struct.disp_opt==1;
+            if FEB_struct.disp_opt==1
                 close(hw); drawnow;
             end
             
@@ -154,7 +154,7 @@ if  isfield(FEB_struct.Loads,'Nodal_load')
         nodeIdSet=FEB_struct.Loads.Nodal_load{q1}.Set;
         nodeValues=FEB_struct.Loads.Nodal_load{q1}.nodeScale;
         
-        if FEB_struct.disp_opt==1;
+        if FEB_struct.disp_opt==1
             hw = waitbar(0,'Adding nodal loads....');
         end
         n_steps=size(nodeIdSet,1);

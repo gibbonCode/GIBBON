@@ -33,7 +33,7 @@ modelName=fullfile(savePath,modelNameEnd);
 sampleWidth=10;
 sampleThickness=10; 
 sampleHeight=10;
-pointSpacings=2*ones(1,3);
+pointSpacings=1*ones(1,3);
 initialArea=sampleWidth*sampleThickness;
 
 numElementsWidth=round(sampleWidth/pointSpacings(1));
@@ -44,20 +44,9 @@ stretchLoad=0.7;
 displacementMagnitude=[0 0 (stretchLoad*sampleHeight)-sampleHeight];
 
 %Material parameter set
-% c1=1e-3;
-% m1=6;
-% k_factor=100;
-
-%True material parameter set
+c1=1e-3; 
+m1=3;
 k_factor=1e2;
-c1_true=0.000322322142618; 
-m1_true=6;
-k_true=c1_true*k_factor; 
-
-%Initial material parameter set
-c1=c1_true*2; 
-m1=m1_true/2;
-k=c1*k_factor; 
 
 %% CREATING MESHED BOX
 

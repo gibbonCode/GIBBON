@@ -41,6 +41,7 @@ end
 %%
 FONT=listTrueTypeFonts(FontName);
 
+try
 [glyphBitmapArray, ...
     glyphIdxFromCharcode, ...
     glyphBitmapStartIdx, ...
@@ -54,6 +55,10 @@ FONT=listTrueTypeFonts(FontName);
     fontLinespace, ...
     maxBitmapSize]=visionPopulateGlyphBuffer(FONT.fileName,FONT.faceIndex, ...
     FontSize,false);
+catch ME
+    warning(['Check if ',FontName,' is a valid font use listTrueTypeFonts to see available fonts']);
+    rethrow(ME);
+end
 
 glyphStruct.glyphBitmapArray     = glyphBitmapArray;
 glyphStruct.glyphIdxFromCharcode = glyphIdxFromCharcode;
