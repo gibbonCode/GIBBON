@@ -1,7 +1,29 @@
-function [Fd,Vd,seedIndex]=remeshTriSurfMarchCount(F,V,numSeeds)
+function [Fd,Vd,seedIndex]=remeshTriSurfMarchCount(varargin)
+
+
+switch nargin
+    case 3
+        F=varargin{1};
+        V=varargin{2};
+        numSeeds=varargin{3};
+        startInds=1; %Use first point as only start 
+    case 4
+        F=varargin{1};
+        V=varargin{2};
+        numSeeds=varargin{3};
+        startInds=varargin{4}; 
+        numStarts=numel(startInds);
+        if numSeeds<numStarts
+            warning('numSeeds<numel(startInds) assuming numSeeds should be numSeeds=numSeeds+numel(startInds)');
+            numSeeds=numSeeds+numStarts;
+        end            
+    otherwise
+        error('Wrong number of input arguments!')
+end
+
 
 numPoints=size(V,1);
-[indSeed,~,seedIndex]=patchMarchCountPointSeed(F,V,1,numSeeds);
+[indSeed,~,seedIndex]=patchMarchCountPointSeed(F,V,startInds,numSeeds);
 
 seedIndexFaces = seedIndex(F); %Face origin indices
 seedIndexFacesSort = sort(seedIndexFaces,2); %Sort to prepare for removal of double entries

@@ -3,8 +3,10 @@ function [indSeed,marchCount,seedIndex]=patchMarchCountPointSeed(F,V,indStart,n)
 [~,IND_V]=patchIND(F,V);
 optStruct.IND_V=IND_V;
 
+numStarts=numel(indStart);
 indSeed=nan(n,1);
-indSeed(1)=indStart;
+indSeed(1:numStarts)=indStart; 
+
 for q=2:1:n
     [marchCount,~]=patchMarchCount(F,V,indSeed(~isnan(indSeed)),optStruct);
     [~,indAdd]=max(marchCount);
