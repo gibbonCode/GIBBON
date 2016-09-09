@@ -6,7 +6,7 @@
    <!--
 This HTML was auto-generated from MATLAB code.
 To make changes, update the MATLAB code and republish this document.
-      --><title>filletCurve</title><meta name="generator" content="MATLAB 8.4"><link rel="schema.DC" href="http://purl.org/dc/elements/1.1/"><meta name="DC.date" content="2014-11-18"><meta name="DC.source" content="HELP_filletCurve.m"><style type="text/css">
+      --><title>filletCurve</title><meta name="generator" content="MATLAB 9.1"><link rel="schema.DC" href="http://purl.org/dc/elements/1.1/"><meta name="DC.date" content="2016-09-09"><meta name="DC.source" content="HELP_filletCurve.m"><style type="text/css">
 html,body,div,span,applet,object,iframe,h1,h2,h3,h4,h5,h6,p,blockquote,pre,a,abbr,acronym,address,big,cite,code,del,dfn,em,font,img,ins,kbd,q,s,samp,small,strike,strong,sub,sup,tt,var,b,u,i,center,dl,dt,dd,ol,ul,li,fieldset,form,label,legend,table,caption,tbody,tfoot,thead,tr,th,td{margin:0;padding:0;border:0;outline:0;font-size:100%;vertical-align:baseline;background:transparent}body{line-height:1}ol,ul{list-style:none}blockquote,q{quotes:none}blockquote:before,blockquote:after,q:before,q:after{content:'';content:none}:focus{outine:0}ins{text-decoration:none}del{text-decoration:line-through}table{border-collapse:collapse;border-spacing:0}
 
 html { min-height:100%; margin-bottom:1px; }
@@ -66,22 +66,20 @@ table td { padding:7px 5px; text-align:left; vertical-align:top; border:1px soli
 
 
 
-  </style></head><body><div class="content"><h1>filletCurve</h1><!--introduction--><p>Below is a demonstration of the features of the <tt>filletCurve</tt> function</p><!--/introduction--><h2>Contents</h2><div><ul><li><a href="#3">FILLETING A CURVE IN 3D</a></li><li><a href="#7">FILLETING A CLOSED CURVE IN 3D</a></li><li><a href="#9">EXTRUDING A FILLETED CURVE FOR CAD LIKE MODEL BUILDING</a></li></ul></div><pre class="codeinput">clear; close <span class="string">all</span>; clc;
-</pre><p>PLOT SETTINGS</p><pre class="codeinput">figColor=<span class="string">'w'</span>;
-figColorDef=<span class="string">'white'</span>;
-fontSize=15;
+  </style></head><body><div class="content"><h1>filletCurve</h1><!--introduction--><p>Below is a demonstration of the features of the <tt>filletCurve</tt> function</p><!--/introduction--><h2>Contents</h2><div><ul><li><a href="#1">Syntax</a></li><li><a href="#2">Description</a></li><li><a href="#3">Examples</a></li><li><a href="#6">Example: Filleting a curve in 3D</a></li><li><a href="#10">Example: Filleting a closed curve in 3D</a></li><li><a href="#12">Example: Extruding a filleted curve for CAD like model building</a></li></ul></div><h2 id="1">Syntax</h2><p><tt>[VN]=filletCurve(Vt,r,np,closedLoopOption);</tt></p><h2 id="2">Description</h2><p>This function fillets a curve based on the input radius r using np points per fillet arc. If closedLoopOpt==1 then closed end conditions are used such that the end and start regions are also filleted.</p><h2 id="3">Examples</h2><pre class="codeinput">clear; close <span class="string">all</span>; clc;
+</pre><p>Plot settings</p><pre class="codeinput">fontSize=15;
 markerSize1=45;
 lineWidth1=2;
 lineWidth2=5;
 lineWidth3=2;
 faceAlpha=0.5;
-</pre><h2>FILLETING A CURVE IN 3D<a name="3"></a></h2><p>Simulating a curve with sharp features</p><pre class="codeinput">Vt=[0 0 0; 10 0 0; 5 10 0; 10 0 10; 0 10 10; ];
+</pre><h2 id="6">Example: Filleting a curve in 3D</h2><p>Simulating a curve with sharp features</p><pre class="codeinput">Vt=[0 0 0; 10 0 0; 5 10 0; 10 0 10; 0 10 10; ];
 </pre><pre class="codeinput"><span class="comment">%Setting control parameters</span>
 r=2; <span class="comment">%Fillet radius</span>
 np=25; <span class="comment">%Number of points used to construct each fillet edge</span>
 closedLoopOption=0; <span class="comment">%Use 1 if curve represents a closed loop but containes unique points</span>
 [VN]=filletCurve(Vt,r,np,closedLoopOption);
-</pre><p>Plotting results</p><pre class="codeinput">hf1=figuremax(figColor,figColorDef);
+</pre><p>Plotting results</p><pre class="codeinput">hf1=cFigure;
 title(<span class="string">'A filleted curve'</span>,<span class="string">'FontSize'</span>,fontSize);
 xlabel(<span class="string">'X'</span>,<span class="string">'FontSize'</span>,fontSize);ylabel(<span class="string">'Y'</span>,<span class="string">'FontSize'</span>,fontSize); zlabel(<span class="string">'Z'</span>,<span class="string">'FontSize'</span>,fontSize);
 hold <span class="string">on</span>;
@@ -91,9 +89,9 @@ plotV(VN,<span class="string">'r.-'</span>,<span class="string">'lineWidth'</spa
 
 axis <span class="string">equal</span>; view(3); axis <span class="string">tight</span>;  grid <span class="string">on</span>;  set(gca,<span class="string">'FontSize'</span>,fontSize);
 drawnow;
-</pre><img vspace="5" hspace="5" src="HELP_filletCurve_01.png" alt=""> <h2>FILLETING A CLOSED CURVE IN 3D<a name="7"></a></h2><pre class="codeinput">closedLoopOption=1;
+</pre><img vspace="5" hspace="5" src="HELP_filletCurve_01.png" alt=""> <h2 id="10">Example: Filleting a closed curve in 3D</h2><pre class="codeinput">closedLoopOption=1;
 [VN]=filletCurve(Vt,r,np,closedLoopOption);
-</pre><p>Plotting results</p><pre class="codeinput">hf2=figuremax(figColor,figColorDef);
+</pre><p>Plotting results</p><pre class="codeinput">hf2=cFigure;
 title(<span class="string">'A filleted curve based on closed end conditions'</span>,<span class="string">'FontSize'</span>,fontSize);
 xlabel(<span class="string">'X'</span>,<span class="string">'FontSize'</span>,fontSize);ylabel(<span class="string">'Y'</span>,<span class="string">'FontSize'</span>,fontSize); zlabel(<span class="string">'Z'</span>,<span class="string">'FontSize'</span>,fontSize);
 hold <span class="string">on</span>;
@@ -104,7 +102,7 @@ plotV(VN,<span class="string">'r.-'</span>,<span class="string">'lineWidth'</spa
 
 axis <span class="string">equal</span>; view(3); axis <span class="string">tight</span>;  grid <span class="string">on</span>;  set(gca,<span class="string">'FontSize'</span>,fontSize);
 drawnow;
-</pre><img vspace="5" hspace="5" src="HELP_filletCurve_02.png" alt=""> <h2>EXTRUDING A FILLETED CURVE FOR CAD LIKE MODEL BUILDING<a name="9"></a></h2><pre class="codeinput"><span class="comment">%Sketching side profile</span>
+</pre><img vspace="5" hspace="5" src="HELP_filletCurve_02.png" alt=""> <h2 id="12">Example: Extruding a filleted curve for CAD like model building</h2><pre class="codeinput"><span class="comment">%Sketching side profile</span>
 x=[0 0 5 15 15];
 y=[0 4 9 10 0];
 V=10*[x(:) y(:)];
@@ -114,7 +112,7 @@ r=15; <span class="comment">%Fillet radius</span>
 np=50; <span class="comment">%Number of points used to construct each fillet edge</span>
 closedLoopOption=0; <span class="comment">%Use 1 if curve represents a closed loop but containes unique points</span>
 [Vc]=filletCurve(V,r,np,closedLoopOption);
-</pre><p>Plotting sketch</p><pre class="codeinput">hf1=figuremax(figColor,figColorDef);
+</pre><p>Plotting sketch</p><pre class="codeinput">hf1=cFigure;
 title(<span class="string">'The side profile sketch'</span>,<span class="string">'FontSize'</span>,fontSize);
 xlabel(<span class="string">'X'</span>,<span class="string">'FontSize'</span>,fontSize);ylabel(<span class="string">'Y'</span>,<span class="string">'FontSize'</span>,fontSize); zlabel(<span class="string">'Z'</span>,<span class="string">'FontSize'</span>,fontSize);
 hold <span class="string">on</span>;
@@ -131,30 +129,38 @@ cPar.dir=0;
 cPar.n=[0 0 1];
 cPar.closeLoopOpt=0;
 [F_tri,V_tri]=polyExtrude(Vc,cPar);
-</pre><p>Plotting meshed model</p><pre class="codeinput">hf2=figuremax(figColor,figColorDef);
+</pre><p>Plotting meshed model</p><pre class="codeinput">hf2=cFigure;
 title(<span class="string">'The extruded model mesh'</span>,<span class="string">'FontSize'</span>,fontSize);
 xlabel(<span class="string">'X'</span>,<span class="string">'FontSize'</span>,fontSize);ylabel(<span class="string">'Y'</span>,<span class="string">'FontSize'</span>,fontSize); zlabel(<span class="string">'Z'</span>,<span class="string">'FontSize'</span>,fontSize);
 hold <span class="string">on</span>;
 
 hp=patch(<span class="string">'faces'</span>,F_tri,<span class="string">'Vertices'</span>,V_tri);
-<span class="comment">% [hp2]=patchNormPlot(F_tri,V_tri,2*pointSpacing);</span>
+<span class="comment">% [hp2]=patchNormPlot(F_tri,V_tri,2*cPar.pointSpacing);</span>
 
-set(hp,<span class="string">'FaceColor'</span>,<span class="string">'g'</span>,<span class="string">'EdgeColor'</span>,<span class="string">'k'</span>,<span class="string">'FaceAlpha'</span>,faceAlpha);
+set(hp,<span class="string">'FaceColor'</span>,<span class="string">'g'</span>,<span class="string">'EdgeColor'</span>,<span class="string">'k'</span>,<span class="string">'FaceAlpha'</span>,1);
 camlight <span class="string">headlight</span>;
 axis <span class="string">equal</span>; view(3); axis <span class="string">tight</span>;  grid <span class="string">on</span>;  set(gca,<span class="string">'FontSize'</span>,fontSize);
 drawnow;
-</pre><img vspace="5" hspace="5" src="HELP_filletCurve_04.png" alt=""> <p><img vspace="5" hspace="5" src="gibbVerySmall.gif" alt=""> </p><p><i><b>GIBBON</b></i> <a href="www.gibboncode.org">www.gibboncode.org</a></p><p><i>Kevin Mattheus Moerman</i>, <a href="gibbon.toolbox@gmail.com">gibbon.toolbox@gmail.com</a></p><p class="footer"><br><a href="http://www.mathworks.com/products/matlab/">Published with MATLAB&reg; R2014b</a><br></p></div><!--
+</pre><img vspace="5" hspace="5" src="HELP_filletCurve_04.png" alt=""> <p><img vspace="5" hspace="5" src="gibbVerySmall.gif" alt=""> </p><p><i><b>GIBBON</b></i> <a href="www.gibboncode.org">www.gibboncode.org</a></p><p><i>Kevin Mattheus Moerman</i>, <a href="gibbon.toolbox@gmail.com">gibbon.toolbox@gmail.com</a></p><p class="footer"><br><a href="http://www.mathworks.com/products/matlab/">Published with MATLAB&reg; R2016b</a><br></p></div><!--
 ##### SOURCE BEGIN #####
 %% filletCurve
 % Below is a demonstration of the features of the |filletCurve| function
-%%
 
-clear; close all; clc;
+%% Syntax
+% |[VN]=filletCurve(Vt,r,np,closedLoopOption);|
+
+%% Description 
+% This function fillets a curve based on the input radius r using np points
+% per fillet arc. If closedLoopOpt==1 then closed end conditions are used
+% such that the end and start regions are also filleted. 
+
+%% Examples
 
 %%
-% PLOT SETTINGS
-figColor='w'; 
-figColorDef='white';
+clear; close all; clc; 
+
+%% 
+% Plot settings
 fontSize=15;
 markerSize1=45;
 lineWidth1=2;
@@ -162,7 +168,7 @@ lineWidth2=5;
 lineWidth3=2;
 faceAlpha=0.5;
 
-%% FILLETING A CURVE IN 3D
+%% Example: Filleting a curve in 3D
 
 %%
 % Simulating a curve with sharp features
@@ -177,7 +183,7 @@ closedLoopOption=0; %Use 1 if curve represents a closed loop but containes uniqu
 
 %%
 % Plotting results
-hf1=figuremax(figColor,figColorDef);
+hf1=cFigure;
 title('A filleted curve','FontSize',fontSize);
 xlabel('X','FontSize',fontSize);ylabel('Y','FontSize',fontSize); zlabel('Z','FontSize',fontSize);
 hold on;
@@ -188,13 +194,13 @@ plotV(VN,'r.-','lineWidth',lineWidth2);
 axis equal; view(3); axis tight;  grid on;  set(gca,'FontSize',fontSize);
 drawnow;
 
-%% FILLETING A CLOSED CURVE IN 3D
+%% Example: Filleting a closed curve in 3D
 closedLoopOption=1; 
 [VN]=filletCurve(Vt,r,np,closedLoopOption);
 
 %%
 % Plotting results
-hf2=figuremax(figColor,figColorDef);
+hf2=cFigure;
 title('A filleted curve based on closed end conditions','FontSize',fontSize);
 xlabel('X','FontSize',fontSize);ylabel('Y','FontSize',fontSize); zlabel('Z','FontSize',fontSize);
 hold on;
@@ -206,7 +212,7 @@ plotV(VN,'r.-','lineWidth',lineWidth2);
 axis equal; view(3); axis tight;  grid on;  set(gca,'FontSize',fontSize);
 drawnow;
 
-%% EXTRUDING A FILLETED CURVE FOR CAD LIKE MODEL BUILDING
+%% Example: Extruding a filleted curve for CAD like model building
 
 %Sketching side profile
 x=[0 0 5 15 15];
@@ -221,7 +227,7 @@ closedLoopOption=0; %Use 1 if curve represents a closed loop but containes uniqu
 
 %%
 % Plotting sketch
-hf1=figuremax(figColor,figColorDef);
+hf1=cFigure;
 title('The side profile sketch','FontSize',fontSize);
 xlabel('X','FontSize',fontSize);ylabel('Y','FontSize',fontSize); zlabel('Z','FontSize',fontSize);
 hold on;
@@ -244,15 +250,15 @@ cPar.closeLoopOpt=0;
 
 %% 
 % Plotting meshed model
-hf2=figuremax(figColor,figColorDef);
+hf2=cFigure;
 title('The extruded model mesh','FontSize',fontSize);
 xlabel('X','FontSize',fontSize);ylabel('Y','FontSize',fontSize); zlabel('Z','FontSize',fontSize);
 hold on;
 
 hp=patch('faces',F_tri,'Vertices',V_tri);
-% [hp2]=patchNormPlot(F_tri,V_tri,2*pointSpacing);
+% [hp2]=patchNormPlot(F_tri,V_tri,2*cPar.pointSpacing);
 
-set(hp,'FaceColor','g','EdgeColor','k','FaceAlpha',faceAlpha);
+set(hp,'FaceColor','g','EdgeColor','k','FaceAlpha',1);
 camlight headlight;
 axis equal; view(3); axis tight;  grid on;  set(gca,'FontSize',fontSize);
 drawnow;

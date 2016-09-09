@@ -11,7 +11,9 @@ for q=plotRange'
     hp=patch('faces',fv,'vertices',Vv,'faceColor','r');
     HP(qI)=hp; %Store handle
     if nargin>2 %Color specified
-        if size(Cv,2)==1 %Colormap driven
+        if ischar(Cv) %String input for color
+            set(hp,'faceColor',Cv);
+        elseif size(Cv,2)==1 %Colormap driven
             set(hp,'faceColor','flat','CData',Cv(q,:));
         elseif size(Cv,2)==3 %RGB driven
             set(hp,'faceColor',Cv(q,:));

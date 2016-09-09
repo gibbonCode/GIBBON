@@ -4,6 +4,10 @@
 % * The use of remeshTriSurfDistMap (and subTri and smoothening) for surface remeshing
 
 %%
+
+clear; close all; clc; 
+
+%%
 %Plot settings
 fontSize=15;
 markerSize=15;

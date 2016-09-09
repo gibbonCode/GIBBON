@@ -56,13 +56,16 @@ xlabel('X','FontSize',fontSize);ylabel('Y','FontSize',fontSize);zlabel('Z','Font
 hold on;
 patch('faces',Ft,'vertices',Vt,'FaceColor','r','FaceAlpha',fAlpha1,'LineWidth',lineWidth1);
 
-for q=1:1:numel(Fv_cell)
-    fv=Fv_cell{q};
-    vv=Vv(fv,:);
-    if all(~isnan(vv))
-        patch('faces',fv,'vertices',Vv,'FaceColor','g','faceAlpha',fAlpha2,'LineWidth',lineWidth2);      
-    end
-end
+HP=cellPatch(Vv,Fv_cell,'g');
+set(HP,'LineWidth',lineWidth,'faceAlpha',fAlpha2,'LineWidth',lineWidth2);
+
+% for q=1:1:numel(Fv_cell)
+%     fv=Fv_cell{q};
+%     vv=Vv(fv,:);
+%     if all(~isnan(vv))
+%         patch('faces',fv,'vertices',Vv,'FaceColor','g','faceAlpha',fAlpha2,'LineWidth',lineWidth2);      
+%     end
+% end
 
 axis equal; view(2); axis tight;  set(gca,'FontSize',fontSize); grid on;
 drawnow;

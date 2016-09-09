@@ -1,13 +1,21 @@
 %% filletCurve
 % Below is a demonstration of the features of the |filletCurve| function
-%%
 
-clear; close all; clc;
+%% Syntax
+% |[VN]=filletCurve(Vt,r,np,closedLoopOption);|
+
+%% Description 
+% This function fillets a curve based on the input radius r using np points
+% per fillet arc. If closedLoopOpt==1 then closed end conditions are used
+% such that the end and start regions are also filleted. 
+
+%% Examples
 
 %%
-% PLOT SETTINGS
-figColor='w'; 
-figColorDef='white';
+clear; close all; clc; 
+
+%% 
+% Plot settings
 fontSize=15;
 markerSize1=45;
 lineWidth1=2;
@@ -15,7 +23,7 @@ lineWidth2=5;
 lineWidth3=2;
 faceAlpha=0.5;
 
-%% FILLETING A CURVE IN 3D
+%% Example: Filleting a curve in 3D
 
 %%
 % Simulating a curve with sharp features
@@ -30,7 +38,7 @@ closedLoopOption=0; %Use 1 if curve represents a closed loop but containes uniqu
 
 %%
 % Plotting results
-hf1=figuremax(figColor,figColorDef);
+hf1=cFigure;
 title('A filleted curve','FontSize',fontSize);
 xlabel('X','FontSize',fontSize);ylabel('Y','FontSize',fontSize); zlabel('Z','FontSize',fontSize);
 hold on;
@@ -41,13 +49,13 @@ plotV(VN,'r.-','lineWidth',lineWidth2);
 axis equal; view(3); axis tight;  grid on;  set(gca,'FontSize',fontSize);
 drawnow;
 
-%% FILLETING A CLOSED CURVE IN 3D
+%% Example: Filleting a closed curve in 3D
 closedLoopOption=1; 
 [VN]=filletCurve(Vt,r,np,closedLoopOption);
 
 %%
 % Plotting results
-hf2=figuremax(figColor,figColorDef);
+hf2=cFigure;
 title('A filleted curve based on closed end conditions','FontSize',fontSize);
 xlabel('X','FontSize',fontSize);ylabel('Y','FontSize',fontSize); zlabel('Z','FontSize',fontSize);
 hold on;
@@ -59,7 +67,7 @@ plotV(VN,'r.-','lineWidth',lineWidth2);
 axis equal; view(3); axis tight;  grid on;  set(gca,'FontSize',fontSize);
 drawnow;
 
-%% EXTRUDING A FILLETED CURVE FOR CAD LIKE MODEL BUILDING
+%% Example: Extruding a filleted curve for CAD like model building
 
 %Sketching side profile
 x=[0 0 5 15 15];
@@ -74,7 +82,7 @@ closedLoopOption=0; %Use 1 if curve represents a closed loop but containes uniqu
 
 %%
 % Plotting sketch
-hf1=figuremax(figColor,figColorDef);
+hf1=cFigure;
 title('The side profile sketch','FontSize',fontSize);
 xlabel('X','FontSize',fontSize);ylabel('Y','FontSize',fontSize); zlabel('Z','FontSize',fontSize);
 hold on;
@@ -97,15 +105,15 @@ cPar.closeLoopOpt=0;
 
 %% 
 % Plotting meshed model
-hf2=figuremax(figColor,figColorDef);
+hf2=cFigure;
 title('The extruded model mesh','FontSize',fontSize);
 xlabel('X','FontSize',fontSize);ylabel('Y','FontSize',fontSize); zlabel('Z','FontSize',fontSize);
 hold on;
 
 hp=patch('faces',F_tri,'Vertices',V_tri);
-% [hp2]=patchNormPlot(F_tri,V_tri,2*pointSpacing);
+% [hp2]=patchNormPlot(F_tri,V_tri,2*cPar.pointSpacing);
 
-set(hp,'FaceColor','g','EdgeColor','k','FaceAlpha',faceAlpha);
+set(hp,'FaceColor','g','EdgeColor','k','FaceAlpha',1);
 camlight headlight;
 axis equal; view(3); axis tight;  grid on;  set(gca,'FontSize',fontSize);
 drawnow;

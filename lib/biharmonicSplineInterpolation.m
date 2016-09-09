@@ -6,7 +6,6 @@ function VI=biharmonicSplineInterpolation(X,V,XI)
 % The |biharmonicSplineInterpolation| function is an expansion to
 % n-dimensions and scattered data of the biharmonic spline interpolation
 % method of the |griddata| function (method 'v4').
-% 
 %
 %   Reference:  David T. Sandwell, Biharmonic spline interpolation of
 %   GEOS-3 and SEASAT altimeter data, Geophysical Research Letters, 2,

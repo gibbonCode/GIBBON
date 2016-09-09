@@ -10,8 +10,8 @@ function [X,Y,Z]=im2cart(I,J,K,v)
 % voxel dimensions in the x,y and z direction respectively. 
 %
 % Kevin Mattheus Moerman
-% kevinmoerman@hotmail.com
-% 15/08/2008
+% gibbon.toolbox@gmail.com
+% 2008/08/15
 % ------------------------------------------------------------------------
 
 X=(J-0.5).*v(2);
