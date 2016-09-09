@@ -65,7 +65,7 @@ xlabel('X','FontSize',fontSize); ylabel('Y','FontSize',fontSize); zlabel('Z','Fo
 hold on;
 patch('Faces',Fb,'Vertices',V,'FaceColor','flat','CData',faceBoundaryMarker,'FaceAlpha',faceAlpha1,'lineWidth',edgeWidth,'edgeColor',edgeColor);
 
-colormap(jet(6)); colorbar; 
+colormap(gjet(6)); colorbar; 
 set(gca,'FontSize',fontSize);
 view(3); axis tight;  axis equal;  grid on;
 % camlight headlight;
@@ -95,7 +95,7 @@ patch('Faces',Fb,'Vertices',V,'FaceColor','flat','CData',faceBoundaryMarker,'Fac
 plotV(V(bcRigidList,:),'k.','MarkerSize',markerSize);
 plotV(V(bcPrescribeList,:),'k.','MarkerSize',markerSize);
 set(gca,'FontSize',fontSize);
-
+colormap(gjet(6)); colorbar; 
 view(3); axis tight;  axis equal;  grid on;
 drawnow; 
 
@@ -224,7 +224,7 @@ if runFlag==1 %i.e. a succesful run
     
     view(3); axis tight;  axis equal;  grid on;
     colormap jet; colorbar;
-    % camlight headlight;
+    camlight headlight;
     set(gca,'FontSize',fontSize);
     drawnow;
 end

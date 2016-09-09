@@ -9,7 +9,7 @@ function [varargout]=febStruct2febFile(FEB_struct)
 %
 % Kevin Mattheus Moerman
 % gibbon.toolbox@gmail.com
-% 
+%
 % 2014/05/27: Updated for GIBBON
 % 2015/05/09: Added biphasic capabilities
 % 2015/05/10: Added traction load capabilities
@@ -20,8 +20,8 @@ function [varargout]=febStruct2febFile(FEB_struct)
 dispStartTitleGibbonCode('Writing FEBio XML object');
 
 %% Set default display setting if missing
-if ~isfield(FEB_struct,'disp_opt')    
-    FEB_struct.disp_opt=0; 
+if ~isfield(FEB_struct,'disp_opt')
+    FEB_struct.disp_opt=0;
 end
 
 %% Initialize docNode object

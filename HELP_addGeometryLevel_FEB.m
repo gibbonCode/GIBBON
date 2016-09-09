@@ -57,9 +57,6 @@ FEB_struct.Geometry.Surface{1}.Name='Contact_master_indentor';
 %Initialize docNode object
 domNode = com.mathworks.xml.XMLUtils.createDocument('febio_spec');
 
-% %Add geometry information (Surfaces)
-% domNode=addGeometryLevel_FEB(domNode,FEB_struct);
-
 %Add boundary condition information
 domNode=addGeometryLevel_FEB(domNode,FEB_struct);
 

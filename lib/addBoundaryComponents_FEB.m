@@ -37,7 +37,7 @@ if  isfield(FEB_struct.Boundary,'Fix')
         %Create a node set
         if isfield(FEB_struct.Boundary.Fix{q},'Set')
             currentSet=FEB_struct.Boundary.Fix{q}.Set;
-            for q_node=1:1:numel(currentSet);
+            for q_node=1:1:numel(currentSet)
                 node_node = docNode.createElement('node'); %create node entry
                 node_node = parent_node.appendChild(node_node); %add node entry
                 
@@ -67,7 +67,7 @@ if  isfield(FEB_struct.Boundary,'Prescribe')
         parent_node.setAttributeNode(attr); %Add id attribute
         
         %Set optional scale parameter
-        if isfield(FEB_struct.Boundary.Prescribe{q},'Scale');
+        if isfield(FEB_struct.Boundary.Prescribe{q},'Scale')
             currentScale=FEB_struct.Boundary.Prescribe{q}.Scale;
             attr = docNode.createAttribute('scale'); %Create id attribute
             attr.setNodeValue(sprintf('%u',currentScale)); %Set id text
@@ -107,7 +107,7 @@ if  isfield(FEB_struct.Boundary,'Prescribe')
         %Create node set
         if isfield(FEB_struct.Boundary.Prescribe{q},'Set')
             currentSet=FEB_struct.Boundary.Prescribe{q}.Set;
-            for q_node=1:1:numel(currentSet);
+            for q_node=1:1:numel(currentSet)
                 node_node = docNode.createElement('node'); %create node entry
                 node_node = parent_node.appendChild(node_node); %add node entry
                 

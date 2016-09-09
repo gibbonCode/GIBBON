@@ -45,7 +45,7 @@ T_start{3}=['        </tocitem>'];
 %FUNCTION HELP
 T_help=cell(numHelpFiles+2,1);
 T_help{1}=['        <tocitem target="funclist.html" image="HelpIcon.FUNCTION">Functions'];
-for q=1:1:numHelpFiles; 
+for q=1:1:numHelpFiles
     currentFile=helpFiles{q};
     currentName=currentFile(1:end-5);
     T_help{q+1}=['            <tocitem target="',currentFile,'">',currentName(6:end),'</tocitem>',currentName];
@@ -56,7 +56,7 @@ T_help{end}=['        </tocitem>'];
 %DEMO EXAMPLES
 T_demo=cell(numDemoFiles+2,1);
 T_demo{1}=['        <tocitem target="gibbonExampes.html" image="HelpIcon.EXAMPLES">Examples'];
-for q=1:1:numDemoFiles; 
+for q=1:1:numDemoFiles
     currentFile=demoFiles{q};
     currentName=currentFile(1:end-5);
     T_demo{q+1}=['            <tocitem target="',currentFile,'">',currentName(6:end),'</tocitem>',currentName];

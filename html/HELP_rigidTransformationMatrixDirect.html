@@ -6,7 +6,7 @@
    <!--
 This HTML was auto-generated from MATLAB code.
 To make changes, update the MATLAB code and republish this document.
-      --><title>HELP_rigidTransformationMatrixDirect</title><meta name="generator" content="MATLAB 8.6"><link rel="schema.DC" href="http://purl.org/dc/elements/1.1/"><meta name="DC.date" content="2015-12-07"><meta name="DC.source" content="HELP_rigidTransformationMatrixDirect.m"><style type="text/css">
+      --><title>rigidTransformationMatrixDirect</title><meta name="generator" content="MATLAB 9.1"><link rel="schema.DC" href="http://purl.org/dc/elements/1.1/"><meta name="DC.date" content="2016-09-08"><meta name="DC.source" content="HELP_rigidTransformationMatrixDirect.m"><style type="text/css">
 html,body,div,span,applet,object,iframe,h1,h2,h3,h4,h5,h6,p,blockquote,pre,a,abbr,acronym,address,big,cite,code,del,dfn,em,font,img,ins,kbd,q,s,samp,small,strike,strong,sub,sup,tt,var,b,u,i,center,dl,dt,dd,ol,ul,li,fieldset,form,label,legend,table,caption,tbody,tfoot,thead,tr,th,td{margin:0;padding:0;border:0;outline:0;font-size:100%;vertical-align:baseline;background:transparent}body{line-height:1}ol,ul{list-style:none}blockquote,q{quotes:none}blockquote:before,blockquote:after,q:before,q:after{content:'';content:none}:focus{outine:0}ins{text-decoration:none}del{text-decoration:line-through}table{border-collapse:collapse;border-spacing:0}
 
 html { min-height:100%; margin-bottom:1px; }
@@ -66,20 +66,38 @@ table td { padding:7px 5px; text-align:left; vertical-align:top; border:1px soli
 
 
 
-  </style></head><body><div class="content"><h1>HELP_rigidTransformationMatrixDirect</h1><!--introduction--><p>Below is a demonstration of the features of the <tt>rigidTransformationMatrixDirect</tt> function</p><!--/introduction--><h2>Contents</h2><div><ul><li><a href="#5">Get the transformation matrix for the point matched data using <tt>rigidTransformationMatrixDirect</tt></a></li></ul></div><pre class="codeinput">clear; close <span class="string">all</span>; clc;
-</pre><p>Plot settings</p><pre class="codeinput">fontSize=15;
+  </style></head><body><div class="content"><h1>rigidTransformationMatrixDirect</h1><!--introduction--><p>Below is a demonstration of the features of the <tt>rigidTransformationMatrixDirect</tt> function</p><!--/introduction--><h2>Contents</h2><div><ul><li><a href="#2">Syntax</a></li><li><a href="#3">Description</a></li><li><a href="#4">Examples</a></li><li><a href="#6">Example:</a></li><li><a href="#7">Determine the rigid transformation to overlay two surfaces</a></li></ul></div><pre class="codeinput">clear; close <span class="string">all</span>; clc;
+</pre><h2 id="2">Syntax</h2><p><tt>[M]=rigidTransformationMatrixDirect(V1,V2);</tt></p><h2 id="3">Description</h2><p>This function computes the rigid transformation matrix (translation, and rotation). For the two point matches input sets V1 and V2.</p><h2 id="4">Examples</h2><p>Plot settings</p><pre class="codeinput">fontSize=15;
 faceAlpha=1;
 edgeColor=<span class="string">'k'</span>;
-</pre><p>Load example patch data</p><pre class="codeinput">[F,Vd]=parasaurolophus;
+</pre><h2 id="6">Example:</h2><h2 id="7">Determine the rigid transformation to overlay two surfaces</h2><p>Below is a demonstration of the features of the <tt>rigidTransformationMatrixDirect</tt> function</p><pre class="codeinput"><span class="comment">% Load example patch data</span>
+[F,Vd]=parasaurolophus;
 
-<span class="comment">%Define a rotation</span>
-a=[-0.25*pi 0.75*pi 0.1*pi];
-[R,~]=euler2DCM(a);
+<span class="comment">%Translation</span>
+OR=[-1 2 -3]; <span class="comment">%Translations</span>
+T  = [1 0 0 OR(1);<span class="keyword">...</span>
+      0 1 0 OR(2);<span class="keyword">...</span>
+      0 0 1 OR(3);<span class="keyword">...</span>
+      0 0 0 1];
+<span class="comment">%Rotation</span>
+a=[-0.25*pi 0.75*pi 0.1*pi]; <span class="comment">%Euler angles</span>
+R  = eye(4,4); R(1:3,1:3)=euler2DCM(a);
 
+<span class="comment">%Scaling</span>
+v=[2 3 1]; <span class="comment">%Scaling factors</span>
+S  = [v(1) 0    0    0;<span class="keyword">...</span>
+      0    v(2) 0    0;<span class="keyword">...</span>
+      0    0    v(3) 0;<span class="keyword">...</span>
+      0    0    0    1];
+
+M_true  = T * R; <span class="comment">%The true transformation matrix</span>
+
+<span class="comment">%Point set 1</span>
 V1=Vd+0.5;
 
-V2=tform(R,Vd)-1;
-</pre><p>Plotting data</p><pre class="codeinput">hf=cFigure;
+<span class="comment">%Point set 2</span>
+V2=tform(M_true,V1);
+</pre><p>Plotting input data</p><pre class="codeinput">hf=cFigure;
 title(<span class="string">'The untransformed surfaces'</span>,<span class="string">'FontSize'</span>,fontSize);
 xlabel(<span class="string">'X'</span>,<span class="string">'FontSize'</span>,fontSize); ylabel(<span class="string">'Y'</span>,<span class="string">'FontSize'</span>,fontSize); zlabel(<span class="string">'Z'</span>,<span class="string">'FontSize'</span>,fontSize);
 
@@ -89,12 +107,12 @@ hp=patch(<span class="string">'Faces'</span>,F,<span class="string">'Vertices'</
 
 camlight <span class="string">headlight</span>;
 set(gca,<span class="string">'FontSize'</span>,fontSize);
-view(3); axis <span class="string">tight</span>;  axis <span class="string">equal</span>;
+view(3); axis <span class="string">tight</span>;  axis <span class="string">equal</span>; box <span class="string">on</span>;
 drawnow;
-</pre><img vspace="5" hspace="5" src="HELP_rigidTransformationMatrixDirect_01.png" alt=""> <h2>Get the transformation matrix for the point matched data using <tt>rigidTransformationMatrixDirect</tt><a name="5"></a></h2><pre class="codeinput">[M]=rigidTransformationMatrixDirect(V1,V2);
+</pre><img vspace="5" hspace="5" src="HELP_rigidTransformationMatrixDirect_01.png" alt=""> <p>Get the transformation matrix for the point matched data using <tt>rigidTransformationMatrixDirect</tt></p><pre class="codeinput">[M_fit]=rigidTransformationMatrixDirect(V1,V2);
 
-V1f=tform((M),V1);
-</pre><p>Plotting data</p><pre class="codeinput">hf=cFigure;
+V1f=tform((M_fit),V1);
+</pre><p>Plotting results</p><pre class="codeinput">hf=cFigure;
 title(<span class="string">'The green surfaces transformed towards the red'</span>,<span class="string">'FontSize'</span>,fontSize);
 xlabel(<span class="string">'X'</span>,<span class="string">'FontSize'</span>,fontSize); ylabel(<span class="string">'Y'</span>,<span class="string">'FontSize'</span>,fontSize); zlabel(<span class="string">'Z'</span>,<span class="string">'FontSize'</span>,fontSize);
 
@@ -104,35 +122,66 @@ hp=patch(<span class="string">'Faces'</span>,F,<span class="string">'Vertices'</
 <span class="comment">% hp=patch('Faces',F,'Vertices',V2ff,'FaceColor','none','FaceAlpha',0.5*2,'edgeColor','b');</span>
 
 set(gca,<span class="string">'FontSize'</span>,fontSize);
-view(3); axis <span class="string">tight</span>;  axis <span class="string">equal</span>;
+view(3); axis <span class="string">tight</span>;  axis <span class="string">equal</span>; box <span class="string">on</span>;
 drawnow;
-</pre><img vspace="5" hspace="5" src="HELP_rigidTransformationMatrixDirect_02.png" alt=""> <p><img vspace="5" hspace="5" src="gibbVerySmall.gif" alt=""> </p><p><i><b>GIBBON</b></i> <a href="www.gibboncode.org">www.gibboncode.org</a></p><p><i>Kevin Mattheus Moerman</i>, <a href="gibbon.toolbox@gmail.com">gibbon.toolbox@gmail.com</a></p><p class="footer"><br><a href="http://www.mathworks.com/products/matlab/">Published with MATLAB&reg; R2015b</a><br></p></div><!--
+</pre><img vspace="5" hspace="5" src="HELP_rigidTransformationMatrixDirect_02.png" alt=""> <p><img vspace="5" hspace="5" src="gibbVerySmall.gif" alt=""> </p><p><i><b>GIBBON</b></i> <a href="www.gibboncode.org">www.gibboncode.org</a></p><p><i>Kevin Mattheus Moerman</i>, <a href="gibbon.toolbox@gmail.com">gibbon.toolbox@gmail.com</a></p><p class="footer"><br><a href="http://www.mathworks.com/products/matlab/">Published with MATLAB&reg; R2016b</a><br></p></div><!--
 ##### SOURCE BEGIN #####
-%% HELP_rigidTransformationMatrixDirect
+%% rigidTransformationMatrixDirect
 % Below is a demonstration of the features of the |rigidTransformationMatrixDirect| function
 
 %%
-clear; close all; clc;
+clear; close all; clc; 
+
+%% Syntax
+% |[M]=rigidTransformationMatrixDirect(V1,V2);|
+
+%% Description
+% This function computes the rigid transformation matrix (translation, and
+% rotation). For the two point matches input sets V1 and V2. 
+
+%% Examples
 
 %%
 % Plot settings
 fontSize=15;
 faceAlpha=1;
 edgeColor='k';
-%% 
+
+%% Example: 
+
+%% Determine the rigid transformation to overlay two surfaces
+% Below is a demonstration of the features of the |rigidTransformationMatrixDirect| function
+ 
 % Load example patch data
 [F,Vd]=parasaurolophus;
  
-%Define a rotation
-a=[-0.25*pi 0.75*pi 0.1*pi]; 
-[R,~]=euler2DCM(a);
+%Translation
+OR=[-1 2 -3]; %Translations
+T  = [1 0 0 OR(1);...
+      0 1 0 OR(2);...
+      0 0 1 OR(3);...
+      0 0 0 1]; 
+%Rotation
+a=[-0.25*pi 0.75*pi 0.1*pi]; %Euler angles
+R  = eye(4,4); R(1:3,1:3)=euler2DCM(a);
 
+%Scaling  
+v=[2 3 1]; %Scaling factors
+S  = [v(1) 0    0    0;...
+      0    v(2) 0    0;...
+      0    0    v(3) 0;...
+      0    0    0    1];
+  
+M_true  = T * R; %The true transformation matrix
+
+%Point set 1
 V1=Vd+0.5;
 
-V2=tform(R,Vd)-1;
+%Point set 2 
+V2=tform(M_true,V1);
 
 %%
-% Plotting data
+% Plotting input data
 
 hf=cFigure;
 title('The untransformed surfaces','FontSize',fontSize);
@@ -144,17 +193,18 @@ hp=patch('Faces',F,'Vertices',V2,'FaceColor','r','FaceAlpha',faceAlpha,'edgeColo
 
 camlight headlight;
 set(gca,'FontSize',fontSize);
-view(3); axis tight;  axis equal; 
+view(3); axis tight;  axis equal; box on; 
 drawnow; 
 
-%% Get the transformation matrix for the point matched data using |rigidTransformationMatrixDirect|
+%% 
+% Get the transformation matrix for the point matched data using |rigidTransformationMatrixDirect|
 
-[M]=rigidTransformationMatrixDirect(V1,V2);
+[M_fit]=rigidTransformationMatrixDirect(V1,V2);
 
-V1f=tform((M),V1);
+V1f=tform((M_fit),V1);
 
 %%
-% Plotting data
+% Plotting results
 
 hf=cFigure;
 title('The green surfaces transformed towards the red','FontSize',fontSize);
@@ -166,7 +216,7 @@ hp=patch('Faces',F,'Vertices',V1f,'FaceColor','none','FaceAlpha',0.5,'edgeColor'
 % hp=patch('Faces',F,'Vertices',V2ff,'FaceColor','none','FaceAlpha',0.5*2,'edgeColor','b');
 
 set(gca,'FontSize',fontSize);
-view(3); axis tight;  axis equal; 
+view(3); axis tight;  axis equal; box on; 
 drawnow; 
 
 %% 

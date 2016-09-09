@@ -2,7 +2,7 @@ function domNode=addGeometryLevel_FEB(domNode,FEB_struct)
 
 % function [domNode]=addGeometryLevel_FEB(domNode,FEB_struct)
 % ------------------------------------------------------------------------
-% Adds control Geometry to the XML object domNode based on
+% Adds geometry information to the XML object domNode based on
 % the FEBio structure FEB_struct. 
 % 
 %
@@ -31,7 +31,7 @@ disp('----> Adding node field');
 parent_node = domNode.createElement('Nodes');
 parent_node = geometryNode.appendChild(parent_node);
 
-if FEB_struct.disp_opt==1;
+if FEB_struct.disp_opt==1
     hw = waitbar(0,'Adding node entries....');
 end
 n_steps=size(FEB_struct.Geometry.Nodes,1);
@@ -42,12 +42,12 @@ for q_n=1:1:n_steps
     attr.setNodeValue(sprintf('%u',q_n)); %Set id text
     node_node.setAttributeNode(attr); %Add id attribute
     node_node.appendChild(domNode.createTextNode(sprintf('%6.7e, %6.7e, %6.7e',FEB_struct.Geometry.Nodes(q_n,:)))); %append data text child
-    if FEB_struct.disp_opt==1 && rem(q_n,round(n_steps/10))==0;
+    if FEB_struct.disp_opt==1 && rem(q_n,round(n_steps/10))==0
         waitbar(q_n/n_steps);
     end
 end
 
-if FEB_struct.disp_opt==1;
+if FEB_struct.disp_opt==1
     close(hw); drawnow;
 end
 
@@ -66,7 +66,7 @@ for q_e1=1:1:numel(FEB_struct.Geometry.Elements) %for all element sets
     E_type=FEB_struct.Geometry.ElementType{q_e1}; %Element type for current set
     partName=FEB_struct.Geometry.ElementsPartName{q_e1}; %Element set part name
     
-    if FEB_struct.disp_opt==1;
+    if FEB_struct.disp_opt==1
         hw = waitbar(0,['Adding ',E_type,' element entries....']);
     end
     disp(['----> Adding ',E_type,' element entries....']);
@@ -126,22 +126,22 @@ for q_e1=1:1:numel(FEB_struct.Geometry.Elements) %for all element sets
             
             element_node.appendChild(domNode.createTextNode(sprintf(t_form,E_mat(q_e2,:)))); %append data text child
             
-            if FEB_struct.disp_opt==1 && rem(q_e2,round(n_steps/10))==0;
+            if FEB_struct.disp_opt==1 && rem(q_e2,round(n_steps/10))==0
                 waitbar(q_e2/n_steps);
             end
         end
         
     end
     
-    if FEB_struct.disp_opt==1;
+    if FEB_struct.disp_opt==1
         close(hw); drawnow;
     end
 end
 
 %% ElementData for thickness
 
-if isfield(FEB_struct.Geometry,'ElementData');
-    if isfield(FEB_struct.Geometry.ElementData,'Thickness');
+if isfield(FEB_struct.Geometry,'ElementData')
+    if isfield(FEB_struct.Geometry.ElementData,'Thickness')
         geometryNode = domNode.getElementsByTagName('Geometry').item(0); %Get GEONode
         
         numElementsPerSet=cellfun(@(x) size(x,1),FEB_struct.Geometry.Elements);
@@ -158,7 +158,7 @@ if isfield(FEB_struct.Geometry,'ElementData');
                 E=FEB_struct.Geometry.Elements{q_e1};
                 E_type=FEB_struct.Geometry.ElementType{q_e1};
                 
-                if FEB_struct.disp_opt==1;
+                if FEB_struct.disp_opt==1
                     hw = waitbar(0,['Adding ',E_type,' element thickness data entries....']);
                 end
                 c=1;
@@ -188,13 +188,13 @@ if isfield(FEB_struct.Geometry,'ElementData');
                     element_node.appendChild(thickness_node);
                     thickness_node.appendChild(domNode.createTextNode(v_text)); %Adding thickness data text
                     
-                    if FEB_struct.disp_opt==1 && rem(c,round(n_steps/10))==0;
+                    if FEB_struct.disp_opt==1 && rem(c,round(n_steps/10))==0
                         waitbar(c/n_steps);
                         
                     end
                     c=c+1;
                 end
-                if FEB_struct.disp_opt==1;
+                if FEB_struct.disp_opt==1
                     close(hw); drawnow;
                 end
             end
@@ -212,7 +212,7 @@ if isfield(FEB_struct.Geometry,'ElementData') %If ElementData exists
 end
 
 %% Adding surface field
-if isfield(FEB_struct.Geometry,'Surface');
+if isfield(FEB_struct.Geometry,'Surface')
     disp('----> Adding surface field');
     
     for q_set=1:1:numel(FEB_struct.Geometry.Surface)
@@ -265,7 +265,7 @@ end
 
 writeNodeSetType=1; %Override as 2 if the old format is desired which has the form form: <NodeSet name="bcSupportList_Z">  1,  2,  3,  4,  5,  6 </NodeSet>
 
-if isfield(FEB_struct.Geometry,'NodeSet');
+if isfield(FEB_struct.Geometry,'NodeSet')
     disp('----> Adding NodeSet field');
     
     for q_set=1:1:numel(FEB_struct.Geometry.NodeSet)

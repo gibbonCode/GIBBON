@@ -2,11 +2,11 @@ function [T]=affineTransformationMatrixDirect(V1,V2)
 
 %%
 %Force input to 3D
-if size(V1,2)==2; 
+if size(V1,2)==2
     V1(:,3)=0; 
 end
 
-if size(V2,2)==2; 
+if size(V2,2)==2
     V2(:,3)=0; 
 end
 
