@@ -2,7 +2,7 @@
 % Below is a demonstration of the features of the |patchTorus| function
 
 %%
-clear; close all; clc; 
+close all; clc; clear;
 
 %% Syntax
 % |[F,V]=patchTorus(r,nr,rc,nc,patchType);|

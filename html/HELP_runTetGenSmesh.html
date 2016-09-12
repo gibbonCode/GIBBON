@@ -6,7 +6,7 @@
    <!--
 This HTML was auto-generated from MATLAB code.
 To make changes, update the MATLAB code and republish this document.
-      --><title>runTetGenSmesh</title><meta name="generator" content="MATLAB 8.4"><link rel="schema.DC" href="http://purl.org/dc/elements/1.1/"><meta name="DC.date" content="2014-10-06"><meta name="DC.source" content="HELP_runTetGenSmesh.m"><style type="text/css">
+      --><title>runTetGenSmesh</title><meta name="generator" content="MATLAB 9.1"><link rel="schema.DC" href="http://purl.org/dc/elements/1.1/"><meta name="DC.date" content="2016-09-12"><meta name="DC.source" content="HELP_runTetGenSmesh.m"><style type="text/css">
 html,body,div,span,applet,object,iframe,h1,h2,h3,h4,h5,h6,p,blockquote,pre,a,abbr,acronym,address,big,cite,code,del,dfn,em,font,img,ins,kbd,q,s,samp,small,strike,strong,sub,sup,tt,var,b,u,i,center,dl,dt,dd,ol,ul,li,fieldset,form,label,legend,table,caption,tbody,tfoot,thead,tr,th,td{margin:0;padding:0;border:0;outline:0;font-size:100%;vertical-align:baseline;background:transparent}body{line-height:1}ol,ul{list-style:none}blockquote,q{quotes:none}blockquote:before,blockquote:after,q:before,q:after{content:'';content:none}:focus{outine:0}ins{text-decoration:none}del{text-decoration:line-through}table{border-collapse:collapse;border-spacing:0}
 
 html { min-height:100%; margin-bottom:1px; }
@@ -66,7 +66,7 @@ table td { padding:7px 5px; text-align:left; vertical-align:top; border:1px soli
 
 
 
-  </style></head><body><div class="content"><h1>runTetGenSmesh</h1><!--introduction--><p>Below is a demonstration of the features of the <tt>runTetGenSmesh</tt> function</p><!--/introduction--><h2>Contents</h2><div><ul><li><a href="#3">MESHING A SINGLE REGION MODEL</a></li><li><a href="#14">VIEWING THE MODEL IN TETVIEW</a></li><li><a href="#16">MESHING A MULTI-REGION MODEL</a></li><li><a href="#27">MESHING A MULTI-REGION MODEL CONTAINING HOLES</a></li><li><a href="#38">Meshing from a quadrilateral input surface</a></li></ul></div><pre class="codeinput">clear; close <span class="string">all</span>; clc;
+  </style></head><body><div class="content"><h1>runTetGenSmesh</h1><!--introduction--><p>Below is a demonstration of the features of the <tt>runTetGenSmesh</tt> function</p><!--/introduction--><h2>Contents</h2><div><ul><li><a href="#4">MESHING A SINGLE REGION MODEL</a></li><li><a href="#15">VIEWING THE MODEL IN TETVIEW</a></li><li><a href="#17">MESHING A MULTI-REGION MODEL</a></li><li><a href="#28">MESHING A MULTI-REGION MODEL CONTAINING HOLES</a></li><li><a href="#39">Meshing from a quadrilateral input surface</a></li></ul></div><pre class="codeinput">close <span class="string">all</span>; clc; <span class="comment">%clear;</span>
 </pre><p>Plot settings</p><pre class="codeinput">fig_color=<span class="string">'w'</span>; fig_colordef=<span class="string">'white'</span>;
 fontSize=15;
 faceAlpha1=0.5;
@@ -74,7 +74,10 @@ faceAlpha2=1;
 edgeColor=0.25*ones(1,3);
 edgeWidth=1.5;
 patchColor=[1 0.5 0];
-</pre><h2>MESHING A SINGLE REGION MODEL<a name="3"></a></h2><p>Building a geodesic dome surface model</p><pre class="codeinput">[F,V,~]=geoSphere(2,1);
+</pre><p>path names</p><pre class="codeinput">filePath=mfilename(<span class="string">'fullpath'</span>);
+savePath=fullfile(fileparts(filePath),<span class="string">'data'</span>,<span class="string">'temp'</span>);
+modelName=fullfile(savePath,<span class="string">'tetgenmodel'</span>);
+</pre><h2 id="4">MESHING A SINGLE REGION MODEL</h2><p>Building a geodesic dome surface model</p><pre class="codeinput">[F,V,~]=geoSphere(2,1);
 </pre><p>Plotting model</p><pre class="codeinput">hf=figuremax(fig_color,fig_colordef);
 title(<span class="string">'Surface model'</span>,<span class="string">'FontSize'</span>,fontSize);
 xlabel(<span class="string">'X'</span>,<span class="string">'FontSize'</span>,fontSize); ylabel(<span class="string">'Y'</span>,<span class="string">'FontSize'</span>,fontSize); zlabel(<span class="string">'Z'</span>,<span class="string">'FontSize'</span>,fontSize);
@@ -89,8 +92,7 @@ view(3); axis <span class="string">tight</span>;  axis <span class="string">equa
 </pre><p>Define region points</p><pre class="codeinput">V_regions=[0 0 0];
 </pre><p>Define hole points</p><pre class="codeinput">V_holes=[];
 </pre><p>Regional mesh volume parameter</p><pre class="codeinput">[regionA]=tetVolMeanEst(F,V); <span class="comment">%Volume for regular tets</span>
-</pre><p>CREATING THE SMESH STRUCTURE</p><pre class="codeinput">stringOpt=<span class="string">'-pq1.2AaYQ'</span>;
-modelName=<span class="string">'tetGenModel'</span>;
+</pre><p>CREATING THE SMESH STRUCTURE</p><pre class="codeinput">stringOpt=<span class="string">'-pq1.2AaYQV'</span>;
 smeshName=[modelName,<span class="string">'.smesh'</span>];
 
 smeshStruct.stringOpt=stringOpt;
@@ -103,24 +105,57 @@ smeshStruct.regionA=regionA;
 smeshStruct.minRegionMarker=2; <span class="comment">%Minimum region marker</span>
 smeshStruct.smeshName=smeshName;
 </pre><p>Mesh model using tetrahedral elements using tetGen (see: <a href="http://wias-berlin.de/software/tetgen/">http://wias-berlin.de/software/tetgen/</a>)</p><pre class="codeinput">[meshOutput]=runTetGenSmesh(smeshStruct); <span class="comment">%Run tetGen</span>
-</pre><pre class="codeoutput"> 
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
---- TETGEN Tetrahedral meshing --- 06-Oct-2014 14:15:49
+</pre><pre class="codeoutput">Warning: runTetGenSmesh has been renamed to runTetGen. runTetGenSmesh will be
+removed in future releases. 
  
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
---- Writing SMESH file --- 06-Oct-2014 14:15:49
+--- TETGEN Tetrahedral meshing --- 12-Sep-2016 09:35:54
+Warning: smeshStruct.smeshName input will be replaced by smeshStruct.modelName
+in future releases! 
+ 
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+--- Writing SMESH file --- 12-Sep-2016 09:35:54
+Warning: smeshStruct.smeshName input will be replaced by smeshStruct.modelName
+in future releases! 
 ----&gt; Adding node field
 ----&gt; Adding facet field
 ----&gt; Adding holes specification
 ----&gt; Adding region specification
---- Done --- 06-Oct-2014 14:15:49
---- Running TetGen for meshing --- 06-Oct-2014 14:15:49
-Opening tetGenModel.smesh.
---- Done --- 06-Oct-2014 14:15:49
+--- Done --- 12-Sep-2016 09:35:54
+--- Running TetGen to mesh input boundary--- 12-Sep-2016 09:35:54
+Opening D:\MATLAB\SVN\GIBBON\lib_ext\tetGen\tempFiles\tetgenmodel.smesh. 
+  Initializing memorypools. 
+  tetrahedron per block: 8188. 
+  Size of a point: 128 bytes. 
+  Size of a tetrahedron: 112 (112) bytes. 
+  Size of a shellface: 192 (192) bytes. 
+  Initializing robust predicates. 
+  sizeof(double) =  8 
+  machine epsilon =  2.22045e-016 [IEEE 754 64-bit macheps] 
+  Permuting vertices. 
+  Sorting vertices. 
+  Incrementally inserting vertices. 
+  320 (480) subfaces (segments). 
+  Recovering segments. 
+  480 (0) segments are recovered (missing). 
+  Recovering facets. 
+  320 (0) subfaces are recovered (missing). 
+  Found 1 domain. 
+  Initial obj = 97.129072319492408 
+  Min radiu-edge ratio = 1.2. 
+  Min dihedral   angle = 0. 
+  Splitting bad quality tets. 
+  Added 247 (0,0,247) Steiner points. 
+  Optimization level  = 2. 
+  Optimization scheme = 7. 
+  Number of iteration = 3. 
+  Min_Max dihed angle = 165. 
+  Removed 17 edges. 
+--- Done --- 12-Sep-2016 09:35:54
  
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
---- Importing TetGen files --- 06-Oct-2014 14:15:49
---- Done --- 06-Oct-2014 14:15:49
+--- Importing TetGen files --- 12-Sep-2016 09:35:54
+--- Done --- 12-Sep-2016 09:35:54
 </pre><p>Access model element and patch data</p><pre class="codeinput">F=meshOutput.faces;
 V=meshOutput.nodes;
 C=meshOutput.faceMaterialID;
@@ -148,14 +183,9 @@ colormap(autumn);
 camlight <span class="string">headlight</span>;
 set(gca,<span class="string">'FontSize'</span>,fontSize);
 drawnow;
-</pre><pre class="codeoutput">Warning: tet4 elements assumed, for other elements please specify elementType 
-</pre><img vspace="5" hspace="5" src="HELP_runTetGenSmesh_02.png" alt=""> <h2>VIEWING THE MODEL IN TETVIEW<a name="14"></a></h2><p>TetView is an external (non-MATLAB) program for viewing TetGen meshes. The runTetGenSmesh function also copies the mesh output files to the tetView directory. TetView is usually found here: ...\gibbon\trunk\lib_ext\tetGen You can run TetView seperately or use the following to view the model in TetView:</p><pre class="codeinput">runTetView(meshOutput.loadNameStruct.loadName_ele);
-</pre><pre class="codeoutput">
-runString =
-
-/data/MATLAB/GIBBON/trunk/lib_ext/tetGen/lin64/tetview-linux tetGenModel.1.ele &amp; 
-
-</pre><p>Here is an example screeshot for viewing models in tetView:</p><p><img vspace="5" hspace="5" src="tetView_screenshot.jpg" alt=""> </p><h2>MESHING A MULTI-REGION MODEL<a name="16"></a></h2><p>Simulating a multiregion mesh</p><pre class="codeinput">[F1,V1]=parasaurolophus; <span class="comment">%A dino</span>
+</pre><pre class="codeoutput">tet4 elements assumed, for other elements please specify elementType
+</pre><img vspace="5" hspace="5" src="HELP_runTetGenSmesh_02.png" alt=""> <h2 id="15">VIEWING THE MODEL IN TETVIEW</h2><p>TetView is an external (non-MATLAB) program for viewing TetGen meshes. The runTetGenSmesh function also copies the mesh output files to the tetView directory. TetView is usually found here: ...\gibbon\trunk\lib_ext\tetGen You can run TetView seperately or use the following to view the model in TetView:</p><pre class="codeinput">runTetView(meshOutput.loadNameStruct.loadName_ele);
+</pre><p>Here is an example screeshot for viewing models in tetView:</p><p><img vspace="5" hspace="5" src="tetView_screenshot.jpg" alt=""> </p><h2 id="17">MESHING A MULTI-REGION MODEL</h2><p>Simulating a multiregion mesh</p><pre class="codeinput">[F1,V1]=parasaurolophus; <span class="comment">%A dino</span>
 [F2,V2,~]=geoSphere(2,0.4); <span class="comment">%An internal region</span>
 V2(:,1)=2*V2(:,1);
 V_centre=[0.75 0 0.25];
@@ -182,7 +212,6 @@ view(3); axis <span class="string">tight</span>;  axis <span class="string">equa
 </pre><p>Regional mesh parameters</p><pre class="codeinput">[A]=tetVolMeanEst(F,V);
 regionA=[A A*3];
 </pre><p>CREATING THE SMESH STRUCTURE</p><pre class="codeinput">stringOpt=<span class="string">'-pq1.2AaYQ'</span>;
-modelName=<span class="string">'tetGenModel'</span>;
 smeshName=[modelName,<span class="string">'.smesh'</span>];
 
 smeshStruct.stringOpt=stringOpt;
@@ -195,24 +224,30 @@ smeshStruct.regionA=regionA;
 smeshStruct.minRegionMarker=2; <span class="comment">%Minimum region marker</span>
 smeshStruct.smeshName=smeshName;
 </pre><p>Mesh model using tetrahedral elements using tetGen (see: <a href="http://wias-berlin.de/software/tetgen/">http://wias-berlin.de/software/tetgen/</a>)</p><pre class="codeinput">[meshOutput]=runTetGenSmesh(smeshStruct); <span class="comment">%Run tetGen</span>
-</pre><pre class="codeoutput"> 
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
---- TETGEN Tetrahedral meshing --- 06-Oct-2014 14:15:52
+</pre><pre class="codeoutput">Warning: runTetGenSmesh has been renamed to runTetGen. runTetGenSmesh will be
+removed in future releases. 
  
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
---- Writing SMESH file --- 06-Oct-2014 14:15:52
+--- TETGEN Tetrahedral meshing --- 12-Sep-2016 09:35:57
+Warning: smeshStruct.smeshName input will be replaced by smeshStruct.modelName
+in future releases! 
+ 
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+--- Writing SMESH file --- 12-Sep-2016 09:35:57
+Warning: smeshStruct.smeshName input will be replaced by smeshStruct.modelName
+in future releases! 
 ----&gt; Adding node field
 ----&gt; Adding facet field
 ----&gt; Adding holes specification
 ----&gt; Adding region specification
---- Done --- 06-Oct-2014 14:15:52
---- Running TetGen for meshing --- 06-Oct-2014 14:15:52
-Opening tetGenModel.smesh.
---- Done --- 06-Oct-2014 14:15:53
+--- Done --- 12-Sep-2016 09:35:57
+--- Running TetGen to mesh input boundary--- 12-Sep-2016 09:35:57
+Opening D:\MATLAB\SVN\GIBBON\lib_ext\tetGen\tempFiles\tetgenmodel.smesh. 
+--- Done --- 12-Sep-2016 09:35:57
  
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
---- Importing TetGen files --- 06-Oct-2014 14:15:53
---- Done --- 06-Oct-2014 14:15:53
+--- Importing TetGen files --- 12-Sep-2016 09:35:57
+--- Done --- 12-Sep-2016 09:35:57
 </pre><p>Access model element and patch data</p><pre class="codeinput">F=meshOutput.faces;
 V=meshOutput.nodes;
 C=meshOutput.faceMaterialID;
@@ -240,8 +275,8 @@ colormap(autumn);
 camlight <span class="string">headlight</span>;
 set(gca,<span class="string">'FontSize'</span>,fontSize);
 drawnow;
-</pre><pre class="codeoutput">Warning: tet4 elements assumed, for other elements please specify elementType 
-</pre><img vspace="5" hspace="5" src="HELP_runTetGenSmesh_04.png" alt=""> <h2>MESHING A MULTI-REGION MODEL CONTAINING HOLES<a name="27"></a></h2><p>Simulating a multiregion mesh</p><pre class="codeinput"><span class="comment">%A dino</span>
+</pre><pre class="codeoutput">tet4 elements assumed, for other elements please specify elementType
+</pre><img vspace="5" hspace="5" src="HELP_runTetGenSmesh_04.png" alt=""> <h2 id="28">MESHING A MULTI-REGION MODEL CONTAINING HOLES</h2><p>Simulating a multiregion mesh</p><pre class="codeinput"><span class="comment">%A dino</span>
 [F1,V1]=parasaurolophus;
 
 <span class="comment">%An internal region</span>
@@ -277,8 +312,6 @@ view(3); axis <span class="string">tight</span>;  axis <span class="string">equa
 </pre><p>Regional mesh parameters</p><pre class="codeinput">[A]=tetVolMeanEst(F,V);
 regionA=[A A/2];
 </pre><p>CREATING THE SMESH STRUCTURE, meshing without the surface constraints imposed by the -Y this time.</p><pre class="codeinput">stringOpt=<span class="string">'-pq1.3AaQ'</span>;
-
-modelName=<span class="string">'tetGenModel'</span>;
 smeshName=[modelName,<span class="string">'.smesh'</span>];
 
 smeshStruct.stringOpt=stringOpt;
@@ -291,24 +324,30 @@ smeshStruct.regionA=regionA;
 smeshStruct.minRegionMarker=2; <span class="comment">%Minimum region marker</span>
 smeshStruct.smeshName=smeshName;
 </pre><p>Mesh model using tetrahedral elements using tetGen (see: <a href="http://wias-berlin.de/software/tetgen/">http://wias-berlin.de/software/tetgen/</a>)</p><pre class="codeinput">[meshOutput]=runTetGenSmesh(smeshStruct); <span class="comment">%Run tetGen</span>
-</pre><pre class="codeoutput"> 
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
---- TETGEN Tetrahedral meshing --- 06-Oct-2014 14:15:56
+</pre><pre class="codeoutput">Warning: runTetGenSmesh has been renamed to runTetGen. runTetGenSmesh will be
+removed in future releases. 
  
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
---- Writing SMESH file --- 06-Oct-2014 14:15:56
+--- TETGEN Tetrahedral meshing --- 12-Sep-2016 09:35:58
+Warning: smeshStruct.smeshName input will be replaced by smeshStruct.modelName
+in future releases! 
+ 
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+--- Writing SMESH file --- 12-Sep-2016 09:35:58
+Warning: smeshStruct.smeshName input will be replaced by smeshStruct.modelName
+in future releases! 
 ----&gt; Adding node field
 ----&gt; Adding facet field
 ----&gt; Adding holes specification
 ----&gt; Adding region specification
---- Done --- 06-Oct-2014 14:15:56
---- Running TetGen for meshing --- 06-Oct-2014 14:15:56
-Opening tetGenModel.smesh.
---- Done --- 06-Oct-2014 14:15:57
+--- Done --- 12-Sep-2016 09:35:58
+--- Running TetGen to mesh input boundary--- 12-Sep-2016 09:35:58
+Opening D:\MATLAB\SVN\GIBBON\lib_ext\tetGen\tempFiles\tetgenmodel.smesh. 
+--- Done --- 12-Sep-2016 09:35:59
  
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
---- Importing TetGen files --- 06-Oct-2014 14:15:57
---- Done --- 06-Oct-2014 14:15:57
+--- Importing TetGen files --- 12-Sep-2016 09:35:59
+--- Done --- 12-Sep-2016 09:35:59
 </pre><p>Access model element and patch data</p><pre class="codeinput">F=meshOutput.faces;
 V=meshOutput.nodes;
 C=meshOutput.faceMaterialID;
@@ -336,14 +375,13 @@ colormap(autumn);
 camlight <span class="string">headlight</span>;
 set(gca,<span class="string">'FontSize'</span>,fontSize);
 drawnow;
-</pre><pre class="codeoutput">Warning: tet4 elements assumed, for other elements please specify elementType 
-</pre><img vspace="5" hspace="5" src="HELP_runTetGenSmesh_06.png" alt=""> <h2>Meshing from a quadrilateral input surface<a name="38"></a></h2><p>Build a quadrilateral surface</p><pre class="codeinput">boxDim=[4 5 6];
+</pre><pre class="codeoutput">tet4 elements assumed, for other elements please specify elementType
+</pre><img vspace="5" hspace="5" src="HELP_runTetGenSmesh_06.png" alt=""> <h2 id="39">Meshing from a quadrilateral input surface</h2><p>Build a quadrilateral surface</p><pre class="codeinput">boxDim=[4 5 6];
 boxEl=[4 5 6];
 [Fq,Vq,faceBoundaryMarker_q]=quadBox(boxDim,boxEl);
 </pre><p>Create smesh structure</p><pre class="codeinput">[regionA]=tetVolMeanEst(Fq,Vq); <span class="comment">%Volume for regular tets</span>
 
 stringOpt=<span class="string">'-pq1.2AaYQV'</span>;
-modelName=<span class="string">'tempModel'</span>;
 smeshName=[modelName,<span class="string">'.smesh'</span>];
 
 smeshStruct.stringOpt=stringOpt;
@@ -356,51 +394,57 @@ smeshStruct.regionA=regionA;
 smeshStruct.minRegionMarker=2; <span class="comment">%Minimum region marker</span>
 smeshStruct.smeshName=smeshName;
 </pre><p>Mesh model using tetrahedral elements using tetGen (see: <a href="http://wias-berlin.de/software/tetgen/">http://wias-berlin.de/software/tetgen/</a>)</p><pre class="codeinput">[meshOutput]=runTetGenSmesh(smeshStruct); <span class="comment">%Run tetGen</span>
-</pre><pre class="codeoutput"> 
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
---- TETGEN Tetrahedral meshing --- 06-Oct-2014 14:16:02
+</pre><pre class="codeoutput">Warning: runTetGenSmesh has been renamed to runTetGen. runTetGenSmesh will be
+removed in future releases. 
  
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
---- Writing SMESH file --- 06-Oct-2014 14:16:02
+--- TETGEN Tetrahedral meshing --- 12-Sep-2016 09:36:00
+Warning: smeshStruct.smeshName input will be replaced by smeshStruct.modelName
+in future releases! 
+ 
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+--- Writing SMESH file --- 12-Sep-2016 09:36:00
+Warning: smeshStruct.smeshName input will be replaced by smeshStruct.modelName
+in future releases! 
 ----&gt; Adding node field
 ----&gt; Adding facet field
 ----&gt; Adding holes specification
 ----&gt; Adding region specification
---- Done --- 06-Oct-2014 14:16:02
---- Running TetGen for meshing --- 06-Oct-2014 14:16:02
-Opening tempModel.smesh.
-  Initializing memorypools.
-  tetrahedron per block: 8188.
-  Size of a point: 128 bytes.
-  Size of a tetrahedron: 112 (112) bytes.
-  Size of a shellface: 192 (192) bytes.
-  Initializing robust predicates.
-  sizeof(double) =  8
-  machine epsilon =   2.22045e-16 [IEEE 754 64-bit macheps]
-  Permuting vertices.
-  Sorting vertices.
-  Incrementally inserting vertices.
-  296 (296) subfaces (segments).
-  Recovering segments.
-  296 (0) segments are recovered (missing).
-  Recovering facets.
-  296 (0) subfaces are recovered (missing).
-  Found 1 domain.
-  Initial obj = 23328
-  Min radiu-edge ratio = 1.2.
-  Min dihedral   angle = 0.
-  Splitting bad quality tets.
-  Added 152 (0,0,152) Steiner points.
-  Optimization level  = 2.
-  Optimization scheme = 7.
-  Number of iteration = 3.
-  Min_Max dihed angle = 165.
-  Removed 4 edges.
---- Done --- 06-Oct-2014 14:16:02
+--- Done --- 12-Sep-2016 09:36:01
+--- Running TetGen to mesh input boundary--- 12-Sep-2016 09:36:01
+Opening D:\MATLAB\SVN\GIBBON\lib_ext\tetGen\tempFiles\tetgenmodel.smesh. 
+  Initializing memorypools. 
+  tetrahedron per block: 8188. 
+  Size of a point: 128 bytes. 
+  Size of a tetrahedron: 112 (112) bytes. 
+  Size of a shellface: 192 (192) bytes. 
+  Initializing robust predicates. 
+  sizeof(double) =  8 
+  machine epsilon =  2.22045e-016 [IEEE 754 64-bit macheps] 
+  Permuting vertices. 
+  Sorting vertices. 
+  Incrementally inserting vertices. 
+  296 (296) subfaces (segments). 
+  Recovering segments. 
+  296 (0) segments are recovered (missing). 
+  Recovering facets. 
+  296 (0) subfaces are recovered (missing). 
+  Found 1 domain. 
+  Initial obj = 23328 
+  Min radiu-edge ratio = 1.2. 
+  Min dihedral   angle = 0. 
+  Splitting bad quality tets. 
+  Added 155 (0,0,155) Steiner points. 
+  Optimization level  = 2. 
+  Optimization scheme = 7. 
+  Number of iteration = 3. 
+  Min_Max dihed angle = 165. 
+  Removed 9 edges. 
+--- Done --- 12-Sep-2016 09:36:01
  
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
---- Importing TetGen files --- 06-Oct-2014 14:16:02
---- Done --- 06-Oct-2014 14:16:02
+--- Importing TetGen files --- 12-Sep-2016 09:36:01
+--- Done --- 12-Sep-2016 09:36:01
 </pre><p>Access model element and patch data</p><pre class="codeinput">F=meshOutput.faces;
 V=meshOutput.nodes;
 C=meshOutput.faceMaterialID;
@@ -436,15 +480,14 @@ colormap(autumn);
 camlight <span class="string">headlight</span>;
 set(gca,<span class="string">'FontSize'</span>,fontSize);
 drawnow;
-</pre><pre class="codeoutput">Warning: tet4 elements assumed, for other elements please specify elementType 
-</pre><img vspace="5" hspace="5" src="HELP_runTetGenSmesh_07.png" alt=""> <p><img vspace="5" hspace="5" src="gibbVerySmall.gif" alt=""> </p><p><i><b>GIBBON</b></i> <a href="www.gibboncode.org">www.gibboncode.org</a></p><p><i>Kevin Mattheus Moerman</i>, <a href="gibbon.toolbox@gmail.com">gibbon.toolbox@gmail.com</a></p><p class="footer"><br><a href="http://www.mathworks.com/products/matlab/">Published with MATLAB&reg; R2014b</a><br></p></div><!--
+</pre><pre class="codeoutput">tet4 elements assumed, for other elements please specify elementType
+</pre><img vspace="5" hspace="5" src="HELP_runTetGenSmesh_07.png" alt=""> <p><img vspace="5" hspace="5" src="gibbVerySmall.gif" alt=""> </p><p><i><b>GIBBON</b></i> <a href="www.gibboncode.org">www.gibboncode.org</a></p><p><i>Kevin Mattheus Moerman</i>, <a href="gibbon.toolbox@gmail.com">gibbon.toolbox@gmail.com</a></p><p class="footer"><br><a href="http://www.mathworks.com/products/matlab/">Published with MATLAB&reg; R2016b</a><br></p></div><!--
 ##### SOURCE BEGIN #####
 %% runTetGenSmesh
 % Below is a demonstration of the features of the |runTetGenSmesh| function
 %
 %%
-
-clear; close all; clc;
+close all; clc; %clear;
 
 %%
 % Plot settings
@@ -455,6 +498,12 @@ faceAlpha2=1;
 edgeColor=0.25*ones(1,3);
 edgeWidth=1.5;
 patchColor=[1 0.5 0];
+
+%%
+% path names
+filePath=mfilename('fullpath');
+savePath=fullfile(fileparts(filePath),'data','temp');
+modelName=fullfile(savePath,'tetgenmodel');
 
 %% MESHING A SINGLE REGION MODEL
 
@@ -494,8 +543,7 @@ V_holes=[];
 %% 
 % CREATING THE SMESH STRUCTURE
 
-stringOpt='-pq1.2AaYQ';
-modelName='tetGenModel';
+stringOpt='-pq1.2AaYQV';
 smeshName=[modelName,'.smesh'];
 
 smeshStruct.stringOpt=stringOpt;
@@ -611,7 +659,6 @@ regionA=[A A*3];
 % CREATING THE SMESH STRUCTURE
 
 stringOpt='-pq1.2AaYQ';
-modelName='tetGenModel';
 smeshName=[modelName,'.smesh'];
 
 smeshStruct.stringOpt=stringOpt;
@@ -636,7 +683,7 @@ F=meshOutput.faces;
 V=meshOutput.nodes;
 C=meshOutput.faceMaterialID;
 E=meshOutput.elements;
-
+ 
 %% 
 % PLOTTING MODEL 
 
@@ -725,8 +772,6 @@ regionA=[A A/2];
 % imposed by the -Y this time. 
 
 stringOpt='-pq1.3AaQ';
-
-modelName='tetGenModel';
 smeshName=[modelName,'.smesh'];
 
 smeshStruct.stringOpt=stringOpt;
@@ -792,7 +837,6 @@ boxEl=[4 5 6];
 [regionA]=tetVolMeanEst(Fq,Vq); %Volume for regular tets
 
 stringOpt='-pq1.2AaYQV';
-modelName='tempModel';
 smeshName=[modelName,'.smesh'];
 
 smeshStruct.stringOpt=stringOpt;

@@ -7,7 +7,7 @@
 
 %%
 
-clear; close all; clc; 
+close all; clc; clear;
 
 %%
 % Plot settings
@@ -285,7 +285,7 @@ FEB_struct.Contact{1}.Values={100,1,1,...
                                       0.01};
 
 %Adding output requests
-FEB_struct.Output.VarTypes={'displacement','stress','relative volume','shell thickness'};
+FEB_struct.Output.VarTypes={'displacement','stress','relative volume'};
 
 %Specify log file output
 run_node_output_name=[FEB_struct.run_filename(1:end-4),'_node_out.txt'];

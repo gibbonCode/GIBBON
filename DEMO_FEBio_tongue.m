@@ -7,7 +7,7 @@
 
 %%
 
-clear; close all; clc;
+close all; clc; clear;
 
 %%
 % Plot settings
@@ -30,10 +30,13 @@ modelName=fullfile(savePath,'tempModel');
 %Material parameter set
 c1=1e-3;
 m1=12;
-ksi=c1*10;
+ksi=c1*100;
 beta=3;
 k_factor=1e3;
+alphaFib=0.25*pi;
 k=0.5.*(c1+ksi)*k_factor;
+
+T0=1e-3; %Active stress
 
 %% BUILD TONGUE MODEL
 % The model geometry was obtained from the Artisynth project (see www.)
@@ -115,17 +118,21 @@ FEB_struct.Geometry.ElementMat={elementMaterialIndices};
 FEB_struct.Geometry.ElementsPartName={'Tongue'};
 
 % DEFINING MATERIALS
-FEB_struct.Materials{1}.Type='uncoupled solid mixture';
+FEB_struct.Materials{1}.Type='solid mixture';
 % FEB_struct.Materials{1}.AnisoType='mat_axis';
 
-FEB_struct.Materials{1}.Solid{1}.Type='Ogden';
-FEB_struct.Materials{1}.Solid{1}.Properties={'c1','m1','k'};
+FEB_struct.Materials{1}.Solid{1}.Type='Ogden unconstrained';
+FEB_struct.Materials{1}.Solid{1}.Properties={'c1','m1','cp'};
 FEB_struct.Materials{1}.Solid{1}.Values={c1,m1,k};
 
-FEB_struct.Materials{1}.Solid{2}.Type='fiber-exp-pow-uncoupled';
-FEB_struct.Materials{1}.Solid{2}.Properties={'ksi','alpha','beta','theta','phi','k'};
-FEB_struct.Materials{1}.Solid{2}.Values={ksi,1e-20,beta,0,0,k};
+FEB_struct.Materials{1}.Solid{2}.Type='prescribed uniaxial active contraction';
+FEB_struct.Materials{1}.Solid{2}.Properties={'T0','theta','phi'};
+FEB_struct.Materials{1}.Solid{2}.Values={T0,0,0};
 FEB_struct.Materials{1}.Solid{2}.AnisoType='mat_axis';
+
+FEB_struct.Materials{1}.Solid{2}.PropAttrName=cell(1,numel(FEB_struct.Materials{1}.Solid{2}.Properties));
+FEB_struct.Materials{1}.Solid{2}.PropAttrName{1}='lc';
+FEB_struct.Materials{1}.Solid{2}.PropAttrVal{1}=1;
 
 %Adding fibre direction, construct local orthonormal basis vectors
 [a,d]=vectorOrthogonalPair(VF);
@@ -162,17 +169,6 @@ FEB_struct.Boundary.Fix{2}.bc='y';
 FEB_struct.Boundary.Fix{2}.SetName=FEB_struct.Geometry.NodeSet{1}.Name;
 FEB_struct.Boundary.Fix{3}.bc='z';
 FEB_struct.Boundary.Fix{3}.SetName=FEB_struct.Geometry.NodeSet{1}.Name;
-
-FEB_struct.Boundary.Prescribe{1}.SetName=FEB_struct.Geometry.NodeSet{2}.Name;
-FEB_struct.Boundary.Prescribe{1}.Scale=displacementMagnitude(1);
-FEB_struct.Boundary.Prescribe{1}.bc='x';
-FEB_struct.Boundary.Prescribe{1}.lc=1;
-FEB_struct.Boundary.Prescribe{1}.Type='relative';
-FEB_struct.Boundary.Prescribe{2}.SetName=FEB_struct.Geometry.NodeSet{2}.Name;
-FEB_struct.Boundary.Prescribe{2}.Scale=displacementMagnitude(3);
-FEB_struct.Boundary.Prescribe{2}.bc='z';
-FEB_struct.Boundary.Prescribe{2}.lc=1;
-FEB_struct.Boundary.Prescribe{2}.Type='relative';
 
 %Load curves
 FEB_struct.LoadData.LoadCurves.id=1;
@@ -232,7 +228,7 @@ hps=patch('Faces',F,'Vertices',V_def,'FaceColor','flat','CData',CF);
 
 view(3); axis tight;  axis equal;  grid on;
 colormap jet; colorbar;
-% camlight headlight;
+camlight headlight;
 set(gca,'FontSize',fontSize);
 drawnow;
 

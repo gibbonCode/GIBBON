@@ -7,7 +7,7 @@
 
 %%
 
-clear; close all; clc;
+close all; clc; clear;
 
 %%
 % Plot settings
@@ -45,7 +45,7 @@ m1=12;
 ksi=c1*100;
 beta=3;
 k_factor=1e3;
-alphaFib=0.25*pi;
+alphaFib=1/3*pi;
 k=0.5.*(c1+ksi)*k_factor;
 
 T0=1e-3; %Active stress

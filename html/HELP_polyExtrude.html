@@ -6,7 +6,7 @@
    <!--
 This HTML was auto-generated from MATLAB code.
 To make changes, update the MATLAB code and republish this document.
-      --><title>polyExtrude</title><meta name="generator" content="MATLAB 8.4"><link rel="schema.DC" href="http://purl.org/dc/elements/1.1/"><meta name="DC.date" content="2014-11-21"><meta name="DC.source" content="HELP_polyExtrude.m"><style type="text/css">
+      --><title>polyExtrude</title><meta name="generator" content="MATLAB 9.1"><link rel="schema.DC" href="http://purl.org/dc/elements/1.1/"><meta name="DC.date" content="2016-09-12"><meta name="DC.source" content="HELP_polyExtrude.m"><style type="text/css">
 html,body,div,span,applet,object,iframe,h1,h2,h3,h4,h5,h6,p,blockquote,pre,a,abbr,acronym,address,big,cite,code,del,dfn,em,font,img,ins,kbd,q,s,samp,small,strike,strong,sub,sup,tt,var,b,u,i,center,dl,dt,dd,ol,ul,li,fieldset,form,label,legend,table,caption,tbody,tfoot,thead,tr,th,td{margin:0;padding:0;border:0;outline:0;font-size:100%;vertical-align:baseline;background:transparent}body{line-height:1}ol,ul{list-style:none}blockquote,q{quotes:none}blockquote:before,blockquote:after,q:before,q:after{content:'';content:none}:focus{outine:0}ins{text-decoration:none}del{text-decoration:line-through}table{border-collapse:collapse;border-spacing:0}
 
 html { min-height:100%; margin-bottom:1px; }
@@ -66,14 +66,14 @@ table td { padding:7px 5px; text-align:left; vertical-align:top; border:1px soli
 
 
 
-  </style></head><body><div class="content"><h1>polyExtrude</h1><!--introduction--><p>Below is a demonstration of the features of the <tt>polyExtrude</tt> function</p><!--/introduction--><h2>Contents</h2><div><ul><li><a href="#1">Syntax</a></li><li><a href="#2">Description</a></li><li><a href="#3">Examples</a></li><li><a href="#6">Example: EXTRUDING A PLANAR POLYGON</a></li><li><a href="#10">Example: EXTRUDING A TILTED PLANAR POLYGON</a></li><li><a href="#16">Example: EXTRUDING A NON-PLANAR POLYGON</a></li></ul></div><h2>Syntax<a name="1"></a></h2><p><tt>[F_tri,V_tri]=polyExtrude(Vc,cPar);</tt></p><h2>Description<a name="2"></a></h2><p>The <tt>polyExtrude</tt> function can be used to extrude polygons to obtain patch data and generate CAD like model geometry.</p><h2>Examples<a name="3"></a></h2><pre class="codeinput">clear; close <span class="string">all</span>; clc;
+  </style></head><body><div class="content"><h1>polyExtrude</h1><!--introduction--><p>Below is a demonstration of the features of the <tt>polyExtrude</tt> function</p><!--/introduction--><h2>Contents</h2><div><ul><li><a href="#1">Syntax</a></li><li><a href="#2">Description</a></li><li><a href="#3">Examples</a></li><li><a href="#6">Example: EXTRUDING A PLANAR POLYGON</a></li><li><a href="#10">Example: EXTRUDING A TILTED PLANAR POLYGON</a></li><li><a href="#16">Example: EXTRUDING A NON-PLANAR POLYGON</a></li></ul></div><h2 id="1">Syntax</h2><p><tt>[F_tri,V_tri]=polyExtrude(Vc,cPar);</tt></p><h2 id="2">Description</h2><p>The <tt>polyExtrude</tt> function can be used to extrude polygons to obtain patch data and generate CAD like model geometry.</p><h2 id="3">Examples</h2><pre class="codeinput">close <span class="string">all</span>; clc; <span class="comment">%clear;</span>
 </pre><p>Plot settings</p><pre class="codeinput">figColor=<span class="string">'w'</span>;
 figColorDef=<span class="string">'white'</span>;
 fontSize=15;
 markerSize1=45;
 lineWidth1=4;
 faceAlpha=0.5;
-</pre><h2>Example: EXTRUDING A PLANAR POLYGON<a name="6"></a></h2><pre class="codeinput"><span class="comment">%Sketching profile</span>
+</pre><h2 id="6">Example: EXTRUDING A PLANAR POLYGON</h2><pre class="codeinput"><span class="comment">%Sketching profile</span>
 ns=150;
 t=linspace(0,2*pi,ns);
 t=t(1:end-1);
@@ -96,20 +96,20 @@ cPar.depth=7;
 cPar.patchType=<span class="string">'quad'</span>;
 cPar.dir=0;
 cPar.closeLoopOpt=1;
-[F_tri,V_tri]=polyExtrude(Vc,cPar);
+[F,V]=polyExtrude(Vc,cPar);
 </pre><p>Plotting meshed model</p><pre class="codeinput">hf2=figuremax(figColor,figColorDef);
 title(<span class="string">'The extruded planar polygon'</span>,<span class="string">'FontSize'</span>,fontSize);
 xlabel(<span class="string">'X'</span>,<span class="string">'FontSize'</span>,fontSize);ylabel(<span class="string">'Y'</span>,<span class="string">'FontSize'</span>,fontSize); zlabel(<span class="string">'Z'</span>,<span class="string">'FontSize'</span>,fontSize);
 hold <span class="string">on</span>;
 
-hp=patch(<span class="string">'faces'</span>,F_tri,<span class="string">'Vertices'</span>,V_tri); set(hp,<span class="string">'FaceColor'</span>,<span class="string">'g'</span>,<span class="string">'EdgeColor'</span>,<span class="string">'k'</span>,<span class="string">'FaceAlpha'</span>,faceAlpha);
-
+hp=patch(<span class="string">'faces'</span>,F,<span class="string">'Vertices'</span>,V); set(hp,<span class="string">'FaceColor'</span>,<span class="string">'g'</span>,<span class="string">'EdgeColor'</span>,<span class="string">'k'</span>,<span class="string">'FaceAlpha'</span>,faceAlpha);
+<span class="comment">% patchNormPlot(F_tri,V_tri);</span>
 plotV(Vc,<span class="string">'r-'</span>,<span class="string">'lineWidth'</span>,lineWidth1,<span class="string">'MarkerSize'</span>,markerSize1);
 
 axis <span class="string">equal</span>; view(3); axis <span class="string">tight</span>;  grid <span class="string">on</span>;  set(gca,<span class="string">'FontSize'</span>,fontSize);
 camlight <span class="string">headlight</span>;
 drawnow;
-</pre><img vspace="5" hspace="5" src="HELP_polyExtrude_02.png" alt=""> <h2>Example: EXTRUDING A TILTED PLANAR POLYGON<a name="10"></a></h2><pre class="codeinput"><span class="comment">%Create rotation matrix</span>
+</pre><img vspace="5" hspace="5" src="HELP_polyExtrude_02.png" alt=""> <h2 id="10">Example: EXTRUDING A TILTED PLANAR POLYGON</h2><pre class="codeinput"><span class="comment">%Create rotation matrix</span>
 E=[0.25*pi 0 0]; <span class="comment">%Euler angles</span>
 [R,~]=euler2DCM(E); <span class="comment">%The rotation matrix</span>
 Vc=(R*Vc')'; <span class="comment">%Rotate polygon</span>
@@ -128,13 +128,13 @@ cPar.depth=7;
 cPar.patchType=<span class="string">'tri_slash'</span>;
 cPar.dir=0;
 cPar.closeLoopOpt=1;
-[F_tri,V_tri]=polyExtrude(Vc,cPar);
+[F,V]=polyExtrude(Vc,cPar);
 </pre><p>Plotting meshed model</p><pre class="codeinput">hf2=figuremax(figColor,figColorDef);
 title(<span class="string">'The extruded planar polygon normal to polygon'</span>,<span class="string">'FontSize'</span>,fontSize);
 xlabel(<span class="string">'X'</span>,<span class="string">'FontSize'</span>,fontSize);ylabel(<span class="string">'Y'</span>,<span class="string">'FontSize'</span>,fontSize); zlabel(<span class="string">'Z'</span>,<span class="string">'FontSize'</span>,fontSize);
 hold <span class="string">on</span>;
 
-hp=patch(<span class="string">'faces'</span>,F_tri,<span class="string">'Vertices'</span>,V_tri); set(hp,<span class="string">'FaceColor'</span>,<span class="string">'g'</span>,<span class="string">'EdgeColor'</span>,<span class="string">'k'</span>,<span class="string">'FaceAlpha'</span>,faceAlpha);
+hp=patch(<span class="string">'faces'</span>,F,<span class="string">'Vertices'</span>,V); set(hp,<span class="string">'FaceColor'</span>,<span class="string">'g'</span>,<span class="string">'EdgeColor'</span>,<span class="string">'k'</span>,<span class="string">'FaceAlpha'</span>,faceAlpha);
 
 plotV(Vc,<span class="string">'r-'</span>,<span class="string">'lineWidth'</span>,lineWidth1,<span class="string">'MarkerSize'</span>,markerSize1);
 
@@ -148,20 +148,20 @@ cPar.patchType=<span class="string">'tri'</span>;
 cPar.dir=0;
 cPar.n=[0 0 1];
 cPar.closeLoopOpt=1;
-[F_tri,V_tri]=polyExtrude(Vc,cPar);
+[F,V]=polyExtrude(Vc,cPar);
 </pre><p>Plotting meshed model</p><pre class="codeinput">hf2=figuremax(figColor,figColorDef);
 title(<span class="string">'The extruded planar polygon in z-dir'</span>,<span class="string">'FontSize'</span>,fontSize);
 xlabel(<span class="string">'X'</span>,<span class="string">'FontSize'</span>,fontSize);ylabel(<span class="string">'Y'</span>,<span class="string">'FontSize'</span>,fontSize); zlabel(<span class="string">'Z'</span>,<span class="string">'FontSize'</span>,fontSize);
 hold <span class="string">on</span>;
 
-hp=patch(<span class="string">'faces'</span>,F_tri,<span class="string">'Vertices'</span>,V_tri); set(hp,<span class="string">'FaceColor'</span>,<span class="string">'g'</span>,<span class="string">'EdgeColor'</span>,<span class="string">'k'</span>,<span class="string">'FaceAlpha'</span>,faceAlpha);
+hp=patch(<span class="string">'faces'</span>,F,<span class="string">'Vertices'</span>,V); set(hp,<span class="string">'FaceColor'</span>,<span class="string">'g'</span>,<span class="string">'EdgeColor'</span>,<span class="string">'k'</span>,<span class="string">'FaceAlpha'</span>,faceAlpha);
 
 plotV(Vc,<span class="string">'r-'</span>,<span class="string">'lineWidth'</span>,lineWidth1,<span class="string">'MarkerSize'</span>,markerSize1);
 
 axis <span class="string">equal</span>; view(3); axis <span class="string">tight</span>;  grid <span class="string">on</span>;  set(gca,<span class="string">'FontSize'</span>,fontSize);
 camlight <span class="string">headlight</span>;
 drawnow;
-</pre><img vspace="5" hspace="5" src="HELP_polyExtrude_05.png" alt=""> <h2>Example: EXTRUDING A NON-PLANAR POLYGON<a name="16"></a></h2><pre class="codeinput"><span class="comment">%Sketching profile</span>
+</pre><img vspace="5" hspace="5" src="HELP_polyExtrude_05.png" alt=""> <h2 id="16">Example: EXTRUDING A NON-PLANAR POLYGON</h2><pre class="codeinput"><span class="comment">%Sketching profile</span>
 ns=150;
 t=linspace(0,2*pi,ns);
 t=t(1:end-1);
@@ -185,20 +185,20 @@ cPar.depth=7;
 cPar.patchType=<span class="string">'tri'</span>;
 cPar.dir=0;
 cPar.closeLoopOpt=1;
-[F_tri,V_tri]=polyExtrude(Vc,cPar);
+[F,V]=polyExtrude(Vc,cPar);
 </pre><p>Plotting meshed model</p><pre class="codeinput">hf2=figuremax(figColor,figColorDef);
 title(<span class="string">'The extruded non-planar polygon normal to polygon'</span>,<span class="string">'FontSize'</span>,fontSize);
 xlabel(<span class="string">'X'</span>,<span class="string">'FontSize'</span>,fontSize);ylabel(<span class="string">'Y'</span>,<span class="string">'FontSize'</span>,fontSize); zlabel(<span class="string">'Z'</span>,<span class="string">'FontSize'</span>,fontSize);
 hold <span class="string">on</span>;
 
-hp=patch(<span class="string">'faces'</span>,F_tri,<span class="string">'Vertices'</span>,V_tri); set(hp,<span class="string">'FaceColor'</span>,<span class="string">'g'</span>,<span class="string">'EdgeColor'</span>,<span class="string">'k'</span>,<span class="string">'FaceAlpha'</span>,faceAlpha);
+hp=patch(<span class="string">'faces'</span>,F,<span class="string">'Vertices'</span>,V); set(hp,<span class="string">'FaceColor'</span>,<span class="string">'g'</span>,<span class="string">'EdgeColor'</span>,<span class="string">'k'</span>,<span class="string">'FaceAlpha'</span>,faceAlpha);
 
 plotV(Vc,<span class="string">'r-'</span>,<span class="string">'lineWidth'</span>,lineWidth1,<span class="string">'MarkerSize'</span>,markerSize1);
 
 axis <span class="string">equal</span>; view(3); axis <span class="string">tight</span>;  grid <span class="string">on</span>;  set(gca,<span class="string">'FontSize'</span>,fontSize);
 camlight <span class="string">headlight</span>;
 drawnow;
-</pre><img vspace="5" hspace="5" src="HELP_polyExtrude_07.png" alt=""> <p><img vspace="5" hspace="5" src="gibbVerySmall.gif" alt=""> </p><p><i><b>GIBBON</b></i> <a href="www.gibboncode.org">www.gibboncode.org</a></p><p><i>Kevin Mattheus Moerman</i>, <a href="gibbon.toolbox@gmail.com">gibbon.toolbox@gmail.com</a></p><p class="footer"><br><a href="http://www.mathworks.com/products/matlab/">Published with MATLAB&reg; R2014b</a><br></p></div><!--
+</pre><img vspace="5" hspace="5" src="HELP_polyExtrude_07.png" alt=""> <p><img vspace="5" hspace="5" src="gibbVerySmall.gif" alt=""> </p><p><i><b>GIBBON</b></i> <a href="www.gibboncode.org">www.gibboncode.org</a></p><p><i>Kevin Mattheus Moerman</i>, <a href="gibbon.toolbox@gmail.com">gibbon.toolbox@gmail.com</a></p><p class="footer"><br><a href="http://www.mathworks.com/products/matlab/">Published with MATLAB&reg; R2016b</a><br></p></div><!--
 ##### SOURCE BEGIN #####
 %% polyExtrude
 % Below is a demonstration of the features of the |polyExtrude| function
@@ -213,7 +213,7 @@ drawnow;
 %% Examples
 
 %%
-clear; close all; clc;
+close all; clc; %clear;
 
 %%
 % Plot settings
@@ -255,7 +255,7 @@ cPar.depth=7;
 cPar.patchType='quad'; 
 cPar.dir=0;
 cPar.closeLoopOpt=1; 
-[F_tri,V_tri]=polyExtrude(Vc,cPar);
+[F,V]=polyExtrude(Vc,cPar);
 
 %% 
 % Plotting meshed model
@@ -264,8 +264,8 @@ title('The extruded planar polygon','FontSize',fontSize);
 xlabel('X','FontSize',fontSize);ylabel('Y','FontSize',fontSize); zlabel('Z','FontSize',fontSize);
 hold on;
 
-hp=patch('faces',F_tri,'Vertices',V_tri); set(hp,'FaceColor','g','EdgeColor','k','FaceAlpha',faceAlpha);
-
+hp=patch('faces',F,'Vertices',V); set(hp,'FaceColor','g','EdgeColor','k','FaceAlpha',faceAlpha);
+% patchNormPlot(F_tri,V_tri);
 plotV(Vc,'r-','lineWidth',lineWidth1,'MarkerSize',markerSize1);
 
 axis equal; view(3); axis tight;  grid on;  set(gca,'FontSize',fontSize);
@@ -299,7 +299,7 @@ cPar.depth=7;
 cPar.patchType='tri_slash'; 
 cPar.dir=0;
 cPar.closeLoopOpt=1; 
-[F_tri,V_tri]=polyExtrude(Vc,cPar);
+[F,V]=polyExtrude(Vc,cPar);
 
 %% 
 % Plotting meshed model
@@ -308,7 +308,7 @@ title('The extruded planar polygon normal to polygon','FontSize',fontSize);
 xlabel('X','FontSize',fontSize);ylabel('Y','FontSize',fontSize); zlabel('Z','FontSize',fontSize);
 hold on;
 
-hp=patch('faces',F_tri,'Vertices',V_tri); set(hp,'FaceColor','g','EdgeColor','k','FaceAlpha',faceAlpha);
+hp=patch('faces',F,'Vertices',V); set(hp,'FaceColor','g','EdgeColor','k','FaceAlpha',faceAlpha);
 
 plotV(Vc,'r-','lineWidth',lineWidth1,'MarkerSize',markerSize1);
 
@@ -326,7 +326,7 @@ cPar.patchType='tri';
 cPar.dir=0;
 cPar.n=[0 0 1];
 cPar.closeLoopOpt=1; 
-[F_tri,V_tri]=polyExtrude(Vc,cPar);
+[F,V]=polyExtrude(Vc,cPar);
 
 %% 
 % Plotting meshed model
@@ -335,7 +335,7 @@ title('The extruded planar polygon in z-dir','FontSize',fontSize);
 xlabel('X','FontSize',fontSize);ylabel('Y','FontSize',fontSize); zlabel('Z','FontSize',fontSize);
 hold on;
 
-hp=patch('faces',F_tri,'Vertices',V_tri); set(hp,'FaceColor','g','EdgeColor','k','FaceAlpha',faceAlpha);
+hp=patch('faces',F,'Vertices',V); set(hp,'FaceColor','g','EdgeColor','k','FaceAlpha',faceAlpha);
 
 plotV(Vc,'r-','lineWidth',lineWidth1,'MarkerSize',markerSize1);
 
@@ -375,7 +375,7 @@ cPar.depth=7;
 cPar.patchType='tri'; 
 cPar.dir=0;
 cPar.closeLoopOpt=1; 
-[F_tri,V_tri]=polyExtrude(Vc,cPar);
+[F,V]=polyExtrude(Vc,cPar);
 
 %% 
 % Plotting meshed model
@@ -384,7 +384,7 @@ title('The extruded non-planar polygon normal to polygon','FontSize',fontSize);
 xlabel('X','FontSize',fontSize);ylabel('Y','FontSize',fontSize); zlabel('Z','FontSize',fontSize);
 hold on;
 
-hp=patch('faces',F_tri,'Vertices',V_tri); set(hp,'FaceColor','g','EdgeColor','k','FaceAlpha',faceAlpha);
+hp=patch('faces',F,'Vertices',V); set(hp,'FaceColor','g','EdgeColor','k','FaceAlpha',faceAlpha);
 
 plotV(Vc,'r-','lineWidth',lineWidth1,'MarkerSize',markerSize1);
 
@@ -400,5 +400,6 @@ drawnow;
 % <www.gibboncode.org>
 % 
 % _Kevin Mattheus Moerman_, <gibbon.toolbox@gmail.com>
+
 ##### SOURCE END #####
 --></body></html>

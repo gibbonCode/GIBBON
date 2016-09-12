@@ -10,7 +10,7 @@
 
 %% Examples
 
-clear; close all; clc;
+close all; clc; clear;
 
 %%
 % Plot settings

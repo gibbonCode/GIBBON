@@ -8,7 +8,7 @@
 
 %%
 
-clear; close all; clc;
+close all; clc; clear;
 
 %%
 % Plot settings
@@ -200,8 +200,8 @@ FEB_struct.Geometry.NodeSet{2}.Set=bcSupportList_X_axis;
 FEB_struct.Geometry.NodeSet{2}.Name='bcSupportList_X_axis';
 FEB_struct.Geometry.NodeSet{3}.Set=bcSupportList_Z;
 FEB_struct.Geometry.NodeSet{3}.Name='bcSupportList_Z';
-FEB_struct.Geometry.NodeSet{4}.Set=bcPrescribeList;
-FEB_struct.Geometry.NodeSet{4}.Name='bcPrescribeList';
+% FEB_struct.Geometry.NodeSet{4}.Set=bcPrescribeList;
+% FEB_struct.Geometry.NodeSet{4}.Name='bcPrescribeList';
 
 %Adding BC information
 FEB_struct.Boundary.Fix{1}.bc='x';
@@ -211,10 +211,10 @@ FEB_struct.Boundary.Fix{2}.SetName=FEB_struct.Geometry.NodeSet{2}.Name;
 FEB_struct.Boundary.Fix{3}.bc='z';
 FEB_struct.Boundary.Fix{3}.SetName=FEB_struct.Geometry.NodeSet{3}.Name;
 
-FEB_struct.Boundary.Prescribe{1}.SetName=FEB_struct.Geometry.NodeSet{4}.Name;
-FEB_struct.Boundary.Prescribe{1}.Scale=displacementMagnitude(3);
+FEB_struct.Boundary.Prescribe{1}.Set=bcPrescribeList;
 FEB_struct.Boundary.Prescribe{1}.bc='z';
 FEB_struct.Boundary.Prescribe{1}.lc=1;
+FEB_struct.Boundary.Prescribe{1}.nodeScale=displacementMagnitude(ones(numel(bcPrescribeList),1),3);
 FEB_struct.Boundary.Prescribe{1}.Type='relative';
 
 %Load curves

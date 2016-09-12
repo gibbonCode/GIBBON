@@ -8,7 +8,7 @@
 
 %%
 
-clear; close all; clc;
+close all; clc; clear;
 
 %%
 % Plot settings
@@ -27,7 +27,8 @@ lineWidth=3;
 filePath=mfilename('fullpath');
 savePath=fullfile(fileparts(filePath),'data','temp');
 
-modelName=fullfile(savePath,'tempModel');
+modelNameEnd='tempModel';
+modelName=fullfile(savePath,modelNameEnd);
 
 %Specifying dimensions and number of elements
 sampleWidth=10;
@@ -211,10 +212,16 @@ FEB_struct.Boundary.Fix{2}.SetName=FEB_struct.Geometry.NodeSet{2}.Name;
 FEB_struct.Boundary.Fix{3}.bc='z';
 FEB_struct.Boundary.Fix{3}.SetName=FEB_struct.Geometry.NodeSet{3}.Name;
 
-FEB_struct.Boundary.Prescribe{1}.SetName=FEB_struct.Geometry.NodeSet{4}.Name;
-FEB_struct.Boundary.Prescribe{1}.Scale=displacementMagnitude(3);
+% FEB_struct.Boundary.Prescribe{1}.SetName=FEB_struct.Geometry.NodeSet{4}.Name;
+% FEB_struct.Boundary.Prescribe{1}.Scale=displacementMagnitude(3);
+% FEB_struct.Boundary.Prescribe{1}.bc='z';
+% FEB_struct.Boundary.Prescribe{1}.lc=1;
+% FEB_struct.Boundary.Prescribe{1}.Type='relative';
+
+FEB_struct.Boundary.Prescribe{1}.Set=bcPrescribeList;
 FEB_struct.Boundary.Prescribe{1}.bc='z';
 FEB_struct.Boundary.Prescribe{1}.lc=1;
+FEB_struct.Boundary.Prescribe{1}.nodeScale=displacementMagnitude(ones(numel(bcPrescribeList),1),3);
 FEB_struct.Boundary.Prescribe{1}.Type='relative';
 
 FEB_struct.Boundary.Prescribe{2}.SetName=FEB_struct.Geometry.NodeSet{4}.Name;
@@ -231,8 +238,8 @@ FEB_struct.LoadData.LoadCurves.loadPoints={[0 0;t_load 1;t_total 1]};
 FEB_struct.Output.VarTypes={'displacement','stress','relative volume','effective fluid pressure','fluid flux'};
 
 %Specify log file output
-run_disp_output_name=[FEB_struct.run_filename(1:end-4),'_node_out.txt'];
-run_force_output_name=[FEB_struct.run_filename(1:end-4),'_force_out.txt'];
+run_disp_output_name=[modelNameEnd,'_node_out.txt'];
+run_force_output_name=[modelNameEnd,'_force_out.txt'];
 FEB_struct.run_output_names={run_disp_output_name,run_force_output_name};
 FEB_struct.output_types={'node_data','node_data'};
 FEB_struct.data_types={'ux;uy;uz','Rx;Ry;Rz'};
@@ -261,7 +268,7 @@ if runFlag==1 %i.e. a succesful run
     
     %% IMPORTING NODAL DISPLACEMENT RESULTS
     % Importing nodal displacements from a log file
-    [~, N_disp_mat,~]=importFEBio_logfile(FEB_struct.run_output_names{1}); %Nodal displacements
+    [~, N_disp_mat,~]=importFEBio_logfile(fullfile(savePath,FEB_struct.run_output_names{1})); %Nodal displacements
     
     DN=N_disp_mat(:,2:end,end); %Final nodal displacements
     
@@ -288,7 +295,7 @@ if runFlag==1 %i.e. a succesful run
     
     %% IMPORTING NODAL FORCES
     % Importing nodal forces from a log file
-    [time_mat, N_force_mat,~]=importFEBio_logfile(FEB_struct.run_output_names{2}); %Nodal forces
+    [time_mat, N_force_mat,~]=importFEBio_logfile(fullfile(savePath,FEB_struct.run_output_names{2})); %Nodal forces
     time_mat=[0; time_mat(:)]; %Time
     
     %% DERIVING STRESS METRICS

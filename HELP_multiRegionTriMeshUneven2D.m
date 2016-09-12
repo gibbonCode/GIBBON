@@ -1,7 +1,7 @@
 %% multiRegionTriMesh2D
 % Below is a basic demonstration of the features of the |multiRegionTriMesh2D| function.
 %%
-clear; close all; clc;
+close all; clc; clear;
 
 %% SIMULATING BOUNDARY CURVES
 

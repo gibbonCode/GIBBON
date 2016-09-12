@@ -2,7 +2,7 @@
 % Below is a demonstration of the features of the |addMatAxisFibreElementData_FEB| function
 
 %%
-clear; close all; clc; 
+close all; clc; clear;
 
 %% Syntax
 % |[domNode]=addMatAxisFibreElementData_FEB(domNode,FEB_struct);|

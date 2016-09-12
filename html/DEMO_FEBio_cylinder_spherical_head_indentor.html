@@ -6,7 +6,7 @@
    <!--
 This HTML was auto-generated from MATLAB code.
 To make changes, update the MATLAB code and republish this document.
-      --><title>DEMO_FEBio_cylinder_spherical_head_indentor</title><meta name="generator" content="MATLAB 8.6"><link rel="schema.DC" href="http://purl.org/dc/elements/1.1/"><meta name="DC.date" content="2015-09-29"><meta name="DC.source" content="DEMO_FEBio_cylinder_spherical_head_indentor.m"><style type="text/css">
+      --><title>DEMO_FEBio_cylinder_spherical_head_indentor</title><meta name="generator" content="MATLAB 9.1"><link rel="schema.DC" href="http://purl.org/dc/elements/1.1/"><meta name="DC.date" content="2016-09-12"><meta name="DC.source" content="DEMO_FEBio_cylinder_spherical_head_indentor.m"><style type="text/css">
 html,body,div,span,applet,object,iframe,h1,h2,h3,h4,h5,h6,p,blockquote,pre,a,abbr,acronym,address,big,cite,code,del,dfn,em,font,img,ins,kbd,q,s,samp,small,strike,strong,sub,sup,tt,var,b,u,i,center,dl,dt,dd,ol,ul,li,fieldset,form,label,legend,table,caption,tbody,tfoot,thead,tr,th,td{margin:0;padding:0;border:0;outline:0;font-size:100%;vertical-align:baseline;background:transparent}body{line-height:1}ol,ul{list-style:none}blockquote,q{quotes:none}blockquote:before,blockquote:after,q:before,q:after{content:'';content:none}:focus{outine:0}ins{text-decoration:none}del{text-decoration:line-through}table{border-collapse:collapse;border-spacing:0}
 
 html { min-height:100%; margin-bottom:1px; }
@@ -66,7 +66,7 @@ table td { padding:7px 5px; text-align:left; vertical-align:top; border:1px soli
 
 
 
-  </style></head><body><div class="content"><h1>DEMO_FEBio_cylinder_spherical_head_indentor</h1><!--introduction--><!--/introduction--><h2>Contents</h2><div><ul><li><a href="#5">Build indentor sphere</a></li><li><a href="#6">Build indentor shaft</a></li><li><a href="#7">Compose indentor</a></li><li><a href="#9">Build gel</a></li><li><a href="#10">Refining top surface locally</a></li><li><a href="#12">Create size field for spatially varying mesh density</a></li><li><a href="#13">Mesh solid using tetgen</a></li><li><a href="#18">Join node sets</a></li><li><a href="#19">Define boundary condition node sets</a></li><li><a href="#21">CONSTRUCTING FEB MODEL</a></li><li><a href="#22">SAVING .FEB FILE</a></li><li><a href="#23">RUNNING FEBIO JOB</a></li><li><a href="#24">IMPORTING NODAL DISPLACEMENT RESULTS</a></li><li><a href="#25">CREATING NODE SET IN DEFORMED STATE</a></li></ul></div><pre class="codeinput">clear; close <span class="string">all</span>; clc;
+  </style></head><body><div class="content"><h1>DEMO_FEBio_cylinder_spherical_head_indentor</h1><!--introduction--><!--/introduction--><h2>Contents</h2><div><ul><li><a href="#5">Build indentor sphere</a></li><li><a href="#6">Build indentor shaft</a></li><li><a href="#7">Compose indentor</a></li><li><a href="#9">Build gel</a></li><li><a href="#10">Refining top surface locally</a></li><li><a href="#12">Create size field for spatially varying mesh density</a></li><li><a href="#13">Mesh solid using tetgen</a></li><li><a href="#18">Join node sets</a></li><li><a href="#19">Define boundary condition node sets</a></li><li><a href="#21">CONSTRUCTING FEB MODEL</a></li><li><a href="#22">SAVING .FEB FILE</a></li><li><a href="#23">RUNNING FEBIO JOB</a></li><li><a href="#24">IMPORTING NODAL DISPLACEMENT RESULTS</a></li><li><a href="#25">CREATING NODE SET IN DEFORMED STATE</a></li></ul></div><pre class="codeinput">close <span class="string">all</span>; clc; clear;
 </pre><p>Plot settings</p><pre class="codeinput">fontSize=15;
 faceAlpha=1;
 lineWidth1=1.5;
@@ -93,7 +93,7 @@ initialSpacing=0.1;
 bcPrescribeMagnitudes=[0 0 -15-initialSpacing]; <span class="comment">%NB desired and effect of initial spacing</span>
 indentorShellThickness=0.01;
 
-contactType=2; <span class="comment">%1=sticky, 2=facet to facet sliding, 3=sliding_with_gaps</span>
+contactType=1; <span class="comment">%1=sticky, 2=facet to facet sliding, 3=sliding_with_gaps</span>
 
 tetTypeOpt=1; <span class="comment">%Element type</span>
 <span class="keyword">switch</span> tetTypeOpt
@@ -104,7 +104,7 @@ tetTypeOpt=1; <span class="comment">%Element type</span>
         <span class="comment">%Control settings</span>
         nSteps=10;
         max_refs=25;
-        max_ups=10;
+        max_ups=0;
         contactPenalty=100;
     <span class="keyword">case</span> 2
         tetType=<span class="string">'tet10'</span>;
@@ -116,7 +116,7 @@ tetTypeOpt=1; <span class="comment">%Element type</span>
         max_ups=10;
         contactPenalty=50;
 <span class="keyword">end</span>
-</pre><h2>Build indentor sphere<a name="5"></a></h2><pre class="codeinput">hemiStruct.sphereRadius=sphereRadius; <span class="comment">%Sphere radius</span>
+</pre><h2 id="5">Build indentor sphere</h2><pre class="codeinput">hemiStruct.sphereRadius=sphereRadius; <span class="comment">%Sphere radius</span>
 hemiStruct.nRefineRegions=nRefine; <span class="comment">%Number of refinement steps for regions</span>
 hemiStruct.nRefineMesh=1; <span class="comment">%Number of refinement steps for mesh</span>
 [F1,V1,~]=hemiSphereRegionMesh(hemiStruct);
@@ -127,7 +127,7 @@ V1(:,3)=-V1(:,3); <span class="comment">%Flip</span>
 TR =triangulation(F1,V1);
 E = freeBoundary(TR);
 [indList]=edgeListToCurve(E);
-</pre><h2>Build indentor shaft<a name="6"></a></h2><pre class="codeinput">Vc=V1(indList(1:end-1),:);
+</pre><h2 id="6">Build indentor shaft</h2><pre class="codeinput">Vc=V1(indList(1:end-1),:);
 
 [D]=patchEdgeLengths(F1,V1);
 
@@ -138,7 +138,8 @@ cPar.patchType=<span class="string">'tri'</span>;
 cPar.dir=1;
 cPar.closeLoopOpt=1;
 [F2,V2]=polyExtrude(Vc,cPar);
-</pre><h2>Compose indentor<a name="7"></a></h2><pre class="codeinput"><span class="comment">%Merge sets</span>
+F2=fliplr(F2);
+</pre><h2 id="7">Compose indentor</h2><pre class="codeinput"><span class="comment">%Merge sets</span>
 Vs=[V1;V2];
 Fs=[F1;F2+size(V1,1);];
 [~,ind1,ind2]=unique(pround(Vs,5),<span class="string">'rows'</span>);
@@ -173,7 +174,7 @@ hp=patchNormPlot(Fs,Vs,2); <span class="comment">%Show face normals</span>
 axis <span class="string">equal</span>; view(3); axis <span class="string">tight</span>;  axis <span class="string">vis3d</span>; grid <span class="string">off</span>;  set(gca,<span class="string">'FontSize'</span>,fontSize);
 camlight <span class="string">headlight</span>;
 drawnow;
-</pre><img vspace="5" hspace="5" src="DEMO_FEBio_cylinder_spherical_head_indentor_01.png" alt=""> <h2>Build gel<a name="9"></a></h2><pre class="codeinput"><span class="comment">%Sketching profile</span>
+</pre><img vspace="5" hspace="5" src="DEMO_FEBio_cylinder_spherical_head_indentor_01.png" alt=""> <h2 id="9">Build gel</h2><pre class="codeinput"><span class="comment">%Sketching profile</span>
 ns=150;
 t=linspace(0,2*pi,ns);
 t=t(1:end-1);
@@ -192,6 +193,7 @@ cPar.patchType=<span class="string">'tri'</span>;
 cPar.dir=-1;
 cPar.closeLoopOpt=1;
 [Fg,Vg]=polyExtrude(Vc,cPar);
+Fg=fliplr(Fg);
 
 Vgb=Vg(cPar.numSteps:cPar.numSteps:end,:);
 
@@ -207,12 +209,12 @@ regionCell={Vgb(:,[1 2])};
 [Fb,Vb]=regionTriMesh2D(regionCell,pointSpacing,0,0);
 Fb=fliplr(Fb); <span class="comment">%flip face orientation</span>
 Vb(:,3)=mean(Vgb(:,3));
-</pre><h2>Refining top surface locally<a name="10"></a></h2><pre class="codeinput"><span class="keyword">if</span> ~any(isnan(distanceSplitSteps))
+</pre><h2 id="10">Refining top surface locally</h2><pre class="codeinput"><span class="keyword">if</span> ~any(isnan(distanceSplitSteps))
     <span class="keyword">for</span> q=1:numel(distanceSplitSteps)
         D=sqrt(sum(Vt(:,1:2).^2,2));
         [DF]=vertexToFaceMeasure(Ft,D);
 
-        logicFaces=DF&lt;(distanceSplitSteps(q));
+        logicFaces=DF&lt;distanceSplitSteps(q);
         indNodesFaces=Ft(logicFaces,:);
         indNodesFaces=unique(indNodesFaces(:))+size(Ft,1);
         [Ft,Vt,Ct,indIni]=subTriDual(Ft,Vt,logicFaces);
@@ -240,6 +242,14 @@ Vb(:,3)=mean(Vgb(:,3));
         Vt(:,3)=mean(Vgt(:,3));
     <span class="keyword">end</span>
 <span class="keyword">end</span>
+</pre><pre class="codeoutput">Warning: Some input points are not referenced by the triangulation. 
+Warning: Some input points are not referenced by the triangulation. 
+Warning: Some input points are not referenced by the triangulation. 
+Warning: Some input points are not referenced by the triangulation. 
+Warning: Some input points are not referenced by the triangulation. 
+Warning: Some input points are not referenced by the triangulation. 
+Warning: Some input points are not referenced by the triangulation. 
+Warning: Some input points are not referenced by the triangulation. 
 </pre><p>Merge gel model surface components</p><pre class="codeinput">V_gel=[Vg; Vt; Vb; ];
 F_gel=[Fg; Ft+size(Vg,1); Fb+size(Vg,1)+size(Vt,1); ];
 C_gel=[ones(size(Fg,1),1); 2*ones(size(Ft,1),1); 3*ones(size(Fb,1),1); ];
@@ -254,7 +264,7 @@ xlabel(<span class="string">'X'</span>,<span class="string">'FontSize'</span>,fo
 hold <span class="string">on</span>;
 
 patch(<span class="string">'Faces'</span>,F_gel,<span class="string">'Vertices'</span>,V_gel,<span class="string">'FaceColor'</span>,<span class="string">'flat'</span>,<span class="string">'CData'</span>,C_gel,<span class="string">'EdgeColor'</span>,<span class="string">'k'</span>,<span class="string">'FaceAlpha'</span>,0.75);
-<span class="comment">% hp=patchNormPlot(F_gel,V_gel,5); %Show face normals</span>
+hp=patchNormPlot(F_gel,V_gel,5); <span class="comment">%Show face normals</span>
 
 <span class="comment">% patch('Faces',Ft,'Vertices',Vt,'FaceColor','b','EdgeColor','k');</span>
 <span class="comment">% patch('Faces',Fb,'Vertices',Vb,'FaceColor','g','EdgeColor','k');</span>
@@ -266,7 +276,7 @@ colormap(gjet);
 axis <span class="string">equal</span>; view(3); axis <span class="string">tight</span>;  axis <span class="string">vis3d</span>; grid <span class="string">off</span>;  set(gca,<span class="string">'FontSize'</span>,fontSize);
 camlight <span class="string">headlight</span>;
 drawnow;
-</pre><img vspace="5" hspace="5" src="DEMO_FEBio_cylinder_spherical_head_indentor_02.png" alt=""> <h2>Create size field for spatially varying mesh density<a name="12"></a></h2><pre class="codeinput"><span class="comment">%Get edge lengths and base minimum size on input edge lengths</span>
+</pre><img vspace="5" hspace="5" src="DEMO_FEBio_cylinder_spherical_head_indentor_02.png" alt=""> <h2 id="12">Create size field for spatially varying mesh density</h2><pre class="codeinput"><span class="comment">%Get edge lengths and base minimum size on input edge lengths</span>
 [edgeLengths]=patchEdgeLengths(F_gel,V_gel);
 minEdgeSize=mean(edgeLengths)*minEdgeSizeFactor; <span class="comment">%The smallest edge size</span>
 maxEdgeSize=mean(edgeLengths)*maxEdgeSizeFactor; <span class="comment">%The largest edge size</span>
@@ -277,7 +287,7 @@ edgeSizeField=D.^2;
 edgeSizeField=edgeSizeField-min(edgeSizeField(:)); <span class="comment">%Range from 0-..</span>
 edgeSizeField=edgeSizeField./max(edgeSizeField(:)); <span class="comment">%Range from 0-1</span>
 edgeSizeField=(edgeSizeField*(maxEdgeSize-minEdgeSize))+minEdgeSize; <span class="comment">%Range from minEdgeSize-maxEdgeSize</span>
-</pre><h2>Mesh solid using tetgen<a name="13"></a></h2><p>Create tetgen meshing input structure</p><pre class="codeinput">modelName=fullfile(savePath,<span class="string">'tempModel'</span>);
+</pre><h2 id="13">Mesh solid using tetgen</h2><p>Create tetgen meshing input structure</p><pre class="codeinput">modelName=fullfile(savePath,<span class="string">'tempModel1'</span>);
 
 <span class="comment">% Regional mesh volume parameter</span>
 [regionA]=tetVolMeanEst(F_gel,V_gel); <span class="comment">%Volume for a regular tet based on edge lengths</span>
@@ -296,45 +306,45 @@ inputStruct.tetType=tetType; <span class="comment">%Element type</span>
 </pre><p>Mesh model using tetrahedral elements using tetGen (see: <a href="http://wias-berlin.de/software/tetgen/">http://wias-berlin.de/software/tetgen/</a>)</p><pre class="codeinput">[meshOutput]=runTetGen(inputStruct); <span class="comment">%Run tetGen</span>
 </pre><pre class="codeoutput"> 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
---- TETGEN Tetrahedral meshing --- 29-Sep-2015 09:30:35
+--- TETGEN Tetrahedral meshing --- 12-Sep-2016 10:52:46
  
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
---- Writing SMESH file --- 29-Sep-2015 09:30:35
+--- Writing SMESH file --- 12-Sep-2016 10:52:46
 ----&gt; Adding node field
 ----&gt; Adding facet field
 ----&gt; Adding holes specification
 ----&gt; Adding region specification
---- Done --- 29-Sep-2015 09:30:35
---- Writing MTR file --- 29-Sep-2015 09:30:35
---- Running TetGen to mesh initial Delaunay tesselation using sizing function--- 29-Sep-2015 09:30:35
-Opening D:\MATLAB\GIBBON\lib_ext\tetGen\tempFiles\tempModel.smesh. 
-Opening D:\MATLAB\GIBBON\lib_ext\tetGen\tempFiles\tempModel.mtr. 
-  Cannot access file D:\MATLAB\GIBBON\lib_ext\tetGen\tempFiles\tempModel.b.node. 
+--- Done --- 12-Sep-2016 10:52:46
+--- Writing MTR file --- 12-Sep-2016 10:52:46
+--- Running TetGen to mesh initial Delaunay tesselation using sizing function--- 12-Sep-2016 10:52:46
+Opening D:\MATLAB\SVN\GIBBON\lib_ext\tetGen\tempFiles\tempModel1.smesh. 
+Opening D:\MATLAB\SVN\GIBBON\lib_ext\tetGen\tempFiles\tempModel1.mtr. 
+  Cannot access file D:\MATLAB\SVN\GIBBON\lib_ext\tetGen\tempFiles\tempModel1.b.node. 
 Delaunizing vertices... 
-Delaunay seconds:  0.002 
+Delaunay seconds:  0.003 
 Creating surface mesh ... 
-Surface mesh seconds:  0.001 
+Surface mesh seconds:  0 
 Recovering boundaries... 
 Boundary recovery seconds:  0.001 
 Removing exterior tetrahedra ... 
 Spreading region attributes. 
 Exterior tets removal seconds:  0 
 Recovering Delaunayness... 
-Delaunay recovery seconds:  0 
+Delaunay recovery seconds:  0.001 
 Refining mesh... 
-Refinement seconds:  0.023 
+Refinement seconds:  0.025 
 Optimizing mesh... 
-Optimization seconds:  0.004 
+Optimization seconds:  0.003 
  
-Writing D:\MATLAB\GIBBON\lib_ext\tetGen\tempFiles\tempModel.1.node. 
-Writing D:\MATLAB\GIBBON\lib_ext\tetGen\tempFiles\tempModel.1.ele. 
-Writing D:\MATLAB\GIBBON\lib_ext\tetGen\tempFiles\tempModel.1.face. 
-Writing D:\MATLAB\GIBBON\lib_ext\tetGen\tempFiles\tempModel.1.edge. 
-Writing D:\MATLAB\GIBBON\lib_ext\tetGen\tempFiles\tempModel.1.mtr. 
-Writing D:\MATLAB\GIBBON\lib_ext\tetGen\tempFiles\tempModel.1.p2t. 
+Writing D:\MATLAB\SVN\GIBBON\lib_ext\tetGen\tempFiles\tempModel1.1.node. 
+Writing D:\MATLAB\SVN\GIBBON\lib_ext\tetGen\tempFiles\tempModel1.1.ele. 
+Writing D:\MATLAB\SVN\GIBBON\lib_ext\tetGen\tempFiles\tempModel1.1.face. 
+Writing D:\MATLAB\SVN\GIBBON\lib_ext\tetGen\tempFiles\tempModel1.1.edge. 
+Writing D:\MATLAB\SVN\GIBBON\lib_ext\tetGen\tempFiles\tempModel1.1.mtr. 
+Writing D:\MATLAB\SVN\GIBBON\lib_ext\tetGen\tempFiles\tempModel1.1.p2t. 
  
-Output seconds:  0.018 
-Total running seconds:  0.05 
+Output seconds:  0.02 
+Total running seconds:  0.053 
  
 Statistics: 
  
@@ -352,12 +362,13 @@ Statistics:
   Mesh edges on input segments: 1164 
   Steiner points inside domain: 1100 
  
---- Done --- 29-Sep-2015 09:30:36
+--- Done --- 12-Sep-2016 10:52:46
  
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
---- Importing TetGen files --- 29-Sep-2015 09:30:36
---- Done --- 29-Sep-2015 09:30:36
-</pre><p>Call TetView to view the model runTetView(meshOutput.loadNameStruct.loadName_ele);</p><p>Access model element and patch data</p><pre class="codeinput">Fm=meshOutput.faces;
+--- Importing TetGen files --- 12-Sep-2016 10:52:46
+--- Done --- 12-Sep-2016 10:52:46
+</pre><p>Call TetView to view the model</p><pre class="codeinput">runTetView(meshOutput.loadNameStruct.loadName_ele);
+</pre><p>Access model element and patch data</p><pre class="codeinput">Fm=meshOutput.faces;
 Vm=meshOutput.nodes;
 Cm=meshOutput.faceMaterialID;
 Em=meshOutput.elements;
@@ -365,9 +376,9 @@ elementMaterialID=meshOutput.elementMaterialID;
 
 Fb=meshOutput.facesBoundary;
 Cb=meshOutput.boundaryMarker;
-</pre><h2>Join node sets<a name="18"></a></h2><pre class="codeinput">V=[Vm;Vs];
+</pre><h2 id="18">Join node sets</h2><pre class="codeinput">V=[Vm;Vs];
 Fs=[Fs+size(Vm,1)];
-</pre><h2>Define boundary condition node sets<a name="19"></a></h2><pre class="codeinput">logicFix= Cb==1 | Cb==3; <span class="comment">%Side and bottom</span>
+</pre><h2 id="19">Define boundary condition node sets</h2><pre class="codeinput">logicFix= Cb==1 | Cb==3; <span class="comment">%Side and bottom</span>
 indBC_fix=Fb(logicFix,:);
 indBC_fix=unique(indBC_fix(:));
 
@@ -404,7 +415,7 @@ camlight <span class="string">headlight</span>;
 set(gca,<span class="string">'FontSize'</span>,fontSize);
 
 drawnow;
-</pre><img vspace="5" hspace="5" src="DEMO_FEBio_cylinder_spherical_head_indentor_03.png" alt=""> <h2>CONSTRUCTING FEB MODEL<a name="21"></a></h2><pre class="codeinput">FEB_struct.febio_spec.version=<span class="string">'2.0'</span>;
+</pre><img vspace="5" hspace="5" src="DEMO_FEBio_cylinder_spherical_head_indentor_03.png" alt=""> <h2 id="21">CONSTRUCTING FEB MODEL</h2><pre class="codeinput">FEB_struct.febio_spec.version=<span class="string">'2.0'</span>;
 FEB_struct.Module.Type=<span class="string">'solid'</span>;
 
 <span class="comment">% Defining file names</span>
@@ -417,7 +428,7 @@ FEB_struct.Geometry.Elements={Em  Fs}; <span class="comment">%The element sets</
 FEB_struct.Geometry.ElementType={tetType,<span class="string">'tri3'</span>}; <span class="comment">%The element types</span>
 FEB_struct.Geometry.ElementMat={1*ones(1,size(Em,1));2*ones(1,size(Fs,1));};
 FEB_struct.Geometry.ElementData.Thickness=[indentorShellThickness*ones(size(Fs,1),1)];
-FEB_struct.Geometry.ElementData.IndicesForThickness=( (size(Em,1)+1):1:(size(Em,1)+size(F2,1)) );
+FEB_struct.Geometry.ElementData.IndicesForThickness=( (size(Em,1)+1):1:(size(Em,1)+size(Fs,1)) );
 FEB_struct.Geometry.ElementsPartName={<span class="string">'Gel'</span>,<span class="string">'Indentor'</span>};
 
 
@@ -541,11 +552,11 @@ run_node_output_name=[FEB_struct.run_filename(1:end-4),<span class="string">'_no
 FEB_struct.run_output_names={run_node_output_name};
 FEB_struct.output_types={<span class="string">'node_data'</span>};
 FEB_struct.data_types={<span class="string">'ux;uy;uz'</span>};
-</pre><h2>SAVING .FEB FILE<a name="22"></a></h2><pre class="codeinput">FEB_struct.disp_opt=0; <span class="comment">%Display waitbars option</span>
+</pre><h2 id="22">SAVING .FEB FILE</h2><pre class="codeinput">FEB_struct.disp_opt=0; <span class="comment">%Display waitbars option</span>
 febStruct2febFile(FEB_struct);
 </pre><pre class="codeoutput"> 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
---- Writing FEBio XML object --- 29-Sep-2015 09:30:36
+--- Writing FEBio XML object --- 12-Sep-2016 10:52:48
 Adding Module level
 Adding Control level
 Adding Globals level
@@ -571,9 +582,11 @@ Adding LoadData level
 Adding Output level
 ----&gt; Adding plotfile field
 ----&gt; Adding logfile field
+Warning: Provided path of logfile is replaced by .feb file path. Only provide
+filename to avoid this warning 
 Writing .feb file
---- Done --- 29-Sep-2015 09:30:37
-</pre><h2>RUNNING FEBIO JOB<a name="23"></a></h2><pre class="codeinput"><span class="comment">% FEBioRunStruct.FEBioPath='C:\Program Files\febio2-2.2.6\bin\febio2.exe';</span>
+--- Done --- 12-Sep-2016 10:52:49
+</pre><h2 id="23">RUNNING FEBIO JOB</h2><pre class="codeinput"><span class="comment">% FEBioRunStruct.FEBioPath='C:\Program Files\febio2-2.2.6\bin\febio2.exe';</span>
 FEBioRunStruct.run_filename=FEB_struct.run_filename;
 FEBioRunStruct.run_logname=FEB_struct.run_logname;
 FEBioRunStruct.disp_on=1;
@@ -586,51 +599,24 @@ FEBioRunStruct.maxLogCheckTime=3; <span class="comment">%Max log file checking t
 [runFlag]=runMonitorFEBio(FEBioRunStruct);<span class="comment">%START FEBio NOW!!!!!!!!</span>
 </pre><pre class="codeoutput"> 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
---- STARTING FEBIO JOB --- 29-Sep-2015 09:30:37
+--- STARTING FEBIO JOB --- 12-Sep-2016 10:52:49
 Waiting for log file...
-Proceeding to check log file...29-Sep-2015 09:30:38
+Proceeding to check log file...12-Sep-2016 10:52:49
 ------- converged at time : 0.1
-------- converged at time : 0.156343
-------- converged at time : 0.193066
-------- converged at time : 0.218151
-------- converged at time : 0.238192
-------- converged at time : 0.255284
-------- converged at time : 0.288958
-------- converged at time : 0.314312
-------- converged at time : 0.334565
-------- converged at time : 0.370768
-------- converged at time : 0.40697
-------- converged at time : 0.434209
-------- converged at time : 0.450357
-------- converged at time : 0.465186
-------- converged at time : 0.497049
-------- converged at time : 0.526223
-------- converged at time : 0.552943
-------- converged at time : 0.579662
-------- converged at time : 0.595039
-------- converged at time : 0.627341
-------- converged at time : 0.654796
-------- converged at time : 0.672873
-------- converged at time : 0.688306
-------- converged at time : 0.71372
-------- converged at time : 0.737007
-------- converged at time : 0.769349
-------- converged at time : 0.795126
-------- converged at time : 0.829665
-------- converged at time : 0.85901
-------- converged at time : 0.883967
-------- converged at time : 0.905213
-------- converged at time : 0.92646
-------- converged at time : 0.942551
-------- converged at time : 0.955481
-------- converged at time : 0.968412
-------- converged at time : 0.991619
+------- converged at time : 0.2
+------- converged at time : 0.3
+------- converged at time : 0.4
+------- converged at time : 0.5
+------- converged at time : 0.6
+------- converged at time : 0.7
+------- converged at time : 0.8
+------- converged at time : 0.9
 ------- converged at time : 1
---- Done --- 29-Sep-2015 09:30:47
-</pre><h2>IMPORTING NODAL DISPLACEMENT RESULTS<a name="24"></a></h2><p>Importing nodal displacements from a log file</p><pre class="codeinput">[~, N_disp_mat,~]=importFEBio_logfile(FEB_struct.run_output_names{1}); <span class="comment">%Nodal displacements</span>
+--- Done --- 12-Sep-2016 10:52:53
+</pre><h2 id="24">IMPORTING NODAL DISPLACEMENT RESULTS</h2><p>Importing nodal displacements from a log file</p><pre class="codeinput">[~, N_disp_mat,~]=importFEBio_logfile(FEB_struct.run_output_names{1}); <span class="comment">%Nodal displacements</span>
 
 DN=N_disp_mat(:,2:end,end); <span class="comment">%Final nodal displacements</span>
-</pre><h2>CREATING NODE SET IN DEFORMED STATE<a name="25"></a></h2><pre class="codeinput">V_def=V+DN;
+</pre><h2 id="25">CREATING NODE SET IN DEFORMED STATE</h2><pre class="codeinput">V_def=V+DN;
 DN_magnitude=sqrt(sum(DN.^2,2));
 </pre><p>Plotting the deformed model</p><pre class="codeinput">[CF]=vertexToFaceMeasure(Fc,DN_magnitude);
 
@@ -657,13 +643,13 @@ colormap <span class="string">jet</span>; colorbar;
 camlight <span class="string">headlight</span>;
 set(gca,<span class="string">'FontSize'</span>,fontSize);
 drawnow;
-</pre><img vspace="5" hspace="5" src="DEMO_FEBio_cylinder_spherical_head_indentor_04.png" alt=""> <p><img vspace="5" hspace="5" src="gibbVerySmall.gif" alt=""> </p><p><i><b>GIBBON</b></i> <a href="www.gibboncode.org">www.gibboncode.org</a></p><p><i>Kevin Mattheus Moerman</i>, <a href="gibbon.toolbox@gmail.com">gibbon.toolbox@gmail.com</a></p><p class="footer"><br><a href="http://www.mathworks.com/products/matlab/">Published with MATLAB&reg; R2015b</a><br></p></div><!--
+</pre><img vspace="5" hspace="5" src="DEMO_FEBio_cylinder_spherical_head_indentor_04.png" alt=""> <p><img vspace="5" hspace="5" src="gibbVerySmall.gif" alt=""> </p><p><i><b>GIBBON</b></i> <a href="www.gibboncode.org">www.gibboncode.org</a></p><p><i>Kevin Mattheus Moerman</i>, <a href="gibbon.toolbox@gmail.com">gibbon.toolbox@gmail.com</a></p><p class="footer"><br><a href="http://www.mathworks.com/products/matlab/">Published with MATLAB&reg; R2016b</a><br></p></div><!--
 ##### SOURCE BEGIN #####
 %% DEMO_FEBio_cylinder_spherical_head_indentor
 %
 
 %%
-clear; close all; clc;
+close all; clc; clear;
 
 %%
 % Plot settings
@@ -698,7 +684,7 @@ initialSpacing=0.1;
 bcPrescribeMagnitudes=[0 0 -15-initialSpacing]; %NB desired and effect of initial spacing
 indentorShellThickness=0.01;
 
-contactType=2; %1=sticky, 2=facet to facet sliding, 3=sliding_with_gaps
+contactType=1; %1=sticky, 2=facet to facet sliding, 3=sliding_with_gaps
 
 tetTypeOpt=1; %Element type
 switch tetTypeOpt
@@ -709,7 +695,7 @@ switch tetTypeOpt
         %Control settings
         nSteps=10;
         max_refs=25;
-        max_ups=10;
+        max_ups=0;
         contactPenalty=100;
     case 2
         tetType='tet10';
@@ -721,8 +707,6 @@ switch tetTypeOpt
         max_ups=10;
         contactPenalty=50;
 end
-
-
 
 %% Build indentor sphere
 
@@ -751,6 +735,7 @@ cPar.patchType='tri';
 cPar.dir=1;
 cPar.closeLoopOpt=1;
 [F2,V2]=polyExtrude(Vc,cPar);
+F2=fliplr(F2);
 
 %% Compose indentor
 
@@ -814,6 +799,7 @@ cPar.patchType='tri';
 cPar.dir=-1;
 cPar.closeLoopOpt=1;
 [Fg,Vg]=polyExtrude(Vc,cPar);
+Fg=fliplr(Fg);
 
 Vgb=Vg(cPar.numSteps:cPar.numSteps:end,:);
 
@@ -837,7 +823,7 @@ if ~any(isnan(distanceSplitSteps))
         D=sqrt(sum(Vt(:,1:2).^2,2));
         [DF]=vertexToFaceMeasure(Ft,D);
         
-        logicFaces=DF<(distanceSplitSteps(q));
+        logicFaces=DF<distanceSplitSteps(q);
         indNodesFaces=Ft(logicFaces,:);
         indNodesFaces=unique(indNodesFaces(:))+size(Ft,1);
         [Ft,Vt,Ct,indIni]=subTriDual(Ft,Vt,logicFaces);
@@ -882,7 +868,7 @@ xlabel('X','FontSize',fontSize); ylabel('Y','FontSize',fontSize); zlabel('Z','Fo
 hold on;
 
 patch('Faces',F_gel,'Vertices',V_gel,'FaceColor','flat','CData',C_gel,'EdgeColor','k','FaceAlpha',0.75);
-% hp=patchNormPlot(F_gel,V_gel,5); %Show face normals
+hp=patchNormPlot(F_gel,V_gel,5); %Show face normals
 
 % patch('Faces',Ft,'Vertices',Vt,'FaceColor','b','EdgeColor','k');
 % patch('Faces',Fb,'Vertices',Vb,'FaceColor','g','EdgeColor','k');
@@ -913,7 +899,7 @@ edgeSizeField=(edgeSizeField*(maxEdgeSize-minEdgeSize))+minEdgeSize; %Range from
 
 %%
 % Create tetgen meshing input structure
-modelName=fullfile(savePath,'tempModel');
+modelName=fullfile(savePath,'tempModel1');
 
 % Regional mesh volume parameter
 [regionA]=tetVolMeanEst(F_gel,V_gel); %Volume for a regular tet based on edge lengths
@@ -938,7 +924,7 @@ inputStruct.tetType=tetType; %Element type
 
 %%
 % Call TetView to view the model
-% runTetView(meshOutput.loadNameStruct.loadName_ele);
+runTetView(meshOutput.loadNameStruct.loadName_ele);
 
 %%
 % Access model element and patch data
@@ -1015,7 +1001,7 @@ FEB_struct.Geometry.Elements={Em  Fs}; %The element sets
 FEB_struct.Geometry.ElementType={tetType,'tri3'}; %The element types
 FEB_struct.Geometry.ElementMat={1*ones(1,size(Em,1));2*ones(1,size(Fs,1));};
 FEB_struct.Geometry.ElementData.Thickness=[indentorShellThickness*ones(size(Fs,1),1)];
-FEB_struct.Geometry.ElementData.IndicesForThickness=( (size(Em,1)+1):1:(size(Em,1)+size(F2,1)) );
+FEB_struct.Geometry.ElementData.IndicesForThickness=( (size(Em,1)+1):1:(size(Em,1)+size(Fs,1)) );
 FEB_struct.Geometry.ElementsPartName={'Gel','Indentor'};
 
 

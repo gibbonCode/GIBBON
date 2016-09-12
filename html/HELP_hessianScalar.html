@@ -6,7 +6,7 @@
    <!--
 This HTML was auto-generated from MATLAB code.
 To make changes, update the MATLAB code and republish this document.
-      --><title>hessianScalar</title><meta name="generator" content="MATLAB 8.5"><link rel="schema.DC" href="http://purl.org/dc/elements/1.1/"><meta name="DC.date" content="2015-04-26"><meta name="DC.source" content="HELP_hessianScalar.m"><style type="text/css">
+      --><title>hessianScalar</title><meta name="generator" content="MATLAB 9.1"><link rel="schema.DC" href="http://purl.org/dc/elements/1.1/"><meta name="DC.date" content="2016-09-12"><meta name="DC.source" content="HELP_hessianScalar.m"><style type="text/css">
 html,body,div,span,applet,object,iframe,h1,h2,h3,h4,h5,h6,p,blockquote,pre,a,abbr,acronym,address,big,cite,code,del,dfn,em,font,img,ins,kbd,q,s,samp,small,strike,strong,sub,sup,tt,var,b,u,i,center,dl,dt,dd,ol,ul,li,fieldset,form,label,legend,table,caption,tbody,tfoot,thead,tr,th,td{margin:0;padding:0;border:0;outline:0;font-size:100%;vertical-align:baseline;background:transparent}body{line-height:1}ol,ul{list-style:none}blockquote,q{quotes:none}blockquote:before,blockquote:after,q:before,q:after{content:'';content:none}:focus{outine:0}ins{text-decoration:none}del{text-decoration:line-through}table{border-collapse:collapse;border-spacing:0}
 
 html { min-height:100%; margin-bottom:1px; }
@@ -66,48 +66,42 @@ table td { padding:7px 5px; text-align:left; vertical-align:top; border:1px soli
 
 
 
-  </style></head><body><div class="content"><h1>hessianScalar</h1><!--introduction--><p>Below is a demonstration of the features of the <tt>hessianScalar</tt> function See also: <tt>gradient</tt>,|hessian|,|jacobian|,|cellEig|.</p><!--/introduction--><h2>Contents</h2><div><ul><li><a href="#2">Syntax</a></li><li><a href="#3">Description</a></li><li><a href="#4">Examples</a></li><li><a href="#6">1D Hessian on vector</a></li><li><a href="#7">2D Hessian on a matrix (e.g. an image)</a></li><li><a href="#12">The cell output option</a></li></ul></div><pre class="codeinput">clear; close <span class="string">all</span>; clc;
-</pre><h2>Syntax<a name="2"></a></h2><p><tt>H=hessianScalar(M,voxelSize,cellOpt);</tt></p><h2>Description<a name="3"></a></h2><p>This function computes the Hessian matrix of the scalar function U for each point in U. U may be a vector, a 2D matrix or a 3D matrix. The vector v denotes the points spacing between the data entries in U. If v is not supplied the spacing is assumed to be homogeneous and unity. If the input is n dimensional array consisting of m entries then the output is a matrix (if cellOpt==0) the size of mx(n^2) (whereby the colum entries define the entries in a Hessian matrix and row entries relate to elements in the input array). If cellOpt==1 then the output is reformed into a cell array that matches the size of the input aray. Each cell entry then contains the nxn Hessian matrix.</p><h2>Examples<a name="4"></a></h2><p>Plot settings</p><pre class="codeinput">faceAlpha1=1;
+  </style></head><body><div class="content"><h1>hessianScalar</h1><!--introduction--><p>Below is a demonstration of the features of the <tt>hessianScalar</tt> function See also: <tt>gradient</tt>,|hessian|,|jacobian|,|cellEig|.</p><!--/introduction--><h2>Contents</h2><div><ul><li><a href="#2">Syntax</a></li><li><a href="#3">Description</a></li><li><a href="#4">Examples</a></li><li><a href="#6">1D Hessian on vector</a></li><li><a href="#7">2D Hessian on a matrix (e.g. an image)</a></li><li><a href="#12">The cell output option</a></li></ul></div><pre class="codeinput">close <span class="string">all</span>; clc; <span class="comment">%clear;</span>
+</pre><h2 id="2">Syntax</h2><p><tt>H=hessianScalar(M,voxelSize,cellOpt);</tt></p><h2 id="3">Description</h2><p>This function computes the Hessian matrix of the scalar function U for each point in U. U may be a vector, a 2D matrix or a 3D matrix. The vector v denotes the points spacing between the data entries in U. If v is not supplied the spacing is assumed to be homogeneous and unity. If the input is n dimensional array consisting of m entries then the output is a matrix (if cellOpt==0) the size of mx(n^2) (whereby the colum entries define the entries in a Hessian matrix and row entries relate to elements in the input array). If cellOpt==1 then the output is reformed into a cell array that matches the size of the input aray. Each cell entry then contains the nxn Hessian matrix.</p><h2 id="4">Examples</h2><p>Plot settings</p><pre class="codeinput">faceAlpha1=1;
 faceAlpha2=0.3;
 fontSize=10;
 markerSize=25;
 edgeWidth=1;
 edgeColor=<span class="string">'k'</span>;
 cMap=gray(250);
-</pre><h2>1D Hessian on vector<a name="6"></a></h2><pre class="codeinput"><span class="comment">%A random vector</span>
+</pre><h2 id="6">1D Hessian on vector</h2><pre class="codeinput"><span class="comment">%A random vector</span>
 M=randn(10,1)
 
 <span class="comment">%Compute Hessian</span>
 H=hessianScalar(M,[],0)
-</pre><pre class="codeoutput">
-M =
-
-   -1.3499
-    3.0349
-    0.7254
-   -0.0631
-    0.7147
-   -0.2050
-   -0.1241
-    1.4897
-    1.4090
-    1.4172
-
-
+</pre><pre class="codeoutput">M =
+    0.7880
+    0.2982
+   -0.1637
+    0.6067
+    1.6345
+   -0.6235
+   -1.3501
+   -1.1622
+   -0.9443
+   -0.6712
 H =
-
-   -3.3472
-   -2.9669
-   -0.5215
-    0.7390
-   -0.2071
-    0.4591
-    0.5930
-   -0.4418
-   -0.3792
-    0.0444
-
-</pre><h2>2D Hessian on a matrix (e.g. an image)<a name="7"></a></h2><p>Below an example is shown for the Hessian of an image.</p><p>Load example image</p><pre class="codeinput"><span class="comment">%Set main folder</span>
+    0.0139
+    0.3220
+    0.6875
+   -0.3847
+   -1.1957
+    0.1729
+    0.8476
+    0.2574
+    0.0351
+    0.0276
+</pre><h2 id="7">2D Hessian on a matrix (e.g. an image)</h2><p>Below an example is shown for the Hessian of an image.</p><p>Load example image</p><pre class="codeinput"><span class="comment">%Set main folder</span>
 defaultFolder = fileparts(mfilename(<span class="string">'fullpath'</span>));
 pathName=fullfile(defaultFolder,<span class="string">'data'</span>,<span class="string">'PICT'</span>);
 loadName=fullfile(pathName,<span class="string">'leaf1.jpg'</span>); <span class="comment">%Load name</span>
@@ -133,16 +127,13 @@ axis <span class="string">equal</span>; axis <span class="string">tight</span>; 
 colormap(cMap); colorbar;
 
 drawnow;
-</pre><img vspace="5" hspace="5" src="HELP_hessianScalar_01.png" alt=""> <h2>The cell output option<a name="12"></a></h2><p>Alternatively if cellOpt==1 then the output is reformed into a cell array that matches the size of the input aray. Each cell entry then contains the nxn Hessian matrix. However this requires a matrix to cell and reshape operation making this approach slower than when cellOpt==0. However after conversion to cell form each cell contains a Hessian matrix and computations on these matrices can be performed using the syntax: [B]=cellfun(@my_func,H,'UniformOutput',0); Where my_func is a suitable function for the Hessian matrices. For instance to computer a trace image one can use: [B]=cellfun(@trace,A,'UniformOutput',0); This form has also been created as a function, namely <tt>cellTrace</tt>, see below.</p><p>Computing the Hessian of the image</p><pre class="codeinput">voxelSize=[1 1];
+</pre><img vspace="5" hspace="5" src="HELP_hessianScalar_01.png" alt=""> <h2 id="12">The cell output option</h2><p>Alternatively if cellOpt==1 then the output is reformed into a cell array that matches the size of the input aray. Each cell entry then contains the nxn Hessian matrix. However this requires a matrix to cell and reshape operation making this approach slower than when cellOpt==0. However after conversion to cell form each cell contains a Hessian matrix and computations on these matrices can be performed using the syntax: [B]=cellfun(@my_func,H,'UniformOutput',0); Where my_func is a suitable function for the Hessian matrices. For instance to computer a trace image one can use: [B]=cellfun(@trace,A,'UniformOutput',0); This form has also been created as a function, namely <tt>cellTrace</tt>, see below.</p><p>Computing the Hessian of the image</p><pre class="codeinput">voxelSize=[1 1];
 cellOpt=1;
 H=hessianScalar(M,voxelSize,cellOpt);
 </pre><p>Each cell contains a Hessian matrix, for example:</p><pre class="codeinput">H{1,1}
-</pre><pre class="codeoutput">
-ans =
-
+</pre><pre class="codeoutput">ans =
    -0.6667   -6.6667
    -6.6667    3.0000
-
 </pre><p>Compute a trace image using <tt>cellTrace</tt> function:</p><pre class="codeinput">Mh_trace=cellTrace(H);
 </pre><p>Computing eigenvalues using <tt>cellEig</tt> function:</p><pre class="codeinput">[Mh_V,Mh_D]=cellEig(H);
 
@@ -164,14 +155,14 @@ axis <span class="string">equal</span>; axis <span class="string">tight</span>; 
 colormap(cMap); colorbar;
 
 drawnow;
-</pre><img vspace="5" hspace="5" src="HELP_hessianScalar_02.png" alt=""> <p><img vspace="5" hspace="5" src="gibbVerySmall.gif" alt=""> </p><p><i><b>GIBBON</b></i> <a href="www.gibboncode.org">www.gibboncode.org</a></p><p><i>Kevin Mattheus Moerman</i>, <a href="gibbon.toolbox@gmail.com">gibbon.toolbox@gmail.com</a></p><p class="footer"><br><a href="http://www.mathworks.com/products/matlab/">Published with MATLAB&reg; R2015a</a><br></p></div><!--
+</pre><img vspace="5" hspace="5" src="HELP_hessianScalar_02.png" alt=""> <p><img vspace="5" hspace="5" src="gibbVerySmall.gif" alt=""> </p><p><i><b>GIBBON</b></i> <a href="www.gibboncode.org">www.gibboncode.org</a></p><p><i>Kevin Mattheus Moerman</i>, <a href="gibbon.toolbox@gmail.com">gibbon.toolbox@gmail.com</a></p><p class="footer"><br><a href="http://www.mathworks.com/products/matlab/">Published with MATLAB&reg; R2016b</a><br></p></div><!--
 ##### SOURCE BEGIN #####
 %% hessianScalar
 % Below is a demonstration of the features of the |hessianScalar| function
 % See also: |gradient|,|hessian|,|jacobian|,|cellEig|.
 
 %%
-clear; close all; clc; 
+close all; clc; %clear;
 
 %% Syntax
 % |H=hessianScalar(M,voxelSize,cellOpt);|

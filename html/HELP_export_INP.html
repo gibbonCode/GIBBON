@@ -6,7 +6,7 @@
    <!--
 This HTML was auto-generated from MATLAB code.
 To make changes, update the MATLAB code and republish this document.
-      --><title>export_INP</title><meta name="generator" content="MATLAB 8.4"><link rel="schema.DC" href="http://purl.org/dc/elements/1.1/"><meta name="DC.date" content="2014-10-01"><meta name="DC.source" content="HELP_export_INP.m"><style type="text/css">
+      --><title>export_INP</title><meta name="generator" content="MATLAB 9.1"><link rel="schema.DC" href="http://purl.org/dc/elements/1.1/"><meta name="DC.date" content="2016-09-12"><meta name="DC.source" content="HELP_export_INP.m"><style type="text/css">
 html,body,div,span,applet,object,iframe,h1,h2,h3,h4,h5,h6,p,blockquote,pre,a,abbr,acronym,address,big,cite,code,del,dfn,em,font,img,ins,kbd,q,s,samp,small,strike,strong,sub,sup,tt,var,b,u,i,center,dl,dt,dd,ol,ul,li,fieldset,form,label,legend,table,caption,tbody,tfoot,thead,tr,th,td{margin:0;padding:0;border:0;outline:0;font-size:100%;vertical-align:baseline;background:transparent}body{line-height:1}ol,ul{list-style:none}blockquote,q{quotes:none}blockquote:before,blockquote:after,q:before,q:after{content:'';content:none}:focus{outine:0}ins{text-decoration:none}del{text-decoration:line-through}table{border-collapse:collapse;border-spacing:0}
 
 html { min-height:100%; margin-bottom:1px; }
@@ -66,12 +66,12 @@ table td { padding:7px 5px; text-align:left; vertical-align:top; border:1px soli
 
 
 
-  </style></head><body><div class="content"><h1>export_INP</h1><!--introduction--><p>Below is a demonstration of the features of the <tt>export_INP</tt> function</p><!--/introduction--><h2>Contents</h2><div><ul><li><a href="#3">Get example data</a></li><li><a href="#5">CREATING THE ELEMENT STRUCTURE</a></li><li><a href="#6">CREATING THE NODE STRUCTURE</a></li><li><a href="#10">EXPORTING AN INP FILE</a></li></ul></div><pre class="codeinput">clear; close <span class="string">all</span>; clc;
+  </style></head><body><div class="content"><h1>export_INP</h1><!--introduction--><p>Below is a demonstration of the features of the <tt>export_INP</tt> function</p><!--/introduction--><h2>Contents</h2><div><ul><li><a href="#3">Get example data</a></li><li><a href="#5">CREATING THE ELEMENT STRUCTURE</a></li><li><a href="#6">CREATING THE NODE STRUCTURE</a></li><li><a href="#10">EXPORTING AN INP FILE</a></li></ul></div><pre class="codeinput">close <span class="string">all</span>; clc; <span class="comment">%clear;</span>
 </pre><p>Plot settings</p><pre class="codeinput">fig_color=<span class="string">'w'</span>;
 fig_colordef=<span class="string">'white'</span>;
 faceAlpha=0.5;
 fontSize=25;
-</pre><h2>Get example data<a name="3"></a></h2><p>In this example INP geometry is first imported and then exported again</p><pre class="codeinput"><span class="comment">%Set main folder</span>
+</pre><h2 id="3">Get example data</h2><p>In this example INP geometry is first imported and then exported again</p><pre class="codeinput"><span class="comment">%Set main folder</span>
 defaultFolder = fileparts(mfilename(<span class="string">'fullpath'</span>));
 pathName=fullfile(defaultFolder,<span class="string">'data'</span>,<span class="string">'INP'</span>);
 
@@ -103,24 +103,22 @@ CONVERTING TEXT FIELDS TO MATLAB ARRAYS
 ---&gt; Created elementStruct
 ---&gt; Created nodeStruct
 DONE!
-</pre><h2>CREATING THE ELEMENT STRUCTURE<a name="5"></a></h2><p>The element structure should contain and element field, an element indices field and an element type field respectively. e.g.:</p><p>elementStruct =</p><pre>        E: [45310x4 double]
+</pre><h2 id="5">CREATING THE ELEMENT STRUCTURE</h2><p>The element structure should contain and element field, an element indices field and an element type field respectively. e.g.:</p><p>elementStruct =</p><pre>        E: [45310x4 double]
     E_ind: [226550x1 double]
-   E_type: '*ELEMENT, TYPE=C3D4, ELSET=PART-DEFAULT_1_EB1'</pre><h2>CREATING THE NODE STRUCTURE<a name="6"></a></h2><p>The node structure should contain and nodal coordinates field and a nodal indices field e.g.:</p><p>nodeStruct =</p><pre>       N: [8524x3 double]
+   E_type: '*ELEMENT, TYPE=C3D4, ELSET=PART-DEFAULT_1_EB1'</pre><h2 id="6">CREATING THE NODE STRUCTURE</h2><p>The node structure should contain and nodal coordinates field and a nodal indices field e.g.:</p><p>nodeStruct =</p><pre>       N: [8524x3 double]
    N_ind: [8524x1 double]</pre><p>Study the imported elementStruct and nodeStruct for instance:</p><pre class="codeinput">elementStruct
 nodeStruct
-</pre><pre class="codeoutput">
-elementStruct = 
+</pre><pre class="codeoutput">elementStruct = 
+  struct with fields:
 
-         E: [45310x4 double]
-     E_ind: [226550x1 double]
+         E: [45310&times;4 double]
+     E_ind: [226550&times;1 double]
     E_type: '*ELEMENT, TYPE=C3D4, ELSET=PART-DEFAULT_1_EB1'
-
-
 nodeStruct = 
+  struct with fields:
 
-        N: [8524x3 double]
-    N_ind: [8524x1 double]
-
+        N: [8524&times;3 double]
+    N_ind: [8524&times;1 double]
 </pre><pre class="codeinput">V=nodeStruct.N; <span class="comment">%The nodes</span>
 E=elementStruct.E; <span class="comment">%The elements</span>
 </pre><p>Displaying the model</p><pre class="codeinput"><span class="comment">%Get patch data for plotting</span>
@@ -137,8 +135,8 @@ xlabel(<span class="string">'X'</span>,<span class="string">'fontSize'</span>,fo
 hpm=patch(<span class="string">'Faces'</span>,F,<span class="string">'Vertices'</span>,V,<span class="string">'EdgeColor'</span>,<span class="string">'k'</span>,<span class="string">'FaceColor'</span>,<span class="string">'g'</span>,<span class="string">'FaceAlpha'</span>,1);
 view(3); axis <span class="string">equal</span>; axis <span class="string">tight</span>; axis <span class="string">vis3d</span>; grid <span class="string">on</span>;
 drawnow;
-</pre><pre class="codeoutput">Warning: tet4 elements assumed, for other elements please specify elementType 
-</pre><img vspace="5" hspace="5" src="HELP_export_INP_01.png" alt=""> <h2>EXPORTING AN INP FILE<a name="10"></a></h2><pre class="codeinput">inpName=[fileName(1:end-4),<span class="string">'_2'</span>,fileName(end-3:end)];
+</pre><pre class="codeoutput">tet4 elements assumed, for other elements please specify elementType
+</pre><img vspace="5" hspace="5" src="HELP_export_INP_01.png" alt=""> <h2 id="10">EXPORTING AN INP FILE</h2><pre class="codeinput">inpName=[fileName(1:end-4),<span class="string">'_2'</span>,fileName(end-3:end)];
 export_INP(elementStruct,nodeStruct,inpName);
 </pre><pre class="codeoutput">--- export_INP ---
 CREATING NODE AND ELEMENT TEXT FIELDS
@@ -146,13 +144,13 @@ CREATING NODE AND ELEMENT TEXT FIELDS
 ---&gt; Creating element text field
 EXPORTING TO INP FILE...
 DONE!
-</pre><p><img vspace="5" hspace="5" src="gibbVerySmall.gif" alt=""> </p><p><i><b>GIBBON</b></i> <a href="www.gibboncode.org">www.gibboncode.org</a></p><p><i>Kevin Mattheus Moerman</i>, <a href="gibbon.toolbox@gmail.com">gibbon.toolbox@gmail.com</a></p><p class="footer"><br><a href="http://www.mathworks.com/products/matlab/">Published with MATLAB&reg; R2014b</a><br></p></div><!--
+</pre><p><img vspace="5" hspace="5" src="gibbVerySmall.gif" alt=""> </p><p><i><b>GIBBON</b></i> <a href="www.gibboncode.org">www.gibboncode.org</a></p><p><i>Kevin Mattheus Moerman</i>, <a href="gibbon.toolbox@gmail.com">gibbon.toolbox@gmail.com</a></p><p class="footer"><br><a href="http://www.mathworks.com/products/matlab/">Published with MATLAB&reg; R2016b</a><br></p></div><!--
 ##### SOURCE BEGIN #####
 %% export_INP
 % Below is a demonstration of the features of the |export_INP| function
 
 %%
-clear; close all; clc; 
+close all; clc; %clear;
 
 %%
 % Plot settings
@@ -248,5 +246,6 @@ export_INP(elementStruct,nodeStruct,inpName);
 % <www.gibboncode.org>
 % 
 % _Kevin Mattheus Moerman_, <gibbon.toolbox@gmail.com>
+
 ##### SOURCE END #####
 --></body></html>

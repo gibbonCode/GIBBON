@@ -2,7 +2,7 @@
 % Below is a demonstration of the features of the |set_mat_par_FEBIO| function
 
 %%
-clear; close all; clc;
+close all; clc; clear;
 
 %%
 % Folder/file locations
@@ -16,8 +16,8 @@ pathName=fullfile(defaultFolder,'data','FEB');
 febFileName=fullfile(pathName,'tempModel_2p0.feb');
 
 %% 
-% View .FEB file using the |febView| function
-febView(febFileName);
+% View .FEB file using the |xmlView| function
+xmlView(febFileName);
 
 %%
 % Lets assume the material section looks like this: 
@@ -77,13 +77,13 @@ set_mat_par_FEBIO(febFileName,febFileSaveName,mat_cell);
 
 %%
 % Verify the XML file content
-febView(febFileSaveName);
+xmlView(febFileSaveName);
 
 %% Altering material parameter entries for "nested" or multisolid materials
 
 febFileName=fullfile(pathName,'tempModel_2p0_solidMixture.feb');
 
-febView(febFileName);
+xmlView(febFileName);
 
 %%
 % Lets assume the material section looks like this: 
@@ -164,7 +164,7 @@ set_mat_par_FEBIO(febFileName,febFileSaveName,mat_cell);
 
 %%
 % Verify the XML file content
-febView(febFileSaveName);
+xmlView(febFileSaveName);
 
 %%
 %

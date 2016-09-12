@@ -7,7 +7,7 @@
 
 %%
 
-clear; close all; clc;
+close all; clc; clear;
 
 %%
 % Plot settings
@@ -26,7 +26,8 @@ markerSize=50;
 filePath=mfilename('fullpath');
 savePath=fullfile(fileparts(filePath),'data','temp');
 
-modelName=fullfile(savePath,'tempModel');
+modelNameEnd='tempModel';
+modelName=fullfile(savePath,modelNameEnd);
 
 %Specifying dimensions and number of elements
 sampleWidth=5;
@@ -207,8 +208,8 @@ FEB_struct.LoadData.LoadCurves.loadPoints={[0 0;1 1;]};
 FEB_struct.Output.VarTypes={'displacement','stress','relative volume','shell thickness'};
 
 %Specify log file output
-run_node_output_name=[FEB_struct.run_filename(1:end-4),'_node_out.txt'];
-FEB_struct.run_output_names={run_node_output_name};
+run_disp_output_name=[modelNameEnd,'_node_out.txt'];
+FEB_struct.run_output_names={run_disp_output_name};
 FEB_struct.output_types={'node_data'};
 FEB_struct.data_types={'ux;uy;uz'};
 
@@ -235,7 +236,7 @@ FEBioRunStruct.maxLogCheckTime=3; %Max log file checking time
 if runFlag==1 %i.e. a succesful run
     % IMPORTING NODAL DISPLACEMENT RESULTS
     % Importing nodal displacements from a log file
-    [~, N_disp_mat,~]=importFEBio_logfile(FEB_struct.run_output_names{1}); %Nodal displacements
+    [~, N_disp_mat,~]=importFEBio_logfile(fullfile(savePath,FEB_struct.run_output_names{1})); %Nodal displacements
     
     DN=N_disp_mat(:,2:end,end); %Final nodal displacements
     

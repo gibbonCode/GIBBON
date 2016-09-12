@@ -6,7 +6,7 @@
    <!--
 This HTML was auto-generated from MATLAB code.
 To make changes, update the MATLAB code and republish this document.
-      --><title>DEMO_slab_pressure_loading_01</title><meta name="generator" content="MATLAB 9.0"><link rel="schema.DC" href="http://purl.org/dc/elements/1.1/"><meta name="DC.date" content="2016-02-01"><meta name="DC.source" content="DEMO_FEBio_slab_pressure_loading_02.m"><style type="text/css">
+      --><title>DEMO_slab_pressure_loading_01</title><meta name="generator" content="MATLAB 9.1"><link rel="schema.DC" href="http://purl.org/dc/elements/1.1/"><meta name="DC.date" content="2016-09-12"><meta name="DC.source" content="DEMO_FEBio_slab_pressure_loading_02.m"><style type="text/css">
 html,body,div,span,applet,object,iframe,h1,h2,h3,h4,h5,h6,p,blockquote,pre,a,abbr,acronym,address,big,cite,code,del,dfn,em,font,img,ins,kbd,q,s,samp,small,strike,strong,sub,sup,tt,var,b,u,i,center,dl,dt,dd,ol,ul,li,fieldset,form,label,legend,table,caption,tbody,tfoot,thead,tr,th,td{margin:0;padding:0;border:0;outline:0;font-size:100%;vertical-align:baseline;background:transparent}body{line-height:1}ol,ul{list-style:none}blockquote,q{quotes:none}blockquote:before,blockquote:after,q:before,q:after{content:'';content:none}:focus{outine:0}ins{text-decoration:none}del{text-decoration:line-through}table{border-collapse:collapse;border-spacing:0}
 
 html { min-height:100%; margin-bottom:1px; }
@@ -66,7 +66,7 @@ table td { padding:7px 5px; text-align:left; vertical-align:top; border:1px soli
 
 
 
-  </style></head><body><div class="content"><h1>DEMO_slab_pressure_loading_01</h1><!--introduction--><p>Below is a demonstration for:</p><div><ul><li>The creation of an FEBio model</li><li>Running an FEBio job with MATLAB</li><li>Importing FEBio results into MATLAB</li></ul></div><!--/introduction--><h2>Contents</h2><div><ul><li><a href="#4">Creating a meshed box (4-node tetrahedral elements)</a></li><li><a href="#5">Alter shape of box to have variable thickness</a></li><li><a href="#6">CREATING MESHED SPHERE</a></li><li><a href="#7">MERGING NODE SETS</a></li><li><a href="#12">DEFINE BC's</a></li><li><a href="#14">CONSTRUCTING FEB MODEL</a></li><li><a href="#15">SAVING .FEB FILE</a></li><li><a href="#16">RUNNING FEBIO JOB</a></li></ul></div><pre class="codeinput">clear; close <span class="string">all</span>; clc;
+  </style></head><body><div class="content"><h1>DEMO_slab_pressure_loading_01</h1><!--introduction--><p>Below is a demonstration for:</p><div><ul><li>The creation of an FEBio model</li><li>Running an FEBio job with MATLAB</li><li>Importing FEBio results into MATLAB</li></ul></div><!--/introduction--><h2>Contents</h2><div><ul><li><a href="#4">Creating a meshed box (4-node tetrahedral elements)</a></li><li><a href="#5">Alter shape of box to have variable thickness</a></li><li><a href="#6">CREATING MESHED SPHERE</a></li><li><a href="#7">MERGING NODE SETS</a></li><li><a href="#12">DEFINE BC's</a></li><li><a href="#14">CONSTRUCTING FEB MODEL</a></li><li><a href="#15">SAVING .FEB FILE</a></li><li><a href="#16">RUNNING FEBIO JOB</a></li></ul></div><pre class="codeinput">close <span class="string">all</span>; clc; clear;
 </pre><p>Plot settings</p><pre class="codeinput">fontSize=15;
 faceAlpha1=0.8;
 faceAlpha2=0.25;
@@ -94,12 +94,12 @@ sphereRadius=sampleWidth/7;
 sphereShift=sphereRadius*1.4;
 
 pressureLevel=-1e-3;
-</pre><h2>Creating a meshed box (4-node tetrahedral elements)<a name="4"></a></h2><pre class="codeinput">boxDim=[sampleWidth sampleThickness sampleHeight]; <span class="comment">%Dimensions</span>
+</pre><h2 id="4">Creating a meshed box (4-node tetrahedral elements)</h2><pre class="codeinput">boxDim=[sampleWidth sampleThickness sampleHeight]; <span class="comment">%Dimensions</span>
 boxEl=[numElementsWidth numElementsThickness numElementsHeight]; <span class="comment">%Number of elements</span>
 
 [Fq,Vq,faceBoundaryMarker_q]=quadBox(boxDim,boxEl);
 [Ft,Vt,faceBoundaryMarker_t]=quad2tri(Fq,Vq,<span class="string">'f'</span>,faceBoundaryMarker_q);
-</pre><h2>Alter shape of box to have variable thickness<a name="5"></a></h2><pre class="codeinput"><span class="comment">%Shift Z</span>
+</pre><h2 id="5">Alter shape of box to have variable thickness</h2><pre class="codeinput"><span class="comment">%Shift Z</span>
 Vt(:,3)=Vt(:,3)-max(Vt(:,3));
 
 <span class="comment">%Create X coordinate based scaling factor</span>
@@ -111,13 +111,13 @@ Xf=1-(Xf*(1-A));
 
 <span class="comment">%Scale Z</span>
 Vt(:,3)=Vt(:,3).*Xf;
-</pre><h2>CREATING MESHED SPHERE<a name="6"></a></h2><pre class="codeinput">[Fsp,Vsp,~]=geoSphere(nRefine,sphereRadius);
+</pre><h2 id="6">CREATING MESHED SPHERE</h2><pre class="codeinput">[Fsp,Vsp,~]=geoSphere(nRefine,sphereRadius);
 
 <span class="comment">%Offset indentor</span>
 minZ=min(Vsp(:,3));
 Vsp(:,3)=Vsp(:,3)-sphereShift;
 Vsp(:,1)=Vsp(:,1)-sphereShift;
-</pre><h2>MERGING NODE SETS<a name="7"></a></h2><pre class="codeinput">V=[Vt;Vsp;]; <span class="comment">%Nodes</span>
+</pre><h2 id="7">MERGING NODE SETS</h2><pre class="codeinput">V=[Vt;Vsp;]; <span class="comment">%Nodes</span>
 F=[Ft; Fsp+size(Vt,1)];
 Fsp_fix=Fsp+size(Vt,1);
 faceBoundaryMarker=[faceBoundaryMarker_t; max(faceBoundaryMarker_t(:))+ones(size(Fsp,1),1)];
@@ -141,22 +141,22 @@ smeshStruct.modelName=smeshName;
 removed in future releases. 
  
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
---- TETGEN Tetrahedral meshing --- 01-Feb-2016 13:56:14
+--- TETGEN Tetrahedral meshing --- 12-Sep-2016 11:02:37
  
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
---- Writing SMESH file --- 01-Feb-2016 13:56:14
+--- Writing SMESH file --- 12-Sep-2016 11:02:37
 ----&gt; Adding node field
 ----&gt; Adding facet field
 ----&gt; Adding holes specification
 ----&gt; Adding region specification
---- Done --- 01-Feb-2016 13:56:14
---- Running TetGen to mesh input boundary--- 01-Feb-2016 13:56:14
-Opening D:\MATLAB\GIBBON\lib_ext\tetGen\tempFiles\tempModel.smesh. 
---- Done --- 01-Feb-2016 13:56:14
+--- Done --- 12-Sep-2016 11:02:37
+--- Running TetGen to mesh input boundary--- 12-Sep-2016 11:02:37
+Opening D:\MATLAB\SVN\GIBBON\lib_ext\tetGen\tempFiles\tempModel.smesh. 
+--- Done --- 12-Sep-2016 11:02:37
  
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
---- Importing TetGen files --- 01-Feb-2016 13:56:14
---- Done --- 01-Feb-2016 13:56:14
+--- Importing TetGen files --- 12-Sep-2016 11:02:37
+--- Done --- 12-Sep-2016 11:02:37
 </pre><p>Access model element and patch data</p><pre class="codeinput">FT=meshOutput.faces;
 VT=meshOutput.nodes;
 CT=meshOutput.faceMaterialID;
@@ -199,7 +199,7 @@ colormap(autumn);
 camlight <span class="string">headlight</span>;
 set(gca,<span class="string">'FontSize'</span>,fontSize);
 drawnow;
-</pre><img vspace="5" hspace="5" src="DEMO_FEBio_slab_pressure_loading_02_02.png" alt=""> <h2>DEFINE BC's<a name="12"></a></h2><pre class="codeinput"><span class="comment">%Supported nodes</span>
+</pre><img vspace="5" hspace="5" src="DEMO_FEBio_slab_pressure_loading_02_02.png" alt=""> <h2 id="12">DEFINE BC's</h2><pre class="codeinput"><span class="comment">%Supported nodes</span>
 logicRigid=faceBoundaryMarker==1 | faceBoundaryMarker==7;
 F_rigid=Fb(logicRigid,:);
 bcRigidListFull=unique(F_rigid(:));
@@ -222,7 +222,7 @@ set(gca,<span class="string">'FontSize'</span>,fontSize);
 
 view(3); axis <span class="string">tight</span>;  axis <span class="string">equal</span>;  grid <span class="string">on</span>;
 drawnow;
-</pre><img vspace="5" hspace="5" src="DEMO_FEBio_slab_pressure_loading_02_03.png" alt=""> <h2>CONSTRUCTING FEB MODEL<a name="14"></a></h2><pre class="codeinput">FEB_struct.febio_spec.version=<span class="string">'2.0'</span>;
+</pre><img vspace="5" hspace="5" src="DEMO_FEBio_slab_pressure_loading_02_03.png" alt=""> <h2 id="14">CONSTRUCTING FEB MODEL</h2><pre class="codeinput">FEB_struct.febio_spec.version=<span class="string">'2.0'</span>;
 FEB_struct.Module.Type=<span class="string">'solid'</span>;
 
 <span class="comment">% Defining file names</span>
@@ -297,11 +297,11 @@ FEB_struct.data_types={<span class="string">'ux;uy;uz'</span>};
 FEB_struct.LoadData.LoadCurves.id=1;
 FEB_struct.LoadData.LoadCurves.type={<span class="string">'linear'</span>};
 FEB_struct.LoadData.LoadCurves.loadPoints={[0 0;1 1];};
-</pre><h2>SAVING .FEB FILE<a name="15"></a></h2><pre class="codeinput">FEB_struct.disp_opt=0; <span class="comment">%Display waitbars option</span>
+</pre><h2 id="15">SAVING .FEB FILE</h2><pre class="codeinput">FEB_struct.disp_opt=0; <span class="comment">%Display waitbars option</span>
 febStruct2febFile(FEB_struct);
 </pre><pre class="codeoutput"> 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
---- Writing FEBio XML object --- 01-Feb-2016 13:56:16
+--- Writing FEBio XML object --- 12-Sep-2016 11:02:39
 Adding Module level
 Adding Control level
 Adding Globals level
@@ -316,7 +316,6 @@ Adding Boundary level
 ----&gt; Defining fix type boundary conditions
 Adding Loads level
 ----&gt; Defining surface loads
-----&gt; Adding loaded surface
 Adding LoadData level
 ----&gt; Defining load curves
 Adding Output level
@@ -325,8 +324,8 @@ Adding Output level
 Warning: Provided path of logfile is replaced by .feb file path. Only provide
 filename to avoid this warning 
 Writing .feb file
---- Done --- 01-Feb-2016 13:56:18
-</pre><h2>RUNNING FEBIO JOB<a name="16"></a></h2><pre class="codeinput"><span class="comment">% FEBioRunStruct.FEBioPath='C:\Program Files\febio2-2.2.6\bin\FEBio2.exe';</span>
+--- Done --- 12-Sep-2016 11:02:41
+</pre><h2 id="16">RUNNING FEBIO JOB</h2><pre class="codeinput"><span class="comment">% FEBioRunStruct.FEBioPath='C:\Program Files\febio2-2.2.6\bin\FEBio2.exe';</span>
 FEBioRunStruct.run_filename=FEB_struct.run_filename;
 FEBioRunStruct.run_logname=FEB_struct.run_logname;
 FEBioRunStruct.disp_on=1;
@@ -339,9 +338,9 @@ FEBioRunStruct.maxLogCheckTime=3; <span class="comment">%Max log file checking t
 [runFlag]=runMonitorFEBio(FEBioRunStruct);<span class="comment">%START FEBio NOW!!!!!!!!</span>
 </pre><pre class="codeoutput"> 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
---- STARTING FEBIO JOB --- 01-Feb-2016 13:56:18
+--- STARTING FEBIO JOB --- 12-Sep-2016 11:02:41
 Waiting for log file...
-Proceeding to check log file...01-Feb-2016 13:56:20
+Proceeding to check log file...12-Sep-2016 11:02:41
 ------- converged at time : 0.1
 ------- converged at time : 0.2
 ------- converged at time : 0.3
@@ -352,7 +351,7 @@ Proceeding to check log file...01-Feb-2016 13:56:20
 ------- converged at time : 0.8
 ------- converged at time : 0.9
 ------- converged at time : 1
---- Done --- 01-Feb-2016 13:56:30
+--- Done --- 12-Sep-2016 11:02:52
 </pre><pre class="codeinput"><span class="keyword">if</span> runFlag==1 <span class="comment">%i.e. a succesful run</span>
 
     <span class="comment">%IMPORTING NODAL DISPLACEMENT RESULTS</span>
@@ -382,7 +381,7 @@ Proceeding to check log file...01-Feb-2016 13:56:20
     set(gca,<span class="string">'FontSize'</span>,fontSize);
     drawnow;
 <span class="keyword">end</span>
-</pre><img vspace="5" hspace="5" src="DEMO_FEBio_slab_pressure_loading_02_04.png" alt=""> <p><img vspace="5" hspace="5" src="gibbVerySmall.gif" alt=""> </p><p><i><b>GIBBON</b></i> <a href="www.gibboncode.org">www.gibboncode.org</a></p><p><i>Kevin Mattheus Moerman</i>, <a href="gibbon.toolbox@gmail.com">gibbon.toolbox@gmail.com</a></p><p class="footer"><br><a href="http://www.mathworks.com/products/matlab/">Published with MATLAB&reg; R2016a</a><br></p></div><!--
+</pre><img vspace="5" hspace="5" src="DEMO_FEBio_slab_pressure_loading_02_04.png" alt=""> <p><img vspace="5" hspace="5" src="gibbVerySmall.gif" alt=""> </p><p><i><b>GIBBON</b></i> <a href="www.gibboncode.org">www.gibboncode.org</a></p><p><i>Kevin Mattheus Moerman</i>, <a href="gibbon.toolbox@gmail.com">gibbon.toolbox@gmail.com</a></p><p class="footer"><br><a href="http://www.mathworks.com/products/matlab/">Published with MATLAB&reg; R2016b</a><br></p></div><!--
 ##### SOURCE BEGIN #####
 %% DEMO_slab_pressure_loading_01
 % Below is a demonstration for: 
@@ -393,7 +392,7 @@ Proceeding to check log file...01-Feb-2016 13:56:20
 
 %%
 
-clear; close all; clc; 
+close all; clc; clear;
 
 %%
 % Plot settings

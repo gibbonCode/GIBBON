@@ -2,7 +2,7 @@
 % Below is a demonstration of the features of the |hemiSphereCylMesh| function
 
 %%
-clear; close all; clc; 
+close all; clc; clear;
 
 %% Plot settings
 figColor='w'; figColorDef='white';

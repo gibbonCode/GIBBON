@@ -6,7 +6,7 @@
    <!--
 This HTML was auto-generated from MATLAB code.
 To make changes, update the MATLAB code and republish this document.
-      --><title>DEMO_spatially_varying_material_parameters</title><meta name="generator" content="MATLAB 8.4"><link rel="schema.DC" href="http://purl.org/dc/elements/1.1/"><meta name="DC.date" content="2014-10-01"><meta name="DC.source" content="DEMO_FEBio_spatially_varying_material_parameters.m"><style type="text/css">
+      --><title>DEMO_spatially_varying_material_parameters</title><meta name="generator" content="MATLAB 9.1"><link rel="schema.DC" href="http://purl.org/dc/elements/1.1/"><meta name="DC.date" content="2016-09-12"><meta name="DC.source" content="DEMO_FEBio_spatially_varying_material_parameters.m"><style type="text/css">
 html,body,div,span,applet,object,iframe,h1,h2,h3,h4,h5,h6,p,blockquote,pre,a,abbr,acronym,address,big,cite,code,del,dfn,em,font,img,ins,kbd,q,s,samp,small,strike,strong,sub,sup,tt,var,b,u,i,center,dl,dt,dd,ol,ul,li,fieldset,form,label,legend,table,caption,tbody,tfoot,thead,tr,th,td{margin:0;padding:0;border:0;outline:0;font-size:100%;vertical-align:baseline;background:transparent}body{line-height:1}ol,ul{list-style:none}blockquote,q{quotes:none}blockquote:before,blockquote:after,q:before,q:after{content:'';content:none}:focus{outine:0}ins{text-decoration:none}del{text-decoration:line-through}table{border-collapse:collapse;border-spacing:0}
 
 html { min-height:100%; margin-bottom:1px; }
@@ -66,9 +66,8 @@ table td { padding:7px 5px; text-align:left; vertical-align:top; border:1px soli
 
 
 
-  </style></head><body><div class="content"><h1>DEMO_spatially_varying_material_parameters</h1><!--introduction--><p>This demonstration shows how to generate a model with spatially varying material parameters.</p><!--/introduction--><h2>Contents</h2><div><ul><li><a href="#4">DEFINING AND VISUALIZING THE PARAMETER MAP</a></li><li><a href="#6">BUILD MODEL</a></li><li><a href="#7">SET UP BOUNDARY CONDITIONS</a></li><li><a href="#8">CONSTRUCTING FEB MODEL</a></li><li><a href="#9">SAVING .FEB FILE</a></li><li><a href="#10">RUNNING FEBIO JOB</a></li><li><a href="#11">IMPORTING NODAL DISPLACEMENT RESULTS</a></li><li><a href="#12">CREATING NODE SET IN DEFORMED STATE</a></li></ul></div><pre class="codeinput">clear; close <span class="string">all</span>; clc;
-</pre><p>Plot settings</p><pre class="codeinput">figColor=<span class="string">'w'</span>; figColorDef=<span class="string">'white'</span>;
-fontSize=15;
+  </style></head><body><div class="content"><h1>DEMO_spatially_varying_material_parameters</h1><!--introduction--><p>This demonstration shows how to generate a model with spatially varying material parameters.</p><!--/introduction--><h2>Contents</h2><div><ul><li><a href="#4">DEFINING AND VISUALIZING THE PARAMETER MAP</a></li><li><a href="#6">BUILD MODEL</a></li><li><a href="#7">SET UP BOUNDARY CONDITIONS</a></li><li><a href="#8">CONSTRUCTING FEB MODEL</a></li><li><a href="#9">SAVING .FEB FILE</a></li><li><a href="#10">RUNNING FEBIO JOB</a></li><li><a href="#11">IMPORTING NODAL DISPLACEMENT RESULTS</a></li><li><a href="#12">CREATING NODE SET IN DEFORMED STATE</a></li></ul></div><pre class="codeinput">close <span class="string">all</span>; clc; clear;
+</pre><p>Plot settings</p><pre class="codeinput">fontSize=15;
 faceAlpha1=1;
 faceAlpha2=0.5;
 edgeColor=0.25*ones(1,3);
@@ -81,7 +80,7 @@ cMap=linspacen(softColor(:),boneColor(:),250)';
 </pre><p>path names</p><pre class="codeinput">filePath=mfilename(<span class="string">'fullpath'</span>);
 savePath=fullfile(fileparts(filePath),<span class="string">'data'</span>,<span class="string">'temp'</span>);
 modelName=fullfile(savePath,<span class="string">'tempModel'</span>);
-</pre><h2>DEFINING AND VISUALIZING THE PARAMETER MAP<a name="4"></a></h2><p>A trabecular structure is here simulated using the "Gyroid triply periodic surface" function.</p><pre class="codeinput"><span class="comment">%Define Mooney-Rivlin parameter</span>
+</pre><h2 id="4">DEFINING AND VISUALIZING THE PARAMETER MAP</h2><p>A trabecular structure is here simulated using the "Gyroid triply periodic surface" function.</p><pre class="codeinput"><span class="comment">%Define Mooney-Rivlin parameter</span>
 nPar=15; <span class="comment">%Number of parameter levels</span>
 minC=1e-5; <span class="comment">%minimum value</span>
 maxC=1e-3; <span class="comment">%Maximum value</span>
@@ -101,7 +100,7 @@ S=reshape(S,size(X));
 [Fs1,Vs1,Cs1]=ind2patch(S&gt;=0.6,S,<span class="string">'vb'</span>);
 [Fs2,Vs2,Cs2]=ind2patch(S&lt;0.6,S,<span class="string">'vb'</span>);
 
-figuremax(figColor,figColorDef);
+cFigure;
 
 subplot(1,2,1);
 title(<span class="string">'Stiff network'</span>,<span class="string">'FontSize'</span>,fontSize);
@@ -120,7 +119,7 @@ colormap(cMap); caxis([min(S(:)) max(S(:))]); colorbar;
 set(gca,<span class="string">'FontSize'</span>,fontSize);
 
 drawnow;
-</pre><img vspace="5" hspace="5" src="DEMO_FEBio_spatially_varying_material_parameters_01.png" alt=""> <h2>BUILD MODEL<a name="6"></a></h2><pre class="codeinput"><span class="comment">%Create hexahedral elements with function based colors</span>
+</pre><img vspace="5" hspace="5" src="DEMO_FEBio_spatially_varying_material_parameters_01.png" alt=""> <h2 id="6">BUILD MODEL</h2><pre class="codeinput"><span class="comment">%Create hexahedral elements with function based colors</span>
 [E,V,C]=ind2patch(true(size(S)),S,<span class="string">'hu'</span>);
 
 <span class="comment">%Define element parameter mapping</span>
@@ -136,7 +135,7 @@ logicTopNodes=abs(V(:,3)-max(V(:,3)))&lt;=max(eps(V(:,3)));
 logicBottomNodes=abs(V(:,3)-min(V(:,3)))&lt;=max(eps(V(:,3)));
 
 
-figuremax(figColor,figColorDef);
+cFigure;
 title(<span class="string">'Gyroid derived model of trabecular structure'</span>,<span class="string">'FontSize'</span>,fontSize);
 xlabel(<span class="string">'X'</span>,<span class="string">'FontSize'</span>,fontSize);ylabel(<span class="string">'Y'</span>,<span class="string">'FontSize'</span>,fontSize); zlabel(<span class="string">'Z'</span>,<span class="string">'FontSize'</span>,fontSize); hold <span class="string">on</span>;
 patch(<span class="string">'Faces'</span>,F,<span class="string">'Vertices'</span>,V,<span class="string">'FaceColor'</span>,<span class="string">'flat'</span>,<span class="string">'CData'</span>,PF,<span class="string">'edgeColor'</span>,edgeColor,<span class="string">'lineWidth'</span>,edgeWidth,<span class="string">'FaceAlpha'</span>,1);
@@ -146,8 +145,8 @@ colormap(cMap); caxis([min(elementMaterialIndices(:)) max(elementMaterialIndices
 
 axis <span class="string">equal</span>; view(3); axis <span class="string">tight</span>; axis <span class="string">vis3d</span>; grid <span class="string">on</span>;
 set(gca,<span class="string">'FontSize'</span>,fontSize);
-</pre><pre class="codeoutput">Warning: hex8 elements assumed, for other elements please specify elementType 
-</pre><img vspace="5" hspace="5" src="DEMO_FEBio_spatially_varying_material_parameters_02.png" alt=""> <h2>SET UP BOUNDARY CONDITIONS<a name="7"></a></h2><pre class="codeinput"><span class="comment">%List of nodes to fix</span>
+</pre><pre class="codeoutput">hex8 elements assumed, for other elements please specify elementType
+</pre><img vspace="5" hspace="5" src="DEMO_FEBio_spatially_varying_material_parameters_02.png" alt=""> <h2 id="7">SET UP BOUNDARY CONDITIONS</h2><pre class="codeinput"><span class="comment">%List of nodes to fix</span>
 bcFixList=find(logicBottomNodes);
 
 <span class="comment">%List of nodes to prescribe displacement for</span>
@@ -155,7 +154,8 @@ bcPrescribeList=find(logicTopNodes);
 
 <span class="comment">%Define displacement magnitudes</span>
 displacementMagnitude=[0 0 3];
-</pre><h2>CONSTRUCTING FEB MODEL<a name="8"></a></h2><pre class="codeinput">FEB_struct.febio_spec.version=<span class="string">'2.0'</span>;
+bcPrescribeMagnitudes=displacementMagnitude(ones(1,numel(bcPrescribeList)),:);
+</pre><h2 id="8">CONSTRUCTING FEB MODEL</h2><pre class="codeinput">FEB_struct.febio_spec.version=<span class="string">'2.0'</span>;
 FEB_struct.Module.Type=<span class="string">'solid'</span>;
 
 <span class="comment">% Defining file names</span>
@@ -204,20 +204,22 @@ FEB_struct.Boundary.Fix{2}.SetName=FEB_struct.Geometry.NodeSet{1}.Name;
 FEB_struct.Boundary.Fix{3}.bc=<span class="string">'z'</span>;
 FEB_struct.Boundary.Fix{3}.SetName=FEB_struct.Geometry.NodeSet{1}.Name;
 
-FEB_struct.Boundary.Prescribe{1}.SetName=FEB_struct.Geometry.NodeSet{2}.Name;
-FEB_struct.Boundary.Prescribe{1}.Scale=displacementMagnitude(1);
+FEB_struct.Boundary.Prescribe{1}.Set=bcPrescribeList;
 FEB_struct.Boundary.Prescribe{1}.bc=<span class="string">'x'</span>;
 FEB_struct.Boundary.Prescribe{1}.lc=1;
+FEB_struct.Boundary.Prescribe{1}.nodeScale=bcPrescribeMagnitudes(:,1);
 FEB_struct.Boundary.Prescribe{1}.Type=<span class="string">'relative'</span>;
-FEB_struct.Boundary.Prescribe{2}.SetName=FEB_struct.Geometry.NodeSet{2}.Name;
-FEB_struct.Boundary.Prescribe{2}.Scale=displacementMagnitude(2);
+
+FEB_struct.Boundary.Prescribe{2}.Set=bcPrescribeList;
 FEB_struct.Boundary.Prescribe{2}.bc=<span class="string">'y'</span>;
 FEB_struct.Boundary.Prescribe{2}.lc=1;
+FEB_struct.Boundary.Prescribe{2}.nodeScale=bcPrescribeMagnitudes(:,2);
 FEB_struct.Boundary.Prescribe{2}.Type=<span class="string">'relative'</span>;
-FEB_struct.Boundary.Prescribe{3}.SetName=FEB_struct.Geometry.NodeSet{2}.Name;
-FEB_struct.Boundary.Prescribe{3}.Scale=displacementMagnitude(3);
+
+FEB_struct.Boundary.Prescribe{3}.Set=bcPrescribeList;
 FEB_struct.Boundary.Prescribe{3}.bc=<span class="string">'z'</span>;
 FEB_struct.Boundary.Prescribe{3}.lc=1;
+FEB_struct.Boundary.Prescribe{3}.nodeScale=bcPrescribeMagnitudes(:,3);
 FEB_struct.Boundary.Prescribe{3}.Type=<span class="string">'relative'</span>;
 
 <span class="comment">%Load curves</span>
@@ -234,11 +236,11 @@ run_force_output_name=[FEB_struct.run_filename(1:end-4),<span class="string">'_f
 FEB_struct.run_output_names={run_disp_output_name,run_force_output_name};
 FEB_struct.output_types={<span class="string">'node_data'</span>,<span class="string">'node_data'</span>};
 FEB_struct.data_types={<span class="string">'ux;uy;uz'</span>,<span class="string">'Rx;Ry;Rz'</span>};
-</pre><h2>SAVING .FEB FILE<a name="9"></a></h2><pre class="codeinput">FEB_struct.disp_opt=0; <span class="comment">%Display waitbars</span>
+</pre><h2 id="9">SAVING .FEB FILE</h2><pre class="codeinput">FEB_struct.disp_opt=0; <span class="comment">%Display waitbars</span>
 febStruct2febFile(FEB_struct);
 </pre><pre class="codeoutput"> 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
---- Writing FEBio XML object --- 01-Oct-2014 14:53:46
+--- Writing FEBio XML object --- 12-Sep-2016 11:07:44
 Adding Module level
 Adding Control level
 Adding Globals level
@@ -256,10 +258,13 @@ Adding LoadData level
 Adding Output level
 ----&gt; Adding plotfile field
 ----&gt; Adding logfile field
+Warning: Provided path of logfile is replaced by .feb file path. Only provide
+filename to avoid this warning 
+Warning: Provided path of logfile is replaced by .feb file path. Only provide
+filename to avoid this warning 
 Writing .feb file
---- Done --- 01-Oct-2014 14:53:54
-</pre><h2>RUNNING FEBIO JOB<a name="10"></a></h2><pre class="codeinput"><span class="comment">% FEBioRunStruct.FEBioPath='C:\Program Files\febio-2.1.0\bin\FEBio2.exe';</span>
-<span class="comment">% FEBioRunStruct.FEBioPath='C:\Users\kmmoerman\00_WORK\SOURCE_CODES\FEBio\VS2010\x64\Release\FEBio2x64.exe';</span>
+--- Done --- 12-Sep-2016 11:07:45
+</pre><h2 id="10">RUNNING FEBIO JOB</h2><pre class="codeinput"><span class="comment">% FEBioRunStruct.FEBioPath='C:\Program Files\febio2-2.2.6\bin\FEBio2.exe';</span>
 FEBioRunStruct.run_filename=FEB_struct.run_filename;
 FEBioRunStruct.run_logname=FEB_struct.run_logname;
 FEBioRunStruct.disp_on=1;
@@ -272,14 +277,9 @@ FEBioRunStruct.maxLogCheckTime=3; <span class="comment">%Max log file checking t
 [runFlag]=runMonitorFEBio(FEBioRunStruct);<span class="comment">%START FEBio NOW!!!!!!!!</span>
 </pre><pre class="codeoutput"> 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
---- STARTING FEBIO JOB --- 01-Oct-2014 14:53:54
-
-ans =
-
-"/data/Code/C/FEBIO_linux/bin/febio2.lnx64" -i "/data/MATLAB/GIBBON/trunk/data/temp/tempModel.feb" -o "/data/MATLAB/GIBBON/trunk/data/temp/tempModel.txt" &amp;
-
+--- STARTING FEBIO JOB --- 12-Sep-2016 11:07:45
 Waiting for log file...
-Proceeding to check log file...01-Oct-2014 14:53:54
+Proceeding to check log file...12-Sep-2016 11:07:46
 ------- converged at time : 0.1
 ------- converged at time : 0.2
 ------- converged at time : 0.3
@@ -290,15 +290,15 @@ Proceeding to check log file...01-Oct-2014 14:53:54
 ------- converged at time : 0.8
 ------- converged at time : 0.9
 ------- converged at time : 1
---- Done --- 01-Oct-2014 14:54:34
-</pre><h2>IMPORTING NODAL DISPLACEMENT RESULTS<a name="11"></a></h2><p>Importing nodal displacements from a log file</p><pre class="codeinput">[~, N_disp_mat,~]=importFEBio_logfile(FEB_struct.run_output_names{1}); <span class="comment">%Nodal displacements</span>
+--- Done --- 12-Sep-2016 11:08:12
+</pre><h2 id="11">IMPORTING NODAL DISPLACEMENT RESULTS</h2><p>Importing nodal displacements from a log file</p><pre class="codeinput">[~, N_disp_mat,~]=importFEBio_logfile(FEB_struct.run_output_names{1}); <span class="comment">%Nodal displacements</span>
 
 DN=N_disp_mat(:,2:end,end); <span class="comment">%Final nodal displacements</span>
-</pre><h2>CREATING NODE SET IN DEFORMED STATE<a name="12"></a></h2><pre class="codeinput">V_def=V+DN;
+</pre><h2 id="12">CREATING NODE SET IN DEFORMED STATE</h2><pre class="codeinput">V_def=V+DN;
 DN_magnitude=sqrt(sum(DN.^2,2));
 </pre><p>Plotting the deformed model</p><pre class="codeinput">[CF]=vertexToFaceMeasure(F,DN_magnitude);
 
-hf1=figuremax(figColor,figColorDef);
+hf1=cFigure;
 title(<span class="string">'The deformed model'</span>,<span class="string">'FontSize'</span>,fontSize);
 xlabel(<span class="string">'X'</span>,<span class="string">'FontSize'</span>,fontSize); ylabel(<span class="string">'Y'</span>,<span class="string">'FontSize'</span>,fontSize); zlabel(<span class="string">'Z'</span>,<span class="string">'FontSize'</span>,fontSize); hold <span class="string">on</span>;
 
@@ -309,18 +309,17 @@ colormap <span class="string">jet</span>; colorbar;
 <span class="comment">% camlight headlight;</span>
 set(gca,<span class="string">'FontSize'</span>,fontSize);
 drawnow;
-</pre><img vspace="5" hspace="5" src="DEMO_FEBio_spatially_varying_material_parameters_03.png" alt=""> <p><img vspace="5" hspace="5" src="gibbVerySmall.gif" alt=""> </p><p><i><b>GIBBON</b></i> <a href="www.gibboncode.org">www.gibboncode.org</a></p><p><i>Kevin Mattheus Moerman</i>, <a href="gibbon.toolbox@gmail.com">gibbon.toolbox@gmail.com</a></p><p class="footer"><br><a href="http://www.mathworks.com/products/matlab/">Published with MATLAB&reg; R2014b</a><br></p></div><!--
+</pre><img vspace="5" hspace="5" src="DEMO_FEBio_spatially_varying_material_parameters_03.png" alt=""> <p><img vspace="5" hspace="5" src="gibbVerySmall.gif" alt=""> </p><p><i><b>GIBBON</b></i> <a href="www.gibboncode.org">www.gibboncode.org</a></p><p><i>Kevin Mattheus Moerman</i>, <a href="gibbon.toolbox@gmail.com">gibbon.toolbox@gmail.com</a></p><p class="footer"><br><a href="http://www.mathworks.com/products/matlab/">Published with MATLAB&reg; R2016b</a><br></p></div><!--
 ##### SOURCE BEGIN #####
 %% DEMO_spatially_varying_material_parameters
 % This demonstration shows how to generate a model with spatially varying
 % material parameters.
 
 %%
-clear; close all; clc; 
+close all; clc; clear;
 
 %%
 % Plot settings
-figColor='w'; figColorDef='white';
 fontSize=15;
 faceAlpha1=1;
 faceAlpha2=0.5;
@@ -366,7 +365,7 @@ S=reshape(S,size(X));
 [Fs1,Vs1,Cs1]=ind2patch(S>=0.6,S,'vb'); 
 [Fs2,Vs2,Cs2]=ind2patch(S<0.6,S,'vb'); 
 
-figuremax(figColor,figColorDef);
+cFigure;
 
 subplot(1,2,1);
 title('Stiff network','FontSize',fontSize);
@@ -404,7 +403,7 @@ logicTopNodes=abs(V(:,3)-max(V(:,3)))<=max(eps(V(:,3)));
 logicBottomNodes=abs(V(:,3)-min(V(:,3)))<=max(eps(V(:,3)));
 
 
-figuremax(figColor,figColorDef);
+cFigure;
 title('Gyroid derived model of trabecular structure','FontSize',fontSize);
 xlabel('X','FontSize',fontSize);ylabel('Y','FontSize',fontSize); zlabel('Z','FontSize',fontSize); hold on;
 patch('Faces',F,'Vertices',V,'FaceColor','flat','CData',PF,'edgeColor',edgeColor,'lineWidth',edgeWidth,'FaceAlpha',1);
@@ -425,6 +424,7 @@ bcPrescribeList=find(logicTopNodes);
 
 %Define displacement magnitudes
 displacementMagnitude=[0 0 3];
+bcPrescribeMagnitudes=displacementMagnitude(ones(1,numel(bcPrescribeList)),:);
 
 %% CONSTRUCTING FEB MODEL
 
@@ -477,20 +477,22 @@ FEB_struct.Boundary.Fix{2}.SetName=FEB_struct.Geometry.NodeSet{1}.Name;
 FEB_struct.Boundary.Fix{3}.bc='z';
 FEB_struct.Boundary.Fix{3}.SetName=FEB_struct.Geometry.NodeSet{1}.Name;
 
-FEB_struct.Boundary.Prescribe{1}.SetName=FEB_struct.Geometry.NodeSet{2}.Name;
-FEB_struct.Boundary.Prescribe{1}.Scale=displacementMagnitude(1);
+FEB_struct.Boundary.Prescribe{1}.Set=bcPrescribeList;
 FEB_struct.Boundary.Prescribe{1}.bc='x';
 FEB_struct.Boundary.Prescribe{1}.lc=1;
+FEB_struct.Boundary.Prescribe{1}.nodeScale=bcPrescribeMagnitudes(:,1);
 FEB_struct.Boundary.Prescribe{1}.Type='relative';
-FEB_struct.Boundary.Prescribe{2}.SetName=FEB_struct.Geometry.NodeSet{2}.Name;
-FEB_struct.Boundary.Prescribe{2}.Scale=displacementMagnitude(2);
+
+FEB_struct.Boundary.Prescribe{2}.Set=bcPrescribeList;
 FEB_struct.Boundary.Prescribe{2}.bc='y';
 FEB_struct.Boundary.Prescribe{2}.lc=1;
+FEB_struct.Boundary.Prescribe{2}.nodeScale=bcPrescribeMagnitudes(:,2);
 FEB_struct.Boundary.Prescribe{2}.Type='relative';
-FEB_struct.Boundary.Prescribe{3}.SetName=FEB_struct.Geometry.NodeSet{2}.Name;
-FEB_struct.Boundary.Prescribe{3}.Scale=displacementMagnitude(3);
+
+FEB_struct.Boundary.Prescribe{3}.Set=bcPrescribeList;
 FEB_struct.Boundary.Prescribe{3}.bc='z';
 FEB_struct.Boundary.Prescribe{3}.lc=1;
+FEB_struct.Boundary.Prescribe{3}.nodeScale=bcPrescribeMagnitudes(:,3);
 FEB_struct.Boundary.Prescribe{3}.Type='relative';
 
 %Load curves
@@ -515,8 +517,7 @@ febStruct2febFile(FEB_struct);
 
 %% RUNNING FEBIO JOB
 
-% FEBioRunStruct.FEBioPath='C:\Program Files\febio-2.1.0\bin\FEBio2.exe';
-% FEBioRunStruct.FEBioPath='C:\Users\kmmoerman\00_WORK\SOURCE_CODES\FEBio\VS2010\x64\Release\FEBio2x64.exe';
+% FEBioRunStruct.FEBioPath='C:\Program Files\febio2-2.2.6\bin\FEBio2.exe';
 FEBioRunStruct.run_filename=FEB_struct.run_filename;
 FEBioRunStruct.run_logname=FEB_struct.run_logname;
 FEBioRunStruct.disp_on=1;
@@ -543,7 +544,7 @@ DN_magnitude=sqrt(sum(DN.^2,2));
 
 [CF]=vertexToFaceMeasure(F,DN_magnitude);
 
-hf1=figuremax(figColor,figColorDef);
+hf1=cFigure;
 title('The deformed model','FontSize',fontSize);
 xlabel('X','FontSize',fontSize); ylabel('Y','FontSize',fontSize); zlabel('Z','FontSize',fontSize); hold on;
 
@@ -563,5 +564,6 @@ drawnow;
 % <www.gibboncode.org>
 % 
 % _Kevin Mattheus Moerman_, <gibbon.toolbox@gmail.com>
+
 ##### SOURCE END #####
 --></body></html>

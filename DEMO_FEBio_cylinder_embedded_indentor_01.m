@@ -2,7 +2,7 @@
 % 
 
 %%
-clear; close all; clc; 
+close all; clc; clear;
 
 %% 
 % Plot settings
@@ -311,21 +311,23 @@ FEB_struct.Boundary.Fix{2}.SetName=FEB_struct.Geometry.NodeSet{1}.Name;
 FEB_struct.Boundary.Fix{3}.bc='z';
 FEB_struct.Boundary.Fix{3}.SetName=FEB_struct.Geometry.NodeSet{1}.Name;
 
-FEB_struct.Boundary.Prescribe{1}.SetName=FEB_struct.Geometry.NodeSet{2}.Name;
-FEB_struct.Boundary.Prescribe{1}.Scale=displacementMagnitude(1);
+FEB_struct.Boundary.Prescribe{1}.Set=indIndentor;
 FEB_struct.Boundary.Prescribe{1}.bc='x';
 FEB_struct.Boundary.Prescribe{1}.lc=1;
+FEB_struct.Boundary.Prescribe{1}.nodeScale=displacementMagnitude(ones(numel(indIndentor),1),1);
 FEB_struct.Boundary.Prescribe{1}.Type='relative';
-FEB_struct.Boundary.Prescribe{2}.SetName=FEB_struct.Geometry.NodeSet{2}.Name;
-FEB_struct.Boundary.Prescribe{2}.Scale=displacementMagnitude(2);
-FEB_struct.Boundary.Prescribe{2}.bc='y';
-FEB_struct.Boundary.Prescribe{2}.lc=1;
-FEB_struct.Boundary.Prescribe{2}.Type='relative';
-FEB_struct.Boundary.Prescribe{3}.SetName=FEB_struct.Geometry.NodeSet{2}.Name;
-FEB_struct.Boundary.Prescribe{3}.Scale=displacementMagnitude(3);
-FEB_struct.Boundary.Prescribe{3}.bc='z';
-FEB_struct.Boundary.Prescribe{3}.lc=1;
-FEB_struct.Boundary.Prescribe{3}.Type='relative';
+
+FEB_struct.Boundary.Prescribe{1}.Set=indIndentor;
+FEB_struct.Boundary.Prescribe{1}.bc='y';
+FEB_struct.Boundary.Prescribe{1}.lc=1;
+FEB_struct.Boundary.Prescribe{1}.nodeScale=displacementMagnitude(ones(numel(indIndentor),1),2);
+FEB_struct.Boundary.Prescribe{1}.Type='relative';
+
+FEB_struct.Boundary.Prescribe{1}.Set=indIndentor;
+FEB_struct.Boundary.Prescribe{1}.bc='z';
+FEB_struct.Boundary.Prescribe{1}.lc=1;
+FEB_struct.Boundary.Prescribe{1}.nodeScale=displacementMagnitude(ones(numel(indIndentor),1),3);
+FEB_struct.Boundary.Prescribe{1}.Type='relative';
 
 %Load curves
 FEB_struct.LoadData.LoadCurves.id=1;

@@ -2,7 +2,7 @@
 % Below is a demonstration of the features of the |joinElementSets| function
 
 %%
-clear; close all; clc; 
+close all; clc; clear;
 
 %% Syntax
 % |[FT,VT,CT]=joinElementSets(Fc,Vc,Cc);|

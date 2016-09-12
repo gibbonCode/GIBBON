@@ -6,7 +6,7 @@
    <!--
 This HTML was auto-generated from MATLAB code.
 To make changes, update the MATLAB code and republish this document.
-      --><title>constrainedDelaunayTetGen</title><meta name="generator" content="MATLAB 8.4"><link rel="schema.DC" href="http://purl.org/dc/elements/1.1/"><meta name="DC.date" content="2014-11-21"><meta name="DC.source" content="HELP_constrainedDelaunayTetGen.m"><style type="text/css">
+      --><title>constrainedDelaunayTetGen</title><meta name="generator" content="MATLAB 9.1"><link rel="schema.DC" href="http://purl.org/dc/elements/1.1/"><meta name="DC.date" content="2016-09-12"><meta name="DC.source" content="HELP_constrainedDelaunayTetGen.m"><style type="text/css">
 html,body,div,span,applet,object,iframe,h1,h2,h3,h4,h5,h6,p,blockquote,pre,a,abbr,acronym,address,big,cite,code,del,dfn,em,font,img,ins,kbd,q,s,samp,small,strike,strong,sub,sup,tt,var,b,u,i,center,dl,dt,dd,ol,ul,li,fieldset,form,label,legend,table,caption,tbody,tfoot,thead,tr,th,td{margin:0;padding:0;border:0;outline:0;font-size:100%;vertical-align:baseline;background:transparent}body{line-height:1}ol,ul{list-style:none}blockquote,q{quotes:none}blockquote:before,blockquote:after,q:before,q:after{content:'';content:none}:focus{outine:0}ins{text-decoration:none}del{text-decoration:line-through}table{border-collapse:collapse;border-spacing:0}
 
 html { min-height:100%; margin-bottom:1px; }
@@ -66,7 +66,7 @@ table td { padding:7px 5px; text-align:left; vertical-align:top; border:1px soli
 
 
 
-  </style></head><body><div class="content"><h1>constrainedDelaunayTetGen</h1><!--introduction--><p>Below is a demonstration of the features of the <tt>constrainedDelaunayTetGen</tt> function</p><!--/introduction--><h2>Contents</h2><div><ul><li><a href="#1">Syntax</a></li><li><a href="#2">Description</a></li><li><a href="#3">Examples</a></li><li><a href="#8">Example: Using MATLAB's <tt>delaunayTriangulation</tt> to compute the unconstrained 3D Delaunay tesselation</a></li><li><a href="#9">Example: Using TetGen based <tt>constrainedDelaunayTetGen</tt> to compute the unconstrained 3D Delaunay tesselation</a></li><li><a href="#11">Example: Using TetGen based <tt>constrainedDelaunayTetGen</tt> to compute the constrained 3D Delaunay tesselation</a></li><li><a href="#13">Example: Computing constrained 3D Delaunay tesselations with interior points</a></li></ul></div><h2>Syntax<a name="1"></a></h2><p><tt>[TR]=constrainedDelaunayTetGen(V,C);</tt></p><h2>Description<a name="2"></a></h2><p>The <tt>constrainedDelaunayTetGen</tt> function uses TetGen to create the constrained 3D Delaunay tesselation of point sets.</p><h2>Examples<a name="3"></a></h2><pre class="codeinput">clear; close <span class="string">all</span>; clc;
+  </style></head><body><div class="content"><h1>constrainedDelaunayTetGen</h1><!--introduction--><p>Below is a demonstration of the features of the <tt>constrainedDelaunayTetGen</tt> function</p><!--/introduction--><h2>Contents</h2><div><ul><li><a href="#1">Syntax</a></li><li><a href="#2">Description</a></li><li><a href="#3">Examples</a></li><li><a href="#8">Example: Using MATLAB's <tt>delaunayTriangulation</tt> to compute the unconstrained 3D Delaunay tesselation</a></li><li><a href="#9">Example: Using TetGen based <tt>constrainedDelaunayTetGen</tt> to compute the unconstrained 3D Delaunay tesselation</a></li><li><a href="#11">Example: Using TetGen based <tt>constrainedDelaunayTetGen</tt> to compute the constrained 3D Delaunay tesselation</a></li><li><a href="#13">Example: Computing constrained 3D Delaunay tesselations with interior points</a></li></ul></div><h2 id="1">Syntax</h2><p><tt>[TR]=constrainedDelaunayTetGen(V,C);</tt></p><h2 id="2">Description</h2><p>The <tt>constrainedDelaunayTetGen</tt> function uses TetGen to create the constrained 3D Delaunay tesselation of point sets.</p><h2 id="3">Examples</h2><pre class="codeinput">close <span class="string">all</span>; clc; <span class="comment">%clear;</span>
 </pre><p>Plot settings</p><pre class="codeinput">figColor=<span class="string">'w'</span>; figColorDef=<span class="string">'white'</span>;
 fontSize=15;
 faceAlpha1=1;
@@ -99,32 +99,32 @@ patch(<span class="string">'Faces'</span>,F,<span class="string">'Vertices'</spa
 camlight <span class="string">headlight</span>;
 set(gca,<span class="string">'FontSize'</span>,fontSize);
 view(3); axis <span class="string">tight</span>;  axis <span class="string">equal</span>;  grid <span class="string">on</span>;
-</pre><img vspace="5" hspace="5" src="HELP_constrainedDelaunayTetGen_01.png" alt=""> <h2>Example: Using MATLAB's <tt>delaunayTriangulation</tt> to compute the unconstrained 3D Delaunay tesselation<a name="8"></a></h2><p>Computing the unconstrained 3D Delaunay tesselation of point set</p><pre class="codeinput">[DT]=delaunayTriangulation(V);
+</pre><img vspace="5" hspace="5" src="HELP_constrainedDelaunayTetGen_01.png" alt=""> <h2 id="8">Example: Using MATLAB's <tt>delaunayTriangulation</tt> to compute the unconstrained 3D Delaunay tesselation</h2><p>Computing the unconstrained 3D Delaunay tesselation of point set</p><pre class="codeinput">[DT]=delaunayTriangulation(V);
 
 <span class="comment">%Access the produces tetrahedrons and vertices (possibly different from</span>
 <span class="comment">%input vertices)</span>
 TET1=DT.ConnectivityList;
 V1=DT.Points;
 [F1]=element2patch(TET1,[],<span class="string">'tet4'</span>);
-</pre><h2>Example: Using TetGen based <tt>constrainedDelaunayTetGen</tt> to compute the unconstrained 3D Delaunay tesselation<a name="9"></a></h2><p>Computing the constrained 3D Delaunay tesselation of point set (i.e. faces are matched)</p><pre class="codeinput">C=[]; <span class="comment">%i.e. no constraints</span>
+</pre><h2 id="9">Example: Using TetGen based <tt>constrainedDelaunayTetGen</tt> to compute the unconstrained 3D Delaunay tesselation</h2><p>Computing the constrained 3D Delaunay tesselation of point set (i.e. faces are matched)</p><pre class="codeinput">C=[]; <span class="comment">%i.e. no constraints</span>
 [TR]=constrainedDelaunayTetGen(V,C);
 TET2=TR.ConnectivityList;
 V2=TR.Points;
 [F2]=element2patch(TET2,[],<span class="string">'tet4'</span>);
 </pre><pre class="codeoutput"> 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
---- TETGEN Tetrahedral meshing --- 21-Nov-2014 10:51:26
+--- TETGEN Tetrahedral meshing --- 12-Sep-2016 09:33:32
  
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
---- Writing NODE file --- 21-Nov-2014 10:51:26
---- Done --- 21-Nov-2014 10:51:26
---- Running TetGen to mesh input boundary--- 21-Nov-2014 10:51:26
-Opening D:\MATLAB\GIBBON\trunk\lib_ext\tetGen\tempFiles\temp.node. 
---- Done --- 21-Nov-2014 10:51:26
+--- Writing NODE file --- 12-Sep-2016 09:33:32
+--- Done --- 12-Sep-2016 09:33:32
+--- Running TetGen to mesh input boundary--- 12-Sep-2016 09:33:32
+Opening D:\MATLAB\SVN\GIBBON\lib_ext\tetGen\tempFiles\temp.node. 
+--- Done --- 12-Sep-2016 09:33:32
  
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
---- Importing TetGen files --- 21-Nov-2014 10:51:26
---- Done --- 21-Nov-2014 10:51:26
+--- Importing TetGen files --- 12-Sep-2016 09:33:32
+--- Done --- 12-Sep-2016 09:33:32
 </pre><p>Plotting surface model</p><pre class="codeinput">hf=figuremax(figColor,figColorDef);
 
 subplot(1,2,1);
@@ -144,29 +144,29 @@ patch(<span class="string">'Faces'</span>,F2,<span class="string">'Vertices'</sp
 camlight <span class="string">headlight</span>;
 set(gca,<span class="string">'FontSize'</span>,fontSize);
 view(3); axis <span class="string">tight</span>;  axis <span class="string">equal</span>;  grid <span class="string">on</span>;
-</pre><img vspace="5" hspace="5" src="HELP_constrainedDelaunayTetGen_02.png" alt=""> <h2>Example: Using TetGen based <tt>constrainedDelaunayTetGen</tt> to compute the constrained 3D Delaunay tesselation<a name="11"></a></h2><p>Computing the constrained 3D Delaunay tesselation of point set (i.e. faces are matched)</p><pre class="codeinput">C=F; <span class="comment">%i.e. The faces form the constraints</span>
+</pre><img vspace="5" hspace="5" src="HELP_constrainedDelaunayTetGen_02.png" alt=""> <h2 id="11">Example: Using TetGen based <tt>constrainedDelaunayTetGen</tt> to compute the constrained 3D Delaunay tesselation</h2><p>Computing the constrained 3D Delaunay tesselation of point set (i.e. faces are matched)</p><pre class="codeinput">C=F; <span class="comment">%i.e. The faces form the constraints</span>
 [TR]=constrainedDelaunayTetGen(V,C);
 TET2=TR.ConnectivityList;
 V2=TR.Points;
 [F2]=element2patch(TET2,[],<span class="string">'tet4'</span>);
 </pre><pre class="codeoutput"> 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
---- TETGEN Tetrahedral meshing --- 21-Nov-2014 10:51:31
+--- TETGEN Tetrahedral meshing --- 12-Sep-2016 09:33:33
  
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
---- Writing SMESH file --- 21-Nov-2014 10:51:31
+--- Writing SMESH file --- 12-Sep-2016 09:33:33
 ----&gt; Adding node field
 ----&gt; Adding facet field
 ----&gt; Adding holes specification
 ----&gt; Adding region specification
---- Done --- 21-Nov-2014 10:51:31
---- Running TetGen to mesh input boundary--- 21-Nov-2014 10:51:31
-Opening D:\MATLAB\GIBBON\trunk\lib_ext\tetGen\tempFiles\temp.smesh. 
---- Done --- 21-Nov-2014 10:51:31
+--- Done --- 12-Sep-2016 09:33:33
+--- Running TetGen to mesh input boundary--- 12-Sep-2016 09:33:33
+Opening D:\MATLAB\SVN\GIBBON\lib_ext\tetGen\tempFiles\temp.smesh. 
+--- Done --- 12-Sep-2016 09:33:33
  
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
---- Importing TetGen files --- 21-Nov-2014 10:51:31
---- Done --- 21-Nov-2014 10:51:31
+--- Importing TetGen files --- 12-Sep-2016 09:33:33
+--- Done --- 12-Sep-2016 09:33:33
 </pre><p>Plotting surface model</p><pre class="codeinput">hf=figuremax(figColor,figColorDef);
 
 subplot(1,2,1);
@@ -186,7 +186,7 @@ patch(<span class="string">'Faces'</span>,F2,<span class="string">'Vertices'</sp
 camlight <span class="string">headlight</span>;
 set(gca,<span class="string">'FontSize'</span>,fontSize);
 view(3); axis <span class="string">tight</span>;  axis <span class="string">equal</span>;  grid <span class="string">on</span>;
-</pre><img vspace="5" hspace="5" src="HELP_constrainedDelaunayTetGen_03.png" alt=""> <h2>Example: Computing constrained 3D Delaunay tesselations with interior points<a name="13"></a></h2><p>First the <tt>triSurf2Im</tt> function is used to mesh the interior</p><pre class="codeinput">[edgeLengths]=patchEdgeLengths(F,V);
+</pre><img vspace="5" hspace="5" src="HELP_constrainedDelaunayTetGen_03.png" alt=""> <h2 id="13">Example: Computing constrained 3D Delaunay tesselations with interior points</h2><p>First the <tt>triSurf2Im</tt> function is used to mesh the interior</p><pre class="codeinput">[edgeLengths]=patchEdgeLengths(F,V);
 edgeLengthsMean=mean(edgeLengths);
 
 voxelSize=edgeLengthsMean/2; <span class="comment">% The output image voxel size.</span>
@@ -263,22 +263,22 @@ L=XE&lt;mean(X(:));
 [F3c]=element2patch(TET3(L,:),[],<span class="string">'tet4'</span>);
 </pre><pre class="codeoutput"> 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
---- TETGEN Tetrahedral meshing --- 21-Nov-2014 10:51:36
+--- TETGEN Tetrahedral meshing --- 12-Sep-2016 09:33:35
  
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
---- Writing SMESH file --- 21-Nov-2014 10:51:36
+--- Writing SMESH file --- 12-Sep-2016 09:33:35
 ----&gt; Adding node field
 ----&gt; Adding facet field
 ----&gt; Adding holes specification
 ----&gt; Adding region specification
---- Done --- 21-Nov-2014 10:51:37
---- Running TetGen to mesh input boundary--- 21-Nov-2014 10:51:37
-Opening D:\MATLAB\GIBBON\trunk\lib_ext\tetGen\tempFiles\temp.smesh. 
---- Done --- 21-Nov-2014 10:51:37
+--- Done --- 12-Sep-2016 09:33:35
+--- Running TetGen to mesh input boundary--- 12-Sep-2016 09:33:35
+Opening D:\MATLAB\SVN\GIBBON\lib_ext\tetGen\tempFiles\temp.smesh. 
+--- Done --- 12-Sep-2016 09:33:35
  
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
---- Importing TetGen files --- 21-Nov-2014 10:51:37
---- Done --- 21-Nov-2014 10:51:37
+--- Importing TetGen files --- 12-Sep-2016 09:33:35
+--- Done --- 12-Sep-2016 09:33:35
 </pre><p>Plotting meshed model</p><pre class="codeinput">hf=figuremax(figColor,figColorDef);
 
 subplot(1,2,1);
@@ -298,7 +298,7 @@ patch(<span class="string">'Faces'</span>,F3c,<span class="string">'Vertices'</s
 camlight <span class="string">headlight</span>;
 set(gca,<span class="string">'FontSize'</span>,fontSize);
 view(2); axis <span class="string">tight</span>;  axis <span class="string">equal</span>;  grid <span class="string">on</span>;
-</pre><img vspace="5" hspace="5" src="HELP_constrainedDelaunayTetGen_06.png" alt=""> <p><img vspace="5" hspace="5" src="gibbVerySmall.gif" alt=""> </p><p><i><b>GIBBON</b></i> <a href="www.gibboncode.org">www.gibboncode.org</a></p><p><i>Kevin Mattheus Moerman</i>, <a href="gibbon.toolbox@gmail.com">gibbon.toolbox@gmail.com</a></p><p class="footer"><br><a href="http://www.mathworks.com/products/matlab/">Published with MATLAB&reg; R2014b</a><br></p></div><!--
+</pre><img vspace="5" hspace="5" src="HELP_constrainedDelaunayTetGen_06.png" alt=""> <p><img vspace="5" hspace="5" src="gibbVerySmall.gif" alt=""> </p><p><i><b>GIBBON</b></i> <a href="www.gibboncode.org">www.gibboncode.org</a></p><p><i>Kevin Mattheus Moerman</i>, <a href="gibbon.toolbox@gmail.com">gibbon.toolbox@gmail.com</a></p><p class="footer"><br><a href="http://www.mathworks.com/products/matlab/">Published with MATLAB&reg; R2016b</a><br></p></div><!--
 ##### SOURCE BEGIN #####
 %% constrainedDelaunayTetGen
 % Below is a demonstration of the features of the
@@ -315,7 +315,7 @@ view(2); axis <span class="string">tight</span>;  axis <span class="string">equa
 %% Examples
 
 %%
-clear; close all; clc; 
+close all; clc; %clear;
 
 %%
 % Plot settings
@@ -561,5 +561,6 @@ view(2); axis tight;  axis equal;  grid on;
 % <www.gibboncode.org>
 % 
 % _Kevin Mattheus Moerman_, <gibbon.toolbox@gmail.com>
+
 ##### SOURCE END #####
 --></body></html>

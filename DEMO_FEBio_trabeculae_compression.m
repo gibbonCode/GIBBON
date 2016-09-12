@@ -4,7 +4,7 @@
 % tetrahedral elements and subjected to compression. 
 
 %%
-clear; close all; clc; 
+close all; clc; clear;
 
 %%
 % Plot settings
@@ -221,6 +221,7 @@ bcPrescribeList=unique(bcPrescribeList(:));
 
 %Define displacement magnitudes
 displacementMagnitude=[0 0 -1.5];
+bcPrescribeMagnitudes=displacementMagnitude(ones(1,numel(bcPrescribeList)),:);
 
 %%
 %Plot model boundaries
@@ -289,20 +290,22 @@ FEB_struct.Boundary.Fix{2}.SetName=FEB_struct.Geometry.NodeSet{1}.Name;
 FEB_struct.Boundary.Fix{3}.bc='z';
 FEB_struct.Boundary.Fix{3}.SetName=FEB_struct.Geometry.NodeSet{1}.Name;
 
-FEB_struct.Boundary.Prescribe{1}.SetName=FEB_struct.Geometry.NodeSet{2}.Name;
-FEB_struct.Boundary.Prescribe{1}.Scale=displacementMagnitude(1);
+FEB_struct.Boundary.Prescribe{1}.Set=bcPrescribeList;
 FEB_struct.Boundary.Prescribe{1}.bc='x';
 FEB_struct.Boundary.Prescribe{1}.lc=1;
+FEB_struct.Boundary.Prescribe{1}.nodeScale=bcPrescribeMagnitudes(:,1);
 FEB_struct.Boundary.Prescribe{1}.Type='relative';
-FEB_struct.Boundary.Prescribe{2}.SetName=FEB_struct.Geometry.NodeSet{2}.Name;
-FEB_struct.Boundary.Prescribe{2}.Scale=displacementMagnitude(2);
+
+FEB_struct.Boundary.Prescribe{2}.Set=bcPrescribeList;
 FEB_struct.Boundary.Prescribe{2}.bc='y';
 FEB_struct.Boundary.Prescribe{2}.lc=1;
+FEB_struct.Boundary.Prescribe{2}.nodeScale=bcPrescribeMagnitudes(:,2);
 FEB_struct.Boundary.Prescribe{2}.Type='relative';
-FEB_struct.Boundary.Prescribe{3}.SetName=FEB_struct.Geometry.NodeSet{2}.Name;
-FEB_struct.Boundary.Prescribe{3}.Scale=displacementMagnitude(3);
+
+FEB_struct.Boundary.Prescribe{3}.Set=bcPrescribeList;
 FEB_struct.Boundary.Prescribe{3}.bc='z';
 FEB_struct.Boundary.Prescribe{3}.lc=1;
+FEB_struct.Boundary.Prescribe{3}.nodeScale=bcPrescribeMagnitudes(:,3);
 FEB_struct.Boundary.Prescribe{3}.Type='relative';
 
 %Load curves

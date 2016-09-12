@@ -4,7 +4,7 @@
 % * Additional colormaps available in GIBBON
 
 %%
-clear; close all; clc; 
+close all; clc; clear;
 
 %%
 %Plot settings

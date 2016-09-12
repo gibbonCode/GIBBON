@@ -6,7 +6,7 @@
    <!--
 This HTML was auto-generated from MATLAB code.
 To make changes, update the MATLAB code and republish this document.
-      --><title>HELP_euler2DCM</title><meta name="generator" content="MATLAB 8.4"><link rel="schema.DC" href="http://purl.org/dc/elements/1.1/"><meta name="DC.date" content="2014-10-29"><meta name="DC.source" content="HELP_euler2DCM.m"><style type="text/css">
+      --><title>HELP_euler2DCM</title><meta name="generator" content="MATLAB 9.1"><link rel="schema.DC" href="http://purl.org/dc/elements/1.1/"><meta name="DC.date" content="2016-09-12"><meta name="DC.source" content="HELP_euler2DCM.m"><style type="text/css">
 html,body,div,span,applet,object,iframe,h1,h2,h3,h4,h5,h6,p,blockquote,pre,a,abbr,acronym,address,big,cite,code,del,dfn,em,font,img,ins,kbd,q,s,samp,small,strike,strong,sub,sup,tt,var,b,u,i,center,dl,dt,dd,ol,ul,li,fieldset,form,label,legend,table,caption,tbody,tfoot,thead,tr,th,td{margin:0;padding:0;border:0;outline:0;font-size:100%;vertical-align:baseline;background:transparent}body{line-height:1}ol,ul{list-style:none}blockquote,q{quotes:none}blockquote:before,blockquote:after,q:before,q:after{content:'';content:none}:focus{outine:0}ins{text-decoration:none}del{text-decoration:line-through}table{border-collapse:collapse;border-spacing:0}
 
 html { min-height:100%; margin-bottom:1px; }
@@ -66,13 +66,13 @@ table td { padding:7px 5px; text-align:left; vertical-align:top; border:1px soli
 
 
 
-  </style></head><body><div class="content"><h1>HELP_euler2DCM</h1><!--introduction--><p>Below is a demonstration of the features of the <tt>euler2DCM</tt> function</p><!--/introduction--><h2>Contents</h2><div><ul><li><a href="#3">Creating a rotation matrix using Euler angles</a></li><li><a href="#12">Creating multiple rotation matrices</a></li></ul></div><pre class="codeinput">clear; close <span class="string">all</span>; clc;
+  </style></head><body><div class="content"><h1>HELP_euler2DCM</h1><!--introduction--><p>Below is a demonstration of the features of the <tt>euler2DCM</tt> function</p><!--/introduction--><h2>Contents</h2><div><ul><li><a href="#3">Creating a rotation matrix using Euler angles</a></li><li><a href="#12">Creating multiple rotation matrices</a></li></ul></div><pre class="codeinput">close <span class="string">all</span>; clc; <span class="comment">%clear;</span>
 </pre><p>Plot settings</p><pre class="codeinput">fig_color=<span class="string">'w'</span>; fig_colordef=<span class="string">'white'</span>;
 fontSize=15;
 faceAlpha=1;
 edgeColor=0*ones(1,3);
 edgeWidth=1;
-</pre><h2>Creating a rotation matrix using Euler angles<a name="3"></a></h2><p>Search wikipedia for information on Euler angles to define a rotation or direction cosine matrix (DCM).</p><p>Load example patch data</p><pre class="codeinput">[F,V]=parasaurolophus;
+</pre><h2 id="3">Creating a rotation matrix using Euler angles</h2><p>Search wikipedia for information on Euler angles to define a rotation or direction cosine matrix (DCM).</p><p>Load example patch data</p><pre class="codeinput">[F,V]=parasaurolophus;
 </pre><p>Defining sets of Euler angles for X, Y and Z axis rotation</p><pre class="codeinput">E1=[0.5*pi 0 0];
 E2=[0 0.5*pi 0];
 E3=[0 0 0.5*pi];
@@ -127,51 +127,36 @@ drawnow;
 </pre><img vspace="5" hspace="5" src="HELP_euler2DCM_01.png" alt=""> <p>A second output can also be requested which is the inverse rotation matrix.</p><pre class="codeinput">[R,Ri]=euler2DCM([randn(1,3)*pi]);
 R
 Ri
-</pre><pre class="codeoutput">
-R =
-
-   -0.4735    0.3738    0.7976
-    0.1516   -0.8574    0.4918
-    0.8677    0.3538    0.3493
-
-
+</pre><pre class="codeoutput">R =
+   -0.0058   -0.5970   -0.8022
+   -0.4741   -0.7047    0.5278
+   -0.8804    0.3834   -0.2790
 Ri =
-
-   -0.4735    0.1516    0.8677
-    0.3738   -0.8574    0.3538
-    0.7976    0.4918    0.3493
-
+   -0.0058   -0.4741   -0.8804
+   -0.5970   -0.7047    0.3834
+   -0.8022    0.5278   -0.2790
 </pre><p>i.e. such that the following :</p><pre class="codeinput">Vr=(R*V')'; <span class="comment">%The rotated coordinates</span>
 Vn=(Ri*Vr')'; <span class="comment">%The normal coordinates after transforming back the rotated coordinates using inverse matrix</span>
 </pre><p>Note that the sum of squared differences for instance is nearly zero</p><pre class="codeinput">D=sum((V(:)-Vn(:)).^2)
-</pre><pre class="codeoutput">
-D =
-
-   7.7439e-29
-
-</pre><h2>Creating multiple rotation matrices<a name="12"></a></h2><p>It is possible to define multiple rotation matrices at once by specifying a multi-row angle set</p><pre class="codeinput">E=[0.25*pi 0 0; 0 0.5*pi 0]; <span class="comment">%E.g. two angle sets are specified, 1 for each row</span>
+</pre><pre class="codeoutput">D =
+   8.7481e-29
+</pre><h2 id="12">Creating multiple rotation matrices</h2><p>It is possible to define multiple rotation matrices at once by specifying a multi-row angle set</p><pre class="codeinput">E=[0.25*pi 0 0; 0 0.5*pi 0]; <span class="comment">%E.g. two angle sets are specified, 1 for each row</span>
 </pre><p>In this case the rotation matrices are stacked in the 3rd dimension</p><pre class="codeinput">[R]=euler2DCM(E)
-</pre><pre class="codeoutput">
-R(:,:,1) =
-
+</pre><pre class="codeoutput">R(:,:,1) =
     1.0000         0         0
          0    0.7071   -0.7071
          0    0.7071    0.7071
-
-
 R(:,:,2) =
-
     0.0000         0    1.0000
          0    1.0000         0
    -1.0000         0    0.0000
-
-</pre><p><img vspace="5" hspace="5" src="gibbVerySmall.gif" alt=""> </p><p><i><b>GIBBON</b></i> <a href="www.gibboncode.org">www.gibboncode.org</a></p><p><i>Kevin Mattheus Moerman</i>, <a href="gibbon.toolbox@gmail.com">gibbon.toolbox@gmail.com</a></p><p class="footer"><br><a href="http://www.mathworks.com/products/matlab/">Published with MATLAB&reg; R2014b</a><br></p></div><!--
+</pre><p><img vspace="5" hspace="5" src="gibbVerySmall.gif" alt=""> </p><p><i><b>GIBBON</b></i> <a href="www.gibboncode.org">www.gibboncode.org</a></p><p><i>Kevin Mattheus Moerman</i>, <a href="gibbon.toolbox@gmail.com">gibbon.toolbox@gmail.com</a></p><p class="footer"><br><a href="http://www.mathworks.com/products/matlab/">Published with MATLAB&reg; R2016b</a><br></p></div><!--
 ##### SOURCE BEGIN #####
 %% HELP_euler2DCM
 % Below is a demonstration of the features of the |euler2DCM| function
 
 %%
-clear; close all; clc;
+close all; clc; %clear;
 
 %%
 % Plot settings
@@ -291,5 +276,6 @@ E=[0.25*pi 0 0; 0 0.5*pi 0]; %E.g. two angle sets are specified, 1 for each row
 % <www.gibboncode.org>
 % 
 % _Kevin Mattheus Moerman_, <gibbon.toolbox@gmail.com>
+
 ##### SOURCE END #####
 --></body></html>

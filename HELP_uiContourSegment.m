@@ -2,7 +2,7 @@
 % Below is a demonstration of the features of the |uiContourSegment| function
 
 %%
-clear; close all; clc;
+close all; clc; clear;
 
 %% Loading example image data
 % Loading MRI data
@@ -45,7 +45,9 @@ saveName=[];%'fibula';                        %If not empty this is where the co
 % Use the various options to try to segment the outer skin contour, press H
 % to reveal the help window. 
 
-[Vcs]=uiContourSegment(M,cPar,saveName);
+%%
+% Uncomment to test
+% [Vcs]=uiContourSegment(M,cPar,saveName);
 
 %% 
 % Example contour process: 

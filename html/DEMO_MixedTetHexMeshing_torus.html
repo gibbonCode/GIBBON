@@ -6,7 +6,7 @@
    <!--
 This HTML was auto-generated from MATLAB code.
 To make changes, update the MATLAB code and republish this document.
-      --><title>DEMO_MixedTetHexMeshing_torus</title><meta name="generator" content="MATLAB 8.5"><link rel="schema.DC" href="http://purl.org/dc/elements/1.1/"><meta name="DC.date" content="2015-02-23"><meta name="DC.source" content="DEMO_MixedTetHexMeshing_torus.m"><style type="text/css">
+      --><title>DEMO_MixedTetHexMeshing_torus</title><meta name="generator" content="MATLAB 9.1"><link rel="schema.DC" href="http://purl.org/dc/elements/1.1/"><meta name="DC.date" content="2016-09-12"><meta name="DC.source" content="DEMO_MixedTetHexMeshing_torus.m"><style type="text/css">
 html,body,div,span,applet,object,iframe,h1,h2,h3,h4,h5,h6,p,blockquote,pre,a,abbr,acronym,address,big,cite,code,del,dfn,em,font,img,ins,kbd,q,s,samp,small,strike,strong,sub,sup,tt,var,b,u,i,center,dl,dt,dd,ol,ul,li,fieldset,form,label,legend,table,caption,tbody,tfoot,thead,tr,th,td{margin:0;padding:0;border:0;outline:0;font-size:100%;vertical-align:baseline;background:transparent}body{line-height:1}ol,ul{list-style:none}blockquote,q{quotes:none}blockquote:before,blockquote:after,q:before,q:after{content:'';content:none}:focus{outine:0}ins{text-decoration:none}del{text-decoration:line-through}table{border-collapse:collapse;border-spacing:0}
 
 html { min-height:100%; margin-bottom:1px; }
@@ -66,14 +66,14 @@ table td { padding:7px 5px; text-align:left; vertical-align:top; border:1px soli
 
 
 
-  </style></head><body><div class="content"><h1>DEMO_MixedTetHexMeshing_torus</h1><!--introduction--><p>Below is a demonstration of how to create a mixed mesh consisting of (linear) hexahedral and tetrahedral elements. The hexahedral mesh is regular while the tetrahedral mesh is derived using TetGen.</p><!--/introduction--><h2>Contents</h2><div><ul><li><a href="#4">CONVERTING A TRIANGULATED SURFACE TO AN IMAGE WITH DESIRED SIZE, VOXEL SIZE AND ORIGIN</a></li><li><a href="#7">GET HEXAHEDRAL ELEMENT SET</a></li><li><a href="#10">Get hole point</a></li><li><a href="#11">Get region point</a></li><li><a href="#19">MERGING NODE SETS</a></li></ul></div><pre class="codeinput">clear; close <span class="string">all</span>; clc;
+  </style></head><body><div class="content"><h1>DEMO_MixedTetHexMeshing_torus</h1><!--introduction--><p>Below is a demonstration of how to create a mixed mesh consisting of (linear) hexahedral and tetrahedral elements. The hexahedral mesh is regular while the tetrahedral mesh is derived using TetGen.</p><!--/introduction--><h2>Contents</h2><div><ul><li><a href="#4">CONVERTING A TRIANGULATED SURFACE TO AN IMAGE WITH DESIRED SIZE, VOXEL SIZE AND ORIGIN</a></li><li><a href="#7">GET HEXAHEDRAL ELEMENT SET</a></li><li><a href="#10">Get hole point</a></li><li><a href="#11">Get region point</a></li><li><a href="#19">MERGING NODE SETS</a></li></ul></div><pre class="codeinput">close <span class="string">all</span>; clc; clear;
 </pre><p>Plot settings for the examples below</p><pre class="codeinput">fontSize=20;
 faceAlpha1=1;
 faceAlpha2=0.3;
 edgeColor=0.3*ones(1,3);
 edgeWidth=1;
 </pre><pre class="codeinput">searchRadius=6;
-</pre><h2>CONVERTING A TRIANGULATED SURFACE TO AN IMAGE WITH DESIRED SIZE, VOXEL SIZE AND ORIGIN<a name="4"></a></h2><p>Defining an example triangulated surface model</p><pre class="codeinput"><span class="comment">% Defining a deformed and rotated torus shape</span>
+</pre><h2 id="4">CONVERTING A TRIANGULATED SURFACE TO AN IMAGE WITH DESIRED SIZE, VOXEL SIZE AND ORIGIN</h2><p>Defining an example triangulated surface model</p><pre class="codeinput"><span class="comment">% Defining a deformed and rotated torus shape</span>
 r=1; <span class="comment">%Sphere radius</span>
 rc=2; <span class="comment">%Central radius</span>
 nr=25;
@@ -133,7 +133,7 @@ set(hc,<span class="string">'YTick'</span>,[1/3 1 5/3]);
 set(hc,<span class="string">'YTickLabel'</span>,{<span class="string">'Exterior'</span>,<span class="string">'Boundary'</span>,<span class="string">'Intertior'</span>});
 axis <span class="string">equal</span>; view(3); axis <span class="string">tight</span>;  grid <span class="string">on</span>;  set(gca,<span class="string">'FontSize'</span>,fontSize);
 drawnow;
-</pre><img vspace="5" hspace="5" src="DEMO_MixedTetHexMeshing_torus_01.png" alt=""> <h2>GET HEXAHEDRAL ELEMENT SET<a name="7"></a></h2><pre class="codeinput">L_model=(M==2); <span class="comment">%Interior&amp;Boundary choosen here</span>
+</pre><img vspace="5" hspace="5" src="DEMO_MixedTetHexMeshing_torus_01.png" alt=""> <h2 id="7">GET HEXAHEDRAL ELEMENT SET</h2><pre class="codeinput">L_model=(M==2); <span class="comment">%Interior&amp;Boundary choosen here</span>
 
 <span class="comment">%Defining erosion/dilation kernel</span>
 k=3;
@@ -185,9 +185,9 @@ drawnow;
 F=[Fs;Ft+size(Vs,1)];
 V=[Vs;Vt];
 C_tet=[ones(size(Fs,1),1);2*ones(size(Ft,1),1)]; <span class="comment">%Surface marker colors</span>
-</pre><h2>Get hole point<a name="10"></a></h2><pre class="codeinput">[V_hole]=getInnerPoint(Ft,Vt,searchRadius,voxelSize/2,0);
+</pre><h2 id="10">Get hole point</h2><pre class="codeinput">[V_hole]=getInnerPoint(Ft,Vt,searchRadius,voxelSize/2,0);
 plotV(V_hole,<span class="string">'r.'</span>,<span class="string">'MarkerSize'</span>,25);
-</pre><img vspace="5" hspace="5" src="DEMO_MixedTetHexMeshing_torus_03.png" alt=""> <h2>Get region point<a name="11"></a></h2><pre class="codeinput">L_in=(M==1);
+</pre><img vspace="5" hspace="5" src="DEMO_MixedTetHexMeshing_torus_03.png" alt=""> <h2 id="11">Get region point</h2><pre class="codeinput">L_in=(M==1);
 
 [indInternal]=getInnerVoxel(double(L_in),searchRadius,0);
 
@@ -223,21 +223,21 @@ smeshStruct.smeshName=smeshName;
 removed in future releases. 
  
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
---- TETGEN Tetrahedral meshing --- 23-Feb-2015 09:59:21
+--- TETGEN Tetrahedral meshing --- 12-Sep-2016 12:01:13
 Warning: smeshStruct.smeshName input will be replaced by smeshStruct.modelName
 in future releases! 
  
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
---- Writing SMESH file --- 23-Feb-2015 09:59:21
+--- Writing SMESH file --- 12-Sep-2016 12:01:13
 Warning: smeshStruct.smeshName input will be replaced by smeshStruct.modelName
 in future releases! 
 ----&gt; Adding node field
 ----&gt; Adding facet field
 ----&gt; Adding holes specification
 ----&gt; Adding region specification
---- Done --- 23-Feb-2015 09:59:22
---- Running TetGen to mesh input boundary--- 23-Feb-2015 09:59:22
-Opening D:\MATLAB\GIBBON\trunk\lib_ext\tetGen\tempFiles\tetGenModel.smesh. 
+--- Done --- 12-Sep-2016 12:01:13
+--- Running TetGen to mesh input boundary--- 12-Sep-2016 12:01:13
+Opening D:\MATLAB\SVN\GIBBON\lib_ext\tetGen\tempFiles\tetGenModel.smesh. 
   Initializing memorypools. 
   tetrahedron per block: 8188. 
   Size of a point: 128 bytes. 
@@ -272,11 +272,11 @@ Opening D:\MATLAB\GIBBON\trunk\lib_ext\tetGen\tempFiles\tetGenModel.smesh.
   Removed 361 edges. 
   0 duplicated vertices are removed. 
   2 unused vertices are removed. 
---- Done --- 23-Feb-2015 09:59:22
+--- Done --- 12-Sep-2016 12:01:13
  
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
---- Importing TetGen files --- 23-Feb-2015 09:59:22
---- Done --- 23-Feb-2015 09:59:22
+--- Importing TetGen files --- 12-Sep-2016 12:01:13
+--- Done --- 12-Sep-2016 12:01:14
 </pre><p>Access model element and patch data</p><pre class="codeinput">F_tet=meshOutput.faces;
 V_tet=meshOutput.nodes;
 C_tet=meshOutput.faceMaterialID;
@@ -284,7 +284,7 @@ E_tet=meshOutput.elements;
 
 indBoundary=meshOutput.facesBoundary(meshOutput.boundaryMarker==1);
 indBoundary=unique(indBoundary);
-</pre><h2>MERGING NODE SETS<a name="19"></a></h2><pre class="codeinput">V=[V_tet;V_hex];
+</pre><h2 id="19">MERGING NODE SETS</h2><pre class="codeinput">V=[V_tet;V_hex];
 E_hex=E_hex+size(V_tet,1);
 
 [~,ind1,ind2]=unique(pround(V,5),<span class="string">'rows'</span>);
@@ -412,7 +412,7 @@ drawnow;
 hex8 elements assumed, for other elements please specify elementType
 tet4 elements assumed, for other elements please specify elementType
 hex8 elements assumed, for other elements please specify elementType
-</pre><img vspace="5" hspace="5" src="DEMO_MixedTetHexMeshing_torus_07.png" alt=""> <img vspace="5" hspace="5" src="DEMO_MixedTetHexMeshing_torus_08.png" alt=""> <p><img vspace="5" hspace="5" src="gibbVerySmall.gif" alt=""> </p><p>GIBBON</p><p>Kevin M. Moerman (<a href="mailto:kevinmoerman@hotmail.com">kevinmoerman@hotmail.com</a>)</p><p class="footer"><br><a href="http://www.mathworks.com/products/matlab/">Published with MATLAB&reg; R2015a</a><br></p></div><!--
+</pre><img vspace="5" hspace="5" src="DEMO_MixedTetHexMeshing_torus_07.png" alt=""> <img vspace="5" hspace="5" src="DEMO_MixedTetHexMeshing_torus_08.png" alt=""> <p><img vspace="5" hspace="5" src="gibbVerySmall.gif" alt=""> </p><p>GIBBON</p><p>Kevin M. Moerman (<a href="mailto:kevinmoerman@hotmail.com">kevinmoerman@hotmail.com</a>)</p><p class="footer"><br><a href="http://www.mathworks.com/products/matlab/">Published with MATLAB&reg; R2016b</a><br></p></div><!--
 ##### SOURCE BEGIN #####
 %% DEMO_MixedTetHexMeshing_torus
 % Below is a demonstration of how to create a mixed mesh consisting of
@@ -421,7 +421,7 @@ hex8 elements assumed, for other elements please specify elementType
 
 %% 
 
-clear; close all; clc;
+close all; clc; clear;
 
 %%
 % Plot settings for the examples below
@@ -778,5 +778,6 @@ drawnow;
 % GIBBON 
 % 
 % Kevin M. Moerman (kevinmoerman@hotmail.com)
+
 ##### SOURCE END #####
 --></body></html>

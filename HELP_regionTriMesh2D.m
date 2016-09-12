@@ -3,7 +3,7 @@
 
 %% 
 
-clear; close all; clc;
+close all; clc; clear;
 
 %% CREATING A REGION MESH
 

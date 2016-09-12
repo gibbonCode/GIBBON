@@ -1,0 +1,627 @@
+
+<!DOCTYPE html
+  PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html><head>
+      <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+   <!--
+This HTML was auto-generated from MATLAB code.
+To make changes, update the MATLAB code and republish this document.
+      --><title>DEMO_layered_spatvar</title><meta name="generator" content="MATLAB 9.1"><link rel="schema.DC" href="http://purl.org/dc/elements/1.1/"><meta name="DC.date" content="2016-09-12"><meta name="DC.source" content="DEMO_FEBio_layered_spatvar.m"><style type="text/css">
+html,body,div,span,applet,object,iframe,h1,h2,h3,h4,h5,h6,p,blockquote,pre,a,abbr,acronym,address,big,cite,code,del,dfn,em,font,img,ins,kbd,q,s,samp,small,strike,strong,sub,sup,tt,var,b,u,i,center,dl,dt,dd,ol,ul,li,fieldset,form,label,legend,table,caption,tbody,tfoot,thead,tr,th,td{margin:0;padding:0;border:0;outline:0;font-size:100%;vertical-align:baseline;background:transparent}body{line-height:1}ol,ul{list-style:none}blockquote,q{quotes:none}blockquote:before,blockquote:after,q:before,q:after{content:'';content:none}:focus{outine:0}ins{text-decoration:none}del{text-decoration:line-through}table{border-collapse:collapse;border-spacing:0}
+
+html { min-height:100%; margin-bottom:1px; }
+html body { height:100%; margin:0px; font-family:Arial, Helvetica, sans-serif; font-size:10px; color:#000; line-height:140%; background:#fff none; overflow-y:scroll; }
+html body td { vertical-align:top; text-align:left; }
+
+h1 { padding:0px; margin:0px 0px 25px; font-family:Arial, Helvetica, sans-serif; font-size:1.5em; color:#d55000; line-height:100%; font-weight:normal; }
+h2 { padding:0px; margin:0px 0px 8px; font-family:Arial, Helvetica, sans-serif; font-size:1.2em; color:#000; font-weight:bold; line-height:140%; border-bottom:1px solid #d6d4d4; display:block; }
+h3 { padding:0px; margin:0px 0px 5px; font-family:Arial, Helvetica, sans-serif; font-size:1.1em; color:#000; font-weight:bold; line-height:140%; }
+
+a { color:#005fce; text-decoration:none; }
+a:hover { color:#005fce; text-decoration:underline; }
+a:visited { color:#004aa0; text-decoration:none; }
+
+p { padding:0px; margin:0px 0px 20px; }
+img { padding:0px; margin:0px 0px 20px; border:none; }
+p img, pre img, tt img, li img, h1 img, h2 img { margin-bottom:0px; } 
+
+ul { padding:0px; margin:0px 0px 20px 23px; list-style:square; }
+ul li { padding:0px; margin:0px 0px 7px 0px; }
+ul li ul { padding:5px 0px 0px; margin:0px 0px 7px 23px; }
+ul li ol li { list-style:decimal; }
+ol { padding:0px; margin:0px 0px 20px 0px; list-style:decimal; }
+ol li { padding:0px; margin:0px 0px 7px 23px; list-style-type:decimal; }
+ol li ol { padding:5px 0px 0px; margin:0px 0px 7px 0px; }
+ol li ol li { list-style-type:lower-alpha; }
+ol li ul { padding-top:7px; }
+ol li ul li { list-style:square; }
+
+.content { font-size:1.2em; line-height:140%; padding: 20px; }
+
+pre, code { font-size:12px; }
+tt { font-size: 1.2em; }
+pre { margin:0px 0px 20px; }
+pre.codeinput { padding:10px; border:1px solid #d3d3d3; background:#f7f7f7; }
+pre.codeoutput { padding:10px 11px; margin:0px 0px 20px; color:#4c4c4c; }
+pre.error { color:red; }
+
+@media print { pre.codeinput, pre.codeoutput { word-wrap:break-word; width:100%; } }
+
+span.keyword { color:#0000FF }
+span.comment { color:#228B22 }
+span.string { color:#A020F0 }
+span.untermstring { color:#B20000 }
+span.syscmd { color:#B28C00 }
+
+.footer { width:auto; padding:10px 0px; margin:25px 0px 0px; border-top:1px dotted #878787; font-size:0.8em; line-height:140%; font-style:italic; color:#878787; text-align:left; float:none; }
+.footer p { margin:0px; }
+.footer a { color:#878787; }
+.footer a:hover { color:#878787; text-decoration:underline; }
+.footer a:visited { color:#878787; }
+
+table th { padding:7px 5px; text-align:left; vertical-align:middle; border: 1px solid #d6d4d4; font-weight:bold; }
+table td { padding:7px 5px; text-align:left; vertical-align:top; border:1px solid #d6d4d4; }
+
+
+
+
+
+  </style></head><body><div class="content"><h1>DEMO_layered_spatvar</h1><!--introduction--><p>This demonstration shows how to generate a model with spatially varying material parameters.</p><!--/introduction--><h2>Contents</h2><div><ul><li><a href="#4">DEFINING AND VISUALIZING THE PARAMETER MAP</a></li><li><a href="#7">BUILD MODEL</a></li><li><a href="#8">SET UP BOUNDARY CONDITIONS</a></li><li><a href="#9">CONSTRUCTING FEB MODEL</a></li><li><a href="#10">SAVING .FEB FILE</a></li><li><a href="#11">RUNNING FEBIO JOB</a></li><li><a href="#12">IMPORTING NODAL DISPLACEMENT RESULTS</a></li><li><a href="#13">CREATING NODE SET IN DEFORMED STATE</a></li></ul></div><pre class="codeinput">close <span class="string">all</span>; clc; clear;
+</pre><p>Plot settings</p><pre class="codeinput">fontSize=15;
+faceAlpha1=1;
+faceAlpha2=0.5;
+edgeColor=0.25*ones(1,3);
+edgeWidth=1.5;
+markerSize1=25;
+cMap=gjet(250);
+</pre><p>path names</p><pre class="codeinput">filePath=mfilename(<span class="string">'fullpath'</span>);
+savePath=fullfile(fileparts(filePath),<span class="string">'data'</span>,<span class="string">'temp'</span>);
+modelName=fullfile(savePath,<span class="string">'tempModel'</span>);
+</pre><h2 id="4">DEFINING AND VISUALIZING THE PARAMETER MAP</h2><pre class="codeinput">numElemIncLayer=3;
+numElemTopLayer=3;
+numElemLayers=numElemTopLayer+numElemIncLayer;
+
+[G]=textImage(<span class="string">'GIBBON'</span>,<span class="string">'Arial'</span>,25,5);
+G=flipud(G);
+G=G-min(G(:));
+G=G./max(G(:));
+
+S=zeros(size(G,1),size(G,2),numElemLayers);
+S(:,:,1:numElemIncLayer)=repmat(G,[1 1 numElemIncLayer]);
+</pre><pre class="codeinput">P=2*1e-3;
+
+nBins=50;
+minC=1e-3; <span class="comment">%minimum value</span>
+maxC=minC*100; <span class="comment">%Maximum value</span>
+c1_range_ini=linspace(minC,maxC,nBins); <span class="comment">%Value range</span>
+k_factor=50;
+m1=2;
+</pre><p>VISUALIZING THE MAPPING</p><pre class="codeinput">[F,V,C]=ind2patch(true(size(S)),S,<span class="string">'vb'</span>);
+[C_rgb]=gray2RGBColorMap(C,jet(250),[min(S(:)) max(S(:))]);
+
+[Fs1,Vs1,Cs1]=ind2patch(S&gt;0,S,<span class="string">'vb'</span>);
+[Fs2,Vs2,Cs2]=ind2patch(S==0,S,<span class="string">'vb'</span>);
+
+cFigure;
+
+subplot(1,2,1);
+title(<span class="string">'Stiff inclusion'</span>,<span class="string">'FontSize'</span>,fontSize);
+xlabel(<span class="string">'X'</span>,<span class="string">'FontSize'</span>,fontSize);ylabel(<span class="string">'Y'</span>,<span class="string">'FontSize'</span>,fontSize); zlabel(<span class="string">'Z'</span>,<span class="string">'FontSize'</span>,fontSize); hold <span class="string">on</span>;
+patch(<span class="string">'Faces'</span>,Fs1,<span class="string">'Vertices'</span>,Vs1,<span class="string">'FaceColor'</span>,<span class="string">'flat'</span>,<span class="string">'CData'</span>,Cs1,<span class="string">'EdgeColor'</span>,<span class="string">'k'</span>,<span class="string">'FaceAlpha'</span>,1);
+axis <span class="string">equal</span>; view(3); axis <span class="string">tight</span>; axis <span class="string">vis3d</span>; grid <span class="string">on</span>; view([-20,22]);
+colormap(cMap); caxis([min(S(:)) max(S(:))]); colorbar;
+set(gca,<span class="string">'FontSize'</span>,fontSize);
+
+subplot(1,2,2);
+title(<span class="string">'Soft matrix'</span>,<span class="string">'FontSize'</span>,fontSize);
+xlabel(<span class="string">'X'</span>,<span class="string">'FontSize'</span>,fontSize);ylabel(<span class="string">'Y'</span>,<span class="string">'FontSize'</span>,fontSize); zlabel(<span class="string">'Z'</span>,<span class="string">'FontSize'</span>,fontSize); hold <span class="string">on</span>;
+patch(<span class="string">'Faces'</span>,Fs2,<span class="string">'Vertices'</span>,Vs2,<span class="string">'FaceColor'</span>,<span class="string">'flat'</span>,<span class="string">'CData'</span>,Cs2,<span class="string">'EdgeColor'</span>,<span class="string">'k'</span>,<span class="string">'FaceAlpha'</span>,1);
+axis <span class="string">equal</span>; view(3); axis <span class="string">tight</span>; axis <span class="string">vis3d</span>; grid <span class="string">on</span>; view([-20,22]);
+colormap(cMap); caxis([min(S(:)) max(S(:))]); colorbar;
+set(gca,<span class="string">'FontSize'</span>,fontSize);
+
+drawnow;
+</pre><img vspace="5" hspace="5" src="DEMO_FEBio_layered_spatvar_01.png" alt=""> <h2 id="7">BUILD MODEL</h2><pre class="codeinput"><span class="comment">%Create hexahedral elements with function based colors</span>
+[E,V,C]=ind2patch(true(size(S)),S,<span class="string">'hu'</span>);
+
+<span class="comment">%Define element parameter mapping</span>
+elementMaterialIndices=C;
+elementMaterialIndices=elementMaterialIndices-min(elementMaterialIndices(:));
+elementMaterialIndices=elementMaterialIndices./max(elementMaterialIndices(:)); <span class="comment">%Normalized</span>
+elementMaterialIndices=round(elementMaterialIndices.*(nBins-1))+1; <span class="comment">%1-nPar</span>
+
+indUni=unique(elementMaterialIndices(:)); <span class="comment">%Unique indices of used materials</span>
+c1_range=c1_range_ini(indUni); <span class="comment">%Select relevant points</span>
+nPar=numel(c1_range);
+
+<span class="comment">%Fix indices</span>
+indFix1=1:numel(indUni);
+indFix2=zeros(nBins,1);
+indFix2(indUni)=indFix1;
+elementMaterialIndices=indFix2(elementMaterialIndices);
+
+<span class="comment">%Reorder elementMaterialIndices and element matrix</span>
+[elementMaterialIndices,indSort]=sort(elementMaterialIndices);
+E=E(indSort,:);
+
+[F,PF]=element2patch(E,elementMaterialIndices);
+
+logicTopNodes=abs(V(:,3)-max(V(:,3)))&lt;=max(eps(V(:,3)));
+
+logicTopFaces=all(logicTopNodes(F),2);
+F_top=F(logicTopFaces,:);
+logicBottomNodes=abs(V(:,3)-min(V(:,3)))&lt;=max(eps(V(:,3)));
+
+cFigure;
+title(<span class="string">'Model'</span>,<span class="string">'FontSize'</span>,fontSize);
+xlabel(<span class="string">'X'</span>,<span class="string">'FontSize'</span>,fontSize);ylabel(<span class="string">'Y'</span>,<span class="string">'FontSize'</span>,fontSize); zlabel(<span class="string">'Z'</span>,<span class="string">'FontSize'</span>,fontSize); hold <span class="string">on</span>;
+patch(<span class="string">'Faces'</span>,F,<span class="string">'Vertices'</span>,V,<span class="string">'FaceColor'</span>,<span class="string">'flat'</span>,<span class="string">'CData'</span>,PF,<span class="string">'edgeColor'</span>,edgeColor,<span class="string">'lineWidth'</span>,edgeWidth,<span class="string">'FaceAlpha'</span>,1);
+patch(<span class="string">'Faces'</span>,F_top,<span class="string">'Vertices'</span>,V,<span class="string">'FaceColor'</span>,0.5*ones(1,3),<span class="string">'edgeColor'</span>,<span class="string">'k'</span>,<span class="string">'lineWidth'</span>,edgeWidth,<span class="string">'FaceAlpha'</span>,0.5);
+patchNormPlot(F_top,V);
+plotV(V(logicTopNodes,:),<span class="string">'k.'</span>,<span class="string">'MarkerSize'</span>,markerSize1);
+plotV(V(logicBottomNodes,:),<span class="string">'k.'</span>,<span class="string">'MarkerSize'</span>,markerSize1);
+colormap(cMap); caxis([min(elementMaterialIndices(:)) max(elementMaterialIndices(:))]); colorbar;
+
+axis <span class="string">equal</span>; view(3); axis <span class="string">tight</span>; axis <span class="string">vis3d</span>; grid <span class="string">on</span>;
+set(gca,<span class="string">'FontSize'</span>,fontSize);
+</pre><pre class="codeoutput">hex8 elements assumed, for other elements please specify elementType
+</pre><img vspace="5" hspace="5" src="DEMO_FEBio_layered_spatvar_02.png" alt=""> <h2 id="8">SET UP BOUNDARY CONDITIONS</h2><pre class="codeinput"><span class="comment">%List of nodes to fix</span>
+bcFixList=find(logicBottomNodes);
+
+<span class="comment">%List of nodes to prescribe displacement for</span>
+bcPrescribeList=find(logicTopNodes);
+
+<span class="comment">%Define displacement magnitudes</span>
+displacementMagnitude=[0 0 -0.3.*numElemLayers];
+</pre><h2 id="9">CONSTRUCTING FEB MODEL</h2><pre class="codeinput">FEB_struct.febio_spec.version=<span class="string">'2.0'</span>;
+FEB_struct.Module.Type=<span class="string">'solid'</span>;
+
+<span class="comment">% Defining file names</span>
+FEB_struct.run_filename=[modelName,<span class="string">'.feb'</span>]; <span class="comment">%FEB file name</span>
+FEB_struct.run_logname=[modelName,<span class="string">'.txt'</span>]; <span class="comment">%FEBio log file name</span>
+<span class="comment">%Creating FEB_struct</span>
+FEB_struct.Geometry.Nodes=V;
+FEB_struct.Geometry.Elements={E}; <span class="comment">%The element sets</span>
+FEB_struct.Geometry.ElementType={<span class="string">'hex8'</span>}; <span class="comment">%The element types</span>
+FEB_struct.Geometry.ElementMat={elementMaterialIndices};
+FEB_struct.Geometry.ElementsPartName={<span class="string">'Block'</span>};
+
+<span class="comment">% DEFINING SPATIALLY VARYING MATERIAL SET</span>
+<span class="keyword">for</span> q=1:1:nPar
+    <span class="comment">%Defining material parameters</span>
+    c1=c1_range(q);
+    k=c1*k_factor;
+    FEB_struct.Materials{q}.Type=<span class="string">'Ogden'</span>;
+    FEB_struct.Materials{q}.Name=[<span class="string">'cube_mat_'</span>,num2str(q)];
+    FEB_struct.Materials{q}.Properties={<span class="string">'c1'</span>,<span class="string">'c2'</span>,<span class="string">'m1'</span>,<span class="string">'m2'</span>,<span class="string">'k'</span>};
+    FEB_struct.Materials{q}.Values={c1,c1,m1,-m1,k};
+<span class="keyword">end</span>
+
+<span class="comment">%Control section</span>
+FEB_struct.Control.AnalysisType=<span class="string">'static'</span>;
+FEB_struct.Control.Properties={<span class="string">'time_steps'</span>,<span class="string">'step_size'</span>,<span class="keyword">...</span>
+    <span class="string">'max_refs'</span>,<span class="string">'max_ups'</span>,<span class="keyword">...</span>
+    <span class="string">'dtol'</span>,<span class="string">'etol'</span>,<span class="string">'rtol'</span>,<span class="string">'lstol'</span>};
+nStep=10;
+tStep=1/nStep;
+FEB_struct.Control.Values={nStep,tStep,<span class="keyword">...</span>
+    25,10,<span class="keyword">...</span>
+    0.001,0.01,0,0.9};
+FEB_struct.Control.TimeStepperProperties={<span class="string">'dtmin'</span>,<span class="string">'dtmax'</span>,<span class="string">'max_retries'</span>,<span class="string">'opt_iter'</span>};
+FEB_struct.Control.TimeStepperValues={tStep/50,tStep,10,6};
+
+<span class="comment">%Defining node sets</span>
+FEB_struct.Geometry.NodeSet{1}.Set=bcFixList;
+FEB_struct.Geometry.NodeSet{1}.Name=<span class="string">'bcFixList'</span>;
+FEB_struct.Geometry.NodeSet{2}.Set=bcPrescribeList;
+FEB_struct.Geometry.NodeSet{2}.Name=<span class="string">'bcPrescribeList'</span>;
+
+<span class="comment">%Defining surfaces</span>
+FEB_struct.Geometry.Surface{1}.Set=F_top;
+FEB_struct.Geometry.Surface{1}.Type=<span class="string">'tri3'</span>;
+FEB_struct.Geometry.Surface{1}.Name=<span class="string">'Pressure_surface'</span>;
+
+<span class="comment">%Adding BC information</span>
+FEB_struct.Boundary.Fix{1}.bc=<span class="string">'x'</span>;
+FEB_struct.Boundary.Fix{1}.SetName=FEB_struct.Geometry.NodeSet{1}.Name;
+FEB_struct.Boundary.Fix{2}.bc=<span class="string">'y'</span>;
+FEB_struct.Boundary.Fix{2}.SetName=FEB_struct.Geometry.NodeSet{1}.Name;
+FEB_struct.Boundary.Fix{3}.bc=<span class="string">'z'</span>;
+FEB_struct.Boundary.Fix{3}.SetName=FEB_struct.Geometry.NodeSet{1}.Name;
+
+FEB_struct.Boundary.Prescribe{1}.Set=bcPrescribeList;
+FEB_struct.Boundary.Prescribe{1}.bc=<span class="string">'z'</span>;
+FEB_struct.Boundary.Prescribe{1}.lc=1;
+FEB_struct.Boundary.Prescribe{1}.nodeScale=displacementMagnitude(ones(numel(bcPrescribeList),1),3);
+FEB_struct.Boundary.Prescribe{1}.Type=<span class="string">'relative'</span>;
+
+<span class="comment">% %Adding load information</span>
+<span class="comment">% FEB_struct.Loads.Surface_load{1}.Type='pressure';</span>
+<span class="comment">% FEB_struct.Loads.Surface_load{1}.SetName=FEB_struct.Geometry.Surface{1}.Name;</span>
+<span class="comment">% FEB_struct.Loads.Surface_load{1}.lcPar='pressure';</span>
+<span class="comment">% FEB_struct.Loads.Surface_load{1}.lcParValue=P;</span>
+<span class="comment">% FEB_struct.Loads.Surface_load{1}.lc=1;</span>
+
+<span class="comment">%Load curves</span>
+FEB_struct.LoadData.LoadCurves.id=1;
+FEB_struct.LoadData.LoadCurves.type={<span class="string">'linear'</span>};
+FEB_struct.LoadData.LoadCurves.loadPoints={[0 0;1 1;]};
+
+<span class="comment">%Adding output requests</span>
+FEB_struct.Output.VarTypes={<span class="string">'displacement'</span>,<span class="string">'stress'</span>,<span class="string">'relative volume'</span>};
+
+<span class="comment">%Specify log file output</span>
+run_disp_output_name=[FEB_struct.run_filename(1:end-4),<span class="string">'_node_out.txt'</span>];
+run_elem_output_name=[FEB_struct.run_filename(1:end-4),<span class="string">'_element_out.txt'</span>];
+FEB_struct.run_output_names={run_disp_output_name,run_elem_output_name};
+FEB_struct.output_types={<span class="string">'node_data'</span>,<span class="string">'element_data'</span>};
+FEB_struct.data_types={<span class="string">'ux;uy;uz'</span>,<span class="string">'E3'</span>};
+</pre><h2 id="10">SAVING .FEB FILE</h2><pre class="codeinput">FEB_struct.disp_opt=0; <span class="comment">%Display waitbars</span>
+febStruct2febFile(FEB_struct);
+</pre><pre class="codeoutput"> 
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+--- Writing FEBio XML object --- 12-Sep-2016 11:00:02
+Adding Module level
+Adding Control level
+Adding Globals level
+Adding Material level
+Adding Geometry level
+----&gt; Adding node field
+----&gt; Adding element field
+----&gt; Adding hex8 element entries....
+----&gt; Adding surface field
+----&gt; Adding NodeSet field
+Adding Boundary level
+----&gt; Defining fix type boundary conditions
+----&gt; Defining prescribe type boundary conditions
+Adding LoadData level
+----&gt; Defining load curves
+Adding Output level
+----&gt; Adding plotfile field
+----&gt; Adding logfile field
+Warning: Provided path of logfile is replaced by .feb file path. Only provide
+filename to avoid this warning 
+Warning: Provided path of logfile is replaced by .feb file path. Only provide
+filename to avoid this warning 
+Writing .feb file
+--- Done --- 12-Sep-2016 11:00:06
+</pre><h2 id="11">RUNNING FEBIO JOB</h2><pre class="codeinput"><span class="comment">% FEBioRunStruct.FEBioPath='C:\Program Files\febio-2.3.1\bin\febio2.exe';</span>
+FEBioRunStruct.run_filename=FEB_struct.run_filename;
+FEBioRunStruct.run_logname=FEB_struct.run_logname;
+FEBioRunStruct.disp_on=1;
+FEBioRunStruct.disp_log_on=1;
+FEBioRunStruct.runMode=<span class="string">'external'</span>;<span class="comment">%'internal';</span>
+FEBioRunStruct.t_check=0.25; <span class="comment">%Time for checking log file (dont set too small)</span>
+FEBioRunStruct.maxtpi=1e99; <span class="comment">%Max analysis time</span>
+FEBioRunStruct.maxLogCheckTime=10; <span class="comment">%Max log file checking time</span>
+
+[runFlag]=runMonitorFEBio(FEBioRunStruct);<span class="comment">%START FEBio NOW!!!!!!!!</span>
+</pre><pre class="codeoutput"> 
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+--- STARTING FEBIO JOB --- 12-Sep-2016 11:00:06
+Waiting for log file...
+Proceeding to check log file...12-Sep-2016 11:00:07
+------- converged at time : 0.1
+------- converged at time : 0.19273
+------- converged at time : 0.27873
+------- converged at time : 0.358499
+------- converged at time : 0.432499
+------- converged at time : 0.501158
+------- converged at time : 0.569817
+------- converged at time : 0.638476
+------- converged at time : 0.702191
+------- converged at time : 0.765905
+------- converged at time : 0.825041
+------- converged at time : 0.884178
+------- converged at time : 0.943314
+------- converged at time : 1
+--- Done --- 12-Sep-2016 11:00:38
+</pre><h2 id="12">IMPORTING NODAL DISPLACEMENT RESULTS</h2><p>Importing nodal displacements from a log file</p><pre class="codeinput">[~, N_disp_mat,~]=importFEBio_logfile(FEB_struct.run_output_names{1}); <span class="comment">%Nodal displacements</span>
+DN=N_disp_mat(:,2:end,end); <span class="comment">%Final nodal displacements</span>
+
+[~, E3_mat,~]=importFEBio_logfile(FEB_struct.run_output_names{2}); <span class="comment">%Element data</span>
+<span class="comment">% ind=E3_mat(:,1,end); %Final element data</span>
+E3=E3_mat(:,2:end,end); <span class="comment">%Final element data</span>
+</pre><h2 id="13">CREATING NODE SET IN DEFORMED STATE</h2><pre class="codeinput">V_def=V+DN;
+DN_magnitude=sqrt(sum(DN.^2,2));
+</pre><p>Plotting the deformed model</p><pre class="codeinput"><span class="comment">% [CF]=vertexToFaceMeasure(F,DN_magnitude);</span>
+
+[F,C]=element2patch(E,E3);
+
+hf1=cFigure;
+title(<span class="string">'The deformed model'</span>,<span class="string">'FontSize'</span>,fontSize);
+xlabel(<span class="string">'X'</span>,<span class="string">'FontSize'</span>,fontSize); ylabel(<span class="string">'Y'</span>,<span class="string">'FontSize'</span>,fontSize); zlabel(<span class="string">'Z'</span>,<span class="string">'FontSize'</span>,fontSize); hold <span class="string">on</span>;
+
+hps=patch(<span class="string">'Faces'</span>,F,<span class="string">'Vertices'</span>,V_def,<span class="string">'FaceColor'</span>,<span class="string">'flat'</span>,<span class="string">'CData'</span>,C,<span class="string">'lineWidth'</span>,edgeWidth,<span class="string">'edgeColor'</span>,edgeColor,<span class="string">'FaceAlpha'</span>,faceAlpha1);
+
+view(3); axis <span class="string">tight</span>;  axis <span class="string">equal</span>;  grid <span class="string">on</span>;
+colormap <span class="string">gjet</span>; colorbar;
+<span class="comment">% camlight headlight;</span>
+set(gca,<span class="string">'FontSize'</span>,fontSize);
+drawnow;
+</pre><pre class="codeoutput">hex8 elements assumed, for other elements please specify elementType
+</pre><img vspace="5" hspace="5" src="DEMO_FEBio_layered_spatvar_03.png" alt=""> <p><img vspace="5" hspace="5" src="gibbVerySmall.gif" alt=""> </p><p><i><b>GIBBON</b></i> <a href="www.gibboncode.org">www.gibboncode.org</a></p><p><i>Kevin Mattheus Moerman</i>, <a href="gibbon.toolbox@gmail.com">gibbon.toolbox@gmail.com</a></p><p class="footer"><br><a href="http://www.mathworks.com/products/matlab/">Published with MATLAB&reg; R2016b</a><br></p></div><!--
+##### SOURCE BEGIN #####
+%% DEMO_layered_spatvar
+% This demonstration shows how to generate a model with spatially varying
+% material parameters.
+
+%%
+close all; clc; clear;
+
+%%
+% Plot settings
+fontSize=15;
+faceAlpha1=1;
+faceAlpha2=0.5;
+edgeColor=0.25*ones(1,3);
+edgeWidth=1.5;
+markerSize1=25;
+cMap=gjet(250);
+
+%%
+% path names
+filePath=mfilename('fullpath');
+savePath=fullfile(fileparts(filePath),'data','temp');
+modelName=fullfile(savePath,'tempModel');
+
+%% DEFINING AND VISUALIZING THE PARAMETER MAP
+
+
+numElemIncLayer=3;
+numElemTopLayer=3;
+numElemLayers=numElemTopLayer+numElemIncLayer;
+
+[G]=textImage('GIBBON','Arial',25,5);
+G=flipud(G);
+G=G-min(G(:));
+G=G./max(G(:));
+
+S=zeros(size(G,1),size(G,2),numElemLayers);
+S(:,:,1:numElemIncLayer)=repmat(G,[1 1 numElemIncLayer]);
+
+%%
+
+P=2*1e-3;
+
+nBins=50; 
+minC=1e-3; %minimum value
+maxC=minC*100; %Maximum value
+c1_range_ini=linspace(minC,maxC,nBins); %Value range
+k_factor=50;
+m1=2;
+
+%% 
+% VISUALIZING THE MAPPING
+
+[F,V,C]=ind2patch(true(size(S)),S,'vb'); 
+[C_rgb]=gray2RGBColorMap(C,jet(250),[min(S(:)) max(S(:))]);
+
+[Fs1,Vs1,Cs1]=ind2patch(S>0,S,'vb'); 
+[Fs2,Vs2,Cs2]=ind2patch(S==0,S,'vb'); 
+
+cFigure;
+
+subplot(1,2,1);
+title('Stiff inclusion','FontSize',fontSize);
+xlabel('X','FontSize',fontSize);ylabel('Y','FontSize',fontSize); zlabel('Z','FontSize',fontSize); hold on;
+patch('Faces',Fs1,'Vertices',Vs1,'FaceColor','flat','CData',Cs1,'EdgeColor','k','FaceAlpha',1);
+axis equal; view(3); axis tight; axis vis3d; grid on; view([-20,22]);
+colormap(cMap); caxis([min(S(:)) max(S(:))]); colorbar; 
+set(gca,'FontSize',fontSize);
+
+subplot(1,2,2);
+title('Soft matrix','FontSize',fontSize);
+xlabel('X','FontSize',fontSize);ylabel('Y','FontSize',fontSize); zlabel('Z','FontSize',fontSize); hold on;
+patch('Faces',Fs2,'Vertices',Vs2,'FaceColor','flat','CData',Cs2,'EdgeColor','k','FaceAlpha',1);
+axis equal; view(3); axis tight; axis vis3d; grid on; view([-20,22]);
+colormap(cMap); caxis([min(S(:)) max(S(:))]); colorbar;
+set(gca,'FontSize',fontSize);
+
+drawnow;
+
+%% BUILD MODEL
+
+%Create hexahedral elements with function based colors
+[E,V,C]=ind2patch(true(size(S)),S,'hu'); 
+
+%Define element parameter mapping
+elementMaterialIndices=C;
+elementMaterialIndices=elementMaterialIndices-min(elementMaterialIndices(:));
+elementMaterialIndices=elementMaterialIndices./max(elementMaterialIndices(:)); %Normalized
+elementMaterialIndices=round(elementMaterialIndices.*(nBins-1))+1; %1-nPar
+
+indUni=unique(elementMaterialIndices(:)); %Unique indices of used materials
+c1_range=c1_range_ini(indUni); %Select relevant points
+nPar=numel(c1_range);
+
+%Fix indices 
+indFix1=1:numel(indUni);
+indFix2=zeros(nBins,1);
+indFix2(indUni)=indFix1;
+elementMaterialIndices=indFix2(elementMaterialIndices);
+
+%Reorder elementMaterialIndices and element matrix
+[elementMaterialIndices,indSort]=sort(elementMaterialIndices);
+E=E(indSort,:);
+
+[F,PF]=element2patch(E,elementMaterialIndices);
+
+logicTopNodes=abs(V(:,3)-max(V(:,3)))<=max(eps(V(:,3)));
+
+logicTopFaces=all(logicTopNodes(F),2);
+F_top=F(logicTopFaces,:);
+logicBottomNodes=abs(V(:,3)-min(V(:,3)))<=max(eps(V(:,3)));
+
+cFigure;
+title('Model','FontSize',fontSize);
+xlabel('X','FontSize',fontSize);ylabel('Y','FontSize',fontSize); zlabel('Z','FontSize',fontSize); hold on;
+patch('Faces',F,'Vertices',V,'FaceColor','flat','CData',PF,'edgeColor',edgeColor,'lineWidth',edgeWidth,'FaceAlpha',1);
+patch('Faces',F_top,'Vertices',V,'FaceColor',0.5*ones(1,3),'edgeColor','k','lineWidth',edgeWidth,'FaceAlpha',0.5);
+patchNormPlot(F_top,V);
+plotV(V(logicTopNodes,:),'k.','MarkerSize',markerSize1);
+plotV(V(logicBottomNodes,:),'k.','MarkerSize',markerSize1);
+colormap(cMap); caxis([min(elementMaterialIndices(:)) max(elementMaterialIndices(:))]); colorbar;
+
+axis equal; view(3); axis tight; axis vis3d; grid on;  
+set(gca,'FontSize',fontSize);
+
+%% SET UP BOUNDARY CONDITIONS
+
+%List of nodes to fix
+bcFixList=find(logicBottomNodes);
+
+%List of nodes to prescribe displacement for
+bcPrescribeList=find(logicTopNodes);
+
+%Define displacement magnitudes
+displacementMagnitude=[0 0 -0.3.*numElemLayers];
+
+%% CONSTRUCTING FEB MODEL
+
+FEB_struct.febio_spec.version='2.0';
+FEB_struct.Module.Type='solid';
+
+% Defining file names
+FEB_struct.run_filename=[modelName,'.feb']; %FEB file name
+FEB_struct.run_logname=[modelName,'.txt']; %FEBio log file name
+%Creating FEB_struct
+FEB_struct.Geometry.Nodes=V;
+FEB_struct.Geometry.Elements={E}; %The element sets
+FEB_struct.Geometry.ElementType={'hex8'}; %The element types
+FEB_struct.Geometry.ElementMat={elementMaterialIndices};
+FEB_struct.Geometry.ElementsPartName={'Block'};
+
+% DEFINING SPATIALLY VARYING MATERIAL SET
+for q=1:1:nPar      
+    %Defining material parameters
+    c1=c1_range(q);
+    k=c1*k_factor;
+    FEB_struct.Materials{q}.Type='Ogden';
+    FEB_struct.Materials{q}.Name=['cube_mat_',num2str(q)];
+    FEB_struct.Materials{q}.Properties={'c1','c2','m1','m2','k'};
+    FEB_struct.Materials{q}.Values={c1,c1,m1,-m1,k};
+end
+
+%Control section
+FEB_struct.Control.AnalysisType='static';
+FEB_struct.Control.Properties={'time_steps','step_size',...
+    'max_refs','max_ups',...
+    'dtol','etol','rtol','lstol'};
+nStep=10;
+tStep=1/nStep;
+FEB_struct.Control.Values={nStep,tStep,...
+    25,10,...
+    0.001,0.01,0,0.9};
+FEB_struct.Control.TimeStepperProperties={'dtmin','dtmax','max_retries','opt_iter'};
+FEB_struct.Control.TimeStepperValues={tStep/50,tStep,10,6};
+
+%Defining node sets
+FEB_struct.Geometry.NodeSet{1}.Set=bcFixList;
+FEB_struct.Geometry.NodeSet{1}.Name='bcFixList';
+FEB_struct.Geometry.NodeSet{2}.Set=bcPrescribeList;
+FEB_struct.Geometry.NodeSet{2}.Name='bcPrescribeList';
+
+%Defining surfaces
+FEB_struct.Geometry.Surface{1}.Set=F_top;
+FEB_struct.Geometry.Surface{1}.Type='tri3';
+FEB_struct.Geometry.Surface{1}.Name='Pressure_surface';
+
+%Adding BC information
+FEB_struct.Boundary.Fix{1}.bc='x';
+FEB_struct.Boundary.Fix{1}.SetName=FEB_struct.Geometry.NodeSet{1}.Name;
+FEB_struct.Boundary.Fix{2}.bc='y';
+FEB_struct.Boundary.Fix{2}.SetName=FEB_struct.Geometry.NodeSet{1}.Name;
+FEB_struct.Boundary.Fix{3}.bc='z';
+FEB_struct.Boundary.Fix{3}.SetName=FEB_struct.Geometry.NodeSet{1}.Name;
+
+FEB_struct.Boundary.Prescribe{1}.Set=bcPrescribeList;
+FEB_struct.Boundary.Prescribe{1}.bc='z';
+FEB_struct.Boundary.Prescribe{1}.lc=1;
+FEB_struct.Boundary.Prescribe{1}.nodeScale=displacementMagnitude(ones(numel(bcPrescribeList),1),3);
+FEB_struct.Boundary.Prescribe{1}.Type='relative';
+
+% %Adding load information
+% FEB_struct.Loads.Surface_load{1}.Type='pressure';
+% FEB_struct.Loads.Surface_load{1}.SetName=FEB_struct.Geometry.Surface{1}.Name;
+% FEB_struct.Loads.Surface_load{1}.lcPar='pressure';
+% FEB_struct.Loads.Surface_load{1}.lcParValue=P;
+% FEB_struct.Loads.Surface_load{1}.lc=1;
+
+%Load curves
+FEB_struct.LoadData.LoadCurves.id=1;
+FEB_struct.LoadData.LoadCurves.type={'linear'};
+FEB_struct.LoadData.LoadCurves.loadPoints={[0 0;1 1;]};
+
+%Adding output requests
+FEB_struct.Output.VarTypes={'displacement','stress','relative volume'};
+
+%Specify log file output
+run_disp_output_name=[FEB_struct.run_filename(1:end-4),'_node_out.txt'];
+run_elem_output_name=[FEB_struct.run_filename(1:end-4),'_element_out.txt'];
+FEB_struct.run_output_names={run_disp_output_name,run_elem_output_name};
+FEB_struct.output_types={'node_data','element_data'};
+FEB_struct.data_types={'ux;uy;uz','E3'};
+
+%% SAVING .FEB FILE
+
+FEB_struct.disp_opt=0; %Display waitbars
+febStruct2febFile(FEB_struct);
+
+%% RUNNING FEBIO JOB
+
+% FEBioRunStruct.FEBioPath='C:\Program Files\febio-2.3.1\bin\febio2.exe';
+FEBioRunStruct.run_filename=FEB_struct.run_filename;
+FEBioRunStruct.run_logname=FEB_struct.run_logname;
+FEBioRunStruct.disp_on=1;
+FEBioRunStruct.disp_log_on=1;
+FEBioRunStruct.runMode='external';%'internal';
+FEBioRunStruct.t_check=0.25; %Time for checking log file (dont set too small)
+FEBioRunStruct.maxtpi=1e99; %Max analysis time
+FEBioRunStruct.maxLogCheckTime=10; %Max log file checking time
+
+[runFlag]=runMonitorFEBio(FEBioRunStruct);%START FEBio NOW!!!!!!!!
+
+%% IMPORTING NODAL DISPLACEMENT RESULTS
+% Importing nodal displacements from a log file
+[~, N_disp_mat,~]=importFEBio_logfile(FEB_struct.run_output_names{1}); %Nodal displacements
+DN=N_disp_mat(:,2:end,end); %Final nodal displacements
+
+[~, E3_mat,~]=importFEBio_logfile(FEB_struct.run_output_names{2}); %Element data
+% ind=E3_mat(:,1,end); %Final element data
+E3=E3_mat(:,2:end,end); %Final element data
+
+%% CREATING NODE SET IN DEFORMED STATE
+V_def=V+DN;
+DN_magnitude=sqrt(sum(DN.^2,2));
+
+%%
+% Plotting the deformed model
+
+% [CF]=vertexToFaceMeasure(F,DN_magnitude);
+
+[F,C]=element2patch(E,E3);
+
+hf1=cFigure;
+title('The deformed model','FontSize',fontSize);
+xlabel('X','FontSize',fontSize); ylabel('Y','FontSize',fontSize); zlabel('Z','FontSize',fontSize); hold on;
+
+hps=patch('Faces',F,'Vertices',V_def,'FaceColor','flat','CData',C,'lineWidth',edgeWidth,'edgeColor',edgeColor,'FaceAlpha',faceAlpha1);
+
+view(3); axis tight;  axis equal;  grid on;
+colormap gjet; colorbar;
+% camlight headlight;
+set(gca,'FontSize',fontSize);
+drawnow;
+
+%% 
+%
+% <<gibbVerySmall.gif>>
+% 
+% _*GIBBON*_ 
+% <www.gibboncode.org>
+% 
+% _Kevin Mattheus Moerman_, <gibbon.toolbox@gmail.com>
+
+##### SOURCE END #####
+--></body></html>

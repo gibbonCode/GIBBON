@@ -2,7 +2,7 @@
 % Below is a demonstration of the features of the |import_off| function
 
 %%
-clear; close all; clc; 
+close all; clc; clear;
 
 %%
 % Plot settings

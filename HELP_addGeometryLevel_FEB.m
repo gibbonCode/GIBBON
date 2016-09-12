@@ -2,7 +2,7 @@
 % Below is a demonstration of the features of the |addGeometryLevel_FEB| function
 
 %%
-clear; close all; clc; 
+close all; clc; clear;
 
 %% Syntax
 % |[domNode]=addGeometryLevel_FEB(domNode,FEB_struct);|

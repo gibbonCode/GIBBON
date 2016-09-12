@@ -13,7 +13,7 @@
 %% Examples
 
 %%
-clear; close all; clc; 
+close all; clc; clear;
 
 %% Example: Calculating eigenvalues for matrices contained in cells
 % Creating example cell containing two matrices

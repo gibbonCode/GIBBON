@@ -14,7 +14,7 @@
 %% Examples
 
 %%
-clear; close all; clc; 
+close all; clc; clear;
 
 %% 
 % Plot settings
@@ -51,13 +51,17 @@ figStructHid.Visible='off';
 [H(1)]=cFigure(figStructHid);
 
 %Plot something in it
-hs=surf(peaks(25)); axis equal; axis tight; colormap jet;
+hs=surf(peaks(25)); 
+axis equal; axis tight; colormap jet;
+drawnow; 
 
 %Open another hidden figure
 [H(2)]=cFigure(figStructHid);
 
 %Plot something in it
-hs=surf(peaks(25)); axis equal; axis tight; colormap gray;
+hs=surf(peaks(25)); 
+axis equal; axis tight; colormap gray;
+drawnow; 
 
 pause(2); %Add pause to demonstrate lack of visible figures
 
@@ -80,13 +84,16 @@ figStruct.ScreenOffset=300;
 [H(2)]=cFigure(figStructHid);
 
 %Plot something in it
-hs=surf(peaks(25)); axis equal; axis tight; colormap autumn;
+hs=surf(peaks(25)); 
+axis equal; axis tight; colormap autumn;
+drawnow; 
 
 %Calling first figure again without making it visible
 scf(H(1)); 
 
 %Now plot something in it
 hs=surf(peaks(25)); axis equal; axis tight; colormap winter;
+drawnow; 
 
 %Now show the figures
 mfv; %If this is used instead of mfv(H) then all hidden figures are shown

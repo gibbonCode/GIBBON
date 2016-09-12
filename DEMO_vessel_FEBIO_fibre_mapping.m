@@ -12,7 +12,7 @@
 
 %%
 
-clear; close all; clc;
+close all; clc; clear;
 
 %%
 % Plot settings
@@ -26,6 +26,25 @@ markerSize1=50;
 % path names
 filePath=mfilename('fullpath');
 savePath=fullfile(fileparts(filePath),'data','temp');
+
+%%
+
+%Material parameters
+c1_1=0.0006618290645;
+m1_1=2.0000011857416;
+ksi_1=0.0000906045135;
+beta_1=3.1728247084040;
+f_1=229.9578182262337;
+k_factor=500; 
+k_1=(c1_1+ksi_1)*k_factor;
+
+c1_2=2*0.0006618290645;
+m1_2=2.0000011857416;
+ksi_2=2*0.0000906045135;
+beta_2=3.1728247084040;
+f_2=229.9578182262337;
+k_factor=500; 
+k_2=(c1_2+ksi_2)*k_factor;
 
 %% BUILDING EXAMPLE SURFACE GEOMETRY
 
@@ -273,14 +292,14 @@ zDir=[0 0 1];
 VE_XY=VE;
 VE_XY(:,3)=0;
 VE_XY=vecnormalize(VE_XY);
-Vf_E=cross(VE_XY,zDir(ones(size(VE,1),1),:)); %I.e. radial tangent
-Vf_E=vecnormalize(Vf_E);
-Vf_E(L1,:)=-Vf_E(L1,:); %I.e. radial tangent flipped
-Vf_E(:,3)=1; 
-Vf_E=vecnormalize(Vf_E);
+VF=cross(VE_XY,zDir(ones(size(VE,1),1),:)); %I.e. radial tangent
+VF=vecnormalize(VF);
+VF(L1,:)=-VF(L1,:); %I.e. radial tangent flipped
+VF(:,3)=1; 
+VF=vecnormalize(VF);
 
 %Create patch data for fibres
-[Ff,Vf,Cf]=quiver3Dpatch(VE(:,1),VE(:,2),VE(:,3),Vf_E(:,1),Vf_E(:,2),Vf_E(:,3),ones(size(Vf_E,1),1),[1 1]);
+[Ff,Vf,Cf]=quiver3Dpatch(VE(:,1),VE(:,2),VE(:,3),VF(:,1),VF(:,2),VF(:,3),ones(size(VF,1),1),[1 1]);
 
 %%
 % Plotting the example model
@@ -317,14 +336,14 @@ V_inner_def=V_inner;
 bcPrescribedMagnitudes=(V_inner_def-V_inner);
 
 % Define indices (node numbers) for the prescribed displacement
-bcIndicesPrescribed=indInner;
+bcPrescribeList=indInner;
 
 %% DEFINE BOUNDARY CONDITIONS
 
-boundaryConditionNodeList=Fb(Cb==4 | Cb==5 | Cb==6 | Cb==7,:);
-boundaryConditionNodeList=unique(boundaryConditionNodeList(:));
+bcFixList=Fb(Cb==4 | Cb==5 | Cb==6 | Cb==7,:);
+bcFixList=unique(bcFixList(:));
 
-plotV(VT(boundaryConditionNodeList,:),'k.');
+plotV(VT(bcFixList,:),'k.');
 
 %% 
 % Plotting deformed inner surface
@@ -347,68 +366,52 @@ camlight headlight;
 set(gca,'FontSize',fontSize);
 view(3); axis tight;  axis equal;  grid on;
 
+%%
+febMatID=elementMaterialIndices;
+febMatID(elementMaterialIndices==-2)=1;
+febMatID(elementMaterialIndices==-3)=2;
+
 %% CONSTRUCTING FEB MODEL
+
+FEB_struct.febio_spec.version='2.0';
+FEB_struct.Module.Type='solid';
 
 % Defining file names
 FEB_struct.run_filename=[modelName,'.feb']; %FEB file name
 FEB_struct.run_logname=[modelName,'.txt']; %FEBio log file name
 
-febMatID=elementMaterialIndices;
-febMatID(elementMaterialIndices==-2)=1;
-febMatID(elementMaterialIndices==-3)=2;
-
-%Creating FEB_struct
+%Geometry section
 FEB_struct.Geometry.Nodes=VT;
 FEB_struct.Geometry.Elements={E}; %The element sets
 FEB_struct.Geometry.ElementType={'tet4'}; %The element types
 FEB_struct.Geometry.ElementMat={febMatID};
+FEB_struct.Geometry.ElementsPartName={'Blood_vessel'};
 
-% DEFINING MATERIALS
-k_factor=1000;
+%Material section
+FEB_struct.Materials{1}.Type='solid mixture';
+FEB_struct.Materials{1}.Solid{1}.Type='Ogden unconstrained';
+FEB_struct.Materials{1}.Solid{1}.Properties={'c1','m1','cp'};
+FEB_struct.Materials{1}.Solid{1}.Values={c1_1,m1_1,k_1};
 
-%Material 1
-c1=0.0008;
-m1=10;
-ksi=0.002;
-beta=3;
-k=0.5.*(c1+ksi)*k_factor;
-Mat1.type='uncoupled solid mixture';
-Mat11.type='Ogden';
-Mat11.props={'c1','m1','k'};
-Mat11.vals={c1,m1,k};
-Mat11.aniso_type='none';
-Mat12.type='fiber-exp-pow-uncoupled';
-Mat12.props={'ksi','alpha','beta','theta','phi','k'};
-Mat12.vals={ksi,1e-25,beta,0,0,k};
-Mat12.aniso_type='none';
-Mat1.Mats={Mat11 Mat12};
+FEB_struct.Materials{1}.Solid{2}.Type='ellipsoidal fiber distribution';
+FEB_struct.Materials{1}.Solid{2}.Properties={'ksi','beta'};
+FEB_struct.Materials{1}.Solid{2}.Values={[ksi_1 ksi_1 f_1*ksi_1],[beta_1 beta_1 beta_1]};
+FEB_struct.Materials{1}.Solid{2}.AnisoType='mat_axis';
 
-%Material 2
-c1=0.0004;
-m1=10;
-ksi=0.001;
-beta=3;
-k=0.5.*(c1+ksi)*k_factor;
-Mat2.type='uncoupled solid mixture';
-Mat11.type='Ogden';
-Mat11.props={'c1','m1','k'};
-Mat11.vals={c1,m1,k};
-Mat11.aniso_type='none';
-Mat12.type='fiber-exp-pow-uncoupled';
-Mat12.props={'ksi','alpha','beta','theta','phi','k'};
-Mat12.vals={ksi,1e-25,beta,0,0,k};
-Mat12.aniso_type='none';
-Mat2.Mats={Mat11 Mat12};
+FEB_struct.Materials{2}.Type='solid mixture';
+FEB_struct.Materials{2}.Solid{1}.Type='Ogden unconstrained';
+FEB_struct.Materials{2}.Solid{1}.Properties={'c1','m1','cp'};
+FEB_struct.Materials{2}.Solid{1}.Values={c1_2,m1_2,k_2};
 
-FEB_struct.Materials{1}=Mat1;
-FEB_struct.Materials{2}=Mat2;
+FEB_struct.Materials{2}.Solid{2}.Type='ellipsoidal fiber distribution';
+FEB_struct.Materials{2}.Solid{2}.Properties={'ksi','beta'};
+FEB_struct.Materials{2}.Solid{2}.Values={[ksi_2 ksi_2 f_2*ksi_1],[beta_2 beta_2 beta_2]};
+FEB_struct.Materials{2}.Solid{2}.AnisoType='mat_axis';
 
 %Adding fibre direction, construct local orthonormal basis vectors
-a=rand(size(Vf_E))-Vf_E(:,[3 1 2]); [a]=vecnormalize(a); %A "random" normalised vector a
-d=cross(Vf_E,a); [d]=vecnormalize(d); %d is orthogonal to Vf_E and a
-a=cross(d,Vf_E); [a]=vecnormalize(a); %a is reset to be orthogonal to both Vf_E and d
+[a,d]=vectorOrthogonalPair(VF);
 
-VF_E=nan(size(Vf_E,1),size(Vf_E,2),2);
+VF_E=zeros(size(VF,1),size(VF,2),2);
 VF_E(:,:,1)=a; %a1 ~ e1 ~ X or first direction
 VF_E(:,:,2)=d; %a2 ~ e2 ~ Y or second direction
 %Vf_E %a3 ~ e3 ~ Z, third direction, or fibre direction
@@ -416,15 +419,48 @@ VF_E(:,:,2)=d; %a2 ~ e2 ~ Y or second direction
 FEB_struct.Geometry.ElementData.MatAxis.ElementIndices=1:1:size(E,1);
 FEB_struct.Geometry.ElementData.MatAxis.Basis=VF_E;
 
+%Defining node sets
+FEB_struct.Geometry.NodeSet{1}.Set=bcFixList;
+FEB_struct.Geometry.NodeSet{1}.Name='boundaryConditionNodeList';
+% FEB_struct.Geometry.NodeSet{2}.Set=bcIndicesPrescribed;
+% FEB_struct.Geometry.NodeSet{2}.Name='bcIndicesPrescribed';
+
 %Adding BC information
-FEB_struct.Boundary.FixList={boundaryConditionNodeList};
-FEB_struct.Boundary.FixType={'xyz'};
+FEB_struct.Boundary.Fix{1}.bc='x';
+FEB_struct.Boundary.Fix{1}.SetName=FEB_struct.Geometry.NodeSet{1}.Name;
+FEB_struct.Boundary.Fix{2}.bc='y';
+FEB_struct.Boundary.Fix{2}.SetName=FEB_struct.Geometry.NodeSet{1}.Name;
+FEB_struct.Boundary.Fix{3}.bc='z';
+FEB_struct.Boundary.Fix{3}.SetName=FEB_struct.Geometry.NodeSet{1}.Name;
 
-FEB_struct.Boundary.PrescribeList={bcIndicesPrescribed,bcIndicesPrescribed,bcIndicesPrescribed};
-FEB_struct.Boundary.PrescribeType={'x','y','z'};
+FEB_struct.Boundary.Prescribe{1}.Set=bcPrescribeList;
+FEB_struct.Boundary.Prescribe{1}.bc='x';
+FEB_struct.Boundary.Prescribe{1}.lc=1;
+FEB_struct.Boundary.Prescribe{1}.nodeScale=bcPrescribedMagnitudes(:,1);
+FEB_struct.Boundary.Prescribe{1}.Type='relative';
 
-FEB_struct.Boundary.PrescribeValues={bcPrescribedMagnitudes(:,1),bcPrescribedMagnitudes(:,2),bcPrescribedMagnitudes(:,3)};
-FEB_struct.Boundary.LoadCurveIds=[1 1 1];
+FEB_struct.Boundary.Prescribe{2}.Set=bcPrescribeList;
+FEB_struct.Boundary.Prescribe{2}.bc='y';
+FEB_struct.Boundary.Prescribe{2}.lc=1;
+FEB_struct.Boundary.Prescribe{2}.nodeScale=bcPrescribedMagnitudes(:,2);
+FEB_struct.Boundary.Prescribe{2}.Type='relative';
+
+FEB_struct.Boundary.Prescribe{3}.Set=bcPrescribeList;
+FEB_struct.Boundary.Prescribe{3}.bc='z';
+FEB_struct.Boundary.Prescribe{3}.lc=1;
+FEB_struct.Boundary.Prescribe{3}.nodeScale=bcPrescribedMagnitudes(:,3);
+FEB_struct.Boundary.Prescribe{3}.Type='relative';
+
+%Control section
+FEB_struct.Control.AnalysisType='static';
+FEB_struct.Control.Properties={'time_steps','step_size',...
+    'max_refs','max_ups',...
+    'dtol','etol','rtol','lstol'};
+FEB_struct.Control.Values={10,0.1,...
+    15,0,...
+    0.001,0.01,0,0.9};
+FEB_struct.Control.TimeStepperProperties={'dtmin','dtmax','max_retries','opt_iter'};
+FEB_struct.Control.TimeStepperValues={1e-5,0.1,10,10};
 
 %Adding output requests
 FEB_struct.Output.VarTypes={'displacement','stress','relative volume','shell thickness'};
@@ -455,7 +491,7 @@ FEB_struct.LoadData.LoadCurves.loadPoints={[0 0;1 1]};
 %% SAVING .FEB FILE
 
 FEB_struct.disp_opt=0; %Turn on displaying of progress
-febStruct2febFile_v1p2(FEB_struct);
+febStruct2febFile(FEB_struct);
 
 %% RUNNING FEBIO JOB
 
@@ -469,7 +505,6 @@ FEBioRunStruct.maxtpi=1e99; %Max analysis time
 FEBioRunStruct.maxLogCheckTime=3; %Max log file checking time
 
 [runFlag]=runMonitorFEBio(FEBioRunStruct);%START FEBio NOW!!!!!!!!
-
 
 %% IMPORTING NODAL DISPLACEMENT RESULTS
 % Importing nodal displacements from a log file
@@ -520,17 +555,17 @@ X=VT_def(:,1); Y=VT_def(:,2); Z=VT_def(:,3);
 XE=mean(X(E),2); YE=mean(Y(E),2); ZE=mean(Z(E),2);
 VE_def=[XE(:) YE(:) ZE(:)];
 
-Vf_E_def=Vf_E;
+VF_def=VF;
 for q=1:1:size(E,1) 
     
     fg=reshape(FG(q,:),3,3)';
     
-    vn=vecnormalize(fg*Vf_E(q,:)')'; %Mapped/stretched vector
-    Vf_E_def(q,:)=vn;
+    vn=vecnormalize(fg*VF(q,:)')'; %Mapped/stretched vector
+    VF_def(q,:)=vn;
 end
 
 %Create patch data for fibres
-[Ff_def,Vf_def,Cf_def]=quiver3Dpatch(VE_def(:,1),VE_def(:,2),VE_def(:,3),Vf_E_def(:,1),Vf_E_def(:,2),Vf_E_def(:,3),ones(size(Vf_E_def,1),1),[1 1]);
+[Ff_def,Vf_def,Cf_def]=quiver3Dpatch(VE_def(:,1),VE_def(:,2),VE_def(:,3),VF_def(:,1),VF_def(:,2),VF_def(:,3),ones(size(VF_def,1),1),[1 1]);
 
 %%
 % Plotting the example model

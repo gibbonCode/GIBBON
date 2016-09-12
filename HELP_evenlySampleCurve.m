@@ -4,7 +4,7 @@
 % Below is a demonstration of the features of the |ind2patch| function
 
 %%
-clear; close all; clc; 
+close all; clc; clear;
 
 %% Syntax
 % |[Vg] = evenlySampleCurve(V,n,interpPar,closeLoopOpt);|

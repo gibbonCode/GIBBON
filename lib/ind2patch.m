@@ -28,53 +28,6 @@ function [F,V,C]=ind2patch(IND,M,ptype)
 %                  nx8) element data.
 % 'hu'             Same as 'h' but with shared unique nodes.
 %
-%%% EXAMPLE
-% clear all; close all; clc; 
-% 
-% %% Simulating 3D image
-% [X,Y,Z]=meshgrid(linspace(-4.77,4.77,25));
-% phi=(1+sqrt(5))/2;
-% M=2 - (cos(X + phi*Y) + cos(X - phi*Y) + cos(Y + phi*Z) + cos(Y - phi*Z) + cos(Z - phi*X) + cos(Z + phi*X));
-% M=M./max(M(:)); %Normalise, not required
-% 
-% figure; set(gcf,'units','normalized','outerposition',[0 0 1 1]); %maximizes figure window
-% hold on; xlabel('X-J','FontSize',20);ylabel('Y-I','FontSize',20);zlabel('Z-K','FontSize',20);
-% 
-% %% Creating and plotting patch data
-% 
-% %Setting up indices for X direction slices
-% S=round(size(M,2)./2); %Selection of middle slice
-% L_plot=false(size(M)); L_plot(:,S,:)=1;
-% IND=find(L_plot);
-% [F,V,C]=ind2patch(IND,M,'sj'); %Creating patch data for x mid-voxel slices
-% hs=patch('Faces',F,'Vertices',V,'EdgeColor','none', 'CData',C,'FaceColor','flat','FaceAlpha',0.75);
-% 
-% %Setting up indices for Y direction slices
-% S=round(size(M,1)./2); %Selection of middle slice
-% L_plot=false(size(M)); L_plot(S,:,:)=1;
-% IND=find(L_plot);
-% [F,V,C]=ind2patch(IND,M,'si'); %Creating patch data for y mid-voxel slices
-% hs=patch('Faces',F,'Vertices',V,'EdgeColor','none', 'CData',C,'FaceColor','flat','FaceAlpha',0.75);
-% 
-% %Setting up indices for Z direction slices
-% S=round(size(M,3)./2); %Selection of middle slice
-% L_plot=false(size(M)); L_plot(:,:,S)=1;
-% IND=find(L_plot);
-% [F,V,C]=ind2patch(IND,M,'sk'); %Creating patch data for z mid-voxel slices
-% hs=patch('Faces',F,'Vertices',V,'EdgeColor','none', 'CData',C,'FaceColor','flat','FaceAlpha',0.75);
-% 
-% %Setting up indices for voxels 
-% IND=find(M>-0.2 & M<=0); % A selection of low intensity voxels
-% [F,V,C]=ind2patch(IND,M,'v'); %Creating patch data for selection of low voxels
-% hs=patch('Faces',F,'Vertices',V,'EdgeColor','k', 'CData',C,'FaceColor','flat','FaceAlpha',1);
-% 
-% %Setting up indices for voxels to plot
-% IND=find(M>0.9); % A selection of high intensity voxels. 
-% [F,V,C]=ind2patch(IND,M,'v'); %Creating patch data for selection of high voxels
-% hs=patch('Faces',F,'Vertices',V,'EdgeColor','k', 'CData',C,'FaceColor','flat','FaceAlpha',1);
-% 
-% axis equal; view(3); axis tight; colormap jet; colorbar; caxis([0 1]); grid on;
-% set(gca,'FontSize',20);
 %
 % Kevin Mattheus Moerman
 % gibbon.toolbox@gmail.com

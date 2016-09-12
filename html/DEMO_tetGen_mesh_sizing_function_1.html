@@ -6,7 +6,7 @@
    <!--
 This HTML was auto-generated from MATLAB code.
 To make changes, update the MATLAB code and republish this document.
-      --><title>DEMO_tetGen_mesh_sizing_function_1</title><meta name="generator" content="MATLAB 8.5"><link rel="schema.DC" href="http://purl.org/dc/elements/1.1/"><meta name="DC.date" content="2015-06-30"><meta name="DC.source" content="DEMO_tetGen_mesh_sizing_function_1.m"><style type="text/css">
+      --><title>DEMO_tetGen_mesh_sizing_function_1</title><meta name="generator" content="MATLAB 9.1"><link rel="schema.DC" href="http://purl.org/dc/elements/1.1/"><meta name="DC.date" content="2016-09-12"><meta name="DC.source" content="DEMO_tetGen_mesh_sizing_function_1.m"><style type="text/css">
 html,body,div,span,applet,object,iframe,h1,h2,h3,h4,h5,h6,p,blockquote,pre,a,abbr,acronym,address,big,cite,code,del,dfn,em,font,img,ins,kbd,q,s,samp,small,strike,strong,sub,sup,tt,var,b,u,i,center,dl,dt,dd,ol,ul,li,fieldset,form,label,legend,table,caption,tbody,tfoot,thead,tr,th,td{margin:0;padding:0;border:0;outline:0;font-size:100%;vertical-align:baseline;background:transparent}body{line-height:1}ol,ul{list-style:none}blockquote,q{quotes:none}blockquote:before,blockquote:after,q:before,q:after{content:'';content:none}:focus{outine:0}ins{text-decoration:none}del{text-decoration:line-through}table{border-collapse:collapse;border-spacing:0}
 
 html { min-height:100%; margin-bottom:1px; }
@@ -66,7 +66,7 @@ table td { padding:7px 5px; text-align:left; vertical-align:top; border:1px soli
 
 
 
-  </style></head><body><div class="content"><h1>DEMO_tetGen_mesh_sizing_function_1</h1><!--introduction--><p>Below is a demonstration for:</p><div><ul><li>The use of TetGen for meshing based on surface geometry</li><li>Biasing the mesh density using a size function specified on the boundary nodes</li></ul></div><!--/introduction--><h2>Contents</h2><div><ul><li><a href="#4">Defining the surface models</a></li><li><a href="#6">Defining a size function on the boundary nodes</a></li><li><a href="#8">CREATING A SOLID TETRAHEDRAL MESH USING TETGEN</a></li></ul></div><pre class="codeinput">clear; close <span class="string">all</span>; clc;
+  </style></head><body><div class="content"><h1>DEMO_tetGen_mesh_sizing_function_1</h1><!--introduction--><p>Below is a demonstration for:</p><div><ul><li>The use of TetGen for meshing based on surface geometry</li><li>Biasing the mesh density using a size function specified on the boundary nodes</li></ul></div><!--/introduction--><h2>Contents</h2><div><ul><li><a href="#4">Defining the surface models</a></li><li><a href="#6">Defining a size function on the boundary nodes</a></li><li><a href="#8">CREATING A SOLID TETRAHEDRAL MESH USING TETGEN</a></li></ul></div><pre class="codeinput">close <span class="string">all</span>; clc; clear;
 </pre><p>Plot settings</p><pre class="codeinput">fontSize=15;
 faceAlpha1=0.5;
 faceAlpha2=0.5;
@@ -85,7 +85,7 @@ pointSpacing=1;
 numElementsWidth=round(sampleWidth/pointSpacing);
 numElementsThickness=round(sampleThickness/pointSpacing);
 numElementsHeight=round(sampleHeight/pointSpacing);
-</pre><h2>Defining the surface models<a name="4"></a></h2><p>The model will consists of two spheres one contained within the other defining two material regions. A stiff core and a soft outer later.</p><pre class="codeinput"><span class="comment">% Creating a meshed box (4-node tetrahedral elements)</span>
+</pre><h2 id="4">Defining the surface models</h2><p>The model will consists of two spheres one contained within the other defining two material regions. A stiff core and a soft outer later.</p><pre class="codeinput"><span class="comment">% Creating a meshed box (4-node tetrahedral elements)</span>
 boxDim=[sampleWidth sampleThickness sampleHeight]; <span class="comment">%Dimensions</span>
 boxEl=[numElementsWidth numElementsThickness numElementsHeight]; <span class="comment">%Number of elements</span>
 [Fq,Vq,faceBoundaryMarker_q]=quadBox(boxDim,boxEl);
@@ -106,7 +106,7 @@ colorbar;
 camlight <span class="string">headlight</span>;
 set(gca,<span class="string">'FontSize'</span>,fontSize);
 view(3); axis <span class="string">tight</span>;  axis <span class="string">equal</span>;  grid <span class="string">on</span>;
-</pre><img vspace="5" hspace="5" src="DEMO_tetGen_mesh_sizing_function_1_01.png" alt=""> <h2>Defining a size function on the boundary nodes<a name="6"></a></h2><pre class="codeinput"><span class="comment">%Get edge lengths and base minimum size on input edge lengths</span>
+</pre><img vspace="5" hspace="5" src="DEMO_tetGen_mesh_sizing_function_1_01.png" alt=""> <h2 id="6">Defining a size function on the boundary nodes</h2><pre class="codeinput"><span class="comment">%Get edge lengths and base minimum size on input edge lengths</span>
 [edgeLengths]=patchEdgeLengths(F,V);
 minEdgeSize=mean(edgeLengths)/3; <span class="comment">%The smallest element size</span>
 
@@ -129,7 +129,7 @@ colorbar;
 camlight <span class="string">headlight</span>;
 set(gca,<span class="string">'FontSize'</span>,fontSize);
 view(3); axis <span class="string">tight</span>;  axis <span class="string">equal</span>;  grid <span class="string">on</span>;
-</pre><img vspace="5" hspace="5" src="DEMO_tetGen_mesh_sizing_function_1_02.png" alt=""> <h2>CREATING A SOLID TETRAHEDRAL MESH USING TETGEN<a name="8"></a></h2><pre class="codeinput">inputStruct.stringOpt=<span class="string">'-pq1.1Aa'</span>;
+</pre><img vspace="5" hspace="5" src="DEMO_tetGen_mesh_sizing_function_1_02.png" alt=""> <h2 id="8">CREATING A SOLID TETRAHEDRAL MESH USING TETGEN</h2><pre class="codeinput">inputStruct.stringOpt=<span class="string">'-pq1.1Aa'</span>;
 inputStruct.Faces=F;
 inputStruct.Nodes=V;
 inputStruct.sizeData=edgeSizeField;
@@ -139,43 +139,43 @@ inputStruct.regionPoints=[0 0 0]; <span class="comment">%region points</span>
 </pre><p>Mesh model using tetrahedral elements using tetGen</p><pre class="codeinput">[meshOutput]=runTetGen(inputStruct); <span class="comment">%Run tetGen</span>
 </pre><pre class="codeoutput"> 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
---- TETGEN Tetrahedral meshing --- 30-Jun-2015 21:21:48
+--- TETGEN Tetrahedral meshing --- 12-Sep-2016 12:02:55
  
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
---- Writing SMESH file --- 30-Jun-2015 21:21:48
+--- Writing SMESH file --- 12-Sep-2016 12:02:55
 ----&gt; Adding node field
 ----&gt; Adding facet field
 ----&gt; Adding holes specification
 ----&gt; Adding region specification
---- Done --- 30-Jun-2015 21:21:48
---- Writing MTR file --- 30-Jun-2015 21:21:48
---- Running TetGen to mesh initial Delaunay tesselation using sizing function--- 30-Jun-2015 21:21:48
-Opening D:\MATLAB\GIBBON\trunk\lib_ext\tetGen\tempFiles\temp.smesh. 
-Opening D:\MATLAB\GIBBON\trunk\lib_ext\tetGen\tempFiles\temp.mtr. 
-  Cannot access file D:\MATLAB\GIBBON\trunk\lib_ext\tetGen\tempFiles\temp.b.node. 
+--- Done --- 12-Sep-2016 12:02:55
+--- Writing MTR file --- 12-Sep-2016 12:02:55
+--- Running TetGen to mesh initial Delaunay tesselation using sizing function--- 12-Sep-2016 12:02:55
+Opening D:\MATLAB\SVN\GIBBON\lib_ext\tetGen\tempFiles\temp.smesh. 
+Opening D:\MATLAB\SVN\GIBBON\lib_ext\tetGen\tempFiles\temp.mtr. 
+  Cannot access file D:\MATLAB\SVN\GIBBON\lib_ext\tetGen\tempFiles\temp.b.node. 
 Delaunizing vertices... 
-Delaunay seconds:  0.013 
+Delaunay seconds:  0.01 
 Creating surface mesh ... 
-Surface mesh seconds:  0.003 
+Surface mesh seconds:  0.001 
 Constrained Delaunay... 
-Constrained Delaunay seconds:  0.004 
+Constrained Delaunay seconds:  0.003 
 Removing exterior tetrahedra ... 
 Spreading region attributes. 
 Exterior tets removal seconds:  0 
 Refining mesh... 
-Refinement seconds:  0.116 
+Refinement seconds:  0.106 
 Optimizing mesh... 
-Optimization seconds:  0.015 
+Optimization seconds:  0.008 
  
-Writing D:\MATLAB\GIBBON\trunk\lib_ext\tetGen\tempFiles\temp.1.node. 
-Writing D:\MATLAB\GIBBON\trunk\lib_ext\tetGen\tempFiles\temp.1.ele. 
-Writing D:\MATLAB\GIBBON\trunk\lib_ext\tetGen\tempFiles\temp.1.face. 
-Writing D:\MATLAB\GIBBON\trunk\lib_ext\tetGen\tempFiles\temp.1.edge. 
-Writing D:\MATLAB\GIBBON\trunk\lib_ext\tetGen\tempFiles\temp.1.mtr. 
-Writing D:\MATLAB\GIBBON\trunk\lib_ext\tetGen\tempFiles\temp.1.p2t. 
+Writing D:\MATLAB\SVN\GIBBON\lib_ext\tetGen\tempFiles\temp.1.node. 
+Writing D:\MATLAB\SVN\GIBBON\lib_ext\tetGen\tempFiles\temp.1.ele. 
+Writing D:\MATLAB\SVN\GIBBON\lib_ext\tetGen\tempFiles\temp.1.face. 
+Writing D:\MATLAB\SVN\GIBBON\lib_ext\tetGen\tempFiles\temp.1.edge. 
+Writing D:\MATLAB\SVN\GIBBON\lib_ext\tetGen\tempFiles\temp.1.mtr. 
+Writing D:\MATLAB\SVN\GIBBON\lib_ext\tetGen\tempFiles\temp.1.p2t. 
  
-Output seconds:  0.071 
-Total running seconds:  0.222 
+Output seconds:  0.061 
+Total running seconds:  0.189 
  
 Statistics: 
  
@@ -195,11 +195,11 @@ Statistics:
   Steiner points on input segments:  61 
   Steiner points inside domain: 3500 
  
---- Done --- 30-Jun-2015 21:21:48
+--- Done --- 12-Sep-2016 12:02:55
  
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
---- Importing TetGen files --- 30-Jun-2015 21:21:48
---- Done --- 30-Jun-2015 21:21:49
+--- Importing TetGen files --- 12-Sep-2016 12:02:55
+--- Done --- 12-Sep-2016 12:02:55
 </pre><p>Accessing the model element and patch data</p><pre class="codeinput">FT=meshOutput.faces;
 Fb=meshOutput.facesBoundary;
 Cb=meshOutput.boundaryMarker;
@@ -223,7 +223,7 @@ colormap(jet); colorbar;
 camlight <span class="string">headlight</span>;
 set(gca,<span class="string">'FontSize'</span>,fontSize);
 drawnow;
-</pre><img vspace="5" hspace="5" src="DEMO_tetGen_mesh_sizing_function_1_03.png" alt=""> <p><img vspace="5" hspace="5" src="gibbVerySmall.gif" alt=""> </p><p><i><b>GIBBON</b></i> <a href="www.gibboncode.org">www.gibboncode.org</a></p><p><i>Kevin Mattheus Moerman</i>, <a href="gibbon.toolbox@gmail.com">gibbon.toolbox@gmail.com</a></p><p class="footer"><br><a href="http://www.mathworks.com/products/matlab/">Published with MATLAB&reg; R2015a</a><br></p></div><!--
+</pre><img vspace="5" hspace="5" src="DEMO_tetGen_mesh_sizing_function_1_03.png" alt=""> <p><img vspace="5" hspace="5" src="gibbVerySmall.gif" alt=""> </p><p><i><b>GIBBON</b></i> <a href="www.gibboncode.org">www.gibboncode.org</a></p><p><i>Kevin Mattheus Moerman</i>, <a href="gibbon.toolbox@gmail.com">gibbon.toolbox@gmail.com</a></p><p class="footer"><br><a href="http://www.mathworks.com/products/matlab/">Published with MATLAB&reg; R2016b</a><br></p></div><!--
 ##### SOURCE BEGIN #####
 %% DEMO_tetGen_mesh_sizing_function_1
 % Below is a demonstration for:
@@ -234,7 +234,7 @@ drawnow;
 
 %%
 
-clear; close all; clc; 
+close all; clc; clear;
 
 %%
 % Plot settings
@@ -373,5 +373,6 @@ drawnow;
 % <www.gibboncode.org>
 % 
 % _Kevin Mattheus Moerman_, <gibbon.toolbox@gmail.com>
+
 ##### SOURCE END #####
 --></body></html>

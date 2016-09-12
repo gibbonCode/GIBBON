@@ -2,7 +2,7 @@
 % Below is a demonstration of the features of the |export_STL_txt| function
 
 %%
-clear; close all; clc; 
+close all; clc; clear;
 
 %%
 % Plot settings

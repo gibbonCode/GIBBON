@@ -7,7 +7,7 @@
 
 %%
 
-clear; close all; clc;
+close all; clc; clear;
 
 %%
 % Plot settings
@@ -26,7 +26,8 @@ lineWidth=3;
 filePath=mfilename('fullpath');
 savePath=fullfile(fileparts(filePath),'data','temp');
 
-modelName=fullfile(savePath,'tempModel');
+modelNameEnd='tempModel';
+modelName=fullfile(savePath,modelNameEnd);
 
 %Specifying dimensions and number of elements
 sampleWidth=10;
@@ -210,8 +211,8 @@ FEB_struct.Geometry.NodeSet{2}.Set=bcSupportList_X_axis;
 FEB_struct.Geometry.NodeSet{2}.Name='bcSupportList_X_axis';
 FEB_struct.Geometry.NodeSet{3}.Set=bcSupportList_Z;
 FEB_struct.Geometry.NodeSet{3}.Name='bcSupportList_Z';
-FEB_struct.Geometry.NodeSet{4}.Set=bcPrescribeList;
-FEB_struct.Geometry.NodeSet{4}.Name='bcPrescribeList';
+% FEB_struct.Geometry.NodeSet{4}.Set=bcPrescribeList;
+% FEB_struct.Geometry.NodeSet{4}.Name='bcPrescribeList';
 
 %Adding BC information
 FEB_struct.Boundary.Fix{1}.bc='x';
@@ -221,10 +222,11 @@ FEB_struct.Boundary.Fix{2}.SetName=FEB_struct.Geometry.NodeSet{2}.Name;
 FEB_struct.Boundary.Fix{3}.bc='z';
 FEB_struct.Boundary.Fix{3}.SetName=FEB_struct.Geometry.NodeSet{3}.Name;
 
-FEB_struct.Boundary.Prescribe{1}.SetName=FEB_struct.Geometry.NodeSet{4}.Name;
-FEB_struct.Boundary.Prescribe{1}.Scale=displacementMagnitude(3);
+%Prescribed BC's
+FEB_struct.Boundary.Prescribe{1}.Set=bcPrescribeList;
 FEB_struct.Boundary.Prescribe{1}.bc='z';
 FEB_struct.Boundary.Prescribe{1}.lc=1;
+FEB_struct.Boundary.Prescribe{1}.nodeScale=displacementMagnitude(ones(numel(bcPrescribeList),1),3);
 FEB_struct.Boundary.Prescribe{1}.Type='relative';
 
 %Load curves
@@ -236,8 +238,8 @@ FEB_struct.LoadData.LoadCurves.loadPoints={[0 0;1 1;]};
 FEB_struct.Output.VarTypes={'displacement','stress','relative volume','shell thickness'};
 
 %Specify log file output
-run_disp_output_name=[FEB_struct.run_filename(1:end-4),'_node_out.txt'];
-run_force_output_name=[FEB_struct.run_filename(1:end-4),'_force_out.txt'];
+run_disp_output_name=[modelNameEnd,'_node_out.txt'];
+run_force_output_name=[modelNameEnd,'_force_out.txt'];
 FEB_struct.run_output_names={run_disp_output_name,run_force_output_name};
 FEB_struct.output_types={'node_data','node_data'};
 FEB_struct.data_types={'ux;uy;uz','Rx;Ry;Rz'};

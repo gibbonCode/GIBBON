@@ -2,7 +2,7 @@
 % Below is a demonstration of the features of the |rigidTransformationMatrixDirect| function
 
 %%
-clear; close all; clc; 
+close all; clc; clear;
 
 %% Syntax
 % |[M]=rigidTransformationMatrixDirect(V1,V2);|

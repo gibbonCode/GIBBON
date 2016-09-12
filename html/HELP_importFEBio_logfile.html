@@ -6,7 +6,7 @@
    <!--
 This HTML was auto-generated from MATLAB code.
 To make changes, update the MATLAB code and republish this document.
-      --><title>import_FEB</title><meta name="generator" content="MATLAB 8.4"><link rel="schema.DC" href="http://purl.org/dc/elements/1.1/"><meta name="DC.date" content="2014-10-01"><meta name="DC.source" content="HELP_importFEBio_logfile.m"><style type="text/css">
+      --><title>import_FEB</title><meta name="generator" content="MATLAB 9.1"><link rel="schema.DC" href="http://purl.org/dc/elements/1.1/"><meta name="DC.date" content="2016-09-12"><meta name="DC.source" content="HELP_importFEBio_logfile.m"><style type="text/css">
 html,body,div,span,applet,object,iframe,h1,h2,h3,h4,h5,h6,p,blockquote,pre,a,abbr,acronym,address,big,cite,code,del,dfn,em,font,img,ins,kbd,q,s,samp,small,strike,strong,sub,sup,tt,var,b,u,i,center,dl,dt,dd,ol,ul,li,fieldset,form,label,legend,table,caption,tbody,tfoot,thead,tr,th,td{margin:0;padding:0;border:0;outline:0;font-size:100%;vertical-align:baseline;background:transparent}body{line-height:1}ol,ul{list-style:none}blockquote,q{quotes:none}blockquote:before,blockquote:after,q:before,q:after{content:'';content:none}:focus{outine:0}ins{text-decoration:none}del{text-decoration:line-through}table{border-collapse:collapse;border-spacing:0}
 
 html { min-height:100%; margin-bottom:1px; }
@@ -66,13 +66,13 @@ table td { padding:7px 5px; text-align:left; vertical-align:top; border:1px soli
 
 
 
-  </style></head><body><div class="content"><h1>import_FEB</h1><!--introduction--><p>Below is a demonstration of the features of the <tt>import_FEB</tt> function</p><!--/introduction--><h2>Contents</h2><div><ul><li><a href="#3">Importing a FEB file</a></li><li><a href="#6">Plotting model</a></li><li><a href="#7">IMPORTING LOG FILE</a></li><li><a href="#8">EXAMPLE CREATING NODE SET IN DEFORMED STATE</a></li></ul></div><pre class="codeinput">clear; close <span class="string">all</span>; clc;
+  </style></head><body><div class="content"><h1>import_FEB</h1><!--introduction--><p>Below is a demonstration of the features of the <tt>import_FEB</tt> function</p><!--/introduction--><h2>Contents</h2><div><ul><li><a href="#3">Importing a FEB file</a></li><li><a href="#6">Plotting model</a></li><li><a href="#7">IMPORTING LOG FILE</a></li><li><a href="#8">EXAMPLE CREATING NODE SET IN DEFORMED STATE</a></li></ul></div><pre class="codeinput">close <span class="string">all</span>; clc; <span class="comment">%clear;</span>
 </pre><p>Plot settings</p><pre class="codeinput">figColor=<span class="string">'w'</span>;
 figColorDef=<span class="string">'white'</span>;
 fontSize=10;
 edgeColor=0.25*ones(1,3);
 edgeWidth=1.5;
-</pre><h2>Importing a FEB file<a name="3"></a></h2><pre class="codeinput"><span class="comment">%Set main folder</span>
+</pre><h2 id="3">Importing a FEB file</h2><pre class="codeinput"><span class="comment">%Set main folder</span>
 defaultFolder = fileparts(mfilename(<span class="string">'fullpath'</span>));
 pathName=fullfile(defaultFolder,<span class="string">'data'</span>,<span class="string">'FEB'</span>);
 
@@ -81,30 +81,28 @@ febFileName=fullfile(pathName,febFileNamePart);
 [febXML,nodeStruct,elementCell]=import_FEB(febFileName);
 </pre><pre class="codeoutput">--- import_FEB ---
 IMPORTING .FEB XML
-RETRIEVING NODAL DATA
+---&gt; Getting nodes
 ---&gt; Imported 2001 nodes
-RETRIEVING ELEMENT DATA
+---&gt; Getting elements
 ---&gt; Imported 10547 tet4 elements
 DONE!
 </pre><p>Content:</p><pre class="codeinput">nodeStruct
 elementCell{1}
 
 V=nodeStruct.N;
-</pre><pre class="codeoutput">
-nodeStruct = 
+</pre><pre class="codeoutput">nodeStruct = 
+  struct with fields:
 
-        N: [2001x3 double]
-    N_ind: [2001x1 double]
-
-
+        N: [2001&times;3 double]
+    N_ind: [2001&times;1 double]
 ans = 
+  struct with fields:
 
     E_type: 'tet4'
-         E: [10547x4 double]
-     E_ind: [10547x1 double]
-     E_mat: [10547x1 double]
-
-</pre><h2>Plotting model<a name="6"></a></h2><pre class="codeinput"><span class="comment">% Plotting the example model surfaces</span>
+         E: [10547&times;4 double]
+     E_ind: [10547&times;1 double]
+     E_mat: [10547&times;1 double]
+</pre><h2 id="6">Plotting model</h2><pre class="codeinput"><span class="comment">% Plotting the example model surfaces</span>
 hf1=figuremax(figColor,figColorDef);
 subplot(1,2,1);
 title(<span class="string">'Visualizing fullmodel'</span>,<span class="string">'FontSize'</span>,fontSize);
@@ -154,13 +152,13 @@ uniqueMaterialIndices=[];
     drawnow;
 
 <span class="keyword">end</span>
-</pre><pre class="codeoutput">Warning: tet4 elements assumed, for other elements please specify elementType 
-Warning: tet4 elements assumed, for other elements please specify elementType 
-</pre><img vspace="5" hspace="5" src="HELP_importFEBio_logfile_01.png" alt=""> <h2>IMPORTING LOG FILE<a name="7"></a></h2><p>Importing nodal displacements from a log file</p><pre class="codeinput">FEB_outputName=fullfile(pathName,<span class="string">'tetGenModel_node_out.txt'</span>);
+</pre><pre class="codeoutput">tet4 elements assumed, for other elements please specify elementType
+tet4 elements assumed, for other elements please specify elementType
+</pre><img vspace="5" hspace="5" src="HELP_importFEBio_logfile_01.png" alt=""> <h2 id="7">IMPORTING LOG FILE</h2><p>Importing nodal displacements from a log file</p><pre class="codeinput">FEB_outputName=fullfile(pathName,<span class="string">'tetGenModel_node_out.txt'</span>);
 [~, N_disp_mat,~]=importFEBio_logfile(FEB_outputName); <span class="comment">%Nodal displacements</span>
 
 DN=N_disp_mat(:,2:end,end); <span class="comment">%Final nodal displacements</span>
-</pre><h2>EXAMPLE CREATING NODE SET IN DEFORMED STATE<a name="8"></a></h2><pre class="codeinput">V_def=V+DN;
+</pre><h2 id="8">EXAMPLE CREATING NODE SET IN DEFORMED STATE</h2><pre class="codeinput">V_def=V+DN;
 </pre><p>Plotting the model</p><pre class="codeinput"><span class="comment">%Selecting half of the model to see interior</span>
 Z=V(:,3); ZE=mean(Z(E),2);
 L=ZE&lt;mean(Z);
@@ -179,14 +177,14 @@ colormap <span class="string">jet</span>; colorbar; shading <span class="string"
 camlight <span class="string">headlight</span>;
 set(gca,<span class="string">'FontSize'</span>,fontSize);
 drawnow;
-</pre><pre class="codeoutput">Warning: tet4 elements assumed, for other elements please specify elementType 
-</pre><img vspace="5" hspace="5" src="HELP_importFEBio_logfile_02.png" alt=""> <p><img vspace="5" hspace="5" src="gibbVerySmall.gif" alt=""> </p><p><i><b>GIBBON</b></i> <a href="www.gibboncode.org">www.gibboncode.org</a></p><p><i>Kevin Mattheus Moerman</i>, <a href="gibbon.toolbox@gmail.com">gibbon.toolbox@gmail.com</a></p><p class="footer"><br><a href="http://www.mathworks.com/products/matlab/">Published with MATLAB&reg; R2014b</a><br></p></div><!--
+</pre><pre class="codeoutput">tet4 elements assumed, for other elements please specify elementType
+</pre><img vspace="5" hspace="5" src="HELP_importFEBio_logfile_02.png" alt=""> <p><img vspace="5" hspace="5" src="gibbVerySmall.gif" alt=""> </p><p><i><b>GIBBON</b></i> <a href="www.gibboncode.org">www.gibboncode.org</a></p><p><i>Kevin Mattheus Moerman</i>, <a href="gibbon.toolbox@gmail.com">gibbon.toolbox@gmail.com</a></p><p class="footer"><br><a href="http://www.mathworks.com/products/matlab/">Published with MATLAB&reg; R2016b</a><br></p></div><!--
 ##### SOURCE BEGIN #####
 %% import_FEB
 % Below is a demonstration of the features of the |import_FEB| function
 
 %%
-clear; close all; clc;
+close all; clc; %clear;
 
 %%
 % Plot settings
@@ -309,5 +307,6 @@ drawnow;
 % <www.gibboncode.org>
 %
 % _Kevin Mattheus Moerman_, <gibbon.toolbox@gmail.com>
+
 ##### SOURCE END #####
 --></body></html>

@@ -21,45 +21,11 @@ function [F,V,regionIndSub]=hemiSphereRegionMesh(hemiSphereStruct)
 %
 % 
 %
-% %% EXAMPLE
-% clear all; close all; clc;
-% 
-% %% PLOT SETTINGS
-% fig_color='w'; fig_colordef='white';
-% fontSize=25;
-% faceAlpha=0.75;
-% lineWidth=1;
-% markerSize=5;
-% 
-% %% SETTINGS
-% 
-% %Sub-triangulation refinement introduces 4 triangles for each triangle per iteration  
-% hemiSphereStruct.sphereRadius=1; %Sphere radius
-% hemiSphereStruct.nRefineRegions=2; %Number of refinement steps for regions
-% hemiSphereStruct.nRefineMesh=2; %Number of refinement steps for mesh
-% 
-% [F,V,regionIndSub]=hemiSphereRegionMesh(hemiSphereStruct);
-% cmap=hsv(max(regionIndSub(:)));
-% cmap=cmap(randperm(size(cmap,1)),:); %scramble colours
-% 
-% % Plotting results
-% hf=figuremax(fig_color,fig_colordef);
-% hold on; view(3); 
-% title('Half dome showing regions with subtriangulated mesh','FontSize',fontSize);
-% xlabel('X','FontSize',fontSize); ylabel('Y','FontSize',fontSize); zlabel('Z','FontSize',fontSize);
-% 
-% hp=patch('Faces',F,'Vertices',V);
-% set(hp,'FaceColor','flat','EdgeColor','k','CData',regionIndSub,'FaceAlpha',faceAlpha,'LineWidth',lineWidth,'Marker','o','MarkerFaceColor','k','MarkerEdgeColor','none','MarkerSize',markerSize);
-% 
-% colormap(cmap); colorbar; 
-% set(gca,'FontSize',fontSize);
-% axis tight;  axis equal;  grid on;
-% set(gca,'FontSize',fontSize);
-%
 %
 % Kevin Mattheus Moerman
-% kevinmoerman@hotmail.com
+% gibbon.toolbox@gmail.com
 % 08/04/2013
+% 2016/09/12 Updated documentation and integration with GIBBON
 %------------------------------------------------------------------------
 
 %% SETTINGS

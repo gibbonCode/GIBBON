@@ -2,7 +2,7 @@
 % Below is a demonstration of the features of the |numReplace| function
 
 %%
-clear; close all; clc; 
+close all; clc; clear;
 
 %% REPLACING NUMBERS IN ARRAYS
 %%

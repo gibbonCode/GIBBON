@@ -6,7 +6,7 @@
    <!--
 This HTML was auto-generated from MATLAB code.
 To make changes, update the MATLAB code and republish this document.
-      --><title>voronoiDiagramEven2D</title><meta name="generator" content="MATLAB 8.4"><link rel="schema.DC" href="http://purl.org/dc/elements/1.1/"><meta name="DC.date" content="2015-02-19"><meta name="DC.source" content="HELP_voronoiDiagramEven2D.m"><style type="text/css">
+      --><title>voronoiDiagramEven2D</title><meta name="generator" content="MATLAB 9.1"><link rel="schema.DC" href="http://purl.org/dc/elements/1.1/"><meta name="DC.date" content="2016-09-12"><meta name="DC.source" content="HELP_voronoiDiagramEven2D.m"><style type="text/css">
 html,body,div,span,applet,object,iframe,h1,h2,h3,h4,h5,h6,p,blockquote,pre,a,abbr,acronym,address,big,cite,code,del,dfn,em,font,img,ins,kbd,q,s,samp,small,strike,strong,sub,sup,tt,var,b,u,i,center,dl,dt,dd,ol,ul,li,fieldset,form,label,legend,table,caption,tbody,tfoot,thead,tr,th,td{margin:0;padding:0;border:0;outline:0;font-size:100%;vertical-align:baseline;background:transparent}body{line-height:1}ol,ul{list-style:none}blockquote,q{quotes:none}blockquote:before,blockquote:after,q:before,q:after{content:'';content:none}:focus{outine:0}ins{text-decoration:none}del{text-decoration:line-through}table{border-collapse:collapse;border-spacing:0}
 
 html { min-height:100%; margin-bottom:1px; }
@@ -66,7 +66,7 @@ table td { padding:7px 5px; text-align:left; vertical-align:top; border:1px soli
 
 
 
-  </style></head><body><div class="content"><h1>voronoiDiagramEven2D</h1><!--introduction--><p>Below is a basic demonstration of the features of the <tt>voronoiDiagramEven2D</tt> function.</p><!--/introduction--><h2>Contents</h2><div><ul><li><a href="#1">Syntax</a></li><li><a href="#2">Description</a></li><li><a href="#3">Examples</a></li><li><a href="#5">Example: Sampling Voronoi cells with the same amount of points</a></li></ul></div><h2>Syntax<a name="1"></a></h2><p><tt>[Vv,Fv]=voronoiDiagramEven2D(DT,numPointsVoronoi);</tt></p><h2>Description<a name="2"></a></h2><p>Samples the cells of a Voronoi tesselation using the same amount of points</p><h2>Examples<a name="3"></a></h2><pre class="codeinput">clear; close <span class="string">all</span>; clc;
+  </style></head><body><div class="content"><h1>voronoiDiagramEven2D</h1><!--introduction--><p>Below is a basic demonstration of the features of the <tt>voronoiDiagramEven2D</tt> function.</p><!--/introduction--><h2>Contents</h2><div><ul><li><a href="#1">Syntax</a></li><li><a href="#2">Description</a></li><li><a href="#3">Examples</a></li><li><a href="#5">Example: Sampling Voronoi cells with the same amount of points</a></li></ul></div><h2 id="1">Syntax</h2><p><tt>[Vv,Fv]=voronoiDiagramEven2D(DT,numPointsVoronoi);</tt></p><h2 id="2">Description</h2><p>Samples the cells of a Voronoi tesselation using the same amount of points</p><h2 id="3">Examples</h2><pre class="codeinput">close <span class="string">all</span>; clc; <span class="comment">%clear;</span>
 
 <span class="comment">% PLOT SETTINGS</span>
 markerSize=15;
@@ -76,7 +76,7 @@ fAlpha1=0.25;
 fAlpha2=0.8;
 lineWidth1=1;
 lineWidth2=3;
-</pre><h2>Example: Sampling Voronoi cells with the same amount of points<a name="5"></a></h2><p>EXAMPLE DELAUNAY TRIANGULATION</p><pre class="codeinput"><span class="comment">%Boundary and mesh parameters</span>
+</pre><h2 id="5">Example: Sampling Voronoi cells with the same amount of points</h2><p>EXAMPLE DELAUNAY TRIANGULATION</p><pre class="codeinput"><span class="comment">%Boundary and mesh parameters</span>
 ns=50; <span class="comment">%Number of points on outer boundary (defines how well the circle is sampled)</span>
 rOut=1; <span class="comment">%Outer radius of circular boundary</span>
 pointSpacing=rOut/5; <span class="comment">%Approximate initial point spacing for point seeding</span>
@@ -101,13 +101,16 @@ xlabel(<span class="string">'X'</span>,<span class="string">'FontSize'</span>,fo
 hold <span class="string">on</span>;
 patch(<span class="string">'faces'</span>,Ft,<span class="string">'vertices'</span>,Vt,<span class="string">'FaceColor'</span>,<span class="string">'r'</span>,<span class="string">'FaceAlpha'</span>,fAlpha1,<span class="string">'LineWidth'</span>,lineWidth1);
 
-<span class="keyword">for</span> q=1:1:numel(Fv_cell)
-    fv=Fv_cell{q};
-    vv=Vv(fv,:);
-    <span class="keyword">if</span> all(~isnan(vv))
-        patch(<span class="string">'faces'</span>,fv,<span class="string">'vertices'</span>,Vv,<span class="string">'FaceColor'</span>,<span class="string">'g'</span>,<span class="string">'faceAlpha'</span>,fAlpha2,<span class="string">'LineWidth'</span>,lineWidth2);
-    <span class="keyword">end</span>
-<span class="keyword">end</span>
+HP=cellPatch(Vv,Fv_cell,<span class="string">'g'</span>);
+set(HP,<span class="string">'LineWidth'</span>,lineWidth,<span class="string">'faceAlpha'</span>,fAlpha2,<span class="string">'LineWidth'</span>,lineWidth2);
+
+<span class="comment">% for q=1:1:numel(Fv_cell)</span>
+<span class="comment">%     fv=Fv_cell{q};</span>
+<span class="comment">%     vv=Vv(fv,:);</span>
+<span class="comment">%     if all(~isnan(vv))</span>
+<span class="comment">%         patch('faces',fv,'vertices',Vv,'FaceColor','g','faceAlpha',fAlpha2,'LineWidth',lineWidth2);</span>
+<span class="comment">%     end</span>
+<span class="comment">% end</span>
 
 axis <span class="string">equal</span>; view(2); axis <span class="string">tight</span>;  set(gca,<span class="string">'FontSize'</span>,fontSize); grid <span class="string">on</span>;
 drawnow;
@@ -153,7 +156,7 @@ patch(<span class="string">'faces'</span>,Ft,<span class="string">'vertices'</sp
 patch(<span class="string">'faces'</span>,Fv4,<span class="string">'vertices'</span>,Vv4,<span class="string">'FaceColor'</span>,<span class="string">'g'</span>,<span class="string">'FaceAlpha'</span>,fAlpha2,<span class="string">'LineWidth'</span>,lineWidth2);
 axis <span class="string">equal</span>; view(2); axis <span class="string">tight</span>;  set(gca,<span class="string">'FontSize'</span>,fontSize); grid <span class="string">on</span>;
 drawnow;
-</pre><img vspace="5" hspace="5" src="HELP_voronoiDiagramEven2D_02.png" alt=""> <p><img vspace="5" hspace="5" src="gibbVerySmall.gif" alt=""> </p><p><i><b>GIBBON</b></i> <a href="www.gibboncode.org">www.gibboncode.org</a></p><p><i>Kevin Mattheus Moerman</i>, <a href="gibbon.toolbox@gmail.com">gibbon.toolbox@gmail.com</a></p><p class="footer"><br><a href="http://www.mathworks.com/products/matlab/">Published with MATLAB&reg; R2014b</a><br></p></div><!--
+</pre><img vspace="5" hspace="5" src="HELP_voronoiDiagramEven2D_02.png" alt=""> <p><img vspace="5" hspace="5" src="gibbVerySmall.gif" alt=""> </p><p><i><b>GIBBON</b></i> <a href="www.gibboncode.org">www.gibboncode.org</a></p><p><i>Kevin Mattheus Moerman</i>, <a href="gibbon.toolbox@gmail.com">gibbon.toolbox@gmail.com</a></p><p class="footer"><br><a href="http://www.mathworks.com/products/matlab/">Published with MATLAB&reg; R2016b</a><br></p></div><!--
 ##### SOURCE BEGIN #####
 %% voronoiDiagramEven2D
 % Below is a basic demonstration of the features of the |voronoiDiagramEven2D| function.
@@ -168,7 +171,7 @@ drawnow;
 %% Examples
 
 %%
-clear; close all; clc;
+close all; clc; %clear;
 
 % PLOT SETTINGS
 markerSize=15;
@@ -213,13 +216,16 @@ xlabel('X','FontSize',fontSize);ylabel('Y','FontSize',fontSize);zlabel('Z','Font
 hold on;
 patch('faces',Ft,'vertices',Vt,'FaceColor','r','FaceAlpha',fAlpha1,'LineWidth',lineWidth1);
 
-for q=1:1:numel(Fv_cell)
-    fv=Fv_cell{q};
-    vv=Vv(fv,:);
-    if all(~isnan(vv))
-        patch('faces',fv,'vertices',Vv,'FaceColor','g','faceAlpha',fAlpha2,'LineWidth',lineWidth2);      
-    end
-end
+HP=cellPatch(Vv,Fv_cell,'g');
+set(HP,'LineWidth',lineWidth,'faceAlpha',fAlpha2,'LineWidth',lineWidth2);
+
+% for q=1:1:numel(Fv_cell)
+%     fv=Fv_cell{q};
+%     vv=Vv(fv,:);
+%     if all(~isnan(vv))
+%         patch('faces',fv,'vertices',Vv,'FaceColor','g','faceAlpha',fAlpha2,'LineWidth',lineWidth2);      
+%     end
+% end
 
 axis equal; view(2); axis tight;  set(gca,'FontSize',fontSize); grid on;
 drawnow;

@@ -6,7 +6,7 @@
    <!--
 This HTML was auto-generated from MATLAB code.
 To make changes, update the MATLAB code and republish this document.
-      --><title>pointLocationTR</title><meta name="generator" content="MATLAB 8.4"><link rel="schema.DC" href="http://purl.org/dc/elements/1.1/"><meta name="DC.date" content="2014-10-01"><meta name="DC.source" content="HELP_pointLocationTR.m"><style type="text/css">
+      --><title>pointLocationTR</title><meta name="generator" content="MATLAB 9.1"><link rel="schema.DC" href="http://purl.org/dc/elements/1.1/"><meta name="DC.date" content="2016-09-12"><meta name="DC.source" content="HELP_pointLocationTR.m"><style type="text/css">
 html,body,div,span,applet,object,iframe,h1,h2,h3,h4,h5,h6,p,blockquote,pre,a,abbr,acronym,address,big,cite,code,del,dfn,em,font,img,ins,kbd,q,s,samp,small,strike,strong,sub,sup,tt,var,b,u,i,center,dl,dt,dd,ol,ul,li,fieldset,form,label,legend,table,caption,tbody,tfoot,thead,tr,th,td{margin:0;padding:0;border:0;outline:0;font-size:100%;vertical-align:baseline;background:transparent}body{line-height:1}ol,ul{list-style:none}blockquote,q{quotes:none}blockquote:before,blockquote:after,q:before,q:after{content:'';content:none}:focus{outine:0}ins{text-decoration:none}del{text-decoration:line-through}table{border-collapse:collapse;border-spacing:0}
 
 html { min-height:100%; margin-bottom:1px; }
@@ -66,7 +66,7 @@ table td { padding:7px 5px; text-align:left; vertical-align:top; border:1px soli
 
 
 
-  </style></head><body><div class="content"><h1>pointLocationTR</h1><!--introduction--><p>Below is a demonstration of the features of the <tt>pointLocationTR</tt> function</p><!--/introduction--><h2>Contents</h2><div><ul><li><a href="#3">FINDING POINTS INSIDE A TESSELATION</a></li><li><a href="#10">EXAMPLE USING BARY CENTRIC COORDINATE OUTPUT TO MAP POINTS IN A DEFORMED MODEL</a></li><li><a href="#12">EXAMPLE USE FOR FINDING VOXELS INSIDE TETRHEDRAL ELEMENTS</a></li><li><a href="#20">EXAMPLE USE FOR INTERPOLATION OF IMAGE DATA ONTO VOLUME ELEMENTS</a></li></ul></div><pre class="codeinput">clear; close <span class="string">all</span>; clc;
+  </style></head><body><div class="content"><h1>pointLocationTR</h1><!--introduction--><p>Below is a demonstration of the features of the <tt>pointLocationTR</tt> function</p><!--/introduction--><h2>Contents</h2><div><ul><li><a href="#3">FINDING POINTS INSIDE A TESSELATION</a></li><li><a href="#10">EXAMPLE USING BARY CENTRIC COORDINATE OUTPUT TO MAP POINTS IN A DEFORMED MODEL</a></li><li><a href="#12">EXAMPLE USE FOR FINDING VOXELS INSIDE TETRHEDRAL ELEMENTS</a></li><li><a href="#20">EXAMPLE USE FOR INTERPOLATION OF IMAGE DATA ONTO VOLUME ELEMENTS</a></li></ul></div><pre class="codeinput">close <span class="string">all</span>; clc; <span class="comment">%clear;</span>
 </pre><p>Plot settings</p><pre class="codeinput">figColor=<span class="string">'w'</span>; figColorDef=<span class="string">'white'</span>;
 fontSize=15;
 faceColor1=<span class="string">'g'</span>;
@@ -77,7 +77,7 @@ edgeColor=0.4*ones(1,3);
 edgeWidth=2;
 markerSize=2;
 cMap=jet(250);
-</pre><h2>FINDING POINTS INSIDE A TESSELATION<a name="3"></a></h2><p>Create a test tesselation</p><pre class="codeinput">r=1; <span class="comment">%Radius of tetrahedron circumsphere</span>
+</pre><h2 id="3">FINDING POINTS INSIDE A TESSELATION</h2><p>Create a test tesselation</p><pre class="codeinput">r=1; <span class="comment">%Radius of tetrahedron circumsphere</span>
 [V,F]=platonic_solid(1,r);
 
 E=[1 2 3 4];
@@ -107,7 +107,7 @@ view(3); grid <span class="string">on</span>; axis <span class="string">equal</s
 view([-50,12])
 set(gca,<span class="string">'FontSize'</span>,fontSize);
 drawnow;
-</pre><pre class="codeoutput">Warning: tet4 elements assumed, for other elements please specify elementType 
+</pre><pre class="codeoutput">tet4 elements assumed, for other elements please specify elementType
 </pre><img vspace="5" hspace="5" src="HELP_pointLocationTR_01.png" alt=""> <p>Convert tesselation to triangulation class</p><pre class="codeinput">TR = triangulation(E,V);
 </pre><p>Use <tt>pointLocationTR</tt> to test points</p><pre class="codeinput">[ti,bc]=pointLocationTR(TR,QP,1,1,1);
 </pre><p>Plot results and color points to the element number they are contained in</p><pre class="codeinput">figuremax(figColor,figColorDef);
@@ -125,7 +125,7 @@ view(3); axis <span class="string">equal</span>; axis <span class="string">tight
 view([-50,12])
 set(gca,<span class="string">'FontSize'</span>,fontSize);
 drawnow;
-</pre><img vspace="5" hspace="5" src="HELP_pointLocationTR_02.png" alt=""> <h2>EXAMPLE USING BARY CENTRIC COORDINATE OUTPUT TO MAP POINTS IN A DEFORMED MODEL<a name="10"></a></h2><p>Changing shape</p><pre class="codeinput">V=TR.Points;
+</pre><img vspace="5" hspace="5" src="HELP_pointLocationTR_02.png" alt=""> <h2 id="10">EXAMPLE USING BARY CENTRIC COORDINATE OUTPUT TO MAP POINTS IN A DEFORMED MODEL</h2><p>Changing shape</p><pre class="codeinput">V=TR.Points;
 V(:,1)=V(:,1)+0.5.*sin(pi*V(:,3));
 V(:,2)=V(:,2)+0.5.*cos(pi*V(:,3));
 
@@ -146,7 +146,7 @@ view(3); axis <span class="string">equal</span>; axis <span class="string">tight
 view([-50,12])
 set(gca,<span class="string">'FontSize'</span>,fontSize);
 drawnow;
-</pre><img vspace="5" hspace="5" src="HELP_pointLocationTR_03.png" alt=""> <h2>EXAMPLE USE FOR FINDING VOXELS INSIDE TETRHEDRAL ELEMENTS<a name="12"></a></h2><p>Simulate image data</p><pre class="codeinput">load <span class="string">mri</span>;
+</pre><img vspace="5" hspace="5" src="HELP_pointLocationTR_03.png" alt=""> <h2 id="12">EXAMPLE USE FOR FINDING VOXELS INSIDE TETRHEDRAL ELEMENTS</h2><p>Simulate image data</p><pre class="codeinput">load <span class="string">mri</span>;
 M=double(squeeze(D)); <span class="comment">%example image data set</span>
 clear <span class="string">D</span>;
 M=M(1:2:end,1:2:end,:);
@@ -185,7 +185,7 @@ hp1= patch(<span class="string">'Faces'</span>,Fv,<span class="string">'Vertices
 colormap(cMap); colorbar;
 view(3); grid <span class="string">on</span>; axis <span class="string">equal</span>; axis <span class="string">tight</span>;
 drawnow;
-</pre><pre class="codeoutput">Warning: tet4 elements assumed, for other elements please specify elementType 
+</pre><pre class="codeoutput">tet4 elements assumed, for other elements please specify elementType
 </pre><img vspace="5" hspace="5" src="HELP_pointLocationTR_04.png" alt=""> <p>Setting up query points, in this case voxel coordinates</p><pre class="codeinput">[Jv,Iv,Kv]=meshgrid(1:1:size(M,2),1:1:size(M,1),1:1:size(M,3)); <span class="comment">%Voxel image coordinates</span>
 [Xv,Yv,Zv]=im2cart(Iv,Jv,Kv,voxelSize); <span class="comment">%Voxel cartesian coordinates</span>
 Vq=[Xv(:) Yv(:) Zv(:)];
@@ -210,7 +210,7 @@ patch(<span class="string">'Faces'</span>,Fm,<span class="string">'Vertices'</sp
 colormap <span class="string">gray</span>; colorbar;
 axis <span class="string">equal</span>; view(3); axis <span class="string">tight</span>;  grid <span class="string">on</span>;  set(gca,<span class="string">'FontSize'</span>,fontSize);
 drawnow;
-</pre><img vspace="5" hspace="5" src="HELP_pointLocationTR_05.png" alt=""> <h2>EXAMPLE USE FOR INTERPOLATION OF IMAGE DATA ONTO VOLUME ELEMENTS<a name="20"></a></h2><p>Hence deriving image based intensity values becomes a matter of averaging across each element index label. If the voxels are sufficiently small with respect to the elements then this method actually partially takes into account partial voluming effects. i.e. the intensity of an element becomes the mean of the voxels contained within it which in some cases is more accurate then an interpolation which does not take into account the volumetric nature of the mesh (e.g. methods based on sampling/interpolating the intensities at the centre point or nodal points of the mesh only instead).</p><pre class="codeinput">[E_color]=imlabelMean(M,ML); <span class="comment">%The image based element colors</span>
+</pre><img vspace="5" hspace="5" src="HELP_pointLocationTR_05.png" alt=""> <h2 id="20">EXAMPLE USE FOR INTERPOLATION OF IMAGE DATA ONTO VOLUME ELEMENTS</h2><p>Hence deriving image based intensity values becomes a matter of averaging across each element index label. If the voxels are sufficiently small with respect to the elements then this method actually partially takes into account partial voluming effects. i.e. the intensity of an element becomes the mean of the voxels contained within it which in some cases is more accurate then an interpolation which does not take into account the volumetric nature of the mesh (e.g. methods based on sampling/interpolating the intensities at the centre point or nodal points of the mesh only instead).</p><pre class="codeinput">[E_color]=imlabelMean(M,ML); <span class="comment">%The image based element colors</span>
 </pre><p>Plotting results</p><pre class="codeinput">figuremax(figColor,figColorDef);
 title(<span class="string">'The image data and the tesselation colored towards the image data'</span>,<span class="string">'FontSize'</span>,fontSize);
 xlabel(<span class="string">'X'</span>,<span class="string">'FontSize'</span>,fontSize);ylabel(<span class="string">'Y'</span>,<span class="string">'FontSize'</span>,fontSize); zlabel(<span class="string">'Z'</span>,<span class="string">'FontSize'</span>,fontSize);
@@ -243,14 +243,14 @@ patch(<span class="string">'Faces'</span>,Fm,<span class="string">'Vertices'</sp
 colormap <span class="string">gray</span>; colorbar;
 axis <span class="string">equal</span>; view(3); axis <span class="string">tight</span>;  grid <span class="string">on</span>;  set(gca,<span class="string">'FontSize'</span>,fontSize);
 drawnow;
-</pre><pre class="codeoutput">Warning: tet4 elements assumed, for other elements please specify elementType 
-</pre><img vspace="5" hspace="5" src="HELP_pointLocationTR_06.png" alt=""> <p><img vspace="5" hspace="5" src="gibbVerySmall.gif" alt=""> </p><p><i><b>GIBBON</b></i> <a href="www.gibboncode.org">www.gibboncode.org</a></p><p><i>Kevin Mattheus Moerman</i>, <a href="gibbon.toolbox@gmail.com">gibbon.toolbox@gmail.com</a></p><p class="footer"><br><a href="http://www.mathworks.com/products/matlab/">Published with MATLAB&reg; R2014b</a><br></p></div><!--
+</pre><pre class="codeoutput">tet4 elements assumed, for other elements please specify elementType
+</pre><img vspace="5" hspace="5" src="HELP_pointLocationTR_06.png" alt=""> <p><img vspace="5" hspace="5" src="gibbVerySmall.gif" alt=""> </p><p><i><b>GIBBON</b></i> <a href="www.gibboncode.org">www.gibboncode.org</a></p><p><i>Kevin Mattheus Moerman</i>, <a href="gibbon.toolbox@gmail.com">gibbon.toolbox@gmail.com</a></p><p class="footer"><br><a href="http://www.mathworks.com/products/matlab/">Published with MATLAB&reg; R2016b</a><br></p></div><!--
 ##### SOURCE BEGIN #####
 %% pointLocationTR
 % Below is a demonstration of the features of the |pointLocationTR| function
 
 %%
-clear; close all; clc; 
+close all; clc; %clear;
 
 %% 
 % Plot settings

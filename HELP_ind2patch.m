@@ -2,7 +2,7 @@
 % Below is a demonstration of the features of the |ind2patch| function
 
 %%
-clear; close all; clc; 
+close all; clc; clear;
 
 %% Syntax
 % |[F,V,C]=ind2patch(IND,M,ptype);|

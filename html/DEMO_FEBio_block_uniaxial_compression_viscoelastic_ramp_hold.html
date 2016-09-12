@@ -6,7 +6,7 @@
    <!--
 This HTML was auto-generated from MATLAB code.
 To make changes, update the MATLAB code and republish this document.
-      --><title>DEMO_FEBio_block_uniaxial_compression_dynamic_viscoelastic_ramp_hold</title><meta name="generator" content="MATLAB 8.5"><link rel="schema.DC" href="http://purl.org/dc/elements/1.1/"><meta name="DC.date" content="2015-02-25"><meta name="DC.source" content="DEMO_FEBio_block_uniaxial_compression_viscoelastic_ramp_hold.m"><style type="text/css">
+      --><title>DEMO_FEBio_block_uniaxial_compression_dynamic_viscoelastic_ramp_hold</title><meta name="generator" content="MATLAB 9.1"><link rel="schema.DC" href="http://purl.org/dc/elements/1.1/"><meta name="DC.date" content="2016-09-12"><meta name="DC.source" content="DEMO_FEBio_block_uniaxial_compression_viscoelastic_ramp_hold.m"><style type="text/css">
 html,body,div,span,applet,object,iframe,h1,h2,h3,h4,h5,h6,p,blockquote,pre,a,abbr,acronym,address,big,cite,code,del,dfn,em,font,img,ins,kbd,q,s,samp,small,strike,strong,sub,sup,tt,var,b,u,i,center,dl,dt,dd,ol,ul,li,fieldset,form,label,legend,table,caption,tbody,tfoot,thead,tr,th,td{margin:0;padding:0;border:0;outline:0;font-size:100%;vertical-align:baseline;background:transparent}body{line-height:1}ol,ul{list-style:none}blockquote,q{quotes:none}blockquote:before,blockquote:after,q:before,q:after{content:'';content:none}:focus{outine:0}ins{text-decoration:none}del{text-decoration:line-through}table{border-collapse:collapse;border-spacing:0}
 
 html { min-height:100%; margin-bottom:1px; }
@@ -66,7 +66,7 @@ table td { padding:7px 5px; text-align:left; vertical-align:top; border:1px soli
 
 
 
-  </style></head><body><div class="content"><h1>DEMO_FEBio_block_uniaxial_compression_dynamic_viscoelastic_ramp_hold</h1><!--introduction--><p>Below is a demonstration for: 1) Building an FEBio model for uniaxial compression for a viscoelastic material 2) Running the model 3) Importing displacement and force results 4) Plotting results</p><!--/introduction--><h2>Contents</h2><div><ul><li><a href="#4">CREATING MESHED BOX</a></li><li><a href="#6">DEFINE BC's</a></li><li><a href="#8">CONSTRUCTING FEB MODEL</a></li><li><a href="#9">SAVING .FEB FILE</a></li><li><a href="#10">RUNNING FEBIO JOB</a></li><li><a href="#13">IMPORTING NODAL DISPLACEMENT RESULTS</a></li><li><a href="#14">CREATING NODE SET IN DEFORMED STATE</a></li><li><a href="#16">IMPORTING NODAL FORCES</a></li><li><a href="#17">DERIVING STRESS METRICS</a></li></ul></div><pre class="codeinput">clear; close <span class="string">all</span>; clc;
+  </style></head><body><div class="content"><h1>DEMO_FEBio_block_uniaxial_compression_dynamic_viscoelastic_ramp_hold</h1><!--introduction--><p>Below is a demonstration for: 1) Building an FEBio model for uniaxial compression for a viscoelastic material 2) Running the model 3) Importing displacement and force results 4) Plotting results</p><!--/introduction--><h2>Contents</h2><div><ul><li><a href="#4">CREATING MESHED BOX</a></li><li><a href="#6">DEFINE BC's</a></li><li><a href="#8">CONSTRUCTING FEB MODEL</a></li><li><a href="#9">SAVING .FEB FILE</a></li><li><a href="#10">RUNNING FEBIO JOB</a></li><li><a href="#13">IMPORTING NODAL DISPLACEMENT RESULTS</a></li><li><a href="#14">CREATING NODE SET IN DEFORMED STATE</a></li><li><a href="#16">IMPORTING NODAL FORCES</a></li><li><a href="#17">DERIVING STRESS METRICS</a></li></ul></div><pre class="codeinput">close <span class="string">all</span>; clc; clear;
 </pre><p>Plot settings</p><pre class="codeinput">fontSize=20;
 faceAlpha1=0.8;
 faceAlpha2=1;
@@ -99,18 +99,18 @@ c1=1e-3; <span class="comment">%ogden c1</span>
 m1=3; <span class="comment">%ogden m1</span>
 k_factor=1000; <span class="comment">%Bulk modulus factor</span>
 k=c1*k_factor; <span class="comment">%The bulk modulus</span>
-g1=1; <span class="comment">%Viscoelastic QLV proportional coefficient</span>
-t1=0.25; <span class="comment">%Viscoelastic QLV time coefficient</span>
+g1=1/2; <span class="comment">%Viscoelastic QLV proportional coefficient</span>
+t1=12; <span class="comment">%Viscoelastic QLV time coefficient</span>
 d=1e-9; <span class="comment">%Density (not required for static analysis)</span>
-t_total=5; <span class="comment">%Total simulation time</span>
-t_load=0.5; <span class="comment">%Time from start to max load</span>
+t_total=100; <span class="comment">%Total simulation time</span>
+t_load=2; <span class="comment">%Time from start to max load</span>
 t_step_ini=1e-3; <span class="comment">%Initial desired step size</span>
-t_step_max=0.05; <span class="comment">%Maximum step size</span>
+t_step_max=0.5; <span class="comment">%Maximum step size</span>
 
-multiStep=0;
+analysisType=<span class="string">'static'</span>;
 
 uncoupledLaw=1; <span class="comment">%1=uncoupled, 2=coupled</span>
-</pre><h2>CREATING MESHED BOX<a name="4"></a></h2><pre class="codeinput"><span class="comment">%Create box 1</span>
+</pre><h2 id="4">CREATING MESHED BOX</h2><pre class="codeinput"><span class="comment">%Create box 1</span>
 boxDim=[sampleWidth sampleThickness sampleHeight]; <span class="comment">%Dimensions</span>
 boxEl=[numElementsWidth numElementsThickness numElementsHeight]; <span class="comment">%Number of elements</span>
 [box1]=hexMeshBox(boxDim,boxEl);
@@ -134,7 +134,7 @@ colormap(jet(6)); colorbar;
 set(gca,<span class="string">'FontSize'</span>,fontSize);
 view(3); axis <span class="string">tight</span>;  axis <span class="string">equal</span>;  grid <span class="string">on</span>;
 drawnow;
-</pre><img vspace="5" hspace="5" src="DEMO_FEBio_block_uniaxial_compression_viscoelastic_ramp_hold_01.png" alt=""> <h2>DEFINE BC's<a name="6"></a></h2><pre class="codeinput"><span class="comment">%Define faces</span>
+</pre><img vspace="5" hspace="5" src="DEMO_FEBio_block_uniaxial_compression_viscoelastic_ramp_hold_01.png" alt=""> <h2 id="6">DEFINE BC's</h2><pre class="codeinput"><span class="comment">%Define faces</span>
 logicFace=faceBoundaryMarker==1;
 Fr=Fb(logicFace,:);
 bcSupportList_X=unique(Fr(:));
@@ -173,7 +173,7 @@ colormap(jet(6)); colorbar;
 set(gca,<span class="string">'FontSize'</span>,fontSize);
 view(3); axis <span class="string">tight</span>;  axis <span class="string">equal</span>;  grid <span class="string">on</span>;
 drawnow;
-</pre><img vspace="5" hspace="5" src="DEMO_FEBio_block_uniaxial_compression_viscoelastic_ramp_hold_02.png" alt=""> <h2>CONSTRUCTING FEB MODEL<a name="8"></a></h2><pre class="codeinput">FEB_struct.febio_spec.version=<span class="string">'2.0'</span>;
+</pre><img vspace="5" hspace="5" src="DEMO_FEBio_block_uniaxial_compression_viscoelastic_ramp_hold_02.png" alt=""> <h2 id="8">CONSTRUCTING FEB MODEL</h2><pre class="codeinput">FEB_struct.febio_spec.version=<span class="string">'2.0'</span>;
 FEB_struct.Module.Type=<span class="string">'solid'</span>;
 
 <span class="comment">% Defining file names</span>
@@ -218,7 +218,7 @@ FEB_struct.Geometry.ElementsPartName={<span class="string">'Block'</span>};
 <span class="comment">%Step specific control sections</span>
 n=round(t_total/t_step_ini);
 t_step=t_total/n;
-FEB_struct.Control.AnalysisType=<span class="string">'static'</span>;
+FEB_struct.Control.AnalysisType=analysisType;
 FEB_struct.Control.Properties={<span class="string">'time_steps'</span>,<span class="string">'step_size'</span>,<span class="keyword">...</span>
     <span class="string">'max_refs'</span>,<span class="string">'max_ups'</span>,<span class="keyword">...</span>
     <span class="string">'dtol'</span>,<span class="string">'etol'</span>,<span class="string">'rtol'</span>,<span class="string">'lstol'</span>};
@@ -236,8 +236,8 @@ FEB_struct.Geometry.NodeSet{2}.Set=bcSupportList_X_axis;
 FEB_struct.Geometry.NodeSet{2}.Name=<span class="string">'bcSupportList_X_axis'</span>;
 FEB_struct.Geometry.NodeSet{3}.Set=bcSupportList_Z;
 FEB_struct.Geometry.NodeSet{3}.Name=<span class="string">'bcSupportList_Z'</span>;
-FEB_struct.Geometry.NodeSet{4}.Set=bcPrescribeList;
-FEB_struct.Geometry.NodeSet{4}.Name=<span class="string">'bcPrescribeList'</span>;
+<span class="comment">% FEB_struct.Geometry.NodeSet{4}.Set=bcPrescribeList;</span>
+<span class="comment">% FEB_struct.Geometry.NodeSet{4}.Name='bcPrescribeList';</span>
 
 <span class="comment">%Adding BC information</span>
 FEB_struct.Boundary.Fix{1}.bc=<span class="string">'x'</span>;
@@ -247,10 +247,10 @@ FEB_struct.Boundary.Fix{2}.SetName=FEB_struct.Geometry.NodeSet{2}.Name;
 FEB_struct.Boundary.Fix{3}.bc=<span class="string">'z'</span>;
 FEB_struct.Boundary.Fix{3}.SetName=FEB_struct.Geometry.NodeSet{3}.Name;
 
-FEB_struct.Boundary.Prescribe{1}.SetName=FEB_struct.Geometry.NodeSet{4}.Name;
-FEB_struct.Boundary.Prescribe{1}.Scale=displacementMagnitude(3);
+FEB_struct.Boundary.Prescribe{1}.Set=bcPrescribeList;
 FEB_struct.Boundary.Prescribe{1}.bc=<span class="string">'z'</span>;
 FEB_struct.Boundary.Prescribe{1}.lc=1;
+FEB_struct.Boundary.Prescribe{1}.nodeScale=displacementMagnitude(ones(numel(bcPrescribeList),1),3);
 FEB_struct.Boundary.Prescribe{1}.Type=<span class="string">'relative'</span>;
 
 <span class="comment">%Load curves</span>
@@ -267,15 +267,17 @@ run_force_output_name=[FEB_struct.run_filename(1:end-4),<span class="string">'_f
 FEB_struct.run_output_names={run_disp_output_name,run_force_output_name};
 FEB_struct.output_types={<span class="string">'node_data'</span>,<span class="string">'node_data'</span>};
 FEB_struct.data_types={<span class="string">'ux;uy;uz'</span>,<span class="string">'Rx;Ry;Rz'</span>};
-</pre><h2>SAVING .FEB FILE<a name="9"></a></h2><pre class="codeinput">FEB_struct.disp_opt=0; <span class="comment">%Display waitbars</span>
+</pre><h2 id="9">SAVING .FEB FILE</h2><pre class="codeinput">FEB_struct.disp_opt=0; <span class="comment">%Display waitbars</span>
 febStruct2febFile(FEB_struct);
 </pre><pre class="codeoutput"> 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
---- Writing FEBio XML object --- 25-Feb-2015 22:06:44
+--- Writing FEBio XML object --- 12-Sep-2016 10:41:57
 Adding Module level
 Adding Control level
 Adding Globals level
 Adding Material level
+Warning: Elastic field (containing material structure) missing. Assuming "old"
+viscoelastic specification type. It is recommended to update code. 
 Adding Geometry level
 ----&gt; Adding node field
 ----&gt; Adding element field
@@ -289,9 +291,13 @@ Adding LoadData level
 Adding Output level
 ----&gt; Adding plotfile field
 ----&gt; Adding logfile field
+Warning: Provided path of logfile is replaced by .feb file path. Only provide
+filename to avoid this warning 
+Warning: Provided path of logfile is replaced by .feb file path. Only provide
+filename to avoid this warning 
 Writing .feb file
---- Done --- 25-Feb-2015 22:06:44
-</pre><h2>RUNNING FEBIO JOB<a name="10"></a></h2><pre class="codeinput">FEBioRunStruct.FEBioPath=<span class="string">'C:\Program Files\febio-2.2.2\bin\FEBio2.exe'</span>;
+--- Done --- 12-Sep-2016 10:41:57
+</pre><h2 id="10">RUNNING FEBIO JOB</h2><pre class="codeinput"><span class="comment">% FEBioRunStruct.FEBioPath='C:\Program Files\febio2-2.2.6\bin\febio2.exe';</span>
 FEBioRunStruct.run_filename=FEB_struct.run_filename;
 FEBioRunStruct.run_logname=FEB_struct.run_logname;
 FEBioRunStruct.disp_on=1;
@@ -304,122 +310,222 @@ FEBioRunStruct.maxLogCheckTime=3; <span class="comment">%Max log file checking t
 [runFlag]=runMonitorFEBio(FEBioRunStruct);<span class="comment">%START FEBio NOW!!!!!!!!</span>
 </pre><pre class="codeoutput"> 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
---- STARTING FEBIO JOB --- 25-Feb-2015 22:06:44
+--- STARTING FEBIO JOB --- 12-Sep-2016 10:41:57
 Waiting for log file...
-Proceeding to check log file...25-Feb-2015 22:06:44
+Proceeding to check log file...12-Sep-2016 10:41:58
 ------- converged at time : 0.001
 ------- converged at time : 0.006
-------- converged at time : 0.013
-------- converged at time : 0.022326
-------- converged at time : 0.0397868
-------- converged at time : 0.0637554
-------- converged at time : 0.0929303
-------- converged at time : 0.12627
-------- converged at time : 0.162942
-------- converged at time : 0.20228
-------- converged at time : 0.24375
-------- converged at time : 0.286926
-------- converged at time : 0.331467
-------- converged at time : 0.377099
-------- converged at time : 0.423605
-------- converged at time : 0.47081
-------- converged at time : 0.518574
-------- converged at time : 0.566785
-------- converged at time : 0.615354
-------- converged at time : 0.664209
-------- converged at time : 0.713293
-------- converged at time : 0.762561
-------- converged at time : 0.811975
-------- converged at time : 0.861506
-------- converged at time : 0.911131
-------- converged at time : 0.96083
-------- converged at time : 1.01059
-------- converged at time : 1.0604
-------- converged at time : 1.11024
-------- converged at time : 1.16012
-------- converged at time : 1.21002
-------- converged at time : 1.25994
-------- converged at time : 1.30988
-------- converged at time : 1.35983
-------- converged at time : 1.40979
-------- converged at time : 1.45976
-------- converged at time : 1.50973
-------- converged at time : 1.55971
-------- converged at time : 1.6097
-------- converged at time : 1.65968
-------- converged at time : 1.70967
-------- converged at time : 1.75966
-------- converged at time : 1.80966
-------- converged at time : 1.85965
-------- converged at time : 1.90965
-------- converged at time : 1.95964
-------- converged at time : 2.00964
-------- converged at time : 2.05964
-------- converged at time : 2.10964
-------- converged at time : 2.15964
-------- converged at time : 2.20963
-------- converged at time : 2.25963
-------- converged at time : 2.30963
-------- converged at time : 2.35963
-------- converged at time : 2.40963
-------- converged at time : 2.45963
-------- converged at time : 2.50963
-------- converged at time : 2.55963
-------- converged at time : 2.60963
-------- converged at time : 2.65963
-------- converged at time : 2.70963
-------- converged at time : 2.75963
-------- converged at time : 2.80963
-------- converged at time : 2.85963
-------- converged at time : 2.90963
-------- converged at time : 2.95963
-------- converged at time : 3.00963
-------- converged at time : 3.05963
-------- converged at time : 3.10963
-------- converged at time : 3.15963
-------- converged at time : 3.20963
-------- converged at time : 3.25963
-------- converged at time : 3.30963
-------- converged at time : 3.35963
-------- converged at time : 3.40963
-------- converged at time : 3.45963
-------- converged at time : 3.50963
-------- converged at time : 3.55963
-------- converged at time : 3.60963
-------- converged at time : 3.65963
-------- converged at time : 3.70963
-------- converged at time : 3.75963
-------- converged at time : 3.80963
-------- converged at time : 3.85963
-------- converged at time : 3.90963
-------- converged at time : 3.95963
-------- converged at time : 4.00963
-------- converged at time : 4.05963
-------- converged at time : 4.10963
-------- converged at time : 4.15963
-------- converged at time : 4.20963
-------- converged at time : 4.25963
-------- converged at time : 4.30963
-------- converged at time : 4.35963
-------- converged at time : 4.40963
-------- converged at time : 4.45963
-------- converged at time : 4.50963
-------- converged at time : 4.55963
-------- converged at time : 4.60963
-------- converged at time : 4.65963
-------- converged at time : 4.70963
-------- converged at time : 4.75963
-------- converged at time : 4.80963
-------- converged at time : 4.85963
-------- converged at time : 4.90963
-------- converged at time : 4.95963
-------- converged at time : 5
---- Done --- 25-Feb-2015 22:06:47
+------- converged at time : 0.031
+------- converged at time : 0.151
+------- converged at time : 0.347
+------- converged at time : 0.6038
+------- converged at time : 0.90924
+------- converged at time : 1.25359
+------- converged at time : 1.62907
+------- converged at time : 2.02946
+------- converged at time : 2.44977
+------- converged at time : 2.88601
+------- converged at time : 3.33501
+------- converged at time : 3.79421
+------- converged at time : 4.26157
+------- converged at time : 4.73545
+------- converged at time : 5.21456
+------- converged at time : 5.69785
+------- converged at time : 6.18448
+------- converged at time : 6.67378
+------- converged at time : 7.16523
+------- converged at time : 7.65838
+------- converged at time : 8.15291
+------- converged at time : 8.64852
+------- converged at time : 9.14502
+------- converged at time : 9.64222
+------- converged at time : 10.14
+------- converged at time : 10.6382
+------- converged at time : 11.1367
+------- converged at time : 11.6356
+------- converged at time : 12.1347
+------- converged at time : 12.6339
+------- converged at time : 13.1334
+------- converged at time : 13.6329
+------- converged at time : 14.1325
+------- converged at time : 14.6322
+------- converged at time : 15.132
+------- converged at time : 15.6318
+------- converged at time : 16.1316
+------- converged at time : 16.6315
+------- converged at time : 17.1314
+------- converged at time : 17.6313
+------- converged at time : 18.1313
+------- converged at time : 18.6312
+------- converged at time : 19.1312
+------- converged at time : 19.6311
+------- converged at time : 20.1311
+------- converged at time : 20.6311
+------- converged at time : 21.1311
+------- converged at time : 21.6311
+------- converged at time : 22.131
+------- converged at time : 22.631
+------- converged at time : 23.131
+------- converged at time : 23.631
+------- converged at time : 24.131
+------- converged at time : 24.631
+------- converged at time : 25.131
+------- converged at time : 25.631
+------- converged at time : 26.131
+------- converged at time : 26.631
+------- converged at time : 27.131
+------- converged at time : 27.631
+------- converged at time : 28.131
+------- converged at time : 28.631
+------- converged at time : 29.131
+------- converged at time : 29.631
+------- converged at time : 30.131
+------- converged at time : 30.631
+------- converged at time : 31.131
+------- converged at time : 31.631
+------- converged at time : 32.131
+------- converged at time : 32.631
+------- converged at time : 33.131
+------- converged at time : 33.631
+------- converged at time : 34.131
+------- converged at time : 34.631
+------- converged at time : 35.131
+------- converged at time : 35.631
+------- converged at time : 36.131
+------- converged at time : 36.631
+------- converged at time : 37.131
+------- converged at time : 37.631
+------- converged at time : 38.131
+------- converged at time : 38.631
+------- converged at time : 39.131
+------- converged at time : 39.631
+------- converged at time : 40.131
+------- converged at time : 40.631
+------- converged at time : 41.131
+------- converged at time : 41.631
+------- converged at time : 42.131
+------- converged at time : 42.631
+------- converged at time : 43.131
+------- converged at time : 43.631
+------- converged at time : 44.131
+------- converged at time : 44.631
+------- converged at time : 45.131
+------- converged at time : 45.631
+------- converged at time : 46.131
+------- converged at time : 46.631
+------- converged at time : 47.131
+------- converged at time : 47.631
+------- converged at time : 48.131
+------- converged at time : 48.631
+------- converged at time : 49.131
+------- converged at time : 49.631
+------- converged at time : 50.131
+------- converged at time : 50.631
+------- converged at time : 51.131
+------- converged at time : 51.631
+------- converged at time : 52.131
+------- converged at time : 52.631
+------- converged at time : 53.131
+------- converged at time : 53.631
+------- converged at time : 54.131
+------- converged at time : 54.631
+------- converged at time : 55.131
+------- converged at time : 55.631
+------- converged at time : 56.131
+------- converged at time : 56.631
+------- converged at time : 57.131
+------- converged at time : 57.631
+------- converged at time : 58.131
+------- converged at time : 58.631
+------- converged at time : 59.131
+------- converged at time : 59.631
+------- converged at time : 60.131
+------- converged at time : 60.631
+------- converged at time : 61.131
+------- converged at time : 61.631
+------- converged at time : 62.131
+------- converged at time : 62.631
+------- converged at time : 63.131
+------- converged at time : 63.631
+------- converged at time : 64.131
+------- converged at time : 64.631
+------- converged at time : 65.131
+------- converged at time : 65.631
+------- converged at time : 66.131
+------- converged at time : 66.631
+------- converged at time : 67.131
+------- converged at time : 67.631
+------- converged at time : 68.131
+------- converged at time : 68.631
+------- converged at time : 69.131
+------- converged at time : 69.631
+------- converged at time : 70.131
+------- converged at time : 70.631
+------- converged at time : 71.131
+------- converged at time : 71.631
+------- converged at time : 72.131
+------- converged at time : 72.631
+------- converged at time : 73.131
+------- converged at time : 73.631
+------- converged at time : 74.131
+------- converged at time : 74.631
+------- converged at time : 75.131
+------- converged at time : 75.631
+------- converged at time : 76.131
+------- converged at time : 76.631
+------- converged at time : 77.131
+------- converged at time : 77.631
+------- converged at time : 78.131
+------- converged at time : 78.631
+------- converged at time : 79.131
+------- converged at time : 79.631
+------- converged at time : 80.131
+------- converged at time : 80.631
+------- converged at time : 81.131
+------- converged at time : 81.631
+------- converged at time : 82.131
+------- converged at time : 82.631
+------- converged at time : 83.131
+------- converged at time : 83.631
+------- converged at time : 84.131
+------- converged at time : 84.631
+------- converged at time : 85.131
+------- converged at time : 85.631
+------- converged at time : 86.131
+------- converged at time : 86.631
+------- converged at time : 87.131
+------- converged at time : 87.631
+------- converged at time : 88.131
+------- converged at time : 88.631
+------- converged at time : 89.131
+------- converged at time : 89.631
+------- converged at time : 90.131
+------- converged at time : 90.631
+------- converged at time : 91.131
+------- converged at time : 91.631
+------- converged at time : 92.131
+------- converged at time : 92.631
+------- converged at time : 93.131
+------- converged at time : 93.631
+------- converged at time : 94.131
+------- converged at time : 94.631
+------- converged at time : 95.131
+------- converged at time : 95.631
+------- converged at time : 96.131
+------- converged at time : 96.631
+------- converged at time : 97.131
+------- converged at time : 97.631
+------- converged at time : 98.131
+------- converged at time : 98.631
+------- converged at time : 99.131
+------- converged at time : 99.631
+------- converged at time : 100
+--- Done --- 12-Sep-2016 10:42:01
 </pre><pre class="codeinput"><span class="keyword">if</span> runFlag==1 <span class="comment">%i.e. a succesful run</span>
-</pre><h2>IMPORTING NODAL DISPLACEMENT RESULTS<a name="13"></a></h2><p>Importing nodal displacements from a log file</p><pre class="codeinput">    [~, N_disp_mat,~]=importFEBio_logfile(FEB_struct.run_output_names{1}); <span class="comment">%Nodal displacements</span>
+</pre><h2 id="13">IMPORTING NODAL DISPLACEMENT RESULTS</h2><p>Importing nodal displacements from a log file</p><pre class="codeinput">    [~, N_disp_mat,~]=importFEBio_logfile(FEB_struct.run_output_names{1}); <span class="comment">%Nodal displacements</span>
 
     DN=N_disp_mat(:,2:end,end); <span class="comment">%Final nodal displacements</span>
-</pre><h2>CREATING NODE SET IN DEFORMED STATE<a name="14"></a></h2><pre class="codeinput">    V_def=V+DN;
+</pre><h2 id="14">CREATING NODE SET IN DEFORMED STATE</h2><pre class="codeinput">    V_def=V+DN;
     DN_magnitude=sqrt(sum(DN.^2,2));
 </pre><p>Plotting the deformed model</p><pre class="codeinput">    [CF]=vertexToFaceMeasure(Fb,DN_magnitude);
 
@@ -434,9 +540,9 @@ Proceeding to check log file...25-Feb-2015 22:06:44
     <span class="comment">% camlight headlight;</span>
     set(gca,<span class="string">'FontSize'</span>,fontSize);
     drawnow;
-</pre><img vspace="5" hspace="5" src="DEMO_FEBio_block_uniaxial_compression_viscoelastic_ramp_hold_03.png" alt=""> <h2>IMPORTING NODAL FORCES<a name="16"></a></h2><p>Importing nodal forces from a log file</p><pre class="codeinput">    [time_mat, N_force_mat,~]=importFEBio_logfile(FEB_struct.run_output_names{2}); <span class="comment">%Nodal forces</span>
+</pre><img vspace="5" hspace="5" src="DEMO_FEBio_block_uniaxial_compression_viscoelastic_ramp_hold_03.png" alt=""> <h2 id="16">IMPORTING NODAL FORCES</h2><p>Importing nodal forces from a log file</p><pre class="codeinput">    [time_mat, N_force_mat,~]=importFEBio_logfile(FEB_struct.run_output_names{2}); <span class="comment">%Nodal forces</span>
     time_mat=[0; time_mat(:)]; <span class="comment">%Time</span>
-</pre><h2>DERIVING STRESS METRICS<a name="17"></a></h2><pre class="codeinput">    <span class="comment">%Get Z forces</span>
+</pre><h2 id="17">DERIVING STRESS METRICS</h2><pre class="codeinput">    <span class="comment">%Get Z forces</span>
     FZ=sum(N_force_mat(bcPrescribeList,end,:),1);
     FZ=[0; FZ(:)]; <span class="comment">%Mean top surface nodal forces</span>
 
@@ -460,7 +566,7 @@ Proceeding to check log file...25-Feb-2015 22:06:44
     set(gca,<span class="string">'FontSize'</span>,fontSize);
     drawnow;
 </pre><img vspace="5" hspace="5" src="DEMO_FEBio_block_uniaxial_compression_viscoelastic_ramp_hold_04.png" alt=""> <pre class="codeinput"><span class="keyword">end</span>
-</pre><p><img vspace="5" hspace="5" src="gibbVerySmall.gif" alt=""> </p><p><i><b>GIBBON</b></i> <a href="www.gibboncode.org">www.gibboncode.org</a></p><p><i>Kevin Mattheus Moerman</i>, <a href="gibbon.toolbox@gmail.com">gibbon.toolbox@gmail.com</a></p><p class="footer"><br><a href="http://www.mathworks.com/products/matlab/">Published with MATLAB&reg; R2015a</a><br></p></div><!--
+</pre><p><img vspace="5" hspace="5" src="gibbVerySmall.gif" alt=""> </p><p><i><b>GIBBON</b></i> <a href="www.gibboncode.org">www.gibboncode.org</a></p><p><i>Kevin Mattheus Moerman</i>, <a href="gibbon.toolbox@gmail.com">gibbon.toolbox@gmail.com</a></p><p class="footer"><br><a href="http://www.mathworks.com/products/matlab/">Published with MATLAB&reg; R2016b</a><br></p></div><!--
 ##### SOURCE BEGIN #####
 %% DEMO_FEBio_block_uniaxial_compression_dynamic_viscoelastic_ramp_hold
 % Below is a demonstration for:
@@ -472,7 +578,7 @@ Proceeding to check log file...25-Feb-2015 22:06:44
 
 %%
 
-clear; close all; clc;
+close all; clc; clear;
 
 %%
 % Plot settings
@@ -512,15 +618,15 @@ c1=1e-3; %ogden c1
 m1=3; %ogden m1
 k_factor=1000; %Bulk modulus factor
 k=c1*k_factor; %The bulk modulus
-g1=1; %Viscoelastic QLV proportional coefficient
-t1=0.25; %Viscoelastic QLV time coefficient
+g1=1/2; %Viscoelastic QLV proportional coefficient
+t1=12; %Viscoelastic QLV time coefficient
 d=1e-9; %Density (not required for static analysis)
-t_total=5; %Total simulation time
-t_load=0.5; %Time from start to max load
+t_total=100; %Total simulation time
+t_load=2; %Time from start to max load
 t_step_ini=1e-3; %Initial desired step size
-t_step_max=0.05; %Maximum step size
+t_step_max=0.5; %Maximum step size
 
-multiStep=0; 
+analysisType='static'; 
 
 uncoupledLaw=1; %1=uncoupled, 2=coupled
 
@@ -646,7 +752,7 @@ end
 %Step specific control sections
 n=round(t_total/t_step_ini);
 t_step=t_total/n;
-FEB_struct.Control.AnalysisType='static';
+FEB_struct.Control.AnalysisType=analysisType;
 FEB_struct.Control.Properties={'time_steps','step_size',...
     'max_refs','max_ups',...
     'dtol','etol','rtol','lstol'};
@@ -664,8 +770,8 @@ FEB_struct.Geometry.NodeSet{2}.Set=bcSupportList_X_axis;
 FEB_struct.Geometry.NodeSet{2}.Name='bcSupportList_X_axis';
 FEB_struct.Geometry.NodeSet{3}.Set=bcSupportList_Z;
 FEB_struct.Geometry.NodeSet{3}.Name='bcSupportList_Z';
-FEB_struct.Geometry.NodeSet{4}.Set=bcPrescribeList;
-FEB_struct.Geometry.NodeSet{4}.Name='bcPrescribeList';
+% FEB_struct.Geometry.NodeSet{4}.Set=bcPrescribeList;
+% FEB_struct.Geometry.NodeSet{4}.Name='bcPrescribeList';
 
 %Adding BC information
 FEB_struct.Boundary.Fix{1}.bc='x';
@@ -675,10 +781,10 @@ FEB_struct.Boundary.Fix{2}.SetName=FEB_struct.Geometry.NodeSet{2}.Name;
 FEB_struct.Boundary.Fix{3}.bc='z';
 FEB_struct.Boundary.Fix{3}.SetName=FEB_struct.Geometry.NodeSet{3}.Name;
 
-FEB_struct.Boundary.Prescribe{1}.SetName=FEB_struct.Geometry.NodeSet{4}.Name;
-FEB_struct.Boundary.Prescribe{1}.Scale=displacementMagnitude(3);
+FEB_struct.Boundary.Prescribe{1}.Set=bcPrescribeList;
 FEB_struct.Boundary.Prescribe{1}.bc='z';
 FEB_struct.Boundary.Prescribe{1}.lc=1;
+FEB_struct.Boundary.Prescribe{1}.nodeScale=displacementMagnitude(ones(numel(bcPrescribeList),1),3);
 FEB_struct.Boundary.Prescribe{1}.Type='relative';
 
 %Load curves
@@ -703,7 +809,7 @@ febStruct2febFile(FEB_struct);
 
 %% RUNNING FEBIO JOB
 
-FEBioRunStruct.FEBioPath='C:\Program Files\febio-2.2.2\bin\FEBio2.exe';
+% FEBioRunStruct.FEBioPath='C:\Program Files\febio2-2.2.6\bin\febio2.exe';
 FEBioRunStruct.run_filename=FEB_struct.run_filename;
 FEBioRunStruct.run_logname=FEB_struct.run_logname;
 FEBioRunStruct.disp_on=1;

@@ -6,7 +6,7 @@
    <!--
 This HTML was auto-generated from MATLAB code.
 To make changes, update the MATLAB code and republish this document.
-      --><title>DEMO_FEBio_iFEA_uniaxial_transiso_01.m</title><meta name="generator" content="MATLAB 8.6"><link rel="schema.DC" href="http://purl.org/dc/elements/1.1/"><meta name="DC.date" content="2015-11-20"><meta name="DC.source" content="DEMO_FEBio_iFEA_uniaxial_transiso_01.m"><style type="text/css">
+      --><title>DEMO_FEBio_iFEA_uniaxial_transiso_01.m</title><meta name="generator" content="MATLAB 9.1"><link rel="schema.DC" href="http://purl.org/dc/elements/1.1/"><meta name="DC.date" content="2016-09-12"><meta name="DC.source" content="DEMO_FEBio_iFEA_uniaxial_transiso_01.m"><style type="text/css">
 html,body,div,span,applet,object,iframe,h1,h2,h3,h4,h5,h6,p,blockquote,pre,a,abbr,acronym,address,big,cite,code,del,dfn,em,font,img,ins,kbd,q,s,samp,small,strike,strong,sub,sup,tt,var,b,u,i,center,dl,dt,dd,ol,ul,li,fieldset,form,label,legend,table,caption,tbody,tfoot,thead,tr,th,td{margin:0;padding:0;border:0;outline:0;font-size:100%;vertical-align:baseline;background:transparent}body{line-height:1}ol,ul{list-style:none}blockquote,q{quotes:none}blockquote:before,blockquote:after,q:before,q:after{content:'';content:none}:focus{outine:0}ins{text-decoration:none}del{text-decoration:line-through}table{border-collapse:collapse;border-spacing:0}
 
 html { min-height:100%; margin-bottom:1px; }
@@ -66,7 +66,7 @@ table td { padding:7px 5px; text-align:left; vertical-align:top; border:1px soli
 
 
 
-  </style></head><body><div class="content"><h1>DEMO_FEBio_iFEA_uniaxial_transiso_01.m</h1><!--introduction--><p>Below is a demonstration for: 1) Inverse FEA based material parameter optimisation</p><!--/introduction--><h2>Contents</h2><div><ul><li><a href="#4">LOAD EXPERIMENTAL DATA</a></li><li><a href="#5">Plotting experimental data</a></li><li><a href="#6">CREATING MESHED BOX</a></li><li><a href="#8">DEFINE BC's</a></li><li><a href="#10">DEFINE FIBRE DIRECTIONS</a></li><li><a href="#12">CONSTRUCTING FEB MODEL</a></li><li><a href="#13">SAVING .FEB FILE</a></li><li><a href="#15">STARTING OPTIMISATION</a></li><li><a href="#17">Plotting experimental data</a></li></ul></div><pre class="codeinput">clear; close <span class="string">all</span>; clc;
+  </style></head><body><div class="content"><h1>DEMO_FEBio_iFEA_uniaxial_transiso_01.m</h1><!--introduction--><p>Below is a demonstration for: 1) Inverse FEA based material parameter optimisation</p><!--/introduction--><h2>Contents</h2><div><ul><li><a href="#4">LOAD EXPERIMENTAL DATA</a></li><li><a href="#5">Plotting experimental data</a></li><li><a href="#6">CREATING MESHED BOX</a></li><li><a href="#8">DEFINE BC's</a></li><li><a href="#10">DEFINE FIBRE DIRECTIONS</a></li><li><a href="#12">CONSTRUCTING FEB MODEL</a></li><li><a href="#13">SAVING .FEB FILE</a></li><li><a href="#15">STARTING OPTIMISATION</a></li><li><a href="#17">Plotting experimental data</a></li></ul></div><pre class="codeinput">close <span class="string">all</span>; clc; clear;
 </pre><p>Plot settings</p><pre class="codeinput">fontSize=25;
 fontSize2=30;
 faceAlpha1=0.3;
@@ -100,7 +100,6 @@ numElementsHeight=round(sampleHeight/pointSpacings(3));
 stretchLoad=0.7;
 displacementMagnitude=[0 0 (stretchLoad*sampleHeight)-sampleHeight];
 
-
 <span class="comment">%Initial material parameter set</span>
 c1_ini=0.0006618290645;
 m1_ini=2.0000011857416;
@@ -116,7 +115,7 @@ alphaFib=0.5*pi;
 
 optimMethod=2;
 optimOpt=0;
-</pre><h2>LOAD EXPERIMENTAL DATA<a name="4"></a></h2><pre class="codeinput"><span class="comment">% Set folder and file name</span>
+</pre><h2 id="4">LOAD EXPERIMENTAL DATA</h2><pre class="codeinput"><span class="comment">% Set folder and file name</span>
 defaultFolder = fileparts(mfilename(<span class="string">'fullpath'</span>));
 pathName=fullfile(defaultFolder,<span class="string">'data'</span>,<span class="string">'Loocke_2006'</span>);
 fileName=fullfile(pathName,<span class="string">'LOOCKE_FIBRE_LANDSCAPE_CAUCHY.mat'</span>);
@@ -133,7 +132,7 @@ F_sd1=1:size(V_sd1,1);
 
 V_sd2=[[stretch_exp;flipud(stretch_exp)] [stress_cauchy_exp(:,2)-stress_cauchy_exp_SD(:,2);flipud(stress_cauchy_exp(:,2)+stress_cauchy_exp_SD(:,2))]];
 F_sd2=1:size(V_sd2,1);
-</pre><h2>Plotting experimental data<a name="5"></a></h2><pre class="codeinput">pColors=gjet(2);
+</pre><h2 id="5">Plotting experimental data</h2><pre class="codeinput">pColors=gjet(2);
 cFigure; hold <span class="string">on</span>;
 title(<span class="string">'Experimental data'</span>,<span class="string">'FontSize'</span>,fontSize2);
 xlabel(<span class="string">'$$\lambda$$'</span>,<span class="string">'FontSize'</span>,fontSize2,<span class="string">'Interpreter'</span>,<span class="string">'Latex'</span>);
@@ -155,7 +154,7 @@ axis <span class="string">tight</span>;
 set(gca,<span class="string">'FontSize'</span>,fontSize);
 box <span class="string">on</span>; grid <span class="string">on</span>;
 drawnow;
-</pre><img vspace="5" hspace="5" src="DEMO_FEBio_iFEA_uniaxial_transiso_01_01.png" alt=""> <h2>CREATING MESHED BOX<a name="6"></a></h2><pre class="codeinput"><span class="comment">%Create box 1</span>
+</pre><img vspace="5" hspace="5" src="DEMO_FEBio_iFEA_uniaxial_transiso_01_01.png" alt=""> <h2 id="6">CREATING MESHED BOX</h2><pre class="codeinput"><span class="comment">%Create box 1</span>
 boxDim=[sampleWidth sampleThickness sampleHeight]; <span class="comment">%Dimensions</span>
 boxEl=[numElementsWidth numElementsThickness numElementsHeight]; <span class="comment">%Number of elements</span>
 [box1]=hexMeshBox(boxDim,boxEl);
@@ -179,7 +178,7 @@ colormap(gjet(6)); colorbar;
 set(gca,<span class="string">'FontSize'</span>,fontSize);
 view(3); axis <span class="string">tight</span>;  axis <span class="string">equal</span>;  grid <span class="string">on</span>;
 drawnow;
-</pre><img vspace="5" hspace="5" src="DEMO_FEBio_iFEA_uniaxial_transiso_01_02.png" alt=""> <h2>DEFINE BC's<a name="8"></a></h2><pre class="codeinput"><span class="comment">%Define supported node sets</span>
+</pre><img vspace="5" hspace="5" src="DEMO_FEBio_iFEA_uniaxial_transiso_01_02.png" alt=""> <h2 id="8">DEFINE BC's</h2><pre class="codeinput"><span class="comment">%Define supported node sets</span>
 logicFace=faceBoundaryMarker==1;
 Fr=Fb(logicFace,:);
 bcSupportList_X=unique(Fr(:));
@@ -213,7 +212,7 @@ colormap(gjet(6)); colorbar;
 set(gca,<span class="string">'FontSize'</span>,fontSize);
 view(3); axis <span class="string">tight</span>;  axis <span class="string">equal</span>;  grid <span class="string">on</span>;
 drawnow;
-</pre><img vspace="5" hspace="5" src="DEMO_FEBio_iFEA_uniaxial_transiso_01_03.png" alt=""> <h2>DEFINE FIBRE DIRECTIONS<a name="10"></a></h2><pre class="codeinput">[R,~]=euler2DCM([0,alphaFib,0]);
+</pre><img vspace="5" hspace="5" src="DEMO_FEBio_iFEA_uniaxial_transiso_01_03.png" alt=""> <h2 id="10">DEFINE FIBRE DIRECTIONS</h2><pre class="codeinput">[R,~]=euler2DCM([0,alphaFib,0]);
 v_fib=(R*[0 0 1]')';
 
 V_fib=v_fib(ones(size(E,1),1),:);
@@ -233,7 +232,7 @@ camlight <span class="string">headlight</span>;
 view(3); axis <span class="string">tight</span>;  axis <span class="string">equal</span>;  grid <span class="string">off</span>; <span class="comment">%box on;</span>
 set(gca,<span class="string">'FontSize'</span>,fontSize);
 drawnow;
-</pre><img vspace="5" hspace="5" src="DEMO_FEBio_iFEA_uniaxial_transiso_01_04.png" alt=""> <h2>CONSTRUCTING FEB MODEL<a name="12"></a></h2><pre class="codeinput">FEB_struct.febio_spec.version=<span class="string">'2.0'</span>;
+</pre><img vspace="5" hspace="5" src="DEMO_FEBio_iFEA_uniaxial_transiso_01_04.png" alt=""> <h2 id="12">CONSTRUCTING FEB MODEL</h2><pre class="codeinput">FEB_struct.febio_spec.version=<span class="string">'2.0'</span>;
 
 <span class="comment">% Defining file names</span>
 FEB_struct.run_filename=[modelName,<span class="string">'.feb'</span>]; <span class="comment">%FEB file name</span>
@@ -324,11 +323,12 @@ run_stress_output_name=[modelEndName,<span class="string">'_stress_out.txt'</spa
 FEB_struct.run_output_names={run_disp_output_name,run_stress_output_name};
 FEB_struct.output_types={<span class="string">'element_data'</span>,<span class="string">'element_data'</span>};
 FEB_struct.data_types={<span class="string">'Ex;Ey;Ez'</span>,<span class="string">'sz'</span>};
-</pre><h2>SAVING .FEB FILE<a name="13"></a></h2><pre class="codeinput">FEB_struct.disp_opt=0; <span class="comment">%Display waitbars option</span>
+</pre><h2 id="13">SAVING .FEB FILE</h2><pre class="codeinput">FEB_struct.disp_opt=0; <span class="comment">%Display waitbars option</span>
 febStruct2febFile(FEB_struct);
 </pre><pre class="codeoutput"> 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
---- Writing FEBio XML object --- 20-Nov-2015 21:55:17
+--- Writing FEBio XML object --- 12-Sep-2016 10:54:50
+Adding Module level
 Adding Control level
 Adding Globals level
 Adding Material level
@@ -348,7 +348,7 @@ Adding Output level
 ----&gt; Adding plotfile field
 ----&gt; Adding logfile field
 Writing .feb file
---- Done --- 20-Nov-2015 21:55:17
+--- Done --- 12-Sep-2016 10:54:50
 </pre><p>FEBioRunStruct.FEBioPath='C:\Program Files\febio2-2.2.6\bin\febio2.exe';</p><pre class="codeinput">FEBioRunStruct.run_filename=FEB_struct.run_filename;
 FEBioRunStruct.run_logname=FEB_struct.run_logname;
 FEBioRunStruct.disp_on=0;
@@ -358,7 +358,7 @@ FEBioRunStruct.t_check=0.25; <span class="comment">%Time for checking log file (
 FEBioRunStruct.maxtpi=1e99; <span class="comment">%Max analysis time</span>
 FEBioRunStruct.maxLogCheckTime=5; <span class="comment">%Max log file checking time</span>
 <span class="comment">% FEBioRunStruct.cleanUpFileList=FEB_struct.run_output_names; %Files to remove prior to starting each job.</span>
-</pre><h2>STARTING OPTIMISATION<a name="15"></a></h2><pre class="codeinput">objectiveStruct.P_ini=P_ini;
+</pre><h2 id="15">STARTING OPTIMISATION</h2><pre class="codeinput">objectiveStruct.P_ini=P_ini;
 objectiveStruct.stretch_exp=stretch_exp;
 objectiveStruct.FEBioRunStruct=FEBioRunStruct;
 objectiveStruct.FEB_struct=FEB_struct;
@@ -443,13 +443,10 @@ Done
 SETTING FIBRE DIRECTIONS...
 ----&gt; Creating MatAxis entries
 Done
-
 ans =
-
     1.1952    1.1952    0.7000
     1.1318    1.2620    0.7000
-
-</pre><h2>Plotting experimental data<a name="17"></a></h2><pre class="codeinput">pColors=gjet(2);
+</pre><h2 id="17">Plotting experimental data</h2><pre class="codeinput">pColors=gjet(2);
 cFigure; hold <span class="string">on</span>;
 <span class="comment">% title('Experimental data','FontSize',fontSize2);</span>
 xlabel(<span class="string">'$$\lambda$$'</span>,<span class="string">'FontSize'</span>,fontSize2,<span class="string">'Interpreter'</span>,<span class="string">'Latex'</span>);
@@ -476,7 +473,7 @@ axis <span class="string">tight</span>;
 set(gca,<span class="string">'FontSize'</span>,fontSize);
 box <span class="string">on</span>; grid <span class="string">on</span>;
 drawnow;
-</pre><img vspace="5" hspace="5" src="DEMO_FEBio_iFEA_uniaxial_transiso_01_05.png" alt=""> <p><img vspace="5" hspace="5" src="gibbVerySmall.gif" alt=""> </p><p><i><b>GIBBON</b></i> <a href="www.gibboncode.org">www.gibboncode.org</a></p><p><i>Kevin Mattheus Moerman</i>, <a href="gibbon.toolbox@gmail.com">gibbon.toolbox@gmail.com</a></p><p class="footer"><br><a href="http://www.mathworks.com/products/matlab/">Published with MATLAB&reg; R2015b</a><br></p></div><!--
+</pre><img vspace="5" hspace="5" src="DEMO_FEBio_iFEA_uniaxial_transiso_01_05.png" alt=""> <p><img vspace="5" hspace="5" src="gibbVerySmall.gif" alt=""> </p><p><i><b>GIBBON</b></i> <a href="www.gibboncode.org">www.gibboncode.org</a></p><p><i>Kevin Mattheus Moerman</i>, <a href="gibbon.toolbox@gmail.com">gibbon.toolbox@gmail.com</a></p><p class="footer"><br><a href="http://www.mathworks.com/products/matlab/">Published with MATLAB&reg; R2016b</a><br></p></div><!--
 ##### SOURCE BEGIN #####
 %% DEMO_FEBio_iFEA_uniaxial_transiso_01.m
 % Below is a demonstration for:
@@ -484,7 +481,7 @@ drawnow;
 
 %%
 
-clear; close all; clc;
+close all; clc; clear;
 
 %%
 % Plot settings
@@ -524,7 +521,6 @@ numElementsHeight=round(sampleHeight/pointSpacings(3));
 
 stretchLoad=0.7;
 displacementMagnitude=[0 0 (stretchLoad*sampleHeight)-sampleHeight];
-
 
 %Initial material parameter set
 c1_ini=0.0006618290645;

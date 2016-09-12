@@ -2,7 +2,7 @@
 %
 
 %%
-clear; close all; clc;
+close all; clc; clear;
 
 %%
 % Plot settings
@@ -73,25 +73,15 @@ k_gel=c1_gel*k_factor_gel;
 
 %% LOADING PROBE MODEL
 
-probeType=2; 
-
 %Set main folder
 defaultFolder = fileparts(mfilename('fullpath'));
 pathName=fullfile(defaultFolder,'data','STL');
-switch probeType
-    case 1    
-        fileName=fullfile(pathName,'stl_cephasnics.stl');
-        [stlStruct] = import_STL_txt(fileName);
-        Fs=stlStruct.solidFaces{1};
-        Vs=stlStruct.solidVertices{1};
-        [R,~]=euler2DCM([0 0.5*pi 0]); %Define rotation tensor to reorient model
-    case 2
-        fileName=fullfile(pathName,'CephasonicsLinear.STL');   
-        [stlStruct] = import_STL_txt(fileName);
-        Fs=stlStruct.solidFaces{1};
-        Vs=stlStruct.solidVertices{1};        
-        [R,~]=euler2DCM([0.5*pi 0 0]); %Define rotation tensor to reorient model
-end
+ 
+fileName=fullfile(pathName,'stl_cephasnics.stl');
+[stlStruct] = import_STL_txt(fileName);
+Fs=stlStruct.solidFaces{1};
+Vs=stlStruct.solidVertices{1};
+[R,~]=euler2DCM([0 0.5*pi 0]); %Define rotation tensor to reorient model
 
 % Merging nodes
 [~,ind1,ind2]=unique(pround(Vs,3),'rows');

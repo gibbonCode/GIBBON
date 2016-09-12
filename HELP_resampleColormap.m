@@ -2,7 +2,7 @@
 % Below is a demonstration of the features of the |resampleColormap| function
 
 %%
-clear; close all; clc; 
+close all; clc; clear;
 
 %% Syntax
 % |[cmap_i]=resampleColormap(cmap,n);|

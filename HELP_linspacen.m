@@ -12,7 +12,7 @@
 % See also: |linspace| and |subCurve|
 %%
 
-clear; close all; clc;
+close all; clc; clear;
 
 %%
 % PLOT SETTINGS

@@ -2,7 +2,7 @@
 % Below is a demonstration of the |stanford_bunny| function
 
 %%
-clear; close all; clc; 
+close all; clc; clear;
 
 % Plot settings
 fig_color='w'; fig_colordef='white';

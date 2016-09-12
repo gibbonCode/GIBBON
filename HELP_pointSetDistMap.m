@@ -3,7 +3,7 @@
 
 %%
 
-clear; close all; clc;
+close all; clc; clear;
 
 % PLOT SETTINGS
 fig_color='w'; fig_colordef='white';

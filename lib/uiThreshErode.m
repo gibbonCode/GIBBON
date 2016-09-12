@@ -56,7 +56,7 @@ end
 %% PLOT SETTINGS
 
 fontSize=10;
-cMap=jet(250);
+cMap=gray(250);
 falpha=1;
 
 logicVoxels=false(size(M));
@@ -109,7 +109,7 @@ while done==0
                 L_BG_blur = convn(double(L_BG_rep),hg,'valid');
         end
         
-        if qc==1; %Plot figure on first iteration
+        if qc==1 %Plot figure on first iteration
             
             %Cropped image            
             [Fs,Vs,Cs]=ind2patch(logicVoxels&L_BG,M_original,'v');

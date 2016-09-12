@@ -6,7 +6,7 @@
    <!--
 This HTML was auto-generated from MATLAB code.
 To make changes, update the MATLAB code and republish this document.
-      --><title>DEMO_AnyBody_force_analysis</title><meta name="generator" content="MATLAB 8.6"><link rel="schema.DC" href="http://purl.org/dc/elements/1.1/"><meta name="DC.date" content="2015-09-22"><meta name="DC.source" content="DEMO_AnyBody_force_analysys.m"><style type="text/css">
+      --><title>DEMO_AnyBody_force_analysis</title><meta name="generator" content="MATLAB 9.1"><link rel="schema.DC" href="http://purl.org/dc/elements/1.1/"><meta name="DC.date" content="2016-09-12"><meta name="DC.source" content="DEMO_AnyBody_force_analysys.m"><style type="text/css">
 html,body,div,span,applet,object,iframe,h1,h2,h3,h4,h5,h6,p,blockquote,pre,a,abbr,acronym,address,big,cite,code,del,dfn,em,font,img,ins,kbd,q,s,samp,small,strike,strong,sub,sup,tt,var,b,u,i,center,dl,dt,dd,ol,ul,li,fieldset,form,label,legend,table,caption,tbody,tfoot,thead,tr,th,td{margin:0;padding:0;border:0;outline:0;font-size:100%;vertical-align:baseline;background:transparent}body{line-height:1}ol,ul{list-style:none}blockquote,q{quotes:none}blockquote:before,blockquote:after,q:before,q:after{content:'';content:none}:focus{outine:0}ins{text-decoration:none}del{text-decoration:line-through}table{border-collapse:collapse;border-spacing:0}
 
 html { min-height:100%; margin-bottom:1px; }
@@ -66,7 +66,7 @@ table td { padding:7px 5px; text-align:left; vertical-align:top; border:1px soli
 
 
 
-  </style></head><body><div class="content"><h1>DEMO_AnyBody_force_analysis</h1><!--introduction--><p>Below is a demonstration for importing AnyBody surface models and analysis results using the <tt>import_STL_txt</tt> and <tt>importAnyBodyOutput</tt> functions respectively. The analysis results includes loads which can be used for finite element analysis. The surface model is meshed using Tetgen and used to formulate an FEBio model with AnyBody derived boundary conditions.</p><!--/introduction--><h2>Contents</h2><div><ul><li><a href="#5">Importing STL surface triangulation</a></li><li><a href="#6">Visualizing imported surface mesh</a></li><li><a href="#7">Merging nodes</a></li><li><a href="#8">Search for "three-connected" points</a></li><li><a href="#10">Removing "3-connected" vertices in the middle of faces and replacing associated faces by a single face</a></li><li><a href="#12">Surface smoothening</a></li><li><a href="#14">Mesh using TetGen</a></li><li><a href="#16">MESH MODEL USING TETGEN</a></li><li><a href="#19">Import force data</a></li><li><a href="#20">Snap force vector origins to nodes (inaccurate but used anyway for example)</a></li><li><a href="#22">CONSTRUCTING FEB MODEL</a></li><li><a href="#23">SAVING .FEB FILE</a></li><li><a href="#24">RUNNING FEBIO JOB</a></li></ul></div><p><b>N.B. This example shows the pipeline for importing AnyBody metrics and for meshing and FEBio model construction. The actual analysis performed is INACCURATE at present. However the various steps highlighted do illustrate the entire modelling proces. This example will be updated in the future to demonstrate a more realistic analysis.</b> 2014/10/09</p><pre class="codeinput">clear; close <span class="string">all</span>; clc;
+  </style></head><body><div class="content"><h1>DEMO_AnyBody_force_analysis</h1><!--introduction--><p>Below is a demonstration for importing AnyBody surface models and analysis results using the <tt>import_STL_txt</tt> and <tt>importAnyBodyOutput</tt> functions respectively. The analysis results includes loads which can be used for finite element analysis. The surface model is meshed using Tetgen and used to formulate an FEBio model with AnyBody derived boundary conditions.</p><!--/introduction--><h2>Contents</h2><div><ul><li><a href="#5">Importing STL surface triangulation</a></li><li><a href="#6">Visualizing imported surface mesh</a></li><li><a href="#7">Merging nodes</a></li><li><a href="#8">Search for "three-connected" points</a></li><li><a href="#10">Removing "3-connected" vertices in the middle of faces and replacing associated faces by a single face</a></li><li><a href="#12">Surface smoothening</a></li><li><a href="#14">Mesh using TetGen</a></li><li><a href="#16">MESH MODEL USING TETGEN</a></li><li><a href="#19">Import force data</a></li><li><a href="#20">Snap force vector origins to nodes (inaccurate but used anyway for example)</a></li><li><a href="#22">CONSTRUCTING FEB MODEL</a></li><li><a href="#23">SAVING .FEB FILE</a></li><li><a href="#24">RUNNING FEBIO JOB</a></li></ul></div><p><b>N.B. This example shows the pipeline for importing AnyBody metrics and for meshing and FEBio model construction. The actual analysis performed is INACCURATE at present. However the various steps highlighted do illustrate the entire modelling proces. This example will be updated in the future to demonstrate a more realistic analysis.</b> 2014/10/09</p><pre class="codeinput">close <span class="string">all</span>; clc; <span class="comment">%clear;</span>
 </pre><p>Plot settings</p><pre class="codeinput">fontSize=10;
 faceColor1=<span class="string">'r'</span>;
 faceColor2=<span class="string">'g'</span>;
@@ -82,14 +82,14 @@ cMap=jet(250);
 savePath=fullfile(fileparts(filePath),<span class="string">'data'</span>,<span class="string">'temp'</span>);
 
 modelName=fullfile(savePath,<span class="string">'tempModel'</span>);
-</pre><h2>Importing STL surface triangulation<a name="5"></a></h2><pre class="codeinput"><span class="comment">% Set folder and file name</span>
+</pre><h2 id="5">Importing STL surface triangulation</h2><pre class="codeinput"><span class="comment">% Set folder and file name</span>
 defaultFolder = fileparts(mfilename(<span class="string">'fullpath'</span>));
 pathName=fullfile(defaultFolder,<span class="string">'data'</span>,<span class="string">'STL'</span>);
 fileName=fullfile(pathName,<span class="string">'femur.stl'</span>);
 
 <span class="comment">% Import STL</span>
 [stlStruct] = import_STL_txt(fileName);
-</pre><h2>Visualizing imported surface mesh<a name="6"></a></h2><p>Plotting the model</p><pre class="codeinput">cFigure;
+</pre><h2 id="6">Visualizing imported surface mesh</h2><p>Plotting the model</p><pre class="codeinput">cFigure;
 title(<span class="string">'Imported patch data from multi-solid STL'</span>,<span class="string">'fontSize'</span>,fontSize);
 xlabel(<span class="string">'X'</span>,<span class="string">'fontSize'</span>,fontSize);ylabel(<span class="string">'Y'</span>,<span class="string">'fontSize'</span>,fontSize); zlabel(<span class="string">'Z'</span>,<span class="string">'fontSize'</span>,fontSize); hold <span class="string">on</span>;
 <span class="keyword">for</span> q=1:1:numel(stlStruct.solidNames)
@@ -103,10 +103,10 @@ view(viewAz,vieEl);
 camlight(<span class="string">'headlight'</span>);
 lighting <span class="string">phong</span>;
 drawnow;
-</pre><img vspace="5" hspace="5" src="DEMO_AnyBody_force_analysys_01.png" alt=""> <h2>Merging nodes<a name="7"></a></h2><p>STL imported surfaces suffer from non-unique points since each face is defined with its own coordinate set, even if it shares nodes with an adjacent face. Hence in order to generate a closed surface these nodes need to be merged. Here the <tt>unique</tt> function is used combined with <tt>pround</tt> to achieve this. So effectively points are deemed the same if they are the same after rounding to the 5th decimal place.</p><pre class="codeinput">[~,ind1,ind2]=unique(pround(V,5),<span class="string">'rows'</span>);
+</pre><img vspace="5" hspace="5" src="DEMO_AnyBody_force_analysys_01.png" alt=""> <h2 id="7">Merging nodes</h2><p>STL imported surfaces suffer from non-unique points since each face is defined with its own coordinate set, even if it shares nodes with an adjacent face. Hence in order to generate a closed surface these nodes need to be merged. Here the <tt>unique</tt> function is used combined with <tt>pround</tt> to achieve this. So effectively points are deemed the same if they are the same after rounding to the 5th decimal place.</p><pre class="codeinput">[~,ind1,ind2]=unique(pround(V,5),<span class="string">'rows'</span>);
 V=V(ind1,:);
 F=ind2(F);
-</pre><h2>Search for "three-connected" points<a name="8"></a></h2><p>A common issue in triangulated surfaces are "three-connected" nodes. These may be undesirable and can easily be identified and removed.</p><pre class="codeinput">[N]=numConnect(F,V);
+</pre><h2 id="8">Search for "three-connected" points</h2><p>A common issue in triangulated surfaces are "three-connected" nodes. These may be undesirable and can easily be identified and removed.</p><pre class="codeinput">[N]=numConnect(F,V);
 logicThree=N==3;
 </pre><p>Plotting three connected points (some may be boundary points)</p><pre class="codeinput">cFigure;
 title(<span class="string">'Highlighted points that are "three-connected"'</span>,<span class="string">'fontSize'</span>,fontSize);
@@ -119,7 +119,7 @@ view(3); axis <span class="string">equal</span>; axis <span class="string">tight
 view(viewAz,vieEl);
 camlight(<span class="string">'headlight'</span>); lighting <span class="string">flat</span>;
 drawnow;
-</pre><img vspace="5" hspace="5" src="DEMO_AnyBody_force_analysys_02.png" alt=""> <h2>Removing "3-connected" vertices in the middle of faces and replacing associated faces by a single face<a name="10"></a></h2><p>In a surface triangulation "3-connected" locations often contain poor quality triangles of a locally smaller area then the rest of the surface. Smoothening does not resolve this issue since the quality is not great improved even after vertex is at the centre of its neighbouring nodes. Hence the function triSurfRemoveThreeConnect instead removes the central nodes and groups the affected triangles into a single triangle.</p><pre class="codeinput">[Ft,Vt,~,L]=triSurfRemoveThreeConnect(F,V,[]);
+</pre><img vspace="5" hspace="5" src="DEMO_AnyBody_force_analysys_02.png" alt=""> <h2 id="10">Removing "3-connected" vertices in the middle of faces and replacing associated faces by a single face</h2><p>In a surface triangulation "3-connected" locations often contain poor quality triangles of a locally smaller area then the rest of the surface. Smoothening does not resolve this issue since the quality is not great improved even after vertex is at the centre of its neighbouring nodes. Hence the function triSurfRemoveThreeConnect instead removes the central nodes and groups the affected triangles into a single triangle.</p><pre class="codeinput">[Ft,Vt,~,L]=triSurfRemoveThreeConnect(F,V,[]);
 C=double(L);
 </pre><p>Plotting results</p><pre class="codeinput">hf=cFigure; hold <span class="string">on</span>;
 subplot(1,2,1);
@@ -143,7 +143,7 @@ view(viewAz,vieEl);
 camlight(<span class="string">'headlight'</span>); lighting <span class="string">flat</span>;
 
 drawnow;
-</pre><img vspace="5" hspace="5" src="DEMO_AnyBody_force_analysys_03.png" alt=""> <h2>Surface smoothening<a name="12"></a></h2><pre class="codeinput">cPar.n=25;
+</pre><img vspace="5" hspace="5" src="DEMO_AnyBody_force_analysys_03.png" alt=""> <h2 id="12">Surface smoothening</h2><pre class="codeinput">cPar.n=25;
 cPar.Method=<span class="string">'HC'</span>;
 [Vt]=patchSmooth(Ft,Vt,[],cPar);
 </pre><p>Plotting smoothing results</p><pre class="codeinput">hf=cFigure; hold <span class="string">on</span>;
@@ -165,7 +165,7 @@ view(3); axis <span class="string">tight</span>;  axis <span class="string">equa
 view(viewAz,vieEl);
 camlight(<span class="string">'headlight'</span>); lighting <span class="string">flat</span>;
 drawnow;
-</pre><img vspace="5" hspace="5" src="DEMO_AnyBody_force_analysys_04.png" alt=""> <h2>Mesh using TetGen<a name="14"></a></h2><pre class="codeinput"><span class="comment">%Find interior point</span>
+</pre><img vspace="5" hspace="5" src="DEMO_AnyBody_force_analysys_04.png" alt=""> <h2 id="14">Mesh using TetGen</h2><pre class="codeinput"><span class="comment">%Find interior point</span>
 searchRadius=5;
 voxelSize=3;
 [V_in_1]=getInnerPoint(Ft,Vt,searchRadius,voxelSize,0);
@@ -197,27 +197,27 @@ smeshStruct.regionPoints=V_in_1; <span class="comment">%region points</span>
 smeshStruct.regionA=regionA;
 smeshStruct.minRegionMarker=2; <span class="comment">%Minimum region marker</span>
 smeshStruct.smeshName=smeshName;
-</pre><h2>MESH MODEL USING TETGEN<a name="16"></a></h2><pre class="codeinput">[meshOutput]=runTetGenSmesh(smeshStruct);
+</pre><h2 id="16">MESH MODEL USING TETGEN</h2><pre class="codeinput">[meshOutput]=runTetGenSmesh(smeshStruct);
 runTetView(meshOutput.loadNameStruct.loadName_ele);
 </pre><pre class="codeoutput">Warning: runTetGenSmesh has been renamed to runTetGen. runTetGenSmesh will be
 removed in future releases. 
  
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
---- TETGEN Tetrahedral meshing --- 22-Sep-2015 20:44:08
+--- TETGEN Tetrahedral meshing --- 12-Sep-2016 10:12:38
 Warning: smeshStruct.smeshName input will be replaced by smeshStruct.modelName
 in future releases! 
  
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
---- Writing SMESH file --- 22-Sep-2015 20:44:08
+--- Writing SMESH file --- 12-Sep-2016 10:12:38
 Warning: smeshStruct.smeshName input will be replaced by smeshStruct.modelName
 in future releases! 
 ----&gt; Adding node field
 ----&gt; Adding facet field
 ----&gt; Adding holes specification
 ----&gt; Adding region specification
---- Done --- 22-Sep-2015 20:44:08
---- Running TetGen to mesh input boundary--- 22-Sep-2015 20:44:08
-Opening D:\MATLAB\GIBBON\lib_ext\tetGen\tempFiles\anyBody_FEMUR.smesh. 
+--- Done --- 12-Sep-2016 10:12:38
+--- Running TetGen to mesh input boundary--- 12-Sep-2016 10:12:38
+Opening D:\MATLAB\SVN\GIBBON\lib_ext\tetGen\tempFiles\anyBody_FEMUR.smesh. 
   Initializing memorypools. 
   tetrahedron per block: 8188. 
   Size of a point: 128 bytes. 
@@ -234,45 +234,45 @@ Delaunay seconds:  0.015
   Point sorting seconds:  0 
 Creating surface mesh ... 
   5916 (8874) subfaces (segments). 
-Surface mesh seconds:  0.004 
+Surface mesh seconds:  0.005 
 Recovering boundaries... 
   Recovering segments. 
   8874 (0) segments are recovered (missing). 
   Recovering facets. 
   5916 (0) subfaces are recovered (missing). 
-Boundary recovery seconds:  0.008 
-  Segment recovery seconds:  0.005 
-  Facet recovery seconds:  0.003 
+Boundary recovery seconds:  0.006 
+  Segment recovery seconds:  0.004 
+  Facet recovery seconds:  0.002 
 Removing exterior tetrahedra ... 
 Spreading region attributes. 
   Found 1 domain. 
-Exterior tets removal seconds:  0.005 
+Exterior tets removal seconds:  0.007 
 Recovering Delaunayness... 
   Initial obj = 1144577110755.3479 
   Final obj  = 1144577101956.8596 
-Delaunay recovery seconds:  0.004 
+Delaunay recovery seconds:  0.003 
 Refining mesh... 
   Min radiu-edge ratio = 1. 
   Min dihedral   angle = 0. 
   Splitting bad quality tets. 
   Added 5765 (0,0,5765) Steiner points. 
   Performed 2 flips. 
-Refinement seconds:  0.112 
+Refinement seconds:  0.132 
 Optimizing mesh... 
   Optimization level  = 2. 
   Optimization scheme = 7. 
   Number of iteration = 3. 
   Min_Max dihed angle = 165. 
   Removed 558 edges. 
-Optimization seconds:  0.018 
+Optimization seconds:  0.016 
  
-Writing D:\MATLAB\GIBBON\lib_ext\tetGen\tempFiles\anyBody_FEMUR.1.node. 
-Writing D:\MATLAB\GIBBON\lib_ext\tetGen\tempFiles\anyBody_FEMUR.1.ele. 
-Writing D:\MATLAB\GIBBON\lib_ext\tetGen\tempFiles\anyBody_FEMUR.1.face. 
-Writing D:\MATLAB\GIBBON\lib_ext\tetGen\tempFiles\anyBody_FEMUR.1.edge. 
+Writing D:\MATLAB\SVN\GIBBON\lib_ext\tetGen\tempFiles\anyBody_FEMUR.1.node. 
+Writing D:\MATLAB\SVN\GIBBON\lib_ext\tetGen\tempFiles\anyBody_FEMUR.1.ele. 
+Writing D:\MATLAB\SVN\GIBBON\lib_ext\tetGen\tempFiles\anyBody_FEMUR.1.face. 
+Writing D:\MATLAB\SVN\GIBBON\lib_ext\tetGen\tempFiles\anyBody_FEMUR.1.edge. 
  
-Output seconds:  0.081 
-Total running seconds:  0.247 
+Output seconds:  0.091 
+Total running seconds:  0.276 
  
 Statistics: 
  
@@ -342,11 +342,11 @@ Memory usage statistics:
   Approximate memory for working arrays (bytes):  1,371,088 
   Approximate total used memory (bytes):  17,970,960 
  
---- Done --- 22-Sep-2015 20:44:09
+--- Done --- 12-Sep-2016 10:12:40
  
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
---- Importing TetGen files --- 22-Sep-2015 20:44:09
---- Done --- 22-Sep-2015 20:44:09
+--- Importing TetGen files --- 12-Sep-2016 10:12:40
+--- Done --- 12-Sep-2016 10:12:40
 </pre><p>Access model element and patch data</p><pre class="codeinput">F=meshOutput.faces;
 V=meshOutput.nodes;
 C=meshOutput.faceMaterialID;
@@ -370,7 +370,7 @@ camlight(<span class="string">'headlight'</span>); lighting <span class="string"
 set(gca,<span class="string">'FontSize'</span>,fontSize);
 drawnow;
 </pre><pre class="codeoutput">tet4 elements assumed, for other elements please specify elementType
-</pre><img vspace="5" hspace="5" src="DEMO_AnyBody_force_analysys_06.png" alt=""> <h2>Import force data<a name="19"></a></h2><pre class="codeinput">pathName_TXT=fullfile(defaultFolder,<span class="string">'data'</span>,<span class="string">'AnyBody'</span>);
+</pre><img vspace="5" hspace="5" src="DEMO_AnyBody_force_analysys_06.png" alt=""> <h2 id="19">Import force data</h2><pre class="codeinput">pathName_TXT=fullfile(defaultFolder,<span class="string">'data'</span>,<span class="string">'AnyBody'</span>);
 fileName=fullfile(pathName_TXT,<span class="string">'femurData.txt'</span>);
 structOut = importAnyBodyOutput(fileName);
 
@@ -396,7 +396,7 @@ camlight(<span class="string">'headlight'</span>); lighting <span class="string"
 
 set(gca,<span class="string">'FontSize'</span>,fontSize);
 drawnow;
-</pre><img vspace="5" hspace="5" src="DEMO_AnyBody_force_analysys_07.png" alt=""> <h2>Snap force vector origins to nodes (inaccurate but used anyway for example)<a name="20"></a></h2><pre class="codeinput">[~,bcPrescribeList]=minDist(V_vec,V);
+</pre><img vspace="5" hspace="5" src="DEMO_AnyBody_force_analysys_07.png" alt=""> <h2 id="20">Snap force vector origins to nodes (inaccurate but used anyway for example)</h2><pre class="codeinput">[~,bcPrescribeList]=minDist(V_vec,V);
 bcPrescribeList=bcPrescribeList(logicRelevant);
 bcPrescribeMagnitudes=F_vec(logicRelevant,:);
 </pre><pre class="codeinput"><span class="comment">% % Bottom boundary region</span>
@@ -427,7 +427,7 @@ camlight(<span class="string">'headlight'</span>); lighting <span class="string"
 
 set(gca,<span class="string">'FontSize'</span>,fontSize);
 drawnow;
-</pre><img vspace="5" hspace="5" src="DEMO_AnyBody_force_analysys_08.png" alt=""> <h2>CONSTRUCTING FEB MODEL<a name="22"></a></h2><pre class="codeinput">FEB_struct.febio_spec.version=<span class="string">'2.0'</span>;
+</pre><img vspace="5" hspace="5" src="DEMO_AnyBody_force_analysys_08.png" alt=""> <h2 id="22">CONSTRUCTING FEB MODEL</h2><pre class="codeinput">FEB_struct.febio_spec.version=<span class="string">'2.0'</span>;
 FEB_struct.Module.Type=<span class="string">'solid'</span>;
 
 <span class="comment">% Defining file names</span>
@@ -512,11 +512,11 @@ run_node_output_name=[FEB_struct.run_filename(1:end-4),<span class="string">'_no
 FEB_struct.run_output_names={run_node_output_name};
 FEB_struct.output_types={<span class="string">'node_data'</span>};
 FEB_struct.data_types={<span class="string">'ux;uy;uz'</span>};
-</pre><h2>SAVING .FEB FILE<a name="23"></a></h2><pre class="codeinput">FEB_struct.disp_opt=0; <span class="comment">%Display waitbars</span>
+</pre><h2 id="23">SAVING .FEB FILE</h2><pre class="codeinput">FEB_struct.disp_opt=0; <span class="comment">%Display waitbars</span>
 febStruct2febFile(FEB_struct);
 </pre><pre class="codeoutput"> 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
---- Writing FEBio XML object --- 22-Sep-2015 20:44:13
+--- Writing FEBio XML object --- 12-Sep-2016 10:12:43
 Adding Module level
 Adding Control level
 Adding Globals level
@@ -538,9 +538,11 @@ Adding LoadData level
 Adding Output level
 ----&gt; Adding plotfile field
 ----&gt; Adding logfile field
+Warning: Provided path of logfile is replaced by .feb file path. Only provide
+filename to avoid this warning 
 Writing .feb file
---- Done --- 22-Sep-2015 20:44:15
-</pre><h2>RUNNING FEBIO JOB<a name="24"></a></h2><pre class="codeinput">FEBioRunStruct.run_filename=FEB_struct.run_filename;
+--- Done --- 12-Sep-2016 10:12:46
+</pre><h2 id="24">RUNNING FEBIO JOB</h2><pre class="codeinput">FEBioRunStruct.run_filename=FEB_struct.run_filename;
 FEBioRunStruct.run_logname=FEB_struct.run_logname;
 FEBioRunStruct.disp_on=1;
 FEBioRunStruct.disp_log_on=1;
@@ -560,7 +562,7 @@ FEBioRunStruct.maxLogCheckTime=3; <span class="comment">%Max log file checking t
    % camlight headlight;
    set(gca,'FontSize',fontSize);
    drawnow;
-end</pre><p><img vspace="5" hspace="5" src="gibbVerySmall.gif" alt=""> </p><p><i><b>GIBBON</b></i> <a href="www.gibboncode.org">www.gibboncode.org</a></p><p><i>Kevin Mattheus Moerman</i>, <a href="gibbon.toolbox@gmail.com">gibbon.toolbox@gmail.com</a></p><p class="footer"><br><a href="http://www.mathworks.com/products/matlab/">Published with MATLAB&reg; R2015b</a><br></p></div><!--
+end</pre><p><img vspace="5" hspace="5" src="gibbVerySmall.gif" alt=""> </p><p><i><b>GIBBON</b></i> <a href="www.gibboncode.org">www.gibboncode.org</a></p><p><i>Kevin Mattheus Moerman</i>, <a href="gibbon.toolbox@gmail.com">gibbon.toolbox@gmail.com</a></p><p class="footer"><br><a href="http://www.mathworks.com/products/matlab/">Published with MATLAB&reg; R2016b</a><br></p></div><!--
 ##### SOURCE BEGIN #####
 %% DEMO_AnyBody_force_analysis
 % Below is a demonstration for importing AnyBody surface models and
@@ -578,7 +580,7 @@ end</pre><p><img vspace="5" hspace="5" src="gibbVerySmall.gif" alt=""> </p><p><i
 % 2014/10/09
 
 %%
-clear; close all; clc; 
+close all; clc; %clear;
 
 %%
 % Plot settings
@@ -1011,5 +1013,6 @@ FEBioRunStruct.maxLogCheckTime=3; %Max log file checking time
 % <www.gibboncode.org>
 % 
 % _Kevin Mattheus Moerman_, <gibbon.toolbox@gmail.com>
+
 ##### SOURCE END #####
 --></body></html>

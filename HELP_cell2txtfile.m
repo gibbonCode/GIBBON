@@ -12,7 +12,7 @@
 % (after spaces are removed) will be skipped.
 
 %%
-clear; close all; clc; 
+close all; clc; clear;
 
 %% Examples
 

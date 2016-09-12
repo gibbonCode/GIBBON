@@ -7,7 +7,7 @@
 
 %%
 
-clear; close all; clc;
+close all; clc; clear;
 
 %%
 % Plot settings
@@ -33,7 +33,7 @@ modelName=fullfile(savePath,modelNameEnd);
 sampleWidth=10;
 sampleThickness=10; 
 sampleHeight=10;
-pointSpacings=1*ones(1,3);
+pointSpacings=2*ones(1,3);
 initialArea=sampleWidth*sampleThickness;
 
 numElementsWidth=round(sampleWidth/pointSpacings(1));
@@ -216,7 +216,7 @@ if runFlag==1 %i.e. a succesful run
     
     %% IMPORTING NODAL DISPLACEMENT RESULTS
     % Importing nodal displacements from a log file
-    [~, N_disp_mat,~]=importFEBio_logfile(FEB_struct.run_output_names{1}); %Nodal displacements
+    [~, N_disp_mat,~]=importFEBio_logfile(fullfile(savePath,FEB_struct.run_output_names{1})); %Nodal displacements
     
     DN=N_disp_mat(:,2:end,end); %Final nodal displacements
     
@@ -243,7 +243,7 @@ if runFlag==1 %i.e. a succesful run
     
     %% IMPORTING NODAL FORCES
     % Importing nodal forces from a log file
-    [time_mat, N_force_mat,~]=importFEBio_logfile(FEB_struct.run_output_names{2}); %Nodal forces
+    [time_mat, N_force_mat,~]=importFEBio_logfile(fullfile(savePath,FEB_struct.run_output_names{2})); %Nodal forces
         
     %% DERIVING STRESS METRICS
     

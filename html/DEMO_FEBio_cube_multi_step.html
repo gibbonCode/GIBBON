@@ -6,7 +6,7 @@
    <!--
 This HTML was auto-generated from MATLAB code.
 To make changes, update the MATLAB code and republish this document.
-      --><title>DEMO_FEBio_cube_multi_step</title><meta name="generator" content="MATLAB 8.4"><link rel="schema.DC" href="http://purl.org/dc/elements/1.1/"><meta name="DC.date" content="2014-10-01"><meta name="DC.source" content="DEMO_FEBio_cube_multi_step.m"><style type="text/css">
+      --><title>DEMO_FEBio_cube_multi_step</title><meta name="generator" content="MATLAB 9.1"><link rel="schema.DC" href="http://purl.org/dc/elements/1.1/"><meta name="DC.date" content="2016-09-12"><meta name="DC.source" content="DEMO_FEBio_cube_multi_step.m"><style type="text/css">
 html,body,div,span,applet,object,iframe,h1,h2,h3,h4,h5,h6,p,blockquote,pre,a,abbr,acronym,address,big,cite,code,del,dfn,em,font,img,ins,kbd,q,s,samp,small,strike,strong,sub,sup,tt,var,b,u,i,center,dl,dt,dd,ol,ul,li,fieldset,form,label,legend,table,caption,tbody,tfoot,thead,tr,th,td{margin:0;padding:0;border:0;outline:0;font-size:100%;vertical-align:baseline;background:transparent}body{line-height:1}ol,ul{list-style:none}blockquote,q{quotes:none}blockquote:before,blockquote:after,q:before,q:after{content:'';content:none}:focus{outine:0}ins{text-decoration:none}del{text-decoration:line-through}table{border-collapse:collapse;border-spacing:0}
 
 html { min-height:100%; margin-bottom:1px; }
@@ -66,7 +66,7 @@ table td { padding:7px 5px; text-align:left; vertical-align:top; border:1px soli
 
 
 
-  </style></head><body><div class="content"><h1>DEMO_FEBio_cube_multi_step</h1><!--introduction--><p>Below is a demonstration for: 1) The creation of an FEBio model of a cube loaded in tension after which loading is removed in a multi-step analysis</p><!--/introduction--><h2>Contents</h2><div><ul><li><a href="#4">CREATING MESHED BOX</a></li><li><a href="#6">DEFINE BC's</a></li><li><a href="#8">CONSTRUCTING FEB MODEL</a></li><li><a href="#9">SAVING .FEB FILE</a></li><li><a href="#10">RUNNING FEBIO JOB</a></li></ul></div><pre class="codeinput">clear; close <span class="string">all</span>; clc;
+  </style></head><body><div class="content"><h1>DEMO_FEBio_cube_multi_step</h1><!--introduction--><p>Below is a demonstration for: 1) The creation of an FEBio model of a cube loaded in tension after which loading is removed in a multi-step analysis</p><!--/introduction--><h2>Contents</h2><div><ul><li><a href="#4">CREATING MESHED BOX</a></li><li><a href="#6">DEFINE BC's</a></li><li><a href="#8">CONSTRUCTING FEB MODEL</a></li><li><a href="#9">SAVING .FEB FILE</a></li><li><a href="#10">RUNNING FEBIO JOB</a></li></ul></div><pre class="codeinput">close <span class="string">all</span>; clc; clear;
 </pre><p>Plot settings</p><pre class="codeinput">figColor=<span class="string">'w'</span>; figColorDef=<span class="string">'white'</span>;
 fontSize=15;
 faceAlpha1=0.8;
@@ -91,7 +91,7 @@ numElementsThickness=round(sampleThickness/pointSpacings(2));
 numElementsHeight=round(sampleHeight/pointSpacings(3));
 
 displacementMagnitude=[0 0 2];
-</pre><h2>CREATING MESHED BOX<a name="4"></a></h2><pre class="codeinput"><span class="comment">%Create box 1</span>
+</pre><h2 id="4">CREATING MESHED BOX</h2><pre class="codeinput"><span class="comment">%Create box 1</span>
 boxDim=[sampleWidth sampleThickness sampleHeight]; <span class="comment">%Dimensions</span>
 boxEl=[numElementsWidth numElementsThickness numElementsHeight]; <span class="comment">%Number of elements</span>
 [box1]=hexMeshBox(boxDim,boxEl);
@@ -134,7 +134,7 @@ set(gca,<span class="string">'FontSize'</span>,fontSize);
 view(3); axis <span class="string">tight</span>;  axis <span class="string">equal</span>;  grid <span class="string">on</span>;
 <span class="comment">% camlight headlight;</span>
 drawnow;
-</pre><img vspace="5" hspace="5" src="DEMO_FEBio_cube_multi_step_01.png" alt=""> <img vspace="5" hspace="5" src="DEMO_FEBio_cube_multi_step_02.png" alt=""> <h2>DEFINE BC's<a name="6"></a></h2><pre class="codeinput"><span class="comment">%Supported nodes</span>
+</pre><img vspace="5" hspace="5" src="DEMO_FEBio_cube_multi_step_01.png" alt=""> <img vspace="5" hspace="5" src="DEMO_FEBio_cube_multi_step_02.png" alt=""> <h2 id="6">DEFINE BC's</h2><pre class="codeinput"><span class="comment">%Supported nodes</span>
 logicRigid_X=faceBoundaryMarker==1;
 Fr=Fb(logicRigid_X,:);
 bcRigidList_X=unique(Fr(:));
@@ -166,7 +166,7 @@ set(gca,<span class="string">'FontSize'</span>,fontSize);
 
 view(3); axis <span class="string">tight</span>;  axis <span class="string">equal</span>;  grid <span class="string">on</span>;
 drawnow;
-</pre><img vspace="5" hspace="5" src="DEMO_FEBio_cube_multi_step_03.png" alt=""> <h2>CONSTRUCTING FEB MODEL<a name="8"></a></h2><pre class="codeinput">FEB_struct.febio_spec.version=<span class="string">'2.0'</span>;
+</pre><img vspace="5" hspace="5" src="DEMO_FEBio_cube_multi_step_03.png" alt=""> <h2 id="8">CONSTRUCTING FEB MODEL</h2><pre class="codeinput">FEB_struct.febio_spec.version=<span class="string">'2.0'</span>;
 
 FEB_struct.Module.Type=<span class="string">'solid'</span>;
 
@@ -255,11 +255,11 @@ run_node_output_name=[FEB_struct.run_filename(1:end-4),<span class="string">'_no
 FEB_struct.run_output_names={run_node_output_name};
 FEB_struct.output_types={<span class="string">'node_data'</span>};
 FEB_struct.data_types={<span class="string">'ux;uy;uz'</span>};
-</pre><h2>SAVING .FEB FILE<a name="9"></a></h2><pre class="codeinput">FEB_struct.disp_opt=0; <span class="comment">%Display waitbars option</span>
+</pre><h2 id="9">SAVING .FEB FILE</h2><pre class="codeinput">FEB_struct.disp_opt=0; <span class="comment">%Display waitbars option</span>
 febStruct2febFile(FEB_struct);
 </pre><pre class="codeoutput"> 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
---- Writing FEBio XML object --- 01-Oct-2014 15:02:02
+--- Writing FEBio XML object --- 12-Sep-2016 10:43:34
 Adding Module level
 Adding Globals level
 Adding Material level
@@ -285,9 +285,11 @@ Adding Step level
 Adding Output level
 ----&gt; Adding plotfile field
 ----&gt; Adding logfile field
+Warning: Provided path of logfile is replaced by .feb file path. Only provide
+filename to avoid this warning 
 Writing .feb file
---- Done --- 01-Oct-2014 15:02:02
-</pre><h2>RUNNING FEBIO JOB<a name="10"></a></h2><pre class="codeinput"><span class="comment">% FEBioRunStruct.FEBioPath='C:\Program Files\febio-2.1.0\bin\FEBio2.exe';</span>
+--- Done --- 12-Sep-2016 10:43:34
+</pre><h2 id="10">RUNNING FEBIO JOB</h2><pre class="codeinput"><span class="comment">% FEBioRunStruct.FEBioPath='C:\Program Files\febio2-2.2.6\bin\febio2.exe';</span>
 FEBioRunStruct.run_filename=FEB_struct.run_filename;
 FEBioRunStruct.run_logname=FEB_struct.run_logname;
 FEBioRunStruct.disp_on=1;
@@ -300,14 +302,9 @@ FEBioRunStruct.maxLogCheckTime=3; <span class="comment">%Max log file checking t
 [runFlag]=runMonitorFEBio(FEBioRunStruct);<span class="comment">%START FEBio NOW!!!!!!!!</span>
 </pre><pre class="codeoutput"> 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
---- STARTING FEBIO JOB --- 01-Oct-2014 15:02:02
-
-ans =
-
-"/data/Code/C/FEBIO_linux/bin/febio2.lnx64" -i "/data/MATLAB/GIBBON/trunk/data/temp/tempModel.feb" -o "/data/MATLAB/GIBBON/trunk/data/temp/tempModel.txt" &amp;
-
+--- STARTING FEBIO JOB --- 12-Sep-2016 10:43:34
 Waiting for log file...
-Proceeding to check log file...01-Oct-2014 15:02:03
+Proceeding to check log file...12-Sep-2016 10:43:34
 ------- converged at time : 0.05
 ------- converged at time : 0.1
 ------- converged at time : 0.15
@@ -348,7 +345,7 @@ Proceeding to check log file...01-Oct-2014 15:02:03
 ------- converged at time : 1.9
 ------- converged at time : 1.95
 ------- converged at time : 2
---- Done --- 01-Oct-2014 15:02:04
+--- Done --- 12-Sep-2016 10:43:35
 </pre><pre class="codeinput"><span class="keyword">if</span> runFlag==1 <span class="comment">%i.e. a succesful run</span>
     <span class="comment">% IMPORTING NODAL DISPLACEMENT RESULTS</span>
     <span class="comment">% Importing nodal displacements from a log file</span>
@@ -377,7 +374,7 @@ Proceeding to check log file...01-Oct-2014 15:02:03
     set(gca,<span class="string">'FontSize'</span>,fontSize);
     drawnow;
 <span class="keyword">end</span>
-</pre><img vspace="5" hspace="5" src="DEMO_FEBio_cube_multi_step_04.png" alt=""> <p><img vspace="5" hspace="5" src="gibbVerySmall.gif" alt=""> </p><p><i><b>GIBBON</b></i> <a href="www.gibboncode.org">www.gibboncode.org</a></p><p><i>Kevin Mattheus Moerman</i>, <a href="gibbon.toolbox@gmail.com">gibbon.toolbox@gmail.com</a></p><p class="footer"><br><a href="http://www.mathworks.com/products/matlab/">Published with MATLAB&reg; R2014b</a><br></p></div><!--
+</pre><img vspace="5" hspace="5" src="DEMO_FEBio_cube_multi_step_04.png" alt=""> <p><img vspace="5" hspace="5" src="gibbVerySmall.gif" alt=""> </p><p><i><b>GIBBON</b></i> <a href="www.gibboncode.org">www.gibboncode.org</a></p><p><i>Kevin Mattheus Moerman</i>, <a href="gibbon.toolbox@gmail.com">gibbon.toolbox@gmail.com</a></p><p class="footer"><br><a href="http://www.mathworks.com/products/matlab/">Published with MATLAB&reg; R2016b</a><br></p></div><!--
 ##### SOURCE BEGIN #####
 %% DEMO_FEBio_cube_multi_step
 % Below is a demonstration for: 
@@ -386,7 +383,7 @@ Proceeding to check log file...01-Oct-2014 15:02:03
 
 %%
 
-clear; close all; clc;
+close all; clc; clear;
 
 %%
 % Plot settings
@@ -605,7 +602,7 @@ febStruct2febFile(FEB_struct);
 
 %% RUNNING FEBIO JOB
 
-% FEBioRunStruct.FEBioPath='C:\Program Files\febio-2.1.0\bin\FEBio2.exe';
+% FEBioRunStruct.FEBioPath='C:\Program Files\febio2-2.2.6\bin\febio2.exe';
 FEBioRunStruct.run_filename=FEB_struct.run_filename;
 FEBioRunStruct.run_logname=FEB_struct.run_logname;
 FEBioRunStruct.disp_on=1;

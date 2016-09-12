@@ -6,7 +6,7 @@
    <!--
 This HTML was auto-generated from MATLAB code.
 To make changes, update the MATLAB code and republish this document.
-      --><title>DEMO_FEBio_cube_viscoelastic_aniso</title><meta name="generator" content="MATLAB 8.6"><link rel="schema.DC" href="http://purl.org/dc/elements/1.1/"><meta name="DC.date" content="2015-06-30"><meta name="DC.source" content="DEMO_FEBio_cube_viscoelastic_aniso.m"><style type="text/css">
+      --><title>DEMO_FEBio_cube_viscoelastic_aniso</title><meta name="generator" content="MATLAB 9.1"><link rel="schema.DC" href="http://purl.org/dc/elements/1.1/"><meta name="DC.date" content="2016-09-12"><meta name="DC.source" content="DEMO_FEBio_cube_viscoelastic_aniso.m"><style type="text/css">
 html,body,div,span,applet,object,iframe,h1,h2,h3,h4,h5,h6,p,blockquote,pre,a,abbr,acronym,address,big,cite,code,del,dfn,em,font,img,ins,kbd,q,s,samp,small,strike,strong,sub,sup,tt,var,b,u,i,center,dl,dt,dd,ol,ul,li,fieldset,form,label,legend,table,caption,tbody,tfoot,thead,tr,th,td{margin:0;padding:0;border:0;outline:0;font-size:100%;vertical-align:baseline;background:transparent}body{line-height:1}ol,ul{list-style:none}blockquote,q{quotes:none}blockquote:before,blockquote:after,q:before,q:after{content:'';content:none}:focus{outine:0}ins{text-decoration:none}del{text-decoration:line-through}table{border-collapse:collapse;border-spacing:0}
 
 html { min-height:100%; margin-bottom:1px; }
@@ -66,7 +66,7 @@ table td { padding:7px 5px; text-align:left; vertical-align:top; border:1px soli
 
 
 
-  </style></head><body><div class="content"><h1>DEMO_FEBio_cube_viscoelastic_aniso</h1><!--introduction--><p>Below is a demonstration for: 1) Building an FEBio model for uniaxial compression for a viscoelastic material with fibres 2) Running the model 3) Importing displacement and force results 4) Plotting results</p><!--/introduction--><h2>Contents</h2><div><ul><li><a href="#4">CREATING MESHED BOX</a></li><li><a href="#6">DEFINE BC's</a></li><li><a href="#8">CONSTRUCTING FEB MODEL</a></li><li><a href="#9">SAVING .FEB FILE</a></li><li><a href="#10">RUNNING FEBIO JOB</a></li><li><a href="#13">IMPORTING NODAL DISPLACEMENT RESULTS</a></li><li><a href="#14">CREATING NODE SET IN DEFORMED STATE</a></li><li><a href="#16">IMPORTING NODAL FORCES</a></li><li><a href="#17">DERIVING STRESS METRICS</a></li></ul></div><pre class="codeinput">clear; close <span class="string">all</span>; clc;
+  </style></head><body><div class="content"><h1>DEMO_FEBio_cube_viscoelastic_aniso</h1><!--introduction--><p>Below is a demonstration for: 1) Building an FEBio model for uniaxial compression for a viscoelastic material with fibres 2) Running the model 3) Importing displacement and force results 4) Plotting results</p><!--/introduction--><h2>Contents</h2><div><ul><li><a href="#4">CREATING MESHED BOX</a></li><li><a href="#6">DEFINE BC's</a></li><li><a href="#8">CONSTRUCTING FEB MODEL</a></li><li><a href="#9">SAVING .FEB FILE</a></li><li><a href="#10">RUNNING FEBIO JOB</a></li><li><a href="#13">IMPORTING NODAL DISPLACEMENT RESULTS</a></li><li><a href="#14">CREATING NODE SET IN DEFORMED STATE</a></li><li><a href="#16">IMPORTING NODAL FORCES</a></li><li><a href="#17">DERIVING STRESS METRICS</a></li></ul></div><pre class="codeinput">close <span class="string">all</span>; clc; clear;
 </pre><p>Plot settings</p><pre class="codeinput">fontSize=20;
 faceAlpha1=0.8;
 faceAlpha2=1;
@@ -114,7 +114,7 @@ t_step_max=0.05; <span class="comment">%Maximum step size</span>
 analysisType=<span class="string">'static'</span>;
 
 uncoupledLaw=1; <span class="comment">%1=uncoupled, 2=coupled</span>
-</pre><h2>CREATING MESHED BOX<a name="4"></a></h2><pre class="codeinput"><span class="comment">%Create box 1</span>
+</pre><h2 id="4">CREATING MESHED BOX</h2><pre class="codeinput"><span class="comment">%Create box 1</span>
 boxDim=[sampleWidth sampleThickness sampleHeight]; <span class="comment">%Dimensions</span>
 boxEl=[numElementsWidth numElementsThickness numElementsHeight]; <span class="comment">%Number of elements</span>
 [box1]=hexMeshBox(boxDim,boxEl);
@@ -138,7 +138,7 @@ colormap(gjet(6)); colorbar;
 set(gca,<span class="string">'FontSize'</span>,fontSize);
 view(3); axis <span class="string">tight</span>;  axis <span class="string">equal</span>;  grid <span class="string">on</span>;
 drawnow;
-</pre><img vspace="5" hspace="5" src="DEMO_FEBio_cube_viscoelastic_aniso_01.png" alt=""> <h2>DEFINE BC's<a name="6"></a></h2><pre class="codeinput"><span class="comment">%Define faces</span>
+</pre><img vspace="5" hspace="5" src="DEMO_FEBio_cube_viscoelastic_aniso_01.png" alt=""> <h2 id="6">DEFINE BC's</h2><pre class="codeinput"><span class="comment">%Define faces</span>
 logicFace=faceBoundaryMarker==1;
 Fr=Fb(logicFace,:);
 bcSupportList_X=unique(Fr(:));
@@ -177,7 +177,7 @@ colormap(gjet(6)); colorbar;
 set(gca,<span class="string">'FontSize'</span>,fontSize);
 view(3); axis <span class="string">tight</span>;  axis <span class="string">equal</span>;  grid <span class="string">on</span>;
 drawnow;
-</pre><img vspace="5" hspace="5" src="DEMO_FEBio_cube_viscoelastic_aniso_02.png" alt=""> <h2>CONSTRUCTING FEB MODEL<a name="8"></a></h2><pre class="codeinput">FEB_struct.febio_spec.version=<span class="string">'2.0'</span>;
+</pre><img vspace="5" hspace="5" src="DEMO_FEBio_cube_viscoelastic_aniso_02.png" alt=""> <h2 id="8">CONSTRUCTING FEB MODEL</h2><pre class="codeinput">FEB_struct.febio_spec.version=<span class="string">'2.0'</span>;
 FEB_struct.Module.Type=<span class="string">'solid'</span>;
 
 <span class="comment">% Defining file names</span>
@@ -321,11 +321,11 @@ run_force_output_name=[run_force_output_name,ext];
 FEB_struct.run_output_names={run_disp_output_name,run_force_output_name};
 FEB_struct.output_types={<span class="string">'node_data'</span>,<span class="string">'node_data'</span>};
 FEB_struct.data_types={<span class="string">'ux;uy;uz'</span>,<span class="string">'Rx;Ry;Rz'</span>};
-</pre><h2>SAVING .FEB FILE<a name="9"></a></h2><pre class="codeinput">FEB_struct.disp_opt=0; <span class="comment">%Display waitbars</span>
+</pre><h2 id="9">SAVING .FEB FILE</h2><pre class="codeinput">FEB_struct.disp_opt=0; <span class="comment">%Display waitbars</span>
 febStruct2febFile(FEB_struct);
 </pre><pre class="codeoutput"> 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
---- Writing FEBio XML object --- 30-Jun-2015 13:48:34
+--- Writing FEBio XML object --- 12-Sep-2016 10:45:55
 Adding Module level
 Adding Control level
 Adding Globals level
@@ -346,8 +346,8 @@ Adding Output level
 ----&gt; Adding plotfile field
 ----&gt; Adding logfile field
 Writing .feb file
---- Done --- 30-Jun-2015 13:48:34
-</pre><h2>RUNNING FEBIO JOB<a name="10"></a></h2><pre class="codeinput">FEBioRunStruct.FEBioPath=<span class="string">'C:\Program Files\febio-2.3.1\bin\febio2.exe'</span>;
+--- Done --- 12-Sep-2016 10:45:55
+</pre><h2 id="10">RUNNING FEBIO JOB</h2><pre class="codeinput">FEBioRunStruct.FEBioPath=<span class="string">'C:\Program Files\febio-2.3.1\bin\febio2.exe'</span>;
 FEBioRunStruct.run_filename=FEB_struct.run_filename;
 FEBioRunStruct.run_logname=FEB_struct.run_logname;
 FEBioRunStruct.disp_on=1;
@@ -360,9 +360,9 @@ FEBioRunStruct.maxLogCheckTime=3; <span class="comment">%Max log file checking t
 [runFlag]=runMonitorFEBio(FEBioRunStruct);<span class="comment">%START FEBio NOW!!!!!!!!</span>
 </pre><pre class="codeoutput"> 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
---- STARTING FEBIO JOB --- 30-Jun-2015 13:48:34
+--- STARTING FEBIO JOB --- 12-Sep-2016 10:45:55
 Waiting for log file...
-Proceeding to check log file...30-Jun-2015 13:48:35
+Proceeding to check log file...12-Sep-2016 10:45:55
 ------- converged at time : 0.001
 ------- converged at time : 0.006
 ------- converged at time : 0.02
@@ -429,12 +429,12 @@ Proceeding to check log file...30-Jun-2015 13:48:35
 ------- converged at time : 2.90359
 ------- converged at time : 2.95359
 ------- converged at time : 3
---- Done --- 30-Jun-2015 13:48:38
+--- Done --- 12-Sep-2016 10:45:57
 </pre><pre class="codeinput"><span class="keyword">if</span> runFlag==1 <span class="comment">%i.e. a succesful run</span>
-</pre><h2>IMPORTING NODAL DISPLACEMENT RESULTS<a name="13"></a></h2><p>Importing nodal displacements from a log file</p><pre class="codeinput">    [~, N_disp_mat,~]=importFEBio_logfile(fullfile(pathstr,FEB_struct.run_output_names{1})); <span class="comment">%Nodal displacements</span>
+</pre><h2 id="13">IMPORTING NODAL DISPLACEMENT RESULTS</h2><p>Importing nodal displacements from a log file</p><pre class="codeinput">    [~, N_disp_mat,~]=importFEBio_logfile(fullfile(pathstr,FEB_struct.run_output_names{1})); <span class="comment">%Nodal displacements</span>
 
     DN=N_disp_mat(:,2:end,end); <span class="comment">%Final nodal displacements</span>
-</pre><h2>CREATING NODE SET IN DEFORMED STATE<a name="14"></a></h2><pre class="codeinput">    V_def=V+DN;
+</pre><h2 id="14">CREATING NODE SET IN DEFORMED STATE</h2><pre class="codeinput">    V_def=V+DN;
     DN_magnitude=sqrt(sum(DN.^2,2));
 </pre><p>Plotting the deformed model</p><pre class="codeinput">    [CF]=vertexToFaceMeasure(Fb,DN_magnitude);
 
@@ -449,9 +449,9 @@ Proceeding to check log file...30-Jun-2015 13:48:35
     <span class="comment">% camlight headlight;</span>
     set(gca,<span class="string">'FontSize'</span>,fontSize);
     drawnow;
-</pre><img vspace="5" hspace="5" src="DEMO_FEBio_cube_viscoelastic_aniso_03.png" alt=""> <h2>IMPORTING NODAL FORCES<a name="16"></a></h2><p>Importing nodal forces from a log file</p><pre class="codeinput">    [time_mat, N_force_mat,~]=importFEBio_logfile(fullfile(pathstr,FEB_struct.run_output_names{2})); <span class="comment">%Nodal forces</span>
+</pre><img vspace="5" hspace="5" src="DEMO_FEBio_cube_viscoelastic_aniso_03.png" alt=""> <h2 id="16">IMPORTING NODAL FORCES</h2><p>Importing nodal forces from a log file</p><pre class="codeinput">    [time_mat, N_force_mat,~]=importFEBio_logfile(fullfile(pathstr,FEB_struct.run_output_names{2})); <span class="comment">%Nodal forces</span>
     time_mat=[0; time_mat(:)]; <span class="comment">%Time</span>
-</pre><h2>DERIVING STRESS METRICS<a name="17"></a></h2><pre class="codeinput">    <span class="comment">%Get Z forces</span>
+</pre><h2 id="17">DERIVING STRESS METRICS</h2><pre class="codeinput">    <span class="comment">%Get Z forces</span>
     FZ=sum(N_force_mat(bcPrescribeList,end,:),1);
     FZ=[0; FZ(:)]; <span class="comment">%Mean top surface nodal forces</span>
 
@@ -475,7 +475,7 @@ Proceeding to check log file...30-Jun-2015 13:48:35
     set(gca,<span class="string">'FontSize'</span>,fontSize);
     drawnow;
 </pre><img vspace="5" hspace="5" src="DEMO_FEBio_cube_viscoelastic_aniso_04.png" alt=""> <pre class="codeinput"><span class="keyword">end</span>
-</pre><p><img vspace="5" hspace="5" src="gibbVerySmall.gif" alt=""> </p><p><i><b>GIBBON</b></i> <a href="www.gibboncode.org">www.gibboncode.org</a></p><p><i>Kevin Mattheus Moerman</i>, <a href="gibbon.toolbox@gmail.com">gibbon.toolbox@gmail.com</a></p><p class="footer"><br><a href="http://www.mathworks.com/products/matlab/">Published with MATLAB&reg; R2015b</a><br></p></div><!--
+</pre><p><img vspace="5" hspace="5" src="gibbVerySmall.gif" alt=""> </p><p><i><b>GIBBON</b></i> <a href="www.gibboncode.org">www.gibboncode.org</a></p><p><i>Kevin Mattheus Moerman</i>, <a href="gibbon.toolbox@gmail.com">gibbon.toolbox@gmail.com</a></p><p class="footer"><br><a href="http://www.mathworks.com/products/matlab/">Published with MATLAB&reg; R2016b</a><br></p></div><!--
 ##### SOURCE BEGIN #####
 %% DEMO_FEBio_cube_viscoelastic_aniso
 % Below is a demonstration for:
@@ -487,7 +487,7 @@ Proceeding to check log file...30-Jun-2015 13:48:35
 
 %%
 
-clear; close all; clc;
+close all; clc; clear;
 
 %%
 % Plot settings
