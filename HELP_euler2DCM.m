@@ -2,7 +2,7 @@
 % Below is a demonstration of the features of the |euler2DCM| function
 
 %%
-close all; clc; clear;
+clear; close all; clc;
 
 %%
 % Plot settings

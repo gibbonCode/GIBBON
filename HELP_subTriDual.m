@@ -2,7 +2,7 @@
 % Below is a demonstration of the features of the |subTriDual| function
 
 %%
-close all; clc; clear;
+clear; close all; clc;
 
 %% Syntax
 % |[Ft,Vt,Ct,indIni]=subTriDual(F,V,logicFaces);|

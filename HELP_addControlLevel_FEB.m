@@ -2,7 +2,7 @@
 % Below is a demonstration of the features of the |addControlLevel_FEB| function
 
 %%
-close all; clc; clear;
+clear; close all; clc;
 
 %% Syntax
 % |[domNode]=addControlLevel_FEB(domNode,FEB_struct);|

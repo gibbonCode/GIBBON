@@ -2,7 +2,7 @@
 % Below is a demonstration of the features of the |subTriLocal| function
 
 %%
-close all; clc; clear;
+clear; close all; clc;
 
 %% Syntax
 % |[outputStruct]=subTriLocal(inputStruct);|

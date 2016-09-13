@@ -2,7 +2,7 @@
 % Below is a demonstration of the features of the |tet4_tet10| function
 
 %%
-close all; clc; clear;
+clear; close all; clc;
 
 % Plot settings
 fontSize=15;

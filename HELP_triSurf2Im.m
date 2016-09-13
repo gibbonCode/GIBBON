@@ -2,7 +2,7 @@
 % Below is a demonstration of the features of the |triSurf2Im| function
 
 %%
-close all; clc; clear;
+clear; close all; clc;
 
 %% Syntax
 % |[M,G,bwLabels]=triSurf2Im(F,V,voxelSize,imOrigin,imSiz);|

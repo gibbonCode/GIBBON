@@ -14,7 +14,7 @@
 % 2014/10/09
 
 %%
-close all; clc; clear;
+clear; close all; clc;
 
 %%
 % Plot settings

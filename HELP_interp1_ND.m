@@ -13,7 +13,7 @@
 
 %% Examples
 
-close all; clc; clear;
+clear; close all; clc;
 
 %%
 % PLOT SETTINGS

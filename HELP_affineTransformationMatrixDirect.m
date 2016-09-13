@@ -2,7 +2,7 @@
 % Below is a demonstration of the features of the |affineTransformationMatrixDirect| function
 
 %%
-close all; clc; clear;
+clear; close all; clc;
 
 %% Syntax
 % |[M]=affineTransformationMatrixDirect(V1,V2);|

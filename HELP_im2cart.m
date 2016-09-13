@@ -2,7 +2,7 @@
 % Below is a demonstration of the features of the |im2cart| function
 
 %%
-close all; clc; clear;
+clear; close all; clc;
 
 %% Syntax
 % |[X,Y,Z]=im2cart(I,J,K,v);|

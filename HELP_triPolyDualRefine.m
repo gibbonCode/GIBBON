@@ -2,7 +2,7 @@
 % Below is a demonstration of the features of the |triPolyDualRefine| function
 
 %%
-close all; clc; clear;
+clear; close all; clc;
 
 %% Syntax
 % |[Ft,Vt,Ct,indIni]=triPolyDualRefine(F,V);|

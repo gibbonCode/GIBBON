@@ -5,7 +5,7 @@
 
 %%
 
-close all; clc; clear;
+clear; close all; clc;
 
 %%
 %Plot settings

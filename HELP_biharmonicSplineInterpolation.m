@@ -2,7 +2,7 @@
 % Below is a demonstration of the features of the |biharmonicSplineInterpolation| function
 
 %%
-close all; clc; clear;
+clear; close all; clc;
 
 %% Syntax
 % |VI=biharmonicSplineInterpolation(X,V,XI);|

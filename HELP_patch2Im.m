@@ -2,7 +2,7 @@
 % Below is a demonstration of the features of the |patch2Im| function
 
 %%
-close all; clc; clear;
+clear; close all; clc;
 
 %% Syntax
 % |[M,G,bwLabels]=patch2Im(F,V,C,voxelSize,imOrigin,imSiz);|

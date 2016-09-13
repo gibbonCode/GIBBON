@@ -2,7 +2,7 @@
 % Below is a demonstration of the features of the |import_INP| function
 
 %%
-close all; clc; clear;
+clear; close all; clc;
 
 %%
 % Plot settings

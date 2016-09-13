@@ -2,7 +2,7 @@
 % Below is a demonstration of the features of the |set_mat_par_FEBIO| function
 
 %%
-close all; clc; clear;
+clear; close all; clc;
 
 %%
 % Folder/file locations

@@ -2,7 +2,7 @@
 % Below is a demonstration of the features of the |triMeshEquilateral| function
 
 %%
-close all; clc; clear;
+clear; close all; clc;
 
 %%
 % PLOT SETTINGS

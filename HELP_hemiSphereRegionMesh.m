@@ -2,7 +2,7 @@
 % Below is a demonstration of the features of the |ind2patch| function
 
 %%
-close all; clc; clear;
+clear; close all; clc;
 
 %% Syntax
 % |[F,V,regionIndSub]=hemiSphereRegionMesh(hemiSphereStruct);|
@@ -33,7 +33,7 @@ lineWidth=1;
 markerSize=5;
 
 %%
-close all; clc; clear;
+clear; close all; clc;
 
 %% Example:  Creating a hemisphere mesh using the |hemiSphereRegionMesh| function
 % Defining hemi-sphere parameters

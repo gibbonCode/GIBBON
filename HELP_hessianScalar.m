@@ -3,7 +3,7 @@
 % See also: |gradient|,|hessian|,|jacobian|,|cellEig|.
 
 %%
-close all; clc; clear;
+clear; close all; clc;
 
 %% Syntax
 % |H=hessianScalar(M,voxelSize,cellOpt);|

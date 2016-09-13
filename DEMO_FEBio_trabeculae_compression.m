@@ -4,7 +4,7 @@
 % tetrahedral elements and subjected to compression. 
 
 %%
-close all; clc; clear;
+clear; close all; clc;
 
 %%
 % Plot settings

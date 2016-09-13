@@ -2,7 +2,7 @@
 % Below is a demonstration of the features of the |addGlobalsLevel_FEB| function
 
 %%
-close all; clc; clear;
+clear; close all; clc;
 
 %% Syntax
 % |[domNode]=addGlobalsLevel_FEB(domNode,FEB_struct);|

@@ -2,7 +2,7 @@
 % Below is a demonstration of the features of the |platonic_solid| function
 
 %%
-close all; clc; clear;
+clear; close all; clc;
 
 %%
 % Plot settings

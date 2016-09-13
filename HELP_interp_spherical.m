@@ -2,7 +2,7 @@
 % Below is a demonstration of the features of the |interp_spherical| function
 
 %%
-close all; clc; clear;
+clear; close all; clc;
 
 %% PLOT SETTINGS
 fig_color='w'; 
