@@ -6,7 +6,7 @@
    <!--
 This HTML was auto-generated from MATLAB code.
 To make changes, update the MATLAB code and republish this document.
-      --><title>pointLocationTR</title><meta name="generator" content="MATLAB 9.1"><link rel="schema.DC" href="http://purl.org/dc/elements/1.1/"><meta name="DC.date" content="2016-09-12"><meta name="DC.source" content="HELP_pointLocationTR.m"><style type="text/css">
+      --><title>pointLocationTR</title><meta name="generator" content="MATLAB 9.1"><link rel="schema.DC" href="http://purl.org/dc/elements/1.1/"><meta name="DC.date" content="2016-11-04"><meta name="DC.source" content="HELP_pointLocationTR.m"><style type="text/css">
 html,body,div,span,applet,object,iframe,h1,h2,h3,h4,h5,h6,p,blockquote,pre,a,abbr,acronym,address,big,cite,code,del,dfn,em,font,img,ins,kbd,q,s,samp,small,strike,strong,sub,sup,tt,var,b,u,i,center,dl,dt,dd,ol,ul,li,fieldset,form,label,legend,table,caption,tbody,tfoot,thead,tr,th,td{margin:0;padding:0;border:0;outline:0;font-size:100%;vertical-align:baseline;background:transparent}body{line-height:1}ol,ul{list-style:none}blockquote,q{quotes:none}blockquote:before,blockquote:after,q:before,q:after{content:'';content:none}:focus{outine:0}ins{text-decoration:none}del{text-decoration:line-through}table{border-collapse:collapse;border-spacing:0}
 
 html { min-height:100%; margin-bottom:1px; }
@@ -66,9 +66,8 @@ table td { padding:7px 5px; text-align:left; vertical-align:top; border:1px soli
 
 
 
-  </style></head><body><div class="content"><h1>pointLocationTR</h1><!--introduction--><p>Below is a demonstration of the features of the <tt>pointLocationTR</tt> function</p><!--/introduction--><h2>Contents</h2><div><ul><li><a href="#3">FINDING POINTS INSIDE A TESSELATION</a></li><li><a href="#10">EXAMPLE USING BARY CENTRIC COORDINATE OUTPUT TO MAP POINTS IN A DEFORMED MODEL</a></li><li><a href="#12">EXAMPLE USE FOR FINDING VOXELS INSIDE TETRHEDRAL ELEMENTS</a></li><li><a href="#20">EXAMPLE USE FOR INTERPOLATION OF IMAGE DATA ONTO VOLUME ELEMENTS</a></li></ul></div><pre class="codeinput">close <span class="string">all</span>; clc; <span class="comment">%clear;</span>
-</pre><p>Plot settings</p><pre class="codeinput">figColor=<span class="string">'w'</span>; figColorDef=<span class="string">'white'</span>;
-fontSize=15;
+  </style></head><body><div class="content"><h1>pointLocationTR</h1><!--introduction--><p>Below is a demonstration of the features of the <tt>pointLocationTR</tt> function</p><!--/introduction--><h2>Contents</h2><div><ul><li><a href="#3">FINDING POINTS INSIDE A TESSELATION</a></li><li><a href="#10">EXAMPLE USING BARY CENTRIC COORDINATE OUTPUT TO MAP POINTS IN A DEFORMED MODEL</a></li><li><a href="#12">EXAMPLE USE FOR FINDING VOXELS INSIDE TETRHEDRAL ELEMENTS</a></li><li><a href="#20">EXAMPLE USE FOR INTERPOLATION OF IMAGE DATA ONTO VOLUME ELEMENTS</a></li></ul></div><pre class="codeinput">clear; close <span class="string">all</span>; clc;
+</pre><p>Plot settings</p><pre class="codeinput">fontSize=15;
 faceColor1=<span class="string">'g'</span>;
 faceColor2=<span class="string">'r'</span>;
 faceAlpha1=0.3;
@@ -94,7 +93,7 @@ C=(1:size(E,1))';
 QP=[X(:) Y(:) Z(:)];
 </pre><p>Plotting the test case</p><pre class="codeinput">[F,CF]=element2patch(E,C);
 
-figuremax(figColor,figColorDef);
+cFigure;
 title([<span class="string">'A '</span>,num2str(size(E,1)),<span class="string">' element tesselation with '</span>,num2str(size(QP,1)),<span class="string">' query points'</span>],<span class="string">'FontSize'</span>,fontSize);
 xlabel(<span class="string">'X'</span>,<span class="string">'FontSize'</span>,fontSize); ylabel(<span class="string">'Y'</span>,<span class="string">'FontSize'</span>,fontSize); zlabel(<span class="string">'Z'</span>,<span class="string">'FontSize'</span>,fontSize);
 hold <span class="string">on</span>;
@@ -110,7 +109,7 @@ drawnow;
 </pre><pre class="codeoutput">tet4 elements assumed, for other elements please specify elementType
 </pre><img vspace="5" hspace="5" src="HELP_pointLocationTR_01.png" alt=""> <p>Convert tesselation to triangulation class</p><pre class="codeinput">TR = triangulation(E,V);
 </pre><p>Use <tt>pointLocationTR</tt> to test points</p><pre class="codeinput">[ti,bc]=pointLocationTR(TR,QP,1,1,1);
-</pre><p>Plot results and color points to the element number they are contained in</p><pre class="codeinput">figuremax(figColor,figColorDef);
+</pre><p>Plot results and color points to the element number they are contained in</p><pre class="codeinput">cFigure;
 title(<span class="string">'Interior query points colored to element index'</span>,<span class="string">'FontSize'</span>,fontSize);
 hold <span class="string">on</span>;
 
@@ -132,7 +131,7 @@ V(:,2)=V(:,2)+0.5.*cos(pi*V(:,3));
 <span class="comment">% Fixing triangulation</span>
 TR = triangulation(E,V);
 QPm = barycentricToCartesian(TR,ti(logicPlot),bc(logicPlot,:));
-</pre><p>Plotting deformed shape</p><pre class="codeinput">figuremax(figColor,figColorDef);
+</pre><p>Plotting deformed shape</p><pre class="codeinput">cFigure;
 title(<span class="string">'Mapping of points in deformed object'</span>,<span class="string">'FontSize'</span>,fontSize);
 xlabel(<span class="string">'X'</span>,<span class="string">'FontSize'</span>,fontSize); ylabel(<span class="string">'Y'</span>,<span class="string">'FontSize'</span>,fontSize); zlabel(<span class="string">'Z'</span>,<span class="string">'FontSize'</span>,fontSize);
 hold <span class="string">on</span>;
@@ -174,7 +173,7 @@ E=E; V=V;
 C=[1:size(E,1)]';
 </pre><pre class="codeinput">[F,CF]=element2patch(E,C);
 
-figuremax(figColor,figColorDef);
+cFigure;
 title(<span class="string">'Image data and a tetrahedral tesselation'</span>,<span class="string">'FontSize'</span>,fontSize);
 xlabel(<span class="string">'X'</span>,<span class="string">'FontSize'</span>,fontSize); ylabel(<span class="string">'Y'</span>,<span class="string">'FontSize'</span>,fontSize); zlabel(<span class="string">'Z'</span>,<span class="string">'FontSize'</span>,fontSize);
 hold <span class="string">on</span>;
@@ -195,7 +194,7 @@ Vq=[Xv(:) Yv(:) Zv(:)];
 <span class="comment">% Reshaping the output TI leads in effect to a labeled image whereby each</span>
 <span class="comment">% voxels containes an index (or group/label number) for an element</span>
 ML=reshape(TI',size(M));
-</pre><p>Plotting the result</p><pre class="codeinput">figuremax(figColor,figColorDef);
+</pre><p>Plotting the result</p><pre class="codeinput">cFigure;
 title(<span class="string">'Image data found inside the tetrahedral tesselation'</span>,<span class="string">'FontSize'</span>,fontSize);
 xlabel(<span class="string">'X'</span>,<span class="string">'FontSize'</span>,fontSize);ylabel(<span class="string">'Y'</span>,<span class="string">'FontSize'</span>,fontSize); zlabel(<span class="string">'Z'</span>,<span class="string">'FontSize'</span>,fontSize);
 hold <span class="string">on</span>;
@@ -211,7 +210,7 @@ colormap <span class="string">gray</span>; colorbar;
 axis <span class="string">equal</span>; view(3); axis <span class="string">tight</span>;  grid <span class="string">on</span>;  set(gca,<span class="string">'FontSize'</span>,fontSize);
 drawnow;
 </pre><img vspace="5" hspace="5" src="HELP_pointLocationTR_05.png" alt=""> <h2 id="20">EXAMPLE USE FOR INTERPOLATION OF IMAGE DATA ONTO VOLUME ELEMENTS</h2><p>Hence deriving image based intensity values becomes a matter of averaging across each element index label. If the voxels are sufficiently small with respect to the elements then this method actually partially takes into account partial voluming effects. i.e. the intensity of an element becomes the mean of the voxels contained within it which in some cases is more accurate then an interpolation which does not take into account the volumetric nature of the mesh (e.g. methods based on sampling/interpolating the intensities at the centre point or nodal points of the mesh only instead).</p><pre class="codeinput">[E_color]=imlabelMean(M,ML); <span class="comment">%The image based element colors</span>
-</pre><p>Plotting results</p><pre class="codeinput">figuremax(figColor,figColorDef);
+</pre><p>Plotting results</p><pre class="codeinput">cFigure;
 title(<span class="string">'The image data and the tesselation colored towards the image data'</span>,<span class="string">'FontSize'</span>,fontSize);
 xlabel(<span class="string">'X'</span>,<span class="string">'FontSize'</span>,fontSize);ylabel(<span class="string">'Y'</span>,<span class="string">'FontSize'</span>,fontSize); zlabel(<span class="string">'Z'</span>,<span class="string">'FontSize'</span>,fontSize);
 hold <span class="string">on</span>;
@@ -250,11 +249,10 @@ drawnow;
 % Below is a demonstration of the features of the |pointLocationTR| function
 
 %%
-close all; clc; %clear;
+clear; close all; clc;
 
 %% 
 % Plot settings
-figColor='w'; figColorDef='white';
 fontSize=15;
 faceColor1='g';
 faceColor2='r';
@@ -292,7 +290,7 @@ QP=[X(:) Y(:) Z(:)];
 % Plotting the test case
 [F,CF]=element2patch(E,C);    
 
-figuremax(figColor,figColorDef);
+cFigure;
 title(['A ',num2str(size(E,1)),' element tesselation with ',num2str(size(QP,1)),' query points'],'FontSize',fontSize);
 xlabel('X','FontSize',fontSize); ylabel('Y','FontSize',fontSize); zlabel('Z','FontSize',fontSize);
 hold on;
@@ -316,7 +314,7 @@ TR = triangulation(E,V);
 
 %%
 % Plot results and color points to the element number they are contained in
-figuremax(figColor,figColorDef);
+cFigure;
 title('Interior query points colored to element index','FontSize',fontSize);
 hold on;
 
@@ -344,7 +342,7 @@ QPm = barycentricToCartesian(TR,ti(logicPlot),bc(logicPlot,:));
 
 %%
 % Plotting deformed shape
-figuremax(figColor,figColorDef);
+cFigure;
 title('Mapping of points in deformed object','FontSize',fontSize);
 xlabel('X','FontSize',fontSize); ylabel('Y','FontSize',fontSize); zlabel('Z','FontSize',fontSize);
 hold on;
@@ -399,7 +397,7 @@ C=[1:size(E,1)]';
 %%
 [F,CF]=element2patch(E,C);    
 
-figuremax(figColor,figColorDef);
+cFigure;
 title('Image data and a tetrahedral tesselation','FontSize',fontSize);
 xlabel('X','FontSize',fontSize); ylabel('Y','FontSize',fontSize); zlabel('Z','FontSize',fontSize);
 hold on;
@@ -428,7 +426,7 @@ ML=reshape(TI',size(M));
 
 %%
 % Plotting the result
-figuremax(figColor,figColorDef);
+cFigure;
 title('Image data found inside the tetrahedral tesselation','FontSize',fontSize);
 xlabel('X','FontSize',fontSize);ylabel('Y','FontSize',fontSize); zlabel('Z','FontSize',fontSize);
 hold on;
@@ -460,7 +458,7 @@ drawnow;
 %%
 % Plotting results
 
-figuremax(figColor,figColorDef);
+cFigure;
 title('The image data and the tesselation colored towards the image data','FontSize',fontSize);
 xlabel('X','FontSize',fontSize);ylabel('Y','FontSize',fontSize); zlabel('Z','FontSize',fontSize);
 hold on;

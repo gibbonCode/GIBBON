@@ -46,7 +46,7 @@ hb = findall(hf,'Type','uitoolbar');
 
 %Check for presence of a efw button
 hp = findobj(hb,'Tag','efw_button');
-if isempty(hp); %If efw button is not present create one 
+if isempty(hp) %If efw button is not present create one 
     
     % Build icon
     s=[NaN,NaN,0.02,0.64,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,0.64,0.01,NaN,NaN;...
@@ -76,7 +76,6 @@ if isempty(hp); %If efw button is not present create one
     
     defStruct=get(hb,'UserData');
     if isempty(defStruct)
-        defStruct.defaultPath=cd;
         defStruct.defaultPath=fullfile(cd,'efw');
         defStruct.imName=['figure',num2str(get(hf,'Number'))];
         defStruct.imExt='png';

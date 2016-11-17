@@ -50,7 +50,7 @@ switch patchType
 end
 
 %Check if a is empty, if so replace  length by mean edge length of surface
-if isempty(a);
+if isempty(a)
     [A]=patchEdgeLengths(F,V);
     a=mean(A); 
 end

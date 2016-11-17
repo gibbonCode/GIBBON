@@ -1,5 +1,31 @@
-function [varargout]=discQuadMesh(nElements,r,f)
+function [varargout]=discQuadMesh(varargin)
 
+% function [F,V,C,indEdge]=discQuadMesh(nElements,r,f)
+% ------------------------------------------------------------------------
+% This function meshes a circle using quadrilaterial elements. 
+%
+%
+% Kevin Mattheus Moerman
+% gibbon.toolbox@gmail.com
+% 
+% 10/05/2016 Updated for GIBBON
+%------------------------------------------------------------------------
+
+
+switch nargin
+    case 1
+        nElements=varargin{1};
+        r=1;
+        f=0.5;
+    case 2
+        nElements=varargin{1};
+        r=varargin{2};
+        f=0.5;
+    case 3
+        nElements=varargin{1};
+        r=varargin{2};
+        f=varargin{3};
+end
 
 %% Creating central regular quad mesh
 
@@ -47,7 +73,12 @@ indEdge=((size(V,1)-size(Xr,1))+1):size(V,1);
 
 %% Removing double points
 
-[~,IND_V,IND_IND]=unique(pround(V,5),'rows'); %N.B. note 5th decimal rounding used here
+numKeep=6; 
+try
+    [~,IND_V,IND_IND]=unique(round(V,numKeep,'significant'),'rows'); 
+catch
+    [~,IND_V,IND_IND]=unique(sround(V,numKeep),'rows'); 
+end
 V=V(IND_V,:);
 F=IND_IND(F);
 indEdge=IND_IND(indEdge(1:end-1));

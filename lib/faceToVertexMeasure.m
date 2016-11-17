@@ -5,7 +5,7 @@ function [CV]=faceToVertexMeasure(F,V,CF)
 L=IND_F>0;
 
 CV=ones(size(V,1),size(CF,2));
-for q=1:1:size(CF,2);
+for q=1:1:size(CF,2)
     cf=CF(:,q);        
     cv=nan(size(IND_F));     
     cv(L)=cf(IND_F(L));

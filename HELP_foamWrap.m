@@ -26,8 +26,6 @@ cmap=gjet(250);
 [F,V,~]=geoSphere(0,1); %Geodesic sphere
 % [F,V]=parasaurolophus;
 % [F,V]=cow;
-% [F,V]=graphicsModels(4);
-% [F,V]=stanford_bunny;
 
 [F,V,C,indIni]=triPolyDualRefine(F,V);
 

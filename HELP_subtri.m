@@ -28,7 +28,7 @@ F=[1 2 3];
 n=0:1:3; %Number of added edge nodes
 pColors=gjet(numel(n));
 cFigure; 
-for q=1:1:numel(n);
+for q=1:1:numel(n)
     [Fs,Vs]=subtri(F,V,n(q)); 
     subplot(2,2,q); hold on;
     title([num2str(n(q)),' added edge nodes'],'FontSize',fontSize);
@@ -47,7 +47,7 @@ end
 n=0:1:3; %Number of added edge nodes
 pColors=gjet(numel(n));
 cFigure; 
-for q=1:1:numel(n);
+for q=1:1:numel(n)
     [Fs,Vs]=subtri(F,V,n(q)); 
     subplot(2,2,q); hold on;
     title([num2str(n(q)),' added edge nodes'],'FontSize',fontSize);
@@ -63,15 +63,15 @@ end
 
 [F,V]=parasaurolophus;
 
-n=[0 2]; %Number of added edge nodes
+n=[0 1 2 3]; %Number of added edge nodes
 pColors=gjet(numel(n));
 cFigure; 
-for q=1:1:numel(n);
+for q=1:1:numel(n)
     [Fs,Vs]=subtri(F,V,n(q)); 
-    subplot(1,2,q); hold on;
+    subplot(2,2,q); hold on;
     title([num2str(n(q)),' added edge nodes'],'FontSize',fontSize);
     hp=patch('Faces',Fs,'Vertices',Vs);
-    set(hp,'FaceColor',pColors(q,:),'FaceAlpha',faceAlpha,'lineWidth',1,'edgeColor','k');
+    set(hp,'FaceColor',pColors(q,:),'FaceAlpha',faceAlpha,'lineWidth',0.5,'edgeColor','k');
     set(gca,'FontSize',fontSize);
     view(3); axis tight;  axis equal;  axis off; 
 end

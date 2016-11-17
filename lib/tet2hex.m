@@ -53,7 +53,7 @@ mixInd=[1 1 1 3 4 2 0 4;...
         4 4 2 5 6 4 0 3];
 
 HEX=zeros(size(TET,1).*4,8); %The matrix for the hexahedral element spec.
-for hexInd=1:1:4;
+for hexInd=1:1:4
     
     %Corner
     ind1=TET(:,mixInd(hexInd,1));
@@ -97,8 +97,13 @@ for hexInd=1:1:4;
 end
 
 %% Removing double VERTICES
-epsOrderDiff=5;
-[Vhex,~,IND_IND]=uniqueEps(Vhex,'rows',epsOrderDiff);
-HEX=IND_IND(HEX);
+numKeep=6;
+try
+    [~,ind1,ind2]=unique(round(Vhex,numKeep,'significant'),'rows');
+catch
+    [~,ind1,ind2]=unique(sround(Vhex,numKeep),'rows');
+end
+Vhex=Vhex(ind1,:);
+HEX=ind2(HEX);
 
 end

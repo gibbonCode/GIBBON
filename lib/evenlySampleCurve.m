@@ -71,7 +71,7 @@ if closeLoopOpt==1
     
     V=[V;V(1,:)]; %Close loop by adding start to end
     
-    if ~ischar(interpPar); %CSAPS SMOOTHEN, interpret interpPar as smoothening parameter
+    if ~ischar(interpPar) %CSAPS SMOOTHEN, interpret interpPar as smoothening parameter
                 
         midInd=round(size(V,1)/2);
         %Close loop and aid periodicity by adding start and end points

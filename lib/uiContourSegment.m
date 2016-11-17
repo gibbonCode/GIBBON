@@ -509,7 +509,7 @@ for qSlice=sliceRange
                     delete(hcc1); delete(hcc2);
                     setDefaultPointer; %Set default pointer
                     titleStringAdd=' Cropped contours';
-                case 1 %Right click key -> Select group
+                case 1 %Left click key -> Select group
                     titleStringAdd=' Added selected contour to current slice';
                     
                     D=NaN(1,numel(C));
@@ -638,7 +638,7 @@ for qSlice=sliceRange
                         };
                     helpButton = questdlg(msgText,'Help information','OK','OK');
                 otherwise
-                    titleStringAdd=[' Invalid input "',num2str(b),'", press H for help'];
+                    titleStringAdd=[' Invalid input "',num2str(b),'", press H for help. Ensure that Caps Lock is off.'];
             end
         else %Esc key was pressed
             done=1; %Variable to finish while loop for current slice

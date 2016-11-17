@@ -1,12 +1,13 @@
 function [TRI6,V6,VX6C]=tri3_tri6(TRI3,V3,VXC)
 
-% function [TET10,V10]=tet4_tet10(TET4,V4)
+% function [TRI6,V6,VX6C]=tri3_tri6(TRI3,V3,VXC)
 % 
-% This function converts 4 node (e.g. linear) tetrahedral elements into 10
-% node (e.g. quadratic) tetrahedral elements compatible with FEBio. 
+% This function converts 3 node (e.g. linear) triangular elements into 6
+% node (e.g. quadratic) triangular elements compatible with FEBio. 
 %
-% 09/12/2013, Kevin Mattheus Moerman
-% kevinmoerman@hotmail.com.com
+% Kevin Mattheus Moerman
+% gibbon.toolbox@gmail.com
+% 09/12/2013
 %----------------------------------------------------------------------
 %%
 
@@ -44,8 +45,12 @@ TRI6=[TRI3...                            % 1-3
        ];  % 10
    
 %Removing double points
-% [~,ind_uni_1,ind_uni_2]=uniqueEps(Vs,'rows',4); %N.B.
-[~,ind_uni_1,ind_uni_2]=unique(pround(V6,5),'rows');
+numDigitKeep=6; 
+try
+    [~,ind_uni_1,ind_uni_2]=unique(round(V6,numDigitKeep,'significant'),'rows');
+catch
+    [~,ind_uni_1,ind_uni_2]=unique(sround(V6,numDigitKeep),'rows');
+end
 V6=V6(ind_uni_1,:);
 TRI6=ind_uni_2(TRI6); %Changing indices in faces matrix
 

@@ -101,6 +101,37 @@ patch('Faces',F(indFaces,:),'Vertices',V,'FaceColor','b','FaceAlpha',faceAlpha2)
 view(3); axis equal; axis tight; grid on; 
 drawnow; 
 
+%% Studying edge connectivity on a surface
+
+[E,indUni1,indUni2]=patchEdges(F,1);
+[IND_E,IND_V,IND_EE]=tesIND(E,[],1);
+
+%%
+% Select a vertex for visualization
+logicValid=IND_EE>0;
+[~,indPick]=max(sum(logicValid,2)); %E.g. this one since its embedded properly
+
+%The faces sharing this vertex
+indEdges=IND_E(indPick,:);
+indEdges=indEdges(indEdges>0);
+
+%The vertices attached by an edge to this vertex
+indVertices=IND_V(indPick,:);
+indVertices=indVertices(indVertices>0);
+
+%%
+cFigure; hold on; 
+title('Vertex-edge and vertex-vertex connectivity on a quadrangulated surface','FontSize',fontSize);
+xlabel('X','FontSize',fontSize);ylabel('Y','FontSize',fontSize); zlabel('Z','FontSize',fontSize); 
+patch('Faces',F,'Vertices',V,'FaceColor','g','FaceAlpha',faceAlpha);
+
+plotV(V(indPick,:),'k.','MarkerSize',markerSize);
+
+patch('Faces',E(indEdges,:),'Vertices',V,'FaceColor','none','EdgeColor','b','LineWidth',5);
+plotV(V(indVertices,:),'r.','MarkerSize',markerSize);
+view(3); axis equal; axis tight; grid on; 
+drawnow; 
+
 %% Studying connectivity on triangulated patch data
 % Create example data
 n=25;

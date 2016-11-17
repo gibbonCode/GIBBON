@@ -1,4 +1,4 @@
-function [hf]=cFigure(varargin)
+function [varargout]=cFigure(varargin)
 
 % function [h]=cFigure(figStruct)
 % ------------------------------------------------------------------------
@@ -68,31 +68,31 @@ switch nargin
         figStruct=varargin{1};
         
         %Use defaults where nothing is provided
-        if ~isfield(figStruct,'Visible');
+        if ~isfield(figStruct,'Visible')
             figStruct.Visible='on';
         end
         
-        if ~isfield(figStruct,'ColorDef');
+        if ~isfield(figStruct,'ColorDef')
             figStruct.ColorDef='white';
         end
         
-        if ~isfield(figStruct,'Color');
+        if ~isfield(figStruct,'Color')
             figStruct.Color='w';
         end
         
-        if ~isfield(figStruct,'ScreenOffset');
+        if ~isfield(figStruct,'ScreenOffset')
             screenSizeGroot = get(groot,'ScreenSize');
             figStruct.ScreenOffset=round(max(screenSizeGroot)*0.1); %i.e. figures are spaced around 10% of the sreensize from the edges
         end
         
-        if ~isfield(figStruct,'vcw');
+        if ~isfield(figStruct,'vcw')
             vcwOpt={'pan','rot','zoomz','zoomz'};
         else
             vcwOpt=figStruct.vcw;
             figStruct=rmfield(figStruct,'vcw'); %Remove field from structure array
         end
         
-        if ~isfield(figStruct,'efw');
+        if ~isfield(figStruct,'efw')
             efwOpt=1;
         else
             efwOpt=figStruct.efw;
@@ -120,7 +120,7 @@ figStruct=rmfield(figStruct,'ColorDef'); %Remove field from structure array
 
 %% Set figure size
 
-if isfield(figStruct,'ScreenOffset');
+if isfield(figStruct,'ScreenOffset')
     screenSizeGroot = get(groot,'ScreenSize');
     screenSizeGroot=screenSizeGroot(3:4); % width, height
     figSizeEdgeOffset=figStruct.ScreenOffset; % Figure offset from border
@@ -158,7 +158,8 @@ end
 %% Check for activation of vcw
 
 if isa(vcwOpt,'cell') %Allow enabling of vcw mode    
-    vcw(hf,vcwOpt);
+    hp=vcw(hf,vcwOpt);
+    hf.UserData.cFigure.Handles.vcw=hp;
 end
 
 %% Check for activation of efw
@@ -166,3 +167,7 @@ if efwOpt
     efw; 
 end
 
+%%
+if nargout>0
+    varargout{1}=hf;
+end

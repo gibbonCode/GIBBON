@@ -42,6 +42,7 @@ for q=1:1:numel(n);
     title([num2str(n(q)),' refinement iterations'],'FontSize',fontSize);
     xlabel('X','FontSize',fontSize); ylabel('Y','FontSize',fontSize); zlabel('Z','FontSize',fontSize);
     hp=patch('Faces',F,'Vertices',V);
+    patchNormPlot(F,V);
     set(hp,'FaceColor',pColors(q,:),'FaceAlpha',faceAlpha,'lineWidth',edgeWidth,'edgeColor',edgeColor);
     camlight headlight; 
     set(gca,'FontSize',fontSize);

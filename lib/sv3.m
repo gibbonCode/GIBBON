@@ -120,7 +120,7 @@ logicPatch=logicPatch & logicThreshold;
 [F,V,C]=ind2patch(logicPatch,M,patchType);
 [V(:,1),V(:,2),V(:,3)]=im2cart(V(:,2),V(:,1),V(:,3),v);
 
-if isfield(hf.UserData,'hp');
+if isfield(hf.UserData,'hp')
     try
         delete(hf.UserData.hp(dirOpt));
     catch
@@ -132,7 +132,7 @@ hf.UserData.hp(dirOpt)= patch('Faces',F,'Vertices',V,'FaceColor','flat','CData',
 navString=['I: ',num2str(sliceIndices(1)),', J:  ',num2str(sliceIndices(2)),', K: ',num2str(sliceIndices(3))];
 title(navString,'color',hf.UserData.fontColor);
 hf.Name=[hf.UserData.Name,' ',navString];
-drawnow;
+% drawnow;
 
 end
 

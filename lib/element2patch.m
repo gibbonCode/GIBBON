@@ -52,7 +52,7 @@ if isempty(elementType) %have to assume defaults
         case 3
             elementType='tri3';
     end    
-    disp([elementType,' elements assumed, for other elements please specify elementType']);
+%     disp([elementType,' elements assumed, for other elements please specify elementType']);
 end
 
 %%

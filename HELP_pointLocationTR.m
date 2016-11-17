@@ -6,7 +6,6 @@ clear; close all; clc;
 
 %% 
 % Plot settings
-figColor='w'; figColorDef='white';
 fontSize=15;
 faceColor1='g';
 faceColor2='r';
@@ -44,7 +43,7 @@ QP=[X(:) Y(:) Z(:)];
 % Plotting the test case
 [F,CF]=element2patch(E,C);    
 
-figuremax(figColor,figColorDef);
+cFigure;
 title(['A ',num2str(size(E,1)),' element tesselation with ',num2str(size(QP,1)),' query points'],'FontSize',fontSize);
 xlabel('X','FontSize',fontSize); ylabel('Y','FontSize',fontSize); zlabel('Z','FontSize',fontSize);
 hold on;
@@ -68,7 +67,7 @@ TR = triangulation(E,V);
 
 %%
 % Plot results and color points to the element number they are contained in
-figuremax(figColor,figColorDef);
+cFigure;
 title('Interior query points colored to element index','FontSize',fontSize);
 hold on;
 
@@ -96,7 +95,7 @@ QPm = barycentricToCartesian(TR,ti(logicPlot),bc(logicPlot,:));
 
 %%
 % Plotting deformed shape
-figuremax(figColor,figColorDef);
+cFigure;
 title('Mapping of points in deformed object','FontSize',fontSize);
 xlabel('X','FontSize',fontSize); ylabel('Y','FontSize',fontSize); zlabel('Z','FontSize',fontSize);
 hold on;
@@ -151,7 +150,7 @@ C=[1:size(E,1)]';
 %%
 [F,CF]=element2patch(E,C);    
 
-figuremax(figColor,figColorDef);
+cFigure;
 title('Image data and a tetrahedral tesselation','FontSize',fontSize);
 xlabel('X','FontSize',fontSize); ylabel('Y','FontSize',fontSize); zlabel('Z','FontSize',fontSize);
 hold on;
@@ -180,7 +179,7 @@ ML=reshape(TI',size(M));
 
 %%
 % Plotting the result
-figuremax(figColor,figColorDef);
+cFigure;
 title('Image data found inside the tetrahedral tesselation','FontSize',fontSize);
 xlabel('X','FontSize',fontSize);ylabel('Y','FontSize',fontSize); zlabel('Z','FontSize',fontSize);
 hold on;
@@ -212,7 +211,7 @@ drawnow;
 %%
 % Plotting results
 
-figuremax(figColor,figColorDef);
+cFigure;
 title('The image data and the tesselation colored towards the image data','FontSize',fontSize);
 xlabel('X','FontSize',fontSize);ylabel('Y','FontSize',fontSize); zlabel('Z','FontSize',fontSize);
 hold on;

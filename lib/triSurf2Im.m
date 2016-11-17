@@ -64,7 +64,7 @@ switch nargin
         siz=varargin{5};
 end
 
-if isempty(voxelSize);
+if isempty(voxelSize)
     voxelSize=meanEdgeLength;
 end
 

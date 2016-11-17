@@ -45,7 +45,8 @@ r=6+2.*sin(5*t);
 V_top=[x(:) y(:) z(:)];
 R=euler2DCM([0 -0.2*pi 0]);
 V_top=(R*V_top')';
-V_top(:,3)=V_top(:,3)+6; 
+V_top(:,3)=V_top(:,3)+12; 
+V_top(:,2)=V_top(:,2)+6; 
 V_top(:,1)=V_top(:,1)+3; 
 
 %% 
@@ -74,7 +75,7 @@ title('The lofted feature','FontSize',fontSize);
 xlabel('X','FontSize',fontSize);ylabel('Y','FontSize',fontSize); zlabel('Z','FontSize',fontSize);
 hold on;
 hp=patch('faces',F,'Vertices',V); set(hp,'FaceColor','g','EdgeColor','k','FaceAlpha',1);
-patchNormPlot(F,V);
+% patchNormPlot(F,V);
 plotV(V_bottom,'r.-','lineWidth',lineWidth1,'MarkerSize',markerSize1);
 plotV(V_top,'b.-','lineWidth',lineWidth1,'MarkerSize',markerSize1);
 

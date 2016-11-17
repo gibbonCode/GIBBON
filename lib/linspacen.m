@@ -16,29 +16,25 @@ function [C]=linspacen(A,B,n)
 
 %%
 
-if all(size(A)==size(A))
-            
-            v=isvector(A);
-            size_A=size(A);
-            A=A(:);
-            B=B(:);
-            C=repmat(A,[1,n])+((B-A)./(n-1))*(0:1:n-1);
-            
-            if v~=1
-                C=reshape(C,[size_A n]);
-            end
-            
-%             %Alternative without REPMAT
-%             q=permute(linspace(0,1,n),(numel(size(A))+2):-1:1);
-%             Q=zeros([size(A) n]);
-%             Q=q(ones(size(A,1),1),ones(size(A,2),1),ones(size(A,3),1),:);
-%             A=A(:,:,:,ones(n,1));
-%             B=B(:,:,:,ones(n,1));
-%             D=B-A;
-%             D=D(:,:,:,ones(n,1));
-%             C=A+Q.*D;
+v=isvector(A);
+size_A=size(A);
+A=A(:);
+B=B(:);
 
-else %Warning
-    
+C=repmat(A,[1,n])+((B-A)./(n-1))*(0:1:n-1);
+
+if v~=1
+    C=reshape(C,[size_A n]);
 end
+
+% %Alternative without REPMAT
+% q=permute(linspace(0,1,n),(numel(size(A))+2):-1:1);
+% Q=zeros([size(A) n]);
+% Q=q(ones(size(A,1),1),ones(size(A,2),1),ones(size(A,3),1),:);
+% A=A(:,:,:,ones(n,1));
+% B=B(:,:,:,ones(n,1));
+% D=B-A;
+% D=D(:,:,:,ones(n,1));
+% C=A+Q.*D;
+
 

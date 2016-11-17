@@ -8,10 +8,11 @@ function [V]=ellipseCoord(A,t)
 %
 %
 % Kevin Mattheus Moerman
-% kevinmoerman@hotmail.com
+% gibbon.toolbox@gmail.com
 % 2013/24/09
 %------------------------------------------------------------------------
 
+%%
 x0=A(1);
 y0=A(2);
 x=A(3).*cos(t);

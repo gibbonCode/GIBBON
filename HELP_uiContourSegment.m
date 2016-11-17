@@ -30,7 +30,7 @@ groupCropOption=0;
 % [L_BG]=uiThreshErode(M,thresholdInitial,preBlurKernalSize,groupCropOption);
 
 %% SETTING CONTROL PARAMETERS
-cPar.minContourSize=25;            %Minimal size of detected contour
+cPar.minContourSize=150;            %Minimal size of detected contour
 cPar.smoothFactor=0.15;              %Degree of smoothing csaps function (cubic smoothing spline)
 cPar.pointReductionFactor=1;        %Reduction factor for contour smoothening
 cPar.logicBackGround=L_BG;   %Ones (white) describe image data regions of interest i.e. a mask
@@ -47,7 +47,7 @@ saveName=[];%'fibula';                        %If not empty this is where the co
 
 %%
 % Uncomment to test
-% [Vcs]=uiContourSegment(M,cPar,saveName);
+[Vcs]=uiContourSegment(M,cPar,saveName);
 
 %% 
 % Example contour process: 

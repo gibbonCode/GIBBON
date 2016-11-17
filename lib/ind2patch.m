@@ -130,10 +130,10 @@ end
 C=M(IND);
 C=C(:);
 
-if ~isa(C,'double'); %If the image is not a double, then convert
+if ~isa(C,'double') %If the image is not a double, then convert
     C=double(C);
 end
-if numFacesPerVoxel>1;
+if numFacesPerVoxel>1
     C=repmat(C,[numFacesPerVoxel,1]);
 end
 

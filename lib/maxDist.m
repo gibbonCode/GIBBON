@@ -1,6 +1,6 @@
 function varargout=maxDist(varargin)
 
-% function [D1,minIND]=maxDist(V1,V2,maxVarSize,selfAvoid)
+% function [D1,maxIND]=maxDist(V1,V2,maxVarSize,selfAvoid)
 
 %% Parse input
 if nargin<2

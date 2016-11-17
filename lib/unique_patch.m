@@ -1,4 +1,4 @@
-function [F_uni,V_uni,C_uni,IND_V,IND_F,F_count]=unique_patch(F,V,C,epsOrderDiff)
+function [F_uni,V_uni,C_uni,IND_V,IND_F,F_count]=unique_patch(F,V,C,numDigitKeep)
 
 numFacesIni=size(F,1);
 
@@ -6,11 +6,12 @@ numFacesIni=size(F,1);
 [F,V]=removeNotIndexed(F,V);
 
 %Removing double vertices
-[V_uni,IND_V,IND_IND]=uniqueEps(V,'rows',epsOrderDiff);
-
-% [~,IND_V,IND_IND]=unique(pround(V,epsOrderDiff),'rows');
-% V_uni=V(IND_V,:);
-
+try
+    [~,IND_V,IND_IND]=unique(round(V,numDigitKeep,'significant'),'rows');
+catch
+    [~,IND_V,IND_IND]=unique(sround(V,numDigitKeep),'rows');
+end
+V_uni=V(IND_V,:);
 F=IND_IND(F); %Fix indices in F
 
 %Removing double FACES

@@ -14,8 +14,10 @@ function [F,V]=removeNotIndexed(F,V)
 % interpretet in the realm of tesselations F may also define an element or
 % edge array.
 %
+%
 % Kevin Mattheus Moerman
-% kevinmoerman@hotmail.com
+% gibbon.toolbox@gmail.com
+% 
 % 2014/03/14
 %------------------------------------------------------------------------
 
@@ -25,7 +27,7 @@ indUsed=unique(F(:)); %The list of used row indices
 
 %If the number of used entries is not equal to the number of rows in V then
 %unused points exist.
-if numel(indUsed)<size(V,1);
+if numel(indUsed)<size(V,1)
     %Prepare for index fixing
     indFix=nan(size(V,1),1);
     indFix(indUsed)=1:numel(indUsed);

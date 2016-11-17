@@ -46,7 +46,7 @@ VP=NaN(size(IND_V,1),size(IND_V,2),nDims);
 P=V;
 PP=V; 
 Q=V;
-for qIter=1:nMax;   
+for qIter=1:nMax 
         
     %% SIMPLE LAPLACIAN SMOOTHENING
     

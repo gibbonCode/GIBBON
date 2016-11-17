@@ -16,13 +16,19 @@ function [stlStruct] = import_STL(fileName)
 T=txtfile2cell(fileName);
 logicSolids= ~cellfun(@isempty,strfind(T,'solid'));
 
-if any(logicSolids)
-    [stlStruct]=parse_STL_txt(T,logicSolids);
-else
+try
+    if any(logicSolids)
+        [stlStruct]=parse_STL_txt(T,logicSolids);
+    else
+        [stlStruct]=parse_STL_bin(fileName);
+    end
+catch
     [stlStruct]=parse_STL_bin(fileName);
 end
 
 end
+
+%%
 
 function [stlStruct]=parse_STL_txt(T,logicSolids)
 

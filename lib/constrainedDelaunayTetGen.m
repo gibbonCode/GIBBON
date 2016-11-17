@@ -1,4 +1,4 @@
-function [TR]=constrainedDelaunayTetGen(V,C)
+function [varargout]=constrainedDelaunayTetGen(V,C)
 
 
 %% Create TetGen input structure
@@ -19,3 +19,10 @@ inputStruct.regionPoints=[]; %region points
 
 TR = triangulation(meshOutput.elements,meshOutput.nodes);
 
+switch nargout
+    case 1
+        varargout{1}=TR;
+    case 2
+        varargout{1}=TR;
+        varargout{2}=meshOutput;
+end

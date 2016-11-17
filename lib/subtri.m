@@ -175,12 +175,12 @@ switch subMethod
         Vs=[Xi(:) Yi(:) Zi(:)];
         
         if uniqueOpt 
-            %this is based on rounding to 5th decimal place after scaling
-            %to avoid this use the split method
+            %this is based on rounding to 6th signigicant digit to avoid this use the split method            
+            numKeep=6; %Number of significant digits to keep
             try
-                [~,ind_uni_1,ind_uni_2]=unique(round(Vs,5),'rows');
+                [~,ind_uni_1,ind_uni_2]=unique(round(Vs,numKeep,'significant'),'rows');
             catch
-                [~,ind_uni_1,ind_uni_2]=unique(round(Vs*(10.^5)),'rows');
+                [~,ind_uni_1,ind_uni_2]=unique(sround(Vs,numKeep),'rows');
             end
             Vs=Vs(ind_uni_1,:);
             Fs=ind_uni_2(Fs);

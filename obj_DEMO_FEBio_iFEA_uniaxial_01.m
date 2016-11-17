@@ -36,8 +36,7 @@ initialArea=objectiveStruct.initialArea;
 stretch_exp=objectiveStruct.stretch_exp;
 stress_cauchy_exp=objectiveStruct.stress_cauchy_exp;
 
-if runFlag==1  
-  
+if runFlag==1    
     
     %Importing displacement
     [~,N_disp_mat,~]=importFEBio_logfile(objectiveStruct.FEB_struct.run_output_names{1}); %Nodal displacements
