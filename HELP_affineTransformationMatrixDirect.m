@@ -73,7 +73,7 @@ drawnow;
 
 [M_fit]=affineTransformationMatrixDirect(V1,V2);
 
-V1f=tform((M_fit),V1);
+V1f=tform(M_fit,V1);
 
 %%
 % Plotting results

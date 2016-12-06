@@ -19,7 +19,7 @@ switch class(E)
 end
 Ri=R;
 
-for q=1:1:size(E,1);
+for q=1:1:size(E,1)
     
     Rx=[1        0        0;...
         0        cos(E(q,1))  -sin(E(q,1));...

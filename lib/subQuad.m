@@ -44,7 +44,7 @@ for qIter=1:1:n
     indMidFace=startIndMidFace+1:size(Vs,1);
     
     Fs=repmat(F,4,1);
-    for q=1:1:4;
+    for q=1:1:4
         startInd=1+(q-1)*size(F,1);
         endInd=startInd-1+size(F,1);
         
@@ -56,9 +56,9 @@ for qIter=1:1:n
         fs=[F(:,q) Fe(:,q)+numV indMidFace(:) Fe(:,ind4)+numV];
         
         Fs(startInd:endInd,:)=fs;
-    end   
-   
-    %% Overwrite faces and vertices
-    V=Vs; F=Fs;   
+    end  
     
+    %% Override input
+    F=Fs;
+    V=Vs;
 end

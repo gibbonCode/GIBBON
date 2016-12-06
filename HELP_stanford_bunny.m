@@ -36,32 +36,16 @@ edgeWidth=1;
 %Obtaining patch data
 [F,V]=stanford_bunny;
 
-%Visualisation
-
-C=rand(size(F,1),1); %random face color values
-
-hf=figuremax(fig_color,fig_colordef); 
-title('The Stanford bunny','FontSize',fontSize);
-xlabel('X','FontSize',fontSize); ylabel('Y','FontSize',fontSize); zlabel('Z','FontSize',fontSize);
-hp=patch('Faces',F,'Vertices',V);
-
-set(hp,'FaceColor','flat','CData',C,'FaceAlpha',faceAlpha,'lineWidth',edgeWidth,'edgeColor',edgeColor);
-colormap autumn; 
-set(gca,'FontSize',fontSize);
-view(3); axis tight;  axis equal;  axis vis3d; axis off;
-camlight('headlight'); lighting phong;
+%%
+% Visualisation
 
 hf=figuremax(fig_color,fig_colordef); 
 title('The Stanford bunny','FontSize',fontSize);
 xlabel('X','FontSize',fontSize); ylabel('Y','FontSize',fontSize); zlabel('Z','FontSize',fontSize);
-hp=patch('Faces',F,'Vertices',V);
-
-set(hp,'FaceColor','flat','CData',C,'FaceAlpha',faceAlpha,'lineWidth',edgeWidth,'edgeColor',edgeColor);
-colormap autumn; 
+hp=patch('Faces',F,'Vertices',V,'FaceColor','g','FaceAlpha',faceAlpha,'lineWidth',edgeWidth,'edgeColor',edgeColor);
 set(gca,'FontSize',fontSize);
 view(3); axis tight;  axis equal;  axis vis3d; axis off;
-camlight('headlight'); lighting phong;
-view(24.5,-44);
+camlight('headlight'); lighting flat;
 
 %% 
 %

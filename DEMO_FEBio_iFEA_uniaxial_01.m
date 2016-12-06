@@ -325,7 +325,7 @@ objectiveStruct.mat_struct=mat_struct;
 objectiveStruct.k_factor=k_factor;
 objectiveStruct.initialArea=initialArea;
 objectiveStruct.sampleHeight=sampleHeight;
-objectiveStruct.parNormFactors=P; %This will normalize the paramters to ones(size(P))
+objectiveStruct.parNormFactors=P; %This will normalize the parameters to ones(size(P))
 objectiveStruct.Pb_struct.xx_c=P; %Parameter constraining centre
 objectiveStruct.Pb_struct.xxlim=[[P(1)/100 2]' [P(1)*100 50]']; %Parameter bounds
 

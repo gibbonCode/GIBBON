@@ -339,66 +339,66 @@ switch eventData.Key
     case 'leftarrow' % Pan left
         if linkedOn==1
             for h = findobj(hf, 'Type', 'axes', '-depth', 1)'
-                vcw_pan([], [step 0], h);
+                vcw_pan([], [step 0], h, hf);
             end
         else
-            vcw_pan([], [step 0], cax);
+            vcw_pan([], [step 0], cax, hf);
         end
     case 'rightarrow' % Pan right
         if linkedOn==1
             for h = findobj(hf, 'Type', 'axes', '-depth', 1)'
-                vcw_pan([], [-step 0], h);
+                vcw_pan([], [-step 0], h, hf);
             end
         else
-            vcw_pan([], [-step 0], cax);
+            vcw_pan([], [-step 0], cax, hf);
         end
     case 'downarrow' % Pan down
         if linkedOn==1
             for h = findobj(hf, 'Type', 'axes', '-depth', 1)'
-                vcw_pan([], [0 step], h);
+                vcw_pan([], [0 step], h, hf);
             end
         else
-            vcw_pan([], [0 step], cax);
+            vcw_pan([], [0 step], cax, hf);
         end
     case 'uparrow' % Pan up
         if linkedOn==1
             for h = findobj(hf, 'Type', 'axes', '-depth', 1)'
-                vcw_pan([], [0 -step], h);
+                vcw_pan([], [0 -step], h, hf);
             end
         else
-            vcw_pan([], [0 -step], cax);
+            vcw_pan([], [0 -step], cax, hf);
         end
     case 'x' % Rotate around x
         if linkedOn==1
             for h = findobj(hf, 'Type', 'axes', '-depth', 1)'
-                vcw_rot([], [0 step], h);
+                vcw_rot([], [0 step], h, hf);
             end
         else
-            vcw_rot([], [0 step], cax);
+            vcw_rot([], [0 step], cax, hf);
         end
     case 'y' % Rotate around y
         if linkedOn==1
             for h = findobj(hf, 'Type', 'axes', '-depth', 1)'
-                vcw_rot([], [step 0], h);
+                vcw_rot([], [step 0], h, hf);
             end
         else
-            vcw_rot([], [step 0], cax);
+            vcw_rot([], [step 0], cax, hf);
         end
     case 'z' % Rotate around z
         if linkedOn==1
             for h = findobj(hf, 'Type', 'axes', '-depth', 1)'
-                vcw_rotz([], [0 step], h);
+                vcw_rotz([], [0 step], h, hf);
             end
         else
-            vcw_rotz([], [0 step], cax);
+            vcw_rotz([], [0 step], cax, hf);
         end
     case 'm' % Magnify/zoom (positive or negative)
         if linkedOn==1
             for h = findobj(hf, 'Type', 'axes', '-depth', 1)'
-                vcw_zoom([], [0 -step],h);
+                vcw_zoom([], [0 -step],h, hf);
             end
         else
-            vcw_zoom([], [0 -step], cax);
+            vcw_zoom([], [0 -step], cax, hf);
         end
     case 't' % top view
         if linkedOn==1
@@ -594,7 +594,7 @@ end
 global VCW_POS
 VCW_POS = get(0, 'PointerLocation');
 % Set the cursor and callback
-set(hf, 'Pointer', 'custom', 'pointershapecdata', shape, 'WindowButtonMotionFcn', {method, cax});
+set(hf, 'Pointer', 'custom', 'pointershapecdata', shape, 'WindowButtonMotionFcn', {method, cax,hf});
 
 end
 
@@ -635,26 +635,56 @@ end
 end
 
 %%
+
+% function setLightPos(hf,cax)
+% 
+% hLights=findobj(cax,'Type','light');
+% 
+% cameraPositionsNew=cax.CameraPosition;
+% 
+% cameraPositionsOld=hf.UserData.CameraPosition;
+% 
+% a=vecnormalize(cameraPositionsOld);
+% b=vecnormalize(cameraPositionsNew);
+% [R]=vecAngle2Rot(acos(dot(a,b)),vecnormalize(cross(a,b)));
+% 
+% % [F,V,~]=quiver3Dpatch(0,0,0,a(1),a(2),a(3),[],[2 2]);
+% % patch('Faces',F,'Vertices',V,'FaceColor','r');
+% % 
+% % c=b*R
+% % 
+% % [F,V,~]=quiver3Dpatch(0,0,0,c(1),c(2),c(3),[],[2 2]);
+% % patch('Faces',F,'Vertices',V,'FaceColor','none','EdgeColor','g');
+% 
+% for q=1:1:numel(hLights)    
+%     hLights(q).Position=hLights(q).Position*R';   
+%     drawnow;
+% end
+% 
+% end
+
 % Figure manipulation functions
 function vcw_rot(s, d, cax, hf)
 d = check_vals(s, d);
+% hf.UserData.CameraPosition=cax.CameraPosition;
 try
-    % Rotate XY
-    camorbit(cax, d(1), d(2), 'camera', [0 0 1]);
+    % Rotate XYt            
+    camorbit(cax, d(1), d(2), 'camera', [0 0 1]);              
 catch
     % Error, so release mouse down
-    mouseup(hf);
+    mouseup([],[],hf);
 end
 end
 
-function vcw_rotz(s, d, cax, hf)
+function vcw_rotz(s, d, cax, hf)    
+%     hf.UserData.CameraPosition=cax.CameraPosition;    
 d = check_vals(s, d);
 try
     % Rotate Z
-    camroll(cax, d(2));
+    camroll(cax, d(2));        
 catch
     % Error, so release mouse down
-    mouseup(hf);
+    mouseup([],[],hf);
 end
 end
 
@@ -666,7 +696,7 @@ try
     camzoom(cax, d);
 catch
     % Error, so release mouse down
-    mouseup(hf);
+    mouseup([],[],hf);
 end
 end
 
@@ -678,7 +708,7 @@ try
     camdolly(cax, 0, 0, d, 'fixtarget', 'camera');
 catch
     % Error, so release mouse down
-    mouseup(hf);
+    mouseup([],[],hf);
 end
 end
 
@@ -689,7 +719,7 @@ try
     camdolly(cax, d(1), d(2), 0, 'movetarget', 'pixels');
 catch
     % Error, so release mouse down
-    mouseup(hf);
+    mouseup([],[],hf);
 end
 end
 

@@ -378,7 +378,6 @@ end
 % Create a uipushtool in the toolbar
 hSmooth=uitoggletool(hb,'TooltipString','Smooth','CData',S,'Tag','smooth_button','ClickedCallback',{@smoothFunc,{hf}});
 
-
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %Ellipse button
 
@@ -1094,6 +1093,7 @@ while 1
     end
 end
 set(hf.UserData.ButtonHandles.Sample,'State','Off');
+
 end
 
 %% Figure key press

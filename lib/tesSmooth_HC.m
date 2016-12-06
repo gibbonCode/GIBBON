@@ -57,7 +57,7 @@ Q=V; %"Previous" point set
 B=V; %
 C=V; %
 
-for qIter=1:nMax;   
+for qIter=1:nMax   
         
     %% SMOOTHENING
     

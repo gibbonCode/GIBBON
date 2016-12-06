@@ -22,10 +22,12 @@ A=A(:);
 B=B(:);
 
 C=repmat(A,[1,n])+((B-A)./(n-1))*(0:1:n-1);
+% C(:,end)=B;
 
 if v~=1
     C=reshape(C,[size_A n]);
 end
+
 
 % %Alternative without REPMAT
 % q=permute(linspace(0,1,n),(numel(size(A))+2):-1:1);

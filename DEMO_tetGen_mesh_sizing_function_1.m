@@ -23,10 +23,10 @@ savePath=fullfile(fileparts(filePath),'data','temp');
 
 %%
 %Specifying dimensions and number of elements
-sampleWidth=20;
-sampleThickness=8; 
-sampleHeight=8;
-pointSpacing=1;
+sampleWidth=32*4;
+sampleThickness=32; 
+sampleHeight=16;
+pointSpacing=8;
 
 numElementsWidth=round(sampleWidth/pointSpacing);
 numElementsThickness=round(sampleThickness/pointSpacing);
@@ -55,7 +55,7 @@ hold on;
 patch('Faces',F,'Vertices',V,'FaceColor','flat','CData',faceBoundaryMarker,'FaceAlpha',faceAlpha1,'lineWidth',edgeWidth,'edgeColor',edgeColor);
 % [hp]=patchNormPlot(F,V,0.25);
 
-colormap(autumn(2));
+colormap(gjet(2));
 colorbar;
 camlight headlight;
 set(gca,'FontSize',fontSize);
@@ -65,9 +65,9 @@ view(3); axis tight;  axis equal;  grid on;
 
 %Get edge lengths and base minimum size on input edge lengths
 [edgeLengths]=patchEdgeLengths(F,V);
-minEdgeSize=mean(edgeLengths)/3; %The smallest element size
+minEdgeSize=mean(edgeLengths)/5; %The smallest element size
 
-n=3; %The largest element edge length is n times minEdgeSize
+n=5; %The largest element edge length is n times minEdgeSize
 edgeSizeField=V(:,1);
 edgeSizeField=edgeSizeField-min(edgeSizeField(:));
 edgeSizeField=edgeSizeField./max(edgeSizeField(:));

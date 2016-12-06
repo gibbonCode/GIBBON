@@ -6,7 +6,7 @@
    <!--
 This HTML was auto-generated from MATLAB code.
 To make changes, update the MATLAB code and republish this document.
-      --><title>stanford_bunny</title><meta name="generator" content="MATLAB 9.1"><link rel="schema.DC" href="http://purl.org/dc/elements/1.1/"><meta name="DC.date" content="2016-09-12"><meta name="DC.source" content="HELP_stanford_bunny.m"><style type="text/css">
+      --><title>stanford_bunny</title><meta name="generator" content="MATLAB 9.1"><link rel="schema.DC" href="http://purl.org/dc/elements/1.1/"><meta name="DC.date" content="2016-12-05"><meta name="DC.source" content="HELP_stanford_bunny.m"><style type="text/css">
 html,body,div,span,applet,object,iframe,h1,h2,h3,h4,h5,h6,p,blockquote,pre,a,abbr,acronym,address,big,cite,code,del,dfn,em,font,img,ins,kbd,q,s,samp,small,strike,strong,sub,sup,tt,var,b,u,i,center,dl,dt,dd,ol,ul,li,fieldset,form,label,legend,table,caption,tbody,tfoot,thead,tr,th,td{margin:0;padding:0;border:0;outline:0;font-size:100%;vertical-align:baseline;background:transparent}body{line-height:1}ol,ul{list-style:none}blockquote,q{quotes:none}blockquote:before,blockquote:after,q:before,q:after{content:'';content:none}:focus{outine:0}ins{text-decoration:none}del{text-decoration:line-through}table{border-collapse:collapse;border-spacing:0}
 
 html { min-height:100%; margin-bottom:1px; }
@@ -66,7 +66,7 @@ table td { padding:7px 5px; text-align:left; vertical-align:top; border:1px soli
 
 
 
-  </style></head><body><div class="content"><h1>stanford_bunny</h1><!--introduction--><p>Below is a demonstration of the <tt>stanford_bunny</tt> function</p><!--/introduction--><h2>Contents</h2><div><ul><li><a href="#2">THE STANFORD BUNNY</a></li></ul></div><pre class="codeinput">close <span class="string">all</span>; clc; <span class="comment">%clear;</span>
+  </style></head><body><div class="content"><h1>stanford_bunny</h1><!--introduction--><p>Below is a demonstration of the <tt>stanford_bunny</tt> function</p><!--/introduction--><h2>Contents</h2><div><ul><li><a href="#2">THE STANFORD BUNNY</a></li></ul></div><pre class="codeinput">clear; close <span class="string">all</span>; clc;
 
 <span class="comment">% Plot settings</span>
 fig_color=<span class="string">'w'</span>; fig_colordef=<span class="string">'white'</span>;
@@ -77,40 +77,20 @@ edgeColor=<span class="string">'k'</span>;
 edgeWidth=1;
 </pre><h2 id="2">THE STANFORD BUNNY</h2><p>The stanford_bunny function generates patch data (faces and vertices) defining a relatively coarse representation of the "Stanford bunny" which is a commonly used test model in computer graphics. The surface is not entirely closed as can be seen in the second figure below.</p><p>This MATLAB implementation is based on the coarse representation downloadable from: <a href="http://www.cc.gatech.edu/projects/large_models/bunny.html">http://www.cc.gatech.edu/projects/large_models/bunny.html</a></p><p>See also: <a href="http://www.gvu.gatech.edu/people/faculty/greg.turk/bunny/bunny.html">http://www.gvu.gatech.edu/people/faculty/greg.turk/bunny/bunny.html</a> <a href="http://graphics.stanford.edu/data/3Dscanrep/">http://graphics.stanford.edu/data/3Dscanrep/</a></p><p>Turk G, Levoy M. Zippered polygon meshes from range images. Proceedings of the 21st annual conference on Computer graphics and interactive techniques - SIGGRAPH  &iuml;&iquest;&frac12;94 [Internet]. New York, New York, USA: ACM Press; 1994;311&iuml;&iquest;&frac12;8. Available from: <a href="http://portal.acm.org/citation.cfm?doid=192161.192241">http://portal.acm.org/citation.cfm?doid=192161.192241</a></p><pre class="codeinput"><span class="comment">%Obtaining patch data</span>
 [F,V]=stanford_bunny;
-
-<span class="comment">%Visualisation</span>
-
-C=rand(size(F,1),1); <span class="comment">%random face color values</span>
-
-hf=figuremax(fig_color,fig_colordef);
+</pre><p>Visualisation</p><pre class="codeinput">hf=figuremax(fig_color,fig_colordef);
 title(<span class="string">'The Stanford bunny'</span>,<span class="string">'FontSize'</span>,fontSize);
 xlabel(<span class="string">'X'</span>,<span class="string">'FontSize'</span>,fontSize); ylabel(<span class="string">'Y'</span>,<span class="string">'FontSize'</span>,fontSize); zlabel(<span class="string">'Z'</span>,<span class="string">'FontSize'</span>,fontSize);
-hp=patch(<span class="string">'Faces'</span>,F,<span class="string">'Vertices'</span>,V);
-
-set(hp,<span class="string">'FaceColor'</span>,<span class="string">'flat'</span>,<span class="string">'CData'</span>,C,<span class="string">'FaceAlpha'</span>,faceAlpha,<span class="string">'lineWidth'</span>,edgeWidth,<span class="string">'edgeColor'</span>,edgeColor);
-colormap <span class="string">autumn</span>;
+hp=patch(<span class="string">'Faces'</span>,F,<span class="string">'Vertices'</span>,V,<span class="string">'FaceColor'</span>,<span class="string">'g'</span>,<span class="string">'FaceAlpha'</span>,faceAlpha,<span class="string">'lineWidth'</span>,edgeWidth,<span class="string">'edgeColor'</span>,edgeColor);
 set(gca,<span class="string">'FontSize'</span>,fontSize);
 view(3); axis <span class="string">tight</span>;  axis <span class="string">equal</span>;  axis <span class="string">vis3d</span>; axis <span class="string">off</span>;
-camlight(<span class="string">'headlight'</span>); lighting <span class="string">phong</span>;
-
-hf=figuremax(fig_color,fig_colordef);
-title(<span class="string">'The Stanford bunny'</span>,<span class="string">'FontSize'</span>,fontSize);
-xlabel(<span class="string">'X'</span>,<span class="string">'FontSize'</span>,fontSize); ylabel(<span class="string">'Y'</span>,<span class="string">'FontSize'</span>,fontSize); zlabel(<span class="string">'Z'</span>,<span class="string">'FontSize'</span>,fontSize);
-hp=patch(<span class="string">'Faces'</span>,F,<span class="string">'Vertices'</span>,V);
-
-set(hp,<span class="string">'FaceColor'</span>,<span class="string">'flat'</span>,<span class="string">'CData'</span>,C,<span class="string">'FaceAlpha'</span>,faceAlpha,<span class="string">'lineWidth'</span>,edgeWidth,<span class="string">'edgeColor'</span>,edgeColor);
-colormap <span class="string">autumn</span>;
-set(gca,<span class="string">'FontSize'</span>,fontSize);
-view(3); axis <span class="string">tight</span>;  axis <span class="string">equal</span>;  axis <span class="string">vis3d</span>; axis <span class="string">off</span>;
-camlight(<span class="string">'headlight'</span>); lighting <span class="string">phong</span>;
-view(24.5,-44);
-</pre><img vspace="5" hspace="5" src="HELP_stanford_bunny_01.png" alt=""> <img vspace="5" hspace="5" src="HELP_stanford_bunny_02.png" alt=""> <p><img vspace="5" hspace="5" src="gibbVerySmall.gif" alt=""> </p><p><i><b>GIBBON</b></i> <a href="www.gibboncode.org">www.gibboncode.org</a></p><p><i>Kevin Mattheus Moerman</i>, <a href="gibbon.toolbox@gmail.com">gibbon.toolbox@gmail.com</a></p><p class="footer"><br><a href="http://www.mathworks.com/products/matlab/">Published with MATLAB&reg; R2016b</a><br></p></div><!--
+camlight(<span class="string">'headlight'</span>); lighting <span class="string">flat</span>;
+</pre><img vspace="5" hspace="5" src="HELP_stanford_bunny_01.png" alt=""> <p><img vspace="5" hspace="5" src="gibbVerySmall.gif" alt=""> </p><p><i><b>GIBBON</b></i> <a href="www.gibboncode.org">www.gibboncode.org</a></p><p><i>Kevin Mattheus Moerman</i>, <a href="gibbon.toolbox@gmail.com">gibbon.toolbox@gmail.com</a></p><p class="footer"><br><a href="http://www.mathworks.com/products/matlab/">Published with MATLAB&reg; R2016b</a><br></p></div><!--
 ##### SOURCE BEGIN #####
 %% stanford_bunny
 % Below is a demonstration of the |stanford_bunny| function
 
 %%
-close all; clc; %clear;
+clear; close all; clc;
 
 % Plot settings
 fig_color='w'; fig_colordef='white';
@@ -144,32 +124,16 @@ edgeWidth=1;
 %Obtaining patch data
 [F,V]=stanford_bunny;
 
-%Visualisation
-
-C=rand(size(F,1),1); %random face color values
-
-hf=figuremax(fig_color,fig_colordef); 
-title('The Stanford bunny','FontSize',fontSize);
-xlabel('X','FontSize',fontSize); ylabel('Y','FontSize',fontSize); zlabel('Z','FontSize',fontSize);
-hp=patch('Faces',F,'Vertices',V);
-
-set(hp,'FaceColor','flat','CData',C,'FaceAlpha',faceAlpha,'lineWidth',edgeWidth,'edgeColor',edgeColor);
-colormap autumn; 
-set(gca,'FontSize',fontSize);
-view(3); axis tight;  axis equal;  axis vis3d; axis off;
-camlight('headlight'); lighting phong;
+%%
+% Visualisation
 
 hf=figuremax(fig_color,fig_colordef); 
 title('The Stanford bunny','FontSize',fontSize);
 xlabel('X','FontSize',fontSize); ylabel('Y','FontSize',fontSize); zlabel('Z','FontSize',fontSize);
-hp=patch('Faces',F,'Vertices',V);
-
-set(hp,'FaceColor','flat','CData',C,'FaceAlpha',faceAlpha,'lineWidth',edgeWidth,'edgeColor',edgeColor);
-colormap autumn; 
+hp=patch('Faces',F,'Vertices',V,'FaceColor','g','FaceAlpha',faceAlpha,'lineWidth',edgeWidth,'edgeColor',edgeColor);
 set(gca,'FontSize',fontSize);
 view(3); axis tight;  axis equal;  axis vis3d; axis off;
-camlight('headlight'); lighting phong;
-view(24.5,-44);
+camlight('headlight'); lighting flat;
 
 %% 
 %

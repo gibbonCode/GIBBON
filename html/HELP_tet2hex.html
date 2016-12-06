@@ -1,0 +1,276 @@
+
+<!DOCTYPE html
+  PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html><head>
+      <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+   <!--
+This HTML was auto-generated from MATLAB code.
+To make changes, update the MATLAB code and republish this document.
+      --><title>tet2hex</title><meta name="generator" content="MATLAB 9.1"><link rel="schema.DC" href="http://purl.org/dc/elements/1.1/"><meta name="DC.date" content="2016-11-22"><meta name="DC.source" content="HELP_tet2hex.m"><style type="text/css">
+html,body,div,span,applet,object,iframe,h1,h2,h3,h4,h5,h6,p,blockquote,pre,a,abbr,acronym,address,big,cite,code,del,dfn,em,font,img,ins,kbd,q,s,samp,small,strike,strong,sub,sup,tt,var,b,u,i,center,dl,dt,dd,ol,ul,li,fieldset,form,label,legend,table,caption,tbody,tfoot,thead,tr,th,td{margin:0;padding:0;border:0;outline:0;font-size:100%;vertical-align:baseline;background:transparent}body{line-height:1}ol,ul{list-style:none}blockquote,q{quotes:none}blockquote:before,blockquote:after,q:before,q:after{content:'';content:none}:focus{outine:0}ins{text-decoration:none}del{text-decoration:line-through}table{border-collapse:collapse;border-spacing:0}
+
+html { min-height:100%; margin-bottom:1px; }
+html body { height:100%; margin:0px; font-family:Arial, Helvetica, sans-serif; font-size:10px; color:#000; line-height:140%; background:#fff none; overflow-y:scroll; }
+html body td { vertical-align:top; text-align:left; }
+
+h1 { padding:0px; margin:0px 0px 25px; font-family:Arial, Helvetica, sans-serif; font-size:1.5em; color:#d55000; line-height:100%; font-weight:normal; }
+h2 { padding:0px; margin:0px 0px 8px; font-family:Arial, Helvetica, sans-serif; font-size:1.2em; color:#000; font-weight:bold; line-height:140%; border-bottom:1px solid #d6d4d4; display:block; }
+h3 { padding:0px; margin:0px 0px 5px; font-family:Arial, Helvetica, sans-serif; font-size:1.1em; color:#000; font-weight:bold; line-height:140%; }
+
+a { color:#005fce; text-decoration:none; }
+a:hover { color:#005fce; text-decoration:underline; }
+a:visited { color:#004aa0; text-decoration:none; }
+
+p { padding:0px; margin:0px 0px 20px; }
+img { padding:0px; margin:0px 0px 20px; border:none; }
+p img, pre img, tt img, li img, h1 img, h2 img { margin-bottom:0px; } 
+
+ul { padding:0px; margin:0px 0px 20px 23px; list-style:square; }
+ul li { padding:0px; margin:0px 0px 7px 0px; }
+ul li ul { padding:5px 0px 0px; margin:0px 0px 7px 23px; }
+ul li ol li { list-style:decimal; }
+ol { padding:0px; margin:0px 0px 20px 0px; list-style:decimal; }
+ol li { padding:0px; margin:0px 0px 7px 23px; list-style-type:decimal; }
+ol li ol { padding:5px 0px 0px; margin:0px 0px 7px 0px; }
+ol li ol li { list-style-type:lower-alpha; }
+ol li ul { padding-top:7px; }
+ol li ul li { list-style:square; }
+
+.content { font-size:1.2em; line-height:140%; padding: 20px; }
+
+pre, code { font-size:12px; }
+tt { font-size: 1.2em; }
+pre { margin:0px 0px 20px; }
+pre.codeinput { padding:10px; border:1px solid #d3d3d3; background:#f7f7f7; }
+pre.codeoutput { padding:10px 11px; margin:0px 0px 20px; color:#4c4c4c; }
+pre.error { color:red; }
+
+@media print { pre.codeinput, pre.codeoutput { word-wrap:break-word; width:100%; } }
+
+span.keyword { color:#0000FF }
+span.comment { color:#228B22 }
+span.string { color:#A020F0 }
+span.untermstring { color:#B20000 }
+span.syscmd { color:#B28C00 }
+
+.footer { width:auto; padding:10px 0px; margin:25px 0px 0px; border-top:1px dotted #878787; font-size:0.8em; line-height:140%; font-style:italic; color:#878787; text-align:left; float:none; }
+.footer p { margin:0px; }
+.footer a { color:#878787; }
+.footer a:hover { color:#878787; text-decoration:underline; }
+.footer a:visited { color:#878787; }
+
+table th { padding:7px 5px; text-align:left; vertical-align:middle; border: 1px solid #d6d4d4; font-weight:bold; }
+table td { padding:7px 5px; text-align:left; vertical-align:top; border:1px solid #d6d4d4; }
+
+
+
+
+
+  </style></head><body><div class="content"><h1>tet2hex</h1><!--introduction--><p>Below is a demonstration of the features of the <tt>tet2hex</tt> function</p><!--/introduction--><h2>Contents</h2><div><ul><li><a href="#1">Syntax</a></li><li><a href="#2">Description</a></li><li><a href="#3">Examples</a></li><li><a href="#5">Example converting a single tetrahedron to 4 hexahedrons</a></li><li><a href="#8">Visualization</a></li><li><a href="#9">Example converting a set of tetrahedral elements</a></li><li><a href="#12">Visualization</a></li></ul></div><h2 id="1">Syntax</h2><p><tt>[Es,Vs]=tet2hex(E,V);</tt></p><h2 id="2">Description</h2><h2 id="3">Examples</h2><pre class="codeinput">clear; close <span class="string">all</span>; clc;
+</pre><p>Plot settings</p><pre class="codeinput">fontSize=15;
+faceColor1=<span class="string">'g'</span>;
+faceColor2=<span class="string">'r'</span>;
+faceAlpha1=0.3;
+faceAlpha2=1;
+edgeColor=0.*ones(1,3);
+edgeWidth=2;
+markerSize=2;
+cMap=gjet(250);
+</pre><h2 id="5">Example converting a single tetrahedron to 4 hexahedrons</h2><p>Creating an example tetrahedron</p><pre class="codeinput">[V,~]=platonic_solid(1,1);
+E=[1:4];
+</pre><p>Convert tetrahedron to hexahedral elements</p><pre class="codeinput">[Es,Vs]=tet2hex(E,V);
+</pre><h2 id="8">Visualization</h2><pre class="codeinput">[F]=element2patch(E);  <span class="comment">%Patch data for plotting</span>
+
+Cs=(1:1:size(Es,1))';
+[Fs,CFs]=element2patch(Es,Cs); <span class="comment">%Patch data for plotting</span>
+
+cFigure;
+subplot(1,2,1);
+title(<span class="string">'Original tetrahedral element'</span>,<span class="string">'FontSize'</span>,fontSize);
+xlabel(<span class="string">'X'</span>,<span class="string">'FontSize'</span>,fontSize); ylabel(<span class="string">'Y'</span>,<span class="string">'FontSize'</span>,fontSize); zlabel(<span class="string">'Z'</span>,<span class="string">'FontSize'</span>,fontSize);
+hold <span class="string">on</span>;
+
+patch(<span class="string">'Faces'</span>,F,<span class="string">'Vertices'</span>,V,<span class="string">'FaceColor'</span>,0.5*ones(1,3),<span class="string">'EdgeColor'</span>,edgeColor,<span class="string">'FaceAlpha'</span>,faceAlpha1,<span class="string">'lineWidth'</span>,edgeWidth);
+view(3); grid <span class="string">on</span>; axis <span class="string">equal</span>; axis <span class="string">tight</span>;
+set(gca,<span class="string">'FontSize'</span>,fontSize);
+
+subplot(1,2,2);
+title(<span class="string">'Converted hexahedral elements'</span>,<span class="string">'FontSize'</span>,fontSize);
+xlabel(<span class="string">'X'</span>,<span class="string">'FontSize'</span>,fontSize); ylabel(<span class="string">'Y'</span>,<span class="string">'FontSize'</span>,fontSize); zlabel(<span class="string">'Z'</span>,<span class="string">'FontSize'</span>,fontSize);
+hold <span class="string">on</span>;
+
+patch(<span class="string">'Faces'</span>,Fs,<span class="string">'Vertices'</span>,Vs,<span class="string">'FaceColor'</span>,<span class="string">'flat'</span>,<span class="string">'CData'</span>,CFs,<span class="string">'EdgeColor'</span>,edgeColor,<span class="string">'FaceAlpha'</span>,faceAlpha1,<span class="string">'lineWidth'</span>,edgeWidth);
+
+colormap(cMap);
+view(3); grid <span class="string">on</span>; axis <span class="string">equal</span>; axis <span class="string">tight</span>;
+set(gca,<span class="string">'FontSize'</span>,fontSize);
+
+drawnow;
+</pre><img vspace="5" hspace="5" src="HELP_tet2hex_01.png" alt=""> <h2 id="9">Example converting a set of tetrahedral elements</h2><p>Creating an example set of hexahedrons</p><pre class="codeinput">[V,~]=platonic_solid(1,1);
+E=[1:4];
+
+n=1;
+<span class="keyword">if</span> n&gt;0
+    <span class="keyword">for</span> q=1:1:n
+        [E,V]=subTet(E,V,1);
+    <span class="keyword">end</span>
+<span class="keyword">end</span>
+
+C=(1:1:size(E,1))';
+</pre><p>Subdeviding the hexahedral element</p><pre class="codeinput">[Es,Vs]=tet2hex(E,V);
+</pre><h2 id="12">Visualization</h2><pre class="codeinput">[F,CF]=element2patch(E,C);  <span class="comment">%Patch data for plotting</span>
+
+[Fs,CFs]=element2patch(Es,repmat(C,[4 1])); <span class="comment">%Patch data for plotting</span>
+
+cFigure;
+subplot(1,2,1);
+title(<span class="string">'Original tetrahedral element set'</span>,<span class="string">'FontSize'</span>,fontSize);
+xlabel(<span class="string">'X'</span>,<span class="string">'FontSize'</span>,fontSize); ylabel(<span class="string">'Y'</span>,<span class="string">'FontSize'</span>,fontSize); zlabel(<span class="string">'Z'</span>,<span class="string">'FontSize'</span>,fontSize);
+hold <span class="string">on</span>;
+
+patch(<span class="string">'Faces'</span>,F,<span class="string">'Vertices'</span>,V,<span class="string">'FaceColor'</span>,<span class="string">'flat'</span>,<span class="string">'CData'</span>,CF,<span class="string">'EdgeColor'</span>,edgeColor,<span class="string">'FaceAlpha'</span>,faceAlpha1,<span class="string">'lineWidth'</span>,edgeWidth);
+
+view(3); grid <span class="string">on</span>; axis <span class="string">equal</span>; axis <span class="string">tight</span>;
+set(gca,<span class="string">'FontSize'</span>,fontSize);
+
+subplot(1,2,2);
+title(<span class="string">'Converted hexahedral elements'</span>,<span class="string">'FontSize'</span>,fontSize);
+xlabel(<span class="string">'X'</span>,<span class="string">'FontSize'</span>,fontSize); ylabel(<span class="string">'Y'</span>,<span class="string">'FontSize'</span>,fontSize); zlabel(<span class="string">'Z'</span>,<span class="string">'FontSize'</span>,fontSize);
+hold <span class="string">on</span>;
+
+patch(<span class="string">'Faces'</span>,Fs,<span class="string">'Vertices'</span>,Vs,<span class="string">'FaceColor'</span>,<span class="string">'flat'</span>,<span class="string">'CData'</span>,CFs,<span class="string">'EdgeColor'</span>,edgeColor,<span class="string">'FaceAlpha'</span>,faceAlpha1,<span class="string">'lineWidth'</span>,edgeWidth);
+
+colormap(cMap);
+view(3); grid <span class="string">on</span>; axis <span class="string">equal</span>; axis <span class="string">tight</span>;
+set(gca,<span class="string">'FontSize'</span>,fontSize);
+
+drawnow;
+</pre><img vspace="5" hspace="5" src="HELP_tet2hex_02.png" alt=""> <p><img vspace="5" hspace="5" src="gibbVerySmall.gif" alt=""> </p><p><i><b>GIBBON</b></i> <a href="www.gibboncode.org">www.gibboncode.org</a></p><p><i>Kevin Mattheus Moerman</i>, <a href="gibbon.toolbox@gmail.com">gibbon.toolbox@gmail.com</a></p><p class="footer"><br><a href="http://www.mathworks.com/products/matlab/">Published with MATLAB&reg; R2016b</a><br></p></div><!--
+##### SOURCE BEGIN #####
+%% tet2hex
+% Below is a demonstration of the features of the |tet2hex| function
+
+%% Syntax
+% |[Es,Vs]=tet2hex(E,V);|
+
+%% Description
+%
+%% Examples
+
+clear; close all; clc;
+
+%%
+% Plot settings
+fontSize=15;
+faceColor1='g';
+faceColor2='r';
+faceAlpha1=0.3;
+faceAlpha2=1;
+edgeColor=0.*ones(1,3);
+edgeWidth=2;
+markerSize=2;
+cMap=gjet(250);
+
+%% Example converting a single tetrahedron to 4 hexahedrons
+
+%%
+% Creating an example tetrahedron
+[V,~]=platonic_solid(1,1);
+E=[1:4];
+
+%%
+% Convert tetrahedron to hexahedral elements
+
+[Es,Vs]=tet2hex(E,V);
+
+%% Visualization
+
+[F]=element2patch(E);  %Patch data for plotting
+
+Cs=(1:1:size(Es,1))';
+[Fs,CFs]=element2patch(Es,Cs); %Patch data for plotting
+
+cFigure;
+subplot(1,2,1); 
+title('Original tetrahedral element','FontSize',fontSize);
+xlabel('X','FontSize',fontSize); ylabel('Y','FontSize',fontSize); zlabel('Z','FontSize',fontSize);
+hold on;
+
+patch('Faces',F,'Vertices',V,'FaceColor',0.5*ones(1,3),'EdgeColor',edgeColor,'FaceAlpha',faceAlpha1,'lineWidth',edgeWidth);
+view(3); grid on; axis equal; axis tight;
+set(gca,'FontSize',fontSize);
+
+subplot(1,2,2); 
+title('Converted hexahedral elements','FontSize',fontSize);
+xlabel('X','FontSize',fontSize); ylabel('Y','FontSize',fontSize); zlabel('Z','FontSize',fontSize);
+hold on;
+
+patch('Faces',Fs,'Vertices',Vs,'FaceColor','flat','CData',CFs,'EdgeColor',edgeColor,'FaceAlpha',faceAlpha1,'lineWidth',edgeWidth);
+
+colormap(cMap);
+view(3); grid on; axis equal; axis tight;
+set(gca,'FontSize',fontSize);
+
+drawnow;
+
+%% Example converting a set of tetrahedral elements
+
+%%
+% Creating an example set of hexahedrons
+
+[V,~]=platonic_solid(1,1);
+E=[1:4];
+
+n=1; 
+if n>0
+    for q=1:1:n
+        [E,V]=subTet(E,V,1);
+    end
+end
+
+C=(1:1:size(E,1))';
+
+%%
+% Subdeviding the hexahedral element
+[Es,Vs]=tet2hex(E,V);
+ 
+%% Visualization
+
+[F,CF]=element2patch(E,C);  %Patch data for plotting
+
+[Fs,CFs]=element2patch(Es,repmat(C,[4 1])); %Patch data for plotting
+
+cFigure;
+subplot(1,2,1); 
+title('Original tetrahedral element set','FontSize',fontSize);
+xlabel('X','FontSize',fontSize); ylabel('Y','FontSize',fontSize); zlabel('Z','FontSize',fontSize);
+hold on;
+
+patch('Faces',F,'Vertices',V,'FaceColor','flat','CData',CF,'EdgeColor',edgeColor,'FaceAlpha',faceAlpha1,'lineWidth',edgeWidth);
+
+view(3); grid on; axis equal; axis tight;
+set(gca,'FontSize',fontSize);
+
+subplot(1,2,2); 
+title('Converted hexahedral elements','FontSize',fontSize);
+xlabel('X','FontSize',fontSize); ylabel('Y','FontSize',fontSize); zlabel('Z','FontSize',fontSize);
+hold on;
+
+patch('Faces',Fs,'Vertices',Vs,'FaceColor','flat','CData',CFs,'EdgeColor',edgeColor,'FaceAlpha',faceAlpha1,'lineWidth',edgeWidth);
+
+colormap(cMap);
+view(3); grid on; axis equal; axis tight;
+set(gca,'FontSize',fontSize);
+
+drawnow;
+
+%%
+% 
+% <<gibbVerySmall.gif>>
+% 
+% _*GIBBON*_ 
+% <www.gibboncode.org>
+% 
+% _Kevin Mattheus Moerman_, <gibbon.toolbox@gmail.com>
+##### SOURCE END #####
+--></body></html>
