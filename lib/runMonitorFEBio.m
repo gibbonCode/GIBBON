@@ -14,7 +14,7 @@ function [runFlag]=runMonitorFEBio(FEBioRunStruct)
 %% 
 
 lineSep=repmat('%',1,45);
-if FEBioRunStruct.disp_on==1;
+if FEBioRunStruct.disp_on==1
     disp(' '); %Empty line
     disp(lineSep); %Stripe
     disp(['--- STARTING FEBIO JOB --- ',datestr(now)]);
@@ -45,7 +45,7 @@ if exist(fileName_plot,'file')==2
 end
 
 %Remove other requested files (e.g. output files)
-if ~isfield(FEBioRunStruct,'cleanUpFileList');
+if ~isfield(FEBioRunStruct,'cleanUpFileList')
     FEBioRunStruct.cleanUpFileList={}; 
 end
 
@@ -125,7 +125,7 @@ tPost=tic;
 
 %% Wait for log file
 
-if FEBioRunStruct.disp_on==1;
+if FEBioRunStruct.disp_on==1
     disp('Waiting for log file...');
 end
 
@@ -145,7 +145,7 @@ while fileFound==0
             if t_fea>=FEBioRunStruct.maxLogCheckTime %&& logTimingError==1
                 runFlag=0;
                 FEBio_go=1;
-                if FEBioRunStruct.disp_on==1;
+                if FEBioRunStruct.disp_on==1
                     warning(['--- FAILED: Log file was not created in time. FEBio likely failed proir to logfile creation! --- ',datestr(now)]);
                     if runExternal==1
                         warning('Try setting FEBioRunStruct.runMode to "internal" to see potential errors prior to log file creation');
@@ -160,7 +160,7 @@ end
 
 if FEBio_go==0
     
-    if FEBioRunStruct.disp_on==1;
+    if FEBioRunStruct.disp_on==1
         disp(['Proceeding to check log file...',datestr(now)]);
     end
     
@@ -176,7 +176,7 @@ if FEBio_go==0
         
         %Check log file content
         while 1
-            if line_count>numel(T_log);
+            if line_count>numel(T_log)
                 break;
             end
             
@@ -199,12 +199,12 @@ if FEBio_go==0
             
             %Check for error termination
             if (strfind(l,targets{3})) % Found: E R R O R   T E R M I N A T I O N
-                if FEBioRunStruct.disp_on==1;
+                if FEBioRunStruct.disp_on==1
                     disp(l); %display line
                 end
                 runFlag=0;
                 FEBio_go=1;
-                if FEBioRunStruct.disp_on==1;
+                if FEBioRunStruct.disp_on==1
                     disp(['--- FAILED: FEBio error! Check log-file --- ',datestr(now)]);
                 end
                 break
@@ -225,7 +225,7 @@ if FEBio_go==0
     end    
 end
 
-if FEBioRunStruct.disp_on==1;
+if FEBioRunStruct.disp_on==1
     if runFlag==1
         disp(['--- Done --- ',datestr(now)]);
     else
@@ -238,7 +238,7 @@ end
 function [runFlag,FEBio_go]=policeFEBioJob(FEBioRunStruct,t_fea)
 
 if t_fea>=FEBioRunStruct.maxtpi 
-    if FEBioRunStruct.disp_on==1;
+    if FEBioRunStruct.disp_on==1
         disp(['--- FAILED: Maximum analysis time exceeded, FEBio job will be terminated! --- ',datestr(now)]);
     end
     runFlag=0;

@@ -35,17 +35,48 @@ switch nargin
 end
 
 if isempty(triType)
-    triType='f';
+    triType='a';
 end
 
 %%
 switch triType
     case 'b' %backward slash
         Ft=[Fq(:,[1 2 3]);Fq(:,[3 4 1]);];
-        Vt=Vq;             
+        Vt=Vq;
+        Ct=repmat(Cq,[2,1]);
     case 'f' %Forward slash
         Ft=[Fq(:,[1 2 4]);Fq(:,[2 3 4]);];        
         Vt=Vq;        
+        Ct=repmat(Cq,[2,1]);
+    case 'e'        
+        d1=sum((Vq(Fq(:,1),:)-Vq(Fq(:,3),:)).^2,2);
+        d2=sum((Vq(Fq(:,2),:)-Vq(Fq(:,4),:)).^2,2);
+        L1=(d1<d2);
+        Ft=[Fq(L1,[1 2 3]);Fq(L1,[3 4 1]); Fq(~L1,[1 2 4]);Fq(~L1,[2 3 4])];
+        Vt=Vq;
+        if ~isempty(Cq)
+            Ct=[Cq(L1,:); Cq(L1,:); Cq(~L1,:); Cq(~L1,:)];
+        else
+            Ct=Cq;
+        end
+    case 'a'        
+        F1=[Fq(:,[1 2 3]);Fq(:,[3 4 1])];
+        F2=[Fq(:,[1 2 4]);Fq(:,[2 3 4])];
+        [a1]=patchEdgeAngles(F1,Vq);
+        a1=reshape(a1,[size(Fq,1),6]);
+        d1=sum(abs(a1-(pi/3)),2);
+        
+        [a2]=patchEdgeAngles(F2,Vq);
+        a2=reshape(a2,[size(Fq,1),6]);
+        d2=sum(abs(a2-(pi/3)),2);
+        L1=(d1<d2);
+        Ft=[Fq(L1,[1 2 3]);Fq(L1,[3 4 1]); Fq(~L1,[1 2 4]);Fq(~L1,[2 3 4])];
+        Vt=Vq;
+        if ~isempty(Cq)
+            Ct=[Cq(L1,:); Cq(L1,:); Cq(~L1,:); Cq(~L1,:)];
+        else
+            Ct=Cq;
+        end
     case 'x' %Cross type
         Vm=zeros(size(Fq,1),size(Vq,2));
         for q=1:1:size(Vq,2)
@@ -65,14 +96,7 @@ switch triType
             Fq(:,2) Fq(:,3) indVm(:);...
             Fq(:,3) Fq(:,4) indVm(:);...
             Fq(:,4) Fq(:,1) indVm(:)];
-end
-
-%Copying color information
-if ~isempty(Cq)
-    diffFac=size(Ft,1)./size(Fq,1); %An integer (e.g. 2 or 4)
-    Ct=repmat(Cq,[diffFac,1]); %Copy color
-else
-    Ct=[];
+        Ct=repmat(Cq,[4,1]);
 end
     
 varargout{1}=Ft;

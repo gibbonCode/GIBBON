@@ -1113,7 +1113,7 @@ hf=inputCell{1}; %Figure handle
 
 % Key input options
 switch eventData.Key
-    case 'leftarrow' % Pan left
+    case 'leftarrow' 
         a=hf.UserData.faceAlpha;
         a=(a-0.1);
         if a<0
@@ -1125,7 +1125,7 @@ switch eventData.Key
         plotSlice([],[],{hf,hf.UserData.sliderHandles{1},1});
         plotSlice([],[],{hf,hf.UserData.sliderHandles{2},2});
         plotSlice([],[],{hf,hf.UserData.sliderHandles{3},3});
-    case 'rightarrow' % Pan right
+    case 'rightarrow' 
         a=hf.UserData.faceAlpha;
         a=(a+0.1);
         if a>1
@@ -1137,7 +1137,7 @@ switch eventData.Key
         plotSlice([],[],{hf,hf.UserData.sliderHandles{1},1});
         plotSlice([],[],{hf,hf.UserData.sliderHandles{2},2});
         plotSlice([],[],{hf,hf.UserData.sliderHandles{3},3});
-    case 'downarrow' % Pan down
+    case 'downarrow' 
         qSlice=hf.UserData.sliceIndices(3);
         if qSlice>1
             hf.UserData.sliceIndices(3)=hf.UserData.sliceIndices(3)-1;
@@ -1147,7 +1147,7 @@ switch eventData.Key
                 plotContourSet(hf);
             end
         end
-    case 'uparrow' % Pan up
+    case 'uparrow' 
         qSlice=hf.UserData.sliceIndices(3);
         if qSlice<size(hf.UserData.M,3)
             hf.UserData.sliceIndices(3)=hf.UserData.sliceIndices(3)+1;

@@ -80,12 +80,11 @@ indV_midFace314=ind2(indV_midFace((4-1)*size(E,1)+(1:size(E,1))))+indOffset;
     ];
 Es=Es(:,[4 3 2 1 8 7 6 5]);
 
-%% Create vertex array
+%% Create vertex arrays
 
 %new mid-edge points
 Vn=0.5*(V(edgeMat(:,1),:)+V(edgeMat(:,2),:));
-       
-        
+     
 switch tet2HexMethod
     case 1        
         %new mid-element points
@@ -112,15 +111,7 @@ switch tet2HexMethod
         
         %new mid-face points
         TR=triangulation(F,V);
-        Vf = incenter(TR,(1:size(F,1))');   
-    case 3
-        %new mid-element points
-        TET=triangulation(E,V);
-        Vm = circumcenter(TET,(1:size(E,1))');
-        
-        %new mid-face points
-        TR=triangulation(F,V);
-        Vf = circumcenter(TR,(1:size(F,1))');   
+        Vf = incenter(TR,(1:size(F,1))');     
 end
 
 Vs=[V; Vn; Vm; Vf]; %Join point sets
