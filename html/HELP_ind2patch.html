@@ -6,7 +6,7 @@
    <!--
 This HTML was auto-generated from MATLAB code.
 To make changes, update the MATLAB code and republish this document.
-      --><title>ind2patch</title><meta name="generator" content="MATLAB 9.1"><link rel="schema.DC" href="http://purl.org/dc/elements/1.1/"><meta name="DC.date" content="2016-09-12"><meta name="DC.source" content="HELP_ind2patch.m"><style type="text/css">
+      --><title>ind2patch</title><meta name="generator" content="MATLAB 9.1"><link rel="schema.DC" href="http://purl.org/dc/elements/1.1/"><meta name="DC.date" content="2016-12-13"><meta name="DC.source" content="HELP_ind2patch.m"><style type="text/css">
 html,body,div,span,applet,object,iframe,h1,h2,h3,h4,h5,h6,p,blockquote,pre,a,abbr,acronym,address,big,cite,code,del,dfn,em,font,img,ins,kbd,q,s,samp,small,strike,strong,sub,sup,tt,var,b,u,i,center,dl,dt,dd,ol,ul,li,fieldset,form,label,legend,table,caption,tbody,tfoot,thead,tr,th,td{margin:0;padding:0;border:0;outline:0;font-size:100%;vertical-align:baseline;background:transparent}body{line-height:1}ol,ul{list-style:none}blockquote,q{quotes:none}blockquote:before,blockquote:after,q:before,q:after{content:'';content:none}:focus{outine:0}ins{text-decoration:none}del{text-decoration:line-through}table{border-collapse:collapse;border-spacing:0}
 
 html { min-height:100%; margin-bottom:1px; }
@@ -66,7 +66,7 @@ table td { padding:7px 5px; text-align:left; vertical-align:top; border:1px soli
 
 
 
-  </style></head><body><div class="content"><h1>ind2patch</h1><!--introduction--><p>Below is a demonstration of the features of the <tt>ind2patch</tt> function</p><!--/introduction--><h2>Contents</h2><div><ul><li><a href="#2">Syntax</a></li><li><a href="#3">Description</a></li><li><a href="#4">Examples</a></li><li><a href="#6">Example: Introduction to using <tt>ind2patch</tt> for voxel plotting</a></li><li><a href="#13">Example: Introduction to using <tt>ind2patch</tt> for slice plotting</a></li><li><a href="#15">Example: Comparison to standard MATLAB <tt>imagesc</tt> function and the patch type MATLAB functions <tt>slice</tt> and <tt>pcolor</tt></a></li><li><a href="#17">Example: Creating and plotting combined voxel and slice patch data</a></li><li><a href="#20">Example: Shrinking patch data through combination with <tt>scalePatch</tt> function</a></li><li><a href="#22">Example: Medical image data and coordinate manipulation due to voxel size</a></li><li><a href="#25">Example: Combining colormap and RGB driven patch colours</a></li></ul></div><pre class="codeinput">close <span class="string">all</span>; clc; <span class="comment">%clear;</span>
+  </style></head><body><div class="content"><h1>ind2patch</h1><!--introduction--><p>Below is a demonstration of the features of the <tt>ind2patch</tt> function</p><!--/introduction--><h2>Contents</h2><div><ul><li><a href="#2">Syntax</a></li><li><a href="#3">Description</a></li><li><a href="#4">Examples</a></li><li><a href="#6">Example: Introduction to using <tt>ind2patch</tt> for voxel plotting</a></li><li><a href="#13">Example: Introduction to using <tt>ind2patch</tt> for slice plotting</a></li><li><a href="#15">Example: Comparison to standard MATLAB <tt>imagesc</tt> function and the patch type MATLAB functions <tt>slice</tt> and <tt>pcolor</tt></a></li><li><a href="#17">Example: Creating and plotting combined voxel and slice patch data</a></li><li><a href="#20">Example: Shrinking patch data through combination with <tt>scalePatch</tt> function</a></li><li><a href="#22">Example: Medical image data and coordinate manipulation due to voxel size</a></li><li><a href="#25">Example: Combining colormap and RGB driven patch colours</a></li></ul></div><pre class="codeinput">clear; close <span class="string">all</span>; clc;
 </pre><h2 id="2">Syntax</h2><p><tt>[F,V,C]=ind2patch(IND,M,ptype);</tt></p><h2 id="3">Description</h2><p>This function generates patch data for 3D images. The patch data is only generated for the voxels specified by the indices (logic or linear indices). The patch data is created according to the patch type desired (e.g. voxel type of slice type).</p><h2 id="4">Examples</h2><p>Plot settings</p><pre class="codeinput">cMap=gjet(250);
 faceAlpha1=1;
 faceAlpha2=0.65;
@@ -74,7 +74,7 @@ edgeColor1=<span class="string">'none'</span>;
 edgeColor2=<span class="string">'none'</span>;
 fontSize=15;
 </pre><h2 id="6">Example: Introduction to using <tt>ind2patch</tt> for voxel plotting</h2><p>The voxel for which patch data is to be specified can be defined by supplying linear indices or a logic array.</p><pre class="codeinput"><span class="comment">% Simulating an image</span>
-M=rand(2,3,4);
+M=rand(3,5,7);
 <span class="comment">% Example supplying linear indices, here all voxels</span>
 indPatch=1:numel(M);
 </pre><p>Creating patch data for voxel display</p><pre class="codeinput">[F,V,C]=ind2patch(indPatch,M,<span class="string">'v'</span>);
@@ -90,8 +90,8 @@ set(gca,<span class="string">'fontSize'</span>,fontSize);
 drawnow;
 </pre><img vspace="5" hspace="5" src="HELP_ind2patch_01.png" alt=""> <p>Study the size of the face and vertex arrays to confirm that the patch type <tt>'v'</tt> creates vertices and faces for each voxel. Shared vertices and faces are not removed. This option requires the most memory.</p><pre class="codeinput">disp(num2str(size(F)));
 disp(num2str(size(V)));
-</pre><pre class="codeoutput">144    4
-192    3
+</pre><pre class="codeoutput">630    4
+2520     3
 </pre><p>Creating patch data for voxel display with shared vertices and faces removed</p><pre class="codeinput">[F,V,C]=ind2patch(indPatch,M,<span class="string">'vu'</span>);
 
 h2=cFigure;
@@ -105,8 +105,8 @@ set(gca,<span class="string">'fontSize'</span>,fontSize);
 drawnow;
 </pre><img vspace="5" hspace="5" src="HELP_ind2patch_02.png" alt=""> <p>Study the size of the face and vertex arrays to confirm that the patch type <tt>'vu'</tt> ensures that shared faces and vertices are not shared. Each vertex and face is therefore unique. This saves memory with respect to using the <tt>'v'</tt> patch type for voxel display. The figures look identical except that shared faces may appear less dark when transparency is on since now one one face is used. Color information is shared too (averaged).</p><pre class="codeinput">disp(num2str(size(F)));
 disp(num2str(size(V)));
-</pre><pre class="codeoutput">98   4
-60   3
+</pre><pre class="codeoutput">386    4
+192    3
 </pre><p>Creating patch data for voxel display with only non-shared faces and vertices</p><pre class="codeinput">[F,V,C]=ind2patch(indPatch,M,<span class="string">'vb'</span>);
 
 h3=cFigure;
@@ -120,8 +120,8 @@ set(gca,<span class="string">'fontSize'</span>,fontSize);
 drawnow;
 </pre><img vspace="5" hspace="5" src="HELP_ind2patch_03.png" alt=""> <p>Study the size of the face and vertex arrays to confirm that the patch type <tt>'vb'</tt> helps to plot only non-shared vertices and faces. In the case of an enclosed shape filled with voxels thus only the boundary faces are displayed. This path type appears no different than the other is transparency is not on however it is much lighter on memory than the above path types.</p><pre class="codeinput">disp(num2str(size(F)));
 disp(num2str(size(V)));
-</pre><pre class="codeoutput">52   4
-54   3
+</pre><pre class="codeoutput">142    4
+144    3
 </pre><h2 id="13">Example: Introduction to using <tt>ind2patch</tt> for slice plotting</h2><pre class="codeinput">h4=cFigure;
 title(<span class="string">'patch type: si, sj, sk'</span>);
 xlabel(<span class="string">'J - columns'</span>);ylabel(<span class="string">'I - rows'</span>); zlabel(<span class="string">'K - slices'</span>); hold <span class="string">on</span>;
@@ -219,7 +219,7 @@ L_mask=M&gt;-0.2 &amp; M&lt;0;
 
 hs=patch(<span class="string">'Faces'</span>,F,<span class="string">'Vertices'</span>,V,<span class="string">'EdgeColor'</span>,<span class="string">'k'</span>, <span class="string">'CData'</span>,C,<span class="string">'FaceColor'</span>,<span class="string">'flat'</span>,<span class="string">'FaceAlpha'</span>,1);
 colormap(cMap); colorbar; caxis([min(M(:)) max(M(:))]);
-axis <span class="string">equal</span>; view(3); axis <span class="string">tight</span>; colormap <span class="string">jet</span>; grid <span class="string">on</span>;
+axis <span class="string">equal</span>; view(3); axis <span class="string">tight</span>; grid <span class="string">on</span>;
 camlight <span class="string">headlight</span>;
 set(gca,<span class="string">'fontSize'</span>,fontSize);
 drawnow;
@@ -230,7 +230,6 @@ drawnow;
 [Ev,Vv,Cv]=ind2patch(L_mask,M,<span class="string">'h'</span>); <span class="comment">%This creates a hexahedral element for each voxel</span>
 [Evs,Vvs,Cvs]=scalePatch(Ev,Vv,Cv,0.5); <span class="comment">%Apply voxel element scaling</span>
 [Fvs,Cvs]=element2patch(Evs,Cvs); <span class="comment">%Convert to quad faces for plotting</span>
-</pre><pre class="codeoutput">hex8 elements assumed, for other elements please specify elementType
 </pre><p>Plotting the voxels</p><pre class="codeinput">h7=cFigure;
 title(<span class="string">'Scaled (shrunk) patch data'</span>);
 xlabel(<span class="string">'J - columns'</span>);ylabel(<span class="string">'I - rows'</span>); zlabel(<span class="string">'K - slices'</span>); hold <span class="string">on</span>;
@@ -308,7 +307,7 @@ drawnow;
 % Below is a demonstration of the features of the |ind2patch| function
 
 %%
-close all; clc; %clear;
+clear; close all; clc;
 
 %% Syntax
 % |[F,V,C]=ind2patch(IND,M,ptype);|
@@ -335,7 +334,7 @@ fontSize=15;
 % supplying linear indices or a logic array. 
 
 % Simulating an image
-M=rand(2,3,4);
+M=rand(3,5,7);
 % Example supplying linear indices, here all voxels
 indPatch=1:numel(M); 
 
@@ -535,7 +534,7 @@ L_mask=M>-0.2 & M<0;
 
 hs=patch('Faces',F,'Vertices',V,'EdgeColor','k', 'CData',C,'FaceColor','flat','FaceAlpha',1);
 colormap(cMap); colorbar; caxis([min(M(:)) max(M(:))]);
-axis equal; view(3); axis tight; colormap jet; grid on;
+axis equal; view(3); axis tight; grid on;
 camlight headlight;
 set(gca,'fontSize',fontSize); 
 drawnow;

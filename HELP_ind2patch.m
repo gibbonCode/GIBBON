@@ -29,7 +29,7 @@ fontSize=15;
 % supplying linear indices or a logic array. 
 
 % Simulating an image
-M=rand(2,3,4);
+M=rand(3,5,7);
 % Example supplying linear indices, here all voxels
 indPatch=1:numel(M); 
 
@@ -229,7 +229,7 @@ L_mask=M>-0.2 & M<0;
 
 hs=patch('Faces',F,'Vertices',V,'EdgeColor','k', 'CData',C,'FaceColor','flat','FaceAlpha',1);
 colormap(cMap); colorbar; caxis([min(M(:)) max(M(:))]);
-axis equal; view(3); axis tight; colormap jet; grid on;
+axis equal; view(3); axis tight; grid on;
 camlight headlight;
 set(gca,'fontSize',fontSize); 
 drawnow;

@@ -81,6 +81,9 @@ hf.UserData.v=v;
 hf.UserData.patchTypes={'si','sj','sk'};
 hf.UserData.sliceIndices=[sliceIndexI sliceIndexJ sliceIndexK];
 hf.UserData.fontColor=fontColor;
+hf.UserData.hp=nan(3,1);
+hf.UserData.M_plot=M;
+
 %%
 set(jSlider_I,'Value',sliceIndexI);
 set(jSlider_J,'Value',sliceIndexJ);
@@ -101,8 +104,7 @@ sliceIndex = get(jSlider,'Value');
 hf.UserData.sliceIndices(dirOpt)=sliceIndex;
 sliceIndices=hf.UserData.sliceIndices;
 
-M=hf.UserData.M;
-logicThreshold=hf.UserData.logicThreshold;
+M=hf.UserData.M_plot;
 v=hf.UserData.v;
 patchType=hf.UserData.patchTypes{dirOpt}; 
 
@@ -115,24 +117,28 @@ switch dirOpt
     case 3
         logicPatch(:,:,sliceIndex)=1;
 end
-logicPatch=logicPatch & logicThreshold;
 
-[F,V,C]=ind2patch(logicPatch,M,patchType);
-[V(:,1),V(:,2),V(:,3)]=im2cart(V(:,2),V(:,1),V(:,3),v);
-
-if isfield(hf.UserData,'hp')
-    try
-        delete(hf.UserData.hp(dirOpt));
-    catch
+if isnan(hf.UserData.hp(dirOpt))    
+    [F,V,C]=im2patch(M,logicPatch,patchType);
+    [V(:,1),V(:,2),V(:,3)]=im2cart(V(:,2),V(:,1),V(:,3),v);    
+    hf.UserData.hp(dirOpt)= patch('Faces',F,'Vertices',V,'FaceColor','flat','CData',C,'EdgeColor','none');
+else    
+    set(hf.UserData.hp(dirOpt),'CData',M(logicPatch));
+    V=get(hf.UserData.hp(dirOpt),'Vertices');
+    switch dirOpt
+        case 1
+            V(:,2)=(sliceIndex-0.5).*v(1);
+        case 2
+            V(:,1)=(sliceIndex-0.5).*v(2);            
+        case 3
+            V(:,3)=(sliceIndex-0.5).*v(3);
     end
+    set(hf.UserData.hp(dirOpt),'Vertices',V);
 end
-
-hf.UserData.hp(dirOpt)= patch('Faces',F,'Vertices',V,'FaceColor','flat','CData',C,'EdgeColor','none');
 
 navString=['I: ',num2str(sliceIndices(1)),', J:  ',num2str(sliceIndices(2)),', K: ',num2str(sliceIndices(3))];
 title(navString,'color',hf.UserData.fontColor);
 hf.Name=[hf.UserData.Name,' ',navString];
-% drawnow;
 
 end
 
@@ -153,7 +159,9 @@ W=max(M(:))-min(M(:));
 T_low=min(M(:))+(W*Tf(1)/100);
 T_high=min(M(:))+(W*Tf(2)/100);
 logicThreshold=(M>=T_low & M<=T_high);
-hf.UserData.logicThreshold=logicThreshold;
+
+hf.UserData.M_plot=M;
+hf.UserData.M_plot(~logicThreshold)=NaN;
 
 plotSlice([],[],{hf,jSlider_I,1});
 plotSlice([],[],{hf,jSlider_J,2});

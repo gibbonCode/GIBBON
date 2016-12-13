@@ -24,8 +24,7 @@ minT=1;
 maxT=numel(animTime);
 w=maxT-minT;
 sliceIndexI=1; %Initial index
-% nTickMajor=round(w/20);
-tickSizeMajor_I=round(w/20);
+tickSizeMajor_I=ceil(w/20);
 
 %% Initialize display
 
@@ -43,7 +42,7 @@ set(hf,'ResizeFcn',{@setScrollSizeFunc,{hf,scrollBarWidth,jSlider}});
 
 %% Initialize figure callbacks
 
-set(hf,'KeyPressFcn', {@figKeyPressFunc,{hf}},'WindowButtonDownFcn', {@figMouseDown,{hf}},'WindowButtonUpFcn', {@mouseup,hf});
+set(hf,'KeyPressFcn', {@figKeyPressFunc,{hf}});%'WindowButtonDownFcn', {@figMouseDown,{hf}},'WindowButtonUpFcn', {@mouseup,hf});
 
 %% Initialise buttons
 
@@ -72,7 +71,7 @@ uipushtool(hb,'TooltipString','Help','CData',S,'Tag','help_button','ClickedCallb
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %Play button
 
-%get icon
+%get icon 1
 D=importdata(fullfile(iconPath,'play.jpg'));
 S=double(D);
 S=S-min(S(:));
@@ -81,8 +80,21 @@ S(S==1)=NaN;
 if size(S,3)==1
     S=repmat(S,[1 1 3]);
 end
+iconPlay=S; 
+
+%get icon 2
+D=importdata(fullfile(iconPath,'stop.jpg'));
+S=double(D);
+S=S-min(S(:));
+S=S./max(S(:));
+S(S==1)=NaN;
+if size(S,3)==1
+    S=repmat(S,[1 1 3]);
+end
+iconStop=S; 
+
 % Create a uitoggletool in the toolbar
-hPlay=uitoggletool(hb,'TooltipString','Play forward','CData',S,'Tag','play_button','ClickedCallback',{@playFunc,{hf}});
+hPlay=uitoggletool(hb,'TooltipString','Play','CData',iconPlay,'Tag','play_button','ClickedCallback',{@playFunc,{hf}});
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %Time button
@@ -114,6 +126,22 @@ end
 % Create a uitoggletool in the toolbar
 hCycle=uitoggletool(hb,'TooltipString','Cycle forward-backward','CData',S,'Tag','cycle_button');
 
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%Save animation button
+
+%get icon
+D=importdata(fullfile(iconPath,'saveAnimation.jpg'));
+S=double(D);
+S=S-min(S(:));
+S=S./max(S(:));
+S(S==1)=NaN;
+if size(S,3)==1
+    S=repmat(S,[1 1 3]);
+end
+% Create a uipushtool in the toolbar
+uipushtool(hb,'TooltipString','Save .gif animation','CData',S,'Tag','saveAnimation_button','ClickedCallback',{@saveAnimationFunc,{hf}}); %,'Separator','on'
+
 %% Text fields
 
 % title(sprintf('%6.16e ',T),'FontSize',hf.UserData.fontSize);
@@ -139,6 +167,8 @@ hf.UserData.ButtonHandles.hCycle=hCycle;
 hf.UserData.ButtonHandles.hTextTime=hTextTime;
 hf.UserData.pauseTime=2/numel(animStruct.Time);
 hf.UserData.shiftMag=1; 
+hf.UserData.icons.play=iconPlay;
+hf.UserData.icons.stop=iconStop;
 
 % Store current settings
 hf.UserData.WindowButtonDownFcn=hf.WindowButtonDownFcn;
@@ -146,6 +176,14 @@ hf.UserData.WindowButtonUpFcn=hf.WindowButtonUpFcn;
 hf.UserData.KeyPressFcn=hf.KeyPressFcn;
 hf.UserData.WindowScrollWheelFcn=hf.WindowScrollWheelFcn;
 hf.UserData.BusyAction=hf.BusyAction;
+
+%Export figure widget settings
+hf.UserData.efw.defaultPath=fullfile(cd,'efw');
+hf.UserData.efw.imName=['figure',num2str(get(hf,'Number'))];
+hf.UserData.efw.imExt='jpg';
+hf.UserData.efw.imRes='50';
+hf.UserData.efw.exportFigOpt='-nocrop';
+hf.UserData.efw.exportGifOpt='1';
 
 %% Initialize slider locations
 set(jSlider,'Value',sliceIndexI);
@@ -168,9 +206,12 @@ end
 
 function helpFunc(~,~)
 
-msgText={'INPUT OPTIONS:',...
-    '------------------------------------------------------------------------',...
-    'Up              -> Increase contour level',...    
+msgText={'* Play button or press the space bar -> Start animation',...    
+         '* Stop button or press the space bar -> Stop animation',...
+         '* Time button -> Change time stepping settings',...
+         '* Cycle button -> Toggle forward / forward-backward mode',...
+         '* Save button -> Export snap shorts (e.g. jpg) and animated .gif files',...
+         '* Press the v key to activate the view control widget (vcw), note that vcw changes key press functions until vcw is deactivated',...
     };
 helpdlg(msgText,'Help information');
 
@@ -181,6 +222,8 @@ end
 function playFunc(~,~,inputCell)
 hf=inputCell{1};
 shiftMag=hf.UserData.shiftMag; 
+
+set(hf.UserData.ButtonHandles.Play,'CData',hf.UserData.icons.stop,'TooltipString','Stop');
 
 while strcmp(get(hf.UserData.ButtonHandles.Play,'State'),'on')
     tic
@@ -217,16 +260,18 @@ while strcmp(get(hf.UserData.ButtonHandles.Play,'State'),'on')
     end    
 end
 
+set(hf.UserData.ButtonHandles.Play,'CData',hf.UserData.icons.play,'TooltipString','Play');
+
 end
 
 %% Time
 function timeFunc(~,~,inputCell)
 hf=inputCell{1};
 
-prompt = {'Enter pause time:','Enter step size'};
-dlg_title = 'Pause time (s)';
+prompt = {'Enter pause time:','Enter step size:'};
+dlg_title = 'Time stepping settings';
 defaultOptions = {num2str(hf.UserData.pauseTime),num2str(hf.UserData.shiftMag)};
-s=25+max([cellfun(@numel,prompt) cellfun(@numel,defaultOptions)]);
+s=40+max([cellfun(@numel,prompt) cellfun(@numel,defaultOptions)]);
 Q = inputdlg(prompt,dlg_title,[1 s],defaultOptions);
 if ~isempty(Q)
     if ~isempty(Q{1})
@@ -239,9 +284,132 @@ end
 
 end
 
+%% Save Animation
+
+function saveAnimationFunc(~,~,inputCell)
+hf=inputCell{1};
+jSlider=hf.UserData.sliderHandles{1};
+
+%%
+
+defStruct=hf.UserData.efw; 
+prompt = {'Save path (leave empty to browse to desired folder instead):',...
+          'Image name:','Image extension (i.e. png, jpg, bmp, or tif):',...
+          'Image resolution (e.g. 120):',...
+          'Extra export_fig options (comma seperated, no spaces e.g. -nocrop,-transparent,-painters):',...
+          'Export gif option'};
+dlg_title = 'Export Gif Widget (see: help efw and help export_fig)';
+defaultOptions = {defStruct.defaultPath,defStruct.imName,defStruct.imExt,defStruct.imRes,defStruct.exportFigOpt,hf.UserData.efw.exportGifOpt};
+
+s=25+max([cellfun(@numel,prompt) cellfun(@numel,defaultOptions)]);
+
+Q = inputdlg(prompt,dlg_title,[1 s],defaultOptions);
+
+if ~isempty(Q)
+    if isempty(Q{1})
+        Q{1}=uigetdir(defStruct.defaultPath,'Select save path');
+        if Q{1}==0
+            return; 
+        end
+    end    
+    
+    if ~exist(Q{1},'dir') %create output folder if it does not exist already
+        mkdir(Q{1});
+    end
+    
+    if all(~cellfun(@isempty,Q(1:end-1)))        
+        
+        fileName=fullfile(Q{1},Q{2});        
+        exportGifCell{1,1}=fileName;
+
+        stringSet=Q{3}; %The image extension
+        stringNoSpaces=regexprep(stringSet,'[^\w'']',''); %Remove potential extra spaces
+        
+        if ~strcmp(stringNoSpaces(1),'-') %If first character is not '-'
+            stringNoSpaces=['-',stringNoSpaces]; %Add '-' to start, e.g. 'jpg' becomes '-jpg'
+        end
+           
+        %Check format validaty and keep if valid
+        if any(strcmp(stringNoSpaces,{'-png','-jpg','-tiff','-bmp'}))
+            exportGifCell{1,2}=stringNoSpaces; %Add to input list
+        else
+            error('Wrong image format requested');
+        end
+          
+        figRes=['-r',Q{4}];
+        exportGifCell{1,end+1}=figRes;
+        
+        if ~isempty(Q{5})
+            stringSet=Q{5}; %The set of potentially multiple options
+            stringSetSep = strsplit(stringSet,',');
+            for q=1:1:numel(stringSetSep)
+                stringNoSpaces=regexprep(stringSetSep{q},'[^\w'']',''); %Remove potential extra spaces
+                if ~strcmp(stringNoSpaces(1),'-') %If first character is not '-'
+                    stringNoSpaces=['-',stringNoSpaces]; %Add '-' to start, e.g. 'jpg' becomes '-jpg'
+                end
+                exportGifCell{1,end+1}=stringNoSpaces; %Add to input list
+            end
+        end
+        
+        if ~isempty(Q{6})
+            exportGifOpt=Q{6};
+        end
+        
+        fileNameGif=exportGifCell{1,1};
+        exportGifCellSub=exportGifCell; 
+        
+        c=1;           
+        stepRange=1:hf.UserData.shiftMag:numel(hf.UserData.animStruct.Time);
+        numSteps=numel(stepRange);
+        for q=stepRange
+            set(jSlider,'Value',q);            
+            fileNameNow=[fileNameGif,'_',num2str(q)];
+            exportGifCellSub{1,1}=fileNameNow;
+            figure(hf);
+            export_fig(exportGifCellSub{:});
+            gifStruct.FileNames{c}=[fileNameNow,'.',exportGifCell{1,2}(2:end)];
+            c=c+1;            
+        end
+                
+        if strcmp(exportGifOpt,'1')
+            %Add reverse path
+            if strcmp(get(hf.UserData.ButtonHandles.hCycle,'State'),'on')
+                numFiles=numel(gifStruct.FileNames);
+                if numFiles>2
+                    for q=(numFiles-1):-1:2
+                        gifStruct.FileNames{end+1}=gifStruct.FileNames{q};
+                    end
+                end
+            end
+            
+            gifStruct.DelayTime=hf.UserData.pauseTime;
+            gifStruct.FileNameGif=fileNameGif;
+            
+            exportGif(gifStruct);
+        end
+        
+        %Override defaults
+        defStruct.defaultPath=Q{1};
+        defStruct.imName=Q{2};
+        defStruct.imExt=Q{3};
+        defStruct.imRes=Q{4};
+        defStruct.exportFigOpt=Q{5};
+        defStruct.efw.exportGifOpt=Q{6};
+        
+        hf.UserData.efw=defStruct;
+        
+    else
+        return
+    end
+end
+
+
+
+end
+
 %% Figure key press
 
-function figKeyPressFunc(src,eventData,inputCell)
+function figKeyPressFunc(~,eventData,inputCell)
 
 hf=inputCell{1}; %Figure handle
 
@@ -261,253 +429,21 @@ switch eventData.Key
     case {'rightarrow','uparrow'}
         shiftSlider(hf.UserData.sliderHandles{1},1*hf.UserData.shiftMag);
     case 'v' % Activate vcw
-        set(hf.UserData.cFigure.Handles.vcw,'State','On');
+        set(hf.UserData.cFigure.Handles.vcw,'State','On');   
+    case'space'
+        if strcmp(get(hf.UserData.ButtonHandles.Play,'State'),'off')
+            set(hf.UserData.ButtonHandles.Play,'State','on');
+            playFunc([],[],{hf});
+        else
+            set(hf.UserData.ButtonHandles.Play,'State','off');
+        end        
 end
 
-end
-
-%% Figure click
-
-function figMouseDown(src, eventData,inputCell)
-
-hf=inputCell{1};
-
-funcs = {'pan','rot','zoomz','zoomz'};
-
-% Get the button pressed
-% cax = overobj2('axes');
-
-cax = get(hf, 'CurrentAxes');
-if isempty(cax)
-    return;
-end
-
-checkAxisLimits(hf);
-colorbarLocSet(hf,'manual');
-
-switch get(hf, 'SelectionType')
-    case 'extend' % Middle button
-        mouseDownFunc = ['vcw_',funcs{2}];
-    case 'alt' % Right hand button
-        mouseDownFunc = ['vcw_',funcs{3}];
-    case 'open' % Double click
-        caxUserDataStruct=get(cax,'UserData');
-        camview(cax,caxUserDataStruct.defaultView);
-        return;
-    otherwise
-        mouseDownFunc = ['vcw_',funcs{1}];
-end
-
-% Set the cursor
-switch mouseDownFunc
-    case {'vcw_zoom', 'vcw_zoomz'}
-        shape=[ 2   2   2   2   2   2   2   2   2   2 NaN NaN NaN NaN NaN NaN  ;
-            2   1   1   1   1   1   1   1   1   2 NaN NaN NaN NaN NaN NaN  ;
-            2   1   2   2   2   2   2   2   2   2 NaN NaN NaN NaN NaN NaN  ;
-            2   1   2   1   1   1   1   1   1   2 NaN NaN NaN NaN NaN NaN  ;
-            2   1   2   1   1   1   1   1   2 NaN NaN NaN NaN NaN NaN NaN  ;
-            2   1   2   1   1   1   1   2 NaN NaN NaN NaN NaN NaN NaN NaN  ;
-            2   1   2   1   1   1   1   1   2 NaN NaN NaN   2   2   2   2  ;
-            2   1   2   1   1   2   1   1   1   2 NaN   2   1   2   1   2  ;
-            2   1   2   1   2 NaN   2   1   1   1   2   1   1   2   1   2  ;
-            2   2   2   2 NaN NaN NaN   2   1   1   1   1   1   2   1   2  ;
-            NaN NaN NaN NaN NaN NaN NaN NaN   2   1   1   1   1   2   1   2  ;
-            NaN NaN NaN NaN NaN NaN NaN   2   1   1   1   1   1   2   1   2  ;
-            NaN NaN NaN NaN NaN NaN   2   1   1   1   1   1   1   2   1   2  ;
-            NaN NaN NaN NaN NaN NaN   2   2   2   2   2   2   2   2   1   2  ;
-            NaN NaN NaN NaN NaN NaN   2   1   1   1   1   1   1   1   1   2  ;
-            NaN NaN NaN NaN NaN NaN   2   2   2   2   2   2   2   2   2   2  ];
-    case 'vcw_pan'
-        shape=[ NaN NaN NaN NaN NaN NaN NaN   2   2 NaN NaN NaN NaN NaN NaN NaN ;
-            NaN NaN NaN NaN NaN NaN   2   1   1   2 NaN NaN NaN NaN NaN NaN ;
-            NaN NaN NaN NaN NaN   2   1   1   1   1   2 NaN NaN NaN NaN NaN ;
-            NaN NaN NaN NaN NaN   1   1   1   1   1   1 NaN NaN NaN NaN NaN ;
-            NaN NaN NaN NaN NaN NaN   2   1   1   2 NaN NaN NaN NaN NaN NaN ;
-            NaN NaN   2   1 NaN NaN   2   1   1   2 NaN NaN   1   2 NaN NaN ;
-            NaN   2   1   1   2   2   2   1   1   2   2   2   1   1   2 NaN ;
-            2   1   1   1   1   1   1   1   1   1   1   1   1   1   1   2 ;
-            2   1   1   1   1   1   1   1   1   1   1   1   1   1   1   2 ;
-            NaN   2   1   1   2   2   2   1   1   2   2   2   1   1   2 NaN ;
-            NaN NaN   2   1 NaN NaN   2   1   1   2 NaN NaN   1   2 NaN NaN ;
-            NaN NaN NaN NaN NaN NaN   2   1   1   2 NaN NaN NaN NaN NaN NaN ;
-            NaN NaN NaN NaN NaN   1   1   1   1   1   1 NaN NaN NaN NaN NaN ;
-            NaN NaN NaN NaN NaN   2   1   1   1   1   2 NaN NaN NaN NaN NaN ;
-            NaN NaN NaN NaN NaN NaN   2   1   1   2 NaN NaN NaN NaN NaN NaN ;
-            NaN NaN NaN NaN NaN NaN NaN   2   2 NaN NaN NaN NaN NaN NaN NaN ];
-    case {'vcw_rotz', 'vcw_rot'}
-        % Rotate
-        shape=[ NaN NaN NaN   2   2   2   2   2 NaN   2   2 NaN NaN NaN NaN NaN ;
-            NaN NaN NaN   1   1   1   1   1   2   1   1   2 NaN NaN NaN NaN ;
-            NaN NaN NaN   2   1   1   1   1   2   1   1   1   2 NaN NaN NaN ;
-            NaN NaN   2   1   1   1   1   1   2   2   1   1   1   2 NaN NaN ;
-            NaN   2   1   1   1   2   1   1   2 NaN NaN   2   1   1   2 NaN ;
-            NaN   2   1   1   2 NaN   2   1   2 NaN NaN   2   1   1   2 NaN ;
-            2   1   1   2 NaN NaN NaN NaN NaN NaN NaN NaN   2   1   1   2 ;
-            2   1   1   2 NaN NaN NaN NaN NaN NaN NaN NaN   2   1   1   2 ;
-            2   1   1   2 NaN NaN NaN NaN NaN NaN NaN NaN   2   1   1   2 ;
-            2   1   1   2 NaN NaN NaN NaN NaN NaN NaN NaN   2   1   1   2 ;
-            NaN   2   1   1   2 NaN NaN   2   1   2 NaN   2   1   1   2 NaN ;
-            NaN   2   1   1   2 NaN NaN   2   1   1   2   1   1   1   2 NaN ;
-            NaN NaN   2   1   1   1   2   2   1   1   1   1   1   2 NaN NaN ;
-            NaN NaN NaN   2   1   1   1   2   1   1   1   1   2 NaN NaN NaN ;
-            NaN NaN NaN NaN   2   1   1   2   1   1   1   1   1 NaN NaN NaN ;
-            NaN NaN NaN NaN NaN   2   2 NaN   2   2   2   2   2 NaN NaN NaN ];
-    otherwise
-        return
-end
-mouseDownFunc=str2func(mouseDownFunc); 
-
-% Record where the pointer is
-global VCW_POS
-VCW_POS = get(0, 'PointerLocation');
-
-% Set the cursor and callback
-set(hf, 'Pointer', 'custom', 'pointershapecdata', shape, 'WindowButtonMotionFcn', {mouseDownFunc, cax});
-
-end
-
-%%
-function mouseup(src, eventData,hf)
-% Clear the cursor and callback
-set(hf, 'WindowButtonMotionFcn', '', 'Pointer', 'arrow');
-end
-
-
-%%
-function d = check_vals(s, d)
-% Check the inputs to the manipulation methods are valid
-global VCW_POS
-if ~isempty(s)
-    % Return the mouse pointers displacement
-    new_pt = get(0, 'PointerLocation');
-    d = VCW_POS - new_pt;
-    VCW_POS = new_pt;
-end
-end
-
-%% Figure manipulation functions
-function vcw_rot(s, d, cax, hf)
-d = check_vals(s, d);
-try
-    % Rotate XY
-    camorbit(cax, d(1), d(2), 'camera', [0 0 1]);
-catch
-    % Error, so release mouse down
-    mouseup(hf);
-end
-end
-
-function vcw_rotz(s, d, cax, hf)
-d = check_vals(s, d);
-try
-    % Rotate Z
-    camroll(cax, d(2));
-catch
-    % Error, so release mouse down
-    mouseup(hf);
-end
-end
-
-function vcw_zoom(s, d, cax, hf)
-d = check_vals(s, d);
-% Zoom
-d = (1 - 0.01 * sign(d(2))) ^ abs(d(2));
-try
-    camzoom(cax, d);
-catch
-    % Error, so release mouse down
-    mouseup(hf);
-end
-end
-
-function vcw_zoomz(s, d, cax, hf)
-d = check_vals(s, d);
-% Zoom by moving towards the camera
-d = (1 - 0.01 * sign(d(2))) ^ abs(d(2)) - 1;
-try
-    camdolly(cax, 0, 0, d, 'fixtarget', 'camera');
-catch
-    % Error, so release mouse down
-    mouseup(hf);
-end
-end
-
-function vcw_pan(s, d, cax, hf)
-d = check_vals(s, d);
-try
-    % Pan
-    camdolly(cax, d(1), d(2), 0, 'movetarget', 'pixels');
-catch
-    % Error, so release mouse down
-    mouseup(hf);
-end
-end
-
-function colorbarLocSet(hf,locOpt)
-H=findobj(hf,'Type','colorbar'); %Handle set
-for q=1:1:numel(H)
-    if isa(locOpt,'cell')
-        set(H(q),'Location',locOpt{q});
-    else
-        set(H(q),'Location',locOpt);
-    end
-end
-end
-
-
-function checkAxisLimits(hf)
-
-h = findobj(hf, 'Type', 'axes', '-depth', 1)'; %All axis handles
-if ~isempty(h)
-    for h = findobj(hf, 'Type', 'axes', '-depth', 1)'
-        axis(h);
-        
-        xLim=get(h,'xlim');
-        yLim=get(h,'ylim');
-        zLim=get(h,'zlim');
-        
-        wx=abs(diff(xlim));
-        wy=abs(diff(ylim));
-        wz=abs(diff(zlim));
-        
-        w_max=max([wx wy wz]);
-        min_w=1e-3;
-        if w_max<min_w
-            w_max=min_w;
-        end
-        
-        w_min=w_max/10;
-        if w_min<min_w
-            w_min=min_w;
-        end
-        w_add=[-w_min w_min]/2;       
-        
-        if wx<w_min
-            set(h,'xlim',xLim+w_add);
-        end
-        
-        if wy<w_min
-            set(h,'ylim',yLim+w_add);
-        end
-        
-        if wz<w_min
-            set(h,'zlim',zLim+w_add);
-        end              
-    end
-    drawnow; 
-end
-
-end
-
-%% Setting default pointer
-
-function setDefaultPointer
-set(gcf,'Pointer','arrow');%'watch');
 end
 
 %% updateViewFunc
 
-function updateViewFunc(src,eventData,inputCell)
+function updateViewFunc(~,~,inputCell)
 
 hf=inputCell{1};
 jSlider=inputCell{2};

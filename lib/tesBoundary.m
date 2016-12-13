@@ -1,8 +1,14 @@
 function [indBounary]=tesBoundary(F,V)
 
+if numel(V)==1
+    numPoints=V;
+else
+    numPoints=size(V,1);
+end
+
 Fbs=sort(F,2);
 
-sizVirt=size(V,1)*ones(1,size(F,2));
+sizVirt=numPoints*ones(1,size(F,2));
 
 ind_F=subMat2ind(sizVirt,Fbs);
 

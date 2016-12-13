@@ -477,6 +477,8 @@ hf.UserData.ButtonHandles.hEllipse=hEllipse;
 hf.UserData.ButtonHandles.hGrow=hGrow;
 hf.UserData.ButtonHandles.hShrink=hShrink;
 
+hf.UserData.hp=NaN(1,3);
+
 hf.UserData.colorBarhandle=hColorBar;
 % hf.UserData.hPopUp1=hPopUp1;
 hf.UserData.hAxis=hAxis;
@@ -528,10 +530,9 @@ sliceIndex = get(jSlider,'Value');
 hf.UserData.sliceIndices(dirOpt)=sliceIndex;
 sliceIndices=hf.UserData.sliceIndices;
 
-M=hf.UserData.M;
-logicThreshold=hf.UserData.logicThreshold;
+M=hf.UserData.M_plot;
 v=hf.UserData.v;
-patchType=hf.UserData.patchTypes{dirOpt};
+patchType=hf.UserData.patchTypes{dirOpt}; 
 
 logicPatch=false(size(M));
 switch dirOpt
@@ -542,28 +543,33 @@ switch dirOpt
     case 3
         logicPatch(:,:,sliceIndex)=1;
 end
-logicPatch=logicPatch & logicThreshold;
 
-[F,V,C]=ind2patch(logicPatch,M,patchType);
-[V(:,1),V(:,2),V(:,3)]=im2cart(V(:,2),V(:,1),V(:,3),v);
-
-if isfield(hf.UserData,'hp')
-    try
-        delete(hf.UserData.hp(dirOpt));
-    catch
+if isnan(hf.UserData.hp(dirOpt))    
+    [F,V,C]=im2patch(M,logicPatch,patchType,v);
+    hf.UserData.hp(dirOpt)= patch('Faces',F,'Vertices',V,'FaceColor','flat','CData',C,'EdgeColor','none');
+else    
+    set(hf.UserData.hp(dirOpt),'CData',M(logicPatch));
+    V=get(hf.UserData.hp(dirOpt),'Vertices');
+    switch dirOpt
+        case 1
+            V(:,2)=(sliceIndex-0.5).*v(1);
+        case 2
+            V(:,1)=(sliceIndex-0.5).*v(2);            
+        case 3
+            V(:,3)=(sliceIndex-0.5).*v(3);
     end
+    set(hf.UserData.hp(dirOpt),'Vertices',V);
 end
 
-hf.UserData.hp(dirOpt)= patch('Faces',F,'Vertices',V,'FaceColor','flat','CData',C,'EdgeColor','none','FaceAlpha',hf.UserData.faceAlpha);
 if dirOpt==3
     if hf.UserData.showAll<0
         plotContourSet(hf);
     end
 end
+
 navString=['I: ',num2str(sliceIndices(1)),', J:  ',num2str(sliceIndices(2)),', K: ',num2str(sliceIndices(3))];
 hf.UserData.colorBarhandle.Label.String=navString;
 hf.Name=[hf.UserData.Name,' ',navString];
-drawnow;
 
 end
 
@@ -586,7 +592,9 @@ W=max(M(:))-min(M(:));
 T_low=min(M(:))+(W*Tf(1)/100);
 T_high=min(M(:))+(W*Tf(2)/100);
 logicThreshold=(M>=T_low & M<=T_high);
-hf.UserData.logicThreshold=logicThreshold;
+
+hf.UserData.M_plot=M;
+hf.UserData.M_plot(~logicThreshold)=NaN;
 
 plotSlice([],[],{hf,jSlider_I,1});
 plotSlice([],[],{hf,jSlider_J,2});
@@ -1187,6 +1195,16 @@ switch eventData.Key
         set(hf.UserData.ButtonHandles.hShrink,'State','On');
         inputCell{2}=-1;
         growShrinkFunc([],[],inputCell);
+    case 'space'
+        qSlice=hf.UserData.sliceIndices(3);
+        if qSlice<size(hf.UserData.M,3)
+            hf.UserData.sliceIndices(3)=hf.UserData.sliceIndices(3)+1;
+            set(hf.UserData.sliderHandles{3},'Value',hf.UserData.sliceIndices(3));
+            plotSlice([],[],{hf,hf.UserData.sliderHandles{3},3});
+            if hf.UserData.showAll<0
+                plotContourSet(hf);
+            end
+        end
 end
 
 end

@@ -73,7 +73,7 @@ for q=1:1:4
             title('IJ-view','color','b');
             view(0,90);
         case 4
-            title(['IJK-view ',num2str(sliceIndexI),' ',num2str(sliceIndexJ),' ',num2str(sliceIndexK)],'color',fontColor);
+            title('IJK-view ','color',fontColor);
             colorbar;
             view(3);
     end
@@ -90,8 +90,8 @@ hf.UserData.sv2.M=M;
 hf.UserData.sv2.v=v;
 hf.UserData.sv2.patchTypes={'si','sj','sk'};
 hf.UserData.sv2.H=H;
-hf.UserData.sv2.hp=[];
-hf.UserData.sv2.hpp=[];
+hf.UserData.sv2.hp=NaN(1,6);
+hf.UserData.sv2.hpp=NaN(1,6);
 hf.UserData.sv2.sliceIndices=[sliceIndexI sliceIndexJ sliceIndexK];
 hf.UserData.sv2.axLim=axLim;
 hf.UserData.sv2.cLim=cLim;
@@ -191,77 +191,68 @@ for dirOpt=1:1:3
         case 3
             logicPatch(:,:,sliceIndex)=1;
     end
-    
-    [F,V,C]=ind2patch(logicPatch & hf.UserData.sv2.logicMask,M,patchType);
-    
-    [V(:,1),V(:,2),V(:,3)]=im2cart(V(:,2),V(:,1),V(:,3),v);
-    
-    if isfield(hf.UserData.sv2,'hp')
-        try
-            delete(hf.UserData.sv2.hp(dirOpt));
-        catch
+        
+    if isnan(hf.UserData.sv2.hp(dirOpt))        
+        [F,V,C]=im2patch(M,logicPatch & hf.UserData.sv2.logicMask,patchType,v);    
+        subplot(2,2,dirOpt);
+        hf.UserData.sv2.hp(dirOpt)= patch('Faces',F,'Vertices',V,'FaceColor','flat','CData',C,'EdgeColor','none');
+        
+        subplot(2,2,4);
+        hf.UserData.sv2.hp(dirOpt+3)= patch('Faces',F,'Vertices',V,'FaceColor','flat','CData',C,'EdgeColor','none');
+    else
+        set(hf.UserData.sv2.hp(dirOpt),'CData',M(logicPatch));
+        set(hf.UserData.sv2.hp(dirOpt+3),'CData',M(logicPatch));
+        V=get(hf.UserData.sv2.hp(dirOpt),'Vertices');
+        switch dirOpt
+            case 1
+                V(:,2)=(sliceIndex-0.5).*v(1);
+            case 2
+                V(:,1)=(sliceIndex-0.5).*v(2);
+            case 3
+                V(:,3)=(sliceIndex-0.5).*v(3);
         end
+        set(hf.UserData.sv2.hp(dirOpt),'Vertices',V);        
+        set(hf.UserData.sv2.hp(dirOpt+3),'Vertices',V);        
     end
-    subplot(2,2,dirOpt);
-    hf.UserData.sv2.hp(dirOpt)= patch('Faces',F,'Vertices',V,'FaceColor','flat','CData',C,'EdgeColor','none');
-    caxis(hf.UserData.sv2.cLim);
     
-    f=[1:4];
-    switch dirOpt
-        case 1
-            if isfield(hf.UserData.sv2,'hpp')
-                try
-                    delete(hf.UserData.sv2.hpp(1));
-                    delete(hf.UserData.sv2.hpp(2));
-                catch
-                end
-            end
-            vv=[xx axLim(3) axLim(6); xx axLim(4) axLim(6); xx axLim(4) axLim(5); xx axLim(3) axLim(5);];
-            hf.UserData.sv2.hpp(1)=patch('faces',f,'vertices',vv,'faceColor','g','EdgeColor','g','faceAlpha',0.1);
-            vv=[axLim(1) axLim(3) zz; axLim(2) axLim(3) zz; axLim(2) axLim(4) zz; axLim(1) axLim(4) zz;];
-            hf.UserData.sv2.hpp(2)=patch('faces',[1 2 3 4],'vertices',vv,'faceColor','b','EdgeColor','b','faceAlpha',0.1);
-        case 2
-            if isfield(hf.UserData.sv2,'hpp')
-                try
-                    delete(hf.UserData.sv2.hpp(3));
-                    delete(hf.UserData.sv2.hpp(4));
-                catch
-                end
-            end
-            vv=[axLim(1) yy axLim(5); axLim(2) yy axLim(5); axLim(2) yy axLim(6); axLim(1) yy axLim(6);];
-            hf.UserData.sv2.hpp(3)=patch('faces',f,'vertices',vv,'faceColor','r','EdgeColor','r','faceAlpha',0.1);
-            vv=[axLim(1) axLim(3) zz; axLim(2) axLim(3) zz; axLim(2) axLim(4) zz; axLim(1) axLim(4) zz;];
-            hf.UserData.sv2.hpp(4)=patch('faces',f,'vertices',vv,'faceColor','b','EdgeColor','b','faceAlpha',0.1);
-        case 3
-            if isfield(hf.UserData.sv2,'hpp')
-                try
-                    delete(hf.UserData.sv2.hpp(5));
-                    delete(hf.UserData.sv2.hpp(6));
-                catch
-                end
-            end
-            vv=[axLim(1) yy axLim(5); axLim(2) yy axLim(5); axLim(2) yy axLim(6); axLim(1) yy axLim(6);];
-            hf.UserData.sv2.hpp(5)=patch('faces',f,'vertices',vv,'faceColor','r','EdgeColor','r','faceAlpha',0.1);
-            vv=[xx axLim(3) axLim(6); xx axLim(4) axLim(6); xx axLim(4) axLim(5); xx axLim(3) axLim(5);];
-            hf.UserData.sv2.hpp(6)=patch('faces',f,'vertices',vv,'faceColor','g','EdgeColor','g','faceAlpha',0.1);
+    subplot(2,2,dirOpt);    
+    
+    if any(isnan(hf.UserData.sv2.hpp))        
+        f=1:4;
+        switch dirOpt
+            case 1
+                vv=[xx axLim(3) axLim(6); xx axLim(4) axLim(6); xx axLim(4) axLim(5); xx axLim(3) axLim(5);];
+                hf.UserData.sv2.hpp(1)=patch('faces',f,'vertices',vv,'faceColor','g','EdgeColor','g','faceAlpha',0.1);
+                vv=[axLim(1) axLim(3) zz; axLim(2) axLim(3) zz; axLim(2) axLim(4) zz; axLim(1) axLim(4) zz;];
+                hf.UserData.sv2.hpp(2)=patch('faces',[1 2 3 4],'vertices',vv,'faceColor','b','EdgeColor','b','faceAlpha',0.1);
+            case 2
+                vv=[axLim(1) yy axLim(5); axLim(2) yy axLim(5); axLim(2) yy axLim(6); axLim(1) yy axLim(6);];
+                hf.UserData.sv2.hpp(3)=patch('faces',f,'vertices',vv,'faceColor','r','EdgeColor','r','faceAlpha',0.1);
+                vv=[axLim(1) axLim(3) zz; axLim(2) axLim(3) zz; axLim(2) axLim(4) zz; axLim(1) axLim(4) zz;];
+                hf.UserData.sv2.hpp(4)=patch('faces',f,'vertices',vv,'faceColor','b','EdgeColor','b','faceAlpha',0.1);
+            case 3
+                vv=[axLim(1) yy axLim(5); axLim(2) yy axLim(5); axLim(2) yy axLim(6); axLim(1) yy axLim(6);];
+                hf.UserData.sv2.hpp(5)=patch('faces',f,'vertices',vv,'faceColor','r','EdgeColor','r','faceAlpha',0.1);
+                vv=[xx axLim(3) axLim(6); xx axLim(4) axLim(6); xx axLim(4) axLim(5); xx axLim(3) axLim(5);];
+                hf.UserData.sv2.hpp(6)=patch('faces',f,'vertices',vv,'faceColor','g','EdgeColor','g','faceAlpha',0.1);
+        end
+    else        
+        switch dirOpt
+            case 1                
+                set(hf.UserData.sv2.hpp(1),'Vertices',[xx axLim(3) axLim(6); xx axLim(4) axLim(6); xx axLim(4) axLim(5); xx axLim(3) axLim(5);]);                                
+                set(hf.UserData.sv2.hpp(2),'Vertices',[axLim(1) axLim(3) zz; axLim(2) axLim(3) zz; axLim(2) axLim(4) zz; axLim(1) axLim(4) zz;]);                                
+            case 2
+                set(hf.UserData.sv2.hpp(3),'Vertices',[axLim(1) yy axLim(5); axLim(2) yy axLim(5); axLim(2) yy axLim(6); axLim(1) yy axLim(6);]);
+                set(hf.UserData.sv2.hpp(4),'Vertices',[axLim(1) axLim(3) zz; axLim(2) axLim(3) zz; axLim(2) axLim(4) zz; axLim(1) axLim(4) zz;]);
+            case 3
+                set(hf.UserData.sv2.hpp(5),'Vertices',[axLim(1) yy axLim(5); axLim(2) yy axLim(5); axLim(2) yy axLim(6); axLim(1) yy axLim(6);]);
+                set(hf.UserData.sv2.hpp(6),'Vertices',[xx axLim(3) axLim(6); xx axLim(4) axLim(6); xx axLim(4) axLim(5); xx axLim(3) axLim(5);]);
+        end        
     end
 end
-subplot(2,2,4);
-if isfield(hf.UserData.sv2,'hp')
-    try
-        delete(hf.UserData.sv2.hp(4));
-        delete(hf.UserData.sv2.hp(5));
-        delete(hf.UserData.sv2.hp(6));
-    catch
-    end
-end
-titleString=['Image coordinates: ',num2str(sliceIndices(1)),' ',num2str(sliceIndices(2)),' ',num2str(sliceIndices(3)),', Color limits: ',sprintf('%.2f %.2f',hf.UserData.sv2.cLim)];
-% title(titleString,'color',hf.UserData.sv2.fontColor);
-hf.Name=titleString;
-% hf.UserData.sv2.hp(4)=patch('Faces',get(hf.UserData.sv2.hp(1),'Faces'),'Vertices',get(hf.UserData.sv2.hp(1),'Vertices'),'FaceColor','flat','CData',get(hf.UserData.sv2.hp(1),'CData'),'EdgeColor','none');
-% hf.UserData.sv2.hp(5)=patch('Faces',get(hf.UserData.sv2.hp(2),'Faces'),'Vertices',get(hf.UserData.sv2.hp(2),'Vertices'),'FaceColor','flat','CData',get(hf.UserData.sv2.hp(2),'CData'),'EdgeColor','none');
-% hf.UserData.sv2.hp(6)=patch('Faces',get(hf.UserData.sv2.hp(3),'Faces'),'Vertices',get(hf.UserData.sv2.hp(3),'Vertices'),'FaceColor','flat','CData',get(hf.UserData.sv2.hp(3),'CData'),'EdgeColor','none');
 
+titleString=['Image coordinates: ',num2str(sliceIndices(1)),' ',num2str(sliceIndices(2)),' ',num2str(sliceIndices(3)),', Color limits: ',sprintf('%.2f %.2f',hf.UserData.sv2.cLim)];
+hf.Name=titleString;
 drawnow;
 
 end
@@ -282,7 +273,6 @@ end
 
 sliceIndices = hf.UserData.sv2.sliceIndices;
 titleString=['Image coordinates: ',num2str(sliceIndices(1)),' ',num2str(sliceIndices(2)),' ',num2str(sliceIndices(3)),', Color limits: ',sprintf('%.2f %.2f',hf.UserData.sv2.cLim)];
-% title(titleString,'color',hf.UserData.sv2.fontColor);
 hf.Name=titleString;
 
 end

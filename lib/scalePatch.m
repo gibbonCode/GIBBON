@@ -37,7 +37,7 @@ Vs=zeros(size(Vn));
 for q=1:1:size(V,2)
     X=Vn(:,q);
     XF=X(Fs); 
-    if size(F,1)==1;
+    if size(F,1)==1
         XF=XF';
     end   
     meanXF=mean(XF,2)*ones(1,size(F,2));     

@@ -1,4 +1,4 @@
-function [Fc,Vc,indFix2]=patchCleanUnused(F,V)
+function [varargout]=patchCleanUnused(F,V)
 
 logicValid =F>0;% %Treat 0,NaN,inf
 
@@ -12,3 +12,8 @@ indFix2=zeros(numPoints,1);
 indFix2(indUni)=indFix1;
 Fc=F; 
 Fc(logicValid)=indFix2(F(logicValid));
+
+%Output
+varargout{1}=Fc;
+varargout{2}=Vc;
+varargout{3}=indFix2;

@@ -25,6 +25,8 @@ function efw(varargin)
 % 2015/04/29 Created
 % 2015/04/29 Updated to support export of multiple image formats e.g. pdf,
 % eps
+% 2016/12/09 Changed to rely on figure UserData rather than toolbar,
+% simplified calllback function use.
 %------------------------------------------------------------------------
 
 %% Parse input arguments
@@ -74,27 +76,42 @@ if isempty(hp) %If efw button is not present create one
     % Create a uipushtool in the toolbar
     hp=uipushtool(hb,'TooltipString','Export Figure Widget','CData',S,'Tag','efw_button');
     
-    defStruct=get(hb,'UserData');
-    if isempty(defStruct)
-        defStruct.defaultPath=fullfile(cd,'efw');
-        defStruct.imName=['figure',num2str(get(hf,'Number'))];
-        defStruct.imExt='png';
-        defStruct.imRes='100';
-        defStruct.exportFigOpt='-transparent';
-        set(hb,'UserData',defStruct);
+    if ~isfield(hf.UserData,'efw')
+        hf.UserData.efw.defaultPath=fullfile(cd,'efw');
+        hf.UserData.efw.imName=['figure',num2str(get(hf,'Number'))];
+        hf.UserData.efw.imExt='png';
+        hf.UserData.efw.imRes='100';
+        hf.UserData.efw.exportFigOpt='-transparent';
+    else        
+        if ~isfield(hf.UserData.efw('defaultPath'))
+            hf.UserData.efw.defaultPath=fullfile(cd,'efw');
+        end
+        
+        if ~isfield(hf.UserData.efw('imName'))
+            hf.UserData.efw.imName=['figure',num2str(get(hf,'Number'))];
+        end
+        
+        if ~isfield(hf.UserData.efw('imExt'))
+            hf.UserData.efw.imExt='png';
+        end
+        
+        if ~isfield(hf.UserData.efw('imRes'))
+            hf.UserData.efw.imRes='100';
+        end
+        
+        if ~isfield(hf.UserData.efw('exportFigOpt'))
+            hf.UserData.efw.exportFigOpt='-transparent';
+        end
     end
-    set(hp,'ClickedCallback',{@start_efw_push,{hf,hb}});      
+    set(hp,'ClickedCallback',{@start_efw,{hf}});      
 end
 
-return
+end
 
-function start_efw_push(hObject,callbackdata,inputData)
-start_efw(inputData{1},inputData{2});
-return
-
-function start_efw(hf,hb)
+function start_efw(~,~,inputCell)
+hf=inputCell{1};
 figure(hf);
-defStruct=get(hb,'UserData');
+defStruct=hf.UserData.efw; 
 prompt = {'Save path (leave empty to browse to desired folder instead):','Image name:','Image extension (i.e. png,jpg, pdf, eps, bmp, tif, fig, all):','Image resolution (e.g. 120. Ignored for fig):','Extra export_fig options (comma seperated, no spaces e.g. -nocrop,-transparent,-painters):'};
 dlg_title = 'Export Figure Widget (see: help efw and help export_fig)';
 defaultOptions = {defStruct.defaultPath,defStruct.imName,defStruct.imExt,defStruct.imRes,defStruct.exportFigOpt};
@@ -169,11 +186,12 @@ if ~isempty(Q)
         defStruct.imExt=Q{3};
         defStruct.imRes=Q{4};
         defStruct.exportFigOpt=Q{5};
-        set(hb,'UserData',defStruct);
+        
+        hf.UserData.efw=defStruct;
         
     else
         return
     end
 end
 
-return
+end
