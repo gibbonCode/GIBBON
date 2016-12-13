@@ -28,8 +28,9 @@ else
     cLim=[min(M(:)) max(M(:))];
     logicMask=true(size(M)); 
 end
-
 cLimScaled=round((cLim./max(M(:)))*100);
+
+M(~logicMask)=NaN;
 
 %%
 % Plot settings
@@ -95,7 +96,6 @@ hf.UserData.sv2.hpp=NaN(1,6);
 hf.UserData.sv2.sliceIndices=[sliceIndexI sliceIndexJ sliceIndexK];
 hf.UserData.sv2.axLim=axLim;
 hf.UserData.sv2.cLim=cLim;
-hf.UserData.sv2.logicMask=logicMask;
 hf.UserData.sv2.fontColor=fontColor;
 
 updateSlices(hf);
@@ -193,7 +193,7 @@ for dirOpt=1:1:3
     end
         
     if isnan(hf.UserData.sv2.hp(dirOpt))        
-        [F,V,C]=im2patch(M,logicPatch & hf.UserData.sv2.logicMask,patchType,v);    
+        [F,V,C]=im2patch(M,logicPatch,patchType,v);    
         subplot(2,2,dirOpt);
         hf.UserData.sv2.hp(dirOpt)= patch('Faces',F,'Vertices',V,'FaceColor','flat','CData',C,'EdgeColor','none');
         

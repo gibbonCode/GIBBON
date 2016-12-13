@@ -453,6 +453,7 @@ hShrink=uitoggletool(hb,'TooltipString','Shrink','CData',S,'Tag','shrink_button'
 %% Set figure UserData
 
 hf.UserData.M=M;
+hf.UserData.M_plot=M;
 hf.UserData.Name=figStruct.Name;
 hf.UserData.v=v;
 
@@ -466,7 +467,7 @@ hf.UserData.contourSlice=sliceIndexK;
 hf.UserData.fontColor=fontColor;
 hf.UserData.faceAlpha=0.8;
 hf.UserData.lineColors=gjet(4);
-
+hf.UserData.logicThreshold=true(size(M));
 hf.UserData.ButtonHandles.Sample=hSample;
 hf.UserData.ButtonHandles.Cut=hCut;
 hf.UserData.ButtonHandles.Draw=hDraw;
@@ -595,6 +596,7 @@ logicThreshold=(M>=T_low & M<=T_high);
 
 hf.UserData.M_plot=M;
 hf.UserData.M_plot(~logicThreshold)=NaN;
+hf.UserData.logicThreshold=logicThreshold;
 
 plotSlice([],[],{hf,jSlider_I,1});
 plotSlice([],[],{hf,jSlider_J,2});
@@ -710,7 +712,8 @@ if ~isempty(Q)
         'colormapSet',...
         'csapsSmoothPar',...
         'showAll',...
-        'logicThreshold'};
+        'logicThreshold',...
+        'M_plot'};
     
     for q=1:1:numel(saveFields)
         fieldNameCurrent=saveFields{q};
