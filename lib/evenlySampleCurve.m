@@ -71,7 +71,7 @@ if closeLoopOpt==1
     
     V=[V;V(1,:)]; %Close loop by adding start to end
     
-    if ~ischar(interpPar) %CSAPS SMOOTHEN, interpret interpPar as smoothening parameter
+%     if ~ischar(interpPar) %CSAPS SMOOTHEN, interpret interpPar as smoothening parameter
                 
         midInd=round(size(V,1)/2);
         %Close loop and aid periodicity by adding start and end points
@@ -81,10 +81,10 @@ if closeLoopOpt==1
              
         startInd=1+size(V_addBefore,1);
         endInd=sizV(1)+size(V_addBefore,1)+1;
-    else
-        startInd=1;
-        endInd=size(V,1);
-    end
+%     else
+%         startInd=1;
+%         endInd=size(V,1);
+%     end
     
 else
     startInd=1;
@@ -108,10 +108,10 @@ Vg=zeros(n,size(V,2));
 %         Vg(:,q)=interp1(D,V(:,q),Dg,interpPar);       
 %     end
 % end
-if ~ischar(interpPar); %CSAPS SMOOTHEN, interpret interpPar as smoothening parameter
+if ~ischar(interpPar) %CSAPS SMOOTHEN, interpret interpPar as smoothening parameter
     Vg = csaps(D,V',interpPar,Dg)'; %Smoothened ppform
 else %NORMAL METHODS
-    for q=1:size(V,2);        
+    for q=1:size(V,2)        
         Vg(:,q)=interp1(D,V(:,q),Dg,interpPar);
     end
 end
@@ -120,7 +120,7 @@ if closeLoopOpt==1
     Vg=Vg(1:end-1,:);
 end
 
-if ~ischar(interpPar); %CSAPS
+if ~ischar(interpPar) %CSAPS
     %resample since smoothening alters spacing of points
     [Vg] = evenlySampleCurve(Vg,n_in,'pchip',closeLoopOpt);
 end

@@ -27,7 +27,7 @@ function export_STL_txt(fileName,stlStruct)
 
 %Remove file if it exists (in some cases data is appended to file if it
 %exists already)
-if exist(fileName,'file')==2; 
+if exist(fileName,'file')==2
     delete(fileName);    
     %Check if its gone
     if exist(fileName,'file')==2
@@ -37,7 +37,7 @@ end
 
 %Append STLs to file
 writeOpt='a';
-for q=1:1:numel(stlStruct.solidNames);    
+for q=1:1:numel(stlStruct.solidNames)   
     patch2STL(fileName,stlStruct.solidVertices{q},stlStruct.solidFaces{q},stlStruct.solidNormals{q},stlStruct.solidNames{q},writeOpt);
 end
 

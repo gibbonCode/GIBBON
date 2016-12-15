@@ -59,7 +59,7 @@ while 1
         i_target=i_target+1;
     end    
     lineCount=lineCount+1;
-    if nnz(lineIndexTarget)==(numel(targets));
+    if nnz(lineIndexTarget)==(numel(targets))
         break
     end
 end
@@ -95,7 +95,7 @@ T=[T(1:lineIndexTarget(1)); NODE_field; T(lineIndexTarget(2)-2:lineIndexTarget(2
 disp('EXPORTING TO INP FILE...');
 
 fid=fopen(saveName,'wt');
-for q=1:size(T,1);  
+for q=1:size(T,1)
     fprintf(fid,'%s\n',T{q});
 end
 fclose(fid);

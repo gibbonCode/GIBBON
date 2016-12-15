@@ -94,30 +94,30 @@ caxis([min(M(:)) max(M(:))]);
 set(gca,'fontSize',fontSize);
 drawnow;
 
-w=50; %Scrollbar width
+scrollBarWidth=50; %Scrollbar width
 jSlider_I = javax.swing.JSlider(1,siz(1));
-javacomponent(jSlider_I,[0,0,w,round(hf.Position(4))]);
+javacomponent(jSlider_I,[0,0,scrollBarWidth,round(hf.Position(4))]);
 set(jSlider_I, 'MajorTickSpacing',tickSizeMajor_I, 'MinorTickSpacing',1, 'PaintTicks',true, 'PaintLabels',true,...
     'Background',java.awt.Color.white, 'snapToTicks',true, 'StateChangedCallback',{@plotSlice,{hf,jSlider_I,1}},'Orientation',jSlider_I.VERTICAL);
 
 jSlider_J = javax.swing.JSlider(1,siz(2));
-javacomponent(jSlider_J,[1*w,0,w,round(hf.Position(4))]);
+javacomponent(jSlider_J,[1*scrollBarWidth,0,scrollBarWidth,round(hf.Position(4))]);
 set(jSlider_J, 'MajorTickSpacing',tickSizeMajor_J, 'MinorTickSpacing',1, 'PaintTicks',true, 'PaintLabels',true,...
     'Background',java.awt.Color.white, 'snapToTicks',true, 'StateChangedCallback',{@plotSlice,{hf,jSlider_J,2}},'Orientation',jSlider_J.VERTICAL);
 
 jSlider_K = javax.swing.JSlider(1,siz(3));
-javacomponent(jSlider_K,[2*w,0,w,round(hf.Position(4))]);
+javacomponent(jSlider_K,[2*scrollBarWidth,0,scrollBarWidth,round(hf.Position(4))]);
 set(jSlider_K, 'MajorTickSpacing',tickSizeMajor_K, 'MinorTickSpacing',1, 'PaintTicks',true, 'PaintLabels',true,...
     'Background',java.awt.Color.white, 'snapToTicks',true, 'StateChangedCallback',{@plotSlice,{hf,jSlider_K,3}},'Orientation',jSlider_K.VERTICAL);
 
 jSlider_T = com.jidesoft.swing.RangeSlider(0,100,Tf(1),Tf(2));  % min,max,low,high
-javacomponent(jSlider_T,[3*w,0,w,round(hf.Position(4))]);
+javacomponent(jSlider_T,[3*scrollBarWidth,0,scrollBarWidth,round(hf.Position(4))]);
 set(jSlider_T, 'MajorTickSpacing',25, 'MinorTickSpacing',1, 'PaintTicks',true, 'PaintLabels',true,...
     'Background',java.awt.Color.white, 'snapToTicks',false, 'StateChangedCallback',{@setThresholdFunc,{hf,jSlider_T,jSlider_I,jSlider_J,jSlider_K}},'Orientation',jSlider_T.VERTICAL);
 
 %% Set resize function
 
-set(hf,'ResizeFcn',{@setScrollSizeFunc,{hf,w,jSlider_T,jSlider_I,jSlider_J,jSlider_K}});
+set(hf,'ResizeFcn',{@setScrollSizeFunc,{hf,scrollBarWidth,jSlider_T,jSlider_I,jSlider_J,jSlider_K}});
 
 %% Initialize figure callbacks
 % set(hf, 'WindowButtonDownFcn', {@FigMouseDown,hf}, ...
@@ -318,6 +318,22 @@ end
 % Create a uipushtool in the toolbar
 hDelete=uitoggletool(hb,'TooltipString','Delete','CData',S,'Tag','delete_button','ClickedCallback',{@deleteFunc,{hf}});
 
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%Adjust contour button
+
+%get icon
+D=importdata(fullfile(iconPath,'polygonSelect.jpg'));
+S=double(D);
+S=S-min(S(:));
+S=S./max(S(:));
+S(S==1)=NaN;
+if size(S,3)==1
+    S=repmat(S,[1 1 3]);
+end
+% Create a uipushtool in the toolbar
+hAdjust=uitoggletool(hb,'TooltipString','Adjust','CData',S,'Tag','adjust_button','ClickedCallback',{@adjustFunc,{hf}});
+
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %Reset contours button
 
@@ -346,7 +362,7 @@ if size(S,3)==1
     S=repmat(S,[1 1 3]);
 end
 % Create a uipushtool in the toolbar
-uipushtool(hb,'TooltipString','Convert','CData',S,'Tag','convert_button','ClickedCallback',{@convertFunc,{hf}});
+hConvert=uitoggletool(hb,'TooltipString','Convert','CData',S,'Tag','convert_button','ClickedCallback',{@convertFunc,{hf}});
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %Close contour button
@@ -450,6 +466,14 @@ hShrink=uitoggletool(hb,'TooltipString','Shrink','CData',S,'Tag','shrink_button'
 % pos=hPopUp1.Position; pos(2)=pos(2)-pos(4);
 % hTopText = uicontrol('Style','text','Position',pos,'String',topTextString,'BackgroundColor',0.5*ones(1,3),'FontSize',10,'ForegroundColor',abs(1-figStruct.Color));
 
+%% Text fields
+
+        
+hTextInfoStringDefault=' s=sample sketch contour, c=cut sketched contour,d=draw contour, delete=delete sketch contour, home=return to active slice, a=accept contour, q=smooth accepted contour, +=grow contour, -=shrink contour, space=go to next slice, left/right arrow=increase/decrease transparancy, v=activate vcw';
+hTextInfo = uicontrol(hf,'Style','text','String',hTextInfoStringDefault,...
+    'Position',[scrollBarWidth*4 hf.Position(4)-round(scrollBarWidth/2) round(hf.Position(3))-scrollBarWidth*4 round(scrollBarWidth/2)],...
+    'BackgroundColor',[1 1 1],'HorizontalAlignment','Left','FontSize',10);
+            
 %% Set figure UserData
 
 hf.UserData.M=M;
@@ -477,6 +501,11 @@ hf.UserData.ButtonHandles.hSmooth=hSmooth;
 hf.UserData.ButtonHandles.hEllipse=hEllipse;
 hf.UserData.ButtonHandles.hGrow=hGrow;
 hf.UserData.ButtonHandles.hShrink=hShrink;
+hf.UserData.ButtonHandles.hConvert=hConvert;
+hf.UserData.ButtonHandles.hTextInfo=hTextInfo;
+hf.UserData.ButtonHandles.hAdjust=hAdjust;
+
+hf.UserData.hTextInfoStringDefault=hTextInfoStringDefault; 
 
 hf.UserData.hp=NaN(1,3);
 
@@ -507,6 +536,8 @@ hf.UserData.WindowScrollWheelFcn=hf.WindowScrollWheelFcn;
 hf.UserData.BusyAction=hf.BusyAction;
 
 hf.UserData.csapsSmoothPar=0.5; 
+hf.UserData.growShrinkStepSize=1/4; 
+hf.UserData.adjustContourParSet={4,1,0.5}; 
 
 hf.UserData.showAll=1; 
 
@@ -547,9 +578,9 @@ end
 
 if isnan(hf.UserData.hp(dirOpt))    
     [F,V,C]=im2patch(M,logicPatch,patchType,v);
-    hf.UserData.hp(dirOpt)= patch('Faces',F,'Vertices',V,'FaceColor','flat','CData',C,'EdgeColor','none');
+    hf.UserData.hp(dirOpt)= patch('Faces',F,'Vertices',V,'FaceColor','flat','CData',C,'EdgeColor','none','FaceAlpha',hf.UserData.faceAlpha);
 else    
-    set(hf.UserData.hp(dirOpt),'CData',M(logicPatch));
+    set(hf.UserData.hp(dirOpt),'CData',M(logicPatch),'FaceAlpha',hf.UserData.faceAlpha);
     V=get(hf.UserData.hp(dirOpt),'Vertices');
     switch dirOpt
         case 1
@@ -639,6 +670,8 @@ hAxis.Units='pixels';
 hAxis.Position(2)=50;
 hAxis.Position(4)=hf.Position(4)-100;
 hAxis.Units=axis_units;
+
+set(hf.UserData.ButtonHandles.hTextInfo,'Position',[scrollBarWidth*4 hf.Position(4)-round(scrollBarWidth/2) round(hf.Position(3))-scrollBarWidth*4 round(scrollBarWidth/2)]);
 
 end
 
@@ -866,6 +899,7 @@ view(0,90);
 v=hf.UserData.v;
 zs=(qSlice-0.5).*v(3); %z-level for contourslice
 
+set(hf.UserData.ButtonHandles.hTextInfo,'String',' Draw contour: Left click to add point, right click (or any other key) to exit');
 
 hpd=[];
 drawDone=0;
@@ -873,14 +907,21 @@ Vd=[];
 [mousePointerType]=specialPointerShape('pen');
 while drawDone==0
     [Xd,Yd,bd]=qginput(1,mousePointerType);
-    switch bd
-        case 1
-            Vd=[Vd; Xd Yd zs];
-            delete(hpd);
-            hpd=plotV(Vd,'b.-','MarkerSize',20,'lineWidth',2);
-        case 3
-            drawDone=1;
+    if ~isempty(bd)
+        switch bd
+            case 1
+                Vd=[Vd; Xd Yd zs];
+                delete(hpd);
+                hpd=plotV(Vd,'b.-','MarkerSize',20,'lineWidth',2);
+            case 3
+                drawDone=1;
+            otherwise
+                drawDone=1;
+        end
+    else
+        drawDone=1;
     end
+        
 end
 delete(hpd);
 
@@ -909,6 +950,8 @@ set(hf.UserData.ButtonHandles.Draw,'State','Off');
 
 setDefaultPointer; %Set default pointer
 
+set(hf.UserData.ButtonHandles.hTextInfo,'String',hf.UserData.hTextInfoStringDefault);
+
 end
 
 %% cut
@@ -919,8 +962,13 @@ hf=inputCell{1}; %Figure handle
 
 set(hf,'WindowButtonDownFcn','','WindowButtonUpFcn','');
 
+%Set info text
+set(hf.UserData.ButtonHandles.hTextInfo,'String',' Cut contours: Left click and drag to define a cutting window');
+
 v=hf.UserData.v;
 siz=size(hf.UserData.M);
+[xMax,yMax,~]=im2cart(siz(1),siz(2),siz(3),v);
+[xMin,yMin,~]=im2cart(1,1,1,v);
 qSlice=hf.UserData.contourSlice;
 
 zs=(qSlice-0.5).*v(3); %z-level for contourslice
@@ -943,13 +991,23 @@ if k==0 %If mouse click
     point2 = get(gca,'CurrentPoint');    % button up detected
     point1 = point1(1,1:2);            % extract x and y
     point2 = point2(1,1:2);
+    
+    point1(point1(:,1)<xMin,1)=xMin;
+    point1(point1(:,1)>xMax,1)=xMax;
+    point1(point1(:,2)<yMin,2)=yMin;
+    point1(point1(:,2)>yMax,2)=yMax;
+    point2(point2(:,1)<xMin,1)=xMin;
+    point2(point2(:,1)>xMax,1)=xMax;
+    point2(point2(:,2)<yMin,2)=yMin;
+    point2(point2(:,2)>yMax,2)=yMax;
+ 
     p1 = [min(point1(1,1),point2(1,1)) max(point1(1,2),point2(1,2))];
     p2 = [max(point1(1,1),point2(1,1)) min(point1(1,2),point2(1,2))];
     [ic1,jc1,~]=cart2im(p1(1),p1(2),0,v);
     [ic2,jc2,~]=cart2im(p2(1),p2(2),0,v);
-    hcc1=plot3(p1(1),p1(2),zs,'r+','MarkerSize',20);
-    hcc2=plot3(p2(1),p2(2),zs,'r+','MarkerSize',20);
-    drawnow;
+%     hcc1=plot3(p1(1),p1(2),zs,'r+','MarkerSize',20);
+%     hcc2=plot3(p2(1),p2(2),zs,'r+','MarkerSize',20);
+%     drawnow;
     
     mc=false(siz(1:2));
     mc(round(ic2):round(ic1),round(jc1):round(jc2))=1;
@@ -1031,14 +1089,13 @@ if k==0 %If mouse click
     [group_sizes,ind_sort]=sort(group_sizes);
     C=C(ind_sort);
     
-    delete(hcc1); delete(hcc2);
+%     delete(hcc1); delete(hcc2);
     
     %Override sketch contour
     hf.UserData.sketchContour=C;
     
     %Update plot
     plotSketchContour(hf);
-    
     
 end
 
@@ -1049,6 +1106,9 @@ set(hf.UserData.ButtonHandles.Cut,'State','Off');
 
 set(hf,'KeyPressFcn', {@figKeyPressFunc,{hf}},'WindowButtonDownFcn', {@figMouseDown,{hf}},'WindowButtonUpFcn', {@mouseup,hf});
 
+%Reset info text 
+set(hf.UserData.ButtonHandles.hTextInfo,'String',hf.UserData.hTextInfoStringDefault);
+
 end
 
 %% sample
@@ -1056,6 +1116,9 @@ end
 function sampleFunc(~,~,inputCell)
 
 hf=inputCell{1}; %Figure handle
+
+%Set info text
+set(hf.UserData.ButtonHandles.hTextInfo,'String',' Sample contours: Left click to sample nearest contour to click at intensity of voxel at the clicked location, right click (or any other key) to exit');
 
 view(0,90);
 
@@ -1104,6 +1167,9 @@ while 1
     end
 end
 set(hf.UserData.ButtonHandles.Sample,'State','Off');
+
+%Reset info text 
+set(hf.UserData.ButtonHandles.hTextInfo,'String',hf.UserData.hTextInfoStringDefault);
 
 end
 
@@ -1187,6 +1253,9 @@ switch eventData.Key
     case 'q'
         set(hf.UserData.ButtonHandles.hSmooth,'State','On');
         smoothFunc([],[],inputCell);
+    case 'z'
+        set(hf.UserData.ButtonHandles.hConvert,'State','On');
+        convertFunc([],[],inputCell);        
     case 'delete'
         set(hf.UserData.ButtonHandles.Delete,'State','On');
         deleteFunc([],[],inputCell);
@@ -1456,6 +1525,9 @@ homeFunc([],[],inputCell);
 hf=inputCell{1}; %Figure handle
 v=hf.UserData.v;
 
+%Set info text
+set(hf.UserData.ButtonHandles.hTextInfo,'String','Select/accept contour: Left click to select and accept nearest contour, right click (or any other key) to exit');
+
 %Get contours
 C=hf.UserData.sketchContour;
 
@@ -1588,6 +1660,9 @@ end
 set(hf.UserData.ButtonHandles.Select,'State','Off');
 setDefaultPointer;
 
+%Reset info text 
+set(hf.UserData.ButtonHandles.hTextInfo,'String',hf.UserData.hTextInfoStringDefault);
+
 end
 
 %% Close
@@ -1596,6 +1671,9 @@ function closeFunc(~,~,inputCell)
 hf=inputCell{1};
 view(0,90);
 [qSlice]=updateSliceIndex(hf);
+
+%Set info text
+set(hf.UserData.ButtonHandles.hTextInfo,'String','Close contour: Left click to close the nearest accepted contour, right click (or any other key) to exit');
 
 v=hf.UserData.v;
 zs=(qSlice-0.5).*v(3); %z-level for contourslice
@@ -1626,6 +1704,9 @@ if ~isempty(Vcs{qSlice}{1})
     end
 end
 
+%Reset info text 
+set(hf.UserData.ButtonHandles.hTextInfo,'String',hf.UserData.hTextInfoStringDefault);
+
 end
 
 %% Smooth
@@ -1635,6 +1716,9 @@ function smoothFunc(~,~,inputCell)
 hf=inputCell{1};
 view(0,90);
 [qSlice]=updateSliceIndex(hf);
+
+%Set info text
+set(hf.UserData.ButtonHandles.hTextInfo,'String','Smooth contour: Left click to smoothen nearest sketched contour, press p to change smoothening parameter (Value in range 0-1, 0=straight line fit, 1=no smoothening), right click (or any other key) to exit');
 
 v=hf.UserData.v;
 zs=(qSlice-0.5).*v(3); %z-level for contourslice
@@ -1691,6 +1775,9 @@ end
 set(hf.UserData.ButtonHandles.hSmooth,'State','Off');
 setDefaultPointer;
 
+%Reset info text 
+set(hf.UserData.ButtonHandles.hTextInfo,'String',hf.UserData.hTextInfoStringDefault);
+
 end
 
 %% Ellipse fit
@@ -1700,6 +1787,9 @@ function ellipseFunc(~,~,inputCell)
 hf=inputCell{1};
 view(0,90);
 [qSlice]=updateSliceIndex(hf);
+
+%Set info text
+set(hf.UserData.ButtonHandles.hTextInfo,'String','Fit ellipse: Left click to fit an ellipse to the nearest accepted contour, right click (or any other key) to exit');
 
 v=hf.UserData.v;
 zs=(qSlice-0.5).*v(3); %z-level for contourslice
@@ -1742,6 +1832,9 @@ end
 set(hf.UserData.ButtonHandles.hEllipse,'State','Off');
 setDefaultPointer;
 
+%Reset info text 
+set(hf.UserData.ButtonHandles.hTextInfo,'String',hf.UserData.hTextInfoStringDefault);
+
 end
 
 %% Delete sketched contour
@@ -1750,6 +1843,10 @@ function deleteFunc(~,~,inputCell)
 
 hf=inputCell{1};
 v=hf.UserData.v;
+
+%Set info text
+set(hf.UserData.ButtonHandles.hTextInfo,'String','Delete contour: Left click to delete nearest sketched, right click (or any other key) to exit');
+
 %Get contours
 C=hf.UserData.sketchContour;
 homeFunc([],[],inputCell);
@@ -1789,13 +1886,175 @@ end
 setDefaultPointer;
 set(hf.UserData.ButtonHandles.Delete,'State','Off');
 
+%Reset info text 
+set(hf.UserData.ButtonHandles.hTextInfo,'String',hf.UserData.hTextInfoStringDefault);
+
 end
 
+%% Adjust
+
+function adjustFunc(~,~,inputCell)
+
+hf=inputCell{1};
+v=hf.UserData.v;
+
+%Get contours
+C=hf.UserData.sketchContour;
+homeFunc([],[],inputCell);
+[mousePointerType]=specialPointerShape('smallHand');
+qSlice=hf.UserData.contourSlice; %Get contour slice
+zs=(qSlice-0.5).*v(3); %z-level for contourslice
+
+while 1
+    if ~isempty(C)
+        
+        %Set info text
+        set(hf.UserData.ButtonHandles.hTextInfo,'String','Adjust contour: Left click to select contour to adjust, right click (or any other key) to exit');
+
+        [xc,yc,b]=qginput(1,'cross');
+        if ~isempty(b)
+            switch b
+                case 1           
+                    vClick=[xc yc zs];
+                    
+                    %Find closest contour
+                    [indMin]=findNearestContour(C,vClick);
+                    
+                    hf=adjustFuncPar(hf);
+                    
+                    Vd=C{indMin};
+                    D=pathLength(Vd);
+                    
+                    n=round(max(D(:))./(hf.UserData.adjustContourParSet{1}*min(v(1:2))));
+                    [Vd] = evenlySampleCurve(Vd,n,'pchip',hf.UserData.adjustContourParSet{2});    
+                    
+                    D=pathLength(Vd);
+                    n=2*round(max(D(:))./min(v(1:2)));
+                    [Vdd] = evenlySampleCurve(Vd,n,hf.UserData.adjustContourParSet{3},hf.UserData.adjustContourParSet{2});
+                    
+                    hPoints=plotV(Vd,'y.','MarkerSize',25);
+                    hCurve=plotV(Vdd,'y-');
+                    hSelect=[];
+                     while 1                         
+                         %Set info text
+                         set(hf.UserData.ButtonHandles.hTextInfo,'String','Adjust contour: Left click to select a point to assign a new location');
+                         
+                         [xc,yc,b]=qginput(1,'fleur');
+                         if ~isempty(b)
+                             switch b
+                                 case 1
+                                     vClick=[xc yc zs];
+                                     
+                                     D=sum((Vd-vClick(ones(size(Vd,1),1),:)).^2,2);
+                                     [~,indNearest]=min(D);                                     
+                                   
+                                     hSelect=plotV(Vd(indNearest,:),'bo','MarkerSize',15,'lineWidth',5);
+                                     
+                                     Vd(indNearest,:)=vClick;    
+                                     
+                                     %Set info text
+                                     set(hf.UserData.ButtonHandles.hTextInfo,'String','Adjust contour: Left click to specify new location');
+                                     
+                                     [xc,yc,b]=qginput(1,mousePointerType);
+                                     switch b
+                                         case 1
+                                             vClick=[xc yc zs];
+                                             Vd(indNearest,:)=vClick;
+                                             
+                                             D=pathLength(Vd);
+                                             n=2*round(max(D(:))./min(v(1:2)));
+                                             [Vdd] = evenlySampleCurve(Vd,n,hf.UserData.adjustContourParSet{3},hf.UserData.adjustContourParSet{2});                                             
+                                             
+                                             delete(hSelect);
+                                             delete(hPoints);
+                                             delete(hCurve);
+                                             
+                                             hPoints=plotV(Vd,'y.','MarkerSize',25);
+                                             hCurve=plotV(Vdd,'y-');
+                                             
+                                         otherwise
+                                             delete(hSelect);
+                                             break
+                                     end                                     
+                                 case 112 % p
+
+                                 otherwise
+                                     break
+                             end
+                         end
+                     end
+                    
+                     if ~isempty(Vd)
+                         delete(hPoints);
+                         delete(hCurve);
+                         
+                         D=pathLength(Vd);
+                         n=2*round(max(D(:))./min(v(1:2)));
+                         
+                         [Vdd] = evenlySampleCurve(Vd,n,hf.UserData.adjustContourParSet{3},hf.UserData.adjustContourParSet{2});
+                         
+                         C{end+1}=Vdd;
+%                          C{indMin}=Vdd;
+                         
+                         %Override sketch contour
+                         C=fixEmptyContours(C);
+                         hf.UserData.sketchContour=C;
+                         
+                         %Update plot
+                         plotSketchContour(hf);
+                     end
+                otherwise
+                    break
+            end
+        else
+            break
+        end
+    else
+        break
+    end
+end
+setDefaultPointer;
+set(hf.UserData.ButtonHandles.hAdjust,'State','Off');
+
+%Reset info text 
+set(hf.UserData.ButtonHandles.hTextInfo,'String',hf.UserData.hTextInfoStringDefault);
+
+end
+
+function hf=adjustFuncPar(hf)
+prompt = {'Enter point spacing in units of pixels','Close loop (0=no, 1=yes):','Interp method (linear, pchip or a scalar smoothening factor 0-1 to use CSAPS cubic smoothening spline):'};
+dlg_title = 'Settings';
+
+if ~ischar(hf.UserData.adjustContourParSet{3})
+    hf.UserData.adjustContourParSet{3}=num2str(hf.UserData.adjustContourParSet{3});
+end
+
+defaultOptions = {num2str(hf.UserData.adjustContourParSet{1}),num2str(hf.UserData.adjustContourParSet{2}),hf.UserData.adjustContourParSet{3}};
+s=25+max([cellfun(@numel,prompt) cellfun(@numel,defaultOptions)]);
+Q = inputdlg(prompt,dlg_title,[1 s],defaultOptions);
+if ~isempty(Q{1})
+    hf.UserData.adjustContourParSet{1}=str2double(Q{1});
+end
+if ~isempty(Q{2})
+    hf.UserData.adjustContourParSet{2}=str2double(Q{2});
+end
+if ~isempty(Q{3})
+    switch Q{3}
+        case {'linear','pchip'}
+            hf.UserData.adjustContourParSet{3}=Q{3};
+        otherwise        
+            hf.UserData.adjustContourParSet{3}=str2double(Q{3});
+    end
+end
+end
 %% reset
 
 function resetFunc(~,~,inputCell)
 
 hf=inputCell{1}; %Figure handle
+
+%Set info text
+set(hf.UserData.ButtonHandles.hTextInfo,'String','Reset: Clear all accepted contours for the current slice');
 
 [qSlice]=updateSliceIndex(hf);
 
@@ -1804,6 +2063,9 @@ plotContourSet(hf);
 
 % hf.UserData.sketchContour={};
 % plotSketchContour(hf);
+
+%Reset info text 
+set(hf.UserData.ButtonHandles.hTextInfo,'String',hf.UserData.hTextInfoStringDefault);
 
 end
 
@@ -1814,6 +2076,9 @@ function convertFunc(~,~,inputCell)
 homeFunc([],[],inputCell);
 
 hf=inputCell{1};
+
+%Set info text
+set(hf.UserData.ButtonHandles.hTextInfo,'String','Convert contour: Left click to convert the nearest accepted contour to a sketch contour, right click (or any other key) to exit');
 
 qSlice=hf.UserData.sliceIndices(3); %Get current slice
 hf.UserData.contourSlice=qSlice;
@@ -1830,37 +2095,43 @@ Vcs=hf.UserData.ContourSet;
 [mousePointerType]=specialPointerShape('smallHand');
 while 1
     if ~isempty(Vcs{qSlice}{1})
-    [xc,yc,b]=qginput(1,mousePointerType);
-    if ~isempty(b)
-        switch b
-            case 1                                
-                vClick=[xc yc zs];
-                [indMin_Vcs]=findNearestContour(Vcs{qSlice},vClick);
-                V_pick=Vcs{qSlice}{indMin_Vcs}; %Contour to downgrade
-                Vcs{qSlice}{indMin_Vcs}=[];
-                Vcs{qSlice}=fixEmptyContours(Vcs{qSlice});
-                hf.UserData.ContourSet{qSlice}=Vcs{qSlice};
-                
-%                 if isempty(C{1})
-%                     C{1}=V_pick;
-%                 else
+        [xc,yc,b]=qginput(1,mousePointerType);
+        if ~isempty(b)
+            switch b
+                case 1
+                    vClick=[xc yc zs];
+                    [indMin_Vcs]=findNearestContour(Vcs{qSlice},vClick);
+                    V_pick=Vcs{qSlice}{indMin_Vcs}; %Contour to downgrade
+                    Vcs{qSlice}{indMin_Vcs}=[];
+                    Vcs{qSlice}=fixEmptyContours(Vcs{qSlice});
+                    hf.UserData.ContourSet{qSlice}=Vcs{qSlice};
+                    
+                    %                 if isempty(C{1})
+                    %                     C{1}=V_pick;
+                    %                 else
                     C{end+1}=V_pick;
-%                 end
-                C=fixEmptyContours(C);
-                
-                hf.UserData.sketchContour=C;
-                
-                %Update plots
-                plotSketchContour(hf);
-                plotContourSet(hf);                
-            otherwise
-                break
+                    %                 end
+                    C=fixEmptyContours(C);
+                    
+                    hf.UserData.sketchContour=C;
+                    
+                    %Update plots
+                    plotSketchContour(hf);
+                    plotContourSet(hf);
+                otherwise
+                    break
+            end
         end
-    end
-    else        
+    else
         break
     end
 end
+
+set(hf.UserData.ButtonHandles.hConvert,'State','Off');
+setDefaultPointer;
+
+%Reset info text 
+set(hf.UserData.ButtonHandles.hTextInfo,'String',hf.UserData.hTextInfoStringDefault);
 
 end
 
@@ -1869,6 +2140,14 @@ function growShrinkFunc(~,~,inputCell)
 
 growDir=inputCell{2};
 hf=inputCell{1};
+
+%Set info text
+if growDir==1
+    set(hf.UserData.ButtonHandles.hTextInfo,'String','Grow contour: Left click to grow nearest accepted contour outward, press p to change the step size, right click (or any other key) to exit');
+else
+    set(hf.UserData.ButtonHandles.hTextInfo,'String','Shrink contour: Left click to shrink the nearest accepted contour inward, press p to change the step size, right click (or any other key) to exit');
+end
+
 view(0,90);
 [qSlice]=updateSliceIndex(hf);
 
@@ -1911,9 +2190,9 @@ if ~isempty(Vcs{qSlice}{1})
                     m=reshape(D,[size(M,1) size(M,2)]);
                     
                     if growDir==1
-                        Tc=min(v/4);
+                        Tc=min(v(1:2))*hf.UserData.growShrinkStepSize;
                     elseif growDir==-1
-                        Tc=-min(v/4);
+                        Tc=-min(v(1:2))*hf.UserData.growShrinkStepSize;
                     end
                     
                     %Compute contour
@@ -1928,7 +2207,15 @@ if ~isempty(Vcs{qSlice}{1})
                     hf.UserData.ContourSet{qSlice}=Vcs{qSlice};                                        
 
                     plotContourSet(hf);
-                    
+                case 112 % p
+                    prompt = {'Enter grow/shrink step size in units of in-plane pixels:'};
+                    dlg_title = 'grow/shrink step size';
+                    defaultOptions = {num2str(hf.UserData.growShrinkStepSize)};
+                    s=25+max([cellfun(@numel,prompt) cellfun(@numel,defaultOptions)]);
+                    Q = inputdlg(prompt,dlg_title,[1 s],defaultOptions);
+                    if ~isempty(Q)
+                        hf.UserData.growShrinkStepSize=str2double(Q{1});
+                    end                    
                 otherwise
                     break
             end
@@ -1943,6 +2230,9 @@ elseif growDir==-1
 end
 
 setDefaultPointer;
+
+%Reset info text 
+set(hf.UserData.ButtonHandles.hTextInfo,'String',hf.UserData.hTextInfoStringDefault);
 
 end
 
