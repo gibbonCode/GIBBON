@@ -25,17 +25,59 @@ clear; close all; clc;
 
 %%
 % Plot settings
-markerSize=15;
-lineWidth=2;
+markerSize1=20;
+markerSize2=10;
+lineWidth=1;
 
-%% EXAMPLE USING NORMAL INTERPOLATION
+%% EXAMPLE 1: Evenly sampling a curve 
+
+%Simulating the case of an unevenly sampled curve
+ns=25;
+x=linspace(0,2*pi,ns);
+y=4*sin(x);
+V=[x(:) y(:)];
+
+%%
+% Resampling a curve evenly in terms of point spacing.
+
+%% 
+% Below original and resampled curves are shown. Note that the original
+% curve is sampled evenly allong x-axis but not in terms of point spacing.
+% For instance the spacing is smallest in flat regions and lowest in steep
+% regions.Various interpolation methods are shown.
+
+interpMethods={'linear','pchip','biharmonic'};
+closeLoopOpt=0; %Option for closed curve
+n=ns*2; %New number of points
+
+cFigure; 
+subplot(2,2,1); hold on; 
+title('Unevenly sampled');
+plotV(V,'k-','MarkerSize',markerSize1);
+plotV(V,'r.','MarkerSize',markerSize1);
+view(2); grid on; axis equal; axis tight; box on;
+drawnow; 
+
+for q=1:1:numel(interpMethods)
+    
+    [Vg]=evenlySampleCurve(V,n,interpMethods{q},closeLoopOpt);
+
+    subplot(2,2,q+1); hold on;
+    title(['Resample ',interpMethods{q},' interpolation']);
+    plotV(Vg,'k-','MarkerSize',markerSize1);
+    plotV(Vg,'g.','MarkerSize',markerSize1);
+    view(2); grid on; axis equal; axis tight; box on;
+end
+drawnow;
+
+%% EXAMPLE 2: Evenly sampling a closed curve
 
 %Simulating the case of an unevenly sampled loop curve
-ns=150;
+ns=75;
 t=sort(linspace(0,2*pi,ns)+pi/10*rand(1,ns));
 t=unique(t); %removing double points
 t=t(t<2*pi);%Removing 2*pi points since they are the same as the 0 point
-r=3+2.*sin(5*t);
+r=3+2.*cos(6*t);
 [x,y] = pol2cart(t,r);
 z=y;
 V=[x(:) y(:) z(:)];
@@ -45,39 +87,72 @@ closeLoopOpt=1;
 n=200;
 [Vg]=evenlySampleCurve(V,n,interpMethod,closeLoopOpt);
 
-hf1=cFigure;
-subplot(1,2,1); hold on;
-title('Unevenly sampled');
-plot3(V(:,1),V(:,2),V(:,3),'r.-','MarkerSize',markerSize);
-drawnow; view(3); grid on; axis equal; axis tight; 
-subplot(1,2,2); hold on;
-title('Evenly sampled allong curve');
-plot3(Vg(:,1),Vg(:,2),Vg(:,3),'g.-','MarkerSize',markerSize);
-plot3(Vg(1,1),Vg(1,2),Vg(1,3),'r.','MarkerSize',2*markerSize,'lineWidth',lineWidth);
-plot3(Vg(end,1),Vg(end,2),Vg(end,3),'b.','MarkerSize',2*markerSize,'lineWidth',lineWidth);
-drawnow; view(3); grid on; axis equal; axis tight; 
+%%
+% Resampling a curve evenly in terms of point spacing.
 
-%% EXAMPLE USING CSAPS
+%% 
+% Below original and resampled curves are shown. Note that the original
+% curve is sampled evenly allong x-axis but not in terms of point spacing.
+% For instance the spacing is smallest in flat regions and lowest in steep
+% regions.Various interpolation methods are shown.
+
+interpMethods={'linear','pchip','biharmonic'};
+closeLoopOpt=1; %Option for closed curve
+n=ns*2; %New number of points
+
+cFigure; 
+subplot(2,2,1); hold on; 
+title('Unevenly sampled');
+plotV(V,'k-','MarkerSize',markerSize1);
+plotV(V,'r.','MarkerSize',markerSize1);
+view(3); grid on; axis equal; axis tight; box on;
+drawnow; 
+
+for q=1:1:numel(interpMethods)
+    
+    [Vg]=evenlySampleCurve(V,n,interpMethods{q},closeLoopOpt);
+
+    subplot(2,2,q+1); hold on;
+    title(['Resampled with ',interpMethods{q},' interpolation']);
+    plotV(Vg,'k-','MarkerSize',markerSize1);
+    plotV(Vg,'g.','MarkerSize',markerSize1);
+    view(3); grid on; axis equal; axis tight; box on;
+end
+drawnow;
+
+%% EXAMPLE 3: Resampling and smoothening a curve based on CSAPS
+% By setting interpMethod as a scalar between 0 and 1 it is interpreted as
+% a smoothening parameter for csaps based cubic smoothening.
+
+ns=125;
+t=sort(linspace(0,2*pi,ns)+pi/10*rand(1,ns));
+t=unique(t); %removing double points
+t=t(t<2*pi);%Removing 2*pi points since they are the same as the 0 point
+r=3+2.*cos(6*t);
+[x,y] = pol2cart(t,r);
+z=y;
+V=[x(:) y(:) z(:)];
 
 %Adding noise
 V=V+0.2.*randn(size(V));
 
-interpMethod=0.7;
+interpMethod=0.25; %Setting a scaler triggers csaps based smoothening
 closeLoopOpt=1;
 [Vg]=evenlySampleCurve(V,n,interpMethod,closeLoopOpt);
 
-hf1=cFigure;
+cFigure;
 subplot(1,2,1); hold on;
-title('Unevenly sampled');
-plot3(V(:,1),V(:,2),V(:,3),'r.-','MarkerSize',markerSize);
-drawnow; view(3); grid on; axis equal; axis tight; 
+title('Unevenly sampled and noisy');
+plotV(V,'k-','MarkerSize',markerSize1);
+plotV(V,'r.','MarkerSize',markerSize1);
+view(3); grid on; axis equal; axis tight;  box on;
 subplot(1,2,2); hold on;
-title('Evenly sampled allong curve and smoothened');
-plot3(Vg(:,1),Vg(:,2),Vg(:,3),'g.-','MarkerSize',markerSize,'lineWidth',lineWidth);
-plot3(Vg(1,1),Vg(1,2),Vg(1,3),'r.','MarkerSize',2*markerSize,'lineWidth',lineWidth);
-plot3(Vg(end,1),Vg(end,2),Vg(end,3),'b.','MarkerSize',2*markerSize,'lineWidth',lineWidth);
-drawnow; view(3); grid on; axis equal; axis tight; 
-
+title('Evenly sampled and smoothened');
+plotV(Vg,'k-','MarkerSize',markerSize1,'lineWidth',lineWidth);
+plotV(Vg,'g.','MarkerSize',markerSize1,'lineWidth',lineWidth);
+plotV(V,'r.','MarkerSize',markerSize1);
+view(3); grid on; axis equal; axis tight;  box on;
+drawnow;
 %% 
 %
 % <<gibbVerySmall.gif>>

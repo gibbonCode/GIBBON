@@ -1,7 +1,7 @@
 function [varargout]=im2patch(varargin)
 
 
-% function [F,V,C,C_ind]=ind2patch(M,indPatch,patchType)
+% function [F,V,C,C_ind]=im2patch(M,indPatch,patchType,v)
 % ------------------------------------------------------------------------
 %
 % This function generates patch data (faces 'F', vertices 'V' and color
@@ -110,7 +110,9 @@ switch patchType
     case 'sk'
         EI=[I  I+1 I+1 I];
         EJ=[J  J   J+1 J+1];
-        EK=[K  K   K   K ];    
+        EK=[K  K   K   K ];  
+    otherwise
+        error('invalid patch type');
 end
 F=sub2ind(sizVox,EI,EJ,EK);                        
 

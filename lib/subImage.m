@@ -28,9 +28,9 @@ stepSize_K=1/nSub(3);
 
 %Define image coordinates of new voxel centres within image coordinate
 %system of original coordinate mesh 
-I_range=linspace((0.5+(stepSize_I/2)),(size(M,1)-(stepSize_I/2)),size(M,1)*nSub(1));
-J_range=linspace((0.5+(stepSize_J/2)),(size(M,2)-(stepSize_J/2)),size(M,2)*nSub(2));
-K_range=linspace((0.5+(stepSize_K/2)),(size(M,3)-(stepSize_K/2)),size(M,3)*nSub(3));  
+I_range=linspace((0.5+(stepSize_I/2)),(size(M,1)-(stepSize_I/2))+0.5,size(M,1)*nSub(1));
+J_range=linspace((0.5+(stepSize_J/2)),(size(M,2)-(stepSize_J/2))+0.5,size(M,2)*nSub(2));
+K_range=linspace((0.5+(stepSize_K/2)),(size(M,3)-(stepSize_K/2))+0.5,size(M,3)*nSub(3));  
 
 [In,Jn,Kn]=ndgrid(I_range,J_range,K_range); %Coordinate matrices
 

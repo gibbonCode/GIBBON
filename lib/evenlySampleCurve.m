@@ -71,8 +71,7 @@ if closeLoopOpt==1
     
     V=[V;V(1,:)]; %Close loop by adding start to end
     
-%     if ~ischar(interpPar) %CSAPS SMOOTHEN, interpret interpPar as smoothening parameter
-                
+%     if ~ischar(interpPar) %CSAPS SMOOTHEN, interpret interpPar as smoothening parameter                
         midInd=round(size(V,1)/2);
         %Close loop and aid periodicity by adding start and end points
         V_addBefore=V(midInd:end-1,:);
@@ -101,27 +100,25 @@ Dg=linspace(D(startInd),D(endInd),n)';
 Vg=zeros(n,size(V,2));
 
 %Interpolate using parametric representation
-% for q=1:size(V,2);    
-%     if ~ischar(interpPar); %CSAPS SMOOTHEN, interpret interpPar as smoothening parameter
-%         Vg(:,q)=csaps(D,V(:,q),interpPar,Dg);        
-%     else %NORMAL METHODS
-%         Vg(:,q)=interp1(D,V(:,q),Dg,interpPar);       
-%     end
-% end
-if ~ischar(interpPar) %CSAPS SMOOTHEN, interpret interpPar as smoothening parameter
+if ~ischar(interpPar) %CSAPS SMOOTHEN, interpret interpPar as smoothening parameter    
     Vg = csaps(D,V',interpPar,Dg)'; %Smoothened ppform
 else %NORMAL METHODS
-    for q=1:size(V,2)        
-        Vg(:,q)=interp1(D,V(:,q),Dg,interpPar);
+    for q=1:size(V,2)
+        if strcmp(interpPar,'biharmonic')
+            Vg(:,q)=biharmonicSplineInterpolation(D,V(:,q),Dg);
+        else
+            Vg(:,q)=interp1(D,V(:,q),Dg,interpPar);
+        end
     end
 end
 
+%Trim off end for closed curves
 if closeLoopOpt==1
     Vg=Vg(1:end-1,:);
 end
 
+%Resample using normal method if csaps was used since smoothening alters spacing of points
 if ~ischar(interpPar) %CSAPS
-    %resample since smoothening alters spacing of points
     [Vg] = evenlySampleCurve(Vg,n_in,'pchip',closeLoopOpt);
 end
 

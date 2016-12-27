@@ -5,7 +5,7 @@
 clear; close all; clc;
 
 %% Syntax
-% |VI=biharmonicSplineInterpolation(X,V,XI);|
+% |[VI]=biharmonicSplineInterpolation(X,V,XI);|
 
 %% Description
 % The |biharmonicSplineInterpolation| function is an expansion to
@@ -20,8 +20,7 @@ clear; close all; clc;
 %%
 % Reference:  David T. Sandwell, Biharmonic spline interpolation of
 % GEOS-3 and SEASAT altimeter data, Geophysical Research Letters, 2,
-% 139-142, 1987.  Describes interpolation using value or gradient of
-% value in any dimension.
+% 139-142, 1987.  
 
 %% Examples
 
@@ -30,6 +29,7 @@ clear; close all; clc;
 figStruct.Visible='on';
 fontSize=15;
 markerSize1=25;
+cMap=gjet(250);
 
 %% Example: 1D Interpolation
 % Below is an example for 1D curve interpolation
@@ -128,8 +128,8 @@ xlabel('X','FontSize',fontSize); ylabel('Y','FontSize',fontSize); zlabel('Z','Fo
 hold on;
 plotV(V,'k.','MarkerSize',markerSize1);
 hs=patch('Faces',F,'Vertices',V,'EdgeColor','k', 'CData',C,'FaceColor','flat');
-colorbar;
 view(3); axis tight;  axis vis3d; grid off;  set(gca,'FontSize',fontSize);
+colormap(cMap); colorbar;
 
 subplot(1,2,2);
 title('Interpolated data','FontSize',fontSize);
@@ -137,8 +137,8 @@ xlabel('X','FontSize',fontSize); ylabel('Y','FontSize',fontSize); zlabel('Z','Fo
 hold on;
 plotV(V,'k.','MarkerSize',markerSize1);
 hs=patch('Faces',FI,'Vertices',VI,'EdgeColor','k', 'CData',CI,'FaceColor','flat');
-colorbar;
 view(3); axis tight;  axis vis3d; grid off;  set(gca,'FontSize',fontSize);
+colormap(cMap); colorbar;
 drawnow;
 
 %% Example: 3D Interpolation
@@ -195,7 +195,7 @@ L_mask=M>-0.2 & M<0;
 
 hs=patch('Faces',F,'Vertices',V,'EdgeColor','k', 'CData',C,'FaceColor','flat','FaceAlpha',1);
 
-colormap(jet(250)); colorbar; caxis([min(M(:)) max(M(:))]);
+colormap(cMap); colorbar; caxis([min(M(:)) max(M(:))]);
 view(3); axis tight;  axis vis3d; grid off;  set(gca,'FontSize',fontSize);
 
 subplot(1,2,2);
@@ -230,7 +230,7 @@ L_mask=MI>-0.2 & MI<0;
 
 hs=patch('Faces',F,'Vertices',V,'EdgeColor','k', 'CData',C,'FaceColor','flat','FaceAlpha',1);
 
-colormap(jet(250)); colorbar; caxis([min(M(:)) max(M(:))]);
+colormap(cMap); colorbar; caxis([min(M(:)) max(M(:))]);
 view(3); axis tight;  axis vis3d; grid off;  set(gca,'FontSize',fontSize);
 drawnow;
 

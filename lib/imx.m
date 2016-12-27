@@ -471,7 +471,7 @@ hShrink=uitoggletool(hb,'TooltipString','Shrink','CData',S,'Tag','shrink_button'
         
 hTextInfoStringDefault=' s=sample sketch contour, c=cut sketched contour,d=draw contour, delete=delete sketch contour, home=return to active slice, a=accept contour, q=smooth accepted contour, +=grow contour, -=shrink contour, space=go to next slice, left/right arrow=increase/decrease transparancy, v=activate vcw';
 hTextInfo = uicontrol(hf,'Style','text','String',hTextInfoStringDefault,...
-    'Position',[scrollBarWidth*4 hf.Position(4)-round(scrollBarWidth/2) round(hf.Position(3))-scrollBarWidth*4 round(scrollBarWidth/2)],...
+    'Position',[scrollBarWidth*4 hf.Position(4)-round(scrollBarWidth/1.5) round(hf.Position(3))-scrollBarWidth*4 round(scrollBarWidth/1.5)],...
     'BackgroundColor',[1 1 1],'HorizontalAlignment','Left','FontSize',10);
             
 %% Set figure UserData
@@ -639,11 +639,11 @@ end
 
 function setScrollSizeFunc(~,~,inputCell)
 hf=inputCell{1};
-w=inputCell{2};
+scrollBarWidth=inputCell{2};
 
 for q=3:6
     jSlider=inputCell{q};
-    javacomponent(jSlider,[w*(q-3),0,w,round(hf.Position(4))]);
+    javacomponent(jSlider,[scrollBarWidth*(q-3),0,scrollBarWidth,round(hf.Position(4))]);
 end
 
 % hColorBar=hf.UserData.colorBarhandle;
@@ -671,7 +671,7 @@ hAxis.Position(2)=50;
 hAxis.Position(4)=hf.Position(4)-100;
 hAxis.Units=axis_units;
 
-set(hf.UserData.ButtonHandles.hTextInfo,'Position',[scrollBarWidth*4 hf.Position(4)-round(scrollBarWidth/2) round(hf.Position(3))-scrollBarWidth*4 round(scrollBarWidth/2)]);
+set(hf.UserData.ButtonHandles.hTextInfo,'Position',[scrollBarWidth*4 hf.Position(4)-round(scrollBarWidth/1.5) round(hf.Position(3))-scrollBarWidth*4 round(scrollBarWidth/1.5)]);
 
 end
 
@@ -963,7 +963,7 @@ hf=inputCell{1}; %Figure handle
 set(hf,'WindowButtonDownFcn','','WindowButtonUpFcn','');
 
 %Set info text
-set(hf.UserData.ButtonHandles.hTextInfo,'String',' Cut contours: Left click and drag to define a cutting window');
+set(hf.UserData.ButtonHandles.hTextInfo,'String',' Cut contours: Left click twice to define two corners of a cutting window');
 
 v=hf.UserData.v;
 siz=size(hf.UserData.M);
@@ -980,124 +980,108 @@ distThresh=2*max(v(1:2));
 
 %Using rbbox to draw a cropping window
 [mousePointerType]=specialPointerShape('cut');
-set(gcf,'Pointer','custom','PointerShapeCData',mousePointerType.PointerShapeCData,'PointerShapeHotSpot',mousePointerType.PointerShapeHotSpot); %User specified mousePointerType
+set(hf,'Pointer','custom','PointerShapeCData',mousePointerType.PointerShapeCData,'PointerShapeHotSpot',mousePointerType.PointerShapeHotSpot); %User specified mousePointerType
 
-k = waitforbuttonpress;
-if k==0 %If mouse click
+[P]=selectBox(hf,zs);
+P(P(:,1)<xMin,1)=xMin;
+P(P(:,1)>xMax,1)=xMax;
+P(P(:,2)<yMin,2)=yMin;
+P(P(:,2)>yMax,2)=yMax;
+point1=P(1,:);
+point2=P(2,:);
+p1 = [min(point1(1,1),point2(1,1)) max(point1(1,2),point2(1,2))];
+p2 = [max(point1(1,1),point2(1,1)) min(point1(1,2),point2(1,2))];
+
+[ic1,jc1,~]=cart2im(p1(1),p1(2),0,v);
+[ic2,jc2,~]=cart2im(p2(1),p2(2),0,v);
+
+mc=false(siz(1:2));
+mc(round(ic2):round(ic1),round(jc1):round(jc2))=1;
+cropInd=find(mc);
+
+%Get contours
+C=hf.UserData.sketchContour;
+
+%Remove contour elements within crop window and regroup
+num_C=numel(C);
+L_delete=false(1,num_C);
+for ig=1:1:num_C
+    V=C{ig};
     
-    point1 = get(gca,'CurrentPoint');    % button down detected
-    rbbox;                 % return figure units
-    drawnow; %pause(1e-6); % Required to avoid point1=point2 errors
-    point2 = get(gca,'CurrentPoint');    % button up detected
-    point1 = point1(1,1:2);            % extract x and y
-    point2 = point2(1,1:2);
+    [icg,jcg,~]=cart2im(V(:,1),V(:,2),zeros(size(V(:,1))),v);
+    icg=round(icg);
+    jcg=round(jcg);
+    icg(icg<1)=1;
+    jcg(jcg<1)=1;
+    icg(icg>siz(1))=siz(1);
+    jcg(jcg>siz(2))=siz(2);
     
-    point1(point1(:,1)<xMin,1)=xMin;
-    point1(point1(:,1)>xMax,1)=xMax;
-    point1(point1(:,2)<yMin,2)=yMin;
-    point1(point1(:,2)>yMax,2)=yMax;
-    point2(point2(:,1)<xMin,1)=xMin;
-    point2(point2(:,1)>xMax,1)=xMax;
-    point2(point2(:,2)<yMin,2)=yMin;
-    point2(point2(:,2)>yMax,2)=yMax;
- 
-    p1 = [min(point1(1,1),point2(1,1)) max(point1(1,2),point2(1,2))];
-    p2 = [max(point1(1,1),point2(1,1)) min(point1(1,2),point2(1,2))];
-    [ic1,jc1,~]=cart2im(p1(1),p1(2),0,v);
-    [ic2,jc2,~]=cart2im(p2(1),p2(2),0,v);
-%     hcc1=plot3(p1(1),p1(2),zs,'r+','MarkerSize',20);
-%     hcc2=plot3(p2(1),p2(2),zs,'r+','MarkerSize',20);
-%     drawnow;
+    vertexInd= sub2ind(siz(1:2),icg,jcg);
+    L_crop=~ismember(vertexInd,cropInd);
     
-    mc=false(siz(1:2));
-    mc(round(ic2):round(ic1),round(jc1):round(jc2))=1;
-    cropInd=find(mc);
-    
-    %Get contours
-    C=hf.UserData.sketchContour;
-    
-    %Remove contour elements within crop window and regroup
-    num_C=numel(C);
-    L_delete=false(1,num_C);
-    for ig=1:1:num_C
-        V=C{ig};
-        
-        [icg,jcg,~]=cart2im(V(:,1),V(:,2),zeros(size(V(:,1))),v);
-        icg=round(icg);
-        jcg=round(jcg);
-        icg(icg<1)=1;
-        jcg(jcg<1)=1;
-        icg(icg>siz(1))=siz(1);
-        jcg(jcg>siz(2))=siz(2);
-        
-        vertexInd= sub2ind(siz(1:2),icg,jcg);
-        L_crop=~ismember(vertexInd,cropInd);
-        
-        if any(~L_crop(:))
-            if all(L_crop(:))
-                L_delete(ig)=1; %Whole contour will be removed
-            else %Contour is cropped
-                %Split curve in groups
-                groupIndices=cumsum(diff([0; L_crop]).*L_crop).*L_crop;
-                groupIndices(groupIndices==0)=NaN;
+    if any(~L_crop(:))
+        if all(L_crop(:))
+            L_delete(ig)=1; %Whole contour will be removed
+        else %Contour is cropped
+            %Split curve in groups
+            groupIndices=cumsum(diff([0; L_crop]).*L_crop).*L_crop;
+            groupIndices(groupIndices==0)=NaN;
+            
+            D_startEnd=sqrt(sum((V(1,:)-V(end,:)).^2));
+            if all(~ismember([1 size(V,1)],cropInd)) && D_startEnd<distThresh% If the start and end are not cropped reunite start/end groups
+                groupIndices(groupIndices==1)=max(groupIndices(:));
+            end
+            
+            groupFirstIter=1;
+            for q_group=nanmin(groupIndices(:)):1:nanmax(groupIndices(:))
                 
-                D_startEnd=sqrt(sum((V(1,:)-V(end,:)).^2));
-                if all(~ismember([1 size(V,1)],cropInd)) && D_startEnd<distThresh% If the start and end are not cropped reunite start/end groups
-                    groupIndices(groupIndices==1)=max(groupIndices(:));
+                Vg=V(groupIndices==q_group,:); %Current curve
+                
+                %Reorder so within curve gaps are removed
+                Dx=diff(Vg(:,1)); Dy=diff(Vg(:,2));
+                D=sqrt(Dx.^2+Dy.^2);
+                LD=D>distThresh;
+                if any(LD) %reorder
+                    indGap=find(LD,1)+1;
+                    Vg=[Vg(indGap:end,:); Vg(1:indGap-1,:)];
                 end
                 
-                groupFirstIter=1;
-                for q_group=nanmin(groupIndices(:)):1:nanmax(groupIndices(:))
-                    
-                    Vg=V(groupIndices==q_group,:); %Current curve
-                    
-                    %Reorder so within curve gaps are removed
-                    Dx=diff(Vg(:,1)); Dy=diff(Vg(:,2));
-                    D=sqrt(Dx.^2+Dy.^2);
-                    LD=D>distThresh;
-                    if any(LD) %reorder
-                        indGap=find(LD,1)+1;
-                        Vg=[Vg(indGap:end,:); Vg(1:indGap-1,:)];
-                    end
-                    
-                    if groupFirstIter==1
-                        C{ig}=Vg;
-                        groupFirstIter=0;
-                    else
-                        C{end+1}=Vg;
-                    end
+                if groupFirstIter==1
+                    C{ig}=Vg;
+                    groupFirstIter=0;
+                else
+                    C{end+1}=Vg;
                 end
             end
         end
     end
-    
-    indDelete=find(L_delete);
-    L_delete=false(1,numel(C));
-    L_delete(indDelete)=1;
-    
-    C=C(~L_delete);
-    
-    %Get new group sizes
-    %Get group sizes
-    group_sizes = cell2mat(cellfun(@(x) size(x,1), C,'UniformOutput',0)');
-    
-    %Remove contours of lenght 1
-    C=C(group_sizes>1);
-    group_sizes=group_sizes(group_sizes>1);
-    
-    %Sort C array according to group size
-    [group_sizes,ind_sort]=sort(group_sizes);
-    C=C(ind_sort);
-    
-%     delete(hcc1); delete(hcc2);
-    
-    %Override sketch contour
-    hf.UserData.sketchContour=C;
-    
-    %Update plot
-    plotSketchContour(hf);
-    
 end
+
+indDelete=find(L_delete);
+L_delete=false(1,numel(C));
+L_delete(indDelete)=1;
+
+C=C(~L_delete);
+
+%Get new group sizes
+%Get group sizes
+group_sizes = cell2mat(cellfun(@(x) size(x,1), C,'UniformOutput',0)');
+
+%Remove contours of lenght 1
+C=C(group_sizes>1);
+group_sizes=group_sizes(group_sizes>1);
+
+%Sort C array according to group size
+[group_sizes,ind_sort]=sort(group_sizes);
+C=C(ind_sort);
+
+%     delete(hcc1); delete(hcc2);
+
+%Override sketch contour
+hf.UserData.sketchContour=C;
+
+%Update plot
+plotSketchContour(hf);
 
 setDefaultPointer; %Set default pointer
 
@@ -2349,3 +2333,4 @@ if qSlice~=qSliceContour
 end
 
 end
+

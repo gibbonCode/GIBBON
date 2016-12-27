@@ -97,7 +97,7 @@ for q=1:1:numContours
         
         %Upsample if desired
         if ~isempty(pointSpacing)
-            D=pathLength(Vg);            
+            D=pathLength(Vg);               
             [Vg] = evenlySampleCurve(Vg,n,resampleMethod,closeLoopOpt);
         end        
     end

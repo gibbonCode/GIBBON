@@ -9,8 +9,7 @@ function VI=biharmonicSplineInterpolation(X,V,XI)
 %
 %   Reference:  David T. Sandwell, Biharmonic spline interpolation of
 %   GEOS-3 and SEASAT altimeter data, Geophysical Research Letters, 2,
-%   139-142, 1987.  Describes interpolation using value or gradient of
-%   value in any dimension.
+%   139-142, 1987.  
 %
 % Kevin Mattheus Moerman
 % gibbon.toolbox@gmail.com
