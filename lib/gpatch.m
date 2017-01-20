@@ -38,9 +38,13 @@ argInPatch.EdgeColor=CE;
 if ischar(C) %Plain single color
     argInPatch.FaceColor=C; 
 elseif size(C,2)==1        
-    argInPatch.FaceColor='flat'; 
-    argInPatch.CData=C;
-elseif size(C,2)==3
+    argInPatch.FaceColor='flat';         
+%     if size(C,1)>size(F,1) %Assume vertex shading
+%         argInPatch.FaceVertexCData=C;
+%     else %Assume face shading
+        argInPatch.CData=C;
+%     end
+elseif size(C,2)==3  %Assume RGB type
     argInPatch.FaceColor='flat';
     argInPatch.FaceVertexCData=C;
 else

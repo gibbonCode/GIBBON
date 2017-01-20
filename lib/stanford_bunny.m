@@ -7,9 +7,9 @@ function [F,V]=stanford_bunny(varargin)
 % stanford bunny,  one of the most commonly used test models in computer
 % graphics. The model consists of 2915 faces and 1494 vertices.
 %
-% This MATLAB implementation is based on the coarse representation
-% downloadable from:
-%
+% This MATLAB implementation is based (holes in the mesh were closed and
+% invalid regions were fixed) on the coarse representation downloadable
+% from: 
 % http://www.cc.gatech.edu/projects/large_models/bunny.html
 %
 %See also:
@@ -21,7 +21,7 @@ function [F,V]=stanford_bunny(varargin)
 % interactive techniques - SIGGRAPH  ’94 [Internet]. New York, New York,
 % USA: ACM Press; 1994;311–8. Available from:
 % http://portal.acm.org/citation.cfm?doid=192161.192241
-%
+% 
 %
 % Kevin Mattheus Moerman
 % gibbon.toolbox@gmail.com

@@ -9,9 +9,19 @@ switch nargin
     case 1
         M=varargin{1};
         v=ones(1,3);
+        savePath=[];
     case 2
         M=varargin{1};
         v=varargin{2};
+        savePath=[];
+    case 3
+        M=varargin{1};
+        v=varargin{2};
+        savePath=varargin{3};
+end
+
+if isempty(savePath)
+    savePath=fullfile(cd,'imseg'); %Save path
 end
 
 M=double(M);
@@ -439,6 +449,21 @@ end
 % Create a uipushtool in the toolbar
 hShrink=uitoggletool(hb,'TooltipString','Shrink','CData',S,'Tag','shrink_button','ClickedCallback',{@growShrinkFunc,{hf,-1}});
 
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%Move button
+
+%get icon
+D=importdata(fullfile(iconPath,'move.jpg'));
+S=double(D);
+S=S-min(S(:));
+S=S./max(S(:));
+S(S==1)=NaN;
+if size(S,3)==1
+    S=repmat(S,[1 1 3]);
+end
+% Create a uipushtool in the toolbar
+hMove=uitoggletool(hb,'TooltipString','Move','CData',S,'Tag','move_button','ClickedCallback',{@moveFunc,{hf}});
+
 % %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % %Target button
 %
@@ -501,6 +526,7 @@ hf.UserData.ButtonHandles.hSmooth=hSmooth;
 hf.UserData.ButtonHandles.hEllipse=hEllipse;
 hf.UserData.ButtonHandles.hGrow=hGrow;
 hf.UserData.ButtonHandles.hShrink=hShrink;
+hf.UserData.ButtonHandles.hMove=hMove;
 hf.UserData.ButtonHandles.hConvert=hConvert;
 hf.UserData.ButtonHandles.hTextInfo=hTextInfo;
 hf.UserData.ButtonHandles.hAdjust=hAdjust;
@@ -518,7 +544,7 @@ hf.UserData.contourSetHandle=[];
 
 hf.UserData.sliderHandles={jSlider_I,jSlider_J,jSlider_K,jSlider_T};
 
-hf.UserData.savePath=fullfile(cd,'imseg'); %Save path
+hf.UserData.savePath=savePath;
 hf.UserData.saveName='imseg'; %Save name
 
 hf.UserData.sketchContour={};
@@ -538,7 +564,7 @@ hf.UserData.BusyAction=hf.BusyAction;
 hf.UserData.csapsSmoothPar=0.5; 
 hf.UserData.growShrinkStepSize=1/4; 
 hf.UserData.adjustContourParSet={4,1,0.5}; 
-
+hf.UserData.MoveStepSize=mean(v(1:2));
 hf.UserData.showAll=1; 
 
 %% Initialize slider locations
@@ -1261,6 +1287,9 @@ switch eventData.Key
                 plotContourSet(hf);
             end
         end
+    case 'm'
+        set(hf.UserData.ButtonHandles.hMove,'State','On');        
+        moveFunc([],[],{hf});
 end
 
 end
@@ -2218,6 +2247,72 @@ setDefaultPointer;
 %Reset info text 
 set(hf.UserData.ButtonHandles.hTextInfo,'String',hf.UserData.hTextInfoStringDefault);
 
+end
+
+%% Move
+
+function moveFunc(~,~,inputCell)
+
+hf=inputCell{1};
+
+%Set info text
+set(hf.UserData.ButtonHandles.hTextInfo,'String','Move contour: Use the arrow keys to move up, down, left, or right. Press p to change the step size, right click (or any other key) to exit');
+
+keyFunc=get(hf,'KeyPressFcn');
+
+set(hf,'KeyPressFcn',{@keyFuncMove,{hf,keyFunc}});
+
+[qSlice]=updateSliceIndex(hf);
+view(0,90);
+
+end
+
+function keyFuncMove(src,eventData,inputCell)
+
+hf=inputCell{1}; %Figure handle
+keyFunc=inputCell{2};
+
+v=hf.UserData.v;
+[qSlice]=updateSliceIndex(hf);
+Vcs=hf.UserData.ContourSet;
+
+%Point location
+vClick = get(gca,'CurrentPoint');
+vClick = vClick(1,1:2);
+
+[indMin_Vcs]=findNearestContour(Vcs{qSlice},vClick);
+Vd=Vcs{qSlice}{indMin_Vcs}; %Get closest contour
+
+% Key input options
+switch eventData.Key
+    case 'leftarrow' 
+        Vd(:,1)=Vd(:,1)-hf.UserData.MoveStepSize;
+    case 'rightarrow' 
+        Vd(:,1)=Vd(:,1)+hf.UserData.MoveStepSize;
+    case 'downarrow' 
+        Vd(:,2)=Vd(:,2)-hf.UserData.MoveStepSize;
+    case 'uparrow' 
+        Vd(:,2)=Vd(:,2)+hf.UserData.MoveStepSize;
+    case'p'
+        prompt = {'Enter move step size in spatial units (e.g. mm)'};
+        dlg_title = 'move step size';
+        defaultOptions = {num2str(hf.UserData.MoveStepSize)};
+        s=25+max([cellfun(@numel,prompt) cellfun(@numel,defaultOptions)]);
+        Q = inputdlg(prompt,dlg_title,[1 s],defaultOptions);
+        if ~isempty(Q)
+            hf.UserData.MoveStepSize=str2double(Q{1});
+        end
+    otherwise
+        set(hf.UserData.ButtonHandles.hMove,'State','Off');
+        set(hf,'KeyPressFcn',keyFunc);
+        setDefaultPointer;
+        
+        %Reset info text
+        set(hf.UserData.ButtonHandles.hTextInfo,'String',hf.UserData.hTextInfoStringDefault);
+end
+Vcs{qSlice}{indMin_Vcs}=Vd;
+hf.UserData.ContourSet{qSlice}=Vcs{qSlice};
+plotContourSet(hf);
 end
 
 %% Plot sketch slice contours

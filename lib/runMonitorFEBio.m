@@ -185,7 +185,7 @@ if FEBio_go==0
             
             %Display line
             if (strfind(l,targets{1}))
-                if FEBioRunStruct.disp_on==1 && FEBioRunStruct.disp_log_on==1;
+                if FEBioRunStruct.disp_on==1 && FEBioRunStruct.disp_log_on==1
                     disp(l); %display line
                 end
             end

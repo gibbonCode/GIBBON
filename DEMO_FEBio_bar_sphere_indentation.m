@@ -41,7 +41,9 @@ contactInitialOffset=0.1;
 
 nRefine=3; 
 sphereRadius=sampleWidth/4;
-sphereDisplacement=sphereRadius;%sampleHeight-(sampleHeight.*0.7);
+sphereDisplacement=sampleHeight-(sampleHeight.*0.4); %sphereRadius
+
+nSteps=25; %Number of analysis steps
 
 %% CREATING MESHED BOX
 
@@ -170,7 +172,7 @@ FEB_struct.Geometry.ElementsPartName={'Block','Sphere'};
 %Material 1 uncoupled hyperelastic
 c1=1e-3;
 m1=12;
-k=1e3*c1;
+k=1e2*c1;
 FEB_struct.Materials{1}.Type='Ogden';
 FEB_struct.Materials{1}.Properties={'c1','m1','k'};
 FEB_struct.Materials{1}.Values={c1,m1,k};
@@ -185,11 +187,13 @@ FEB_struct.Control.AnalysisType='static';
 FEB_struct.Control.Properties={'time_steps','step_size',...
     'max_refs','max_ups',...
     'dtol','etol','rtol','lstol'};
-FEB_struct.Control.Values={10,0.1,...
+
+t=1/nSteps;
+FEB_struct.Control.Values={nSteps,t,...
     25,0,...
     0.001,0.01,0,0.9};
-FEB_struct.Control.TimeStepperProperties={'dtmin','dtmax','max_retries','opt_iter','aggressiveness'};
-FEB_struct.Control.TimeStepperValues={1e-4,0.1,5,5,1};
+FEB_struct.Control.TimeStepperProperties={'dtmin','dtmax','max_retries','opt_iter'};
+FEB_struct.Control.TimeStepperValues={t/100,t,5,10};
 
 %Defining surfaces
 FEB_struct.Geometry.Surface{1}.Set=Fc1;
@@ -257,10 +261,10 @@ FEB_struct.Output.VarTypes={'displacement','stress','relative volume','shell thi
 
 %Specify log file output
 run_node_output_name=[FEB_struct.run_filename(1:end-4),'_node_out.txt'];
-run_stress_output_name=[FEB_struct.run_filename(1:end-4),'_stress_out.txt'];
-FEB_struct.run_output_names={run_node_output_name,run_stress_output_name};
+run_element_output_name=[FEB_struct.run_filename(1:end-4),'_element_out.txt'];
+FEB_struct.run_output_names={run_node_output_name,run_element_output_name};
 FEB_struct.output_types={'node_data','element_data'};
-FEB_struct.data_types={'ux;uy;uz','sz'};
+FEB_struct.data_types={'ux;uy;uz','Fxx;Fxy;Fxz;Fyx;Fyy;Fyz;Fzx;Fzy;Fzz'};
 
 %Load curves
 FEB_struct.LoadData.LoadCurves.id=1;

@@ -1,23 +1,26 @@
 function [Q]=kabschRotationMatrix(V1,V2)
 
+%2017/01/19 Fixed bug in relation to forcing right handed coordinate
+%system. This will avoid inverting as well. 
+
 %%
 %Force input to 3D
-if size(V1,2)==2; 
+if size(V1,2)==2
     V1(:,3)=0; 
 end
 
-if size(V2,2)==2; 
+if size(V2,2)==2
     V2(:,3)=0; 
 end
 
 %% 
 
 %Force input to 3D
-if size(V1,2)==2; 
+if size(V1,2)==2
     V1(:,3)=0; 
 end
 
-if size(V2,2)==2; 
+if size(V2,2)==2
     V2(:,3)=0; 
 end
 
@@ -34,8 +37,8 @@ A=V1'*V2;
 
 [U,~,V] = svd(A);
 
-q=sign(det(U'*V));
-Q=eye(3,3);
-Q(3,3)=q; 
-Q=V*U';
+d=sign(det(U'*V));
+D=eye(3,3);
+D(3,3)=d; 
+Q=V*D*U';
 

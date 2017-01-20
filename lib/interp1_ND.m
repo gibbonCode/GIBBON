@@ -102,7 +102,7 @@ switch interpMethod
         m0=p0; m1=p0;
 end
 
-for q=1:1:siz_i_2D(end);
+for q=1:1:siz_i_2D(end)
     
     %Find close point pair to define interval
     D=abs(X-Xi(:,q*ones(1,size(X,2))));

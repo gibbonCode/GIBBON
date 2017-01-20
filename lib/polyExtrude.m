@@ -86,6 +86,8 @@ end
 
 [F,V]=polyLoftLinear(Vc_start,Vc_end,cPar);
 
+%% old
+
 % X=linspacen(Vc_start(:,1),Vc_end(:,1),cPar.numSteps)';
 % Y=linspacen(Vc_start(:,2),Vc_end(:,2),cPar.numSteps)';
 % Z=linspacen(Vc_start(:,3),Vc_end(:,3),cPar.numSteps)';

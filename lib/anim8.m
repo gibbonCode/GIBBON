@@ -461,8 +461,8 @@ set(hf.UserData.ButtonHandles.hTextTime,'String',[' Time: ',sprintf('%f',T)],'Fo
 for q=1:1:numel(H)    
     h=H(q); % Current graphics handle
     p=P{q}; % Current graphics property
-    s=S{q}; %Current property setting
-    h.(p)=s;
+    s=S{q}; % Current property setting
+    h.(p)=s;% Setting the property
 end
 
 end

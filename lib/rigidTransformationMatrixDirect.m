@@ -1,4 +1,4 @@
-function [T]=rigidTransformationMatrixDirect(V1,V2)
+function [varargout]=rigidTransformationMatrixDirect(V1,V2)
 
 %%
 %Force input to 3D
@@ -25,4 +25,7 @@ T2=eye(4,4);
 T2(1:3,end)=-V1_m;
 
 T=T1*R*T2;
+
+varargout{1}=T;
+varargout{2}=R(1:3,1:3);
 

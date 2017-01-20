@@ -152,7 +152,7 @@ varargout{2}=V;
 %% Add color specification if requested
 
 if nargout==3
-    if isempty(c); %If empty specify vector magnitudes as colormap driven color
+    if isempty(c) %If empty specify vector magnitudes as colormap driven color
         C=repmat(R_vec,[size(F_order,1),1]);
     else %If user specified color replicate to match # of added faces for arrow
         %c my be an nx3 array to allow for RGB type color data

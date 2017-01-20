@@ -54,7 +54,7 @@ if untwistOpt
         [Vc_end,~,~]=minPolyTwist(Vc_start,Vc_end);        
 end
 
-%% Create coordinates "mesh"
+%% Create coordinate matrices
 X=linspacen(Vc_start(:,1),Vc_end(:,1),numSteps)';
 Y=linspacen(Vc_start(:,2),Vc_end(:,2),numSteps)';
 Z=linspacen(Vc_start(:,3),Vc_end(:,3),numSteps)';

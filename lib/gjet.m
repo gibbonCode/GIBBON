@@ -7,10 +7,10 @@ switch nargin
         n=varargin{1};
 end
 
-cMap=[51 105 232;... %Blue
-    0 153 37;... %Green
-    238 178 17;... %Yelow    
-    213 15 37;... %red    
+cMap=[51  105 232;... %Blue
+      0   153 37;... %Green
+      238 178 17;... %Yelow
+      213 15  37;... %red
     ];
 cMap=cMap./256;
 
