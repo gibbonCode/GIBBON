@@ -204,7 +204,7 @@ modelName=fullfile(savePathStr,modelNameClean);
 modelNameTemp=fullfile(pathNameTempFiles,modelNameClean);
 
 inputStruct.modelName=modelNameTemp;
-if isfield(inputStruct,'smeshName'); %WILL BE REMOVED
+if isfield(inputStruct,'smeshName') %WILL BE REMOVED
     inputStruct.smeshName=modelNameTemp;
 end
 % inputStruct = rmfield(inputStruct,'smeshName');
@@ -309,7 +309,7 @@ if sizingOn
         fileList={fileList(1:end).name}; %Current file list
         
         %Delete files
-        for q=1:1:numel(fileList);
+        for q=1:1:numel(fileList)
             fileName=fullfile(savePathStr,fileList{q});
             delete(fileName);
         end

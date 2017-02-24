@@ -62,7 +62,6 @@ end
 numFiles=numel(optStruct.FileNames);
 hw = waitbar(0,'Exporting .gif animation');
 for q=1:1:numFiles   
-    optStruct.FileNames{q}
     D = imread(optStruct.FileNames{q});    
     [A,map] = rgb2ind(D,256);    
     if q == 1

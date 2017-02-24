@@ -12,7 +12,6 @@
 clear; close all; clc;
 
 % Plot settings
-fig_color='w'; fig_colordef='white';
 fontSize=15;
 faceColor='b';
 faceAlpha=1;
@@ -21,7 +20,7 @@ edgeWidth=0.5;
 
 %% 
 
-hf=figuremax(fig_color,fig_colordef); 
+hf=cFigure; 
 
 cMap=gjet(7);
 cNames={'Stanford bunny','Utah teapot','cow','parasaurolophus','femur','hip implant','elephant'};

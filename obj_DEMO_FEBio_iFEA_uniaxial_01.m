@@ -30,6 +30,8 @@ disp('Done')
 
 [runFlag]=runMonitorFEBio(objectiveStruct.FEBioRunStruct);
 
+pause(0.1); 
+
 bcPrescribeList=objectiveStruct.bcPrescribeList;
 sampleHeight=objectiveStruct.sampleHeight;
 initialArea=objectiveStruct.initialArea;

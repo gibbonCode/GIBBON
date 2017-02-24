@@ -39,7 +39,7 @@ indentorShellThickness=0.01;
 
 contactType=1; %1=sticky, 2=facet to facet sliding, 3=sliding_with_gaps
 
-tetTypeOpt=1; %Element type
+tetTypeOpt=2; %Element type
 switch tetTypeOpt
     case 1 
         tetType='tet4';
@@ -57,7 +57,7 @@ switch tetTypeOpt
         %Control settings
         nSteps=20;
         max_refs=25;
-        max_ups=10;
+        max_ups=0;
         contactPenalty=50;
 end
 

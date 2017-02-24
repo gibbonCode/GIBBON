@@ -60,7 +60,7 @@ if ~isempty(FEBioRunStruct.cleanUpFileList)
             fileToRemove=fullfile(filePath,fileToRemove); %Create full path name
         end
         
-        %Delete file if it exists
+        %Remove file if it exists
         if exist(fileToRemove,'file')==2
             delete(fileToRemove);
             %Check if its gone
@@ -91,13 +91,21 @@ if ~isfield(FEBioRunStruct,'run_string')
             FEBioRunStruct.run_string=['"',FEBioRunStruct.FEBioPath,'" -i "',FEBioRunStruct.run_filename,'" -o "',FEBioRunStruct.run_logname,'" &'];
             runExternal=1;
         case 'external'
-            if ispc
-                FEBioRunStruct.run_string=['start /min "GIBBON - FEBio" "',FEBioRunStruct.FEBioPath,'"',' -i "',FEBioRunStruct.run_filename,'" -o "',FEBioRunStruct.run_logname,'"'];
-            elseif isunix
+            if ismac % Code to run on Mac plaform
+                %TO DO IMPROVE THIS LINE FOR MAC
                 FEBioRunStruct.run_string=['nice "',FEBioRunStruct.FEBioPath,'"',' -i "',FEBioRunStruct.run_filename,'" -o "',FEBioRunStruct.run_logname,'" &'];
+            elseif isunix && ~ismac % Code to run on Linux plaform                               
+%                 FEBioRunStruct.run_string=['gnome-terminal -e ""',FEBioRunStruct.FEBioPath,'"',' -i "',FEBioRunStruct.run_filename,'" -o "',FEBioRunStruct.run_logname,'"" &'];                
+%                 FEBioRunStruct.run_string=['xterm -e ""',FEBioRunStruct.FEBioPath,'"',' -i "',FEBioRunStruct.run_filename,'" -o "',FEBioRunStruct.run_logname,'"" &'];                
+%                 FEBioRunStruct.run_string=['konsole -e ""',FEBioRunStruct.FEBioPath,'"',' -i "',FEBioRunStruct.run_filename,'" -o "',FEBioRunStruct.run_logname,'"" &'];                
+                FEBioRunStruct.run_string=['nice "',FEBioRunStruct.FEBioPath,'"',' -i "',FEBioRunStruct.run_filename,'" -o "',FEBioRunStruct.run_logname,'" &'];                
+            elseif ispc % Code to run on Windows platform
+                FEBioRunStruct.run_string=['start /min "GIBBON - FEBio" "',FEBioRunStruct.FEBioPath,'"',' -i "',FEBioRunStruct.run_filename,'" -o "',FEBioRunStruct.run_logname,'"'];
             else
+                warning('Unknown operational system, run command might be inappropriate');
                 FEBioRunStruct.run_string=['"',FEBioRunStruct.FEBioPath,'"',' -i "',FEBioRunStruct.run_filename,'" -o "',FEBioRunStruct.run_logname,'" &'];
             end
+            
              runExternal=1;
         case 'internal'
             if ispc
@@ -118,8 +126,8 @@ end
 %% Starting FEBio job
 
 FEBio_go=0; %i.e. not stopped
-% FEBioRunStruct.run_string
 tPre=tic; 
+% FEBioRunStruct.run_string
 system(FEBioRunStruct.run_string); %START FEBio NOW!!!!!!!!
 tPost=tic;
 

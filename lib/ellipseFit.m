@@ -174,6 +174,7 @@ switch numPoints
             Ru=Rmajor;
             Rv=Rminor;
         end
+        thetarad=rem(thetarad,pi);
         A = [uCentre, vCentre, Ru, Rv, thetarad];
         
 end

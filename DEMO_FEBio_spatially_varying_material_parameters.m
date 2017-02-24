@@ -69,7 +69,6 @@ patch('Faces',Fs2,'Vertices',Vs2,'FaceColor','flat','CData',Cs2,'EdgeColor','k',
 axis equal; view(3); axis tight; axis vis3d; grid on; view([-20,22]);
 colormap(cMap); caxis([min(S(:)) max(S(:))]); colorbar;
 set(gca,'FontSize',fontSize);
-
 drawnow;
 
 %% BUILD MODEL
@@ -97,9 +96,10 @@ patch('Faces',F,'Vertices',V,'FaceColor','flat','CData',PF,'edgeColor',edgeColor
 plotV(V(logicTopNodes,:),'k.','MarkerSize',markerSize1);
 plotV(V(logicBottomNodes,:),'k.','MarkerSize',markerSize1);
 colormap(cMap); caxis([min(elementMaterialIndices(:)) max(elementMaterialIndices(:))]); colorbar;
-
+patchNormPlot(F,V);
 axis equal; view(3); axis tight; axis vis3d; grid on;  
 set(gca,'FontSize',fontSize);
+drawnow;
 
 %% SET UP BOUNDARY CONDITIONS
 

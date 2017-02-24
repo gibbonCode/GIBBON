@@ -22,36 +22,34 @@ end
 
 %%
 
-%Centre on mean
-V_offset=mean(V,1);
-Vk=V-V_offset(ones(size(V,1),1),:);
+mean_V=mean(V,1);
+Vk=V-mean_V(ones(size(V,1),1),:);
 
-%Rotate to 2D problem
 [Q,~,~]=svd(Vk',0);
-Vf=Vk*Q; %Rotate to XY plane
+Vf=(Q'*Vk')';
 
 %Fit ellipse
 [A] = ellipseFit(Vf,optMethod,numSample);
+
 [R,~]=euler2DCM([0 0 -A(5)]);
-T1=eye(4,4);
-T1(1:2,4)=A(1:2);
+
 R1=eye(4,4);
-R1(1:3,1:3)=R;
+R1(1:3,1:3)=R';
+
+T1=eye(4,4);
+T1(1:3,4)=[A(1) A(2) 0];
+
+R2=eye(4,4);
+R2(1:3,1:3)=Q;
 
 T2=eye(4,4);
-T2(1:3,4)=V_offset(:);
-R2=eye(4,4);
-R2(1:3,1:3)=inv(Q);
+T2(1:3,4)=mean_V;
 
-M=T1*R1*T2*R2;
-e_centre=M(1:3,4)';
-Q=M(1:3,1:3);
+M=T2*R2*T1*R1';
 
 %%
 
-e.centre=e_centre; 
+e.centre=M(1:3,4)'; 
 e.radii=A(3:4);
-e.axes=Q;
-
-
-
+e.axes=M(1:3,1:3);
+e.tform=M;

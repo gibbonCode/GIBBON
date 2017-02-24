@@ -35,10 +35,9 @@ switch smoothMethod
     case 'tLAP' %Tangent Laplacian       
         
         %Invert face orientation if required
-        [L]=isGlobalSurfDirOutward(F,V);
-        if ~L
+        [logicFlip]=isGlobalSurfDirOutward(F,V);
+        if ~logicFlip
             F=fliplr(F); %Flip faces
-            warning('Face orientations of input mesh were altered for smoothening. All normals should face outward.');
         end
         
         %Set control parameters for Laplacian smoothening iterations
@@ -46,7 +45,7 @@ switch smoothMethod
         cPar_t.n=1;
         cPar_t.Tolerance=[];
         P=V;
-        for q=1:1:cPar.n;
+        for q=1:1:cPar.n
             [Ps]=tesSmooth_LAP(F,P,IND_V,cPar_t);  %The Laplacian smoothened coordinate set
             D=Ps-P; %smoothening intended displacement vectors
             [Dt]=patchVectorTangent(F,P,D,[]); %Tangential component of displacement
@@ -56,10 +55,9 @@ switch smoothMethod
     case 'tHC' %Tangent HC
                 
         %Invert face orientation if required
-        [L]=isGlobalSurfDirOutward(F,V);
-        if ~L
+        [logicFlip]=isGlobalSurfDirOutward(F,V);
+        if ~logicFlip
             F=fliplr(F); %Flip faces
-            warning('Face orientations of input mesh were altered for smoothening. All normals should face outward.');
         end
         
         %Set control parameters for Laplacian smoothening iterations
@@ -67,7 +65,7 @@ switch smoothMethod
         cPar_t.n=1;
         cPar_t.Tolerance=[];
         P=V;
-        for q=1:1:cPar.n;
+        for q=1:1:cPar.n
             [Ps]=tesSmooth_HC(F,P,IND_V,cPar_t);  %The smoothened coordinate set
             D=Ps-P; %smoothening intended displacement vectors
             [Dt]=patchVectorTangent(F,P,D,[]); %Tangential component of displacement

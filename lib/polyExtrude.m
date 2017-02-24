@@ -25,22 +25,22 @@ else
 end
 
 %Check depth
-if ~isfield(cPar,'depth');
+if ~isfield(cPar,'depth')
     error('cPar.depth was not specified.');
 end
 
 %Check dir
-if ~isfield(cPar,'dir');
+if ~isfield(cPar,'dir')
     cPar.dir=0; %Default symmetric
 end
 
 %Check patchType
-if ~isfield(cPar,'patchType');
+if ~isfield(cPar,'patchType')
     cPar.patchType='tri'; %Default triangles
 end
 
 %Check direction vector
-if ~isfield(cPar,'n');
+if ~isfield(cPar,'n')
     [R_fit]=pointSetPrincipalDir(Vc);
     cPar.n=R_fit(:,3); %Default normal direction to polygon
 end
@@ -48,7 +48,7 @@ cPar.n=vecnormalize(cPar.n);
 cPar.n=cPar.n(:)';
 
 %Check closeLoopOpt
-if ~isfield(cPar,'closeLoopOpt');
+if ~isfield(cPar,'closeLoopOpt')
     cPar.closeLoopOpt=0; %Default off
 end
 

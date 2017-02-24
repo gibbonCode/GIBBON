@@ -165,7 +165,7 @@ switch uncoupledLaw
         FEB_struct.Materials{1}.PropParVal=cell(1,numel(FEB_struct.Materials{1}.Properties));
         FEB_struct.Materials{1}.PropParName{3}={'c1','m1','k','density'};
         FEB_struct.Materials{1}.PropParVal{3}={c1,m1,k,d};
-    case 0
+    case 2
         FEB_struct.Materials{1}.Type='viscoelastic';
         FEB_struct.Materials{1}.Name='Block_material';
         FEB_struct.Materials{1}.Properties={'g1','t1','elastic','density'};

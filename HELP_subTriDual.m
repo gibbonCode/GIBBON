@@ -369,6 +369,7 @@ for q=1:numel(distanceSplitSteps)
     logicFaces=DF<(distanceSplitSteps(q));
     indNodesFaces=Ft(logicFaces,:);
     indNodesFaces=unique(indNodesFaces(:))+size(Ft,1);
+    
     [Ft,Vt,Ct,indIni]=subTriDual(Ft,Vt,logicFaces);
     
     %Smoothen newly introduced nodes
@@ -381,6 +382,8 @@ for q=1:numel(distanceSplitSteps)
     TR=triangulation(Ft(Ct==1,:),Vt);
     E=freeBoundary(TR);
     indEdge=unique(E(:));
+    
+    indNodesFaces=Ft(Ct~=1,:);
     logicValid=ismember(indEdge,indNodesFaces);
     indEdge=indEdge(logicValid);
     logicEdge=false(size(Vt,1),1);
@@ -412,7 +415,8 @@ xlabel('X','FontSize',fontSize);ylabel('Y','FontSize',fontSize); zlabel('Z','Fon
 hold on;
 
 patch('Faces',Ft,'Vertices',Vt,'FaceColor','r','FaceAlpha',1,'EdgeColor','k');
-
+% plotV(Vt(indRigid,:),'b.','markerSize',25);
+% plotV(Vt(indNodesFaces,:),'y.','markerSize',25);
 axis equal; view(2); axis tight;  grid on;  set(gca,'FontSize',fontSize);
 drawnow;
 

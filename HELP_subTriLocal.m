@@ -134,6 +134,7 @@ inputStruct.V=V;
 inputStruct.indFaces=indFaces; 
 inputStruct.f=f; 
 [outputStruct]=subTriLocal(inputStruct);
+
 Fq=outputStruct.F; 
 Vq=outputStruct.V; 
 Cq=outputStruct.faceTypeLabel;

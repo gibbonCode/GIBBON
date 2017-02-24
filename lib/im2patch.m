@@ -116,6 +116,11 @@ switch patchType
 end
 F=sub2ind(sizVox,EI,EJ,EK);                        
 
+switch patchType
+    case 'h'
+        F=F(:,[4:-1:1 8:-1:5]); %Invert voxel face order to form elements
+end
+
 %Alter face description for voxels
 switch patchType
     case {'v','vu'}

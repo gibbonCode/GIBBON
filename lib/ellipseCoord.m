@@ -19,6 +19,6 @@ x=A(3).*cos(t);
 y=A(4).*sin(t);
 V=[x(:) y(:) zeros(size(x(:)))];
 [R,~]=euler2DCM([0 0 -A(5)]);
-V=V*R;
+V=(R*V')';
 V(:,1)=V(:,1)+x0;
 V(:,2)=V(:,2)+y0;
