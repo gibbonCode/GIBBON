@@ -6,7 +6,7 @@
    <!--
 This HTML was auto-generated from MATLAB code.
 To make changes, update the MATLAB code and republish this document.
-      --><title>quiver3Dpatch</title><meta name="generator" content="MATLAB 9.1"><link rel="schema.DC" href="http://purl.org/dc/elements/1.1/"><meta name="DC.date" content="2016-09-12"><meta name="DC.source" content="HELP_quiver3Dpatch.m"><style type="text/css">
+      --><title>quiver3Dpatch</title><meta name="generator" content="MATLAB 9.1"><link rel="schema.DC" href="http://purl.org/dc/elements/1.1/"><meta name="DC.date" content="2017-03-01"><meta name="DC.source" content="HELP_quiver3Dpatch.m"><style type="text/css">
 html,body,div,span,applet,object,iframe,h1,h2,h3,h4,h5,h6,p,blockquote,pre,a,abbr,acronym,address,big,cite,code,del,dfn,em,font,img,ins,kbd,q,s,samp,small,strike,strong,sub,sup,tt,var,b,u,i,center,dl,dt,dd,ol,ul,li,fieldset,form,label,legend,table,caption,tbody,tfoot,thead,tr,th,td{margin:0;padding:0;border:0;outline:0;font-size:100%;vertical-align:baseline;background:transparent}body{line-height:1}ol,ul{list-style:none}blockquote,q{quotes:none}blockquote:before,blockquote:after,q:before,q:after{content:'';content:none}:focus{outine:0}ins{text-decoration:none}del{text-decoration:line-through}table{border-collapse:collapse;border-spacing:0}
 
 html { min-height:100%; margin-bottom:1px; }
@@ -66,14 +66,13 @@ table td { padding:7px 5px; text-align:left; vertical-align:top; border:1px soli
 
 
 
-  </style></head><body><div class="content"><h1>quiver3Dpatch</h1><!--introduction--><p>Below is a demonstration of the features of the <tt>quiver3Dpatch</tt> function</p><!--/introduction--><h2>Contents</h2><div><ul><li><a href="#3">Plotting a vector</a></li><li><a href="#4">Defining vector lengths and colours</a></li><li><a href="#5">Example visualising coordinate system base vectors</a></li><li><a href="#6">Example visualising face normals of patch data</a></li><li><a href="#7">Example for multidimensional image data 1: colormap driven vectors combined with RGB driven iso-surfaces</a></li><li><a href="#10">Example for multidimensional image data 2: RGB driven vectors combined with colormap driven iso-surfaces</a></li></ul></div><pre class="codeinput">close <span class="string">all</span>; clc; <span class="comment">%clear;</span>
-</pre><p>Plot settings</p><pre class="codeinput">fig_color=<span class="string">'w'</span>; fig_colordef=<span class="string">'white'</span>;
-cMap=jet(250);
+  </style></head><body><div class="content"><h1>quiver3Dpatch</h1><!--introduction--><p>Below is a demonstration of the features of the <tt>quiver3Dpatch</tt> function</p><!--/introduction--><h2>Contents</h2><div><ul><li><a href="#3">Plotting a vector</a></li><li><a href="#4">Defining vector lengths and colours</a></li><li><a href="#5">Example visualising coordinate system base vectors</a></li><li><a href="#6">Example visualising face normals of patch data</a></li><li><a href="#7">Example for multidimensional image data 1: colormap driven vectors combined with RGB driven iso-surfaces</a></li><li><a href="#10">Example for multidimensional image data 2: RGB driven vectors combined with colormap driven iso-surfaces</a></li></ul></div><pre class="codeinput">clear; close <span class="string">all</span>; clc;
+</pre><p>Plot settings</p><pre class="codeinput">cMap=jet(250);
 faceAlpha1=1;
 faceAlpha2=1;
 edgeColor1=<span class="string">'none'</span>;
 edgeColor2=<span class="string">'none'</span>;
-cMap1=jet(250);
+cMap1=gjet(250);
 cMap2=gray(250);
 fontSize=8;
 </pre><h2 id="3">Plotting a vector</h2><p>Below is a visualisation of the basec vector style</p><pre class="codeinput"><span class="comment">%Defining a single vector colinear with the Z-axis with length 2</span>
@@ -86,7 +85,7 @@ Cv=[]; <span class="comment">%If empty then vector magnitude based scaling is us
 a=[min(G(:)) max(G(:))]; <span class="comment">%Arrow length scaling to magnitude range</span>
 [F1,V1,C1]=quiver3Dpatch(X,Y,Z,u,v,w,Cv,a);
 
-h1=figuremax(fig_color,fig_colordef);
+cFigure;
 title(<span class="string">'Basic vector style using 7 vertices and 6 faces'</span>);
 xlabel(<span class="string">'X'</span>,<span class="string">'FontSize'</span>,fontSize);ylabel(<span class="string">'Y'</span>,<span class="string">'FontSize'</span>,fontSize);zlabel(<span class="string">'Z'</span>,<span class="string">'FontSize'</span>,fontSize);
 patch(<span class="string">'Faces'</span>,F1,<span class="string">'Vertices'</span>,V1,<span class="string">'EdgeColor'</span>,<span class="string">'k'</span>, <span class="string">'CData'</span>,C1,<span class="string">'FaceColor'</span>,<span class="string">'flat'</span>,<span class="string">'FaceAlpha'</span>,0.5,<span class="string">'Marker'</span>,<span class="string">'.'</span>,<span class="string">'MarkerSize'</span>,25);
@@ -105,7 +104,7 @@ Cv=zeros(size(X));
 
 C4=gray2RGBColorMap(C3,cMap2,cLim);
 
-h1=figuremax(fig_color,fig_colordef);
+cFigure;
 subplot(2,2,1);
 title(<span class="string">'Vector with length and color according to magnitude'</span>);
 xlabel(<span class="string">'X'</span>,<span class="string">'FontSize'</span>,fontSize);ylabel(<span class="string">'Y'</span>,<span class="string">'FontSize'</span>,fontSize);zlabel(<span class="string">'Z'</span>,<span class="string">'FontSize'</span>,fontSize);
@@ -149,7 +148,7 @@ C2=[5 4 3];
 [Fc1,Vc1,Cc1]=quiver3Dpatch(originBasis1(1)*ones(1,3), originBasis1(2)*ones(1,3), originBasis1(3)*ones(1,3),E1(:,1),E1(:,2),E1(:,3),C1',[1 1]);
 [Fc2,Vc2,Cc2]=quiver3Dpatch(originBasis2(1)*ones(1,3), originBasis2(2)*ones(1,3), originBasis2(3)*ones(1,3),E2(:,1),E2(:,2),E2(:,3),C2',[1 1]);
 
-h1=figuremax(fig_color,fig_colordef);
+cFigure;
 xlabel(<span class="string">'X'</span>,<span class="string">'FontSize'</span>,fontSize);ylabel(<span class="string">'Y'</span>,<span class="string">'FontSize'</span>,fontSize);zlabel(<span class="string">'Z'</span>,<span class="string">'FontSize'</span>,fontSize);
 title(<span class="string">'Visualizing base vectors'</span>,<span class="string">'FontSize'</span>,fontSize);
 hp1=patch(<span class="string">'Faces'</span>,Fc1,<span class="string">'Vertices'</span>,Vc1,<span class="string">'EdgeColor'</span>,<span class="string">'k'</span>,<span class="string">'FaceColor'</span>,<span class="string">'flat'</span>,<span class="string">'FaceVertexCData'</span>,Cc1,<span class="string">'FaceAlpha'</span>,1); hold <span class="string">on</span>;
@@ -158,8 +157,7 @@ view(3); grid <span class="string">on</span>; axis <span class="string">equal</s
 set(gca,<span class="string">'FontSize'</span>,fontSize);
 colormap <span class="string">jet</span>;
 drawnow;
-</pre><img vspace="5" hspace="5" src="HELP_quiver3Dpatch_03.png" alt=""> <h2 id="6">Example visualising face normals of patch data</h2><pre class="codeinput">hf=figuremax(fig_color,fig_colordef); <span class="comment">% Open figure for plotting</span>
-
+</pre><img vspace="5" hspace="5" src="HELP_quiver3Dpatch_03.png" alt=""> <h2 id="6">Example visualising face normals of patch data</h2><pre class="codeinput">cFigure;
 [Fs,Vs,~]=geoSphere(2,1);
 title(<span class="string">'Displaying face normals'</span>,<span class="string">'FontSize'</span>,fontSize);
 hp=patch(<span class="string">'Faces'</span>,Fs,<span class="string">'Vertices'</span>,Vs,<span class="string">'FaceColor'</span>,<span class="string">'g'</span>);
@@ -190,7 +188,7 @@ cLim=[min(M(:)) max(M(:))]; <span class="comment">%Colorbar limits</span>
 [Ci1n]=gray2RGBColorMap(Ci1,cMap2,cLim);
 [Ci2n]=gray2RGBColorMap(Ci2,cMap2,cLim);
 
-h1=figuremax(fig_color,fig_colordef);
+cFigure;
 xlabel(<span class="string">'X'</span>,<span class="string">'FontSize'</span>,fontSize);ylabel(<span class="string">'Y'</span>,<span class="string">'FontSize'</span>,fontSize);zlabel(<span class="string">'Z'</span>,<span class="string">'FontSize'</span>,fontSize);
 title(<span class="string">'Colormap driven vector colors and RGB driven isosurfaces'</span>,<span class="string">'FontSize'</span>,fontSize);
 patch(<span class="string">'Faces'</span>,Fv,<span class="string">'Vertices'</span>,Vv,<span class="string">'EdgeColor'</span>,edgeColor1, <span class="string">'CData'</span>,Cv,<span class="string">'FaceColor'</span>,<span class="string">'flat'</span>,<span class="string">'FaceAlpha'</span>,1);
@@ -209,7 +207,7 @@ Crgb=abs(Crgb./(M*ones(1,3))); <span class="comment">%Normalising color</span>
 </pre><p>Defining a sphere to show the color mapping</p><pre class="codeinput">[F,V,~]=geoSphere(4,1);
 Xs=V(:,1); Ys=V(:,2); Zs=V(:,3);
 C=[mean(Xs(F),2) mean(Ys(F),2) mean(Zs(F),2)]; <span class="comment">%color for angles</span>
-</pre><p>The figure now demonstrates isosurfaces for the image data with overlain the gradient vectors coloured according to their direction</p><pre class="codeinput">h1=figuremax(fig_color,fig_colordef);
+</pre><p>The figure now demonstrates isosurfaces for the image data with overlain the gradient vectors coloured according to their direction</p><pre class="codeinput">cFigure;
 subplot(1,2,1);
 xlabel(<span class="string">'X'</span>,<span class="string">'FontSize'</span>,fontSize);ylabel(<span class="string">'Y'</span>,<span class="string">'FontSize'</span>,fontSize);zlabel(<span class="string">'Z'</span>,<span class="string">'FontSize'</span>,fontSize);
 title(<span class="string">'RGB driven vector colors and colormap driven isosurfaces'</span>,<span class="string">'FontSize'</span>,fontSize);
@@ -241,17 +239,16 @@ drawnow;
 % Below is a demonstration of the features of the |quiver3Dpatch| function
 
 %%
-close all; clc; %clear;
+clear; close all; clc;
 
 %%
 % Plot settings
-fig_color='w'; fig_colordef='white'; 
 cMap=jet(250);
 faceAlpha1=1;
 faceAlpha2=1;
 edgeColor1='none';
 edgeColor2='none';
-cMap1=jet(250);
+cMap1=gjet(250);
 cMap2=gray(250);
 fontSize=8; 
 
@@ -268,7 +265,7 @@ Cv=[]; %If empty then vector magnitude based scaling is used
 a=[min(G(:)) max(G(:))]; %Arrow length scaling to magnitude range
 [F1,V1,C1]=quiver3Dpatch(X,Y,Z,u,v,w,Cv,a);
 
-h1=figuremax(fig_color,fig_colordef);
+cFigure;
 title('Basic vector style using 7 vertices and 6 faces');
 xlabel('X','FontSize',fontSize);ylabel('Y','FontSize',fontSize);zlabel('Z','FontSize',fontSize);
 patch('Faces',F1,'Vertices',V1,'EdgeColor','k', 'CData',C1,'FaceColor','flat','FaceAlpha',0.5,'Marker','.','MarkerSize',25); 
@@ -290,7 +287,7 @@ Cv=zeros(size(X));
 
 C4=gray2RGBColorMap(C3,cMap2,cLim);
 
-h1=figuremax(fig_color,fig_colordef);
+cFigure;
 subplot(2,2,1);
 title('Vector with length and color according to magnitude');
 xlabel('X','FontSize',fontSize);ylabel('Y','FontSize',fontSize);zlabel('Z','FontSize',fontSize);
@@ -337,7 +334,7 @@ C2=[5 4 3];
 [Fc1,Vc1,Cc1]=quiver3Dpatch(originBasis1(1)*ones(1,3), originBasis1(2)*ones(1,3), originBasis1(3)*ones(1,3),E1(:,1),E1(:,2),E1(:,3),C1',[1 1]);
 [Fc2,Vc2,Cc2]=quiver3Dpatch(originBasis2(1)*ones(1,3), originBasis2(2)*ones(1,3), originBasis2(3)*ones(1,3),E2(:,1),E2(:,2),E2(:,3),C2',[1 1]);
 
-h1=figuremax(fig_color,fig_colordef);
+cFigure;
 xlabel('X','FontSize',fontSize);ylabel('Y','FontSize',fontSize);zlabel('Z','FontSize',fontSize);
 title('Visualizing base vectors','FontSize',fontSize);
 hp1=patch('Faces',Fc1,'Vertices',Vc1,'EdgeColor','k','FaceColor','flat','FaceVertexCData',Cc1,'FaceAlpha',1); hold on;
@@ -348,8 +345,7 @@ colormap jet;
 drawnow;
 
 %% Example visualising face normals of patch data
-hf=figuremax(fig_color,fig_colordef); % Open figure for plotting
-
+cFigure;
 [Fs,Vs,~]=geoSphere(2,1);
 title('Displaying face normals','FontSize',fontSize);
 hp=patch('Faces',Fs,'Vertices',Vs,'FaceColor','g');
@@ -388,7 +384,7 @@ cLim=[min(M(:)) max(M(:))]; %Colorbar limits
 [Ci1n]=gray2RGBColorMap(Ci1,cMap2,cLim);
 [Ci2n]=gray2RGBColorMap(Ci2,cMap2,cLim);
 
-h1=figuremax(fig_color,fig_colordef);
+cFigure;
 xlabel('X','FontSize',fontSize);ylabel('Y','FontSize',fontSize);zlabel('Z','FontSize',fontSize);
 title('Colormap driven vector colors and RGB driven isosurfaces','FontSize',fontSize);
 patch('Faces',Fv,'Vertices',Vv,'EdgeColor',edgeColor1, 'CData',Cv,'FaceColor','flat','FaceAlpha',1); 
@@ -419,7 +415,7 @@ C=[mean(Xs(F),2) mean(Ys(F),2) mean(Zs(F),2)]; %color for angles
 % The figure now demonstrates isosurfaces for the image data with overlain
 % the gradient vectors coloured according to their direction
 
-h1=figuremax(fig_color,fig_colordef);
+cFigure;
 subplot(1,2,1);
 xlabel('X','FontSize',fontSize);ylabel('Y','FontSize',fontSize);zlabel('Z','FontSize',fontSize);
 title('RGB driven vector colors and colormap driven isosurfaces','FontSize',fontSize);

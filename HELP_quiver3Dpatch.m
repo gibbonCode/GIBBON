@@ -6,13 +6,12 @@ clear; close all; clc;
 
 %%
 % Plot settings
-fig_color='w'; fig_colordef='white'; 
 cMap=jet(250);
 faceAlpha1=1;
 faceAlpha2=1;
 edgeColor1='none';
 edgeColor2='none';
-cMap1=jet(250);
+cMap1=gjet(250);
 cMap2=gray(250);
 fontSize=8; 
 
@@ -29,7 +28,7 @@ Cv=[]; %If empty then vector magnitude based scaling is used
 a=[min(G(:)) max(G(:))]; %Arrow length scaling to magnitude range
 [F1,V1,C1]=quiver3Dpatch(X,Y,Z,u,v,w,Cv,a);
 
-h1=figuremax(fig_color,fig_colordef);
+cFigure;
 title('Basic vector style using 7 vertices and 6 faces');
 xlabel('X','FontSize',fontSize);ylabel('Y','FontSize',fontSize);zlabel('Z','FontSize',fontSize);
 patch('Faces',F1,'Vertices',V1,'EdgeColor','k', 'CData',C1,'FaceColor','flat','FaceAlpha',0.5,'Marker','.','MarkerSize',25); 
@@ -51,7 +50,7 @@ Cv=zeros(size(X));
 
 C4=gray2RGBColorMap(C3,cMap2,cLim);
 
-h1=figuremax(fig_color,fig_colordef);
+cFigure;
 subplot(2,2,1);
 title('Vector with length and color according to magnitude');
 xlabel('X','FontSize',fontSize);ylabel('Y','FontSize',fontSize);zlabel('Z','FontSize',fontSize);
@@ -98,7 +97,7 @@ C2=[5 4 3];
 [Fc1,Vc1,Cc1]=quiver3Dpatch(originBasis1(1)*ones(1,3), originBasis1(2)*ones(1,3), originBasis1(3)*ones(1,3),E1(:,1),E1(:,2),E1(:,3),C1',[1 1]);
 [Fc2,Vc2,Cc2]=quiver3Dpatch(originBasis2(1)*ones(1,3), originBasis2(2)*ones(1,3), originBasis2(3)*ones(1,3),E2(:,1),E2(:,2),E2(:,3),C2',[1 1]);
 
-h1=figuremax(fig_color,fig_colordef);
+cFigure;
 xlabel('X','FontSize',fontSize);ylabel('Y','FontSize',fontSize);zlabel('Z','FontSize',fontSize);
 title('Visualizing base vectors','FontSize',fontSize);
 hp1=patch('Faces',Fc1,'Vertices',Vc1,'EdgeColor','k','FaceColor','flat','FaceVertexCData',Cc1,'FaceAlpha',1); hold on;
@@ -109,8 +108,7 @@ colormap jet;
 drawnow;
 
 %% Example visualising face normals of patch data
-hf=figuremax(fig_color,fig_colordef); % Open figure for plotting
-
+cFigure;
 [Fs,Vs,~]=geoSphere(2,1);
 title('Displaying face normals','FontSize',fontSize);
 hp=patch('Faces',Fs,'Vertices',Vs,'FaceColor','g');
@@ -149,7 +147,7 @@ cLim=[min(M(:)) max(M(:))]; %Colorbar limits
 [Ci1n]=gray2RGBColorMap(Ci1,cMap2,cLim);
 [Ci2n]=gray2RGBColorMap(Ci2,cMap2,cLim);
 
-h1=figuremax(fig_color,fig_colordef);
+cFigure;
 xlabel('X','FontSize',fontSize);ylabel('Y','FontSize',fontSize);zlabel('Z','FontSize',fontSize);
 title('Colormap driven vector colors and RGB driven isosurfaces','FontSize',fontSize);
 patch('Faces',Fv,'Vertices',Vv,'EdgeColor',edgeColor1, 'CData',Cv,'FaceColor','flat','FaceAlpha',1); 
@@ -180,7 +178,7 @@ C=[mean(Xs(F),2) mean(Ys(F),2) mean(Zs(F),2)]; %color for angles
 % The figure now demonstrates isosurfaces for the image data with overlain
 % the gradient vectors coloured according to their direction
 
-h1=figuremax(fig_color,fig_colordef);
+cFigure;
 subplot(1,2,1);
 xlabel('X','FontSize',fontSize);ylabel('Y','FontSize',fontSize);zlabel('Z','FontSize',fontSize);
 title('RGB driven vector colors and colormap driven isosurfaces','FontSize',fontSize);
