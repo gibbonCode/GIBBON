@@ -83,9 +83,16 @@ cLevel=zeros(numContours,1);
 for q=1:1:numContours
     
     Vg=[Q(1,IND1(q):IND2(q))' Q(2,IND1(q):IND2(q))']; %Get coordinates
-    cLevel(q)=Q(1,IND1(q)-1); %Get level
+    cLevel(q)=Q(1,IND1(q)-1); %Get level    
+    
+    %Check for non-unique points
+    [~,indUni,~]=unique(pround(Vg,5),'rows');
+    logicKeep=false(size(Vg,1),1);
+    logicKeep(indUni)=1;
+    Vg=Vg(logicKeep,:);
     
     if size(Vg,1)>1
+        
         %Check if contour is closed loop or not
         d=sqrt(sum((Vg(1,:)-Vg(end,:)).^2)); %Distance between first and last point
         if d<(min(v)/10) %Smaller than 1/10th of a pixel dimension

@@ -8,39 +8,71 @@ switch nargin
         P=varargin{1};
         V=varargin{2};
         vecSize=[];
-        colorOpt=[];
+        colorSpec=[];
         edgeColorOpt='none';
+        quiverStyleOpt=1;
     case 3
         P=varargin{1};
         V=varargin{2};
         vecSize=varargin{3};
-        colorOpt=[];
+        colorSpec=[];
         edgeColorOpt='none';
+        quiverStyleOpt=1;
     case 4
         P=varargin{1};
         V=varargin{2};
         vecSize=varargin{3};
-        colorOpt=varargin{4};        
+        colorSpec=varargin{4};        
         edgeColorOpt='none';
+        quiverStyleOpt=1;
     case 5
         P=varargin{1};
         V=varargin{2};
         vecSize=varargin{3};
-        colorOpt=varargin{4};
+        colorSpec=varargin{4};
         edgeColorOpt=varargin{5};
+        quiverStyleOpt=1;
+    case 6
+        P=varargin{1};
+        V=varargin{2};
+        vecSize=varargin{3};
+        colorSpec=varargin{4};
+        edgeColorOpt=varargin{5};
+        quiverStyleOpt=varargin{6};
+end
+   
+if isempty(edgeColorOpt)
+    edgeColorOpt='none';
 end
 
+switch quiverStyleOpt
+    case 1 %Depart from origin
+        %Keep as is
+    case 2 %Arrive at origin
+        P=P-V;
+    case 3 %Pass through origin
+        P=P-(V/2);
+    case 4 %Two-sided
+        P=[P;P];
+        V=[V;-V];
+        if ~ischar(colorSpec) && size(colorSpec,1)>1
+            colorSpec=[colorSpec;colorSpec];
+        end
+end
 
-if isempty(vecSize)
-    [F,P,C]=quiver3Dpatch(P(:,1),P(:,2),P(:,3),V(:,1),V(:,2),V(:,3),[],[]);
+if numel(vecSize)==1
+    vecSize=vecSize*ones(1,2);
+end
+
+if ischar(colorSpec)    
+    [F,P,~]=quiver3Dpatch(P(:,1),P(:,2),P(:,3),V(:,1),V(:,2),V(:,3),[],vecSize);    
+    C=colorSpec;
 else
-    [F,P,C]=quiver3Dpatch(P(:,1),P(:,2),P(:,3),V(:,1),V(:,2),V(:,3),[],[vecSize(1) vecSize(2)]);
+    if size(colorSpec,1)==1 %If only 1 color is provided
+        colorSpec=colorSpec(ones(size(P,1),1),:); %copy for all vectors
+    end
+        
+    [F,P,C]=quiver3Dpatch(P(:,1),P(:,2),P(:,3),V(:,1),V(:,2),V(:,3),colorSpec,vecSize);    
 end
 
-if isempty(colorOpt) %If empty use colormapping
-    h=gpatch(F,P,C,edgeColorOpt,1);
-else %else use specified which could be 'k'
-    h=gpatch(F,P,colorOpt,edgeColorOpt,1);
-end
-
-varargout{1}=h;
+varargout{1}=gpatch(F,P,C,edgeColorOpt,1);

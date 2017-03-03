@@ -7,9 +7,10 @@ numStarts=numel(indStart);
 indSeed=nan(n,1);
 indSeed(1:numStarts)=indStart; 
 
-for q=2:1:n
-    [marchCount,~]=patchMarchCount(F,V,indSeed(~isnan(indSeed)),optStruct);
+for q=numStarts:1:n
+    [marchCount,seedIndex]=patchMarchCount(F,V,indSeed(~isnan(indSeed)),optStruct);
     [~,indAdd]=max(marchCount);
-    indSeed(q)=indAdd;
+    if q<n
+        indSeed(q)=indAdd;
+    end
 end
-[marchCount,seedIndex]=patchMarchCount(F,V,indSeed(~isnan(indSeed)),optStruct);

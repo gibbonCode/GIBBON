@@ -19,6 +19,7 @@ if any(L(:))
         voxelSize=[1 1 1];
         [I_in,J_in,K_in]=ind2sub(size(L),indInternal); %Convert to subscript coordinates
         [X_in,Y_in,Z_in]=im2cart(I_in,J_in,K_in,voxelSize);
+        V_in=[X_in Y_in Z_in];
         
         %Plot settings
         figColor='w'; figColorDef='white';
@@ -31,7 +32,7 @@ if any(L(:))
         hold on;
         
         %Found voxel location
-        plot3(X_in,Y_in,Z_in,'r.','MarkerSize',markerSize1);
+        plotV(V_in,'r.','MarkerSize',markerSize1);
         
         %Local slices
         L_plot=false(size(L));

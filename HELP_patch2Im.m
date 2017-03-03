@@ -171,7 +171,7 @@ hold on;
 patch('Faces',F,'Vertices',V,'FaceColor','flat','CData',C,'EdgeColor','none','FaceAlpha',faceAlpha2);
 camlight('headlight'); lighting flat;
 axis equal; view(3); axis tight;  grid on;  set(gca,'FontSize',fontSize);
-colormap gjet; colorbar; 
+colormap gjet; colorbar; caxis([0 max(C(:))]);
 
 subplot(1,2,2);
 title('Patch data derived image data (3 slices)','FontSize',fontSize);
@@ -189,7 +189,7 @@ L_plot=L_plot & ~isnan(M);
 Vm=Vm+imOrigin(ones(size(Vm,1),1),:);
 patch('Faces',Fm,'Vertices',Vm,'FaceColor','flat','CData',Cm,'EdgeColor','k','FaceAlpha',faceAlpha1);
 
-colormap gjet; colorbar;
+colormap gjet; colorbar; caxis([0 max(C(:))]);
 camlight('headlight'); lighting flat;
 axis equal; view(3); axis tight;  grid on;  set(gca,'FontSize',fontSize);
 drawnow;

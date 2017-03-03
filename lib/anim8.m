@@ -165,8 +165,8 @@ hf.UserData.playDir=1;
 hf.UserData.ButtonHandles.Play=hPlay;
 hf.UserData.ButtonHandles.hCycle=hCycle;
 hf.UserData.ButtonHandles.hTextTime=hTextTime;
-hf.UserData.pauseTime=2/numel(animStruct.Time);
-hf.UserData.shiftMag=1; 
+hf.UserData.pauseTime=mean(diff(animStruct.Time));
+hf.UserData.shiftMag=ceil(numel(animStruct.Time)/20); 
 hf.UserData.icons.play=iconPlay;
 hf.UserData.icons.stop=iconStop;
 

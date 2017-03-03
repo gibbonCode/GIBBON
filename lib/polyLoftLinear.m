@@ -46,7 +46,8 @@ if isempty(numSteps)
     d2=sqrt(sum(diff(Vc_end,1,1).^2,2));       
     d=mean([d1(:);d2(:)]);
     dd=mean(sqrt(sum((Vc_start-Vc_end).^2,2)));
-    numSteps=round(dd./d)+1;
+    numSteps=ceil(dd./d);
+    numSteps=numSteps+iseven(numSteps);
 end
 
 %% Remove twist
