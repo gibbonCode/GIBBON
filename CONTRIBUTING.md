@@ -6,7 +6,6 @@
 - **Share as much information as possible.** Include operating system and version, browser and version. Also, include steps to reproduce the bug.
 
 ## Project Setup
-
 Refer to the [README](README.md).
 
 ## Code Style

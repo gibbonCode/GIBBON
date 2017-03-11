@@ -33,7 +33,10 @@ GIBBON is now installed and the help and documentation is integrated allong side
 ## [License (BSD-3-Clause)](https://github.com/Kevin-Mattheus-Moerman/GIBBON/blob/master/LICENSE)
 
 ##Contributing
-Coming soon
+Refer to the [CONTRIBUTING](CONTRIBUTING.md).
+
+##Code of conduct
+Refer to the [CODE_OF_CONDUCT](CODE_OF_CONDUCT.md).
 
 ##Roadmap
 Coming soon
