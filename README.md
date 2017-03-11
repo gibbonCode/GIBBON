@@ -1,12 +1,10 @@
-GIBBON
-======
 
-The Geometry and Image-Based Bioengineering add-On for MATLAB
+![](http://www.gibboncode.org/wp-content/uploads/2014/05/header1.png)
 
-See also: http://www.gibboncode.org/
+## Project summary
+GIBBON (The Geometry and Image-Based Bioengineering add-On) is an open-source MATLAB toolbox by [Kevin M. Moerman](kevimoerman.org) and includes an array of image and geometry visualization and processing tools and is interfaced with free open source software such as [TetGen](http://wias-berlin.de/software/tetgen/), for robust tetrahedral meshing, and [FEBio](http://febio.org/) for finite element analysis. The combination provides a highly flexible image-based modelling environment and enables advanced inverse finite element analysis.
 
-![](http://www.gibboncode.org/wp-content/uploads/2014/05/image121.png)
-
+![](http://www.gibboncode.org/wp-content/uploads/2014/05/Picture1.png)
 
 ## Installation
 See also: http://www.gibboncode.org/installation/
@@ -32,5 +30,10 @@ GIBBON is now installed and the help and documentation is integrated allong side
 * Study the GIBBON folder structure. For example, nottice how the `lib` folder contains all GIBBON's functions and that `lib_ext` contains "external functions" i.e. functions developed by others included with GIBBON. The `html` folder contains the help and documentation .html files which are integrated in MATLAB. 
 * **Help and documentation** see the installation instructions on accessing the help and documentation. Through the integrated help and documentation the user can explore variations function descriptions and also demo entries. The codes that generate all the help and documention can be found in GIBBON's main folder. **The source for the help information for any function `functionName` is named `HELP_functionName`**, and  **The source for demos have `DEMO_` as part of the name**. Therefore if one is interested in reproducing or starting off from codes in the help and documentation simply start typing code names starting in `HELP_` or `DEMO_` in the MATLAB command window, e.g. `HELP_ind2patch` can be used to generate the help information for the `ind2patch` function. Users can start editing the file by typing `open HELP_ind2patch` in the command window. By publishing (MATLAB publish functionality) the HELP_ or DEMO_ files .html files are created in the `html` folder. As such if users alter/contribute code in the `lib` folder and generate associated `HELP_` or `DEMO_` files new help and documentation is added. For new help and documentation to become known and visible to MATLAB run the `createHelpDemoDocumentation` function and restart MATLAB. 
 
-## License
-https://opensource.org/licenses/BSD-3-Clause
+## [License (BSD-3-Clause)](https://github.com/Kevin-Mattheus-Moerman/GIBBON/blob/master/LICENSE)
+
+##Contributing
+Coming soon
+
+##Roadmap
+Coming soon
