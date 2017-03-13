@@ -1,0 +1,444 @@
+
+<!DOCTYPE html
+  PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html><head>
+      <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+   <!--
+This HTML was auto-generated from MATLAB code.
+To make changes, update the MATLAB code and republish this document.
+      --><title>subTriLocal</title><meta name="generator" content="MATLAB 9.1"><link rel="schema.DC" href="http://purl.org/dc/elements/1.1/"><meta name="DC.date" content="2017-03-13"><meta name="DC.source" content="HELP_subTriLocal.m"><style type="text/css">
+html,body,div,span,applet,object,iframe,h1,h2,h3,h4,h5,h6,p,blockquote,pre,a,abbr,acronym,address,big,cite,code,del,dfn,em,font,img,ins,kbd,q,s,samp,small,strike,strong,sub,sup,tt,var,b,u,i,center,dl,dt,dd,ol,ul,li,fieldset,form,label,legend,table,caption,tbody,tfoot,thead,tr,th,td{margin:0;padding:0;border:0;outline:0;font-size:100%;vertical-align:baseline;background:transparent}body{line-height:1}ol,ul{list-style:none}blockquote,q{quotes:none}blockquote:before,blockquote:after,q:before,q:after{content:'';content:none}:focus{outine:0}ins{text-decoration:none}del{text-decoration:line-through}table{border-collapse:collapse;border-spacing:0}
+
+html { min-height:100%; margin-bottom:1px; }
+html body { height:100%; margin:0px; font-family:Arial, Helvetica, sans-serif; font-size:10px; color:#000; line-height:140%; background:#fff none; overflow-y:scroll; }
+html body td { vertical-align:top; text-align:left; }
+
+h1 { padding:0px; margin:0px 0px 25px; font-family:Arial, Helvetica, sans-serif; font-size:1.5em; color:#d55000; line-height:100%; font-weight:normal; }
+h2 { padding:0px; margin:0px 0px 8px; font-family:Arial, Helvetica, sans-serif; font-size:1.2em; color:#000; font-weight:bold; line-height:140%; border-bottom:1px solid #d6d4d4; display:block; }
+h3 { padding:0px; margin:0px 0px 5px; font-family:Arial, Helvetica, sans-serif; font-size:1.1em; color:#000; font-weight:bold; line-height:140%; }
+
+a { color:#005fce; text-decoration:none; }
+a:hover { color:#005fce; text-decoration:underline; }
+a:visited { color:#004aa0; text-decoration:none; }
+
+p { padding:0px; margin:0px 0px 20px; }
+img { padding:0px; margin:0px 0px 20px; border:none; }
+p img, pre img, tt img, li img, h1 img, h2 img { margin-bottom:0px; } 
+
+ul { padding:0px; margin:0px 0px 20px 23px; list-style:square; }
+ul li { padding:0px; margin:0px 0px 7px 0px; }
+ul li ul { padding:5px 0px 0px; margin:0px 0px 7px 23px; }
+ul li ol li { list-style:decimal; }
+ol { padding:0px; margin:0px 0px 20px 0px; list-style:decimal; }
+ol li { padding:0px; margin:0px 0px 7px 23px; list-style-type:decimal; }
+ol li ol { padding:5px 0px 0px; margin:0px 0px 7px 0px; }
+ol li ol li { list-style-type:lower-alpha; }
+ol li ul { padding-top:7px; }
+ol li ul li { list-style:square; }
+
+.content { font-size:1.2em; line-height:140%; padding: 20px; }
+
+pre, code { font-size:12px; }
+tt { font-size: 1.2em; }
+pre { margin:0px 0px 20px; }
+pre.codeinput { padding:10px; border:1px solid #d3d3d3; background:#f7f7f7; }
+pre.codeoutput { padding:10px 11px; margin:0px 0px 20px; color:#4c4c4c; }
+pre.error { color:red; }
+
+@media print { pre.codeinput, pre.codeoutput { word-wrap:break-word; width:100%; } }
+
+span.keyword { color:#0000FF }
+span.comment { color:#228B22 }
+span.string { color:#A020F0 }
+span.untermstring { color:#B20000 }
+span.syscmd { color:#B28C00 }
+
+.footer { width:auto; padding:10px 0px; margin:25px 0px 0px; border-top:1px dotted #878787; font-size:0.8em; line-height:140%; font-style:italic; color:#878787; text-align:left; float:none; }
+.footer p { margin:0px; }
+.footer a { color:#878787; }
+.footer a:hover { color:#878787; text-decoration:underline; }
+.footer a:visited { color:#878787; }
+
+table th { padding:7px 5px; text-align:left; vertical-align:middle; border: 1px solid #d6d4d4; font-weight:bold; }
+table td { padding:7px 5px; text-align:left; vertical-align:top; border:1px solid #d6d4d4; }
+
+
+
+
+
+  </style></head><body><div class="content"><h1>subTriLocal</h1><!--introduction--><p>Below is a demonstration of the features of the <tt>subTriLocal</tt> function</p><!--/introduction--><h2>Contents</h2><div><ul><li><a href="#2">Syntax</a></li><li><a href="#3">Description</a></li><li><a href="#4">Examples</a></li><li><a href="#6">Example: Refining a local region of a mesh (e.g. the top half of a sphere)</a></li><li><a href="#12">Smoothening the output mesh</a></li><li><a href="#14">Keeping track of face data or color information</a></li></ul></div><pre class="codeinput">clear; close <span class="string">all</span>; clc;
+</pre><h2 id="2">Syntax</h2><p><tt>[outputStruct]=subTriLocal(inputStruct);</tt></p><h2 id="3">Description</h2><p>This function refines (using the subTri function) the triangles in F defined by indFaces and splits neighbouring triangles to create a conforming mesh. This way local refinement can be achieved. The output mesh is stored in Fq and Vq and a face color list Cq can also be requested which lists whether a triangle is unaltered (Cq==1), is subdevided (Cq==2) or has been split to connect the two regions (Cq==3). The optional input f (default is 0) defines the location of the new points introduced for the transition elements. Using f&gt;0 (and &lt;1) will place these points closer to the coarse mesh nodes. The optional output indInitial is a list containing all the original nodes.</p><h2 id="4">Examples</h2><p>Plot settings</p><pre class="codeinput">fontSize=15;
+faceAlpha=1;
+edgeColor=0.*ones(1,3);
+edgeWidth=2;
+</pre><h2 id="6">Example: Refining a local region of a mesh (e.g. the top half of a sphere)</h2><p>Building example geometry</p><pre class="codeinput"><span class="comment">%Defining geodesic dome</span>
+r=1; <span class="comment">%sphere radius</span>
+n=2; <span class="comment">%Refinements</span>
+[F,V,~]=geoSphere(n,r);
+</pre><p>Define face list for refinement</p><pre class="codeinput">L=V(:,3)&gt;0.5;
+LF=all(L(F),2);
+indFaces=find(LF);
+
+inputStruct.F=F;
+inputStruct.V=V;
+inputStruct.indFaces=indFaces;
+[outputStruct]=subTriLocal(inputStruct);
+Fq=outputStruct.F;
+Vq=outputStruct.V;
+Cq=outputStruct.faceTypeLabel;
+</pre><p>Plotting results</p><pre class="codeinput"><span class="comment">%Create face color data to visualize selection</span>
+C=ones(size(F,1),1);
+C(indFaces)=2;
+
+hf=cFigure;
+subplot(1,2,1); hold <span class="string">on</span>;
+title(<span class="string">'Initial'</span>,<span class="string">'FontSize'</span>,fontSize);
+xlabel(<span class="string">'X'</span>,<span class="string">'FontSize'</span>,fontSize); ylabel(<span class="string">'Y'</span>,<span class="string">'FontSize'</span>,fontSize); zlabel(<span class="string">'Z'</span>,<span class="string">'FontSize'</span>,fontSize);
+hp=patch(<span class="string">'Faces'</span>,F,<span class="string">'Vertices'</span>,V,<span class="string">'FaceColor'</span>,<span class="string">'flat'</span>,<span class="string">'CData'</span>,C,<span class="string">'FaceAlpha'</span>,faceAlpha,<span class="string">'lineWidth'</span>,edgeWidth,<span class="string">'edgeColor'</span>,edgeColor);
+<span class="comment">% [hp]=patchNormPlot(Fq,Vq,0.2);</span>
+camlight <span class="string">headlight</span>;
+set(gca,<span class="string">'FontSize'</span>,fontSize);
+view(3); axis <span class="string">tight</span>;  axis <span class="string">equal</span>;  grid <span class="string">on</span>;
+
+subplot(1,2,2); hold <span class="string">on</span>;
+title(<span class="string">'Refined'</span>,<span class="string">'FontSize'</span>,fontSize);
+xlabel(<span class="string">'X'</span>,<span class="string">'FontSize'</span>,fontSize); ylabel(<span class="string">'Y'</span>,<span class="string">'FontSize'</span>,fontSize); zlabel(<span class="string">'Z'</span>,<span class="string">'FontSize'</span>,fontSize);
+hp=patch(<span class="string">'Faces'</span>,Fq,<span class="string">'Vertices'</span>,Vq,<span class="string">'FaceColor'</span>,<span class="string">'flat'</span>,<span class="string">'CData'</span>,Cq,<span class="string">'FaceAlpha'</span>,faceAlpha,<span class="string">'lineWidth'</span>,edgeWidth,<span class="string">'edgeColor'</span>,edgeColor);
+<span class="comment">% [hp]=patchNormPlot(Fq,Vq,0.2);</span>
+camlight <span class="string">headlight</span>;
+set(gca,<span class="string">'FontSize'</span>,fontSize);
+colormap(autumn); colorbar;
+view(3); axis <span class="string">tight</span>;  axis <span class="string">equal</span>;  grid <span class="string">on</span>;
+</pre><img vspace="5" hspace="5" src="HELP_subTriLocal_01.png" alt=""> <p>For the above a default f of 0 was assumed. Note the difference when instead f=0.25 is used.</p><pre class="codeinput">f=0.25;
+
+inputStruct.F=F;
+inputStruct.V=V;
+inputStruct.indFaces=indFaces;
+inputStruct.f=f;
+[outputStruct]=subTriLocal(inputStruct);
+Fq=outputStruct.F;
+Vq=outputStruct.V;
+Cq=outputStruct.faceTypeLabel;
+</pre><p>Plotting results</p><pre class="codeinput"><span class="comment">%Create face color data to visualize selection</span>
+C=ones(size(F,1),1);
+C(indFaces)=2;
+
+hf=cFigure;
+subplot(1,2,1); hold <span class="string">on</span>;
+title(<span class="string">'Initial'</span>,<span class="string">'FontSize'</span>,fontSize);
+xlabel(<span class="string">'X'</span>,<span class="string">'FontSize'</span>,fontSize); ylabel(<span class="string">'Y'</span>,<span class="string">'FontSize'</span>,fontSize); zlabel(<span class="string">'Z'</span>,<span class="string">'FontSize'</span>,fontSize);
+hp=patch(<span class="string">'Faces'</span>,F,<span class="string">'Vertices'</span>,V,<span class="string">'FaceColor'</span>,<span class="string">'flat'</span>,<span class="string">'CData'</span>,C,<span class="string">'FaceAlpha'</span>,faceAlpha,<span class="string">'lineWidth'</span>,edgeWidth,<span class="string">'edgeColor'</span>,edgeColor);
+<span class="comment">% [hp]=patchNormPlot(Fq,Vq,0.2);</span>
+camlight <span class="string">headlight</span>;
+set(gca,<span class="string">'FontSize'</span>,fontSize);
+view(3); axis <span class="string">tight</span>;  axis <span class="string">equal</span>;  grid <span class="string">on</span>;
+
+subplot(1,2,2); hold <span class="string">on</span>;
+title(<span class="string">'Refined'</span>,<span class="string">'FontSize'</span>,fontSize);
+xlabel(<span class="string">'X'</span>,<span class="string">'FontSize'</span>,fontSize); ylabel(<span class="string">'Y'</span>,<span class="string">'FontSize'</span>,fontSize); zlabel(<span class="string">'Z'</span>,<span class="string">'FontSize'</span>,fontSize);
+hp=patch(<span class="string">'Faces'</span>,Fq,<span class="string">'Vertices'</span>,Vq,<span class="string">'FaceColor'</span>,<span class="string">'flat'</span>,<span class="string">'CData'</span>,Cq,<span class="string">'FaceAlpha'</span>,faceAlpha,<span class="string">'lineWidth'</span>,edgeWidth,<span class="string">'edgeColor'</span>,edgeColor);
+<span class="comment">% [hp]=patchNormPlot(Fq,Vq,0.2);</span>
+camlight <span class="string">headlight</span>;
+set(gca,<span class="string">'FontSize'</span>,fontSize);
+colormap(autumn); colorbar;
+view(3); axis <span class="string">tight</span>;  axis <span class="string">equal</span>;  grid <span class="string">on</span>;
+</pre><img vspace="5" hspace="5" src="HELP_subTriLocal_02.png" alt=""> <h2 id="12">Smoothening the output mesh</h2><p>The output mesh can be smoothening normally or using constrained smoothing and using the optional indInitial output. The points defined by indInitial are plotted on the mesh. Note however that smoothening may undo the change induced by the factor f.</p><pre class="codeinput">indFaces=1:60;
+
+inputStruct.F=F;
+inputStruct.V=V;
+inputStruct.indFaces=indFaces;
+inputStruct.f=f;
+[outputStruct]=subTriLocal(inputStruct);
+
+Fq=outputStruct.F;
+Vq=outputStruct.V;
+Cq=outputStruct.faceTypeLabel;
+indInitial=outputStruct.indInitial;
+
+smoothPar.Alpha=0.1;
+smoothPar.Beta=0.5;
+smoothPar.Method=<span class="string">'HC'</span>;
+smoothPar.n=100;
+smoothPar.RigidConstraints=indInitial;
+[Vq]=tesSmooth(Fq,Vq,[],smoothPar);
+</pre><p>Plotting results</p><pre class="codeinput"><span class="comment">%Create face color data to visualize selection</span>
+C=ones(size(F,1),1);
+C(indFaces)=2;
+
+hf=cFigure;
+subplot(1,2,1); hold <span class="string">on</span>;
+title(<span class="string">'Initial'</span>,<span class="string">'FontSize'</span>,fontSize);
+xlabel(<span class="string">'X'</span>,<span class="string">'FontSize'</span>,fontSize); ylabel(<span class="string">'Y'</span>,<span class="string">'FontSize'</span>,fontSize); zlabel(<span class="string">'Z'</span>,<span class="string">'FontSize'</span>,fontSize);
+hp=patch(<span class="string">'Faces'</span>,F,<span class="string">'Vertices'</span>,V,<span class="string">'FaceColor'</span>,<span class="string">'flat'</span>,<span class="string">'CData'</span>,C,<span class="string">'FaceAlpha'</span>,faceAlpha,<span class="string">'lineWidth'</span>,edgeWidth,<span class="string">'edgeColor'</span>,edgeColor);
+<span class="comment">% [hp]=patchNormPlot(Fq,Vq,0.2);</span>
+camlight <span class="string">headlight</span>;
+set(gca,<span class="string">'FontSize'</span>,fontSize);
+view(3); axis <span class="string">tight</span>;  axis <span class="string">equal</span>;  grid <span class="string">on</span>;
+
+subplot(1,2,2); hold <span class="string">on</span>;
+title(<span class="string">'Refined'</span>,<span class="string">'FontSize'</span>,fontSize);
+xlabel(<span class="string">'X'</span>,<span class="string">'FontSize'</span>,fontSize); ylabel(<span class="string">'Y'</span>,<span class="string">'FontSize'</span>,fontSize); zlabel(<span class="string">'Z'</span>,<span class="string">'FontSize'</span>,fontSize);
+hp=patch(<span class="string">'Faces'</span>,Fq,<span class="string">'Vertices'</span>,Vq,<span class="string">'FaceColor'</span>,<span class="string">'flat'</span>,<span class="string">'CData'</span>,Cq,<span class="string">'FaceAlpha'</span>,faceAlpha,<span class="string">'lineWidth'</span>,edgeWidth,<span class="string">'edgeColor'</span>,edgeColor);
+<span class="comment">% [hp]=patchNormPlot(Fq,Vq,0.2);</span>
+plotV(Vq(indInitial,:),<span class="string">'k.'</span>,<span class="string">'MarkerSize'</span>,50);
+camlight <span class="string">headlight</span>;
+set(gca,<span class="string">'FontSize'</span>,fontSize);
+colormap(autumn); colorbar;
+view(3); axis <span class="string">tight</span>;  axis <span class="string">equal</span>;  grid <span class="string">on</span>;
+</pre><img vspace="5" hspace="5" src="HELP_subTriLocal_03.png" alt=""> <h2 id="14">Keeping track of face data or color information</h2><pre class="codeinput"><span class="comment">%Create example color information</span>
+[C]=vertexToFaceMeasure(F,V(:,2));
+
+inputStruct.F=F;
+inputStruct.V=V;
+inputStruct.C=C;
+inputStruct.indFaces=indFaces;
+[outputStruct]=subTriLocal(inputStruct);
+Fq=outputStruct.F;
+Vq=outputStruct.V;
+Cq=outputStruct.C;
+</pre><p>Plotting results</p><pre class="codeinput">hf=cFigure;
+subplot(1,2,1); hold <span class="string">on</span>;
+title(<span class="string">'Initial'</span>,<span class="string">'FontSize'</span>,fontSize);
+xlabel(<span class="string">'X'</span>,<span class="string">'FontSize'</span>,fontSize); ylabel(<span class="string">'Y'</span>,<span class="string">'FontSize'</span>,fontSize); zlabel(<span class="string">'Z'</span>,<span class="string">'FontSize'</span>,fontSize);
+hp=patch(<span class="string">'Faces'</span>,F,<span class="string">'Vertices'</span>,V,<span class="string">'FaceColor'</span>,<span class="string">'flat'</span>,<span class="string">'CData'</span>,C,<span class="string">'FaceAlpha'</span>,faceAlpha,<span class="string">'lineWidth'</span>,edgeWidth,<span class="string">'edgeColor'</span>,edgeColor);
+<span class="comment">% [hp]=patchNormPlot(Fq,Vq,0.2);</span>
+camlight <span class="string">headlight</span>;
+set(gca,<span class="string">'FontSize'</span>,fontSize);
+view(3); axis <span class="string">tight</span>;  axis <span class="string">equal</span>;  grid <span class="string">on</span>;
+
+subplot(1,2,2); hold <span class="string">on</span>;
+title(<span class="string">'Refined'</span>,<span class="string">'FontSize'</span>,fontSize);
+xlabel(<span class="string">'X'</span>,<span class="string">'FontSize'</span>,fontSize); ylabel(<span class="string">'Y'</span>,<span class="string">'FontSize'</span>,fontSize); zlabel(<span class="string">'Z'</span>,<span class="string">'FontSize'</span>,fontSize);
+hp=patch(<span class="string">'Faces'</span>,Fq,<span class="string">'Vertices'</span>,Vq,<span class="string">'FaceColor'</span>,<span class="string">'flat'</span>,<span class="string">'CData'</span>,Cq,<span class="string">'FaceAlpha'</span>,faceAlpha,<span class="string">'lineWidth'</span>,edgeWidth,<span class="string">'edgeColor'</span>,edgeColor);
+<span class="comment">% [hp]=patchNormPlot(Fq,Vq,0.2);</span>
+camlight <span class="string">headlight</span>;
+set(gca,<span class="string">'FontSize'</span>,fontSize);
+colormap(hsv(size(Cq,1))); colorbar;
+view(3); axis <span class="string">tight</span>;  axis <span class="string">equal</span>;  grid <span class="string">on</span>;
+</pre><img vspace="5" hspace="5" src="HELP_subTriLocal_04.png" alt=""> <p><img vspace="5" hspace="5" src="gibbVerySmall.gif" alt=""> </p><p><i><b>GIBBON</b></i> <a href="www.gibboncode.org">www.gibboncode.org</a></p><p><i>Kevin Mattheus Moerman</i>, <a href="gibbon.toolbox@gmail.com">gibbon.toolbox@gmail.com</a></p><p class="footer"><br><a href="http://www.mathworks.com/products/matlab/">Published with MATLAB&reg; R2016b</a><br></p></div><!--
+##### SOURCE BEGIN #####
+%% subTriLocal
+% Below is a demonstration of the features of the |subTriLocal| function
+
+%%
+clear; close all; clc;
+
+%% Syntax
+% |[outputStruct]=subTriLocal(inputStruct);|
+
+%% Description
+% This function refines (using the subTri function) the triangles in F
+% defined by indFaces and splits neighbouring triangles to create a
+% conforming mesh. This way local refinement can be achieved. 
+% The output mesh is stored in Fq and Vq and a face color list Cq can also
+% be requested which lists whether a triangle is unaltered (Cq==1), is
+% subdevided (Cq==2) or has been split to connect the two regions (Cq==3).
+% The optional input f (default is 0) defines the location of the new
+% points introduced for the transition elements. Using f>0 (and <1) will
+% place these points closer to the coarse mesh nodes. The optional output
+% indInitial is a list containing all the original nodes. 
+
+%% Examples
+
+%%
+% Plot settings
+fontSize=15;
+faceAlpha=1;
+edgeColor=0.*ones(1,3);
+edgeWidth=2;
+
+%% Example: Refining a local region of a mesh (e.g. the top half of a sphere)
+
+%% 
+% Building example geometry
+
+%Defining geodesic dome
+r=1; %sphere radius
+n=2; %Refinements   
+[F,V,~]=geoSphere(n,r);
+
+%%
+% Define face list for refinement
+
+L=V(:,3)>0.5;
+LF=all(L(F),2);
+indFaces=find(LF);
+
+inputStruct.F=F; 
+inputStruct.V=V; 
+inputStruct.indFaces=indFaces; 
+[outputStruct]=subTriLocal(inputStruct);
+Fq=outputStruct.F; 
+Vq=outputStruct.V; 
+Cq=outputStruct.faceTypeLabel;
+
+%%
+% Plotting results
+
+%Create face color data to visualize selection
+C=ones(size(F,1),1);
+C(indFaces)=2;
+
+hf=cFigure; 
+subplot(1,2,1); hold on; 
+title('Initial','FontSize',fontSize);
+xlabel('X','FontSize',fontSize); ylabel('Y','FontSize',fontSize); zlabel('Z','FontSize',fontSize);
+hp=patch('Faces',F,'Vertices',V,'FaceColor','flat','CData',C,'FaceAlpha',faceAlpha,'lineWidth',edgeWidth,'edgeColor',edgeColor);
+% [hp]=patchNormPlot(Fq,Vq,0.2);
+camlight headlight;
+set(gca,'FontSize',fontSize);
+view(3); axis tight;  axis equal;  grid on;
+
+subplot(1,2,2); hold on; 
+title('Refined','FontSize',fontSize);
+xlabel('X','FontSize',fontSize); ylabel('Y','FontSize',fontSize); zlabel('Z','FontSize',fontSize);
+hp=patch('Faces',Fq,'Vertices',Vq,'FaceColor','flat','CData',Cq,'FaceAlpha',faceAlpha,'lineWidth',edgeWidth,'edgeColor',edgeColor);
+% [hp]=patchNormPlot(Fq,Vq,0.2);
+camlight headlight;
+set(gca,'FontSize',fontSize);
+colormap(autumn); colorbar; 
+view(3); axis tight;  axis equal;  grid on;
+
+%%
+% For the above a default f of 0 was assumed. Note the difference when
+% instead f=0.25 is used. 
+f=0.25; 
+
+inputStruct.F=F; 
+inputStruct.V=V; 
+inputStruct.indFaces=indFaces; 
+inputStruct.f=f; 
+[outputStruct]=subTriLocal(inputStruct);
+Fq=outputStruct.F; 
+Vq=outputStruct.V; 
+Cq=outputStruct.faceTypeLabel;
+
+%%
+% Plotting results
+
+%Create face color data to visualize selection
+C=ones(size(F,1),1);
+C(indFaces)=2;
+
+hf=cFigure; 
+subplot(1,2,1); hold on; 
+title('Initial','FontSize',fontSize);
+xlabel('X','FontSize',fontSize); ylabel('Y','FontSize',fontSize); zlabel('Z','FontSize',fontSize);
+hp=patch('Faces',F,'Vertices',V,'FaceColor','flat','CData',C,'FaceAlpha',faceAlpha,'lineWidth',edgeWidth,'edgeColor',edgeColor);
+% [hp]=patchNormPlot(Fq,Vq,0.2);
+camlight headlight;
+set(gca,'FontSize',fontSize);
+view(3); axis tight;  axis equal;  grid on;
+
+subplot(1,2,2); hold on; 
+title('Refined','FontSize',fontSize);
+xlabel('X','FontSize',fontSize); ylabel('Y','FontSize',fontSize); zlabel('Z','FontSize',fontSize);
+hp=patch('Faces',Fq,'Vertices',Vq,'FaceColor','flat','CData',Cq,'FaceAlpha',faceAlpha,'lineWidth',edgeWidth,'edgeColor',edgeColor);
+% [hp]=patchNormPlot(Fq,Vq,0.2);
+camlight headlight;
+set(gca,'FontSize',fontSize);
+colormap(autumn); colorbar; 
+view(3); axis tight;  axis equal;  grid on;
+
+%% Smoothening the output mesh
+% The output mesh can be smoothening normally or using constrained
+% smoothing and using the optional indInitial output. The points defined by
+% indInitial are plotted on the mesh. Note however that smoothening may
+% undo the change induced by the factor f. 
+
+indFaces=1:60;
+
+inputStruct.F=F; 
+inputStruct.V=V; 
+inputStruct.indFaces=indFaces; 
+inputStruct.f=f; 
+[outputStruct]=subTriLocal(inputStruct);
+
+Fq=outputStruct.F; 
+Vq=outputStruct.V; 
+Cq=outputStruct.faceTypeLabel;
+indInitial=outputStruct.indInitial;
+
+smoothPar.Alpha=0.1;
+smoothPar.Beta=0.5;
+smoothPar.Method='HC';
+smoothPar.n=100;
+smoothPar.RigidConstraints=indInitial;    
+[Vq]=tesSmooth(Fq,Vq,[],smoothPar);
+
+%%
+% Plotting results
+
+%Create face color data to visualize selection
+C=ones(size(F,1),1);
+C(indFaces)=2;
+
+hf=cFigure; 
+subplot(1,2,1); hold on; 
+title('Initial','FontSize',fontSize);
+xlabel('X','FontSize',fontSize); ylabel('Y','FontSize',fontSize); zlabel('Z','FontSize',fontSize);
+hp=patch('Faces',F,'Vertices',V,'FaceColor','flat','CData',C,'FaceAlpha',faceAlpha,'lineWidth',edgeWidth,'edgeColor',edgeColor);
+% [hp]=patchNormPlot(Fq,Vq,0.2);
+camlight headlight;
+set(gca,'FontSize',fontSize);
+view(3); axis tight;  axis equal;  grid on;
+
+subplot(1,2,2); hold on; 
+title('Refined','FontSize',fontSize);
+xlabel('X','FontSize',fontSize); ylabel('Y','FontSize',fontSize); zlabel('Z','FontSize',fontSize);
+hp=patch('Faces',Fq,'Vertices',Vq,'FaceColor','flat','CData',Cq,'FaceAlpha',faceAlpha,'lineWidth',edgeWidth,'edgeColor',edgeColor);
+% [hp]=patchNormPlot(Fq,Vq,0.2);
+plotV(Vq(indInitial,:),'k.','MarkerSize',50);
+camlight headlight;
+set(gca,'FontSize',fontSize);
+colormap(autumn); colorbar; 
+view(3); axis tight;  axis equal;  grid on;
+
+%% Keeping track of face data or color information
+
+%Create example color information
+[C]=vertexToFaceMeasure(F,V(:,2));
+
+inputStruct.F=F; 
+inputStruct.V=V; 
+inputStruct.C=C; 
+inputStruct.indFaces=indFaces; 
+[outputStruct]=subTriLocal(inputStruct);
+Fq=outputStruct.F; 
+Vq=outputStruct.V; 
+Cq=outputStruct.C;
+
+%%
+% Plotting results
+
+hf=cFigure; 
+subplot(1,2,1); hold on; 
+title('Initial','FontSize',fontSize);
+xlabel('X','FontSize',fontSize); ylabel('Y','FontSize',fontSize); zlabel('Z','FontSize',fontSize);
+hp=patch('Faces',F,'Vertices',V,'FaceColor','flat','CData',C,'FaceAlpha',faceAlpha,'lineWidth',edgeWidth,'edgeColor',edgeColor);
+% [hp]=patchNormPlot(Fq,Vq,0.2);
+camlight headlight;
+set(gca,'FontSize',fontSize);
+view(3); axis tight;  axis equal;  grid on;
+
+subplot(1,2,2); hold on; 
+title('Refined','FontSize',fontSize);
+xlabel('X','FontSize',fontSize); ylabel('Y','FontSize',fontSize); zlabel('Z','FontSize',fontSize);
+hp=patch('Faces',Fq,'Vertices',Vq,'FaceColor','flat','CData',Cq,'FaceAlpha',faceAlpha,'lineWidth',edgeWidth,'edgeColor',edgeColor);
+% [hp]=patchNormPlot(Fq,Vq,0.2);
+camlight headlight;
+set(gca,'FontSize',fontSize);
+colormap(hsv(size(Cq,1))); colorbar; 
+view(3); axis tight;  axis equal;  grid on;
+
+%% 
+%
+% <<gibbVerySmall.gif>>
+% 
+% _*GIBBON*_ 
+% <www.gibboncode.org>
+% 
+% _Kevin Mattheus Moerman_, <gibbon.toolbox@gmail.com>
+
+##### SOURCE END #####
+--></body></html>

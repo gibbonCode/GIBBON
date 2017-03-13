@@ -4,5 +4,5 @@ function addHelpSearch
 
 mfilePath = mfilename('fullpath');
 gibbonPath=fileparts(fileparts(mfilePath));
-gibbonHelpPath=fullfile(gibbonPath,'html');
+gibbonHelpPath=fullfile(gibbonPath,'doc','html');
 builddocsearchdb(gibbonHelpPath);
