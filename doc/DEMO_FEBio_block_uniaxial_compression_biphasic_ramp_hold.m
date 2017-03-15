@@ -44,13 +44,21 @@ numElementsHeight=round(sampleHeight/pointSpacings(3));
 stretchLoad=0.7;
 displacementMagnitude=[0 0 (stretchLoad*sampleHeight)-sampleHeight];
 
-%Material parameter set
+%% Material parameters
+
+%Hyperelastic parameters
 c1=1e-3; %ogden c1
 m1=6; %ogden m1
 k_factor=1; %Bulk like modulus factor
 k=c1*k_factor; %The bulk like modulus
 
 d=1e-9; %Density (not required for static analysis)
+
+%Constant Isotropic Permeability parameters
+phi0=0.5; %Solid volume fraction in reference configuration
+permHydro=1e4; %hydraulic permeability
+
+%% Time and control settings
 t_load=0.1; %Time from start to max load
 t_total=t_load+5; %Total simulation time
 
@@ -85,7 +93,7 @@ xlabel('X','FontSize',fontSize); ylabel('Y','FontSize',fontSize); zlabel('Z','Fo
 hold on;
 patch('Faces',Fb,'Vertices',V,'FaceColor','flat','CData',faceBoundaryMarker,'FaceAlpha',faceAlpha2,'lineWidth',edgeWidth,'edgeColor',edgeColor);
 
-colormap(jet(6)); colorbar;
+colormap(gjet(6)); colorbar;
 set(gca,'FontSize',fontSize);
 view(3); axis tight;  axis equal;  grid on;
 drawnow;
@@ -130,7 +138,7 @@ plotV(V(bcSupportList_X_axis,:),'g.','MarkerSize',markerSize);
 plotV(V(bcSupportList_Y_axis,:),'r.','MarkerSize',markerSize);
 
 set(gca,'FontSize',fontSize);
-colormap(jet(6)); colorbar;
+colormap(gjet(6)); colorbar;
 set(gca,'FontSize',fontSize);
 view(3); axis tight;  axis equal;  grid on;
 drawnow;
@@ -151,19 +159,6 @@ FEB_struct.Geometry.ElementType={'hex8'}; %The element types
 FEB_struct.Geometry.ElementMat={elementMaterialIndices};
 FEB_struct.Geometry.ElementsPartName={'Block'};
 
-% %Material section
-% FEB_struct.Materials{1}.Type='biphasic';
-% FEB_struct.Materials{1}.Name='Block_material';
-% FEB_struct.Materials{1}.Properties={'g1','t1','elastic','density'};
-% FEB_struct.Materials{1}.Values={g1,t1,[],d};
-% FEB_struct.Materials{1}.PropAttrName=cell(1,numel(FEB_struct.Materials{1}.Properties));
-% FEB_struct.Materials{1}.PropAttrName{3}='type';
-% FEB_struct.Materials{1}.PropAttrVal{3}='Ogden unconstrained';
-% FEB_struct.Materials{1}.PropParName=cell(1,numel(FEB_struct.Materials{1}.Properties));
-% FEB_struct.Materials{1}.PropParVal=cell(1,numel(FEB_struct.Materials{1}.Properties));
-% FEB_struct.Materials{1}.PropParName{3}={'c1','m1','cp','density'};
-% FEB_struct.Materials{1}.PropParVal{3}={c1,m1,k,d};
-
 %Material section
 FEB_struct.Materials{1}.Type='biphasic';
 FEB_struct.Materials{1}.Name='Block_material';
@@ -172,14 +167,14 @@ FEB_struct.Materials{1}.Solid{1}.Properties={'c1','m1','cp','density'};
 FEB_struct.Materials{1}.Solid{1}.Values={c1,m1,k,d};
 
 FEB_struct.Materials{1}.Properties={'phi0','permeability','fluid_density'};
-FEB_struct.Materials{1}.Values={0.5,[],d};
+FEB_struct.Materials{1}.Values={phi0,[],d};
 FEB_struct.Materials{1}.PropAttrName=cell(1,numel(FEB_struct.Materials{1}.Properties));
 FEB_struct.Materials{1}.PropAttrName{2}='type';
 FEB_struct.Materials{1}.PropAttrVal{2}='perm-const-iso';
 FEB_struct.Materials{1}.PropParName=cell(1,numel(FEB_struct.Materials{1}.Properties));
 FEB_struct.Materials{1}.PropParVal=cell(1,numel(FEB_struct.Materials{1}.Properties));
 FEB_struct.Materials{1}.PropParName{2}={'perm'};
-FEB_struct.Materials{1}.PropParVal{2}={10000};
+FEB_struct.Materials{1}.PropParVal{2}={permHydro};
 
 %Step specific control sections
 n=round(t_total/t_step_ini);
@@ -288,7 +283,7 @@ if runFlag==1 %i.e. a succesful run
     hps=patch('Faces',Fb,'Vertices',V_def,'FaceColor','flat','CData',CF);
     
     view(3); axis tight;  axis equal;  grid on;
-    colormap jet; colorbar;
+    colormap gjet; colorbar;
     % camlight headlight;
     set(gca,'FontSize',fontSize);
     drawnow;

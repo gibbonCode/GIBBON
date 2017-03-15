@@ -43,27 +43,27 @@
 
  MESH INFO
 ===========================================================================
-	Number of materials ............................ : 2
-	Number of domains .............................. : 2
-	Number of nodes ................................ : 1145
-	Number of solid elements ....................... : 4260
+	Number of materials ............................ : 1
+	Number of domains .............................. : 1
+	Number of nodes ................................ : 512
+	Number of solid elements ....................... : 343
 
 
  CONTROL DATA
 ===========================================================================
-	Module type .................................... : solid
+	Module type .................................... : biphasic
 	Analysis type .................................. : quasi-static
 	Plane strain mode .............................. : no
-	Number of timesteps ............................ : 10
-	Time step size ................................. : 0.1
+	Number of timesteps ............................ : 5100
+	Time step size ................................. : 0.001
 	Auto time stepper activated .................... : yes
-	  Optimal nr of iterations ..................... : 5
+	  Optimal nr of iterations ..................... : 10
 	  Minimum allowable step size .................. : 1e-05
-	  Maximum allowable step size .................. : 0.1
+	  Maximum allowable step size .................. : 0.51
 	Number of loadcurves ........................... : 1
-	Number of displacement boundary conditions ..... : 3
+	Number of displacement boundary conditions ..... : 2
 	Number of concentrated nodal forces ............ : 0
-	Max nr of stiffness reformations ............... : 25
+	Max nr of stiffness reformations ............... : 15
 	per time steps
 	Max nr of Quasi-Newton iterations .............. : 0
 	between stiffness matrix reformations
@@ -75,6 +75,7 @@
 	Energy convergence tolerance ................... : 0.01
 	Residual convergence tolerance ................. : 0
 	Minimal residual value ......................... : 1e-20
+	Fluid pressure convergence tolerance ........... : 0.01
 
 
  OUTPUT DATA
@@ -86,23 +87,23 @@
 		Domain Variables:
 			stress               (type = mat3fs, format = ITEM)
 			relative volume      (type = float, format = ITEM)
-			shell thickness      (type = float, format = COMP)
+			effective fluid pressure (type = float, format = NODE)
+			fluid flux           (type = vec3f, format = ITEM)
 
 
  MATERIAL DATA
 ===========================================================================
-  1 - mat_1 (type: solid mixture)
-	density ........................................... : 1
----------------------------------------------------------------------------
-  2 - mat_2 (type: solid mixture)
-	density ........................................... : 1
+  1 - Block_material (type: biphasic)
+	phi0 .............................................. : 0.5
+	fluid_density ..................................... : 1e-09
 
 
  LOADCURVE DATA
 ===========================================================================
   1
          0         0
-         1         1
+       0.1         1
+       5.1         1
 
 
  LINEAR SOLVER DATA
@@ -112,655 +113,1075 @@
 
 
 
-===== beginning time step 1 : 0.1 =====
+===== beginning time step 1 : 0.001 =====
 ===== reforming stiffness matrix:
-	Nr of equations ........................... : 3075
-	Nr of nonzeroes in stiffness matrix ....... : 55767
+	Nr of equations ........................... : 1968
+	Nr of nonzeroes in stiffness matrix ....... : 81948
 
  1
- Nonlinear solution status: time= 0.1
+ Nonlinear solution status: time= 0.001
 	stiffness updates             = 0
 	right hand side evaluations   = 2
 	stiffness matrix reformations = 1
 	step from line search         = 1.000000
 	convergence norms :     INITIAL         CURRENT         REQUIRED
-	   residual            9.014023e+01    1.921601e-02    0.000000e+00 
-	   energy              4.073036e+01    5.692335e-01    4.073036e-01 
-	   displacement        3.201451e+01    3.201451e+01    3.201451e-05 
+	   residual            3.959321e-02    1.009354e-07    0.000000e+00 
+	   energy              1.125318e-04    1.018629e-08    1.125318e-06 
+	   displacement        1.878605e-01    1.878605e-01    1.878605e-07 
+	   fluid pressure      1.158665e-09    1.158665e-09    1.158665e-13 
 Reforming stiffness matrix: reformation #1
 
  2
- Nonlinear solution status: time= 0.1
+ Nonlinear solution status: time= 0.001
 	stiffness updates             = 0
 	right hand side evaluations   = 3
 	stiffness matrix reformations = 2
 	step from line search         = 1.000000
 	convergence norms :     INITIAL         CURRENT         REQUIRED
-	   residual            9.014023e+01    3.560395e-07    0.000000e+00 
-	   energy              4.073036e+01    1.798857e-07    4.073036e-01 
-	   displacement        3.201451e+01    4.473243e-02    3.286556e-05 
+	   residual            3.959321e-02    9.069358e-18    0.000000e+00 
+	   energy              1.125318e-04    2.133150e-16    1.125318e-06 
+	   displacement        1.878605e-01    4.009893e-07    1.882105e-07 
+	   fluid pressure      1.158665e-09    4.155818e-14    1.172562e-13 
 Reforming stiffness matrix: reformation #2
 
  3
- Nonlinear solution status: time= 0.1
+ Nonlinear solution status: time= 0.001
 	stiffness updates             = 0
 	right hand side evaluations   = 4
 	stiffness matrix reformations = 3
 	step from line search         = 1.000000
 	convergence norms :     INITIAL         CURRENT         REQUIRED
-	   residual            9.014023e+01    5.429878e-12    0.000000e+00 
-	   energy              4.073036e+01    2.662108e-10    4.073036e-01 
-	   displacement        3.201451e+01    3.616424e-04    3.286955e-05 
-Reforming stiffness matrix: reformation #3
-
- 4
- Nonlinear solution status: time= 0.1
-	stiffness updates             = 0
-	right hand side evaluations   = 5
-	stiffness matrix reformations = 4
-	step from line search         = 1.000000
-	convergence norms :     INITIAL         CURRENT         REQUIRED
-	   residual            9.014023e+01    3.227635e-25    0.000000e+00 
-	   energy              4.073036e+01    6.992030e-19    4.073036e-01 
-	   displacement        3.201451e+01    4.692333e-11    3.286955e-05 
+	   residual            3.959321e-02    1.225653e-27    0.000000e+00 
+	   energy              1.125318e-04    2.595736e-25    1.125318e-06 
+	   displacement        1.878605e-01    2.452611e-17    1.882105e-07 
+	   fluid pressure      1.158665e-09    1.285981e-22    1.172562e-13 
 
 convergence summary
-    number of iterations   : 4
-    number of reformations : 4
+    number of iterations   : 3
+    number of reformations : 3
 
 
-------- converged at time : 0.1
+------- converged at time : 0.001
 
 
 Data Record #1
 ===========================================================================
 Step = 1
-Time = 0.1
+Time = 0.001
 Data = ux;uy;uz
 File = /mnt/data/MATLAB/GIT/GIBBON/data/temp/tempModel_node_out.txt
 
 Data Record #2
 ===========================================================================
 Step = 1
-Time = 0.1
-Data = Fxx;Fxy;Fxz;Fyx;Fyy;Fyz;Fzx;Fzy;Fzz
-File = /mnt/data/MATLAB/GIT/GIBBON/data/temp/tempModel_F_out.txt
+Time = 0.001
+Data = Rx;Ry;Rz
+File = /mnt/data/MATLAB/GIT/GIBBON/data/temp/tempModel_force_out.txt
 
-===== beginning time step 2 : 0.2 =====
+AUTO STEPPER: increasing time step, dt = 0.005
+
+
+===== beginning time step 2 : 0.006 =====
  1
- Nonlinear solution status: time= 0.2
+ Nonlinear solution status: time= 0.006
 	stiffness updates             = 0
 	right hand side evaluations   = 2
 	stiffness matrix reformations = 1
 	step from line search         = 1.000000
 	convergence norms :     INITIAL         CURRENT         REQUIRED
-	   residual            1.086742e+02    1.825783e-02    0.000000e+00 
-	   energy              4.580831e+01    5.943297e-01    4.580831e-01 
-	   displacement        3.376667e+01    3.376667e+01    3.376667e-05 
+	   residual            9.922285e-01    6.286019e-05    0.000000e+00 
+	   energy              2.808481e-03    1.515246e-06    2.808481e-05 
+	   displacement        4.687007e+00    4.687007e+00    4.687007e-06 
+	   fluid pressure      2.790194e-08    2.790194e-08    2.790194e-12 
 Reforming stiffness matrix: reformation #1
 
  2
- Nonlinear solution status: time= 0.2
+ Nonlinear solution status: time= 0.006
 	stiffness updates             = 0
 	right hand side evaluations   = 3
 	stiffness matrix reformations = 2
 	step from line search         = 1.000000
 	convergence norms :     INITIAL         CURRENT         REQUIRED
-	   residual            1.086742e+02    8.821813e-08    0.000000e+00 
-	   energy              4.580831e+01    1.663852e-06    4.580831e-01 
-	   displacement        3.376667e+01    2.565973e-02    3.463696e-05 
+	   residual            9.922285e-01    3.058846e-12    0.000000e+00 
+	   energy              2.808481e-03    2.585293e-12    2.808481e-05 
+	   displacement        4.687007e+00    2.454323e-04    4.729327e-06 
+	   fluid pressure      2.790194e-08    2.485858e-11    2.959157e-12 
 Reforming stiffness matrix: reformation #2
 
  3
- Nonlinear solution status: time= 0.2
+ Nonlinear solution status: time= 0.006
 	stiffness updates             = 0
 	right hand side evaluations   = 4
 	stiffness matrix reformations = 3
 	step from line search         = 1.000000
 	convergence norms :     INITIAL         CURRENT         REQUIRED
-	   residual            1.086742e+02    8.047584e-13    0.000000e+00 
-	   energy              4.580831e+01    4.465524e-11    4.580831e-01 
-	   displacement        3.376667e+01    9.169915e-05    3.464570e-05 
-Reforming stiffness matrix: reformation #3
-
- 4
- Nonlinear solution status: time= 0.2
-	stiffness updates             = 0
-	right hand side evaluations   = 5
-	stiffness matrix reformations = 4
-	step from line search         = 1.000000
-	convergence norms :     INITIAL         CURRENT         REQUIRED
-	   residual            1.086742e+02    6.102939e-27    0.000000e+00 
-	   energy              4.580831e+01    2.290537e-20    4.580831e-01 
-	   displacement        3.376667e+01    3.485265e-12    3.464571e-05 
+	   residual            9.922285e-01    9.330945e-20    0.000000e+00 
+	   energy              2.808481e-03    5.518632e-19    2.808481e-05 
+	   displacement        4.687007e+00    3.960110e-12    4.729320e-06 
+	   fluid pressure      2.790194e-08    5.758150e-18    2.959137e-12 
 
 convergence summary
-    number of iterations   : 4
-    number of reformations : 4
+    number of iterations   : 3
+    number of reformations : 3
 
 
-------- converged at time : 0.2
+------- converged at time : 0.006
 
 
 Data Record #1
 ===========================================================================
 Step = 2
-Time = 0.2
+Time = 0.006
 Data = ux;uy;uz
 File = /mnt/data/MATLAB/GIT/GIBBON/data/temp/tempModel_node_out.txt
 
 Data Record #2
 ===========================================================================
 Step = 2
-Time = 0.2
-Data = Fxx;Fxy;Fxz;Fyx;Fyy;Fyz;Fzx;Fzy;Fzz
-File = /mnt/data/MATLAB/GIT/GIBBON/data/temp/tempModel_F_out.txt
+Time = 0.006
+Data = Rx;Ry;Rz
+File = /mnt/data/MATLAB/GIT/GIBBON/data/temp/tempModel_force_out.txt
 
-===== beginning time step 3 : 0.3 =====
+AUTO STEPPER: increasing time step, dt = 0.025
+
+
+===== beginning time step 3 : 0.031 =====
  1
- Nonlinear solution status: time= 0.3
+ Nonlinear solution status: time= 0.031
 	stiffness updates             = 0
 	right hand side evaluations   = 2
 	stiffness matrix reformations = 1
 	step from line search         = 1.000000
 	convergence norms :     INITIAL         CURRENT         REQUIRED
-	   residual            1.309429e+02    1.696337e-02    0.000000e+00 
-	   energy              5.135270e+01    6.075361e-01    5.135270e-01 
-	   displacement        3.552898e+01    3.552898e+01    3.552898e-05 
+	   residual            2.520310e+01    4.000944e-02    0.000000e+00 
+	   energy              6.959434e-02    2.563514e-04    6.959434e-04 
+	   displacement        1.177763e+02    1.177763e+02    1.177763e-04 
+	   fluid pressure      7.174198e-07    7.174198e-07    7.174198e-11 
 Reforming stiffness matrix: reformation #1
 
  2
- Nonlinear solution status: time= 0.3
+ Nonlinear solution status: time= 0.031
 	stiffness updates             = 0
 	right hand side evaluations   = 3
 	stiffness matrix reformations = 2
 	step from line search         = 1.000000
 	convergence norms :     INITIAL         CURRENT         REQUIRED
-	   residual            1.309429e+02    5.696229e-08    0.000000e+00 
-	   energy              5.135270e+01    5.617737e-06    5.135270e-01 
-	   displacement        3.552898e+01    1.874303e-02    3.634627e-05 
+	   residual            2.520310e+01    1.033638e-06    0.000000e+00 
+	   energy              6.959434e-02    4.009428e-08    6.959434e-04 
+	   displacement        1.177763e+02    1.569978e-01    1.228991e-04 
+	   fluid pressure      7.174198e-07    1.835425e-08    9.650712e-11 
 Reforming stiffness matrix: reformation #2
 
  3
- Nonlinear solution status: time= 0.3
+ Nonlinear solution status: time= 0.031
 	stiffness updates             = 0
 	right hand side evaluations   = 4
 	stiffness matrix reformations = 3
 	step from line search         = 1.000000
 	convergence norms :     INITIAL         CURRENT         REQUIRED
-	   residual            1.309429e+02    1.949247e-13    0.000000e+00 
-	   energy              5.135270e+01    3.795848e-11    5.135270e-01 
-	   displacement        3.552898e+01    6.879515e-05    3.635678e-05 
-Reforming stiffness matrix: reformation #3
-
- 4
- Nonlinear solution status: time= 0.3
-	stiffness updates             = 0
-	right hand side evaluations   = 5
-	stiffness matrix reformations = 4
-	step from line search         = 1.000000
-	convergence norms :     INITIAL         CURRENT         REQUIRED
-	   residual            1.309429e+02    4.095225e-27    0.000000e+00 
-	   energy              5.135270e+01    4.587546e-21    5.135270e-01 
-	   displacement        3.552898e+01    1.700970e-12    3.635678e-05 
+	   residual            2.520310e+01    6.328392e-12    0.000000e+00 
+	   energy              6.959434e-02    1.117540e-12    6.959434e-04 
+	   displacement        1.177763e+02    1.155256e-06    1.228797e-04 
+	   fluid pressure      7.174198e-07    3.256521e-13    9.645779e-11 
 
 convergence summary
-    number of iterations   : 4
-    number of reformations : 4
+    number of iterations   : 3
+    number of reformations : 3
 
 
-------- converged at time : 0.3
+------- converged at time : 0.031
 
 
 Data Record #1
 ===========================================================================
 Step = 3
-Time = 0.3
+Time = 0.031
 Data = ux;uy;uz
 File = /mnt/data/MATLAB/GIT/GIBBON/data/temp/tempModel_node_out.txt
 
 Data Record #2
 ===========================================================================
 Step = 3
-Time = 0.3
-Data = Fxx;Fxy;Fxz;Fyx;Fyy;Fyz;Fzx;Fzy;Fzz
-File = /mnt/data/MATLAB/GIT/GIBBON/data/temp/tempModel_F_out.txt
+Time = 0.031
+Data = Rx;Ry;Rz
+File = /mnt/data/MATLAB/GIT/GIBBON/data/temp/tempModel_force_out.txt
 
-===== beginning time step 4 : 0.4 =====
+AUTO STEPPER: increasing time step, dt = 0.122
+
+
+===== beginning time step 4 : 0.153 =====
  1
- Nonlinear solution status: time= 0.4
+ Nonlinear solution status: time= 0.153
 	stiffness updates             = 0
 	right hand side evaluations   = 2
 	stiffness matrix reformations = 1
 	step from line search         = 1.000000
 	convergence norms :     INITIAL         CURRENT         REQUIRED
-	   residual            1.575736e+02    1.526208e-02    0.000000e+00 
-	   energy              5.735943e+01    6.072320e-01    5.735943e-01 
-	   displacement        3.717014e+01    3.717014e+01    3.717014e-05 
+	   residual            2.020983e+02    2.269875e+00    0.000000e+00 
+	   energy              5.153604e-01    8.707517e-03    5.153604e-03 
+	   displacement        9.344487e+02    9.344487e+02    9.344487e-04 
+	   fluid pressure      7.834204e-06    7.834204e-06    7.834204e-10 
 Reforming stiffness matrix: reformation #1
 
  2
- Nonlinear solution status: time= 0.4
+ Nonlinear solution status: time= 0.153
 	stiffness updates             = 0
 	right hand side evaluations   = 3
 	stiffness matrix reformations = 2
 	step from line search         = 1.000000
 	convergence norms :     INITIAL         CURRENT         REQUIRED
-	   residual            1.575736e+02    5.022036e-08    0.000000e+00 
-	   energy              5.735943e+01    7.826608e-06    5.735943e-01 
-	   displacement        3.717014e+01    1.642457e-02    3.790471e-05 
+	   residual            2.020983e+02    1.940236e-02    0.000000e+00 
+	   energy              5.153604e-01    6.697013e-05    5.153604e-03 
+	   displacement        9.344487e+02    7.599900e+00    1.020429e-03 
+	   fluid pressure      7.834204e-06    1.883175e-06    1.738231e-09 
 Reforming stiffness matrix: reformation #2
 
  3
- Nonlinear solution status: time= 0.4
+ Nonlinear solution status: time= 0.153
 	stiffness updates             = 0
 	right hand side evaluations   = 4
 	stiffness matrix reformations = 3
 	step from line search         = 1.000000
 	convergence norms :     INITIAL         CURRENT         REQUIRED
-	   residual            1.575736e+02    1.335734e-13    0.000000e+00 
-	   energy              5.735943e+01    3.732157e-11    5.735943e-01 
-	   displacement        3.717014e+01    7.639832e-05    3.791126e-05 
+	   residual            2.020983e+02    1.142892e-04    0.000000e+00 
+	   energy              5.153604e-01    3.173271e-07    5.153604e-03 
+	   displacement        9.344487e+02    1.155785e-02    1.016064e-03 
+	   fluid pressure      7.834204e-06    2.385998e-09    1.704157e-09 
 Reforming stiffness matrix: reformation #3
 
  4
- Nonlinear solution status: time= 0.4
+ Nonlinear solution status: time= 0.153
 	stiffness updates             = 0
 	right hand side evaluations   = 5
 	stiffness matrix reformations = 4
 	step from line search         = 1.000000
 	convergence norms :     INITIAL         CURRENT         REQUIRED
-	   residual            1.575736e+02    4.416862e-27    0.000000e+00 
-	   energy              5.735943e+01    5.905984e-21    5.735943e-01 
-	   displacement        3.717014e+01    1.749871e-12    3.791126e-05 
+	   residual            2.020983e+02    3.735513e-08    0.000000e+00 
+	   energy              5.153604e-01    3.128047e-10    5.153604e-03 
+	   displacement        9.344487e+02    2.550491e-05    1.016338e-03 
+	   fluid pressure      7.834204e-06    7.395442e-12    1.705796e-09 
 
 convergence summary
     number of iterations   : 4
     number of reformations : 4
 
 
-------- converged at time : 0.4
+------- converged at time : 0.153
 
 
 Data Record #1
 ===========================================================================
 Step = 4
-Time = 0.4
+Time = 0.153
 Data = ux;uy;uz
 File = /mnt/data/MATLAB/GIT/GIBBON/data/temp/tempModel_node_out.txt
 
 Data Record #2
 ===========================================================================
 Step = 4
-Time = 0.4
-Data = Fxx;Fxy;Fxz;Fyx;Fyy;Fyz;Fzx;Fzy;Fzz
-File = /mnt/data/MATLAB/GIT/GIBBON/data/temp/tempModel_F_out.txt
+Time = 0.153
+Data = Rx;Ry;Rz
+File = /mnt/data/MATLAB/GIT/GIBBON/data/temp/tempModel_force_out.txt
 
-===== beginning time step 5 : 0.5 =====
+AUTO STEPPER: increasing time step, dt = 0.1996
+
+
+===== beginning time step 5 : 0.3526 =====
  1
- Nonlinear solution status: time= 0.5
+ Nonlinear solution status: time= 0.3526
 	stiffness updates             = 0
 	right hand side evaluations   = 2
 	stiffness matrix reformations = 1
 	step from line search         = 1.000000
 	convergence norms :     INITIAL         CURRENT         REQUIRED
-	   residual            1.893305e+02    1.317932e-02    0.000000e+00 
-	   energy              6.383049e+01    5.912110e-01    6.383049e-01 
-	   displacement        3.862733e+01    3.862733e+01    3.862733e-05 
+	   residual            1.543387e+01    6.603964e-03    0.000000e+00 
+	   energy              3.526945e-03    5.529298e-05    3.526945e-05 
+	   displacement        5.849216e+00    5.849216e+00    5.849216e-06 
+	   fluid pressure      1.434094e-06    1.434094e-06    1.434094e-10 
 Reforming stiffness matrix: reformation #1
 
  2
- Nonlinear solution status: time= 0.5
+ Nonlinear solution status: time= 0.3526
 	stiffness updates             = 0
 	right hand side evaluations   = 3
 	stiffness matrix reformations = 2
 	step from line search         = 1.000000
 	convergence norms :     INITIAL         CURRENT         REQUIRED
-	   residual            1.893305e+02    4.302196e-08    0.000000e+00 
-	   energy              6.383049e+01    6.762283e-06    6.383049e-01 
-	   displacement        3.862733e+01    1.377022e-02    3.925372e-05 
+	   residual            1.543387e+01    4.181846e-07    0.000000e+00 
+	   energy              3.526945e-03    6.022086e-10    3.526945e-05 
+	   displacement        5.849216e+00    8.053416e-04    5.726441e-06 
+	   fluid pressure      1.434094e-06    4.795406e-10    1.386429e-10 
 Reforming stiffness matrix: reformation #2
 
  3
- Nonlinear solution status: time= 0.5
+ Nonlinear solution status: time= 0.3526
 	stiffness updates             = 0
 	right hand side evaluations   = 4
 	stiffness matrix reformations = 3
 	step from line search         = 1.000000
 	convergence norms :     INITIAL         CURRENT         REQUIRED
-	   residual            1.893305e+02    3.840689e-14    0.000000e+00 
-	   energy              6.383049e+01    1.478219e-11    6.383049e-01 
-	   displacement        3.862733e+01    3.550770e-05    3.925596e-05 
+	   residual            1.543387e+01    1.383529e-10    0.000000e+00 
+	   energy              3.526945e-03    1.467827e-13    3.526945e-05 
+	   displacement        5.849216e+00    6.148805e-08    5.727391e-06 
+	   fluid pressure      1.434094e-06    1.766230e-14    1.386607e-10 
 
 convergence summary
     number of iterations   : 3
     number of reformations : 3
 
 
-------- converged at time : 0.5
+------- converged at time : 0.3526
 
 
 Data Record #1
 ===========================================================================
 Step = 5
-Time = 0.5
+Time = 0.3526
 Data = ux;uy;uz
 File = /mnt/data/MATLAB/GIT/GIBBON/data/temp/tempModel_node_out.txt
 
 Data Record #2
 ===========================================================================
 Step = 5
-Time = 0.5
-Data = Fxx;Fxy;Fxz;Fyx;Fyy;Fyz;Fzx;Fzy;Fzz
-File = /mnt/data/MATLAB/GIT/GIBBON/data/temp/tempModel_F_out.txt
+Time = 0.3526
+Data = Rx;Ry;Rz
+File = /mnt/data/MATLAB/GIT/GIBBON/data/temp/tempModel_force_out.txt
 
-===== beginning time step 6 : 0.6 =====
+AUTO STEPPER: increasing time step, dt = 0.26168
+
+
+===== beginning time step 6 : 0.61428 =====
  1
- Nonlinear solution status: time= 0.6
+ Nonlinear solution status: time= 0.61428
 	stiffness updates             = 0
 	right hand side evaluations   = 2
 	stiffness matrix reformations = 1
 	step from line search         = 1.000000
 	convergence norms :     INITIAL         CURRENT         REQUIRED
-	   residual            2.271462e+02    1.088348e-02    0.000000e+00 
-	   energy              7.077392e+01    5.585736e-01    7.077392e-01 
-	   displacement        3.985123e+01    3.985123e+01    3.985123e-05 
+	   residual            3.121745e+00    1.619554e-03    0.000000e+00 
+	   energy              1.318090e-03    2.255319e-05    1.318090e-05 
+	   displacement        4.428328e+00    4.428328e+00    4.428328e-06 
+	   fluid pressure      7.840536e-07    7.840536e-07    7.840536e-11 
 Reforming stiffness matrix: reformation #1
 
  2
- Nonlinear solution status: time= 0.6
+ Nonlinear solution status: time= 0.61428
 	stiffness updates             = 0
 	right hand side evaluations   = 3
 	stiffness matrix reformations = 2
 	step from line search         = 1.000000
 	convergence norms :     INITIAL         CURRENT         REQUIRED
-	   residual            2.271462e+02    3.988981e-08    0.000000e+00 
-	   energy              7.077392e+01    4.982723e-06    7.077392e-01 
-	   displacement        3.985123e+01    1.273670e-02    4.035299e-05 
+	   residual            3.121745e+00    1.668441e-07    0.000000e+00 
+	   energy              1.318090e-03    2.121071e-09    1.318090e-05 
+	   displacement        4.428328e+00    6.054182e-04    4.327219e-06 
+	   fluid pressure      7.840536e-07    2.408771e-10    7.574232e-11 
 Reforming stiffness matrix: reformation #2
 
  3
- Nonlinear solution status: time= 0.6
+ Nonlinear solution status: time= 0.61428
 	stiffness updates             = 0
 	right hand side evaluations   = 4
 	stiffness matrix reformations = 3
 	step from line search         = 1.000000
 	convergence norms :     INITIAL         CURRENT         REQUIRED
-	   residual            2.271462e+02    4.711233e-15    0.000000e+00 
-	   energy              7.077392e+01    4.112702e-12    7.077392e-01 
-	   displacement        3.985123e+01    1.206589e-05    4.035284e-05 
+	   residual            3.121745e+00    2.072930e-11    0.000000e+00 
+	   energy              1.318090e-03    2.401186e-13    1.318090e-05 
+	   displacement        4.428328e+00    8.688369e-08    4.328408e-06 
+	   fluid pressure      7.840536e-07    1.184540e-14    7.575915e-11 
 
 convergence summary
     number of iterations   : 3
     number of reformations : 3
 
 
-------- converged at time : 0.6
+------- converged at time : 0.61428
 
 
 Data Record #1
 ===========================================================================
 Step = 6
-Time = 0.6
+Time = 0.61428
 Data = ux;uy;uz
 File = /mnt/data/MATLAB/GIT/GIBBON/data/temp/tempModel_node_out.txt
 
 Data Record #2
 ===========================================================================
 Step = 6
-Time = 0.6
-Data = Fxx;Fxy;Fxz;Fyx;Fyy;Fyz;Fzx;Fzy;Fzz
-File = /mnt/data/MATLAB/GIT/GIBBON/data/temp/tempModel_F_out.txt
+Time = 0.61428
+Data = Rx;Ry;Rz
+File = /mnt/data/MATLAB/GIT/GIBBON/data/temp/tempModel_force_out.txt
 
-===== beginning time step 7 : 0.7 =====
+AUTO STEPPER: increasing time step, dt = 0.311344
+
+
+===== beginning time step 7 : 0.925624 =====
  1
- Nonlinear solution status: time= 0.7
+ Nonlinear solution status: time= 0.925624
 	stiffness updates             = 0
 	right hand side evaluations   = 2
 	stiffness matrix reformations = 1
 	step from line search         = 1.000000
 	convergence norms :     INITIAL         CURRENT         REQUIRED
-	   residual            2.721554e+02    8.705858e-03    0.000000e+00 
-	   energy              7.820299e+01    5.100916e-01    7.820299e-01 
-	   displacement        4.082151e+01    4.082151e+01    4.082151e-05 
+	   residual            1.422641e+00    4.431760e-04    0.000000e+00 
+	   energy              7.853937e-04    1.137930e-05    7.853937e-06 
+	   displacement        3.879448e+00    3.879448e+00    3.879448e-06 
+	   fluid pressure      5.387525e-07    5.387525e-07    5.387525e-11 
 Reforming stiffness matrix: reformation #1
 
  2
- Nonlinear solution status: time= 0.7
+ Nonlinear solution status: time= 0.925624
 	stiffness updates             = 0
 	right hand side evaluations   = 3
 	stiffness matrix reformations = 2
 	step from line search         = 1.000000
 	convergence norms :     INITIAL         CURRENT         REQUIRED
-	   residual            2.721554e+02    3.692288e-08    0.000000e+00 
-	   energy              7.820299e+01    3.787181e-06    7.820299e-01 
-	   displacement        4.082151e+01    1.289290e-02    4.120559e-05 
+	   residual            1.422641e+00    5.287329e-08    0.000000e+00 
+	   energy              7.853937e-04    9.343996e-10    7.853937e-06 
+	   displacement        3.879448e+00    2.576620e-04    3.817610e-06 
+	   fluid pressure      5.387525e-07    1.114124e-10    5.236679e-11 
 Reforming stiffness matrix: reformation #2
 
  3
- Nonlinear solution status: time= 0.7
+ Nonlinear solution status: time= 0.925624
 	stiffness updates             = 0
 	right hand side evaluations   = 4
 	stiffness matrix reformations = 3
 	step from line search         = 1.000000
 	convergence norms :     INITIAL         CURRENT         REQUIRED
-	   residual            2.721554e+02    1.678890e-14    0.000000e+00 
-	   energy              7.820299e+01    4.733715e-12    7.820299e-01 
-	   displacement        4.082151e+01    7.782120e-06    4.120442e-05 
+	   residual            1.422641e+00    4.900486e-12    0.000000e+00 
+	   energy              7.853937e-04    8.750342e-14    7.853937e-06 
+	   displacement        3.879448e+00    3.873330e-08    3.818374e-06 
+	   fluid pressure      5.387525e-07    4.705729e-15    5.237620e-11 
 
 convergence summary
     number of iterations   : 3
     number of reformations : 3
 
 
-------- converged at time : 0.7
+------- converged at time : 0.925624
 
 
 Data Record #1
 ===========================================================================
 Step = 7
-Time = 0.7
+Time = 0.925624
 Data = ux;uy;uz
 File = /mnt/data/MATLAB/GIT/GIBBON/data/temp/tempModel_node_out.txt
 
 Data Record #2
 ===========================================================================
 Step = 7
-Time = 0.7
-Data = Fxx;Fxy;Fxz;Fyx;Fyy;Fyz;Fzx;Fzy;Fzz
-File = /mnt/data/MATLAB/GIT/GIBBON/data/temp/tempModel_F_out.txt
+Time = 0.925624
+Data = Rx;Ry;Rz
+File = /mnt/data/MATLAB/GIT/GIBBON/data/temp/tempModel_force_out.txt
 
-===== beginning time step 8 : 0.8 =====
+AUTO STEPPER: increasing time step, dt = 0.351075
+
+
+===== beginning time step 8 : 1.2767 =====
  1
- Nonlinear solution status: time= 0.8
+ Nonlinear solution status: time= 1.2767
 	stiffness updates             = 0
 	right hand side evaluations   = 2
 	stiffness matrix reformations = 1
 	step from line search         = 1.000000
 	convergence norms :     INITIAL         CURRENT         REQUIRED
-	   residual            3.257153e+02    7.022115e-03    0.000000e+00 
-	   energy              8.613407e+01    4.485711e-01    8.613407e-01 
-	   displacement        4.156117e+01    4.156117e+01    4.156117e-05 
+	   residual            9.237902e-01    1.546197e-04    0.000000e+00 
+	   energy              5.398632e-04    5.999373e-06    5.398632e-06 
+	   displacement        3.114759e+00    3.114759e+00    3.114759e-06 
+	   fluid pressure      3.808291e-07    3.808291e-07    3.808291e-11 
 Reforming stiffness matrix: reformation #1
 
  2
- Nonlinear solution status: time= 0.8
+ Nonlinear solution status: time= 1.2767
 	stiffness updates             = 0
 	right hand side evaluations   = 3
 	stiffness matrix reformations = 2
 	step from line search         = 1.000000
 	convergence norms :     INITIAL         CURRENT         REQUIRED
-	   residual            3.257153e+02    3.075630e-08    0.000000e+00 
-	   energy              8.613407e+01    3.307531e-06    8.613407e-01 
-	   displacement        4.156117e+01    1.229995e-02    4.184912e-05 
+	   residual            9.237902e-01    1.505494e-08    0.000000e+00 
+	   energy              5.398632e-04    3.527524e-10    5.398632e-06 
+	   displacement        3.114759e+00    9.044521e-05    3.082497e-06 
+	   fluid pressure      3.808291e-07    4.885760e-11    3.725404e-11 
 Reforming stiffness matrix: reformation #2
 
  3
- Nonlinear solution status: time= 0.8
+ Nonlinear solution status: time= 1.2767
 	stiffness updates             = 0
 	right hand side evaluations   = 4
 	stiffness matrix reformations = 3
 	step from line search         = 1.000000
 	convergence norms :     INITIAL         CURRENT         REQUIRED
-	   residual            3.257153e+02    1.153016e-14    0.000000e+00 
-	   energy              8.613407e+01    2.552756e-12    8.613407e-01 
-	   displacement        4.156117e+01    5.440186e-06    4.184769e-05 
+	   residual            9.237902e-01    9.696983e-13    0.000000e+00 
+	   energy              5.398632e-04    2.328007e-14    5.398632e-06 
+	   displacement        3.114759e+00    1.225907e-08    3.082885e-06 
+	   fluid pressure      3.808291e-07    1.442357e-15    3.725851e-11 
 
 convergence summary
     number of iterations   : 3
     number of reformations : 3
 
 
-------- converged at time : 0.8
+------- converged at time : 1.2767
 
 
 Data Record #1
 ===========================================================================
 Step = 8
-Time = 0.8
+Time = 1.2766992
 Data = ux;uy;uz
 File = /mnt/data/MATLAB/GIT/GIBBON/data/temp/tempModel_node_out.txt
 
 Data Record #2
 ===========================================================================
 Step = 8
-Time = 0.8
-Data = Fxx;Fxy;Fxz;Fyx;Fyy;Fyz;Fzx;Fzy;Fzz
-File = /mnt/data/MATLAB/GIT/GIBBON/data/temp/tempModel_F_out.txt
+Time = 1.2766992
+Data = Rx;Ry;Rz
+File = /mnt/data/MATLAB/GIT/GIBBON/data/temp/tempModel_force_out.txt
 
-===== beginning time step 9 : 0.9 =====
+AUTO STEPPER: increasing time step, dt = 0.38286
+
+
+===== beginning time step 9 : 1.65956 =====
  1
- Nonlinear solution status: time= 0.9
+ Nonlinear solution status: time= 1.65956
 	stiffness updates             = 0
 	right hand side evaluations   = 2
 	stiffness matrix reformations = 1
 	step from line search         = 1.000000
 	convergence norms :     INITIAL         CURRENT         REQUIRED
-	   residual            3.894000e+02    6.023483e-03    0.000000e+00 
-	   energy              9.458308e+01    3.791906e-01    9.458308e-01 
-	   displacement        4.211569e+01    4.211569e+01    4.211569e-05 
+	   residual            6.331289e-01    5.960969e-05    0.000000e+00 
+	   energy              3.660302e-04    3.089918e-06    3.660302e-06 
+	   displacement        2.240180e+00    2.240180e+00    2.240180e-06 
+	   fluid pressure      2.568083e-07    2.568083e-07    2.568083e-11 
 Reforming stiffness matrix: reformation #1
 
  2
- Nonlinear solution status: time= 0.9
+ Nonlinear solution status: time= 1.65956
 	stiffness updates             = 0
 	right hand side evaluations   = 3
 	stiffness matrix reformations = 2
 	step from line search         = 1.000000
 	convergence norms :     INITIAL         CURRENT         REQUIRED
-	   residual            3.894000e+02    2.352985e-08    0.000000e+00 
-	   energy              9.458308e+01    3.160056e-06    9.458308e-01 
-	   displacement        4.211569e+01    1.030745e-02    4.233231e-05 
+	   residual            6.331289e-01    4.017378e-09    0.000000e+00 
+	   energy              3.660302e-04    1.220276e-10    3.660302e-06 
+	   displacement        2.240180e+00    3.103475e-05    2.224448e-06 
+	   fluid pressure      2.568083e-07    2.008407e-11    2.524860e-11 
 Reforming stiffness matrix: reformation #2
 
  3
- Nonlinear solution status: time= 0.9
+ Nonlinear solution status: time= 1.65956
 	stiffness updates             = 0
 	right hand side evaluations   = 4
 	stiffness matrix reformations = 3
 	step from line search         = 1.000000
 	convergence norms :     INITIAL         CURRENT         REQUIRED
-	   residual            3.894000e+02    1.555300e-15    0.000000e+00 
-	   energy              9.458308e+01    3.603217e-13    9.458308e-01 
-	   displacement        4.211569e+01    1.988852e-06    4.233105e-05 
+	   residual            6.331289e-01    1.681564e-13    0.000000e+00 
+	   energy              3.660302e-04    5.280698e-15    3.660302e-06 
+	   displacement        2.240180e+00    3.321226e-09    2.224620e-06 
+	   fluid pressure      2.568083e-07    3.908490e-16    2.525052e-11 
 
 convergence summary
     number of iterations   : 3
     number of reformations : 3
 
 
-------- converged at time : 0.9
+------- converged at time : 1.65956
 
 
 Data Record #1
 ===========================================================================
 Step = 9
-Time = 0.9
+Time = 1.65955936
 Data = ux;uy;uz
 File = /mnt/data/MATLAB/GIT/GIBBON/data/temp/tempModel_node_out.txt
 
 Data Record #2
 ===========================================================================
 Step = 9
-Time = 0.9
-Data = Fxx;Fxy;Fxz;Fyx;Fyy;Fyz;Fzx;Fzy;Fzz
-File = /mnt/data/MATLAB/GIT/GIBBON/data/temp/tempModel_F_out.txt
+Time = 1.65955936
+Data = Rx;Ry;Rz
+File = /mnt/data/MATLAB/GIT/GIBBON/data/temp/tempModel_force_out.txt
 
-===== beginning time step 10 : 1 =====
+AUTO STEPPER: increasing time step, dt = 0.408288
+
+
+===== beginning time step 10 : 2.06785 =====
  1
- Nonlinear solution status: time= 1
+ Nonlinear solution status: time= 2.06785
 	stiffness updates             = 0
 	right hand side evaluations   = 2
 	stiffness matrix reformations = 1
 	step from line search         = 1.000000
 	convergence norms :     INITIAL         CURRENT         REQUIRED
-	   residual            4.649654e+02    5.584564e-03    0.000000e+00 
-	   energy              1.035616e+02    3.086612e-01    1.035616e+00 
-	   displacement        4.253464e+01    4.253464e+01    4.253464e-05 
+	   residual            4.139391e-01    2.276020e-05    0.000000e+00 
+	   energy              2.356241e-04    1.521801e-06    2.356241e-06 
+	   displacement        1.480001e+00    1.480001e+00    1.480001e-06 
+	   fluid pressure      1.637907e-07    1.637907e-07    1.637907e-11 
 Reforming stiffness matrix: reformation #1
 
  2
- Nonlinear solution status: time= 1
+ Nonlinear solution status: time= 2.06785
 	stiffness updates             = 0
 	right hand side evaluations   = 3
 	stiffness matrix reformations = 2
 	step from line search         = 1.000000
 	convergence norms :     INITIAL         CURRENT         REQUIRED
-	   residual            4.649654e+02    1.746938e-08    0.000000e+00 
-	   energy              1.035616e+02    2.740895e-06    1.035616e+00 
-	   displacement        4.253464e+01    7.771282e-03    4.270488e-05 
+	   residual            4.139391e-01    9.794656e-10    0.000000e+00 
+	   energy              2.356241e-04    3.879379e-11    2.356241e-06 
+	   displacement        1.480001e+00    1.074421e-05    1.472559e-06 
+	   fluid pressure      1.637907e-07    7.697774e-12    1.616613e-11 
 Reforming stiffness matrix: reformation #2
 
  3
- Nonlinear solution status: time= 1
+ Nonlinear solution status: time= 2.06785
 	stiffness updates             = 0
 	right hand side evaluations   = 4
 	stiffness matrix reformations = 3
 	step from line search         = 1.000000
 	convergence norms :     INITIAL         CURRENT         REQUIRED
-	   residual            4.649654e+02    1.292670e-15    0.000000e+00 
-	   energy              1.035616e+02    3.357420e-13    1.035616e+00 
-	   displacement        4.253464e+01    1.646916e-06    4.270424e-05 
+	   residual            4.139391e-01    2.564910e-14    0.000000e+00 
+	   energy              2.356241e-04    1.055079e-15    2.356241e-06 
+	   displacement        1.480001e+00    8.082176e-10    1.472628e-06 
+	   fluid pressure      1.637907e-07    9.639310e-17    1.616689e-11 
 
 convergence summary
     number of iterations   : 3
     number of reformations : 3
 
 
-------- converged at time : 1
+------- converged at time : 2.06785
 
 
 Data Record #1
 ===========================================================================
 Step = 10
-Time = 1
+Time = 2.06784749
 Data = ux;uy;uz
 File = /mnt/data/MATLAB/GIT/GIBBON/data/temp/tempModel_node_out.txt
 
 Data Record #2
 ===========================================================================
 Step = 10
-Time = 1
-Data = Fxx;Fxy;Fxz;Fyx;Fyy;Fyz;Fzx;Fzy;Fzz
-File = /mnt/data/MATLAB/GIT/GIBBON/data/temp/tempModel_F_out.txt
+Time = 2.06784749
+Data = Rx;Ry;Rz
+File = /mnt/data/MATLAB/GIT/GIBBON/data/temp/tempModel_force_out.txt
+
+AUTO STEPPER: increasing time step, dt = 0.428631
+
+
+===== beginning time step 11 : 2.49648 =====
+ 1
+ Nonlinear solution status: time= 2.49648
+	stiffness updates             = 0
+	right hand side evaluations   = 2
+	stiffness matrix reformations = 1
+	step from line search         = 1.000000
+	convergence norms :     INITIAL         CURRENT         REQUIRED
+	   residual            2.565358e-01    8.270380e-06    0.000000e+00 
+	   energy              1.445458e-04    7.139236e-07    1.445458e-06 
+	   displacement        9.202508e-01    9.202508e-01    9.202508e-07 
+	   fluid pressure      9.972439e-08    9.972439e-08    9.972439e-12 
+Reforming stiffness matrix: reformation #1
+
+ 2
+ Nonlinear solution status: time= 2.49648
+	stiffness updates             = 0
+	right hand side evaluations   = 3
+	stiffness matrix reformations = 2
+	step from line search         = 1.000000
+	convergence norms :     INITIAL         CURRENT         REQUIRED
+	   residual            2.565358e-01    2.166332e-10    0.000000e+00 
+	   energy              1.445458e-04    1.130625e-11    1.445458e-06 
+	   displacement        9.202508e-01    3.673147e-06    9.168322e-07 
+	   fluid pressure      9.972439e-08    2.759348e-12    9.872977e-12 
+Reforming stiffness matrix: reformation #2
+
+ 3
+ Nonlinear solution status: time= 2.49648
+	stiffness updates             = 0
+	right hand side evaluations   = 4
+	stiffness matrix reformations = 3
+	step from line search         = 1.000000
+	convergence norms :     INITIAL         CURRENT         REQUIRED
+	   residual            2.565358e-01    3.435198e-15    0.000000e+00 
+	   energy              1.445458e-04    1.865696e-16    1.445458e-06 
+	   displacement        9.202508e-01    1.783516e-10    9.168577e-07 
+	   fluid pressure      9.972439e-08    2.161476e-17    9.873257e-12 
+
+convergence summary
+    number of iterations   : 3
+    number of reformations : 3
+
+
+------- converged at time : 2.49648
+
+
+Data Record #1
+===========================================================================
+Step = 11
+Time = 2.49647799
+Data = ux;uy;uz
+File = /mnt/data/MATLAB/GIT/GIBBON/data/temp/tempModel_node_out.txt
+
+Data Record #2
+===========================================================================
+Step = 11
+Time = 2.49647799
+Data = Rx;Ry;Rz
+File = /mnt/data/MATLAB/GIT/GIBBON/data/temp/tempModel_force_out.txt
+
+AUTO STEPPER: increasing time step, dt = 0.444904
+
+
+===== beginning time step 12 : 2.94138 =====
+ 1
+ Nonlinear solution status: time= 2.94138
+	stiffness updates             = 0
+	right hand side evaluations   = 2
+	stiffness matrix reformations = 1
+	step from line search         = 1.000000
+	convergence norms :     INITIAL         CURRENT         REQUIRED
+	   residual            1.524572e-01    2.843106e-06    0.000000e+00 
+	   energy              8.537390e-05    3.202515e-07    8.537390e-07 
+	   displacement        5.477855e-01    5.477855e-01    5.477855e-07 
+	   fluid pressure      5.856532e-08    5.856532e-08    5.856532e-12 
+Reforming stiffness matrix: reformation #1
+
+ 2
+ Nonlinear solution status: time= 2.94138
+	stiffness updates             = 0
+	right hand side evaluations   = 3
+	stiffness matrix reformations = 2
+	step from line search         = 1.000000
+	convergence norms :     INITIAL         CURRENT         REQUIRED
+	   residual            1.524572e-01    4.379622e-11    0.000000e+00 
+	   energy              8.537390e-05    3.038262e-12    8.537390e-07 
+	   displacement        5.477855e-01    1.217468e-06    5.462670e-07 
+	   fluid pressure      5.856532e-08    9.327904e-13    5.812164e-12 
+Reforming stiffness matrix: reformation #2
+
+ 3
+ Nonlinear solution status: time= 2.94138
+	stiffness updates             = 0
+	right hand side evaluations   = 4
+	stiffness matrix reformations = 3
+	step from line search         = 1.000000
+	convergence norms :     INITIAL         CURRENT         REQUIRED
+	   residual            1.524572e-01    4.077737e-16    0.000000e+00 
+	   energy              8.537390e-05    2.948095e-17    8.537390e-07 
+	   displacement        5.477855e-01    3.597968e-11    5.462759e-07 
+	   fluid pressure      5.856532e-08    4.423513e-18    5.812261e-12 
+
+convergence summary
+    number of iterations   : 3
+    number of reformations : 3
+
+
+------- converged at time : 2.94138
+
+
+Data Record #1
+===========================================================================
+Step = 12
+Time = 2.94138239
+Data = ux;uy;uz
+File = /mnt/data/MATLAB/GIT/GIBBON/data/temp/tempModel_node_out.txt
+
+Data Record #2
+===========================================================================
+Step = 12
+Time = 2.94138239
+Data = Rx;Ry;Rz
+File = /mnt/data/MATLAB/GIT/GIBBON/data/temp/tempModel_force_out.txt
+
+AUTO STEPPER: increasing time step, dt = 0.457924
+
+
+===== beginning time step 13 : 3.39931 =====
+ 1
+ Nonlinear solution status: time= 3.39931
+	stiffness updates             = 0
+	right hand side evaluations   = 2
+	stiffness matrix reformations = 1
+	step from line search         = 1.000000
+	convergence norms :     INITIAL         CURRENT         REQUIRED
+	   residual            8.781249e-02    9.296971e-07    0.000000e+00 
+	   energy              4.897760e-05    1.382745e-07    4.897760e-07 
+	   displacement        3.157468e-01    3.157468e-01    3.157468e-07 
+	   fluid pressure      3.344977e-08    3.344977e-08    3.344977e-12 
+Reforming stiffness matrix: reformation #1
+
+ 2
+ Nonlinear solution status: time= 3.39931
+	stiffness updates             = 0
+	right hand side evaluations   = 3
+	stiffness matrix reformations = 2
+	step from line search         = 1.000000
+	convergence norms :     INITIAL         CURRENT         REQUIRED
+	   residual            8.781249e-02    8.197984e-12    0.000000e+00 
+	   energy              4.897760e-05    7.613713e-13    4.897760e-07 
+	   displacement        3.157468e-01    3.889726e-07    3.150944e-07 
+	   fluid pressure      3.344977e-08    3.003110e-13    3.325924e-12 
+Reforming stiffness matrix: reformation #2
+
+ 3
+ Nonlinear solution status: time= 3.39931
+	stiffness updates             = 0
+	right hand side evaluations   = 4
+	stiffness matrix reformations = 3
+	step from line search         = 1.000000
+	convergence norms :     INITIAL         CURRENT         REQUIRED
+	   residual            8.781249e-02    4.361527e-17    0.000000e+00 
+	   energy              4.897760e-05    4.228817e-18    4.897760e-07 
+	   displacement        3.157468e-01    6.715276e-12    3.150973e-07 
+	   fluid pressure      3.344977e-08    8.352589e-19    3.325956e-12 
+
+convergence summary
+    number of iterations   : 3
+    number of reformations : 3
+
+
+------- converged at time : 3.39931
+
+
+Data Record #1
+===========================================================================
+Step = 13
+Time = 3.39930591
+Data = ux;uy;uz
+File = /mnt/data/MATLAB/GIT/GIBBON/data/temp/tempModel_node_out.txt
+
+Data Record #2
+===========================================================================
+Step = 13
+Time = 3.39930591
+Data = Rx;Ry;Rz
+File = /mnt/data/MATLAB/GIT/GIBBON/data/temp/tempModel_force_out.txt
+
+AUTO STEPPER: increasing time step, dt = 0.468339
+
+
+===== beginning time step 14 : 3.86764 =====
+ 1
+ Nonlinear solution status: time= 3.86764
+	stiffness updates             = 0
+	right hand side evaluations   = 2
+	stiffness matrix reformations = 1
+	step from line search         = 1.000000
+	convergence norms :     INITIAL         CURRENT         REQUIRED
+	   residual            4.939730e-02    2.915390e-07    0.000000e+00 
+	   energy              2.747247e-05    5.786016e-08    2.747247e-07 
+	   displacement        1.776231e-01    1.776231e-01    1.776231e-07 
+	   fluid pressure      1.869661e-08    1.869661e-08    1.869661e-12 
+Reforming stiffness matrix: reformation #1
+
+ 2
+ Nonlinear solution status: time= 3.86764
+	stiffness updates             = 0
+	right hand side evaluations   = 3
+	stiffness matrix reformations = 2
+	step from line search         = 1.000000
+	convergence norms :     INITIAL         CURRENT         REQUIRED
+	   residual            4.939730e-02    1.439915e-12    0.000000e+00 
+	   energy              2.747247e-05    1.801580e-13    2.747247e-07 
+	   displacement        1.776231e-01    1.200135e-07    1.773509e-07 
+	   fluid pressure      1.869661e-08    9.293685e-14    1.861725e-12 
+
+convergence summary
+    number of iterations   : 2
+    number of reformations : 2
+
+
+------- converged at time : 3.86764
+
+
+Data Record #1
+===========================================================================
+Step = 14
+Time = 3.86764473
+Data = ux;uy;uz
+File = /mnt/data/MATLAB/GIT/GIBBON/data/temp/tempModel_node_out.txt
+
+Data Record #2
+===========================================================================
+Step = 14
+Time = 3.86764473
+Data = Rx;Ry;Rz
+File = /mnt/data/MATLAB/GIT/GIBBON/data/temp/tempModel_force_out.txt
+
+AUTO STEPPER: increasing time step, dt = 0.476671
+
+
+===== beginning time step 15 : 4.34432 =====
+ 1
+ Nonlinear solution status: time= 4.34432
+	stiffness updates             = 0
+	right hand side evaluations   = 2
+	stiffness matrix reformations = 1
+	step from line search         = 1.000000
+	convergence norms :     INITIAL         CURRENT         REQUIRED
+	   residual            2.728642e-02    8.836279e-08    0.000000e+00 
+	   energy              1.514146e-05    2.360729e-08    1.514146e-07 
+	   displacement        9.806686e-02    9.806686e-02    9.806686e-08 
+	   fluid pressure      1.027512e-08    1.027512e-08    1.027512e-12 
+Reforming stiffness matrix: reformation #1
+
+ 2
+ Nonlinear solution status: time= 4.34432
+	stiffness updates             = 0
+	right hand side evaluations   = 3
+	stiffness matrix reformations = 2
+	step from line search         = 1.000000
+	convergence norms :     INITIAL         CURRENT         REQUIRED
+	   residual            2.728642e-02    2.401863e-13    0.000000e+00 
+	   energy              1.514146e-05    4.071255e-14    1.514146e-07 
+	   displacement        9.806686e-02    3.593097e-08    9.795604e-08 
+	   fluid pressure      1.027512e-08    2.786530e-14    1.024288e-12 
+
+convergence summary
+    number of iterations   : 2
+    number of reformations : 2
+
+
+------- converged at time : 4.34432
+
+
+Data Record #1
+===========================================================================
+Step = 15
+Time = 4.34431578
+Data = ux;uy;uz
+File = /mnt/data/MATLAB/GIT/GIBBON/data/temp/tempModel_node_out.txt
+
+Data Record #2
+===========================================================================
+Step = 15
+Time = 4.34431578
+Data = Rx;Ry;Rz
+File = /mnt/data/MATLAB/GIT/GIBBON/data/temp/tempModel_force_out.txt
+
+AUTO STEPPER: increasing time step, dt = 0.483337
+
+
+===== beginning time step 16 : 4.82765 =====
+ 1
+ Nonlinear solution status: time= 4.82765
+	stiffness updates             = 0
+	right hand side evaluations   = 2
+	stiffness matrix reformations = 1
+	step from line search         = 1.000000
+	convergence norms :     INITIAL         CURRENT         REQUIRED
+	   residual            1.485950e-02    2.606025e-08    0.000000e+00 
+	   energy              8.230462e-06    9.439174e-09    8.230462e-08 
+	   displacement        5.335783e-02    5.335783e-02    5.335783e-08 
+	   fluid pressure      5.572084e-09    5.572084e-09    5.572084e-13 
+Reforming stiffness matrix: reformation #1
+
+ 2
+ Nonlinear solution status: time= 4.82765
+	stiffness updates             = 0
+	right hand side evaluations   = 3
+	stiffness matrix reformations = 2
+	step from line search         = 1.000000
+	convergence norms :     INITIAL         CURRENT         REQUIRED
+	   residual            1.485950e-02    3.843764e-14    0.000000e+00 
+	   energy              8.230462e-06    8.870408e-15    8.230462e-08 
+	   displacement        5.335783e-02    1.049336e-08    5.331362e-08 
+	   fluid pressure      5.572084e-09    8.146831e-15    5.559232e-13 
+
+convergence summary
+    number of iterations   : 2
+    number of reformations : 2
+
+
+------- converged at time : 4.82765
+
+
+Data Record #1
+===========================================================================
+Step = 16
+Time = 4.82765263
+Data = ux;uy;uz
+File = /mnt/data/MATLAB/GIT/GIBBON/data/temp/tempModel_node_out.txt
+
+Data Record #2
+===========================================================================
+Step = 16
+Time = 4.82765263
+Data = Rx;Ry;Rz
+File = /mnt/data/MATLAB/GIT/GIBBON/data/temp/tempModel_force_out.txt
+
+AUTO STEPPER: increasing time step, dt = 0.488669
+
+MUST POINT CONTROLLER: adjusting time step. dt = 0.272347
+
+
+===== beginning time step 17 : 5.1 =====
+ 1
+ Nonlinear solution status: time= 5.1
+	stiffness updates             = 0
+	right hand side evaluations   = 2
+	stiffness matrix reformations = 1
+	step from line search         = 1.000000
+	convergence norms :     INITIAL         CURRENT         REQUIRED
+	   residual            2.485310e-03    1.220158e-09    0.000000e+00 
+	   energy              1.564873e-06    9.490466e-10    1.564873e-08 
+	   displacement        1.155712e-02    1.155712e-02    1.155712e-08 
+	   fluid pressure      1.203849e-09    1.203849e-09    1.203849e-13 
+Reforming stiffness matrix: reformation #1
+
+ 2
+ Nonlinear solution status: time= 5.1
+	stiffness updates             = 0
+	right hand side evaluations   = 3
+	stiffness matrix reformations = 2
+	step from line search         = 1.000000
+	convergence norms :     INITIAL         CURRENT         REQUIRED
+	   residual            2.485310e-03    7.349373e-16    0.000000e+00 
+	   energy              1.564873e-06    3.232531e-16    1.564873e-08 
+	   displacement        1.155712e-02    8.650812e-10    1.155124e-08 
+	   fluid pressure      1.203849e-09    5.206076e-16    1.202381e-13 
+
+convergence summary
+    number of iterations   : 2
+    number of reformations : 2
+
+
+------- converged at time : 5.1
+
+
+Data Record #1
+===========================================================================
+Step = 17
+Time = 5.1
+Data = ux;uy;uz
+File = /mnt/data/MATLAB/GIT/GIBBON/data/temp/tempModel_node_out.txt
+
+Data Record #2
+===========================================================================
+Step = 17
+Time = 5.1
+Data = Rx;Ry;Rz
+File = /mnt/data/MATLAB/GIT/GIBBON/data/temp/tempModel_force_out.txt
 
 
 N O N L I N E A R   I T E R A T I O N   I N F O R M A T I O N
 
-	Number of time steps completed .................... : 10
+	Number of time steps completed .................... : 17
 
-	Total number of equilibrium iterations ............ : 34
+	Total number of equilibrium iterations ............ : 48
 
-	Average number of equilibrium iterations .......... : 3.4
+	Average number of equilibrium iterations .......... : 2.82353
 
-	Total number of right hand evaluations ............ : 44
+	Total number of right hand evaluations ............ : 65
 
-	Total number of stiffness reformations ............ : 34
+	Total number of stiffness reformations ............ : 48
 
-	Time in linear solver: 0:00:00
+	Time in linear solver: 0:00:01
 
 
- Elapsed time : 0:00:02
+ Elapsed time : 0:00:01
 
  T I M I N G   I N F O R M A T I O N
 
@@ -768,21 +1189,21 @@ N O N L I N E A R   I T E R A T I O N   I N F O R M A T I O N
 
 	Initialization time ............. : 0:00:00 (0 sec)
 
-	Solve time ...................... : 0:00:02 (2 sec)
+	Solve time ...................... : 0:00:01 (1 sec)
 
 	   IO-time (plot, dmp, data) .... : 0:00:00 (0 sec)
 
 	   reforming stiffness .......... : 0:00:00 (0 sec)
 
-	   evaluating stiffness ......... : 0:00:01 (1 sec)
+	   evaluating stiffness ......... : 0:00:00 (0 sec)
 
 	   evaluating residual .......... : 0:00:00 (0 sec)
 
-	   model update ................. : 0:00:01 (1 sec)
+	   model update ................. : 0:00:00 (0 sec)
 
-	   time in linear solver ........ : 0:00:00 (0 sec)
+	   time in linear solver ........ : 0:00:01 (1 sec)
 
-	Total elapsed time .............. : 0:00:02 (2 sec)
+	Total elapsed time .............. : 0:00:01 (1 sec)
 
 
  N O R M A L   T E R M I N A T I O N
