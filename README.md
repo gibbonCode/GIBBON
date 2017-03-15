@@ -12,21 +12,17 @@
 ## Project summary <a name="Summary"></a>
 GIBBON (The Geometry and Image-Based Bioengineering add-On) is an open-source MATLAB toolbox by [Kevin M. Moerman](kevimoerman.org) and includes an array of image and geometry visualization and processing tools and is interfaced with free open source software such as [TetGen](http://wias-berlin.de/software/tetgen/), for robust tetrahedral meshing, and [FEBio](http://febio.org/) for finite element analysis. The combination provides a highly flexible image-based modelling environment and enables advanced inverse finite element analysis.
 
-![](http://www.gibboncode.org/wp-content/uploads/2014/05/Picture1.png)
-
 ## Installation <a name="Installation"></a>
 
 Follow the steps below. 
 
 1. Add the toolbox folder (e.g. for SVN the patch typically ends in `..\gibbon\trunk`) including subdirectories to the MATLAB path (see MATLAB home tab and the `Add path` button, or see MATLAB help). To permanently add GIBBON to the path save the added path definitions. 
+![](/doc/gif_addToPath.gif)
 2. To integrate the GIBBON help and demonstrations in MATLAB run the function `createHelpDemoDocumentation` (found in the createHelpDoc folder, after adding GIBBON to the path it can be run from the command window).
+![](/doc/gif_createHelpDoc.gif)
 3. Restart MATLAB to allow it to update help and documentation definitions.
-3. To access the help documentation from MATLAB click on the HELP browser then click `Supplemental Software` as shown below.
-![](http://www.gibboncode.org/wp-content/uploads/2014/05/helpFront1.png)
-This will open the following window showing the toolbox help and documentation integrated into MATLAB:
-![](http://www.gibboncode.org/wp-content/uploads/2014/05/helpFront2.png)
-
-GIBBON is now installed and the help and documentation is integrated allong side your default MATLAB help and documentation. The help and documentation is also searchable. 
+4. To access the help documentation from MATLAB click on the HELP browser then click `Supplemental Software` as shown below. This will open the toolbox help and documentation which is now searchable and integrated into MATLAB
+![](doc/gif_helpSearch.gif)
 
 ### Setting up third party packages
 * **FEBio** FEBio is a finite element package. FEBio is not provided with GIBBON. Install a desired release (see: http://febio.org/) and change the path name to FEBio in the configuration file `FEBioPath.txt`found in the `config` folder. However the config path can also be ignored by always directly specifying the location in the code (see FEBio related demos).
