@@ -1,5 +1,5 @@
 
-![](http://www.gibboncode.org/wp-content/uploads/2014/05/header1.png)
+![](/doc/html/gibbonLogo.jpg)
 
 # Table of contents
 - [Project Summary](#Summary)
