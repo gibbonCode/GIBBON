@@ -1,4 +1,4 @@
-clear; close all; clc;  
+function createHelpDemoDocumentation
 
 %% Get toolbox location
 
