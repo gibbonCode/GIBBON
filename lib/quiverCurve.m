@@ -27,6 +27,10 @@ end
 
 %%
 
+if size(Vg,2)==2
+    Vg(:,3)=0;
+end
+
 switch dirOpt
     case 1 %Forward
         V=Vg(1:end-1,:);

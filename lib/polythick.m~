@@ -1,6 +1,6 @@
-function [X1,Y1,X2,Y2]=polythick(varargin)
+function [X1,Y1,X2,Y2]=polythick(x,y,t,nSteps,resampleFactor)
 
-% function [Xu Yu Xl Yl]=polythick(x,y,t,nSteps,resampleFactor)
+% function [Xu Yu Xl Yl]=polythick(x,y,t)
 % ------------------------------------------------------------------------
 % This function thickens a polygon defined by x, y. It generates the upper
 % (Xu, Yu) and lower (Xl, Yl) coordinates depending on the thickness t. 
@@ -17,47 +17,10 @@ function [X1,Y1,X2,Y2]=polythick(varargin)
 
 %% 
 
-switch nargin
-    case 2
-        x=varargin{1};
-        y=varargin{2};
-        t=[];
-        nSteps=[];
-        resampleFactor=3;
-    case 3
-        x=varargin{1};
-        y=varargin{2};
-        t=varargin{3};
-        nSteps=[];
-        resampleFactor=3;
-    case 4
-        x=varargin{1};
-        y=varargin{2};
-        t=varargin{3};
-        nSteps=varargin{4};
-        resampleFactor=3;
-    case 5
-        x=varargin{1};
-        y=varargin{2};
-        t=varargin{3};
-        nSteps=varargin{4};
-        resampleFactor=varargin{5};
-end
-
-%%
 V_curve=[x(:) y(:)];
-V_curve(:,3)=0;
-
 D=sqrt(sum(diff(V_curve,1,1).^2,2));
-if isempty(t)
-    t=mean(D);
-end
+nSteps=ceil(4*(t./max(D)));
 
-if isempty(nSteps)
-    nSteps=ceil(4*(t./mean(D)));
-end
-
-%%
 V_curve1=V_curve;
 V_curve2=V_curve;
 
