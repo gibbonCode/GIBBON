@@ -27,10 +27,10 @@ axisGeom; view(2);
 
 %%
 polyThickness=0.2; 
-[Xu Yu Xl Yl]=polythick(x,y,polyThickness);
+[X1,Y1,X2,Y2]=polythick(x,y,polyThickness);
 
-plot(Xu,Yu,'g-');
-plot(Xl,Yl,'r-');
+plot(X1,Y1,'g-');
+plot(X2,Y2,'r-');
 
 %%
 % 

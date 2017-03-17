@@ -2,19 +2,15 @@ function [varargout]=polyNormal(V_poly)
 
 % [N,Vn,Nv]=polyNormal(V_poly)
 % ------------------------------------------------------------------------
-% Normals are derived based on cross product of triangle edge vectors. Each
-% triangle is constructed using the two points of its face and the mean of
-% the face. 
-%
-%
-% To do: Check for co-linear edges ?
+% Normals directions are derived based on cross product of curve segments
+% with the outware z-direction. A horizontal and clockwise curve segment
+% therefore results in an upward normal. The normals are provided for each
+% segment or for each point on the curve. 
 %
 % Kevin Mattheus Moerman
 % gibbon.toolbox@gmail.com
 %
-% 2014/06/02 %Updated general lay-out and commenting
-% 2015/09/22 %Fixed to allow for 2D patch data
-% 2016/11/15 %Added handling of non-triangular faces
+% 2017/03/16 Created
 %------------------------------------------------------------------------
 
 %%
