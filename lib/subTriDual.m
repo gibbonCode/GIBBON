@@ -66,13 +66,13 @@ Fd=Fq(~logicFlip,:);
 Cd=Cq(~logicFlip,:);
 Vd=Vq; 
 
-TR = triangulation(Fs,V);
-[indFree_FV] = freeBoundary(TR);
+[Eb]=patchBoundary(Fs,V);
+indFree=unique(Eb(:));
 logicFree_FV=false(size(V,1),1);
-logicFree_FV(indFree_FV)=1; 
+logicFree_FV(indFree)=1; 
 
-TR = triangulation(Fd,Vd);
-[indFree] = freeBoundary(TR);
+[Eb]=patchBoundary(Fd,Vd);
+indFree=unique(Eb(:));
 logicFree=false(size(Vd,1),1);
 logicFree(indFree)=1; 
 
@@ -90,8 +90,7 @@ logic_Fd_invalid=any(logic_Fd_invalid,2)&sum(logic_Fd,2)==2;
 Cd=Cd(~logic_Fd_invalid,:);
 Fd=Fd(~logic_Fd_invalid,:);
 
-TR=triangulation(Fd,Vd);
-E = freeBoundary(TR);
+[E]=patchBoundary(Fd,Vd);
 
 logicMember=ismember(E,indIni);
 indA=unique(E(logicMember));
@@ -104,7 +103,6 @@ IND_V(logicNotMember)=0;
 IND_V=IND_V(indB,:);
 
 logicTwo=sum(IND_V>0,2)==2;
-logicThree=sum(IND_V>0,2)==3;
 
 Fn=sort(IND_V(logicTwo,:),2);
 Fn=[indB(logicTwo) Fn(:,end-1:end)];
@@ -139,7 +137,7 @@ try
         Cn3=[];
     end
 catch
-    error('Input mesh is too coarse for dual method');   
+    error('Error. Input mesh may be too coarse for dual based subtriangulation');   
 end
 
 %%

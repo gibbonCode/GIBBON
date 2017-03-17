@@ -3,12 +3,12 @@ function [varargout]=gcontour(varargin)
 % function [C,cSiz,cLevel]=gcontour(X,Y,Z,k,pointSpacing,resampleMethod)
 % ------------------------------------------------------------------------
 %
-% This function computes contour data for the data Z 
+% This function computes contour data for the data Z
 %
 %
 % Kevin Mattheus Moerman
 % gibbon.toolbox@gmail.com
-% 
+%
 % 2016/10/18
 %
 %------------------------------------------------------------------------
@@ -21,7 +21,7 @@ switch nargin
         Y=varargin{2};
         Z=varargin{3};
         k=varargin{4};
-        pointSpacing=[]; 
+        pointSpacing=[];
     case 5
         X=varargin{1};
         Y=varargin{2};
@@ -39,7 +39,7 @@ switch nargin
     otherwise
         error('Wrong number of input arguments');
 end
-        
+
 %%
 %Use contourc to derive contours
 x=X(1,:)';
@@ -57,63 +57,68 @@ else
     Q = contourc(x,y,Z,k);
 end
 
-%Get contour indices
-c=0;
-ind2=0;
-n=0; 
-IND1=[];
-IND2=[];
-while 1       
-    numPoints=Q(2,ind2+1);
-    n=n+numPoints;
-    ind1=1+(ind2+1);
-    ind2=1+n+c;    
-    c=c+1;     
-    IND1(c)=ind1; %#ok<AGROW>
-    IND2(c)=ind2; %#ok<AGROW>    
-    if ind2==size(Q,2)
-        break        
+if ~isempty(Q)
+    %Get contour indices
+    c=0;
+    ind2=0;
+    n=0;
+    IND1=[];
+    IND2=[];
+    while 1
+        numPoints=Q(2,ind2+1);
+        n=n+numPoints;
+        ind1=1+(ind2+1);
+        ind2=1+n+c;
+        c=c+1;
+        IND1(c)=ind1; %#ok<AGROW>
+        IND2(c)=ind2; %#ok<AGROW>
+        if ind2==size(Q,2)
+            break
+        end
     end
-end
-
-numContours=numel(IND1); 
-C=cell(numContours,1);
-cSiz=zeros(numContours,1);
-cLevel=zeros(numContours,1);
-for q=1:1:numContours
     
-    Vg=[Q(1,IND1(q):IND2(q))' Q(2,IND1(q):IND2(q))']; %Get coordinates
-    cLevel(q)=Q(1,IND1(q)-1); %Get level    
-    
-    %Check for non-unique points
-    [~,indUni,~]=unique(pround(Vg,5),'rows');
-    logicKeep=false(size(Vg,1),1);
-    logicKeep(indUni)=1;
-    Vg=Vg(logicKeep,:);
-    
-    if size(Vg,1)>1
+    numContours=numel(IND1);
+    C=cell(numContours,1);
+    cSiz=zeros(numContours,1);
+    cLevel=zeros(numContours,1);
+    for q=1:1:numContours
         
-        %Check if contour is closed loop or not
-        d=sqrt(sum((Vg(1,:)-Vg(end,:)).^2)); %Distance between first and last point
-        if d<(min(v)/10) %Smaller than 1/10th of a pixel dimension
-            Vg=Vg(1:end-1,:);
-            closeLoopOpt=1;
-        else
-            closeLoopOpt=0;
+        Vg=[Q(1,IND1(q):IND2(q))' Q(2,IND1(q):IND2(q))']; %Get coordinates
+        cLevel(q)=Q(1,IND1(q)-1); %Get level
+        
+        %Check for non-unique points
+        [~,indUni,~]=unique(pround(Vg,5),'rows');
+        logicKeep=false(size(Vg,1),1);
+        logicKeep(indUni)=1;
+        Vg=Vg(logicKeep,:);
+        
+        if size(Vg,1)>1
+            
+            %Check if contour is closed loop or not
+            d=sqrt(sum((Vg(1,:)-Vg(end,:)).^2)); %Distance between first and last point
+            if d<(min(v)/10) %Smaller than 1/10th of a pixel dimension
+                Vg=Vg(1:end-1,:);
+                closeLoopOpt=1;
+            else
+                closeLoopOpt=0;
+            end
+            
+            %Upsample if desired
+            if ~isempty(pointSpacing)
+                D=pathLength(Vg);
+                [Vg] = evenlySampleCurve(Vg,n,resampleMethod,closeLoopOpt);
+            end
         end
         
-        %Upsample if desired
-        if ~isempty(pointSpacing)
-            D=pathLength(Vg);               
-            [Vg] = evenlySampleCurve(Vg,n,resampleMethod,closeLoopOpt);
-        end        
+        %Store contour in cell array
+        C{q}=Vg;
+        cSiz(q)=size(Vg,1);
     end
-    
-    %Store contour in cell array
-    C{q}=Vg;
-    cSiz(q)=size(Vg,1);
+else
+    C={};
+    cSiz=[];
+    cLevel=[];
 end
-
 varargout{1}=C;
 varargout{2}=cSiz;
 varargout{3}=cLevel;

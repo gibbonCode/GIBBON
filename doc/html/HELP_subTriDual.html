@@ -6,7 +6,7 @@
    <!--
 This HTML was auto-generated from MATLAB code.
 To make changes, update the MATLAB code and republish this document.
-      --><title>subTriDual</title><meta name="generator" content="MATLAB 9.1"><link rel="schema.DC" href="http://purl.org/dc/elements/1.1/"><meta name="DC.date" content="2017-03-13"><meta name="DC.source" content="HELP_subTriDual.m"><style type="text/css">
+      --><title>subTriDual</title><meta name="generator" content="MATLAB 9.1"><link rel="schema.DC" href="http://purl.org/dc/elements/1.1/"><meta name="DC.date" content="2017-03-17"><meta name="DC.source" content="HELP_subTriDual.m"><style type="text/css">
 html,body,div,span,applet,object,iframe,h1,h2,h3,h4,h5,h6,p,blockquote,pre,a,abbr,acronym,address,big,cite,code,del,dfn,em,font,img,ins,kbd,q,s,samp,small,strike,strong,sub,sup,tt,var,b,u,i,center,dl,dt,dd,ol,ul,li,fieldset,form,label,legend,table,caption,tbody,tfoot,thead,tr,th,td{margin:0;padding:0;border:0;outline:0;font-size:100%;vertical-align:baseline;background:transparent}body{line-height:1}ol,ul{list-style:none}blockquote,q{quotes:none}blockquote:before,blockquote:after,q:before,q:after{content:'';content:none}:focus{outine:0}ins{text-decoration:none}del{text-decoration:line-through}table{border-collapse:collapse;border-spacing:0}
 
 html { min-height:100%; margin-bottom:1px; }
@@ -87,43 +87,43 @@ n=1; <span class="comment">%Refinements</span>
 hf=cFigure;
 subplot(1,3,1); hold <span class="string">on</span>;
 title(<span class="string">'Original triangulation'</span>,<span class="string">'FontSize'</span>,fontSize);
-xlabel(<span class="string">'X'</span>,<span class="string">'FontSize'</span>,fontSize); ylabel(<span class="string">'Y'</span>,<span class="string">'FontSize'</span>,fontSize); zlabel(<span class="string">'Z'</span>,<span class="string">'FontSize'</span>,fontSize);
-hp=patch(<span class="string">'Faces'</span>,F,<span class="string">'Vertices'</span>,V);
-set(hp,<span class="string">'FaceColor'</span>,faceColor1,<span class="string">'FaceAlpha'</span>,1,<span class="string">'EdgeColor'</span>,plotColor1,<span class="string">'LineWidth'</span>,edgeWidth,<span class="string">'Marker'</span>,<span class="string">'o'</span>,<span class="string">'MarkerFaceColor'</span>,plotColor1,<span class="string">'MarkerEdgeColor'</span>,<span class="string">'none'</span>,<span class="string">'MarkerSize'</span>,markerSize);
 
-axis <span class="string">equal</span>; axis <span class="string">tight</span>; view(3); axis <span class="string">vis3d</span>; axis <span class="string">off</span>;
-set(gca,<span class="string">'FontSize'</span>,fontSize);
+hp=gpatch(F,V,faceColor1,plotColor1);
+set(hp,<span class="string">'LineWidth'</span>,edgeWidth,<span class="string">'Marker'</span>,<span class="string">'o'</span>,<span class="string">'MarkerFaceColor'</span>,plotColor1,<span class="string">'MarkerEdgeColor'</span>,<span class="string">'none'</span>,<span class="string">'MarkerSize'</span>,markerSize);
+
+axisGeom(gca,fontSize);
 camlight <span class="string">headlight</span>;
-drawnow;
 
 subplot(1,3,2); hold <span class="string">on</span>;
 title(<span class="string">'The dual tesselation'</span>,<span class="string">'FontSize'</span>,fontSize);
 
-<span class="keyword">for</span> i=1:1:numel(Fd);
+<span class="keyword">for</span> i=1:1:numel(Fd)
     Fs=Fd{i};
-    hp=patch(<span class="string">'Faces'</span>,Fs,<span class="string">'Vertices'</span>,Vd,<span class="string">'FaceColor'</span>,faceColor1,<span class="string">'FaceAlpha'</span>,1,<span class="string">'EdgeColor'</span>,plotColor2,<span class="string">'LineWidth'</span>,edgeWidth,<span class="string">'Marker'</span>,<span class="string">'o'</span>,<span class="string">'MarkerFaceColor'</span>,plotColor2,<span class="string">'MarkerEdgeColor'</span>,<span class="string">'none'</span>,<span class="string">'MarkerSize'</span>,markerSize);
+    hp=gpatch(Fs,Vd,faceColor1,plotColor2);
+    set(hp,<span class="string">'LineWidth'</span>,edgeWidth,<span class="string">'Marker'</span>,<span class="string">'o'</span>,<span class="string">'MarkerFaceColor'</span>,plotColor2,<span class="string">'MarkerEdgeColor'</span>,<span class="string">'none'</span>,<span class="string">'MarkerSize'</span>,markerSize);
 <span class="keyword">end</span>
-axis <span class="string">equal</span>; axis <span class="string">tight</span>; view(3); axis <span class="string">vis3d</span>; axis <span class="string">off</span>;
-set(gca,<span class="string">'FontSize'</span>,fontSize);
+
+axisGeom(gca,fontSize);
 camlight <span class="string">headlight</span>;
-drawnow;
 
 subplot(1,3,3); hold <span class="string">on</span>;
 title(<span class="string">'Refinement by triangulating merged pointsets'</span>,<span class="string">'FontSize'</span>,fontSize);
 
-hp=patch(<span class="string">'Faces'</span>,Ft,<span class="string">'Vertices'</span>,Vt);
-set(hp,<span class="string">'FaceColor'</span>,faceColor1,<span class="string">'FaceAlpha'</span>,1,<span class="string">'EdgeColor'</span>,plotColor3,<span class="string">'LineWidth'</span>,1);
+gpatch(Ft,Vt,faceColor1,plotColor3);
 
-hp=patch(<span class="string">'Faces'</span>,F,<span class="string">'Vertices'</span>,V,<span class="string">'FaceColor'</span>,<span class="string">'none'</span>,<span class="string">'EdgeColor'</span>,<span class="string">'none'</span>,<span class="string">'LineWidth'</span>,edgeWidth,<span class="string">'Marker'</span>,<span class="string">'o'</span>,<span class="string">'MarkerFaceColor'</span>,plotColor1,<span class="string">'MarkerEdgeColor'</span>,<span class="string">'none'</span>,<span class="string">'MarkerSize'</span>,markerSize);
 
-<span class="keyword">for</span> i=1:1:numel(Fd);
+hp=plotV(V,<span class="string">'k.'</span>,<span class="string">'MarkerSize'</span>,markerSize*3);
+set(hp,<span class="string">'Color'</span>,plotColor1);
+
+<span class="keyword">for</span> i=1:1:numel(Fd)
     Fs=Fd{i};
-    hp=patch(<span class="string">'Faces'</span>,Fs,<span class="string">'Vertices'</span>,Vd,<span class="string">'FaceColor'</span>,<span class="string">'none'</span>,<span class="string">'EdgeColor'</span>,plotColor2,<span class="string">'LineWidth'</span>,edgeWidth,<span class="string">'Marker'</span>,<span class="string">'o'</span>,<span class="string">'MarkerFaceColor'</span>,plotColor2,<span class="string">'MarkerEdgeColor'</span>,<span class="string">'none'</span>,<span class="string">'MarkerSize'</span>,markerSize);
+    hp=gpatch(Fs,Vd,<span class="string">'none'</span>,plotColor2);
+    set(hp,<span class="string">'LineWidth'</span>,edgeWidth,<span class="string">'Marker'</span>,<span class="string">'o'</span>,<span class="string">'MarkerFaceColor'</span>,plotColor2,<span class="string">'MarkerEdgeColor'</span>,<span class="string">'none'</span>,<span class="string">'MarkerSize'</span>,markerSize);
 <span class="keyword">end</span>
 
 hp=plotV(Vt(indIni,:),<span class="string">'k.'</span>); set(hp,<span class="string">'Color'</span>,plotColor1,<span class="string">'MarkerSize'</span>,markerSize)
-axis <span class="string">equal</span>; axis <span class="string">tight</span>; view(3); axis <span class="string">vis3d</span>; axis <span class="string">off</span>;
-set(gca,<span class="string">'FontSize'</span>,fontSize);
+
+axisGeom(gca,fontSize);
 camlight <span class="string">headlight</span>;
 drawnow;
 </pre><img vspace="5" hspace="5" src="HELP_subTriDual_01.png" alt=""> <h2 id="11">Example: Refining a closed surface</h2><p>Building example geometry</p><pre class="codeinput">r=1; <span class="comment">%Radius</span>
@@ -135,25 +135,22 @@ nc=25;
 </pre><p>Plotting input surface model</p><pre class="codeinput">cFigure;
 subplot(1,2,1);
 title(<span class="string">'Input surface'</span>,<span class="string">'FontSize'</span>,fontSize);
-xlabel(<span class="string">'X'</span>,<span class="string">'FontSize'</span>,fontSize);ylabel(<span class="string">'Y'</span>,<span class="string">'FontSize'</span>,fontSize); zlabel(<span class="string">'Z'</span>,<span class="string">'FontSize'</span>,fontSize);
 hold <span class="string">on</span>;
 
-patch(<span class="string">'Faces'</span>,F,<span class="string">'Vertices'</span>,V,<span class="string">'FaceColor'</span>,<span class="string">'g'</span>,<span class="string">'FaceAlpha'</span>,1,<span class="string">'EdgeColor'</span>,<span class="string">'k'</span>);
-
-axis <span class="string">equal</span>; view(3); axis <span class="string">tight</span>;  grid <span class="string">on</span>;  set(gca,<span class="string">'FontSize'</span>,fontSize);
+gpatch(F,V,<span class="string">'g'</span>);
+axisGeom(gca,fontSize);
 camlight <span class="string">headlight</span>;
 
 subplot(1,2,2);
 title(<span class="string">'Output surface'</span>,<span class="string">'FontSize'</span>,fontSize);
-xlabel(<span class="string">'X'</span>,<span class="string">'FontSize'</span>,fontSize);ylabel(<span class="string">'Y'</span>,<span class="string">'FontSize'</span>,fontSize); zlabel(<span class="string">'Z'</span>,<span class="string">'FontSize'</span>,fontSize);
 hold <span class="string">on</span>;
 
-patch(<span class="string">'Faces'</span>,Ft,<span class="string">'Vertices'</span>,Vt,<span class="string">'FaceColor'</span>,<span class="string">'y'</span>,<span class="string">'FaceAlpha'</span>,1,<span class="string">'EdgeColor'</span>,<span class="string">'k'</span>);
+gpatch(Ft,Vt,<span class="string">'y'</span>);
 plotV(Vt(indIni,:),<span class="string">'k.'</span>,<span class="string">'MarkerSize'</span>,25);
 
-colormap <span class="string">autumn</span>;
-axis <span class="string">equal</span>; view(3); axis <span class="string">tight</span>;  grid <span class="string">on</span>;  set(gca,<span class="string">'FontSize'</span>,fontSize);
+axisGeom(gca,fontSize);
 camlight <span class="string">headlight</span>;
+colormap <span class="string">gjet</span>;
 drawnow;
 </pre><img vspace="5" hspace="5" src="HELP_subTriDual_02.png" alt=""> <h2 id="15">Example: Refining a local region of a mesh (e.g. region on a sphere)</h2><p>Building example geometry</p><pre class="codeinput"><span class="comment">%Defining geodesic dome</span>
 r=1; <span class="comment">%sphere radius</span>
@@ -162,9 +159,6 @@ n=3; <span class="comment">%Refinements</span>
 </pre><p>Define face list for refinement</p><pre class="codeinput">logicNodes=V(:,3)&gt;0.6 | V(:,2)&lt;-0.5;
 logicFaces=all(logicNodes(F),2);
 </pre><p>Refine surface region using subTriDual</p><pre class="codeinput">[Ft,Vt,Ct,indIni]=subTriDual(F,V,logicFaces);
-</pre><pre class="codeoutput">Warning: Some input points are not referenced by the triangulation. 
-Warning: Some input points are not referenced by the triangulation. 
-Warning: Some input points are not referenced by the triangulation. 
 </pre><h2 id="19">Example Smoothening the mesh</h2><pre class="codeinput"><span class="comment">%Smoothen newly introduced nodes</span>
 cPar.Method=<span class="string">'HC'</span>;
 cPar.n=50;
@@ -172,8 +166,7 @@ cPar.RigidConstraints=indIni;
 [Vt]=tesSmooth(Ft,Vt,[],cPar);
 
 <span class="comment">%Smoothen boundary nodes on original mesh nodes</span>
-TR=triangulation(Ft(Ct==1,:),Vt);
-E=freeBoundary(TR);
+E=patchBoundary(Ft(Ct==1,:),Vt);
 indEdge=unique(E(:));
 logicEdge=false(size(Vt,1),1);
 logicEdge(indEdge)=1;
@@ -183,31 +176,26 @@ cPar.Method=<span class="string">'HC'</span>;
 cPar.n=50;
 cPar.RigidConstraints=indRigid;
 [Vt]=tesSmooth(Ft,Vt,[],cPar);
-</pre><pre class="codeoutput">Warning: Some input points are not referenced by the triangulation. 
 </pre><p>Plotting input surface model</p><pre class="codeinput">cFigure;
 subplot(1,2,1);
 title(<span class="string">'Input surface'</span>,<span class="string">'FontSize'</span>,fontSize);
-xlabel(<span class="string">'X'</span>,<span class="string">'FontSize'</span>,fontSize);ylabel(<span class="string">'Y'</span>,<span class="string">'FontSize'</span>,fontSize); zlabel(<span class="string">'Z'</span>,<span class="string">'FontSize'</span>,fontSize);
 hold <span class="string">on</span>;
-
-patch(<span class="string">'Faces'</span>,F,<span class="string">'Vertices'</span>,V,<span class="string">'FaceColor'</span>,<span class="string">'flat'</span>,<span class="string">'CData'</span>,double(logicFaces),<span class="string">'FaceAlpha'</span>,1,<span class="string">'EdgeColor'</span>,<span class="string">'k'</span>);
-<span class="comment">% patch('Faces',Fs,'Vertices',V,'FaceColor','b','FaceAlpha',1,'EdgeColor','k');</span>
-
-axis <span class="string">equal</span>; view(3); axis <span class="string">tight</span>;  grid <span class="string">on</span>;  set(gca,<span class="string">'FontSize'</span>,fontSize);
+gpatch(F,V,logicFaces);
+axisGeom(gca,fontSize);
 camlight <span class="string">headlight</span>;
 
 subplot(1,2,2);
 title(<span class="string">'Output surface'</span>,<span class="string">'FontSize'</span>,fontSize);
-xlabel(<span class="string">'X'</span>,<span class="string">'FontSize'</span>,fontSize);ylabel(<span class="string">'Y'</span>,<span class="string">'FontSize'</span>,fontSize); zlabel(<span class="string">'Z'</span>,<span class="string">'FontSize'</span>,fontSize);
 hold <span class="string">on</span>;
 
-patch(<span class="string">'Faces'</span>,Ft,<span class="string">'Vertices'</span>,Vt,<span class="string">'FaceColor'</span>,<span class="string">'flat'</span>,<span class="string">'CData'</span>,Ct,<span class="string">'FaceAlpha'</span>,1,<span class="string">'EdgeColor'</span>,<span class="string">'k'</span>);
+gpatch(Ft,Vt,Ct);
+
 <span class="comment">% [hp]=patchNormPlot(Ft,Vt,0.25);</span>
 plotV(Vt(indIni,:),<span class="string">'k.'</span>,<span class="string">'MarkerSize'</span>,25);
-plotV(Vt(logicEdge,:),<span class="string">'b.'</span>,<span class="string">'MarkerSize'</span>,50);
+plotV(Vt(logicEdge,:),<span class="string">'y.'</span>,<span class="string">'MarkerSize'</span>,50);
 
-colormap <span class="string">autumn</span>;
-axis <span class="string">equal</span>; view(3); axis <span class="string">tight</span>;  grid <span class="string">on</span>;  set(gca,<span class="string">'FontSize'</span>,fontSize);
+colormap <span class="string">gjet</span>;
+axisGeom(gca,fontSize);
 camlight <span class="string">headlight</span>;
 drawnow;
 </pre><img vspace="5" hspace="5" src="HELP_subTriDual_03.png" alt=""> <h2 id="21">Example: Keeping track of surface data e.g. color</h2><pre class="codeinput">X=V(:,1);
@@ -218,12 +206,6 @@ C2=double(C&lt;0); <span class="comment">%"Sparse" color to help show averaging 
 <span class="comment">% Refine surface using subTriDual</span>
 [Ft,Vt,~,indIni,Ct]=subTriDual(F,V,logicFaces,C);
 [~,~,~,indIni,Ct2]=subTriDual(F,V,logicFaces,C2);
-</pre><pre class="codeoutput">Warning: Some input points are not referenced by the triangulation. 
-Warning: Some input points are not referenced by the triangulation. 
-Warning: Some input points are not referenced by the triangulation. 
-Warning: Some input points are not referenced by the triangulation. 
-Warning: Some input points are not referenced by the triangulation. 
-Warning: Some input points are not referenced by the triangulation. 
 </pre><p>Plotting input surface model</p><pre class="codeinput">cFigure;
 subplot(2,2,1);
 title(<span class="string">'Input surface'</span>,<span class="string">'FontSize'</span>,fontSize);
@@ -328,7 +310,7 @@ patch(<span class="string">'Faces'</span>,Ft,<span class="string">'Vertices'</sp
 <span class="comment">% [hp]=patchNormPlot(Ft,Vt,0.25);</span>
 plotV(Vt(indIni,:),<span class="string">'k.'</span>,<span class="string">'MarkerSize'</span>,25);
 
-colormap <span class="string">autumn</span>;
+colormap <span class="string">gjet</span>;
 axis <span class="string">equal</span>; view(3); axis <span class="string">tight</span>;  grid <span class="string">on</span>;  set(gca,<span class="string">'FontSize'</span>,fontSize);
 camlight <span class="string">headlight</span>;
 drawnow;
@@ -365,8 +347,7 @@ Ft=F; Vt=V;
     [Vt]=tesSmooth(Ft,Vt,[],cPar);
 
     <span class="comment">%Smoothen boundary nodes on original mesh nodes</span>
-    TR=triangulation(Ft(Ct==1,:),Vt);
-    E=freeBoundary(TR);
+    E=patchBoundary(Ft(Ct==1,:),Vt);
     indEdge=unique(E(:));
 
     indNodesFaces=Ft(Ct~=1,:);
@@ -382,18 +363,6 @@ Ft=F; Vt=V;
     [Vt]=tesSmooth(Ft,Vt,[],cPar);
 
 <span class="keyword">end</span>
-</pre><pre class="codeoutput">Warning: Some input points are not referenced by the triangulation. 
-Warning: Some input points are not referenced by the triangulation. 
-Warning: Some input points are not referenced by the triangulation. 
-Warning: Some input points are not referenced by the triangulation. 
-Warning: Some input points are not referenced by the triangulation. 
-Warning: Some input points are not referenced by the triangulation. 
-Warning: Some input points are not referenced by the triangulation. 
-Warning: Some input points are not referenced by the triangulation. 
-Warning: Some input points are not referenced by the triangulation. 
-Warning: Some input points are not referenced by the triangulation. 
-Warning: Some input points are not referenced by the triangulation. 
-Warning: Some input points are not referenced by the triangulation. 
 </pre><p>Plotting input surface model</p><pre class="codeinput">cFigure;
 subplot(1,2,1);
 title(<span class="string">'Input surface'</span>,<span class="string">'FontSize'</span>,fontSize);
@@ -471,43 +440,43 @@ n=1; %Refinements
 hf=cFigure; 
 subplot(1,3,1); hold on;
 title('Original triangulation','FontSize',fontSize);
-xlabel('X','FontSize',fontSize); ylabel('Y','FontSize',fontSize); zlabel('Z','FontSize',fontSize);
-hp=patch('Faces',F,'Vertices',V);
-set(hp,'FaceColor',faceColor1,'FaceAlpha',1,'EdgeColor',plotColor1,'LineWidth',edgeWidth,'Marker','o','MarkerFaceColor',plotColor1,'MarkerEdgeColor','none','MarkerSize',markerSize);
 
-axis equal; axis tight; view(3); axis vis3d; axis off; 
-set(gca,'FontSize',fontSize);
+hp=gpatch(F,V,faceColor1,plotColor1);
+set(hp,'LineWidth',edgeWidth,'Marker','o','MarkerFaceColor',plotColor1,'MarkerEdgeColor','none','MarkerSize',markerSize);
+
+axisGeom(gca,fontSize);
 camlight headlight;
-drawnow;
 
 subplot(1,3,2); hold on;
 title('The dual tesselation','FontSize',fontSize);
 
-for i=1:1:numel(Fd);
+for i=1:1:numel(Fd)
     Fs=Fd{i};
-    hp=patch('Faces',Fs,'Vertices',Vd,'FaceColor',faceColor1,'FaceAlpha',1,'EdgeColor',plotColor2,'LineWidth',edgeWidth,'Marker','o','MarkerFaceColor',plotColor2,'MarkerEdgeColor','none','MarkerSize',markerSize);
+    hp=gpatch(Fs,Vd,faceColor1,plotColor2);
+    set(hp,'LineWidth',edgeWidth,'Marker','o','MarkerFaceColor',plotColor2,'MarkerEdgeColor','none','MarkerSize',markerSize);
 end
-axis equal; axis tight; view(3); axis vis3d; axis off; 
-set(gca,'FontSize',fontSize);
+
+axisGeom(gca,fontSize);
 camlight headlight;
-drawnow;
 
 subplot(1,3,3); hold on;
 title('Refinement by triangulating merged pointsets','FontSize',fontSize);
 
-hp=patch('Faces',Ft,'Vertices',Vt);
-set(hp,'FaceColor',faceColor1,'FaceAlpha',1,'EdgeColor',plotColor3,'LineWidth',1);
+gpatch(Ft,Vt,faceColor1,plotColor3);
 
-hp=patch('Faces',F,'Vertices',V,'FaceColor','none','EdgeColor','none','LineWidth',edgeWidth,'Marker','o','MarkerFaceColor',plotColor1,'MarkerEdgeColor','none','MarkerSize',markerSize);
 
-for i=1:1:numel(Fd);
+hp=plotV(V,'k.','MarkerSize',markerSize*3);
+set(hp,'Color',plotColor1);
+
+for i=1:1:numel(Fd)
     Fs=Fd{i};
-    hp=patch('Faces',Fs,'Vertices',Vd,'FaceColor','none','EdgeColor',plotColor2,'LineWidth',edgeWidth,'Marker','o','MarkerFaceColor',plotColor2,'MarkerEdgeColor','none','MarkerSize',markerSize);
+    hp=gpatch(Fs,Vd,'none',plotColor2);
+    set(hp,'LineWidth',edgeWidth,'Marker','o','MarkerFaceColor',plotColor2,'MarkerEdgeColor','none','MarkerSize',markerSize);
 end
 
 hp=plotV(Vt(indIni,:),'k.'); set(hp,'Color',plotColor1,'MarkerSize',markerSize)
-axis equal; axis tight; view(3); axis vis3d; axis off; 
-set(gca,'FontSize',fontSize);
+
+axisGeom(gca,fontSize);
 camlight headlight;
 drawnow;
 
@@ -530,25 +499,22 @@ nc=25;
 cFigure;
 subplot(1,2,1);
 title('Input surface','FontSize',fontSize);
-xlabel('X','FontSize',fontSize);ylabel('Y','FontSize',fontSize); zlabel('Z','FontSize',fontSize);
 hold on;
 
-patch('Faces',F,'Vertices',V,'FaceColor','g','FaceAlpha',1,'EdgeColor','k');
-
-axis equal; view(3); axis tight;  grid on;  set(gca,'FontSize',fontSize);
+gpatch(F,V,'g');
+axisGeom(gca,fontSize);
 camlight headlight;
 
 subplot(1,2,2);
 title('Output surface','FontSize',fontSize);
-xlabel('X','FontSize',fontSize);ylabel('Y','FontSize',fontSize); zlabel('Z','FontSize',fontSize);
 hold on;
 
-patch('Faces',Ft,'Vertices',Vt,'FaceColor','y','FaceAlpha',1,'EdgeColor','k');
+gpatch(Ft,Vt,'y');
 plotV(Vt(indIni,:),'k.','MarkerSize',25);
 
-colormap autumn; 
-axis equal; view(3); axis tight;  grid on;  set(gca,'FontSize',fontSize);
+axisGeom(gca,fontSize);
 camlight headlight;
+colormap gjet; 
 drawnow;
 
 %% Example: Refining a local region of a mesh (e.g. region on a sphere)
@@ -579,8 +545,7 @@ cPar.RigidConstraints=indIni;
 [Vt]=tesSmooth(Ft,Vt,[],cPar);
 
 %Smoothen boundary nodes on original mesh nodes
-TR=triangulation(Ft(Ct==1,:),Vt);
-E=freeBoundary(TR);
+E=patchBoundary(Ft(Ct==1,:),Vt);
 indEdge=unique(E(:));
 logicEdge=false(size(Vt,1),1);
 logicEdge(indEdge)=1; 
@@ -596,27 +561,23 @@ cPar.RigidConstraints=indRigid;
 cFigure;
 subplot(1,2,1);
 title('Input surface','FontSize',fontSize);
-xlabel('X','FontSize',fontSize);ylabel('Y','FontSize',fontSize); zlabel('Z','FontSize',fontSize);
 hold on;
-
-patch('Faces',F,'Vertices',V,'FaceColor','flat','CData',double(logicFaces),'FaceAlpha',1,'EdgeColor','k');
-% patch('Faces',Fs,'Vertices',V,'FaceColor','b','FaceAlpha',1,'EdgeColor','k');
-
-axis equal; view(3); axis tight;  grid on;  set(gca,'FontSize',fontSize);
+gpatch(F,V,logicFaces);
+axisGeom(gca,fontSize);
 camlight headlight;
 
 subplot(1,2,2);
 title('Output surface','FontSize',fontSize);
-xlabel('X','FontSize',fontSize);ylabel('Y','FontSize',fontSize); zlabel('Z','FontSize',fontSize);
 hold on;
 
-patch('Faces',Ft,'Vertices',Vt,'FaceColor','flat','CData',Ct,'FaceAlpha',1,'EdgeColor','k');
+gpatch(Ft,Vt,Ct);
+
 % [hp]=patchNormPlot(Ft,Vt,0.25);
 plotV(Vt(indIni,:),'k.','MarkerSize',25);
-plotV(Vt(logicEdge,:),'b.','MarkerSize',50);
+plotV(Vt(logicEdge,:),'y.','MarkerSize',50);
 
-colormap autumn; 
-axis equal; view(3); axis tight;  grid on;  set(gca,'FontSize',fontSize);
+colormap gjet; 
+axisGeom(gca,fontSize);
 camlight headlight;
 drawnow;
 
@@ -751,7 +712,7 @@ patch('Faces',Ft,'Vertices',Vt,'FaceColor','flat','CData',Ct,'FaceAlpha',1,'Edge
 % [hp]=patchNormPlot(Ft,Vt,0.25);
 plotV(Vt(indIni,:),'k.','MarkerSize',25);
 
-colormap autumn; 
+colormap gjet; 
 axis equal; view(3); axis tight;  grid on;  set(gca,'FontSize',fontSize);
 camlight headlight;
 drawnow;
@@ -797,8 +758,7 @@ for q=1:numel(distanceSplitSteps)
     [Vt]=tesSmooth(Ft,Vt,[],cPar);
     
     %Smoothen boundary nodes on original mesh nodes
-    TR=triangulation(Ft(Ct==1,:),Vt);
-    E=freeBoundary(TR);
+    E=patchBoundary(Ft(Ct==1,:),Vt);
     indEdge=unique(E(:));
     
     indNodesFaces=Ft(Ct~=1,:);

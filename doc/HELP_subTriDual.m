@@ -53,43 +53,43 @@ n=1; %Refinements
 hf=cFigure; 
 subplot(1,3,1); hold on;
 title('Original triangulation','FontSize',fontSize);
-xlabel('X','FontSize',fontSize); ylabel('Y','FontSize',fontSize); zlabel('Z','FontSize',fontSize);
-hp=patch('Faces',F,'Vertices',V);
-set(hp,'FaceColor',faceColor1,'FaceAlpha',1,'EdgeColor',plotColor1,'LineWidth',edgeWidth,'Marker','o','MarkerFaceColor',plotColor1,'MarkerEdgeColor','none','MarkerSize',markerSize);
 
-axis equal; axis tight; view(3); axis vis3d; axis off; 
-set(gca,'FontSize',fontSize);
+hp=gpatch(F,V,faceColor1,plotColor1);
+set(hp,'LineWidth',edgeWidth,'Marker','o','MarkerFaceColor',plotColor1,'MarkerEdgeColor','none','MarkerSize',markerSize);
+
+axisGeom(gca,fontSize);
 camlight headlight;
-drawnow;
 
 subplot(1,3,2); hold on;
 title('The dual tesselation','FontSize',fontSize);
 
-for i=1:1:numel(Fd);
+for i=1:1:numel(Fd)
     Fs=Fd{i};
-    hp=patch('Faces',Fs,'Vertices',Vd,'FaceColor',faceColor1,'FaceAlpha',1,'EdgeColor',plotColor2,'LineWidth',edgeWidth,'Marker','o','MarkerFaceColor',plotColor2,'MarkerEdgeColor','none','MarkerSize',markerSize);
+    hp=gpatch(Fs,Vd,faceColor1,plotColor2);
+    set(hp,'LineWidth',edgeWidth,'Marker','o','MarkerFaceColor',plotColor2,'MarkerEdgeColor','none','MarkerSize',markerSize);
 end
-axis equal; axis tight; view(3); axis vis3d; axis off; 
-set(gca,'FontSize',fontSize);
+
+axisGeom(gca,fontSize);
 camlight headlight;
-drawnow;
 
 subplot(1,3,3); hold on;
 title('Refinement by triangulating merged pointsets','FontSize',fontSize);
 
-hp=patch('Faces',Ft,'Vertices',Vt);
-set(hp,'FaceColor',faceColor1,'FaceAlpha',1,'EdgeColor',plotColor3,'LineWidth',1);
+gpatch(Ft,Vt,faceColor1,plotColor3);
 
-hp=patch('Faces',F,'Vertices',V,'FaceColor','none','EdgeColor','none','LineWidth',edgeWidth,'Marker','o','MarkerFaceColor',plotColor1,'MarkerEdgeColor','none','MarkerSize',markerSize);
 
-for i=1:1:numel(Fd);
+hp=plotV(V,'k.','MarkerSize',markerSize*3);
+set(hp,'Color',plotColor1);
+
+for i=1:1:numel(Fd)
     Fs=Fd{i};
-    hp=patch('Faces',Fs,'Vertices',Vd,'FaceColor','none','EdgeColor',plotColor2,'LineWidth',edgeWidth,'Marker','o','MarkerFaceColor',plotColor2,'MarkerEdgeColor','none','MarkerSize',markerSize);
+    hp=gpatch(Fs,Vd,'none',plotColor2);
+    set(hp,'LineWidth',edgeWidth,'Marker','o','MarkerFaceColor',plotColor2,'MarkerEdgeColor','none','MarkerSize',markerSize);
 end
 
 hp=plotV(Vt(indIni,:),'k.'); set(hp,'Color',plotColor1,'MarkerSize',markerSize)
-axis equal; axis tight; view(3); axis vis3d; axis off; 
-set(gca,'FontSize',fontSize);
+
+axisGeom(gca,fontSize);
 camlight headlight;
 drawnow;
 
@@ -112,25 +112,22 @@ nc=25;
 cFigure;
 subplot(1,2,1);
 title('Input surface','FontSize',fontSize);
-xlabel('X','FontSize',fontSize);ylabel('Y','FontSize',fontSize); zlabel('Z','FontSize',fontSize);
 hold on;
 
-patch('Faces',F,'Vertices',V,'FaceColor','g','FaceAlpha',1,'EdgeColor','k');
-
-axis equal; view(3); axis tight;  grid on;  set(gca,'FontSize',fontSize);
+gpatch(F,V,'g');
+axisGeom(gca,fontSize);
 camlight headlight;
 
 subplot(1,2,2);
 title('Output surface','FontSize',fontSize);
-xlabel('X','FontSize',fontSize);ylabel('Y','FontSize',fontSize); zlabel('Z','FontSize',fontSize);
 hold on;
 
-patch('Faces',Ft,'Vertices',Vt,'FaceColor','y','FaceAlpha',1,'EdgeColor','k');
+gpatch(Ft,Vt,'y');
 plotV(Vt(indIni,:),'k.','MarkerSize',25);
 
-colormap autumn; 
-axis equal; view(3); axis tight;  grid on;  set(gca,'FontSize',fontSize);
+axisGeom(gca,fontSize);
 camlight headlight;
+colormap gjet; 
 drawnow;
 
 %% Example: Refining a local region of a mesh (e.g. region on a sphere)
@@ -161,8 +158,7 @@ cPar.RigidConstraints=indIni;
 [Vt]=tesSmooth(Ft,Vt,[],cPar);
 
 %Smoothen boundary nodes on original mesh nodes
-TR=triangulation(Ft(Ct==1,:),Vt);
-E=freeBoundary(TR);
+E=patchBoundary(Ft(Ct==1,:),Vt);
 indEdge=unique(E(:));
 logicEdge=false(size(Vt,1),1);
 logicEdge(indEdge)=1; 
@@ -178,27 +174,23 @@ cPar.RigidConstraints=indRigid;
 cFigure;
 subplot(1,2,1);
 title('Input surface','FontSize',fontSize);
-xlabel('X','FontSize',fontSize);ylabel('Y','FontSize',fontSize); zlabel('Z','FontSize',fontSize);
 hold on;
-
-patch('Faces',F,'Vertices',V,'FaceColor','flat','CData',double(logicFaces),'FaceAlpha',1,'EdgeColor','k');
-% patch('Faces',Fs,'Vertices',V,'FaceColor','b','FaceAlpha',1,'EdgeColor','k');
-
-axis equal; view(3); axis tight;  grid on;  set(gca,'FontSize',fontSize);
+gpatch(F,V,logicFaces);
+axisGeom(gca,fontSize);
 camlight headlight;
 
 subplot(1,2,2);
 title('Output surface','FontSize',fontSize);
-xlabel('X','FontSize',fontSize);ylabel('Y','FontSize',fontSize); zlabel('Z','FontSize',fontSize);
 hold on;
 
-patch('Faces',Ft,'Vertices',Vt,'FaceColor','flat','CData',Ct,'FaceAlpha',1,'EdgeColor','k');
+gpatch(Ft,Vt,Ct);
+
 % [hp]=patchNormPlot(Ft,Vt,0.25);
 plotV(Vt(indIni,:),'k.','MarkerSize',25);
-plotV(Vt(logicEdge,:),'b.','MarkerSize',50);
+plotV(Vt(logicEdge,:),'y.','MarkerSize',50);
 
-colormap autumn; 
-axis equal; view(3); axis tight;  grid on;  set(gca,'FontSize',fontSize);
+colormap gjet; 
+axisGeom(gca,fontSize);
 camlight headlight;
 drawnow;
 
@@ -333,7 +325,7 @@ patch('Faces',Ft,'Vertices',Vt,'FaceColor','flat','CData',Ct,'FaceAlpha',1,'Edge
 % [hp]=patchNormPlot(Ft,Vt,0.25);
 plotV(Vt(indIni,:),'k.','MarkerSize',25);
 
-colormap autumn; 
+colormap gjet; 
 axis equal; view(3); axis tight;  grid on;  set(gca,'FontSize',fontSize);
 camlight headlight;
 drawnow;
@@ -379,8 +371,7 @@ for q=1:numel(distanceSplitSteps)
     [Vt]=tesSmooth(Ft,Vt,[],cPar);
     
     %Smoothen boundary nodes on original mesh nodes
-    TR=triangulation(Ft(Ct==1,:),Vt);
-    E=freeBoundary(TR);
+    E=patchBoundary(Ft(Ct==1,:),Vt);
     indEdge=unique(E(:));
     
     indNodesFaces=Ft(Ct~=1,:);
