@@ -42,7 +42,7 @@ QQc2=Qc(:,ones(1,size(F2,2)));
 E=[repmat(F2,[nZ 1])+(QQc) repmat(F2,[nZ 1])+(QQc2); ];
 
 %Convert elements to faces
-[F,~]=hex2patch(E,[]);
+[F,~]=element2patch(E,[],'hex8');
 
 %Find boundary faces
 [indFree]=freeBoundaryPatch(F);

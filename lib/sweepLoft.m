@@ -1,15 +1,75 @@
-function [F,V,C]=sweepLoft(V1,V2,n1,n2,Vg,numSteps,numTwist,plotOn)
+function [F,V,C]=sweepLoft(varargin)
+
+% function [F,V,C]=sweepLoft(V1,V2,n1,n2,Vg,numSteps,numTwist,plotOn)
+%------------------------------------------------------------------------
+%
+% The |sweepLoft| function creates a swept loft (as in CAD terminology for
+% a shape formed by merging a set of sketches towards each other allong a
+% given path or guide curve). The inputs to the function are the start and
+% end sketchs (V1 and V2), the start and end normal directions (n1 and n2),
+% and the guid curve (Vg). Optional additional inputs are: the number of
+% steps for the loft feature (numSteps, same as number of points in guide
+% curve if not provided), the number of twists (numTwists, default is zero)
+% the shape undergoes around the guide curve, and finally plotOn (default
+% is 0, i.e. off) which is a logic to turn on or off plotting within the
+% function. The function outputs are patch data i.e. faces (F), the
+% vertices (V) and face colors (C, denoting step in lofting process).
+%
+% Kevin Mattheus Moerman
+% gibbon.toolbox@gmail.com
+% 
+% 2016/08/01 Created 
+%
+%------------------------------------------------------------------------
+
+%% Parse input
+
+if nargin<5
+    error('Insufficient input parameters');
+end
+
+V1=varargin{1};
+V2=varargin{2};
+n1=varargin{3};
+n2=varargin{4};
+Vg=varargin{5};
+numSteps=[];
+numTwist=0;
+plotOn=0;
+
+switch nargin        
+    case 6
+        Vg=varargin{5};
+        numSteps=varargin{6};        
+    case 7
+        Vg=varargin{5};
+        numSteps=varargin{6};
+        numTwist=varargin{7};        
+    case 8        
+        numSteps=varargin{6};
+        numTwist=varargin{7};
+        plotOn=varargin{8};
+end
+
+if isempty(numSteps)
+    numSteps=size(Vg,1);
+end
 
 %%
 
 p1=Vg(1,:);
 p2=Vg(end,:);
 
+%%
+
+if size(Vg,1)~=numSteps
+    [Vg] = evenlySampleCurve(Vg,numSteps,'linear',0);
+end
 
 %%
 if plotOn
-    [Fq1,Vq1,Cq1]=quiver3Dpatch(p1(1),p1(2),p1(3),n1(1),n1(2),n1(3),[],[1 1]);
-    [Fq2,Vq2,Cq2]=quiver3Dpatch(p2(1),p2(2),p2(3),n2(1),n2(2),n2(3),[],[1 1]);
+    [Fq1,Vq1,~]=quiver3Dpatch(p1(1),p1(2),p1(3),n1(1),n1(2),n1(3),[],[1 1]);
+    [Fq2,Vq2,~]=quiver3Dpatch(p2(1),p2(2),p2(3),n2(1),n2(2),n2(3),[],[1 1]);
     
     cFigure; hold on;
     xlabel('x');ylabel('y');zlabel('z');
@@ -53,7 +113,7 @@ R2=[e1;e2;e3];
 
 R_curve=repmat(eye(3,3),[1,1,size(Vg,1)]);
 R_curve(:,:,1)=R1;
-R=R1; 
+R=R1;
 
 if plotOn
     quiverTriad(Vg(1,:),R1,1); drawnow;
@@ -69,7 +129,7 @@ for q=2:size(Vg,1)
     R=R*Rn;
     if plotOn
         quiverTriad(Vg(q,:),R,1);
-        drawnow; 
+        drawnow;
     end
     R_curve(:,:,q)=R;
 end
@@ -96,12 +156,12 @@ Z=reshape(Vs(:,3),size(Z));
 %%
 
 for q=1:1:numSteps
-
-    V2p=[X(q,:)' Y(q,:)' Z(q,:)'];    
+    
+    V2p=[X(q,:)' Y(q,:)' Z(q,:)'];
     V2p=(R_curve(:,:,q)'*V2p')';
-    V2p=V2p+Vg(q*ones(size(V2p,1),1),:);    
+    V2p=V2p+Vg(q*ones(size(V2p,1),1),:);
     if plotOn==1
-        plotV(V2p,'b-','LineWidth',1); drawnow; 
+        plotV(V2p,'b-','LineWidth',1); drawnow;
     end
     X(q,:)=V2p(:,1);
     Y(q,:)=V2p(:,2);
@@ -139,13 +199,13 @@ if numTwist>0
     theta_step_twist=linspace(0,2*pi*numTwist,size(Vg,1));
 end
 
-for q=1:1:size(Vg,1)    
+for q=1:1:size(Vg,1)
     Vn=[X(q,:)' Y(q,:)' Z(q,:)'];
     Vn_mean=mean(Vn,1);
     Vn=Vn-Vn_mean(ones(size(Vn,1),1),:);
     
-    [Rc]=vecAngle2Rot(theta_step(q),w);       
-    Vn=(Rc'*Vn')';    
+    [Rc]=vecAngle2Rot(theta_step(q),w);
+    Vn=(Rc'*Vn')';
     
     if numTwist>0
         [Rc]=vecAngle2Rot(theta_step_twist(q),U(q,:));
@@ -155,7 +215,7 @@ for q=1:1:size(Vg,1)
     Vn=Vn+Vn_mean(ones(size(Vn,1),1),:);
     
     if plotOn
-        plotV(Vn,'k-','lineWidth',1,'MarkerSize',25); drawnow; 
+        plotV(Vn,'k-','lineWidth',1,'MarkerSize',25); drawnow;
     end
     
     X(q,:)=Vn(:,1);
@@ -165,7 +225,7 @@ end
 
 
 % %%
-% 
+%
 % V1s=V1-p1(ones(size(V1,1),1),:);
 % e3=n1;
 % e1=vecnormalize(V1s(1,:));
@@ -173,7 +233,7 @@ end
 % e1=vecnormalize(cross(e2,e3));
 % R1s=[e1;e2;e3];
 % V1s=V1s*R1s';
-% 
+%
 % V2m=mean(V2,1);
 % V2s=V2-p2(ones(size(V2,1),1),:);
 % e3=n2;
@@ -182,109 +242,109 @@ end
 % e1=vecnormalize(cross(e2,e3));
 % R2s=[e1;e2;e3];
 % V2s=V2s*R2s';
-% 
+%
 % % Create coordinate matrices
 % Xs=linspacen(V1s(:,1),V2s(:,1),numSteps)';
 % Ys=linspacen(V1s(:,2),V2s(:,2),numSteps)';
 % Zs=linspacen(V1s(:,3),V2s(:,3),numSteps)';
-% 
+%
 % Vs=[Xs(:) Ys(:) Zs(:)];
-% 
+%
 % Xs=reshape(Vs(:,1),size(Xs));
 % Ys=reshape(Vs(:,2),size(Ys));
 % Zs=reshape(Vs(:,3),size(Zs));
-% 
+%
 % %% Define allong curve coordinate systems
-% 
+%
 % Uf=[diff(Vg,1,1); nan(1,size(Vg,2))];
 % Ub=-[nan(1,size(Vg,2)); flipud(diff(flipud(Vg),1,1))];
 % U=Uf;
 % U(:,:,2)=Ub;
 % U=nanmean(U,3);
 % U=vecnormalize(U);
-% U(end,:)=n2; 
-% 
+% U(end,:)=n2;
+%
 % R=eye(3,3);
 % e3=U(1,:);
 % e2=[0 1 0];
 % e1=vecnormalize(cross(e2,e3));
 % e2=vecnormalize(cross(e3,e1));
-% 
+%
 % R=[e1;e2;e3];
-% 
+%
 % R_cell=cell(1,size(Vg,1));
 % R1=R;
 % R_cell{1}=R1s;
 % for q=2:size(Vg,1)
 %     a=U(q-1,:);
 %     b=U(q,:);
-%     
+%
 %     theta=real(acos(dot(a,b))); %Complex if dot product is out of range [-1.1] due to precission issues
 %     w=vecnormalize(cross(b,a));
 %     [Rn]=vecAngle2Rot(theta,w);
 %     R=R*Rn;
 %     if plotOn
 %         quiverTriad(Vg(q,:),R,1);
-%         drawnow; 
+%         drawnow;
 %     end
 %     R_cell{q}=R;
 % end
-% 
+%
 % %% Fix for rotation
-% 
+%
 % V1_now=[Xs(end,:)' Ys(end,:)' Zs(end,:)'];
 % V2p=V1_now*R_cell{end};%[X(end,:)' Y(end,:)' Z(end,:)'];
 % % V1_now=V1_now+p1(ones(size(V1_now,1),1),:);
 % % V2p=V2p+p1(ones(size(V2p,1),1),:);
 % V2p=V2p+Vg(size(Vg,1)*ones(size(V2p,1),1),:);
-% 
+%
 % if plotOn
 %     plotV(V2p,'r--','lineWidth',3);
-%     drawnow; 
+%     drawnow;
 % end
-% 
+%
 % [~,R]=rigidTransformationMatrixDirect(V2,V2p);
-% 
+%
 % [theta,w]=rot2VecAngle(R);
 % if dot(n2,w)<0
 %     theta=-theta;
 % end
 % theta=theta+(2*pi)*numTwist;
-% 
+%
 % % [R]=vecAngle2Rot(theta,w)
-% 
+%
 % V2p_c=mean(V2p,1);
 % V2p=((V2p-V2p_c(ones(size(V2p,1),1),:))*R)+V2p_c(ones(size(V2p,1),1),:);
-% 
+%
 % % plotV(V2p,'g--','lineWidth',3);
-% 
+%
 % %% Build coordinate matrices
-% 
+%
 % X=zeros(size(Vg,1),size(V1,1));
 % Y=X;
 % Z=X;
-% 
+%
 % theta_w=linspace(0,1,size(Vg,1));
 % theta_step=theta*theta_w;
 % Rc=eye(3,3);
 % for q=1:1:size(Vg,1)
-%     
-%     V1_now=[Xs(q,:)' Ys(q,:)' Zs(q,:)'];    
+%
+%     V1_now=[Xs(q,:)' Ys(q,:)' Zs(q,:)'];
 %     Rn=R_cell{q};
 %     w=Rn(3,:);
-%     [Rc]=vecAngle2Rot(theta_step(q),w);        
+%     [Rc]=vecAngle2Rot(theta_step(q),w);
 %     Vpn=V1_now*Rn*Rc;
 %     Vpn=Vpn+Vg(q*ones(size(Vpn,1),1),:);
 %     if plotOn
 %         plotV(Vpn,'k-','lineWidth',1,'MarkerSize',25);
-%         drawnow; 
+%         drawnow;
 %     end
-%     
+%
 %     X(q,:)=Vpn(:,1);
 %     Y(q,:)=Vpn(:,2);
 %     Z(q,:)=Vpn(:,3);
 % end
-% 
+%
 %% Override start and end with input curves
 
 X(1,:)=V1(:,1);

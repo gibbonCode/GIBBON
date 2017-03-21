@@ -39,11 +39,12 @@ D=pathLength(V);
 %Redefine distance metric for evenly spaced points
 Dg=linspace(D(2),D(end-1),numSteps)';
 
-p=csapsPar(V,p);
-W=[1 1e9 1 1 1e9 1];
-Vg=zeros(numSteps,size(V,2));
-for q=1:1:size(V,2)
+p=csapsPar(V,p); %Scale invariant version of smoothening parameter
+W=[1 1e9 1 1 1e9 1]; %Weights vector
+Vg=zeros(numSteps,size(V,2)); %Initialize curve
+for q=1:1:size(V,2) %Loop across dimensions
     v=V(:,q);
     pp = csaps(D,v,p,[],W)'; %Smoothened ppform
-    Vg(:,q)=ppval(pp,Dg);
+    Vg(:,q)=ppval(pp,Dg); %Evaluate ppform
 end
+

@@ -35,7 +35,7 @@ xlabel('X','FontSize',fontSize);ylabel('Y','FontSize',fontSize); zlabel('Z','Fon
 hold on;
 patch('Faces',Fb,'Vertices',V,'FaceColor','flat','CData',faceBoundaryMarker,'FaceAlpha',faceAlpha1,'lineWidth',edgeWidth,'edgeColor',edgeColor);
 [hp]=patchNormPlot(Fb,V,1);
-colormap(jet(6)); colorbar; 
+colormap(gjet(6)); colorbar; 
 set(gca,'FontSize',fontSize);
 view(3); axis tight;  axis equal;  grid on;
 
