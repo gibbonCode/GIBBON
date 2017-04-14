@@ -23,9 +23,10 @@ cmap=gjet(250);
 %% 
 % Create surface model 
 
-[F,V,~]=geoSphere(0,1); %Geodesic sphere
+[F,V,~]=geoSphere(2,1); %Geodesic sphere
 % [F,V]=parasaurolophus;
 % [F,V]=cow;
+% [F,V]=stanford_bunny;
 
 [F,V,C,indIni]=triPolyDualRefine(F,V);
 
@@ -63,7 +64,8 @@ hp=patch('Faces',FT(CT_c~=1,:),'Vertices',VT,'FaceColor','flat','CData',CT_c(CT_
 
 camlight headlight; 
 % lighting phong;
-colormap(gjet(numel(unique(CT_c)))); colorbar;
+% colormap(gjet(numel(unique(CT_c)))); colorbar;
+colormap(gray(250));
 
 
 set(gca,'FontSize',fontSize);

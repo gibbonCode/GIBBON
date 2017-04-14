@@ -167,8 +167,8 @@ if ~isfield(inputStruct,'minRegionMarker')
     inputStruct.minRegionMarker=2;
 end
 
-if ~isfield(inputStruct,'modelName');
-    if isfield(inputStruct,'smeshName'); %WILL BE REMOVED
+if ~isfield(inputStruct,'modelName')
+    if isfield(inputStruct,'smeshName') %WILL BE REMOVED
         inputStruct.modelName=inputStruct.smeshName;
         warning('smeshStruct.smeshName input will be replaced by smeshStruct.modelName in future releases!');    
         copyFiles=1;
@@ -320,14 +320,14 @@ if sizingOn
     
     %Compute Delauney tesselation / Mesh using tetgen
 
-    runString=['"',runNameTetGen,'" ',[inputStruct.stringOpt,'m'],' "',runModelName,'"']; % Old which may not work with paths with spaces:  %     runString=[runNameTetGen,' ',[inputStruct.stringOpt,'m'],' ',runModelName];
+    runString=['"',runNameTetGen,'" ',[inputStruct.stringOpt,'m'],' "',runModelName,'"']; 
             
     disp(['--- Running TetGen to mesh initial Delaunay tesselation using sizing function--- ',datestr(now)]);
     [runStatus,runOut]=system(runString,'-echo');
     dispDoneGibbonCode;
 else
     %Compute Delauney tesselation / Mesh using tetgen
-    runString=['"',runNameTetGen,'" ',inputStruct.stringOpt,' "',runModelName,'"']; %runString=[runNameTetGen,' ',inputStruct.stringOpt,' ',runModelName];
+    runString=['"',runNameTetGen,'" ',inputStruct.stringOpt,' "',runModelName,'"']; 
     disp(['--- Running TetGen to mesh input boundary--- ',datestr(now)]);
     [runStatus,runOut]=system(runString,'-echo');
     dispDoneGibbonCode;

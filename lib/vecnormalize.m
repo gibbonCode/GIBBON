@@ -1,12 +1,12 @@
-function [A_norm]=vecnormalize(A)
+function [V_norm]=vecnormalize(V)
 
-if isvector(A)
-    H=sqrt(sum(A.^2));
+if isvector(V)
+    H=sqrt(sum(V.^2));
 else
-    H=sqrt(sum(A.^2,2));    
+    H=sqrt(sum(V.^2,2));    
 end
-H(H<eps)=eps; %Avoids introducing NAN due to devision by zero for zero length vectors
+logicInvalid=H==0;
 
-A_norm=A./H(:,ones(size(A,2),1));
-
+V_norm=V./H(:,ones(size(V,2),1));
+V_norm(logicInvalid,:)=0; %Set invalid lengths to 0
 end

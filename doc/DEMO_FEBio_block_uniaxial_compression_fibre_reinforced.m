@@ -267,7 +267,7 @@ if runFlag==1 %i.e. a succesful run
     
     %% IMPORTING NODAL DISPLACEMENT RESULTS
     % Importing nodal displacements from a log file
-    [~, N_disp_mat,~]=importFEBio_logfile(FEB_struct.run_output_names{1}); %Nodal displacements
+    [~, N_disp_mat,~]=importFEBio_logfile(fullfile(savePath,FEB_struct.run_output_names{1})); %Nodal displacements
     
     DN=N_disp_mat(:,2:end,end); %Final nodal displacements
     
@@ -294,7 +294,7 @@ if runFlag==1 %i.e. a succesful run
     
     %% IMPORTING NODAL FORCES
     % Importing nodal forces from a log file
-    [time_mat, N_force_mat,~]=importFEBio_logfile(FEB_struct.run_output_names{2}); %Nodal displacements
+    [time_mat, N_force_mat,~]=importFEBio_logfile(fullfile(savePath,FEB_struct.run_output_names{2})); %Nodal displacements
     
     FZ_set=N_force_mat(bcPrescribeList,end,:); %Final nodal displacements
     

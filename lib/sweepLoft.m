@@ -1,5 +1,7 @@
 function [F,V,C]=sweepLoft(varargin)
 
+warning('UNFINISHED FUNCTION WORK IN PROGRESS')
+
 % function [F,V,C]=sweepLoft(V1,V2,n1,n2,Vg,numSteps,numTwist,plotOn)
 %------------------------------------------------------------------------
 %
@@ -17,8 +19,8 @@ function [F,V,C]=sweepLoft(varargin)
 %
 % Kevin Mattheus Moerman
 % gibbon.toolbox@gmail.com
-% 
-% 2016/08/01 Created 
+%
+% 2016/08/01 Created
 %
 %------------------------------------------------------------------------
 
@@ -37,15 +39,15 @@ numSteps=[];
 numTwist=0;
 plotOn=0;
 
-switch nargin        
+switch nargin
     case 6
         Vg=varargin{5};
-        numSteps=varargin{6};        
+        numSteps=varargin{6};
     case 7
         Vg=varargin{5};
         numSteps=varargin{6};
-        numTwist=varargin{7};        
-    case 8        
+        numTwist=varargin{7};
+    case 8
         numSteps=varargin{6};
         numTwist=varargin{7};
         plotOn=varargin{8};
@@ -61,30 +63,28 @@ p1=Vg(1,:);
 p2=Vg(end,:);
 
 %%
+%Resample guid curve evenly using numSteps
+[Vg] = evenlySampleCurve(Vg,numSteps,'linear',0);
 
-if size(Vg,1)~=numSteps
-    [Vg] = evenlySampleCurve(Vg,numSteps,'linear',0);
-end
-
+stepSize=sqrt(sum((Vg(1,:)-Vg(2,:)).^2,2));
 %%
-if plotOn
-    [Fq1,Vq1,~]=quiver3Dpatch(p1(1),p1(2),p1(3),n1(1),n1(2),n1(3),[],[1 1]);
-    [Fq2,Vq2,~]=quiver3Dpatch(p2(1),p2(2),p2(3),n2(1),n2(2),n2(3),[],[1 1]);
-    
-    cFigure; hold on;
-    xlabel('x');ylabel('y');zlabel('z');
-    plotV(V1,'r-','lineWidth',3);
-    plotV(V2,'b-','lineWidth',3);
-    plotV(Vg,'g-','lineWidth',3);
-    plotV(p1,'r.','MarkerSize',15);
-    plotV(p2,'b.','MarkerSize',15);
-    gpatch(Fq1,Vq1,'r');
-    gpatch(Fq2,Vq2,'b');
-    axis tight; axis equal; view(3);
-    grid on; box on; grid on;
-    drawnow;
-end
 
+if plotOn
+    cFigure;
+    for q=1:1:3
+        subplot(1,3,q);
+        hold on;
+        plotV(V1,'r-','lineWidth',3);
+        plotV(V2,'b-','lineWidth',3);
+        plotV(Vg,'g-','lineWidth',3);
+        plotV(p1,'r.','MarkerSize',15);
+        plotV(p2,'b.','MarkerSize',15);
+        quiverVec(p1,n1,stepSize,'r');
+        quiverVec(p2,n2,stepSize,'b');
+        axisGeom;
+        drawnow;
+    end
+end
 
 %% Define allong curve coordinate systems
 
@@ -116,7 +116,7 @@ R_curve(:,:,1)=R1;
 R=R1;
 
 if plotOn
-    quiverTriad(Vg(1,:),R1,1); drawnow;
+    quiverTriad(Vg(1,:),R1,stepSize); drawnow;
 end
 
 for q=2:size(Vg,1)
@@ -124,12 +124,17 @@ for q=2:size(Vg,1)
     b=U(q,:);
     
     theta=real(acos(dot(a,b))); %Complex if dot product is out of range [-1.1] due to precission issues
+    
     w=vecnormalize(cross(b,a));
-    [Rn]=vecAngle2Rot(theta,w);
-    R=R*Rn;
-    if plotOn
-        quiverTriad(Vg(q,:),R,1);
-        drawnow;
+    
+    if norm(w)>0.5
+        [Rn]=vecAngle2Rot(theta,w);
+        R=R*Rn;
+        if plotOn
+            subplot(1,3,1);
+            quiverTriad(Vg(q,:),R,stepSize);
+            drawnow;
+        end
     end
     R_curve(:,:,q)=R;
 end
@@ -160,8 +165,13 @@ for q=1:1:numSteps
     V2p=[X(q,:)' Y(q,:)' Z(q,:)'];
     V2p=(R_curve(:,:,q)'*V2p')';
     V2p=V2p+Vg(q*ones(size(V2p,1),1),:);
+    
     if plotOn==1
+        subplot(1,3,2);
+        hold on;
         plotV(V2p,'b-','LineWidth',1); drawnow;
+        axisGeom;
+        drawnow;
     end
     X(q,:)=V2p(:,1);
     Y(q,:)=V2p(:,2);
@@ -172,21 +182,50 @@ end
 
 V2p=[X(end,:)' Y(end,:)' Z(end,:)'];
 
-[~,R]=rigidTransformationMatrixDirect(V2,V2p);
+if size(V2,1)==3
+    [V2_temp] = evenlySampleCurve(V2,size(V2,1)*3,'linear',0);
+    [V2p_temp] = evenlySampleCurve(V2p,size(V2,1)*3,'linear',0);
+    [~,Rc]=rigidTransformationMatrixDirect(V2_temp,V2p_temp);
+else
+    [~,Rc]=rigidTransformationMatrixDirect(V2,V2p);
+end
 
-[theta,w]=rot2VecAngle(R);
+% [theta,w]=rot2VecAngle(Rc);
+theta=0; w=n2';
 
-%Flip angle
-% if dot(U(end,:)',w)<0
-%      theta=-theta;
-% end
+if plotOn==1
+    quiverVec(mean_V2,w',stepSize,'k'); drawnow;
+end
+
+
+
+%%
+W=repmat(w(:)',[numSteps,1]);
+for q=numSteps-1:-1:1
+    
+    R=R_curve(:,:,q);
+    
+    mean_V_now=mean([X(q,:)' Y(q,:)' Z(q,:)'],1);
+    
+%     wt=w'*R;
+    wt=(R'*w)';
+    if plotOn==1
+        quiverVec(mean_V_now,wt,stepSize,'k'); drawnow;
+    end
+    W(q,:)=wt(:)';
+    
+end
+
+%%
 
 V2p_c=mean(V2p,1);
 V2p=V2p-V2p_c(ones(size(V2p,1),1),:);
-V2p=(R'*V2p')';
+V2p=(Rc'*V2p')';
 V2p=V2p+V2p_c(ones(size(V2p,1),1),:);
 
 if plotOn==1
+    subplot(1,3,2);
+    hold on;
     plotV(V2p,'g--','lineWidth',3); drawnow;
 end
 
@@ -194,6 +233,7 @@ end
 
 theta_w=linspace(0,1,size(Vg,1));
 theta_step=theta*theta_w;
+
 
 if numTwist>0
     theta_step_twist=linspace(0,2*pi*numTwist,size(Vg,1));
@@ -204,9 +244,9 @@ for q=1:1:size(Vg,1)
     Vn_mean=mean(Vn,1);
     Vn=Vn-Vn_mean(ones(size(Vn,1),1),:);
     
-    [Rc]=vecAngle2Rot(theta_step(q),w);
+    [Rc]=vecAngle2Rot(theta_step(q),W(q,:));
     Vn=(Rc'*Vn')';
-    
+
     if numTwist>0
         [Rc]=vecAngle2Rot(theta_step_twist(q),U(q,:));
         Vn=(Rc'*Vn')';
@@ -214,7 +254,8 @@ for q=1:1:size(Vg,1)
     
     Vn=Vn+Vn_mean(ones(size(Vn,1),1),:);
     
-    if plotOn
+    if plotOn==1
+        subplot(1,3,2);
         plotV(Vn,'k-','lineWidth',1,'MarkerSize',25); drawnow;
     end
     
@@ -222,7 +263,6 @@ for q=1:1:size(Vg,1)
     Y(q,:)=Vn(:,2);
     Z(q,:)=Vn(:,3);
 end
-
 
 % %%
 %
@@ -374,7 +414,8 @@ F=[F;F_sub];
 C(end-size(F_sub,1):end,:)=C(end-size(F_sub,1):end,:)+0.5;
 C=round(C);
 
-if plotOn
+if plotOn==1
+    subplot(1,3,3);
     h=gpatch(F,V,C,'k',1);
     colormap gjet;
     camlight headlight;

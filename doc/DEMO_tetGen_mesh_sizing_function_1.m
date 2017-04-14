@@ -18,7 +18,7 @@ edgeColor=0.25*ones(1,3);
 edgeWidth=1.5; 
 
 % path names
-defaultFolder = fileparts(fileparts(mfilename('fullpath')));
+defaultFolder = fileparts(fileparts(fileparts(mfilename('fullpath'))));
 savePath=fullfile(defaultFolder,'data','temp');
 
 %%

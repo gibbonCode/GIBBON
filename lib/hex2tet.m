@@ -1,4 +1,30 @@
-function [TET,Vtet,C]=hex2tet(HEX,V,C,tetOpt)
+function [TET,Vtet,C]=hex2tet(varargin)
+
+% function [TET,Vtet,C]=hex2tet(HEX,V,C,tetOpt)
+
+%%
+
+switch nargin
+    case 2
+        HEX=varargin{1};
+        V=varargin{2};
+        C=[];
+        tetOpt=1;
+    case 3
+        HEX=varargin{1};
+        V=varargin{2};
+        C=varargin{3};
+        tetOpt=1;
+    case 4
+        HEX=varargin{1};
+        V=varargin{2};
+        C=varargin{3};
+        tetOpt=varargin{4};
+    otherwise
+        error('Wrong number of input arguments');
+end
+
+%%
 
 C=C(:);
 switch tetOpt

@@ -8,7 +8,7 @@ switch nargin
     case 2
         E=varargin{1};
         V=varargin{2};
-        cpar=[];
+        cPar=[];
     case 3
         E=varargin{1};
         V=varargin{2};

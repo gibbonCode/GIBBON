@@ -128,6 +128,8 @@ end
 % Start |anim8| gui
 anim8(hf,animStruct);
 
+dfsdfsa
+
 %% Example 2a:  Animating multiple graphics features, points and curves
 
 %%

@@ -18,7 +18,7 @@ cMap=gjet(250);
 %%
 % path names
 filePath=mfilename('fullpath');
-savePath=fullfile(fileparts(filePath),'data','temp');
+savePath=fullfile(fileparts(fileparts(filePath)),'data','temp');
 modelName=fullfile(savePath,'tetgenmodel');
 
 %% MESHING A SINGLE REGION MODEL
@@ -77,10 +77,11 @@ inputStruct.modelName=modelName;
 [meshOutput]=runTetGen(inputStruct); %Run tetGen 
 
 %% 
-% Access model element and patch data 
-F=meshOutput.faces;
+% Access model element and patch data
+Fb=meshOutput.facesBoundary;
+Cb=meshOutput.boundaryMarker;
 V=meshOutput.nodes;
-C=meshOutput.faceMaterialID;
+CE=meshOutput.elementMaterialID;
 E=meshOutput.elements;
 
 %% 
@@ -89,21 +90,22 @@ E=meshOutput.elements;
 %Selecting half of the model to see interior
 Y=V(:,2); YE=mean(Y(E),2);
 L=YE>mean(Y);
-[Fs,Cs]=element2patch(E(L,:),C(L),'tet4');
+[Fs,Cs]=element2patch(E(L,:),CE(L),'tet4');
 
 hf1=cFigure;
 subplot(1,2,1);
 title('Solid tetrahedral mesh model','FontSize',fontSize);
 xlabel('X','FontSize',fontSize); ylabel('Y','FontSize',fontSize); zlabel('Z','FontSize',fontSize); hold on;
-hps=patch('Faces',F,'Vertices',V,'FaceColor','flat','CData',C,'lineWidth',edgeWidth,'edgeColor',edgeColor);
+hps=patch('Faces',Fb,'Vertices',V,'FaceColor','flat','CData',Cb,'lineWidth',edgeWidth,'edgeColor',edgeColor,'FaceAlpha',faceAlpha1);
 view(3); axis tight;  axis equal;  grid on;
 colormap(cMap); 
 camlight headlight;
 set(gca,'FontSize',fontSize);
+
 subplot(1,2,2);
 title('Cut view of Solid tetrahedral mesh model','FontSize',fontSize);
 xlabel('X','FontSize',fontSize); ylabel('Y','FontSize',fontSize); zlabel('Z','FontSize',fontSize); hold on;
-hps=patch('Faces',Fs,'Vertices',V,'FaceColor','flat','CData',Cs,'lineWidth',edgeWidth,'edgeColor',edgeColor);
+hps=patch('Faces',Fs,'Vertices',V,'FaceColor','flat','CData',Cs,'lineWidth',edgeWidth,'edgeColor',edgeColor,'Marker','.','MarkerEdgeColor','k','MarkerSize',markerSize);
 view(3); axis tight;  axis equal;  grid on;
 colormap(cMap); 
 camlight headlight;
@@ -192,9 +194,10 @@ inputStruct.modelName=modelName;
 
 %% 
 % Access model element and patch data
-F=meshOutput.faces;
+Fb=meshOutput.facesBoundary;
+Cb=meshOutput.boundaryMarker;
 V=meshOutput.nodes;
-C=meshOutput.faceMaterialID;
+CE=meshOutput.elementMaterialID;
 E=meshOutput.elements;
 
 %% 
@@ -203,21 +206,22 @@ E=meshOutput.elements;
 %Selecting half of the model to see interior
 Y=V(:,2); YE=mean(Y(E),2);
 L=YE>mean(Y);
-[Fs,Cs]=element2patch(E(L,:),C(L),'tet4');
+[Fs,Cs]=element2patch(E(L,:),CE(L),'tet4');
 
 hf1=cFigure;
 subplot(1,2,1);
 title('Solid tetrahedral mesh model','FontSize',fontSize);
 xlabel('X','FontSize',fontSize); ylabel('Y','FontSize',fontSize); zlabel('Z','FontSize',fontSize); hold on;
-hps=patch('Faces',F,'Vertices',V,'FaceColor','flat','CData',C,'lineWidth',edgeWidth,'edgeColor',edgeColor);
+hps=patch('Faces',Fb,'Vertices',V,'FaceColor','flat','CData',Cb,'lineWidth',edgeWidth,'edgeColor',edgeColor,'FaceAlpha',faceAlpha1);
 view(3); axis tight;  axis equal;  grid on;
 colormap(cMap); 
 camlight headlight;
 set(gca,'FontSize',fontSize);
+
 subplot(1,2,2);
 title('Cut view of Solid tetrahedral mesh model','FontSize',fontSize);
 xlabel('X','FontSize',fontSize); ylabel('Y','FontSize',fontSize); zlabel('Z','FontSize',fontSize); hold on;
-hps=patch('Faces',Fs,'Vertices',V,'FaceColor','flat','CData',Cs,'lineWidth',edgeWidth,'edgeColor',edgeColor);
+hps=patch('Faces',Fs,'Vertices',V,'FaceColor','flat','CData',Cs,'lineWidth',edgeWidth,'edgeColor',edgeColor,'Marker','.','MarkerEdgeColor','k','MarkerSize',markerSize);
 view(3); axis tight;  axis equal;  grid on;
 colormap(cMap); 
 camlight headlight;
@@ -256,8 +260,7 @@ title('Multi-region surface model','FontSize',fontSize);
 xlabel('X','FontSize',fontSize); ylabel('Y','FontSize',fontSize); zlabel('Z','FontSize',fontSize);
 hold on;
 
-hp=patch('Faces',F,'Vertices',V);
-set(hp,'FaceColor','flat','CData',C,'FaceAlpha',faceAlpha1,'lineWidth',edgeWidth,'edgeColor',edgeColor);
+hp=patch('Faces',F,'Vertices',V,'FaceColor','flat','CData',C,'FaceAlpha',faceAlpha1,'edgeColor','none');
 camlight headlight;
 colormap(cMap); 
 set(gca,'FontSize',fontSize);
@@ -269,7 +272,18 @@ faceBoundaryMarker=C;
 
 %%
 % Define region points
-V_regions=[0.5 0 0; 0 0 0];
+
+%Find an interior point in region 1
+logicRegion=ismember(faceBoundaryMarker,[1 2]);
+[V_in_1]=getInnerPoint(F(logicRegion,:),V);
+plotV(V_in_1,'r.','MarkerSize',25);
+
+%Find an interior point in region 1
+logicRegion=ismember(faceBoundaryMarker,[2 3]);
+[V_in_2]=getInnerPoint(F(logicRegion,:),V);
+plotV(V_in_2,'r.','MarkerSize',25);
+
+V_regions=[V_in_1; V_in_2];
 
 %%
 % Define hole points
@@ -303,9 +317,10 @@ inputStruct.modelName=modelName;
 
 %% 
 % Access model element and patch data
-F=meshOutput.faces;
+Fb=meshOutput.facesBoundary;
+Cb=meshOutput.boundaryMarker;
 V=meshOutput.nodes;
-C=meshOutput.faceMaterialID;
+CE=meshOutput.elementMaterialID;
 E=meshOutput.elements;
 
 %% 
@@ -314,21 +329,22 @@ E=meshOutput.elements;
 %Selecting half of the model to see interior
 Y=V(:,2); YE=mean(Y(E),2);
 L=YE>mean(Y);
-[Fs,Cs]=element2patch(E(L,:),C(L),'tet4');
+[Fs,Cs]=element2patch(E(L,:),CE(L),'tet4');
 
 hf1=cFigure;
 subplot(1,2,1);
 title('Solid tetrahedral mesh model','FontSize',fontSize);
 xlabel('X','FontSize',fontSize); ylabel('Y','FontSize',fontSize); zlabel('Z','FontSize',fontSize); hold on;
-hps=patch('Faces',F,'Vertices',V,'FaceColor','flat','CData',C,'lineWidth',edgeWidth,'edgeColor',edgeColor);
+hps=patch('Faces',Fb,'Vertices',V,'FaceColor','flat','CData',Cb,'lineWidth',edgeWidth,'edgeColor',edgeColor,'FaceAlpha',faceAlpha1);
 view(3); axis tight;  axis equal;  grid on;
 colormap(cMap); 
 camlight headlight;
 set(gca,'FontSize',fontSize);
+
 subplot(1,2,2);
 title('Cut view of Solid tetrahedral mesh model','FontSize',fontSize);
 xlabel('X','FontSize',fontSize); ylabel('Y','FontSize',fontSize); zlabel('Z','FontSize',fontSize); hold on;
-hps=patch('Faces',Fs,'Vertices',V,'FaceColor','flat','CData',Cs,'lineWidth',edgeWidth,'edgeColor',edgeColor);
+hps=patch('Faces',Fs,'Vertices',V,'FaceColor','flat','CData',Cs,'lineWidth',edgeWidth,'edgeColor',edgeColor,'Marker','.','MarkerEdgeColor','k','MarkerSize',markerSize);
 view(3); axis tight;  axis equal;  grid on;
 colormap(cMap); 
 camlight headlight;
@@ -367,9 +383,10 @@ inputStruct.modelName=modelName;
 
 %% 
 % Access model element and patch data
-F=meshOutput.faces;
+Fb=meshOutput.facesBoundary;
+Cb=meshOutput.boundaryMarker;
 V=meshOutput.nodes;
-C=meshOutput.faceMaterialID;
+CE=meshOutput.elementMaterialID;
 E=meshOutput.elements;
 
 %% 
@@ -378,29 +395,22 @@ E=meshOutput.elements;
 %Selecting half of the model to see interior
 Y=V(:,2); YE=mean(Y(E),2);
 L=YE>mean(Y);
-[Fs,Cs]=element2patch(E(L,:),C(L),'tet4');
+[Fs,Cs]=element2patch(E(L,:),CE(L),'tet4');
 
 hf1=cFigure;
-subplot(1,3,1);
-title('The quadrilateral surface model','FontSize',fontSize);
-patch('Faces',Fq,'Vertices',Vq,'FaceColor','flat','CData',faceBoundaryMarker_q,'FaceAlpha',faceAlpha1,'lineWidth',edgeWidth,'edgeColor',edgeColor);
-
-colormap(jet(6)); colorbar; 
-set(gca,'FontSize',fontSize);
-view(3); axis tight;  axis equal;  grid on;
-
-subplot(1,3,2);
+subplot(1,2,1);
 title('Solid tetrahedral mesh model','FontSize',fontSize);
 xlabel('X','FontSize',fontSize); ylabel('Y','FontSize',fontSize); zlabel('Z','FontSize',fontSize); hold on;
-hps=patch('Faces',F,'Vertices',V,'FaceColor','flat','CData',C,'lineWidth',edgeWidth,'edgeColor',edgeColor);
+hps=patch('Faces',Fb,'Vertices',V,'FaceColor','flat','CData',Cb,'lineWidth',edgeWidth,'edgeColor',edgeColor,'FaceAlpha',faceAlpha1);
 view(3); axis tight;  axis equal;  grid on;
 colormap(cMap); 
 camlight headlight;
 set(gca,'FontSize',fontSize);
-subplot(1,3,3);
+
+subplot(1,2,2);
 title('Cut view of Solid tetrahedral mesh model','FontSize',fontSize);
 xlabel('X','FontSize',fontSize); ylabel('Y','FontSize',fontSize); zlabel('Z','FontSize',fontSize); hold on;
-hps=patch('Faces',Fs,'Vertices',V,'FaceColor','flat','CData',Cs,'lineWidth',edgeWidth,'edgeColor',edgeColor);
+hps=patch('Faces',Fs,'Vertices',V,'FaceColor','flat','CData',Cs,'lineWidth',edgeWidth,'edgeColor',edgeColor,'Marker','.','MarkerEdgeColor','k','MarkerSize',markerSize);
 view(3); axis tight;  axis equal;  grid on;
 colormap(cMap); 
 camlight headlight;
@@ -419,7 +429,6 @@ r3=r1/3;
 
 % Merging node sets
 V1=[V_sphere;V_core;V_core2];
-V1(end+1:end+5,:)=rand(5,3);
 
 F1=[F_sphere;F_core+size(V_sphere,1);F_core2+size(V_sphere,1)+size(V_core,1)];
 
@@ -461,9 +470,10 @@ inputStruct.tetType='tet10';
 
 %% 
 % Access model element and patch data
-F=meshOutput.faces;
+Fb=meshOutput.facesBoundary;
+Cb=meshOutput.boundaryMarker;
 V=meshOutput.nodes;
-C=meshOutput.faceMaterialID;
+CE=meshOutput.elementMaterialID;
 E=meshOutput.elements;
 
 %% 
@@ -472,31 +482,22 @@ E=meshOutput.elements;
 %Selecting half of the model to see interior
 Y=V(:,2); YE=mean(Y(E),2);
 L=YE>mean(Y);
-[Fs,Cs]=element2patch(E(L,:),C(L),'tet10');
+[Fs,Cs]=element2patch(E(L,:),CE(L),'tet10');
 
 hf1=cFigure;
-subplot(1,3,1);
-title('Surface model','FontSize',fontSize);
-patch('Faces',F1,'Vertices',V1,'FaceColor','flat','CData',faceBoundaryMarker,'FaceAlpha',faceAlpha1,'lineWidth',edgeWidth,'edgeColor',edgeColor);
-
-colormap(jet(6)); colorbar; 
-set(gca,'FontSize',fontSize);
-view(3); axis tight;  axis equal;  grid on;
-
-subplot(1,3,2);
-title('10-node tet. mesh model','FontSize',fontSize);
+subplot(1,2,1);
+title('Solid tetrahedral mesh model','FontSize',fontSize);
 xlabel('X','FontSize',fontSize); ylabel('Y','FontSize',fontSize); zlabel('Z','FontSize',fontSize); hold on;
-hps=patch('Faces',F,'Vertices',V,'FaceColor','flat','CData',C,'lineWidth',edgeWidth,'edgeColor',edgeColor,'Marker','.','MarkerEdgeColor','k','MarkerSize',markerSize);
-
+hps=patch('Faces',Fb,'Vertices',V,'FaceColor','flat','CData',Cb,'lineWidth',edgeWidth,'edgeColor',edgeColor,'FaceAlpha',faceAlpha1);
 view(3); axis tight;  axis equal;  grid on;
 colormap(cMap); 
 camlight headlight;
 set(gca,'FontSize',fontSize);
-subplot(1,3,3);
-title('Cut view 10-node tet. mesh model','FontSize',fontSize);
+
+subplot(1,2,2);
+title('Cut view of Solid tetrahedral mesh model','FontSize',fontSize);
 xlabel('X','FontSize',fontSize); ylabel('Y','FontSize',fontSize); zlabel('Z','FontSize',fontSize); hold on;
 hps=patch('Faces',Fs,'Vertices',V,'FaceColor','flat','CData',Cs,'lineWidth',edgeWidth,'edgeColor',edgeColor,'Marker','.','MarkerEdgeColor','k','MarkerSize',markerSize);
-
 view(3); axis tight;  axis equal;  grid on;
 colormap(cMap); 
 camlight headlight;

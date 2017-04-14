@@ -154,7 +154,7 @@ while fileFound==0
                 runFlag=0;
                 FEBio_go=1;
                 if FEBioRunStruct.disp_on==1
-                    warning(['--- FAILED: Log file was not created in time. FEBio likely failed proir to logfile creation! --- ',datestr(now)]);
+                    warning(['--- FAILED: Log file was not created in time. FEBio likely failed prior to logfile creation! --- ',datestr(now)]);
                     if runExternal==1
                         warning('Try setting FEBioRunStruct.runMode to "internal" to see potential errors prior to log file creation');
                     end

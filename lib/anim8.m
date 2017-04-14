@@ -28,7 +28,7 @@ tickSizeMajor_I=ceil(w/20);
 
 %% Initialize display
 
-figure(hf);
+figure(hf); drawnow; 
 
 %Initialize slider
 jSlider = javax.swing.JSlider(minT,maxT);

@@ -60,6 +60,14 @@ switch quiverStyleOpt
         end
 end
 
+if size(P,2)==2
+    P(:,3)=0;
+end
+
+if size(V,2)==2
+    V(:,3)=0;
+end
+
 if numel(vecSize)==1
     vecSize=vecSize*ones(1,2);
 end
