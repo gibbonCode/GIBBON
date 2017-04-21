@@ -5,7 +5,7 @@
 - [Project Summary](#Summary)
 - [Installation](#Installation)
 - [Getting started](#Start)
-- [Contributin](#Contributin)
+- [Contributing](#Contributing)
 - [CodeOfConduct](#CodeOfConduct)
 - [Road Map](#RoadMap)
 
