@@ -31,8 +31,7 @@ pointSpacing=0.1;
 
 [F,V]=regionTriMesh2D(regionCell,pointSpacing,1,plotOn);
 plotV(V1,'b-','LineWidth',2);
-
-axis tight; view(3);
+axis tight; 
 drawnow;
 
 %% CREATING A REGION MESH WITH HOLES
@@ -78,7 +77,7 @@ pointSpacing=0.5;
 plotV(V1,'b-','LineWidth',2);
 plotV(V2,'b-','LineWidth',2);
 plotV(V3,'b-','LineWidth',2);
-axis tight; view(3);
+axis tight; 
 drawnow;
 
 %% 

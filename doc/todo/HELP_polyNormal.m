@@ -1,11 +1,11 @@
-%% vecnormalize
-% Below is a demonstration of the features of the |vecnormalize| function
+%% polyNormal
+% Below is a demonstration of the features of the |polyNormal| function
 
 %%
 clear; close all; clc;
 
 %% Syntax
-% |[V_norm]=vecnormalize(V);|
+% |[varargout]=polyNormal(V_poly);|
 
 %% Description 
 % UNDOCUMENTED 

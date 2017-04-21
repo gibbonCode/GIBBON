@@ -1,11 +1,11 @@
-%% vecnormalize
-% Below is a demonstration of the features of the |vecnormalize| function
+%% runTetGenSmesh
+% Below is a demonstration of the features of the |runTetGenSmesh| function
 
 %%
 clear; close all; clc;
 
 %% Syntax
-% |[V_norm]=vecnormalize(V);|
+% |[meshOutput]=runTetGenSmesh(inputStruct);|
 
 %% Description 
 % UNDOCUMENTED 

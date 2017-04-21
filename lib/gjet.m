@@ -12,6 +12,6 @@ cMap=[51  105 232;... %Blue
       238 178 17;... %Yelow
       213 15  37;... %red
     ];
-cMap=cMap./256;
+cMap=cMap./255;
 
 [cMap]=resampleColormap(cMap,n);

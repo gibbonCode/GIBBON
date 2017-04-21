@@ -1,4 +1,4 @@
-function [F,V]=regionTriMesh2D(regionCell,pointSpacing,resampleCurveOpt,plotOn)
+function [F,V]=regionTriMesh2D(varargin)
 
 % function [F,V]=regionTriMesh2D(regionCell,pointSpacing,resampleCurveOpt,plotOn)
 % ------------------------------------------------------------------------
@@ -18,9 +18,48 @@ function [F,V]=regionTriMesh2D(regionCell,pointSpacing,resampleCurveOpt,plotOn)
 % this boundary and the space inside them is therefore not meshed.
 %
 % Kevin Mattheus Moerman
-% kevinmoerman@hotmail.com
+%
 % 2013/14/08
+% 2017/18/04 Added varargin style with defaults for missing parameters
+% 2017/18/04 Fixed bug which caused accidental removal of interior points
+% for multiregion meshes or meshes containing holes.
 %------------------------------------------------------------------------
+
+%%
+
+switch nargin
+    case 1
+        regionCell=varargin{1};
+        pointSpacing=[];
+        resampleCurveOpt=0;
+        plotOn=0;
+    case 2
+        regionCell=varargin{1};
+        pointSpacing=varargin{2};
+        resampleCurveOpt=0;
+        plotOn=0;
+    case 3
+        regionCell=varargin{1};
+        pointSpacing=varargin{2};
+        resampleCurveOpt=varargin{3};
+        plotOn=0;
+    case 4
+        regionCell=varargin{1};
+        pointSpacing=varargin{2};
+        resampleCurveOpt=varargin{3};
+        plotOn=varargin{4};
+end
+
+if isempty(pointSpacing)
+    %If pointSpacing is empty it will be based on the point spacing of the
+    %input curves
+    pointSpacingCurves=zeros(1,numel(regionCell));
+    for q=1:1:numel(regionCell)
+        V_now=regionCell{q};
+        pointSpacingCurves(q)=mean(sqrt(sum(diff(V_now,1,1).^2,2)));        
+    end    
+    pointSpacing=mean(pointSpacingCurves);
+end
 
 %% CONTROL PARAMETERS
 interpMethod='linear';
@@ -28,37 +67,40 @@ closeLoopOpt=1;
 minConnectivity=4; %Minimum connectivity for points
 
 %% PLOT SETTINGS
-if plotOn==1;
-    figColor='w'; figColorDef='white';
+if plotOn==1
     fontSize=20;
-    fAlpha=1;
+    faceAlpha=1;
     markerSize=20;
-    faceColor='r';
+    c=gjet(4);
+    faceColor=c(4,:);
 end
 
 %% Get region curves and define constraints for Delaunay tesselation
 
 V=[]; %Curve points
-VS=[]; %Curve points
+VSS=[]; %Curve points
 C=[]; %Constraints
 nss=0; %Number of points parameter for constraint index correction
 for qCurve=1:1:numel(regionCell)
     %Get curve
     Vs=regionCell{qCurve};
     
-    %Calculate required number of points for curve
-    np=ceil(max(pathLength(Vs))./pointSpacing);
+    %Resample curve evenly based on point spacing
+    np=ceil(max(pathLength(Vs))./pointSpacing); %Calculate required number of points for curve
     [Vss]=evenlySampleCurve(Vs,np,interpMethod,closeLoopOpt);
+    
+    %Create refined set for distance based edge point removal
+    [Vss_split]=evenlySampleCurve(Vs,np*2,interpMethod,closeLoopOpt);
     
     %Resample curve
     if resampleCurveOpt==1
-       Vs=Vss;
+        Vs=Vss;
     end
     
     %Collect curve points
     V=[V;Vs]; %Original or interpolated set
     
-    VS=[V;Vss]; %Interpolated set
+    VSS=[VSS;Vss_split]; %Interpolated set
     
     %Create curve constrains
     ns= size(Vs,1);
@@ -69,14 +111,14 @@ end
 
 %% DEFINE INTERNAL MESH SEED POINTS
 
-methodOpt=2; 
+methodOpt=2;
 
 %region extrema
 maxVi=max(V(:,[1 2]),[],1);
 minVi=min(V(:,[1 2]),[],1);
 
 switch methodOpt
-    case 1 %Aproximate regular triangles but more symmetric
+    case 1 %Approximate regular triangles but more symmetric
         %Mesh point spacing for aproximately equilateral triangular mesh
         pointSpacingXY=[pointSpacing pointSpacing.*0.5.*sqrt(3)];
         
@@ -104,14 +146,12 @@ switch methodOpt
         X=Vt(:,1); Y=Vt(:,2);
 end
 
-X=X(:); 
+X=X(:);
 Y=Y(:);
 
-%%
+%% Remove edge points
 
-[VSS]=subCurve(VS,2); %Point spacing is aproximately pointSpacing/3
-
-[D,~]=minDist([X Y],VSS); 
+[D,~]=minDist([X Y],VSS);
 L=D>(pointSpacing*0.5*sqrt(3))/2;
 
 X=X(L);
@@ -131,6 +171,8 @@ DT = delaunayTriangulation(V(:,1),V(:,2),C);
 V=DT.Points;
 F=DT.ConnectivityList;
 
+%% PLOTTING
+    
 %Remove poorly connected points associated with poor triangles
 [~,IND_V]=tesIND(F,V,0); % [~,IND_V]=patchIND(F,V);
 
@@ -183,17 +225,16 @@ else
     smoothPar.n=250;
     smoothPar.Tolerance=0.01;
     smoothPar.RigidConstraints=boundaryInd;
-    [V]=tesSmooth(F,V,[],smoothPar);    
+    [V]=tesSmooth(F,V,[],smoothPar);
     
     %% PLOTTING
     if plotOn==1
-        figuremax(figColor,figColorDef);
+        cFigure;
         title('The meshed model','FontSize',fontSize);
         xlabel('X','FontSize',fontSize);ylabel('Y','FontSize',fontSize);zlabel('Z','FontSize',fontSize);
         hold on;
-        patch('faces',F,'vertices',V,'FaceColor',faceColor,'FaceAlpha',fAlpha);
-        plotV(V(boundaryInd',:),'b.','MarkerSize',markerSize);
-%         plot(X,Y,'k.','MarkerSize',markerSize);
+        gpatch(F,V,faceColor,'k',faceAlpha);
+        plotV(V(boundaryInd',:),'b.','MarkerSize',markerSize);        
         axis equal; view(2); axis tight;  set(gca,'FontSize',fontSize); grid on;
         drawnow;
     end

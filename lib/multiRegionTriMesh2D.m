@@ -33,13 +33,9 @@ function [F,V,regionInd]=multiRegionTriMesh2D(regionSpec,pointSpacing,resampleCu
 %------------------------------------------------------------------------
 
 %% PLOT SETTINGS
-if plotOn==1;     
-    figColor='w'; figColorDef='white';
-    fontSize=20;    
-    fAlpha=1;    
-    markerSize=20;       
-    faceColor='r';
-    hf1=figuremax(figColor,figColorDef);
+if plotOn==1         
+    fontSize=20;              
+    hf1=cFigure;
     title('Smoothened triangulated mesh','FontSize',fontSize);
     xlabel('X','FontSize',fontSize);ylabel('Y','FontSize',fontSize);zlabel('Z','FontSize',fontSize);
     hold on;  
@@ -66,9 +62,9 @@ end
 %% PLOTTING
 if plotOn==1  
     figure(hf1);
-    patch('faces',F,'vertices',V,'FaceColor','flat','CData',regionInd,'FaceAlpha',fAlpha);
+    gpatch(F,V,regionInd);
     colormap(autumn(numel(regionSpec))); colorbar;
-    axis equal; view(2); axis tight;  set(gca,'FontSize',fontSize); grid on;
+    axisGeom(gca,fontSize);    
     drawnow;
 end
 

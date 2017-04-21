@@ -1,11 +1,11 @@
-%% vecnormalize
-% Below is a demonstration of the features of the |vecnormalize| function
+%% gaborCoil
+% Below is a demonstration of the features of the |gaborCoil| function
 
 %%
 clear; close all; clc;
 
 %% Syntax
-% |[V_norm]=vecnormalize(V);|
+% |[V_coil_rep]=gaborCoil(varargin);|
 
 %% Description 
 % UNDOCUMENTED 

@@ -1,11 +1,11 @@
-%% vecnormalize
-% Below is a demonstration of the features of the |vecnormalize| function
+%% polyContourThick
+% Below is a demonstration of the features of the |polyContourThick| function
 
 %%
 clear; close all; clc;
 
 %% Syntax
-% |[V_norm]=vecnormalize(V);|
+% |[C]=polyContourThick(varargin);|
 
 %% Description 
 % UNDOCUMENTED 

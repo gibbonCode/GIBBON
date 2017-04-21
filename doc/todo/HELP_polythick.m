@@ -5,33 +5,12 @@
 clear; close all; clc;
 
 %% Syntax
-% |[Xu Yu Xl Yl]=polythick(x,y,t);|
+% |[X1,Y1,X2,Y2]=polythick(varargin);|
 
 %% Description 
-% The polythick function can be used to thicken a polygon by a desired
-% thickness. The output is a curve 0.5 x the thickness above and below the
-% curve. The directions above and below refer to the curve normal
-
+% UNDOCUMENTED 
 %% Examples 
-
-clear; close all; clc; 
-
-%%
-% Creating an example polygon
-x=linspace(0,2*pi,25);
-y=sin(x);
-
-cFigure; hold on;
-plot(x,y,'b-');
-axisGeom; view(2);
-
-%%
-polyThickness=0.2; 
-[X1,Y1,X2,Y2]=polythick(x,y,polyThickness);
-
-plot(X1,Y1,'g-');
-plot(X2,Y2,'r-');
-
+% 
 %%
 % 
 % <<gibbVerySmall.gif>>

@@ -6,7 +6,7 @@
    <!--
 This HTML was auto-generated from MATLAB code.
 To make changes, update the MATLAB code and republish this document.
-      --><title>patchcylinder</title><meta name="generator" content="MATLAB 9.1"><link rel="schema.DC" href="http://purl.org/dc/elements/1.1/"><meta name="DC.date" content="2017-03-13"><meta name="DC.source" content="HELP_patchcylinder.m"><style type="text/css">
+      --><title>patchcylinder</title><meta name="generator" content="MATLAB 9.1"><link rel="schema.DC" href="http://purl.org/dc/elements/1.1/"><meta name="DC.date" content="2017-04-18"><meta name="DC.source" content="HELP_patchcylinder.m"><style type="text/css">
 html,body,div,span,applet,object,iframe,h1,h2,h3,h4,h5,h6,p,blockquote,pre,a,abbr,acronym,address,big,cite,code,del,dfn,em,font,img,ins,kbd,q,s,samp,small,strike,strong,sub,sup,tt,var,b,u,i,center,dl,dt,dd,ol,ul,li,fieldset,form,label,legend,table,caption,tbody,tfoot,thead,tr,th,td{margin:0;padding:0;border:0;outline:0;font-size:100%;vertical-align:baseline;background:transparent}body{line-height:1}ol,ul{list-style:none}blockquote,q{quotes:none}blockquote:before,blockquote:after,q:before,q:after{content:'';content:none}:focus{outine:0}ins{text-decoration:none}del{text-decoration:line-through}table{border-collapse:collapse;border-spacing:0}
 
 html { min-height:100%; margin-bottom:1px; }
@@ -66,30 +66,63 @@ table td { padding:7px 5px; text-align:left; vertical-align:top; border:1px soli
 
 
 
-  </style></head><body><div class="content"><h1>patchcylinder</h1><!--introduction--><p>Below is a demonstration of the features of the <tt>patchcylinder</tt> function</p><!--/introduction--><h2>Contents</h2><div><ul><li><a href="#1">Syntax</a></li><li><a href="#2">Description</a></li><li><a href="#3">Examples</a></li><li><a href="#5">Building a geodesic dome based on the icosahedron</a></li></ul></div><h2 id="1">Syntax</h2><p><tt>[F,V]=patchcylinder(r,nr,h,nz,ptype);</tt></p><h2 id="2">Description</h2><p>Use <tt>patchcylinder</tt> to generate triangulated spheres with nearly geodesic triangle distributions. The density of the triangulation can be controlled through a particular choice of n (number of mesh refinement steps).</p><h2 id="3">Examples</h2><pre class="codeinput">clear; close <span class="string">all</span>; clc;
+  </style></head><body><div class="content"><h1>patchcylinder</h1><!--introduction--><p>Below is a demonstration of the features of the <tt>patchcylinder</tt> function</p><!--/introduction--><h2>Contents</h2><div><ul><li><a href="#1">Syntax</a></li><li><a href="#2">Description</a></li><li><a href="#3">Examples</a></li><li><a href="#5">Building a patched cylinder model</a></li><li><a href="#7">Using an input structure instead</a></li><li><a href="#11">Creating a closed cylinder model</a></li></ul></div><h2 id="1">Syntax</h2><p><tt>[F,V]=patchcylinder(r,nr,h,nz,ptype);</tt></p><h2 id="2">Description</h2><p>Use <tt>patchcylinder</tt> to generate triangulated spheres with nearly geodesic triangle distributions. The density of the triangulation can be controlled through a particular choice of n (number of mesh refinement steps).</p><h2 id="3">Examples</h2><pre class="codeinput">clear; close <span class="string">all</span>; clc;
 </pre><p>Plot Settings</p><pre class="codeinput">fontSize=15;
 faceAlpha=0.8;
 edgeColor=0.*ones(1,3);
 edgeWidth=2;
-</pre><h2 id="5">Building a geodesic dome based on the icosahedron</h2><p>The function inputs are n and r which define the mesh refinement and radius respectively. The mesh refinement number n defines the number of subtriangulation (see function <tt>subTri</tt>) iterations performed on an icosahedron. Below is a visualisation for n=0:1:3. The function outputs the geodesic dome faces (F) and vertices (V) and also the spherical coordinates of the vertices (Vs) (this output is suppressed in the example below).</p><pre class="codeinput"><span class="comment">%Defining triangulated geodesic domes with different densities</span>
-r=1; <span class="comment">%Cylinder radius</span>
-nr=12; <span class="comment">%Number of elements in the circumferential direction</span>
-h=3; <span class="comment">%height</span>
-nz=7; <span class="comment">%Number of elements in the height direction</span>
-ptypes={<span class="string">'quad'</span>,<span class="string">'tri_slash'</span>,<span class="string">'tri'</span>}; <span class="comment">%Patch Types</span>
-pColors=gjet(numel(ptypes));
-cFigure;
-<span class="keyword">for</span> q=1:1:numel(ptypes);
-    [F,V]=patchcylinder(r,nr,h,nz,ptypes{q});
+</pre><h2 id="5">Building a patched cylinder model</h2><p>Defining patched cylinders with different mesh types</p><pre class="codeinput">cylRaduis=1; <span class="comment">%Cylinder radius</span>
+numRadial=12; <span class="comment">%Number of elements in the circumferential direction</span>
+cylHeight=3; <span class="comment">%height</span>
+numSteps=7; <span class="comment">%Number of elements in the height direction</span>
+meshTypes={<span class="string">'quad'</span>,<span class="string">'tri_slash'</span>,<span class="string">'tri'</span>}; <span class="comment">%Patch Types</span>
+
+pColors=gjet(numel(meshTypes));
+</pre><p>Creating and visualizing patch data</p><pre class="codeinput">cFigure;
+<span class="keyword">for</span> q=1:1:numel(meshTypes)
+    [F,V]=patchcylinder(cylRaduis,numRadial,cylHeight,numSteps,meshTypes{q});
     subplot(1,3,q); hold <span class="string">on</span>;
-    title([ptypes{q},<span class="string">' type cylinder'</span>],<span class="string">'FontSize'</span>,fontSize,<span class="string">'Interpreter'</span>,<span class="string">'none'</span>);
+    title([meshTypes{q},<span class="string">' type cylinder'</span>],<span class="string">'FontSize'</span>,fontSize,<span class="string">'Interpreter'</span>,<span class="string">'none'</span>);
     xlabel(<span class="string">'X'</span>,<span class="string">'FontSize'</span>,fontSize); ylabel(<span class="string">'Y'</span>,<span class="string">'FontSize'</span>,fontSize); zlabel(<span class="string">'Z'</span>,<span class="string">'FontSize'</span>,fontSize);
-    patch(<span class="string">'Faces'</span>,F,<span class="string">'Vertices'</span>,V,<span class="string">'FaceColor'</span>,pColors(q,:),<span class="string">'FaceAlpha'</span>,faceAlpha,<span class="string">'lineWidth'</span>,edgeWidth,<span class="string">'edgeColor'</span>,edgeColor);
-<span class="comment">%     patchNormPlot(F,V);</span>
+    gpatch(F,V,pColors(q,:));
+    patchNormPlot(F,V);
     set(gca,<span class="string">'FontSize'</span>,fontSize);
     view(3); axis <span class="string">tight</span>;  axis <span class="string">equal</span>;  grid <span class="string">on</span>;
+    camlight <span class="string">headlight</span>;
 <span class="keyword">end</span>
-</pre><img vspace="5" hspace="5" src="HELP_patchcylinder_01.png" alt=""> <p><img vspace="5" hspace="5" src="gibbVerySmall.gif" alt=""> </p><p><i><b>GIBBON</b></i> <a href="www.gibboncode.org">www.gibboncode.org</a></p><p><i>Kevin Mattheus Moerman</i>, <a href="gibbon.toolbox@gmail.com">gibbon.toolbox@gmail.com</a></p><p class="footer"><br><a href="http://www.mathworks.com/products/matlab/">Published with MATLAB&reg; R2016b</a><br></p></div><!--
+drawnow;
+</pre><img vspace="5" hspace="5" src="HELP_patchcylinder_01.png" alt=""> <h2 id="7">Using an input structure instead</h2><p>Creating input structure</p><pre class="codeinput">inputStruct.cylRadius=1;
+inputStruct.numRadial=15;
+inputStruct.cylHeight=3;
+inputStruct.numHeight=11;
+inputStruct.meshType=<span class="string">'tri'</span>;
+</pre><p>Derive patch data for a cylinder</p><pre class="codeinput">[F,V]=patchcylinder(inputStruct);
+</pre><p>Visualizing cylinder model</p><pre class="codeinput">cFigure;
+hold <span class="string">on</span>;
+gpatch(F,V,<span class="string">'g'</span>);
+<span class="comment">% patchNormPlot(F,V);</span>
+axisGeom(gca,fontSize);
+camlight <span class="string">headlight</span>;
+drawnow;
+</pre><img vspace="5" hspace="5" src="HELP_patchcylinder_02.png" alt=""> <h2 id="11">Creating a closed cylinder model</h2><p>Indices for the top and bottom points can be obtained as follows</p><pre class="codeinput">indTop=inputStruct.numHeight:inputStruct.numHeight:size(V,1);
+indBottom=1:inputStruct.numHeight:size(V,1);
+</pre><p>The top and bottom can be meshed using <tt>regionTriMesh2D</tt></p><pre class="codeinput">[Ft,Vt]=regionTriMesh2D({V(indTop,[1 2])},[],0);
+Vt(:,3)=mean(V(indTop,3));
+
+[Fb,Vb]=regionTriMesh2D({V(indBottom,[1 2])},[],0);
+Vb(:,3)=mean(V(indBottom,3));
+Fb=fliplr(Fb);
+</pre><p>Visualizing meshed regions</p><pre class="codeinput"><span class="comment">%Curves</span>
+plotV(V(indTop,:),<span class="string">'b.-'</span>,<span class="string">'markerSize'</span>,25,<span class="string">'lineWidth'</span>,2);
+plotV(V(indBottom,:),<span class="string">'r.-'</span>,<span class="string">'markerSize'</span>,25,<span class="string">'lineWidth'</span>,2);
+
+<span class="comment">%Caps</span>
+gpatch(Ft,Vt,<span class="string">'r'</span>);
+<span class="comment">% patchNormPlot(Ft,Vt);</span>
+gpatch(Fb,Vb,<span class="string">'b'</span>);
+<span class="comment">% patchNormPlot(Fb,Vb);</span>
+drawnow;
+</pre><img vspace="5" hspace="5" src="HELP_patchcylinder_03.png" alt=""> <p><img vspace="5" hspace="5" src="gibbVerySmall.gif" alt=""> </p><p><i><b>GIBBON</b></i> <a href="www.gibboncode.org">www.gibboncode.org</a></p><p><i>Kevin Mattheus Moerman</i>, <a href="gibbon.toolbox@gmail.com">gibbon.toolbox@gmail.com</a></p><p class="footer"><br><a href="http://www.mathworks.com/products/matlab/">Published with MATLAB&reg; R2016b</a><br></p></div><!--
 ##### SOURCE BEGIN #####
 %% patchcylinder
 % Below is a demonstration of the features of the |patchcylinder| function
@@ -114,33 +147,89 @@ faceAlpha=0.8;
 edgeColor=0.*ones(1,3);
 edgeWidth=2;
 
-%% Building a geodesic dome based on the icosahedron
-% The function inputs are n and r which define the mesh refinement and
-% radius respectively. The mesh refinement number n defines the number of
-% subtriangulation (see function |subTri|) iterations performed on an
-% icosahedron. Below is a visualisation for n=0:1:3. The function outputs
-% the geodesic dome faces (F) and vertices (V) and also the spherical
-% coordinates of the vertices (Vs) (this output is suppressed in the
-% example below).
+%% Building a patched cylinder model
+% Defining patched cylinders with different mesh types
 
-%Defining triangulated geodesic domes with different densities
-r=1; %Cylinder radius
-nr=12; %Number of elements in the circumferential direction
-h=3; %height
-nz=7; %Number of elements in the height direction
-ptypes={'quad','tri_slash','tri'}; %Patch Types
-pColors=gjet(numel(ptypes));
+cylRaduis=1; %Cylinder radius
+numRadial=12; %Number of elements in the circumferential direction
+cylHeight=3; %height
+numSteps=7; %Number of elements in the height direction
+meshTypes={'quad','tri_slash','tri'}; %Patch Types
+
+pColors=gjet(numel(meshTypes));
+
+%%
+% Creating and visualizing patch data
+
 cFigure; 
-for q=1:1:numel(ptypes);
-    [F,V]=patchcylinder(r,nr,h,nz,ptypes{q}); 
+for q=1:1:numel(meshTypes)
+    [F,V]=patchcylinder(cylRaduis,numRadial,cylHeight,numSteps,meshTypes{q}); 
     subplot(1,3,q); hold on;
-    title([ptypes{q},' type cylinder'],'FontSize',fontSize,'Interpreter','none');
+    title([meshTypes{q},' type cylinder'],'FontSize',fontSize,'Interpreter','none');
     xlabel('X','FontSize',fontSize); ylabel('Y','FontSize',fontSize); zlabel('Z','FontSize',fontSize);
-    patch('Faces',F,'Vertices',V,'FaceColor',pColors(q,:),'FaceAlpha',faceAlpha,'lineWidth',edgeWidth,'edgeColor',edgeColor);
-%     patchNormPlot(F,V);    
+    gpatch(F,V,pColors(q,:));
+    patchNormPlot(F,V);    
     set(gca,'FontSize',fontSize);
     view(3); axis tight;  axis equal;  grid on;
+    camlight headlight;
 end
+drawnow;
+
+%% Using an input structure instead
+
+%%
+% Creating input structure
+inputStruct.cylRadius=1;
+inputStruct.numRadial=15;
+inputStruct.cylHeight=3;
+inputStruct.numHeight=11;
+inputStruct.meshType='tri';
+
+%%
+% Derive patch data for a cylinder
+[F,V]=patchcylinder(inputStruct); 
+
+%%
+% Visualizing cylinder model
+
+cFigure; 
+hold on;
+gpatch(F,V,'g');
+% patchNormPlot(F,V);  
+axisGeom(gca,fontSize);
+camlight headlight;
+drawnow;
+
+%% Creating a closed cylinder model
+
+%%
+% Indices for the top and bottom points can be obtained as follows
+indTop=inputStruct.numHeight:inputStruct.numHeight:size(V,1);
+indBottom=1:inputStruct.numHeight:size(V,1);
+
+%%
+% The top and bottom can be meshed using |regionTriMesh2D|
+
+[Ft,Vt]=regionTriMesh2D({V(indTop,[1 2])},[],0);
+Vt(:,3)=mean(V(indTop,3));
+
+[Fb,Vb]=regionTriMesh2D({V(indBottom,[1 2])},[],0);
+Vb(:,3)=mean(V(indBottom,3));
+Fb=fliplr(Fb);
+
+%%
+% Visualizing meshed regions
+
+%Curves
+plotV(V(indTop,:),'b.-','markerSize',25,'lineWidth',2);
+plotV(V(indBottom,:),'r.-','markerSize',25,'lineWidth',2);
+
+%Caps
+gpatch(Ft,Vt,'r');
+% patchNormPlot(Ft,Vt);  
+gpatch(Fb,Vb,'b');
+% patchNormPlot(Fb,Vb);  
+drawnow; 
 
 %% 
 %

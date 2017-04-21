@@ -1,11 +1,11 @@
-%% vecnormalize
-% Below is a demonstration of the features of the |vecnormalize| function
+%% element2HexLattice
+% Below is a demonstration of the features of the |element2HexLattice| function
 
 %%
 clear; close all; clc;
 
 %% Syntax
-% |[V_norm]=vecnormalize(V);|
+% |[Es,Vs,Cs]=element2HexLattice(varargin);|
 
 %% Description 
 % UNDOCUMENTED 

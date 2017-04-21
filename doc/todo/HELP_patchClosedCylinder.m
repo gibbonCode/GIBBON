@@ -1,11 +1,11 @@
-%% vecnormalize
-% Below is a demonstration of the features of the |vecnormalize| function
+%% patchClosedCylinder
+% Below is a demonstration of the features of the |patchClosedCylinder| function
 
 %%
 clear; close all; clc;
 
 %% Syntax
-% |[V_norm]=vecnormalize(V);|
+% |[FT,VT,CT]=patchClosedCylinder(inputStruct);|
 
 %% Description 
 % UNDOCUMENTED 
