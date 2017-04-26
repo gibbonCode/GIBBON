@@ -2,6 +2,10 @@ function [Fn,Vn,Cn]=element2lattice(varargin)
 
 % function [Fn,Vn,Cn]=element2lattice(E,V,cPar)
 
+% 2017/04/26 fixed bug for older MATLAB versions in relation to subtracting
+% columns from matrices e.g. subtracting an nx1 column from all columns in
+% an nxm matrix. 
+
 %% Parse input
 
 switch nargin
@@ -65,6 +69,7 @@ for q=1:1:size(V,2)
         FX=X(F);
     end
     FX_mean=mean(FX,2);
+    FX_mean=FX_mean(:,ones(size(FX,2),1));
     FX=((FX-FX_mean)*cPar.shrinkFactor)+FX_mean;
     Vc(:,q)=FX(:);
 end
@@ -79,6 +84,7 @@ for q=1:1:size(V,2)
         EX=X(E);
     end
     EX_mean=mean(EX,2);
+    EX_mean=EX_mean(:,ones(size(EX,2),1));
     EX=((EX-EX_mean)*cPar.shrinkFactor)+EX_mean;
     Vcc(:,q)=EX(:);
 end
