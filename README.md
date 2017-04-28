@@ -5,6 +5,7 @@
 - [Project Summary](#Summary)
 - [Installation](#Installation)
 - [Getting started](#Start)
+- [License](#License)
 - [Contributing](#Contributing)
 - [CodeOfConduct](#CodeOfConduct)
 - [Road Map](#RoadMap)
@@ -32,10 +33,12 @@ Follow the steps below.
 * **export_fig** export_fig is not included with GIBBON. These figure exporting MATLAB tools (used by the GIBBON 'efw' function) can be found on [GitHub](https://github.com/altmany/export_fig) or on [the MathWorks file exchange](http://www.mathworks.com/matlabcentral/fileexchange/23629-export-fig). 
 
 ## Getting started <a name="Start"></a>
-* Study the GIBBON folder structure. For example, nottice how the `lib` folder contains all GIBBON's functions and that `lib_ext` contains "external functions" i.e. functions developed by others included with GIBBON. The `html` folder contains the help and documentation .html files which are integrated in MATLAB. 
-* **Help and documentation** see the installation instructions on accessing the help and documentation. Through the integrated help and documentation the user can explore variations function descriptions and also demo entries. The codes that generate all the help and documention can be found in GIBBON's main folder. **The source for the help information for any function** `functionName` **is named **`HELP_functionName`**, and  The source for demos have **`DEMO_`** as part of the name**. Therefore if one is interested in reproducing or starting off from codes in the help and documentation simply start typing code names starting in `HELP_` or `DEMO_` in the MATLAB command window, e.g. `HELP_ind2patch` can be used to generate the help information for the `ind2patch` function. Users can start editing the file by typing `open HELP_ind2patch` in the command window. By publishing (MATLAB publish functionality) the HELP_ or DEMO_ files .html files are created in the `html` folder. As such if users alter/contribute code in the `lib` folder and generate associated `HELP_` or `DEMO_` files new help and documentation is added. For new help and documentation to become known and visible to MATLAB run the `createHelpDemoDocumentation` function and restart MATLAB. 
+* The `lib` folder contains all GIBBON's functions and the `lib_ext` contains "external functions" i.e. functions developed by others included with GIBBON. The `doc` folder contains the help&documentation, and demo files which when "published" (using MATLAB's publish functionality) create the .html documentation files (found in `doc/html`) which are integrated in MATLAB. 
+* The source for the help information for any function `functionName` is named `HELP_functionName`, and  the source for demos have `DEMO_` as part of the name**. Therefore if one is interested in reproducing or starting off from codes in the help and documentation simply start typing code names starting in `HELP_` or `DEMO_` in the MATLAB command window, e.g. `HELP_ind2patch` can be used to generate the help information for the `ind2patch` function. Users can start editing the file by typing `open HELP_ind2patch` in the command window. By publishing (MATLAB publish functionality) the HELP_ or DEMO_ files .html files are created in the `doc\html` folder. As such if users alter/contribute code in the `lib` folder and generate associated `HELP_` or `DEMO_` files, new help and documentation is added. For new help and documentation to become known and visible to MATLAB run the `createHelpDemoDocumentation` function and restart MATLAB. 
+* Many of the `DEMO_` files focus on the use of FEBio. The demo `DEMO_FEBio_block_uniaxial_compression` for instance features a simple cube that undergoes a 30% compression. Other demos focus on different load types, single versus multi-step analysis, different materials and inverse analysis (e.g. `DEMO_FEBio_iFEA_uniaxial_01`). 
 
-## [License (BSD-3-Clause)](https://github.com/Kevin-Mattheus-Moerman/GIBBON/blob/master/LICENSE)
+## License <a name="License"></a>
+ [BSD-3-Clause](https://github.com/Kevin-Mattheus-Moerman/GIBBON/blob/master/LICENSE)
 
 ## Contributing <a name="Contributing"></a>
 Refer to the [CONTRIBUTING](CONTRIBUTING.md).
