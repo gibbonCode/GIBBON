@@ -119,7 +119,7 @@ end
 
 %Resample using normal method if csaps was used since smoothening alters spacing of points
 if ~ischar(interpPar) %CSAPS
-    [Vg] = evenlySampleCurve(Vg,n_in,'pchip',closeLoopOpt);
+    [Vg] = evenlySampleCurve(Vg,n_in,'linear',closeLoopOpt);
 end
 
 

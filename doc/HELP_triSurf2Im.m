@@ -218,7 +218,7 @@ drawnow;
 
 %%
 % Load surface geometry
-defaultFolder = fileparts(mfilename('fullpath'));
+defaultFolder = fileparts(fileparts(mfilename('fullpath')));
 pathName=fullfile(defaultFolder,'data','STL'); 
 stlName='hip_implant_new.stl';
 fileName=fullfile(pathName,stlName); 

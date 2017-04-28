@@ -16,7 +16,7 @@ faceAlpha=0.8;
 %% DEFORMING A 2D MESH
 % SIMULATING A 2D EXAMPLE
 
-interpMethod='cubic';
+interpMethod='pchip';
 closeLoopOpt=1;
 n=200;
 

@@ -94,7 +94,11 @@ set(jSlider_T,'LowValue',Tf(1));
 setThreshold([],[],{hf,jSlider_T,jSlider_I,jSlider_J,jSlider_K});
 
 %%
+
+drawnow;
+%%
 varargout{1}=hf;
+
 end
 
 function plotSlice(~,~,inputCell)

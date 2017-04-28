@@ -6,7 +6,7 @@
    <!--
 This HTML was auto-generated from MATLAB code.
 To make changes, update the MATLAB code and republish this document.
-      --><title>import_STL_txt</title><meta name="generator" content="MATLAB 9.1"><link rel="schema.DC" href="http://purl.org/dc/elements/1.1/"><meta name="DC.date" content="2017-03-13"><meta name="DC.source" content="HELP_import_STL_txt.m"><style type="text/css">
+      --><title>import_STL_txt</title><meta name="generator" content="MATLAB 9.1"><link rel="schema.DC" href="http://purl.org/dc/elements/1.1/"><meta name="DC.date" content="2017-04-28"><meta name="DC.source" content="HELP_import_STL_txt.m"><style type="text/css">
 html,body,div,span,applet,object,iframe,h1,h2,h3,h4,h5,h6,p,blockquote,pre,a,abbr,acronym,address,big,cite,code,del,dfn,em,font,img,ins,kbd,q,s,samp,small,strike,strong,sub,sup,tt,var,b,u,i,center,dl,dt,dd,ol,ul,li,fieldset,form,label,legend,table,caption,tbody,tfoot,thead,tr,th,td{margin:0;padding:0;border:0;outline:0;font-size:100%;vertical-align:baseline;background:transparent}body{line-height:1}ol,ul{list-style:none}blockquote,q{quotes:none}blockquote:before,blockquote:after,q:before,q:after{content:'';content:none}:focus{outine:0}ins{text-decoration:none}del{text-decoration:line-through}table{border-collapse:collapse;border-spacing:0}
 
 html { min-height:100%; margin-bottom:1px; }
@@ -67,14 +67,12 @@ table td { padding:7px 5px; text-align:left; vertical-align:top; border:1px soli
 
 
   </style></head><body><div class="content"><h1>import_STL_txt</h1><!--introduction--><p>Below is a demonstration of the features of the <tt>import_STL_txt</tt> function</p><!--/introduction--><h2>Contents</h2><div><ul><li><a href="#1">Syntax</a></li><li><a href="#2">Description</a></li><li><a href="#3">Examples</a></li><li><a href="#5">Import STL file as patch data</a></li><li><a href="#8">Importing a multi-solid STL file as patch data</a></li></ul></div><h2 id="1">Syntax</h2><p><tt>[stlStruct] = import_STL_txt(fileName);</tt></p><h2 id="2">Description</h2><p>Use <tt>import_STL_txt</tt> to import .txt type (as apposed to binary) STL files. The function supports multi-solid STL.</p><h2 id="3">Examples</h2><pre class="codeinput">clear; close <span class="string">all</span>; clc;
-</pre><p>Plot settings</p><pre class="codeinput">faceAlpha1=1;
-faceAlpha2=0.5;
+</pre><p>Plot settings</p><pre class="codeinput">faceAlpha=0.5;
 fontSize=25;
 </pre><h2 id="5">Import STL file as patch data</h2><pre class="codeinput"><span class="comment">%Set main folder</span>
 defaultFolder = fileparts(fileparts(mfilename(<span class="string">'fullpath'</span>)));
 pathName=fullfile(defaultFolder,<span class="string">'data'</span>,<span class="string">'STL'</span>);
 fileName=fullfile(pathName,<span class="string">'femur.stl'</span>);
-<span class="comment">% fileName=fullfile(pathName,'Panthera_pardus_AMNH11374.stl');</span>
 [stlStruct] = import_STL_txt(fileName);
 
 F=stlStruct.solidFaces{1};
@@ -84,11 +82,8 @@ V=V(ind1,:);
 F=ind2(F);
 </pre><p>Plotting the model</p><pre class="codeinput">cFigure;
 title(<span class="string">'Imported patch data from STL'</span>,<span class="string">'fontSize'</span>,fontSize);
-xlabel(<span class="string">'X'</span>,<span class="string">'fontSize'</span>,fontSize);ylabel(<span class="string">'Y'</span>,<span class="string">'fontSize'</span>,fontSize); zlabel(<span class="string">'Z'</span>,<span class="string">'fontSize'</span>,fontSize); hold <span class="string">on</span>;
-
-patch(<span class="string">'Faces'</span>,F,<span class="string">'Vertices'</span>,V,<span class="string">'FaceColor'</span>,<span class="string">'g'</span>,<span class="string">'EdgeColor'</span>,<span class="string">'k'</span>,<span class="string">'FaceAlpha'</span>,faceAlpha1);
-
-view(3); axis <span class="string">equal</span>; axis <span class="string">tight</span>; axis <span class="string">vis3d</span>; grid <span class="string">on</span>;
+gpatch(F,V,<span class="string">'g'</span>);
+axisGeom;
 camlight(<span class="string">'headlight'</span>);
 lighting <span class="string">phong</span>; axis <span class="string">off</span>;
 drawnow;
@@ -101,13 +96,12 @@ fileName=fullfile(pathName,<span class="string">'stanford_bunny_multi.stl'</span
 
 cFigure;
 title(<span class="string">'Imported patch data from multi-solid STL'</span>,<span class="string">'fontSize'</span>,fontSize);
-xlabel(<span class="string">'X'</span>,<span class="string">'fontSize'</span>,fontSize);ylabel(<span class="string">'Y'</span>,<span class="string">'fontSize'</span>,fontSize); zlabel(<span class="string">'Z'</span>,<span class="string">'fontSize'</span>,fontSize); hold <span class="string">on</span>;
 <span class="keyword">for</span> q=1:1:numel(stlStruct.solidNames)
     F=stlStruct.solidFaces{q};
     V=stlStruct.solidVertices{q};
-    patch(<span class="string">'Faces'</span>,F,<span class="string">'Vertices'</span>,V,<span class="string">'FaceColor'</span>,pColors(q,:),<span class="string">'EdgeColor'</span>,<span class="string">'k'</span>,<span class="string">'FaceAlpha'</span>,faceAlpha2);
+    gpatch(F,V,pColors(q,:),<span class="string">'k'</span>,faceAlpha);
 <span class="keyword">end</span>
-view(3); axis <span class="string">equal</span>; axis <span class="string">tight</span>; axis <span class="string">vis3d</span>; grid <span class="string">on</span>;
+axisGeom;
 camlight(<span class="string">'headlight'</span>);
 lighting <span class="string">phong</span>; axis <span class="string">off</span>;
 drawnow;
@@ -129,8 +123,7 @@ clear; close all; clc;
 
 %%
 % Plot settings
-faceAlpha1=1;
-faceAlpha2=0.5;
+faceAlpha=0.5;
 fontSize=25; 
 
 %% Import STL file as patch data
@@ -139,7 +132,6 @@ fontSize=25;
 defaultFolder = fileparts(fileparts(mfilename('fullpath')));
 pathName=fullfile(defaultFolder,'data','STL'); 
 fileName=fullfile(pathName,'femur.stl'); 
-% fileName=fullfile(pathName,'Panthera_pardus_AMNH11374.stl'); 
 [stlStruct] = import_STL_txt(fileName);
 
 F=stlStruct.solidFaces{1};
@@ -156,11 +148,8 @@ F=ind2(F);
 
 cFigure;
 title('Imported patch data from STL','fontSize',fontSize);
-xlabel('X','fontSize',fontSize);ylabel('Y','fontSize',fontSize); zlabel('Z','fontSize',fontSize); hold on;
-
-patch('Faces',F,'Vertices',V,'FaceColor','g','EdgeColor','k','FaceAlpha',faceAlpha1);
-
-view(3); axis equal; axis tight; axis vis3d; grid on; 
+gpatch(F,V,'g');
+axisGeom;
 camlight('headlight');
 lighting phong; axis off; 
 drawnow;
@@ -179,13 +168,12 @@ pColors=autumn(numel(stlStruct.solidNames));
 
 cFigure;
 title('Imported patch data from multi-solid STL','fontSize',fontSize);
-xlabel('X','fontSize',fontSize);ylabel('Y','fontSize',fontSize); zlabel('Z','fontSize',fontSize); hold on;
 for q=1:1:numel(stlStruct.solidNames)
     F=stlStruct.solidFaces{q};
     V=stlStruct.solidVertices{q};
-    patch('Faces',F,'Vertices',V,'FaceColor',pColors(q,:),'EdgeColor','k','FaceAlpha',faceAlpha2);
+    gpatch(F,V,pColors(q,:),'k',faceAlpha);
 end
-view(3); axis equal; axis tight; axis vis3d; grid on; 
+axisGeom;
 camlight('headlight');
 lighting phong; axis off; 
 drawnow;

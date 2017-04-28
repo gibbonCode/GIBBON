@@ -6,7 +6,7 @@
    <!--
 This HTML was auto-generated from MATLAB code.
 To make changes, update the MATLAB code and republish this document.
-      --><title>sampleCurveEvenly</title><meta name="generator" content="MATLAB 9.1"><link rel="schema.DC" href="http://purl.org/dc/elements/1.1/"><meta name="DC.date" content="2017-03-13"><meta name="DC.source" content="HELP_sampleCurveEvenly.m"><style type="text/css">
+      --><title>sampleCurveEvenly</title><meta name="generator" content="MATLAB 9.1"><link rel="schema.DC" href="http://purl.org/dc/elements/1.1/"><meta name="DC.date" content="2017-04-28"><meta name="DC.source" content="HELP_sampleCurveEvenly.m"><style type="text/css">
 html,body,div,span,applet,object,iframe,h1,h2,h3,h4,h5,h6,p,blockquote,pre,a,abbr,acronym,address,big,cite,code,del,dfn,em,font,img,ins,kbd,q,s,samp,small,strike,strong,sub,sup,tt,var,b,u,i,center,dl,dt,dd,ol,ul,li,fieldset,form,label,legend,table,caption,tbody,tfoot,thead,tr,th,td{margin:0;padding:0;border:0;outline:0;font-size:100%;vertical-align:baseline;background:transparent}body{line-height:1}ol,ul{list-style:none}blockquote,q{quotes:none}blockquote:before,blockquote:after,q:before,q:after{content:'';content:none}:focus{outine:0}ins{text-decoration:none}del{text-decoration:line-through}table{border-collapse:collapse;border-spacing:0}
 
 html { min-height:100%; margin-bottom:1px; }
@@ -82,12 +82,12 @@ cPar=[]; <span class="comment">%If the control structure is empty these are the 
 
 <span class="comment">% cPar.nd=size(V,1); %resample with the same about of points</span>
 <span class="comment">% cPar.typeOpt='num'; %curve steps are based on the desired number of points</span>
-<span class="comment">% cPar.interpMethod='cubic'; %use CUBIC interpolation</span>
+<span class="comment">% cPar.interpMethod='pchip'; %use pchip interpolation</span>
 <span class="comment">% cPar.closeLoopOpt=0; %the curve is not a closed loop</span>
 
 [Vg]=sampleCurveEvenly(V,cPar);
 
-hf1=figuremax(fig_color,fig_colordef);
+cFigure;
 subplot(1,2,1); hold <span class="string">on</span>;
 title(<span class="string">'Unevenly sampled'</span>);
 plotV(V,<span class="string">'r.-'</span>,<span class="string">'MarkerSize'</span>,markerSize);
@@ -99,10 +99,7 @@ plotV(Vg(1,:),<span class="string">'r.'</span>,<span class="string">'MarkerSize'
 plotV(Vg(end,:),<span class="string">'b.'</span>,<span class="string">'MarkerSize'</span>,2*markerSize,<span class="string">'lineWidth'</span>,lineWidth);
 view(2); grid <span class="string">on</span>; axis <span class="string">equal</span>; axis <span class="string">tight</span>;
 drawnow;
-</pre><pre class="codeoutput">Warning: INTERP1(...,'CUBIC') will change in a future release. Use
-INTERP1(...,'PCHIP') instead. 
-Warning: INTERP1(...,'CUBIC') will change in a future release. Use
-INTERP1(...,'PCHIP') instead. 
+</pre><pre class="codeoutput">Warning: This function will be replaced by evenlySampleCurve 
 </pre><img vspace="5" hspace="5" src="HELP_sampleCurveEvenly_01.png" alt=""> <h2 id="3">EXAMPLE USING CUSTOM SETTINGS FOR RESAMPLING A CURVE EVENLY</h2><pre class="codeinput"><span class="comment">%Simulating the case of an unevenly sampled loop curve</span>
 
 cPar.nd=size(V,1)*2; <span class="comment">%upsample twice</span>
@@ -112,7 +109,7 @@ cPar.closeLoopOpt=0; <span class="comment">%the curve is not a closed loop</span
 
 [Vg]=sampleCurveEvenly(V,cPar);
 
-hf1=figuremax(fig_color,fig_colordef);
+cFigure;
 subplot(1,2,1); hold <span class="string">on</span>;
 title(<span class="string">'Unevenly sampled'</span>);
 plotV(V,<span class="string">'r.-'</span>,<span class="string">'MarkerSize'</span>,markerSize);
@@ -124,6 +121,7 @@ plotV(Vg(1,:),<span class="string">'r.'</span>,<span class="string">'MarkerSize'
 plotV(Vg(end,:),<span class="string">'b.'</span>,<span class="string">'MarkerSize'</span>,2*markerSize,<span class="string">'lineWidth'</span>,lineWidth);
 view(2); grid <span class="string">on</span>; axis <span class="string">equal</span>; axis <span class="string">tight</span>;
 drawnow;
+</pre><pre class="codeoutput">Warning: This function will be replaced by evenlySampleCurve 
 </pre><img vspace="5" hspace="5" src="HELP_sampleCurveEvenly_02.png" alt=""> <h2 id="4">EXAMPLE USING CUSTOM SETTINGS FOR RESAMPLING A CURVE EVENLY</h2><pre class="codeinput"><span class="comment">%Simulating the case of an unevenly sampled loop curve</span>
 
 cPar.nd=0.1; <span class="comment">%resmaple based on curve length step size</span>
@@ -133,7 +131,7 @@ cPar.closeLoopOpt=0; <span class="comment">%the curve is not a closed loop</span
 
 [Vg]=sampleCurveEvenly(V,cPar);
 
-hf1=figuremax(fig_color,fig_colordef);
+cFigure;
 subplot(1,2,1); hold <span class="string">on</span>;
 title(<span class="string">'Unevenly sampled'</span>);
 plotV(V,<span class="string">'r.-'</span>,<span class="string">'MarkerSize'</span>,markerSize);
@@ -148,14 +146,14 @@ drawnow;
 
 V(:,2)=V(:,2)*2; <span class="comment">%Increasing amplitude increases point spacing and  hence increases number of point used for curve step size resampling</span>
 
-cPar.nd=0.1; <span class="comment">%resmaple based on curve length step size</span>
+cPar.nd=0.1; <span class="comment">%resample based on curve length step size</span>
 cPar.typeOpt=<span class="string">'dist'</span>; <span class="comment">%curve steps are based on the desired number of points</span>
 cPar.interpMethod=<span class="string">'linear'</span>; <span class="comment">%use linear interpolation</span>
 cPar.closeLoopOpt=0; <span class="comment">%the curve is not a closed loop</span>
 
 [Vg]=sampleCurveEvenly(V,cPar);
 
-hf1=figuremax(fig_color,fig_colordef);
+cFigure;
 subplot(1,2,1); hold <span class="string">on</span>;
 title(<span class="string">'Unevenly sampled'</span>);
 plotV(V,<span class="string">'r.-'</span>,<span class="string">'MarkerSize'</span>,markerSize);
@@ -167,6 +165,8 @@ plotV(Vg(1,:),<span class="string">'r.'</span>,<span class="string">'MarkerSize'
 plotV(Vg(end,:),<span class="string">'b.'</span>,<span class="string">'MarkerSize'</span>,2*markerSize,<span class="string">'lineWidth'</span>,lineWidth);
 view(2); grid <span class="string">on</span>; axis <span class="string">equal</span>; axis <span class="string">tight</span>;
 drawnow;
+</pre><pre class="codeoutput">Warning: This function will be replaced by evenlySampleCurve 
+Warning: This function will be replaced by evenlySampleCurve 
 </pre><img vspace="5" hspace="5" src="HELP_sampleCurveEvenly_03.png" alt=""> <img vspace="5" hspace="5" src="HELP_sampleCurveEvenly_04.png" alt=""> <h2 id="5">EXAMPLE USING CUSTOM SETTINGS FOR RESAMPLING A CLOSED POLYGON EVENLY</h2><pre class="codeinput"><span class="comment">%Simulating the case of an unevenly sampled loop curve</span>
 ns=150;
 t=sort(linspace(0,2*pi,ns)+pi/10*rand(1,ns));
@@ -179,12 +179,12 @@ V=[x(:) y(:) z(:)];
 
 cPar.nd=200; <span class="comment">%Desired number of pointsupsample twice</span>
 cPar.typeOpt=<span class="string">'num'</span>; <span class="comment">%curve steps are based on the desired number of points</span>
-cPar.interpMethod=<span class="string">'cubic'</span>; <span class="comment">%use Cubic interpolation</span>
+cPar.interpMethod=<span class="string">'pchip'</span>; <span class="comment">%use pchip interpolation</span>
 cPar.closeLoopOpt=1; <span class="comment">%the curve is close so the end is considered equal to the start</span>
 
 [Vg]=sampleCurveEvenly(V,cPar);
 
-hf1=figuremax(fig_color,fig_colordef);
+cFigure;
 subplot(1,2,1); hold <span class="string">on</span>;
 title(<span class="string">'Unevenly sampled'</span>);
 plot3(V(:,1),V(:,2),V(:,3),<span class="string">'r.-'</span>,<span class="string">'MarkerSize'</span>,markerSize);
@@ -195,12 +195,7 @@ plot3(Vg(:,1),Vg(:,2),Vg(:,3),<span class="string">'g.-'</span>,<span class="str
 plot3(Vg(1,1),Vg(1,2),Vg(1,3),<span class="string">'r.'</span>,<span class="string">'MarkerSize'</span>,2*markerSize,<span class="string">'lineWidth'</span>,lineWidth);
 plot3(Vg(end,1),Vg(end,2),Vg(end,3),<span class="string">'b.'</span>,<span class="string">'MarkerSize'</span>,2*markerSize,<span class="string">'lineWidth'</span>,lineWidth);
 drawnow; view(3); grid <span class="string">on</span>; axis <span class="string">equal</span>; axis <span class="string">tight</span>;
-</pre><pre class="codeoutput">Warning: INTERP1(...,'CUBIC') will change in a future release. Use
-INTERP1(...,'PCHIP') instead. 
-Warning: INTERP1(...,'CUBIC') will change in a future release. Use
-INTERP1(...,'PCHIP') instead. 
-Warning: INTERP1(...,'CUBIC') will change in a future release. Use
-INTERP1(...,'PCHIP') instead. 
+</pre><pre class="codeoutput">Warning: This function will be replaced by evenlySampleCurve 
 </pre><img vspace="5" hspace="5" src="HELP_sampleCurveEvenly_05.png" alt=""> <h2 id="6">EXAMPLE USING CURVE SMOOTHENING</h2><pre class="codeinput"><span class="comment">%Adding noise</span>
 V=V+0.2.*randn(size(V));
 
@@ -211,7 +206,7 @@ cPar.closeLoopOpt=1;
 
 [Vg]=sampleCurveEvenly(V,cPar);
 
-hf1=figuremax(fig_color,fig_colordef);
+cFigure;
 subplot(1,2,1); hold <span class="string">on</span>;
 title(<span class="string">'Unevenly sampled'</span>);
 plot3(V(:,1),V(:,2),V(:,3),<span class="string">'r.-'</span>,<span class="string">'MarkerSize'</span>,markerSize);
@@ -222,6 +217,7 @@ plot3(Vg(:,1),Vg(:,2),Vg(:,3),<span class="string">'g.-'</span>,<span class="str
 plot3(Vg(1,1),Vg(1,2),Vg(1,3),<span class="string">'r.'</span>,<span class="string">'MarkerSize'</span>,2*markerSize,<span class="string">'lineWidth'</span>,lineWidth);
 plot3(Vg(end,1),Vg(end,2),Vg(end,3),<span class="string">'b.'</span>,<span class="string">'MarkerSize'</span>,2*markerSize,<span class="string">'lineWidth'</span>,lineWidth);
 drawnow; view(3); grid <span class="string">on</span>; axis <span class="string">equal</span>; axis <span class="string">tight</span>;
+</pre><pre class="codeoutput">Warning: This function will be replaced by evenlySampleCurve 
 </pre><img vspace="5" hspace="5" src="HELP_sampleCurveEvenly_06.png" alt=""> <p><img vspace="5" hspace="5" src="gibbVerySmall.gif" alt=""> </p><p><i><b>GIBBON</b></i> <a href="www.gibboncode.org">www.gibboncode.org</a></p><p><i>Kevin Mattheus Moerman</i>, <a href="gibbon.toolbox@gmail.com">gibbon.toolbox@gmail.com</a></p><p class="footer"><br><a href="http://www.mathworks.com/products/matlab/">Published with MATLAB&reg; R2016b</a><br></p></div><!--
 ##### SOURCE BEGIN #####
 %% sampleCurveEvenly
@@ -247,12 +243,12 @@ cPar=[]; %If the control structure is empty these are the settings used:
 
 % cPar.nd=size(V,1); %resample with the same about of points
 % cPar.typeOpt='num'; %curve steps are based on the desired number of points
-% cPar.interpMethod='cubic'; %use CUBIC interpolation
+% cPar.interpMethod='pchip'; %use pchip interpolation
 % cPar.closeLoopOpt=0; %the curve is not a closed loop
 
 [Vg]=sampleCurveEvenly(V,cPar);
 
-hf1=figuremax(fig_color,fig_colordef);
+cFigure;
 subplot(1,2,1); hold on;
 title('Unevenly sampled');
 plotV(V,'r.-','MarkerSize',markerSize);
@@ -276,7 +272,7 @@ cPar.closeLoopOpt=0; %the curve is not a closed loop
 
 [Vg]=sampleCurveEvenly(V,cPar);
 
-hf1=figuremax(fig_color,fig_colordef);
+cFigure;
 subplot(1,2,1); hold on;
 title('Unevenly sampled');
 plotV(V,'r.-','MarkerSize',markerSize);
@@ -300,7 +296,7 @@ cPar.closeLoopOpt=0; %the curve is not a closed loop
 
 [Vg]=sampleCurveEvenly(V,cPar);
 
-hf1=figuremax(fig_color,fig_colordef);
+cFigure;
 subplot(1,2,1); hold on;
 title('Unevenly sampled');
 plotV(V,'r.-','MarkerSize',markerSize);
@@ -315,14 +311,14 @@ drawnow;
 
 V(:,2)=V(:,2)*2; %Increasing amplitude increases point spacing and  hence increases number of point used for curve step size resampling
 
-cPar.nd=0.1; %resmaple based on curve length step size
+cPar.nd=0.1; %resample based on curve length step size
 cPar.typeOpt='dist'; %curve steps are based on the desired number of points
 cPar.interpMethod='linear'; %use linear interpolation
 cPar.closeLoopOpt=0; %the curve is not a closed loop
 
 [Vg]=sampleCurveEvenly(V,cPar);
 
-hf1=figuremax(fig_color,fig_colordef);
+cFigure;
 subplot(1,2,1); hold on;
 title('Unevenly sampled');
 plotV(V,'r.-','MarkerSize',markerSize);
@@ -349,12 +345,12 @@ V=[x(:) y(:) z(:)];
 
 cPar.nd=200; %Desired number of pointsupsample twice
 cPar.typeOpt='num'; %curve steps are based on the desired number of points
-cPar.interpMethod='cubic'; %use Cubic interpolation
+cPar.interpMethod='pchip'; %use pchip interpolation
 cPar.closeLoopOpt=1; %the curve is close so the end is considered equal to the start
 
 [Vg]=sampleCurveEvenly(V,cPar);
 
-hf1=figuremax(fig_color,fig_colordef);
+cFigure;
 subplot(1,2,1); hold on;
 title('Unevenly sampled');
 plot3(V(:,1),V(:,2),V(:,3),'r.-','MarkerSize',markerSize);
@@ -378,7 +374,7 @@ cPar.closeLoopOpt=1;
 
 [Vg]=sampleCurveEvenly(V,cPar);
 
-hf1=figuremax(fig_color,fig_colordef);
+cFigure;
 subplot(1,2,1); hold on;
 title('Unevenly sampled');
 plot3(V(:,1),V(:,2),V(:,3),'r.-','MarkerSize',markerSize);

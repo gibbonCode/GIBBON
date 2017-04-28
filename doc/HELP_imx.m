@@ -8,9 +8,23 @@ clear; close all; clc;
 % |hf=imx(varargin);|
 
 %% Description 
-% UNDOCUMENTED 
+% The |imx| function provides a figure window based GUI for 3D image
+% segmentation
+
 %% Examples 
-% 
+%
+%% Example: Segmenting MRI data
+
+%% 
+% Get a 3D image
+load mri;
+M=squeeze(D); %example image data set
+v=2./[1,1,.4]; %example voxel size
+
+%%
+% Start segmentation using |imx|
+hf=imx(M,v);
+
 %%
 % 
 % <<gibbVerySmall.gif>>

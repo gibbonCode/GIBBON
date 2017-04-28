@@ -6,7 +6,7 @@ clear; close all; clc;
 
 %% Loading example image data
 % Loading MRI data
-toolboxPath=fileparts(mfilename('fullpath'));
+toolboxPath=fileparts(fileparts(mfilename('fullpath')));
 
 imageFolder=fullfile(toolboxPath,'data','DICOM','KNEE_UTE','IMDAT');
 

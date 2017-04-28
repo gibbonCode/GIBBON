@@ -23,7 +23,7 @@ clear; close all; clc;
 
 T={'Hello','','World','  ',uint8(125)};
 filePath=mfilename('fullpath');
-fileName=fullfile(fileparts(filePath),'data','temp','temp.txt');
+fileName=fullfile(fileparts(fileparts(filePath)),'data','temp','temp.txt');
 skipOpt=0; %Empty entries will be kept 
 cell2txtfile(fileName,T,skipOpt);
 

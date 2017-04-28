@@ -120,6 +120,9 @@ set(jSlider_C,'HighValue',cLimScaled(2));
 
 set(hf,'ResizeFcn',{@setScrollSizeFunc,{hf,w,jSlider_C}});
 
+%%
+
+drawnow;
 end
 
 function ButtonDownFunction(~,~,hf)

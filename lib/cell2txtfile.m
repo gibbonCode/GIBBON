@@ -28,7 +28,7 @@ for q=1:size(T,1)
 
     if ~ischar(l) %If this isn't a char then attempt conversion
         l=sprintf('%u',l);
-        warning(['Entry ',num2str(q),' is not a char and was converted to: ',l]);
+%        warning(['Entry ',num2str(q),' is not a char and was converted to: ',l]);
     end
     
     if skipOpt==0 || ~isempty(deblank(l))

@@ -188,6 +188,8 @@ hf.UserData.efw.exportGifOpt='1';
 %% Initialize slider locations
 set(jSlider,'Value',sliceIndexI);
 
+%%
+drawnow;
 end
 
 %% Scroll bar resizing

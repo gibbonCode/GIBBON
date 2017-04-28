@@ -35,7 +35,12 @@ function [Vcs]=uiContourSegment(varargin)
 % 2016/06/27 qginput was changed so that Esc (rather than Enter) exits the
 % function. uiContourSegment was changed such that Esc exits the for loop
 % (without causing errors). 
+% 2017/04/28 Refer to imx function instead
 % ------------------------------------------------------------------------
+
+%%
+
+warning('This function is deprecated. Use imx instead.')
 
 %%
 

@@ -492,7 +492,6 @@ hMove=uitoggletool(hb,'TooltipString','Move','CData',S,'Tag','move_button','Clic
 % hTopText = uicontrol('Style','text','Position',pos,'String',topTextString,'BackgroundColor',0.5*ones(1,3),'FontSize',10,'ForegroundColor',abs(1-figStruct.Color));
 
 %% Text fields
-
         
 hTextInfoStringDefault=' s=sample sketch contour, c=cut sketched contour,d=draw contour, delete=delete sketch contour, home=return to active slice, a=accept contour, q=smooth accepted contour, +=grow contour, -=shrink contour, space=go to next slice, left/right arrow=increase/decrease transparancy, v=activate vcw';
 hTextInfo = uicontrol(hf,'Style','text','String',hTextInfoStringDefault,...
@@ -575,6 +574,10 @@ set(jSlider_T,'HighValue',Tf(2));
 set(jSlider_T,'LowValue',Tf(1));
 
 setThresholdFunc([],[],{hf,jSlider_T,jSlider_I,jSlider_J,jSlider_K});
+
+%%
+
+drawnow;
 
 end
 

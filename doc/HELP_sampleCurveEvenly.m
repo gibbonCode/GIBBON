@@ -21,12 +21,12 @@ cPar=[]; %If the control structure is empty these are the settings used:
 
 % cPar.nd=size(V,1); %resample with the same about of points
 % cPar.typeOpt='num'; %curve steps are based on the desired number of points
-% cPar.interpMethod='cubic'; %use CUBIC interpolation
+% cPar.interpMethod='pchip'; %use pchip interpolation
 % cPar.closeLoopOpt=0; %the curve is not a closed loop
 
 [Vg]=sampleCurveEvenly(V,cPar);
 
-hf1=figuremax(fig_color,fig_colordef);
+cFigure;
 subplot(1,2,1); hold on;
 title('Unevenly sampled');
 plotV(V,'r.-','MarkerSize',markerSize);
@@ -50,7 +50,7 @@ cPar.closeLoopOpt=0; %the curve is not a closed loop
 
 [Vg]=sampleCurveEvenly(V,cPar);
 
-hf1=figuremax(fig_color,fig_colordef);
+cFigure;
 subplot(1,2,1); hold on;
 title('Unevenly sampled');
 plotV(V,'r.-','MarkerSize',markerSize);
@@ -74,7 +74,7 @@ cPar.closeLoopOpt=0; %the curve is not a closed loop
 
 [Vg]=sampleCurveEvenly(V,cPar);
 
-hf1=figuremax(fig_color,fig_colordef);
+cFigure;
 subplot(1,2,1); hold on;
 title('Unevenly sampled');
 plotV(V,'r.-','MarkerSize',markerSize);
@@ -89,14 +89,14 @@ drawnow;
 
 V(:,2)=V(:,2)*2; %Increasing amplitude increases point spacing and  hence increases number of point used for curve step size resampling
 
-cPar.nd=0.1; %resmaple based on curve length step size
+cPar.nd=0.1; %resample based on curve length step size
 cPar.typeOpt='dist'; %curve steps are based on the desired number of points
 cPar.interpMethod='linear'; %use linear interpolation
 cPar.closeLoopOpt=0; %the curve is not a closed loop
 
 [Vg]=sampleCurveEvenly(V,cPar);
 
-hf1=figuremax(fig_color,fig_colordef);
+cFigure;
 subplot(1,2,1); hold on;
 title('Unevenly sampled');
 plotV(V,'r.-','MarkerSize',markerSize);
@@ -123,12 +123,12 @@ V=[x(:) y(:) z(:)];
 
 cPar.nd=200; %Desired number of pointsupsample twice
 cPar.typeOpt='num'; %curve steps are based on the desired number of points
-cPar.interpMethod='cubic'; %use Cubic interpolation
+cPar.interpMethod='pchip'; %use pchip interpolation
 cPar.closeLoopOpt=1; %the curve is close so the end is considered equal to the start
 
 [Vg]=sampleCurveEvenly(V,cPar);
 
-hf1=figuremax(fig_color,fig_colordef);
+cFigure;
 subplot(1,2,1); hold on;
 title('Unevenly sampled');
 plot3(V(:,1),V(:,2),V(:,3),'r.-','MarkerSize',markerSize);
@@ -152,7 +152,7 @@ cPar.closeLoopOpt=1;
 
 [Vg]=sampleCurveEvenly(V,cPar);
 
-hf1=figuremax(fig_color,fig_colordef);
+cFigure;
 subplot(1,2,1); hold on;
 title('Unevenly sampled');
 plot3(V(:,1),V(:,2),V(:,3),'r.-','MarkerSize',markerSize);

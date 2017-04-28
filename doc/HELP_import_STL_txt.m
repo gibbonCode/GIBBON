@@ -14,8 +14,7 @@ clear; close all; clc;
 
 %%
 % Plot settings
-faceAlpha1=1;
-faceAlpha2=0.5;
+faceAlpha=0.5;
 fontSize=25; 
 
 %% Import STL file as patch data
@@ -24,7 +23,6 @@ fontSize=25;
 defaultFolder = fileparts(fileparts(mfilename('fullpath')));
 pathName=fullfile(defaultFolder,'data','STL'); 
 fileName=fullfile(pathName,'femur.stl'); 
-% fileName=fullfile(pathName,'Panthera_pardus_AMNH11374.stl'); 
 [stlStruct] = import_STL_txt(fileName);
 
 F=stlStruct.solidFaces{1};
@@ -41,11 +39,8 @@ F=ind2(F);
 
 cFigure;
 title('Imported patch data from STL','fontSize',fontSize);
-xlabel('X','fontSize',fontSize);ylabel('Y','fontSize',fontSize); zlabel('Z','fontSize',fontSize); hold on;
-
-patch('Faces',F,'Vertices',V,'FaceColor','g','EdgeColor','k','FaceAlpha',faceAlpha1);
-
-view(3); axis equal; axis tight; axis vis3d; grid on; 
+gpatch(F,V,'g');
+axisGeom;
 camlight('headlight');
 lighting phong; axis off; 
 drawnow;
@@ -64,13 +59,12 @@ pColors=autumn(numel(stlStruct.solidNames));
 
 cFigure;
 title('Imported patch data from multi-solid STL','fontSize',fontSize);
-xlabel('X','fontSize',fontSize);ylabel('Y','fontSize',fontSize); zlabel('Z','fontSize',fontSize); hold on;
 for q=1:1:numel(stlStruct.solidNames)
     F=stlStruct.solidFaces{q};
     V=stlStruct.solidVertices{q};
-    patch('Faces',F,'Vertices',V,'FaceColor',pColors(q,:),'EdgeColor','k','FaceAlpha',faceAlpha2);
+    gpatch(F,V,pColors(q,:),'k',faceAlpha);
 end
-view(3); axis equal; axis tight; axis vis3d; grid on; 
+axisGeom;
 camlight('headlight');
 lighting phong; axis off; 
 drawnow;

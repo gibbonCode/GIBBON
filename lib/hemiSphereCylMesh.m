@@ -74,7 +74,7 @@ V_edge=V_edge(indSort,:);
 [x,y,z]=getColumns(V_edge); %Reorder and get coordinates
 
 %Determine Z step sizes
-if isempty(cylinderStepSize);
+if isempty(cylinderStepSize)
     cylinderStepSize=mean(sqrt(sum(diff(V_edge,1,1).^2,2))); %mean point spacing on edge
 end
 nStepsCylinder=round(cylinderHeight./cylinderStepSize);
@@ -114,6 +114,6 @@ Fcc=Fc+size(Vs,1); %Fix vertex ID's here
 Ft=[Fs;Fcc];
 
 %Removing double vertices and fixing face indices
-[~,ind1,ind2]=unique(round(Vt*1e5),'rows');
+[~,ind1,ind2]=unique(pround(Vt,5),'rows');
 Vt=Vt(ind1,:);
 Ft=ind2(Ft);
