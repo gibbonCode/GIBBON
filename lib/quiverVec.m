@@ -11,6 +11,7 @@ switch nargin
         colorSpec=[];
         edgeColorOpt='none';
         quiverStyleOpt=1;
+        alphaLevel=1;
     case 3
         P=varargin{1};
         V=varargin{2};
@@ -18,6 +19,7 @@ switch nargin
         colorSpec=[];
         edgeColorOpt='none';
         quiverStyleOpt=1;
+        alphaLevel=1;
     case 4
         P=varargin{1};
         V=varargin{2};
@@ -25,6 +27,7 @@ switch nargin
         colorSpec=varargin{4};        
         edgeColorOpt='none';
         quiverStyleOpt=1;
+        alphaLevel=1;
     case 5
         P=varargin{1};
         V=varargin{2};
@@ -32,6 +35,7 @@ switch nargin
         colorSpec=varargin{4};
         edgeColorOpt=varargin{5};
         quiverStyleOpt=1;
+        alphaLevel=1;
     case 6
         P=varargin{1};
         V=varargin{2};
@@ -39,6 +43,15 @@ switch nargin
         colorSpec=varargin{4};
         edgeColorOpt=varargin{5};
         quiverStyleOpt=varargin{6};
+        alphaLevel=1;
+    case 7
+        P=varargin{1};
+        V=varargin{2};
+        vecSize=varargin{3};
+        colorSpec=varargin{4};
+        edgeColorOpt=varargin{5};
+        quiverStyleOpt=varargin{6};
+        alphaLevel=varargin{7};
 end
    
 if isempty(edgeColorOpt)
@@ -83,4 +96,4 @@ else
     [F,P,C]=quiver3Dpatch(P(:,1),P(:,2),P(:,3),V(:,1),V(:,2),V(:,3),colorSpec,vecSize);    
 end
 
-varargout{1}=gpatch(F,P,C,edgeColorOpt,1);
+varargout{1}=gpatch(F,P,C,edgeColorOpt,alphaLevel);

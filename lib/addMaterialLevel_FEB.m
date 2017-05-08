@@ -25,10 +25,12 @@ MaterialNode = rootNode.appendChild(MaterialNode);
 
 % Adding material fields
 disp('Adding Material level')
-materialIndexSet=[FEB_struct.Geometry.ElementMat{:}];
-matIndicesUnique=unique(materialIndexSet);
+materialIndicesUniquePerSet=cellfun(@(x) unique(x(:))',FEB_struct.Geometry.ElementMat,'UniformOutput',0);
+matIndicesUnique=unique([materialIndicesUniquePerSet{:}]);
+% materialIndexSet=[FEB_struct.Geometry.ElementMat{:}];
+% matIndicesUnique=unique(materialIndexSet);
 
-if FEB_struct.disp_opt==1;
+if FEB_struct.disp_opt==1
     hw = waitbar(0,'Adding material level...');
 end
 
@@ -124,14 +126,14 @@ for q_mat=1:1:numel(matIndicesUnique)
             end
     end
     
-    if FEB_struct.disp_opt==1;
+    if FEB_struct.disp_opt==1
         %Adjust waitbar
         waitbar(q_mat/numel(matIndicesUnique),hw,'Adding material level...');
     end
     
 end
 
-if FEB_struct.disp_opt==1;
+if FEB_struct.disp_opt==1
     %Close waitbat
     close(hw);
     drawnow;
