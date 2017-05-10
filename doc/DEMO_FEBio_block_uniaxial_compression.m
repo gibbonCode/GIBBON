@@ -73,7 +73,7 @@ xlabel('X','FontSize',fontSize); ylabel('Y','FontSize',fontSize); zlabel('Z','Fo
 hold on;
 patch('Faces',Fb,'Vertices',V,'FaceColor','flat','CData',faceBoundaryMarker,'FaceAlpha',faceAlpha2,'lineWidth',edgeWidth,'edgeColor',edgeColor);
 
-colormap(jet(6)); colorbar;
+colormap(gjet(6)); colorbar;
 set(gca,'FontSize',fontSize);
 view(3); axis tight;  axis equal;  grid on;
 drawnow;
@@ -113,7 +113,7 @@ plotV(V(bcSupportList_Z,:),'b.','MarkerSize',markerSize);
 plotV(V(bcPrescribeList,:),'k.','MarkerSize',markerSize);
 set(gca,'FontSize',fontSize);
 
-colormap(jet(6)); colorbar; 
+colormap(gjet(6)); colorbar; 
 set(gca,'FontSize',fontSize);
 view(3); axis tight;  axis equal;  grid on;
 drawnow; 
@@ -213,38 +213,62 @@ FEBioRunStruct.maxLogCheckTime=3; %Max log file checking time
 
 %%
 if runFlag==1 %i.e. a succesful run
-    
     %% IMPORTING NODAL DISPLACEMENT RESULTS
     % Importing nodal displacements from a log file
-    [~, N_disp_mat,~]=importFEBio_logfile(fullfile(savePath,FEB_struct.run_output_names{1})); %Nodal displacements
-    
-    DN=N_disp_mat(:,2:end,end); %Final nodal displacements
-    
-    %% CREATING NODE SET IN DEFORMED STATE
-    V_def=V+DN;
-    DN_magnitude=sqrt(sum(DN.^2,2));
-    
-    %%
-    % Plotting the deformed model
-    
-    [CF]=vertexToFaceMeasure(Fb,DN_magnitude);
-    
-    hf1=cFigure;
-    title('The deformed model','FontSize',fontSize);
-    xlabel('X','FontSize',fontSize); ylabel('Y','FontSize',fontSize); zlabel('Z','FontSize',fontSize); hold on;
-    
-    hps=patch('Faces',Fb,'Vertices',V_def,'FaceColor','flat','CData',CF);
-    
-    view(3); axis tight;  axis equal;  grid on;
-    colormap jet; colorbar;
-    % camlight headlight;
-    set(gca,'FontSize',fontSize);
-    drawnow;
+    [~, N_disp_mat,~]=importFEBio_logfile(FEB_struct.run_output_names{1}); %Nodal displacements    
     
     %% IMPORTING NODAL FORCES
     % Importing nodal forces from a log file
-    [time_mat, N_force_mat,~]=importFEBio_logfile(fullfile(savePath,FEB_struct.run_output_names{2})); %Nodal forces
+    [time_mat, N_force_mat,~]=importFEBio_logfile(FEB_struct.run_output_names{2}); %Nodal forces
+    time_mat=[0; time_mat(:)]; %Time
+    
+    %% Plotting the deformed model
+    
+    N_disp_mat=N_disp_mat(:,2:end,:);
+    sizImport=size(N_disp_mat);
+    sizImport(3)=sizImport(3)+1;
+    N_disp_mat_n=zeros(sizImport);
+    N_disp_mat_n(:,:,2:end)=N_disp_mat;
+    N_disp_mat=N_disp_mat_n;
+    DN=N_disp_mat(:,:,end);
+    DN_magnitude=sqrt(sum(DN(:,3).^2,2));
+    V_def=V+DN;
+    [CF]=vertexToFaceMeasure(Fb,DN_magnitude);
+    
+    %%
+    hf=cFigure;
+    xlabel('X','FontSize',fontSize); ylabel('Y','FontSize',fontSize); zlabel('Z','FontSize',fontSize); hold on;
+    
+    hp=gpatch(Fb,V_def,CF,'k',1);
+    gpatch(Fb,V,0.5*ones(1,3),'k',0.25);
+    
+    view(3); axis tight;  axis equal;  grid on; box on;
+    colormap(gjet(250)); colorbar;
+    caxis([0 max(DN_magnitude)]);
+    axis([min(V_def(:,1)) max(V_def(:,1)) min(V_def(:,2)) max(V_def(:,2)) min(V(:,3)) max(V(:,3))]);
+    view(130,25);
+    camlight headlight;
+    set(gca,'FontSize',fontSize);
+    drawnow;
+    
+    animStruct.Time=time_mat;
+    
+    for qt=1:1:size(N_disp_mat,3)
         
+        DN=N_disp_mat(:,:,qt);
+        DN_magnitude=sqrt(sum(DN(:,3).^2,2));
+        V_def=V+DN;
+        [CF]=vertexToFaceMeasure(Fb,DN_magnitude);
+        
+        %Set entries in animation structure
+        animStruct.Handles{qt}=[hp hp]; %Handles of objects to animate
+        animStruct.Props{qt}={'Vertices','CData'}; %Properties of objects to animate
+        animStruct.Set{qt}={V_def,CF}; %Property values for to set in order to animate
+    end
+        
+    anim8(hf,animStruct);
+    drawnow;
+    
     %% DERIVING STRESS METRICS
     
     %Get Z forces
@@ -255,7 +279,7 @@ if runFlag==1 %i.e. a succesful run
     DZ_set=N_disp_mat(bcPrescribeList,end,:); %Final nodal displacements
     DZ_set=mean(DZ_set,1);
     stretch_sim=(DZ_set+sampleHeight)./sampleHeight;
-    stretch_sim=[1; stretch_sim(:)];
+    stretch_sim=[stretch_sim(:)];
     
     %Derive simulated Cauchy stress (alternatively import stress and take the mean)
     currentArea=initialArea./stretch_sim;
@@ -264,13 +288,12 @@ if runFlag==1 %i.e. a succesful run
     
     %%
     
-    hf1=cFigure;
-    title('Stretch stress curves','FontSize',fontSize);
-    xlabel('\lambda Stretch [.]','FontSize',fontSize); ylabel('\sigma Cauchy stress [kPa]','FontSize',fontSize); zlabel('Z','FontSize',fontSize); hold on;
+    hf4=cFigure;
+    xlabel('\lambda Stretch [.]','FontSize',fontSize); ylabel('\sigma Cauchy stress [kPa]','FontSize',fontSize); hold on;
     
-    plot(stretch_sim,stress_cauchy_sim,'r.-','lineWidth',lineWidth,'markerSize',markerSize);
+    h=plot(stretch_sim(:),stress_cauchy_sim(:),'r-','lineWidth',lineWidth);
     
-    view(2); axis tight;  grid on;
+    view(2); axis tight;  grid on; axis square; box on; 
     set(gca,'FontSize',fontSize);
     drawnow;
     

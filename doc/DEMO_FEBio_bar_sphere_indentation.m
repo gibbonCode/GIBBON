@@ -31,7 +31,7 @@ modelName=fullfile(savePath,'tempModel');
 sampleWidth=10;
 sampleThickness=10; 
 sampleHeight=5;
-pointSpacing=1;
+pointSpacing=0.5;
 
 numElementsWidth=round(sampleWidth/pointSpacing);
 numElementsThickness=round(sampleThickness/pointSpacing);

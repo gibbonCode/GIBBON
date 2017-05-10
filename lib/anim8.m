@@ -126,7 +126,6 @@ end
 % Create a uitoggletool in the toolbar
 hCycle=uitoggletool(hb,'TooltipString','Cycle forward-backward','CData',S,'Tag','cycle_button');
 
-
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %Save animation button
 
@@ -166,7 +165,7 @@ hf.UserData.ButtonHandles.Play=hPlay;
 hf.UserData.ButtonHandles.hCycle=hCycle;
 hf.UserData.ButtonHandles.hTextTime=hTextTime;
 hf.UserData.pauseTime=mean(diff(animStruct.Time));
-hf.UserData.shiftMag=ceil(numel(animStruct.Time)/20); 
+hf.UserData.shiftMag=1;%ceil(numel(animStruct.Time)/20); 
 hf.UserData.icons.play=iconPlay;
 hf.UserData.icons.stop=iconStop;
 
