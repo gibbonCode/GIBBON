@@ -215,11 +215,11 @@ FEBioRunStruct.maxLogCheckTime=3; %Max log file checking time
 if runFlag==1 %i.e. a succesful run
     %% IMPORTING NODAL DISPLACEMENT RESULTS
     % Importing nodal displacements from a log file
-    [~, N_disp_mat,~]=importFEBio_logfile(FEB_struct.run_output_names{1}); %Nodal displacements    
+    [~, N_disp_mat,~]=importFEBio_logfile(fullfile(savePath,FEB_struct.run_output_names{1})); %Nodal displacements    
     
     %% IMPORTING NODAL FORCES
     % Importing nodal forces from a log file
-    [time_mat, N_force_mat,~]=importFEBio_logfile(FEB_struct.run_output_names{2}); %Nodal forces
+    [time_mat, N_force_mat,~]=importFEBio_logfile(fullfile(savePath,FEB_struct.run_output_names{2})); %Nodal forces
     time_mat=[0; time_mat(:)]; %Time
     
     %% Plotting the deformed model

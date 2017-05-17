@@ -60,23 +60,23 @@ LE=~any(ismember(Eh,ind),2);
 
 %%
 
-if cPar.latticeSide==2
+if cPar.shrinkIterations<0
     LE=~LE;
 end
 
-for q=1:1:cPar.shrinkIterations   
+for q=1:1:abs(cPar.shrinkIterations)
     [Eh,Vh]=subHex(Eh,Vh,1,1);
     LE=repmat(LE,[8,1]);
     
     ind_LE=Eh(LE,:);
     ind_LE=unique(ind_LE(:));
-    LE=~any(ismember(Eh,ind_LE),2);
+    LE=any(ismember(Eh,ind_LE),2);
 end
 
-if cPar.latticeSide==2
+if cPar.shrinkIterations<0
     LE=~LE;
 end
-
+    
 %%
 
 

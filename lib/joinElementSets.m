@@ -48,18 +48,17 @@ else
 end
 
 %Color data
-if nargout==3
-    if isempty(Cc) %If empty replace by set number
-        Cc=Fc;
-        for q=1:1:numSets
-            Cc{q}=q*ones(size(Fc{q},1),1);
-        end
+if isempty(Cc) %If empty replace by set number
+    Cc=Fc;
+    for q=1:1:numSets
+        Cc{q}=q*ones(size(Fc{q},1),1);
     end
-    numColorSets=cellfun(@(x) size(x,1),Cc);
-    numDimColor=max(cellfun(@(x) size(x,2),Cc));
-    numColorTotal=sum(numColorSets);
-    CT=zeros(numColorTotal,numDimColor); %Initialize
 end
+numColorSets=cellfun(@(x) size(x,1),Cc);
+numDimColor=max(cellfun(@(x) size(x,2),Cc));
+numColorTotal=sum(numColorSets);
+CT=zeros(numColorTotal,numDimColor); %Initialize
+
 
 %% 
 
