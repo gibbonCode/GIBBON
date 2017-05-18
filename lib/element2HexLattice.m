@@ -2,8 +2,6 @@ function [Es,Vs,Cs]=element2HexLattice(varargin)
 
 % function [Es,Vs]=element2HexLattice(E,V,cPar)
 
-warning('UNFINISHED FUNCTION WORK IN PROGRESS')
-
 %% Parse input
 
 switch nargin
@@ -18,15 +16,15 @@ switch nargin
 end
 
 %The default control parameters
-cParDefault.shrinkIterations=1;
+cParDefault.growSteps=1;
 cParDefault.latticeSide=1;
 cParDefault.indBoundary=[];
 
 if isempty(cPar)
     cPar=cParDefault;
 else
-    if ~isfield(cPar,'shrinkIterations')
-        cPar.shrinkIterations=cParDefault.shrinkIterations;
+    if ~isfield(cPar,'growSteps')
+        cPar.growSteps=cParDefault.growSteps;
     end
     if ~isfield(cPar,'latticeSide')
         cPar.latticeSide=cParDefault.latticeSide;
@@ -60,11 +58,11 @@ LE=~any(ismember(Eh,ind),2);
 
 %%
 
-if cPar.shrinkIterations<0
+if cPar.growSteps<0
     LE=~LE;
 end
 
-for q=1:1:abs(cPar.shrinkIterations)
+for q=1:1:abs(cPar.growSteps)
     [Eh,Vh]=subHex(Eh,Vh,1,1);
     LE=repmat(LE,[8,1]);
     
@@ -73,7 +71,7 @@ for q=1:1:abs(cPar.shrinkIterations)
     LE=any(ismember(Eh,ind_LE),2);
 end
 
-if cPar.shrinkIterations<0
+if cPar.growSteps<0
     LE=~LE;
 end
     
