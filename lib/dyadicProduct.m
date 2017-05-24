@@ -16,7 +16,7 @@ else
 end
 
 %Creating indices for tensors
-IJKL=combvec(1:3,1:3,1:3,1:3)';
+IJKL=gcombvec(1:3,1:3,1:3,1:3)';
 I=IJKL(:,1); J=IJKL(:,2); K=IJKL(:,3); L=IJKL(:,4);
 IND_IJKL=sub2ind(siz4,I,J,K,L);
 

@@ -7,7 +7,7 @@ if ndims(c)==4 %4d array e.g. 4th order tensor
         %Creating indices for tensors
         sizeFourthOrderTensor=siz4; %size of fourth order tensor
         sizeVoigtTensor=6.*ones(1,2); %size
-        indexCombinations=combvec(1:3,1:3,1:3,1:3)';
+        indexCombinations=gcombvec(1:3,1:3,1:3,1:3)';
         I=indexCombinations(:,1); J=indexCombinations(:,2); K=indexCombinations(:,3); L=indexCombinations(:,4);
         
         kroneckerDelta_IJ=double(I==J);

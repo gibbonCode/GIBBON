@@ -14,7 +14,7 @@ if ndims(A)==4 && ismatrix(B) %4d array and 2d array
     if all(sizA==siz4) && all(sizB==siz2) %4th order tensor and 2nd order tensor
         
         %Creating indices for tensors
-        IJKL=combvec(1:3,1:3,1:3,1:3)';
+        IJKL=gcombvec(1:3,1:3,1:3,1:3)';
         I=IJKL(:,1); J=IJKL(:,2); K=IJKL(:,3); L=IJKL(:,4);
         IND_IJKL=sub2ind(siz4,I,J,K,L); %Linear indices for 4th order tensor A
         IND_JK=sub2ind(siz2,J,K); %Linear indices for 2nd order tensor B
