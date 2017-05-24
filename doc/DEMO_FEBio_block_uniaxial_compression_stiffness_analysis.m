@@ -39,7 +39,7 @@ numElementsWidth=round(sampleWidth/pointSpacings(1));
 numElementsThickness=round(sampleThickness/pointSpacings(2));
 numElementsHeight=round(sampleHeight/pointSpacings(3));
 
-stretchLoad=1;
+stretchLoad=0.7;
 displacementMagnitude=[0 0 (stretchLoad*sampleHeight)-sampleHeight];
 
 %Material parameter set
@@ -294,11 +294,8 @@ if runFlag==1 %i.e. a succesful run
     
     %%
     
-    viewFourthOrderTensor2D(c*1e3); %Visualize tensor C
-    
-    fdsafsa
-    
-    
+    viewFourthOrderTensor(c); %Visualize tensor C
+        
     %% Plotting the deformed model
     
     N_disp_mat=N_disp_mat(:,2:end,:);
