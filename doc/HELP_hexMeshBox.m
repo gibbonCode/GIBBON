@@ -6,10 +6,7 @@ clear; close all; clc;
 
 %%
 % PLOT SETTINGS
-fig_color='w'; fig_colordef='white';
 fontSize=20;
-edgeWidth=2;
-edgeColor=0.7*ones(1,3);
 faceAlpha1=1;
 faceAlpha2=0.5;
 
@@ -27,26 +24,27 @@ faceBoundaryMarker=meshStruct.faceBoundaryMarker;
 
 %%
 % Plotting model
-hf1=figuremax(fig_color,fig_colordef);
-
+cFigure;
 subplot(1,2,1);
-title('Box boundaries and normals','FontSize',fontSize);
-xlabel('X','FontSize',fontSize);ylabel('Y','FontSize',fontSize); zlabel('Z','FontSize',fontSize);
+title('Box boundaries faces','FontSize',fontSize);
 hold on;
-patch('Faces',Fb,'Vertices',V,'FaceColor','flat','CData',faceBoundaryMarker,'FaceAlpha',faceAlpha1,'lineWidth',edgeWidth,'edgeColor',edgeColor);
-[hp]=patchNormPlot(Fb,V,1);
-colormap(gjet(6)); colorbar; 
-set(gca,'FontSize',fontSize);
-view(3); axis tight;  axis equal;  grid on;
+
+gpatch(Fb,V,faceBoundaryMarker,'k',faceAlpha1);
+% [hp]=patchNormPlot(Fb,V,1); %Display face normals
+
+axisGeom(gca,fontSize); 
+colormap(gjet(6)); icolorbar; 
+
 
 subplot(1,2,2);
-title('Box model','FontSize',fontSize);
-xlabel('X','FontSize',fontSize);ylabel('Y','FontSize',fontSize); zlabel('Z','FontSize',fontSize);
+title('Box hexahedral mesh','FontSize',fontSize);
 hold on;
-hpm=patch('Faces',F,'Vertices',V,'EdgeColor','k','FaceColor','g','FaceAlpha',faceAlpha2,'lineWidth',edgeWidth,'edgeColor',edgeColor);
-axis equal; view(3); axis tight;  grid on; 
+
+gpatch(F,V,0.5*ones(1,3),'k',faceAlpha2);
+
+axisGeom(gca,fontSize); 
 camlight headlight;
-set(gca,'FontSize',fontSize);
+
 drawnow;
 
 %% 

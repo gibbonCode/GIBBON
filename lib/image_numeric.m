@@ -61,10 +61,9 @@ end
 figure(hf);
 H=zeros(1,numel(M));
 qh=1;
-for i=1:size(M,1)
-    for j=1:size(M,2)
-        m=M(i,j);
-        
+for qi=1:size(M,1)
+    for qj=1:size(M,2)
+        m=M(qi,qj);        
         switch class(m)
             case'sym'
                 try %to conver to double
@@ -87,10 +86,11 @@ for i=1:size(M,1)
                 textFormat=['%0.',num2str(numDigits),'f';];
                 image_text=sprintf(textFormat,m);
         end
-        H(qh)=text(j,i, image_text,'horizontalAlignment','center','color',textColor,'FontWeight','demi','FontSize',fontSize,'interpreter',interpreter);
+        H(qh)=text(qj,qi, image_text,'horizontalAlignment','center','color',textColor,'FontWeight','demi','FontSize',fontSize,'interpreter',interpreter);
         qh=qh+1;
     end
 end
-drawnow;
-varargout{1}=H;
+if nargout==1
+    varargout{1}=H;
+end
 

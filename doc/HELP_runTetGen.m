@@ -112,19 +112,6 @@ camlight headlight;
 set(gca,'FontSize',fontSize);
 drawnow;
 
-%% VIEWING THE MODEL IN TETVIEW
-% TetView is an external (non-MATLAB) program for viewing TetGen meshes.
-% The runTetGen function also copies the mesh output files to the
-% tetView directory. TetView is usually found here:
-% ...\gibbon\trunk\lib_ext\tetGen
-% You can run TetView seperately or use the following to view the model in TetView:
-[runStatus,runCmdHist]=runTetView(meshOutput.loadNameStruct.loadName_ele);
-
-%% 
-% Here is an example screeshot for viewing models in tetView:
-% 
-% <<tetView_screenshot.jpg>>
-%
 %% MESHING A MULTI-REGION MODEL
 
 %%

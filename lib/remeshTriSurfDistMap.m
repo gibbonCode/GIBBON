@@ -1,4 +1,16 @@
-function [Fd,Vd,seedIndex]=remeshTriSurfDistMap(varargin)
+function [varargout]=remeshTriSurfDistMap(varargin)
+% [Fd,Vd,seedIndex,indSeed]=remeshTriSurfDistMap(F,V,numSeeds,startInds,)
+% Inputs: 
+% F = input mesh faces
+% V = input mesh vertices
+% numSeeds = number of desired vertices (must be much less than length(V))
+% startInds = points to start the remeshing from (optional). These points will be included in the output mesh
+% W = point weights (optional)
+% Outputs: 
+% Fd = Output mesh faces
+% Vd = Output mesh vertices
+% seedIndex = indices of selected output vertices for each index vertex
+% indSeed = indices of input vertices selected for the output mesh
 
 %% PARSE INPUT
 
@@ -56,3 +68,10 @@ indDelaunayFix(indSeed)=1:numSeeds;
 %Prepare output
 Fd=indDelaunayFix(seedIndexFacesVoronoi); %Delaunay triangular faces
 Vd=V(indSeed,:);  %Delaunay vertices
+
+varargout{1} =  Fd;
+varargout{2} =  Vd;
+varargout{3} =  seedIndex;
+varargout{4} =  indSeed;
+     
+end

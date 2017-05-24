@@ -9,8 +9,19 @@ clear; close all; clc;
 
 %% Description 
 % UNDOCUMENTED 
+
 %% Examples 
 % 
+
+%%
+% Plot settings
+faceAlpha=0.5; 
+fontSize=20; 
+
+
+
+
+
 %%
 % 
 % <<gibbVerySmall.gif>>
