@@ -11,21 +11,31 @@ switch nargin
         numDigits=5;
         fontSizeIm=15;
         fontSize=15;
+        toleranceLevel=max(abs(C(:)))/1e6;
     case 2
         C=varargin{1};
         numDigits=varargin{2};
         fontSizeIm=15;
         fontSize=15;
+        toleranceLevel=max(abs(C(:)))/1e6;
     case 3
         C=varargin{1};
         numDigits=varargin{2};
         fontSizeIm=varargin{3};
         fontSize=15;
+        toleranceLevel=max(abs(C(:)))/1e6;
     case 4
         C=varargin{1};
         numDigits=varargin{2};
         fontSizeIm=varargin{3};
         fontSize=varargin{4};
+        toleranceLevel=max(abs(C(:)))/1e6;
+    case 5        
+        C=varargin{1};
+        numDigits=varargin{2};
+        fontSizeIm=varargin{3};
+        fontSize=varargin{4};
+        toleranceLevel=max(abs(C(:)))/1e6;
 end
 
 if isempty(C)
@@ -93,15 +103,15 @@ switch class(C)
         
         symbolicVariableSet=symvar(CM);
         C_dummy=double(subs(CM,symbolicVariableSet,1:numel(symbolicVariableSet)));
-        logicEntry=C_dummy>eps(C_dummy);
+        logicEntry=abs(C_dummy)>toleranceLevel;
         
         C_dummy_V=double(subs(CV,symbolicVariableSet,1:numel(symbolicVariableSet)));
-        logicEntry_V=C_dummy_V>eps(C_dummy_V);
+        logicEntry_V=abs(C_dummy_V)>toleranceLevel;
         
     otherwise
         logicSym=0;
-        logicEntry=CM>eps(CM);
-        logicEntry_V=CV>eps(CV);
+        logicEntry=abs(CM)>toleranceLevel;
+        logicEntry_V=abs(CV)>toleranceLevel;
 end
 
 %%

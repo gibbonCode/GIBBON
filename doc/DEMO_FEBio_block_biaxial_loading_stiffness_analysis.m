@@ -1,4 +1,4 @@
-%% DEMO_FEBio_block_uniaxial_compression_stiffness_analysis
+%% DEMO_FEBio_block_biaxial_loading_stiffness_analysis
 % Below is a demonstration for:
 % 1) Building an FEBio model for uniaxial compression
 % 2) Running the model
@@ -39,8 +39,11 @@ numElementsWidth=round(sampleWidth/pointSpacings(1));
 numElementsThickness=round(sampleThickness/pointSpacings(2));
 numElementsHeight=round(sampleHeight/pointSpacings(3));
 
-stretchLoad=0.7;
-displacementMagnitude=[0 0 (stretchLoad*sampleHeight)-sampleHeight];
+boxDim=[sampleWidth sampleThickness sampleHeight]; %Dimensions
+boxEl=[numElementsWidth numElementsThickness numElementsHeight]; %Number of elements
+
+stretchLoads=[nan 1.4 0.7]; %Applied stretches, use NaN to leave face free
+displacementMagnitudes=(boxDim.*stretchLoads)-boxDim;
 
 %Material parameter set
 c1=1e-3; 
@@ -50,8 +53,6 @@ k_factor=1e2;
 %% CREATING MESHED BOX
 
 %Create box 1
-boxDim=[sampleWidth sampleThickness sampleHeight]; %Dimensions
-boxEl=[numElementsWidth numElementsThickness numElementsHeight]; %Number of elements
 [box1]=hexMeshBox(boxDim,boxEl);
 E=box1.E;
 V=box1.V;
@@ -72,7 +73,7 @@ xlabel('X','FontSize',fontSize); ylabel('Y','FontSize',fontSize); zlabel('Z','Fo
 hold on;
 patch('Faces',Fb,'Vertices',V,'FaceColor','flat','CData',faceBoundaryMarker,'FaceAlpha',faceAlpha2,'lineWidth',edgeWidth,'edgeColor',edgeColor);
 
-colormap(gjet(6)); colorbar;
+colormap(gjet(6)); icolorbar;
 set(gca,'FontSize',fontSize);
 view(3); axis tight;  axis equal;  grid on;
 drawnow;
@@ -95,8 +96,19 @@ bcSupportList_Z=unique(Fr(:));
 %Prescribed displacement nodes
 logicPrescribe=faceBoundaryMarker==6;
 Fr=Fb(logicPrescribe,:);
-bcPrescribeList=unique(Fr(:));
-bcPrescribeMagnitudes=displacementMagnitude(ones(1,numel(bcPrescribeList)),:);
+bcPrescribeList_Z=unique(Fr(:));
+bcPrescribeMagnitudes_Z=displacementMagnitudes(ones(1,numel(bcPrescribeList_Z)),3);
+
+logicPrescribe=faceBoundaryMarker==4;
+Fr=Fb(logicPrescribe,:);
+bcPrescribeList_Y=unique(Fr(:));
+bcPrescribeMagnitudes_Y=displacementMagnitudes(ones(1,numel(bcPrescribeList_Y)),2);
+
+logicPrescribe=faceBoundaryMarker==2;
+Fr=Fb(logicPrescribe,:);
+bcPrescribeList_X=unique(Fr(:));
+bcPrescribeMagnitudes_X=displacementMagnitudes(ones(1,numel(bcPrescribeList_X)),1);
+
 
 %%
 % Visualize BC's
@@ -109,10 +121,12 @@ patch('Faces',Fb,'Vertices',V,'FaceColor','flat','CData',faceBoundaryMarker,'Fac
 plotV(V(bcSupportList_X,:),'r.','MarkerSize',markerSize);
 plotV(V(bcSupportList_Y,:),'g.','MarkerSize',markerSize);
 plotV(V(bcSupportList_Z,:),'b.','MarkerSize',markerSize);
-plotV(V(bcPrescribeList,:),'k.','MarkerSize',markerSize);
+plotV(V(bcPrescribeList_Z,:),'k.','MarkerSize',markerSize);
+plotV(V(bcPrescribeList_Y,:),'k+','MarkerSize',markerSize); 
+plotV(V(bcPrescribeList_X,:),'k*','MarkerSize',markerSize); 
 set(gca,'FontSize',fontSize);
 
-colormap(gjet(6)); colorbar; 
+colormap(gjet(6)); icolorbar; 
 set(gca,'FontSize',fontSize);
 view(3); axis tight;  axis equal;  grid on;
 drawnow; 
@@ -137,14 +151,10 @@ FEB_struct.Geometry.ElementsPartName={'Block'};
 k=c1*k_factor;
 
 %Material section
-% FEB_struct.Materials{1}.Type='Ogden';
-% FEB_struct.Materials{1}.Name='Block_material';
-% FEB_struct.Materials{1}.Properties={'c1','m1','c2','m2','k'};
-% FEB_struct.Materials{1}.Values={c1,m1,c1,-m1,k};
-FEB_struct.Materials{1}.Type='Mooney-Rivlin';
+FEB_struct.Materials{1}.Type='Ogden';
 FEB_struct.Materials{1}.Name='Block_material';
-FEB_struct.Materials{1}.Properties={'c1','c2','k'};
-FEB_struct.Materials{1}.Values={c1,c1,k};
+FEB_struct.Materials{1}.Properties={'c1','m1','c2','m2','k'};
+FEB_struct.Materials{1}.Values={c1,m1,c1,-m1,k};
 
 %Step specific control sections
 FEB_struct.Control.AnalysisType='static';
@@ -163,8 +173,7 @@ FEB_struct.Geometry.NodeSet{2}.Set=bcSupportList_Y;
 FEB_struct.Geometry.NodeSet{2}.Name='bcSupportList_Y';
 FEB_struct.Geometry.NodeSet{3}.Set=bcSupportList_Z;
 FEB_struct.Geometry.NodeSet{3}.Name='bcSupportList_Z';
-% FEB_struct.Geometry.NodeSet{4}.Set=bcPrescribeList;
-% FEB_struct.Geometry.NodeSet{4}.Name='bcPrescribeList';
+
 
 %Adding BC information
 FEB_struct.Boundary.Fix{1}.bc='x';
@@ -175,11 +184,32 @@ FEB_struct.Boundary.Fix{3}.bc='z';
 FEB_struct.Boundary.Fix{3}.SetName=FEB_struct.Geometry.NodeSet{3}.Name;
 
 %Prescribed BC's
-FEB_struct.Boundary.Prescribe{1}.Set=bcPrescribeList;
-FEB_struct.Boundary.Prescribe{1}.bc='z';
-FEB_struct.Boundary.Prescribe{1}.lc=1;
-FEB_struct.Boundary.Prescribe{1}.nodeScale=displacementMagnitude(ones(numel(bcPrescribeList),1),3);
-FEB_struct.Boundary.Prescribe{1}.Type='relative';
+indBC=1;
+if ~any(isnan(bcPrescribeMagnitudes_X(:)))
+    FEB_struct.Boundary.Prescribe{indBC}.Set=bcPrescribeList_X;
+    FEB_struct.Boundary.Prescribe{indBC}.bc='x';
+    FEB_struct.Boundary.Prescribe{indBC}.lc=1;
+    FEB_struct.Boundary.Prescribe{indBC}.nodeScale=bcPrescribeMagnitudes_X;
+    FEB_struct.Boundary.Prescribe{indBC}.Type='relative';
+    indBC=indBC+1;
+end
+
+if ~any(isnan(bcPrescribeMagnitudes_Y(:)))    
+    FEB_struct.Boundary.Prescribe{indBC}.Set=bcPrescribeList_Y;
+    FEB_struct.Boundary.Prescribe{indBC}.bc='y';
+    FEB_struct.Boundary.Prescribe{indBC}.lc=1;
+    FEB_struct.Boundary.Prescribe{indBC}.nodeScale=bcPrescribeMagnitudes_Y;
+    FEB_struct.Boundary.Prescribe{indBC}.Type='relative';
+    indBC=indBC+1;
+end
+
+if ~any(isnan(bcPrescribeMagnitudes_Z(:)))    
+    FEB_struct.Boundary.Prescribe{indBC}.Set=bcPrescribeList_Z;
+    FEB_struct.Boundary.Prescribe{indBC}.bc='z';
+    FEB_struct.Boundary.Prescribe{indBC}.lc=1;
+    FEB_struct.Boundary.Prescribe{indBC}.nodeScale=bcPrescribeMagnitudes_Z;
+    FEB_struct.Boundary.Prescribe{indBC}.Type='relative';
+end
 
 %Load curves
 FEB_struct.LoadData.LoadCurves.id=1;

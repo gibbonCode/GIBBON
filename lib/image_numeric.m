@@ -57,6 +57,10 @@ switch nargin
         interpreter=varargin{6};
 end
 
+
+% textFormat=['%6.',num2str(numDigits),'e'];
+textFormat=['%0.',num2str(numDigits),'f';];                    
+ 
 %%
 figure(hf);
 H=zeros(1,numel(M));
@@ -66,9 +70,8 @@ for qi=1:size(M,1)
         m=M(qi,qj);        
         switch class(m)
             case'sym'
-                try %to conver to double
-                    m=double(m);
-                    textFormat=['%0.',num2str(numDigits),'f';];
+                try %to convert to double
+                    m=double(m);                    
                     image_text=sprintf(textFormat,m);
                 catch %Contains symbolic expressions
                     switch interpreter
@@ -82,8 +85,7 @@ for qi=1:size(M,1)
                     %image_text = strsplit(image_text,' '); %Places space
                     %separated elements on new line
                 end
-            otherwise
-                textFormat=['%0.',num2str(numDigits),'f';];
+            otherwise                
                 image_text=sprintf(textFormat,m);
         end
         H(qh)=text(qj,qi, image_text,'horizontalAlignment','center','color',textColor,'FontWeight','demi','FontSize',fontSize,'interpreter',interpreter);
