@@ -14,7 +14,7 @@ end
 
 filePath=mfilename('fullpath');
 toolboxPath=fileparts(fileparts(filePath));
-helpPath=fullfile(toolboxPath,'doc');
+helpPath=fullfile(toolboxPath,'docs');
 
 %%
 

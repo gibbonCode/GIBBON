@@ -25,7 +25,7 @@ end
 
 %%
 
-testFolder=fullfile(fileparts(fileparts(mfilename('fullpath'))),'doc');
+testFolder=fullfile(fileparts(fileparts(mfilename('fullpath'))),'docs');
 
 %Get list of M-files in documentation folder
 allFiles_publish = dir(fullfile(testFolder,'*.m'));
