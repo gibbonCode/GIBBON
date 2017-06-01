@@ -65,7 +65,7 @@ for q_test=startInd:1:numel(testFileList)
         case 'test' %Test
             run(mFileNow);
         case 'pub' %Publish
-            publish(mFileNow,'catchError',false,'figureSnapMethod','getframe','maxWidth',800);
+            publish(mFileNow,'catchError',false,'figureSnapMethod','getframe','maxHeight',800);
     end
     
     load('tempPub.mat'); %Load variables

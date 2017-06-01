@@ -52,7 +52,7 @@ for q_publish=1:1:numPubpFiles_publish
     disp(q_publish);
     save('tempPub.mat')
     
-    publish(fullfile(helpPath,pubFileList_publish{q_publish}),'catchError',catchErrorOpt,'figureSnapMethod','getframe','maxWidth',800);
+    publish(fullfile(helpPath,pubFileList_publish{q_publish}),'catchError',catchErrorOpt,'figureSnapMethod','getframe','maxHeight',800);
     
     load('tempPub.mat');
     disp(q_publish);

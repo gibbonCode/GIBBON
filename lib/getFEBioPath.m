@@ -14,6 +14,7 @@ function FEBioPath=getFEBioPath
 % 2015/10/05 Enabled searching valid paths in multi-line config. file.
 %------------------------------------------------------------------------
 
+%%
 
 filePath=mfilename('fullpath');
 toolboxPath=fileparts(fileparts(filePath));

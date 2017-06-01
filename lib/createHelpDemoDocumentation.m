@@ -4,7 +4,7 @@ function createHelpDemoDocumentation
 
 filePath=mfilename('fullpath');
 toolboxPath=fileparts(fileparts(filePath));
-helpPath=fullfile(toolboxPath,'html');
+helpPath=fullfile(toolboxPath,'docs','html');
 
 %% FIND HTML FILES
 

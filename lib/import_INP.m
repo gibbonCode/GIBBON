@@ -55,7 +55,7 @@ while 1
         disp(['---> Found target:',target,' on line ',num2str(lineCount)]);
     end    
     lineCount=lineCount+1;
-    if nnz(lineIndexTarget)==(numel(targets));
+    if nnz(lineIndexTarget)==(numel(targets))
         break
     end
 end

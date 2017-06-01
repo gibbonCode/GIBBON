@@ -5,17 +5,17 @@ logo: "img/home-bg.jpg"
 description: "Help and demo links"
 header-img: "img/home-bg.jpg"
 ---
-
+ 
 __The documentation is a work in progress__. Not all functions have associated help files and not all functionality is covered by the demos. The help files currently cover about 50% of the functions and the demos mainly cover the use of FEBio.  
-
+ 
 #### Table of content
 * [The MATLAB integrated help](#helpMatlab)
 * [Function help files](#help)
 * [Demo files](#demo)
-
+ 
 ## The MATLAB integrated help <a name="helpMatlab"></a>  
 Follow the installation instructions to integrate and access GIBBON documentation from within MATLAB. The name for all function help files (the files that generate the help/documentation when published with MATLAB) starts with `HELP_`, all demo files start with `DEMO_`. This way users may explore/open/edit these files by typing `open HELP_functionName` or `open DEMO_functionName` in the MATLAB command window
-
+ 
 ## Function help files <a name="help"></a>   
 
 [HELP_addBoundaryLevel_FEB](html/HELP_addBoundaryLevel_FEB.html)  
