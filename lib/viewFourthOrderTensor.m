@@ -11,31 +11,31 @@ switch nargin
         numDigits=5;
         fontSizeIm=15;
         fontSize=15;
-        toleranceLevel=max(abs(C(:)))/1e6;
+        toleranceLevel=eps(1);
     case 2
         C=varargin{1};
         numDigits=varargin{2};
         fontSizeIm=15;
         fontSize=15;
-        toleranceLevel=max(abs(C(:)))/1e6;
+        toleranceLevel=eps(1);
     case 3
         C=varargin{1};
         numDigits=varargin{2};
         fontSizeIm=varargin{3};
         fontSize=15;
-        toleranceLevel=max(abs(C(:)))/1e6;
+        toleranceLevel=eps(1);
     case 4
         C=varargin{1};
         numDigits=varargin{2};
         fontSizeIm=varargin{3};
         fontSize=varargin{4};
-        toleranceLevel=max(abs(C(:)))/1e6;
+        toleranceLevel=eps(1);
     case 5        
         C=varargin{1};
         numDigits=varargin{2};
         fontSizeIm=varargin{3};
         fontSize=varargin{4};
-        toleranceLevel=max(abs(C(:)))/1e6;
+        toleranceLevel=eps(1);
 end
 
 if isempty(C)
