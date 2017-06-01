@@ -35,12 +35,12 @@ Alternatively download the [.zip file](https://github.com/gibbonCode/GIBBON/arch
 # Installation <a name="Installation"></a>  
 
 #### 1. __Installing 3rd party packages__
-* **FEBio** FEBio is the finite element solver used by GIBBON. FEBio is not provided with GIBBON user need to download a desired release from the [FEBio website](http://febio.org/) and install it.    
-* **export_fig** export_fig is a MATLAB library which GIBBON uses for exporting figures. The export_fig library is available through its [gitHub](https://github.com/altmany/export_fig) page (or the [MathWorks file exchange](http://www.mathworks.com/matlabcentral/fileexchange/23629-export-fig)).
+* **FEBio** is the finite element solver used by GIBBON. FEBio is not provided with GIBBON user need to download a desired release from the [FEBio website](http://febio.org/) and install it.    
+* **export_fig**  is a MATLAB library which GIBBON uses for exporting figures. The export_fig library is available through its [gitHub](https://github.com/altmany/export_fig) page (or the [MathWorks file exchange](http://www.mathworks.com/matlabcentral/fileexchange/23629-export-fig)).
 Already bundled with GIBBON:
 * **TetGen** is a tetrahedral meshing package which is provided with GIBBON. If an alternative release is required visit the [TetGen website](http://wias-berlin.de/software/tetgen/), and replace the existing files (in `...\GIBBON\lib_ext\tetGen)` as desired.
 
-#### 2. __Run `installGibbon.m`__  
+#### 2. __Run `installGibbon.m`__
 The file can be found here `...\GIBBON\installGibbon.m` and will add the GIBBON, FEBio, and export_fig path definitions to MATLAB, and will also integrate the help and documentation.
 
 #### 3. __Restart MATLAB__
