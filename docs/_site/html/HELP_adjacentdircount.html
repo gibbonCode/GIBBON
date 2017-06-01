@@ -1,0 +1,362 @@
+
+<!DOCTYPE html
+  PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html><head>
+      <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+   <!--
+This HTML was auto-generated from MATLAB code.
+To make changes, update the MATLAB code and republish this document.
+      --><title>adjacentdircount</title><meta name="generator" content="MATLAB 9.1"><link rel="schema.DC" href="http://purl.org/dc/elements/1.1/"><meta name="DC.date" content="2017-03-13"><meta name="DC.source" content="HELP_adjacentdircount.m"><style type="text/css">
+html,body,div,span,applet,object,iframe,h1,h2,h3,h4,h5,h6,p,blockquote,pre,a,abbr,acronym,address,big,cite,code,del,dfn,em,font,img,ins,kbd,q,s,samp,small,strike,strong,sub,sup,tt,var,b,u,i,center,dl,dt,dd,ol,ul,li,fieldset,form,label,legend,table,caption,tbody,tfoot,thead,tr,th,td{margin:0;padding:0;border:0;outline:0;font-size:100%;vertical-align:baseline;background:transparent}body{line-height:1}ol,ul{list-style:none}blockquote,q{quotes:none}blockquote:before,blockquote:after,q:before,q:after{content:'';content:none}:focus{outine:0}ins{text-decoration:none}del{text-decoration:line-through}table{border-collapse:collapse;border-spacing:0}
+
+html { min-height:100%; margin-bottom:1px; }
+html body { height:100%; margin:0px; font-family:Arial, Helvetica, sans-serif; font-size:10px; color:#000; line-height:140%; background:#fff none; overflow-y:scroll; }
+html body td { vertical-align:top; text-align:left; }
+
+h1 { padding:0px; margin:0px 0px 25px; font-family:Arial, Helvetica, sans-serif; font-size:1.5em; color:#d55000; line-height:100%; font-weight:normal; }
+h2 { padding:0px; margin:0px 0px 8px; font-family:Arial, Helvetica, sans-serif; font-size:1.2em; color:#000; font-weight:bold; line-height:140%; border-bottom:1px solid #d6d4d4; display:block; }
+h3 { padding:0px; margin:0px 0px 5px; font-family:Arial, Helvetica, sans-serif; font-size:1.1em; color:#000; font-weight:bold; line-height:140%; }
+
+a { color:#005fce; text-decoration:none; }
+a:hover { color:#005fce; text-decoration:underline; }
+a:visited { color:#004aa0; text-decoration:none; }
+
+p { padding:0px; margin:0px 0px 20px; }
+img { padding:0px; margin:0px 0px 20px; border:none; }
+p img, pre img, tt img, li img, h1 img, h2 img { margin-bottom:0px; } 
+
+ul { padding:0px; margin:0px 0px 20px 23px; list-style:square; }
+ul li { padding:0px; margin:0px 0px 7px 0px; }
+ul li ul { padding:5px 0px 0px; margin:0px 0px 7px 23px; }
+ul li ol li { list-style:decimal; }
+ol { padding:0px; margin:0px 0px 20px 0px; list-style:decimal; }
+ol li { padding:0px; margin:0px 0px 7px 23px; list-style-type:decimal; }
+ol li ol { padding:5px 0px 0px; margin:0px 0px 7px 0px; }
+ol li ol li { list-style-type:lower-alpha; }
+ol li ul { padding-top:7px; }
+ol li ul li { list-style:square; }
+
+.content { font-size:1.2em; line-height:140%; padding: 20px; }
+
+pre, code { font-size:12px; }
+tt { font-size: 1.2em; }
+pre { margin:0px 0px 20px; }
+pre.codeinput { padding:10px; border:1px solid #d3d3d3; background:#f7f7f7; }
+pre.codeoutput { padding:10px 11px; margin:0px 0px 20px; color:#4c4c4c; }
+pre.error { color:red; }
+
+@media print { pre.codeinput, pre.codeoutput { word-wrap:break-word; width:100%; } }
+
+span.keyword { color:#0000FF }
+span.comment { color:#228B22 }
+span.string { color:#A020F0 }
+span.untermstring { color:#B20000 }
+span.syscmd { color:#B28C00 }
+
+.footer { width:auto; padding:10px 0px; margin:25px 0px 0px; border-top:1px dotted #878787; font-size:0.8em; line-height:140%; font-style:italic; color:#878787; text-align:left; float:none; }
+.footer p { margin:0px; }
+.footer a { color:#878787; }
+.footer a:hover { color:#878787; text-decoration:underline; }
+.footer a:visited { color:#878787; }
+
+table th { padding:7px 5px; text-align:left; vertical-align:middle; border: 1px solid #d6d4d4; font-weight:bold; }
+table td { padding:7px 5px; text-align:left; vertical-align:top; border:1px solid #d6d4d4; }
+
+
+
+
+
+  </style></head><body><div class="content"><h1>adjacentdircount</h1><!--introduction--><p>Below is a demonstration of the features of the <tt>adjacentdircount</tt> function</p><!--/introduction--><h2>Contents</h2><div><ul><li><a href="#1">Syntax</a></li><li><a href="#2">Description</a></li><li><a href="#3">Examples</a></li><li><a href="#6">Example: Using <tt>adjacentdircount</tt> to compute "connectivity"</a></li><li><a href="#10">Example: Use for 3D arrays</a></li><li><a href="#12">Example: Studying object line feature thickness</a></li></ul></div><h2 id="1">Syntax</h2><p><tt>[Lc]=adjacentdircount(L,n);</tt></p><h2 id="2">Description</h2><p>The <tt>adjacentdircount</tt> function calculates the number of adjacent entries of an input logic array allong a specified direction.</p><h2 id="3">Examples</h2><pre class="codeinput">clear; close <span class="string">all</span>; clc;
+</pre><p>Plot settings</p><pre class="codeinput">figColor=<span class="string">'w'</span>;
+figColorDef=<span class="string">'white'</span>;
+fontSize=10;
+</pre><h2 id="6">Example: Using <tt>adjacentdircount</tt> to compute "connectivity"</h2><p>The <tt>adjacentdircount</tt> function computes the number of adjacent elements in the input array that have the value 1. As such it computes a type of connectivity or "thickness" of structures in the logic arrays allong a certain dimension.</p><p>Lets consider the following array:</p><pre class="codeinput">L=[0 1 1 0 0 1;<span class="keyword">...</span>
+   0 0 1 0 0 1;<span class="keyword">...</span>
+   1 0 0 1 1 1]; <span class="comment">%A logic array or an array containing ones</span>
+</pre><p>Now view the output of the <tt>adjacentdircount</tt> function for n=1:</p><pre class="codeinput">n=1; <span class="comment">%Row direction (i.e. thickness orthogonal to rows)</span>
+[Lc]=adjacentdircount(L,n);
+Lc
+</pre><pre class="codeoutput">
+Lc =
+
+     0     1     2     0     0     3
+     0     0     2     0     0     3
+     1     0     0     1     1     3
+
+</pre><p>and similarly for for n=2:</p><pre class="codeinput">n=2; <span class="comment">%Column direction (i.e. thickness orthogonal to columns)</span>
+[Lc]=adjacentdircount(L,n);
+Lc
+</pre><pre class="codeoutput">
+Lc =
+
+     0     2     2     0     0     1
+     0     0     1     0     0     1
+     1     0     0     3     3     3
+
+</pre><h2 id="10">Example: Use for 3D arrays</h2><p>Create a 3D example array, here L is copied upside down into a second "slice" and again for the third slice.</p><pre class="codeinput">L(:,:,2)=flipud(L);
+L(:,:,3)=flipud(L(:,:,1));
+</pre><pre class="codeinput">n=3; <span class="comment">%Slice direction (i.e. thickness orthogonal to slices)</span>
+[Lc]=adjacentdircount(L,n);
+Lc
+</pre><pre class="codeoutput">
+Lc(:,:,1) =
+
+     0     1     1     0     0     3
+     0     0     3     0     0     3
+     1     0     0     1     1     3
+
+
+Lc(:,:,2) =
+
+     2     0     0     2     2     3
+     0     0     3     0     0     3
+     0     2     2     0     0     3
+
+
+Lc(:,:,3) =
+
+     2     0     0     2     2     3
+     0     0     3     0     0     3
+     0     2     2     0     0     3
+
+</pre><h2 id="12">Example: Studying object line feature thickness</h2><pre class="codeinput"><span class="comment">% Simulating a striped image in 3D</span>
+np=45;
+[X,Y,Z]=meshgrid(linspace(-5*pi,5*pi,np));
+R=sqrt(X.^2+Y.^2+Z.^2); <span class="comment">%Radii</span>
+M=sin(R);
+</pre><p>First consider the mid-slice for 2D analysis</p><pre class="codeinput">midInd=round(size(M,3)/2);
+m=M(:,:,midInd);
+</pre><p>Convert to a logic array for thickness analysis</p><pre class="codeinput">L=m&gt;0;
+</pre><p>Now use <tt>adjacentdircount</tt> to compute "connectivity" allong first and second dimensions</p><pre class="codeinput">[Lc1]=adjacentdircount(L,1); <span class="comment">%1st dim</span>
+[Lc2]=adjacentdircount(L,2); <span class="comment">%1st dim</span>
+</pre><p>Plotting the results</p><pre class="codeinput">hf=figuremax(figColor,figColorDef);
+hold <span class="string">on</span>;
+subplot(1,3,1);
+imagesc(L);
+colormap <span class="string">jet</span>; colorbar;
+axis <span class="string">equal</span>; axis <span class="string">tight</span>;
+set(gca,<span class="string">'FontSize'</span>,fontSize);
+
+subplot(1,3,2);
+imagesc(Lc1);
+colormap <span class="string">jet</span>; colorbar;
+axis <span class="string">equal</span>; axis <span class="string">tight</span>;
+set(gca,<span class="string">'FontSize'</span>,fontSize);
+
+subplot(1,3,3);
+imagesc(Lc2);
+colormap <span class="string">jet</span>; colorbar;
+axis <span class="string">equal</span>; axis <span class="string">tight</span>;
+set(gca,<span class="string">'FontSize'</span>,fontSize);
+
+drawnow;
+</pre><img vspace="5" hspace="5" src="HELP_adjacentdircount_01.png" alt=""> <p>Now lets expand to 3D analysis</p><pre class="codeinput">L=M&gt;0;
+[Lc1]=adjacentdircount(L,1); <span class="comment">%1st dim</span>
+[Lc2]=adjacentdircount(L,2); <span class="comment">%1st dim</span>
+[Lc3]=adjacentdircount(L,3); <span class="comment">%1st dim</span>
+
+<span class="comment">%Construct logic array setting voxels to display using |ind2patch| function</span>
+logicPatch=L; <span class="comment">%Initialise as L</span>
+logicPatch(:,:,midInd:end)=0; <span class="comment">%Crop off half to visualize interior</span>
+
+[F,V,C]=ind2patch(logicPatch,L,<span class="string">'vb'</span>);
+[F1,V1,C1]=ind2patch(logicPatch,Lc1,<span class="string">'vb'</span>);
+[F2,V2,C2]=ind2patch(logicPatch,Lc2,<span class="string">'vb'</span>);
+[F3,V3,C3]=ind2patch(logicPatch,Lc3,<span class="string">'vb'</span>);
+
+figuremax(figColor,figColorDef);
+subplot(2,2,1);
+xlabel(<span class="string">'J'</span>);ylabel(<span class="string">'I'</span>); zlabel(<span class="string">'K'</span>); hold <span class="string">on</span>;
+patch(<span class="string">'Faces'</span>,F,<span class="string">'Vertices'</span>,V,<span class="string">'FaceColor'</span>,<span class="string">'flat'</span>,<span class="string">'CData'</span>,C,<span class="string">'EdgeColor'</span>,<span class="string">'k'</span>);
+axis <span class="string">equal</span>; view(3); axis <span class="string">tight</span>; axis <span class="string">vis3d</span>; grid <span class="string">off</span>;
+colormap <span class="string">jet</span>; colorbar;
+set(gca,<span class="string">'FontSize'</span>,fontSize);
+
+subplot(2,2,2);
+xlabel(<span class="string">'J'</span>);ylabel(<span class="string">'I'</span>); zlabel(<span class="string">'K'</span>); hold <span class="string">on</span>;
+patch(<span class="string">'Faces'</span>,F1,<span class="string">'Vertices'</span>,V1,<span class="string">'FaceColor'</span>,<span class="string">'flat'</span>,<span class="string">'CData'</span>,C1,<span class="string">'EdgeColor'</span>,<span class="string">'k'</span>);
+axis <span class="string">equal</span>; view(3); axis <span class="string">tight</span>; axis <span class="string">vis3d</span>; grid <span class="string">off</span>;
+colormap <span class="string">jet</span>; colorbar;
+set(gca,<span class="string">'FontSize'</span>,fontSize);
+
+subplot(2,2,3);
+xlabel(<span class="string">'J'</span>);ylabel(<span class="string">'I'</span>); zlabel(<span class="string">'K'</span>); hold <span class="string">on</span>;
+patch(<span class="string">'Faces'</span>,F2,<span class="string">'Vertices'</span>,V2,<span class="string">'FaceColor'</span>,<span class="string">'flat'</span>,<span class="string">'CData'</span>,C2,<span class="string">'EdgeColor'</span>,<span class="string">'k'</span>);
+axis <span class="string">equal</span>; view(3); axis <span class="string">tight</span>; axis <span class="string">vis3d</span>; grid <span class="string">off</span>;
+colormap <span class="string">jet</span>; colorbar;
+set(gca,<span class="string">'FontSize'</span>,fontSize);
+
+subplot(2,2,4);
+xlabel(<span class="string">'J'</span>);ylabel(<span class="string">'I'</span>); zlabel(<span class="string">'K'</span>); hold <span class="string">on</span>;
+patch(<span class="string">'Faces'</span>,F3,<span class="string">'Vertices'</span>,V3,<span class="string">'FaceColor'</span>,<span class="string">'flat'</span>,<span class="string">'CData'</span>,C3,<span class="string">'EdgeColor'</span>,<span class="string">'k'</span>);
+axis <span class="string">equal</span>; view(3); axis <span class="string">tight</span>; axis <span class="string">vis3d</span>; grid <span class="string">off</span>;
+colormap <span class="string">jet</span>; colorbar;
+set(gca,<span class="string">'FontSize'</span>,fontSize);
+
+drawnow;
+</pre><img vspace="5" hspace="5" src="HELP_adjacentdircount_02.png" alt=""> <p><img vspace="5" hspace="5" src="gibbVerySmall.gif" alt=""> </p><p><i><b>GIBBON</b></i> <a href="www.gibboncode.org">www.gibboncode.org</a></p><p><i>Kevin Mattheus Moerman</i>, <a href="gibbon.toolbox@gmail.com">gibbon.toolbox@gmail.com</a></p><p class="footer"><br><a href="http://www.mathworks.com/products/matlab/">Published with MATLAB&reg; R2016b</a><br></p></div><!--
+##### SOURCE BEGIN #####
+%% adjacentdircount
+% Below is a demonstration of the features of the |adjacentdircount| function
+
+%% Syntax
+% |[Lc]=adjacentdircount(L,n);|
+
+%% Description 
+% The |adjacentdircount| function calculates the number of adjacent entries
+% of an input logic array allong a specified direction. 
+
+%% Examples
+
+%%
+clear; close all; clc;
+
+%% 
+% Plot settings
+figColor='w';
+figColorDef='white';
+fontSize=10;
+
+%% Example: Using |adjacentdircount| to compute "connectivity" 
+% The |adjacentdircount| function computes the number of adjacent elements
+% in the input array that have the value 1. As such it computes a type of
+% connectivity or "thickness" of structures in the logic arrays allong a
+% certain dimension. 
+
+%% 
+% Lets consider the following array:
+
+L=[0 1 1 0 0 1;...
+   0 0 1 0 0 1;...
+   1 0 0 1 1 1]; %A logic array or an array containing ones
+
+%% 
+% Now view the output of the |adjacentdircount| function for n=1:
+n=1; %Row direction (i.e. thickness orthogonal to rows)
+[Lc]=adjacentdircount(L,n);
+Lc
+
+%% 
+% and similarly for for n=2:
+n=2; %Column direction (i.e. thickness orthogonal to columns)
+[Lc]=adjacentdircount(L,n);
+Lc
+
+%% Example: Use for 3D arrays
+% Create a 3D example array, here L is copied upside down into a second
+% "slice" and again for the third slice.
+L(:,:,2)=flipud(L);
+L(:,:,3)=flipud(L(:,:,1));
+
+%% 
+% 
+n=3; %Slice direction (i.e. thickness orthogonal to slices)
+[Lc]=adjacentdircount(L,n);
+Lc
+
+%% Example: Studying object line feature thickness
+
+% Simulating a striped image in 3D
+np=45; 
+[X,Y,Z]=meshgrid(linspace(-5*pi,5*pi,np));
+R=sqrt(X.^2+Y.^2+Z.^2); %Radii
+M=sin(R);
+
+%% 
+% First consider the mid-slice for 2D analysis
+midInd=round(size(M,3)/2);
+m=M(:,:,midInd);
+
+%% 
+% Convert to a logic array for thickness analysis
+L=m>0; 
+
+%% 
+% Now use |adjacentdircount| to compute "connectivity" allong first and
+% second dimensions
+
+[Lc1]=adjacentdircount(L,1); %1st dim
+[Lc2]=adjacentdircount(L,2); %1st dim
+
+%%
+% Plotting the results
+hf=figuremax(figColor,figColorDef); 
+hold on; 
+subplot(1,3,1);
+imagesc(L);
+colormap jet; colorbar;
+axis equal; axis tight; 
+set(gca,'FontSize',fontSize);
+
+subplot(1,3,2);
+imagesc(Lc1);
+colormap jet; colorbar;
+axis equal; axis tight; 
+set(gca,'FontSize',fontSize);
+
+subplot(1,3,3);
+imagesc(Lc2);
+colormap jet; colorbar;
+axis equal; axis tight; 
+set(gca,'FontSize',fontSize);
+
+drawnow;
+
+%% 
+% Now lets expand to 3D analysis
+L=M>0;
+[Lc1]=adjacentdircount(L,1); %1st dim
+[Lc2]=adjacentdircount(L,2); %1st dim
+[Lc3]=adjacentdircount(L,3); %1st dim
+
+%Construct logic array setting voxels to display using |ind2patch| function
+logicPatch=L; %Initialise as L
+logicPatch(:,:,midInd:end)=0; %Crop off half to visualize interior
+
+[F,V,C]=ind2patch(logicPatch,L,'vb'); 
+[F1,V1,C1]=ind2patch(logicPatch,Lc1,'vb');
+[F2,V2,C2]=ind2patch(logicPatch,Lc2,'vb');
+[F3,V3,C3]=ind2patch(logicPatch,Lc3,'vb');
+
+figuremax(figColor,figColorDef);
+subplot(2,2,1);
+xlabel('J');ylabel('I'); zlabel('K'); hold on;
+patch('Faces',F,'Vertices',V,'FaceColor','flat','CData',C,'EdgeColor','k');
+axis equal; view(3); axis tight; axis vis3d; grid off;  
+colormap jet; colorbar;
+set(gca,'FontSize',fontSize);
+
+subplot(2,2,2);
+xlabel('J');ylabel('I'); zlabel('K'); hold on;
+patch('Faces',F1,'Vertices',V1,'FaceColor','flat','CData',C1,'EdgeColor','k');
+axis equal; view(3); axis tight; axis vis3d; grid off;  
+colormap jet; colorbar;
+set(gca,'FontSize',fontSize);
+
+subplot(2,2,3);
+xlabel('J');ylabel('I'); zlabel('K'); hold on;
+patch('Faces',F2,'Vertices',V2,'FaceColor','flat','CData',C2,'EdgeColor','k');
+axis equal; view(3); axis tight; axis vis3d; grid off;  
+colormap jet; colorbar;
+set(gca,'FontSize',fontSize);
+
+subplot(2,2,4);
+xlabel('J');ylabel('I'); zlabel('K'); hold on;
+patch('Faces',F3,'Vertices',V3,'FaceColor','flat','CData',C3,'EdgeColor','k');
+axis equal; view(3); axis tight; axis vis3d; grid off;  
+colormap jet; colorbar;
+set(gca,'FontSize',fontSize);
+
+drawnow;
+
+%% 
+%
+% <<gibbVerySmall.gif>>
+% 
+% _*GIBBON*_ 
+% <www.gibboncode.org>
+% 
+% _Kevin Mattheus Moerman_, <gibbon.toolbox@gmail.com>
+
+##### SOURCE END #####
+--></body></html>

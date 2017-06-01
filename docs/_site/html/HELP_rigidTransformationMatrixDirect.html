@@ -1,0 +1,232 @@
+
+<!DOCTYPE html
+  PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html><head>
+      <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+   <!--
+This HTML was auto-generated from MATLAB code.
+To make changes, update the MATLAB code and republish this document.
+      --><title>rigidTransformationMatrixDirect</title><meta name="generator" content="MATLAB 9.1"><link rel="schema.DC" href="http://purl.org/dc/elements/1.1/"><meta name="DC.date" content="2017-03-13"><meta name="DC.source" content="HELP_rigidTransformationMatrixDirect.m"><style type="text/css">
+html,body,div,span,applet,object,iframe,h1,h2,h3,h4,h5,h6,p,blockquote,pre,a,abbr,acronym,address,big,cite,code,del,dfn,em,font,img,ins,kbd,q,s,samp,small,strike,strong,sub,sup,tt,var,b,u,i,center,dl,dt,dd,ol,ul,li,fieldset,form,label,legend,table,caption,tbody,tfoot,thead,tr,th,td{margin:0;padding:0;border:0;outline:0;font-size:100%;vertical-align:baseline;background:transparent}body{line-height:1}ol,ul{list-style:none}blockquote,q{quotes:none}blockquote:before,blockquote:after,q:before,q:after{content:'';content:none}:focus{outine:0}ins{text-decoration:none}del{text-decoration:line-through}table{border-collapse:collapse;border-spacing:0}
+
+html { min-height:100%; margin-bottom:1px; }
+html body { height:100%; margin:0px; font-family:Arial, Helvetica, sans-serif; font-size:10px; color:#000; line-height:140%; background:#fff none; overflow-y:scroll; }
+html body td { vertical-align:top; text-align:left; }
+
+h1 { padding:0px; margin:0px 0px 25px; font-family:Arial, Helvetica, sans-serif; font-size:1.5em; color:#d55000; line-height:100%; font-weight:normal; }
+h2 { padding:0px; margin:0px 0px 8px; font-family:Arial, Helvetica, sans-serif; font-size:1.2em; color:#000; font-weight:bold; line-height:140%; border-bottom:1px solid #d6d4d4; display:block; }
+h3 { padding:0px; margin:0px 0px 5px; font-family:Arial, Helvetica, sans-serif; font-size:1.1em; color:#000; font-weight:bold; line-height:140%; }
+
+a { color:#005fce; text-decoration:none; }
+a:hover { color:#005fce; text-decoration:underline; }
+a:visited { color:#004aa0; text-decoration:none; }
+
+p { padding:0px; margin:0px 0px 20px; }
+img { padding:0px; margin:0px 0px 20px; border:none; }
+p img, pre img, tt img, li img, h1 img, h2 img { margin-bottom:0px; } 
+
+ul { padding:0px; margin:0px 0px 20px 23px; list-style:square; }
+ul li { padding:0px; margin:0px 0px 7px 0px; }
+ul li ul { padding:5px 0px 0px; margin:0px 0px 7px 23px; }
+ul li ol li { list-style:decimal; }
+ol { padding:0px; margin:0px 0px 20px 0px; list-style:decimal; }
+ol li { padding:0px; margin:0px 0px 7px 23px; list-style-type:decimal; }
+ol li ol { padding:5px 0px 0px; margin:0px 0px 7px 0px; }
+ol li ol li { list-style-type:lower-alpha; }
+ol li ul { padding-top:7px; }
+ol li ul li { list-style:square; }
+
+.content { font-size:1.2em; line-height:140%; padding: 20px; }
+
+pre, code { font-size:12px; }
+tt { font-size: 1.2em; }
+pre { margin:0px 0px 20px; }
+pre.codeinput { padding:10px; border:1px solid #d3d3d3; background:#f7f7f7; }
+pre.codeoutput { padding:10px 11px; margin:0px 0px 20px; color:#4c4c4c; }
+pre.error { color:red; }
+
+@media print { pre.codeinput, pre.codeoutput { word-wrap:break-word; width:100%; } }
+
+span.keyword { color:#0000FF }
+span.comment { color:#228B22 }
+span.string { color:#A020F0 }
+span.untermstring { color:#B20000 }
+span.syscmd { color:#B28C00 }
+
+.footer { width:auto; padding:10px 0px; margin:25px 0px 0px; border-top:1px dotted #878787; font-size:0.8em; line-height:140%; font-style:italic; color:#878787; text-align:left; float:none; }
+.footer p { margin:0px; }
+.footer a { color:#878787; }
+.footer a:hover { color:#878787; text-decoration:underline; }
+.footer a:visited { color:#878787; }
+
+table th { padding:7px 5px; text-align:left; vertical-align:middle; border: 1px solid #d6d4d4; font-weight:bold; }
+table td { padding:7px 5px; text-align:left; vertical-align:top; border:1px solid #d6d4d4; }
+
+
+
+
+
+  </style></head><body><div class="content"><h1>rigidTransformationMatrixDirect</h1><!--introduction--><p>Below is a demonstration of the features of the <tt>rigidTransformationMatrixDirect</tt> function</p><!--/introduction--><h2>Contents</h2><div><ul><li><a href="#2">Syntax</a></li><li><a href="#3">Description</a></li><li><a href="#4">Examples</a></li><li><a href="#6">Example:</a></li><li><a href="#7">Determine the rigid transformation to overlay two surfaces</a></li></ul></div><pre class="codeinput">clear; close <span class="string">all</span>; clc;
+</pre><h2 id="2">Syntax</h2><p><tt>[M]=rigidTransformationMatrixDirect(V1,V2);</tt></p><h2 id="3">Description</h2><p>This function computes the rigid transformation matrix (translation, and rotation). For the two point matches input sets V1 and V2.</p><h2 id="4">Examples</h2><p>Plot settings</p><pre class="codeinput">fontSize=15;
+faceAlpha=1;
+edgeColor=<span class="string">'k'</span>;
+</pre><h2 id="6">Example:</h2><h2 id="7">Determine the rigid transformation to overlay two surfaces</h2><p>Below is a demonstration of the features of the <tt>rigidTransformationMatrixDirect</tt> function</p><pre class="codeinput"><span class="comment">% Load example patch data</span>
+[F,Vd]=parasaurolophus;
+
+<span class="comment">%Translation</span>
+OR=[-1 2 -3]; <span class="comment">%Translations</span>
+T  = [1 0 0 OR(1);<span class="keyword">...</span>
+      0 1 0 OR(2);<span class="keyword">...</span>
+      0 0 1 OR(3);<span class="keyword">...</span>
+      0 0 0 1];
+<span class="comment">%Rotation</span>
+a=[-0.25*pi 0.75*pi 0.1*pi]; <span class="comment">%Euler angles</span>
+R  = eye(4,4); R(1:3,1:3)=euler2DCM(a);
+
+<span class="comment">%Scaling</span>
+v=[2 3 1]; <span class="comment">%Scaling factors</span>
+S  = [v(1) 0    0    0;<span class="keyword">...</span>
+      0    v(2) 0    0;<span class="keyword">...</span>
+      0    0    v(3) 0;<span class="keyword">...</span>
+      0    0    0    1];
+
+M_true  = T * R; <span class="comment">%The true transformation matrix</span>
+
+<span class="comment">%Point set 1</span>
+V1=Vd+0.5;
+
+<span class="comment">%Point set 2</span>
+V2=tform(M_true,V1);
+</pre><p>Plotting input data</p><pre class="codeinput">hf=cFigure;
+title(<span class="string">'The untransformed surfaces'</span>,<span class="string">'FontSize'</span>,fontSize);
+xlabel(<span class="string">'X'</span>,<span class="string">'FontSize'</span>,fontSize); ylabel(<span class="string">'Y'</span>,<span class="string">'FontSize'</span>,fontSize); zlabel(<span class="string">'Z'</span>,<span class="string">'FontSize'</span>,fontSize);
+
+hp=patch(<span class="string">'Faces'</span>,F,<span class="string">'Vertices'</span>,V1,<span class="string">'FaceColor'</span>,<span class="string">'g'</span>,<span class="string">'FaceAlpha'</span>,faceAlpha);
+
+hp=patch(<span class="string">'Faces'</span>,F,<span class="string">'Vertices'</span>,V2,<span class="string">'FaceColor'</span>,<span class="string">'r'</span>,<span class="string">'FaceAlpha'</span>,faceAlpha,<span class="string">'edgeColor'</span>,edgeColor);
+
+camlight <span class="string">headlight</span>;
+set(gca,<span class="string">'FontSize'</span>,fontSize);
+view(3); axis <span class="string">tight</span>;  axis <span class="string">equal</span>; box <span class="string">on</span>;
+drawnow;
+</pre><img vspace="5" hspace="5" src="HELP_rigidTransformationMatrixDirect_01.png" alt=""> <p>Get the transformation matrix for the point matched data using <tt>rigidTransformationMatrixDirect</tt></p><pre class="codeinput">[M_fit]=rigidTransformationMatrixDirect(V1,V2);
+
+V1f=tform((M_fit),V1);
+</pre><p>Plotting results</p><pre class="codeinput">hf=cFigure;
+title(<span class="string">'The green surfaces transformed towards the red'</span>,<span class="string">'FontSize'</span>,fontSize);
+xlabel(<span class="string">'X'</span>,<span class="string">'FontSize'</span>,fontSize); ylabel(<span class="string">'Y'</span>,<span class="string">'FontSize'</span>,fontSize); zlabel(<span class="string">'Z'</span>,<span class="string">'FontSize'</span>,fontSize);
+
+hp=patch(<span class="string">'Faces'</span>,F,<span class="string">'Vertices'</span>,V2,<span class="string">'FaceColor'</span>,<span class="string">'r'</span>,<span class="string">'FaceAlpha'</span>,0.5,<span class="string">'edgeColor'</span>,edgeColor);
+
+hp=patch(<span class="string">'Faces'</span>,F,<span class="string">'Vertices'</span>,V1f,<span class="string">'FaceColor'</span>,<span class="string">'none'</span>,<span class="string">'FaceAlpha'</span>,0.5,<span class="string">'edgeColor'</span>,<span class="string">'g'</span>);
+<span class="comment">% hp=patch('Faces',F,'Vertices',V2ff,'FaceColor','none','FaceAlpha',0.5*2,'edgeColor','b');</span>
+
+set(gca,<span class="string">'FontSize'</span>,fontSize);
+view(3); axis <span class="string">tight</span>;  axis <span class="string">equal</span>; box <span class="string">on</span>;
+drawnow;
+</pre><img vspace="5" hspace="5" src="HELP_rigidTransformationMatrixDirect_02.png" alt=""> <p><img vspace="5" hspace="5" src="gibbVerySmall.gif" alt=""> </p><p><i><b>GIBBON</b></i> <a href="www.gibboncode.org">www.gibboncode.org</a></p><p><i>Kevin Mattheus Moerman</i>, <a href="gibbon.toolbox@gmail.com">gibbon.toolbox@gmail.com</a></p><p class="footer"><br><a href="http://www.mathworks.com/products/matlab/">Published with MATLAB&reg; R2016b</a><br></p></div><!--
+##### SOURCE BEGIN #####
+%% rigidTransformationMatrixDirect
+% Below is a demonstration of the features of the |rigidTransformationMatrixDirect| function
+
+%%
+clear; close all; clc;
+
+%% Syntax
+% |[M]=rigidTransformationMatrixDirect(V1,V2);|
+
+%% Description
+% This function computes the rigid transformation matrix (translation, and
+% rotation). For the two point matches input sets V1 and V2. 
+
+%% Examples
+
+%%
+% Plot settings
+fontSize=15;
+faceAlpha=1;
+edgeColor='k';
+
+%% Example: 
+
+%% Determine the rigid transformation to overlay two surfaces
+% Below is a demonstration of the features of the |rigidTransformationMatrixDirect| function
+ 
+% Load example patch data
+[F,Vd]=parasaurolophus;
+ 
+%Translation
+OR=[-1 2 -3]; %Translations
+T  = [1 0 0 OR(1);...
+      0 1 0 OR(2);...
+      0 0 1 OR(3);...
+      0 0 0 1]; 
+%Rotation
+a=[-0.25*pi 0.75*pi 0.1*pi]; %Euler angles
+R  = eye(4,4); R(1:3,1:3)=euler2DCM(a);
+
+%Scaling  
+v=[2 3 1]; %Scaling factors
+S  = [v(1) 0    0    0;...
+      0    v(2) 0    0;...
+      0    0    v(3) 0;...
+      0    0    0    1];
+  
+M_true  = T * R; %The true transformation matrix
+
+%Point set 1
+V1=Vd+0.5;
+
+%Point set 2 
+V2=tform(M_true,V1);
+
+%%
+% Plotting input data
+
+hf=cFigure;
+title('The untransformed surfaces','FontSize',fontSize);
+xlabel('X','FontSize',fontSize); ylabel('Y','FontSize',fontSize); zlabel('Z','FontSize',fontSize);
+
+hp=patch('Faces',F,'Vertices',V1,'FaceColor','g','FaceAlpha',faceAlpha);
+
+hp=patch('Faces',F,'Vertices',V2,'FaceColor','r','FaceAlpha',faceAlpha,'edgeColor',edgeColor);
+
+camlight headlight;
+set(gca,'FontSize',fontSize);
+view(3); axis tight;  axis equal; box on; 
+drawnow; 
+
+%% 
+% Get the transformation matrix for the point matched data using |rigidTransformationMatrixDirect|
+
+[M_fit]=rigidTransformationMatrixDirect(V1,V2);
+
+V1f=tform((M_fit),V1);
+
+%%
+% Plotting results
+
+hf=cFigure;
+title('The green surfaces transformed towards the red','FontSize',fontSize);
+xlabel('X','FontSize',fontSize); ylabel('Y','FontSize',fontSize); zlabel('Z','FontSize',fontSize);
+
+hp=patch('Faces',F,'Vertices',V2,'FaceColor','r','FaceAlpha',0.5,'edgeColor',edgeColor);
+
+hp=patch('Faces',F,'Vertices',V1f,'FaceColor','none','FaceAlpha',0.5,'edgeColor','g');
+% hp=patch('Faces',F,'Vertices',V2ff,'FaceColor','none','FaceAlpha',0.5*2,'edgeColor','b');
+
+set(gca,'FontSize',fontSize);
+view(3); axis tight;  axis equal; box on; 
+drawnow; 
+
+%% 
+%
+% <<gibbVerySmall.gif>>
+% 
+% _*GIBBON*_ 
+% <www.gibboncode.org>
+% 
+% _Kevin Mattheus Moerman_, <gibbon.toolbox@gmail.com>
+
+##### SOURCE END #####
+--></body></html>
