@@ -28,9 +28,9 @@ git clone https://github.com/gibbonCode/GIBBON.git
 ```
 
 ### Direct download <a name="direct"></a>
-Alternatively download the [.zip file](https://github.com/Kevin-Mattheus-Moerman/GIBBON/archive/master.zip) directly
+Alternatively download the [.zip file](https://github.com/gibbonCode/GIBBON/archive/master.zip) directly
 
-[![Download](img/gibbonDownLoadBox.png){:height="150px"}](https://github.com/Kevin-Mattheus-Moerman/GIBBON/archive/master.zip)
+[![Download](img/gibbonDownLoadBox.png){:height="150px"}](https://github.com/gibbonCode/GIBBON/archive/master.zip)
 
 # Installation
 ### Setting up GIBBON <a name="setup"></a>
