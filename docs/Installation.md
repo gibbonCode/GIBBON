@@ -19,12 +19,12 @@ header-img: "img/home-bg.jpg"
 To stay up to date with new developments it is recommended to keep up with the latest version on the GitHub repository by setting up git. Alternatively users may download a zipfile directly.
 
 ### GitHub and GIT <a name="git"></a>
-GIBBON is hosted on [this](https://github.com/Kevin-Mattheus-Moerman/GIBBON) GitHub repository.  
-[![Download](img/gibbon_github.png){:height="150px"}](https://github.com/Kevin-Mattheus-Moerman/GIBBON)
+GIBBON is hosted on [this](https://github.com/gibbonCode/GIBBON) GitHub repository.  
+[![Download](img/gibbon_github.png){:height="150px"}](https://github.com/gibbonCode/GIBBON)
 
 ```
 git init
-git clone https://github.com/Kevin-Mattheus-Moerman/GIBBON.git
+git clone https://github.com/gibbonCode/GIBBON.git
 ```
 
 ### Direct download <a name="direct"></a>
