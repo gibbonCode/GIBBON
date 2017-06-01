@@ -1,0 +1,173 @@
+
+<!DOCTYPE html
+  PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html><head>
+      <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+   <!--
+This HTML was auto-generated from MATLAB code.
+To make changes, update the MATLAB code and republish this document.
+      --><title>addControlLevel_FEB</title><meta name="generator" content="MATLAB 9.1"><link rel="schema.DC" href="http://purl.org/dc/elements/1.1/"><meta name="DC.date" content="2017-03-13"><meta name="DC.source" content="HELP_addControlLevel_FEB.m"><style type="text/css">
+html,body,div,span,applet,object,iframe,h1,h2,h3,h4,h5,h6,p,blockquote,pre,a,abbr,acronym,address,big,cite,code,del,dfn,em,font,img,ins,kbd,q,s,samp,small,strike,strong,sub,sup,tt,var,b,u,i,center,dl,dt,dd,ol,ul,li,fieldset,form,label,legend,table,caption,tbody,tfoot,thead,tr,th,td{margin:0;padding:0;border:0;outline:0;font-size:100%;vertical-align:baseline;background:transparent}body{line-height:1}ol,ul{list-style:none}blockquote,q{quotes:none}blockquote:before,blockquote:after,q:before,q:after{content:'';content:none}:focus{outine:0}ins{text-decoration:none}del{text-decoration:line-through}table{border-collapse:collapse;border-spacing:0}
+
+html { min-height:100%; margin-bottom:1px; }
+html body { height:100%; margin:0px; font-family:Arial, Helvetica, sans-serif; font-size:10px; color:#000; line-height:140%; background:#fff none; overflow-y:scroll; }
+html body td { vertical-align:top; text-align:left; }
+
+h1 { padding:0px; margin:0px 0px 25px; font-family:Arial, Helvetica, sans-serif; font-size:1.5em; color:#d55000; line-height:100%; font-weight:normal; }
+h2 { padding:0px; margin:0px 0px 8px; font-family:Arial, Helvetica, sans-serif; font-size:1.2em; color:#000; font-weight:bold; line-height:140%; border-bottom:1px solid #d6d4d4; display:block; }
+h3 { padding:0px; margin:0px 0px 5px; font-family:Arial, Helvetica, sans-serif; font-size:1.1em; color:#000; font-weight:bold; line-height:140%; }
+
+a { color:#005fce; text-decoration:none; }
+a:hover { color:#005fce; text-decoration:underline; }
+a:visited { color:#004aa0; text-decoration:none; }
+
+p { padding:0px; margin:0px 0px 20px; }
+img { padding:0px; margin:0px 0px 20px; border:none; }
+p img, pre img, tt img, li img, h1 img, h2 img { margin-bottom:0px; } 
+
+ul { padding:0px; margin:0px 0px 20px 23px; list-style:square; }
+ul li { padding:0px; margin:0px 0px 7px 0px; }
+ul li ul { padding:5px 0px 0px; margin:0px 0px 7px 23px; }
+ul li ol li { list-style:decimal; }
+ol { padding:0px; margin:0px 0px 20px 0px; list-style:decimal; }
+ol li { padding:0px; margin:0px 0px 7px 23px; list-style-type:decimal; }
+ol li ol { padding:5px 0px 0px; margin:0px 0px 7px 0px; }
+ol li ol li { list-style-type:lower-alpha; }
+ol li ul { padding-top:7px; }
+ol li ul li { list-style:square; }
+
+.content { font-size:1.2em; line-height:140%; padding: 20px; }
+
+pre, code { font-size:12px; }
+tt { font-size: 1.2em; }
+pre { margin:0px 0px 20px; }
+pre.codeinput { padding:10px; border:1px solid #d3d3d3; background:#f7f7f7; }
+pre.codeoutput { padding:10px 11px; margin:0px 0px 20px; color:#4c4c4c; }
+pre.error { color:red; }
+
+@media print { pre.codeinput, pre.codeoutput { word-wrap:break-word; width:100%; } }
+
+span.keyword { color:#0000FF }
+span.comment { color:#228B22 }
+span.string { color:#A020F0 }
+span.untermstring { color:#B20000 }
+span.syscmd { color:#B28C00 }
+
+.footer { width:auto; padding:10px 0px; margin:25px 0px 0px; border-top:1px dotted #878787; font-size:0.8em; line-height:140%; font-style:italic; color:#878787; text-align:left; float:none; }
+.footer p { margin:0px; }
+.footer a { color:#878787; }
+.footer a:hover { color:#878787; text-decoration:underline; }
+.footer a:visited { color:#878787; }
+
+table th { padding:7px 5px; text-align:left; vertical-align:middle; border: 1px solid #d6d4d4; font-weight:bold; }
+table td { padding:7px 5px; text-align:left; vertical-align:top; border:1px solid #d6d4d4; }
+
+
+
+
+
+  </style></head><body><div class="content"><h1>addControlLevel_FEB</h1><!--introduction--><p>Below is a demonstration of the features of the <tt>addControlLevel_FEB</tt> function</p><!--/introduction--><h2>Contents</h2><div><ul><li><a href="#2">Syntax</a></li><li><a href="#3">Description</a></li><li><a href="#4">Examples</a></li><li><a href="#5">Example: Defining control section</a></li></ul></div><pre class="codeinput">clear; close <span class="string">all</span>; clc;
+</pre><h2 id="2">Syntax</h2><p><tt>[domNode]=addControlLevel_FEB(domNode,FEB_struct);</tt></p><h2 id="3">Description</h2><p>This function adds the control information to the input XML data (domNode) based on the input febio structure (FEB_struct).</p><h2 id="4">Examples</h2><h2 id="5">Example: Defining control section</h2><pre class="codeinput"><span class="comment">%Example data</span>
+numSteps=25;
+
+<span class="comment">%Control section</span>
+FEB_struct.Control.AnalysisType=<span class="string">'static'</span>;
+FEB_struct.Control.Properties={<span class="string">'time_steps'</span>,<span class="string">'step_size'</span>,<span class="keyword">...</span>
+                               <span class="string">'max_refs'</span>,<span class="string">'max_ups'</span>,<span class="keyword">...</span>
+                               <span class="string">'dtol'</span>,<span class="string">'etol'</span>,<span class="string">'rtol'</span>,<span class="string">'lstol'</span>};
+
+FEB_struct.Control.Values={numSteps,1/numSteps,25,0,0.001,0.01,0,0.9};
+FEB_struct.Control.TimeStepperProperties={<span class="string">'dtmin'</span>,<span class="string">'dtmax'</span>,<span class="string">'max_retries'</span>,<span class="string">'opt_iter'</span>};
+FEB_struct.Control.TimeStepperValues={(1/(100*numSteps)),1/numSteps,5,10};
+
+
+<span class="comment">%Initialize docNode object</span>
+domNode = com.mathworks.xml.XMLUtils.createDocument(<span class="string">'febio_spec'</span>);
+
+<span class="comment">% %Add geometry information (Surfaces)</span>
+<span class="comment">% domNode=addGeometryLevel_FEB(domNode,FEB_struct);</span>
+
+<span class="comment">%Add boundary condition information</span>
+domNode=addControlLevel_FEB(domNode,FEB_struct);
+</pre><pre class="codeoutput">Adding Control level
+</pre><pre>View example XML string</pre><pre class="codeinput">XML_str = xmlwrite(domNode);
+disp(XML_str);
+</pre><pre class="codeoutput">&lt;?xml version="1.0" encoding="utf-8"?&gt;
+&lt;febio_spec&gt;
+   &lt;Control&gt;
+      &lt;time_steps&gt;25.000000&lt;/time_steps&gt;
+      &lt;step_size&gt;0.040000&lt;/step_size&gt;
+      &lt;max_refs&gt;25.000000&lt;/max_refs&gt;
+      &lt;max_ups&gt;0.000000&lt;/max_ups&gt;
+      &lt;dtol&gt;0.001000&lt;/dtol&gt;
+      &lt;etol&gt;0.010000&lt;/etol&gt;
+      &lt;rtol&gt;0.000000&lt;/rtol&gt;
+      &lt;lstol&gt;0.900000&lt;/lstol&gt;
+      &lt;analysis type="static"/&gt;
+      &lt;time_stepper&gt;
+         &lt;dtmin&gt;0.000400&lt;/dtmin&gt;
+         &lt;dtmax&gt;0.040000&lt;/dtmax&gt;
+         &lt;max_retries&gt;5.000000&lt;/max_retries&gt;
+         &lt;opt_iter&gt;10.000000&lt;/opt_iter&gt;
+      &lt;/time_stepper&gt;
+   &lt;/Control&gt;
+&lt;/febio_spec&gt;
+</pre><p><img vspace="5" hspace="5" src="gibbVerySmall.gif" alt=""> </p><p><i><b>GIBBON</b></i> <a href="www.gibboncode.org">www.gibboncode.org</a></p><p><i>Kevin Mattheus Moerman</i>, <a href="gibbon.toolbox@gmail.com">gibbon.toolbox@gmail.com</a></p><p class="footer"><br><a href="http://www.mathworks.com/products/matlab/">Published with MATLAB&reg; R2016b</a><br></p></div><!--
+##### SOURCE BEGIN #####
+%% addControlLevel_FEB
+% Below is a demonstration of the features of the |addControlLevel_FEB| function
+
+%%
+clear; close all; clc;
+
+%% Syntax
+% |[domNode]=addControlLevel_FEB(domNode,FEB_struct);|
+
+%% Description
+% This function adds the control information to the input XML
+% data (domNode) based on the input febio structure (FEB_struct).
+
+%% Examples
+
+%% Example: Defining control section
+% 
+
+%Example data 
+numSteps=25;
+
+%Control section
+FEB_struct.Control.AnalysisType='static';
+FEB_struct.Control.Properties={'time_steps','step_size',...
+                               'max_refs','max_ups',...
+                               'dtol','etol','rtol','lstol'};
+
+FEB_struct.Control.Values={numSteps,1/numSteps,25,0,0.001,0.01,0,0.9};
+FEB_struct.Control.TimeStepperProperties={'dtmin','dtmax','max_retries','opt_iter'};
+FEB_struct.Control.TimeStepperValues={(1/(100*numSteps)),1/numSteps,5,10};
+
+
+%Initialize docNode object
+domNode = com.mathworks.xml.XMLUtils.createDocument('febio_spec');
+
+% %Add geometry information (Surfaces)
+% domNode=addGeometryLevel_FEB(domNode,FEB_struct);
+
+%Add boundary condition information
+domNode=addControlLevel_FEB(domNode,FEB_struct);
+
+%%
+%  View example XML string
+XML_str = xmlwrite(domNode);
+disp(XML_str);
+
+%% 
+%
+% <<gibbVerySmall.gif>>
+% 
+% _*GIBBON*_ 
+% <www.gibboncode.org>
+% 
+% _Kevin Mattheus Moerman_, <gibbon.toolbox@gmail.com>
+
+##### SOURCE END #####
+--></body></html>

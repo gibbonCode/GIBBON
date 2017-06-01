@@ -1,0 +1,243 @@
+
+<!DOCTYPE html
+  PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html><head>
+      <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+   <!--
+This HTML was auto-generated from MATLAB code.
+To make changes, update the MATLAB code and republish this document.
+      --><title>rgbImage2ColorMap</title><meta name="generator" content="MATLAB 9.1"><link rel="schema.DC" href="http://purl.org/dc/elements/1.1/"><meta name="DC.date" content="2017-03-13"><meta name="DC.source" content="HELP_rgbImage2ColorMap.m"><style type="text/css">
+html,body,div,span,applet,object,iframe,h1,h2,h3,h4,h5,h6,p,blockquote,pre,a,abbr,acronym,address,big,cite,code,del,dfn,em,font,img,ins,kbd,q,s,samp,small,strike,strong,sub,sup,tt,var,b,u,i,center,dl,dt,dd,ol,ul,li,fieldset,form,label,legend,table,caption,tbody,tfoot,thead,tr,th,td{margin:0;padding:0;border:0;outline:0;font-size:100%;vertical-align:baseline;background:transparent}body{line-height:1}ol,ul{list-style:none}blockquote,q{quotes:none}blockquote:before,blockquote:after,q:before,q:after{content:'';content:none}:focus{outine:0}ins{text-decoration:none}del{text-decoration:line-through}table{border-collapse:collapse;border-spacing:0}
+
+html { min-height:100%; margin-bottom:1px; }
+html body { height:100%; margin:0px; font-family:Arial, Helvetica, sans-serif; font-size:10px; color:#000; line-height:140%; background:#fff none; overflow-y:scroll; }
+html body td { vertical-align:top; text-align:left; }
+
+h1 { padding:0px; margin:0px 0px 25px; font-family:Arial, Helvetica, sans-serif; font-size:1.5em; color:#d55000; line-height:100%; font-weight:normal; }
+h2 { padding:0px; margin:0px 0px 8px; font-family:Arial, Helvetica, sans-serif; font-size:1.2em; color:#000; font-weight:bold; line-height:140%; border-bottom:1px solid #d6d4d4; display:block; }
+h3 { padding:0px; margin:0px 0px 5px; font-family:Arial, Helvetica, sans-serif; font-size:1.1em; color:#000; font-weight:bold; line-height:140%; }
+
+a { color:#005fce; text-decoration:none; }
+a:hover { color:#005fce; text-decoration:underline; }
+a:visited { color:#004aa0; text-decoration:none; }
+
+p { padding:0px; margin:0px 0px 20px; }
+img { padding:0px; margin:0px 0px 20px; border:none; }
+p img, pre img, tt img, li img, h1 img, h2 img { margin-bottom:0px; } 
+
+ul { padding:0px; margin:0px 0px 20px 23px; list-style:square; }
+ul li { padding:0px; margin:0px 0px 7px 0px; }
+ul li ul { padding:5px 0px 0px; margin:0px 0px 7px 23px; }
+ul li ol li { list-style:decimal; }
+ol { padding:0px; margin:0px 0px 20px 0px; list-style:decimal; }
+ol li { padding:0px; margin:0px 0px 7px 23px; list-style-type:decimal; }
+ol li ol { padding:5px 0px 0px; margin:0px 0px 7px 0px; }
+ol li ol li { list-style-type:lower-alpha; }
+ol li ul { padding-top:7px; }
+ol li ul li { list-style:square; }
+
+.content { font-size:1.2em; line-height:140%; padding: 20px; }
+
+pre, code { font-size:12px; }
+tt { font-size: 1.2em; }
+pre { margin:0px 0px 20px; }
+pre.codeinput { padding:10px; border:1px solid #d3d3d3; background:#f7f7f7; }
+pre.codeoutput { padding:10px 11px; margin:0px 0px 20px; color:#4c4c4c; }
+pre.error { color:red; }
+
+@media print { pre.codeinput, pre.codeoutput { word-wrap:break-word; width:100%; } }
+
+span.keyword { color:#0000FF }
+span.comment { color:#228B22 }
+span.string { color:#A020F0 }
+span.untermstring { color:#B20000 }
+span.syscmd { color:#B28C00 }
+
+.footer { width:auto; padding:10px 0px; margin:25px 0px 0px; border-top:1px dotted #878787; font-size:0.8em; line-height:140%; font-style:italic; color:#878787; text-align:left; float:none; }
+.footer p { margin:0px; }
+.footer a { color:#878787; }
+.footer a:hover { color:#878787; text-decoration:underline; }
+.footer a:visited { color:#878787; }
+
+table th { padding:7px 5px; text-align:left; vertical-align:middle; border: 1px solid #d6d4d4; font-weight:bold; }
+table td { padding:7px 5px; text-align:left; vertical-align:top; border:1px solid #d6d4d4; }
+
+
+
+
+
+  </style></head><body><div class="content"><h1>rgbImage2ColorMap</h1><!--introduction--><p>Below is a demonstration of the features of the <tt>rgbImage2ColorMap</tt> function</p><!--/introduction--><h2>Contents</h2><div><ul><li><a href="#1">Syntax</a></li><li><a href="#2">Description</a></li><li><a href="#3">Examples</a></li><li><a href="#5">Example: harvest colormap from image data</a></li><li><a href="#10">Example: adjust harvested colormap</a></li></ul></div><h2 id="1">Syntax</h2><p><tt>[C]=rgbImage2ColorMap(A,optStruct);</tt></p><h2 id="2">Description</h2><p>The <tt>rgbImage2ColorMap</tt> creates a colormap based on an input RGB (red green blue) color image. Colormap colors are based on the intensities occuring in the image. Therefore monotonic color images probably yeild the best results.</p><h2 id="3">Examples</h2><pre class="codeinput">clear; close <span class="string">all</span>; clc;
+</pre><p>Plot settings</p><pre class="codeinput">fontSize=10;
+</pre><h2 id="5">Example: harvest colormap from image data</h2><p>Import example images</p><pre class="codeinput"><span class="comment">%Set main folder</span>
+defaultFolder = fileparts(fileparts(mfilename(<span class="string">'fullpath'</span>)));
+pathName=fullfile(defaultFolder,<span class="string">'data'</span>,<span class="string">'PICT'</span>);
+
+<span class="comment">% Load example images</span>
+loadName=fullfile(pathName,<span class="string">'leaf1.jpg'</span>); <span class="comment">%Load name</span>
+X_leaf=importdata(loadName); <span class="comment">%Import image</span>
+X_leaf_intensity=mean(double(X_leaf),3);
+
+loadName=fullfile(pathName,<span class="string">'fire.jpg'</span>); <span class="comment">%Load name</span>
+X_fire=importdata(loadName); <span class="comment">%Import image</span>
+X_fire=X_fire(1:3:end,1:3:end,:); <span class="comment">%Reduce resolution</span>
+X_fire_intensity=mean(double(X_fire),3);
+</pre><p>Build colormaps from imported images</p><pre class="codeinput">optStruct.n=250; <span class="comment">%Number entries in the colormap</span>
+optStruct.numBins=25; <span class="comment">%Number of bins to sample the colors (colors are averages across bins)</span>
+optStruct.normFactor=255; <span class="comment">%Normalisation factor, e.g. max(X(:))</span>
+
+<span class="comment">%Leaf colormap</span>
+[C_leaf]=rgbImage2ColorMap(X_leaf,optStruct);
+
+<span class="comment">%Fire colormap</span>
+[C_fire]=rgbImage2ColorMap(X_fire,optStruct);
+</pre><p>Create example patch data to color surfaces</p><pre class="codeinput">[X,Y,Z]=peaks(50);
+</pre><p>Show colormap create results</p><pre class="codeinput">cFigure;
+
+<span class="comment">%Show images</span>
+subplot(2,3,1);  imagesc(X_leaf);  axis <span class="string">equal</span>; axis <span class="string">tight</span>; axis <span class="string">off</span>; hold <span class="string">on</span>;
+title(<span class="string">'RGB leaf image'</span>);
+hs=subplot(2,3,2); imagesc(X_leaf_intensity); axis <span class="string">equal</span>; axis <span class="string">tight</span>; axis <span class="string">off</span>; hold <span class="string">on</span>;
+title(<span class="string">'Colormapped image'</span>);
+colormap(hs,C_leaf); colorbar; caxis([0 255]);
+
+subplot(2,3,4);  imagesc(X_fire);  axis <span class="string">equal</span>; axis <span class="string">tight</span>; axis <span class="string">off</span>; hold <span class="string">on</span>;
+title(<span class="string">'RGB fire image'</span>);
+hs=subplot(2,3,5); imagesc(X_fire_intensity); axis <span class="string">equal</span>; axis <span class="string">tight</span>; axis <span class="string">off</span>; hold <span class="string">on</span>;
+title(<span class="string">'Colormapped image'</span>);
+colormap(hs,C_fire); colorbar; caxis([0 255]);
+
+<span class="comment">%Show surface data</span>
+hs=subplot(2,3,3);
+h=surf(X,Y,Z); axis <span class="string">tight</span>; axis <span class="string">off</span>; hold <span class="string">on</span>;
+set(h,<span class="string">'EdgeColor'</span>,<span class="string">'none'</span>); shading <span class="string">interp</span>;
+camlight(<span class="string">'headlight'</span>); lighting <span class="string">phong</span>;
+title(<span class="string">'Surface with leaf colormap'</span>);
+colormap(hs,C_leaf); colorbar;
+
+hs=subplot(2,3,6);
+h=surf(X,Y,Z); axis <span class="string">tight</span>; axis <span class="string">off</span>; hold <span class="string">on</span>;
+set(h,<span class="string">'EdgeColor'</span>,<span class="string">'none'</span>); shading <span class="string">interp</span>;
+camlight(<span class="string">'headlight'</span>); lighting <span class="string">phong</span>;
+title(<span class="string">'Surface with fire colormap'</span>);
+colormap(hs,C_fire); colorbar;
+</pre><img vspace="5" hspace="5" src="HELP_rgbImage2ColorMap_01.png" alt=""> <h2 id="10">Example: adjust harvested colormap</h2><p>Use fact that flipped fire colormap looks like ice colormap and combine</p><pre class="codeinput">C_fireIce=[rot90(C_fire,2); C_fire(2:end,:)];
+
+hs=cFigure;
+h=surf(X,Y,Z); axis <span class="string">equal</span>; axis <span class="string">tight</span>; axis <span class="string">off</span>; hold <span class="string">on</span>; view(2);
+set(h,<span class="string">'EdgeColor'</span>,<span class="string">'none'</span>); shading <span class="string">interp</span>;
+title(<span class="string">'Surface with fireIce colormap'</span>);
+colormap(hs,C_fireIce); colorbar; caxis([-max(abs(Z(:))) max(abs(Z(:)))]);
+</pre><img vspace="5" hspace="5" src="HELP_rgbImage2ColorMap_02.png" alt=""> <p><img vspace="5" hspace="5" src="gibbVerySmall.gif" alt=""> </p><p><i><b>GIBBON</b></i> <a href="www.gibboncode.org">www.gibboncode.org</a></p><p><i>Kevin Mattheus Moerman</i>, <a href="gibbon.toolbox@gmail.com">gibbon.toolbox@gmail.com</a></p><p class="footer"><br><a href="http://www.mathworks.com/products/matlab/">Published with MATLAB&reg; R2016b</a><br></p></div><!--
+##### SOURCE BEGIN #####
+%% rgbImage2ColorMap
+% Below is a demonstration of the features of the |rgbImage2ColorMap| function
+
+%% Syntax
+% |[C]=rgbImage2ColorMap(A,optStruct);|
+
+%% Description
+% The |rgbImage2ColorMap| creates a colormap based on an input RGB (red
+% green blue) color image. Colormap colors are based on the intensities
+% occuring in the image. Therefore monotonic color images probably yeild
+% the best results.
+
+%% Examples
+
+clear; close all; clc;
+
+%%
+% Plot settings
+fontSize=10;
+
+%% Example: harvest colormap from image data
+%%
+% Import example images
+
+%Set main folder
+defaultFolder = fileparts(fileparts(mfilename('fullpath'))); 
+pathName=fullfile(defaultFolder,'data','PICT'); 
+
+% Load example images
+loadName=fullfile(pathName,'leaf1.jpg'); %Load name
+X_leaf=importdata(loadName); %Import image
+X_leaf_intensity=mean(double(X_leaf),3);
+
+loadName=fullfile(pathName,'fire.jpg'); %Load name
+X_fire=importdata(loadName); %Import image
+X_fire=X_fire(1:3:end,1:3:end,:); %Reduce resolution
+X_fire_intensity=mean(double(X_fire),3);
+
+%%
+% Build colormaps from imported images
+
+optStruct.n=250; %Number entries in the colormap 
+optStruct.numBins=25; %Number of bins to sample the colors (colors are averages across bins)
+optStruct.normFactor=255; %Normalisation factor, e.g. max(X(:))
+
+%Leaf colormap
+[C_leaf]=rgbImage2ColorMap(X_leaf,optStruct);
+
+%Fire colormap
+[C_fire]=rgbImage2ColorMap(X_fire,optStruct);
+
+%%
+% Create example patch data to color surfaces
+[X,Y,Z]=peaks(50); 
+
+
+%%
+% Show colormap create results
+
+cFigure; 
+
+%Show images
+subplot(2,3,1);  imagesc(X_leaf);  axis equal; axis tight; axis off; hold on; 
+title('RGB leaf image');
+hs=subplot(2,3,2); imagesc(X_leaf_intensity); axis equal; axis tight; axis off; hold on; 
+title('Colormapped image');
+colormap(hs,C_leaf); colorbar; caxis([0 255]); 
+
+subplot(2,3,4);  imagesc(X_fire);  axis equal; axis tight; axis off; hold on; 
+title('RGB fire image');
+hs=subplot(2,3,5); imagesc(X_fire_intensity); axis equal; axis tight; axis off; hold on; 
+title('Colormapped image');
+colormap(hs,C_fire); colorbar; caxis([0 255]); 
+
+%Show surface data
+hs=subplot(2,3,3); 
+h=surf(X,Y,Z); axis tight; axis off; hold on; 
+set(h,'EdgeColor','none'); shading interp; 
+camlight('headlight'); lighting phong; 
+title('Surface with leaf colormap');
+colormap(hs,C_leaf); colorbar; 
+
+hs=subplot(2,3,6); 
+h=surf(X,Y,Z); axis tight; axis off; hold on; 
+set(h,'EdgeColor','none'); shading interp; 
+camlight('headlight'); lighting phong; 
+title('Surface with fire colormap');
+colormap(hs,C_fire); colorbar;  
+
+%% Example: adjust harvested colormap
+%%
+% Use fact that flipped fire colormap looks like ice colormap and combine
+
+C_fireIce=[rot90(C_fire,2); C_fire(2:end,:)];
+
+hs=cFigure; 
+h=surf(X,Y,Z); axis equal; axis tight; axis off; hold on; view(2); 
+set(h,'EdgeColor','none'); shading interp; 
+title('Surface with fireIce colormap');
+colormap(hs,C_fireIce); colorbar; caxis([-max(abs(Z(:))) max(abs(Z(:)))]);
+
+%% 
+%
+% <<gibbVerySmall.gif>>
+% 
+% _*GIBBON*_ 
+% <www.gibboncode.org>
+% 
+% _Kevin Mattheus Moerman_, <gibbon.toolbox@gmail.com>
+
+##### SOURCE END #####
+--></body></html>

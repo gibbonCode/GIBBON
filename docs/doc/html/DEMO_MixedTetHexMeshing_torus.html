@@ -1,0 +1,772 @@
+
+<!DOCTYPE html
+  PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html><head>
+      <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+   <!--
+This HTML was auto-generated from MATLAB code.
+To make changes, update the MATLAB code and republish this document.
+      --><title>DEMO_MixedTetHexMeshing_torus</title><meta name="generator" content="MATLAB 9.1"><link rel="schema.DC" href="http://purl.org/dc/elements/1.1/"><meta name="DC.date" content="2017-03-13"><meta name="DC.source" content="DEMO_MixedTetHexMeshing_torus.m"><style type="text/css">
+html,body,div,span,applet,object,iframe,h1,h2,h3,h4,h5,h6,p,blockquote,pre,a,abbr,acronym,address,big,cite,code,del,dfn,em,font,img,ins,kbd,q,s,samp,small,strike,strong,sub,sup,tt,var,b,u,i,center,dl,dt,dd,ol,ul,li,fieldset,form,label,legend,table,caption,tbody,tfoot,thead,tr,th,td{margin:0;padding:0;border:0;outline:0;font-size:100%;vertical-align:baseline;background:transparent}body{line-height:1}ol,ul{list-style:none}blockquote,q{quotes:none}blockquote:before,blockquote:after,q:before,q:after{content:'';content:none}:focus{outine:0}ins{text-decoration:none}del{text-decoration:line-through}table{border-collapse:collapse;border-spacing:0}
+
+html { min-height:100%; margin-bottom:1px; }
+html body { height:100%; margin:0px; font-family:Arial, Helvetica, sans-serif; font-size:10px; color:#000; line-height:140%; background:#fff none; overflow-y:scroll; }
+html body td { vertical-align:top; text-align:left; }
+
+h1 { padding:0px; margin:0px 0px 25px; font-family:Arial, Helvetica, sans-serif; font-size:1.5em; color:#d55000; line-height:100%; font-weight:normal; }
+h2 { padding:0px; margin:0px 0px 8px; font-family:Arial, Helvetica, sans-serif; font-size:1.2em; color:#000; font-weight:bold; line-height:140%; border-bottom:1px solid #d6d4d4; display:block; }
+h3 { padding:0px; margin:0px 0px 5px; font-family:Arial, Helvetica, sans-serif; font-size:1.1em; color:#000; font-weight:bold; line-height:140%; }
+
+a { color:#005fce; text-decoration:none; }
+a:hover { color:#005fce; text-decoration:underline; }
+a:visited { color:#004aa0; text-decoration:none; }
+
+p { padding:0px; margin:0px 0px 20px; }
+img { padding:0px; margin:0px 0px 20px; border:none; }
+p img, pre img, tt img, li img, h1 img, h2 img { margin-bottom:0px; } 
+
+ul { padding:0px; margin:0px 0px 20px 23px; list-style:square; }
+ul li { padding:0px; margin:0px 0px 7px 0px; }
+ul li ul { padding:5px 0px 0px; margin:0px 0px 7px 23px; }
+ul li ol li { list-style:decimal; }
+ol { padding:0px; margin:0px 0px 20px 0px; list-style:decimal; }
+ol li { padding:0px; margin:0px 0px 7px 23px; list-style-type:decimal; }
+ol li ol { padding:5px 0px 0px; margin:0px 0px 7px 0px; }
+ol li ol li { list-style-type:lower-alpha; }
+ol li ul { padding-top:7px; }
+ol li ul li { list-style:square; }
+
+.content { font-size:1.2em; line-height:140%; padding: 20px; }
+
+pre, code { font-size:12px; }
+tt { font-size: 1.2em; }
+pre { margin:0px 0px 20px; }
+pre.codeinput { padding:10px; border:1px solid #d3d3d3; background:#f7f7f7; }
+pre.codeoutput { padding:10px 11px; margin:0px 0px 20px; color:#4c4c4c; }
+pre.error { color:red; }
+
+@media print { pre.codeinput, pre.codeoutput { word-wrap:break-word; width:100%; } }
+
+span.keyword { color:#0000FF }
+span.comment { color:#228B22 }
+span.string { color:#A020F0 }
+span.untermstring { color:#B20000 }
+span.syscmd { color:#B28C00 }
+
+.footer { width:auto; padding:10px 0px; margin:25px 0px 0px; border-top:1px dotted #878787; font-size:0.8em; line-height:140%; font-style:italic; color:#878787; text-align:left; float:none; }
+.footer p { margin:0px; }
+.footer a { color:#878787; }
+.footer a:hover { color:#878787; text-decoration:underline; }
+.footer a:visited { color:#878787; }
+
+table th { padding:7px 5px; text-align:left; vertical-align:middle; border: 1px solid #d6d4d4; font-weight:bold; }
+table td { padding:7px 5px; text-align:left; vertical-align:top; border:1px solid #d6d4d4; }
+
+
+
+
+
+  </style></head><body><div class="content"><h1>DEMO_MixedTetHexMeshing_torus</h1><!--introduction--><p>Below is a demonstration of how to create a mixed mesh consisting of (linear) hexahedral and tetrahedral elements. The hexahedral mesh is regular while the tetrahedral mesh is derived using TetGen.</p><!--/introduction--><h2>Contents</h2><div><ul><li><a href="#4">CONVERTING A TRIANGULATED SURFACE TO AN IMAGE WITH DESIRED SIZE, VOXEL SIZE AND ORIGIN</a></li><li><a href="#7">GET HEXAHEDRAL ELEMENT SET</a></li><li><a href="#10">Get hole point</a></li><li><a href="#11">Get region point</a></li><li><a href="#19">MERGING NODE SETS</a></li></ul></div><pre class="codeinput">clear; close <span class="string">all</span>; clc;
+</pre><p>Plot settings for the examples below</p><pre class="codeinput">fontSize=20;
+faceAlpha1=1;
+faceAlpha2=0.3;
+edgeColor=0.3*ones(1,3);
+edgeWidth=1;
+</pre><pre class="codeinput">searchRadius=6;
+</pre><h2 id="4">CONVERTING A TRIANGULATED SURFACE TO AN IMAGE WITH DESIRED SIZE, VOXEL SIZE AND ORIGIN</h2><p>Defining an example triangulated surface model</p><pre class="codeinput"><span class="comment">% Defining a deformed and rotated torus shape</span>
+r=1; <span class="comment">%Sphere radius</span>
+rc=2; <span class="comment">%Central radius</span>
+nr=25;
+nc=50;
+ptype=<span class="string">'tri'</span>;
+[Fs,Vs]=patchTorus(r,nr,rc,nc,ptype);
+[THETA,RHO] = cart2pol(Vs(:,1),Vs(:,2));
+Vs(:,3)=Vs(:,3)+sin(3*THETA);
+[R,~]=euler2DCM([0.5*pi 0.5*pi 0.*pi]);
+Vs=Vs*R;
+</pre><p>Setting control parameters</p><pre class="codeinput"><span class="comment">% Defining the full set of possible control parameters</span>
+voxelSize=0.2; <span class="comment">% The output image voxel size.</span>
+imOrigin=min(Vs,[],1)-voxelSize;
+imMax=max(Vs,[],1)+voxelSize;
+imSiz=round((imMax-imOrigin)/voxelSize);
+imSiz=imSiz([2 1 3]); <span class="comment">%Image size (x, y corresponds to j,i in image coordinates, hence the permutation)</span>
+
+<span class="comment">% Using |triSurf2Im| function to convert patch data to image data</span>
+[M,~]=triSurf2Im(Fs,Vs,voxelSize,imOrigin,imSiz);
+</pre><p>Plotting the results</p><pre class="codeinput">hf1=cFigure;
+subplot(1,2,1);
+title(<span class="string">'Closed triangulated surface'</span>,<span class="string">'FontSize'</span>,fontSize);
+xlabel(<span class="string">'X'</span>,<span class="string">'FontSize'</span>,fontSize);ylabel(<span class="string">'Y'</span>,<span class="string">'FontSize'</span>,fontSize); zlabel(<span class="string">'Z'</span>,<span class="string">'FontSize'</span>,fontSize);
+hold <span class="string">on</span>;
+patch(<span class="string">'Faces'</span>,Fs,<span class="string">'Vertices'</span>,Vs,<span class="string">'FaceColor'</span>,<span class="string">'g'</span>,<span class="string">'EdgeColor'</span>,<span class="string">'k'</span>,<span class="string">'FaceAlpha'</span>,faceAlpha1);
+camlight(<span class="string">'headlight'</span>); lighting <span class="string">flat</span>;
+axis <span class="string">equal</span>; view(3); axis <span class="string">tight</span>;  grid <span class="string">on</span>;  set(gca,<span class="string">'FontSize'</span>,fontSize);
+
+subplot(1,2,2);
+title(<span class="string">'Boundary, intertior and exterior image'</span>,<span class="string">'FontSize'</span>,fontSize);
+xlabel(<span class="string">'X'</span>,<span class="string">'FontSize'</span>,fontSize);ylabel(<span class="string">'Y'</span>,<span class="string">'FontSize'</span>,fontSize); zlabel(<span class="string">'Z'</span>,<span class="string">'FontSize'</span>,fontSize);
+hold <span class="string">on</span>;
+
+patch(<span class="string">'Faces'</span>,Fs,<span class="string">'Vertices'</span>,Vs,<span class="string">'FaceColor'</span>,<span class="string">'g'</span>,<span class="string">'EdgeColor'</span>,<span class="string">'none'</span>,<span class="string">'FaceAlpha'</span>,faceAlpha2);
+L_plot=false(size(M));
+L_plot(:,:,round(size(M,3)/2))=1;
+[Fm,Vm,Cm]=ind2patch(L_plot,double(M),<span class="string">'sk'</span>);
+[Vm(:,1),Vm(:,2),Vm(:,3)]=im2cart(Vm(:,2),Vm(:,1),Vm(:,3),voxelSize*ones(1,3));
+Vm=Vm+imOrigin(ones(size(Vm,1),1),:);
+patch(<span class="string">'Faces'</span>,Fm,<span class="string">'Vertices'</span>,Vm,<span class="string">'FaceColor'</span>,<span class="string">'flat'</span>,<span class="string">'CData'</span>,Cm,<span class="string">'EdgeColor'</span>,<span class="string">'k'</span>,<span class="string">'FaceAlpha'</span>,faceAlpha1);
+
+L_plot=false(size(M));L_plot(round(size(M,1)/2),:,:)=1;
+[Fm,Vm,Cm]=ind2patch(L_plot,M,<span class="string">'si'</span>);
+[Vm(:,1),Vm(:,2),Vm(:,3)]=im2cart(Vm(:,2),Vm(:,1),Vm(:,3),voxelSize*ones(1,3));
+Vm=Vm+imOrigin(ones(size(Vm,1),1),:);
+patch(<span class="string">'Faces'</span>,Fm,<span class="string">'Vertices'</span>,Vm,<span class="string">'FaceColor'</span>,<span class="string">'flat'</span>,<span class="string">'CData'</span>,Cm,<span class="string">'EdgeColor'</span>,<span class="string">'k'</span>,<span class="string">'FaceAlpha'</span>,faceAlpha1);
+
+L_plot=false(size(M));L_plot(:,round(size(M,2)/2),:)=1;
+[Fm,Vm,Cm]=ind2patch(L_plot,M,<span class="string">'sj'</span>);
+[Vm(:,1),Vm(:,2),Vm(:,3)]=im2cart(Vm(:,2),Vm(:,1),Vm(:,3),voxelSize*ones(1,3));
+Vm=Vm+imOrigin(ones(size(Vm,1),1),:);
+patch(<span class="string">'Faces'</span>,Fm,<span class="string">'Vertices'</span>,Vm,<span class="string">'FaceColor'</span>,<span class="string">'flat'</span>,<span class="string">'CData'</span>,Cm,<span class="string">'EdgeColor'</span>,<span class="string">'k'</span>,<span class="string">'FaceAlpha'</span>,faceAlpha1);
+
+colormap(gray(3)); caxis([0 2]);
+hc=colorbar;
+set(hc,<span class="string">'YTick'</span>,[1/3 1 5/3]);
+set(hc,<span class="string">'YTickLabel'</span>,{<span class="string">'Exterior'</span>,<span class="string">'Boundary'</span>,<span class="string">'Intertior'</span>});
+axis <span class="string">equal</span>; view(3); axis <span class="string">tight</span>;  grid <span class="string">on</span>;  set(gca,<span class="string">'FontSize'</span>,fontSize);
+drawnow;
+</pre><img vspace="5" hspace="5" src="DEMO_MixedTetHexMeshing_torus_01.png" alt=""> <h2 id="7">GET HEXAHEDRAL ELEMENT SET</h2><pre class="codeinput">L_model=(M==2); <span class="comment">%Interior&amp;Boundary choosen here</span>
+
+<span class="comment">%Defining erosion/dilation kernel</span>
+k=3;
+p=k-round(k./2);
+hb=zeros(3,3);
+hb(2,2,2)=1;
+hb(2,2,1)=1;
+hb(2,2,3)=1;
+hb(1,2,2)=1;
+hb(3,2,2)=1;
+hb(2,3,2)=1;
+hb(2,1,2)=1;
+
+L_model_rep=zeros(size(L_model)+(2.*p));
+L_model_rep(p+(1:size(L_model,1)),p+(1:size(L_model,2)),p+(1:size(L_model,3)))=L_model;
+L_model_blur = convn(double(L_model_rep),hb,<span class="string">'valid'</span>);
+L_model=L_model_blur&gt;=(sum(hb(:)));
+
+[E_hex,V_hex,C_hex]=ind2patch(L_model,M,<span class="string">'hu'</span>);
+
+<span class="comment">% Convert Coordinates</span>
+[V_hex(:,1),V_hex(:,2),V_hex(:,3)]=im2cart(V_hex(:,2),V_hex(:,1),V_hex(:,3),voxelSize*ones(1,3));
+V_hex=V_hex+imOrigin(ones(size(V_hex,1),1),:);
+
+<span class="comment">% Use element2patch to get patch data to plot the model</span>
+[F_hex,C_hex_F]=element2patch(E_hex,C_hex);
+
+<span class="comment">%Pass through unique_patch to reduce "weight" of plot</span>
+[Fp,Vp,~,~,~,F_count]=unique_patch(F_hex,V_hex,[],5);
+logicUni=F_count==1; <span class="comment">%Logic for boundary faces</span>
+
+Fq=Fp(logicUni,:);
+Vq=Vp;
+[Fq,Vq,~]=patchCleanUnused(Fq,Vq);
+
+[Ft,Vt]=quad2tri(Fq,Vq,<span class="string">'b'</span>);
+</pre><p>Plotting the results</p><pre class="codeinput">hf1=cFigure;
+title(<span class="string">'Visualizing internal voxels=hexahedral elements'</span>,<span class="string">'FontSize'</span>,fontSize);
+xlabel(<span class="string">'X'</span>,<span class="string">'FontSize'</span>,fontSize);ylabel(<span class="string">'Y'</span>,<span class="string">'FontSize'</span>,fontSize); zlabel(<span class="string">'Z'</span>,<span class="string">'FontSize'</span>,fontSize);
+hold <span class="string">on</span>;
+patch(<span class="string">'Faces'</span>,Fs,<span class="string">'Vertices'</span>,Vs,<span class="string">'FaceColor'</span>,<span class="string">'g'</span>,<span class="string">'EdgeColor'</span>,<span class="string">'none'</span>,<span class="string">'FaceAlpha'</span>,0.25);
+patch(<span class="string">'Faces'</span>,Ft,<span class="string">'Vertices'</span>,Vt,<span class="string">'FaceColor'</span>,<span class="string">'b'</span>,<span class="string">'EdgeColor'</span>,<span class="string">'none'</span>,<span class="string">'FaceAlpha'</span>,0.5);
+
+camlight(<span class="string">'headlight'</span>); lighting <span class="string">flat</span>;
+axis <span class="string">equal</span>; view(3); axis <span class="string">tight</span>;  grid <span class="string">on</span>;  set(gca,<span class="string">'FontSize'</span>,fontSize);
+drawnow;
+</pre><img vspace="5" hspace="5" src="DEMO_MixedTetHexMeshing_torus_02.png" alt=""> <pre class="codeinput"><span class="comment">%Joining surface sets</span>
+F=[Fs;Ft+size(Vs,1)];
+V=[Vs;Vt];
+C_tet=[ones(size(Fs,1),1);2*ones(size(Ft,1),1)]; <span class="comment">%Surface marker colors</span>
+</pre><h2 id="10">Get hole point</h2><pre class="codeinput">[V_hole]=getInnerPoint(Ft,Vt,searchRadius,voxelSize/2,0);
+plotV(V_hole,<span class="string">'r.'</span>,<span class="string">'MarkerSize'</span>,25);
+</pre><img vspace="5" hspace="5" src="DEMO_MixedTetHexMeshing_torus_03.png" alt=""> <h2 id="11">Get region point</h2><pre class="codeinput">L_in=(M==1);
+
+[indInternal]=getInnerVoxel(double(L_in),searchRadius,0);
+
+[I_in,J_in,K_in]=ind2sub(size(L_in),indInternal); <span class="comment">%Convert to subscript coordinates</span>
+[X_in,Y_in,Z_in]=im2cart(I_in,J_in,K_in,voxelSize*ones(1,3));
+V_in=[X_in Y_in Z_in];
+V_in=V_in+imOrigin(ones(size(V_in,1),1),:);
+
+plotV(V_in,<span class="string">'k.'</span>,<span class="string">'MarkerSize'</span>,25);
+</pre><img vspace="5" hspace="5" src="DEMO_MixedTetHexMeshing_torus_04.png" alt=""> <p>DEFINE FACE BOUNDARY MARKERS</p><pre class="codeinput">faceBoundaryMarker=C_tet;
+</pre><p>Define region points</p><pre class="codeinput">V_regions=[V_in];
+</pre><p>Define hole points</p><pre class="codeinput">V_holes=[V_hole];
+</pre><p>Regional mesh parameters</p><pre class="codeinput">[edgeLengths]=patchEdgeLengths(F,V);
+edgeLengthsMean=mean(edgeLengths);
+meanProposedVolume=edgeLengthsMean^3./(6*sqrt(2)); <span class="comment">%For regular tetrahedron</span>
+regionA=meanProposedVolume;
+</pre><p>CREATING THE SMESH STRUCTURE, meshing without the surface constraints imposed by the -Y this time.</p><pre class="codeinput">stringOpt=<span class="string">'-pq1.2AaYQV'</span>;
+
+modelName=<span class="string">'tetGenModel'</span>;
+smeshName=[modelName,<span class="string">'.smesh'</span>];
+
+smeshStruct.stringOpt=stringOpt;
+smeshStruct.Faces=F;
+smeshStruct.Nodes=V;
+smeshStruct.holePoints=V_holes;
+smeshStruct.faceBoundaryMarker=faceBoundaryMarker; <span class="comment">%Face boundary markers</span>
+smeshStruct.regionPoints=V_regions; <span class="comment">%region points</span>
+smeshStruct.regionA=regionA;
+smeshStruct.minRegionMarker=2; <span class="comment">%Minimum region marker</span>
+smeshStruct.smeshName=smeshName;
+</pre><p>Mesh model using tetrahedral elements using tetGen (see: <a href="http://wias-berlin.de/software/tetgen/">http://wias-berlin.de/software/tetgen/</a>)</p><pre class="codeinput">[meshOutput]=runTetGenSmesh(smeshStruct); <span class="comment">%Run tetGen</span>
+</pre><pre class="codeoutput">Warning: runTetGenSmesh has been renamed to runTetGen. runTetGenSmesh will be
+removed in future releases. 
+ 
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+--- TETGEN Tetrahedral meshing --- 13-Mar-2017 16:29:50
+Warning: smeshStruct.smeshName input will be replaced by smeshStruct.modelName
+in future releases! 
+ 
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+--- Writing SMESH file --- 13-Mar-2017 16:29:50
+Warning: smeshStruct.smeshName input will be replaced by smeshStruct.modelName
+in future releases! 
+----&gt; Adding node field
+----&gt; Adding facet field
+----&gt; Adding holes specification
+----&gt; Adding region specification
+--- Done --- 13-Mar-2017 16:29:50
+--- Running TetGen to mesh input boundary--- 13-Mar-2017 16:29:50
+Opening /mnt/data/MATLAB/GIT/GIBBON/lib_ext/tetGen/tempFiles/tetGenModel.smesh.
+  Initializing memorypools.
+  tetrahedron per block: 8188.
+  Size of a point: 128 bytes.
+  Size of a tetrahedron: 112 (112) bytes.
+  Size of a shellface: 192 (192) bytes.
+  Initializing robust predicates.
+  sizeof(double) =  8
+  machine epsilon =   2.22045e-16 [IEEE 754 64-bit macheps]
+  Permuting vertices.
+  Sorting vertices.
+  Incrementally inserting vertices.
+  7188 (10775) subfaces (segments).
+  Recovering segments.
+  10767 (8) segments are recovered (missing).
+  10773 (2) segments are recovered (missing).
+  Added 2 Steiner points in volume.
+  Recovering facets.
+  7188 (0) subfaces are recovered (missing).
+  Removed 2 exterior Steiner vertices.
+  Found 1 domain.
+  Initial obj = 3287.0266536437712
+  Final obj  = 3286.9898604131345
+  Min radiu-edge ratio = 1.2.
+  Min dihedral   angle = 0.
+  Splitting bad quality tets.
+  Added 316 (0,0,316) Steiner points.
+  Performed 1 flips.
+  Optimization level  = 2.
+  Optimization scheme = 7.
+  Number of iteration = 3.
+  Min_Max dihed angle = 165.
+  Removed 365 edges.
+  0 duplicated vertices are removed.
+  2 unused vertices are removed.
+--- Done --- 13-Mar-2017 16:29:51
+ 
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+--- Importing TetGen files --- 13-Mar-2017 16:29:51
+--- Done --- 13-Mar-2017 16:29:51
+</pre><p>Access model element and patch data</p><pre class="codeinput">F_tet=meshOutput.faces;
+V_tet=meshOutput.nodes;
+C_tet=meshOutput.faceMaterialID;
+E_tet=meshOutput.elements;
+
+indBoundary=meshOutput.facesBoundary(meshOutput.boundaryMarker==1);
+indBoundary=unique(indBoundary);
+</pre><h2 id="19">MERGING NODE SETS</h2><pre class="codeinput">V=[V_tet;V_hex];
+E_hex=E_hex+size(V_tet,1);
+
+[~,ind1,ind2]=unique(pround(V,5),<span class="string">'rows'</span>);
+V=V(ind1,:);
+E_tet=ind2(E_tet);
+E_hex=ind2(E_hex);
+indBoundary=ind2(indBoundary);
+
+E={E_tet, E_hex};
+</pre><p>PLOTTING MODEL</p><pre class="codeinput">hf1=cFigure;
+<span class="comment">% subplot(1,2,1);</span>
+title(<span class="string">'XY cut view of mixed mesh'</span>,<span class="string">'FontSize'</span>,fontSize);
+xlabel(<span class="string">'X'</span>,<span class="string">'FontSize'</span>,fontSize); ylabel(<span class="string">'Y'</span>,<span class="string">'FontSize'</span>,fontSize); zlabel(<span class="string">'Z'</span>,<span class="string">'FontSize'</span>,fontSize); hold <span class="string">on</span>;
+
+<span class="comment">%Selecting half of the model to see interior</span>
+X=V(:,3); XE=mean(X(E{1}),2);
+L=XE&lt;mean(X);
+[Fs,Cs]=element2patch(E{1}(L,:),C_tet(L));
+
+<span class="comment">%Selecting half of the model to see interior</span>
+X=V(:,3); XE=mean(X(E{2}),2);
+L=XE&lt;mean(X);
+[Fh,Ch]=element2patch(E{2}(L,:),C_hex(L));
+
+hps=patch(<span class="string">'Faces'</span>,Fs,<span class="string">'Vertices'</span>,V,<span class="string">'FaceColor'</span>,<span class="string">'g'</span>,<span class="string">'lineWidth'</span>,edgeWidth,<span class="string">'edgeColor'</span>,edgeColor,<span class="string">'FaceAlpha'</span>,1);
+hps2=patch(<span class="string">'Faces'</span>,Fh,<span class="string">'Vertices'</span>,V,<span class="string">'FaceColor'</span>,<span class="string">'b'</span>,<span class="string">'lineWidth'</span>,edgeWidth,<span class="string">'edgeColor'</span>,edgeColor,<span class="string">'FaceAlpha'</span>,1);
+view(3); axis <span class="string">tight</span>;  axis <span class="string">equal</span>;  grid <span class="string">on</span>;
+colormap(autumn);
+camlight <span class="string">headlight</span>;
+set(gca,<span class="string">'FontSize'</span>,fontSize);
+drawnow;
+
+hf1=cFigure;
+<span class="comment">% subplot(1,2,2);</span>
+title(<span class="string">'XZ cut view of mixed mesh'</span>,<span class="string">'FontSize'</span>,fontSize);
+xlabel(<span class="string">'X'</span>,<span class="string">'FontSize'</span>,fontSize); ylabel(<span class="string">'Y'</span>,<span class="string">'FontSize'</span>,fontSize); zlabel(<span class="string">'Z'</span>,<span class="string">'FontSize'</span>,fontSize); hold <span class="string">on</span>;
+
+<span class="comment">%Selecting half of the model to see interior</span>
+X=V(:,2); XE=mean(X(E{1}),2);
+L=XE&gt;mean(X);
+[Fs,Cs]=element2patch(E{1}(L,:),C_tet(L));
+
+<span class="comment">%Selecting half of the model to see interior</span>
+X=V(:,2); XE=mean(X(E{2}),2);
+L=XE&gt;mean(X);
+[Fh,Ch]=element2patch(E{2}(L,:),C_hex(L));
+
+hps=patch(<span class="string">'Faces'</span>,Fs,<span class="string">'Vertices'</span>,V,<span class="string">'FaceColor'</span>,<span class="string">'g'</span>,<span class="string">'lineWidth'</span>,edgeWidth,<span class="string">'edgeColor'</span>,edgeColor,<span class="string">'FaceAlpha'</span>,1);
+hps2=patch(<span class="string">'Faces'</span>,Fh,<span class="string">'Vertices'</span>,V,<span class="string">'FaceColor'</span>,<span class="string">'b'</span>,<span class="string">'lineWidth'</span>,edgeWidth,<span class="string">'edgeColor'</span>,edgeColor,<span class="string">'FaceAlpha'</span>,1);
+
+view(3); axis <span class="string">tight</span>;  axis <span class="string">equal</span>;  grid <span class="string">on</span>;
+colormap(autumn);
+camlight <span class="string">headlight</span>;
+set(gca,<span class="string">'FontSize'</span>,fontSize);
+
+drawnow;
+</pre><img vspace="5" hspace="5" src="DEMO_MixedTetHexMeshing_torus_05.png" alt=""> <img vspace="5" hspace="5" src="DEMO_MixedTetHexMeshing_torus_06.png" alt=""> <pre class="codeinput">cPar.Method=<span class="string">'LAP'</span>;
+cPar.n=25;
+cPar.RigidConstraints=indBoundary;
+
+[F1,~]=element2patch(E{1},[]);
+[F1,~,~]=uniqueIntegerRow(F1);
+[F2,~]=element2patch(E{2},[]);
+[F2,~,~]=uniqueIntegerRow(F2);
+[~,IND_V1,~]=tesIND(F1,V,0);
+[~,IND_V2,~]=tesIND(F2,V,0);
+
+IND_V=[IND_V1 IND_V2];
+
+[VS]=tesSmooth([],V,IND_V,cPar);
+</pre><p>PLOTTING MODEL</p><pre class="codeinput">hf1=cFigure;
+<span class="comment">% subplot(1,2,1);</span>
+title(<span class="string">'XY cut view of mixed mesh'</span>,<span class="string">'FontSize'</span>,fontSize);
+xlabel(<span class="string">'X'</span>,<span class="string">'FontSize'</span>,fontSize); ylabel(<span class="string">'Y'</span>,<span class="string">'FontSize'</span>,fontSize); zlabel(<span class="string">'Z'</span>,<span class="string">'FontSize'</span>,fontSize); hold <span class="string">on</span>;
+
+<span class="comment">%Selecting half of the model to see interior</span>
+X=V(:,3); XE=mean(X(E{1}),2);
+L=XE&lt;mean(X);
+[Fs,Cs]=element2patch(E{1}(L,:),C_tet(L));
+
+<span class="comment">%Selecting half of the model to see interior</span>
+X=V(:,3); XE=mean(X(E{2}),2);
+L=XE&lt;mean(X);
+[Fh,Ch]=element2patch(E{2}(L,:),C_hex(L));
+
+hps=patch(<span class="string">'Faces'</span>,Fs,<span class="string">'Vertices'</span>,VS,<span class="string">'FaceColor'</span>,<span class="string">'g'</span>,<span class="string">'lineWidth'</span>,edgeWidth,<span class="string">'edgeColor'</span>,edgeColor,<span class="string">'FaceAlpha'</span>,1);
+hps2=patch(<span class="string">'Faces'</span>,Fh,<span class="string">'Vertices'</span>,VS,<span class="string">'FaceColor'</span>,<span class="string">'b'</span>,<span class="string">'lineWidth'</span>,edgeWidth,<span class="string">'edgeColor'</span>,edgeColor,<span class="string">'FaceAlpha'</span>,1);
+view(3); axis <span class="string">tight</span>;  axis <span class="string">equal</span>;  grid <span class="string">on</span>;
+colormap(autumn);
+camlight <span class="string">headlight</span>;
+set(gca,<span class="string">'FontSize'</span>,fontSize);
+drawnow;
+
+hf1=cFigure;
+<span class="comment">% subplot(1,2,2);</span>
+title(<span class="string">'XZ cut view of mixed mesh'</span>,<span class="string">'FontSize'</span>,fontSize);
+xlabel(<span class="string">'X'</span>,<span class="string">'FontSize'</span>,fontSize); ylabel(<span class="string">'Y'</span>,<span class="string">'FontSize'</span>,fontSize); zlabel(<span class="string">'Z'</span>,<span class="string">'FontSize'</span>,fontSize); hold <span class="string">on</span>;
+
+<span class="comment">%Selecting half of the model to see interior</span>
+X=V(:,2); XE=mean(X(E{1}),2);
+L=XE&gt;mean(X);
+[Fs,Cs]=element2patch(E{1}(L,:),C_tet(L));
+
+<span class="comment">%Selecting half of the model to see interior</span>
+X=V(:,2); XE=mean(X(E{2}),2);
+L=XE&gt;mean(X);
+[Fh,Ch]=element2patch(E{2}(L,:),C_hex(L));
+
+hps=patch(<span class="string">'Faces'</span>,Fs,<span class="string">'Vertices'</span>,VS,<span class="string">'FaceColor'</span>,<span class="string">'g'</span>,<span class="string">'lineWidth'</span>,edgeWidth,<span class="string">'edgeColor'</span>,edgeColor,<span class="string">'FaceAlpha'</span>,1);
+hps2=patch(<span class="string">'Faces'</span>,Fh,<span class="string">'Vertices'</span>,VS,<span class="string">'FaceColor'</span>,<span class="string">'b'</span>,<span class="string">'lineWidth'</span>,edgeWidth,<span class="string">'edgeColor'</span>,edgeColor,<span class="string">'FaceAlpha'</span>,1);
+
+view(3); axis <span class="string">tight</span>;  axis <span class="string">equal</span>;  grid <span class="string">on</span>;
+colormap(autumn);
+camlight <span class="string">headlight</span>;
+set(gca,<span class="string">'FontSize'</span>,fontSize);
+
+drawnow;
+</pre><img vspace="5" hspace="5" src="DEMO_MixedTetHexMeshing_torus_07.png" alt=""> <img vspace="5" hspace="5" src="DEMO_MixedTetHexMeshing_torus_08.png" alt=""> <p><img vspace="5" hspace="5" src="gibbVerySmall.gif" alt=""> </p><p>GIBBON</p><p>Kevin M. Moerman (<a href="mailto:kevinmoerman@hotmail.com">kevinmoerman@hotmail.com</a>)</p><p class="footer"><br><a href="http://www.mathworks.com/products/matlab/">Published with MATLAB&reg; R2016b</a><br></p></div><!--
+##### SOURCE BEGIN #####
+%% DEMO_MixedTetHexMeshing_torus
+% Below is a demonstration of how to create a mixed mesh consisting of
+% (linear) hexahedral and tetrahedral elements. The hexahedral mesh is
+% regular while the tetrahedral mesh is derived using TetGen. 
+
+%% 
+
+clear; close all; clc;
+
+%%
+% Plot settings for the examples below
+fontSize=20;
+faceAlpha1=1;
+faceAlpha2=0.3;
+edgeColor=0.3*ones(1,3);
+edgeWidth=1; 
+
+%%
+
+searchRadius=6; 
+
+%% CONVERTING A TRIANGULATED SURFACE TO AN IMAGE WITH DESIRED SIZE, VOXEL SIZE AND ORIGIN
+% Defining an example triangulated surface model
+
+% Defining a deformed and rotated torus shape
+r=1; %Sphere radius
+rc=2; %Central radius
+nr=25;
+nc=50;
+ptype='tri';
+[Fs,Vs]=patchTorus(r,nr,rc,nc,ptype);
+[THETA,RHO] = cart2pol(Vs(:,1),Vs(:,2));
+Vs(:,3)=Vs(:,3)+sin(3*THETA);
+[R,~]=euler2DCM([0.5*pi 0.5*pi 0.*pi]);
+Vs=Vs*R;
+
+%% 
+% Setting control parameters
+
+% Defining the full set of possible control parameters
+voxelSize=0.2; % The output image voxel size.  
+imOrigin=min(Vs,[],1)-voxelSize;
+imMax=max(Vs,[],1)+voxelSize;
+imSiz=round((imMax-imOrigin)/voxelSize);
+imSiz=imSiz([2 1 3]); %Image size (x, y corresponds to j,i in image coordinates, hence the permutation)
+
+% Using |triSurf2Im| function to convert patch data to image data
+[M,~]=triSurf2Im(Fs,Vs,voxelSize,imOrigin,imSiz);
+
+%%
+% Plotting the results
+
+hf1=cFigure;
+subplot(1,2,1);
+title('Closed triangulated surface','FontSize',fontSize);
+xlabel('X','FontSize',fontSize);ylabel('Y','FontSize',fontSize); zlabel('Z','FontSize',fontSize);
+hold on;
+patch('Faces',Fs,'Vertices',Vs,'FaceColor','g','EdgeColor','k','FaceAlpha',faceAlpha1);
+camlight('headlight'); lighting flat;
+axis equal; view(3); axis tight;  grid on;  set(gca,'FontSize',fontSize);
+
+subplot(1,2,2);
+title('Boundary, intertior and exterior image','FontSize',fontSize);
+xlabel('X','FontSize',fontSize);ylabel('Y','FontSize',fontSize); zlabel('Z','FontSize',fontSize);
+hold on;
+
+patch('Faces',Fs,'Vertices',Vs,'FaceColor','g','EdgeColor','none','FaceAlpha',faceAlpha2);
+L_plot=false(size(M));
+L_plot(:,:,round(size(M,3)/2))=1;
+[Fm,Vm,Cm]=ind2patch(L_plot,double(M),'sk');
+[Vm(:,1),Vm(:,2),Vm(:,3)]=im2cart(Vm(:,2),Vm(:,1),Vm(:,3),voxelSize*ones(1,3));
+Vm=Vm+imOrigin(ones(size(Vm,1),1),:);
+patch('Faces',Fm,'Vertices',Vm,'FaceColor','flat','CData',Cm,'EdgeColor','k','FaceAlpha',faceAlpha1);
+
+L_plot=false(size(M));L_plot(round(size(M,1)/2),:,:)=1;
+[Fm,Vm,Cm]=ind2patch(L_plot,M,'si');
+[Vm(:,1),Vm(:,2),Vm(:,3)]=im2cart(Vm(:,2),Vm(:,1),Vm(:,3),voxelSize*ones(1,3));
+Vm=Vm+imOrigin(ones(size(Vm,1),1),:);
+patch('Faces',Fm,'Vertices',Vm,'FaceColor','flat','CData',Cm,'EdgeColor','k','FaceAlpha',faceAlpha1);
+
+L_plot=false(size(M));L_plot(:,round(size(M,2)/2),:)=1;
+[Fm,Vm,Cm]=ind2patch(L_plot,M,'sj');
+[Vm(:,1),Vm(:,2),Vm(:,3)]=im2cart(Vm(:,2),Vm(:,1),Vm(:,3),voxelSize*ones(1,3));
+Vm=Vm+imOrigin(ones(size(Vm,1),1),:);
+patch('Faces',Fm,'Vertices',Vm,'FaceColor','flat','CData',Cm,'EdgeColor','k','FaceAlpha',faceAlpha1);
+
+colormap(gray(3)); caxis([0 2]);
+hc=colorbar;
+set(hc,'YTick',[1/3 1 5/3]);
+set(hc,'YTickLabel',{'Exterior','Boundary','Intertior'});
+axis equal; view(3); axis tight;  grid on;  set(gca,'FontSize',fontSize);
+drawnow;
+
+%% GET HEXAHEDRAL ELEMENT SET
+
+L_model=(M==2); %Interior&Boundary choosen here
+ 
+%Defining erosion/dilation kernel
+k=3;
+p=k-round(k./2);
+hb=zeros(3,3);
+hb(2,2,2)=1;
+hb(2,2,1)=1;
+hb(2,2,3)=1;
+hb(1,2,2)=1;
+hb(3,2,2)=1;
+hb(2,3,2)=1;
+hb(2,1,2)=1;
+
+L_model_rep=zeros(size(L_model)+(2.*p));
+L_model_rep(p+(1:size(L_model,1)),p+(1:size(L_model,2)),p+(1:size(L_model,3)))=L_model;
+L_model_blur = convn(double(L_model_rep),hb,'valid');
+L_model=L_model_blur>=(sum(hb(:)));
+        
+[E_hex,V_hex,C_hex]=ind2patch(L_model,M,'hu');
+
+% Convert Coordinates
+[V_hex(:,1),V_hex(:,2),V_hex(:,3)]=im2cart(V_hex(:,2),V_hex(:,1),V_hex(:,3),voxelSize*ones(1,3));
+V_hex=V_hex+imOrigin(ones(size(V_hex,1),1),:);
+
+% Use element2patch to get patch data to plot the model
+[F_hex,C_hex_F]=element2patch(E_hex,C_hex);
+
+%Pass through unique_patch to reduce "weight" of plot
+[Fp,Vp,~,~,~,F_count]=unique_patch(F_hex,V_hex,[],5);
+logicUni=F_count==1; %Logic for boundary faces
+
+Fq=Fp(logicUni,:);
+Vq=Vp;
+[Fq,Vq,~]=patchCleanUnused(Fq,Vq);
+
+[Ft,Vt]=quad2tri(Fq,Vq,'b');
+
+%%
+% Plotting the results
+
+hf1=cFigure;
+title('Visualizing internal voxels=hexahedral elements','FontSize',fontSize);
+xlabel('X','FontSize',fontSize);ylabel('Y','FontSize',fontSize); zlabel('Z','FontSize',fontSize);
+hold on;
+patch('Faces',Fs,'Vertices',Vs,'FaceColor','g','EdgeColor','none','FaceAlpha',0.25);
+patch('Faces',Ft,'Vertices',Vt,'FaceColor','b','EdgeColor','none','FaceAlpha',0.5);
+
+camlight('headlight'); lighting flat;
+axis equal; view(3); axis tight;  grid on;  set(gca,'FontSize',fontSize);
+drawnow;
+
+%%
+
+%Joining surface sets
+F=[Fs;Ft+size(Vs,1)];
+V=[Vs;Vt];
+C_tet=[ones(size(Fs,1),1);2*ones(size(Ft,1),1)]; %Surface marker colors
+
+%% Get hole point
+[V_hole]=getInnerPoint(Ft,Vt,searchRadius,voxelSize/2,0);
+plotV(V_hole,'r.','MarkerSize',25);
+
+%% Get region point
+
+L_in=(M==1);
+
+[indInternal]=getInnerVoxel(double(L_in),searchRadius,0);
+
+[I_in,J_in,K_in]=ind2sub(size(L_in),indInternal); %Convert to subscript coordinates
+[X_in,Y_in,Z_in]=im2cart(I_in,J_in,K_in,voxelSize*ones(1,3));
+V_in=[X_in Y_in Z_in];
+V_in=V_in+imOrigin(ones(size(V_in,1),1),:);
+
+plotV(V_in,'k.','MarkerSize',25);
+
+%%
+% DEFINE FACE BOUNDARY MARKERS
+faceBoundaryMarker=C_tet;
+
+%%
+% Define region points
+V_regions=[V_in];
+
+%%
+% Define hole points
+V_holes=[V_hole];
+
+%% 
+% Regional mesh parameters
+[edgeLengths]=patchEdgeLengths(F,V);
+edgeLengthsMean=mean(edgeLengths);
+meanProposedVolume=edgeLengthsMean^3./(6*sqrt(2)); %For regular tetrahedron
+regionA=meanProposedVolume;
+
+%% 
+% CREATING THE SMESH STRUCTURE, meshing without the surface constraints
+% imposed by the -Y this time. 
+
+stringOpt='-pq1.2AaYQV';
+
+modelName='tetGenModel';
+smeshName=[modelName,'.smesh'];
+
+smeshStruct.stringOpt=stringOpt;
+smeshStruct.Faces=F;
+smeshStruct.Nodes=V;
+smeshStruct.holePoints=V_holes;
+smeshStruct.faceBoundaryMarker=faceBoundaryMarker; %Face boundary markers
+smeshStruct.regionPoints=V_regions; %region points
+smeshStruct.regionA=regionA;
+smeshStruct.minRegionMarker=2; %Minimum region marker
+smeshStruct.smeshName=smeshName;
+
+%% 
+% Mesh model using tetrahedral elements using tetGen (see:
+% <http://wias-berlin.de/software/tetgen/>)
+
+[meshOutput]=runTetGenSmesh(smeshStruct); %Run tetGen 
+
+%% 
+% Access model element and patch data
+F_tet=meshOutput.faces;
+V_tet=meshOutput.nodes;
+C_tet=meshOutput.faceMaterialID;
+E_tet=meshOutput.elements;
+
+indBoundary=meshOutput.facesBoundary(meshOutput.boundaryMarker==1);
+indBoundary=unique(indBoundary);
+
+%% MERGING NODE SETS
+
+V=[V_tet;V_hex];
+E_hex=E_hex+size(V_tet,1);
+
+[~,ind1,ind2]=unique(pround(V,5),'rows');
+V=V(ind1,:);
+E_tet=ind2(E_tet);
+E_hex=ind2(E_hex);
+indBoundary=ind2(indBoundary);
+
+E={E_tet, E_hex};
+
+%% 
+% PLOTTING MODEL 
+
+hf1=cFigure;
+% subplot(1,2,1);
+title('XY cut view of mixed mesh','FontSize',fontSize);
+xlabel('X','FontSize',fontSize); ylabel('Y','FontSize',fontSize); zlabel('Z','FontSize',fontSize); hold on;
+
+%Selecting half of the model to see interior
+X=V(:,3); XE=mean(X(E{1}),2);
+L=XE<mean(X);
+[Fs,Cs]=element2patch(E{1}(L,:),C_tet(L));
+
+%Selecting half of the model to see interior
+X=V(:,3); XE=mean(X(E{2}),2);
+L=XE<mean(X);
+[Fh,Ch]=element2patch(E{2}(L,:),C_hex(L));
+
+hps=patch('Faces',Fs,'Vertices',V,'FaceColor','g','lineWidth',edgeWidth,'edgeColor',edgeColor,'FaceAlpha',1);
+hps2=patch('Faces',Fh,'Vertices',V,'FaceColor','b','lineWidth',edgeWidth,'edgeColor',edgeColor,'FaceAlpha',1);
+view(3); axis tight;  axis equal;  grid on;
+colormap(autumn); 
+camlight headlight;
+set(gca,'FontSize',fontSize);
+drawnow; 
+
+hf1=cFigure;
+% subplot(1,2,2);
+title('XZ cut view of mixed mesh','FontSize',fontSize);
+xlabel('X','FontSize',fontSize); ylabel('Y','FontSize',fontSize); zlabel('Z','FontSize',fontSize); hold on;
+
+%Selecting half of the model to see interior
+X=V(:,2); XE=mean(X(E{1}),2);
+L=XE>mean(X);
+[Fs,Cs]=element2patch(E{1}(L,:),C_tet(L));
+
+%Selecting half of the model to see interior
+X=V(:,2); XE=mean(X(E{2}),2);
+L=XE>mean(X);
+[Fh,Ch]=element2patch(E{2}(L,:),C_hex(L));
+
+hps=patch('Faces',Fs,'Vertices',V,'FaceColor','g','lineWidth',edgeWidth,'edgeColor',edgeColor,'FaceAlpha',1);
+hps2=patch('Faces',Fh,'Vertices',V,'FaceColor','b','lineWidth',edgeWidth,'edgeColor',edgeColor,'FaceAlpha',1);
+
+view(3); axis tight;  axis equal;  grid on;
+colormap(autumn); 
+camlight headlight;
+set(gca,'FontSize',fontSize);
+
+drawnow;
+
+%%
+
+cPar.Method='LAP';
+cPar.n=25;
+cPar.RigidConstraints=indBoundary;
+
+[F1,~]=element2patch(E{1},[]);
+[F1,~,~]=uniqueIntegerRow(F1);
+[F2,~]=element2patch(E{2},[]);
+[F2,~,~]=uniqueIntegerRow(F2);
+[~,IND_V1,~]=tesIND(F1,V,0);
+[~,IND_V2,~]=tesIND(F2,V,0);
+
+IND_V=[IND_V1 IND_V2];
+
+[VS]=tesSmooth([],V,IND_V,cPar);
+
+%% 
+% PLOTTING MODEL 
+
+hf1=cFigure;
+% subplot(1,2,1);
+title('XY cut view of mixed mesh','FontSize',fontSize);
+xlabel('X','FontSize',fontSize); ylabel('Y','FontSize',fontSize); zlabel('Z','FontSize',fontSize); hold on;
+
+%Selecting half of the model to see interior
+X=V(:,3); XE=mean(X(E{1}),2);
+L=XE<mean(X);
+[Fs,Cs]=element2patch(E{1}(L,:),C_tet(L));
+
+%Selecting half of the model to see interior
+X=V(:,3); XE=mean(X(E{2}),2);
+L=XE<mean(X);
+[Fh,Ch]=element2patch(E{2}(L,:),C_hex(L));
+
+hps=patch('Faces',Fs,'Vertices',VS,'FaceColor','g','lineWidth',edgeWidth,'edgeColor',edgeColor,'FaceAlpha',1);
+hps2=patch('Faces',Fh,'Vertices',VS,'FaceColor','b','lineWidth',edgeWidth,'edgeColor',edgeColor,'FaceAlpha',1);
+view(3); axis tight;  axis equal;  grid on;
+colormap(autumn); 
+camlight headlight;
+set(gca,'FontSize',fontSize);
+drawnow; 
+
+hf1=cFigure;
+% subplot(1,2,2);
+title('XZ cut view of mixed mesh','FontSize',fontSize);
+xlabel('X','FontSize',fontSize); ylabel('Y','FontSize',fontSize); zlabel('Z','FontSize',fontSize); hold on;
+
+%Selecting half of the model to see interior
+X=V(:,2); XE=mean(X(E{1}),2);
+L=XE>mean(X);
+[Fs,Cs]=element2patch(E{1}(L,:),C_tet(L));
+
+%Selecting half of the model to see interior
+X=V(:,2); XE=mean(X(E{2}),2);
+L=XE>mean(X);
+[Fh,Ch]=element2patch(E{2}(L,:),C_hex(L));
+
+hps=patch('Faces',Fs,'Vertices',VS,'FaceColor','g','lineWidth',edgeWidth,'edgeColor',edgeColor,'FaceAlpha',1);
+hps2=patch('Faces',Fh,'Vertices',VS,'FaceColor','b','lineWidth',edgeWidth,'edgeColor',edgeColor,'FaceAlpha',1);
+
+view(3); axis tight;  axis equal;  grid on;
+colormap(autumn); 
+camlight headlight;
+set(gca,'FontSize',fontSize);
+
+drawnow;
+
+%% 
+%
+% <<gibbVerySmall.gif>>
+% 
+% GIBBON 
+% 
+% Kevin M. Moerman (kevinmoerman@hotmail.com)
+
+##### SOURCE END #####
+--></body></html>

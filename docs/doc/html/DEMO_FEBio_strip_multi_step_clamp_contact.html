@@ -1,0 +1,1116 @@
+
+<!DOCTYPE html
+  PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html><head>
+      <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+   <!--
+This HTML was auto-generated from MATLAB code.
+To make changes, update the MATLAB code and republish this document.
+      --><title>DEMO_FEBio_strip_multi_step_clamp_contact</title><meta name="generator" content="MATLAB 9.0"><link rel="schema.DC" href="http://purl.org/dc/elements/1.1/"><meta name="DC.date" content="2016-02-01"><meta name="DC.source" content="DEMO_FEBio_strip_multi_step_clamp_contact.m"><style type="text/css">
+html,body,div,span,applet,object,iframe,h1,h2,h3,h4,h5,h6,p,blockquote,pre,a,abbr,acronym,address,big,cite,code,del,dfn,em,font,img,ins,kbd,q,s,samp,small,strike,strong,sub,sup,tt,var,b,u,i,center,dl,dt,dd,ol,ul,li,fieldset,form,label,legend,table,caption,tbody,tfoot,thead,tr,th,td{margin:0;padding:0;border:0;outline:0;font-size:100%;vertical-align:baseline;background:transparent}body{line-height:1}ol,ul{list-style:none}blockquote,q{quotes:none}blockquote:before,blockquote:after,q:before,q:after{content:'';content:none}:focus{outine:0}ins{text-decoration:none}del{text-decoration:line-through}table{border-collapse:collapse;border-spacing:0}
+
+html { min-height:100%; margin-bottom:1px; }
+html body { height:100%; margin:0px; font-family:Arial, Helvetica, sans-serif; font-size:10px; color:#000; line-height:140%; background:#fff none; overflow-y:scroll; }
+html body td { vertical-align:top; text-align:left; }
+
+h1 { padding:0px; margin:0px 0px 25px; font-family:Arial, Helvetica, sans-serif; font-size:1.5em; color:#d55000; line-height:100%; font-weight:normal; }
+h2 { padding:0px; margin:0px 0px 8px; font-family:Arial, Helvetica, sans-serif; font-size:1.2em; color:#000; font-weight:bold; line-height:140%; border-bottom:1px solid #d6d4d4; display:block; }
+h3 { padding:0px; margin:0px 0px 5px; font-family:Arial, Helvetica, sans-serif; font-size:1.1em; color:#000; font-weight:bold; line-height:140%; }
+
+a { color:#005fce; text-decoration:none; }
+a:hover { color:#005fce; text-decoration:underline; }
+a:visited { color:#004aa0; text-decoration:none; }
+
+p { padding:0px; margin:0px 0px 20px; }
+img { padding:0px; margin:0px 0px 20px; border:none; }
+p img, pre img, tt img, li img, h1 img, h2 img { margin-bottom:0px; } 
+
+ul { padding:0px; margin:0px 0px 20px 23px; list-style:square; }
+ul li { padding:0px; margin:0px 0px 7px 0px; }
+ul li ul { padding:5px 0px 0px; margin:0px 0px 7px 23px; }
+ul li ol li { list-style:decimal; }
+ol { padding:0px; margin:0px 0px 20px 0px; list-style:decimal; }
+ol li { padding:0px; margin:0px 0px 7px 23px; list-style-type:decimal; }
+ol li ol { padding:5px 0px 0px; margin:0px 0px 7px 0px; }
+ol li ol li { list-style-type:lower-alpha; }
+ol li ul { padding-top:7px; }
+ol li ul li { list-style:square; }
+
+.content { font-size:1.2em; line-height:140%; padding: 20px; }
+
+pre, code { font-size:12px; }
+tt { font-size: 1.2em; }
+pre { margin:0px 0px 20px; }
+pre.codeinput { padding:10px; border:1px solid #d3d3d3; background:#f7f7f7; }
+pre.codeoutput { padding:10px 11px; margin:0px 0px 20px; color:#4c4c4c; }
+pre.error { color:red; }
+
+@media print { pre.codeinput, pre.codeoutput { word-wrap:break-word; width:100%; } }
+
+span.keyword { color:#0000FF }
+span.comment { color:#228B22 }
+span.string { color:#A020F0 }
+span.untermstring { color:#B20000 }
+span.syscmd { color:#B28C00 }
+
+.footer { width:auto; padding:10px 0px; margin:25px 0px 0px; border-top:1px dotted #878787; font-size:0.8em; line-height:140%; font-style:italic; color:#878787; text-align:left; float:none; }
+.footer p { margin:0px; }
+.footer a { color:#878787; }
+.footer a:hover { color:#878787; text-decoration:underline; }
+.footer a:visited { color:#878787; }
+
+table th { padding:7px 5px; text-align:left; vertical-align:middle; border: 1px solid #d6d4d4; font-weight:bold; }
+table td { padding:7px 5px; text-align:left; vertical-align:top; border:1px solid #d6d4d4; }
+
+
+
+
+
+  </style></head><body><div class="content"><h1>DEMO_FEBio_strip_multi_step_clamp_contact</h1><!--introduction--><p>Below is a demonstration for: 1) The creation of an FEBio model for clamped tensile testing 2) The use of multiple steps 4) Running an FEBio job with MATLAB 5) Importing FEBio results into MATLAB</p><!--/introduction--><h2>Contents</h2><div><ul><li><a href="#4">CREATING 3 MESHED BOXES</a></li><li><a href="#6">MERGING BOX SETS</a></li><li><a href="#8">Create grip models</a></li><li><a href="#10">Define contact surfaces</a></li><li><a href="#11">Collect node sets</a></li><li><a href="#12">CONSTRUCTING FEB MODEL</a></li><li><a href="#13">SAVING .FEB FILE</a></li><li><a href="#14">RUNNING FEBIO JOB</a></li><li><a href="#15">IMPORTING NODAL DISPLACEMENT RESULTS</a></li><li><a href="#16">CREATING NODE SET IN DEFORMED STATE</a></li></ul></div><pre class="codeinput">clear; close <span class="string">all</span>; clc;
+</pre><p>Plot settings</p><pre class="codeinput">fontSize=15;
+faceAlpha1=0.5;
+faceAlpha2=1;
+edgeColor=0.25*ones(1,3);
+edgeWidth=1.5;
+markerSize=50;
+</pre><p>Control parameters</p><pre class="codeinput"><span class="comment">% path names</span>
+filePath=mfilename(<span class="string">'fullpath'</span>);
+savePath=fullfile(fileparts(filePath),<span class="string">'data'</span>,<span class="string">'temp'</span>);
+
+modelName=fullfile(savePath,<span class="string">'tempModel'</span>);
+
+pointspacing=0.75;
+
+<span class="comment">%Specifying dimensions and number of elements</span>
+sampleWidth=10;
+numElementsWidth=round(sampleWidth/pointspacing);
+numElementsWidth=numElementsWidth+iseven(numElementsWidth); <span class="comment">%Force uneven so there is a middle element</span>
+elementSizeWidth=sampleWidth/numElementsWidth;
+
+sampleThickness=1.65;
+numElementsThickness=round(sampleThickness/pointspacing)+1;
+
+sampleGripGripHeight=20;
+numElementsGripGripHeight=round(sampleGripGripHeight/pointspacing);
+numElementsGripGripHeight=numElementsGripGripHeight+iseven(numElementsGripGripHeight); <span class="comment">%Force uneven so there is a middle element</span>
+
+sampleClampedHeight=8;
+numElementsClampedHeight=round(sampleClampedHeight/pointspacing);
+elementSizeClamped=sampleClampedHeight/numElementsClampedHeight;
+
+contactOverlap=3;
+
+contactInitialOffset=0.1;
+clampCompressiveStrain=0.375;
+clampCompressiveDisplacement=(sampleThickness.*clampCompressiveStrain)/2;
+tensileStretch=1.1;
+clampTensionDisplacement=(sampleGripGripHeight.*tensileStretch)-sampleGripGripHeight;
+
+contactType=1; <span class="comment">%1=sticky, 2=sliding/friction</span>
+</pre><h2>CREATING 3 MESHED BOXES<a name="4"></a></h2><pre class="codeinput"><span class="comment">%Create box 1</span>
+boxDim=[sampleWidth sampleThickness sampleClampedHeight]; <span class="comment">%Dimensions</span>
+boxEl=[numElementsWidth numElementsThickness numElementsClampedHeight]; <span class="comment">%Number of elements</span>
+[box1]=hexMeshBox(boxDim,boxEl);
+E1=box1.E;
+V1=box1.V;
+F1=box1.F;
+Fb1=box1.Fb;
+faceBoundaryMarker1=box1.faceBoundaryMarker;
+
+<span class="comment">%Create box 3 by copying the first</span>
+E3=E1;
+V3=V1;
+F3=F1;
+Fb3=Fb1;
+faceBoundaryMarker3=faceBoundaryMarker1;
+
+<span class="comment">%Shift first box up</span>
+V1(:,3)=V1(:,3)+sampleGripGripHeight/2+sampleClampedHeight/2;
+
+<span class="comment">%Shift third box down</span>
+V3(:,3)=V3(:,3)-sampleGripGripHeight/2-sampleClampedHeight/2;
+
+<span class="comment">%Create box 1</span>
+boxDim=[sampleWidth sampleThickness sampleGripGripHeight]; <span class="comment">%Dimensions</span>
+boxEl=[numElementsWidth numElementsThickness numElementsGripGripHeight]; <span class="comment">%Number of elements</span>
+[box2]=hexMeshBox(boxDim,boxEl);
+E2=box2.E;
+V2=box2.V;
+F2=box2.F;
+Fb2=box2.Fb;
+faceBoundaryMarker2=box2.faceBoundaryMarker;
+</pre><p>Plotting surface models</p><pre class="codeinput">hf=cFigure;
+title(<span class="string">'Box sets'</span>,<span class="string">'FontSize'</span>,fontSize);
+xlabel(<span class="string">'X'</span>,<span class="string">'FontSize'</span>,fontSize); ylabel(<span class="string">'Y'</span>,<span class="string">'FontSize'</span>,fontSize); zlabel(<span class="string">'Z'</span>,<span class="string">'FontSize'</span>,fontSize);
+hold <span class="string">on</span>;
+patch(<span class="string">'Faces'</span>,Fb1,<span class="string">'Vertices'</span>,V1,<span class="string">'FaceColor'</span>,<span class="string">'flat'</span>,<span class="string">'CData'</span>,faceBoundaryMarker1,<span class="string">'FaceAlpha'</span>,faceAlpha1,<span class="string">'lineWidth'</span>,edgeWidth,<span class="string">'edgeColor'</span>,edgeColor);
+patch(<span class="string">'Faces'</span>,Fb2,<span class="string">'Vertices'</span>,V2,<span class="string">'FaceColor'</span>,<span class="string">'flat'</span>,<span class="string">'CData'</span>,faceBoundaryMarker2,<span class="string">'FaceAlpha'</span>,faceAlpha1,<span class="string">'lineWidth'</span>,edgeWidth,<span class="string">'edgeColor'</span>,edgeColor);
+patch(<span class="string">'Faces'</span>,Fb3,<span class="string">'Vertices'</span>,V3,<span class="string">'FaceColor'</span>,<span class="string">'flat'</span>,<span class="string">'CData'</span>,faceBoundaryMarker3,<span class="string">'FaceAlpha'</span>,faceAlpha1,<span class="string">'lineWidth'</span>,edgeWidth,<span class="string">'edgeColor'</span>,edgeColor);
+
+colormap(jet(6)); colorbar;
+set(gca,<span class="string">'FontSize'</span>,fontSize);
+view(3); axis <span class="string">tight</span>;  axis <span class="string">equal</span>;  grid <span class="string">on</span>;
+camlight <span class="string">headlight</span>;
+drawnow;
+</pre><img vspace="5" hspace="5" src="DEMO_FEBio_strip_multi_step_clamp_contact_01.png" alt=""> <h2>MERGING BOX SETS<a name="6"></a></h2><pre class="codeinput">faceBoundaryMarker_all=[faceBoundaryMarker1; faceBoundaryMarker2; faceBoundaryMarker3;];
+faceBoundaryMarker_ind=[ones(size(Fb1,1),1);2*ones(size(Fb2,1),1); 3*ones(size(Fb3,1),1);];
+
+V=[V1;V2;V3];
+E=[E1;E2+size(V1,1);E3+size(V1,1)+size(V2,1)];
+F=[F1;F2+size(V1,1);F3+size(V1,1)+size(V2,1)];
+Fb=[Fb1;Fb2+size(V1,1);Fb3+size(V1,1)+size(V2,1)];
+
+[~,ind1,ind2]=unique(pround(V,5),<span class="string">'rows'</span>);
+V=V(ind1,:);
+E=ind2(E);
+F=ind2(F);
+Fb=ind2(Fb);
+</pre><p>Plotting surface models</p><pre class="codeinput">hf=cFigure;
+title(<span class="string">'Merged box sets'</span>,<span class="string">'FontSize'</span>,fontSize);
+xlabel(<span class="string">'X'</span>,<span class="string">'FontSize'</span>,fontSize); ylabel(<span class="string">'Y'</span>,<span class="string">'FontSize'</span>,fontSize); zlabel(<span class="string">'Z'</span>,<span class="string">'FontSize'</span>,fontSize);
+hold <span class="string">on</span>;
+patch(<span class="string">'Faces'</span>,Fb,<span class="string">'Vertices'</span>,V,<span class="string">'FaceColor'</span>,<span class="string">'flat'</span>,<span class="string">'CData'</span>,faceBoundaryMarker_all,<span class="string">'FaceAlpha'</span>,1,<span class="string">'lineWidth'</span>,edgeWidth,<span class="string">'edgeColor'</span>,edgeColor);
+colormap(jet(6)); colorbar;
+set(gca,<span class="string">'FontSize'</span>,fontSize);
+view(3); axis <span class="string">tight</span>;  axis <span class="string">equal</span>;  grid <span class="string">on</span>;
+drawnow;
+</pre><img vspace="5" hspace="5" src="DEMO_FEBio_strip_multi_step_clamp_contact_02.png" alt=""> <h2>Create grip models<a name="8"></a></h2><pre class="codeinput"><span class="comment">%Get edge lengths of model</span>
+<span class="comment">% [D]=patchEdgeLengths(Fb,V);</span>
+<span class="comment">% elementSizeRigid=min(D)/2;</span>
+
+elementSizeRigid=min(elementSizeClamped,elementSizeWidth)/2;
+
+nX=round((2*sampleWidth+2*contactOverlap)/elementSizeRigid);
+xRange=linspace(-(sampleWidth/2)-contactOverlap,(sampleWidth/2)+contactOverlap,nX);
+
+nZ=round((sampleClampedHeight+contactOverlap)/elementSizeRigid);
+zRange=linspace(0,sampleClampedHeight+contactOverlap,nZ);
+
+[Xr,Zr]=meshgrid(xRange,zRange); <span class="comment">%mesh of single slice</span>
+[Fr,Vr,~] = surf2patch(Xr,zeros(size(Xr)),Zr,zeros(size(Xr))); <span class="comment">%Convert to patch data (quadrilateral faces)</span>
+
+<span class="comment">%Create off set rigid parts</span>
+Fr1=fliplr(Fr);
+Vr1=Vr;
+Vr1(:,3)=Vr1(:,3)+sampleGripGripHeight/2;
+Vr1(:,2)=Vr1(:,2)-sampleThickness/2-contactInitialOffset;
+
+Fr2=Fr;
+Vr2=Vr;
+Vr2(:,3)=Vr2(:,3)+sampleGripGripHeight/2;
+Vr2(:,2)=Vr2(:,2)+sampleThickness/2+contactInitialOffset;
+
+Fr3=Fr;
+Vr3=-Vr1;
+
+Fr4=fliplr(Fr);
+Vr4=-Vr2;
+</pre><p>Plotting surface models</p><pre class="codeinput">hf=cFigure;
+title(<span class="string">'Sample with rigid body clamps'</span>,<span class="string">'FontSize'</span>,fontSize);
+xlabel(<span class="string">'X'</span>,<span class="string">'FontSize'</span>,fontSize); ylabel(<span class="string">'Y'</span>,<span class="string">'FontSize'</span>,fontSize); zlabel(<span class="string">'Z'</span>,<span class="string">'FontSize'</span>,fontSize);
+hold <span class="string">on</span>;
+patch(<span class="string">'Faces'</span>,F,<span class="string">'Vertices'</span>,V,<span class="string">'FaceColor'</span>,0.5*ones(1,3),<span class="string">'FaceAlpha'</span>,1,<span class="string">'lineWidth'</span>,edgeWidth,<span class="string">'edgeColor'</span>,edgeColor);
+
+patch(<span class="string">'Faces'</span>,Fr1,<span class="string">'Vertices'</span>,Vr1,<span class="string">'FaceColor'</span>,<span class="string">'r'</span>,<span class="string">'FaceAlpha'</span>,faceAlpha1,<span class="string">'lineWidth'</span>,edgeWidth,<span class="string">'edgeColor'</span>,edgeColor);
+[hp]=patchNormPlot(Fr1,Vr1,2);
+patch(<span class="string">'Faces'</span>,Fr2,<span class="string">'Vertices'</span>,Vr2,<span class="string">'FaceColor'</span>,<span class="string">'g'</span>,<span class="string">'FaceAlpha'</span>,faceAlpha1,<span class="string">'lineWidth'</span>,edgeWidth,<span class="string">'edgeColor'</span>,edgeColor);
+[hp]=patchNormPlot(Fr2,Vr2,2);
+patch(<span class="string">'Faces'</span>,Fr3,<span class="string">'Vertices'</span>,Vr3,<span class="string">'FaceColor'</span>,<span class="string">'b'</span>,<span class="string">'FaceAlpha'</span>,faceAlpha1,<span class="string">'lineWidth'</span>,edgeWidth,<span class="string">'edgeColor'</span>,edgeColor);
+[hp]=patchNormPlot(Fr3,Vr3,2);
+patch(<span class="string">'Faces'</span>,Fr4,<span class="string">'Vertices'</span>,Vr4,<span class="string">'FaceColor'</span>,<span class="string">'y'</span>,<span class="string">'FaceAlpha'</span>,faceAlpha1,<span class="string">'lineWidth'</span>,edgeWidth,<span class="string">'edgeColor'</span>,edgeColor);
+[hp]=patchNormPlot(Fr4,Vr4,2);
+set(gca,<span class="string">'FontSize'</span>,fontSize);
+
+view(3); axis <span class="string">tight</span>;  axis <span class="string">equal</span>;  grid <span class="string">on</span>;
+drawnow;
+</pre><img vspace="5" hspace="5" src="DEMO_FEBio_strip_multi_step_clamp_contact_03.png" alt=""> <h2>Define contact surfaces<a name="10"></a></h2><pre class="codeinput">logicContactSurf1=faceBoundaryMarker_all==3 &amp; faceBoundaryMarker_ind==1;
+Fc1=Fb(logicContactSurf1,:);
+
+logicContactSurf2=faceBoundaryMarker_all==4 &amp; faceBoundaryMarker_ind==1;
+Fc2=Fb(logicContactSurf2,:);
+
+logicContactSurf3=faceBoundaryMarker_all==4 &amp; faceBoundaryMarker_ind==3;
+Fc3=Fb(logicContactSurf3,:);
+
+logicContactSurf4=faceBoundaryMarker_all==3 &amp; faceBoundaryMarker_ind==3;
+Fc4=Fb(logicContactSurf4,:);
+
+<span class="comment">% Plotting surface models</span>
+hf=cFigure;
+title(<span class="string">'Contact sets'</span>,<span class="string">'FontSize'</span>,fontSize);
+xlabel(<span class="string">'X'</span>,<span class="string">'FontSize'</span>,fontSize); ylabel(<span class="string">'Y'</span>,<span class="string">'FontSize'</span>,fontSize); zlabel(<span class="string">'Z'</span>,<span class="string">'FontSize'</span>,fontSize);
+hold <span class="string">on</span>;
+patch(<span class="string">'Faces'</span>,Fc1,<span class="string">'Vertices'</span>,V,<span class="string">'FaceColor'</span>,<span class="string">'r'</span>,<span class="string">'FaceAlpha'</span>,1,<span class="string">'lineWidth'</span>,edgeWidth,<span class="string">'edgeColor'</span>,edgeColor);
+[hp]=patchNormPlot(Fc1,V,2);
+patch(<span class="string">'Faces'</span>,Fc2,<span class="string">'Vertices'</span>,V,<span class="string">'FaceColor'</span>,<span class="string">'g'</span>,<span class="string">'FaceAlpha'</span>,1,<span class="string">'lineWidth'</span>,edgeWidth,<span class="string">'edgeColor'</span>,edgeColor);
+[hp]=patchNormPlot(Fc2,V,2);
+patch(<span class="string">'Faces'</span>,Fc3,<span class="string">'Vertices'</span>,V,<span class="string">'FaceColor'</span>,<span class="string">'b'</span>,<span class="string">'FaceAlpha'</span>,1,<span class="string">'lineWidth'</span>,edgeWidth,<span class="string">'edgeColor'</span>,edgeColor);
+[hp]=patchNormPlot(Fc3,V,2);
+patch(<span class="string">'Faces'</span>,Fc4,<span class="string">'Vertices'</span>,V,<span class="string">'FaceColor'</span>,<span class="string">'y'</span>,<span class="string">'FaceAlpha'</span>,1,<span class="string">'lineWidth'</span>,edgeWidth,<span class="string">'edgeColor'</span>,edgeColor);
+[hp]=patchNormPlot(Fc4,V,2);
+
+patch(<span class="string">'Faces'</span>,Fr1,<span class="string">'Vertices'</span>,Vr1,<span class="string">'FaceColor'</span>,<span class="string">'r'</span>,<span class="string">'FaceAlpha'</span>,faceAlpha1,<span class="string">'lineWidth'</span>,edgeWidth,<span class="string">'edgeColor'</span>,edgeColor);
+patch(<span class="string">'Faces'</span>,Fr2,<span class="string">'Vertices'</span>,Vr2,<span class="string">'FaceColor'</span>,<span class="string">'g'</span>,<span class="string">'FaceAlpha'</span>,faceAlpha1,<span class="string">'lineWidth'</span>,edgeWidth,<span class="string">'edgeColor'</span>,edgeColor);
+patch(<span class="string">'Faces'</span>,Fr3,<span class="string">'Vertices'</span>,Vr3,<span class="string">'FaceColor'</span>,<span class="string">'b'</span>,<span class="string">'FaceAlpha'</span>,faceAlpha1,<span class="string">'lineWidth'</span>,edgeWidth,<span class="string">'edgeColor'</span>,edgeColor);
+patch(<span class="string">'Faces'</span>,Fr4,<span class="string">'Vertices'</span>,Vr4,<span class="string">'FaceColor'</span>,<span class="string">'y'</span>,<span class="string">'FaceAlpha'</span>,faceAlpha1,<span class="string">'lineWidth'</span>,edgeWidth,<span class="string">'edgeColor'</span>,edgeColor);
+
+set(gca,<span class="string">'FontSize'</span>,fontSize);
+
+view(3); axis <span class="string">tight</span>;  axis <span class="string">equal</span>;  grid <span class="string">on</span>;
+drawnow;
+</pre><img vspace="5" hspace="5" src="DEMO_FEBio_strip_multi_step_clamp_contact_04.png" alt=""> <h2>Collect node sets<a name="11"></a></h2><pre class="codeinput">VT=[V; Vr1; Vr2; Vr3; Vr4];
+
+<span class="comment">%Fix rigid model node indices</span>
+Eq1=Fr1+size(V,1);
+Eq2=Fr2+size(V,1)+size(Vr1,1);
+Eq3=Fr3+size(V,1)+size(Vr1,1)+size(Vr2,1);
+Eq4=Fr4+size(V,1)+size(Vr1,1)+size(Vr2,1)+size(Vr3,1);
+
+bcPrescribeListRB1=unique(Eq1(:));
+bcPrescribeMagnitudesRB1=zeros(1,3);
+bcPrescribeMagnitudesRB1(:,1)=0;
+bcPrescribeMagnitudesRB1(:,2)=clampCompressiveDisplacement+contactInitialOffset; <span class="comment">%In step 1</span>
+bcPrescribeMagnitudesRB1(:,3)=clampTensionDisplacement; <span class="comment">%In step 2</span>
+
+bcPrescribeListRB2=unique(Eq2(:));
+bcPrescribeMagnitudesRB2=zeros(1,3);
+bcPrescribeMagnitudesRB2(:,1)=0;
+bcPrescribeMagnitudesRB2(:,2)=-clampCompressiveDisplacement-contactInitialOffset; <span class="comment">%In step 1</span>
+bcPrescribeMagnitudesRB2(:,3)=clampTensionDisplacement; <span class="comment">%In step 2</span>
+
+bcPrescribeListRB3=unique(Eq3(:));
+bcPrescribeMagnitudesRB3=zeros(1,3);
+bcPrescribeMagnitudesRB3(:,1)=0;
+bcPrescribeMagnitudesRB3(:,2)=-clampCompressiveDisplacement-contactInitialOffset; <span class="comment">%In step 1</span>
+bcPrescribeMagnitudesRB3(:,3)=0; <span class="comment">%In step 2</span>
+
+bcPrescribeListRB4=unique(Eq4(:));
+bcPrescribeMagnitudesRB4=zeros(1,3);
+bcPrescribeMagnitudesRB4(:,1)=0;
+bcPrescribeMagnitudesRB4(:,2)=clampCompressiveDisplacement+contactInitialOffset; <span class="comment">%In step 1</span>
+bcPrescribeMagnitudesRB4(:,3)=0; <span class="comment">%In step 2</span>
+
+<span class="comment">% Plotting surface models</span>
+hf=cFigure;
+title(<span class="string">'Complete model'</span>,<span class="string">'FontSize'</span>,fontSize);
+xlabel(<span class="string">'X'</span>,<span class="string">'FontSize'</span>,fontSize); ylabel(<span class="string">'Y'</span>,<span class="string">'FontSize'</span>,fontSize); zlabel(<span class="string">'Z'</span>,<span class="string">'FontSize'</span>,fontSize);
+hold <span class="string">on</span>;
+
+patch(<span class="string">'Faces'</span>,F,<span class="string">'Vertices'</span>,VT,<span class="string">'FaceColor'</span>,0.5*ones(1,3),<span class="string">'FaceAlpha'</span>,1,<span class="string">'lineWidth'</span>,edgeWidth,<span class="string">'edgeColor'</span>,edgeColor);
+
+patch(<span class="string">'Faces'</span>,Eq1,<span class="string">'Vertices'</span>,VT,<span class="string">'FaceColor'</span>,<span class="string">'r'</span>,<span class="string">'FaceAlpha'</span>,faceAlpha1,<span class="string">'lineWidth'</span>,edgeWidth,<span class="string">'edgeColor'</span>,edgeColor);
+patch(<span class="string">'Faces'</span>,Eq2,<span class="string">'Vertices'</span>,VT,<span class="string">'FaceColor'</span>,<span class="string">'g'</span>,<span class="string">'FaceAlpha'</span>,faceAlpha1,<span class="string">'lineWidth'</span>,edgeWidth,<span class="string">'edgeColor'</span>,edgeColor);
+patch(<span class="string">'Faces'</span>,Eq3,<span class="string">'Vertices'</span>,VT,<span class="string">'FaceColor'</span>,<span class="string">'b'</span>,<span class="string">'FaceAlpha'</span>,faceAlpha1,<span class="string">'lineWidth'</span>,edgeWidth,<span class="string">'edgeColor'</span>,edgeColor);
+patch(<span class="string">'Faces'</span>,Eq4,<span class="string">'Vertices'</span>,VT,<span class="string">'FaceColor'</span>,<span class="string">'y'</span>,<span class="string">'FaceAlpha'</span>,faceAlpha1,<span class="string">'lineWidth'</span>,edgeWidth,<span class="string">'edgeColor'</span>,edgeColor);
+
+set(gca,<span class="string">'FontSize'</span>,fontSize);
+
+view(3); axis <span class="string">tight</span>;  axis <span class="string">equal</span>;  grid <span class="string">on</span>;
+drawnow;
+</pre><img vspace="5" hspace="5" src="DEMO_FEBio_strip_multi_step_clamp_contact_05.png" alt=""> <h2>CONSTRUCTING FEB MODEL<a name="12"></a></h2><pre class="codeinput"><span class="comment">% Defining file names</span>
+FEB_struct.run_filename=[modelName,<span class="string">'.feb'</span>]; <span class="comment">%FEB file name</span>
+FEB_struct.run_logname=[modelName,<span class="string">'.txt'</span>]; <span class="comment">%FEBio log file name</span>
+
+<span class="comment">%Creating FEB_struct</span>
+FEB_struct.Geometry.Nodes=VT;
+FEB_struct.Geometry.Elements={Eq1 Eq2 Eq3 Eq4 E}; <span class="comment">%The element sets</span>
+FEB_struct.Geometry.ElementType={<span class="string">'quad4'</span>,<span class="string">'quad4'</span>,<span class="string">'quad4'</span>,<span class="string">'quad4'</span>,<span class="string">'hex8'</span>}; <span class="comment">%The element types</span>
+FEB_struct.Geometry.ElementMat={[1*ones(1,size(Eq1,1))]; [2*ones(1,size(Eq2,1))]; [3*ones(1,size(Eq3,1))]; [4*ones(1,size(Eq4,1))]; [5*ones(1,size(E,1))];};
+
+<span class="comment">%Adding fibre direction, construct local orthonormal basis vectors</span>
+Vf_E=zeros(size(E,1),3);
+Vf_E(:,3)=1; <span class="comment">%Z-axis fibres</span>
+<span class="comment">% Vf_E(:,1)=1; %X-axis fibres</span>
+[a,d]=vectorOrthogonalPair(Vf_E);
+
+VF_E=nan(size(Vf_E,1),size(Vf_E,2),2);
+VF_E(:,:,1)=a; <span class="comment">%a1 ~ e1 ~ X or first direction</span>
+VF_E(:,:,2)=d; <span class="comment">%a2 ~ e2 ~ Y or second direction</span>
+<span class="comment">%Vf_E %a3 ~ e3 ~ Z, third direction, or fibre direction</span>
+
+FEB_struct.Geometry.ElementData.MatAxis.ElementIndices=size(Eq1,1)+size(Eq2,1)+size(Eq3,1)+size(Eq4,1)+(1:1:size(E,1));
+FEB_struct.Geometry.ElementData.MatAxis.Basis=VF_E;
+
+<span class="comment">% DEFINING MATERIALS</span>
+
+<span class="comment">%Rigid materials</span>
+Mat1.type=<span class="string">'rigid body'</span>;
+Mat1.props={<span class="string">'density'</span>,<span class="string">'center_of_mass'</span>};
+Mat1.vals={1,[0,0,0]};
+Mat1.aniso_type=<span class="string">'none'</span>;
+
+Mat2.type=<span class="string">'rigid body'</span>;
+Mat2.props={<span class="string">'density'</span>,<span class="string">'center_of_mass'</span>};
+Mat2.vals={1,[0,0,0]};
+Mat2.aniso_type=<span class="string">'none'</span>;
+
+Mat3.type=<span class="string">'rigid body'</span>;
+Mat3.props={<span class="string">'density'</span>,<span class="string">'center_of_mass'</span>};
+Mat3.vals={1,[0,0,0]};
+Mat3.aniso_type=<span class="string">'none'</span>;
+
+Mat4.type=<span class="string">'rigid body'</span>;
+Mat4.props={<span class="string">'density'</span>,<span class="string">'center_of_mass'</span>};
+Mat4.vals={1,[0,0,0]};
+Mat4.aniso_type=<span class="string">'none'</span>;
+
+<span class="comment">% c1=1e-3;</span>
+<span class="comment">% k=c1*100;</span>
+<span class="comment">% Mat5.type='Mooney-Rivlin';</span>
+<span class="comment">% Mat5.props={'c1','c2','k'};</span>
+<span class="comment">% Mat5.vals={c1,0,k};</span>
+<span class="comment">% Mat5.aniso_type='none';</span>
+
+c1=2.309;
+m1=9.421;
+ksi=22.499;
+beta=2.387;
+k=(0.5.*(c1+ksi))*100;<span class="comment">% 20;</span>
+Mat5.type=<span class="string">'uncoupled solid mixture'</span>;
+Mat51.type=<span class="string">'Ogden'</span>;
+Mat51.props={<span class="string">'c1'</span>,<span class="string">'m1'</span>,<span class="string">'k'</span>};
+Mat51.vals={c1,m1,k};
+Mat51.aniso_type=<span class="string">'none'</span>;
+Mat52.type=<span class="string">'fiber-exp-pow-uncoupled'</span>;
+Mat52.props={<span class="string">'ksi'</span>,<span class="string">'alpha'</span>,<span class="string">'beta'</span>,<span class="string">'theta'</span>,<span class="string">'phi'</span>,<span class="string">'k'</span>};
+Mat52.vals={ksi,1e-25,beta,0,0,k};
+Mat52.aniso_type=<span class="string">'none'</span>;
+Mat5.Mats={Mat51 Mat52};
+
+FEB_struct.Materials={Mat1 Mat2 Mat3 Mat4 Mat5};
+
+
+<span class="comment">%Step specific BC's</span>
+<span class="comment">% FEB_struct.Step(1).Boundary.PrescribeList={bcPrescribeList,bcPrescribeList,bcPrescribeList};</span>
+<span class="comment">% FEB_struct.Step(1).Boundary.PrescribeType={'x','y','z'};</span>
+<span class="comment">% FEB_struct.Step(1).Boundary.PrescribeValues={bcPrescribedMagnitudesStep1(:,1),bcPrescribedMagnitudesStep1(:,2),bcPrescribedMagnitudesStep1(:,3)};</span>
+<span class="comment">% FEB_struct.Step(1).Boundary.PrescribeTypes={'relative','relative','relative'};</span>
+<span class="comment">% FEB_struct.Step(1).Boundary.LoadCurveIds=[1 1 1];</span>
+<span class="comment">%</span>
+<span class="comment">% FEB_struct.Step(2).Boundary.PrescribeList={bcPrescribeList,bcPrescribeList,bcPrescribeList};</span>
+<span class="comment">% FEB_struct.Step(2).Boundary.PrescribeType={'x','y','z'};</span>
+<span class="comment">% FEB_struct.Step(2).Boundary.PrescribeValues={bcPrescribedMagnitudesStep2(:,1),bcPrescribedMagnitudesStep2(:,2),bcPrescribedMagnitudesStep2(:,3)};</span>
+<span class="comment">% FEB_struct.Step(2).Boundary.PrescribeTypes={'relative','relative','relative'};</span>
+<span class="comment">% FEB_struct.Step(2).Boundary.LoadCurveIds=[2 2 2];</span>
+
+<span class="comment">%Step specific control sections</span>
+FEB_struct.Step(1).Control.AnalysisType=<span class="string">'static'</span>;
+FEB_struct.Step(1).Control.Properties={<span class="string">'time_steps'</span>,<span class="string">'step_size'</span>,<span class="keyword">...</span>
+    <span class="string">'max_refs'</span>,<span class="string">'max_ups'</span>,<span class="keyword">...</span>
+    <span class="string">'dtol'</span>,<span class="string">'etol'</span>,<span class="string">'rtol'</span>,<span class="string">'lstol'</span>};
+FEB_struct.Step(1).Control.Values={10,0.1,<span class="keyword">...</span>
+    25,0,<span class="keyword">...</span>
+    0.001,0.01,0,0.9};
+FEB_struct.Step(1).Control.TimeStepperProperties={<span class="string">'dtmin'</span>,<span class="string">'dtmax'</span>,<span class="string">'max_retries'</span>,<span class="string">'opt_iter'</span>,<span class="string">'aggressiveness'</span>};
+FEB_struct.Step(1).Control.TimeStepperValues={1e-5, 0.1, 5, 5, 1};
+
+FEB_struct.Step(2).Control=FEB_struct.Step(1).Control;
+
+<span class="comment">%Constraint section</span>
+FEB_struct.Constraints(1).RigidId=1;
+FEB_struct.Constraints(1).Properties={<span class="string">'trans_x'</span>,<span class="string">'trans_y'</span>,<span class="string">'trans_z'</span>,<span class="string">'rot_x'</span>,<span class="string">'rot_y'</span>,<span class="string">'rot_z'</span>};
+FEB_struct.Constraints(1).Values={bcPrescribeMagnitudesRB1(1),bcPrescribeMagnitudesRB1(2),bcPrescribeMagnitudesRB1(3),0,0,0};
+FEB_struct.Constraints(1).LoadCurveIds=[1 1 2 1 1 1];
+FEB_struct.Constraints(1).Type=<span class="string">'prescribed'</span>;
+
+FEB_struct.Constraints(2).RigidId=2;
+FEB_struct.Constraints(2).Properties={<span class="string">'trans_x'</span>,<span class="string">'trans_y'</span>,<span class="string">'trans_z'</span>,<span class="string">'rot_x'</span>,<span class="string">'rot_y'</span>,<span class="string">'rot_z'</span>};
+FEB_struct.Constraints(2).Values={bcPrescribeMagnitudesRB2(1),bcPrescribeMagnitudesRB2(2),bcPrescribeMagnitudesRB2(3),0,0,0};
+FEB_struct.Constraints(2).LoadCurveIds=[1 1 2 1 1 1];
+FEB_struct.Constraints(2).Type=<span class="string">'prescribed'</span>;
+
+FEB_struct.Constraints(3).RigidId=3;
+FEB_struct.Constraints(3).Properties={<span class="string">'trans_x'</span>,<span class="string">'trans_y'</span>,<span class="string">'trans_z'</span>,<span class="string">'rot_x'</span>,<span class="string">'rot_y'</span>,<span class="string">'rot_z'</span>};
+FEB_struct.Constraints(3).Values={bcPrescribeMagnitudesRB3(1),bcPrescribeMagnitudesRB3(2),bcPrescribeMagnitudesRB3(3),0,0,0};
+FEB_struct.Constraints(3).LoadCurveIds=[1 1 2 1 1 1];
+FEB_struct.Constraints(3).Type=<span class="string">'prescribed'</span>;
+
+FEB_struct.Constraints(4).RigidId=4;
+FEB_struct.Constraints(4).Properties={<span class="string">'trans_x'</span>,<span class="string">'trans_y'</span>,<span class="string">'trans_z'</span>,<span class="string">'rot_x'</span>,<span class="string">'rot_y'</span>,<span class="string">'rot_z'</span>};
+FEB_struct.Constraints(4).Values={bcPrescribeMagnitudesRB4(1),bcPrescribeMagnitudesRB4(2),bcPrescribeMagnitudesRB4(3),0,0,0};
+FEB_struct.Constraints(4).LoadCurveIds=[1 1 2 1 1 1];
+FEB_struct.Constraints(4).Type=<span class="string">'prescribed'</span>;
+
+<span class="comment">%Adding contact information</span>
+FEB_struct.Boundary.Contact{1}.Surfaces.elements={Eq1,Fc1};
+FEB_struct.Boundary.Contact{1}.Surfaces.Type={<span class="string">'master'</span>,<span class="string">'slave'</span>};
+<span class="keyword">switch</span> contactType
+    <span class="keyword">case</span> 1 <span class="comment">%STICKY</span>
+        <span class="comment">%           &lt;contact type="sticky"&gt;</span>
+        <span class="comment">% 			&lt;laugon&gt;0&lt;/laugon&gt;</span>
+        <span class="comment">% 			&lt;tolerance&gt;0.2&lt;/tolerance&gt;</span>
+        <span class="comment">% 			&lt;penalty&gt;1&lt;/penalty&gt;</span>
+        <span class="comment">% 			&lt;minaug&gt;0&lt;/minaug&gt;</span>
+        <span class="comment">% 			&lt;maxaug&gt;10&lt;/maxaug&gt;</span>
+
+        FEB_struct.Boundary.Contact{1}.Type=<span class="string">'sticky'</span>;
+        FEB_struct.Boundary.Contact{1}.Properties={<span class="string">'laugon'</span>,<span class="string">'tolerance'</span>,<span class="string">'penalty'</span>,<span class="keyword">...</span>
+            <span class="string">'minaug'</span>,<span class="string">'maxaug'</span>};
+        FEB_struct.Boundary.Contact{1}.Values={0,0.05,(0.5.*(c1+ksi))*100,<span class="keyword">...</span>
+            0,10};
+    <span class="keyword">case</span> 2 <span class="comment">%SLIDING/FRICTION</span>
+        FEB_struct.Boundary.Contact{1}.Type=<span class="string">'sliding_with_gaps'</span>;
+        FEB_struct.Boundary.Contact{1}.Properties={<span class="string">'penalty'</span>,<span class="string">'auto_penalty'</span>,<span class="string">'two_pass'</span>,<span class="keyword">...</span>
+            <span class="string">'laugon'</span>,<span class="string">'tolerance'</span>,<span class="keyword">...</span>
+            <span class="string">'gaptol'</span>,<span class="string">'minaug'</span>,<span class="string">'maxaug'</span>,<span class="keyword">...</span>
+            <span class="string">'fric_coeff'</span>,<span class="string">'fric_penalty'</span>,<span class="keyword">...</span>
+            <span class="string">'seg_up'</span>,<span class="keyword">...</span>
+            <span class="string">'search_tol'</span>};
+        FEB_struct.Boundary.Contact{1}.Values={50,0,0,<span class="keyword">...</span>
+            0,0.1,<span class="keyword">...</span>
+            0,0,10,<span class="keyword">...</span>
+            1,1000,<span class="keyword">...</span>
+            0,<span class="keyword">...</span>
+            0.01};
+<span class="keyword">end</span>
+
+FEB_struct.Boundary.Contact{2}=FEB_struct.Boundary.Contact{1};
+FEB_struct.Boundary.Contact{2}.Surfaces.elements={Eq2,Fc2};
+
+FEB_struct.Boundary.Contact{3}=FEB_struct.Boundary.Contact{1};
+FEB_struct.Boundary.Contact{3}.Surfaces.elements={Eq3,Fc3};
+
+FEB_struct.Boundary.Contact{4}=FEB_struct.Boundary.Contact{1};
+FEB_struct.Boundary.Contact{4}.Surfaces.elements={Eq4,Fc4};
+
+<span class="comment">%Adding output requests</span>
+FEB_struct.Output.VarTypes={<span class="string">'displacement'</span>,<span class="string">'stress'</span>,<span class="string">'relative volume'</span>,<span class="string">'shell thickness'</span>,<span class="string">'contact force'</span>,<span class="string">'reaction forces'</span>};
+
+<span class="comment">%Specify log file output</span>
+run_output_name_disp=[FEB_struct.run_filename(1:end-4),<span class="string">'_node_out.txt'</span>];
+run_output_name_force=[FEB_struct.run_filename(1:end-4),<span class="string">'_force_out.txt'</span>];
+FEB_struct.run_output_names={run_output_name_disp,run_output_name_force};
+FEB_struct.output_types={<span class="string">'node_data'</span>,<span class="string">'rigid_body_data'</span>};
+FEB_struct.data_types={<span class="string">'ux;uy;uz'</span>,<span class="string">'Fx;Fy;Fz'</span>};
+
+<span class="comment">%Load curves</span>
+FEB_struct.LoadData.LoadCurves.id=[1 2];
+FEB_struct.LoadData.LoadCurves.type={<span class="string">'linear'</span>,<span class="string">'linear'</span>};
+FEB_struct.LoadData.LoadCurves.loadPoints={[0 0;1 1];[0 0;1 0;2 1];};
+</pre><h2>SAVING .FEB FILE<a name="13"></a></h2><pre class="codeinput">FEB_struct.disp_opt=0; <span class="comment">%Display waitbars option</span>
+febStruct2febFile_v1p2(FEB_struct);
+</pre><pre class="codeoutput"> 
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+--- Writing FEBio XML object --- 01-Feb-2016 13:46:47
+Adding Module level
+Adding Globals level
+Adding Material level
+Adding Geometry level
+----&gt; Adding node field
+----&gt; Adding element field
+----&gt; Adding quad4 element entries....
+----&gt; Adding quad4 element entries....
+----&gt; Adding quad4 element entries....
+----&gt; Adding quad4 element entries....
+----&gt; Adding hex8 element entries....
+----&gt; Adding element data field
+----&gt; MatAxis data entries found
+Adding Output level
+----&gt; Adding plotfile field
+----&gt; Adding logfile field
+Adding Boundary level
+----&gt; Defining contact
+----&gt; Setting contact parameters
+----&gt; Adding MASTER contact element entries
+----&gt; Adding SLAVE contact element entries
+----&gt; Setting contact parameters
+----&gt; Adding MASTER contact element entries
+----&gt; Adding SLAVE contact element entries
+----&gt; Setting contact parameters
+----&gt; Adding MASTER contact element entries
+----&gt; Adding SLAVE contact element entries
+----&gt; Setting contact parameters
+----&gt; Adding MASTER contact element entries
+----&gt; Adding SLAVE contact element entries
+Adding LoadData level
+----&gt; Defining load curves
+Adding Step level
+----&gt; Adding Control field
+----&gt; Adding Control field
+Writing .feb file
+--- Done --- 01-Feb-2016 13:46:52
+</pre><h2>RUNNING FEBIO JOB<a name="14"></a></h2><pre class="codeinput">FEBioRunStruct.run_filename=FEB_struct.run_filename;
+FEBioRunStruct.run_logname=FEB_struct.run_logname;
+FEBioRunStruct.disp_on=1;
+FEBioRunStruct.disp_log_on=1;
+FEBioRunStruct.runMode=<span class="string">'external'</span>;<span class="comment">%'internal';</span>
+FEBioRunStruct.t_check=0.25; <span class="comment">%Time for checking log file (dont set too small)</span>
+FEBioRunStruct.maxtpi=1e99; <span class="comment">%Max analysis time</span>
+FEBioRunStruct.maxLogCheckTime=3; <span class="comment">%Max log file checking time</span>
+
+[runFlag]=runMonitorFEBio(FEBioRunStruct);<span class="comment">%START FEBio NOW!!!!!!!!</span>
+</pre><pre class="codeoutput"> 
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+--- STARTING FEBIO JOB --- 01-Feb-2016 13:46:52
+Waiting for log file...
+Proceeding to check log file...01-Feb-2016 13:46:54
+------- converged at time : 0.1
+------- converged at time : 0.2
+------- converged at time : 0.3
+------- converged at time : 0.374538
+------- converged at time : 0.433468
+------- converged at time : 0.487264
+------- converged at time : 0.54106
+------- converged at time : 0.60031
+------- converged at time : 0.664369
+------- converged at time : 0.732671
+------- converged at time : 0.804714
+------- converged at time : 0.880057
+------- converged at time : 0.958311
+------- converged at time : 1
+------- converged at time : 1.1
+------- converged at time : 1.2
+------- converged at time : 1.3
+------- converged at time : 1.4
+------- converged at time : 1.5
+------- converged at time : 1.6
+------- converged at time : 1.7
+------- converged at time : 1.8
+------- converged at time : 1.9
+------- converged at time : 2
+--- Done --- 01-Feb-2016 13:47:14
+</pre><h2>IMPORTING NODAL DISPLACEMENT RESULTS<a name="15"></a></h2><p>Importing nodal displacements from a log file</p><pre class="codeinput">[~, N_disp_mat,~]=importFEBio_logfile(FEB_struct.run_output_names{1}); <span class="comment">%Nodal displacements</span>
+
+DN=N_disp_mat(:,2:end,end); <span class="comment">%Final nodal displacements</span>
+</pre><h2>CREATING NODE SET IN DEFORMED STATE<a name="16"></a></h2><pre class="codeinput">VT_def=VT+DN;
+DN_magnitude=sqrt(sum(DN.^2,2));
+</pre><pre class="codeoutput error">Error using +
+Matrix dimensions must agree.
+Error in DEMO_FEBio_strip_multi_step_clamp_contact (line 492)
+VT_def=VT+DN;</pre><p>Plotting the deformed model</p><pre class="codeinput">[CF]=vertexToFaceMeasure(F,DN_magnitude);
+
+hf1=cFigure;
+title(<span class="string">'The deformed model'</span>,<span class="string">'FontSize'</span>,fontSize);
+xlabel(<span class="string">'X'</span>,<span class="string">'FontSize'</span>,fontSize); ylabel(<span class="string">'Y'</span>,<span class="string">'FontSize'</span>,fontSize); zlabel(<span class="string">'Z'</span>,<span class="string">'FontSize'</span>,fontSize); hold <span class="string">on</span>;
+
+hps=patch(<span class="string">'Faces'</span>,F,<span class="string">'Vertices'</span>,VT_def,<span class="string">'FaceColor'</span>,<span class="string">'flat'</span>,<span class="string">'CData'</span>,CF);
+
+view(3); axis <span class="string">tight</span>;  axis <span class="string">equal</span>;  grid <span class="string">on</span>;
+colormap <span class="string">jet</span>; colorbar;
+<span class="comment">% camlight headlight;</span>
+set(gca,<span class="string">'FontSize'</span>,fontSize);
+drawnow;
+</pre><p><img vspace="5" hspace="5" src="gibbVerySmall.gif" alt=""> </p><p><i><b>GIBBON</b></i> <a href="www.gibboncode.org">www.gibboncode.org</a></p><p><i>Kevin Mattheus Moerman</i>, <a href="gibbon.toolbox@gmail.com">gibbon.toolbox@gmail.com</a></p><p class="footer"><br><a href="http://www.mathworks.com/products/matlab/">Published with MATLAB&reg; R2016a</a><br></p></div><!--
+##### SOURCE BEGIN #####
+%% DEMO_FEBio_strip_multi_step_clamp_contact
+% Below is a demonstration for: 
+% 1) The creation of an FEBio model for clamped tensile testing
+% 2) The use of multiple steps
+% 4) Running an FEBio job with MATLAB
+% 5) Importing FEBio results into MATLAB
+
+%%
+
+clear; close all; clc;
+
+%%
+% Plot settings
+fontSize=15;
+faceAlpha1=0.5;
+faceAlpha2=1;
+edgeColor=0.25*ones(1,3);
+edgeWidth=1.5;
+markerSize=50;
+
+%%
+% Control parameters
+
+% path names
+filePath=mfilename('fullpath');
+savePath=fullfile(fileparts(filePath),'data','temp');
+
+modelName=fullfile(savePath,'tempModel');
+
+pointspacing=0.75; 
+
+%Specifying dimensions and number of elements
+sampleWidth=10;
+numElementsWidth=round(sampleWidth/pointspacing);
+numElementsWidth=numElementsWidth+iseven(numElementsWidth); %Force uneven so there is a middle element
+elementSizeWidth=sampleWidth/numElementsWidth;
+
+sampleThickness=1.65; 
+numElementsThickness=round(sampleThickness/pointspacing)+1;
+
+sampleGripGripHeight=20;
+numElementsGripGripHeight=round(sampleGripGripHeight/pointspacing);
+numElementsGripGripHeight=numElementsGripGripHeight+iseven(numElementsGripGripHeight); %Force uneven so there is a middle element
+
+sampleClampedHeight=8;
+numElementsClampedHeight=round(sampleClampedHeight/pointspacing);
+elementSizeClamped=sampleClampedHeight/numElementsClampedHeight;
+
+contactOverlap=3;
+
+contactInitialOffset=0.1;
+clampCompressiveStrain=0.375;
+clampCompressiveDisplacement=(sampleThickness.*clampCompressiveStrain)/2;
+tensileStretch=1.1;
+clampTensionDisplacement=(sampleGripGripHeight.*tensileStretch)-sampleGripGripHeight;
+
+contactType=1; %1=sticky, 2=sliding/friction
+
+%% CREATING 3 MESHED BOXES
+
+%Create box 1
+boxDim=[sampleWidth sampleThickness sampleClampedHeight]; %Dimensions
+boxEl=[numElementsWidth numElementsThickness numElementsClampedHeight]; %Number of elements
+[box1]=hexMeshBox(boxDim,boxEl);
+E1=box1.E;
+V1=box1.V;
+F1=box1.F;
+Fb1=box1.Fb;
+faceBoundaryMarker1=box1.faceBoundaryMarker;
+
+%Create box 3 by copying the first
+E3=E1; 
+V3=V1; 
+F3=F1;
+Fb3=Fb1;
+faceBoundaryMarker3=faceBoundaryMarker1;
+
+%Shift first box up
+V1(:,3)=V1(:,3)+sampleGripGripHeight/2+sampleClampedHeight/2;
+
+%Shift third box down
+V3(:,3)=V3(:,3)-sampleGripGripHeight/2-sampleClampedHeight/2;
+
+%Create box 1
+boxDim=[sampleWidth sampleThickness sampleGripGripHeight]; %Dimensions
+boxEl=[numElementsWidth numElementsThickness numElementsGripGripHeight]; %Number of elements
+[box2]=hexMeshBox(boxDim,boxEl);
+E2=box2.E;
+V2=box2.V;
+F2=box2.F;
+Fb2=box2.Fb;
+faceBoundaryMarker2=box2.faceBoundaryMarker;
+
+%%
+% Plotting surface models
+hf=cFigure;
+title('Box sets','FontSize',fontSize);
+xlabel('X','FontSize',fontSize); ylabel('Y','FontSize',fontSize); zlabel('Z','FontSize',fontSize);
+hold on;
+patch('Faces',Fb1,'Vertices',V1,'FaceColor','flat','CData',faceBoundaryMarker1,'FaceAlpha',faceAlpha1,'lineWidth',edgeWidth,'edgeColor',edgeColor);
+patch('Faces',Fb2,'Vertices',V2,'FaceColor','flat','CData',faceBoundaryMarker2,'FaceAlpha',faceAlpha1,'lineWidth',edgeWidth,'edgeColor',edgeColor);
+patch('Faces',Fb3,'Vertices',V3,'FaceColor','flat','CData',faceBoundaryMarker3,'FaceAlpha',faceAlpha1,'lineWidth',edgeWidth,'edgeColor',edgeColor);
+
+colormap(jet(6)); colorbar; 
+set(gca,'FontSize',fontSize);
+view(3); axis tight;  axis equal;  grid on;
+camlight headlight;
+drawnow; 
+
+%% MERGING BOX SETS
+
+faceBoundaryMarker_all=[faceBoundaryMarker1; faceBoundaryMarker2; faceBoundaryMarker3;];
+faceBoundaryMarker_ind=[ones(size(Fb1,1),1);2*ones(size(Fb2,1),1); 3*ones(size(Fb3,1),1);];
+
+V=[V1;V2;V3];
+E=[E1;E2+size(V1,1);E3+size(V1,1)+size(V2,1)];
+F=[F1;F2+size(V1,1);F3+size(V1,1)+size(V2,1)];
+Fb=[Fb1;Fb2+size(V1,1);Fb3+size(V1,1)+size(V2,1)];
+
+[~,ind1,ind2]=unique(pround(V,5),'rows');
+V=V(ind1,:);
+E=ind2(E);
+F=ind2(F);
+Fb=ind2(Fb);
+
+%%
+% Plotting surface models
+hf=cFigure;
+title('Merged box sets','FontSize',fontSize);
+xlabel('X','FontSize',fontSize); ylabel('Y','FontSize',fontSize); zlabel('Z','FontSize',fontSize);
+hold on;
+patch('Faces',Fb,'Vertices',V,'FaceColor','flat','CData',faceBoundaryMarker_all,'FaceAlpha',1,'lineWidth',edgeWidth,'edgeColor',edgeColor);
+colormap(jet(6)); colorbar; 
+set(gca,'FontSize',fontSize);
+view(3); axis tight;  axis equal;  grid on;
+drawnow; 
+
+%% Create grip models
+
+%Get edge lengths of model
+% [D]=patchEdgeLengths(Fb,V);
+% elementSizeRigid=min(D)/2;
+
+elementSizeRigid=min(elementSizeClamped,elementSizeWidth)/2;
+
+nX=round((2*sampleWidth+2*contactOverlap)/elementSizeRigid);
+xRange=linspace(-(sampleWidth/2)-contactOverlap,(sampleWidth/2)+contactOverlap,nX);
+
+nZ=round((sampleClampedHeight+contactOverlap)/elementSizeRigid);
+zRange=linspace(0,sampleClampedHeight+contactOverlap,nZ);
+
+[Xr,Zr]=meshgrid(xRange,zRange); %mesh of single slice
+[Fr,Vr,~] = surf2patch(Xr,zeros(size(Xr)),Zr,zeros(size(Xr))); %Convert to patch data (quadrilateral faces)
+
+%Create off set rigid parts
+Fr1=fliplr(Fr);
+Vr1=Vr;
+Vr1(:,3)=Vr1(:,3)+sampleGripGripHeight/2;
+Vr1(:,2)=Vr1(:,2)-sampleThickness/2-contactInitialOffset;
+
+Fr2=Fr;
+Vr2=Vr;
+Vr2(:,3)=Vr2(:,3)+sampleGripGripHeight/2;
+Vr2(:,2)=Vr2(:,2)+sampleThickness/2+contactInitialOffset;
+
+Fr3=Fr;
+Vr3=-Vr1;
+
+Fr4=fliplr(Fr);
+Vr4=-Vr2;
+
+%%
+% Plotting surface models
+hf=cFigure;
+title('Sample with rigid body clamps','FontSize',fontSize);
+xlabel('X','FontSize',fontSize); ylabel('Y','FontSize',fontSize); zlabel('Z','FontSize',fontSize);
+hold on;
+patch('Faces',F,'Vertices',V,'FaceColor',0.5*ones(1,3),'FaceAlpha',1,'lineWidth',edgeWidth,'edgeColor',edgeColor);
+
+patch('Faces',Fr1,'Vertices',Vr1,'FaceColor','r','FaceAlpha',faceAlpha1,'lineWidth',edgeWidth,'edgeColor',edgeColor);
+[hp]=patchNormPlot(Fr1,Vr1,2);
+patch('Faces',Fr2,'Vertices',Vr2,'FaceColor','g','FaceAlpha',faceAlpha1,'lineWidth',edgeWidth,'edgeColor',edgeColor);
+[hp]=patchNormPlot(Fr2,Vr2,2);
+patch('Faces',Fr3,'Vertices',Vr3,'FaceColor','b','FaceAlpha',faceAlpha1,'lineWidth',edgeWidth,'edgeColor',edgeColor);
+[hp]=patchNormPlot(Fr3,Vr3,2);
+patch('Faces',Fr4,'Vertices',Vr4,'FaceColor','y','FaceAlpha',faceAlpha1,'lineWidth',edgeWidth,'edgeColor',edgeColor);
+[hp]=patchNormPlot(Fr4,Vr4,2);
+set(gca,'FontSize',fontSize);
+
+view(3); axis tight;  axis equal;  grid on;
+drawnow; 
+
+%% Define contact surfaces
+
+logicContactSurf1=faceBoundaryMarker_all==3 & faceBoundaryMarker_ind==1;
+Fc1=Fb(logicContactSurf1,:);
+
+logicContactSurf2=faceBoundaryMarker_all==4 & faceBoundaryMarker_ind==1;
+Fc2=Fb(logicContactSurf2,:);
+
+logicContactSurf3=faceBoundaryMarker_all==4 & faceBoundaryMarker_ind==3;
+Fc3=Fb(logicContactSurf3,:);
+
+logicContactSurf4=faceBoundaryMarker_all==3 & faceBoundaryMarker_ind==3;
+Fc4=Fb(logicContactSurf4,:);
+
+% Plotting surface models
+hf=cFigure;
+title('Contact sets','FontSize',fontSize);
+xlabel('X','FontSize',fontSize); ylabel('Y','FontSize',fontSize); zlabel('Z','FontSize',fontSize);
+hold on;
+patch('Faces',Fc1,'Vertices',V,'FaceColor','r','FaceAlpha',1,'lineWidth',edgeWidth,'edgeColor',edgeColor);
+[hp]=patchNormPlot(Fc1,V,2);
+patch('Faces',Fc2,'Vertices',V,'FaceColor','g','FaceAlpha',1,'lineWidth',edgeWidth,'edgeColor',edgeColor);
+[hp]=patchNormPlot(Fc2,V,2);
+patch('Faces',Fc3,'Vertices',V,'FaceColor','b','FaceAlpha',1,'lineWidth',edgeWidth,'edgeColor',edgeColor);
+[hp]=patchNormPlot(Fc3,V,2);
+patch('Faces',Fc4,'Vertices',V,'FaceColor','y','FaceAlpha',1,'lineWidth',edgeWidth,'edgeColor',edgeColor);
+[hp]=patchNormPlot(Fc4,V,2);
+
+patch('Faces',Fr1,'Vertices',Vr1,'FaceColor','r','FaceAlpha',faceAlpha1,'lineWidth',edgeWidth,'edgeColor',edgeColor);
+patch('Faces',Fr2,'Vertices',Vr2,'FaceColor','g','FaceAlpha',faceAlpha1,'lineWidth',edgeWidth,'edgeColor',edgeColor);
+patch('Faces',Fr3,'Vertices',Vr3,'FaceColor','b','FaceAlpha',faceAlpha1,'lineWidth',edgeWidth,'edgeColor',edgeColor);
+patch('Faces',Fr4,'Vertices',Vr4,'FaceColor','y','FaceAlpha',faceAlpha1,'lineWidth',edgeWidth,'edgeColor',edgeColor);
+
+set(gca,'FontSize',fontSize);
+
+view(3); axis tight;  axis equal;  grid on;
+drawnow; 
+
+
+%% Collect node sets
+
+VT=[V; Vr1; Vr2; Vr3; Vr4];
+
+%Fix rigid model node indices
+Eq1=Fr1+size(V,1);
+Eq2=Fr2+size(V,1)+size(Vr1,1);
+Eq3=Fr3+size(V,1)+size(Vr1,1)+size(Vr2,1);
+Eq4=Fr4+size(V,1)+size(Vr1,1)+size(Vr2,1)+size(Vr3,1);
+
+bcPrescribeListRB1=unique(Eq1(:));
+bcPrescribeMagnitudesRB1=zeros(1,3);
+bcPrescribeMagnitudesRB1(:,1)=0;
+bcPrescribeMagnitudesRB1(:,2)=clampCompressiveDisplacement+contactInitialOffset; %In step 1
+bcPrescribeMagnitudesRB1(:,3)=clampTensionDisplacement; %In step 2
+
+bcPrescribeListRB2=unique(Eq2(:));
+bcPrescribeMagnitudesRB2=zeros(1,3);
+bcPrescribeMagnitudesRB2(:,1)=0;
+bcPrescribeMagnitudesRB2(:,2)=-clampCompressiveDisplacement-contactInitialOffset; %In step 1
+bcPrescribeMagnitudesRB2(:,3)=clampTensionDisplacement; %In step 2
+
+bcPrescribeListRB3=unique(Eq3(:));
+bcPrescribeMagnitudesRB3=zeros(1,3);
+bcPrescribeMagnitudesRB3(:,1)=0;
+bcPrescribeMagnitudesRB3(:,2)=-clampCompressiveDisplacement-contactInitialOffset; %In step 1
+bcPrescribeMagnitudesRB3(:,3)=0; %In step 2
+
+bcPrescribeListRB4=unique(Eq4(:));
+bcPrescribeMagnitudesRB4=zeros(1,3);
+bcPrescribeMagnitudesRB4(:,1)=0;
+bcPrescribeMagnitudesRB4(:,2)=clampCompressiveDisplacement+contactInitialOffset; %In step 1
+bcPrescribeMagnitudesRB4(:,3)=0; %In step 2
+
+% Plotting surface models
+hf=cFigure;
+title('Complete model','FontSize',fontSize);
+xlabel('X','FontSize',fontSize); ylabel('Y','FontSize',fontSize); zlabel('Z','FontSize',fontSize);
+hold on;
+
+patch('Faces',F,'Vertices',VT,'FaceColor',0.5*ones(1,3),'FaceAlpha',1,'lineWidth',edgeWidth,'edgeColor',edgeColor);
+
+patch('Faces',Eq1,'Vertices',VT,'FaceColor','r','FaceAlpha',faceAlpha1,'lineWidth',edgeWidth,'edgeColor',edgeColor);
+patch('Faces',Eq2,'Vertices',VT,'FaceColor','g','FaceAlpha',faceAlpha1,'lineWidth',edgeWidth,'edgeColor',edgeColor);
+patch('Faces',Eq3,'Vertices',VT,'FaceColor','b','FaceAlpha',faceAlpha1,'lineWidth',edgeWidth,'edgeColor',edgeColor);
+patch('Faces',Eq4,'Vertices',VT,'FaceColor','y','FaceAlpha',faceAlpha1,'lineWidth',edgeWidth,'edgeColor',edgeColor);
+
+set(gca,'FontSize',fontSize);
+
+view(3); axis tight;  axis equal;  grid on;
+drawnow; 
+
+%% CONSTRUCTING FEB MODEL
+
+% Defining file names
+FEB_struct.run_filename=[modelName,'.feb']; %FEB file name
+FEB_struct.run_logname=[modelName,'.txt']; %FEBio log file name
+
+%Creating FEB_struct
+FEB_struct.Geometry.Nodes=VT;
+FEB_struct.Geometry.Elements={Eq1 Eq2 Eq3 Eq4 E}; %The element sets
+FEB_struct.Geometry.ElementType={'quad4','quad4','quad4','quad4','hex8'}; %The element types
+FEB_struct.Geometry.ElementMat={[1*ones(1,size(Eq1,1))]; [2*ones(1,size(Eq2,1))]; [3*ones(1,size(Eq3,1))]; [4*ones(1,size(Eq4,1))]; [5*ones(1,size(E,1))];};
+
+%Adding fibre direction, construct local orthonormal basis vectors
+Vf_E=zeros(size(E,1),3);
+Vf_E(:,3)=1; %Z-axis fibres
+% Vf_E(:,1)=1; %X-axis fibres
+[a,d]=vectorOrthogonalPair(Vf_E);
+
+VF_E=nan(size(Vf_E,1),size(Vf_E,2),2);
+VF_E(:,:,1)=a; %a1 ~ e1 ~ X or first direction
+VF_E(:,:,2)=d; %a2 ~ e2 ~ Y or second direction
+%Vf_E %a3 ~ e3 ~ Z, third direction, or fibre direction
+
+FEB_struct.Geometry.ElementData.MatAxis.ElementIndices=size(Eq1,1)+size(Eq2,1)+size(Eq3,1)+size(Eq4,1)+(1:1:size(E,1));
+FEB_struct.Geometry.ElementData.MatAxis.Basis=VF_E;
+
+% DEFINING MATERIALS
+
+%Rigid materials
+Mat1.type='rigid body';
+Mat1.props={'density','center_of_mass'};
+Mat1.vals={1,[0,0,0]};
+Mat1.aniso_type='none';
+
+Mat2.type='rigid body';
+Mat2.props={'density','center_of_mass'};
+Mat2.vals={1,[0,0,0]};
+Mat2.aniso_type='none';
+
+Mat3.type='rigid body';
+Mat3.props={'density','center_of_mass'};
+Mat3.vals={1,[0,0,0]};
+Mat3.aniso_type='none';
+
+Mat4.type='rigid body';
+Mat4.props={'density','center_of_mass'};
+Mat4.vals={1,[0,0,0]};
+Mat4.aniso_type='none';
+
+% c1=1e-3;
+% k=c1*100;
+% Mat5.type='Mooney-Rivlin';
+% Mat5.props={'c1','c2','k'};
+% Mat5.vals={c1,0,k};
+% Mat5.aniso_type='none';
+
+c1=2.309;
+m1=9.421;
+ksi=22.499;
+beta=2.387;
+k=(0.5.*(c1+ksi))*100;% 20;
+Mat5.type='uncoupled solid mixture';
+Mat51.type='Ogden';
+Mat51.props={'c1','m1','k'};
+Mat51.vals={c1,m1,k};
+Mat51.aniso_type='none';
+Mat52.type='fiber-exp-pow-uncoupled';
+Mat52.props={'ksi','alpha','beta','theta','phi','k'};
+Mat52.vals={ksi,1e-25,beta,0,0,k};
+Mat52.aniso_type='none';
+Mat5.Mats={Mat51 Mat52};
+
+FEB_struct.Materials={Mat1 Mat2 Mat3 Mat4 Mat5};
+
+
+%Step specific BC's
+% FEB_struct.Step(1).Boundary.PrescribeList={bcPrescribeList,bcPrescribeList,bcPrescribeList};
+% FEB_struct.Step(1).Boundary.PrescribeType={'x','y','z'};
+% FEB_struct.Step(1).Boundary.PrescribeValues={bcPrescribedMagnitudesStep1(:,1),bcPrescribedMagnitudesStep1(:,2),bcPrescribedMagnitudesStep1(:,3)};
+% FEB_struct.Step(1).Boundary.PrescribeTypes={'relative','relative','relative'};
+% FEB_struct.Step(1).Boundary.LoadCurveIds=[1 1 1];
+% 
+% FEB_struct.Step(2).Boundary.PrescribeList={bcPrescribeList,bcPrescribeList,bcPrescribeList};
+% FEB_struct.Step(2).Boundary.PrescribeType={'x','y','z'};
+% FEB_struct.Step(2).Boundary.PrescribeValues={bcPrescribedMagnitudesStep2(:,1),bcPrescribedMagnitudesStep2(:,2),bcPrescribedMagnitudesStep2(:,3)};
+% FEB_struct.Step(2).Boundary.PrescribeTypes={'relative','relative','relative'};
+% FEB_struct.Step(2).Boundary.LoadCurveIds=[2 2 2];
+
+%Step specific control sections
+FEB_struct.Step(1).Control.AnalysisType='static';
+FEB_struct.Step(1).Control.Properties={'time_steps','step_size',...
+    'max_refs','max_ups',...
+    'dtol','etol','rtol','lstol'};
+FEB_struct.Step(1).Control.Values={10,0.1,...
+    25,0,...
+    0.001,0.01,0,0.9};
+FEB_struct.Step(1).Control.TimeStepperProperties={'dtmin','dtmax','max_retries','opt_iter','aggressiveness'};
+FEB_struct.Step(1).Control.TimeStepperValues={1e-5, 0.1, 5, 5, 1};
+
+FEB_struct.Step(2).Control=FEB_struct.Step(1).Control;
+
+%Constraint section
+FEB_struct.Constraints(1).RigidId=1;
+FEB_struct.Constraints(1).Properties={'trans_x','trans_y','trans_z','rot_x','rot_y','rot_z'};
+FEB_struct.Constraints(1).Values={bcPrescribeMagnitudesRB1(1),bcPrescribeMagnitudesRB1(2),bcPrescribeMagnitudesRB1(3),0,0,0};
+FEB_struct.Constraints(1).LoadCurveIds=[1 1 2 1 1 1];
+FEB_struct.Constraints(1).Type='prescribed';
+
+FEB_struct.Constraints(2).RigidId=2;
+FEB_struct.Constraints(2).Properties={'trans_x','trans_y','trans_z','rot_x','rot_y','rot_z'};
+FEB_struct.Constraints(2).Values={bcPrescribeMagnitudesRB2(1),bcPrescribeMagnitudesRB2(2),bcPrescribeMagnitudesRB2(3),0,0,0};
+FEB_struct.Constraints(2).LoadCurveIds=[1 1 2 1 1 1];
+FEB_struct.Constraints(2).Type='prescribed';
+
+FEB_struct.Constraints(3).RigidId=3;
+FEB_struct.Constraints(3).Properties={'trans_x','trans_y','trans_z','rot_x','rot_y','rot_z'};
+FEB_struct.Constraints(3).Values={bcPrescribeMagnitudesRB3(1),bcPrescribeMagnitudesRB3(2),bcPrescribeMagnitudesRB3(3),0,0,0};
+FEB_struct.Constraints(3).LoadCurveIds=[1 1 2 1 1 1];
+FEB_struct.Constraints(3).Type='prescribed';
+
+FEB_struct.Constraints(4).RigidId=4;
+FEB_struct.Constraints(4).Properties={'trans_x','trans_y','trans_z','rot_x','rot_y','rot_z'};
+FEB_struct.Constraints(4).Values={bcPrescribeMagnitudesRB4(1),bcPrescribeMagnitudesRB4(2),bcPrescribeMagnitudesRB4(3),0,0,0};
+FEB_struct.Constraints(4).LoadCurveIds=[1 1 2 1 1 1];
+FEB_struct.Constraints(4).Type='prescribed';
+
+%Adding contact information
+FEB_struct.Boundary.Contact{1}.Surfaces.elements={Eq1,Fc1};
+FEB_struct.Boundary.Contact{1}.Surfaces.Type={'master','slave'};
+switch contactType
+    case 1 %STICKY
+        %           <contact type="sticky">
+        % 			<laugon>0</laugon>
+        % 			<tolerance>0.2</tolerance>
+        % 			<penalty>1</penalty>
+        % 			<minaug>0</minaug>
+        % 			<maxaug>10</maxaug>
+        
+        FEB_struct.Boundary.Contact{1}.Type='sticky';
+        FEB_struct.Boundary.Contact{1}.Properties={'laugon','tolerance','penalty',...
+            'minaug','maxaug'};
+        FEB_struct.Boundary.Contact{1}.Values={0,0.05,(0.5.*(c1+ksi))*100,...
+            0,10};
+    case 2 %SLIDING/FRICTION
+        FEB_struct.Boundary.Contact{1}.Type='sliding_with_gaps';
+        FEB_struct.Boundary.Contact{1}.Properties={'penalty','auto_penalty','two_pass',...
+            'laugon','tolerance',...
+            'gaptol','minaug','maxaug',...
+            'fric_coeff','fric_penalty',...
+            'seg_up',...
+            'search_tol'};
+        FEB_struct.Boundary.Contact{1}.Values={50,0,0,...
+            0,0.1,...
+            0,0,10,...
+            1,1000,...
+            0,...
+            0.01};
+end
+
+FEB_struct.Boundary.Contact{2}=FEB_struct.Boundary.Contact{1};
+FEB_struct.Boundary.Contact{2}.Surfaces.elements={Eq2,Fc2};
+
+FEB_struct.Boundary.Contact{3}=FEB_struct.Boundary.Contact{1};
+FEB_struct.Boundary.Contact{3}.Surfaces.elements={Eq3,Fc3};
+
+FEB_struct.Boundary.Contact{4}=FEB_struct.Boundary.Contact{1};
+FEB_struct.Boundary.Contact{4}.Surfaces.elements={Eq4,Fc4};
+
+%Adding output requests
+FEB_struct.Output.VarTypes={'displacement','stress','relative volume','shell thickness','contact force','reaction forces'};
+
+%Specify log file output
+run_output_name_disp=[FEB_struct.run_filename(1:end-4),'_node_out.txt'];
+run_output_name_force=[FEB_struct.run_filename(1:end-4),'_force_out.txt'];
+FEB_struct.run_output_names={run_output_name_disp,run_output_name_force};
+FEB_struct.output_types={'node_data','rigid_body_data'};
+FEB_struct.data_types={'ux;uy;uz','Fx;Fy;Fz'};
+
+%Load curves
+FEB_struct.LoadData.LoadCurves.id=[1 2];
+FEB_struct.LoadData.LoadCurves.type={'linear','linear'};
+FEB_struct.LoadData.LoadCurves.loadPoints={[0 0;1 1];[0 0;1 0;2 1];};
+
+%% SAVING .FEB FILE
+
+FEB_struct.disp_opt=0; %Display waitbars option
+febStruct2febFile_v1p2(FEB_struct);
+
+%% RUNNING FEBIO JOB
+
+FEBioRunStruct.run_filename=FEB_struct.run_filename;
+FEBioRunStruct.run_logname=FEB_struct.run_logname;
+FEBioRunStruct.disp_on=1;
+FEBioRunStruct.disp_log_on=1;
+FEBioRunStruct.runMode='external';%'internal';
+FEBioRunStruct.t_check=0.25; %Time for checking log file (dont set too small)
+FEBioRunStruct.maxtpi=1e99; %Max analysis time
+FEBioRunStruct.maxLogCheckTime=3; %Max log file checking time
+
+[runFlag]=runMonitorFEBio(FEBioRunStruct);%START FEBio NOW!!!!!!!!
+
+%% IMPORTING NODAL DISPLACEMENT RESULTS
+% Importing nodal displacements from a log file
+[~, N_disp_mat,~]=importFEBio_logfile(FEB_struct.run_output_names{1}); %Nodal displacements
+
+DN=N_disp_mat(:,2:end,end); %Final nodal displacements
+
+%% CREATING NODE SET IN DEFORMED STATE
+VT_def=VT+DN;
+DN_magnitude=sqrt(sum(DN.^2,2));
+
+%%
+% Plotting the deformed model
+
+[CF]=vertexToFaceMeasure(F,DN_magnitude);
+
+hf1=cFigure;
+title('The deformed model','FontSize',fontSize);
+xlabel('X','FontSize',fontSize); ylabel('Y','FontSize',fontSize); zlabel('Z','FontSize',fontSize); hold on;
+
+hps=patch('Faces',F,'Vertices',VT_def,'FaceColor','flat','CData',CF);
+
+view(3); axis tight;  axis equal;  grid on;
+colormap jet; colorbar;
+% camlight headlight;
+set(gca,'FontSize',fontSize);
+drawnow;
+
+%% 
+%
+% <<gibbVerySmall.gif>>
+% 
+% _*GIBBON*_ 
+% <www.gibboncode.org>
+% 
+% _Kevin Mattheus Moerman_, <gibbon.toolbox@gmail.com>
+
+##### SOURCE END #####
+--></body></html>
