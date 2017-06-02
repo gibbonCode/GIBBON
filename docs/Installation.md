@@ -6,41 +6,32 @@ header-img: "img/home-bg.jpg"
 ---
 
 #### Table of content
-* [Getting GIBBON](#GettingGIBBON)
-  * [GitHub and GIT](#git)
-  * [Direct download](#direct)
+* [Download](#Download)  
 * [Installation](#Installation)
-  * [Setting up GIBBON](#setup)
-  * [Setting up third party packages](#3rdparties)
 
 ***
 
-# Getting GIBBON <a name="GettingGIBBON"></a>
-To stay up to date with new developments it is recommended to keep up with the latest version on the GitHub repository by setting up git. Alternatively users may download a zipfile directly.
+# Download <a name="Download"></a>
 
-### GitHub and GIT <a name="git"></a>
-GIBBON is hosted on [this](https://github.com/gibbonCode/GIBBON) GitHub repository.  
-[![Download](img/gibbon_github.png){:height="150px"}](https://github.com/gibbonCode/GIBBON)
+|[Setup GIT/GitHub (recommended)](https://github.com/gibbonCode/GIBBON)|[Download .zip file directly](https://github.com/gibbonCode/GIBBON/archive/master.zip)|
+|:-|-:|
+|[![Github repository](img/gibbon_github.png){:height="125px"}](https://github.com/gibbonCode/GIBBON)|[![Download](img/gibbonDownLoadBox.png){:height="125px"}](https://github.com/gibbonCode/GIBBON/archive/master.zip)|  
 
 ```
 git init
 git clone https://github.com/gibbonCode/GIBBON.git
-```
-
-### Direct download <a name="direct"></a>
-Alternatively download the [.zip file](https://github.com/gibbonCode/GIBBON/archive/master.zip) directly
-
-[![Download](img/gibbonDownLoadBox.png){:height="150px"}](https://github.com/gibbonCode/GIBBON/archive/master.zip)
+```  
+(__New to GIT?__ see these [learning resources](https://help.github.com/articles/git-and-github-learning-resources/) and this [10 min. GIT tutorial](https://try.github.io/levels/1/challenges/1))
 
 # Installation <a name="Installation"></a>  
+### 1. Installing 3rd party packages
+Skip this step if finite element analysis and figure exporting are not required.
 
-#### 1. __Installing 3rd party packages__
-* **FEBio** is the finite element solver used by GIBBON. FEBio is not provided with GIBBON user need to download a desired release from the [FEBio website](http://febio.org/) and install it.    
-* **export_fig**  is a MATLAB library which GIBBON uses for exporting figures. The export_fig library is available through its [gitHub](https://github.com/altmany/export_fig) page (or the [MathWorks file exchange](http://www.mathworks.com/matlabcentral/fileexchange/23629-export-fig)).
-Already bundled with GIBBON:
-* **TetGen** is a tetrahedral meshing package which is provided with GIBBON. If an alternative release is required visit the [TetGen website](http://wias-berlin.de/software/tetgen/), and replace the existing files (in `...\GIBBON\lib_ext\tetGen)` as desired.
+| Package | Purpose | Included? | Download |
+|:--|:--|:--:|--:|
+|[__FEBio__](https://febio.org) <br/> [![FEBio](/img/logos/febioLogo.png){:height="100px"}](https://febio.org)|FEBio is a finite element solver and is used in GIBBON for all finite element analysis. Use of FEBio is featured in many of the `DEMO_FEBio...` files |__No__|[__FEBio website__](https://febio.org) |
+|[__export_fig__](https://github.com/altmany/export_fig) <br/> [![export_fig](/img/logos/export_fig_logo.jpg){:height="100px"}](https://github.com/altmany/export_fig)| <br/> `export_fig` helps to export publication quality images (e.g. .png, .jpg, .pdf, .eps), in GIBBON it is integrated in the export figure widget `efw` to export such images from the `cFigure` window directly. `export_fig` is also used for exporting images for creation of .gif animations with the GIBBON `anim8` function |__No__|[__Get via GitHub__](https://github.com/altmany/export_fig) <br/> <br/> [__Download zip__](https://github.com/altmany/export_fig/archive/master.zip)|
+|<br/> [__TetGen__]() <br/> [![tetGen](/img/logos/tetgenLogo.gif){:height="100px"}](http://wias-berlin.de/software/tetgen/)| <br/> Is used for tetrahedral meshing (and possibly constrained 3D Delaunay tessellation). See for instance `HELP_runTetGen.m`|__Yes__| For other versions: [__TetGen website__](http://wias-berlin.de/software/tetgen/)|
 
-#### 2. __Run `installGibbon.m`__
-The file can be found here `...\GIBBON\installGibbon.m` and will add the GIBBON, FEBio, and export_fig path definitions to MATLAB, and will also integrate the help and documentation.
-
-#### 3. __Restart MATLAB__
+### 2. Run `installGibbon.m`
+By running `installGibbon.m` the GIBBON, FEBio, and export_fig path definitions will be added and saved to MATLAB. The help and documentation will also be integrated. Once finished you will be asked to __restart MATLAB__. `installGibbon.m` can be found in the main GIBBON folder.

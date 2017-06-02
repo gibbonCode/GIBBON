@@ -6,9 +6,26 @@ description: "Contributors to the project"
 header-img: "img/home-bg.jpg"
 ---
 
-__Dr. Kevin M. Moerman__  
+***  
+[__YOU! Join the team!__](https://github.com/gibbonCode/GIBBON/blob/master/CONTRIBUTING.md)   
+*Developer*  
+Your description, Your affiliation   
+[![You](/img/member_avatars/question-mark.jpg){:width="150px"}](Your link here)   
+[![Email](/img/icons/email_icon.png){:width="25px"}](Email address here)
+[![ORCID](img/icons/orcid.png){:width="25px"}](orcid link here)
+[![Impactstory](img/icons/impactStory.png){:width="25px"}](impactStory link here)
+[![GitHub](img/icons/github-icon.png){:width="25px"}](your github profile link here)
+[![Twitter](img/icons/twitter.png){:width="25px"}](your twitter page here)  
+
+***  
+[__Dr. Kevin M. Moerman__](https://www.kevinmoerman.org)    
 *Founder, lead developer*  
-[![Kevin Moerman](img/member_avatars/kmm_profile_crop.jpg){:width="175px"}](https://www.kevinmoerman.org)  
-[![Kevin M. Moerman's ORCID profile](https://orcid.org/sites/default/files/images/orcid_24x24.png){:height="36px"}](http://orcid.org/0000-0003-3768-4269) [![Kevin M. Moerman's Impactstory profile](https://upload.wikimedia.org/wikipedia/commons/4/4a/Impactstory-logo-2014.png){:height="36px"}](https://www.impactstory.org/u/0000-0003-3768-4269) [![Kevin M. Moerman's LinkedIn profile](https://upload.wikimedia.org/wikipedia/commons/thumb/c/ca/LinkedIn_logo_initials.png/768px-LinkedIn_logo_initials.png){:height="36px"}](https://www.linkedin.com/in/kevin-moerman-98923831) [![Follow @KMMoerman on twitter](https://g.twimg.com/Twitter_logo_blue.png){:height="36px"}](https://twitter.com/KMMoerman)  
-Biomechanical & Design Engineer  
-MIT Media Lab, **[kmoerman@mit.edu](mailto:kmoerman@mit.edu)**
+Biomechanical & Design Engineer, MIT Media Lab   
+[![Kevin Moerman](img/member_avatars/kmm_profile_crop.jpg){:width="150px"}](https://www.kevinmoerman.org)   
+[![Email](/img/icons/email_icon.png){:width="25px"}](mailto:kmoerman@mit.edu)
+[![ORCID](img/icons/orcid.png){:width="25px"}](http://orcid.org/0000-0003-3768-4269)
+[![Impactstory](img/icons/impactStory.png){:width="25px"}](https://www.impactstory.org/u/0000-0003-3768-4269)
+[![GitHub](img/icons/github-icon.png){:width="25px"}](https://github.com/Kevin-Mattheus-Moerman)
+[![Twitter](img/icons/twitter.png){:width="25px"}](https://twitter.com/KMMoerman)  
+
+***
