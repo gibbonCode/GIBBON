@@ -1,5 +1,6 @@
 
-![](/doc/html/gibbonLogo.jpg)
+![](docs/html/gibbonLogo.jpg)   
+Cite GIBBON:  [![Citing](https://zenodo.org/badge/DOI/10.5281/zenodo.44404.svg)](https://doi.org/10.5281/zenodo.44404)  
 
 # Table of contents
 - [Project Summary](#Summary)  
@@ -7,7 +8,7 @@
 - [Getting started](#Start)  
 - [License](#License)  
 - [Contributing](#Contributing)  
-- [CodeOfConduct](#CodeOfConduct)  
+- [Code of conduct](#CodeOfConduct)  
 - [Road Map](#RoadMap)  
 
 ## Project summary <a name="Summary"></a>
@@ -35,7 +36,6 @@ By running `installGibbon.m` the GIBBON, FEBio, and export_fig path definitions 
 
 ![](docs/gif_helpSearch.gif)  
 
-
 ##### Where to find functions and the executable help and demo files
 * The `lib` folder contains all GIBBON's functions and the `lib_ext` contains "external functions" i.e. functions developed by others included with GIBBON. The `docs` folder contains the help&documentation, and demo files which when "published" (using MATLAB's publish functionality) create the .html documentation files (found in `docs/html`) which are integrated in MATLAB.  
 
@@ -44,13 +44,13 @@ By running `installGibbon.m` the GIBBON, FEBio, and export_fig path definitions 
 * Many of the `DEMO_` files focus on the use of FEBio. The demo `DEMO_FEBio_block_uniaxial_compression` for instance features a simple cube that undergoes a 30% compression. Other demos focus on different load types, single versus multi-step analysis, different materials and inverse analysis (e.g. `DEMO_FEBio_iFEA_uniaxial_01`).
 
 ## License <a name="License"></a>
- [BSD-3-Clause](https://github.com/gibbonCode/GIBBON/blob/master/LICENSE)
+[![License](https://img.shields.io/badge/License-BSD%203--Clause-green.svg)](https://github.com/gibbonCode/GIBBON/blob/master/LICENSE)
 
 ## Contributing <a name="Contributing"></a>
-Refer to the [CONTRIBUTING](CONTRIBUTING.md).
+See [CONTRIBUTING](CONTRIBUTING.md)
 
 ## Code of conduct <a name="CodeOfConduct"></a>
-Refer to the [CODE_OF_CONDUCT](CODE_OF_CONDUCT.md).
+See [CODE_OF_CONDUCT](CODE_OF_CONDUCT.md)
 
 ## Roadmap <a name="RoadMap"></a>
 Coming soon
