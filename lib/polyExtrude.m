@@ -1,8 +1,13 @@
 function [F,V]=polyExtrude(Vc,cPar)
 
-%% COMPUTER CURVE LENGTH
+%% COMPUTE CURVE LENGTH
 D=max(pathLength(Vc)); %Compute curve length for point sampling
 numPoints=size(Vc,1);
+
+%% Cope with 2D input
+if size(Vc,2)==2
+    Vc(:,3)=0;
+end
 
 %% PARSE cPar
 

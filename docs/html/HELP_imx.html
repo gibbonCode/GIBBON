@@ -6,7 +6,7 @@
    <!--
 This HTML was auto-generated from MATLAB code.
 To make changes, update the MATLAB code and republish this document.
-      --><title>imx</title><meta name="generator" content="MATLAB 9.1"><link rel="schema.DC" href="http://purl.org/dc/elements/1.1/"><meta name="DC.date" content="2017-04-28"><meta name="DC.source" content="HELP_imx.m"><style type="text/css">
+      --><title>imx</title><meta name="generator" content="MATLAB 9.1"><link rel="schema.DC" href="http://purl.org/dc/elements/1.1/"><meta name="DC.date" content="2017-06-08"><meta name="DC.source" content="HELP_imx.m"><style type="text/css">
 html,body,div,span,applet,object,iframe,h1,h2,h3,h4,h5,h6,p,blockquote,pre,a,abbr,acronym,address,big,cite,code,del,dfn,em,font,img,ins,kbd,q,s,samp,small,strike,strong,sub,sup,tt,var,b,u,i,center,dl,dt,dd,ol,ul,li,fieldset,form,label,legend,table,caption,tbody,tfoot,thead,tr,th,td{margin:0;padding:0;border:0;outline:0;font-size:100%;vertical-align:baseline;background:transparent}body{line-height:1}ol,ul{list-style:none}blockquote,q{quotes:none}blockquote:before,blockquote:after,q:before,q:after{content:'';content:none}:focus{outine:0}ins{text-decoration:none}del{text-decoration:line-through}table{border-collapse:collapse;border-spacing:0}
 
 html { min-height:100%; margin-bottom:1px; }
@@ -67,9 +67,22 @@ table td { padding:7px 5px; text-align:left; vertical-align:top; border:1px soli
 
 
   </style></head><body><div class="content"><h1>imx</h1><!--introduction--><p>Below is a demonstration of the features of the <tt>imx</tt> function</p><!--/introduction--><h2>Contents</h2><div><ul><li><a href="#2">Syntax</a></li><li><a href="#3">Description</a></li><li><a href="#4">Examples</a></li><li><a href="#5">Example: Segmenting MRI data</a></li></ul></div><pre class="codeinput">clear; close <span class="string">all</span>; clc;
-</pre><h2 id="2">Syntax</h2><p><tt>hf=imx(varargin);</tt></p><h2 id="3">Description</h2><p>The <tt>imx</tt> function provides a figure window based GUI for 3D image segmentation</p><h2 id="4">Examples</h2><h2 id="5">Example: Segmenting MRI data</h2><p>Get a 3D image</p><pre class="codeinput">load <span class="string">mri</span>;
-M=squeeze(D); <span class="comment">%example image data set</span>
-v=2./[1,1,.4]; <span class="comment">%example voxel size</span>
+</pre><h2 id="2">Syntax</h2><p><tt>hf=imx(varargin);</tt></p><h2 id="3">Description</h2><p>The <tt>imx</tt> function provides a figure window based GUI for 3D image segmentation</p><h2 id="4">Examples</h2><h2 id="5">Example: Segmenting MRI data</h2><p>Get a 3D image (see als0 <tt>dcmFolder2MATobject</tt> to import DICOM data)</p><pre class="codeinput">testCase=2;
+<span class="keyword">switch</span> testCase
+    <span class="keyword">case</span> 1 <span class="comment">%MATLAB brain data</span>
+        load <span class="string">mri</span>;
+        M=squeeze(D); <span class="comment">%example image data set</span>
+        v=2./[1,1,.4]; <span class="comment">%example voxel size</span>
+    <span class="keyword">case</span> 2 <span class="comment">%MRI imported from DICOM files, see also HELP_dcmFolder2MATobject</span>
+        defaultFolder = fileparts(fileparts(mfilename(<span class="string">'fullpath'</span>))); <span class="comment">%Set main folder</span>
+        pathName=fullfile(defaultFolder,<span class="string">'data'</span>,<span class="string">'DICOM'</span>,<span class="string">'KNEE_UTE'</span>);
+        loadName=fullfile(pathName,<span class="string">'IMDAT'</span>,<span class="string">'IMDAT.mat'</span>);
+
+        IMDAT_struct=load(loadName); <span class="comment">%The image data structure</span>
+        G = IMDAT_struct.G; <span class="comment">%Geometric/spatial information</span>
+        v=G.v; <span class="comment">%The voxel size</span>
+        M= IMDAT_struct.type_1; <span class="comment">%The image data</span>
+<span class="keyword">end</span>
 </pre><p>Start segmentation using <tt>imx</tt></p><pre class="codeinput">hf=imx(M,v);
 </pre><img vspace="5" hspace="5" src="HELP_imx_01.png" alt=""> <p><img vspace="5" hspace="5" src="gibbVerySmall.gif" alt=""> </p><p><i><b>GIBBON</b></i> <a href="www.gibboncode.org">www.gibboncode.org</a></p><p><i>Kevin Mattheus Moerman</i>, <a href="gibbon.toolbox@gmail.com">gibbon.toolbox@gmail.com</a></p><p class="footer"><br><a href="http://www.mathworks.com/products/matlab/">Published with MATLAB&reg; R2016b</a><br></p></div><!--
 ##### SOURCE BEGIN #####
@@ -91,10 +104,23 @@ clear; close all; clc;
 %% Example: Segmenting MRI data
 
 %% 
-% Get a 3D image
-load mri;
-M=squeeze(D); %example image data set
-v=2./[1,1,.4]; %example voxel size
+% Get a 3D image (see als0 |dcmFolder2MATobject| to import DICOM data)
+testCase=2; 
+switch testCase
+    case 1 %MATLAB brain data
+        load mri;
+        M=squeeze(D); %example image data set
+        v=2./[1,1,.4]; %example voxel size
+    case 2 %MRI imported from DICOM files, see also HELP_dcmFolder2MATobject
+        defaultFolder = fileparts(fileparts(mfilename('fullpath'))); %Set main folder
+        pathName=fullfile(defaultFolder,'data','DICOM','KNEE_UTE');
+        loadName=fullfile(pathName,'IMDAT','IMDAT.mat');
+        
+        IMDAT_struct=load(loadName); %The image data structure 
+        G = IMDAT_struct.G; %Geometric/spatial information
+        v=G.v; %The voxel size
+        M= IMDAT_struct.type_1; %The image data
+end
 
 %%
 % Start segmentation using |imx|
@@ -108,6 +134,5 @@ hf=imx(M,v);
 % <www.gibboncode.org>
 % 
 % _Kevin Mattheus Moerman_, <gibbon.toolbox@gmail.com>
-
 ##### SOURCE END #####
 --></body></html>

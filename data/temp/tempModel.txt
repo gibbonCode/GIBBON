@@ -54,18 +54,18 @@
 	Module type .................................... : solid
 	Analysis type .................................. : quasi-static
 	Plane strain mode .............................. : no
-	Number of timesteps ............................ : 10
-	Time step size ................................. : 0.1
+	Number of timesteps ............................ : 20
+	Time step size ................................. : 0.05
 	Auto time stepper activated .................... : yes
 	  Optimal nr of iterations ..................... : 10
-	  Minimum allowable step size .................. : 1e-05
-	  Maximum allowable step size .................. : 0.1
+	  Minimum allowable step size .................. : 0.0005
+	  Maximum allowable step size .................. : 0.05
 	Number of loadcurves ........................... : 1
-	Number of displacement boundary conditions ..... : 1
+	Number of displacement boundary conditions ..... : 2
 	Number of concentrated nodal forces ............ : 0
-	Max nr of stiffness reformations ............... : 15
+	Max nr of stiffness reformations ............... : 25
 	per time steps
-	Max nr of Quasi-Newton iterations .............. : 0
+	Max nr of Quasi-Newton iterations .............. : 5
 	between stiffness matrix reformations
 	Linesearch convergence tolerance ............... : 0.9
 	Minimum line search size ....................... : 0.01
@@ -86,18 +86,29 @@
 		Domain Variables:
 			stress               (type = mat3fs, format = ITEM)
 			relative volume      (type = float, format = ITEM)
-			shell thickness      (type = float, format = COMP)
 
 
  MATERIAL DATA
 ===========================================================================
-  1 - mat_1 (type: uncoupled solid mixture)
+  1 - Block_material (type: Ogden)
 	density ........................................... : 1
-	k ................................................. : 101
+	k ................................................. : 0.1
 	laugon ............................................ : 0
 	atol .............................................. : 0.01
 	minaug ............................................ : 0
 	maxaug ............................................ : 0
+	c1 ................................................ : 0.001
+	c2 ................................................ : 0.001
+	c3 ................................................ : 0
+	c4 ................................................ : 0
+	c5 ................................................ : 0
+	c6 ................................................ : 0
+	m1 ................................................ : 3
+	m2 ................................................ : -3
+	m3 ................................................ : 1
+	m4 ................................................ : 1
+	m5 ................................................ : 1
+	m6 ................................................ : 1
 
 
  LOADCURVE DATA
@@ -114,11 +125,72 @@
 
 
 
-===== beginning time step 1 : 0.1 =====
+===== beginning time step 1 : 0.05 =====
 ===== reforming stiffness matrix:
-	Nr of equations ........................... : 600
-	Nr of nonzeroes in stiffness matrix ....... : 17024
+	Nr of equations ........................... : 540
+	Nr of nonzeroes in stiffness matrix ....... : 14670
 
+ 1
+ Nonlinear solution status: time= 0.05
+	stiffness updates             = 0
+	right hand side evaluations   = 2
+	stiffness matrix reformations = 1
+	step from line search         = 1.000000
+	convergence norms :     INITIAL         CURRENT         REQUIRED
+	   residual            5.620219e-02    3.375603e-07    0.000000e+00 
+	   energy              2.557677e-01    1.582034e-04    2.557677e-03 
+	   displacement        2.890261e+00    2.890261e+00    2.890261e-06 
+ 2
+ Nonlinear solution status: time= 0.05
+	stiffness updates             = 1
+	right hand side evaluations   = 3
+	stiffness matrix reformations = 1
+	step from line search         = 1.000000
+	convergence norms :     INITIAL         CURRENT         REQUIRED
+	   residual            5.620219e-02    1.113326e-10    0.000000e+00 
+	   energy              2.557677e-01    8.743459e-08    2.557677e-03 
+	   displacement        2.890261e+00    8.016046e-04    2.866578e-06 
+ 3
+ Nonlinear solution status: time= 0.05
+	stiffness updates             = 2
+	right hand side evaluations   = 4
+	stiffness matrix reformations = 1
+	step from line search         = 1.000000
+	convergence norms :     INITIAL         CURRENT         REQUIRED
+	   residual            5.620219e-02    9.398996e-14    0.000000e+00 
+	   energy              2.557677e-01    1.689544e-12    2.557677e-03 
+	   displacement        2.890261e+00    6.022960e-08    2.866585e-06 
+
+convergence summary
+    number of iterations   : 3
+    number of reformations : 1
+
+
+------- converged at time : 0.05
+
+
+Data Record #1
+===========================================================================
+Step = 1
+Time = 0.05
+Data = ux;uy;uz
+File = /mnt/data/MATLAB/GIT/GIBBON/data/temp/tempModel_node_out.txt
+
+Data Record #2
+===========================================================================
+Step = 1
+Time = 0.05
+Data = Rx;Ry;Rz
+File = /mnt/data/MATLAB/GIT/GIBBON/data/temp/tempModel_force_out.txt
+
+Data Record #3
+===========================================================================
+Step = 1
+Time = 0.05
+Data = cxxxx;cxxyy;cyyyy;cxxzz;cyyzz;czzzz;cxxxy;cyyxy;czzxy;cxyxy;cxxyz;cyyyz;czzyz;cxyyz;cyzyz;cxxxz;cyyxz;czzxz;cxyxz;cyzxz;cxzxz
+File = /mnt/data/MATLAB/GIT/GIBBON/data/temp/tempModel_stiffness_out.txt
+
+===== beginning time step 2 : 0.1 =====
  1
  Nonlinear solution status: time= 0.1
 	stiffness updates             = 0
@@ -126,73 +198,33 @@
 	stiffness matrix reformations = 1
 	step from line search         = 1.000000
 	convergence norms :     INITIAL         CURRENT         REQUIRED
-	   residual            1.074173e+05    5.802700e+00    0.000000e+00 
-	   energy              4.545017e+02    2.035862e+00    4.545017e+00 
-	   displacement        7.451965e+00    7.451965e+00    7.451965e-06 
-Reforming stiffness matrix: reformation #1
-
+	   residual            5.478305e-02    3.259777e-07    0.000000e+00 
+	   energy              2.516524e-01    1.355890e-04    2.516524e-03 
+	   displacement        2.844594e+00    2.844594e+00    2.844594e-06 
  2
  Nonlinear solution status: time= 0.1
-	stiffness updates             = 0
+	stiffness updates             = 1
 	right hand side evaluations   = 3
-	stiffness matrix reformations = 2
+	stiffness matrix reformations = 1
 	step from line search         = 1.000000
 	convergence norms :     INITIAL         CURRENT         REQUIRED
-	   residual            1.074173e+05    3.379915e-05    0.000000e+00 
-	   energy              4.545017e+02    2.491090e-05    4.545017e+00 
-	   displacement        7.451965e+00    3.337313e-03    7.593483e-06 
-Reforming stiffness matrix: reformation #2
-
+	   residual            5.478305e-02    9.897860e-11    0.000000e+00 
+	   energy              2.516524e-01    7.328997e-08    2.516524e-03 
+	   displacement        2.844594e+00    7.602255e-04    2.824590e-06 
  3
  Nonlinear solution status: time= 0.1
-	stiffness updates             = 0
+	stiffness updates             = 2
 	right hand side evaluations   = 4
-	stiffness matrix reformations = 3
+	stiffness matrix reformations = 1
 	step from line search         = 1.000000
 	convergence norms :     INITIAL         CURRENT         REQUIRED
-	   residual            1.074173e+05    1.809487e-04    0.000000e+00 
-	   energy              4.545017e+02    2.058889e-06    4.545017e+00 
-	   displacement        7.451965e+00    7.550023e-02    7.285663e-06 
-Reforming stiffness matrix: reformation #3
-
- 4
- Nonlinear solution status: time= 0.1
-	stiffness updates             = 0
-	right hand side evaluations   = 5
-	stiffness matrix reformations = 4
-	step from line search         = 1.000000
-	convergence norms :     INITIAL         CURRENT         REQUIRED
-	   residual            1.074173e+05    1.946960e-07    0.000000e+00 
-	   energy              4.545017e+02    4.231544e-08    4.545017e+00 
-	   displacement        7.451965e+00    4.172844e-03    7.241916e-06 
-Reforming stiffness matrix: reformation #4
-
- 5
- Nonlinear solution status: time= 0.1
-	stiffness updates             = 0
-	right hand side evaluations   = 6
-	stiffness matrix reformations = 5
-	step from line search         = 1.000000
-	convergence norms :     INITIAL         CURRENT         REQUIRED
-	   residual            1.074173e+05    1.419383e-07    0.000000e+00 
-	   energy              4.545017e+02    2.543053e-12    4.545017e+00 
-	   displacement        7.451965e+00    5.512297e-04    7.230462e-06 
-Reforming stiffness matrix: reformation #5
-
- 6
- Nonlinear solution status: time= 0.1
-	stiffness updates             = 0
-	right hand side evaluations   = 7
-	stiffness matrix reformations = 6
-	step from line search         = 1.000000
-	convergence norms :     INITIAL         CURRENT         REQUIRED
-	   residual            1.074173e+05    1.179938e-11    0.000000e+00 
-	   energy              4.545017e+02    2.371443e-11    4.545017e+00 
-	   displacement        7.451965e+00    4.015872e-06    7.229829e-06 
+	   residual            5.478305e-02    8.682706e-14    0.000000e+00 
+	   energy              2.516524e-01    1.075551e-12    2.516524e-03 
+	   displacement        2.844594e+00    4.481773e-08    2.824549e-06 
 
 convergence summary
-    number of iterations   : 6
-    number of reformations : 6
+    number of iterations   : 3
+    number of reformations : 1
 
 
 ------- converged at time : 0.1
@@ -200,19 +232,87 @@ convergence summary
 
 Data Record #1
 ===========================================================================
-Step = 1
+Step = 2
 Time = 0.1
 Data = ux;uy;uz
 File = /mnt/data/MATLAB/GIT/GIBBON/data/temp/tempModel_node_out.txt
 
 Data Record #2
 ===========================================================================
-Step = 1
+Step = 2
 Time = 0.1
 Data = Rx;Ry;Rz
 File = /mnt/data/MATLAB/GIT/GIBBON/data/temp/tempModel_force_out.txt
 
-===== beginning time step 2 : 0.2 =====
+Data Record #3
+===========================================================================
+Step = 2
+Time = 0.1
+Data = cxxxx;cxxyy;cyyyy;cxxzz;cyyzz;czzzz;cxxxy;cyyxy;czzxy;cxyxy;cxxyz;cyyyz;czzyz;cxyyz;cyzyz;cxxxz;cyyxz;czzxz;cxyxz;cyzxz;cxzxz
+File = /mnt/data/MATLAB/GIT/GIBBON/data/temp/tempModel_stiffness_out.txt
+
+===== beginning time step 3 : 0.15 =====
+ 1
+ Nonlinear solution status: time= 0.15
+	stiffness updates             = 0
+	right hand side evaluations   = 2
+	stiffness matrix reformations = 1
+	step from line search         = 1.000000
+	convergence norms :     INITIAL         CURRENT         REQUIRED
+	   residual            5.370704e-02    3.161010e-07    0.000000e+00 
+	   energy              2.481273e-01    1.143785e-04    2.481273e-03 
+	   displacement        2.806098e+00    2.806098e+00    2.806098e-06 
+ 2
+ Nonlinear solution status: time= 0.15
+	stiffness updates             = 1
+	right hand side evaluations   = 3
+	stiffness matrix reformations = 1
+	step from line search         = 1.000000
+	convergence norms :     INITIAL         CURRENT         REQUIRED
+	   residual            5.370704e-02    8.913089e-11    0.000000e+00 
+	   energy              2.481273e-01    6.064284e-08    2.481273e-03 
+	   displacement        2.806098e+00    7.257085e-04    2.789474e-06 
+ 3
+ Nonlinear solution status: time= 0.15
+	stiffness updates             = 2
+	right hand side evaluations   = 4
+	stiffness matrix reformations = 1
+	step from line search         = 1.000000
+	convergence norms :     INITIAL         CURRENT         REQUIRED
+	   residual            5.370704e-02    8.154085e-14    0.000000e+00 
+	   energy              2.481273e-01    4.885812e-13    2.481273e-03 
+	   displacement        2.806098e+00    3.271278e-08    2.789395e-06 
+
+convergence summary
+    number of iterations   : 3
+    number of reformations : 1
+
+
+------- converged at time : 0.15
+
+
+Data Record #1
+===========================================================================
+Step = 3
+Time = 0.15
+Data = ux;uy;uz
+File = /mnt/data/MATLAB/GIT/GIBBON/data/temp/tempModel_node_out.txt
+
+Data Record #2
+===========================================================================
+Step = 3
+Time = 0.15
+Data = Rx;Ry;Rz
+File = /mnt/data/MATLAB/GIT/GIBBON/data/temp/tempModel_force_out.txt
+
+Data Record #3
+===========================================================================
+Step = 3
+Time = 0.15
+Data = cxxxx;cxxyy;cyyyy;cxxzz;cyyzz;czzzz;cxxxy;cyyxy;czzxy;cxyxy;cxxyz;cyyyz;czzyz;cxyyz;cyzyz;cxxxz;cyyxz;czzxz;cxyxz;cyzxz;cxzxz
+File = /mnt/data/MATLAB/GIT/GIBBON/data/temp/tempModel_stiffness_out.txt
+
+===== beginning time step 4 : 0.2 =====
  1
  Nonlinear solution status: time= 0.2
 	stiffness updates             = 0
@@ -220,61 +320,33 @@ File = /mnt/data/MATLAB/GIT/GIBBON/data/temp/tempModel_force_out.txt
 	stiffness matrix reformations = 1
 	step from line search         = 1.000000
 	convergence norms :     INITIAL         CURRENT         REQUIRED
-	   residual            1.180747e+05    6.362915e+00    0.000000e+00 
-	   energy              4.830472e+02    2.233314e+00    4.830472e+00 
-	   displacement        7.261787e+00    7.261787e+00    7.261787e-06 
-Reforming stiffness matrix: reformation #1
-
+	   residual            5.295625e-02    3.078250e-07    0.000000e+00 
+	   energy              2.451691e-01    9.438794e-05    2.451691e-03 
+	   displacement        2.774182e+00    2.774182e+00    2.774182e-06 
  2
  Nonlinear solution status: time= 0.2
-	stiffness updates             = 0
+	stiffness updates             = 1
 	right hand side evaluations   = 3
-	stiffness matrix reformations = 2
+	stiffness matrix reformations = 1
 	step from line search         = 1.000000
 	convergence norms :     INITIAL         CURRENT         REQUIRED
-	   residual            1.180747e+05    2.421558e-06    0.000000e+00 
-	   energy              4.830472e+02    2.910235e-05    4.830472e+00 
-	   displacement        7.261787e+00    2.234561e-03    7.431255e-06 
-Reforming stiffness matrix: reformation #2
-
+	   residual            5.295625e-02    8.145823e-11    0.000000e+00 
+	   energy              2.451691e-01    4.921258e-08    2.451691e-03 
+	   displacement        2.774182e+00    6.973424e-04    2.760691e-06 
  3
  Nonlinear solution status: time= 0.2
-	stiffness updates             = 0
+	stiffness updates             = 2
 	right hand side evaluations   = 4
-	stiffness matrix reformations = 3
+	stiffness matrix reformations = 1
 	step from line search         = 1.000000
 	convergence norms :     INITIAL         CURRENT         REQUIRED
-	   residual            1.180747e+05    1.468877e-05    0.000000e+00 
-	   energy              4.830472e+02    1.192375e-08    4.830472e+00 
-	   displacement        7.261787e+00    1.338115e-02    7.348340e-06 
-Reforming stiffness matrix: reformation #3
-
- 4
- Nonlinear solution status: time= 0.2
-	stiffness updates             = 0
-	right hand side evaluations   = 5
-	stiffness matrix reformations = 4
-	step from line search         = 1.000000
-	convergence norms :     INITIAL         CURRENT         REQUIRED
-	   residual            1.180747e+05    1.682895e-10    0.000000e+00 
-	   energy              4.830472e+02    1.680915e-10    4.830472e+00 
-	   displacement        7.261787e+00    2.816215e-05    7.347254e-06 
-Reforming stiffness matrix: reformation #4
-
- 5
- Nonlinear solution status: time= 0.2
-	stiffness updates             = 0
-	right hand side evaluations   = 6
-	stiffness matrix reformations = 5
-	step from line search         = 1.000000
-	convergence norms :     INITIAL         CURRENT         REQUIRED
-	   residual            1.180747e+05    5.727114e-12    0.000000e+00 
-	   energy              4.830472e+02    2.432409e-13    4.830472e+00 
-	   displacement        7.261787e+00    2.435746e-06    7.346905e-06 
+	   residual            5.295625e-02    7.798462e-14    0.000000e+00 
+	   energy              2.451691e-01    5.044863e-14    2.451691e-03 
+	   displacement        2.774182e+00    2.330556e-08    2.760581e-06 
 
 convergence summary
-    number of iterations   : 5
-    number of reformations : 5
+    number of iterations   : 3
+    number of reformations : 1
 
 
 ------- converged at time : 0.2
@@ -282,19 +354,87 @@ convergence summary
 
 Data Record #1
 ===========================================================================
-Step = 2
+Step = 4
 Time = 0.2
 Data = ux;uy;uz
 File = /mnt/data/MATLAB/GIT/GIBBON/data/temp/tempModel_node_out.txt
 
 Data Record #2
 ===========================================================================
-Step = 2
+Step = 4
 Time = 0.2
 Data = Rx;Ry;Rz
 File = /mnt/data/MATLAB/GIT/GIBBON/data/temp/tempModel_force_out.txt
 
-===== beginning time step 3 : 0.3 =====
+Data Record #3
+===========================================================================
+Step = 4
+Time = 0.2
+Data = cxxxx;cxxyy;cyyyy;cxxzz;cyyzz;czzzz;cxxxy;cyyxy;czzxy;cxyxy;cxxyz;cyyyz;czzyz;cxyyz;cyzyz;cxxxz;cyyxz;czzxz;cxyxz;cyzxz;cxzxz
+File = /mnt/data/MATLAB/GIT/GIBBON/data/temp/tempModel_stiffness_out.txt
+
+===== beginning time step 5 : 0.25 =====
+ 1
+ Nonlinear solution status: time= 0.25
+	stiffness updates             = 0
+	right hand side evaluations   = 2
+	stiffness matrix reformations = 1
+	step from line search         = 1.000000
+	convergence norms :     INITIAL         CURRENT         REQUIRED
+	   residual            5.251733e-02    3.010627e-07    0.000000e+00 
+	   energy              2.427587e-01    7.539920e-05    2.427587e-03 
+	   displacement        2.748387e+00    2.748387e+00    2.748387e-06 
+ 2
+ Nonlinear solution status: time= 0.25
+	stiffness updates             = 1
+	right hand side evaluations   = 3
+	stiffness matrix reformations = 1
+	step from line search         = 1.000000
+	convergence norms :     INITIAL         CURRENT         REQUIRED
+	   residual            5.251733e-02    7.568965e-11    0.000000e+00 
+	   energy              2.427587e-01    3.875812e-08    2.427587e-03 
+	   displacement        2.748387e+00    6.745582e-04    2.737828e-06 
+ 3
+ Nonlinear solution status: time= 0.25
+	stiffness updates             = 2
+	right hand side evaluations   = 4
+	stiffness matrix reformations = 1
+	step from line search         = 1.000000
+	convergence norms :     INITIAL         CURRENT         REQUIRED
+	   residual            5.251733e-02    7.596286e-14    0.000000e+00 
+	   energy              2.427587e-01    5.573621e-13    2.427587e-03 
+	   displacement        2.748387e+00    1.613520e-08    2.737694e-06 
+
+convergence summary
+    number of iterations   : 3
+    number of reformations : 1
+
+
+------- converged at time : 0.25
+
+
+Data Record #1
+===========================================================================
+Step = 5
+Time = 0.25
+Data = ux;uy;uz
+File = /mnt/data/MATLAB/GIT/GIBBON/data/temp/tempModel_node_out.txt
+
+Data Record #2
+===========================================================================
+Step = 5
+Time = 0.25
+Data = Rx;Ry;Rz
+File = /mnt/data/MATLAB/GIT/GIBBON/data/temp/tempModel_force_out.txt
+
+Data Record #3
+===========================================================================
+Step = 5
+Time = 0.25
+Data = cxxxx;cxxyy;cyyyy;cxxzz;cyyzz;czzzz;cxxxy;cyyxy;czzxy;cxyxy;cxxyz;cyyyz;czzyz;cxyyz;cyzyz;cxxxz;cyyxz;czzxz;cxyxz;cyzxz;cxzxz
+File = /mnt/data/MATLAB/GIT/GIBBON/data/temp/tempModel_stiffness_out.txt
+
+===== beginning time step 6 : 0.3 =====
  1
  Nonlinear solution status: time= 0.3
 	stiffness updates             = 0
@@ -302,61 +442,33 @@ File = /mnt/data/MATLAB/GIT/GIBBON/data/temp/tempModel_force_out.txt
 	stiffness matrix reformations = 1
 	step from line search         = 1.000000
 	convergence norms :     INITIAL         CURRENT         REQUIRED
-	   residual            1.304036e+05    6.920078e+00    0.000000e+00 
-	   energy              5.143455e+02    2.443977e+00    5.143455e+00 
-	   displacement        7.456666e+00    7.456666e+00    7.456666e-06 
-Reforming stiffness matrix: reformation #1
-
+	   residual            5.238128e-02    2.957427e-07    0.000000e+00 
+	   energy              2.408806e-01    5.720898e-05    2.408806e-03 
+	   displacement        2.728344e+00    2.728344e+00    2.728344e-06 
  2
  Nonlinear solution status: time= 0.3
-	stiffness updates             = 0
+	stiffness updates             = 1
 	right hand side evaluations   = 3
-	stiffness matrix reformations = 2
+	stiffness matrix reformations = 1
 	step from line search         = 1.000000
 	convergence norms :     INITIAL         CURRENT         REQUIRED
-	   residual            1.304036e+05    2.668657e-06    0.000000e+00 
-	   energy              5.143455e+02    3.483741e-05    5.143455e+00 
-	   displacement        7.456666e+00    2.550730e-03    7.641442e-06 
-Reforming stiffness matrix: reformation #2
-
+	   residual            5.238128e-02    7.162155e-11    0.000000e+00 
+	   energy              2.408806e-01    2.906662e-08    2.408806e-03 
+	   displacement        2.728344e+00    6.569061e-04    2.720560e-06 
  3
  Nonlinear solution status: time= 0.3
-	stiffness updates             = 0
+	stiffness updates             = 2
 	right hand side evaluations   = 4
-	stiffness matrix reformations = 3
+	stiffness matrix reformations = 1
 	step from line search         = 1.000000
 	convergence norms :     INITIAL         CURRENT         REQUIRED
-	   residual            1.304036e+05    1.012217e-05    0.000000e+00 
-	   energy              5.143455e+02    3.729959e-08    5.143455e+00 
-	   displacement        7.456666e+00    1.175976e-02    7.593224e-06 
-Reforming stiffness matrix: reformation #3
-
- 4
- Nonlinear solution status: time= 0.3
-	stiffness updates             = 0
-	right hand side evaluations   = 5
-	stiffness matrix reformations = 4
-	step from line search         = 1.000000
-	convergence norms :     INITIAL         CURRENT         REQUIRED
-	   residual            1.304036e+05    1.793312e-10    0.000000e+00 
-	   energy              5.143455e+02    2.094556e-10    5.143455e+00 
-	   displacement        7.456666e+00    1.726834e-05    7.592901e-06 
-Reforming stiffness matrix: reformation #4
-
- 5
- Nonlinear solution status: time= 0.3
-	stiffness updates             = 0
-	right hand side evaluations   = 6
-	stiffness matrix reformations = 5
-	step from line search         = 1.000000
-	convergence norms :     INITIAL         CURRENT         REQUIRED
-	   residual            1.304036e+05    2.109600e-12    0.000000e+00 
-	   energy              5.143455e+02    2.042027e-13    5.143455e+00 
-	   displacement        7.456666e+00    1.582325e-06    7.592591e-06 
+	   residual            5.238128e-02    7.535562e-14    0.000000e+00 
+	   energy              2.408806e-01    1.046312e-12    2.408806e-03 
+	   displacement        2.728344e+00    1.085383e-08    2.720408e-06 
 
 convergence summary
-    number of iterations   : 5
-    number of reformations : 5
+    number of iterations   : 3
+    number of reformations : 1
 
 
 ------- converged at time : 0.3
@@ -364,19 +476,87 @@ convergence summary
 
 Data Record #1
 ===========================================================================
-Step = 3
+Step = 6
 Time = 0.3
 Data = ux;uy;uz
 File = /mnt/data/MATLAB/GIT/GIBBON/data/temp/tempModel_node_out.txt
 
 Data Record #2
 ===========================================================================
-Step = 3
+Step = 6
 Time = 0.3
 Data = Rx;Ry;Rz
 File = /mnt/data/MATLAB/GIT/GIBBON/data/temp/tempModel_force_out.txt
 
-===== beginning time step 4 : 0.4 =====
+Data Record #3
+===========================================================================
+Step = 6
+Time = 0.3
+Data = cxxxx;cxxyy;cyyyy;cxxzz;cyyzz;czzzz;cxxxy;cyyxy;czzxy;cxyxy;cxxyz;cyyyz;czzyz;cxyyz;cyzyz;cxxxz;cyyxz;czzxz;cxyxz;cyzxz;cxzxz
+File = /mnt/data/MATLAB/GIT/GIBBON/data/temp/tempModel_stiffness_out.txt
+
+===== beginning time step 7 : 0.35 =====
+ 1
+ Nonlinear solution status: time= 0.35
+	stiffness updates             = 0
+	right hand side evaluations   = 2
+	stiffness matrix reformations = 1
+	step from line search         = 1.000000
+	convergence norms :     INITIAL         CURRENT         REQUIRED
+	   residual            5.254311e-02    2.918080e-07    0.000000e+00 
+	   energy              2.395230e-01    3.962567e-05    2.395230e-03 
+	   displacement        2.713767e+00    2.713767e+00    2.713767e-06 
+ 2
+ Nonlinear solution status: time= 0.35
+	stiffness updates             = 1
+	right hand side evaluations   = 3
+	stiffness matrix reformations = 1
+	step from line search         = 1.000000
+	convergence norms :     INITIAL         CURRENT         REQUIRED
+	   residual            5.254311e-02    6.910876e-11    0.000000e+00 
+	   energy              2.395230e-01    1.994714e-08    2.395230e-03 
+	   displacement        2.713767e+00    6.440411e-04    2.708643e-06 
+ 3
+ Nonlinear solution status: time= 0.35
+	stiffness updates             = 2
+	right hand side evaluations   = 4
+	stiffness matrix reformations = 1
+	step from line search         = 1.000000
+	convergence norms :     INITIAL         CURRENT         REQUIRED
+	   residual            5.254311e-02    7.610931e-14    0.000000e+00 
+	   energy              2.395230e-01    1.530360e-12    2.395230e-03 
+	   displacement        2.713767e+00    7.206477e-09    2.708477e-06 
+
+convergence summary
+    number of iterations   : 3
+    number of reformations : 1
+
+
+------- converged at time : 0.35
+
+
+Data Record #1
+===========================================================================
+Step = 7
+Time = 0.35
+Data = ux;uy;uz
+File = /mnt/data/MATLAB/GIT/GIBBON/data/temp/tempModel_node_out.txt
+
+Data Record #2
+===========================================================================
+Step = 7
+Time = 0.35
+Data = Rx;Ry;Rz
+File = /mnt/data/MATLAB/GIT/GIBBON/data/temp/tempModel_force_out.txt
+
+Data Record #3
+===========================================================================
+Step = 7
+Time = 0.35
+Data = cxxxx;cxxyy;cyyyy;cxxzz;cyyzz;czzzz;cxxxy;cyyxy;czzxy;cxyxy;cxxyz;cyyyz;czzyz;cxyyz;cyzyz;cxxxz;cyyxz;czzxz;cxyxz;cyzxz;cxzxz
+File = /mnt/data/MATLAB/GIT/GIBBON/data/temp/tempModel_stiffness_out.txt
+
+===== beginning time step 8 : 0.4 =====
  1
  Nonlinear solution status: time= 0.4
 	stiffness updates             = 0
@@ -384,61 +564,33 @@ File = /mnt/data/MATLAB/GIT/GIBBON/data/temp/tempModel_force_out.txt
 	stiffness matrix reformations = 1
 	step from line search         = 1.000000
 	convergence norms :     INITIAL         CURRENT         REQUIRED
-	   residual            1.447312e+05    7.508209e+00    0.000000e+00 
-	   energy              5.487293e+02    2.675629e+00    5.487293e+00 
-	   displacement        7.751534e+00    7.751534e+00    7.751534e-06 
-Reforming stiffness matrix: reformation #1
-
+	   residual            5.300177e-02    2.892157e-07    0.000000e+00 
+	   energy              2.386775e-01    2.246669e-05    2.386775e-03 
+	   displacement        2.704450e+00    2.704450e+00    2.704450e-06 
  2
  Nonlinear solution status: time= 0.4
-	stiffness updates             = 0
+	stiffness updates             = 1
 	right hand side evaluations   = 3
-	stiffness matrix reformations = 2
+	stiffness matrix reformations = 1
 	step from line search         = 1.000000
 	convergence norms :     INITIAL         CURRENT         REQUIRED
-	   residual            1.447312e+05    3.179323e-05    0.000000e+00 
-	   energy              5.487293e+02    4.041359e-05    5.487293e+00 
-	   displacement        7.751534e+00    3.314190e-03    7.952602e-06 
-Reforming stiffness matrix: reformation #2
-
+	   residual            5.300177e-02    6.805804e-11    0.000000e+00 
+	   energy              2.386775e-01    1.122515e-08    2.386775e-03 
+	   displacement        2.704450e+00    6.357127e-04    2.701906e-06 
  3
  Nonlinear solution status: time= 0.4
-	stiffness updates             = 0
+	stiffness updates             = 2
 	right hand side evaluations   = 4
-	stiffness matrix reformations = 3
+	stiffness matrix reformations = 1
 	step from line search         = 1.000000
 	convergence norms :     INITIAL         CURRENT         REQUIRED
-	   residual            1.447312e+05    2.004201e-05    0.000000e+00 
-	   energy              5.487293e+02    2.579324e-08    5.487293e+00 
-	   displacement        7.751534e+00    1.061794e-02    7.918547e-06 
-Reforming stiffness matrix: reformation #3
-
- 4
- Nonlinear solution status: time= 0.4
-	stiffness updates             = 0
-	right hand side evaluations   = 5
-	stiffness matrix reformations = 4
-	step from line search         = 1.000000
-	convergence norms :     INITIAL         CURRENT         REQUIRED
-	   residual            1.447312e+05    7.929616e-08    0.000000e+00 
-	   energy              5.487293e+02    4.689867e-09    5.487293e+00 
-	   displacement        7.751534e+00    9.949278e-05    7.936637e-06 
-Reforming stiffness matrix: reformation #4
-
- 5
- Nonlinear solution status: time= 0.4
-	stiffness updates             = 0
-	right hand side evaluations   = 6
-	stiffness matrix reformations = 5
-	step from line search         = 1.000000
-	convergence norms :     INITIAL         CURRENT         REQUIRED
-	   residual            1.447312e+05    1.049205e-10    0.000000e+00 
-	   energy              5.487293e+02    2.087998e-11    5.487293e+00 
-	   displacement        7.751534e+00    3.488019e-06    7.938081e-06 
+	   residual            5.300177e-02    7.823201e-14    0.000000e+00 
+	   energy              2.386775e-01    2.022024e-12    2.386775e-03 
+	   displacement        2.704450e+00    5.016476e-09    2.701732e-06 
 
 convergence summary
-    number of iterations   : 5
-    number of reformations : 5
+    number of iterations   : 3
+    number of reformations : 1
 
 
 ------- converged at time : 0.4
@@ -446,19 +598,87 @@ convergence summary
 
 Data Record #1
 ===========================================================================
-Step = 4
+Step = 8
 Time = 0.4
 Data = ux;uy;uz
 File = /mnt/data/MATLAB/GIT/GIBBON/data/temp/tempModel_node_out.txt
 
 Data Record #2
 ===========================================================================
-Step = 4
+Step = 8
 Time = 0.4
 Data = Rx;Ry;Rz
 File = /mnt/data/MATLAB/GIT/GIBBON/data/temp/tempModel_force_out.txt
 
-===== beginning time step 5 : 0.5 =====
+Data Record #3
+===========================================================================
+Step = 8
+Time = 0.4
+Data = cxxxx;cxxyy;cyyyy;cxxzz;cyyzz;czzzz;cxxxy;cyyxy;czzxy;cxyxy;cxxyz;cyyyz;czzyz;cxyyz;cyzyz;cxxxz;cyyxz;czzxz;cxyxz;cyzxz;cxzxz
+File = /mnt/data/MATLAB/GIT/GIBBON/data/temp/tempModel_stiffness_out.txt
+
+===== beginning time step 9 : 0.45 =====
+ 1
+ Nonlinear solution status: time= 0.45
+	stiffness updates             = 0
+	right hand side evaluations   = 2
+	stiffness matrix reformations = 1
+	step from line search         = 1.000000
+	convergence norms :     INITIAL         CURRENT         REQUIRED
+	   residual            5.376003e-02    2.879357e-07    0.000000e+00 
+	   energy              2.383389e-01    5.555900e-06    2.383389e-03 
+	   displacement        2.700259e+00    2.700259e+00    2.700259e-06 
+ 2
+ Nonlinear solution status: time= 0.45
+	stiffness updates             = 1
+	right hand side evaluations   = 3
+	stiffness matrix reformations = 1
+	step from line search         = 1.000000
+	convergence norms :     INITIAL         CURRENT         REQUIRED
+	   residual            5.376003e-02    6.842401e-11    0.000000e+00 
+	   energy              2.383389e-01    2.737616e-09    2.383389e-03 
+	   displacement        2.700259e+00    6.317565e-04    2.700250e-06 
+ 3
+ Nonlinear solution status: time= 0.45
+	stiffness updates             = 2
+	right hand side evaluations   = 4
+	stiffness matrix reformations = 1
+	step from line search         = 1.000000
+	convergence norms :     INITIAL         CURRENT         REQUIRED
+	   residual            5.376003e-02    8.179284e-14    0.000000e+00 
+	   energy              2.383389e-01    2.533779e-12    2.383389e-03 
+	   displacement        2.700259e+00    4.175422e-09    2.700073e-06 
+
+convergence summary
+    number of iterations   : 3
+    number of reformations : 1
+
+
+------- converged at time : 0.45
+
+
+Data Record #1
+===========================================================================
+Step = 9
+Time = 0.45
+Data = ux;uy;uz
+File = /mnt/data/MATLAB/GIT/GIBBON/data/temp/tempModel_node_out.txt
+
+Data Record #2
+===========================================================================
+Step = 9
+Time = 0.45
+Data = Rx;Ry;Rz
+File = /mnt/data/MATLAB/GIT/GIBBON/data/temp/tempModel_force_out.txt
+
+Data Record #3
+===========================================================================
+Step = 9
+Time = 0.45
+Data = cxxxx;cxxyy;cyyyy;cxxzz;cyyzz;czzzz;cxxxy;cyyxy;czzxy;cxyxy;cxxyz;cyyyz;czzyz;cxyyz;cyzyz;cxxxz;cyyxz;czzxz;cxyxz;cyzxz;cxzxz
+File = /mnt/data/MATLAB/GIT/GIBBON/data/temp/tempModel_stiffness_out.txt
+
+===== beginning time step 10 : 0.5 =====
  1
  Nonlinear solution status: time= 0.5
 	stiffness updates             = 0
@@ -466,61 +686,33 @@ File = /mnt/data/MATLAB/GIT/GIBBON/data/temp/tempModel_force_out.txt
 	stiffness matrix reformations = 1
 	step from line search         = 1.000000
 	convergence norms :     INITIAL         CURRENT         REQUIRED
-	   residual            1.614644e+05    8.142874e+00    0.000000e+00 
-	   energy              5.865920e+02    2.935364e+00    5.865920e+00 
-	   displacement        8.147214e+00    8.147214e+00    8.147214e-06 
-Reforming stiffness matrix: reformation #1
-
+	   residual            5.482451e-02    2.879508e-07    0.000000e+00 
+	   energy              2.385055e-01    1.127878e-05    2.385055e-03 
+	   displacement        2.701129e+00    2.701129e+00    2.701129e-06 
  2
  Nonlinear solution status: time= 0.5
-	stiffness updates             = 0
+	stiffness updates             = 1
 	right hand side evaluations   = 3
-	stiffness matrix reformations = 2
+	stiffness matrix reformations = 1
 	step from line search         = 1.000000
 	convergence norms :     INITIAL         CURRENT         REQUIRED
-	   residual            1.614644e+05    4.264201e-05    0.000000e+00 
-	   energy              5.865920e+02    4.636409e-05    5.865920e+00 
-	   displacement        8.147214e+00    4.168570e-03    8.362299e-06 
-Reforming stiffness matrix: reformation #2
-
+	   residual            5.482451e-02    7.020698e-11    0.000000e+00 
+	   energy              2.385055e-01    5.671394e-09    2.385055e-03 
+	   displacement        2.701129e+00    6.320895e-04    2.703647e-06 
  3
  Nonlinear solution status: time= 0.5
-	stiffness updates             = 0
+	stiffness updates             = 2
 	right hand side evaluations   = 4
-	stiffness matrix reformations = 3
+	stiffness matrix reformations = 1
 	step from line search         = 1.000000
 	convergence norms :     INITIAL         CURRENT         REQUIRED
-	   residual            1.614644e+05    3.186430e-05    0.000000e+00 
-	   energy              5.865920e+02    6.977137e-08    5.865920e+00 
-	   displacement        8.147214e+00    9.731521e-03    8.363219e-06 
-Reforming stiffness matrix: reformation #3
-
- 4
- Nonlinear solution status: time= 0.5
-	stiffness updates             = 0
-	right hand side evaluations   = 5
-	stiffness matrix reformations = 4
-	step from line search         = 1.000000
-	convergence norms :     INITIAL         CURRENT         REQUIRED
-	   residual            1.614644e+05    5.725662e-08    0.000000e+00 
-	   energy              5.865920e+02    7.223325e-09    5.865920e+00 
-	   displacement        8.147214e+00    1.619836e-04    8.381873e-06 
-Reforming stiffness matrix: reformation #4
-
- 5
- Nonlinear solution status: time= 0.5
-	stiffness updates             = 0
-	right hand side evaluations   = 6
-	stiffness matrix reformations = 5
-	step from line search         = 1.000000
-	convergence norms :     INITIAL         CURRENT         REQUIRED
-	   residual            1.614644e+05    8.575278e-11    0.000000e+00 
-	   energy              5.865920e+02    1.799842e-11    5.865920e+00 
-	   displacement        8.147214e+00    6.390965e-06    8.385307e-06 
+	   residual            5.482451e-02    8.692546e-14    0.000000e+00 
+	   energy              2.385055e-01    3.078537e-12    2.385055e-03 
+	   displacement        2.701129e+00    4.636914e-09    2.703471e-06 
 
 convergence summary
-    number of iterations   : 5
-    number of reformations : 5
+    number of iterations   : 3
+    number of reformations : 1
 
 
 ------- converged at time : 0.5
@@ -528,19 +720,87 @@ convergence summary
 
 Data Record #1
 ===========================================================================
-Step = 5
+Step = 10
 Time = 0.5
 Data = ux;uy;uz
 File = /mnt/data/MATLAB/GIT/GIBBON/data/temp/tempModel_node_out.txt
 
 Data Record #2
 ===========================================================================
-Step = 5
+Step = 10
 Time = 0.5
 Data = Rx;Ry;Rz
 File = /mnt/data/MATLAB/GIT/GIBBON/data/temp/tempModel_force_out.txt
 
-===== beginning time step 6 : 0.6 =====
+Data Record #3
+===========================================================================
+Step = 10
+Time = 0.5
+Data = cxxxx;cxxyy;cyyyy;cxxzz;cyyzz;czzzz;cxxxy;cyyxy;czzxy;cxyxy;cxxyz;cyyyz;czzyz;cxyyz;cyzyz;cxxxz;cyyxz;czzxz;cxyxz;cyzxz;cxzxz
+File = /mnt/data/MATLAB/GIT/GIBBON/data/temp/tempModel_stiffness_out.txt
+
+===== beginning time step 11 : 0.55 =====
+ 1
+ Nonlinear solution status: time= 0.55
+	stiffness updates             = 0
+	right hand side evaluations   = 2
+	stiffness matrix reformations = 1
+	step from line search         = 1.000000
+	convergence norms :     INITIAL         CURRENT         REQUIRED
+	   residual            5.620581e-02    2.892561e-07    0.000000e+00 
+	   energy              2.391785e-01    2.820769e-05    2.391785e-03 
+	   displacement        2.707066e+00    2.707066e+00    2.707066e-06 
+ 2
+ Nonlinear solution status: time= 0.55
+	stiffness updates             = 1
+	right hand side evaluations   = 3
+	stiffness matrix reformations = 1
+	step from line search         = 1.000000
+	convergence norms :     INITIAL         CURRENT         REQUIRED
+	   residual            5.620581e-02    7.345281e-11    0.000000e+00 
+	   energy              2.391785e-01    1.415490e-08    2.391785e-03 
+	   displacement        2.707066e+00    6.367071e-04    2.712136e-06 
+ 3
+ Nonlinear solution status: time= 0.55
+	stiffness updates             = 2
+	right hand side evaluations   = 4
+	stiffness matrix reformations = 1
+	step from line search         = 1.000000
+	convergence norms :     INITIAL         CURRENT         REQUIRED
+	   residual            5.620581e-02    9.383572e-14    0.000000e+00 
+	   energy              2.391785e-01    3.670139e-12    2.391785e-03 
+	   displacement        2.707066e+00    6.413701e-09    2.711965e-06 
+
+convergence summary
+    number of iterations   : 3
+    number of reformations : 1
+
+
+------- converged at time : 0.55
+
+
+Data Record #1
+===========================================================================
+Step = 11
+Time = 0.55
+Data = ux;uy;uz
+File = /mnt/data/MATLAB/GIT/GIBBON/data/temp/tempModel_node_out.txt
+
+Data Record #2
+===========================================================================
+Step = 11
+Time = 0.55
+Data = Rx;Ry;Rz
+File = /mnt/data/MATLAB/GIT/GIBBON/data/temp/tempModel_force_out.txt
+
+Data Record #3
+===========================================================================
+Step = 11
+Time = 0.55
+Data = cxxxx;cxxyy;cyyyy;cxxzz;cyyzz;czzzz;cxxxy;cyyxy;czzxy;cxyxy;cxxyz;cyyyz;czzyz;cxyyz;cyzyz;cxxxz;cyyxz;czzxz;cxyxz;cyzxz;cxzxz
+File = /mnt/data/MATLAB/GIT/GIBBON/data/temp/tempModel_stiffness_out.txt
+
+===== beginning time step 12 : 0.6 =====
  1
  Nonlinear solution status: time= 0.6
 	stiffness updates             = 0
@@ -548,109 +808,33 @@ File = /mnt/data/MATLAB/GIT/GIBBON/data/temp/tempModel_force_out.txt
 	stiffness matrix reformations = 1
 	step from line search         = 1.000000
 	convergence norms :     INITIAL         CURRENT         REQUIRED
-	   residual            1.811154e+05    8.827522e+00    0.000000e+00 
-	   energy              6.284053e+02    3.230009e+00    6.284053e+00 
-	   displacement        8.645644e+00    8.645644e+00    8.645644e-06 
-Reforming stiffness matrix: reformation #1
-
+	   residual            5.791873e-02    2.918588e-07    0.000000e+00 
+	   energy              2.403627e-01    4.540168e-05    2.403627e-03 
+	   displacement        2.718143e+00    2.718143e+00    2.718143e-06 
  2
  Nonlinear solution status: time= 0.6
-	stiffness updates             = 0
+	stiffness updates             = 1
 	right hand side evaluations   = 3
-	stiffness matrix reformations = 2
+	stiffness matrix reformations = 1
 	step from line search         = 1.000000
 	convergence norms :     INITIAL         CURRENT         REQUIRED
-	   residual            1.811154e+05    1.183021e-03    0.000000e+00 
-	   energy              6.284053e+02    3.230329e-05    6.284053e+00 
-	   displacement        8.645644e+00    1.003923e-02    8.948436e-06 
-Reforming stiffness matrix: reformation #2
-
+	   residual            5.791873e-02    7.825463e-11    0.000000e+00 
+	   energy              2.403627e-01    2.286701e-08    2.403627e-03 
+	   displacement        2.718143e+00    6.456826e-04    2.725826e-06 
  3
  Nonlinear solution status: time= 0.6
-	stiffness updates             = 0
-	right hand side evaluations   = 5
-	stiffness matrix reformations = 3
-	step from line search         = 0.192410
-	convergence norms :     INITIAL         CURRENT         REQUIRED
-	   residual            1.811154e+05    5.146749e-04    0.000000e+00 
-	   energy              6.284053e+02    1.846252e-06    6.284053e+00 
-	   displacement        8.645644e+00    8.776686e-03    8.772853e-06 
-Reforming stiffness matrix: reformation #3
-
- 4
- Nonlinear solution status: time= 0.6
-	stiffness updates             = 0
-	right hand side evaluations   = 7
-	stiffness matrix reformations = 4
-	step from line search         = 0.547041
-	convergence norms :     INITIAL         CURRENT         REQUIRED
-	   residual            1.811154e+05    3.262994e-04    0.000000e+00 
-	   energy              6.284053e+02    1.395906e-06    6.284053e+00 
-	   displacement        8.645644e+00    1.416360e-02    9.050284e-06 
-Reforming stiffness matrix: reformation #4
-
- 5
- Nonlinear solution status: time= 0.6
-	stiffness updates             = 0
-	right hand side evaluations   = 8
-	stiffness matrix reformations = 5
+	stiffness updates             = 2
+	right hand side evaluations   = 4
+	stiffness matrix reformations = 1
 	step from line search         = 1.000000
 	convergence norms :     INITIAL         CURRENT         REQUIRED
-	   residual            1.811154e+05    3.055587e-04    0.000000e+00 
-	   energy              6.284053e+02    2.030802e-06    6.284053e+00 
-	   displacement        8.645644e+00    8.032553e-03    8.902013e-06 
-Reforming stiffness matrix: reformation #5
-
- 6
- Nonlinear solution status: time= 0.6
-	stiffness updates             = 0
-	right hand side evaluations   = 9
-	stiffness matrix reformations = 6
-	step from line search         = 1.000000
-	convergence norms :     INITIAL         CURRENT         REQUIRED
-	   residual            1.811154e+05    6.317415e-06    0.000000e+00 
-	   energy              6.284053e+02    1.548502e-07    6.284053e+00 
-	   displacement        8.645644e+00    7.894974e-04    8.883561e-06 
-Reforming stiffness matrix: reformation #6
-
- 7
- Nonlinear solution status: time= 0.6
-	stiffness updates             = 0
-	right hand side evaluations   = 10
-	stiffness matrix reformations = 7
-	step from line search         = 1.000000
-	convergence norms :     INITIAL         CURRENT         REQUIRED
-	   residual            1.811154e+05    6.152523e-07    0.000000e+00 
-	   energy              6.284053e+02    1.189569e-08    6.284053e+00 
-	   displacement        8.645644e+00    4.096256e-04    8.928986e-06 
-Reforming stiffness matrix: reformation #7
-
- 8
- Nonlinear solution status: time= 0.6
-	stiffness updates             = 0
-	right hand side evaluations   = 11
-	stiffness matrix reformations = 8
-	step from line search         = 1.000000
-	convergence norms :     INITIAL         CURRENT         REQUIRED
-	   residual            1.811154e+05    4.875050e-09    0.000000e+00 
-	   energy              6.284053e+02    3.911146e-10    6.284053e+00 
-	   displacement        8.645644e+00    1.477363e-05    8.936034e-06 
-Reforming stiffness matrix: reformation #8
-
- 9
- Nonlinear solution status: time= 0.6
-	stiffness updates             = 0
-	right hand side evaluations   = 12
-	stiffness matrix reformations = 9
-	step from line search         = 1.000000
-	convergence norms :     INITIAL         CURRENT         REQUIRED
-	   residual            1.811154e+05    4.658262e-13    0.000000e+00 
-	   energy              6.284053e+02    3.981878e-13    6.284053e+00 
-	   displacement        8.645644e+00    1.227711e-07    8.936728e-06 
+	   residual            5.791873e-02    1.028142e-13    0.000000e+00 
+	   energy              2.403627e-01    4.323873e-12    2.403627e-03 
+	   displacement        2.718143e+00    9.577989e-09    2.725665e-06 
 
 convergence summary
-    number of iterations   : 9
-    number of reformations : 9
+    number of iterations   : 3
+    number of reformations : 1
 
 
 ------- converged at time : 0.6
@@ -658,19 +842,87 @@ convergence summary
 
 Data Record #1
 ===========================================================================
-Step = 6
+Step = 12
 Time = 0.6
 Data = ux;uy;uz
 File = /mnt/data/MATLAB/GIT/GIBBON/data/temp/tempModel_node_out.txt
 
 Data Record #2
 ===========================================================================
-Step = 6
+Step = 12
 Time = 0.6
 Data = Rx;Ry;Rz
 File = /mnt/data/MATLAB/GIT/GIBBON/data/temp/tempModel_force_out.txt
 
-===== beginning time step 7 : 0.7 =====
+Data Record #3
+===========================================================================
+Step = 12
+Time = 0.6
+Data = cxxxx;cxxyy;cyyyy;cxxzz;cyyzz;czzzz;cxxxy;cyyxy;czzxy;cxyxy;cxxyz;cyyyz;czzyz;cxyyz;cyzyz;cxxxz;cyyxz;czzxz;cxyxz;cyzxz;cxzxz
+File = /mnt/data/MATLAB/GIT/GIBBON/data/temp/tempModel_stiffness_out.txt
+
+===== beginning time step 13 : 0.65 =====
+ 1
+ Nonlinear solution status: time= 0.65
+	stiffness updates             = 0
+	right hand side evaluations   = 2
+	stiffness matrix reformations = 1
+	step from line search         = 1.000000
+	convergence norms :     INITIAL         CURRENT         REQUIRED
+	   residual            5.998251e-02    2.957781e-07    0.000000e+00 
+	   energy              2.420661e-01    6.303435e-05    2.420661e-03 
+	   displacement        2.734505e+00    2.734505e+00    2.734505e-06 
+ 2
+ Nonlinear solution status: time= 0.65
+	stiffness updates             = 1
+	right hand side evaluations   = 3
+	stiffness matrix reformations = 1
+	step from line search         = 1.000000
+	convergence norms :     INITIAL         CURRENT         REQUIRED
+	   residual            5.998251e-02    8.475653e-11    0.000000e+00 
+	   energy              2.420661e-01    3.196695e-08    2.420661e-03 
+	   displacement        2.734505e+00    6.591690e-04    2.744895e-06 
+ 3
+ Nonlinear solution status: time= 0.65
+	stiffness updates             = 2
+	right hand side evaluations   = 4
+	stiffness matrix reformations = 1
+	step from line search         = 1.000000
+	convergence norms :     INITIAL         CURRENT         REQUIRED
+	   residual            5.998251e-02    1.142546e-13    0.000000e+00 
+	   energy              2.420661e-01    5.057050e-12    2.420661e-03 
+	   displacement        2.734505e+00    1.426491e-08    2.744749e-06 
+
+convergence summary
+    number of iterations   : 3
+    number of reformations : 1
+
+
+------- converged at time : 0.65
+
+
+Data Record #1
+===========================================================================
+Step = 13
+Time = 0.65
+Data = ux;uy;uz
+File = /mnt/data/MATLAB/GIT/GIBBON/data/temp/tempModel_node_out.txt
+
+Data Record #2
+===========================================================================
+Step = 13
+Time = 0.65
+Data = Rx;Ry;Rz
+File = /mnt/data/MATLAB/GIT/GIBBON/data/temp/tempModel_force_out.txt
+
+Data Record #3
+===========================================================================
+Step = 13
+Time = 0.65
+Data = cxxxx;cxxyy;cyyyy;cxxzz;cyyzz;czzzz;cxxxy;cyyxy;czzxy;cxyxy;cxxyz;cyyyz;czzyz;cxyyz;cyzyz;cxxxz;cyyxz;czzxz;cxyxz;cyzxz;cxzxz
+File = /mnt/data/MATLAB/GIT/GIBBON/data/temp/tempModel_stiffness_out.txt
+
+===== beginning time step 14 : 0.7 =====
  1
  Nonlinear solution status: time= 0.7
 	stiffness updates             = 0
@@ -678,73 +930,33 @@ File = /mnt/data/MATLAB/GIT/GIBBON/data/temp/tempModel_force_out.txt
 	stiffness matrix reformations = 1
 	step from line search         = 1.000000
 	convergence norms :     INITIAL         CURRENT         REQUIRED
-	   residual            2.043300e+05    9.551485e+00    0.000000e+00 
-	   energy              6.747266e+02    3.564687e+00    6.747266e+00 
-	   displacement        9.251472e+00    9.251472e+00    9.251472e-06 
-Reforming stiffness matrix: reformation #1
-
+	   residual            6.242133e-02    3.010453e-07    0.000000e+00 
+	   energy              2.443000e-01    8.128434e-05    2.443000e-03 
+	   displacement        2.756367e+00    2.756367e+00    2.756367e-06 
  2
  Nonlinear solution status: time= 0.7
-	stiffness updates             = 0
+	stiffness updates             = 1
 	right hand side evaluations   = 3
-	stiffness matrix reformations = 2
+	stiffness matrix reformations = 1
 	step from line search         = 1.000000
 	convergence norms :     INITIAL         CURRENT         REQUIRED
-	   residual            2.043300e+05    8.215215e-04    0.000000e+00 
-	   energy              6.747266e+02    3.258632e-05    6.747266e+00 
-	   displacement        9.251472e+00    9.219528e-03    9.531040e-06 
-Reforming stiffness matrix: reformation #2
-
+	   residual            6.242133e-02    9.315948e-11    0.000000e+00 
+	   energy              2.443000e-01    4.162321e-08    2.443000e-03 
+	   displacement        2.756367e+00    6.774028e-04    2.769597e-06 
  3
  Nonlinear solution status: time= 0.7
-	stiffness updates             = 0
+	stiffness updates             = 2
 	right hand side evaluations   = 4
-	stiffness matrix reformations = 3
+	stiffness matrix reformations = 1
 	step from line search         = 1.000000
 	convergence norms :     INITIAL         CURRENT         REQUIRED
-	   residual            2.043300e+05    2.188085e-04    0.000000e+00 
-	   energy              6.747266e+02    8.833795e-07    6.747266e+00 
-	   displacement        9.251472e+00    1.243598e-02    9.504331e-06 
-Reforming stiffness matrix: reformation #3
-
- 4
- Nonlinear solution status: time= 0.7
-	stiffness updates             = 0
-	right hand side evaluations   = 5
-	stiffness matrix reformations = 4
-	step from line search         = 1.000000
-	convergence norms :     INITIAL         CURRENT         REQUIRED
-	   residual            2.043300e+05    5.504642e-06    0.000000e+00 
-	   energy              6.747266e+02    6.292415e-08    6.747266e+00 
-	   displacement        9.251472e+00    1.775542e-03    9.592823e-06 
-Reforming stiffness matrix: reformation #4
-
- 5
- Nonlinear solution status: time= 0.7
-	stiffness updates             = 0
-	right hand side evaluations   = 6
-	stiffness matrix reformations = 5
-	step from line search         = 1.000000
-	convergence norms :     INITIAL         CURRENT         REQUIRED
-	   residual            2.043300e+05    2.261859e-09    0.000000e+00 
-	   energy              6.747266e+02    5.439104e-10    6.747266e+00 
-	   displacement        9.251472e+00    1.810952e-05    9.598979e-06 
-Reforming stiffness matrix: reformation #5
-
- 6
- Nonlinear solution status: time= 0.7
-	stiffness updates             = 0
-	right hand side evaluations   = 7
-	stiffness matrix reformations = 6
-	step from line search         = 1.000000
-	convergence norms :     INITIAL         CURRENT         REQUIRED
-	   residual            2.043300e+05    1.225408e-13    0.000000e+00 
-	   energy              6.747266e+02    7.845979e-14    6.747266e+00 
-	   displacement        9.251472e+00    9.291992e-08    9.599710e-06 
+	   residual            6.242133e-02    1.286793e-13    0.000000e+00 
+	   energy              2.443000e-01    5.889666e-12    2.443000e-03 
+	   displacement        2.756367e+00    2.067937e-08    2.769473e-06 
 
 convergence summary
-    number of iterations   : 6
-    number of reformations : 6
+    number of iterations   : 3
+    number of reformations : 1
 
 
 ------- converged at time : 0.7
@@ -752,261 +964,26 @@ convergence summary
 
 Data Record #1
 ===========================================================================
-Step = 7
+Step = 14
 Time = 0.7
 Data = ux;uy;uz
 File = /mnt/data/MATLAB/GIT/GIBBON/data/temp/tempModel_node_out.txt
 
 Data Record #2
 ===========================================================================
-Step = 7
+Step = 14
 Time = 0.7
 Data = Rx;Ry;Rz
 File = /mnt/data/MATLAB/GIT/GIBBON/data/temp/tempModel_force_out.txt
 
-===== beginning time step 8 : 0.8 =====
- 1
- Nonlinear solution status: time= 0.8
-	stiffness updates             = 0
-	right hand side evaluations   = 2
-	stiffness matrix reformations = 1
-	step from line search         = 1.000000
-	convergence norms :     INITIAL         CURRENT         REQUIRED
-	   residual            2.319227e+05    1.029456e+01    0.000000e+00 
-	   energy              7.262014e+02    3.943055e+00    7.262014e+00 
-	   displacement        9.974536e+00    9.974536e+00    9.974536e-06 
-Reforming stiffness matrix: reformation #1
+Data Record #3
+===========================================================================
+Step = 14
+Time = 0.7
+Data = cxxxx;cxxyy;cyyyy;cxxzz;cyyzz;czzzz;cxxxy;cyyxy;czzxy;cxyxy;cxxyz;cyyyz;czzyz;cxyyz;cyzyz;cxxxz;cyyxz;czzxz;cxyxz;cyzxz;cxzxz
+File = /mnt/data/MATLAB/GIT/GIBBON/data/temp/tempModel_stiffness_out.txt
 
- 2
- Nonlinear solution status: time= 0.8
-	stiffness updates             = 0
-	right hand side evaluations   = 4
-	stiffness matrix reformations = 2
-	step from line search         = 0.602246
-	convergence norms :     INITIAL         CURRENT         REQUIRED
-	   residual            2.319227e+05    5.066927e+00    0.000000e+00 
-	   energy              7.262014e+02    9.751981e-03    7.262014e+00 
-	   displacement        9.974536e+00    3.046519e-01    1.040706e-05 
-Reforming stiffness matrix: reformation #2
-
- 3
- Nonlinear solution status: time= 0.8
-	stiffness updates             = 0
-	right hand side evaluations   = 6
-	stiffness matrix reformations = 3
-	step from line search         = 0.216506
-	convergence norms :     INITIAL         CURRENT         REQUIRED
-	   residual            2.319227e+05    3.033866e+00    0.000000e+00 
-	   energy              7.262014e+02    3.132366e-03    7.262014e+00 
-	   displacement        9.974536e+00    1.031882e-01    1.035975e-05 
-Reforming stiffness matrix: reformation #3
-
- 4
- Nonlinear solution status: time= 0.8
-	stiffness updates             = 0
-	right hand side evaluations   = 10
-	stiffness matrix reformations = 4
-	step from line search         = 0.041721
-	convergence norms :     INITIAL         CURRENT         REQUIRED
-	   residual            2.319227e+05    2.644942e+00    0.000000e+00 
-	   energy              7.262014e+02    3.730477e-04    7.262014e+00 
-	   displacement        9.974536e+00    1.339641e-01    1.026469e-05 
-Reforming stiffness matrix: reformation #4
-
- 5
- *************************************************************************
- *                                ERROR                                  *
- *                                                                       *
- * Negative jacobian was detected at element 2 at gauss point 8          *
- * jacobian = -0.453806                                                  *
- *                                                                       *
- *************************************************************************
- *************************************************************************
- *                                ERROR                                  *
- *                                                                       *
- * Negative jacobian was detected at element 17 at gauss point 8         *
- * jacobian = -0.0600961                                                 *
- *                                                                       *
- *************************************************************************
- *************************************************************************
- *                                ERROR                                  *
- *                                                                       *
- * Negative jacobian was detected at element 111 at gauss point 2        *
- * jacobian = -0.986916                                                  *
- *                                                                       *
- *************************************************************************
- *************************************************************************
- *                                ERROR                                  *
- *                                                                       *
- * Negative jacobian was detected at element 53 at gauss point 1         *
- * jacobian = -0.246301                                                  *
- *                                                                       *
- *************************************************************************
- *************************************************************************
- *                                ERROR                                  *
- *                                                                       *
- * Negative jacobian was detected at element 37 at gauss point 8         *
- * jacobian = -0.0117727                                                 *
- *                                                                       *
- *************************************************************************
- *************************************************************************
- *                                ERROR                                  *
- *                                                                       *
- * Negative jacobian was detected at element 84 at gauss point 4         *
- * jacobian = -0.229844                                                  *
- *                                                                       *
- *************************************************************************
- *************************************************************************
- *                                ERROR                                  *
- *                                                                       *
- * Negative jacobian was detected at element 101 at gauss point 5        *
- * jacobian = -0.180029                                                  *
- *                                                                       *
- *************************************************************************
- *************************************************************************
- *                                ERROR                                  *
- *                                                                       *
- * Negative jacobian was detected at element 77 at gauss point 1         *
- * jacobian = -0.178348                                                  *
- *                                                                       *
- *************************************************************************
- *************************************************************************
- *                                ERROR                                  *
- *                                                                       *
- * Negative jacobian was detected at element 26 at gauss point 5         *
- * jacobian = -0.119026                                                  *
- *                                                                       *
- *************************************************************************
- *************************************************************************
- *                                ERROR                                  *
- *                                                                       *
- * Negative jacobian was detected at element 54 at gauss point 8         *
- * jacobian = -0.241538                                                  *
- *                                                                       *
- *************************************************************************
- *************************************************************************
- *                                ERROR                                  *
- *                                                                       *
- * Negative jacobian was detected at element 41 at gauss point 1         *
- * jacobian = -0.964932                                                  *
- *                                                                       *
- *************************************************************************
- *************************************************************************
- *                                ERROR                                  *
- *                                                                       *
- * Negative jacobian was detected at element 88 at gauss point 8         *
- * jacobian = -0.202115                                                  *
- *                                                                       *
- *************************************************************************
- *************************************************************************
- *                                ERROR                                  *
- *                                                                       *
- * Negative jacobian was detected at element 102 at gauss point 8        *
- * jacobian = -0.772926                                                  *
- *                                                                       *
- *************************************************************************
- *************************************************************************
- *                                ERROR                                  *
- *                                                                       *
- * Negative jacobian was detected at element 78 at gauss point 2         *
- * jacobian = -0.0594784                                                 *
- *                                                                       *
- *************************************************************************
- *************************************************************************
- *                                ERROR                                  *
- *                                                                       *
- * Negative jacobian was detected at element 55 at gauss point 1         *
- * jacobian = -0.256676                                                  *
- *                                                                       *
- *************************************************************************
- *************************************************************************
- *                                ERROR                                  *
- *                                                                       *
- * Negative jacobian was detected at element 27 at gauss point 4         *
- * jacobian = -0.09152                                                   *
- *                                                                       *
- *************************************************************************
- *************************************************************************
- *                                ERROR                                  *
- *                                                                       *
- * Negative jacobian was detected at element 93 at gauss point 6         *
- * jacobian = -0.0303072                                                 *
- *                                                                       *
- *************************************************************************
- *************************************************************************
- *                                ERROR                                  *
- *                                                                       *
- * Negative jacobian was detected at element 79 at gauss point 2         *
- * jacobian = -0.108111                                                  *
- *                                                                       *
- *************************************************************************
- *************************************************************************
- *                                ERROR                                  *
- *                                                                       *
- * Negative jacobian was detected at element 104 at gauss point 1        *
- * jacobian = -0.358228                                                  *
- *                                                                       *
- *************************************************************************
- *************************************************************************
- *                                ERROR                                  *
- *                                                                       *
- * Negative jacobian was detected at element 57 at gauss point 5         *
- * jacobian = -0.0178767                                                 *
- *                                                                       *
- *************************************************************************
- *************************************************************************
- *                                ERROR                                  *
- *                                                                       *
- * Negative jacobian was detected at element 28 at gauss point 8         *
- * jacobian = -0.231601                                                  *
- *                                                                       *
- *************************************************************************
- *************************************************************************
- *                                ERROR                                  *
- *                                                                       *
- * Negative jacobian was detected at element 29 at gauss point 1         *
- * jacobian = -0.0323973                                                 *
- *                                                                       *
- *************************************************************************
- *************************************************************************
- *                                ERROR                                  *
- *                                                                       *
- * Negative jacobian was detected at element 60 at gauss point 8         *
- * jacobian = -0.264537                                                  *
- *                                                                       *
- *************************************************************************
- *************************************************************************
- *                                ERROR                                  *
- *                                                                       *
- * Negative jacobian was detected at element 106 at gauss point 5        *
- * jacobian = -0.821509                                                  *
- *                                                                       *
- *************************************************************************
- *************************************************************************
- *                                ERROR                                  *
- *                                                                       *
- * Negative jacobian was detected at element 108 at gauss point 4        *
- * jacobian = -1.09997                                                   *
- *                                                                       *
- *************************************************************************
- *************************************************************************
- *                                ERROR                                  *
- *                                                                       *
- * Negative jacobian was detected at element 109 at gauss point 1        *
- * jacobian = -1.16729                                                   *
- *                                                                       *
- *************************************************************************
-
-
-------- failed to converge at time : 0.8
-
-Retrying time step. Retry attempt 1 of max 10
-
-
-AUTO STEPPER: retry step, dt = 0.05
-
-
-===== beginning time step 8 : 0.75 =====
+===== beginning time step 15 : 0.75 =====
  1
  Nonlinear solution status: time= 0.75
 	stiffness updates             = 0
@@ -1014,49 +991,33 @@ AUTO STEPPER: retry step, dt = 0.05
 	stiffness matrix reformations = 1
 	step from line search         = 1.000000
 	convergence norms :     INITIAL         CURRENT         REQUIRED
-	   residual            5.798067e+04    6.468412e-01    0.000000e+00 
-	   energy              1.815503e+02    4.938278e-01    1.815503e+00 
-	   displacement        2.493634e+00    2.493634e+00    2.493634e-06 
-Reforming stiffness matrix: reformation #1
-
+	   residual            6.526478e-02    3.077043e-07    0.000000e+00 
+	   energy              2.470794e-01    1.003377e-04    2.470794e-03 
+	   displacement        2.784024e+00    2.784024e+00    2.784024e-06 
  2
  Nonlinear solution status: time= 0.75
-	stiffness updates             = 0
+	stiffness updates             = 1
 	right hand side evaluations   = 3
-	stiffness matrix reformations = 2
+	stiffness matrix reformations = 1
 	step from line search         = 1.000000
 	convergence norms :     INITIAL         CURRENT         REQUIRED
-	   residual            5.798067e+04    2.908020e-08    0.000000e+00 
-	   energy              1.815503e+02    1.213836e-06    1.815503e+00 
-	   displacement        2.493634e+00    3.720696e-04    2.532591e-06 
-Reforming stiffness matrix: reformation #2
-
+	   residual            6.526478e-02    1.037297e-10    0.000000e+00 
+	   energy              2.470794e-01    5.201799e-08    2.470794e-03 
+	   displacement        2.784024e+00    7.007108e-04    2.800268e-06 
  3
  Nonlinear solution status: time= 0.75
-	stiffness updates             = 0
+	stiffness updates             = 2
 	right hand side evaluations   = 4
-	stiffness matrix reformations = 3
+	stiffness matrix reformations = 1
 	step from line search         = 1.000000
 	convergence norms :     INITIAL         CURRENT         REQUIRED
-	   residual            5.798067e+04    1.082240e-07    0.000000e+00 
-	   energy              1.815503e+02    8.114352e-10    1.815503e+00 
-	   displacement        2.493634e+00    5.823855e-04    2.543932e-06 
-Reforming stiffness matrix: reformation #3
-
- 4
- Nonlinear solution status: time= 0.75
-	stiffness updates             = 0
-	right hand side evaluations   = 5
-	stiffness matrix reformations = 4
-	step from line search         = 1.000000
-	convergence norms :     INITIAL         CURRENT         REQUIRED
-	   residual            5.798067e+04    1.735233e-16    0.000000e+00 
-	   energy              1.815503e+02    2.921285e-14    1.815503e+00 
-	   displacement        2.493634e+00    1.874225e-08    2.544019e-06 
+	   residual            6.526478e-02    1.467745e-13    0.000000e+00 
+	   energy              2.470794e-01    6.845177e-12    2.470794e-03 
+	   displacement        2.784024e+00    2.910664e-08    2.800170e-06 
 
 convergence summary
-    number of iterations   : 4
-    number of reformations : 4
+    number of iterations   : 3
+    number of reformations : 1
 
 
 ------- converged at time : 0.75
@@ -1064,526 +1025,272 @@ convergence summary
 
 Data Record #1
 ===========================================================================
-Step = 8
+Step = 15
 Time = 0.75
 Data = ux;uy;uz
 File = /mnt/data/MATLAB/GIT/GIBBON/data/temp/tempModel_node_out.txt
 
 Data Record #2
 ===========================================================================
-Step = 8
+Step = 15
 Time = 0.75
 Data = Rx;Ry;Rz
 File = /mnt/data/MATLAB/GIT/GIBBON/data/temp/tempModel_force_out.txt
 
-AUTO STEPPER: increasing time step, dt = 0.06
+Data Record #3
+===========================================================================
+Step = 15
+Time = 0.75
+Data = cxxxx;cxxyy;cyyyy;cxxzz;cyyzz;czzzz;cxxxy;cyyxy;czzxy;cxyxy;cxxyz;cyyyz;czzyz;cxyyz;cyzyz;cxxxz;cyyxz;czzxz;cxyxz;cyzxz;cxzxz
+File = /mnt/data/MATLAB/GIT/GIBBON/data/temp/tempModel_stiffness_out.txt
 
-
-===== beginning time step 9 : 0.81 =====
+===== beginning time step 16 : 0.8 =====
  1
- Nonlinear solution status: time= 0.81
+ Nonlinear solution status: time= 0.8
 	stiffness updates             = 0
 	right hand side evaluations   = 2
 	stiffness matrix reformations = 1
 	step from line search         = 1.000000
 	convergence norms :     INITIAL         CURRENT         REQUIRED
-	   residual            8.916211e+04    1.388687e+00    0.000000e+00 
-	   energy              2.714757e+02    8.975895e-01    2.714757e+00 
-	   displacement        3.738571e+00    3.738571e+00    3.738571e-06 
-Reforming stiffness matrix: reformation #1
-
+	   residual            6.854855e-02    3.158114e-07    0.000000e+00 
+	   energy              2.504232e-01    1.203904e-04    2.504232e-03 
+	   displacement        2.817853e+00    2.817853e+00    2.817853e-06 
  2
- Nonlinear solution status: time= 0.81
-	stiffness updates             = 0
+ Nonlinear solution status: time= 0.8
+	stiffness updates             = 1
 	right hand side evaluations   = 3
-	stiffness matrix reformations = 2
+	stiffness matrix reformations = 1
 	step from line search         = 1.000000
 	convergence norms :     INITIAL         CURRENT         REQUIRED
-	   residual            8.916211e+04    1.825515e-07    0.000000e+00 
-	   energy              2.714757e+02    4.308703e-06    2.714757e+00 
-	   displacement        3.738571e+00    7.279393e-04    3.808458e-06 
-Reforming stiffness matrix: reformation #2
-
+	   residual            6.854855e-02    1.168101e-10    0.000000e+00 
+	   energy              2.504232e-01    6.335201e-08    2.504232e-03 
+	   displacement        2.817853e+00    7.295187e-04    2.837328e-06 
  3
- Nonlinear solution status: time= 0.81
-	stiffness updates             = 0
+ Nonlinear solution status: time= 0.8
+	stiffness updates             = 2
 	right hand side evaluations   = 4
-	stiffness matrix reformations = 3
+	stiffness matrix reformations = 1
 	step from line search         = 1.000000
 	convergence norms :     INITIAL         CURRENT         REQUIRED
-	   residual            8.916211e+04    4.218483e-07    0.000000e+00 
-	   energy              2.714757e+02    1.352350e-09    2.714757e+00 
-	   displacement        3.738571e+00    1.118152e-03    3.833485e-06 
-Reforming stiffness matrix: reformation #3
-
- 4
- Nonlinear solution status: time= 0.81
-	stiffness updates             = 0
-	right hand side evaluations   = 5
-	stiffness matrix reformations = 4
-	step from line search         = 1.000000
-	convergence norms :     INITIAL         CURRENT         REQUIRED
-	   residual            8.916211e+04    7.193383e-16    0.000000e+00 
-	   energy              2.714757e+02    1.072998e-13    2.714757e+00 
-	   displacement        3.738571e+00    4.413249e-08    3.833653e-06 
+	   residual            6.854855e-02    1.694382e-13    0.000000e+00 
+	   energy              2.504232e-01    7.951429e-12    2.504232e-03 
+	   displacement        2.817853e+00    3.992742e-08    2.837264e-06 
 
 convergence summary
-    number of iterations   : 4
-    number of reformations : 4
+    number of iterations   : 3
+    number of reformations : 1
 
 
-------- converged at time : 0.81
+------- converged at time : 0.8
 
 
 Data Record #1
 ===========================================================================
-Step = 9
-Time = 0.81
+Step = 16
+Time = 0.8
 Data = ux;uy;uz
 File = /mnt/data/MATLAB/GIT/GIBBON/data/temp/tempModel_node_out.txt
 
 Data Record #2
 ===========================================================================
-Step = 9
-Time = 0.81
+Step = 16
+Time = 0.8
 Data = Rx;Ry;Rz
 File = /mnt/data/MATLAB/GIT/GIBBON/data/temp/tempModel_force_out.txt
 
-AUTO STEPPER: increasing time step, dt = 0.068
+Data Record #3
+===========================================================================
+Step = 16
+Time = 0.8
+Data = cxxxx;cxxyy;cyyyy;cxxzz;cyyzz;czzzz;cxxxy;cyyxy;czzxy;cxyxy;cxxyz;cyyyz;czzyz;cxyyz;cyzyz;cxxxz;cyyxz;czzxz;cxyxz;cyzxz;cxzxz
+File = /mnt/data/MATLAB/GIT/GIBBON/data/temp/tempModel_stiffness_out.txt
 
-
-===== beginning time step 10 : 0.878 =====
+===== beginning time step 17 : 0.85 =====
  1
- Nonlinear solution status: time= 0.878
+ Nonlinear solution status: time= 0.85
 	stiffness updates             = 0
 	right hand side evaluations   = 2
 	stiffness matrix reformations = 1
 	step from line search         = 1.000000
 	convergence norms :     INITIAL         CURRENT         REQUIRED
-	   residual            1.241859e+05    2.388757e+00    0.000000e+00 
-	   energy              3.651409e+02    1.389014e+00    3.651409e+00 
-	   displacement        5.051446e+00    5.051446e+00    5.051446e-06 
-Reforming stiffness matrix: reformation #1
-
+	   residual            7.231531e-02    3.254358e-07    0.000000e+00 
+	   energy              2.543544e-01    1.416508e-04    2.543544e-03 
+	   displacement        2.858321e+00    2.858321e+00    2.858321e-06 
  2
- Nonlinear solution status: time= 0.878
-	stiffness updates             = 0
+ Nonlinear solution status: time= 0.85
+	stiffness updates             = 1
 	right hand side evaluations   = 3
-	stiffness matrix reformations = 2
+	stiffness matrix reformations = 1
 	step from line search         = 1.000000
 	convergence norms :     INITIAL         CURRENT         REQUIRED
-	   residual            1.241859e+05    2.114341e-05    0.000000e+00 
-	   energy              3.651409e+02    2.956002e-06    3.651409e+00 
-	   displacement        5.051446e+00    1.958650e-03    5.179668e-06 
-Reforming stiffness matrix: reformation #2
-
+	   residual            7.231531e-02    1.328349e-10    0.000000e+00 
+	   energy              2.543544e-01    7.584997e-08    2.543544e-03 
+	   displacement        2.858321e+00    7.643635e-04    2.881292e-06 
  3
- Nonlinear solution status: time= 0.878
-	stiffness updates             = 0
+ Nonlinear solution status: time= 0.85
+	stiffness updates             = 2
 	right hand side evaluations   = 4
-	stiffness matrix reformations = 3
+	stiffness matrix reformations = 1
 	step from line search         = 1.000000
 	convergence norms :     INITIAL         CURRENT         REQUIRED
-	   residual            1.241859e+05    1.920525e-05    0.000000e+00 
-	   energy              3.651409e+02    8.283352e-08    3.651409e+00 
-	   displacement        5.051446e+00    1.722265e-03    5.202349e-06 
-Reforming stiffness matrix: reformation #3
-
- 4
- Nonlinear solution status: time= 0.878
-	stiffness updates             = 0
-	right hand side evaluations   = 5
-	stiffness matrix reformations = 4
-	step from line search         = 1.000000
-	convergence norms :     INITIAL         CURRENT         REQUIRED
-	   residual            1.241859e+05    1.294921e-10    0.000000e+00 
-	   energy              3.651409e+02    2.790273e-10    3.651409e+00 
-	   displacement        5.051446e+00    4.091341e-06    5.204425e-06 
+	   residual            7.231531e-02    1.978445e-13    0.000000e+00 
+	   energy              2.543544e-01    9.241794e-12    2.543544e-03 
+	   displacement        2.858321e+00    5.363830e-08    2.881271e-06 
 
 convergence summary
-    number of iterations   : 4
-    number of reformations : 4
+    number of iterations   : 3
+    number of reformations : 1
 
 
-------- converged at time : 0.878
+------- converged at time : 0.85
 
 
 Data Record #1
 ===========================================================================
-Step = 10
-Time = 0.878
+Step = 17
+Time = 0.85
 Data = ux;uy;uz
 File = /mnt/data/MATLAB/GIT/GIBBON/data/temp/tempModel_node_out.txt
 
 Data Record #2
 ===========================================================================
-Step = 10
-Time = 0.878
+Step = 17
+Time = 0.85
 Data = Rx;Ry;Rz
 File = /mnt/data/MATLAB/GIT/GIBBON/data/temp/tempModel_force_out.txt
 
-AUTO STEPPER: increasing time step, dt = 0.0744
+Data Record #3
+===========================================================================
+Step = 17
+Time = 0.85
+Data = cxxxx;cxxyy;cyyyy;cxxzz;cyyzz;czzzz;cxxxy;cyyxy;czzxy;cxyxy;cxxyz;cyyyz;czzyz;cxyyz;cyzyz;cxxxz;cyyxz;czzxz;cxyxz;cyzxz;cxzxz
+File = /mnt/data/MATLAB/GIT/GIBBON/data/temp/tempModel_stiffness_out.txt
 
-
-===== beginning time step 11 : 0.9524 =====
+===== beginning time step 18 : 0.9 =====
  1
- Nonlinear solution status: time= 0.9524
+ Nonlinear solution status: time= 0.9
 	stiffness updates             = 0
 	right hand side evaluations   = 2
 	stiffness matrix reformations = 1
 	step from line search         = 1.000000
 	convergence norms :     INITIAL         CURRENT         REQUIRED
-	   residual            1.634307e+05    3.600587e+00    0.000000e+00 
-	   energy              4.610715e+02    1.950479e+00    4.610715e+00 
-	   displacement        6.422004e+00    6.422004e+00    6.422004e-06 
-Reforming stiffness matrix: reformation #1
-
+	   residual            7.661573e-02    3.366606e-07    0.000000e+00 
+	   energy              2.589003e-01    1.643427e-04    2.589003e-03 
+	   displacement        2.905998e+00    2.905998e+00    2.905998e-06 
  2
- Nonlinear solution status: time= 0.9524
-	stiffness updates             = 0
+ Nonlinear solution status: time= 0.9
+	stiffness updates             = 1
 	right hand side evaluations   = 3
-	stiffness matrix reformations = 2
-	step from line search         = 1.000000
-	convergence norms :     INITIAL         CURRENT         REQUIRED
-	   residual            1.634307e+05    1.099250e+00    0.000000e+00 
-	   energy              4.610715e+02    7.942476e-03    4.610715e+00 
-	   displacement        6.422004e+00    2.152058e-01    7.326025e-06 
-Reforming stiffness matrix: reformation #2
-
- 3
- Nonlinear solution status: time= 0.9524
-	stiffness updates             = 0
-	right hand side evaluations   = 7
-	stiffness matrix reformations = 3
-	step from line search         = 0.080619
-	convergence norms :     INITIAL         CURRENT         REQUIRED
-	   residual            1.634307e+05    8.557714e-01    0.000000e+00 
-	   energy              4.610715e+02    8.154264e-05    4.610715e+00 
-	   displacement        6.422004e+00    4.957525e-02    7.206251e-06 
-Reforming stiffness matrix: reformation #3
-
- 4
- Nonlinear solution status: time= 0.9524
-	stiffness updates             = 0
-	right hand side evaluations   = 10
-	stiffness matrix reformations = 4
-	step from line search         = 0.500000
-	convergence norms :     INITIAL         CURRENT         REQUIRED
-	   residual            1.634307e+05    4.371805e+02    0.000000e+00 
-	   energy              4.610715e+02    3.257039e+00    4.610715e+00 
-	   displacement        6.422004e+00    9.278884e+00    1.129660e-05 
-Reforming stiffness matrix: reformation #4
-
- 5
- Nonlinear solution status: time= 0.9524
-	stiffness updates             = 0
-	right hand side evaluations   = 12
-	stiffness matrix reformations = 5
-	step from line search         = 0.594300
-	convergence norms :     INITIAL         CURRENT         REQUIRED
-	   residual            1.634307e+05    1.025178e+02    0.000000e+00 
-	   energy              4.610715e+02    1.419623e-01    4.610715e+00 
-	   displacement        6.422004e+00    5.542977e+00    1.544582e-05 
-Reforming stiffness matrix: reformation #5
-
- 6
- *************************************************************************
- *                                ERROR                                  *
- *                                                                       *
- * Negative jacobian was detected at element 1 at gauss point 3          *
- * jacobian = -0.0771934                                                 *
- *                                                                       *
- *************************************************************************
- *************************************************************************
- *                                ERROR                                  *
- *                                                                       *
- * Negative jacobian was detected at element 49 at gauss point 2         *
- * jacobian = -0.124113                                                  *
- *                                                                       *
- *************************************************************************
- *************************************************************************
- *                                ERROR                                  *
- *                                                                       *
- * Negative jacobian was detected at element 96 at gauss point 2         *
- * jacobian = -0.0446624                                                 *
- *                                                                       *
- *************************************************************************
- *************************************************************************
- *                                ERROR                                  *
- *                                                                       *
- * Negative jacobian was detected at element 66 at gauss point 1         *
- * jacobian = -0.551264                                                  *
- *                                                                       *
- *************************************************************************
- *************************************************************************
- *                                ERROR                                  *
- *                                                                       *
- * Negative jacobian was detected at element 111 at gauss point 1        *
- * jacobian = -0.000319604                                               *
- *                                                                       *
- *************************************************************************
- *************************************************************************
- *                                ERROR                                  *
- *                                                                       *
- * Negative jacobian was detected at element 36 at gauss point 6         *
- * jacobian = -0.956348                                                  *
- *                                                                       *
- *************************************************************************
- *************************************************************************
- *                                ERROR                                  *
- *                                                                       *
- * Negative jacobian was detected at element 21 at gauss point 1         *
- * jacobian = -0.0982939                                                 *
- *                                                                       *
- *************************************************************************
- *************************************************************************
- *                                ERROR                                  *
- *                                                                       *
- * Negative jacobian was detected at element 86 at gauss point 6         *
- * jacobian = -0.105052                                                  *
- *                                                                       *
- *************************************************************************
- *************************************************************************
- *                                ERROR                                  *
- *                                                                       *
- * Negative jacobian was detected at element 52 at gauss point 8         *
- * jacobian = -0.041087                                                  *
- *                                                                       *
- *************************************************************************
- *************************************************************************
- *                                ERROR                                  *
- *                                                                       *
- * Negative jacobian was detected at element 11 at gauss point 7         *
- * jacobian = -0.217599                                                  *
- *                                                                       *
- *************************************************************************
- *************************************************************************
- *                                ERROR                                  *
- *                                                                       *
- * Negative jacobian was detected at element 113 at gauss point 6        *
- * jacobian = -0.353975                                                  *
- *                                                                       *
- *************************************************************************
- *************************************************************************
- *                                ERROR                                  *
- *                                                                       *
- * Negative jacobian was detected at element 41 at gauss point 5         *
- * jacobian = -0.3345                                                    *
- *                                                                       *
- *************************************************************************
- *************************************************************************
- *                                ERROR                                  *
- *                                                                       *
- * Negative jacobian was detected at element 74 at gauss point 8         *
- * jacobian = -0.152463                                                  *
- *                                                                       *
- *************************************************************************
- *************************************************************************
- *                                ERROR                                  *
- *                                                                       *
- * Negative jacobian was detected at element 15 at gauss point 2         *
- * jacobian = -0.14002                                                   *
- *                                                                       *
- *************************************************************************
- *************************************************************************
- *                                ERROR                                  *
- *                                                                       *
- * Negative jacobian was detected at element 61 at gauss point 2         *
- * jacobian = -1.37083                                                   *
- *                                                                       *
- *************************************************************************
- *************************************************************************
- *                                ERROR                                  *
- *                                                                       *
- * Negative jacobian was detected at element 114 at gauss point 8        *
- * jacobian = -0.388571                                                  *
- *                                                                       *
- *************************************************************************
- *************************************************************************
- *                                ERROR                                  *
- *                                                                       *
- * Negative jacobian was detected at element 75 at gauss point 5         *
- * jacobian = -0.0628299                                                 *
- *                                                                       *
- *************************************************************************
- *************************************************************************
- *                                ERROR                                  *
- *                                                                       *
- * Negative jacobian was detected at element 115 at gauss point 6        *
- * jacobian = -0.582184                                                  *
- *                                                                       *
- *************************************************************************
-
-
-------- failed to converge at time : 0.9524
-
-Retrying time step. Retry attempt 1 of max 10
-
-
-AUTO STEPPER: retry step, dt = 0.0372
-
-
-===== beginning time step 11 : 0.9152 =====
- 1
- Nonlinear solution status: time= 0.9152
-	stiffness updates             = 0
-	right hand side evaluations   = 2
 	stiffness matrix reformations = 1
 	step from line search         = 1.000000
 	convergence norms :     INITIAL         CURRENT         REQUIRED
-	   residual            4.085768e+04    2.259895e-01    0.000000e+00 
-	   energy              1.152679e+02    2.441591e-01    1.152679e+00 
-	   displacement        1.605522e+00    1.605522e+00    1.605522e-06 
-Reforming stiffness matrix: reformation #1
-
- 2
- Nonlinear solution status: time= 0.9152
-	stiffness updates             = 0
-	right hand side evaluations   = 3
-	stiffness matrix reformations = 2
-	step from line search         = 1.000000
-	convergence norms :     INITIAL         CURRENT         REQUIRED
-	   residual            4.085768e+04    2.889362e-06    0.000000e+00 
-	   energy              1.152679e+02    3.392002e-06    1.152679e+00 
-	   displacement        1.605522e+00    5.243432e-04    1.606142e-06 
-Reforming stiffness matrix: reformation #2
-
+	   residual            7.661573e-02    1.523494e-10    0.000000e+00 
+	   energy              2.589003e-01    8.976672e-08    2.589003e-03 
+	   displacement        2.905998e+00    8.059088e-04    2.932783e-06 
  3
- Nonlinear solution status: time= 0.9152
-	stiffness updates             = 0
+ Nonlinear solution status: time= 0.9
+	stiffness updates             = 2
 	right hand side evaluations   = 4
-	stiffness matrix reformations = 3
+	stiffness matrix reformations = 1
 	step from line search         = 1.000000
 	convergence norms :     INITIAL         CURRENT         REQUIRED
-	   residual            4.085768e+04    3.767972e-06    0.000000e+00 
-	   energy              1.152679e+02    1.857145e-08    1.152679e+00 
-	   displacement        1.605522e+00    7.422838e-04    1.632170e-06 
-Reforming stiffness matrix: reformation #3
-
- 4
- Nonlinear solution status: time= 0.9152
-	stiffness updates             = 0
-	right hand side evaluations   = 5
-	stiffness matrix reformations = 4
-	step from line search         = 1.000000
-	convergence norms :     INITIAL         CURRENT         REQUIRED
-	   residual            4.085768e+04    5.344419e-12    0.000000e+00 
-	   energy              1.152679e+02    3.168714e-11    1.152679e+00 
-	   displacement        1.605522e+00    8.949029e-07    1.632930e-06 
+	   residual            7.661573e-02    2.335312e-13    0.000000e+00 
+	   energy              2.589003e-01    1.075655e-11    2.589003e-03 
+	   displacement        2.905998e+00    7.087891e-08    2.932814e-06 
 
 convergence summary
-    number of iterations   : 4
-    number of reformations : 4
+    number of iterations   : 3
+    number of reformations : 1
 
 
-------- converged at time : 0.9152
+------- converged at time : 0.9
 
 
 Data Record #1
 ===========================================================================
-Step = 11
-Time = 0.9152
+Step = 18
+Time = 0.9
 Data = ux;uy;uz
 File = /mnt/data/MATLAB/GIT/GIBBON/data/temp/tempModel_node_out.txt
 
 Data Record #2
 ===========================================================================
-Step = 11
-Time = 0.9152
+Step = 18
+Time = 0.9
 Data = Rx;Ry;Rz
 File = /mnt/data/MATLAB/GIT/GIBBON/data/temp/tempModel_force_out.txt
 
-AUTO STEPPER: increasing time step, dt = 0.04976
+Data Record #3
+===========================================================================
+Step = 18
+Time = 0.9
+Data = cxxxx;cxxyy;cyyyy;cxxzz;cyyzz;czzzz;cxxxy;cyyxy;czzxy;cxyxy;cxxyz;cyyyz;czzyz;cxyyz;cyzyz;cxxxz;cyyxz;czzxz;cxyxz;cyzxz;cxzxz
+File = /mnt/data/MATLAB/GIT/GIBBON/data/temp/tempModel_stiffness_out.txt
 
-
-===== beginning time step 12 : 0.96496 =====
+===== beginning time step 19 : 0.95 =====
  1
- Nonlinear solution status: time= 0.96496
+ Nonlinear solution status: time= 0.95
 	stiffness updates             = 0
 	right hand side evaluations   = 2
 	stiffness matrix reformations = 1
 	step from line search         = 1.000000
 	convergence norms :     INITIAL         CURRENT         REQUIRED
-	   residual            7.709633e+04    7.454424e-01    0.000000e+00 
-	   energy              2.124669e+02    6.069673e-01    2.124669e+00 
-	   displacement        2.971907e+00    2.971907e+00    2.971907e-06 
-Reforming stiffness matrix: reformation #1
-
+	   residual            8.150979e-02    3.495826e-07    0.000000e+00 
+	   energy              2.640932e-01    1.887085e-04    2.640932e-03 
+	   displacement        2.961565e+00    2.961565e+00    2.961565e-06 
  2
- Nonlinear solution status: time= 0.96496
-	stiffness updates             = 0
+ Nonlinear solution status: time= 0.95
+	stiffness updates             = 1
 	right hand side evaluations   = 3
-	stiffness matrix reformations = 2
+	stiffness matrix reformations = 1
 	step from line search         = 1.000000
 	convergence norms :     INITIAL         CURRENT         REQUIRED
-	   residual            7.709633e+04    1.137476e-04    0.000000e+00 
-	   energy              2.124669e+02    2.914154e-05    2.124669e+00 
-	   displacement        2.971907e+00    5.711370e-03    3.084393e-06 
-Reforming stiffness matrix: reformation #2
-
+	   residual            8.150979e-02    1.760343e-10    0.000000e+00 
+	   energy              2.640932e-01    1.053944e-07    2.640932e-03 
+	   displacement        2.961565e+00    8.549645e-04    2.992543e-06 
  3
- Nonlinear solution status: time= 0.96496
-	stiffness updates             = 0
+ Nonlinear solution status: time= 0.95
+	stiffness updates             = 2
 	right hand side evaluations   = 4
-	stiffness matrix reformations = 3
+	stiffness matrix reformations = 1
 	step from line search         = 1.000000
 	convergence norms :     INITIAL         CURRENT         REQUIRED
-	   residual            7.709633e+04    8.652230e-05    0.000000e+00 
-	   energy              2.124669e+02    4.356390e-07    2.124669e+00 
-	   displacement        2.971907e+00    4.416963e-03    3.043996e-06 
-Reforming stiffness matrix: reformation #3
-
- 4
- Nonlinear solution status: time= 0.96496
-	stiffness updates             = 0
-	right hand side evaluations   = 5
-	stiffness matrix reformations = 4
-	step from line search         = 1.000000
-	convergence norms :     INITIAL         CURRENT         REQUIRED
-	   residual            7.709633e+04    1.118818e-08    0.000000e+00 
-	   energy              2.124669e+02    5.039705e-09    2.124669e+00 
-	   displacement        2.971907e+00    3.658101e-05    3.041765e-06 
-Reforming stiffness matrix: reformation #4
-
- 5
- Nonlinear solution status: time= 0.96496
-	stiffness updates             = 0
-	right hand side evaluations   = 6
-	stiffness matrix reformations = 5
-	step from line search         = 1.000000
-	convergence norms :     INITIAL         CURRENT         REQUIRED
-	   residual            7.709633e+04    7.898006e-13    0.000000e+00 
-	   energy              2.124669e+02    7.496304e-13    2.124669e+00 
-	   displacement        2.971907e+00    3.419725e-07    3.041419e-06 
+	   residual            8.150979e-02    2.785186e-13    0.000000e+00 
+	   energy              2.640932e-01    1.254460e-11    2.640932e-03 
+	   displacement        2.961565e+00    9.246764e-08    2.992639e-06 
 
 convergence summary
-    number of iterations   : 5
-    number of reformations : 5
+    number of iterations   : 3
+    number of reformations : 1
 
 
-------- converged at time : 0.96496
+------- converged at time : 0.95
 
 
 Data Record #1
 ===========================================================================
-Step = 12
-Time = 0.96496
+Step = 19
+Time = 0.95
 Data = ux;uy;uz
 File = /mnt/data/MATLAB/GIT/GIBBON/data/temp/tempModel_node_out.txt
 
 Data Record #2
 ===========================================================================
-Step = 12
-Time = 0.96496
+Step = 19
+Time = 0.95
 Data = Rx;Ry;Rz
 File = /mnt/data/MATLAB/GIT/GIBBON/data/temp/tempModel_force_out.txt
 
-AUTO STEPPER: increasing time step, dt = 0.059808
+Data Record #3
+===========================================================================
+Step = 19
+Time = 0.95
+Data = cxxxx;cxxyy;cyyyy;cxxzz;cyyzz;czzzz;cxxxy;cyyxy;czzxy;cxyxy;cxxyz;cyyyz;czzyz;cxyyz;cyzyz;cxxxz;cyyxz;czzxz;cxyxz;cyzxz;cxzxz
+File = /mnt/data/MATLAB/GIT/GIBBON/data/temp/tempModel_stiffness_out.txt
+MUST POINT CONTROLLER: adjusting time step. dt = 0.05
 
-MUST POINT CONTROLLER: adjusting time step. dt = 0.03504
 
-
-===== beginning time step 13 : 1 =====
+===== beginning time step 20 : 1 =====
  1
  Nonlinear solution status: time= 1
 	stiffness updates             = 0
@@ -1591,49 +1298,33 @@ MUST POINT CONTROLLER: adjusting time step. dt = 0.03504
 	stiffness matrix reformations = 1
 	step from line search         = 1.000000
 	convergence norms :     INITIAL         CURRENT         REQUIRED
-	   residual            4.110947e+04    1.924060e-01    0.000000e+00 
-	   energy              1.096937e+02    2.233419e-01    1.096937e+00 
-	   displacement        1.543608e+00    1.543608e+00    1.543608e-06 
-Reforming stiffness matrix: reformation #1
-
+	   residual            8.706834e-02    3.643139e-07    0.000000e+00 
+	   energy              2.699706e-01    2.150125e-04    2.699706e-03 
+	   displacement        3.025832e+00    3.025832e+00    3.025832e-06 
  2
  Nonlinear solution status: time= 1
-	stiffness updates             = 0
+	stiffness updates             = 1
 	right hand side evaluations   = 3
-	stiffness matrix reformations = 2
+	stiffness matrix reformations = 1
 	step from line search         = 1.000000
 	convergence norms :     INITIAL         CURRENT         REQUIRED
-	   residual            4.110947e+04    9.460358e-07    0.000000e+00 
-	   energy              1.096937e+02    2.301557e-06    1.096937e+00 
-	   displacement        1.543608e+00    5.788299e-04    1.564842e-06 
-Reforming stiffness matrix: reformation #2
-
+	   residual            8.706834e-02    2.047381e-10    0.000000e+00 
+	   energy              2.699706e-01    1.230710e-07    2.699706e-03 
+	   displacement        3.025832e+00    9.125107e-04    3.061452e-06 
  3
  Nonlinear solution status: time= 1
-	stiffness updates             = 0
+	stiffness updates             = 2
 	right hand side evaluations   = 4
-	stiffness matrix reformations = 3
+	stiffness matrix reformations = 1
 	step from line search         = 1.000000
 	convergence norms :     INITIAL         CURRENT         REQUIRED
-	   residual            4.110947e+04    9.320019e-07    0.000000e+00 
-	   energy              1.096937e+02    5.249192e-09    1.096937e+00 
-	   displacement        1.543608e+00    5.966858e-04    1.569217e-06 
-Reforming stiffness matrix: reformation #3
-
- 4
- Nonlinear solution status: time= 1
-	stiffness updates             = 0
-	right hand side evaluations   = 5
-	stiffness matrix reformations = 4
-	step from line search         = 1.000000
-	convergence norms :     INITIAL         CURRENT         REQUIRED
-	   residual            4.110947e+04    7.736045e-14    0.000000e+00 
-	   energy              1.096937e+02    1.725960e-12    1.096937e+00 
-	   displacement        1.543608e+00    9.848555e-08    1.569364e-06 
+	   residual            8.706834e-02    3.354715e-13    0.000000e+00 
+	   energy              2.699706e-01    1.466562e-11    2.699706e-03 
+	   displacement        3.025832e+00    1.194482e-07    3.061625e-06 
 
 convergence summary
-    number of iterations   : 4
-    number of reformations : 4
+    number of iterations   : 3
+    number of reformations : 1
 
 
 ------- converged at time : 1
@@ -1641,35 +1332,42 @@ convergence summary
 
 Data Record #1
 ===========================================================================
-Step = 13
+Step = 20
 Time = 1
 Data = ux;uy;uz
 File = /mnt/data/MATLAB/GIT/GIBBON/data/temp/tempModel_node_out.txt
 
 Data Record #2
 ===========================================================================
-Step = 13
+Step = 20
 Time = 1
 Data = Rx;Ry;Rz
 File = /mnt/data/MATLAB/GIT/GIBBON/data/temp/tempModel_force_out.txt
 
+Data Record #3
+===========================================================================
+Step = 20
+Time = 1
+Data = cxxxx;cxxyy;cyyyy;cxxzz;cyyzz;czzzz;cxxxy;cyyxy;czzxy;cxyxy;cxxyz;cyyyz;czzyz;cxyyz;cyzyz;cxxxz;cyyxz;czzxz;cxyxz;cyzxz;cxzxz
+File = /mnt/data/MATLAB/GIT/GIBBON/data/temp/tempModel_stiffness_out.txt
+
 
 N O N L I N E A R   I T E R A T I O N   I N F O R M A T I O N
 
-	Number of time steps completed .................... : 13
+	Number of time steps completed .................... : 20
 
-	Total number of equilibrium iterations ............ : 75
+	Total number of equilibrium iterations ............ : 60
 
-	Average number of equilibrium iterations .......... : 5.76923
+	Average number of equilibrium iterations .......... : 3
 
-	Total number of right hand evaluations ............ : 103
+	Total number of right hand evaluations ............ : 80
 
-	Total number of stiffness reformations ............ : 77
+	Total number of stiffness reformations ............ : 20
 
 	Time in linear solver: 0:00:00
 
 
- Elapsed time : 0:00:01
+ Elapsed time : 0:00:02
 
  T I M I N G   I N F O R M A T I O N
 
@@ -1677,9 +1375,9 @@ N O N L I N E A R   I T E R A T I O N   I N F O R M A T I O N
 
 	Initialization time ............. : 0:00:00 (0 sec)
 
-	Solve time ...................... : 0:00:01 (1 sec)
+	Solve time ...................... : 0:00:02 (2 sec)
 
-	   IO-time (plot, dmp, data) .... : 0:00:00 (0 sec)
+	   IO-time (plot, dmp, data) .... : 0:00:02 (2 sec)
 
 	   reforming stiffness .......... : 0:00:00 (0 sec)
 
@@ -1687,11 +1385,11 @@ N O N L I N E A R   I T E R A T I O N   I N F O R M A T I O N
 
 	   evaluating residual .......... : 0:00:00 (0 sec)
 
-	   model update ................. : 0:00:01 (1 sec)
+	   model update ................. : 0:00:00 (0 sec)
 
 	   time in linear solver ........ : 0:00:00 (0 sec)
 
-	Total elapsed time .............. : 0:00:01 (1 sec)
+	Total elapsed time .............. : 0:00:02 (2 sec)
 
 
  N O R M A L   T E R M I N A T I O N

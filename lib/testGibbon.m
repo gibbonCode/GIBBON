@@ -1,6 +1,11 @@
 function testGibbon(varargin)
 
 switch nargin
+    case 0
+        testSet='all';
+        testMode='test';
+        approveQuestion=1;
+        startInd=1;
     case 1
         testSet=varargin{1};
         testMode='test';

@@ -19,6 +19,4 @@ end
 
 c(linearIndexFourthOrder)=cVoigt(linearIndexVoigt);
 
-
 end
-

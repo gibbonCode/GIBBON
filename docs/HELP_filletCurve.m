@@ -101,6 +101,7 @@ cPar.patchType='tri';
 cPar.dir=0;
 cPar.n=[0 0 1];
 cPar.closeLoopOpt=0; 
+
 [F_tri,V_tri]=polyExtrude(Vc,cPar);
 
 %% 
@@ -111,7 +112,6 @@ xlabel('X','FontSize',fontSize);ylabel('Y','FontSize',fontSize); zlabel('Z','Fon
 hold on;
 
 hp=patch('faces',F_tri,'Vertices',V_tri);
-% [hp2]=patchNormPlot(F_tri,V_tri,2*cPar.pointSpacing);
 
 set(hp,'FaceColor','g','EdgeColor','k','FaceAlpha',1);
 camlight headlight;
