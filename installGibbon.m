@@ -5,8 +5,12 @@ disp('---INSTALLING GIBBON ---');
 disp('-> Adding gibbon paths');
 
 gibbonPath=fileparts(mfilename('fullpath')); %Get the GIBBON path
+addpath(fullfile(gibbonPath,'lib')); %Add gibbon lib path so gibbon functions used here are known
+
+%%
 [pathNames]=getSubPaths(gibbonPath);
 
+%%
 ignoreString='.'; %Target for ignoring .git and other hidden folders
 for q=1:1:numel(pathNames)
     pathNameNow=pathNames{q};
@@ -18,7 +22,7 @@ end
 %% Add FEBio and export_fig paths
 disp('-> Adding 3rd party paths');
 
-prompt = {'FEBio path:','export_fig path:'};
+prompt = {'FEBio full path to program (e.g. .../bin/FEBio2.lnx64 or ...\bin\FEBio2.exe):','export_fig path:'};
 dlg_title = 'Path definitions (leave empty if not used)';
 
 FEBioPath=getFEBioPath;

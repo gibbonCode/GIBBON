@@ -12,6 +12,7 @@ function FEBioPath=getFEBioPath
 % 
 % 2015/10/05 Updated for GIBBON
 % 2015/10/05 Enabled searching valid paths in multi-line config. file.
+% 2017/06/10 changed empty output to an empty character array. 
 %------------------------------------------------------------------------
 
 %%
@@ -30,7 +31,7 @@ catch
 end
 
 %Get first valid path
-FEBioPath=[];
+FEBioPath='';
 if ~isempty(T)
     for q=1:1:numel(T)
         pathName=T{q};
