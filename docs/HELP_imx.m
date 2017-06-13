@@ -17,7 +17,7 @@ clear; close all; clc;
 
 %% 
 % Get a 3D image (see als0 |dcmFolder2MATobject| to import DICOM data)
-testCase=1; 
+testCase=2; 
 switch testCase
     case 1 %MATLAB brain data
         load mri;
