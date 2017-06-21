@@ -7,8 +7,8 @@ defaultVal={0,0,0.25,0.25,100,2,1};
 for q=1:1:numel(fieldNames)    
     if ~isfield(optStruct,fieldNames{q})
         optStruct.(fieldNames{q})=defaultVal{q};
-    elseif isempty(optStruct.(fieldNames{q}))
-        optStruct.(fieldNames{q})=defaultVal{q};
+%     elseif isempty(optStruct.(fieldNames{q}))
+%         optStruct.(fieldNames{q})=defaultVal{q};
     end
 end
 
@@ -42,16 +42,24 @@ y2=linspace(y2,1,nLin);
 
 if numel(n)==1
     xi=linspace(0,1,n);
-else
+elseif numel(n)>1
     xi=n;
+else %n must be empty
+    xi=[]; %Make xi empty will force pp form output
 end
 
-yi=interp1([x1(:);x2(:)],[y1(:);y2(:)],xi,'pchip');
+if ~isempty(xi)
+    yi = pchip([x1(:);x2(:)],[y1(:);y2(:)],xi);
+else
+    pp = pchip([x1(:);x2(:)],[y1(:);y2(:)]);    
+end
 
 if numel(n)==1
     s=[xi(:) yi(:)];
-else
+elseif numel(n)>1
     s=yi;
+else
+    s=pp;
 end
 
 
