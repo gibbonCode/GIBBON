@@ -99,7 +99,7 @@ smeshStruct.regionA=regionA;
 smeshStruct.minRegionMarker=2; %Minimum region marker
 smeshStruct.modelName=smeshName;
 
-[meshOutput]=runTetGenSmesh(smeshStruct); %Run tetGen 
+[meshOutput]=runTetGen(smeshStruct); %Run tetGen 
 
 %% 
 % Access model element and patch data

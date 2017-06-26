@@ -211,7 +211,7 @@ smeshStruct.smeshName=smeshName;
 % Mesh model using tetrahedral elements using tetGen (see:
 % <http://wias-berlin.de/software/tetgen/>)
 
-[meshOutput]=runTetGenSmesh(smeshStruct); %Run tetGen 
+[meshOutput]=runTetGen(smeshStruct); %Run tetGen 
 
 %% 
 % Access model element and patch data

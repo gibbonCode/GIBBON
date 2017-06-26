@@ -116,7 +116,7 @@ inputStruct.regionA=regionA;
 inputStruct.minRegionMarker=2; %Minimum region marker
 inputStruct.modelName=modelName;
 inputStruct.tetType=tetType;
-[meshOutput]=runTetGenSmesh(inputStruct); %Run tetGen 
+[meshOutput]=runTetGen(inputStruct); %Run tetGen 
 
 %% 
 % Access model element and patch data

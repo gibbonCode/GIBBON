@@ -197,7 +197,7 @@ smeshStruct.smeshName=smeshName;
 
 %% MESH MODEL USING TETGEN
 
-[meshOutput]=runTetGenSmesh(smeshStruct);
+[meshOutput]=runTetGen(smeshStruct);
 %runTetView(meshOutput.loadNameStruct.loadName_ele);
 
 % Accessing the model element and patch data
