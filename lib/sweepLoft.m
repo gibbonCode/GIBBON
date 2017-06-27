@@ -1,7 +1,5 @@
 function [F,V,C]=sweepLoft(varargin)
 
-warning('UNFINISHED FUNCTION WORK IN PROGRESS')
-
 % function [F,V,C]=sweepLoft(V1,V2,n1,n2,Vg,numSteps,numTwist,plotOn)
 %------------------------------------------------------------------------
 %
@@ -21,7 +19,7 @@ warning('UNFINISHED FUNCTION WORK IN PROGRESS')
 % gibbon.toolbox@gmail.com
 %
 % 2016/08/01 Created
-%
+% 2017/06/27 Fixed bug in relation to compensatory/corrective rotation
 %------------------------------------------------------------------------
 
 %% Parse input
@@ -56,8 +54,6 @@ end
 if isempty(numSteps)
     numSteps=size(Vg,1);
 end
-
-%%
 
 p1=Vg(1,:);
 p2=Vg(end,:);
@@ -113,6 +109,9 @@ R2=[e1;e2;e3];
 
 R_curve=repmat(eye(3,3),[1,1,size(Vg,1)]);
 R_curve(:,:,1)=R1;
+
+R_curve2(:,:,1)=R1;
+
 R=R1;
 
 if plotOn
@@ -123,8 +122,7 @@ for q=2:size(Vg,1)
     a=U(q-1,:);
     b=U(q,:);
     
-    theta=real(acos(dot(a,b))); %Complex if dot product is out of range [-1.1] due to precission issues
-    
+    theta=real(acos(dot(a,b))); %Complex if dot product is out of range [-1.1] due to precission issues    
     w=vecnormalize(cross(b,a));
     
     if norm(w)>0.5
@@ -190,30 +188,23 @@ else
     [~,Rc]=rigidTransformationMatrixDirect(V2,V2p);
 end
 
-% [theta,w]=rot2VecAngle(Rc);
-theta=0; w=n2';
+[theta,w]=rot2VecAngle(Rc);
+% theta=0; w=n2';
 
 if plotOn==1
-    quiverVec(mean_V2,w',stepSize,'k'); drawnow;
+    quiverVec(mean_V2,w',stepSize*2,0.5*ones(1,3)); drawnow;
 end
-
-
 
 %%
 W=repmat(w(:)',[numSteps,1]);
-for q=numSteps-1:-1:1
-    
-    R=R_curve(:,:,q);
-    
-    mean_V_now=mean([X(q,:)' Y(q,:)' Z(q,:)'],1);
-    
-%     wt=w'*R;
-    wt=(R'*w)';
+wt=w;
+for q=numSteps-1:-1:1        
+    mean_V_now=mean([X(q,:)' Y(q,:)' Z(q,:)'],1);        
+    wt=(wt'*R_curve(:,:,q+1)'*R_curve(:,:,q))';    
     if plotOn==1
-        quiverVec(mean_V_now,wt,stepSize,'k'); drawnow;
-    end
-    W(q,:)=wt(:)';
-    
+        quiverVec(mean_V_now,wt',stepSize,'k'); drawnow;        
+    end    
+    W(q,:)=wt(:)';    
 end
 
 %%
@@ -233,7 +224,6 @@ end
 
 theta_w=linspace(0,1,size(Vg,1));
 theta_step=theta*theta_w;
-
 
 if numTwist>0
     theta_step_twist=linspace(0,2*pi*numTwist,size(Vg,1));
@@ -264,127 +254,6 @@ for q=1:1:size(Vg,1)
     Z(q,:)=Vn(:,3);
 end
 
-% %%
-%
-% V1s=V1-p1(ones(size(V1,1),1),:);
-% e3=n1;
-% e1=vecnormalize(V1s(1,:));
-% e2=vecnormalize(cross(e3,e1));
-% e1=vecnormalize(cross(e2,e3));
-% R1s=[e1;e2;e3];
-% V1s=V1s*R1s';
-%
-% V2m=mean(V2,1);
-% V2s=V2-p2(ones(size(V2,1),1),:);
-% e3=n2;
-% e1=vecnormalize(V2s(1,:));
-% e2=vecnormalize(cross(e3,e1));
-% e1=vecnormalize(cross(e2,e3));
-% R2s=[e1;e2;e3];
-% V2s=V2s*R2s';
-%
-% % Create coordinate matrices
-% Xs=linspacen(V1s(:,1),V2s(:,1),numSteps)';
-% Ys=linspacen(V1s(:,2),V2s(:,2),numSteps)';
-% Zs=linspacen(V1s(:,3),V2s(:,3),numSteps)';
-%
-% Vs=[Xs(:) Ys(:) Zs(:)];
-%
-% Xs=reshape(Vs(:,1),size(Xs));
-% Ys=reshape(Vs(:,2),size(Ys));
-% Zs=reshape(Vs(:,3),size(Zs));
-%
-% %% Define allong curve coordinate systems
-%
-% Uf=[diff(Vg,1,1); nan(1,size(Vg,2))];
-% Ub=-[nan(1,size(Vg,2)); flipud(diff(flipud(Vg),1,1))];
-% U=Uf;
-% U(:,:,2)=Ub;
-% U=nanmean(U,3);
-% U=vecnormalize(U);
-% U(end,:)=n2;
-%
-% R=eye(3,3);
-% e3=U(1,:);
-% e2=[0 1 0];
-% e1=vecnormalize(cross(e2,e3));
-% e2=vecnormalize(cross(e3,e1));
-%
-% R=[e1;e2;e3];
-%
-% R_cell=cell(1,size(Vg,1));
-% R1=R;
-% R_cell{1}=R1s;
-% for q=2:size(Vg,1)
-%     a=U(q-1,:);
-%     b=U(q,:);
-%
-%     theta=real(acos(dot(a,b))); %Complex if dot product is out of range [-1.1] due to precission issues
-%     w=vecnormalize(cross(b,a));
-%     [Rn]=vecAngle2Rot(theta,w);
-%     R=R*Rn;
-%     if plotOn
-%         quiverTriad(Vg(q,:),R,1);
-%         drawnow;
-%     end
-%     R_cell{q}=R;
-% end
-%
-% %% Fix for rotation
-%
-% V1_now=[Xs(end,:)' Ys(end,:)' Zs(end,:)'];
-% V2p=V1_now*R_cell{end};%[X(end,:)' Y(end,:)' Z(end,:)'];
-% % V1_now=V1_now+p1(ones(size(V1_now,1),1),:);
-% % V2p=V2p+p1(ones(size(V2p,1),1),:);
-% V2p=V2p+Vg(size(Vg,1)*ones(size(V2p,1),1),:);
-%
-% if plotOn
-%     plotV(V2p,'r--','lineWidth',3);
-%     drawnow;
-% end
-%
-% [~,R]=rigidTransformationMatrixDirect(V2,V2p);
-%
-% [theta,w]=rot2VecAngle(R);
-% if dot(n2,w)<0
-%     theta=-theta;
-% end
-% theta=theta+(2*pi)*numTwist;
-%
-% % [R]=vecAngle2Rot(theta,w)
-%
-% V2p_c=mean(V2p,1);
-% V2p=((V2p-V2p_c(ones(size(V2p,1),1),:))*R)+V2p_c(ones(size(V2p,1),1),:);
-%
-% % plotV(V2p,'g--','lineWidth',3);
-%
-% %% Build coordinate matrices
-%
-% X=zeros(size(Vg,1),size(V1,1));
-% Y=X;
-% Z=X;
-%
-% theta_w=linspace(0,1,size(Vg,1));
-% theta_step=theta*theta_w;
-% Rc=eye(3,3);
-% for q=1:1:size(Vg,1)
-%
-%     V1_now=[Xs(q,:)' Ys(q,:)' Zs(q,:)'];
-%     Rn=R_cell{q};
-%     w=Rn(3,:);
-%     [Rc]=vecAngle2Rot(theta_step(q),w);
-%     Vpn=V1_now*Rn*Rc;
-%     Vpn=Vpn+Vg(q*ones(size(Vpn,1),1),:);
-%     if plotOn
-%         plotV(Vpn,'k-','lineWidth',1,'MarkerSize',25);
-%         drawnow;
-%     end
-%
-%     X(q,:)=Vpn(:,1);
-%     Y(q,:)=Vpn(:,2);
-%     Z(q,:)=Vpn(:,3);
-% end
-%
 %% Override start and end with input curves
 
 X(1,:)=V1(:,1);
@@ -421,4 +290,3 @@ if plotOn==1
     camlight headlight;
     drawnow;
 end
-

@@ -6,7 +6,7 @@
    <!--
 This HTML was auto-generated from MATLAB code.
 To make changes, update the MATLAB code and republish this document.
-      --><title>sweepLoft</title><meta name="generator" content="MATLAB 9.1"><link rel="schema.DC" href="http://purl.org/dc/elements/1.1/"><meta name="DC.date" content="2017-03-21"><meta name="DC.source" content="HELP_sweepLoft.m"><style type="text/css">
+      --><title>sweepLoft</title><meta name="generator" content="MATLAB 9.1"><link rel="schema.DC" href="http://purl.org/dc/elements/1.1/"><meta name="DC.date" content="2017-06-27"><meta name="DC.source" content="HELP_sweepLoft.m"><style type="text/css">
 html,body,div,span,applet,object,iframe,h1,h2,h3,h4,h5,h6,p,blockquote,pre,a,abbr,acronym,address,big,cite,code,del,dfn,em,font,img,ins,kbd,q,s,samp,small,strike,strong,sub,sup,tt,var,b,u,i,center,dl,dt,dd,ol,ul,li,fieldset,form,label,legend,table,caption,tbody,tfoot,thead,tr,th,td{margin:0;padding:0;border:0;outline:0;font-size:100%;vertical-align:baseline;background:transparent}body{line-height:1}ol,ul{list-style:none}blockquote,q{quotes:none}blockquote:before,blockquote:after,q:before,q:after{content:'';content:none}:focus{outine:0}ins{text-decoration:none}del{text-decoration:line-through}table{border-collapse:collapse;border-spacing:0}
 
 html { min-height:100%; margin-bottom:1px; }
@@ -66,7 +66,7 @@ table td { padding:7px 5px; text-align:left; vertical-align:top; border:1px soli
 
 
 
-  </style></head><body><div class="content"><h1>sweepLoft</h1><!--introduction--><p>Below is a demonstration of the features of the <tt>sweepLoft</tt> function</p><!--/introduction--><h2>Contents</h2><div><ul><li><a href="#2">Syntax</a></li><li><a href="#3">Description</a></li><li><a href="#4">Examples</a></li><li><a href="#5">A sweep loft allong a guide curve</a></li><li><a href="#10">A sweep loft allong a guide curve with twist</a></li><li><a href="#12">A ring shaped sweep loft</a></li></ul></div><pre class="codeinput">clear; close <span class="string">all</span>; clc;
+  </style></head><body><div class="content"><h1>sweepLoft</h1><!--introduction--><p>Below is a demonstration of the features of the <tt>sweepLoft</tt> function</p><!--/introduction--><h2>Contents</h2><div><ul><li><a href="#2">Syntax</a></li><li><a href="#3">Description</a></li><li><a href="#4">Examples</a></li><li><a href="#5">A sweep loft allong a guide curve</a></li><li><a href="#10">A sweep loft allong a guide curve with twist</a></li><li><a href="#12">A ring shaped sweep loft</a></li><li><a href="#16">A sweep loft to create a coil</a></li></ul></div><pre class="codeinput">clear; close <span class="string">all</span>; clc;
 </pre><h2 id="2">Syntax</h2><p><tt>[F,V,C]=sweepLoft(V1,V2,n1,n2,Vg,numSteps,numTwist,plotOn);</tt></p><h2 id="3">Description</h2><p>The <tt>sweepLoft</tt> function creates a swept loft (as in CAD terminology for a shape formed by merging a set of sketches towards each other allong a given path or guide curve). The inputs to the function are the start and end sketchs (V1 and V2), the start and end normal directions (n1 and n2), and the guid curve (Vg). Optional additional inputs are: the number of steps for the loft feature (numSteps, same as number of points in guide curve if not provided), the number of twists (numTwists, default is zero) the shape undergoes around the guide curve, and finally plotOn (default is 0, i.e. off) which is a logic to turn on or off plotting within the function. The function outputs are patch data i.e. faces (F), the vertices (V) and face colors (C, denoting step in lofting process).</p><h2 id="4">Examples</h2><h2 id="5">A sweep loft allong a guide curve</h2><p>Creating sketches</p><pre class="codeinput">ns=50;
 t=linspace(0,2*pi,ns);
 t=t(1:end-1);
@@ -147,7 +147,55 @@ Vg=[x zeros(size(x)) z];
 numStepsSweep=numStepsCurve; <span class="comment">%Number of steps for loft feature from sketch 1 to sketch 2</span>
 plotOn=1; <span class="comment">%Turn on plotting to view lofting behaviour</span>
 [F,V,C]=sweepLoft(V1,V2,n1,n2,Vg,numStepsSweep,numTwist,plotOn);
-</pre><img vspace="5" hspace="5" src="HELP_sweepLoft_03.png" alt=""> <p><img vspace="5" hspace="5" src="gibbVerySmall.gif" alt=""> </p><p><i><b>GIBBON</b></i> <a href="www.gibboncode.org">www.gibboncode.org</a></p><p><i>Kevin Mattheus Moerman</i>, <a href="gibbon.toolbox@gmail.com">gibbon.toolbox@gmail.com</a></p><p class="footer"><br><a href="http://www.mathworks.com/products/matlab/">Published with MATLAB&reg; R2016b</a><br></p></div><!--
+</pre><img vspace="5" hspace="5" src="HELP_sweepLoft_03.png" alt=""> <h2 id="16">A sweep loft to create a coil</h2><pre class="codeinput">numStepsCurve=75;
+numTwist=0; <span class="comment">%Number of additional twists of loft feature around guide curve</span>
+numSteps=numStepsCurve; <span class="comment">%Number of steps for loft feature from sketch 1 to sketch 2</span>
+plotOn=1; <span class="comment">%Turn on plotting to view lofting behaviour</span>
+
+<span class="comment">% V1=[0 0 0; 1 0 0; 0.5 1 0];</span>
+<span class="comment">% Creating sketches</span>
+ns=12;
+t=linspace(0,2*pi,ns);
+t=t(1:end-1);
+r=5*ones(size(t));
+[x,y] = pol2cart(t,r);
+V1=[x(:) y(:) zeros(size(x(:)))];
+
+V2=V1;
+V2(:,3)=100;
+V=[mean(V1,1); mean(V2,1)];
+Vg=gaborCoil(V,[1 2],numSteps,4,20,4);
+[Vg] = evenlySampleCurve(Vg,size(Vg,1),<span class="string">'linear'</span>,0);
+
+n1=[0 0 1];
+n2=[0 0 1];
+
+R=euler2DCM([0.25*pi 0 0]);  <span class="comment">% R=euler2DCM(2*pi*randn(1,3));</span>
+V1=V1*R;
+V2=V2*R;
+n1=n1*R;
+n2=n2*R;
+Vg=Vg*R;
+
+[F,V,C]=sweepLoft(V1,V2,n1,n2,Vg,numSteps,numTwist,1);
+</pre><img vspace="5" hspace="5" src="HELP_sweepLoft_04.png" alt=""> <p>Visualize loft feature</p><pre class="codeinput">cFigure;
+subplot(1,2,1);
+hold <span class="string">on</span>;
+plotV(Vg,<span class="string">'k.-'</span>);
+plotV(V1,<span class="string">'r.-'</span>);
+plotV(V2,<span class="string">'g.-'</span>);
+axisGeom;
+
+subplot(1,2,2); hold <span class="string">on</span>;
+plotV(Vg,<span class="string">'k.-'</span>);
+plotV(V1,<span class="string">'r.-'</span>);
+plotV(V2,<span class="string">'g.-'</span>);
+gpatch(F,V,C,<span class="string">'k'</span>);
+axisGeom;
+colormap(gjet(250));
+camlight <span class="string">headlight</span>
+drawnow;
+</pre><img vspace="5" hspace="5" src="HELP_sweepLoft_05.png" alt=""> <p><img vspace="5" hspace="5" src="gibbVerySmall.gif" alt=""> </p><p><i><b>GIBBON</b></i> <a href="www.gibboncode.org">www.gibboncode.org</a></p><p><i>Kevin Mattheus Moerman</i>, <a href="gibbon.toolbox@gmail.com">gibbon.toolbox@gmail.com</a></p><p class="footer"><br><a href="http://www.mathworks.com/products/matlab/">Published with MATLAB&reg; R2016b</a><br></p></div><!--
 ##### SOURCE BEGIN #####
 %% sweepLoft
 % Below is a demonstration of the features of the |sweepLoft| function
@@ -290,6 +338,62 @@ numTwist=2; %Number of additional twists of loft feature around guide curve
 numStepsSweep=numStepsCurve; %Number of steps for loft feature from sketch 1 to sketch 2
 plotOn=1; %Turn on plotting to view lofting behaviour
 [F,V,C]=sweepLoft(V1,V2,n1,n2,Vg,numStepsSweep,numTwist,plotOn);
+
+%% A sweep loft to create a coil
+
+numStepsCurve=75;
+numTwist=0; %Number of additional twists of loft feature around guide curve
+numSteps=numStepsCurve; %Number of steps for loft feature from sketch 1 to sketch 2
+plotOn=1; %Turn on plotting to view lofting behaviour
+
+% V1=[0 0 0; 1 0 0; 0.5 1 0];
+% Creating sketches 
+ns=12;
+t=linspace(0,2*pi,ns);
+t=t(1:end-1);
+r=5*ones(size(t));
+[x,y] = pol2cart(t,r);
+V1=[x(:) y(:) zeros(size(x(:)))];
+
+V2=V1;
+V2(:,3)=100;
+V=[mean(V1,1); mean(V2,1)];
+Vg=gaborCoil(V,[1 2],numSteps,4,20,4);
+[Vg] = evenlySampleCurve(Vg,size(Vg,1),'linear',0);
+
+n1=[0 0 1];
+n2=[0 0 1];
+
+R=euler2DCM([0.25*pi 0 0]);  % R=euler2DCM(2*pi*randn(1,3));
+V1=V1*R;
+V2=V2*R;
+n1=n1*R;
+n2=n2*R;
+Vg=Vg*R;
+
+[F,V,C]=sweepLoft(V1,V2,n1,n2,Vg,numSteps,numTwist,1);
+
+%%
+% Visualize loft feature
+
+cFigure; 
+subplot(1,2,1);
+hold on;
+plotV(Vg,'k.-');
+plotV(V1,'r.-');
+plotV(V2,'g.-');
+axisGeom;
+
+subplot(1,2,2); hold on; 
+plotV(Vg,'k.-');
+plotV(V1,'r.-');
+plotV(V2,'g.-');
+gpatch(F,V,C,'k');
+axisGeom;
+colormap(gjet(250));
+camlight headlight
+drawnow;
+
 
 %%
 % 
