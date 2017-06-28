@@ -5,7 +5,7 @@ function hf=anim8(varargin)
 switch nargin
     case 2
         hf=varargin{1};
-        animStruct=varargin{2};        
+        animStruct=varargin{2};
 end
 
 %% Visualisation settings
@@ -14,9 +14,9 @@ end
 fontSize=15;
 % cMap=gjet(250);
 
-scrollBarWidth=50; 
+scrollBarWidth=50;
 
-%% Defining slider 
+%% Defining slider
 
 animTime=animStruct.Time(:);
 
@@ -28,7 +28,7 @@ tickSizeMajor_I=ceil(w/20);
 
 %% Initialize display
 
-figure(hf); drawnow; 
+figure(hf); drawnow;
 
 %Initialize slider
 jSlider = javax.swing.JSlider(minT,maxT);
@@ -80,7 +80,7 @@ S(S==1)=NaN;
 if size(S,3)==1
     S=repmat(S,[1 1 3]);
 end
-iconPlay=S; 
+iconPlay=S;
 
 %get icon 2
 D=importdata(fullfile(iconPath,'stop.jpg'));
@@ -91,7 +91,7 @@ S(S==1)=NaN;
 if size(S,3)==1
     S=repmat(S,[1 1 3]);
 end
-iconStop=S; 
+iconStop=S;
 
 % Create a uitoggletool in the toolbar
 hPlay=uitoggletool(hb,'TooltipString','Play','CData',iconPlay,'Tag','play_button','ClickedCallback',{@playFunc,{hf}});
@@ -147,9 +147,9 @@ uipushtool(hb,'TooltipString','Save .gif animation','CData',S,'Tag','saveAnimati
 % title(sprintf('%f',T),'FontSize',hf.UserData.fontSize);
 
 hTextTime = uicontrol(hf,'Style','text',...
-                'String',[' Time: ',sprintf('%f',animTime(1))],...
-                'Position',[0 scrollBarWidth round(hf.Position(3)) round(scrollBarWidth/2)],'BackgroundColor',[1 1 1],'HorizontalAlignment','Left'); %hf.Color
-            
+    'String',[' Time: ',sprintf('%f',animTime(1))],...
+    'Position',[0 scrollBarWidth round(hf.Position(3)) round(scrollBarWidth/2)],'BackgroundColor',[1 1 1],'HorizontalAlignment','Left'); %hf.Color
+
 %% Set figure UserData
 
 hf.UserData.sliderHandles={jSlider};
@@ -165,7 +165,7 @@ hf.UserData.ButtonHandles.Play=hPlay;
 hf.UserData.ButtonHandles.hCycle=hCycle;
 hf.UserData.ButtonHandles.hTextTime=hTextTime;
 hf.UserData.pauseTime=mean(diff(animStruct.Time));
-hf.UserData.shiftMag=1;%ceil(numel(animStruct.Time)/20); 
+hf.UserData.shiftMag=1;%ceil(numel(animStruct.Time)/20);
 hf.UserData.icons.play=iconPlay;
 hf.UserData.icons.stop=iconStop;
 
@@ -207,12 +207,12 @@ end
 
 function helpFunc(~,~)
 
-msgText={'* Play button or press the space bar -> Start animation',...    
-         '* Stop button or press the space bar -> Stop animation',...
-         '* Time button -> Change time stepping settings',...
-         '* Cycle button -> Toggle forward / forward-backward mode',...
-         '* Save button -> Export snap shorts (e.g. jpg) and animated .gif files',...
-         '* Press the v key to activate the view control widget (vcw), note that vcw changes key press functions until vcw is deactivated',...
+msgText={'* Play button or press the space bar -> Start animation',...
+    '* Stop button or press the space bar -> Stop animation',...
+    '* Time button -> Change time stepping settings',...
+    '* Cycle button -> Toggle forward / forward-backward mode',...
+    '* Save button -> Export snap shorts (e.g. jpg) and animated .gif files',...
+    '* Press the v key to activate the view control widget (vcw), note that vcw changes key press functions until vcw is deactivated',...
     };
 helpdlg(msgText,'Help information');
 
@@ -222,7 +222,7 @@ end
 
 function playFunc(~,~,inputCell)
 hf=inputCell{1};
-shiftMag=hf.UserData.shiftMag; 
+shiftMag=hf.UserData.shiftMag;
 
 set(hf.UserData.ButtonHandles.Play,'CData',hf.UserData.icons.stop,'TooltipString','Stop');
 
@@ -239,13 +239,13 @@ while strcmp(get(hf.UserData.ButtonHandles.Play,'State'),'on')
         sliderMin=get(jSlider,'Minimum');
         
         if sliderValueNew<sliderMin
-            hf.UserData.playDir=hf.UserData.playDir*-1;            
+            hf.UserData.playDir=hf.UserData.playDir*-1;
             sliderValueNew=sliderValue+(shiftMag*hf.UserData.playDir);
         elseif sliderValueNew>sliderMax
-            hf.UserData.playDir=hf.UserData.playDir*-1;            
+            hf.UserData.playDir=hf.UserData.playDir*-1;
             sliderValueNew=sliderValue+(shiftMag*hf.UserData.playDir);
         end
-                
+        
         set(jSlider,'Value',sliderValueNew);
         
     else
@@ -256,9 +256,9 @@ while strcmp(get(hf.UserData.ButtonHandles.Play,'State'),'on')
     drawnow;
     
     t=toc;
-    if (hf.UserData.pauseTime-t)>0        
+    if (hf.UserData.pauseTime-t)>0
         pause(hf.UserData.pauseTime-t);
-    end    
+    end
 end
 
 set(hf.UserData.ButtonHandles.Play,'CData',hf.UserData.icons.play,'TooltipString','Play');
@@ -293,12 +293,12 @@ jSlider=hf.UserData.sliderHandles{1};
 
 %%
 
-defStruct=hf.UserData.efw; 
+defStruct=hf.UserData.efw;
 prompt = {'Save path (leave empty to browse to desired folder instead):',...
-          'Image name:','Image extension (i.e. png, jpg, bmp, or tif):',...
-          'Image resolution (e.g. 120):',...
-          'Extra export_fig options (comma seperated, no spaces e.g. -nocrop,-transparent,-painters):',...
-          'Export gif option'};
+    'Image name:','Image extension (i.e. png, jpg, bmp, or tif):',...
+    'Image resolution (e.g. 120):',...
+    'Extra export_fig options (comma seperated, no spaces e.g. -nocrop,-transparent,-painters):',...
+    'Export gif option'};
 dlg_title = 'Export Gif Widget (see: help efw and help export_fig)';
 defaultOptions = {defStruct.defaultPath,defStruct.imName,defStruct.imExt,defStruct.imRes,defStruct.exportFigOpt,hf.UserData.efw.exportGifOpt};
 
@@ -310,101 +310,102 @@ if ~isempty(Q)
     if isempty(Q{1})
         Q{1}=uigetdir(defStruct.defaultPath,'Select save path');
         if Q{1}==0
-            return; 
+            return;
         end
-    end    
+    end
+    
+    if isempty(Q{2})
+        error('Empty input. Please enter a file name');
+    end
     
     if ~exist(Q{1},'dir') %create output folder if it does not exist already
         mkdir(Q{1});
     end
     
-    if all(~cellfun(@isempty,Q(1:end-1)))        
-        
-        fileName=fullfile(Q{1},Q{2});        
-        exportGifCell{1,1}=fileName;
-
-        stringSet=Q{3}; %The image extension
-        stringNoSpaces=regexprep(stringSet,'[^\w'']',''); %Remove potential extra spaces
-        
-        if ~strcmp(stringNoSpaces(1),'-') %If first character is not '-'
-            stringNoSpaces=['-',stringNoSpaces]; %Add '-' to start, e.g. 'jpg' becomes '-jpg'
-        end
-           
-        %Check format validaty and keep if valid
-        if any(strcmp(stringNoSpaces,{'-png','-jpg','-tiff','-bmp'}))
-            exportGifCell{1,2}=stringNoSpaces; %Add to input list
-        else
-            error('Wrong image format requested');
-        end
-          
-        figRes=['-r',Q{4}];
-        exportGifCell{1,end+1}=figRes;
-        
-        if ~isempty(Q{5})
-            stringSet=Q{5}; %The set of potentially multiple options
-            stringSetSep = strsplit(stringSet,',');
-            for q=1:1:numel(stringSetSep)
-                stringNoSpaces=regexprep(stringSetSep{q},'[^\w'']',''); %Remove potential extra spaces
-                if ~strcmp(stringNoSpaces(1),'-') %If first character is not '-'
-                    stringNoSpaces=['-',stringNoSpaces]; %Add '-' to start, e.g. 'jpg' becomes '-jpg'
-                end
-                exportGifCell{1,end+1}=stringNoSpaces; %Add to input list
-            end
-        end
-        
-        if ~isempty(Q{6})
-            exportGifOpt=Q{6};
-        end
-        
-        fileNameGif=exportGifCell{1,1};
-        exportGifCellSub=exportGifCell; 
-        
-        c=1;           
-        stepRange=1:hf.UserData.shiftMag:numel(hf.UserData.animStruct.Time);
-        numSteps=numel(stepRange);
-        for q=stepRange
-            set(jSlider,'Value',q);            
-            fileNameNow=[fileNameGif,'_',num2str(q)];
-            exportGifCellSub{1,1}=fileNameNow;
-            figure(hf);
-            export_fig(exportGifCellSub{:});
-            gifStruct.FileNames{c}=[fileNameNow,'.',exportGifCell{1,2}(2:end)];
-            c=c+1;            
-        end
-                
-        if strcmp(exportGifOpt,'1')
-            %Add reverse path
-            if strcmp(get(hf.UserData.ButtonHandles.hCycle,'State'),'on')
-                numFiles=numel(gifStruct.FileNames);
-                if numFiles>2
-                    for q=(numFiles-1):-1:2
-                        gifStruct.FileNames{end+1}=gifStruct.FileNames{q};
-                    end
-                end
-            end
-            
-            gifStruct.DelayTime=hf.UserData.pauseTime;
-            gifStruct.FileNameGif=fileNameGif;
-            
-            exportGif(gifStruct);
-        end
-        
-        %Override defaults
-        defStruct.defaultPath=Q{1};
-        defStruct.imName=Q{2};
-        defStruct.imExt=Q{3};
-        defStruct.imRes=Q{4};
-        defStruct.exportFigOpt=Q{5};
-        defStruct.efw.exportGifOpt=Q{6};
-        
-        hf.UserData.efw=defStruct;
-        
-    else
-        return
+    if isempty(Q{3})
+        warning('Empty input. No image format specified, using jpg files.');
+        Q{3}='jpg';
     end
+    
+    fileName=fullfile(Q{1},Q{2});
+    exportGifCell{1,1}=fileName;
+    
+    stringSet=Q{3}; %The image extension
+    stringNoSpaces=regexprep(stringSet,'[^\w'']',''); %Remove potential extra spaces
+    
+    if ~strcmp(stringNoSpaces(1),'-') %If first character is not '-'
+        stringNoSpaces=['-',stringNoSpaces]; %Add '-' to start, e.g. 'jpg' becomes '-jpg'
+    end
+    
+    %Check format validaty and keep if valid
+    if any(strcmp(stringNoSpaces,{'-png','-jpg','-tiff','-bmp'}))
+        exportGifCell{1,end+1}=stringNoSpaces; %Add to input list
+    else
+        error('Wrong image format requested');
+    end
+    
+    figRes=['-r',Q{4}];
+    exportGifCell{1,end+1}=figRes;
+    
+    if ~isempty(Q{5})
+        stringSet=Q{5}; %The set of potentially multiple options
+        stringSetSep = strsplit(stringSet,',');
+        for q=1:1:numel(stringSetSep)
+            stringNoSpaces=regexprep(stringSetSep{q},'[^\w'']',''); %Remove potential extra spaces
+            if ~strcmp(stringNoSpaces(1),'-') %If first character is not '-'
+                stringNoSpaces=['-',stringNoSpaces]; %Add '-' to start, e.g. 'jpg' becomes '-jpg'
+            end
+            exportGifCell{1,end+1}=stringNoSpaces; %Add to input list
+        end
+    end
+    
+    if ~isempty(Q{6})
+        exportGifOpt=Q{6};
+    end
+    
+    fileNameGif=exportGifCell{1,1};
+    exportGifCellSub=exportGifCell;
+    
+    c=1;
+    stepRange=1:hf.UserData.shiftMag:numel(hf.UserData.animStruct.Time);    
+    for q=stepRange
+        set(jSlider,'Value',q);
+        fileNameNow=[fileNameGif,'_',num2str(q)];
+        exportGifCellSub{1,1}=fileNameNow;
+        figure(hf);
+        export_fig(exportGifCellSub{:});
+        gifStruct.FileNames{c}=[fileNameNow,'.',exportGifCell{1,2}(2:end)];
+        c=c+1;
+    end
+    
+    if strcmp(exportGifOpt,'1')
+        %Add reverse path
+        if strcmp(get(hf.UserData.ButtonHandles.hCycle,'State'),'on')
+            numFiles=numel(gifStruct.FileNames);
+            if numFiles>2
+                for q=(numFiles-1):-1:2
+                    gifStruct.FileNames{end+1}=gifStruct.FileNames{q};
+                end
+            end
+        end
+        
+        gifStruct.DelayTime=hf.UserData.pauseTime;
+        gifStruct.FileNameGif=fileNameGif;
+        
+        exportGif(gifStruct);
+    end
+    
+    %Override defaults
+    defStruct.defaultPath=Q{1};
+    defStruct.imName=Q{2};
+    defStruct.imExt=Q{3};
+    defStruct.imRes=Q{4};
+    defStruct.exportFigOpt=Q{5};
+    defStruct.efw.exportGifOpt=Q{6};
+    
+    hf.UserData.efw=defStruct;
+    
 end
-
-
 
 end
 
@@ -426,18 +427,18 @@ hf=inputCell{1}; %Figure handle
 % Key input options
 switch eventData.Key
     case {'leftarrow','downarrow'}
-         shiftSlider(hf.UserData.sliderHandles{1},-1*hf.UserData.shiftMag);
+        shiftSlider(hf.UserData.sliderHandles{1},-1*hf.UserData.shiftMag);
     case {'rightarrow','uparrow'}
         shiftSlider(hf.UserData.sliderHandles{1},1*hf.UserData.shiftMag);
     case 'v' % Activate vcw
-        set(hf.UserData.cFigure.Handles.vcw,'State','On');   
+        set(hf.UserData.cFigure.Handles.vcw,'State','On');
     case'space'
         if strcmp(get(hf.UserData.ButtonHandles.Play,'State'),'off')
             set(hf.UserData.ButtonHandles.Play,'State','on');
             playFunc([],[],{hf});
         else
             set(hf.UserData.ButtonHandles.Play,'State','off');
-        end        
+        end
 end
 
 end
@@ -452,14 +453,14 @@ animStruct=hf.UserData.animStruct;
 
 sliderValue=get(jSlider,'Value');
 
-T=animStruct.Time(sliderValue); 
+T=animStruct.Time(sliderValue);
 H=animStruct.Handles{sliderValue};%e.g. [hp,hp]; %Handles of objects to animate
 P=animStruct.Props{sliderValue};% e.g. {'FaceColor','Vertices'}; %Properties of objects to animate
 S=animStruct.Set{sliderValue};%e.g.{c(q,:),V}; %Property values for to set in order to animate
 
 set(hf.UserData.ButtonHandles.hTextTime,'String',[' Time: ',sprintf('%f',T)],'FontSize',hf.UserData.fontSize);
 
-for q=1:1:numel(H)    
+for q=1:1:numel(H)
     h=H(q); % Current graphics handle
     p=P{q}; % Current graphics property
     s=S{q}; % Current property setting
@@ -475,8 +476,8 @@ function shiftSlider(jSlider,shiftMag)
 sliderValue=get(jSlider,'Value');
 sliderValueNew=sliderValue+shiftMag;
 
-sliderMax=get(jSlider,'Maximum'); 
-sliderMin=get(jSlider,'Minimum'); 
+sliderMax=get(jSlider,'Maximum');
+sliderMin=get(jSlider,'Minimum');
 
 if sliderValueNew<sliderMin
     set(jSlider,'Value',sliderMax);

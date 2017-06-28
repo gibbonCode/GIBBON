@@ -90,8 +90,8 @@ E=meshOutput.elements;
 
 %Selecting half of the model to see interior
 Y=V(:,2); YE=mean(Y(E),2);
-L=YE>mean(Y);
-[Fs,Cs]=element2patch(E(L,:),CE(L),'tet4');
+logicCutView=YE>mean(Y);
+[Fs,Cs]=element2patch(E(logicCutView,:),CE(logicCutView),'tet4');
 
 cFigure;
 hold on; 
@@ -104,6 +104,44 @@ axisGeom(gca,fontSize);
 axis off; 
 colormap(cMap); 
 drawnow;
+
+%% Example: Creating an animated view to explore the mesh
+% See also |anim8| function
+
+%%
+% Initialize figure
+hf=cFigure; %Store figure handle
+hold on; 
+% title('Cut view of Solid tetrahedral mesh model','FontSize',fontSize);
+gpatch(Fb,V,0.5*ones(1,3),'none',faceAlpha1);
+hp=gpatch(Fs,V,Cs,'k',faceAlpha2); %Graphics object to vary property of during animation
+camlight headlight;
+axisGeom(gca,fontSize); 
+axis off; 
+colormap(cMap); 
+drawnow;
+
+%%
+% Set up animation
+nSteps=25; %Number of animation steps
+
+animStruct.Time=linspace(0,1,nSteps); %Time vector
+cutLevel=linspace(min(Y(:)),max(Y(:)),nSteps); %Property to set
+
+for q=1:1:nSteps %Step through time       
+    cutLevelNow=cutLevel(q); %The current cut level    
+    
+    logicCutView=YE>cutLevelNow;
+    [Fs,Cs]=element2patch(E(logicCutView,:),CE(logicCutView),'tet4');
+    
+    %Set entries in animation structure
+    animStruct.Handles{q}=[hp hp]; %Handles of objects to animate
+    animStruct.Props{q}={'Faces','CData'}; %Properties of objects to animate
+    animStruct.Set{q}={Fs,Cs}; %Property values for to set in order to animate
+end
+
+%Add animation layer
+anim8(hf,animStruct);
 
 %% MESHING IMPORTED GEOMETRY 
 
@@ -179,8 +217,8 @@ E=meshOutput.elements;
 
 %Selecting half of the model to see interior
 Y=V(:,2); YE=mean(Y(E),2);
-L=YE>mean(Y);
-[Fs,Cs]=element2patch(E(L,:),CE(L),'tet4');
+logicCutView=YE>mean(Y);
+[Fs,Cs]=element2patch(E(logicCutView,:),CE(logicCutView),'tet4');
 
 cFigure;
 hold on; 
@@ -194,13 +232,120 @@ axis off;
 colormap(cMap); 
 drawnow;
 
-%% MESHING A MULTI-REGION MODEL
+%% MESHING A MULTI-REGION MODEL EG LAYERED
+
+%%
+% An example surface
+r=2; %Sphere radius
+rc=3; %Central radius
+nr=15;
+nc=25;
+ptype='tri';
+[F,V]=patchTorus(r,nr,rc,nc,ptype);
+
+%%
+% Creating layer by offsetting inwards
+layerThickness=0.5;
+[N,Vn,Nv]=patchNormal(F,V); %Patch Normals
+V2=V-layerThickness.*Nv;
+
+[F,V,C]=joinElementSets({F F},{V V2}); %Join sets
+
+voxelSize=layerThickness/2;
+[M,G,bwLabels]=patch2Im(F,V,C,voxelSize);
+
+L=M==0;
+[indInternal]=getInnerVoxel(L,1,0);
+
+[I_in,J_in,K_in]=ind2sub(size(L),indInternal); %Convert to subscript coordinates
+[V_in1(:,1),V_in1(:,2),V_in1(:,3)]=im2cart(I_in,J_in,K_in,voxelSize*ones(1,3));
+V_in1=V_in1+G.origin(ones(size(V_in1,1),1),:);
+
+V_in2=getInnerPoint(F(C==2,:),V);
+
+%%
+cFigure; hold on;
+title('Surface model','FontSize',fontSize);
+gpatch(F,V,C,'none',0.2);
+colormap(cMap);
+camlight headlight;
+axisGeom(gca,fontSize); 
+
+plotV(V_in1,'k.','MarkerSize',25);
+plotV(V_in2,'r.','MarkerSize',25);
+
+%%
+% DEFINE FACE BOUNDARY MARKERS
+faceBoundaryMarker=C;
+
+%%
+% Define region points
+V_regions=[V_in1;V_in2];
+
+%%
+% Define hole points
+V_holes=[];
+
+%% 
+% Regional mesh parameters
+[A]=tetVolMeanEst(F,V);
+regionA=[A/2 A];
+
+%% 
+% CREATING THE INPUT STRUCTURE
+
+stringOpt='-pq1.2AaYQ';
+inputStruct.stringOpt=stringOpt;
+inputStruct.Faces=F;
+inputStruct.Nodes=V;
+inputStruct.holePoints=V_holes;
+inputStruct.faceBoundaryMarker=faceBoundaryMarker; %Face boundary markers
+inputStruct.regionPoints=V_regions; %region points
+inputStruct.regionA=regionA;
+inputStruct.minRegionMarker=2; %Minimum region marker
+inputStruct.modelName=modelName;
+
+%% 
+% Mesh model using tetrahedral elements using tetGen (see:
+% <http://wias-berlin.de/software/tetgen/>)
+
+[meshOutput]=runTetGen(inputStruct); %Run tetGen 
+
+%% 
+% Access model element and patch data
+Fb=meshOutput.facesBoundary;
+Cb=meshOutput.boundaryMarker;
+V=meshOutput.nodes;
+CE=meshOutput.elementMaterialID;
+E=meshOutput.elements;
+
+%% 
+% PLOTTING MODEL 
+
+%Selecting half of the model to see interior
+Y=V(:,2); YE=mean(Y(E),2);
+logicCutView=YE>mean(Y);
+[Fs,Cs]=element2patch(E(logicCutView,:),CE(logicCutView),'tet4');
+
+cFigure;
+hold on; 
+title('Cut view of Solid tetrahedral mesh model','FontSize',fontSize);
+gpatch(Fb,V,0.5*ones(1,3),'none',faceAlpha1);
+gpatch(Fs,V,Cs,'k',faceAlpha2);
+plotV(V(unique(Fs(:)),:),'k.','MarkerSize',markerSize);
+camlight headlight;
+axisGeom(gca,fontSize); 
+axis off; 
+colormap(cMap); 
+drawnow;
+
+%% MESHING A MULTI-REGION MODEL EG INCLUSION
 
 %%
 % Simulating a multiregion mesh
 [F1,V1]=parasaurolophus; %A dino
 [F2,V2,~]=geoSphere(3,0.4); %An internal region
-V2(:,1)=2*V2(:,1);
+V2(:,1)=2.5*V2(:,1);
 V_centre=[0.75 0 0.25];
 V2=V2+V_centre(ones(size(V2,1),1),:);
 
@@ -267,21 +412,46 @@ E=meshOutput.elements;
 % PLOTTING MODEL 
 
 %Selecting half of the model to see interior
-Y=V(:,2); YE=mean(Y(E),2);
-L=YE>mean(Y);
-[Fs,Cs]=element2patch(E(L,:),CE(L),'tet4');
+X=V(:,1); XE=mean(X(E),2);
+logicCutView=XE>mean(X);
+[Fs,Cs]=element2patch(E(logicCutView,:),CE(logicCutView),'tet4');
 
-cFigure;
+hf=cFigure;
 hold on; 
 title('Cut view of Solid tetrahedral mesh model','FontSize',fontSize);
 gpatch(Fb,V,0.5*ones(1,3),'none',faceAlpha1);
-gpatch(Fs,V,Cs,'k',faceAlpha2);
-plotV(V(unique(Fs(:)),:),'k.','MarkerSize',markerSize);
+hp=gpatch(Fs,V,Cs,'k',faceAlpha2);
+% plotV(V(unique(Fs(:)),:),'k.','MarkerSize',markerSize);
 camlight headlight;
 axisGeom(gca,fontSize); 
 axis off; 
 colormap(cMap); 
 drawnow;
+
+%%
+% Set up animation
+nSteps=25; %Number of animation steps
+
+animStruct.Time=linspace(0,1,nSteps); %Time vector
+cutLevel=linspace(min(X(:)),max(X(:)),nSteps); %Property to set
+
+for q=1:1:nSteps %Step through time       
+    cutLevelNow=cutLevel(q); %The current cut level    
+    
+    logicCutView=XE>cutLevelNow;
+    [Fs,Cs]=element2patch(E(logicCutView,:),CE(logicCutView),'tet4');
+    
+    %Set entries in animation structure
+    animStruct.Handles{q}=[hp hp]; %Handles of objects to animate
+    animStruct.Props{q}={'Faces','CData'}; %Properties of objects to animate
+    animStruct.Set{q}={Fs,Cs}; %Property values for to set in order to animate
+end
+
+%Add animation layer
+anim8(hf,animStruct);
+
+
+fsdfsa
 
 %% MESHING A MULTI-REGION MODEL CONTAINING HOLES 
 
@@ -380,8 +550,8 @@ E=meshOutput.elements;
 
 %Selecting half of the model to see interior
 Y=V(:,2); YE=mean(Y(E),2);
-L=YE>mean(Y);
-[Fs,Cs]=element2patch(E(L,:),CE(L),'tet4');
+logicCutView=YE>mean(Y);
+[Fs,Cs]=element2patch(E(logicCutView,:),CE(logicCutView),'tet4');
 
 cFigure;
 hold on; 
@@ -438,8 +608,8 @@ E=meshOutput.elements;
 
 %Selecting half of the model to see interior
 Y=V(:,2); YE=mean(Y(E),2);
-L=YE>mean(Y);
-[Fs,Cs]=element2patch(E(L,:),CE(L),'tet4');
+logicCutView=YE>mean(Y);
+[Fs,Cs]=element2patch(E(logicCutView,:),CE(logicCutView),'tet4');
 
 cFigure;
 hold on; 
@@ -517,8 +687,8 @@ E=meshOutput.elements;
 
 %Selecting half of the model to see interior
 Y=V(:,2); YE=mean(Y(E),2);
-L=YE>mean(Y);
-[Fs,Cs]=element2patch(E(L,:),CE(L),'tet10');
+logicCutView=YE>mean(Y);
+[Fs,Cs]=element2patch(E(logicCutView,:),CE(logicCutView),'tet10');
 
 cFigure;
 hold on; 

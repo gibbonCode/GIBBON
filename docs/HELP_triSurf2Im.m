@@ -159,8 +159,10 @@ drawnow;
 % |ind2patch| function can be used to convert a triangulated surface into a
 % regular hexahedral meshed model. 
 
+[F,V]=stanford_bunny('g'); %Bunny
+
 % Convert to image
-elementSize=0.05; %Desired hexahedral element size =voxelsize
+elementSize=4; %Desired hexahedral element size =voxelsize
 [M,G]=triSurf2Im(F,V,elementSize);
 
 % Get geometric parameters of mesh
@@ -191,6 +193,7 @@ logicUni=F_count==1; %Logic for boundary faces
 
 patch('Faces',Fp(logicUni,:),'Vertices',Vp,'FaceColor','r','EdgeColor','k','FaceAlpha',faceAlpha1);
 axis equal; view(3); axis tight;  grid on;  set(gca,'FontSize',fontSize);
+camlight headlight; 
 
 subplot(1,2,2);
 title('Cut view','FontSize',fontSize);
@@ -210,8 +213,8 @@ logicUni=F_count==1; %Logic for boundary faces
 
 patch('Faces',F,'Vertices',V,'FaceColor','g','EdgeColor','none','FaceAlpha',faceAlpha2);
 patch('Faces',Fp,'Vertices',Vp,'FaceColor','r','EdgeColor','k','FaceAlpha',faceAlpha1);
-
 axis equal; view(3); axis tight;  grid on;  set(gca,'FontSize',fontSize);
+camlight headlight; 
 drawnow;
 
 %% EXAMPLE 4: Using |triSurf2Im| combined with |logic2isosurface| to resample a surface

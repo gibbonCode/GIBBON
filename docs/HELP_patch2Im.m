@@ -71,17 +71,15 @@ L_plot=L_plot & ~isnan(M);
 Vm=Vm+imOrigin(ones(size(Vm,1),1),:);
 patch('Faces',Fm,'Vertices',Vm,'FaceColor','flat','CData',Cm,'EdgeColor','k','FaceAlpha',faceAlpha1);
 
-colormap gjet; colorbar;
+colormap gjet; icolorbar;
 camlight('headlight'); lighting flat;
 axis equal; view(3); axis tight;  grid on;  set(gca,'FontSize',fontSize);
 drawnow;
 
-%% EXAMPLE 1: CONVERTING PATCH DATA WITH A SINGLE BOUNDARY TO AN IMAGE
+%% EXAMPLE 2: CONVERTING PATCH DATA WITH A SINGLE BOUNDARY TO AN IMAGE
 % Defining an example surface model
 
 [F,V]=graphicsModels(3);
-
-%%
 
 %%
 
@@ -123,12 +121,12 @@ L_plot=L_plot & ~isnan(M);
 Vm=Vm+imOrigin(ones(size(Vm,1),1),:);
 patch('Faces',Fm,'Vertices',Vm,'FaceColor','flat','CData',Cm,'EdgeColor','k','FaceAlpha',faceAlpha1);
 
-colormap gjet; colorbar;
+colormap gjet; icolorbar;
 camlight('headlight'); lighting flat;
 axis equal; view(3); axis tight;  grid on;  set(gca,'FontSize',fontSize);
 drawnow;
 
-%% EXAMPLE 3: CONVERTING PATCH DATA WITH A MULTIPLE BOUNDARIES TO AN IMAGE
+%% EXAMPLE 3: CONVERTING PATCH DATA WITH A MULTIPLE BOUNDARIES AND PATCH TYPES TO AN IMAGE
 
 % Defining a multi boundary set
 
@@ -189,7 +187,7 @@ L_plot=L_plot & ~isnan(M);
 Vm=Vm+imOrigin(ones(size(Vm,1),1),:);
 patch('Faces',Fm,'Vertices',Vm,'FaceColor','flat','CData',Cm,'EdgeColor','k','FaceAlpha',faceAlpha1);
 
-colormap gjet; colorbar; caxis([0 max(C(:))]);
+colormap gjet; icolorbar; %caxis([0 max(C(:))]);
 camlight('headlight'); lighting flat;
 axis equal; view(3); axis tight;  grid on;  set(gca,'FontSize',fontSize);
 drawnow;

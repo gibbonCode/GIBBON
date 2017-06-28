@@ -10,7 +10,7 @@ function write_XML_no_extra_lines(save_name,XDOC)
 % fclose(fid); 
 
 %Write to text file
-%xmlwrite(save_name,XDOC); %MATLAB's xmlwrite extremely slow in for versions 2016-2017
+%xmlwrite(save_name,XDOC); %MATLAB's xmlwrite extremely slow for v2017a-2017b
 xmlwrite_xerces(save_name,XDOC); %Custom XML write function for now
 
 %Import back into cell array
@@ -18,5 +18,3 @@ xmlwrite_xerces(save_name,XDOC); %Custom XML write function for now
 
 %Save to txt file while skipping "empty lines"
 cell2txtfile(save_name,T,1);
-
-

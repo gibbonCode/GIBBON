@@ -31,6 +31,12 @@ switch nargin
         error('Wrong number of input arguments');
 end
 
+if isa(F,'cell')
+    [F,V,C]=joinElementSets(F,V);
+else
+    C=ones(size(F,1),1);
+end
+
 if isempty(voxelSize)
    D=patchEdgeLengths(F,V); 
    voxelSize=mean(D)/2;
@@ -38,14 +44,6 @@ end
 
 if isempty(searchRadius)
    searchRadius=voxelSize*3;
-end
-
-%%
-
-if isa(F,'cell')
-    [F,V,C]=joinElementSets(F,V);
-else
-    C=ones(size(F,1),1);
 end
 
 %% Get an inner point

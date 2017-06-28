@@ -28,7 +28,7 @@ startFile=allFiles{indStart};
 T_top={};
 T_top(1,1)={'<?xml version="1.0" encoding="utf-8"?>'};
 T_top(2,1)={'<toc version="2.0">'};
-T_top(3,1)={'    <tocitem target="GIBBOM.html">The GIBBON Toolbox'};
+T_top(3,1)={'    <tocitem target="GIBBON.html">The GIBBON Toolbox'};
 
 %GETTING STARTED SECTION
 T_start=cell(3,1);

@@ -49,6 +49,7 @@ for q=1:1:4;
     set(gca,'FontSize',fontSize);
     view(3); axis tight;  axis equal;  grid on;
 end
+drawnow;
 
 %% Simulate your lunch
 
@@ -102,6 +103,7 @@ set(hp,'FaceColor','flat','FaceVertexCData',C,'edgeColor','none');
 camlight headlight; lighting phong;
 set(gca,'FontSize',fontSize);
 view(3); axis tight;  axis equal;  grid on; axis off; 
+drawnow;
 
 %%
 %

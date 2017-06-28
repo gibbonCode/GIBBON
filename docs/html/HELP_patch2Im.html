@@ -6,7 +6,7 @@
    <!--
 This HTML was auto-generated from MATLAB code.
 To make changes, update the MATLAB code and republish this document.
-      --><title>patch2Im</title><meta name="generator" content="MATLAB 9.1"><link rel="schema.DC" href="http://purl.org/dc/elements/1.1/"><meta name="DC.date" content="2017-03-13"><meta name="DC.source" content="HELP_patch2Im.m"><style type="text/css">
+      --><title>patch2Im</title><meta name="generator" content="MATLAB 9.1"><link rel="schema.DC" href="http://purl.org/dc/elements/1.1/"><meta name="DC.date" content="2017-06-28"><meta name="DC.source" content="HELP_patch2Im.m"><style type="text/css">
 html,body,div,span,applet,object,iframe,h1,h2,h3,h4,h5,h6,p,blockquote,pre,a,abbr,acronym,address,big,cite,code,del,dfn,em,font,img,ins,kbd,q,s,samp,small,strike,strong,sub,sup,tt,var,b,u,i,center,dl,dt,dd,ol,ul,li,fieldset,form,label,legend,table,caption,tbody,tfoot,thead,tr,th,td{margin:0;padding:0;border:0;outline:0;font-size:100%;vertical-align:baseline;background:transparent}body{line-height:1}ol,ul{list-style:none}blockquote,q{quotes:none}blockquote:before,blockquote:after,q:before,q:after{content:'';content:none}:focus{outine:0}ins{text-decoration:none}del{text-decoration:line-through}table{border-collapse:collapse;border-spacing:0}
 
 html { min-height:100%; margin-bottom:1px; }
@@ -66,7 +66,7 @@ table td { padding:7px 5px; text-align:left; vertical-align:top; border:1px soli
 
 
 
-  </style></head><body><div class="content"><h1>patch2Im</h1><!--introduction--><p>Below is a demonstration of the features of the <tt>patch2Im</tt> function</p><!--/introduction--><h2>Contents</h2><div><ul><li><a href="#2">Syntax</a></li><li><a href="#3">Description</a></li><li><a href="#4">Examples</a></li><li><a href="#6">EXAMPLE 1: CONVERTING PATCH DATA WITH A SINGLE BOUNDARY TO AN IMAGE</a></li><li><a href="#9">EXAMPLE 1: CONVERTING PATCH DATA WITH A SINGLE BOUNDARY TO AN IMAGE</a></li><li><a href="#13">EXAMPLE 3: CONVERTING PATCH DATA WITH A MULTIPLE BOUNDARIES TO AN IMAGE</a></li></ul></div><pre class="codeinput">clear; close <span class="string">all</span>; clc;
+  </style></head><body><div class="content"><h1>patch2Im</h1><!--introduction--><p>Below is a demonstration of the features of the <tt>patch2Im</tt> function</p><!--/introduction--><h2>Contents</h2><div><ul><li><a href="#2">Syntax</a></li><li><a href="#3">Description</a></li><li><a href="#4">Examples</a></li><li><a href="#6">EXAMPLE 1: CONVERTING PATCH DATA WITH A SINGLE BOUNDARY TO AN IMAGE</a></li><li><a href="#9">EXAMPLE 2: CONVERTING PATCH DATA WITH A SINGLE BOUNDARY TO AN IMAGE</a></li><li><a href="#12">EXAMPLE 3: CONVERTING PATCH DATA WITH A MULTIPLE BOUNDARIES AND PATCH TYPES TO AN IMAGE</a></li></ul></div><pre class="codeinput">clear; close <span class="string">all</span>; clc;
 </pre><h2 id="2">Syntax</h2><p><tt>[M,G,bwLabels]=patch2Im(F,V,C,voxelSize,imOrigin,imSiz);</tt></p><h2 id="3">Description</h2><p>This function converts patch surface data to images. The input C can be used to set the label for each surface and corresponding image region. The regions are assigned in order according to the color label in C. See also <tt>triSurf2Im</tt></p><h2 id="4">Examples</h2><p>Plot settings</p><pre class="codeinput">fontSize=10;
 faceAlpha1=1;
 faceAlpha2=0.3;
@@ -110,11 +110,11 @@ L_plot=L_plot &amp; ~isnan(M);
 Vm=Vm+imOrigin(ones(size(Vm,1),1),:);
 patch(<span class="string">'Faces'</span>,Fm,<span class="string">'Vertices'</span>,Vm,<span class="string">'FaceColor'</span>,<span class="string">'flat'</span>,<span class="string">'CData'</span>,Cm,<span class="string">'EdgeColor'</span>,<span class="string">'k'</span>,<span class="string">'FaceAlpha'</span>,faceAlpha1);
 
-colormap <span class="string">gjet</span>; colorbar;
+colormap <span class="string">gjet</span>; icolorbar;
 camlight(<span class="string">'headlight'</span>); lighting <span class="string">flat</span>;
 axis <span class="string">equal</span>; view(3); axis <span class="string">tight</span>;  grid <span class="string">on</span>;  set(gca,<span class="string">'FontSize'</span>,fontSize);
 drawnow;
-</pre><img vspace="5" hspace="5" src="HELP_patch2Im_01.png" alt=""> <h2 id="9">EXAMPLE 1: CONVERTING PATCH DATA WITH A SINGLE BOUNDARY TO AN IMAGE</h2><p>Defining an example surface model</p><pre class="codeinput">[F,V]=graphicsModels(3);
+</pre><img vspace="5" hspace="5" src="HELP_patch2Im_01.png" alt=""> <h2 id="9">EXAMPLE 2: CONVERTING PATCH DATA WITH A SINGLE BOUNDARY TO AN IMAGE</h2><p>Defining an example surface model</p><pre class="codeinput">[F,V]=graphicsModels(3);
 </pre><pre class="codeinput"><span class="comment">% Defining the full set of possible control parameters</span>
 voxelSize=(max(V(:,1))-min(V(:,1)))/50; <span class="comment">% The output image voxel size.</span>
 imOrigin=min(V,[],1)-voxelSize;
@@ -149,11 +149,11 @@ L_plot=L_plot &amp; ~isnan(M);
 Vm=Vm+imOrigin(ones(size(Vm,1),1),:);
 patch(<span class="string">'Faces'</span>,Fm,<span class="string">'Vertices'</span>,Vm,<span class="string">'FaceColor'</span>,<span class="string">'flat'</span>,<span class="string">'CData'</span>,Cm,<span class="string">'EdgeColor'</span>,<span class="string">'k'</span>,<span class="string">'FaceAlpha'</span>,faceAlpha1);
 
-colormap <span class="string">gjet</span>; colorbar;
+colormap <span class="string">gjet</span>; icolorbar;
 camlight(<span class="string">'headlight'</span>); lighting <span class="string">flat</span>;
 axis <span class="string">equal</span>; view(3); axis <span class="string">tight</span>;  grid <span class="string">on</span>;  set(gca,<span class="string">'FontSize'</span>,fontSize);
 drawnow;
-</pre><img vspace="5" hspace="5" src="HELP_patch2Im_02.png" alt=""> <h2 id="13">EXAMPLE 3: CONVERTING PATCH DATA WITH A MULTIPLE BOUNDARIES TO AN IMAGE</h2><pre class="codeinput"><span class="comment">% Defining a multi boundary set</span>
+</pre><img vspace="5" hspace="5" src="HELP_patch2Im_02.png" alt=""> <h2 id="12">EXAMPLE 3: CONVERTING PATCH DATA WITH A MULTIPLE BOUNDARIES AND PATCH TYPES TO AN IMAGE</h2><pre class="codeinput"><span class="comment">% Defining a multi boundary set</span>
 
 r=2; <span class="comment">%Sphere radius</span>
 rc=3; <span class="comment">%Central radius</span>
@@ -205,7 +205,7 @@ L_plot=L_plot &amp; ~isnan(M);
 Vm=Vm+imOrigin(ones(size(Vm,1),1),:);
 patch(<span class="string">'Faces'</span>,Fm,<span class="string">'Vertices'</span>,Vm,<span class="string">'FaceColor'</span>,<span class="string">'flat'</span>,<span class="string">'CData'</span>,Cm,<span class="string">'EdgeColor'</span>,<span class="string">'k'</span>,<span class="string">'FaceAlpha'</span>,faceAlpha1);
 
-colormap <span class="string">gjet</span>; colorbar; caxis([0 max(C(:))]);
+colormap <span class="string">gjet</span>; icolorbar; <span class="comment">%caxis([0 max(C(:))]);</span>
 camlight(<span class="string">'headlight'</span>); lighting <span class="string">flat</span>;
 axis <span class="string">equal</span>; view(3); axis <span class="string">tight</span>;  grid <span class="string">on</span>;  set(gca,<span class="string">'FontSize'</span>,fontSize);
 drawnow;
@@ -284,17 +284,15 @@ L_plot=L_plot & ~isnan(M);
 Vm=Vm+imOrigin(ones(size(Vm,1),1),:);
 patch('Faces',Fm,'Vertices',Vm,'FaceColor','flat','CData',Cm,'EdgeColor','k','FaceAlpha',faceAlpha1);
 
-colormap gjet; colorbar;
+colormap gjet; icolorbar;
 camlight('headlight'); lighting flat;
 axis equal; view(3); axis tight;  grid on;  set(gca,'FontSize',fontSize);
 drawnow;
 
-%% EXAMPLE 1: CONVERTING PATCH DATA WITH A SINGLE BOUNDARY TO AN IMAGE
+%% EXAMPLE 2: CONVERTING PATCH DATA WITH A SINGLE BOUNDARY TO AN IMAGE
 % Defining an example surface model
 
 [F,V]=graphicsModels(3);
-
-%%
 
 %%
 
@@ -336,12 +334,12 @@ L_plot=L_plot & ~isnan(M);
 Vm=Vm+imOrigin(ones(size(Vm,1),1),:);
 patch('Faces',Fm,'Vertices',Vm,'FaceColor','flat','CData',Cm,'EdgeColor','k','FaceAlpha',faceAlpha1);
 
-colormap gjet; colorbar;
+colormap gjet; icolorbar;
 camlight('headlight'); lighting flat;
 axis equal; view(3); axis tight;  grid on;  set(gca,'FontSize',fontSize);
 drawnow;
 
-%% EXAMPLE 3: CONVERTING PATCH DATA WITH A MULTIPLE BOUNDARIES TO AN IMAGE
+%% EXAMPLE 3: CONVERTING PATCH DATA WITH A MULTIPLE BOUNDARIES AND PATCH TYPES TO AN IMAGE
 
 % Defining a multi boundary set
 
@@ -402,7 +400,7 @@ L_plot=L_plot & ~isnan(M);
 Vm=Vm+imOrigin(ones(size(Vm,1),1),:);
 patch('Faces',Fm,'Vertices',Vm,'FaceColor','flat','CData',Cm,'EdgeColor','k','FaceAlpha',faceAlpha1);
 
-colormap gjet; colorbar; caxis([0 max(C(:))]);
+colormap gjet; icolorbar; %caxis([0 max(C(:))]);
 camlight('headlight'); lighting flat;
 axis equal; view(3); axis tight;  grid on;  set(gca,'FontSize',fontSize);
 drawnow;
