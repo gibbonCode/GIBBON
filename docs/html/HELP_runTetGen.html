@@ -6,7 +6,7 @@
    <!--
 This HTML was auto-generated from MATLAB code.
 To make changes, update the MATLAB code and republish this document.
-      --><title>runTetGen</title><meta name="generator" content="MATLAB 9.1"><link rel="schema.DC" href="http://purl.org/dc/elements/1.1/"><meta name="DC.date" content="2017-06-19"><meta name="DC.source" content="HELP_runTetGen.m"><style type="text/css">
+      --><title>runTetGen</title><meta name="generator" content="MATLAB 9.1"><link rel="schema.DC" href="http://purl.org/dc/elements/1.1/"><meta name="DC.date" content="2017-06-29"><meta name="DC.source" content="HELP_runTetGen.m"><style type="text/css">
 html,body,div,span,applet,object,iframe,h1,h2,h3,h4,h5,h6,p,blockquote,pre,a,abbr,acronym,address,big,cite,code,del,dfn,em,font,img,ins,kbd,q,s,samp,small,strike,strong,sub,sup,tt,var,b,u,i,center,dl,dt,dd,ol,ul,li,fieldset,form,label,legend,table,caption,tbody,tfoot,thead,tr,th,td{margin:0;padding:0;border:0;outline:0;font-size:100%;vertical-align:baseline;background:transparent}body{line-height:1}ol,ul{list-style:none}blockquote,q{quotes:none}blockquote:before,blockquote:after,q:before,q:after{content:'';content:none}:focus{outine:0}ins{text-decoration:none}del{text-decoration:line-through}table{border-collapse:collapse;border-spacing:0}
 
 html { min-height:100%; margin-bottom:1px; }
@@ -66,9 +66,9 @@ table td { padding:7px 5px; text-align:left; vertical-align:top; border:1px soli
 
 
 
-  </style></head><body><div class="content"><h1>runTetGen</h1><!--introduction--><p>Below is a demonstration of the features of the <tt>runTetGen</tt> function</p><!--/introduction--><h2>Contents</h2><div><ul><li><a href="#4">MESHING A SINGLE REGION MODEL</a></li><li><a href="#15">MESHING IMPORTED GEOMETRY</a></li><li><a href="#26">MESHING A MULTI-REGION MODEL</a></li><li><a href="#37">MESHING A MULTI-REGION MODEL CONTAINING HOLES</a></li><li><a href="#48">Meshing from a quadrilateral input surface</a></li><li><a href="#53">Meshing 10-node (i.e. quadratic) tetrahedral elements</a></li></ul></div><pre class="codeinput">clear; close <span class="string">all</span>; clc;
+  </style></head><body><div class="content"><h1>runTetGen</h1><!--introduction--><p>Below is a demonstration of the features of the <tt>runTetGen</tt> function</p><!--/introduction--><h2>Contents</h2><div><ul><li><a href="#4">MESHING A SINGLE REGION MODEL</a></li><li><a href="#15">Example: Creating an animated view to explore the mesh</a></li><li><a href="#18">MESHING IMPORTED GEOMETRY</a></li><li><a href="#29">MESHING A MULTI-REGION MODEL EG LAYERED</a></li><li><a href="#41">MESHING A MULTI-REGION MODEL EG INCLUSION</a></li><li><a href="#57">MESHING A MULTI-REGION MODEL CONTAINING HOLES</a></li><li><a href="#68">Meshing from a quadrilateral input surface</a></li><li><a href="#73">Meshing 10-node (i.e. quadratic) tetrahedral elements</a></li></ul></div><pre class="codeinput">clear; close <span class="string">all</span>; clc;
 </pre><p>Plot settings</p><pre class="codeinput">fontSize=15;
-faceAlpha1=0.4;
+faceAlpha1=0.3;
 faceAlpha2=1;
 cMap=gjet(4);
 patchColor=cMap(1,:);
@@ -105,43 +105,43 @@ inputStruct.regionPoints=V_regions; <span class="comment">%region points</span>
 inputStruct.regionA=regionA;
 inputStruct.minRegionMarker=2; <span class="comment">%Minimum region marker</span>
 inputStruct.modelName=modelName;
-</pre><p>Mesh model using tetrahedral elements using tetGen (see: <a href="http://wias-berlin.de/software/tetgen/">http://wias-berlin.de/software/tetgen/</a>)</p><pre class="codeinput">[meshOutput]=runTetGen(inputStruct); <span class="comment">%Run tetGen</span>
+</pre><p>Mesh model using tetrahedral elements using tetGen</p><pre class="codeinput">[meshOutput]=runTetGen(inputStruct); <span class="comment">%Run tetGen</span>
 </pre><pre class="codeoutput"> 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
---- TETGEN Tetrahedral meshing --- 19-Jun-2017 11:59:38
+--- TETGEN Tetrahedral meshing --- 29-Jun-2017 10:02:23
  
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
---- Writing SMESH file --- 19-Jun-2017 11:59:38
+--- Writing SMESH file --- 29-Jun-2017 10:02:23
 ----&gt; Adding node field
 ----&gt; Adding facet field
 ----&gt; Adding holes specification
 ----&gt; Adding region specification
---- Done --- 19-Jun-2017 11:59:38
---- Running TetGen to mesh input boundary--- 19-Jun-2017 11:59:38
+--- Done --- 29-Jun-2017 10:02:23
+--- Running TetGen to mesh input boundary--- 29-Jun-2017 10:02:23
 Opening /mnt/data/MATLAB/GIT/GIBBON/lib_ext/tetGen/tempFiles/tetgenmodel.smesh.
 Delaunizing vertices...
-Delaunay seconds:  0.021508
+Delaunay seconds:  0.021884
 Creating surface mesh ...
-Surface mesh seconds:  0.004899
+Surface mesh seconds:  0.004552
 Recovering boundaries...
-Boundary recovery seconds:  0.005243
+Boundary recovery seconds:  0.00506
 Removing exterior tetrahedra ...
 Spreading region attributes.
-Exterior tets removal seconds:  0.004049
+Exterior tets removal seconds:  0.004129
 Recovering Delaunayness...
-Delaunay recovery seconds:  0.002933
+Delaunay recovery seconds:  0.002969
 Refining mesh...
-Refinement seconds:  0.208616
+Refinement seconds:  0.20599
 Optimizing mesh...
-Optimization seconds:  0.02494
+Optimization seconds:  0.022284
 
 Writing /mnt/data/MATLAB/GIT/GIBBON/lib_ext/tetGen/tempFiles/tetgenmodel.1.node.
 Writing /mnt/data/MATLAB/GIT/GIBBON/lib_ext/tetGen/tempFiles/tetgenmodel.1.ele.
 Writing /mnt/data/MATLAB/GIT/GIBBON/lib_ext/tetGen/tempFiles/tetgenmodel.1.face.
 Writing /mnt/data/MATLAB/GIT/GIBBON/lib_ext/tetGen/tempFiles/tetgenmodel.1.edge.
 
-Output seconds:  0.062466
-Total running seconds:  0.334808
+Output seconds:  0.063397
+Total running seconds:  0.330413
 
 Statistics:
 
@@ -159,11 +159,11 @@ Statistics:
   Mesh edges on input segments: 4554
   Steiner points inside domain: 4384
 
---- Done --- 19-Jun-2017 11:59:39
+--- Done --- 29-Jun-2017 10:02:24
  
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
---- Importing TetGen files --- 19-Jun-2017 11:59:39
---- Done --- 19-Jun-2017 11:59:39
+--- Importing TetGen files --- 29-Jun-2017 10:02:24
+--- Done --- 29-Jun-2017 10:02:24
 </pre><p>Access model element and patch data</p><pre class="codeinput">Fb=meshOutput.facesBoundary;
 Cb=meshOutput.boundaryMarker;
 V=meshOutput.nodes;
@@ -171,8 +171,8 @@ CE=meshOutput.elementMaterialID;
 E=meshOutput.elements;
 </pre><p>PLOTTING MODEL</p><pre class="codeinput"><span class="comment">%Selecting half of the model to see interior</span>
 Y=V(:,2); YE=mean(Y(E),2);
-L=YE&gt;mean(Y);
-[Fs,Cs]=element2patch(E(L,:),CE(L),<span class="string">'tet4'</span>);
+logicCutView=YE&gt;mean(Y);
+[Fs,Cs]=element2patch(E(logicCutView,:),CE(logicCutView),<span class="string">'tet4'</span>);
 
 cFigure;
 hold <span class="string">on</span>;
@@ -185,7 +185,36 @@ axisGeom(gca,fontSize);
 axis <span class="string">off</span>;
 colormap(cMap);
 drawnow;
-</pre><img vspace="5" hspace="5" src="HELP_runTetGen_02.png" alt=""> <h2 id="15">MESHING IMPORTED GEOMETRY</h2><p>Import an STL model</p><pre class="codeinput">defaultFolder = fileparts(fileparts(mfilename(<span class="string">'fullpath'</span>)));
+</pre><img vspace="5" hspace="5" src="HELP_runTetGen_02.png" alt=""> <h2 id="15">Example: Creating an animated view to explore the mesh</h2><p>See also <tt>anim8</tt> function</p><p>Initialize figure</p><pre class="codeinput">hf=cFigure; <span class="comment">%Store figure handle</span>
+hold <span class="string">on</span>;
+<span class="comment">% title('Cut view of Solid tetrahedral mesh model','FontSize',fontSize);</span>
+gpatch(Fb,V,0.5*ones(1,3),<span class="string">'none'</span>,faceAlpha1);
+hp=gpatch(Fs,V,Cs,<span class="string">'k'</span>,faceAlpha2); <span class="comment">%Graphics object to vary property of during animation</span>
+camlight <span class="string">headlight</span>;
+axisGeom(gca,fontSize);
+axis <span class="string">off</span>;
+colormap(cMap);
+drawnow;
+</pre><img vspace="5" hspace="5" src="HELP_runTetGen_03.png" alt=""> <p>Set up animation</p><pre class="codeinput">nSteps=25; <span class="comment">%Number of animation steps</span>
+
+animStruct.Time=linspace(0,1,nSteps); <span class="comment">%Time vector</span>
+cutLevel=linspace(min(Y(:)),max(Y(:)),nSteps); <span class="comment">%Property to set</span>
+
+<span class="keyword">for</span> q=1:1:nSteps <span class="comment">%Step through time</span>
+    cutLevelNow=cutLevel(q); <span class="comment">%The current cut level</span>
+
+    logicCutView=YE&gt;cutLevelNow;
+    [Fs,Cs]=element2patch(E(logicCutView,:),CE(logicCutView),<span class="string">'tet4'</span>);
+
+    <span class="comment">%Set entries in animation structure</span>
+    animStruct.Handles{q}=[hp hp]; <span class="comment">%Handles of objects to animate</span>
+    animStruct.Props{q}={<span class="string">'Faces'</span>,<span class="string">'CData'</span>}; <span class="comment">%Properties of objects to animate</span>
+    animStruct.Set{q}={Fs,Cs}; <span class="comment">%Property values for to set in order to animate</span>
+<span class="keyword">end</span>
+
+<span class="comment">%Add animation layer</span>
+anim8(hf,animStruct);
+</pre><img vspace="5" hspace="5" src="HELP_runTetGen_04.png" alt=""> <h2 id="18">MESHING IMPORTED GEOMETRY</h2><p>Import an STL model</p><pre class="codeinput">defaultFolder = fileparts(fileparts(mfilename(<span class="string">'fullpath'</span>)));
 pathName=fullfile(defaultFolder,<span class="string">'data'</span>,<span class="string">'STL'</span>);
 fileName=fullfile(pathName,<span class="string">'femur.stl'</span>);
 [stlStruct] = import_STL(fileName);
@@ -202,7 +231,7 @@ title(<span class="string">'Surface model'</span>,<span class="string">'FontSize
 gpatch(F,V,patchColor,<span class="string">'k'</span>,faceAlpha1);
 camlight <span class="string">headlight</span>;
 axisGeom(gca,fontSize);
-</pre><img vspace="5" hspace="5" src="HELP_runTetGen_03.png" alt=""> <p>DEFINE FACE BOUNDARY MARKERS</p><pre class="codeinput">faceBoundaryMarker=ones(size(F,1),1);
+</pre><img vspace="5" hspace="5" src="HELP_runTetGen_05.png" alt=""> <p>DEFINE FACE BOUNDARY MARKERS</p><pre class="codeinput">faceBoundaryMarker=ones(size(F,1),1);
 </pre><p>Define region points</p><pre class="codeinput">V_regions=[0 0 0];
 </pre><p>Define hole points</p><pre class="codeinput">V_holes=[];
 </pre><p>Regional mesh volume parameter</p><pre class="codeinput">[regionA]=tetVolMeanEst(F,V); <span class="comment">%Volume for regular tets</span>
@@ -217,43 +246,43 @@ inputStruct.regionPoints=V_regions; <span class="comment">%region points</span>
 inputStruct.regionA=regionA;
 inputStruct.minRegionMarker=2; <span class="comment">%Minimum region marker</span>
 inputStruct.modelName=modelName;
-</pre><p>Mesh model using tetrahedral elements using tetGen (see: <a href="http://wias-berlin.de/software/tetgen/">http://wias-berlin.de/software/tetgen/</a>)</p><pre class="codeinput">[meshOutput]=runTetGen(inputStruct); <span class="comment">%Run tetGen</span>
+</pre><p>Mesh model using tetrahedral elements using tetGen</p><pre class="codeinput">[meshOutput]=runTetGen(inputStruct); <span class="comment">%Run tetGen</span>
 </pre><pre class="codeoutput"> 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
---- TETGEN Tetrahedral meshing --- 19-Jun-2017 11:59:42
+--- TETGEN Tetrahedral meshing --- 29-Jun-2017 10:02:29
  
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
---- Writing SMESH file --- 19-Jun-2017 11:59:42
+--- Writing SMESH file --- 29-Jun-2017 10:02:29
 ----&gt; Adding node field
 ----&gt; Adding facet field
 ----&gt; Adding holes specification
 ----&gt; Adding region specification
---- Done --- 19-Jun-2017 11:59:42
---- Running TetGen to mesh input boundary--- 19-Jun-2017 11:59:42
+--- Done --- 29-Jun-2017 10:02:30
+--- Running TetGen to mesh input boundary--- 29-Jun-2017 10:02:30
 Opening /mnt/data/MATLAB/GIT/GIBBON/lib_ext/tetGen/tempFiles/tetgenmodel.smesh.
 Delaunizing vertices...
-Delaunay seconds:  0.045063
+Delaunay seconds:  0.046169
 Creating surface mesh ...
-Surface mesh seconds:  0.010225
+Surface mesh seconds:  0.009115
 Recovering boundaries...
-Boundary recovery seconds:  0.013837
+Boundary recovery seconds:  0.013051
 Removing exterior tetrahedra ...
 Spreading region attributes.
-Exterior tets removal seconds:  0.009348
+Exterior tets removal seconds:  0.009482
 Recovering Delaunayness...
-Delaunay recovery seconds:  0.007065
+Delaunay recovery seconds:  0.007748
 Refining mesh...
-Refinement seconds:  0.37883
+Refinement seconds:  0.35228
 Optimizing mesh...
-Optimization seconds:  0.037569
+Optimization seconds:  0.037352
 
 Writing /mnt/data/MATLAB/GIT/GIBBON/lib_ext/tetGen/tempFiles/tetgenmodel.1.node.
 Writing /mnt/data/MATLAB/GIT/GIBBON/lib_ext/tetGen/tempFiles/tetgenmodel.1.ele.
 Writing /mnt/data/MATLAB/GIT/GIBBON/lib_ext/tetGen/tempFiles/tetgenmodel.1.face.
 Writing /mnt/data/MATLAB/GIT/GIBBON/lib_ext/tetGen/tempFiles/tetgenmodel.1.edge.
 
-Output seconds:  0.090738
-Total running seconds:  0.592941
+Output seconds:  0.088369
+Total running seconds:  0.563847
 
 Statistics:
 
@@ -271,11 +300,11 @@ Statistics:
   Mesh edges on input segments: 8886
   Steiner points inside domain: 6377
 
---- Done --- 19-Jun-2017 11:59:43
+--- Done --- 29-Jun-2017 10:02:30
  
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
---- Importing TetGen files --- 19-Jun-2017 11:59:43
---- Done --- 19-Jun-2017 11:59:43
+--- Importing TetGen files --- 29-Jun-2017 10:02:30
+--- Done --- 29-Jun-2017 10:02:30
 </pre><p>Access model element and patch data</p><pre class="codeinput">Fb=meshOutput.facesBoundary;
 Cb=meshOutput.boundaryMarker;
 V=meshOutput.nodes;
@@ -283,8 +312,8 @@ CE=meshOutput.elementMaterialID;
 E=meshOutput.elements;
 </pre><p>PLOTTING MODEL</p><pre class="codeinput"><span class="comment">%Selecting half of the model to see interior</span>
 Y=V(:,2); YE=mean(Y(E),2);
-L=YE&gt;mean(Y);
-[Fs,Cs]=element2patch(E(L,:),CE(L),<span class="string">'tet4'</span>);
+logicCutView=YE&gt;mean(Y);
+[Fs,Cs]=element2patch(E(logicCutView,:),CE(logicCutView),<span class="string">'tet4'</span>);
 
 cFigure;
 hold <span class="string">on</span>;
@@ -297,24 +326,40 @@ axisGeom(gca,fontSize);
 axis <span class="string">off</span>;
 colormap(cMap);
 drawnow;
-</pre><img vspace="5" hspace="5" src="HELP_runTetGen_04.png" alt=""> <h2 id="26">MESHING A MULTI-REGION MODEL</h2><p>Simulating a multiregion mesh</p><pre class="codeinput">[F1,V1]=parasaurolophus; <span class="comment">%A dino</span>
-[F2,V2,~]=geoSphere(3,0.4); <span class="comment">%An internal region</span>
-V2(:,1)=2*V2(:,1);
-V_centre=[0.75 0 0.25];
-V2=V2+V_centre(ones(size(V2,1),1),:);
+</pre><img vspace="5" hspace="5" src="HELP_runTetGen_06.png" alt=""> <h2 id="29">MESHING A MULTI-REGION MODEL EG LAYERED</h2><p>An example surface</p><pre class="codeinput">r=2; <span class="comment">%Sphere radius</span>
+rc=3; <span class="comment">%Central radius</span>
+nr=15;
+nc=25;
+ptype=<span class="string">'tri'</span>;
+[F,V]=patchTorus(r,nr,rc,nc,ptype);
+</pre><p>Creating layer by offsetting inwards</p><pre class="codeinput">layerThickness=0.5;
+[N,Vn,Nv]=patchNormal(F,V); <span class="comment">%Patch Normals</span>
+V2=V-layerThickness.*Nv;
 
-<span class="comment">%Joining surface sets</span>
-F=[F1;F2+size(V1,1)];
-V=[V1;V2];
-C=[ones(size(F1,1),1);2*ones(size(F2,1),1)]; <span class="comment">%Surface marker colors</span>
-</pre><p>Plotting model</p><pre class="codeinput">cFigure; hold <span class="string">on</span>;
+[F,V,C]=joinElementSets({F F},{V V2}); <span class="comment">%Join sets</span>
+
+voxelSize=layerThickness/2;
+[M,G,bwLabels]=patch2Im(F,V,C,voxelSize);
+
+L=M==0;
+[indInternal]=getInnerVoxel(L,1,0);
+
+[I_in,J_in,K_in]=ind2sub(size(L),indInternal); <span class="comment">%Convert to subscript coordinates</span>
+[V_in1(:,1),V_in1(:,2),V_in1(:,3)]=im2cart(I_in,J_in,K_in,voxelSize*ones(1,3));
+V_in1=V_in1+G.origin(ones(size(V_in1,1),1),:);
+
+V_in2=getInnerPoint(F(C==2,:),V);
+</pre><pre class="codeinput">cFigure; hold <span class="string">on</span>;
 title(<span class="string">'Surface model'</span>,<span class="string">'FontSize'</span>,fontSize);
-gpatch(F,V,C,<span class="string">'k'</span>,faceAlpha1);
+gpatch(F,V,C,<span class="string">'none'</span>,0.2);
+colormap(cMap);
 camlight <span class="string">headlight</span>;
 axisGeom(gca,fontSize);
-colormap(cMap);
-</pre><img vspace="5" hspace="5" src="HELP_runTetGen_05.png" alt=""> <p>DEFINE FACE BOUNDARY MARKERS</p><pre class="codeinput">faceBoundaryMarker=C;
-</pre><p>Define region points</p><pre class="codeinput">V_regions=[0.5 0 0;V_centre];
+
+plotV(V_in1,<span class="string">'k.'</span>,<span class="string">'MarkerSize'</span>,25);
+plotV(V_in2,<span class="string">'r.'</span>,<span class="string">'MarkerSize'</span>,25);
+</pre><img vspace="5" hspace="5" src="HELP_runTetGen_07.png" alt=""> <p>DEFINE FACE BOUNDARY MARKERS</p><pre class="codeinput">faceBoundaryMarker=C;
+</pre><p>Define region points</p><pre class="codeinput">V_regions=[V_in1;V_in2];
 </pre><p>Define hole points</p><pre class="codeinput">V_holes=[];
 </pre><p>Regional mesh parameters</p><pre class="codeinput">[A]=tetVolMeanEst(F,V);
 regionA=[A/2 A];
@@ -328,25 +373,25 @@ inputStruct.regionPoints=V_regions; <span class="comment">%region points</span>
 inputStruct.regionA=regionA;
 inputStruct.minRegionMarker=2; <span class="comment">%Minimum region marker</span>
 inputStruct.modelName=modelName;
-</pre><p>Mesh model using tetrahedral elements using tetGen (see: <a href="http://wias-berlin.de/software/tetgen/">http://wias-berlin.de/software/tetgen/</a>)</p><pre class="codeinput">[meshOutput]=runTetGen(inputStruct); <span class="comment">%Run tetGen</span>
+</pre><p>Mesh model using tetrahedral elements using tetGen</p><pre class="codeinput">[meshOutput]=runTetGen(inputStruct); <span class="comment">%Run tetGen</span>
 </pre><pre class="codeoutput"> 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
---- TETGEN Tetrahedral meshing --- 19-Jun-2017 11:59:45
+--- TETGEN Tetrahedral meshing --- 29-Jun-2017 10:02:33
  
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
---- Writing SMESH file --- 19-Jun-2017 11:59:45
+--- Writing SMESH file --- 29-Jun-2017 10:02:33
 ----&gt; Adding node field
 ----&gt; Adding facet field
 ----&gt; Adding holes specification
 ----&gt; Adding region specification
---- Done --- 19-Jun-2017 11:59:46
---- Running TetGen to mesh input boundary--- 19-Jun-2017 11:59:46
+--- Done --- 29-Jun-2017 10:02:34
+--- Running TetGen to mesh input boundary--- 29-Jun-2017 10:02:34
 Opening /mnt/data/MATLAB/GIT/GIBBON/lib_ext/tetGen/tempFiles/tetgenmodel.smesh.
---- Done --- 19-Jun-2017 11:59:46
+--- Done --- 29-Jun-2017 10:02:34
  
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
---- Importing TetGen files --- 19-Jun-2017 11:59:46
---- Done --- 19-Jun-2017 11:59:46
+--- Importing TetGen files --- 29-Jun-2017 10:02:34
+--- Done --- 29-Jun-2017 10:02:34
 </pre><p>Access model element and patch data</p><pre class="codeinput">Fb=meshOutput.facesBoundary;
 Cb=meshOutput.boundaryMarker;
 V=meshOutput.nodes;
@@ -354,8 +399,8 @@ CE=meshOutput.elementMaterialID;
 E=meshOutput.elements;
 </pre><p>PLOTTING MODEL</p><pre class="codeinput"><span class="comment">%Selecting half of the model to see interior</span>
 Y=V(:,2); YE=mean(Y(E),2);
-L=YE&gt;mean(Y);
-[Fs,Cs]=element2patch(E(L,:),CE(L),<span class="string">'tet4'</span>);
+logicCutView=YE&gt;mean(Y);
+[Fs,Cs]=element2patch(E(logicCutView,:),CE(logicCutView),<span class="string">'tet4'</span>);
 
 cFigure;
 hold <span class="string">on</span>;
@@ -368,7 +413,135 @@ axisGeom(gca,fontSize);
 axis <span class="string">off</span>;
 colormap(cMap);
 drawnow;
-</pre><img vspace="5" hspace="5" src="HELP_runTetGen_06.png" alt=""> <h2 id="37">MESHING A MULTI-REGION MODEL CONTAINING HOLES</h2><p>Simulating a multiregion mesh</p><pre class="codeinput"><span class="comment">%A dino</span>
+</pre><img vspace="5" hspace="5" src="HELP_runTetGen_08.png" alt=""> <h2 id="41">MESHING A MULTI-REGION MODEL EG INCLUSION</h2><p>Creating boundary surfaces</p><pre class="codeinput"><span class="comment">%Outer bunny</span>
+[F1,V1]=stanford_bunny(<span class="string">'g'</span>); <span class="comment">%Bunny</span>
+V1_mean=mean(V1,1);
+V1=V1-V1_mean(ones(size(V1,1),1),:);
+
+<span class="comment">%Inner bunny</span>
+V2=V1/4;
+V2(:,3)=V2(:,3)-35;
+V2(:,2)=V2(:,2)-15;
+V2(:,1)=V2(:,1)+10;
+
+V3=V1/4;
+V3(:,3)=V3(:,3)-10;
+V3(:,2)=V3(:,2)+10;
+V3(:,1)=V3(:,1)+40;
+
+<span class="comment">%Joining surface sets</span>
+[F,V,C]=joinElementSets({F1,F1,F1},{V1,V2,V3});
+
+<span class="comment">%</span>
+<span class="comment">% Plotting model</span>
+cFigure; hold <span class="string">on</span>;
+title(<span class="string">'Surface model'</span>,<span class="string">'FontSize'</span>,fontSize);
+gpatch(F,V,C,<span class="string">'k'</span>,faceAlpha1);
+camlight <span class="string">headlight</span>;
+axisGeom(gca,fontSize);
+colormap(cMap); icolorbar;
+</pre><img vspace="5" hspace="5" src="HELP_runTetGen_09.png" alt=""> <p>Find interior points</p><pre class="codeinput">V_in1=getInnerPoint(F(C==1,:),V); <span class="comment">%Check if inside others (getInnerVoxel for region is safer)</span>
+V_in2=getInnerPoint(F(C==2,:),V);
+V_in3=getInnerPoint(F(C==3,:),V);
+</pre><p>Visualize interior points</p><pre class="codeinput">cFigure; hold <span class="string">on</span>;
+title(<span class="string">'Surface model with interior points'</span>,<span class="string">'FontSize'</span>,fontSize);
+gpatch(F,V,C,<span class="string">'none'</span>,faceAlpha1);
+plotV(V_in1,<span class="string">'b.'</span>,<span class="string">'MarkerSize'</span>,25);
+plotV(V_in2,<span class="string">'g.'</span>,<span class="string">'MarkerSize'</span>,25);
+plotV(V_in3,<span class="string">'r.'</span>,<span class="string">'MarkerSize'</span>,25);
+
+camlight <span class="string">headlight</span>;
+axisGeom(gca,fontSize);
+colormap(cMap);
+</pre><img vspace="5" hspace="5" src="HELP_runTetGen_10.png" alt=""> <p>DEFINE FACE BOUNDARY MARKERS</p><pre class="codeinput">faceBoundaryMarker=C;
+</pre><p>Define region points</p><pre class="codeinput">V_regions=[V_in1;V_in2; V_in3];
+</pre><p>Define hole points</p><pre class="codeinput">V_holes=[];
+</pre><p>Regional mesh parameters</p><pre class="codeinput">[A]=tetVolMeanEst(F,V); <span class="comment">%Volume estimate based on current edge lengths</span>
+regionA=[5*A A/2 A/2]; <span class="comment">%Element volume settings</span>
+</pre><p>CREATING THE INPUT STRUCTURE</p><pre class="codeinput">stringOpt=<span class="string">'-pq1.2AaYQ'</span>;
+inputStruct.stringOpt=stringOpt;
+inputStruct.Faces=F;
+inputStruct.Nodes=V;
+inputStruct.holePoints=V_holes;
+inputStruct.faceBoundaryMarker=faceBoundaryMarker; <span class="comment">%Face boundary markers</span>
+inputStruct.regionPoints=V_regions; <span class="comment">%region points</span>
+inputStruct.regionA=regionA;
+inputStruct.minRegionMarker=2; <span class="comment">%Minimum region marker</span>
+inputStruct.modelName=modelName;
+</pre><p>Mesh model using tetrahedral elements using tetGen</p><pre class="codeinput">[meshOutput]=runTetGen(inputStruct); <span class="comment">%Run tetGen</span>
+</pre><pre class="codeoutput"> 
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+--- TETGEN Tetrahedral meshing --- 29-Jun-2017 10:02:37
+ 
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+--- Writing SMESH file --- 29-Jun-2017 10:02:37
+----&gt; Adding node field
+----&gt; Adding facet field
+----&gt; Adding holes specification
+----&gt; Adding region specification
+--- Done --- 29-Jun-2017 10:02:37
+--- Running TetGen to mesh input boundary--- 29-Jun-2017 10:02:37
+Opening /mnt/data/MATLAB/GIT/GIBBON/lib_ext/tetGen/tempFiles/tetgenmodel.smesh.
+--- Done --- 29-Jun-2017 10:02:39
+ 
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+--- Importing TetGen files --- 29-Jun-2017 10:02:39
+--- Done --- 29-Jun-2017 10:02:39
+</pre><p>Access model element and patch data</p><pre class="codeinput">Fb=meshOutput.facesBoundary;
+Cb=meshOutput.boundaryMarker;
+V=meshOutput.nodes;
+CE=meshOutput.elementMaterialID;
+E=meshOutput.elements;
+</pre><p>Setting "material indices". These can be based on the TetGen material ID</p><pre class="codeinput">materialIndex=zeros(size(CE));
+materialIndex(CE==-2)=1;
+materialIndex(CE==-3)=2;
+materialIndex(CE==-4)=3;
+</pre><p>PLOTTING MODEL</p><pre class="codeinput"><span class="comment">%Selecting half of the model to see interior</span>
+Y=V(:,2); YE=mean(Y(E),2);
+logicCutView=YE&gt;mean(Y);
+[Fs,Cs]=element2patch(E(logicCutView,:),materialIndex(logicCutView),<span class="string">'tet4'</span>);
+
+cFigure;
+hold <span class="string">on</span>;
+title(<span class="string">'Cut view of Solid tetrahedral mesh model'</span>,<span class="string">'FontSize'</span>,fontSize);
+gpatch(Fb,V,0.5*ones(1,3),<span class="string">'none'</span>,faceAlpha1);
+gpatch(Fs,V,Cs,<span class="string">'k'</span>,faceAlpha2);
+plotV(V(unique(Fs(:)),:),<span class="string">'k.'</span>,<span class="string">'MarkerSize'</span>,markerSize);
+camlight <span class="string">headlight</span>;
+axisGeom(gca,fontSize);
+axis <span class="string">off</span>;
+colormap(cMap); icolorbar([1 3]);
+drawnow;
+</pre><img vspace="5" hspace="5" src="HELP_runTetGen_11.png" alt=""> <p>Creating an animated view to explore the mesh, See also <tt>anim8</tt> function</p><p>Initialize figure</p><pre class="codeinput">hf=cFigure; <span class="comment">%Store figure handle</span>
+hold <span class="string">on</span>;
+<span class="comment">% title('Cut view of Solid tetrahedral mesh model','FontSize',fontSize);</span>
+gpatch(Fb,V,0.5*ones(1,3),<span class="string">'none'</span>,faceAlpha1);
+hp=gpatch(Fs,V,Cs,<span class="string">'k'</span>,faceAlpha2); <span class="comment">%Graphics object to vary property of during animation</span>
+camlight <span class="string">headlight</span>;
+axisGeom(gca,fontSize);
+axis <span class="string">off</span>;
+colormap(cMap); icolorbar([1 3]);
+drawnow;
+</pre><img vspace="5" hspace="5" src="HELP_runTetGen_12.png" alt=""> <p>Set up animation</p><pre class="codeinput">nSteps=25; <span class="comment">%Number of animation steps</span>
+
+animStruct.Time=linspace(0,1,nSteps); <span class="comment">%Time vector</span>
+cutLevel=linspace(min(Y(:)),max(Y(:)),nSteps); <span class="comment">%Property to set</span>
+
+<span class="keyword">for</span> q=1:1:nSteps <span class="comment">%Step through time</span>
+    cutLevelNow=cutLevel(q); <span class="comment">%The current cut level</span>
+
+    logicCutView=YE&gt;cutLevelNow;
+    [Fs,Cs]=element2patch(E(logicCutView,:),materialIndex(logicCutView),<span class="string">'tet4'</span>);
+
+    <span class="comment">%Set entries in animation structure</span>
+    animStruct.Handles{q}=[hp hp]; <span class="comment">%Handles of objects to animate</span>
+    animStruct.Props{q}={<span class="string">'Faces'</span>,<span class="string">'CData'</span>}; <span class="comment">%Properties of objects to animate</span>
+    animStruct.Set{q}={Fs,Cs}; <span class="comment">%Property values for to set in order to animate</span>
+<span class="keyword">end</span>
+
+<span class="comment">%Add animation layer</span>
+anim8(hf,animStruct);
+</pre><img vspace="5" hspace="5" src="HELP_runTetGen_13.png" alt=""> <h2 id="57">MESHING A MULTI-REGION MODEL CONTAINING HOLES</h2><p>Simulating a multiregion mesh</p><pre class="codeinput"><span class="comment">%A dino</span>
 [F1,V1]=parasaurolophus;
 
 <span class="comment">%An internal region</span>
@@ -394,7 +567,7 @@ camlight <span class="string">headlight</span>;
 axisGeom(gca,fontSize);
 colormap(cMap);
 drawnow;
-</pre><img vspace="5" hspace="5" src="HELP_runTetGen_07.png" alt=""> <p>DEFINE FACE BOUNDARY MARKERS</p><pre class="codeinput">faceBoundaryMarker=C;
+</pre><img vspace="5" hspace="5" src="HELP_runTetGen_14.png" alt=""> <p>DEFINE FACE BOUNDARY MARKERS</p><pre class="codeinput">faceBoundaryMarker=C;
 </pre><p>Define region points</p><pre class="codeinput"><span class="comment">%Find an interior point in region 1</span>
 logicRegion=ismember(faceBoundaryMarker,[1 2]);
 [V_in_1]=getInnerPoint(F(logicRegion,:),V);
@@ -406,7 +579,7 @@ logicRegion=ismember(faceBoundaryMarker,[2 3]);
 plotV(V_in_2,<span class="string">'r.'</span>,<span class="string">'MarkerSize'</span>,25);
 
 V_regions=[V_in_1; V_in_2];
-</pre><img vspace="5" hspace="5" src="HELP_runTetGen_08.png" alt=""> <p>Define hole points</p><pre class="codeinput">V_holes=[V_centre];
+</pre><img vspace="5" hspace="5" src="HELP_runTetGen_15.png" alt=""> <p>Define hole points</p><pre class="codeinput">V_holes=[V_centre];
 </pre><p>Regional mesh parameters</p><pre class="codeinput">[A]=tetVolMeanEst(F,V);
 regionA=[A A/2];
 </pre><p>CREATING THE INPUT STRUCTURE</p><pre class="codeinput">stringOpt=<span class="string">'-pq1.2AaQY'</span>;
@@ -420,25 +593,25 @@ inputStruct.regionPoints=V_regions; <span class="comment">%region points</span>
 inputStruct.regionA=regionA;
 inputStruct.minRegionMarker=2; <span class="comment">%Minimum region marker</span>
 inputStruct.modelName=modelName;
-</pre><p>Mesh model using tetrahedral elements using tetGen (see: <a href="http://wias-berlin.de/software/tetgen/">http://wias-berlin.de/software/tetgen/</a>)</p><pre class="codeinput">[meshOutput]=runTetGen(inputStruct); <span class="comment">%Run tetGen</span>
+</pre><p>Mesh model using tetrahedral elements using tetGen</p><pre class="codeinput">[meshOutput]=runTetGen(inputStruct); <span class="comment">%Run tetGen</span>
 </pre><pre class="codeoutput"> 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
---- TETGEN Tetrahedral meshing --- 19-Jun-2017 11:59:49
+--- TETGEN Tetrahedral meshing --- 29-Jun-2017 10:02:48
  
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
---- Writing SMESH file --- 19-Jun-2017 11:59:49
+--- Writing SMESH file --- 29-Jun-2017 10:02:48
 ----&gt; Adding node field
 ----&gt; Adding facet field
 ----&gt; Adding holes specification
 ----&gt; Adding region specification
---- Done --- 19-Jun-2017 11:59:49
---- Running TetGen to mesh input boundary--- 19-Jun-2017 11:59:49
+--- Done --- 29-Jun-2017 10:02:48
+--- Running TetGen to mesh input boundary--- 29-Jun-2017 10:02:48
 Opening /mnt/data/MATLAB/GIT/GIBBON/lib_ext/tetGen/tempFiles/tetgenmodel.smesh.
---- Done --- 19-Jun-2017 11:59:50
+--- Done --- 29-Jun-2017 10:02:49
  
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
---- Importing TetGen files --- 19-Jun-2017 11:59:50
---- Done --- 19-Jun-2017 11:59:50
+--- Importing TetGen files --- 29-Jun-2017 10:02:49
+--- Done --- 29-Jun-2017 10:02:49
 </pre><p>Access model element and patch data</p><pre class="codeinput">Fb=meshOutput.facesBoundary;
 Cb=meshOutput.boundaryMarker;
 V=meshOutput.nodes;
@@ -446,8 +619,8 @@ CE=meshOutput.elementMaterialID;
 E=meshOutput.elements;
 </pre><p>PLOTTING MODEL</p><pre class="codeinput"><span class="comment">%Selecting half of the model to see interior</span>
 Y=V(:,2); YE=mean(Y(E),2);
-L=YE&gt;mean(Y);
-[Fs,Cs]=element2patch(E(L,:),CE(L),<span class="string">'tet4'</span>);
+logicCutView=YE&gt;mean(Y);
+[Fs,Cs]=element2patch(E(logicCutView,:),CE(logicCutView),<span class="string">'tet4'</span>);
 
 cFigure;
 hold <span class="string">on</span>;
@@ -460,7 +633,7 @@ axisGeom(gca,fontSize);
 axis <span class="string">off</span>;
 colormap(cMap);
 drawnow;
-</pre><img vspace="5" hspace="5" src="HELP_runTetGen_09.png" alt=""> <h2 id="48">Meshing from a quadrilateral input surface</h2><p>Build a quadrilateral surface</p><pre class="codeinput">boxDim=[4 5 6];
+</pre><img vspace="5" hspace="5" src="HELP_runTetGen_16.png" alt=""> <h2 id="68">Meshing from a quadrilateral input surface</h2><p>Build a quadrilateral surface</p><pre class="codeinput">boxDim=[4 5 6];
 boxEl=[4 5 6];
 [Fq,Vq,faceBoundaryMarker_q]=quadBox(boxDim,boxEl);
 </pre><p>CREATING THE INPUT STRUCTURE</p><pre class="codeinput">[regionA]=tetVolMeanEst(Fq,Vq); <span class="comment">%Volume for regular tets</span>
@@ -476,25 +649,25 @@ inputStruct.regionPoints=[0 0 0]; <span class="comment">%region points</span>
 inputStruct.regionA=regionA;
 inputStruct.minRegionMarker=2; <span class="comment">%Minimum region marker</span>
 inputStruct.modelName=modelName;
-</pre><p>Mesh model using tetrahedral elements using tetGen (see: <a href="http://wias-berlin.de/software/tetgen/">http://wias-berlin.de/software/tetgen/</a>)</p><pre class="codeinput">[meshOutput]=runTetGen(inputStruct); <span class="comment">%Run tetGen</span>
+</pre><p>Mesh model using tetrahedral elements using tetGen</p><pre class="codeinput">[meshOutput]=runTetGen(inputStruct); <span class="comment">%Run tetGen</span>
 </pre><pre class="codeoutput"> 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
---- TETGEN Tetrahedral meshing --- 19-Jun-2017 11:59:51
+--- TETGEN Tetrahedral meshing --- 29-Jun-2017 10:02:51
  
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
---- Writing SMESH file --- 19-Jun-2017 11:59:51
+--- Writing SMESH file --- 29-Jun-2017 10:02:51
 ----&gt; Adding node field
 ----&gt; Adding facet field
 ----&gt; Adding holes specification
 ----&gt; Adding region specification
---- Done --- 19-Jun-2017 11:59:51
---- Running TetGen to mesh input boundary--- 19-Jun-2017 11:59:51
+--- Done --- 29-Jun-2017 10:02:51
+--- Running TetGen to mesh input boundary--- 29-Jun-2017 10:02:51
 Opening /mnt/data/MATLAB/GIT/GIBBON/lib_ext/tetGen/tempFiles/tetgenmodel.smesh.
---- Done --- 19-Jun-2017 11:59:51
+--- Done --- 29-Jun-2017 10:02:51
  
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
---- Importing TetGen files --- 19-Jun-2017 11:59:51
---- Done --- 19-Jun-2017 11:59:51
+--- Importing TetGen files --- 29-Jun-2017 10:02:51
+--- Done --- 29-Jun-2017 10:02:51
 </pre><p>Access model element and patch data</p><pre class="codeinput">Fb=meshOutput.facesBoundary;
 Cb=meshOutput.boundaryMarker;
 V=meshOutput.nodes;
@@ -502,8 +675,8 @@ CE=meshOutput.elementMaterialID;
 E=meshOutput.elements;
 </pre><p>PLOTTING MODEL</p><pre class="codeinput"><span class="comment">%Selecting half of the model to see interior</span>
 Y=V(:,2); YE=mean(Y(E),2);
-L=YE&gt;mean(Y);
-[Fs,Cs]=element2patch(E(L,:),CE(L),<span class="string">'tet4'</span>);
+logicCutView=YE&gt;mean(Y);
+[Fs,Cs]=element2patch(E(logicCutView,:),CE(logicCutView),<span class="string">'tet4'</span>);
 
 cFigure;
 hold <span class="string">on</span>;
@@ -516,7 +689,7 @@ axisGeom(gca,fontSize);
 axis <span class="string">off</span>;
 colormap(cMap);
 drawnow;
-</pre><img vspace="5" hspace="5" src="HELP_runTetGen_10.png" alt=""> <h2 id="53">Meshing 10-node (i.e. quadratic) tetrahedral elements</h2><pre class="codeinput"><span class="comment">% Building spherical surface models</span>
+</pre><img vspace="5" hspace="5" src="HELP_runTetGen_17.png" alt=""> <h2 id="73">Meshing 10-node (i.e. quadratic) tetrahedral elements</h2><pre class="codeinput"><span class="comment">% Building spherical surface models</span>
 r1=1;
 r2=2*(r1/3);
 r3=r1/3;
@@ -552,25 +725,25 @@ inputStruct.regionA=regionA;
 inputStruct.minRegionMarker=2; <span class="comment">%Minimum region marker</span>
 inputStruct.modelName=modelName;
 </pre><p>Setting desired element type to tet10 (default is tet4)</p><pre class="codeinput">inputStruct.tetType=<span class="string">'tet10'</span>;
-</pre><p>Mesh model using tetrahedral elements using tetGen (see: <a href="http://wias-berlin.de/software/tetgen/">http://wias-berlin.de/software/tetgen/</a>)</p><pre class="codeinput">[meshOutput]=runTetGen(inputStruct); <span class="comment">%Run tetGen</span>
+</pre><p>Mesh model using tetrahedral elements using tetGen</p><pre class="codeinput">[meshOutput]=runTetGen(inputStruct); <span class="comment">%Run tetGen</span>
 </pre><pre class="codeoutput"> 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
---- TETGEN Tetrahedral meshing --- 19-Jun-2017 11:59:52
+--- TETGEN Tetrahedral meshing --- 29-Jun-2017 10:02:52
  
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
---- Writing SMESH file --- 19-Jun-2017 11:59:52
+--- Writing SMESH file --- 29-Jun-2017 10:02:52
 ----&gt; Adding node field
 ----&gt; Adding facet field
 ----&gt; Adding holes specification
 ----&gt; Adding region specification
---- Done --- 19-Jun-2017 11:59:52
---- Running TetGen to mesh input boundary--- 19-Jun-2017 11:59:52
+--- Done --- 29-Jun-2017 10:02:52
+--- Running TetGen to mesh input boundary--- 29-Jun-2017 10:02:52
 Opening /mnt/data/MATLAB/GIT/GIBBON/lib_ext/tetGen/tempFiles/tetgenmodel.smesh.
---- Done --- 19-Jun-2017 11:59:52
+--- Done --- 29-Jun-2017 10:02:52
  
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
---- Importing TetGen files --- 19-Jun-2017 11:59:52
---- Done --- 19-Jun-2017 11:59:52
+--- Importing TetGen files --- 29-Jun-2017 10:02:52
+--- Done --- 29-Jun-2017 10:02:52
 </pre><p>Access model element and patch data</p><pre class="codeinput">Fb=meshOutput.facesBoundary;
 Cb=meshOutput.boundaryMarker;
 V=meshOutput.nodes;
@@ -578,8 +751,8 @@ CE=meshOutput.elementMaterialID;
 E=meshOutput.elements;
 </pre><p>PLOTTING MODEL</p><pre class="codeinput"><span class="comment">%Selecting half of the model to see interior</span>
 Y=V(:,2); YE=mean(Y(E),2);
-L=YE&gt;mean(Y);
-[Fs,Cs]=element2patch(E(L,:),CE(L),<span class="string">'tet10'</span>);
+logicCutView=YE&gt;mean(Y);
+[Fs,Cs]=element2patch(E(logicCutView,:),CE(logicCutView),<span class="string">'tet10'</span>);
 
 cFigure;
 hold <span class="string">on</span>;
@@ -592,7 +765,7 @@ axisGeom(gca,fontSize);
 axis <span class="string">off</span>;
 colormap(cMap);
 drawnow;
-</pre><img vspace="5" hspace="5" src="HELP_runTetGen_11.png" alt=""> <p><img vspace="5" hspace="5" src="gibbVerySmall.gif" alt=""> </p><p><i><b>GIBBON</b></i> <a href="www.gibboncode.org">www.gibboncode.org</a></p><p><i>Kevin Mattheus Moerman</i>, <a href="gibbon.toolbox@gmail.com">gibbon.toolbox@gmail.com</a></p><p class="footer"><br><a href="http://www.mathworks.com/products/matlab/">Published with MATLAB&reg; R2016b</a><br></p></div><!--
+</pre><img vspace="5" hspace="5" src="HELP_runTetGen_18.png" alt=""> <p><img vspace="5" hspace="5" src="gibbVerySmall.gif" alt=""> </p><p><i><b>GIBBON</b></i> <a href="www.gibboncode.org">www.gibboncode.org</a></p><p><i>Kevin Mattheus Moerman</i>, <a href="gibbon.toolbox@gmail.com">gibbon.toolbox@gmail.com</a></p><p class="footer"><br><a href="http://www.mathworks.com/products/matlab/">Published with MATLAB&reg; R2016b</a><br></p></div><!--
 ##### SOURCE BEGIN #####
 %% runTetGen
 % Below is a demonstration of the features of the |runTetGen| function
@@ -603,7 +776,7 @@ clear; close all; clc;
 %%
 % Plot settings
 fontSize=15;
-faceAlpha1=0.4;
+faceAlpha1=0.3;
 faceAlpha2=1;
 cMap=gjet(4); 
 patchColor=cMap(1,:);
@@ -668,9 +841,7 @@ inputStruct.minRegionMarker=2; %Minimum region marker
 inputStruct.modelName=modelName;
 
 %% 
-% Mesh model using tetrahedral elements using tetGen (see:
-% <http://wias-berlin.de/software/tetgen/>)
-
+% Mesh model using tetrahedral elements using tetGen 
 [meshOutput]=runTetGen(inputStruct); %Run tetGen 
 
 %% 
@@ -686,8 +857,8 @@ E=meshOutput.elements;
 
 %Selecting half of the model to see interior
 Y=V(:,2); YE=mean(Y(E),2);
-L=YE>mean(Y);
-[Fs,Cs]=element2patch(E(L,:),CE(L),'tet4');
+logicCutView=YE>mean(Y);
+[Fs,Cs]=element2patch(E(logicCutView,:),CE(logicCutView),'tet4');
 
 cFigure;
 hold on; 
@@ -700,6 +871,44 @@ axisGeom(gca,fontSize);
 axis off; 
 colormap(cMap); 
 drawnow;
+
+%% Example: Creating an animated view to explore the mesh
+% See also |anim8| function
+
+%%
+% Initialize figure
+hf=cFigure; %Store figure handle
+hold on; 
+% title('Cut view of Solid tetrahedral mesh model','FontSize',fontSize);
+gpatch(Fb,V,0.5*ones(1,3),'none',faceAlpha1);
+hp=gpatch(Fs,V,Cs,'k',faceAlpha2); %Graphics object to vary property of during animation
+camlight headlight;
+axisGeom(gca,fontSize); 
+axis off; 
+colormap(cMap); 
+drawnow;
+
+%%
+% Set up animation
+nSteps=25; %Number of animation steps
+
+animStruct.Time=linspace(0,1,nSteps); %Time vector
+cutLevel=linspace(min(Y(:)),max(Y(:)),nSteps); %Property to set
+
+for q=1:1:nSteps %Step through time       
+    cutLevelNow=cutLevel(q); %The current cut level    
+    
+    logicCutView=YE>cutLevelNow;
+    [Fs,Cs]=element2patch(E(logicCutView,:),CE(logicCutView),'tet4');
+    
+    %Set entries in animation structure
+    animStruct.Handles{q}=[hp hp]; %Handles of objects to animate
+    animStruct.Props{q}={'Faces','CData'}; %Properties of objects to animate
+    animStruct.Set{q}={Fs,Cs}; %Property values for to set in order to animate
+end
+
+%Add animation layer
+anim8(hf,animStruct);
 
 %% MESHING IMPORTED GEOMETRY 
 
@@ -757,9 +966,7 @@ inputStruct.minRegionMarker=2; %Minimum region marker
 inputStruct.modelName=modelName;
 
 %% 
-% Mesh model using tetrahedral elements using tetGen (see:
-% <http://wias-berlin.de/software/tetgen/>)
-
+% Mesh model using tetrahedral elements using tetGen
 [meshOutput]=runTetGen(inputStruct); %Run tetGen 
 
 %% 
@@ -775,8 +982,8 @@ E=meshOutput.elements;
 
 %Selecting half of the model to see interior
 Y=V(:,2); YE=mean(Y(E),2);
-L=YE>mean(Y);
-[Fs,Cs]=element2patch(E(L,:),CE(L),'tet4');
+logicCutView=YE>mean(Y);
+[Fs,Cs]=element2patch(E(logicCutView,:),CE(logicCutView),'tet4');
 
 cFigure;
 hold on; 
@@ -790,29 +997,47 @@ axis off;
 colormap(cMap); 
 drawnow;
 
-%% MESHING A MULTI-REGION MODEL
+%% MESHING A MULTI-REGION MODEL EG LAYERED
 
 %%
-% Simulating a multiregion mesh
-[F1,V1]=parasaurolophus; %A dino
-[F2,V2,~]=geoSphere(3,0.4); %An internal region
-V2(:,1)=2*V2(:,1);
-V_centre=[0.75 0 0.25];
-V2=V2+V_centre(ones(size(V2,1),1),:);
-
-%Joining surface sets
-F=[F1;F2+size(V1,1)];
-V=[V1;V2];
-C=[ones(size(F1,1),1);2*ones(size(F2,1),1)]; %Surface marker colors
+% An example surface
+r=2; %Sphere radius
+rc=3; %Central radius
+nr=15;
+nc=25;
+ptype='tri';
+[F,V]=patchTorus(r,nr,rc,nc,ptype);
 
 %%
-% Plotting model
+% Creating layer by offsetting inwards
+layerThickness=0.5;
+[N,Vn,Nv]=patchNormal(F,V); %Patch Normals
+V2=V-layerThickness.*Nv;
+
+[F,V,C]=joinElementSets({F F},{V V2}); %Join sets
+
+voxelSize=layerThickness/2;
+[M,G,bwLabels]=patch2Im(F,V,C,voxelSize);
+
+L=M==0;
+[indInternal]=getInnerVoxel(L,1,0);
+
+[I_in,J_in,K_in]=ind2sub(size(L),indInternal); %Convert to subscript coordinates
+[V_in1(:,1),V_in1(:,2),V_in1(:,3)]=im2cart(I_in,J_in,K_in,voxelSize*ones(1,3));
+V_in1=V_in1+G.origin(ones(size(V_in1,1),1),:);
+
+V_in2=getInnerPoint(F(C==2,:),V);
+
+%%
 cFigure; hold on;
 title('Surface model','FontSize',fontSize);
-gpatch(F,V,C,'k',faceAlpha1);
+gpatch(F,V,C,'none',0.2);
+colormap(cMap);
 camlight headlight;
 axisGeom(gca,fontSize); 
-colormap(cMap);
+
+plotV(V_in1,'k.','MarkerSize',25);
+plotV(V_in2,'r.','MarkerSize',25);
 
 %%
 % DEFINE FACE BOUNDARY MARKERS
@@ -820,7 +1045,7 @@ faceBoundaryMarker=C;
 
 %%
 % Define region points
-V_regions=[0.5 0 0;V_centre];
+V_regions=[V_in1;V_in2];
 
 %%
 % Define hole points
@@ -846,9 +1071,7 @@ inputStruct.minRegionMarker=2; %Minimum region marker
 inputStruct.modelName=modelName;
 
 %% 
-% Mesh model using tetrahedral elements using tetGen (see:
-% <http://wias-berlin.de/software/tetgen/>)
-
+% Mesh model using tetrahedral elements using tetGen
 [meshOutput]=runTetGen(inputStruct); %Run tetGen 
 
 %% 
@@ -864,8 +1087,8 @@ E=meshOutput.elements;
 
 %Selecting half of the model to see interior
 Y=V(:,2); YE=mean(Y(E),2);
-L=YE>mean(Y);
-[Fs,Cs]=element2patch(E(L,:),CE(L),'tet4');
+logicCutView=YE>mean(Y);
+[Fs,Cs]=element2patch(E(logicCutView,:),CE(logicCutView),'tet4');
 
 cFigure;
 hold on; 
@@ -878,6 +1101,167 @@ axisGeom(gca,fontSize);
 axis off; 
 colormap(cMap); 
 drawnow;
+
+%% MESHING A MULTI-REGION MODEL EG INCLUSION
+
+%%
+% Creating boundary surfaces
+
+%Outer bunny
+[F1,V1]=stanford_bunny('g'); %Bunny
+V1_mean=mean(V1,1);
+V1=V1-V1_mean(ones(size(V1,1),1),:);
+
+%Inner bunny
+V2=V1/4;
+V2(:,3)=V2(:,3)-35;
+V2(:,2)=V2(:,2)-15;
+V2(:,1)=V2(:,1)+10;
+
+V3=V1/4;
+V3(:,3)=V3(:,3)-10;
+V3(:,2)=V3(:,2)+10;
+V3(:,1)=V3(:,1)+40;
+
+%Joining surface sets
+[F,V,C]=joinElementSets({F1,F1,F1},{V1,V2,V3});
+
+%
+% Plotting model
+cFigure; hold on;
+title('Surface model','FontSize',fontSize);
+gpatch(F,V,C,'k',faceAlpha1);
+camlight headlight;
+axisGeom(gca,fontSize); 
+colormap(cMap); icolorbar;
+
+%%
+% Find interior points
+
+V_in1=getInnerPoint(F(C==1,:),V); %Check if inside others (getInnerVoxel for region is safer)
+V_in2=getInnerPoint(F(C==2,:),V);
+V_in3=getInnerPoint(F(C==3,:),V);
+
+%%
+% Visualize interior points
+cFigure; hold on;
+title('Surface model with interior points','FontSize',fontSize);
+gpatch(F,V,C,'none',faceAlpha1);
+plotV(V_in1,'b.','MarkerSize',25);
+plotV(V_in2,'g.','MarkerSize',25);
+plotV(V_in3,'r.','MarkerSize',25);
+
+camlight headlight;
+axisGeom(gca,fontSize); 
+colormap(cMap);
+
+%%
+% DEFINE FACE BOUNDARY MARKERS
+faceBoundaryMarker=C;
+
+%%
+% Define region points
+V_regions=[V_in1;V_in2; V_in3];
+
+%%
+% Define hole points
+V_holes=[];
+
+%% 
+% Regional mesh parameters
+[A]=tetVolMeanEst(F,V); %Volume estimate based on current edge lengths
+regionA=[5*A A/2 A/2]; %Element volume settings
+
+%% 
+% CREATING THE INPUT STRUCTURE
+
+stringOpt='-pq1.2AaYQ';
+inputStruct.stringOpt=stringOpt;
+inputStruct.Faces=F;
+inputStruct.Nodes=V;
+inputStruct.holePoints=V_holes;
+inputStruct.faceBoundaryMarker=faceBoundaryMarker; %Face boundary markers
+inputStruct.regionPoints=V_regions; %region points
+inputStruct.regionA=regionA;
+inputStruct.minRegionMarker=2; %Minimum region marker
+inputStruct.modelName=modelName;
+
+%% 
+% Mesh model using tetrahedral elements using tetGen 
+[meshOutput]=runTetGen(inputStruct); %Run tetGen 
+
+%% 
+% Access model element and patch data
+Fb=meshOutput.facesBoundary;
+Cb=meshOutput.boundaryMarker;
+V=meshOutput.nodes;
+CE=meshOutput.elementMaterialID;
+E=meshOutput.elements;
+
+%%
+% Setting "material indices". These can be based on the TetGen material ID
+materialIndex=zeros(size(CE));
+materialIndex(CE==-2)=1;
+materialIndex(CE==-3)=2;
+materialIndex(CE==-4)=3;
+
+%% 
+% PLOTTING MODEL 
+
+%Selecting half of the model to see interior
+Y=V(:,2); YE=mean(Y(E),2);
+logicCutView=YE>mean(Y);
+[Fs,Cs]=element2patch(E(logicCutView,:),materialIndex(logicCutView),'tet4');
+
+cFigure;
+hold on; 
+title('Cut view of Solid tetrahedral mesh model','FontSize',fontSize);
+gpatch(Fb,V,0.5*ones(1,3),'none',faceAlpha1);
+gpatch(Fs,V,Cs,'k',faceAlpha2);
+plotV(V(unique(Fs(:)),:),'k.','MarkerSize',markerSize);
+camlight headlight;
+axisGeom(gca,fontSize); 
+axis off; 
+colormap(cMap); icolorbar([1 3]);
+drawnow;
+
+%% 
+% Creating an animated view to explore the mesh, See also |anim8| function
+
+%%
+% Initialize figure
+hf=cFigure; %Store figure handle
+hold on; 
+% title('Cut view of Solid tetrahedral mesh model','FontSize',fontSize);
+gpatch(Fb,V,0.5*ones(1,3),'none',faceAlpha1);
+hp=gpatch(Fs,V,Cs,'k',faceAlpha2); %Graphics object to vary property of during animation
+camlight headlight;
+axisGeom(gca,fontSize); 
+axis off; 
+colormap(cMap); icolorbar([1 3]);
+drawnow;
+
+%%
+% Set up animation
+nSteps=25; %Number of animation steps
+
+animStruct.Time=linspace(0,1,nSteps); %Time vector
+cutLevel=linspace(min(Y(:)),max(Y(:)),nSteps); %Property to set
+
+for q=1:1:nSteps %Step through time       
+    cutLevelNow=cutLevel(q); %The current cut level    
+    
+    logicCutView=YE>cutLevelNow;
+    [Fs,Cs]=element2patch(E(logicCutView,:),materialIndex(logicCutView),'tet4');
+    
+    %Set entries in animation structure
+    animStruct.Handles{q}=[hp hp]; %Handles of objects to animate
+    animStruct.Props{q}={'Faces','CData'}; %Properties of objects to animate
+    animStruct.Set{q}={Fs,Cs}; %Property values for to set in order to animate
+end
+
+%Add animation layer
+anim8(hf,animStruct);
 
 %% MESHING A MULTI-REGION MODEL CONTAINING HOLES 
 
@@ -958,9 +1342,7 @@ inputStruct.minRegionMarker=2; %Minimum region marker
 inputStruct.modelName=modelName;
 
 %% 
-% Mesh model using tetrahedral elements using tetGen (see:
-% <http://wias-berlin.de/software/tetgen/>)
-
+% Mesh model using tetrahedral elements using tetGen 
 [meshOutput]=runTetGen(inputStruct); %Run tetGen 
 
 %% 
@@ -976,8 +1358,8 @@ E=meshOutput.elements;
 
 %Selecting half of the model to see interior
 Y=V(:,2); YE=mean(Y(E),2);
-L=YE>mean(Y);
-[Fs,Cs]=element2patch(E(L,:),CE(L),'tet4');
+logicCutView=YE>mean(Y);
+[Fs,Cs]=element2patch(E(logicCutView,:),CE(logicCutView),'tet4');
 
 cFigure;
 hold on; 
@@ -1016,9 +1398,7 @@ inputStruct.minRegionMarker=2; %Minimum region marker
 inputStruct.modelName=modelName;
 
 %% 
-% Mesh model using tetrahedral elements using tetGen (see:
-% <http://wias-berlin.de/software/tetgen/>)
-
+% Mesh model using tetrahedral elements using tetGen
 [meshOutput]=runTetGen(inputStruct); %Run tetGen 
 
 %% 
@@ -1034,8 +1414,8 @@ E=meshOutput.elements;
 
 %Selecting half of the model to see interior
 Y=V(:,2); YE=mean(Y(E),2);
-L=YE>mean(Y);
-[Fs,Cs]=element2patch(E(L,:),CE(L),'tet4');
+logicCutView=YE>mean(Y);
+[Fs,Cs]=element2patch(E(logicCutView,:),CE(logicCutView),'tet4');
 
 cFigure;
 hold on; 
@@ -1095,9 +1475,7 @@ inputStruct.modelName=modelName;
 inputStruct.tetType='tet10';
 
 %% 
-% Mesh model using tetrahedral elements using tetGen (see:
-% <http://wias-berlin.de/software/tetgen/>)
-
+% Mesh model using tetrahedral elements using tetGen 
 [meshOutput]=runTetGen(inputStruct); %Run tetGen 
 
 %% 
@@ -1113,8 +1491,8 @@ E=meshOutput.elements;
 
 %Selecting half of the model to see interior
 Y=V(:,2); YE=mean(Y(E),2);
-L=YE>mean(Y);
-[Fs,Cs]=element2patch(E(L,:),CE(L),'tet10');
+logicCutView=YE>mean(Y);
+[Fs,Cs]=element2patch(E(logicCutView,:),CE(logicCutView),'tet10');
 
 cFigure;
 hold on; 

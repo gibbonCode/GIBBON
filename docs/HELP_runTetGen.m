@@ -7,7 +7,7 @@ clear; close all; clc;
 %%
 % Plot settings
 fontSize=15;
-faceAlpha1=0.4;
+faceAlpha1=0.3;
 faceAlpha2=1;
 cMap=gjet(4); 
 patchColor=cMap(1,:);
@@ -72,9 +72,7 @@ inputStruct.minRegionMarker=2; %Minimum region marker
 inputStruct.modelName=modelName;
 
 %% 
-% Mesh model using tetrahedral elements using tetGen (see:
-% <http://wias-berlin.de/software/tetgen/>)
-
+% Mesh model using tetrahedral elements using tetGen 
 [meshOutput]=runTetGen(inputStruct); %Run tetGen 
 
 %% 
@@ -199,9 +197,7 @@ inputStruct.minRegionMarker=2; %Minimum region marker
 inputStruct.modelName=modelName;
 
 %% 
-% Mesh model using tetrahedral elements using tetGen (see:
-% <http://wias-berlin.de/software/tetgen/>)
-
+% Mesh model using tetrahedral elements using tetGen
 [meshOutput]=runTetGen(inputStruct); %Run tetGen 
 
 %% 
@@ -306,9 +302,7 @@ inputStruct.minRegionMarker=2; %Minimum region marker
 inputStruct.modelName=modelName;
 
 %% 
-% Mesh model using tetrahedral elements using tetGen (see:
-% <http://wias-berlin.de/software/tetgen/>)
-
+% Mesh model using tetrahedral elements using tetGen
 [meshOutput]=runTetGen(inputStruct); %Run tetGen 
 
 %% 
@@ -342,23 +336,52 @@ drawnow;
 %% MESHING A MULTI-REGION MODEL EG INCLUSION
 
 %%
-% Simulating a multiregion mesh
-[F1,V1]=parasaurolophus; %A dino
-[F2,V2,~]=geoSphere(3,0.4); %An internal region
-V2(:,1)=2.5*V2(:,1);
-V_centre=[0.75 0 0.25];
-V2=V2+V_centre(ones(size(V2,1),1),:);
+% Creating boundary surfaces
+
+%Outer bunny
+[F1,V1]=stanford_bunny('g'); %Bunny
+V1_mean=mean(V1,1);
+V1=V1-V1_mean(ones(size(V1,1),1),:);
+
+%Inner bunny
+V2=V1/4;
+V2(:,3)=V2(:,3)-35;
+V2(:,2)=V2(:,2)-15;
+V2(:,1)=V2(:,1)+10;
+
+V3=V1/4;
+V3(:,3)=V3(:,3)-10;
+V3(:,2)=V3(:,2)+10;
+V3(:,1)=V3(:,1)+40;
 
 %Joining surface sets
-F=[F1;F2+size(V1,1)];
-V=[V1;V2];
-C=[ones(size(F1,1),1);2*ones(size(F2,1),1)]; %Surface marker colors
+[F,V,C]=joinElementSets({F1,F1,F1},{V1,V2,V3});
 
-%%
+%
 % Plotting model
 cFigure; hold on;
 title('Surface model','FontSize',fontSize);
 gpatch(F,V,C,'k',faceAlpha1);
+camlight headlight;
+axisGeom(gca,fontSize); 
+colormap(cMap); icolorbar;
+
+%%
+% Find interior points
+
+V_in1=getInnerPoint(F(C==1,:),V); %Check if inside others (getInnerVoxel for region is safer)
+V_in2=getInnerPoint(F(C==2,:),V);
+V_in3=getInnerPoint(F(C==3,:),V);
+
+%%
+% Visualize interior points
+cFigure; hold on;
+title('Surface model with interior points','FontSize',fontSize);
+gpatch(F,V,C,'none',faceAlpha1);
+plotV(V_in1,'b.','MarkerSize',25);
+plotV(V_in2,'g.','MarkerSize',25);
+plotV(V_in3,'r.','MarkerSize',25);
+
 camlight headlight;
 axisGeom(gca,fontSize); 
 colormap(cMap);
@@ -369,7 +392,7 @@ faceBoundaryMarker=C;
 
 %%
 % Define region points
-V_regions=[0.5 0 0;V_centre];
+V_regions=[V_in1;V_in2; V_in3];
 
 %%
 % Define hole points
@@ -377,8 +400,8 @@ V_holes=[];
 
 %% 
 % Regional mesh parameters
-[A]=tetVolMeanEst(F,V);
-regionA=[A/2 A];
+[A]=tetVolMeanEst(F,V); %Volume estimate based on current edge lengths
+regionA=[5*A A/2 A/2]; %Element volume settings
 
 %% 
 % CREATING THE INPUT STRUCTURE
@@ -395,9 +418,7 @@ inputStruct.minRegionMarker=2; %Minimum region marker
 inputStruct.modelName=modelName;
 
 %% 
-% Mesh model using tetrahedral elements using tetGen (see:
-% <http://wias-berlin.de/software/tetgen/>)
-
+% Mesh model using tetrahedral elements using tetGen 
 [meshOutput]=runTetGen(inputStruct); %Run tetGen 
 
 %% 
@@ -408,24 +429,47 @@ V=meshOutput.nodes;
 CE=meshOutput.elementMaterialID;
 E=meshOutput.elements;
 
+%%
+% Setting "material indices". These can be based on the TetGen material ID
+materialIndex=zeros(size(CE));
+materialIndex(CE==-2)=1;
+materialIndex(CE==-3)=2;
+materialIndex(CE==-4)=3;
+
 %% 
 % PLOTTING MODEL 
 
 %Selecting half of the model to see interior
-X=V(:,1); XE=mean(X(E),2);
-logicCutView=XE>mean(X);
-[Fs,Cs]=element2patch(E(logicCutView,:),CE(logicCutView),'tet4');
+Y=V(:,2); YE=mean(Y(E),2);
+logicCutView=YE>mean(Y);
+[Fs,Cs]=element2patch(E(logicCutView,:),materialIndex(logicCutView),'tet4');
 
-hf=cFigure;
+cFigure;
 hold on; 
 title('Cut view of Solid tetrahedral mesh model','FontSize',fontSize);
 gpatch(Fb,V,0.5*ones(1,3),'none',faceAlpha1);
-hp=gpatch(Fs,V,Cs,'k',faceAlpha2);
-% plotV(V(unique(Fs(:)),:),'k.','MarkerSize',markerSize);
+gpatch(Fs,V,Cs,'k',faceAlpha2);
+plotV(V(unique(Fs(:)),:),'k.','MarkerSize',markerSize);
 camlight headlight;
 axisGeom(gca,fontSize); 
 axis off; 
-colormap(cMap); 
+colormap(cMap); icolorbar([1 3]);
+drawnow;
+
+%% 
+% Creating an animated view to explore the mesh, See also |anim8| function
+
+%%
+% Initialize figure
+hf=cFigure; %Store figure handle
+hold on; 
+% title('Cut view of Solid tetrahedral mesh model','FontSize',fontSize);
+gpatch(Fb,V,0.5*ones(1,3),'none',faceAlpha1);
+hp=gpatch(Fs,V,Cs,'k',faceAlpha2); %Graphics object to vary property of during animation
+camlight headlight;
+axisGeom(gca,fontSize); 
+axis off; 
+colormap(cMap); icolorbar([1 3]);
 drawnow;
 
 %%
@@ -433,13 +477,13 @@ drawnow;
 nSteps=25; %Number of animation steps
 
 animStruct.Time=linspace(0,1,nSteps); %Time vector
-cutLevel=linspace(min(X(:)),max(X(:)),nSteps); %Property to set
+cutLevel=linspace(min(Y(:)),max(Y(:)),nSteps); %Property to set
 
 for q=1:1:nSteps %Step through time       
     cutLevelNow=cutLevel(q); %The current cut level    
     
-    logicCutView=XE>cutLevelNow;
-    [Fs,Cs]=element2patch(E(logicCutView,:),CE(logicCutView),'tet4');
+    logicCutView=YE>cutLevelNow;
+    [Fs,Cs]=element2patch(E(logicCutView,:),materialIndex(logicCutView),'tet4');
     
     %Set entries in animation structure
     animStruct.Handles{q}=[hp hp]; %Handles of objects to animate
@@ -449,9 +493,6 @@ end
 
 %Add animation layer
 anim8(hf,animStruct);
-
-
-fsdfsa
 
 %% MESHING A MULTI-REGION MODEL CONTAINING HOLES 
 
@@ -532,9 +573,7 @@ inputStruct.minRegionMarker=2; %Minimum region marker
 inputStruct.modelName=modelName;
 
 %% 
-% Mesh model using tetrahedral elements using tetGen (see:
-% <http://wias-berlin.de/software/tetgen/>)
-
+% Mesh model using tetrahedral elements using tetGen 
 [meshOutput]=runTetGen(inputStruct); %Run tetGen 
 
 %% 
@@ -590,9 +629,7 @@ inputStruct.minRegionMarker=2; %Minimum region marker
 inputStruct.modelName=modelName;
 
 %% 
-% Mesh model using tetrahedral elements using tetGen (see:
-% <http://wias-berlin.de/software/tetgen/>)
-
+% Mesh model using tetrahedral elements using tetGen
 [meshOutput]=runTetGen(inputStruct); %Run tetGen 
 
 %% 
@@ -669,9 +706,7 @@ inputStruct.modelName=modelName;
 inputStruct.tetType='tet10';
 
 %% 
-% Mesh model using tetrahedral elements using tetGen (see:
-% <http://wias-berlin.de/software/tetgen/>)
-
+% Mesh model using tetrahedral elements using tetGen 
 [meshOutput]=runTetGen(inputStruct); %Run tetGen 
 
 %% 

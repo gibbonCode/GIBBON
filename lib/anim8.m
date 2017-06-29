@@ -179,7 +179,7 @@ hf.UserData.BusyAction=hf.BusyAction;
 %Export figure widget settings
 hf.UserData.efw.defaultPath=fullfile(cd,'efw');
 hf.UserData.efw.imName=['figure',num2str(get(hf,'Number'))];
-hf.UserData.efw.imExt='jpg';
+hf.UserData.efw.imExt='png';
 hf.UserData.efw.imRes='50';
 hf.UserData.efw.exportFigOpt='-nocrop';
 hf.UserData.efw.exportGifOpt='1';
