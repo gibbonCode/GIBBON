@@ -143,8 +143,8 @@ uipushtool(hb,'TooltipString','Save .gif animation','CData',S,'Tag','saveAnimati
 
 %% Text fields
 
-% title(sprintf('%6.16e ',T),'FontSize',hf.UserData.fontSize);
-% title(sprintf('%f',T),'FontSize',hf.UserData.fontSize);
+% title(sprintf('%6.16e ',T),'FontSize',hf.UserData.anim8.fontSize);
+% title(sprintf('%f',T),'FontSize',hf.UserData.anim8.fontSize);
 
 hTextTime = uicontrol(hf,'Style','text',...
     'String',[' Time: ',sprintf('%f',animTime(1))],...
@@ -152,29 +152,29 @@ hTextTime = uicontrol(hf,'Style','text',...
 
 %% Set figure UserData
 
-hf.UserData.sliderHandles={jSlider};
-% hf.UserData.ButtonHandles.Sample=hSample;
-hf.UserData.animStruct=animStruct;
-hf.UserData.fontSize=fontSize;
+hf.UserData.anim8.sliderHandles={jSlider};
+% hf.UserData.anim8.ButtonHandles.Sample=hSample;
+hf.UserData.anim8.animStruct=animStruct;
+hf.UserData.anim8.fontSize=fontSize;
 % animHandles=animStruct.Handles; %Handles of objects to animate
 % animProps=animStruct.Props; %Properties of objects to animate
 % animSets=animStruct.Set; %Property values for to set in order to animate
 % animTime=animStruct.Time;
-hf.UserData.playDir=1;
-hf.UserData.ButtonHandles.Play=hPlay;
-hf.UserData.ButtonHandles.hCycle=hCycle;
-hf.UserData.ButtonHandles.hTextTime=hTextTime;
-hf.UserData.pauseTime=mean(diff(animStruct.Time));
-hf.UserData.shiftMag=1;%ceil(numel(animStruct.Time)/20);
-hf.UserData.icons.play=iconPlay;
-hf.UserData.icons.stop=iconStop;
+hf.UserData.anim8.playDir=1;
+hf.UserData.anim8.ButtonHandles.Play=hPlay;
+hf.UserData.anim8.ButtonHandles.hCycle=hCycle;
+hf.UserData.anim8.ButtonHandles.hTextTime=hTextTime;
+hf.UserData.anim8.pauseTime=5/numel(animStruct.Time);%mean(diff(animStruct.Time));
+hf.UserData.anim8.shiftMag=1;%ceil(numel(animStruct.Time)/20);
+hf.UserData.anim8.icons.play=iconPlay;
+hf.UserData.anim8.icons.stop=iconStop;
 
 % Store current settings
-hf.UserData.WindowButtonDownFcn=hf.WindowButtonDownFcn;
-hf.UserData.WindowButtonUpFcn=hf.WindowButtonUpFcn;
-hf.UserData.KeyPressFcn=hf.KeyPressFcn;
-hf.UserData.WindowScrollWheelFcn=hf.WindowScrollWheelFcn;
-hf.UserData.BusyAction=hf.BusyAction;
+hf.UserData.anim8.WindowButtonDownFcn=hf.WindowButtonDownFcn;
+hf.UserData.anim8.WindowButtonUpFcn=hf.WindowButtonUpFcn;
+hf.UserData.anim8.KeyPressFcn=hf.KeyPressFcn;
+hf.UserData.anim8.WindowScrollWheelFcn=hf.WindowScrollWheelFcn;
+hf.UserData.anim8.BusyAction=hf.BusyAction;
 
 %Export figure widget settings
 hf.UserData.efw.defaultPath=fullfile(cd,'efw');
@@ -200,7 +200,7 @@ scrollBarWidth=inputCell{2};
 jSlider=inputCell{3};
 javacomponent(jSlider,[0,0,round(hf.Position(3)), scrollBarWidth]);
 
-set(hf.UserData.ButtonHandles.hTextTime,'Position',[0 scrollBarWidth round(hf.Position(3)) round(scrollBarWidth/2)]);
+set(hf.UserData.anim8.ButtonHandles.hTextTime,'Position',[0 scrollBarWidth round(hf.Position(3)) round(scrollBarWidth/2)]);
 end
 
 %% Help
@@ -222,46 +222,46 @@ end
 
 function playFunc(~,~,inputCell)
 hf=inputCell{1};
-shiftMag=hf.UserData.shiftMag;
+shiftMag=hf.UserData.anim8.shiftMag;
 
-set(hf.UserData.ButtonHandles.Play,'CData',hf.UserData.icons.stop,'TooltipString','Stop');
+set(hf.UserData.anim8.ButtonHandles.Play,'CData',hf.UserData.anim8.icons.stop,'TooltipString','Stop');
 
-while strcmp(get(hf.UserData.ButtonHandles.Play,'State'),'on')
+while strcmp(get(hf.UserData.anim8.ButtonHandles.Play,'State'),'on')
     tic
-    if strcmp(get(hf.UserData.ButtonHandles.hCycle,'State'),'on')
+    if strcmp(get(hf.UserData.anim8.ButtonHandles.hCycle,'State'),'on')
         
-        jSlider=hf.UserData.sliderHandles{1};
+        jSlider=hf.UserData.anim8.sliderHandles{1};
         
         sliderValue=get(jSlider,'Value');
-        sliderValueNew=sliderValue+(shiftMag*hf.UserData.playDir);
+        sliderValueNew=sliderValue+(shiftMag*hf.UserData.anim8.playDir);
         
         sliderMax=get(jSlider,'Maximum');
         sliderMin=get(jSlider,'Minimum');
         
         if sliderValueNew<sliderMin
-            hf.UserData.playDir=hf.UserData.playDir*-1;
-            sliderValueNew=sliderValue+(shiftMag*hf.UserData.playDir);
+            hf.UserData.anim8.playDir=hf.UserData.anim8.playDir*-1;
+            sliderValueNew=sliderValue+(shiftMag*hf.UserData.anim8.playDir);
         elseif sliderValueNew>sliderMax
-            hf.UserData.playDir=hf.UserData.playDir*-1;
-            sliderValueNew=sliderValue+(shiftMag*hf.UserData.playDir);
+            hf.UserData.anim8.playDir=hf.UserData.anim8.playDir*-1;
+            sliderValueNew=sliderValue+(shiftMag*hf.UserData.anim8.playDir);
         end
         
         set(jSlider,'Value',sliderValueNew);
         
     else
-        shiftSlider(hf.UserData.sliderHandles{1},shiftMag);
+        shiftSlider(hf.UserData.anim8.sliderHandles{1},shiftMag);
     end
     
     
     drawnow;
     
     t=toc;
-    if (hf.UserData.pauseTime-t)>0
-        pause(hf.UserData.pauseTime-t);
+    if (hf.UserData.anim8.pauseTime-t)>0
+        pause(hf.UserData.anim8.pauseTime-t);
     end
 end
 
-set(hf.UserData.ButtonHandles.Play,'CData',hf.UserData.icons.play,'TooltipString','Play');
+set(hf.UserData.anim8.ButtonHandles.Play,'CData',hf.UserData.anim8.icons.play,'TooltipString','Play');
 
 end
 
@@ -271,15 +271,15 @@ hf=inputCell{1};
 
 prompt = {'Enter pause time:','Enter step size:'};
 dlg_title = 'Time stepping settings';
-defaultOptions = {num2str(hf.UserData.pauseTime),num2str(hf.UserData.shiftMag)};
+defaultOptions = {num2str(hf.UserData.anim8.pauseTime),num2str(hf.UserData.anim8.shiftMag)};
 s=40+max([cellfun(@numel,prompt) cellfun(@numel,defaultOptions)]);
 Q = inputdlg(prompt,dlg_title,[1 s],defaultOptions);
 if ~isempty(Q)
     if ~isempty(Q{1})
-        hf.UserData.pauseTime=str2double(Q{1});
+        hf.UserData.anim8.pauseTime=str2double(Q{1});
     end
     if ~isempty(Q{2})
-        hf.UserData.shiftMag=str2double(Q{2});
+        hf.UserData.anim8.shiftMag=str2double(Q{2});
     end
 end
 
@@ -289,7 +289,7 @@ end
 
 function saveAnimationFunc(~,~,inputCell)
 hf=inputCell{1};
-jSlider=hf.UserData.sliderHandles{1};
+jSlider=hf.UserData.anim8.sliderHandles{1};
 
 %%
 
@@ -367,7 +367,7 @@ if ~isempty(Q)
     exportGifCellSub=exportGifCell;
     
     c=1;
-    stepRange=1:hf.UserData.shiftMag:numel(hf.UserData.animStruct.Time);    
+    stepRange=1:hf.UserData.anim8.shiftMag:numel(hf.UserData.anim8.animStruct.Time);    
     for q=stepRange
         set(jSlider,'Value',q);
         fileNameNow=[fileNameGif,'_',num2str(q)];
@@ -380,7 +380,7 @@ if ~isempty(Q)
     
     if strcmp(exportGifOpt,'1')
         %Add reverse path
-        if strcmp(get(hf.UserData.ButtonHandles.hCycle,'State'),'on')
+        if strcmp(get(hf.UserData.anim8.ButtonHandles.hCycle,'State'),'on')
             numFiles=numel(gifStruct.FileNames);
             if numFiles>2
                 for q=(numFiles-1):-1:2
@@ -389,7 +389,7 @@ if ~isempty(Q)
             end
         end
         
-        gifStruct.DelayTime=hf.UserData.pauseTime;
+        gifStruct.DelayTime=hf.UserData.anim8.pauseTime;
         gifStruct.FileNameGif=fileNameGif;
         
         exportGif(gifStruct);
@@ -427,17 +427,17 @@ hf=inputCell{1}; %Figure handle
 % Key input options
 switch eventData.Key
     case {'leftarrow','downarrow'}
-        shiftSlider(hf.UserData.sliderHandles{1},-1*hf.UserData.shiftMag);
+        shiftSlider(hf.UserData.anim8.sliderHandles{1},-1*hf.UserData.anim8.shiftMag);
     case {'rightarrow','uparrow'}
-        shiftSlider(hf.UserData.sliderHandles{1},1*hf.UserData.shiftMag);
+        shiftSlider(hf.UserData.anim8.sliderHandles{1},1*hf.UserData.anim8.shiftMag);
     case 'v' % Activate vcw
         set(hf.UserData.cFigure.Handles.vcw,'State','On');
     case'space'
-        if strcmp(get(hf.UserData.ButtonHandles.Play,'State'),'off')
-            set(hf.UserData.ButtonHandles.Play,'State','on');
+        if strcmp(get(hf.UserData.anim8.ButtonHandles.Play,'State'),'off')
+            set(hf.UserData.anim8.ButtonHandles.Play,'State','on');
             playFunc([],[],{hf});
         else
-            set(hf.UserData.ButtonHandles.Play,'State','off');
+            set(hf.UserData.anim8.ButtonHandles.Play,'State','off');
         end
 end
 
@@ -449,7 +449,7 @@ function updateViewFunc(~,~,inputCell)
 
 hf=inputCell{1};
 jSlider=inputCell{2};
-animStruct=hf.UserData.animStruct;
+animStruct=hf.UserData.anim8.animStruct;
 
 sliderValue=get(jSlider,'Value');
 
@@ -458,7 +458,7 @@ H=animStruct.Handles{sliderValue};%e.g. [hp,hp]; %Handles of objects to animate
 P=animStruct.Props{sliderValue};% e.g. {'FaceColor','Vertices'}; %Properties of objects to animate
 S=animStruct.Set{sliderValue};%e.g.{c(q,:),V}; %Property values for to set in order to animate
 
-set(hf.UserData.ButtonHandles.hTextTime,'String',[' Time: ',sprintf('%f',T)],'FontSize',hf.UserData.fontSize);
+set(hf.UserData.anim8.ButtonHandles.hTextTime,'String',[' Time: ',sprintf('%f',T)],'FontSize',hf.UserData.anim8.fontSize);
 
 for q=1:1:numel(H)
     h=H(q); % Current graphics handle

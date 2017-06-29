@@ -1,7 +1,7 @@
-%% DEMO_FEBio_bar_force
+%% DEMO_FEBio_bar_twist
 % Below is a demonstration for: 
 %
-% * The creation of an FEBio model whereby force is applied to a selection
+% * The creation of an FEBio model whereby a twist is applied to a selection
 % of nodes, in this case to the end of a bar
 % *  Running an FEBio job with MATLAB
 % *  Importing FEBio results into MATLAB
@@ -31,15 +31,17 @@ modelName=fullfile(savePath,modelNameEnd);
 
 %Specifying dimensions and number of elements
 sampleWidth=20;
-sampleThickness=5; 
-sampleHeight=5;
+h=5;
+sampleThickness=h; 
+sampleHeight=h;
 pointSpacings=1.*[1 1 1];
 
 numElementsWidth=round(sampleWidth/pointSpacings(1));
 numElementsThickness=round(sampleThickness/pointSpacings(2));
 numElementsHeight=round(sampleHeight/pointSpacings(3));
 
-forceMagnitude=[0 0 -2e-5];
+alphaRotTotal=0.5*pi; %Total twist angle
+numSteps=50; %Number of steps
 
 %% CREATING MESHED BOX
 
@@ -79,7 +81,11 @@ bcRigidList=unique(Fr(:));
 logicPrescribe=faceBoundaryMarker==2;
 Fr=Fb(logicPrescribe,:);
 bcPrescribeList=unique(Fr(:));
-bcPrescribeMagnitudes=forceMagnitude(ones(1,numel(bcPrescribeList)),:);
+
+%Rotational settings
+alphaRotStep=alphaRotTotal/numSteps; %The angular increment for each step
+R=euler2DCM([alphaRotStep 0 0]); %The rotation tensor for each step
+V2=V*R; %Rotated 1 part for visualization of stepwise amount
 
 %%
 % Visualize BC's
@@ -89,6 +95,7 @@ title('Boundary conditions','FontSize',fontSize);
 gpatch(Fb,V,0.5*ones(1,3),'k',0.4);
 plotV(V(bcRigidList,:),'b.','MarkerSize',markerSize);
 plotV(V(bcPrescribeList,:),'r.','MarkerSize',markerSize);
+plotV(V2(bcPrescribeList,:),'k.','MarkerSize',markerSize);
 axisGeom;
 camlight headlight;
 set(gca,'FontSize',fontSize);
@@ -117,17 +124,6 @@ FEB_struct.Materials{1}.Type='Mooney-Rivlin';
 FEB_struct.Materials{1}.Properties={'c1','c2','k'};
 FEB_struct.Materials{1}.Values={c1,0,k};
 
-%Step specific control sections
-FEB_struct.Control.AnalysisType='static';
-FEB_struct.Control.Properties={'time_steps','step_size',...
-    'max_refs','max_ups',...
-    'dtol','etol','rtol','lstol'};
-FEB_struct.Control.Values={10,0.1,...
-    25,0,...
-    0.001,0.01,0,0.9};
-FEB_struct.Control.TimeStepperProperties={'dtmin','dtmax','max_retries','opt_iter','aggressiveness'};
-FEB_struct.Control.TimeStepperValues={1e-5, 0.1, 5, 5, 1};
-
 %Defining node sets
 FEB_struct.Geometry.NodeSet{1}.Set=bcRigidList;
 FEB_struct.Geometry.NodeSet{1}.Name='bcRigidList';
@@ -142,24 +138,46 @@ FEB_struct.Boundary.Fix{2}.SetName=FEB_struct.Geometry.NodeSet{1}.Name;
 FEB_struct.Boundary.Fix{3}.bc='z';
 FEB_struct.Boundary.Fix{3}.SetName=FEB_struct.Geometry.NodeSet{1}.Name;
 
-%Adding load information
-FEB_struct.Loads.Nodal_load{1}.bc='x';
-FEB_struct.Loads.Nodal_load{1}.lc=1;
-% FEB_struct.Loads.Nodal_load{1}.SetName=FEB_struct.Geometry.NodeSet{1}.Name;
-FEB_struct.Loads.Nodal_load{1}.Set=bcPrescribeList;
-FEB_struct.Loads.Nodal_load{1}.nodeScale=bcPrescribeMagnitudes(:,1);
+%Creating steps
+V2=V; %Coordinate set
+for q=1:1:numSteps
+    %Step specific control sections
+    FEB_struct.Step{q}.Control.AnalysisType='static';
+    FEB_struct.Step{q}.Control.Properties={'time_steps','step_size',...
+        'max_refs','max_ups',...
+        'dtol','etol','rtol','lstol'};
+    
+    n=1; %Number of desired analysis steps per step
+    FEB_struct.Step{q}.Control.Values={n,1/n,...
+        25,0,...
+        0.001,0.01,0,0.9};
+    FEB_struct.Step{q}.Control.TimeStepperProperties={'dtmin','dtmax','max_retries','opt_iter'};
+    FEB_struct.Step{q}.Control.TimeStepperValues={(1/n)/100,1/n, 5, 5};
+        
+    V2n=V2;
+    V2=V2*R;
+    bcPrescribeMagnitudesStep=V2(bcPrescribeList,:)-V2n(bcPrescribeList,:);
 
-FEB_struct.Loads.Nodal_load{2}.bc='y';
-FEB_struct.Loads.Nodal_load{2}.lc=1;
-% FEB_struct.Loads.Nodal_load{2}.SetName=FEB_struct.Geometry.NodeSet{1}.Name;
-FEB_struct.Loads.Nodal_load{2}.Set=bcPrescribeList;
-FEB_struct.Loads.Nodal_load{2}.nodeScale=bcPrescribeMagnitudes(:,2);
+    %Prescribed BC's
+    FEB_struct.Step{q}.Boundary.Prescribe{1}.Set=bcPrescribeList;
+    FEB_struct.Step{q}.Boundary.Prescribe{1}.bc='x';
+    FEB_struct.Step{q}.Boundary.Prescribe{1}.lc=1;
+    FEB_struct.Step{q}.Boundary.Prescribe{1}.nodeScale=bcPrescribeMagnitudesStep(:,1);
+    FEB_struct.Step{q}.Boundary.Prescribe{1}.Type='relative';
+    
+    FEB_struct.Step{q}.Boundary.Prescribe{2}.Set=bcPrescribeList;
+    FEB_struct.Step{q}.Boundary.Prescribe{2}.bc='y';
+    FEB_struct.Step{q}.Boundary.Prescribe{2}.lc=1;
+    FEB_struct.Step{q}.Boundary.Prescribe{2}.nodeScale=bcPrescribeMagnitudesStep(:,2);
+    FEB_struct.Step{q}.Boundary.Prescribe{2}.Type='relative';
+    
+    FEB_struct.Step{q}.Boundary.Prescribe{3}.Set=bcPrescribeList;
+    FEB_struct.Step{q}.Boundary.Prescribe{3}.bc='z';
+    FEB_struct.Step{q}.Boundary.Prescribe{3}.lc=1;
+    FEB_struct.Step{q}.Boundary.Prescribe{3}.nodeScale=bcPrescribeMagnitudesStep(:,3);
+    FEB_struct.Step{q}.Boundary.Prescribe{3}.Type='relative';
 
-FEB_struct.Loads.Nodal_load{3}.bc='z';
-FEB_struct.Loads.Nodal_load{3}.lc=1;
-% FEB_struct.Loads.Nodal_load{3}.SetName=FEB_struct.Geometry.NodeSet{1}.Name;
-FEB_struct.Loads.Nodal_load{3}.Set=bcPrescribeList;
-FEB_struct.Loads.Nodal_load{3}.nodeScale=bcPrescribeMagnitudes(:,3);
+end
 
 %Load curves
 FEB_struct.LoadData.LoadCurves.id=1;
