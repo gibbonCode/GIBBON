@@ -50,6 +50,7 @@ Follow the installation instructions to integrate and access GIBBON documentatio
 [HELP_export_STL_txt](html/HELP_export_STL_txt.html) ![HELP_export_STL_txt](html/HELP_export_STL_txt.png){:height="40px"}  
 [HELP_filletCurve](html/HELP_filletCurve.html) ![HELP_filletCurve](html/HELP_filletCurve.png){:height="40px"}  
 [HELP_foamWrap](html/HELP_foamWrap.html) ![HELP_foamWrap](html/HELP_foamWrap.png){:height="40px"}  
+[HELP_gaborCoil](html/HELP_gaborCoil.html) ![HELP_gaborCoil](html/HELP_gaborCoil.png){:height="40px"}  
 [HELP_geoSphere](html/HELP_geoSphere.html) ![HELP_geoSphere](html/HELP_geoSphere.png){:height="40px"}  
 [HELP_graphicsModels](html/HELP_graphicsModels.html) ![HELP_graphicsModels](html/HELP_graphicsModels.png){:height="40px"}  
 [HELP_hemiSphereCylMesh](html/HELP_hemiSphereCylMesh.html) ![HELP_hemiSphereCylMesh](html/HELP_hemiSphereCylMesh.png){:height="40px"}  
@@ -148,6 +149,7 @@ Follow the installation instructions to integrate and access GIBBON documentatio
 [DEMO_FEBio_bar_sphere_indentation](html/DEMO_FEBio_bar_sphere_indentation.html) ![DEMO_FEBio_bar_sphere_indentation](html/DEMO_FEBio_bar_sphere_indentation.png){:height="40px"}  
 [DEMO_FEBio_bar_sphere_indentation_multi_generation](html/DEMO_FEBio_bar_sphere_indentation_multi_generation.html) ![DEMO_FEBio_bar_sphere_indentation_multi_generation](html/DEMO_FEBio_bar_sphere_indentation_multi_generation.png){:height="40px"}  
 [DEMO_FEBio_bar_sphere_indentation_multi_step](html/DEMO_FEBio_bar_sphere_indentation_multi_step.html) ![DEMO_FEBio_bar_sphere_indentation_multi_step](html/DEMO_FEBio_bar_sphere_indentation_multi_step.png){:height="40px"}  
+[DEMO_FEBio_bar_twist](html/DEMO_FEBio_bar_twist.html) ![DEMO_FEBio_bar_twist](html/DEMO_FEBio_bar_twist.png){:height="40px"}  
 [DEMO_FEBio_beam_bending](html/DEMO_FEBio_beam_bending.html) ![DEMO_FEBio_beam_bending](html/DEMO_FEBio_beam_bending.png){:height="40px"}  
 [DEMO_FEBio_block_biaxial_loading_stiffness_analysis](html/DEMO_FEBio_block_biaxial_loading_stiffness_analysis.html) ![DEMO_FEBio_block_biaxial_loading_stiffness_analysis](html/DEMO_FEBio_block_biaxial_loading_stiffness_analysis.png){:height="40px"}  
 [DEMO_FEBio_block_uniaxial_compression](html/DEMO_FEBio_block_uniaxial_compression.html) ![DEMO_FEBio_block_uniaxial_compression](html/DEMO_FEBio_block_uniaxial_compression.png){:height="40px"}  
