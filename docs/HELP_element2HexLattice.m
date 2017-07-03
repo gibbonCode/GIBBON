@@ -210,8 +210,8 @@ drawnow;
 % Creating example geometry. 
 [V,~]=platonic_solid(2,1); %Vertices of cube
 E=1:8; %Element description of the 8-node cube (hexahedral element)
-[E,V]=subHex(E,V); %Subdevide into 8 sub-cubes
-[E,V]=hex2tet(E,V,1); %Convert to tetrahedral elements
+[E,V,C]=subHex(E,V); %Subdevide into 8 sub-cubes
+[E,V,C]=hex2tet(E,V,C,1); %Convert to tetrahedral elements
 
 [F,~]=element2patch(E,C); %Patch data for plotting
 

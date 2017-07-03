@@ -1,5 +1,6 @@
 
-![](docs/html/gibbonLogo.jpg)   
+<img src="docs/html/gibbonLogo.jpg" href="https://gibboncode.org" alt="GIBBON" width="100%">   
+
 Cite GIBBON:  [![Citing](https://zenodo.org/badge/DOI/10.5281/zenodo.44404.svg)](https://doi.org/10.5281/zenodo.44404)  
 
 # Table of contents
@@ -14,7 +15,7 @@ Cite GIBBON:  [![Citing](https://zenodo.org/badge/DOI/10.5281/zenodo.44404.svg)]
 ## Project summary <a name="Summary"></a>
 GIBBON (The Geometry and Image-Based Bioengineering add-On) is an open-source MATLAB toolbox by [Kevin M. Moerman](kevimoerman.org) and includes an array of image and geometry visualization and processing tools and is interfaced with free open source software such as [TetGen](http://wias-berlin.de/software/tetgen/), for robust tetrahedral meshing, and [FEBio](http://febio.org/) for finite element analysis. The combination provides a highly flexible image-based modelling environment and enables advanced inverse finite element analysis.
 
-![](docs/html/GIBBON_overview.jpg)
+<img src="docs/html/GIBBON_overview.jpg" href="https://gibboncode.org" alt="GIBBON overview" width="100%">
 
 # Installation <a name="Installation"></a>  
 ### 1. Installing 3rd party packages
@@ -22,9 +23,9 @@ Skip this step if finite element analysis and figure exporting are not required.
 
 | Package | Purpose | Included? | Download |
 |:--|:--|:--:|--:|
-|[__FEBio__](https://febio.org) <br/> [![FEBio](docs/img/logos/febioLogo.png){:height="100px"}](https://febio.org)|FEBio is a finite element solver and is used in GIBBON for all finite element analysis. Use of FEBio is featured in many of the `DEMO_FEBio...` files |__No__|[__FEBio website__](https://febio.org) |
-|[__export_fig__](https://github.com/altmany/export_fig) <br/> [![export_fig](docs/img/logos/export_fig_logo.jpg){:height="100px"}](https://github.com/altmany/export_fig)| <br/> `export_fig` helps to export publication quality images (e.g. .png, .jpg, .pdf, .eps), in GIBBON it is integrated in the export figure widget `efw` to export such images from the `cFigure` window directly. `export_fig` is also used for exporting images for creation of .gif animations with the GIBBON `anim8` function |__No__|[__Get via GitHub__](https://github.com/altmany/export_fig) <br/> <br/> [__Download zip__](https://github.com/altmany/export_fig/archive/master.zip)|
-|<br/> [__TetGen__]() <br/> [![tetGen](docs/img/logos/tetgenLogo.gif){:height="100px"}](http://wias-berlin.de/software/tetgen/)| <br/> Is used for tetrahedral meshing (and possibly constrained 3D Delaunay tessellation). See for instance `HELP_runTetGen.m`|__Yes__| For other versions: [__TetGen website__](http://wias-berlin.de/software/tetgen/)|
+|[__FEBio__](https://febio.org) <br/> <img src="docs/img/logos/febioLogo.png" href="https://febio.org" alt="FEBIO" width="100%">|FEBio is a finite element solver and is used in GIBBON for all finite element analysis. Use of FEBio is featured in many of the `DEMO_FEBio...` files |__No__|[__FEBio website__](https://febio.org) |
+|[__export_fig__](https://github.com/altmany/export_fig) <br/> <img src="docs/img/logos/export_fig_logo.jpg" href="https://github.com/altmany/export_fig" alt="export_fig" width="100%">| <br/> `export_fig` helps to export publication quality images (e.g. .png, .jpg, .pdf, .eps), in GIBBON it is integrated in the export figure widget `efw` to export such images from the `cFigure` window directly. `export_fig` is also used for exporting images for creation of .gif animations with the GIBBON `anim8` function |__No__|[__Get via GitHub__](https://github.com/altmany/export_fig) <br/> <br/> [__Download zip__](https://github.com/altmany/export_fig/archive/master.zip)|
+|<br/> [__TetGen__]() <br/> <img src="docs/img/logos/tetgenLogo.gif" href="http://wias-berlin.de/software/tetgen/" alt="TetGen" width="100px">| <br/> Is used for tetrahedral meshing (and possibly constrained 3D Delaunay tessellation). See for instance `HELP_runTetGen.m`|__Yes__| For other versions: [__TetGen website__](http://wias-berlin.de/software/tetgen/)|
 
 ### 2. Run `installGibbon.m`
 By running `installGibbon.m` the GIBBON, FEBio, and export_fig path definitions will be added and saved to MATLAB. The help and documentation will also be integrated. Once finished you will be asked to __restart MATLAB__. `installGibbon.m` can be found in the main GIBBON folder.
@@ -34,7 +35,7 @@ By running `installGibbon.m` the GIBBON, FEBio, and export_fig path definitions 
 ##### Access the integrated help
 * To access the help documentation from MATLAB click on the HELP browser then click o `GIBBON toolbox` under `Supplemental Software` as shown below. This will open the toolbox help and documentation which is now searchable and integrated just like the rest of MATLAB's help and documentation.  
 
-![](docs/gif_helpSearch.gif)  
+<img src="docs/gif_helpSearch.gif" alt="Help integration" width="100%">
 
 ##### Where to find functions and the executable help and demo files
 * The `lib` folder contains all GIBBON's functions and the `lib_ext` contains "external functions" i.e. functions developed by others included with GIBBON. The `docs` folder contains the help&documentation, and demo files which when "published" (using MATLAB's publish functionality) create the .html documentation files (found in `docs/html`) which are integrated in MATLAB.  

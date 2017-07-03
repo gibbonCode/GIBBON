@@ -7,7 +7,6 @@ function [Fs,Vs,Cs]=scalePatch(F,V,C,scaleFactor)
 % 19/12/2013 Fixed error related to single face entry, see if statement
 % related to size(F,1)
 %
-% Kevin Mattheus Moerman (kevinmoerman@hotmail.com)
 % --------------------------------------------------------------------
 %%
 
@@ -23,15 +22,9 @@ end
 
 %Fix indices in face matrix
 indVn=1:numel(F);
-% Ft=F';
-% indFt=Ft(:);
 Fs=reshape(indVn(:),size(F,2),size(F,1))';
 Cs=C;
 
-% else
-%     Vn=V;
-%     Fn=F;
-% end
 %Derive face means to shift vertices around mean
 Vs=zeros(size(Vn));
 for q=1:1:size(V,2)

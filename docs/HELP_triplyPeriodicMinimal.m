@@ -108,13 +108,12 @@ n=50;
 S=triplyPeriodicMinimal(X,Y,Z,'g');
 
 T=0.6;      
-L=S>=(max(S(:))*T);
-[F1,V1,C1]=ind2patch(L,S,'vb'); 
+c=(max(S(:))*T);
+L=S>=c;
+[F1,V1,C1]=im2patch(S,L,'vb'); 
 
-T=0.6;      
-L=S<(max(S(:))*T);
-[F2,V2,C2]=ind2patch(L,S,'vb'); 
-
+L=S<c;
+[F2,V2,C2]=im2patch(S,L,'vb'); 
 
 cFigure;
 subplot(1,2,1);

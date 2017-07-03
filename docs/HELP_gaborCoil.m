@@ -18,10 +18,10 @@ clear; close all; clc;
 V=[0 0 0; 1 0 0];
 E=[1 2];
 numSteps=250;
-numTwist=7; 
-coilAmplitude=0.25;
-f=4;
-Vg=gaborCoil(V,E,numSteps,numTwist,coilAmplitude,4);
+numTwist=4; 
+coilAmplitude=0;
+f=3;
+Vg=gaborCoil(V,E,numSteps,numTwist,coilAmplitude,f);
 
 %%
 % Visualizing coil curve

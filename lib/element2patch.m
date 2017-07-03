@@ -21,7 +21,7 @@ function [varargout]=element2patch(varargin)
 switch nargin
     case 1
         E=varargin{1};
-        C=[];
+        C=[1:1:size(E,1)]'; %Element based colors
         elementType=[];
     case 2
         E=varargin{1};
