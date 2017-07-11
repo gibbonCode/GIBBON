@@ -78,7 +78,7 @@ indV_midFace314=ind2(indV_midFace((4-1)*size(E,1)+(1:size(E,1))))+indOffset;
      indV_midFace123 indV_23 E(:,3) indV_31 indV_mid indV_midFace234 indV_34 indV_midFace314;...%Corner hex 3
      indV_14  indV_midFace124 indV_mid indV_midFace314 E(:,4) indV_24 indV_midFace234 indV_34;...%Corner hex 4
     ];
-Es=Es(:,[4 3 2 1 8 7 6 5]);
+% Es=Es(:,[4 3 2 1 8 7 6 5]);
 
 %% Create vertex arrays
 

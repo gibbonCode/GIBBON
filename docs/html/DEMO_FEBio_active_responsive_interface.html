@@ -1,0 +1,1307 @@
+
+<!DOCTYPE html
+  PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html><head>
+      <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+   <!--
+This HTML was auto-generated from MATLAB code.
+To make changes, update the MATLAB code and republish this document.
+      --><title>DEMO_FEBio_cylinder_embedded_indentor_01</title><meta name="generator" content="MATLAB 9.1"><link rel="schema.DC" href="http://purl.org/dc/elements/1.1/"><meta name="DC.date" content="2017-07-11"><meta name="DC.source" content="DEMO_FEBio_active_responsive_interface.m"><style type="text/css">
+html,body,div,span,applet,object,iframe,h1,h2,h3,h4,h5,h6,p,blockquote,pre,a,abbr,acronym,address,big,cite,code,del,dfn,em,font,img,ins,kbd,q,s,samp,small,strike,strong,sub,sup,tt,var,b,u,i,center,dl,dt,dd,ol,ul,li,fieldset,form,label,legend,table,caption,tbody,tfoot,thead,tr,th,td{margin:0;padding:0;border:0;outline:0;font-size:100%;vertical-align:baseline;background:transparent}body{line-height:1}ol,ul{list-style:none}blockquote,q{quotes:none}blockquote:before,blockquote:after,q:before,q:after{content:'';content:none}:focus{outine:0}ins{text-decoration:none}del{text-decoration:line-through}table{border-collapse:collapse;border-spacing:0}
+
+html { min-height:100%; margin-bottom:1px; }
+html body { height:100%; margin:0px; font-family:Arial, Helvetica, sans-serif; font-size:10px; color:#000; line-height:140%; background:#fff none; overflow-y:scroll; }
+html body td { vertical-align:top; text-align:left; }
+
+h1 { padding:0px; margin:0px 0px 25px; font-family:Arial, Helvetica, sans-serif; font-size:1.5em; color:#d55000; line-height:100%; font-weight:normal; }
+h2 { padding:0px; margin:0px 0px 8px; font-family:Arial, Helvetica, sans-serif; font-size:1.2em; color:#000; font-weight:bold; line-height:140%; border-bottom:1px solid #d6d4d4; display:block; }
+h3 { padding:0px; margin:0px 0px 5px; font-family:Arial, Helvetica, sans-serif; font-size:1.1em; color:#000; font-weight:bold; line-height:140%; }
+
+a { color:#005fce; text-decoration:none; }
+a:hover { color:#005fce; text-decoration:underline; }
+a:visited { color:#004aa0; text-decoration:none; }
+
+p { padding:0px; margin:0px 0px 20px; }
+img { padding:0px; margin:0px 0px 20px; border:none; }
+p img, pre img, tt img, li img, h1 img, h2 img { margin-bottom:0px; } 
+
+ul { padding:0px; margin:0px 0px 20px 23px; list-style:square; }
+ul li { padding:0px; margin:0px 0px 7px 0px; }
+ul li ul { padding:5px 0px 0px; margin:0px 0px 7px 23px; }
+ul li ol li { list-style:decimal; }
+ol { padding:0px; margin:0px 0px 20px 0px; list-style:decimal; }
+ol li { padding:0px; margin:0px 0px 7px 23px; list-style-type:decimal; }
+ol li ol { padding:5px 0px 0px; margin:0px 0px 7px 0px; }
+ol li ol li { list-style-type:lower-alpha; }
+ol li ul { padding-top:7px; }
+ol li ul li { list-style:square; }
+
+.content { font-size:1.2em; line-height:140%; padding: 20px; }
+
+pre, code { font-size:12px; }
+tt { font-size: 1.2em; }
+pre { margin:0px 0px 20px; }
+pre.codeinput { padding:10px; border:1px solid #d3d3d3; background:#f7f7f7; }
+pre.codeoutput { padding:10px 11px; margin:0px 0px 20px; color:#4c4c4c; }
+pre.error { color:red; }
+
+@media print { pre.codeinput, pre.codeoutput { word-wrap:break-word; width:100%; } }
+
+span.keyword { color:#0000FF }
+span.comment { color:#228B22 }
+span.string { color:#A020F0 }
+span.untermstring { color:#B20000 }
+span.syscmd { color:#B28C00 }
+
+.footer { width:auto; padding:10px 0px; margin:25px 0px 0px; border-top:1px dotted #878787; font-size:0.8em; line-height:140%; font-style:italic; color:#878787; text-align:left; float:none; }
+.footer p { margin:0px; }
+.footer a { color:#878787; }
+.footer a:hover { color:#878787; text-decoration:underline; }
+.footer a:visited { color:#878787; }
+
+table th { padding:7px 5px; text-align:left; vertical-align:middle; border: 1px solid #d6d4d4; font-weight:bold; }
+table td { padding:7px 5px; text-align:left; vertical-align:top; border:1px solid #d6d4d4; }
+
+
+
+
+
+  </style></head><body><div class="content"><h1>DEMO_FEBio_cylinder_embedded_indentor_01</h1><!--introduction--><!--/introduction--><h2>Contents</h2><div><ul><li><a href="#5">Build tissue skin surface top</a></li><li><a href="#6">Build tissue skin surface bottom</a></li><li><a href="#7">Build tissue skin surface middle</a></li><li><a href="#8">Build wrap outer surface</a></li><li><a href="#9">Build bone surface</a></li><li><a href="#10">Capping tissue top</a></li><li><a href="#11">Capping tissue bottom</a></li><li><a href="#12">Capping wrap top</a></li><li><a href="#13">Capping wrap bottom</a></li><li><a href="#14">Visualizing surface geometry</a></li><li><a href="#15">Joining and merging geometry sets</a></li><li><a href="#17">Find solid mesh region interior points</a></li><li><a href="#19">Mesh solid using tetgen</a></li><li><a href="#24">Visualizing cut-view of solid mesh</a></li><li><a href="#25">Define boundary condition node sets</a></li><li><a href="#26">Define pressure surface</a></li><li><a href="#28">Create element sets and material indices</a></li><li><a href="#29">DEFINE FIBRE DIRECTIONS</a></li><li><a href="#31">CONSTRUCTING FEB MODEL</a></li><li><a href="#32">SAVING .FEB FILE</a></li><li><a href="#33">RUNNING FEBIO JOB</a></li><li><a href="#34">IMPORTING NODAL DISPLACEMENT RESULTS</a></li><li><a href="#35">CREATING NODE SET IN DEFORMED STATE</a></li></ul></div><pre class="codeinput">clear; close <span class="string">all</span>; clc;
+</pre><p>Plot settings</p><pre class="codeinput">fontSize=15;
+faceAlpha=1;
+lineWidth1=1.5;
+lineWidth2=3;
+markerSize=25;
+markerSize1=15;
+markerSize2=30;
+edgeWidth=2;
+edgeColor=<span class="string">'k'</span>;
+faceAlpha1=1;
+plotColors=gjet(9);
+</pre><p>path names</p><pre class="codeinput">defaultFolder = fileparts(fileparts(mfilename(<span class="string">'fullpath'</span>)));
+savePath=fullfile(defaultFolder,<span class="string">'data'</span>,<span class="string">'temp'</span>);
+</pre><pre class="codeinput">c1=1e-3;
+c2=1*c1;
+m1=6;
+k_factor=50;
+k=c1*k_factor;
+T0_1=1e-2/5;
+T0_2=1e-2*2;
+
+tissueRadius=35;
+tissueHeight=170;
+boneRadius=10;
+wrapHeight=24;
+wrapThickness=4;
+pointSpacing=6; <span class="comment">% Aproximate node spacing for cylinder portion</span>
+
+digitKeep=5;
+</pre><h2 id="5">Build tissue skin surface top</h2><pre class="codeinput"><span class="comment">%Sketching profile</span>
+ns=150;
+t=linspace(0,2*pi,ns);
+t=t(1:end-1);
+
+x=tissueRadius*cos(t);
+y=tissueRadius*sin(t);
+z=zeros(size(x));
+Vc=[x(:) y(:) z(:)];
+np=ceil(max(pathLength(Vc))./pointSpacing);
+[Vc]=evenlySampleCurve(Vc,np,<span class="string">'pchip'</span>,1);
+
+<span class="comment">% Extruding model</span>
+h=(tissueHeight/2)-wrapHeight/2;
+cPar.numSteps=round(h/pointSpacing);
+cPar.numSteps=cPar.numSteps+iseven(cPar.numSteps);
+cPar.depth=h;
+cPar.patchType=<span class="string">'tri'</span>;
+cPar.dir=-1;
+cPar.closeLoopOpt=1;
+[Fg1,Vg1]=polyExtrude(Vc,cPar);
+Vg1(:,3)=Vg1(:,3)+tissueHeight/2;
+
+[T,R] = cart2pol(Vg1(:,1),Vg1(:,2));
+R=R-(tissueRadius/1.25*((Vg1(:,3)-(wrapHeight/2))/(tissueHeight/2)).^2);
+[Vg1(:,1),Vg1(:,2)] = pol2cart(T,R);
+
+Vg1b=Vg1(cPar.numSteps:cPar.numSteps:end,:);
+Vg1t=Vg1(1:cPar.numSteps:end,:);
+</pre><h2 id="6">Build tissue skin surface bottom</h2><pre class="codeinput">Fg2=Fg1;
+Fg2=fliplr(Fg2);
+Vg2=Vg1;
+Vg2(:,3)=-Vg2(:,3);
+Vg2b=Vg2(cPar.numSteps:cPar.numSteps:end,:);
+Vg2t=Vg2(1:cPar.numSteps:end,:);
+</pre><h2 id="7">Build tissue skin surface middle</h2><pre class="codeinput"><span class="comment">% Extruding model</span>
+h=wrapHeight;
+cPar.numSteps=round(h/pointSpacing);
+cPar.numSteps=cPar.numSteps+iseven(cPar.numSteps);
+cPar.depth=h;
+cPar.patchType=<span class="string">'tri'</span>;
+cPar.closeLoopOpt=1;
+
+Vc_start=Vg1b;
+Vc_end=Vg2b;
+[Fg3,Vg3]=polyLoftLinear(Vc_start,Vc_end,cPar);
+
+<span class="comment">% Vg3(:,3)=Vg3(:,3)+tissueHeight/2;</span>
+Vg3b=Vg3(cPar.numSteps:cPar.numSteps:end,:);
+Vg3t=Vg3(1:cPar.numSteps:end,:);
+</pre><h2 id="8">Build wrap outer surface</h2><pre class="codeinput">ns=150;
+t=linspace(0,2*pi,ns);
+t=t(1:end-1);
+
+x=(tissueRadius+wrapThickness)*cos(t);
+y=(tissueRadius+wrapThickness)*sin(t);
+z=zeros(size(x));
+Vc=[x(:) y(:) z(:)];
+np=ceil(max(pathLength(Vc))./pointSpacing);
+[Vwt]=evenlySampleCurve(Vc,np,<span class="string">'pchip'</span>,1);
+Vwt(:,3)=mean(Vg3t(:,3));
+Vwb=Vwt;
+Vwb(:,3)=Vwt(:,3)-wrapHeight;
+
+h=wrapHeight;
+cPar.numSteps=round(h/pointSpacing);
+cPar.numSteps=cPar.numSteps+iseven(cPar.numSteps);
+cPar.depth=h;
+cPar.patchType=<span class="string">'tri'</span>;
+cPar.closeLoopOpt=1;
+
+Vc_start=Vwt;
+Vc_end=Vwb;
+[Fw1,Vw1]=polyLoftLinear(Vc_start,Vc_end,cPar);
+</pre><h2 id="9">Build bone surface</h2><pre class="codeinput">x=boneRadius*cos(t);
+y=boneRadius*sin(t);
+z=zeros(size(x));
+Vc=[x(:) y(:) z(:)];
+np=ceil(max(pathLength(Vc))./pointSpacing);
+[Vc]=evenlySampleCurve(Vc,np,<span class="string">'pchip'</span>,1);
+
+<span class="comment">% Extruding model</span>
+cPar.numSteps=round(tissueHeight/pointSpacing);
+cPar.numSteps=cPar.numSteps+iseven(cPar.numSteps);
+cPar.depth=tissueHeight;
+cPar.patchType=<span class="string">'tri'</span>;
+cPar.dir=-1;
+cPar.closeLoopOpt=1;
+[Fb,Vb]=polyExtrude(Vc,cPar);
+Fb=fliplr(Fb);
+Vb(:,3)=Vb(:,3)+tissueHeight/2;
+
+Vbb=Vb(cPar.numSteps:cPar.numSteps:end,:);
+Vbt=Vb(1:cPar.numSteps:end,:);
+</pre><h2 id="10">Capping tissue top</h2><pre class="codeinput">regionCell={Vg1t(:,[1 2]),Vbt(:,[1 2])};
+[Ft,Vt]=regionTriMesh2D(regionCell,pointSpacing,0,0);
+Vt(:,3)=mean(Vg1t(:,3));
+Ft=fliplr(Ft);
+</pre><h2 id="11">Capping tissue bottom</h2><pre class="codeinput">regionCell={Vg2t(:,[1 2]),Vbb(:,[1 2])};
+[Fgb,Vgb]=regionTriMesh2D(regionCell,pointSpacing,0,0);
+Vgb(:,3)=mean(Vg2t(:,3));
+</pre><h2 id="12">Capping wrap top</h2><pre class="codeinput">regionCell={Vwt(:,[1 2]),Vg1b(:,[1 2])};
+[Fwtt,Vwtt]=regionTriMesh2D(regionCell,pointSpacing,0,0);
+Vwtt(:,3)=mean(Vwt(:,3));
+Fwtt=fliplr(Fwtt);
+</pre><h2 id="13">Capping wrap bottom</h2><pre class="codeinput">regionCell={Vwb(:,[1 2]),Vg2b(:,[1 2])};
+[Fwbb,Vwbb]=regionTriMesh2D(regionCell,pointSpacing,0,0);
+Vwbb(:,3)=mean(Vwb(:,3));
+</pre><h2 id="14">Visualizing surface geometry</h2><pre class="codeinput">cFigure;
+xlabel(<span class="string">'X'</span>,<span class="string">'FontSize'</span>,fontSize); ylabel(<span class="string">'Y'</span>,<span class="string">'FontSize'</span>,fontSize); zlabel(<span class="string">'Z'</span>,<span class="string">'FontSize'</span>,fontSize)
+hold <span class="string">on</span>;
+
+gpatch(Fg1,Vg1,plotColors(1,:),<span class="string">'k'</span>);
+patchNormPlot(Fg1,Vg1);
+plotV(Vg1t,<span class="string">'r.-'</span>,<span class="string">'lineWidth'</span>,lineWidth1,<span class="string">'MarkerSize'</span>,markerSize1);
+plotV(Vg1b,<span class="string">'y.-'</span>,<span class="string">'lineWidth'</span>,lineWidth1,<span class="string">'MarkerSize'</span>,markerSize1);
+
+gpatch(Fg2,Vg2,plotColors(2,:),<span class="string">'k'</span>);
+patchNormPlot(Fg2,Vg2);
+plotV(Vg2t,<span class="string">'r.-'</span>,<span class="string">'lineWidth'</span>,lineWidth1,<span class="string">'MarkerSize'</span>,markerSize1);
+plotV(Vg2b,<span class="string">'y.-'</span>,<span class="string">'lineWidth'</span>,lineWidth1,<span class="string">'MarkerSize'</span>,markerSize1);
+
+gpatch(Fg3,Vg3,plotColors(3,:),<span class="string">'k'</span>);
+patchNormPlot(Fg3,Vg3);
+plotV(Vg3t,<span class="string">'r.-'</span>,<span class="string">'lineWidth'</span>,lineWidth1,<span class="string">'MarkerSize'</span>,markerSize1);
+plotV(Vg3b,<span class="string">'y.-'</span>,<span class="string">'lineWidth'</span>,lineWidth1,<span class="string">'MarkerSize'</span>,markerSize1);
+
+gpatch(Fw1,Vw1,plotColors(4,:),<span class="string">'k'</span>);
+patchNormPlot(Fw1,Vw1);
+plotV(Vwt,<span class="string">'g.-'</span>,<span class="string">'lineWidth'</span>,lineWidth1,<span class="string">'MarkerSize'</span>,markerSize1);
+plotV(Vwb,<span class="string">'g.-'</span>,<span class="string">'lineWidth'</span>,lineWidth1,<span class="string">'MarkerSize'</span>,markerSize1);
+
+gpatch(Fb,Vb,plotColors(5,:),<span class="string">'k'</span>);
+patchNormPlot(Fb,Vb);
+plotV(Vbt,<span class="string">'r.-'</span>,<span class="string">'lineWidth'</span>,lineWidth1,<span class="string">'MarkerSize'</span>,markerSize1);
+plotV(Vbb,<span class="string">'y.-'</span>,<span class="string">'lineWidth'</span>,lineWidth1,<span class="string">'MarkerSize'</span>,markerSize1);
+
+gpatch(Ft,Vt,plotColors(6,:),<span class="string">'k'</span>);
+patchNormPlot(Ft,Vt);
+
+gpatch(Fgb,Vgb,plotColors(7,:),<span class="string">'k'</span>);
+patchNormPlot(Fgb,Vgb);
+
+gpatch(Fwtt,Vwtt,plotColors(8,:),<span class="string">'k'</span>);
+patchNormPlot(Fwtt,Vwtt);
+
+gpatch(Fwbb,Vwbb,plotColors(9,:),<span class="string">'k'</span>);
+patchNormPlot(Fwbb,Vwbb);
+
+axisGeom;
+colormap(plotColors); colorbar;
+drawnow;
+</pre><img vspace="5" hspace="5" src="DEMO_FEBio_active_responsive_interface_01.png" alt=""> <h2 id="15">Joining and merging geometry sets</h2><pre class="codeinput"><span class="comment">%Joining sets</span>
+
+<span class="comment">%Creating color information</span>
+Cg1=1*ones(size(Fg1,1),1); <span class="comment">%Tissue top cylinder</span>
+Cg2=2*ones(size(Fg2,1),1); <span class="comment">%Tissue bottom cylinder</span>
+Cg3=3*ones(size(Fg3,1),1); <span class="comment">%Tissue middle cylinder</span>
+Cw1=4*ones(size(Fw1,1),1); <span class="comment">%Wrap outer cylinder</span>
+Cb=5*ones(size(Fb,1),1); <span class="comment">%Bone cylinder</span>
+Ct=6*ones(size(Ft,1),1); <span class="comment">%Tissue top</span>
+Cgb=7*ones(size(Fgb,1),1); <span class="comment">%Tissue bottom</span>
+Cwtt=8*ones(size(Fwtt,1),1); <span class="comment">%Wrap top</span>
+Cwbb=9*ones(size(Fwbb,1),1); <span class="comment">%Wrap bottom</span>
+
+[F,V,C]=joinElementSets({Fg1,Fg2,Fg3,Fw1,Fb,Ft,Fgb,Fwtt,Fwbb},{Vg1,Vg2,Vg3,Vw1,Vb,Vt,Vgb,Vwtt,Vwbb},{Cg1,Cg2,Cg3,Cw1,Cb,Ct,Cgb,Cwtt,Cwbb}); <span class="comment">%joining sets together</span>
+
+<span class="comment">%merging sets</span>
+[~,indUni,indFix]=unique(pround(V,digitKeep),<span class="string">'rows'</span>);
+V=V(indUni,:); <span class="comment">%The merged point set</span>
+F=indFix(F);
+</pre><pre class="codeinput">cFigure;
+xlabel(<span class="string">'X'</span>,<span class="string">'FontSize'</span>,fontSize); ylabel(<span class="string">'Y'</span>,<span class="string">'FontSize'</span>,fontSize); zlabel(<span class="string">'Z'</span>,<span class="string">'FontSize'</span>,fontSize)
+hold <span class="string">on</span>;
+
+gpatch(F,V,C,<span class="string">'none'</span>,0.5);
+<span class="comment">% patchNormPlot(F,V);</span>
+
+axisGeom;
+colormap(plotColors); colorbar;
+drawnow;
+</pre><img vspace="5" hspace="5" src="DEMO_FEBio_active_responsive_interface_02.png" alt=""> <h2 id="17">Find solid mesh region interior points</h2><pre class="codeinput">logicRegion=ismember(C,[3 4 8 9]);
+[V_in_1]=getInnerPoint(F(logicRegion,:),V);
+
+logicRegion=ismember(C,[1 2 3 5 6 7 ]);
+[V_in_2]=getInnerPoint(F(logicRegion,:),V);
+
+V_regions=[V_in_1;V_in_2];
+</pre><pre class="codeinput">cFigure;
+xlabel(<span class="string">'X'</span>,<span class="string">'FontSize'</span>,fontSize); ylabel(<span class="string">'Y'</span>,<span class="string">'FontSize'</span>,fontSize); zlabel(<span class="string">'Z'</span>,<span class="string">'FontSize'</span>,fontSize)
+hold <span class="string">on</span>;
+
+gpatch(F,V,C,<span class="string">'none'</span>,0.2);
+plotV(V_in_1,<span class="string">'r.'</span>,<span class="string">'MarkerSize'</span>,25);
+plotV(V_in_2,<span class="string">'b.'</span>,<span class="string">'MarkerSize'</span>,25);
+
+axisGeom;
+colormap(plotColors); colorbar;
+drawnow;
+</pre><img vspace="5" hspace="5" src="DEMO_FEBio_active_responsive_interface_03.png" alt=""> <h2 id="19">Mesh solid using tetgen</h2><pre class="codeinput"><span class="comment">% Create tetgen meshing input structure</span>
+modelName=fullfile(savePath,<span class="string">'tempModel'</span>);
+
+<span class="comment">% Regional mesh volume parameter</span>
+[regionA]=tetVolMeanEst(F,V); <span class="comment">%Volume for a regular tet based on edge lengths</span>
+volumeFactors=(regionA.*ones(size(V_regions,1),1));
+
+inputStruct.stringOpt=<span class="string">'-pq1.2AaY'</span>;
+inputStruct.Faces=F;
+inputStruct.Nodes=V;
+inputStruct.holePoints=[];
+inputStruct.faceBoundaryMarker=C; <span class="comment">%Face boundary markers</span>
+inputStruct.regionPoints=V_regions; <span class="comment">%region points</span>
+inputStruct.regionA=volumeFactors; <span class="comment">%Desired volume for tets</span>
+inputStruct.minRegionMarker=2; <span class="comment">%Minimum region marker</span>
+inputStruct.modelName=modelName;
+</pre><p>Mesh model using tetrahedral elements using tetGen (see: <a href="http://wias-berlin.de/software/tetgen/">http://wias-berlin.de/software/tetgen/</a>)</p><pre class="codeinput">[meshOutput]=runTetGen(inputStruct); <span class="comment">%Run tetGen</span>
+</pre><pre class="codeoutput"> 
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+--- TETGEN Tetrahedral meshing --- 11-Jul-2017 13:56:59
+ 
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+--- Writing SMESH file --- 11-Jul-2017 13:56:59
+----&gt; Adding node field
+----&gt; Adding facet field
+----&gt; Adding holes specification
+----&gt; Adding region specification
+--- Done --- 11-Jul-2017 13:57:00
+--- Running TetGen to mesh input boundary--- 11-Jul-2017 13:57:00
+Opening /mnt/data/MATLAB/GIT/GIBBON/lib_ext/tetGen/tempFiles/tempModel.smesh.
+Delaunizing vertices...
+Delaunay seconds:  0.028044
+Creating surface mesh ...
+Surface mesh seconds:  0.004886
+Recovering boundaries...
+Boundary recovery seconds:  0.005483
+Removing exterior tetrahedra ...
+Spreading region attributes.
+Exterior tets removal seconds:  0.003231
+Recovering Delaunayness...
+Delaunay recovery seconds:  0.003119
+Refining mesh...
+Refinement seconds:  0.159517
+Optimizing mesh...
+Optimization seconds:  0.016841
+
+Writing /mnt/data/MATLAB/GIT/GIBBON/lib_ext/tetGen/tempFiles/tempModel.1.node.
+Writing /mnt/data/MATLAB/GIT/GIBBON/lib_ext/tetGen/tempFiles/tempModel.1.ele.
+Writing /mnt/data/MATLAB/GIT/GIBBON/lib_ext/tetGen/tempFiles/tempModel.1.face.
+Writing /mnt/data/MATLAB/GIT/GIBBON/lib_ext/tetGen/tempFiles/tempModel.1.edge.
+
+Output seconds:  0.0468
+Total running seconds:  0.268087
+
+Statistics:
+
+  Input points: 1597
+  Input facets: 3268
+  Input segments: 4865
+  Input holes: 0
+  Input regions: 2
+
+  Mesh points: 4867
+  Mesh tetrahedra: 26213
+  Mesh faces: 53912
+  Mesh faces on exterior boundary: 2972
+  Mesh faces on input facets: 3268
+  Mesh edges on input segments: 4865
+  Steiner points inside domain: 3270
+
+--- Done --- 11-Jul-2017 13:57:00
+ 
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+--- Importing TetGen files --- 11-Jul-2017 13:57:00
+--- Done --- 11-Jul-2017 13:57:00
+</pre><p>Call TetView to view the model runTetView(meshOutput.loadNameStruct.loadName_ele);</p><p>Access model element and patch data</p><pre class="codeinput">F=meshOutput.faces;
+V=meshOutput.nodes;
+C=meshOutput.faceMaterialID;
+E=meshOutput.elements;
+CE=meshOutput.elementMaterialID;
+
+Fb=meshOutput.facesBoundary;
+Cb=meshOutput.boundaryMarker;
+</pre><pre class="codeinput">cFigure;
+xlabel(<span class="string">'X'</span>,<span class="string">'FontSize'</span>,fontSize); ylabel(<span class="string">'Y'</span>,<span class="string">'FontSize'</span>,fontSize); zlabel(<span class="string">'Z'</span>,<span class="string">'FontSize'</span>,fontSize)
+hold <span class="string">on</span>;
+
+gpatch(Fb,V,Cb);
+
+axisGeom;
+colormap(plotColors)
+drawnow;
+</pre><img vspace="5" hspace="5" src="DEMO_FEBio_active_responsive_interface_04.png" alt=""> <h2 id="24">Visualizing cut-view of solid mesh</h2><pre class="codeinput"><span class="comment">%Selecting half of the model to see interior</span>
+Y=V(:,2); YE=mean(Y(E),2);
+L=YE&gt;mean(Y);
+[Fs,Cs]=element2patch(E(L,:),CE(L),<span class="string">'tet4'</span>);
+
+hf1=cFigure;
+subplot(1,2,1);
+title(<span class="string">'Solid tetrahedral mesh model'</span>,<span class="string">'FontSize'</span>,fontSize);
+gpatch(Fb,V,Cb);
+axisGeom;
+colormap(plotColors);
+camlight <span class="string">headlight</span>;
+set(gca,<span class="string">'FontSize'</span>,fontSize);
+
+subplot(1,2,2);
+title(<span class="string">'Cut view of Solid tetrahedral mesh model'</span>,<span class="string">'FontSize'</span>,fontSize);
+gpatch(Fs,V,Cs);
+axisGeom;
+colormap(plotColors); colorbar;
+camlight <span class="string">headlight</span>;
+set(gca,<span class="string">'FontSize'</span>,fontSize);
+drawnow;
+</pre><img vspace="5" hspace="5" src="DEMO_FEBio_active_responsive_interface_05.png" alt=""> <h2 id="25">Define boundary condition node sets</h2><pre class="codeinput">logicRigid=ismember(Cb,[5 6 7]);
+indRigid=Fb(logicRigid,:);
+indRigid=unique(indRigid(:));
+</pre><h2 id="26">Define pressure surface</h2><pre class="codeinput">F_pressure=fliplr(Fb(Cb==3,:));
+</pre><p>Plot boundary condition nodes</p><pre class="codeinput">cFigure;
+xlabel(<span class="string">'X'</span>,<span class="string">'FontSize'</span>,fontSize); ylabel(<span class="string">'Y'</span>,<span class="string">'FontSize'</span>,fontSize); zlabel(<span class="string">'Z'</span>,<span class="string">'FontSize'</span>,fontSize)
+hold <span class="string">on</span>;
+
+gpatch(Fb,V,Cb,<span class="string">'none'</span>,0.5);
+plotV(V(indRigid,:),<span class="string">'k.'</span>,<span class="string">'lineWidth'</span>,lineWidth1,<span class="string">'MarkerSize'</span>,markerSize1);
+gpatch(F_pressure,V,0.5*ones(1,3),<span class="string">'k'</span>);
+
+axisGeom;
+colormap(plotColors);
+drawnow;
+</pre><img vspace="5" hspace="5" src="DEMO_FEBio_active_responsive_interface_06.png" alt=""> <h2 id="28">Create element sets and material indices</h2><pre class="codeinput"><span class="comment">%Create material indices</span>
+elementMaterialIndices=CE;
+elementMaterialIndices(elementMaterialIndices==-3)=1;
+elementMaterialIndices(elementMaterialIndices==-2)=2;
+
+<span class="comment">%Order material sets</span>
+E1=E(elementMaterialIndices==1,:); <span class="comment">%Tissue material</span>
+E2=E(elementMaterialIndices==2,:); <span class="comment">%Wrap material</span>
+</pre><h2 id="29">DEFINE FIBRE DIRECTIONS</h2><pre class="codeinput">v_fib1=[0 0 1];
+V_fib1=v_fib1(ones(size(E1,1),1),:);
+X=V(:,1);
+Y=V(:,2);
+Z=V(:,3);
+VE1=[mean(X(E1),2) mean(Y(E1),2) mean(Z(E1),2)];
+
+VE2=[mean(X(E2),2) mean(Y(E2),2) mean(Z(E2),2)];
+VE2n=VE2;
+VE2n(:,3)=0;
+V_fib2=vecnormalize(cross(VE2n,v_fib1(ones(size(VE2,1),1),:)));
+
+V_fib=[V_fib1;V_fib2];
+
+[a_fib,d_fib]=vectorOrthogonalPair(V_fib);
+
+VE=[VE1;VE2];
+</pre><p>Plot fibre directions</p><pre class="codeinput">cFigure;
+xlabel(<span class="string">'X'</span>,<span class="string">'FontSize'</span>,fontSize); ylabel(<span class="string">'Y'</span>,<span class="string">'FontSize'</span>,fontSize); zlabel(<span class="string">'Z'</span>,<span class="string">'FontSize'</span>,fontSize)
+hold <span class="string">on</span>;
+
+gpatch(Fb,V,Cb,<span class="string">'none'</span>,0.5);
+<span class="comment">% quiverVec(VE1,V_fib1,1,'k','none');</span>
+<span class="comment">% quiverVec(VE2,V_fib2,2,'r','none');</span>
+quiverVec(VE,a_fib,2,<span class="string">'r'</span>,<span class="string">'none'</span>);
+quiverVec(VE,d_fib,1,<span class="string">'g'</span>,<span class="string">'none'</span>);
+
+axisGeom;
+colormap(plotColors);
+drawnow;
+</pre><img vspace="5" hspace="5" src="DEMO_FEBio_active_responsive_interface_07.png" alt=""> <h2 id="31">CONSTRUCTING FEB MODEL</h2><pre class="codeinput">FEB_struct.febio_spec.version=<span class="string">'2.0'</span>;
+FEB_struct.Module.Type=<span class="string">'solid'</span>;
+
+<span class="comment">% Defining file names</span>
+FEB_struct.run_filename=[modelName,<span class="string">'.feb'</span>]; <span class="comment">%FEB file name</span>
+FEB_struct.run_logname=[modelName,<span class="string">'.txt'</span>]; <span class="comment">%FEBio log file name</span>
+
+<span class="comment">%Creating FEB_struct</span>
+FEB_struct.Geometry.Nodes=V;
+FEB_struct.Geometry.Elements={E1,E2}; <span class="comment">%The element sets</span>
+FEB_struct.Geometry.ElementType={<span class="string">'tet4'</span>,<span class="string">'tet4'</span>}; <span class="comment">%The element types</span>
+FEB_struct.Geometry.ElementMat={elementMaterialIndices(elementMaterialIndices==1); elementMaterialIndices(elementMaterialIndices==2)};
+FEB_struct.Geometry.ElementsPartName={<span class="string">'Tissue'</span>,<span class="string">'Wrap'</span>};
+
+<span class="comment">%Adding fibre direction, construct local orthonormal basis vectors</span>
+
+VF_E=zeros(size(V_fib,1),size(V_fib,2),2);
+VF_E(:,:,1)=a_fib; <span class="comment">%a1 ~ e1 ~ X or first direction</span>
+VF_E(:,:,2)=d_fib; <span class="comment">%a2 ~ e2 ~ Y or second direction</span>
+<span class="comment">%Vf_E %a3 ~ e3 ~ Z, third direction, or fibre direction</span>
+
+FEB_struct.Geometry.ElementData.MatAxis.ElementIndices=1:1:size(E,1);
+FEB_struct.Geometry.ElementData.MatAxis.Basis=VF_E;
+
+<span class="comment">% DEFINING MATERIALS</span>
+
+<span class="comment">%Material section</span>
+<span class="comment">% FEB_struct.Materials{1}.Type='Ogden';</span>
+<span class="comment">% FEB_struct.Materials{1}.Name='Tissue_material';</span>
+<span class="comment">% FEB_struct.Materials{1}.Properties={'c1','m1','c2','m2','k'};</span>
+<span class="comment">% FEB_struct.Materials{1}.Values={c1,m1,c1,-m1,k};</span>
+
+FEB_struct.Materials{1}.Type=<span class="string">'solid mixture'</span>;
+<span class="comment">% FEB_struct.Materials{1}.AnisoType='mat_axis';</span>
+FEB_struct.Materials{1}.Solid{1}.Type=<span class="string">'Ogden unconstrained'</span>;
+FEB_struct.Materials{1}.Solid{1}.Properties={<span class="string">'c1'</span>,<span class="string">'m1'</span>,<span class="string">'c1'</span>,<span class="string">'m1'</span>,<span class="string">'cp'</span>};
+FEB_struct.Materials{1}.Solid{1}.Values={c1,m1,c1,-m1,k};
+
+FEB_struct.Materials{1}.Solid{2}.Type=<span class="string">'prescribed uniaxial active contraction'</span>;
+FEB_struct.Materials{1}.Solid{2}.Properties={<span class="string">'T0'</span>,<span class="string">'theta'</span>,<span class="string">'phi'</span>};
+FEB_struct.Materials{1}.Solid{2}.Values={T0_1,0,0};
+FEB_struct.Materials{1}.Solid{2}.AnisoType=<span class="string">'mat_axis'</span>;
+
+FEB_struct.Materials{1}.Solid{2}.PropAttrName=cell(1,numel(FEB_struct.Materials{1}.Solid{2}.Properties));
+FEB_struct.Materials{1}.Solid{2}.PropAttrName{1}=<span class="string">'lc'</span>;
+FEB_struct.Materials{1}.Solid{2}.PropAttrVal{1}=2;
+
+
+FEB_struct.Materials{2}.Type=<span class="string">'solid mixture'</span>;
+<span class="comment">% FEB_struct.Materials{2}.AnisoType='mat_axis';</span>
+FEB_struct.Materials{2}.Solid{1}.Type=<span class="string">'Ogden unconstrained'</span>;
+FEB_struct.Materials{2}.Solid{1}.Properties={<span class="string">'c1'</span>,<span class="string">'m1'</span>,<span class="string">'c1'</span>,<span class="string">'m1'</span>,<span class="string">'cp'</span>};
+FEB_struct.Materials{2}.Solid{1}.Values={c2,2,c2,-2,k};
+
+FEB_struct.Materials{2}.Solid{2}.Type=<span class="string">'prescribed uniaxial active contraction'</span>;
+FEB_struct.Materials{2}.Solid{2}.Properties={<span class="string">'T0'</span>,<span class="string">'theta'</span>,<span class="string">'phi'</span>};
+FEB_struct.Materials{2}.Solid{2}.Values={T0_2,0,0};
+FEB_struct.Materials{2}.Solid{2}.AnisoType=<span class="string">'mat_axis'</span>;
+
+FEB_struct.Materials{2}.Solid{2}.PropAttrName=cell(1,numel(FEB_struct.Materials{1}.Solid{2}.Properties));
+FEB_struct.Materials{2}.Solid{2}.PropAttrName{1}=<span class="string">'lc'</span>;
+FEB_struct.Materials{2}.Solid{2}.PropAttrVal{1}=1;
+
+<span class="comment">%Control section</span>
+FEB_struct.Step{1}.Control.AnalysisType=<span class="string">'static'</span>;
+FEB_struct.Step{1}.Control.Properties={<span class="string">'time_steps'</span>,<span class="string">'step_size'</span>,<span class="keyword">...</span>
+    <span class="string">'max_refs'</span>,<span class="string">'max_ups'</span>,<span class="keyword">...</span>
+    <span class="string">'dtol'</span>,<span class="string">'etol'</span>,<span class="string">'rtol'</span>,<span class="string">'lstol'</span>};
+n=20;
+FEB_struct.Step{1}.Control.Values={n,1/n,<span class="keyword">...</span>
+    25,10,<span class="keyword">...</span>
+    0.001,0.01,0,0.9};
+FEB_struct.Step{1}.Control.TimeStepperProperties={<span class="string">'dtmin'</span>,<span class="string">'dtmax'</span>,<span class="string">'max_retries'</span>,<span class="string">'opt_iter'</span>,<span class="string">'aggressiveness'</span>};
+FEB_struct.Step{1}.Control.TimeStepperValues={(1/n)/100,1/n,5,10,1};
+FEB_struct.Step{2}.Control=FEB_struct.Step{1}.Control;
+FEB_struct.Step{3}.Control=FEB_struct.Step{1}.Control;
+
+<span class="comment">%Defining node sets</span>
+FEB_struct.Geometry.NodeSet{1}.Set=indRigid;
+FEB_struct.Geometry.NodeSet{1}.Name=<span class="string">'indRigid'</span>;
+
+<span class="comment">%Defining surfaces</span>
+FEB_struct.Geometry.Surface{1}.Set=F_pressure;
+FEB_struct.Geometry.Surface{1}.Type=<span class="string">'tri3'</span>;
+FEB_struct.Geometry.Surface{1}.Name=<span class="string">'Pressure_surface'</span>;
+
+<span class="comment">%Adding BC information</span>
+FEB_struct.Boundary.Fix{1}.bc=<span class="string">'x'</span>;
+FEB_struct.Boundary.Fix{1}.SetName=FEB_struct.Geometry.NodeSet{1}.Name;
+FEB_struct.Boundary.Fix{2}.bc=<span class="string">'y'</span>;
+FEB_struct.Boundary.Fix{2}.SetName=FEB_struct.Geometry.NodeSet{1}.Name;
+FEB_struct.Boundary.Fix{3}.bc=<span class="string">'z'</span>;
+FEB_struct.Boundary.Fix{3}.SetName=FEB_struct.Geometry.NodeSet{1}.Name;
+
+<span class="comment">%Load curves</span>
+FEB_struct.LoadData.LoadCurves.id=[1 2];
+FEB_struct.LoadData.LoadCurves.type={<span class="string">'linear'</span>,<span class="string">'linear'</span>};
+FEB_struct.LoadData.LoadCurves.loadPoints={[0 0;1 1;2 1;3 0.5;]; [0 0;1 0;2 1;3 1;]};
+
+<span class="comment">%Adding output requests</span>
+FEB_struct.Output.VarTypes={<span class="string">'displacement'</span>,<span class="string">'stress'</span>,<span class="string">'relative volume'</span>};
+
+<span class="comment">%Specify log file output</span>
+run_node_output_name=[FEB_struct.run_filename(1:end-4),<span class="string">'_node_out.txt'</span>];
+FEB_struct.run_output_names={run_node_output_name};
+FEB_struct.output_types={<span class="string">'node_data'</span>};
+FEB_struct.data_types={<span class="string">'ux;uy;uz'</span>};
+</pre><h2 id="32">SAVING .FEB FILE</h2><pre class="codeinput">FEB_struct.disp_opt=0; <span class="comment">%Display waitbars option</span>
+febStruct2febFile(FEB_struct);
+</pre><pre class="codeoutput"> 
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+--- Writing FEBio XML object --- 11-Jul-2017 13:57:04
+Adding Module level
+Adding Globals level
+Adding Material level
+Adding Geometry level
+----&gt; Adding node field
+----&gt; Adding element field
+----&gt; Adding tet4 element entries....
+----&gt; Adding tet4 element entries....
+----&gt; Adding element data field
+----&gt; MatAxis data entries found
+----&gt; Adding surface field
+----&gt; Adding NodeSet field
+Adding Boundary level
+----&gt; Defining fix type boundary conditions
+Adding LoadData level
+----&gt; Defining load curves
+Adding Step level
+----&gt; Adding Module field
+----&gt; Adding Control field
+Adding Step level
+----&gt; Adding Module field
+----&gt; Adding Control field
+Adding Step level
+----&gt; Adding Module field
+----&gt; Adding Control field
+Adding Output level
+----&gt; Adding plotfile field
+----&gt; Adding logfile field
+Warning: Provided path of logfile is replaced by .feb file path. Only provide
+filename to avoid this warning 
+Writing .feb file
+--- Done --- 11-Jul-2017 13:57:22
+</pre><h2 id="33">RUNNING FEBIO JOB</h2><pre class="codeinput"><span class="comment">% FEBioRunStruct.FEBioPath='C:\Program Files\febio2-2.2.6\bin\febio2.exe';</span>
+FEBioRunStruct.run_filename=FEB_struct.run_filename;
+FEBioRunStruct.run_logname=FEB_struct.run_logname;
+FEBioRunStruct.disp_on=1;
+FEBioRunStruct.disp_log_on=1;
+FEBioRunStruct.runMode=<span class="string">'external'</span>;<span class="comment">%'internal';</span>
+FEBioRunStruct.t_check=0.25; <span class="comment">%Time for checking log file (dont set too small)</span>
+FEBioRunStruct.maxtpi=1e99; <span class="comment">%Max analysis time</span>
+FEBioRunStruct.maxLogCheckTime=30; <span class="comment">%Max log file checking time</span>
+
+[runFlag]=runMonitorFEBio(FEBioRunStruct);<span class="comment">%START FEBio NOW!!!!!!!!</span>
+</pre><pre class="codeoutput"> 
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+--- STARTING FEBIO JOB --- 11-Jul-2017 13:57:22
+Waiting for log file...
+Proceeding to check log file...11-Jul-2017 13:57:23
+------- converged at time : 0.05
+------- converged at time : 0.1
+------- converged at time : 0.15
+------- converged at time : 0.2
+------- converged at time : 0.25
+------- converged at time : 0.3
+------- converged at time : 0.35
+------- converged at time : 0.4
+------- converged at time : 0.45
+------- converged at time : 0.5
+------- converged at time : 0.55
+------- converged at time : 0.6
+------- converged at time : 0.65
+------- converged at time : 0.7
+------- converged at time : 0.75
+------- converged at time : 0.8
+------- converged at time : 0.85
+------- converged at time : 0.9
+------- converged at time : 0.95
+------- converged at time : 1
+------- converged at time : 1.05
+------- converged at time : 1.1
+------- converged at time : 1.15
+------- converged at time : 1.2
+------- converged at time : 1.25
+------- converged at time : 1.3
+------- converged at time : 1.35
+------- converged at time : 1.4
+------- converged at time : 1.45
+------- converged at time : 1.5
+------- converged at time : 1.55
+------- converged at time : 1.6
+------- converged at time : 1.65
+------- converged at time : 1.7
+------- converged at time : 1.75
+------- converged at time : 1.8
+------- converged at time : 1.85
+------- converged at time : 1.9
+------- converged at time : 1.95
+------- converged at time : 2
+------- converged at time : 2.05
+------- converged at time : 2.1
+------- converged at time : 2.15
+------- converged at time : 2.2
+------- converged at time : 2.25
+------- converged at time : 2.3
+------- converged at time : 2.35
+------- converged at time : 2.4
+------- converged at time : 2.45
+------- converged at time : 2.5
+------- converged at time : 2.55
+------- converged at time : 2.6
+------- converged at time : 2.65
+------- converged at time : 2.7
+------- converged at time : 2.75
+------- converged at time : 2.8
+------- converged at time : 2.85
+------- converged at time : 2.9
+------- converged at time : 2.95
+------- converged at time : 3
+--- Done --- 11-Jul-2017 13:57:54
+</pre><h2 id="34">IMPORTING NODAL DISPLACEMENT RESULTS</h2><p>Importing nodal displacements from a log file</p><pre class="codeinput">[~, N_disp_mat,~]=importFEBio_logfile(FEB_struct.run_output_names{1}); <span class="comment">%Nodal displacements</span>
+
+DN=N_disp_mat(:,2:end,end); <span class="comment">%Final nodal displacements</span>
+</pre><h2 id="35">CREATING NODE SET IN DEFORMED STATE</h2><pre class="codeinput">V_def=V+DN;
+DN_magnitude=sqrt(sum(DN.^2,2));
+</pre><p>Plotting the deformed model</p><pre class="codeinput">[CF]=vertexToFaceMeasure(F,DN_magnitude);
+
+cFigure;
+title(<span class="string">'The deformed model'</span>,<span class="string">'FontSize'</span>,fontSize);
+xlabel(<span class="string">'X'</span>,<span class="string">'FontSize'</span>,fontSize); ylabel(<span class="string">'Y'</span>,<span class="string">'FontSize'</span>,fontSize); zlabel(<span class="string">'Z'</span>,<span class="string">'FontSize'</span>,fontSize); hold <span class="string">on</span>;
+
+hps=patch(<span class="string">'Faces'</span>,F,<span class="string">'Vertices'</span>,V_def,<span class="string">'FaceColor'</span>,<span class="string">'flat'</span>,<span class="string">'CData'</span>,CF,<span class="string">'lineWidth'</span>,edgeWidth,<span class="string">'edgeColor'</span>,edgeColor,<span class="string">'FaceAlpha'</span>,faceAlpha1);
+
+view(3); axis <span class="string">tight</span>;  axis <span class="string">equal</span>;  grid <span class="string">on</span>;
+colormap <span class="string">jet</span>; colorbar;
+camlight <span class="string">headlight</span>;
+set(gca,<span class="string">'FontSize'</span>,fontSize);
+drawnow;
+</pre><img vspace="5" hspace="5" src="DEMO_FEBio_active_responsive_interface_08.png" alt=""> <p><img vspace="5" hspace="5" src="gibbVerySmall.gif" alt=""> </p><p><i><b>GIBBON</b></i> <a href="www.gibboncode.org">www.gibboncode.org</a></p><p><i>Kevin Mattheus Moerman</i>, <a href="gibbon.toolbox@gmail.com">gibbon.toolbox@gmail.com</a></p><p class="footer"><br><a href="http://www.mathworks.com/products/matlab/">Published with MATLAB&reg; R2016b</a><br></p></div><!--
+##### SOURCE BEGIN #####
+%% DEMO_FEBio_cylinder_embedded_indentor_01
+% 
+
+%%
+clear; close all; clc;
+
+%% 
+% Plot settings
+fontSize=15;
+faceAlpha=1;
+lineWidth1=1.5;
+lineWidth2=3; 
+markerSize=25;
+markerSize1=15; 
+markerSize2=30; 
+edgeWidth=2; 
+edgeColor='k';
+faceAlpha1=1; 
+plotColors=gjet(9);
+
+%%
+% path names
+defaultFolder = fileparts(fileparts(mfilename('fullpath')));
+savePath=fullfile(defaultFolder,'data','temp');
+
+%%
+c1=1e-3;
+c2=1*c1;
+m1=6;
+k_factor=50;
+k=c1*k_factor;
+T0_1=1e-2/5;
+T0_2=1e-2*2;
+
+tissueRadius=35;
+tissueHeight=170;
+boneRadius=10;
+wrapHeight=24;
+wrapThickness=4;
+pointSpacing=6; % Aproximate node spacing for cylinder portion
+
+digitKeep=5;
+
+%% Build tissue skin surface top
+
+%Sketching profile
+ns=150;
+t=linspace(0,2*pi,ns);
+t=t(1:end-1);
+
+x=tissueRadius*cos(t);
+y=tissueRadius*sin(t);
+z=zeros(size(x));
+Vc=[x(:) y(:) z(:)];
+np=ceil(max(pathLength(Vc))./pointSpacing);
+[Vc]=evenlySampleCurve(Vc,np,'pchip',1);
+ 
+% Extruding model
+h=(tissueHeight/2)-wrapHeight/2;
+cPar.numSteps=round(h/pointSpacing);
+cPar.numSteps=cPar.numSteps+iseven(cPar.numSteps); 
+cPar.depth=h; 
+cPar.patchType='tri'; 
+cPar.dir=-1;
+cPar.closeLoopOpt=1; 
+[Fg1,Vg1]=polyExtrude(Vc,cPar);
+Vg1(:,3)=Vg1(:,3)+tissueHeight/2;
+
+[T,R] = cart2pol(Vg1(:,1),Vg1(:,2));
+R=R-(tissueRadius/1.25*((Vg1(:,3)-(wrapHeight/2))/(tissueHeight/2)).^2);
+[Vg1(:,1),Vg1(:,2)] = pol2cart(T,R);
+
+Vg1b=Vg1(cPar.numSteps:cPar.numSteps:end,:); 
+Vg1t=Vg1(1:cPar.numSteps:end,:); 
+
+
+
+%% Build tissue skin surface bottom
+
+Fg2=Fg1; 
+Fg2=fliplr(Fg2);
+Vg2=Vg1;
+Vg2(:,3)=-Vg2(:,3);
+Vg2b=Vg2(cPar.numSteps:cPar.numSteps:end,:); 
+Vg2t=Vg2(1:cPar.numSteps:end,:); 
+
+%% Build tissue skin surface middle
+
+% Extruding model
+h=wrapHeight;
+cPar.numSteps=round(h/pointSpacing);
+cPar.numSteps=cPar.numSteps+iseven(cPar.numSteps); 
+cPar.depth=h; 
+cPar.patchType='tri'; 
+cPar.closeLoopOpt=1; 
+
+Vc_start=Vg1b;
+Vc_end=Vg2b;
+[Fg3,Vg3]=polyLoftLinear(Vc_start,Vc_end,cPar);
+
+% Vg3(:,3)=Vg3(:,3)+tissueHeight/2;
+Vg3b=Vg3(cPar.numSteps:cPar.numSteps:end,:); 
+Vg3t=Vg3(1:cPar.numSteps:end,:); 
+
+%% Build wrap outer surface
+
+ns=150;
+t=linspace(0,2*pi,ns);
+t=t(1:end-1);
+
+x=(tissueRadius+wrapThickness)*cos(t);
+y=(tissueRadius+wrapThickness)*sin(t);
+z=zeros(size(x));
+Vc=[x(:) y(:) z(:)];
+np=ceil(max(pathLength(Vc))./pointSpacing);
+[Vwt]=evenlySampleCurve(Vc,np,'pchip',1);
+Vwt(:,3)=mean(Vg3t(:,3));
+Vwb=Vwt;
+Vwb(:,3)=Vwt(:,3)-wrapHeight;
+
+h=wrapHeight;
+cPar.numSteps=round(h/pointSpacing);
+cPar.numSteps=cPar.numSteps+iseven(cPar.numSteps); 
+cPar.depth=h; 
+cPar.patchType='tri'; 
+cPar.closeLoopOpt=1; 
+
+Vc_start=Vwt;
+Vc_end=Vwb;
+[Fw1,Vw1]=polyLoftLinear(Vc_start,Vc_end,cPar);
+
+%% Build bone surface
+
+x=boneRadius*cos(t);
+y=boneRadius*sin(t);
+z=zeros(size(x));
+Vc=[x(:) y(:) z(:)];
+np=ceil(max(pathLength(Vc))./pointSpacing);
+[Vc]=evenlySampleCurve(Vc,np,'pchip',1);
+
+% Extruding model
+cPar.numSteps=round(tissueHeight/pointSpacing);
+cPar.numSteps=cPar.numSteps+iseven(cPar.numSteps); 
+cPar.depth=tissueHeight; 
+cPar.patchType='tri'; 
+cPar.dir=-1;
+cPar.closeLoopOpt=1; 
+[Fb,Vb]=polyExtrude(Vc,cPar);
+Fb=fliplr(Fb);
+Vb(:,3)=Vb(:,3)+tissueHeight/2;
+
+Vbb=Vb(cPar.numSteps:cPar.numSteps:end,:); 
+Vbt=Vb(1:cPar.numSteps:end,:); 
+
+%% Capping tissue top
+
+regionCell={Vg1t(:,[1 2]),Vbt(:,[1 2])};
+[Ft,Vt]=regionTriMesh2D(regionCell,pointSpacing,0,0);
+Vt(:,3)=mean(Vg1t(:,3));
+Ft=fliplr(Ft);
+
+%% Capping tissue bottom
+
+regionCell={Vg2t(:,[1 2]),Vbb(:,[1 2])};
+[Fgb,Vgb]=regionTriMesh2D(regionCell,pointSpacing,0,0);
+Vgb(:,3)=mean(Vg2t(:,3));
+
+%% Capping wrap top
+
+regionCell={Vwt(:,[1 2]),Vg1b(:,[1 2])};
+[Fwtt,Vwtt]=regionTriMesh2D(regionCell,pointSpacing,0,0);
+Vwtt(:,3)=mean(Vwt(:,3));
+Fwtt=fliplr(Fwtt);
+
+%% Capping wrap bottom
+
+regionCell={Vwb(:,[1 2]),Vg2b(:,[1 2])};
+[Fwbb,Vwbb]=regionTriMesh2D(regionCell,pointSpacing,0,0);
+Vwbb(:,3)=mean(Vwb(:,3));
+
+%% Visualizing surface geometry
+
+cFigure;
+xlabel('X','FontSize',fontSize); ylabel('Y','FontSize',fontSize); zlabel('Z','FontSize',fontSize)
+hold on;
+
+gpatch(Fg1,Vg1,plotColors(1,:),'k');
+patchNormPlot(Fg1,Vg1);
+plotV(Vg1t,'r.-','lineWidth',lineWidth1,'MarkerSize',markerSize1);
+plotV(Vg1b,'y.-','lineWidth',lineWidth1,'MarkerSize',markerSize1);
+
+gpatch(Fg2,Vg2,plotColors(2,:),'k');
+patchNormPlot(Fg2,Vg2);
+plotV(Vg2t,'r.-','lineWidth',lineWidth1,'MarkerSize',markerSize1);
+plotV(Vg2b,'y.-','lineWidth',lineWidth1,'MarkerSize',markerSize1);
+
+gpatch(Fg3,Vg3,plotColors(3,:),'k');
+patchNormPlot(Fg3,Vg3);
+plotV(Vg3t,'r.-','lineWidth',lineWidth1,'MarkerSize',markerSize1);
+plotV(Vg3b,'y.-','lineWidth',lineWidth1,'MarkerSize',markerSize1);
+
+gpatch(Fw1,Vw1,plotColors(4,:),'k');
+patchNormPlot(Fw1,Vw1);
+plotV(Vwt,'g.-','lineWidth',lineWidth1,'MarkerSize',markerSize1);
+plotV(Vwb,'g.-','lineWidth',lineWidth1,'MarkerSize',markerSize1);
+
+gpatch(Fb,Vb,plotColors(5,:),'k');
+patchNormPlot(Fb,Vb);
+plotV(Vbt,'r.-','lineWidth',lineWidth1,'MarkerSize',markerSize1);
+plotV(Vbb,'y.-','lineWidth',lineWidth1,'MarkerSize',markerSize1);
+
+gpatch(Ft,Vt,plotColors(6,:),'k');
+patchNormPlot(Ft,Vt);
+
+gpatch(Fgb,Vgb,plotColors(7,:),'k');
+patchNormPlot(Fgb,Vgb);
+
+gpatch(Fwtt,Vwtt,plotColors(8,:),'k');
+patchNormPlot(Fwtt,Vwtt);
+
+gpatch(Fwbb,Vwbb,plotColors(9,:),'k');
+patchNormPlot(Fwbb,Vwbb);
+
+axisGeom; 
+colormap(plotColors); colorbar;
+drawnow; 
+
+%% Joining and merging geometry sets
+
+%Joining sets 
+
+%Creating color information
+Cg1=1*ones(size(Fg1,1),1); %Tissue top cylinder
+Cg2=2*ones(size(Fg2,1),1); %Tissue bottom cylinder
+Cg3=3*ones(size(Fg3,1),1); %Tissue middle cylinder
+Cw1=4*ones(size(Fw1,1),1); %Wrap outer cylinder
+Cb=5*ones(size(Fb,1),1); %Bone cylinder
+Ct=6*ones(size(Ft,1),1); %Tissue top
+Cgb=7*ones(size(Fgb,1),1); %Tissue bottom
+Cwtt=8*ones(size(Fwtt,1),1); %Wrap top
+Cwbb=9*ones(size(Fwbb,1),1); %Wrap bottom
+
+[F,V,C]=joinElementSets({Fg1,Fg2,Fg3,Fw1,Fb,Ft,Fgb,Fwtt,Fwbb},{Vg1,Vg2,Vg3,Vw1,Vb,Vt,Vgb,Vwtt,Vwbb},{Cg1,Cg2,Cg3,Cw1,Cb,Ct,Cgb,Cwtt,Cwbb}); %joining sets together
+
+%merging sets
+[~,indUni,indFix]=unique(pround(V,digitKeep),'rows');
+V=V(indUni,:); %The merged point set
+F=indFix(F);
+
+%%
+
+cFigure;
+xlabel('X','FontSize',fontSize); ylabel('Y','FontSize',fontSize); zlabel('Z','FontSize',fontSize)
+hold on;
+
+gpatch(F,V,C,'none',0.5);
+% patchNormPlot(F,V);
+
+axisGeom; 
+colormap(plotColors); colorbar;
+drawnow; 
+
+%% Find solid mesh region interior points
+
+logicRegion=ismember(C,[3 4 8 9]);
+[V_in_1]=getInnerPoint(F(logicRegion,:),V);
+
+logicRegion=ismember(C,[1 2 3 5 6 7 ]);
+[V_in_2]=getInnerPoint(F(logicRegion,:),V);
+
+V_regions=[V_in_1;V_in_2];
+
+%%
+
+cFigure;
+xlabel('X','FontSize',fontSize); ylabel('Y','FontSize',fontSize); zlabel('Z','FontSize',fontSize)
+hold on;
+
+gpatch(F,V,C,'none',0.2);
+plotV(V_in_1,'r.','MarkerSize',25);
+plotV(V_in_2,'b.','MarkerSize',25);
+
+axisGeom; 
+colormap(plotColors); colorbar;
+drawnow; 
+
+%% Mesh solid using tetgen
+
+% Create tetgen meshing input structure
+modelName=fullfile(savePath,'tempModel');
+
+% Regional mesh volume parameter
+[regionA]=tetVolMeanEst(F,V); %Volume for a regular tet based on edge lengths
+volumeFactors=(regionA.*ones(size(V_regions,1),1));
+
+inputStruct.stringOpt='-pq1.2AaY';
+inputStruct.Faces=F;
+inputStruct.Nodes=V;
+inputStruct.holePoints=[];
+inputStruct.faceBoundaryMarker=C; %Face boundary markers
+inputStruct.regionPoints=V_regions; %region points
+inputStruct.regionA=volumeFactors; %Desired volume for tets
+inputStruct.minRegionMarker=2; %Minimum region marker
+inputStruct.modelName=modelName;
+
+%% 
+% Mesh model using tetrahedral elements using tetGen (see:
+% <http://wias-berlin.de/software/tetgen/>)
+
+[meshOutput]=runTetGen(inputStruct); %Run tetGen 
+
+%%
+% Call TetView to view the model
+% runTetView(meshOutput.loadNameStruct.loadName_ele);
+
+%% 
+% Access model element and patch data 
+F=meshOutput.faces;
+V=meshOutput.nodes;
+C=meshOutput.faceMaterialID;
+E=meshOutput.elements;
+CE=meshOutput.elementMaterialID;
+
+Fb=meshOutput.facesBoundary;
+Cb=meshOutput.boundaryMarker;
+
+%%
+
+cFigure;
+xlabel('X','FontSize',fontSize); ylabel('Y','FontSize',fontSize); zlabel('Z','FontSize',fontSize)
+hold on;
+
+gpatch(Fb,V,Cb);
+
+axisGeom;
+colormap(plotColors)
+drawnow; 
+
+%% Visualizing cut-view of solid mesh
+
+%Selecting half of the model to see interior
+Y=V(:,2); YE=mean(Y(E),2);
+L=YE>mean(Y);
+[Fs,Cs]=element2patch(E(L,:),CE(L),'tet4');
+
+hf1=cFigure;
+subplot(1,2,1);
+title('Solid tetrahedral mesh model','FontSize',fontSize);
+gpatch(Fb,V,Cb);
+axisGeom;
+colormap(plotColors); 
+camlight headlight;
+set(gca,'FontSize',fontSize);
+
+subplot(1,2,2);
+title('Cut view of Solid tetrahedral mesh model','FontSize',fontSize);
+gpatch(Fs,V,Cs);
+axisGeom;
+colormap(plotColors); colorbar;
+camlight headlight;
+set(gca,'FontSize',fontSize);
+drawnow;
+
+%% Define boundary condition node sets
+
+logicRigid=ismember(Cb,[5 6 7]);
+indRigid=Fb(logicRigid,:);
+indRigid=unique(indRigid(:));
+
+%% Define pressure surface
+
+F_pressure=fliplr(Fb(Cb==3,:));
+
+%%
+% Plot boundary condition nodes
+cFigure;
+xlabel('X','FontSize',fontSize); ylabel('Y','FontSize',fontSize); zlabel('Z','FontSize',fontSize)
+hold on;
+
+gpatch(Fb,V,Cb,'none',0.5);
+plotV(V(indRigid,:),'k.','lineWidth',lineWidth1,'MarkerSize',markerSize1);
+gpatch(F_pressure,V,0.5*ones(1,3),'k');
+
+axisGeom;
+colormap(plotColors); 
+drawnow; 
+
+
+%% Create element sets and material indices
+
+%Create material indices
+elementMaterialIndices=CE;
+elementMaterialIndices(elementMaterialIndices==-3)=1; 
+elementMaterialIndices(elementMaterialIndices==-2)=2; 
+
+%Order material sets
+E1=E(elementMaterialIndices==1,:); %Tissue material
+E2=E(elementMaterialIndices==2,:); %Wrap material
+
+%% DEFINE FIBRE DIRECTIONS
+
+v_fib1=[0 0 1];
+V_fib1=v_fib1(ones(size(E1,1),1),:);
+X=V(:,1);
+Y=V(:,2);
+Z=V(:,3);
+VE1=[mean(X(E1),2) mean(Y(E1),2) mean(Z(E1),2)];
+
+VE2=[mean(X(E2),2) mean(Y(E2),2) mean(Z(E2),2)];
+VE2n=VE2;
+VE2n(:,3)=0;
+V_fib2=vecnormalize(cross(VE2n,v_fib1(ones(size(VE2,1),1),:)));
+
+V_fib=[V_fib1;V_fib2];
+
+[a_fib,d_fib]=vectorOrthogonalPair(V_fib);
+
+VE=[VE1;VE2];
+
+%%
+% Plot fibre directions
+cFigure;
+xlabel('X','FontSize',fontSize); ylabel('Y','FontSize',fontSize); zlabel('Z','FontSize',fontSize)
+hold on;
+
+gpatch(Fb,V,Cb,'none',0.5);
+% quiverVec(VE1,V_fib1,1,'k','none');
+% quiverVec(VE2,V_fib2,2,'r','none');
+quiverVec(VE,a_fib,2,'r','none');
+quiverVec(VE,d_fib,1,'g','none');
+
+axisGeom;
+colormap(plotColors); 
+drawnow; 
+
+%% CONSTRUCTING FEB MODEL
+
+FEB_struct.febio_spec.version='2.0';
+FEB_struct.Module.Type='solid';
+
+% Defining file names
+FEB_struct.run_filename=[modelName,'.feb']; %FEB file name
+FEB_struct.run_logname=[modelName,'.txt']; %FEBio log file name
+
+%Creating FEB_struct
+FEB_struct.Geometry.Nodes=V;
+FEB_struct.Geometry.Elements={E1,E2}; %The element sets
+FEB_struct.Geometry.ElementType={'tet4','tet4'}; %The element types
+FEB_struct.Geometry.ElementMat={elementMaterialIndices(elementMaterialIndices==1); elementMaterialIndices(elementMaterialIndices==2)};
+FEB_struct.Geometry.ElementsPartName={'Tissue','Wrap'};
+
+%Adding fibre direction, construct local orthonormal basis vectors
+
+VF_E=zeros(size(V_fib,1),size(V_fib,2),2);
+VF_E(:,:,1)=a_fib; %a1 ~ e1 ~ X or first direction
+VF_E(:,:,2)=d_fib; %a2 ~ e2 ~ Y or second direction
+%Vf_E %a3 ~ e3 ~ Z, third direction, or fibre direction
+
+FEB_struct.Geometry.ElementData.MatAxis.ElementIndices=1:1:size(E,1);
+FEB_struct.Geometry.ElementData.MatAxis.Basis=VF_E;
+
+% DEFINING MATERIALS
+
+%Material section
+% FEB_struct.Materials{1}.Type='Ogden';
+% FEB_struct.Materials{1}.Name='Tissue_material';
+% FEB_struct.Materials{1}.Properties={'c1','m1','c2','m2','k'};
+% FEB_struct.Materials{1}.Values={c1,m1,c1,-m1,k};
+
+FEB_struct.Materials{1}.Type='solid mixture';
+% FEB_struct.Materials{1}.AnisoType='mat_axis';
+FEB_struct.Materials{1}.Solid{1}.Type='Ogden unconstrained';
+FEB_struct.Materials{1}.Solid{1}.Properties={'c1','m1','c1','m1','cp'};
+FEB_struct.Materials{1}.Solid{1}.Values={c1,m1,c1,-m1,k};
+
+FEB_struct.Materials{1}.Solid{2}.Type='prescribed uniaxial active contraction';
+FEB_struct.Materials{1}.Solid{2}.Properties={'T0','theta','phi'};
+FEB_struct.Materials{1}.Solid{2}.Values={T0_1,0,0};
+FEB_struct.Materials{1}.Solid{2}.AnisoType='mat_axis';
+
+FEB_struct.Materials{1}.Solid{2}.PropAttrName=cell(1,numel(FEB_struct.Materials{1}.Solid{2}.Properties));
+FEB_struct.Materials{1}.Solid{2}.PropAttrName{1}='lc';
+FEB_struct.Materials{1}.Solid{2}.PropAttrVal{1}=2;
+
+
+FEB_struct.Materials{2}.Type='solid mixture';
+% FEB_struct.Materials{2}.AnisoType='mat_axis';
+FEB_struct.Materials{2}.Solid{1}.Type='Ogden unconstrained';
+FEB_struct.Materials{2}.Solid{1}.Properties={'c1','m1','c1','m1','cp'};
+FEB_struct.Materials{2}.Solid{1}.Values={c2,2,c2,-2,k};
+
+FEB_struct.Materials{2}.Solid{2}.Type='prescribed uniaxial active contraction';
+FEB_struct.Materials{2}.Solid{2}.Properties={'T0','theta','phi'};
+FEB_struct.Materials{2}.Solid{2}.Values={T0_2,0,0};
+FEB_struct.Materials{2}.Solid{2}.AnisoType='mat_axis';
+
+FEB_struct.Materials{2}.Solid{2}.PropAttrName=cell(1,numel(FEB_struct.Materials{1}.Solid{2}.Properties));
+FEB_struct.Materials{2}.Solid{2}.PropAttrName{1}='lc';
+FEB_struct.Materials{2}.Solid{2}.PropAttrVal{1}=1;
+
+%Control section
+FEB_struct.Step{1}.Control.AnalysisType='static';
+FEB_struct.Step{1}.Control.Properties={'time_steps','step_size',...
+    'max_refs','max_ups',...
+    'dtol','etol','rtol','lstol'};
+n=20;
+FEB_struct.Step{1}.Control.Values={n,1/n,...
+    25,10,...
+    0.001,0.01,0,0.9};
+FEB_struct.Step{1}.Control.TimeStepperProperties={'dtmin','dtmax','max_retries','opt_iter','aggressiveness'};
+FEB_struct.Step{1}.Control.TimeStepperValues={(1/n)/100,1/n,5,10,1};
+FEB_struct.Step{2}.Control=FEB_struct.Step{1}.Control;
+FEB_struct.Step{3}.Control=FEB_struct.Step{1}.Control;
+
+%Defining node sets
+FEB_struct.Geometry.NodeSet{1}.Set=indRigid;
+FEB_struct.Geometry.NodeSet{1}.Name='indRigid';
+
+%Defining surfaces
+FEB_struct.Geometry.Surface{1}.Set=F_pressure;
+FEB_struct.Geometry.Surface{1}.Type='tri3';
+FEB_struct.Geometry.Surface{1}.Name='Pressure_surface';
+
+%Adding BC information
+FEB_struct.Boundary.Fix{1}.bc='x';
+FEB_struct.Boundary.Fix{1}.SetName=FEB_struct.Geometry.NodeSet{1}.Name;
+FEB_struct.Boundary.Fix{2}.bc='y';
+FEB_struct.Boundary.Fix{2}.SetName=FEB_struct.Geometry.NodeSet{1}.Name;
+FEB_struct.Boundary.Fix{3}.bc='z';
+FEB_struct.Boundary.Fix{3}.SetName=FEB_struct.Geometry.NodeSet{1}.Name;
+
+%Load curves
+FEB_struct.LoadData.LoadCurves.id=[1 2];
+FEB_struct.LoadData.LoadCurves.type={'linear','linear'};
+FEB_struct.LoadData.LoadCurves.loadPoints={[0 0;1 1;2 1;3 0.5;]; [0 0;1 0;2 1;3 1;]};
+
+%Adding output requests
+FEB_struct.Output.VarTypes={'displacement','stress','relative volume'};
+
+%Specify log file output
+run_node_output_name=[FEB_struct.run_filename(1:end-4),'_node_out.txt'];
+FEB_struct.run_output_names={run_node_output_name};
+FEB_struct.output_types={'node_data'};
+FEB_struct.data_types={'ux;uy;uz'};
+
+%% SAVING .FEB FILE
+
+FEB_struct.disp_opt=0; %Display waitbars option
+febStruct2febFile(FEB_struct);
+
+%% RUNNING FEBIO JOB
+
+% FEBioRunStruct.FEBioPath='C:\Program Files\febio2-2.2.6\bin\febio2.exe';
+FEBioRunStruct.run_filename=FEB_struct.run_filename;
+FEBioRunStruct.run_logname=FEB_struct.run_logname;
+FEBioRunStruct.disp_on=1;
+FEBioRunStruct.disp_log_on=1;
+FEBioRunStruct.runMode='external';%'internal';
+FEBioRunStruct.t_check=0.25; %Time for checking log file (dont set too small)
+FEBioRunStruct.maxtpi=1e99; %Max analysis time
+FEBioRunStruct.maxLogCheckTime=30; %Max log file checking time
+
+[runFlag]=runMonitorFEBio(FEBioRunStruct);%START FEBio NOW!!!!!!!!
+
+%% IMPORTING NODAL DISPLACEMENT RESULTS
+% Importing nodal displacements from a log file
+[~, N_disp_mat,~]=importFEBio_logfile(FEB_struct.run_output_names{1}); %Nodal displacements
+
+DN=N_disp_mat(:,2:end,end); %Final nodal displacements
+
+%% CREATING NODE SET IN DEFORMED STATE
+V_def=V+DN;
+DN_magnitude=sqrt(sum(DN.^2,2));
+
+%%
+% Plotting the deformed model
+
+[CF]=vertexToFaceMeasure(F,DN_magnitude);
+
+cFigure;
+title('The deformed model','FontSize',fontSize);
+xlabel('X','FontSize',fontSize); ylabel('Y','FontSize',fontSize); zlabel('Z','FontSize',fontSize); hold on;
+
+hps=patch('Faces',F,'Vertices',V_def,'FaceColor','flat','CData',CF,'lineWidth',edgeWidth,'edgeColor',edgeColor,'FaceAlpha',faceAlpha1);
+
+view(3); axis tight;  axis equal;  grid on;
+colormap jet; colorbar;
+camlight headlight;
+set(gca,'FontSize',fontSize);
+drawnow;
+
+%% 
+%
+% <<gibbVerySmall.gif>>
+% 
+% _*GIBBON*_ 
+% <www.gibboncode.org>
+% 
+% _Kevin Mattheus Moerman_, <gibbon.toolbox@gmail.com>
+
+##### SOURCE END #####
+--></body></html>

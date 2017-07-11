@@ -22,6 +22,7 @@ switch nargin
 end
 
 C=(1:1:size(E,1))'; %Element colors or indices
+CV=[];
 
 %%
 for qIter=1:1:n

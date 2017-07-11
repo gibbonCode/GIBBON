@@ -41,7 +41,7 @@ title('Box hexahedral mesh','FontSize',fontSize);
 hold on;
 
 gpatch(F,V,0.5*ones(1,3),'k',faceAlpha2);
-
+patchNormPlot(F,V);
 axisGeom(gca,fontSize); 
 camlight headlight;
 

@@ -6,7 +6,7 @@
    <!--
 This HTML was auto-generated from MATLAB code.
 To make changes, update the MATLAB code and republish this document.
-      --><title>DEMO_slab_displacement_loading_01</title><meta name="generator" content="MATLAB 9.1"><link rel="schema.DC" href="http://purl.org/dc/elements/1.1/"><meta name="DC.date" content="2017-03-13"><meta name="DC.source" content="DEMO_FEBio_slab_displacement_loading_01.m"><style type="text/css">
+      --><title>DEMO_slab_displacement_loading_01</title><meta name="generator" content="MATLAB 9.1"><link rel="schema.DC" href="http://purl.org/dc/elements/1.1/"><meta name="DC.date" content="2017-07-11"><meta name="DC.source" content="DEMO_FEBio_slab_displacement_loading_01.m"><style type="text/css">
 html,body,div,span,applet,object,iframe,h1,h2,h3,h4,h5,h6,p,blockquote,pre,a,abbr,acronym,address,big,cite,code,del,dfn,em,font,img,ins,kbd,q,s,samp,small,strike,strong,sub,sup,tt,var,b,u,i,center,dl,dt,dd,ol,ul,li,fieldset,form,label,legend,table,caption,tbody,tfoot,thead,tr,th,td{margin:0;padding:0;border:0;outline:0;font-size:100%;vertical-align:baseline;background:transparent}body{line-height:1}ol,ul{list-style:none}blockquote,q{quotes:none}blockquote:before,blockquote:after,q:before,q:after{content:'';content:none}:focus{outine:0}ins{text-decoration:none}del{text-decoration:line-through}table{border-collapse:collapse;border-spacing:0}
 
 html { min-height:100%; margin-bottom:1px; }
@@ -150,27 +150,25 @@ inputStruct.regionA=regionA;
 inputStruct.minRegionMarker=2; <span class="comment">%Minimum region marker</span>
 inputStruct.modelName=modelName;
 inputStruct.tetType=tetType;
-[meshOutput]=runTetGenSmesh(inputStruct); <span class="comment">%Run tetGen</span>
-</pre><pre class="codeoutput">Warning: runTetGenSmesh has been renamed to runTetGen. runTetGenSmesh will be
-removed in future releases. 
+[meshOutput]=runTetGen(inputStruct); <span class="comment">%Run tetGen</span>
+</pre><pre class="codeoutput"> 
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+--- TETGEN Tetrahedral meshing --- 11-Jul-2017 15:04:22
  
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
---- TETGEN Tetrahedral meshing --- 13-Mar-2017 16:26:59
- 
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
---- Writing SMESH file --- 13-Mar-2017 16:26:59
+--- Writing SMESH file --- 11-Jul-2017 15:04:22
 ----&gt; Adding node field
 ----&gt; Adding facet field
 ----&gt; Adding holes specification
 ----&gt; Adding region specification
---- Done --- 13-Mar-2017 16:26:59
---- Running TetGen to mesh input boundary--- 13-Mar-2017 16:26:59
+--- Done --- 11-Jul-2017 15:04:22
+--- Running TetGen to mesh input boundary--- 11-Jul-2017 15:04:22
 Opening /mnt/data/MATLAB/GIT/GIBBON/lib_ext/tetGen/tempFiles/tempModel.smesh.
---- Done --- 13-Mar-2017 16:26:59
+--- Done --- 11-Jul-2017 15:04:22
  
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
---- Importing TetGen files --- 13-Mar-2017 16:26:59
---- Done --- 13-Mar-2017 16:26:59
+--- Importing TetGen files --- 11-Jul-2017 15:04:22
+--- Done --- 11-Jul-2017 15:04:22
 </pre><p>Access model element and patch data</p><pre class="codeinput">FT=meshOutput.faces;
 VT=meshOutput.nodes;
 CT=meshOutput.faceMaterialID;
@@ -328,7 +326,7 @@ FEB_struct.LoadData.LoadCurves.loadPoints={[0 0;1 1];};
 febStruct2febFile(FEB_struct);
 </pre><pre class="codeoutput"> 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
---- Writing FEBio XML object --- 13-Mar-2017 16:27:00
+--- Writing FEBio XML object --- 11-Jul-2017 15:04:24
 Adding Module level
 Adding Control level
 Adding Globals level
@@ -350,7 +348,7 @@ Adding Output level
 Warning: Provided path of logfile is replaced by .feb file path. Only provide
 filename to avoid this warning 
 Writing .feb file
---- Done --- 13-Mar-2017 16:27:02
+--- Done --- 11-Jul-2017 15:04:26
 </pre><h2 id="17">RUNNING FEBIO JOB</h2><pre class="codeinput"><span class="comment">% FEBioRunStruct.FEBioPath='C:\Program Files\febio2-2.2.6\bin\febio2.exe';</span>
 FEBioRunStruct.run_filename=FEB_struct.run_filename;
 FEBioRunStruct.run_logname=FEB_struct.run_logname;
@@ -364,9 +362,9 @@ FEBioRunStruct.maxLogCheckTime=3; <span class="comment">%Max log file checking t
 [runFlag]=runMonitorFEBio(FEBioRunStruct);<span class="comment">%START FEBio NOW!!!!!!!!</span>
 </pre><pre class="codeoutput"> 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
---- STARTING FEBIO JOB --- 13-Mar-2017 16:27:02
+--- STARTING FEBIO JOB --- 11-Jul-2017 15:04:26
 Waiting for log file...
-Proceeding to check log file...13-Mar-2017 16:27:02
+Proceeding to check log file...11-Jul-2017 15:04:26
 ------- converged at time : 0.1
 ------- converged at time : 0.2
 ------- converged at time : 0.3
@@ -377,7 +375,7 @@ Proceeding to check log file...13-Mar-2017 16:27:02
 ------- converged at time : 0.8
 ------- converged at time : 0.9
 ------- converged at time : 1
---- Done --- 13-Mar-2017 16:27:06
+--- Done --- 11-Jul-2017 15:04:31
 </pre><pre class="codeinput"><span class="keyword">if</span> runFlag==1 <span class="comment">%i.e. a succesful run</span>
 
     <span class="comment">%IMPORTING NODAL DISPLACEMENT RESULTS</span>
@@ -527,7 +525,7 @@ inputStruct.regionA=regionA;
 inputStruct.minRegionMarker=2; %Minimum region marker
 inputStruct.modelName=modelName;
 inputStruct.tetType=tetType;
-[meshOutput]=runTetGenSmesh(inputStruct); %Run tetGen 
+[meshOutput]=runTetGen(inputStruct); %Run tetGen 
 
 %% 
 % Access model element and patch data

@@ -41,7 +41,7 @@ end
 %Check if a is empty, if so replace  length by mean edge length of surface
 if isempty(a)
     [A]=patchEdgeLengths(F,V);
-    a=mean(A)*ones(1,2);
+    a=mean(A)*ones(1,2)/2;
 elseif numel(a)==1
     a=a*ones(1,2);
 end

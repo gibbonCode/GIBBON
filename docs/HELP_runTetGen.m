@@ -38,8 +38,10 @@ end
 cFigure; hold on;
 title('Surface model','FontSize',fontSize);
 gpatch(F,V,patchColor,'k',faceAlpha1);
+% patchNormPlot(F,V);
 camlight headlight;
 axisGeom(gca,fontSize); 
+drawnow; 
 
 %%
 % DEFINE FACE BOUNDARY MARKERS
@@ -62,7 +64,7 @@ V_holes=[];
 stringOpt='-pq1.2AaY';
 
 inputStruct.stringOpt=stringOpt;
-inputStruct.Faces=F;
+inputStruct.Faces=fliplr(F);
 inputStruct.Nodes=V;
 inputStruct.holePoints=V_holes;
 inputStruct.faceBoundaryMarker=faceBoundaryMarker; %Face boundary markers
@@ -94,14 +96,17 @@ logicCutView=YE>mean(Y);
 cFigure;
 hold on; 
 title('Cut view of Solid tetrahedral mesh model','FontSize',fontSize);
-gpatch(Fb,V,0.5*ones(1,3),'none',faceAlpha1);
+% gpatch(Fb,V,0.5*ones(1,3),'none',faceAlpha1);
+patchNormPlot(Fb,V);
 gpatch(Fs,V,Cs,'k',faceAlpha2);
+patchNormPlot(Fs,V);
 plotV(V(unique(Fs(:)),:),'k.','MarkerSize',markerSize);
 camlight headlight;
 axisGeom(gca,fontSize); 
 axis off; 
 colormap(cMap); 
 drawnow;
+
 
 %% Example: Creating an animated view to explore the mesh
 % See also |anim8| function

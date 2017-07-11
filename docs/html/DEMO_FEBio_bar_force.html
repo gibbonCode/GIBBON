@@ -6,7 +6,7 @@
    <!--
 This HTML was auto-generated from MATLAB code.
 To make changes, update the MATLAB code and republish this document.
-      --><title>DEMO_FEBio_bar_force</title><meta name="generator" content="MATLAB 9.1"><link rel="schema.DC" href="http://purl.org/dc/elements/1.1/"><meta name="DC.date" content="2017-03-13"><meta name="DC.source" content="DEMO_FEBio_bar_force.m"><style type="text/css">
+      --><title>DEMO_FEBio_bar_force</title><meta name="generator" content="MATLAB 9.1"><link rel="schema.DC" href="http://purl.org/dc/elements/1.1/"><meta name="DC.date" content="2017-07-11"><meta name="DC.source" content="DEMO_FEBio_bar_force.m"><style type="text/css">
 html,body,div,span,applet,object,iframe,h1,h2,h3,h4,h5,h6,p,blockquote,pre,a,abbr,acronym,address,big,cite,code,del,dfn,em,font,img,ins,kbd,q,s,samp,small,strike,strong,sub,sup,tt,var,b,u,i,center,dl,dt,dd,ol,ul,li,fieldset,form,label,legend,table,caption,tbody,tfoot,thead,tr,th,td{margin:0;padding:0;border:0;outline:0;font-size:100%;vertical-align:baseline;background:transparent}body{line-height:1}ol,ul{list-style:none}blockquote,q{quotes:none}blockquote:before,blockquote:after,q:before,q:after{content:'';content:none}:focus{outine:0}ins{text-decoration:none}del{text-decoration:line-through}table{border-collapse:collapse;border-spacing:0}
 
 html { min-height:100%; margin-bottom:1px; }
@@ -66,7 +66,7 @@ table td { padding:7px 5px; text-align:left; vertical-align:top; border:1px soli
 
 
 
-  </style></head><body><div class="content"><h1>DEMO_FEBio_bar_force</h1><!--introduction--><p>Below is a demonstration for:</p><div><ul><li>The creation of an FEBio model whereby force is applied to a selection of nodes, in this case to the end of a bar</li><li>Running an FEBio job with MATLAB</li><li>Importing FEBio results into MATLAB</li></ul></div><!--/introduction--><h2>Contents</h2><div><ul><li><a href="#4">CREATING MESHED BOX</a></li><li><a href="#6">DEFINE BC's</a></li><li><a href="#8">CONSTRUCTING FEB MODEL</a></li><li><a href="#9">SAVING .FEB FILE</a></li><li><a href="#10">RUNNING FEBIO JOB</a></li><li><a href="#12">IMPORTING NODAL DISPLACEMENT RESULTS</a></li><li><a href="#13">CREATING NODE SET IN DEFORMED STATE</a></li></ul></div><pre class="codeinput">clear; close <span class="string">all</span>; clc;
+  </style></head><body><div class="content"><h1>DEMO_FEBio_bar_force</h1><!--introduction--><p>Below is a demonstration for:</p><div><ul><li>The creation of an FEBio model whereby force is applied to a selection of nodes, in this case to the end of a bar</li><li>Running an FEBio job with MATLAB</li><li>Importing FEBio results into MATLAB</li></ul></div><!--/introduction--><h2>Contents</h2><div><ul><li><a href="#4">CREATING MESHED BOX</a></li><li><a href="#6">DEFINE BC's</a></li><li><a href="#8">CONSTRUCTING FEB MODEL</a></li><li><a href="#9">SAVING .FEB FILE</a></li><li><a href="#10">RUNNING FEBIO JOB</a></li><li><a href="#12">IMPORTING NODAL DISPLACEMENT RESULTS</a></li><li><a href="#13">IMPORTING NODAL FORCES</a></li><li><a href="#14">Axis limits for plotting</a></li><li><a href="#15">Plotting the deformed model</a></li></ul></div><pre class="codeinput">clear; close <span class="string">all</span>; clc;
 </pre><p>Plot settings</p><pre class="codeinput">fontSize=15;
 faceAlpha1=0.8;
 faceAlpha2=1;
@@ -77,7 +77,8 @@ markerSize=50;
 defaultFolder = fileparts(fileparts(mfilename(<span class="string">'fullpath'</span>)));
 savePath=fullfile(defaultFolder,<span class="string">'data'</span>,<span class="string">'temp'</span>);
 
-modelName=fullfile(savePath,<span class="string">'tempModel'</span>);
+modelNameEnd=<span class="string">'tempModel'</span>;
+modelName=fullfile(savePath,modelNameEnd);
 
 <span class="comment">%Specifying dimensions and number of elements</span>
 sampleWidth=20;
@@ -103,17 +104,13 @@ X=V(:,1); Y=V(:,2); Z=V(:,3);
 VE=[mean(X(E),2) mean(Y(E),2) mean(Z(E),2)];
 
 elementMaterialIndices=ones(size(E,1),1);
-</pre><pre class="codeinput"><span class="comment">% Plotting boundary surfaces</span>
-hf=cFigure;
+</pre><p>Plotting boundary surfaces</p><pre class="codeinput">cFigure; hold <span class="string">on</span>;
 title(<span class="string">'Model surfaces'</span>,<span class="string">'FontSize'</span>,fontSize);
-xlabel(<span class="string">'X'</span>,<span class="string">'FontSize'</span>,fontSize); ylabel(<span class="string">'Y'</span>,<span class="string">'FontSize'</span>,fontSize); zlabel(<span class="string">'Z'</span>,<span class="string">'FontSize'</span>,fontSize);
-hold <span class="string">on</span>;
-patch(<span class="string">'Faces'</span>,Fb,<span class="string">'Vertices'</span>,V,<span class="string">'FaceColor'</span>,<span class="string">'flat'</span>,<span class="string">'CData'</span>,faceBoundaryMarker,<span class="string">'FaceAlpha'</span>,faceAlpha1,<span class="string">'lineWidth'</span>,edgeWidth,<span class="string">'edgeColor'</span>,edgeColor);
-
-colormap(gjet(6)); colorbar;
+gpatch(Fb,V,faceBoundaryMarker,<span class="string">'k'</span>,faceAlpha1);
+colormap(gjet(6)); icolorbar;
+axisGeom;
+camlight <span class="string">headlight</span>;
 set(gca,<span class="string">'FontSize'</span>,fontSize);
-view(3); axis <span class="string">tight</span>;  axis <span class="string">equal</span>;  grid <span class="string">on</span>;
-<span class="comment">% camlight headlight;</span>
 drawnow;
 </pre><img vspace="5" hspace="5" src="DEMO_FEBio_bar_force_01.png" alt=""> <h2 id="6">DEFINE BC's</h2><pre class="codeinput"><span class="comment">%Supported nodes</span>
 logicRigid=faceBoundaryMarker==1;
@@ -125,17 +122,14 @@ logicPrescribe=faceBoundaryMarker==2;
 Fr=Fb(logicPrescribe,:);
 bcPrescribeList=unique(Fr(:));
 bcPrescribeMagnitudes=forceMagnitude(ones(1,numel(bcPrescribeList)),:);
-</pre><p>Visualize BC's</p><pre class="codeinput">hf=cFigure;
-title(<span class="string">'Complete model'</span>,<span class="string">'FontSize'</span>,fontSize);
-xlabel(<span class="string">'X'</span>,<span class="string">'FontSize'</span>,fontSize); ylabel(<span class="string">'Y'</span>,<span class="string">'FontSize'</span>,fontSize); zlabel(<span class="string">'Z'</span>,<span class="string">'FontSize'</span>,fontSize);
-hold <span class="string">on</span>;
-
-patch(<span class="string">'Faces'</span>,Fb,<span class="string">'Vertices'</span>,V,<span class="string">'FaceColor'</span>,<span class="string">'flat'</span>,<span class="string">'CData'</span>,faceBoundaryMarker,<span class="string">'FaceAlpha'</span>,faceAlpha1,<span class="string">'lineWidth'</span>,edgeWidth,<span class="string">'edgeColor'</span>,edgeColor);
-plotV(V(bcRigidList,:),<span class="string">'k.'</span>,<span class="string">'MarkerSize'</span>,markerSize);
-plotV(V(bcPrescribeList,:),<span class="string">'k.'</span>,<span class="string">'MarkerSize'</span>,markerSize);
+</pre><p>Visualize BC's</p><pre class="codeinput">cFigure; hold <span class="string">on</span>;
+title(<span class="string">'Boundary conditions'</span>,<span class="string">'FontSize'</span>,fontSize);
+gpatch(Fb,V,0.5*ones(1,3),<span class="string">'k'</span>,0.4);
+plotV(V(bcRigidList,:),<span class="string">'b.'</span>,<span class="string">'MarkerSize'</span>,markerSize);
+plotV(V(bcPrescribeList,:),<span class="string">'r.'</span>,<span class="string">'MarkerSize'</span>,markerSize);
+axisGeom;
+camlight <span class="string">headlight</span>;
 set(gca,<span class="string">'FontSize'</span>,fontSize);
-colormap(gjet(6)); colorbar;
-view(3); axis <span class="string">tight</span>;  axis <span class="string">equal</span>;  grid <span class="string">on</span>;
 drawnow;
 </pre><img vspace="5" hspace="5" src="DEMO_FEBio_bar_force_02.png" alt=""> <h2 id="8">CONSTRUCTING FEB MODEL</h2><pre class="codeinput">FEB_struct.febio_spec.version=<span class="string">'2.0'</span>;
 FEB_struct.Module.Type=<span class="string">'solid'</span>;
@@ -208,18 +202,19 @@ FEB_struct.LoadData.LoadCurves.type={<span class="string">'linear'</span>};
 FEB_struct.LoadData.LoadCurves.loadPoints={[0 0;1 1;]};
 
 <span class="comment">%Adding output requests</span>
-FEB_struct.Output.VarTypes={<span class="string">'displacement'</span>,<span class="string">'stress'</span>,<span class="string">'relative volume'</span>,<span class="string">'shell thickness'</span>};
+FEB_struct.Output.VarTypes={<span class="string">'displacement'</span>,<span class="string">'stress'</span>,<span class="string">'relative volume'</span>};
 
 <span class="comment">%Specify log file output</span>
-run_node_output_name=[FEB_struct.run_filename(1:end-4),<span class="string">'_node_out.txt'</span>];
-FEB_struct.run_output_names={run_node_output_name};
-FEB_struct.output_types={<span class="string">'node_data'</span>};
-FEB_struct.data_types={<span class="string">'ux;uy;uz'</span>};
+run_disp_output_name=[modelNameEnd,<span class="string">'_node_out.txt'</span>];
+run_force_output_name=[modelNameEnd,<span class="string">'_force_out.txt'</span>];
+FEB_struct.run_output_names={run_disp_output_name,run_force_output_name};
+FEB_struct.output_types={<span class="string">'node_data'</span>,<span class="string">'node_data'</span>};
+FEB_struct.data_types={<span class="string">'ux;uy;uz'</span>,<span class="string">'Rx;Ry;Rz'</span>};
 </pre><h2 id="9">SAVING .FEB FILE</h2><pre class="codeinput">FEB_struct.disp_opt=0; <span class="comment">%Display waitbars</span>
 febStruct2febFile(FEB_struct);
 </pre><pre class="codeoutput"> 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
---- Writing FEBio XML object --- 13-Mar-2017 16:18:45
+--- Writing FEBio XML object --- 11-Jul-2017 13:58:05
 Adding Module level
 Adding Control level
 Adding Globals level
@@ -241,10 +236,8 @@ Adding LoadData level
 Adding Output level
 ----&gt; Adding plotfile field
 ----&gt; Adding logfile field
-Warning: Provided path of logfile is replaced by .feb file path. Only provide
-filename to avoid this warning 
 Writing .feb file
---- Done --- 13-Mar-2017 16:18:45
+--- Done --- 11-Jul-2017 13:58:05
 </pre><h2 id="10">RUNNING FEBIO JOB</h2><pre class="codeinput">FEBioRunStruct.run_filename=FEB_struct.run_filename;
 FEBioRunStruct.run_logname=FEB_struct.run_logname;
 FEBioRunStruct.disp_on=1;
@@ -257,9 +250,9 @@ FEBioRunStruct.maxLogCheckTime=3; <span class="comment">%Max log file checking t
 [runFlag]=runMonitorFEBio(FEBioRunStruct);<span class="comment">%START FEBio NOW!!!!!!!!</span>
 </pre><pre class="codeoutput"> 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
---- STARTING FEBIO JOB --- 13-Mar-2017 16:18:45
+--- STARTING FEBIO JOB --- 11-Jul-2017 13:58:05
 Waiting for log file...
-Proceeding to check log file...13-Mar-2017 16:18:45
+Proceeding to check log file...11-Jul-2017 13:58:05
 ------- converged at time : 0.1
 ------- converged at time : 0.170714
 ------- converged at time : 0.22662
@@ -294,25 +287,56 @@ Proceeding to check log file...13-Mar-2017 16:18:45
 ------- converged at time : 0.975519
 ------- converged at time : 0.998634
 ------- converged at time : 1
---- Done --- 13-Mar-2017 16:18:49
+--- Done --- 11-Jul-2017 13:58:09
 </pre><pre class="codeinput"><span class="keyword">if</span> runFlag==1 <span class="comment">%i.e. a succesful run</span>
-</pre><h2 id="12">IMPORTING NODAL DISPLACEMENT RESULTS</h2><p>Importing nodal displacements from a log file</p><pre class="codeinput">    [~, N_disp_mat,~]=importFEBio_logfile(FEB_struct.run_output_names{1}); <span class="comment">%Nodal displacements</span>
+</pre><h2 id="12">IMPORTING NODAL DISPLACEMENT RESULTS</h2><p>Importing nodal displacements from a log file</p><pre class="codeinput">    [~, N_disp_mat,~]=importFEBio_logfile(fullfile(savePath,FEB_struct.run_output_names{1})); <span class="comment">%Nodal displacements</span>
+</pre><h2 id="13">IMPORTING NODAL FORCES</h2><p>Importing nodal forces from a log file</p><pre class="codeinput">    [time_mat, N_force_mat,~]=importFEBio_logfile(fullfile(savePath,FEB_struct.run_output_names{2})); <span class="comment">%Nodal forces</span>
+    time_mat=[0; time_mat(:)]; <span class="comment">%Time</span>
 
-    DN=N_disp_mat(:,2:end,end); <span class="comment">%Final nodal displacements</span>
-</pre><h2 id="13">CREATING NODE SET IN DEFORMED STATE</h2><pre class="codeinput">    V_def=V+DN;
-    DN_magnitude=sqrt(sum(DN.^2,2));
-</pre><p>Plotting the deformed model</p><pre class="codeinput">    [CF]=vertexToFaceMeasure(Fb,DN_magnitude);
-
-    hf1=cFigure;
-    title(<span class="string">'The deformed model'</span>,<span class="string">'FontSize'</span>,fontSize);
+    N_disp_mat=N_disp_mat(:,2:end,:);
+    sizImport=size(N_disp_mat);
+    sizImport(3)=sizImport(3)+1;
+    N_disp_mat_n=zeros(sizImport);
+    N_disp_mat_n(:,:,2:end)=N_disp_mat;
+    N_disp_mat=N_disp_mat_n;
+    DN=N_disp_mat(:,:,end);
+    DN_magnitude=sqrt(sum(DN(:,3).^2,2));
+    V_def=V+DN;
+    [CF]=vertexToFaceMeasure(Fb,DN_magnitude);
+</pre><h2 id="14">Axis limits for plotting</h2><pre class="codeinput">    minD=min(V+min(N_disp_mat,[],3),[],1);
+    maxD=max(V+max(N_disp_mat,[],3),[],1);
+    axisLim=[minD(1) maxD(1) minD(2) maxD(2) minD(3) maxD(3)];
+</pre><h2 id="15">Plotting the deformed model</h2><pre class="codeinput">    hf=cFigure;
     xlabel(<span class="string">'X'</span>,<span class="string">'FontSize'</span>,fontSize); ylabel(<span class="string">'Y'</span>,<span class="string">'FontSize'</span>,fontSize); zlabel(<span class="string">'Z'</span>,<span class="string">'FontSize'</span>,fontSize); hold <span class="string">on</span>;
 
-    hps=patch(<span class="string">'Faces'</span>,Fb,<span class="string">'Vertices'</span>,V_def,<span class="string">'FaceColor'</span>,<span class="string">'flat'</span>,<span class="string">'CData'</span>,CF);
+    hp=gpatch(Fb,V_def,CF,<span class="string">'k'</span>,1);
+    gpatch(Fb,V,0.5*ones(1,3),<span class="string">'k'</span>,0.25);
 
-    view(3); axis <span class="string">tight</span>;  axis <span class="string">equal</span>;  grid <span class="string">on</span>;
-    colormap <span class="string">jet</span>; colorbar;
+    view(3); axis <span class="string">tight</span>;  axis <span class="string">equal</span>;  grid <span class="string">on</span>; box <span class="string">on</span>;
+    colormap(gjet(250)); colorbar;
+    caxis([0 max(DN_magnitude)]);
+    view(130,25);
     camlight <span class="string">headlight</span>;
     set(gca,<span class="string">'FontSize'</span>,fontSize);
+    axis(axisLim);
+    drawnow;
+
+    animStruct.Time=time_mat;
+
+    <span class="keyword">for</span> qt=1:1:size(N_disp_mat,3)
+
+        DN=N_disp_mat(:,:,qt);
+        DN_magnitude=sqrt(sum(DN(:,3).^2,2));
+        V_def=V+DN;
+        [CF]=vertexToFaceMeasure(Fb,DN_magnitude);
+
+        <span class="comment">%Set entries in animation structure</span>
+        animStruct.Handles{qt}=[hp hp]; <span class="comment">%Handles of objects to animate</span>
+        animStruct.Props{qt}={<span class="string">'Vertices'</span>,<span class="string">'CData'</span>}; <span class="comment">%Properties of objects to animate</span>
+        animStruct.Set{qt}={V_def,CF}; <span class="comment">%Property values for to set in order to animate</span>
+    <span class="keyword">end</span>
+
+    anim8(hf,animStruct);
     drawnow;
 </pre><img vspace="5" hspace="5" src="DEMO_FEBio_bar_force_03.png" alt=""> <pre class="codeinput"><span class="keyword">end</span>
 </pre><p><img vspace="5" hspace="5" src="gibbVerySmall.gif" alt=""> </p><p><i><b>GIBBON</b></i> <a href="www.gibboncode.org">www.gibboncode.org</a></p><p><i>Kevin Mattheus Moerman</i>, <a href="gibbon.toolbox@gmail.com">gibbon.toolbox@gmail.com</a></p><p class="footer"><br><a href="http://www.mathworks.com/products/matlab/">Published with MATLAB&reg; R2016b</a><br></p></div><!--
@@ -345,7 +369,8 @@ markerSize=50;
 defaultFolder = fileparts(fileparts(mfilename('fullpath')));
 savePath=fullfile(defaultFolder,'data','temp');
 
-modelName=fullfile(savePath,'tempModel');
+modelNameEnd='tempModel';
+modelName=fullfile(savePath,modelNameEnd);
 
 %Specifying dimensions and number of elements
 sampleWidth=20;
@@ -376,18 +401,14 @@ VE=[mean(X(E),2) mean(Y(E),2) mean(Z(E),2)];
 elementMaterialIndices=ones(size(E,1),1); 
 
 %%
-
 % Plotting boundary surfaces
-hf=cFigure;
+cFigure; hold on;
 title('Model surfaces','FontSize',fontSize);
-xlabel('X','FontSize',fontSize); ylabel('Y','FontSize',fontSize); zlabel('Z','FontSize',fontSize);
-hold on;
-patch('Faces',Fb,'Vertices',V,'FaceColor','flat','CData',faceBoundaryMarker,'FaceAlpha',faceAlpha1,'lineWidth',edgeWidth,'edgeColor',edgeColor);
-
-colormap(gjet(6)); colorbar; 
+gpatch(Fb,V,faceBoundaryMarker,'k',faceAlpha1);
+colormap(gjet(6)); icolorbar; 
+axisGeom;
+camlight headlight;
 set(gca,'FontSize',fontSize);
-view(3); axis tight;  axis equal;  grid on;
-% camlight headlight;
 drawnow; 
 
 %% DEFINE BC's
@@ -405,19 +426,16 @@ bcPrescribeMagnitudes=forceMagnitude(ones(1,numel(bcPrescribeList)),:);
 
 %%
 % Visualize BC's
-hf=cFigure;
-title('Complete model','FontSize',fontSize);
-xlabel('X','FontSize',fontSize); ylabel('Y','FontSize',fontSize); zlabel('Z','FontSize',fontSize);
-hold on;
 
-patch('Faces',Fb,'Vertices',V,'FaceColor','flat','CData',faceBoundaryMarker,'FaceAlpha',faceAlpha1,'lineWidth',edgeWidth,'edgeColor',edgeColor);
-plotV(V(bcRigidList,:),'k.','MarkerSize',markerSize);
-plotV(V(bcPrescribeList,:),'k.','MarkerSize',markerSize);
+cFigure; hold on;
+title('Boundary conditions','FontSize',fontSize);
+gpatch(Fb,V,0.5*ones(1,3),'k',0.4);
+plotV(V(bcRigidList,:),'b.','MarkerSize',markerSize);
+plotV(V(bcPrescribeList,:),'r.','MarkerSize',markerSize);
+axisGeom;
+camlight headlight;
 set(gca,'FontSize',fontSize);
-colormap(gjet(6)); colorbar; 
-view(3); axis tight;  axis equal;  grid on;
 drawnow; 
-
 
 %% CONSTRUCTING FEB MODEL
 
@@ -492,13 +510,14 @@ FEB_struct.LoadData.LoadCurves.type={'linear'};
 FEB_struct.LoadData.LoadCurves.loadPoints={[0 0;1 1;]};
 
 %Adding output requests
-FEB_struct.Output.VarTypes={'displacement','stress','relative volume','shell thickness'};
+FEB_struct.Output.VarTypes={'displacement','stress','relative volume'};
 
 %Specify log file output
-run_node_output_name=[FEB_struct.run_filename(1:end-4),'_node_out.txt'];
-FEB_struct.run_output_names={run_node_output_name};
-FEB_struct.output_types={'node_data'};
-FEB_struct.data_types={'ux;uy;uz'};
+run_disp_output_name=[modelNameEnd,'_node_out.txt'];
+run_force_output_name=[modelNameEnd,'_force_out.txt'];
+FEB_struct.run_output_names={run_disp_output_name,run_force_output_name};
+FEB_struct.output_types={'node_data','node_data'};
+FEB_struct.data_types={'ux;uy;uz','Rx;Ry;Rz'};
 
 %% SAVING .FEB FILE
 
@@ -522,30 +541,65 @@ FEBioRunStruct.maxLogCheckTime=3; %Max log file checking time
 if runFlag==1 %i.e. a succesful run
     %% IMPORTING NODAL DISPLACEMENT RESULTS
     % Importing nodal displacements from a log file
-    [~, N_disp_mat,~]=importFEBio_logfile(FEB_struct.run_output_names{1}); %Nodal displacements
+    [~, N_disp_mat,~]=importFEBio_logfile(fullfile(savePath,FEB_struct.run_output_names{1})); %Nodal displacements    
     
-    DN=N_disp_mat(:,2:end,end); %Final nodal displacements
+    %% IMPORTING NODAL FORCES
+    % Importing nodal forces from a log file
+    [time_mat, N_force_mat,~]=importFEBio_logfile(fullfile(savePath,FEB_struct.run_output_names{2})); %Nodal forces
+    time_mat=[0; time_mat(:)]; %Time
     
-    %% CREATING NODE SET IN DEFORMED STATE
+    N_disp_mat=N_disp_mat(:,2:end,:);
+    sizImport=size(N_disp_mat);
+    sizImport(3)=sizImport(3)+1;
+    N_disp_mat_n=zeros(sizImport);
+    N_disp_mat_n(:,:,2:end)=N_disp_mat;
+    N_disp_mat=N_disp_mat_n;
+    DN=N_disp_mat(:,:,end);
+    DN_magnitude=sqrt(sum(DN(:,3).^2,2));
     V_def=V+DN;
-    DN_magnitude=sqrt(sum(DN.^2,2));
-    
-    %%
-    % Plotting the deformed model
-    
     [CF]=vertexToFaceMeasure(Fb,DN_magnitude);
     
-    hf1=cFigure;
-    title('The deformed model','FontSize',fontSize);
+    %% Axis limits for plotting
+    
+    minD=min(V+min(N_disp_mat,[],3),[],1);
+    maxD=max(V+max(N_disp_mat,[],3),[],1);
+    axisLim=[minD(1) maxD(1) minD(2) maxD(2) minD(3) maxD(3)];
+    
+    %% Plotting the deformed model
+    
+    hf=cFigure;
     xlabel('X','FontSize',fontSize); ylabel('Y','FontSize',fontSize); zlabel('Z','FontSize',fontSize); hold on;
     
-    hps=patch('Faces',Fb,'Vertices',V_def,'FaceColor','flat','CData',CF);
+    hp=gpatch(Fb,V_def,CF,'k',1);
+    gpatch(Fb,V,0.5*ones(1,3),'k',0.25);
     
-    view(3); axis tight;  axis equal;  grid on;
-    colormap jet; colorbar;
+    view(3); axis tight;  axis equal;  grid on; box on;
+    colormap(gjet(250)); colorbar;
+    caxis([0 max(DN_magnitude)]);
+    view(130,25);
     camlight headlight;
     set(gca,'FontSize',fontSize);
+    axis(axisLim);
     drawnow;
+
+    animStruct.Time=time_mat;
+    
+    for qt=1:1:size(N_disp_mat,3)
+        
+        DN=N_disp_mat(:,:,qt);
+        DN_magnitude=sqrt(sum(DN(:,3).^2,2));
+        V_def=V+DN;
+        [CF]=vertexToFaceMeasure(Fb,DN_magnitude);
+        
+        %Set entries in animation structure
+        animStruct.Handles{qt}=[hp hp]; %Handles of objects to animate
+        animStruct.Props{qt}={'Vertices','CData'}; %Properties of objects to animate
+        animStruct.Set{qt}={V_def,CF}; %Property values for to set in order to animate
+    end
+        
+    anim8(hf,animStruct);
+    drawnow;
+    
 end
 
 %% 

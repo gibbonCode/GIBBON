@@ -6,7 +6,7 @@
    <!--
 This HTML was auto-generated from MATLAB code.
 To make changes, update the MATLAB code and republish this document.
-      --><title>DEMO_FEBio_strip_multi_step_clamp</title><meta name="generator" content="MATLAB 9.1"><link rel="schema.DC" href="http://purl.org/dc/elements/1.1/"><meta name="DC.date" content="2017-03-13"><meta name="DC.source" content="DEMO_FEBio_strip_multi_step_clamp.m"><style type="text/css">
+      --><title>DEMO_FEBio_strip_multi_step_clamp</title><meta name="generator" content="MATLAB 9.1"><link rel="schema.DC" href="http://purl.org/dc/elements/1.1/"><meta name="DC.date" content="2017-07-11"><meta name="DC.source" content="DEMO_FEBio_strip_multi_step_clamp.m"><style type="text/css">
 html,body,div,span,applet,object,iframe,h1,h2,h3,h4,h5,h6,p,blockquote,pre,a,abbr,acronym,address,big,cite,code,del,dfn,em,font,img,ins,kbd,q,s,samp,small,strike,strong,sub,sup,tt,var,b,u,i,center,dl,dt,dd,ol,ul,li,fieldset,form,label,legend,table,caption,tbody,tfoot,thead,tr,th,td{margin:0;padding:0;border:0;outline:0;font-size:100%;vertical-align:baseline;background:transparent}body{line-height:1}ol,ul{list-style:none}blockquote,q{quotes:none}blockquote:before,blockquote:after,q:before,q:after{content:'';content:none}:focus{outine:0}ins{text-decoration:none}del{text-decoration:line-through}table{border-collapse:collapse;border-spacing:0}
 
 html { min-height:100%; margin-bottom:1px; }
@@ -485,7 +485,7 @@ FEB_struct.disp_opt=1; <span class="comment">%Display waitbars option</span>
 </pre><h2 id="12">SAVING .FEB FILE</h2><pre class="codeinput">febStruct2febFile(FEB_struct);
 </pre><pre class="codeoutput"> 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
---- Writing FEBio XML object --- 13-Mar-2017 16:28:20
+--- Writing FEBio XML object --- 11-Jul-2017 15:06:30
 Adding Module level
 Adding Globals level
 Adding Material level
@@ -512,7 +512,7 @@ Adding Output level
 ----&gt; Adding plotfile field
 ----&gt; Adding logfile field
 Writing .feb file
---- Done --- 13-Mar-2017 16:28:23
+--- Done --- 11-Jul-2017 15:06:33
 </pre><h2 id="13">RUNNING FEBIO JOB</h2><pre class="codeinput">FEBioRunStruct.run_filename=FEB_struct.run_filename;
 FEBioRunStruct.run_logname=FEB_struct.run_logname;
 FEBioRunStruct.disp_on=1;
@@ -525,9 +525,9 @@ FEBioRunStruct.maxLogCheckTime=3; <span class="comment">%Max log file checking t
 [runFlag]=runMonitorFEBio(FEBioRunStruct);<span class="comment">%START FEBio NOW!!!!!!!!</span>
 </pre><pre class="codeoutput"> 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
---- STARTING FEBIO JOB --- 13-Mar-2017 16:28:23
+--- STARTING FEBIO JOB --- 11-Jul-2017 15:06:33
 Waiting for log file...
-Proceeding to check log file...13-Mar-2017 16:28:24
+Proceeding to check log file...11-Jul-2017 15:06:34
 ------- converged at time : 0.05
 ------- converged at time : 0.1
 ------- converged at time : 0.15
@@ -568,12 +568,16 @@ Proceeding to check log file...13-Mar-2017 16:28:24
 ------- converged at time : 1.9
 ------- converged at time : 1.95
 ------- converged at time : 2
---- Done --- 13-Mar-2017 16:28:45
+--- Done --- 11-Jul-2017 15:06:57
 </pre><h2 id="14">IMPORTING NODAL DISPLACEMENT RESULTS</h2><p>Importing nodal displacements from a log file</p><pre class="codeinput">[~, N_disp_mat,~]=importFEBio_logfile(FEB_struct.run_output_names{1}); <span class="comment">%Nodal displacements</span>
 
 DN=N_disp_mat(:,2:end,end); <span class="comment">%Final nodal displacements</span>
 </pre><h2 id="15">CREATING NODE SET IN DEFORMED STATE</h2><pre class="codeinput">VT_def=V+DN;
 DN_magnitude=sqrt(sum(DN.^2,2));
+</pre><pre class="codeoutput error">Matrix dimensions must agree.
+
+Error in DEMO_FEBio_strip_multi_step_clamp (line 481)
+VT_def=V+DN;
 </pre><h2 id="16">IMPORT NODAL FORCE RESULTS</h2><pre class="codeinput">[~, N_force_mat,~]=importFEBio_logfile(FEB_struct.run_output_names{2}); <span class="comment">%Nodal forces</span>
 </pre><p>Plotting the deformed model</p><pre class="codeinput">[CF]=vertexToFaceMeasure(F,DN_magnitude);
 
@@ -588,7 +592,7 @@ colormap <span class="string">jet</span>; colorbar;
 <span class="comment">% camlight headlight;</span>
 set(gca,<span class="string">'FontSize'</span>,fontSize);
 drawnow;
-</pre><img vspace="5" hspace="5" src="DEMO_FEBio_strip_multi_step_clamp_05.png" alt=""> <p><img vspace="5" hspace="5" src="gibbVerySmall.gif" alt=""> </p><p><i><b>GIBBON</b></i> <a href="www.gibboncode.org">www.gibboncode.org</a></p><p><i>Kevin Mattheus Moerman</i>, <a href="gibbon.toolbox@gmail.com">gibbon.toolbox@gmail.com</a></p><p class="footer"><br><a href="http://www.mathworks.com/products/matlab/">Published with MATLAB&reg; R2016b</a><br></p></div><!--
+</pre><p><img vspace="5" hspace="5" src="gibbVerySmall.gif" alt=""> </p><p><i><b>GIBBON</b></i> <a href="www.gibboncode.org">www.gibboncode.org</a></p><p><i>Kevin Mattheus Moerman</i>, <a href="gibbon.toolbox@gmail.com">gibbon.toolbox@gmail.com</a></p><p class="footer"><br><a href="http://www.mathworks.com/products/matlab/">Published with MATLAB&reg; R2016b</a><br></p></div><!--
 ##### SOURCE BEGIN #####
 %% DEMO_FEBio_strip_multi_step_clamp
 % Below is a demonstration for: 

@@ -23,17 +23,17 @@ for q=1:1:5
     [V,F]=platonic_solid(q,1); %q indicates solid type, r is the radius
     
     subplot(2,3,q); hold on;
-    xlabel('X','FontSize',fontSize); ylabel('Y','FontSize',fontSize); zlabel('Z','FontSize',fontSize);
-    hp=patch('Faces',F,'Vertices',V);
-    set(hp,'FaceColor',pColor(q,:),'FaceAlpha',faceAlpha,'lineWidth',edgeWidth,'edgeColor',edgeColor);
+    
+    hp=gpatch(F,V,pColor(q,:),'k',faceAlpha);
     
     %Plotting face normals
-    [hn]=patchNormPlot(F,V,1);
+    [hn]=patchNormPlot(F,V);
     
-    set(gca,'FontSize',fontSize);
-    view(3); axis tight;  axis equal;  axis vis3d; axis off;
+    axisGeom(gca,fontSize);    
     camlight('headlight'); lighting flat;
+    axis off;
 end
+drawnow; 
 
 %%
 %

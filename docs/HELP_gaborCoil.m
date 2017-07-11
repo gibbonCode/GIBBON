@@ -19,7 +19,7 @@ V=[0 0 0; 1 0 0];
 E=[1 2];
 numSteps=250;
 numTwist=4; 
-coilAmplitude=0;
+coilAmplitude=0.1;
 f=3;
 Vg=gaborCoil(V,E,numSteps,numTwist,coilAmplitude,f);
 

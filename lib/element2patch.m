@@ -51,6 +51,8 @@ if isempty(elementType) %have to assume defaults
             elementType='tri6';
         case 3
             elementType='tri3';
+        otherwise
+            elementType='unknown';
     end    
 %     disp([elementType,' elements assumed, for other elements please specify elementType']);
 end
@@ -75,7 +77,6 @@ switch elementType
             E(:,[1 2 4]);... %face 1 2 4
             E(:,[2 3 4]);... %face 2 3 4
             E(:,[3 1 4])];   %face 1 3 4
-        F=fliplr(F);
         C=repmat(C,4,1); %Replicate color data
     case 'tet10' %Quadratic tets
          F=[E(:,[2 5 1 7  3 6 ]);... %face 1 2 3
@@ -95,6 +96,9 @@ switch elementType
     case 'hex20' %Hexahedral elements
         %TO DO
         error('hex20 elements not implemented yet');
+    case 'unknown'
+        F=E;
+        C=C;
 end
 
 %% Compose output

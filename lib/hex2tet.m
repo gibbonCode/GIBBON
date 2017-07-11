@@ -96,7 +96,6 @@ switch tetOpt
         TET_set_reform1=TET_set(:,TET_format(:))';        
         TET_set_reform2=reshape(TET_set_reform1,size(TET_format,1),numel(TET_set_reform1)/size(TET_format,1))';
         TET=reshape(TET_set_reform2,4,numel(TET_set_reform2)/4)';
-%         TET=TET(:,[3 2 1 4]); 
         
         %Fix color information
         C=repmat(C,size(TET_format,1),1);        
@@ -169,4 +168,6 @@ switch tetOpt
         end
         Vtet=V;
 end
+
+TET=TET(:,[1 2 4 3]); %Invert
 

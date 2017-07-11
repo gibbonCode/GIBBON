@@ -50,10 +50,10 @@ addpath(helpPath);
 for q_publish=1:1:numPubpFiles_publish
     initialVars_publish = who;        
     disp(q_publish);
-    save('tempPub.mat')
-    
+    save('tempPub.mat');
+    pause(1);
     publish(fullfile(helpPath,pubFileList_publish{q_publish}),'catchError',catchErrorOpt,'figureSnapMethod','getframe','maxHeight',800);
-    
+    pause(1);
     load('tempPub.mat');
     disp(q_publish);
     

@@ -142,46 +142,39 @@ drawnow;
 % homogeneous in shape. 
 
 [V,~]=platonic_solid(2,1);
-V(:,3)=V(:,3)*2; %Stretching in z-direction
 E=[1:8];
-[E,V]=subHex(E,V,2);
+[E,V]=subHex(E,V,1);
 C=(1:1:size(E,1))';
 
-%%
-% Subdeviding the hexahedral element
-splitMethod=2; %Corresponse to splitting in top-bottom dir
-[Es,Vs,Cs]=subHex(E,V,1,splitMethod);
+nRefine=1; 
 
-%% 
-% Visualization
+%%
 
 [F,CF]=element2patch(E,C);  %Patch data for plotting
 
+cFigure;
+subplot(2,3,1); hold on;
+title('Original element set','FontSize',fontSize);
+gpatch(F,V,CF,'k',1);
+patchNormPlot(F,V);
+colormap(cMap);
+axisGeom(gca,fontSize);
+
+for q=1:1:4
+    
+% Subdeviding the hexahedral element
+splitMethod=q; 
+[Es,Vs,Cs]=subHex(E,V,nRefine,splitMethod);
 [Fs,CFs]=element2patch(Es,Cs); %Patch data for plotting
 
-cFigure;
-subplot(1,2,1); 
-title('Original element set','FontSize',fontSize);
-xlabel('X','FontSize',fontSize); ylabel('Y','FontSize',fontSize); zlabel('Z','FontSize',fontSize);
-hold on;
-
-patch('Faces',F,'Vertices',V,'FaceColor','flat','CData',CF,'EdgeColor',edgeColor,'FaceAlpha',1,'lineWidth',edgeWidth);
-
-view(3); grid on; axis equal; axis tight;
-set(gca,'FontSize',fontSize);
-
-subplot(1,2,2); 
-title('Subdevided element set','FontSize',fontSize);
-xlabel('X','FontSize',fontSize); ylabel('Y','FontSize',fontSize); zlabel('Z','FontSize',fontSize);
-hold on;
-
-patch('Faces',F,'Vertices',V,'FaceColor','flat','CData',CF,'EdgeColor',edgeColor,'FaceAlpha',faceAlpha1,'lineWidth',edgeWidth);
-patch('Faces',Fs,'Vertices',Vs,'FaceColor','flat','CData',CFs,'EdgeColor',edgeColor,'FaceAlpha',1,'lineWidth',edgeWidth);
+subplot(2,3,q+1); hold on;
+title(['Refined set method: ',num2str(q)],'FontSize',fontSize);
+gpatch(Fs,Vs,CFs,'k',1);
+patchNormPlot(Fs,Vs);
 
 colormap(cMap);
-view(3); grid on; axis equal; axis tight;
-set(gca,'FontSize',fontSize);
-
+axisGeom(gca,fontSize);
+end
 drawnow;
 
 %%

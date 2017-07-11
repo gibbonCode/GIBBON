@@ -48,7 +48,11 @@ switch n
         X=[-0.5;0.5;0;0;];
         Y=[-sqrt(3)/6;  -sqrt(3)/6; sqrt(3)/3; 0];
         Z=[-0.25.*sqrt(2/3); -0.25.*sqrt(2/3); -0.25.*sqrt(2/3);  0.75.*sqrt(2/3)];
+        X=X([1 2 4 3]);
+        Y=Y([1 2 4 3]);
+        Z=Z([1 2 4 3]);        
         F=[3,2,1;1,2,4;2,3,4;4,3,1;];
+        F=fliplr(F);
     case 2 % Cube
         X=[-1;  1; 1; -1; -1;  1; 1; -1;];
         Y=[-1; -1; 1;  1; -1; -1; 1;  1;];
@@ -82,5 +86,5 @@ end
 
 %Altering radius
 [THETA,PHI,~]=cart2sph(X,Y,Z);
-[X,Y,Z]=sph2cart(THETA,PHI,r.*ones(size(X(:,1))));
-V=[X Y Z];
+[X,Y,Z]=sph2cart(THETA,PHI,r.*ones(size(X)));
+V=[X(:) Y(:) Z(:)];
