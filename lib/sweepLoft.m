@@ -115,7 +115,7 @@ R_curve2(:,:,1)=R1;
 R=R1;
 
 if plotOn
-    quiverTriad(Vg(1,:),R1,stepSize); drawnow;
+    quiverTriad(Vg(1,:),R1',stepSize); drawnow;
 end
 
 for q=2:size(Vg,1)
@@ -130,7 +130,7 @@ for q=2:size(Vg,1)
         R=R*Rn;
         if plotOn
             subplot(1,3,1);
-            quiverTriad(Vg(q,:),R,stepSize);
+            quiverTriad(Vg(q,:),R',stepSize);
             drawnow;
         end
     end

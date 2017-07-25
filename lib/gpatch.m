@@ -27,6 +27,8 @@ switch nargin
         C=varargin{3};
         CE=varargin{4};
         A=varargin{5};
+    otherwise
+        error('Wrong number of input arguments');
 end
 
 if isa(F,'cell') %Assume all entries are cells defining multiple patch data sets

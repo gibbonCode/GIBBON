@@ -6,7 +6,7 @@
    <!--
 This HTML was auto-generated from MATLAB code.
 To make changes, update the MATLAB code and republish this document.
-      --><title>foamWrap</title><meta name="generator" content="MATLAB 9.1"><link rel="schema.DC" href="http://purl.org/dc/elements/1.1/"><meta name="DC.date" content="2017-07-11"><meta name="DC.source" content="HELP_foamWrap.m"><style type="text/css">
+      --><title>foamWrap</title><meta name="generator" content="MATLAB 9.1"><link rel="schema.DC" href="http://purl.org/dc/elements/1.1/"><meta name="DC.date" content="2017-07-25"><meta name="DC.source" content="HELP_foamWrap.m"><style type="text/css">
 html,body,div,span,applet,object,iframe,h1,h2,h3,h4,h5,h6,p,blockquote,pre,a,abbr,acronym,address,big,cite,code,del,dfn,em,font,img,ins,kbd,q,s,samp,small,strike,strong,sub,sup,tt,var,b,u,i,center,dl,dt,dd,ol,ul,li,fieldset,form,label,legend,table,caption,tbody,tfoot,thead,tr,th,td{margin:0;padding:0;border:0;outline:0;font-size:100%;vertical-align:baseline;background:transparent}body{line-height:1}ol,ul{list-style:none}blockquote,q{quotes:none}blockquote:before,blockquote:after,q:before,q:after{content:'';content:none}:focus{outine:0}ins{text-decoration:none}del{text-decoration:line-through}table{border-collapse:collapse;border-spacing:0}
 
 html { min-height:100%; margin-bottom:1px; }
@@ -87,6 +87,7 @@ camlight <span class="string">headlight</span>;
 colormap(cmap);
 set(gca,<span class="string">'FontSize'</span>,fontSize);
 view(3); axis <span class="string">tight</span>;  axis <span class="string">equal</span>;  grid <span class="string">on</span>; axis <span class="string">off</span>;
+view(0,59);
 </pre><img vspace="5" hspace="5" src="HELP_foamWrap_01.png" alt=""> <pre class="codeinput">cPar.n=3;
 cPar.dirFlip=1;
 cPar.foamThickness=[]; <span class="comment">%Empty uses default which is mean edgelength based</span>
@@ -98,17 +99,13 @@ cPar.cParSmooth=cParSmooth;
 </pre><pre class="codeinput">cFigure; hold <span class="string">on</span>;
 xlabel(<span class="string">'X'</span>,<span class="string">'FontSize'</span>,fontSize); ylabel(<span class="string">'Y'</span>,<span class="string">'FontSize'</span>,fontSize); zlabel(<span class="string">'Z'</span>,<span class="string">'FontSize'</span>,fontSize);
 
-hp=patch(<span class="string">'Faces'</span>,FT(CT_c==1,:),<span class="string">'Vertices'</span>,VT,<span class="string">'FaceColor'</span>,<span class="string">'flat'</span>,<span class="string">'CData'</span>,CT_c(CT_c==1),<span class="string">'FaceAlpha'</span>,1,<span class="string">'lineWidth'</span>,edgeWidth,<span class="string">'edgeColor'</span>,<span class="string">'none'</span>);
-hp=patch(<span class="string">'Faces'</span>,FT(CT_c~=1,:),<span class="string">'Vertices'</span>,VT,<span class="string">'FaceColor'</span>,<span class="string">'flat'</span>,<span class="string">'CData'</span>,CT_c(CT_c~=1),<span class="string">'FaceAlpha'</span>,1,<span class="string">'lineWidth'</span>,edgeWidth,<span class="string">'edgeColor'</span>,<span class="string">'none'</span>);
+gpatch(FT,VT,CT_c,<span class="string">'none'</span>,1);
 
-camlight <span class="string">headlight</span>;
-<span class="comment">% lighting phong;</span>
-<span class="comment">% colormap(gjet(numel(unique(CT_c)))); colorbar;</span>
-colormap(gray(250));
-
-
+colormap(gray(250)); icolorbar;
 set(gca,<span class="string">'FontSize'</span>,fontSize);
 view(3); axis <span class="string">tight</span>;  axis <span class="string">equal</span>;  grid <span class="string">on</span>;
+view(0,58.25);
+camlight <span class="string">headlight</span>;
 axis <span class="string">off</span>;
 </pre><img vspace="5" hspace="5" src="HELP_foamWrap_02.png" alt=""> <p><img vspace="5" hspace="5" src="gibbVerySmall.gif" alt=""> </p><p><i><b>GIBBON</b></i> <a href="www.gibboncode.org">www.gibboncode.org</a></p><p><i>Kevin Mattheus Moerman</i>, <a href="gibbon.toolbox@gmail.com">gibbon.toolbox@gmail.com</a></p><p class="footer"><br><a href="http://www.mathworks.com/products/matlab/">Published with MATLAB&reg; R2016b</a><br></p></div><!--
 ##### SOURCE BEGIN #####
@@ -154,7 +151,7 @@ camlight headlight;
 colormap(cmap);
 set(gca,'FontSize',fontSize);
 view(3); axis tight;  axis equal;  grid on; axis off; 
-
+view(0,59);
 
 %%
 
@@ -173,17 +170,13 @@ L_remove=true(size(F,1),1);
 cFigure; hold on; 
 xlabel('X','FontSize',fontSize); ylabel('Y','FontSize',fontSize); zlabel('Z','FontSize',fontSize);
 
-hp=patch('Faces',FT(CT_c==1,:),'Vertices',VT,'FaceColor','flat','CData',CT_c(CT_c==1),'FaceAlpha',1,'lineWidth',edgeWidth,'edgeColor','none');
-hp=patch('Faces',FT(CT_c~=1,:),'Vertices',VT,'FaceColor','flat','CData',CT_c(CT_c~=1),'FaceAlpha',1,'lineWidth',edgeWidth,'edgeColor','none');
+gpatch(FT,VT,CT_c,'none',1);
 
-camlight headlight; 
-% lighting phong;
-% colormap(gjet(numel(unique(CT_c)))); colorbar;
-colormap(gray(250));
-
-
+colormap(gray(250)); icolorbar;
 set(gca,'FontSize',fontSize);
 view(3); axis tight;  axis equal;  grid on;
+view(0,58.25);
+camlight headlight; 
 axis off;
 
 %% 

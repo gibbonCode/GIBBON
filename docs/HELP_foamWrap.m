@@ -40,7 +40,7 @@ camlight headlight;
 colormap(cmap);
 set(gca,'FontSize',fontSize);
 view(3); axis tight;  axis equal;  grid on; axis off; 
-
+view(0,59);
 
 %%
 
@@ -59,17 +59,13 @@ L_remove=true(size(F,1),1);
 cFigure; hold on; 
 xlabel('X','FontSize',fontSize); ylabel('Y','FontSize',fontSize); zlabel('Z','FontSize',fontSize);
 
-hp=patch('Faces',FT(CT_c==1,:),'Vertices',VT,'FaceColor','flat','CData',CT_c(CT_c==1),'FaceAlpha',1,'lineWidth',edgeWidth,'edgeColor','none');
-hp=patch('Faces',FT(CT_c~=1,:),'Vertices',VT,'FaceColor','flat','CData',CT_c(CT_c~=1),'FaceAlpha',1,'lineWidth',edgeWidth,'edgeColor','none');
+gpatch(FT,VT,CT_c,'none',1);
 
-camlight headlight; 
-% lighting phong;
-% colormap(gjet(numel(unique(CT_c)))); colorbar;
-colormap(gray(250));
-
-
+colormap(gray(250)); icolorbar;
 set(gca,'FontSize',fontSize);
 view(3); axis tight;  axis equal;  grid on;
+view(0,58.25);
+camlight headlight; 
 axis off;
 
 %% 

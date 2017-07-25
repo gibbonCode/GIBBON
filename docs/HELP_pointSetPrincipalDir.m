@@ -7,8 +7,6 @@ clear; close all; clc;
 %%
 % Plot settings
 
-figColor='w'; 
-figColorDef='white';
 fontSize=11;
 
 %% Using |pointSetPrincipalDir| to determine main directions of a polyhedron
@@ -25,7 +23,7 @@ ellipStretchTrue=[pi 2 1]
 V=V.*ellipStretchTrue(ones(size(V,1),1),:);
 
 %Create Euler angles to set directions
-E=[0.25*pi 0.25*pi -0.25*pi]; 
+E=[0.25*pi 0.25*pi 0.25*pi]; 
 [R_true,~]=euler2DCM(E); %The true directions for X, Y and Z axis
 V=(R_true*V')'; %Rotate polyhedron
 
@@ -42,24 +40,16 @@ R_true
 %% 
 % Visualizing results
 
-MU=mean(V,1); %Origin for vectors
-a=[7 7]; %Vector size
-
-[Fq,Vq,Cq]=quiver3Dpatch(MU(1)*ones(1,3),MU(2)*ones(1,3),MU(3)*ones(1,3),R_fit(1,:),R_fit(2,:),R_fit(3,:),eye(3,3),a); %Fitted vectors
-[Fq2,Vq2,Cq2]=quiver3Dpatch(MU(1)*ones(1,3),MU(2)*ones(1,3),MU(3)*ones(1,3),R_true(1,:),R_true(2,:),R_true(3,:),eye(3,3),a); %True vectors
-
-figuremax(figColor,figColorDef);
+cFigure;
 title('The polyhedron with true (transparant) and determined (solid) axis directions','FontSize',fontSize);
-xlabel('X','FontSize',fontSize); ylabel('Y','FontSize',fontSize); zlabel('Z','FontSize',fontSize);
 hold on;
 
-hp=patch('Faces',F,'Vertices',V); %The polyhedron
-set(hp,'FaceColor',0.5*ones(1,3),'FaceAlpha',1,'EdgeColor','k','LineWidth',1.5,'Marker','.','MarkerSize',15,'MarkerEdgeColor',0.75*ones(1,3));
-patch('Faces',Fq,'Vertices',Vq,'FaceColor','flat','FaceVertexCData',Cq,'FaceAlpha',1);
-patch('Faces',Fq2,'Vertices',Vq2,'FaceColor','flat','FaceVertexCData',Cq2,'FaceAlpha',0.2,'EdgeColor','none');
+gpatch(F,V,0.75*ones(1,3),'k',1);
+quiverTriad(mean(V,1),R_fit,7,[],1);
+quiverTriad(mean(V,1),R_true,10,[],0.2);
+
 camlight('headlight');
-axis equal; view(3); axis vis3d; axis tight;  grid on; 
-set(gca,'FontSize',fontSize); 
+axisGeom(gca,fontSize); 
 drawnow;
 
 %%

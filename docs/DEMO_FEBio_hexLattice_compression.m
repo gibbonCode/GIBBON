@@ -31,12 +31,9 @@ modelNameEnd='tempModel';
 modelName=fullfile(savePath,modelNameEnd);
 
 %Specifying dimensions and number of elements
-sampleWidth=10;
-sampleThickness=sampleWidth; 
-sampleHeight=sampleWidth;
-
+sampleSize=10;
 stretchLoad=0.8;
-displacementMagnitude=[0 0 (stretchLoad*sampleHeight)-sampleHeight];
+displacementMagnitude=[0 0 (stretchLoad*sampleSize)-sampleSize];
 
 %Material parameters
 c=1e-3;
@@ -54,7 +51,7 @@ max_ups=0;
 X=[-1;  1; 1; -1; -1;  1; 1; -1;];
 Y=[-1; -1; 1;  1; -1; -1; 1;  1;];
 Z=[-1; -1;-1; -1;  1;  1; 1;  1;];
-V=sampleWidth*[X(:) Y(:) Z(:)]/2;
+V=sampleSize*[X(:) Y(:) Z(:)]/2;
 E=1:8; %Element description of the 8-node cube (hexahedral element)
 
 [E,V,C]=subHex(E,V); %Subdevide into 8 sub-cubes
@@ -106,22 +103,22 @@ zVec=[0 0 1];
 d=dot(Nb,zVec(ones(size(Nb,1),1),:),2);
 Z=Vs(:,3);
 ZF=mean(Z(Fb),2);
-logicTop_Fb=(d>0.9) & ZF>=(max(Vs(:,3))-eps(sampleWidth));
-logicBottom_Fb=(d<-0.9) & ZF<=(min(Vs(:,3))+eps(sampleWidth));
+logicTop_Fb=(d>0.9) & ZF>=(max(Vs(:,3))-eps(sampleSize));
+logicBottom_Fb=(d<-0.9) & ZF<=(min(Vs(:,3))+eps(sampleSize));
 
 xVec=[1 0 0];
 d=dot(Nb,xVec(ones(size(Nb,1),1),:),2);
 X=Vs(:,1);
 XF=mean(X(Fb),2);
-logicSides_Fb1=(d>0.9) & XF>=(max(Vs(:,1))-eps(sampleWidth));
-logicSides_Fb2=(d<-0.9) & XF<=(min(Vs(:,1))+eps(sampleWidth));
+logicSides_Fb1=(d>0.9) & XF>=(max(Vs(:,1))-eps(sampleSize));
+logicSides_Fb2=(d<-0.9) & XF<=(min(Vs(:,1))+eps(sampleSize));
 
 yVec=[0 1 0];
 d=dot(Nb,yVec(ones(size(Nb,1),1),:),2);
 Y=Vs(:,2);
 YF=mean(Y(Fb),2);
-logicSides_Fb3=(d>0.9) & YF>=(max(Vs(:,2))-eps(sampleWidth));
-logicSides_Fb4=(d<-0.9) & YF<=(min(Vs(:,2))+eps(sampleWidth));
+logicSides_Fb3=(d>0.9) & YF>=(max(Vs(:,2))-eps(sampleSize));
+logicSides_Fb4=(d<-0.9) & YF<=(min(Vs(:,2))+eps(sampleSize));
 
 logicSides_Fb=logicSides_Fb1 | logicSides_Fb2 | logicSides_Fb3 | logicSides_Fb4;
 
