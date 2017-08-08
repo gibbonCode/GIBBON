@@ -31,3 +31,20 @@ P=[mean(x),mean(y),mean(z)];
 [U,S,V]=svd([x-P(1),y-P(2),z-P(3)],0);
 N=-1/V(end,end)*V(:,end);
 A=N(1); B=N(2); C=-P*N;
+ 
+%% 
+% ********** _license boilerplate_ **********
+% 
+% Copyright 2017 Kevin Mattheus Moerman
+% 
+% Licensed under the Apache License, Version 2.0 (the "License");
+% you may not use this file except in compliance with the License.
+% You may obtain a copy of the License at
+% 
+%   http://www.apache.org/licenses/LICENSE-2.0
+% 
+% Unless required by applicable law or agreed to in writing, software
+% distributed under the License is distributed on an "AS IS" BASIS,
+% WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+% See the License for the specific language governing permissions and
+% limitations under the License.
