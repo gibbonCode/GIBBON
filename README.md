@@ -45,7 +45,7 @@ By running `installGibbon.m` the GIBBON, FEBio, and export_fig path definitions 
 * Many of the `DEMO_` files focus on the use of FEBio. The demo `DEMO_FEBio_block_uniaxial_compression` for instance features a simple cube that undergoes a 30% compression. Other demos focus on different load types, single versus multi-step analysis, different materials and inverse analysis (e.g. `DEMO_FEBio_iFEA_uniaxial_01`).
 
 ## License <a name="License"></a>
-[![License](https://img.shields.io/badge/License-BSD%203--Clause-green.svg)](https://github.com/gibbonCode/GIBBON/blob/master/LICENSE)
+[![License](https://img.shields.io/badge/License-Apache%202.0-orange.svg)](https://github.com/gibbonCode/GIBBON/blob/master/LICENSE)
 
 ## Contributing <a name="Contributing"></a>
 See [CONTRIBUTING](CONTRIBUTING.md)
