@@ -1,106 +1,39 @@
-% GIBBON Toolbox
-% Version 1.01 22-Oct-2014
-% 
-% Kevin Mattheus Moerman
+function [dY,fft_dY]=FFT_derivative(Y,dt,dimDir,derOrder)
 
-%   DEMO_AnyBody_force_analysys                                 - DEMO_AnyBody_force_analysis
-%   DEMO_FEBio_bar_force                                        - DEMO_FEBio_bar_force
-%   DEMO_FEBio_bar_force_v1p2                                   - DEMO_FEBio_bar_force
-%   DEMO_FEBio_bar_soft_sphere_indentation                      - DEMO_FEBio_bar_soft_sphere_indentation
-%   DEMO_FEBio_bar_sphere_indentation                           - DEMO_FEBio_bar_sphere_indentation
-%   DEMO_FEBio_bar_sphere_indentation_multi_generation          - DEMO_FEBio_bar_sphere_indentation_multi_generation
-%   DEMO_FEBio_bar_sphere_indentation_multi_step                - DEMO_FEBio_bar_sphere_indentation_multi_step
-%   DEMO_FEBio_block_uniaxial_compression                       - DEMO_FEBio_block_uniaxial_compression
-%   DEMO_FEBio_block_uniaxial_compression_fibre_reinforced      - DEMO_FEBio_block_uniaxial_compression_fibre_reinforced
-%   DEMO_FEBio_block_uniaxial_compression_fibre_reinforced_v1p2 - DEMO_FEBio_block_uniaxial_compression_fibre_reinforced_v1p2
-%   DEMO_FEBio_block_uniaxial_compression_v1p2                  - DEMO_FEBio_block_uniaxial_compression
-%   DEMO_FEBio_cube_multi_generation                            - DEMO_FEBio_cube_multi_generation
-%   DEMO_FEBio_cube_multi_step                                  - DEMO_FEBio_cube_multi_step
-%   DEMO_FEBio_cube_tension                                     - DEMO_FEBio_cube_tension
-%   DEMO_FEBio_iFEA_uniaxial_01                                 - DEMO_FEBio_iFEA_uniaxial_01
-%   DEMO_FEBio_skin_sphere_indentation                          - DEMO_FEBio_skin_sphere_indentation
-%   DEMO_FEBio_skin_sphere_indentation_tet10                    - DEMO_FEBio_skin_sphere_indentation_tet10
-%   DEMO_FEBio_skin_sphere_indentation_tet4                     - DEMO_FEBio_skin_sphere_indentation_tet4
-%   DEMO_FEBio_spatially_varying_material_parameters            - DEMO_spatially_varying_material_parameters
-%   DEMO_FEBio_spatially_varying_material_parameters_v1p2       - DEMO_spatially_varying_material_parameters
-%   DEMO_FEBio_strip_multi_step_clamp                           - DEMO_FEBio_strip_multi_step_clamp
-%   DEMO_FEBio_strip_multi_step_clamp_contact                   - DEMO_FEBio_strip_multi_step_clamp_contact
-%   DEMO_FEBio_tongue                                           - DEMO_FEBio_tongue
-%   DEMO_FEBio_trabeculae_compression                           - DEMO_trabeculae_compression
-%   DEMO_FEBio_trabeculae_compression_v1p2                      - DEMO_trabeculae_compression
-%   DEMO_create_run_import_FEBIO_spheres                        - DEMO_create_run_import_FEBIO_spheres
-%   DEMO_create_run_import_FEBIO_spheres_pressure               - DEMO_create_run_import_FEBIO_spheres_pressure
-%   DEMO_create_run_import_FEBIO_spheres_pressure_v1p2          - DEMO_create_run_import_FEBIO_spheres_pressure_v1p2
-%   DEMO_femur_STL_surface_improvement                          - DEMO_femur_STL_surface_improvement.m
-%   DEMO_import_FEB_export_INP                                  - DEMO_import_FEB_export_INP
-%   DEMO_tetGen_mesh_sizing_function_1                          - DEMO_tetGen_mesh_sizing_function_1
-%   DEMO_vessel_FEBIO_fibre_mapping                             - DEMO_vessel_FEBIO_fibre_mapping
-%   DEMO_vessel_FEBIO_fibre_mapping_v1p2                        - DEMO_vessel_FEBIO_fibre_mapping_v1p2
-%   GIBBON_product_page                                         - GIBBON: A Geometry and Image-Based Bioengineering Add-on for MATLAB
-%   HELP_adjacentdircount                                       - adjacentdircount
-%   HELP_bias_nodes1d                                           - bias_nodes1d
-%   HELP_box_indices                                            - box_indices
-%   HELP_cap_patchcylinder                                      - cap_patchCylinder
-%   HELP_constrainedDelaunayTetGen                              - constrainedDelaunayTetGen
-%   HELP_dcmFolder2MATobject                                    - dcmFolder2MATobject
-%   HELP_evenlySampleCurve                                      - evenlySampleCurve
-%   HELP_export_INP                                             - export_INP
-%   HELP_export_STL_txt                                         - export_STL_txt
-%   HELP_filletCurve                                            - filletCurve
-%   HELP_geoSphere                                              - geoSphere
-%   HELP_hemiSphereCylMesh                                      - hemiSphereCylMesh
-%   HELP_hemiSphereRegionMesh                                   - geoSphere and hemiSphereRegionMesh
-%   HELP_hessianScalar                                          - hessianScalar
-%   HELP_hexMeshBox                                             - hexMeshBox
-%   HELP_hexMeshSphere                                          - hexMeshSphere
-%   HELP_honeyCombMesh                                          - honeyCombMesh
-%   HELP_importAnyBodyOutput                                    - importAnyBodyOutput
-%   HELP_importFEBio_logfile                                    - import_FEB
-%   HELP_import_FEB                                             - import_FEB
-%   HELP_import_INP                                             - import_INP
-%   HELP_import_STL_txt                                         - import_STL_txt
-%   HELP_import_off                                             - import_off
-%   HELP_ind2patch                                              - ind2patch
-%   HELP_interp_spherical                                       - interp_spherical
-%   HELP_linspacen                                              - linspacen
-%   HELP_minDist                                                - minDist
-%   HELP_minPolyTwist                                           - minPolyTwist
-%   HELP_multiRegionTriMesh2D                                   - multiRegionTriMesh2D
-%   HELP_multiRegionTriMeshUneven2D                             - multiRegionTriMesh2D
-%   HELP_numReplace                                             - numReplace
-%   HELP_patch2STL                                              - patch2STL
-%   HELP_patchDual                                              - patch_dual
-%   HELP_patchEdges2Im                                          - patch2EdgeIm
-%   HELP_patchTorus                                             - patchTorus
-%   HELP_platonic_solid                                         - platonic_solid
-%   HELP_pointLocationTR                                        - pointLocationTR
-%   HELP_pointSetDistMap                                        - pointSetDistMap
-%   HELP_polyTube                                               - polyTube
-%   HELP_quadBox                                                - quadBox
-%   HELP_quadSphere                                             - quadSphere
-%   HELP_quiver3Dpatch                                          - quiver3Dpatch
-%   HELP_regionTriMesh2D                                        - regionTriMesh2D
-%   HELP_regionTriMeshRand2D                                    - regionTriMeshRand2D
-%   HELP_rhombicDodecahedron                                    - rhombicDodecahedron
-%   HELP_rhombicDodecahedronMesh                                - rhombicDodecahedronMesh
-%   HELP_rigidTransformationMatrixDirect                        - HELP_rigidTransformationMatrixDirect
-%   HELP_runTetGen                                              - runTetGen
-%   HELP_runTetGenSmesh                                         - runTetGenSmesh
-%   HELP_sampleCurveEvenly                                      - sampleCurveEvenly
-%   HELP_set_mat_par_FEBIO                                      - set_mat_par_FEBIO
-%   HELP_splitCurveSetMesh                                      - splitCurveSetMesh
-%   HELP_stanford_bunny                                         - stanford_bunny
-%   HELP_subCurve                                               - subCurve
-%   HELP_subTriCentre                                           - subTriCentre
-%   HELP_tesIND                                                 - tesIND
-%   HELP_tet4_tet10                                             - tet4_tet10
-%   HELP_tetVolMeanEst                                          - tetVolMeanEst
-%   HELP_triMeshEquilateral                                     - triMeshEquilateral
-%   HELP_triSurf2Im                                             - triSurf2Im
-%   HELP_triSurfRemoveThreeConnect                              - triSurfRemoveThreeConnect
-%   HELP_triSurfSetDist                                         - triSurfSetDist
-%   HELP_triplyPeriodicMinimal                                  - triplyPeriodicMinimal
-%   HELP_uiContourSegment                                       - uiContourSegment
-%   HELP_uiThreshErode                                          - uiThreshErode
-%   HELP_voronoiDiagramEven2D                                   - voronoiDiagramEven2D
-%   obj_DEMO_FEBio_iFEA_uniaxial_01                             - PARAMETER BOUNDS
+N=size(Y,dimDir); 
+
+%Calculate frequencies
+if iseven(N)    
+    nx = ((-N/2:N/2-1)/N);
+else    
+    nx = ((-(N-1)/2:(N-1)/2)/N);
+end
+kx = ifftshift((2*pi/dt).*nx); 
+
+%Reshape for bsxfun
+if dimDir == 1
+    kx = reshape(kx, N, 1);
+else
+    kx = reshape(kx, [ones(1,dimDir-1), N]);
+end
+
+fft_dY=bsxfun(@times,(1i*kx).^derOrder,fft(Y,[],dimDir));
+
+dY=ifft(fft_dY,[],dimDir,'symmetric');
+ 
+%% 
+% ********** _license boilerplate_ **********
+% 
+% Copyright 2017 Kevin Mattheus Moerman
+% 
+% Licensed under the Apache License, Version 2.0 (the "License");
+% you may not use this file except in compliance with the License.
+% You may obtain a copy of the License at
+% 
+%   http://www.apache.org/licenses/LICENSE-2.0
+% 
+% Unless required by applicable law or agreed to in writing, software
+% distributed under the License is distributed on an "AS IS" BASIS,
+% WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+% See the License for the specific language governing permissions and
+% limitations under the License.
