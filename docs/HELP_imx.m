@@ -32,30 +32,6 @@ switch testCase
         G = IMDAT_struct.G; %Geometric/spatial information
         v=G.v; %The voxel size
         M= IMDAT_struct.type_1; %The image data
-    case 3
-        pathName = '/mnt/data/Dropbox (MIT)/Bryan_Kevin/data/AM/MRI/dcm/Herr_AM_20160321_Herr_AM_20160321/20160321_1.2.276.0.7230010.3.1.2.1635514508.9940.1468594105.272/MR/Left_T1_2';
-        loadName=fullfile(pathName,'IMDAT','IMDAT.mat');
-        
-        IMDAT_struct=load(loadName); %The image data structure 
-        G = IMDAT_struct.G; %Geometric/spatial information
-        v=G.v; %The voxel size
-        M= IMDAT_struct.type_1; %The image data
-    case 4
-        pathName = '/mnt/data/Dropbox (MIT)/Bryan_Kevin/data/AM/MRI/dcm/Herr_AM_20160321_Herr_AM_20160321/20160321_1.2.276.0.7230010.3.1.2.1635514508.9940.1468594105.272/MR/Right_T1_2';
-        loadName=fullfile(pathName,'IMDAT','IMDAT.mat');
-        
-        IMDAT_struct=load(loadName); %The image data structure
-        G = IMDAT_struct.G; %Geometric/spatial information
-        v=G.v; %The voxel size
-        M= IMDAT_struct.type_1; %The image data
-    case 5
-        pathName='/mnt/data/Experimental_Data/MRI/AMC/2013/2013_06_14/T1/00801_T1_COR/';
-        loadName=fullfile(pathName,'IMDAT','IMDAT.mat');
-        
-        IMDAT_struct=load(loadName); %The image data structure
-        G = IMDAT_struct.G; %Geometric/spatial information
-        v=G.v; %The voxel size
-        M= IMDAT_struct.type_1; %The image data
 end
 
 %%
