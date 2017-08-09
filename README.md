@@ -1,11 +1,9 @@
 
 <img src="docs/html/gibbonLogo.jpg" href="https://gibboncode.org" alt="GIBBON" width="100%">   
 
-Cite GIBBON:  [![Citing](https://zenodo.org/badge/DOI/10.5281/zenodo.44404.svg)](https://doi.org/10.5281/zenodo.44404)  
+[![Citing](https://zenodo.org/badge/DOI/10.5281/zenodo.44404.svg)](https://doi.org/10.5281/zenodo.44404) [![Join the chat at https://gitter.im/GIBBONchat/Lobby](https://badges.gitter.im/GIBBONchat/Lobby.svg)](https://gitter.im/GIBBONchat/Lobby?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge) [![License](https://img.shields.io/badge/License-Apache%202.0-orange.svg)](https://github.com/gibbonCode/GIBBON/blob/master/LICENSE)
 
 # Table of contents
-
-[![Join the chat at https://gitter.im/GIBBONchat/Lobby](https://badges.gitter.im/GIBBONchat/Lobby.svg)](https://gitter.im/GIBBONchat/Lobby?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
 - [Project Summary](#Summary)  
 - [Installation](#Installation)  
 - [Getting started](#Start)  
@@ -50,7 +48,8 @@ By running `installGibbon.m` the GIBBON, FEBio, and export_fig path definitions 
 [![License](https://img.shields.io/badge/License-Apache%202.0-orange.svg)](https://github.com/gibbonCode/GIBBON/blob/master/LICENSE)
 
 ## Contributing <a name="Contributing"></a>
-See [CONTRIBUTING](CONTRIBUTING.md)
+See [CONTRIBUTING](CONTRIBUTING.md)    
+[![Join the chat at https://gitter.im/GIBBONchat/Lobby](https://badges.gitter.im/GIBBONchat/Lobby.svg)](https://gitter.im/GIBBONchat/Lobby?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
 
 ## Code of conduct <a name="CodeOfConduct"></a>
 See [CODE_OF_CONDUCT](CODE_OF_CONDUCT.md)
