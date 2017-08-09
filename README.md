@@ -4,6 +4,8 @@
 Cite GIBBON:  [![Citing](https://zenodo.org/badge/DOI/10.5281/zenodo.44404.svg)](https://doi.org/10.5281/zenodo.44404)  
 
 # Table of contents
+
+[![Join the chat at https://gitter.im/GIBBONchat/Lobby](https://badges.gitter.im/GIBBONchat/Lobby.svg)](https://gitter.im/GIBBONchat/Lobby?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
 - [Project Summary](#Summary)  
 - [Installation](#Installation)  
 - [Getting started](#Start)  
