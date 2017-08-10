@@ -13,7 +13,6 @@ pathNames={docToolsPath,libPath,docPath};
 
 licenseBoilerPlate=fullfile(toolboxPath,'licenseBoilerPlate.txt');
 [T]=txtfile2cell(licenseBoilerPlate);
-size(T)
 
 footerTargetText='%% <-- GIBBON footer text --> ';
 
@@ -40,25 +39,29 @@ for q_path=1:1:numPaths
     numFiles=numel(files);    
     for q_file=1:1:numFiles
         fileName=fullfile(pathName,files{q_file});
-        [T_now]=txtfile2cell(fileName);
-        
+        [T_now]=txtfile2cell(fileName);        
         T_now(end+1:end+numel(T))=T;
-        cell2txtfile(fileName,T_now,0);
-        
+        cell2txtfile(fileName,T_now,0);        
     end
 end
 
 %% <-- GIBBON footer text --> 
-% Copyright 2017 Kevin Mattheus Moerman
 % 
-% Licensed under the Apache License, Version 2.0 (the "License");
-% you may not use this file except in compliance with the License.
-% You may obtain a copy of the License at
+%     GIBBON: The Geometry and Image-based Bioengineering add-On. A toolbox for
+%     image segmentation, image-based modeling, meshing, and finite element
+%     analysis.
 % 
-%   http://www.apache.org/licenses/LICENSE-2.0
+%     Copyright (C) 2017  Kevin Mattheus Moerman
 % 
-% Unless required by applicable law or agreed to in writing, software
-% distributed under the License is distributed on an "AS IS" BASIS,
-% WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-% See the License for the specific language governing permissions and
-% limitations under the License.
+%     This program is free software: you can redistribute it and/or modify
+%     it under the terms of the GNU General Public License as published by
+%     the Free Software Foundation, either version 3 of the License, or
+%     (at your option) any later version.
+% 
+%     This program is distributed in the hope that it will be useful,
+%     but WITHOUT ANY WARRANTY; without even the implied warranty of
+%     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+%     GNU General Public License for more details.
+% 
+%     You should have received a copy of the GNU General Public License
+%     along with this program.  If not, see <http://www.gnu.org/licenses/>.

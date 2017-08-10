@@ -1,7 +1,7 @@
 
 <img src="docs/html/gibbonLogo.jpg" href="https://gibboncode.org" alt="GIBBON" width="100%">   
 
-[![Citing](https://zenodo.org/badge/DOI/10.5281/zenodo.44404.svg)](https://doi.org/10.5281/zenodo.44404) [![Join the chat at https://gitter.im/GIBBONchat/Lobby](https://badges.gitter.im/GIBBONchat/Lobby.svg)](https://gitter.im/GIBBONchat/Lobby?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge) [![License](https://img.shields.io/badge/License-Apache%202.0-orange.svg)](https://github.com/gibbonCode/GIBBON/blob/master/LICENSE)
+[![Citing](https://zenodo.org/badge/DOI/10.5281/zenodo.44404.svg)](https://doi.org/10.5281/zenodo.44404) [![Join the chat at https://gitter.im/GIBBONchat/Lobby](https://badges.gitter.im/GIBBONchat/Lobby.svg)](https://gitter.im/GIBBONchat/Lobby?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge) [![License](https://img.shields.io/badge/License-GNU_GPLv3-orange.svg)](https://github.com/gibbonCode/GIBBON/blob/master/LICENSE)
 
 # Table of contents
 - [Project Summary](#Summary)  
@@ -45,7 +45,7 @@ By running `installGibbon.m` the GIBBON, FEBio, and export_fig path definitions 
 * Many of the `DEMO_` files focus on the use of FEBio. The demo `DEMO_FEBio_block_uniaxial_compression` for instance features a simple cube that undergoes a 30% compression. Other demos focus on different load types, single versus multi-step analysis, different materials and inverse analysis (e.g. `DEMO_FEBio_iFEA_uniaxial_01`).
 
 ## License <a name="License"></a>
-[![License](https://img.shields.io/badge/License-Apache%202.0-orange.svg)](https://github.com/gibbonCode/GIBBON/blob/master/LICENSE)
+[![License](https://img.shields.io/badge/License-GNU_GPLv3-orange.svg)](https://github.com/gibbonCode/GIBBON/blob/master/LICENSE)
 
 ## Contributing <a name="Contributing"></a>
 See [CONTRIBUTING](CONTRIBUTING.md)    
