@@ -41,9 +41,7 @@ Vn_shift=Vn-meanV; %Shift vertices
 Vn_shift_scale=Vn_shift*scaleFactor; %Scale shifted vertices with respect to face center 
 Vs=Vn_shift_scale+meanV; %Shift scaled vertices back
  
-%% 
-% ********** _license boilerplate_ **********
-% 
+%% <-- GIBBON footer text --> 
 % Copyright 2017 Kevin Mattheus Moerman
 % 
 % Licensed under the Apache License, Version 2.0 (the "License");

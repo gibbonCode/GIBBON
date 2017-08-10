@@ -7,9 +7,7 @@ p=2.*pi;
 y=(4.*(abs((x./p)-floor((x./p)+0.5))))-1;
 
  
-%% 
-% ********** _license boilerplate_ **********
-% 
+%% <-- GIBBON footer text --> 
 % Copyright 2017 Kevin Mattheus Moerman
 % 
 % Licensed under the Apache License, Version 2.0 (the "License");

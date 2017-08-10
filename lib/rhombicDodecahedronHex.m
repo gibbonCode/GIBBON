@@ -17,9 +17,7 @@ E4=[fliplr((F(4,:))) fliplr([F(12,2) F(12,3) size(V,1) F(11,1)])  ];
 E=[E1;E2;E3;E4];
 
  
-%% 
-% ********** _license boilerplate_ **********
-% 
+%% <-- GIBBON footer text --> 
 % Copyright 2017 Kevin Mattheus Moerman
 % 
 % Licensed under the Apache License, Version 2.0 (the "License");

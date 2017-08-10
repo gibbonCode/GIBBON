@@ -209,9 +209,7 @@ varargout{3}=CT; %Two colors
 varargout{4}=CT_c; %Four colors 1=input, 2=base for offset, 3=sides for offset, 4=top for offset
 
  
-%% 
-% ********** _license boilerplate_ **********
-% 
+%% <-- GIBBON footer text --> 
 % Copyright 2017 Kevin Mattheus Moerman
 % 
 % Licensed under the Apache License, Version 2.0 (the "License");

@@ -4,9 +4,7 @@ function [b,m,n,c,IND_MAP]=unique_map(varargin)
 IND_MAP=sparse(1:numel(n),n,1:numel(n),numel(n),max(n(:)),numel(n));
 c=full(sum(IND_MAP>0,1))';
  
-%% 
-% ********** _license boilerplate_ **********
-% 
+%% <-- GIBBON footer text --> 
 % Copyright 2017 Kevin Mattheus Moerman
 % 
 % Licensed under the Apache License, Version 2.0 (the "License");

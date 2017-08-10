@@ -12,9 +12,7 @@ logicColourMatrixEntry=sparse(IND_F_2,1:numF,1,numFuni,numF,numF);
 F_count=full(sum(logicColourMatrixEntry,2));
 
  
-%% 
-% ********** _license boilerplate_ **********
-% 
+%% <-- GIBBON footer text --> 
 % Copyright 2017 Kevin Mattheus Moerman
 % 
 % Licensed under the Apache License, Version 2.0 (the "License");

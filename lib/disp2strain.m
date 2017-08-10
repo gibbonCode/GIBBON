@@ -100,9 +100,7 @@ D_out.Ezx=Ezx; D_out.Ezy=Ezy; D_out.Ezz=Ezz;
 
 end
  
-%% 
-% ********** _license boilerplate_ **********
-% 
+%% <-- GIBBON footer text --> 
 % Copyright 2017 Kevin Mattheus Moerman
 % 
 % Licensed under the Apache License, Version 2.0 (the "License");

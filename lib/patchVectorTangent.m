@@ -10,9 +10,7 @@ Dn_mag=dot(D,N,2); %Allong normal displacement magnitudes
 Dn=Dn_mag(:,ones(1,3)).*N; %Normal direction displacement vectors
 Dt=D-Dn; %Tranverse or tangential only displacement vectors
  
-%% 
-% ********** _license boilerplate_ **********
-% 
+%% <-- GIBBON footer text --> 
 % Copyright 2017 Kevin Mattheus Moerman
 % 
 % Licensed under the Apache License, Version 2.0 (the "License");

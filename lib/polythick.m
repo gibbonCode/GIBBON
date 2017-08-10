@@ -85,9 +85,7 @@ X2=V_curve2(:,1);
 Y2=V_curve2(:,2);
 
  
-%% 
-% ********** _license boilerplate_ **********
-% 
+%% <-- GIBBON footer text --> 
 % Copyright 2017 Kevin Mattheus Moerman
 % 
 % Licensed under the Apache License, Version 2.0 (the "License");

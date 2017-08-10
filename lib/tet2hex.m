@@ -229,9 +229,7 @@ varargout{3}=CVs;
 % Vhex=Vhex(ind1,:);
 % HEX=ind2(HEX);
  
-%% 
-% ********** _license boilerplate_ **********
-% 
+%% <-- GIBBON footer text --> 
 % Copyright 2017 Kevin Mattheus Moerman
 % 
 % Licensed under the Apache License, Version 2.0 (the "License");

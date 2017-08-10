@@ -87,9 +87,7 @@ end
 
 [X Y Z]=sph2cart(THETA,RHO,R);
  
-%% 
-% ********** _license boilerplate_ **********
-% 
+%% <-- GIBBON footer text --> 
 % Copyright 2017 Kevin Mattheus Moerman
 % 
 % Licensed under the Apache License, Version 2.0 (the "License");

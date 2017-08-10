@@ -4,9 +4,7 @@ function [I,J,K,IND]=logic2subind(L)
 I=I(L); J=J(L); K=K(L); 
 IND = sub2ind(size(L),I,J,K);
  
-%% 
-% ********** _license boilerplate_ **********
-% 
+%% <-- GIBBON footer text --> 
 % Copyright 2017 Kevin Mattheus Moerman
 % 
 % Licensed under the Apache License, Version 2.0 (the "License");

@@ -19,9 +19,7 @@ Vn=[mean(X(F),2) mean(Y(F),2) mean(Z(F),2)];
 end
 
  
-%% 
-% ********** _license boilerplate_ **********
-% 
+%% <-- GIBBON footer text --> 
 % Copyright 2017 Kevin Mattheus Moerman
 % 
 % Licensed under the Apache License, Version 2.0 (the "License");

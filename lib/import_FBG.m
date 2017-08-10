@@ -29,9 +29,7 @@ D.ind_depth=cell_out{6};
 D.TTL_logic=cell_out{7};
 
  
-%% 
-% ********** _license boilerplate_ **********
-% 
+%% <-- GIBBON footer text --> 
 % Copyright 2017 Kevin Mattheus Moerman
 % 
 % Licensed under the Apache License, Version 2.0 (the "License");

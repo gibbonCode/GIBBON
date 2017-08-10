@@ -6,9 +6,7 @@ IJK=[I(:) J(:) K(:) ones(size(I(:)))]; %Prepare for mapping
 IJK_mapped=(T*IJK')'; %Do mapping
 [Vm(:,1),Vm(:,2),Vm(:,3)]=im2cart(IJK_mapped(:,1),IJK_mapped(:,2),IJK_mapped(:,3),v); %Convert mapped image coordinates back to "Cartesian" coordinates
  
-%% 
-% ********** _license boilerplate_ **********
-% 
+%% <-- GIBBON footer text --> 
 % Copyright 2017 Kevin Mattheus Moerman
 % 
 % Licensed under the Apache License, Version 2.0 (the "License");

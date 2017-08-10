@@ -3,9 +3,7 @@ function [eulerVal]=eulerChar(F,V)
 E=patchEdges(F,1);
 eulerVal=size(V,1)-size(E,1)+size(F,1);
  
-%% 
-% ********** _license boilerplate_ **********
-% 
+%% <-- GIBBON footer text --> 
 % Copyright 2017 Kevin Mattheus Moerman
 % 
 % Licensed under the Apache License, Version 2.0 (the "License");

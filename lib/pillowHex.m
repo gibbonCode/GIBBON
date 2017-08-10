@@ -54,9 +54,7 @@ Cp=repmat(C,[7,1]);
 % Ep=[E_core;E1;E2];
 
  
-%% 
-% ********** _license boilerplate_ **********
-% 
+%% <-- GIBBON footer text --> 
 % Copyright 2017 Kevin Mattheus Moerman
 % 
 % Licensed under the Apache License, Version 2.0 (the "License");

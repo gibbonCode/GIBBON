@@ -60,9 +60,7 @@ X=X(1:end-1); Y=Y(1:end-1); %Removing double end points (=start point)
 end
 
  
-%% 
-% ********** _license boilerplate_ **********
-% 
+%% <-- GIBBON footer text --> 
 % Copyright 2017 Kevin Mattheus Moerman
 % 
 % Licensed under the Apache License, Version 2.0 (the "License");

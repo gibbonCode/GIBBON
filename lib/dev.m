@@ -3,9 +3,7 @@ function Ad=dev(A)
 I=eye(size(A)); 
 Ad=A-((trace(A)./3)*I);
  
-%% 
-% ********** _license boilerplate_ **********
-% 
+%% <-- GIBBON footer text --> 
 % Copyright 2017 Kevin Mattheus Moerman
 % 
 % Licensed under the Apache License, Version 2.0 (the "License");

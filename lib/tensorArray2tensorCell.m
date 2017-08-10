@@ -7,9 +7,7 @@ H_mat=reshape(H_mat',nDims,nDims,size(H_mat,1));
         
 H=reshape(mat2cell(H_mat,nDims,nDims,ones(size(H_mat,3),1)),siz);
  
-%% 
-% ********** _license boilerplate_ **********
-% 
+%% <-- GIBBON footer text --> 
 % Copyright 2017 Kevin Mattheus Moerman
 % 
 % Licensed under the Apache License, Version 2.0 (the "License");

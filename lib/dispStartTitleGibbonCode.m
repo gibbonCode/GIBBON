@@ -5,9 +5,7 @@ disp(' '); %Empty line
 disp(lineSep); %Stripe
 disp(['--- ',msgText,' --- ',datestr(now)]); %Start message
  
-%% 
-% ********** _license boilerplate_ **********
-% 
+%% <-- GIBBON footer text --> 
 % Copyright 2017 Kevin Mattheus Moerman
 % 
 % Licensed under the Apache License, Version 2.0 (the "License");

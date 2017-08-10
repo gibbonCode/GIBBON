@@ -42,9 +42,7 @@ IND_mask=zeros(size(Im));
 IND_mask(L_valid)=ind_m;
 
  
-%% 
-% ********** _license boilerplate_ **********
-% 
+%% <-- GIBBON footer text --> 
 % Copyright 2017 Kevin Mattheus Moerman
 % 
 % Licensed under the Apache License, Version 2.0 (the "License");

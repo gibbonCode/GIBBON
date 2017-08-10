@@ -25,9 +25,7 @@ cMap=[0 49 79; 214 20 28; 122 141 155; 254 229 163; ]./255;
 
 end
  
-%% 
-% ********** _license boilerplate_ **********
-% 
+%% <-- GIBBON footer text --> 
 % Copyright 2017 Kevin Mattheus Moerman
 % 
 % Licensed under the Apache License, Version 2.0 (the "License");

@@ -35,9 +35,7 @@ F_fixed(L_fixed,:)=fliplr(F(L_fixed,:)); %Invert faces whose normal vector end r
 
 end
  
-%% 
-% ********** _license boilerplate_ **********
-% 
+%% <-- GIBBON footer text --> 
 % Copyright 2017 Kevin Mattheus Moerman
 % 
 % Licensed under the Apache License, Version 2.0 (the "License");

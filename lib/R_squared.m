@@ -15,9 +15,7 @@ SS_err=nansum((yi-fi).^2);
 SS_tot=nansum((yi-y_bar).^2);
 R_sq=1-(SS_err./SS_tot);
  
-%% 
-% ********** _license boilerplate_ **********
-% 
+%% <-- GIBBON footer text --> 
 % Copyright 2017 Kevin Mattheus Moerman
 % 
 % Licensed under the Apache License, Version 2.0 (the "License");

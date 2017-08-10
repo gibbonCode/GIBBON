@@ -26,9 +26,7 @@ T{end+1}=TF;
 %Write text to file
 cell2txtfile(fileName,T,0);   
  
-%% 
-% ********** _license boilerplate_ **********
-% 
+%% <-- GIBBON footer text --> 
 % Copyright 2017 Kevin Mattheus Moerman
 % 
 % Licensed under the Apache License, Version 2.0 (the "License");

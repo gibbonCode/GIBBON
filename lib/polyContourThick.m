@@ -70,9 +70,7 @@ M=reshape(D,size(X)); %Level-set image
 [C]=gcontour(X,Y,M,k,pointSpacing,resampleMethod);
 
  
-%% 
-% ********** _license boilerplate_ **********
-% 
+%% <-- GIBBON footer text --> 
 % Copyright 2017 Kevin Mattheus Moerman
 % 
 % Licensed under the Apache License, Version 2.0 (the "License");

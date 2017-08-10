@@ -3,9 +3,7 @@ function [R]=vecAngle2Rot(theta,w)
 W=crossProdMat(w);
 R=eye(3,3)+W*sin(theta)+W^2*(1-cos(theta));
  
-%% 
-% ********** _license boilerplate_ **********
-% 
+%% <-- GIBBON footer text --> 
 % Copyright 2017 Kevin Mattheus Moerman
 % 
 % Licensed under the Apache License, Version 2.0 (the "License");

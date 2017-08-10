@@ -56,9 +56,7 @@ TRI6=ind_uni_2(TRI6); %Changing indices in faces matrix
 
    
  
-%% 
-% ********** _license boilerplate_ **********
-% 
+%% <-- GIBBON footer text --> 
 % Copyright 2017 Kevin Mattheus Moerman
 % 
 % Licensed under the Apache License, Version 2.0 (the "License");

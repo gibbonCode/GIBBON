@@ -187,9 +187,7 @@ varargout{4}=Fb_tet10;
 varargout{5}=S;
    
  
-%% 
-% ********** _license boilerplate_ **********
-% 
+%% <-- GIBBON footer text --> 
 % Copyright 2017 Kevin Mattheus Moerman
 % 
 % Licensed under the Apache License, Version 2.0 (the "License");

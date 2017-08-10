@@ -20,9 +20,7 @@ x2=V2-v1(indMin,:);
 %Find distance to closest triangles
 D=abs(dot(N1(indMin,:),x2,2));
  
-%% 
-% ********** _license boilerplate_ **********
-% 
+%% <-- GIBBON footer text --> 
 % Copyright 2017 Kevin Mattheus Moerman
 % 
 % Licensed under the Apache License, Version 2.0 (the "License");

@@ -18,9 +18,7 @@ I=(Y./v(1))+0.5;
 J=(X./v(2))+0.5;
 K=(Z./v(3))+0.5;
  
-%% 
-% ********** _license boilerplate_ **********
-% 
+%% <-- GIBBON footer text --> 
 % Copyright 2017 Kevin Mattheus Moerman
 % 
 % Licensed under the Apache License, Version 2.0 (the "License");

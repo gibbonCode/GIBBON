@@ -46,9 +46,7 @@ a=tan(Ps.t*0.5*pi);
 x=(P-Ps.c)./(b./a);
 Pb=(w.*(0.5+(atan(x)./pi)))+Ps.lb;
  
-%% 
-% ********** _license boilerplate_ **********
-% 
+%% <-- GIBBON footer text --> 
 % Copyright 2017 Kevin Mattheus Moerman
 % 
 % Licensed under the Apache License, Version 2.0 (the "License");

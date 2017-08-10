@@ -89,9 +89,7 @@ end
 [X,Y,Z]=sph2cart(THETA,PHI,r.*ones(size(X)));
 V=[X(:) Y(:) Z(:)];
  
-%% 
-% ********** _license boilerplate_ **********
-% 
+%% <-- GIBBON footer text --> 
 % Copyright 2017 Kevin Mattheus Moerman
 % 
 % Licensed under the Apache License, Version 2.0 (the "License");

@@ -36,9 +36,7 @@ F_add=[Fs(:,2) indNew Fs(:,1);...
 
 Fn=[F(~L,:);F_add];
  
-%% 
-% ********** _license boilerplate_ **********
-% 
+%% <-- GIBBON footer text --> 
 % Copyright 2017 Kevin Mattheus Moerman
 % 
 % Licensed under the Apache License, Version 2.0 (the "License");

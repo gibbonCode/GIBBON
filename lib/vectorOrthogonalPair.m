@@ -52,9 +52,7 @@ end
 a=cross(f,d,2); [a]=vecnormalize(a); %d is orthogonal to f and a
 d=cross(f,a,2); [d]=vecnormalize(d); %a is reset to be orthogonal to both f and d
  
-%% 
-% ********** _license boilerplate_ **********
-% 
+%% <-- GIBBON footer text --> 
 % Copyright 2017 Kevin Mattheus Moerman
 % 
 % Licensed under the Apache License, Version 2.0 (the "License");

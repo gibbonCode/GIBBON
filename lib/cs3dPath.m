@@ -8,9 +8,7 @@ t = cumsum([0,dt.^(1/4)]); %Curve length measure
 % t = cumsum([0,dt]); %Curve length measure
 pp = csaps(t,V',p,[],w); %Smoothened ppform
  
-%% 
-% ********** _license boilerplate_ **********
-% 
+%% <-- GIBBON footer text --> 
 % Copyright 2017 Kevin Mattheus Moerman
 % 
 % Licensed under the Apache License, Version 2.0 (the "License");

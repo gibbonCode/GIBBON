@@ -46,9 +46,7 @@ valRep=A(L_mem); %These are the (non-unique) entries to be replaces
 [~,~,indReplace]=unique(valRep); %Use to unique operation to get indices into b
 A(L_mem)=b(indReplace); %Now replace the entries
  
-%% 
-% ********** _license boilerplate_ **********
-% 
+%% <-- GIBBON footer text --> 
 % Copyright 2017 Kevin Mattheus Moerman
 % 
 % Licensed under the Apache License, Version 2.0 (the "License");

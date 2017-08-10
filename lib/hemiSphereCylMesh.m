@@ -118,9 +118,7 @@ Ft=[Fs;Fcc];
 Vt=Vt(ind1,:);
 Ft=ind2(Ft);
  
-%% 
-% ********** _license boilerplate_ **********
-% 
+%% <-- GIBBON footer text --> 
 % Copyright 2017 Kevin Mattheus Moerman
 % 
 % Licensed under the Apache License, Version 2.0 (the "License");

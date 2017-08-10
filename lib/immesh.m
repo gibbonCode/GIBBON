@@ -2,9 +2,7 @@ function [I,J,K]=immesh(M)
 
 [J,I, K]=meshgrid(0.5:1:(size(M,2)+0.5),0.5:1:(size(M,1)+0.5), 1:1:(size(M,3)));
  
-%% 
-% ********** _license boilerplate_ **********
-% 
+%% <-- GIBBON footer text --> 
 % Copyright 2017 Kevin Mattheus Moerman
 % 
 % Licensed under the Apache License, Version 2.0 (the "License");

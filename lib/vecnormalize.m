@@ -11,9 +11,7 @@ V_norm=V./H(:,ones(size(V,2),1));
 V_norm(logicInvalid,:)=0; %Set invalid lengths to 0
 end
  
-%% 
-% ********** _license boilerplate_ **********
-% 
+%% <-- GIBBON footer text --> 
 % Copyright 2017 Kevin Mattheus Moerman
 % 
 % Licensed under the Apache License, Version 2.0 (the "License");

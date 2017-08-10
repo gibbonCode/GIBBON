@@ -5,9 +5,7 @@ M_pad=zeros(size(M)+L_even_dim);
 M_pad(1:1:size(M,1),1:1:size(M,2),1:1:size(M,3))=M;
 
  
-%% 
-% ********** _license boilerplate_ **********
-% 
+%% <-- GIBBON footer text --> 
 % Copyright 2017 Kevin Mattheus Moerman
 % 
 % Licensed under the Apache License, Version 2.0 (the "License");

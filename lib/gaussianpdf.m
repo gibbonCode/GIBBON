@@ -2,9 +2,7 @@ function P=gaussianpdf(A,M,S)
 
 P= ((1./(S.*sqrt(2*pi))).*exp(-1.*((M-sqrt((A^2)+(S^2))).^2./(2.*(S.^2))))).*(M>=0);
  
-%% 
-% ********** _license boilerplate_ **********
-% 
+%% <-- GIBBON footer text --> 
 % Copyright 2017 Kevin Mattheus Moerman
 % 
 % Licensed under the Apache License, Version 2.0 (the "License");

@@ -13,9 +13,7 @@ for q=1:1:size(V1,2) %For all dimensions
 end
 D=sqrt(D);
  
-%% 
-% ********** _license boilerplate_ **********
-% 
+%% <-- GIBBON footer text --> 
 % Copyright 2017 Kevin Mattheus Moerman
 % 
 % Licensed under the Apache License, Version 2.0 (the "License");

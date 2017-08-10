@@ -112,9 +112,7 @@ D_out.Exx=Exx; D_out.Exy=Exy; D_out.Exz=Exz;
 D_out.Eyx=Eyx; D_out.Eyy=Eyy; D_out.Eyz=Eyz;
 D_out.Ezx=Ezx; D_out.Ezy=Ezy; D_out.Ezz=Ezz;
  
-%% 
-% ********** _license boilerplate_ **********
-% 
+%% <-- GIBBON footer text --> 
 % Copyright 2017 Kevin Mattheus Moerman
 % 
 % Licensed under the Apache License, Version 2.0 (the "License");

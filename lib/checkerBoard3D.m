@@ -26,9 +26,7 @@ M=false(siz);
 M(iseven(K))=logic_ij(iseven(K));
 M(~iseven(K))=~logic_ij(~iseven(K));
  
-%% 
-% ********** _license boilerplate_ **********
-% 
+%% <-- GIBBON footer text --> 
 % Copyright 2017 Kevin Mattheus Moerman
 % 
 % Licensed under the Apache License, Version 2.0 (the "License");

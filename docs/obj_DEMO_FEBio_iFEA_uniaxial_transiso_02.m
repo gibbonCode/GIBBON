@@ -155,13 +155,8 @@ switch objectiveStruct.method
         Fopt=[OPT_stats_out.Fopt(1,1) OPT_stats_out.Fopt(1,2) OPT_stats_out.Fopt(2,2)]; %Objective function vectors
 end
 
-%%
-
-
  
-%% 
-% ********** _license boilerplate_ **********
-% 
+%% <-- GIBBON footer text --> 
 % Copyright 2017 Kevin Mattheus Moerman
 % 
 % Licensed under the Apache License, Version 2.0 (the "License");

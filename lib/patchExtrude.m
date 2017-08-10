@@ -20,9 +20,7 @@ indFix=indFix(:,ones(1,size(F_rep,2)));
 %Create element matrix
 Et=[F_rep+(size(V,1)*indFix) F_rep+(size(V,1)*(indFix+1))];
  
-%% 
-% ********** _license boilerplate_ **********
-% 
+%% <-- GIBBON footer text --> 
 % Copyright 2017 Kevin Mattheus Moerman
 % 
 % Licensed under the Apache License, Version 2.0 (the "License");

@@ -23,9 +23,7 @@ D=[XE(:,4) YE(:,4) ZE(:,4)];
 
 VE=abs(dot((A-D),cross((B-D),(C-D),2),2))./6;
  
-%% 
-% ********** _license boilerplate_ **********
-% 
+%% <-- GIBBON footer text --> 
 % Copyright 2017 Kevin Mattheus Moerman
 % 
 % Licensed under the Apache License, Version 2.0 (the "License");

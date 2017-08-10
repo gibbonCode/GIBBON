@@ -32,9 +32,7 @@ P=[mean(x),mean(y),mean(z)];
 N=-1/V(end,end)*V(:,end);
 A=N(1); B=N(2); C=-P*N;
  
-%% 
-% ********** _license boilerplate_ **********
-% 
+%% <-- GIBBON footer text --> 
 % Copyright 2017 Kevin Mattheus Moerman
 % 
 % Licensed under the Apache License, Version 2.0 (the "License");

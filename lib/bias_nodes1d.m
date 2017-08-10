@@ -19,9 +19,7 @@ max_x=max(x,[],2)*ones(1,size(x,2));
 x=max_x.*((x.^f)./(max_x.^f)); 
 x=x+min_x;
  
-%% 
-% ********** _license boilerplate_ **********
-% 
+%% <-- GIBBON footer text --> 
 % Copyright 2017 Kevin Mattheus Moerman
 % 
 % Licensed under the Apache License, Version 2.0 (the "License");

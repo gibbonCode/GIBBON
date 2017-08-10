@@ -21,9 +21,7 @@ fft_dY=bsxfun(@times,(1i*kx).^derOrder,fft(Y,[],dimDir));
 
 dY=ifft(fft_dY,[],dimDir,'symmetric');
  
-%% 
-% ********** _license boilerplate_ **********
-% 
+%% <-- GIBBON footer text --> 
 % Copyright 2017 Kevin Mattheus Moerman
 % 
 % Licensed under the Apache License, Version 2.0 (the "License");

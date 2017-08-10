@@ -87,9 +87,7 @@ M(ismember(LL,labelsInterior))=2; %Interior is set to 2
 G.voxelSize=voxelSize;
 G.origin=imOrigin;
  
-%% 
-% ********** _license boilerplate_ **********
-% 
+%% <-- GIBBON footer text --> 
 % Copyright 2017 Kevin Mattheus Moerman
 % 
 % Licensed under the Apache License, Version 2.0 (the "License");

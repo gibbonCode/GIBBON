@@ -20,9 +20,7 @@ V2_M(:,4)=1;
 T=(V1_M\V2_M)';
 
  
-%% 
-% ********** _license boilerplate_ **********
-% 
+%% <-- GIBBON footer text --> 
 % Copyright 2017 Kevin Mattheus Moerman
 % 
 % Licensed under the Apache License, Version 2.0 (the "License");

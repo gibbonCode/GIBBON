@@ -4,9 +4,7 @@ V=[e.radii(1).*cos(t(:)) e.radii(2).*sin(t(:)) zeros(numel(t),1)];
 V=(e.axes*V')';
 V=V+e.centre(ones(numel(t),1),:);
  
-%% 
-% ********** _license boilerplate_ **********
-% 
+%% <-- GIBBON footer text --> 
 % Copyright 2017 Kevin Mattheus Moerman
 % 
 % Licensed under the Apache License, Version 2.0 (the "License");

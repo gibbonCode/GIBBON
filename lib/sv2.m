@@ -288,9 +288,7 @@ javacomponent(jSlider,[0,0,w,round(hf.Position(4))]);
 end
 
  
-%% 
-% ********** _license boilerplate_ **********
-% 
+%% <-- GIBBON footer text --> 
 % Copyright 2017 Kevin Mattheus Moerman
 % 
 % Licensed under the Apache License, Version 2.0 (the "License");

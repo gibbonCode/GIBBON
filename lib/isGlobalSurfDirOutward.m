@@ -23,9 +23,7 @@ L=volFV2>volFV1; %if the volume increased the global direction is outward
 
 end
  
-%% 
-% ********** _license boilerplate_ **********
-% 
+%% <-- GIBBON footer text --> 
 % Copyright 2017 Kevin Mattheus Moerman
 % 
 % Licensed under the Apache License, Version 2.0 (the "License");

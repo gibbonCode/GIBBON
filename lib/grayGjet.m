@@ -13,9 +13,7 @@ cMap=[flipud(gray(size(cMap,1))); cMap];
 
 [cMap]=resampleColormap(cMap,n);
  
-%% 
-% ********** _license boilerplate_ **********
-% 
+%% <-- GIBBON footer text --> 
 % Copyright 2017 Kevin Mattheus Moerman
 % 
 % Licensed under the Apache License, Version 2.0 (the "License");

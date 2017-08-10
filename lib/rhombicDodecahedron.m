@@ -34,9 +34,7 @@ F(end-3:end,:)=F(end-3:end,[1 4 3 2]);
 % 2)Similarly remove need for scaling
 
  
-%% 
-% ********** _license boilerplate_ **********
-% 
+%% <-- GIBBON footer text --> 
 % Copyright 2017 Kevin Mattheus Moerman
 % 
 % Licensed under the Apache License, Version 2.0 (the "License");

@@ -47,9 +47,7 @@ PointerShapeCData(5:end,5:end)=1;
 PointerShapeCData(6:end,6:end)=NaN;
 end
  
-%% 
-% ********** _license boilerplate_ **********
-% 
+%% <-- GIBBON footer text --> 
 % Copyright 2017 Kevin Mattheus Moerman
 % 
 % Licensed under the Apache License, Version 2.0 (the "License");

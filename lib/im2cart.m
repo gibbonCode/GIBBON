@@ -18,9 +18,7 @@ X=(J-0.5).*v(2);
 Y=(I-0.5).*v(1);
 Z=(K-0.5).*v(3);
  
-%% 
-% ********** _license boilerplate_ **********
-% 
+%% <-- GIBBON footer text --> 
 % Copyright 2017 Kevin Mattheus Moerman
 % 
 % Licensed under the Apache License, Version 2.0 (the "License");

@@ -8,9 +8,7 @@ y=range_out(1)+(abs(range_out(1)-range_out(2))*(y./y(end)));
 
 end
  
-%% 
-% ********** _license boilerplate_ **********
-% 
+%% <-- GIBBON footer text --> 
 % Copyright 2017 Kevin Mattheus Moerman
 % 
 % Licensed under the Apache License, Version 2.0 (the "License");

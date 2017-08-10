@@ -19,9 +19,7 @@ xmlwrite_xerces(save_name,XDOC); %Custom XML write function for now
 %Save to txt file while skipping "empty lines"
 cell2txtfile(save_name,T,1);
  
-%% 
-% ********** _license boilerplate_ **********
-% 
+%% <-- GIBBON footer text --> 
 % Copyright 2017 Kevin Mattheus Moerman
 % 
 % Licensed under the Apache License, Version 2.0 (the "License");

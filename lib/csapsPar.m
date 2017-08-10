@@ -37,9 +37,7 @@ h=mean(hVec(:)); %Average point spacing
 p=1./(1+(((h.^3)/6)*f));
 
  
-%% 
-% ********** _license boilerplate_ **********
-% 
+%% <-- GIBBON footer text --> 
 % Copyright 2017 Kevin Mattheus Moerman
 % 
 % Licensed under the Apache License, Version 2.0 (the "License");

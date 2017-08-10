@@ -29,9 +29,7 @@ Mq(1:end,1:end,size(M,3):end)=flipdim(Mq(1:end,1:end,1:size(M,3)),3);
 
 %% END
  
-%% 
-% ********** _license boilerplate_ **********
-% 
+%% <-- GIBBON footer text --> 
 % Copyright 2017 Kevin Mattheus Moerman
 % 
 % Licensed under the Apache License, Version 2.0 (the "License");

@@ -39,9 +39,7 @@ VD=(V_E1-V_E2);
 D=sqrt(sum(VD.^2,2));
 
  
-%% 
-% ********** _license boilerplate_ **********
-% 
+%% <-- GIBBON footer text --> 
 % Copyright 2017 Kevin Mattheus Moerman
 % 
 % Licensed under the Apache License, Version 2.0 (the "License");

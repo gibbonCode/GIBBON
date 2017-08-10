@@ -4,9 +4,7 @@ function Nn=vec_normalize(N)
 Nn=N./(sqrt(sum(N.^2,2))*ones(1,size(N,2)));
 
  
-%% 
-% ********** _license boilerplate_ **********
-% 
+%% <-- GIBBON footer text --> 
 % Copyright 2017 Kevin Mattheus Moerman
 % 
 % Licensed under the Apache License, Version 2.0 (the "License");

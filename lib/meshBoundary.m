@@ -41,9 +41,7 @@ varargout{1}=Fb;
 varargout{2}=F_count;
 varargout{3}=CFb;
  
-%% 
-% ********** _license boilerplate_ **********
-% 
+%% <-- GIBBON footer text --> 
 % Copyright 2017 Kevin Mattheus Moerman
 % 
 % Licensed under the Apache License, Version 2.0 (the "License");

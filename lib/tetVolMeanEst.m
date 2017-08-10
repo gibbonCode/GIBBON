@@ -20,9 +20,7 @@ edgeLengthsMean=mean(edgeLengths);
 meanProposedVolume=edgeLengthsMean^3./(6*sqrt(2)); %For a regular tetrahedron
 v=meanProposedVolume;
  
-%% 
-% ********** _license boilerplate_ **********
-% 
+%% <-- GIBBON footer text --> 
 % Copyright 2017 Kevin Mattheus Moerman
 % 
 % Licensed under the Apache License, Version 2.0 (the "License");

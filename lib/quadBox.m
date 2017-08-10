@@ -42,9 +42,7 @@ V=V./maxV(ones(size(V,1),1),:);
 V=V.*boxDim(ones(size(V,1),1),:);
 V=V-boxDim(ones(size(V,1),1),:)/2;
  
-%% 
-% ********** _license boilerplate_ **********
-% 
+%% <-- GIBBON footer text --> 
 % Copyright 2017 Kevin Mattheus Moerman
 % 
 % Licensed under the Apache License, Version 2.0 (the "License");

@@ -46,9 +46,7 @@ Mc=M(:); %Image as column
 M=Mc(linearInd); %The refined image
 
  
-%% 
-% ********** _license boilerplate_ **********
-% 
+%% <-- GIBBON footer text --> 
 % Copyright 2017 Kevin Mattheus Moerman
 % 
 % Licensed under the Apache License, Version 2.0 (the "License");

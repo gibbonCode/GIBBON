@@ -54,9 +54,7 @@ e.radii=A(3:4);
 e.axes=M(1:3,1:3);
 e.tform=M;
  
-%% 
-% ********** _license boilerplate_ **********
-% 
+%% <-- GIBBON footer text --> 
 % Copyright 2017 Kevin Mattheus Moerman
 % 
 % Licensed under the Apache License, Version 2.0 (the "License");

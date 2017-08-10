@@ -66,9 +66,7 @@ Fc_T=mat2cell(Ft_T,size(Fst,1)*ones(1,nTotal),size(Fst,2));
 end
 
  
-%% 
-% ********** _license boilerplate_ **********
-% 
+%% <-- GIBBON footer text --> 
 % Copyright 2017 Kevin Mattheus Moerman
 % 
 % Licensed under the Apache License, Version 2.0 (the "License");

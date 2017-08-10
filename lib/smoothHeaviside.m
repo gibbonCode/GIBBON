@@ -18,9 +18,7 @@ k=k*2;
 S=exp(2*k*(x-r))./(1+exp(2*k*(x-r)));
 
  
-%% 
-% ********** _license boilerplate_ **********
-% 
+%% <-- GIBBON footer text --> 
 % Copyright 2017 Kevin Mattheus Moerman
 % 
 % Licensed under the Apache License, Version 2.0 (the "License");

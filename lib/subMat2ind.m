@@ -6,9 +6,7 @@ for q=2:1:size(I,2)
     ind = ind + (I(:,q) - 1).*k(q-1);
 end
  
-%% 
-% ********** _license boilerplate_ **********
-% 
+%% <-- GIBBON footer text --> 
 % Copyright 2017 Kevin Mattheus Moerman
 % 
 % Licensed under the Apache License, Version 2.0 (the "License");

@@ -74,9 +74,7 @@ end
 V=V(ind1,:); %The unique point set
 F=ind2(F); %Fixing vertex indices in faces matrix
  
-%% 
-% ********** _license boilerplate_ **********
-% 
+%% <-- GIBBON footer text --> 
 % Copyright 2017 Kevin Mattheus Moerman
 % 
 % Licensed under the Apache License, Version 2.0 (the "License");

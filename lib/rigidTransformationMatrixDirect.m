@@ -30,9 +30,7 @@ varargout{1}=T;
 varargout{2}=R(1:3,1:3);
 
  
-%% 
-% ********** _license boilerplate_ **********
-% 
+%% <-- GIBBON footer text --> 
 % Copyright 2017 Kevin Mattheus Moerman
 % 
 % Licensed under the Apache License, Version 2.0 (the "License");

@@ -23,9 +23,7 @@ set(gca,'FontSize',fontSize);
 axis equal; axis vis3d; axis tight;
 grid on; box on; 
  
-%% 
-% ********** _license boilerplate_ **********
-% 
+%% <-- GIBBON footer text --> 
 % Copyright 2017 Kevin Mattheus Moerman
 % 
 % Licensed under the Apache License, Version 2.0 (the "License");

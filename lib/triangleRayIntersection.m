@@ -205,9 +205,7 @@ V_intersect=((1-U_bar(:,ones(1,3))-V_bar(:,ones(1,3))).*V0) + (U_bar(:,ones(1,3)
 V_intersect(~L_intersect,:)=NaN;
 T(~L_intersect,:)=NaN;
  
-%% 
-% ********** _license boilerplate_ **********
-% 
+%% <-- GIBBON footer text --> 
 % Copyright 2017 Kevin Mattheus Moerman
 % 
 % Licensed under the Apache License, Version 2.0 (the "License");

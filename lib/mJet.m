@@ -12,9 +12,7 @@ cMap=[0.121732026143791,0.00996732026143791,0.313725490196078;0.142581763676599,
 
 [cMap]=resampleColormap(cMap,n);
  
-%% 
-% ********** _license boilerplate_ **********
-% 
+%% <-- GIBBON footer text --> 
 % Copyright 2017 Kevin Mattheus Moerman
 % 
 % Licensed under the Apache License, Version 2.0 (the "License");

@@ -53,9 +53,7 @@ logicSlashType=iseven(F_I);
 F=[F1(~logicSlashType,:);F2(logicSlashType,:)];
 
  
-%% 
-% ********** _license boilerplate_ **********
-% 
+%% <-- GIBBON footer text --> 
 % Copyright 2017 Kevin Mattheus Moerman
 % 
 % Licensed under the Apache License, Version 2.0 (the "License");

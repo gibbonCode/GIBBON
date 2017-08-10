@@ -19,9 +19,7 @@ function [Z]=rozenbrock(X,Y)
 
 Z=(1-X.^2)+100.*((Y-(X.^2)).^2);
  
-%% 
-% ********** _license boilerplate_ **********
-% 
+%% <-- GIBBON footer text --> 
 % Copyright 2017 Kevin Mattheus Moerman
 % 
 % Licensed under the Apache License, Version 2.0 (the "License");

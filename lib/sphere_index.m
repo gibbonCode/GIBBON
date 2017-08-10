@@ -28,9 +28,7 @@ I=I-IJK_middle(1);
 J=J-IJK_middle(2);
 K=K-IJK_middle(3);
  
-%% 
-% ********** _license boilerplate_ **********
-% 
+%% <-- GIBBON footer text --> 
 % Copyright 2017 Kevin Mattheus Moerman
 % 
 % Licensed under the Apache License, Version 2.0 (the "License");

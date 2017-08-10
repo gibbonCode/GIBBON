@@ -89,9 +89,7 @@ hp=patch('Faces',Fni,'Vertices',Vni);
 set(hp,'EdgeColor','none','FaceColor','k');
 
  
-%% 
-% ********** _license boilerplate_ **********
-% 
+%% <-- GIBBON footer text --> 
 % Copyright 2017 Kevin Mattheus Moerman
 % 
 % Licensed under the Apache License, Version 2.0 (the "License");

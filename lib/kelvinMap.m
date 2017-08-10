@@ -10,9 +10,7 @@ elseif isvector(cVoigt) %assume that c is a 2nd order tensor
     cKelvin=cVoigt.*x';
 end
  
-%% 
-% ********** _license boilerplate_ **********
-% 
+%% <-- GIBBON footer text --> 
 % Copyright 2017 Kevin Mattheus Moerman
 % 
 % Licensed under the Apache License, Version 2.0 (the "License");

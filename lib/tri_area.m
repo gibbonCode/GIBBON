@@ -8,9 +8,7 @@ V12=V(F(:,2),:)-V(F(:,1),:);
 V13=V(F(:,3),:)-V(F(:,1),:);
 A=0.5.*sqrt(sum(cross(V12,V13,2).^2,2));
  
-%% 
-% ********** _license boilerplate_ **********
-% 
+%% <-- GIBBON footer text --> 
 % Copyright 2017 Kevin Mattheus Moerman
 % 
 % Licensed under the Apache License, Version 2.0 (the "License");

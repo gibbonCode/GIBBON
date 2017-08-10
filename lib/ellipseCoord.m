@@ -23,9 +23,7 @@ V=(R*V')';
 V(:,1)=V(:,1)+x0;
 V(:,2)=V(:,2)+y0;
  
-%% 
-% ********** _license boilerplate_ **********
-% 
+%% <-- GIBBON footer text --> 
 % Copyright 2017 Kevin Mattheus Moerman
 % 
 % Licensed under the Apache License, Version 2.0 (the "License");
