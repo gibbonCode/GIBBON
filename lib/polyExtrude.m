@@ -45,9 +45,13 @@ if ~isfield(cPar,'patchType')
 end
 
 %Check direction vector
-if ~isfield(cPar,'n')
+if ~isfield(cPar,'n')    
     [R_fit]=pointSetPrincipalDir(Vc);
-    cPar.n=R_fit(:,3); %Default normal direction to polygon
+    nDir=R_fit(:,3);
+    if dot(nDir,[0 0 1])<1 %Make the z direction the default upward direction
+        nDir=-nDir;
+    end
+    cPar.n=nDir; %Default normal direction to polygon
 end
 cPar.n=vecnormalize(cPar.n);
 cPar.n=cPar.n(:)';

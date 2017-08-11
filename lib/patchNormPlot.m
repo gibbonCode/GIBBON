@@ -1,4 +1,4 @@
-function [hp]=patchNormPlot(varargin)
+function varargout=patchNormPlot(varargin)
 
 % function [hp]=patchNormPlot(F,V,a,pathType)
 %
@@ -88,6 +88,9 @@ hp=patch('Faces',Fni,'Vertices',Vni);
 %Set defaults
 set(hp,'EdgeColor','none','FaceColor','k');
 
+if nargout>1
+    varargout{1}=hp;
+end
  
 %% <-- GIBBON footer text --> 
 % 
