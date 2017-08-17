@@ -268,7 +268,7 @@ axisGeom(gca,fontSize);
 camlight headlight; lighting flat;
 
 subplot(1,2,2); 
-title('Lattice side 1','fontSize',fontSize)
+title('Lattice side 2','fontSize',fontSize)
 hold on;
 gpatch(Fs,Vs,CsF);
 colormap(cMap); 

@@ -21,25 +21,35 @@ bibliography: paper.bib
 
 ![Overview of GIBBON](docs/html/GIBBON_overview.jpg){:width="100%"}
 
-# Application highlights
-## Segmentation  
-The `imx.m` function provides a graphical user interface for segmenting 3D image data.
+# Application highlights   
+- [Segmentation](#Segmentation)  
+- [Meshing](#Meshing)  
+- [Finite element analysis](#FEA)
+- [Geometric tools](#Geometric)
+- [Visualization](#Visualization)    
 
-## Meshing  
-`runTetGen.m`
+## Segmentation  <a name="Segmentation"></a>    
+The `imx.m` function provides a graphical user interface for segmenting 3D image data. The demo below stems from: `HELP_imx`.   
+![Segmentation](docs/img/imx_demo.gif){:width="70%"}
 
-## Geometric tools  
-Models, `geoSphere.m`
-Mesh conversions `hex2tet.m`
-Refinement, resampling `subTri.m`, `triSurfaceRemesh.m`  
-Lattice structures  
-CAD (computer aided design) tools `polyExtrude.m`, `polyLoftLinear.m`
+## Meshing <a name="Meshing"></a>   
+Multi-material tetrahedral meshing is enabled using [TetGen](http://wias-berlin.de/software/tetgen/). The TetGen interface is based on the `runTetGen.m` function. The demo below comes from the help file `HELP_runTetGen`.
+![Tetrahedral meshing](docs/img/bunnyMesh.gif){:width="70%"}
 
-## Visualization
-`cFigure.m` `vcw.m` `im2patch.m` `gpatch.m` `quiver3DPatch.m` `fourthOrderTensorView.m`
+## Finite Element Analysis <a name="FEA"></a>   
+Finite element analysis is enabled through the FEBio interface (see also the `runMonitorFEBio` function.
+The image below is for large strain analysis of a twisting bar and stems from the demo `DEMO_FEBio_bar_twist`. Other `DEMO_FEBio_...` files cover uni-axial tension/compression, bending, indentation, viscoelastic analysis, contact and indentation problems, multi-generational materials for pre-load analysis.   
+![Large strain analysis](docs/img/barTwist.gif){:width="70%"}
 
-## Finite Element Analysis
-`runMonitorFEBio.m`
+## Geometric tools <a name="Geometric"></a>   
+Models, `geoSphere`   
+Mesh conversions `hex2tet`   
+Refinement, resampling `subTri`, `triSurfaceRemesh`     
+Lattice structures  `element2lattice`   
+CAD (computer aided design) tools `polyExtrude`, `polyLoftLinear`, `sweepLoft`
+
+## Visualization <a name="Visualization"></a>    
+`cFigure` `vcw` `im2patch` `gpatch` `quiver3DPatch` `fourthOrderTensorView`
 
 # Setting up GIBBON
 ## Installation

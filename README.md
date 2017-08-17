@@ -5,6 +5,7 @@
 
 # Table of contents
 - [Project Summary](#Summary)  
+- [Application highlights](#Application)  
 - [Installation](#Installation)  
 - [Getting started](#Start)  
 - [License](#License)  
@@ -16,6 +17,26 @@
 GIBBON (The Geometry and Image-Based Bioengineering add-On) is an open-source MATLAB toolbox by [Kevin M. Moerman](kevimoerman.org) and includes an array of image and geometry visualization and processing tools and is interfaced with free open source software such as [TetGen](http://wias-berlin.de/software/tetgen/), for robust tetrahedral meshing, and [FEBio](http://febio.org/) for finite element analysis. The combination provides a highly flexible image-based modelling environment and enables advanced inverse finite element analysis.
 
 <img src="docs/html/GIBBON_overview.jpg" href="https://gibboncode.org" alt="GIBBON overview" width="100%">
+
+# Application highlights <a name="Application"></a>  
+- [Segmentation](#Segmentation)  
+- [Meshing](#Meshing)  
+- [Finite element analysis](#FEA)
+- [Geometric tools](#Geometric)
+- [Visualization](#Visualization)    
+
+### Segmentation  <a name="Segmentation"></a>    
+The `imx.m` function provides a graphical user interface for segmenting 3D image data. The demo below stems from: `HELP_imx`.   
+![Segmentation](docs/img/imx_demo.gif){:width="70%"}
+
+### Meshing <a name="Meshing"></a>   
+Multi-material tetrahedral meshing is enabled using [TetGen](http://wias-berlin.de/software/tetgen/). The TetGen interface is based on the `runTetGen.m` function. The demo below comes from the help file `HELP_runTetGen`.
+![Tetrahedral meshing](docs/img/bunnyMesh.gif){:width="70%"}
+
+### Finite Element Analysis <a name="FEA"></a>   
+Finite element analysis is enabled through the FEBio interface (see also the `runMonitorFEBio` function.
+The image below is for large strain analysis of a twisting bar and stems from the demo `DEMO_FEBio_bar_twist`. Other `DEMO_FEBio_...` files cover uni-axial tension/compression, bending, indentation, viscoelastic analysis, contact and indentation problems, multi-generational materials for pre-load analysis.   
+![Large strain analysis](docs/img/barTwist.gif){:width="70%"}
 
 # Installation <a name="Installation"></a>  
 ### 1. Installing 3rd party packages

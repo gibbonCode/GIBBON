@@ -88,7 +88,7 @@ hp=patch('Faces',Fni,'Vertices',Vni);
 %Set defaults
 set(hp,'EdgeColor','none','FaceColor','k');
 
-if nargout>1
+if nargout>0
     varargout{1}=hp;
 end
  

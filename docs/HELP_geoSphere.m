@@ -36,7 +36,7 @@ hf=cFigure; % Open figure for plotting
 r=1; %sphere radius
 n=0:1:3; %Refinements   
 pColors=autumn(numel(n));
-for q=1:1:numel(n);
+for q=1:1:numel(n)
     [F,V,~]=geoSphere(n(q),r); 
     subplot(2,2,q); hold on;
     title([num2str(n(q)),' refinement iterations'],'FontSize',fontSize);
@@ -61,7 +61,7 @@ hf=cFigure; % Open figure for plotting
 titleCell={'tetrahedron','cube','octahedron','icosahedron','dodecahedron'};
 n=0; %Refinements   
 pColors=autumn(numel(n));
-for solidType=solidTypes;
+for solidType=solidTypes
     [F,V,~]=geoSphere(0,r,solidType); 
     subplot(2,3,solidType); hold on;
     title(['Based on: ',titleCell{solidType}],'FontSize',fontSize);
