@@ -473,7 +473,7 @@ FEBioRunStruct.maxLogCheckTime=3; %Max log file checking time
 
 %% IMPORTING NODAL DISPLACEMENT RESULTS
 % Importing nodal displacements from a log file
-[~, N_disp_mat,~]=importFEBio_logfile(FEB_struct.run_output_names{1}); %Nodal displacements
+[~, N_disp_mat,~]=importFEBio_logfile(fullfile(savePath,FEB_struct.run_output_names{1})); %Nodal displacements
 
 DN=N_disp_mat(:,2:end,end); %Final nodal displacements
 
@@ -483,7 +483,7 @@ DN_magnitude=sqrt(sum(DN.^2,2));
 
 %% IMPORT NODAL FORCE RESULTS
 
-[~, N_force_mat,~]=importFEBio_logfile(FEB_struct.run_output_names{2}); %Nodal forces
+[~, N_force_mat,~]=importFEBio_logfile(fullfile(savePath,FEB_struct.run_output_names{2})); %Nodal forces
 
 %%
 % Plotting the deformed model
@@ -511,23 +511,26 @@ drawnow;
 % 
 % _Kevin Mattheus Moerman_, <gibbon.toolbox@gmail.com>
  
-%% <-- GIBBON footer text --> 
+%% 
+% _*GIBBON footer text*_ 
 % 
-%     GIBBON: The Geometry and Image-based Bioengineering add-On. A toolbox for
-%     image segmentation, image-based modeling, meshing, and finite element
-%     analysis.
+% License: <https://github.com/gibbonCode/GIBBON/blob/master/LICENSE>
 % 
-%     Copyright (C) 2017  Kevin Mattheus Moerman
+% GIBBON: The Geometry and Image-based Bioengineering add-On. A toolbox for
+% image segmentation, image-based modeling, meshing, and finite element
+% analysis.
 % 
-%     This program is free software: you can redistribute it and/or modify
-%     it under the terms of the GNU General Public License as published by
-%     the Free Software Foundation, either version 3 of the License, or
-%     (at your option) any later version.
+% Copyright (C) 2017  Kevin Mattheus Moerman
 % 
-%     This program is distributed in the hope that it will be useful,
-%     but WITHOUT ANY WARRANTY; without even the implied warranty of
-%     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-%     GNU General Public License for more details.
+% This program is free software: you can redistribute it and/or modify
+% it under the terms of the GNU General Public License as published by
+% the Free Software Foundation, either version 3 of the License, or
+% (at your option) any later version.
 % 
-%     You should have received a copy of the GNU General Public License
-%     along with this program.  If not, see <http://www.gnu.org/licenses/>.
+% This program is distributed in the hope that it will be useful,
+% but WITHOUT ANY WARRANTY; without even the implied warranty of
+% MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+% GNU General Public License for more details.
+% 
+% You should have received a copy of the GNU General Public License
+% along with this program.  If not, see <http://www.gnu.org/licenses/>.

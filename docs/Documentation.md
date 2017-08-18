@@ -143,6 +143,7 @@ Follow the installation instructions to integrate and access GIBBON documentatio
 ## Demo files <a name="demo"></a>  
 
 [DEMO_AnyBody_force_analysys](html/DEMO_AnyBody_force_analysys.html) ![DEMO_AnyBody_force_analysys](html/DEMO_AnyBody_force_analysys.png){:height="40px"}  
+[DEMO_FEBio_XML_replacing_node_field](html/DEMO_FEBio_XML_replacing_node_field.html)  
 [DEMO_FEBio_active_contraction_01](html/DEMO_FEBio_active_contraction_01.html) ![DEMO_FEBio_active_contraction_01](html/DEMO_FEBio_active_contraction_01.png){:height="40px"}  
 [DEMO_FEBio_active_responsive_interface](html/DEMO_FEBio_active_responsive_interface.html) ![DEMO_FEBio_active_responsive_interface](html/DEMO_FEBio_active_responsive_interface.png){:height="40px"}  
 [DEMO_FEBio_bar_force](html/DEMO_FEBio_bar_force.html) ![DEMO_FEBio_bar_force](html/DEMO_FEBio_bar_force.png){:height="40px"}  
@@ -192,7 +193,6 @@ Follow the installation instructions to integrate and access GIBBON documentatio
 [DEMO_create_run_import_FEBIO_spheres_pressure](html/DEMO_create_run_import_FEBIO_spheres_pressure.html) ![DEMO_create_run_import_FEBIO_spheres_pressure](html/DEMO_create_run_import_FEBIO_spheres_pressure.png){:height="40px"}  
 [DEMO_create_run_import_FEBIO_spheres_traction](html/DEMO_create_run_import_FEBIO_spheres_traction.html) ![DEMO_create_run_import_FEBIO_spheres_traction](html/DEMO_create_run_import_FEBIO_spheres_traction.png){:height="40px"}  
 [DEMO_femur_STL_surface_improvement](html/DEMO_femur_STL_surface_improvement.html) ![DEMO_femur_STL_surface_improvement](html/DEMO_femur_STL_surface_improvement.png){:height="40px"}  
-[DEMO_geodesic_remeshing](html/DEMO_geodesic_remeshing.html) ![DEMO_geodesic_remeshing](html/DEMO_geodesic_remeshing.png){:height="40px"}  
 [DEMO_import_FEB_export_INP](html/DEMO_import_FEB_export_INP.html) ![DEMO_import_FEB_export_INP](html/DEMO_import_FEB_export_INP.png){:height="40px"}  
 [DEMO_tetGen_mesh_sizing_function_1](html/DEMO_tetGen_mesh_sizing_function_1.html) ![DEMO_tetGen_mesh_sizing_function_1](html/DEMO_tetGen_mesh_sizing_function_1.png){:height="40px"}  
 [DEMO_vessel_FEBIO_fibre_mapping](html/DEMO_vessel_FEBIO_fibre_mapping.html) ![DEMO_vessel_FEBIO_fibre_mapping](html/DEMO_vessel_FEBIO_fibre_mapping.png){:height="40px"}  

@@ -6,7 +6,7 @@
    <!--
 This HTML was auto-generated from MATLAB code.
 To make changes, update the MATLAB code and republish this document.
-      --><title>DEMO_slab_pressure_loading_01</title><meta name="generator" content="MATLAB 9.1"><link rel="schema.DC" href="http://purl.org/dc/elements/1.1/"><meta name="DC.date" content="2017-07-11"><meta name="DC.source" content="DEMO_FEBio_slab_pressure_loading_01.m"><style type="text/css">
+      --><title>DEMO_slab_pressure_loading_01</title><meta name="generator" content="MATLAB 9.1"><link rel="schema.DC" href="http://purl.org/dc/elements/1.1/"><meta name="DC.date" content="2017-08-18"><meta name="DC.source" content="DEMO_FEBio_slab_pressure_loading_01.m"><style type="text/css">
 html,body,div,span,applet,object,iframe,h1,h2,h3,h4,h5,h6,p,blockquote,pre,a,abbr,acronym,address,big,cite,code,del,dfn,em,font,img,ins,kbd,q,s,samp,small,strike,strong,sub,sup,tt,var,b,u,i,center,dl,dt,dd,ol,ul,li,fieldset,form,label,legend,table,caption,tbody,tfoot,thead,tr,th,td{margin:0;padding:0;border:0;outline:0;font-size:100%;vertical-align:baseline;background:transparent}body{line-height:1}ol,ul{list-style:none}blockquote,q{quotes:none}blockquote:before,blockquote:after,q:before,q:after{content:'';content:none}:focus{outine:0}ins{text-decoration:none}del{text-decoration:line-through}table{border-collapse:collapse;border-spacing:0}
 
 html { min-height:100%; margin-bottom:1px; }
@@ -144,22 +144,22 @@ smeshStruct.modelName=smeshName;
 [meshOutput]=runTetGen(smeshStruct); <span class="comment">%Run tetGen</span>
 </pre><pre class="codeoutput"> 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
---- TETGEN Tetrahedral meshing --- 11-Jul-2017 15:04:36
+--- TETGEN Tetrahedral meshing --- 18-Aug-2017 14:47:15
  
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
---- Writing SMESH file --- 11-Jul-2017 15:04:36
+--- Writing SMESH file --- 18-Aug-2017 14:47:15
 ----&gt; Adding node field
 ----&gt; Adding facet field
 ----&gt; Adding holes specification
 ----&gt; Adding region specification
---- Done --- 11-Jul-2017 15:04:36
---- Running TetGen to mesh input boundary--- 11-Jul-2017 15:04:36
+--- Done --- 18-Aug-2017 14:47:15
+--- Running TetGen to mesh input boundary--- 18-Aug-2017 14:47:15
 Opening /mnt/data/MATLAB/GIT/GIBBON/lib_ext/tetGen/tempFiles/tempModel.smesh.
---- Done --- 11-Jul-2017 15:04:36
+--- Done --- 18-Aug-2017 14:47:15
  
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
---- Importing TetGen files --- 11-Jul-2017 15:04:36
---- Done --- 11-Jul-2017 15:04:36
+--- Importing TetGen files --- 18-Aug-2017 14:47:15
+--- Done --- 18-Aug-2017 14:47:15
 </pre><p>Access model element and patch data</p><pre class="codeinput">FT=meshOutput.faces;
 VT=meshOutput.nodes;
 CT=meshOutput.faceMaterialID;
@@ -334,7 +334,7 @@ FEB_struct.LoadData.LoadCurves.loadPoints={[0 0;1 1];};
 febStruct2febFile(FEB_struct);
 </pre><pre class="codeoutput"> 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
---- Writing FEBio XML object --- 11-Jul-2017 15:04:39
+--- Writing FEBio XML object --- 18-Aug-2017 14:47:18
 Adding Module level
 Adding Control level
 Adding Globals level
@@ -357,7 +357,7 @@ Adding Output level
 Warning: Provided path of logfile is replaced by .feb file path. Only provide
 filename to avoid this warning 
 Writing .feb file
---- Done --- 11-Jul-2017 15:04:41
+--- Done --- 18-Aug-2017 14:47:19
 </pre><h2 id="16">RUNNING FEBIO JOB</h2><pre class="codeinput"><span class="comment">% FEBioRunStruct.FEBioPath='C:\Program Files\febio2-2.2.6\bin\febio2.exe';</span>
 FEBioRunStruct.run_filename=FEB_struct.run_filename;
 FEBioRunStruct.run_logname=FEB_struct.run_logname;
@@ -371,9 +371,9 @@ FEBioRunStruct.maxLogCheckTime=3; <span class="comment">%Max log file checking t
 [runFlag]=runMonitorFEBio(FEBioRunStruct);<span class="comment">%START FEBio NOW!!!!!!!!</span>
 </pre><pre class="codeoutput"> 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
---- STARTING FEBIO JOB --- 11-Jul-2017 15:04:41
+--- STARTING FEBIO JOB --- 18-Aug-2017 14:47:20
 Waiting for log file...
-Proceeding to check log file...11-Jul-2017 15:04:41
+Proceeding to check log file...18-Aug-2017 14:47:20
 ------- converged at time : 0.1
 ------- converged at time : 0.2
 ------- converged at time : 0.3
@@ -384,7 +384,7 @@ Proceeding to check log file...11-Jul-2017 15:04:41
 ------- converged at time : 0.8
 ------- converged at time : 0.9
 ------- converged at time : 1
---- Done --- 11-Jul-2017 15:04:46
+--- Done --- 18-Aug-2017 14:47:26
 </pre><pre class="codeinput"><span class="keyword">if</span> runFlag==1 <span class="comment">%i.e. a succesful run</span>
 
     <span class="comment">%IMPORTING NODAL DISPLACEMENT RESULTS</span>
@@ -414,7 +414,7 @@ Proceeding to check log file...11-Jul-2017 15:04:41
     set(gca,<span class="string">'FontSize'</span>,fontSize);
     drawnow;
 <span class="keyword">end</span>
-</pre><img vspace="5" hspace="5" src="DEMO_FEBio_slab_pressure_loading_01_04.png" alt=""> <p><img vspace="5" hspace="5" src="gibbVerySmall.gif" alt=""> </p><p><i><b>GIBBON</b></i> <a href="www.gibboncode.org">www.gibboncode.org</a></p><p><i>Kevin Mattheus Moerman</i>, <a href="gibbon.toolbox@gmail.com">gibbon.toolbox@gmail.com</a></p><p class="footer"><br><a href="http://www.mathworks.com/products/matlab/">Published with MATLAB&reg; R2016b</a><br></p></div><!--
+</pre><img vspace="5" hspace="5" src="DEMO_FEBio_slab_pressure_loading_01_04.png" alt=""> <p><img vspace="5" hspace="5" src="gibbVerySmall.gif" alt=""> </p><p><i><b>GIBBON</b></i> <a href="www.gibboncode.org">www.gibboncode.org</a></p><p><i>Kevin Mattheus Moerman</i>, <a href="gibbon.toolbox@gmail.com">gibbon.toolbox@gmail.com</a></p><p><i><b>GIBBON footer text</b></i></p><p>License: <a href="https://github.com/gibbonCode/GIBBON/blob/master/LICENSE">https://github.com/gibbonCode/GIBBON/blob/master/LICENSE</a></p><p>GIBBON: The Geometry and Image-based Bioengineering add-On. A toolbox for image segmentation, image-based modeling, meshing, and finite element analysis.</p><p>Copyright (C) 2017  Kevin Mattheus Moerman</p><p>This program is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.</p><p>This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for more details.</p><p>You should have received a copy of the GNU General Public License along with this program.  If not, see <a href="http://www.gnu.org/licenses/">http://www.gnu.org/licenses/</a>.</p><p class="footer"><br><a href="http://www.mathworks.com/products/matlab/">Published with MATLAB&reg; R2016b</a><br></p></div><!--
 ##### SOURCE BEGIN #####
 %% DEMO_slab_pressure_loading_01
 % Below is a demonstration for: 
@@ -771,6 +771,30 @@ end
 % <www.gibboncode.org>
 % 
 % _Kevin Mattheus Moerman_, <gibbon.toolbox@gmail.com>
+ 
+%% 
+% _*GIBBON footer text*_ 
+% 
+% License: <https://github.com/gibbonCode/GIBBON/blob/master/LICENSE>
+% 
+% GIBBON: The Geometry and Image-based Bioengineering add-On. A toolbox for
+% image segmentation, image-based modeling, meshing, and finite element
+% analysis.
+% 
+% Copyright (C) 2017  Kevin Mattheus Moerman
+% 
+% This program is free software: you can redistribute it and/or modify
+% it under the terms of the GNU General Public License as published by
+% the Free Software Foundation, either version 3 of the License, or
+% (at your option) any later version.
+% 
+% This program is distributed in the hope that it will be useful,
+% but WITHOUT ANY WARRANTY; without even the implied warranty of
+% MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+% GNU General Public License for more details.
+% 
+% You should have received a copy of the GNU General Public License
+% along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 ##### SOURCE END #####
 --></body></html>
