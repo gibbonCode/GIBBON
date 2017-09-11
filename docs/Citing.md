@@ -8,8 +8,10 @@ header-img: "img/home-bg.jpg"
 # Citing GIBBON
 A paper on GIBBON will be published shortly in [JOSS](https://joss.theoj.org/) which users will be asked to cite. For now please cite the DOI for the latest version archived with ZENODO, e.g. as:  
 
-`Kevin Mattheus Moerman, . (2016, January 7). GIBBON (Hylobates Lar). Zenodo. https://doi.org/10.5281/zenodo.44404`
+`Kevin Mattheus Moerman, . (2017, September 11). GIBBON (Hylobates Lar). Zenodo. https://zenodo.org/badge/latestdoi/93002532`
 
 To see options for importing into reference managers click this DOI badge:
 
-[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.44404.svg)](https://doi.org/10.5281/zenodo.44404)
+
+
+[![DOI](https://zenodo.org/badge/93002532.svg)](https://zenodo.org/badge/latestdoi/93002532)

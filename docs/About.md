@@ -17,37 +17,38 @@ header-img: "img/home-bg.jpg"
 - [Geometric tools](#Geometric)
 - [Visualization](#Visualization)    
 
-## Segmentation  <a name="Segmentation"></a>    
+### Segmentation  <a name="Segmentation"></a>    
 The `imx.m` function provides a graphical user interface for segmenting 3D image data. The demo below stems from: `HELP_imx`.   
 ![Segmentation](/img/imx_demo.gif){:width="70%"}
 
-## Meshing <a name="Meshing"></a>   
+### Meshing <a name="Meshing"></a>   
 Multi-material tetrahedral meshing is enabled using [TetGen](http://wias-berlin.de/software/tetgen/). The TetGen interface is based on the `runTetGen.m` function. The demo below comes from the help file `HELP_runTetGen`.
 ![Tetrahedral meshing](/img/bunnyMesh.gif){:width="70%"}
 
-## Finite Element Analysis <a name="FEA"></a>   
+### Finite Element Analysis <a name="FEA"></a>   
 Finite element analysis is enabled through the FEBio interface (see also the `runMonitorFEBio` function.
 The image below is for large strain analysis of a twisting bar and stems from the demo `DEMO_FEBio_bar_twist`. Other `DEMO_FEBio_...` files cover uni-axial tension/compression, bending, indentation, viscoelastic analysis, contact and indentation problems, multi-generational materials for pre-load analysis.   
 ![Large strain analysis](/img/barTwist.gif){:width="70%"}
 
-## Geometric tools <a name="Geometric"></a>   
+### Geometric tools <a name="Geometric"></a>   
 Models, `geoSphere`   
 Mesh conversions `hex2tet`   
 Refinement, resampling `subTri`, `triSurfaceRemesh`     
 Lattice structures  `element2lattice`   
 CAD (computer aided design) tools `polyExtrude`, `polyLoftLinear`, `sweepLoft`
 
-## Visualization <a name="Visualization"></a>    
-`cFigure` `vcw` `im2patch` `gpatch` `quiver3DPatch` `fourthOrderTensorView`
+### Visualization <a name="Visualization"></a>    
+`im2patch` `gpatch` `quiver3DPatch` `fourthOrderTensorView`
 
+GIBBON uses a custom figure type called `cFigure`. It contains a white background, is maximized by default, and includes a view control widget (`vcw`) and an export figure widget (`efw`). The `vcw` function enables 3D view control similar to CAD packages. Rotation, zooming, and panning can be performed using a 3 button "mouse" (or equivalent input device), e.g. middle-click rotates the view, left click drags/moves the view, right click allows zooming in and out.
+
+| GIBBON | Classic MATLAB |   
+|:--|--:|   
+|  |  |   
+
+ ![](/img/gibbonViewControl.gif){:width="100%"}
 
 # Setting up GIBBON
-## Installation
-The GIBBON website (and the `readme.md` file) contains detailed installation instructions. For basic use only the GIBBON folder and sub-directories need to be added to the MATLAB path. For use with FEBio for finite element analysis FEBio needs to be installed and the patch to FEBio needs to be provided. If exporting of figures to images and animations is of interest the export_fig library needs to be downloaded and added to the MATLAB path also.
-
-## Third party packages
-* __FEBio__ [@Maas2012], a finite element solver, which enables finite element analysis with GIBBON. FEBio is available through [FEBio](http://febio.org/) website.
-* __TetGen__, an open source tetrahedral meshing package [@Si2015]. TetGen is utilized in GIBBON for tetrahedral meshing, see also the `runTetGen.m` function. TetGen is included with GIBBON but alternative versions may be available through the [TetGen](http://wias-berlin.de/software/tetgen/) website.
-* __export_fig__, a MATLAB library for exporting publication quality figures. export_fig is used in GIBBON with the `efw.m` (export figure widget) to export figures, and with `anim8.m` (animation function) to export animated .gif files. export_fig can be obtained via the [export_fig](https://github.com/altmany/export_fig) GitHub repository.
+See [installation](www.gibboncode.org/Installation/).
 
 ## Use of GIBBON in research

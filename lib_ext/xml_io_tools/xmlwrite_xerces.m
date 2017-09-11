@@ -23,7 +23,7 @@ function varargout=xmlwrite_xerces(varargin)
 %  SOURCE can also be a SAX InputSource, JAXP Source, InputStream, or 
 %    Reader object
 %
-% LOG:
+% Change log:
 % 2017/06/26 This code was obtained from 'xml_io_tools' copyright (c) 2007,
 % Jaroslaw Tuszynski (BSD-2-Clause license) 
 % (https://nl.mathworks.com/matlabcentral/fileexchange/12907-xml-io-tools). 
@@ -35,7 +35,12 @@ function varargout=xmlwrite_xerces(varargin)
 % xmlwrite. i.e.
 % javaMethod('serializeXML','com.mathworks.xml.XMLUtils',source,result); is
 % very slow in MATLAB 2017a-b.
+%
+% To do: 
+% 2017/08/18 Fix error that occurs for string output with singular input
 % ----------------------------------------------------------
+
+%%
 
 returnString = false;
 if length(varargin)==1

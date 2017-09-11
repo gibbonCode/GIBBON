@@ -1,49 +1,69 @@
 function [varargout]=isInsideTR(varargin)
 
-if nargin<2
-    error('Not enough input arguments');
+
+
+%%
+
+switch nargin
+    case 1
+        TR=varargin{1};
+        QP=TR.Points; 
+        ti=[];
+        epsCheck=0;
+    case 2
+        TR=varargin{1};
+        QP=varargin{2};
+        ti=[];
+        epsCheck=0;
+    case 3
+        TR=varargin{1};
+        QP=varargin{2};
+        ti=varargin{3};
+        epsCheck=0;
+    case 4
+        TR=varargin{1};
+        QP=varargin{2};
+        ti=varargin{3};
+        epsCheck=varargin{4};
+    otherwise 
+        error('Wrong number of input arguments');
 end
 
-TR=varargin{1};
-numTR=size(TR.ConnectivityList,1);
-QP=varargin{2};
-
-if nargin==3
-    ti=varargin{3};
-else
-    ti=1:numTR;
+if isempty(ti)
+    ti=1:size(TR.ConnectivityList,1);
 end
     
 %Get barycentric coordinates of points
 baryCoords=cartesianToBarycentric(TR,ti(:),QP);
 
-logicFoundEnclosing=all(baryCoords>0,2);
+% logicFoundEnclosing=all(baryCoords>0,2);
+logicFoundEnclosing=all(baryCoords>=-epsCheck,2);
 
 varargout{1}=logicFoundEnclosing;
 if nargout==2
     varargout{2}=baryCoords;
 end
-
-
-
  
-%% <-- GIBBON footer text --> 
+%% 
+% _*GIBBON footer text*_ 
 % 
-%     GIBBON: The Geometry and Image-based Bioengineering add-On. A toolbox for
-%     image segmentation, image-based modeling, meshing, and finite element
-%     analysis.
+% License: <https://github.com/gibbonCode/GIBBON/blob/master/LICENSE>
 % 
-%     Copyright (C) 2017  Kevin Mattheus Moerman
+% GIBBON: The Geometry and Image-based Bioengineering add-On. A toolbox for
+% image segmentation, image-based modeling, meshing, and finite element
+% analysis.
 % 
-%     This program is free software: you can redistribute it and/or modify
-%     it under the terms of the GNU General Public License as published by
-%     the Free Software Foundation, either version 3 of the License, or
-%     (at your option) any later version.
+% Copyright (C) 2017  Kevin Mattheus Moerman
 % 
-%     This program is distributed in the hope that it will be useful,
-%     but WITHOUT ANY WARRANTY; without even the implied warranty of
-%     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-%     GNU General Public License for more details.
+% This program is free software: you can redistribute it and/or modify
+% it under the terms of the GNU General Public License as published by
+% the Free Software Foundation, either version 3 of the License, or
+% (at your option) any later version.
 % 
-%     You should have received a copy of the GNU General Public License
-%     along with this program.  If not, see <http://www.gnu.org/licenses/>.
+% This program is distributed in the hope that it will be useful,
+% but WITHOUT ANY WARRANTY; without even the implied warranty of
+% MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+% GNU General Public License for more details.
+% 
+% You should have received a copy of the GNU General Public License
+% along with this program.  If not, see <http://www.gnu.org/licenses/>.

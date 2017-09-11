@@ -1,4 +1,4 @@
-function docNode=addMaterialLevel_FEB(docNode,FEB_struct)
+function domNode=addMaterialLevel_FEB(domNode,FEB_struct)
 
 % function docNode=addMaterialLevel_FEB(docNode,FEB_struct)
 % ------------------------------------------------------------------------
@@ -18,9 +18,9 @@ function docNode=addMaterialLevel_FEB(docNode,FEB_struct)
 
 %%
 
-rootNode = docNode.getDocumentElement;
+rootNode = domNode.getDocumentElement;
 
-MaterialNode = docNode.createElement('Material');
+MaterialNode = domNode.createElement('Material');
 MaterialNode = rootNode.appendChild(MaterialNode);
 
 % Adding material fields
@@ -37,7 +37,7 @@ end
 for q_mat=1:1:numel(matIndicesUnique)
     
     %Adding material node
-    material_node = docNode.createElement('material'); %create material entry
+    material_node = domNode.createElement('material'); %create material entry
     material_node = MaterialNode.appendChild(material_node); %add material entry
     
     %The current material struct
@@ -51,7 +51,7 @@ for q_mat=1:1:numel(matIndicesUnique)
     %Current id
     currentMaterialStruct.id=matIndicesUnique(q_mat);
     
-    [docNode]=setMaterialEntries(docNode,material_node,currentMaterialStruct);
+    [domNode]=setMaterialEntries(domNode,material_node,currentMaterialStruct);
     
     %% Adding fields for solid mixture or multigeneration materials
     
@@ -60,12 +60,12 @@ for q_mat=1:1:numel(matIndicesUnique)
             numSolids=numel(currentMaterialStruct.Solid);
             for q_sol=1:1:numSolids
                 %Add solid level
-                solid_node = docNode.createElement('solid'); %create entry
+                solid_node = domNode.createElement('solid'); %create entry
                 solid_node = material_node.appendChild(solid_node); %add entry
                 
                 %Set parameters
                 currentSolidStruct=currentMaterialStruct.Solid{q_sol};
-                [docNode]=setMaterialEntries(docNode,solid_node,currentSolidStruct);
+                [domNode]=setMaterialEntries(domNode,solid_node,currentSolidStruct);
             end
         case 'multigeneration'
             numGenerations=numel(currentMaterialStruct.Generation);
@@ -76,33 +76,33 @@ for q_mat=1:1:numel(matIndicesUnique)
                 currentGenerationStruct.id=q_gen;
                 
                 %Add solid level
-                gen_node = docNode.createElement('generation'); %create entry
+                gen_node = domNode.createElement('generation'); %create entry
                 gen_node = material_node.appendChild(gen_node); %add entry
                 
-                [docNode]=setMaterialEntries(docNode,gen_node,currentGenerationStruct);
+                [domNode]=setMaterialEntries(domNode,gen_node,currentGenerationStruct);
                 
                 numSolids=numel(currentMaterialStruct.Generation{q_gen}.Solid);
                 for q_sol=1:1:numSolids
                     %Add solid level
-                    solid_node = docNode.createElement('solid'); %create entry
+                    solid_node = domNode.createElement('solid'); %create entry
                     solid_node = gen_node.appendChild(solid_node); %add entry
                     
                     %Set parameters
                     currentSolidStruct=currentGenerationStruct.Solid{q_sol};
-                    [docNode]=setMaterialEntries(docNode,solid_node,currentSolidStruct);
+                    [domNode]=setMaterialEntries(domNode,solid_node,currentSolidStruct);
                 end
             end
         case {'uncoupled viscoelastic','viscoelastic'}
             if isfield(currentMaterialStruct,'Elastic')
                 %Add elastic level
-                elastic_node = docNode.createElement('elastic'); %create entry
+                elastic_node = domNode.createElement('elastic'); %create entry
                 elastic_node = material_node.appendChild(elastic_node); %add entry
                 
                 %Get material structure for elastic
                 elasticStruct=currentMaterialStruct.Elastic;
                 
                 %Setting elastic material Type
-                attr = docNode.createAttribute('type'); %Create attribute
+                attr = domNode.createAttribute('type'); %Create attribute
                 attr.setNodeValue(elasticStruct.Type); %Set text
                 elastic_node.setAttributeNode(attr); %Add attribute
                 
@@ -111,15 +111,15 @@ for q_mat=1:1:numel(matIndicesUnique)
                         numSolids=numel(elasticStruct.Solid);
                         for q_sol=1:1:numSolids
                             %Add solid level
-                            solid_node = docNode.createElement('solid'); %create entry
+                            solid_node = domNode.createElement('solid'); %create entry
                             solid_node = elastic_node.appendChild(solid_node); %add entry
                             
                             %Set parameters
                             currentSolidStruct=elasticStruct.Solid{q_sol};
-                            [docNode]=setMaterialEntries(docNode,solid_node,currentSolidStruct);
+                            [domNode]=setMaterialEntries(domNode,solid_node,currentSolidStruct);
                         end
                     otherwise
-                        [docNode]=setMaterialEntries(docNode,elastic_node,elasticStruct);
+                        [domNode]=setMaterialEntries(domNode,elastic_node,elasticStruct);
                 end
             else
                 warning('Elastic field (containing material structure) missing. Assuming "old" viscoelastic specification type. It is recommended to update code.')
@@ -268,23 +268,26 @@ end
 
 end
  
-%% <-- GIBBON footer text --> 
+%% 
+% _*GIBBON footer text*_ 
 % 
-%     GIBBON: The Geometry and Image-based Bioengineering add-On. A toolbox for
-%     image segmentation, image-based modeling, meshing, and finite element
-%     analysis.
+% License: <https://github.com/gibbonCode/GIBBON/blob/master/LICENSE>
 % 
-%     Copyright (C) 2017  Kevin Mattheus Moerman
+% GIBBON: The Geometry and Image-based Bioengineering add-On. A toolbox for
+% image segmentation, image-based modeling, meshing, and finite element
+% analysis.
 % 
-%     This program is free software: you can redistribute it and/or modify
-%     it under the terms of the GNU General Public License as published by
-%     the Free Software Foundation, either version 3 of the License, or
-%     (at your option) any later version.
+% Copyright (C) 2017  Kevin Mattheus Moerman
 % 
-%     This program is distributed in the hope that it will be useful,
-%     but WITHOUT ANY WARRANTY; without even the implied warranty of
-%     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-%     GNU General Public License for more details.
+% This program is free software: you can redistribute it and/or modify
+% it under the terms of the GNU General Public License as published by
+% the Free Software Foundation, either version 3 of the License, or
+% (at your option) any later version.
 % 
-%     You should have received a copy of the GNU General Public License
-%     along with this program.  If not, see <http://www.gnu.org/licenses/>.
+% This program is distributed in the hope that it will be useful,
+% but WITHOUT ANY WARRANTY; without even the implied warranty of
+% MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+% GNU General Public License for more details.
+% 
+% You should have received a copy of the GNU General Public License
+% along with this program.  If not, see <http://www.gnu.org/licenses/>.

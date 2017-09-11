@@ -1,4 +1,4 @@
-function [docNode]=addLoadsLevel_FEB(docNode,FEB_struct)
+function [domNode]=addLoadsLevel_FEB(domNode,FEB_struct)
 
 % function [docNode]=addLoadsLevel_FEB(docNode,FEB_struct)
 % ------------------------------------------------------------------------
@@ -18,9 +18,9 @@ function [docNode]=addLoadsLevel_FEB(docNode,FEB_struct)
 
 disp('Adding Loads level');
 
-rootNode = docNode.getDocumentElement;
+rootNode = domNode.getDocumentElement;
 
-loadsNode = docNode.createElement('Loads');
+loadsNode = domNode.createElement('Loads');
 loadsNode = rootNode.appendChild(loadsNode);
 
 %% Adding surface loads
@@ -30,26 +30,26 @@ if isfield(FEB_struct.Loads,'Surface_load')
                 
         
         %Create surface_load level
-        surfaceLoadNode = docNode.createElement('surface_load');
+        surfaceLoadNode = domNode.createElement('surface_load');
         surfaceLoadNode = loadsNode.appendChild(surfaceLoadNode);
         
         %Set load type attribute
         currentLoadType=FEB_struct.Loads.Surface_load{q_sl}.Type;
-        attr = docNode.createAttribute('type'); %Create id attribute
+        attr = domNode.createAttribute('type'); %Create id attribute
         attr.setNodeValue(currentLoadType); %Set attribute text
         surfaceLoadNode.setAttributeNode(attr); %Add id attribute
         
         %Create lcPar level
         currentLcParType=FEB_struct.Loads.Surface_load{q_sl}.lcPar;
-        lcParNode = docNode.createElement(currentLcParType);
+        lcParNode = domNode.createElement(currentLcParType);
         lcParNode = surfaceLoadNode.appendChild(lcParNode);
         
         %Set lcPar value (sometimes scale)
-        lcParNode.appendChild(docNode.createTextNode(sprintf('%10.6e',FEB_struct.Loads.Surface_load{q_sl}.lcParValue))); %append data text child
+        lcParNode.appendChild(domNode.createTextNode(sprintf('%10.6e',FEB_struct.Loads.Surface_load{q_sl}.lcParValue))); %append data text child
         
         %Set lcPar lc attribute
         if isfield(FEB_struct.Loads.Surface_load{q_sl},'lc')
-            attr = docNode.createAttribute('lc'); %Create id attribute
+            attr = domNode.createAttribute('lc'); %Create id attribute
             attr.setNodeValue(sprintf('%u',FEB_struct.Loads.Surface_load{q_sl}.lc)); %Set attribute text
             lcParNode.setAttributeNode(attr); %Add id attribute
         end
@@ -60,20 +60,20 @@ if isfield(FEB_struct.Loads,'Surface_load')
             surfaceLoadValues=FEB_struct.Loads.Surface_load{q_sl}.Values;
             
             for q=1:1:numel(surfaceLoadProperties)
-                prop_node = docNode.createElement(surfaceLoadProperties{q}); %create entry
+                prop_node = domNode.createElement(surfaceLoadProperties{q}); %create entry
                 prop_node = surfaceLoadNode.appendChild(prop_node); %add entry
                 t_form=repmat('%10.6e, ',1,size(surfaceLoadValues{q},2)); t_form=t_form(1:end-2);
-                prop_node.appendChild(docNode.createTextNode(sprintf(t_form,surfaceLoadValues{q}))); %append data text child
+                prop_node.appendChild(domNode.createTextNode(sprintf(t_form,surfaceLoadValues{q}))); %append data text child
             end
         end
         
         %Create surface_load level
 %         disp('----> Adding loaded surface');
-        surfaceNode = docNode.createElement('surface');
+        surfaceNode = domNode.createElement('surface');
         surfaceNode = surfaceLoadNode.appendChild(surfaceNode);
         if isfield(FEB_struct.Loads.Surface_load{q_sl},'SetName') && ~isfield(FEB_struct.Loads.Surface_load{q_sl},'Set')
             %Define set name attribute
-            attr = docNode.createAttribute('set'); %Create id attribute
+            attr = domNode.createAttribute('set'); %Create id attribute
             attr.setNodeValue(FEB_struct.Loads.Surface_load{q_sl}.SetName); %Set attribute text
             surfaceNode.setAttributeNode(attr); %Add id attribute
         elseif isfield(FEB_struct.Loads.Surface_load{q_sl},'Set') && ~isfield(FEB_struct.Loads.Surface_load{q_sl},'SetName')
@@ -99,15 +99,15 @@ if isfield(FEB_struct.Loads,'Surface_load')
                 end
                 
                 %Create surface type entry
-                element_node = docNode.createElement(E_type); %create element entry
+                element_node = domNode.createElement(E_type); %create element entry
                 element_node = surfaceNode.appendChild(element_node); %add element entry
                 
                 %Set id
-                attr = docNode.createAttribute('id'); %Create id attribute
+                attr = domNode.createAttribute('id'); %Create id attribute
                 attr.setNodeValue(num2str(q_e)); %Set id text
                 element_node.setAttributeNode(attr); %Add id attribute
                 t_form=repmat('%u, ',1,size(E,2)); t_form=t_form(1:end-2); %Text form
-                element_node.appendChild(docNode.createTextNode(sprintf(t_form,E(q_e,:)))); %append data text child
+                element_node.appendChild(domNode.createTextNode(sprintf(t_form,E(q_e,:)))); %append data text child
                 
                 %Increment waitbar
                 if FEB_struct.disp_opt==1 && rem(q_e,round(n_steps/10))==0
@@ -134,18 +134,18 @@ if  isfield(FEB_struct.Loads,'Nodal_load')
     for q1=1:1:numel(FEB_struct.Loads.Nodal_load) %For all Nodal_loads
         
         %Create nodal_load level
-        nodal_load_node = docNode.createElement('nodal_load'); %create entry
+        nodal_load_node = domNode.createElement('nodal_load'); %create entry
         nodal_load_node = loadsNode.appendChild(nodal_load_node); %add entry
         
         %Add bc attribute
         currentBC=FEB_struct.Loads.Nodal_load{q1}.bc;
-        attr = docNode.createAttribute('bc'); %Create id attribute
+        attr = domNode.createAttribute('bc'); %Create id attribute
         attr.setNodeValue(currentBC); %Set id text
         nodal_load_node.setAttributeNode(attr); %Add id attribute
         
         %Set lc attribute
         if isfield(FEB_struct.Loads.Nodal_load{q1},'lc')
-            attr = docNode.createAttribute('lc'); %Create id attribute
+            attr = domNode.createAttribute('lc'); %Create id attribute
             attr.setNodeValue(sprintf('%u',FEB_struct.Loads.Nodal_load{q1}.lc)); %Set attribute text
             nodal_load_node.setAttributeNode(attr); %Add id attribute
         end
@@ -163,14 +163,14 @@ if  isfield(FEB_struct.Loads,'Nodal_load')
         
         for q2=1:1:n_steps
             
-            node_node = docNode.createElement('node'); %create node entry
+            node_node = domNode.createElement('node'); %create node entry
             node_node = nodal_load_node.appendChild(node_node); %add node entry
             
-            attr = docNode.createAttribute('id'); %Create id attribute
+            attr = domNode.createAttribute('id'); %Create id attribute
             attr.setNodeValue(sprintf('%u',nodeIdSet(q2))); %Set id text
             node_node.setAttributeNode(attr); %Add id attribute
             
-            node_node.appendChild(docNode.createTextNode(sprintf('%6.7e',nodeValues(q2)))); %append data text child
+            node_node.appendChild(domNode.createTextNode(sprintf('%6.7e',nodeValues(q2)))); %append data text child
             
             if FEB_struct.disp_opt==1 && rem(q2,round(n_steps/10))==0;
                 waitbar(q2/n_steps);
@@ -192,12 +192,12 @@ if  isfield(FEB_struct.Loads,'Body_load')
     for q1=1:1:numel(FEB_struct.Loads.Body_load) %For all Body_loads
         
         %Create body_load level
-        body_load_node = docNode.createElement('body_load'); %create entry
+        body_load_node = domNode.createElement('body_load'); %create entry
         body_load_node = loadsNode.appendChild(body_load_node); %add entry
         
         %Add type attribute
         currentType=FEB_struct.Loads.Body_load{q1}.Type;
-        attr = docNode.createAttribute('type'); %Create attribute
+        attr = domNode.createAttribute('type'); %Create attribute
         attr.setNodeValue(currentType); %Set text
         body_load_node.setAttributeNode(attr); %Add attribute        
         
@@ -211,13 +211,13 @@ if  isfield(FEB_struct.Loads,'Body_load')
                 
         for q2=1:numel(FEB_struct.Loads.Body_load{q1}.Properties)
             %Add property node
-            node_node = docNode.createElement(FEB_struct.Loads.Body_load{q1}.Properties{q2}); %create node entry
+            node_node = domNode.createElement(FEB_struct.Loads.Body_load{q1}.Properties{q2}); %create node entry
             node_node = body_load_node.appendChild(node_node); %add node entry
             
             switch FEB_struct.Loads.Body_load{q1}.Type
                 case 'const'
                     %Add lc attribute
-                    attr = docNode.createAttribute('lc'); %Create id attribute
+                    attr = domNode.createAttribute('lc'); %Create id attribute
                     attr.setNodeValue(sprintf('%u',FEB_struct.Loads.Body_load{q1}.lc(q2))); %Set id text
                     node_node.setAttributeNode(attr); %Add id attribute
                 case 'non-const'                                        
@@ -228,9 +228,9 @@ if  isfield(FEB_struct.Loads,'Body_load')
             
             %Set value
             if ischar(FEB_struct.Loads.Body_load{q1}.Values{q2}) %text
-                node_node.appendChild(docNode.createTextNode(FEB_struct.Loads.Body_load{q1}.Values{q2})); %append data text child
+                node_node.appendChild(domNode.createTextNode(FEB_struct.Loads.Body_load{q1}.Values{q2})); %append data text child
             else %Assume numeric
-                node_node.appendChild(docNode.createTextNode(sprintf('%6.7e',FEB_struct.Loads.Body_load{q1}.Values{q2}))); %append data text child
+                node_node.appendChild(domNode.createTextNode(sprintf('%6.7e',FEB_struct.Loads.Body_load{q1}.Values{q2}))); %append data text child
             end
         end
   
@@ -238,23 +238,26 @@ if  isfield(FEB_struct.Loads,'Body_load')
 end
 
  
-%% <-- GIBBON footer text --> 
+%% 
+% _*GIBBON footer text*_ 
 % 
-%     GIBBON: The Geometry and Image-based Bioengineering add-On. A toolbox for
-%     image segmentation, image-based modeling, meshing, and finite element
-%     analysis.
+% License: <https://github.com/gibbonCode/GIBBON/blob/master/LICENSE>
 % 
-%     Copyright (C) 2017  Kevin Mattheus Moerman
+% GIBBON: The Geometry and Image-based Bioengineering add-On. A toolbox for
+% image segmentation, image-based modeling, meshing, and finite element
+% analysis.
 % 
-%     This program is free software: you can redistribute it and/or modify
-%     it under the terms of the GNU General Public License as published by
-%     the Free Software Foundation, either version 3 of the License, or
-%     (at your option) any later version.
+% Copyright (C) 2017  Kevin Mattheus Moerman
 % 
-%     This program is distributed in the hope that it will be useful,
-%     but WITHOUT ANY WARRANTY; without even the implied warranty of
-%     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-%     GNU General Public License for more details.
+% This program is free software: you can redistribute it and/or modify
+% it under the terms of the GNU General Public License as published by
+% the Free Software Foundation, either version 3 of the License, or
+% (at your option) any later version.
 % 
-%     You should have received a copy of the GNU General Public License
-%     along with this program.  If not, see <http://www.gnu.org/licenses/>.
+% This program is distributed in the hope that it will be useful,
+% but WITHOUT ANY WARRANTY; without even the implied warranty of
+% MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+% GNU General Public License for more details.
+% 
+% You should have received a copy of the GNU General Public License
+% along with this program.  If not, see <http://www.gnu.org/licenses/>.

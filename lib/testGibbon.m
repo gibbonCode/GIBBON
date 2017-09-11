@@ -71,11 +71,13 @@ for q_test=startInd:1:numel(testFileList)
             run(mFileNow);
         case 'pub' %Publish
             publish(mFileNow,'catchError',false,'figureSnapMethod','getframe','maxHeight',800);
+            drawnow;
+            pause(1);
     end
-    
+            
     load('tempPub.mat'); %Load variables
     delete('tempPub.mat'); %Clean up
-   
+     
     if approveQuestion
         choice = questdlg([fileMessage,'. Done. Do you want to proceed?'],testFileList{q_test},'Yes','No','Yes');        
         switch choice
@@ -91,23 +93,26 @@ for q_test=startInd:1:numel(testFileList)
     
 end
  
-%% <-- GIBBON footer text --> 
+%% 
+% _*GIBBON footer text*_ 
 % 
-%     GIBBON: The Geometry and Image-based Bioengineering add-On. A toolbox for
-%     image segmentation, image-based modeling, meshing, and finite element
-%     analysis.
+% License: <https://github.com/gibbonCode/GIBBON/blob/master/LICENSE>
 % 
-%     Copyright (C) 2017  Kevin Mattheus Moerman
+% GIBBON: The Geometry and Image-based Bioengineering add-On. A toolbox for
+% image segmentation, image-based modeling, meshing, and finite element
+% analysis.
 % 
-%     This program is free software: you can redistribute it and/or modify
-%     it under the terms of the GNU General Public License as published by
-%     the Free Software Foundation, either version 3 of the License, or
-%     (at your option) any later version.
+% Copyright (C) 2017  Kevin Mattheus Moerman
 % 
-%     This program is distributed in the hope that it will be useful,
-%     but WITHOUT ANY WARRANTY; without even the implied warranty of
-%     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-%     GNU General Public License for more details.
+% This program is free software: you can redistribute it and/or modify
+% it under the terms of the GNU General Public License as published by
+% the Free Software Foundation, either version 3 of the License, or
+% (at your option) any later version.
 % 
-%     You should have received a copy of the GNU General Public License
-%     along with this program.  If not, see <http://www.gnu.org/licenses/>.
+% This program is distributed in the hope that it will be useful,
+% but WITHOUT ANY WARRANTY; without even the implied warranty of
+% MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+% GNU General Public License for more details.
+% 
+% You should have received a copy of the GNU General Public License
+% along with this program.  If not, see <http://www.gnu.org/licenses/>.

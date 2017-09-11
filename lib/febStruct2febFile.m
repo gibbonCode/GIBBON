@@ -13,6 +13,8 @@ function [varargout]=febStruct2febFile(FEB_struct)
 % 2014/05/27: Updated for GIBBON
 % 2015/05/09: Added biphasic capabilities
 % 2015/05/10: Added traction load capabilities
+% 2017/08/18: Adding support to allow incomplete feb file creation (only
+% write fields provided). 
 %------------------------------------------------------------------------
 
 %%
@@ -25,10 +27,10 @@ if ~isfield(FEB_struct,'disp_opt')
 end
 
 %% Initialize docNode object
-docNode = com.mathworks.xml.XMLUtils.createDocument('febio_spec'); %Create the overall febio_spec field
+domNode = com.mathworks.xml.XMLUtils.createDocument('febio_spec'); %Create the overall febio_spec field
 
 %Set febio_spec
-febio_spec = docNode.getDocumentElement;
+febio_spec = domNode.getDocumentElement;
 if ~isfield(FEB_struct,'febio_spec')
     FEB_struct.febio_spec.version='2.0';
 elseif ~isfield(FEB_struct.febio_spec,'version')
@@ -42,67 +44,69 @@ if isfield(FEB_struct,'commentField')
 else %Default comment
     commentString = ['Created using GIBBON, ',datestr(now)];
 end
-commentNode = docNode.createComment(commentString);
+commentNode = domNode.createComment(commentString);
 febio_spec.appendChild(commentNode);
 
 %% DEFINING MODULE LEVEL
 if ~isfield(FEB_struct,'Module')
     FEB_struct.Module.Type='solid'; %Use solid as default module
 end
-docNode=addModuleLevel_FEB(docNode,FEB_struct);
+domNode=addModuleLevel_FEB(domNode,FEB_struct);
 
 %% DEFINE CONTROL SECTION
 if isfield(FEB_struct,'Control')
-    docNode=addControlLevel_FEB(docNode,FEB_struct);
+    domNode=addControlLevel_FEB(domNode,FEB_struct);
 end
 
 %% DEFINING GLOBALS LEVEL
-docNode=addGlobalsLevel_FEB(docNode,FEB_struct);
+domNode=addGlobalsLevel_FEB(domNode,FEB_struct);
 
 %% DEFINING MATERIAL LEVEL
-docNode=addMaterialLevel_FEB(docNode,FEB_struct);
+domNode=addMaterialLevel_FEB(domNode,FEB_struct);
 
 %% DEFINING GEOMETRY LEVEL
 writeMethod=1;
-switch writeMethod
-    case 1 % TEXT FILE PARSING (faster for large arrays)
-        docNode=addGeometryLevel_TXT(docNode,FEB_struct);
-    case 2 %XML PARSING
-        docNode=addGeometryLevel_FEB(docNode,FEB_struct);
+if isfield(FEB_struct,'Geometry')
+    switch writeMethod
+        case 1 % TEXT FILE PARSING (faster for large arrays)
+            domNode=addGeometryLevel_TXT(domNode,FEB_struct);
+        case 2 %XML PARSING
+            domNode=addGeometryLevel_FEB(domNode,FEB_struct);
+    end
 end
 
 %% DEFINE BOUNDARY CONDITIONS LEVEL AND LOADS LEVEL
 if isfield(FEB_struct,'Boundary')
-    [docNode]=addBoundaryLevel_FEB(docNode,FEB_struct);
+    [domNode]=addBoundaryLevel_FEB(domNode,FEB_struct);
 end
 
 %% DEFINE LOAD LEVEL
 if isfield(FEB_struct,'Loads')
-    [docNode]=addLoadsLevel_FEB(docNode,FEB_struct);
+    [domNode]=addLoadsLevel_FEB(domNode,FEB_struct);
 end
 
 %% DEFINE CONTACT
 if isfield(FEB_struct,'Contact')
-    [docNode]=addContactLevel_FEB(docNode,FEB_struct);
+    [domNode]=addContactLevel_FEB(domNode,FEB_struct);
 end
 
 %% DEFINE CONSTRAINTS LEVEL
 if isfield(FEB_struct,'Constraints')
-    [docNode]=addConstraintsLevel_FEB(docNode,FEB_struct);
+    [domNode]=addConstraintsLevel_FEB(domNode,FEB_struct);
 end
 
 %% DEFINE LOADDATA LEVEL
 if isfield(FEB_struct,'LoadData')
-    [docNode]=addLoadDataLevel_FEB(docNode,FEB_struct);
+    [domNode]=addLoadDataLevel_FEB(domNode,FEB_struct);
 end
 
 %% DEFINE STEP LEVEL
 if isfield(FEB_struct,'Step')
-    [docNode]=addStepLevel_FEB(docNode,FEB_struct);
+    [domNode]=addStepLevel_FEB(domNode,FEB_struct);
 end
 
 %% DEFINE OUTPUT LEVEL
-docNode=addOutputLevel_FEB(docNode,FEB_struct);
+domNode=addOutputLevel_FEB(domNode,FEB_struct);
 
 %% CREATE OUTPUT OR EXPORT XML FILE
 
@@ -110,36 +114,37 @@ switch nargout
     case 0
         disp('Writing .feb file');
         if isfield(FEB_struct,'topCommentLine')
-            exportFEB_XML(FEB_struct.run_filename,docNode,FEB_struct.topCommentLine); % Saving XML file
+            exportFEB_XML(FEB_struct.run_filename,domNode,FEB_struct.topCommentLine); % Saving XML file
         else
-            exportFEB_XML(FEB_struct.run_filename,docNode); % Saving XML file
+            exportFEB_XML(FEB_struct.run_filename,domNode); % Saving XML file
         end
     case 1
-        varargout{1}=docNode;
+        varargout{1}=domNode;
 end
 dispDoneGibbonCode;
 
 end
-
-
  
-%% <-- GIBBON footer text --> 
+%% 
+% _*GIBBON footer text*_ 
 % 
-%     GIBBON: The Geometry and Image-based Bioengineering add-On. A toolbox for
-%     image segmentation, image-based modeling, meshing, and finite element
-%     analysis.
+% License: <https://github.com/gibbonCode/GIBBON/blob/master/LICENSE>
 % 
-%     Copyright (C) 2017  Kevin Mattheus Moerman
+% GIBBON: The Geometry and Image-based Bioengineering add-On. A toolbox for
+% image segmentation, image-based modeling, meshing, and finite element
+% analysis.
 % 
-%     This program is free software: you can redistribute it and/or modify
-%     it under the terms of the GNU General Public License as published by
-%     the Free Software Foundation, either version 3 of the License, or
-%     (at your option) any later version.
+% Copyright (C) 2017  Kevin Mattheus Moerman
 % 
-%     This program is distributed in the hope that it will be useful,
-%     but WITHOUT ANY WARRANTY; without even the implied warranty of
-%     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-%     GNU General Public License for more details.
+% This program is free software: you can redistribute it and/or modify
+% it under the terms of the GNU General Public License as published by
+% the Free Software Foundation, either version 3 of the License, or
+% (at your option) any later version.
 % 
-%     You should have received a copy of the GNU General Public License
-%     along with this program.  If not, see <http://www.gnu.org/licenses/>.
+% This program is distributed in the hope that it will be useful,
+% but WITHOUT ANY WARRANTY; without even the implied warranty of
+% MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+% GNU General Public License for more details.
+% 
+% You should have received a copy of the GNU General Public License
+% along with this program.  If not, see <http://www.gnu.org/licenses/>.

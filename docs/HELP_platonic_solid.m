@@ -6,7 +6,6 @@ clear; close all; clc;
 
 %%
 % Plot settings
-fig_color='w'; fig_colordef='white';
 fontSize=15;
 faceColor='b';
 faceAlpha=0.75;
@@ -16,7 +15,7 @@ markerSize=5;
 
 %%
 
-hf=figuremax(fig_color,fig_colordef); % Open figure for plotting
+hf=cFigure; % Open figure for plotting
 pColor=jet(5);
 for q=1:1:5
     %Defining the faces (F) and vertices (V) of a platonic solid
