@@ -6,7 +6,7 @@
    <!--
 This HTML was auto-generated from MATLAB code.
 To make changes, update the MATLAB code and republish this document.
-      --><title>interp_spherical</title><meta name="generator" content="MATLAB 9.1"><link rel="schema.DC" href="http://purl.org/dc/elements/1.1/"><meta name="DC.date" content="2017-08-18"><meta name="DC.source" content="HELP_interp_spherical.m"><style type="text/css">
+      --><title>interp_spherical</title><meta name="generator" content="MATLAB 9.1"><link rel="schema.DC" href="http://purl.org/dc/elements/1.1/"><meta name="DC.date" content="2017-09-13"><meta name="DC.source" content="HELP_interp_spherical.m"><style type="text/css">
 html,body,div,span,applet,object,iframe,h1,h2,h3,h4,h5,h6,p,blockquote,pre,a,abbr,acronym,address,big,cite,code,del,dfn,em,font,img,ins,kbd,q,s,samp,small,strike,strong,sub,sup,tt,var,b,u,i,center,dl,dt,dd,ol,ul,li,fieldset,form,label,legend,table,caption,tbody,tfoot,thead,tr,th,td{margin:0;padding:0;border:0;outline:0;font-size:100%;vertical-align:baseline;background:transparent}body{line-height:1}ol,ul{list-style:none}blockquote,q{quotes:none}blockquote:before,blockquote:after,q:before,q:after{content:'';content:none}:focus{outine:0}ins{text-decoration:none}del{text-decoration:line-through}table{border-collapse:collapse;border-spacing:0}
 
 html { min-height:100%; margin-bottom:1px; }
@@ -66,29 +66,7 @@ table td { padding:7px 5px; text-align:left; vertical-align:top; border:1px soli
 
 
 
-  </style></head><body><div class="content"><h1>interp_spherical</h1><!--introduction--><p>Below is a demonstration of the features of the <tt>interp_spherical</tt> function</p><!--/introduction--><h2>Contents</h2><div><ul><li><a href="#2">PLOT SETTINGS</a></li><li><a href="#3">Simulating sparse sampling of complex spherical function</a></li><li><a href="#4">Spherical interpolation</a></li><li><a href="#5">Animation of build in demo for <tt>interp_spherical</tt></a></li></ul></div><pre class="codeinput">clear; close <span class="string">all</span>; clc;
-</pre><h2 id="2">PLOT SETTINGS</h2><pre class="codeinput">fig_color=<span class="string">'w'</span>;
-fig_colordef=<span class="string">'white'</span>;
-font_size=10;
-</pre><h2 id="3">Simulating sparse sampling of complex spherical function</h2><pre class="codeinput"><span class="comment">%A triangulated representation is constructed allowing for surface</span>
-<span class="comment">%visualization. This is however not required.</span>
-
-<span class="comment">%Start with sphere triangulation (Buckminster-Fuller type)</span>
-[F,V,Vs]=geoSphere(3,1);
-T=Vs(:,1); P=Vs(:,2); <span class="comment">%Spherical coordinates</span>
-
-<span class="comment">%Modifying to obtain complex shape</span>
-[DCM,~]=euler2DCM([0.25.*pi -0.25*pi 0]); <span class="comment">%Rotate</span>
-Vr=(V*DCM);
-[Tr,Pr,Rr]=cart2sph(Vr(:,1),Vr(:,2),Vr(:,3)); <span class="comment">%convert to spherical coordinates</span>
-[V(:,1),V(:,2),V(:,3)]=sph2cart(T,P,1+0.25*cos(2*(Tr))+0.25*cos(8*(P))); <span class="comment">%Convert back with unity radii</span>
-V(:,3)=V(:,3)*2; <span class="comment">%Scale</span>
-[T,P,R] = cart2sph(V(:,1),V(:,2),V(:,3)); <span class="comment">%Convert to spherical coordinates</span>
-
-<span class="comment">%Defining denser point set for interpolation</span>
-[Fi,Vi,Vsi]=geoSphere(4,1);
-Ti=Vsi(:,1); Pi=Vsi(:,2); <span class="comment">%Spherical coordinates</span>
-</pre><h2 id="4">Spherical interpolation</h2><pre class="codeinput"><span class="comment">%The function |interp_spherical| interpolates in a spherical coordinate</span>
+  </style></head><body><div class="content"><h1>interp_spherical</h1><!--introduction--><p>Below is a demonstration of the features of the <tt>interp_spherical</tt> function</p><!--/introduction--><h2>Contents</h2><div><ul><li><a href="#1">Syntax</a></li><li><a href="#2">Description</a></li><li><a href="#3">Examples</a></li><li><a href="#5">Example: Interpolating data in spherical coordinates</a></li></ul></div><h2 id="1">Syntax</h2><p><tt>[Ri,Ci]=interp_spherical(T,P,R,Ti,Pi,interpMethod,numberInterpSteps);</tt></p><h2 id="2">Description</h2><pre class="codeinput"><span class="comment">%The function |interp_spherical| interpolates in a spherical coordinate</span>
 <span class="comment">%sytem using standard interp2 type interpolation methods or those based on</span>
 <span class="comment">%Delaunay tesselations in the angular space such as natural neighbour</span>
 <span class="comment">%interpolation method. Standard spherical interpolation of this type</span>
@@ -97,78 +75,115 @@ Ti=Vsi(:,1); Pi=Vsi(:,2); <span class="comment">%Spherical coordinates</span>
 <span class="comment">%function aims to interpolate at the "equator" such that polar artifacts</span>
 <span class="comment">%can be minimized. For each interpolation step the interpolation problem is</span>
 <span class="comment">%rotated such that the currect "equatorial band" is centered at the</span>
-<span class="comment">%equator. Running |interp_spherical| on its own without inputs or outputs</span>
-<span class="comment">%shows a demo animation of this stepwise process.</span>
+<span class="comment">%equator.</span>
+</pre><h2 id="3">Examples</h2><pre class="codeinput">clear; close <span class="string">all</span>; clc;
+</pre><h2 id="5">Example: Interpolating data in spherical coordinates</h2><p>Plot settings</p><pre class="codeinput">fontSize=15;
+</pre><p>Simulating sparse sampling of complex spherical function. A triangulated representation is constructed allowing for surface visualization. This is however not required.</p><pre class="codeinput">numRefine1=2; <span class="comment">%Number of refinement steps from icosahedron</span>
+r=2; <span class="comment">%Inner sphere radius</span>
+[F,V,~]=geoSphere(numRefine1,r);
 
+[~,V2,~]=geoSphere(0,r);
 
-numberInterpSteps=8; <span class="comment">%Number of interpolation steps</span>
-interpMethod=<span class="string">'natural'</span>; <span class="comment">%The interpolation method</span>
+[D,indMin]=minDist(V,V2);
+D=D.^2;
+D=D-min(D(:));
+D=D./max(D(:));
+D=D.*r;
+
+[T,P,R] = cart2sph(V(:,1),V(:,2),V(:,3));
+R=R-0.6*D;
+[V(:,1),V(:,2),V(:,3)] = sph2cart(T,P,R);
+
+[T,P,R] = cart2sph(V(:,1),V(:,2),V(:,3)); <span class="comment">%Get spherical coordinates</span>
+</pre><p>Defining denser point set for interpolation</p><pre class="codeinput">numRefine2=numRefine1+2;
+[Fi,Vs,Vsi]=geoSphere(numRefine2,1);
+Ti=Vsi(:,1); Pi=Vsi(:,2); <span class="comment">%Get spherical coordinates</span>
+</pre><p>Interpolate in spherical coordinates</p><pre class="codeinput">numberInterpSteps=8; <span class="comment">%Number of interpolation steps ("equitorial bands")</span>
+interpMethod=<span class="string">'cubic'</span>; <span class="comment">%The interpolation method</span>
 
 <span class="comment">%Spherical interpolation</span>
-[Ri]=interp_spherical(T,P,R,Ti,Pi,interpMethod,numberInterpSteps);
+[Ri,Ci]=interp_spherical(T,P,R,Ti,Pi,interpMethod,numberInterpSteps);
 
 <span class="comment">%Convert to Cartesian coordinates</span>
 [Vi(:,1),Vi(:,2),Vi(:,3)]=sph2cart(Ti,Pi,Ri);
 
 <span class="comment">%Plotting results</span>
-hf1=figuremax(fig_color,fig_colordef);
-subplot(1,2,1); hold <span class="string">on</span>; grid <span class="string">on</span>; view(3);
-xlabel(<span class="string">'X'</span>,<span class="string">'FontWeight'</span>,<span class="string">'bold'</span>,<span class="string">'FontSize'</span>,font_size); ylabel(<span class="string">'Y'</span>,<span class="string">'FontWeight'</span>,<span class="string">'bold'</span>,<span class="string">'FontSize'</span>,font_size); zlabel(<span class="string">'Z'</span>,<span class="string">'FontWeight'</span>,<span class="string">'bold'</span>,<span class="string">'FontSize'</span>,font_size);
-title(<span class="string">'Coarse original form'</span>,<span class="string">'FontSize'</span>,font_size);
-hp1=patch(<span class="string">'Faces'</span>,F,<span class="string">'Vertices'</span>,V);
-set(hp1,<span class="string">'FaceColor'</span>,<span class="string">'g'</span>,<span class="string">'EdgeColor'</span>,<span class="string">'w'</span>);
-axis <span class="string">equal</span> <span class="string">tight</span> <span class="string">vis3d</span>;
-camlight(<span class="string">'headlight'</span>); lighting <span class="string">phong</span>;
-set(gca,<span class="string">'FontSize'</span>,font_size);
-drawnow;
+cFigure;
+subplot(1,3,1); hold <span class="string">on</span>; grid <span class="string">on</span>; view(3);
+title(<span class="string">'Complex surface, coarse original form'</span>,<span class="string">'FontSize'</span>,fontSize);
+gpatch(F,V,0.5*ones(1,3),<span class="string">'k'</span>);
+axisGeom(gca,fontSize);
+camlight(<span class="string">'headlight'</span>);
 ha=axis;
-subplot(1,2,2); hold <span class="string">on</span>; grid <span class="string">on</span>; view(3);
-xlabel(<span class="string">'X'</span>,<span class="string">'FontWeight'</span>,<span class="string">'bold'</span>,<span class="string">'FontSize'</span>,font_size); ylabel(<span class="string">'Y'</span>,<span class="string">'FontWeight'</span>,<span class="string">'bold'</span>,<span class="string">'FontSize'</span>,font_size); zlabel(<span class="string">'Z'</span>,<span class="string">'FontWeight'</span>,<span class="string">'bold'</span>,<span class="string">'FontSize'</span>,font_size);
-title(<span class="string">'Dense interpolated form'</span>,<span class="string">'FontSize'</span>,font_size);
-hp1=patch(<span class="string">'Faces'</span>,Fi,<span class="string">'Vertices'</span>,Vi);
-set(hp1,<span class="string">'FaceColor'</span>,<span class="string">'r'</span>,<span class="string">'EdgeColor'</span>,<span class="string">'none'</span>);
-axis <span class="string">equal</span> <span class="string">tight</span> <span class="string">vis3d</span>;
+
+subplot(1,3,2); hold <span class="string">on</span>; grid <span class="string">on</span>; view(3);
+title(<span class="string">'Refined spherical coordinates'</span>,<span class="string">'FontSize'</span>,fontSize);
+gpatch(Fi,Vs,0.8*ones(1,3),<span class="string">'k'</span>);
+h1=scatter3(Vs(:,1),Vs(:,2),Vs(:,3),35,Ci,<span class="string">'filled'</span>);
+colormap(gca,gjet(numberInterpSteps)); icolorbar([1 8]);
+axisGeom(gca,fontSize);
+camlight(<span class="string">'headlight'</span>);
+
+subplot(1,3,3); hold <span class="string">on</span>; grid <span class="string">on</span>; view(3);
+title(<span class="string">'Dense interpolated form'</span>,<span class="string">'FontSize'</span>,fontSize);
+gpatch(F,V,0.5*ones(1,3),<span class="string">'none'</span>,0.1);
+h2=gpatch(Fi,Vi,Ci,<span class="string">'k'</span>);
+axisGeom(gca,fontSize);
+colormap(gca,gjet(numberInterpSteps)); icolorbar([1 8]);
+camlight(<span class="string">'headlight'</span>);
 axis(ha);
-camlight(<span class="string">'headlight'</span>); lighting <span class="string">phong</span>;
-set(gca,<span class="string">'FontSize'</span>,font_size);
 drawnow;
-</pre><img vspace="5" hspace="5" src="HELP_interp_spherical_01.png" alt=""> <h2 id="5">Animation of build in demo for <tt>interp_spherical</tt></h2><pre class="codeinput">interp_spherical;
-</pre><pre class="codeoutput">DEMO MODE
-</pre><img vspace="5" hspace="5" src="HELP_interp_spherical_02.png" alt=""> <p><img vspace="5" hspace="5" src="gibbVerySmall.gif" alt=""> </p><p><i><b>GIBBON</b></i> <a href="www.gibboncode.org">www.gibboncode.org</a></p><p><i>Kevin Mattheus Moerman</i>, <a href="gibbon.toolbox@gmail.com">gibbon.toolbox@gmail.com</a></p><p><i><b>GIBBON footer text</b></i></p><p>License: <a href="https://github.com/gibbonCode/GIBBON/blob/master/LICENSE">https://github.com/gibbonCode/GIBBON/blob/master/LICENSE</a></p><p>GIBBON: The Geometry and Image-based Bioengineering add-On. A toolbox for image segmentation, image-based modeling, meshing, and finite element analysis.</p><p>Copyright (C) 2017  Kevin Mattheus Moerman</p><p>This program is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.</p><p>This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for more details.</p><p>You should have received a copy of the GNU General Public License along with this program.  If not, see <a href="http://www.gnu.org/licenses/">http://www.gnu.org/licenses/</a>.</p><p class="footer"><br><a href="http://www.mathworks.com/products/matlab/">Published with MATLAB&reg; R2016b</a><br></p></div><!--
+</pre><img vspace="5" hspace="5" src="HELP_interp_spherical_01.png" alt=""> <p>Animate the process</p><pre class="codeinput">hf=cFigure;
+subplot(1,3,1); hold <span class="string">on</span>; grid <span class="string">on</span>; view(3);
+title(<span class="string">'Complex surface, coarse original form'</span>,<span class="string">'FontSize'</span>,fontSize);
+gpatch(F,V,0.5*ones(1,3),<span class="string">'k'</span>);
+axisGeom(gca,fontSize);
+camlight(<span class="string">'headlight'</span>);
+ha=axis;
+
+subplot(1,3,2); hold <span class="string">on</span>; grid <span class="string">on</span>; view(3);
+title(<span class="string">'Refined spherical coordinates'</span>,<span class="string">'FontSize'</span>,fontSize);
+gpatch(Fi,Vs,0.8*ones(1,3),<span class="string">'k'</span>);
+h1=scatter3(Vs(:,1),Vs(:,2),Vs(:,3),35,Ci,<span class="string">'filled'</span>);
+colormap(gca,gjet(numberInterpSteps)); icolorbar([1 8]);
+axisGeom(gca,fontSize);
+camlight(<span class="string">'headlight'</span>);
+
+subplot(1,3,3); hold <span class="string">on</span>; grid <span class="string">on</span>; view(3);
+title(<span class="string">'Dense interpolated form'</span>,<span class="string">'FontSize'</span>,fontSize);
+gpatch(F,V,0.5*ones(1,3),<span class="string">'none'</span>,0.1);
+h2=gpatch(Fi,Vi,Ci,<span class="string">'k'</span>);
+axisGeom(gca,fontSize);
+colormap(gca,gjet(numberInterpSteps)); icolorbar([1 8]);
+camlight(<span class="string">'headlight'</span>);
+axis(ha);
+drawnow;
+</pre><img vspace="5" hspace="5" src="HELP_interp_spherical_02.png" alt=""> <p>Add animation component based on <tt>anim8</tt> to visualize stepwise process</p><pre class="codeinput">animStruct.Time=linspace(0,1,numberInterpSteps+1);
+Cn=nan(size(Ri));
+Rn=ones(size(Ri));
+<span class="keyword">for</span> q=1:1:numberInterpSteps+1
+    <span class="keyword">if</span> q==1
+        [Vn(:,1),Vn(:,2),Vn(:,3)]=sph2cart(Ti,Pi,Rn);
+    <span class="keyword">else</span>
+        Rn(Ci==q-1)=Ri(Ci==q-1);
+        [Vn(:,1),Vn(:,2),Vn(:,3)]=sph2cart(Ti,Pi,Rn);
+        Cn(Ci==q-1)=Ci(Ci==q-1);
+    <span class="keyword">end</span>
+    <span class="comment">%Set entries in animation structure</span>
+    animStruct.Handles{q}=[h1,h2,h2]; <span class="comment">%Handles of objects to animate</span>
+    animStruct.Props{q}={<span class="string">'CData'</span>,<span class="string">'Vertices'</span>,<span class="string">'CData'</span>}; <span class="comment">%Properties of objects to animate</span>
+    animStruct.Set{q}={Cn,Vn,Cn}; <span class="comment">%Property values for to set in order to animate</span>
+<span class="keyword">end</span>
+anim8(hf,animStruct);
+</pre><img vspace="5" hspace="5" src="HELP_interp_spherical_03.png" alt=""> <p><img vspace="5" hspace="5" src="gibbVerySmall.gif" alt=""> </p><p><i><b>GIBBON</b></i> <a href="www.gibboncode.org">www.gibboncode.org</a></p><p><i>Kevin Mattheus Moerman</i>, <a href="gibbon.toolbox@gmail.com">gibbon.toolbox@gmail.com</a></p><p><i><b>GIBBON footer text</b></i></p><p>License: <a href="https://github.com/gibbonCode/GIBBON/blob/master/LICENSE">https://github.com/gibbonCode/GIBBON/blob/master/LICENSE</a></p><p>GIBBON: The Geometry and Image-based Bioengineering add-On. A toolbox for image segmentation, image-based modeling, meshing, and finite element analysis.</p><p>Copyright (C) 2017  Kevin Mattheus Moerman</p><p>This program is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.</p><p>This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for more details.</p><p>You should have received a copy of the GNU General Public License along with this program.  If not, see <a href="http://www.gnu.org/licenses/">http://www.gnu.org/licenses/</a>.</p><p class="footer"><br><a href="http://www.mathworks.com/products/matlab/">Published with MATLAB&reg; R2016b</a><br></p></div><!--
 ##### SOURCE BEGIN #####
 %% interp_spherical
 % Below is a demonstration of the features of the |interp_spherical| function
 
-%%
-clear; close all; clc;
+%% Syntax
+% |[Ri,Ci]=interp_spherical(T,P,R,Ti,Pi,interpMethod,numberInterpSteps);|
 
-%% PLOT SETTINGS
-fig_color='w'; 
-fig_colordef='white';
-font_size=10;
-
-%% Simulating sparse sampling of complex spherical function
-
-%A triangulated representation is constructed allowing for surface
-%visualization. This is however not required. 
-
-%Start with sphere triangulation (Buckminster-Fuller type)
-[F,V,Vs]=geoSphere(3,1);
-T=Vs(:,1); P=Vs(:,2); %Spherical coordinates
-
-%Modifying to obtain complex shape
-[DCM,~]=euler2DCM([0.25.*pi -0.25*pi 0]); %Rotate
-Vr=(V*DCM);
-[Tr,Pr,Rr]=cart2sph(Vr(:,1),Vr(:,2),Vr(:,3)); %convert to spherical coordinates
-[V(:,1),V(:,2),V(:,3)]=sph2cart(T,P,1+0.25*cos(2*(Tr))+0.25*cos(8*(P))); %Convert back with unity radii
-V(:,3)=V(:,3)*2; %Scale
-[T,P,R] = cart2sph(V(:,1),V(:,2),V(:,3)); %Convert to spherical coordinates
-
-%Defining denser point set for interpolation
-[Fi,Vi,Vsi]=geoSphere(4,1);
-Ti=Vsi(:,1); Pi=Vsi(:,2); %Spherical coordinates
-
-%% Spherical interpolation
+%% Description 
 %The function |interp_spherical| interpolates in a spherical coordinate
 %sytem using standard interp2 type interpolation methods or those based on
 %Delaunay tesselations in the angular space such as natural neighbour
@@ -178,44 +193,136 @@ Ti=Vsi(:,1); Pi=Vsi(:,2); %Spherical coordinates
 %function aims to interpolate at the "equator" such that polar artifacts
 %can be minimized. For each interpolation step the interpolation problem is
 %rotated such that the currect "equatorial band" is centered at the
-%equator. Running |interp_spherical| on its own without inputs or outputs
-%shows a demo animation of this stepwise process. 
+%equator. 
 
+%% Examples 
 
-numberInterpSteps=8; %Number of interpolation steps
-interpMethod='natural'; %The interpolation method
+%%
+clear; close all; clc;
+
+%% Example: Interpolating data in spherical coordinates
+
+%%
+% Plot settings
+fontSize=15;
+
+%%
+% Simulating sparse sampling of complex spherical function. A triangulated
+% representation is constructed allowing for surface visualization. This is
+% however not required. 
+
+numRefine1=2; %Number of refinement steps from icosahedron
+r=2; %Inner sphere radius
+[F,V,~]=geoSphere(numRefine1,r);
+
+[~,V2,~]=geoSphere(0,r);
+
+[D,indMin]=minDist(V,V2);
+D=D.^2;
+D=D-min(D(:));
+D=D./max(D(:));
+D=D.*r;
+
+[T,P,R] = cart2sph(V(:,1),V(:,2),V(:,3));
+R=R-0.6*D;
+[V(:,1),V(:,2),V(:,3)] = sph2cart(T,P,R);
+
+[T,P,R] = cart2sph(V(:,1),V(:,2),V(:,3)); %Get spherical coordinates
+
+%% 
+% Defining denser point set for interpolation
+numRefine2=numRefine1+2;
+[Fi,Vs,Vsi]=geoSphere(numRefine2,1);
+Ti=Vsi(:,1); Pi=Vsi(:,2); %Get spherical coordinates
+
+%%
+% Interpolate in spherical coordinates 
+
+numberInterpSteps=8; %Number of interpolation steps ("equitorial bands")
+interpMethod='cubic'; %The interpolation method
 
 %Spherical interpolation
-[Ri]=interp_spherical(T,P,R,Ti,Pi,interpMethod,numberInterpSteps);
+[Ri,Ci]=interp_spherical(T,P,R,Ti,Pi,interpMethod,numberInterpSteps);
 
 %Convert to Cartesian coordinates
 [Vi(:,1),Vi(:,2),Vi(:,3)]=sph2cart(Ti,Pi,Ri);
 
 %Plotting results
-hf1=figuremax(fig_color,fig_colordef); 
-subplot(1,2,1); hold on; grid on; view(3);
-xlabel('X','FontWeight','bold','FontSize',font_size); ylabel('Y','FontWeight','bold','FontSize',font_size); zlabel('Z','FontWeight','bold','FontSize',font_size);
-title('Coarse original form','FontSize',font_size);
-hp1=patch('Faces',F,'Vertices',V);
-set(hp1,'FaceColor','g','EdgeColor','w');
-axis equal tight vis3d;
-camlight('headlight'); lighting phong;
-set(gca,'FontSize',font_size);
-drawnow;
+cFigure;
+subplot(1,3,1); hold on; grid on; view(3);
+title('Complex surface, coarse original form','FontSize',fontSize);
+gpatch(F,V,0.5*ones(1,3),'k');
+axisGeom(gca,fontSize);
+camlight('headlight'); 
 ha=axis; 
-subplot(1,2,2); hold on; grid on; view(3);
-xlabel('X','FontWeight','bold','FontSize',font_size); ylabel('Y','FontWeight','bold','FontSize',font_size); zlabel('Z','FontWeight','bold','FontSize',font_size);
-title('Dense interpolated form','FontSize',font_size);
-hp1=patch('Faces',Fi,'Vertices',Vi);
-set(hp1,'FaceColor','r','EdgeColor','none');
-axis equal tight vis3d;
+
+subplot(1,3,2); hold on; grid on; view(3);
+title('Refined spherical coordinates','FontSize',fontSize);
+gpatch(Fi,Vs,0.8*ones(1,3),'k');
+h1=scatter3(Vs(:,1),Vs(:,2),Vs(:,3),35,Ci,'filled');
+colormap(gca,gjet(numberInterpSteps)); icolorbar([1 8]); 
+axisGeom(gca,fontSize);
+camlight('headlight'); 
+
+subplot(1,3,3); hold on; grid on; view(3);
+title('Dense interpolated form','FontSize',fontSize);
+gpatch(F,V,0.5*ones(1,3),'none',0.1);
+h2=gpatch(Fi,Vi,Ci,'k');
+axisGeom(gca,fontSize);
+colormap(gca,gjet(numberInterpSteps)); icolorbar([1 8]); 
+camlight('headlight'); 
 axis(ha); 
-camlight('headlight'); lighting phong;
-set(gca,'FontSize',font_size);
 drawnow;
 
-%% Animation of build in demo for |interp_spherical|
-interp_spherical;
+%%
+% Animate the process
+
+hf=cFigure;
+subplot(1,3,1); hold on; grid on; view(3);
+title('Complex surface, coarse original form','FontSize',fontSize);
+gpatch(F,V,0.5*ones(1,3),'k');
+axisGeom(gca,fontSize);
+camlight('headlight'); 
+ha=axis; 
+
+subplot(1,3,2); hold on; grid on; view(3);
+title('Refined spherical coordinates','FontSize',fontSize);
+gpatch(Fi,Vs,0.8*ones(1,3),'k');
+h1=scatter3(Vs(:,1),Vs(:,2),Vs(:,3),35,Ci,'filled');
+colormap(gca,gjet(numberInterpSteps)); icolorbar([1 8]); 
+axisGeom(gca,fontSize);
+camlight('headlight'); 
+
+subplot(1,3,3); hold on; grid on; view(3);
+title('Dense interpolated form','FontSize',fontSize);
+gpatch(F,V,0.5*ones(1,3),'none',0.1);
+h2=gpatch(Fi,Vi,Ci,'k');
+axisGeom(gca,fontSize);
+colormap(gca,gjet(numberInterpSteps)); icolorbar([1 8]); 
+camlight('headlight'); 
+axis(ha); 
+drawnow;
+
+%%
+% Add animation component based on |anim8| to visualize stepwise process
+
+animStruct.Time=linspace(0,1,numberInterpSteps+1);
+Cn=nan(size(Ri));
+Rn=ones(size(Ri));
+for q=1:1:numberInterpSteps+1
+    if q==1
+        [Vn(:,1),Vn(:,2),Vn(:,3)]=sph2cart(Ti,Pi,Rn);
+    else
+        Rn(Ci==q-1)=Ri(Ci==q-1);
+        [Vn(:,1),Vn(:,2),Vn(:,3)]=sph2cart(Ti,Pi,Rn);
+        Cn(Ci==q-1)=Ci(Ci==q-1);        
+    end        
+    %Set entries in animation structure
+    animStruct.Handles{q}=[h1,h2,h2]; %Handles of objects to animate
+    animStruct.Props{q}={'CData','Vertices','CData'}; %Properties of objects to animate
+    animStruct.Set{q}={Cn,Vn,Cn}; %Property values for to set in order to animate
+end
+anim8(hf,animStruct);
 
 %%
 %

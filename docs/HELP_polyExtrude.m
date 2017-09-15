@@ -17,10 +17,10 @@ clear; close all; clc;
 % Plot settings
 figColor='w'; 
 figColorDef='white';
-fontSize=15;
+fontSize=25;
 markerSize1=45;
 lineWidth1=4;
-faceAlpha=0.5;
+faceAlpha=1;
 
 %% Example: EXTRUDING A PLANAR POLYGON
 

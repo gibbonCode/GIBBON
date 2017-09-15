@@ -234,8 +234,6 @@ if ~isempty(C)
 end
 outputStruct.faceTypeLabel=faceTypeLabel;
 outputStruct.indInitial=indInitial;
-
-
  
 %% 
 % _*GIBBON footer text*_ 

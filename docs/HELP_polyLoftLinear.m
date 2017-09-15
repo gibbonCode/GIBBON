@@ -18,7 +18,7 @@ clear; close all; clc;
 % Plot settings
 figColor='w'; 
 figColorDef='white';
-fontSize=15;
+fontSize=25;
 markerSize1=25;
 lineWidth1=3;
 faceAlpha=0.5;
@@ -58,29 +58,17 @@ cPar.patchType='tri_slash';
 
 %%
 % Plotting results
-hf1=figuremax(figColor,figColorDef);
-subplot(1,2,1);
-title('The sketched profiles','FontSize',fontSize);
-xlabel('X','FontSize',fontSize);ylabel('Y','FontSize',fontSize); zlabel('Z','FontSize',fontSize);
-hold on;
-
-plotV(V_bottom,'r-','lineWidth',lineWidth1,'MarkerSize',markerSize1);
-
-plotV(V_top,'b-','lineWidth',lineWidth1,'MarkerSize',markerSize1);
-
-axis equal; view(3); axis tight;  grid on;  set(gca,'FontSize',fontSize);
-
-subplot(1,2,2);
+cFigure; hold on;
 title('The lofted feature','FontSize',fontSize);
-xlabel('X','FontSize',fontSize);ylabel('Y','FontSize',fontSize); zlabel('Z','FontSize',fontSize);
-hold on;
-hp=patch('faces',F,'Vertices',V); set(hp,'FaceColor','g','EdgeColor','k','FaceAlpha',1);
+
+gpatch(F,V,'g','k',1);
 % patchNormPlot(F,V);
+
 plotV(V_bottom,'r.-','lineWidth',lineWidth1,'MarkerSize',markerSize1);
 plotV(V_top,'b.-','lineWidth',lineWidth1,'MarkerSize',markerSize1);
 
-axis equal; view(3); axis tight;  grid on;  set(gca,'FontSize',fontSize);
-camlight headlight; lighting phong;
+axisGeom(gca,fontSize);
+camlight headlight; 
 drawnow;
 
 %% 

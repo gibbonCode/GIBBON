@@ -35,19 +35,17 @@ hf=cFigure; % Open figure for plotting
 %Defining triangulated geodesic domes with different densities
 r=1; %sphere radius
 n=0:1:3; %Refinements   
-pColors=autumn(numel(n));
+pColors=gjet(numel(n));
 for q=1:1:numel(n)
     [F,V,~]=geoSphere(n(q),r); 
     subplot(2,2,q); hold on;
-    title([num2str(n(q)),' refinement iterations'],'FontSize',fontSize);
-    xlabel('X','FontSize',fontSize); ylabel('Y','FontSize',fontSize); zlabel('Z','FontSize',fontSize);
-    hp=patch('Faces',F,'Vertices',V);
-    patchNormPlot(F,V);
-    set(hp,'FaceColor',pColors(q,:),'FaceAlpha',faceAlpha,'lineWidth',edgeWidth,'edgeColor',edgeColor);
+    title([num2str(n(q)),' refinement iterations'],'FontSize',fontSize);    
+    gpatch(F,V,pColors(q,:));
+    % patchNormPlot(F,V);    
     camlight headlight; 
-    set(gca,'FontSize',fontSize);
-    view(3); axis tight;  axis equal;  grid on;
+    axisGeom(gca,fontSize);    
 end
+drawnow; 
 
 %% Using other solid types
 % Other platonic solids can also be used as a starting tesselation. However
@@ -59,19 +57,17 @@ solidTypes=1:5;
 
 hf=cFigure; % Open figure for plotting
 titleCell={'tetrahedron','cube','octahedron','icosahedron','dodecahedron'};
-n=0; %Refinements   
-pColors=autumn(numel(n));
-for solidType=solidTypes
-    [F,V,~]=geoSphere(0,r,solidType); 
-    subplot(2,3,solidType); hold on;
-    title(['Based on: ',titleCell{solidType}],'FontSize',fontSize);
-    xlabel('X','FontSize',fontSize); ylabel('Y','FontSize',fontSize); zlabel('Z','FontSize',fontSize);
-    hp=patch('Faces',F,'Vertices',V);
-    set(hp,'FaceColor','b','FaceAlpha',faceAlpha,'lineWidth',edgeWidth,'edgeColor',edgeColor);
+pColors=gjet(numel(solidTypes));
+q=1;
+for q=solidTypes
+    [F,V,~]=geoSphere(0,r,q); 
+    subplot(2,3,q); hold on;
+    title(['Based on: ',titleCell{q}],'FontSize',fontSize);    
+    gpatch(F,V,pColors(q,:));   
     camlight headlight; 
-    set(gca,'FontSize',fontSize);
-    view(3); axis tight;  axis equal;  grid on;
+    axisGeom(gca,fontSize);    
 end
+drawnow; 
 
 %% 
 %

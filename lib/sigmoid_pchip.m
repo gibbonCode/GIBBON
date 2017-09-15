@@ -61,8 +61,6 @@ elseif numel(n)>1
 else
     s=pp;
 end
-
-
  
 %% 
 % _*GIBBON footer text*_ 
