@@ -95,18 +95,17 @@ logicCutView=YE>mean(Y);
 
 cFigure;
 hold on; 
-title('Cut view of Solid tetrahedral mesh model','FontSize',fontSize);
-% gpatch(Fb,V,0.5*ones(1,3),'none',faceAlpha1);
-patchNormPlot(Fb,V);
+title('Cut view of tetrahedral mesh model','FontSize',fontSize);
+gpatch(Fb,V,0.5*ones(1,3),'none',faceAlpha1);
+% patchNormPlot(Fb,V);
 gpatch(Fs,V,Cs,'k',faceAlpha2);
-patchNormPlot(Fs,V);
+% patchNormPlot(Fs,V);
 plotV(V(unique(Fs(:)),:),'k.','MarkerSize',markerSize);
 camlight headlight;
 axisGeom(gca,fontSize); 
 axis off; 
 colormap(cMap); 
 drawnow;
-
 
 %% Example: Creating an animated view to explore the mesh
 % See also |anim8| function
@@ -115,7 +114,7 @@ drawnow;
 % Initialize figure
 hf=cFigure; %Store figure handle
 hold on; 
-% title('Cut view of Solid tetrahedral mesh model','FontSize',fontSize);
+% title('Cut view of tetrahedral mesh model','FontSize',fontSize);
 gpatch(Fb,V,0.5*ones(1,3),'none',faceAlpha1);
 hp=gpatch(Fs,V,Cs,'k',faceAlpha2); %Graphics object to vary property of during animation
 camlight headlight;
@@ -223,7 +222,7 @@ logicCutView=YE>mean(Y);
 
 cFigure;
 hold on; 
-title('Cut view of Solid tetrahedral mesh model','FontSize',fontSize);
+title('Cut view of tetrahedral mesh model','FontSize',fontSize);
 gpatch(Fb,V,0.5*ones(1,3),'none',faceAlpha1);
 gpatch(Fs,V,Cs,'k',faceAlpha2);
 plotV(V(unique(Fs(:)),:),'k.','MarkerSize',markerSize);
@@ -328,7 +327,7 @@ logicCutView=YE>mean(Y);
 
 cFigure;
 hold on; 
-title('Cut view of Solid tetrahedral mesh model','FontSize',fontSize);
+title('Cut view of tetrahedral mesh model','FontSize',fontSize);
 gpatch(Fb,V,0.5*ones(1,3),'none',faceAlpha1);
 gpatch(Fs,V,Cs,'k',faceAlpha2);
 plotV(V(unique(Fs(:)),:),'k.','MarkerSize',markerSize);
@@ -451,7 +450,7 @@ logicCutView=YE>mean(Y);
 
 cFigure;
 hold on; 
-title('Cut view of Solid tetrahedral mesh model','FontSize',fontSize);
+title('Cut view of tetrahedral mesh model','FontSize',fontSize);
 gpatch(Fb,V,0.5*ones(1,3),'none',faceAlpha1);
 gpatch(Fs,V,Cs,'k',faceAlpha2);
 plotV(V(unique(Fs(:)),:),'k.','MarkerSize',markerSize);
@@ -468,7 +467,7 @@ drawnow;
 % Initialize figure
 hf=cFigure; %Store figure handle
 hold on; 
-% title('Cut view of Solid tetrahedral mesh model','FontSize',fontSize);
+% title('Cut view of tetrahedral mesh model','FontSize',fontSize);
 gpatch(Fb,V,0.5*ones(1,3),'none',faceAlpha1);
 hp=gpatch(Fs,V,Cs,'k',faceAlpha2); %Graphics object to vary property of during animation
 camlight headlight;
@@ -599,7 +598,7 @@ logicCutView=YE>mean(Y);
 
 cFigure;
 hold on; 
-title('Cut view of Solid tetrahedral mesh model','FontSize',fontSize);
+title('Cut view of tetrahedral mesh model','FontSize',fontSize);
 gpatch(Fb,V,0.5*ones(1,3),'none',faceAlpha1);
 gpatch(Fs,V,Cs,'k',faceAlpha2);
 plotV(V(unique(Fs(:)),:),'k.','MarkerSize',markerSize);
@@ -655,7 +654,7 @@ logicCutView=YE>mean(Y);
 
 cFigure;
 hold on; 
-title('Cut view of Solid tetrahedral mesh model','FontSize',fontSize);
+title('Cut view of tetrahedral mesh model','FontSize',fontSize);
 gpatch(Fb,V,0.5*ones(1,3),'none',faceAlpha1);
 gpatch(Fs,V,Cs,'k',faceAlpha2);
 plotV(V(unique(Fs(:)),:),'k.','MarkerSize',markerSize);
@@ -732,9 +731,11 @@ logicCutView=YE>mean(Y);
 
 cFigure;
 hold on; 
-title('Cut view of Solid tetrahedral mesh model','FontSize',fontSize);
+title('Cut view of tetrahedral mesh model','FontSize',fontSize);
 gpatch(Fb,V,0.5*ones(1,3),'none',faceAlpha1);
 gpatch(Fs,V,Cs,'k',faceAlpha2);
+% patchNormPlot(Fs,V);
+
 plotV(V(unique(Fs(:)),:),'k.','MarkerSize',markerSize);
 camlight headlight;
 axisGeom(gca,fontSize); 

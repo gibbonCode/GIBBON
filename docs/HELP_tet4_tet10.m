@@ -5,9 +5,9 @@
 clear; close all; clc;
 
 % Plot settings
-fontSize=15;
+fontSize=25;
 faceColor='b';
-faceAlpha=0.5;
+faceAlpha=0.3;
 edgeColor='k';
 edgeWidth1=2;
 edgeWidth2=1;
@@ -17,7 +17,7 @@ markerSize2=10;
 %% CONVERSION FROM TET4 TO TET10, EXAMPLE FOR A SINGLE TETRAHEDRON
 % Creating a single 4-node tetrahedron
 [V4,~]=platonic_solid(1,1); %q indicates solid type, r is the radius
-TET4=[1:4];
+TET4=[1 2 4 3];
 [F4,~]=element2patch(TET4,[],'tet4');
 
 %%
@@ -34,10 +34,10 @@ xlabel('X','FontSize',fontSize); ylabel('Y','FontSize',fontSize); zlabel('Z','Fo
 
 hp=patch('Faces',F4,'Vertices',V4);
 set(hp,'FaceColor','g','FaceAlpha',faceAlpha,'lineWidth',edgeWidth1,'edgeColor',edgeColor,'Marker','.','MarkerSize',markerSize1);
-[hn]=patchNormPlot(F4,V4,0.25); %Plotting face normals
+[hn]=patchNormPlot(F4,V4,0.75); %Plotting face normals
 
 for q=1:1:size(TET4,2)
-    text(V4(TET4(1,q),1),V4(TET4(1,q),2),V4(TET4(1,q),3),[' ',num2str(q)],'FontSize',50);
+    text(V4(TET4(1,q),1),V4(TET4(1,q),2),V4(TET4(1,q),3),['  ',num2str(q)],'FontSize',35,'color','b');
 end
 
 set(gca,'FontSize',fontSize);
@@ -50,10 +50,10 @@ xlabel('X','FontSize',fontSize); ylabel('Y','FontSize',fontSize); zlabel('Z','Fo
 
 hp=patch('Faces',F10,'Vertices',V10);
 set(hp,'FaceColor','r','FaceAlpha',faceAlpha,'lineWidth',edgeWidth1,'edgeColor',edgeColor,'Marker','.','MarkerSize',markerSize1);
-[hn]=patchNormPlot(F10,V10,0.25); %Plotting face normals
+[hn]=patchNormPlot(F10,V10,0.75); %Plotting face normals
 
 for q=1:1:size(TET10,2)
-    text(V10(TET10(1,q),1),V10(TET10(1,q),2),V10(TET10(1,q),3),[' ',num2str(q)],'FontSize',50);
+    text(V10(TET10(1,q),1),V10(TET10(1,q),2),V10(TET10(1,q),3),[' ',num2str(q)],'FontSize',35,'color','b');
 end
 
 set(gca,'FontSize',fontSize);
@@ -139,9 +139,6 @@ view([-50,12])
 camlight('headlight'); lighting flat;
 
 drawnow; 
-
-%%
-
 
 %% 
 %

@@ -220,8 +220,8 @@ V_tet=meshOutput.nodes;
 C_tet=meshOutput.faceMaterialID;
 E_tet=meshOutput.elements;
 
-indBoundary=meshOutput.facesBoundary(meshOutput.boundaryMarker==1);
-indBoundary=unique(indBoundary);
+indBoundary=meshOutput.facesBoundary(meshOutput.boundaryMarker==1,:);
+indBoundary=unique(indBoundary(:));
 
 %% MERGING NODE SETS
 

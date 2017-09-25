@@ -17,6 +17,7 @@ Fc(logicValid)=indFix2(F(logicValid));
 varargout{1}=Fc;
 varargout{2}=Vc;
 varargout{3}=indFix2;
+varargout{4}=logicValid;
  
 %% 
 % _*GIBBON footer text*_ 

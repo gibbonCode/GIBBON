@@ -92,6 +92,7 @@ drawnow;
 %%
 
 % Extruding model
+clear cPar;
 cPar.pointSpacing=0.5;
 cPar.depth=7; 
 cPar.patchType='tri_slash'; 
@@ -118,6 +119,7 @@ drawnow;
 % Alternative extrusion direction direction
 
 % Extruding model
+clear cPar;
 cPar.pointSpacing=0.5;
 cPar.depth=7; 
 cPar.patchType='tri'; 
@@ -168,7 +170,8 @@ drawnow;
 %%
 
 % Extruding model
-cPar.pointSpacing=0.5;
+clear cPar;
+cPar.numSteps=13;
 cPar.depth=7; 
 cPar.patchType='tri'; 
 cPar.dir=0;

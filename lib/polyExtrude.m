@@ -1,4 +1,4 @@
-function [F,V]=polyExtrude(Vc,cPar)
+function [varargout]=polyExtrude(Vc,cPar)
 
 %% COMPUTE CURVE LENGTH
 D=max(pathLength(Vc)); %Compute curve length for point sampling
@@ -9,7 +9,7 @@ if size(Vc,2)==2
     Vc(:,3)=0;
 end
 
-%% PARSE cPar
+%% Parse input
 
 %Check what mode
 if isfield(cPar,'pointSpacing') && isfield(cPar,'numSteps')
@@ -61,7 +61,7 @@ if ~isfield(cPar,'closeLoopOpt')
     cPar.closeLoopOpt=0; %Default off
 end
 
-%% Extruding the skethed profile
+%% Prepare for extrude
 
 switch extrudeMode
     case 1 %Use number of points
@@ -93,8 +93,14 @@ switch cPar.dir
         Vc_end=Vc-V_add(ones(size(Vc,1),1),:);
 end
 
-[F,V]=polyLoftLinear(Vc_start,Vc_end,cPar);
- 
+%% Extruding the skethed profile using polyLoftLinear
+
+[F,V,indStart,indEnd]=polyLoftLinear(Vc_start,Vc_end,cPar);
+varargout{1}=F;
+varargout{2}=V;
+varargout{3}=indStart;
+varargout{4}=indEnd;
+
 %% 
 % _*GIBBON footer text*_ 
 % 

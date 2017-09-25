@@ -88,8 +88,6 @@ xlabel('X','FontSize',fontSize); ylabel('Y','FontSize',fontSize); zlabel('Z','Fo
 hold on;
 patch('Faces',Ft,'Vertices',Vt,'FaceColor','g','FaceAlpha',faceAlpha1,'lineWidth',edgeWidth,'edgeColor',edgeColor);
 patch('Faces',Fsp,'Vertices',Vsp,'FaceColor','r','FaceAlpha',faceAlpha1,'lineWidth',edgeWidth,'edgeColor',edgeColor);
-
-colormap(jet(6)); colorbar; 
 set(gca,'FontSize',fontSize);
 view(3); axis tight;  axis equal;  grid on;
 drawnow; 
@@ -137,59 +135,30 @@ xlabel('X','FontSize',fontSize); ylabel('Y','FontSize',fontSize); zlabel('Z','Fo
 hold on;
 patch('Faces',Fb,'Vertices',VT,'FaceColor','flat','CData',faceBoundaryMarker,'FaceAlpha',faceAlpha1,'lineWidth',edgeWidth,'edgeColor',edgeColor);
 
-colormap(jet(6)); colorbar; 
+colormap(jet(7)); icolorbar; 
 set(gca,'FontSize',fontSize);
 view(3); axis tight;  axis equal;  grid on;
 drawnow; 
 
-%%
-% % Plotting the meshed geometry
-% 
-% hf1=cFigure;
-% subplot(1,2,1);
-% 
-% title('Model boundaries','FontSize',fontSize);
-% xlabel('X','FontSize',fontSize); ylabel('Y','FontSize',fontSize); zlabel('Z','FontSize',fontSize); hold on;
-% hps=patch('Faces',Fb,'Vertices',VT,'FaceColor','flat','CData',faceBoundaryMarker,'lineWidth',edgeWidth,'edgeColor',edgeColor,'FaceAlpha',faceAlpha1);
-% view(3); axis tight;  axis equal;  grid on;
-% colormap(autumn);
-% set(gca,'FontSize',fontSize);
-% drawnow;
-% 
-% subplot(1,2,2);
-% %Selecting half of the model to see interior
-% Y=VT(:,2); YE=mean(Y(E),2);
-% L=YE>mean(Y);
-% [Fs,Cs]=element2patch(E(L,:),CT(L),'tet4');
-% 
-% title('Cut view of solid tetrahedral mesh model','FontSize',fontSize);
-% xlabel('X','FontSize',fontSize); ylabel('Y','FontSize',fontSize); zlabel('Z','FontSize',fontSize); hold on;
-% hps=patch('Faces',Fs,'Vertices',VT,'FaceColor','flat','CData',Cs,'lineWidth',edgeWidth,'edgeColor',edgeColor);
-% view(3); axis tight;  axis equal;  grid on;
-% colormap(autumn);
-% camlight headlight;
-% set(gca,'FontSize',fontSize);
-% drawnow;
-
 %% DEFINE BC's
 
 %Supported nodes
-logicRigid=faceBoundaryMarker==1 | faceBoundaryMarker==7;
+logicRigid=faceBoundaryMarker==5 | faceBoundaryMarker==7;
 F_rigid=Fb(logicRigid,:);
 bcRigidListFull=unique(F_rigid(:));
 
 if sideSupportOn
-    logicRigid=faceBoundaryMarker==5 | faceBoundaryMarker==6;
+    logicRigid=faceBoundaryMarker==3 | faceBoundaryMarker==4;
     F_rigid_x=Fb(logicRigid,:);
     bcRigidList_x=unique(F_rigid_x(:));
     
-    logicRigid=faceBoundaryMarker==3 | faceBoundaryMarker==4;
+    logicRigid=faceBoundaryMarker==1 | faceBoundaryMarker==2;
     F_rigid_y=Fb(logicRigid,:);
     bcRigidList_y=unique(F_rigid_y(:));
 end
 
 %Prescribed displacement nodes
-logicDisp=faceBoundaryMarker==2;
+logicDisp=faceBoundaryMarker==6;
 F_disp=Fb(logicDisp,:);
 bcIndicesPrescribed=unique(F_disp(:));
 bcPrescribedMagnitudes=[0 0 displacementMag];
@@ -216,8 +185,8 @@ end
 set(gca,'FontSize',fontSize);
 
 view(3); axis tight;  axis equal;  grid on;
-drawnow; 
 
+drawnow; 
 
 %% CONSTRUCTING FEB MODEL
 

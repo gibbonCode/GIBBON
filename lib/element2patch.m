@@ -83,7 +83,7 @@ switch elementType
             E(:,[1 5 2 9  4 8 ]);... %face 1 2 4
             E(:,[2 6 3 10 4 9 ]);... %face 2 3 4
             E(:,[3 7 1 8  4 10])];   %face 1 3 4        
-        F=fliplr(F);
+%         F=fliplr(F);
         C=repmat(C,4,1); %Replicate color data
     case 'hex8' %Hexahedral elements
         F =[E(:,[4 3 2 1]);... %top

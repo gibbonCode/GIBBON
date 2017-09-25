@@ -156,12 +156,12 @@ drawnow;
 %% DEFINE BC's
 
 %Supported nodes
-logicRigid=faceBoundaryMarker==1 | faceBoundaryMarker==7;
+logicRigid=faceBoundaryMarker==5 | faceBoundaryMarker==7;
 F_rigid=Fb(logicRigid,:);
 bcRigidListFull=unique(F_rigid(:));
 
 %Pressure surface
-logicPressure=faceBoundaryMarker==2;
+logicPressure=faceBoundaryMarker==6;
 F_pressure=Fb(logicPressure,:);
 
 %%

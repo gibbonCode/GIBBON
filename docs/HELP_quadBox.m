@@ -6,10 +6,7 @@ clear; close all; clc;
 
 %%
 % PLOT SETTINGS
-fig_color='w'; fig_colordef='white';
-fontSize=20;
-edgeWidth=2;
-edgeColor=0.7*ones(1,3);
+fontSize=15;
 faceAlpha1=0.5;
 
 %% Creating a quadrilateral mesh of a box
@@ -26,18 +23,14 @@ boxEl=[3 4 5]; %Number of elements per direction
 
 %%
 % Plotting model
-hf1=figuremax(fig_color,fig_colordef);
+cFigure; hold on;
 title('Box quadrilateral faces and normals','FontSize',fontSize);
-xlabel('X','FontSize',fontSize);ylabel('Y','FontSize',fontSize); zlabel('Z','FontSize',fontSize);
-hold on;
 
-patch('Faces',F,'Vertices',V,'FaceColor','flat','CData',faceBoundaryMarker,'FaceAlpha',faceAlpha1,'lineWidth',edgeWidth,'edgeColor',edgeColor);
-[hp]=patchNormPlot(F,V,mean(boxDim./boxEl));
+gpatch(F,V,faceBoundaryMarker,'k',1);
+% [hp]=patchNormPlot(F,V,mean(boxDim./boxEl));
 
-colormap(jet(6)); colorbar; 
-set(gca,'FontSize',fontSize);
-view(3); axis tight;  axis equal;  grid on;
-
+colormap(gjet(6)); icolorbar; 
+axisGeom(gca,fontSize);
 drawnow;
 
 %% 

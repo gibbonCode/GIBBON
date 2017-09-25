@@ -184,8 +184,7 @@ varargout{1}=E_tet10;
 varargout{2}=V_tet10;
 varargout{3}=V_tet10_cell;
 varargout{4}=Fb_tet10;
-varargout{5}=S;
-   
+varargout{5}=S;   
  
 %% 
 % _*GIBBON footer text*_ 

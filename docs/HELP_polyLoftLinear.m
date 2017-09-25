@@ -2,7 +2,7 @@
 % Below is a demonstration of the features of the |polyLoftLinear| function
 
 %% Syntax
-% |[F_tri,V_tri]=polyLoftLinear(V_bottom,V_top,cPar);|
+% |[F,V,indStart,indEnd]=polyLoftLinear(Vc_start,Vc_end,cPar);|
 
 %% Description
 % The |polyLoftLinear| function can be used to loft a surface defined by a
@@ -62,10 +62,33 @@ cFigure; hold on;
 title('The lofted feature','FontSize',fontSize);
 
 gpatch(F,V,'g','k',1);
-% patchNormPlot(F,V);
+patchNormPlot(F,V);
 
 plotV(V_bottom,'r.-','lineWidth',lineWidth1,'MarkerSize',markerSize1);
 plotV(V_top,'b.-','lineWidth',lineWidth1,'MarkerSize',markerSize1);
+
+axisGeom(gca,fontSize);
+camlight headlight; 
+drawnow;
+
+%% 
+% Create loft feature of a different type, also access start/end curve
+% output. 
+
+% cPar.numSteps=17; 
+cPar.closeLoopOpt=1; 
+cPar.patchType='quad';
+[F,V,ind1,ind2]=polyLoftLinear(V_bottom,V_top,cPar);
+
+%%
+% Plotting results
+cFigure; hold on;
+title('The lofted feature','FontSize',fontSize);
+
+gpatch(F,V,'g','k',1);
+patchNormPlot(F,V);
+plotV(V(ind1,:),'r.-','lineWidth',lineWidth1,'MarkerSize',markerSize1);
+plotV(V(ind2,:),'b.-','lineWidth',lineWidth1,'MarkerSize',markerSize1);
 
 axisGeom(gca,fontSize);
 camlight headlight; 

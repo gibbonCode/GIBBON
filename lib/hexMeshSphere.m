@@ -14,10 +14,11 @@ makeHollow=cPar.makeHollow;
 %Create box 1
 sphereDim=1/sqrt(3)*2*coreRadius*ones(1,3); 
 sphereEl=numElementsCore*ones(1,3); %Number of elements
-[box2]=hexMeshBox(sphereDim,sphereEl);
-E_core=box2.E;
-V_core=box2.V;
-Fb=box2.Fb;
+[boxMeshStruct]=hexMeshBox(sphereDim,sphereEl);
+E_core=boxMeshStruct.E;
+V_core=boxMeshStruct.V;
+Fb=boxMeshStruct.Fb;
+faceBoundaryMarkerBox=boxMeshStruct.faceBoundaryMarker;
 
 indBoundary=unique(Fb(:));
 V_core_boundary=V_core(indBoundary,:);
@@ -55,7 +56,9 @@ elseif makeHollow==0
     [~,ind1,ind2]=unique(pround(VT,5),'rows');
     VT=VT(ind1,:);
     ET=ind2(ET);
-    FTb=ind2(F_mantel_outer+size(V_core,1));
+    F_mantel_outer=ind2(F_mantel_outer+size(V_core,1));
+%     F_mantel_inner=ind2(F_mantel_inner+size(V_core,1));
+    FTb=F_mantel_outer;
     faceBoundaryMarker=ones(size(F_mantel_outer,1),1);
 end
 
@@ -69,6 +72,9 @@ if ~isfield(cPar,'cParSmooth')
     cPar.cParSmooth.LambdaSmooth=0.5;
     cPar.cParSmooth.n=5;
 end
+
+% F_rigid=[F_mantel_outer; F_mantel_inner];
+
 cPar.cParSmooth.RigidConstraints=unique(FTb(:));
 
 [F,~,~]=uniqueIntegerRow(FT);
@@ -80,10 +86,14 @@ end
 %% Collect output
 
 meshStruct.E=ET; 
+if makeHollow==0
+    meshStruct.elementRegionLabel=[1*ones(size(E_core,1),1); 2*ones(size(E_mantel,1),1);];
+end
 meshStruct.V=VT; 
 meshStruct.F=FT;
 meshStruct.Fb=FTb;
 meshStruct.faceBoundaryMarker=faceBoundaryMarker;
+meshStruct.faceBoundaryMarkerBox=faceBoundaryMarkerBox; 
 
 end
  

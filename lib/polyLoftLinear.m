@@ -1,6 +1,6 @@
-function [F,V]=polyLoftLinear(varargin)
+function [varargout]=polyLoftLinear(varargin)
 
-% function [F,V]=polyLoftLinear(Vc_start,Vc_end,cPar)
+% function [F,V,indStart,indEnd]=polyLoftLinear(Vc_start,Vc_end,cPar)
 % ------------------------------------------------------------------------
 %
 % This function creates a loft between the two input curves i.e. it
@@ -15,6 +15,7 @@ function [F,V]=polyLoftLinear(varargin)
 % 2016/01/13 Updated function description
 % 2016/01/13 Fixed 'tri' surface type for even steps such that end curve is
 % unaltered on output surface.
+% 2017/09/20 Added additional outputs for start and end curve points
 %------------------------------------------------------------------------
 
 %% Parse input
@@ -60,14 +61,17 @@ X=linspacen(Vc_start(:,1),Vc_end(:,1),numSteps)';
 Y=linspacen(Vc_start(:,2),Vc_end(:,2),numSteps)';
 Z=linspacen(Vc_start(:,3),Vc_end(:,3),numSteps)';
 
-%%
+%% Create patch data
 c=(1:1:size(Z,1))';
 C=c(:,ones(1,size(Z,2)));
 
 %Create quad patch data
 [F,V,C] = surf2patch(X,Y,Z,C);
 
-%Close patch if required
+indStart=1:numSteps:size(V,1);
+indEnd=numSteps:numSteps:size(V,1);
+
+%% Close patch if required
 if cPar.closeLoopOpt
     I=[(2:size(Z,1))' (2:size(Z,1))' (1:size(Z,1)-1)' (1:size(Z,1)-1)'];
     J=[ones(size(Z,1)-1,1) size(Z,2).*ones(size(Z,1)-1,1) size(Z,2).*ones(size(Z,1)-1,1) ones(size(Z,1)-1,1)];
@@ -80,12 +84,11 @@ else
 end
 C=round(C);
 
+%% Change mesh type if required
 meshTypes={'quad','tri_slash','tri'};
 if ~ismember(cPar.patchType,meshTypes)
     error([cPar.patchType,' is not a valid patch type, use quad, tri_slash, or tri instead'])
 else
-    
-    
     switch cPar.patchType
         case 'quad'
         case 'tri_slash' %Convert quads to triangles by slashing
@@ -148,6 +151,10 @@ else
     end
 end
 
+varargout{1}=F;
+varargout{2}=V;
+varargout{3}=indStart;
+varargout{4}=indEnd;
  
 %% 
 % _*GIBBON footer text*_ 

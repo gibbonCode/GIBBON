@@ -7,7 +7,6 @@ clear; close all; clc;
 
 %%
 % Plot settings
-figColor='w'; figColorDef='white';
 fontSize=15;
 faceAlpha1=1;
 edgeColor=0.25*ones(1,3);
@@ -34,27 +33,22 @@ Fb=meshStruct.Fb; %The boundary faces
 %%
 % Plotting sphere model
 
-hf=figuremax(figColor,figColorDef);
-subplot(1,2,1);
-title('The hexahedral mesh sphere','FontSize',fontSize);
-xlabel('X','FontSize',fontSize); ylabel('Y','FontSize',fontSize); zlabel('Z','FontSize',fontSize);
-hold on;
-patch('Faces',Fb,'Vertices',V,'FaceColor','r','FaceAlpha',faceAlpha1,'lineWidth',edgeWidth,'edgeColor',edgeColor);
-set(gca,'FontSize',fontSize);
-view(3); axis tight;  axis equal;  grid on;
-camlight headlight;
-
-subplot(1,2,2);
-title('Cut-view of the mesh','FontSize',fontSize);
-
 %Create cut view
 Y=V(:,2); YE=mean(Y(E),2);
 L=YE>mean(Y);
 [Fs,~]=element2patch(E(L,:),[],'hex8');
-patch('Faces',Fs,'Vertices',V,'FaceColor','b','FaceAlpha',faceAlpha1,'lineWidth',edgeWidth,'edgeColor',edgeColor);
 
-set(gca,'FontSize',fontSize);
-view(3); axis tight;  axis equal;  grid on;
+cFigure;
+subplot(1,2,1); hold on;
+title('The hexahedral mesh sphere','FontSize',fontSize);
+gpatch(Fb,V,'r');
+axisGeom(gca,fontSize);
+camlight headlight;
+
+subplot(1,2,2); hold on;
+title('Cut-view of the mesh','FontSize',fontSize);
+gpatch(Fs,V,'r');
+axisGeom(gca,fontSize);
 camlight headlight;
 
 drawnow; 
@@ -76,33 +70,39 @@ cPar.makeHollow=1;
 E=meshStruct.E; %The elements 
 V=meshStruct.V; %The vertices
 Fb=meshStruct.Fb; %The boundary faces
+faceBoundaryMarker=meshStruct.faceBoundaryMarker; %Boundary marker
 
 %%
 % Plotting sphere model
-
-hf=figuremax(figColor,figColorDef);
-subplot(1,2,1);
-title('The hexahedral mesh sphere','FontSize',fontSize);
-xlabel('X','FontSize',fontSize); ylabel('Y','FontSize',fontSize); zlabel('Z','FontSize',fontSize);
-hold on;
-patch('Faces',Fb,'Vertices',V,'FaceColor','r','FaceAlpha',faceAlpha1,'lineWidth',edgeWidth,'edgeColor',edgeColor);
-set(gca,'FontSize',fontSize);
-view(3); axis tight;  axis equal;  grid on;
-camlight headlight;
-
-subplot(1,2,2);
-title('Cut-view of the mesh','FontSize',fontSize);
 
 %Create cut view
 Y=V(:,2); YE=mean(Y(E),2);
 L=YE>mean(Y);
 [Fs,~]=element2patch(E(L,:),[],'hex8');
-patch('Faces',Fs,'Vertices',V,'FaceColor','b','FaceAlpha',faceAlpha1,'lineWidth',edgeWidth,'edgeColor',edgeColor);
 
-set(gca,'FontSize',fontSize);
-view(3); axis tight;  axis equal;  grid on;
+cFigure;
+subplot(1,2,1); hold on;
+title('The hexahedral mesh sphere','FontSize',fontSize);
+gpatch(Fb,V,'r');
+axisGeom(gca,fontSize);
 camlight headlight;
 
+subplot(1,2,2); hold on;
+title('Cut-view of the mesh','FontSize',fontSize);
+gpatch(Fs,V,'r');
+axisGeom(gca,fontSize);
+camlight headlight;
+
+drawnow; 
+
+%%
+
+cFigure;
+title('Boundary color visualization','FontSize',fontSize);
+gpatch(Fb,V,faceBoundaryMarker,'none',0.5);
+axisGeom(gca,fontSize);
+camlight headlight;
+colormap(gjet(4)); icolorbar;
 drawnow; 
 
 %% 

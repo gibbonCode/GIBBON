@@ -147,7 +147,7 @@ drawnow;
 
 Fc1=E2;
 
-logicContactSurf1=faceBoundaryMarker==2;
+logicContactSurf1=faceBoundaryMarker==6;
 Fc2=fliplr(Fb1(logicContactSurf1,:));
 
 % Plotting surface models
@@ -197,7 +197,7 @@ drawnow;
 %% DEFINE BC's
 
 %Supported nodes
-logicRigid=faceBoundaryMarker==1;
+logicRigid=faceBoundaryMarker==5;
 Fr=Fb1(logicRigid,:);
 bcRigidList=unique(Fr(:));
 
