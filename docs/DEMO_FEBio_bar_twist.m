@@ -40,7 +40,7 @@ numElementsWidth=round(sampleWidth/pointSpacings(1));
 numElementsThickness=round(sampleThickness/pointSpacings(2));
 numElementsHeight=round(sampleHeight/pointSpacings(3));
 
-alphaRotTotal=0.5*pi; %Total twist angle
+alphaRotTotal=pi;%0.5*pi; %Total twist angle
 numSteps=50; %Number of steps
 
 %% CREATING MESHED BOX

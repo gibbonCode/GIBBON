@@ -33,16 +33,10 @@ function [F,V,regionInd]=multiRegionTriMeshUneven2D(regionSpec,BoundaryPointSpac
 %------------------------------------------------------------------------
 
 %% PLOT SETTINGS
-if plotOn==1;     
-    figColor='w'; figColorDef='white';
-    fontSize=10;    
-    fAlpha=1;    
-    markerSize=20;       
-    faceColor='r';
-    hf1=figuremax(figColor,figColorDef);
-    title('Smoothened triangulated mesh','FontSize',fontSize);
-    xlabel('X','FontSize',fontSize);ylabel('Y','FontSize',fontSize);zlabel('Z','FontSize',fontSize);
-    hold on;  
+if plotOn==1     
+    fontSize=15;     
+    hf1=cFigure; hold on;  
+    title('The multi-region mesh','FontSize',fontSize);
 end
 
 %% CONTROL PARAMETERS
@@ -77,9 +71,9 @@ end
 %% PLOTTING
 if plotOn==1  
     figure(hf1);
-    patch('faces',F,'vertices',V,'FaceColor','flat','CData',regionInd,'FaceAlpha',fAlpha);
-    colormap(autumn(numel(regionSpec))); colorbar;
-    axis equal; view(2); axis tight;  set(gca,'FontSize',fontSize); grid on;
+    gpatch(F,V,regionInd,'k');
+    colormap(gjet(numel(regionSpec))); icolorbar;
+    axisGeom(gca,fontSize); view(2); 
     drawnow;
 end
 

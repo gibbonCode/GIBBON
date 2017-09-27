@@ -156,7 +156,7 @@ patch('Faces',Fi2,'Vertices',Vi2,'FaceColor','flat','FaceVertexCData',Ci2n,'Edge
 colormap(cMap1); colorbar; caxis([min(Cv(:)) max(Cv(:))]);
 view(3); grid on; axis equal; axis vis3d; 
 set(gca,'FontSize',fontSize);
-camlight headlight; lighting phong
+camlight headlight; lighting flat
 drawnow;
 
 %% Example for multidimensional image data 2: RGB driven vectors combined with colormap driven iso-surfaces
@@ -190,7 +190,7 @@ patch('Faces',Fi2,'Vertices',Vi2,'FaceColor','flat','CData',Ci2,'EdgeColor',edge
 view(3); grid on; axis equal; axis vis3d; 
 set(gca,'FontSize',fontSize);
 colormap(cMap2); colorbar; 
-camlight headlight; lighting phong
+camlight headlight; lighting flat
 
 subplot(1,2,2);
 hp=patch('Faces',F,'Vertices',V);

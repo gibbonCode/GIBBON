@@ -90,12 +90,12 @@ node_FEB_XML = NODES_FEB_XML.item(0).getElementsByTagName('node');
 no_nodes=node_FEB_XML.getLength;
 
 ELEMENTS_FEB_XML = GEO_FEB_XML.item(0).getElementsByTagName('Elements');
-elementTypes={'tri3','quad4','tet4','penta6','hex8'}; %Element type strings, these need to match targets in FEB file, adjust for other types
-numberElementNodes=[3,4,4,6,8]; %Number of nodes for each element type
+elementTypes={'tri3','quad4','tet4','tet10','penta6','hex8'}; %Element type strings, these need to match targets in FEB file, adjust for other types
+numberElementNodes=[3,4,4,10,6,8]; %Number of nodes for each element type
 
 %Getting the number of elements for each type
 numberElementEntries=zeros(1,numel(elementTypes));
-for q=1:1:numel(elementTypes);
+for q=1:1:numel(elementTypes)
     numberElementEntries(q)=ELEMENTS_FEB_XML.item(0).getElementsByTagName(elementTypes{q}).getLength;
 end
 indexElementTypes=find(numberElementEntries>0);
@@ -103,7 +103,7 @@ indexElementTypes=find(numberElementEntries>0);
 %Getting element data
 elementType=1;
 elementCell=cell(1,numel(indexElementTypes));
-for q=indexElementTypes;    
+for q=indexElementTypes  
    
     textScanFormat=repmat('%d,',1,numberElementNodes(q)); textScanFormat=textScanFormat(1:end-1); %Create text scan format    
     
@@ -160,8 +160,6 @@ end
 
 end
 
-
- 
 %% 
 % _*GIBBON footer text*_ 
 % 

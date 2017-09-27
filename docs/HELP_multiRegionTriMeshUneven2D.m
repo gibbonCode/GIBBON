@@ -52,10 +52,10 @@ plotOn=1; %This turns on/off plotting
 %Desired point spacing
 [F,V,regionInd]=multiRegionTriMeshUneven2D(regionSpec,BoundaryPointSpacings,MeshPointSpacings,plotOn);
 % [F,V,regionInd]=multiRegionTriMesh2D(regionSpec,pointSpacing,plotOn);
-plotV(V1,'b-','LineWidth',2);
-plotV(V2,'b-','LineWidth',2);
-plotV(V3,'b-','LineWidth',2);
-axis tight; 
+% plotV(V1,'b-','LineWidth',2);
+% plotV(V2,'b-','LineWidth',2);
+% plotV(V3,'b-','LineWidth',2);
+
 
 %%
 %

@@ -6,31 +6,50 @@ clear; close all; clc;
 
 %%
 % Plot settings
-figColor='w'; figColorDef='white';
-fontSize=10;
-edgeColor=0.25*ones(1,3);
-edgeWidth=1.5;
+fontSize=15;
+cMap=gjet(250);
 
 %% Importing a FEB file
 
-%Set main folder
+%% 
+% Set main folder
 defaultFolder = fileparts(fileparts(mfilename('fullpath')));
 pathName=fullfile(defaultFolder,'data','FEB');
 
+%%
+% Select test file
 testCase=2; 
 switch testCase
     case 1
         febFileNamePart='tetGenModel.feb'; %febio_spec 1.2
     case 2
-        febFileNamePart='tempModel_2p0.feb'; %febio_spec 2.0
+        febFileNamePart='tempModel.feb'; %febio_spec 2.0
 end
 febFileName=fullfile(pathName,febFileNamePart);
-[febXML,nodeStruct,elementCell]=import_FEB(febFileName);
 
 %%
-% Content:
+% Import FEB file
+[febXML,nodeStruct,elementCell]=import_FEB(febFileName);
 
+%% 
+% The output is an XML object for the feb file, a structure containing the
+% nodal information and a structure containing the element descriptions.
+% The content for the import variables is shown below. 
+
+%%
+% The node structure contains two fields, i.e. one containing nodal
+% coordinates and one containing node indices. The latter should strictly
+% be a monotonically increasing and ordered list so may not be required but
+% is provided here just in case the list is not ordered. 
 nodeStruct
+
+%%
+% The element cell output contains structures for each element set in the
+% model. Element sets are groups of elements with the same material index
+% and the same element type. The structures contain a the element type, the
+% material index, the element matrix (containing the nodal indices), and
+% the element indices. 
+
 elementCell{:}
 
 V=nodeStruct.N;
@@ -38,48 +57,28 @@ V=nodeStruct.N;
 %% Plotting model
 
 % Plotting the example model surfaces
-hf1=figuremax(figColor,figColorDef);
-subplot(1,2,1);
-title('Visualizing fullmodel','FontSize',fontSize);
-xlabel('X','FontSize',fontSize);ylabel('Y','FontSize',fontSize); zlabel('Z','FontSize',fontSize);
-hold on;
+cFigure; hold on;
+title('The imported model','FontSize',fontSize);
 
 for q=1:1:numel(elementCell)
 
     E=elementCell{q}.E;
     C=elementCell{q}.E_mat;
+    elementType=elementCell{q}.E_type;
+    
     if numel(C)==1
         C=C.*ones(size(E,1),1);
     end
         
-    [F,C]=element2patch(E,C); 
-    
-    subplot(1,2,1);
-    
-    title('Full model','FontSize',fontSize);
-    xlabel('X','FontSize',fontSize); ylabel('Y','FontSize',fontSize); zlabel('Z','FontSize',fontSize); hold on;
-    hp=patch('Faces',F,'Vertices',V,'EdgeColor','k','FaceColor','flat','Cdata',C,'FaceAlpha',1);
-    view(3); axis tight;  axis equal;  grid on;
-    colormap(autumn);   
-    set(gca,'FontSize',fontSize);
-    
-    subplot(1,2,2);
-    
-    %Selecting half of the model to see interior
-    Y=V(:,2); YE=mean(Y(E),2);
-    L=YE>mean(Y);
-    [Fs,Cs]=element2patch(E(L,:),C(L));
-    
-    title('Cut view of model','FontSize',fontSize);
-    xlabel('X','FontSize',fontSize); ylabel('Y','FontSize',fontSize); zlabel('Z','FontSize',fontSize); hold on;
-    hps=patch('Faces',Fs,'Vertices',V,'FaceColor','flat','CData',Cs,'lineWidth',edgeWidth,'edgeColor',edgeColor);
-    view(3); axis tight;  axis equal;  grid on;
-    colormap(autumn);
-    set(gca,'FontSize',fontSize);
-    
-    drawnow;
+    [F,C]=element2patch(E,C,elementType); 
 
+    gpatch(F,V,C);
+    axisGeom(gca,fontSize);
+    colormap(cMap);           
+    
 end
+camlight;
+drawnow;
 
 %%
 %
