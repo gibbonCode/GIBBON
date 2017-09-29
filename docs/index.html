@@ -1,38 +1,61 @@
 ---
 layout: page
 ---
-{% for post in paginator.posts %}
-<div class="post-preview">
-    <a href="{{ post.url | prepend: site.baseurl }}">
-        <h2 class="post-title">            {{ post.title }}
-        </h2>
-        {% if post.subtitle %}
-        <h3 class="post-subtitle">
-            {{ post.subtitle }}
-        </h3>
-        {% endif %}
-    </a>
-    <p class="post-meta" style="margin-bottom:5px">Posted by {{ post.author }} on {{ post.date | date: "%B %-d, %Y" }}</p>
-	<div class="notepad-index-post-tags" style="">
-		{% for tag in post.tags %}<a href="{{ site.baseurl }}/search/index.html#{{ tag | cgi_encode }}" title="Other posts from the {{ tag | capitalize }} tag">{{ tag | capitalize }}</a>{% unless forloop.last %}&nbsp;{% endunless %}{% endfor %}
-	</div>
-</div>
-<hr>
-{% endfor %}
 
-<!-- Pager -->
-{% if paginator.total_pages > 1 %}
-<ul class="pager">
-    {% if paginator.previous_page %}
-    <li class="previous">
-        <a href="{{ paginator.previous_page_path | prepend: site.baseurl | replace: '//', '/' }}">&larr; Newer Posts</a>
-    </li>
-    {% endif %}
-    {% if paginator.next_page %}
-    <li class="next">
-        <a href="{{ paginator.next_page_path | prepend: site.baseurl | replace: '//', '/' }}">Older Posts &rarr;</a>
-    </li>
-    {% endif %}
+
+
+<link type="text/css" rel="stylesheet" href="{{ site.baseurl }}/css/lightslider.css" />
+<script src="//ajax.googleapis.com/ajax/libs/jquery/1.11.0/jquery.min.js"></script>
+<script src="{{ site.baseurl }}/js/lightslider.js"></script>
+ <!-- Do not include both lightslider.js and lightslider.min.js -->
+
+ <script>
+    $(document).ready(function() {
+         $('#image-gallery').lightSlider({
+             gallery:true,
+             item:1,
+             thumbItem:10,
+             slideMargin: 0,
+             adaptiveHeight:true,
+             vThumbWidth:200,
+             keyPress: true,
+             speed:1000,
+             pause:4000,
+             auto:true,
+             loop:true,
+             pauseOnHover: true,
+             onSliderLoad: function() {
+                 $('#image-gallery').removeClass('cS-hidden');
+             }
+         });
+    });
+ </script>
+
+
+<div class="row" style="padding-bottom: 45px">
+   <ul id="image-gallery" class="gallery list-unstyled cS-hidden">
+  {% for gallery_image in site.static_files %}
+     {% if gallery_image.path contains 'img/gallery' %}
+
+       <li data-thumb={{ site.baseurl }}{{ gallery_image.path }}>
+           <h3>{{ gallery_image.name }}</h3>
+           <a rel="Content license" href="http://creativecommons.org/licenses/by/4.0/"><img alt="Website content license" style="border-width:0" src="https://img.shields.io/badge/License-CC%20BY%204.0-lightgrey.svg" /></a>
+           <!-- <p>{{ gallery_image.path }}</p> -->
+           <img src="{{ site.baseurl }}{{ gallery_image.path }}" alt="image" width="100%" align="middle" >
+       </li>
+
+         <!-- <div  class=" col-md-4 col-xs-12 full" style=" border-width: 0px; margin-top:35px;">
+           <div class="well" style="height:300px; height:relative; background: url({{ site.baseurl }}{{ image.path }}); background-size: 100%; background-position:center; background-repeat: no-repeat; margin: 0px;">
+             <div style="height:50px; position:relative; top:250px; background:rgba(0,0,0,0.9); color: white; font-size: 16px; text-align: left; margin: -20px -20px -20px -20px">
+                <a href="{{ site.baseurl }}{{ gallery_image.path }}" target="_blank" style="color: white !important"><p style="font-size:1em; position:relative; top:0px; width: 75%; white-space: nowrap; overflow: hidden !important; text-overflow: ellipsis; margin-left:5px">{{ gallery_image.name }}</p>
+               <i class="fa fa-chevron-right ico" style="font-size: 30px; color: white; position:relative; margin: -44px 5px 0px 0px; float:right"></i></a>
+             </div>
+           </div>
+         </div> -->
+
+     {% endif %}
+ {% endfor %}
+
 </ul>
-{% endif %}
 
+</div>
