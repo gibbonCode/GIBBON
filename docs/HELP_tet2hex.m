@@ -12,15 +12,12 @@ clear; close all; clc;
 
 %%
 % Plot settings
-fontSize=15;
-faceColor1='g';
-faceColor2='r';
-faceAlpha1=0.3;
-faceAlpha2=1;
+fontSize=25;
+faceAlpha=0.3;
 edgeColor=0.*ones(1,3);
-edgeWidth=2;
-markerSize=2;
-cMap=gjet(250);
+edgeWidth=3;
+markerSize=75;
+cMap=gjet(4);
 
 %% Example converting a single tetrahedron to 4 hexahedrons
 
@@ -43,25 +40,26 @@ Cs=(1:1:size(Es,1))';
 
 cFigure;
 subplot(1,2,1); 
-title('Original tetrahedral element','FontSize',fontSize);
-xlabel('X','FontSize',fontSize); ylabel('Y','FontSize',fontSize); zlabel('Z','FontSize',fontSize);
+title('Original tetrahedral element set','FontSize',fontSize);
 hold on;
 
-patch('Faces',F,'Vertices',V,'FaceColor',0.5*ones(1,3),'EdgeColor',edgeColor,'FaceAlpha',faceAlpha1,'lineWidth',edgeWidth);
-view(3); grid on; axis equal; axis tight;
-set(gca,'FontSize',fontSize);
+gpatch(F,V,0.5*ones(1,3),'k',faceAlpha,edgeWidth);
+% hp=patchNormPlot(F,V);
+plotV(V,'k.','MarkerSize',markerSize);
+axisGeom(gca,fontSize); axis off; 
+view(-47,20);
 
 subplot(1,2,2); 
 title('Converted hexahedral elements','FontSize',fontSize);
 xlabel('X','FontSize',fontSize); ylabel('Y','FontSize',fontSize); zlabel('Z','FontSize',fontSize);
 hold on;
 
-patch('Faces',Fs,'Vertices',Vs,'FaceColor','flat','CData',CFs,'EdgeColor',edgeColor,'FaceAlpha',faceAlpha1,'lineWidth',edgeWidth);
-
+gpatch(Fs,Vs,CFs,'k',faceAlpha,edgeWidth);
+% hp=patchNormPlot(Fs,Vs);
+plotV(Vs,'k.','MarkerSize',markerSize);
 colormap(cMap);
-view(3); grid on; axis equal; axis tight;
-set(gca,'FontSize',fontSize);
-
+axisGeom(gca,fontSize); axis off; 
+view(-47,20);
 drawnow;
 
 %% Example converting a set of tetrahedral elements
@@ -94,24 +92,21 @@ C=(1:1:size(E,1))';
 cFigure;
 subplot(1,2,1); 
 title('Original tetrahedral element set','FontSize',fontSize);
-xlabel('X','FontSize',fontSize); ylabel('Y','FontSize',fontSize); zlabel('Z','FontSize',fontSize);
 hold on;
 
-patch('Faces',F,'Vertices',V,'FaceColor','flat','CData',CF,'EdgeColor',edgeColor,'FaceAlpha',faceAlpha1,'lineWidth',edgeWidth);
-hp=patchNormPlot(F,V);
-view(3); grid on; axis equal; axis tight;
-set(gca,'FontSize',fontSize);
+gpatch(F,V,CF,'k',faceAlpha,edgeWidth);
+% hp=patchNormPlot(F,V);
+axisGeom(gca,fontSize); axis off; 
 
 subplot(1,2,2); 
 title('Converted hexahedral elements','FontSize',fontSize);
 xlabel('X','FontSize',fontSize); ylabel('Y','FontSize',fontSize); zlabel('Z','FontSize',fontSize);
 hold on;
 
-patch('Faces',Fs,'Vertices',Vs,'FaceColor','flat','CData',CFs,'EdgeColor',edgeColor,'FaceAlpha',faceAlpha1,'lineWidth',edgeWidth);
-hp=patchNormPlot(Fs,Vs);
+gpatch(Fs,Vs,CFs,'k',faceAlpha,edgeWidth);
+% hp=patchNormPlot(Fs,Vs);
 colormap(cMap);
-view(3); grid on; axis equal; axis tight;
-set(gca,'FontSize',fontSize);
+axisGeom(gca,fontSize); axis off; 
 
 drawnow;
 

@@ -47,36 +47,43 @@ cFigure;
 hs=subplot(2,2,1); 
 title('The input mesh','fontSize',fontSize)
 hold on;
-gpatch(F,V,0.5*ones(1,3),'k',0.5);
+gpatch(F,V,0.5*ones(1,3),'k',0.25,3);
 axisGeom(gca,fontSize); 
 camlight headlight; lighting flat;
+ha=axis; axis off; 
 
 subplot(2,2,2); 
 title('The two complementary lattice structures','fontSize',fontSize)
 hold on;
+gpatch(F,V,0.5*ones(1,3),'k',0.25,3);
 gpatch(Fs,Vs,CsF);
 colormap(cMap); 
-cLim=caxis;
+cLim=caxis; caxis([1 2]);
 axisGeom(gca,fontSize); 
 camlight headlight; lighting flat;
+axis(ha); axis off; 
 
 subplot(2,2,3); 
 title('Lattice side 1','fontSize',fontSize)
 hold on;
-gpatch(Fs1,Vs,CsF1);
+gpatch(F,V,0.5*ones(1,3),'k',0.25,3);
+gpatch(Fs1,Vs,cMap(1,:));
 colormap(cMap); 
 caxis(cLim);
 axisGeom(gca,fontSize); 
 camlight headlight; lighting flat;
+axis(ha); axis off; 
 
 subplot(2,2,4); 
 title('Lattice side 2','fontSize',fontSize)
 hold on;
+gpatch(F,V,0.5*ones(1,3),'k',0.25,3);
 gpatch(Fs2,Vs,CsF2);
 colormap(cMap); 
 caxis(cLim);
 axisGeom(gca,fontSize); 
 camlight headlight; lighting flat;
+axis(ha); axis off; 
 
 drawnow;
 
@@ -108,36 +115,43 @@ cFigure;
 hs=subplot(2,2,1); 
 title('The input mesh','fontSize',fontSize)
 hold on;
-gpatch(F,V,0.5*ones(1,3),'k',0.5);
+gpatch(F,V,0.5*ones(1,3),'k',0.25,3);
 axisGeom(gca,fontSize); 
 camlight headlight; lighting flat;
+ha=axis; axis off; 
 
 subplot(2,2,2); 
 title('The two complementary lattice structures','fontSize',fontSize)
 hold on;
+gpatch(F,V,0.5*ones(1,3),'k',0.25,3);
 gpatch(Fs,Vs,CsF);
 colormap(cMap); 
-cLim=caxis;
+cLim=caxis; caxis([1 2]);
 axisGeom(gca,fontSize); 
 camlight headlight; lighting flat;
+axis(ha); axis off; 
 
 subplot(2,2,3); 
 title('Lattice side 1','fontSize',fontSize)
 hold on;
-gpatch(Fs1,Vs,CsF1);
+gpatch(F,V,0.5*ones(1,3),'k',0.25,3);
+gpatch(Fs1,Vs,cMap(1,:));
 colormap(cMap); 
 caxis(cLim);
 axisGeom(gca,fontSize); 
 camlight headlight; lighting flat;
+axis(ha); axis off; 
 
 subplot(2,2,4); 
 title('Lattice side 2','fontSize',fontSize)
 hold on;
+gpatch(F,V,0.5*ones(1,3),'k',0.25,3);
 gpatch(Fs2,Vs,CsF2);
 colormap(cMap); 
 caxis(cLim);
 axisGeom(gca,fontSize); 
 camlight headlight; lighting flat;
+axis(ha); axis off; 
 
 drawnow;
 
@@ -176,31 +190,37 @@ controlParameter.growSteps=-1; %0 is normal, positive or negative integers incre
 
 cFigure;
 subplot(1,3,1); 
-title('The two complementary lattice structures','fontSize',fontSize)
+title('growSteps=1','fontSize',fontSize)
 hold on;
-gpatch(Fs_0,Vs_0,CsF_0);
-colormap(cMap); 
-cLim=caxis;
-axisGeom(gca,fontSize); 
-camlight headlight; lighting flat;
-
-subplot(1,3,2); 
-title('The two complementary lattice structures','fontSize',fontSize)
-hold on;
+gpatch(F,V,0.5*ones(1,3),'k',0.25,3);
 gpatch(Fs_1,Vs_1,CsF_1);
 colormap(cMap); 
-cLim=caxis;
+cLim=caxis; caxis([1 2]);
 axisGeom(gca,fontSize); 
 camlight headlight; lighting flat;
+axis off;
+
+subplot(1,3,2); 
+title('growSteps=0','fontSize',fontSize)
+hold on;
+gpatch(F,V,0.5*ones(1,3),'k',0.25,3);
+gpatch(Fs_0,Vs_0,CsF_0);
+colormap(cMap); 
+cLim=caxis; caxis([1 2]);
+axisGeom(gca,fontSize); 
+camlight headlight; lighting flat;
+axis off;
 
 subplot(1,3,3); 
-title('The two complementary lattice structures','fontSize',fontSize)
+title('growSteps=-1','fontSize',fontSize)
 hold on;
+gpatch(F,V,0.5*ones(1,3),'k',0.25,3);
 gpatch(Fs_n1,Vs_n1,CsF_n1);
 colormap(cMap); 
-cLim=caxis;
+cLim=caxis; caxis([1 2]);
 axisGeom(gca,fontSize); 
 camlight headlight; lighting flat;
+axis off;
 
 drawnow;
 
@@ -231,21 +251,20 @@ cFigure;
 hs=subplot(1,2,1); 
 title('The input mesh','fontSize',fontSize)
 hold on;
-gpatch(F,V,0.5*ones(1,3),'k',0.5);
+gpatch(F,V,0.5*ones(1,3),'k',0.25,3);
 axisGeom(gca,fontSize); 
 camlight headlight; lighting flat;
 
 subplot(1,2,2); 
 title('Lattice side 1','fontSize',fontSize)
 hold on;
-gpatch(Fs,Vs,CsF);
+gpatch(Fs,Vs,cMap(1,:));
 colormap(cMap); 
 caxis(cLim);
 axisGeom(gca,fontSize); 
 camlight headlight; lighting flat;
 
 drawnow;
-
 
 %%
 % Create lattice structure
@@ -263,18 +282,98 @@ cFigure;
 hs=subplot(1,2,1); 
 title('The input mesh','fontSize',fontSize)
 hold on;
-gpatch(F,V,0.5*ones(1,3),'k',0.5);
+gpatch(F,V,0.5*ones(1,3),'k',0.25,3);
 axisGeom(gca,fontSize); 
 camlight headlight; lighting flat;
 
 subplot(1,2,2); 
 title('Lattice side 2','fontSize',fontSize)
 hold on;
-gpatch(Fs,Vs,CsF);
+gpatch(Fs,Vs,cMap(1,:));
 colormap(cMap); 
 caxis(cLim);
 axisGeom(gca,fontSize); 
 camlight headlight; lighting flat;
+
+drawnow;
+
+%% Example 5 Hierarchical lattice structures
+
+%%
+% Creating example geometry. 
+
+% [V,~]=platonic_solid(2,1); %Vertices of cube
+% E=1:8; %Element description of the 8-node cube (hexahedral element)
+% C=(1:size(E,1))'; %color (e.g. material) labels for all elements
+% [F,~]=element2patch(E,C); %Patch data for plotting
+
+[V,~]=platonic_solid(1,1); %Vertices of tetrahedron
+E=1:4; %Element description of the 4-node tetrahedron
+C=(1:size(E,1))'; %color (e.g. material) labels for all elements
+[F,~]=element2patch(E,C); %Patch data for plotting
+
+%%
+% Create first order lattice structure
+controlParameter.growSteps=-1; %0 is normal, positive or negative integers increase or decrease the edge lattice thickness respectively
+controlParameter.latticeSide=1; %Empty outputs both, 1=side 1 the edge lattice, 2=side 2 the dual lattice to the edge lattice
+[Es1,Vs1,Cs1]=element2HexLattice(E,V,controlParameter); %Get lattice structure
+ 
+%%
+% Uncomment to create more complex structure
+[Es1,Vs1,Cs1]=hex2tet(Es1,Vs1,Cs1,5); %Convert to tetrahedral elements
+% [Es1,Vs1,Cs1]=tet2hex(Es1,Vs1,1); %Convert to tetrahedral elements
+
+%%
+% Create second order lattice structure
+controlParameter.growSteps=-1; %0 is normal, positive or negative integers increase or decrease the edge lattice thickness respectively
+controlParameter.latticeSide=1; %Empty outputs both, 1=side 1 the edge lattice, 2=side 2 the dual lattice to the edge lattice
+[Es2,Vs2,Cs2]=element2HexLattice(Es1,Vs1,controlParameter); %Get lattice structure
+
+%%
+% Visualizing input mesh and lattic structures
+
+% Create patch Data for visualization
+[Fs1,CsF1]=element2patch(Es1,Cs1); %Patch data for plotting
+[Fs2,CsF2]=element2patch(Es2,Cs2); %Patch data for plotting
+
+[indBounary]=tesBoundary(Fs2,Vs2);
+Fs2_b=Fs2(indBounary,:);
+
+[indBounary]=tesBoundary(Fs1,Vs1);
+Fs1_b=Fs1(indBounary,:);
+
+%%
+
+cFigure;
+hs=subplot(1,3,1); 
+title('The input mesh','fontSize',fontSize)
+hold on;
+gpatch(F,V,0.5*ones(1,3),'k',0.25,3);
+axisGeom(gca,fontSize); 
+camlight headlight; lighting flat;
+ha=axis; axis off; 
+
+subplot(1,3,2); 
+title('Lattice order 1','fontSize',fontSize)
+hold on;
+gpatch(F,V,0.5*ones(1,3),'k',0,3);
+gpatch(Fs1_b,Vs1,cMap(1,:),'none');
+colormap(cMap); 
+caxis(cLim);
+axisGeom(gca,fontSize); 
+camlight headlight; lighting flat;
+axis(ha); axis off; 
+
+subplot(1,3,3); 
+title('Lattice order 2','fontSize',fontSize)
+hold on;
+gpatch(F,V,0.5*ones(1,3),'k',0,3);
+gpatch(Fs2_b,Vs2,cMap(1,:),'none');
+colormap(cMap); 
+caxis(cLim);
+axisGeom(gca,fontSize); 
+camlight headlight; lighting flat;
+axis(ha); axis off; 
 
 drawnow;
 

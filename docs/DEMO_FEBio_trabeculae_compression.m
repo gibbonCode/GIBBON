@@ -365,10 +365,17 @@ FEBioRunStruct.maxLogCheckTime=3; %Max log file checking time
 %% IMPORTING NODAL DISPLACEMENT RESULTS
 % Importing nodal displacements from a log file
  fName=fullfile(savePath,FEB_struct.run_output_names{1});
-[~, N_disp_mat,~]=importFEBio_logfile(fName); %Nodal displacements
+[time_mat, N_disp_mat,~]=importFEBio_logfile(fName); %Nodal displacements
 
-DN=N_disp_mat(:,2:end,end); %Final nodal displacements
-
+N_disp_mat=N_disp_mat(:,2:end,:);
+sizImport=size(N_disp_mat);
+sizImport(3)=sizImport(3)+1;
+N_disp_mat_n=zeros(sizImport);
+N_disp_mat_n(:,:,2:end)=N_disp_mat;
+N_disp_mat=N_disp_mat_n;
+DN=N_disp_mat(:,:,end); %Final nodal displacements
+time_mat=[0; time_mat(:)]; %Time
+    
 %% CREATING NODE SET IN DEFORMED STATE
 VT_def=VT+DN;
 DN_magnitude=sqrt(sum(DN.^2,2));
@@ -385,9 +392,43 @@ xlabel('X','FontSize',fontSize); ylabel('Y','FontSize',fontSize); zlabel('Z','Fo
 hps=patch('Faces',F,'Vertices',VT_def,'FaceColor','flat','CData',CF,'lineWidth',edgeWidth,'edgeColor',edgeColor,'FaceAlpha',faceAlpha1);
 
 view(3); axis tight;  axis equal;  grid on;
-colormap jet; colorbar;
+colormap gjet; colorbar;
 camlight headlight;
 set(gca,'FontSize',fontSize);
+drawnow;
+
+%%
+hf=cFigure;
+xlabel('X','FontSize',fontSize); ylabel('Y','FontSize',fontSize); zlabel('Z','FontSize',fontSize); hold on;
+
+hp=gpatch(Fb,VT_def,CF,'none',1);
+gpatch(Fb,VT,0.5*ones(1,3),'none',0.2);
+
+view(3); axis tight;  axis equal;  grid on; box on;
+colormap(gjet(250)); colorbar;
+caxis([0 max(DN_magnitude)]);
+axis([min(VT_def(:,1)) max(VT_def(:,1)) min(VT_def(:,2)) max(VT_def(:,2)) min(VT(:,3)) max(VT(:,3))]);
+view(130,25);
+camlight headlight;
+set(gca,'FontSize',fontSize);
+drawnow;
+
+animStruct.Time=time_mat;
+
+for qt=1:1:size(N_disp_mat,3)
+    
+    DN=N_disp_mat(:,:,qt);
+    DN_magnitude=sqrt(sum(DN(:,3).^2,2));
+    VT_def=VT+DN;
+    [CF]=vertexToFaceMeasure(Fb,DN_magnitude);
+    
+    %Set entries in animation structure
+    animStruct.Handles{qt}=[hp hp]; %Handles of objects to animate
+    animStruct.Props{qt}={'Vertices','CData'}; %Properties of objects to animate
+    animStruct.Set{qt}={VT_def,CF}; %Property values for to set in order to animate
+end
+
+anim8(hf,animStruct);
 drawnow;
 
 %% 

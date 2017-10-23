@@ -12,10 +12,6 @@
 
 clear; close all; clc;
 
-%%
-% Plot settings
-fig_color='w'; fig_colordef='white';
-
 %% Example: CONVERTING DICOM IMAGE DATA TO A MAT OBJECT
 % Below some example code is shown to convert all DICOM files inside a
 % folder (including its subfolders) to the IMDAT format. The function
@@ -64,7 +60,7 @@ numberOfFolders=numel(pathNames);
 %Converting DICOM data to IMDAT format in all subfolders
 for q=1:1:numberOfFolders
     pathNameSub=pathNames{q}; %Current path name
-    if isempty(strfind(pathNameSub,[filesep,'IMDAT'])); %if the IMDAT directory does not exist yet
+    if ~contains(pathNameSub,[filesep,'IMDAT']) %if the IMDAT directory does not exist yet        
         try
             dcmFolder2MATobject(pathNameSub,[]);%Get DICOM data
         catch exception
@@ -93,7 +89,7 @@ M= matObj.type_1;
 
 %% 
 % Viewing the image data
-sv3(M);
+sv3(M,G.v);
 
 %% 
 % Viewing the image data using |ind2patch|

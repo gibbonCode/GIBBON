@@ -9,34 +9,45 @@ switch nargin
         C='g';
         CE='k';
         A=1;
+        L=[];
     case 3
         F=varargin{1};
         V=varargin{2};
         C=varargin{3};
         CE='k';
         A=1;
+        L=[];
     case 4
         F=varargin{1};
         V=varargin{2};
         C=varargin{3};
         CE=varargin{4};
         A=1;
+        L=[];
     case 5
         F=varargin{1};
         V=varargin{2};
         C=varargin{3};
         CE=varargin{4};
         A=varargin{5};
+        L=[];
+    case 6
+        F=varargin{1};
+        V=varargin{2};
+        C=varargin{3};
+        CE=varargin{4};
+        A=varargin{5};
+        L=varargin{6};
     otherwise
         error('Wrong number of input arguments');
 end
 
 if isa(F,'cell') %Assume all entries are cells defining multiple patch data sets
     for q=1:1:numel(F)
-        hp(q)=plotPatch(F{q},V{q},C{q},CE{q},A{q});
+        hp(q)=plotPatch(F{q},V{q},C{q},CE{q},A{q},L);
     end
 else
-    hp=plotPatch(F,V,C,CE,A);
+    hp=plotPatch(F,V,C,CE,A,L);
 end
 
 if nargout==1
@@ -46,7 +57,7 @@ end
 end
 
 %%
-function hp=plotPatch(F,V,C,CE,A)
+function hp=plotPatch(F,V,C,CE,A,L)
 
 argInPatch.Faces=F;
 argInPatch.Vertices=V;
@@ -75,6 +86,10 @@ elseif size(A,2)==1 %Alpha mapping
     argInPatch.FaceVertexAlphaData=A;
 else
     error('Invalid alpha data input');
+end
+
+if ~isempty(L)
+    argInPatch.LineWidth=L;
 end
 
 hp=patch(argInPatch);

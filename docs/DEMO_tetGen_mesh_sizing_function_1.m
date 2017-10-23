@@ -14,7 +14,7 @@ clear; close all; clc;
 fontSize=15;
 faceAlpha1=0.5;
 faceAlpha2=0.5;
-edgeColor=0.25*ones(1,3);
+edgeColor='k';
 edgeWidth=1.5; 
 
 % path names
@@ -82,9 +82,9 @@ xlabel('X','FontSize',fontSize); ylabel('Y','FontSize',fontSize); zlabel('Z','Fo
 hold on;
 
 patch('Faces',F,'Vertices',V,'FaceColor',0.5*ones(1,3),'FaceAlpha',0.1,'edgeColor','none');
-scatter3(V(:,1),V(:,2),V(:,3),25,edgeSizeField,'fill')
+scatter3(V(:,1),V(:,2),V(:,3),75,edgeSizeField,'fill')
 
-colormap(jet(250));
+colormap(gjet(250));
 colorbar;
 camlight headlight;
 set(gca,'FontSize',fontSize);
@@ -130,10 +130,14 @@ hf1=cFigure;
 
 title('Cut view of biased mesh','FontSize',fontSize);
 xlabel('X','FontSize',fontSize); ylabel('Y','FontSize',fontSize); zlabel('Z','FontSize',fontSize); hold on;
-hps=patch('Faces',Fs,'Vertices',VT,'FaceColor','flat','CData',Cs,'lineWidth',edgeWidth,'edgeColor',edgeColor);
+
+[CV]=faceToVertexMeasure(Fs,VT,Cs);
+hps=patch('Faces',Fs,'Vertices',VT,'FaceColor','flat','CData',CV,'lineWidth',edgeWidth);
+shading interp; 
+set(hps,'edgeColor',edgeColor);
 
 view(3); axis tight;  axis equal;  grid on;
-colormap(jet); colorbar; 
+colormap(gjet(250)); colorbar; 
 camlight headlight;
 set(gca,'FontSize',fontSize);
 drawnow;
