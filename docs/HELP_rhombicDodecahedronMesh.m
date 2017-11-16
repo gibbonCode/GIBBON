@@ -6,7 +6,7 @@ clear; close all; clc;
 
 %% 
 % Plot settings
-fontSize=10;
+fontSize=15;
 faceAlpha1=1;
 
 %% Creating a mesh of rhombic dodecahedra
@@ -21,30 +21,23 @@ nCopies=[n+1 n+1 n+ceil((n+1)/2)]; %Number of offset copies
 
 %%
 % Plotting results
-cFigure; set(gcf,'renderer','zbuffer');
+cFigure; hold on;
 title('A mesh of rhombicDodecahedra','FontSize',fontSize);
-xlabel('X','FontSize',fontSize); ylabel('Y','FontSize',fontSize); zlabel('Z','FontSize',fontSize);
-hold on;
-
-patch('Faces',Ft_Q,'Vertices',Vt,'FaceColor','flat','CData',Ct_Q,'FaceAlpha',faceAlpha1);
+gpatch(Ft_Q,Vt,Ct_Q,'k',faceAlpha1);
 colormap(gjet);
-
-set(gca,'FontSize',fontSize);
-view(3); axis tight;  axis equal;  axis vis3d; grid on; 
-camlight('headlight'); lighting flat; 
-
-%%
-% Plotting results
-cFigure;
-title('A mesh of rhombicDodecahedra plotted with triangular faces','FontSize',fontSize);
-hold on;
-
-patch('Faces',Ft_T,'Vertices',Vt,'FaceColor','flat','CData',Ct_T,'FaceAlpha',faceAlpha1);
-colormap(gjet);
-
 axisGeom(gca,fontSize);
 camlight('headlight'); 
-drawnow;
+drawnow; 
+
+%%
+
+cFigure; hold on;
+title('A mesh of rhombicDodecahedra plotted with triangular faces','FontSize',fontSize);
+gpatch(Ft_T,Vt,Ct_T,'k',faceAlpha1);
+colormap(gjet);
+axisGeom(gca,fontSize);
+camlight('headlight'); 
+drawnow; 
 
 %% EXAMPLE: Creating a "bubble image"
 % The triangular surface output can but used with the function |triSurf2Im|
@@ -59,19 +52,10 @@ imOrigin=G.origin;
 % Plot results
 
 cFigure;
-subplot(1,2,1);
-title('Triangulated surface representation','FontSize',fontSize);
 hold on;
-patch('Faces',Ft_T,'Vertices',Vt,'FaceColor','flat','CData',Ct_T,'FaceAlpha',faceAlpha1);
-camlight('headlight'); lighting flat;
-colormap(gjet(max(ML(:)))); hc=colorbar;
-axisGeom(gca,fontSize);
+% title('"Bubble image"','FontSize',fontSize);
 
-subplot(1,2,2);
-title('"Bubble image"','FontSize',fontSize);
-hold on;
-
-% patch('Faces',F,'Vertices',V,'FaceColor','g','EdgeColor','none','FaceAlpha',faceAlpha2);
+gpatch(Ft_Q,Vt,0.5*ones(1,3),'none',0.1);
 
 L_plot=false(size(ML));
 L_plot(:,:,round(size(ML,3)/2))=1;
@@ -79,7 +63,7 @@ L_plot=L_plot&~isnan(ML);
 [Fm,Vm,Cm]=ind2patch(L_plot,ML,'sk');
 [Vm(:,1),Vm(:,2),Vm(:,3)]=im2cart(Vm(:,2),Vm(:,1),Vm(:,3),voxelSize*ones(1,3));
 Vm=Vm+imOrigin(ones(size(Vm,1),1),:);
-patch('Faces',Fm,'Vertices',Vm,'FaceColor','flat','CData',Cm,'EdgeColor','k','FaceAlpha',faceAlpha1);
+gpatch(Fm,Vm,Cm,'none',faceAlpha1);
 
 L_plot=false(size(ML));
 L_plot(round(size(ML,1)/2),:,:)=1;
@@ -87,7 +71,7 @@ L_plot=L_plot&~isnan(ML);
 [Fm,Vm,Cm]=ind2patch(L_plot,ML,'si');
 [Vm(:,1),Vm(:,2),Vm(:,3)]=im2cart(Vm(:,2),Vm(:,1),Vm(:,3),voxelSize*ones(1,3));
 Vm=Vm+imOrigin(ones(size(Vm,1),1),:);
-patch('Faces',Fm,'Vertices',Vm,'FaceColor','flat','CData',Cm,'EdgeColor','k','FaceAlpha',faceAlpha1);
+gpatch(Fm,Vm,Cm,'none',faceAlpha1);
 
 L_plot=false(size(ML));
 L_plot(:,round(size(ML,2)/2),:)=1;
@@ -95,11 +79,12 @@ L_plot=L_plot&~isnan(ML);
 [Fm,Vm,Cm]=ind2patch(L_plot,ML,'sj');
 [Vm(:,1),Vm(:,2),Vm(:,3)]=im2cart(Vm(:,2),Vm(:,1),Vm(:,3),voxelSize*ones(1,3));
 Vm=Vm+imOrigin(ones(size(Vm,1),1),:);
-patch('Faces',Fm,'Vertices',Vm,'FaceColor','flat','CData',Cm,'EdgeColor','k','FaceAlpha',faceAlpha1);
+gpatch(Fm,Vm,Cm,'none',faceAlpha1);
 
-colormap(gjet(max(ML(:)))); hc=colorbar;
-axisGeom(gca,fontSize);
+colormap(gjet(max(ML(:)))); colorbar;
 camlight('headlight'); 
+axisGeom(gca,fontSize);
+
 drawnow;
 
 %% 

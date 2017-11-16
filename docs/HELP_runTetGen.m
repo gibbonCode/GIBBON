@@ -23,7 +23,7 @@ modelName=fullfile(savePath,'tetgenmodel');
 
 %%
 
-testCase=2;
+testCase=1;
 switch testCase
     case 1
         [F,V,~]=geoSphere(2,1); % Building a geodesic dome surface model
@@ -41,7 +41,7 @@ gpatch(F,V,patchColor,'k',faceAlpha1);
 % patchNormPlot(F,V);
 camlight headlight;
 axisGeom(gca,fontSize); 
-drawnow; 
+drawnow;
 
 %%
 % DEFINE FACE BOUNDARY MARKERS
@@ -527,7 +527,7 @@ C=[ones(size(F1,1),1);2*ones(size(F2,1),1);3*ones(size(F3,1),1)]; %Surface marke
 % Plotting model
 cFigure; hold on;
 title('Surface model','FontSize',fontSize);
-gpatch(F,V,C,'k',faceAlpha1);
+gpatch(F,V,C,'none',faceAlpha1);
 camlight headlight;
 axisGeom(gca,fontSize); 
 colormap(cMap); 
@@ -551,6 +551,8 @@ logicRegion=ismember(faceBoundaryMarker,[2 3]);
 plotV(V_in_2,'r.','MarkerSize',25);
 
 V_regions=[V_in_1; V_in_2];
+
+plotV(V_centre,'b.','MarkerSize',25);
 
 %%
 % Define hole points
