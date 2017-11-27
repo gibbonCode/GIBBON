@@ -45,6 +45,16 @@ The image below is for large strain analysis of a twisting bar and stems from th
 <img src="docs/img/barTwist.gif" width="70%">   
 <!-- ![Large strain analysis](docs/img/barTwist.gif) -->
 
+### Geometric tools <a name="Geometric"></a>   
+Models, `geoSphere`   
+Mesh conversions `hex2tet`   
+Refinement, resampling `subTri`, `triSurfaceRemesh`     
+Lattice structures  `element2lattice`   
+CAD (computer aided design) tools `polyExtrude`, `polyLoftLinear`, `sweepLoft`
+
+### Visualization <a name="Visualization"></a>    
+`im2patch` `gpatch` `quiver3DPatch` `fourthOrderTensorView`
+
 # Installation <a name="Installation"></a>  
 ### 1. Installing 3rd party packages
 Skip this step if finite element analysis and figure exporting are not required.

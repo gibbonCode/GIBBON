@@ -354,6 +354,7 @@ switch cPar.latticeSide
                             
                             %Tri
                             Fn=[Fn(:,[1 2 3]); Fn(:,[3 4 1])];
+                            Cn=[Cn;Cn];
                             
                             %Boundary parts
                             if ~isempty(cPar.indBoundary)

@@ -71,7 +71,9 @@ end
 %% PLOTTING
 if plotOn==1  
     figure(hf1);
-    gpatch(F,V,regionInd,'k');
+    hp=gpatch(F,V,regionInd,'k');    
+    hp.LineWidth=3;
+    
     colormap(gjet(numel(regionSpec))); icolorbar;
     axisGeom(gca,fontSize); view(2); 
     drawnow;

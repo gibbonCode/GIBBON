@@ -77,7 +77,6 @@ end
     
 %%
 
-
 if isempty(cPar.latticeSide)
     Es=[Eh(LE==0,:);Eh(LE==1,:)];
     Cs=[ones(nnz(LE==0),1); 2*ones(nnz(LE==1),1)];
@@ -91,10 +90,6 @@ end
 
 Vs=Vh;
 [Es,Vs]=patchCleanUnused(Es,Vs);
-
-
-
-
  
 %% 
 % _*GIBBON footer text*_ 

@@ -35,7 +35,6 @@ function [F,V,C]=ind2patch(IND,M,ptype)
 % 2014/09/25
 % 2016/06/10 Added input parsing for IND, i.e. handling empty index set.
 % IND will now default to all voxels if input is empty
-%
 %------------------------------------------------------------------------
 
 %%

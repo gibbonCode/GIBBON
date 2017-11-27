@@ -6,7 +6,7 @@
    <!--
 This HTML was auto-generated from MATLAB code.
 To make changes, update the MATLAB code and republish this document.
-      --><title>gaborCoil</title><meta name="generator" content="MATLAB 9.1"><link rel="schema.DC" href="http://purl.org/dc/elements/1.1/"><meta name="DC.date" content="2017-08-18"><meta name="DC.source" content="HELP_gaborCoil.m"><style type="text/css">
+      --><title>gaborCoil</title><meta name="generator" content="MATLAB 9.1"><link rel="schema.DC" href="http://purl.org/dc/elements/1.1/"><meta name="DC.date" content="2017-11-27"><meta name="DC.source" content="HELP_gaborCoil.m"><style type="text/css">
 html,body,div,span,applet,object,iframe,h1,h2,h3,h4,h5,h6,p,blockquote,pre,a,abbr,acronym,address,big,cite,code,del,dfn,em,font,img,ins,kbd,q,s,samp,small,strike,strong,sub,sup,tt,var,b,u,i,center,dl,dt,dd,ol,ul,li,fieldset,form,label,legend,table,caption,tbody,tfoot,thead,tr,th,td{margin:0;padding:0;border:0;outline:0;font-size:100%;vertical-align:baseline;background:transparent}body{line-height:1}ol,ul{list-style:none}blockquote,q{quotes:none}blockquote:before,blockquote:after,q:before,q:after{content:'';content:none}:focus{outine:0}ins{text-decoration:none}del{text-decoration:line-through}table{border-collapse:collapse;border-spacing:0}
 
 html { min-height:100%; margin-bottom:1px; }
@@ -69,35 +69,77 @@ table td { padding:7px 5px; text-align:left; vertical-align:top; border:1px soli
   </style></head><body><div class="content"><h1>gaborCoil</h1><!--introduction--><p>Below is a demonstration of the features of the <tt>gaborCoil</tt> function</p><!--/introduction--><h2>Contents</h2><div><ul><li><a href="#2">Syntax</a></li><li><a href="#3">Description</a></li><li><a href="#4">Examples</a></li><li><a href="#5">Creating a single Gabor coil</a></li><li><a href="#7">Creating Gabor coil on all edges in mesh</a></li></ul></div><pre class="codeinput">clear; close <span class="string">all</span>; clc;
 </pre><h2 id="2">Syntax</h2><p><tt>[V_coil_rep]=gaborCoil(varargin);</tt></p><h2 id="3">Description</h2><p>UNDOCUMENTED</p><h2 id="4">Examples</h2><h2 id="5">Creating a single Gabor coil</h2><pre class="codeinput">V=[0 0 0; 1 0 0];
 E=[1 2];
-numSteps=250;
-numTwist=4;
-coilAmplitude=0;
-f=3;
-Vg=gaborCoil(V,E,numSteps,numTwist,coilAmplitude,f);
+
+<span class="comment">%Create a gabor coil</span>
+optionStruct.numSteps=150; <span class="comment">%Number of points used to define the curve.</span>
+optionStruct.numTwist=4; <span class="comment">%Number of twists (for an unmodulated coil)</span>
+optionStruct.coilAmplitude=[]; <span class="comment">%The coil amplitude (set empty to based on curve or edge length instead)</span>
+optionStruct.coilAmplitudeFactor=1/5; <span class="comment">%The factor used to set local coil amplitude as a function of edge length</span>
+optionStruct.f=3; <span class="comment">% The Gaussian bell curve will be truncated at n*the standard deviation on both sides.</span>
+optionStruct.funcMethod=2; <span class="comment">%For loop based (1) or vectorised (2).</span>
+V_gabor_coil=gaborCoil(V,E,optionStruct);
+
+<span class="comment">%Get pure Gaussian part for illustration</span>
+optionStruct.numSteps=150; <span class="comment">%Number of points used to define the curve.</span>
+optionStruct.numTwist=0; <span class="comment">%Number of twists (for an unmodulated coil)</span>
+optionStruct.coilAmplitude=[]; <span class="comment">%The coil amplitude (set empty to based on curve or edge length instead)</span>
+optionStruct.coilAmplitudeFactor=1/5; <span class="comment">%The factor used to set local coil amplitude as a function of edge length</span>
+optionStruct.f=3; <span class="comment">% The Gaussian bell curve will be truncated at n*the standard deviation on both sides.</span>
+optionStruct.funcMethod=2; <span class="comment">%For loop based (1) or vectorised (2).</span>
+V_gauss=gaborCoil(V,E,optionStruct);
+
+<span class="comment">%Get pure coil part for illustration</span>
+optionStruct.numSteps=150; <span class="comment">%Number of points used to define the curve.</span>
+optionStruct.numTwist=4; <span class="comment">%Number of twists (for an unmodulated coil)</span>
+optionStruct.coilAmplitude=[]; <span class="comment">%The coil amplitude (set empty to based on curve or edge length instead)</span>
+optionStruct.coilAmplitudeFactor=1/5; <span class="comment">%The factor used to set local coil amplitude as a function of edge length</span>
+optionStruct.f=0; <span class="comment">% The Gaussian bell curve will be truncated at n*the standard deviation on both sides.</span>
+optionStruct.funcMethod=2; <span class="comment">%For loop based (1) or vectorised (2).</span>
+V_coil=gaborCoil(V,E,optionStruct);
 </pre><p>Visualizing coil curve</p><pre class="codeinput">cFigure;
+subplot(1,2,1);
+title(<span class="string">'Gabor coil construction'</span>);
 hold <span class="string">on</span>;
-plotV(V,<span class="string">'r.'</span>,<span class="string">'markerSize'</span>,50);
-plotV(Vg,<span class="string">'k-'</span>,<span class="string">'LineWidth'</span>,5);
+hp(1)=plotV(V,<span class="string">'b.'</span>,<span class="string">'markerSize'</span>,50);
+hp(2)=plotV(V_gauss,<span class="string">'r-'</span>,<span class="string">'LineWidth'</span>,5);
+hp(3)=plotV(V_coil,<span class="string">'g-'</span>,<span class="string">'LineWidth'</span>,5);
+hp(4)=plotV(V_gabor_coil,<span class="string">'k-'</span>,<span class="string">'LineWidth'</span>,5);
+legend(hp,<span class="string">'Start/end points'</span>,<span class="string">'Guassian part'</span>,<span class="string">'Coil (sinusoidal) part'</span>,<span class="string">'Gabor coil'</span>);
 axisGeom;
+view(2);
+
+subplot(1,2,2);
+title(<span class="string">'The 3D Gabor coil'</span>);
+hold <span class="string">on</span>;
+hp2(1)=plotV(V,<span class="string">'b.'</span>,<span class="string">'markerSize'</span>,50);
+hp2(2)=plotV(V_gabor_coil,<span class="string">'k-'</span>,<span class="string">'LineWidth'</span>,5);
+legend(hp2,<span class="string">'Start/end points'</span>,<span class="string">'Gabor coil'</span>);
+axisGeom;
+
 drawnow;
 </pre><img vspace="5" hspace="5" src="HELP_gaborCoil_01.png" alt=""> <h2 id="7">Creating Gabor coil on all edges in mesh</h2><p>Creating example patch data</p><pre class="codeinput">[F,V]=geoSphere(1,1);
 <span class="comment">% [F,V]=stanford_bunny;</span>
 </pre><p>Get patch edges</p><pre class="codeinput">E=patchEdges(F,1);
-</pre><pre class="codeinput">numSteps=100;
-numTwist=8;
-coilAmplitude=0.05;
-f=3;
+</pre><pre class="codeinput">optionStruct.numSteps=150; <span class="comment">%Number of points used to define the curve.</span>
+optionStruct.numTwist=5; <span class="comment">%Number of twists (for an unmodulated coil)</span>
+optionStruct.coilAmplitude=[]; <span class="comment">%The coil amplitude (set empty to based on curve or edge length instead)</span>
+optionStruct.coilAmplitudeFactor=1/10; <span class="comment">%The factor used to set local coil amplitude as a function of edge length</span>
+optionStruct.f=3; <span class="comment">% The Gaussian bell curve will be truncated at n*the standard deviation on both sides.</span>
+optionStruct.funcMethod=2; <span class="comment">%For loop based (1) or vectorised (2).</span>
+
+[V_coil_rep]=gaborCoil(V,E,optionStruct);
 </pre><pre class="codeinput">cFigure; hold <span class="string">on</span>;
 gpatch(F,V,<span class="string">'g'</span>,0.5*ones(1,3),0.5);
 plotV(V,<span class="string">'r.'</span>,<span class="string">'MarkerSize'</span>,25);
 axisGeom;
 camlight <span class="string">headlight</span>;
-</pre><img vspace="5" hspace="5" src="HELP_gaborCoil_02.png" alt=""> <pre class="codeinput">[V_coil_rep]=gaborCoil(V,E,numSteps,numTwist,coilAmplitude,f);
 
 <span class="keyword">for</span> q=1:1:size(V_coil_rep,3)
     plotV(V_coil_rep(:,:,q),<span class="string">'k-'</span>,<span class="string">'lineWidth'</span>,5);
 <span class="keyword">end</span>
-</pre><img vspace="5" hspace="5" src="HELP_gaborCoil_03.png" alt=""> <p><img vspace="5" hspace="5" src="gibbVerySmall.gif" alt=""> </p><p><i><b>GIBBON</b></i> <a href="www.gibboncode.org">www.gibboncode.org</a></p><p><i>Kevin Mattheus Moerman</i>, <a href="gibbon.toolbox@gmail.com">gibbon.toolbox@gmail.com</a></p><p><i><b>GIBBON footer text</b></i></p><p>License: <a href="https://github.com/gibbonCode/GIBBON/blob/master/LICENSE">https://github.com/gibbonCode/GIBBON/blob/master/LICENSE</a></p><p>GIBBON: The Geometry and Image-based Bioengineering add-On. A toolbox for image segmentation, image-based modeling, meshing, and finite element analysis.</p><p>Copyright (C) 2017  Kevin Mattheus Moerman</p><p>This program is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.</p><p>This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for more details.</p><p>You should have received a copy of the GNU General Public License along with this program.  If not, see <a href="http://www.gnu.org/licenses/">http://www.gnu.org/licenses/</a>.</p><p class="footer"><br><a href="http://www.mathworks.com/products/matlab/">Published with MATLAB&reg; R2016b</a><br></p></div><!--
+
+drawnow;
+</pre><img vspace="5" hspace="5" src="HELP_gaborCoil_02.png" alt=""> <p><img vspace="5" hspace="5" src="gibbVerySmall.gif" alt=""> </p><p><i><b>GIBBON</b></i> <a href="www.gibboncode.org">www.gibboncode.org</a></p><p><i>Kevin Mattheus Moerman</i>, <a href="gibbon.toolbox@gmail.com">gibbon.toolbox@gmail.com</a></p><p><i><b>GIBBON footer text</b></i></p><p>License: <a href="https://github.com/gibbonCode/GIBBON/blob/master/LICENSE">https://github.com/gibbonCode/GIBBON/blob/master/LICENSE</a></p><p>GIBBON: The Geometry and Image-based Bioengineering add-On. A toolbox for image segmentation, image-based modeling, meshing, and finite element analysis.</p><p>Copyright (C) 2017  Kevin Mattheus Moerman</p><p>This program is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.</p><p>This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for more details.</p><p>You should have received a copy of the GNU General Public License along with this program.  If not, see <a href="http://www.gnu.org/licenses/">http://www.gnu.org/licenses/</a>.</p><p class="footer"><br><a href="http://www.mathworks.com/products/matlab/">Published with MATLAB&reg; R2016b</a><br></p></div><!--
 ##### SOURCE BEGIN #####
 %% gaborCoil
 % Below is a demonstration of the features of the |gaborCoil| function
@@ -118,19 +160,56 @@ clear; close all; clc;
 
 V=[0 0 0; 1 0 0];
 E=[1 2];
-numSteps=250;
-numTwist=4; 
-coilAmplitude=0;
-f=3;
-Vg=gaborCoil(V,E,numSteps,numTwist,coilAmplitude,f);
+
+%Create a gabor coil
+optionStruct.numSteps=150; %Number of points used to define the curve. 
+optionStruct.numTwist=4; %Number of twists (for an unmodulated coil) 
+optionStruct.coilAmplitude=[]; %The coil amplitude (set empty to based on curve or edge length instead)
+optionStruct.coilAmplitudeFactor=1/5; %The factor used to set local coil amplitude as a function of edge length
+optionStruct.f=3; % The Gaussian bell curve will be truncated at n*the standard deviation on both sides. 
+optionStruct.funcMethod=2; %For loop based (1) or vectorised (2). 
+V_gabor_coil=gaborCoil(V,E,optionStruct);
+
+%Get pure Gaussian part for illustration
+optionStruct.numSteps=150; %Number of points used to define the curve. 
+optionStruct.numTwist=0; %Number of twists (for an unmodulated coil) 
+optionStruct.coilAmplitude=[]; %The coil amplitude (set empty to based on curve or edge length instead)
+optionStruct.coilAmplitudeFactor=1/5; %The factor used to set local coil amplitude as a function of edge length
+optionStruct.f=3; % The Gaussian bell curve will be truncated at n*the standard deviation on both sides. 
+optionStruct.funcMethod=2; %For loop based (1) or vectorised (2). 
+V_gauss=gaborCoil(V,E,optionStruct);
+
+%Get pure coil part for illustration
+optionStruct.numSteps=150; %Number of points used to define the curve. 
+optionStruct.numTwist=4; %Number of twists (for an unmodulated coil) 
+optionStruct.coilAmplitude=[]; %The coil amplitude (set empty to based on curve or edge length instead)
+optionStruct.coilAmplitudeFactor=1/5; %The factor used to set local coil amplitude as a function of edge length
+optionStruct.f=0; % The Gaussian bell curve will be truncated at n*the standard deviation on both sides. 
+optionStruct.funcMethod=2; %For loop based (1) or vectorised (2). 
+V_coil=gaborCoil(V,E,optionStruct);
 
 %%
 % Visualizing coil curve
 cFigure; 
+subplot(1,2,1);
+title('Gabor coil construction');
 hold on; 
-plotV(V,'r.','markerSize',50);
-plotV(Vg,'k-','LineWidth',5);
+hp(1)=plotV(V,'b.','markerSize',50);
+hp(2)=plotV(V_gauss,'r-','LineWidth',5);
+hp(3)=plotV(V_coil,'g-','LineWidth',5);
+hp(4)=plotV(V_gabor_coil,'k-','LineWidth',5);
+legend(hp,'Start/end points','Guassian part','Coil (sinusoidal) part','Gabor coil');
 axisGeom; 
+view(2); 
+
+subplot(1,2,2);
+title('The 3D Gabor coil');
+hold on; 
+hp2(1)=plotV(V,'b.','markerSize',50);
+hp2(2)=plotV(V_gabor_coil,'k-','LineWidth',5);
+legend(hp2,'Start/end points','Gabor coil');
+axisGeom; 
+
 drawnow; 
 
 %% Creating Gabor coil on all edges in mesh
@@ -146,10 +225,14 @@ E=patchEdges(F,1);
 
 %%
 
-numSteps=100;
-numTwist=8; 
-coilAmplitude=0.05; 
-f=3;
+optionStruct.numSteps=150; %Number of points used to define the curve. 
+optionStruct.numTwist=5; %Number of twists (for an unmodulated coil) 
+optionStruct.coilAmplitude=[]; %The coil amplitude (set empty to based on curve or edge length instead)
+optionStruct.coilAmplitudeFactor=1/10; %The factor used to set local coil amplitude as a function of edge length
+optionStruct.f=3; % The Gaussian bell curve will be truncated at n*the standard deviation on both sides. 
+optionStruct.funcMethod=2; %For loop based (1) or vectorised (2). 
+
+[V_coil_rep]=gaborCoil(V,E,optionStruct);
 
 %%
 cFigure; hold on;
@@ -158,13 +241,11 @@ plotV(V,'r.','MarkerSize',25);
 axisGeom;
 camlight headlight; 
 
-%%
-
-[V_coil_rep]=gaborCoil(V,E,numSteps,numTwist,coilAmplitude,f);
-
 for q=1:1:size(V_coil_rep,3)
     plotV(V_coil_rep(:,:,q),'k-','lineWidth',5);               
 end
+
+drawnow; 
 
 %%
 % 

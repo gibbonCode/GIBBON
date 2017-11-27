@@ -1,55 +1,36 @@
 function [V_coil_rep]=gaborCoil(varargin)
 
+
+%%
+
+defaultOpt.numSteps=100;
+defaultOpt.numTwist=4;
+defaultOpt.coilAmplitude=[];
+defaultOpt.coilAmplitudeFactor=1/10;
+defaultOpt.f=4;
+defaultOpt.funcMethod=2;
+
 switch nargin
     case 2
         V=varargin{1};
         E=varargin{2};
-        numSteps=100;
-        numTwist=4;
-        coilAmplitude=[];
-        f=4;
-        funcMethod=2;
+        optStruct=defaultOpt;
     case 3
         V=varargin{1};
         E=varargin{2};
-        numSteps=varargin{3};
-        numTwist=4;
-        coilAmplitude=[];
-        f=4;
-        funcMethod=2;
-    case 4
-        V=varargin{1};
-        E=varargin{2};
-        numSteps=varargin{3};
-        numTwist=varargin{4};
-        coilAmplitude=[];
-        f=4;
-        funcMethod=2;
-    case 5
-        V=varargin{1};
-        E=varargin{2};
-        numSteps=varargin{3};
-        numTwist=varargin{4};
-        coilAmplitude=varargin{5};
-        f=4;
-        funcMethod=2;
-    case 6
-        V=varargin{1};
-        E=varargin{2};
-        numSteps=varargin{3};
-        numTwist=varargin{4};
-        coilAmplitude=varargin{5};
-        f=varargin{6};
-        funcMethod=2;
-    case 7
-        V=varargin{1};
-        E=varargin{2};
-        numSteps=varargin{3};
-        numTwist=varargin{4};
-        coilAmplitude=varargin{5};
-        f=varargin{6};
-        funcMethod=varargin{7};
+        optStruct=varargin{3};
 end
+
+%%
+
+[optStruct]=structComplete(optStruct,defaultOpt,0);
+
+numSteps=optStruct.numSteps;
+numTwist=optStruct.numTwist;
+coilAmplitude=optStruct.coilAmplitude;
+coilAmplitudeFactor=optStruct.coilAmplitudeFactor;
+f=optStruct.f;
+funcMethod=optStruct.funcMethod;
 
 %%
 
@@ -72,7 +53,7 @@ vecRot(logicReplace,:)=c(ones(nnz(logicReplace),1),:);
 vecRot=vecnormalize(vecRot);
 
 if isempty(coilAmplitude) %If coil amplitudes are empty
-    coilAmplitude=A_mag/10; %Set as local edge length devided by 10
+    coilAmplitude=A_mag*coilAmplitudeFactor; %Set as local edge length multiplied by amplitude factor
 end
 
 %% Create standard coil
@@ -152,9 +133,6 @@ switch funcMethod
         V_edgeOrigins_rep=repmat(permute(V_edgeOrigins,[3 2 1]),[numSteps,1,1]);
         V_coil_rep=V_coil_rep+V_edgeOrigins_rep;
 end
-
-
-
  
 %% 
 % _*GIBBON footer text*_ 

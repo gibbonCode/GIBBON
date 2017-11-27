@@ -143,8 +143,14 @@ plotOn=1; %Turn on plotting to view lofting behaviour
 %% A sweep loft to create a coil
 
 numStepsCurve=75;
-numTwist=0; %Number of additional twists of loft feature around guide curve
-numSteps=numStepsCurve; %Number of steps for loft feature from sketch 1 to sketch 2
+
+optionStruct.numSteps=numStepsCurve; %Number of points used to define the curve. 
+optionStruct.numTwist=4; %Number of twists (for an unmodulated coil) 
+optionStruct.coilAmplitude=[]; %The coil amplitude (set empty to based on curve or edge length instead)
+optionStruct.coilAmplitudeFactor=1/5; %The factor used to set local coil amplitude as a function of edge length
+optionStruct.f=3; % The Gaussian bell curve will be truncated at n*the standard deviation on both sides. 
+optionStruct.funcMethod=2; %For loop based (1) or vectorised (2). 
+
 plotOn=1; %Turn on plotting to view lofting behaviour
 
 % V1=[0 0 0; 1 0 0; 0.5 1 0];
@@ -159,7 +165,7 @@ V1=[x(:) y(:) zeros(size(x(:)))];
 V2=V1;
 V2(:,3)=100;
 V=[mean(V1,1); mean(V2,1)];
-Vg=gaborCoil(V,[1 2],numSteps,4,20,4);
+Vg=gaborCoil(V,[1 2],optionStruct);
 [Vg] = evenlySampleCurve(Vg,size(Vg,1),'linear',0);
 
 n1=[0 0 1];
@@ -172,7 +178,7 @@ n1=n1*R;
 n2=n2*R;
 Vg=Vg*R;
 
-[F,V,C]=sweepLoft(V1,V2,n1,n2,Vg,numSteps,numTwist,1);
+[F,V,C]=sweepLoft(V1,V2,n1,n2,Vg,optionStruct.numSteps,0,1);
 
 %%
 % Visualize loft feature
