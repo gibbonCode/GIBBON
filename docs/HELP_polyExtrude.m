@@ -6,7 +6,8 @@
 
 %% Description
 % The |polyExtrude| function can be used to extrude polygons to obtain
-% patch data and generate CAD like model geometry. 
+% surface patch data and generate CAD like model geometry. 
+% See also: |polyLoftLinear|
 
 %% Examples
 
@@ -15,16 +16,13 @@ clear; close all; clc;
 
 %%
 % Plot settings
-figColor='w'; 
-figColorDef='white';
-fontSize=25;
-markerSize1=45;
-lineWidth1=4;
-faceAlpha=1;
+fontSize=15;
+lineWidth=4;
 
 %% Example: EXTRUDING A PLANAR POLYGON
 
-%Sketching profile
+%%
+% Creating an example polygon (or sketch)
 ns=150;
 t=linspace(0,2*pi,ns);
 t=t(1:end-1);
@@ -34,20 +32,8 @@ z=zeros(size(x));
 Vc=[x(:) y(:) z(:)];
 
 %%
-% Plotting sketch
-hf1=figuremax(figColor,figColorDef);
-title('The sketch profile','FontSize',fontSize);
-xlabel('X','FontSize',fontSize);ylabel('Y','FontSize',fontSize); zlabel('Z','FontSize',fontSize);
-hold on;
+% Extruding polygon to obtain the surface model
 
-plotV(Vc,'r-','lineWidth',lineWidth1,'MarkerSize',markerSize1);
-
-axis equal; view(3); axis tight;  grid on;  set(gca,'FontSize',fontSize);
-drawnow;
-
-%%
-
-% Extruding model
 cPar.pointSpacing=0.5;
 cPar.depth=7; 
 cPar.patchType='quad'; 
@@ -56,42 +42,58 @@ cPar.closeLoopOpt=1;
 [F,V]=polyExtrude(Vc,cPar);
 
 %% 
-% Plotting meshed model
-hf2=figuremax(figColor,figColorDef);
-title('The extruded planar polygon','FontSize',fontSize);
-xlabel('X','FontSize',fontSize);ylabel('Y','FontSize',fontSize); zlabel('Z','FontSize',fontSize);
+% Plotting results
+cFigure;
+title('Polygon extrusion','FontSize',fontSize);
 hold on;
 
-hp=patch('faces',F,'Vertices',V); set(hp,'FaceColor','g','EdgeColor','k','FaceAlpha',faceAlpha);
-% patchNormPlot(F_tri,V_tri);
-plotV(Vc,'r-','lineWidth',lineWidth1,'MarkerSize',markerSize1);
+hp1=plotV(Vc,'r-','lineWidth',lineWidth);
+hp2=gpatch(F,V,'g');
 
-axis equal; view(3); axis tight;  grid on;  set(gca,'FontSize',fontSize);
+axisGeom(gca,fontSize);
 camlight headlight;
+legend([hp1 hp2],'The input polygon','The extruded surface');
+drawnow;
+%% Exmaple: Mesh type control
+
+%%
+% Visualizing extrusion with all possible mesh types 
+patchTypes={'quad','tri','tri_slash'};
+
+cFigure;
+suptitle('Extrusion surface mesh types')
+for q=1:1:numel(patchTypes)
+    
+cPar.patchType=patchTypes{q};
+[F,V]=polyExtrude(Vc,cPar);
+
+%Visualizing mesh
+subplot(1,numel(patchTypes),q);
+title(patchTypes{q},'FontSize',fontSize,'Interpreter','none');
+hold on;
+gpatch(F,V,'g');
+axisGeom(gca,fontSize);
+camlight headlight;
+
+end
+
 drawnow;
 
 %% Example: EXTRUDING A TILTED PLANAR POLYGON
 
-%Create rotation matrix
+%%
+% Creating an example of a rotated polygon
+
+% Create rotation matrix
 E=[0.25*pi 0 0]; %Euler angles
 [R,~]=euler2DCM(E); %The rotation matrix
-Vc=(R*Vc')'; %Rotate polygon
+
+% Rotate the polygon
+Vc=(R*Vc')'; 
 
 %%
-% Plotting sketch
-hf1=figuremax(figColor,figColorDef);
-title('The sketch profile','FontSize',fontSize);
-xlabel('X','FontSize',fontSize);ylabel('Y','FontSize',fontSize); zlabel('Z','FontSize',fontSize);
-hold on;
-
-plotV(Vc,'r-','lineWidth',lineWidth1,'MarkerSize',markerSize1);
-
-axis equal; view(3); axis tight;  grid on;  set(gca,'FontSize',fontSize);
-drawnow;
-
-%%
-
 % Extruding model
+
 clear cPar;
 cPar.pointSpacing=0.5;
 cPar.depth=7; 
@@ -101,18 +103,17 @@ cPar.closeLoopOpt=1;
 [F,V]=polyExtrude(Vc,cPar);
 
 %% 
-% Plotting meshed model
-hf2=figuremax(figColor,figColorDef);
-title('The extruded planar polygon normal to polygon','FontSize',fontSize);
-xlabel('X','FontSize',fontSize);ylabel('Y','FontSize',fontSize); zlabel('Z','FontSize',fontSize);
+% Plotting results
+cFigure;
+title('Tilted polygon extrusion','FontSize',fontSize);
 hold on;
 
-hp=patch('faces',F,'Vertices',V); set(hp,'FaceColor','g','EdgeColor','k','FaceAlpha',faceAlpha);
+hp1=plotV(Vc,'r-','lineWidth',lineWidth);
+hp2=gpatch(F,V,'g');
 
-plotV(Vc,'r-','lineWidth',lineWidth1,'MarkerSize',markerSize1);
-
-axis equal; view(3); axis tight;  grid on;  set(gca,'FontSize',fontSize);
+axisGeom(gca,fontSize);
 camlight headlight;
+legend([hp1 hp2],'The input polygon','The extruded surface');
 drawnow;
 
 %%
@@ -129,23 +130,23 @@ cPar.closeLoopOpt=1;
 [F,V]=polyExtrude(Vc,cPar);
 
 %% 
-% Plotting meshed model
-hf2=figuremax(figColor,figColorDef);
-title('The extruded planar polygon in z-dir','FontSize',fontSize);
-xlabel('X','FontSize',fontSize);ylabel('Y','FontSize',fontSize); zlabel('Z','FontSize',fontSize);
+% Plotting results
+cFigure;
+title('Tilted polygon extrusion','FontSize',fontSize);
 hold on;
 
-hp=patch('faces',F,'Vertices',V); set(hp,'FaceColor','g','EdgeColor','k','FaceAlpha',faceAlpha);
+hp1=plotV(Vc,'r-','lineWidth',lineWidth);
+hp2=gpatch(F,V,'g');
 
-plotV(Vc,'r-','lineWidth',lineWidth1,'MarkerSize',markerSize1);
-
-axis equal; view(3); axis tight;  grid on;  set(gca,'FontSize',fontSize);
+axisGeom(gca,fontSize);
 camlight headlight;
+legend([hp1 hp2],'The input polygon','The extruded surface');
 drawnow;
 
 %% Example: EXTRUDING A NON-PLANAR POLYGON
 
-%Sketching profile
+%%
+% Creating a non-planar polygon for extrusion
 ns=150;
 t=linspace(0,2*pi,ns);
 t=t(1:end-1);
@@ -154,18 +155,6 @@ r=6+2.*sin(5*t);
 z=1/10*x.^2; 
 
 Vc=[x(:) y(:) z(:)];
-
-%%
-% Plotting sketch
-hf1=figuremax(figColor,figColorDef);
-title('The sketch profile','FontSize',fontSize);
-xlabel('X','FontSize',fontSize);ylabel('Y','FontSize',fontSize); zlabel('Z','FontSize',fontSize);
-hold on;
-
-plotV(Vc,'r-','lineWidth',lineWidth1,'MarkerSize',markerSize1);
-
-axis equal; view(3); axis tight;  grid on;  set(gca,'FontSize',fontSize);
-drawnow;
 
 %%
 
@@ -179,18 +168,17 @@ cPar.closeLoopOpt=1;
 [F,V]=polyExtrude(Vc,cPar);
 
 %% 
-% Plotting meshed model
-hf2=figuremax(figColor,figColorDef);
-title('The extruded non-planar polygon normal to polygon','FontSize',fontSize);
-xlabel('X','FontSize',fontSize);ylabel('Y','FontSize',fontSize); zlabel('Z','FontSize',fontSize);
+% Plotting results
+cFigure;
+title('Non-planar polygon extrusion','FontSize',fontSize);
 hold on;
 
-hp=patch('faces',F,'Vertices',V); set(hp,'FaceColor','g','EdgeColor','k','FaceAlpha',faceAlpha);
+hp1=plotV(Vc,'r-','lineWidth',lineWidth);
+hp2=gpatch(F,V,'g');
 
-plotV(Vc,'r-','lineWidth',lineWidth1,'MarkerSize',markerSize1);
-
-axis equal; view(3); axis tight;  grid on;  set(gca,'FontSize',fontSize);
+axisGeom(gca,fontSize);
 camlight headlight;
+legend([hp1 hp2],'The input polygon','The extruded surface');
 drawnow;
 
 %% 
