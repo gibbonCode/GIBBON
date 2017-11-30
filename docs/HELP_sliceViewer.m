@@ -1,43 +1,45 @@
-%% platonic_solid
-% Below is a demonstration of the features of the |platonic_solid| function
+%% sliceViewer
+% Below is a demonstration of the features of the |sliceViewer| function
 
 %%
 clear; close all; clc;
 
-%%
-% Plot settings
-fontSize=15;
-faceColor='b';
-faceAlpha=1;
-edgeColor='k';
-edgeWidth=2;
-markerSize=5;
+%% Syntax
+% |hf=sliceViewer(varargin);|
 
-%%
+%% Description 
+% The |sliceViewer| function provides a figure window based GUI for 3D image
+% visualization
 
-hf=cFigure; % Open figure for plotting
-pColor=gjet(5);
-for q=1:1:5
-    %Defining the faces (F) and vertices (V) of a platonic solid
-    [V,F]=platonic_solid(q,1); %q indicates solid type, r is the radius
-    
-    subplot(2,3,q); hold on;
-    
-    hp=gpatch(F,V,pColor(q,:),'k',faceAlpha,3);
-    
-    axisGeom(gca,fontSize);    
-    camlight('headlight'); lighting flat;
-    axis off;
-end
-drawnow; 
-
-%%
+%% Examples 
 %
+%% Example: Visualizing MRI data
+
+%% 
+% Example image data
+load mri;
+M=squeeze(D); %example image data set
+v=2./[1,1,.4]; %example voxel size
+
+%%
+% Visualise using viewerType=1 featuring clickable navigation in mutually
+% orthogonal 2D views
+viewerType=1; %1 is default
+hf=sliceViewer(M,v,viewerType);
+
+%%
+% Visualise using viewerType=2 featuring a single 3D view and GUI sliders
+% for navigation and thresholding
+viewerType=2; 
+hf=sliceViewer(M,v,viewerType);
+
+%%
+% 
 % <<gibbVerySmall.gif>>
-%
-% _*GIBBON*_
+% 
+% _*GIBBON*_ 
 % <www.gibboncode.org>
-%
+% 
 % _Kevin Mattheus Moerman_, <gibbon.toolbox@gmail.com>
  
 %% 

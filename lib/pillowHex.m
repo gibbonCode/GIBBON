@@ -52,7 +52,6 @@ E6=[E2(:,indSide2) E1(:,indSide2)];
 Ep=[E_core; E1; E2; E3; E4; E5; E6];
 Cp=repmat(C,[7,1]);
 % Ep=[E_core;E1;E2];
-
  
 %% 
 % _*GIBBON footer text*_ 

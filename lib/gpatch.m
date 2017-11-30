@@ -42,6 +42,10 @@ switch nargin
         error('Wrong number of input arguments');
 end
 
+if isempty(C)
+    C='g';
+end
+
 if isa(F,'cell') %Assume all entries are cells defining multiple patch data sets
     for q=1:1:numel(F)
         hp(q)=plotPatch(F{q},V{q},C{q},CE{q},A{q},L);

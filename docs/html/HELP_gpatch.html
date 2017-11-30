@@ -1,0 +1,237 @@
+
+<!DOCTYPE html
+  PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html><head>
+      <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+   <!--
+This HTML was auto-generated from MATLAB code.
+To make changes, update the MATLAB code and republish this document.
+      --><title>gpatch</title><meta name="generator" content="MATLAB 9.1"><link rel="schema.DC" href="http://purl.org/dc/elements/1.1/"><meta name="DC.date" content="2017-11-30"><meta name="DC.source" content="HELP_gpatch.m"><style type="text/css">
+html,body,div,span,applet,object,iframe,h1,h2,h3,h4,h5,h6,p,blockquote,pre,a,abbr,acronym,address,big,cite,code,del,dfn,em,font,img,ins,kbd,q,s,samp,small,strike,strong,sub,sup,tt,var,b,u,i,center,dl,dt,dd,ol,ul,li,fieldset,form,label,legend,table,caption,tbody,tfoot,thead,tr,th,td{margin:0;padding:0;border:0;outline:0;font-size:100%;vertical-align:baseline;background:transparent}body{line-height:1}ol,ul{list-style:none}blockquote,q{quotes:none}blockquote:before,blockquote:after,q:before,q:after{content:'';content:none}:focus{outine:0}ins{text-decoration:none}del{text-decoration:line-through}table{border-collapse:collapse;border-spacing:0}
+
+html { min-height:100%; margin-bottom:1px; }
+html body { height:100%; margin:0px; font-family:Arial, Helvetica, sans-serif; font-size:10px; color:#000; line-height:140%; background:#fff none; overflow-y:scroll; }
+html body td { vertical-align:top; text-align:left; }
+
+h1 { padding:0px; margin:0px 0px 25px; font-family:Arial, Helvetica, sans-serif; font-size:1.5em; color:#d55000; line-height:100%; font-weight:normal; }
+h2 { padding:0px; margin:0px 0px 8px; font-family:Arial, Helvetica, sans-serif; font-size:1.2em; color:#000; font-weight:bold; line-height:140%; border-bottom:1px solid #d6d4d4; display:block; }
+h3 { padding:0px; margin:0px 0px 5px; font-family:Arial, Helvetica, sans-serif; font-size:1.1em; color:#000; font-weight:bold; line-height:140%; }
+
+a { color:#005fce; text-decoration:none; }
+a:hover { color:#005fce; text-decoration:underline; }
+a:visited { color:#004aa0; text-decoration:none; }
+
+p { padding:0px; margin:0px 0px 20px; }
+img { padding:0px; margin:0px 0px 20px; border:none; }
+p img, pre img, tt img, li img, h1 img, h2 img { margin-bottom:0px; } 
+
+ul { padding:0px; margin:0px 0px 20px 23px; list-style:square; }
+ul li { padding:0px; margin:0px 0px 7px 0px; }
+ul li ul { padding:5px 0px 0px; margin:0px 0px 7px 23px; }
+ul li ol li { list-style:decimal; }
+ol { padding:0px; margin:0px 0px 20px 0px; list-style:decimal; }
+ol li { padding:0px; margin:0px 0px 7px 23px; list-style-type:decimal; }
+ol li ol { padding:5px 0px 0px; margin:0px 0px 7px 0px; }
+ol li ol li { list-style-type:lower-alpha; }
+ol li ul { padding-top:7px; }
+ol li ul li { list-style:square; }
+
+.content { font-size:1.2em; line-height:140%; padding: 20px; }
+
+pre, code { font-size:12px; }
+tt { font-size: 1.2em; }
+pre { margin:0px 0px 20px; }
+pre.codeinput { padding:10px; border:1px solid #d3d3d3; background:#f7f7f7; }
+pre.codeoutput { padding:10px 11px; margin:0px 0px 20px; color:#4c4c4c; }
+pre.error { color:red; }
+
+@media print { pre.codeinput, pre.codeoutput { word-wrap:break-word; width:100%; } }
+
+span.keyword { color:#0000FF }
+span.comment { color:#228B22 }
+span.string { color:#A020F0 }
+span.untermstring { color:#B20000 }
+span.syscmd { color:#B28C00 }
+
+.footer { width:auto; padding:10px 0px; margin:25px 0px 0px; border-top:1px dotted #878787; font-size:0.8em; line-height:140%; font-style:italic; color:#878787; text-align:left; float:none; }
+.footer p { margin:0px; }
+.footer a { color:#878787; }
+.footer a:hover { color:#878787; text-decoration:underline; }
+.footer a:visited { color:#878787; }
+
+table th { padding:7px 5px; text-align:left; vertical-align:middle; border: 1px solid #d6d4d4; font-weight:bold; }
+table td { padding:7px 5px; text-align:left; vertical-align:top; border:1px solid #d6d4d4; }
+
+
+
+
+
+  </style></head><body><div class="content"><h1>gpatch</h1><!--introduction--><p>Below is a demonstration of the features of the <tt>gpatch</tt> function</p><!--/introduction--><h2>Contents</h2><div><ul><li><a href="#2">Syntax</a></li><li><a href="#3">Description</a></li><li><a href="#4">Examples</a></li><li><a href="#6">Example: Introduction to using <tt>gpatch</tt> for mesh visualization</a></li></ul></div><pre class="codeinput">clear; close <span class="string">all</span>; clc;
+</pre><h2 id="2">Syntax</h2><p>|[hp]=gpatch(F,V,C,CE,A,L);</p><h2 id="3">Description</h2><p>This function is a short-hand version of the <tt>patch</tt> command. The inputs for <tt>gpatch</tt> are the faces (F), the vertices (V), the color description (C), the edge color description CE, the transparancy (A), and the edge width (L). The color description C can be: 1) A string such as 'g' for green 2) A triplet of RGD values e.g. [1 0 0] is blue 3) A nx1 or a mx1 array of colormapped colors (where n=size(F,1) or m=size(V,1)) 4) (simiarl to 3) A nx3 or a mx3 RGB color value array for the faces or vertices respectively.</p><h2 id="4">Examples</h2><p>Create example mesh data</p><pre class="codeinput">[F,V,~]=geoSphere(2,1); <span class="comment">%Faces and vertices</span>
+CV=V(:,1); <span class="comment">%Color information for vertices</span>
+CF=vertexToFaceMeasure(F,CV); <span class="comment">%Color information for faces</span>
+CF_rgb=abs(vertexToFaceMeasure(F,V)); <span class="comment">%Color information for faces</span>
+</pre><h2 id="6">Example: Introduction to using <tt>gpatch</tt> for mesh visualization</h2><p>The below visualization show the syntax require using <tt>patch</tt> and <tt>gpatch</tt>. Essentially <tt>gpatch</tt> is just a short-hand version of <tt>patch</tt> allowing for quick and easy visualization using patch graphics.</p><p>Using patch graphics in MATLAB see documentation on <tt>patch</tt> for more information</p><pre class="codeinput">cFigure;
+suptitle(<span class="string">'Using patch'</span>)
+subplot(2,2,1);
+patch(<span class="string">'Faces'</span>,F,<span class="string">'Vertices'</span>,V,<span class="string">'FaceColor'</span>,<span class="string">'r'</span>,<span class="string">'EdgeColor'</span>,<span class="string">'g'</span>,<span class="string">'FaceAlpha'</span>,0.5);
+axisGeom;
+
+subplot(2,2,2);
+patch(<span class="string">'Faces'</span>,F,<span class="string">'Vertices'</span>,V,<span class="string">'FaceColor'</span>,<span class="string">'flat'</span>,<span class="string">'CData'</span>,CF,<span class="string">'EdgeColor'</span>,<span class="string">'k'</span>,<span class="string">'FaceAlpha'</span>,1);
+colormap <span class="string">gjet</span>;
+axisGeom;
+
+subplot(2,2,3);
+patch(<span class="string">'Faces'</span>,F,<span class="string">'Vertices'</span>,V,<span class="string">'FaceColor'</span>,<span class="string">'flat'</span>,<span class="string">'CData'</span>,CV);
+colormap <span class="string">gjet</span>; shading <span class="string">interp</span>;
+axisGeom;
+
+subplot(2,2,4);
+patch(<span class="string">'Faces'</span>,F,<span class="string">'Vertices'</span>,V,<span class="string">'FaceColor'</span>,<span class="string">'flat'</span>,<span class="string">'FaceVertexCData'</span>,CF_rgb,<span class="string">'EdgeColor'</span>,<span class="string">'k'</span>,<span class="string">'FaceAlpha'</span>,1,<span class="string">'LineWidth'</span>,3);
+axisGeom;
+
+drawnow;
+</pre><img vspace="5" hspace="5" src="HELP_gpatch_01.png" alt=""> <p>Using <tt>gpatch</tt> shorthand alternative to <tt>patch</tt></p><pre class="codeinput">cFigure;
+suptitle(<span class="string">'Using gpatch'</span>)
+subplot(2,2,1);
+gpatch(F,V,<span class="string">'r'</span>,<span class="string">'g'</span>,0.5);
+axisGeom;
+
+subplot(2,2,2);
+gpatch(F,V,CF);
+colormap <span class="string">gjet</span>;
+axisGeom;
+
+subplot(2,2,3);
+gpatch(F,V,CV);
+colormap <span class="string">gjet</span>; shading <span class="string">interp</span>;
+axisGeom;
+
+subplot(2,2,4);
+gpatch(F,V,CF_rgb,<span class="string">'k'</span>,1,3);
+axisGeom;
+
+drawnow;
+</pre><img vspace="5" hspace="5" src="HELP_gpatch_02.png" alt=""> <p><img vspace="5" hspace="5" src="gibbVerySmall.gif" alt=""> </p><p><i><b>GIBBON</b></i> <a href="www.gibboncode.org">www.gibboncode.org</a></p><p><i>Kevin Mattheus Moerman</i>, <a href="gibbon.toolbox@gmail.com">gibbon.toolbox@gmail.com</a></p><p><i><b>GIBBON footer text</b></i></p><p>License: <a href="https://github.com/gibbonCode/GIBBON/blob/master/LICENSE">https://github.com/gibbonCode/GIBBON/blob/master/LICENSE</a></p><p>GIBBON: The Geometry and Image-based Bioengineering add-On. A toolbox for image segmentation, image-based modeling, meshing, and finite element analysis.</p><p>Copyright (C) 2017  Kevin Mattheus Moerman</p><p>This program is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.</p><p>This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for more details.</p><p>You should have received a copy of the GNU General Public License along with this program.  If not, see <a href="http://www.gnu.org/licenses/">http://www.gnu.org/licenses/</a>.</p><p class="footer"><br><a href="http://www.mathworks.com/products/matlab/">Published with MATLAB&reg; R2016b</a><br></p></div><!--
+##### SOURCE BEGIN #####
+%% gpatch
+% Below is a demonstration of the features of the |gpatch| function
+
+%%
+clear; close all; clc;
+
+%% Syntax
+% |[hp]=gpatch(F,V,C,CE,A,L);
+
+%% Description
+% This function is a short-hand version of the |patch| command. The inputs
+% for |gpatch| are the faces (F), the vertices (V), the color description
+% (C), the edge color description CE, the transparancy (A), and the edge
+% width (L). 
+% The color description C can be: 
+% 1) A string such as 'g' for green
+% 2) A triplet of RGD values e.g. [1 0 0] is blue
+% 3) A nx1 or a mx1 array of colormapped colors (where n=size(F,1) or m=size(V,1))
+% 4) (simiarl to 3) A nx3 or a mx3 RGB color value array for the faces or vertices respectively. 
+
+%% Examples
+
+%%
+% Create example mesh data
+
+[F,V,~]=geoSphere(2,1); %Faces and vertices
+CV=V(:,1); %Color information for vertices
+CF=vertexToFaceMeasure(F,CV); %Color information for faces
+CF_rgb=abs(vertexToFaceMeasure(F,V)); %Color information for faces
+
+%% Example: Introduction to using |gpatch| for mesh visualization
+% The below visualization show the syntax require using |patch| and
+% |gpatch|. Essentially |gpatch| is just a short-hand version of |patch|
+% allowing for quick and easy visualization using patch graphics. 
+
+%%
+% Using patch graphics in MATLAB see documentation on |patch| for more information
+
+cFigure; 
+suptitle('Using patch')
+subplot(2,2,1); 
+patch('Faces',F,'Vertices',V,'FaceColor','r','EdgeColor','g','FaceAlpha',0.5);
+axisGeom; 
+
+subplot(2,2,2);
+patch('Faces',F,'Vertices',V,'FaceColor','flat','CData',CF,'EdgeColor','k','FaceAlpha',1);
+colormap gjet;
+axisGeom; 
+
+subplot(2,2,3);
+patch('Faces',F,'Vertices',V,'FaceColor','flat','CData',CV);
+colormap gjet; shading interp;
+axisGeom; 
+
+subplot(2,2,4);
+patch('Faces',F,'Vertices',V,'FaceColor','flat','FaceVertexCData',CF_rgb,'EdgeColor','k','FaceAlpha',1,'LineWidth',3);
+axisGeom; 
+
+drawnow; 
+
+%%
+% Using |gpatch| shorthand alternative to |patch|
+
+cFigure; 
+suptitle('Using gpatch')
+subplot(2,2,1); 
+gpatch(F,V,'r','g',0.5);
+axisGeom; 
+
+subplot(2,2,2);
+gpatch(F,V,CF);
+colormap gjet;
+axisGeom; 
+
+subplot(2,2,3);
+gpatch(F,V,CV);
+colormap gjet; shading interp;
+axisGeom; 
+
+subplot(2,2,4);
+gpatch(F,V,CF_rgb,'k',1,3);
+axisGeom; 
+
+drawnow; 
+
+%% 
+%
+% <<gibbVerySmall.gif>>
+% 
+% _*GIBBON*_ 
+% <www.gibboncode.org>
+% 
+% _Kevin Mattheus Moerman_, <gibbon.toolbox@gmail.com>
+ 
+%% 
+% _*GIBBON footer text*_ 
+% 
+% License: <https://github.com/gibbonCode/GIBBON/blob/master/LICENSE>
+% 
+% GIBBON: The Geometry and Image-based Bioengineering add-On. A toolbox for
+% image segmentation, image-based modeling, meshing, and finite element
+% analysis.
+% 
+% Copyright (C) 2017  Kevin Mattheus Moerman
+% 
+% This program is free software: you can redistribute it and/or modify
+% it under the terms of the GNU General Public License as published by
+% the Free Software Foundation, either version 3 of the License, or
+% (at your option) any later version.
+% 
+% This program is distributed in the hope that it will be useful,
+% but WITHOUT ANY WARRANTY; without even the implied warranty of
+% MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+% GNU General Public License for more details.
+% 
+% You should have received a copy of the GNU General Public License
+% along with this program.  If not, see <http://www.gnu.org/licenses/>.
+
+##### SOURCE END #####
+--></body></html>
