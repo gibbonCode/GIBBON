@@ -71,7 +71,7 @@ cell2txtfile(saveName,T,0);
 %% Add searchable help
 addHelpSearch;
 
-disp('Restart MATLAB for the changes to take effect');
+disp('Restart MATLAB to allow for the help and documentation integration changes to take effect');
 
  
 %% 

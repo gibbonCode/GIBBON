@@ -1,5 +1,8 @@
 function [varargout]=patchBoundary(F,V)
 
+%function [Eb,E,indBoundary]=patchBoundary(F,V)
+
+%%
 %Get non-unique edges
 E1=F';
 E2=F(:,[2:end 1])';

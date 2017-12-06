@@ -83,15 +83,12 @@ TR = triangulation(F,V);
 boundEdges = freeBoundary(TR);
 boundaryInd=unique(boundEdges(:));
 
-smoothPar.n=50;
-smoothPar.Tolerance=0.001;
-smoothPar.RigidConstraints=boundaryInd;
-smoothPar.smoothMethod='HC';
-[V]=tesSmooth(F,V,[],smoothPar);
+% smoothPar.n=50;
+% smoothPar.Tolerance=0.001;
+% smoothPar.RigidConstraints=boundaryInd;
+% smoothPar.smoothMethod='HC';
+% [V]=tesSmooth(F,V,[],smoothPar);
 
-
-
- 
 %% 
 % _*GIBBON footer text*_ 
 % 

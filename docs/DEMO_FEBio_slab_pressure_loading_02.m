@@ -1,4 +1,4 @@
-%% DEMO_slab_pressure_loading_01
+%% DEMO_FEBio_slab_pressure_loading_02
 % Below is a demonstration for: 
 % 
 % * The creation of an FEBio model
