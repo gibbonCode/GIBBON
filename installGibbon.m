@@ -26,7 +26,14 @@ prompt = {'FEBio full path to program (e.g. .../bin/FEBio2.lnx64 or ...\bin\FEBi
 dlg_title = 'Path definitions (leave empty if not used)';
 
 FEBioPath=getFEBioPath;
-
+% if isempty(FEBioPath)
+%     if ispc
+%         FEBioPath='';
+%     elseif isunix
+%         FEBioPath='';
+%     end
+% end
+    
 exportFigPath=fileparts(which('export_fig'));
 defaultOptions = {FEBioPath,exportFigPath};
 

@@ -147,9 +147,7 @@ switch cPar.latticeSide
                     if cPar.hexSplit>0
                         [Fn,Vn]=subHex(Fn,Vn,cPar.hexSplit,3);
                     end
-                    Cn=[];
-                    
-                    
+                    Cn=zeros(size(Fn,1),1);
                 case 'hex8'
                     
                     ind1=1:size(E,1);
@@ -186,10 +184,11 @@ switch cPar.latticeSide
                                 Fc(ind4,3) Fc(ind4,2) Fcc(ind6,3) Fcc(ind6,2)   F(ind6,2) F(ind6,3) Fc(ind6,3) Fc(ind6,2); ...
                                 ];
                             Vn=[Vc;Vcc;V;];
-                            
+                        
                             if cPar.hexSplit>0                                
                                 [Fn,Vn]=subHex(Fn,Vn,cPar.hexSplit,3);                                
                             end
+                            Cn=zeros(size(Fn,1),1);
                         case 2             
                             Vn=[Vc;Vcc;V;Ve];
                             El=[Fc(ind4,2) Fc(ind4,1) Fcc(ind1,2) Fcc(ind1,1)    Fec1(ind1,1) Fec2(ind1,1) Fc(ind1,2) Fc(ind1,1) ;... %1
@@ -227,8 +226,8 @@ switch cPar.latticeSide
                                 Es=Es+size(Vl,1);
                             end
                             Fn=[El; Es];                            
-                    end
-                    Cn=[];
+                            Cn=[zeros(size(El,1),1);ones(size(Es,1),1)];
+                    end                    
             end
         else
             switch elementType
@@ -287,12 +286,13 @@ switch cPar.latticeSide
                             [Fccq,Vccq]=tri2quad(Fcc,Vcc);
                             Vccq(end-size(Fcc)+1:end,:)=repmat(Vcc_Ecc_mean,[4 1]);
                             Fn=[Fcq Fccq+size(Vcq,1)];
-                            Fn=Fn(:,[1 5 6 2 4 8 7 3]);
+                            Fn=Fn(:,[1 5 6 2 4 8 7 3]);    
+                            Fn=Fn(:,[5:8 1:4]);
                             Vn=[Vcq;Vccq];
                             if cPar.hexSplit>0
                                 [Fn,Vn]=subHex(Fn,Vn,cPar.hexSplit,3);
                             end
-                            Cn=[];
+                            Cn=zeros(size(Fn,1),1);
                         case 2
                             [Fcq,Vcq]=tri2quad(Fc,Vc);
                             [Fccq,Vccq]=tri2quad(Fcc,Vcc);                            
@@ -309,7 +309,7 @@ switch cPar.latticeSide
                                 Es=Es+size(Vl,1);
                             end                            
                             Fn=[El; Es];                            
-                            Cn=[];
+                            Cn=[zeros(size(El,1),1);ones(size(Es,1),1)];
                     end
                 case 'hex8'                    
                     switch cPar.hexMethod
@@ -319,11 +319,12 @@ switch cPar.latticeSide
                             Vccq(end-size(Fcc)+1:end,:)=repmat(Vcc_Ecc_mean,[6 1]);
                             Fn=[Fcq Fccq+size(Vcq,1)];
                             Fn=Fn(:,[1 5 6 2 4 8 7 3]);
+                            Fn=Fn(:,[5:8 1:4]);
                             Vn=[Vcq;Vccq];                            
                             if cPar.hexSplit>0
                                 [Fn,Vn]=subHex(Fn,Vn,cPar.hexSplit,3);
                             end                            
-                            Cn=[];                            
+                            Cn=zeros(size(Fn,1),1);                            
                         case 2
                             Vn=[Vc;Vcc;];
                             El=[Fcc+size(Vc,1) Fc];
@@ -337,7 +338,7 @@ switch cPar.latticeSide
                                 Es=Es+size(Vl,1);
                             end
                             Fn=[El; Es];
-                            Cn=[];
+                            Cn=[zeros(size(El,1),1);ones(size(Es,1),1)];
                     end
             end
         else

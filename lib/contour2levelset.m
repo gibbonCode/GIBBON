@@ -1,5 +1,13 @@
 function [K]=contour2levelset(M,v,Vcs,levelSetType)
 
+%-------------------------------------------------------------------------
+% function [K]=contour2levelset(M,v,Vcs,levelSetType)
+%
+%
+% 2017/12/07 disabled waitbar for now as it appears incompatible with sliders used
+% in other GUI's
+%-------------------------------------------------------------------------
+
 
 %%
 resampleOpt=0;
@@ -15,10 +23,9 @@ switch levelSetType
         
         %% Compute levelset
         
-        hw=waitbar(0,'Computing levelset... ');
+%         hw=waitbar(0,'Computing levelset... ');
         K=NaN(size(M));
-        
-        
+                
         logicEmpty=cellfun(@(x) isempty(x{1}),Vcs);
         
         sliceRange=find(~logicEmpty);
@@ -41,51 +48,46 @@ switch levelSetType
                     K(:,:,qSlice)=nanmin(K(:,:,qSlice),k_sub); %Add to current slice
                 end
             end
-            waitbar(c/numSteps,hw,['Computing levelset. ',num2str(round((c/numSteps)*100)),'%']);
+%             waitbar(c/numSteps,hw,['Computing levelset. ',num2str(round((c/numSteps)*100)),'%']);
             c=c+1;
         end
-        close(hw);
+%         close(hw);
     case 2 %3D distances       
-%         %% Get image coordinates
-%         [J,I,K]=meshgrid(1:1:siz(2),1:1:siz(1),1:1:siz(3));
-%         
-%         %Convert to cartesian coordinates using voxel size if provided
-%         [x,y,z]=im2cart(I,J,K,v);
-%         
+
         %% Compute levelset
         
         [logicInside]=contour2logic(M,v,Vcs);
         
-        logicEmpty=cellfun(@(x) isempty(x{1}),Vcs);        
-        sliceRange=find(~logicEmpty);
+%         logicEmpty=cellfun(@(x) isempty(x{1}),Vcs);        
+%         sliceRange=find(~logicEmpty);
         
-        VD=[];
-        for qSlice=sliceRange
-            numSubContours=numel(Vcs{qSlice}); %Number of sub-contours for the current slice
-            for qSub=1:1:numSubContours
-                Vd=Vcs{qSlice}{qSub}; %Current contour
-                if ~isempty(Vd) %If it is not empty a levelset is computed
-                    if resampleOpt
-                        d=pathLength(Vd);
-                        nResample=2*round(max(d(:))/min(v(:,[1 2])));
-                        [Vd]=evenlySampleCurve(V,nResample,'linear',1);
-                    end                                        
-                    VD=[VD;Vd];                    
-                end
-            end        
-        end
-        
+%         VD=[];
+%         for qSlice=sliceRange
+%             numSubContours=numel(Vcs{qSlice}); %Number of sub-contours for the current slice
+%             for qSub=1:1:numSubContours
+%                 Vd=Vcs{qSlice}{qSub}; %Current contour
+%                 if ~isempty(Vd) %If it is not empty a levelset is computed
+%                     if resampleOpt
+%                         d=pathLength(Vd);
+%                         nResample=2*round(max(d(:))/min(v(:,[1 2])));
+%                         [Vd]=evenlySampleCurve(V,nResample,'linear',1);
+%                     end                                        
+%                     VD=[VD;Vd];                    
+%                 end
+%             end        
+%         end
+%         
+% %         [D,~]=minDist([x(:) y(:) z(:)],VD); %Compute distances to contour
+% %         D(logicInside)=-D(logicInside); %Negate distances inside contour
+% %         K=reshape(D,siz); %The sub-levelset        
+
         %Use distance transform
         D1 = bwdist(logicInside,'euclidean');                
         D2 = bwdist(~logicInside,'euclidean');
         K=zeros(siz);
         K(logicInside)=-D2(logicInside);
         K(~logicInside)=D1(~logicInside);
-        
-%         [D,~]=minDist([x(:) y(:) z(:)],VD); %Compute distances to contour
-%         D(logicInside)=-D(logicInside); %Negate distances inside contour
-%         K=reshape(D,siz); %The sub-levelset        
-        
+                
 end
  
 %% 

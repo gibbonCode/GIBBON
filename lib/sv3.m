@@ -6,23 +6,36 @@ switch nargin
     case 1
         M=varargin{1};
         v=ones(1,3);
+        vizOptStruct=[];
     case 2
         M=varargin{1};
-        v=varargin{2};  
+        v=varargin{2}; 
+        vizOptStruct=[];
+    case 3
+        M=varargin{1};
+        v=varargin{2};
+        vizOptStruct=varargin{3};
 end
+
+figStruct.Name='GIBBON: Slice viewer'; %Figure name
+figStruct.Color='k'; %Figure background color
+figStruct.ColorDef='black'; %Setting colordefinitions to black
+
+vizOptStructDefault.colormap=gray(250);
+vizOptStructDefault.fontColor='w';
+vizOptStructDefault.fontSize=20;
+vizOptStructDefault.figStruct=figStruct;
+
+[vizOptStruct]=structComplete(vizOptStruct,vizOptStructDefault,1);
 
 M=double(M);
 
 %%
 % Plot settings
-fontColor='w';
-fontSize=20;
-cMap=gray(250);
-
-figStruct.Name='GIBBON: Slice viewer'; %Figure name
-figStruct.Color='k'; %Figure background color
-figStruct.ColorDef='black'; %Setting colordefinitions to black
-% figStruct.ScreenOffset=20; %Setting spacing of figure with respect to screen edges
+fontColor=vizOptStruct.fontColor;
+fontSize=vizOptStruct.fontSize;
+cMap=vizOptStruct.colormap;
+figStruct=vizOptStruct.figStruct;
 
 %%
 
@@ -73,6 +86,7 @@ set(jSlider_T, 'MajorTickSpacing',25, 'MinorTickSpacing',1, 'PaintTicks',true, '
 %% Set resize function 
 
 set(hf,'ResizeFcn',{@setScrollSizeFunc,{hf,w,jSlider_T,jSlider_I,jSlider_J,jSlider_K}});
+
 
 %%
 hf.UserData.M=M;

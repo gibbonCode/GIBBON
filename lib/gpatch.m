@@ -76,7 +76,9 @@ elseif size(C,2)==1
     %     else %Assume face shading
     argInPatch.CData=double(C);
     %     end
-elseif size(C,2)==3  %Assume RGB type
+elseif size(C,2)==3 && size(C,1)==1 %Assume single RGB level
+    argInPatch.FaceColor=double(C);
+elseif size(C,2)==3 && size(C,1)>1 %Assume RGB array
     argInPatch.FaceColor='flat';
     argInPatch.FaceVertexCData=double(C);
 else
