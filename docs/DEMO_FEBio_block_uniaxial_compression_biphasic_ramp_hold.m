@@ -254,7 +254,7 @@ FEBioRunStruct.disp_log_on=1;
 FEBioRunStruct.runMode='external';%'internal';
 FEBioRunStruct.t_check=0.25; %Time for checking log file (dont set too small)
 FEBioRunStruct.maxtpi=1e99; %Max analysis time
-FEBioRunStruct.maxLogCheckTime=3; %Max log file checking time
+FEBioRunStruct.maxLogCheckTime=10; %Max log file checking time
 
 [runFlag]=runMonitorFEBio(FEBioRunStruct);%START FEBio NOW!!!!!!!!
 

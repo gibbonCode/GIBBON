@@ -238,10 +238,10 @@ FEBioRunStruct.run_filename=FEB_struct.run_filename;
 FEBioRunStruct.run_logname=FEB_struct.run_logname;
 FEBioRunStruct.disp_on=1;
 FEBioRunStruct.disp_log_on=1;
-FEBioRunStruct.runMode='internal';%'internal';
+FEBioRunStruct.runMode='external';%'internal';
 FEBioRunStruct.t_check=0.25; %Time for checking log file (dont set too small)
 FEBioRunStruct.maxtpi=1e99; %Max analysis time
-FEBioRunStruct.maxLogCheckTime=3; %Max log file checking time
+FEBioRunStruct.maxLogCheckTime=10; %Max log file checking time
 
 [runFlag]=runMonitorFEBio(FEBioRunStruct);%START FEBio NOW!!!!!!!!
 
@@ -278,7 +278,6 @@ if runFlag==1 %i.e. a succesful run
         c=voigtUnMap(cVoigt);
         cKelvin=kelvinMap(c);
         stiffness_mat_kelvin{q}=cKelvin;
-        
     end
     
     %%
