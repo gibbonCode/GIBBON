@@ -27,6 +27,15 @@ markerSize1=25;
 % Setting element type for demonstration
 tetType='tet10'; %Use 'tet10' or 'tet4'
 
+%FEA control settings
+nSteps=20; %Number of time steps desired
+max_refs=25; %Max reforms
+max_ups=0; %Set to zero to use full-Newton iterations
+opt_iter=10; %Optimum number of iterations
+max_retries=5; %Maximum number of retires
+dtmin=(1/nSteps)/100; %Minimum time step size
+dtmax=1/nSteps; %Maximum time step size
+
 %%
 
 % path names
@@ -265,17 +274,16 @@ FEB_struct.Materials{3}.Type='Ogden';
 FEB_struct.Materials{3}.Properties={'c1','m1','k'};
 FEB_struct.Materials{3}.Values={c1,m1,k};
 
-%Control sections
-n=15; %Number of time steps desired
+%Control section
 FEB_struct.Control.AnalysisType='static';
 FEB_struct.Control.Properties={'time_steps','step_size',...
     'max_refs','max_ups',...
     'dtol','etol','rtol','lstol'};
-FEB_struct.Control.Values={n,1/n,...
-    15,5,...
+FEB_struct.Control.Values={nSteps,1/nSteps,...
+    max_refs,max_ups,...
     0.001,0.01,0,0.9};
-FEB_struct.Control.TimeStepperProperties={'dtmin','dtmax','max_retries','opt_iter','aggressiveness'};
-FEB_struct.Control.TimeStepperValues={(1/n)/100,1/n,5,15,1};
+FEB_struct.Control.TimeStepperProperties={'dtmin','dtmax','max_retries','opt_iter'};
+FEB_struct.Control.TimeStepperValues={dtmin,dtmax,max_retries,opt_iter};
 
 %Defining surfaces
 FEB_struct.Geometry.Surface{1}.Set=Fc1;
