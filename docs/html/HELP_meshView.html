@@ -1,0 +1,274 @@
+
+<!DOCTYPE html
+  PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html><head>
+      <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+   <!--
+This HTML was auto-generated from MATLAB code.
+To make changes, update the MATLAB code and republish this document.
+      --><title>meshView</title><meta name="generator" content="MATLAB 9.1"><link rel="schema.DC" href="http://purl.org/dc/elements/1.1/"><meta name="DC.date" content="2017-12-20"><meta name="DC.source" content="HELP_meshView.m"><style type="text/css">
+html,body,div,span,applet,object,iframe,h1,h2,h3,h4,h5,h6,p,blockquote,pre,a,abbr,acronym,address,big,cite,code,del,dfn,em,font,img,ins,kbd,q,s,samp,small,strike,strong,sub,sup,tt,var,b,u,i,center,dl,dt,dd,ol,ul,li,fieldset,form,label,legend,table,caption,tbody,tfoot,thead,tr,th,td{margin:0;padding:0;border:0;outline:0;font-size:100%;vertical-align:baseline;background:transparent}body{line-height:1}ol,ul{list-style:none}blockquote,q{quotes:none}blockquote:before,blockquote:after,q:before,q:after{content:'';content:none}:focus{outine:0}ins{text-decoration:none}del{text-decoration:line-through}table{border-collapse:collapse;border-spacing:0}
+
+html { min-height:100%; margin-bottom:1px; }
+html body { height:100%; margin:0px; font-family:Arial, Helvetica, sans-serif; font-size:10px; color:#000; line-height:140%; background:#fff none; overflow-y:scroll; }
+html body td { vertical-align:top; text-align:left; }
+
+h1 { padding:0px; margin:0px 0px 25px; font-family:Arial, Helvetica, sans-serif; font-size:1.5em; color:#d55000; line-height:100%; font-weight:normal; }
+h2 { padding:0px; margin:0px 0px 8px; font-family:Arial, Helvetica, sans-serif; font-size:1.2em; color:#000; font-weight:bold; line-height:140%; border-bottom:1px solid #d6d4d4; display:block; }
+h3 { padding:0px; margin:0px 0px 5px; font-family:Arial, Helvetica, sans-serif; font-size:1.1em; color:#000; font-weight:bold; line-height:140%; }
+
+a { color:#005fce; text-decoration:none; }
+a:hover { color:#005fce; text-decoration:underline; }
+a:visited { color:#004aa0; text-decoration:none; }
+
+p { padding:0px; margin:0px 0px 20px; }
+img { padding:0px; margin:0px 0px 20px; border:none; }
+p img, pre img, tt img, li img, h1 img, h2 img { margin-bottom:0px; } 
+
+ul { padding:0px; margin:0px 0px 20px 23px; list-style:square; }
+ul li { padding:0px; margin:0px 0px 7px 0px; }
+ul li ul { padding:5px 0px 0px; margin:0px 0px 7px 23px; }
+ul li ol li { list-style:decimal; }
+ol { padding:0px; margin:0px 0px 20px 0px; list-style:decimal; }
+ol li { padding:0px; margin:0px 0px 7px 23px; list-style-type:decimal; }
+ol li ol { padding:5px 0px 0px; margin:0px 0px 7px 0px; }
+ol li ol li { list-style-type:lower-alpha; }
+ol li ul { padding-top:7px; }
+ol li ul li { list-style:square; }
+
+.content { font-size:1.2em; line-height:140%; padding: 20px; }
+
+pre, code { font-size:12px; }
+tt { font-size: 1.2em; }
+pre { margin:0px 0px 20px; }
+pre.codeinput { padding:10px; border:1px solid #d3d3d3; background:#f7f7f7; }
+pre.codeoutput { padding:10px 11px; margin:0px 0px 20px; color:#4c4c4c; }
+pre.error { color:red; }
+
+@media print { pre.codeinput, pre.codeoutput { word-wrap:break-word; width:100%; } }
+
+span.keyword { color:#0000FF }
+span.comment { color:#228B22 }
+span.string { color:#A020F0 }
+span.untermstring { color:#B20000 }
+span.syscmd { color:#B28C00 }
+
+.footer { width:auto; padding:10px 0px; margin:25px 0px 0px; border-top:1px dotted #878787; font-size:0.8em; line-height:140%; font-style:italic; color:#878787; text-align:left; float:none; }
+.footer p { margin:0px; }
+.footer a { color:#878787; }
+.footer a:hover { color:#878787; text-decoration:underline; }
+.footer a:visited { color:#878787; }
+
+table th { padding:7px 5px; text-align:left; vertical-align:middle; border: 1px solid #d6d4d4; font-weight:bold; }
+table td { padding:7px 5px; text-align:left; vertical-align:top; border:1px solid #d6d4d4; }
+
+
+
+
+
+  </style></head><body><div class="content"><h1>meshView</h1><!--introduction--><p>Below is a demonstration of the features of the <tt>meshView</tt> function</p><!--/introduction--><h2>Contents</h2><div><ul><li><a href="#2">Syntax</a></li><li><a href="#3">Description</a></li><li><a href="#4">Examples</a></li><li><a href="#6">Creating an example mesh</a></li><li><a href="#9">Visualizing mesh using <tt>meshView</tt>, see also <tt>anim8</tt></a></li></ul></div><pre class="codeinput">clear; close <span class="string">all</span>; clc;
+</pre><h2 id="2">Syntax</h2><p><tt>[hFig,hp]=meshView(meshStruct,optionStruct);</tt></p><h2 id="3">Description</h2><p>This function visualizes volumetric mesh data (e.g. tetrahedral or hexahedral elements). The visualization uses the <tt>anim8</tt> function to generate a slider controlled cut view of the mesh. The input is a mesh structure and an option structure. The default option structure (if optionStruct is left empty/incomplete) is:</p><pre class="language-matlab">defaultOptionStruct.hFig=[]; <span class="comment">%Figure handle (if empty a new figure is</span>
+created)
+defaultOptionStruct.numSLiceSteps=25; <span class="comment">%Number of slice steps</span>
+defaultOptionStruct.cMap=[]; <span class="comment">%Colormap used (if empty it is based of</span>
+number <span class="string">of</span> <span class="string">element</span> <span class="string">material</span> <span class="string">types</span>
+defaultOptionStruct.faceAlpha1=0.2; <span class="comment">%Alpha level for boundary surface</span>
+defaultOptionStruct.faceAlpha2=1; <span class="comment">%Alpha level for mesh elements</span>
+defaultOptionStruct.lightWeightPlot=1; <span class="comment">%Option to only plot element</span>
+outer <span class="string">boundaries</span> <span class="string">to</span> <span class="string">create</span> <span class="string">a</span> <span class="string">more</span> <span class="string">lightweigth</span> <span class="string">plot</span>
+</pre><p>The output consists of a figure handle and a graphics handle. If tetgen is used the meshStruct can be the tetgen output structure.</p><h2 id="4">Examples</h2><p>Plot settings</p><pre class="codeinput">fontSize=15;
+faceAlpha1=0.3;
+faceAlpha2=1;
+cMap=gjet(4);
+patchColor=cMap(1,:);
+markerSize=10;
+</pre><h2 id="6">Creating an example mesh</h2><p>Surface mesh</p><pre class="codeinput">testCase=2;
+<span class="keyword">switch</span> testCase
+    <span class="keyword">case</span> 1
+        [F,V,~]=geoSphere(2,1); <span class="comment">% Building a geodesic dome surface model</span>
+    <span class="keyword">case</span> 2
+        [F,V]=stanford_bunny(<span class="string">'g'</span>); <span class="comment">%Bunny</span>
+        V_mean=mean(V,1);
+        V=V-V_mean(ones(size(V,1),1),:);
+<span class="keyword">end</span>
+</pre><p>Using <tt>runTetGen</tt> to mesh the geometry</p><pre class="codeinput">inputStruct.stringOpt=<span class="string">'-pq1.2AaY'</span>;
+inputStruct.Faces=fliplr(F);
+inputStruct.Nodes=V;
+inputStruct.holePoints=[]; <span class="comment">%holes</span>
+inputStruct.faceBoundaryMarker=ones(size(F,1),1); <span class="comment">%Face boundary markers</span>
+inputStruct.regionPoints=getInnerPoint(F,V); <span class="comment">%region interior point</span>
+inputStruct.regionA=tetVolMeanEst(F,V); <span class="comment">%Volume attribute</span>
+inputStruct.minRegionMarker=2; <span class="comment">%Minimum region marker</span>
+
+<span class="comment">% Mesh model using tetrahedral elements using tetGen</span>
+[meshOutput]=runTetGen(inputStruct); <span class="comment">%Run tetGen</span>
+</pre><pre class="codeoutput"> 
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+--- TETGEN Tetrahedral meshing --- 20-Dec-2017 10:54:44
+ 
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+--- Writing SMESH file --- 20-Dec-2017 10:54:44
+----&gt; Adding node field
+----&gt; Adding facet field
+----&gt; Adding holes specification
+----&gt; Adding region specification
+--- Done --- 20-Dec-2017 10:54:44
+--- Running TetGen to mesh input boundary--- 20-Dec-2017 10:54:44
+Opening /mnt/data/MATLAB/GIT/GIBBON/lib_ext/tetGen/tempFiles/temp.smesh.
+Delaunizing vertices...
+Delaunay seconds:  0.023375
+Creating surface mesh ...
+Surface mesh seconds:  0.005469
+Recovering boundaries...
+Boundary recovery seconds:  0.007648
+Removing exterior tetrahedra ...
+Spreading region attributes.
+Exterior tets removal seconds:  0.004415
+Recovering Delaunayness...
+Delaunay recovery seconds:  0.002839
+Refining mesh...
+Refinement seconds:  0.22198
+Optimizing mesh...
+Optimization seconds:  0.022455
+
+Writing /mnt/data/MATLAB/GIT/GIBBON/lib_ext/tetGen/tempFiles/temp.1.node.
+Writing /mnt/data/MATLAB/GIT/GIBBON/lib_ext/tetGen/tempFiles/temp.1.ele.
+Writing /mnt/data/MATLAB/GIT/GIBBON/lib_ext/tetGen/tempFiles/temp.1.face.
+Writing /mnt/data/MATLAB/GIT/GIBBON/lib_ext/tetGen/tempFiles/temp.1.edge.
+
+Output seconds:  0.069121
+Total running seconds:  0.357491
+
+Statistics:
+
+  Input points: 1520
+  Input facets: 3036
+  Input segments: 4554
+  Input holes: 0
+  Input regions: 1
+
+  Mesh points: 5861
+  Mesh tetrahedra: 32563
+  Mesh faces: 66644
+  Mesh faces on exterior boundary: 3036
+  Mesh faces on input facets: 3036
+  Mesh edges on input segments: 4554
+  Steiner points inside domain: 4341
+
+--- Done --- 20-Dec-2017 10:54:45
+ 
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+--- Importing TetGen files --- 20-Dec-2017 10:54:45
+--- Done --- 20-Dec-2017 10:54:45
+</pre><h2 id="9">Visualizing mesh using <tt>meshView</tt>, see also <tt>anim8</tt></h2><pre class="codeinput">meshView(meshOutput,[]);
+</pre><img vspace="5" hspace="5" src="HELP_meshView_01.png" alt=""> <p><img vspace="5" hspace="5" src="gibbVerySmall.gif" alt=""> </p><p><i><b>GIBBON</b></i> <a href="www.gibboncode.org">www.gibboncode.org</a></p><p><i>Kevin Mattheus Moerman</i>, <a href="gibbon.toolbox@gmail.com">gibbon.toolbox@gmail.com</a></p><p><i><b>GIBBON footer text</b></i></p><p>License: <a href="https://github.com/gibbonCode/GIBBON/blob/master/LICENSE">https://github.com/gibbonCode/GIBBON/blob/master/LICENSE</a></p><p>GIBBON: The Geometry and Image-based Bioengineering add-On. A toolbox for image segmentation, image-based modeling, meshing, and finite element analysis.</p><p>Copyright (C) 2017  Kevin Mattheus Moerman</p><p>This program is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.</p><p>This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for more details.</p><p>You should have received a copy of the GNU General Public License along with this program.  If not, see <a href="http://www.gnu.org/licenses/">http://www.gnu.org/licenses/</a>.</p><p class="footer"><br><a href="http://www.mathworks.com/products/matlab/">Published with MATLAB&reg; R2016b</a><br></p></div><!--
+##### SOURCE BEGIN #####
+%% meshView
+% Below is a demonstration of the features of the |meshView| function
+
+%%
+clear; close all; clc;
+
+%% Syntax
+% |[hFig,hp]=meshView(meshStruct,optionStruct);|
+
+%% Description
+% This function visualizes volumetric mesh data (e.g. tetrahedral or
+% hexahedral elements). The visualization uses the |anim8| function to
+% generate a slider controlled cut view of the mesh. The input is a mesh
+% structure and an option structure. The default option structure (if
+% optionStruct is left empty/incomplete) is:
+%  
+%   defaultOptionStruct.hFig=[]; %Figure handle (if empty a new figure is
+%   created)
+%   defaultOptionStruct.numSLiceSteps=25; %Number of slice steps
+%   defaultOptionStruct.cMap=[]; %Colormap used (if empty it is based of
+%   number of element material types
+%   defaultOptionStruct.faceAlpha1=0.2; %Alpha level for boundary surface
+%   defaultOptionStruct.faceAlpha2=1; %Alpha level for mesh elements
+%   defaultOptionStruct.lightWeightPlot=1; %Option to only plot element
+%   outer boundaries to create a more lightweigth plot
+%
+% The output consists of a figure handle and a graphics handle. 
+% If tetgen is used the meshStruct can be the tetgen output structure. 
+
+%% Examples
+
+%%
+% Plot settings
+fontSize=15;
+faceAlpha1=0.3;
+faceAlpha2=1;
+cMap=gjet(4); 
+patchColor=cMap(1,:);
+markerSize=10; 
+
+%% Creating an example mesh
+
+%%
+% Surface mesh
+
+testCase=2;
+switch testCase
+    case 1
+        [F,V,~]=geoSphere(2,1); % Building a geodesic dome surface model
+    case 2
+        [F,V]=stanford_bunny('g'); %Bunny
+        V_mean=mean(V,1);
+        V=V-V_mean(ones(size(V,1),1),:);
+end
+
+%%
+% Using |runTetGen| to mesh the geometry
+
+inputStruct.stringOpt='-pq1.2AaY';
+inputStruct.Faces=fliplr(F);
+inputStruct.Nodes=V;
+inputStruct.holePoints=[]; %holes
+inputStruct.faceBoundaryMarker=ones(size(F,1),1); %Face boundary markers
+inputStruct.regionPoints=getInnerPoint(F,V); %region interior point
+inputStruct.regionA=tetVolMeanEst(F,V); %Volume attribute
+inputStruct.minRegionMarker=2; %Minimum region marker
+
+% Mesh model using tetrahedral elements using tetGen 
+[meshOutput]=runTetGen(inputStruct); %Run tetGen 
+
+%% Visualizing mesh using |meshView|, see also |anim8|
+
+meshView(meshOutput,[]);
+
+%% 
+%
+% <<gibbVerySmall.gif>>
+% 
+% _*GIBBON*_ 
+% <www.gibboncode.org>
+% 
+% _Kevin Mattheus Moerman_, <gibbon.toolbox@gmail.com>
+ 
+%% 
+% _*GIBBON footer text*_ 
+% 
+% License: <https://github.com/gibbonCode/GIBBON/blob/master/LICENSE>
+% 
+% GIBBON: The Geometry and Image-based Bioengineering add-On. A toolbox for
+% image segmentation, image-based modeling, meshing, and finite element
+% analysis.
+% 
+% Copyright (C) 2017  Kevin Mattheus Moerman
+% 
+% This program is free software: you can redistribute it and/or modify
+% it under the terms of the GNU General Public License as published by
+% the Free Software Foundation, either version 3 of the License, or
+% (at your option) any later version.
+% 
+% This program is distributed in the hope that it will be useful,
+% but WITHOUT ANY WARRANTY; without even the implied warranty of
+% MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+% GNU General Public License for more details.
+% 
+% You should have received a copy of the GNU General Public License
+% along with this program.  If not, see <http://www.gnu.org/licenses/>.
+
+##### SOURCE END #####
+--></body></html>

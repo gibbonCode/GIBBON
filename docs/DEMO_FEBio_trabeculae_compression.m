@@ -198,7 +198,6 @@ smeshStruct.smeshName=smeshName;
 %% MESH MODEL USING TETGEN
 
 [meshOutput]=runTetGen(smeshStruct);
-%runTetView(meshOutput.loadNameStruct.loadName_ele);
 
 % Accessing the model element and patch data
 FT=meshOutput.faces;
@@ -208,6 +207,9 @@ VT=meshOutput.nodes;
 C=meshOutput.faceMaterialID;
 E=meshOutput.elements;
 elementMaterialIndices=meshOutput.elementMaterialID;
+
+%% Visualizing mesh
+meshView(meshOutput);
 
 %% SET UP BOUNDARY CONDITIONS
 

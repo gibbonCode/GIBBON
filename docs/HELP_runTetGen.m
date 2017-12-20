@@ -23,7 +23,7 @@ modelName=fullfile(savePath,'tetgenmodel');
 
 %%
 
-testCase=1;
+testCase=2;
 switch testCase
     case 1
         [F,V,~]=geoSphere(2,1); % Building a geodesic dome surface model
@@ -85,65 +85,9 @@ V=meshOutput.nodes;
 CE=meshOutput.elementMaterialID;
 E=meshOutput.elements;
 
-%% 
-% PLOTTING MODEL 
+%% Visualizing mesh using |meshView|, see also |anim8|
 
-%Selecting half of the model to see interior
-Y=V(:,2); YE=mean(Y(E),2);
-logicCutView=YE>mean(Y);
-[Fs,Cs]=element2patch(E(logicCutView,:),CE(logicCutView),'tet4');
-
-cFigure;
-hold on; 
-title('Cut view of tetrahedral mesh model','FontSize',fontSize);
-gpatch(Fb,V,0.5*ones(1,3),'none',faceAlpha1);
-% patchNormPlot(Fb,V);
-gpatch(Fs,V,Cs,'k',faceAlpha2);
-% patchNormPlot(Fs,V);
-plotV(V(unique(Fs(:)),:),'k.','MarkerSize',markerSize);
-camlight headlight;
-axisGeom(gca,fontSize); 
-axis off; 
-colormap(cMap); 
-drawnow;
-
-%% Example: Creating an animated view to explore the mesh
-% See also |anim8| function
-
-%%
-% Initialize figure
-hf=cFigure; %Store figure handle
-hold on; 
-% title('Cut view of tetrahedral mesh model','FontSize',fontSize);
-gpatch(Fb,V,0.5*ones(1,3),'none',faceAlpha1);
-hp=gpatch(Fs,V,Cs,'k',faceAlpha2); %Graphics object to vary property of during animation
-camlight headlight;
-axisGeom(gca,fontSize); 
-axis off; 
-colormap(cMap); 
-drawnow;
-
-%%
-% Set up animation
-nSteps=25; %Number of animation steps
-
-animStruct.Time=linspace(0,1,nSteps); %Time vector
-cutLevel=linspace(min(Y(:)),max(Y(:)),nSteps); %Property to set
-
-for q=1:1:nSteps %Step through time       
-    cutLevelNow=cutLevel(q); %The current cut level    
-    
-    logicCutView=YE>cutLevelNow;
-    [Fs,Cs]=element2patch(E(logicCutView,:),CE(logicCutView),'tet4');
-    
-    %Set entries in animation structure
-    animStruct.Handles{q}=[hp hp]; %Handles of objects to animate
-    animStruct.Props{q}={'Faces','CData'}; %Properties of objects to animate
-    animStruct.Set{q}={Fs,Cs}; %Property values for to set in order to animate
-end
-
-%Add animation layer
-anim8(hf,animStruct);
+meshView(meshOutput,[]);
 
 %% MESHING IMPORTED GEOMETRY 
 
@@ -213,24 +157,8 @@ CE=meshOutput.elementMaterialID;
 E=meshOutput.elements;
 
 %% 
-% PLOTTING MODEL 
-
-%Selecting half of the model to see interior
-Y=V(:,2); YE=mean(Y(E),2);
-logicCutView=YE>mean(Y);
-[Fs,Cs]=element2patch(E(logicCutView,:),CE(logicCutView),'tet4');
-
-cFigure;
-hold on; 
-title('Cut view of tetrahedral mesh model','FontSize',fontSize);
-gpatch(Fb,V,0.5*ones(1,3),'none',faceAlpha1);
-gpatch(Fs,V,Cs,'k',faceAlpha2);
-plotV(V(unique(Fs(:)),:),'k.','MarkerSize',markerSize);
-camlight headlight;
-axisGeom(gca,fontSize); 
-axis off; 
-colormap(cMap); 
-drawnow;
+% Visualizing mesh using |meshView|, see also |anim8|
+meshView(meshOutput,[]);
 
 %% MESHING A MULTI-REGION MODEL EG LAYERED
 
@@ -318,24 +246,8 @@ CE=meshOutput.elementMaterialID;
 E=meshOutput.elements;
 
 %% 
-% PLOTTING MODEL 
-
-%Selecting half of the model to see interior
-Y=V(:,2); YE=mean(Y(E),2);
-logicCutView=YE>mean(Y);
-[Fs,Cs]=element2patch(E(logicCutView,:),CE(logicCutView),'tet4');
-
-cFigure;
-hold on; 
-title('Cut view of tetrahedral mesh model','FontSize',fontSize);
-gpatch(Fb,V,0.5*ones(1,3),'none',faceAlpha1);
-gpatch(Fs,V,Cs,'k',faceAlpha2);
-plotV(V(unique(Fs(:)),:),'k.','MarkerSize',markerSize);
-camlight headlight;
-axisGeom(gca,fontSize); 
-axis off; 
-colormap(cMap); 
-drawnow;
+% Visualizing mesh using |meshView|, see also |anim8|
+meshView(meshOutput,[]);
 
 %% MESHING A MULTI-REGION MODEL EG INCLUSION
 
@@ -441,7 +353,7 @@ materialIndex(CE==-3)=2;
 materialIndex(CE==-4)=3;
 
 %% 
-% PLOTTING MODEL 
+% Visualizing mesh 
 
 %Selecting half of the model to see interior
 Y=V(:,2); YE=mean(Y(E),2);
@@ -461,42 +373,8 @@ colormap(cMap); icolorbar([1 3]);
 drawnow;
 
 %% 
-% Creating an animated view to explore the mesh, See also |anim8| function
-
-%%
-% Initialize figure
-hf=cFigure; %Store figure handle
-hold on; 
-% title('Cut view of tetrahedral mesh model','FontSize',fontSize);
-gpatch(Fb,V,0.5*ones(1,3),'none',faceAlpha1);
-hp=gpatch(Fs,V,Cs,'k',faceAlpha2); %Graphics object to vary property of during animation
-camlight headlight;
-axisGeom(gca,fontSize); 
-axis off; 
-colormap(cMap); icolorbar([1 3]);
-drawnow;
-
-%%
-% Set up animation
-nSteps=25; %Number of animation steps
-
-animStruct.Time=linspace(0,1,nSteps); %Time vector
-cutLevel=linspace(min(Y(:)),max(Y(:)),nSteps); %Property to set
-
-for q=1:1:nSteps %Step through time       
-    cutLevelNow=cutLevel(q); %The current cut level    
-    
-    logicCutView=YE>cutLevelNow;
-    [Fs,Cs]=element2patch(E(logicCutView,:),materialIndex(logicCutView),'tet4');
-    
-    %Set entries in animation structure
-    animStruct.Handles{q}=[hp hp]; %Handles of objects to animate
-    animStruct.Props{q}={'Faces','CData'}; %Properties of objects to animate
-    animStruct.Set{q}={Fs,Cs}; %Property values for to set in order to animate
-end
-
-%Add animation layer
-anim8(hf,animStruct);
+% Visualizing mesh using |meshView|, see also |anim8|
+meshView(meshOutput,[]);
 
 %% MESHING A MULTI-REGION MODEL CONTAINING HOLES 
 
@@ -591,7 +469,7 @@ CE=meshOutput.elementMaterialID;
 E=meshOutput.elements;
 
 %% 
-% PLOTTING MODEL 
+% Visualizing mesh 
 
 %Selecting half of the model to see interior
 Y=V(:,2); YE=mean(Y(E),2);
@@ -647,7 +525,7 @@ CE=meshOutput.elementMaterialID;
 E=meshOutput.elements;
 
 %% 
-% PLOTTING MODEL 
+% Visualizing mesh 
 
 %Selecting half of the model to see interior
 Y=V(:,2); YE=mean(Y(E),2);
@@ -724,7 +602,7 @@ CE=meshOutput.elementMaterialID;
 E=meshOutput.elements;
 
 %% 
-% PLOTTING MODEL 
+% Visualizing mesh 
 
 %Selecting half of the model to see interior
 Y=V(:,2); YE=mean(Y(E),2);

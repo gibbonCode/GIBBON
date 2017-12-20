@@ -274,10 +274,7 @@ inputStruct.tetType=tetType; %Element type
 % <http://wias-berlin.de/software/tetgen/>)
 
 [meshOutput]=runTetGen(inputStruct); %Run tetGen
-
-%%
-% Call TetView to view the model
-runTetView(meshOutput.loadNameStruct.loadName_ele);
+meshView(meshOutput);
 
 %%
 % Access model element and patch data

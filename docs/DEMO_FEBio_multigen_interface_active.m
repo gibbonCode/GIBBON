@@ -1,4 +1,4 @@
-%% DEMO_FEBio_cylinder_embedded_indentor_01
+%% DEMO_FEBio_multigen_interface_active
 % 
 
 %%
@@ -307,9 +307,8 @@ inputStruct.modelName=modelName;
 
 [meshOutput]=runTetGen(inputStruct); %Run tetGen 
 
-%%
-% Call TetView to view the model
-% runTetView(meshOutput.loadNameStruct.loadName_ele);
+%% Visualizing mesh
+meshView(meshOutput);
 
 %% 
 % Access model element and patch data 

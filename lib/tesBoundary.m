@@ -1,4 +1,4 @@
-function [indBounary]=tesBoundary(F,V)
+function [indBoundary]=tesBoundary(F,V)
 
 if numel(V)==1
     numPoints=V;
@@ -22,7 +22,7 @@ ind=ind(~ismember(ind,indUni1));
 ind_Fb_cut=ind_F(ind,:);
 L_uni=~ismember(ind_F_uni,ind_Fb_cut);
 
-indBounary=indUni1(L_uni,:);
+indBoundary=indUni1(L_uni,:);
  
 %% 
 % _*GIBBON footer text*_ 

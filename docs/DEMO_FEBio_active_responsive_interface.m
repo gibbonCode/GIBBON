@@ -1,4 +1,4 @@
-%% DEMO_FEBio_cylinder_embedded_indentor_01
+%% DEMO_FEBio_active_responsive_interface
 % 
 
 %%
@@ -308,10 +308,7 @@ inputStruct.modelName=modelName;
 % <http://wias-berlin.de/software/tetgen/>)
 
 [meshOutput]=runTetGen(inputStruct); %Run tetGen 
-
-%%
-% Call TetView to view the model
-% runTetView(meshOutput.loadNameStruct.loadName_ele);
+meshView(meshOutput);
 
 %% 
 % Access model element and patch data 

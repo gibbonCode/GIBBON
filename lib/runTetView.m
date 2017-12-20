@@ -1,5 +1,9 @@
 function [varargout]=runTetView(modelName)
 
+%%
+
+warning('This function will be removed, use the meshView function instead, see HELP_meshView');
+
 %% SETTING TETGEN PATHNAMES
 
 compString=computer; 
