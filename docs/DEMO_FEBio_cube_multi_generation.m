@@ -47,12 +47,19 @@ displacementMagnitude=(stretchLoad*sampleHeight)-sampleHeight;
 
 %Material parameters
 k_factor=50;
-
 c1=2;
 k=c1*k_factor;
-
 c1_g=[c1/1000 c1*2];
 k_g=c1_g*k_factor;
+
+% FEA control settings
+numTimeSteps=20; %Number of time steps desired
+max_refs=25; %Max reforms
+max_ups=0; %Set to zero to use full-Newton iterations
+opt_iter=10; %Optimum number of iterations
+max_retries=5; %Maximum number of retires
+dtmin=(1/numTimeSteps)/100; %Minimum time step size
+dtmax=1/numTimeSteps; %Maximum time step size
 
 %% CREATING MESHED BOX
 
@@ -184,10 +191,11 @@ FEB_struct.Step{1}.Control.AnalysisType='static';
 FEB_struct.Step{1}.Control.Properties={'time_steps','step_size',...
     'max_refs','max_ups',...
     'dtol','etol','rtol','lstol'};
-
-FEB_struct.Step{1}.Control.Values={numSteps,1/numSteps,25,5,0.001,0.01,0,0.9};
-FEB_struct.Step{1}.Control.TimeStepperProperties={'dtmin','dtmax','max_retries','opt_iter','aggressiveness'};
-FEB_struct.Step{1}.Control.TimeStepperValues={(1/(100*numSteps)),1/numSteps,5,10,1};
+FEB_struct.Step{1}.Control.Values={numTimeSteps,1/numTimeSteps,...
+    max_refs,max_ups,...
+    0.001,0.01,0,0.9};
+FEB_struct.Step{1}.Control.TimeStepperProperties={'dtmin','dtmax','max_retries','opt_iter'};
+FEB_struct.Step{1}.Control.TimeStepperValues={dtmin,dtmax,max_retries,opt_iter};
 FEB_struct.Step{2}=FEB_struct.Step{1};
 
 %Defining node sets
@@ -292,7 +300,6 @@ if runFlag==1 %i.e. a succesful run
     
     time_mat_plot=time_mat;
     ind1=find(time_mat==1);
-    time_mat_plot(ind1-1)=1;
     c1_plot=c1*ones(size(time_mat));
     cg_plot=c1_g(1)*ones(size(time_mat));
     cg_plot(time_mat>=1)=c1_g(2);

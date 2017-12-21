@@ -52,6 +52,15 @@ m1_ini=m1_true/2;
 k_ini=c1_ini*k_factor; 
 P=[c1_ini m1_ini];
 
+% FEA control settings
+numTimeSteps=10; %Number of time steps desired
+max_refs=25; %Max reforms
+max_ups=0; %Set to zero to use full-Newton iterations
+opt_iter=6; %Optimum number of iterations
+max_retries=5; %Maximum number of retires
+dtmin=(1/numTimeSteps)/100; %Minimum time step size
+dtmax=1/numTimeSteps; %Maximum time step size
+
 %% SIMULATE EXPERIMENTAL DATA
 
 %Basic set
@@ -96,7 +105,7 @@ xlabel('X','FontSize',fontSize); ylabel('Y','FontSize',fontSize); zlabel('Z','Fo
 hold on;
 patch('Faces',Fb,'Vertices',V,'FaceColor','flat','CData',faceBoundaryMarker,'FaceAlpha',faceAlpha2,'lineWidth',edgeWidth,'edgeColor',edgeColor);
 
-colormap(jet(6)); colorbar; 
+colormap(gjet(6)); colorbar; 
 set(gca,'FontSize',fontSize);
 view(3); axis tight;  axis equal;  grid on;
 drawnow; 
@@ -136,7 +145,7 @@ plotV(V(bcSupportList_Z,:),'b.','MarkerSize',markerSize);
 plotV(V(bcPrescribeList,:),'k.','MarkerSize',markerSize);
 set(gca,'FontSize',fontSize);
 
-colormap(jet(6)); colorbar; 
+colormap(gjet(6)); colorbar; 
 set(gca,'FontSize',fontSize);
 view(3); axis tight;  axis equal;  grid on;
 drawnow; 
@@ -165,15 +174,16 @@ FEB_struct.Materials{1}.Name='Block_material';
 FEB_struct.Materials{1}.Properties={'c1','m1','c2','m2','k'};
 FEB_struct.Materials{1}.Values={c1_ini,m1_ini,c1_ini,-m1_ini,k_ini};
 
-% %Control section
+%Control section
 FEB_struct.Control.AnalysisType='static';
 FEB_struct.Control.Properties={'time_steps','step_size',...
     'max_refs','max_ups',...
     'dtol','etol','rtol','lstol'};
-numSteps=20;
-FEB_struct.Control.Values={numSteps,1/numSteps,25,5,0.001,0.01,0,0.9};
-FEB_struct.Control.TimeStepperProperties={'dtmin','dtmax','max_retries','opt_iter','aggressiveness'};
-FEB_struct.Control.TimeStepperValues={(1/(100*numSteps)),1/numSteps,5,10,1};
+FEB_struct.Control.Values={numTimeSteps,1/numTimeSteps,...
+    max_refs,max_ups,...
+    0.001,0.01,0,0.9};
+FEB_struct.Control.TimeStepperProperties={'dtmin','dtmax','max_retries','opt_iter'};
+FEB_struct.Control.TimeStepperValues={dtmin,dtmax,max_retries,opt_iter};
 
 %Defining node sets
 FEB_struct.Geometry.NodeSet{1}.Set=bcSupportList_X;
@@ -256,7 +266,7 @@ xlabel('X','FontSize',fontSize); ylabel('Y','FontSize',fontSize); zlabel('Z','Fo
 hps=patch('Faces',Fb,'Vertices',V_def,'FaceColor','flat','CData',CF);
 
 view(3); axis tight;  axis equal;  grid on;
-colormap jet; colorbar;
+colormap gjet; colorbar;
 % camlight headlight;
 set(gca,'FontSize',fontSize);
 drawnow;

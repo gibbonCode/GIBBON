@@ -6,7 +6,7 @@
    <!--
 This HTML was auto-generated from MATLAB code.
 To make changes, update the MATLAB code and republish this document.
-      --><title>DEMO_FEBio_block_uniaxial_compression_biphasic_ramp_hold</title><meta name="generator" content="MATLAB 9.1"><link rel="schema.DC" href="http://purl.org/dc/elements/1.1/"><meta name="DC.date" content="2017-08-18"><meta name="DC.source" content="DEMO_FEBio_block_uniaxial_compression_biphasic_ramp_hold.m"><style type="text/css">
+      --><title>DEMO_FEBio_block_uniaxial_compression_biphasic_ramp_hold</title><meta name="generator" content="MATLAB 9.1"><link rel="schema.DC" href="http://purl.org/dc/elements/1.1/"><meta name="DC.date" content="2017-12-21"><meta name="DC.source" content="DEMO_FEBio_block_uniaxial_compression_biphasic_ramp_hold.m"><style type="text/css">
 html,body,div,span,applet,object,iframe,h1,h2,h3,h4,h5,h6,p,blockquote,pre,a,abbr,acronym,address,big,cite,code,del,dfn,em,font,img,ins,kbd,q,s,samp,small,strike,strong,sub,sup,tt,var,b,u,i,center,dl,dt,dd,ol,ul,li,fieldset,form,label,legend,table,caption,tbody,tfoot,thead,tr,th,td{margin:0;padding:0;border:0;outline:0;font-size:100%;vertical-align:baseline;background:transparent}body{line-height:1}ol,ul{list-style:none}blockquote,q{quotes:none}blockquote:before,blockquote:after,q:before,q:after{content:'';content:none}:focus{outine:0}ins{text-decoration:none}del{text-decoration:line-through}table{border-collapse:collapse;border-spacing:0}
 
 html { min-height:100%; margin-bottom:1px; }
@@ -107,12 +107,21 @@ phi0=0.5; <span class="comment">%Solid volume fraction in reference configuratio
 permHydro=1e4; <span class="comment">%hydraulic permeability</span>
 </pre><h2 id="5">Time and control settings</h2><pre class="codeinput">t_load=0.1; <span class="comment">%Time from start to max load</span>
 t_total=t_load+5; <span class="comment">%Total simulation time</span>
-
 t_step_ini=t_load./100; <span class="comment">%Initial desired step size</span>
-t_step_max=t_total/10; <span class="comment">%Maximum step size</span>
 
+numTimeSteps=round(t_total/t_step_ini);
+t_step=t_total/numTimeSteps;
+
+<span class="comment">% FEA control settings</span>
 analysisType=<span class="string">'static'</span>;
 febioModule=<span class="string">'biphasic'</span>;
+
+max_refs=25; <span class="comment">%Max reforms</span>
+max_ups=0; <span class="comment">%Set to zero to use full-Newton iterations</span>
+opt_iter=10; <span class="comment">%Optimum number of iterations</span>
+max_retries=5; <span class="comment">%Maximum number of retires</span>
+dtmin=t_step/100; <span class="comment">%Minimum time step size</span>
+dtmax=t_total/25; <span class="comment">%Maximum time step size</span>
 </pre><h2 id="6">CREATING MESHED BOX</h2><pre class="codeinput"><span class="comment">%Create box 1</span>
 boxDim=[sampleWidth sampleThickness sampleHeight]; <span class="comment">%Dimensions</span>
 boxEl=[numElementsWidth numElementsThickness numElementsHeight]; <span class="comment">%Number of elements</span>
@@ -208,17 +217,15 @@ FEB_struct.Materials{1}.PropParName{2}={<span class="string">'perm'</span>};
 FEB_struct.Materials{1}.PropParVal{2}={permHydro};
 
 <span class="comment">%Step specific control sections</span>
-n=round(t_total/t_step_ini);
-t_step=t_total/n;
 FEB_struct.Control.AnalysisType=analysisType;
 FEB_struct.Control.Properties={<span class="string">'time_steps'</span>,<span class="string">'step_size'</span>,<span class="keyword">...</span>
     <span class="string">'max_refs'</span>,<span class="string">'max_ups'</span>,<span class="keyword">...</span>
-    <span class="string">'dtol'</span>,<span class="string">'etol'</span>,<span class="string">'rtol'</span>,<span class="string">'lstol'</span>,<span class="string">'ptol'</span>,<span class="string">'symmetric_biphasic'</span>};
-FEB_struct.Control.Values={n,t_step,<span class="keyword">...</span>
-    15,0,<span class="keyword">...</span>
-    0.001,0.01,0,0.9,0.01,1};
-FEB_struct.Control.TimeStepperProperties={<span class="string">'dtmin'</span>,<span class="string">'dtmax'</span>,<span class="string">'max_retries'</span>,<span class="string">'opt_iter'</span>,<span class="string">'aggressiveness'</span>};
-FEB_struct.Control.TimeStepperValues={t_step/100,t_step_max,5,10,0};
+    <span class="string">'dtol'</span>,<span class="string">'etol'</span>,<span class="string">'rtol'</span>,<span class="string">'lstol'</span>};
+FEB_struct.Control.Values={numTimeSteps,t_step,<span class="keyword">...</span>
+    max_refs,max_ups,<span class="keyword">...</span>
+    0.001,0.01,0,0.9};
+FEB_struct.Control.TimeStepperProperties={<span class="string">'dtmin'</span>,<span class="string">'dtmax'</span>,<span class="string">'max_retries'</span>,<span class="string">'opt_iter'</span>};
+FEB_struct.Control.TimeStepperValues={dtmin,dtmax,max_retries,opt_iter};
 
 <span class="comment">%Defining node sets</span>
 FEB_struct.Geometry.NodeSet{1}.Set=bcSupportList_Y_axis;
@@ -273,7 +280,7 @@ FEB_struct.data_types={<span class="string">'ux;uy;uz'</span>,<span class="strin
 febStruct2febFile(FEB_struct);
 </pre><pre class="codeoutput"> 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
---- Writing FEBio XML object --- 18-Aug-2017 14:36:32
+--- Writing FEBio XML object --- 21-Dec-2017 13:58:45
 Adding Module level
 Adding Control level
 Adding Globals level
@@ -292,7 +299,7 @@ Adding Output level
 ----&gt; Adding plotfile field
 ----&gt; Adding logfile field
 Writing .feb file
---- Done --- 18-Aug-2017 14:36:32
+--- Done --- 21-Dec-2017 13:58:45
 </pre><h2 id="12">RUNNING FEBIO JOB</h2><pre class="codeinput"><span class="comment">% FEBioRunStruct.FEBioPath='C:\Program Files\febio2-2.2.6\bin\febio2.exe';</span>
 FEBioRunStruct.run_filename=FEB_struct.run_filename;
 FEBioRunStruct.run_logname=FEB_struct.run_logname;
@@ -301,32 +308,47 @@ FEBioRunStruct.disp_log_on=1;
 FEBioRunStruct.runMode=<span class="string">'external'</span>;<span class="comment">%'internal';</span>
 FEBioRunStruct.t_check=0.25; <span class="comment">%Time for checking log file (dont set too small)</span>
 FEBioRunStruct.maxtpi=1e99; <span class="comment">%Max analysis time</span>
-FEBioRunStruct.maxLogCheckTime=3; <span class="comment">%Max log file checking time</span>
+FEBioRunStruct.maxLogCheckTime=10; <span class="comment">%Max log file checking time</span>
 
 [runFlag]=runMonitorFEBio(FEBioRunStruct);<span class="comment">%START FEBio NOW!!!!!!!!</span>
 </pre><pre class="codeoutput"> 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
---- STARTING FEBIO JOB --- 18-Aug-2017 14:36:32
+--- STARTING FEBIO JOB --- 21-Dec-2017 13:58:45
 Waiting for log file...
-Proceeding to check log file...18-Aug-2017 14:36:32
+Proceeding to check log file...21-Dec-2017 13:58:45
 ------- converged at time : 0.001
 ------- converged at time : 0.006
 ------- converged at time : 0.031
-------- converged at time : 0.153
-------- converged at time : 0.3526
-------- converged at time : 0.61428
-------- converged at time : 0.925624
-------- converged at time : 1.2767
-------- converged at time : 1.65956
-------- converged at time : 2.06785
-------- converged at time : 2.49648
-------- converged at time : 2.94138
-------- converged at time : 3.39931
-------- converged at time : 3.86764
-------- converged at time : 4.34432
-------- converged at time : 4.82765
+------- converged at time : 0.0918
+------- converged at time : 0.18124
+------- converged at time : 0.293592
+------- converged at time : 0.424274
+------- converged at time : 0.569619
+------- converged at time : 0.726695
+------- converged at time : 0.893156
+------- converged at time : 1.06712
+------- converged at time : 1.2471
+------- converged at time : 1.43188
+------- converged at time : 1.6205
+------- converged at time : 1.8122
+------- converged at time : 2.00636
+------- converged at time : 2.20249
+------- converged at time : 2.40019
+------- converged at time : 2.59915
+------- converged at time : 2.79912
+------- converged at time : 2.9999
+------- converged at time : 3.20132
+------- converged at time : 3.40325
+------- converged at time : 3.6056
+------- converged at time : 3.80828
+------- converged at time : 4.01123
+------- converged at time : 4.21438
+------- converged at time : 4.4177
+------- converged at time : 4.62116
+------- converged at time : 4.82473
+------- converged at time : 5.02838
 ------- converged at time : 5.1
---- Done --- 18-Aug-2017 14:36:33
+--- Done --- 21-Dec-2017 13:58:47
 </pre><pre class="codeinput"><span class="keyword">if</span> runFlag==1 <span class="comment">%i.e. a succesful run</span>
 </pre><h2 id="15">IMPORTING NODAL DISPLACEMENT RESULTS</h2><p>Importing nodal displacements from a log file</p><pre class="codeinput">    [~, N_disp_mat,~]=importFEBio_logfile(fullfile(savePath,FEB_struct.run_output_names{1})); <span class="comment">%Nodal displacements</span>
 
@@ -437,12 +459,21 @@ permHydro=1e4; %hydraulic permeability
 %% Time and control settings
 t_load=0.1; %Time from start to max load
 t_total=t_load+5; %Total simulation time
-
 t_step_ini=t_load./100; %Initial desired step size
-t_step_max=t_total/10; %Maximum step size
 
+numTimeSteps=round(t_total/t_step_ini);
+t_step=t_total/numTimeSteps;
+
+% FEA control settings
 analysisType='static'; 
 febioModule='biphasic';
+
+max_refs=25; %Max reforms
+max_ups=0; %Set to zero to use full-Newton iterations
+opt_iter=10; %Optimum number of iterations
+max_retries=5; %Maximum number of retires
+dtmin=t_step/100; %Minimum time step size
+dtmax=t_total/25; %Maximum time step size
 
 %% CREATING MESHED BOX
 
@@ -553,17 +584,15 @@ FEB_struct.Materials{1}.PropParName{2}={'perm'};
 FEB_struct.Materials{1}.PropParVal{2}={permHydro};
 
 %Step specific control sections
-n=round(t_total/t_step_ini);
-t_step=t_total/n;
 FEB_struct.Control.AnalysisType=analysisType;
 FEB_struct.Control.Properties={'time_steps','step_size',...
     'max_refs','max_ups',...
-    'dtol','etol','rtol','lstol','ptol','symmetric_biphasic'};
-FEB_struct.Control.Values={n,t_step,...
-    15,0,...
-    0.001,0.01,0,0.9,0.01,1};
-FEB_struct.Control.TimeStepperProperties={'dtmin','dtmax','max_retries','opt_iter','aggressiveness'};
-FEB_struct.Control.TimeStepperValues={t_step/100,t_step_max,5,10,0};
+    'dtol','etol','rtol','lstol'};
+FEB_struct.Control.Values={numTimeSteps,t_step,...
+    max_refs,max_ups,...
+    0.001,0.01,0,0.9};
+FEB_struct.Control.TimeStepperProperties={'dtmin','dtmax','max_retries','opt_iter'};
+FEB_struct.Control.TimeStepperValues={dtmin,dtmax,max_retries,opt_iter};
 
 %Defining node sets
 FEB_struct.Geometry.NodeSet{1}.Set=bcSupportList_Y_axis;
@@ -630,7 +659,7 @@ FEBioRunStruct.disp_log_on=1;
 FEBioRunStruct.runMode='external';%'internal';
 FEBioRunStruct.t_check=0.25; %Time for checking log file (dont set too small)
 FEBioRunStruct.maxtpi=1e99; %Max analysis time
-FEBioRunStruct.maxLogCheckTime=3; %Max log file checking time
+FEBioRunStruct.maxLogCheckTime=10; %Max log file checking time
 
 [runFlag]=runMonitorFEBio(FEBioRunStruct);%START FEBio NOW!!!!!!!!
 

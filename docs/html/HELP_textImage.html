@@ -1,0 +1,202 @@
+
+<!DOCTYPE html
+  PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html><head>
+      <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+   <!--
+This HTML was auto-generated from MATLAB code.
+To make changes, update the MATLAB code and republish this document.
+      --><title>textImage</title><meta name="generator" content="MATLAB 9.1"><link rel="schema.DC" href="http://purl.org/dc/elements/1.1/"><meta name="DC.date" content="2017-12-21"><meta name="DC.source" content="HELP_textImage.m"><style type="text/css">
+html,body,div,span,applet,object,iframe,h1,h2,h3,h4,h5,h6,p,blockquote,pre,a,abbr,acronym,address,big,cite,code,del,dfn,em,font,img,ins,kbd,q,s,samp,small,strike,strong,sub,sup,tt,var,b,u,i,center,dl,dt,dd,ol,ul,li,fieldset,form,label,legend,table,caption,tbody,tfoot,thead,tr,th,td{margin:0;padding:0;border:0;outline:0;font-size:100%;vertical-align:baseline;background:transparent}body{line-height:1}ol,ul{list-style:none}blockquote,q{quotes:none}blockquote:before,blockquote:after,q:before,q:after{content:'';content:none}:focus{outine:0}ins{text-decoration:none}del{text-decoration:line-through}table{border-collapse:collapse;border-spacing:0}
+
+html { min-height:100%; margin-bottom:1px; }
+html body { height:100%; margin:0px; font-family:Arial, Helvetica, sans-serif; font-size:10px; color:#000; line-height:140%; background:#fff none; overflow-y:scroll; }
+html body td { vertical-align:top; text-align:left; }
+
+h1 { padding:0px; margin:0px 0px 25px; font-family:Arial, Helvetica, sans-serif; font-size:1.5em; color:#d55000; line-height:100%; font-weight:normal; }
+h2 { padding:0px; margin:0px 0px 8px; font-family:Arial, Helvetica, sans-serif; font-size:1.2em; color:#000; font-weight:bold; line-height:140%; border-bottom:1px solid #d6d4d4; display:block; }
+h3 { padding:0px; margin:0px 0px 5px; font-family:Arial, Helvetica, sans-serif; font-size:1.1em; color:#000; font-weight:bold; line-height:140%; }
+
+a { color:#005fce; text-decoration:none; }
+a:hover { color:#005fce; text-decoration:underline; }
+a:visited { color:#004aa0; text-decoration:none; }
+
+p { padding:0px; margin:0px 0px 20px; }
+img { padding:0px; margin:0px 0px 20px; border:none; }
+p img, pre img, tt img, li img, h1 img, h2 img { margin-bottom:0px; } 
+
+ul { padding:0px; margin:0px 0px 20px 23px; list-style:square; }
+ul li { padding:0px; margin:0px 0px 7px 0px; }
+ul li ul { padding:5px 0px 0px; margin:0px 0px 7px 23px; }
+ul li ol li { list-style:decimal; }
+ol { padding:0px; margin:0px 0px 20px 0px; list-style:decimal; }
+ol li { padding:0px; margin:0px 0px 7px 23px; list-style-type:decimal; }
+ol li ol { padding:5px 0px 0px; margin:0px 0px 7px 0px; }
+ol li ol li { list-style-type:lower-alpha; }
+ol li ul { padding-top:7px; }
+ol li ul li { list-style:square; }
+
+.content { font-size:1.2em; line-height:140%; padding: 20px; }
+
+pre, code { font-size:12px; }
+tt { font-size: 1.2em; }
+pre { margin:0px 0px 20px; }
+pre.codeinput { padding:10px; border:1px solid #d3d3d3; background:#f7f7f7; }
+pre.codeoutput { padding:10px 11px; margin:0px 0px 20px; color:#4c4c4c; }
+pre.error { color:red; }
+
+@media print { pre.codeinput, pre.codeoutput { word-wrap:break-word; width:100%; } }
+
+span.keyword { color:#0000FF }
+span.comment { color:#228B22 }
+span.string { color:#A020F0 }
+span.untermstring { color:#B20000 }
+span.syscmd { color:#B28C00 }
+
+.footer { width:auto; padding:10px 0px; margin:25px 0px 0px; border-top:1px dotted #878787; font-size:0.8em; line-height:140%; font-style:italic; color:#878787; text-align:left; float:none; }
+.footer p { margin:0px; }
+.footer a { color:#878787; }
+.footer a:hover { color:#878787; text-decoration:underline; }
+.footer a:visited { color:#878787; }
+
+table th { padding:7px 5px; text-align:left; vertical-align:middle; border: 1px solid #d6d4d4; font-weight:bold; }
+table td { padding:7px 5px; text-align:left; vertical-align:top; border:1px solid #d6d4d4; }
+
+
+
+
+
+  </style></head><body><div class="content"><h1>textImage</h1><!--introduction--><p>Below is a demonstration of the features of the <tt>textImage</tt> function</p><!--/introduction--><h2>Contents</h2><div><ul><li><a href="#2">Syntax</a></li><li><a href="#3">Description</a></li><li><a href="#4">Examples</a></li><li><a href="#6">Example: Using <tt>textImage</tt> to create an image with text</a></li><li><a href="#10">Example: Use with cell inputs and text across multiple lines</a></li></ul></div><pre class="codeinput">clear; close <span class="string">all</span>; clc;
+</pre><h2 id="2">Syntax</h2><p><tt>[glyphImage]=textImage(textString,FontName,FontSize,padAmount);</tt></p><h2 id="3">Description</h2><p>This creates image data containing text content with a desired size and font.</p><h2 id="4">Examples</h2><p>Plot settings</p><pre class="codeinput">cMap=gray(250); <span class="comment">%Colormap</span>
+</pre><h2 id="6">Example: Using <tt>textImage</tt> to create an image with text</h2><p>You can use <tt>listTrueTypeFonts</tt> to check what fonts are available on your machine</p><p>Settings</p><pre class="codeinput">textString={<span class="string">'Text'</span>}; <span class="comment">%String to be rendered in image</span>
+FontName=<span class="string">'Arial'</span>; <span class="comment">%Font name</span>
+FontSize=25; <span class="comment">%Font height in pixels</span>
+padAmount=20; <span class="comment">%Pixels padded around string</span>
+</pre><p>Creating the text image</p><pre class="codeinput">[M]=textImage(textString,FontName,FontSize,padAmount);
+</pre><p>Visualizing the text image</p><pre class="codeinput">cFigure;
+title(<span class="string">'patch type: v'</span>);
+imagesc(M);
+axis <span class="string">equal</span>; axis <span class="string">tight</span>; grid <span class="string">off</span>;
+colormap(cMap); caxis([min(M(:)) max(M(:))]); colorbar;
+drawnow;
+</pre><img vspace="5" hspace="5" src="HELP_textImage_01.png" alt=""> <h2 id="10">Example: Use with cell inputs and text across multiple lines</h2><p>You can use <tt>listTrueTypeFonts</tt> to check what fonts are available on your machine</p><p>Settings</p><pre class="codeinput">textString={<span class="string">'Lorem ipsum dolor sit amet'</span>,<span class="keyword">...</span>
+            <span class="string">'consectetur adipiscing elit, sed'</span>,<span class="keyword">...</span>
+            <span class="string">'do eiusmod tempor incididunt ut'</span>,<span class="keyword">...</span>
+            <span class="string">'labore et dolore magna aliqua.'</span>}; <span class="comment">%String to be rendered in image</span>
+FontName=<span class="string">'Arial'</span>; <span class="comment">%Font name</span>
+FontSize=50; <span class="comment">%Font height in pixels</span>
+padAmount=25; <span class="comment">%Pixels padded around string</span>
+</pre><p>Creating the text image</p><pre class="codeinput">[M]=textImage(textString,FontName,FontSize,padAmount);
+</pre><p>Visualizing the text image</p><pre class="codeinput">cFigure;
+title(<span class="string">'patch type: v'</span>);
+imagesc(M);
+axis <span class="string">equal</span>; axis <span class="string">tight</span>; grid <span class="string">off</span>;
+colormap(cMap); caxis([min(M(:)) max(M(:))]); colorbar;
+drawnow;
+</pre><img vspace="5" hspace="5" src="HELP_textImage_02.png" alt=""> <p><img vspace="5" hspace="5" src="gibbVerySmall.gif" alt=""> </p><p><i><b>GIBBON</b></i> <a href="www.gibboncode.org">www.gibboncode.org</a></p><p><i>Kevin Mattheus Moerman</i>, <a href="gibbon.toolbox@gmail.com">gibbon.toolbox@gmail.com</a></p><p><i><b>GIBBON footer text</b></i></p><p>License: <a href="https://github.com/gibbonCode/GIBBON/blob/master/LICENSE">https://github.com/gibbonCode/GIBBON/blob/master/LICENSE</a></p><p>GIBBON: The Geometry and Image-based Bioengineering add-On. A toolbox for image segmentation, image-based modeling, meshing, and finite element analysis.</p><p>Copyright (C) 2017  Kevin Mattheus Moerman</p><p>This program is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.</p><p>This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for more details.</p><p>You should have received a copy of the GNU General Public License along with this program.  If not, see <a href="http://www.gnu.org/licenses/">http://www.gnu.org/licenses/</a>.</p><p class="footer"><br><a href="http://www.mathworks.com/products/matlab/">Published with MATLAB&reg; R2016b</a><br></p></div><!--
+##### SOURCE BEGIN #####
+%% textImage
+% Below is a demonstration of the features of the |textImage| function
+
+%%
+clear; close all; clc;
+
+%% Syntax
+% |[glyphImage]=textImage(textString,FontName,FontSize,padAmount);|
+
+%% Description
+% This creates image data containing text content with a desired size and
+% font. 
+
+%% Examples
+
+%%
+% Plot settings
+cMap=gray(250); %Colormap
+
+%% Example: Using |textImage| to create an image with text
+% You can use |listTrueTypeFonts| to check what fonts are available on your
+% machine
+
+%%
+% Settings
+textString={'Text'}; %String to be rendered in image
+FontName='Arial'; %Font name 
+FontSize=25; %Font height in pixels
+padAmount=20; %Pixels padded around string
+
+%%
+% Creating the text image
+[M]=textImage(textString,FontName,FontSize,padAmount);
+
+%%
+% Visualizing the text image
+cFigure;
+title('patch type: v');
+imagesc(M);
+axis equal; axis tight; grid off;  
+colormap(cMap); caxis([min(M(:)) max(M(:))]); colorbar;
+drawnow;
+
+%% Example: Use with cell inputs and text across multiple lines
+% You can use |listTrueTypeFonts| to check what fonts are available on your
+% machine
+
+%%
+% Settings
+textString={'Lorem ipsum dolor sit amet',...
+            'consectetur adipiscing elit, sed',...
+            'do eiusmod tempor incididunt ut',... 
+            'labore et dolore magna aliqua.'}; %String to be rendered in image
+FontName='Arial'; %Font name 
+FontSize=50; %Font height in pixels
+padAmount=25; %Pixels padded around string
+
+%%
+% Creating the text image
+[M]=textImage(textString,FontName,FontSize,padAmount);
+
+%%
+% Visualizing the text image
+cFigure;
+title('patch type: v');
+imagesc(M);
+axis equal; axis tight; grid off;  
+colormap(cMap); caxis([min(M(:)) max(M(:))]); colorbar;
+drawnow;
+
+%% 
+%
+% <<gibbVerySmall.gif>>
+% 
+% _*GIBBON*_ 
+% <www.gibboncode.org>
+% 
+% _Kevin Mattheus Moerman_, <gibbon.toolbox@gmail.com>
+ 
+%% 
+% _*GIBBON footer text*_ 
+% 
+% License: <https://github.com/gibbonCode/GIBBON/blob/master/LICENSE>
+% 
+% GIBBON: The Geometry and Image-based Bioengineering add-On. A toolbox for
+% image segmentation, image-based modeling, meshing, and finite element
+% analysis.
+% 
+% Copyright (C) 2017  Kevin Mattheus Moerman
+% 
+% This program is free software: you can redistribute it and/or modify
+% it under the terms of the GNU General Public License as published by
+% the Free Software Foundation, either version 3 of the License, or
+% (at your option) any later version.
+% 
+% This program is distributed in the hope that it will be useful,
+% but WITHOUT ANY WARRANTY; without even the implied warranty of
+% MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+% GNU General Public License for more details.
+% 
+% You should have received a copy of the GNU General Public License
+% along with this program.  If not, see <http://www.gnu.org/licenses/>.
+
+##### SOURCE END #####
+--></body></html>

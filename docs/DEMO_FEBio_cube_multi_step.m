@@ -38,6 +38,15 @@ numElementsHeight=round(sampleHeight/pointSpacings(3));
 
 displacementMagnitude=[0 0 2];
 
+% FEA control settings
+numTimeSteps=20; %Number of time steps desired
+max_refs=25; %Max reforms
+max_ups=0; %Set to zero to use full-Newton iterations
+opt_iter=10; %Optimum number of iterations
+max_retries=5; %Maximum number of retires
+dtmin=(1/numTimeSteps)/100; %Minimum time step size
+dtmax=1/numTimeSteps; %Maximum time step size
+
 %% CREATING MESHED BOX
 
 %Create box 1
@@ -68,7 +77,7 @@ xlabel('X','FontSize',fontSize); ylabel('Y','FontSize',fontSize); zlabel('Z','Fo
 hold on;
 patch('Faces',Fb,'Vertices',V,'FaceColor','flat','CData',faceBoundaryMarker,'FaceAlpha',faceAlpha1,'lineWidth',edgeWidth,'edgeColor',edgeColor);
 
-colormap(jet(6)); colorbar; 
+colormap(gjet(6)); colorbar; 
 set(gca,'FontSize',fontSize);
 view(3); axis tight;  axis equal;  grid on;
 % camlight headlight;
@@ -81,7 +90,7 @@ xlabel('X','FontSize',fontSize); ylabel('Y','FontSize',fontSize); zlabel('Z','Fo
 hold on;
 patch('Faces',F,'Vertices',V,'FaceColor','flat','CData',CF,'FaceAlpha',faceAlpha1,'lineWidth',edgeWidth,'edgeColor',edgeColor);
 
-colormap jet; colorbar; 
+colormap gjet; colorbar; 
 set(gca,'FontSize',fontSize);
 view(3); axis tight;  axis equal;  grid on;
 % camlight headlight;
@@ -121,7 +130,7 @@ plotV(V(bcRigidList_Y,:),'g.','MarkerSize',markerSize);
 plotV(V(bcRigidList_Z,:),'b.','MarkerSize',markerSize);
 plotV(V(bcPrescribeList,:),'k.','MarkerSize',markerSize);
 set(gca,'FontSize',fontSize);
-
+colormap gjet;
 view(3); axis tight;  axis equal;  grid on;
 drawnow; 
 
@@ -167,11 +176,11 @@ FEB_struct.Step{1}.Control.AnalysisType='static';
 FEB_struct.Step{1}.Control.Properties={'time_steps','step_size',...
     'max_refs','max_ups',...
     'dtol','etol','rtol','lstol'};
-FEB_struct.Step{1}.Control.Values={20,0.05,...
-    25,0,...
+FEB_struct.Step{1}.Control.Values={numTimeSteps,1/numTimeSteps,...
+    max_refs,max_ups,...
     0.001,0.01,0,0.9};
-FEB_struct.Step{1}.Control.TimeStepperProperties={'dtmin','dtmax','max_retries','opt_iter','aggressiveness'};
-FEB_struct.Step{1}.Control.TimeStepperValues={1e-4,0.05,5,10,1};
+FEB_struct.Step{1}.Control.TimeStepperProperties={'dtmin','dtmax','max_retries','opt_iter'};
+FEB_struct.Step{1}.Control.TimeStepperValues={dtmin,dtmax,max_retries,opt_iter};
 FEB_struct.Step{2}.Control=FEB_struct.Step{1}.Control;
 
 %Defining node sets
@@ -260,7 +269,7 @@ if runFlag==1 %i.e. a succesful run
     hps=patch('Faces',Fb,'Vertices',V_def,'FaceColor','flat','CData',CF);
     
     view(3); axis tight;  axis equal;  grid on;
-    colormap jet; colorbar;
+    colormap gjet; colorbar;
     % camlight headlight;
     set(gca,'FontSize',fontSize);
     drawnow;

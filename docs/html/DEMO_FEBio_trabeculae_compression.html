@@ -6,7 +6,7 @@
    <!--
 This HTML was auto-generated from MATLAB code.
 To make changes, update the MATLAB code and republish this document.
-      --><title>DEMO_FEBio_trabeculae_compression</title><meta name="generator" content="MATLAB 9.1"><link rel="schema.DC" href="http://purl.org/dc/elements/1.1/"><meta name="DC.date" content="2017-12-20"><meta name="DC.source" content="DEMO_FEBio_trabeculae_compression.m"><style type="text/css">
+      --><title>DEMO_FEBio_trabeculae_compression</title><meta name="generator" content="MATLAB 9.1"><link rel="schema.DC" href="http://purl.org/dc/elements/1.1/"><meta name="DC.date" content="2017-12-21"><meta name="DC.source" content="DEMO_FEBio_trabeculae_compression.m"><style type="text/css">
 html,body,div,span,applet,object,iframe,h1,h2,h3,h4,h5,h6,p,blockquote,pre,a,abbr,acronym,address,big,cite,code,del,dfn,em,font,img,ins,kbd,q,s,samp,small,strike,strong,sub,sup,tt,var,b,u,i,center,dl,dt,dd,ol,ul,li,fieldset,form,label,legend,table,caption,tbody,tfoot,thead,tr,th,td{margin:0;padding:0;border:0;outline:0;font-size:100%;vertical-align:baseline;background:transparent}body{line-height:1}ol,ul{list-style:none}blockquote,q{quotes:none}blockquote:before,blockquote:after,q:before,q:after{content:'';content:none}:focus{outine:0}ins{text-decoration:none}del{text-decoration:line-through}table{border-collapse:collapse;border-spacing:0}
 
 html { min-height:100%; margin-bottom:1px; }
@@ -66,7 +66,7 @@ table td { padding:7px 5px; text-align:left; vertical-align:top; border:1px soli
 
 
 
-  </style></head><body><div class="content"><h1>DEMO_FEBio_trabeculae_compression</h1><!--introduction--><p>This demonstration shows the creation of a trabacular structure model derived from a triply periodic equation. The structure is meshed using tetrahedral elements and subjected to compression.</p><!--/introduction--><h2>Contents</h2><div><ul><li><a href="#4">DEFINING GEOMETRY</a></li><li><a href="#5">Save STL</a></li><li><a href="#7">DEFINE SMESH STRUCT FOR MESHING</a></li><li><a href="#8">MESH MODEL USING TETGEN</a></li><li><a href="#9">Visualizing mesh</a></li><li><a href="#10">SET UP BOUNDARY CONDITIONS</a></li><li><a href="#13">CONSTRUCTING FEB MODEL</a></li><li><a href="#14">SAVING .FEB FILE</a></li><li><a href="#15">RUNNING FEBIO JOB</a></li><li><a href="#16">IMPORTING NODAL DISPLACEMENT RESULTS</a></li><li><a href="#17">CREATING NODE SET IN DEFORMED STATE</a></li></ul></div><pre class="codeinput">clear; close <span class="string">all</span>; clc;
+  </style></head><body><div class="content"><h1>DEMO_FEBio_trabeculae_compression</h1><!--introduction--><p>This demonstration shows the creation of a trabacular structure model derived from a triply periodic equation. The structure is meshed using tetrahedral elements and subjected to compression.</p><!--/introduction--><h2>Contents</h2><div><ul><li><a href="#5">DEFINING GEOMETRY</a></li><li><a href="#6">Save STL</a></li><li><a href="#8">DEFINE SMESH STRUCT FOR MESHING</a></li><li><a href="#9">MESH MODEL USING TETGEN</a></li><li><a href="#10">Visualizing mesh</a></li><li><a href="#11">SET UP BOUNDARY CONDITIONS</a></li><li><a href="#14">CONSTRUCTING FEB MODEL</a></li><li><a href="#15">SAVING .FEB FILE</a></li><li><a href="#16">RUNNING FEBIO JOB</a></li><li><a href="#17">IMPORTING NODAL DISPLACEMENT RESULTS</a></li><li><a href="#18">CREATING NODE SET IN DEFORMED STATE</a></li></ul></div><pre class="codeinput">clear; close <span class="string">all</span>; clc;
 </pre><p>Plot settings</p><pre class="codeinput">fontSize=15;
 faceAlpha1=1;
 faceAlpha2=0.5;
@@ -76,7 +76,14 @@ markerSize1=25;
 boneColor=[1 0.8 0.7]*0.7;
 </pre><p>path names</p><pre class="codeinput">defaultFolder = fileparts(fileparts(mfilename(<span class="string">'fullpath'</span>)));
 savePath=fullfile(defaultFolder,<span class="string">'data'</span>,<span class="string">'temp'</span>);
-</pre><h2 id="4">DEFINING GEOMETRY</h2><p>The trabecular structure is here simulated using isosurfaces on triply periodic minimal surfaces functions.</p><pre class="codeinput">samplePeriodSize=3;
+</pre><p>FEA control settings</p><pre class="codeinput">numTimeSteps=20; <span class="comment">%Number of time steps desired</span>
+max_refs=25; <span class="comment">%Max reforms</span>
+max_ups=0; <span class="comment">%Set to zero to use full-Newton iterations</span>
+opt_iter=10; <span class="comment">%Optimum number of iterations</span>
+max_retries=5; <span class="comment">%Maximum number of retires</span>
+dtmin=(1/numTimeSteps)/100; <span class="comment">%Minimum time step size</span>
+dtmax=1/numTimeSteps; <span class="comment">%Maximum time step size</span>
+</pre><h2 id="5">DEFINING GEOMETRY</h2><p>The trabecular structure is here simulated using isosurfaces on triply periodic minimal surfaces functions.</p><pre class="codeinput">samplePeriodSize=3;
 
 <span class="comment">%Get periodic surface</span>
 porousGeometryCase=<span class="string">'g'</span>;
@@ -195,7 +202,7 @@ plotV(V(indRigid,:),<span class="string">'k.'</span>,<span class="string">'Marke
 axis <span class="string">equal</span>; view(3); axis <span class="string">tight</span>; axis <span class="string">vis3d</span>; grid <span class="string">on</span>;
 set(gca,<span class="string">'FontSize'</span>,fontSize);
 camlight <span class="string">headlight</span>;
-</pre><img vspace="5" hspace="5" src="DEMO_FEBio_trabeculae_compression_01.png" alt=""> <h2 id="5">Save STL</h2><pre class="codeinput"><span class="comment">% stlStruct.solidNames={'part'};</span>
+</pre><img vspace="5" hspace="5" src="DEMO_FEBio_trabeculae_compression_01.png" alt=""> <h2 id="6">Save STL</h2><pre class="codeinput"><span class="comment">% stlStruct.solidNames={'part'};</span>
 <span class="comment">% stlStruct.solidVertices={V};</span>
 <span class="comment">% stlStruct.solidFaces={F};</span>
 <span class="comment">% stlStruct.solidNormals={[]};</span>
@@ -221,7 +228,7 @@ axis <span class="string">equal</span>; view(3); axis <span class="string">tight
 set(gca,<span class="string">'FontSize'</span>,fontSize);
 camlight <span class="string">headlight</span>;
 drawnow;
-</pre><img vspace="5" hspace="5" src="DEMO_FEBio_trabeculae_compression_02.png" alt=""> <h2 id="7">DEFINE SMESH STRUCT FOR MESHING</h2><pre class="codeinput">stringOpt=<span class="string">'-pq1.2AaYQ'</span>;
+</pre><img vspace="5" hspace="5" src="DEMO_FEBio_trabeculae_compression_02.png" alt=""> <h2 id="8">DEFINE SMESH STRUCT FOR MESHING</h2><pre class="codeinput">stringOpt=<span class="string">'-pq1.2AaYQ'</span>;
 modelNameEnd=<span class="string">'tempModel'</span>;
 modelName=fullfile(savePath,modelNameEnd);
 smeshName=[modelName,<span class="string">'.smesh'</span>];
@@ -235,7 +242,7 @@ smeshStruct.regionPoints=V_in_1; <span class="comment">%region points</span>
 smeshStruct.regionA=[0.5];
 smeshStruct.minRegionMarker=2; <span class="comment">%Minimum region marker</span>
 smeshStruct.smeshName=smeshName;
-</pre><h2 id="8">MESH MODEL USING TETGEN</h2><pre class="codeinput">[meshOutput]=runTetGen(smeshStruct);
+</pre><h2 id="9">MESH MODEL USING TETGEN</h2><pre class="codeinput">[meshOutput]=runTetGen(smeshStruct);
 
 <span class="comment">% Accessing the model element and patch data</span>
 FT=meshOutput.faces;
@@ -247,28 +254,28 @@ E=meshOutput.elements;
 elementMaterialIndices=meshOutput.elementMaterialID;
 </pre><pre class="codeoutput"> 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
---- TETGEN Tetrahedral meshing --- 20-Dec-2017 11:40:58
+--- TETGEN Tetrahedral meshing --- 21-Dec-2017 14:10:23
 Warning: smeshStruct.smeshName input will be replaced by smeshStruct.modelName
 in future releases! 
  
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
---- Writing SMESH file --- 20-Dec-2017 11:40:58
+--- Writing SMESH file --- 21-Dec-2017 14:10:23
 Warning: smeshStruct.smeshName input will be replaced by smeshStruct.modelName
 in future releases! 
 ----&gt; Adding node field
 ----&gt; Adding facet field
 ----&gt; Adding holes specification
 ----&gt; Adding region specification
---- Done --- 20-Dec-2017 11:40:59
---- Running TetGen to mesh input boundary--- 20-Dec-2017 11:40:59
+--- Done --- 21-Dec-2017 14:10:24
+--- Running TetGen to mesh input boundary--- 21-Dec-2017 14:10:24
 Opening /mnt/data/MATLAB/GIT/GIBBON/lib_ext/tetGen/tempFiles/tempModel.smesh.
---- Done --- 20-Dec-2017 11:41:00
+--- Done --- 21-Dec-2017 14:10:25
  
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
---- Importing TetGen files --- 20-Dec-2017 11:41:00
---- Done --- 20-Dec-2017 11:41:00
-</pre><h2 id="9">Visualizing mesh</h2><pre class="codeinput">meshView(meshOutput);
-</pre><img vspace="5" hspace="5" src="DEMO_FEBio_trabeculae_compression_03.png" alt=""> <h2 id="10">SET UP BOUNDARY CONDITIONS</h2><pre class="codeinput"><span class="comment">%List of nodes to fix</span>
+--- Importing TetGen files --- 21-Dec-2017 14:10:25
+--- Done --- 21-Dec-2017 14:10:25
+</pre><h2 id="10">Visualizing mesh</h2><pre class="codeinput">meshView(meshOutput);
+</pre><img vspace="5" hspace="5" src="DEMO_FEBio_trabeculae_compression_03.png" alt=""> <h2 id="11">SET UP BOUNDARY CONDITIONS</h2><pre class="codeinput"><span class="comment">%List of nodes to fix</span>
 bcFixList=Fb(Cb==3,:);
 bcFixList=unique(bcFixList(:));
 
@@ -309,7 +316,7 @@ axisGeom(gca,fontSize);
 axis <span class="string">off</span>;
 colormap(cMap);
 drawnow;
-</pre><img vspace="5" hspace="5" src="DEMO_FEBio_trabeculae_compression_05.png" alt=""> <h2 id="13">CONSTRUCTING FEB MODEL</h2><pre class="codeinput">FEB_struct.febio_spec.version=<span class="string">'2.0'</span>;
+</pre><img vspace="5" hspace="5" src="DEMO_FEBio_trabeculae_compression_05.png" alt=""> <h2 id="14">CONSTRUCTING FEB MODEL</h2><pre class="codeinput">FEB_struct.febio_spec.version=<span class="string">'2.0'</span>;
 FEB_struct.Module.Type=<span class="string">'solid'</span>;
 
 <span class="comment">% Defining file names</span>
@@ -339,11 +346,11 @@ FEB_struct.Control.AnalysisType=<span class="string">'static'</span>;
 FEB_struct.Control.Properties={<span class="string">'time_steps'</span>,<span class="string">'step_size'</span>,<span class="keyword">...</span>
     <span class="string">'max_refs'</span>,<span class="string">'max_ups'</span>,<span class="keyword">...</span>
     <span class="string">'dtol'</span>,<span class="string">'etol'</span>,<span class="string">'rtol'</span>,<span class="string">'lstol'</span>};
-FEB_struct.Control.Values={20,0.05,<span class="keyword">...</span>
-    25,0,<span class="keyword">...</span>
+FEB_struct.Control.Values={numTimeSteps,1/numTimeSteps,<span class="keyword">...</span>
+    max_refs,max_ups,<span class="keyword">...</span>
     0.001,0.01,0,0.9};
-FEB_struct.Control.TimeStepperProperties={<span class="string">'dtmin'</span>,<span class="string">'dtmax'</span>,<span class="string">'max_retries'</span>,<span class="string">'opt_iter'</span>,<span class="string">'aggressiveness'</span>};
-FEB_struct.Control.TimeStepperValues={1e-4,0.05,5,10,1};
+FEB_struct.Control.TimeStepperProperties={<span class="string">'dtmin'</span>,<span class="string">'dtmax'</span>,<span class="string">'max_retries'</span>,<span class="string">'opt_iter'</span>};
+FEB_struct.Control.TimeStepperValues={dtmin,dtmax,max_retries,opt_iter};
 
 <span class="comment">%Defining node sets</span>
 FEB_struct.Geometry.NodeSet{1}.Set=bcFixList;
@@ -390,11 +397,11 @@ run_node_output_name=[modelNameEnd,<span class="string">'_node_out.txt'</span>];
 FEB_struct.run_output_names={run_node_output_name};
 FEB_struct.output_types={<span class="string">'node_data'</span>};
 FEB_struct.data_types={<span class="string">'ux;uy;uz'</span>};
-</pre><h2 id="14">SAVING .FEB FILE</h2><pre class="codeinput">FEB_struct.disp_opt=0; <span class="comment">%Display waitbars option</span>
+</pre><h2 id="15">SAVING .FEB FILE</h2><pre class="codeinput">FEB_struct.disp_opt=0; <span class="comment">%Display waitbars option</span>
 febStruct2febFile(FEB_struct);
 </pre><pre class="codeoutput"> 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
---- Writing FEBio XML object --- 20-Dec-2017 11:41:05
+--- Writing FEBio XML object --- 21-Dec-2017 14:10:29
 Adding Module level
 Adding Control level
 Adding Globals level
@@ -413,8 +420,8 @@ Adding Output level
 ----&gt; Adding plotfile field
 ----&gt; Adding logfile field
 Writing .feb file
---- Done --- 20-Dec-2017 11:41:11
-</pre><h2 id="15">RUNNING FEBIO JOB</h2><pre class="codeinput"><span class="comment">% FEBioRunStruct.FEBioPath='C:\Program Files\febio2-2.2.6\bin\FEBio2.exe';</span>
+--- Done --- 21-Dec-2017 14:10:34
+</pre><h2 id="16">RUNNING FEBIO JOB</h2><pre class="codeinput"><span class="comment">% FEBioRunStruct.FEBioPath='C:\Program Files\febio2-2.2.6\bin\FEBio2.exe';</span>
 FEBioRunStruct.run_filename=FEB_struct.run_filename;
 FEBioRunStruct.run_logname=FEB_struct.run_logname;
 FEBioRunStruct.disp_on=1;
@@ -427,9 +434,9 @@ FEBioRunStruct.maxLogCheckTime=3; <span class="comment">%Max log file checking t
 [runFlag]=runMonitorFEBio(FEBioRunStruct);<span class="comment">%START FEBio NOW!!!!!!!!</span>
 </pre><pre class="codeoutput"> 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
---- STARTING FEBIO JOB --- 20-Dec-2017 11:41:11
+--- STARTING FEBIO JOB --- 21-Dec-2017 14:10:34
 Waiting for log file...
-Proceeding to check log file...20-Dec-2017 11:41:11
+Proceeding to check log file...21-Dec-2017 14:10:34
 ------- converged at time : 0.05
 ------- converged at time : 0.1
 ------- converged at time : 0.15
@@ -450,8 +457,8 @@ Proceeding to check log file...20-Dec-2017 11:41:11
 ------- converged at time : 0.9
 ------- converged at time : 0.95
 ------- converged at time : 1
---- Done --- 20-Dec-2017 11:41:44
-</pre><h2 id="16">IMPORTING NODAL DISPLACEMENT RESULTS</h2><p>Importing nodal displacements from a log file</p><pre class="codeinput"> fName=fullfile(savePath,FEB_struct.run_output_names{1});
+--- Done --- 21-Dec-2017 14:11:05
+</pre><h2 id="17">IMPORTING NODAL DISPLACEMENT RESULTS</h2><p>Importing nodal displacements from a log file</p><pre class="codeinput"> fName=fullfile(savePath,FEB_struct.run_output_names{1});
 [time_mat, N_disp_mat,~]=importFEBio_logfile(fName); <span class="comment">%Nodal displacements</span>
 
 N_disp_mat=N_disp_mat(:,2:end,:);
@@ -462,7 +469,7 @@ N_disp_mat_n(:,:,2:end)=N_disp_mat;
 N_disp_mat=N_disp_mat_n;
 DN=N_disp_mat(:,:,end); <span class="comment">%Final nodal displacements</span>
 time_mat=[0; time_mat(:)]; <span class="comment">%Time</span>
-</pre><h2 id="17">CREATING NODE SET IN DEFORMED STATE</h2><pre class="codeinput">VT_def=VT+DN;
+</pre><h2 id="18">CREATING NODE SET IN DEFORMED STATE</h2><pre class="codeinput">VT_def=VT+DN;
 DN_magnitude=sqrt(sum(DN.^2,2));
 </pre><p>Plotting the deformed model</p><pre class="codeinput">[CF]=vertexToFaceMeasure(F,DN_magnitude);
 
@@ -533,6 +540,16 @@ boneColor=[1 0.8 0.7]*0.7;
 % path names
 defaultFolder = fileparts(fileparts(mfilename('fullpath')));
 savePath=fullfile(defaultFolder,'data','temp');
+
+%%
+% FEA control settings
+numTimeSteps=20; %Number of time steps desired
+max_refs=25; %Max reforms
+max_ups=0; %Set to zero to use full-Newton iterations
+opt_iter=10; %Optimum number of iterations
+max_retries=5; %Maximum number of retires
+dtmin=(1/numTimeSteps)/100; %Minimum time step size
+dtmax=1/numTimeSteps; %Maximum time step size
 
 %% DEFINING GEOMETRY
 % The trabecular structure is here simulated using isosurfaces on triply
@@ -806,11 +823,11 @@ FEB_struct.Control.AnalysisType='static';
 FEB_struct.Control.Properties={'time_steps','step_size',...
     'max_refs','max_ups',...
     'dtol','etol','rtol','lstol'};
-FEB_struct.Control.Values={20,0.05,...
-    25,0,...
+FEB_struct.Control.Values={numTimeSteps,1/numTimeSteps,...
+    max_refs,max_ups,...
     0.001,0.01,0,0.9};
-FEB_struct.Control.TimeStepperProperties={'dtmin','dtmax','max_retries','opt_iter','aggressiveness'};
-FEB_struct.Control.TimeStepperValues={1e-4,0.05,5,10,1};
+FEB_struct.Control.TimeStepperProperties={'dtmin','dtmax','max_retries','opt_iter'};
+FEB_struct.Control.TimeStepperValues={dtmin,dtmax,max_retries,opt_iter};
 
 %Defining node sets
 FEB_struct.Geometry.NodeSet{1}.Set=bcFixList;

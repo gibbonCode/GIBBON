@@ -48,7 +48,9 @@ switch testSet
     case 'demo'
         testFileList=allFiles_publish(logicDemo & ~logicNot);
     case 'help'
-        testFileList=allFiles_publish(logicHelp & ~logicNot);        
+        testFileList=allFiles_publish(logicHelp & ~logicNot);      
+    otherwise
+        error([testMode,' is not a valid option. Use: all, demo, or help']);
 end
 
 %%
@@ -70,9 +72,16 @@ for q_test=startInd:1:numel(testFileList)
         case 'test' %Test
             run(mFileNow);
         case 'pub' %Publish
-            publish(mFileNow,'catchError',false,'figureSnapMethod','getframe','maxHeight',800);
-            drawnow;
-            pause(1);
+            try
+                publish(mFileNow,'catchError',false,'figureSnapMethod','getframe','maxHeight',800);
+                drawnow;
+                pause(1);
+            catch ME                             
+                disp(['Error in: ',mFileNow]);
+                disp(['To restart from this file use start index: ',num2str(q_test)]);
+                disp(' ');
+                rethrow(ME);
+            end
     end
             
     load('tempPub.mat'); %Load variables

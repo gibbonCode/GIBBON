@@ -61,12 +61,21 @@ permHydro=1e4; %hydraulic permeability
 %% Time and control settings
 t_load=0.1; %Time from start to max load
 t_total=t_load+5; %Total simulation time
-
 t_step_ini=t_load./100; %Initial desired step size
-t_step_max=t_total/10; %Maximum step size
 
+numTimeSteps=round(t_total/t_step_ini);
+t_step=t_total/numTimeSteps;
+
+% FEA control settings
 analysisType='static'; 
 febioModule='biphasic';
+
+max_refs=25; %Max reforms
+max_ups=0; %Set to zero to use full-Newton iterations
+opt_iter=10; %Optimum number of iterations
+max_retries=5; %Maximum number of retires
+dtmin=t_step/100; %Minimum time step size
+dtmax=t_total/25; %Maximum time step size
 
 %% CREATING MESHED BOX
 
@@ -177,17 +186,15 @@ FEB_struct.Materials{1}.PropParName{2}={'perm'};
 FEB_struct.Materials{1}.PropParVal{2}={permHydro};
 
 %Step specific control sections
-n=round(t_total/t_step_ini);
-t_step=t_total/n;
 FEB_struct.Control.AnalysisType=analysisType;
 FEB_struct.Control.Properties={'time_steps','step_size',...
     'max_refs','max_ups',...
-    'dtol','etol','rtol','lstol','ptol','symmetric_biphasic'};
-FEB_struct.Control.Values={n,t_step,...
-    15,0,...
-    0.001,0.01,0,0.9,0.01,1};
-FEB_struct.Control.TimeStepperProperties={'dtmin','dtmax','max_retries','opt_iter','aggressiveness'};
-FEB_struct.Control.TimeStepperValues={t_step/100,t_step_max,5,10,0};
+    'dtol','etol','rtol','lstol'};
+FEB_struct.Control.Values={numTimeSteps,t_step,...
+    max_refs,max_ups,...
+    0.001,0.01,0,0.9};
+FEB_struct.Control.TimeStepperProperties={'dtmin','dtmax','max_retries','opt_iter'};
+FEB_struct.Control.TimeStepperValues={dtmin,dtmax,max_retries,opt_iter};
 
 %Defining node sets
 FEB_struct.Geometry.NodeSet{1}.Set=bcSupportList_Y_axis;

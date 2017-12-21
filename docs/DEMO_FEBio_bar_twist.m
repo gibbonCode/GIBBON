@@ -43,6 +43,15 @@ numElementsHeight=round(sampleHeight/pointSpacings(3));
 alphaRotTotal=pi;%0.5*pi; %Total twist angle
 numSteps=50; %Number of steps
 
+% FEA control settings
+numTimeSteps=1; %Number of time steps desired
+max_refs=25; %Max reforms
+max_ups=0; %Set to zero to use full-Newton iterations
+opt_iter=10; %Optimum number of iterations
+max_retries=5; %Maximum number of retires
+dtmin=(1/numTimeSteps)/100; %Minimum time step size
+dtmax=1/numTimeSteps; %Maximum time step size
+
 %% CREATING MESHED BOX
 
 %Create box 1
@@ -141,18 +150,16 @@ FEB_struct.Boundary.Fix{3}.SetName=FEB_struct.Geometry.NodeSet{1}.Name;
 %Creating steps
 V2=V; %Coordinate set
 for q=1:1:numSteps
-    %Step specific control sections
+    %Step specific control sections   
     FEB_struct.Step{q}.Control.AnalysisType='static';
     FEB_struct.Step{q}.Control.Properties={'time_steps','step_size',...
         'max_refs','max_ups',...
         'dtol','etol','rtol','lstol'};
-    
-    n=1; %Number of desired analysis steps per step
-    FEB_struct.Step{q}.Control.Values={n,1/n,...
-        25,0,...
+    FEB_struct.Step{q}.Control.Values={numTimeSteps,1/numTimeSteps,...
+        max_refs,max_ups,...
         0.001,0.01,0,0.9};
     FEB_struct.Step{q}.Control.TimeStepperProperties={'dtmin','dtmax','max_retries','opt_iter'};
-    FEB_struct.Step{q}.Control.TimeStepperValues={(1/n)/100,1/n, 5, 5};
+    FEB_struct.Step{q}.Control.TimeStepperValues={dtmin,dtmax,max_retries,opt_iter};
         
     V2n=V2;
     V2=V2*R;

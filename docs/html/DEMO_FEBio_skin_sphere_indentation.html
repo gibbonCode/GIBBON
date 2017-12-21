@@ -6,7 +6,7 @@
    <!--
 This HTML was auto-generated from MATLAB code.
 To make changes, update the MATLAB code and republish this document.
-      --><title>DEMO_FEBio_skin_sphere_indentation</title><meta name="generator" content="MATLAB 9.1"><link rel="schema.DC" href="http://purl.org/dc/elements/1.1/"><meta name="DC.date" content="2017-08-18"><meta name="DC.source" content="DEMO_FEBio_skin_sphere_indentation.m"><style type="text/css">
+      --><title>DEMO_FEBio_skin_sphere_indentation</title><meta name="generator" content="MATLAB 9.1"><link rel="schema.DC" href="http://purl.org/dc/elements/1.1/"><meta name="DC.date" content="2017-12-21"><meta name="DC.source" content="DEMO_FEBio_skin_sphere_indentation.m"><style type="text/css">
 html,body,div,span,applet,object,iframe,h1,h2,h3,h4,h5,h6,p,blockquote,pre,a,abbr,acronym,address,big,cite,code,del,dfn,em,font,img,ins,kbd,q,s,samp,small,strike,strong,sub,sup,tt,var,b,u,i,center,dl,dt,dd,ol,ul,li,fieldset,form,label,legend,table,caption,tbody,tfoot,thead,tr,th,td{margin:0;padding:0;border:0;outline:0;font-size:100%;vertical-align:baseline;background:transparent}body{line-height:1}ol,ul{list-style:none}blockquote,q{quotes:none}blockquote:before,blockquote:after,q:before,q:after{content:'';content:none}:focus{outine:0}ins{text-decoration:none}del{text-decoration:line-through}table{border-collapse:collapse;border-spacing:0}
 
 html { min-height:100%; margin-bottom:1px; }
@@ -94,6 +94,15 @@ contactInitialOffset=0.05;
 nRefine=3;
 sphereRadius=sampleWidth/4;
 sphereDisplacement=sphereRadius;<span class="comment">%sampleHeight-(sampleHeight.*0.7);</span>
+
+<span class="comment">% FEA control settings</span>
+numTimeSteps=20; <span class="comment">%Number of time steps desired</span>
+max_refs=25; <span class="comment">%Max reforms</span>
+max_ups=0; <span class="comment">%Set to zero to use full-Newton iterations</span>
+opt_iter=10; <span class="comment">%Optimum number of iterations</span>
+max_retries=5; <span class="comment">%Maximum number of retires</span>
+dtmin=(1/numTimeSteps)/100; <span class="comment">%Minimum time step size</span>
+dtmax=1/numTimeSteps; <span class="comment">%Maximum time step size</span>
 </pre><h2 id="4">CREATING MESHED BOX</h2><pre class="codeinput"><span class="comment">%Create box 1</span>
 boxDim=[sampleWidth sampleThickness sampleHeight]; <span class="comment">%Dimensions</span>
 boxEl=[numElementsWidth numElementsThickness numElementsHeight]; <span class="comment">%Number of elements</span>
@@ -216,16 +225,16 @@ FEB_struct.Materials{3}.Type=<span class="string">'Ogden'</span>;
 FEB_struct.Materials{3}.Properties={<span class="string">'c1'</span>,<span class="string">'m1'</span>,<span class="string">'k'</span>};
 FEB_struct.Materials{3}.Values={c1,m1,k};
 
-<span class="comment">%Control sections</span>
+<span class="comment">%Control section</span>
 FEB_struct.Control.AnalysisType=<span class="string">'static'</span>;
 FEB_struct.Control.Properties={<span class="string">'time_steps'</span>,<span class="string">'step_size'</span>,<span class="keyword">...</span>
     <span class="string">'max_refs'</span>,<span class="string">'max_ups'</span>,<span class="keyword">...</span>
     <span class="string">'dtol'</span>,<span class="string">'etol'</span>,<span class="string">'rtol'</span>,<span class="string">'lstol'</span>};
-FEB_struct.Control.Values={20,0.05,<span class="keyword">...</span>
-    25,0,<span class="keyword">...</span>
+FEB_struct.Control.Values={numTimeSteps,1/numTimeSteps,<span class="keyword">...</span>
+    max_refs,max_ups,<span class="keyword">...</span>
     0.001,0.01,0,0.9};
-FEB_struct.Control.TimeStepperProperties={<span class="string">'dtmin'</span>,<span class="string">'dtmax'</span>,<span class="string">'max_retries'</span>,<span class="string">'opt_iter'</span>,<span class="string">'aggressiveness'</span>};
-FEB_struct.Control.TimeStepperValues={1e-4,0.05,5,10,1};
+FEB_struct.Control.TimeStepperProperties={<span class="string">'dtmin'</span>,<span class="string">'dtmax'</span>,<span class="string">'max_retries'</span>,<span class="string">'opt_iter'</span>};
+FEB_struct.Control.TimeStepperValues={dtmin,dtmax,max_retries,opt_iter};
 
 <span class="comment">%Defining surfaces</span>
 FEB_struct.Geometry.Surface{1}.Set=Fc1;
@@ -305,7 +314,7 @@ FEB_struct.LoadData.LoadCurves.loadPoints={[0 0;1 1];};
 febStruct2febFile(FEB_struct);
 </pre><pre class="codeoutput"> 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
---- Writing FEBio XML object --- 18-Aug-2017 14:45:43
+--- Writing FEBio XML object --- 21-Dec-2017 14:07:08
 Adding Module level
 Adding Control level
 Adding Globals level
@@ -335,7 +344,7 @@ Adding Output level
 Warning: Provided path of logfile is replaced by .feb file path. Only provide
 filename to avoid this warning 
 Writing .feb file
---- Done --- 18-Aug-2017 14:45:45
+--- Done --- 21-Dec-2017 14:07:09
 </pre><h2 id="14">RUNNING FEBIO JOB</h2><pre class="codeinput"><span class="comment">% FEBioRunStruct.FEBioPath='C:\Program Files\febio2-2.2.6\bin\febio2.exe';</span>
 FEBioRunStruct.run_filename=FEB_struct.run_filename;
 FEBioRunStruct.run_logname=FEB_struct.run_logname;
@@ -349,37 +358,35 @@ FEBioRunStruct.maxLogCheckTime=3; <span class="comment">%Max log file checking t
 [runFlag]=runMonitorFEBio(FEBioRunStruct);<span class="comment">%START FEBio NOW!!!!!!!!</span>
 </pre><pre class="codeoutput"> 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
---- STARTING FEBIO JOB --- 18-Aug-2017 14:45:45
+--- STARTING FEBIO JOB --- 21-Dec-2017 14:07:09
 Waiting for log file...
-Proceeding to check log file...18-Aug-2017 14:45:45
+Proceeding to check log file...21-Dec-2017 14:07:09
 ------- converged at time : 0.05
-------- converged at time : 0.075
-------- converged at time : 0.105
-------- converged at time : 0.139
-------- converged at time : 0.1762
-------- converged at time : 0.21596
-------- converged at time : 0.257768
-------- converged at time : 0.301214
-------- converged at time : 0.345434
-------- converged at time : 0.368122
-------- converged at time : 0.396273
-------- converged at time : 0.428793
-------- converged at time : 0.464809
-------- converged at time : 0.503622
-------- converged at time : 0.544619
-------- converged at time : 0.587417
-------- converged at time : 0.631621
-------- converged at time : 0.676984
-------- converged at time : 0.723274
-------- converged at time : 0.770289
-------- converged at time : 0.794094
-------- converged at time : 0.823139
-------- converged at time : 0.856375
-------- converged at time : 0.892963
-------- converged at time : 0.932234
-------- converged at time : 0.973651
+------- converged at time : 0.1
+------- converged at time : 0.141667
+------- converged at time : 0.177745
+------- converged at time : 0.216607
+------- converged at time : 0.257697
+------- converged at time : 0.300569
+------- converged at time : 0.33688
+------- converged at time : 0.375928
+------- converged at time : 0.417115
+------- converged at time : 0.460064
+------- converged at time : 0.497031
+------- converged at time : 0.536604
+------- converged at time : 0.571319
+------- converged at time : 0.609091
+------- converged at time : 0.649309
+------- converged at time : 0.691483
+------- converged at time : 0.720643
+------- converged at time : 0.75397
+------- converged at time : 0.790633
+------- converged at time : 0.829962
+------- converged at time : 0.871426
+------- converged at time : 0.914597
+------- converged at time : 0.959134
 ------- converged at time : 1
---- Done --- 18-Aug-2017 14:46:12
+--- Done --- 21-Dec-2017 14:07:32
 </pre><pre class="codeinput"><span class="keyword">if</span> runFlag==1 <span class="comment">%i.e. a succesful run</span>
 
     <span class="comment">%IMPORTING NODAL DISPLACEMENT RESULTS</span>
@@ -456,6 +463,15 @@ contactInitialOffset=0.05;
 nRefine=3; 
 sphereRadius=sampleWidth/4;
 sphereDisplacement=sphereRadius;%sampleHeight-(sampleHeight.*0.7);
+
+% FEA control settings
+numTimeSteps=20; %Number of time steps desired
+max_refs=25; %Max reforms
+max_ups=0; %Set to zero to use full-Newton iterations
+opt_iter=10; %Optimum number of iterations
+max_retries=5; %Maximum number of retires
+dtmin=(1/numTimeSteps)/100; %Minimum time step size
+dtmax=1/numTimeSteps; %Maximum time step size
 
 %% CREATING MESHED BOX
 
@@ -604,16 +620,16 @@ FEB_struct.Materials{3}.Type='Ogden';
 FEB_struct.Materials{3}.Properties={'c1','m1','k'};
 FEB_struct.Materials{3}.Values={c1,m1,k};
 
-%Control sections
+%Control section
 FEB_struct.Control.AnalysisType='static';
 FEB_struct.Control.Properties={'time_steps','step_size',...
     'max_refs','max_ups',...
     'dtol','etol','rtol','lstol'};
-FEB_struct.Control.Values={20,0.05,...
-    25,0,...
+FEB_struct.Control.Values={numTimeSteps,1/numTimeSteps,...
+    max_refs,max_ups,...
     0.001,0.01,0,0.9};
-FEB_struct.Control.TimeStepperProperties={'dtmin','dtmax','max_retries','opt_iter','aggressiveness'};
-FEB_struct.Control.TimeStepperValues={1e-4,0.05,5,10,1};
+FEB_struct.Control.TimeStepperProperties={'dtmin','dtmax','max_retries','opt_iter'};
+FEB_struct.Control.TimeStepperValues={dtmin,dtmax,max_retries,opt_iter};
 
 %Defining surfaces
 FEB_struct.Geometry.Surface{1}.Set=Fc1;

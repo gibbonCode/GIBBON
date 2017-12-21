@@ -6,7 +6,7 @@
    <!--
 This HTML was auto-generated from MATLAB code.
 To make changes, update the MATLAB code and republish this document.
-      --><title>quadBox</title><meta name="generator" content="MATLAB 9.1"><link rel="schema.DC" href="http://purl.org/dc/elements/1.1/"><meta name="DC.date" content="2017-08-18"><meta name="DC.source" content="HELP_quadBox.m"><style type="text/css">
+      --><title>quadBox</title><meta name="generator" content="MATLAB 9.1"><link rel="schema.DC" href="http://purl.org/dc/elements/1.1/"><meta name="DC.date" content="2017-12-21"><meta name="DC.source" content="HELP_quadBox.m"><style type="text/css">
 html,body,div,span,applet,object,iframe,h1,h2,h3,h4,h5,h6,p,blockquote,pre,a,abbr,acronym,address,big,cite,code,del,dfn,em,font,img,ins,kbd,q,s,samp,small,strike,strong,sub,sup,tt,var,b,u,i,center,dl,dt,dd,ol,ul,li,fieldset,form,label,legend,table,caption,tbody,tfoot,thead,tr,th,td{margin:0;padding:0;border:0;outline:0;font-size:100%;vertical-align:baseline;background:transparent}body{line-height:1}ol,ul{list-style:none}blockquote,q{quotes:none}blockquote:before,blockquote:after,q:before,q:after{content:'';content:none}:focus{outine:0}ins{text-decoration:none}del{text-decoration:line-through}table{border-collapse:collapse;border-spacing:0}
 
 html { min-height:100%; margin-bottom:1px; }
@@ -67,26 +67,19 @@ table td { padding:7px 5px; text-align:left; vertical-align:top; border:1px soli
 
 
   </style></head><body><div class="content"><h1>quadBox</h1><!--introduction--><p>Below is a demonstration of the features of the <tt>quadBox</tt> function</p><!--/introduction--><h2>Contents</h2><div><ul><li><a href="#3">Creating a quadrilateral mesh of a box</a></li></ul></div><pre class="codeinput">clear; close <span class="string">all</span>; clc;
-</pre><p>PLOT SETTINGS</p><pre class="codeinput">fig_color=<span class="string">'w'</span>; fig_colordef=<span class="string">'white'</span>;
-fontSize=20;
-edgeWidth=2;
-edgeColor=0.7*ones(1,3);
+</pre><p>PLOT SETTINGS</p><pre class="codeinput">fontSize=15;
 faceAlpha1=0.5;
 </pre><h2 id="3">Creating a quadrilateral mesh of a box</h2><p>Specifying dimensions and number of elements for each direction</p><pre class="codeinput">boxDim=[4 5 6]; <span class="comment">%Width in each direction</span>
 boxEl=[3 4 5]; <span class="comment">%Number of elements per direction</span>
 </pre><p>Using <tt>quadBox</tt> to build the patch model</p><pre class="codeinput">[F,V,faceBoundaryMarker]=quadBox(boxDim,boxEl);
-</pre><p>Plotting model</p><pre class="codeinput">hf1=figuremax(fig_color,fig_colordef);
+</pre><p>Plotting model</p><pre class="codeinput">cFigure; hold <span class="string">on</span>;
 title(<span class="string">'Box quadrilateral faces and normals'</span>,<span class="string">'FontSize'</span>,fontSize);
-xlabel(<span class="string">'X'</span>,<span class="string">'FontSize'</span>,fontSize);ylabel(<span class="string">'Y'</span>,<span class="string">'FontSize'</span>,fontSize); zlabel(<span class="string">'Z'</span>,<span class="string">'FontSize'</span>,fontSize);
-hold <span class="string">on</span>;
 
-patch(<span class="string">'Faces'</span>,F,<span class="string">'Vertices'</span>,V,<span class="string">'FaceColor'</span>,<span class="string">'flat'</span>,<span class="string">'CData'</span>,faceBoundaryMarker,<span class="string">'FaceAlpha'</span>,faceAlpha1,<span class="string">'lineWidth'</span>,edgeWidth,<span class="string">'edgeColor'</span>,edgeColor);
-[hp]=patchNormPlot(F,V,mean(boxDim./boxEl));
+gpatch(F,V,faceBoundaryMarker,<span class="string">'k'</span>,1);
+<span class="comment">% [hp]=patchNormPlot(F,V,mean(boxDim./boxEl));</span>
 
-colormap(jet(6)); colorbar;
-set(gca,<span class="string">'FontSize'</span>,fontSize);
-view(3); axis <span class="string">tight</span>;  axis <span class="string">equal</span>;  grid <span class="string">on</span>;
-
+colormap(gjet(6)); icolorbar;
+axisGeom(gca,fontSize);
 drawnow;
 </pre><img vspace="5" hspace="5" src="HELP_quadBox_01.png" alt=""> <p><img vspace="5" hspace="5" src="gibbVerySmall.gif" alt=""> </p><p><i><b>GIBBON</b></i> <a href="www.gibboncode.org">www.gibboncode.org</a></p><p><i>Kevin Mattheus Moerman</i>, <a href="gibbon.toolbox@gmail.com">gibbon.toolbox@gmail.com</a></p><p><i><b>GIBBON footer text</b></i></p><p>License: <a href="https://github.com/gibbonCode/GIBBON/blob/master/LICENSE">https://github.com/gibbonCode/GIBBON/blob/master/LICENSE</a></p><p>GIBBON: The Geometry and Image-based Bioengineering add-On. A toolbox for image segmentation, image-based modeling, meshing, and finite element analysis.</p><p>Copyright (C) 2017  Kevin Mattheus Moerman</p><p>This program is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.</p><p>This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for more details.</p><p>You should have received a copy of the GNU General Public License along with this program.  If not, see <a href="http://www.gnu.org/licenses/">http://www.gnu.org/licenses/</a>.</p><p class="footer"><br><a href="http://www.mathworks.com/products/matlab/">Published with MATLAB&reg; R2016b</a><br></p></div><!--
 ##### SOURCE BEGIN #####
@@ -98,10 +91,7 @@ clear; close all; clc;
 
 %%
 % PLOT SETTINGS
-fig_color='w'; fig_colordef='white';
-fontSize=20;
-edgeWidth=2;
-edgeColor=0.7*ones(1,3);
+fontSize=15;
 faceAlpha1=0.5;
 
 %% Creating a quadrilateral mesh of a box
@@ -118,18 +108,14 @@ boxEl=[3 4 5]; %Number of elements per direction
 
 %%
 % Plotting model
-hf1=figuremax(fig_color,fig_colordef);
+cFigure; hold on;
 title('Box quadrilateral faces and normals','FontSize',fontSize);
-xlabel('X','FontSize',fontSize);ylabel('Y','FontSize',fontSize); zlabel('Z','FontSize',fontSize);
-hold on;
 
-patch('Faces',F,'Vertices',V,'FaceColor','flat','CData',faceBoundaryMarker,'FaceAlpha',faceAlpha1,'lineWidth',edgeWidth,'edgeColor',edgeColor);
-[hp]=patchNormPlot(F,V,mean(boxDim./boxEl));
+gpatch(F,V,faceBoundaryMarker,'k',1);
+% [hp]=patchNormPlot(F,V,mean(boxDim./boxEl));
 
-colormap(jet(6)); colorbar; 
-set(gca,'FontSize',fontSize);
-view(3); axis tight;  axis equal;  grid on;
-
+colormap(gjet(6)); icolorbar; 
+axisGeom(gca,fontSize);
 drawnow;
 
 %% 

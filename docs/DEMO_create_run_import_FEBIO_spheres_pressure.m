@@ -20,9 +20,20 @@ faceAlpha2=0.5;
 edgeColor=0.25*ones(1,3);
 edgeWidth=1.5;
 
+%%
 % path names
 defaultFolder = fileparts(fileparts(mfilename('fullpath')));
 savePath=fullfile(defaultFolder,'data','temp');
+
+%%
+% FEA control settings
+numTimeSteps=20; %Number of time steps desired
+max_refs=25; %Max reforms
+max_ups=0; %Set to zero to use full-Newton iterations
+opt_iter=10; %Optimum number of iterations
+max_retries=5; %Maximum number of retires
+dtmin=(1/numTimeSteps)/100; %Minimum time step size
+dtmax=1/numTimeSteps; %Maximum time step size
 
 %% Defining the surface models
 % The model will consists of two spheres one contained within the other
@@ -283,11 +294,11 @@ FEB_struct.Control.AnalysisType='static';
 FEB_struct.Control.Properties={'time_steps','step_size',...
     'max_refs','max_ups',...
     'dtol','etol','rtol','lstol'};
-FEB_struct.Control.Values={10,0.1,...
-    25,0,...
+FEB_struct.Control.Values={numTimeSteps,1/numTimeSteps,...
+    max_refs,max_ups,...
     0.001,0.01,0,0.9};
-FEB_struct.Control.TimeStepperProperties={'dtmin','dtmax','max_retries','opt_iter','aggressiveness'};
-FEB_struct.Control.TimeStepperValues={1e-5, 0.1, 5, 5, 1};
+FEB_struct.Control.TimeStepperProperties={'dtmin','dtmax','max_retries','opt_iter'};
+FEB_struct.Control.TimeStepperValues={dtmin,dtmax,max_retries,opt_iter};
 
 %Load curves
 FEB_struct.LoadData.LoadCurves.id=1;

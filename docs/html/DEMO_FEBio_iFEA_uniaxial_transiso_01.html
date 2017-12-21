@@ -6,7 +6,7 @@
    <!--
 This HTML was auto-generated from MATLAB code.
 To make changes, update the MATLAB code and republish this document.
-      --><title>DEMO_FEBio_iFEA_uniaxial_transiso_01.m</title><meta name="generator" content="MATLAB 9.1"><link rel="schema.DC" href="http://purl.org/dc/elements/1.1/"><meta name="DC.date" content="2017-08-18"><meta name="DC.source" content="DEMO_FEBio_iFEA_uniaxial_transiso_01.m"><style type="text/css">
+      --><title>DEMO_FEBio_iFEA_uniaxial_transiso_01.m</title><meta name="generator" content="MATLAB 9.1"><link rel="schema.DC" href="http://purl.org/dc/elements/1.1/"><meta name="DC.date" content="2017-12-21"><meta name="DC.source" content="DEMO_FEBio_iFEA_uniaxial_transiso_01.m"><style type="text/css">
 html,body,div,span,applet,object,iframe,h1,h2,h3,h4,h5,h6,p,blockquote,pre,a,abbr,acronym,address,big,cite,code,del,dfn,em,font,img,ins,kbd,q,s,samp,small,strike,strong,sub,sup,tt,var,b,u,i,center,dl,dt,dd,ol,ul,li,fieldset,form,label,legend,table,caption,tbody,tfoot,thead,tr,th,td{margin:0;padding:0;border:0;outline:0;font-size:100%;vertical-align:baseline;background:transparent}body{line-height:1}ol,ul{list-style:none}blockquote,q{quotes:none}blockquote:before,blockquote:after,q:before,q:after{content:'';content:none}:focus{outine:0}ins{text-decoration:none}del{text-decoration:line-through}table{border-collapse:collapse;border-spacing:0}
 
 html { min-height:100%; margin-bottom:1px; }
@@ -115,6 +115,15 @@ alphaFib=0.5*pi;
 
 optimMethod=2;
 optimOpt=0;
+
+<span class="comment">% FEA control settings</span>
+numTimeSteps=20; <span class="comment">%Number of time steps desired</span>
+max_refs=25; <span class="comment">%Max reforms</span>
+max_ups=0; <span class="comment">%Set to zero to use full-Newton iterations</span>
+opt_iter=10; <span class="comment">%Optimum number of iterations</span>
+max_retries=5; <span class="comment">%Maximum number of retires</span>
+dtmin=(1/numTimeSteps)/100; <span class="comment">%Minimum time step size</span>
+dtmax=1/numTimeSteps; <span class="comment">%Maximum time step size</span>
 </pre><h2 id="4">LOAD EXPERIMENTAL DATA</h2><pre class="codeinput"><span class="comment">% Set folder and file name</span>
 pathName=fullfile(defaultFolder,<span class="string">'data'</span>,<span class="string">'Loocke_2006'</span>);
 fileName=fullfile(pathName,<span class="string">'LOOCKE_FIBRE_LANDSCAPE_CAUCHY.mat'</span>);
@@ -277,10 +286,11 @@ FEB_struct.Control.AnalysisType=<span class="string">'static'</span>;
 FEB_struct.Control.Properties={<span class="string">'time_steps'</span>,<span class="string">'step_size'</span>,<span class="keyword">...</span>
     <span class="string">'max_refs'</span>,<span class="string">'max_ups'</span>,<span class="keyword">...</span>
     <span class="string">'dtol'</span>,<span class="string">'etol'</span>,<span class="string">'rtol'</span>,<span class="string">'lstol'</span>};
-numSteps=25;
-FEB_struct.Control.Values={numSteps,1/numSteps,25,0,0.001,0.01,0,0.9};
-FEB_struct.Control.TimeStepperProperties={<span class="string">'dtmin'</span>,<span class="string">'dtmax'</span>,<span class="string">'max_retries'</span>,<span class="string">'opt_iter'</span>,<span class="string">'aggressiveness'</span>};
-FEB_struct.Control.TimeStepperValues={(1/(100*numSteps)),1/numSteps,5,10,1};
+FEB_struct.Control.Values={numTimeSteps,1/numTimeSteps,<span class="keyword">...</span>
+    max_refs,max_ups,<span class="keyword">...</span>
+    0.001,0.01,0,0.9};
+FEB_struct.Control.TimeStepperProperties={<span class="string">'dtmin'</span>,<span class="string">'dtmax'</span>,<span class="string">'max_retries'</span>,<span class="string">'opt_iter'</span>};
+FEB_struct.Control.TimeStepperValues={dtmin,dtmax,max_retries,opt_iter};
 
 <span class="comment">%Defining node sets</span>
 FEB_struct.Geometry.NodeSet{1}.Set=bcSupportList_X;
@@ -326,7 +336,7 @@ FEB_struct.data_types={<span class="string">'Ex;Ey;Ez'</span>,<span class="strin
 febStruct2febFile(FEB_struct);
 </pre><pre class="codeoutput"> 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
---- Writing FEBio XML object --- 18-Aug-2017 14:42:40
+--- Writing FEBio XML object --- 21-Dec-2017 14:03:19
 Adding Module level
 Adding Control level
 Adding Globals level
@@ -347,7 +357,7 @@ Adding Output level
 ----&gt; Adding plotfile field
 ----&gt; Adding logfile field
 Writing .feb file
---- Done --- 18-Aug-2017 14:42:41
+--- Done --- 21-Dec-2017 14:03:19
 </pre><p>FEBioRunStruct.FEBioPath='C:\Program Files\febio2-2.2.6\bin\febio2.exe';</p><pre class="codeinput">FEBioRunStruct.run_filename=FEB_struct.run_filename;
 FEBioRunStruct.run_logname=FEB_struct.run_logname;
 FEBioRunStruct.disp_on=0;
@@ -540,6 +550,15 @@ alphaFib=0.5*pi;
 optimMethod=2;
 optimOpt=0;
 
+% FEA control settings
+numTimeSteps=20; %Number of time steps desired
+max_refs=25; %Max reforms
+max_ups=0; %Set to zero to use full-Newton iterations
+opt_iter=10; %Optimum number of iterations
+max_retries=5; %Maximum number of retires
+dtmin=(1/numTimeSteps)/100; %Minimum time step size
+dtmax=1/numTimeSteps; %Maximum time step size
+
 %% LOAD EXPERIMENTAL DATA
 
 % Set folder and file name
@@ -731,10 +750,11 @@ FEB_struct.Control.AnalysisType='static';
 FEB_struct.Control.Properties={'time_steps','step_size',...
     'max_refs','max_ups',...
     'dtol','etol','rtol','lstol'};
-numSteps=25;
-FEB_struct.Control.Values={numSteps,1/numSteps,25,0,0.001,0.01,0,0.9};
-FEB_struct.Control.TimeStepperProperties={'dtmin','dtmax','max_retries','opt_iter','aggressiveness'};
-FEB_struct.Control.TimeStepperValues={(1/(100*numSteps)),1/numSteps,5,10,1};
+FEB_struct.Control.Values={numTimeSteps,1/numTimeSteps,...
+    max_refs,max_ups,...
+    0.001,0.01,0,0.9};
+FEB_struct.Control.TimeStepperProperties={'dtmin','dtmax','max_retries','opt_iter'};
+FEB_struct.Control.TimeStepperValues={dtmin,dtmax,max_retries,opt_iter};
 
 %Defining node sets
 FEB_struct.Geometry.NodeSet{1}.Set=bcSupportList_X;

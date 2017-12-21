@@ -6,7 +6,7 @@
    <!--
 This HTML was auto-generated from MATLAB code.
 To make changes, update the MATLAB code and republish this document.
-      --><title>DEMO_FEBio_iFEA_uniaxial_01</title><meta name="generator" content="MATLAB 9.1"><link rel="schema.DC" href="http://purl.org/dc/elements/1.1/"><meta name="DC.date" content="2017-08-18"><meta name="DC.source" content="DEMO_FEBio_iFEA_uniaxial_01.m"><style type="text/css">
+      --><title>DEMO_FEBio_iFEA_uniaxial_01</title><meta name="generator" content="MATLAB 9.1"><link rel="schema.DC" href="http://purl.org/dc/elements/1.1/"><meta name="DC.date" content="2017-12-21"><meta name="DC.source" content="DEMO_FEBio_iFEA_uniaxial_01.m"><style type="text/css">
 html,body,div,span,applet,object,iframe,h1,h2,h3,h4,h5,h6,p,blockquote,pre,a,abbr,acronym,address,big,cite,code,del,dfn,em,font,img,ins,kbd,q,s,samp,small,strike,strong,sub,sup,tt,var,b,u,i,center,dl,dt,dd,ol,ul,li,fieldset,form,label,legend,table,caption,tbody,tfoot,thead,tr,th,td{margin:0;padding:0;border:0;outline:0;font-size:100%;vertical-align:baseline;background:transparent}body{line-height:1}ol,ul{list-style:none}blockquote,q{quotes:none}blockquote:before,blockquote:after,q:before,q:after{content:'';content:none}:focus{outine:0}ins{text-decoration:none}del{text-decoration:line-through}table{border-collapse:collapse;border-spacing:0}
 
 html { min-height:100%; margin-bottom:1px; }
@@ -106,6 +106,15 @@ c1_ini=c1_true*2;
 m1_ini=m1_true/2;
 k_ini=c1_ini*k_factor;
 P=[c1_ini m1_ini];
+
+<span class="comment">% FEA control settings</span>
+numTimeSteps=10; <span class="comment">%Number of time steps desired</span>
+max_refs=25; <span class="comment">%Max reforms</span>
+max_ups=0; <span class="comment">%Set to zero to use full-Newton iterations</span>
+opt_iter=6; <span class="comment">%Optimum number of iterations</span>
+max_retries=5; <span class="comment">%Maximum number of retires</span>
+dtmin=(1/numTimeSteps)/100; <span class="comment">%Minimum time step size</span>
+dtmax=1/numTimeSteps; <span class="comment">%Maximum time step size</span>
 </pre><h2 id="4">SIMULATE EXPERIMENTAL DATA</h2><pre class="codeinput"><span class="comment">%Basic set</span>
 stress_cauchy_exp=[-0.606636933451196;-0.594598753306976;-0.582704841004989;-0.571357405135258;-0.560202987257958;-0.549116632489736;-0.538518403222691;-0.528087294560408;-0.518193056737126;-0.508206114096577;-0.498701595140669;-0.489855637164223;-0.480813541456146;-0.472386398119889;-0.463619435755875;-0.455563887366101;-0.447492483369391;-0.439573886089611;-0.432050298442763;-0.424607647116797;-0.416804189884078;-0.410387298955262;-0.402977977822379;-0.396396657790034;-0.389210485373911;-0.383000553144204;-0.376675743693335;-0.370668858911072;-0.364731155035823;-0.358344772157269;-0.352790185960043;-0.346625957990168;-0.340956058045645;-0.335892515500584;-0.330212348100342;-0.325153422018813;-0.319890421672462;-0.315056500840712;-0.310859570288282;-0.305563240532117;-0.301114864342368;-0.295807178919732;-0.291944875824590;-0.287799721606394;-0.282704271932097;-0.279560319546267;-0.273953092186896;-0.271205596632553;-0.266019580975468;-0.261921529885230;-0.259473236771767;-0.254229845700605;-0.251227010966108;-0.246731599709182;-0.243347463269765;-0.240668206009318;-0.235904450179518;-0.233443491646300;-0.229240342796589;-0.226328455230997;-0.222574693739149;-0.219690552720043;-0.215908110296801;-0.213462994691799;-0.209402262394587;-0.206143135063048;-0.204259473767410;-0.200271046174199;-0.198497342254049;-0.194018107075590;-0.190682588685824;-0.190178278993820;-0.184939186637633;-0.184540226448861;-0.179325520197559;-0.177302998325867;-0.174896317893232;-0.170891038492450;-0.170506389072493;-0.165503062182587;-0.164964944739691;-0.160899776454826;-0.158388071874370;-0.156732253086585;-0.152865980799647;-0.151886036142296;-0.147064551962397;-0.146636586148680;-0.143247545748075;-0.139910407552933;-0.139643630040939;-0.135175245456319;-0.134411814767664;-0.131535143940800;-0.127943005303573;-0.127499404828055;-0.123718865018965;-0.123269655840332;-0.118450118919226;-0.117869603457104;-0.114259063948408;-0.111845005007273;-0.110782903827826;-0.106815200840467;-0.108112322079051;-0.103218831561054;-0.103859461792770;-0.100330051927225;-0.0988503888488038;-0.0984110683795259;-0.0920373613042230;-0.0944900398318279;-0.0908054642234128;-0.0873647791392896;-0.0857302637239363;-0.0832930518728098;-0.0811377337125286;-0.0801419455213994;-0.0773146108678843;-0.0750524119380378;-0.0737660915109812;-0.0711063097725948;-0.0689106003957611;-0.0662015603338655;-0.0637907034798034;-0.0622238776663924;-0.0587129121234732;-0.0590737570248270;-0.0542752113831988;-0.0539468997803651;-0.0504474583208646;-0.0479308792263506;-0.0474997497002284;-0.0422136232687380;-0.0419340474843669;-0.0383206523546593;-0.0353822402853126;-0.0342394575632298;-0.0296092241247699;-0.0290386117855990;-0.0252785740102147;-0.0211393477778685;-0.0210232271972257;-0.0149625128602809;-0.0150455267730763;-0.00925788965002460;-0.00559693887219605;-0.00235368730112040;0.00439939147625970;0.00280776088737496];
 stretch_exp=[0.700330019000000;0.702340563275168;0.704351107550336;0.706361651825503;0.708372196100671;0.710382740375839;0.712393284651007;0.714403828926175;0.716414373201342;0.718424917476510;0.720435461751678;0.722446006026846;0.724456550302013;0.726467094577181;0.728477638852349;0.730488183127517;0.732498727402685;0.734509271677852;0.736519815953020;0.738530360228188;0.740540904503356;0.742551448778524;0.744561993053691;0.746572537328859;0.748583081604027;0.750593625879195;0.752604170154362;0.754614714429530;0.756625258704698;0.758635802979866;0.760646347255034;0.762656891530201;0.764667435805369;0.766677980080537;0.768688524355705;0.770699068630873;0.772709612906040;0.774720157181208;0.776730701456376;0.778741245731544;0.780751790006711;0.782762334281879;0.784772878557047;0.786783422832215;0.788793967107383;0.790804511382550;0.792815055657718;0.794825599932886;0.796836144208054;0.798846688483222;0.800857232758389;0.802867777033557;0.804878321308725;0.806888865583893;0.808899409859060;0.810909954134228;0.812920498409396;0.814931042684564;0.816941586959732;0.818952131234899;0.820962675510067;0.822973219785235;0.824983764060403;0.826994308335570;0.829004852610738;0.831015396885906;0.833025941161074;0.835036485436242;0.837047029711409;0.839057573986577;0.841068118261745;0.843078662536913;0.845089206812081;0.847099751087248;0.849110295362416;0.851120839637584;0.853131383912752;0.855141928187920;0.857152472463087;0.859163016738255;0.861173561013423;0.863184105288591;0.865194649563758;0.867205193838926;0.869215738114094;0.871226282389262;0.873236826664430;0.875247370939597;0.877257915214765;0.879268459489933;0.881279003765101;0.883289548040269;0.885300092315436;0.887310636590604;0.889321180865772;0.891331725140940;0.893342269416107;0.895352813691275;0.897363357966443;0.899373902241611;0.901384446516779;0.903394990791946;0.905405535067114;0.907416079342282;0.909426623617450;0.911437167892617;0.913447712167785;0.915458256442953;0.917468800718121;0.919479344993289;0.921489889268456;0.923500433543624;0.925510977818792;0.927521522093960;0.929532066369128;0.931542610644295;0.933553154919463;0.935563699194631;0.937574243469799;0.939584787744967;0.941595332020134;0.943605876295302;0.945616420570470;0.947626964845638;0.949637509120805;0.951648053395973;0.953658597671141;0.955669141946309;0.957679686221477;0.959690230496644;0.961700774771812;0.963711319046980;0.965721863322148;0.967732407597316;0.969742951872483;0.971753496147651;0.973764040422819;0.975774584697987;0.977785128973154;0.979795673248322;0.981806217523490;0.983816761798658;0.985827306073826;0.987837850348993;0.989848394624161;0.991858938899329;0.993869483174497;0.995880027449664;0.997890571724832;0.999901116000000];
@@ -142,7 +151,7 @@ xlabel(<span class="string">'X'</span>,<span class="string">'FontSize'</span>,fo
 hold <span class="string">on</span>;
 patch(<span class="string">'Faces'</span>,Fb,<span class="string">'Vertices'</span>,V,<span class="string">'FaceColor'</span>,<span class="string">'flat'</span>,<span class="string">'CData'</span>,faceBoundaryMarker,<span class="string">'FaceAlpha'</span>,faceAlpha2,<span class="string">'lineWidth'</span>,edgeWidth,<span class="string">'edgeColor'</span>,edgeColor);
 
-colormap(jet(6)); colorbar;
+colormap(gjet(6)); colorbar;
 set(gca,<span class="string">'FontSize'</span>,fontSize);
 view(3); axis <span class="string">tight</span>;  axis <span class="string">equal</span>;  grid <span class="string">on</span>;
 drawnow;
@@ -176,7 +185,7 @@ plotV(V(bcSupportList_Z,:),<span class="string">'b.'</span>,<span class="string"
 plotV(V(bcPrescribeList,:),<span class="string">'k.'</span>,<span class="string">'MarkerSize'</span>,markerSize);
 set(gca,<span class="string">'FontSize'</span>,fontSize);
 
-colormap(jet(6)); colorbar;
+colormap(gjet(6)); colorbar;
 set(gca,<span class="string">'FontSize'</span>,fontSize);
 view(3); axis <span class="string">tight</span>;  axis <span class="string">equal</span>;  grid <span class="string">on</span>;
 drawnow;
@@ -202,15 +211,16 @@ FEB_struct.Materials{1}.Name=<span class="string">'Block_material'</span>;
 FEB_struct.Materials{1}.Properties={<span class="string">'c1'</span>,<span class="string">'m1'</span>,<span class="string">'c2'</span>,<span class="string">'m2'</span>,<span class="string">'k'</span>};
 FEB_struct.Materials{1}.Values={c1_ini,m1_ini,c1_ini,-m1_ini,k_ini};
 
-<span class="comment">% %Control section</span>
+<span class="comment">%Control section</span>
 FEB_struct.Control.AnalysisType=<span class="string">'static'</span>;
 FEB_struct.Control.Properties={<span class="string">'time_steps'</span>,<span class="string">'step_size'</span>,<span class="keyword">...</span>
     <span class="string">'max_refs'</span>,<span class="string">'max_ups'</span>,<span class="keyword">...</span>
     <span class="string">'dtol'</span>,<span class="string">'etol'</span>,<span class="string">'rtol'</span>,<span class="string">'lstol'</span>};
-numSteps=20;
-FEB_struct.Control.Values={numSteps,1/numSteps,25,5,0.001,0.01,0,0.9};
-FEB_struct.Control.TimeStepperProperties={<span class="string">'dtmin'</span>,<span class="string">'dtmax'</span>,<span class="string">'max_retries'</span>,<span class="string">'opt_iter'</span>,<span class="string">'aggressiveness'</span>};
-FEB_struct.Control.TimeStepperValues={(1/(100*numSteps)),1/numSteps,5,10,1};
+FEB_struct.Control.Values={numTimeSteps,1/numTimeSteps,<span class="keyword">...</span>
+    max_refs,max_ups,<span class="keyword">...</span>
+    0.001,0.01,0,0.9};
+FEB_struct.Control.TimeStepperProperties={<span class="string">'dtmin'</span>,<span class="string">'dtmax'</span>,<span class="string">'max_retries'</span>,<span class="string">'opt_iter'</span>};
+FEB_struct.Control.TimeStepperValues={dtmin,dtmax,max_retries,opt_iter};
 
 <span class="comment">%Defining node sets</span>
 FEB_struct.Geometry.NodeSet{1}.Set=bcSupportList_X;
@@ -255,7 +265,7 @@ FEB_struct.data_types={<span class="string">'ux;uy;uz'</span>,<span class="strin
 febStruct2febFile(FEB_struct);
 </pre><pre class="codeoutput"> 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
---- Writing FEBio XML object --- 18-Aug-2017 14:42:21
+--- Writing FEBio XML object --- 21-Dec-2017 14:03:01
 Adding Module level
 Adding Control level
 Adding Globals level
@@ -274,7 +284,7 @@ Adding Output level
 ----&gt; Adding plotfile field
 ----&gt; Adding logfile field
 Writing .feb file
---- Done --- 18-Aug-2017 14:42:21
+--- Done --- 21-Dec-2017 14:03:01
 </pre><h2 id="11">RUNNING FEBIO JOB</h2><pre class="codeinput"><span class="comment">% FEBioRunStruct.FEBioPath='C:\Program Files\febio2-2.2.6\bin\febio2.exe';</span>
 FEBioRunStruct.run_filename=FEB_struct.run_filename;
 FEBioRunStruct.run_logname=FEB_struct.run_logname;
@@ -289,30 +299,20 @@ FEBioRunStruct.cleanUpFileList=FEB_struct.run_output_names; <span class="comment
 [runFlag]=runMonitorFEBio(FEBioRunStruct);<span class="comment">%START FEBio NOW!!!!!!!!</span>
 </pre><pre class="codeoutput"> 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
---- STARTING FEBIO JOB --- 18-Aug-2017 14:42:21
+--- STARTING FEBIO JOB --- 21-Dec-2017 14:03:01
 Waiting for log file...
-Proceeding to check log file...18-Aug-2017 14:42:21
-------- converged at time : 0.05
+Proceeding to check log file...21-Dec-2017 14:03:02
 ------- converged at time : 0.1
-------- converged at time : 0.15
 ------- converged at time : 0.2
-------- converged at time : 0.25
 ------- converged at time : 0.3
-------- converged at time : 0.35
 ------- converged at time : 0.4
-------- converged at time : 0.45
 ------- converged at time : 0.5
-------- converged at time : 0.55
 ------- converged at time : 0.6
-------- converged at time : 0.65
 ------- converged at time : 0.7
-------- converged at time : 0.75
 ------- converged at time : 0.8
-------- converged at time : 0.85
 ------- converged at time : 0.9
-------- converged at time : 0.95
 ------- converged at time : 1
---- Done --- 18-Aug-2017 14:42:22
+--- Done --- 21-Dec-2017 14:03:02
 </pre><h2 id="12">IMPORTING NODAL DISPLACEMENT RESULTS</h2><p>Importing nodal displacements from a log file</p><pre class="codeinput">[~, N_disp_mat,~]=importFEBio_logfile(FEB_struct.run_output_names{1}); <span class="comment">%Nodal displacements</span>
 
 DN=N_disp_mat(:,2:end,end); <span class="comment">%Final nodal displacements</span>
@@ -327,7 +327,7 @@ xlabel(<span class="string">'X'</span>,<span class="string">'FontSize'</span>,fo
 hps=patch(<span class="string">'Faces'</span>,Fb,<span class="string">'Vertices'</span>,V_def,<span class="string">'FaceColor'</span>,<span class="string">'flat'</span>,<span class="string">'CData'</span>,CF);
 
 view(3); axis <span class="string">tight</span>;  axis <span class="string">equal</span>;  grid <span class="string">on</span>;
-colormap <span class="string">jet</span>; colorbar;
+colormap <span class="string">gjet</span>; colorbar;
 <span class="comment">% camlight headlight;</span>
 set(gca,<span class="string">'FontSize'</span>,fontSize);
 drawnow;
@@ -439,55 +439,55 @@ Done
 
                                         First-Order                    Norm of 
  Iteration  Func-count    Residual       optimality      Lambda           step
-     0           3         2.27193            11.4         0.01
+     0           3         2.27203            11.4         0.01
 SETTING MATERIAL PARAMETERS...
-Proposed (norm.): 7.3041473879874541e-01 1.4561599254748412e+00 
-Proposed        : 4.7085768721875682e-04 4.3684797764245236e+00 
-Set (constr.)   : 2.8577972810327716e-04 5.6280072751443626e+00 
+Proposed (norm.): 7.3038332166986297e-01 1.4570165659432903e+00 
+Proposed        : 4.7083743434616428e-04 4.3710496978298714e+00 
+Set (constr.)   : 2.8574271850998617e-04 5.6330970207030990e+00 
 Done
 SETTING MATERIAL PARAMETERS...
-Proposed (norm.): 7.3141473879874541e-01 1.4561599254748412e+00 
-Proposed        : 4.7150233150399282e-04 4.3684797764245236e+00 
-Set (constr.)   : 2.8695941985962373e-04 5.6280072751443626e+00 
+Proposed (norm.): 7.3138332166986297e-01 1.4570165659432903e+00 
+Proposed        : 4.7148207863140023e-04 4.3710496978298714e+00 
+Set (constr.)   : 2.8692230774252705e-04 5.6330970207030990e+00 
 Done
 SETTING MATERIAL PARAMETERS...
-Proposed (norm.): 7.3041473879874541e-01 1.4576160854003160e+00 
-Proposed        : 4.7085768721875682e-04 4.3728482562009479e+00 
-Set (constr.)   : 2.8577972810327716e-04 5.6366593919901105e+00 
+Proposed (norm.): 7.3038332166986297e-01 1.4584735825092336e+00 
+Proposed        : 4.7083743434616428e-04 4.3754207475277012e+00 
+Set (constr.)   : 2.8574271850998617e-04 5.6417551286824423e+00 
 Done
-     1           6        0.172659            3.76        0.001       0.529866
+     1           6        0.171597            3.75        0.001        0.53062
 SETTING MATERIAL PARAMETERS...
-Proposed (norm.): 7.6132954344893611e-01 1.5363473886746914e+00 
-Proposed        : 4.9078673936568955e-04 4.6090421660240741e+00 
-Set (constr.)   : 3.2364688187895438e-04 6.1067016392761619e+00 
-Done
-SETTING MATERIAL PARAMETERS...
-Proposed (norm.): 7.6232954344893611e-01 1.5363473886746914e+00 
-Proposed        : 4.9143138365092555e-04 4.6090421660240741e+00 
-Set (constr.)   : 3.2491607244640339e-04 6.1067016392761619e+00 
+Proposed (norm.): 7.6139883366763739e-01 1.5353733351441416e+00 
+Proposed        : 4.9083140690919813e-04 4.6061200054324249e+00 
+Set (constr.)   : 3.2373474277577134e-04 6.1008598862119570e+00 
 Done
 SETTING MATERIAL PARAMETERS...
-Proposed (norm.): 7.6132954344893611e-01 1.5378837360633661e+00 
-Proposed        : 4.9078673936568955e-04 4.6136512081900989e+00 
-Set (constr.)   : 3.2364688187895438e-04 6.1159169971117562e+00 
-Done
-     2           9       0.0102599           0.372       0.0001      0.0859404
-SETTING MATERIAL PARAMETERS...
-Proposed (norm.): 7.5994555545035858e-01 1.5252683224114449e+00 
-Proposed        : 4.8989455941157137e-04 4.5758049672343351e+00 
-Set (constr.)   : 3.2189453098547074e-04 6.0402949919581710e+00 
+Proposed (norm.): 7.6239883366763739e-01 1.5353733351441416e+00 
+Proposed        : 4.9147605119443413e-04 4.6061200054324249e+00 
+Set (constr.)   : 3.2500410838897200e-04 6.1008598862119570e+00 
 Done
 SETTING MATERIAL PARAMETERS...
-Proposed (norm.): 7.6094555545035858e-01 1.5252683224114449e+00 
-Proposed        : 4.9053920369680737e-04 4.5758049672343351e+00 
-Set (constr.)   : 3.2316020128959249e-04 6.0402949919581710e+00 
+Proposed (norm.): 7.6139883366763739e-01 1.5369087084792858e+00 
+Proposed        : 4.9083140690919813e-04 4.6107261254378571e+00 
+Set (constr.)   : 3.2373474277577134e-04 6.1100683741142472e+00 
+Done
+     2           9       0.0101784           0.365       0.0001      0.0842719
+SETTING MATERIAL PARAMETERS...
+Proposed (norm.): 7.6000527494267966e-01 1.5246772323604867e+00 
+Proposed        : 4.8993305724101337e-04 4.5740316970814598e+00 
+Set (constr.)   : 3.2197004419845721e-04 6.0367544463647711e+00 
 Done
 SETTING MATERIAL PARAMETERS...
-Proposed (norm.): 7.5994555545035858e-01 1.5267935907338563e+00 
-Proposed        : 4.8989455941157137e-04 4.5803807722015693e+00 
-Set (constr.)   : 3.2189453098547074e-04 6.0494322489954797e+00 
+Proposed (norm.): 7.6100527494267967e-01 1.5246772323604867e+00 
+Proposed        : 4.9057770152624938e-04 4.5740316970814598e+00 
+Set (constr.)   : 3.2323586734418042e-04 6.0367544463647711e+00 
 Done
-     3          12      0.00897384         0.00371        1e-05      0.0111652
+SETTING MATERIAL PARAMETERS...
+Proposed (norm.): 7.6000527494267966e-01 1.5262019095928472e+00 
+Proposed        : 4.8993305724101337e-04 4.5786057287785411e+00 
+Set (constr.)   : 3.2197004419845721e-04 6.0458875389960083e+00 
+Done
+     3          12      0.00893876         0.00368        1e-05      0.0107865
 
 Local minimum possible.
 
@@ -500,9 +500,9 @@ the selected value of the step size tolerance.
 
 <span class="comment">% type(fullfile(fileparts(filePath),'obj_DEMO_FEBio_iFEA_uniaxial_01'))</span>
 </pre><pre class="codeoutput">SETTING MATERIAL PARAMETERS...
-Proposed (norm.): 7.5994555545035858e-01 1.5252683224114449e+00 
-Proposed        : 4.8989455941157137e-04 4.5758049672343351e+00 
-Set (constr.)   : 3.2189453098547074e-04 6.0402949919581710e+00 
+Proposed (norm.): 7.6000527494267966e-01 1.5246772323604867e+00 
+Proposed        : 4.8993305724101337e-04 4.5740316970814598e+00 
+Set (constr.)   : 3.2197004419845721e-04 6.0367544463647711e+00 
 Done
 </pre><h2 id="21">Unnormalize and constrain parameters</h2><pre class="codeinput">P_opt=Pn_opt.*objectiveStruct.parNormFactors; <span class="comment">%Scale back, undo normalization</span>
 
@@ -513,7 +513,7 @@ Done
 
 disp_text=sprintf(<span class="string">'%6.16e,'</span>,P_opt); disp_text=disp_text(1:end-1);
 disp([<span class="string">'P_opt='</span>,disp_text]);
-</pre><pre class="codeoutput">P_opt=3.2189453098547074e-04,6.0402949919581710e+00
+</pre><pre class="codeoutput">P_opt=3.2197004419845721e-04,6.0367544463647711e+00
 </pre><pre class="codeinput">hf1=cFigure;
 title(<span class="string">'Stretch stress curves optimised'</span>,<span class="string">'FontSize'</span>,fontSize);
 xlabel(<span class="string">'\lambda Stretch [.]'</span>,<span class="string">'FontSize'</span>,fontSize); ylabel(<span class="string">'\sigma Cauchy stress [kPa]'</span>,<span class="string">'FontSize'</span>,fontSize); zlabel(<span class="string">'Z'</span>,<span class="string">'FontSize'</span>,fontSize); hold <span class="string">on</span>;
@@ -581,6 +581,15 @@ m1_ini=m1_true/2;
 k_ini=c1_ini*k_factor; 
 P=[c1_ini m1_ini];
 
+% FEA control settings
+numTimeSteps=10; %Number of time steps desired
+max_refs=25; %Max reforms
+max_ups=0; %Set to zero to use full-Newton iterations
+opt_iter=6; %Optimum number of iterations
+max_retries=5; %Maximum number of retires
+dtmin=(1/numTimeSteps)/100; %Minimum time step size
+dtmax=1/numTimeSteps; %Maximum time step size
+
 %% SIMULATE EXPERIMENTAL DATA
 
 %Basic set
@@ -625,7 +634,7 @@ xlabel('X','FontSize',fontSize); ylabel('Y','FontSize',fontSize); zlabel('Z','Fo
 hold on;
 patch('Faces',Fb,'Vertices',V,'FaceColor','flat','CData',faceBoundaryMarker,'FaceAlpha',faceAlpha2,'lineWidth',edgeWidth,'edgeColor',edgeColor);
 
-colormap(jet(6)); colorbar; 
+colormap(gjet(6)); colorbar; 
 set(gca,'FontSize',fontSize);
 view(3); axis tight;  axis equal;  grid on;
 drawnow; 
@@ -665,7 +674,7 @@ plotV(V(bcSupportList_Z,:),'b.','MarkerSize',markerSize);
 plotV(V(bcPrescribeList,:),'k.','MarkerSize',markerSize);
 set(gca,'FontSize',fontSize);
 
-colormap(jet(6)); colorbar; 
+colormap(gjet(6)); colorbar; 
 set(gca,'FontSize',fontSize);
 view(3); axis tight;  axis equal;  grid on;
 drawnow; 
@@ -694,15 +703,16 @@ FEB_struct.Materials{1}.Name='Block_material';
 FEB_struct.Materials{1}.Properties={'c1','m1','c2','m2','k'};
 FEB_struct.Materials{1}.Values={c1_ini,m1_ini,c1_ini,-m1_ini,k_ini};
 
-% %Control section
+%Control section
 FEB_struct.Control.AnalysisType='static';
 FEB_struct.Control.Properties={'time_steps','step_size',...
     'max_refs','max_ups',...
     'dtol','etol','rtol','lstol'};
-numSteps=20;
-FEB_struct.Control.Values={numSteps,1/numSteps,25,5,0.001,0.01,0,0.9};
-FEB_struct.Control.TimeStepperProperties={'dtmin','dtmax','max_retries','opt_iter','aggressiveness'};
-FEB_struct.Control.TimeStepperValues={(1/(100*numSteps)),1/numSteps,5,10,1};
+FEB_struct.Control.Values={numTimeSteps,1/numTimeSteps,...
+    max_refs,max_ups,...
+    0.001,0.01,0,0.9};
+FEB_struct.Control.TimeStepperProperties={'dtmin','dtmax','max_retries','opt_iter'};
+FEB_struct.Control.TimeStepperValues={dtmin,dtmax,max_retries,opt_iter};
 
 %Defining node sets
 FEB_struct.Geometry.NodeSet{1}.Set=bcSupportList_X;
@@ -785,7 +795,7 @@ xlabel('X','FontSize',fontSize); ylabel('Y','FontSize',fontSize); zlabel('Z','Fo
 hps=patch('Faces',Fb,'Vertices',V_def,'FaceColor','flat','CData',CF);
 
 view(3); axis tight;  axis equal;  grid on;
-colormap jet; colorbar;
+colormap gjet; colorbar;
 % camlight headlight;
 set(gca,'FontSize',fontSize);
 drawnow;

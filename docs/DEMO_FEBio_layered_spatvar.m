@@ -19,10 +19,11 @@ cMap=gjet(250);
 % path names
 defaultFolder = fileparts(fileparts(mfilename('fullpath')));
 savePath=fullfile(defaultFolder,'data','temp');
-modelName=fullfile(savePath,'tempModel');
+
+modelNameEnd='tempModel';
+modelName=fullfile(savePath,modelNameEnd);
 
 %% DEFINING AND VISUALIZING THE PARAMETER MAP
-
 
 numElemIncLayer=3;
 numElemTopLayer=3;
@@ -37,6 +38,7 @@ S=zeros(size(G,1),size(G,2),numElemLayers);
 S(:,:,1:numElemIncLayer)=repmat(G,[1 1 numElemIncLayer]);
 
 %%
+% Control parameters
 
 P=2*1e-3;
 
@@ -46,6 +48,15 @@ maxC=minC*100; %Maximum value
 c1_range_ini=linspace(minC,maxC,nBins); %Value range
 k_factor=50;
 m1=2;
+
+% FEA control settings
+numTimeSteps=10; %Number of time steps desired
+max_refs=25; %Max reforms
+max_ups=10; %Set to zero to use full-Newton iterations
+opt_iter=10; %Optimum number of iterations
+max_retries=5; %Maximum number of retires
+dtmin=(1/numTimeSteps)/100; %Minimum time step size
+dtmax=1/numTimeSteps; %Maximum time step size
 
 %% 
 % VISUALIZING THE MAPPING
@@ -103,10 +114,14 @@ E=E(indSort,:);
 
 [F,PF]=element2patch(E,elementMaterialIndices);
 
+%Get boundary faces for light plotting
+[indBoundary]=tesBoundary(F,V);
+Fb=F(indBoundary,:);
+
 logicTopNodes=abs(V(:,3)-max(V(:,3)))<=max(eps(V(:,3)));
 
-logicTopFaces=all(logicTopNodes(F),2);
-F_top=F(logicTopFaces,:);
+logicTopFaces=all(logicTopNodes(Fb),2);
+F_top=Fb(logicTopFaces,:);
 logicBottomNodes=abs(V(:,3)-min(V(:,3)))<=max(eps(V(:,3)));
 
 cFigure;
@@ -164,13 +179,11 @@ FEB_struct.Control.AnalysisType='static';
 FEB_struct.Control.Properties={'time_steps','step_size',...
     'max_refs','max_ups',...
     'dtol','etol','rtol','lstol'};
-nStep=10;
-tStep=1/nStep;
-FEB_struct.Control.Values={nStep,tStep,...
-    25,10,...
+FEB_struct.Control.Values={numTimeSteps,1/numTimeSteps,...
+    max_refs,max_ups,...
     0.001,0.01,0,0.9};
 FEB_struct.Control.TimeStepperProperties={'dtmin','dtmax','max_retries','opt_iter'};
-FEB_struct.Control.TimeStepperValues={tStep/50,tStep,10,6};
+FEB_struct.Control.TimeStepperValues={dtmin,dtmax,max_retries,opt_iter};
 
 %Defining node sets
 FEB_struct.Geometry.NodeSet{1}.Set=bcFixList;
@@ -213,11 +226,11 @@ FEB_struct.LoadData.LoadCurves.loadPoints={[0 0;1 1;]};
 FEB_struct.Output.VarTypes={'displacement','stress','relative volume'};
 
 %Specify log file output
-run_disp_output_name=[FEB_struct.run_filename(1:end-4),'_node_out.txt'];
-run_elem_output_name=[FEB_struct.run_filename(1:end-4),'_element_out.txt'];
+run_disp_output_name=[modelNameEnd,'_node_out.txt'];
+run_elem_output_name=[modelNameEnd,'_element_out.txt'];
 FEB_struct.run_output_names={run_disp_output_name,run_elem_output_name};
 FEB_struct.output_types={'node_data','element_data'};
-FEB_struct.data_types={'ux;uy;uz','E3'};
+FEB_struct.data_types={'ux;uy;uz','sed'};
 
 %% SAVING .FEB FILE
 
@@ -238,37 +251,89 @@ FEBioRunStruct.maxLogCheckTime=10; %Max log file checking time
 
 [runFlag]=runMonitorFEBio(FEBioRunStruct);%START FEBio NOW!!!!!!!!
 
-%% IMPORTING NODAL DISPLACEMENT RESULTS
-% Importing nodal displacements from a log file
-[~, N_disp_mat,~]=importFEBio_logfile(FEB_struct.run_output_names{1}); %Nodal displacements
-DN=N_disp_mat(:,2:end,end); %Final nodal displacements
-
-[~, E3_mat,~]=importFEBio_logfile(FEB_struct.run_output_names{2}); %Element data
-% ind=E3_mat(:,1,end); %Final element data
-E3=E3_mat(:,2:end,end); %Final element data
-
-%% CREATING NODE SET IN DEFORMED STATE
-V_def=V+DN;
-DN_magnitude=sqrt(sum(DN.^2,2));
-
 %%
-% Plotting the deformed model
+if runFlag==1 %i.e. a succesful run
+    %% IMPORTING NODAL DISPLACEMENT RESULTS
+    % Importing nodal displacements from a log file
+    [time_mat,N_disp_mat,~]=importFEBio_logfile(fullfile(savePath,FEB_struct.run_output_names{1})); %Nodal displacements    
+    time_mat=[0; time_mat(:)]; %Time
+    
+    N_disp_mat=N_disp_mat(:,2:end,:);
+    sizImport=size(N_disp_mat);
+    sizImport(3)=sizImport(3)+1;
+    N_disp_mat_n=zeros(sizImport);
+    N_disp_mat_n(:,:,2:end)=N_disp_mat;
+    N_disp_mat=N_disp_mat_n;
+    DN=N_disp_mat(:,:,end);
+    DN_magnitude=sqrt(sum(DN(:,3).^2,2));
+    V_def=V+DN;
+    [CF]=vertexToFaceMeasure(Fb,DN_magnitude);
 
-% [CF]=vertexToFaceMeasure(F,DN_magnitude);
+    %% IMPORTING ELEMENT STRAIN ENERGY
+    
+    [~, N_sed_mat,~]=importFEBio_logfile(fullfile(savePath,FEB_struct.run_output_names{2})); %Nodal forces
+    N_sed_mat=N_sed_mat(:,2:end,:);
+    sizImport=size(N_sed_mat);
+    sizImport(3)=sizImport(3)+1;
+    N_sed_mat_n=zeros(sizImport);
+    N_sed_mat_n(:,:,2:end)=N_sed_mat;
+    N_sed_mat=N_sed_mat_n;
+%     E_sed=N_sed_mat(:,:,end);
+%     DN_magnitude=sqrt(sum(DN(:,3).^2,2));
+%     V_def=V+DN;
+%     [CF]=vertexToFaceMeasure(Fb,DN_magnitude);
+        
+    %% Axis limits for plotting
+    
+    minD=min(V+min(N_disp_mat,[],3),[],1);
+    maxD=max(V+max(N_disp_mat,[],3),[],1);
+    axisLim=[minD(1) maxD(1) minD(2) maxD(2) minD(3) maxD(3)];
+    
+    %% Plotting the deformed model
+    
+    [F,CF]=element2patch(E,N_sed_mat(:,:,1));
+    
+    %Get boundary faces for light plotting
+    [indBoundary]=tesBoundary(F,V);
+    Fb=F(indBoundary,:);
+    Cb=CF(indBoundary,:);
+    
+    hf=cFigure;
+    xlabel('X','FontSize',fontSize); ylabel('Y','FontSize',fontSize); zlabel('Z','FontSize',fontSize); hold on;
+    
+    hp=gpatch(Fb,V_def,Cb,'k',1);
+%     gpatch(Fb,V,0.5*ones(1,3),'none',0.25);
+    
+    view(3); axis tight;  axis equal;  grid on; box on;
+    colormap(gjet(250)); colorbar;
+    caxis([min(N_sed_mat(:)) max(N_sed_mat(:))/7]);
+    view(130,25);
+    camlight headlight;
+    set(gca,'FontSize',fontSize);
+    axis(axisLim);
+    drawnow;
 
-[F,C]=element2patch(E,E3);
-
-hf1=cFigure;
-title('The deformed model','FontSize',fontSize);
-xlabel('X','FontSize',fontSize); ylabel('Y','FontSize',fontSize); zlabel('Z','FontSize',fontSize); hold on;
-
-hps=patch('Faces',F,'Vertices',V_def,'FaceColor','flat','CData',C,'lineWidth',edgeWidth,'edgeColor',edgeColor,'FaceAlpha',faceAlpha1);
-
-view(3); axis tight;  axis equal;  grid on;
-colormap gjet; colorbar;
-% camlight headlight;
-set(gca,'FontSize',fontSize);
-drawnow;
+    animStruct.Time=time_mat;
+    
+    for qt=1:1:size(N_disp_mat,3)
+        
+        DN=N_disp_mat(:,:,qt);
+        DN_magnitude=sqrt(sum(DN(:,3).^2,2));
+        V_def=V+DN;
+        
+        [~,CF]=element2patch(E,N_sed_mat(:,:,qt));
+        Cb=CF(indBoundary,:);
+        
+        %Set entries in animation structure
+        animStruct.Handles{qt}=[hp hp]; %Handles of objects to animate
+        animStruct.Props{qt}={'Vertices','CData'}; %Properties of objects to animate
+        animStruct.Set{qt}={V_def,Cb}; %Property values for to set in order to animate
+    end
+        
+    anim8(hf,animStruct);
+    drawnow;
+    
+end
 
 %% 
 %

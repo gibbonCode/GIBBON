@@ -60,7 +60,7 @@ switch tetTypeOpt
         max_refs=25;
         max_retries=25;
         opt_iter=10;
-        max_ups=10;
+        max_ups=0;
         contactPenalty=50;
 end
 

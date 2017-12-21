@@ -22,8 +22,13 @@ clear; close all; clc;
 % 
 
 %% Examples 
-%
-testGibbon('help','test',1,2);
+testSet='all'; % Or 'demo' or 'help'
+testMode='test'; % for test mode or 'pub' for publishing mode
+approveQuestion=1; % Ask user to approve the test 1 or more on 0
+startInd=1; % File index to start testing from
+
+%%
+% |testGibbon(testSet,testMode,approveQuestion,startInd);|
 
 %%
 % 

@@ -37,6 +37,16 @@ savePath=fullfile(defaultFolder,'data','temp');
 
 modelName=fullfile(savePath,'tempModel');
 
+%%
+% FEA control settings
+nSteps=10; %Number of time steps desired
+max_refs=25; %Max reforms
+max_ups=0; %Set to zero to use full-Newton iterations
+opt_iter=6; %Optimum number of iterations
+max_retries=5; %Maximum number of retires
+dtmin=(1/nSteps)/100; %Minimum time step size
+dtmax=1/nSteps; %Maximum time step size
+
 %% Importing STL surface triangulation
 
 % Set folder and file name
@@ -326,17 +336,16 @@ FEB_struct.Materials{1}.Type='Mooney-Rivlin';
 FEB_struct.Materials{1}.Properties={'c1','c2','k'};
 FEB_struct.Materials{1}.Values={c1,0,k};
 
-%Step specific control sections
+%Control section
 FEB_struct.Control.AnalysisType='static';
 FEB_struct.Control.Properties={'time_steps','step_size',...
     'max_refs','max_ups',...
     'dtol','etol','rtol','lstol'};
-n_steps=50; time_step=1/n_steps;
-FEB_struct.Control.Values={n_steps,time_step,...
-    25,10,...
+FEB_struct.Control.Values={nSteps,1/nSteps,...
+    max_refs,max_ups,...
     0.001,0.01,0,0.9};
-FEB_struct.Control.TimeStepperProperties={'dtmin','dtmax','max_retries','opt_iter','aggressiveness'};
-FEB_struct.Control.TimeStepperValues={time_step/1000,time_step, 5, 10, 1};
+FEB_struct.Control.TimeStepperProperties={'dtmin','dtmax','max_retries','opt_iter'};
+FEB_struct.Control.TimeStepperValues={dtmin,dtmax,max_retries,opt_iter};
 
 %Defining node sets
 FEB_struct.Geometry.NodeSet{1}.Set=bcRigidList;

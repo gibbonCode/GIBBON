@@ -24,20 +24,34 @@ defaultFolder = fileparts(fileparts(mfilename('fullpath')));
 savePath=fullfile(defaultFolder,'data','temp');
 
 %%
+% Control parameters
+
+% Material parameters
 c1=1e-3;
 m1=6;
 k_factor=50;
 k=c1*k_factor;
 T0=1e-2;
+c_g=[c1/1000 c1*100];
+k_g=c_g*k_factor;
 
+% Geometry parameters
 tissueRadius=35;
 tissueHeight=170;
 boneRadius=10;
 wrapHeight=24;
 wrapThickness=5;
-pointSpacing=5; % Aproximate node spacing for cylinder portion
-
+pointSpacing=5; % Aproximate node spacing 
 digitKeep=5;
+
+% FEA control settings
+nSteps=10; %Number of time steps desired
+max_refs=25; %Max reforms
+max_ups=0; %Set to zero to use full-Newton iterations
+opt_iter=6; %Optimum number of iterations
+max_retries=5; %Maximum number of retires
+dtmin=(1/nSteps)/100; %Minimum time step size
+dtmax=1/nSteps; %Maximum time step size
 
 %% Build tissue skin surface top
 
@@ -466,9 +480,6 @@ FEB_struct.Materials{1}.Solid{2}.PropAttrName=cell(1,numel(FEB_struct.Materials{
 FEB_struct.Materials{1}.Solid{2}.PropAttrName{1}='lc';
 FEB_struct.Materials{1}.Solid{2}.PropAttrVal{1}=2;
 
-
-c_g=[c1/1000 c1*100];
-k_g=c_g*k_factor;
 FEB_struct.Materials{2}.Type='multigeneration';
 FEB_struct.Materials{2}.Name='Deformable block';
 FEB_struct.Materials{2}.Generation{1}.Solid{1}.Type='Ogden unconstrained';
@@ -487,12 +498,12 @@ FEB_struct.Step{1}.Control.AnalysisType='static';
 FEB_struct.Step{1}.Control.Properties={'time_steps','step_size',...
     'max_refs','max_ups',...
     'dtol','etol','rtol','lstol'};
-n=20;
-FEB_struct.Step{1}.Control.Values={n,1/n,...
-    25,10,...
+FEB_struct.Step{1}.Control.Values={nSteps,1/nSteps,...
+    max_refs,max_ups,...
     0.001,0.01,0,0.9};
-FEB_struct.Step{1}.Control.TimeStepperProperties={'dtmin','dtmax','max_retries','opt_iter','aggressiveness'};
-FEB_struct.Step{1}.Control.TimeStepperValues={(1/n)/100,1/n,5,10,1};
+FEB_struct.Step{1}.Control.TimeStepperProperties={'dtmin','dtmax','max_retries','opt_iter'};
+FEB_struct.Step{1}.Control.TimeStepperValues={dtmin,dtmax,max_retries,opt_iter};
+
 FEB_struct.Step{2}.Control=FEB_struct.Step{1}.Control;
 FEB_struct.Step{3}.Control=FEB_struct.Step{1}.Control;
 

@@ -6,7 +6,7 @@
    <!--
 This HTML was auto-generated from MATLAB code.
 To make changes, update the MATLAB code and republish this document.
-      --><title>uiContourSegment</title><meta name="generator" content="MATLAB 9.1"><link rel="schema.DC" href="http://purl.org/dc/elements/1.1/"><meta name="DC.date" content="2017-03-13"><meta name="DC.source" content="HELP_uiContourSegment.m"><style type="text/css">
+      --><title>uiContourSegment</title><meta name="generator" content="MATLAB 9.1"><link rel="schema.DC" href="http://purl.org/dc/elements/1.1/"><meta name="DC.date" content="2017-12-21"><meta name="DC.source" content="HELP_uiContourSegment.m"><style type="text/css">
 html,body,div,span,applet,object,iframe,h1,h2,h3,h4,h5,h6,p,blockquote,pre,a,abbr,acronym,address,big,cite,code,del,dfn,em,font,img,ins,kbd,q,s,samp,small,strike,strong,sub,sup,tt,var,b,u,i,center,dl,dt,dd,ol,ul,li,fieldset,form,label,legend,table,caption,tbody,tfoot,thead,tr,th,td{margin:0;padding:0;border:0;outline:0;font-size:100%;vertical-align:baseline;background:transparent}body{line-height:1}ol,ul{list-style:none}blockquote,q{quotes:none}blockquote:before,blockquote:after,q:before,q:after{content:'';content:none}:focus{outine:0}ins{text-decoration:none}del{text-decoration:line-through}table{border-collapse:collapse;border-spacing:0}
 
 html { min-height:100%; margin-bottom:1px; }
@@ -66,8 +66,8 @@ table td { padding:7px 5px; text-align:left; vertical-align:top; border:1px soli
 
 
 
-  </style></head><body><div class="content"><h1>uiContourSegment</h1><!--introduction--><p>Below is a demonstration of the features of the <tt>uiContourSegment</tt> function</p><!--/introduction--><h2>Contents</h2><div><ul><li><a href="#2">Loading example image data</a></li><li><a href="#3">Visualizing data</a></li><li><a href="#4">REMOVING BACKGROUND THROUGH THRESHOLDING/DILATION PROCEDURE</a></li><li><a href="#5">SETTING CONTROL PARAMETERS</a></li><li><a href="#6">SEGMENTING CONTOURS</a></li></ul></div><pre class="codeinput">clear; close <span class="string">all</span>; clc;
-</pre><h2 id="2">Loading example image data</h2><p>Loading MRI data</p><pre class="codeinput">toolboxPath=fileparts(mfilename(<span class="string">'fullpath'</span>));
+  </style></head><body><div class="content"><h1>uiContourSegment</h1><!--introduction--><p>Below is a demonstration of the features of the <tt>uiContourSegment</tt> function</p><!--/introduction--><h2>Contents</h2><div><ul><li><a href="#1">WILL BE REMOVED USE <tt>imx</tt> INSTEAD!</a></li><li><a href="#3">Loading example image data</a></li><li><a href="#4">Visualizing data</a></li><li><a href="#5">REMOVING BACKGROUND THROUGH THRESHOLDING/DILATION PROCEDURE</a></li><li><a href="#6">SETTING CONTROL PARAMETERS</a></li><li><a href="#7">SEGMENTING CONTOURS</a></li></ul></div><h2 id="1">WILL BE REMOVED USE <tt>imx</tt> INSTEAD!</h2><pre class="codeinput">clear; close <span class="string">all</span>; clc;
+</pre><h2 id="3">Loading example image data</h2><p>Loading MRI data</p><pre class="codeinput">toolboxPath=fileparts(fileparts(mfilename(<span class="string">'fullpath'</span>)));
 
 imageFolder=fullfile(toolboxPath,<span class="string">'data'</span>,<span class="string">'DICOM'</span>,<span class="string">'KNEE_UTE'</span>,<span class="string">'IMDAT'</span>);
 
@@ -76,19 +76,14 @@ IMDAT_set=load(loadName);
 M=double(IMDAT_set.type_1);
 M_info=IMDAT_set.type_1_info(1);
 [v,OR,r,c]=dicom3Dpar(M_info);
-</pre><pre class="codeoutput error">Error using load
-Unable to read file '/mnt/data/MATLAB/GIT/GIBBON/doc/data/DICOM/KNEE_UTE/IMDAT/IMDAT.mat'. No such file or directory.
-
-Error in HELP_uiContourSegment (line 14)
-IMDAT_set=load(loadName);
-</pre><h2 id="3">Visualizing data</h2><pre class="codeinput">hf=sliceViewer(M,v,2);
-</pre><h2 id="4">REMOVING BACKGROUND THROUGH THRESHOLDING/DILATION PROCEDURE</h2><p>Removal of background may be useful see <tt>uiThreshErode</tt></p><pre class="codeinput">L_BG=true(size(M)); <span class="comment">%In this example background is not removed</span>
+</pre><h2 id="4">Visualizing data</h2><pre class="codeinput">hf=sliceViewer(M,v,2);
+</pre><img vspace="5" hspace="5" src="HELP_uiContourSegment_01.png" alt=""> <h2 id="5">REMOVING BACKGROUND THROUGH THRESHOLDING/DILATION PROCEDURE</h2><p>Removal of background may be useful see <tt>uiThreshErode</tt></p><pre class="codeinput">L_BG=true(size(M)); <span class="comment">%In this example background is not removed</span>
 
 thresholdInitial=0.1; <span class="comment">%with respect to normalised image</span>
 preBlurKernalSize=0; <span class="comment">%with respect to normalised image</span>
 groupCropOption=0;
 <span class="comment">% [L_BG]=uiThreshErode(M,thresholdInitial,preBlurKernalSize,groupCropOption);</span>
-</pre><h2 id="5">SETTING CONTROL PARAMETERS</h2><pre class="codeinput">cPar.minContourSize=150;            <span class="comment">%Minimal size of detected contour</span>
+</pre><h2 id="6">SETTING CONTROL PARAMETERS</h2><pre class="codeinput">cPar.minContourSize=150;            <span class="comment">%Minimal size of detected contour</span>
 cPar.smoothFactor=0.15;              <span class="comment">%Degree of smoothing csaps function (cubic smoothing spline)</span>
 cPar.pointReductionFactor=1;        <span class="comment">%Reduction factor for contour smoothening</span>
 cPar.logicBackGround=L_BG;   <span class="comment">%Ones (white) describe image data regions of interest i.e. a mask</span>
@@ -96,18 +91,19 @@ cPar.v=v;                           <span class="comment">%Voxel size</span>
 cPar.recoverOn=0; <span class="comment">%Turn on or off file recovery mode</span>
 cPar.sliceRange=98:144; <span class="comment">%This can be a custom range. For unvisited slices the contour is empty</span>
 saveName=[];<span class="comment">%'fibula';                        %If not empty this is where the contours are saved</span>
-</pre><h2 id="6">SEGMENTING CONTOURS</h2><p>Run the following code: <tt>[Vcs]=uiContourSegment(M,cPar,saveName)</tt>; Use the various options to try to segment the outer skin contour, press H to reveal the help window.</p><p>Uncomment to test</p><pre class="codeinput">[Vcs]=uiContourSegment(M,cPar,saveName);
-</pre><p>Example contour process:</p><p><img vspace="5" hspace="5" src="contour_1.png" alt=""> </p><p>Clearly only features "detectable" with contour levels can be segmented or otherwise manual drawing is needed.</p><p><img vspace="5" hspace="5" src="gibbVerySmall.gif" alt=""> </p><p><i><b>GIBBON</b></i> <a href="www.gibboncode.org">www.gibboncode.org</a></p><p><i>Kevin Mattheus Moerman</i>, <a href="gibbon.toolbox@gmail.com">gibbon.toolbox@gmail.com</a></p><p class="footer"><br><a href="http://www.mathworks.com/products/matlab/">Published with MATLAB&reg; R2016b</a><br></p></div><!--
+</pre><h2 id="7">SEGMENTING CONTOURS</h2><p>Run the following code: <tt>[Vcs]=uiContourSegment(M,cPar,saveName)</tt>; Use the various options to try to segment the outer skin contour, press H to reveal the help window.</p><p>Uncomment to test [Vcs]=uiContourSegment(M,cPar,saveName);</p><p>Example contour process:</p><p><img vspace="5" hspace="5" src="contour_1.png" alt=""> </p><p>Clearly only features "detectable" with contour levels can be segmented or otherwise manual drawing is needed.</p><p><img vspace="5" hspace="5" src="gibbVerySmall.gif" alt=""> </p><p><i><b>GIBBON</b></i> <a href="www.gibboncode.org">www.gibboncode.org</a></p><p><i>Kevin Mattheus Moerman</i>, <a href="gibbon.toolbox@gmail.com">gibbon.toolbox@gmail.com</a></p><p><i><b>GIBBON footer text</b></i></p><p>License: <a href="https://github.com/gibbonCode/GIBBON/blob/master/LICENSE">https://github.com/gibbonCode/GIBBON/blob/master/LICENSE</a></p><p>GIBBON: The Geometry and Image-based Bioengineering add-On. A toolbox for image segmentation, image-based modeling, meshing, and finite element analysis.</p><p>Copyright (C) 2017  Kevin Mattheus Moerman</p><p>This program is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.</p><p>This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for more details.</p><p>You should have received a copy of the GNU General Public License along with this program.  If not, see <a href="http://www.gnu.org/licenses/">http://www.gnu.org/licenses/</a>.</p><p class="footer"><br><a href="http://www.mathworks.com/products/matlab/">Published with MATLAB&reg; R2016b</a><br></p></div><!--
 ##### SOURCE BEGIN #####
 %% uiContourSegment
 % Below is a demonstration of the features of the |uiContourSegment| function
+
+%% WILL BE REMOVED USE |imx| INSTEAD!
 
 %%
 clear; close all; clc;
 
 %% Loading example image data
 % Loading MRI data
-toolboxPath=fileparts(mfilename('fullpath'));
+toolboxPath=fileparts(fileparts(mfilename('fullpath')));
 
 imageFolder=fullfile(toolboxPath,'data','DICOM','KNEE_UTE','IMDAT');
 
@@ -148,7 +144,7 @@ saveName=[];%'fibula';                        %If not empty this is where the co
 
 %%
 % Uncomment to test
-[Vcs]=uiContourSegment(M,cPar,saveName);
+% [Vcs]=uiContourSegment(M,cPar,saveName);
 
 %% 
 % Example contour process: 
@@ -167,6 +163,30 @@ saveName=[];%'fibula';                        %If not empty this is where the co
 % <www.gibboncode.org>
 % 
 % _Kevin Mattheus Moerman_, <gibbon.toolbox@gmail.com>
+ 
+%% 
+% _*GIBBON footer text*_ 
+% 
+% License: <https://github.com/gibbonCode/GIBBON/blob/master/LICENSE>
+% 
+% GIBBON: The Geometry and Image-based Bioengineering add-On. A toolbox for
+% image segmentation, image-based modeling, meshing, and finite element
+% analysis.
+% 
+% Copyright (C) 2017  Kevin Mattheus Moerman
+% 
+% This program is free software: you can redistribute it and/or modify
+% it under the terms of the GNU General Public License as published by
+% the Free Software Foundation, either version 3 of the License, or
+% (at your option) any later version.
+% 
+% This program is distributed in the hope that it will be useful,
+% but WITHOUT ANY WARRANTY; without even the implied warranty of
+% MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+% GNU General Public License for more details.
+% 
+% You should have received a copy of the GNU General Public License
+% along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 ##### SOURCE END #####
 --></body></html>

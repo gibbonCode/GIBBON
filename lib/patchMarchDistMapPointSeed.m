@@ -16,7 +16,7 @@ if n>numel(indStart)
     numSteps=numel(loopRange);
     c=1;
     hw=waitbar(c/numSteps,['patchMarchDistMapPointSeed...',num2str(round(100.*c/numSteps)),'%']);
-    for q=loopRange;
+    for q=loopRange
         D_map = min(D_map,D_map_now);
         [~,indSeed(q)]=max(D_map);
         options.constraint_map = D_map;

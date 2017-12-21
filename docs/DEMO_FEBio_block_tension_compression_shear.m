@@ -51,6 +51,15 @@ c1=1e-3;
 m1=6;
 k=c1*20;
 
+% FEA control settings
+numTimeSteps=10; %Number of time steps desired
+max_refs=25; %Max reforms
+max_ups=0; %Set to zero to use full-Newton iterations
+opt_iter=6; %Optimum number of iterations
+max_retries=5; %Maximum number of retires
+dtmin=(1/numTimeSteps)/100; %Minimum time step size
+dtmax=1/numTimeSteps; %Maximum time step size
+
 %% CREATING MESHED BOX
 
 %Create box 1
@@ -135,14 +144,17 @@ FEB_struct.Materials{1}.Properties={'c1','m1','c2','m2','cp'};
 FEB_struct.Materials{1}.Values={c1,m1,c1,-m1,k};
 
 %Step specific control sections
+%Step specific control sections
 FEB_struct.Step{1}.Control.AnalysisType='static';
 FEB_struct.Step{1}.Control.Properties={'time_steps','step_size',...
     'max_refs','max_ups',...
     'dtol','etol','rtol','lstol'};
+FEB_struct.Step{1}.Control.Values={numTimeSteps,1/numTimeSteps,...
+    max_refs,max_ups,...
+    0.001,0.01,0,0.9};
+FEB_struct.Step{1}.Control.TimeStepperProperties={'dtmin','dtmax','max_retries','opt_iter'};
+FEB_struct.Step{1}.Control.TimeStepperValues={dtmin,dtmax,max_retries,opt_iter};
 
-FEB_struct.Step{1}.Control.Values={numSteps,1/numSteps,25,5,0.001,0.01,0,0.9};
-FEB_struct.Step{1}.Control.TimeStepperProperties={'dtmin','dtmax','max_retries','opt_iter','aggressiveness'};
-FEB_struct.Step{1}.Control.TimeStepperValues={(1/(100*numSteps)),1/numSteps,5,10,1};
 FEB_struct.Step{2}=FEB_struct.Step{1};
 FEB_struct.Step{3}=FEB_struct.Step{1};
 FEB_struct.Step{4}=FEB_struct.Step{1};

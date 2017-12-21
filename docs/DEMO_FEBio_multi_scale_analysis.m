@@ -52,16 +52,25 @@ c3=c1/3;
 m3=2;
 k3=c3*k_factor;
 
+% FEA control settings
+numTimeSteps=10; %Number of time steps desired
+max_refs=25; %Max reforms
+max_ups=0; %Set to zero to use full-Newton iterations
+opt_iter=6; %Optimum number of iterations
+max_retries=5; %Maximum number of retires
+dtmin=(1/numTimeSteps)/100; %Minimum time step size
+dtmax=1/numTimeSteps; %Maximum time step size
+
 %%
 
 cPar.boxWidth=1;
 cPar.OuterSphereRadius=cPar.boxWidth/6;
 cPar.InnerSphereRadius=cPar.OuterSphereRadius/2;
 cPar.CoreSphereRadius=cPar.InnerSphereRadius/2;
-cPar.numElementsCube=16;
-cPar.numElementsCubeSphere=6;
-cPar.numElementsSphereMantel=6;
-cPar.numElementsSphereCore=6;
+cPar.numElementsCube=10;
+cPar.numElementsCubeSphere=4;
+cPar.numElementsSphereMantel=4;
+cPar.numElementsSphereCore=4;
 cPar.nSmooth=15;
 
 [Es,Vs,elementMaterialIndices,Fbs,Cbs]=hexMeshCubeSphere(cPar);
@@ -70,7 +79,6 @@ cPar.nSmooth=15;
 Y=Vs(:,2); YE=mean(Y(Es),2);
 L=YE>mean(Y);
 [Fs,Cs]=element2patch(Es(L,:),elementMaterialIndices(L,:),'hex8');
-
 
 %%
 
@@ -112,11 +120,11 @@ camlight headlight;
 
 drawnow;
 
-%%
+%% Run a for loop for all desired elements
 
 numElements=size(E,1);
 
-for qElement=1:1:numElements
+for qElement=1%:1:numElements
     
     %% Retrieve initial and deformed state
     
@@ -215,15 +223,16 @@ for qElement=1:1:numElements
     FEB_struct.Materials{3}.Properties={'c1','m1','k'};
     FEB_struct.Materials{3}.Values={c3,m3,k};
     
-    %Step specific control sections
+    %Control section
     FEB_struct.Control.AnalysisType='static';
     FEB_struct.Control.Properties={'time_steps','step_size',...
         'max_refs','max_ups',...
         'dtol','etol','rtol','lstol'};
-    numSteps=20;
-    FEB_struct.Control.Values={numSteps,1/numSteps,25,5,0.001,0.01,0,0.9};
-    FEB_struct.Control.TimeStepperProperties={'dtmin','dtmax','max_retries','opt_iter','aggressiveness'};
-    FEB_struct.Control.TimeStepperValues={(1/(100*numSteps)),1/numSteps,5,10,1};
+    FEB_struct.Control.Values={numTimeSteps,1/numTimeSteps,...
+        max_refs,max_ups,...
+        0.001,0.01,0,0.9};
+    FEB_struct.Control.TimeStepperProperties={'dtmin','dtmax','max_retries','opt_iter'};
+    FEB_struct.Control.TimeStepperValues={dtmin,dtmax,max_retries,opt_iter};
     
     %Defining node sets
     FEB_struct.Geometry.NodeSet{1}.Set=bcSupportList_X;
@@ -286,12 +295,9 @@ for qElement=1:1:numElements
     FEBioRunStruct.maxLogCheckTime=3; %Max log file checking time
     
     [runFlag]=runMonitorFEBio(FEBioRunStruct);%START FEBio NOW!!!!!!!!
-    
-    fdsafas
-    
+        
 end
 %%
-
 
 
 %%

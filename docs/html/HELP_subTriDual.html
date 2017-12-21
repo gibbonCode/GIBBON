@@ -6,7 +6,7 @@
    <!--
 This HTML was auto-generated from MATLAB code.
 To make changes, update the MATLAB code and republish this document.
-      --><title>subTriDual</title><meta name="generator" content="MATLAB 9.1"><link rel="schema.DC" href="http://purl.org/dc/elements/1.1/"><meta name="DC.date" content="2017-08-18"><meta name="DC.source" content="HELP_subTriDual.m"><style type="text/css">
+      --><title>subTriDual</title><meta name="generator" content="MATLAB 9.1"><link rel="schema.DC" href="http://purl.org/dc/elements/1.1/"><meta name="DC.date" content="2017-12-21"><meta name="DC.source" content="HELP_subTriDual.m"><style type="text/css">
 html,body,div,span,applet,object,iframe,h1,h2,h3,h4,h5,h6,p,blockquote,pre,a,abbr,acronym,address,big,cite,code,del,dfn,em,font,img,ins,kbd,q,s,samp,small,strike,strong,sub,sup,tt,var,b,u,i,center,dl,dt,dd,ol,ul,li,fieldset,form,label,legend,table,caption,tbody,tfoot,thead,tr,th,td{margin:0;padding:0;border:0;outline:0;font-size:100%;vertical-align:baseline;background:transparent}body{line-height:1}ol,ul{list-style:none}blockquote,q{quotes:none}blockquote:before,blockquote:after,q:before,q:after{content:'';content:none}:focus{outine:0}ins{text-decoration:none}del{text-decoration:line-through}table{border-collapse:collapse;border-spacing:0}
 
 html { min-height:100%; margin-bottom:1px; }
@@ -67,7 +67,7 @@ table td { padding:7px 5px; text-align:left; vertical-align:top; border:1px soli
 
 
   </style></head><body><div class="content"><h1>subTriDual</h1><!--introduction--><p>Below is a demonstration of the features of the <tt>subTriDual</tt> function</p><!--/introduction--><h2>Contents</h2><div><ul><li><a href="#2">Syntax</a></li><li><a href="#3">Description</a></li><li><a href="#4">Examples</a></li><li><a href="#6">Example: Illustrating the refinement process</a></li><li><a href="#11">Example: Refining a closed surface</a></li><li><a href="#15">Example: Refining a local region of a mesh (e.g. region on a sphere)</a></li><li><a href="#19">Example Smoothening the mesh</a></li><li><a href="#21">Example: Keeping track of surface data e.g. color</a></li><li><a href="#23">Example: use for non-closed 3D surfaces with voids</a></li><li><a href="#28">Example: Iterative refinement</a></li></ul></div><pre class="codeinput">clear; close <span class="string">all</span>; clc;
-</pre><h2 id="2">Syntax</h2><p><tt>[Ft,Vt,Ct,indIni]=subTriDual(F,V,logicFaces);</tt></p><h2 id="3">Description</h2><p>This function refines the surface region defined by the logicFaces beloning to the surface given by the faces F and vertices V. The region is refined by: 1) taking the dual tesselation, 2) retriangulating the dual mesh to include the original points. See also: <tt>triPolyDualRefine</tt></p><h2 id="4">Examples</h2><p>Plot settings</p><pre class="codeinput">fontSize=15;
+</pre><h2 id="2">Syntax</h2><p><tt>[Ft,Vt,Ct,indIni]=subTriDual(F,V,logicFaces);</tt></p><h2 id="3">Description</h2><p>This function refines the surface region defined by the logicFaces beloning to the surface given by the faces F and vertices V. The region is refined by: 1) taking the dual tesselation, 2) retriangulating the dual mesh to include the original points. See also: <tt>triPolyDualRefine</tt></p><h2 id="4">Examples</h2><p>Plot settings</p><pre class="codeinput">fontSize=25;
 cMap=gjet(4);
 faceAlpha=0.5;
 plotColor1=cMap(1,:);
@@ -206,48 +206,36 @@ C2=double(C&lt;0); <span class="comment">%"Sparse" color to help show averaging 
 <span class="comment">% Refine surface using subTriDual</span>
 [Ft,Vt,~,indIni,Ct]=subTriDual(F,V,logicFaces,C);
 [~,~,~,indIni,Ct2]=subTriDual(F,V,logicFaces,C2);
-</pre><p>Plotting input surface model</p><pre class="codeinput">cFigure;
-subplot(2,2,1);
+</pre><p>Plotting surface models</p><pre class="codeinput">cFigure;
+subplot(2,2,1); hold <span class="string">on</span>;
 title(<span class="string">'Input surface'</span>,<span class="string">'FontSize'</span>,fontSize);
-xlabel(<span class="string">'X'</span>,<span class="string">'FontSize'</span>,fontSize);ylabel(<span class="string">'Y'</span>,<span class="string">'FontSize'</span>,fontSize); zlabel(<span class="string">'Z'</span>,<span class="string">'FontSize'</span>,fontSize);
-hold <span class="string">on</span>;
-
-patch(<span class="string">'Faces'</span>,F,<span class="string">'Vertices'</span>,V,<span class="string">'FaceColor'</span>,<span class="string">'flat'</span>,<span class="string">'CData'</span>,C,<span class="string">'FaceAlpha'</span>,1,<span class="string">'EdgeColor'</span>,<span class="string">'k'</span>);
-
-axis <span class="string">equal</span>; view(3); axis <span class="string">tight</span>;  grid <span class="string">on</span>;  set(gca,<span class="string">'FontSize'</span>,fontSize);
+gpatch(F,V,C);
+axisGeom(gca,fontSize);
+colormap <span class="string">gjet</span>; colorbar;
 camlight <span class="string">headlight</span>;
 
-subplot(2,2,2);
+subplot(2,2,2); hold <span class="string">on</span>
 title(<span class="string">'Output surface'</span>,<span class="string">'FontSize'</span>,fontSize);
-xlabel(<span class="string">'X'</span>,<span class="string">'FontSize'</span>,fontSize);ylabel(<span class="string">'Y'</span>,<span class="string">'FontSize'</span>,fontSize); zlabel(<span class="string">'Z'</span>,<span class="string">'FontSize'</span>,fontSize);
-hold <span class="string">on</span>;
-
-patch(<span class="string">'Faces'</span>,Ft,<span class="string">'Vertices'</span>,Vt,<span class="string">'FaceColor'</span>,<span class="string">'flat'</span>,<span class="string">'CData'</span>,Ct,<span class="string">'FaceAlpha'</span>,1,<span class="string">'EdgeColor'</span>,<span class="string">'k'</span>);
-
+gpatch(Ft,Vt,Ct);
+axisGeom(gca,fontSize);
 colormap <span class="string">gjet</span>; colorbar;
-axis <span class="string">equal</span>; view(3); axis <span class="string">tight</span>;  grid <span class="string">on</span>;  set(gca,<span class="string">'FontSize'</span>,fontSize);
 camlight <span class="string">headlight</span>;
 
 subplot(2,2,3);
+hold <span class="string">on</span>;
 title(<span class="string">'Input surface'</span>,<span class="string">'FontSize'</span>,fontSize);
-xlabel(<span class="string">'X'</span>,<span class="string">'FontSize'</span>,fontSize);ylabel(<span class="string">'Y'</span>,<span class="string">'FontSize'</span>,fontSize); zlabel(<span class="string">'Z'</span>,<span class="string">'FontSize'</span>,fontSize);
-hold <span class="string">on</span>;
-
-patch(<span class="string">'Faces'</span>,F,<span class="string">'Vertices'</span>,V,<span class="string">'FaceColor'</span>,<span class="string">'flat'</span>,<span class="string">'CData'</span>,C2,<span class="string">'FaceAlpha'</span>,1,<span class="string">'EdgeColor'</span>,<span class="string">'k'</span>);
-
-axis <span class="string">equal</span>; view(3); axis <span class="string">tight</span>;  grid <span class="string">on</span>;  set(gca,<span class="string">'FontSize'</span>,fontSize);
-camlight <span class="string">headlight</span>;
-
-subplot(2,2,4);
-title(<span class="string">'Output surface'</span>,<span class="string">'FontSize'</span>,fontSize);
-xlabel(<span class="string">'X'</span>,<span class="string">'FontSize'</span>,fontSize);ylabel(<span class="string">'Y'</span>,<span class="string">'FontSize'</span>,fontSize); zlabel(<span class="string">'Z'</span>,<span class="string">'FontSize'</span>,fontSize);
-hold <span class="string">on</span>;
-
-patch(<span class="string">'Faces'</span>,Ft,<span class="string">'Vertices'</span>,Vt,<span class="string">'FaceColor'</span>,<span class="string">'flat'</span>,<span class="string">'CData'</span>,Ct2,<span class="string">'FaceAlpha'</span>,1,<span class="string">'EdgeColor'</span>,<span class="string">'k'</span>);
-
+gpatch(F,V,C2);
+axisGeom(gca,fontSize);
 colormap <span class="string">gjet</span>; colorbar;
-axis <span class="string">equal</span>; view(3); axis <span class="string">tight</span>;  grid <span class="string">on</span>;  set(gca,<span class="string">'FontSize'</span>,fontSize);
 camlight <span class="string">headlight</span>;
+
+subplot(2,2,4); hold <span class="string">on</span>
+title(<span class="string">'Output surface'</span>,<span class="string">'FontSize'</span>,fontSize);
+gpatch(Ft,Vt,Ct2);
+axisGeom(gca,fontSize);
+colormap <span class="string">gjet</span>; colorbar;
+camlight <span class="string">headlight</span>;
+
 drawnow;
 </pre><img vspace="5" hspace="5" src="HELP_subTriDual_04.png" alt=""> <h2 id="23">Example: use for non-closed 3D surfaces with voids</h2><p>Creating complex example surface</p><pre class="codeinput"><span class="comment">%Boundary 1</span>
 ns=150;
@@ -290,29 +278,16 @@ interpMethod=<span class="string">'linear'</span>; <span class="comment">%or 'na
 [F,V]=regionTriMesh3D(regionCell,pointSpacing,resampleCurveOpt,interpMethod);
 </pre><pre class="codeinput">logicFaces=true(size(F,1),1);
 [Ft,Vt,Ct,indIni]=subTriDual(F,V,logicFaces);
-</pre><p>Plotting input surface model</p><pre class="codeinput">cFigure;
-subplot(1,2,1);
+</pre><p>Plotting surface models</p><pre class="codeinput">cFigure;
+subplot(1,2,1); hold <span class="string">on</span>;
 title(<span class="string">'Input surface'</span>,<span class="string">'FontSize'</span>,fontSize);
-xlabel(<span class="string">'X'</span>,<span class="string">'FontSize'</span>,fontSize);ylabel(<span class="string">'Y'</span>,<span class="string">'FontSize'</span>,fontSize); zlabel(<span class="string">'Z'</span>,<span class="string">'FontSize'</span>,fontSize);
-hold <span class="string">on</span>;
+gpatch(F,V,<span class="string">'g'</span>);
+axisGeom(gca,fontSize);
 
-patch(<span class="string">'Faces'</span>,F,<span class="string">'Vertices'</span>,V,<span class="string">'FaceColor'</span>,<span class="string">'g'</span>,<span class="string">'FaceAlpha'</span>,1,<span class="string">'EdgeColor'</span>,<span class="string">'k'</span>);
-
-axis <span class="string">equal</span>; view(3); axis <span class="string">tight</span>;  grid <span class="string">on</span>;  set(gca,<span class="string">'FontSize'</span>,fontSize);
-camlight <span class="string">headlight</span>;
-
-subplot(1,2,2);
+subplot(1,2,2); hold <span class="string">on</span>;
 title(<span class="string">'Output surface'</span>,<span class="string">'FontSize'</span>,fontSize);
-xlabel(<span class="string">'X'</span>,<span class="string">'FontSize'</span>,fontSize);ylabel(<span class="string">'Y'</span>,<span class="string">'FontSize'</span>,fontSize); zlabel(<span class="string">'Z'</span>,<span class="string">'FontSize'</span>,fontSize);
-hold <span class="string">on</span>;
-
-patch(<span class="string">'Faces'</span>,Ft,<span class="string">'Vertices'</span>,Vt,<span class="string">'FaceColor'</span>,<span class="string">'flat'</span>,<span class="string">'CData'</span>,Ct,<span class="string">'FaceAlpha'</span>,1,<span class="string">'EdgeColor'</span>,<span class="string">'k'</span>);
-<span class="comment">% [hp]=patchNormPlot(Ft,Vt,0.25);</span>
-plotV(Vt(indIni,:),<span class="string">'k.'</span>,<span class="string">'MarkerSize'</span>,25);
-
-colormap <span class="string">gjet</span>;
-axis <span class="string">equal</span>; view(3); axis <span class="string">tight</span>;  grid <span class="string">on</span>;  set(gca,<span class="string">'FontSize'</span>,fontSize);
-camlight <span class="string">headlight</span>;
+gpatch(Ft,Vt,<span class="string">'r'</span>); view(2);
+axisGeom(gca,fontSize);
 drawnow;
 </pre><img vspace="5" hspace="5" src="HELP_subTriDual_05.png" alt=""> <h2 id="28">Example: Iterative refinement</h2><p>Creating example geometry</p><pre class="codeinput">ns=150;
 t=linspace(0,2*pi,ns);
@@ -322,7 +297,7 @@ x=r*sin(t);
 y=r*cos(t);
 V1=[x(:) y(:)];
 regionCell={V1};
-pointSpacing=0.75; <span class="comment">%Desired point spacing</span>
+pointSpacing=2; <span class="comment">%Desired point spacing</span>
 resampleCurveOpt=1;
 interpMethod=<span class="string">'linear'</span>; <span class="comment">%or 'natural'</span>
 [F,V]=regionTriMesh2D(regionCell,pointSpacing,resampleCurveOpt,interpMethod);
@@ -363,25 +338,16 @@ Ft=F; Vt=V;
     [Vt]=tesSmooth(Ft,Vt,[],cPar);
 
 <span class="keyword">end</span>
-</pre><p>Plotting input surface model</p><pre class="codeinput">cFigure;
-subplot(1,2,1);
+</pre><p>Plotting surface models</p><pre class="codeinput">cFigure;
+subplot(1,2,1); hold <span class="string">on</span>;
 title(<span class="string">'Input surface'</span>,<span class="string">'FontSize'</span>,fontSize);
-xlabel(<span class="string">'X'</span>,<span class="string">'FontSize'</span>,fontSize);ylabel(<span class="string">'Y'</span>,<span class="string">'FontSize'</span>,fontSize); zlabel(<span class="string">'Z'</span>,<span class="string">'FontSize'</span>,fontSize);
-hold <span class="string">on</span>;
+gpatch(F,V,<span class="string">'g'</span>);
+axisGeom(gca,fontSize); view(2); axis <span class="string">off</span>;
 
-patch(<span class="string">'Faces'</span>,F,<span class="string">'Vertices'</span>,V,<span class="string">'FaceColor'</span>,<span class="string">'g'</span>,<span class="string">'FaceAlpha'</span>,1,<span class="string">'EdgeColor'</span>,<span class="string">'k'</span>);
-
-axis <span class="string">equal</span>; view(2); axis <span class="string">tight</span>;  grid <span class="string">on</span>;  set(gca,<span class="string">'FontSize'</span>,fontSize);
-
-subplot(1,2,2);
+subplot(1,2,2); hold <span class="string">on</span>;
 title(<span class="string">'Output surface'</span>,<span class="string">'FontSize'</span>,fontSize);
-xlabel(<span class="string">'X'</span>,<span class="string">'FontSize'</span>,fontSize);ylabel(<span class="string">'Y'</span>,<span class="string">'FontSize'</span>,fontSize); zlabel(<span class="string">'Z'</span>,<span class="string">'FontSize'</span>,fontSize);
-hold <span class="string">on</span>;
-
-patch(<span class="string">'Faces'</span>,Ft,<span class="string">'Vertices'</span>,Vt,<span class="string">'FaceColor'</span>,<span class="string">'r'</span>,<span class="string">'FaceAlpha'</span>,1,<span class="string">'EdgeColor'</span>,<span class="string">'k'</span>);
-<span class="comment">% plotV(Vt(indRigid,:),'b.','markerSize',25);</span>
-<span class="comment">% plotV(Vt(indNodesFaces,:),'y.','markerSize',25);</span>
-axis <span class="string">equal</span>; view(2); axis <span class="string">tight</span>;  grid <span class="string">on</span>;  set(gca,<span class="string">'FontSize'</span>,fontSize);
+gpatch(Ft,Vt,<span class="string">'r'</span>); view(2);
+axisGeom(gca,fontSize); view(2); axis <span class="string">off</span>;
 drawnow;
 </pre><img vspace="5" hspace="5" src="HELP_subTriDual_06.png" alt=""> <p><img vspace="5" hspace="5" src="gibbVerySmall.gif" alt=""> </p><p><i><b>GIBBON</b></i> <a href="www.gibboncode.org">www.gibboncode.org</a></p><p><i>Kevin Mattheus Moerman</i>, <a href="gibbon.toolbox@gmail.com">gibbon.toolbox@gmail.com</a></p><p><i><b>GIBBON footer text</b></i></p><p>License: <a href="https://github.com/gibbonCode/GIBBON/blob/master/LICENSE">https://github.com/gibbonCode/GIBBON/blob/master/LICENSE</a></p><p>GIBBON: The Geometry and Image-based Bioengineering add-On. A toolbox for image segmentation, image-based modeling, meshing, and finite element analysis.</p><p>Copyright (C) 2017  Kevin Mattheus Moerman</p><p>This program is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.</p><p>This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for more details.</p><p>You should have received a copy of the GNU General Public License along with this program.  If not, see <a href="http://www.gnu.org/licenses/">http://www.gnu.org/licenses/</a>.</p><p class="footer"><br><a href="http://www.mathworks.com/products/matlab/">Published with MATLAB&reg; R2016b</a><br></p></div><!--
 ##### SOURCE BEGIN #####
@@ -405,7 +371,7 @@ clear; close all; clc;
 
 %%
 % Plot settings
-fontSize=15;
+fontSize=25;
 cMap=gjet(4);
 faceAlpha=0.5;
 plotColor1=cMap(1,:);
@@ -592,49 +558,38 @@ C2=double(C<0); %"Sparse" color to help show averaging at transitions
 [~,~,~,indIni,Ct2]=subTriDual(F,V,logicFaces,C2);
 
 %%
-% Plotting input surface model
+% Plotting surface models
+
 cFigure;
-subplot(2,2,1);
+subplot(2,2,1); hold on;
 title('Input surface','FontSize',fontSize);
-xlabel('X','FontSize',fontSize);ylabel('Y','FontSize',fontSize); zlabel('Z','FontSize',fontSize);
-hold on;
-
-patch('Faces',F,'Vertices',V,'FaceColor','flat','CData',C,'FaceAlpha',1,'EdgeColor','k');
-
-axis equal; view(3); axis tight;  grid on;  set(gca,'FontSize',fontSize);
+gpatch(F,V,C);
+axisGeom(gca,fontSize); 
+colormap gjet; colorbar; 
 camlight headlight;
 
-subplot(2,2,2);
+subplot(2,2,2); hold on 
 title('Output surface','FontSize',fontSize);
-xlabel('X','FontSize',fontSize);ylabel('Y','FontSize',fontSize); zlabel('Z','FontSize',fontSize);
-hold on;
-
-patch('Faces',Ft,'Vertices',Vt,'FaceColor','flat','CData',Ct,'FaceAlpha',1,'EdgeColor','k');
-
+gpatch(Ft,Vt,Ct);
+axisGeom(gca,fontSize); 
 colormap gjet; colorbar; 
-axis equal; view(3); axis tight;  grid on;  set(gca,'FontSize',fontSize);
 camlight headlight;
 
 subplot(2,2,3);
+hold on;
 title('Input surface','FontSize',fontSize);
-xlabel('X','FontSize',fontSize);ylabel('Y','FontSize',fontSize); zlabel('Z','FontSize',fontSize);
-hold on;
-
-patch('Faces',F,'Vertices',V,'FaceColor','flat','CData',C2,'FaceAlpha',1,'EdgeColor','k');
-
-axis equal; view(3); axis tight;  grid on;  set(gca,'FontSize',fontSize);
-camlight headlight;
-
-subplot(2,2,4);
-title('Output surface','FontSize',fontSize);
-xlabel('X','FontSize',fontSize);ylabel('Y','FontSize',fontSize); zlabel('Z','FontSize',fontSize);
-hold on;
-
-patch('Faces',Ft,'Vertices',Vt,'FaceColor','flat','CData',Ct2,'FaceAlpha',1,'EdgeColor','k');
-
+gpatch(F,V,C2);
+axisGeom(gca,fontSize); 
 colormap gjet; colorbar; 
-axis equal; view(3); axis tight;  grid on;  set(gca,'FontSize',fontSize);
 camlight headlight;
+
+subplot(2,2,4); hold on
+title('Output surface','FontSize',fontSize);
+gpatch(Ft,Vt,Ct2);
+axisGeom(gca,fontSize); 
+colormap gjet; colorbar; 
+camlight headlight;
+
 drawnow;
 
 %% Example: use for non-closed 3D surfaces with voids
@@ -691,30 +646,17 @@ logicFaces=true(size(F,1),1);
 [Ft,Vt,Ct,indIni]=subTriDual(F,V,logicFaces);
 
 %%
-% Plotting input surface model
+% Plotting surface models
 cFigure;
-subplot(1,2,1);
+subplot(1,2,1); hold on;
 title('Input surface','FontSize',fontSize);
-xlabel('X','FontSize',fontSize);ylabel('Y','FontSize',fontSize); zlabel('Z','FontSize',fontSize);
-hold on;
+gpatch(F,V,'g');
+axisGeom(gca,fontSize); 
 
-patch('Faces',F,'Vertices',V,'FaceColor','g','FaceAlpha',1,'EdgeColor','k');
-
-axis equal; view(3); axis tight;  grid on;  set(gca,'FontSize',fontSize);
-camlight headlight;
-
-subplot(1,2,2);
+subplot(1,2,2); hold on;
 title('Output surface','FontSize',fontSize);
-xlabel('X','FontSize',fontSize);ylabel('Y','FontSize',fontSize); zlabel('Z','FontSize',fontSize);
-hold on;
-
-patch('Faces',Ft,'Vertices',Vt,'FaceColor','flat','CData',Ct,'FaceAlpha',1,'EdgeColor','k');
-% [hp]=patchNormPlot(Ft,Vt,0.25);
-plotV(Vt(indIni,:),'k.','MarkerSize',25);
-
-colormap gjet; 
-axis equal; view(3); axis tight;  grid on;  set(gca,'FontSize',fontSize);
-camlight headlight;
+gpatch(Ft,Vt,'r'); view(2);
+axisGeom(gca,fontSize); 
 drawnow;
 
 %% Example: Iterative refinement
@@ -730,7 +672,7 @@ x=r*sin(t);
 y=r*cos(t);
 V1=[x(:) y(:)];
 regionCell={V1}; 
-pointSpacing=0.75; %Desired point spacing
+pointSpacing=2; %Desired point spacing
 resampleCurveOpt=1; 
 interpMethod='linear'; %or 'natural'
 [F,V]=regionTriMesh2D(regionCell,pointSpacing,resampleCurveOpt,interpMethod);
@@ -776,26 +718,17 @@ for q=1:numel(distanceSplitSteps)
 end
 
 %%
-% Plotting input surface model
+% Plotting surface models
 cFigure;
-subplot(1,2,1);
+subplot(1,2,1); hold on;
 title('Input surface','FontSize',fontSize);
-xlabel('X','FontSize',fontSize);ylabel('Y','FontSize',fontSize); zlabel('Z','FontSize',fontSize);
-hold on;
+gpatch(F,V,'g');
+axisGeom(gca,fontSize); view(2); axis off; 
 
-patch('Faces',F,'Vertices',V,'FaceColor','g','FaceAlpha',1,'EdgeColor','k');
-
-axis equal; view(2); axis tight;  grid on;  set(gca,'FontSize',fontSize);
-
-subplot(1,2,2);
+subplot(1,2,2); hold on;
 title('Output surface','FontSize',fontSize);
-xlabel('X','FontSize',fontSize);ylabel('Y','FontSize',fontSize); zlabel('Z','FontSize',fontSize);
-hold on;
-
-patch('Faces',Ft,'Vertices',Vt,'FaceColor','r','FaceAlpha',1,'EdgeColor','k');
-% plotV(Vt(indRigid,:),'b.','markerSize',25);
-% plotV(Vt(indNodesFaces,:),'y.','markerSize',25);
-axis equal; view(2); axis tight;  grid on;  set(gca,'FontSize',fontSize);
+gpatch(Ft,Vt,'r'); view(2);
+axisGeom(gca,fontSize); view(2); axis off;  
 drawnow;
 
 %% 

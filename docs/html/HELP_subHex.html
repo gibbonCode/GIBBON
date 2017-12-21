@@ -6,7 +6,7 @@
    <!--
 This HTML was auto-generated from MATLAB code.
 To make changes, update the MATLAB code and republish this document.
-      --><title>subHex</title><meta name="generator" content="MATLAB 9.1"><link rel="schema.DC" href="http://purl.org/dc/elements/1.1/"><meta name="DC.date" content="2017-08-18"><meta name="DC.source" content="HELP_subHex.m"><style type="text/css">
+      --><title>subHex</title><meta name="generator" content="MATLAB 9.1"><link rel="schema.DC" href="http://purl.org/dc/elements/1.1/"><meta name="DC.date" content="2017-12-21"><meta name="DC.source" content="HELP_subHex.m"><style type="text/css">
 html,body,div,span,applet,object,iframe,h1,h2,h3,h4,h5,h6,p,blockquote,pre,a,abbr,acronym,address,big,cite,code,del,dfn,em,font,img,ins,kbd,q,s,samp,small,strike,strong,sub,sup,tt,var,b,u,i,center,dl,dt,dd,ol,ul,li,fieldset,form,label,legend,table,caption,tbody,tfoot,thead,tr,th,td{margin:0;padding:0;border:0;outline:0;font-size:100%;vertical-align:baseline;background:transparent}body{line-height:1}ol,ul{list-style:none}blockquote,q{quotes:none}blockquote:before,blockquote:after,q:before,q:after{content:'';content:none}:focus{outine:0}ins{text-decoration:none}del{text-decoration:line-through}table{border-collapse:collapse;border-spacing:0}
 
 html { min-height:100%; margin-bottom:1px; }
@@ -165,24 +165,24 @@ cFigure;
 subplot(2,3,1); hold <span class="string">on</span>;
 title(<span class="string">'Original element set'</span>,<span class="string">'FontSize'</span>,fontSize);
 gpatch(F,V,CF,<span class="string">'k'</span>,1);
-patchNormPlot(F,V);
+<span class="comment">% patchNormPlot(F,V);</span>
 colormap(cMap);
 axisGeom(gca,fontSize);
 
 <span class="keyword">for</span> q=1:1:4
 
-<span class="comment">% Subdeviding the hexahedral element</span>
-splitMethod=q;
-[Es,Vs,Cs]=subHex(E,V,nRefine,splitMethod);
-[Fs,CFs]=element2patch(Es,Cs); <span class="comment">%Patch data for plotting</span>
+    <span class="comment">% Subdeviding the hexahedral element</span>
+    splitMethod=q;
+    [Es,Vs,Cs]=subHex(E,V,nRefine,splitMethod);
+    [Fs,CFs]=element2patch(Es,Cs); <span class="comment">%Patch data for plotting</span>
 
-subplot(2,3,q+1); hold <span class="string">on</span>;
-title([<span class="string">'Refined set method: '</span>,num2str(q)],<span class="string">'FontSize'</span>,fontSize);
-gpatch(Fs,Vs,CFs,<span class="string">'k'</span>,1);
-patchNormPlot(Fs,Vs);
+    subplot(2,3,q+1); hold <span class="string">on</span>;
+    title([<span class="string">'Refined set method: '</span>,num2str(q)],<span class="string">'FontSize'</span>,fontSize);
+    gpatch(Fs,Vs,CFs,<span class="string">'k'</span>,1);
+    <span class="comment">% patchNormPlot(Fs,Vs);</span>
 
-colormap(cMap);
-axisGeom(gca,fontSize);
+    colormap(cMap);
+    axisGeom(gca,fontSize);
 <span class="keyword">end</span>
 drawnow;
 </pre><img vspace="5" hspace="5" src="HELP_subHex_03.png" alt=""> <p><img vspace="5" hspace="5" src="gibbVerySmall.gif" alt=""> </p><p><i><b>GIBBON</b></i> <a href="www.gibboncode.org">www.gibboncode.org</a></p><p><i>Kevin Mattheus Moerman</i>, <a href="gibbon.toolbox@gmail.com">gibbon.toolbox@gmail.com</a></p><p><i><b>GIBBON footer text</b></i></p><p>License: <a href="https://github.com/gibbonCode/GIBBON/blob/master/LICENSE">https://github.com/gibbonCode/GIBBON/blob/master/LICENSE</a></p><p>GIBBON: The Geometry and Image-based Bioengineering add-On. A toolbox for image segmentation, image-based modeling, meshing, and finite element analysis.</p><p>Copyright (C) 2017  Kevin Mattheus Moerman</p><p>This program is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.</p><p>This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for more details.</p><p>You should have received a copy of the GNU General Public License along with this program.  If not, see <a href="http://www.gnu.org/licenses/">http://www.gnu.org/licenses/</a>.</p><p class="footer"><br><a href="http://www.mathworks.com/products/matlab/">Published with MATLAB&reg; R2016b</a><br></p></div><!--
@@ -193,13 +193,13 @@ drawnow;
 %% Syntax
 % |[Es,Vs]=subHex(E,V,n);|
 
-%% Description 
-% 
-%% Example:s 
+%% Description
+%
+%% Example:s
 
 clear; close all; clc;
 
-%% 
+%%
 % Plot settings
 fontSize=15;
 faceColor1='g';
@@ -221,10 +221,10 @@ E=[1:8];
 %%
 % Subdeviding the hexahedral element
 [Es,Vs]=subHex(E,V,1);
- 
+
 [E2s,V2s]=subHex(E,V,2);
 
-%% 
+%%
 % Visualization
 
 [F]=element2patch(E);  %Patch data for plotting
@@ -236,7 +236,7 @@ C2s=(1:1:size(E2s,1))';
 [F2s,CF2s]=element2patch(E2s,C2s); %Patch data for plotting
 
 cFigure;
-subplot(1,3,1); 
+subplot(1,3,1);
 title('Original element','FontSize',fontSize);
 xlabel('X','FontSize',fontSize); ylabel('Y','FontSize',fontSize); zlabel('Z','FontSize',fontSize);
 hold on;
@@ -245,7 +245,7 @@ patch('Faces',F,'Vertices',V,'FaceColor',0.5*ones(1,3),'EdgeColor',edgeColor,'Fa
 view(3); grid on; axis equal; axis tight;
 set(gca,'FontSize',fontSize);
 
-subplot(1,3,2); 
+subplot(1,3,2);
 title('Subdevided once','FontSize',fontSize);
 xlabel('X','FontSize',fontSize); ylabel('Y','FontSize',fontSize); zlabel('Z','FontSize',fontSize);
 hold on;
@@ -256,7 +256,7 @@ colormap(cMap);
 view(3); grid on; axis equal; axis tight;
 set(gca,'FontSize',fontSize);
 
-subplot(1,3,3); 
+subplot(1,3,3);
 title('Subdevided twice','FontSize',fontSize);
 xlabel('X','FontSize',fontSize); ylabel('Y','FontSize',fontSize); zlabel('Z','FontSize',fontSize);
 hold on;
@@ -281,7 +281,7 @@ C=(1:1:size(E,1))';
 %%
 % Subdeviding the hexahedral element
 [Es,Vs,Cs]=subHex(E,V,2);
- 
+
 %%
 % Visualization
 
@@ -290,7 +290,7 @@ C=(1:1:size(E,1))';
 [Fs,CFs]=element2patch(Es,Cs); %Patch data for plotting
 
 cFigure;
-subplot(1,2,1); 
+subplot(1,2,1);
 title('Original element set','FontSize',fontSize);
 xlabel('X','FontSize',fontSize); ylabel('Y','FontSize',fontSize); zlabel('Z','FontSize',fontSize);
 hold on;
@@ -300,7 +300,7 @@ patch('Faces',F,'Vertices',V,'FaceColor','flat','CData',CF,'EdgeColor',edgeColor
 view(3); grid on; axis equal; axis tight;
 set(gca,'FontSize',fontSize);
 
-subplot(1,2,2); 
+subplot(1,2,2);
 title('Subdevided element set','FontSize',fontSize);
 xlabel('X','FontSize',fontSize); ylabel('Y','FontSize',fontSize); zlabel('Z','FontSize',fontSize);
 hold on;
@@ -323,19 +323,19 @@ drawnow;
 % in the element description, the last 4 nodes are the bottom. These
 % splitting methods produce conforming meshes for structured hexahedral
 % meshes as the element orientations may not match up for unstructured
-% hexahedral meshes. 
+% hexahedral meshes.
 
 %%
 % Creating an example hexahedral mesh with stretched elements in
 % z-direction. After splitting in this direction the elements are more
-% homogeneous in shape. 
+% homogeneous in shape.
 
 [V,~]=platonic_solid(2,1);
 E=[1:8];
 [E,V]=subHex(E,V,1);
 C=(1:1:size(E,1))';
 
-nRefine=1; 
+nRefine=1;
 
 %%
 
@@ -345,57 +345,57 @@ cFigure;
 subplot(2,3,1); hold on;
 title('Original element set','FontSize',fontSize);
 gpatch(F,V,CF,'k',1);
-patchNormPlot(F,V);
+% patchNormPlot(F,V);
 colormap(cMap);
 axisGeom(gca,fontSize);
 
 for q=1:1:4
     
-% Subdeviding the hexahedral element
-splitMethod=q; 
-[Es,Vs,Cs]=subHex(E,V,nRefine,splitMethod);
-[Fs,CFs]=element2patch(Es,Cs); %Patch data for plotting
-
-subplot(2,3,q+1); hold on;
-title(['Refined set method: ',num2str(q)],'FontSize',fontSize);
-gpatch(Fs,Vs,CFs,'k',1);
-patchNormPlot(Fs,Vs);
-
-colormap(cMap);
-axisGeom(gca,fontSize);
+    % Subdeviding the hexahedral element
+    splitMethod=q;
+    [Es,Vs,Cs]=subHex(E,V,nRefine,splitMethod);
+    [Fs,CFs]=element2patch(Es,Cs); %Patch data for plotting
+    
+    subplot(2,3,q+1); hold on;
+    title(['Refined set method: ',num2str(q)],'FontSize',fontSize);
+    gpatch(Fs,Vs,CFs,'k',1);
+    % patchNormPlot(Fs,Vs);
+    
+    colormap(cMap);
+    axisGeom(gca,fontSize);
 end
 drawnow;
 
 %%
-% 
+%
 % <<gibbVerySmall.gif>>
-% 
-% _*GIBBON*_ 
+%
+% _*GIBBON*_
 % <www.gibboncode.org>
-% 
+%
 % _Kevin Mattheus Moerman_, <gibbon.toolbox@gmail.com>
- 
-%% 
-% _*GIBBON footer text*_ 
-% 
+
+%%
+% _*GIBBON footer text*_
+%
 % License: <https://github.com/gibbonCode/GIBBON/blob/master/LICENSE>
-% 
+%
 % GIBBON: The Geometry and Image-based Bioengineering add-On. A toolbox for
 % image segmentation, image-based modeling, meshing, and finite element
 % analysis.
-% 
+%
 % Copyright (C) 2017  Kevin Mattheus Moerman
-% 
+%
 % This program is free software: you can redistribute it and/or modify
 % it under the terms of the GNU General Public License as published by
 % the Free Software Foundation, either version 3 of the License, or
 % (at your option) any later version.
-% 
+%
 % This program is distributed in the hope that it will be useful,
 % but WITHOUT ANY WARRANTY; without even the implied warranty of
 % MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 % GNU General Public License for more details.
-% 
+%
 % You should have received a copy of the GNU General Public License
 % along with this program.  If not, see <http://www.gnu.org/licenses/>.
 

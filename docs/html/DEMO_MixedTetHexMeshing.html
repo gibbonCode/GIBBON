@@ -1,0 +1,734 @@
+
+<!DOCTYPE html
+  PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html><head>
+      <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+   <!--
+This HTML was auto-generated from MATLAB code.
+To make changes, update the MATLAB code and republish this document.
+      --><title>DEMO_MixedTetHexMeshing</title><meta name="generator" content="MATLAB 9.1"><link rel="schema.DC" href="http://purl.org/dc/elements/1.1/"><meta name="DC.date" content="2017-12-21"><meta name="DC.source" content="DEMO_MixedTetHexMeshing.m"><style type="text/css">
+html,body,div,span,applet,object,iframe,h1,h2,h3,h4,h5,h6,p,blockquote,pre,a,abbr,acronym,address,big,cite,code,del,dfn,em,font,img,ins,kbd,q,s,samp,small,strike,strong,sub,sup,tt,var,b,u,i,center,dl,dt,dd,ol,ul,li,fieldset,form,label,legend,table,caption,tbody,tfoot,thead,tr,th,td{margin:0;padding:0;border:0;outline:0;font-size:100%;vertical-align:baseline;background:transparent}body{line-height:1}ol,ul{list-style:none}blockquote,q{quotes:none}blockquote:before,blockquote:after,q:before,q:after{content:'';content:none}:focus{outine:0}ins{text-decoration:none}del{text-decoration:line-through}table{border-collapse:collapse;border-spacing:0}
+
+html { min-height:100%; margin-bottom:1px; }
+html body { height:100%; margin:0px; font-family:Arial, Helvetica, sans-serif; font-size:10px; color:#000; line-height:140%; background:#fff none; overflow-y:scroll; }
+html body td { vertical-align:top; text-align:left; }
+
+h1 { padding:0px; margin:0px 0px 25px; font-family:Arial, Helvetica, sans-serif; font-size:1.5em; color:#d55000; line-height:100%; font-weight:normal; }
+h2 { padding:0px; margin:0px 0px 8px; font-family:Arial, Helvetica, sans-serif; font-size:1.2em; color:#000; font-weight:bold; line-height:140%; border-bottom:1px solid #d6d4d4; display:block; }
+h3 { padding:0px; margin:0px 0px 5px; font-family:Arial, Helvetica, sans-serif; font-size:1.1em; color:#000; font-weight:bold; line-height:140%; }
+
+a { color:#005fce; text-decoration:none; }
+a:hover { color:#005fce; text-decoration:underline; }
+a:visited { color:#004aa0; text-decoration:none; }
+
+p { padding:0px; margin:0px 0px 20px; }
+img { padding:0px; margin:0px 0px 20px; border:none; }
+p img, pre img, tt img, li img, h1 img, h2 img { margin-bottom:0px; } 
+
+ul { padding:0px; margin:0px 0px 20px 23px; list-style:square; }
+ul li { padding:0px; margin:0px 0px 7px 0px; }
+ul li ul { padding:5px 0px 0px; margin:0px 0px 7px 23px; }
+ul li ol li { list-style:decimal; }
+ol { padding:0px; margin:0px 0px 20px 0px; list-style:decimal; }
+ol li { padding:0px; margin:0px 0px 7px 23px; list-style-type:decimal; }
+ol li ol { padding:5px 0px 0px; margin:0px 0px 7px 0px; }
+ol li ol li { list-style-type:lower-alpha; }
+ol li ul { padding-top:7px; }
+ol li ul li { list-style:square; }
+
+.content { font-size:1.2em; line-height:140%; padding: 20px; }
+
+pre, code { font-size:12px; }
+tt { font-size: 1.2em; }
+pre { margin:0px 0px 20px; }
+pre.codeinput { padding:10px; border:1px solid #d3d3d3; background:#f7f7f7; }
+pre.codeoutput { padding:10px 11px; margin:0px 0px 20px; color:#4c4c4c; }
+pre.error { color:red; }
+
+@media print { pre.codeinput, pre.codeoutput { word-wrap:break-word; width:100%; } }
+
+span.keyword { color:#0000FF }
+span.comment { color:#228B22 }
+span.string { color:#A020F0 }
+span.untermstring { color:#B20000 }
+span.syscmd { color:#B28C00 }
+
+.footer { width:auto; padding:10px 0px; margin:25px 0px 0px; border-top:1px dotted #878787; font-size:0.8em; line-height:140%; font-style:italic; color:#878787; text-align:left; float:none; }
+.footer p { margin:0px; }
+.footer a { color:#878787; }
+.footer a:hover { color:#878787; text-decoration:underline; }
+.footer a:visited { color:#878787; }
+
+table th { padding:7px 5px; text-align:left; vertical-align:middle; border: 1px solid #d6d4d4; font-weight:bold; }
+table td { padding:7px 5px; text-align:left; vertical-align:top; border:1px solid #d6d4d4; }
+
+
+
+
+
+  </style></head><body><div class="content"><h1>DEMO_MixedTetHexMeshing</h1><!--introduction--><p>Below is a demonstration of how to create a mixed mesh consisting of (linear) hexahedral and tetrahedral elements. The hexahedral mesh is regular while the tetrahedral mesh is derived using TetGen.</p><!--/introduction--><h2>Contents</h2><div><ul><li><a href="#4">CONVERTING A TRIANGULATED SURFACE TO AN IMAGE WITH DESIRED SIZE, VOXEL SIZE AND ORIGIN</a></li><li><a href="#7">GET HEXAHEDRAL ELEMENT SET</a></li><li><a href="#10">Get hole point</a></li><li><a href="#11">Get region point</a></li><li><a href="#19">MERGING NODE SETS</a></li></ul></div><pre class="codeinput">clear; close <span class="string">all</span>; clc;
+</pre><p>Plot settings for the examples below</p><pre class="codeinput">fontSize=20;
+faceAlpha1=1;
+faceAlpha2=0.3;
+plotColors=gjet(4);
+</pre><pre class="codeinput">searchRadius=6;
+</pre><h2 id="4">CONVERTING A TRIANGULATED SURFACE TO AN IMAGE WITH DESIRED SIZE, VOXEL SIZE AND ORIGIN</h2><p>Defining an example triangulated surface model</p><pre class="codeinput">[Fs,Vs]=stanford_bunny;
+</pre><p>Setting control parameters</p><pre class="codeinput"><span class="comment">% Defining the full set of possible control parameters</span>
+voxelSize=6; <span class="comment">% The output image voxel size.</span>
+imOrigin=min(Vs,[],1)-voxelSize;
+imMax=max(Vs,[],1)+voxelSize;
+imSiz=round((imMax-imOrigin)/voxelSize);
+imSiz=imSiz([2 1 3]); <span class="comment">%Image size (x, y corresponds to j,i in image coordinates, hence the permutation)</span>
+
+<span class="comment">% Using |triSurf2Im| function to convert patch data to image data</span>
+[M,~]=triSurf2Im(Fs,Vs,voxelSize,imOrigin,imSiz);
+</pre><p>Plotting the results</p><pre class="codeinput">hf1=cFigure;
+subplot(1,2,1);
+title(<span class="string">'Closed triangulated surface'</span>,<span class="string">'FontSize'</span>,fontSize);
+xlabel(<span class="string">'X'</span>,<span class="string">'FontSize'</span>,fontSize);ylabel(<span class="string">'Y'</span>,<span class="string">'FontSize'</span>,fontSize); zlabel(<span class="string">'Z'</span>,<span class="string">'FontSize'</span>,fontSize);
+hold <span class="string">on</span>;
+gpatch(Fs,Vs,<span class="string">'g'</span>,<span class="string">'none'</span>);
+axis <span class="string">equal</span>; view(3); axis <span class="string">tight</span>;  grid <span class="string">on</span>;  set(gca,<span class="string">'FontSize'</span>,fontSize);
+camlight(<span class="string">'headlight'</span>); lighting <span class="string">phong</span>;
+set(gca,<span class="string">'fontSize'</span>,fontSize);
+
+subplot(1,2,2);
+title(<span class="string">'Boundary, intertior and exterior image'</span>,<span class="string">'FontSize'</span>,fontSize);
+xlabel(<span class="string">'X'</span>,<span class="string">'FontSize'</span>,fontSize);ylabel(<span class="string">'Y'</span>,<span class="string">'FontSize'</span>,fontSize); zlabel(<span class="string">'Z'</span>,<span class="string">'FontSize'</span>,fontSize);
+hold <span class="string">on</span>;
+
+gpatch(Fs,Vs,<span class="string">'g'</span>,<span class="string">'none'</span>,faceAlpha2);
+
+L_plot=false(size(M));
+L_plot(:,:,round(size(M,3)/2))=1;
+[Fm,Vm,Cm]=ind2patch(L_plot,double(M),<span class="string">'sk'</span>);
+[Vm(:,1),Vm(:,2),Vm(:,3)]=im2cart(Vm(:,2),Vm(:,1),Vm(:,3),voxelSize*ones(1,3));
+Vm=Vm+imOrigin(ones(size(Vm,1),1),:);
+gpatch(Fm,Vm,Cm,<span class="string">'k'</span>);
+
+L_plot=false(size(M));L_plot(round(size(M,1)/2),:,:)=1;
+[Fm,Vm,Cm]=ind2patch(L_plot,M,<span class="string">'si'</span>);
+[Vm(:,1),Vm(:,2),Vm(:,3)]=im2cart(Vm(:,2),Vm(:,1),Vm(:,3),voxelSize*ones(1,3));
+Vm=Vm+imOrigin(ones(size(Vm,1),1),:);
+gpatch(Fm,Vm,Cm,<span class="string">'k'</span>);
+
+L_plot=false(size(M));L_plot(:,round(size(M,2)/2),:)=1;
+[Fm,Vm,Cm]=ind2patch(L_plot,M,<span class="string">'sj'</span>);
+[Vm(:,1),Vm(:,2),Vm(:,3)]=im2cart(Vm(:,2),Vm(:,1),Vm(:,3),voxelSize*ones(1,3));
+Vm=Vm+imOrigin(ones(size(Vm,1),1),:);
+gpatch(Fm,Vm,Cm,<span class="string">'k'</span>);
+
+colormap(gray(3)); caxis([0 2]);
+hc=colorbar;
+set(hc,<span class="string">'YTick'</span>,[1/3 1 5/3]);
+set(hc,<span class="string">'YTickLabel'</span>,{<span class="string">'Exterior'</span>,<span class="string">'Boundary'</span>,<span class="string">'Intertior'</span>});
+set(hc,<span class="string">'fontSize'</span>,fontSize);
+axis <span class="string">equal</span>; view(3); axis <span class="string">tight</span>;  grid <span class="string">on</span>;  set(gca,<span class="string">'FontSize'</span>,fontSize);
+set(gca,<span class="string">'fontSize'</span>,fontSize);
+drawnow;
+</pre><img vspace="5" hspace="5" src="DEMO_MixedTetHexMeshing_01.png" alt=""> <h2 id="7">GET HEXAHEDRAL ELEMENT SET</h2><pre class="codeinput">L_model=(M==2); <span class="comment">%Interior&amp;Boundary choosen here</span>
+
+<span class="comment">%Defining erosion/dilation kernel</span>
+k=3;
+p=k-round(k./2);
+hb=zeros(3,3);
+hb(2,2,2)=1;
+hb(2,2,1)=1;
+hb(2,2,3)=1;
+hb(1,2,2)=1;
+hb(3,2,2)=1;
+hb(2,3,2)=1;
+hb(2,1,2)=1;
+
+L_model_rep=zeros(size(L_model)+(2.*p));
+L_model_rep(p+(1:size(L_model,1)),p+(1:size(L_model,2)),p+(1:size(L_model,3)))=L_model;
+L_model_blur = convn(double(L_model_rep),hb,<span class="string">'valid'</span>);
+L_model=L_model_blur&gt;=(sum(hb(:)));
+
+[E_hex,V_hex,C_hex]=ind2patch(L_model,M,<span class="string">'hu'</span>);
+
+<span class="comment">% Convert Coordinates</span>
+[V_hex(:,1),V_hex(:,2),V_hex(:,3)]=im2cart(V_hex(:,2),V_hex(:,1),V_hex(:,3),voxelSize*ones(1,3));
+V_hex=V_hex+imOrigin(ones(size(V_hex,1),1),:);
+
+<span class="comment">% Use element2patch to get patch data to plot the model</span>
+[F_hex_cut1,C_hex_F]=element2patch(E_hex,C_hex);
+
+<span class="comment">%Pass through unique_patch to reduce "weight" of plot</span>
+[Fp,Vp,~,~,~,F_count]=unique_patch(F_hex_cut1,V_hex,[],5);
+logicUni=F_count==1; <span class="comment">%Logic for boundary faces</span>
+
+Fq=Fp(logicUni,:);
+Vq=Vp;
+[Fq,Vq,~]=patchCleanUnused(Fq,Vq);
+
+[Ft,Vt]=quad2tri(Fq,Vq,<span class="string">'b'</span>);
+</pre><p>Plotting the results</p><pre class="codeinput">hf1=cFigure;
+title(<span class="string">'Visualizing internal voxels=hexahedral elements'</span>,<span class="string">'FontSize'</span>,fontSize);
+xlabel(<span class="string">'X'</span>,<span class="string">'FontSize'</span>,fontSize);ylabel(<span class="string">'Y'</span>,<span class="string">'FontSize'</span>,fontSize); zlabel(<span class="string">'Z'</span>,<span class="string">'FontSize'</span>,fontSize);
+hold <span class="string">on</span>;
+
+gpatch(Fs,Vs,0.5*ones(1,3),<span class="string">'none'</span>,faceAlpha2);
+gpatch(Fq,Vq,plotColors(2,:),<span class="string">'k'</span>);
+
+camlight(<span class="string">'headlight'</span>); lighting <span class="string">flat</span>;
+axis <span class="string">equal</span>; view(3); axis <span class="string">tight</span>;  grid <span class="string">on</span>;  set(gca,<span class="string">'FontSize'</span>,fontSize);
+drawnow;
+</pre><img vspace="5" hspace="5" src="DEMO_MixedTetHexMeshing_02.png" alt=""> <pre class="codeinput"><span class="comment">%Joining surface sets</span>
+F=[Fs;Ft+size(Vs,1)];
+V=[Vs;Vt];
+C_tet=[ones(size(Fs,1),1);2*ones(size(Ft,1),1)]; <span class="comment">%Surface marker colors</span>
+</pre><h2 id="10">Get hole point</h2><pre class="codeinput">[V_hole]=getInnerPoint(Ft,Vt,searchRadius,voxelSize/2,0);
+plotV(V_hole,<span class="string">'r.'</span>,<span class="string">'MarkerSize'</span>,25);
+</pre><img vspace="5" hspace="5" src="DEMO_MixedTetHexMeshing_03.png" alt=""> <h2 id="11">Get region point</h2><pre class="codeinput">L_in=(M==1);
+
+[indInternal]=getInnerVoxel(double(L_in),searchRadius,0);
+
+[I_in,J_in,K_in]=ind2sub(size(L_in),indInternal); <span class="comment">%Convert to subscript coordinates</span>
+[X_in,Y_in,Z_in]=im2cart(I_in,J_in,K_in,voxelSize*ones(1,3));
+V_in=[X_in Y_in Z_in];
+V_in=V_in+imOrigin(ones(size(V_in,1),1),:);
+
+plotV(V_in,<span class="string">'k.'</span>,<span class="string">'MarkerSize'</span>,25);
+</pre><img vspace="5" hspace="5" src="DEMO_MixedTetHexMeshing_04.png" alt=""> <p>DEFINE FACE BOUNDARY MARKERS</p><pre class="codeinput">faceBoundaryMarker=C_tet;
+</pre><p>Define region points</p><pre class="codeinput">V_regions=[V_in];
+</pre><p>Define hole points</p><pre class="codeinput">V_holes=[V_hole];
+</pre><p>Regional mesh parameters</p><pre class="codeinput">[edgeLengths]=patchEdgeLengths(F,V);
+edgeLengthsMean=mean(edgeLengths);
+meanProposedVolume=edgeLengthsMean^3./(6*sqrt(2)); <span class="comment">%For regular tetrahedron</span>
+regionA=meanProposedVolume;
+</pre><p>CREATING THE SMESH STRUCTURE, meshing without the surface constraints imposed by the -Y this time.</p><pre class="codeinput">stringOpt=<span class="string">'-pq1.2AaY'</span>;
+
+modelName=<span class="string">'tetGenModel'</span>;
+
+meshStruct.stringOpt=stringOpt;
+meshStruct.Faces=F;
+meshStruct.Nodes=V;
+meshStruct.holePoints=V_holes;
+meshStruct.faceBoundaryMarker=faceBoundaryMarker; <span class="comment">%Face boundary markers</span>
+meshStruct.regionPoints=V_regions; <span class="comment">%region points</span>
+meshStruct.regionA=regionA;
+meshStruct.minRegionMarker=2; <span class="comment">%Minimum region marker</span>
+meshStruct.modelName=modelName;
+</pre><p>Mesh model using tetrahedral elements using tetGen (see: <a href="http://wias-berlin.de/software/tetgen/">http://wias-berlin.de/software/tetgen/</a>)</p><pre class="codeinput">[meshOutput]=runTetGen(meshStruct); <span class="comment">%Run tetGen</span>
+</pre><pre class="codeoutput"> 
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+--- TETGEN Tetrahedral meshing --- 21-Dec-2017 14:11:13
+ 
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+--- Writing SMESH file --- 21-Dec-2017 14:11:13
+----&gt; Adding node field
+----&gt; Adding facet field
+----&gt; Adding holes specification
+----&gt; Adding region specification
+--- Done --- 21-Dec-2017 14:11:14
+--- Running TetGen to mesh input boundary--- 21-Dec-2017 14:11:14
+Opening /mnt/data/MATLAB/GIT/GIBBON/lib_ext/tetGen/tempFiles/tetGenModel.smesh.
+Delaunizing vertices...
+Delaunay seconds:  0.062766
+Creating surface mesh ...
+Surface mesh seconds:  0.01015
+Recovering boundaries...
+Boundary recovery seconds:  0.031269
+Removing exterior tetrahedra ...
+Spreading region attributes.
+Exterior tets removal seconds:  0.008227
+Suppressing Steiner points ...
+Steiner suppression seconds:  7e-06
+Recovering Delaunayness...
+Delaunay recovery seconds:  0.011443
+Refining mesh...
+Refinement seconds:  0.075648
+Optimizing mesh...
+Optimization seconds:  0.012194
+Jettisoning redundant points.
+
+Writing /mnt/data/MATLAB/GIT/GIBBON/lib_ext/tetGen/tempFiles/tetGenModel.1.node.
+Writing /mnt/data/MATLAB/GIT/GIBBON/lib_ext/tetGen/tempFiles/tetGenModel.1.ele.
+Writing /mnt/data/MATLAB/GIT/GIBBON/lib_ext/tetGen/tempFiles/tetGenModel.1.face.
+Writing /mnt/data/MATLAB/GIT/GIBBON/lib_ext/tetGen/tempFiles/tetGenModel.1.edge.
+
+Output seconds:  0.035505
+Total running seconds:  0.247514
+
+Statistics:
+
+  Input points: 2729
+  Input facets: 5460
+  Input segments: 8185
+  Input holes: 1
+  Input regions: 1
+
+  Mesh points: 3514
+  Mesh tetrahedra: 13888
+  Mesh faces: 30506
+  Mesh faces on exterior boundary: 5460
+  Mesh faces on input facets: 5460
+  Mesh edges on input segments: 8185
+  Steiner points inside domain: 785
+
+--- Done --- 21-Dec-2017 14:11:14
+ 
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+--- Importing TetGen files --- 21-Dec-2017 14:11:14
+--- Done --- 21-Dec-2017 14:11:14
+</pre><p>Access model element and patch data</p><pre class="codeinput">F_tet_cut1=meshOutput.faces;
+V_tet=meshOutput.nodes;
+C_tet=meshOutput.faceMaterialID;
+E_tet=meshOutput.elements;
+
+indBoundary=meshOutput.facesBoundary(meshOutput.boundaryMarker==1,:);
+indBoundary=unique(indBoundary(:));
+</pre><h2 id="19">MERGING NODE SETS</h2><pre class="codeinput">V=[V_tet;V_hex];
+E_hex=E_hex+size(V_tet,1);
+
+[~,ind1,ind2]=unique(pround(V,5),<span class="string">'rows'</span>);
+V=V(ind1,:);
+E_tet=ind2(E_tet);
+E_hex=ind2(E_hex);
+indBoundary=ind2(indBoundary);
+
+E={E_tet, E_hex};
+</pre><p>Visualizing mesh</p><pre class="codeinput">cFigure;
+title(<span class="string">'Mixed TET/HEX mesh'</span>,<span class="string">'FontSize'</span>,fontSize);
+
+<span class="comment">%Selecting half of the model to see interior</span>
+X=V(:,2); XE=mean(X(E{1}),2);
+L=XE&gt;mean(X);
+[F_tet_cut1,~]=element2patch(E{1}(L,:),C_tet(L));
+
+<span class="comment">%Selecting half of the model to see interior</span>
+X=V(:,2); XE=mean(X(E{2}),2);
+L=XE&gt;mean(X);
+[F_hex_cut1,~]=element2patch(E{2}(L,:),C_hex(L));
+
+gpatch(F_tet_cut1,V,plotColors(1,:),<span class="string">'k'</span>);
+gpatch(F_hex_cut1,V,plotColors(2,:),<span class="string">'k'</span>);
+gpatch(Fs,Vs,0.5*ones(1,3),<span class="string">'none'</span>,faceAlpha2);
+
+axisGeom(gca,fontSize);
+camlight <span class="string">headlight</span>;
+set(gca,<span class="string">'FontSize'</span>,fontSize);
+drawnow;
+</pre><img vspace="5" hspace="5" src="DEMO_MixedTetHexMeshing_05.png" alt=""> <p>Smoothing meshes</p><pre class="codeinput">cPar.Method=<span class="string">'LAP'</span>;
+cPar.n=25;
+cPar.RigidConstraints=indBoundary;
+
+[F1,~]=element2patch(E{1},[]);
+[F1,~,~]=uniqueIntegerRow(F1);
+[F2,~]=element2patch(E{2},[]);
+[F2,~,~]=uniqueIntegerRow(F2);
+[~,IND_V1,~]=tesIND(F1,V,0);
+[~,IND_V2,~]=tesIND(F2,V,0);
+IND_V=[IND_V1 IND_V2];
+
+[VS]=tesSmooth([],V,IND_V,cPar);
+</pre><p>Visualizing mesh</p><pre class="codeinput">hf=cFigure;
+title(<span class="string">'Mixed TET/HEX mesh'</span>,<span class="string">'FontSize'</span>,fontSize);
+
+<span class="comment">%Selecting half of the model to see interior</span>
+X=V(:,2); XE=mean(X(E{1}),2);
+L=XE&gt;mean(X);
+[F_tet_cut1,~]=element2patch(E{1}(L,:),C_tet(L));
+
+<span class="comment">%Selecting half of the model to see interior</span>
+X=V(:,2); XE=mean(X(E{2}),2);
+L=XE&gt;mean(X);
+[F_hex_cut1,~]=element2patch(E{2}(L,:),C_hex(L));
+
+hp1=gpatch(F_tet_cut1,VS,plotColors(1,:),<span class="string">'k'</span>);
+hp2=gpatch(F_hex_cut1,VS,plotColors(2,:),<span class="string">'k'</span>);
+gpatch(Fs,Vs,0.5*ones(1,3),<span class="string">'none'</span>,faceAlpha2);
+
+axisGeom(gca,fontSize);
+camlight <span class="string">headlight</span>;
+set(gca,<span class="string">'FontSize'</span>,fontSize);
+drawnow;
+</pre><img vspace="5" hspace="5" src="DEMO_MixedTetHexMeshing_06.png" alt=""> <p>Set up animation</p><pre class="codeinput">nSteps=25; <span class="comment">%Number of animation steps</span>
+X=V(:,2);
+XE1=mean(X(E{1}),2);
+XE2=mean(X(E{2}),2);
+
+animStruct.Time=linspace(0,1,nSteps); <span class="comment">%Time vector</span>
+cutLevel=linspace(min(X(:)),max(X(:)),nSteps); <span class="comment">%Property to set</span>
+
+<span class="keyword">for</span> q=1:1:nSteps <span class="comment">%Step through time</span>
+    cutLevelNow=cutLevel(q); <span class="comment">%The current cut level</span>
+
+    L1=XE1&gt;cutLevelNow;
+    [F_tet_cut1,~]=element2patch(E{1}(L1,:));
+
+    L2=XE2&gt;cutLevelNow;
+    [F_hex_cut1,~]=element2patch(E{2}(L2,:));
+
+    <span class="comment">%Set entries in animation structure</span>
+    animStruct.Handles{q}=[hp1 hp2]; <span class="comment">%Handles of objects to animate</span>
+    animStruct.Props{q}={<span class="string">'Faces'</span>,<span class="string">'Faces'</span>}; <span class="comment">%Properties of objects to animate</span>
+    animStruct.Set{q}={F_tet_cut1,F_hex_cut1}; <span class="comment">%Property values for to set in order to animate</span>
+<span class="keyword">end</span>
+
+<span class="comment">%Add animation layer</span>
+anim8(hf,animStruct);
+</pre><img vspace="5" hspace="5" src="DEMO_MixedTetHexMeshing_07.png" alt=""> <p><img vspace="5" hspace="5" src="gibbVerySmall.gif" alt=""> </p><p>GIBBON</p><p>Kevin M. Moerman (<a href="mailto:kevinmoerman@hotmail.com">kevinmoerman@hotmail.com</a>)</p><p><i><b>GIBBON footer text</b></i></p><p>License: <a href="https://github.com/gibbonCode/GIBBON/blob/master/LICENSE">https://github.com/gibbonCode/GIBBON/blob/master/LICENSE</a></p><p>GIBBON: The Geometry and Image-based Bioengineering add-On. A toolbox for image segmentation, image-based modeling, meshing, and finite element analysis.</p><p>Copyright (C) 2017  Kevin Mattheus Moerman</p><p>This program is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.</p><p>This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for more details.</p><p>You should have received a copy of the GNU General Public License along with this program.  If not, see <a href="http://www.gnu.org/licenses/">http://www.gnu.org/licenses/</a>.</p><p class="footer"><br><a href="http://www.mathworks.com/products/matlab/">Published with MATLAB&reg; R2016b</a><br></p></div><!--
+##### SOURCE BEGIN #####
+%% DEMO_MixedTetHexMeshing
+% Below is a demonstration of how to create a mixed mesh consisting of
+% (linear) hexahedral and tetrahedral elements. The hexahedral mesh is
+% regular while the tetrahedral mesh is derived using TetGen. 
+
+%% 
+
+clear; close all; clc;
+
+%%
+% Plot settings for the examples below
+fontSize=20;
+faceAlpha1=1;
+faceAlpha2=0.3;
+plotColors=gjet(4);
+
+%%
+
+searchRadius=6; 
+
+%% CONVERTING A TRIANGULATED SURFACE TO AN IMAGE WITH DESIRED SIZE, VOXEL SIZE AND ORIGIN
+% Defining an example triangulated surface model
+
+[Fs,Vs]=stanford_bunny;
+
+%% 
+% Setting control parameters
+
+% Defining the full set of possible control parameters
+voxelSize=6; % The output image voxel size.  
+imOrigin=min(Vs,[],1)-voxelSize;
+imMax=max(Vs,[],1)+voxelSize;
+imSiz=round((imMax-imOrigin)/voxelSize);
+imSiz=imSiz([2 1 3]); %Image size (x, y corresponds to j,i in image coordinates, hence the permutation)
+
+% Using |triSurf2Im| function to convert patch data to image data
+[M,~]=triSurf2Im(Fs,Vs,voxelSize,imOrigin,imSiz);
+
+%%
+% Plotting the results
+
+hf1=cFigure;
+subplot(1,2,1);
+title('Closed triangulated surface','FontSize',fontSize);
+xlabel('X','FontSize',fontSize);ylabel('Y','FontSize',fontSize); zlabel('Z','FontSize',fontSize);
+hold on;
+gpatch(Fs,Vs,'g','none');
+axis equal; view(3); axis tight;  grid on;  set(gca,'FontSize',fontSize);
+camlight('headlight'); lighting phong;
+set(gca,'fontSize',fontSize);
+
+subplot(1,2,2);
+title('Boundary, intertior and exterior image','FontSize',fontSize);
+xlabel('X','FontSize',fontSize);ylabel('Y','FontSize',fontSize); zlabel('Z','FontSize',fontSize);
+hold on;
+
+gpatch(Fs,Vs,'g','none',faceAlpha2);
+
+L_plot=false(size(M));
+L_plot(:,:,round(size(M,3)/2))=1;
+[Fm,Vm,Cm]=ind2patch(L_plot,double(M),'sk');
+[Vm(:,1),Vm(:,2),Vm(:,3)]=im2cart(Vm(:,2),Vm(:,1),Vm(:,3),voxelSize*ones(1,3));
+Vm=Vm+imOrigin(ones(size(Vm,1),1),:);
+gpatch(Fm,Vm,Cm,'k');
+
+L_plot=false(size(M));L_plot(round(size(M,1)/2),:,:)=1;
+[Fm,Vm,Cm]=ind2patch(L_plot,M,'si');
+[Vm(:,1),Vm(:,2),Vm(:,3)]=im2cart(Vm(:,2),Vm(:,1),Vm(:,3),voxelSize*ones(1,3));
+Vm=Vm+imOrigin(ones(size(Vm,1),1),:);
+gpatch(Fm,Vm,Cm,'k');
+
+L_plot=false(size(M));L_plot(:,round(size(M,2)/2),:)=1;
+[Fm,Vm,Cm]=ind2patch(L_plot,M,'sj');
+[Vm(:,1),Vm(:,2),Vm(:,3)]=im2cart(Vm(:,2),Vm(:,1),Vm(:,3),voxelSize*ones(1,3));
+Vm=Vm+imOrigin(ones(size(Vm,1),1),:);
+gpatch(Fm,Vm,Cm,'k');
+
+colormap(gray(3)); caxis([0 2]);
+hc=colorbar;
+set(hc,'YTick',[1/3 1 5/3]);
+set(hc,'YTickLabel',{'Exterior','Boundary','Intertior'});
+set(hc,'fontSize',fontSize);
+axis equal; view(3); axis tight;  grid on;  set(gca,'FontSize',fontSize);
+set(gca,'fontSize',fontSize);
+drawnow;
+
+%% GET HEXAHEDRAL ELEMENT SET
+
+L_model=(M==2); %Interior&Boundary choosen here
+ 
+%Defining erosion/dilation kernel
+k=3;
+p=k-round(k./2);
+hb=zeros(3,3);
+hb(2,2,2)=1;
+hb(2,2,1)=1;
+hb(2,2,3)=1;
+hb(1,2,2)=1;
+hb(3,2,2)=1;
+hb(2,3,2)=1;
+hb(2,1,2)=1;
+
+L_model_rep=zeros(size(L_model)+(2.*p));
+L_model_rep(p+(1:size(L_model,1)),p+(1:size(L_model,2)),p+(1:size(L_model,3)))=L_model;
+L_model_blur = convn(double(L_model_rep),hb,'valid');
+L_model=L_model_blur>=(sum(hb(:)));
+        
+[E_hex,V_hex,C_hex]=ind2patch(L_model,M,'hu');
+
+% Convert Coordinates
+[V_hex(:,1),V_hex(:,2),V_hex(:,3)]=im2cart(V_hex(:,2),V_hex(:,1),V_hex(:,3),voxelSize*ones(1,3));
+V_hex=V_hex+imOrigin(ones(size(V_hex,1),1),:);
+
+% Use element2patch to get patch data to plot the model
+[F_hex_cut1,C_hex_F]=element2patch(E_hex,C_hex);
+
+%Pass through unique_patch to reduce "weight" of plot
+[Fp,Vp,~,~,~,F_count]=unique_patch(F_hex_cut1,V_hex,[],5);
+logicUni=F_count==1; %Logic for boundary faces
+
+Fq=Fp(logicUni,:);
+Vq=Vp;
+[Fq,Vq,~]=patchCleanUnused(Fq,Vq);
+
+[Ft,Vt]=quad2tri(Fq,Vq,'b');
+
+%%
+% Plotting the results
+
+hf1=cFigure;
+title('Visualizing internal voxels=hexahedral elements','FontSize',fontSize);
+xlabel('X','FontSize',fontSize);ylabel('Y','FontSize',fontSize); zlabel('Z','FontSize',fontSize);
+hold on;
+
+gpatch(Fs,Vs,0.5*ones(1,3),'none',faceAlpha2);
+gpatch(Fq,Vq,plotColors(2,:),'k');
+
+camlight('headlight'); lighting flat;
+axis equal; view(3); axis tight;  grid on;  set(gca,'FontSize',fontSize);
+drawnow;
+
+%%
+
+%Joining surface sets
+F=[Fs;Ft+size(Vs,1)];
+V=[Vs;Vt];
+C_tet=[ones(size(Fs,1),1);2*ones(size(Ft,1),1)]; %Surface marker colors
+
+%% Get hole point
+[V_hole]=getInnerPoint(Ft,Vt,searchRadius,voxelSize/2,0);
+plotV(V_hole,'r.','MarkerSize',25);
+
+%% Get region point
+
+L_in=(M==1);
+
+[indInternal]=getInnerVoxel(double(L_in),searchRadius,0);
+
+[I_in,J_in,K_in]=ind2sub(size(L_in),indInternal); %Convert to subscript coordinates
+[X_in,Y_in,Z_in]=im2cart(I_in,J_in,K_in,voxelSize*ones(1,3));
+V_in=[X_in Y_in Z_in];
+V_in=V_in+imOrigin(ones(size(V_in,1),1),:);
+
+plotV(V_in,'k.','MarkerSize',25);
+
+%%
+% DEFINE FACE BOUNDARY MARKERS
+faceBoundaryMarker=C_tet;
+
+%%
+% Define region points
+V_regions=[V_in];
+
+%%
+% Define hole points
+V_holes=[V_hole];
+
+%% 
+% Regional mesh parameters
+[edgeLengths]=patchEdgeLengths(F,V);
+edgeLengthsMean=mean(edgeLengths);
+meanProposedVolume=edgeLengthsMean^3./(6*sqrt(2)); %For regular tetrahedron
+regionA=meanProposedVolume;
+
+%% 
+% CREATING THE SMESH STRUCTURE, meshing without the surface constraints
+% imposed by the -Y this time. 
+
+stringOpt='-pq1.2AaY';
+
+modelName='tetGenModel';
+
+meshStruct.stringOpt=stringOpt;
+meshStruct.Faces=F;
+meshStruct.Nodes=V;
+meshStruct.holePoints=V_holes;
+meshStruct.faceBoundaryMarker=faceBoundaryMarker; %Face boundary markers
+meshStruct.regionPoints=V_regions; %region points
+meshStruct.regionA=regionA;
+meshStruct.minRegionMarker=2; %Minimum region marker
+meshStruct.modelName=modelName;
+
+%% 
+% Mesh model using tetrahedral elements using tetGen (see:
+% <http://wias-berlin.de/software/tetgen/>)
+
+[meshOutput]=runTetGen(meshStruct); %Run tetGen 
+
+%% 
+% Access model element and patch data
+F_tet_cut1=meshOutput.faces;
+V_tet=meshOutput.nodes;
+C_tet=meshOutput.faceMaterialID;
+E_tet=meshOutput.elements;
+
+indBoundary=meshOutput.facesBoundary(meshOutput.boundaryMarker==1,:);
+indBoundary=unique(indBoundary(:));
+
+%% MERGING NODE SETS
+
+V=[V_tet;V_hex];
+E_hex=E_hex+size(V_tet,1);
+
+[~,ind1,ind2]=unique(pround(V,5),'rows');
+V=V(ind1,:);
+E_tet=ind2(E_tet);
+E_hex=ind2(E_hex);
+indBoundary=ind2(indBoundary);
+
+E={E_tet, E_hex};
+
+%% 
+% Visualizing mesh
+
+cFigure;
+title('Mixed TET/HEX mesh','FontSize',fontSize);
+
+%Selecting half of the model to see interior
+X=V(:,2); XE=mean(X(E{1}),2);
+L=XE>mean(X);
+[F_tet_cut1,~]=element2patch(E{1}(L,:),C_tet(L));
+
+%Selecting half of the model to see interior
+X=V(:,2); XE=mean(X(E{2}),2);
+L=XE>mean(X);
+[F_hex_cut1,~]=element2patch(E{2}(L,:),C_hex(L));
+
+gpatch(F_tet_cut1,V,plotColors(1,:),'k');
+gpatch(F_hex_cut1,V,plotColors(2,:),'k');
+gpatch(Fs,Vs,0.5*ones(1,3),'none',faceAlpha2);
+
+axisGeom(gca,fontSize);
+camlight headlight;
+set(gca,'FontSize',fontSize);
+drawnow; 
+
+%%
+% Smoothing meshes 
+
+cPar.Method='LAP';
+cPar.n=25;
+cPar.RigidConstraints=indBoundary;
+
+[F1,~]=element2patch(E{1},[]);
+[F1,~,~]=uniqueIntegerRow(F1);
+[F2,~]=element2patch(E{2},[]);
+[F2,~,~]=uniqueIntegerRow(F2);
+[~,IND_V1,~]=tesIND(F1,V,0);
+[~,IND_V2,~]=tesIND(F2,V,0);
+IND_V=[IND_V1 IND_V2];
+
+[VS]=tesSmooth([],V,IND_V,cPar);
+
+%% 
+% Visualizing mesh
+
+hf=cFigure;
+title('Mixed TET/HEX mesh','FontSize',fontSize);
+
+%Selecting half of the model to see interior
+X=V(:,2); XE=mean(X(E{1}),2);
+L=XE>mean(X);
+[F_tet_cut1,~]=element2patch(E{1}(L,:),C_tet(L));
+
+%Selecting half of the model to see interior
+X=V(:,2); XE=mean(X(E{2}),2);
+L=XE>mean(X);
+[F_hex_cut1,~]=element2patch(E{2}(L,:),C_hex(L));
+
+hp1=gpatch(F_tet_cut1,VS,plotColors(1,:),'k');
+hp2=gpatch(F_hex_cut1,VS,plotColors(2,:),'k');
+gpatch(Fs,Vs,0.5*ones(1,3),'none',faceAlpha2);
+
+axisGeom(gca,fontSize);
+camlight headlight;
+set(gca,'FontSize',fontSize);
+drawnow; 
+
+
+%%
+% Set up animation
+nSteps=25; %Number of animation steps
+X=V(:,2);
+XE1=mean(X(E{1}),2);
+XE2=mean(X(E{2}),2);
+
+animStruct.Time=linspace(0,1,nSteps); %Time vector
+cutLevel=linspace(min(X(:)),max(X(:)),nSteps); %Property to set
+
+for q=1:1:nSteps %Step through time       
+    cutLevelNow=cutLevel(q); %The current cut level    
+    
+    L1=XE1>cutLevelNow;
+    [F_tet_cut1,~]=element2patch(E{1}(L1,:));
+
+    L2=XE2>cutLevelNow;
+    [F_hex_cut1,~]=element2patch(E{2}(L2,:));
+        
+    %Set entries in animation structure
+    animStruct.Handles{q}=[hp1 hp2]; %Handles of objects to animate
+    animStruct.Props{q}={'Faces','Faces'}; %Properties of objects to animate
+    animStruct.Set{q}={F_tet_cut1,F_hex_cut1}; %Property values for to set in order to animate
+end
+
+%Add animation layer
+anim8(hf,animStruct);
+
+%% 
+%
+% <<gibbVerySmall.gif>>
+% 
+% GIBBON 
+% 
+% Kevin M. Moerman (kevinmoerman@hotmail.com)
+ 
+%% 
+% _*GIBBON footer text*_ 
+% 
+% License: <https://github.com/gibbonCode/GIBBON/blob/master/LICENSE>
+% 
+% GIBBON: The Geometry and Image-based Bioengineering add-On. A toolbox for
+% image segmentation, image-based modeling, meshing, and finite element
+% analysis.
+% 
+% Copyright (C) 2017  Kevin Mattheus Moerman
+% 
+% This program is free software: you can redistribute it and/or modify
+% it under the terms of the GNU General Public License as published by
+% the Free Software Foundation, either version 3 of the License, or
+% (at your option) any later version.
+% 
+% This program is distributed in the hope that it will be useful,
+% but WITHOUT ANY WARRANTY; without even the implied warranty of
+% MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+% GNU General Public License for more details.
+% 
+% You should have received a copy of the GNU General Public License
+% along with this program.  If not, see <http://www.gnu.org/licenses/>.
+
+##### SOURCE END #####
+--></body></html>

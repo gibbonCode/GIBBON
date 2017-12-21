@@ -6,7 +6,7 @@
    <!--
 This HTML was auto-generated from MATLAB code.
 To make changes, update the MATLAB code and republish this document.
-      --><title>DEMO_FEBIO_vessel_fibre_mapping</title><meta name="generator" content="MATLAB 9.1"><link rel="schema.DC" href="http://purl.org/dc/elements/1.1/"><meta name="DC.date" content="2017-12-20"><meta name="DC.source" content="DEMO_FEBIO_vessel_fibre_mapping.m"><style type="text/css">
+      --><title>DEMO_FEBIO_vessel_fibre_mapping</title><meta name="generator" content="MATLAB 9.1"><link rel="schema.DC" href="http://purl.org/dc/elements/1.1/"><meta name="DC.date" content="2017-12-21"><meta name="DC.source" content="DEMO_FEBIO_vessel_fibre_mapping.m"><style type="text/css">
 html,body,div,span,applet,object,iframe,h1,h2,h3,h4,h5,h6,p,blockquote,pre,a,abbr,acronym,address,big,cite,code,del,dfn,em,font,img,ins,kbd,q,s,samp,small,strike,strong,sub,sup,tt,var,b,u,i,center,dl,dt,dd,ol,ul,li,fieldset,form,label,legend,table,caption,tbody,tfoot,thead,tr,th,td{margin:0;padding:0;border:0;outline:0;font-size:100%;vertical-align:baseline;background:transparent}body{line-height:1}ol,ul{list-style:none}blockquote,q{quotes:none}blockquote:before,blockquote:after,q:before,q:after{content:'';content:none}:focus{outine:0}ins{text-decoration:none}del{text-decoration:line-through}table{border-collapse:collapse;border-spacing:0}
 
 html { min-height:100%; margin-bottom:1px; }
@@ -78,7 +78,7 @@ cMap=gjet(250);
 <span class="comment">% path names</span>
 defaultFolder = fileparts(fileparts(mfilename(<span class="string">'fullpath'</span>)));
 savePath=fullfile(defaultFolder,<span class="string">'data'</span>,<span class="string">'temp'</span>);
-</pre><pre class="codeinput"><span class="comment">%Material parameters</span>
+</pre><p>Control parameters</p><pre class="codeinput"><span class="comment">%Material parameters</span>
 c1_1=0.0006618290645;
 m1_1=2.0000011857416;
 ksi_1=0.0000906045135;
@@ -94,6 +94,15 @@ beta_2=3.1728247084040;
 f_2=229.9578182262337;
 k_factor=500;
 k_2=(c1_2+ksi_2)*k_factor;
+
+<span class="comment">%FEA control settings</span>
+nSteps=10; <span class="comment">%Number of time steps desired</span>
+max_refs=25; <span class="comment">%Max reforms</span>
+max_ups=0; <span class="comment">%Set to zero to use full-Newton iterations</span>
+opt_iter=6; <span class="comment">%Optimum number of iterations</span>
+max_retries=5; <span class="comment">%Maximum number of retires</span>
+dtmin=(1/nSteps)/100; <span class="comment">%Minimum time step size</span>
+dtmax=1/nSteps; <span class="comment">%Maximum time step size</span>
 </pre><h2 id="5">BUILDING EXAMPLE SURFACE GEOMETRY</h2><pre class="codeinput"><span class="comment">% Construct regular cylinder</span>
 r=10;
 nr=25;
@@ -243,22 +252,22 @@ modelStruct.modelName=modelName;
 </pre><p>Mesh model using tetrahedral elements using tetGen (see: <a href="http://wias-berlin.de/software/tetgen/">http://wias-berlin.de/software/tetgen/</a>)</p><pre class="codeinput">[meshOutput]=runTetGen(modelStruct); <span class="comment">%Run tetGen</span>
 </pre><pre class="codeoutput"> 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
---- TETGEN Tetrahedral meshing --- 20-Dec-2017 11:10:31
+--- TETGEN Tetrahedral meshing --- 21-Dec-2017 13:54:52
  
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
---- Writing SMESH file --- 20-Dec-2017 11:10:31
+--- Writing SMESH file --- 21-Dec-2017 13:54:52
 ----&gt; Adding node field
 ----&gt; Adding facet field
 ----&gt; Adding holes specification
 ----&gt; Adding region specification
---- Done --- 20-Dec-2017 11:10:31
---- Running TetGen to mesh input boundary--- 20-Dec-2017 11:10:31
+--- Done --- 21-Dec-2017 13:54:53
+--- Running TetGen to mesh input boundary--- 21-Dec-2017 13:54:53
 Opening /mnt/data/MATLAB/GIT/GIBBON/lib_ext/tetGen/tempFiles/tempModel.smesh.
---- Done --- 20-Dec-2017 11:10:32
+--- Done --- 21-Dec-2017 13:54:53
  
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
---- Importing TetGen files --- 20-Dec-2017 11:10:32
---- Done --- 20-Dec-2017 11:10:32
+--- Importing TetGen files --- 21-Dec-2017 13:54:53
+--- Done --- 21-Dec-2017 13:54:53
 </pre><h2 id="16">Visualizing mesh</h2><pre class="codeinput">meshView(meshOutput);
 </pre><img vspace="5" hspace="5" src="DEMO_FEBIO_vessel_fibre_mapping_05.png" alt=""> <pre class="codeinput"><span class="comment">% Accessing the model element and patch data</span>
 FT=meshOutput.faces;
@@ -457,11 +466,11 @@ FEB_struct.Control.AnalysisType=<span class="string">'static'</span>;
 FEB_struct.Control.Properties={<span class="string">'time_steps'</span>,<span class="string">'step_size'</span>,<span class="keyword">...</span>
     <span class="string">'max_refs'</span>,<span class="string">'max_ups'</span>,<span class="keyword">...</span>
     <span class="string">'dtol'</span>,<span class="string">'etol'</span>,<span class="string">'rtol'</span>,<span class="string">'lstol'</span>};
-FEB_struct.Control.Values={10,0.1,<span class="keyword">...</span>
-    15,0,<span class="keyword">...</span>
+FEB_struct.Control.Values={nSteps,1/nSteps,<span class="keyword">...</span>
+    max_refs,max_ups,<span class="keyword">...</span>
     0.001,0.01,0,0.9};
 FEB_struct.Control.TimeStepperProperties={<span class="string">'dtmin'</span>,<span class="string">'dtmax'</span>,<span class="string">'max_retries'</span>,<span class="string">'opt_iter'</span>};
-FEB_struct.Control.TimeStepperValues={1e-5,0.1,10,10};
+FEB_struct.Control.TimeStepperValues={dtmin,dtmax,max_retries,opt_iter};
 
 <span class="comment">%Adding output requests</span>
 FEB_struct.Output.VarTypes={<span class="string">'displacement'</span>,<span class="string">'stress'</span>,<span class="string">'relative volume'</span>,<span class="string">'shell thickness'</span>};
@@ -492,7 +501,7 @@ FEB_struct.LoadData.LoadCurves.loadPoints={[0 0;1 1]};
 febStruct2febFile(FEB_struct);
 </pre><pre class="codeoutput"> 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
---- Writing FEBio XML object --- 20-Dec-2017 11:10:34
+--- Writing FEBio XML object --- 21-Dec-2017 13:54:56
 Adding Module level
 Adding Control level
 Adding Globals level
@@ -513,7 +522,7 @@ Adding Output level
 ----&gt; Adding plotfile field
 ----&gt; Adding logfile field
 Writing .feb file
---- Done --- 20-Dec-2017 11:10:38
+--- Done --- 21-Dec-2017 13:54:59
 </pre><h2 id="27">RUNNING FEBIO JOB</h2><pre class="codeinput">FEBioRunStruct.run_filename=FEB_struct.run_filename;
 FEBioRunStruct.run_logname=FEB_struct.run_logname;
 FEBioRunStruct.disp_on=1;
@@ -526,9 +535,9 @@ FEBioRunStruct.maxLogCheckTime=3; <span class="comment">%Max log file checking t
 [runFlag]=runMonitorFEBio(FEBioRunStruct);<span class="comment">%START FEBio NOW!!!!!!!!</span>
 </pre><pre class="codeoutput"> 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
---- STARTING FEBIO JOB --- 20-Dec-2017 11:10:38
+--- STARTING FEBIO JOB --- 21-Dec-2017 13:54:59
 Waiting for log file...
-Proceeding to check log file...20-Dec-2017 11:10:38
+Proceeding to check log file...21-Dec-2017 13:54:59
 ------- converged at time : 0.1
 ------- converged at time : 0.2
 ------- converged at time : 0.3
@@ -539,7 +548,7 @@ Proceeding to check log file...20-Dec-2017 11:10:38
 ------- converged at time : 0.8
 ------- converged at time : 0.9
 ------- converged at time : 1
---- Done --- 20-Dec-2017 11:10:40
+--- Done --- 21-Dec-2017 13:55:01
 </pre><h2 id="28">IMPORTING NODAL DISPLACEMENT RESULTS</h2><p>Importing nodal displacements from a log file</p><pre class="codeinput">[~, N_disp_mat,~]=importFEBio_logfile(fullfile(savePath,FEB_struct.run_output_names{1})); <span class="comment">%Nodal displacements</span>
 DN=N_disp_mat(:,2:end,end); <span class="comment">%Final nodal displacements</span>
 
@@ -633,6 +642,7 @@ defaultFolder = fileparts(fileparts(mfilename('fullpath')));
 savePath=fullfile(defaultFolder,'data','temp');
 
 %%
+% Control parameters
 
 %Material parameters
 c1_1=0.0006618290645;
@@ -650,6 +660,15 @@ beta_2=3.1728247084040;
 f_2=229.9578182262337;
 k_factor=500; 
 k_2=(c1_2+ksi_2)*k_factor;
+
+%FEA control settings
+nSteps=10; %Number of time steps desired
+max_refs=25; %Max reforms
+max_ups=0; %Set to zero to use full-Newton iterations
+opt_iter=6; %Optimum number of iterations
+max_retries=5; %Maximum number of retires
+dtmin=(1/nSteps)/100; %Minimum time step size
+dtmax=1/nSteps; %Maximum time step size
 
 %% BUILDING EXAMPLE SURFACE GEOMETRY
 
@@ -1063,11 +1082,11 @@ FEB_struct.Control.AnalysisType='static';
 FEB_struct.Control.Properties={'time_steps','step_size',...
     'max_refs','max_ups',...
     'dtol','etol','rtol','lstol'};
-FEB_struct.Control.Values={10,0.1,...
-    15,0,...
+FEB_struct.Control.Values={nSteps,1/nSteps,...
+    max_refs,max_ups,...
     0.001,0.01,0,0.9};
 FEB_struct.Control.TimeStepperProperties={'dtmin','dtmax','max_retries','opt_iter'};
-FEB_struct.Control.TimeStepperValues={1e-5,0.1,10,10};
+FEB_struct.Control.TimeStepperValues={dtmin,dtmax,max_retries,opt_iter};
 
 %Adding output requests
 FEB_struct.Output.VarTypes={'displacement','stress','relative volume','shell thickness'};

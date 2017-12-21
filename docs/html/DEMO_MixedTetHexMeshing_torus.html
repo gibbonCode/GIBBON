@@ -6,7 +6,7 @@
    <!--
 This HTML was auto-generated from MATLAB code.
 To make changes, update the MATLAB code and republish this document.
-      --><title>DEMO_MixedTetHexMeshing_torus</title><meta name="generator" content="MATLAB 9.1"><link rel="schema.DC" href="http://purl.org/dc/elements/1.1/"><meta name="DC.date" content="2017-08-18"><meta name="DC.source" content="DEMO_MixedTetHexMeshing_torus.m"><style type="text/css">
+      --><title>DEMO_MixedTetHexMeshing_torus</title><meta name="generator" content="MATLAB 9.1"><link rel="schema.DC" href="http://purl.org/dc/elements/1.1/"><meta name="DC.date" content="2017-12-21"><meta name="DC.source" content="DEMO_MixedTetHexMeshing_torus.m"><style type="text/css">
 html,body,div,span,applet,object,iframe,h1,h2,h3,h4,h5,h6,p,blockquote,pre,a,abbr,acronym,address,big,cite,code,del,dfn,em,font,img,ins,kbd,q,s,samp,small,strike,strong,sub,sup,tt,var,b,u,i,center,dl,dt,dd,ol,ul,li,fieldset,form,label,legend,table,caption,tbody,tfoot,thead,tr,th,td{margin:0;padding:0;border:0;outline:0;font-size:100%;vertical-align:baseline;background:transparent}body{line-height:1}ol,ul{list-style:none}blockquote,q{quotes:none}blockquote:before,blockquote:after,q:before,q:after{content:'';content:none}:focus{outine:0}ins{text-decoration:none}del{text-decoration:line-through}table{border-collapse:collapse;border-spacing:0}
 
 html { min-height:100%; margin-bottom:1px; }
@@ -220,20 +220,20 @@ smeshStruct.smeshName=smeshName;
 </pre><p>Mesh model using tetrahedral elements using tetGen (see: <a href="http://wias-berlin.de/software/tetgen/">http://wias-berlin.de/software/tetgen/</a>)</p><pre class="codeinput">[meshOutput]=runTetGen(smeshStruct); <span class="comment">%Run tetGen</span>
 </pre><pre class="codeoutput"> 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
---- TETGEN Tetrahedral meshing --- 18-Aug-2017 15:06:46
+--- TETGEN Tetrahedral meshing --- 21-Dec-2017 14:11:30
 Warning: smeshStruct.smeshName input will be replaced by smeshStruct.modelName
 in future releases! 
  
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
---- Writing SMESH file --- 18-Aug-2017 15:06:46
+--- Writing SMESH file --- 21-Dec-2017 14:11:30
 Warning: smeshStruct.smeshName input will be replaced by smeshStruct.modelName
 in future releases! 
 ----&gt; Adding node field
 ----&gt; Adding facet field
 ----&gt; Adding holes specification
 ----&gt; Adding region specification
---- Done --- 18-Aug-2017 15:06:47
---- Running TetGen to mesh input boundary--- 18-Aug-2017 15:06:47
+--- Done --- 21-Dec-2017 14:11:30
+--- Running TetGen to mesh input boundary--- 21-Dec-2017 14:11:30
 Opening /mnt/data/MATLAB/GIT/GIBBON/lib_ext/tetGen/tempFiles/tetGenModel.smesh.
   Initializing memorypools.
   tetrahedron per block: 8188.
@@ -269,18 +269,18 @@ Opening /mnt/data/MATLAB/GIT/GIBBON/lib_ext/tetGen/tempFiles/tetGenModel.smesh.
   Removed 365 edges.
   0 duplicated vertices are removed.
   2 unused vertices are removed.
---- Done --- 18-Aug-2017 15:06:47
+--- Done --- 21-Dec-2017 14:11:31
  
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
---- Importing TetGen files --- 18-Aug-2017 15:06:47
---- Done --- 18-Aug-2017 15:06:47
+--- Importing TetGen files --- 21-Dec-2017 14:11:31
+--- Done --- 21-Dec-2017 14:11:31
 </pre><p>Access model element and patch data</p><pre class="codeinput">F_tet=meshOutput.faces;
 V_tet=meshOutput.nodes;
 C_tet=meshOutput.faceMaterialID;
 E_tet=meshOutput.elements;
 
-indBoundary=meshOutput.facesBoundary(meshOutput.boundaryMarker==1);
-indBoundary=unique(indBoundary);
+indBoundary=meshOutput.facesBoundary(meshOutput.boundaryMarker==1,:);
+indBoundary=unique(indBoundary(:));
 </pre><h2 id="19">MERGING NODE SETS</h2><pre class="codeinput">V=[V_tet;V_hex];
 E_hex=E_hex+size(V_tet,1);
 
@@ -623,8 +623,8 @@ V_tet=meshOutput.nodes;
 C_tet=meshOutput.faceMaterialID;
 E_tet=meshOutput.elements;
 
-indBoundary=meshOutput.facesBoundary(meshOutput.boundaryMarker==1);
-indBoundary=unique(indBoundary);
+indBoundary=meshOutput.facesBoundary(meshOutput.boundaryMarker==1,:);
+indBoundary=unique(indBoundary(:));
 
 %% MERGING NODE SETS
 

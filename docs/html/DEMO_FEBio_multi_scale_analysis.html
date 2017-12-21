@@ -1,0 +1,733 @@
+
+<!DOCTYPE html
+  PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html><head>
+      <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+   <!--
+This HTML was auto-generated from MATLAB code.
+To make changes, update the MATLAB code and republish this document.
+      --><title>DEMO_FEBio_multi_scale_analysis</title><meta name="generator" content="MATLAB 9.1"><link rel="schema.DC" href="http://purl.org/dc/elements/1.1/"><meta name="DC.date" content="2017-12-21"><meta name="DC.source" content="DEMO_FEBio_multi_scale_analysis.m"><style type="text/css">
+html,body,div,span,applet,object,iframe,h1,h2,h3,h4,h5,h6,p,blockquote,pre,a,abbr,acronym,address,big,cite,code,del,dfn,em,font,img,ins,kbd,q,s,samp,small,strike,strong,sub,sup,tt,var,b,u,i,center,dl,dt,dd,ol,ul,li,fieldset,form,label,legend,table,caption,tbody,tfoot,thead,tr,th,td{margin:0;padding:0;border:0;outline:0;font-size:100%;vertical-align:baseline;background:transparent}body{line-height:1}ol,ul{list-style:none}blockquote,q{quotes:none}blockquote:before,blockquote:after,q:before,q:after{content:'';content:none}:focus{outine:0}ins{text-decoration:none}del{text-decoration:line-through}table{border-collapse:collapse;border-spacing:0}
+
+html { min-height:100%; margin-bottom:1px; }
+html body { height:100%; margin:0px; font-family:Arial, Helvetica, sans-serif; font-size:10px; color:#000; line-height:140%; background:#fff none; overflow-y:scroll; }
+html body td { vertical-align:top; text-align:left; }
+
+h1 { padding:0px; margin:0px 0px 25px; font-family:Arial, Helvetica, sans-serif; font-size:1.5em; color:#d55000; line-height:100%; font-weight:normal; }
+h2 { padding:0px; margin:0px 0px 8px; font-family:Arial, Helvetica, sans-serif; font-size:1.2em; color:#000; font-weight:bold; line-height:140%; border-bottom:1px solid #d6d4d4; display:block; }
+h3 { padding:0px; margin:0px 0px 5px; font-family:Arial, Helvetica, sans-serif; font-size:1.1em; color:#000; font-weight:bold; line-height:140%; }
+
+a { color:#005fce; text-decoration:none; }
+a:hover { color:#005fce; text-decoration:underline; }
+a:visited { color:#004aa0; text-decoration:none; }
+
+p { padding:0px; margin:0px 0px 20px; }
+img { padding:0px; margin:0px 0px 20px; border:none; }
+p img, pre img, tt img, li img, h1 img, h2 img { margin-bottom:0px; } 
+
+ul { padding:0px; margin:0px 0px 20px 23px; list-style:square; }
+ul li { padding:0px; margin:0px 0px 7px 0px; }
+ul li ul { padding:5px 0px 0px; margin:0px 0px 7px 23px; }
+ul li ol li { list-style:decimal; }
+ol { padding:0px; margin:0px 0px 20px 0px; list-style:decimal; }
+ol li { padding:0px; margin:0px 0px 7px 23px; list-style-type:decimal; }
+ol li ol { padding:5px 0px 0px; margin:0px 0px 7px 0px; }
+ol li ol li { list-style-type:lower-alpha; }
+ol li ul { padding-top:7px; }
+ol li ul li { list-style:square; }
+
+.content { font-size:1.2em; line-height:140%; padding: 20px; }
+
+pre, code { font-size:12px; }
+tt { font-size: 1.2em; }
+pre { margin:0px 0px 20px; }
+pre.codeinput { padding:10px; border:1px solid #d3d3d3; background:#f7f7f7; }
+pre.codeoutput { padding:10px 11px; margin:0px 0px 20px; color:#4c4c4c; }
+pre.error { color:red; }
+
+@media print { pre.codeinput, pre.codeoutput { word-wrap:break-word; width:100%; } }
+
+span.keyword { color:#0000FF }
+span.comment { color:#228B22 }
+span.string { color:#A020F0 }
+span.untermstring { color:#B20000 }
+span.syscmd { color:#B28C00 }
+
+.footer { width:auto; padding:10px 0px; margin:25px 0px 0px; border-top:1px dotted #878787; font-size:0.8em; line-height:140%; font-style:italic; color:#878787; text-align:left; float:none; }
+.footer p { margin:0px; }
+.footer a { color:#878787; }
+.footer a:hover { color:#878787; text-decoration:underline; }
+.footer a:visited { color:#878787; }
+
+table th { padding:7px 5px; text-align:left; vertical-align:middle; border: 1px solid #d6d4d4; font-weight:bold; }
+table td { padding:7px 5px; text-align:left; vertical-align:top; border:1px solid #d6d4d4; }
+
+
+
+
+
+  </style></head><body><div class="content"><h1>DEMO_FEBio_multi_scale_analysis</h1><!--introduction--><p>Below is a demonstration for: 1) Importing data from a pre-run model 2) Doing multi-scale analysis for each element</p><!--/introduction--><h2>Contents</h2><div><ul><li><a href="#2">First run other demo with hexahedral elements</a></li><li><a href="#8">Run a for loop for all desired elements</a></li><li><a href="#10">Retrieve initial and deformed state</a></li><li><a href="#11">Map source elements to target in both states</a></li><li><a href="#12">Visualization</a></li><li><a href="#14">CONSTRUCTING FEB MODEL</a></li><li><a href="#15">SAVING .FEB FILE</a></li><li><a href="#16">RUNNING FEBIO JOB</a></li></ul></div><pre class="codeinput">clear; close <span class="string">all</span>; clc;
+</pre><h2 id="2">First run other demo with hexahedral elements</h2><pre class="codeinput">DEMO_FEBio_block_uniaxial_compression;
+
+close <span class="string">all</span>; <span class="comment">%Close figures</span>
+</pre><pre class="codeoutput"> 
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+--- Writing FEBio XML object --- 21-Dec-2017 14:04:23
+Adding Module level
+Adding Control level
+Adding Globals level
+Adding Material level
+Adding Geometry level
+----&gt; Adding node field
+----&gt; Adding element field
+----&gt; Adding hex8 element entries....
+----&gt; Adding NodeSet field
+Adding Boundary level
+----&gt; Defining fix type boundary conditions
+----&gt; Defining prescribe type boundary conditions
+Adding LoadData level
+----&gt; Defining load curves
+Adding Output level
+----&gt; Adding plotfile field
+----&gt; Adding logfile field
+Writing .feb file
+--- Done --- 21-Dec-2017 14:04:23
+ 
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+--- STARTING FEBIO JOB --- 21-Dec-2017 14:04:23
+Waiting for log file...
+Proceeding to check log file...21-Dec-2017 14:04:24
+------- converged at time : 0.1
+------- converged at time : 0.2
+------- converged at time : 0.3
+------- converged at time : 0.4
+------- converged at time : 0.5
+------- converged at time : 0.6
+------- converged at time : 0.7
+------- converged at time : 0.8
+------- converged at time : 0.9
+------- converged at time : 1
+--- Done --- 21-Dec-2017 14:04:24
+</pre><p>Plot settings</p><pre class="codeinput">fontSize=15;
+faceColor1=<span class="string">'g'</span>;
+faceColor2=<span class="string">'r'</span>;
+faceAlpha1=0.3;
+faceAlpha2=1;
+edgeColor=0.*ones(1,3);
+edgeWidth=2;
+markerSize=2;
+cMap=gjet(250);
+</pre><p>Control parameters</p><pre class="codeinput"><span class="comment">% path names</span>
+defaultFolder = fileparts(fileparts(mfilename(<span class="string">'fullpath'</span>)));
+savePath=fullfile(defaultFolder,<span class="string">'data'</span>,<span class="string">'temp'</span>);
+
+modelNameEnd=<span class="string">'tempModel'</span>;
+modelName=fullfile(savePath,modelNameEnd);
+
+<span class="comment">%Material parameters</span>
+<span class="comment">%1=core, material 2=cell mantel, 3=ecm</span>
+
+k_factor=200;
+
+c1=1e-3;
+m1=2;
+k1=c1*k_factor;
+
+c2=2*c1;
+m2=2;
+k2=c2*k_factor;
+
+c3=c1/3;
+m3=2;
+k3=c3*k_factor;
+
+<span class="comment">% FEA control settings</span>
+numTimeSteps=10; <span class="comment">%Number of time steps desired</span>
+max_refs=25; <span class="comment">%Max reforms</span>
+max_ups=0; <span class="comment">%Set to zero to use full-Newton iterations</span>
+opt_iter=6; <span class="comment">%Optimum number of iterations</span>
+max_retries=5; <span class="comment">%Maximum number of retires</span>
+dtmin=(1/numTimeSteps)/100; <span class="comment">%Minimum time step size</span>
+dtmax=1/numTimeSteps; <span class="comment">%Maximum time step size</span>
+</pre><pre class="codeinput">cPar.boxWidth=1;
+cPar.OuterSphereRadius=cPar.boxWidth/6;
+cPar.InnerSphereRadius=cPar.OuterSphereRadius/2;
+cPar.CoreSphereRadius=cPar.InnerSphereRadius/2;
+cPar.numElementsCube=10;
+cPar.numElementsCubeSphere=4;
+cPar.numElementsSphereMantel=4;
+cPar.numElementsSphereCore=4;
+cPar.nSmooth=15;
+
+[Es,Vs,elementMaterialIndices,Fbs,Cbs]=hexMeshCubeSphere(cPar);
+
+<span class="comment">%Create cut view</span>
+Y=Vs(:,2); YE=mean(Y(Es),2);
+L=YE&gt;mean(Y);
+[Fs,Cs]=element2patch(Es(L,:),elementMaterialIndices(L,:),<span class="string">'hex8'</span>);
+</pre><pre class="codeinput">VI=[0 0 0; 1 0 0; 1 1 0; 0 1 0; 0 0 1; 1 0 1; 1 1 1; 0 1 1;]-0.5;
+EI=[1:8];
+
+[FI,~]=element2patch(EI); <span class="comment">%Patch data for plotting</span>
+
+Sn=[-1 -1 -1; 1 -1 -1; 1  1 -1; -1  1 -1; -1 -1  1; 1 -1  1; 1  1  1; -1  1  1];
+
+Vx=[ones(1,8); VI'];
+Vx_inv=pinv(Vx);
+
+S=Vs;
+N=zeros(8,size(Vs,1));
+<span class="keyword">for</span> q=1:1:size(S,1)
+    p=Vs(q,:);<span class="comment">%mean(V,1);</span>
+    px=[1; p(:)];
+    n=Vx_inv*px;
+    N(:,q)=n;
+    S(q,:)=(Sn'*n)';
+<span class="keyword">end</span>
+
+a=1; b=1; c=1;
+<span class="keyword">for</span> q=1:1:size(S,1)
+    N(:,q)=1/8*(1+2*S(q,1)*VI(:,1)/a).*(1+2*S(q,2)*VI(:,2)/b).*(1+2*S(q,3)*VI(:,3)/c);
+<span class="keyword">end</span>
+</pre><pre class="codeinput">cFigure; hold <span class="string">on</span>;
+title(<span class="string">'Cut-view of the mesh'</span>,<span class="string">'FontSize'</span>,fontSize);
+
+gpatch(Fs,Vs,Cs);
+gpatch(FI,VI,0.5*ones(1,3),<span class="string">'k'</span>,0.25);
+
+axisGeom(gca,fontSize);
+colormap(gca,gjet(3)); icolorbar;
+camlight <span class="string">headlight</span>;
+
+drawnow;
+</pre><img vspace="5" hspace="5" src="DEMO_FEBio_multi_scale_analysis_01.png" alt=""> <h2 id="8">Run a for loop for all desired elements</h2><pre class="codeinput">numElements=size(E,1);
+
+<span class="keyword">for</span> qElement=1<span class="comment">%:1:numElements</span>
+</pre><h2 id="10">Retrieve initial and deformed state</h2><pre class="codeinput">    E_now=E(qElement,:);
+    V_now=V(E_now,:);
+    V_now2=V_def(E_now,:);
+</pre><h2 id="11">Map source elements to target in both states</h2><pre class="codeinput">    Vs_now=zeros(size(Vs));
+    Vs_now2=zeros(size(Vs));
+    <span class="keyword">for</span> q=1:1:size(Vs,1)
+        Vs_now(q,:)=sum(N(:,q*ones(1,size(Vs,2))).*V_now,1);
+        Vs_now2(q,:)=sum(N(:,q*ones(1,size(Vs,2))).*V_now2,1);
+    <span class="keyword">end</span>
+</pre><h2 id="12">Visualization</h2><pre class="codeinput">    cFigure;
+    subplot(2,2,1); hold <span class="string">on</span>;
+    title(<span class="string">'Source mesh'</span>);
+
+    gpatch(FI,VI,0.5*ones(1,3),<span class="string">'k'</span>,0.25); <span class="comment">%Original mother mesh</span>
+    gpatch(Fs,Vs,Cs); <span class="comment">%Mapped mesh</span>
+
+    colormap(gca,cMap); <span class="comment">%colorbar;</span>
+    axisGeom(gca,fontSize);
+    camlight <span class="string">headlight</span>;
+
+    subplot(2,2,2); hold <span class="string">on</span>;
+    title(<span class="string">'Target mesh'</span>);
+
+    gpatch(FI,V_now2,0.5*ones(1,3),<span class="string">'k'</span>,0.25); <span class="comment">%Original mother mesh</span>
+    gpatch(Fs,Vs_now2,Cs); <span class="comment">%Mapped mesh</span>
+
+    colormap(gca,cMap); <span class="comment">%colorbar;</span>
+    axisGeom(gca,fontSize);
+    camlight <span class="string">headlight</span>;
+
+    subplot(2,2,3); hold <span class="string">on</span>;
+    title(<span class="string">'Target mesh intial state'</span>);
+
+    gpatch(Fbs,Vs_now,Cbs,<span class="string">'none'</span>,0.5);
+
+    colormap(gca,gjet(9)); icolorbar;
+    axisGeom(gca,fontSize);
+    camlight <span class="string">headlight</span>;
+
+    subplot(2,2,4); hold <span class="string">on</span>;
+    title(<span class="string">'Target mesh in deformed state'</span>);
+
+    gpatch(Fbs,Vs_now2,Cbs,<span class="string">'none'</span>,0.5);
+
+    colormap(gca,gjet(9)); icolorbar;
+    axisGeom(gca,fontSize);
+    camlight <span class="string">headlight</span>;
+
+    drawnow;
+</pre><img vspace="5" hspace="5" src="DEMO_FEBio_multi_scale_analysis_02.png" alt=""> <pre class="codeinput">    F_out=Fbs(ismember(Cbs,1:6),:);
+    bcPrescribeList=unique(F_out(:));
+
+    displacement_now=Vs_now2-Vs_now;
+    displacement_prescribe=displacement_now(bcPrescribeList,:);
+</pre><h2 id="14">CONSTRUCTING FEB MODEL</h2><pre class="codeinput">    FEB_struct.febio_spec.version=<span class="string">'2.0'</span>;
+    FEB_struct.Module.Type=<span class="string">'solid'</span>;
+
+    <span class="comment">% Defining file names</span>
+    FEB_struct.run_filename=[modelName,<span class="string">'.feb'</span>]; <span class="comment">%FEB file name</span>
+    FEB_struct.run_logname=[modelName,<span class="string">'.txt'</span>]; <span class="comment">%FEBio log file name</span>
+
+    <span class="comment">%Geometry section</span>
+    FEB_struct.Geometry.Nodes=Vs_now;
+    FEB_struct.Geometry.Elements={Es}; <span class="comment">%The element sets</span>
+    FEB_struct.Geometry.ElementType={<span class="string">'hex8'</span>}; <span class="comment">%The element types</span>
+    FEB_struct.Geometry.ElementMat={elementMaterialIndices};
+    FEB_struct.Geometry.ElementsPartName={<span class="string">'Multiscale element'</span>};
+
+    <span class="comment">%Material section</span>
+    FEB_struct.Materials{1}.Type=<span class="string">'Ogden'</span>;
+    FEB_struct.Materials{1}.Name=<span class="string">'Block_material'</span>;
+    FEB_struct.Materials{1}.Properties={<span class="string">'c1'</span>,<span class="string">'m1'</span>,<span class="string">'k'</span>};
+    FEB_struct.Materials{1}.Values={c1,m1,k};
+
+    FEB_struct.Materials{2}.Type=<span class="string">'Ogden'</span>;
+    FEB_struct.Materials{2}.Name=<span class="string">'Block_material'</span>;
+    FEB_struct.Materials{2}.Properties={<span class="string">'c1'</span>,<span class="string">'m1'</span>,<span class="string">'k'</span>};
+    FEB_struct.Materials{2}.Values={c2,m2,k};
+
+    FEB_struct.Materials{3}.Type=<span class="string">'Ogden'</span>;
+    FEB_struct.Materials{3}.Name=<span class="string">'Block_material'</span>;
+    FEB_struct.Materials{3}.Properties={<span class="string">'c1'</span>,<span class="string">'m1'</span>,<span class="string">'k'</span>};
+    FEB_struct.Materials{3}.Values={c3,m3,k};
+
+    <span class="comment">%Control section</span>
+    FEB_struct.Control.AnalysisType=<span class="string">'static'</span>;
+    FEB_struct.Control.Properties={<span class="string">'time_steps'</span>,<span class="string">'step_size'</span>,<span class="keyword">...</span>
+        <span class="string">'max_refs'</span>,<span class="string">'max_ups'</span>,<span class="keyword">...</span>
+        <span class="string">'dtol'</span>,<span class="string">'etol'</span>,<span class="string">'rtol'</span>,<span class="string">'lstol'</span>};
+    FEB_struct.Control.Values={numTimeSteps,1/numTimeSteps,<span class="keyword">...</span>
+        max_refs,max_ups,<span class="keyword">...</span>
+        0.001,0.01,0,0.9};
+    FEB_struct.Control.TimeStepperProperties={<span class="string">'dtmin'</span>,<span class="string">'dtmax'</span>,<span class="string">'max_retries'</span>,<span class="string">'opt_iter'</span>};
+    FEB_struct.Control.TimeStepperValues={dtmin,dtmax,max_retries,opt_iter};
+
+    <span class="comment">%Defining node sets</span>
+    FEB_struct.Geometry.NodeSet{1}.Set=bcSupportList_X;
+    FEB_struct.Geometry.NodeSet{1}.Name=<span class="string">'bcSupportList_X'</span>;
+    FEB_struct.Geometry.NodeSet{2}.Set=bcSupportList_Y;
+    FEB_struct.Geometry.NodeSet{2}.Name=<span class="string">'bcSupportList_Y'</span>;
+    FEB_struct.Geometry.NodeSet{3}.Set=bcSupportList_Z;
+    FEB_struct.Geometry.NodeSet{3}.Name=<span class="string">'bcSupportList_Z'</span>;
+    <span class="comment">% FEB_struct.Geometry.NodeSet{4}.Set=bcPrescribeList;</span>
+    <span class="comment">% FEB_struct.Geometry.NodeSet{4}.Name='bcPrescribeList';</span>
+
+    <span class="comment">%Adding BC information</span>
+    FEB_struct.Boundary.Prescribe{1}.Set=bcPrescribeList;
+    FEB_struct.Boundary.Prescribe{1}.bc=<span class="string">'x'</span>;
+    FEB_struct.Boundary.Prescribe{1}.lc=1;
+    FEB_struct.Boundary.Prescribe{1}.nodeScale=displacement_prescribe(:,1);
+    FEB_struct.Boundary.Prescribe{1}.Type=<span class="string">'relative'</span>;
+
+    FEB_struct.Boundary.Prescribe{2}.Set=bcPrescribeList;
+    FEB_struct.Boundary.Prescribe{2}.bc=<span class="string">'y'</span>;
+    FEB_struct.Boundary.Prescribe{2}.lc=1;
+    FEB_struct.Boundary.Prescribe{2}.nodeScale=displacement_prescribe(:,2);
+    FEB_struct.Boundary.Prescribe{2}.Type=<span class="string">'relative'</span>;
+
+    FEB_struct.Boundary.Prescribe{3}.Set=bcPrescribeList;
+    FEB_struct.Boundary.Prescribe{3}.bc=<span class="string">'z'</span>;
+    FEB_struct.Boundary.Prescribe{3}.lc=1;
+    FEB_struct.Boundary.Prescribe{3}.nodeScale=displacement_prescribe(:,3);
+    FEB_struct.Boundary.Prescribe{3}.Type=<span class="string">'relative'</span>;
+
+    <span class="comment">%Load curves</span>
+    FEB_struct.LoadData.LoadCurves.id=1;
+    FEB_struct.LoadData.LoadCurves.type={<span class="string">'linear'</span>};
+    FEB_struct.LoadData.LoadCurves.loadPoints={[0 0;1 1;]};
+
+    <span class="comment">%Adding output requests</span>
+    FEB_struct.Output.VarTypes={<span class="string">'displacement'</span>,<span class="string">'stress'</span>,<span class="string">'relative volume'</span>};
+
+    <span class="comment">%Specify log file output</span>
+    run_disp_output_name=[modelNameEnd,<span class="string">'_node_out.txt'</span>];
+    run_force_output_name=[modelNameEnd,<span class="string">'_force_out.txt'</span>];
+    FEB_struct.run_output_names={run_disp_output_name,run_force_output_name};
+    FEB_struct.output_types={<span class="string">'node_data'</span>,<span class="string">'node_data'</span>};
+    FEB_struct.data_types={<span class="string">'ux;uy;uz'</span>,<span class="string">'Rx;Ry;Rz'</span>};
+</pre><h2 id="15">SAVING .FEB FILE</h2><pre class="codeinput">    FEB_struct.disp_opt=0; <span class="comment">%Display waitbars</span>
+    febStruct2febFile(FEB_struct);
+</pre><pre class="codeoutput"> 
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+--- Writing FEBio XML object --- 21-Dec-2017 14:04:27
+Adding Module level
+Adding Control level
+Adding Globals level
+Adding Material level
+Adding Geometry level
+----&gt; Adding node field
+----&gt; Adding element field
+----&gt; Adding hex8 element entries....
+----&gt; Adding NodeSet field
+Adding Boundary level
+----&gt; Defining fix type boundary conditions
+----&gt; Defining prescribe type boundary conditions
+Adding LoadData level
+----&gt; Defining load curves
+Adding Output level
+----&gt; Adding plotfile field
+----&gt; Adding logfile field
+Writing .feb file
+--- Done --- 21-Dec-2017 14:04:29
+</pre><h2 id="16">RUNNING FEBIO JOB</h2><pre class="codeinput">    FEBioRunStruct.run_filename=FEB_struct.run_filename;
+    FEBioRunStruct.run_logname=FEB_struct.run_logname;
+    FEBioRunStruct.disp_on=1;
+    FEBioRunStruct.disp_log_on=1;
+    FEBioRunStruct.runMode=<span class="string">'external'</span>;<span class="comment">%'internal';</span>
+    FEBioRunStruct.t_check=0.25; <span class="comment">%Time for checking log file (dont set too small)</span>
+    FEBioRunStruct.maxtpi=1e99; <span class="comment">%Max analysis time</span>
+    FEBioRunStruct.maxLogCheckTime=3; <span class="comment">%Max log file checking time</span>
+
+    [runFlag]=runMonitorFEBio(FEBioRunStruct);<span class="comment">%START FEBio NOW!!!!!!!!</span>
+</pre><pre class="codeoutput"> 
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+--- STARTING FEBIO JOB --- 21-Dec-2017 14:04:29
+Waiting for log file...
+Proceeding to check log file...21-Dec-2017 14:04:30
+------- converged at time : 0.1
+------- converged at time : 0.2
+------- converged at time : 0.3
+------- converged at time : 0.4
+------- converged at time : 0.5
+------- converged at time : 0.6
+------- converged at time : 0.7
+------- converged at time : 0.8
+------- converged at time : 0.9
+------- converged at time : 1
+--- Done --- 21-Dec-2017 14:05:02
+</pre><pre class="codeinput"><span class="keyword">end</span>
+</pre><p><img vspace="5" hspace="5" src="gibbVerySmall.gif" alt=""> </p><p><i><b>GIBBON</b></i> <a href="www.gibboncode.org">www.gibboncode.org</a></p><p><i>Kevin Mattheus Moerman</i>, <a href="gibbon.toolbox@gmail.com">gibbon.toolbox@gmail.com</a></p><p><i><b>GIBBON footer text</b></i></p><p>License: <a href="https://github.com/gibbonCode/GIBBON/blob/master/LICENSE">https://github.com/gibbonCode/GIBBON/blob/master/LICENSE</a></p><p>GIBBON: The Geometry and Image-based Bioengineering add-On. A toolbox for image segmentation, image-based modeling, meshing, and finite element analysis.</p><p>Copyright (C) 2017  Kevin Mattheus Moerman</p><p>This program is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.</p><p>This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for more details.</p><p>You should have received a copy of the GNU General Public License along with this program.  If not, see <a href="http://www.gnu.org/licenses/">http://www.gnu.org/licenses/</a>.</p><p class="footer"><br><a href="http://www.mathworks.com/products/matlab/">Published with MATLAB&reg; R2016b</a><br></p></div><!--
+##### SOURCE BEGIN #####
+%% DEMO_FEBio_multi_scale_analysis
+% Below is a demonstration for:
+% 1) Importing data from a pre-run model
+% 2) Doing multi-scale analysis for each element
+%%
+
+clear; close all; clc;
+
+
+%% First run other demo with hexahedral elements
+
+DEMO_FEBio_block_uniaxial_compression;
+
+close all; %Close figures
+
+%%
+% Plot settings
+fontSize=15;
+faceColor1='g';
+faceColor2='r';
+faceAlpha1=0.3;
+faceAlpha2=1;
+edgeColor=0.*ones(1,3);
+edgeWidth=2;
+markerSize=2;
+cMap=gjet(250);
+
+%%
+% Control parameters
+
+% path names
+defaultFolder = fileparts(fileparts(mfilename('fullpath')));
+savePath=fullfile(defaultFolder,'data','temp');
+
+modelNameEnd='tempModel';
+modelName=fullfile(savePath,modelNameEnd);
+
+%Material parameters
+%1=core, material 2=cell mantel, 3=ecm
+
+k_factor=200;
+
+c1=1e-3;
+m1=2;
+k1=c1*k_factor;
+
+c2=2*c1;
+m2=2;
+k2=c2*k_factor;
+
+c3=c1/3;
+m3=2;
+k3=c3*k_factor;
+
+% FEA control settings
+numTimeSteps=10; %Number of time steps desired
+max_refs=25; %Max reforms
+max_ups=0; %Set to zero to use full-Newton iterations
+opt_iter=6; %Optimum number of iterations
+max_retries=5; %Maximum number of retires
+dtmin=(1/numTimeSteps)/100; %Minimum time step size
+dtmax=1/numTimeSteps; %Maximum time step size
+
+%%
+
+cPar.boxWidth=1;
+cPar.OuterSphereRadius=cPar.boxWidth/6;
+cPar.InnerSphereRadius=cPar.OuterSphereRadius/2;
+cPar.CoreSphereRadius=cPar.InnerSphereRadius/2;
+cPar.numElementsCube=10;
+cPar.numElementsCubeSphere=4;
+cPar.numElementsSphereMantel=4;
+cPar.numElementsSphereCore=4;
+cPar.nSmooth=15;
+
+[Es,Vs,elementMaterialIndices,Fbs,Cbs]=hexMeshCubeSphere(cPar);
+
+%Create cut view
+Y=Vs(:,2); YE=mean(Y(Es),2);
+L=YE>mean(Y);
+[Fs,Cs]=element2patch(Es(L,:),elementMaterialIndices(L,:),'hex8');
+
+%%
+
+VI=[0 0 0; 1 0 0; 1 1 0; 0 1 0; 0 0 1; 1 0 1; 1 1 1; 0 1 1;]-0.5;
+EI=[1:8];
+
+[FI,~]=element2patch(EI); %Patch data for plotting
+
+Sn=[-1 -1 -1; 1 -1 -1; 1  1 -1; -1  1 -1; -1 -1  1; 1 -1  1; 1  1  1; -1  1  1];
+
+Vx=[ones(1,8); VI'];
+Vx_inv=pinv(Vx);
+
+S=Vs;
+N=zeros(8,size(Vs,1));
+for q=1:1:size(S,1)
+    p=Vs(q,:);%mean(V,1);
+    px=[1; p(:)];
+    n=Vx_inv*px;
+    N(:,q)=n;
+    S(q,:)=(Sn'*n)';
+end
+
+a=1; b=1; c=1;
+for q=1:1:size(S,1)
+    N(:,q)=1/8*(1+2*S(q,1)*VI(:,1)/a).*(1+2*S(q,2)*VI(:,2)/b).*(1+2*S(q,3)*VI(:,3)/c);
+end
+
+%%
+cFigure; hold on;
+title('Cut-view of the mesh','FontSize',fontSize);
+
+gpatch(Fs,Vs,Cs);
+gpatch(FI,VI,0.5*ones(1,3),'k',0.25);
+
+axisGeom(gca,fontSize);
+colormap(gca,gjet(3)); icolorbar;
+camlight headlight;
+
+drawnow;
+
+%% Run a for loop for all desired elements
+
+numElements=size(E,1);
+
+for qElement=1%:1:numElements
+    
+    %% Retrieve initial and deformed state
+    
+    E_now=E(qElement,:);
+    V_now=V(E_now,:);
+    V_now2=V_def(E_now,:);
+    
+    %% Map source elements to target in both states
+    
+    Vs_now=zeros(size(Vs));
+    Vs_now2=zeros(size(Vs));
+    for q=1:1:size(Vs,1)
+        Vs_now(q,:)=sum(N(:,q*ones(1,size(Vs,2))).*V_now,1);
+        Vs_now2(q,:)=sum(N(:,q*ones(1,size(Vs,2))).*V_now2,1);
+    end
+    
+    %% Visualization
+    
+    cFigure;
+    subplot(2,2,1); hold on;
+    title('Source mesh');
+    
+    gpatch(FI,VI,0.5*ones(1,3),'k',0.25); %Original mother mesh
+    gpatch(Fs,Vs,Cs); %Mapped mesh
+    
+    colormap(gca,cMap); %colorbar;
+    axisGeom(gca,fontSize);
+    camlight headlight;
+    
+    subplot(2,2,2); hold on;
+    title('Target mesh');
+    
+    gpatch(FI,V_now2,0.5*ones(1,3),'k',0.25); %Original mother mesh
+    gpatch(Fs,Vs_now2,Cs); %Mapped mesh
+    
+    colormap(gca,cMap); %colorbar;
+    axisGeom(gca,fontSize);
+    camlight headlight;
+    
+    subplot(2,2,3); hold on;
+    title('Target mesh intial state');
+    
+    gpatch(Fbs,Vs_now,Cbs,'none',0.5);
+    
+    colormap(gca,gjet(9)); icolorbar;
+    axisGeom(gca,fontSize);
+    camlight headlight;
+    
+    subplot(2,2,4); hold on;
+    title('Target mesh in deformed state');
+    
+    gpatch(Fbs,Vs_now2,Cbs,'none',0.5);
+    
+    colormap(gca,gjet(9)); icolorbar;
+    axisGeom(gca,fontSize);
+    camlight headlight;
+    
+    drawnow;
+    
+    %%
+    F_out=Fbs(ismember(Cbs,1:6),:);
+    bcPrescribeList=unique(F_out(:));
+    
+    displacement_now=Vs_now2-Vs_now;
+    displacement_prescribe=displacement_now(bcPrescribeList,:);
+    
+    %% CONSTRUCTING FEB MODEL
+    
+    FEB_struct.febio_spec.version='2.0';
+    FEB_struct.Module.Type='solid';
+    
+    % Defining file names
+    FEB_struct.run_filename=[modelName,'.feb']; %FEB file name
+    FEB_struct.run_logname=[modelName,'.txt']; %FEBio log file name
+    
+    %Geometry section
+    FEB_struct.Geometry.Nodes=Vs_now;
+    FEB_struct.Geometry.Elements={Es}; %The element sets
+    FEB_struct.Geometry.ElementType={'hex8'}; %The element types
+    FEB_struct.Geometry.ElementMat={elementMaterialIndices};
+    FEB_struct.Geometry.ElementsPartName={'Multiscale element'};
+    
+    %Material section
+    FEB_struct.Materials{1}.Type='Ogden';
+    FEB_struct.Materials{1}.Name='Block_material';
+    FEB_struct.Materials{1}.Properties={'c1','m1','k'};
+    FEB_struct.Materials{1}.Values={c1,m1,k};
+    
+    FEB_struct.Materials{2}.Type='Ogden';
+    FEB_struct.Materials{2}.Name='Block_material';
+    FEB_struct.Materials{2}.Properties={'c1','m1','k'};
+    FEB_struct.Materials{2}.Values={c2,m2,k};
+    
+    FEB_struct.Materials{3}.Type='Ogden';
+    FEB_struct.Materials{3}.Name='Block_material';
+    FEB_struct.Materials{3}.Properties={'c1','m1','k'};
+    FEB_struct.Materials{3}.Values={c3,m3,k};
+    
+    %Control section
+    FEB_struct.Control.AnalysisType='static';
+    FEB_struct.Control.Properties={'time_steps','step_size',...
+        'max_refs','max_ups',...
+        'dtol','etol','rtol','lstol'};
+    FEB_struct.Control.Values={numTimeSteps,1/numTimeSteps,...
+        max_refs,max_ups,...
+        0.001,0.01,0,0.9};
+    FEB_struct.Control.TimeStepperProperties={'dtmin','dtmax','max_retries','opt_iter'};
+    FEB_struct.Control.TimeStepperValues={dtmin,dtmax,max_retries,opt_iter};
+    
+    %Defining node sets
+    FEB_struct.Geometry.NodeSet{1}.Set=bcSupportList_X;
+    FEB_struct.Geometry.NodeSet{1}.Name='bcSupportList_X';
+    FEB_struct.Geometry.NodeSet{2}.Set=bcSupportList_Y;
+    FEB_struct.Geometry.NodeSet{2}.Name='bcSupportList_Y';
+    FEB_struct.Geometry.NodeSet{3}.Set=bcSupportList_Z;
+    FEB_struct.Geometry.NodeSet{3}.Name='bcSupportList_Z';
+    % FEB_struct.Geometry.NodeSet{4}.Set=bcPrescribeList;
+    % FEB_struct.Geometry.NodeSet{4}.Name='bcPrescribeList';
+    
+    %Adding BC information
+    FEB_struct.Boundary.Prescribe{1}.Set=bcPrescribeList;
+    FEB_struct.Boundary.Prescribe{1}.bc='x';
+    FEB_struct.Boundary.Prescribe{1}.lc=1;
+    FEB_struct.Boundary.Prescribe{1}.nodeScale=displacement_prescribe(:,1);
+    FEB_struct.Boundary.Prescribe{1}.Type='relative';
+    
+    FEB_struct.Boundary.Prescribe{2}.Set=bcPrescribeList;
+    FEB_struct.Boundary.Prescribe{2}.bc='y';
+    FEB_struct.Boundary.Prescribe{2}.lc=1;
+    FEB_struct.Boundary.Prescribe{2}.nodeScale=displacement_prescribe(:,2);
+    FEB_struct.Boundary.Prescribe{2}.Type='relative';
+    
+    FEB_struct.Boundary.Prescribe{3}.Set=bcPrescribeList;
+    FEB_struct.Boundary.Prescribe{3}.bc='z';
+    FEB_struct.Boundary.Prescribe{3}.lc=1;
+    FEB_struct.Boundary.Prescribe{3}.nodeScale=displacement_prescribe(:,3);
+    FEB_struct.Boundary.Prescribe{3}.Type='relative';
+    
+    %Load curves
+    FEB_struct.LoadData.LoadCurves.id=1;
+    FEB_struct.LoadData.LoadCurves.type={'linear'};
+    FEB_struct.LoadData.LoadCurves.loadPoints={[0 0;1 1;]};
+    
+    %Adding output requests
+    FEB_struct.Output.VarTypes={'displacement','stress','relative volume'};
+    
+    %Specify log file output
+    run_disp_output_name=[modelNameEnd,'_node_out.txt'];
+    run_force_output_name=[modelNameEnd,'_force_out.txt'];
+    FEB_struct.run_output_names={run_disp_output_name,run_force_output_name};
+    FEB_struct.output_types={'node_data','node_data'};
+    FEB_struct.data_types={'ux;uy;uz','Rx;Ry;Rz'};
+    
+    %% SAVING .FEB FILE
+    
+    FEB_struct.disp_opt=0; %Display waitbars
+    febStruct2febFile(FEB_struct);
+    
+    %% RUNNING FEBIO JOB
+    
+    FEBioRunStruct.run_filename=FEB_struct.run_filename;
+    FEBioRunStruct.run_logname=FEB_struct.run_logname;
+    FEBioRunStruct.disp_on=1;
+    FEBioRunStruct.disp_log_on=1;
+    FEBioRunStruct.runMode='external';%'internal';
+    FEBioRunStruct.t_check=0.25; %Time for checking log file (dont set too small)
+    FEBioRunStruct.maxtpi=1e99; %Max analysis time
+    FEBioRunStruct.maxLogCheckTime=3; %Max log file checking time
+    
+    [runFlag]=runMonitorFEBio(FEBioRunStruct);%START FEBio NOW!!!!!!!!
+        
+end
+%%
+
+
+%%
+%
+% <<gibbVerySmall.gif>>
+%
+% _*GIBBON*_
+% <www.gibboncode.org>
+%
+% _Kevin Mattheus Moerman_, <gibbon.toolbox@gmail.com>
+
+%%
+% _*GIBBON footer text*_
+%
+% License: <https://github.com/gibbonCode/GIBBON/blob/master/LICENSE>
+%
+% GIBBON: The Geometry and Image-based Bioengineering add-On. A toolbox for
+% image segmentation, image-based modeling, meshing, and finite element
+% analysis.
+%
+% Copyright (C) 2017  Kevin Mattheus Moerman
+%
+% This program is free software: you can redistribute it and/or modify
+% it under the terms of the GNU General Public License as published by
+% the Free Software Foundation, either version 3 of the License, or
+% (at your option) any later version.
+%
+% This program is distributed in the hope that it will be useful,
+% but WITHOUT ANY WARRANTY; without even the implied warranty of
+% MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+% GNU General Public License for more details.
+%
+% You should have received a copy of the GNU General Public License
+% along with this program.  If not, see <http://www.gnu.org/licenses/>.
+
+##### SOURCE END #####
+--></body></html>

@@ -1,6 +1,8 @@
 %% uiContourSegment
 % Below is a demonstration of the features of the |uiContourSegment| function
 
+%% WILL BE REMOVED USE |imx| INSTEAD!
+
 %%
 clear; close all; clc;
 
@@ -47,7 +49,7 @@ saveName=[];%'fibula';                        %If not empty this is where the co
 
 %%
 % Uncomment to test
-[Vcs]=uiContourSegment(M,cPar,saveName);
+% [Vcs]=uiContourSegment(M,cPar,saveName);
 
 %% 
 % Example contour process: 

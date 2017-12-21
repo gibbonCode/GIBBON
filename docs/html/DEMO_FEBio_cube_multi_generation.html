@@ -6,7 +6,7 @@
    <!--
 This HTML was auto-generated from MATLAB code.
 To make changes, update the MATLAB code and republish this document.
-      --><title>DEMO_FEBio_cube_multi_generation</title><meta name="generator" content="MATLAB 9.1"><link rel="schema.DC" href="http://purl.org/dc/elements/1.1/"><meta name="DC.date" content="2017-08-18"><meta name="DC.source" content="DEMO_FEBio_cube_multi_generation.m"><style type="text/css">
+      --><title>DEMO_FEBio_cube_multi_generation</title><meta name="generator" content="MATLAB 9.1"><link rel="schema.DC" href="http://purl.org/dc/elements/1.1/"><meta name="DC.date" content="2017-12-21"><meta name="DC.source" content="DEMO_FEBio_cube_multi_generation.m"><style type="text/css">
 html,body,div,span,applet,object,iframe,h1,h2,h3,h4,h5,h6,p,blockquote,pre,a,abbr,acronym,address,big,cite,code,del,dfn,em,font,img,ins,kbd,q,s,samp,small,strike,strong,sub,sup,tt,var,b,u,i,center,dl,dt,dd,ol,ul,li,fieldset,form,label,legend,table,caption,tbody,tfoot,thead,tr,th,td{margin:0;padding:0;border:0;outline:0;font-size:100%;vertical-align:baseline;background:transparent}body{line-height:1}ol,ul{list-style:none}blockquote,q{quotes:none}blockquote:before,blockquote:after,q:before,q:after{content:'';content:none}:focus{outine:0}ins{text-decoration:none}del{text-decoration:line-through}table{border-collapse:collapse;border-spacing:0}
 
 html { min-height:100%; margin-bottom:1px; }
@@ -66,14 +66,15 @@ table td { padding:7px 5px; text-align:left; vertical-align:top; border:1px soli
 
 
 
-  </style></head><body><div class="content"><h1>DEMO_FEBio_cube_multi_generation</h1><!--introduction--><p>Below is a demonstration for: 1) The creation of an FEBio model whereby multigeration materials are used to create a preload affect. 2) A cube is loaded in tension and relaxed back while in the deformed state the multigeneration material's stiffness is "switched on"</p><!--/introduction--><h2>Contents</h2><div><ul><li><a href="#4">CREATING MESHED BOX</a></li><li><a href="#6">DEFINE BC's</a></li><li><a href="#8">CONSTRUCTING FEB MODEL</a></li><li><a href="#9">SAVING .FEB FILE</a></li><li><a href="#10">RUNNING FEBIO JOB</a></li></ul></div><pre class="codeinput">clear; close <span class="string">all</span>; clc;
-</pre><p>Plot settings</p><pre class="codeinput">figColor=<span class="string">'w'</span>; figColorDef=<span class="string">'white'</span>;
-fontSize=15;
-faceAlpha1=0.8;
+  </style></head><body><div class="content"><h1>DEMO_FEBio_cube_multi_generation</h1><!--introduction--><p>Below is a demonstration for: 1) The creation of an FEBio model whereby multigeration materials are used to create a preload affect. 2) A cube is loaded in tension and relaxed back while in the deformed state the multigeneration material's stiffness is "switched on"</p><!--/introduction--><h2>Contents</h2><div><ul><li><a href="#4">CREATING MESHED BOX</a></li><li><a href="#6">Splitting mesh into 2 material groups</a></li><li><a href="#8">DEFINE BC's</a></li><li><a href="#10">CONSTRUCTING FEB MODEL</a></li><li><a href="#11">SAVING .FEB FILE</a></li><li><a href="#12">RUNNING FEBIO JOB</a></li><li><a href="#15">Importing nodal displacements from a log file</a></li><li><a href="#16">Importing element stresses from a log file</a></li><li><a href="#17">Plotting the deformed model</a></li></ul></div><pre class="codeinput">clear; close <span class="string">all</span>; clc;
+</pre><p>Plot settings</p><pre class="codeinput">fontSize=20;
+faceAlpha1=0.5;
 faceAlpha2=1;
 edgeColor=0.25*ones(1,3);
 edgeWidth=1.5;
-markerSize=50;
+markerSize=40;
+lineWidth=3;
+plotColors=gjet(4);
 </pre><p>Control parameters</p><pre class="codeinput"><span class="comment">% path names</span>
 defaultFolder = fileparts(fileparts(mfilename(<span class="string">'fullpath'</span>)));
 savePath=fullfile(defaultFolder,<span class="string">'data'</span>,<span class="string">'temp'</span>);
@@ -81,17 +82,38 @@ savePath=fullfile(defaultFolder,<span class="string">'data'</span>,<span class="
 modelNameEnd=<span class="string">'tempModel'</span>;
 modelName=fullfile(savePath,modelNameEnd);
 
+<span class="comment">%FEA control</span>
+numSteps=10;
+
 <span class="comment">%Specifying dimensions and number of elements</span>
-sampleWidth=5;
-sampleThickness=5;
-sampleHeight=5;
-pointSpacings=[1 1 1];
+sampleWidth=10;
+sampleThickness=sampleWidth;
+sampleHeight=sampleWidth;
+pointSpacings=10/8*ones(1,3);
+initialArea=sampleWidth*sampleThickness;
 
 numElementsWidth=round(sampleWidth/pointSpacings(1));
 numElementsThickness=round(sampleThickness/pointSpacings(2));
 numElementsHeight=round(sampleHeight/pointSpacings(3));
 
-displacementMagnitude=[0 0 2];
+stretchLoad=1.3;
+displacementMagnitude=(stretchLoad*sampleHeight)-sampleHeight;
+
+<span class="comment">%Material parameters</span>
+k_factor=50;
+c1=2;
+k=c1*k_factor;
+c1_g=[c1/1000 c1*2];
+k_g=c1_g*k_factor;
+
+<span class="comment">% FEA control settings</span>
+numTimeSteps=20; <span class="comment">%Number of time steps desired</span>
+max_refs=25; <span class="comment">%Max reforms</span>
+max_ups=0; <span class="comment">%Set to zero to use full-Newton iterations</span>
+opt_iter=10; <span class="comment">%Optimum number of iterations</span>
+max_retries=5; <span class="comment">%Maximum number of retires</span>
+dtmin=(1/numTimeSteps)/100; <span class="comment">%Minimum time step size</span>
+dtmax=1/numTimeSteps; <span class="comment">%Maximum time step size</span>
 </pre><h2 id="4">CREATING MESHED BOX</h2><pre class="codeinput"><span class="comment">%Create box 1</span>
 boxDim=[sampleWidth sampleThickness sampleHeight]; <span class="comment">%Dimensions</span>
 boxEl=[numElementsWidth numElementsThickness numElementsHeight]; <span class="comment">%Number of elements</span>
@@ -100,74 +122,61 @@ E=box1.E;
 V=box1.V;
 Fb=box1.Fb;
 faceBoundaryMarker=box1.faceBoundaryMarker;
+</pre><p>Plotting boundary surfaces</p><pre class="codeinput">cFigure;
+title(<span class="string">'Model surfaces'</span>,<span class="string">'FontSize'</span>,fontSize);
+hold <span class="string">on</span>;
+gpatch(Fb,V,faceBoundaryMarker,<span class="string">'k'</span>,faceAlpha2,edgeWidth);
 
-X=V(:,1); Y=V(:,2); Z=V(:,3);
+colormap(gjet(6)); icolorbar;
+axisGeom(gca,fontSize);
+camlight <span class="string">headlight</span>;
+drawnow;
+</pre><img vspace="5" hspace="5" src="DEMO_FEBio_cube_multi_generation_01.png" alt=""> <h2 id="6">Splitting mesh into 2 material groups</h2><pre class="codeinput">X=V(:,1); Y=V(:,2); Z=V(:,3);
 VE=[mean(X(E),2) mean(Y(E),2) mean(Z(E),2)];
 
 logicMaterial_1=VE(:,1)&lt;0;
 
 elementMaterialIndices=logicMaterial_1+1;
 
+<span class="comment">%Reoder E to cope with FEBio bug in relation to element ordering and</span>
+<span class="comment">%multiple material sets</span>
+E=[E(elementMaterialIndices==1,:); E(elementMaterialIndices==2,:);];
+elementMaterialIndices=[elementMaterialIndices(elementMaterialIndices==1,:); elementMaterialIndices(elementMaterialIndices==2,:);];
+
 <span class="comment">%Creating faces for plotting</span>
-[F,CF]=hex2patch(E,elementMaterialIndices);
-</pre><pre class="codeinput"><span class="comment">% Plotting boundary surfaces</span>
-hf=figuremax(figColor,figColorDef);
-title(<span class="string">'Model surfaces'</span>,<span class="string">'FontSize'</span>,fontSize);
-xlabel(<span class="string">'X'</span>,<span class="string">'FontSize'</span>,fontSize); ylabel(<span class="string">'Y'</span>,<span class="string">'FontSize'</span>,fontSize); zlabel(<span class="string">'Z'</span>,<span class="string">'FontSize'</span>,fontSize);
+[F,CF]=element2patch(E,elementMaterialIndices);
+</pre><p>Plotting model</p><pre class="codeinput">cFigure;
+title(<span class="string">'Material regions'</span>,<span class="string">'FontSize'</span>,fontSize);
 hold <span class="string">on</span>;
-patch(<span class="string">'Faces'</span>,Fb,<span class="string">'Vertices'</span>,V,<span class="string">'FaceColor'</span>,<span class="string">'flat'</span>,<span class="string">'CData'</span>,faceBoundaryMarker,<span class="string">'FaceAlpha'</span>,faceAlpha1,<span class="string">'lineWidth'</span>,edgeWidth,<span class="string">'edgeColor'</span>,edgeColor);
+gpatch(F,V,CF,<span class="string">'k'</span>,0.5);
 
-colormap(jet(6)); colorbar;
-set(gca,<span class="string">'FontSize'</span>,fontSize);
-view(3); axis <span class="string">tight</span>;  axis <span class="string">equal</span>;  grid <span class="string">on</span>;
-<span class="comment">% camlight headlight;</span>
+colormap(gjet(6)); icolorbar;
+axisGeom(gca,fontSize);
+camlight <span class="string">headlight</span>;
 drawnow;
-
-<span class="comment">% Plotting model</span>
-hf=figuremax(figColor,figColorDef);
-title(<span class="string">'Model materials'</span>,<span class="string">'FontSize'</span>,fontSize);
-xlabel(<span class="string">'X'</span>,<span class="string">'FontSize'</span>,fontSize); ylabel(<span class="string">'Y'</span>,<span class="string">'FontSize'</span>,fontSize); zlabel(<span class="string">'Z'</span>,<span class="string">'FontSize'</span>,fontSize);
-hold <span class="string">on</span>;
-patch(<span class="string">'Faces'</span>,F,<span class="string">'Vertices'</span>,V,<span class="string">'FaceColor'</span>,<span class="string">'flat'</span>,<span class="string">'CData'</span>,CF,<span class="string">'FaceAlpha'</span>,faceAlpha1,<span class="string">'lineWidth'</span>,edgeWidth,<span class="string">'edgeColor'</span>,edgeColor);
-
-colormap <span class="string">jet</span>; colorbar;
-set(gca,<span class="string">'FontSize'</span>,fontSize);
-view(3); axis <span class="string">tight</span>;  axis <span class="string">equal</span>;  grid <span class="string">on</span>;
-<span class="comment">% camlight headlight;</span>
-drawnow;
-</pre><img vspace="5" hspace="5" src="DEMO_FEBio_cube_multi_generation_01.png" alt=""> <img vspace="5" hspace="5" src="DEMO_FEBio_cube_multi_generation_02.png" alt=""> <h2 id="6">DEFINE BC's</h2><pre class="codeinput"><span class="comment">%Supported nodes</span>
-logicRigid_X=faceBoundaryMarker==1;
-Fr=Fb(logicRigid_X,:);
-bcRigidList_X=unique(Fr(:));
-
-logicRigid_Y=faceBoundaryMarker==3;
-Fr=Fb(logicRigid_Y,:);
-bcRigidList_Y=unique(Fr(:));
-
-logicRigid_Z=faceBoundaryMarker==5;
-Fr=Fb(logicRigid_Z,:);
-bcRigidList_Z=unique(Fr(:));
+</pre><img vspace="5" hspace="5" src="DEMO_FEBio_cube_multi_generation_02.png" alt=""> <h2 id="8">DEFINE BC's</h2><pre class="codeinput"><span class="comment">%Define supported node sets</span>
+logicFace=faceBoundaryMarker==5;
+Fr=Fb(logicFace,:);
+bcSupportList=unique(Fr(:));
 
 <span class="comment">%Prescribed displacement nodes</span>
 logicPrescribe=faceBoundaryMarker==6;
 Fr=Fb(logicPrescribe,:);
 bcPrescribeList=unique(Fr(:));
+
 bcPrescribeMagnitudes=displacementMagnitude(ones(1,numel(bcPrescribeList)),:);
-</pre><p>Visualize BC's</p><pre class="codeinput">hf=figuremax(figColor,figColorDef);
-title(<span class="string">'Complete model'</span>,<span class="string">'FontSize'</span>,fontSize);
-xlabel(<span class="string">'X'</span>,<span class="string">'FontSize'</span>,fontSize); ylabel(<span class="string">'Y'</span>,<span class="string">'FontSize'</span>,fontSize); zlabel(<span class="string">'Z'</span>,<span class="string">'FontSize'</span>,fontSize);
+</pre><p>Visualize BC's</p><pre class="codeinput">cFigure;
+title(<span class="string">'Boundary conditions'</span>,<span class="string">'FontSize'</span>,fontSize);
 hold <span class="string">on</span>;
 
-patch(<span class="string">'Faces'</span>,F,<span class="string">'Vertices'</span>,V,<span class="string">'FaceColor'</span>,<span class="string">'flat'</span>,<span class="string">'CData'</span>,CF,<span class="string">'FaceAlpha'</span>,faceAlpha1,<span class="string">'lineWidth'</span>,edgeWidth,<span class="string">'edgeColor'</span>,edgeColor);
-plotV(V(bcRigidList_X,:),<span class="string">'r.'</span>,<span class="string">'MarkerSize'</span>,markerSize);
-plotV(V(bcRigidList_Y,:),<span class="string">'g.'</span>,<span class="string">'MarkerSize'</span>,markerSize);
-plotV(V(bcRigidList_Z,:),<span class="string">'b.'</span>,<span class="string">'MarkerSize'</span>,markerSize);
-plotV(V(bcPrescribeList,:),<span class="string">'k.'</span>,<span class="string">'MarkerSize'</span>,markerSize);
-set(gca,<span class="string">'FontSize'</span>,fontSize);
+gpatch(Fb,V,0.5*ones(1,3),<span class="string">'k'</span>,faceAlpha1);
+plotV(V(bcSupportList,:),<span class="string">'k.'</span>,<span class="string">'MarkerSize'</span>,markerSize);
+plotV(V(bcPrescribeList,:),<span class="string">'b.'</span>,<span class="string">'MarkerSize'</span>,markerSize);
 
-view(3); axis <span class="string">tight</span>;  axis <span class="string">equal</span>;  grid <span class="string">on</span>;
+axisGeom(gca,fontSize);
+camlight <span class="string">headlight</span>;
 drawnow;
-</pre><img vspace="5" hspace="5" src="DEMO_FEBio_cube_multi_generation_03.png" alt=""> <h2 id="8">CONSTRUCTING FEB MODEL</h2><pre class="codeinput">FEB_struct.febio_spec.version=<span class="string">'2.0'</span>;
+</pre><img vspace="5" hspace="5" src="DEMO_FEBio_cube_multi_generation_03.png" alt=""> <h2 id="10">CONSTRUCTING FEB MODEL</h2><pre class="codeinput">FEB_struct.febio_spec.version=<span class="string">'2.0'</span>;
 
 FEB_struct.Module.Type=<span class="string">'solid'</span>;
 
@@ -188,29 +197,23 @@ FEB_struct.Geometry.ElementsPartName={<span class="string">'Cube'</span>};
 
 <span class="comment">% DEFINING MATERIALS</span>
 <span class="comment">%Material 1 deformable block</span>
-c1=1e-3;
-k=c1*1e3;
-FEB_struct.Materials{1}.Type=<span class="string">'Mooney-Rivlin'</span>;
+
+FEB_struct.Materials{1}.Type=<span class="string">'Ogden unconstrained'</span>;
 FEB_struct.Materials{1}.Name=<span class="string">'cube_mat'</span>;
-FEB_struct.Materials{1}.Properties={<span class="string">'c1'</span>,<span class="string">'c2'</span>,<span class="string">'k'</span>};
-FEB_struct.Materials{1}.Values={c1,0,k};
+FEB_struct.Materials{1}.Properties={<span class="string">'c1'</span>,<span class="string">'m1'</span>,<span class="string">'c2'</span>,<span class="string">'m2'</span>,<span class="string">'cp'</span>};
+FEB_struct.Materials{1}.Values={c1,2,c1,-2,k};
 
 <span class="comment">%Material 2 Homes-Mow compressible multigeneration</span>
-E=1e-3;
-E_g=[E/100 E];
-v_g=[0.3 0.3];
-beta_g=[0.1 0.1];
-
 FEB_struct.Materials{2}.Type=<span class="string">'multigeneration'</span>;
 FEB_struct.Materials{2}.Name=<span class="string">'Deformable block'</span>;
-FEB_struct.Materials{2}.Generation{1}.Solid{1}.Type=<span class="string">'Holmes-Mow'</span>;
-FEB_struct.Materials{2}.Generation{1}.Solid{1}.Properties={<span class="string">'E'</span>,<span class="string">'v'</span>,<span class="string">'beta'</span>};
-FEB_struct.Materials{2}.Generation{1}.Solid{1}.Values={E_g(1),v_g(1),beta_g(1)};
+FEB_struct.Materials{2}.Generation{1}.Solid{1}.Type=<span class="string">'Ogden unconstrained'</span>;
+FEB_struct.Materials{2}.Generation{1}.Solid{1}.Properties={<span class="string">'c1'</span>,<span class="string">'m1'</span>,<span class="string">'c2'</span>,<span class="string">'m2'</span>,<span class="string">'cp'</span>};
+FEB_struct.Materials{2}.Generation{1}.Solid{1}.Values={c1_g(1),2,c1_g(1),-2,k_g(1)};
 FEB_struct.Materials{2}.Generation{1}.Properties={<span class="string">'start_time'</span>};
 FEB_struct.Materials{2}.Generation{1}.Values={0};
-FEB_struct.Materials{2}.Generation{2}.Solid{1}.Type=<span class="string">'Holmes-Mow'</span>;
-FEB_struct.Materials{2}.Generation{2}.Solid{1}.Properties={<span class="string">'E'</span>,<span class="string">'v'</span>,<span class="string">'beta'</span>};
-FEB_struct.Materials{2}.Generation{2}.Solid{1}.Values={E_g(2),v_g(2),beta_g(2)};
+FEB_struct.Materials{2}.Generation{2}.Solid{1}.Type=<span class="string">'Ogden unconstrained'</span>;
+FEB_struct.Materials{2}.Generation{2}.Solid{1}.Properties={<span class="string">'c1'</span>,<span class="string">'m1'</span>,<span class="string">'c2'</span>,<span class="string">'m2'</span>,<span class="string">'cp'</span>};
+FEB_struct.Materials{2}.Generation{2}.Solid{1}.Values={c1_g(2),2,c1_g(2),-2,k_g(2)};
 FEB_struct.Materials{2}.Generation{2}.Properties={<span class="string">'start_time'</span>};
 FEB_struct.Materials{2}.Generation{2}.Values={1};
 
@@ -219,41 +222,45 @@ FEB_struct.Step{1}.Control.AnalysisType=<span class="string">'static'</span>;
 FEB_struct.Step{1}.Control.Properties={<span class="string">'time_steps'</span>,<span class="string">'step_size'</span>,<span class="keyword">...</span>
     <span class="string">'max_refs'</span>,<span class="string">'max_ups'</span>,<span class="keyword">...</span>
     <span class="string">'dtol'</span>,<span class="string">'etol'</span>,<span class="string">'rtol'</span>,<span class="string">'lstol'</span>};
-FEB_struct.Step{1}.Control.Values={20,0.05,<span class="keyword">...</span>
-    25,0,<span class="keyword">...</span>
+FEB_struct.Step{1}.Control.Values={numTimeSteps,1/numTimeSteps,<span class="keyword">...</span>
+    max_refs,max_ups,<span class="keyword">...</span>
     0.001,0.01,0,0.9};
-FEB_struct.Step{1}.Control.TimeStepperProperties={<span class="string">'dtmin'</span>,<span class="string">'dtmax'</span>,<span class="string">'max_retries'</span>,<span class="string">'opt_iter'</span>,<span class="string">'aggressiveness'</span>};
-FEB_struct.Step{1}.Control.TimeStepperValues={1e-4,0.05,5,10,1};
-FEB_struct.Step{2}.Control=FEB_struct.Step{1}.Control;
+FEB_struct.Step{1}.Control.TimeStepperProperties={<span class="string">'dtmin'</span>,<span class="string">'dtmax'</span>,<span class="string">'max_retries'</span>,<span class="string">'opt_iter'</span>};
+FEB_struct.Step{1}.Control.TimeStepperValues={dtmin,dtmax,max_retries,opt_iter};
+FEB_struct.Step{2}=FEB_struct.Step{1};
 
 <span class="comment">%Defining node sets</span>
-FEB_struct.Geometry.NodeSet{1}.Set=bcRigidList_X;
-FEB_struct.Geometry.NodeSet{1}.Name=<span class="string">'bcRigidList_X'</span>;
-FEB_struct.Geometry.NodeSet{2}.Set=bcRigidList_Y;
-FEB_struct.Geometry.NodeSet{2}.Name=<span class="string">'bcRigidList_Y'</span>;
-FEB_struct.Geometry.NodeSet{3}.Set=bcRigidList_Z;
-FEB_struct.Geometry.NodeSet{3}.Name=<span class="string">'bcRigidList_Z'</span>;
-<span class="comment">% FEB_struct.Geometry.NodeSet{4}.Set=bcPrescribeList;</span>
-<span class="comment">% FEB_struct.Geometry.NodeSet{4}.Name='bcPrescribeList';</span>
+FEB_struct.Geometry.NodeSet{1}.Set=bcSupportList;
+FEB_struct.Geometry.NodeSet{1}.Name=<span class="string">'bcSupportList'</span>;
+FEB_struct.Geometry.NodeSet{2}.Set=bcPrescribeList;
+FEB_struct.Geometry.NodeSet{2}.Name=<span class="string">'bcPrescribeList'</span>;
 
 <span class="comment">%Adding BC information</span>
 FEB_struct.Boundary.Fix{1}.bc=<span class="string">'x'</span>;
 FEB_struct.Boundary.Fix{1}.SetName=FEB_struct.Geometry.NodeSet{1}.Name;
 FEB_struct.Boundary.Fix{2}.bc=<span class="string">'y'</span>;
-FEB_struct.Boundary.Fix{2}.SetName=FEB_struct.Geometry.NodeSet{2}.Name;
+FEB_struct.Boundary.Fix{2}.SetName=FEB_struct.Geometry.NodeSet{1}.Name;
 FEB_struct.Boundary.Fix{3}.bc=<span class="string">'z'</span>;
-FEB_struct.Boundary.Fix{3}.SetName=FEB_struct.Geometry.NodeSet{3}.Name;
+FEB_struct.Boundary.Fix{3}.SetName=FEB_struct.Geometry.NodeSet{1}.Name;
 
 <span class="comment">%Step specific BC's</span>
-FEB_struct.Step{1}.Boundary.Prescribe{1}.Set=bcPrescribeList;
-FEB_struct.Step{1}.Boundary.Prescribe{1}.bc=<span class="string">'z'</span>;
-FEB_struct.Step{1}.Boundary.Prescribe{1}.lc=1;
-FEB_struct.Step{1}.Boundary.Prescribe{1}.nodeScale=bcPrescribeMagnitudes(:,3);
+FEB_struct.Boundary.Prescribe{1}.Set=bcPrescribeList;
+FEB_struct.Boundary.Prescribe{1}.bc=<span class="string">'z'</span>;
+FEB_struct.Boundary.Prescribe{1}.lc=1;
+FEB_struct.Boundary.Prescribe{1}.nodeScale=displacementMagnitude(ones(numel(bcPrescribeList),1),1);
+FEB_struct.Boundary.Prescribe{1}.Type=<span class="string">'relative'</span>;
 
-FEB_struct.Step{2}.Boundary.Prescribe{1}.Set=bcPrescribeList;
-FEB_struct.Step{2}.Boundary.Prescribe{1}.bc=<span class="string">'z'</span>;
-FEB_struct.Step{2}.Boundary.Prescribe{1}.lc=1;
-FEB_struct.Step{2}.Boundary.Prescribe{1}.nodeScale=bcPrescribeMagnitudes(:,3);
+FEB_struct.Boundary.Prescribe{2}.Set=bcPrescribeList;
+FEB_struct.Boundary.Prescribe{2}.bc=<span class="string">'x'</span>;
+FEB_struct.Boundary.Prescribe{2}.lc=1;
+FEB_struct.Boundary.Prescribe{2}.nodeScale=zeros(numel(bcPrescribeList),1);
+FEB_struct.Boundary.Prescribe{2}.Type=<span class="string">'relative'</span>;
+
+FEB_struct.Boundary.Prescribe{3}.Set=bcPrescribeList;
+FEB_struct.Boundary.Prescribe{3}.bc=<span class="string">'y'</span>;
+FEB_struct.Boundary.Prescribe{3}.lc=1;
+FEB_struct.Boundary.Prescribe{3}.nodeScale=zeros(numel(bcPrescribeList),1);
+FEB_struct.Boundary.Prescribe{3}.Type=<span class="string">'relative'</span>;
 
 <span class="comment">%Load curves</span>
 FEB_struct.LoadData.LoadCurves.id=1;
@@ -261,18 +268,19 @@ FEB_struct.LoadData.LoadCurves.type={<span class="string">'linear'</span>};
 FEB_struct.LoadData.LoadCurves.loadPoints={[0 0;1 1; 2 0;];};
 
 <span class="comment">%Adding output requests</span>
-FEB_struct.Output.VarTypes={<span class="string">'displacement'</span>,<span class="string">'stress'</span>,<span class="string">'relative volume'</span>,<span class="string">'shell thickness'</span>};
+FEB_struct.Output.VarTypes={<span class="string">'displacement'</span>,<span class="string">'stress'</span>,<span class="string">'relative volume'</span>};
 
 <span class="comment">%Specify log file output</span>
 run_node_output_name=[modelNameEnd,<span class="string">'_node_out.txt'</span>];
-FEB_struct.run_output_names={run_node_output_name};
-FEB_struct.output_types={<span class="string">'node_data'</span>};
-FEB_struct.data_types={<span class="string">'ux;uy;uz'</span>};
-</pre><h2 id="9">SAVING .FEB FILE</h2><pre class="codeinput">FEB_struct.disp_opt=0; <span class="comment">%Display waitbars option</span>
+run_element_output_name=[modelNameEnd,<span class="string">'_element_out.txt'</span>];
+FEB_struct.run_output_names={run_node_output_name,run_element_output_name};
+FEB_struct.output_types={<span class="string">'node_data'</span>,<span class="string">'element_data'</span>};
+FEB_struct.data_types={<span class="string">'ux;uy;uz'</span>,<span class="string">'sed'</span>};
+</pre><h2 id="11">SAVING .FEB FILE</h2><pre class="codeinput">FEB_struct.disp_opt=0; <span class="comment">%Display waitbars option</span>
 febStruct2febFile(FEB_struct);
 </pre><pre class="codeoutput"> 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
---- Writing FEBio XML object --- 18-Aug-2017 14:37:14
+--- Writing FEBio XML object --- 21-Dec-2017 13:59:28
 Adding Module level
 Adding Globals level
 Adding Material level
@@ -283,25 +291,21 @@ Adding Geometry level
 ----&gt; Adding NodeSet field
 Adding Boundary level
 ----&gt; Defining fix type boundary conditions
+----&gt; Defining prescribe type boundary conditions
 Adding LoadData level
 ----&gt; Defining load curves
 Adding Step level
 ----&gt; Adding Module field
-----&gt; Adding Boundary field
-----&gt; Defining prescribe type boundary conditions
 ----&gt; Adding Control field
 Adding Step level
 ----&gt; Adding Module field
-----&gt; Adding Boundary field
-----&gt; Defining prescribe type boundary conditions
 ----&gt; Adding Control field
 Adding Output level
 ----&gt; Adding plotfile field
 ----&gt; Adding logfile field
 Writing .feb file
---- Done --- 18-Aug-2017 14:37:14
-</pre><h2 id="10">RUNNING FEBIO JOB</h2><pre class="codeinput"><span class="comment">% FEBioRunStruct.FEBioPath='C:\Program Files\febio2-2.2.6\bin\febio2.exe';</span>
-FEBioRunStruct.run_filename=FEB_struct.run_filename;
+--- Done --- 21-Dec-2017 13:59:28
+</pre><h2 id="12">RUNNING FEBIO JOB</h2><pre class="codeinput">FEBioRunStruct.run_filename=FEB_struct.run_filename;
 FEBioRunStruct.run_logname=FEB_struct.run_logname;
 FEBioRunStruct.disp_on=1;
 FEBioRunStruct.disp_log_on=1;
@@ -313,9 +317,9 @@ FEBioRunStruct.maxLogCheckTime=3; <span class="comment">%Max log file checking t
 [runFlag]=runMonitorFEBio(FEBioRunStruct);<span class="comment">%START FEBio NOW!!!!!!!!</span>
 </pre><pre class="codeoutput"> 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
---- STARTING FEBIO JOB --- 18-Aug-2017 14:37:14
+--- STARTING FEBIO JOB --- 21-Dec-2017 13:59:28
 Waiting for log file...
-Proceeding to check log file...18-Aug-2017 14:37:14
+Proceeding to check log file...21-Dec-2017 13:59:28
 ------- converged at time : 0.05
 ------- converged at time : 0.1
 ------- converged at time : 0.15
@@ -356,42 +360,98 @@ Proceeding to check log file...18-Aug-2017 14:37:14
 ------- converged at time : 1.9
 ------- converged at time : 1.95
 ------- converged at time : 2
---- Done --- 18-Aug-2017 14:37:15
+--- Done --- 21-Dec-2017 13:59:32
 </pre><pre class="codeinput"><span class="keyword">if</span> runFlag==1 <span class="comment">%i.e. a succesful run</span>
-    <span class="comment">% IMPORTING NODAL DISPLACEMENT RESULTS</span>
-    <span class="comment">% Importing nodal displacements from a log file</span>
-    [~, N_disp_mat,~]=importFEBio_logfile(fullfile(savePath,FEB_struct.run_output_names{1})); <span class="comment">%Nodal displacements</span>
+</pre><h2 id="15">Importing nodal displacements from a log file</h2><pre class="codeinput">    [time_mat, N_disp_mat,~]=importFEBio_logfile(fullfile(savePath,FEB_struct.run_output_names{1})); <span class="comment">%Nodal displacements</span>
 
-    DN=N_disp_mat(:,2:end,end); <span class="comment">%Final nodal displacements</span>
+    <span class="comment">%Remove nodal index column</span>
+    N_disp_mat=N_disp_mat(:,2:end,:);
 
-    <span class="comment">% CREATING NODE SET IN DEFORMED STATE</span>
+    <span class="comment">%Add initial state i.e. zero displacement</span>
+    sizImport=size(N_disp_mat);
+    sizImport(3)=sizImport(3)+1;
+    N_disp_mat_n=zeros(sizImport);
+    N_disp_mat_n(:,:,2:end)=N_disp_mat;
+    N_disp_mat=N_disp_mat_n;
+
+    <span class="comment">%Add zero time point</span>
+    time_mat=[0; time_mat(:)]; <span class="comment">%Time</span>
+</pre><h2 id="16">Importing element stresses from a log file</h2><pre class="codeinput">    [~,E_stress_mat,~]=importFEBio_logfile(fullfile(savePath,FEB_struct.run_output_names{2})); <span class="comment">%Element stresses</span>
+
+    <span class="comment">%Remove nodal index column</span>
+    E_stress_mat=E_stress_mat(:,2:end,:);
+
+    <span class="comment">%Add initial state i.e. zero displacement</span>
+    sizImport=size(E_stress_mat);
+    sizImport(3)=sizImport(3)+1;
+    E_stress_mat_n=zeros(sizImport);
+    E_stress_mat_n(:,:,2:end)=E_stress_mat;
+    E_stress_mat=E_stress_mat_n;
+</pre><h2 id="17">Plotting the deformed model</h2><pre class="codeinput">    time_mat_plot=time_mat;
+    ind1=find(time_mat==1);
+    c1_plot=c1*ones(size(time_mat));
+    cg_plot=c1_g(1)*ones(size(time_mat));
+    cg_plot(time_mat&gt;=1)=c1_g(2);
+
+    DN_MAG=sqrt(sum(N_disp_mat.^2,2));
+    DN=N_disp_mat(:,:,end);
+    DN_magnitude=sqrt(sum(DN(:,3).^2,2));
     V_def=V+DN;
-    DN_magnitude=sqrt(sum(DN.^2,2));
+    V_DEF=N_disp_mat+repmat(V,[1 1 size(N_disp_mat,3)]);
+    X_DEF=V_DEF(:,1,:);
+    Y_DEF=V_DEF(:,2,:);
+    Z_DEF=V_DEF(:,3,:);
 
-    <span class="comment">%</span>
-    <span class="comment">% Plotting the deformed model</span>
+    [~,CF]=element2patch(E,E_stress_mat(:,:,1));
 
-    [CF]=vertexToFaceMeasure(Fb,DN_magnitude);
+    hf=cFigure;
+    subplot(1,2,1); hold <span class="string">on</span>;
+    title(<span class="string">'Ogden parameter c_1'</span>);
+    xlabel(<span class="string">'Time'</span>); ylabel(<span class="string">'c_1'</span>);
+    plot(time_mat_plot,c1_plot,<span class="string">'b-'</span>,<span class="string">'lineWidth'</span>,2);
+    plot(time_mat_plot,cg_plot,<span class="string">'r-'</span>,<span class="string">'lineWidth'</span>,2);
+    hp1=plot(time_mat_plot(1),c1_plot(1),<span class="string">'b.'</span>,<span class="string">'MarkerSize'</span>,50);
+    hp2=plot(time_mat_plot(1),cg_plot(1),<span class="string">'r.'</span>,<span class="string">'MarkerSize'</span>,50);
+    legend([hp1 hp2],<span class="string">'Material 1'</span>,<span class="string">'Material 2'</span>);
+    axis <span class="string">tight</span>; axis <span class="string">square</span>; set(gca,<span class="string">'fontsize'</span>,fontSize);
+    grid <span class="string">on</span>;
+    subplot(1,2,2); hold <span class="string">on</span>;
+    title(<span class="string">'Strain energy density'</span>);
+    hp3=gpatch(F,V,CF,<span class="string">'k'</span>,1);
 
-    hf1=figuremax(figColor,figColorDef);
-    title(<span class="string">'The deformed model'</span>,<span class="string">'FontSize'</span>,fontSize);
-    xlabel(<span class="string">'X'</span>,<span class="string">'FontSize'</span>,fontSize); ylabel(<span class="string">'Y'</span>,<span class="string">'FontSize'</span>,fontSize); zlabel(<span class="string">'Z'</span>,<span class="string">'FontSize'</span>,fontSize); hold <span class="string">on</span>;
+<span class="comment">%     gpatch(Fb,V,0.5*ones(1,3),'none',0.25);</span>
 
-    hps=patch(<span class="string">'Faces'</span>,Fb,<span class="string">'Vertices'</span>,V_def,<span class="string">'FaceColor'</span>,<span class="string">'flat'</span>,<span class="string">'CData'</span>,CF);
-
-    view(3); axis <span class="string">tight</span>;  axis <span class="string">equal</span>;  grid <span class="string">on</span>;
-    colormap <span class="string">jet</span>; colorbar;
-    <span class="comment">% camlight headlight;</span>
-    set(gca,<span class="string">'FontSize'</span>,fontSize);
+    colormap(gjet(250)); colorbar;
+    caxis([min(E_stress_mat(:)) max(E_stress_mat(:))]);
+    axisGeom(gca,fontSize);
+    axis([min(X_DEF(:)) max(X_DEF(:)) min(Y_DEF(:)) max(Y_DEF(:)) min(Z_DEF(:)) max(Z_DEF(:))]);
+    axis <span class="string">manual</span>;
+    camlight <span class="string">headlight</span>;
     drawnow;
-<span class="keyword">end</span>
-</pre><img vspace="5" hspace="5" src="DEMO_FEBio_cube_multi_generation_04.png" alt=""> <p><img vspace="5" hspace="5" src="gibbVerySmall.gif" alt=""> </p><p><i><b>GIBBON</b></i> <a href="www.gibboncode.org">www.gibboncode.org</a></p><p><i>Kevin Mattheus Moerman</i>, <a href="gibbon.toolbox@gmail.com">gibbon.toolbox@gmail.com</a></p><p><i><b>GIBBON footer text</b></i></p><p>License: <a href="https://github.com/gibbonCode/GIBBON/blob/master/LICENSE">https://github.com/gibbonCode/GIBBON/blob/master/LICENSE</a></p><p>GIBBON: The Geometry and Image-based Bioengineering add-On. A toolbox for image segmentation, image-based modeling, meshing, and finite element analysis.</p><p>Copyright (C) 2017  Kevin Mattheus Moerman</p><p>This program is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.</p><p>This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for more details.</p><p>You should have received a copy of the GNU General Public License along with this program.  If not, see <a href="http://www.gnu.org/licenses/">http://www.gnu.org/licenses/</a>.</p><p class="footer"><br><a href="http://www.mathworks.com/products/matlab/">Published with MATLAB&reg; R2016b</a><br></p></div><!--
+
+    animStruct.Time=time_mat;
+
+    <span class="keyword">for</span> qt=1:1:size(N_disp_mat,3)
+
+        DN=N_disp_mat(:,:,qt);
+        V_def=V+DN;
+        [~,CF]=element2patch(E,E_stress_mat(:,:,qt));
+
+        <span class="comment">%Set entries in animation structure</span>
+        animStruct.Handles{qt}=[hp3 hp3 hp1 hp1 hp2 hp2]; <span class="comment">%Handles of objects to animate</span>
+        animStruct.Props{qt}={<span class="string">'Vertices'</span>,<span class="string">'CData'</span>,<span class="string">'XData'</span>,<span class="string">'YData'</span>,<span class="string">'XData'</span>,<span class="string">'YData'</span>}; <span class="comment">%Properties of objects to animate</span>
+        animStruct.Set{qt}={V_def,CF,time_mat_plot(qt),c1_plot(qt),time_mat_plot(qt),cg_plot(qt)}; <span class="comment">%Property values for to set in order to animate</span>
+    <span class="keyword">end</span>
+
+    anim8(hf,animStruct);
+    drawnow;
+</pre><img vspace="5" hspace="5" src="DEMO_FEBio_cube_multi_generation_04.png" alt=""> <pre class="codeinput"><span class="keyword">end</span>
+</pre><p><img vspace="5" hspace="5" src="gibbVerySmall.gif" alt=""> </p><p><i><b>GIBBON</b></i> <a href="www.gibboncode.org">www.gibboncode.org</a></p><p><i>Kevin Mattheus Moerman</i>, <a href="gibbon.toolbox@gmail.com">gibbon.toolbox@gmail.com</a></p><p><i><b>GIBBON footer text</b></i></p><p>License: <a href="https://github.com/gibbonCode/GIBBON/blob/master/LICENSE">https://github.com/gibbonCode/GIBBON/blob/master/LICENSE</a></p><p>GIBBON: The Geometry and Image-based Bioengineering add-On. A toolbox for image segmentation, image-based modeling, meshing, and finite element analysis.</p><p>Copyright (C) 2017  Kevin Mattheus Moerman</p><p>This program is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.</p><p>This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for more details.</p><p>You should have received a copy of the GNU General Public License along with this program.  If not, see <a href="http://www.gnu.org/licenses/">http://www.gnu.org/licenses/</a>.</p><p class="footer"><br><a href="http://www.mathworks.com/products/matlab/">Published with MATLAB&reg; R2016b</a><br></p></div><!--
 ##### SOURCE BEGIN #####
 %% DEMO_FEBio_cube_multi_generation
 % Below is a demonstration for: 
 % 1) The creation of an FEBio model whereby multigeration materials are used to create a preload affect. 
-% 2) A cube is loaded in tension and relaxed back while in the deformed
-% state the multigeneration material's stiffness is "switched on"
+% 2) A cube is loaded in tension and relaxed back while in the deformed state the multigeneration material's stiffness is "switched on"
 
 %%
 
@@ -399,13 +459,14 @@ clear; close all; clc;
 
 %%
 % Plot settings
-figColor='w'; figColorDef='white';
-fontSize=15;
-faceAlpha1=0.8;
+fontSize=20;
+faceAlpha1=0.5;
 faceAlpha2=1;
 edgeColor=0.25*ones(1,3);
 edgeWidth=1.5;
-markerSize=50;
+markerSize=40;
+lineWidth=3;
+plotColors=gjet(4);
 
 %%
 % Control parameters
@@ -417,17 +478,38 @@ savePath=fullfile(defaultFolder,'data','temp');
 modelNameEnd='tempModel';
 modelName=fullfile(savePath,modelNameEnd);
 
+%FEA control
+numSteps=10;
+
 %Specifying dimensions and number of elements
-sampleWidth=5;
-sampleThickness=5; 
-sampleHeight=5;
-pointSpacings=[1 1 1];
+sampleWidth=10;
+sampleThickness=sampleWidth; 
+sampleHeight=sampleWidth;
+pointSpacings=10/8*ones(1,3);
+initialArea=sampleWidth*sampleThickness;
 
 numElementsWidth=round(sampleWidth/pointSpacings(1));
 numElementsThickness=round(sampleThickness/pointSpacings(2));
 numElementsHeight=round(sampleHeight/pointSpacings(3));
 
-displacementMagnitude=[0 0 2];
+stretchLoad=1.3;
+displacementMagnitude=(stretchLoad*sampleHeight)-sampleHeight;
+
+%Material parameters
+k_factor=50;
+c1=2;
+k=c1*k_factor;
+c1_g=[c1/1000 c1*2];
+k_g=c1_g*k_factor;
+
+% FEA control settings
+numTimeSteps=20; %Number of time steps desired
+max_refs=25; %Max reforms
+max_ups=0; %Set to zero to use full-Newton iterations
+opt_iter=10; %Optimum number of iterations
+max_retries=5; %Maximum number of retires
+dtmin=(1/numTimeSteps)/100; %Minimum time step size
+dtmax=1/numTimeSteps; %Maximum time step size
 
 %% CREATING MESHED BOX
 
@@ -440,6 +522,21 @@ V=box1.V;
 Fb=box1.Fb;
 faceBoundaryMarker=box1.faceBoundaryMarker;
 
+%%
+% Plotting boundary surfaces
+cFigure;
+title('Model surfaces','FontSize',fontSize);
+hold on;
+gpatch(Fb,V,faceBoundaryMarker,'k',faceAlpha2,edgeWidth);
+
+colormap(gjet(6)); icolorbar;
+axisGeom(gca,fontSize);
+camlight headlight;
+drawnow;
+
+%% Splitting mesh into 2 material groups
+
+
 X=V(:,1); Y=V(:,2); Z=V(:,3);
 VE=[mean(X(E),2) mean(Y(E),2) mean(Z(E),2)];
 
@@ -447,74 +544,54 @@ logicMaterial_1=VE(:,1)<0;
 
 elementMaterialIndices=logicMaterial_1+1; 
 
+%Reoder E to cope with FEBio bug in relation to element ordering and
+%multiple material sets
+E=[E(elementMaterialIndices==1,:); E(elementMaterialIndices==2,:);];
+elementMaterialIndices=[elementMaterialIndices(elementMaterialIndices==1,:); elementMaterialIndices(elementMaterialIndices==2,:);];
+
 %Creating faces for plotting
-[F,CF]=hex2patch(E,elementMaterialIndices);
+[F,CF]=element2patch(E,elementMaterialIndices);
 
 %%
-
-% Plotting boundary surfaces
-hf=figuremax(figColor,figColorDef);
-title('Model surfaces','FontSize',fontSize);
-xlabel('X','FontSize',fontSize); ylabel('Y','FontSize',fontSize); zlabel('Z','FontSize',fontSize);
-hold on;
-patch('Faces',Fb,'Vertices',V,'FaceColor','flat','CData',faceBoundaryMarker,'FaceAlpha',faceAlpha1,'lineWidth',edgeWidth,'edgeColor',edgeColor);
-
-colormap(jet(6)); colorbar; 
-set(gca,'FontSize',fontSize);
-view(3); axis tight;  axis equal;  grid on;
-% camlight headlight;
-drawnow; 
-
 % Plotting model
-hf=figuremax(figColor,figColorDef);
-title('Model materials','FontSize',fontSize);
-xlabel('X','FontSize',fontSize); ylabel('Y','FontSize',fontSize); zlabel('Z','FontSize',fontSize);
-hold on;
-patch('Faces',F,'Vertices',V,'FaceColor','flat','CData',CF,'FaceAlpha',faceAlpha1,'lineWidth',edgeWidth,'edgeColor',edgeColor);
 
-colormap jet; colorbar; 
-set(gca,'FontSize',fontSize);
-view(3); axis tight;  axis equal;  grid on;
-% camlight headlight;
-drawnow; 
+cFigure;
+title('Material regions','FontSize',fontSize);
+hold on;
+gpatch(F,V,CF,'k',0.5);
+
+colormap(gjet(6)); icolorbar;
+axisGeom(gca,fontSize);
+camlight headlight;
+drawnow;
 
 %% DEFINE BC's
 
-%Supported nodes
-logicRigid_X=faceBoundaryMarker==1;
-Fr=Fb(logicRigid_X,:);
-bcRigidList_X=unique(Fr(:));
-
-logicRigid_Y=faceBoundaryMarker==3;
-Fr=Fb(logicRigid_Y,:);
-bcRigidList_Y=unique(Fr(:));
-
-logicRigid_Z=faceBoundaryMarker==5;
-Fr=Fb(logicRigid_Z,:);
-bcRigidList_Z=unique(Fr(:));
+%Define supported node sets
+logicFace=faceBoundaryMarker==5;
+Fr=Fb(logicFace,:);
+bcSupportList=unique(Fr(:));
 
 %Prescribed displacement nodes
 logicPrescribe=faceBoundaryMarker==6;
 Fr=Fb(logicPrescribe,:);
 bcPrescribeList=unique(Fr(:));
+
 bcPrescribeMagnitudes=displacementMagnitude(ones(1,numel(bcPrescribeList)),:);
 
 %%
 % Visualize BC's
-hf=figuremax(figColor,figColorDef);
-title('Complete model','FontSize',fontSize);
-xlabel('X','FontSize',fontSize); ylabel('Y','FontSize',fontSize); zlabel('Z','FontSize',fontSize);
+cFigure;
+title('Boundary conditions','FontSize',fontSize);
 hold on;
 
-patch('Faces',F,'Vertices',V,'FaceColor','flat','CData',CF,'FaceAlpha',faceAlpha1,'lineWidth',edgeWidth,'edgeColor',edgeColor);
-plotV(V(bcRigidList_X,:),'r.','MarkerSize',markerSize);
-plotV(V(bcRigidList_Y,:),'g.','MarkerSize',markerSize);
-plotV(V(bcRigidList_Z,:),'b.','MarkerSize',markerSize);
-plotV(V(bcPrescribeList,:),'k.','MarkerSize',markerSize);
-set(gca,'FontSize',fontSize);
+gpatch(Fb,V,0.5*ones(1,3),'k',faceAlpha1);
+plotV(V(bcSupportList,:),'k.','MarkerSize',markerSize);
+plotV(V(bcPrescribeList,:),'b.','MarkerSize',markerSize);
 
-view(3); axis tight;  axis equal;  grid on;
-drawnow; 
+axisGeom(gca,fontSize);
+camlight headlight;
+drawnow;
 
 %% CONSTRUCTING FEB MODEL
 
@@ -539,29 +616,23 @@ FEB_struct.Geometry.ElementsPartName={'Cube'};
 
 % DEFINING MATERIALS
 %Material 1 deformable block
-c1=1e-3;
-k=c1*1e3;
-FEB_struct.Materials{1}.Type='Mooney-Rivlin';
+
+FEB_struct.Materials{1}.Type='Ogden unconstrained';
 FEB_struct.Materials{1}.Name='cube_mat';
-FEB_struct.Materials{1}.Properties={'c1','c2','k'};
-FEB_struct.Materials{1}.Values={c1,0,k};
+FEB_struct.Materials{1}.Properties={'c1','m1','c2','m2','cp'};
+FEB_struct.Materials{1}.Values={c1,2,c1,-2,k};
 
 %Material 2 Homes-Mow compressible multigeneration
-E=1e-3;
-E_g=[E/100 E];
-v_g=[0.3 0.3];
-beta_g=[0.1 0.1];
-
 FEB_struct.Materials{2}.Type='multigeneration';
 FEB_struct.Materials{2}.Name='Deformable block';
-FEB_struct.Materials{2}.Generation{1}.Solid{1}.Type='Holmes-Mow';
-FEB_struct.Materials{2}.Generation{1}.Solid{1}.Properties={'E','v','beta'};
-FEB_struct.Materials{2}.Generation{1}.Solid{1}.Values={E_g(1),v_g(1),beta_g(1)};
+FEB_struct.Materials{2}.Generation{1}.Solid{1}.Type='Ogden unconstrained';
+FEB_struct.Materials{2}.Generation{1}.Solid{1}.Properties={'c1','m1','c2','m2','cp'};
+FEB_struct.Materials{2}.Generation{1}.Solid{1}.Values={c1_g(1),2,c1_g(1),-2,k_g(1)};
 FEB_struct.Materials{2}.Generation{1}.Properties={'start_time'};
 FEB_struct.Materials{2}.Generation{1}.Values={0};
-FEB_struct.Materials{2}.Generation{2}.Solid{1}.Type='Holmes-Mow';
-FEB_struct.Materials{2}.Generation{2}.Solid{1}.Properties={'E','v','beta'};
-FEB_struct.Materials{2}.Generation{2}.Solid{1}.Values={E_g(2),v_g(2),beta_g(2)};
+FEB_struct.Materials{2}.Generation{2}.Solid{1}.Type='Ogden unconstrained';
+FEB_struct.Materials{2}.Generation{2}.Solid{1}.Properties={'c1','m1','c2','m2','cp'};
+FEB_struct.Materials{2}.Generation{2}.Solid{1}.Values={c1_g(2),2,c1_g(2),-2,k_g(2)};
 FEB_struct.Materials{2}.Generation{2}.Properties={'start_time'};
 FEB_struct.Materials{2}.Generation{2}.Values={1};
 
@@ -570,41 +641,45 @@ FEB_struct.Step{1}.Control.AnalysisType='static';
 FEB_struct.Step{1}.Control.Properties={'time_steps','step_size',...
     'max_refs','max_ups',...
     'dtol','etol','rtol','lstol'};
-FEB_struct.Step{1}.Control.Values={20,0.05,...
-    25,0,...
+FEB_struct.Step{1}.Control.Values={numTimeSteps,1/numTimeSteps,...
+    max_refs,max_ups,...
     0.001,0.01,0,0.9};
-FEB_struct.Step{1}.Control.TimeStepperProperties={'dtmin','dtmax','max_retries','opt_iter','aggressiveness'};
-FEB_struct.Step{1}.Control.TimeStepperValues={1e-4,0.05,5,10,1};
-FEB_struct.Step{2}.Control=FEB_struct.Step{1}.Control;
+FEB_struct.Step{1}.Control.TimeStepperProperties={'dtmin','dtmax','max_retries','opt_iter'};
+FEB_struct.Step{1}.Control.TimeStepperValues={dtmin,dtmax,max_retries,opt_iter};
+FEB_struct.Step{2}=FEB_struct.Step{1};
 
 %Defining node sets
-FEB_struct.Geometry.NodeSet{1}.Set=bcRigidList_X;
-FEB_struct.Geometry.NodeSet{1}.Name='bcRigidList_X';
-FEB_struct.Geometry.NodeSet{2}.Set=bcRigidList_Y;
-FEB_struct.Geometry.NodeSet{2}.Name='bcRigidList_Y';
-FEB_struct.Geometry.NodeSet{3}.Set=bcRigidList_Z;
-FEB_struct.Geometry.NodeSet{3}.Name='bcRigidList_Z';
-% FEB_struct.Geometry.NodeSet{4}.Set=bcPrescribeList;
-% FEB_struct.Geometry.NodeSet{4}.Name='bcPrescribeList';
+FEB_struct.Geometry.NodeSet{1}.Set=bcSupportList;
+FEB_struct.Geometry.NodeSet{1}.Name='bcSupportList';
+FEB_struct.Geometry.NodeSet{2}.Set=bcPrescribeList;
+FEB_struct.Geometry.NodeSet{2}.Name='bcPrescribeList';
 
 %Adding BC information
 FEB_struct.Boundary.Fix{1}.bc='x';
 FEB_struct.Boundary.Fix{1}.SetName=FEB_struct.Geometry.NodeSet{1}.Name;
 FEB_struct.Boundary.Fix{2}.bc='y';
-FEB_struct.Boundary.Fix{2}.SetName=FEB_struct.Geometry.NodeSet{2}.Name;
+FEB_struct.Boundary.Fix{2}.SetName=FEB_struct.Geometry.NodeSet{1}.Name;
 FEB_struct.Boundary.Fix{3}.bc='z';
-FEB_struct.Boundary.Fix{3}.SetName=FEB_struct.Geometry.NodeSet{3}.Name;
+FEB_struct.Boundary.Fix{3}.SetName=FEB_struct.Geometry.NodeSet{1}.Name;
 
 %Step specific BC's
-FEB_struct.Step{1}.Boundary.Prescribe{1}.Set=bcPrescribeList;
-FEB_struct.Step{1}.Boundary.Prescribe{1}.bc='z';
-FEB_struct.Step{1}.Boundary.Prescribe{1}.lc=1;
-FEB_struct.Step{1}.Boundary.Prescribe{1}.nodeScale=bcPrescribeMagnitudes(:,3);
+FEB_struct.Boundary.Prescribe{1}.Set=bcPrescribeList;
+FEB_struct.Boundary.Prescribe{1}.bc='z';
+FEB_struct.Boundary.Prescribe{1}.lc=1;
+FEB_struct.Boundary.Prescribe{1}.nodeScale=displacementMagnitude(ones(numel(bcPrescribeList),1),1);
+FEB_struct.Boundary.Prescribe{1}.Type='relative';
 
-FEB_struct.Step{2}.Boundary.Prescribe{1}.Set=bcPrescribeList;
-FEB_struct.Step{2}.Boundary.Prescribe{1}.bc='z';
-FEB_struct.Step{2}.Boundary.Prescribe{1}.lc=1;
-FEB_struct.Step{2}.Boundary.Prescribe{1}.nodeScale=bcPrescribeMagnitudes(:,3);
+FEB_struct.Boundary.Prescribe{2}.Set=bcPrescribeList;
+FEB_struct.Boundary.Prescribe{2}.bc='x';
+FEB_struct.Boundary.Prescribe{2}.lc=1;
+FEB_struct.Boundary.Prescribe{2}.nodeScale=zeros(numel(bcPrescribeList),1);
+FEB_struct.Boundary.Prescribe{2}.Type='relative';
+
+FEB_struct.Boundary.Prescribe{3}.Set=bcPrescribeList;
+FEB_struct.Boundary.Prescribe{3}.bc='y';
+FEB_struct.Boundary.Prescribe{3}.lc=1;
+FEB_struct.Boundary.Prescribe{3}.nodeScale=zeros(numel(bcPrescribeList),1);
+FEB_struct.Boundary.Prescribe{3}.Type='relative';
 
 %Load curves
 FEB_struct.LoadData.LoadCurves.id=1;
@@ -612,13 +687,14 @@ FEB_struct.LoadData.LoadCurves.type={'linear'};
 FEB_struct.LoadData.LoadCurves.loadPoints={[0 0;1 1; 2 0;];};
 
 %Adding output requests
-FEB_struct.Output.VarTypes={'displacement','stress','relative volume','shell thickness'};
+FEB_struct.Output.VarTypes={'displacement','stress','relative volume'};
 
 %Specify log file output
 run_node_output_name=[modelNameEnd,'_node_out.txt'];
-FEB_struct.run_output_names={run_node_output_name};
-FEB_struct.output_types={'node_data'};
-FEB_struct.data_types={'ux;uy;uz'};
+run_element_output_name=[modelNameEnd,'_element_out.txt'];
+FEB_struct.run_output_names={run_node_output_name,run_element_output_name};
+FEB_struct.output_types={'node_data','element_data'};
+FEB_struct.data_types={'ux;uy;uz','sed'};
 
 %% SAVING .FEB FILE
 
@@ -627,7 +703,6 @@ febStruct2febFile(FEB_struct);
 
 %% RUNNING FEBIO JOB
 
-% FEBioRunStruct.FEBioPath='C:\Program Files\febio2-2.2.6\bin\febio2.exe';
 FEBioRunStruct.run_filename=FEB_struct.run_filename;
 FEBioRunStruct.run_logname=FEB_struct.run_logname;
 FEBioRunStruct.disp_on=1;
@@ -641,31 +716,95 @@ FEBioRunStruct.maxLogCheckTime=3; %Max log file checking time
 
 %%
 if runFlag==1 %i.e. a succesful run
-    % IMPORTING NODAL DISPLACEMENT RESULTS
-    % Importing nodal displacements from a log file
-    [~, N_disp_mat,~]=importFEBio_logfile(fullfile(savePath,FEB_struct.run_output_names{1})); %Nodal displacements
     
-    DN=N_disp_mat(:,2:end,end); %Final nodal displacements
+    %% Importing nodal displacements from a log file
+    [time_mat, N_disp_mat,~]=importFEBio_logfile(fullfile(savePath,FEB_struct.run_output_names{1})); %Nodal displacements    
     
-    % CREATING NODE SET IN DEFORMED STATE
+    %Remove nodal index column
+    N_disp_mat=N_disp_mat(:,2:end,:);
+    
+    %Add initial state i.e. zero displacement
+    sizImport=size(N_disp_mat); 
+    sizImport(3)=sizImport(3)+1;
+    N_disp_mat_n=zeros(sizImport);
+    N_disp_mat_n(:,:,2:end)=N_disp_mat;
+    N_disp_mat=N_disp_mat_n;
+    
+    %Add zero time point
+    time_mat=[0; time_mat(:)]; %Time
+    
+    %% Importing element stresses from a log file
+    [~,E_stress_mat,~]=importFEBio_logfile(fullfile(savePath,FEB_struct.run_output_names{2})); %Element stresses
+    
+    %Remove nodal index column
+    E_stress_mat=E_stress_mat(:,2:end,:);
+    
+    %Add initial state i.e. zero displacement
+    sizImport=size(E_stress_mat); 
+    sizImport(3)=sizImport(3)+1;
+    E_stress_mat_n=zeros(sizImport);
+    E_stress_mat_n(:,:,2:end)=E_stress_mat;
+    E_stress_mat=E_stress_mat_n;
+        
+    %% Plotting the deformed model
+    
+    time_mat_plot=time_mat;
+    ind1=find(time_mat==1);
+    c1_plot=c1*ones(size(time_mat));
+    cg_plot=c1_g(1)*ones(size(time_mat));
+    cg_plot(time_mat>=1)=c1_g(2);
+    
+    DN_MAG=sqrt(sum(N_disp_mat.^2,2));
+    DN=N_disp_mat(:,:,end);
+    DN_magnitude=sqrt(sum(DN(:,3).^2,2));
     V_def=V+DN;
-    DN_magnitude=sqrt(sum(DN.^2,2));
+    V_DEF=N_disp_mat+repmat(V,[1 1 size(N_disp_mat,3)]);
+    X_DEF=V_DEF(:,1,:);
+    Y_DEF=V_DEF(:,2,:);
+    Z_DEF=V_DEF(:,3,:);
     
-    %
-    % Plotting the deformed model
+    [~,CF]=element2patch(E,E_stress_mat(:,:,1));
     
-    [CF]=vertexToFaceMeasure(Fb,DN_magnitude);
+    hf=cFigure;
+    subplot(1,2,1); hold on;
+    title('Ogden parameter c_1');
+    xlabel('Time'); ylabel('c_1');
+    plot(time_mat_plot,c1_plot,'b-','lineWidth',2);
+    plot(time_mat_plot,cg_plot,'r-','lineWidth',2);
+    hp1=plot(time_mat_plot(1),c1_plot(1),'b.','MarkerSize',50);
+    hp2=plot(time_mat_plot(1),cg_plot(1),'r.','MarkerSize',50);
+    legend([hp1 hp2],'Material 1','Material 2');
+    axis tight; axis square; set(gca,'fontsize',fontSize);
+    grid on;
+    subplot(1,2,2); hold on;    
+    title('Strain energy density');
+    hp3=gpatch(F,V,CF,'k',1);
+
+%     gpatch(Fb,V,0.5*ones(1,3),'none',0.25);    
     
-    hf1=figuremax(figColor,figColorDef);
-    title('The deformed model','FontSize',fontSize);
-    xlabel('X','FontSize',fontSize); ylabel('Y','FontSize',fontSize); zlabel('Z','FontSize',fontSize); hold on;
+    colormap(gjet(250)); colorbar;
+    caxis([min(E_stress_mat(:)) max(E_stress_mat(:))]);
+    axisGeom(gca,fontSize);
+    axis([min(X_DEF(:)) max(X_DEF(:)) min(Y_DEF(:)) max(Y_DEF(:)) min(Z_DEF(:)) max(Z_DEF(:))]);
+    axis manual; 
+    camlight headlight;   
+    drawnow;
     
-    hps=patch('Faces',Fb,'Vertices',V_def,'FaceColor','flat','CData',CF);
+    animStruct.Time=time_mat;
     
-    view(3); axis tight;  axis equal;  grid on;
-    colormap jet; colorbar;
-    % camlight headlight;
-    set(gca,'FontSize',fontSize);
+    for qt=1:1:size(N_disp_mat,3)
+        
+        DN=N_disp_mat(:,:,qt);
+        V_def=V+DN;
+        [~,CF]=element2patch(E,E_stress_mat(:,:,qt));
+        
+        %Set entries in animation structure
+        animStruct.Handles{qt}=[hp3 hp3 hp1 hp1 hp2 hp2]; %Handles of objects to animate
+        animStruct.Props{qt}={'Vertices','CData','XData','YData','XData','YData'}; %Properties of objects to animate
+        animStruct.Set{qt}={V_def,CF,time_mat_plot(qt),c1_plot(qt),time_mat_plot(qt),cg_plot(qt)}; %Property values for to set in order to animate
+    end
+        
+    anim8(hf,animStruct);
     drawnow;
 end
 
