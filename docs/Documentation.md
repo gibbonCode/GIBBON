@@ -16,15 +16,13 @@ __The documentation is a work in progress__. Not all functions have associated h
 ## The MATLAB integrated help <a name="helpMatlab"></a>  
 Follow the installation instructions to integrate and access GIBBON documentation from within MATLAB. The name for all function help files (the files that generate the help/documentation when published with MATLAB) starts with `HELP_`, all demo files start with `DEMO_`. This way users may explore/open/edit these files by typing `open HELP_functionName` or `open DEMO_functionName` in the MATLAB command window
 
-## Function help files <a name="help"></a>   
+## Function help files <a name="help"></a>
+
 <div>
   {% for help_html in site.static_files %}
      {% if help_html.path contains '/html' %}
         {% if help_html.basename contains 'HELP' %}
-        {% if help_html.extname contains 'html' %}
-             <a href="{{ site.baseurl}}{{ help_html.path}}"> <u> {{help_html.basename}} </u>
-                {% assign filename = help_html.path | remove_first: '.html' %}
-                <br>
+        {% if help_html.extname contains 'html' %}            
                   {% for image in site.static_files %}
                     {% if image.path contains help_html.basename %}
                        {% if image.path contains '.png' %}
@@ -34,12 +32,20 @@ Follow the installation instructions to integrate and access GIBBON documentatio
                        {% endif %}              
                     {% endif %}              
                   {% endfor %}
-                </a>            
-            <hr>            
+
+                  <details>
+                    <summary><u><i class="fa fa-chevron-down" aria-hidden="true"></i> {{help_html.basename}}</u></summary>
+                    <span style="font-size:65%;">                    
+                      <iframe   src="{{ site.baseurl}}{{ help_html.path}}" width="100%" height="1000" frameborder="1" allowfullscreen> </iframe>
+                    </span>
+                  </details>
+                  <hr>            
+
         {% endif %}
         {% endif %}
      {% endif %}
  {% endfor %}
+
 </div>
 
 ## Demo files <a name="demo"></a>  
@@ -47,10 +53,7 @@ Follow the installation instructions to integrate and access GIBBON documentatio
   {% for help_html in site.static_files %}
      {% if help_html.path contains '/html' %}
         {% if help_html.basename contains 'DEMO' %}
-        {% if help_html.extname contains 'html' %}
-             <a href="{{ site.baseurl}}{{ help_html.path}}"> <u> {{help_html.basename}} </u>
-                {% assign filename = help_html.path | remove_first: '.html' %}
-                <br>
+        {% if help_html.extname contains 'html' %}             
                   {% for image in site.static_files %}
                     {% if image.path contains help_html.basename %}
                        {% if image.path contains '.png' %}
@@ -60,8 +63,15 @@ Follow the installation instructions to integrate and access GIBBON documentatio
                        {% endif %}              
                     {% endif %}              
                   {% endfor %}
-                </a>            
-            <hr>            
+
+                  <details>
+                    <summary><u><i class="fa fa-chevron-down" aria-hidden="true"></i> {{help_html.basename}}</u></summary>
+                    <span style="font-size:65%;">                    
+                      <iframe   src="{{ site.baseurl}}{{ help_html.path}}" width="100%" height="1000" frameborder="1" allowfullscreen> </iframe>
+                    </span>
+                  </details>
+                  <hr>            
+                  
         {% endif %}
         {% endif %}
      {% endif %}
