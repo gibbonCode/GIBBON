@@ -61,18 +61,26 @@ The image below is for large strain analysis of a twisting bar and stems from th
 GIBBON expands the standard MATLAB® visualization capabilities by adding 3D image and voxel visualization (see `HELP_im2patch` and `HELP_sliceViewer`), meshed geometries (`HELP_gpatch`), finite element models (`HELP_element2patch`), and colormapped vector data (`HELP_quiverVec`), and all visualization methods enable multiple colormaps to be used in each figure or axis window. Furthermore GIBBON offers a custom figure window `cFigure` containing 3D rotation options (`HELP_vcw`) that mimic CAD behavior of 3D scene rendering, and high quality figure exporting options (`HELP_efw`). Advanced graphics animation creation and exporting capabilities through a figure window based GUI are also enabled (see `HELP_anim8`).   
 
 # Installation <a name="Installation"></a>  
+The steps below guide you through a streamlined installation procedure using the `installGibbon.m` function<sup>\*</sup>.   
 
-### 1. Installing 3rd party packages
-Skip this step if finite element analysis and figure exporting are not required.
+\*<sub>If you prefer manual installation do the following: 1) Add the GIBBON folder (with subfolders) to the path and save the path definitions, 2) Run `createHelpDemoDocumentation.m` to integrate the help and documentation, 3) For the 3rd party packages: 3a) Add the `export_fig` folder to the path and save the path definitions, 3b) Go to the config folder in _../GIBBON/config_ and edit the _FEBioPath.txt_ file to contain the full path to the FEBio executable </sub>
+
+### 1. Get a copy of GIBBON
+To use GIBBON you need to create a copy on a local directory on your machine. Obtain a copy by downloading and unzipping the latest [zip file](https://github.com/gibbonCode/GIBBON/archive/master.zip) or clone GIBBON instead e.g. using: `git clone https://github.com/gibbonCode/GIBBON.git`. You can place the GIBBON folder anywhere on your machine, however, MATLAB (and the 3rd party packages listed below) may have file permission limitations for some locations which you may need to address<sup>\*</sup>.   
+
+<sup>\* For instance, some of GIBBON's features, such as those associated with TetGen and FEBio, regularly create and delete temporary files. As such MATLAB (and the 3rd party packes) should have full permissions for these folders. First of all users should make sure MATLAB has full (e.g. read/write/delete) permissions for the entire GIBBON folder (and its sub-folders). On some platforms the 3rd party packages require special treatment. For instance some OSX users have found it necessary to give tetGen or FEBio particular file permissions. For instance in the case of TetGen related features using `git update-index --chmod=+x path/to/tetgen`. </sup>
+
+### 2. Installing and setting up 3rd party packages
+Below is a list of 3rd party packages that are required for full functionality. Download and install them if needed (some are already included with GIBBON). Skip this step if finite element analysis (with FEBio) and figure exporting (with export_fig) are not desired.
 
 | Package | Description | Included? | Download |
 |:--|:--|:--:|--:|
 |[__FEBio__](https://febio.org) <br/> <img src="docs/img/logos/febioLogo.png" href="https://febio.org" alt="FEBIO" width="100%">|FEBio is a finite element solver and is used in GIBBON for all finite element analysis. Use of FEBio is featured in the many `DEMO_FEBio...` files. FEBio version 2.5.0 or newer is recommended. |__No__|[__FEBio website__](https://febio.org) |
-|[__export_fig__](https://github.com/altmany/export_fig) <br/> <img src="docs/img/logos/export_fig_logo.jpg" href="https://github.com/altmany/export_fig" alt="export_fig" width="100%">| <br/> `export_fig` helps to export publication quality images (e.g. .png, .jpg, .pdf, .eps), in GIBBON it is integrated in the export figure widget `efw` to export such images from the `cFigure` window directly. `export_fig` is also used for exporting images for creation of .gif animations with the GIBBON `anim8` function. |__No__|[__Get via GitHub__](https://github.com/altmany/export_fig) <br/> <br/> [__Download zip__](https://github.com/altmany/export_fig/archive/master.zip)|
-|<br/> [__TetGen__]() <br/> <img src="docs/img/logos/tetgenLogo.gif" href="http://wias-berlin.de/software/tetgen/" alt="TetGen" width="100px">| <br/> Is used for tetrahedral meshing (and possibly constrained 3D Delaunay tessellation). See for instance `HELP_runTetGen.m`. |__Yes__| For other versions: [__TetGen website__](http://wias-berlin.de/software/tetgen/)|
+|[__export_fig__](https://github.com/altmany/export_fig) <br/> <img src="docs/img/logos/export_fig_logo.jpg" href="https://github.com/altmany/export_fig" alt="export_fig" width="100%">| `export_fig` helps to export publication quality images (e.g. .png, .jpg, .pdf, .eps), in GIBBON it is integrated in the export figure widget `efw` to export such images from the `cFigure` window directly. `export_fig` is also used for exporting images for creation of .gif animations with the GIBBON `anim8` function. |__No__|[__Get via GitHub__](https://github.com/altmany/export_fig)  / [__Download zip__](https://github.com/altmany/export_fig/archive/master.zip)|
+|[__TetGen__](http://wias-berlin.de/software/tetgen/) <br/> <img src="docs/img/logos/tetgenLogo.gif" href="http://wias-berlin.de/software/tetgen/" alt="TetGen" width="100px">| Is used for tetrahedral meshing (and possibly constrained 3D Delaunay tessellation). See for instance `HELP_runTetGen.m`. |__Yes__| For other versions: [__TetGen website__](http://wias-berlin.de/software/tetgen/)|
 
-### 2. Run `installGibbon.m`
-By running `installGibbon.m` the GIBBON, FEBio, and export_fig path definitions will be added and saved to MATLAB. The help and documentation will also be integrated. Once finished you will be asked to __restart MATLAB__. `installGibbon.m` can be found in the main GIBBON folder.
+### 2. Install GIBBON
+By running `installGibbon.m` the GIBBON, FEBio, and export_fig path definitions will be added and saved to MATLAB. The help and documentation will also be integrated. Once finished you will be asked to __restart MATLAB__. `installGibbon.m` can be found in the main GIBBON folder.   
 
 # Getting started <a name="Start"></a>
 
