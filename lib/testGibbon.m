@@ -73,7 +73,7 @@ for q_test=startInd:1:numel(testFileList)
             run(mFileNow);
         case 'pub' %Publish
             try
-                publish(mFileNow,'catchError',false,'figureSnapMethod','getframe','maxHeight',800);
+                publish(mFileNow,'catchError',false,'figureSnapMethod','getframe','maxWidth',1000);
                 drawnow;
                 pause(1);
             catch ME                             
