@@ -1,6 +1,6 @@
-function [domNode]=addBoundaryLevel_FEB_v2p5(domNode,FEB_struct)
+function [domNode]=addBoundaryLevel_FEB(domNode,FEB_struct)
 
-% function [domNode]=addBoundaryLevel_FEB_v2p5(domNode,FEB_struct)
+% function [domNode]=addBoundaryLevel_FEB(domNode,FEB_struct)
 % ------------------------------------------------------------------------
 % Adds boundary condition information to the XML object domNode based on
 % the FEBio structure FEB_struct. 

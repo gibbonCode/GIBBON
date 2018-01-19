@@ -10,6 +10,8 @@ function domNode=addGeometryLevel_FEB(domNode,FEB_struct)
 % gibbon.toolbox@gmail.com
 %
 % 2016/06/02
+% 2018/01/17: Demoted function to obsolete, will be removed in future
+% releases
 %------------------------------------------------------------------------
 
 %% Set default display setting if missing
@@ -143,6 +145,7 @@ if isfield(FEB_struct.Geometry,'Elements')
     end
     
 end
+
 %% ElementData for thickness
 
 if isfield(FEB_struct.Geometry,'ElementData')
@@ -284,7 +287,7 @@ if isfield(FEB_struct.Geometry,'NodeSet')
         parent_node = geometryNode.appendChild(parent_node);
         
         if ~isfield(FEB_struct.Geometry.NodeSet{q_set},'Name')
-            FEB_struct.Geometry.NodeSet{q_set}.Name=['NodeSet_',sprintf('%u',q_set)]; %Surface type
+            FEB_struct.Geometry.NodeSet{q_set}.Name=['NodeSet_',sprintf('%u',q_set)]; %Set default name
         end
         nodeSetName=FEB_struct.Geometry.NodeSet{q_set}.Name; %Node set name
         

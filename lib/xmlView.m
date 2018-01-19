@@ -59,7 +59,7 @@ switch viewerOpt
         [~,hFig]=web(fileName);%,'-new');
 end
 
-if nargout>1
+if nargout==1
     varargout{1}=hFig;
 end
  

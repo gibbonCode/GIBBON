@@ -6,7 +6,7 @@
    <!--
 This HTML was auto-generated from MATLAB code.
 To make changes, update the MATLAB code and republish this document.
-      --><title>DEMO_FEBio_AnyBody_force_analysis</title><meta name="generator" content="MATLAB 9.1"><link rel="schema.DC" href="http://purl.org/dc/elements/1.1/"><meta name="DC.date" content="2017-12-21"><meta name="DC.source" content="DEMO_FEBio_AnyBody_force_analysis.m"><style type="text/css">
+      --><title>DEMO_FEBio_AnyBody_force_analysis</title><meta name="generator" content="MATLAB 9.4"><link rel="schema.DC" href="http://purl.org/dc/elements/1.1/"><meta name="DC.date" content="2018-01-19"><meta name="DC.source" content="DEMO_FEBio_AnyBody_force_analysis.m"><style type="text/css">
 html,body,div,span,applet,object,iframe,h1,h2,h3,h4,h5,h6,p,blockquote,pre,a,abbr,acronym,address,big,cite,code,del,dfn,em,font,img,ins,kbd,q,s,samp,small,strike,strong,sub,sup,tt,var,b,u,i,center,dl,dt,dd,ol,ul,li,fieldset,form,label,legend,table,caption,tbody,tfoot,thead,tr,th,td{margin:0;padding:0;border:0;outline:0;font-size:100%;vertical-align:baseline;background:transparent}body{line-height:1}ol,ul{list-style:none}blockquote,q{quotes:none}blockquote:before,blockquote:after,q:before,q:after{content:'';content:none}:focus{outine:0}ins{text-decoration:none}del{text-decoration:line-through}table{border-collapse:collapse;border-spacing:0}
 
 html { min-height:100%; margin-bottom:1px; }
@@ -194,37 +194,29 @@ regionA=tetVolMeanEst(Ft,Vt);
 regionA=regionA*6;
 
 stringOpt=<span class="string">'-pq1VAaY'</span>;
-smeshName=[<span class="string">'anyBody_FEMUR'</span>,<span class="string">'.smesh'</span>];
-smeshStruct.stringOpt=stringOpt;
-smeshStruct.Faces=Ft;
-smeshStruct.Nodes=Vt;
-smeshStruct.holePoints=[];
-smeshStruct.faceBoundaryMarker=faceBoundaryMarker; <span class="comment">%Face boundary markers</span>
-smeshStruct.regionPoints=V_in_1; <span class="comment">%region points</span>
-smeshStruct.regionA=regionA;
-smeshStruct.minRegionMarker=2; <span class="comment">%Minimum region marker</span>
-smeshStruct.smeshName=smeshName;
-</pre><h2 id="17">MESH MODEL USING TETGEN</h2><pre class="codeinput">[meshOutput]=runTetGen(smeshStruct);
+meshStruct.stringOpt=stringOpt;
+meshStruct.Faces=Ft;
+meshStruct.Nodes=Vt;
+meshStruct.holePoints=[];
+meshStruct.faceBoundaryMarker=faceBoundaryMarker; <span class="comment">%Face boundary markers</span>
+meshStruct.regionPoints=V_in_1; <span class="comment">%region points</span>
+meshStruct.regionA=regionA;
+meshStruct.minRegionMarker=2; <span class="comment">%Minimum region marker</span>
+</pre><h2 id="17">MESH MODEL USING TETGEN</h2><pre class="codeinput">[meshOutput]=runTetGen(meshStruct);
 meshView(meshOutput);
 </pre><pre class="codeoutput"> 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
---- TETGEN Tetrahedral meshing --- 21-Dec-2017 13:55:09
-Warning: smeshStruct.smeshName input will be
-replaced by smeshStruct.modelName in future
-releases! 
+--- TETGEN Tetrahedral meshing --- 19-Jan-2018 14:05:44
  
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
---- Writing SMESH file --- 21-Dec-2017 13:55:09
-Warning: smeshStruct.smeshName input will be
-replaced by smeshStruct.modelName in future
-releases! 
+--- Writing SMESH file --- 19-Jan-2018 14:05:44
 ----&gt; Adding node field
 ----&gt; Adding facet field
 ----&gt; Adding holes specification
 ----&gt; Adding region specification
---- Done --- 21-Dec-2017 13:55:09
---- Running TetGen to mesh input boundary--- 21-Dec-2017 13:55:09
-Opening /mnt/data/MATLAB/GIT/GIBBON/lib_ext/tetGen/tempFiles/anyBody_FEMUR.smesh.
+--- Done --- 19-Jan-2018 14:05:45
+--- Running TetGen to mesh input boundary--- 19-Jan-2018 14:05:45
+Opening /mnt/data/MATLAB/GIT/GIBBON/lib_ext/tetGen/tempFiles/temp.smesh.
   Initializing memorypools.
   tetrahedron per block: 8188.
   Size of a point: 128 bytes.
@@ -237,49 +229,49 @@ Delaunizing vertices...
   Permuting vertices.
   Sorting vertices.
   Incrementally inserting vertices.
-Delaunay seconds:  0.053799
-  Point sorting seconds:  0.000614
+Delaunay seconds:  0.048339
+  Point sorting seconds:  0.000502
 Creating surface mesh ...
   5916 (8874) subfaces (segments).
-Surface mesh seconds:  0.01024
+Surface mesh seconds:  0.010223
 Recovering boundaries...
   Recovering segments.
   8874 (0) segments are recovered (missing).
   Recovering facets.
   5916 (0) subfaces are recovered (missing).
-Boundary recovery seconds:  0.013443
-  Segment recovery seconds:  0.008983
-  Facet recovery seconds:  0.00446
+Boundary recovery seconds:  0.013407
+  Segment recovery seconds:  0.008998
+  Facet recovery seconds:  0.004409
 Removing exterior tetrahedra ...
 Spreading region attributes.
   Found 1 domain.
-Exterior tets removal seconds:  0.010475
+Exterior tets removal seconds:  0.009741
 Recovering Delaunayness...
   Initial obj = 1144577110755.3481
   Final obj  = 1144577101956.8599
-Delaunay recovery seconds:  0.007435
+Delaunay recovery seconds:  0.006516
 Refining mesh...
   Min radiu-edge ratio = 1.
   Min dihedral   angle = 0.
   Splitting bad quality tets.
   Added 5589 (0,0,5589) Steiner points.
   Performed 3 flips.
-Refinement seconds:  0.294957
+Refinement seconds:  0.291392
 Optimizing mesh...
   Optimization level  = 2.
   Optimization scheme = 7.
   Number of iteration = 3.
   Min_Max dihed angle = 165.
   Removed 605 edges.
-Optimization seconds:  0.02968
+Optimization seconds:  0.029685
 
-Writing /mnt/data/MATLAB/GIT/GIBBON/lib_ext/tetGen/tempFiles/anyBody_FEMUR.1.node.
-Writing /mnt/data/MATLAB/GIT/GIBBON/lib_ext/tetGen/tempFiles/anyBody_FEMUR.1.ele.
-Writing /mnt/data/MATLAB/GIT/GIBBON/lib_ext/tetGen/tempFiles/anyBody_FEMUR.1.face.
-Writing /mnt/data/MATLAB/GIT/GIBBON/lib_ext/tetGen/tempFiles/anyBody_FEMUR.1.edge.
+Writing /mnt/data/MATLAB/GIT/GIBBON/lib_ext/tetGen/tempFiles/temp.1.node.
+Writing /mnt/data/MATLAB/GIT/GIBBON/lib_ext/tetGen/tempFiles/temp.1.ele.
+Writing /mnt/data/MATLAB/GIT/GIBBON/lib_ext/tetGen/tempFiles/temp.1.face.
+Writing /mnt/data/MATLAB/GIT/GIBBON/lib_ext/tetGen/tempFiles/temp.1.edge.
 
-Output seconds:  0.096457
-Total running seconds:  0.516799
+Output seconds:  0.099922
+Total running seconds:  0.50954
 
 Statistics:
 
@@ -349,11 +341,11 @@ Memory usage statistics:
   Approximate memory for working arrays (bytes):  1,386,688
   Approximate total used memory (bytes):  17,856,848
 
---- Done --- 21-Dec-2017 13:55:10
+--- Done --- 19-Jan-2018 14:05:46
  
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
---- Importing TetGen files --- 21-Dec-2017 13:55:10
---- Done --- 21-Dec-2017 13:55:10
+--- Importing TetGen files --- 19-Jan-2018 14:05:46
+--- Done --- 19-Jan-2018 14:05:46
 </pre><img vspace="5" hspace="5" src="DEMO_FEBio_AnyBody_force_analysis_06.png" alt=""> <p>Access model element and patch data</p><pre class="codeinput">F=meshOutput.faces;
 V=meshOutput.nodes;
 C=meshOutput.faceMaterialID;
@@ -519,12 +511,15 @@ FEB_struct.output_types={<span class="string">'node_data'</span>};
 FEB_struct.data_types={<span class="string">'ux;uy;uz'</span>};
 </pre><h2 id="24">SAVING .FEB FILE</h2><pre class="codeinput">FEB_struct.disp_opt=0; <span class="comment">%Display waitbars</span>
 febStruct2febFile(FEB_struct);
-</pre><pre class="codeoutput"> 
+</pre><pre class="codeoutput">Warning: febStruct2febFile is depricated and will be removed in future releases.
+Update your codes to use febioStruct2xml, see HELP_febioStruct2xml (furthermore
+febio_spec version 2.5 is recommended) 
+ 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
---- Writing FEBio XML object --- 21-Dec-2017 13:55:14
+--- Writing FEBio XML object --- 19-Jan-2018 14:05:51
+Using febio_spec: 2.0
 Adding Module level
 Adding Control level
-Adding Globals level
 Adding Material level
 Adding Geometry level
 ----&gt; Adding node field
@@ -543,11 +538,10 @@ Adding LoadData level
 Adding Output level
 ----&gt; Adding plotfile field
 ----&gt; Adding logfile field
-Warning: Provided path of logfile is replaced by
-.feb file path. Only provide filename to avoid this
-warning 
+Warning: Provided path of logfile is replaced by .feb file path. Only provide
+filename to avoid this warning 
 Writing .feb file
---- Done --- 21-Dec-2017 13:55:19
+--- Done --- 19-Jan-2018 14:05:57
 </pre><h2 id="25">RUNNING FEBIO JOB</h2><pre class="codeinput">FEBioRunStruct.run_filename=FEB_struct.run_filename;
 FEBioRunStruct.run_logname=FEB_struct.run_logname;
 FEBioRunStruct.disp_on=1;
@@ -568,7 +562,7 @@ FEBioRunStruct.maxLogCheckTime=3; <span class="comment">%Max log file checking t
    % camlight headlight;
    set(gca,'FontSize',fontSize);
    drawnow;
-end</pre><p><img vspace="5" hspace="5" src="gibbVerySmall.gif" alt=""> </p><p><i><b>GIBBON</b></i> <a href="www.gibboncode.org">www.gibboncode.org</a></p><p><i>Kevin Mattheus Moerman</i>, <a href="gibbon.toolbox@gmail.com">gibbon.toolbox@gmail.com</a></p><p><i><b>GIBBON footer text</b></i></p><p>License: <a href="https://github.com/gibbonCode/GIBBON/blob/master/LICENSE">https://github.com/gibbonCode/GIBBON/blob/master/LICENSE</a></p><p>GIBBON: The Geometry and Image-based Bioengineering add-On. A toolbox for image segmentation, image-based modeling, meshing, and finite element analysis.</p><p>Copyright (C) 2017  Kevin Mattheus Moerman</p><p>This program is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.</p><p>This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for more details.</p><p>You should have received a copy of the GNU General Public License along with this program.  If not, see <a href="http://www.gnu.org/licenses/">http://www.gnu.org/licenses/</a>.</p><p class="footer"><br><a href="http://www.mathworks.com/products/matlab/">Published with MATLAB&reg; R2016b</a><br></p></div><!--
+end</pre><p><img vspace="5" hspace="5" src="gibbVerySmall.gif" alt=""> </p><p><i><b>GIBBON</b></i> <a href="www.gibboncode.org">www.gibboncode.org</a></p><p><i>Kevin Mattheus Moerman</i>, <a href="gibbon.toolbox@gmail.com">gibbon.toolbox@gmail.com</a></p><p><i><b>GIBBON footer text</b></i></p><p>License: <a href="https://github.com/gibbonCode/GIBBON/blob/master/LICENSE">https://github.com/gibbonCode/GIBBON/blob/master/LICENSE</a></p><p>GIBBON: The Geometry and Image-based Bioengineering add-On. A toolbox for image segmentation, image-based modeling, meshing, and finite element analysis.</p><p>Copyright (C) 2017  Kevin Mattheus Moerman</p><p>This program is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.</p><p>This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for more details.</p><p>You should have received a copy of the GNU General Public License along with this program.  If not, see <a href="http://www.gnu.org/licenses/">http://www.gnu.org/licenses/</a>.</p><p class="footer"><br><a href="https://www.mathworks.com/products/matlab/">Published with MATLAB&reg; R2018a</a><br></p></div><!--
 ##### SOURCE BEGIN #####
 %% DEMO_FEBio_AnyBody_force_analysis
 % Below is a demonstration for importing AnyBody surface models and
@@ -774,20 +768,18 @@ regionA=tetVolMeanEst(Ft,Vt);
 regionA=regionA*6;
 
 stringOpt='-pq1VAaY'; 
-smeshName=['anyBody_FEMUR','.smesh'];
-smeshStruct.stringOpt=stringOpt;
-smeshStruct.Faces=Ft; 
-smeshStruct.Nodes=Vt; 
-smeshStruct.holePoints=[];
-smeshStruct.faceBoundaryMarker=faceBoundaryMarker; %Face boundary markers
-smeshStruct.regionPoints=V_in_1; %region points
-smeshStruct.regionA=regionA; 
-smeshStruct.minRegionMarker=2; %Minimum region marker
-smeshStruct.smeshName=smeshName; 
+meshStruct.stringOpt=stringOpt;
+meshStruct.Faces=Ft; 
+meshStruct.Nodes=Vt; 
+meshStruct.holePoints=[];
+meshStruct.faceBoundaryMarker=faceBoundaryMarker; %Face boundary markers
+meshStruct.regionPoints=V_in_1; %region points
+meshStruct.regionA=regionA; 
+meshStruct.minRegionMarker=2; %Minimum region marker
 
 %% MESH MODEL USING TETGEN
 
-[meshOutput]=runTetGen(smeshStruct);
+[meshOutput]=runTetGen(meshStruct);
 meshView(meshOutput);
 
 %% 

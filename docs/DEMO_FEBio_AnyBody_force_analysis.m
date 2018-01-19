@@ -202,20 +202,18 @@ regionA=tetVolMeanEst(Ft,Vt);
 regionA=regionA*6;
 
 stringOpt='-pq1VAaY'; 
-smeshName=['anyBody_FEMUR','.smesh'];
-smeshStruct.stringOpt=stringOpt;
-smeshStruct.Faces=Ft; 
-smeshStruct.Nodes=Vt; 
-smeshStruct.holePoints=[];
-smeshStruct.faceBoundaryMarker=faceBoundaryMarker; %Face boundary markers
-smeshStruct.regionPoints=V_in_1; %region points
-smeshStruct.regionA=regionA; 
-smeshStruct.minRegionMarker=2; %Minimum region marker
-smeshStruct.smeshName=smeshName; 
+meshStruct.stringOpt=stringOpt;
+meshStruct.Faces=Ft; 
+meshStruct.Nodes=Vt; 
+meshStruct.holePoints=[];
+meshStruct.faceBoundaryMarker=faceBoundaryMarker; %Face boundary markers
+meshStruct.regionPoints=V_in_1; %region points
+meshStruct.regionA=regionA; 
+meshStruct.minRegionMarker=2; %Minimum region marker
 
 %% MESH MODEL USING TETGEN
 
-[meshOutput]=runTetGen(smeshStruct);
+[meshOutput]=runTetGen(meshStruct);
 meshView(meshOutput);
 
 %% 

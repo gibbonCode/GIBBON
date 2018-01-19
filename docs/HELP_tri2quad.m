@@ -28,6 +28,7 @@ edgeWidth=1;
 %%
 % Convert triangular faces to quadrilateral faces
 [Fq,Vq]=tri2quad(F,V,1);
+[Fq,Vq]=subQuad(Fq,Vq,2);
 
 %%
 % Visualisation

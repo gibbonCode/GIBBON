@@ -1,0 +1,502 @@
+
+<!DOCTYPE html
+  PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html><head>
+      <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+   <!--
+This HTML was auto-generated from MATLAB code.
+To make changes, update the MATLAB code and republish this document.
+      --><title>DEMO_geodesic_remeshing</title><meta name="generator" content="MATLAB 9.4"><link rel="schema.DC" href="http://purl.org/dc/elements/1.1/"><meta name="DC.date" content="2018-01-19"><meta name="DC.source" content="DEMO_geodesic_remeshing.m"><style type="text/css">
+html,body,div,span,applet,object,iframe,h1,h2,h3,h4,h5,h6,p,blockquote,pre,a,abbr,acronym,address,big,cite,code,del,dfn,em,font,img,ins,kbd,q,s,samp,small,strike,strong,sub,sup,tt,var,b,u,i,center,dl,dt,dd,ol,ul,li,fieldset,form,label,legend,table,caption,tbody,tfoot,thead,tr,th,td{margin:0;padding:0;border:0;outline:0;font-size:100%;vertical-align:baseline;background:transparent}body{line-height:1}ol,ul{list-style:none}blockquote,q{quotes:none}blockquote:before,blockquote:after,q:before,q:after{content:'';content:none}:focus{outine:0}ins{text-decoration:none}del{text-decoration:line-through}table{border-collapse:collapse;border-spacing:0}
+
+html { min-height:100%; margin-bottom:1px; }
+html body { height:100%; margin:0px; font-family:Arial, Helvetica, sans-serif; font-size:10px; color:#000; line-height:140%; background:#fff none; overflow-y:scroll; }
+html body td { vertical-align:top; text-align:left; }
+
+h1 { padding:0px; margin:0px 0px 25px; font-family:Arial, Helvetica, sans-serif; font-size:1.5em; color:#d55000; line-height:100%; font-weight:normal; }
+h2 { padding:0px; margin:0px 0px 8px; font-family:Arial, Helvetica, sans-serif; font-size:1.2em; color:#000; font-weight:bold; line-height:140%; border-bottom:1px solid #d6d4d4; display:block; }
+h3 { padding:0px; margin:0px 0px 5px; font-family:Arial, Helvetica, sans-serif; font-size:1.1em; color:#000; font-weight:bold; line-height:140%; }
+
+a { color:#005fce; text-decoration:none; }
+a:hover { color:#005fce; text-decoration:underline; }
+a:visited { color:#004aa0; text-decoration:none; }
+
+p { padding:0px; margin:0px 0px 20px; }
+img { padding:0px; margin:0px 0px 20px; border:none; }
+p img, pre img, tt img, li img, h1 img, h2 img { margin-bottom:0px; } 
+
+ul { padding:0px; margin:0px 0px 20px 23px; list-style:square; }
+ul li { padding:0px; margin:0px 0px 7px 0px; }
+ul li ul { padding:5px 0px 0px; margin:0px 0px 7px 23px; }
+ul li ol li { list-style:decimal; }
+ol { padding:0px; margin:0px 0px 20px 0px; list-style:decimal; }
+ol li { padding:0px; margin:0px 0px 7px 23px; list-style-type:decimal; }
+ol li ol { padding:5px 0px 0px; margin:0px 0px 7px 0px; }
+ol li ol li { list-style-type:lower-alpha; }
+ol li ul { padding-top:7px; }
+ol li ul li { list-style:square; }
+
+.content { font-size:1.2em; line-height:140%; padding: 20px; }
+
+pre, code { font-size:12px; }
+tt { font-size: 1.2em; }
+pre { margin:0px 0px 20px; }
+pre.codeinput { padding:10px; border:1px solid #d3d3d3; background:#f7f7f7; }
+pre.codeoutput { padding:10px 11px; margin:0px 0px 20px; color:#4c4c4c; }
+pre.error { color:red; }
+
+@media print { pre.codeinput, pre.codeoutput { word-wrap:break-word; width:100%; } }
+
+span.keyword { color:#0000FF }
+span.comment { color:#228B22 }
+span.string { color:#A020F0 }
+span.untermstring { color:#B20000 }
+span.syscmd { color:#B28C00 }
+
+.footer { width:auto; padding:10px 0px; margin:25px 0px 0px; border-top:1px dotted #878787; font-size:0.8em; line-height:140%; font-style:italic; color:#878787; text-align:left; float:none; }
+.footer p { margin:0px; }
+.footer a { color:#878787; }
+.footer a:hover { color:#878787; text-decoration:underline; }
+.footer a:visited { color:#878787; }
+
+table th { padding:7px 5px; text-align:left; vertical-align:middle; border: 1px solid #d6d4d4; font-weight:bold; }
+table td { padding:7px 5px; text-align:left; vertical-align:top; border:1px solid #d6d4d4; }
+
+
+
+
+
+  </style></head><body><div class="content"><h1>DEMO_geodesic_remeshing</h1><!--introduction--><p>Below is a demonstration for:</p><div><ul><li>The use of remeshTriSurfDistMap (and subTri and smoothening) for surface remeshing</li></ul></div><!--/introduction--><h2>Contents</h2><div><ul><li><a href="#3">Control parameters</a></li><li><a href="#4">Creating example surface data</a></li><li><a href="#5">Merge nodes if required (e.g. in case of STL import)</a></li><li><a href="#6">Refine input mesh before resampling</a></li><li><a href="#7">Estimate number of points required given point spacing</a></li><li><a href="#8">Visualize input mesh</a></li><li><a href="#9">Get indices of boundary points and get boundary curve</a></li><li><a href="#10">Get indices of "must points" close to evenly spaced on boundary curve</a></li><li><a href="#11">Visualize boundary points to keep on input mesh</a></li><li><a href="#12">Resample input surface geodesically</a></li><li><a href="#14">Refine output if desired using sub-triangulation</a></li><li><a href="#15">Get indices of new boundary points and get boundary curve</a></li><li><a href="#16">Visualize final result</a></li></ul></div><pre class="codeinput">clear; close <span class="string">all</span>; clc;
+</pre><pre class="codeinput"><span class="comment">%Plot settings</span>
+fontSize=15;
+markerSize=15;
+lineWidth=2;
+</pre><h2 id="3">Control parameters</h2><pre class="codeinput">exampleType=1; <span class="comment">%Use to switch between different examples</span>
+
+<span class="keyword">switch</span> exampleType
+    <span class="keyword">case</span> 1 <span class="comment">%A fast (~10 seconds) resampling to a coarser geodesic output mesh, without before/after refinement</span>
+        pointSpacing=1; <span class="comment">%Desired point spacing</span>
+        nRefineOriginal=0; <span class="comment">%Set n&gt;0 to refine the input mesh through sub-triangulation before resampling</span>
+        nRefineOutput=0; <span class="comment">%Number of output refinement steps</span>
+    <span class="keyword">case</span> 2 <span class="comment">%Same as 1 but with resampling/smoothening of the output surface (is mast and may be sufficient)</span>
+        <span class="comment">%A fast resampling to coarse geodesic mesh, with refinement of output</span>
+        pointSpacing=1; <span class="comment">%Desired point spacing</span>
+        nRefineOriginal=0; <span class="comment">%Set n&gt;0 to refine the input mesh through sub-triangulation before resampling</span>
+        nRefineOutput=2; <span class="comment">%Number of output refinement steps</span>
+    <span class="keyword">case</span> 3 <span class="comment">%Same as 2 but with more sub-triangulation</span>
+        <span class="comment">%A fast resampling to coarse geodesic mesh, with refinement of output</span>
+        pointSpacing=1; <span class="comment">%Desired point spacing</span>
+        nRefineOriginal=0; <span class="comment">%Set n&gt;0 to refine the input mesh through sub-triangulation before resampling</span>
+        nRefineOutput=3; <span class="comment">%Number of output refinement steps</span>
+    <span class="keyword">case</span> 4 <span class="comment">%A reduced point spacing requires a refined input surface, slower example (~5 minutes)</span>
+        pointSpacing=0.5; <span class="comment">%Desired point spacing</span>
+        nRefineOriginal=1; <span class="comment">%Set n&gt;0 to refine the input mesh through sub-triangulation before resampling</span>
+        nRefineOutput=0; <span class="comment">%Number of output refinement steps</span>
+<span class="keyword">end</span>
+
+mergeNodes=0; <span class="comment">%Use to force sharing of nodes with nearly equal coordinates across faces</span>
+nSmoothIterations=15; <span class="comment">%Number of smoothening steps per refinement step (only used for output sub-triangulation)</span>
+</pre><h2 id="4">Creating example surface data</h2><pre class="codeinput"><span class="comment">%Boundary 1</span>
+ns=150;
+t=linspace(0,2*pi,ns);
+t=t(1:end-1);
+r=6+2.*sin(5*t);
+[x,y] = pol2cart(t,r);
+z=1/10*x.^2;
+V1=[x(:) y(:) z(:)];
+
+<span class="comment">%Create Euler angles to set directions</span>
+E=[0.25*pi -0.25*pi 0];
+[R,~]=euler2DCM(E); <span class="comment">%The true directions for X, Y and Z axis</span>
+
+V1=(R*V1')'; <span class="comment">%Rotate polygon</span>
+
+regionCell={V1}; <span class="comment">%A region between V1 and V2 (V2 forms a hole inside V1)</span>
+
+<span class="comment">% Meshing the region (See also |regionTriMesh2D|)</span>
+[F,V]=regionTriMesh3D(regionCell,0.2,1,<span class="string">'linear'</span>);
+</pre><h2 id="5">Merge nodes if required (e.g. in case of STL import)</h2><p>In some cases nodes are not shared for adjacent triangles (e.g. STL imported geometry). In this case merging is required.</p><pre class="codeinput"><span class="keyword">if</span> mergeNodes==1
+    decPlaceRound=6; <span class="comment">%Decimal place for rounding</span>
+    [~,indUni,indF]=unique(pround(V,decPlaceRound),<span class="string">'rows'</span>); <span class="comment">%Get indices for unique point set</span>
+    V=V(indUni,:); <span class="comment">%Keep only unique</span>
+    F=indF(F); <span class="comment">%Fix indices in faces matrix</span>
+<span class="keyword">end</span>
+</pre><h2 id="6">Refine input mesh before resampling</h2><p>Refining the input mesh is required if the intended mesh density exceeds that of the desired output mesh density. For each iteration the triangle edges are split in half while the triangle faces are split into 4. The mesh becomes very dense, very quickly so do not over do this. Subtri works through triangle splitting and is linear in the sense that it leaves input points unaltered but adds intermediate points on all input edges.</p><pre class="codeinput"><span class="keyword">if</span> nRefineOriginal&gt;0
+    <span class="keyword">for</span> q=1:1:nRefineOriginal
+        [F,V]=subtri(F,V,1); <span class="comment">%Refine input mesh through sub-triangulation</span>
+    <span class="keyword">end</span>
+<span class="keyword">end</span>
+</pre><h2 id="7">Estimate number of points required given point spacing</h2><pre class="codeinput">numPointsInput=size(V,1); <span class="comment">%Number of points in the original data</span>
+[A]=patch_area(F,V); <span class="comment">%Areas of current faces</span>
+totalArea=sum(A(:)); <span class="comment">%Total area</span>
+l=sqrt(totalArea); <span class="comment">%Width or length of square with same size</span>
+np=round((l./pointSpacing).^2); <span class="comment">%Point spacing for mesh in virtual square</span>
+</pre><h2 id="8">Visualize input mesh</h2><pre class="codeinput">cFigure; hold <span class="string">on</span>;
+title(<span class="string">'The original mesh'</span>);
+patch(<span class="string">'Faces'</span>,F,<span class="string">'Vertices'</span>,V,<span class="string">'FaceColor'</span>,<span class="string">'g'</span>,<span class="string">'EdgeColor'</span>,<span class="string">'k'</span>);
+view(3); axis <span class="string">equal</span>; axis <span class="string">tight</span>; grid <span class="string">on</span>; box <span class="string">on</span>; view(152,22);
+set(gca,<span class="string">'FontSize'</span>,fontSize);
+drawnow;
+<span class="comment">% [hp]=patchNormPlot(F,V);</span>
+</pre><img vspace="5" hspace="5" src="DEMO_geodesic_remeshing_01.png" alt=""> <h2 id="9">Get indices of boundary points and get boundary curve</h2><pre class="codeinput"><span class="comment">%First get triangulation class representation</span>
+TR=triangulation(F,V);
+[indEdges] = freeBoundary(TR); <span class="comment">%The list of free edges</span>
+
+<span class="comment">%Reorder edge list to obtain indices describing continuous curve (assuming</span>
+<span class="comment">%a single boundary, need to group first and do reordering on each group if</span>
+<span class="comment">%multiple boundaries exist)</span>
+[indList]=edgeListToCurve(indEdges);
+indList=indList(1:end-1);
+</pre><h2 id="10">Get indices of "must points" close to evenly spaced on boundary curve</h2><pre class="codeinput">D=pathLength(V(indList,:)); <span class="comment">%The cummulative curve length</span>
+boundaryLength=max(D); <span class="comment">%The total curve length</span>
+
+nb=round(boundaryLength./pointSpacing); <span class="comment">%Number of points to keep on boundary</span>
+[Vb] = evenlySampleCurve(V(indList,:),nb,<span class="string">'pchip'</span>,1);
+
+[~,minIND]=minDist(Vb,V(indList,:));
+indListSelect=indList(minIND); <span class="comment">%List of points to keep</span>
+</pre><h2 id="11">Visualize boundary points to keep on input mesh</h2><pre class="codeinput">cFigure; hold <span class="string">on</span>;
+title(<span class="string">'Input mesh and boundary points to keep'</span>)
+patch(<span class="string">'Faces'</span>,F,<span class="string">'Vertices'</span>,V,<span class="string">'FaceColor'</span>,<span class="string">'g'</span>,<span class="string">'EdgeColor'</span>,<span class="string">'k'</span>);
+
+plotV(V(indListSelect,:),<span class="string">'r.-'</span>,<span class="string">'MarkerSize'</span>,25,<span class="string">'LineWidth'</span>,lineWidth);
+plotV(Vb,<span class="string">'b.-'</span>,<span class="string">'MarkerSize'</span>,markerSize,<span class="string">'LineWidth'</span>,lineWidth);
+
+view(3); axis <span class="string">equal</span>; axis <span class="string">tight</span>; grid <span class="string">on</span>; box <span class="string">on</span>; view(152,22);
+set(gca,<span class="string">'FontSize'</span>,fontSize);
+drawnow;
+</pre><img vspace="5" hspace="5" src="DEMO_geodesic_remeshing_02.png" alt=""> <h2 id="12">Resample input surface geodesically</h2><p>Geodesic re-sampling works by taking a point on the surface and calculating the distance to all other points by marching/propagating across the mesh. The point on the mesh furthest away from the input point (or points) is then added to the list. Then new distances are computed and the furthest point is again added to this list. Therefore using this iterative process equally spaced point sets can be obtained. The mesh works by sampling the input mesh to a coarser homogeneous mesh. If the input mesh is too coarse refine it first using subTri (subTri does not alter input geometry). This method does not alter the geometry but simply samples a subset of the input points. So the output point set (or seeds) are all points part of the original input geometry. The region closest to one of the seed points can be viewed as a Voronoi cell. The dual of the Voronoi tesselation is a Delaunay triangulation which gives the output mesh connectivity. The distance marching can be very slow. One tip is to do a coarse resampling and then to sub-triangulate the output.</p><pre class="codeinput"><span class="comment">%Use distance marching method</span>
+[Fn,Vn,S]=remeshTriSurfDistMap(F,V,numel(indListSelect)+np,indListSelect); <span class="comment">%distance based marching</span>
+</pre><pre class="codeinput">cFigure; hold <span class="string">on</span>;
+title(<span class="string">'Original mesh with seed points and "Voronoi cells"'</span>);
+<span class="comment">% [S]=vertexToFaceMeasure(F,S);</span>
+patch(<span class="string">'Faces'</span>,F,<span class="string">'Vertices'</span>,V,<span class="string">'FaceColor'</span>,<span class="string">'flat'</span>,<span class="string">'CData'</span>,S,<span class="string">'EdgeColor'</span>,<span class="string">'none'</span>);
+plotV(Vn,<span class="string">'k.'</span>,<span class="string">'MarkerSize'</span>,markerSize);
+
+view(3); axis <span class="string">equal</span>; axis <span class="string">tight</span>; grid <span class="string">on</span>; box <span class="string">on</span>; view(152,22);
+set(gca,<span class="string">'FontSize'</span>,fontSize);
+camlight <span class="string">headlight</span>;
+cMap=hsv(max(S));
+cMap=cMap(randperm(size(cMap,1)),:);
+colormap(cMap);
+drawnow;
+</pre><img vspace="5" hspace="5" src="DEMO_geodesic_remeshing_03.png" alt=""> <h2 id="14">Refine output if desired using sub-triangulation</h2><pre class="codeinput"><span class="keyword">if</span> nRefineOutput&gt;0
+    numOutIni=size(Vn,1);
+    <span class="comment">%Refine and smoothen</span>
+    <span class="keyword">for</span> q=1:1:nRefineOutput
+        <span class="comment">%Refine</span>
+        [Fn,Vn]=subtri(Fn,Vn,1); <span class="comment">%Refine through splitting</span>
+
+        <span class="comment">%Smoothen refined mesh</span>
+
+        <span class="comment">%First get triangulation class representation</span>
+        TR_n=triangulation(Fn,Vn);
+        [indEdges_n] = freeBoundary(TR_n); <span class="comment">%The list of free edges</span>
+        indKeep=1:numOutIni; <span class="comment">%Indices for points that should not be moved by smoothening</span>
+        indKeep=unique([indKeep(:);indEdges_n(:)]); <span class="comment">%Add boundary points to keep list</span>
+
+        <span class="comment">%Smoothening parameters for smoothening after refinement</span>
+        cPar.Method=<span class="string">'HC'</span>;
+        cPar.n=nSmoothIterations;
+        cPar.RigidConstraints=indKeep; <span class="comment">%Points to hold on to while smoothening</span>
+
+        <span class="comment">%Smooth while holding on to desired points (here original and boundary)</span>
+        [Vn]=patchSmooth(Fn,Vn,[],cPar);
+
+    <span class="keyword">end</span>
+<span class="keyword">else</span>
+    indKeep=1:size(Vn,1);
+<span class="keyword">end</span>
+</pre><h2 id="15">Get indices of new boundary points and get boundary curve</h2><pre class="codeinput"><span class="comment">%First get triangulation class representation</span>
+TR_n=triangulation(Fn,Vn);
+[indEdges_n] = freeBoundary(TR_n); <span class="comment">%The list of free edges</span>
+
+<span class="comment">%Reorder edge list to obtain indices describing continuous curve (assuming</span>
+<span class="comment">%a single boundary, need to group first and do reordering on each group if</span>
+<span class="comment">%multiple boundaries exist)</span>
+[indList_n]=edgeListToCurve(indEdges_n);
+indList_n=indList_n(1:end-1);
+</pre><h2 id="16">Visualize final result</h2><pre class="codeinput">cFigure; hold <span class="string">on</span>;
+title(<span class="string">'Resampled mesh'</span>);
+patch(<span class="string">'Faces'</span>,Fn,<span class="string">'Vertices'</span>,Vn,<span class="string">'FaceColor'</span>,<span class="string">'b'</span>,<span class="string">'EdgeColor'</span>,<span class="string">'k'</span>);
+plotV(Vn(indList_n,:),<span class="string">'r.-'</span>,<span class="string">'MarkerSize'</span>,markerSize,<span class="string">'LineWidth'</span>,lineWidth);
+
+plotV(Vn(indKeep,:),<span class="string">'y.'</span>,<span class="string">'MarkerSize'</span>,markerSize); <span class="comment">%Boundary point of member of original surface</span>
+view(3); axis <span class="string">equal</span>; axis <span class="string">tight</span>; grid <span class="string">on</span>; box <span class="string">on</span>; view(152,22);
+set(gca,<span class="string">'FontSize'</span>,fontSize);
+camlight <span class="string">headlight</span>;
+drawnow;
+</pre><img vspace="5" hspace="5" src="DEMO_geodesic_remeshing_04.png" alt=""> <p><img vspace="5" hspace="5" src="gibbVerySmall.gif" alt=""> </p><p><i><b>GIBBON</b></i> <a href="www.gibboncode.org">www.gibboncode.org</a></p><p><i>Kevin Mattheus Moerman</i>, <a href="gibbon.toolbox@gmail.com">gibbon.toolbox@gmail.com</a></p><p><i><b>GIBBON footer text</b></i></p><p>License: <a href="https://github.com/gibbonCode/GIBBON/blob/master/LICENSE">https://github.com/gibbonCode/GIBBON/blob/master/LICENSE</a></p><p>GIBBON: The Geometry and Image-based Bioengineering add-On. A toolbox for image segmentation, image-based modeling, meshing, and finite element analysis.</p><p>Copyright (C) 2017  Kevin Mattheus Moerman</p><p>This program is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.</p><p>This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for more details.</p><p>You should have received a copy of the GNU General Public License along with this program.  If not, see <a href="http://www.gnu.org/licenses/">http://www.gnu.org/licenses/</a>.</p><p class="footer"><br><a href="https://www.mathworks.com/products/matlab/">Published with MATLAB&reg; R2018a</a><br></p></div><!--
+##### SOURCE BEGIN #####
+%% DEMO_geodesic_remeshing
+% Below is a demonstration for:
+% 
+% * The use of remeshTriSurfDistMap (and subTri and smoothening) for surface remeshing
+
+%%
+
+clear; close all; clc;
+
+%%
+%Plot settings
+fontSize=15;
+markerSize=15;
+lineWidth=2; 
+
+%% Control parameters
+
+exampleType=1; %Use to switch between different examples
+
+switch exampleType
+    case 1 %A fast (~10 seconds) resampling to a coarser geodesic output mesh, without before/after refinement
+        pointSpacing=1; %Desired point spacing
+        nRefineOriginal=0; %Set n>0 to refine the input mesh through sub-triangulation before resampling
+        nRefineOutput=0; %Number of output refinement steps
+    case 2 %Same as 1 but with resampling/smoothening of the output surface (is mast and may be sufficient)
+        %A fast resampling to coarse geodesic mesh, with refinement of output       
+        pointSpacing=1; %Desired point spacing
+        nRefineOriginal=0; %Set n>0 to refine the input mesh through sub-triangulation before resampling
+        nRefineOutput=2; %Number of output refinement steps
+    case 3 %Same as 2 but with more sub-triangulation
+        %A fast resampling to coarse geodesic mesh, with refinement of output
+        pointSpacing=1; %Desired point spacing
+        nRefineOriginal=0; %Set n>0 to refine the input mesh through sub-triangulation before resampling
+        nRefineOutput=3; %Number of output refinement steps
+    case 4 %A reduced point spacing requires a refined input surface, slower example (~5 minutes)
+        pointSpacing=0.5; %Desired point spacing
+        nRefineOriginal=1; %Set n>0 to refine the input mesh through sub-triangulation before resampling
+        nRefineOutput=0; %Number of output refinement steps
+end
+
+mergeNodes=0; %Use to force sharing of nodes with nearly equal coordinates across faces
+nSmoothIterations=15; %Number of smoothening steps per refinement step (only used for output sub-triangulation) 
+
+%% Creating example surface data
+
+%Boundary 1
+ns=150;
+t=linspace(0,2*pi,ns);
+t=t(1:end-1);
+r=6+2.*sin(5*t);
+[x,y] = pol2cart(t,r);
+z=1/10*x.^2;
+V1=[x(:) y(:) z(:)];
+
+%Create Euler angles to set directions
+E=[0.25*pi -0.25*pi 0];
+[R,~]=euler2DCM(E); %The true directions for X, Y and Z axis
+
+V1=(R*V1')'; %Rotate polygon
+
+regionCell={V1}; %A region between V1 and V2 (V2 forms a hole inside V1)
+
+% Meshing the region (See also |regionTriMesh2D|)
+[F,V]=regionTriMesh3D(regionCell,0.2,1,'linear');
+
+%% Merge nodes if required (e.g. in case of STL import)
+% In some cases nodes are not shared for adjacent triangles (e.g. STL
+% imported geometry). In this case merging is required. 
+if mergeNodes==1
+    decPlaceRound=6; %Decimal place for rounding
+    [~,indUni,indF]=unique(pround(V,decPlaceRound),'rows'); %Get indices for unique point set
+    V=V(indUni,:); %Keep only unique
+    F=indF(F); %Fix indices in faces matrix
+end
+
+%% Refine input mesh before resampling
+% Refining the input mesh is required if the intended mesh density exceeds
+% that of the desired output mesh density. For each iteration the triangle
+% edges are split in half while the triangle faces are split into 4. The
+% mesh becomes very dense, very quickly so do not over do this. Subtri
+% works through triangle splitting and is linear in the sense that it
+% leaves input points unaltered but adds intermediate points on all input
+% edges. 
+
+if nRefineOriginal>0
+    for q=1:1:nRefineOriginal
+        [F,V]=subtri(F,V,1); %Refine input mesh through sub-triangulation
+    end
+end
+
+%% Estimate number of points required given point spacing
+
+numPointsInput=size(V,1); %Number of points in the original data
+[A]=patch_area(F,V); %Areas of current faces
+totalArea=sum(A(:)); %Total area
+l=sqrt(totalArea); %Width or length of square with same size
+np=round((l./pointSpacing).^2); %Point spacing for mesh in virtual square
+
+%% Visualize input mesh
+
+cFigure; hold on; 
+title('The original mesh');
+patch('Faces',F,'Vertices',V,'FaceColor','g','EdgeColor','k'); 
+view(3); axis equal; axis tight; grid on; box on; view(152,22);
+set(gca,'FontSize',fontSize);
+drawnow; 
+% [hp]=patchNormPlot(F,V);
+
+%% Get indices of boundary points and get boundary curve
+
+%First get triangulation class representation
+TR=triangulation(F,V);
+[indEdges] = freeBoundary(TR); %The list of free edges
+
+%Reorder edge list to obtain indices describing continuous curve (assuming
+%a single boundary, need to group first and do reordering on each group if
+%multiple boundaries exist) 
+[indList]=edgeListToCurve(indEdges);
+indList=indList(1:end-1);
+
+%% Get indices of "must points" close to evenly spaced on boundary curve
+ 
+D=pathLength(V(indList,:)); %The cummulative curve length
+boundaryLength=max(D); %The total curve length
+
+nb=round(boundaryLength./pointSpacing); %Number of points to keep on boundary
+[Vb] = evenlySampleCurve(V(indList,:),nb,'pchip',1); 
+
+[~,minIND]=minDist(Vb,V(indList,:));
+indListSelect=indList(minIND); %List of points to keep
+
+%% Visualize boundary points to keep on input mesh
+
+cFigure; hold on; 
+title('Input mesh and boundary points to keep')
+patch('Faces',F,'Vertices',V,'FaceColor','g','EdgeColor','k'); 
+
+plotV(V(indListSelect,:),'r.-','MarkerSize',25,'LineWidth',lineWidth);
+plotV(Vb,'b.-','MarkerSize',markerSize,'LineWidth',lineWidth);
+
+view(3); axis equal; axis tight; grid on; box on; view(152,22);
+set(gca,'FontSize',fontSize); 
+drawnow; 
+
+%% Resample input surface geodesically
+% Geodesic re-sampling works by taking a point on the surface and
+% calculating the distance to all other points by marching/propagating
+% across the mesh. The point on the mesh furthest away from the input point
+% (or points) is then added to the list. Then new distances are computed
+% and the furthest point is again added to this list. Therefore using this
+% iterative process equally spaced point sets can be obtained. The mesh
+% works by sampling the input mesh to a coarser homogeneous mesh. If the
+% input mesh is too coarse refine it first using subTri (subTri does not
+% alter input geometry). This method does not alter the geometry but
+% simply samples a subset of the input points. So the output point set (or
+% seeds) are all points part of the original input geometry. 
+% The region closest to one of the seed points can be viewed as a Voronoi
+% cell. The dual of the Voronoi tesselation is a Delaunay triangulation
+% which gives the output mesh connectivity. 
+% The distance marching can be very slow. One tip is to do a coarse
+% resampling and then to sub-triangulate the output.
+
+%Use distance marching method
+[Fn,Vn,S]=remeshTriSurfDistMap(F,V,numel(indListSelect)+np,indListSelect); %distance based marching
+
+%%
+
+cFigure; hold on; 
+title('Original mesh with seed points and "Voronoi cells"');
+% [S]=vertexToFaceMeasure(F,S);
+patch('Faces',F,'Vertices',V,'FaceColor','flat','CData',S,'EdgeColor','none'); 
+plotV(Vn,'k.','MarkerSize',markerSize);
+
+view(3); axis equal; axis tight; grid on; box on; view(152,22);
+set(gca,'FontSize',fontSize);
+camlight headlight;
+cMap=hsv(max(S));
+cMap=cMap(randperm(size(cMap,1)),:);
+colormap(cMap); 
+drawnow; 
+
+%% Refine output if desired using sub-triangulation
+
+
+if nRefineOutput>0
+    numOutIni=size(Vn,1);
+    %Refine and smoothen
+    for q=1:1:nRefineOutput
+        %Refine
+        [Fn,Vn]=subtri(Fn,Vn,1); %Refine through splitting   
+        
+        %Smoothen refined mesh
+        
+        %First get triangulation class representation
+        TR_n=triangulation(Fn,Vn);
+        [indEdges_n] = freeBoundary(TR_n); %The list of free edges
+        indKeep=1:numOutIni; %Indices for points that should not be moved by smoothening
+        indKeep=unique([indKeep(:);indEdges_n(:)]); %Add boundary points to keep list
+        
+        %Smoothening parameters for smoothening after refinement
+        cPar.Method='HC';
+        cPar.n=nSmoothIterations;
+        cPar.RigidConstraints=indKeep; %Points to hold on to while smoothening
+        
+        %Smooth while holding on to desired points (here original and boundary)
+        [Vn]=patchSmooth(Fn,Vn,[],cPar);
+        
+    end  
+else
+    indKeep=1:size(Vn,1);
+end
+
+%% Get indices of new boundary points and get boundary curve
+
+%First get triangulation class representation
+TR_n=triangulation(Fn,Vn);
+[indEdges_n] = freeBoundary(TR_n); %The list of free edges
+
+%Reorder edge list to obtain indices describing continuous curve (assuming
+%a single boundary, need to group first and do reordering on each group if
+%multiple boundaries exist) 
+[indList_n]=edgeListToCurve(indEdges_n);
+indList_n=indList_n(1:end-1);
+
+%% Visualize final result
+
+cFigure; hold on; 
+title('Resampled mesh');
+patch('Faces',Fn,'Vertices',Vn,'FaceColor','b','EdgeColor','k'); 
+plotV(Vn(indList_n,:),'r.-','MarkerSize',markerSize,'LineWidth',lineWidth);
+
+plotV(Vn(indKeep,:),'y.','MarkerSize',markerSize); %Boundary point of member of original surface
+view(3); axis equal; axis tight; grid on; box on; view(152,22);
+set(gca,'FontSize',fontSize);
+camlight headlight;
+drawnow; 
+
+%%
+%
+% <<gibbVerySmall.gif>>
+%
+% _*GIBBON*_
+% <www.gibboncode.org>
+%
+% _Kevin Mattheus Moerman_, <gibbon.toolbox@gmail.com>
+ 
+%% 
+% _*GIBBON footer text*_ 
+% 
+% License: <https://github.com/gibbonCode/GIBBON/blob/master/LICENSE>
+% 
+% GIBBON: The Geometry and Image-based Bioengineering add-On. A toolbox for
+% image segmentation, image-based modeling, meshing, and finite element
+% analysis.
+% 
+% Copyright (C) 2017  Kevin Mattheus Moerman
+% 
+% This program is free software: you can redistribute it and/or modify
+% it under the terms of the GNU General Public License as published by
+% the Free Software Foundation, either version 3 of the License, or
+% (at your option) any later version.
+% 
+% This program is distributed in the hope that it will be useful,
+% but WITHOUT ANY WARRANTY; without even the implied warranty of
+% MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+% GNU General Public License for more details.
+% 
+% You should have received a copy of the GNU General Public License
+% along with this program.  If not, see <http://www.gnu.org/licenses/>.
+
+##### SOURCE END #####
+--></body></html>

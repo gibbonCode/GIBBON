@@ -25,7 +25,6 @@ boundaryNode = rootNode.appendChild(boundaryNode);
 %% Adding boundary components
 
 [domNode]=addBoundaryComponents_FEB(domNode,boundaryNode,FEB_struct);
-
  
 %% 
 % _*GIBBON footer text*_ 

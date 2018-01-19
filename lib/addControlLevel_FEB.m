@@ -13,7 +13,6 @@ function domNode=addControlLevel_FEB(domNode,FEB_struct)
 %------------------------------------------------------------------------
 
 %%
-
 disp('Adding Control level')
 
 %% Create control level

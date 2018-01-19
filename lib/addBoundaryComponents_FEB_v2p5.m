@@ -1,4 +1,4 @@
-function [docNode]=addBoundaryComponents_FEB_v2p5(docNode,boundaryNode,FEB_struct)
+function [docNode]=addBoundaryComponents_FEB(docNode,boundaryNode,FEB_struct)
 
 
 %% ADDING FIX BC's
@@ -15,35 +15,19 @@ if  isfield(FEB_struct.Boundary,'Fix')
         parent_node = boundaryNode.appendChild(parent_node);
         
         %Set bc attribute
-        attr = docNode.createAttribute('bc'); %Create id attribute
-        attr.setNodeValue(currentBC); %Set id text
-        parent_node.setAttributeNode(attr); %Add id attribute
-        
-        %Check consistency
-        if isfield(FEB_struct.Boundary.Fix{q},'SetName') && isfield(FEB_struct.Boundary.Fix{q},'Set')
-            error('Specify either SetName or Set, not both');
-        end
+        attr = docNode.createAttribute('bc'); %Create attribute
+        attr.setNodeValue(currentBC); %Set text
+        parent_node.setAttributeNode(attr); %Add attribute        
         
         %Add set name attribute if present
-        if isfield(FEB_struct.Boundary.Fix{q},'SetName')
-            currentSetName=FEB_struct.Boundary.Fix{q}.SetName;
+        if isfield(FEB_struct.Boundary.Fix{q},'node_set')
+            currentSetName=FEB_struct.Boundary.Fix{q}.node_set;
             
-            attr = docNode.createAttribute('set'); %Create id attribute
-            attr.setNodeValue(currentSetName); %Set id text
-            parent_node.setAttributeNode(attr); %Add id attribute            
-        end
-        
-        %Create a node set
-        if isfield(FEB_struct.Boundary.Fix{q},'Set')
-            currentSet=FEB_struct.Boundary.Fix{q}.Set;
-            for q_node=1:1:numel(currentSet)
-                node_node = docNode.createElement('node'); %create node entry
-                node_node = parent_node.appendChild(node_node); %add node entry
-                
-                attr = docNode.createAttribute('id'); %Create id attribute
-                attr.setNodeValue(sprintf('%u',currentSet(q_node))); %Set id text
-                node_node.setAttributeNode(attr); %Add id attribute
-            end
+            attr = docNode.createAttribute('node_set'); %Create attribute
+            attr.setNodeValue(currentSetName); %Set text
+            parent_node.setAttributeNode(attr); %Add attribute  
+        else
+            error(['No node_set provided for Fix type boundary condition ',num2str(q)])
         end
     end
 end

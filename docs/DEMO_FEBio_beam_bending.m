@@ -48,6 +48,9 @@ max_retries=5; %Maximum number of retires
 dtmin=(1/numTimeSteps)/100; %Minimum time step size
 dtmax=1/numTimeSteps; %Maximum time step size
 
+c1=1e-3;
+k=1e3*c1;
+
 %% CREATING MESHED BOX
 
 %Create box 1
@@ -124,8 +127,6 @@ FEB_struct.Geometry.ElementMat={elementMaterialIndices};
 FEB_struct.Geometry.ElementsPartName={'Bar'};
 
 %Material section
-c1=1e-3;
-k=1e3*c1;
 FEB_struct.Materials{1}.Type='Mooney-Rivlin';
 FEB_struct.Materials{1}.Properties={'c1','c2','k'};
 FEB_struct.Materials{1}.Values={c1,0,k};

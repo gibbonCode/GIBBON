@@ -30,8 +30,7 @@ if  isfield(FEB_struct.Boundary,'Fix')
             
             attr = docNode.createAttribute('set'); %Create id attribute
             attr.setNodeValue(currentSetName); %Set id text
-            parent_node.setAttributeNode(attr); %Add id attribute
-            
+            parent_node.setAttributeNode(attr); %Add id attribute            
         end
         
         %Create a node set

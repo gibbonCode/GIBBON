@@ -6,7 +6,7 @@
    <!--
 This HTML was auto-generated from MATLAB code.
 To make changes, update the MATLAB code and republish this document.
-      --><title>DEMO_FEBio_multigen_interface_active</title><meta name="generator" content="MATLAB 9.1"><link rel="schema.DC" href="http://purl.org/dc/elements/1.1/"><meta name="DC.date" content="2017-12-21"><meta name="DC.source" content="DEMO_FEBio_multigen_interface_active.m"><style type="text/css">
+      --><title>DEMO_FEBio_multigen_interface_active</title><meta name="generator" content="MATLAB 9.4"><link rel="schema.DC" href="http://purl.org/dc/elements/1.1/"><meta name="DC.date" content="2018-01-19"><meta name="DC.source" content="DEMO_FEBio_multigen_interface_active.m"><style type="text/css">
 html,body,div,span,applet,object,iframe,h1,h2,h3,h4,h5,h6,p,blockquote,pre,a,abbr,acronym,address,big,cite,code,del,dfn,em,font,img,ins,kbd,q,s,samp,small,strike,strong,sub,sup,tt,var,b,u,i,center,dl,dt,dd,ol,ul,li,fieldset,form,label,legend,table,caption,tbody,tfoot,thead,tr,th,td{margin:0;padding:0;border:0;outline:0;font-size:100%;vertical-align:baseline;background:transparent}body{line-height:1}ol,ul{list-style:none}blockquote,q{quotes:none}blockquote:before,blockquote:after,q:before,q:after{content:'';content:none}:focus{outine:0}ins{text-decoration:none}del{text-decoration:line-through}table{border-collapse:collapse;border-spacing:0}
 
 html { min-height:100%; margin-bottom:1px; }
@@ -324,40 +324,40 @@ inputStruct.modelName=modelName;
 </pre><p>Mesh model using tetrahedral elements using tetGen (see: <a href="http://wias-berlin.de/software/tetgen/">http://wias-berlin.de/software/tetgen/</a>)</p><pre class="codeinput">[meshOutput]=runTetGen(inputStruct); <span class="comment">%Run tetGen</span>
 </pre><pre class="codeoutput"> 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
---- TETGEN Tetrahedral meshing --- 21-Dec-2017 14:05:06
+--- TETGEN Tetrahedral meshing --- 19-Jan-2018 14:38:21
  
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
---- Writing SMESH file --- 21-Dec-2017 14:05:06
+--- Writing SMESH file --- 19-Jan-2018 14:38:21
 ----&gt; Adding node field
 ----&gt; Adding facet field
 ----&gt; Adding holes specification
 ----&gt; Adding region specification
---- Done --- 21-Dec-2017 14:05:06
---- Running TetGen to mesh input boundary--- 21-Dec-2017 14:05:06
+--- Done --- 19-Jan-2018 14:38:22
+--- Running TetGen to mesh input boundary--- 19-Jan-2018 14:38:22
 Opening /mnt/data/MATLAB/GIT/GIBBON/lib_ext/tetGen/tempFiles/tempModel.smesh.
 Delaunizing vertices...
-Delaunay seconds:  0.036952
+Delaunay seconds:  0.037226
 Creating surface mesh ...
-Surface mesh seconds:  0.006803
+Surface mesh seconds:  0.006943
 Recovering boundaries...
-Boundary recovery seconds:  0.008551
+Boundary recovery seconds:  0.008779
 Removing exterior tetrahedra ...
 Spreading region attributes.
-Exterior tets removal seconds:  0.004767
+Exterior tets removal seconds:  0.005591
 Recovering Delaunayness...
-Delaunay recovery seconds:  0.004247
+Delaunay recovery seconds:  0.004423
 Refining mesh...
-Refinement seconds:  0.245233
+Refinement seconds:  0.239392
 Optimizing mesh...
-Optimization seconds:  0.027321
+Optimization seconds:  0.02622
 
 Writing /mnt/data/MATLAB/GIT/GIBBON/lib_ext/tetGen/tempFiles/tempModel.1.node.
 Writing /mnt/data/MATLAB/GIT/GIBBON/lib_ext/tetGen/tempFiles/tempModel.1.ele.
 Writing /mnt/data/MATLAB/GIT/GIBBON/lib_ext/tetGen/tempFiles/tempModel.1.face.
 Writing /mnt/data/MATLAB/GIT/GIBBON/lib_ext/tetGen/tempFiles/tempModel.1.edge.
 
-Output seconds:  0.080903
-Total running seconds:  0.415012
+Output seconds:  0.089923
+Total running seconds:  0.418732
 
 Statistics:
 
@@ -375,11 +375,11 @@ Statistics:
   Mesh edges on input segments: 6655
   Steiner points inside domain: 5288
 
---- Done --- 21-Dec-2017 14:05:07
+--- Done --- 19-Jan-2018 14:38:22
  
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
---- Importing TetGen files --- 21-Dec-2017 14:05:07
---- Done --- 21-Dec-2017 14:05:07
+--- Importing TetGen files --- 19-Jan-2018 14:38:22
+--- Done --- 19-Jan-2018 14:38:22
 </pre><h2 id="21">Visualizing mesh</h2><pre class="codeinput">meshView(meshOutput);
 </pre><img vspace="5" hspace="5" src="DEMO_FEBio_multigen_interface_active_04.png" alt=""> <p>Access model element and patch data</p><pre class="codeinput">F=meshOutput.faces;
 V=meshOutput.nodes;
@@ -576,9 +576,9 @@ FEB_struct.data_types={<span class="string">'ux;uy;uz'</span>};
 febStruct2febFile(FEB_struct);
 </pre><pre class="codeoutput"> 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
---- Writing FEBio XML object --- 21-Dec-2017 14:05:11
+--- Writing FEBio XML object --- 19-Jan-2018 14:38:28
+Using febio_spec: 2.0
 Adding Module level
-Adding Globals level
 Adding Material level
 Adding Geometry level
 ----&gt; Adding node field
@@ -607,10 +607,8 @@ Adding Step level
 Adding Output level
 ----&gt; Adding plotfile field
 ----&gt; Adding logfile field
-Warning: Provided path of logfile is replaced by .feb file path. Only provide
-filename to avoid this warning 
 Writing .feb file
---- Done --- 21-Dec-2017 14:05:40
+--- Done --- 19-Jan-2018 14:39:01
 </pre><h2 id="33">RUNNING FEBIO JOB</h2><pre class="codeinput"><span class="comment">% FEBioRunStruct.FEBioPath='C:\Program Files\febio2-2.2.6\bin\febio2.exe';</span>
 FEBioRunStruct.run_filename=FEB_struct.run_filename;
 FEBioRunStruct.run_logname=FEB_struct.run_logname;
@@ -624,9 +622,9 @@ FEBioRunStruct.maxLogCheckTime=30; <span class="comment">%Max log file checking 
 [runFlag]=runMonitorFEBio(FEBioRunStruct);<span class="comment">%START FEBio NOW!!!!!!!!</span>
 </pre><pre class="codeoutput"> 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
---- STARTING FEBIO JOB --- 21-Dec-2017 14:05:40
+--- STARTING FEBIO JOB --- 19-Jan-2018 14:39:01
 Waiting for log file...
-Proceeding to check log file...21-Dec-2017 14:05:41
+Proceeding to check log file...19-Jan-2018 14:39:02
 ------- converged at time : 0.1
 ------- converged at time : 0.2
 ------- converged at time : 0.3
@@ -658,7 +656,7 @@ Proceeding to check log file...21-Dec-2017 14:05:41
 ------- converged at time : 2.8
 ------- converged at time : 2.9
 ------- converged at time : 3
---- Done --- 21-Dec-2017 14:07:00
+--- Done --- 19-Jan-2018 14:39:53
 </pre><h2 id="34">IMPORTING NODAL DISPLACEMENT RESULTS</h2><p>Importing nodal displacements from a log file</p><pre class="codeinput">[~, N_disp_mat,~]=importFEBio_logfile(FEB_struct.run_output_names{1}); <span class="comment">%Nodal displacements</span>
 
 DN=N_disp_mat(:,2:end,end); <span class="comment">%Final nodal displacements</span>
@@ -677,7 +675,7 @@ colormap <span class="string">jet</span>; colorbar;
 camlight <span class="string">headlight</span>;
 set(gca,<span class="string">'FontSize'</span>,fontSize);
 drawnow;
-</pre><img vspace="5" hspace="5" src="DEMO_FEBio_multigen_interface_active_09.png" alt=""> <p><img vspace="5" hspace="5" src="gibbVerySmall.gif" alt=""> </p><p><i><b>GIBBON</b></i> <a href="www.gibboncode.org">www.gibboncode.org</a></p><p><i>Kevin Mattheus Moerman</i>, <a href="gibbon.toolbox@gmail.com">gibbon.toolbox@gmail.com</a></p><p><i><b>GIBBON footer text</b></i></p><p>License: <a href="https://github.com/gibbonCode/GIBBON/blob/master/LICENSE">https://github.com/gibbonCode/GIBBON/blob/master/LICENSE</a></p><p>GIBBON: The Geometry and Image-based Bioengineering add-On. A toolbox for image segmentation, image-based modeling, meshing, and finite element analysis.</p><p>Copyright (C) 2017  Kevin Mattheus Moerman</p><p>This program is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.</p><p>This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for more details.</p><p>You should have received a copy of the GNU General Public License along with this program.  If not, see <a href="http://www.gnu.org/licenses/">http://www.gnu.org/licenses/</a>.</p><p class="footer"><br><a href="http://www.mathworks.com/products/matlab/">Published with MATLAB&reg; R2016b</a><br></p></div><!--
+</pre><img vspace="5" hspace="5" src="DEMO_FEBio_multigen_interface_active_09.png" alt=""> <p><img vspace="5" hspace="5" src="gibbVerySmall.gif" alt=""> </p><p><i><b>GIBBON</b></i> <a href="www.gibboncode.org">www.gibboncode.org</a></p><p><i>Kevin Mattheus Moerman</i>, <a href="gibbon.toolbox@gmail.com">gibbon.toolbox@gmail.com</a></p><p><i><b>GIBBON footer text</b></i></p><p>License: <a href="https://github.com/gibbonCode/GIBBON/blob/master/LICENSE">https://github.com/gibbonCode/GIBBON/blob/master/LICENSE</a></p><p>GIBBON: The Geometry and Image-based Bioengineering add-On. A toolbox for image segmentation, image-based modeling, meshing, and finite element analysis.</p><p>Copyright (C) 2017  Kevin Mattheus Moerman</p><p>This program is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.</p><p>This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for more details.</p><p>You should have received a copy of the GNU General Public License along with this program.  If not, see <a href="http://www.gnu.org/licenses/">http://www.gnu.org/licenses/</a>.</p><p class="footer"><br><a href="https://www.mathworks.com/products/matlab/">Published with MATLAB&reg; R2018a</a><br></p></div><!--
 ##### SOURCE BEGIN #####
 %% DEMO_FEBio_multigen_interface_active
 % 

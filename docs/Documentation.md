@@ -1,5 +1,5 @@
 ---
-layout: page
+layout: pagefullwidth
 title: "Documentation"
 logo: "img/home-bg.jpg"
 description: "Help and demo links"
@@ -23,6 +23,13 @@ Follow the installation instructions to integrate and access GIBBON documentatio
      {% if help_html.path contains '/html' %}
         {% if help_html.basename contains 'HELP' %}
         {% if help_html.extname contains 'html' %}            
+
+        <details>
+          <summary><u><i class="fa fa-chevron-down" aria-hidden="true"></i> {{help_html.basename}}</u></summary>
+          <span style="font-size:65%;">                    
+            <iframe   src="{{ site.baseurl}}{{ help_html.path}}" width="100%" height="1000" frameborder="1" allowfullscreen> </iframe>
+          </span>
+        </details>
                   {% for image in site.static_files %}
                     {% if image.path contains help_html.basename %}
                        {% if image.path contains '.png' %}
@@ -33,12 +40,7 @@ Follow the installation instructions to integrate and access GIBBON documentatio
                     {% endif %}              
                   {% endfor %}
 
-                  <details>
-                    <summary><u><i class="fa fa-chevron-down" aria-hidden="true"></i> {{help_html.basename}}</u></summary>
-                    <span style="font-size:65%;">                    
-                      <iframe   src="{{ site.baseurl}}{{ help_html.path}}" width="100%" height="1000" frameborder="1" allowfullscreen> </iframe>
-                    </span>
-                  </details>
+
                   <hr>            
 
         {% endif %}
@@ -71,7 +73,7 @@ Follow the installation instructions to integrate and access GIBBON documentatio
                     </span>
                   </details>
                   <hr>            
-                  
+
         {% endif %}
         {% endif %}
      {% endif %}
