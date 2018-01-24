@@ -6,7 +6,7 @@
    <!--
 This HTML was auto-generated from MATLAB code.
 To make changes, update the MATLAB code and republish this document.
-      --><title>hexMeshBox</title><meta name="generator" content="MATLAB 9.4"><link rel="schema.DC" href="http://purl.org/dc/elements/1.1/"><meta name="DC.date" content="2018-01-16"><meta name="DC.source" content="HELP_hexMeshBox.m"><style type="text/css">
+      --><title>hexMeshBox</title><meta name="generator" content="MATLAB 9.4"><link rel="schema.DC" href="http://purl.org/dc/elements/1.1/"><meta name="DC.date" content="2018-01-23"><meta name="DC.source" content="HELP_hexMeshBox.m"><style type="text/css">
 html,body,div,span,applet,object,iframe,h1,h2,h3,h4,h5,h6,p,blockquote,pre,a,abbr,acronym,address,big,cite,code,del,dfn,em,font,img,ins,kbd,q,s,samp,small,strike,strong,sub,sup,tt,var,b,u,i,center,dl,dt,dd,ol,ul,li,fieldset,form,label,legend,table,caption,tbody,tfoot,thead,tr,th,td{margin:0;padding:0;border:0;outline:0;font-size:100%;vertical-align:baseline;background:transparent}body{line-height:1}ol,ul{list-style:none}blockquote,q{quotes:none}blockquote:before,blockquote:after,q:before,q:after{content:'';content:none}:focus{outine:0}ins{text-decoration:none}del{text-decoration:line-through}table{border-collapse:collapse;border-spacing:0}
 
 html { min-height:100%; margin-bottom:1px; }
@@ -66,11 +66,10 @@ table td { padding:7px 5px; text-align:left; vertical-align:top; border:1px soli
 
 
 
-  </style></head><body><div class="content"><h1>hexMeshBox</h1><!--introduction--><p>Below is a demonstration of the features of the <tt>hexMeshBox</tt> function</p><!--/introduction--><h2>Contents</h2><div><ul><li><a href="#3">CREATING A MESHED BOX</a></li></ul></div><pre class="codeinput">clear; close <span class="string">all</span>; clc;
-</pre><p>PLOT SETTINGS</p><pre class="codeinput">fontSize=20;
-faceAlpha1=1;
-faceAlpha2=0.5;
-</pre><h2 id="3">CREATING A MESHED BOX</h2><pre class="codeinput">boxDim=[5 6 7];
+  </style></head><body><div class="content"><h1>hexMeshBox</h1><!--introduction--><p>Below is a demonstration of the features of the <tt>hexMeshBox</tt> function</p><!--/introduction--><h2>Contents</h2><div><ul><li><a href="#2">Syntax</a></li><li><a href="#3">Description</a></li><li><a href="#4">Examples</a></li><li><a href="#6">CREATING A MESHED BOX</a></li></ul></div><pre class="codeinput">clear; close <span class="string">all</span>; clc;
+</pre><h2 id="2">Syntax</h2><p><tt>[meshStruct]=hexMeshBox(boxDim,boxEl,outputStructType);</tt></p><h2 id="3">Description</h2><p>This function generates a mesh structure containing element and node data for a hexahedral element meshed box. The box dimensions in each of the 3 directions are based on the boxDim input (1x3 vector). The number of elements in each direction is based on the boxEl input (1x3) vector. Finally the type of output structure is based on the optional final input outputStructType. By choosing 1 the old mesh structure is used. By using the option 2 the newer output structure form is used which is compatible with the meshView function. The default option is 1.</p><h2 id="4">Examples</h2><p>Plot settings</p><pre class="codeinput">fontSize=20;
+faceAlpha1=0.8;
+</pre><h2 id="6">CREATING A MESHED BOX</h2><pre class="codeinput">boxDim=[5 6 7];
 boxEl=[4 5 6];
 
 [meshStruct]=hexMeshBox(boxDim,boxEl);
@@ -81,28 +80,21 @@ F=meshStruct.F;
 Fb=meshStruct.Fb;
 faceBoundaryMarker=meshStruct.faceBoundaryMarker;
 </pre><p>Plotting model</p><pre class="codeinput">cFigure;
-subplot(1,2,1);
 title(<span class="string">'Box boundaries faces'</span>,<span class="string">'FontSize'</span>,fontSize);
 hold <span class="string">on</span>;
 
 gpatch(Fb,V,faceBoundaryMarker,<span class="string">'k'</span>,faceAlpha1);
-<span class="comment">% [hp]=patchNormPlot(Fb,V,1); %Display face normals</span>
+<span class="comment">% patchNormPlot(Fb,V);</span>
 
 axisGeom(gca,fontSize);
 colormap(gjet(6)); icolorbar;
-
-
-subplot(1,2,2);
-title(<span class="string">'Box hexahedral mesh'</span>,<span class="string">'FontSize'</span>,fontSize);
-hold <span class="string">on</span>;
-
-gpatch(F,V,0.5*ones(1,3),<span class="string">'k'</span>,faceAlpha2);
-patchNormPlot(F,V);
-axisGeom(gca,fontSize);
-camlight <span class="string">headlight</span>;
-
 drawnow;
-</pre><img vspace="5" hspace="5" src="HELP_hexMeshBox_01.png" alt=""> <p><img vspace="5" hspace="5" src="gibbVerySmall.gif" alt=""> </p><p><i><b>GIBBON</b></i> <a href="www.gibboncode.org">www.gibboncode.org</a></p><p><i>Kevin Mattheus Moerman</i>, <a href="gibbon.toolbox@gmail.com">gibbon.toolbox@gmail.com</a></p><p><i><b>GIBBON footer text</b></i></p><p>License: <a href="https://github.com/gibbonCode/GIBBON/blob/master/LICENSE">https://github.com/gibbonCode/GIBBON/blob/master/LICENSE</a></p><p>GIBBON: The Geometry and Image-based Bioengineering add-On. A toolbox for image segmentation, image-based modeling, meshing, and finite element analysis.</p><p>Copyright (C) 2017  Kevin Mattheus Moerman</p><p>This program is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.</p><p>This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for more details.</p><p>You should have received a copy of the GNU General Public License along with this program.  If not, see <a href="http://www.gnu.org/licenses/">http://www.gnu.org/licenses/</a>.</p><p class="footer"><br><a href="https://www.mathworks.com/products/matlab/">Published with MATLAB&reg; R2018a</a><br></p></div><!--
+</pre><img vspace="5" hspace="5" src="HELP_hexMeshBox_01.png" alt=""> <p>Visualizing model internal mesh with <tt>meshView</tt></p><pre class="codeinput"><span class="comment">%Recreate mesh but output structure compatible with meshView</span>
+[meshStruct]=hexMeshBox(boxDim,boxEl,2);
+
+<span class="comment">%Use meshView to visualize mesh</span>
+meshView(meshStruct);
+</pre><img vspace="5" hspace="5" src="HELP_hexMeshBox_02.png" alt=""> <p><img vspace="5" hspace="5" src="gibbVerySmall.gif" alt=""> </p><p><i><b>GIBBON</b></i> <a href="www.gibboncode.org">www.gibboncode.org</a></p><p><i>Kevin Mattheus Moerman</i>, <a href="gibbon.toolbox@gmail.com">gibbon.toolbox@gmail.com</a></p><p><i><b>GIBBON footer text</b></i></p><p>License: <a href="https://github.com/gibbonCode/GIBBON/blob/master/LICENSE">https://github.com/gibbonCode/GIBBON/blob/master/LICENSE</a></p><p>GIBBON: The Geometry and Image-based Bioengineering add-On. A toolbox for image segmentation, image-based modeling, meshing, and finite element analysis.</p><p>Copyright (C) 2017  Kevin Mattheus Moerman</p><p>This program is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.</p><p>This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for more details.</p><p>You should have received a copy of the GNU General Public License along with this program.  If not, see <a href="http://www.gnu.org/licenses/">http://www.gnu.org/licenses/</a>.</p><p class="footer"><br><a href="https://www.mathworks.com/products/matlab/">Published with MATLAB&reg; R2018a</a><br></p></div><!--
 ##### SOURCE BEGIN #####
 %% hexMeshBox
 % Below is a demonstration of the features of the |hexMeshBox| function
@@ -110,11 +102,26 @@ drawnow;
 %%
 clear; close all; clc;
 
+%% Syntax
+% |[meshStruct]=hexMeshBox(boxDim,boxEl,outputStructType);|
+
+%% Description
+% This function generates a mesh structure containing element and node data
+% for a hexahedral element meshed box. The box dimensions in each of the 3
+% directions are based on the boxDim input (1x3 vector). The number of
+% elements in each direction is based on the boxEl input (1x3) vector.
+% Finally the type of output structure is based on the optional final input
+% outputStructType. By choosing 1 the old mesh structure is used. By using
+% the option 2 the newer output structure form is used which is compatible
+% with the meshView function. The default option is 1. 
+
+%% Examples
+
 %%
-% PLOT SETTINGS
+% Plot settings
+
 fontSize=20;
-faceAlpha1=1;
-faceAlpha2=0.5;
+faceAlpha1=0.8;
 
 %% CREATING A MESHED BOX
 boxDim=[5 6 7];
@@ -131,27 +138,24 @@ faceBoundaryMarker=meshStruct.faceBoundaryMarker;
 %%
 % Plotting model
 cFigure;
-subplot(1,2,1);
 title('Box boundaries faces','FontSize',fontSize);
 hold on;
 
 gpatch(Fb,V,faceBoundaryMarker,'k',faceAlpha1);
-% [hp]=patchNormPlot(Fb,V,1); %Display face normals
+% patchNormPlot(Fb,V);
 
 axisGeom(gca,fontSize); 
 colormap(gjet(6)); icolorbar; 
+drawnow; 
 
+%%
+% Visualizing model internal mesh with |meshView|
 
-subplot(1,2,2);
-title('Box hexahedral mesh','FontSize',fontSize);
-hold on;
+%Recreate mesh but output structure compatible with meshView
+[meshStruct]=hexMeshBox(boxDim,boxEl,2);
 
-gpatch(F,V,0.5*ones(1,3),'k',faceAlpha2);
-patchNormPlot(F,V);
-axisGeom(gca,fontSize); 
-camlight headlight;
-
-drawnow;
+%Use meshView to visualize mesh
+meshView(meshStruct); 
 
 %% 
 %

@@ -15,17 +15,27 @@ function [C]=structComplete(A,B,emptyFixOpt)
 %------------------------------------------------------------------------
 
 %%
+
 fieldNameSet=fieldnames(B);
 
-C=B;
-for q=1:1:numel(fieldNameSet)
-    fieldNameNow=fieldNameSet{q};
-    if isfield(A,fieldNameNow)
-        C.(fieldNameNow)=A.(fieldNameNow);
-        if emptyFixOpt==1 %if empty field fixing is on
-            if isempty(C.(fieldNameNow)) %if the current field is empty
-                C.(fieldNameNow)=B.(fieldNameNow); %Replace empty by default
+C=A; %Initialize C as the same as A
+for q=1:1:numel(fieldNameSet) %Loop over field names
+    fieldNameNow=fieldNameSet{q}; %Current field name
+    if isfield(A,fieldNameNow) %If A contains the field in B                
+        
+        if isempty(A.(fieldNameNow)) %if the field in A is empty
+            if emptyFixOpt==1 %if empty field fixing is on
+                C.(fieldNameNow)=B.(fieldNameNow); %Replace empty in C by default
             end
-        end        
+        end    
+        
+        if isstruct(A.(fieldNameNow)) && isstruct(B.(fieldNameNow)) %If the field in A is a structure, check structure recursively
+            [C.(fieldNameNow)]=structComplete(A.(fieldNameNow),B.(fieldNameNow),emptyFixOpt);
+        end
+        
+    else %If the field is missing, add it
+        C.(fieldNameNow)=B.(fieldNameNow);            
     end
 end
+
+%%

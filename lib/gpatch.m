@@ -69,6 +69,9 @@ argInPatch.EdgeColor=CE;
 
 if ischar(C) %Plain single color
     argInPatch.FaceColor=C;
+    if strcmp(C,'kw')
+        argInPatch.FaceColor=grayColor(0.5);
+    end
 elseif size(C,2)==1
     argInPatch.FaceColor='flat';
     %     if size(C,1)>size(F,1) %Assume vertex shading

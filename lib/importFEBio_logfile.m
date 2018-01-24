@@ -21,8 +21,14 @@ function [TIME, DATA, Data_label]=importFEBio_logfile(import_name)
 T=T(2:end);
 
 %% Getting time data and crop indices
-target='*Time';
-L=cellfun(@(x)~isempty(x),(strfind(T,target)));
+targetString='*Time';
+
+try
+    L=contains(T,targetString); 
+catch
+    L=cellfun(@(x)~isempty(x),(strfind(T,targetString)));
+end
+
 no_steps=(sum(L));
 
 T_time=T(L);
@@ -42,10 +48,6 @@ end
 L=false(size(L));
 L(IND)=1;
 T_data=T(L);
-
-% x=repmat(rand(5,4),3,1)
-% permute(reshape(permute(x,[2,3,1]),4,5,3),[2,1,3])
-% permute(reshape(permute(DATA,[2,3,1]),size(DATA,1)./no_steps,size(DATA,2),no_steps),[2,1,3])
 
 %% Getting data
 DATA=cell2mat(cellfun(@(x) (sscanf(x,'%f,')'),T_data,'UniformOutput',0));

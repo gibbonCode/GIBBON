@@ -1,5 +1,9 @@
 function [varargout]=meshView(varargin)
 
+% function [varargout]=meshView(varargin)
+% 
+% 2018/01/23 Updated to allow for subfigure plotting
+
 %% Parse input
 
 switch nargin
@@ -23,7 +27,14 @@ defaultOptionStruct.lightWeightPlot=1;
 
 %% Get control parameters
 
-hFig=optionStruct.hFig;
+figHandles=optionStruct.hFig;
+hFig=figHandles(1);
+if numel(figHandles)==2    
+    hSub=figHandles(2);
+else
+    hSub=[];
+end
+
 numSliceSteps=optionStruct.numSLiceSteps;
 cMap=optionStruct.cMap;
 faceAlpha1=optionStruct.faceAlpha1;
@@ -58,6 +69,12 @@ end
 % prepare figure
 if isempty(hFig)
     hFig=cFigure; %Store figure handle
+    title('Cut view of mesh','FontSize',fontSize);
+end
+
+figure(hFig);
+if ~isempty(hSub)
+    subplot(hSub); 
 end
 hold on;
 
@@ -74,7 +91,7 @@ if numMaterials>1
 else
 %     caxis([0 1]);
 end
-colormap(cMap); 
+colormap(gca,cMap); 
 if numMaterials>1
     colorbar;
 end
@@ -91,7 +108,7 @@ for q=1:1:numSliceSteps %Step through time
     cutLevelNow=cutLevel(q); %The current cut level    
     
     logicCutView=YE>cutLevelNow;
-    [Fs,Cs]=element2patch(E(logicCutView,:),CE(logicCutView),'tet4');
+    [Fs,Cs]=element2patch(E(logicCutView,:),CE(logicCutView));
     
     if lightWeightPlot==1
         [indBoundary]=tesBoundary(Fs,V);

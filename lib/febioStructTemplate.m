@@ -17,7 +17,7 @@ febio_spec.Module.ATTR.type='solid'; %Use default set
 
 %% Control section
 
-febio_spec.analysis.type='static';
+febio_spec.Control.analysis.ATTR.type='static';
 febio_spec.Control.title='temp';
 febio_spec.Control.time_steps=10;
 febio_spec.Control.step_size=0.1;
@@ -53,19 +53,19 @@ febio_spec.Globals.Constants.R=0;
 febio_spec.Globals.Constants.Fc=0; 
 
 %% Material section
-
-% febio_spec.Materials{1}.ATTR.type='Mooney-Rivlin';
-% febio_spec.Materials{1}.ATTR.id=1;
-% febio_spec.Materials{1}.c1=1e-3;
-% febio_spec.Materials{1}.c2=0;
-% febio_spec.Materials{1}.k=10;
+% febio_spec.Material.material{1}.ATTR.type='Ogden';
+% febio_spec.Material.material{1}.ATTR.id=1;
+% febio_spec.Material.material{1}.c1=1e-3;
+% febio_spec.Material.material{1}.m1=6;
+% febio_spec.Material.material{1}.c2=1e-3;
+% febio_spec.Material.material{1}.m2=-6;
+% febio_spec.Material.material{1}.k=1e-1;
 
 %% LoadData section
 
-febio_spec.LoadData.load_curve.ATTR.id=1;
-febio_spec.LoadData.load_curve.ATTR.type='linear';
-febio_spec.LoadData.load_curve.ATTR.type='constant';
-febio_spec.LoadData.load_curve.point.VAL=[0 0; 1 1];
+febio_spec.LoadData.loadcurve.ATTR.id=1;
+febio_spec.LoadData.loadcurve.ATTR.type='linear';
+febio_spec.LoadData.loadcurve.point.VAL=[0 0; 1 1];
 
 %% Output section
 

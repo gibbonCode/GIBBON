@@ -1,6 +1,6 @@
-function [meshStruct]=hexMeshBox(boxDim,boxEl)
+function [meshStruct]=hexMeshBox(varargin)
 
-% function [meshStruct]=hexMeshBox(boxDim,boxEl)
+% function [meshStruct]=hexMeshBox(boxDim,boxEl,outputStructType)
 % ------------------------------------------------------------------------
 %
 %
@@ -8,8 +8,28 @@ function [meshStruct]=hexMeshBox(boxDim,boxEl)
 % gibbon.toolbox@gmail.com
 % 
 % 2014/09/25
+% 2018/01/23 Added option to export same mesh structure as tetgen so it is
+% compatible with the meshView function
 %------------------------------------------------------------------------
 
+%% Parse input 
+
+switch nargin
+    case 1
+        boxDim=varargin{1};
+        boxEl=[10 10 10];
+        outputStructType=1;
+    case 2
+        boxDim=varargin{1};
+        boxEl=varargin{2};
+        outputStructType=1;
+    case 3
+        boxDim=varargin{1}; 
+        boxEl=varargin{2}; 
+        outputStructType=varargin{3}; 
+end
+
+%%
 dX=boxDim(1); 
 dY=boxDim(2);
 dZ=boxDim(3);
@@ -60,15 +80,25 @@ faceBoundaryMarker(N(:,2)>0.5)=4; %Back
 faceBoundaryMarker(N(:,3)<-0.5)=5; %Bottom
 faceBoundaryMarker(N(:,3)>0.5)=6; %Top
 
-%Collect output
-meshStruct.E=E; 
-meshStruct.V=V; 
-meshStruct.F=F;
-meshStruct.indFree=indFree;
-meshStruct.Fb=Fb;
-meshStruct.faceBoundaryMarker=faceBoundaryMarker;
+%% Collect output
 
-
+switch outputStructType
+    case 1
+        meshStruct.E=E;
+        meshStruct.V=V;
+        meshStruct.F=F;
+        meshStruct.indFree=indFree;
+        meshStruct.Fb=Fb;
+        meshStruct.faceBoundaryMarker=faceBoundaryMarker;
+    case 2
+        meshStruct.nodes=V;
+        meshStruct.facesBoundary=Fb;
+        meshStruct.boundaryMarker=faceBoundaryMarker;
+        meshStruct.faces=F;
+        meshStruct.elements=E;
+        meshStruct.elementMaterialID=ones(size(E,1),1);
+        meshStruct.faceMaterialID=ones(size(meshStruct.faces,1),1);
+end
  
 %% 
 % _*GIBBON footer text*_ 

@@ -4,11 +4,26 @@
 %%
 clear; close all; clc;
 
+%% Syntax
+% |[meshStruct]=hexMeshBox(boxDim,boxEl,outputStructType);|
+
+%% Description
+% This function generates a mesh structure containing element and node data
+% for a hexahedral element meshed box. The box dimensions in each of the 3
+% directions are based on the boxDim input (1x3 vector). The number of
+% elements in each direction is based on the boxEl input (1x3) vector.
+% Finally the type of output structure is based on the optional final input
+% outputStructType. By choosing 1 the old mesh structure is used. By using
+% the option 2 the newer output structure form is used which is compatible
+% with the meshView function. The default option is 1. 
+
+%% Examples
+
 %%
-% PLOT SETTINGS
+% Plot settings
+
 fontSize=20;
-faceAlpha1=1;
-faceAlpha2=0.5;
+faceAlpha1=0.8;
 
 %% CREATING A MESHED BOX
 boxDim=[5 6 7];
@@ -25,27 +40,24 @@ faceBoundaryMarker=meshStruct.faceBoundaryMarker;
 %%
 % Plotting model
 cFigure;
-subplot(1,2,1);
 title('Box boundaries faces','FontSize',fontSize);
 hold on;
 
 gpatch(Fb,V,faceBoundaryMarker,'k',faceAlpha1);
-% [hp]=patchNormPlot(Fb,V,1); %Display face normals
+% patchNormPlot(Fb,V);
 
 axisGeom(gca,fontSize); 
 colormap(gjet(6)); icolorbar; 
+drawnow; 
 
+%%
+% Visualizing model internal mesh with |meshView|
 
-subplot(1,2,2);
-title('Box hexahedral mesh','FontSize',fontSize);
-hold on;
+%Recreate mesh but output structure compatible with meshView
+[meshStruct]=hexMeshBox(boxDim,boxEl,2);
 
-gpatch(F,V,0.5*ones(1,3),'k',faceAlpha2);
-patchNormPlot(F,V);
-axisGeom(gca,fontSize); 
-camlight headlight;
-
-drawnow;
+%Use meshView to visualize mesh
+meshView(meshStruct); 
 
 %% 
 %

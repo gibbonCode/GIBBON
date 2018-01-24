@@ -166,11 +166,13 @@ febio_spec.Globals.Solutes{2}.density=3.21;
 
 %% Material section
 
-febio_spec.Materials{1}.ATTR.type='Mooney-Rivlin';
-febio_spec.Materials{1}.ATTR.id=1;
-febio_spec.Materials{1}.c1=1e-3;
-febio_spec.Materials{1}.c2=0;
-febio_spec.Materials{1}.k=10;
+febio_spec.Material.material{1}.ATTR.type='Ogden';
+febio_spec.Material.material{1}.ATTR.id=1;
+febio_spec.Material.material{1}.c1=1;
+febio_spec.Material.material{1}.m1=6;
+febio_spec.Material.material{1}.c2=1;
+febio_spec.Material.material{1}.m2=-6;
+febio_spec.Material.material{1}.k=100;
 
 %% Geometry section
 
@@ -200,8 +202,9 @@ febio_spec.Geometry.Nodes{2}.node.VAL=rand(7,3);
 
 %Nodes without a set name
 % febio_spec.Geometry.Nodes{3}.ATTR.name='nodeSet3';
-febio_spec.Geometry.Nodes{3}.node.ATTR.id=(1:7)';
-febio_spec.Geometry.Nodes{3}.node.VAL=rand(7,3);
+n=7; %Number of nodes to test
+febio_spec.Geometry.Nodes{3}.node.ATTR.id=(1:n)';
+febio_spec.Geometry.Nodes{3}.node.VAL=rand(n,3);
 
 %%
 % Node sets
@@ -211,12 +214,12 @@ febio_spec.Geometry.Nodes{3}.node.VAL=rand(7,3);
 %     <node id="102"/>
 %     <node id="2"/>
 % </NodeSet>
-febio_spec.Geometry.NodesSet{1}.ATTR.name='nodeSet3';
-febio_spec.Geometry.NodesSet{1}.node.ATTR.id=(1:21)';
+febio_spec.Geometry.NodeSet{1}.ATTR.name='nodeSet3';
+febio_spec.Geometry.NodeSet{1}.node.ATTR.id=(1:21)';
 
 % <NodeSet name="set1"> ... </NodeSet>
-febio_spec.Geometry.NodesSet{2}.ATTR.name='nodeSet4';
-febio_spec.Geometry.NodesSet{2}.VAL=(1:21);
+febio_spec.Geometry.NodeSet{2}.ATTR.name='nodeSet4';
+febio_spec.Geometry.NodeSet{2}.VAL=(1:21);
 
 %%
 % Elements
@@ -432,10 +435,9 @@ febio_spec.Loads.nodal_load.value.VAL=pi;
 %   </loadcurve>
 % </LoadData>
 
-febio_spec.LoadData.load_curve.ATTR.id=1;
-febio_spec.LoadData.load_curve.ATTR.type='linear';
-febio_spec.LoadData.load_curve.ATTR.type='constant';
-febio_spec.LoadData.load_curve.point.VAL=[0 0; 1 1];
+febio_spec.LoadData.loadcurve.ATTR.id=1;
+febio_spec.LoadData.loadcurve.ATTR.type='linear';
+febio_spec.LoadData.loadcurve.point.VAL=[0 0; 1 1];
 
 %% Output section 
 
@@ -449,18 +451,22 @@ febio_spec.LoadData.load_curve.point.VAL=[0 0; 1 1];
 %       <rigid_body_data [attributes]>item list</rigid_body_data>
 %   </logfile>
 % </Output>
+febio_spec.Output.logfile.ATTR.file='logfile.txt';
 
-febio_spec.Output.logfile{1}.ATTR.file='outputLogfile1.txt';
-febio_spec.Output.logfile{1}.node_data{1}.ATTR.data='x;y;z';
-febio_spec.Output.logfile{1}.node_data{2}.ATTR.data='Rx;Ry;Rz';
-febio_spec.Output.logfile{1}.node_data{2}.VAL=1:10;
+febio_spec.Output.logfile.node_data{1}.ATTR.file='outputLogfile1.txt';
+febio_spec.Output.logfile.node_data{1}.ATTR.data='Rx;Ry;Rz';
+febio_spec.Output.logfile.node_data{1}.ATTR.delim=',';
+febio_spec.Output.logfile.node_data{1}.VAL=1:10;
 
-febio_spec.Output.logfile{2}.ATTR.file='outputLogfile2.txt';
-febio_spec.Output.logfile{2}.element_data{1}.ATTR.data='sxx;syy;szz;sxy;syz;sxz';
-febio_spec.Output.logfile{2}.element_data{1}.ATTR.name='Element stresses';
+febio_spec.Output.logfile.element_data{1}.ATTR.file='outputLogfile1.txt';
+febio_spec.Output.logfile.element_data{1}.ATTR.data='sxx;syy;szz;sxy;syz;sxz';
+febio_spec.Output.logfile.element_data{1}.ATTR.name='Element stresses';
+febio_spec.Output.logfile.element_data{1}.ATTR.delim=',';
+febio_spec.Output.logfile.element_data{1}.VAL=1:25;
 
-febio_spec.Output.logfile{3}.ATTR.file='outputLogfile3.txt';
-febio_spec.Output.logfile{3}.rigid_body_data{1}.ATTR.data='Fx;Fy;Fz';
+febio_spec.Output.logfile.rigid_body_data{1}.ATTR.file='outputLogfile3.txt';
+febio_spec.Output.logfile.rigid_body_data{1}.ATTR.data='Fx;Fy;Fz';
+febio_spec.Output.logfile.rigid_body_data{1}.ATTR.delim=',';
 
 %%
 % Plot file
@@ -484,19 +490,19 @@ febio_spec.Output.plotfile.var{2}.ATTR.type='stress';
 %Create file name for XML file
 defaultFolder = fileparts(fileparts(mfilename('fullpath')));
 savePath=fullfile(defaultFolder,'data','temp');
-fileName=fullfile(savePath,'tempModel');
+fileName=fullfile(savePath,'tempModel.feb');
 
 [domNode]=febioStruct2xml(febio_spec,fileName); %Exporting to file and domNode
 
 %% Viewing the FEBio input file
-% The |xmlView| command can be used to render and XML file in a figure
+% The |febView| command can be used to render and XML file in a figure
 % window. 
 %%
 % NOTE: The figure below does not render in documentation due to a
-% MATLAB but (or limitation). The code |[hFig]=xmlView(domNode,1);| is
-% therefore suppressed.
+% MATLAB but (or limitation). The code |[hFig]=febView(domNode);| is
+% therefore suppressed. (see also |xmlView|);
 
-% [hFig]=xmlView(domNode,1);
+% [hFig]=febView(fileName);
 
 %% 
 %
