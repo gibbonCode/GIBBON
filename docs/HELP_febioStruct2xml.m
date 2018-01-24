@@ -74,6 +74,11 @@ clear; close all; clc;
 % documentation example. However in principle all FEBio functionality
 % (based on XML content) can be coded for in a similar fashion. 
 
+%%
+% The remainder of this documentation will describe how various XML
+% components of the FEBio input file can be coded. A structure is created
+% with the name "febio_spec". 
+
 %% Set febio_spec version
 febio_spec.ATTR.version='2.5';
 
