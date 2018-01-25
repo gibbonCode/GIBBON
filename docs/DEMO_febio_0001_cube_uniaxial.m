@@ -1,12 +1,14 @@
 %% DEMO_febio_0001_cube_uniaxial
 % Below is a demonstration for:
+% 
 % * Building geometry for a cube with hexahedral elements
 % * Defining the boundary conditions 
 % * Coding the febio structure
 % * Running the model
 % * Importing and visualizing the displacement and stress results
 
-%% Keywords: 
+%% Keywords
+%
 % * febio_spec version 2.5
 % * febio, FEBio
 % * uniaxial loading

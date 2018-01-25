@@ -23,7 +23,7 @@ animTime=animStruct.Time(:);
 minT=1;
 maxT=numel(animTime);
 w=maxT-minT;
-sliceIndexI=1; %Initial index
+sliceIndexI=numel(animTime); %Initial index
 tickSizeMajor_I=ceil(w/20);
 
 %% Initialize display

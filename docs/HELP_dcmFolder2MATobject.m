@@ -60,7 +60,8 @@ numberOfFolders=numel(pathNames);
 %Converting DICOM data to IMDAT format in all subfolders
 for q=1:1:numberOfFolders
     pathNameSub=pathNames{q}; %Current path name
-    if ~contains(pathNameSub,[filesep,'IMDAT']) %if the IMDAT directory does not exist yet        
+%     if ~strcmp(pathNameSub,[filesep,'IMDAT']) %if the IMDAT directory does not exist yet
+      if ~contains(pathNameSub,[filesep,'IMDAT']) %if the IMDAT directory does not exist yet
         try
             dcmFolder2MATobject(pathNameSub,[]);%Get DICOM data
         catch exception

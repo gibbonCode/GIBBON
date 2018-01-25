@@ -63,9 +63,9 @@ febio_spec.Globals.Constants.Fc=0;
 
 %% LoadData section
 
-febio_spec.LoadData.loadcurve.ATTR.id=1;
-febio_spec.LoadData.loadcurve.ATTR.type='linear';
-febio_spec.LoadData.loadcurve.point.VAL=[0 0; 1 1];
+febio_spec.LoadData.loadcurve{1}.ATTR.id=1;
+febio_spec.LoadData.loadcurve{1}.ATTR.type='linear';
+febio_spec.LoadData.loadcurve{1}.point.VAL=[0 0; 1 1];
 
 %% Output section
 

@@ -7,7 +7,10 @@ function [varargout]=febioStruct2xml(varargin)
 defaultOptionStruct.attributeKeyword='ATTR';
 defaultOptionStruct.valueKeyword='VAL';
 defaultOptionStruct.arrayLoopKeywords={'node','elem','face','delem','quad4','quad8','tri3','tri6','tri7','line2','line3','point'};
-
+defaultOptionStruct.fieldOrder={'Module','Control','Globals','Material',...
+                                'Geometry','MeshData','Initial','Boundary',...
+                                'Loads','Contact','Constraints','Rigid Connectors',...
+                                'Discrete','LoadData','Output','Parameters'};
 switch nargin
     case 1
         parseStruct=varargin{1};
@@ -41,6 +44,9 @@ commentString = ['Created using GIBBON, ',datestr(now)];
 commentNode = domNode.createComment(commentString);
 rootNode=domNode.getElementsByTagName('febio_spec').item(0);
 rootNode.appendChild(commentNode);
+
+%% Reorder fields
+[parseStruct]=reorderStruct(parseStruct,optionStruct.fieldOrder);
 
 %% Add content to XML
 [domNode]=febioStruct2xmlStep(domNode,rootNode,parseStruct,optionStruct,fileName);
@@ -208,7 +214,8 @@ rootNode.appendChild(commentNode);
 xmlwrite_xerces(fileName,domNode); %Export to text file
 [T_now]=txtfile2cell(fileName); %Import back into cell array
 
-indFind=find(contains(T_now,targetCutString));
+indFind=find(contains(T_now,targetCutString)); %indFind=find(strcmp(targetCutString,T_now))
+
 if indFind==numel(T_now)
     T_top=T_now(1:indFind-1);
     T_bottom={};
@@ -261,6 +268,30 @@ rootNode=nodeList.item(nodeList.getLength-1);
 delete(fileName);
 
 end
+
+%%
+function [B]=reorderStruct(A,fieldOrder)
+
+%Start with fieldOrder fields
+fieldNameSet=fieldnames(A);
+for q=1:1:numel(fieldOrder)
+    fieldNameNow=fieldOrder{q};    
+    logicFind=strcmp(fieldNameNow,fieldNameSet);
+    if any(logicFind)
+        B.(fieldNameNow)=A.(fieldNameNow);
+        A=rmfield(A,fieldNameNow);
+    end
+end
+
+%Add remaining fields
+fieldNameSet=fieldnames(A);
+for q=1:1:numel(fieldNameSet)
+    fieldNameNow=fieldNameSet{q};
+    B.(fieldNameNow)=A.(fieldNameNow);
+end
+
+end
+
 %%
 % _*GIBBON footer text*_
 %
