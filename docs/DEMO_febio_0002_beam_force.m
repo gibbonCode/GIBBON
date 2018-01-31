@@ -1,21 +1,24 @@
-%% DEMO_febio_0051_cube_body_load
+%% DEMO_febio_0002_beam_force
 % Below is a demonstration for:
-% * Building geometry for a cube with hexahedral elements
+% 
+% * Building geometry for a beam with hexahedral elements
 % * Defining the boundary conditions 
 % * Coding the febio structure
 % * Running the model
-% * Importing and visualizing the displacement and stress results
+% * Importing and visualizing the displacement results
 
-%% Keywords: 
+%% Keywords
+%
 % * febio_spec version 2.5
 % * febio, FEBio
-% * body load
+% * beam force loading
+% * force control boundary condition
 % * hexahedral elements, hex8
-% * cube, box, rectangular
+% * beam, rectangular
 % * static, solid
 % * hyperelastic, Ogden
-% * Displacement logfile
-% * Force logfile
+% * displacement logfile
+% * stress logfile
 
 %%
 
@@ -41,17 +44,17 @@ febioLogFileName_disp=[febioFebFileNamePart,'_disp_out.txt']; %Log file name for
 febioLogFileName_force=[febioFebFileNamePart,'_force_out.txt']; %Log file name for exporting force
 
 %Specifying dimensions and number of elements
-cubeSize=10; 
-sampleWidth=cubeSize; %Width 
-sampleThickness=cubeSize; %Thickness 
-sampleHeight=cubeSize; %Height
+beamWidth=10; 
+sampleWidth=beamWidth; %Width 
+sampleThickness=4*beamWidth; %Thickness 
+sampleHeight=beamWidth; %Height
 pointSpacings=2*ones(1,3); %Desired point spacing between nodes
 numElementsWidth=round(sampleWidth/pointSpacings(1)); %Number of elemens in dir 1
 numElementsThickness=round(sampleThickness/pointSpacings(2)); %Number of elemens in dir 2
 numElementsHeight=round(sampleHeight/pointSpacings(3)); %Number of elemens in dir 3
 
-%Define applied displacement 
-bodyLoadType='const'; % or 'non-const'
+%Define applied force 
+appliedForce=[0 0 -5e-5]; 
 
 %Material parameter set
 c1=1e-3; %Shear-modulus-like parameter
@@ -60,7 +63,7 @@ k_factor=1e2; %Bulk modulus factor
 k=c1*k_factor; %Bulk modulus
 
 % FEA control settings
-numTimeSteps=50; %Number of time steps desired
+numTimeSteps=10; %Number of time steps desired
 max_refs=25; %Max reforms
 max_ups=0; %Set to zero to use full-Newton iterations
 opt_iter=6; %Optimum number of iterations
@@ -69,17 +72,17 @@ dtmin=(1/numTimeSteps)/100; %Minimum time step size
 dtmax=1/numTimeSteps; %Maximum time step size
 
 %% Creating model geometry and mesh
-% A cube is created with tri-linear hexahedral (hex8) elements using the
+% A beam is created with tri-linear hexahedral (hex8) elements using the
 % |hexMeshBox| function. The function offers the boundary faces with
 % seperate labels for the top, bottom, left, right, front, and back sides
 % of the cube. As such these can be used to define boundary conditions on
 % the exterior. 
 
 % Create a box with hexahedral elements
-cubeDimensions=[sampleWidth sampleThickness sampleHeight]; %Dimensions
-cubeElementNumbers=[numElementsWidth numElementsThickness numElementsHeight]; %Number of elements
+beamDimensions=[sampleWidth sampleThickness sampleHeight]; %Dimensions
+beamElementNumbers=[numElementsWidth numElementsThickness numElementsHeight]; %Number of elements
 outputStructType=2; %A structure compatible with mesh view
-[meshStruct]=hexMeshBox(cubeDimensions,cubeElementNumbers,outputStructType);
+[meshStruct]=hexMeshBox(beamDimensions,beamElementNumbers,outputStructType);
 
 %Access elements, nodes, and faces from the structure
 E=meshStruct.elements; %The elements 
@@ -111,13 +114,13 @@ drawnow;
 % The visualization of the model boundary shows colors for each side of the
 % cube. These labels can be used to define boundary conditions. 
 
-%Define supported node sets
-logicFace=Cb==5; %Logic for current face set
+%Define supported node set
+logicFace=Cb==4; %Logic for current face set
 Fr=Fb(logicFace,:); %The current face set
 bcSupportList=unique(Fr(:)); %Node set part of selected face
 
-%Prescribed displacement nodes
-logicPrescribe=Cb==6; %Logic for current face set
+%Prescribed force nodes
+logicPrescribe=Cb==3; %Logic for current face set
 Fr=Fb(logicPrescribe,:); %The current face set
 bcPrescribeList=unique(Fr(:)); %Node set part of selected face
 
@@ -132,13 +135,15 @@ hold on;
 
 gpatch(Fb,V,'kw','k',0.5);
 
-hl(1)=plotV(V(bcSupportList,:),'b.','MarkerSize',markerSize);
+hl(1)=plotV(V(bcSupportList,:),'k.','MarkerSize',markerSize);
+hl(2)=plotV(V(bcPrescribeList,:),'r.','MarkerSize',markerSize);
 
-legend(hl,{'BC support'});
+legend(hl,{'BC support','BC prescribe'});
 
 axisGeom(gca,fontSize);
 camlight headlight; 
 drawnow; 
+
 
 %% Defining the FEBio input structure
 % See also |febioStructTemplate| and |febioStruct2xml| and the FEBio user
@@ -191,6 +196,9 @@ febio_spec.Geometry.Elements{1}.elem.VAL=E;
 febio_spec.Geometry.NodeSet{1}.ATTR.name='bcSupportList';
 febio_spec.Geometry.NodeSet{1}.VAL=bcSupportList(:);
 
+febio_spec.Geometry.NodeSet{2}.ATTR.name='bcPrescribeList';
+febio_spec.Geometry.NodeSet{2}.VAL=bcPrescribeList(:);
+
 %Boundary condition section 
 % -> Fix boundary conditions
 febio_spec.Boundary.fix{1}.ATTR.bc='x';
@@ -201,42 +209,24 @@ febio_spec.Boundary.fix{3}.ATTR.bc='z';
 febio_spec.Boundary.fix{3}.ATTR.node_set=febio_spec.Geometry.NodeSet{1}.ATTR.name;
 
 %Loads section
-% -> Body load
-switch bodyLoadType
-    case 'const'
-        febio_spec.Loads.body_load.ATTR.type='const';
-        febio_spec.Loads.body_load.x.ATTR.lc=1;
-        febio_spec.Loads.body_load.x.VAL=1e-5;
-        febio_spec.Loads.body_load.y.ATTR.lc=2;
-        febio_spec.Loads.body_load.y.VAL=1e-5;
-        febio_spec.Loads.body_load.z.ATTR.lc=3;
-        febio_spec.Loads.body_load.z.VAL=1e-5;
-    case 'non-const'
-        febio_spec.Loads.body_load.ATTR.type='non-const';
-        febio_spec.Loads.body_load.x.ATTR.lc=1;
-        febio_spec.Loads.body_load.x.VAL='-0.00001*x';
-        febio_spec.Loads.body_load.y.ATTR.lc=2;
-        febio_spec.Loads.body_load.y.VAL='0.000002*y';
-        febio_spec.Loads.body_load.z.ATTR.lc=3;
-        febio_spec.Loads.body_load.z.VAL='0.000006*z';
-end
-        
-%LoadData section
-% -> load curves
-febio_spec.LoadData.loadcurve{1}.ATTR.id=1;
-febio_spec.LoadData.loadcurve{1}.ATTR.type='linear';
-febio_spec.LoadData.loadcurve{1}.point.VAL=[0 0; 1 1];
-febio_spec.LoadData.loadcurve{1}.ATTR.extend='constant';
+% -> Prescribed nodal forces
+febio_spec.Loads.nodal_load{1}.ATTR.bc='x';
+febio_spec.Loads.nodal_load{1}.ATTR.node_set=febio_spec.Geometry.NodeSet{2}.ATTR.name;
+febio_spec.Loads.nodal_load{1}.scale.ATTR.lc=1;
+febio_spec.Loads.nodal_load{1}.scale.VAL=1;
+febio_spec.Loads.nodal_load{1}.value=appliedForce(1);
 
-febio_spec.LoadData.loadcurve{2}.ATTR.id=2;
-febio_spec.LoadData.loadcurve{2}.ATTR.type='linear';
-febio_spec.LoadData.loadcurve{2}.point.VAL=[0 0; 1 1];
-febio_spec.LoadData.loadcurve{2}.ATTR.extend='constant';
+febio_spec.Loads.nodal_load{2}.ATTR.bc='y';
+febio_spec.Loads.nodal_load{2}.ATTR.node_set=febio_spec.Geometry.NodeSet{2}.ATTR.name;
+febio_spec.Loads.nodal_load{2}.scale.ATTR.lc=1;
+febio_spec.Loads.nodal_load{2}.scale.VAL=1;
+febio_spec.Loads.nodal_load{2}.value=appliedForce(2);
 
-febio_spec.LoadData.loadcurve{3}.ATTR.id=3;
-febio_spec.LoadData.loadcurve{3}.ATTR.type='linear';
-febio_spec.LoadData.loadcurve{3}.point.VAL=[0 0; 1 1];
-febio_spec.LoadData.loadcurve{3}.ATTR.extend='constant';
+febio_spec.Loads.nodal_load{3}.ATTR.bc='z';
+febio_spec.Loads.nodal_load{3}.ATTR.node_set=febio_spec.Geometry.NodeSet{2}.ATTR.name;
+febio_spec.Loads.nodal_load{3}.scale.ATTR.lc=1;
+febio_spec.Loads.nodal_load{3}.scale.VAL=1;
+febio_spec.Loads.nodal_load{3}.value=appliedForce(3);
 
 %Output section 
 % -> log file
@@ -256,7 +246,7 @@ febio_spec.Output.logfile.node_data{2}.VAL=1:size(V,1);
 % figure window. 
 
 %%
-febView(febio_spec); %Viewing the febio file
+% |febView(febio_spec); %Viewing the febio file|
 
 %% Exporting the FEBio input file
 % Exporting the febio_spec structure to an FEBio input file is done using
@@ -275,7 +265,7 @@ febioAnalysis.run_filename=febioFebFileName; %The input file name
 febioAnalysis.run_logname=febioLogFileName; %The name for the log file
 febioAnalysis.disp_on=1; %Display information on the command window
 febioAnalysis.disp_log_on=1; %Display convergence information in the command window
-febioAnalysis.runMode='internal';%'internal';
+febioAnalysis.runMode='external';%'internal';
 febioAnalysis.t_check=0.25; %Time for checking log file (dont set too small)
 febioAnalysis.maxtpi=1e99; %Max analysis time
 febioAnalysis.maxLogCheckTime=3; %Max log file checking time
@@ -289,6 +279,7 @@ if runFlag==1 %i.e. a succesful run
     % Importing nodal displacements from a log file
     [time_mat, N_disp_mat,~]=importFEBio_logfile(fullfile(savePath,febioLogFileName_disp)); %Nodal displacements    
     time_mat=[0; time_mat(:)]; %Time
+
     N_disp_mat=N_disp_mat(:,2:end,:);
     sizImport=size(N_disp_mat);
     sizImport(3)=sizImport(3)+1;
@@ -299,29 +290,28 @@ if runFlag==1 %i.e. a succesful run
     DN_magnitude=sqrt(sum(DN(:,3).^2,2));
     V_def=V+DN;
     [CF]=vertexToFaceMeasure(Fb,DN_magnitude);
-        
+    
     %% 
     % Plotting the simulated results using |anim8| to visualize and animate
     % deformations 
     
     % Create basic view and store graphics handle to initiate animation
     hf=cFigure; %Open figure  
-    title([febioFebFileNamePart,': Press play to animate']);
+    suptitle([febioFebFileNamePart,': Press play to animate']);
     hp=gpatch(Fb,V_def,CF,'k',1); %Add graphics object to animate
-    gpatch(Fb,V,0.5*ones(1,3),'k',0.25); %A static graphics object
+    gpatch(Fb,V,0.5*ones(1,3),'none',0.25); %A static graphics object
     
     axisGeom(gca,fontSize); 
     colormap(gjet(250)); colorbar;
     caxis([0 max(DN_magnitude)]);    
     axis([min(V_def(:,1)) max(V_def(:,1)) min(V_def(:,2)) max(V_def(:,2)) min(V_def(:,3)) max(V_def(:,3))]); %Set axis limits statically
-    view(130,25); %Set view direction
     camlight headlight;        
         
     % Set up animation features
     animStruct.Time=time_mat; %The time vector    
     for qt=1:1:size(N_disp_mat,3) %Loop over time increments        
         DN=N_disp_mat(:,:,qt); %Current displacement
-        DN_magnitude=sqrt(sum(DN(:,3).^2,2)); %Current displacement magnitude
+        DN_magnitude=sqrt(sum(DN.^2,2)); %Current displacement magnitude
         V_def=V+DN; %Current nodal coordinates
         [CF]=vertexToFaceMeasure(Fb,DN_magnitude); %Current color data to use
         
@@ -332,7 +322,7 @@ if runFlag==1 %i.e. a succesful run
     end        
     anim8(hf,animStruct); %Initiate animation feature    
     drawnow;
-    
+
 end
 
 %% 

@@ -18,8 +18,8 @@
 % * cube, box, rectangular
 % * static, solid
 % * hyperelastic, Ogden
-% * Displacement logfile
-% * Stress logfile
+% * displacement logfile
+% * stress logfile
 
 %%
 
@@ -319,14 +319,14 @@ if runFlag==1 %i.e. a succesful run
     
     % Create basic view and store graphics handle to initiate animation
     hf=cFigure; %Open figure  
-    title([febioFebFileNamePart,': Press play to animate']);
+    suptitle([febioFebFileNamePart,': Press play to animate']);
     hp=gpatch(Fb,V_def,CF,'k',1); %Add graphics object to animate
     gpatch(Fb,V,0.5*ones(1,3),'k',0.25); %A static graphics object
     
     axisGeom(gca,fontSize); 
     colormap(gjet(250)); colorbar;
     caxis([0 max(DN_magnitude)]);    
-    axis([min(V_def(:,1)) max(V_def(:,1)) min(V_def(:,2)) max(V_def(:,2)) min(V(:,3)) max(V(:,3))]); %Set axis limits statically
+    axis([min(V_def(:,1)) max(V_def(:,1)) min(V_def(:,2)) max(V_def(:,2)) min(V_def(:,3)) max(V_def(:,3))]); %Set axis limits statically
     view(130,25); %Set view direction
     camlight headlight;        
         
@@ -334,7 +334,7 @@ if runFlag==1 %i.e. a succesful run
     animStruct.Time=time_mat; %The time vector    
     for qt=1:1:size(N_disp_mat,3) %Loop over time increments        
         DN=N_disp_mat(:,:,qt); %Current displacement
-        DN_magnitude=sqrt(sum(DN(:,3).^2,2)); %Current displacement magnitude
+        DN_magnitude=sqrt(sum(DN.^2,2)); %Current displacement magnitude
         V_def=V+DN; %Current nodal coordinates
         [CF]=vertexToFaceMeasure(Fb,DN_magnitude); %Current color data to use
         

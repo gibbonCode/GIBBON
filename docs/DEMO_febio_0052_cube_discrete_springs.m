@@ -67,7 +67,7 @@ displacementMagnitude=(stretchLoad*sampleHeight)-sampleHeight; %The displacement
 
 %Material parameter set
 c_spring=1e-3; %Spring "Youngs Modulus" 
-c1=c_spring/10000; %Solid shear-modulus-like parameter
+c1=c_spring/100000; %Solid shear-modulus-like parameter
 m1=2; %Solid material parameter setting degree of non-linearity
 k=c1; %Solid bulk modulus
 
@@ -325,7 +325,7 @@ if runFlag==1 %i.e. a succesful run
     axisGeom(gca,fontSize); 
     colormap(gjet(250)); colorbar;
     caxis([0 max(DN_magnitude)]);    
-    axis([min(V_def(:,1)) max(V_def(:,1)) min(V_def(:,2)) max(V_def(:,2)) min(V(:,3)) max(V(:,3))]); %Set axis limits statically
+    axis([min(V_def(:,1)) max(V_def(:,1)) min(V_def(:,2)) max(V_def(:,2)) min(V_def(:,3)) max(V_def(:,3))]); %Set axis limits statically
     view(130,25); %Set view direction
     drawnow;
 %     camlight headlight;        
