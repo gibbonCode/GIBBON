@@ -72,11 +72,10 @@ dtmin=(1/numTimeSteps)/100; %Minimum time step size
 dtmax=1/numTimeSteps; %Maximum time step size
 
 %% Creating model geometry and mesh
-% A beam is created with tri-linear hexahedral (hex8) elements using the
+% A box is created with tri-linear hexahedral (hex8) elements using the
 % |hexMeshBox| function. The function offers the boundary faces with
-% seperate labels for the top, bottom, left, right, front, and back sides
-% of the cube. As such these can be used to define boundary conditions on
-% the exterior. 
+% seperate labels for the top, bottom, left, right, front, and back sides.
+% As such these can be used to define boundary conditions on the exterior. 
 
 % Create a box with hexahedral elements
 beamDimensions=[sampleWidth sampleThickness sampleHeight]; %Dimensions
@@ -186,7 +185,7 @@ febio_spec.Geometry.Nodes{1}.node.VAL=V; %The nodel coordinates
 % -> Elements
 febio_spec.Geometry.Elements{1}.ATTR.type='hex8'; %Element type of this set
 febio_spec.Geometry.Elements{1}.ATTR.mat=1; %material index for this set 
-febio_spec.Geometry.Elements{1}.ATTR.name='Cube'; %Name of the element set
+febio_spec.Geometry.Elements{1}.ATTR.name='Beam'; %Name of the element set
 febio_spec.Geometry.Elements{1}.elem.ATTR.id=(1:1:size(E,1))'; %Element id's
 febio_spec.Geometry.Elements{1}.elem.VAL=E;
 

@@ -82,11 +82,10 @@ dtmin=(1/numTimeSteps)/100; %Minimum time step size
 dtmax=1/numTimeSteps; %Maximum time step size
 
 %% Creating model geometry and mesh
-% A cube is created with tri-linear hexahedral (hex8) elements using the
+% A box is created with tri-linear hexahedral (hex8) elements using the
 % |hexMeshBox| function. The function offers the boundary faces with
-% seperate labels for the top, bottom, left, right, front, and back sides
-% of the cube. As such these can be used to define boundary conditions on
-% the exterior. 
+% seperate labels for the top, bottom, left, right, front, and back sides.
+% As such these can be used to define boundary conditions on the exterior. 
 
 % Create a box with hexahedral elements
 cubeDimensions=[sampleWidth sampleThickness sampleHeight]; %Dimensions

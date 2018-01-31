@@ -304,8 +304,8 @@ febio_spec.Geometry.ElementSet{1}.elem.ATTR.id=(1:5)';
 %   <master surface="surface1"/>
 %   <slave surface="surface2"/>
 % </SurfacePair>
-
-febio_spec.Geometry.SurfacePair{1}.master.ATTR.surface='Suface1';
+febio_spec.Geometry.SurfacePair{1}.ATTR.name='Contact1';
+febio_spec.Geometry.SurfacePair{1}.master.ATTR.surface='Surface1';
 febio_spec.Geometry.SurfacePair{1}.slave.ATTR.surface='Surface2';
 
 %% MeshData section
@@ -443,6 +443,24 @@ febio_spec.Loads.nodal_load.value.VAL=pi;
 febio_spec.LoadData.loadcurve.ATTR.id=1;
 febio_spec.LoadData.loadcurve.ATTR.type='linear';
 febio_spec.LoadData.loadcurve.point.VAL=[0 0; 1 1];
+
+%% Contact section
+
+febio_spec.Contact.contact{1}.ATTR.surface_pair=febio_spec.Geometry.SurfacePair{1}.ATTR.name;
+febio_spec.Contact.contact{1}.ATTR.type='sliding_with_gaps';
+febio_spec.Contact.contact{1}.penalty=100;
+febio_spec.Contact.contact{1}.auto_penalty=1;
+febio_spec.Contact.contact{1}.two_pass=0;
+febio_spec.Contact.contact{1}.laugon=0;
+febio_spec.Contact.contact{1}.tolerance=0.1;
+febio_spec.Contact.contact{1}.gaptol=0;
+febio_spec.Contact.contact{1}.minaug=0;
+febio_spec.Contact.contact{1}.maxaug=10;
+febio_spec.Contact.contact{1}.fric_coeff=0;
+febio_spec.Contact.contact{1}.fric_penalty=0;
+febio_spec.Contact.contact{1}.ktmult=1;
+febio_spec.Contact.contact{1}.seg_up=0;
+febio_spec.Contact.contact{1}.search_tol=0.01;
 
 %% Output section 
 

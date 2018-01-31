@@ -6,7 +6,7 @@
    <!--
 This HTML was auto-generated from MATLAB code.
 To make changes, update the MATLAB code and republish this document.
-      --><title>febioStruct2xml</title><meta name="generator" content="MATLAB 9.4"><link rel="schema.DC" href="http://purl.org/dc/elements/1.1/"><meta name="DC.date" content="2018-01-23"><meta name="DC.source" content="HELP_febioStruct2xml.m"><style type="text/css">
+      --><title>febioStruct2xml</title><meta name="generator" content="MATLAB 9.4"><link rel="schema.DC" href="http://purl.org/dc/elements/1.1/"><meta name="DC.date" content="2018-01-31"><meta name="DC.source" content="HELP_febioStruct2xml.m"><style type="text/css">
 html,body,div,span,applet,object,iframe,h1,h2,h3,h4,h5,h6,p,blockquote,pre,a,abbr,acronym,address,big,cite,code,del,dfn,em,font,img,ins,kbd,q,s,samp,small,strike,strong,sub,sup,tt,var,b,u,i,center,dl,dt,dd,ol,ul,li,fieldset,form,label,legend,table,caption,tbody,tfoot,thead,tr,th,td{margin:0;padding:0;border:0;outline:0;font-size:100%;vertical-align:baseline;background:transparent}body{line-height:1}ol,ul{list-style:none}blockquote,q{quotes:none}blockquote:before,blockquote:after,q:before,q:after{content:'';content:none}:focus{outine:0}ins{text-decoration:none}del{text-decoration:line-through}table{border-collapse:collapse;border-spacing:0}
 
 html { min-height:100%; margin-bottom:1px; }
@@ -66,7 +66,7 @@ table td { padding:7px 5px; text-align:left; vertical-align:top; border:1px soli
 
 
 
-  </style></head><body><div class="content"><h1>febioStruct2xml</h1><!--introduction--><p>Below is a demonstration of the features of the <tt>febioStruct2xml</tt> function</p><!--/introduction--><h2>Contents</h2><div><ul><li><a href="#2">Syntax</a></li><li><a href="#3">Description</a></li><li><a href="#5">About FEBio XML input files</a></li><li><a href="#6">Coding XML files in MATLAB</a></li><li><a href="#10">Set febio_spec version</a></li><li><a href="#11">Module section</a></li><li><a href="#15">Control section</a></li><li><a href="#16">Globals section</a></li><li><a href="#17">Material section</a></li><li><a href="#18">Geometry section</a></li><li><a href="#27">MeshData section</a></li><li><a href="#29">Initial section</a></li><li><a href="#31">Boundary</a></li><li><a href="#33">Loads section</a></li><li><a href="#35">LoadData section</a></li><li><a href="#36">Output section</a></li><li><a href="#39">Creating the FEBio input file</a></li><li><a href="#40">Viewing the FEBio input file</a></li></ul></div><pre class="codeinput">clear; close <span class="string">all</span>; clc;
+  </style></head><body><div class="content"><h1>febioStruct2xml</h1><!--introduction--><p>Below is a demonstration of the features of the <tt>febioStruct2xml</tt> function</p><!--/introduction--><h2>Contents</h2><div><ul><li><a href="#2">Syntax</a></li><li><a href="#3">Description</a></li><li><a href="#5">About FEBio XML input files</a></li><li><a href="#6">Coding XML files in MATLAB</a></li><li><a href="#11">Set febio_spec version</a></li><li><a href="#12">Module section</a></li><li><a href="#16">Control section</a></li><li><a href="#17">Globals section</a></li><li><a href="#18">Material section</a></li><li><a href="#19">Geometry section</a></li><li><a href="#28">MeshData section</a></li><li><a href="#30">Initial section</a></li><li><a href="#32">Boundary</a></li><li><a href="#34">Loads section</a></li><li><a href="#36">LoadData section</a></li><li><a href="#37">Contact section</a></li><li><a href="#38">Output section</a></li><li><a href="#41">Creating the FEBio input file</a></li><li><a href="#42">Viewing the FEBio input file</a></li></ul></div><pre class="codeinput">clear; close <span class="string">all</span>; clc;
 </pre><h2 id="2">Syntax</h2><p><tt>[domNode]=febioStruct2xml(febio_spec,fileName,optionStruct);</tt></p><h2 id="3">Description</h2><p>This function provides the basis for coding FEBio XML input file content and helps to generate the XML input file.</p><p>See also: <tt>febioStructTemplate</tt></p><h2 id="5">About FEBio XML input files</h2><p>FEBio input files (.feb) are XML files. The XML syntax bellow is for febio_spec 2.5. More on the input file formatting can be found in the FEBio user manual.</p><h2 id="6">Coding XML files in MATLAB</h2><p>Coding XML files (or in this case .feb FEBio files) can be challenging and may look confusing. An alternative method is implemented here which is a trade-off between clarify, ease of programming, and fidelity with the generated XML file. In general XML files follow the following form:</p><pre class="codeinput"><span class="comment">% &lt;Globals&gt;</span>
 <span class="comment">%   &lt;Constants&gt;</span>
 <span class="comment">%       &lt;R&gt;8.314e-6&lt;/R&gt;</span>
@@ -81,10 +81,10 @@ table td { padding:7px 5px; text-align:left; vertical-align:top; border:1px soli
 <span class="comment">%       &lt;/solute&gt;</span>
 <span class="comment">% &lt;/Globals&gt;</span>
 </pre><p>Here Globals is an element with the entries Constants and Solutes being child elements (and Constants and Solutes have R,T,Fc and solute as their respective child elements,... etc). The symbols <a href="..">..</a> start an element and <a href="/..">/..</a> closes that element. Components within <a href="..">..</a> sometimes contain attributes. An example of this is id="1", here the attribute "id" has the value "1" associated with it, another example of an attribute is name="Na". Elements may contain child elements and may have a value. For instance the element Constants has children but the element R has the value 8.314e-6 associated with it. To code these features in MATLAB a particular syntax was developed. Structures are suitable as they are tree-like similar to XML. However structures lack the attribute feature, i.e. fields in structures have values but do not have attributes associated with them. To solve this keywords are used here to denote attributes and to distinguish them from values or elements. For instance node.ATTR.id=1 will become <a href="node">id="1"</a>, where the ATTR keyword is here simply used as a target/trigger keyword for determining wheter the subsequent feature is an element, value or attribute. Futhermore the VAL keyword exists to denote a value, e.g. node.ATTR.id=1; node.VAL=2;  will become:</p><pre class="codeinput"><span class="comment">% &lt;node id="1"&gt; 2 &lt;/node&gt;.</span>
-</pre><p>One may use arrays for values as well i.e. node.ATTR.id=nodeIdArray; node.VAL=nodeCoordinateArray; can be used to define sets of attributes and sets of values simultaneously. Below several types of FEBio functionality and how to code for the XML content is highlighted. Examples are obtained or adjusted from the FEBio user manual. Not all of FEBio's functionality is covered in this documentation example. However in principle all FEBio functionality (based on XML content) can be coded for in a similar fashion.</p><h2 id="10">Set febio_spec version</h2><pre class="codeinput">febio_spec.ATTR.version=<span class="string">'2.5'</span>;
-</pre><h2 id="11">Module section</h2><p>XML syntax example</p><pre class="codeinput"><span class="comment">% &lt;Module type="Solid"/&gt;</span>
+</pre><p>One may use arrays for values as well i.e. node.ATTR.id=nodeIdArray; node.VAL=nodeCoordinateArray; can be used to define sets of attributes and sets of values simultaneously. Below several types of FEBio functionality and how to code for the XML content is highlighted. Examples are obtained or adjusted from the FEBio user manual. Not all of FEBio's functionality is covered in this documentation example. However in principle all FEBio functionality (based on XML content) can be coded for in a similar fashion.</p><p>The remainder of this documentation will describe how various XML components of the FEBio input file can be coded. A structure is created with the name "febio_spec".</p><h2 id="11">Set febio_spec version</h2><pre class="codeinput">febio_spec.ATTR.version=<span class="string">'2.5'</span>;
+</pre><h2 id="12">Module section</h2><p>XML syntax example</p><pre class="codeinput"><span class="comment">% &lt;Module type="Solid"/&gt;</span>
 </pre><p>Implementation example</p><pre class="codeinput">febio_spec.Module.ATTR.type=<span class="string">'solid'</span>; <span class="comment">%Use default set</span>
-</pre><h2 id="15">Control section</h2><pre class="codeinput"><span class="comment">%Example structure</span>
+</pre><h2 id="16">Control section</h2><pre class="codeinput"><span class="comment">%Example structure</span>
 defaultStruct.analysis.type=<span class="string">'static'</span>;
 defaultStruct.title=<span class="string">'temp'</span>;
 defaultStruct.time_steps=10;
@@ -115,7 +115,7 @@ defaultStruct.min_residual=1e-20;
 defaultStruct.output_level=<span class="string">'OUTPUT_MAJOR_ITRS'</span>;
 
 febio_spec.Control=defaultStruct; <span class="comment">%Use default set</span>
-</pre><h2 id="16">Globals section</h2><pre class="codeinput"><span class="comment">% &lt;Globals&gt;</span>
+</pre><h2 id="17">Globals section</h2><pre class="codeinput"><span class="comment">% &lt;Globals&gt;</span>
 <span class="comment">%   &lt;Constants&gt;</span>
 <span class="comment">%       &lt;R&gt;8.314e-6&lt;/R&gt;</span>
 <span class="comment">%       &lt;T&gt;298&lt;/T&gt;</span>
@@ -155,14 +155,14 @@ febio_spec.Globals.Solutes{2}.ATTR.name=<span class="string">'Cl'</span>;
 febio_spec.Globals.Solutes{2}.charge_number=-1;
 febio_spec.Globals.Solutes{2}.molar_mass=35.45;
 febio_spec.Globals.Solutes{2}.density=3.21;
-</pre><h2 id="17">Material section</h2><pre class="codeinput">febio_spec.Materials.material{1}.ATTR.type=<span class="string">'Ogden'</span>;
-febio_spec.Materials.material{1}.ATTR.id=1;
-febio_spec.Materials.material{1}.c1=1;
-febio_spec.Materials.material{1}.m1=6;
-febio_spec.Materials.material{1}.c2=1;
-febio_spec.Materials.material{1}.m2=-6;
-febio_spec.Materials.material{1}.k=100;
-</pre><h2 id="18">Geometry section</h2><p>Nodes</p><pre class="codeinput"><span class="comment">% &lt;Nodes name="set01"&gt;</span>
+</pre><h2 id="18">Material section</h2><pre class="codeinput">febio_spec.Material.material{1}.ATTR.type=<span class="string">'Ogden'</span>;
+febio_spec.Material.material{1}.ATTR.id=1;
+febio_spec.Material.material{1}.c1=1;
+febio_spec.Material.material{1}.m1=6;
+febio_spec.Material.material{1}.c2=1;
+febio_spec.Material.material{1}.m2=-6;
+febio_spec.Material.material{1}.k=100;
+</pre><h2 id="19">Geometry section</h2><p>Nodes</p><pre class="codeinput"><span class="comment">% &lt;Nodes name="set01"&gt;</span>
 <span class="comment">%   &lt;node id="1"&gt;0,0,0,&lt;/node&gt;</span>
 <span class="comment">%   ...</span>
 <span class="comment">%   &lt;/node id="101"&gt;1,1,1&lt;/node&gt;</span>
@@ -254,10 +254,10 @@ febio_spec.Geometry.ElementSet{1}.elem.ATTR.id=(1:5)';
 <span class="comment">%   &lt;master surface="surface1"/&gt;</span>
 <span class="comment">%   &lt;slave surface="surface2"/&gt;</span>
 <span class="comment">% &lt;/SurfacePair&gt;</span>
-
-febio_spec.Geometry.SurfacePair{1}.master.ATTR.surface=<span class="string">'Suface1'</span>;
+febio_spec.Geometry.SurfacePair{1}.ATTR.name=<span class="string">'Contact1'</span>;
+febio_spec.Geometry.SurfacePair{1}.master.ATTR.surface=<span class="string">'Surface1'</span>;
 febio_spec.Geometry.SurfacePair{1}.slave.ATTR.surface=<span class="string">'Surface2'</span>;
-</pre><h2 id="27">MeshData section</h2><pre class="codeinput"><span class="comment">% &lt;MeshData&gt;</span>
+</pre><h2 id="28">MeshData section</h2><pre class="codeinput"><span class="comment">% &lt;MeshData&gt;</span>
 <span class="comment">%   &lt;ElementData var="shell thickness" elem_set="part1"&gt;</span>
 <span class="comment">%       &lt;elem lid="1"&gt;1.0, 1.0, 1.0, 1.0&lt;/elem&gt;</span>
 <span class="comment">%       &lt;elem lid="2"&gt;1.0, 1.0, 1.0, 1.0&lt;/elem&gt;</span>
@@ -277,7 +277,7 @@ febio_spec.MeshData.ElementData{2}.ATTR.var=<span class="string">'pre_stretch'</
 febio_spec.MeshData.ElementData{2}.ATTR.elem_set=<span class="string">'part2'</span>;
 febio_spec.MeshData.ElementData{2}.elem.ATTR.lid=(1:2)';
 febio_spec.MeshData.ElementData{2}.elem.VAL=[1.05 1.05]';
-</pre><h2 id="29">Initial section</h2><pre class="codeinput"><span class="comment">% &lt;MeshData&gt;</span>
+</pre><h2 id="30">Initial section</h2><pre class="codeinput"><span class="comment">% &lt;MeshData&gt;</span>
 <span class="comment">%   &lt;NodeData name="init_vel" node_set="set1"&gt;</span>
 <span class="comment">%       &lt;node lid="1"&gt;1.0&lt;/node&gt;</span>
 <span class="comment">%       &lt;node lid="2"&gt;1.5&lt;/node&gt;</span>
@@ -298,7 +298,7 @@ febio_spec.MeshData.NodeData{1}.node.VAL=[1.0 1.5 1.0]';
 febio_spec.Initial.init.ATTR.bc=<span class="string">'vx'</span>;
 febio_spec.Initial.init.ATTR.node_set=<span class="string">'set1'</span>;
 febio_spec.Initial.init.value.ATTR.node_data=<span class="string">'init_vel'</span>;
-</pre><h2 id="31">Boundary</h2><pre class="codeinput"><span class="comment">% &lt;MeshData&gt;</span>
+</pre><h2 id="32">Boundary</h2><pre class="codeinput"><span class="comment">% &lt;MeshData&gt;</span>
 <span class="comment">%   &lt;NodeData name="values" node_set="set1"&gt;</span>
 <span class="comment">%       &lt;node lid="1"&gt;1.0&lt;/node&gt;</span>
 <span class="comment">%       &lt;node lid="2"&gt;2.0&lt;/node&gt;</span>
@@ -345,7 +345,7 @@ febio_spec.Boundary.rigid_body{1}.prescribed.ATTR.lc=1;
 febio_spec.Boundary.rigid_body{1}.prescribed.VAL=2;
 febio_spec.Boundary.rigid_body{1}.fixed{1}.ATTR.bc=<span class="string">'y'</span>;
 febio_spec.Boundary.rigid_body{1}.fixed{2}.ATTR.bc=<span class="string">'Rx'</span>;
-</pre><h2 id="33">Loads section</h2><p>Nodal loads</p><pre class="codeinput"><span class="comment">% &lt;Loads&gt;</span>
+</pre><h2 id="34">Loads section</h2><p>Nodal loads</p><pre class="codeinput"><span class="comment">% &lt;Loads&gt;</span>
 <span class="comment">%   &lt;nodal_load bc="x" node_set="set1"&gt;</span>
 <span class="comment">%       &lt;scale lc="1"&gt;1.0&lt;/scale&gt;</span>
 <span class="comment">%       &lt;value&gt;3.14&lt;/value&gt;</span>
@@ -357,7 +357,7 @@ febio_spec.Loads.nodal_load.ATTR.node_set=<span class="string">'set1'</span>;
 febio_spec.Loads.nodal_load.scale.ATTR.lc=1;
 febio_spec.Loads.nodal_load.scale.VAL=1;
 febio_spec.Loads.nodal_load.value.VAL=pi;
-</pre><h2 id="35">LoadData section</h2><pre class="codeinput"><span class="comment">% &lt;LoadData&gt;</span>
+</pre><h2 id="36">LoadData section</h2><pre class="codeinput"><span class="comment">% &lt;LoadData&gt;</span>
 <span class="comment">%   &lt;loadcurve id="1" [type="type" extend="extend"]&gt;</span>
 <span class="comment">%       &lt;point&gt; 0, 0 &lt;/point&gt;</span>
 <span class="comment">%       &lt;point&gt; 1, 1 &lt;/point&gt;</span>
@@ -367,7 +367,22 @@ febio_spec.Loads.nodal_load.value.VAL=pi;
 febio_spec.LoadData.loadcurve.ATTR.id=1;
 febio_spec.LoadData.loadcurve.ATTR.type=<span class="string">'linear'</span>;
 febio_spec.LoadData.loadcurve.point.VAL=[0 0; 1 1];
-</pre><h2 id="36">Output section</h2><p>Logfile</p><pre class="codeinput"><span class="comment">% &lt;Output&gt;</span>
+</pre><h2 id="37">Contact section</h2><pre class="codeinput">febio_spec.Contact.contact{1}.ATTR.surface_pair=febio_spec.Geometry.SurfacePair{1}.ATTR.name;
+febio_spec.Contact.contact{1}.ATTR.type=<span class="string">'sliding_with_gaps'</span>;
+febio_spec.Contact.contact{1}.penalty=100;
+febio_spec.Contact.contact{1}.auto_penalty=1;
+febio_spec.Contact.contact{1}.two_pass=0;
+febio_spec.Contact.contact{1}.laugon=0;
+febio_spec.Contact.contact{1}.tolerance=0.1;
+febio_spec.Contact.contact{1}.gaptol=0;
+febio_spec.Contact.contact{1}.minaug=0;
+febio_spec.Contact.contact{1}.maxaug=10;
+febio_spec.Contact.contact{1}.fric_coeff=0;
+febio_spec.Contact.contact{1}.fric_penalty=0;
+febio_spec.Contact.contact{1}.ktmult=1;
+febio_spec.Contact.contact{1}.seg_up=0;
+febio_spec.Contact.contact{1}.search_tol=0.01;
+</pre><h2 id="38">Output section</h2><p>Logfile</p><pre class="codeinput"><span class="comment">% &lt;Output&gt;</span>
 <span class="comment">%   &lt;logfile [file="&lt;log file&gt;"]&gt;</span>
 <span class="comment">%       &lt;node_data [attributes]&gt;item list&lt;/node_data&gt;</span>
 <span class="comment">%       &lt;element_data [attributes]&gt;item list&lt;/element_data&gt;</span>
@@ -400,13 +415,13 @@ febio_spec.Output.logfile.rigid_body_data{1}.ATTR.delim=<span class="string">','
 febio_spec.Output.plotfile.ATTR.type=<span class="string">'febio'</span>;
 febio_spec.Output.plotfile.var{1}.ATTR.type=<span class="string">'displacement'</span>;
 febio_spec.Output.plotfile.var{2}.ATTR.type=<span class="string">'stress'</span>;
-</pre><h2 id="39">Creating the FEBio input file</h2><p>You can use <tt>febioStruct2xml</tt> to write the xml data to a file AND/OR a domNode object (optional output). Leave the fileName variable empty to supress file export.</p><pre class="codeinput"><span class="comment">%Create file name for XML file</span>
+</pre><h2 id="41">Creating the FEBio input file</h2><p>You can use <tt>febioStruct2xml</tt> to write the xml data to a file AND/OR a domNode object (optional output). Leave the fileName variable empty to supress file export.</p><pre class="codeinput"><span class="comment">%Create file name for XML file</span>
 defaultFolder = fileparts(fileparts(mfilename(<span class="string">'fullpath'</span>)));
 savePath=fullfile(defaultFolder,<span class="string">'data'</span>,<span class="string">'temp'</span>);
 fileName=fullfile(savePath,<span class="string">'tempModel.feb'</span>);
 
 [domNode]=febioStruct2xml(febio_spec,fileName); <span class="comment">%Exporting to file and domNode</span>
-</pre><h2 id="40">Viewing the FEBio input file</h2><p>The <tt>febView</tt> command can be used to render and XML file in a figure window.</p><p>NOTE: The figure below does not render in documentation due to a MATLAB but (or limitation). The code <tt>[hFig]=febView(domNode);</tt> is therefore suppressed. (see also <tt>xmlView</tt>);</p><pre class="codeinput"><span class="comment">% [hFig]=febView(fileName);</span>
+</pre><h2 id="42">Viewing the FEBio input file</h2><p>The <tt>febView</tt> command can be used to render and XML file in a figure window.</p><p>NOTE: The figure below does not render in documentation due to a MATLAB but (or limitation). The code <tt>[hFig]=febView(domNode);</tt> is therefore suppressed. (see also <tt>xmlView</tt>);</p><pre class="codeinput"><span class="comment">% [hFig]=febView(fileName);</span>
 </pre><p><img vspace="5" hspace="5" src="gibbVerySmall.gif" alt=""> </p><p><i><b>GIBBON</b></i> <a href="www.gibboncode.org">www.gibboncode.org</a></p><p><i>Kevin Mattheus Moerman</i>, <a href="gibbon.toolbox@gmail.com">gibbon.toolbox@gmail.com</a></p><p><i><b>GIBBON footer text</b></i></p><p>License: <a href="https://github.com/gibbonCode/GIBBON/blob/master/LICENSE">https://github.com/gibbonCode/GIBBON/blob/master/LICENSE</a></p><p>GIBBON: The Geometry and Image-based Bioengineering add-On. A toolbox for image segmentation, image-based modeling, meshing, and finite element analysis.</p><p>Copyright (C) 2017  Kevin Mattheus Moerman</p><p>This program is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.</p><p>This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for more details.</p><p>You should have received a copy of the GNU General Public License along with this program.  If not, see <a href="http://www.gnu.org/licenses/">http://www.gnu.org/licenses/</a>.</p><p class="footer"><br><a href="https://www.mathworks.com/products/matlab/">Published with MATLAB&reg; R2018a</a><br></p></div><!--
 ##### SOURCE BEGIN #####
 %% febioStruct2xml
@@ -484,6 +499,11 @@ clear; close all; clc;
 % user manual. Not all of FEBio's functionality is covered in this
 % documentation example. However in principle all FEBio functionality
 % (based on XML content) can be coded for in a similar fashion. 
+
+%%
+% The remainder of this documentation will describe how various XML
+% components of the FEBio input file can be coded. A structure is created
+% with the name "febio_spec". 
 
 %% Set febio_spec version
 febio_spec.ATTR.version='2.5';
@@ -577,13 +597,13 @@ febio_spec.Globals.Solutes{2}.density=3.21;
 
 %% Material section
 
-febio_spec.Materials.material{1}.ATTR.type='Ogden';
-febio_spec.Materials.material{1}.ATTR.id=1;
-febio_spec.Materials.material{1}.c1=1;
-febio_spec.Materials.material{1}.m1=6;
-febio_spec.Materials.material{1}.c2=1;
-febio_spec.Materials.material{1}.m2=-6;
-febio_spec.Materials.material{1}.k=100;
+febio_spec.Material.material{1}.ATTR.type='Ogden';
+febio_spec.Material.material{1}.ATTR.id=1;
+febio_spec.Material.material{1}.c1=1;
+febio_spec.Material.material{1}.m1=6;
+febio_spec.Material.material{1}.c2=1;
+febio_spec.Material.material{1}.m2=-6;
+febio_spec.Material.material{1}.k=100;
 
 %% Geometry section
 
@@ -710,8 +730,8 @@ febio_spec.Geometry.ElementSet{1}.elem.ATTR.id=(1:5)';
 %   <master surface="surface1"/>
 %   <slave surface="surface2"/>
 % </SurfacePair>
-
-febio_spec.Geometry.SurfacePair{1}.master.ATTR.surface='Suface1';
+febio_spec.Geometry.SurfacePair{1}.ATTR.name='Contact1';
+febio_spec.Geometry.SurfacePair{1}.master.ATTR.surface='Surface1';
 febio_spec.Geometry.SurfacePair{1}.slave.ATTR.surface='Surface2';
 
 %% MeshData section
@@ -849,6 +869,24 @@ febio_spec.Loads.nodal_load.value.VAL=pi;
 febio_spec.LoadData.loadcurve.ATTR.id=1;
 febio_spec.LoadData.loadcurve.ATTR.type='linear';
 febio_spec.LoadData.loadcurve.point.VAL=[0 0; 1 1];
+
+%% Contact section
+
+febio_spec.Contact.contact{1}.ATTR.surface_pair=febio_spec.Geometry.SurfacePair{1}.ATTR.name;
+febio_spec.Contact.contact{1}.ATTR.type='sliding_with_gaps';
+febio_spec.Contact.contact{1}.penalty=100;
+febio_spec.Contact.contact{1}.auto_penalty=1;
+febio_spec.Contact.contact{1}.two_pass=0;
+febio_spec.Contact.contact{1}.laugon=0;
+febio_spec.Contact.contact{1}.tolerance=0.1;
+febio_spec.Contact.contact{1}.gaptol=0;
+febio_spec.Contact.contact{1}.minaug=0;
+febio_spec.Contact.contact{1}.maxaug=10;
+febio_spec.Contact.contact{1}.fric_coeff=0;
+febio_spec.Contact.contact{1}.fric_penalty=0;
+febio_spec.Contact.contact{1}.ktmult=1;
+febio_spec.Contact.contact{1}.seg_up=0;
+febio_spec.Contact.contact{1}.search_tol=0.01;
 
 %% Output section 
 
