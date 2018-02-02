@@ -49,9 +49,18 @@ function [varargout]=cFigure(varargin)
 %
 % 2014/11/25 %Created
 % 2015/04/15 %Added vcw functionality
+% 2018/02/02 %Fixed bug in relation to groot units (e.g. figure size is
+% wrong if units are not pixels). 
 %------------------------------------------------------------------------
 
 %% Parse input and set defaults
+
+%For groot units to be pixels
+graphicalRoot=groot;
+grootUnits=graphicalRoot.Units;
+if ~strcmp(grootUnits,'pixels')
+    graphicalRoot.Units='pixels';
+end
 
 switch nargin
     case 0
@@ -171,7 +180,13 @@ end
 if nargout>0
     varargout{1}=hf;
 end
- 
+
+%%
+% Reset groot units if a change was needed
+if ~strcmp(grootUnits,'pixels')
+    graphicalRoot.Units=grootUnits;
+end
+
 %% 
 % _*GIBBON footer text*_ 
 % 

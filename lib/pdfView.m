@@ -1,37 +1,35 @@
-function [varargout]=xmlView(varargin)
+function [varargout]=pdfView(varargin)
 
-% function [hFig]=xmlView(xmlSpec,viewerOpt)
+% function [hFig]=pdfView(fileName,viewerOpt)
 %------------------------------------------------------------------------
-% View XML files using a brower embedded in a figure window or within
+% View PDF files using a brower embedded in a figure window or within
 % MATLAB brower. 
 %
 % Kevin Mattheus Moerman
 % gibbon.toolbox@gmail.com
 %
-% 2016/05/13 %Updated, renamed from febView to xmlView
-% 2017/08/18 %Created varargin with viewer option. Create temp file to
-% allow viewing of domNode. 
+% 2018/02/02 : Created based on xmlView
 %------------------------------------------------------------------------
 
 %% Parse input
 
 switch nargin
     case 1
-        xmlSpec=varargin{1};
+        fileName=varargin{1};
         viewerOpt=1; 
     case 2
-        xmlSpec=varargin{1};
+        fileName=varargin{1};
         viewerOpt=varargin{2};
 end
 
-if ischar(xmlSpec)
-    fileName=xmlSpec;
-else %Assuming xmlSpec is a domNode
-    domNode=xmlSpec; 
-    pathName=fullfile(fileparts(fileparts(mfilename('fullpath'))),'data','temp');
-    fileName=fullfile(pathName,'temp.xml');
-    xmlwrite_xerces(fileName,domNode);
-end
+%% Prepare html file
+
+pathName=fullfile(fileparts(fileparts(mfilename('fullpath'))),'data','temp');
+fileName_html=fullfile(pathName,'temp.html');
+
+T={['<embed src="',fileName,'" width="100%" height="100%" alt="pdf" type=''application/pdf''>']};
+
+cell2txtfile(fileName_html,T,0);
 
 %%
 
@@ -49,7 +47,7 @@ switch viewerOpt
         
         %Create browser
         browser = com.mathworks.mlwidgets.html.HTMLBrowserPanel;        
-        browser.setCurrentLocation(fileName);
+        browser.setCurrentLocation(fileName_html);
         
         %Embed browser
         posPanel = getpixelposition(hFig,true);
@@ -57,7 +55,7 @@ switch viewerOpt
         set(browserContainer,'Units','normalized');
         drawnow;
     case 2 %Broswer viewer
-        [~,hFig]=web(fileName);%,'-new');
+        [~,hFig]=web(fileName_html);%,'-new');
 end
 
 if nargout==1
