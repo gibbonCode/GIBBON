@@ -12,10 +12,10 @@ clear; close all; clc;
 % for |gpatch| are the faces (F), the vertices (V), the color description
 % (C), the edge color description CE, the transparancy (A), and the edge
 % width (L). 
-% The color description C can be: 
+% The color data descriptions C (or equivalently CE for edges) can be: 
 % 1) A string such as 'g' for green
 % 2) A triplet of RGD values e.g. [1 0 0] is blue
-% 3) A nx1 or a mx1 array of colormapped colors (where n=size(F,1) or m=size(V,1))
+% 3) A nx1 or a mx1 array of colormapped colors (where n=size(F,1) or m=size(V,1)) 
 % 4) (simiarl to 3) A nx3 or a mx3 RGB color value array for the faces or vertices respectively. 
 
 %% Examples
@@ -37,23 +37,31 @@ CF_rgb=abs(vertexToFaceMeasure(F,V)); %Color information for faces
 % Using patch graphics in MATLAB see documentation on |patch| for more information
 
 cFigure; 
-suptitle('Using patch')
-subplot(2,2,1); 
+subplot(2,3,1); 
+title('Single face and edge color');
 patch('Faces',F,'Vertices',V,'FaceColor','r','EdgeColor','g','FaceAlpha',0.5);
 axisGeom; 
 
-subplot(2,2,2);
+subplot(2,3,2);
+title('Colormapped face colors');
 patch('Faces',F,'Vertices',V,'FaceColor','flat','CData',CF,'EdgeColor','k','FaceAlpha',1);
-colormap gjet;
+colormap gjet; colorbar;
 axisGeom; 
 
-subplot(2,2,3);
-patch('Faces',F,'Vertices',V,'FaceColor','flat','CData',CV);
-colormap gjet; shading interp;
-axisGeom; 
-
-subplot(2,2,4);
+subplot(2,3,3);
+title('RGB driven face colors');
 patch('Faces',F,'Vertices',V,'FaceColor','flat','FaceVertexCData',CF_rgb,'EdgeColor','k','FaceAlpha',1,'LineWidth',3);
+axisGeom; 
+
+subplot(2,3,4);
+title('Colormapped edge colors');
+patch('Faces',F,'Vertices',V,'FaceColor',grayColor(0.5),'EdgeColor','flat','CData',CV,'LineWidth',3);
+colormap gjet; colorbar;
+axisGeom; 
+
+subplot(2,3,5);
+title('alpha mapping');
+patch('Faces',F,'Vertices',V,'FaceColor','g','FaceVertexAlphaData',CV,'EdgeColor','none','FaceAlpha','flat');
 axisGeom; 
 
 drawnow; 
@@ -62,23 +70,31 @@ drawnow;
 % Using |gpatch| shorthand alternative to |patch|
 
 cFigure; 
-suptitle('Using gpatch')
-subplot(2,2,1); 
+subplot(2,3,1); 
+title('Single face and edge color');
 gpatch(F,V,'r','g',0.5);
 axisGeom; 
 
-subplot(2,2,2);
+subplot(2,3,2);
+title('Colormapped face colors');
 gpatch(F,V,CF);
-colormap gjet;
+colormap gjet; colorbar;
 axisGeom; 
 
-subplot(2,2,3);
-gpatch(F,V,CV);
-colormap gjet; shading interp;
-axisGeom; 
-
-subplot(2,2,4);
+subplot(2,3,3);
+title('RGB driven face colors');
 gpatch(F,V,CF_rgb,'k',1,3);
+axisGeom; 
+
+subplot(2,3,4);
+title('Colormapped edge colors');
+gpatch(F,V,'kw',CV,1,3); %kw -> grayColor(0.5)
+colormap gjet; colorbar;
+axisGeom; 
+
+subplot(2,3,5);
+title('alpha mapping');
+gpatch(F,V,'g','none',CV);
 axisGeom; 
 
 drawnow; 

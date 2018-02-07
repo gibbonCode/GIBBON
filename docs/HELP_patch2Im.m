@@ -46,21 +46,6 @@ imOrigin=G.origin;
 %%
 % Plotting the results
 
-hf1=cFigure;
-subplot(1,2,1);
-title('Closed patch surface','FontSize',fontSize);
-xlabel('X','FontSize',fontSize);ylabel('Y','FontSize',fontSize); zlabel('Z','FontSize',fontSize);
-hold on;
-patch('Faces',F,'Vertices',V,'FaceColor',0.5*ones(1,3),'EdgeColor','k','FaceAlpha',faceAlpha1);
-camlight('headlight'); lighting flat;
-axis equal; view(3); axis tight;  grid on;  set(gca,'FontSize',fontSize);
-
-subplot(1,2,2);
-title('Patch data derived image data (3 slices)','FontSize',fontSize);
-xlabel('X','FontSize',fontSize);ylabel('Y','FontSize',fontSize); zlabel('Z','FontSize',fontSize);
-hold on;
-
-patch('Faces',F,'Vertices',V,'FaceColor',0.5*ones(1,3),'EdgeColor','none','FaceAlpha',faceAlpha2);
 L_plot=false(size(M));
 L_plot(:,:,round(size(M,3)/2))=1;
 L_plot(round(size(M,1)/2),:,:)=1;
@@ -69,11 +54,26 @@ L_plot=L_plot & ~isnan(M);
 [Fm,Vm,Cm]=ind2patch(L_plot,double(M),'v');
 [Vm(:,1),Vm(:,2),Vm(:,3)]=im2cart(Vm(:,2),Vm(:,1),Vm(:,3),voxelSize*ones(1,3));
 Vm=Vm+imOrigin(ones(size(Vm,1),1),:);
-patch('Faces',Fm,'Vertices',Vm,'FaceColor','flat','CData',Cm,'EdgeColor','k','FaceAlpha',faceAlpha1);
+
+cFigure;
+subplot(1,2,1); hold on;
+title('Closed patch surface','FontSize',fontSize);
+
+gpatch(F,V,'kw','k',faceAlpha1);
+
+camlight('headlight'); 
+axisGeom(gca,fontSize);
+
+subplot(1,2,2); hold on;
+title('Patch data derived image data (3 slices)','FontSize',fontSize);
+
+gpatch(F,V,'kw','none',faceAlpha2);
+gpatch(Fm,Vm,Cm,'k',faceAlpha1);
 
 colormap gjet; icolorbar;
-camlight('headlight'); lighting flat;
-axis equal; view(3); axis tight;  grid on;  set(gca,'FontSize',fontSize);
+camlight('headlight'); 
+axisGeom(gca,fontSize);
+
 drawnow;
 
 %% EXAMPLE 2: CONVERTING PATCH DATA WITH A SINGLE BOUNDARY TO AN IMAGE
@@ -96,21 +96,6 @@ imSiz=imSiz([2 1 3]); %Image size (x, y corresponds to j,i in image coordinates,
 %%
 % Plotting the results
 
-hf1=cFigure;
-subplot(1,2,1);
-title('Closed patch surface','FontSize',fontSize);
-xlabel('X','FontSize',fontSize);ylabel('Y','FontSize',fontSize); zlabel('Z','FontSize',fontSize);
-hold on;
-patch('Faces',F,'Vertices',V,'FaceColor',0.5*ones(1,3),'EdgeColor','none','FaceAlpha',faceAlpha1);
-camlight('headlight'); lighting flat;
-axis equal; view(3); axis tight;  grid on;  set(gca,'FontSize',fontSize);
-
-subplot(1,2,2);
-title('Patch data derived image data (3 slices)','FontSize',fontSize);
-xlabel('X','FontSize',fontSize);ylabel('Y','FontSize',fontSize); zlabel('Z','FontSize',fontSize);
-hold on;
-
-patch('Faces',F,'Vertices',V,'FaceColor',0.5*ones(1,3),'EdgeColor','none','FaceAlpha',faceAlpha2);
 L_plot=false(size(M));
 L_plot(:,:,round(size(M,3)/2))=1;
 L_plot(round(size(M,1)/2),:,:)=1;
@@ -119,11 +104,26 @@ L_plot=L_plot & ~isnan(M);
 [Fm,Vm,Cm]=ind2patch(L_plot,double(M),'v');
 [Vm(:,1),Vm(:,2),Vm(:,3)]=im2cart(Vm(:,2),Vm(:,1),Vm(:,3),voxelSize*ones(1,3));
 Vm=Vm+imOrigin(ones(size(Vm,1),1),:);
-patch('Faces',Fm,'Vertices',Vm,'FaceColor','flat','CData',Cm,'EdgeColor','k','FaceAlpha',faceAlpha1);
+
+cFigure;
+subplot(1,2,1); hold on;
+title('Closed patch surface','FontSize',fontSize);
+
+gpatch(F,V,'kw','k',faceAlpha1);
+
+camlight('headlight'); 
+axisGeom(gca,fontSize);
+
+subplot(1,2,2); hold on;
+title('Patch data derived image data (3 slices)','FontSize',fontSize);
+
+gpatch(F,V,'kw','none',faceAlpha2);
+gpatch(Fm,Vm,Cm,'k',faceAlpha1);
 
 colormap gjet; icolorbar;
-camlight('headlight'); lighting flat;
-axis equal; view(3); axis tight;  grid on;  set(gca,'FontSize',fontSize);
+camlight('headlight'); 
+axisGeom(gca,fontSize);
+
 drawnow;
 
 %% EXAMPLE 3: CONVERTING PATCH DATA WITH A MULTIPLE BOUNDARIES AND PATCH TYPES TO AN IMAGE
@@ -161,22 +161,6 @@ imSiz=imSiz([2 1 3]); %Image size (x, y corresponds to j,i in image coordinates,
 %%
 % Plotting the results
 
-hf1=cFigure;
-subplot(1,2,1);
-title('Closed patch surface','FontSize',fontSize);
-xlabel('X','FontSize',fontSize);ylabel('Y','FontSize',fontSize); zlabel('Z','FontSize',fontSize);
-hold on;
-patch('Faces',F,'Vertices',V,'FaceColor','flat','CData',C,'EdgeColor','none','FaceAlpha',faceAlpha2);
-camlight('headlight'); lighting flat;
-axis equal; view(3); axis tight;  grid on;  set(gca,'FontSize',fontSize);
-colormap gjet; colorbar; caxis([0 max(C(:))]);
-
-subplot(1,2,2);
-title('Patch data derived image data (3 slices)','FontSize',fontSize);
-xlabel('X','FontSize',fontSize);ylabel('Y','FontSize',fontSize); zlabel('Z','FontSize',fontSize);
-hold on;
-
-% patch('Faces',F,'Vertices',V,'FaceColor','flat','CData',C,'EdgeColor','none','FaceAlpha',faceAlpha2);
 L_plot=false(size(M));
 L_plot(:,:,round(size(M,3)/2))=1;
 L_plot(round(size(M,1)/2),:,:)=1;
@@ -185,11 +169,26 @@ L_plot=L_plot & ~isnan(M);
 [Fm,Vm,Cm]=ind2patch(L_plot,double(M),'v');
 [Vm(:,1),Vm(:,2),Vm(:,3)]=im2cart(Vm(:,2),Vm(:,1),Vm(:,3),voxelSize*ones(1,3));
 Vm=Vm+imOrigin(ones(size(Vm,1),1),:);
-patch('Faces',Fm,'Vertices',Vm,'FaceColor','flat','CData',Cm,'EdgeColor','k','FaceAlpha',faceAlpha1);
 
-colormap gjet; icolorbar; %caxis([0 max(C(:))]);
-camlight('headlight'); lighting flat;
-axis equal; view(3); axis tight;  grid on;  set(gca,'FontSize',fontSize);
+cFigure;
+subplot(1,2,1); hold on;
+title('Closed patch surface','FontSize',fontSize);
+
+gpatch(F,V,C,'none',faceAlpha2);
+
+camlight('headlight'); 
+axisGeom(gca,fontSize);
+
+subplot(1,2,2); hold on;
+title('Patch data derived image data (3 slices)','FontSize',fontSize);
+
+gpatch(F,V,'kw','none',faceAlpha2);
+gpatch(Fm,Vm,Cm,'k',faceAlpha1);
+
+colormap gjet; icolorbar;
+camlight('headlight'); 
+axisGeom(gca,fontSize);
+
 drawnow;
 
 %%

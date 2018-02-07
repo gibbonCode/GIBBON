@@ -12,8 +12,8 @@ function [varargout]=geoSphere(varargin)
 % Kevin Mattheus Moerman
 % gibbon.toolbox@gmail.com
 % 
-% 08/04/2013 Updated for GIBBON
-% 12/08/2014 Added custom solidType and updated using varargin, varargout
+% 2013/04/08 Updated for GIBBON
+% 2014/08/12 Added custom solidType and updated using varargin, varargout
 % 2015/04/25 Added dodecahedron solidType
 %------------------------------------------------------------------------
 

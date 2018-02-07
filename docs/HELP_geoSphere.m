@@ -30,7 +30,7 @@ edgeWidth=1.5;
 % coordinates of the vertices (Vs) (this output is suppressed in the
 % example below).
 
-hf=cFigure; % Open figure for plotting
+cFigure; % Open figure for plotting
 
 %Defining triangulated geodesic domes with different densities
 r=1; %sphere radius
@@ -55,10 +55,9 @@ drawnow;
 %e.g. using a cube
 solidTypes=1:5;
 
-hf=cFigure; % Open figure for plotting
+cFigure; % Open figure for plotting
 titleCell={'tetrahedron','cube','octahedron','icosahedron','dodecahedron'};
 pColors=gjet(numel(solidTypes));
-q=1;
 for q=solidTypes
     [F,V,~]=geoSphere(0,r,q); 
     subplot(2,3,q); hold on;

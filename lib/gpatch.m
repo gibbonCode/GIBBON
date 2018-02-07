@@ -1,5 +1,27 @@
 function [varargout]=gpatch(varargin)
 
+% function [h]=gpatch(F,V,C,CE,A,L)
+% ------------------------------------------------------------------------
+% This function is a short-hand version of the |patch| command. The inputs
+% for |gpatch| are the faces (F), the vertices (V), the color description
+% (C), the edge color description CE, the transparancy (A), and the edge
+% width (L). 
+% The color data descriptions C (or equivalently CE for edges) can be: 
+% 1) A string such as 'g' for green
+% 2) A triplet of RGD values e.g. [1 0 0] is blue
+% 3) A nx1 or a mx1 array of colormapped colors (where n=size(F,1) or
+% m=size(V,1)) 
+% 4) (simiarl to 3) A nx3 or a mx3 RGB color value array for the faces or
+% vertices respectively. 
+%
+%
+% Kevin Mattheus Moerman
+% gibbon.toolbox@gmail.com
+% 
+% 2017 
+% 2018/02/07 Added support for colormapped edges
+%------------------------------------------------------------------------
+
 switch nargin
     case 1
         error('Not enough input arguments, provide at least faces and vertices');
@@ -46,6 +68,10 @@ if isempty(C)
     C='g';
 end
 
+if isempty(CE)
+    C='k';
+end
+
 if isa(F,'cell') %Assume all entries are cells defining multiple patch data sets
     for q=1:1:numel(F)
         hp(q)=plotPatch(F{q},V{q},C{q},CE{q},A{q},L);
@@ -74,18 +100,43 @@ if ischar(C) %Plain single color
     end
 elseif size(C,2)==1
     argInPatch.FaceColor='flat';
-    %     if size(C,1)>size(F,1) %Assume vertex shading
-    %         argInPatch.FaceVertexCData=C;
-    %     else %Assume face shading
     argInPatch.CData=double(C);
-    %     end
 elseif size(C,2)==3 && size(C,1)==1 %Assume single RGB level
     argInPatch.FaceColor=double(C);
 elseif size(C,2)==3 && size(C,1)>1 %Assume RGB array
     argInPatch.FaceColor='flat';
     argInPatch.FaceVertexCData=double(C);
 else
-    error('Invalid color data input');
+    error('Invalid face-vertex color data input');
+end
+
+if ischar(CE) %Plain single color
+    argInPatch.EdgeColor=CE;
+    if strcmp(CE,'kw')
+        argInPatch.EdgeColor=grayColor(0.5);
+    end
+elseif size(CE,2)==1
+    if size(CE,1)>1
+        if size(CE,1)==size(F,1)
+            [CE]=faceToVertexMeasure(F,V,CE);
+            argInPatch.EdgeColor='flat';
+            argInPatch.CData=double(CE);
+        end
+        if size(CE,1)==size(V,1)            
+            argInPatch.EdgeColor='flat';
+            argInPatch.CData=double(CE);
+        end
+    else
+        argInPatch.EdgeColor='flat';
+        argInPatch.CData=double(CE)*ones(size(V,1),1);
+    end    
+elseif size(CE,2)==3 && size(CE,1)==1 %Assume single RGB level
+    argInPatch.EdgeColor=double(CE);
+elseif size(CE,2)==3 && size(CE,1)>1 %Assume RGB array
+    argInPatch.EdgeColor='flat';
+    argInPatch.FaceVertexCData=double(CE);
+else
+    error('Invalid edge color data input');
 end
 
 if numel(A)==1 %Plain single alpha
@@ -101,6 +152,7 @@ if ~isempty(L)
     argInPatch.LineWidth=L;
 end
 
+size(argInPatch.EdgeColor)
 hp=patch(argInPatch);
 
 end
