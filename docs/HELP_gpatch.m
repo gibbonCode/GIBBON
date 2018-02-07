@@ -5,7 +5,7 @@
 clear; close all; clc;
 
 %% Syntax
-% |[hp]=gpatch(F,V,C,CE,A,L);
+% |[hp]=gpatch(F,V,C,CE,A,L)|;
 
 %% Description
 % This function is a short-hand version of the |patch| command. The inputs
