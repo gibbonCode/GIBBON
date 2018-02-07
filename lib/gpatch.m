@@ -152,7 +152,6 @@ if ~isempty(L)
     argInPatch.LineWidth=L;
 end
 
-size(argInPatch.EdgeColor)
 hp=patch(argInPatch);
 
 end
