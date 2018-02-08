@@ -12,16 +12,31 @@ allFiles = dir(fullfile(helpPath,'*.html'));
 allFiles={allFiles(1:end).name};
 allFiles=sort(allFiles(:));
 
-logicDemo=~cellfun(@isempty,strfind(allFiles,'DEMO_'));
+% try
+    logicDemo=contains(allFiles,'DEMO_');
+% catch 
+%     logicDemo=~cellfun(@isempty,strfind(allFiles,'DEMO_'));
+% end
+
 demoFiles=allFiles(logicDemo);
 numDemoFiles=numel(demoFiles);
 
-logicHelp=~cellfun(@isempty,strfind(allFiles,'HELP_'));
+% try    
+    logicHelp=contains(allFiles,'HELP_');
+% catch 
+%     logicHelp=~cellfun(@isempty,strfind(allFiles,'HELP_'));
+% end
+
 helpFiles=allFiles(logicHelp);
 numHelpFiles=numel(helpFiles);
 
-indStart=find(~cellfun(@isempty,strfind(allFiles,'GIBBON_product_page')));
-startFile=allFiles{indStart};
+% try    
+    logicStart=contains(allFiles,'GIBBON_product_page');
+% catch 
+%     logicStart=~cellfun(@isempty,strfind(allFiles,'GIBBON_product_page'));
+% end
+
+startFile=allFiles{logicStart};
 
 %% ADJUST helptoc.XML
 %TOP SECTION
@@ -32,30 +47,30 @@ T_top(3,1)={'    <tocitem target="GIBBON.html">The GIBBON Toolbox'};
 
 %GETTING STARTED SECTION
 T_start=cell(3,1);
-T_start{1}=['        <tocitem target="GettingStarted.html" image="HelpIcon.GETTING_STARTED">Getting Started'];
+T_start{1}='        <tocitem target="GettingStarted.html" image="HelpIcon.GETTING_STARTED">Getting Started';
 T_start{2}=['            <tocitem target="',startFile,'">',startFile(1:end-5),'</tocitem>',startFile(1:end-4)];
-T_start{3}=['        </tocitem>'];
+T_start{3}='        </tocitem>';
 
 %FUNCTION HELP
 T_help=cell(numHelpFiles+2,1);
-T_help{1}=['        <tocitem target="funclist.html" image="HelpIcon.FUNCTION">Functions'];
+T_help{1}='        <tocitem target="funclist.html" image="HelpIcon.FUNCTION">Functions';
 for q=1:1:numHelpFiles
     currentFile=helpFiles{q};
     currentName=currentFile(1:end-5);
     T_help{q+1}=['            <tocitem target="',currentFile,'">',currentName(6:end),'</tocitem>',currentName];
 end
-T_help{end}=['        </tocitem>'];
+T_help{end}='        </tocitem>';
 
 
 %DEMO EXAMPLES
 T_demo=cell(numDemoFiles+2,1);
-T_demo{1}=['        <tocitem target="gibbonExampes.html" image="HelpIcon.EXAMPLES">Examples'];
+T_demo{1}='        <tocitem target="gibbonExampes.html" image="HelpIcon.EXAMPLES">Examples';
 for q=1:1:numDemoFiles
     currentFile=demoFiles{q};
     currentName=currentFile(1:end-5);
     T_demo{q+1}=['            <tocitem target="',currentFile,'">',currentName(6:end),'</tocitem>',currentName];
 end
-T_demo{end}=['        </tocitem>'];
+T_demo{end}='        </tocitem>';
 
 %BOTTOM SECTION
 T_bottom={};
