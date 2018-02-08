@@ -3,7 +3,7 @@ function varargout=plotV(V,varargin)
 if ~isempty(V)
     nDims=size(V,2);
     
-    %Ad zeros if input is 2D
+    %Add zeros if input is 2D
     if nDims==2
         V(:,3)=0;
     end

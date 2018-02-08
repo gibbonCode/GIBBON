@@ -1,6 +1,6 @@
 function [F,V]=stanford_bunny(varargin)
 
-% [F,V]=stanford_bunny
+% [F,V]=stanford_bunny(modelID)
 % ------------------------------------------------------------------------
 %
 % This function generates patch data (faces=F and vertices=V) for the

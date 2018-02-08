@@ -113,8 +113,7 @@ if numC>1
     imSiz=size(M);
     voxelSize=G.voxelSize;
     imOrigin=G.origin;
-    
-    for q=2:1:numC;
+    for q=2:1:numC
         [Fs,Vs]=removeNotIndexed(F(C==C_uni_sort(q),:),V);
         [M_s]=triSurf2Im(Fs,Vs,voxelSize,imOrigin,imSiz);
         M(M_s==1)=0; %Boundary voxels
@@ -125,7 +124,6 @@ end
 varargout{1}=M;
 varargout{2}=G;
 varargout{3}=bwLabels;
-
  
 %% 
 % _*GIBBON footer text*_ 

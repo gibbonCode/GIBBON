@@ -135,8 +135,7 @@ G.origin=imOrigin;
 labeledImage(M==0)=NaN;
 varargout{1}=M;
 varargout{2}=G;
-varargout{3}=labeledImage;
-    
+varargout{3}=labeledImage;    
  
 %% 
 % _*GIBBON footer text*_ 

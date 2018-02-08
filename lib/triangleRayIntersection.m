@@ -129,8 +129,7 @@ detMat   = sum(E1.*Pvec,2);   % determinant of the matrix M = dot(E1,Pvec)
 
 logicParalel = (abs(detMat)<optStruct.eps);    % if determinant is near zero then ray lies in the plane of the triangle
 
-if all(logicParalel); % if all parallel than no intersections
-%     disp('PAR');
+if all(logicParalel) % if all parallel than no intersections
     return;
 end
 
@@ -144,15 +143,14 @@ switch optStruct.border
 end
 
 %% Different behavior depending on one or two sided triangles
-if strcmpi(optStruct.triangle,'two sided'),          % treats triangles as two sided    
+if strcmpi(optStruct.triangle,'two sided')          % treats triangles as two sided    
     
     detMat(logicParalel) = 1;                       % change to avoid division by zero
     
     U_bar  = sum(Tvec.*Pvec,2)./detMat;             % calculate U parameter used to test bounds
     L_ok = (~logicParalel & U_bar>=-zeroLim & U_bar<=1.0+zeroLim);% mask which allows performing next 2 operations only when needed
     
-    if ~any(L_ok); % if all ray/plane intersections are outside the triangle than no intersections
-%         disp('OK');
+    if ~any(L_ok) % if all ray/plane intersections are outside the triangle than no intersections
         return;
     end
     
@@ -167,7 +165,7 @@ if strcmpi(optStruct.triangle,'two sided'),          % treats triangles as two s
     
     T(L_ok,:) = sum(E2(L_ok,:).*Qvec,2)./detMat(L_ok,:);
     
-    if ~(strcmpi(optStruct.ray,'ray'));
+    if ~(strcmpi(optStruct.ray,'ray'))
 %         disp('RAY2');
         L_intersect = (L_intersect & T>=-zeroLim & T<=1.0+zeroLim);
     end
@@ -177,7 +175,7 @@ else % treats triangles as one sided
     U_bar = sum(Tvec.*Pvec,2);                   % calculate U parameter used to test bounds
     L_ok = (detMat>optStruct.eps & U_bar>=0.0 & U_bar<=detMat);        % mask which allows performing next 2 operations only when needed
     
-    if ~any(L_ok);% if all ray/plane intersections are outside the triangle than no intersections
+    if ~any(L_ok) % if all ray/plane intersections are outside the triangle than no intersections
         return;
     end
     
@@ -196,7 +194,7 @@ else % treats triangles as one sided
     U_bar = U_bar.*inv_det;
     V_bar = V_bar.*inv_det;
     
-    if ~(strcmpi(optStruct.ray,'ray'));
+    if ~(strcmpi(optStruct.ray,'ray'))
         L_intersect = (L_intersect & T>=-zeroLim & T<=1.0+zeroLim); % intersection between origin and destination
     end
 end
