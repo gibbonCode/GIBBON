@@ -32,7 +32,7 @@ function [regionLabel]=simplexImIntersect(varargin)
 % gibbon.toolbox@gmail.com
 % 
 % 2018/02/07:  Created
-% 2018/02/08:  Expanded to allow for labelling and use with multi-region
+% 2018/02/08:  Expanded to allow for labeling and use with multi-region
 % simplices. 
 %------------------------------------------------------------------------
 
