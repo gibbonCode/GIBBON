@@ -38,7 +38,7 @@ Mq(1:end,1:end,size(M,3):end)=flipdim(Mq(1:end,1:end,1:size(M,3)),3);
 % image segmentation, image-based modeling, meshing, and finite element
 % analysis.
 % 
-% Copyright (C) 2017  Kevin Mattheus Moerman
+% Copyright (C) 2018  Kevin Mattheus Moerman
 % 
 % This program is free software: you can redistribute it and/or modify
 % it under the terms of the GNU General Public License as published by

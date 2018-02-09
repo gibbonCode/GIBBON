@@ -94,7 +94,7 @@ febio_spec.Control
 % image segmentation, image-based modeling, meshing, and finite element
 % analysis.
 % 
-% Copyright (C) 2017  Kevin Mattheus Moerman
+% Copyright (C) 2018  Kevin Mattheus Moerman
 % 
 % This program is free software: you can redistribute it and/or modify
 % it under the terms of the GNU General Public License as published by
@@ -108,4 +108,3 @@ febio_spec.Control
 % 
 % You should have received a copy of the GNU General Public License
 % along with this program.  If not, see <http://www.gnu.org/licenses/>.
-

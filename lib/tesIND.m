@@ -147,7 +147,7 @@ varargout{3}=IND_FF;
 % image segmentation, image-based modeling, meshing, and finite element
 % analysis.
 % 
-% Copyright (C) 2017  Kevin Mattheus Moerman
+% Copyright (C) 2018  Kevin Mattheus Moerman
 % 
 % This program is free software: you can redistribute it and/or modify
 % it under the terms of the GNU General Public License as published by

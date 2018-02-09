@@ -218,7 +218,7 @@ varargout{4}=CT_c; %Four colors 1=input, 2=base for offset, 3=sides for offset, 
 % image segmentation, image-based modeling, meshing, and finite element
 % analysis.
 % 
-% Copyright (C) 2017  Kevin Mattheus Moerman
+% Copyright (C) 2018  Kevin Mattheus Moerman
 % 
 % This program is free software: you can redistribute it and/or modify
 % it under the terms of the GNU General Public License as published by

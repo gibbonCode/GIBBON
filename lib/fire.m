@@ -36,7 +36,7 @@ cMap=[0,0,0;0.112,0.0130,0;0.213,0.0240,0.00100;0.323,0.0370,0.00100;...
 % image segmentation, image-based modeling, meshing, and finite element
 % analysis.
 % 
-% Copyright (C) 2017  Kevin Mattheus Moerman
+% Copyright (C) 2018  Kevin Mattheus Moerman
 % 
 % This program is free software: you can redistribute it and/or modify
 % it under the terms of the GNU General Public License as published by
