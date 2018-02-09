@@ -1,6 +1,8 @@
-%% DEMO_febio_0051_cube_body_load
-% Below is a demonstration for:
-% * Building geometry for a cube with hexahedral elements
+%% DEMO_febio_0009_cube_discrete_springs
+% Below is a demonstration for: 
+% 
+% * Building geometry for a cube with hexahedral elements and discrete
+% elements on the edges
 % * Defining the boundary conditions 
 % * Coding the febio structure
 % * Running the model
@@ -9,13 +11,15 @@
 %% Keywords: 
 % * febio_spec version 2.5
 % * febio, FEBio
-% * body load
-% * hexahedral elements, hex8
+% * discrete elements
+% * springs
+% * compression, tension, compressive, tensile
+% * displacement control, displacement boundary condition
 % * cube, box, rectangular
 % * static, solid
 % * hyperelastic, Ogden
-% * Displacement logfile
-% * Force logfile
+% * displacement logfile
+% * Stress logfile
 
 %%
 
@@ -45,22 +49,30 @@ cubeSize=10;
 sampleWidth=cubeSize; %Width 
 sampleThickness=cubeSize; %Thickness 
 sampleHeight=cubeSize; %Height
-pointSpacings=2*ones(1,3); %Desired point spacing between nodes
+pointSpacings=1*ones(1,3); %Desired point spacing between nodes
 numElementsWidth=round(sampleWidth/pointSpacings(1)); %Number of elemens in dir 1
 numElementsThickness=round(sampleThickness/pointSpacings(2)); %Number of elemens in dir 2
 numElementsHeight=round(sampleHeight/pointSpacings(3)); %Number of elemens in dir 3
 
 %Define applied displacement 
-bodyLoadType='const'; % or 'non-const'
+appliedStrain=0.2; %Linear strain (Only used to compute applied stretch)
+loadingOption='compression'; % or 'tension'
+switch loadingOption
+    case 'compression'
+        stretchLoad=1-appliedStrain; %The applied stretch for uniaxial loading
+    case 'tension'
+        stretchLoad=1+appliedStrain; %The applied stretch for uniaxial loading
+end
+displacementMagnitude=(stretchLoad*sampleHeight)-sampleHeight; %The displacement magnitude
 
 %Material parameter set
-c1=1e-3; %Shear-modulus-like parameter
-m1=8; %Material parameter setting degree of non-linearity
-k_factor=1e2; %Bulk modulus factor 
-k=c1*k_factor; %Bulk modulus
+c_spring=1e-3; %Spring "Youngs Modulus" 
+c1=c_spring/100000; %Solid shear-modulus-like parameter
+m1=2; %Solid material parameter setting degree of non-linearity
+k=c1; %Solid bulk modulus
 
 % FEA control settings
-numTimeSteps=50; %Number of time steps desired
+numTimeSteps=10; %Number of time steps desired
 max_refs=25; %Max reforms
 max_ups=0; %Set to zero to use full-Newton iterations
 opt_iter=6; %Optimum number of iterations
@@ -87,6 +99,10 @@ V=meshStruct.nodes; %The nodes (vertices)
 Fb=meshStruct.facesBoundary; %The boundary faces
 Cb=meshStruct.boundaryMarker; %The "colors" or labels for the boundary faces
 elementMaterialIndices=ones(size(E,1),1); %Element material indices
+F=meshStruct.faces; %Model faces
+
+%Get edges
+edgeSet=patchEdges(F,1);
 
 %% 
 % Plotting model boundary surfaces and a cut view
@@ -100,9 +116,10 @@ colormap(gjet(6)); icolorbar;
 axisGeom(gca,fontSize);
 
 hs=subplot(1,2,2); hold on; 
-title('Cut view of solid mesh','FontSize',fontSize);
-optionStruct.hFig=[hFig hs];
-meshView(meshStruct,optionStruct);
+title('Model edges for spring features','FontSize',fontSize);
+
+gpatch(edgeSet,V,'none','b'); 
+
 axisGeom(gca,fontSize);
 
 drawnow;
@@ -130,11 +147,12 @@ title('Boundary conditions','FontSize',fontSize);
 xlabel('X','FontSize',fontSize); ylabel('Y','FontSize',fontSize); zlabel('Z','FontSize',fontSize);
 hold on;
 
-gpatch(Fb,V,'kw','k',0.5);
+gpatch(Fb,V,'kw','none',0.5);
 
-hl(1)=plotV(V(bcSupportList,:),'b.','MarkerSize',markerSize);
+hl(1)=plotV(V(bcSupportList,:),'r.','MarkerSize',markerSize);
+hl(2)=plotV(V(bcPrescribeList,:),'k.','MarkerSize',markerSize);
 
-legend(hl,{'BC support'});
+legend(hl,{'BC full support','BC z prescribe'});
 
 axisGeom(gca,fontSize);
 camlight headlight; 
@@ -165,14 +183,28 @@ febio_spec.Control.time_stepper.opt_iter=opt_iter;
 febio_spec.Control.max_refs=max_refs;
 febio_spec.Control.max_ups=max_ups;
 
-%Material section
-febio_spec.Material.material{1}.ATTR.type='Ogden';
+% Material section
+febio_spec.Material.material{1}.ATTR.type='Ogden unconstrained';
 febio_spec.Material.material{1}.ATTR.id=1;
 febio_spec.Material.material{1}.c1=c1;
 febio_spec.Material.material{1}.m1=m1;
 febio_spec.Material.material{1}.c2=c1;
 febio_spec.Material.material{1}.m2=-m1;
-febio_spec.Material.material{1}.k=k;
+febio_spec.Material.material{1}.cp=k;
+
+% Discrete section
+febio_spec.Discrete.discrete_material{1}.ATTR.id=1; 
+febio_spec.Discrete.discrete_material{1}.ATTR.type='linear spring'; 
+febio_spec.Discrete.discrete_material{1}.E=c_spring; 
+febio_spec.Discrete.discrete{1}.ATTR.dmat=1; 
+febio_spec.Discrete.discrete{1}.ATTR.discrete_set='springs1'; 
+
+% febio_spec.Discrete.discrete_material{1}.ATTR.id=1; 
+% febio_spec.Discrete.discrete_material{1}.ATTR.type='nonlinear spring'; 
+% febio_spec.Discrete.discrete_material{1}.force.ATTR.lc=1; 
+% febio_spec.Discrete.discrete_material{1}.force.VAL=1; 
+% febio_spec.Discrete.discrete{1}.ATTR.dmat=1; 
+% febio_spec.Discrete.discrete{1}.ATTR.discrete_set='springs1';
 
 %Geometry section
 % -> Nodes
@@ -191,6 +223,13 @@ febio_spec.Geometry.Elements{1}.elem.VAL=E;
 febio_spec.Geometry.NodeSet{1}.ATTR.name='bcSupportList';
 febio_spec.Geometry.NodeSet{1}.VAL=bcSupportList(:);
 
+febio_spec.Geometry.NodeSet{2}.ATTR.name='bcPrescribeList';
+febio_spec.Geometry.NodeSet{2}.VAL=bcPrescribeList(:);
+
+% -> DiscreteSet
+febio_spec.Geometry.DiscreteSet{1}.ATTR.name='springs1';
+febio_spec.Geometry.DiscreteSet{1}.delem.VAL=edgeSet;
+
 %Boundary condition section 
 % -> Fix boundary conditions
 febio_spec.Boundary.fix{1}.ATTR.bc='x';
@@ -200,43 +239,27 @@ febio_spec.Boundary.fix{2}.ATTR.node_set=febio_spec.Geometry.NodeSet{1}.ATTR.nam
 febio_spec.Boundary.fix{3}.ATTR.bc='z';
 febio_spec.Boundary.fix{3}.ATTR.node_set=febio_spec.Geometry.NodeSet{1}.ATTR.name;
 
-%Loads section
-% -> Body load
-switch bodyLoadType
-    case 'const'
-        febio_spec.Loads.body_load.ATTR.type='const';
-        febio_spec.Loads.body_load.x.ATTR.lc=1;
-        febio_spec.Loads.body_load.x.VAL=1e-5;
-        febio_spec.Loads.body_load.y.ATTR.lc=2;
-        febio_spec.Loads.body_load.y.VAL=1e-5;
-        febio_spec.Loads.body_load.z.ATTR.lc=3;
-        febio_spec.Loads.body_load.z.VAL=1e-5;
-    case 'non-const'
-        febio_spec.Loads.body_load.ATTR.type='non-const';
-        febio_spec.Loads.body_load.x.ATTR.lc=1;
-        febio_spec.Loads.body_load.x.VAL='-0.00001*x';
-        febio_spec.Loads.body_load.y.ATTR.lc=2;
-        febio_spec.Loads.body_load.y.VAL='0.000002*y';
-        febio_spec.Loads.body_load.z.ATTR.lc=3;
-        febio_spec.Loads.body_load.z.VAL='0.000006*z';
-end
-        
-%LoadData section
-% -> load curves
-febio_spec.LoadData.loadcurve{1}.ATTR.id=1;
-febio_spec.LoadData.loadcurve{1}.ATTR.type='linear';
-febio_spec.LoadData.loadcurve{1}.point.VAL=[0 0; 1 1];
-febio_spec.LoadData.loadcurve{1}.ATTR.extend='constant';
+% -> Prescribe boundary conditions
+febio_spec.Boundary.prescribe{1}.ATTR.bc='z';
+febio_spec.Boundary.prescribe{1}.ATTR.node_set=febio_spec.Geometry.NodeSet{2}.ATTR.name;
+febio_spec.Boundary.prescribe{1}.scale.ATTR.lc=1;
+febio_spec.Boundary.prescribe{1}.scale.VAL=1;
+febio_spec.Boundary.prescribe{1}.relative=1;
+febio_spec.Boundary.prescribe{1}.value=displacementMagnitude;
 
-febio_spec.LoadData.loadcurve{2}.ATTR.id=2;
-febio_spec.LoadData.loadcurve{2}.ATTR.type='linear';
-febio_spec.LoadData.loadcurve{2}.point.VAL=[0 0; 1 1];
-febio_spec.LoadData.loadcurve{2}.ATTR.extend='constant';
+febio_spec.Boundary.prescribe{2}.ATTR.bc='x';
+febio_spec.Boundary.prescribe{2}.ATTR.node_set=febio_spec.Geometry.NodeSet{2}.ATTR.name;
+febio_spec.Boundary.prescribe{2}.scale.ATTR.lc=1;
+febio_spec.Boundary.prescribe{2}.scale.VAL=1;
+febio_spec.Boundary.prescribe{2}.relative=1;
+febio_spec.Boundary.prescribe{2}.value=0;
 
-febio_spec.LoadData.loadcurve{3}.ATTR.id=3;
-febio_spec.LoadData.loadcurve{3}.ATTR.type='linear';
-febio_spec.LoadData.loadcurve{3}.point.VAL=[0 0; 1 1];
-febio_spec.LoadData.loadcurve{3}.ATTR.extend='constant';
+febio_spec.Boundary.prescribe{3}.ATTR.bc='y';
+febio_spec.Boundary.prescribe{3}.ATTR.node_set=febio_spec.Geometry.NodeSet{2}.ATTR.name;
+febio_spec.Boundary.prescribe{3}.scale.ATTR.lc=1;
+febio_spec.Boundary.prescribe{3}.scale.VAL=1;
+febio_spec.Boundary.prescribe{3}.relative=1;
+febio_spec.Boundary.prescribe{3}.value=0;
 
 %Output section 
 % -> log file
@@ -256,7 +279,7 @@ febio_spec.Output.logfile.node_data{2}.VAL=1:size(V,1);
 % figure window. 
 
 %%
-febView(febio_spec); %Viewing the febio file
+% febView(febio_spec); %Viewing the febio file
 
 %% Exporting the FEBio input file
 % Exporting the febio_spec structure to an FEBio input file is done using
@@ -275,7 +298,7 @@ febioAnalysis.run_filename=febioFebFileName; %The input file name
 febioAnalysis.run_logname=febioLogFileName; %The name for the log file
 febioAnalysis.disp_on=1; %Display information on the command window
 febioAnalysis.disp_log_on=1; %Display convergence information in the command window
-febioAnalysis.runMode='internal';%'internal';
+febioAnalysis.runMode='external';%'internal';
 febioAnalysis.t_check=0.25; %Time for checking log file (dont set too small)
 febioAnalysis.maxtpi=1e99; %Max analysis time
 febioAnalysis.maxLogCheckTime=3; %Max log file checking time
@@ -289,6 +312,7 @@ if runFlag==1 %i.e. a succesful run
     % Importing nodal displacements from a log file
     [time_mat, N_disp_mat,~]=importFEBio_logfile(fullfile(savePath,febioLogFileName_disp)); %Nodal displacements    
     time_mat=[0; time_mat(:)]; %Time
+    
     N_disp_mat=N_disp_mat(:,2:end,:);
     sizImport=size(N_disp_mat);
     sizImport(3)=sizImport(3)+1;
@@ -298,8 +322,7 @@ if runFlag==1 %i.e. a succesful run
     DN=N_disp_mat(:,:,end);
     DN_magnitude=sqrt(sum(DN(:,3).^2,2));
     V_def=V+DN;
-    [CF]=vertexToFaceMeasure(Fb,DN_magnitude);
-        
+    
     %% 
     % Plotting the simulated results using |anim8| to visualize and animate
     % deformations 
@@ -307,15 +330,19 @@ if runFlag==1 %i.e. a succesful run
     % Create basic view and store graphics handle to initiate animation
     hf=cFigure; %Open figure  
     title([febioFebFileNamePart,': Press play to animate']);
-    hp=gpatch(Fb,V_def,CF,'k',1); %Add graphics object to animate
-    gpatch(Fb,V,0.5*ones(1,3),'k',0.25); %A static graphics object
+    hp=gpatch(edgeSet,V_def,DN_magnitude,'k',1,2); %Add graphics object to animate
+    hp.EdgeColor='interp';
+    hp.EdgeLighting='gouraud';
+
+    gpatch(Fb,V,0.5*ones(1,3),'none',0.1); %A static graphics object
     
     axisGeom(gca,fontSize); 
     colormap(gjet(250)); colorbar;
     caxis([0 max(DN_magnitude)]);    
     axis([min(V_def(:,1)) max(V_def(:,1)) min(V_def(:,2)) max(V_def(:,2)) min(V_def(:,3)) max(V_def(:,3))]); %Set axis limits statically
     view(130,25); %Set view direction
-    camlight headlight;        
+    drawnow;
+%     camlight headlight;        
         
     % Set up animation features
     animStruct.Time=time_mat; %The time vector    
@@ -323,16 +350,15 @@ if runFlag==1 %i.e. a succesful run
         DN=N_disp_mat(:,:,qt); %Current displacement
         DN_magnitude=sqrt(sum(DN(:,3).^2,2)); %Current displacement magnitude
         V_def=V+DN; %Current nodal coordinates
-        [CF]=vertexToFaceMeasure(Fb,DN_magnitude); %Current color data to use
         
         %Set entries in animation structure
         animStruct.Handles{qt}=[hp hp]; %Handles of objects to animate
         animStruct.Props{qt}={'Vertices','CData'}; %Properties of objects to animate
-        animStruct.Set{qt}={V_def,CF}; %Property values for to set in order to animate
+        animStruct.Set{qt}={V_def,DN_magnitude}; %Property values for to set in order to animate
     end        
-    anim8(hf,animStruct); %Initiate animation feature    
+    anim8(hf,animStruct); %Initiate animation feature   
     drawnow;
-    
+       
 end
 
 %% 

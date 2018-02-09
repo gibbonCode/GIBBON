@@ -1,6 +1,21 @@
 function [varargout]=febioStruct2xml(varargin)
 
 % function [domNode]=febioStruct2xml(parseStruct,fileName,optionStruct)
+% ------------------------------------------------------------------------
+%
+% This function provides the basis for coding FEBio XML input file content
+% and helps to generate the XML input file. 
+%
+% Kevin Mattheus Moerman
+% gibbon.toolbox@gmail.com
+% 
+% 2018/01/15: Created 
+% 2018/02/09: Found bug in text write mode.
+% 
+% To do: 
+% 1) Fix text write mode
+%------------------------------------------------------------------------
+
 
 %% Parse input
 

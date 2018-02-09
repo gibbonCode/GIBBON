@@ -6,7 +6,7 @@
    <!--
 This HTML was auto-generated from MATLAB code.
 To make changes, update the MATLAB code and republish this document.
-      --><title>DEMO_febio_0052_cube_discrete_springs</title><meta name="generator" content="MATLAB 9.4"><link rel="schema.DC" href="http://purl.org/dc/elements/1.1/"><meta name="DC.date" content="2018-01-24"><meta name="DC.source" content="DEMO_febio_0052_cube_discrete_springs.m"><style type="text/css">
+      --><title>DEMO_febio_0009_cube_discrete_springs</title><meta name="generator" content="MATLAB 9.4"><link rel="schema.DC" href="http://purl.org/dc/elements/1.1/"><meta name="DC.date" content="2018-02-09"><meta name="DC.source" content="DEMO_febio_0009_cube_discrete_springs.m"><style type="text/css">
 html,body,div,span,applet,object,iframe,h1,h2,h3,h4,h5,h6,p,blockquote,pre,a,abbr,acronym,address,big,cite,code,del,dfn,em,font,img,ins,kbd,q,s,samp,small,strike,strong,sub,sup,tt,var,b,u,i,center,dl,dt,dd,ol,ul,li,fieldset,form,label,legend,table,caption,tbody,tfoot,thead,tr,th,td{margin:0;padding:0;border:0;outline:0;font-size:100%;vertical-align:baseline;background:transparent}body{line-height:1}ol,ul{list-style:none}blockquote,q{quotes:none}blockquote:before,blockquote:after,q:before,q:after{content:'';content:none}:focus{outine:0}ins{text-decoration:none}del{text-decoration:line-through}table{border-collapse:collapse;border-spacing:0}
 
 html { min-height:100%; margin-bottom:1px; }
@@ -66,7 +66,7 @@ table td { padding:7px 5px; text-align:left; vertical-align:top; border:1px soli
 
 
 
-  </style></head><body><div class="content"><h1>DEMO_febio_0052_cube_discrete_springs</h1><!--introduction--><p>Below is a demonstration for:</p><div><ul><li>Building geometry for a cube with hexahedral elements and discrete elements on the edges</li><li>Defining the boundary conditions</li><li>Coding the febio structure</li><li>Running the model</li><li>Importing and visualizing the displacement and stress results</li></ul></div><!--/introduction--><h2>Contents</h2><div><ul><li><a href="#1">Keywords:</a></li><li><a href="#3">Plot settings</a></li><li><a href="#4">Control parameters</a></li><li><a href="#5">Creating model geometry and mesh</a></li><li><a href="#7">Defining the boundary conditions</a></li><li><a href="#9">Defining the FEBio input structure</a></li><li><a href="#10">Quick viewing of the FEBio input file structure</a></li><li><a href="#12">Exporting the FEBio input file</a></li><li><a href="#13">Running the FEBio analysis</a></li><li><a href="#14">Import FEBio results</a></li></ul></div><h2 id="1">Keywords:</h2><div><ul><li>febio_spec version 2.5</li><li>febio, FEBio</li><li>discrete elements</li><li>springs</li><li>compression, tension, compressive, tensile</li><li>displacement control, displacement boundary condition</li><li>cube, box, rectangular</li><li>static, solid</li><li>hyperelastic, Ogden</li><li>displacement logfile</li><li>Stress logfile</li></ul></div><pre class="codeinput">clear; close <span class="string">all</span>; clc;
+  </style></head><body><div class="content"><h1>DEMO_febio_0009_cube_discrete_springs</h1><!--introduction--><p>Below is a demonstration for:</p><div><ul><li>Building geometry for a cube with hexahedral elements and discrete elements on the edges</li><li>Defining the boundary conditions</li><li>Coding the febio structure</li><li>Running the model</li><li>Importing and visualizing the displacement and stress results</li></ul></div><!--/introduction--><h2>Contents</h2><div><ul><li><a href="#1">Keywords:</a></li><li><a href="#3">Plot settings</a></li><li><a href="#4">Control parameters</a></li><li><a href="#5">Creating model geometry and mesh</a></li><li><a href="#7">Defining the boundary conditions</a></li><li><a href="#9">Defining the FEBio input structure</a></li><li><a href="#10">Quick viewing of the FEBio input file structure</a></li><li><a href="#12">Exporting the FEBio input file</a></li><li><a href="#13">Running the FEBio analysis</a></li><li><a href="#14">Import FEBio results</a></li></ul></div><h2 id="1">Keywords:</h2><div><ul><li>febio_spec version 2.5</li><li>febio, FEBio</li><li>discrete elements</li><li>springs</li><li>compression, tension, compressive, tensile</li><li>displacement control, displacement boundary condition</li><li>cube, box, rectangular</li><li>static, solid</li><li>hyperelastic, Ogden</li><li>displacement logfile</li><li>Stress logfile</li></ul></div><pre class="codeinput">clear; close <span class="string">all</span>; clc;
 </pre><h2 id="3">Plot settings</h2><pre class="codeinput">fontSize=20;
 faceAlpha1=0.8;
 markerSize=40;
@@ -105,7 +105,7 @@ displacementMagnitude=(stretchLoad*sampleHeight)-sampleHeight; <span class="comm
 
 <span class="comment">%Material parameter set</span>
 c_spring=1e-3; <span class="comment">%Spring "Youngs Modulus"</span>
-c1=c_spring/10000; <span class="comment">%Solid shear-modulus-like parameter</span>
+c1=c_spring/100000; <span class="comment">%Solid shear-modulus-like parameter</span>
 m1=2; <span class="comment">%Solid material parameter setting degree of non-linearity</span>
 k=c1; <span class="comment">%Solid bulk modulus</span>
 
@@ -149,7 +149,7 @@ gpatch(edgeSet,V,<span class="string">'none'</span>,<span class="string">'b'</sp
 axisGeom(gca,fontSize);
 
 drawnow;
-</pre><img vspace="5" hspace="5" src="DEMO_febio_0052_cube_discrete_springs_01.png" alt=""> <h2 id="7">Defining the boundary conditions</h2><p>The visualization of the model boundary shows colors for each side of the cube. These labels can be used to define boundary conditions.</p><pre class="codeinput"><span class="comment">%Define supported node sets</span>
+</pre><img vspace="5" hspace="5" src="DEMO_febio_0009_cube_discrete_springs_01.png" alt=""> <h2 id="7">Defining the boundary conditions</h2><p>The visualization of the model boundary shows colors for each side of the cube. These labels can be used to define boundary conditions.</p><pre class="codeinput"><span class="comment">%Define supported node sets</span>
 logicFace=Cb==5; <span class="comment">%Logic for current face set</span>
 Fr=Fb(logicFace,:); <span class="comment">%The current face set</span>
 bcSupportList=unique(Fr(:)); <span class="comment">%Node set part of selected face</span>
@@ -173,7 +173,7 @@ legend(hl,{<span class="string">'BC full support'</span>,<span class="string">'B
 axisGeom(gca,fontSize);
 camlight <span class="string">headlight</span>;
 drawnow;
-</pre><img vspace="5" hspace="5" src="DEMO_febio_0052_cube_discrete_springs_02.png" alt=""> <h2 id="9">Defining the FEBio input structure</h2><p>See also <tt>febioStructTemplate</tt> and <tt>febioStruct2xml</tt> and the FEBio user manual.</p><pre class="codeinput"><span class="comment">%Get a template with default settings</span>
+</pre><img vspace="5" hspace="5" src="DEMO_febio_0009_cube_discrete_springs_02.png" alt=""> <h2 id="9">Defining the FEBio input structure</h2><p>See also <tt>febioStructTemplate</tt> and <tt>febioStruct2xml</tt> and the FEBio user manual.</p><pre class="codeinput"><span class="comment">%Get a template with default settings</span>
 [febio_spec]=febioStructTemplate;
 
 <span class="comment">%febio_spec version</span>
@@ -258,6 +258,20 @@ febio_spec.Boundary.prescribe{1}.scale.VAL=1;
 febio_spec.Boundary.prescribe{1}.relative=1;
 febio_spec.Boundary.prescribe{1}.value=displacementMagnitude;
 
+febio_spec.Boundary.prescribe{2}.ATTR.bc=<span class="string">'x'</span>;
+febio_spec.Boundary.prescribe{2}.ATTR.node_set=febio_spec.Geometry.NodeSet{2}.ATTR.name;
+febio_spec.Boundary.prescribe{2}.scale.ATTR.lc=1;
+febio_spec.Boundary.prescribe{2}.scale.VAL=1;
+febio_spec.Boundary.prescribe{2}.relative=1;
+febio_spec.Boundary.prescribe{2}.value=0;
+
+febio_spec.Boundary.prescribe{3}.ATTR.bc=<span class="string">'y'</span>;
+febio_spec.Boundary.prescribe{3}.ATTR.node_set=febio_spec.Geometry.NodeSet{2}.ATTR.name;
+febio_spec.Boundary.prescribe{3}.scale.ATTR.lc=1;
+febio_spec.Boundary.prescribe{3}.scale.VAL=1;
+febio_spec.Boundary.prescribe{3}.relative=1;
+febio_spec.Boundary.prescribe{3}.value=0;
+
 <span class="comment">%Output section</span>
 <span class="comment">% -&gt; log file</span>
 febio_spec.Output.logfile.ATTR.file=febioLogFileName;
@@ -283,9 +297,9 @@ febioAnalysis.maxLogCheckTime=3; <span class="comment">%Max log file checking ti
 [runFlag]=runMonitorFEBio(febioAnalysis);<span class="comment">%START FEBio NOW!!!!!!!!</span>
 </pre><pre class="codeoutput"> 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
---- STARTING FEBIO JOB --- 24-Jan-2018 22:49:32
+--- STARTING FEBIO JOB --- 09-Feb-2018 16:08:07
 Waiting for log file...
-Proceeding to check log file...24-Jan-2018 22:49:33
+Proceeding to check log file...09-Feb-2018 16:08:07
 ------- converged at time : 0.1
 ------- converged at time : 0.2
 ------- converged at time : 0.3
@@ -296,7 +310,7 @@ Proceeding to check log file...24-Jan-2018 22:49:33
 ------- converged at time : 0.8
 ------- converged at time : 0.9
 ------- converged at time : 1
---- Done --- 24-Jan-2018 22:49:34
+--- Done --- 09-Feb-2018 16:08:08
 </pre><h2 id="14">Import FEBio results</h2><pre class="codeinput"><span class="keyword">if</span> runFlag==1 <span class="comment">%i.e. a succesful run</span>
 </pre><pre class="codeinput">    <span class="comment">% Importing nodal displacements from a log file</span>
     [time_mat, N_disp_mat,~]=importFEBio_logfile(fullfile(savePath,febioLogFileName_disp)); <span class="comment">%Nodal displacements</span>
@@ -323,7 +337,7 @@ Proceeding to check log file...24-Jan-2018 22:49:33
     axisGeom(gca,fontSize);
     colormap(gjet(250)); colorbar;
     caxis([0 max(DN_magnitude)]);
-    axis([min(V_def(:,1)) max(V_def(:,1)) min(V_def(:,2)) max(V_def(:,2)) min(V(:,3)) max(V(:,3))]); <span class="comment">%Set axis limits statically</span>
+    axis([min(V_def(:,1)) max(V_def(:,1)) min(V_def(:,2)) max(V_def(:,2)) min(V_def(:,3)) max(V_def(:,3))]); <span class="comment">%Set axis limits statically</span>
     view(130,25); <span class="comment">%Set view direction</span>
     drawnow;
 <span class="comment">%     camlight headlight;</span>
@@ -342,10 +356,10 @@ Proceeding to check log file...24-Jan-2018 22:49:33
     <span class="keyword">end</span>
     anim8(hf,animStruct); <span class="comment">%Initiate animation feature</span>
     drawnow;
-</pre><img vspace="5" hspace="5" src="DEMO_febio_0052_cube_discrete_springs_03.png" alt=""> <pre class="codeinput"><span class="keyword">end</span>
-</pre><p><img vspace="5" hspace="5" src="gibbVerySmall.gif" alt=""> </p><p><i><b>GIBBON</b></i> <a href="www.gibboncode.org">www.gibboncode.org</a></p><p><i>Kevin Mattheus Moerman</i>, <a href="gibbon.toolbox@gmail.com">gibbon.toolbox@gmail.com</a></p><p><i><b>GIBBON footer text</b></i></p><p>License: <a href="https://github.com/gibbonCode/GIBBON/blob/master/LICENSE">https://github.com/gibbonCode/GIBBON/blob/master/LICENSE</a></p><p>GIBBON: The Geometry and Image-based Bioengineering add-On. A toolbox for image segmentation, image-based modeling, meshing, and finite element analysis.</p><p>Copyright (C) 2017  Kevin Mattheus Moerman</p><p>This program is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.</p><p>This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for more details.</p><p>You should have received a copy of the GNU General Public License along with this program.  If not, see <a href="http://www.gnu.org/licenses/">http://www.gnu.org/licenses/</a>.</p><p class="footer"><br><a href="https://www.mathworks.com/products/matlab/">Published with MATLAB&reg; R2018a</a><br></p></div><!--
+</pre><img vspace="5" hspace="5" src="DEMO_febio_0009_cube_discrete_springs_03.png" alt=""> <pre class="codeinput"><span class="keyword">end</span>
+</pre><p><img vspace="5" hspace="5" src="gibbVerySmall.gif" alt=""> </p><p><i><b>GIBBON</b></i> <a href="www.gibboncode.org">www.gibboncode.org</a></p><p><i>Kevin Mattheus Moerman</i>, <a href="gibbon.toolbox@gmail.com">gibbon.toolbox@gmail.com</a></p><p><i><b>GIBBON footer text</b></i></p><p>License: <a href="https://github.com/gibbonCode/GIBBON/blob/master/LICENSE">https://github.com/gibbonCode/GIBBON/blob/master/LICENSE</a></p><p>GIBBON: The Geometry and Image-based Bioengineering add-On. A toolbox for image segmentation, image-based modeling, meshing, and finite element analysis.</p><p>Copyright (C) 2018  Kevin Mattheus Moerman</p><p>This program is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.</p><p>This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for more details.</p><p>You should have received a copy of the GNU General Public License along with this program.  If not, see <a href="http://www.gnu.org/licenses/">http://www.gnu.org/licenses/</a>.</p><p class="footer"><br><a href="https://www.mathworks.com/products/matlab/">Published with MATLAB&reg; R2018a</a><br></p></div><!--
 ##### SOURCE BEGIN #####
-%% DEMO_febio_0052_cube_discrete_springs
+%% DEMO_febio_0009_cube_discrete_springs
 % Below is a demonstration for: 
 % 
 % * Building geometry for a cube with hexahedral elements and discrete
@@ -414,7 +428,7 @@ displacementMagnitude=(stretchLoad*sampleHeight)-sampleHeight; %The displacement
 
 %Material parameter set
 c_spring=1e-3; %Spring "Youngs Modulus" 
-c1=c_spring/10000; %Solid shear-modulus-like parameter
+c1=c_spring/100000; %Solid shear-modulus-like parameter
 m1=2; %Solid material parameter setting degree of non-linearity
 k=c1; %Solid bulk modulus
 
@@ -594,6 +608,20 @@ febio_spec.Boundary.prescribe{1}.scale.VAL=1;
 febio_spec.Boundary.prescribe{1}.relative=1;
 febio_spec.Boundary.prescribe{1}.value=displacementMagnitude;
 
+febio_spec.Boundary.prescribe{2}.ATTR.bc='x';
+febio_spec.Boundary.prescribe{2}.ATTR.node_set=febio_spec.Geometry.NodeSet{2}.ATTR.name;
+febio_spec.Boundary.prescribe{2}.scale.ATTR.lc=1;
+febio_spec.Boundary.prescribe{2}.scale.VAL=1;
+febio_spec.Boundary.prescribe{2}.relative=1;
+febio_spec.Boundary.prescribe{2}.value=0;
+
+febio_spec.Boundary.prescribe{3}.ATTR.bc='y';
+febio_spec.Boundary.prescribe{3}.ATTR.node_set=febio_spec.Geometry.NodeSet{2}.ATTR.name;
+febio_spec.Boundary.prescribe{3}.scale.ATTR.lc=1;
+febio_spec.Boundary.prescribe{3}.scale.VAL=1;
+febio_spec.Boundary.prescribe{3}.relative=1;
+febio_spec.Boundary.prescribe{3}.value=0;
+
 %Output section 
 % -> log file
 febio_spec.Output.logfile.ATTR.file=febioLogFileName;
@@ -672,7 +700,7 @@ if runFlag==1 %i.e. a succesful run
     axisGeom(gca,fontSize); 
     colormap(gjet(250)); colorbar;
     caxis([0 max(DN_magnitude)]);    
-    axis([min(V_def(:,1)) max(V_def(:,1)) min(V_def(:,2)) max(V_def(:,2)) min(V(:,3)) max(V(:,3))]); %Set axis limits statically
+    axis([min(V_def(:,1)) max(V_def(:,1)) min(V_def(:,2)) max(V_def(:,2)) min(V_def(:,3)) max(V_def(:,3))]); %Set axis limits statically
     view(130,25); %Set view direction
     drawnow;
 %     camlight headlight;        
@@ -712,7 +740,7 @@ end
 % image segmentation, image-based modeling, meshing, and finite element
 % analysis.
 % 
-% Copyright (C) 2017  Kevin Mattheus Moerman
+% Copyright (C) 2018  Kevin Mattheus Moerman
 % 
 % This program is free software: you can redistribute it and/or modify
 % it under the terms of the GNU General Public License as published by

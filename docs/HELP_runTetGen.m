@@ -87,7 +87,7 @@ E=meshOutput.elements;
 
 %% Visualizing mesh using |meshView|, see also |anim8|
 
-meshView(meshOutput,[]);
+meshView(meshOutput);
 
 %% MESHING IMPORTED GEOMETRY 
 

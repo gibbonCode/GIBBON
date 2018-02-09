@@ -1,8 +1,7 @@
-%% DEMO_febio_0052_cube_discrete_springs
+%% DEMO_febio_0010_trabeculae_compression
 % Below is a demonstration for: 
 % 
-% * Building geometry for a cube with hexahedral elements and discrete
-% elements on the edges
+% * Building geometry for trabecular structure with tetrahedral elements
 % * Defining the boundary conditions 
 % * Coding the febio structure
 % * Running the model
@@ -11,11 +10,11 @@
 %% Keywords: 
 % * febio_spec version 2.5
 % * febio, FEBio
-% * discrete elements
-% * springs
 % * compression, tension, compressive, tensile
 % * displacement control, displacement boundary condition
-% * cube, box, rectangular
+% * trabecular
+% * tetgen, meshing
+% * tetrahedral elements, tet4
 % * static, solid
 % * hyperelastic, Ogden
 % * displacement logfile
@@ -30,6 +29,7 @@ fontSize=20;
 faceAlpha1=0.8;
 markerSize=40;
 lineWidth=3;
+markerSize1=25; 
 
 %% Control parameters
 
@@ -44,15 +44,10 @@ febioLogFileName=fullfile(savePath,[febioFebFileNamePart,'.txt']); %FEBio log fi
 febioLogFileName_disp=[febioFebFileNamePart,'_disp_out.txt']; %Log file name for exporting force
 febioLogFileName_force=[febioFebFileNamePart,'_force_out.txt']; %Log file name for exporting force
 
-%Specifying dimensions and number of elements
-cubeSize=10; 
-sampleWidth=cubeSize; %Width 
-sampleThickness=cubeSize; %Thickness 
-sampleHeight=cubeSize; %Height
-pointSpacings=1*ones(1,3); %Desired point spacing between nodes
-numElementsWidth=round(sampleWidth/pointSpacings(1)); %Number of elemens in dir 1
-numElementsThickness=round(sampleThickness/pointSpacings(2)); %Number of elemens in dir 2
-numElementsHeight=round(sampleHeight/pointSpacings(3)); %Number of elemens in dir 3
+porousGeometryCase='g'; 
+ns=12; %Number of voxel steps across period for image data (roughly number of points on mesh period)
+nPeriods=[2 2 2]; %Number of periods in each direction
+sampleSize=10; %Heigh of the sample
 
 %Define applied displacement 
 appliedStrain=0.2; %Linear strain (Only used to compute applied stretch)
@@ -63,78 +58,184 @@ switch loadingOption
     case 'tension'
         stretchLoad=1+appliedStrain; %The applied stretch for uniaxial loading
 end
-displacementMagnitude=(stretchLoad*sampleHeight)-sampleHeight; %The displacement magnitude
+displacementMagnitude=(stretchLoad*sampleSize)-sampleSize; %The displacement magnitude
 
 %Material parameter set
-c_spring=1e-3; %Spring "Youngs Modulus" 
-c1=c_spring/100000; %Solid shear-modulus-like parameter
+c1=1e-3; %Solid shear-modulus-like parameter
 m1=2; %Solid material parameter setting degree of non-linearity
 k=c1; %Solid bulk modulus
 
 % FEA control settings
 numTimeSteps=10; %Number of time steps desired
-max_refs=25; %Max reforms
+max_refs=15; %Max reforms
 max_ups=0; %Set to zero to use full-Newton iterations
 opt_iter=6; %Optimum number of iterations
 max_retries=5; %Maximum number of retires
 dtmin=(1/numTimeSteps)/100; %Minimum time step size
 dtmax=1/numTimeSteps; %Maximum time step size
 
-%% Creating model geometry and mesh
-% A cube is created with tri-linear hexahedral (hex8) elements using the
-% |hexMeshBox| function. The function offers the boundary faces with
-% seperate labels for the top, bottom, left, right, front, and back sides
-% of the cube. As such these can be used to define boundary conditions on
-% the exterior. 
+%% DEFINING GEOMETRY
+% The trabecular structure is here simulated using isosurfaces on triply
+% periodic minimal surfaces functions. 
 
-% Create a box with hexahedral elements
-cubeDimensions=[sampleWidth sampleThickness sampleHeight]; %Dimensions
-cubeElementNumbers=[numElementsWidth numElementsThickness numElementsHeight]; %Number of elements
-outputStructType=2; %A structure compatible with mesh view
-[meshStruct]=hexMeshBox(cubeDimensions,cubeElementNumbers,outputStructType);
 
-%Access elements, nodes, and faces from the structure
-E=meshStruct.elements; %The elements 
-V=meshStruct.nodes; %The nodes (vertices)
-Fb=meshStruct.facesBoundary; %The boundary faces
-Cb=meshStruct.boundaryMarker; %The "colors" or labels for the boundary faces
-elementMaterialIndices=ones(size(E,1),1); %Element material indices
-F=meshStruct.faces; %Model faces
+switch porousGeometryCase
+    case 'g' %Gyroid        
+        n=nPeriods*ns; %Number of sample points
+        isoLevel=0.; %Iso-surface level
+        
+        cutOffset=1/3*pi; %Cut level such that data "ends well"
+        
+        %Define coordinate limits
+        xMin=0*pi;
+        xMax=(xMin+2*pi*nPeriods(1))-cutOffset;
+        yMin=0*pi;
+        yMax=(yMin+2*pi*nPeriods(2))-cutOffset;
+        zMin=0*pi;
+        zMax=(zMin+2*pi*nPeriods(3))-cutOffset;                
+    case 'p' %Schwarz P              
+        n=nPeriods*ns; %Number of sample points
+        isoLevel=0.; %Iso-surface level
+        
+        %Define coordinate limits
+        xMin=0*pi;
+        xMax=xMin+2*pi*nPeriods(1);
+        yMin=0*pi;
+        yMax=yMin+2*pi*nPeriods(2);
+        zMin=0*pi;
+        zMax=zMin+2*pi*nPeriods(3);
+    case 'd' %Schwarz D        
+        n=nPeriods*ns; %Number of sample points
+        isoLevel=0.; %Iso-surface level
+        
+        %Define coordinate limits
+        xMin=0*pi;
+        xMax=xMin+2*pi*nPeriods(1);
+        yMin=0*pi;
+        yMax=yMin+2*pi*nPeriods(2);
+        zMin=0*pi;
+        zMax=zMin+2*pi*nPeriods(3);
+end
 
-%Get edges
-edgeSet=patchEdges(F,1);
+%Create coordinates
+xRange=linspace(xMin,xMax,n(1));
+yRange=linspace(yMin,yMax,n(2));
+zRange=linspace(zMin,zMax,n(3));
+[X,Y,Z]=meshgrid(xRange,yRange,zRange);
+V=[X(:) Y(:) Z(:)];
 
-%% 
-% Plotting model boundary surfaces and a cut view
+%Calculate 3D image data
+S=triplyPeriodicMinimal(V(:,1),V(:,2),V(:,3),porousGeometryCase);        
+S=reshape(S,size(X));
 
-hFig=cFigure; 
+%Scaling coordinates
+X=((X./abs(xMax-xMin)).*sampleSize)-sampleSize/2;
+Y=((Y./abs(yMax-yMin)).*sampleSize)-sampleSize/2;
+Z=((Z./abs(zMax-zMin)).*sampleSize)-sampleSize/2;
 
-subplot(1,2,1); hold on; 
-title('Model boundary surfaces and labels','FontSize',fontSize);
-gpatch(Fb,V,Cb,'k',faceAlpha1); 
-colormap(gjet(6)); icolorbar;
+%Compute isosurface
+[Fi,Vi] = isosurface(X,Y,Z,S,isoLevel); %main isosurface
+Fi=fliplr(Fi); %Flip so normal faces outward
+
+%Merge nodes
+[~,ind1,ind2]=unique(pround(Vi,5),'rows');
+Vi=Vi(ind1,:);
+Fi=ind2(Fi);
+logicInvalid=any(diff(sort(Fi,2),[],2)==0,2);
+Fi=Fi(~logicInvalid,:);
+
+%Compute caps (to create closed surface)
+[Fc,Vc] = isocaps(X,Y,Z,S,isoLevel); %Caps to close the shape
+Fc=fliplr(Fc); %Flip so normal faces outward
+
+%Merge nodes
+[~,ind1,ind2]=unique(pround(Vc,5),'rows');
+Vc=Vc(ind1,:);
+Fc=ind2(Fc);
+logicInvalid=any(diff(sort(Fc,2),[],2)==0,2);
+Fc=Fc(~logicInvalid,:);
+
+%Join model segments (isosurface and caps)
+V=[Vi;Vc];
+F=[Fi;Fc+size(Vi,1)];
+
+%Find top and bottom face sets
+[Nc]=patchNormal(Fc,Vc);
+logicTop_Fc=Nc(:,3)>0.5;
+logicTop=[false(size(Fi,1),1);logicTop_Fc];
+
+[Nc]=patchNormal(Fc,Vc);
+logicBottom_Fc=Nc(:,3)<-0.5;
+logicBottom=[false(size(Fi,1),1);logicBottom_Fc];
+
+%Merge nodes
+[~,ind1,ind2]=unique(pround(V,5),'rows');
+V=V(ind1,:);
+F=ind2(F);
+
+%Create faceboundary label
+C=zeros(size(F,1),1);
+C(logicTop)=1;
+C(logicBottom)=2;
+
+%Smoothen surface mesh (isosurface does not yield high quality mesh)
+indKeep=F(C~=0,:);%F(size(Fi,1)+1:end,:);
+indKeep=unique(indKeep(:)); 
+cPar.n=75;
+cPar.RigidConstraints=indKeep; %Boundary nodes are held on to
+cPar.Method='HC';
+[V]=patchSmooth(F,V,[],cPar);
+
+%%
+% Visualizing geometry
+
+cFigure; hold on; 
+title('Triply-periodic minimal surface derived model of trabecular structure','FontSize',fontSize);
+gpatch(F,V,C,'k',1);
+
+% plotV(V(indKeep,:),'k.','MarkerSize',markerSize1);
 axisGeom(gca,fontSize);
+colormap gjet; icolorbar;
+camlight headlight; 
+drawnow; 
 
-hs=subplot(1,2,2); hold on; 
-title('Model edges for spring features','FontSize',fontSize);
+%% Tetrahedral meshing using tetgen (see also |runTetGen|)
 
-gpatch(edgeSet,V,'none','b'); 
+% Create tetgen input structure
+inputStruct.stringOpt='-pq1.2AaY';
+inputStruct.Faces=F;
+inputStruct.Nodes=V;
+inputStruct.holePoints=[];
+inputStruct.faceBoundaryMarker=C; %Face boundary markers
+inputStruct.regionPoints=getInnerPoint(F,V); %region points
+inputStruct.regionA=2*tetVolMeanEst(F,V);
+inputStruct.minRegionMarker=2; %Minimum region marker
 
-axisGeom(gca,fontSize);
+% Mesh model using tetrahedral elements using tetGen 
+[meshOutput]=runTetGen(inputStruct); %Run tetGen 
+ 
+% Access model element and patch data
+Fb=meshOutput.facesBoundary;
+Cb=meshOutput.boundaryMarker;
+V=meshOutput.nodes;
+CE=meshOutput.elementMaterialID;
+E=meshOutput.elements;
 
-drawnow;
+%% Visualizing mesh using |meshView|, see also |anim8|
+
+meshView(meshOutput);
 
 %% Defining the boundary conditions
 % The visualization of the model boundary shows colors for each side of the
 % cube. These labels can be used to define boundary conditions. 
 
 %Define supported node sets
-logicFace=Cb==5; %Logic for current face set
+logicFace=Cb==2; %Logic for current face set
 Fr=Fb(logicFace,:); %The current face set
 bcSupportList=unique(Fr(:)); %Node set part of selected face
 
 %Prescribed displacement nodes
-logicPrescribe=Cb==6; %Logic for current face set
+logicPrescribe=Cb==1; %Logic for current face set
 Fr=Fb(logicPrescribe,:); %The current face set
 bcPrescribeList=unique(Fr(:)); %Node set part of selected face
 
@@ -192,20 +293,6 @@ febio_spec.Material.material{1}.c2=c1;
 febio_spec.Material.material{1}.m2=-m1;
 febio_spec.Material.material{1}.cp=k;
 
-% Discrete section
-febio_spec.Discrete.discrete_material{1}.ATTR.id=1; 
-febio_spec.Discrete.discrete_material{1}.ATTR.type='linear spring'; 
-febio_spec.Discrete.discrete_material{1}.E=c_spring; 
-febio_spec.Discrete.discrete{1}.ATTR.dmat=1; 
-febio_spec.Discrete.discrete{1}.ATTR.discrete_set='springs1'; 
-
-% febio_spec.Discrete.discrete_material{1}.ATTR.id=1; 
-% febio_spec.Discrete.discrete_material{1}.ATTR.type='nonlinear spring'; 
-% febio_spec.Discrete.discrete_material{1}.force.ATTR.lc=1; 
-% febio_spec.Discrete.discrete_material{1}.force.VAL=1; 
-% febio_spec.Discrete.discrete{1}.ATTR.dmat=1; 
-% febio_spec.Discrete.discrete{1}.ATTR.discrete_set='springs1';
-
 %Geometry section
 % -> Nodes
 febio_spec.Geometry.Nodes{1}.ATTR.name='nodeSet_all'; %The node set name
@@ -213,9 +300,9 @@ febio_spec.Geometry.Nodes{1}.node.ATTR.id=(1:size(V,1))'; %The node id's
 febio_spec.Geometry.Nodes{1}.node.VAL=V; %The nodel coordinates
 
 % -> Elements
-febio_spec.Geometry.Elements{1}.ATTR.type='hex8'; %Element type of this set
+febio_spec.Geometry.Elements{1}.ATTR.type='tet4'; %Element type of this set
 febio_spec.Geometry.Elements{1}.ATTR.mat=1; %material index for this set 
-febio_spec.Geometry.Elements{1}.ATTR.name='Cube'; %Name of the element set
+febio_spec.Geometry.Elements{1}.ATTR.name='Bone sample'; %Name of the element set
 febio_spec.Geometry.Elements{1}.elem.ATTR.id=(1:1:size(E,1))'; %Element id's
 febio_spec.Geometry.Elements{1}.elem.VAL=E;
 
@@ -225,10 +312,6 @@ febio_spec.Geometry.NodeSet{1}.VAL=bcSupportList(:);
 
 febio_spec.Geometry.NodeSet{2}.ATTR.name='bcPrescribeList';
 febio_spec.Geometry.NodeSet{2}.VAL=bcPrescribeList(:);
-
-% -> DiscreteSet
-febio_spec.Geometry.DiscreteSet{1}.ATTR.name='springs1';
-febio_spec.Geometry.DiscreteSet{1}.delem.VAL=edgeSet;
 
 %Boundary condition section 
 % -> Fix boundary conditions
@@ -246,6 +329,20 @@ febio_spec.Boundary.prescribe{1}.scale.ATTR.lc=1;
 febio_spec.Boundary.prescribe{1}.scale.VAL=1;
 febio_spec.Boundary.prescribe{1}.relative=1;
 febio_spec.Boundary.prescribe{1}.value=displacementMagnitude;
+
+febio_spec.Boundary.prescribe{2}.ATTR.bc='x';
+febio_spec.Boundary.prescribe{2}.ATTR.node_set=febio_spec.Geometry.NodeSet{2}.ATTR.name;
+febio_spec.Boundary.prescribe{2}.scale.ATTR.lc=1;
+febio_spec.Boundary.prescribe{2}.scale.VAL=1;
+febio_spec.Boundary.prescribe{2}.relative=1;
+febio_spec.Boundary.prescribe{2}.value=0;
+
+febio_spec.Boundary.prescribe{3}.ATTR.bc='y';
+febio_spec.Boundary.prescribe{3}.ATTR.node_set=febio_spec.Geometry.NodeSet{2}.ATTR.name;
+febio_spec.Boundary.prescribe{3}.scale.ATTR.lc=1;
+febio_spec.Boundary.prescribe{3}.scale.VAL=1;
+febio_spec.Boundary.prescribe{3}.relative=1;
+febio_spec.Boundary.prescribe{3}.value=0;
 
 %Output section 
 % -> log file
@@ -315,10 +412,8 @@ if runFlag==1 %i.e. a succesful run
     
     % Create basic view and store graphics handle to initiate animation
     hf=cFigure; %Open figure  
-    title([febioFebFileNamePart,': Press play to animate']);
-    hp=gpatch(edgeSet,V_def,DN_magnitude,'k',1,2); %Add graphics object to animate
-    hp.EdgeColor='interp';
-    hp.EdgeLighting='gouraud';
+    suptitle([febioFebFileNamePart,': Press play to animate']);
+    hp=gpatch(Fb,V_def,DN_magnitude,'k',1,1); %Add graphics object to animate
 
     gpatch(Fb,V,0.5*ones(1,3),'none',0.1); %A static graphics object
     
@@ -327,8 +422,8 @@ if runFlag==1 %i.e. a succesful run
     caxis([0 max(DN_magnitude)]);    
     axis([min(V_def(:,1)) max(V_def(:,1)) min(V_def(:,2)) max(V_def(:,2)) min(V_def(:,3)) max(V_def(:,3))]); %Set axis limits statically
     view(130,25); %Set view direction
+    camlight headlight;  
     drawnow;
-%     camlight headlight;        
         
     % Set up animation features
     animStruct.Time=time_mat; %The time vector    
