@@ -1,5 +1,5 @@
 %% DEMO_imx
-% Below is a demonstration of the features of the |triSurf2Im| function
+% 
 
 %%
 clear; close all; clc;
@@ -9,6 +9,12 @@ clear; close all; clc;
 fontSize=10;
 faceAlpha1=1;
 faceAlpha2=0.3;
+
+%%
+
+defaultFolder = fileparts(fileparts(mfilename('fullpath'))); %Set main folder
+pathName=fullfile(defaultFolder,'data','imseg');
+loadNames={'imseg_torus_1','imseg_torus_2'};
 
 %% Simulate image
 % Defining an example triangulated surface model
@@ -89,15 +95,10 @@ drawnow; hold on;
 Vt=V-imOrigin(ones(size(V,1),1),:);
 gpatch(F,Vt,'g','none',0.5);
 
-% msgbox('Try to load in imseg_torus_1.mat or imseg_torus_2.mat from...GIBBON/data/temp/imseg/','Hint','help')
+% msgbox('Try to load in imseg_torus_1.mat or imseg_torus_2.mat from...GIBBON/data/imseg/','Hint','help')
 
 %%
 % Turn contours into segmentation
-
-pathName='/mnt/data/MATLAB/GIT/GIBBON/data/temp/imseg/';
-loadNames={'imseg_torus_1','imseg_torus_2'};
-
-close all;
 
 hf1q=sv3(M,v);
 drawnow;
