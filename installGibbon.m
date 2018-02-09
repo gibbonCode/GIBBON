@@ -26,6 +26,7 @@ set(hf,'ResizeFcn',{@resizeAll,{hf}});
 % [left bottom width height]
 
 hf.UserData.W=W;
+hf.UserData.gibbonPath=gibbonPath;
 
 %% Initilize text fields
 
@@ -81,6 +82,7 @@ end
 close(hw)
 
 hTextStatement.String='Done adding toolbox paths';
+drawnow;
 
 %% Add 3rd party paths
 hTextStatement.String='Please provide 3rd party package locations.';
@@ -210,22 +212,35 @@ delete(hf.UserData.uihandles.hconfirmButton)
 hf.UserData.uihandles=rmfield(hf.UserData.uihandles,'hconfirmButton');
 
 hf.UserData.uihandles.hTextStatement.String='Done, adding third party paths';
-pause(0.1);
+drawnow;
 
 %% Saving path definitions
 hf.UserData.uihandles.hTextStatement.String='Saving path definitions';
+drawnow;
+
 savepath;
+
 hf.UserData.uihandles.hTextStatement.String='Done, saving path definitions';
-pause(0.1);
+drawnow;
+
+%% Unzip compressed data
+hf.UserData.uihandles.hTextStatement.String='Unzipping compressed data'; 
+drawnow;
+
+dataFolder=fullfile(hf.UserData.gibbonPath,'data');
+unzipAll(dataFolder,1);
+
+hf.UserData.uihandles.hTextStatement.String='Done, unzipping data';
+drawnow;
 
 %% Integrating help/documentations
 
-hf.UserData.uihandles.hTextStatement.String='Integrating help';
+hf.UserData.uihandles.hTextStatement.String='Integrating help'; drawnow;
 createHelpDemoDocumentation;
 
 hf.UserData.uihandles.hTextStatement.String='Restart MATLAB to allow for the help and documentation integration changes to take effect';
 
-hf.UserData.uihandles.hTextTitle.String='Finished GIBBON is installed. Feel free to close this window';
+hf.UserData.uihandles.hTextTitle.String='Finished! GIBBON is installed. Feel free to close this window';
 
 end
  
