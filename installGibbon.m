@@ -6,14 +6,28 @@ addpath(fullfile(gibbonPath,'lib')); %Add gibbon lib path so gibbon functions us
 
 %% Settings
 
-W=40; %Scrollbar width
+W=60; %Scrollbar width
 
 %% Open figure
+
+%Force groot units to be pixels
+graphicalRoot=groot;
+grootUnits=graphicalRoot.Units;
+if ~strcmp(grootUnits,'pixels')
+    graphicalRoot.Units='pixels';
+end
+
+screenSizeGroot = get(groot,'ScreenSize');
 
 figStruct.Name='Installing GIBBON';
 
 hf = cFigure(figStruct);
 hf.NumberTitle='off';
+
+figSize=round([min(screenSizeGroot(3:4)) min(screenSizeGroot(3:4))*0.9]); % width, height
+
+hf.Units='pixels';
+hf.Position=[(screenSizeGroot(3)-figSize(1))/2 (screenSizeGroot(4)-figSize(2))/2  figSize(1) figSize(2)]; % left bottom width height
 
 %Remove tool and menu bars
 ht = findobj(allchild(hf),'flat','Type','uitoolbar');
@@ -28,19 +42,24 @@ set(hf,'ResizeFcn',{@resizeAll,{hf}});
 hf.UserData.W=W;
 hf.UserData.gibbonPath=gibbonPath;
 
+% Reset groot units if a change was needed
+if ~strcmp(grootUnits,'pixels')
+    graphicalRoot.Units=grootUnits;
+end
+
 %% Initilize text fields
 
 top_title='Installing GIBBON';
 hTextTitle = uicontrol(hf,'Style','text','String',top_title,...
     'Position',[W hf.Position(4)-W hf.Position(3)-W*2 round(W/1.5)],...
-    'BackgroundColor',[1 1 1],'HorizontalAlignment','Left','FontSize',20,'FontWeight','normal');
+    'BackgroundColor',[1 1 1],'HorizontalAlignment','Left','FontSize',18,'FontWeight','normal');
 
 hf.UserData.uihandles.hTextTitle=hTextTitle;
 
 top_statement='Adding gibbon paths. Please wait...';
 hTextStatement = uicontrol(hf,'Style','text','String',top_statement,...
     'Position',[W hf.Position(4)-2*W hf.Position(3)-W*2 round(W/1.5)],...
-    'BackgroundColor',[1 1 1],'HorizontalAlignment','Left','FontSize',16,'FontWeight','bold');
+    'BackgroundColor',[1 1 1],'HorizontalAlignment','Left','FontSize',12,'FontWeight','bold');
 
 hf.UserData.uihandles.hTextStatement=hTextStatement;
 
@@ -91,7 +110,7 @@ hTextInfoStringDefault='Full path to FEBio excutable (leave blank if not needed)
 
 hTextInfo1 = uicontrol(hf,'Style','text','String',hTextInfoStringDefault,...
     'Position',[W hf.Position(4)-W*3 round(hf.Position(3))-W*2 round(W/1.5)],...
-    'BackgroundColor',[1 1 1],'HorizontalAlignment','Left','FontSize',12,'FontWeight','bold');
+    'BackgroundColor',[1 1 1],'HorizontalAlignment','Left','FontSize',12,'FontWeight','normal');
 
 FEBioPath=getFEBioPath;
 
@@ -115,7 +134,7 @@ hTextInfoStringDefault='Full path to export_fig:';
 
 hTextInfo2 = uicontrol(hf,'Style','text','String',hTextInfoStringDefault,...
     'Position',[W hf.Position(4)-W*4.5 round(hf.Position(3))-W*2 round(W/1.5)],...
-    'BackgroundColor',[1 1 1],'HorizontalAlignment','Left','FontSize',12,'FontWeight','bold');
+    'BackgroundColor',[1 1 1],'HorizontalAlignment','Left','FontSize',12,'FontWeight','normal');
 
 exportFigPath=fileparts(which('export_fig'));
 

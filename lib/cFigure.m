@@ -55,7 +55,7 @@ function [varargout]=cFigure(varargin)
 
 %% Parse input and set defaults
 
-%For groot units to be pixels
+%Force groot units to be pixels
 graphicalRoot=groot;
 grootUnits=graphicalRoot.Units;
 if ~strcmp(grootUnits,'pixels')
