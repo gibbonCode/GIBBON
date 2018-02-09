@@ -168,9 +168,6 @@ end
 anim8(hf,animStruct);
 
 %%
-
-
-%%
 %
 % <<gibbVerySmall.gif>>
 %

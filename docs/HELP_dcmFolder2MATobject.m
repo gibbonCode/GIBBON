@@ -40,35 +40,15 @@ clear; close all; clc;
 %      r: [3x1 double] %Direction vector for rows
 %      c: [3x1 double] %Direction vector for Columns
 
-%%
+%% 
+% Path name for dicom files
 
 defaultFolder = fileparts(fileparts(mfilename('fullpath'))); %Set main folder
-pathName=fullfile(defaultFolder,'data','DICOM','KNEE_UTE');
+pathName=fullfile(defaultFolder,'data','DICOM','0001_human_calf');
 
-%Get all subfolders
-if ispc
-    pathNames = regexp(genpath(pathName),[filesep,';'], 'split');
-elseif isunix
-    pathNames = regexp(genpath(pathName),':', 'split');
-else
-    pathNames = regexp(genpath(pathName),[filesep,';'], 'split');
-end
-
-pathNames=pathNames(1:end-1)';
-numberOfFolders=numel(pathNames);
-
-%Converting DICOM data to IMDAT format in all subfolders
-for q=1:1:numberOfFolders
-    pathNameSub=pathNames{q}; %Current path name
-%     if ~strcmp(pathNameSub,[filesep,'IMDAT']) %if the IMDAT directory does not exist yet
-      if ~contains(pathNameSub,[filesep,'IMDAT']) %if the IMDAT directory does not exist yet
-        try
-            dcmFolder2MATobject(pathNameSub,[]);%Get DICOM data
-        catch exception
-            warning([exception.message,'-> Analysis skipped for: ',pathName]);
-        end
-    end
-end
+%%
+% Converting dicom data to the IMDAT format
+dcmFolder2MATobject(pathName);%Get DICOM data
 
 %% Example: LOADING OR HANDLING THE MAT OBJECT
 % Here is an example for loading in the entire data structure

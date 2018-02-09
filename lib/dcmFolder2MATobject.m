@@ -10,7 +10,7 @@ function dcmFolder2MATobject(varargin)
 % Kevin Mattheus Moerman
 % gibbon.toolbox@gmail.com
 %
-% 23/10/2013
+% 2013/10/23
 % 2016/01/22 
 %------------------------------------------------------------------------
 

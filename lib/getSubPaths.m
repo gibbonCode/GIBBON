@@ -8,8 +8,9 @@ function [pathNames]=getSubPaths(pathName)
 %the input pathName.
 %
 % Kevin Mattheus Moerman
-% kevinmoerman@hotmail.com
-% 18/04/2013
+% gibbon.toolbox@gmail.com
+%
+% 2013/04/18 Created
 % 2017/06/01 Fixed bug in relation to operational system differences
 %------------------------------------------------------------------------
 

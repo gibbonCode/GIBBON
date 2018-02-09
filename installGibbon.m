@@ -12,7 +12,6 @@ W=40; %Scrollbar width
 
 figStruct.Name='Installing GIBBON';
 
-
 hf = cFigure(figStruct);
 hf.NumberTitle='off';
 
@@ -84,40 +83,6 @@ close(hw)
 hTextStatement.String='Done adding toolbox paths';
 
 %% Add 3rd party paths
-
-% % disp('-> Adding 3rd party paths');
-% %
-% % prompt = {'FEBio full path to program (e.g. .../bin/FEBio2.lnx64 or ...\bin\FEBio2.exe):','export_fig path:'};
-% % dlg_title = 'Path definitions (leave empty if not used)';
-% %
-% % FEBioPath=getFEBioPath;
-% % % if isempty(FEBioPath)
-% % %     if ispc
-% % %         FEBioPath='';
-% % %     elseif isunix
-% % %         FEBioPath='';
-% % %     end
-% % % end
-% %
-% % exportFigPath=fileparts(which('export_fig'));
-% % defaultOptions = {FEBioPath,exportFigPath};
-% %
-% % s=25+max([cellfun(@numel,prompt) cellfun(@numel,defaultOptions)]);
-% %
-% % Q = inputdlg(prompt,dlg_title,[1 s],defaultOptions);
-% %
-% % if ~isempty(Q)
-% %     if ~isempty(Q{1})
-% %         setFEBioPath(Q{1}); %Set FEBio path in config file
-% %     end
-% %     if ~isempty(Q{2})
-% %         addpath(Q{2}); %Add export_fig to the path
-% %     end
-% % end
-%
-%
-% %%
-
 hTextStatement.String='Please provide 3rd party package locations.';
 
 hTextInfoStringDefault='Full path to FEBio excutable (leave blank if not needed):';
@@ -263,3 +228,28 @@ hf.UserData.uihandles.hTextStatement.String='Restart MATLAB to allow for the hel
 hf.UserData.uihandles.hTextTitle.String='Finished GIBBON is installed. Feel free to close this window';
 
 end
+ 
+%% 
+% _*GIBBON footer text*_ 
+% 
+% License: <https://github.com/gibbonCode/GIBBON/blob/master/LICENSE>
+% 
+% GIBBON: The Geometry and Image-based Bioengineering add-On. A toolbox for
+% image segmentation, image-based modeling, meshing, and finite element
+% analysis.
+% 
+% Copyright (C) 2017  Kevin Mattheus Moerman
+% 
+% This program is free software: you can redistribute it and/or modify
+% it under the terms of the GNU General Public License as published by
+% the Free Software Foundation, either version 3 of the License, or
+% (at your option) any later version.
+% 
+% This program is distributed in the hope that it will be useful,
+% but WITHOUT ANY WARRANTY; without even the implied warranty of
+% MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+% GNU General Public License for more details.
+% 
+% You should have received a copy of the GNU General Public License
+% along with this program.  If not, see <http://www.gnu.org/licenses/>.
+
