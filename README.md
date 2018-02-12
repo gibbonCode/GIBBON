@@ -30,35 +30,48 @@ GIBBON (The Geometry and Image-Based Bioengineering add-On) is an open-source MA
 - [Visualization](#Visualization)    
 
 ### Segmentation  <a name="Segmentation"></a>    
-In patient-, or subject-specific biomechanics, the geometry information is often derived from image data (e.g. Magnetic Resonance Imaging (MRI)). GIBBON offers image filtering and smoothening methods, and has a graphical user interface for 3D image segmentation (see `HELP_imx.m`). The segmented image data can be converted to 3D surface models which can be meshed for FEA.  
+GIBBON offers image filtering and smoothing methods, and has a graphical user interface for 3D image segmentation (`HELP_imx.m`). The segmented image data can be converted to 3D surface models (`DEMO_imx_levelset_surface_compare`) which can be meshed for FEA (`HELP_runTetGen`).   
 
-<img src="docs/img/imx_demo.gif" width="70%">   
-<!-- ![Segmentation](docs/img/imx_demo.gif) -->
+<div>
+<center>
+<img src="docs/img/imx_demo.gif" width="60%">   
+</div>
 
 ### Computer Aided Design (CAD) tools <a name="CAD"></a>  
-Sometimes geometry is instead imported or designed. Using GIBBON geometry can be imported from common mesh based CAD files (such as STL, see `HELP_import_STL`). However, several CAD style commands have also been implemented in GIBBON such as polygon rounding, revolution (see `HELP_polyRevolve`), extrusion (see `HELP_polyExtrude`), and sweeping and lofting (see `HELP_polyLoftLinear` and `HELP_sweepLoft`).   
+Using GIBBON, geometry can be imported from common mesh based CAD files (such as STL, `HELP_import_STL`). For generating geometries within MATLAB®, GIBBON also provides several CAD-style commands such as polygon rounding (`HELP_filletCurve`), revolution (`HELP_polyRevolve`), extrusion (`HELP_polyExtrude`), and sweeping and lofting (`HELP_polyLoftLinear` and `HELP_sweepLoft`). Simple geometries such as spheres (`HELP_geoSphere`), boxes (`HELP_quadBox`), platonic solids (`HELP_platonic_solid`), and rhombic dodecahedra (`HELP_rhombicDodecahedron`) can also be directly created using GIBBON.  
 
 ### Surface meshing tools<a name="SurfaceMeshing"></a>   
-2D multi-region triangular meshing (see for instance `HELP_regionTriMesh2D` and `HELP_multiRegionTriMeshUneven2D`), resampling meshes geodesically (see `DEMO_geodesic_remeshing`), smoothening (`DEMO_surface_smooth_methods`), and surface mesh refinement (see `HELP_subtri`, `HELP_subTriDual` and `HELP_subQuad`), mesh type conversions (see `HELP_tri2quad`, `HELP_quad2tri`), and mesh dual computation (see `HELP_patch_dual`). Geometries can also be exported to the STL format e.g. for computer aided manufacture and 3D printing.   
+2D multi-region triangular meshing (e.g. `HELP_regionTriMesh2D` and `HELP_multiRegionTriMeshUneven2D`), resampling meshes geodesically (`DEMO_geodesic_remeshing`), smoothing (`DEMO_surface_smooth_methods`), and surface mesh refinement (e.g. `HELP_subtri`, `HELP_subTriDual` and `HELP_subQuad`), mesh type conversions (e.g. `HELP_tri2quad`, `HELP_quad2tri`), and mesh dual computation (`HELP_patch_dual`). Geometries can also be exported to the STL format e.g. for computer aided manufacture and 3D printing.
 
 ### Volumetric meshing <a name="Meshing"></a>   
-Tetrahedral meshing (and constrained Delaunay tessellation) of multi-region domains is enabled through an interface with the [TetGen](http://wias-berlin.de/software/tetgen/) [@Si2015] package (`HELP_runTetGen`). Hexahedral meshes for some geometry types can be directly coded (e.g. sphere `HELP_hexMeshSphere`, boxes `HELP_hexMeshBox` and lattices `HELP_element2HexLattice`). For general input surfaces multi-region mixed tetrahedral-hexahedral meshing is also available (`DEMO_MixedTetHexMeshing`).   
+Tetrahedral meshing (and constrained Delaunay tessellation) of multi-region domains is enabled through an interface with the [TetGen](http://wias-berlin.de/software/tetgen/) package (`HELP_runTetGen` and `HELP_constrainedDelaunayTetGen`). Hexahedral meshes for some geometry types can be directly coded (e.g. spheres `HELP_hexMeshSphere`, boxes `HELP_hexMeshBox` and lattices `HELP_element2HexLattice`). For general input surfaces multi-region mixed tetrahedral-hexahedral meshing is also available (e.g. `DEMO_MixedTetHexMeshing`).
 
-<img src="docs/img/bunnyMesh.gif" width="70%">   
-<!-- ![Tetrahedral meshing](docs/img/bunnyMesh.gif) -->
+<div>
+<center>
+<img src="docs/img/bunnyMesh.gif" width="60%">
+</div>
 
 ### Lattice structures <a name="Lattice"></a>
-Various lattice structure tools have been implemented. One method to generate surface geometry for lattices is the use of triply-periodic functions (see `HELP_triplyPeriodicMinimal` and `DEMO_FEBio_trabeculae_compression`). Functions to convert element descriptions, such as tetrahedral and hexahedral elements, to lattice structures have also been implemented (`HELP_element2lattice` and `HELP_element2HexLattice`). These allow for the creation of 3D boundary conforming lattice structures on arbitrary input geometry. Exporting of hexahedral elements is also supported allowing for FEA on the created lattice structures.
+One method to generate surface geometry for lattices is the use of triply-periodic functions (`HELP_triplyPeriodicMinimal`). Functions to convert element descriptions, such as tetrahedral and hexahedral elements, to lattice structures have also been implemented (`HELP_element2lattice` and `HELP_element2HexLattice`). These allow for the creation of 3D boundary conforming lattice structures on arbitrary input geometry. Exporting of hexahedral elements is also supported allowing for FEA on the created lattice structures (`DEMO_FEBio_hexLattice_compression`).
+
+<div>
+<center>
+<img src="docs/img/latticeCompress.gif" width="60%">   
+</div>
 
 ### Finite Element Analysis <a name="FEA"></a>
-GIBBON interfaces with the free software [FEBio](http://febio.org/) for FEA (source code available on FEBio website). GIBBON can be used as a pre- and post- processor for FEA as it enables the code based development of meshes, boundary conditions, and input files. FEBio files can be directly exported based on dedicated MATLAB® structures. Furthermore, GIBBON can be used to start and control FEBio simulations (see also the `runMonitorFEBio` function). As such, iterative and inverse FEA (e.g. based on MATLAB® optimization routines) is also enabled. All `DEMO_FEBio_...` files contain FEBio examples, `DEMO_FEBio_iFEA_uniaxial_01` is a simple inverse FEA example.
-The image below is for large strain analysis of a twisting bar and stems from the demo `DEMO_FEBio_bar_twist`. Other `DEMO_FEBio_...` files cover uni-axial tension/compression, bending, indentation, viscoelastic analysis, contact and indentation problems, multi-generational materials for pre-load analysis.   
+GIBBON interfaces with the free software [FEBio](http://febio.org/) for FEA (source code available on FEBio website). GIBBON can be used as a pre- and post- processor for FEBio as it enables code-based development of meshes, boundary conditions, and input files. FEBio files can be directly exported based on dedicated MATLAB® structures (`HELP_febioStruct2xml`). Furthermore, GIBBON can be used to start and control FEBio simulations. As such, iterative and inverse FEA (e.g. based on MATLAB® optimization routines) is also enabled. All `DEMO_febio_...` files are FEBio demos, e.g. `DEMO_febio_0001_cube_uniaxial` is a simple uniaxial loading example, and `DEMO_FEBio_iFEA_uniaxial_01` is an example of inverse FEA.    
+The image below is for large strain analysis of a twisting bar and stems from the demo `DEMO_FEBio_bar_twist`. Other demos cover tension, compression, shear, applied forces, applied pressures, applied displacements, bending, poroelasticity, dynamic and viscoelastic analysis, contact and indentation problems, multi-generational materials for pre-load analysis.     
 
-<img src="docs/img/barTwist.gif" width="70%">   
-<!-- ![Large strain analysis](docs/img/barTwist.gif) -->
+**The `DEMO_FEBio_...` demos are for the older febio_spec 2.0 while the `DEMO_febio_...` demos are for the latest febio_spec 2.5.**   
+
+<div>
+<center>
+<img src="docs/img/barTwist.gif" width="60%">   
+</div>
 
 ### Visualization <a name="Visualization"></a>    
-GIBBON expands the standard MATLAB® visualization capabilities by adding 3D image and voxel visualization (see `HELP_im2patch` and `HELP_sliceViewer`), meshed geometries (`HELP_gpatch`), finite element models (`HELP_element2patch`), and colormapped vector data (`HELP_quiverVec`), and all visualization methods enable multiple colormaps to be used in each figure or axis window. Furthermore GIBBON offers a custom figure window `cFigure` containing 3D rotation options (`HELP_vcw`) that mimic CAD behavior of 3D scene rendering, and high quality figure exporting options (`HELP_efw`). Advanced graphics animation creation and exporting capabilities through a figure window based GUI are also enabled (see `HELP_anim8`).   
+GIBBON expands the standard MATLAB® visualization capabilities by adding 3D image and voxel visualization (`HELP_im2patch` and `HELP_sliceViewer`), meshed geometries (`HELP_gpatch` and `HELP_meshView`), finite element models (`HELP_element2patch`), and colormapped vector data (`HELP_quiverVec`), and all visualization methods enable multiple colormaps to be used in each figure or axis window. Furthermore GIBBON offers a custom figure window `cFigure` containing 3D rotation options (`HELP_vcw`) that mimic CAD behavior of 3D scene rendering, and high quality figure exporting options (`HELP_efw`). Advanced graphics animation creation and exporting capabilities through a figure window based GUI are also enabled (`HELP_anim8`).
 
 # Installation <a name="Installation"></a>  
 The steps below guide you through a streamlined installation procedure using the `installGibbon.m` function<sup>\*</sup>.   
@@ -80,12 +93,13 @@ Below is a list of 3rd party packages that are required for full functionality. 
 |[__TetGen__](http://wias-berlin.de/software/tetgen/) <br/> <img src="docs/img/logos/tetgenLogo.gif" href="http://wias-berlin.de/software/tetgen/" alt="TetGen" width="100px">| Is used for tetrahedral meshing (and possibly constrained 3D Delaunay tessellation). See for instance `HELP_runTetGen.m`. |__Yes__| For other versions: [__TetGen website__](http://wias-berlin.de/software/tetgen/)|
 
 ### 2. Install GIBBON
-By running `installGibbon.m` the GIBBON, FEBio, and export_fig path definitions will be added and saved to MATLAB. The help and documentation will also be integrated. Once finished you will be asked to __restart MATLAB__. `installGibbon.m` can be found in the main GIBBON folder.   
+By running `installGibbon.m` the GIBBON, FEBio, and export_fig path definitions will be added and saved to MATLAB. The help and documentation will also be integrated. Once finished you will be asked to restart MATLAB. `installGibbon.m` can be found in the main GIBBON folder.  
 
 # Getting started <a name="Start"></a>
 
 ### Access the integrated help
 * To access the help documentation from MATLAB click on the HELP browser then click o `GIBBON toolbox` under `Supplemental Software` as shown below. This will open the toolbox help and documentation which is now searchable and integrated just like the rest of MATLAB's help and documentation.  
+* You may also use `gdoc` (similar to MATLAB's doc) to access GIBBON documentation. For instance for help on `im2patch` use `gdoc im2patch`. This will search the integrated help for im2patch and display the results.
 
 <img src="docs/gif_helpSearch.gif" alt="Help integration" width="100%">
 
@@ -94,11 +108,11 @@ By running `installGibbon.m` the GIBBON, FEBio, and export_fig path definitions 
 
 * The source for the help information for any function `functionName` is named `HELP_functionName`, and  the source for demos have `DEMO_` as part of the name. Therefore if one is interested in reproducing or starting off from codes in the help and documentation simply start typing code names starting in `HELP_` or `DEMO_` in the MATLAB command window, e.g. `HELP_ind2patch` can be used to generate the help information for the `ind2patch` function. Users can start editing the file by typing `open HELP_ind2patch` in the command window. By publishing (MATLAB publish functionality) the HELP_ or DEMO_ files .html files are created in the `docs\html` folder. As such if users alter/contribute code in the `lib` folder and generate associated `HELP_` or `DEMO_` files, new help and documentation is added. For new help and documentation to become known and visible to MATLAB run the `createHelpDemoDocumentation` function and restart MATLAB.  
 
-* Many of the `DEMO_` files focus on the use of FEBio. The demo `DEMO_FEBio_block_uniaxial_compression` for instance features a simple cube that undergoes a 30% compression. Other demos focus on different load types, single versus multi-step analysis, different materials and inverse analysis (e.g. `DEMO_FEBio_iFEA_uniaxial_01`).
+* Many of the `DEMO_` files focus on the use of FEBio. The demo `DEMO_FEBio_block_uniaxial_compression` for instance features a simple cube that undergoes a 30% compression. Other demos focus on different load types, single versus multi-step analysis, different materials and inverse analysis (e.g. `DEMO_FEBio_iFEA_uniaxial_01`). Demos with `DEMO_FEBio_...` are for the old febio_spec 2.0 format. The newer demos with `DEMO_febio_...` are for the latest febio_spec 2.5.
 
 # Testing <a name="Test"></a>
-GIBBON's core functionality can be tested by running `testGibbon('all','test');`. Use `testGibbon('demo','test');` or `testGibbon('help','test');` for running the demo or help files only. Use the `'publish'` option to test and publish the output to the integrated help and documentation`testGibbon('all','publish');`.   
-GIBBON is currently developed and tested using the most recent version of MATLAB (or the latest pre-release) and has been tested on Windows 10, Ubuntu 14.10/16.04/17.10, and Mac OS. Most of GIBBON's functionality is compatible with older MATLAB versions, especially MATLAB R2014a and newer (Delaunay tessellation and toolbox help integration are amongst things that have undergone large change). Please inform the developers (or open an issue) if a particular function does not work for your MATLAB environment. It is likely that codes can be altered to work for your version.    
+GIBBON's core functionality can be tested by running `testGibbon('all','test');`. Use `testGibbon('demo','test');` or `testGibbon('help','test');` for running the demo or help files only.     
+GIBBON is currently developed and tested using the most recent version of MATLAB (or the latest pre-release) and has been tested on Windows 10, Ubuntu 14.10/16.04/17.10, and Mac OS. Most of GIBBON's functionality is compatible with older MATLAB versions, especially MATLAB R2014a and newer (Delaunay tessellation and toolbox help integration are amongst things that have undergone large changes). Please inform the developers (or open an issue) if a particular function does not work for your MATLAB environment. It is likely that codes can be easily altered to work for your version.    
 A large portion of GIBBON's functionality does not rely on special MATLAB toolboxes. However some functions do. Here is a list of toolboxes which appear to be used in GIBBON:
 * Image Processing Toolbox
 * Bioinformatics Toolbox
@@ -110,7 +124,7 @@ A large portion of GIBBON's functionality does not rely on special MATLAB toolbo
 * Parallel Computing Toolbox
 * Mapping Toolbox    
 
-Geodesic remeshing (`DEMO_geodesic_remeshing`) currently only works for Windows OS, for other operational systems special mex file compilation is required or an alternative (experimental function) is used.
+Geodesic remeshing (`DEMO_geodesic_remeshing`) currently only works for Windows OS, for other operational systems special mex file compilation is required or an alternative (experimental function) is used instead.
 
 # License <a name="License"></a>
 [![License](https://img.shields.io/badge/License-GNU_GPLv3-orange.svg)](https://github.com/gibbonCode/GIBBON/blob/master/LICENSE)
