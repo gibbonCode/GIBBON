@@ -1,14 +1,28 @@
-%% DEMO_imx
+%% DEMO_imx_levelset_surface_compare
+% Below is a demonstration for:
 % 
+% * Segmenting contours from 3D image data
+% * Converting the contour data to a levelset image
+% * Compute a surface from the levelset image
+% * Compate the surface to a theoretical surface
+
+%% Keywords
+%
+% * Image segmentation 
+% * Image contours
+% * imx
+% * Levelset image
+% * Surface reconstruction
 
 %%
 clear; close all; clc;
 
-%%
+%%close all
 % Plot settings
 fontSize=10;
 faceAlpha1=1;
 faceAlpha2=0.3;
+plotColors=gjet(4);
 
 %%
 
@@ -40,6 +54,9 @@ imSiz=imSiz([2 1 3]); %Image size (x, y corresponds to j,i in image coordinates,
 
 % Using |triSurf2Im| function to convert patch data to image data
 [M,G,bwLabels]=triSurf2Im(F,V,voxelSize,imOrigin,imSiz);
+
+%calucalte coordinate in image system
+Vt=V-imOrigin(ones(size(V,1),1),:);
 
 %%
 % Plotting the results
@@ -85,34 +102,31 @@ set(hc,'YTickLabel',{'Exterior','Boundary','Intertior'});
 axis equal; view(3); axis tight;  grid on;  set(gca,'FontSize',fontSize);
 drawnow;
 
-%%
-% Start segmentation using |imx|
+%% Start contour selection using |imx|
+% Use |imx| to draw contours for tissue boundaries of interest. 
 
-v=voxelSize*ones(1,3);
-hf=imx(M,v);
-drawnow; hold on;
+v=voxelSize*ones(1,3); %Voxel size
+hf=imx(M,v); %Start image contour analysis
+drawnow; 
 
-Vt=V-imOrigin(ones(size(V,1),1),:);
-gpatch(F,Vt,'g','none',0.5);
+%% Upload previously completed contours
+% You can upload complete contours by using the load button. Try to load in
+% imseg_torus_1.mat or imseg_torus_2.mat from...GIBBON/data/imseg/ 
 
-% msgbox('Try to load in imseg_torus_1.mat or imseg_torus_2.mat from...GIBBON/data/imseg/','Hint','help')
+%% Example converting completed contours into levelset function
+% The surface should exist at the level 0
 
-%%
-% Turn contours into segmentation
-
-hf1q=sv3(M,v);
+% Start simple slice viewer
+sv3(M,v);
 drawnow;
 
 numContours=numel(loadNames);
 numSlices=size(M,3);
 
-plotColors=gjet(4);
-
 levelSetType=2;
 vizStruct.colormap=gjet(250);
 
-%%
-
+%Loop over slices and compute levelset
 KK=repmat(M,1,1,1,2);
 for q=1:1:2
     loadName=fullfile(pathName,loadNames{q});
@@ -133,20 +147,19 @@ for q=1:1:2
         end
     end    
 end
-gpatch(F,Vt,'r','none',0.5);
+gpatch(F,Vt,'g','none',0.5); %Plot correct theoretical surface 
 drawnow;
 
-%%
+%% 
+% Visualize levelset 
 
 KK(:,:,:,2)=-KK(:,:,:,2);
 K=max(KK,[],4);%KK(:,:,:,1);
 K(isnan(K))=nanmax(K(:));
 
 hf1q=sv3(K,v,vizStruct);
-% 
-% hf2q=sv3(K2,v,vizStruct);
 
-%%
+%% Convert levelset function to a surface
 
 controlPar.contourLevel=0;
 controlPar.voxelSize=v;
@@ -155,21 +168,28 @@ controlPar.capOpt=1;
 
 [Fi,Vi]=levelset2isosurface(K,controlPar);
 Fi=fliplr(Fi); %Invert orientation
+
+%% Surface improvement and smoothing
+
+%Remove tri-connected parts
 [Fi,Vi]=triSurfRemoveThreeConnect(Fi,Vi,[]);
 
+%Smoothen
 cParSmooth.Method='HC';
 cParSmooth.Alpha=0.1;
 cParSmooth.Beta=0.5;
 cParSmooth.n=15;
 [Vi]=patchSmooth(Fi,Vi,[],cParSmooth);
 
-%%
-
-% Di=minDist(Vi,Vt);
+%% Compare to theoretical original
+% Compare by computing distance with ray-tracing method. 
 [Di]=triSurfSetDist(Fi,Vi,F,Vt,'dist-ray');
 
 %%
+% Visualize distance measure
+
 cFigure; 
+title('Distance to theoretical surface');
 hold on; 
 gpatch(F,Vt,0.5*ones(1,3),'none',0.5);
 hp=gpatch(Fi,Vi,Di,'none',1);
@@ -177,12 +197,6 @@ caxis([min(Di(:)) max(Di(:))]);
 colormap(gjet(250)); colorbar; 
 axisGeom;
 drawnow
-
-%%
-
-
-
-
 
 %% 
 % _*GIBBON footer text*_ 
