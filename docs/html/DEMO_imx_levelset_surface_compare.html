@@ -6,7 +6,7 @@
    <!--
 This HTML was auto-generated from MATLAB code.
 To make changes, update the MATLAB code and republish this document.
-      --><title>DEMO_imx_levelset_surface_compare</title><meta name="generator" content="MATLAB 9.4"><link rel="schema.DC" href="http://purl.org/dc/elements/1.1/"><meta name="DC.date" content="2018-02-12"><meta name="DC.source" content="DEMO_imx_levelset_surface_compare.m"><style type="text/css">
+      --><title>DEMO_imx_levelset_surface_compare</title><meta name="generator" content="MATLAB 9.4"><link rel="schema.DC" href="http://purl.org/dc/elements/1.1/"><meta name="DC.date" content="2018-02-14"><meta name="DC.source" content="DEMO_imx_levelset_surface_compare.m"><style type="text/css">
 html,body,div,span,applet,object,iframe,h1,h2,h3,h4,h5,h6,p,blockquote,pre,a,abbr,acronym,address,big,cite,code,del,dfn,em,font,img,ins,kbd,q,s,samp,small,strike,strong,sub,sup,tt,var,b,u,i,center,dl,dt,dd,ol,ul,li,fieldset,form,label,legend,table,caption,tbody,tfoot,thead,tr,th,td{margin:0;padding:0;border:0;outline:0;font-size:100%;vertical-align:baseline;background:transparent}body{line-height:1}ol,ul{list-style:none}blockquote,q{quotes:none}blockquote:before,blockquote:after,q:before,q:after{content:'';content:none}:focus{outine:0}ins{text-decoration:none}del{text-decoration:line-through}table{border-collapse:collapse;border-spacing:0}
 
 html { min-height:100%; margin-bottom:1px; }
@@ -66,15 +66,18 @@ table td { padding:7px 5px; text-align:left; vertical-align:top; border:1px soli
 
 
 
-  </style></head><body><div class="content"><h1>DEMO_imx_levelset_surface_compare</h1><!--introduction--><p>Below is a demonstration for:</p><div><ul><li>Segmenting contours from 3D image data</li><li>Converting the contour data to a levelset image</li><li>Compute a surface from the levelset image</li><li>Compate the surface to a theoretical surface</li></ul></div><!--/introduction--><h2>Contents</h2><div><ul><li><a href="#1">Keywords</a></li><li><a href="#5">Simulate image</a></li><li><a href="#8">Start contour selection using <tt>imx</tt></a></li><li><a href="#9">Upload previously completed contours</a></li><li><a href="#10">Example converting completed contours into levelset function</a></li><li><a href="#12">Convert levelset function to a surface</a></li><li><a href="#13">Surface improvement and smoothing</a></li><li><a href="#14">Compare to theoretical original</a></li></ul></div><h2 id="1">Keywords</h2><div><ul><li>Image segmentation</li><li>Image contours</li><li>imx</li><li>Levelset image</li><li>Surface reconstruction</li></ul></div><pre class="codeinput">clear; close <span class="string">all</span>; clc;
-</pre><p>Plot settings</p><pre class="codeinput">fontSize=10;
+  </style></head><body><div class="content"><h1>DEMO_imx_levelset_surface_compare</h1><!--introduction--><p>Below is a demonstration for:</p><div><ul><li>Segmenting contours from 3D image data</li><li>Converting the contour data to a levelset image</li><li>Compute a surface from the levelset image</li><li>Compate the surface to a theoretical surface</li></ul></div><!--/introduction--><h2>Contents</h2><div><ul><li><a href="#1">Keywords</a></li><li><a href="#4">Simulate image</a></li><li><a href="#7">Start contour selection using <tt>imx</tt></a></li><li><a href="#8">Upload previously completed contours</a></li><li><a href="#9">Example converting completed contours into levelset function</a></li><li><a href="#11">Convert levelset function to a surface</a></li><li><a href="#12">Surface improvement and smoothing</a></li><li><a href="#13">Compare to theoretical original</a></li></ul></div><h2 id="1">Keywords</h2><div><ul><li>Image segmentation</li><li>Image contours</li><li>imx</li><li>Levelset image</li><li>Surface reconstruction</li></ul></div><pre class="codeinput">clear; close <span class="string">all</span>; clc;
+
+<span class="comment">%%close all</span>
+<span class="comment">% Plot settings</span>
+fontSize=10;
 faceAlpha1=1;
 faceAlpha2=0.3;
 plotColors=gjet(4);
 </pre><pre class="codeinput">defaultFolder = fileparts(fileparts(mfilename(<span class="string">'fullpath'</span>))); <span class="comment">%Set main folder</span>
 pathName=fullfile(defaultFolder,<span class="string">'data'</span>,<span class="string">'imseg'</span>);
 loadNames={<span class="string">'imseg_torus_1'</span>,<span class="string">'imseg_torus_2'</span>};
-</pre><h2 id="5">Simulate image</h2><p>Defining an example triangulated surface model</p><pre class="codeinput"><span class="comment">% Defining a deformed and rotated torus shape</span>
+</pre><h2 id="4">Simulate image</h2><p>Defining an example triangulated surface model</p><pre class="codeinput"><span class="comment">% Defining a deformed and rotated torus shape</span>
 r=1; <span class="comment">%Sphere radius</span>
 rc=2; <span class="comment">%Central radius</span>
 nr=16;
@@ -134,10 +137,10 @@ set(hc,<span class="string">'YTick'</span>,[1/3 1 5/3]);
 set(hc,<span class="string">'YTickLabel'</span>,{<span class="string">'Exterior'</span>,<span class="string">'Boundary'</span>,<span class="string">'Intertior'</span>});
 axis <span class="string">equal</span>; view(3); axis <span class="string">tight</span>;  grid <span class="string">on</span>;  set(gca,<span class="string">'FontSize'</span>,fontSize);
 drawnow;
-</pre><img vspace="5" hspace="5" src="DEMO_imx_levelset_surface_compare_01.png" alt=""> <h2 id="8">Start contour selection using <tt>imx</tt></h2><p>Use <tt>imx</tt> to draw contours for tissue boundaries of interest.</p><pre class="codeinput">v=voxelSize*ones(1,3); <span class="comment">%Voxel size</span>
+</pre><img vspace="5" hspace="5" src="DEMO_imx_levelset_surface_compare_01.png" alt=""> <h2 id="7">Start contour selection using <tt>imx</tt></h2><p>Use <tt>imx</tt> to draw contours for tissue boundaries of interest.</p><pre class="codeinput">v=voxelSize*ones(1,3); <span class="comment">%Voxel size</span>
 hf=imx(M,v); <span class="comment">%Start image contour analysis</span>
 drawnow;
-</pre><img vspace="5" hspace="5" src="DEMO_imx_levelset_surface_compare_02.png" alt=""> <h2 id="9">Upload previously completed contours</h2><p>You can upload complete contours by using the load button. Try to load in imseg_torus_1.mat or imseg_torus_2.mat from...GIBBON/data/imseg/</p><h2 id="10">Example converting completed contours into levelset function</h2><p>The surface should exist at the level 0</p><pre class="codeinput"><span class="comment">% Start simple slice viewer</span>
+</pre><img vspace="5" hspace="5" src="DEMO_imx_levelset_surface_compare_02.png" alt=""> <h2 id="8">Upload previously completed contours</h2><p>You can upload complete contours by using the load button. Try to load in imseg_torus_1.mat or imseg_torus_2.mat from...GIBBON/data/imseg/</p><h2 id="9">Example converting completed contours into levelset function</h2><p>The surface should exist at the level 0</p><pre class="codeinput"><span class="comment">% Start simple slice viewer</span>
 sv3(M,v);
 drawnow;
 
@@ -175,14 +178,14 @@ K=max(KK,[],4);<span class="comment">%KK(:,:,:,1);</span>
 K(isnan(K))=nanmax(K(:));
 
 hf1q=sv3(K,v,vizStruct);
-</pre><img vspace="5" hspace="5" src="DEMO_imx_levelset_surface_compare_04.png" alt=""> <h2 id="12">Convert levelset function to a surface</h2><pre class="codeinput">controlPar.contourLevel=0;
+</pre><img vspace="5" hspace="5" src="DEMO_imx_levelset_surface_compare_04.png" alt=""> <h2 id="11">Convert levelset function to a surface</h2><pre class="codeinput">controlPar.contourLevel=0;
 controlPar.voxelSize=v;
 controlPar.nSub=[1 1 1];
 controlPar.capOpt=1;
 
 [Fi,Vi]=levelset2isosurface(K,controlPar);
 Fi=fliplr(Fi); <span class="comment">%Invert orientation</span>
-</pre><h2 id="13">Surface improvement and smoothing</h2><pre class="codeinput"><span class="comment">%Remove tri-connected parts</span>
+</pre><h2 id="12">Surface improvement and smoothing</h2><pre class="codeinput"><span class="comment">%Remove tri-connected parts</span>
 [Fi,Vi]=triSurfRemoveThreeConnect(Fi,Vi,[]);
 
 <span class="comment">%Smoothen</span>
@@ -191,12 +194,12 @@ cParSmooth.Alpha=0.1;
 cParSmooth.Beta=0.5;
 cParSmooth.n=15;
 [Vi]=patchSmooth(Fi,Vi,[],cParSmooth);
-</pre><h2 id="14">Compare to theoretical original</h2><p>Compare by computing distance with ray-tracing method.</p><pre class="codeinput">[Di]=triSurfSetDist(Fi,Vi,F,Vt,<span class="string">'dist-ray'</span>);
+</pre><h2 id="13">Compare to theoretical original</h2><p>Compare by computing distance with ray-tracing method.</p><pre class="codeinput">[Di]=triSurfSetDist(Fi,Vi,F,Vt,<span class="string">'dist-ray'</span>);
 </pre><p>Visualize distance measure</p><pre class="codeinput">cFigure;
 title(<span class="string">'Distance to theoretical surface'</span>);
 hold <span class="string">on</span>;
 gpatch(F,Vt,0.5*ones(1,3),<span class="string">'none'</span>,0.5);
-hp=gpatch(Fi,Vi,Di,<span class="string">'none'</span>,1);
+hp=gpatch(Fi,Vi,Di,<span class="string">'k'</span>,1);
 caxis([min(Di(:)) max(Di(:))]);
 colormap(gjet(250)); colorbar;
 axisGeom;
@@ -222,7 +225,7 @@ drawnow
 %%
 clear; close all; clc;
 
-%%
+%%close all
 % Plot settings
 fontSize=10;
 faceAlpha1=1;
@@ -397,7 +400,7 @@ cFigure;
 title('Distance to theoretical surface');
 hold on; 
 gpatch(F,Vt,0.5*ones(1,3),'none',0.5);
-hp=gpatch(Fi,Vi,Di,'none',1);
+hp=gpatch(Fi,Vi,Di,'k',1);
 caxis([min(Di(:)) max(Di(:))]);
 colormap(gjet(250)); colorbar; 
 axisGeom;

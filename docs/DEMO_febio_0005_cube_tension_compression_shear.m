@@ -169,11 +169,22 @@ stepStruct.Control.time_stepper.opt_iter=opt_iter;
 stepStruct.Control.max_refs=max_refs;
 stepStruct.Control.max_ups=max_ups;
 
+%Add template based default settings to proposed control section
+[stepStruct.Control]=structComplete(stepStruct.Control,febio_spec.Control,1); %Complement provided with default if missing
+
+%Remove control field (part of template) since step specific control sections are used
+febio_spec=rmfield(febio_spec,'Control'); 
+
 febio_spec.Step{1}.Control=stepStruct.Control;
+febio_spec.Step{1}.ATTR.id=1;
 febio_spec.Step{2}.Control=stepStruct.Control;
+febio_spec.Step{2}.ATTR.id=2;
 febio_spec.Step{3}.Control=stepStruct.Control;
+febio_spec.Step{3}.ATTR.id=3;
 febio_spec.Step{4}.Control=stepStruct.Control;
+febio_spec.Step{4}.ATTR.id=4;
 febio_spec.Step{5}.Control=stepStruct.Control;
+febio_spec.Step{5}.ATTR.id=5;
 
 %Material section
 febio_spec.Material.material{1}.ATTR.type='Ogden';

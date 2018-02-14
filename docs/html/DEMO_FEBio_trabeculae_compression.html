@@ -6,7 +6,7 @@
    <!--
 This HTML was auto-generated from MATLAB code.
 To make changes, update the MATLAB code and republish this document.
-      --><title>DEMO_FEBio_trabeculae_compression</title><meta name="generator" content="MATLAB 9.4"><link rel="schema.DC" href="http://purl.org/dc/elements/1.1/"><meta name="DC.date" content="2018-01-19"><meta name="DC.source" content="DEMO_FEBio_trabeculae_compression.m"><style type="text/css">
+      --><title>DEMO_FEBio_trabeculae_compression</title><meta name="generator" content="MATLAB 9.4"><link rel="schema.DC" href="http://purl.org/dc/elements/1.1/"><meta name="DC.date" content="2018-02-14"><meta name="DC.source" content="DEMO_FEBio_trabeculae_compression.m"><style type="text/css">
 html,body,div,span,applet,object,iframe,h1,h2,h3,h4,h5,h6,p,blockquote,pre,a,abbr,acronym,address,big,cite,code,del,dfn,em,font,img,ins,kbd,q,s,samp,small,strike,strong,sub,sup,tt,var,b,u,i,center,dl,dt,dd,ol,ul,li,fieldset,form,label,legend,table,caption,tbody,tfoot,thead,tr,th,td{margin:0;padding:0;border:0;outline:0;font-size:100%;vertical-align:baseline;background:transparent}body{line-height:1}ol,ul{list-style:none}blockquote,q{quotes:none}blockquote:before,blockquote:after,q:before,q:after{content:'';content:none}:focus{outine:0}ins{text-decoration:none}del{text-decoration:line-through}table{border-collapse:collapse;border-spacing:0}
 
 html { min-height:100%; margin-bottom:1px; }
@@ -254,22 +254,26 @@ E=meshOutput.elements;
 elementMaterialIndices=meshOutput.elementMaterialID;
 </pre><pre class="codeoutput"> 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
---- TETGEN Tetrahedral meshing --- 19-Jan-2018 14:43:03
+--- TETGEN Tetrahedral meshing --- 14-Feb-2018 14:51:07
+Warning: smeshStruct.smeshName input will be replaced by smeshStruct.modelName
+in future releases! 
  
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
---- Writing SMESH file --- 19-Jan-2018 14:43:03
+--- Writing SMESH file --- 14-Feb-2018 14:51:07
+Warning: smeshStruct.smeshName input will be replaced by smeshStruct.modelName
+in future releases! 
 ----&gt; Adding node field
 ----&gt; Adding facet field
 ----&gt; Adding holes specification
 ----&gt; Adding region specification
---- Done --- 19-Jan-2018 14:43:04
---- Running TetGen to mesh input boundary--- 19-Jan-2018 14:43:04
+--- Done --- 14-Feb-2018 14:51:08
+--- Running TetGen to mesh input boundary--- 14-Feb-2018 14:51:08
 Opening /mnt/data/MATLAB/GIT/GIBBON/lib_ext/tetGen/tempFiles/tempModel.smesh.
---- Done --- 19-Jan-2018 14:43:05
+--- Done --- 14-Feb-2018 14:51:09
  
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
---- Importing TetGen files --- 19-Jan-2018 14:43:05
---- Done --- 19-Jan-2018 14:43:05
+--- Importing TetGen files --- 14-Feb-2018 14:51:09
+--- Done --- 14-Feb-2018 14:51:09
 </pre><h2 id="10">Visualizing mesh</h2><pre class="codeinput">meshView(meshOutput);
 </pre><img vspace="5" hspace="5" src="DEMO_FEBio_trabeculae_compression_03.png" alt=""> <h2 id="11">SET UP BOUNDARY CONDITIONS</h2><pre class="codeinput"><span class="comment">%List of nodes to fix</span>
 bcFixList=Fb(Cb==3,:);
@@ -395,9 +399,12 @@ FEB_struct.output_types={<span class="string">'node_data'</span>};
 FEB_struct.data_types={<span class="string">'ux;uy;uz'</span>};
 </pre><h2 id="15">SAVING .FEB FILE</h2><pre class="codeinput">FEB_struct.disp_opt=0; <span class="comment">%Display waitbars option</span>
 febStruct2febFile(FEB_struct);
-</pre><pre class="codeoutput"> 
+</pre><pre class="codeoutput">Warning: febStruct2febFile is depricated and will be removed in future releases.
+Update your codes to use febioStruct2xml, see HELP_febioStruct2xml (furthermore
+febio_spec version 2.5 is recommended) 
+ 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
---- Writing FEBio XML object --- 19-Jan-2018 14:43:10
+--- Writing FEBio XML object --- 14-Feb-2018 14:51:14
 Using febio_spec: 2.0
 Adding Module level
 Adding Control level
@@ -416,7 +423,7 @@ Adding Output level
 ----&gt; Adding plotfile field
 ----&gt; Adding logfile field
 Writing .feb file
---- Done --- 19-Jan-2018 14:43:16
+--- Done --- 14-Feb-2018 14:51:20
 </pre><h2 id="16">RUNNING FEBIO JOB</h2><pre class="codeinput"><span class="comment">% FEBioRunStruct.FEBioPath='C:\Program Files\febio2-2.2.6\bin\FEBio2.exe';</span>
 FEBioRunStruct.run_filename=FEB_struct.run_filename;
 FEBioRunStruct.run_logname=FEB_struct.run_logname;
@@ -430,9 +437,9 @@ FEBioRunStruct.maxLogCheckTime=3; <span class="comment">%Max log file checking t
 [runFlag]=runMonitorFEBio(FEBioRunStruct);<span class="comment">%START FEBio NOW!!!!!!!!</span>
 </pre><pre class="codeoutput"> 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
---- STARTING FEBIO JOB --- 19-Jan-2018 14:43:16
+--- STARTING FEBIO JOB --- 14-Feb-2018 14:51:20
 Waiting for log file...
-Proceeding to check log file...19-Jan-2018 14:43:17
+Proceeding to check log file...14-Feb-2018 14:51:20
 ------- converged at time : 0.05
 ------- converged at time : 0.1
 ------- converged at time : 0.15
@@ -453,7 +460,7 @@ Proceeding to check log file...19-Jan-2018 14:43:17
 ------- converged at time : 0.9
 ------- converged at time : 0.95
 ------- converged at time : 1
---- Done --- 19-Jan-2018 14:43:37
+--- Done --- 14-Feb-2018 14:51:41
 </pre><h2 id="17">IMPORTING NODAL DISPLACEMENT RESULTS</h2><p>Importing nodal displacements from a log file</p><pre class="codeinput"> fName=fullfile(savePath,FEB_struct.run_output_names{1});
 [time_mat, N_disp_mat,~]=importFEBio_logfile(fName); <span class="comment">%Nodal displacements</span>
 
@@ -512,7 +519,7 @@ animStruct.Time=time_mat;
 
 anim8(hf,animStruct);
 drawnow;
-</pre><img vspace="5" hspace="5" src="DEMO_FEBio_trabeculae_compression_07.png" alt=""> <p><img vspace="5" hspace="5" src="gibbVerySmall.gif" alt=""> </p><p><i><b>GIBBON</b></i> <a href="www.gibboncode.org">www.gibboncode.org</a></p><p><i>Kevin Mattheus Moerman</i>, <a href="gibbon.toolbox@gmail.com">gibbon.toolbox@gmail.com</a></p><p><i><b>GIBBON footer text</b></i></p><p>License: <a href="https://github.com/gibbonCode/GIBBON/blob/master/LICENSE">https://github.com/gibbonCode/GIBBON/blob/master/LICENSE</a></p><p>GIBBON: The Geometry and Image-based Bioengineering add-On. A toolbox for image segmentation, image-based modeling, meshing, and finite element analysis.</p><p>Copyright (C) 2017  Kevin Mattheus Moerman</p><p>This program is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.</p><p>This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for more details.</p><p>You should have received a copy of the GNU General Public License along with this program.  If not, see <a href="http://www.gnu.org/licenses/">http://www.gnu.org/licenses/</a>.</p><p class="footer"><br><a href="https://www.mathworks.com/products/matlab/">Published with MATLAB&reg; R2018a</a><br></p></div><!--
+</pre><img vspace="5" hspace="5" src="DEMO_FEBio_trabeculae_compression_07.png" alt=""> <p><img vspace="5" hspace="5" src="gibbVerySmall.gif" alt=""> </p><p><i><b>GIBBON</b></i> <a href="www.gibboncode.org">www.gibboncode.org</a></p><p><i>Kevin Mattheus Moerman</i>, <a href="gibbon.toolbox@gmail.com">gibbon.toolbox@gmail.com</a></p><p><i><b>GIBBON footer text</b></i></p><p>License: <a href="https://github.com/gibbonCode/GIBBON/blob/master/LICENSE">https://github.com/gibbonCode/GIBBON/blob/master/LICENSE</a></p><p>GIBBON: The Geometry and Image-based Bioengineering add-On. A toolbox for image segmentation, image-based modeling, meshing, and finite element analysis.</p><p>Copyright (C) 2018  Kevin Mattheus Moerman</p><p>This program is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.</p><p>This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for more details.</p><p>You should have received a copy of the GNU General Public License along with this program.  If not, see <a href="http://www.gnu.org/licenses/">http://www.gnu.org/licenses/</a>.</p><p class="footer"><br><a href="https://www.mathworks.com/products/matlab/">Published with MATLAB&reg; R2018a</a><br></p></div><!--
 ##### SOURCE BEGIN #####
 %% DEMO_FEBio_trabeculae_compression
 % This demonstration shows the creation of a trabacular structure model
@@ -977,7 +984,7 @@ drawnow;
 % image segmentation, image-based modeling, meshing, and finite element
 % analysis.
 % 
-% Copyright (C) 2017  Kevin Mattheus Moerman
+% Copyright (C) 2018  Kevin Mattheus Moerman
 % 
 % This program is free software: you can redistribute it and/or modify
 % it under the terms of the GNU General Public License as published by

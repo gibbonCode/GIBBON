@@ -68,6 +68,7 @@ switch nargin
         figStruct.Visible='on';
         figStruct.ColorDef='white';
         figStruct.Color='w';
+%         figStruct.Colormap=gjet(250);
         screenSizeGroot = get(groot,'ScreenSize');
         figStruct.ScreenOffset=round(max(screenSizeGroot)*0.1); %i.e. figures are spaced around 10% of the sreensize from the edges
         vcwOpt={'pan','rot','zoomz','zoomz'};

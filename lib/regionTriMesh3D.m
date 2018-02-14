@@ -77,12 +77,10 @@ V(:,3)=interpFunc(V(:,[1 2]));
 V=(R_fit*V')';
 V=V+Vt_mean(ones(size(V,1),1),:);
 
-%%
-
-TR = triangulation(F,V);
-boundEdges = freeBoundary(TR);
-boundaryInd=unique(boundEdges(:));
-
+%% Smoothen
+% TR = triangulation(F,V);
+% boundEdges = freeBoundary(TR);
+% boundaryInd=unique(boundEdges(:));
 % smoothPar.n=50;
 % smoothPar.Tolerance=0.001;
 % smoothPar.RigidConstraints=boundaryInd;

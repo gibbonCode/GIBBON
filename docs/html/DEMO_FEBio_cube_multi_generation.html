@@ -6,7 +6,7 @@
    <!--
 This HTML was auto-generated from MATLAB code.
 To make changes, update the MATLAB code and republish this document.
-      --><title>DEMO_FEBio_cube_multi_generation</title><meta name="generator" content="MATLAB 9.4"><link rel="schema.DC" href="http://purl.org/dc/elements/1.1/"><meta name="DC.date" content="2018-01-19"><meta name="DC.source" content="DEMO_FEBio_cube_multi_generation.m"><style type="text/css">
+      --><title>DEMO_FEBio_cube_multi_generation</title><meta name="generator" content="MATLAB 9.4"><link rel="schema.DC" href="http://purl.org/dc/elements/1.1/"><meta name="DC.date" content="2018-02-14"><meta name="DC.source" content="DEMO_FEBio_cube_multi_generation.m"><style type="text/css">
 html,body,div,span,applet,object,iframe,h1,h2,h3,h4,h5,h6,p,blockquote,pre,a,abbr,acronym,address,big,cite,code,del,dfn,em,font,img,ins,kbd,q,s,samp,small,strike,strong,sub,sup,tt,var,b,u,i,center,dl,dt,dd,ol,ul,li,fieldset,form,label,legend,table,caption,tbody,tfoot,thead,tr,th,td{margin:0;padding:0;border:0;outline:0;font-size:100%;vertical-align:baseline;background:transparent}body{line-height:1}ol,ul{list-style:none}blockquote,q{quotes:none}blockquote:before,blockquote:after,q:before,q:after{content:'';content:none}:focus{outine:0}ins{text-decoration:none}del{text-decoration:line-through}table{border-collapse:collapse;border-spacing:0}
 
 html { min-height:100%; margin-bottom:1px; }
@@ -197,7 +197,6 @@ FEB_struct.Geometry.ElementsPartName={<span class="string">'Cube'</span>};
 
 <span class="comment">% DEFINING MATERIALS</span>
 <span class="comment">%Material 1 deformable block</span>
-
 FEB_struct.Materials{1}.Type=<span class="string">'Ogden unconstrained'</span>;
 FEB_struct.Materials{1}.Name=<span class="string">'cube_mat'</span>;
 FEB_struct.Materials{1}.Properties={<span class="string">'c1'</span>,<span class="string">'m1'</span>,<span class="string">'c2'</span>,<span class="string">'m2'</span>,<span class="string">'cp'</span>};
@@ -283,7 +282,7 @@ Update your codes to use febioStruct2xml, see HELP_febioStruct2xml (furthermore
 febio_spec version 2.5 is recommended) 
  
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
---- Writing FEBio XML object --- 19-Jan-2018 14:28:27
+--- Writing FEBio XML object --- 14-Feb-2018 14:40:52
 Using febio_spec: 2.0
 Adding Module level
 Adding Material level
@@ -307,7 +306,7 @@ Adding Output level
 ----&gt; Adding plotfile field
 ----&gt; Adding logfile field
 Writing .feb file
---- Done --- 19-Jan-2018 14:28:27
+--- Done --- 14-Feb-2018 14:40:52
 </pre><h2 id="12">RUNNING FEBIO JOB</h2><pre class="codeinput">FEBioRunStruct.run_filename=FEB_struct.run_filename;
 FEBioRunStruct.run_logname=FEB_struct.run_logname;
 FEBioRunStruct.disp_on=1;
@@ -320,9 +319,9 @@ FEBioRunStruct.maxLogCheckTime=3; <span class="comment">%Max log file checking t
 [runFlag]=runMonitorFEBio(FEBioRunStruct);<span class="comment">%START FEBio NOW!!!!!!!!</span>
 </pre><pre class="codeoutput"> 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
---- STARTING FEBIO JOB --- 19-Jan-2018 14:28:27
+--- STARTING FEBIO JOB --- 14-Feb-2018 14:40:53
 Waiting for log file...
-Proceeding to check log file...19-Jan-2018 14:28:28
+Proceeding to check log file...14-Feb-2018 14:40:53
 ------- converged at time : 0.05
 ------- converged at time : 0.1
 ------- converged at time : 0.15
@@ -363,7 +362,7 @@ Proceeding to check log file...19-Jan-2018 14:28:28
 ------- converged at time : 1.9
 ------- converged at time : 1.95
 ------- converged at time : 2
---- Done --- 19-Jan-2018 14:28:31
+--- Done --- 14-Feb-2018 14:40:56
 </pre><pre class="codeinput"><span class="keyword">if</span> runFlag==1 <span class="comment">%i.e. a succesful run</span>
 </pre><h2 id="15">Importing nodal displacements from a log file</h2><pre class="codeinput">    [time_mat, N_disp_mat,~]=importFEBio_logfile(fullfile(savePath,FEB_struct.run_output_names{1})); <span class="comment">%Nodal displacements</span>
 
@@ -390,9 +389,7 @@ Proceeding to check log file...19-Jan-2018 14:28:28
     E_stress_mat_n=zeros(sizImport);
     E_stress_mat_n(:,:,2:end)=E_stress_mat;
     E_stress_mat=E_stress_mat_n;
-</pre><h2 id="17">Plotting the deformed model</h2><pre class="codeinput">    time_mat_plot=time_mat;
-    ind1=find(time_mat==1);
-    c1_plot=c1*ones(size(time_mat));
+</pre><h2 id="17">Plotting the deformed model</h2><pre class="codeinput">    c1_plot=c1*ones(size(time_mat));
     cg_plot=c1_g(1)*ones(size(time_mat));
     cg_plot(time_mat&gt;=1)=c1_g(2);
 
@@ -411,10 +408,10 @@ Proceeding to check log file...19-Jan-2018 14:28:28
     subplot(1,2,1); hold <span class="string">on</span>;
     title(<span class="string">'Ogden parameter c_1'</span>);
     xlabel(<span class="string">'Time'</span>); ylabel(<span class="string">'c_1'</span>);
-    plot(time_mat_plot,c1_plot,<span class="string">'b-'</span>,<span class="string">'lineWidth'</span>,2);
-    plot(time_mat_plot,cg_plot,<span class="string">'r-'</span>,<span class="string">'lineWidth'</span>,2);
-    hp1=plot(time_mat_plot(1),c1_plot(1),<span class="string">'b.'</span>,<span class="string">'MarkerSize'</span>,50);
-    hp2=plot(time_mat_plot(1),cg_plot(1),<span class="string">'r.'</span>,<span class="string">'MarkerSize'</span>,50);
+    plot(time_mat,c1_plot,<span class="string">'b-'</span>,<span class="string">'lineWidth'</span>,2);
+    plot(time_mat,cg_plot,<span class="string">'r-'</span>,<span class="string">'lineWidth'</span>,2);
+    hp1=plot(time_mat(1),c1_plot(1),<span class="string">'b.'</span>,<span class="string">'MarkerSize'</span>,50);
+    hp2=plot(time_mat(1),cg_plot(1),<span class="string">'r.'</span>,<span class="string">'MarkerSize'</span>,50);
     legend([hp1 hp2],<span class="string">'Material 1'</span>,<span class="string">'Material 2'</span>);
     axis <span class="string">tight</span>; axis <span class="string">square</span>; set(gca,<span class="string">'fontsize'</span>,fontSize);
     grid <span class="string">on</span>;
@@ -443,13 +440,13 @@ Proceeding to check log file...19-Jan-2018 14:28:28
         <span class="comment">%Set entries in animation structure</span>
         animStruct.Handles{qt}=[hp3 hp3 hp1 hp1 hp2 hp2]; <span class="comment">%Handles of objects to animate</span>
         animStruct.Props{qt}={<span class="string">'Vertices'</span>,<span class="string">'CData'</span>,<span class="string">'XData'</span>,<span class="string">'YData'</span>,<span class="string">'XData'</span>,<span class="string">'YData'</span>}; <span class="comment">%Properties of objects to animate</span>
-        animStruct.Set{qt}={V_def,CF,time_mat_plot(qt),c1_plot(qt),time_mat_plot(qt),cg_plot(qt)}; <span class="comment">%Property values for to set in order to animate</span>
+        animStruct.Set{qt}={V_def,CF,time_mat(qt),c1_plot(qt),time_mat(qt),cg_plot(qt)}; <span class="comment">%Property values for to set in order to animate</span>
     <span class="keyword">end</span>
 
     anim8(hf,animStruct);
     drawnow;
 </pre><img vspace="5" hspace="5" src="DEMO_FEBio_cube_multi_generation_04.png" alt=""> <pre class="codeinput"><span class="keyword">end</span>
-</pre><p><img vspace="5" hspace="5" src="gibbVerySmall.gif" alt=""> </p><p><i><b>GIBBON</b></i> <a href="www.gibboncode.org">www.gibboncode.org</a></p><p><i>Kevin Mattheus Moerman</i>, <a href="gibbon.toolbox@gmail.com">gibbon.toolbox@gmail.com</a></p><p><i><b>GIBBON footer text</b></i></p><p>License: <a href="https://github.com/gibbonCode/GIBBON/blob/master/LICENSE">https://github.com/gibbonCode/GIBBON/blob/master/LICENSE</a></p><p>GIBBON: The Geometry and Image-based Bioengineering add-On. A toolbox for image segmentation, image-based modeling, meshing, and finite element analysis.</p><p>Copyright (C) 2017  Kevin Mattheus Moerman</p><p>This program is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.</p><p>This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for more details.</p><p>You should have received a copy of the GNU General Public License along with this program.  If not, see <a href="http://www.gnu.org/licenses/">http://www.gnu.org/licenses/</a>.</p><p class="footer"><br><a href="https://www.mathworks.com/products/matlab/">Published with MATLAB&reg; R2018a</a><br></p></div><!--
+</pre><p><img vspace="5" hspace="5" src="gibbVerySmall.gif" alt=""> </p><p><i><b>GIBBON</b></i> <a href="www.gibboncode.org">www.gibboncode.org</a></p><p><i>Kevin Mattheus Moerman</i>, <a href="gibbon.toolbox@gmail.com">gibbon.toolbox@gmail.com</a></p><p><i><b>GIBBON footer text</b></i></p><p>License: <a href="https://github.com/gibbonCode/GIBBON/blob/master/LICENSE">https://github.com/gibbonCode/GIBBON/blob/master/LICENSE</a></p><p>GIBBON: The Geometry and Image-based Bioengineering add-On. A toolbox for image segmentation, image-based modeling, meshing, and finite element analysis.</p><p>Copyright (C) 2018  Kevin Mattheus Moerman</p><p>This program is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.</p><p>This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for more details.</p><p>You should have received a copy of the GNU General Public License along with this program.  If not, see <a href="http://www.gnu.org/licenses/">http://www.gnu.org/licenses/</a>.</p><p class="footer"><br><a href="https://www.mathworks.com/products/matlab/">Published with MATLAB&reg; R2018a</a><br></p></div><!--
 ##### SOURCE BEGIN #####
 %% DEMO_FEBio_cube_multi_generation
 % Below is a demonstration for: 
@@ -619,7 +616,6 @@ FEB_struct.Geometry.ElementsPartName={'Cube'};
 
 % DEFINING MATERIALS
 %Material 1 deformable block
-
 FEB_struct.Materials{1}.Type='Ogden unconstrained';
 FEB_struct.Materials{1}.Name='cube_mat';
 FEB_struct.Materials{1}.Properties={'c1','m1','c2','m2','cp'};
@@ -751,8 +747,6 @@ if runFlag==1 %i.e. a succesful run
         
     %% Plotting the deformed model
     
-    time_mat_plot=time_mat;
-    ind1=find(time_mat==1);
     c1_plot=c1*ones(size(time_mat));
     cg_plot=c1_g(1)*ones(size(time_mat));
     cg_plot(time_mat>=1)=c1_g(2);
@@ -772,10 +766,10 @@ if runFlag==1 %i.e. a succesful run
     subplot(1,2,1); hold on;
     title('Ogden parameter c_1');
     xlabel('Time'); ylabel('c_1');
-    plot(time_mat_plot,c1_plot,'b-','lineWidth',2);
-    plot(time_mat_plot,cg_plot,'r-','lineWidth',2);
-    hp1=plot(time_mat_plot(1),c1_plot(1),'b.','MarkerSize',50);
-    hp2=plot(time_mat_plot(1),cg_plot(1),'r.','MarkerSize',50);
+    plot(time_mat,c1_plot,'b-','lineWidth',2);
+    plot(time_mat,cg_plot,'r-','lineWidth',2);
+    hp1=plot(time_mat(1),c1_plot(1),'b.','MarkerSize',50);
+    hp2=plot(time_mat(1),cg_plot(1),'r.','MarkerSize',50);
     legend([hp1 hp2],'Material 1','Material 2');
     axis tight; axis square; set(gca,'fontsize',fontSize);
     grid on;
@@ -804,7 +798,7 @@ if runFlag==1 %i.e. a succesful run
         %Set entries in animation structure
         animStruct.Handles{qt}=[hp3 hp3 hp1 hp1 hp2 hp2]; %Handles of objects to animate
         animStruct.Props{qt}={'Vertices','CData','XData','YData','XData','YData'}; %Properties of objects to animate
-        animStruct.Set{qt}={V_def,CF,time_mat_plot(qt),c1_plot(qt),time_mat_plot(qt),cg_plot(qt)}; %Property values for to set in order to animate
+        animStruct.Set{qt}={V_def,CF,time_mat(qt),c1_plot(qt),time_mat(qt),cg_plot(qt)}; %Property values for to set in order to animate
     end
         
     anim8(hf,animStruct);
@@ -829,7 +823,7 @@ end
 % image segmentation, image-based modeling, meshing, and finite element
 % analysis.
 % 
-% Copyright (C) 2017  Kevin Mattheus Moerman
+% Copyright (C) 2018  Kevin Mattheus Moerman
 % 
 % This program is free software: you can redistribute it and/or modify
 % it under the terms of the GNU General Public License as published by

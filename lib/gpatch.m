@@ -89,6 +89,12 @@ end
 %%
 function hp=plotPatch(F,V,C,CE,A,L)
 
+% hf=gcf;
+% if isempty(hf.Children)
+%     gca;
+%     view(3);
+% end
+
 argInPatch.Faces=F;
 argInPatch.Vertices=V;
 argInPatch.EdgeColor=CE;

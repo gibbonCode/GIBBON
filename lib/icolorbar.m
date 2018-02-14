@@ -1,18 +1,26 @@
 function [varargout]=icolorbar(varargin)
 
-hFig=gcf;
 
+hf=gcf;
+if isempty(hf.Children) %No axis objects so use figure handle
+    h=hf;
+else %Graphics objects so use current axis
+    h=gca;
+end
+
+c=h.Colormap; 
 switch nargin
     case 0 
         cLim=caxis;
     case 1
         cLim=varargin{1};
 end
+h.Colormap=c;
 
 caxis([cLim(1)-0.5 cLim(2)+0.5]);
 hc=colorbar; 
 hc.Ticks=cLim(1):1:cLim(2);%linspace(cLim(1)-0.5,cLim(2)+0.5,numel(cLim)+3)
-hFig.Colormap=resampleColormap(hFig.Colormap,numel(hc.Ticks));
+h.Colormap=resampleColormap(h.Colormap,numel(hc.Ticks));
 
 if nargout==1
     varargout{1}=h;

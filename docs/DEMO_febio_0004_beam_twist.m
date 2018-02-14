@@ -218,6 +218,7 @@ febio_spec.MeshData.NodeData=[];%Initialize so we can use end+1 indexing
 bcNames={'x','y','z'};
 for q=1:1:numSteps
     %Step specific control section
+    febio_spec.Step{q}.ATTR.id=q; 
     febio_spec.Step{q}.Control=stepStruct.Control; 
     
     %Rotate coordinates

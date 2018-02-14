@@ -192,7 +192,7 @@ cFigure;
 title('Distance to theoretical surface');
 hold on; 
 gpatch(F,Vt,0.5*ones(1,3),'none',0.5);
-hp=gpatch(Fi,Vi,Di,'none',1);
+hp=gpatch(Fi,Vi,Di,'k',1);
 caxis([min(Di(:)) max(Di(:))]);
 colormap(gjet(250)); colorbar; 
 axisGeom;

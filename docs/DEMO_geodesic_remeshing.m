@@ -11,9 +11,75 @@ clear; close all; clc;
 %Plot settings
 fontSize=15;
 markerSize=15;
+scatterSize=35;
 lineWidth=2; 
 
-%% Control parameters
+%% Example 1: Resampling a triangulated surface model
+
+% Load example surface
+[F,V]=stanford_bunny('g');
+
+% Refine surface
+% [F,V]=subtri(F,V,1); 
+
+numPointsInput=size(V,1); %Number of points in the original data
+
+numPointsOutput=round(numPointsInput/10); %Number of points desired in output
+
+%%
+% Visualize surface
+cFigure; 
+hold on; 
+gpatch(F,V,'kw'); 
+axisGeom(gca,fontSize);
+camlight headlight; 
+drawnow; 
+
+%%
+% Use distance marching method to resample
+[Fn,Vn,S,indSeed]=remeshTriSurfDistMap(F,V,numPointsOutput,1); %distance based marching
+
+%%
+% Visualize result
+
+cFigure;  
+subplot(1,3,1); hold on;
+title('Original mesh');
+
+gpatch(F,V,'kw'); 
+
+axisGeom(gca,fontSize);
+camlight headlight;
+
+subplot(1,3,2); hold on;
+title('Mesh comparison');
+
+gpatch(F,V,S,'k',0.7); 
+scatterV(V,scatterSize,S,'filled');
+
+gpatch(Fn,Vn,'none','k',1,2); 
+
+axisGeom(gca,fontSize);
+camlight headlight;
+
+subplot(1,3,3); hold on;
+title('Resampled mesh');
+
+gpatch(Fn,Vn,'kw'); 
+
+axisGeom(gca,fontSize);
+camlight headlight;
+
+cMap=hsv(max(S));
+cMap=cMap(randperm(size(cMap,1)),:);
+colormap(cMap); 
+
+drawnow; 
+
+%% Example 2: Boundary preserving resampling
+
+%%
+% Control parameters
 
 exampleType=1; %Use to switch between different examples
 
@@ -61,7 +127,7 @@ V1=(R*V1')'; %Rotate polygon
 regionCell={V1}; %A region between V1 and V2 (V2 forms a hole inside V1)
 
 % Meshing the region (See also |regionTriMesh2D|)
-[F,V]=regionTriMesh3D(regionCell,0.2,1,'linear');
+[F,V]=regionTriMesh3D(regionCell,0.2,1,'natural');
 
 %% Merge nodes if required (e.g. in case of STL import)
 % In some cases nodes are not shared for adjacent triangles (e.g. STL
@@ -162,6 +228,43 @@ drawnow;
 
 %Use distance marching method
 [Fn,Vn,S]=remeshTriSurfDistMap(F,V,numel(indListSelect)+np,indListSelect); %distance based marching
+
+%%
+% Visualize result
+
+cFigure;  
+subplot(1,3,1); hold on;
+title('Original mesh');
+
+gpatch(F,V,'kw'); 
+
+axisGeom(gca,fontSize);
+camlight headlight;
+
+subplot(1,3,2); hold on;
+title('Mesh comparison');
+
+gpatch(F,V,S,'k',0.7); 
+scatterV(V,scatterSize,S,'filled');
+
+gpatch(Fn,Vn,'none','k',1,2); 
+
+axisGeom(gca,fontSize);
+camlight headlight;
+
+subplot(1,3,3); hold on;
+title('Resampled mesh');
+
+gpatch(Fn,Vn,'kw'); 
+
+axisGeom(gca,fontSize);
+camlight headlight;
+
+cMap=hsv(max(S));
+cMap=cMap(randperm(size(cMap,1)),:);
+colormap(cMap); 
+
+drawnow; 
 
 %%
 

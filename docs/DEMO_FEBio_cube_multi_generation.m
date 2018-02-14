@@ -166,7 +166,6 @@ FEB_struct.Geometry.ElementsPartName={'Cube'};
 
 % DEFINING MATERIALS
 %Material 1 deformable block
-
 FEB_struct.Materials{1}.Type='Ogden unconstrained';
 FEB_struct.Materials{1}.Name='cube_mat';
 FEB_struct.Materials{1}.Properties={'c1','m1','c2','m2','cp'};
@@ -298,8 +297,6 @@ if runFlag==1 %i.e. a succesful run
         
     %% Plotting the deformed model
     
-    time_mat_plot=time_mat;
-    ind1=find(time_mat==1);
     c1_plot=c1*ones(size(time_mat));
     cg_plot=c1_g(1)*ones(size(time_mat));
     cg_plot(time_mat>=1)=c1_g(2);
@@ -319,10 +316,10 @@ if runFlag==1 %i.e. a succesful run
     subplot(1,2,1); hold on;
     title('Ogden parameter c_1');
     xlabel('Time'); ylabel('c_1');
-    plot(time_mat_plot,c1_plot,'b-','lineWidth',2);
-    plot(time_mat_plot,cg_plot,'r-','lineWidth',2);
-    hp1=plot(time_mat_plot(1),c1_plot(1),'b.','MarkerSize',50);
-    hp2=plot(time_mat_plot(1),cg_plot(1),'r.','MarkerSize',50);
+    plot(time_mat,c1_plot,'b-','lineWidth',2);
+    plot(time_mat,cg_plot,'r-','lineWidth',2);
+    hp1=plot(time_mat(1),c1_plot(1),'b.','MarkerSize',50);
+    hp2=plot(time_mat(1),cg_plot(1),'r.','MarkerSize',50);
     legend([hp1 hp2],'Material 1','Material 2');
     axis tight; axis square; set(gca,'fontsize',fontSize);
     grid on;
@@ -351,7 +348,7 @@ if runFlag==1 %i.e. a succesful run
         %Set entries in animation structure
         animStruct.Handles{qt}=[hp3 hp3 hp1 hp1 hp2 hp2]; %Handles of objects to animate
         animStruct.Props{qt}={'Vertices','CData','XData','YData','XData','YData'}; %Properties of objects to animate
-        animStruct.Set{qt}={V_def,CF,time_mat_plot(qt),c1_plot(qt),time_mat_plot(qt),cg_plot(qt)}; %Property values for to set in order to animate
+        animStruct.Set{qt}={V_def,CF,time_mat(qt),c1_plot(qt),time_mat(qt),cg_plot(qt)}; %Property values for to set in order to animate
     end
         
     anim8(hf,animStruct);

@@ -17,7 +17,7 @@ clear; close all; clc;
 
 %% 
 % Get a 3D image (see als0 |dcmFolder2MATobject| to import DICOM data)
-testCase=1; 
+testCase=2; 
 switch testCase
     case 1 %MATLAB brain data
         load mri;
@@ -25,7 +25,7 @@ switch testCase
         v=2./[1,1,.4]; %example voxel size
     case 2 %MRI imported from DICOM files, see also HELP_dcmFolder2MATobject
         defaultFolder = fileparts(fileparts(mfilename('fullpath'))); %Set main folder
-        pathName=fullfile(defaultFolder,'data','DICOM','KNEE_UTE');
+        pathName=fullfile(defaultFolder,'data','DICOM','0001_human_calf');        
         loadName=fullfile(pathName,'IMDAT','IMDAT.mat');
         
         IMDAT_struct=load(loadName); %The image data structure 
