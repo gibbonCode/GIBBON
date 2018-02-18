@@ -37,10 +37,8 @@ T(end+1:end+numel(V_cell))=V_cell;
 
 %% SAVING TXT FILE
 
-cell2txtfile(nodeFileName,T,0);
+cell2txtfile(nodeFileName,T,0,0);
 dispDoneGibbonCode;
-
-
  
 %% 
 % _*GIBBON footer text*_ 

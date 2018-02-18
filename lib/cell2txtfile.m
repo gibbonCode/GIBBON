@@ -1,6 +1,6 @@
-function cell2txtfile(fileName,T,skipOpt)
+function cell2txtfile(varargin)
 
-% function cell2txtfile(fileName,T,skipOpt)
+% function cell2txtfile(fileName,T,skipOpt,checkChar)
 % ------------------------------------------------------------------------
 %
 % This function exports the content in the cell array T to
@@ -13,28 +13,66 @@ function cell2txtfile(fileName,T,skipOpt)
 % gibbon.toolbox@gmail.com
 %
 % 2016/09/09: Updated for GIBBON
-% 2016/09/09 added conversion to char and associated warning for
-% non-character content. 
+% 2016/09/09: Added conversion to char and associated warning for non-character content. 
+% 2018/02/14: Added whole cell conversion when skipOp==0
+% 2018/02/14: Added varargin and defaults
 %------------------------------------------------------------------------
 
-%%
+%% parse input
 
-%Make column
-T=T(:);
+switch nargin
+    case 2
+        fileName=varargin{1};
+        T=varargin{2};
+        skipOpt=0;   
+        checkChar=1;
+    case 3
+        fileName=varargin{1};
+        T=varargin{2};
+        skipOpt=varargin{3};
+        checkChar=1;
+    case 4
+        fileName=varargin{1};
+        T=varargin{2};
+        skipOpt=varargin{3};
+        checkChar=varargin{4};
+end
+
+% Force column if it isn't
+if ~isvector(T)
+    T=T(:);%Make column
+end
+
+% Convert non-character content to text
+if checkChar==1
+    indNotChar=find(~cellfun(@(x) ischar(x),T,'UniformOutput',1));
+    if ~isempty(indNotChar)
+        warning('Non character entries detected');
+        for q=indNotChar            
+            T{q}=vec2strIntDouble(T{q},'%6.7e');
+        end
+    end
+end
+
+%%
+% Write to file
 
 fid=fopen(fileName,'w');
-for q=1:size(T,1)
-    l=T{q,:};
-
-    if ~ischar(l) %If this isn't a char then attempt conversion
-        l=sprintf('%u',l);
-%        warning(['Entry ',num2str(q),' is not a char and was converted to: ',l]);
-    end
-    
-    if skipOpt==0 || ~isempty(deblank(l))
-        fprintf(fid,'%s\r\n',l);
-    end
-    
+switch skipOpt
+    case 0 %Process in one go
+        fprintf(fid,'%s\r\n', T{:});
+    case 1 %Looping to check if lines are empty
+        for q=1:numel(T)
+            l=T{q}; %Get current cell entry            
+            if ~ischar(l) %If this isn't a char then attempt conversion
+                l=sprintf('%u',l);                
+            end
+            
+            %Write if not empty
+            if ~isempty(deblank(l))
+                fprintf(fid,'%s\r\n',l);
+            end            
+        end
 end
 fclose(fid);
  

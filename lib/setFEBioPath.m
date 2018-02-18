@@ -26,7 +26,7 @@ switch class(FEBioPathSpec)
         end
 end
 
-cell2txtfile(fileName,T,0); %Write cell to config file
+cell2txtfile(fileName,T,0,0); %Write cell to config file
 
 end
 

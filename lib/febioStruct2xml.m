@@ -4,18 +4,17 @@ function [varargout]=febioStruct2xml(varargin)
 % ------------------------------------------------------------------------
 %
 % This function provides the basis for coding FEBio XML input file content
-% and helps to generate the XML input file. 
+% and helps to generate the XML input file.
 %
 % Kevin Mattheus Moerman
 % gibbon.toolbox@gmail.com
-% 
-% 2018/01/15: Created 
+%
+% 2018/01/15: Created
 % 2018/02/09: Found bug in text write mode.
-% 
-% To do: 
-% 1) Fix text write mode
+% 2018/02/18: Created several "array parse methods" including based on text
+% file exporting providing a significant computational time reduction over
+% full XML based parsing. 
 %------------------------------------------------------------------------
-
 
 %% Parse input
 
@@ -23,9 +22,11 @@ defaultOptionStruct.attributeKeyword='ATTR';
 defaultOptionStruct.valueKeyword='VAL';
 defaultOptionStruct.arrayLoopKeywords={'node','elem','face','delem','quad4','quad8','tri3','tri6','tri7','line2','line3','point'};
 defaultOptionStruct.fieldOrder={'Module','Control','Globals','Material',...
-                                'Geometry','MeshData','Initial','Boundary',...
-                                'Loads','Contact','Constraints','Rigid Connectors',...
-                                'Discrete','LoadData','Output','Parameters'};
+    'Geometry','MeshData','Initial','Boundary',...
+    'Loads','Contact','Constraints','Rigid Connectors',...
+    'Discrete','LoadData','Output','Parameters'};
+defaultOptionStruct.arrayParseMethod=1;
+
 switch nargin
     case 1
         parseStruct=varargin{1};
@@ -67,10 +68,13 @@ rootNode.appendChild(commentNode);
 [domNode]=febioStruct2xmlStep(domNode,rootNode,parseStruct,optionStruct,fileName);
 
 %% Export XML file
-if ~isempty(fileName)
-    % xmlwrite(fileName,domNode); %Export to text file
-    xmlwrite_xerces(fileName,domNode); %Custom XML write function
-end
+xmlwrite_xerces(fileName,domNode); %Custom XML write function
+
+%Import to cut out bad element names from text write mode
+T=txtfile2cell(fileName);
+
+logicKeep=~contains(T,'xxxxxxxxxxx_CUT');
+cell2txtfile(fileName,T(logicKeep),0,0);
 
 %% Collect output
 if nargout>0
@@ -79,9 +83,9 @@ end
 
 end
 
-function [domNode]=febioStruct2xmlStep(domNode,rootNode,parseStruct,optionStruct,fileName)
+function [domNode,rootNode]=febioStruct2xmlStep(domNode,rootNode,parseStruct,optionStruct,fileName)
 
-writeMode=1;
+arrayParseMethod=optionStruct.arrayParseMethod;
 
 %%
 %Get keywords
@@ -138,8 +142,8 @@ for q_field=1:1:numel(fieldNameSet) %Loop for all field names
                 end
                 
                 if ~isempty(arrayDataSet) %if array entries exist
-                    switch writeMode
-                        case 1
+                    switch arrayParseMethod
+                        case 0
                             for q_array=1:1:numArray %Loop over elements in array
                                 %Add the element and its value
                                 if iscell(arrayDataSet)
@@ -160,8 +164,8 @@ for q_field=1:1:numel(fieldNameSet) %Loop for all field names
                                     end
                                 end
                             end
-                        case 2
-                            [domNode,rootNode]=textModeElementAttributeParse(domNode,rootNode,currentFieldName,attributeStruct,arrayDataSet,numArray,fieldNameSetSub,fileName);
+                        otherwise
+                            [domNode,rootNode]=textModeElementAttributeParse(domNode,rootNode,currentFieldName,attributeStruct,arrayDataSet,numArray,fieldNameSetSub,fileName,arrayParseMethod);
                     end
                     
                 elseif ~isempty(fieldNameSetSub) %If this is not empty there are attributes to add despite empty array
@@ -170,8 +174,8 @@ for q_field=1:1:numel(fieldNameSet) %Loop for all field names
                     currentFieldNameSub=fieldNameSetSub{1};
                     numArray=numel(attributeStruct.(currentFieldNameSub));
                     
-                    switch writeMode
-                        case 1
+                    switch arrayParseMethod
+                        case 0
                             for q_array=1:1:numArray %Loop over all entries
                                 [domNode,elementNode,rootNode]=addElementXML(domNode,rootNode,currentFieldName,[]); %Create element without value
                                 for q_fieldSub=1:1:numel(fieldNameSetSub) %Loop over and add all attributes
@@ -185,33 +189,33 @@ for q_field=1:1:numel(fieldNameSet) %Loop for all field names
                                     [domNode]=addAttributeSetXML(domNode,elementNode,attributeStructSub); %Add attribute
                                 end
                             end
-                        case 2
-                            [domNode,rootNode]=textModeElementAttributeParse(domNode,rootNode,currentFieldName,attributeStruct,arrayDataSet,numArray,fieldNameSetSub,fileName);
+                        otherwise
+                            [domNode,rootNode]=textModeElementAttributeParse(domNode,rootNode,currentFieldName,attributeStruct,arrayDataSet,numArray,fieldNameSetSub,fileName,arrayParseMethod);
                     end
                 elseif ~isempty(parseStructSub) %Despite arrayLoopKeywords trigger no values or attributes are to be added, but other fields might exist
-                    [domNode]=recursiveElementParse(domNode,rootNode,currentFieldName,currentFieldValue,optionStruct,fileName);
+                    [domNode,rootNode]=recursiveElementParse(domNode,rootNode,currentFieldName,currentFieldValue,optionStruct,fileName);
                 end
                 
             else
-                [domNode]=recursiveElementParse(domNode,rootNode,currentFieldName,currentFieldValue,optionStruct,fileName);
+                [domNode,rootNode]=recursiveElementParse(domNode,rootNode,currentFieldName,currentFieldValue,optionStruct,fileName);
             end
     end
 end
 
 end
 
-function [domNode]=recursiveElementParse(domNode,rootNode,currentFieldName,currentFieldValue,optionStruct,fileName)
+function [domNode,rootNode]=recursiveElementParse(domNode,rootNode,currentFieldName,currentFieldValue,optionStruct,fileName)
 
 if isnumeric(currentFieldValue) || ischar(currentFieldValue)
     [domNode,~,rootNode]=addElementXML(domNode,rootNode,currentFieldName,currentFieldValue);
 elseif isstruct(currentFieldValue)
     [domNode,elementNode,rootNode]=addElementXML(domNode,rootNode,currentFieldName,[]); %Create the current element
-    [domNode]=febioStruct2xmlStep(domNode,elementNode,currentFieldValue,optionStruct,fileName); %Add whatever is nested in here
+    [domNode,elementNode]=febioStruct2xmlStep(domNode,elementNode,currentFieldValue,optionStruct,fileName); %Add whatever is nested in here
 elseif iscell(currentFieldValue)
     for q_cell=1:1:numel(currentFieldValue)
         parseStructSub=currentFieldValue{q_cell};
         [domNode,elementNode,rootNode]=addElementXML(domNode,rootNode,currentFieldName,[]);
-        [domNode]=febioStruct2xmlStep(domNode,elementNode,parseStructSub,optionStruct,fileName); %Add whatever is nested in here
+        [domNode,elementNode]=febioStruct2xmlStep(domNode,elementNode,parseStructSub,optionStruct,fileName); %Add whatever is nested in here
     end
 end
 
@@ -219,65 +223,101 @@ end
 
 %%
 
-function [domNode,rootNode]=textModeElementAttributeParse(domNode,rootNode,currentFieldName,attributeStruct,arrayDataSet,numArray,fieldNameSetSub,fileName)
+function [domNode,rootNode]=textModeElementAttributeParse(domNode,rootNode,currentFieldName,attributeStruct,arrayDataSet,numArray,fieldNameSetSub,fileName,arrayParseMethod)
 
-targetCutString = '***CUT HERE';
-commentNode = domNode.createComment(targetCutString);
-rootNode.appendChild(commentNode);
-
-% xmlwrite(fileName,domNode); %Export to text file
-xmlwrite_xerces(fileName,domNode); %Export to text file
-[T_now]=txtfile2cell(fileName); %Import back into cell array
-
-indFind=find(contains(T_now,targetCutString)); %indFind=find(strcmp(targetCutString,T_now))
-
-if indFind==numel(T_now)
-    T_top=T_now(1:indFind-1);
-    T_bottom={};
-else
-    T_top=T_now(1:indFind-1);
-    T_bottom=T_now(indFind+1:end);
-end
-
-T_add=cell(numArray,1);
-for q_array=1:1:numArray %Loop over elements in array
-    attributeText=[];
-    if ~isempty(fieldNameSetSub) %If attributes exist
-        for q_fieldSub=1:1:numel(fieldNameSetSub) %loop over all attributes
-            
-            attributeName=fieldNameSetSub{q_fieldSub}; %Get current attribute name
-            if iscell(attributeStruct.(attributeName))
-                attributeNameValue=attributeStruct.(attributeName){q_array};
-            else
-                attributeNameValue=attributeStruct.(attributeName)(q_array,:);
+switch arrayParseMethod
+    case 1 %Non-flexible, assumes equal attribute type and size (fastest)
+        textFormat=['<',currentFieldName,' '];
+        if ~isempty(fieldNameSetSub) %If attributes exist
+            D=[];
+            for q_fieldSub=1:1:numel(fieldNameSetSub) %loop over all attributes
+                attributeName=fieldNameSetSub{q_fieldSub}; %Get current attribute name
+                if iscell(attributeStruct.(attributeName))
+                    attributeNameValue=attributeStruct.(attributeName);
+                else
+                    attributeNameValue=attributeStruct.(attributeName);
+                end
+                D=[D attributeNameValue];
+                if all(isrounded(attributeNameValue))
+                    t_form=repmat(['%d',', '],1,size(attributeNameValue,2));
+                else
+                    t_form=repmat(['%6.7e',', '],1,size(attributeNameValue,2));
+                end
+                t_form=t_form(1:end-2); %Take away last space and comma
+                textFormat=[textFormat,' ',attributeName,'="',t_form,'"'];
             end
-            
-            [attributeNameValue]=vec2strIntDouble(attributeNameValue,'%6.7e');
-            
-            attributeText=[attributeText,' ',attributeName,'="',attributeNameValue,'"'];
+        else
+            D=[];
         end
-    end
-    if ~isempty(arrayDataSet)
-        [currentValue]=vec2strIntDouble(arrayDataSet(q_array,:),'%6.7e');
-    else
-        currentValue=[];
-    end
-    T_add{q_array}=['<',currentFieldName,' ',attributeText,'>',currentValue,'</',currentFieldName,'>'];
+        
+        if all(isrounded(arrayDataSet))
+            t_form=repmat(['%d',', '],1,size(arrayDataSet,2));
+        else
+            t_form=repmat(['%6.7e',', '],1,size(arrayDataSet,2));
+        end
+        t_form=t_form(1:end-2); %Take away last space and comma
+        textFormat=[textFormat,'>',t_form,'</',currentFieldName,'>','\n'];
+        D=[D arrayDataSet];
+        
+        %Convert to string
+        t=sprintf(textFormat,D');
+        
+        T_add={t};      
+    case 2 %Flexible, handles non-uniform attributes, uses cellfun to "loop"         
+        T_add=cell(numArray,1);
+        tquote=repmat({'"'},numArray,1);
+        if ~isempty(fieldNameSetSub) %If attributes exist
+            for q_fieldSub=1:1:numel(fieldNameSetSub) %loop over all attributes
+                attributeName=fieldNameSetSub{q_fieldSub}; %Get current attribute name
+                attributeNameValue=attributeStruct.(attributeName);                
+                T_attributeValue=var2cellstr(attributeNameValue);          
+                T_add=strcat(T_add,repmat({[' ',attributeName,'=']},numArray,1),tquote,T_attributeValue,tquote);
+            end
+        end
+        T_val=var2cellstr(arrayDataSet);
+        T_add=strcat(repmat({['<',currentFieldName,' ']},numArray,1),T_add,repmat({'>'},numArray,1),T_val,repmat({['</',currentFieldName,'>']},numArray,1));    
+    case 3 %Flexible, handles non-uniform attributes, loop through all entries (slowest)
+        T_add=cell(numArray,1);
+        for q_array=1:1:numArray %Loop over elements in array
+            attributeText=[];
+            if ~isempty(fieldNameSetSub) %If attributes exist
+                for q_fieldSub=1:1:numel(fieldNameSetSub) %loop over all attributes                    
+                    attributeName=fieldNameSetSub{q_fieldSub}; %Get current attribute name
+                    if iscell(attributeStruct.(attributeName))
+                        attributeNameValue=attributeStruct.(attributeName){q_array};
+                    else
+                        attributeNameValue=attributeStruct.(attributeName)(q_array,:);
+                    end                    
+                    [attributeNameValue]=vec2strIntDouble(attributeNameValue,'%6.7e');                    
+                    attributeText=[attributeText,' ',attributeName,'="',attributeNameValue,'"'];
+                end
+            end
+            if ~isempty(arrayDataSet)
+                [currentValue]=vec2strIntDouble(arrayDataSet(q_array,:),'%6.7e');
+            else
+                currentValue=[];
+            end
+            T_add{q_array}=['<',currentFieldName,' ',attributeText,'>',currentValue,'</',currentFieldName,'>'];
+        end
 end
 
+fieldNameCut=[currentFieldName,'_xxxxxxxxxxx_CUT'];
+T_top{1}=['<',fieldNameCut,'>'];
 totalTextCell=T_top;
 totalTextCell(end+1:end+numel(T_add))=T_add;
-totalTextCell(end+1:end+numel(T_bottom))=T_bottom;
+totalTextCell(end+1)={['</',fieldNameCut,'>']};
 
 % Export text cell to .feb file
-cell2txtfile(fileName,totalTextCell,1); %Export to text file
+cell2txtfile(fileName,totalTextCell,0,0); %Export to text file
 
 % Reimport XML type
-domNode = xmlread(fileName); %Reimport docNode
+domNode2 = xmlread(fileName); %Reimport docNode
 
-% Get correct rootNode
-nodeList=domNode.getElementsByTagName(rootNode.getNodeName);
-rootNode=nodeList.item(nodeList.getLength-1);
+nodeList=domNode2.getElementsByTagName(fieldNameCut);
+rootNode2=nodeList.item(0);
+
+firstDocImportedNode = domNode.importNode(rootNode2.getChildNodes,true);
+rootNode.appendChild(firstDocImportedNode);
 
 %Delete file
 delete(fileName);
@@ -290,7 +330,7 @@ function [B]=reorderStruct(A,fieldOrder)
 %Start with fieldOrder fields
 fieldNameSet=fieldnames(A);
 for q=1:1:numel(fieldOrder)
-    fieldNameNow=fieldOrder{q};    
+    fieldNameNow=fieldOrder{q};
     logicFind=strcmp(fieldNameNow,fieldNameSet);
     if any(logicFind)
         B.(fieldNameNow)=A.(fieldNameNow);
@@ -316,40 +356,17 @@ end
 % image segmentation, image-based modeling, meshing, and finite element
 % analysis.
 %
-% Copyright (C) 2017  Kevin Mattheus Moerman
-%
-% This program is free software: you can redistribute it and/or modify
-% it under the terms of the GNU General Public License as published by
-% the Free Software Foundation, either version 3 of the License, or
-% (at your option) any later version.
-%
-% This program is distributed in the hope that it will be useful,
-% but WITHOUT ANY WARRANTY; without even the implied warranty of
-% MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-% GNU General Public License for more details.
-%
-% You should have received a copy of the GNU General Public License
-% along with this program.  If not, see <http://www.gnu.org/licenses/>.
-%% 
-% _*GIBBON footer text*_ 
-% 
-% License: <https://github.com/gibbonCode/GIBBON/blob/master/LICENSE>
-% 
-% GIBBON: The Geometry and Image-based Bioengineering add-On. A toolbox for
-% image segmentation, image-based modeling, meshing, and finite element
-% analysis.
-% 
 % Copyright (C) 2018  Kevin Mattheus Moerman
-% 
+%
 % This program is free software: you can redistribute it and/or modify
 % it under the terms of the GNU General Public License as published by
 % the Free Software Foundation, either version 3 of the License, or
 % (at your option) any later version.
-% 
+%
 % This program is distributed in the hope that it will be useful,
 % but WITHOUT ANY WARRANTY; without even the implied warranty of
 % MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 % GNU General Public License for more details.
-% 
+%
 % You should have received a copy of the GNU General Public License
 % along with this program.  If not, see <http://www.gnu.org/licenses/>.

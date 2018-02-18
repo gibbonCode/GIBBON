@@ -29,7 +29,7 @@ fileName_html=fullfile(pathName,'temp.html');
 
 T={['<embed src="',fileName,'" width="100%" height="100%" alt="pdf" type=''application/pdf''>']};
 
-cell2txtfile(fileName_html,T,0);
+cell2txtfile(fileName_html,T,0,0);
 
 %%
 

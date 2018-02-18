@@ -81,7 +81,7 @@ T=[T_top;T_start;T_help;T_demo;T_bottom];
 
 saveName=fullfile(helpPath,'helptoc.xml');
 
-cell2txtfile(saveName,T,0);
+cell2txtfile(saveName,T,0,0);
 
 %% Add searchable help
 addHelpSearch;

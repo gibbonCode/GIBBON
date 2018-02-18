@@ -14,10 +14,10 @@ V_regions=smeshStruct.regionPoints; %region points
 regionA=smeshStruct.regionA;
 minRegionMarker=smeshStruct.minRegionMarker; %Minimum region marker
 
-if isfield(smeshStruct,'smeshName'); %WILL BE REMOVED
+if isfield(smeshStruct,'smeshName') %WILL BE REMOVED
     smeshName=smeshStruct.smeshName;
     warning('smeshStruct.smeshName input will be replaced by smeshStruct.modelName in future releases!');
-elseif isfield(smeshStruct,'modelName'); 
+elseif isfield(smeshStruct,'modelName') 
     smeshName=smeshStruct.modelName; 
 end
 
@@ -111,7 +111,7 @@ T(end+1:end+numel(V_cell),1)=V_cell;
 
 %% SAVING TXT FILE
 
-cell2txtfile(smeshName,T,0);
+cell2txtfile(smeshName,T,0,0);
 
 dispDoneGibbonCode;
 

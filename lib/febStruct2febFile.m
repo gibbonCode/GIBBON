@@ -16,6 +16,7 @@ function [varargout]=febStruct2febFile(FEBioInputStruct)
 % 2017/08/18: Adding support to allow incomplete feb file creation (only
 % write fields provided). 
 % 2018/01/17: Added support for febiospec 2.5 and made it default
+% 2018/01/18: Decided to make 2.5 available in new seperate system
 %------------------------------------------------------------------------
 
 %%
@@ -127,11 +128,12 @@ domNode=addOutputLevel_FEB(domNode,FEBioInputStruct);
 switch nargout
     case 0
         disp('Writing .feb file');
-        if isfield(FEBioInputStruct,'topCommentLine')
-            exportFEB_XML(FEBioInputStruct.run_filename,domNode,FEBioInputStruct.topCommentLine); % Saving XML file
-        else
-            exportFEB_XML(FEBioInputStruct.run_filename,domNode); % Saving XML file
-        end
+        xmlwrite_xerces(FEBioInputStruct.run_filename,domNode); %Custom XML write function 
+%         if isfield(FEBioInputStruct,'topCommentLine')
+%             exportFEB_XML(FEBioInputStruct.run_filename,domNode,FEBioInputStruct.topCommentLine); % Saving XML file
+%         else
+%             exportFEB_XML(FEBioInputStruct.run_filename,domNode); % Saving XML file
+%         end
     case 1
         varargout{1}=domNode;
 end

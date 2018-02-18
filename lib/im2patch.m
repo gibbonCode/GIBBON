@@ -195,7 +195,6 @@ varargout{1}=F;
 varargout{2}=V;
 varargout{3}=C;
 varargout{4}=C_ind;
-
  
 %% 
 % _*GIBBON footer text*_ 

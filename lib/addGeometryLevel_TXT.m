@@ -312,7 +312,7 @@ end
 totalTextCell(end+1:end+numel(T_end))=T_end;
 
 %% Export text cell to .feb file
-cell2txtfile(FEB_struct.run_filename,totalTextCell,1); %Export to text file
+cell2txtfile(FEB_struct.run_filename,totalTextCell,0,0); %Export to text file
 
 %% Reimport XML type
 docNode = xmlread(FEB_struct.run_filename); %Reimport docNode

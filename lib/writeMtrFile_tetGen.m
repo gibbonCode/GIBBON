@@ -19,7 +19,6 @@ end
 
 %%
 
-
 V_field=sizeData(:);
 V_char=sprintf('%0.16e \n',V_field');
 V_cell = regexp(V_char, '\n', 'split')'; 
@@ -40,10 +39,7 @@ T(end+1,1)={'#attribute'};
 T(end+1:end+numel(V_cell),1)=V_cell;
 
 %% SAVING TXT FILE
-cell2txtfile(mtrFileName,T,0);
-
-
-
+cell2txtfile(mtrFileName,T,0,0);
  
 %% 
 % _*GIBBON footer text*_ 

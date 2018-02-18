@@ -515,7 +515,8 @@ defaultFolder = fileparts(fileparts(mfilename('fullpath')));
 savePath=fullfile(defaultFolder,'data','temp');
 fileName=fullfile(savePath,'tempModel.feb');
 
-[domNode]=febioStruct2xml(febio_spec,fileName); %Exporting to file and domNode
+optionStruct.arrayParseMethod=1;
+[domNode]=febioStruct2xml(febio_spec,fileName,optionStruct);
 
 %% Viewing the FEBio input file
 % The |febView| command can be used to render and XML file in a figure
@@ -524,8 +525,8 @@ fileName=fullfile(savePath,'tempModel.feb');
 % NOTE: The figure below does not render in documentation due to a
 % MATLAB but (or limitation). The code |[hFig]=febView(domNode);| is
 % therefore suppressed. (see also |xmlView|);
-
-% [hFig]=febView(fileName);
+%%
+% |[hFig]=febView(fileName);|
 
 %% 
 %

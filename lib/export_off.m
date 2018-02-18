@@ -24,7 +24,7 @@ TF=sprintf(textForm,F_mat');
 T{end+1}=TF;
 
 %Write text to file
-cell2txtfile(fileName,T,0);   
+cell2txtfile(fileName,T,0,0);   
  
 %% 
 % _*GIBBON footer text*_ 

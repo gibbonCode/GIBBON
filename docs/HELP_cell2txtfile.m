@@ -21,7 +21,7 @@ clear; close all; clc;
 % containing just spaces and a non-char entry number. The number entry will
 % be converted to a string. 
 
-T={'Hello','','World','  ',uint8(125)};
+T={'Hello','','World','  ',uint8(125),pi};
 filePath=mfilename('fullpath');
 fileName=fullfile(fileparts(fileparts(filePath)),'data','temp','temp.txt');
 skipOpt=0; %Empty entries will be kept 

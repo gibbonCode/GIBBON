@@ -34,7 +34,7 @@ for q_path=1:1:numPaths
         if ~isempty(targetStartIndex)
             targetStartIndex=targetStartIndex(end); %Keep last occurance
             T_now=T_now(1:targetStartIndex-1-1); %NB -1 is used to remove %% above target 
-            cell2txtfile(fileName,T_now,0);
+            cell2txtfile(fileName,T_now,0,0);
         end
     end
 end
