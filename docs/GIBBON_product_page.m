@@ -13,15 +13,15 @@
 % and enables advanced inverse finite element analysis.
 
 %% Updates
-% Get the latest development version here:
-% <https://github.com/Kevin-Mattheus-Moerman/GIBBON>
+% Get the latest development version via GitHub:
+% <https://github.com/gibbonCode/GIBBON>
 
-%% Citing GIBBON
-% A paper is in preparation but for now please cite GIBBON as:
-% Kevin Mattheus Moerman, (2016). GIBBON (Hylobates Lar). Zenodo. http://doi.org/10.5281/zenodo.44404
+%% Reporting issues and contributing
+% Please visit the GitHub site for reporting issues and to find out how to
+% contribute.
+% <https://github.com/gibbonCode/GIBBON>
 
-%% Support
-% Users are encouraged to study the help and examples provided.
+%% Contact 
 % For queries email: <gibbon.toolbox@gmail.com>.
 
 %%
