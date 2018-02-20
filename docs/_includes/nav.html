@@ -16,18 +16,33 @@
         <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
             <ul class="nav navbar-nav navbar-right">
                 <li>
-                    <a href="{{ site.baseurl }}/">Home</a>
+                  <a href="{{ site.baseurl }}/">
+                    <img alt="Home" style="height:2rem;" src="/img/icons/home.png" />
+                  </a>
                 </li>
-				{% for page in site.pages %}{% if page.url contains "projects/" %}{% if page.title %}
-                <li>
-                    <a href="{{ page.url | prepend: site.baseurl }}">{{ page.title }}</a>
-                </li>
-                {% endif %}{% endif %}{% endfor %}
-                {% for page in site.pages %}{% if page.url contains "projects/" %}{% else %}{% if page.title %}
-                <li>
-                    <a href="{{ page.url | prepend: site.baseurl }}">{{ page.title }}</a>
-                </li>
-                {% endif %}{% endif %}{% endfor %}
+
+                {% assign sorted_pages = site.pages | sort:"ordernumber"%}
+                {% for page in sorted_pages %}
+                  {% if page.url contains "projects/" %}
+                    {% else %}
+                    {% if page.title %}
+                      <li>
+                        <a href="{{ page.url | prepend: site.baseurl }}">{{ page.title }}</a>
+                      </li>
+                    {% endif %}
+                  {% endif %}
+                {% endfor %}
+
+                {% for page in site.pages %}
+                  {% if page.url contains "projects/" %}
+                    {% if page.title %}
+                    <li>
+                      <a href="{{ page.url | prepend: site.baseurl }}">{{ page.title }}</a>
+                    </li>
+                    {% endif %}
+                  {% endif %}
+                {% endfor %}
+
             </ul>
         </div>
         <!-- /.navbar-collapse -->

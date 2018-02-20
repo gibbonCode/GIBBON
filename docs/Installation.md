@@ -3,7 +3,9 @@ layout: page
 title: "Installation"
 description: "How to install GIBBON"
 header-img: "img/home-bg.jpg"
+ordernumber: 1
 ---
+# Installation
 
 #### Table of content
 * [Download](#Download)  
@@ -11,7 +13,7 @@ header-img: "img/home-bg.jpg"
 
 ***
 
-# Download <a name="Download"></a>
+## Download <a name="Download"></a>
 
 |[Setup GIT/GitHub (recommended)](https://github.com/gibbonCode/GIBBON)|[Download .zip file directly](https://github.com/gibbonCode/GIBBON/archive/master.zip)|
 |:-|-:|
@@ -23,7 +25,7 @@ git clone https://github.com/gibbonCode/GIBBON.git
 ```  
 (__New to GIT?__ see these [learning resources](https://help.github.com/articles/git-and-github-learning-resources/) and this [10 min. GIT tutorial](https://try.github.io/levels/1/challenges/1))
 
-# Installation <a name="Installation"></a>  
+## Installation <a name="Installation"></a>  
 The steps below guide you through a streamlined installation procedure using the `installGibbon.m` function<sup>\*</sup>.   
 \*<sub>If you prefer manual installation do the following: 1) Add the GIBBON folder (with subfolders) to the path and save the path definitions, 2) Run `createHelpDemoDocumentation.m` to integrate the help and documentation, 3) For the 3rd party packages: 3a) Add the `export_fig` folder to the path and save the path definitions, 3b) Go to the config folder in _../GIBBON/config_ and edit the _FEBioPath.txt_ file to contain the full path to the FEBio executable </sub>
 

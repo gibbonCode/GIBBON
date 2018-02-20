@@ -3,11 +3,10 @@ layout: page
 title: "Citing"
 description: "Citing GIBBON"
 header-img: "img/home-bg.jpg"
+ordernumber: 3
 ---
 
 # Citing GIBBON
-A paper on GIBBON will be published shortly in [JOSS](https://joss.theoj.org/) which users will be asked to cite. For now please cite the DOI for the latest version archived with ZENODO, e.g. as:  
-
-`Kevin Mattheus Moerman, . (2017, September 11). GIBBON (Hylobates Albibarbis). Zenodo. https://zenodo.org/badge/latestdoi/93002532`
-
-To see options for importing into reference managers click this DOI badge: [![DOI](https://zenodo.org/badge/93002532.svg)](https://zenodo.org/badge/latestdoi/93002532)
+Cite the Journal of Open Source Software paper: [![DOI](http://joss.theoj.org/papers/10.21105/joss.00506/status.svg)](https://doi.org/10.21105/joss.00506)   
+    
+Moerman, (2018). GIBBON: _The Geometry and Image-Based Bioengineering add-On_. Journal of Open Source Software, 3(22), 506, [https://doi.org/10.21105/joss.00506](https://doi.org/10.21105/joss.00506)

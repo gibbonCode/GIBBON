@@ -1,8 +1,11 @@
 
 <img src="docs/html/gibbonLogo.jpg" href="https://gibboncode.org" alt="GIBBON" width="100%">   
 
-[![DOI](https://zenodo.org/badge/93002532.svg)](https://zenodo.org/badge/latestdoi/93002532)
-[![Join the chat at https://gitter.im/GIBBONchat/Lobby](https://badges.gitter.im/GIBBONchat/Lobby.svg)](https://gitter.im/GIBBONchat/Lobby?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge) [![License](https://img.shields.io/badge/License-GNU_GPLv3-orange.svg)](https://github.com/gibbonCode/GIBBON/blob/master/LICENSE)
+**Cite GIBBON:** [![DOI](http://joss.theoj.org/papers/10.21105/joss.00506/status.svg)](https://doi.org/10.21105/joss.00506)
+
+**License:** [![License](https://img.shields.io/badge/License-GNU_GPLv3-orange.svg)](https://github.com/gibbonCode/GIBBON/blob/master/LICENSE)
+
+**Join chat:** [![Join the chat at https://gitter.im/GIBBONchat/Lobby](https://badges.gitter.im/GIBBONchat/Lobby.svg)](https://gitter.im/GIBBONchat/Lobby?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
 
 # Table of contents
 - [Project Summary](#Summary)  
@@ -11,6 +14,7 @@
 - [Getting started](#Start)
 - [Testing](#Test)
 - [License](#License)  
+- [Citing GIBBON](#Cite)
 - [Contributing](#Contributing)  
 - [Code of conduct](#CodeOfConduct)  
 - [Road Map](#RoadMap)  
@@ -127,7 +131,12 @@ A large portion of GIBBON's functionality does not rely on special MATLAB toolbo
 Geodesic remeshing (`DEMO_geodesic_remeshing`) currently only works for Windows OS, for other operational systems special mex file compilation is required or an alternative (experimental function) is used instead.
 
 # License <a name="License"></a>
-[![License](https://img.shields.io/badge/License-GNU_GPLv3-orange.svg)](https://github.com/gibbonCode/GIBBON/blob/master/LICENSE)
+GIBBON is provided under:  [![License](https://img.shields.io/badge/License-GNU_GPLv3-orange.svg)](https://opensource.org/licenses/GPL-3.0). The [license file](https://github.com/gibbonCode/GIBBON/blob/master/LICENSE) is found on the GitHub repository.
+
+# Citing GIBBON <a name="Cite"></a>
+Cite the Journal of Open Source Software paper: [![DOI](http://joss.theoj.org/papers/10.21105/joss.00506/status.svg)](https://doi.org/10.21105/joss.00506)    
+
+Moerman, (2018). GIBBON: _The Geometry and Image-Based Bioengineering add-On_. Journal of Open Source Software, 3(22), 506, [https://doi.org/10.21105/joss.00506](https://doi.org/10.21105/joss.00506)
 
 # Contributing <a name="Contributing"></a>
 See [CONTRIBUTING](CONTRIBUTING.md)    

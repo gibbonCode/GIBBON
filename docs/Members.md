@@ -4,6 +4,7 @@ title: "Members"
 logo: "img/home-bg.jpg"
 description: "Contributors to the project"
 header-img: "img/home-bg.jpg"
+ordernumber: 6
 ---
 
 ***  
