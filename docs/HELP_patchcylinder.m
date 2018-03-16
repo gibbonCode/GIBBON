@@ -40,11 +40,9 @@ for q=1:1:numel(meshTypes)
     [F,V]=patchcylinder(cylRaduis,numRadial,cylHeight,numSteps,meshTypes{q}); 
     subplot(1,3,q); hold on;
     title([meshTypes{q},' type cylinder'],'FontSize',fontSize,'Interpreter','none');
-    xlabel('X','FontSize',fontSize); ylabel('Y','FontSize',fontSize); zlabel('Z','FontSize',fontSize);
+    axisGeom(gca,fontSize);
     gpatch(F,V,pColors(q,:));
-    patchNormPlot(F,V);    
-    set(gca,'FontSize',fontSize);
-    view(3); axis tight;  axis equal;  grid on;
+    patchNormPlot(F,V);        
     camlight headlight;
 end
 drawnow;
@@ -76,33 +74,27 @@ drawnow;
 
 %% Creating a closed cylinder model
 
-%%
-% Indices for the top and bottom points can be obtained as follows
-indTop=inputStruct.numHeight:inputStruct.numHeight:size(V,1);
-indBottom=1:inputStruct.numHeight:size(V,1);
+% Creating input structure
+inputStruct.cylRadius=1;
+inputStruct.numRadial=15;
+inputStruct.cylHeight=3;
+inputStruct.numHeight=11;
+inputStruct.meshType='tri';
+inputStruct.closeOpt=1;
 
 %%
-% The top and bottom can be meshed using |regionTriMesh2D|
-
-[Ft,Vt]=regionTriMesh2D({V(indTop,[1 2])},[],0);
-Vt(:,3)=mean(V(indTop,3));
-
-[Fb,Vb]=regionTriMesh2D({V(indBottom,[1 2])},[],0);
-Vb(:,3)=mean(V(indBottom,3));
-Fb=fliplr(Fb);
+% Derive patch data for a cylinder
+[F,V,C]=patchcylinder(inputStruct); 
 
 %%
 % Visualizing meshed regions
 
-%Curves
-plotV(V(indTop,:),'b.-','markerSize',25,'lineWidth',2);
-plotV(V(indBottom,:),'r.-','markerSize',25,'lineWidth',2);
-
-%Caps
-gpatch(Ft,Vt,'r');
-% patchNormPlot(Ft,Vt);  
-gpatch(Fb,Vb,'b');
-% patchNormPlot(Fb,Vb);  
+cFigure; 
+gpatch(F,V,C);
+patchNormPlot(F,V);  
+colormap(gjet(3)); icolorbar; 
+axisGeom; 
+camlight headlight; 
 drawnow; 
 
 %% 

@@ -1,9 +1,6 @@
 %% simplexImIntersect
 % Below is a demonstration of the features of the |simplexImIntersect| function
 
-%%
-clear; close all; clc;
-
 %% Syntax
 % |[regionlabel]=simplexImIntersect(F1,V1,V2,voxelSize);|
 

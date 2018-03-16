@@ -29,8 +29,8 @@ edgeWidth=1;
 %
 % Turk G, Levoy M. Zippered polygon meshes from range images.
 % Proceedings of the 21st annual conference on Computer graphics and
-% interactive techniques - SIGGRAPH  �94 [Internet]. New York, New York,
-% USA: ACM Press; 1994;311�8. Available from:
+% interactive techniques - SIGGRAPH  -94 [Internet]. New York, New York,
+% USA: ACM Press; 1994;311-8. Available from:
 % http://portal.acm.org/citation.cfm?doid=192161.192241
 
 %Obtaining patch data
@@ -39,13 +39,12 @@ edgeWidth=1;
 %%
 % Visualisation
 
-hf=figuremax(fig_color,fig_colordef); 
+cFigure;
 title('The Stanford bunny','FontSize',fontSize);
-xlabel('X','FontSize',fontSize); ylabel('Y','FontSize',fontSize); zlabel('Z','FontSize',fontSize);
-hp=patch('Faces',F,'Vertices',V,'FaceColor','g','FaceAlpha',faceAlpha,'lineWidth',edgeWidth,'edgeColor',edgeColor);
-set(gca,'FontSize',fontSize);
-view(3); axis tight;  axis equal;  axis vis3d; axis off;
-camlight('headlight'); lighting flat;
+gpatch(F,V,'g');
+axisGeom(gca,fontSize);
+camlight('headlight');
+drawnow; 
 
 %% 
 %

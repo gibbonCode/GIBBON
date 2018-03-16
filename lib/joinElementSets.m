@@ -25,7 +25,7 @@ switch nargin
 end
 
 %%
-numSets=numel(Fc); %Nubmer of sets in the cell arrays
+numSets=numel(Fc); %Number of sets in the cell arrays
 
 %Vertex data
 numVertSets=cellfun(@(x) size(x,1),Vc); 
@@ -57,8 +57,12 @@ end
 numColorSets=cellfun(@(x) size(x,1),Cc);
 numDimColor=max(cellfun(@(x) size(x,2),Cc));
 numColorTotal=sum(numColorSets);
-CT=zeros(numColorTotal,numDimColor); %Initialize
 
+if cellMode        
+    CT=Cc; %Initialize as input cell
+else
+    CT=zeros(numColorTotal,numDimColor); %Initialize
+end
 
 %% 
 
@@ -78,21 +82,23 @@ for q=1:1:numSets
     VT(indVert(q)+1:indVert(q+1),:)=Vn; %Appending Current vertex set
     
     %Face data
+    Fn=Fc{q}+indVert(q); %Current face set plus index shift
     if cellMode
-        FT{q}=Fc{q}+indVert(q); %Add index shift
-    else
-        Fn=Fc{q}+indVert(q); %Current face set plus index shift
+        FT{q}=Fn; %Appending Current face set
+    else        
         FT(indFace(q)+1:indFace(q+1),:)=Fn; %Appending Current face set
     end    
     
     if nargout==3
-        %Color Data
-        Cn=Cc{q}; %Current color set
-        if size(Cn,2)<numDimColor %Expand if required
-            Cn(:,size(Cn,2)+1:numDimColor)=0;
-            warning('Not all color sets are of equal dimensionality (e.g. varying numbers of columns). Zeros were added for added dimensions');
+        %Color Data        
+        if ~cellMode
+            Cn=Cc{q}; %Current color set            
+            if size(Cn,2)<numDimColor %Expand if required
+                Cn(:,size(Cn,2)+1:numDimColor)=0;
+                warning('Not all color sets are of equal dimensionality (e.g. varying numbers of columns). Zeros were added for added dimensions');
+            end
+            CT(indColor(q)+1:indColor(q+1),:)=Cn; %Appending Current color set
         end
-        CT(indColor(q)+1:indColor(q+1),:)=Cn; %Appending Current color set
     end
 end
 

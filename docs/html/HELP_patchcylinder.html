@@ -6,7 +6,7 @@
    <!--
 This HTML was auto-generated from MATLAB code.
 To make changes, update the MATLAB code and republish this document.
-      --><title>patchcylinder</title><meta name="generator" content="MATLAB 9.4"><link rel="schema.DC" href="http://purl.org/dc/elements/1.1/"><meta name="DC.date" content="2018-02-18"><meta name="DC.source" content="HELP_patchcylinder.m"><style type="text/css">
+      --><title>patchcylinder</title><meta name="generator" content="MATLAB 9.4"><link rel="schema.DC" href="http://purl.org/dc/elements/1.1/"><meta name="DC.date" content="2018-03-16"><meta name="DC.source" content="HELP_patchcylinder.m"><style type="text/css">
 html,body,div,span,applet,object,iframe,h1,h2,h3,h4,h5,h6,p,blockquote,pre,a,abbr,acronym,address,big,cite,code,del,dfn,em,font,img,ins,kbd,q,s,samp,small,strike,strong,sub,sup,tt,var,b,u,i,center,dl,dt,dd,ol,ul,li,fieldset,form,label,legend,table,caption,tbody,tfoot,thead,tr,th,td{margin:0;padding:0;border:0;outline:0;font-size:100%;vertical-align:baseline;background:transparent}body{line-height:1}ol,ul{list-style:none}blockquote,q{quotes:none}blockquote:before,blockquote:after,q:before,q:after{content:'';content:none}:focus{outine:0}ins{text-decoration:none}del{text-decoration:line-through}table{border-collapse:collapse;border-spacing:0}
 
 html { min-height:100%; margin-bottom:1px; }
@@ -83,11 +83,9 @@ pColors=gjet(numel(meshTypes));
     [F,V]=patchcylinder(cylRaduis,numRadial,cylHeight,numSteps,meshTypes{q});
     subplot(1,3,q); hold <span class="string">on</span>;
     title([meshTypes{q},<span class="string">' type cylinder'</span>],<span class="string">'FontSize'</span>,fontSize,<span class="string">'Interpreter'</span>,<span class="string">'none'</span>);
-    xlabel(<span class="string">'X'</span>,<span class="string">'FontSize'</span>,fontSize); ylabel(<span class="string">'Y'</span>,<span class="string">'FontSize'</span>,fontSize); zlabel(<span class="string">'Z'</span>,<span class="string">'FontSize'</span>,fontSize);
+    axisGeom(gca,fontSize);
     gpatch(F,V,pColors(q,:));
     patchNormPlot(F,V);
-    set(gca,<span class="string">'FontSize'</span>,fontSize);
-    view(3); axis <span class="string">tight</span>;  axis <span class="string">equal</span>;  grid <span class="string">on</span>;
     camlight <span class="string">headlight</span>;
 <span class="keyword">end</span>
 drawnow;
@@ -104,23 +102,20 @@ gpatch(F,V,<span class="string">'g'</span>);
 axisGeom(gca,fontSize);
 camlight <span class="string">headlight</span>;
 drawnow;
-</pre><img vspace="5" hspace="5" src="HELP_patchcylinder_02.png" alt=""> <h2 id="11">Creating a closed cylinder model</h2><p>Indices for the top and bottom points can be obtained as follows</p><pre class="codeinput">indTop=inputStruct.numHeight:inputStruct.numHeight:size(V,1);
-indBottom=1:inputStruct.numHeight:size(V,1);
-</pre><p>The top and bottom can be meshed using <tt>regionTriMesh2D</tt></p><pre class="codeinput">[Ft,Vt]=regionTriMesh2D({V(indTop,[1 2])},[],0);
-Vt(:,3)=mean(V(indTop,3));
-
-[Fb,Vb]=regionTriMesh2D({V(indBottom,[1 2])},[],0);
-Vb(:,3)=mean(V(indBottom,3));
-Fb=fliplr(Fb);
-</pre><p>Visualizing meshed regions</p><pre class="codeinput"><span class="comment">%Curves</span>
-plotV(V(indTop,:),<span class="string">'b.-'</span>,<span class="string">'markerSize'</span>,25,<span class="string">'lineWidth'</span>,2);
-plotV(V(indBottom,:),<span class="string">'r.-'</span>,<span class="string">'markerSize'</span>,25,<span class="string">'lineWidth'</span>,2);
-
-<span class="comment">%Caps</span>
-gpatch(Ft,Vt,<span class="string">'r'</span>);
-<span class="comment">% patchNormPlot(Ft,Vt);</span>
-gpatch(Fb,Vb,<span class="string">'b'</span>);
-<span class="comment">% patchNormPlot(Fb,Vb);</span>
+</pre><img vspace="5" hspace="5" src="HELP_patchcylinder_02.png" alt=""> <h2 id="11">Creating a closed cylinder model</h2><pre class="codeinput"><span class="comment">% Creating input structure</span>
+inputStruct.cylRadius=1;
+inputStruct.numRadial=15;
+inputStruct.cylHeight=3;
+inputStruct.numHeight=11;
+inputStruct.meshType=<span class="string">'tri'</span>;
+inputStruct.closeOpt=1;
+</pre><p>Derive patch data for a cylinder</p><pre class="codeinput">[F,V,C]=patchcylinder(inputStruct);
+</pre><p>Visualizing meshed regions</p><pre class="codeinput">cFigure;
+gpatch(F,V,C);
+patchNormPlot(F,V);
+colormap(gjet(3)); icolorbar;
+axisGeom;
+camlight <span class="string">headlight</span>;
 drawnow;
 </pre><img vspace="5" hspace="5" src="HELP_patchcylinder_03.png" alt=""> <p><img vspace="5" hspace="5" src="gibbVerySmall.gif" alt=""> </p><p><i><b>GIBBON</b></i> <a href="www.gibboncode.org">www.gibboncode.org</a></p><p><i>Kevin Mattheus Moerman</i>, <a href="gibbon.toolbox@gmail.com">gibbon.toolbox@gmail.com</a></p><p><i><b>GIBBON footer text</b></i></p><p>License: <a href="https://github.com/gibbonCode/GIBBON/blob/master/LICENSE">https://github.com/gibbonCode/GIBBON/blob/master/LICENSE</a></p><p>GIBBON: The Geometry and Image-based Bioengineering add-On. A toolbox for image segmentation, image-based modeling, meshing, and finite element analysis.</p><p>Copyright (C) 2018  Kevin Mattheus Moerman</p><p>This program is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.</p><p>This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for more details.</p><p>You should have received a copy of the GNU General Public License along with this program.  If not, see <a href="http://www.gnu.org/licenses/">http://www.gnu.org/licenses/</a>.</p><p class="footer"><br><a href="https://www.mathworks.com/products/matlab/">Published with MATLAB&reg; R2018a</a><br></p></div><!--
 ##### SOURCE BEGIN #####
@@ -166,11 +161,9 @@ for q=1:1:numel(meshTypes)
     [F,V]=patchcylinder(cylRaduis,numRadial,cylHeight,numSteps,meshTypes{q}); 
     subplot(1,3,q); hold on;
     title([meshTypes{q},' type cylinder'],'FontSize',fontSize,'Interpreter','none');
-    xlabel('X','FontSize',fontSize); ylabel('Y','FontSize',fontSize); zlabel('Z','FontSize',fontSize);
+    axisGeom(gca,fontSize);
     gpatch(F,V,pColors(q,:));
-    patchNormPlot(F,V);    
-    set(gca,'FontSize',fontSize);
-    view(3); axis tight;  axis equal;  grid on;
+    patchNormPlot(F,V);        
     camlight headlight;
 end
 drawnow;
@@ -202,33 +195,27 @@ drawnow;
 
 %% Creating a closed cylinder model
 
-%%
-% Indices for the top and bottom points can be obtained as follows
-indTop=inputStruct.numHeight:inputStruct.numHeight:size(V,1);
-indBottom=1:inputStruct.numHeight:size(V,1);
+% Creating input structure
+inputStruct.cylRadius=1;
+inputStruct.numRadial=15;
+inputStruct.cylHeight=3;
+inputStruct.numHeight=11;
+inputStruct.meshType='tri';
+inputStruct.closeOpt=1;
 
 %%
-% The top and bottom can be meshed using |regionTriMesh2D|
-
-[Ft,Vt]=regionTriMesh2D({V(indTop,[1 2])},[],0);
-Vt(:,3)=mean(V(indTop,3));
-
-[Fb,Vb]=regionTriMesh2D({V(indBottom,[1 2])},[],0);
-Vb(:,3)=mean(V(indBottom,3));
-Fb=fliplr(Fb);
+% Derive patch data for a cylinder
+[F,V,C]=patchcylinder(inputStruct); 
 
 %%
 % Visualizing meshed regions
 
-%Curves
-plotV(V(indTop,:),'b.-','markerSize',25,'lineWidth',2);
-plotV(V(indBottom,:),'r.-','markerSize',25,'lineWidth',2);
-
-%Caps
-gpatch(Ft,Vt,'r');
-% patchNormPlot(Ft,Vt);  
-gpatch(Fb,Vb,'b');
-% patchNormPlot(Fb,Vb);  
+cFigure; 
+gpatch(F,V,C);
+patchNormPlot(F,V);  
+colormap(gjet(3)); icolorbar; 
+axisGeom; 
+camlight headlight; 
 drawnow; 
 
 %% 

@@ -6,7 +6,7 @@
    <!--
 This HTML was auto-generated from MATLAB code.
 To make changes, update the MATLAB code and republish this document.
-      --><title>joinElementSets</title><meta name="generator" content="MATLAB 9.4"><link rel="schema.DC" href="http://purl.org/dc/elements/1.1/"><meta name="DC.date" content="2018-02-18"><meta name="DC.source" content="HELP_joinElementSets.m"><style type="text/css">
+      --><title>joinElementSets</title><meta name="generator" content="MATLAB 9.4"><link rel="schema.DC" href="http://purl.org/dc/elements/1.1/"><meta name="DC.date" content="2018-03-15"><meta name="DC.source" content="HELP_joinElementSets.m"><style type="text/css">
 html,body,div,span,applet,object,iframe,h1,h2,h3,h4,h5,h6,p,blockquote,pre,a,abbr,acronym,address,big,cite,code,del,dfn,em,font,img,ins,kbd,q,s,samp,small,strike,strong,sub,sup,tt,var,b,u,i,center,dl,dt,dd,ol,ul,li,fieldset,form,label,legend,table,caption,tbody,tfoot,thead,tr,th,td{margin:0;padding:0;border:0;outline:0;font-size:100%;vertical-align:baseline;background:transparent}body{line-height:1}ol,ul{list-style:none}blockquote,q{quotes:none}blockquote:before,blockquote:after,q:before,q:after{content:'';content:none}:focus{outine:0}ins{text-decoration:none}del{text-decoration:line-through}table{border-collapse:collapse;border-spacing:0}
 
 html { min-height:100%; margin-bottom:1px; }
@@ -90,24 +90,21 @@ Vc={V1,V2,V3};
 
 p=[1 3 5];
 <span class="keyword">for</span> q=1:1:numel(Fc)
-    subplot(3,2,p(q));
+    subplot(3,2,p(q)); hold <span class="string">on</span>;
     title([<span class="string">'Set '</span>,num2str(q)],<span class="string">'FontSize'</span>,fontSize);
-    xlabel(<span class="string">'X'</span>,<span class="string">'FontSize'</span>,fontSize);ylabel(<span class="string">'Y'</span>,<span class="string">'FontSize'</span>,fontSize); zlabel(<span class="string">'Z'</span>,<span class="string">'FontSize'</span>,fontSize);
-    hold <span class="string">on</span>;
-    patch(<span class="string">'Faces'</span>,Fc{q},<span class="string">'Vertices'</span>,Vc{q},<span class="string">'FaceColor'</span>,<span class="string">'flat'</span>,<span class="string">'CData'</span>,q*ones(size(Fc{q},1),1),<span class="string">'EdgeColor'</span>,<span class="string">'k'</span>,<span class="string">'FaceAlpha'</span>,faceAlpha1);
-    camlight(<span class="string">'headlight'</span>); lighting <span class="string">flat</span>;
-    axis <span class="string">equal</span>; view(3); axis <span class="string">tight</span>;  grid <span class="string">on</span>;  set(gca,<span class="string">'FontSize'</span>,fontSize);
-    colormap(gjet(numel(Fc))); caxis([0.5 numel(Fc)+0.5]);
+    gpatch(Fc{q},Vc{q},q*ones(size(Fc{q},1),1),<span class="string">'k'</span>,faceAlpha1);
+    camlight(<span class="string">'headlight'</span>);
+    axisGeom(gca,fontSize);
+    colormap(gjet(numel(Fc)));
+    caxis([0.5 numel(Fc)+0.5]);
 <span class="keyword">end</span>
 
-subplot(3,2,[2 4 6]);
+subplot(3,2,[2 4 6]); hold <span class="string">on</span>;
 title(<span class="string">'Joined sets'</span>,<span class="string">'FontSize'</span>,fontSize);
-xlabel(<span class="string">'X'</span>,<span class="string">'FontSize'</span>,fontSize);ylabel(<span class="string">'Y'</span>,<span class="string">'FontSize'</span>,fontSize); zlabel(<span class="string">'Z'</span>,<span class="string">'FontSize'</span>,fontSize);
-hold <span class="string">on</span>;
-patch(<span class="string">'Faces'</span>,FT,<span class="string">'Vertices'</span>,VT,<span class="string">'FaceColor'</span>,<span class="string">'flat'</span>,<span class="string">'CData'</span>,CT,<span class="string">'EdgeColor'</span>,<span class="string">'k'</span>,<span class="string">'FaceAlpha'</span>,faceAlpha1);
-camlight(<span class="string">'headlight'</span>); lighting <span class="string">flat</span>;
-axis <span class="string">equal</span>; view(3); axis <span class="string">tight</span>;  grid <span class="string">on</span>;  set(gca,<span class="string">'FontSize'</span>,fontSize);
-colormap(gjet(numel(Fc))); colorbar; caxis([0.5 numel(Fc)+0.5]);
+gpatch(FT,VT,CT,<span class="string">'k'</span>,faceAlpha1);
+camlight(<span class="string">'headlight'</span>);
+axisGeom(gca,fontSize);
+colormap(gjet(numel(Fc))); icolorbar;
 drawnow;
 </pre><img vspace="5" hspace="5" src="HELP_joinElementSets_01.png" alt=""> <h2 id="10">EXAMPLE 2: Joining sets of patch data of the different types</h2><p>Defining an example triangulated surface model</p><pre class="codeinput"><span class="comment">% Defining a deformed and rotated torus shape</span>
 r=1; <span class="comment">%Sphere radius</span>
@@ -129,28 +126,21 @@ Vc={V1,V2,V3};
 
 p=[1 3 5];
 <span class="keyword">for</span> q=1:1:numel(Fc)
-    subplot(3,2,p(q));
+    subplot(3,2,p(q)); hold <span class="string">on</span>;
     title([<span class="string">'Set '</span>,num2str(q)],<span class="string">'FontSize'</span>,fontSize);
-    xlabel(<span class="string">'X'</span>,<span class="string">'FontSize'</span>,fontSize);ylabel(<span class="string">'Y'</span>,<span class="string">'FontSize'</span>,fontSize); zlabel(<span class="string">'Z'</span>,<span class="string">'FontSize'</span>,fontSize);
-    hold <span class="string">on</span>;
-    patch(<span class="string">'Faces'</span>,Fc{q},<span class="string">'Vertices'</span>,Vc{q},<span class="string">'FaceColor'</span>,<span class="string">'flat'</span>,<span class="string">'CData'</span>,q*ones(size(Fc{q},1),1),<span class="string">'EdgeColor'</span>,<span class="string">'k'</span>,<span class="string">'FaceAlpha'</span>,faceAlpha1);
-    camlight(<span class="string">'headlight'</span>); lighting <span class="string">flat</span>;
-    axis <span class="string">equal</span>; view(3); axis <span class="string">tight</span>;  grid <span class="string">on</span>;  set(gca,<span class="string">'FontSize'</span>,fontSize);
-    colormap(gjet(numel(Fc))); caxis([0.5 numel(Fc)+0.5]);
+    gpatch(Fc{q},Vc{q},q*ones(size(Fc{q},1),1),<span class="string">'k'</span>,faceAlpha1);
+    camlight(<span class="string">'headlight'</span>);
+    axisGeom(gca,fontSize);
+    colormap(gjet(numel(Fc)));
+    caxis([0.5 numel(Fc)+0.5]);
 <span class="keyword">end</span>
 
-subplot(3,2,[2 4 6]);
+subplot(3,2,[2 4 6]); hold <span class="string">on</span>;
 title(<span class="string">'Joined sets'</span>,<span class="string">'FontSize'</span>,fontSize);
-xlabel(<span class="string">'X'</span>,<span class="string">'FontSize'</span>,fontSize);ylabel(<span class="string">'Y'</span>,<span class="string">'FontSize'</span>,fontSize); zlabel(<span class="string">'Z'</span>,<span class="string">'FontSize'</span>,fontSize);
-hold <span class="string">on</span>;
-
-<span class="keyword">for</span> q=1:1:numel(Fc)
-    patch(<span class="string">'Faces'</span>,FT{q},<span class="string">'Vertices'</span>,VT,<span class="string">'FaceColor'</span>,<span class="string">'flat'</span>,<span class="string">'CData'</span>,q*ones(size(FT{q},1),1),<span class="string">'EdgeColor'</span>,<span class="string">'k'</span>,<span class="string">'FaceAlpha'</span>,faceAlpha1);
-<span class="keyword">end</span>
-
-camlight(<span class="string">'headlight'</span>); lighting <span class="string">flat</span>;
-axis <span class="string">equal</span>; view(3); axis <span class="string">tight</span>;  grid <span class="string">on</span>;  set(gca,<span class="string">'FontSize'</span>,fontSize);
-colormap(gjet(numel(Fc))); colorbar; caxis([0.5 numel(Fc)+0.5]);
+gpatch(FT,VT,CT,<span class="string">'k'</span>,faceAlpha1);
+camlight(<span class="string">'headlight'</span>);
+axisGeom(gca,fontSize);
+colormap(gjet(numel(Fc))); icolorbar;
 drawnow;
 </pre><img vspace="5" hspace="5" src="HELP_joinElementSets_02.png" alt=""> <p><img vspace="5" hspace="5" src="gibbVerySmall.gif" alt=""> </p><p><i><b>GIBBON</b></i> <a href="www.gibboncode.org">www.gibboncode.org</a></p><p><i>Kevin Mattheus Moerman</i>, <a href="gibbon.toolbox@gmail.com">gibbon.toolbox@gmail.com</a></p><p><i><b>GIBBON footer text</b></i></p><p>License: <a href="https://github.com/gibbonCode/GIBBON/blob/master/LICENSE">https://github.com/gibbonCode/GIBBON/blob/master/LICENSE</a></p><p>GIBBON: The Geometry and Image-based Bioengineering add-On. A toolbox for image segmentation, image-based modeling, meshing, and finite element analysis.</p><p>Copyright (C) 2018  Kevin Mattheus Moerman</p><p>This program is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.</p><p>This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for more details.</p><p>You should have received a copy of the GNU General Public License along with this program.  If not, see <a href="http://www.gnu.org/licenses/">http://www.gnu.org/licenses/</a>.</p><p class="footer"><br><a href="https://www.mathworks.com/products/matlab/">Published with MATLAB&reg; R2018a</a><br></p></div><!--
 ##### SOURCE BEGIN #####
@@ -208,24 +198,21 @@ cFigure;
 
 p=[1 3 5];
 for q=1:1:numel(Fc)
-    subplot(3,2,p(q));
-    title(['Set ',num2str(q)],'FontSize',fontSize);
-    xlabel('X','FontSize',fontSize);ylabel('Y','FontSize',fontSize); zlabel('Z','FontSize',fontSize);
-    hold on;
-    patch('Faces',Fc{q},'Vertices',Vc{q},'FaceColor','flat','CData',q*ones(size(Fc{q},1),1),'EdgeColor','k','FaceAlpha',faceAlpha1);
-    camlight('headlight'); lighting flat;
-    axis equal; view(3); axis tight;  grid on;  set(gca,'FontSize',fontSize);
-    colormap(gjet(numel(Fc))); caxis([0.5 numel(Fc)+0.5]);
+    subplot(3,2,p(q)); hold on;
+    title(['Set ',num2str(q)],'FontSize',fontSize);    
+    gpatch(Fc{q},Vc{q},q*ones(size(Fc{q},1),1),'k',faceAlpha1);
+    camlight('headlight');
+    axisGeom(gca,fontSize);
+    colormap(gjet(numel(Fc)));
+    caxis([0.5 numel(Fc)+0.5]);
 end
 
-subplot(3,2,[2 4 6]);
+subplot(3,2,[2 4 6]); hold on;
 title('Joined sets','FontSize',fontSize);
-xlabel('X','FontSize',fontSize);ylabel('Y','FontSize',fontSize); zlabel('Z','FontSize',fontSize);
-hold on;
-patch('Faces',FT,'Vertices',VT,'FaceColor','flat','CData',CT,'EdgeColor','k','FaceAlpha',faceAlpha1);
-camlight('headlight'); lighting flat;
-axis equal; view(3); axis tight;  grid on;  set(gca,'FontSize',fontSize);
-colormap(gjet(numel(Fc))); colorbar; caxis([0.5 numel(Fc)+0.5]);
+gpatch(FT,VT,CT,'k',faceAlpha1);
+camlight('headlight'); 
+axisGeom(gca,fontSize);
+colormap(gjet(numel(Fc))); icolorbar; 
 drawnow;
 
 %% EXAMPLE 2: Joining sets of patch data of the different types
@@ -258,28 +245,21 @@ cFigure;
 
 p=[1 3 5];
 for q=1:1:numel(Fc)
-    subplot(3,2,p(q));
-    title(['Set ',num2str(q)],'FontSize',fontSize);
-    xlabel('X','FontSize',fontSize);ylabel('Y','FontSize',fontSize); zlabel('Z','FontSize',fontSize);
-    hold on;
-    patch('Faces',Fc{q},'Vertices',Vc{q},'FaceColor','flat','CData',q*ones(size(Fc{q},1),1),'EdgeColor','k','FaceAlpha',faceAlpha1);
-    camlight('headlight'); lighting flat;
-    axis equal; view(3); axis tight;  grid on;  set(gca,'FontSize',fontSize);
-    colormap(gjet(numel(Fc))); caxis([0.5 numel(Fc)+0.5]);
+    subplot(3,2,p(q)); hold on;
+    title(['Set ',num2str(q)],'FontSize',fontSize);    
+    gpatch(Fc{q},Vc{q},q*ones(size(Fc{q},1),1),'k',faceAlpha1);
+    camlight('headlight');
+    axisGeom(gca,fontSize);
+    colormap(gjet(numel(Fc)));
+    caxis([0.5 numel(Fc)+0.5]);
 end
 
-subplot(3,2,[2 4 6]);
+subplot(3,2,[2 4 6]); hold on;
 title('Joined sets','FontSize',fontSize);
-xlabel('X','FontSize',fontSize);ylabel('Y','FontSize',fontSize); zlabel('Z','FontSize',fontSize);
-hold on;
-
-for q=1:1:numel(Fc)
-    patch('Faces',FT{q},'Vertices',VT,'FaceColor','flat','CData',q*ones(size(FT{q},1),1),'EdgeColor','k','FaceAlpha',faceAlpha1);
-end
-
-camlight('headlight'); lighting flat;
-axis equal; view(3); axis tight;  grid on;  set(gca,'FontSize',fontSize);
-colormap(gjet(numel(Fc))); colorbar; caxis([0.5 numel(Fc)+0.5]);
+gpatch(FT,VT,CT,'k',faceAlpha1);
+camlight('headlight'); 
+axisGeom(gca,fontSize);
+colormap(gjet(numel(Fc))); icolorbar; 
 drawnow;
 
 %%

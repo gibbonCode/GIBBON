@@ -24,21 +24,60 @@ switch nargin
         V=varargin{2};
         a=[];
         patchType='f'; 
+        patchColor='k';
     case 3
         F=varargin{1};
         V=varargin{2};
         a=varargin{3};
         patchType='f'; 
+        patchColor='k';
     case 4
         F=varargin{1};
         V=varargin{2};
         a=varargin{3};
-        patchType=varargin{4};         
+        patchType=varargin{4};    
+        patchColor='k';
+    case 5
+        F=varargin{1};
+        V=varargin{2};
+        a=varargin{3};
+        patchType=varargin{4};
+        patchColor=varargin{5};
     otherwise
         error('Wrong numer of input arguments!');
 end
 
-%Check if a is empty, if so replace  length by mean edge length of surface
+%Check if patchType is empty, if so replace
+if isempty(patchType)
+    patchType='f';
+end
+
+%Check if patchColor is empty, if so replace
+if isempty(patchColor)
+    patchColor='k';
+end
+
+%%
+
+if isa(F,'cell') %Cell array of faces
+    hp=[];
+    for q=1:1:numel(F)
+        hp(q)=patchNormPlotStep(F{q},V,a,patchType,patchColor);
+    end
+else
+    hp=patchNormPlotStep(F,V,a,patchType,patchColor);
+end
+
+if nargout>0
+    varargout{1}=hp;
+end
+
+end
+
+function hp=patchNormPlotStep(F,V,a,patchType,patchColor)
+
+%%
+%Check if a is empty, if so replace length by mean edge length of surface
 if isempty(a)
     [A]=patchEdgeLengths(F,V);
     a=mean(A)*ones(1,2)/2;
@@ -46,6 +85,7 @@ elseif numel(a)==1
     a=a*ones(1,2);
 end
 
+%%
 %Get face normals
 switch patchType
     case 'f'       
@@ -77,8 +117,6 @@ switch patchType
         error('Wrong patchType specified!');
 end
 
-
-
 %Derive quiver patch data
 [Fni,Vni,~]=quiver3Dpatch(Vn(:,1),Vn(:,2),Vn(:,3),N(:,1),N(:,2),N(:,3),[],a);
 
@@ -86,10 +124,8 @@ end
 hp=patch('Faces',Fni,'Vertices',Vni);
 
 %Set defaults
-set(hp,'EdgeColor','none','FaceColor','k');
+set(hp,'EdgeColor','none','FaceColor',patchColor);
 
-if nargout>0
-    varargout{1}=hp;
 end
  
 %% 

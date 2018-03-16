@@ -1,74 +1,49 @@
-function [F,V]=patchcylinder(varargin)
+function [varargout]=patchcylinder(varargin)
 
 %------------------------------------------------------------------------
-% function [F,V]=patchcylinder(varargin)
+% function [F,V,C]=patchcylinder(optionStruct)
 
-
-% 2017/18/04
-% 2017/18/04 Added varargin style with defaults for missing parameters
+% 2017/04/18
+% 2017/04/18 Added varargin style with defaults for missing parameters
+% 2018/03/15 Updated input parsing based on default structure 
+% 2018/03/15 Added option to output a closed cylinder
+% 2018/03/15 Added varargout and color output
 %------------------------------------------------------------------------
 
-%%
+%% Parse input
 
+%Create default structure
+defaultOptionStruct.cylRadius=1;
+defaultOptionStruct.numRadial=10;
+defaultOptionStruct.cylHeight=2*defaultOptionStruct.cylRadius;
+defaultOptionStruct.numHeight=defaultOptionStruct.numRadial;
+defaultOptionStruct.meshType='quad';
+defaultOptionStruct.closeOpt=0;
 switch nargin    
     case 1
-        inputStruct=varargin{1};
+        optionStruct=varargin{1};
     case 5
-        inputStruct.cylRadius=varargin{1};
-        inputStruct.numRadial=varargin{2};
-        inputStruct.cylHeight=varargin{3};
-        inputStruct.numHeight=varargin{4};
-        inputStruct.meshType=varargin{5};        
+        optionStruct.cylRadius=varargin{1};
+        optionStruct.numRadial=varargin{2};
+        optionStruct.cylHeight=varargin{3};
+        optionStruct.numHeight=varargin{4};
+        optionStruct.meshType=varargin{5};        
     otherwise
         error('Wrong numer of input arguments');
 end
 
-if isfield(inputStruct,'cylRadius')
-    cylRadius=inputStruct.cylRadius;
-else
-    cylRadius=1;
-end
-if isempty(cylRadius)
-    cylRadius=1;
-end
+%Complement/fix input with default
+[optionStruct]=structComplete(optionStruct,defaultOptionStruct,1); %Complement provided with default if missing or empty
 
-if isfield(inputStruct,'numRadial')
-    numRadial=inputStruct.numRadial;
-else
-    numRadial=[];
-end
-if isempty(numRadial)
-    numRadial=10;
-end
+%Access parameters
+cylRadius=optionStruct.cylRadius;
+numRadial=optionStruct.numRadial;
+cylHeight=optionStruct.cylHeight;
+numHeight=optionStruct.numHeight;
+meshType=optionStruct.meshType;
+closeOpt=optionStruct.closeOpt;
 
-if isfield(inputStruct,'cylHeight')
-    cylHeight=inputStruct.cylHeight;
-else
-    cylHeight=2*cylRadius;
-end
-if isempty(cylHeight)
-    cylHeight=2*cylRadius;
-end
-
-if isfield(inputStruct,'numHeight')
-    numHeight=inputStruct.numHeight;
-else
-    numHeight=numRadial;
-end
-if isempty(numHeight)
-    numHeight=numRadial;
-end
-
-if isfield(inputStruct,'meshType')
-    meshType=inputStruct.meshType;
-else
-    meshType='quad';
-end
-if isempty(meshType)
-    meshType='quad';
-end
-
-%%
+%% Create cylinder
 
 t=linspace(0,2*pi,numRadial+1);
 t=t(1:end-1);
@@ -84,6 +59,37 @@ cPar.dir=0;
 cPar.closeLoopOpt=1; 
 
 [F,V]=polyExtrude(Vc,cPar);
+
+%% 
+
+indTop=numHeight:numHeight:size(V,1);
+indBottom=1:numHeight:size(V,1);
+
+%% Cap ends if requested
+
+if closeOpt==1
+    [Ft,Vt]=regionTriMesh2D({V(indTop,[1 2])},[],0);
+    Vt(:,3)=mean(V(indTop,3));
+    
+    [Fb,Vb]=regionTriMesh2D({V(indBottom,[1 2])},[],0);
+    Vb(:,3)=mean(V(indBottom,3));
+    Fb=fliplr(Fb);
+    
+    [F,V,C]=joinElementSets({F,Ft,Fb},{V,Vt,Vb});
+    nKeep=5; 
+    [F,V,~,ind2]=mergeVertices(F,V,nKeep);
+    indTop=ind2(indTop);
+    indBottom=ind2(indBottom);
+else
+    C=ones(size(F,1),1);
+end
+
+%% Collect output
+varargout{1}=F;
+varargout{2}=V;
+varargout{3}=C;
+varargout{4}=indTop;
+varargout{5}=indBottom;
 
 end
  

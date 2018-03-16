@@ -1,8 +1,5 @@
 function [F,V]=logic2isosurface(L,controlPar)
 
-%%
-
-%%
 
 %% GET CONTROL PARAMETERS
 

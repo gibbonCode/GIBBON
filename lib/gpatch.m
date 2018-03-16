@@ -74,7 +74,33 @@ end
 
 if isa(F,'cell') %Assume all entries are cells defining multiple patch data sets
     for q=1:1:numel(F)
-        hp(q)=plotPatch(F{q},V{q},C{q},CE{q},A{q},L);
+        f=F{q};
+        
+        if isa(V,'cell')
+            v=V{q};
+        else
+            v=V;
+        end
+
+        if isa(C,'cell')
+            c=C{q};
+        else
+            c=C;
+        end
+        
+        if isa(CE,'cell')
+            ce=CE{q};
+        else
+            ce=CE;
+        end
+        
+        if isa(A,'cell')
+            a=A{q};
+        else
+            a=A;
+        end
+        
+        hp(q)=plotPatch(f,v,c,ce,a,L);
     end
 else
     hp=plotPatch(F,V,C,CE,A,L);

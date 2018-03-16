@@ -51,6 +51,10 @@ if isempty(numSteps)
     numSteps=numSteps+iseven(numSteps);
 end
 
+% if numSteps==1
+%     numSteps=2;
+% end
+
 %% Remove twist
 if untwistOpt
     [Vc_end,~,~]=minPolyTwist(Vc_start,Vc_end);

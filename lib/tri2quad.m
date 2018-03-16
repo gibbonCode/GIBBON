@@ -6,11 +6,11 @@ switch nargin
     case 2
         Ft=varargin{1};
         Vt=varargin{2};
-        tet2HexMethod=1; 
+        convertMethod=1; 
     case 3
         Ft=varargin{1};
         Vt=varargin{2};        
-        tet2HexMethod=varargin{3};         
+        convertMethod=varargin{3};         
 end
 
 %% Mid edge sets
@@ -61,7 +61,7 @@ indV_midFace123=(indV_midFace((1-1)*size(Ft,1)+(1:size(Ft,1))))+indOffset;
 %new mid-edge points
 Vn=0.5*(Vt(edgeMat(:,1),:)+Vt(edgeMat(:,2),:));
      
-switch tet2HexMethod
+switch convertMethod
     case 1        
         %new mid-element points
         Vm=zeros(size(Ft,1),3);

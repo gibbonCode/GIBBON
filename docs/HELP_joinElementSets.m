@@ -52,24 +52,21 @@ cFigure;
 
 p=[1 3 5];
 for q=1:1:numel(Fc)
-    subplot(3,2,p(q));
-    title(['Set ',num2str(q)],'FontSize',fontSize);
-    xlabel('X','FontSize',fontSize);ylabel('Y','FontSize',fontSize); zlabel('Z','FontSize',fontSize);
-    hold on;
-    patch('Faces',Fc{q},'Vertices',Vc{q},'FaceColor','flat','CData',q*ones(size(Fc{q},1),1),'EdgeColor','k','FaceAlpha',faceAlpha1);
-    camlight('headlight'); lighting flat;
-    axis equal; view(3); axis tight;  grid on;  set(gca,'FontSize',fontSize);
-    colormap(gjet(numel(Fc))); caxis([0.5 numel(Fc)+0.5]);
+    subplot(3,2,p(q)); hold on;
+    title(['Set ',num2str(q)],'FontSize',fontSize);    
+    gpatch(Fc{q},Vc{q},q*ones(size(Fc{q},1),1),'k',faceAlpha1);
+    camlight('headlight');
+    axisGeom(gca,fontSize);
+    colormap(gjet(numel(Fc)));
+    caxis([0.5 numel(Fc)+0.5]);
 end
 
-subplot(3,2,[2 4 6]);
+subplot(3,2,[2 4 6]); hold on;
 title('Joined sets','FontSize',fontSize);
-xlabel('X','FontSize',fontSize);ylabel('Y','FontSize',fontSize); zlabel('Z','FontSize',fontSize);
-hold on;
-patch('Faces',FT,'Vertices',VT,'FaceColor','flat','CData',CT,'EdgeColor','k','FaceAlpha',faceAlpha1);
-camlight('headlight'); lighting flat;
-axis equal; view(3); axis tight;  grid on;  set(gca,'FontSize',fontSize);
-colormap(gjet(numel(Fc))); colorbar; caxis([0.5 numel(Fc)+0.5]);
+gpatch(FT,VT,CT,'k',faceAlpha1);
+camlight('headlight'); 
+axisGeom(gca,fontSize);
+colormap(gjet(numel(Fc))); icolorbar; 
 drawnow;
 
 %% EXAMPLE 2: Joining sets of patch data of the different types
@@ -102,28 +99,21 @@ cFigure;
 
 p=[1 3 5];
 for q=1:1:numel(Fc)
-    subplot(3,2,p(q));
-    title(['Set ',num2str(q)],'FontSize',fontSize);
-    xlabel('X','FontSize',fontSize);ylabel('Y','FontSize',fontSize); zlabel('Z','FontSize',fontSize);
-    hold on;
-    patch('Faces',Fc{q},'Vertices',Vc{q},'FaceColor','flat','CData',q*ones(size(Fc{q},1),1),'EdgeColor','k','FaceAlpha',faceAlpha1);
-    camlight('headlight'); lighting flat;
-    axis equal; view(3); axis tight;  grid on;  set(gca,'FontSize',fontSize);
-    colormap(gjet(numel(Fc))); caxis([0.5 numel(Fc)+0.5]);
+    subplot(3,2,p(q)); hold on;
+    title(['Set ',num2str(q)],'FontSize',fontSize);    
+    gpatch(Fc{q},Vc{q},q*ones(size(Fc{q},1),1),'k',faceAlpha1);
+    camlight('headlight');
+    axisGeom(gca,fontSize);
+    colormap(gjet(numel(Fc)));
+    caxis([0.5 numel(Fc)+0.5]);
 end
 
-subplot(3,2,[2 4 6]);
+subplot(3,2,[2 4 6]); hold on;
 title('Joined sets','FontSize',fontSize);
-xlabel('X','FontSize',fontSize);ylabel('Y','FontSize',fontSize); zlabel('Z','FontSize',fontSize);
-hold on;
-
-for q=1:1:numel(Fc)
-    patch('Faces',FT{q},'Vertices',VT,'FaceColor','flat','CData',q*ones(size(FT{q},1),1),'EdgeColor','k','FaceAlpha',faceAlpha1);
-end
-
-camlight('headlight'); lighting flat;
-axis equal; view(3); axis tight;  grid on;  set(gca,'FontSize',fontSize);
-colormap(gjet(numel(Fc))); colorbar; caxis([0.5 numel(Fc)+0.5]);
+gpatch(FT,VT,CT,'k',faceAlpha1);
+camlight('headlight'); 
+axisGeom(gca,fontSize);
+colormap(gjet(numel(Fc))); icolorbar; 
 drawnow;
 
 %%
