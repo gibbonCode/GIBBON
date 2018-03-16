@@ -1,4 +1,4 @@
-%% DEMO_febio_0013_disc_pressure
+%% DEMO_febio_0013_disc_pressure_varying
 % Below is a demonstration for:
 % 
 % * Building geometry for a thin disc with tetrahedral elements
