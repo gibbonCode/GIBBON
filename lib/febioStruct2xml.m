@@ -14,6 +14,8 @@ function [varargout]=febioStruct2xml(varargin)
 % 2018/02/18: Created several "array parse methods" including based on text
 % file exporting providing a significant computational time reduction over
 % full XML based parsing. 
+% To do:
+% Gracefully handle empty fields e.g. 0x8 element array
 %------------------------------------------------------------------------
 
 %% Parse input
