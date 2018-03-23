@@ -37,13 +37,6 @@ end
 sizV=size(Vp);
 Vp=[Vp; Vn]; %Add mean patch points to vertex list
 
-% %Deal with non-triangular faces
-% if size(F,2)>3
-%     %Pick three points allong parameter 
-%     indKeep=1:round(size(F,2)/3):3*round(size(F,2)/3); 
-%     F=F(:,indKeep);
-% end
-
 %Vertex indices for triangle edge sets
 indVertex=[1:size(F,2); 2:size(F,2)+1]';
 indVertex(end,end)=1;

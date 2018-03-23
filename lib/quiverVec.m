@@ -1,5 +1,7 @@
 function [varargout]=quiverVec(varargin)
 
+% function [h]=quiverVec(P,V,vecSize,colorSpec,edgeColorOpt,quiverStyleOpt,alphaLevel)
+
 
 %% Parse input
 

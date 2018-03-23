@@ -1,4 +1,4 @@
-%% DEMO_spatially_varying_material_parameters
+%% DEMO_FEBio_spatially_varying_material_parameters
 % This demonstration shows how to generate a model with spatially varying
 % material parameters.
 

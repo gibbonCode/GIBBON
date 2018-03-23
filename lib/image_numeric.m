@@ -6,8 +6,11 @@ function [varargout]=image_numeric(varargin)
 % at the pixel coordinates.
 %
 % Kevin Mattheus Moerman
-% kevinmoerman@hotmail.com
-% 28/08/2008
+% gibbon.toolbox@gmail.com
+%
+% 2008/08/28: Created
+% 
+% 
 % ------------------------------------------------------------------------
 
 %%
@@ -57,6 +60,9 @@ switch nargin
         interpreter=varargin{6};
 end
 
+if isempty(hf)
+    hf=gcf;
+end
 
 % textFormat=['%6.',num2str(numDigits),'e'];
 textFormat=['%0.',num2str(numDigits),'f';];                    
