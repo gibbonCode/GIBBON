@@ -57,7 +57,7 @@ switch triType
         if ~isempty(Cq)
             Ct=[Cq(L1,:); Cq(L1,:); Cq(~L1,:); Cq(~L1,:)];
         else
-            Ct=Cq;
+            Ct=repmat(Cq,[2,1]);
         end
     case 'a'        
         F1=[Fq(:,[1 2 3]);Fq(:,[3 4 1])];
@@ -75,7 +75,7 @@ switch triType
         if ~isempty(Cq)
             Ct=[Cq(L1,:); Cq(L1,:); Cq(~L1,:); Cq(~L1,:)];
         else
-            Ct=Cq;
+            Ct=repmat(Cq,[2,1]);
         end
     case 'x' %Cross type
         Vm=zeros(size(Fq,1),size(Vq,2));

@@ -14,26 +14,25 @@ clear; close all; clc;
 
 %%
 % Plot settings
-fontSize=15;
+fontSize=10;
 
-
-%% Examples 
-% 
 %% Example: Converting a quandrangulated surface to a triangulated surface
 
 %%
 % Create example geometry
 
 [X,Y,Z]=peaks(15);
-[F,V]=surf2patch(X,Y,Z);
+[F,V,CV]=surf2patch(X,Y,Z,Z);
+[C]=vertexToFaceMeasure(F,CV);
 
 %%
 % Visualisation
 
 cFigure;
 title('Quadrangulation','FontSize',fontSize);
-gpatch(F,V,'rw','k');
+gpatch(F,V,C,'k');
 axisGeom(gca,fontSize);
+colormap(gjet(250)); colorbar;
 camlight('headlight'); 
 drawnow; 
 
@@ -43,19 +42,24 @@ drawnow;
 cFigure;
 subplot(2,3,1);
 title('Quadrangulation','FontSize',fontSize);
-gpatch(F,V,'rw','k');
-view(2);
-    
+gpatch(F,V,C,'k');
+axisGeom;
+view(-30,70);
+camlight headlight
+colormap(gjet(250)); 
+
 optionSet={'f','b','x','e','a'};
 titleString={'forw. slash','backw. slash','cross','edge length','angle'};
 numOptions=numel(optionSet);
 for q=1:1:numOptions
-    [Ft,Vt]=quad2tri(F,V,optionSet{q});
+    [Ft,Vt,Ct]=quad2tri(F,V,optionSet{q},C);
     subplot(2,3,q+1);
     title(['Option ''',optionSet{q},''' ',titleString{q}],'FontSize',fontSize);
-    gpatch(Ft,Vt,'gw','k');
-    view(2);
-    
+    gpatch(Ft,Vt,Ct,'k');
+    axisGeom;
+    view(-30,70);
+    camlight headlight
+    colormap(gjet(250));
 end
 drawnow;
 
