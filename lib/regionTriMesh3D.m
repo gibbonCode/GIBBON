@@ -1,4 +1,4 @@
-function [F,V]=regionTriMesh3D(regionCell,pointSpacing,resampleCurveOpt,interpMethod)
+function [F,V]=regionTriMesh3D(varargin)
 
 % function [F,V]=regionTriMesh3D(regionCell,pointSpacing,resampleCurveOpt,interpMethod)
 % ------------------------------------------------------------------------
@@ -18,11 +18,54 @@ function [F,V]=regionTriMesh3D(regionCell,pointSpacing,resampleCurveOpt,interpMe
 % this boundary and the space inside them is therefore not meshed.
 %
 % See also: regionTriMesh2D
-% 
+%
 % Kevin Mattheus Moerman
-% kevinmoerman@hotmail.com
-% 2013/21/11
+% gibbon.toolbox@gmail.com
+%
+% 2013/11/21: Created
+% 2013/11/21: Added varargin input parsing
 %------------------------------------------------------------------------
+
+%% Parse input
+
+switch nargin
+    case 1
+        regionCell=varargin{1};
+        pointSpacing=[];
+        resampleCurveOpt=[];
+        interpMethod=[];
+    case 2
+        regionCell=varargin{1};
+        pointSpacing=varargin{2};
+        resampleCurveOpt=[];
+        interpMethod=[];
+    case 3
+        regionCell=varargin{1};
+        pointSpacing=varargin{2};
+        resampleCurveOpt=varargin{3};
+        interpMethod=[];
+    case 4
+        regionCell=varargin{1};
+        pointSpacing=varargin{2};
+        resampleCurveOpt=varargin{3};
+        interpMethod=varargin{4};
+end
+
+if isempty(pointSpacing)
+    D=zeros(1,numel(regionCell));
+    for q=1:1:numel(regionCell)
+        D(q)=mean(diff(polyCurveLength(regionCell{1})));
+    end
+    pointSpacing=mean(D);
+end
+
+if isempty(resampleCurveOpt)
+    resampleCurveOpt=0;
+end
+   
+if isempty(interpMethod)
+    interpMethod='natural';
+end
 
 %% Parse 3D regions and convert to planar 2D
 

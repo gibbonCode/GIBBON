@@ -12,49 +12,52 @@
 %%
 clear; close all; clc;
 
+%%
 % Plot settings
-fig_color='w'; fig_colordef='white';
 fontSize=15;
-faceColor='b';
-faceAlpha=1;
-edgeColor='k';
-edgeWidth=1;
+
 
 %% Examples 
 % 
 %% Example: Converting a quandrangulated surface to a triangulated surface
 
 %%
+% Create example geometry
 
-[X,Y,Z]=peaks(25);
+[X,Y,Z]=peaks(15);
 [F,V]=surf2patch(X,Y,Z);
-
-
-%%
-% Convert triangular faces to quadrilateral faces
-[Ft,Vt]=quad2tri(F,V);
 
 %%
 % Visualisation
 
-hf=figuremax(fig_color,fig_colordef); 
-subplot(1,2,1);
+cFigure;
 title('Quadrangulation','FontSize',fontSize);
-xlabel('X','FontSize',fontSize); ylabel('Y','FontSize',fontSize); zlabel('Z','FontSize',fontSize);
-hp=patch('Faces',F,'Vertices',V,'FaceColor','g','FaceAlpha',faceAlpha,'lineWidth',edgeWidth,'edgeColor','k');
-set(gca,'FontSize',fontSize);
-view(3); axis tight;  axis equal;  axis vis3d; axis off;
-camlight('headlight'); lighting flat;
-
-subplot(1,2,2);
-title('Triangulation','FontSize',fontSize);
-xlabel('X','FontSize',fontSize); ylabel('Y','FontSize',fontSize); zlabel('Z','FontSize',fontSize);
-hp=patch('Faces',Ft,'Vertices',Vt,'FaceColor','b','FaceAlpha',faceAlpha,'lineWidth',edgeWidth,'edgeColor','r');
-set(gca,'FontSize',fontSize);
-view(3); axis tight;  axis equal;  axis vis3d; axis off;
-camlight('headlight'); lighting flat;
-
+gpatch(F,V,'rw','k');
+axisGeom(gca,fontSize);
+camlight('headlight'); 
 drawnow; 
+
+%%
+% Convert triangular faces to quadrilateral faces
+
+cFigure;
+subplot(2,3,1);
+title('Quadrangulation','FontSize',fontSize);
+gpatch(F,V,'rw','k');
+view(2);
+    
+optionSet={'f','b','x','e','a'};
+titleString={'forw. slash','backw. slash','cross','edge length','angle'};
+numOptions=numel(optionSet);
+for q=1:1:numOptions
+    [Ft,Vt]=quad2tri(F,V,optionSet{q});
+    subplot(2,3,q+1);
+    title(['Option ''',optionSet{q},''' ',titleString{q}],'FontSize',fontSize);
+    gpatch(Ft,Vt,'gw','k');
+    view(2);
+    
+end
+drawnow;
 
 
 %%

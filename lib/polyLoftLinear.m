@@ -96,7 +96,8 @@ else
     switch cPar.patchType
         case 'quad'
         case 'tri_slash' %Convert quads to triangles by slashing
-            F=fliplr([F(:,1) F(:,3) F(:,2); F(:,1) F(:,4) F(:,3)]);
+%             F=fliplr([F(:,1) F(:,3) F(:,2); F(:,1) F(:,4) F(:,3)]);
+            [F]=quad2tri(F,V);
         case 'tri' %Convert quads to approximate equilateral triangles
             
             logicSlashType=repmat(iseven(C),2,1);

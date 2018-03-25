@@ -130,6 +130,24 @@ if ischar(C) %Plain single color
     if strcmp(C,'kw')
         argInPatch.FaceColor=grayColor(0.5);
     end
+    if strcmp(C,'rw')
+        argInPatch.FaceColor=[1 0.5 0.5];
+    end
+    if strcmp(C,'gw')
+        argInPatch.FaceColor=[0.5 1 0.5];
+    end
+    if strcmp(C,'bw')
+        argInPatch.FaceColor=[0.5 0.5 1];
+    end
+    if strcmp(C,'yw')
+        argInPatch.FaceColor=[1 1 0.5];
+    end
+    if strcmp(C,'cw')
+        argInPatch.FaceColor=[0.5 1 1];
+    end
+    if strcmp(C,'mw')
+        argInPatch.FaceColor=[1 0.5 1];
+    end
 elseif size(C,2)==1
     argInPatch.FaceColor='flat';
     argInPatch.CData=double(C);
@@ -143,10 +161,28 @@ else
 end
 
 if ischar(CE) %Plain single color
-    argInPatch.EdgeColor=CE;
+    argInPatch.EdgeColor=CE;    
     if strcmp(CE,'kw')
         argInPatch.EdgeColor=grayColor(0.5);
     end
+    if strcmp(CE,'rw')
+        argInPatch.EdgeColor=[1 0.5 0.5];
+    end
+    if strcmp(CE,'gw')
+        argInPatch.EdgeColor=[0.5 1 0.5];
+    end
+    if strcmp(CE,'bw')
+        argInPatch.EdgeColor=[0.5 0.5 1];
+    end
+    if strcmp(CE,'yw')
+        argInPatch.EdgeColor=[1 1 0.5];
+    end
+    if strcmp(CE,'cw')
+        argInPatch.EdgeColor=[0.5 1 1];
+    end
+    if strcmp(CE,'mw')
+        argInPatch.EdgeColor=[1 0.5 1];
+    end    
 elseif size(CE,2)==1
     if size(CE,1)>1
         if size(CE,1)==size(F,1)

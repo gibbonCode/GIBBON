@@ -28,7 +28,6 @@ edgeWidth=1;
 %%
 % Convert triangular faces to quadrilateral faces
 [Fq,Vq]=tri2quad(F,V,1);
-[Fq,Vq]=subQuad(Fq,Vq,2);
 
 %%
 % Visualisation
@@ -36,19 +35,17 @@ edgeWidth=1;
 hf=figuremax(fig_color,fig_colordef); 
 subplot(1,2,1);
 title('Triangulation','FontSize',fontSize);
-xlabel('X','FontSize',fontSize); ylabel('Y','FontSize',fontSize); zlabel('Z','FontSize',fontSize);
-hp=patch('Faces',F,'Vertices',V,'FaceColor','g','FaceAlpha',faceAlpha,'lineWidth',edgeWidth,'edgeColor','k');
+gpatch(F,V,'rw','r');
 set(gca,'FontSize',fontSize);
-view(3); axis tight;  axis equal;  axis vis3d; axis off;
-camlight('headlight'); lighting flat;
+axisGeom;
+camlight('headlight'); 
 
 subplot(1,2,2);
 title('Quadrangulation','FontSize',fontSize);
-xlabel('X','FontSize',fontSize); ylabel('Y','FontSize',fontSize); zlabel('Z','FontSize',fontSize);
-hp=patch('Faces',Fq,'Vertices',Vq,'FaceColor','b','FaceAlpha',faceAlpha,'lineWidth',edgeWidth,'edgeColor','r');
+gpatch(Fq,Vq,'gw','g');
 set(gca,'FontSize',fontSize);
-view(3); axis tight;  axis equal;  axis vis3d; axis off;
-camlight('headlight'); lighting flat;
+axisGeom;
+camlight('headlight'); 
 
 drawnow; 
 
