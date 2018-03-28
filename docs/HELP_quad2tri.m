@@ -63,7 +63,6 @@ for q=1:1:numOptions
 end
 drawnow;
 
-
 %%
 % 
 % <<gibbVerySmall.gif>>

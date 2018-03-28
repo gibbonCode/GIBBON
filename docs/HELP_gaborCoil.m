@@ -8,7 +8,8 @@ clear; close all; clc;
 % |[V_coil_rep]=gaborCoil(varargin);|
 
 %% Description 
-% UNDOCUMENTED 
+% This function generates a so-called Gabor coil, i.e. a spiral which is
+% modulated similar to a Gabor filter. 
 
 %% Examples 
 

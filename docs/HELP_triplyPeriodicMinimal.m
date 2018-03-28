@@ -11,27 +11,29 @@ faceAlpha1=1;
 faceAlpha2=0.65;
 edgeColor1='none';
 edgeColor2='none';
-fontSize=15; 
+fontSize=25; 
 
 %% SURFACE VISUALIZATIONS
 
 pColors=gjet(6);
 
-n=35;
-
-cFigure;
+n=50;
 
 [X,Y,Z]=meshgrid(linspace(-pi,pi,n));
 S=triplyPeriodicMinimal(X,Y,Z,'p');
 [F,V] = isosurface(X,Y,Z,S,0.1);
 
+%%
+% Visualization
+
+cFigure;
+
 subplot(2,3,1);
 title('Schwarz P-surface','FontSize',fontSize);
-xlabel('X','FontSize',fontSize);ylabel('Y','FontSize',fontSize); zlabel('Z','FontSize',fontSize); hold on;
-patch('Faces',F,'Vertices',V,'FaceColor',pColors(1,:),'EdgeColor','none','FaceAlpha',1);
-axis equal; view(3); axis tight; axis vis3d; grid on;  
-set(gca,'FontSize',fontSize);
-camlight headlight; lighting phong;
+hold on;
+gpatch(F,V,pColors(1,:),'none',1);
+axisGeom; 
+camlight headlight;
 view(-50,30);
 
 [X,Y,Z]=meshgrid(linspace(-pi,pi,n));
@@ -40,11 +42,10 @@ S=triplyPeriodicMinimal(X,Y,Z,'d');
 
 subplot(2,3,2);
 title('d','FontSize',fontSize);
-xlabel('X','FontSize',fontSize);ylabel('Y','FontSize',fontSize); zlabel('Z','FontSize',fontSize); hold on;
-patch('Faces',F,'Vertices',V,'FaceColor',pColors(2,:),'EdgeColor','none','FaceAlpha',1);
-axis equal; view(3); axis tight; axis vis3d; grid on;  
-set(gca,'FontSize',fontSize);
-camlight headlight; lighting phong;
+hold on;
+gpatch(F,V,pColors(2,:),'none',1);
+axisGeom; 
+camlight headlight;
 view(-50,30);
 
 [X,Y,Z]=meshgrid(linspace(-2*pi,2*pi,n));
@@ -53,11 +54,10 @@ S=triplyPeriodicMinimal(X,Y,Z,'g');
 
 subplot(2,3,3);
 title('Gyroid','FontSize',fontSize);
-xlabel('X','FontSize',fontSize);ylabel('Y','FontSize',fontSize); zlabel('Z','FontSize',fontSize); hold on;
-patch('Faces',F,'Vertices',V,'FaceColor',pColors(3,:),'EdgeColor','none','FaceAlpha',1);
-axis equal; view(3); axis tight; axis vis3d; grid on;  
-set(gca,'FontSize',fontSize);
-camlight headlight; lighting phong;
+hold on;
+gpatch(F,V,pColors(3,:),'none',1);
+axisGeom; 
+camlight headlight;
 view(-50,30);
 
 [X,Y,Z]=meshgrid(linspace(-pi,pi,n));
@@ -66,11 +66,10 @@ S=triplyPeriodicMinimal(X,Y,Z,'n');
 
 subplot(2,3,4);
 title('Neovius','FontSize',fontSize);
-xlabel('X','FontSize',fontSize);ylabel('Y','FontSize',fontSize); zlabel('Z','FontSize',fontSize); hold on;
-patch('Faces',F,'Vertices',V,'FaceColor',pColors(4,:),'EdgeColor','none','FaceAlpha',1);
-axis equal; view(3); axis tight; axis vis3d; grid on;  
-set(gca,'FontSize',fontSize);
-camlight headlight; lighting phong;
+hold on;
+gpatch(F,V,pColors(4,:),'none',1);
+axisGeom; 
+camlight headlight;
 view(-50,30);
 
 [X,Y,Z]=meshgrid(linspace(-pi,pi,n));
@@ -79,11 +78,10 @@ S=triplyPeriodicMinimal(X,Y,Z,'w');
 
 subplot(2,3,5);
 title('w','FontSize',fontSize);
-xlabel('X','FontSize',fontSize);ylabel('Y','FontSize',fontSize); zlabel('Z','FontSize',fontSize); hold on;
-patch('Faces',F,'Vertices',V,'FaceColor',pColors(5,:),'EdgeColor','none','FaceAlpha',1);
-axis equal; view(3); axis tight; axis vis3d; grid on;  
-set(gca,'FontSize',fontSize);
-camlight headlight; lighting phong;
+hold on;
+gpatch(F,V,pColors(5,:),'none',1);
+axisGeom; 
+camlight headlight;
 view(-50,30);
 
 [X,Y,Z]=meshgrid(linspace(-pi,pi,n));
@@ -92,11 +90,10 @@ S=triplyPeriodicMinimal(X,Y,Z,'pw');
 
 subplot(2,3,6);
 title('pw','FontSize',fontSize);
-xlabel('X','FontSize',fontSize);ylabel('Y','FontSize',fontSize); zlabel('Z','FontSize',fontSize); hold on;
-patch('Faces',F,'Vertices',V,'FaceColor',pColors(6,:),'EdgeColor','none','FaceAlpha',1);
-axis equal; view(3); axis tight; axis vis3d; grid on;  
-set(gca,'FontSize',fontSize);
-camlight headlight; lighting phong;
+hold on;
+gpatch(F,V,pColors(6,:),'none',1);
+axisGeom; 
+camlight headlight;
 view(-50,30);
 
 drawnow;
@@ -115,24 +112,27 @@ L=S>=c;
 L=S<c;
 [F2,V2,C2]=im2patch(S,L,'vb'); 
 
+%%
+% Visualization
+
 cFigure;
 subplot(1,2,1);
 title('Gyroid based "network"','FontSize',fontSize);
 xlabel('J','FontSize',fontSize);ylabel('I','FontSize',fontSize); zlabel('K','FontSize',fontSize); hold on;
-patch('Faces',F1,'Vertices',V1,'FaceColor','flat','CData',C1,'EdgeColor','k','FaceAlpha',1);
-axis equal; view(3); axis tight; axis vis3d; grid on;  
+gpatch(F1,V1,C1,'k',1);
+axisGeom; 
 colormap(cMap); 
 caxis([min(S(:)) max(S(:))]);
-set(gca,'FontSize',fontSize);
+camlight headlight;
 
 subplot(1,2,2);
 title('Gyroid based "matrix"','FontSize',fontSize);
 xlabel('J','FontSize',fontSize);ylabel('I','FontSize',fontSize); zlabel('K','FontSize',fontSize); hold on;
-patch('Faces',F2,'Vertices',V2,'FaceColor','flat','CData',C2,'EdgeColor','k','FaceAlpha',1);
-axis equal; view(3); axis tight; axis vis3d; grid on;  
+gpatch(F2,V2,C2,'k',1);
+axisGeom; 
 colormap(cMap); 
 caxis([min(S(:)) max(S(:))]);
-set(gca,'FontSize',fontSize); 
+camlight headlight;
 
 drawnow;
 

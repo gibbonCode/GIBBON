@@ -26,7 +26,6 @@ function [varargout]=im2patch(varargin)
 % 
 % Change log:
 % 2016/12/13 Created as improvement on (future replacement of) ind2patch
-%
 %------------------------------------------------------------------------
 
 %% Parse input

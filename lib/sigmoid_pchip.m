@@ -1,16 +1,23 @@
 function [s]=sigmoid_pchip(optStruct)
 
+% function [s]=sigmoid_pchip(optStruct)
+%-------------------------------------------------------------------------
+% This function generates a sigmoid curve with controllable start and end
+% slopes as well as controllable start and end flatness. 
+%-------------------------------------------------------------------------
+
 %%
 
-fieldNames={'c1','c2','r1','r2','n','nLin','rMode'};
-defaultVal={0,0,0.25,0.25,100,2,1};
-for q=1:1:numel(fieldNames)    
-    if ~isfield(optStruct,fieldNames{q})
-        optStruct.(fieldNames{q})=defaultVal{q};
-%     elseif isempty(optStruct.(fieldNames{q}))
-%         optStruct.(fieldNames{q})=defaultVal{q};
-    end
-end
+%Default structure
+defaultOpt.c1=0;
+defaultOpt.c2=defaultOpt.c1;
+defaultOpt.r1=0.25;
+defaultOpt.r2=defaultOpt.r1;
+defaultOpt.n=100;
+defaultOpt.nlin=2;
+defaultOpt.rMode=1;
+
+[optStruct]=structComplete(optStruct,defaultOpt,0);
 
 c1=optStruct.c1;
 c2=optStruct.c2;

@@ -1,6 +1,17 @@
 function [V_coil_rep]=gaborCoil(varargin)
 
-
+% function [V_coil_rep]=gaborCoil(V,E,optStruct)
+%-------------------------------------------------------------------------
+% This function generates a so-called Gabor coil, i.e. a spiral which is
+% modulated similar to a Gabor filter. 
+% 
+% Kevin Mattheus Moerman
+% gibbon.toolbox@gmail.com
+% 
+% Change log:
+% 2017/01/01
+% 2018/03/27 
+%------------------------------------------------------------------------
 %%
 
 defaultOpt.numSteps=100;
