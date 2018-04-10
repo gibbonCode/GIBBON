@@ -25,10 +25,33 @@ edgeWidth=1.5;
 % The function inputs are n and r which define the mesh refinement and
 % radius respectively. The mesh refinement number n defines the number of
 % subtriangulation (see function |subTri|) iterations performed on an
-% icosahedron. Below is a visualisation for n=0:1:3. The function outputs
-% the geodesic dome faces (F) and vertices (V) and also the spherical
-% coordinates of the vertices (Vs) (this output is suppressed in the
-% example below).
+% icosahedron. 
+
+r=1; %sphere radius
+n=2; %Refinements   
+[F,V,~]=geoSphere(n,r); 
+[Fi,Vi,~]=geoSphere(0,r); 
+%%
+% Visualize sphere
+
+cFigure; hold on;
+subplot(1,2,1); hold on;
+gpatch(Fi,Vi,'rw','r',0.8,2);
+plotV(Vi,'r.','MarkerSize',50);
+camlight headlight;
+axisGeom(gca,fontSize);
+
+subplot(1,2,2); hold on;
+gpatch(F,V,'bw','k',1,2);
+plotV(Vi,'r.','MarkerSize',50);
+camlight headlight;
+axisGeom(gca,fontSize);
+drawnow;
+
+%% 
+% Below is a visualisation for n=0:1:3. The function outputs the geodesic
+% dome faces (F) and vertices (V) and also the spherical coordinates of the
+% vertices (Vs) (this output is suppressed in the example below).
 
 cFigure; % Open figure for plotting
 

@@ -1,0 +1,341 @@
+
+<!DOCTYPE html
+  PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html><head>
+      <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+   <!--
+This HTML was auto-generated from MATLAB code.
+To make changes, update the MATLAB code and republish this document.
+      --><title>truncatePolyhedra</title><meta name="generator" content="MATLAB 9.4"><link rel="schema.DC" href="http://purl.org/dc/elements/1.1/"><meta name="DC.date" content="2018-04-03"><meta name="DC.source" content="HELP_truncatePolyhedra.m"><style type="text/css">
+html,body,div,span,applet,object,iframe,h1,h2,h3,h4,h5,h6,p,blockquote,pre,a,abbr,acronym,address,big,cite,code,del,dfn,em,font,img,ins,kbd,q,s,samp,small,strike,strong,sub,sup,tt,var,b,u,i,center,dl,dt,dd,ol,ul,li,fieldset,form,label,legend,table,caption,tbody,tfoot,thead,tr,th,td{margin:0;padding:0;border:0;outline:0;font-size:100%;vertical-align:baseline;background:transparent}body{line-height:1}ol,ul{list-style:none}blockquote,q{quotes:none}blockquote:before,blockquote:after,q:before,q:after{content:'';content:none}:focus{outine:0}ins{text-decoration:none}del{text-decoration:line-through}table{border-collapse:collapse;border-spacing:0}
+
+html { min-height:100%; margin-bottom:1px; }
+html body { height:100%; margin:0px; font-family:Arial, Helvetica, sans-serif; font-size:10px; color:#000; line-height:140%; background:#fff none; overflow-y:scroll; }
+html body td { vertical-align:top; text-align:left; }
+
+h1 { padding:0px; margin:0px 0px 25px; font-family:Arial, Helvetica, sans-serif; font-size:1.5em; color:#d55000; line-height:100%; font-weight:normal; }
+h2 { padding:0px; margin:0px 0px 8px; font-family:Arial, Helvetica, sans-serif; font-size:1.2em; color:#000; font-weight:bold; line-height:140%; border-bottom:1px solid #d6d4d4; display:block; }
+h3 { padding:0px; margin:0px 0px 5px; font-family:Arial, Helvetica, sans-serif; font-size:1.1em; color:#000; font-weight:bold; line-height:140%; }
+
+a { color:#005fce; text-decoration:none; }
+a:hover { color:#005fce; text-decoration:underline; }
+a:visited { color:#004aa0; text-decoration:none; }
+
+p { padding:0px; margin:0px 0px 20px; }
+img { padding:0px; margin:0px 0px 20px; border:none; }
+p img, pre img, tt img, li img, h1 img, h2 img { margin-bottom:0px; } 
+
+ul { padding:0px; margin:0px 0px 20px 23px; list-style:square; }
+ul li { padding:0px; margin:0px 0px 7px 0px; }
+ul li ul { padding:5px 0px 0px; margin:0px 0px 7px 23px; }
+ul li ol li { list-style:decimal; }
+ol { padding:0px; margin:0px 0px 20px 0px; list-style:decimal; }
+ol li { padding:0px; margin:0px 0px 7px 23px; list-style-type:decimal; }
+ol li ol { padding:5px 0px 0px; margin:0px 0px 7px 0px; }
+ol li ol li { list-style-type:lower-alpha; }
+ol li ul { padding-top:7px; }
+ol li ul li { list-style:square; }
+
+.content { font-size:1.2em; line-height:140%; padding: 20px; }
+
+pre, code { font-size:12px; }
+tt { font-size: 1.2em; }
+pre { margin:0px 0px 20px; }
+pre.codeinput { padding:10px; border:1px solid #d3d3d3; background:#f7f7f7; }
+pre.codeoutput { padding:10px 11px; margin:0px 0px 20px; color:#4c4c4c; }
+pre.error { color:red; }
+
+@media print { pre.codeinput, pre.codeoutput { word-wrap:break-word; width:100%; } }
+
+span.keyword { color:#0000FF }
+span.comment { color:#228B22 }
+span.string { color:#A020F0 }
+span.untermstring { color:#B20000 }
+span.syscmd { color:#B28C00 }
+
+.footer { width:auto; padding:10px 0px; margin:25px 0px 0px; border-top:1px dotted #878787; font-size:0.8em; line-height:140%; font-style:italic; color:#878787; text-align:left; float:none; }
+.footer p { margin:0px; }
+.footer a { color:#878787; }
+.footer a:hover { color:#878787; text-decoration:underline; }
+.footer a:visited { color:#878787; }
+
+table th { padding:7px 5px; text-align:left; vertical-align:middle; border: 1px solid #d6d4d4; font-weight:bold; }
+table td { padding:7px 5px; text-align:left; vertical-align:top; border:1px solid #d6d4d4; }
+
+
+
+
+
+  </style></head><body><div class="content"><h1>truncatePolyhedra</h1><!--introduction--><p>Below is a demonstration of the features of the <tt>truncatePolyhedra</tt> function</p><!--/introduction--><h2>Contents</h2><div><ul><li><a href="#1">Syntax</a></li><li><a href="#2">Description</a></li><li><a href="#3">Examples</a></li><li><a href="#4">Truncating a solid</a></li><li><a href="#7">Demonstration of truncation for all platonic solids</a></li><li><a href="#8">Truncating a general closed surface</a></li><li><a href="#11">Create animated view to study effect of the truncation factor</a></li></ul></div><h2 id="1">Syntax</h2><p><tt>[FC,VC,CC]=truncatePolyhedra(F,V,w);</tt></p><h2 id="2">Description</h2><p>This function computes the truncated form of the input solid as specified by the input faces (F), vertices (V), and the truncation factor (w). The output is the patch data (faces, vertices, and color/face labels) for the truncated solid. The truncation factor ranges between 0 and 1. If unspecified or empty the default value is: w=tan(pi/(size(F,2)*2))/tan(pi/(size(F,2))); which provides the uniform truncation.</p><h2 id="3">Examples</h2><pre class="codeinput">clear; close <span class="string">all</span>; clc;
+</pre><h2 id="4">Truncating a solid</h2><p>Creating a platonic solid which will be truncated</p><pre class="codeinput">[V,F]=platonic_solid(1,1); <span class="comment">%Get a tetrahedron, the first platonic solid</span>
+C=zeros(size(F,1),1); <span class="comment">%Create color data for visualization</span>
+</pre><p>Truncating a platonic solid</p><pre class="codeinput">[FC,VC,CC]=truncatePolyhedra(F,V);
+</pre><p>Visualizing result</p><pre class="codeinput">cFigure;
+subplot(1,2,1);hold <span class="string">on</span>;
+title(<span class="string">'Normal solid'</span>);
+gpatch(F,V,C,<span class="string">'k'</span>,1,1);
+axisGeom;
+camlight <span class="string">headlight</span>;
+caxis([0 1]);
+
+subplot(1,2,2);hold <span class="string">on</span>;
+title(<span class="string">'Truncated solid'</span>);
+gpatch(F,V,<span class="string">'kw'</span>,<span class="string">'k'</span>,0.25,1);
+gpatch(FC,VC,CC,<span class="string">'k'</span>,1,1);
+axisGeom;
+camlight <span class="string">headlight</span>;
+caxis([0 1]);
+
+colormap(gjet(2));
+drawnow;
+</pre><img vspace="5" hspace="5" src="HELP_truncatePolyhedra_01.png" alt=""> <h2 id="7">Demonstration of truncation for all platonic solids</h2><pre class="codeinput">cFigure;
+<span class="keyword">for</span> q=1:1:5
+    [V,F]=platonic_solid(q,1);
+    C=zeros(size(F,1),1);
+    [FC,VC,CC]=truncatePolyhedra(F,V);
+
+    subplot(3,5,q);hold <span class="string">on</span>;
+    gpatch(F,V,C,<span class="string">'k'</span>,1,1);
+    axisGeom;
+    camlight <span class="string">headlight</span>;
+    caxis([0 1]);
+    axis <span class="string">off</span>;
+
+    subplot(3,5,q+5);hold <span class="string">on</span>;
+    gpatch(FC,VC,CC,<span class="string">'k'</span>,1,1);
+    axisGeom;
+    camlight <span class="string">headlight</span>;
+    caxis([0 1]);
+    axis <span class="string">off</span>;
+
+    [FC,VC,CC]=truncatePolyhedra(F,V,0);
+
+    subplot(3,5,q+10);hold <span class="string">on</span>;
+    gpatch(FC,VC,CC,<span class="string">'k'</span>,1,1);
+    axisGeom;
+    camlight <span class="string">headlight</span>;
+    caxis([0 1]);
+    axis <span class="string">off</span>;
+
+<span class="keyword">end</span>
+colormap(gjet(2));
+drawnow;
+</pre><img vspace="5" hspace="5" src="HELP_truncatePolyhedra_02.png" alt=""> <h2 id="8">Truncating a general closed surface</h2><pre class="codeinput"><span class="comment">% Creating a triangulated sphere</span>
+[F,V]=geoSphere(2,1);
+C=zeros(size(F,1),1); <span class="comment">%Create color data for visualization</span>
+</pre><p>Truncating the solid solid</p><pre class="codeinput">[FC,VC,CC]=truncatePolyhedra(F,V);
+</pre><p>Visualizing result</p><pre class="codeinput">cFigure;
+subplot(1,2,1);hold <span class="string">on</span>;
+title(<span class="string">'Normal solid'</span>);
+gpatch(F,V,C,<span class="string">'k'</span>,1,1);
+axisGeom;
+camlight <span class="string">headlight</span>;
+caxis([0 1]);
+
+subplot(1,2,2);hold <span class="string">on</span>;
+title(<span class="string">'Truncated solid'</span>);
+gpatch(FC,VC,CC,<span class="string">'k'</span>,1,1);
+axisGeom;
+camlight <span class="string">headlight</span>;
+caxis([0 1]);
+
+colormap(gjet(2));
+drawnow;
+</pre><img vspace="5" hspace="5" src="HELP_truncatePolyhedra_03.png" alt=""> <h2 id="11">Create animated view to study effect of the truncation factor</h2><p>Prepare visualization</p><pre class="codeinput">[V,F]=platonic_solid(4,1);
+w=tan(pi/(size(F,2)*2))/tan(pi/(size(F,2)));
+[FC,VC,CC]=truncatePolyhedra(F,V,w);
+
+hf=cFigure; hold <span class="string">on</span>;
+ht=title([<span class="string">'w='</span>,num2str(w)]);
+hp=gpatch(FC,VC,CC,<span class="string">'k'</span>,1,3);
+axisGeom;
+colormap(gjet(size(F,1)+size(V,1))); <span class="comment">%icolorbar;</span>
+camlight <span class="string">headlight</span>;
+drawnow;
+</pre><img vspace="5" hspace="5" src="HELP_truncatePolyhedra_04.png" alt=""> <p>Create animation window</p><pre class="codeinput">nSteps=100; <span class="comment">%Number of animation steps</span>
+
+<span class="comment">%Create the time vector</span>
+animStruct.Time=linspace(0,1,nSteps);
+
+<span class="comment">%Create w range</span>
+w=linspace(1,0,nSteps);
+
+<span class="keyword">for</span> q=1:1:nSteps
+    [~,VC,~]=truncatePolyhedra(F,V,w(q));
+
+    <span class="comment">%Set entries in animation structure</span>
+    animStruct.Handles{q}=[hp]; <span class="comment">%Handles of objects to animate</span>
+    <span class="keyword">for</span> qh=1:1:numel(hp)
+        animStruct.Props{q}(qh)={<span class="string">'Vertices'</span>}; <span class="comment">%Properties of objects to animate</span>
+        animStruct.Set{q}(qh)={VC}; <span class="comment">%Property values for to set in order to animate</span>
+    <span class="keyword">end</span>
+    animStruct.Handles{q}(end+1)=[ht]; <span class="comment">%Handles of objects to animate</span>
+    animStruct.Props{q}(end+1)={<span class="string">'String'</span>}; <span class="comment">%Properties of objects to animate</span>
+    animStruct.Set{q}(end+1)={[<span class="string">'w='</span>,num2str(w(q))]}; <span class="comment">%Property values for to set in order to animate</span>
+<span class="keyword">end</span>
+
+anim8(hf,animStruct);
+</pre><img vspace="5" hspace="5" src="HELP_truncatePolyhedra_05.png" alt=""> <p class="footer"><br><a href="https://www.mathworks.com/products/matlab/">Published with MATLAB&reg; R2018a</a><br></p></div><!--
+##### SOURCE BEGIN #####
+%% truncatePolyhedra
+% Below is a demonstration of the features of the |truncatePolyhedra| function
+
+%% Syntax
+% |[FC,VC,CC]=truncatePolyhedra(F,V,w);|
+
+%% Description
+% This function computes the truncated form of the input solid as specified
+% by the input faces (F), vertices (V), and the truncation factor (w). The
+% output is the patch data (faces, vertices, and color/face labels) for the
+% truncated solid. The truncation factor ranges between 0 and 1. If
+% unspecified or empty the default value is:
+% w=tan(pi/(size(F,2)*2))/tan(pi/(size(F,2))); which provides the uniform
+% truncation. 
+
+%% Examples
+
+clear; close all; clc;
+
+%% Truncating a solid
+% Creating a platonic solid which will be truncated
+[V,F]=platonic_solid(1,1); %Get a tetrahedron, the first platonic solid
+C=zeros(size(F,1),1); %Create color data for visualization
+
+%%
+% Truncating a platonic solid
+[FC,VC,CC]=truncatePolyhedra(F,V);
+
+%%
+% Visualizing result
+
+cFigure;
+subplot(1,2,1);hold on;
+title('Normal solid');
+gpatch(F,V,C,'k',1,1);
+axisGeom;
+camlight headlight;
+caxis([0 1]);
+
+subplot(1,2,2);hold on;
+title('Truncated solid');
+gpatch(F,V,'kw','k',0.25,1);
+gpatch(FC,VC,CC,'k',1,1);
+axisGeom;
+camlight headlight;
+caxis([0 1]);
+
+colormap(gjet(2));
+drawnow;
+
+%% Demonstration of truncation for all platonic solids
+
+cFigure;
+for q=1:1:5
+    [V,F]=platonic_solid(q,1);
+    C=zeros(size(F,1),1);
+    [FC,VC,CC]=truncatePolyhedra(F,V);
+
+    subplot(3,5,q);hold on;
+    gpatch(F,V,C,'k',1,1);
+    axisGeom;
+    camlight headlight;
+    caxis([0 1]);
+    axis off;
+    
+    subplot(3,5,q+5);hold on;
+    gpatch(FC,VC,CC,'k',1,1);
+    axisGeom;
+    camlight headlight;
+    caxis([0 1]);
+    axis off;
+    
+    [FC,VC,CC]=truncatePolyhedra(F,V,0);
+    
+    subplot(3,5,q+10);hold on;
+    gpatch(FC,VC,CC,'k',1,1);
+    axisGeom;
+    camlight headlight;
+    caxis([0 1]);
+    axis off;
+        
+end
+colormap(gjet(2));
+drawnow;
+
+
+%% Truncating a general closed surface
+
+% Creating a triangulated sphere
+[F,V]=geoSphere(2,1); 
+C=zeros(size(F,1),1); %Create color data for visualization
+
+%%
+% Truncating the solid solid
+[FC,VC,CC]=truncatePolyhedra(F,V);
+
+%%
+% Visualizing result
+
+cFigure;
+subplot(1,2,1);hold on;
+title('Normal solid');
+gpatch(F,V,C,'k',1,1);
+axisGeom;
+camlight headlight;
+caxis([0 1]);
+
+subplot(1,2,2);hold on;
+title('Truncated solid');
+gpatch(FC,VC,CC,'k',1,1);
+axisGeom;
+camlight headlight;
+caxis([0 1]);
+
+colormap(gjet(2));
+drawnow;
+
+%% Create animated view to study effect of the truncation factor
+
+%%
+% Prepare visualization
+[V,F]=platonic_solid(4,1);
+w=tan(pi/(size(F,2)*2))/tan(pi/(size(F,2)));
+[FC,VC,CC]=truncatePolyhedra(F,V,w);
+
+hf=cFigure; hold on;
+ht=title(['w=',num2str(w)]);
+hp=gpatch(FC,VC,CC,'k',1,3);
+axisGeom;
+colormap(gjet(size(F,1)+size(V,1))); %icolorbar;
+camlight headlight;
+drawnow;
+
+%%
+% Create animation window 
+
+nSteps=100; %Number of animation steps
+
+%Create the time vector
+animStruct.Time=linspace(0,1,nSteps);
+
+%Create w range
+w=linspace(1,0,nSteps);
+
+for q=1:1:nSteps    
+    [~,VC,~]=truncatePolyhedra(F,V,w(q));
+    
+    %Set entries in animation structure
+    animStruct.Handles{q}=[hp]; %Handles of objects to animate
+    for qh=1:1:numel(hp)
+        animStruct.Props{q}(qh)={'Vertices'}; %Properties of objects to animate
+        animStruct.Set{q}(qh)={VC}; %Property values for to set in order to animate
+    end
+    animStruct.Handles{q}(end+1)=[ht]; %Handles of objects to animate
+    animStruct.Props{q}(end+1)={'String'}; %Properties of objects to animate
+    animStruct.Set{q}(end+1)={['w=',num2str(w(q))]}; %Property values for to set in order to animate
+end
+
+anim8(hf,animStruct);
+
+##### SOURCE END #####
+--></body></html>

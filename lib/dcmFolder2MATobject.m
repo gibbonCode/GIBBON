@@ -1,6 +1,6 @@
 function dcmFolder2MATobject(varargin)
 
-% function dcmFolder2MATobject(PathName,MaxVarSize,reOrderOpt,dicomDictType)
+% function dcmFolder2MATobject(PathName,MaxVarSize,reOrderOpt,dicomDictType,fileExtension)
 % ------------------------------------------------------------------------
 % This function converts the DICOM files in the folder PathName to a MAT
 % object which is stored as a file called IMDAT in a new subfolder called
@@ -22,21 +22,31 @@ switch nargin
         MaxVarSize=[];
         reOrderOpt=0;
         dicomDictFactory=0;
+        fileExtension='.dcm';
     case 2
         PathName=varargin{1};
         MaxVarSize=varargin{2};
         reOrderOpt=0;
         dicomDictFactory=0;
+        fileExtension='.dcm';
     case 3
         PathName=varargin{1};
         MaxVarSize=varargin{2};
         reOrderOpt=varargin{3};
         dicomDictFactory=0;
+        fileExtension='.dcm';
     case 4
         PathName=varargin{1};
         MaxVarSize=varargin{2};
         reOrderOpt=varargin{3};
         dicomDictFactory=varargin{4};
+        fileExtension='.dcm';
+    case 5
+        PathName=varargin{1};
+        MaxVarSize=varargin{2};
+        reOrderOpt=varargin{3};
+        dicomDictFactory=varargin{4};
+        fileExtension=varargin{5};        
 end
 
 %%
@@ -46,8 +56,20 @@ if isempty(MaxVarSize)
     MaxVarSize=1e9; %Default
 end
 
+if isempty(reOrderOpt)
+    reOrderOpt=0; %Default
+end
+
+if isempty(dicomDictFactory)
+    dicomDictFactory=0; %Default
+end
+
+if isempty(fileExtension)
+    fileExtension='dcm'; %Default
+end
+
 %% Getting DICOM file names and image dimension parameters
-files = dir(fullfile(PathName,'*.dcm'));
+files = dir(fullfile(PathName,['*',fileExtension]));
 files={files(1:end).name};
 files=sort(files(:));
 NumberOfFiles=numel(files);
@@ -124,7 +146,9 @@ if NumberOfFiles>0
     
     %First import using factory settings
     dicomdict('factory');
-    dcmInfo_full=dicominfo(fName);    
+    dcmInfo_full=dicominfo(fName);  
+    m=dicomread(fName); %Test upload first
+    sizSlice=size(m);
     dictSetting=3;
     
     if dicomDictFactory==0
@@ -284,7 +308,19 @@ if NumberOfFiles>0
             %             NumberOfRows=double(dcmInfo(1).Width);
             %             NumberOfColumns=double(dcmInfo(1).Height);
     end
+    
     ImageSize=[NumberOfRows NumberOfColumns NumberOfSlices NumberOfTemporalPositions];
+    
+%     %Check if slice size matching DICOM parameters   
+%     if sizSlice(1)~=ImageSize(1)
+%         ImageSize(1)=sizSlice(1);
+%         warning('Image size 2 does not match size specified in DICOM info. Using image size from image instead')
+%     end
+%     if sizSlice(2)~=ImageSize(2)
+%         ImageSize(2)=sizSlice(2);
+%         warning('Image size 2 does not match size specified in DICOM info. Using image size from image instead')
+%     end
+        
     matObj.ImageSize=ImageSize;
     
     NumClass=['uint',num2str(dcmInfo_full.BitsAllocated)];
@@ -342,7 +378,13 @@ if NumberOfFiles>0
                     for iSlice=1:1:numel(TempTypeFiles)
                         waitbar(c/numel(files),hw,['Loading DICIM image data...',num2str(round(100.*c/numel(files))),'%']);
                         load_name=fullfile(PathName,TempTypeFiles{iSlice});
-                        M(:,:,iSlice)=dicomread(load_name);
+                        m=dicomread(load_name);                        
+                        if size(m,3)>1                            
+                            m=mean(double(m),3);
+                            warning('Multi-dimensional (e.g. RGB) slices where converted to 2D grayscale');
+                        end                        
+                        M(:,:,iSlice)=m;
+                        
                         c=c+1;
                     end
                     waitbar(c/numel(files),hw,['Saving DICOM image data to MAT-file...',num2str(round(100.*c/numel(files))),'%']);
@@ -362,6 +404,10 @@ if NumberOfFiles>0
                         waitbar(c/numel(files),hw,['Loading DICIM image data...',num2str(round(100.*c/numel(files))),'%']);
                         load_name=fullfile(PathName,TempTypeFiles{iSlice});
                         m=dicomread(load_name); %Current slice
+                        if size(m,3)>1                            
+                            m=mean(double(m),3);
+                            warning('Multi-dimensional (e.g. RGB) slices where converted to 2D grayscale');
+                        end
                         if size(M,1)~=size(m,1)
                             M(:,:,iSlice)=m'; %Try transpose
                             %TO DO! add proper warning here

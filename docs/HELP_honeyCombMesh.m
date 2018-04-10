@@ -5,10 +5,8 @@
 clear; close all; clc;
 
 %%
-% PLOT SETTINGS
-figColor='w'; 
-figColorDef='white';
-fontSize=10;
+% Plot settings
+fontSize=15;
 lineWidth1=3;
 faceAlpha1=0.9;
 
@@ -28,18 +26,18 @@ minV=[-10 -10];
 
 %%
 % Plottting model
-hf1=figuremax(figColor,figColorDef);
+
+C=rand(size(Fh,1),1); %Random color for visualization
+
+cFigure; hold on;
 title('The honey-comb mesh','FontSize',fontSize);
-xlabel('X','FontSize',fontSize);ylabel('Y','FontSize',fontSize); zlabel('Z','FontSize',fontSize);
-hold on;
-C=rand(size(Fh,1),1);
-hpm=patch('Faces',Fh,'Vertices',Vh,'EdgeColor','k','FaceColor','flat','CData',C,'FaceAlpha',faceAlpha1,'lineWidth',lineWidth1);
-% [hp]=patchNormPlot(Fh,Vh,1);
+
+gpatch(Fh,Vh,C,'k',1,lineWidth1);
+
 colormap autumn; 
-axis equal; view(3); axis tight;  grid on; 
-set(gca,'FontSize',fontSize);
-drawnow;
+axisGeom(gca,fontSize);
 view(2);
+drawnow;
 
 %% 
 %

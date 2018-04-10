@@ -12,7 +12,7 @@ faceAlpha1=1;
 %% Creating a mesh of rhombic dodecahedra
 
 r=sqrt(2)/2; %Radii, the chosen level results in X,Y spacings of 1
-n=3; %Desired number of copies in each direction 
+n=5; %Desired number of copies in each direction 
 
 %The actual input 
 nCopies=[n+1 n+1 n+ceil((n+1)/2)]; %Number of offset copies

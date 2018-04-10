@@ -331,10 +331,7 @@ febio_spec.Output.logfile.element_data{1}.VAL=1:size(E,1);
 % the |febioStruct2xml| function. 
 
 febioStruct2xml(febio_spec,febioFebFileName); %Exporting to file and domNode
-febView(febioFebFileName); 
-
-fdsfas
-
+% febView(febioFebFileName); 
 
 %% Running the FEBio analysis
 % To run the analysis defined by the created FEBio input file the

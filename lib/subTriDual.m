@@ -42,11 +42,9 @@ CFs=CF(logicFaces,:);
 
 %%
 
-%Get face normals
+[N]=patchNormal(Fs,V); %Get face normals
 
-[N]=patchNormal(Fs,V);
-
-[Fq,Vq,Cq,indIni]=triPolyDualRefine(Fs,V);
+[Fq,Vq,Cq,indIni]=triPolyDualRefine(Fs,V,0);
 
 Cq=CV(Cq);
 
@@ -60,21 +58,21 @@ Fq=Fq(~logicInvalid,:);
 [Nq]=patchNormal(Fq,Vq);
 
 ind1=Fq(:,1);
-ind1(ind1>size(Vq,1))=ind1(ind1>size(Vq,1))-size(Vq,1); 
+ind1(ind1>size(Vq,1))=ind1(ind1>size(Vq,1))-size(Vq,1);
 logicFlip=dot(Nq,N(ind1,:),2)<0;
 Fd=Fq(~logicFlip,:);
 Cd=Cq(~logicFlip,:);
-Vd=Vq; 
+Vd=Vq;
 
 [Eb]=patchBoundary(Fs,V);
 indFree=unique(Eb(:));
 logicFree_FV=false(size(V,1),1);
-logicFree_FV(indFree)=1; 
+logicFree_FV(indFree)=1;
 
 [Eb]=patchBoundary(Fd,Vd);
 indFree=unique(Eb(:));
 logicFree=false(size(Vd,1),1);
-logicFree(indFree)=1; 
+logicFree(indFree)=1;
 
 logicFree_FV_Fd=false(size(Vd,1),1);
 logicFree_FV_Fd(indIni)=logicFree_FV;
@@ -107,13 +105,13 @@ logicTwo=sum(IND_V>0,2)==2;
 Fn=sort(IND_V(logicTwo,:),2);
 Fn=[indB(logicTwo) Fn(:,end-1:end)];
 
-indThree=indB(sum(IND_V>0,2)==3); 
+indThree=indB(sum(IND_V>0,2)==3);
 
 [Nn,~,~]=patchNormal(Fn,Vd);
 ind1=Fn(:,1);
-ind1(ind1>size(Vd,1))=ind1(ind1>size(Vd,1))-size(Vd,1); 
+ind1(ind1>size(Vd,1))=ind1(ind1>size(Vd,1))-size(Vd,1);
 logicFlip=dot(Nn,N(ind1,:),2)<0;
-Fn(logicFlip,:)=fliplr(Fn(logicFlip,:)); 
+Fn(logicFlip,:)=fliplr(Fn(logicFlip,:));
 
 Cn=CFs(ind1,:);
 
@@ -137,22 +135,20 @@ try
         Cn3=[];
     end
 catch
-    error('Error. Input mesh may be too coarse for dual based subtriangulation');   
+    error('Error. Input mesh may be too coarse for dual based subtriangulation');
 end
 
 %%
 
 if ~isempty(CF)
-     Ctf=[CF(~logicFaces,:); Cd; Cn; Cn3];
+    Ctf=[CF(~logicFaces,:); Cd; Cn; Cn3];
 else
-    Ctf=[]
+    Ctf=[];
 end
 
 Ct=[ones(nnz(~logicFaces),1); 2*ones(size(Fd,1),1); 3*ones(size(Fn,1),1); 4*ones(size(Fn3,1),1)];
 Ft=[F(~logicFaces,:)+nnz(logicFaces); Fd; Fn; Fn3];
-Vt=Vd; 
-
-
+Vt=Vd;
 
 %% Collect output
 
@@ -161,27 +157,27 @@ varargout{2}=Vt;
 varargout{3}=Ct;
 varargout{4}=indIni;
 varargout{5}=Ctf;
- 
-%% 
-% _*GIBBON footer text*_ 
-% 
+
+%%
+% _*GIBBON footer text*_
+%
 % License: <https://github.com/gibbonCode/GIBBON/blob/master/LICENSE>
-% 
+%
 % GIBBON: The Geometry and Image-based Bioengineering add-On. A toolbox for
 % image segmentation, image-based modeling, meshing, and finite element
 % analysis.
-% 
+%
 % Copyright (C) 2018  Kevin Mattheus Moerman
-% 
+%
 % This program is free software: you can redistribute it and/or modify
 % it under the terms of the GNU General Public License as published by
 % the Free Software Foundation, either version 3 of the License, or
 % (at your option) any later version.
-% 
+%
 % This program is distributed in the hope that it will be useful,
 % but WITHOUT ANY WARRANTY; without even the implied warranty of
 % MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 % GNU General Public License for more details.
-% 
+%
 % You should have received a copy of the GNU General Public License
 % along with this program.  If not, see <http://www.gnu.org/licenses/>.

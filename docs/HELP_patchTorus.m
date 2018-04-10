@@ -37,7 +37,7 @@ cFigure;
 
 %Plot the various mesh types
 pColors=gjet(4);
-for q=1:1:4;
+for q=1:1:4
     [F,V]=patchTorus(r,nr,rc,nc,patchTypes{q});
     subplot(2,2,q); hold on;
     title([patchTypes{q}],'FontSize',fontSize,'Interpreter','none');
@@ -51,7 +51,7 @@ for q=1:1:4;
 end
 drawnow;
 
-%% Simulate your lunch
+%% Simulate  a doughnut
 
 %Torus parameters
 np=100;
@@ -96,13 +96,13 @@ C(Lr,:)=C_blue(ones(nnz(Lr),1),:);
 Lr=XF>1.8-d & XF<2-d & L;
 C(Lr,:)=C_blue(ones(nnz(Lr),1),:);
 
+%%
+% Visualize a doughnut
 cFigure; hold on;
-xlabel('X','FontSize',fontSize); ylabel('Y','FontSize',fontSize); zlabel('Z','FontSize',fontSize);
-hp=patch('Faces',F,'Vertices',V);
-set(hp,'FaceColor','flat','FaceVertexCData',C,'edgeColor','none');
+title('doughnut','FontSize',fontSize); 
+gpatch(F,V,C,'none');
+axisGeom(gca,fontSize);
 camlight headlight; lighting phong;
-set(gca,'FontSize',fontSize);
-view(3); axis tight;  axis equal;  grid on; axis off; 
 drawnow;
 
 %%

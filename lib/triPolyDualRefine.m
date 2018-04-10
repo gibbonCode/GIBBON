@@ -9,26 +9,26 @@ function [varargout]=triPolyDualRefine(varargin)
 % 
 % 2015/05/01 Updated for GIBBON
 % 2015/05/01 Added varargin/varargout
-%
-% TO DO allow multiple iterations with "book keeping" of color/index data
+% 2018/04/06 Added fixBoundaryOpt to be compatible with update in
+% patch_dual function
 %------------------------------------------------------------------------
 
 %% Parse input
 
-% switch nargin
-%     case 2
+switch nargin
+    case 2
         F=varargin{1}; %Faces
         V=varargin{2}; %Vertices
-%         CF=ones(size(F,1),1); %Color data
-%     case 3        
-%         F=varargin{1}; %Faces
-%         V=varargin{2}; %Vertices
-%         CF=varargin{3}; %Color data
-% end
+        fixBoundaryOpt=1;
+    case 3        
+        F=varargin{1}; %Faces
+        V=varargin{2}; %Vertices
+        fixBoundaryOpt=varargin{3}; %Vertices
+end
 
 %%
 
-[Vd,~,Fds]=patch_dual(V,F);
+[Vd,~,Fds]=patch_dual(V,F,fixBoundaryOpt);
 
 Cd=(1:1:size(Fds,1))';
 Cds=Cd(:,ones(size(Fds,2),1));
@@ -64,9 +64,6 @@ varargout{1}=Ft;
 varargout{2}=Vt;
 varargout{3}=Ct;
 varargout{4}=indIni;
-
-
-
  
 %% 
 % _*GIBBON footer text*_ 

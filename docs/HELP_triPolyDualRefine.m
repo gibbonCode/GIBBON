@@ -23,16 +23,10 @@ edgeColor=0.*ones(1,3);
 edgeWidth=1;
 markerSize=15; 
 
-%% Example: Subtriangulating a closed polyhedron (sphere)
+%% Example: Subtriangulating a triangulated surface
 % Building example geometry
-
-%Defining geodesic dome
-r=1; %sphere radius
-n=2; %Refinements   
-[F,V,~]=geoSphere(n,r);
-% [F,V]=parasaurolophus;
-% indPerm=randperm(size(F,1)); 
-% F=F(indPerm,:);
+[F,V]=regionTriMesh2D({[-1 -1; -1 1; 1 1; 1 -1]},0.25,1,0); 
+V(:,3)=0;
 
 %%
 
@@ -40,26 +34,57 @@ n=2; %Refinements
 
 %%
 
-hf=cFigure; 
+cMap=gjet(size(Fq,1));
+cMap=cMap(randperm(size(cMap,1)),:);
+
+cFigure; 
 subplot(1,2,1); hold on; 
 title('Original','FontSize',fontSize); 
-xlabel('X','FontSize',fontSize); ylabel('Y','FontSize',fontSize); zlabel('Z','FontSize',fontSize);
-hp=patch('Faces',F,'Vertices',V,'FaceColor','g','FaceAlpha',faceAlpha,'lineWidth',edgeWidth,'edgeColor',edgeColor);
-% [hp]=patchNormPlot(Fq,Vq,0.2);
-camlight headlight;
-set(gca,'FontSize',fontSize);
-view(3); axis tight;  axis equal;  grid on; axis vis3d; 
+gpatch(F,V,'gw','k');
+axisGeom(gca,fontSize);
+view(2);
 
 subplot(1,2,2); hold on; 
 title('Refined','FontSize',fontSize); 
-xlabel('X','FontSize',fontSize); ylabel('Y','FontSize',fontSize); zlabel('Z','FontSize',fontSize);
-hp=patch('Faces',Fq,'Vertices',Vq,'FaceColor','flat','CData',Cq,'FaceAlpha',faceAlpha,'lineWidth',edgeWidth,'edgeColor',edgeColor);
-% [hp]=patchNormPlot(Fq,Vq,0.2);
+gpatch(Fq,Vq,Cq,'k');
 plotV(Vq(indIni,:),'k.','MarkerSize',markerSize);
+axisGeom(gca,fontSize);
+colormap(cMap);
+view(2);
+drawnow; 
+
+%% Example: Subtriangulating a closed polyhedron (sphere)
+% Building example geometry
+
+%Defining geodesic dome
+r=1; %sphere radius
+n=2; %Refinements   
+[F,V,~]=geoSphere(n,r);
+
+%%
+
+[Fq,Vq,Cq,indIni]=triPolyDualRefine(F,V);
+
+%%
+
+cMap=gjet(size(Fq,1));
+cMap=cMap(randperm(size(cMap,1)),:);
+
+cFigure; 
+subplot(1,2,1); hold on; 
+title('Original','FontSize',fontSize); 
+gpatch(F,V,'gw','k');
+axisGeom(gca,fontSize);
 camlight headlight;
-set(gca,'FontSize',fontSize);
-colormap(autumn); 
-view(3); axis tight;  axis equal;  grid on; axis vis3d; 
+
+subplot(1,2,2); hold on; 
+title('Refined','FontSize',fontSize); 
+gpatch(Fq,Vq,Cq,'k');
+plotV(Vq(indIni,:),'k.','MarkerSize',markerSize);
+axisGeom(gca,fontSize);
+camlight headlight;
+colormap(cMap);
+drawnow; 
 
 %% Example: Subtriangulating a closed polyhedron (dinosaur)
 % Building example geometry
@@ -72,29 +97,24 @@ view(3); axis tight;  axis equal;  grid on; axis vis3d;
 
 %%
 
-hf=cFigure; 
+cMap=gjet(size(Fq,1));
+cMap=cMap(randperm(size(cMap,1)),:);
+
+cFigure; 
 subplot(1,2,1); hold on; 
 title('Original','FontSize',fontSize); 
-xlabel('X','FontSize',fontSize); ylabel('Y','FontSize',fontSize); zlabel('Z','FontSize',fontSize);
-hp=patch('Faces',F,'Vertices',V,'FaceColor','g','FaceAlpha',faceAlpha,'lineWidth',edgeWidth,'edgeColor',edgeColor);
-% [hp]=patchNormPlot(Fq,Vq,0.2);
+gpatch(F,V,'gw','k');
+axisGeom(gca,fontSize);
 camlight headlight;
-set(gca,'FontSize',fontSize);
-view(3); axis tight;  axis equal;  grid on; axis vis3d; 
 
 subplot(1,2,2); hold on; 
 title('Refined','FontSize',fontSize); 
-xlabel('X','FontSize',fontSize); ylabel('Y','FontSize',fontSize); zlabel('Z','FontSize',fontSize);
-hp=patch('Faces',Fq,'Vertices',Vq,'FaceColor','flat','CData',Cq,'FaceAlpha',faceAlpha,'lineWidth',edgeWidth,'edgeColor',edgeColor);
-% [hp]=patchNormPlot(Fq,Vq,0.2);
+gpatch(Fq,Vq,Cq,'k');
 plotV(Vq(indIni,:),'k.','MarkerSize',markerSize);
+axisGeom(gca,fontSize);
 camlight headlight;
-set(gca,'FontSize',fontSize);
-cmap=hsv(size(V,1));
-cmap=cmap(randperm(size(cmap,1)),:);
-colormap(cmap);
-view(3); axis tight;  axis equal;  grid on; axis vis3d; 
-
+colormap(cMap);
+drawnow; 
 
 %% 
 %

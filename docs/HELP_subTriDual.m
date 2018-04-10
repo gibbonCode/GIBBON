@@ -50,7 +50,7 @@ n=1; %Refinements
 %%
 
 %Plotting results
-hf=cFigure; 
+cFigure; 
 subplot(1,3,1); hold on;
 title('Original triangulation','FontSize',fontSize);
 

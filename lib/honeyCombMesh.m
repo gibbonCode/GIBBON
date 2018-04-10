@@ -7,10 +7,9 @@ maxV(2)=maxV(2)+pointSpacing;
 
 %% GET DUAL FOR HONEY-COMB
 
-[Vh,Fd]=patch_dual(V,F);
+[Vh,Fd]=patch_dual(V,F,0);
 numVert=cellfun(@(x) size(x,2),Fd);
 Fh=Fd{numVert==6};
-
  
 %% 
 % _*GIBBON footer text*_ 

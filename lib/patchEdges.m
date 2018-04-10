@@ -35,7 +35,7 @@ E=[E1(:) E2(:)];
 %% REMOVE DOUBLE ENTRIES IF DESIRED
 
 if uniOpt==1
-    Es=sort(E,2); %Sorted so [1 4] and [4 1] are seen as the same edge
+    [Es,indSort]=sort(E,2); %Sorted so [1 4] and [4 1] are seen as the same edge
     [~,indUni1,indUni2]=unique(Es,'rows'); %Get indices for unique edges
     E=E(indUni1,:);    
 end
@@ -47,6 +47,7 @@ varargout{1}=E;
 if nargout>1 && uniOpt==1
     varargout{2}=indUni1;
     varargout{3}=indUni2;
+    varargout{4}=(indSort(:,1)==2); %Logic for flipped edges
 elseif nargout>1 && uniOpt~=1
     error('Multiple outputs only available if uniOpt=1');
 end

@@ -1,4 +1,4 @@
-function [varargout]=patch_dual(V,F)
+function [varargout]=patch_dual(varargin)
 
 % function [Vd,Fd,Fds]=patch_dual(V,F)
 % ------------------------------------------------------------------------
@@ -12,23 +12,131 @@ function [varargout]=patch_dual(V,F)
 % 
 % 2013/04/28
 % 2015/07/07 Updated for GIBBON
-%
-% TO DO allow multiple iterations. Add "book keeping" of color/index data
+% 2018/04/06 Added color output
+% 2018/04/06 Improved handling of edge cells
 %------------------------------------------------------------------------
 %%
 
+switch nargin
+    case 2
+        V=varargin{1};
+        F=varargin{2};
+        fixBoundaryOption=1;
+    case 3
+        V=varargin{1};
+        F=varargin{2};
+        fixBoundaryOption=varargin{3};
+end
+
+%Cope with 2D input
+if size(V,2)==2
+    V(:,3)=0;
+end
+
+%%
 %Get input tesselation vertex-normals
 [~,~,Nv]=patchNormal(F,V);
 
-%Create patch indices
+%Get indices of face neighbourhood
 [IND_F]=tesIND(F,V,0);
 
-%Face centre point coordinates
-X=V(:,1); Y=V(:,2); Z=V(:,3);
-Vd=[mean(X(F),2) mean(Y(F),2) mean(Z(F),2)];
+%Create central face coordinates
+VF=zeros(size(F,1),size(V,2));
+for q=1:1:size(V,2)
+    X=V(:,q);
+    VF(:,q)=mean(X(F),2);
+end
+
+if fixBoundaryOption>0
+    
+    [Eb]=patchBoundary(F,V);
+    if ~isempty(Eb) 
+        switch fixBoundaryOption
+            case 1 %Include original boundary vertices
+                ind_Eb=unique(Eb(:));
+                
+                %Create mid-edge vertices
+                VE=zeros(size(Eb,1),size(V,2));
+                for q=1:1:size(V,2)
+                    X=V(:,q);
+                    VE(:,q)=mean(X(Eb),2);
+                end
+                
+                Vd=[VF; VE; ];
+                
+                %Add new points in IND_F
+                IND_F(Eb(:,1),end+1)=(1:size(VE,1))'+size(VF,1);
+                ind1=IND_F(ind_Eb,end);
+                IND_F(Eb(:,2),end+1)=(1:size(VE,1))'+size(VF,1);
+                ind2=IND_F(ind_Eb,end);
+                IND_F(ind_Eb,end+1)=(1:1:numel(ind_Eb))'+size(VF,1)+size(VE,1);
+                
+                VB=(Vd(ind1,:)+Vd(ind2,:))/2; %Use this average for now to avoid inverted elements VB=V(ind_Eb,:);
+                                
+                %Collect point sets
+                Vd=[VF; VE; VB];
+                
+                IND_F=sort(IND_F,2,'descend');
+                indMax=find(sum(IND_F,1)==0,1);
+                IND_F=IND_F(:,1:indMax);
+                
+                replaceVb=1; %Replace on so average is replaced later by real boundary vertices
+            case 2 % Do not include original boundary vertices
+                %Create mid-edge vertices
+                VE=zeros(size(Eb,1),size(V,2));
+                for q=1:1:size(V,2)
+                    X=V(:,q);
+                    VE(:,q)=mean(X(Eb),2);
+                end
+                
+                %Collect point sets
+                Vd=[VF; VE; ];
+                
+                %Add new points in IND_F
+                IND_F(Eb(:,1),end+1)=(1:size(VE,1))'+size(VF,1);
+                IND_F(Eb(:,2),end+1)=(1:size(VE,1))'+size(VF,1);                
+                
+                IND_F=sort(IND_F,2,'descend');
+                indMax=find(sum(IND_F,1)==0,1);
+                IND_F=IND_F(:,1:indMax);
+                
+                replaceVb=0;
+        end
+%         %Create boundary vertices
+%         ind_Eb=unique(Eb(:));
+%         VB=V(ind_Eb,:);
+%         
+%         %Create mid-edge vertices
+%         VE=zeros(size(Eb,1),size(V,2));
+%         for q=1:1:size(V,2)
+%             X=V(:,q);
+%             VE(:,q)=mean(X(Eb),2);
+%         end
+%         
+%         %Collect point sets
+%         Vd=[VF; VE; VB];
+%         
+%         %Add new points in IND_F
+%         IND_F(Eb(:,1),end+1)=(1:size(VE,1))'+size(VF,1);
+%         IND_F(Eb(:,2),end+1)=(1:size(VE,1))'+size(VF,1);
+%         IND_F(ind_Eb,end+1)=(1:1:numel(ind_Eb))'+size(VF,1)+size(VE,1);
+%         
+%         IND_F=sort(IND_F,2,'descend');
+%         indMax=find(sum(IND_F,1)==0,1);
+%         IND_F=IND_F(:,1:indMax);
+
+    else
+        Vd=VF;
+        replaceVb=0;
+    end
+else
+    Vd=VF;
+    replaceVb=0;
+end
 
 %Creating arrays for faces
 [I,J,v] = find(IND_F);
+
 Xfd=accumarray({I,J},Vd(v,1),size(IND_F),[],NaN); 
 Yfd=accumarray({I,J},Vd(v,2),size(IND_F),[],NaN); 
 Zfd=accumarray({I,J},Vd(v,3),size(IND_F),[],NaN); 
@@ -44,22 +152,18 @@ Zfd=Zfd-Zfd_mean(:,ones(1,(size(Zfd,2))));
 %Determine face order
 Xfdn=Xfd; Yfdn=Yfd; Zfdn=Zfd;
 for q=1:1:size(Xfd,1)
-    Vc=[Xfd(q,:); Yfd(q,:); Zfd(q,:)];
-    v1=[Xfd(q,1),Yfd(q,1),Zfd(q,1)]-[Xfd(q,2),Yfd(q,2),Zfd(q,2)]; [v1]=vecnormalize(v1);
-    v2=[Xfd(q,2),Yfd(q,2),Zfd(q,2)]-[Xfd(q,3),Yfd(q,3),Zfd(q,3)]; [v2]=vecnormalize(v2);
-    v3=cross(v1,v2); [v3]=vecnormalize(v3);
-    v2=cross(v1,v3); [v2]=vecnormalize(v2);
-    DCM=[v1; v2; v3];
-    Vcn=(DCM*Vc)';
+    Vc=[Xfd(q,:); Yfd(q,:); Zfd(q,:)]';    
+    logicValid=~any(isnan(Vc),2);
+    [R]=pointSetPrincipalDir(Vc(logicValid,:)); %Fit local coordinate system with 3rd direction pointing outward of local planar-ish region
+    Vcn=Vc*R; %Rotate coordinate set to prepare for 2D Delaunay based triangulation    
     Xfdn(q,:)=Vcn(:,1);
     Yfdn(q,:)=Vcn(:,2);
-    Zfdn(q,:)=Vcn(:,3);
+    Zfdn(q,:)=Vcn(:,3);    
 end
 
 %Fix face order
-theta_n=atan2(Yfdn,Xfdn); %[theta_n,~,~] = cart2pol(Xfdn,Yfdn,Zfdn);
+theta_n=atan2(Yfdn,Xfdn); 
 [~,J_sort]=sort(theta_n,2);
-% I_sort=(1:1:size(J_sort,1))'*ones(1,size(J_sort,2));
 I_sort=(1:1:size(J_sort,1))'; 
 I_sort=I_sort(:,ones(1,size(J_sort,2)));
 IND_sort = sub2ind(size(J_sort),I_sort,J_sort);
@@ -69,33 +173,38 @@ Fds=IND_F(IND_sort);
 
 %Splitting up into seperate face types and fix face normals
 n_sum=sum(Fds>0,2);
-face_num_types=unique(n_sum);
-face_num_types=face_num_types(face_num_types>0);
-Fd=cell(1,numel(face_num_types));
-for q=1:1:numel(face_num_types)
+faceTypesNum=unique(n_sum);
+faceTypesNum=faceTypesNum(faceTypesNum>0);
+Fd=cell(1,numel(faceTypesNum));
+C=(1:1:size(V,1))';
+Cd=cell(1,numel(faceTypesNum));
+for q=1:1:numel(faceTypesNum)
     %Get faces
-    Lf=(n_sum==face_num_types(q)); %logic for current faces    
-    F_now=Fds(Lf,1:face_num_types(q)); %The current face set
+    logicFacesNow=(n_sum==faceTypesNum(q)); %logic for current faces    
+    F_now=Fds(logicFacesNow,1:faceTypesNum(q)); %The current face set
     
     %Flip face orientation if required
-    Nv_now=Nv(Lf,:); %Appropriate face normals based on input mesh    
-    [N_now]=patchNormal(F_now,Vd); %Current face normals    
-    D=sqrt(sum((N_now-Nv_now).^2,2)); %Difference metric    
-    logicFlip=D>1;%max(eps(N_now(:))); %Logic for faces that require flipping    
+    Nv_now=Nv(logicFacesNow,:); %Appropriate face normals based on input mesh    
+    [N_now]=patchNormal(F_now,Vd); %Current face normals        
+    logicFlip=dot(Nv_now,N_now,2)<0; %dot product is negative if face is inverted
     F_now(logicFlip,:)=fliplr(F_now(logicFlip,:)); %Flip faces
+  
+    indFaces=find(logicFacesNow);
+    indFlip=indFaces(logicFlip);
+    Fds(indFlip,1:faceTypesNum(q))=fliplr(Fds(indFlip,1:faceTypesNum(q)));
     
-    ind_f=find(Lf); 
-    indFlip=ind_f(logicFlip);
-    Fds(indFlip,1:face_num_types(q))=fliplr(Fds(indFlip,1:face_num_types(q))); 
-    
-    %Store faces in cell array    
-    Fd{q}=F_now; 
+    Fd{q}=F_now; %Store faces in cell array    
+    Cd{q}=C(logicFacesNow);
 end
 
-varargout{1}=Vd;
-varargout{2}=Fd;
-varargout{3}=Fds;
+if replaceVb==1 && fixBoundaryOption~=2
+    Vd(end-numel(ind_Eb)+1:end,:)=V(ind_Eb,:);
+end
 
+varargout{1}=Vd; %Vertices
+varargout{2}=Fd; %Cell array of faces
+varargout{3}=Fds; %Array of face indices (with zeros)
+varargout{4}=Cd; %Colors
  
 %% 
 % _*GIBBON footer text*_ 
