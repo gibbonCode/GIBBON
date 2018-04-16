@@ -3,6 +3,8 @@ function [varargout]=meshView(varargin)
 % function [varargout]=meshView(varargin)
 % 
 % 2018/01/23 Updated to allow for subfigure plotting
+% 2018/04/16 Added control of direction of cutting (X,Y, or Z) and also
+% what side is viewed/cut away. 
 
 %% Parse input
 
@@ -20,6 +22,8 @@ end
 defaultOptionStruct.hFig=[];
 defaultOptionStruct.numSLiceSteps=25; %Number of animation steps
 defaultOptionStruct.cMap=[];
+defaultOptionStruct.cutDir=2;
+defaultOptionStruct.cutSide=1;
 defaultOptionStruct.faceAlpha1=0.2;
 defaultOptionStruct.faceAlpha2=1;
 defaultOptionStruct.lightWeightPlot=1;
@@ -42,6 +46,8 @@ end
 
 numSliceSteps=optionStruct.numSLiceSteps;
 cMap=optionStruct.cMap;
+cutDir=optionStruct.cutDir; 
+cutSide=optionStruct.cutSide; 
 faceAlpha1=optionStruct.faceAlpha1;
 faceAlpha2=optionStruct.faceAlpha2;
 lightWeightPlot=optionStruct.lightWeightPlot;
@@ -104,15 +110,21 @@ end
 %%
 % Set up animation
 
-Y=V(:,2); YE=mean(Y(E),2);
+X=V(:,cutDir); 
+XE=mean(X(E),2);
 
 animStruct.Time=linspace(0,1,numSliceSteps); %Time vector
-cutLevel=linspace(min(Y(:)),max(Y(:)),numSliceSteps); %Property to set
+cutLevel=linspace(min(X(:)),max(X(:)),numSliceSteps); %Property to set
 
 for q=1:1:numSliceSteps %Step through time       
     cutLevelNow=cutLevel(q); %The current cut level    
     
-    logicCutView=YE>cutLevelNow;
+    if cutSide==1
+        logicCutView=XE>cutLevelNow;
+    elseif cutSide==-1
+        logicCutView=XE<cutLevelNow;
+    end
+    
     [Fs,Cs]=element2patch(E(logicCutView,:),CE(logicCutView));
     
     if lightWeightPlot==1

@@ -2,7 +2,6 @@ function [varargout]=mergeVertices(varargin)
 
 % function [F,V,ind1,ind2]=mergeVertices(F,V,nKeep)
 
-
 %% Parse input
 
 switch nargin    

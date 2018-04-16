@@ -178,19 +178,8 @@ if n>0
                     indV_15 indV_26 indV_37 indV_48 E(:,5:8)];
                 
                 %% Create vertex array
-                Vn=0.5*(V(edgeMat(:,1),:)+V(edgeMat(:,2),:)); %new mid-edge points
-                Vm=zeros(size(E,1),3);
-                for q=1:1:size(V,2)
-                    X=V(:,q);
-                    if size(E,1)==1
-                        Vm(:,q)=mean(X(E)',2);
-                    else
-                        Vm(:,q)=mean(X(E),2);
-                    end
-                end
-                
-                Vs = [V; Vn;]; %Join point sets
-                
+                Vn=0.5*(V(edgeMat(:,1),:)+V(edgeMat(:,2),:)); %new mid-edge points                       
+                Vs = [V; Vn;]; %Join point sets                
                 CV=[0*ones(size(V,1),1); 1*ones(size(Vn,1),1);];
                 
             case 3
@@ -227,16 +216,6 @@ if n>0
                 
                 %% Create vertex array
                 Vn=0.5*(V(edgeMat(:,1),:)+V(edgeMat(:,2),:)); %new mid-edge points
-                Vm=zeros(size(E,1),3);
-                for q=1:1:size(V,2)
-                    X=V(:,q);
-                    if size(E,1)==1
-                        Vm(:,q)=mean(X(E)',2);
-                    else
-                        Vm(:,q)=mean(X(E),2);
-                    end
-                end
-                
                 Vs = [V; Vn;]; %Join point sets
                 CV=[0*ones(size(V,1),1); 1*ones(size(Vn,1),1);];
                 
@@ -274,16 +253,6 @@ if n>0
                 
                 %% Create vertex array
                 Vn=0.5*(V(edgeMat(:,1),:)+V(edgeMat(:,2),:)); %new mid-edge points
-                Vm=zeros(size(E,1),3);
-                for q=1:1:size(V,2)
-                    X=V(:,q);
-                    if size(E,1)==1
-                        Vm(:,q)=mean(X(E)',2);
-                    else
-                        Vm(:,q)=mean(X(E),2);
-                    end
-                end
-                
                 Vs = [V; Vn;]; %Join point sets
                 CV=[0*ones(size(V,1),1); 1*ones(size(Vn,1),1);];
                 

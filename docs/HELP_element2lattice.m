@@ -312,7 +312,7 @@ for q=1:numel(meshTypeSet)
 end
 drawnow;
 
-%% Example: Exportin hexahedral elements instead of surface elements
+%% Example: Exporting hexahedral elements instead of surface elements
 
 %%
 % The |element2patch| function can also be used to export hexahedral
@@ -328,6 +328,56 @@ boxEl=[1 1 1];
 E=meshStruct.E;
 V=meshStruct.V;
 F=meshStruct.F;
+[indBoundary]=tesBoundary(F,V);
+
+clear controlParameter
+
+% Create lattice structure
+controlParameter.latticeSide=2;
+controlParameter.numDigitKeep=5; %used for merging nodes
+controlParameter.indBoundary=indBoundary; %indices of the boundary faces
+controlParameter.shrinkFactor=0.25;
+controlParameter.meshType='hex';
+
+hexSplitSet=[0 1 2];
+cFigure;
+suptitle('Lattice structure hex element output and element mesh refinement');
+
+c=1; %counter for plotting
+for latticeSide=1:2
+    controlParameter.latticeSide=latticeSide;
+    for q=1:numel(hexSplitSet)
+        controlParameter.hexSplit=hexSplitSet(q); %The current mesh type
+        
+        [Es1,Vs1,Cs1]=element2lattice(E,V,controlParameter); %Get lattice structure
+        
+        [Fs1,Cs1F]=element2patch(Es1,Cs1); %Patch data for plotting
+        
+        % Visualizing input mesh and lattice structures
+        subplot(2,numel(hexSplitSet),c);
+        hold on; title(['hexSplit=',num2str(hexSplitSet(q))]);
+        gpatch(Fs1,Vs1,Cs1F,'k',0.8,2);
+        colormap(gjet(250));
+        axisGeom(gca,fontSize);
+        camlight headlight; lighting flat;
+        c=c+1;
+    end
+end
+drawnow;
+
+%%
+% 
+
+[V,F]=platonic_solid(1,1);
+E=[1 2 4 3];
+
+% 
+% boxDim=[1 1 1];
+% boxEl=[1 1 1];
+% [meshStruct]=hexMeshBox(boxDim,boxEl);
+% E=meshStruct.E;
+% V=meshStruct.V;
+% F=meshStruct.F;
 [indBoundary]=tesBoundary(F,V);
 
 clear controlParameter
@@ -420,22 +470,22 @@ for latticeSide=1:2
         cPar.indBoundary=indBoundary;
         [Fn,Vn,Cn]=element2lattice(E,V,cPar);
         
-        %Refine mesh
-        [Fn,Vn]=subQuad(Fn,Vn,1);
-        Cn=repmat(Cn,[4 1]); %Replicate color info
-        
-        %Smoothen
-        indRigid=Fn(Cn==1,:);
-        indRigid=unique(indRigid(:)); %Indices for boundary elements to hold on to
-        cParSmooth.RigidConstraints=indRigid;
-        if cParSmooth.n>0
-            [Vn]=tesSmooth(Fn,Vn,[],cParSmooth); %Smoothen mesh
-        end
+%         %Refine mesh
+%         [Fn,Vn]=subQuad(Fn,Vn,1);
+%         Cn=repmat(Cn,[4 1]); %Replicate color info
+%         
+%         %Smoothen
+%         indRigid=Fn(Cn==1,:);
+%         indRigid=unique(indRigid(:)); %Indices for boundary elements to hold on to
+%         cParSmooth.RigidConstraints=indRigid;
+%         if cParSmooth.n>0
+%             [Vn]=tesSmooth(Fn,Vn,[],cParSmooth); %Smoothen mesh
+%         end
         
         %Visualize
         subplot(2,3,c); hold on;
         gpatch(Ft,Vt,0.5*ones(1,3),'k',0.25);
-        gpatch(Fn,Vn,Cn,'none',1);
+        gpatch(Fn,Vn,Cn,'k',1);
         colormap(cMap);
         axisGeom(gca,fontSize);
         camlight headlight;
