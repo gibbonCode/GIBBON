@@ -1,5 +1,16 @@
 function [Fc,Vc]=patchDetach(F,V,shrinkFactor)
 
+%%
+
+if numel(shrinkFactor)==size(V,1) %If specified on the nodes
+    shrinkFactor=vertexToFaceMeasure(F,shrinkFactor); % Convert to face metric
+end
+
+if numel(shrinkFactor)~=1 && numel(shrinkFactor)~=size(F,1)
+    error('The number of elements in shrinkFactor should be equal to 1 or the number of faces or the number of nodes');
+end
+
+%%
 Vc=zeros(size(F,1)*size(F,2),size(V,2));
 for q=1:1:size(V,2)
     X=V(:,q);
@@ -9,7 +20,7 @@ for q=1:1:size(V,2)
         FX=X(F);
     end
     FX_mean=mean(FX,2);
-    FX=((FX-FX_mean)*shrinkFactor)+FX_mean;
+    FX=((FX-FX_mean).*shrinkFactor)+FX_mean;
     Vc(:,q)=FX(:);
 end
     

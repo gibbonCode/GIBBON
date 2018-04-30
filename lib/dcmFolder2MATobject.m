@@ -65,7 +65,7 @@ if isempty(dicomDictFactory)
 end
 
 if isempty(fileExtension)
-    fileExtension='dcm'; %Default
+    fileExtension='.dcm'; %Default
 end
 
 %% Getting DICOM file names and image dimension parameters

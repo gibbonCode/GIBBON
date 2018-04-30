@@ -60,6 +60,10 @@ if isempty(edgeColorOpt)
     edgeColorOpt='none';
 end
 
+if isempty(quiverStyleOpt)
+    quiverStyleOpt=1;
+end
+
 switch quiverStyleOpt
     case 1 %Depart from origin
         %Keep as is
