@@ -25,11 +25,11 @@ Through this workshop you will be introduced to:
 * Running GIBBON coded FEBio models from MATLAB
 
 ### Requirements to attend
-1) Please bring your own **laptop**.
-2) Have **MATLAB** installed (the latest preferred or at least R2016)
-3) Have [**FEBio**](https://febio.org/) installed
-4) Have [**GIBBON**](https://www.gibboncode.org/Installation/) installed
-5) Have a text editor installed which is able to view large XML files, e.g. [Atom](https://atom.io/) or [NotePad++](https://notepad-plus-plus.org/)
+1) Please bring your own **laptop**.    
+2) Have **MATLAB** installed (the latest preferred or at least R2016)    
+3) Have [**FEBio**](https://febio.org/) installed    
+4) Have [**GIBBON**](https://www.gibboncode.org/Installation/) installed    
+5) Have a text editor installed which is able to view large XML files, e.g. [Atom](https://atom.io/) or [NotePad++](https://notepad-plus-plus.org/)    
 
 # We look forward to welcoming you!
 
