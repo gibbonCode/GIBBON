@@ -9,6 +9,8 @@ thumbnail:  /img/logos/gibbonlogo.png
 ---
 
 # GIBBON Workshop WCB 2018
+**Time**: Saturday 7th of July, 10am-1pm   
+**Location:** B2.72, B2.73 & B2.74, Basement level 2, Trinity Biomedical Sciences Institute, , Trinity College Dublin, 152-160 Pearse Street, Dublin 2.   
 **Speaker:** [Dr. Kevin Moerman](https://kevinmoerman.org/), _MIT Media Lab, Biomechatronics group_   
 
 Join this workshop to learn about [GIBBON](https://www.gibboncode.org): a **FREE and open-source** MATLAB toolbox for segmentation, image-based modelling, visualization, meshing, and finite element analysis. GIBBON includes an array of image and geometry visualization and processing tools and is interfaced with free open source software such as TetGen, for robust tetrahedral meshing, and FEBio for finite element analysis. The combination provides a highly flexible image-based modelling environment and enables advanced inverse finite element analysis.
