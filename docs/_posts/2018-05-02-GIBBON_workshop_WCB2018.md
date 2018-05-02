@@ -3,12 +3,12 @@ layout:     post
 title:      GIBBON workshop at WCB2018
 author:     Kevin Mattheus Moerman
 tags: 		  post
-subtitle:  	Workshop at the World Congress of Biomechanics
+subtitle:  	Workshop at the World Congress of Biomechanics 2018
 category:   Blog
 thumbnail:  /img/logos/gibbonlogo.png
 ---
 
-# GIBBON Workshop WCB 2018
+# GIBBON Workshop [WCB 2018](http://wcb2018.com/)
 **Time**: Saturday 7th of July, 10am-1pm   
 **Location:** B2.72, B2.73 & B2.74, Basement level 2, Trinity Biomedical Sciences Institute, , Trinity College Dublin, 152-160 Pearse Street, Dublin 2.   
 **Speaker:** [Dr. Kevin Moerman](https://kevinmoerman.org/), _MIT Media Lab, Biomechatronics group_   
@@ -37,6 +37,8 @@ Through this workshop you will be introduced to:
 [GIBBON website](https://www.gibboncode.org)    
 [GitHub repository](https://github.com/gibbonCode/GIBBON)          
 
-![GIBBON overview](https://www.gibboncode.org/html/GIBBON_overview.jpg)
-
-### Register here
+<div>
+<center>
+ <img src="https://www.gibboncode.org/html/GIBBON_overview.jpg" alt="" style="width:75%;">
+ </center>
+</div>
