@@ -16,12 +16,13 @@ thumbnail:  /img/logos/gibbonlogo.png
 Join this workshop to learn about [GIBBON](https://www.gibboncode.org): a **FREE and open-source** MATLAB toolbox for segmentation, image-based modelling, visualization, meshing, and finite element analysis. GIBBON includes an array of image and geometry visualization and processing tools and is interfaced with free open source software such as TetGen, for robust tetrahedral meshing, and FEBio for finite element analysis. The combination provides a highly flexible image-based modelling environment and enables advanced inverse finite element analysis.
 
 ### Learning objectives
-After this workshop you will be able to:
-* Access GIBBON documentation and run the demos
-* Use GIBBON to run TetGen and FEBio from MATLAB
-* Create or import custom geometries in MATLAB for meshing
-* Mesh geometries based on GIBBON and TetGen
-* Code models and specify boundary conditions for custom finite element analysis
+Through this workshop you will be introduced to:
+* Finding GIBBON documentation and running demos
+* Obtaining surface geometry from 3D image data
+* Optimizing surface meshes through smoothening and remeshing
+* Performing tetrahedral meshing using GIBBON and TetGen
+* Specifying finite element model boundary conditions in GIBBON
+* Running GIBBON coded FEBio models from MATLAB
 
 ### Requirements to attend
 1) Please bring your own **laptop**.
