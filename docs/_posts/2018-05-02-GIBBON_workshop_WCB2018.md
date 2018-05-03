@@ -16,15 +16,7 @@ thumbnail:  /img/logos/gibbonlogo.png
 
 **Speaker:** [Dr. Kevin Moerman](https://kevinmoerman.org/), _MIT Media Lab, Biomechatronics group_   
 
-<div>  
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
-  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
-  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
-
-  <h1><a href="https://goo.gl/forms/3NUtYR15sM4F13bq1"><span class="label label-default">Register</span></a></h1>
-</div>
+[![License](https://img.shields.io/badge/REGISTER-HERE-blue.svg)](https://goo.gl/forms/3NUtYR15sM4F13bq1)
 
 Join this workshop to learn about [GIBBON](https://www.gibboncode.org): a **FREE and open-source** MATLAB toolbox for segmentation, image-based modelling, visualization, meshing, and finite element analysis. GIBBON includes an array of image and geometry visualization and processing tools and is interfaced with free open source software such as TetGen, for robust tetrahedral meshing, and FEBio for finite element analysis. The combination provides a highly flexible image-based modelling environment and enables advanced inverse finite element analysis.
 
@@ -50,11 +42,7 @@ Through this workshop you will be introduced to:
 3. Check out the [README and the getting started section](https://github.com/gibbonCode/GIBBON/blob/master/README.md#Start).
 4. Find [the project on GitHub](https://github.com/gibbonCode/GIBBON) and learn how you can contribute!
 
-# We look forward to welcoming you!
-
-### Links:   
-[GIBBON website](https://www.gibboncode.org)    
-[GitHub repository](https://github.com/gibbonCode/GIBBON)          
+### We look forward to welcoming you!
 
 <div>
 <center>
@@ -62,7 +50,9 @@ Through this workshop you will be introduced to:
  </center>
 </div>
 
-# Register
-Regiser [here](https://goo.gl/forms/3NUtYR15sM4F13bq1)!
+### Register
+[![License](https://img.shields.io/badge/REGISTER-HERE-blue.svg)](https://goo.gl/forms/3NUtYR15sM4F13bq1) https://goo.gl/forms/3NUtYR15sM4F13bq1
 
+<div>
 <iframe src="https://docs.google.com/forms/d/e/1FAIpQLSfHqCvm_ZHRWXVpvipKJs2ZSwBHweVjxTaBJ3LtzCFVsm-Yag/viewform?embedded=true" width="100%" height="1200px" frameborder="0" marginheight="0" marginwidth="0">Loading...</iframe>
+</div>
