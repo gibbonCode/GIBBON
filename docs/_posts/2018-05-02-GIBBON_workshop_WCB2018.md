@@ -14,7 +14,7 @@ thumbnail:  /img/logos/gibbonlogo.png
 **Contact details:** [Dr. Kevin Moerman](https://kevinmoerman.org/), _MIT Media Lab_, ([kmoerman@mit.edu](mailto:kmoerman@mit.edu))    
 **Registration link**: https://goo.gl/forms/3NUtYR15sM4F13bq1
 
-[![License](https://img.shields.io/badge/REGISTER-HERE-blue.svg)](https://goo.gl/forms/3NUtYR15sM4F13bq1)
+[![REGISTER](https://img.shields.io/badge/REGISTER-HERE-blue.svg)](https://goo.gl/forms/3NUtYR15sM4F13bq1)
 
 Join this workshop to learn about [GIBBON](https://www.gibboncode.org): a **FREE and open-source** MATLAB toolbox for segmentation, image-based modelling, visualization, meshing, and finite element analysis. GIBBON includes an array of image and geometry visualization and processing tools and is interfaced with free open source software such as TetGen, for robust tetrahedral meshing, and FEBio for finite element analysis. The combination provides a highly flexible image-based modelling environment and enables advanced inverse finite element analysis.
 
