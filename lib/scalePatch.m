@@ -1,46 +1,56 @@
-function [Fs,Vs,Cs]=scalePatch(F,V,C,scaleFactor)
+function [Fc,Vc]=scalePatch(varargin)
 
 % --------------------------------------------------------------------
-% function [Fs,Vs,Cs]=scalePatch(F,V,C,scaleFactor)
+% function [Fc,Vc]=scalePatch(F,V,scaleFactor)
 %
 % CHANGE LOG: 
 % 19/12/2013 Fixed error related to single face entry, see if statement
 % related to size(F,1)
+% 2018/05/07 Created to be similar to patchDetach, which now calls this
+% function
 %
 % --------------------------------------------------------------------
 %%
 
-%If vertices are shared they need to be disconnected by adding vertices
-% if numel(F)~=numel(V)
-Vn=zeros(numel(F),size(V,2));
-for q=1:1:size(V,2)
-    X=V(:,q); %The coordinate set
-    XF=X(F); %The coordinates for each face vertex
-    XFt=XF'; %transpose to prepare for column array
-    Vn(:,q)=XFt(:); %Add column as part of new vertex matrix
+%% Parse input
+
+switch nargin
+    case 2
+        F=varargin{1};
+        V=varargin{2};
+        scaleFactor=1;        
+    case 3
+        F=varargin{1};
+        V=varargin{2};
+        scaleFactor=varargin{3};
 end
 
-%Fix indices in face matrix
-indVn=1:numel(F);
-Fs=reshape(indVn(:),size(F,2),size(F,1))';
-Cs=C;
+if numel(scaleFactor)==size(V,1) %If specified on the nodes
+    scaleFactor=vertexToFaceMeasure(F,scaleFactor); % Convert to face metric
+end
 
-%Derive face means to shift vertices around mean
-Vs=zeros(size(Vn));
+if numel(scaleFactor)~=1 && numel(scaleFactor)~=size(F,1)
+    error('The number of elements in scaleFactor should be equal to 1 or the number of faces or the number of nodes');
+end
+
+%%
+Vc=zeros(size(F,1)*size(F,2),size(V,2));
 for q=1:1:size(V,2)
-    X=Vn(:,q);
-    XF=X(Fs); 
+    X=V(:,q);
     if size(F,1)==1
-        XF=XF';
-    end   
-    meanXF=mean(XF,2)*ones(1,size(F,2));     
-    meanXFt=meanXF'; 
-    meanV(:,q)=meanXFt(:);   
+        FX=X(F)';
+    else
+        FX=X(F);
+    end
+    if any(scaleFactor~=1)
+        FX_mean=mean(FX,2);
+        FX=((FX-FX_mean).*scaleFactor)+FX_mean;
+    end
+    Vc(:,q)=FX(:);
 end
-Vn_shift=Vn-meanV; %Shift vertices
-Vn_shift_scale=Vn_shift*scaleFactor; %Scale shifted vertices with respect to face center 
-Vs=Vn_shift_scale+meanV; %Shift scaled vertices back
- 
+    
+Fc=reshape(1:size(Vc,1),size(F,1),size(F,2));
+
 %% 
 % _*GIBBON footer text*_ 
 % 

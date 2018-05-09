@@ -1,37 +1,57 @@
-%% quadBox
-% Below is a demonstration of the features of the |quadBox| function
+%% tetMeshBox
+% Below is a demonstration of the features of the |tetMeshBox| function
 
 %%
 clear; close all; clc;
 
+%% Syntax
+% |[meshStruct]=tetMeshBox(boxDim,pointSpacing);|
+
+%% Description
+% This function generates a mesh structure containing element and node data
+% for a tetrahedral element meshed box. The box dimensions in each of the 3
+% directions are based on the boxDim input (1x3 vector). The number of
+% elements in each direction is based on the pointSpacing input.
+
+%% Examples
+
 %%
-% PLOT SETTINGS
-fontSize=15;
-faceAlpha1=0.5;
+% Plot settings
 
-%% Creating a quadrilateral mesh of a box
+fontSize=20;
+faceAlpha1=0.8;
 
-%% 
-% Specifying dimensions and number of elements for each direction
-boxDim=[4 5 6]; %Width in each direction
-boxEl=[3 4 5]; %Number of elements per direction 
+%% CREATING A MESHED BOX
+boxDim=[5 6 7]; % Box dimenstions
+pointSpacing=1; 
+
+[meshStruct]=tetMeshBox(boxDim,pointSpacing);
 
 %%
-% Using |quadBox| to build the patch model
-
-[F,V,faceBoundaryMarker]=quadBox(boxDim,boxEl);
+% Acces output fields
+E=meshStruct.elements;
+V=meshStruct.nodes;
+F=meshStruct.faces;
+Fb=meshStruct.facesBoundary;
+faceBoundaryMarker=meshStruct.boundaryMarker;
 
 %%
 % Plotting model
-cFigure; hold on;
-title('Box quadrilateral faces and normals','FontSize',fontSize);
+cFigure;
+title('Box boundaries faces','FontSize',fontSize);
+hold on;
 
-gpatch(F,V,faceBoundaryMarker,'k',1);
-patchNormPlot(F,V);
+gpatch(Fb,V,faceBoundaryMarker,'k',faceAlpha1);
+% patchNormPlot(Fb,V);
 
+axisGeom(gca,fontSize); 
 colormap(gjet(6)); icolorbar; 
-axisGeom(gca,fontSize);
-drawnow;
+drawnow; 
+
+%%
+% Visualizing model internal mesh with |meshView|
+
+meshView(meshStruct); 
 
 %% 
 %

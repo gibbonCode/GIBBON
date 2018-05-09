@@ -9,8 +9,8 @@ thumbnail:  /img/logos/gibbonlogo.png
 ---
 
 # GIBBON Workshop [WCB 2018](http://wcb2018.com/)
-**Time**: [Saturday 7th of July, 10am-1pm ![Add to calendar](https://www.google.com/calendar/images/ext/gc_button1_en-GB.gif)](https://calendar.google.com/event?action=TEMPLATE&amp;tmeid=NTJsN2o2djk2anFuamRmNjRxN3BxNm1tM3QgMTdpMDhjNGMzbjJtOXAxMDVlcms4NXZuOTRAZw&amp;tmsrc=17i08c4c3n2m9p105erk85vn94%40group.calendar.google.com)   
-**Location:** Rooms B2.72, B2.73 & B2.74, Basement level 2, [Trinity Biomedical Sciences Institute, Trinity College Dublin, 152-160 Pearse Street, Dublin 2](https://www.google.com/maps/place/Trinity+Biomedical+Sciences+Institute/@53.3436554,-6.2498093,17z/data=!3m1!4b1!4m5!3m4!1s0x48670e9183082d31:0x9d8406292b807797!8m2!3d53.3436522!4d-6.2476153).    
+**Time**: [Saturday 7th of July, 9:30am-12:30pm ![Add to calendar](https://www.google.com/calendar/images/ext/gc_button1_en-GB.gif)](https://calendar.google.com/event?action=TEMPLATE&amp;tmeid=NTJsN2o2djk2anFuamRmNjRxN3BxNm1tM3QgMTdpMDhjNGMzbjJtOXAxMDVlcms4NXZuOTRAZw&amp;tmsrc=17i08c4c3n2m9p105erk85vn94%40group.calendar.google.com)   
+**Location:** PAC room, Basement level 2, [Trinity Biomedical Sciences Institute, Trinity College Dublin, 152-160 Pearse Street, Dublin 2](https://www.google.com/maps/place/Trinity+Biomedical+Sciences+Institute/@53.3436554,-6.2498093,17z/data=!3m1!4b1!4m5!3m4!1s0x48670e9183082d31:0x9d8406292b807797!8m2!3d53.3436522!4d-6.2476153).    
 **Contact details:** [Dr. Kevin Moerman](https://kevinmoerman.org/), _MIT Media Lab_, ([kmoerman@mit.edu](mailto:kmoerman@mit.edu))    
 **Registration link**: https://goo.gl/forms/3NUtYR15sM4F13bq1
 

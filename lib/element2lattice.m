@@ -5,6 +5,8 @@ function [Fn,Vn,Cn]=element2lattice(varargin)
 % 2017/04/26 fixed bug for older MATLAB versions in relation to subtracting
 % columns from matrices e.g. subtracting an nx1 column from all columns in
 % an nxm matrix.
+% 2018/05/07 Updated handling of default input (no change in functionality)
+% 2018/05/07 Added default boundary face use if not provided at all. 
 
 %% Parse input
 
@@ -19,40 +21,6 @@ switch nargin
         cPar=varargin{3};
 end
 
-%The default control parameters
-cParDefault.shrinkFactor=0.25;
-cParDefault.latticeSide=1;
-cParDefault.numDigitKeep=5;
-cParDefault.meshType='tri';
-cParDefault.indBoundary=[];
-cParDefault.hexSplit=0;
-cParDefault.hexMethod=2;
-
-if isempty(cPar)
-    cPar=cParDefault;
-else
-    if ~isfield(cPar,'shrinkFactor')
-        cPar.shrinkFactor=cParDefault.shrinkFactor;
-    end
-    if ~isfield(cPar,'latticeSide')
-        cPar.latticeSide=cParDefault.latticeSide;
-    end
-    if ~isfield(cPar,'numDigitKeep')
-        cPar.numDigitKeep=cParDefault.numDigitKeep;
-    end
-    if ~isfield(cPar,'meshType')
-        cPar.meshType=cParDefault.meshType;
-    end
-    if ~isfield(cPar,'hexSplit')
-        cPar.hexSplit=cParDefault.hexSplit;
-    end
-    if ~isfield(cPar,'hexMethod')
-        cPar.hexMethod=cParDefault.hexMethod;
-    end
-end
-
-%%
-
 switch size(E,2)
     case 4
         elementType='tet4';
@@ -62,7 +30,26 @@ switch size(E,2)
         error('Element type not supported');
 end
 
-[F]=element2patch(E); %Element faces
+[F]=element2patch(E,elementType); %Element faces
+
+%The default control parameters
+cParDefault.shrinkFactor=0.25;
+cParDefault.latticeSide=1;
+cParDefault.numDigitKeep=5;
+cParDefault.meshType='tri';
+cParDefault.indBoundary=[];
+cParDefault.hexSplit=0;
+cParDefault.hexMethod=2;
+
+if ~isfield(cPar,'indBoundary')
+    %If no boundary entry is provided 
+    cPar.indBoundary=tesBoundary(F,V);
+end
+    
+%Complement input structure with default
+[cPar]=structComplete(cPar,cParDefault,0);
+
+%%
 
 if cPar.latticeSide==1
     cPar.shrinkFactor=1-cPar.shrinkFactor;
@@ -347,9 +334,13 @@ switch cPar.latticeSide
                     switch cPar.meshType
                         case 'tri'
                             %Quad
-                            Fn=[Fc(:,1) Fcc(:,1)+size(Vc,1) Fcc(:,2)+size(Vc,1) Fc(:,2);...
-                                Fc(:,2) Fcc(:,2)+size(Vc,1) Fcc(:,3)+size(Vc,1) Fc(:,3);...
-                                Fc(:,3) Fcc(:,3)+size(Vc,1) Fcc(:,1)+size(Vc,1) Fc(:,1)];
+%                             Fn=[Fc(:,1) Fcc(:,1)+size(Vc,1) Fcc(:,2)+size(Vc,1) Fc(:,2);...
+%                                 Fc(:,2) Fcc(:,2)+size(Vc,1) Fcc(:,3)+size(Vc,1) Fc(:,3);...
+%                                 Fc(:,3) Fcc(:,3)+size(Vc,1) Fcc(:,1)+size(Vc,1) Fc(:,1)];
+                            Fn=[Fcc(:,1)+size(Vc,1) Fcc(:,1)+size(Vc,1) Fcc(:,2)+size(Vc,1) Fcc(:,2)+size(Vc,1);...
+                                Fcc(:,2)+size(Vc,1) Fcc(:,2)+size(Vc,1) Fcc(:,3)+size(Vc,1) Fcc(:,3)+size(Vc,1);...
+                                Fcc(:,3)+size(Vc,1) Fcc(:,3)+size(Vc,1) Fcc(:,1)+size(Vc,1) Fcc(:,1)+size(Vc,1)];
+                            
                             Cn=zeros(size(Fn,1),1);
                             Vn=[Vc;Vcc;];
                             

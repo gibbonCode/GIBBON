@@ -23,7 +23,7 @@ function [D]=patchEdgeLengths(F,V)
 
 %Derive edge array
 if size(F,2)>2 %The input is assumed to represent faces hence an edge array is derived
-    E=patchEdges(F);
+    E=patchEdges(F,0);
 else %It is assumed that the input array represents an edges array
     E=F; 
 end

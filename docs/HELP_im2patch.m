@@ -241,8 +241,8 @@ drawnow;
 % instance).
 
 [Ev,Vv,Cv]=im2patch(M,L_mask,'h'); %This creates a hexahedral element for each voxel
-[Evs,Vvs,Cvs]=scalePatch(Ev,Vv,Cv,0.5); %Apply voxel element scaling
-[Fvs,Cvs]=element2patch(Evs,Cvs); %Convert to quad faces for plotting
+[Evs,Vvs]=scalePatch(Ev,Vv,0.5); %Apply voxel element scaling
+[Fvs,Cvs]=element2patch(Evs,Cv); %Convert to quad faces for plotting
 
 %%
 % Plotting the voxels

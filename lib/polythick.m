@@ -1,4 +1,4 @@
-function [X1,Y1,X2,Y2]=polythick(varargin)
+function [varargout]=polythick(varargin)
 
 % function [Xu Yu Xl Yl]=polythick(x,y,t,nSteps,resampleFactor)
 % ------------------------------------------------------------------------
@@ -12,6 +12,7 @@ function [X1,Y1,X2,Y2]=polythick(varargin)
 % gibbon.toolbox@gmail.com
 % 27/08/2008 Created
 % 2017/03/16 Updated for GIBBON
+% 2017/03/16 Added varargout option
 
 %------------------------------------------------------------------------
 
@@ -84,6 +85,20 @@ Y1=V_curve1(:,2);
 X2=V_curve2(:,1);
 Y2=V_curve2(:,2);
 
+%%
+
+switch nargout
+    case 2
+        varargout{1}=V_curve1;
+        varargout{2}=V_curve2;
+    case 4
+        varargout{1}=X1;
+        varargout{2}=Y1;
+        varargout{3}=X2;
+        varargout{4}=Y2;
+    otherwise
+        error('Wrong number of output arguments. Use 2 or 4 output arguments');
+end
  
 %% 
 % _*GIBBON footer text*_ 

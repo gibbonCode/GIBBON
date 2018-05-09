@@ -1,8 +1,8 @@
-%% patchDetach
-% Below is a demonstration of the features of the |patchDetach| function
+%% scalePatch
+% Below is a demonstration of the features of the |scalePatch| function
 
 %% Syntax
-% |[Fs,Vs]=patchDetach(F,V,scalefactor);|
+% |[Fs,Vs]=scalePatch(F,V,scalefactor);|
 
 %% Description
 % This function seperates the nodes (if shared) for all faces. If a
@@ -30,7 +30,7 @@ n=2; %Refinements
 
 %Detach nodes and shrink faces
 scaleFactor=0.5;
-[Fs,Vs]=patchDetach(F,V,scaleFactor);
+[Fs,Vs]=scalePatch(F,V,scaleFactor);
 
 %%
 %Plotting results
@@ -62,7 +62,7 @@ scaleFactor=scaleFactor./max(scaleFactor(:));
 
 %%
 % Detach nodes and shrink faces
-[Fs,Vs]=patchDetach(F,V,scaleFactor);
+[Fs,Vs]=scalePatch(F,V,scaleFactor);
 
 %%
 % Plotting results

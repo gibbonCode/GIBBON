@@ -1,20 +1,12 @@
-function [Ep,Vp,Cp]=pillowHex(E,V,C,shrinkFactor)
+function [varargout]=pillowHex(E,V,C,shrinkFactor)
 
 %Defive core element
-[E_core,V_core,C_core]=scalePatch(E,V,C,shrinkFactor);
+[E_core,V_core]=scalePatch(E,V,shrinkFactor);
 
 Vp=[V;V_core]; %Collect nodes 
 E_core=E_core+size(V,1); %Fix node indices in E_core
 
 %% FORMAT FOR FACES
-% F =[E(:,[4 3 2 1]);... %top
-%     E(:,[5 6 7 8]);... %bottom
-%     E(:,[1 2 6 5]);... %side 1
-%     E(:,[3 4 8 7]);... %side 2
-%     E(:,[2 3 7 6]);... %front
-%     E(:,[5 8 4 1]);]; %back
-%C=repmat(C,6,1);
-        
 indTop=1:1:4;
 indBottom=5:1:8;
 indFront=[2 3 7 6];
@@ -46,13 +38,15 @@ E5=[E2(:,indSide1) E1(:,indSide1)];
 %   bottom=side2 of E2 top=side2 of E1
 E6=[E2(:,indSide2) E1(:,indSide2)];
 
-%% FIX FACES ORIENTATION 
-
-%% COLLECT ALL ELEMENTS
+%% Gather element sets
 Ep=[E_core; E1; E2; E3; E4; E5; E6];
 Cp=repmat(C,[7,1]);
-% Ep=[E_core;E1;E2];
  
+%% Collect output
+varargout{1}=Ep;
+varargout{2}=Vp;
+varargout{3}=Cp;
+
 %% 
 % _*GIBBON footer text*_ 
 % 

@@ -1,5 +1,5 @@
-%% quadBox
-% Below is a demonstration of the features of the |quadBox| function
+%% triBox
+% Below is a demonstration of the features of the |triBox| function
 
 %%
 clear; close all; clc;
@@ -9,22 +9,22 @@ clear; close all; clc;
 fontSize=15;
 faceAlpha1=0.5;
 
-%% Creating a quadrilateral mesh of a box
+%% Creating a triangulated mesh of a box
 
 %% 
 % Specifying dimensions and number of elements for each direction
 boxDim=[4 5 6]; %Width in each direction
-boxEl=[3 4 5]; %Number of elements per direction 
+pointSpacing=1; %Desired point spacing
 
 %%
-% Using |quadBox| to build the patch model
+% Using |triBox| to build the patch model
 
-[F,V,faceBoundaryMarker]=quadBox(boxDim,boxEl);
+[F,V,faceBoundaryMarker]=triBox(boxDim,pointSpacing);
 
 %%
 % Plotting model
 cFigure; hold on;
-title('Box quadrilateral faces and normals','FontSize',fontSize);
+title('Box triangular faces and normals','FontSize',fontSize);
 
 gpatch(F,V,faceBoundaryMarker,'k',1);
 patchNormPlot(F,V);

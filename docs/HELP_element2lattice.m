@@ -535,6 +535,7 @@ E=meshOutput.elements;
 F=meshOutput.faces;
 [indBoundary]=tesBoundary(F,V); %Boundary indices
 
+dfsafa
 %%
 % Create lattice structure
 clear controlParameter
