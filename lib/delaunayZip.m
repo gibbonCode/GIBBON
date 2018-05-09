@@ -59,7 +59,7 @@ indGroup=startInd(:); %Initialize current group
 numGroup=numel(indGroup); %Initialize current number of members of the current group
 
 if plotOn==1
-    cFigure; hold on;
+    hf=cFigure; hold on;
     gpatch(F1,V1,'r','none',0.2);
     gpatch(F2,V2,'b','none',0.2);
     plotV(V(ind1,:),'r.-','LineWidth',1,'MarkerSize',10);
@@ -89,6 +89,7 @@ while 1
             end
             
             if plotOn==1 %%Plot if plotting is on
+                figure(hf);
                 h3(2)=plotV(V(startInd,:),'y.','MarkerSize',60);
                 if ~isempty(Fn)
                     h3(3)=gpatch(Fn,V,'kw','k',0.5);
@@ -161,6 +162,7 @@ while 1
                 indGroup=indListSub(1:end-1);
                 
                 if plotOn==1 %%Plot if plotting is on
+                    figure(hf);
                     h1(1)=plotV(V(indEndPoints1,:),'r.','MarkerSize',50);
                     h1(2)=plotV(V(indEndPoints2,:),'b.','MarkerSize',50);
                     h1(3)=plotV(V(indListSub1,:),'r-','LineWidth',3);
@@ -215,13 +217,12 @@ while 1
     end
     
     if plotOn==1 %%Plot if plotting is on
+        figure(hf);
         V_now_mean=mean(V_now); %Mean of coordinate set
         h2(1)=plotV(V_now_mean,'kx','MarkerSize',15);
         h2(2)=gpatch(f,V,'r','k',0.5);
-        h2(3)=patchNormPlot(f,V);
-        
-        plotV(V(startInd,:),'c.','MarkerSize',50);
-        
+        h2(3)=patchNormPlot(f,V);        
+        plotV(V(startInd,:),'c.','MarkerSize',50);        
         drawnow;
     end
     
@@ -268,6 +269,7 @@ while 1
     
     %%
     if plotOn==1 %%Plot if plotting is on
+        figure(hf);
         h2(3)=plotV(V(logicNotUsed,:),'go','MarkerSize',20);
         h2(4)=plotV(V(startInd,:),'y.','MarkerSize',60);
     end
