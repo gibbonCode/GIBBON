@@ -96,7 +96,11 @@ while 1
                 E_sub=E(logicMember,:); %The subset of touching edges
                 
                 indGroup=unique([indGroup; E_sub(:)]); %Grow group with point indices in the edges that are touching
-                [D]=minDist(V(indGroup,:),V(startInd,:));%Compute distance of group members to the start points
+                
+                d1=sqrt(sum((V(indGroup,:)-V(startInd(1)*ones(numel(indGroup),1),:)).^2,2));
+                d2=sqrt(sum((V(indGroup,:)-V(startInd(2)*ones(numel(indGroup),1),:)).^2,2));
+                D=min(d1,d2);                
+                
                 logicKeep= (D<distLocal) & (logicNotUsed(indGroup));
                 indGroup=indGroup(logicKeep); %Remove points that are too far
                 if numGroup==numel(indGroup) %Compare current group size to previous step
@@ -129,7 +133,9 @@ while 1
                 
                 %Create single closed curve
                 if isempty(Fn) %First iteration
-                    [~,indClosest]=minDist(V(indListSub1(1),:),V([indListSub2(1) indListSub2(end)],:));
+                    d=sqrt(sum((V([indListSub2(1) indListSub2(end)],:)-V(indListSub1(1)*ones(1,2),:)).^2,2));
+                    [~,indClosest]=min(d);
+
                     if indClosest==2
                         indListSub=[indListSub1;indListSub2;indListSub1(1)];
                     else

@@ -1,10 +1,11 @@
 function [numFreeBytes]=freeMemory
 
 try
-    if ispc
+    if ispc        
+        %Can be slow on windows
         [~,mem_stat] = memory;
-        numFreeBytes = mem_stat.PhysicalMemory.Available;
-        % numFreeBytes = mem_stat.MaxPossibleArrayBytes; %Alternative
+        numFreeBytes = mem_stat.PhysicalMemory.Available; % numFreeBytes = mem_stat.MaxPossibleArrayBytes; %Alternative
+%          [~,S]=system('wmic OS get FreePhysicalMemory');
     elseif isunix && ~ismac
         % Output format of running 'free -b | grep Mem'
         %  total       used       free     shared    buffers     cached

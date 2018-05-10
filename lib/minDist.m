@@ -11,7 +11,7 @@ V1=varargin{1};
 V2=varargin{2};
 switch nargin
     case 2        
-        maxVarSize=[]; %Empty will force calucation below
+        maxVarSize=[]; %Empty will force calcucation below
         selfAvoid=0; 
     case 3
         maxVarSize=varargin{3};
@@ -27,17 +27,21 @@ if isempty(maxVarSize)
     maxVarSize=numFreeBytes/2;
 end
 
-%Derive class dependent variable size
-[~,b1]=maxnumel(V1(1));
-[~,b2]=maxnumel(V2(1));
-b=max([b1 b2]);
-numelVar=numel(V1)*numel(V2);
-varSize=numelVar*b;
-
-numSteps=ceil(varSize/maxVarSize);
-indSteps=round(linspace(0,size(V1,1),numSteps));
-indSteps=sort(unique(indSteps));
-numSteps=numel(indSteps);
+if isnan(maxVarSize)
+    numSteps=1;
+else
+    %Derive class dependent variable size
+    [~,b1]=maxnumel(V1(1));
+    [~,b2]=maxnumel(V2(1));
+    b=max([b1 b2]);
+    numelVar=numel(V1)*numel(V2);
+    varSize=numelVar*b;
+    
+    numSteps=ceil(varSize/maxVarSize);
+    indSteps=round(linspace(0,size(V1,1),numSteps));
+    indSteps=sort(unique(indSteps));
+    numSteps=numel(indSteps);
+end
 
 if numSteps>1 %In steps
     D1=zeros(size(V1,1),1);
