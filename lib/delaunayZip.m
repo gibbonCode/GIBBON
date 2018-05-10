@@ -43,13 +43,6 @@ E=[ind1(1:end-1) ind1(2:end); ind2(1:end-1) ind2(2:end)];
 
 logicNotUsed=ismember((1:1:size(V,1))',E); %Logic to keep track of points that are used
 
-%Initiate plot handles if plotting is on
-if plotOn==1
-    h1=[];
-    h2=[];
-    h3=[];
-end
-
 %Initialize other parameters
 Fn=[]; %Faces
 Cn=[]; %"Colors"=step count for face group
@@ -57,8 +50,12 @@ c=1; %While loop counter variable
 
 indGroup=startInd(:); %Initialize current group
 numGroup=numel(indGroup); %Initialize current number of members of the current group
+numGroupPrevious=0;
 
 if plotOn==1
+    h1=[]; %Initiate empty plot handle
+    markerSize=25;
+    
     hf=cFigure; hold on;
     gpatch(F1,V1,'r','none',0.2);
     gpatch(F2,V2,'b','none',0.2);
@@ -75,30 +72,23 @@ end
 %Turn off Delaunay warning as this case is handled properly
 warning('off','MATLAB:delaunayTriangulation:ConsConsSplitWarnId');
 
+%%
 while 1
-
-    %%
     
+    numGroupStep=1;
+    lastTry=0;
     while 1
         try
             
             if plotOn==1 %%Plot if plotting is on
                 delete(h1); h1=[];
-                delete(h2); h2=[];
-                delete(h3); h3=[];
             end
             
             if plotOn==1 %%Plot if plotting is on
                 figure(hf);
-                h3(2)=plotV(V(startInd,:),'y.','MarkerSize',60);
-                if ~isempty(Fn)
-                    h3(3)=gpatch(Fn,V,'kw','k',0.5);
-                    h3(4)=patchNormPlot(Fn,V);
-                    h3(3)=plotV(V(logicNotUsed,:),'go','MarkerSize',20);
-                end
-                drawnow;
+                h1(end+1)=plotV(V(startInd,:),'y.','MarkerSize',markerSize);
+                drawnow
             end
-            
             
             %Grow the current region
             while 1 %Loop to form local group (stuff attached to current group within a given distance)
@@ -163,14 +153,14 @@ while 1
                 
                 if plotOn==1 %%Plot if plotting is on
                     figure(hf);
-                    h1(1)=plotV(V(indEndPoints1,:),'r.','MarkerSize',50);
-                    h1(2)=plotV(V(indEndPoints2,:),'b.','MarkerSize',50);
-                    h1(3)=plotV(V(indListSub1,:),'r-','LineWidth',3);
-                    h1(4)=plotV(V(indListSub2,:),'b-','LineWidth',3);
-                    h1(5)=plotV(V(indListSub,:),'k-','LineWidth',2);
-                    drawnow;
+                    h1(end+1)=plotV(V(indEndPoints1,:),'r.','MarkerSize',markerSize);
+                    h1(end+1)=plotV(V(indEndPoints2,:),'b.','MarkerSize',markerSize);
+                    h1(end+1)=plotV(V(indListSub1,:),'r-','LineWidth',3);
+                    h1(end+1)=plotV(V(indListSub2,:),'b-','LineWidth',3);
+                    h1(end+1)=plotV(V(indListSub,:),'k-','LineWidth',2);      
+                    drawnow
                 end
-                
+  
                 %Rotate current point set
                 V_now=V(indListSub(1:end-1),:); %Current closed curve coordinate set
                 [R]=pointSetPrincipalDir(V_now); %Fit local coordinate system with 3rd direction pointing outward of local planar-ish region
@@ -197,21 +187,28 @@ while 1
                     logicNeighbours=sum(IND_FF>1,2)>1;
                     logicNeighbours(any(ismember(f,startInd),2))=1;
                     f=f(logicNeighbours,:);
-                end
-                
+                end                
             else
                 f=unique([indGroup(:); startInd(:)])';
             end
             
             break
             
-        catch
+        catch ME
+            if lastTry==1                
+                rethrow(ME)
+            end
+            
+            if numGroupStep==numGroupPrevious
+                lastTry=1;                
+            end
             distLocal=distLocal+maxD;
+            disp(['Failed using current step size, increasing to: ',num2str(distLocal)]);
+            numGroupPrevious=numGroupStep;            
         end        
     end    
     distLocal=inputStruct.distLocal; %reset
     
-    %%
     if dot(mean(patchNormal(f,V),1),mean(Nv(indListSub(1:end-1),:),1))<0
         f=fliplr(f);
     end
@@ -219,21 +216,17 @@ while 1
     if plotOn==1 %%Plot if plotting is on
         figure(hf);
         V_now_mean=mean(V_now); %Mean of coordinate set
-        h2(1)=plotV(V_now_mean,'kx','MarkerSize',15);
-        h2(2)=gpatch(f,V,'r','k',0.5);
-        h2(3)=patchNormPlot(f,V);        
-        plotV(V(startInd,:),'c.','MarkerSize',50);        
-        drawnow;
+        h1(end+1)=plotV(V_now_mean,'kx','MarkerSize',markerSize);
+        gpatch(f,V,c*ones(size(f,1),1),'k',1);        
+        drawnow
     end
     
     %Collect faces and color data
     Fn=[Fn;f];
-    Cn=[Cn;c*ones(size(f,1),1)];
+    Cn=[Cn;c*ones(size(f,1),1)];    
     
-    %Get new start points
-    indUsedNow=unique(Fn);
-    
-    %%
+%     indUsedNow=unique(Fn);
+        
     E_Fn=sort(patchEdges(Fn,0),2);
     ind_E_Fn= reshape(sub2indn(size(V,1)*ones(1,2),E_Fn),size(Fn));
     
@@ -267,15 +260,7 @@ while 1
         startInd=[indListSub1(end) indListSub2(end)];
     end
     
-    %%
-    if plotOn==1 %%Plot if plotting is on
-        figure(hf);
-        h2(3)=plotV(V(logicNotUsed,:),'go','MarkerSize',20);
-        h2(4)=plotV(V(startInd,:),'y.','MarkerSize',60);
-    end
-    
-    c=c+1;
-    
+    c=c+1;    
 end
 
 F=[F;Fn];
