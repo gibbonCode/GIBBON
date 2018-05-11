@@ -326,7 +326,7 @@ febio_spec.Geometry.SurfacePair{1}.slave.ATTR.surface='Surface2';
 febio_spec.MeshData.ElementData{1}.ATTR.var='Shell thickness';
 febio_spec.MeshData.ElementData{1}.ATTR.elem_set='part1';
 febio_spec.MeshData.ElementData{1}.elem.ATTR.lid=(1:2)';
-febio_spec.MeshData.ElementData{1}.elem.VAL=round(100*rand(2,7));
+febio_spec.MeshData.ElementData{1}.elem.VAL=round(100*rand(2,4));
 
 febio_spec.MeshData.ElementData{2}.ATTR.var='pre_stretch';
 febio_spec.MeshData.ElementData{2}.ATTR.elem_set='part2';
@@ -528,6 +528,7 @@ optionStruct.arrayParseMethod=1;
 %%
 % |[hFig]=febView(fileName);|
 
+febView(febio_spec)
 %% 
 %
 % <<gibbVerySmall.gif>>

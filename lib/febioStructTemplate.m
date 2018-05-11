@@ -18,7 +18,7 @@ febio_spec.Module.ATTR.type='solid'; %Use default set
 %% Control section
 
 febio_spec.Control.analysis.ATTR.type='static';
-febio_spec.Control.title='temp';
+% febio_spec.Control.title='temp';
 febio_spec.Control.time_steps=10;
 febio_spec.Control.step_size=0.1;
 febio_spec.Control.dtol=0.001;

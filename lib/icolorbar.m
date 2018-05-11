@@ -57,8 +57,6 @@ else
     end
 end
 
-figure(hf);  
-
 %Get colormap
 if isprop(h,'Colormap') %Available in MATLAB 2018  
     c=h.Colormap;

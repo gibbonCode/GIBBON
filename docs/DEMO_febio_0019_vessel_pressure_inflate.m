@@ -1,7 +1,7 @@
-%% DEMO_febio_0004_beam_twist
+%% DEMO_febio_0019_vessel_pressure_inflate
 % Below is a demonstration for:
 % 
-% * Building geometry for a beam with hexahedral elements
+% * Building geometry for a cylindrical vessel with tetrahedral elements
 % * Defining the boundary conditions 
 % * Coding the febio structure
 % * Running the model
@@ -11,11 +11,11 @@
 %
 % * febio_spec version 2.5
 % * febio, FEBio
-% * beam torsion twist loading
-% * prescribed displacement boundary condition
-% * hexahedral elements, hex8
-% * beam, rectangular
-% * static, solid, multi-step
+% * vessel, cylinder
+% * prescribed pressure
+% * tetrahedral elements, tet4
+% * tube, cylindrical
+% * static, solid
 % * hyperelastic, Ogden
 % * displacement logfile
 % * stress logfile
@@ -43,19 +43,17 @@ febioLogFileName=fullfile(savePath,[febioFebFileNamePart,'.txt']); %FEBio log fi
 febioLogFileName_disp=[febioFebFileNamePart,'_disp_out.txt']; %Log file name for exporting force
 febioLogFileName_force=[febioFebFileNamePart,'_force_out.txt']; %Log file name for exporting force
 
-%Specifying dimensions and number of elements
-beamWidth=10; 
-sampleWidth=beamWidth; %Width 
-sampleThickness=4*beamWidth; %Thickness 
-sampleHeight=beamWidth; %Height
-pointSpacings=2*ones(1,3); %Desired point spacing between nodes
-numElementsWidth=round(sampleWidth/pointSpacings(1)); %Number of elemens in dir 1
-numElementsThickness=round(sampleThickness/pointSpacings(2)); %Number of elemens in dir 2
-numElementsHeight=round(sampleHeight/pointSpacings(3)); %Number of elemens in dir 3
+%Specifying geometry parameters
+pointSpacing=1; 
+radiusOuter1=10;
+radiusInner1=9;
+radiusOuter2=9;
+radiusInner2=7;
+vesselLength=60;
+nKeep=5; %Number of decimal places used for merging nodes
 
-%Define applied torsion angle
-alphaRotTotal=2*pi;%0.5*pi; %Total twist angle
-numSteps=50; %Number of steps
+%Load
+pressureValue=3e-4; 
 
 %Material parameter set
 c1=1e-3; %Shear-modulus-like parameter
@@ -64,70 +62,133 @@ k_factor=1e2; %Bulk modulus factor
 k=c1*k_factor; %Bulk modulus
 
 % FEA control settings
-numTimeSteps=1; %Number of time steps desired
+numTimeSteps=10; %Number of time steps desired
 max_refs=25; %Max reforms
 max_ups=0; %Set to zero to use full-Newton iterations
-opt_iter=10; %Optimum number of iterations
+opt_iter=6; %Optimum number of iterations
 max_retries=5; %Maximum number of retires
 dtmin=(1/numTimeSteps)/100; %Minimum time step size
 dtmax=1/numTimeSteps; %Maximum time step size
 
-%% Creating model geometry and mesh
-% A box is created with tri-linear hexahedral (hex8) elements using the
-% |hexMeshBox| function. The function offers the boundary faces with
-% seperate labels for the top, bottom, left, right, front, and back sides.
-% As such these can be used to define boundary conditions on the exterior. 
+%% Creating model boundary polygons
+%
 
-% Create a box with hexahedral elements
-beamDimensions=[sampleWidth sampleThickness sampleHeight]; %Dimensions
-beamElementNumbers=[numElementsWidth numElementsThickness numElementsHeight]; %Number of elements
-outputStructType=2; %A structure compatible with mesh view
-[meshStruct]=hexMeshBox(beamDimensions,beamElementNumbers,outputStructType);
+nRad=round((2*pi*mean([radiusOuter1 radiusOuter2]))/pointSpacing); %Number of radial steps
 
-%Access elements, nodes, and faces from the structure
-E=meshStruct.elements; %The elements 
-V=meshStruct.nodes; %The nodes (vertices)
-Fb=meshStruct.facesBoundary; %The boundary faces
-Cb=meshStruct.boundaryMarker; %The "colors" or labels for the boundary faces
-elementMaterialIndices=ones(size(E,1),1); %Element material indices
+t=linspace(0,2*pi,nRad)'; %Angles
+t=t(1:end-1); %take away last which equals start
+v1_Outer=[-(vesselLength/2)*ones(size(t)) radiusOuter1*sin(t) radiusOuter1*cos(t)]; %Circular coordinates
+
+t=linspace(0,2*pi,nRad)'; %Angles
+t=t(1:end-1); %take away last which equals start
+v2_Outer=[(vesselLength/2)*ones(size(t)) radiusOuter2*sin(t) radiusOuter2*cos(t)]; %Circular coordinates
+
+nRad=round((2*pi*mean([radiusInner1 radiusInner2]))/pointSpacing); %Number of radial steps
+
+t=linspace(0,2*pi,nRad)'; %Angles
+t=t(1:end-1); %take away last which equals start
+v1_Inner=[-(vesselLength/2)*ones(size(t)) radiusInner1*sin(t) radiusInner1*cos(t)]; %Circular coordinates
+
+t=linspace(0,2*pi,nRad)'; %Angles
+t=t(1:end-1); %take away last which equals start
+v2_Inner=[(vesselLength/2)*ones(size(t)) radiusInner2*sin(t) radiusInner2*cos(t)]; %Circular coordinates
 
 %% 
-% Plotting model boundary surfaces and a cut view
+% Plotting model boundary polygons
 
-hFig=cFigure; 
-
-subplot(1,2,1); hold on; 
-title('Model boundary surfaces and labels','FontSize',fontSize);
-gpatch(Fb,V,Cb,'k',faceAlpha1); 
-colormap(gjet(6)); icolorbar;
-axisGeom(gca,fontSize);
-
-hs=subplot(1,2,2); hold on; 
-title('Cut view of solid mesh','FontSize',fontSize);
-optionStruct.hFig=[hFig hs];
-meshView(meshStruct,optionStruct);
+cFigure; 
+hold on; 
+title('Model boundary polygons','FontSize',fontSize);
+plotV(v1_Outer,'r.-')
+plotV(v1_Inner,'g.-')
+plotV(v2_Outer,'b.-')
+plotV(v2_Inner,'y.-')
 axisGeom(gca,fontSize);
 
 drawnow;
+
+%% Creating model boundary surfaces
+
+% controlStructLoft.numSteps=17; 
+controlStructLoft.closeLoopOpt=1; 
+controlStructLoft.patchType='tri';
+
+%Meshing outer surface
+[F1,V1]=polyLoftLinear(v1_Outer,v2_Outer,controlStructLoft); 
+F1=fliplr(F1); %Invert orientation
+
+%Meshing inner surface
+[F2,V2]=polyLoftLinear(v1_Inner,v2_Inner,controlStructLoft); 
+
+%Meshing left
+[F3,V3]=regionTriMesh3D({v1_Outer,v1_Inner},pointSpacing,0,'linear');
+F3=fliplr(F3); %Invert orientation
+
+%Meshing right
+[F4,V4]=regionTriMesh3D({v2_Outer,v2_Inner},pointSpacing,0,'linear');
+
+%Merging surface sets
+[Fv,Vv,Cv]=joinElementSets({F1,F2,F3,F4},{V1,V2,V3,V4});
+[Fv,Vv]=mergeVertices(Fv,Vv,nKeep);
+Fv=fliplr(Fv);
+
+%%
+% Plotting model boundary surfaces
+
+cFigure; 
+hold on; 
+title('Model boundary surfaces','FontSize',fontSize);
+
+gpatch(Fv,Vv,Cv);
+% patchNormPlot(Fv,Vv);
+
+icolorbar; 
+colormap(gjet(4)); 
+
+axisGeom(gca,fontSize);
+camlight headlight;
+drawnow;
+
+%% Tetrahedral meshing of vessel
+% 
+
+faceBoundaryMarker=Cv;
+[V_regions]=getInnerPoint(Fv,Vv);
+[regionA]=tetVolMeanEst(Fv,Vv); %Volume for regular tets
+stringOpt='-pq1.2AaY';
+
+inputStruct.stringOpt=stringOpt;
+inputStruct.Faces=Fv;
+inputStruct.Nodes=Vv;
+inputStruct.holePoints=[];
+inputStruct.faceBoundaryMarker=faceBoundaryMarker; %Face boundary markers
+inputStruct.regionPoints=V_regions; %region points
+inputStruct.regionA=regionA;
+inputStruct.minRegionMarker=2; %Minimum region marker
+
+% Mesh model using tetrahedral elements using tetGen
+[meshOutput]=runTetGen(inputStruct); %Run tetGen 
+
+%% 
+% Access model element and patch data
+Fb=meshOutput.facesBoundary;
+Cb=meshOutput.boundaryMarker;
+V=meshOutput.nodes;
+CE=meshOutput.elementMaterialID;
+E=meshOutput.elements;
+
+%% 
+% Visualizing mesh using |meshView|, see also |anim8|
+meshView(meshOutput,[]);
 
 %% Defining the boundary conditions
 % The visualization of the model boundary shows colors for each side of the
 % cube. These labels can be used to define boundary conditions. 
 
 %Define supported node set
-logicFace=Cb==4; %Logic for current face set
-Fr=Fb(logicFace,:); %The current face set
-bcSupportList=unique(Fr(:)); %Node set part of selected face
+bcSupportList=unique(Fb(ismember(Cb,[3 4]),:)); %Node set part of selected face
 
-%Prescribed force nodes
-logicPrescribe=Cb==3; %Logic for current face set
-Fr=Fb(logicPrescribe,:); %The current face set
-bcPrescribeList=unique(Fr(:)); %Node set part of selected face
-
-%Rotational settings
-alphaRotStep=alphaRotTotal/numSteps; %The angular increment for each step
-R=euler2DCM([0 alphaRotStep 0]); %The rotation tensor for each step
-V2=V*R; %Rotated 1 part for visualization of stepwise amount
+F_pressure=fliplr(Fb(Cb==2,:));
 
 %% 
 % Visualizing boundary conditions. Markers plotted on the semi-transparent
@@ -141,10 +202,9 @@ hold on;
 gpatch(Fb,V,'kw','k',0.5);
 
 hl(1)=plotV(V(bcSupportList,:),'k.','MarkerSize',markerSize);
-hl(2)=plotV(V(bcPrescribeList,:),'r.','MarkerSize',markerSize);
-hl(3)=plotV(V2(bcPrescribeList,:),'g.','MarkerSize',markerSize);
+hl(2)=gpatch(F_pressure,V,'rw','r',0.5);
 
-legend(hl,{'BC support','BC prescribe','BC prescribe 1 step'});
+legend(hl,{'BC support','Pressure surface'});
 
 axisGeom(gca,fontSize);
 camlight headlight; 
@@ -163,22 +223,16 @@ febio_spec.ATTR.version='2.5';
 %Module section
 febio_spec.Module.ATTR.type='solid'; 
 
-%Create control structure for use by all steps
-stepStruct.Control.analysis.ATTR.type='static';
-stepStruct.Control.time_steps=numTimeSteps;
-stepStruct.Control.step_size=1/numTimeSteps;
-stepStruct.Control.time_stepper.dtmin=dtmin;
-stepStruct.Control.time_stepper.dtmax=dtmax; 
-stepStruct.Control.time_stepper.max_retries=max_retries;
-stepStruct.Control.time_stepper.opt_iter=opt_iter;
-stepStruct.Control.max_refs=max_refs;
-stepStruct.Control.max_ups=max_ups;
-
-%Add template based default settings to proposed control section
-[stepStruct.Control]=structComplete(stepStruct.Control,febio_spec.Control,1); %Complement provided with default if missing
-
-%Remove control field (part of template) since step specific control sections are used
-febio_spec=rmfield(febio_spec,'Control'); 
+%Control section
+febio_spec.Control.analysis.ATTR.type='static';
+febio_spec.Control.time_steps=numTimeSteps;
+febio_spec.Control.step_size=1/numTimeSteps;
+febio_spec.Control.time_stepper.dtmin=dtmin;
+febio_spec.Control.time_stepper.dtmax=dtmax; 
+febio_spec.Control.time_stepper.max_retries=max_retries;
+febio_spec.Control.time_stepper.opt_iter=opt_iter;
+febio_spec.Control.max_refs=max_refs;
+febio_spec.Control.max_ups=max_ups;
 
 %Material section
 febio_spec.Material.material{1}.ATTR.type='Ogden';
@@ -196,9 +250,9 @@ febio_spec.Geometry.Nodes{1}.node.ATTR.id=(1:size(V,1))'; %The node id's
 febio_spec.Geometry.Nodes{1}.node.VAL=V; %The nodel coordinates
 
 % -> Elements
-febio_spec.Geometry.Elements{1}.ATTR.type='hex8'; %Element type of this set
+febio_spec.Geometry.Elements{1}.ATTR.type='tet4'; %Element type of this set
 febio_spec.Geometry.Elements{1}.ATTR.mat=1; %material index for this set 
-febio_spec.Geometry.Elements{1}.ATTR.name='Beam'; %Name of the element set
+febio_spec.Geometry.Elements{1}.ATTR.name='Vessel'; %Name of the element set
 febio_spec.Geometry.Elements{1}.elem.ATTR.id=(1:1:size(E,1))'; %Element id's
 febio_spec.Geometry.Elements{1}.elem.VAL=E;
 
@@ -206,54 +260,10 @@ febio_spec.Geometry.Elements{1}.elem.VAL=E;
 febio_spec.Geometry.NodeSet{1}.ATTR.name='bcSupportList';
 febio_spec.Geometry.NodeSet{1}.VAL=bcSupportList(:);
 
-febio_spec.Geometry.NodeSet{2}.ATTR.name='bcPrescribeList';
-febio_spec.Geometry.NodeSet{2}.VAL=bcPrescribeList(:);
-
-
-%Create steps
-V2=V; %Coordinate set
-nodeSetName=febio_spec.Geometry.NodeSet{2}.ATTR.name;
-febio_spec.MeshData.NodeData=[];%Initialize so we can use end+1 indexing
-bcNames={'x','y','z'};
-for q=1:1:numSteps
-    %Step specific control section
-    febio_spec.Step{q}.ATTR.id=q; 
-    febio_spec.Step{q}.Control=stepStruct.Control; 
-    
-    %Rotate coordinates
-    V2n=V2; %The current set
-    V2=V2*R; %Rotated further
-    
-    %Define prescribed displacements
-    bcPrescribeMagnitudesStep=V2(bcPrescribeList,:)-V2n(bcPrescribeList,:);
-
-    %Define mesh data and presrived displacements
-    for q_dir=1:1:3 %Loop over coordinates dimensions        
-        
-        %Define mesh data for displacement increments
-        c=numel(febio_spec.MeshData.NodeData)+1; %Current step index
-        febio_spec.MeshData.NodeData{c}.ATTR.name=['displacement_',bcNames{q_dir},'_step_',num2str(q)];
-        febio_spec.MeshData.NodeData{c}.ATTR.node_set=nodeSetName;
-        febio_spec.MeshData.NodeData{c}.node.ATTR.lid=(1:1:numel(bcPrescribeList))';
-        febio_spec.MeshData.NodeData{c}.node.VAL=bcPrescribeMagnitudesStep(:,q_dir);
-        
-        %Define prescribed displacements 
-        febio_spec.Step{q}.Boundary.prescribe{q_dir}.ATTR.bc=bcNames{q_dir};
-        febio_spec.Step{q}.Boundary.prescribe{q_dir}.ATTR.relative=1;
-        febio_spec.Step{q}.Boundary.prescribe{q_dir}.ATTR.node_set=nodeSetName;
-        febio_spec.Step{q}.Boundary.prescribe{q_dir}.scale.ATTR.lc=1;
-        febio_spec.Step{q}.Boundary.prescribe{q_dir}.scale.VAL=1;
-        febio_spec.Step{q}.Boundary.prescribe{q_dir}.relative=1;
-        febio_spec.Step{q}.Boundary.prescribe{q_dir}.value.ATTR.node_data=febio_spec.MeshData.NodeData{c}.ATTR.name;
-    end
-    
-%     febio_spec.Step{q}.Boundary.Prescribe{3}.Set=bcPrescribeList;
-%     febio_spec.Step{q}.Boundary.Prescribe{3}.bc='z';
-%     febio_spec.Step{q}.Boundary.Prescribe{3}.lc=1;
-%     febio_spec.Step{q}.Boundary.Prescribe{3}.nodeScale=bcPrescribeMagnitudesStep(:,3);
-%     febio_spec.Step{q}.Boundary.Prescribe{3}.Type='relative';
-
-end
+% -> Surfaces
+febio_spec.Geometry.Surface{1}.ATTR.name='Pressure_surface';
+febio_spec.Geometry.Surface{1}.tri3.ATTR.lid=(1:size(F_pressure,1))';
+febio_spec.Geometry.Surface{1}.tri3.VAL=F_pressure;
 
 %Boundary condition section 
 % -> Fix boundary conditions
@@ -263,6 +273,12 @@ febio_spec.Boundary.fix{2}.ATTR.bc='y';
 febio_spec.Boundary.fix{2}.ATTR.node_set=febio_spec.Geometry.NodeSet{1}.ATTR.name;
 febio_spec.Boundary.fix{3}.ATTR.bc='z';
 febio_spec.Boundary.fix{3}.ATTR.node_set=febio_spec.Geometry.NodeSet{1}.ATTR.name;
+
+%Loads
+febio_spec.Loads.surface_load{1}.ATTR.type='pressure';
+febio_spec.Loads.surface_load{1}.ATTR.surface=febio_spec.Geometry.Surface{1}.ATTR.name;
+febio_spec.Loads.surface_load{1}.pressure.VAL=pressureValue;
+febio_spec.Loads.surface_load{1}.pressure.ATTR.lc=1;
 
 %Output section 
 % -> log file
@@ -283,6 +299,7 @@ febio_spec.Output.logfile.node_data{2}.VAL=1:size(V,1);
 
 %%
 % |febView(febio_spec); %Viewing the febio file|
+% febView(febio_spec)
 
 %% Exporting the FEBio input file
 % Exporting the febio_spec structure to an FEBio input file is done using
