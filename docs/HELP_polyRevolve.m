@@ -107,7 +107,7 @@ Vc=[x(:) y(:) z(:)];
 W=eye(3,3);
 
 cFigure;
-suptitle('Variation of the rotation axis')
+gtitle('Variation of the rotation axis',fontSize);
 for q=1:1:size(W,1)
     
     cPar.w=W(q,:);
@@ -147,7 +147,7 @@ cPar.w=[0 0 1];
 cPar.closeLoopOpt=0; %Do not close feature
 
 cFigure;
-suptitle('Variation of the rotation angle')
+gtitle('Variation of the rotation angle',fontSize);
 for q=1:1:size(W,1)
     
     cPar.theta=T(q);

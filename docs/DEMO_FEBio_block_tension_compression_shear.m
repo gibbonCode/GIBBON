@@ -403,7 +403,7 @@ if runFlag==1 %i.e. a succesful run
     %% Plotting force data
     
     cFigure; 
-    ht=suptitle('Force history curves');
+    ht=gtitle('Force history curves');
     ht.FontSize=fontSize;
     
     subplot(1,3,1); hold on;

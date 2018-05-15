@@ -6,7 +6,7 @@
    <!--
 This HTML was auto-generated from MATLAB code.
 To make changes, update the MATLAB code and republish this document.
-      --><title>element2lattice</title><meta name="generator" content="MATLAB 9.4"><link rel="schema.DC" href="http://purl.org/dc/elements/1.1/"><meta name="DC.date" content="2018-04-03"><meta name="DC.source" content="HELP_element2lattice.m"><style type="text/css">
+      --><title>element2lattice</title><meta name="generator" content="MATLAB 9.4"><link rel="schema.DC" href="http://purl.org/dc/elements/1.1/"><meta name="DC.date" content="2018-05-15"><meta name="DC.source" content="HELP_element2lattice.m"><style type="text/css">
 html,body,div,span,applet,object,iframe,h1,h2,h3,h4,h5,h6,p,blockquote,pre,a,abbr,acronym,address,big,cite,code,del,dfn,em,font,img,ins,kbd,q,s,samp,small,strike,strong,sub,sup,tt,var,b,u,i,center,dl,dt,dd,ol,ul,li,fieldset,form,label,legend,table,caption,tbody,tfoot,thead,tr,th,td{margin:0;padding:0;border:0;outline:0;font-size:100%;vertical-align:baseline;background:transparent}body{line-height:1}ol,ul{list-style:none}blockquote,q{quotes:none}blockquote:before,blockquote:after,q:before,q:after{content:'';content:none}:focus{outine:0}ins{text-decoration:none}del{text-decoration:line-through}table{border-collapse:collapse;border-spacing:0}
 
 html { min-height:100%; margin-bottom:1px; }
@@ -66,7 +66,7 @@ table td { padding:7px 5px; text-align:left; vertical-align:top; border:1px soli
 
 
 
-  </style></head><body><div class="content"><h1>element2lattice</h1><!--introduction--><p>Below is a demonstration of the features of the <tt>element2lattice</tt> function</p><!--/introduction--><h2>Contents</h2><div><ul><li><a href="#2">Syntax</a></li><li><a href="#3">Description</a></li><li><a href="#4">Examples</a></li><li><a href="#6">Example: Creating a lattice structure on a hexahedral element</a></li><li><a href="#10">Example: Different lattice sides</a></li><li><a href="#13">Example: Refining the lattice structure</a></li><li><a href="#15">Example: Creating a lattice structure on tetrahedral elements</a></li><li><a href="#19">Example: Different lattice sides</a></li><li><a href="#22">Example: Changing lattice strut thickness (and porosity)</a></li><li><a href="#24">Example: Changing output surface mesh type</a></li><li><a href="#26">Example: Exportin hexahedral elements instead of surface elements</a></li><li><a href="#28">Example: Creating lattice structure variations through input mesh conversion/subdevission</a></li><li><a href="#29">Example: Create lattice structures on arbitry input meshes</a></li></ul></div><pre class="codeinput">clear; close <span class="string">all</span>; clc;
+  </style></head><body><div class="content"><h1>element2lattice</h1><!--introduction--><p>Below is a demonstration of the features of the <tt>element2lattice</tt> function</p><!--/introduction--><h2>Contents</h2><div><ul><li><a href="#2">Syntax</a></li><li><a href="#3">Description</a></li><li><a href="#4">Examples</a></li><li><a href="#6">Example: Creating a lattice structure on a hexahedral element</a></li><li><a href="#10">Example: Different lattice sides</a></li><li><a href="#13">Example: Refining the lattice structure</a></li><li><a href="#15">Example: Creating a lattice structure on tetrahedral elements</a></li><li><a href="#19">Example: Different lattice sides</a></li><li><a href="#22">Example: Changing lattice strut thickness (and porosity)</a></li><li><a href="#24">Example: Changing output surface mesh type</a></li><li><a href="#26">Example: Exporting hexahedral elements instead of surface elements</a></li><li><a href="#29">Example: Creating lattice structure variations through input mesh conversion/subdevission</a></li><li><a href="#30">Example: Create lattice structures on arbitry input meshes</a></li></ul></div><pre class="codeinput">clear; close <span class="string">all</span>; clc;
 </pre><h2 id="2">Syntax</h2><p><tt>[Es,Vs,Cs]=element2lattice(E,V,cPar);</tt></p><h2 id="3">Description</h2><p>This function converts an element description (elements and vertices i.e nodes into a lattice structure. The lattice structure is returned as a hexahederal mesh.</p><h2 id="4">Examples</h2><p>Plot settings</p><pre class="codeinput">cMap=gjet(4);
 fontSize=15;
 </pre><h2 id="6">Example: Creating a lattice structure on a hexahedral element</h2><p>Creating example geometry.</p><pre class="codeinput">boxDim=[1 1 1];
@@ -143,7 +143,7 @@ axis(ha); axis <span class="string">off</span>;
 
 drawnow;
 </pre><img vspace="5" hspace="5" src="HELP_element2lattice_02.png" alt=""> <h2 id="13">Example: Refining the lattice structure</h2><p>Refining a lattice structure by first refining the input mesh</p><pre class="codeinput">cFigure;
-suptitle(<span class="string">'Lattice structure refinement'</span>)
+gtitle(<span class="string">'Lattice structure refinement'</span>,fontSize);
 
 <span class="keyword">for</span> q=1:4
     <span class="keyword">if</span> q&gt;1
@@ -247,7 +247,7 @@ shrinkFactorSet=linspace(0.1,0.5,4);
 <span class="keyword">for</span> latticeSide=1:2
     controlParameter.latticeSide=latticeSide;
     cFigure;
-    suptitle(<span class="string">'Lattice structure porosity control'</span>);
+    gtitle(<span class="string">'Lattice structure porosity control'</span>,fontSize);
 
     <span class="keyword">for</span> q=1:4
         controlParameter.shrinkFactor=shrinkFactorSet(q); <span class="comment">%Strut sides are formed by shrinking the input mesh faces by this facto</span>
@@ -283,7 +283,7 @@ controlParameter.indBoundary=indBoundary; <span class="comment">%indices of the 
 controlParameter.shrinkFactor=0.3;
 
 cFigure;
-suptitle(<span class="string">'Lattice structure mesh output type control'</span>);
+gtitle(<span class="string">'Lattice structure mesh output type control'</span>,fontSize);
 
 <span class="keyword">for</span> q=1:numel(meshTypeSet)
     controlParameter.meshType=meshTypeSet{q}; <span class="comment">%The current mesh type</span>
@@ -299,7 +299,7 @@ suptitle(<span class="string">'Lattice structure mesh output type control'</span
     camlight <span class="string">headlight</span>; lighting <span class="string">flat</span>;
 <span class="keyword">end</span>
 drawnow;
-</pre><img vspace="5" hspace="5" src="HELP_element2lattice_08.png" alt=""> <h2 id="26">Example: Exportin hexahedral elements instead of surface elements</h2><p>The <tt>element2patch</tt> function can also be used to export hexahedral elements directly by setting the meshType parameter to 'hex'. Furthermore, it is possible to subdevide the ellongated hexahedral elements using a certain number of split iterations. Below is an example of hexahedral element output with increasing number of split iterations used for the ellongated hexahedral elements.</p><pre class="codeinput">boxDim=[1 1 1];
+</pre><img vspace="5" hspace="5" src="HELP_element2lattice_08.png" alt=""> <h2 id="26">Example: Exporting hexahedral elements instead of surface elements</h2><p>The <tt>element2patch</tt> function can also be used to export hexahedral elements directly by setting the meshType parameter to 'hex'. Furthermore, it is possible to subdevide the ellongated hexahedral elements using a certain number of split iterations. Below is an example of hexahedral element output with increasing number of split iterations used for the ellongated hexahedral elements.</p><pre class="codeinput">boxDim=[1 1 1];
 boxEl=[1 1 1];
 [meshStruct]=hexMeshBox(boxDim,boxEl);
 E=meshStruct.E;
@@ -318,7 +318,7 @@ controlParameter.meshType=<span class="string">'hex'</span>;
 
 hexSplitSet=[0 1 2];
 cFigure;
-suptitle(<span class="string">'Lattice structure hex element output and element mesh refinement'</span>);
+gtitle(<span class="string">'Lattice structure hex element output and element mesh refinement'</span>,fontSize);
 
 c=1; <span class="comment">%counter for plotting</span>
 <span class="keyword">for</span> latticeSide=1:2
@@ -341,7 +341,53 @@ c=1; <span class="comment">%counter for plotting</span>
     <span class="keyword">end</span>
 <span class="keyword">end</span>
 drawnow;
-</pre><img vspace="5" hspace="5" src="HELP_element2lattice_09.png" alt=""> <h2 id="28">Example: Creating lattice structure variations through input mesh conversion/subdevission</h2><pre class="codeinput">cPar.shrinkFactor=0.25;
+</pre><img vspace="5" hspace="5" src="HELP_element2lattice_09.png" alt=""> <pre class="codeinput">[V,F]=platonic_solid(1,1);
+E=[1 2 4 3];
+
+<span class="comment">%</span>
+<span class="comment">% boxDim=[1 1 1];</span>
+<span class="comment">% boxEl=[1 1 1];</span>
+<span class="comment">% [meshStruct]=hexMeshBox(boxDim,boxEl);</span>
+<span class="comment">% E=meshStruct.E;</span>
+<span class="comment">% V=meshStruct.V;</span>
+<span class="comment">% F=meshStruct.F;</span>
+[indBoundary]=tesBoundary(F,V);
+
+clear <span class="string">controlParameter</span>
+
+<span class="comment">% Create lattice structure</span>
+controlParameter.latticeSide=2;
+controlParameter.numDigitKeep=5; <span class="comment">%used for merging nodes</span>
+controlParameter.indBoundary=indBoundary; <span class="comment">%indices of the boundary faces</span>
+controlParameter.shrinkFactor=0.25;
+controlParameter.meshType=<span class="string">'hex'</span>;
+
+hexSplitSet=[0 1 2];
+cFigure;
+gtitle(<span class="string">'Lattice structure hex element output and element mesh refinement'</span>,fontSize);
+
+c=1; <span class="comment">%counter for plotting</span>
+<span class="keyword">for</span> latticeSide=1:2
+    controlParameter.latticeSide=latticeSide;
+    <span class="keyword">for</span> q=1:numel(hexSplitSet)
+        controlParameter.hexSplit=hexSplitSet(q); <span class="comment">%The current mesh type</span>
+
+        [Es1,Vs1,Cs1]=element2lattice(E,V,controlParameter); <span class="comment">%Get lattice structure</span>
+
+        [Fs1,Cs1F]=element2patch(Es1,Cs1); <span class="comment">%Patch data for plotting</span>
+
+        <span class="comment">% Visualizing input mesh and lattice structures</span>
+        subplot(2,numel(hexSplitSet),c);
+        hold <span class="string">on</span>; title([<span class="string">'hexSplit='</span>,num2str(hexSplitSet(q))]);
+        gpatch(Fs1,Vs1,Cs1F,<span class="string">'k'</span>,0.8,2);
+        colormap(gjet(250));
+        axisGeom(gca,fontSize);
+        camlight <span class="string">headlight</span>; lighting <span class="string">flat</span>;
+        c=c+1;
+    <span class="keyword">end</span>
+<span class="keyword">end</span>
+drawnow;
+</pre><img vspace="5" hspace="5" src="HELP_element2lattice_10.png" alt=""> <h2 id="29">Example: Creating lattice structure variations through input mesh conversion/subdevission</h2><pre class="codeinput">cPar.shrinkFactor=0.25;
 cPar.numDigitKeep=5;
 cPar.meshType=<span class="string">'quad'</span>;
 
@@ -394,22 +440,22 @@ c=1;
         cPar.indBoundary=indBoundary;
         [Fn,Vn,Cn]=element2lattice(E,V,cPar);
 
-        <span class="comment">%Refine mesh</span>
-        [Fn,Vn]=subQuad(Fn,Vn,1);
-        Cn=repmat(Cn,[4 1]); <span class="comment">%Replicate color info</span>
-
-        <span class="comment">%Smoothen</span>
-        indRigid=Fn(Cn==1,:);
-        indRigid=unique(indRigid(:)); <span class="comment">%Indices for boundary elements to hold on to</span>
-        cParSmooth.RigidConstraints=indRigid;
-        <span class="keyword">if</span> cParSmooth.n&gt;0
-            [Vn]=tesSmooth(Fn,Vn,[],cParSmooth); <span class="comment">%Smoothen mesh</span>
-        <span class="keyword">end</span>
+<span class="comment">%         %Refine mesh</span>
+<span class="comment">%         [Fn,Vn]=subQuad(Fn,Vn,1);</span>
+<span class="comment">%         Cn=repmat(Cn,[4 1]); %Replicate color info</span>
+<span class="comment">%</span>
+<span class="comment">%         %Smoothen</span>
+<span class="comment">%         indRigid=Fn(Cn==1,:);</span>
+<span class="comment">%         indRigid=unique(indRigid(:)); %Indices for boundary elements to hold on to</span>
+<span class="comment">%         cParSmooth.RigidConstraints=indRigid;</span>
+<span class="comment">%         if cParSmooth.n&gt;0</span>
+<span class="comment">%             [Vn]=tesSmooth(Fn,Vn,[],cParSmooth); %Smoothen mesh</span>
+<span class="comment">%         end</span>
 
         <span class="comment">%Visualize</span>
         subplot(2,3,c); hold <span class="string">on</span>;
         gpatch(Ft,Vt,0.5*ones(1,3),<span class="string">'k'</span>,0.25);
-        gpatch(Fn,Vn,Cn,<span class="string">'none'</span>,1);
+        gpatch(Fn,Vn,Cn,<span class="string">'k'</span>,1);
         colormap(cMap);
         axisGeom(gca,fontSize);
         camlight <span class="string">headlight</span>;
@@ -419,7 +465,7 @@ c=1;
     <span class="keyword">end</span>
 <span class="keyword">end</span>
 drawnow;
-</pre><img vspace="5" hspace="5" src="HELP_element2lattice_10.png" alt=""> <h2 id="29">Example: Create lattice structures on arbitry input meshes</h2><p>Below is an example of a general tetrahedral mesh</p><pre class="codeinput">testCase=2;
+</pre><img vspace="5" hspace="5" src="HELP_element2lattice_11.png" alt=""> <h2 id="30">Example: Create lattice structures on arbitry input meshes</h2><p>Below is an example of a general tetrahedral mesh</p><pre class="codeinput">testCase=2;
 <span class="keyword">switch</span> testCase
     <span class="keyword">case</span> 1
         [F,V,~]=geoSphere(2,1); <span class="comment">% Building a geodesic dome surface model</span>
@@ -450,40 +496,40 @@ F=meshOutput.faces;
 [indBoundary]=tesBoundary(F,V); <span class="comment">%Boundary indices</span>
 </pre><pre class="codeoutput"> 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
---- TETGEN Tetrahedral meshing --- 03-Apr-2018 15:58:35
+--- TETGEN Tetrahedral meshing --- 15-May-2018 16:11:37
  
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
---- Writing SMESH file --- 03-Apr-2018 15:58:35
+--- Writing SMESH file --- 15-May-2018 16:11:37
 ----&gt; Adding node field
 ----&gt; Adding facet field
 ----&gt; Adding holes specification
 ----&gt; Adding region specification
---- Done --- 03-Apr-2018 15:58:35
---- Running TetGen to mesh input boundary--- 03-Apr-2018 15:58:35
-Opening /mnt/data/MATLAB/GIT/GIBBON/lib_ext/tetGen/tempFiles/temp.smesh.
+--- Done --- 15-May-2018 16:11:37
+--- Running TetGen to mesh input boundary--- 15-May-2018 16:11:37
+Opening /mnt/data/MATLAB/GIT/GIBBON/data/temp/temp.smesh.
 Delaunizing vertices...
-Delaunay seconds:  0.022004
+Delaunay seconds:  0.029027
 Creating surface mesh ...
-Surface mesh seconds:  0.004888
+Surface mesh seconds:  0.004602
 Recovering boundaries...
-Boundary recovery seconds:  0.005678
+Boundary recovery seconds:  0.005432
 Removing exterior tetrahedra ...
 Spreading region attributes.
-Exterior tets removal seconds:  0.003994
+Exterior tets removal seconds:  0.004116
 Recovering Delaunayness...
-Delaunay recovery seconds:  0.00301
+Delaunay recovery seconds:  0.002797
 Refining mesh...
-Refinement seconds:  0.189924
+Refinement seconds:  0.179767
 Optimizing mesh...
-Optimization seconds:  0.022093
+Optimization seconds:  0.021033
 
-Writing /mnt/data/MATLAB/GIT/GIBBON/lib_ext/tetGen/tempFiles/temp.1.node.
-Writing /mnt/data/MATLAB/GIT/GIBBON/lib_ext/tetGen/tempFiles/temp.1.ele.
-Writing /mnt/data/MATLAB/GIT/GIBBON/lib_ext/tetGen/tempFiles/temp.1.face.
-Writing /mnt/data/MATLAB/GIT/GIBBON/lib_ext/tetGen/tempFiles/temp.1.edge.
+Writing /mnt/data/MATLAB/GIT/GIBBON/data/temp/temp.1.node.
+Writing /mnt/data/MATLAB/GIT/GIBBON/data/temp/temp.1.ele.
+Writing /mnt/data/MATLAB/GIT/GIBBON/data/temp/temp.1.face.
+Writing /mnt/data/MATLAB/GIT/GIBBON/data/temp/temp.1.edge.
 
-Output seconds:  0.065261
-Total running seconds:  0.317023
+Output seconds:  0.065297
+Total running seconds:  0.312306
 
 Statistics:
 
@@ -501,11 +547,11 @@ Statistics:
   Mesh edges on input segments: 4554
   Steiner points inside domain: 4341
 
---- Done --- 03-Apr-2018 15:58:35
+--- Done --- 15-May-2018 16:11:38
  
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
---- Importing TetGen files --- 03-Apr-2018 15:58:35
---- Done --- 03-Apr-2018 15:58:35
+--- Importing TetGen files --- 15-May-2018 16:11:38
+--- Done --- 15-May-2018 16:11:38
 </pre><p>Create lattice structure</p><pre class="codeinput">clear <span class="string">controlParameter</span>
 controlParameter.shrinkFactor=0.2; <span class="comment">%Strut sides are formed by shrinking the input mesh faces by this factor</span>
 controlParameter.numDigitKeep=5; <span class="comment">%used for merging nodes</span>
@@ -529,7 +575,7 @@ axisGeom(gca,fontSize);
 axis <span class="string">off</span>;
 colormap(cMap);
 drawnow;
-</pre><img vspace="5" hspace="5" src="HELP_element2lattice_11.png" alt=""> <p>Visualize lattice structure</p><pre class="codeinput">cFigure;
+</pre><img vspace="5" hspace="5" src="HELP_element2lattice_12.png" alt=""> <p>Visualize lattice structure</p><pre class="codeinput">cFigure;
 hold <span class="string">on</span>;
 title(<span class="string">'Lattice structure on arbitrary input mesh'</span>,<span class="string">'FontSize'</span>,fontSize);
 <span class="comment">% gpatch(Fb,V,0.5*ones(1,3),'none',0.5);</span>
@@ -539,7 +585,7 @@ axisGeom(gca,fontSize);
 axis <span class="string">off</span>;
 colormap(cMap);
 drawnow;
-</pre><img vspace="5" hspace="5" src="HELP_element2lattice_12.png" alt=""> <p><img vspace="5" hspace="5" src="gibbVerySmall.gif" alt=""> </p><p><i><b>GIBBON</b></i> <a href="www.gibboncode.org">www.gibboncode.org</a></p><p><i>Kevin Mattheus Moerman</i>, <a href="gibbon.toolbox@gmail.com">gibbon.toolbox@gmail.com</a></p><p><i><b>GIBBON footer text</b></i></p><p>License: <a href="https://github.com/gibbonCode/GIBBON/blob/master/LICENSE">https://github.com/gibbonCode/GIBBON/blob/master/LICENSE</a></p><p>GIBBON: The Geometry and Image-based Bioengineering add-On. A toolbox for image segmentation, image-based modeling, meshing, and finite element analysis.</p><p>Copyright (C) 2018  Kevin Mattheus Moerman</p><p>This program is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.</p><p>This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for more details.</p><p>You should have received a copy of the GNU General Public License along with this program.  If not, see <a href="http://www.gnu.org/licenses/">http://www.gnu.org/licenses/</a>.</p><p class="footer"><br><a href="https://www.mathworks.com/products/matlab/">Published with MATLAB&reg; R2018a</a><br></p></div><!--
+</pre><img vspace="5" hspace="5" src="HELP_element2lattice_13.png" alt=""> <p><img vspace="5" hspace="5" src="gibbVerySmall.gif" alt=""> </p><p><i><b>GIBBON</b></i> <a href="www.gibboncode.org">www.gibboncode.org</a></p><p><i>Kevin Mattheus Moerman</i>, <a href="gibbon.toolbox@gmail.com">gibbon.toolbox@gmail.com</a></p><p><i><b>GIBBON footer text</b></i></p><p>License: <a href="https://github.com/gibbonCode/GIBBON/blob/master/LICENSE">https://github.com/gibbonCode/GIBBON/blob/master/LICENSE</a></p><p>GIBBON: The Geometry and Image-based Bioengineering add-On. A toolbox for image segmentation, image-based modeling, meshing, and finite element analysis.</p><p>Copyright (C) 2018  Kevin Mattheus Moerman</p><p>This program is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.</p><p>This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for more details.</p><p>You should have received a copy of the GNU General Public License along with this program.  If not, see <a href="http://www.gnu.org/licenses/">http://www.gnu.org/licenses/</a>.</p><p class="footer"><br><a href="https://www.mathworks.com/products/matlab/">Published with MATLAB&reg; R2018a</a><br></p></div><!--
 ##### SOURCE BEGIN #####
 %% element2lattice
 % Below is a demonstration of the features of the |element2lattice| function
@@ -663,7 +709,7 @@ drawnow;
 % Refining a lattice structure by first refining the input mesh
 
 cFigure;
-suptitle('Lattice structure refinement')
+gtitle('Lattice structure refinement',fontSize);
 
 for q=1:4
     if q>1
@@ -795,7 +841,7 @@ shrinkFactorSet=linspace(0.1,0.5,4);
 for latticeSide=1:2
     controlParameter.latticeSide=latticeSide;
     cFigure;
-    suptitle('Lattice structure porosity control');
+    gtitle('Lattice structure porosity control',fontSize);
     
     for q=1:4
         controlParameter.shrinkFactor=shrinkFactorSet(q); %Strut sides are formed by shrinking the input mesh faces by this facto
@@ -838,7 +884,7 @@ controlParameter.indBoundary=indBoundary; %indices of the boundary faces
 controlParameter.shrinkFactor=0.3;
 
 cFigure;
-suptitle('Lattice structure mesh output type control');
+gtitle('Lattice structure mesh output type control',fontSize);
 
 for q=1:numel(meshTypeSet)
     controlParameter.meshType=meshTypeSet{q}; %The current mesh type
@@ -855,7 +901,7 @@ for q=1:numel(meshTypeSet)
 end
 drawnow;
 
-%% Example: Exportin hexahedral elements instead of surface elements
+%% Example: Exporting hexahedral elements instead of surface elements
 
 %%
 % The |element2patch| function can also be used to export hexahedral
@@ -884,7 +930,57 @@ controlParameter.meshType='hex';
 
 hexSplitSet=[0 1 2];
 cFigure;
-suptitle('Lattice structure hex element output and element mesh refinement');
+gtitle('Lattice structure hex element output and element mesh refinement',fontSize);
+
+c=1; %counter for plotting
+for latticeSide=1:2
+    controlParameter.latticeSide=latticeSide;
+    for q=1:numel(hexSplitSet)
+        controlParameter.hexSplit=hexSplitSet(q); %The current mesh type
+        
+        [Es1,Vs1,Cs1]=element2lattice(E,V,controlParameter); %Get lattice structure
+        
+        [Fs1,Cs1F]=element2patch(Es1,Cs1); %Patch data for plotting
+        
+        % Visualizing input mesh and lattice structures
+        subplot(2,numel(hexSplitSet),c);
+        hold on; title(['hexSplit=',num2str(hexSplitSet(q))]);
+        gpatch(Fs1,Vs1,Cs1F,'k',0.8,2);
+        colormap(gjet(250));
+        axisGeom(gca,fontSize);
+        camlight headlight; lighting flat;
+        c=c+1;
+    end
+end
+drawnow;
+
+%%
+% 
+
+[V,F]=platonic_solid(1,1);
+E=[1 2 4 3];
+
+% 
+% boxDim=[1 1 1];
+% boxEl=[1 1 1];
+% [meshStruct]=hexMeshBox(boxDim,boxEl);
+% E=meshStruct.E;
+% V=meshStruct.V;
+% F=meshStruct.F;
+[indBoundary]=tesBoundary(F,V);
+
+clear controlParameter
+
+% Create lattice structure
+controlParameter.latticeSide=2;
+controlParameter.numDigitKeep=5; %used for merging nodes
+controlParameter.indBoundary=indBoundary; %indices of the boundary faces
+controlParameter.shrinkFactor=0.25;
+controlParameter.meshType='hex';
+
+hexSplitSet=[0 1 2];
+cFigure;
+gtitle('Lattice structure hex element output and element mesh refinement',fontSize);
 
 c=1; %counter for plotting
 for latticeSide=1:2
@@ -963,22 +1059,22 @@ for latticeSide=1:2
         cPar.indBoundary=indBoundary;
         [Fn,Vn,Cn]=element2lattice(E,V,cPar);
         
-        %Refine mesh
-        [Fn,Vn]=subQuad(Fn,Vn,1);
-        Cn=repmat(Cn,[4 1]); %Replicate color info
-        
-        %Smoothen
-        indRigid=Fn(Cn==1,:);
-        indRigid=unique(indRigid(:)); %Indices for boundary elements to hold on to
-        cParSmooth.RigidConstraints=indRigid;
-        if cParSmooth.n>0
-            [Vn]=tesSmooth(Fn,Vn,[],cParSmooth); %Smoothen mesh
-        end
+%         %Refine mesh
+%         [Fn,Vn]=subQuad(Fn,Vn,1);
+%         Cn=repmat(Cn,[4 1]); %Replicate color info
+%         
+%         %Smoothen
+%         indRigid=Fn(Cn==1,:);
+%         indRigid=unique(indRigid(:)); %Indices for boundary elements to hold on to
+%         cParSmooth.RigidConstraints=indRigid;
+%         if cParSmooth.n>0
+%             [Vn]=tesSmooth(Fn,Vn,[],cParSmooth); %Smoothen mesh
+%         end
         
         %Visualize
         subplot(2,3,c); hold on;
         gpatch(Ft,Vt,0.5*ones(1,3),'k',0.25);
-        gpatch(Fn,Vn,Cn,'none',1);
+        gpatch(Fn,Vn,Cn,'k',1);
         colormap(cMap);
         axisGeom(gca,fontSize);
         camlight headlight;

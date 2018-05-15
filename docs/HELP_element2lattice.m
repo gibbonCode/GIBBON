@@ -120,7 +120,7 @@ drawnow;
 % Refining a lattice structure by first refining the input mesh
 
 cFigure;
-suptitle('Lattice structure refinement')
+gtitle('Lattice structure refinement',fontSize);
 
 for q=1:4
     if q>1
@@ -252,7 +252,7 @@ shrinkFactorSet=linspace(0.1,0.5,4);
 for latticeSide=1:2
     controlParameter.latticeSide=latticeSide;
     cFigure;
-    suptitle('Lattice structure porosity control');
+    gtitle('Lattice structure porosity control',fontSize);
     
     for q=1:4
         controlParameter.shrinkFactor=shrinkFactorSet(q); %Strut sides are formed by shrinking the input mesh faces by this facto
@@ -295,7 +295,7 @@ controlParameter.indBoundary=indBoundary; %indices of the boundary faces
 controlParameter.shrinkFactor=0.3;
 
 cFigure;
-suptitle('Lattice structure mesh output type control');
+gtitle('Lattice structure mesh output type control',fontSize);
 
 for q=1:numel(meshTypeSet)
     controlParameter.meshType=meshTypeSet{q}; %The current mesh type
@@ -341,7 +341,7 @@ controlParameter.meshType='hex';
 
 hexSplitSet=[0 1 2];
 cFigure;
-suptitle('Lattice structure hex element output and element mesh refinement');
+gtitle('Lattice structure hex element output and element mesh refinement',fontSize);
 
 c=1; %counter for plotting
 for latticeSide=1:2
@@ -391,7 +391,7 @@ controlParameter.meshType='hex';
 
 hexSplitSet=[0 1 2];
 cFigure;
-suptitle('Lattice structure hex element output and element mesh refinement');
+gtitle('Lattice structure hex element output and element mesh refinement',fontSize);
 
 c=1; %counter for plotting
 for latticeSide=1:2
@@ -535,7 +535,6 @@ E=meshOutput.elements;
 F=meshOutput.faces;
 [indBoundary]=tesBoundary(F,V); %Boundary indices
 
-dfsafa
 %%
 % Create lattice structure
 clear controlParameter

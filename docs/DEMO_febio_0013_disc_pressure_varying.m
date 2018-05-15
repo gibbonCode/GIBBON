@@ -330,7 +330,7 @@ if runFlag==1 %i.e. a succesful run
     
     % Create basic view and store graphics handle to initiate animation
     hf=cFigure; %Open figure  
-    suptitle([febioFebFileNamePart,': Press play to animate']);
+    gtitle([febioFebFileNamePart,': Press play to animate']);
     hp=gpatch(Fb,V_def,CF,'k',1); %Add graphics object to animate
     gpatch(Fb,V,'kw','none',0.25); %A static graphics object
     

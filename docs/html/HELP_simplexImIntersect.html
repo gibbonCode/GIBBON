@@ -6,7 +6,7 @@
    <!--
 This HTML was auto-generated from MATLAB code.
 To make changes, update the MATLAB code and republish this document.
-      --><title>simplexImIntersect</title><meta name="generator" content="MATLAB 9.4"><link rel="schema.DC" href="http://purl.org/dc/elements/1.1/"><meta name="DC.date" content="2018-02-18"><meta name="DC.source" content="HELP_simplexImIntersect.m"><style type="text/css">
+      --><title>simplexImIntersect</title><meta name="generator" content="MATLAB 9.4"><link rel="schema.DC" href="http://purl.org/dc/elements/1.1/"><meta name="DC.date" content="2018-05-15"><meta name="DC.source" content="HELP_simplexImIntersect.m"><style type="text/css">
 html,body,div,span,applet,object,iframe,h1,h2,h3,h4,h5,h6,p,blockquote,pre,a,abbr,acronym,address,big,cite,code,del,dfn,em,font,img,ins,kbd,q,s,samp,small,strike,strong,sub,sup,tt,var,b,u,i,center,dl,dt,dd,ol,ul,li,fieldset,form,label,legend,table,caption,tbody,tfoot,thead,tr,th,td{margin:0;padding:0;border:0;outline:0;font-size:100%;vertical-align:baseline;background:transparent}body{line-height:1}ol,ul{list-style:none}blockquote,q{quotes:none}blockquote:before,blockquote:after,q:before,q:after{content:'';content:none}:focus{outine:0}ins{text-decoration:none}del{text-decoration:line-through}table{border-collapse:collapse;border-spacing:0}
 
 html { min-height:100%; margin-bottom:1px; }
@@ -66,8 +66,7 @@ table td { padding:7px 5px; text-align:left; vertical-align:top; border:1px soli
 
 
 
-  </style></head><body><div class="content"><h1>simplexImIntersect</h1><!--introduction--><p>Below is a demonstration of the features of the <tt>simplexImIntersect</tt> function</p><!--/introduction--><h2>Contents</h2><div><ul><li><a href="#2">Syntax</a></li><li><a href="#3">Description</a></li><li><a href="#4">Examples</a></li><li><a href="#8">Find points outside of a simplex</a></li></ul></div><pre class="codeinput">clear; close <span class="string">all</span>; clc;
-</pre><h2 id="2">Syntax</h2><p><tt>[regionlabel]=simplexImIntersect(F1,V1,V2,voxelSize);</tt></p><h2 id="3">Description</h2><p>This function uses the input simplex (or simplices) defined by F1 (faces), V1 (vertices), and C1 (boundary labels) to label the vertices V2 according to what simplex regions they are contained in. The labels are stored in the output regionLabel. A vertex inside a simplex region is labelled with the boundary label of the simplex region. Vertices outside of all simplices are labelled with NaN. Points are labelled based on the patch2Im function, i.e. the following steps are used: 1) The simplex is converted to an image where voxels intensities denote simplex region labels. (see patch2Im). 2) The vertices in V2 are converted to image coordinates in this image 3) The image coordinates are converted to image voxel indices 4) Voxel indices are used to retrieve the labels from the simplex image.</p><p>The image constructed uses the optional input voxelSize (the default if not provided is half of the mean edge size of the input simplex). The completeness/accuracy of the labelling depends on the voxel size. Some points are labelled as 0 which means they are found inside boundary voxels and cannot, based on the current voxel size, be assigned as outside or inside a particular region. All vertices labelled as NaN or a value &gt;0 are labelled correctly. However some of the vertices labelled as 0 may actually be inside a simplex region or outside all simplex regions, i.e. 0 denotes that their status is unknown given the voxel size used.</p><p>See also <tt>patch2im</tt></p><h2 id="4">Examples</h2><pre class="codeinput">clear; close <span class="string">all</span>; clc;
+  </style></head><body><div class="content"><h1>simplexImIntersect</h1><!--introduction--><p>Below is a demonstration of the features of the <tt>simplexImIntersect</tt> function</p><!--/introduction--><h2>Contents</h2><div><ul><li><a href="#1">Syntax</a></li><li><a href="#2">Description</a></li><li><a href="#3">Examples</a></li><li><a href="#7">Find points outside of a simplex</a></li></ul></div><h2 id="1">Syntax</h2><p><tt>[regionlabel]=simplexImIntersect(F1,V1,V2,voxelSize);</tt></p><h2 id="2">Description</h2><p>This function uses the input simplex (or simplices) defined by F1 (faces), V1 (vertices), and C1 (boundary labels) to label the vertices V2 according to what simplex regions they are contained in. The labels are stored in the output regionLabel. A vertex inside a simplex region is labelled with the boundary label of the simplex region. Vertices outside of all simplices are labelled with NaN. Points are labelled based on the patch2Im function, i.e. the following steps are used: 1) The simplex is converted to an image where voxels intensities denote simplex region labels. (see patch2Im). 2) The vertices in V2 are converted to image coordinates in this image 3) The image coordinates are converted to image voxel indices 4) Voxel indices are used to retrieve the labels from the simplex image.</p><p>The image constructed uses the optional input voxelSize (the default if not provided is half of the mean edge size of the input simplex). The completeness/accuracy of the labelling depends on the voxel size. Some points are labelled as 0 which means they are found inside boundary voxels and cannot, based on the current voxel size, be assigned as outside or inside a particular region. All vertices labelled as NaN or a value &gt;0 are labelled correctly. However some of the vertices labelled as 0 may actually be inside a simplex region or outside all simplex regions, i.e. 0 denotes that their status is unknown given the voxel size used.</p><p>See also <tt>patch2im</tt></p><h2 id="3">Examples</h2><pre class="codeinput">clear; close <span class="string">all</span>; clc;
 </pre><p>Plot settings</p><pre class="codeinput">faceAlpha1=1;
 faceAlpha2=0.3;
 fontSize=15;
@@ -79,7 +78,7 @@ V2(:,2)=V2(:,2)+1; <span class="comment">%Shift second sphere</span>
 [D2]=patchEdgeLengths(F2,V2);
 d=mean([D1(:);D2(:)]);
 voxelSize=d/2;
-</pre><h2 id="8">Find points outside of a simplex</h2><pre class="codeinput">[regionLabel]=simplexImIntersect(F1,V1,[],V2,voxelSize);
+</pre><h2 id="7">Find points outside of a simplex</h2><pre class="codeinput">[regionLabel]=simplexImIntersect(F1,V1,[],V2,voxelSize);
 logicOut=isnan(regionLabel);
 logicFacesOut=all(logicOut(F2),2);
 </pre><p>Visualize results</p><pre class="codeinput">cFigure;
@@ -165,9 +164,6 @@ drawnow;
 ##### SOURCE BEGIN #####
 %% simplexImIntersect
 % Below is a demonstration of the features of the |simplexImIntersect| function
-
-%%
-clear; close all; clc;
 
 %% Syntax
 % |[regionlabel]=simplexImIntersect(F1,V1,V2,voxelSize);|

@@ -426,7 +426,7 @@ if runFlag==1 %i.e. a succesful run
     
     % Create basic view and store graphics handle to initiate animation
     hf=cFigure; %Open figure  
-    suptitle([febioFebFileNamePart,': Press play to animate']);
+    gtitle([febioFebFileNamePart,': Press play to animate']);
     
     subplot(1,2,1); hold on;
     title('Ogden parameter c_1');

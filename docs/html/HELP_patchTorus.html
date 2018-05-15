@@ -6,7 +6,7 @@
    <!--
 This HTML was auto-generated from MATLAB code.
 To make changes, update the MATLAB code and republish this document.
-      --><title>patchTorus</title><meta name="generator" content="MATLAB 9.4"><link rel="schema.DC" href="http://purl.org/dc/elements/1.1/"><meta name="DC.date" content="2018-02-18"><meta name="DC.source" content="HELP_patchTorus.m"><style type="text/css">
+      --><title>patchTorus</title><meta name="generator" content="MATLAB 9.4"><link rel="schema.DC" href="http://purl.org/dc/elements/1.1/"><meta name="DC.date" content="2018-05-15"><meta name="DC.source" content="HELP_patchTorus.m"><style type="text/css">
 html,body,div,span,applet,object,iframe,h1,h2,h3,h4,h5,h6,p,blockquote,pre,a,abbr,acronym,address,big,cite,code,del,dfn,em,font,img,ins,kbd,q,s,samp,small,strike,strong,sub,sup,tt,var,b,u,i,center,dl,dt,dd,ol,ul,li,fieldset,form,label,legend,table,caption,tbody,tfoot,thead,tr,th,td{margin:0;padding:0;border:0;outline:0;font-size:100%;vertical-align:baseline;background:transparent}body{line-height:1}ol,ul{list-style:none}blockquote,q{quotes:none}blockquote:before,blockquote:after,q:before,q:after{content:'';content:none}:focus{outine:0}ins{text-decoration:none}del{text-decoration:line-through}table{border-collapse:collapse;border-spacing:0}
 
 html { min-height:100%; margin-bottom:1px; }
@@ -66,7 +66,7 @@ table td { padding:7px 5px; text-align:left; vertical-align:top; border:1px soli
 
 
 
-  </style></head><body><div class="content"><h1>patchTorus</h1><!--introduction--><p>Below is a demonstration of the features of the <tt>patchTorus</tt> function</p><!--/introduction--><h2>Contents</h2><div><ul><li><a href="#2">Syntax</a></li><li><a href="#3">Description</a></li><li><a href="#4">Examples</a></li><li><a href="#6">Building a mesh of a torus</a></li><li><a href="#7">Simulate your lunch</a></li></ul></div><pre class="codeinput">clear; close <span class="string">all</span>; clc;
+  </style></head><body><div class="content"><h1>patchTorus</h1><!--introduction--><p>Below is a demonstration of the features of the <tt>patchTorus</tt> function</p><!--/introduction--><h2>Contents</h2><div><ul><li><a href="#2">Syntax</a></li><li><a href="#3">Description</a></li><li><a href="#4">Examples</a></li><li><a href="#6">Building a mesh of a torus</a></li><li><a href="#7">Simulate  a doughnut</a></li></ul></div><pre class="codeinput">clear; close <span class="string">all</span>; clc;
 </pre><h2 id="2">Syntax</h2><p><tt>[F,V]=patchTorus(r,nr,rc,nc,patchType);</tt></p><h2 id="3">Description</h2><p>This function generates patch for a torus with desired dimensions and mesh type</p><h2 id="4">Examples</h2><p>Plot settings</p><pre class="codeinput">fontSize=10;
 faceColor=<span class="string">'b'</span>;
 faceAlpha=1;
@@ -86,7 +86,7 @@ cFigure;
 
 <span class="comment">%Plot the various mesh types</span>
 pColors=gjet(4);
-<span class="keyword">for</span> q=1:1:4;
+<span class="keyword">for</span> q=1:1:4
     [F,V]=patchTorus(r,nr,rc,nc,patchTypes{q});
     subplot(2,2,q); hold <span class="string">on</span>;
     title([patchTypes{q}],<span class="string">'FontSize'</span>,fontSize,<span class="string">'Interpreter'</span>,<span class="string">'none'</span>);
@@ -99,7 +99,7 @@ pColors=gjet(4);
     view(3); axis <span class="string">tight</span>;  axis <span class="string">equal</span>;  grid <span class="string">on</span>;
 <span class="keyword">end</span>
 drawnow;
-</pre><img vspace="5" hspace="5" src="HELP_patchTorus_01.png" alt=""> <h2 id="7">Simulate your lunch</h2><pre class="codeinput"><span class="comment">%Torus parameters</span>
+</pre><img vspace="5" hspace="5" src="HELP_patchTorus_01.png" alt=""> <h2 id="7">Simulate  a doughnut</h2><pre class="codeinput"><span class="comment">%Torus parameters</span>
 np=100;
 r=1; <span class="comment">%Sphere radius</span>
 rc=2.5; <span class="comment">%Central radius</span>
@@ -141,14 +141,11 @@ C(Lr,:)=C_blue(ones(nnz(Lr),1),:);
 
 Lr=XF&gt;1.8-d &amp; XF&lt;2-d &amp; L;
 C(Lr,:)=C_blue(ones(nnz(Lr),1),:);
-
-cFigure; hold <span class="string">on</span>;
-xlabel(<span class="string">'X'</span>,<span class="string">'FontSize'</span>,fontSize); ylabel(<span class="string">'Y'</span>,<span class="string">'FontSize'</span>,fontSize); zlabel(<span class="string">'Z'</span>,<span class="string">'FontSize'</span>,fontSize);
-hp=patch(<span class="string">'Faces'</span>,F,<span class="string">'Vertices'</span>,V);
-set(hp,<span class="string">'FaceColor'</span>,<span class="string">'flat'</span>,<span class="string">'FaceVertexCData'</span>,C,<span class="string">'edgeColor'</span>,<span class="string">'none'</span>);
+</pre><p>Visualize a doughnut</p><pre class="codeinput">cFigure; hold <span class="string">on</span>;
+title(<span class="string">'doughnut'</span>,<span class="string">'FontSize'</span>,fontSize);
+gpatch(F,V,C,<span class="string">'none'</span>);
+axisGeom(gca,fontSize);
 camlight <span class="string">headlight</span>; lighting <span class="string">phong</span>;
-set(gca,<span class="string">'FontSize'</span>,fontSize);
-view(3); axis <span class="string">tight</span>;  axis <span class="string">equal</span>;  grid <span class="string">on</span>; axis <span class="string">off</span>;
 drawnow;
 </pre><img vspace="5" hspace="5" src="HELP_patchTorus_02.png" alt=""> <p><img vspace="5" hspace="5" src="gibbVerySmall.gif" alt=""> </p><p><i><b>GIBBON</b></i> <a href="www.gibboncode.org">www.gibboncode.org</a></p><p><i>Kevin Mattheus Moerman</i>, <a href="gibbon.toolbox@gmail.com">gibbon.toolbox@gmail.com</a></p><p><i><b>GIBBON footer text</b></i></p><p>License: <a href="https://github.com/gibbonCode/GIBBON/blob/master/LICENSE">https://github.com/gibbonCode/GIBBON/blob/master/LICENSE</a></p><p>GIBBON: The Geometry and Image-based Bioengineering add-On. A toolbox for image segmentation, image-based modeling, meshing, and finite element analysis.</p><p>Copyright (C) 2018  Kevin Mattheus Moerman</p><p>This program is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.</p><p>This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for more details.</p><p>You should have received a copy of the GNU General Public License along with this program.  If not, see <a href="http://www.gnu.org/licenses/">http://www.gnu.org/licenses/</a>.</p><p class="footer"><br><a href="https://www.mathworks.com/products/matlab/">Published with MATLAB&reg; R2018a</a><br></p></div><!--
 ##### SOURCE BEGIN #####
@@ -191,7 +188,7 @@ cFigure;
 
 %Plot the various mesh types
 pColors=gjet(4);
-for q=1:1:4;
+for q=1:1:4
     [F,V]=patchTorus(r,nr,rc,nc,patchTypes{q});
     subplot(2,2,q); hold on;
     title([patchTypes{q}],'FontSize',fontSize,'Interpreter','none');
@@ -205,7 +202,7 @@ for q=1:1:4;
 end
 drawnow;
 
-%% Simulate your lunch
+%% Simulate  a doughnut
 
 %Torus parameters
 np=100;
@@ -250,13 +247,13 @@ C(Lr,:)=C_blue(ones(nnz(Lr),1),:);
 Lr=XF>1.8-d & XF<2-d & L;
 C(Lr,:)=C_blue(ones(nnz(Lr),1),:);
 
+%%
+% Visualize a doughnut
 cFigure; hold on;
-xlabel('X','FontSize',fontSize); ylabel('Y','FontSize',fontSize); zlabel('Z','FontSize',fontSize);
-hp=patch('Faces',F,'Vertices',V);
-set(hp,'FaceColor','flat','FaceVertexCData',C,'edgeColor','none');
+title('doughnut','FontSize',fontSize); 
+gpatch(F,V,C,'none');
+axisGeom(gca,fontSize);
 camlight headlight; lighting phong;
-set(gca,'FontSize',fontSize);
-view(3); axis tight;  axis equal;  grid on; axis off; 
 drawnow;
 
 %%

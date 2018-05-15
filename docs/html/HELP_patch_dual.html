@@ -6,7 +6,7 @@
    <!--
 This HTML was auto-generated from MATLAB code.
 To make changes, update the MATLAB code and republish this document.
-      --><title>patch_dual</title><meta name="generator" content="MATLAB 9.4"><link rel="schema.DC" href="http://purl.org/dc/elements/1.1/"><meta name="DC.date" content="2018-02-18"><meta name="DC.source" content="HELP_patch_dual.m"><style type="text/css">
+      --><title>patch_dual</title><meta name="generator" content="MATLAB 9.4"><link rel="schema.DC" href="http://purl.org/dc/elements/1.1/"><meta name="DC.date" content="2018-05-15"><meta name="DC.source" content="HELP_patch_dual.m"><style type="text/css">
 html,body,div,span,applet,object,iframe,h1,h2,h3,h4,h5,h6,p,blockquote,pre,a,abbr,acronym,address,big,cite,code,del,dfn,em,font,img,ins,kbd,q,s,samp,small,strike,strong,sub,sup,tt,var,b,u,i,center,dl,dt,dd,ol,ul,li,fieldset,form,label,legend,table,caption,tbody,tfoot,thead,tr,th,td{margin:0;padding:0;border:0;outline:0;font-size:100%;vertical-align:baseline;background:transparent}body{line-height:1}ol,ul{list-style:none}blockquote,q{quotes:none}blockquote:before,blockquote:after,q:before,q:after{content:'';content:none}:focus{outine:0}ins{text-decoration:none}del{text-decoration:line-through}table{border-collapse:collapse;border-spacing:0}
 
 html { min-height:100%; margin-bottom:1px; }
@@ -66,14 +66,12 @@ table td { padding:7px 5px; text-align:left; vertical-align:top; border:1px soli
 
 
 
-  </style></head><body><div class="content"><h1>patch_dual</h1><!--introduction--><p>Below is a demonstration of the features of the <tt>patch_dual</tt> function</p><!--/introduction--><h2>Contents</h2><div><ul><li><a href="#1">Syntax</a></li><li><a href="#2">Description</a></li><li><a href="#3">Examples</a></li><li><a href="#6">Example: Computing the dual of a surface triangulation</a></li><li><a href="#9">Example: The "Buckminster Fuller" dome triangulation and its dual</a></li></ul></div><h2 id="1">Syntax</h2><p><tt>[Vd,Fd,Fds]=patch_dual(V,F);</tt></p><h2 id="2">Description</h2><p>Computes the dual of the input tesselation defined by the vertices V and faces F.</p><h2 id="3">Examples</h2><pre class="codeinput">clear; close <span class="string">all</span>; clc;
+  </style></head><body><div class="content"><h1>patch_dual</h1><!--introduction--><p>Below is a demonstration of the features of the <tt>patch_dual</tt> function</p><!--/introduction--><h2>Contents</h2><div><ul><li><a href="#1">Syntax</a></li><li><a href="#2">Description</a></li><li><a href="#3">Examples</a></li><li><a href="#6">Example: Computing the dual of a surface triangulation</a></li><li><a href="#11">Example: The "Buckminster Fuller" dome triangulation and its dual</a></li></ul></div><h2 id="1">Syntax</h2><p><tt>[Vd,Fd,Fds]=patch_dual(V,F);</tt></p><h2 id="2">Description</h2><p>Computes the dual of the input tesselation defined by the vertices V and faces F.</p><h2 id="3">Examples</h2><pre class="codeinput">clear; close <span class="string">all</span>; clc;
 </pre><p>Plot settings</p><pre class="codeinput">fontSize=15;
-faceColor=<span class="string">'b'</span>;
-faceAlpha=0.5;
-plotColor1=0.2.*ones(1,3);
-plotColor2=0.5.*ones(1,3);
-edgeWidth=1.5;
-markerSize=10;
+plotColor1=0.25.*ones(1,3);
+plotColor2=0.75.*ones(1,3);
+edgeWidth=2;
+markerSize=25;
 cmap1=gjet(250);
 cmap2=autumn(250);
 </pre><h2 id="6">Example: Computing the dual of a surface triangulation</h2><p>Creating example triangulation (circle filled triangle)</p><pre class="codeinput"><span class="comment">%Boundary and mesh parameters</span>
@@ -97,26 +95,70 @@ V(:,3)=(sin(3*V(:,1))+sin(3*V(:,2)))/2;
 <span class="comment">%Deriving the dual of the patch</span>
 [Vd,Fd]=patch_dual(V,F);
 </pre><pre class="codeinput"><span class="comment">%Plotting results</span>
-hf=cFigure;
-hold <span class="string">on</span>;
-<span class="comment">% title('A geodesic sphere triangulation and its dual consisting of pentagons and hexagons','FontSize',fontSize);</span>
-xlabel(<span class="string">'X'</span>,<span class="string">'FontSize'</span>,fontSize); ylabel(<span class="string">'Y'</span>,<span class="string">'FontSize'</span>,fontSize); zlabel(<span class="string">'Z'</span>,<span class="string">'FontSize'</span>,fontSize);
-hp=patch(<span class="string">'Faces'</span>,F,<span class="string">'Vertices'</span>,V);
-set(hp,<span class="string">'FaceColor'</span>,<span class="string">'flat'</span>,<span class="string">'CData'</span>,V(:,3),<span class="string">'FaceAlpha'</span>,0.9,<span class="string">'EdgeColor'</span>,plotColor2,<span class="string">'LineWidth'</span>,edgeWidth);
 
-<span class="comment">%Splitting up the plotting due to difference is face types (e.g.</span>
-<span class="comment">%pentagons,or hexagons)</span>
-<span class="keyword">for</span> i=1:1:numel(Fd)
-    Ft=Fd{i};
-    hp=patch(<span class="string">'Faces'</span>,Ft,<span class="string">'Vertices'</span>,Vd);
-       set(hp,<span class="string">'FaceColor'</span>,<span class="string">'none'</span>,<span class="string">'FaceAlpha'</span>,0.2,<span class="string">'EdgeColor'</span>,plotColor2,<span class="string">'LineWidth'</span>,edgeWidth);
-<span class="keyword">end</span>
+cFigure;
+hold <span class="string">on</span>;
+
+gpatch(F,V,V(:,3),plotColor1,0.9,edgeWidth);
+gpatch(Fd,Vd,<span class="string">'none'</span>,plotColor2,1,edgeWidth);
+
+axisGeom(gca,fontSize);
+camlight <span class="string">headlight</span>;
 colormap(cmap1);
-axis <span class="string">equal</span>; axis <span class="string">tight</span>; view(3); axis <span class="string">vis3d</span>; grid <span class="string">on</span>; box <span class="string">on</span>;
-set(gca,<span class="string">'FontSize'</span>,fontSize);
-camlight <span class="string">headlight</span>; lighting <span class="string">flat</span>;
 drawnow;
-</pre><img vspace="5" hspace="5" src="HELP_patch_dual_01.png" alt=""> <h2 id="9">Example: The "Buckminster Fuller" dome triangulation and its dual</h2><p>The patch_dual function assumes that a valid and appropriate dual exists for the input patch data specified by F and V (faces and vertices). If they are not appropriate the output may for instance not form an enclosing shape or output faces may not be planar.</p><pre class="codeinput"><span class="comment">%Defining geodesic dome triangulation</span>
+</pre><img vspace="5" hspace="5" src="HELP_patch_dual_01.png" alt=""> <pre class="codeinput"><span class="comment">%Boundary 1</span>
+ns=150;
+t=linspace(0,2*pi,ns);
+t=t(1:end-1);
+r=6+2.*sin(5*t);
+[x,y] = pol2cart(t,r);
+V1=[x(:) y(:)];
+
+<span class="comment">%Boundary 2</span>
+[x,y] = pol2cart(t,ones(size(t)));
+V2=[x(:) y(:)+4];
+
+<span class="comment">%Boundary 3</span>
+[x,y] = pol2cart(t,2*ones(size(t)));
+V3=[x(:) y(:)-0.5];
+
+<span class="comment">%Meshing the region</span>
+pointSpacing=0.75; <span class="comment">%Desired point spacing</span>
+[F,V]=regionTriMesh2D({V1,V2,V3},pointSpacing,1,0);
+
+<span class="comment">%Deriving the dual of the patch</span>
+[Vd0,Fd0]=patch_dual(V,F,0);
+[Vd1,Fd1]=patch_dual(V,F,1);
+[Vd2,Fd2]=patch_dual(V,F,2);
+</pre><pre class="codeinput"><span class="comment">%Plotting results</span>
+
+cFigure;
+subplot(1,3,1); hold <span class="string">on</span>;
+title(<span class="string">'Edge compensation 0 (off)'</span>);
+gpatch(F,V,<span class="string">'rw'</span>,<span class="string">'r'</span>,0.5);
+gpatch(Fd0,Vd0,<span class="string">'none'</span>,<span class="string">'b'</span>,1);
+axisGeom(gca,fontSize);
+colormap(cmap2);
+view(2);
+
+subplot(1,3,2); hold <span class="string">on</span>;
+title(<span class="string">'Edge compensation 1'</span>);
+gpatch(F,V,<span class="string">'rw'</span>,<span class="string">'r'</span>,0.5);
+gpatch(Fd1,Vd1,<span class="string">'none'</span>,<span class="string">'b'</span>,1);
+axisGeom(gca,fontSize);
+colormap(cmap2);
+view(2);
+
+subplot(1,3,3); hold <span class="string">on</span>;
+title(<span class="string">'Edge compensation 2'</span>);
+gpatch(F,V,<span class="string">'rw'</span>,<span class="string">'r'</span>,0.5);
+gpatch(Fd2,Vd2,<span class="string">'none'</span>,<span class="string">'b'</span>,1);
+axisGeom(gca,fontSize);
+colormap(cmap2);
+view(2);
+
+drawnow;
+</pre><img vspace="5" hspace="5" src="HELP_patch_dual_02.png" alt=""> <h2 id="11">Example: The "Buckminster Fuller" dome triangulation and its dual</h2><p>The patch_dual function assumes that a valid and appropriate dual exists for the input patch data specified by F and V (faces and vertices). If they are not appropriate the output may for instance not form an enclosing shape or output faces may not be planar.</p><pre class="codeinput"><span class="comment">%Defining geodesic dome triangulation</span>
 r=1; <span class="comment">%sphere radius</span>
 n=2; <span class="comment">%Refinements</span>
 [F,V,~]=geoSphere(n,r);
@@ -124,27 +166,19 @@ n=2; <span class="comment">%Refinements</span>
 <span class="comment">%Deriving the dual of the patch</span>
 [Vd,Fd]=patch_dual(V,F);
 </pre><pre class="codeinput"><span class="comment">%Plotting results</span>
-hf=cFigure;
-hold <span class="string">on</span>;
-<span class="comment">% title('A geodesic sphere triangulation and its dual consisting of pentagons and hexagons','FontSize',fontSize);</span>
-xlabel(<span class="string">'X'</span>,<span class="string">'FontSize'</span>,fontSize); ylabel(<span class="string">'Y'</span>,<span class="string">'FontSize'</span>,fontSize); zlabel(<span class="string">'Z'</span>,<span class="string">'FontSize'</span>,fontSize);
-hp=patch(<span class="string">'Faces'</span>,F,<span class="string">'Vertices'</span>,V);
-set(hp,<span class="string">'FaceColor'</span>,<span class="string">'none'</span>,<span class="string">'EdgeColor'</span>,plotColor2,<span class="string">'LineWidth'</span>,edgeWidth,<span class="string">'Marker'</span>,<span class="string">'o'</span>,<span class="string">'MarkerFaceColor'</span>,plotColor1,<span class="string">'MarkerEdgeColor'</span>,<span class="string">'none'</span>,<span class="string">'MarkerSize'</span>,markerSize);
 
-<span class="comment">%Splitting up the plotting due to difference is face types (e.g.</span>
-<span class="comment">%pentagons,or hexagons)</span>
-<span class="keyword">for</span> i=1:1:numel(Fd)
-    Ft=Fd{i};
-    hp=patch(<span class="string">'Faces'</span>,Ft,<span class="string">'Vertices'</span>,Vd);
-    C=rand(size(Ft,1),1); <span class="comment">%Create random color</span>
-    set(hp,<span class="string">'FaceColor'</span>,<span class="string">'flat'</span>,<span class="string">'CData'</span>,C,<span class="string">'FaceAlpha'</span>,0.6,<span class="string">'EdgeColor'</span>,plotColor2,<span class="string">'LineWidth'</span>,edgeWidth,<span class="string">'Marker'</span>,<span class="string">'o'</span>,<span class="string">'MarkerFaceColor'</span>,plotColor2,<span class="string">'MarkerEdgeColor'</span>,<span class="string">'none'</span>,<span class="string">'MarkerSize'</span>,markerSize);
-<span class="keyword">end</span>
+cFigure;
+hold <span class="string">on</span>;
+
+gpatch(F,V,<span class="string">'none'</span>,<span class="string">'r'</span>,1,edgeWidth);
+plotV(V,<span class="string">'r.'</span>,<span class="string">'MarkerSize'</span>,markerSize);
+gpatch(Fd,Vd,<span class="string">'bw'</span>,<span class="string">'b'</span>,0.9,edgeWidth);
+plotV(Vd,<span class="string">'b.'</span>,<span class="string">'MarkerSize'</span>,markerSize);
+axisGeom(gca,fontSize);
+camlight <span class="string">headlight</span>;
 colormap(cmap2);
-axis <span class="string">equal</span>; axis <span class="string">tight</span>; view(3); axis <span class="string">vis3d</span>; grid <span class="string">on</span>; box <span class="string">on</span>;
-set(gca,<span class="string">'FontSize'</span>,fontSize);
-camlight <span class="string">headlight</span>; lighting <span class="string">flat</span>;
 drawnow;
-</pre><img vspace="5" hspace="5" src="HELP_patch_dual_02.png" alt=""> <p><img vspace="5" hspace="5" src="gibbVerySmall.gif" alt=""> </p><p><i><b>GIBBON</b></i> <a href="www.gibboncode.org">www.gibboncode.org</a></p><p><i>Kevin Mattheus Moerman</i>, <a href="gibbon.toolbox@gmail.com">gibbon.toolbox@gmail.com</a></p><p><i><b>GIBBON footer text</b></i></p><p>License: <a href="https://github.com/gibbonCode/GIBBON/blob/master/LICENSE">https://github.com/gibbonCode/GIBBON/blob/master/LICENSE</a></p><p>GIBBON: The Geometry and Image-based Bioengineering add-On. A toolbox for image segmentation, image-based modeling, meshing, and finite element analysis.</p><p>Copyright (C) 2018  Kevin Mattheus Moerman</p><p>This program is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.</p><p>This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for more details.</p><p>You should have received a copy of the GNU General Public License along with this program.  If not, see <a href="http://www.gnu.org/licenses/">http://www.gnu.org/licenses/</a>.</p><p class="footer"><br><a href="https://www.mathworks.com/products/matlab/">Published with MATLAB&reg; R2018a</a><br></p></div><!--
+</pre><img vspace="5" hspace="5" src="HELP_patch_dual_03.png" alt=""> <p><img vspace="5" hspace="5" src="gibbVerySmall.gif" alt=""> </p><p><i><b>GIBBON</b></i> <a href="www.gibboncode.org">www.gibboncode.org</a></p><p><i>Kevin Mattheus Moerman</i>, <a href="gibbon.toolbox@gmail.com">gibbon.toolbox@gmail.com</a></p><p><i><b>GIBBON footer text</b></i></p><p>License: <a href="https://github.com/gibbonCode/GIBBON/blob/master/LICENSE">https://github.com/gibbonCode/GIBBON/blob/master/LICENSE</a></p><p>GIBBON: The Geometry and Image-based Bioengineering add-On. A toolbox for image segmentation, image-based modeling, meshing, and finite element analysis.</p><p>Copyright (C) 2018  Kevin Mattheus Moerman</p><p>This program is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.</p><p>This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for more details.</p><p>You should have received a copy of the GNU General Public License along with this program.  If not, see <a href="http://www.gnu.org/licenses/">http://www.gnu.org/licenses/</a>.</p><p class="footer"><br><a href="https://www.mathworks.com/products/matlab/">Published with MATLAB&reg; R2018a</a><br></p></div><!--
 ##### SOURCE BEGIN #####
 %% patch_dual
 % Below is a demonstration of the features of the |patch_dual| function
@@ -154,7 +188,7 @@ drawnow;
 
 %% Description
 % Computes the dual of the input tesselation defined by the vertices V and
-% faces F. 
+% faces F.
 
 %% Examples
 
@@ -164,18 +198,16 @@ clear; close all; clc;
 %%
 % Plot settings
 fontSize=15;
-faceColor='b';
-faceAlpha=0.5;
-plotColor1=0.2.*ones(1,3);
-plotColor2=0.5.*ones(1,3);
-edgeWidth=1.5;
-markerSize=10;
+plotColor1=0.25.*ones(1,3);
+plotColor2=0.75.*ones(1,3);
+edgeWidth=2;
+markerSize=25;
 cmap1=gjet(250);
 cmap2=autumn(250);
 
 %% Example: Computing the dual of a surface triangulation
 
-%% 
+%%
 % Creating example triangulation (circle filled triangle)
 
 %Boundary and mesh parameters
@@ -194,42 +226,91 @@ Vb=[x(:) y(:)];
 %Create Delaunay derived mesh
 regionCell={Vb};
 [F,V,~,DT]=regionTriMeshRand2D(regionCell,pointSpacing,stdP,1,0);
-V(:,3)=(sin(3*V(:,1))+sin(3*V(:,2)))/2; 
+V(:,3)=(sin(3*V(:,1))+sin(3*V(:,2)))/2;
 
 %Deriving the dual of the patch
 [Vd,Fd]=patch_dual(V,F);
 
-%% 
+%%
 %Plotting results
-hf=cFigure;
-hold on;
-% title('A geodesic sphere triangulation and its dual consisting of pentagons and hexagons','FontSize',fontSize);
-xlabel('X','FontSize',fontSize); ylabel('Y','FontSize',fontSize); zlabel('Z','FontSize',fontSize);
-hp=patch('Faces',F,'Vertices',V);
-set(hp,'FaceColor','flat','CData',V(:,3),'FaceAlpha',0.9,'EdgeColor',plotColor2,'LineWidth',edgeWidth);
 
-%Splitting up the plotting due to difference is face types (e.g.
-%pentagons,or hexagons)
-for i=1:1:numel(Fd)
-    Ft=Fd{i};
-    hp=patch('Faces',Ft,'Vertices',Vd);
-       set(hp,'FaceColor','none','FaceAlpha',0.2,'EdgeColor',plotColor2,'LineWidth',edgeWidth);
-end
+cFigure;
+hold on;
+
+gpatch(F,V,V(:,3),plotColor1,0.9,edgeWidth);
+gpatch(Fd,Vd,'none',plotColor2,1,edgeWidth);
+
+axisGeom(gca,fontSize);
+camlight headlight;
 colormap(cmap1);
-axis equal; axis tight; view(3); axis vis3d; grid on; box on; 
-set(gca,'FontSize',fontSize);
-camlight headlight; lighting flat; 
+drawnow;
+
+%%
+
+%Boundary 1
+ns=150;
+t=linspace(0,2*pi,ns);
+t=t(1:end-1);
+r=6+2.*sin(5*t);
+[x,y] = pol2cart(t,r);
+V1=[x(:) y(:)];
+
+%Boundary 2
+[x,y] = pol2cart(t,ones(size(t)));
+V2=[x(:) y(:)+4];
+
+%Boundary 3
+[x,y] = pol2cart(t,2*ones(size(t)));
+V3=[x(:) y(:)-0.5];
+
+%Meshing the region
+pointSpacing=0.75; %Desired point spacing
+[F,V]=regionTriMesh2D({V1,V2,V3},pointSpacing,1,0);
+
+%Deriving the dual of the patch
+[Vd0,Fd0]=patch_dual(V,F,0);
+[Vd1,Fd1]=patch_dual(V,F,1);
+[Vd2,Fd2]=patch_dual(V,F,2);
+
+%%
+%Plotting results
+
+cFigure;
+subplot(1,3,1); hold on;
+title('Edge compensation 0 (off)');
+gpatch(F,V,'rw','r',0.5);
+gpatch(Fd0,Vd0,'none','b',1);
+axisGeom(gca,fontSize);
+colormap(cmap2);
+view(2);
+
+subplot(1,3,2); hold on;
+title('Edge compensation 1');
+gpatch(F,V,'rw','r',0.5);
+gpatch(Fd1,Vd1,'none','b',1);
+axisGeom(gca,fontSize);
+colormap(cmap2);
+view(2);
+
+subplot(1,3,3); hold on;
+title('Edge compensation 2');
+gpatch(F,V,'rw','r',0.5);
+gpatch(Fd2,Vd2,'none','b',1);
+axisGeom(gca,fontSize);
+colormap(cmap2);
+view(2);
+
 drawnow;
 
 %% Example: The "Buckminster Fuller" dome triangulation and its dual
 % The patch_dual function assumes that a valid and appropriate dual exists
 % for the input patch data specified by F and V (faces and vertices). If
 % they are not appropriate the output may for instance not form an
-% enclosing shape or output faces may not be planar. 
+% enclosing shape or output faces may not be planar.
 
 %Defining geodesic dome triangulation
 r=1; %sphere radius
-n=2; %Refinements   
+n=2; %Refinements
 [F,V,~]=geoSphere(n,r);
 
 %Deriving the dual of the patch
@@ -237,25 +318,17 @@ n=2; %Refinements
 
 %%
 %Plotting results
-hf=cFigure;
-hold on;
-% title('A geodesic sphere triangulation and its dual consisting of pentagons and hexagons','FontSize',fontSize);
-xlabel('X','FontSize',fontSize); ylabel('Y','FontSize',fontSize); zlabel('Z','FontSize',fontSize);
-hp=patch('Faces',F,'Vertices',V);
-set(hp,'FaceColor','none','EdgeColor',plotColor2,'LineWidth',edgeWidth,'Marker','o','MarkerFaceColor',plotColor1,'MarkerEdgeColor','none','MarkerSize',markerSize);
 
-%Splitting up the plotting due to difference is face types (e.g.
-%pentagons,or hexagons)
-for i=1:1:numel(Fd)
-    Ft=Fd{i};
-    hp=patch('Faces',Ft,'Vertices',Vd);
-    C=rand(size(Ft,1),1); %Create random color
-    set(hp,'FaceColor','flat','CData',C,'FaceAlpha',0.6,'EdgeColor',plotColor2,'LineWidth',edgeWidth,'Marker','o','MarkerFaceColor',plotColor2,'MarkerEdgeColor','none','MarkerSize',markerSize);
-end
+cFigure;
+hold on;
+
+gpatch(F,V,'none','r',1,edgeWidth);
+plotV(V,'r.','MarkerSize',markerSize);
+gpatch(Fd,Vd,'bw','b',0.9,edgeWidth);
+plotV(Vd,'b.','MarkerSize',markerSize);
+axisGeom(gca,fontSize);
+camlight headlight;
 colormap(cmap2);
-axis equal; axis tight; view(3); axis vis3d; grid on; box on; 
-set(gca,'FontSize',fontSize);
-camlight headlight; lighting flat; 
 drawnow;
 
 %%
@@ -266,28 +339,28 @@ drawnow;
 % <www.gibboncode.org>
 %
 % _Kevin Mattheus Moerman_, <gibbon.toolbox@gmail.com>
- 
-%% 
-% _*GIBBON footer text*_ 
-% 
+
+%%
+% _*GIBBON footer text*_
+%
 % License: <https://github.com/gibbonCode/GIBBON/blob/master/LICENSE>
-% 
+%
 % GIBBON: The Geometry and Image-based Bioengineering add-On. A toolbox for
 % image segmentation, image-based modeling, meshing, and finite element
 % analysis.
-% 
+%
 % Copyright (C) 2018  Kevin Mattheus Moerman
-% 
+%
 % This program is free software: you can redistribute it and/or modify
 % it under the terms of the GNU General Public License as published by
 % the Free Software Foundation, either version 3 of the License, or
 % (at your option) any later version.
-% 
+%
 % This program is distributed in the hope that it will be useful,
 % but WITHOUT ANY WARRANTY; without even the implied warranty of
 % MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 % GNU General Public License for more details.
-% 
+%
 % You should have received a copy of the GNU General Public License
 % along with this program.  If not, see <http://www.gnu.org/licenses/>.
 

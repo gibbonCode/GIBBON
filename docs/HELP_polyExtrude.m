@@ -61,7 +61,7 @@ drawnow;
 patchTypes={'quad','tri','tri_slash'};
 
 cFigure;
-suptitle('Extrusion surface mesh types')
+gtitle('Extrusion surface mesh types',fontSize);
 for q=1:1:numel(patchTypes)
     
 cPar.patchType=patchTypes{q};

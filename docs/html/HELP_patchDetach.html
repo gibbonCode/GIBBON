@@ -6,7 +6,7 @@
    <!--
 This HTML was auto-generated from MATLAB code.
 To make changes, update the MATLAB code and republish this document.
-      --><title>patchDetach</title><meta name="generator" content="MATLAB 9.4"><link rel="schema.DC" href="http://purl.org/dc/elements/1.1/"><meta name="DC.date" content="2018-04-26"><meta name="DC.source" content="HELP_patchDetach.m"><style type="text/css">
+      --><title>patchDetach</title><meta name="generator" content="MATLAB 9.4"><link rel="schema.DC" href="http://purl.org/dc/elements/1.1/"><meta name="DC.date" content="2018-05-15"><meta name="DC.source" content="HELP_patchDetach.m"><style type="text/css">
 html,body,div,span,applet,object,iframe,h1,h2,h3,h4,h5,h6,p,blockquote,pre,a,abbr,acronym,address,big,cite,code,del,dfn,em,font,img,ins,kbd,q,s,samp,small,strike,strong,sub,sup,tt,var,b,u,i,center,dl,dt,dd,ol,ul,li,fieldset,form,label,legend,table,caption,tbody,tfoot,thead,tr,th,td{margin:0;padding:0;border:0;outline:0;font-size:100%;vertical-align:baseline;background:transparent}body{line-height:1}ol,ul{list-style:none}blockquote,q{quotes:none}blockquote:before,blockquote:after,q:before,q:after{content:'';content:none}:focus{outine:0}ins{text-decoration:none}del{text-decoration:line-through}table{border-collapse:collapse;border-spacing:0}
 
 html { min-height:100%; margin-bottom:1px; }
@@ -66,20 +66,20 @@ table td { padding:7px 5px; text-align:left; vertical-align:top; border:1px soli
 
 
 
-  </style></head><body><div class="content"><h1>patchDetach</h1><!--introduction--><p>Below is a demonstration of the features of the <tt>patchDetach</tt> function</p><!--/introduction--><h2>Contents</h2><div><ul><li><a href="#1">Syntax</a></li><li><a href="#2">Description</a></li><li><a href="#3">Examples</a></li><li><a href="#6">Example: Seperate and shrink faces homogeneously</a></li><li><a href="#8">Example: Seperate and shrink faces in a spatially varying way</a></li></ul></div><h2 id="1">Syntax</h2><p><tt>[Fs,Vs]=patchDetach(F,V,shrinkfactor);</tt></p><h2 id="2">Description</h2><p>This function seperates the nodes (if shared) for all faces. If a constant or spatially varying shrinkfactor is provided the faces are shrunk (around their mean) as well.</p><h2 id="3">Examples</h2><pre class="codeinput">clear; close <span class="string">all</span>; clc;
+  </style></head><body><div class="content"><h1>patchDetach</h1><!--introduction--><p>Below is a demonstration of the features of the <tt>patchDetach</tt> function</p><!--/introduction--><h2>Contents</h2><div><ul><li><a href="#1">Syntax</a></li><li><a href="#2">Description</a></li><li><a href="#3">Examples</a></li><li><a href="#6">Example: Seperate and scale faces homogeneously</a></li><li><a href="#8">Example: Seperate and shrink faces in a spatially varying way</a></li></ul></div><h2 id="1">Syntax</h2><p><tt>[Fs,Vs]=patchDetach(F,V,scalefactor);</tt></p><h2 id="2">Description</h2><p>This function seperates the nodes (if shared) for all faces. If a constant or spatially varying scalefactor is provided the faces are scaled (around their mean) as well.</p><h2 id="3">Examples</h2><pre class="codeinput">clear; close <span class="string">all</span>; clc;
 </pre><p>Plot settings</p><pre class="codeinput">fontSize=15;
 plotColor1=0.25.*ones(1,3);
 plotColor2=0.75.*ones(1,3);
 edgeWidth=2;
 markerSize=25;
-</pre><h2 id="6">Example: Seperate and shrink faces homogeneously</h2><pre class="codeinput"><span class="comment">%Defining geodesic dome triangulation</span>
+</pre><h2 id="6">Example: Seperate and scale faces homogeneously</h2><pre class="codeinput"><span class="comment">%Defining geodesic dome triangulation</span>
 r=1; <span class="comment">%sphere radius</span>
 n=2; <span class="comment">%Refinements</span>
 [F,V,~]=geoSphere(n,r);
 
 <span class="comment">%Detach nodes and shrink faces</span>
-shrinkFactor=0.5;
-[Fs,Vs]=patchDetach(F,V,shrinkFactor);
+scaleFactor=0.5;
+[Fs,Vs]=patchDetach(F,V,scaleFactor);
 </pre><pre class="codeinput"><span class="comment">%Plotting results</span>
 
 cFigure;
@@ -97,11 +97,11 @@ camlight <span class="string">headlight</span>;
 view(2);
 
 drawnow;
-</pre><img vspace="5" hspace="5" src="HELP_patchDetach_01.png" alt=""> <h2 id="8">Example: Seperate and shrink faces in a spatially varying way</h2><p>Create a spatially varying shrink factor between 0 and 1</p><pre class="codeinput">shrinkFactor=V(:,2);
-shrinkFactor=mean(shrinkFactor(F),2);
-shrinkFactor=shrinkFactor-min(shrinkFactor(:));
-shrinkFactor=shrinkFactor./max(shrinkFactor(:));
-</pre><p>Detach nodes and shrink faces</p><pre class="codeinput">[Fs,Vs]=patchDetach(F,V,shrinkFactor);
+</pre><img vspace="5" hspace="5" src="HELP_patchDetach_01.png" alt=""> <h2 id="8">Example: Seperate and shrink faces in a spatially varying way</h2><p>Create a spatially varying shrink factor between 0 and 1</p><pre class="codeinput">scaleFactor=V(:,2);
+scaleFactor=mean(scaleFactor(F),2);
+scaleFactor=scaleFactor-min(scaleFactor(:));
+scaleFactor=scaleFactor./max(scaleFactor(:));
+</pre><p>Detach nodes and shrink faces</p><pre class="codeinput">[Fs,Vs]=patchDetach(F,V,scaleFactor);
 </pre><p>Plotting results</p><pre class="codeinput">cFigure;
 subplot(1,2,1); hold <span class="string">on</span>;
 gpatch(F,V,<span class="string">'rw'</span>,<span class="string">'k'</span>,1,edgeWidth);
@@ -123,12 +123,12 @@ drawnow;
 % Below is a demonstration of the features of the |patchDetach| function
 
 %% Syntax
-% |[Fs,Vs]=patchDetach(F,V,shrinkfactor);|
+% |[Fs,Vs]=patchDetach(F,V,scalefactor);|
 
 %% Description
 % This function seperates the nodes (if shared) for all faces. If a
-% constant or spatially varying shrinkfactor is provided the faces are
-% shrunk (around their mean) as well. 
+% constant or spatially varying scalefactor is provided the faces are
+% scaled (around their mean) as well. 
 
 %% Examples
 
@@ -143,15 +143,15 @@ plotColor2=0.75.*ones(1,3);
 edgeWidth=2;
 markerSize=25;
 
-%% Example: Seperate and shrink faces homogeneously
+%% Example: Seperate and scale faces homogeneously
 %Defining geodesic dome triangulation
 r=1; %sphere radius
 n=2; %Refinements
 [F,V,~]=geoSphere(n,r);
 
 %Detach nodes and shrink faces
-shrinkFactor=0.5;
-[Fs,Vs]=patchDetach(F,V,shrinkFactor);
+scaleFactor=0.5;
+[Fs,Vs]=patchDetach(F,V,scaleFactor);
 
 %%
 %Plotting results
@@ -176,14 +176,14 @@ drawnow;
 
 %%
 % Create a spatially varying shrink factor between 0 and 1
-shrinkFactor=V(:,2);
-shrinkFactor=mean(shrinkFactor(F),2);
-shrinkFactor=shrinkFactor-min(shrinkFactor(:));
-shrinkFactor=shrinkFactor./max(shrinkFactor(:));
+scaleFactor=V(:,2);
+scaleFactor=mean(scaleFactor(F),2);
+scaleFactor=scaleFactor-min(scaleFactor(:));
+scaleFactor=scaleFactor./max(scaleFactor(:));
 
 %%
 % Detach nodes and shrink faces
-[Fs,Vs]=patchDetach(F,V,shrinkFactor);
+[Fs,Vs]=patchDetach(F,V,scaleFactor);
 
 %%
 % Plotting results

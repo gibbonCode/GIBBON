@@ -1,5 +1,6 @@
 function testGibbon(varargin)
 
+% function testGibbon(testSet,testMode,approveQuestion,startInd)
 switch nargin
     case 0
         testSet='all';

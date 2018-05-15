@@ -38,7 +38,8 @@ set(jSlider, 'MajorTickSpacing',tickSizeMajor_I, 'MinorTickSpacing',1, 'PaintTic
 
 %% Set resize function
 
-set(hf,'ResizeFcn',{@setScrollSizeFunc,{hf,scrollBarWidth,jSlider}});
+% set(hf,'ResizeFcn',{@setScrollSizeFunc,{hf,scrollBarWidth,jSlider}});
+set(hf,'ResizeFcn',@(h,e)setScrollSizeFunc(h,e,{hf,scrollBarWidth,jSlider}));
 
 %% Initialize figure callbacks
 
