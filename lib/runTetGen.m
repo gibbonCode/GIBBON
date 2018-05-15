@@ -102,6 +102,7 @@ function [meshOutput]=runTetGen(inputStruct)
 % 2015/07/10 Fixed handling of spaces in paths
 % 2015/09/22 Updated for new tet4_tet10 function, removed for loop for
 % boundaryMarker handling for tet10 elements
+% 2018/05/15 Change temp files to be the general GIBBON temp folder
 %------------------------------------------------------------------------
 
 %% PARSE INPUT
@@ -190,7 +191,12 @@ end
 
 %Setting tetGen pathnames
 pathNameTetGen=fullfile(fileparts(fileparts(mfilename('fullpath'))),'lib_ext','tetGen');
-pathNameTempFiles=fullfile(fileparts(fileparts(mfilename('fullpath'))),'lib_ext','tetGen','tempFiles');
+pathNameTempFiles=fullfile(fileparts(fileparts(mfilename('fullpath'))),'data','temp');
+
+%Create temp folder if it does not exist
+if ~exist(pathNameTempFiles,'file')
+    mkdir(pathNameTempFiles);
+end
 
 %Get model name
 modelName=inputStruct.modelName;
@@ -383,18 +389,19 @@ if copyFiles
         fileList={fileList(1:end).name}; %Current file list
         
         %Copying files to output location
-        for q=1:1:numel(fileList);
-            fileNameTemp=fullfile(pathNameTempFiles,fileList{q});
-            fileName=fullfile(savePathStr,fileList{q});
-            copyfile(fileNameTemp,fileName);
+        for q=1:1:numel(fileList)
+            fileNameTemp=fullfile(pathNameTempFiles,fileList{q});            
+            fileName=fullfile(savePathStr,fileList{q});            
+            if ~strcmp(fileNameTemp,fileName) %If the names are not the same
+                %A location other than the temp folder is an output folder
+                copyfile(fileNameTemp,fileName);
+            end
         end
     end    
 end
 
 %% Clean up directory
 cleanUpTetGen(pathNameTempFiles); % Clean up temp directory
- 
-
  
 %% 
 % _*GIBBON footer text*_ 

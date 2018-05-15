@@ -1,5 +1,11 @@
 function installGibbon
 
+% function installGibbon
+%-------------------------------------------------------------------------
+% Change log: 
+% 2018/05/15 Added creation of temp folder if it does not exist
+%-------------------------------------------------------------------------
+
 %% Add GIBBON library path so functions are known to use here
 gibbonPath=fileparts(mfilename('fullpath')); %Get the GIBBON path
 addpath(fullfile(gibbonPath,'lib')); %Add gibbon lib path so gibbon functions used here are known
@@ -83,6 +89,14 @@ hf.UserData.uihandles.hAxis=hAxis;
 
 %%
 drawnow;
+
+%% Adding temp folder if it does not exist
+
+tempPath=fullfile(gibbonPath,'data','temp');
+
+if ~exist(tempPath,'file')
+    mkdir(tempPath)
+end
 
 %% Adding paths
 

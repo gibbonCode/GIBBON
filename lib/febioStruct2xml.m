@@ -9,11 +9,12 @@ function [varargout]=febioStruct2xml(varargin)
 % Kevin Mattheus Moerman
 % gibbon.toolbox@gmail.com
 %
-% 2018/01/15: Created
-% 2018/02/09: Found bug in text write mode.
-% 2018/02/18: Created several "array parse methods" including based on text
+% 2018/01/15 Created
+% 2018/02/09 Found bug in text write mode.
+% 2018/02/18 Created several "array parse methods" including based on text
 % file exporting providing a significant computational time reduction over
 % full XML based parsing. 
+% 2018/05/15 Create temp directory if it is does not exist
 % To do:
 % Gracefully handle empty fields e.g. 0x8 element array
 %------------------------------------------------------------------------
@@ -48,9 +49,16 @@ end
 
 [optionStruct]=structComplete(optionStruct,defaultOptionStruct,1); %Complement provided with default if missing or empty
 
+defaultFolder = fileparts(fileparts(mfilename('fullpath')));
+savePath=fullfile(defaultFolder,'data','temp');
+
+%Create temp folder if it does not exist
+if ~exist(savePath,'file')
+    mkdir(savePath);
+end
+
+%Create output file name if not provided
 if isempty(fileName)
-    defaultFolder = fileparts(fileparts(mfilename('fullpath')));
-    savePath=fullfile(defaultFolder,'data','temp');
     fileName=fullfile(savePath,'temp.xml');
 end
 
