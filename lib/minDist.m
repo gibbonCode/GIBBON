@@ -1,6 +1,6 @@
 function varargout=minDist(varargin)
 
-% function [D1,minIND]=minDist(V1,V2,maxVarSize,selfAvoid)
+% function [D1,minIND]=minDist(V1,V2,maxVarSize,selfAvoid,numFreeBytes)
 
 %% Parse input
 if nargin<2
@@ -13,17 +13,28 @@ switch nargin
     case 2        
         maxVarSize=[]; %Empty will force calcucation below
         selfAvoid=0; 
+        numFreeBytes=[];
     case 3
         maxVarSize=varargin{3};
         selfAvoid=0; 
+        numFreeBytes=[];
     case 4
         maxVarSize=varargin{3};
-        selfAvoid=varargin{4};        
+        selfAvoid=varargin{4}; 
+        numFreeBytes=[];
+    case 5
+        maxVarSize=varargin{3};
+        selfAvoid=varargin{4};
+        numFreeBytes=varargin{5};        
+end
+
+%Get free memory
+if isempty(numFreeBytes)
+    [numFreeBytes]=freeMemory;
 end
 
 %Get max variable size available        
-if isempty(maxVarSize)
-    [numFreeBytes]=freeMemory;
+if isempty(maxVarSize)    
     maxVarSize=numFreeBytes/2;
 end
 
@@ -31,8 +42,8 @@ if isnan(maxVarSize)
     numSteps=1;
 else
     %Derive class dependent variable size
-    [~,b1]=maxnumel(V1(1));
-    [~,b2]=maxnumel(V2(1));
+    [~,b1]=maxnumel(V1(1),numFreeBytes);
+    [~,b2]=maxnumel(V2(1),numFreeBytes);
     b=max([b1 b2]);
     numelVar=numel(V1)*numel(V2);
     varSize=numelVar*b;

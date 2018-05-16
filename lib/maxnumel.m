@@ -1,7 +1,23 @@
-function [varargout]=maxnumel(a)
+function [varargout]=maxnumel(varargin)
 
-%Max variable size available
-[numFreeBytes]=freeMemory;
+% function [n,numBytesType]=maxnumel(a,numFreeBytes)
+
+%% Parse input
+
+switch nargin
+    case 1
+        a=varargin{1};
+        numFreeBytes=[];
+    case 2
+        a=varargin{1};
+        numFreeBytes=varargin{2};
+end
+%%
+
+if isempty(numFreeBytes)
+    %Max variable size available
+    [numFreeBytes]=freeMemory;
+end
 
 %Size of input variable
 sizA=size(a);
