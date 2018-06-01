@@ -14,13 +14,11 @@ try
         %         mem_stat = str2double(regexp(S, '[0-9]*', 'match')); % Get the numbers
         %         numFreeBytes = mem_stat(3) + mem_stat(end) ;
         
-        [~,numFreeBytesStr]=unix('free -b | awk ''/Mem/{print $3} /Mem/{print $6}''');
-        numFreeBytes=sum(str2double(numFreeBytesStr));
-    elseif ismac 
-        %UNTESTED!
-        [~,S] = unix('vm_stat | grep free'); % Excute vm_stat
-        mem_stat = strfind(S,' '); % Detect spaces
-        numFreeBytes = str2double(S(mem_stat(end):end))*4096; %Take last value and convert pages to bytes
+        [~,numFreeBytesStr]=unix('free -b | awk ''/Mem/{print $3} /Mem/{print $6}''');        
+        numFreeBytes=sum(sscanf(numFreeBytesStr,'%f')); %numFreeBytes=sum(str2double(numFreeBytesStr));
+    elseif ismac         
+        [~,s] = unix('vm_stat | grep free'); % Excute vm_stat
+        numFreeBytes=str2double(regexp(s,'\d+','match'))*4096;         
     end
 catch 
     error('Could not determine free memory');

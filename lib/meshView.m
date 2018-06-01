@@ -104,7 +104,7 @@ else
 end
 colormap(gca,cMap); 
 if numMaterials>1
-    colorbar;
+    icolorbar;
 end
 
 %%

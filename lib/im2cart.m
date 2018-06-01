@@ -1,4 +1,4 @@
-function [X,Y,Z]=im2cart(I,J,K,v)
+function [X,Y,Z]=im2cart(varargin)
 
 % function [X Y Z]=im2cart(I,J,K,v)
 % ------------------------------------------------------------------------
@@ -14,6 +14,42 @@ function [X,Y,Z]=im2cart(I,J,K,v)
 % 2008/08/15
 % ------------------------------------------------------------------------
 
+%% Parse input
+
+switch nargin
+    case 1
+        IJK=varargin{1};         
+        v=[];        
+        I=IJK(:,1);
+        J=IJK(:,2);
+        K=IJK(:,3);
+    case 2
+        IJK=varargin{1};        
+        v=varargin{2};        
+        I=IJK(:,1);
+        J=IJK(:,2);
+        K=IJK(:,3);
+    case 3
+        I=varargin{1};
+        J=varargin{2};
+        K=varargin{3};
+        v=[];
+    case 4
+        I=varargin{1};
+        J=varargin{2};
+        K=varargin{3};
+        v=varargin{4};
+end
+
+if isempty(v)
+    v=ones(1,3);
+end
+
+if numel(v)==1
+    v=v*ones(1,3);
+end
+
+%%
 X=(J-0.5).*v(2);
 Y=(I-0.5).*v(1);
 Z=(K-0.5).*v(3);

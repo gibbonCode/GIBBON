@@ -21,14 +21,12 @@ if any(L(:))
         [X_in,Y_in,Z_in]=im2cart(I_in,J_in,K_in,voxelSize);
         V_in=[X_in Y_in Z_in];
         
-        %Plot settings
-        figColor='w'; figColorDef='white';
+        %Plot settings        
         fontSize=20;
         markerSize1=round(max(voxelSize)*25);
         faceAlpha1=1;
         
-        hf=figuremax(figColor,figColorDef);
-        xlabel('X','FontSize',fontSize); ylabel('Y','FontSize',fontSize); zlabel('Z','FontSize',fontSize);
+        cFigure        
         hold on;
         
         %Found voxel location
@@ -40,25 +38,24 @@ if any(L(:))
         L_plot=L_plot&L>0;
         [Fm,Vm,Cm]=ind2patch(L_plot,double(L),'sk');
         [Vm(:,1),Vm(:,2),Vm(:,3)]=im2cart(Vm(:,2),Vm(:,1),Vm(:,3),voxelSize);
-        patch('Faces',Fm,'Vertices',Vm,'FaceColor','flat','CData',Cm,'EdgeColor','k','FaceAlpha',faceAlpha1);
+        gpatch(Fm,Vm,Cm,'k',faceAlpha1);
         
         L_plot=false(size(L));
         L_plot(I_in,:,:)=1;
         L_plot=L_plot&L>0;
         [Fm,Vm,Cm]=ind2patch(L_plot,L,'si');
         [Vm(:,1),Vm(:,2),Vm(:,3)]=im2cart(Vm(:,2),Vm(:,1),Vm(:,3),voxelSize);
-        patch('Faces',Fm,'Vertices',Vm,'FaceColor','flat','CData',Cm,'EdgeColor','k','FaceAlpha',faceAlpha1);
+        gpatch(Fm,Vm,Cm,'k',faceAlpha1);
         
         L_plot=false(size(L));
         L_plot(:,J_in,:)=1;
         L_plot=L_plot&L>0;
         [Fm,Vm,Cm]=ind2patch(L_plot,L,'sj');
         [Vm(:,1),Vm(:,2),Vm(:,3)]=im2cart(Vm(:,2),Vm(:,1),Vm(:,3),voxelSize);
-        patch('Faces',Fm,'Vertices',Vm,'FaceColor','flat','CData',Cm,'EdgeColor','k','FaceAlpha',faceAlpha1);
+        gpatch(Fm,Vm,Cm,'k',faceAlpha1);
         
-        axis equal; view(3); axis tight;  grid on;  set(gca,'FontSize',fontSize);
-        set(gca,'FontSize',fontSize);
         colormap(gray(3));
+        axisGeom(gca,fontSize);                
         drawnow;
     end
 else

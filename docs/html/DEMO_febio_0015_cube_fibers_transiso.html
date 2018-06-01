@@ -6,7 +6,7 @@
    <!--
 This HTML was auto-generated from MATLAB code.
 To make changes, update the MATLAB code and republish this document.
-      --><title>DEMO_febio_0015_cube_fibers_transiso</title><meta name="generator" content="MATLAB 9.4"><link rel="schema.DC" href="http://purl.org/dc/elements/1.1/"><meta name="DC.date" content="2018-05-15"><meta name="DC.source" content="DEMO_febio_0015_cube_fibers_transiso.m"><style type="text/css">
+      --><title>DEMO_febio_0015_cube_fibers_transiso</title><meta name="generator" content="MATLAB 9.4"><link rel="schema.DC" href="http://purl.org/dc/elements/1.1/"><meta name="DC.date" content="2018-06-01"><meta name="DC.source" content="DEMO_febio_0015_cube_fibers_transiso.m"><style type="text/css">
 html,body,div,span,applet,object,iframe,h1,h2,h3,h4,h5,h6,p,blockquote,pre,a,abbr,acronym,address,big,cite,code,del,dfn,em,font,img,ins,kbd,q,s,samp,small,strike,strong,sub,sup,tt,var,b,u,i,center,dl,dt,dd,ol,ul,li,fieldset,form,label,legend,table,caption,tbody,tfoot,thead,tr,th,td{margin:0;padding:0;border:0;outline:0;font-size:100%;vertical-align:baseline;background:transparent}body{line-height:1}ol,ul{list-style:none}blockquote,q{quotes:none}blockquote:before,blockquote:after,q:before,q:after{content:'';content:none}:focus{outine:0}ins{text-decoration:none}del{text-decoration:line-through}table{border-collapse:collapse;border-spacing:0}
 
 html { min-height:100%; margin-bottom:1px; }
@@ -88,7 +88,7 @@ cubeSize=10;
 sampleWidth=cubeSize; <span class="comment">%Width</span>
 sampleThickness=cubeSize; <span class="comment">%Thickness</span>
 sampleHeight=cubeSize; <span class="comment">%Height</span>
-pointSpacings=2*ones(1,3); <span class="comment">%Desired point spacing between nodes</span>
+pointSpacings=1*ones(1,3); <span class="comment">%Desired point spacing between nodes</span>
 numElementsWidth=round(sampleWidth/pointSpacings(1)); <span class="comment">%Number of elemens in dir 1</span>
 numElementsThickness=round(sampleThickness/pointSpacings(2)); <span class="comment">%Number of elemens in dir 2</span>
 numElementsHeight=round(sampleHeight/pointSpacings(3)); <span class="comment">%Number of elemens in dir 3</span>
@@ -105,13 +105,29 @@ loadingOption=<span class="string">'compression'</span>; <span class="comment">%
 displacementMagnitude=(stretchLoad*sampleHeight)-sampleHeight; <span class="comment">%The displacement magnitude</span>
 
 <span class="comment">%Material parameter set</span>
-c1=1e-3; <span class="comment">%Shear-modulus-like parameter</span>
-m1=12; <span class="comment">%Material parameter setting degree of non-linearity of ground matrix</span>
-ksi=c1*100;
-beta=3;
-k_factor=1e3; <span class="comment">%Bulk modulus factor</span>
+k_factor=500; <span class="comment">%Bulk modulus factor</span>
+
+fiberType=2;
+<span class="keyword">switch</span> fiberType
+    <span class="keyword">case</span> 1
+        c1=1e-3; <span class="comment">%Shear-modulus-like parameter</span>
+        m1=12; <span class="comment">%Material parameter setting degree of non-linearity of ground matrix</span>
+        ksi=c1*100;
+        beta=3;
+        k=0.5.*(c1+ksi)*k_factor; <span class="comment">%Bulk modulus</span>
+    <span class="keyword">case</span> 2
+        Q=0.5;
+
+        c=6.115e-04;
+        c1=Q*c;
+        m1=2.007;
+        ksi_p=9.0590e-05;
+        beta=3.294*ones(1,3);
+        f_transiso=235.1;
+        k=(2*c1+ksi_p)*k_factor;
+        ksi=[ksi_p ksi_p f_transiso*ksi_p];
+<span class="keyword">end</span>
 alphaFib=1/3*pi;
-k=0.5.*(c1+ksi)*k_factor; <span class="comment">%Bulk modulus</span>
 
 <span class="comment">% FEA control settings</span>
 numTimeSteps=10; <span class="comment">%Number of time steps desired</span>
@@ -149,22 +165,19 @@ axisGeom(gca,fontSize);
 
 drawnow;
 </pre><img vspace="5" hspace="5" src="DEMO_febio_0015_cube_fibers_transiso_01.png" alt=""> <h2 id="7">Defining the boundary conditions</h2><p>The visualization of the model boundary shows colors for each side of the cube. These labels can be used to define boundary conditions.</p><pre class="codeinput"><span class="comment">%Define supported node sets</span>
-logicFace=Cb==1; <span class="comment">%Logic for current face set</span>
-Fr=Fb(logicFace,:); <span class="comment">%The current face set</span>
-bcSupportList_X=unique(Fr(:)); <span class="comment">%Node set part of selected face</span>
+FX=Fb(Cb==1,:); <span class="comment">%Face orthogonal to X</span>
+FY=Fb(Cb==3,:); <span class="comment">%Face orthogonal to Y</span>
+FZ=Fb(Cb==5,:); <span class="comment">%Face orthogonal to Z</span>
 
-logicFace=Cb==3; <span class="comment">%Logic for current face set</span>
-Fr=Fb(logicFace,:); <span class="comment">%The current face set</span>
-bcSupportList_Y=unique(Fr(:)); <span class="comment">%Node set part of selected face</span>
+indAll=1:1:size(V,1);
+bcSupportList_X=indAll(ismember(indAll,FX) &amp; ismember(indAll,FZ)); <span class="comment">%Node set part of selected face</span>
+bcSupportList_Y=indAll(ismember(indAll,FY) &amp; ismember(indAll,FZ)); <span class="comment">%Node set part of selected face</span>
+bcSupportList_Z=unique(FZ(:)); <span class="comment">%Node set part of selected face</span>
 
-logicFace=Cb==5; <span class="comment">%Logic for current face set</span>
-Fr=Fb(logicFace,:); <span class="comment">%The current face set</span>
-bcSupportList_Z=unique(Fr(:)); <span class="comment">%Node set part of selected face</span>
 
 <span class="comment">%Prescribed displacement nodes</span>
-logicPrescribe=Cb==6; <span class="comment">%Logic for current face set</span>
-Fr=Fb(logicPrescribe,:); <span class="comment">%The current face set</span>
-bcPrescribeList=unique(Fr(:)); <span class="comment">%Node set part of selected face</span>
+F_fix=Fb(Cb==6,:); <span class="comment">%The current face set</span>
+bcPrescribeList=unique(F_fix(:)); <span class="comment">%Node set part of selected face</span>
 </pre><p>Visualizing boundary conditions. Markers plotted on the semi-transparent model denote the nodes in the various boundary condition lists.</p><pre class="codeinput">hf=cFigure;
 title(<span class="string">'Boundary conditions'</span>,<span class="string">'FontSize'</span>,fontSize);
 xlabel(<span class="string">'X'</span>,<span class="string">'FontSize'</span>,fontSize); ylabel(<span class="string">'Y'</span>,<span class="string">'FontSize'</span>,fontSize); zlabel(<span class="string">'Z'</span>,<span class="string">'FontSize'</span>,fontSize);
@@ -172,8 +185,8 @@ hold <span class="string">on</span>;
 
 gpatch(Fb,V,<span class="string">'kw'</span>,<span class="string">'k'</span>,0.5);
 
-hl(1)=plotV(V(bcSupportList_X,:),<span class="string">'r.'</span>,<span class="string">'MarkerSize'</span>,markerSize);
-hl(2)=plotV(V(bcSupportList_Y,:),<span class="string">'g.'</span>,<span class="string">'MarkerSize'</span>,markerSize);
+hl(1)=plotV(V(bcSupportList_X,:),<span class="string">'r.'</span>,<span class="string">'MarkerSize'</span>,markerSize*2);
+hl(2)=plotV(V(bcSupportList_Y,:),<span class="string">'g.'</span>,<span class="string">'MarkerSize'</span>,markerSize*2);
 hl(3)=plotV(V(bcSupportList_Z,:),<span class="string">'b.'</span>,<span class="string">'MarkerSize'</span>,markerSize);
 hl(4)=plotV(V(bcPrescribeList,:),<span class="string">'k.'</span>,<span class="string">'MarkerSize'</span>,markerSize);
 
@@ -224,27 +237,34 @@ febio_spec.Control.max_refs=max_refs;
 febio_spec.Control.max_ups=max_ups;
 
 <span class="comment">%Material section</span>
-febio_spec.Material.material{1}.ATTR.type=<span class="string">'uncoupled solid mixture'</span>;
+febio_spec.Material.material{1}.ATTR.type=<span class="string">'solid mixture'</span>;
 febio_spec.Material.material{1}.ATTR.id=1;
 
-febio_spec.Material.material{1}.mat_axis.ATTR.type=<span class="string">'vector'</span>;
-febio_spec.Material.material{1}.mat_axis.a=[1 0 0];
-febio_spec.Material.material{1}.mat_axis.d=[0 1 0];
+febio_spec.Material.material{1}.mat_axis.ATTR.type=<span class="string">'user'</span>;
+<span class="comment">% febio_spec.Material.material{1}.mat_axis.a=[1 0 0];</span>
+<span class="comment">% febio_spec.Material.material{1}.mat_axis.d=[0 1 0];</span>
 
-febio_spec.Material.material{1}.solid{1}.ATTR.type=<span class="string">'Ogden'</span>;
+febio_spec.Material.material{1}.solid{1}.ATTR.type=<span class="string">'Ogden unconstrained'</span>;
 febio_spec.Material.material{1}.solid{1}.c1=c1;
 febio_spec.Material.material{1}.solid{1}.m1=m1;
 febio_spec.Material.material{1}.solid{1}.c2=c1;
 febio_spec.Material.material{1}.solid{1}.m2=-m1;
-febio_spec.Material.material{1}.solid{1}.k=k;
+febio_spec.Material.material{1}.solid{1}.cp=k;
 
-febio_spec.Material.material{1}.solid{2}.ATTR.type=<span class="string">'fiber-exp-pow-uncoupled'</span>;
-febio_spec.Material.material{1}.solid{2}.ksi=ksi;
-febio_spec.Material.material{1}.solid{2}.alpha=1e-20;
-febio_spec.Material.material{1}.solid{2}.beta=beta;
-febio_spec.Material.material{1}.solid{2}.theta=0;
-febio_spec.Material.material{1}.solid{2}.phi=0;
-febio_spec.Material.material{1}.solid{2}.k=k;
+<span class="keyword">switch</span> fiberType
+    <span class="keyword">case</span> 1
+        febio_spec.Material.material{1}.solid{2}.ATTR.type=<span class="string">'fiber-exp-pow-uncoupled'</span>;
+        febio_spec.Material.material{1}.solid{2}.ksi=ksi;
+        febio_spec.Material.material{1}.solid{2}.alpha=1e-20;
+        febio_spec.Material.material{1}.solid{2}.beta=beta;
+        febio_spec.Material.material{1}.solid{2}.theta=0;
+        febio_spec.Material.material{1}.solid{2}.phi=0;
+        febio_spec.Material.material{1}.solid{2}.k=k;
+    <span class="keyword">case</span> 2
+        febio_spec.Material.material{1}.solid{2}.ATTR.type=<span class="string">'ellipsoidal fiber distribution'</span>;
+        febio_spec.Material.material{1}.solid{2}.ksi=ksi;
+        febio_spec.Material.material{1}.solid{2}.beta=beta;
+<span class="keyword">end</span>
 
 <span class="comment">%Geometry section</span>
 <span class="comment">% -&gt; Nodes</span>
@@ -323,13 +343,13 @@ febio_spec.Output.logfile.element_data{1}.ATTR.file=febioLogFileName_stress;
 febio_spec.Output.logfile.element_data{1}.ATTR.data=<span class="string">'sz'</span>;
 febio_spec.Output.logfile.element_data{1}.ATTR.delim=<span class="string">','</span>;
 febio_spec.Output.logfile.element_data{1}.VAL=1:size(E,1);
-</pre><h2 id="12">Quick viewing of the FEBio input file structure</h2><p>The <tt>febView</tt> function can be used to view the xml structure in a MATLAB figure window.</p><p><tt>febView(febio_spec); %Viewing the febio file</tt></p><h2 id="14">Exporting the FEBio input file</h2><p>Exporting the febio_spec structure to an FEBio input file is done using the <tt>febioStruct2xml</tt> function.</p><pre class="codeinput">febioStruct2xml(febio_spec,febioFebFileName); <span class="comment">%Exporting to file and domNode</span>
+</pre><h2 id="12">Quick viewing of the FEBio input file structure</h2><p>The <tt>febView</tt> function can be used to view the xml structure in a MATLAB figure window.</p><p><tt>febView(febio_spec); %Viewing the febio file</tt> febView(febio_spec);</p><h2 id="14">Exporting the FEBio input file</h2><p>Exporting the febio_spec structure to an FEBio input file is done using the <tt>febioStruct2xml</tt> function.</p><pre class="codeinput">febioStruct2xml(febio_spec,febioFebFileName); <span class="comment">%Exporting to file and domNode</span>
 <span class="comment">% febView(febioFebFileName);</span>
 </pre><h2 id="15">Running the FEBio analysis</h2><p>To run the analysis defined by the created FEBio input file the <tt>runMonitorFEBio</tt> function is used. The input for this function is a structure defining job settings e.g. the FEBio input file name. The optional output runFlag informs the user if the analysis was run succesfully.</p><pre class="codeinput">febioAnalysis.run_filename=febioFebFileName; <span class="comment">%The input file name</span>
 febioAnalysis.run_logname=febioLogFileName; <span class="comment">%The name for the log file</span>
 febioAnalysis.disp_on=1; <span class="comment">%Display information on the command window</span>
 febioAnalysis.disp_log_on=1; <span class="comment">%Display convergence information in the command window</span>
-febioAnalysis.runMode=<span class="string">'internal'</span>;<span class="comment">%'internal';</span>
+febioAnalysis.runMode=<span class="string">'external'</span>;<span class="comment">%'internal';</span>
 febioAnalysis.t_check=0.25; <span class="comment">%Time for checking log file (dont set too small)</span>
 febioAnalysis.maxtpi=1e99; <span class="comment">%Max analysis time</span>
 febioAnalysis.maxLogCheckTime=3; <span class="comment">%Max log file checking time</span>
@@ -337,475 +357,9 @@ febioAnalysis.maxLogCheckTime=3; <span class="comment">%Max log file checking ti
 [runFlag]=runMonitorFEBio(febioAnalysis);<span class="comment">%START FEBio NOW!!!!!!!!</span>
 </pre><pre class="codeoutput"> 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
---- STARTING FEBIO JOB --- 15-May-2018 16:05:51
-===========================================================================
-         ________    _________   _________     __     _________            
-        |        |\ |        |\ |        |\   |  |\  /         \\          
-        |    ____|| |    ____|| |    __  ||   |__|| |    ___    ||         
-        |   |\___\| |   |\___\| |   |\_| ||    \_\| |   //  \   ||         
-        |   ||      |   ||      |   || | ||    __   |  ||    |  ||         
-        |   ||__    |   ||__    |   ||_| ||   |  |\ |  ||    |  ||         
-        |       |\  |       |\  |         \\  |  || |  ||    |  ||         
-        |    ___||  |    ___||  |    ___   || |  || |  ||    |  ||         
-        |   |\__\|  |   |\__\|  |   |\__|  || |  || |  ||    |  ||         
-        |   ||      |   ||      |   ||  |  || |  || |  ||    |  ||         
-        |   ||      |   ||___   |   ||__|  || |  || |   \\__/   ||         
-        |   ||      |        |\ |          || |  || |           ||         
-        |___||      |________|| |__________|| |__||  \_________//          
-                                                                           
-      F I N I T E   E L E M E N T S   F O R   B I O M E C H A N I C S      
-                                                                           
-                 --- v e r s i o n - 2 . 7 . 0 . 9579 ---                 
-                                                                           
-                                                                           
-  Musculoskeletal Research Laboratory                                      
-  University of Utah                                                       
-  http://febio.org                                                         
-                                                                           
-  FEBio is a registered trademark.                                         
-  copyright (c) 2006-2018 - All rights reserved                            
-                                                                           
-                                                                              
- This is the NON-COMMERCIAL version of FEBio or the commercial license        
- key file could not be found. If you have a key file make sure it is          
- placed in the same directory as the executable. This version may only        
- be used for non-commercial purposes as described in the license agreement.   
- The functionality of this version may be limited compared to the commercial  
- version. If you wish to obtain a valid commercial license file, please       
- contact the developers.                                                      
-                                                                           
-===========================================================================
-
-
-Reading file /mnt/data/MATLAB/GIT/GIBBON/data/temp/tempModel.feb ...SUCCESS!
- ]0;(0%) tempModel.feb - FEBio 2.7.0.9579  
-===== beginning time step 1 : 0.1 =====
-===== reforming stiffness matrix:
-	Nr of equations ........................... : 540
-	Nr of nonzeroes in stiffness matrix ....... : 14670
-
- 1
- Nonlinear solution status: time= 0.1
-	stiffness updates             = 0
-	right hand side evaluations   = 2
-	stiffness matrix reformations = 1
-	step from line search         = 1.000000
-	convergence norms :     INITIAL         CURRENT         REQUIRED
-	   residual            9.089266e+04    2.984128e+00    0.000000e+00 
-	   energy              4.545033e+02    2.035814e+00    4.545033e+00 
-	   displacement        7.451929e+00    7.451929e+00    7.451929e-06 
-Reforming stiffness matrix: reformation #1
-
- 2
- Nonlinear solution status: time= 0.1
-	stiffness updates             = 0
-	right hand side evaluations   = 3
-	stiffness matrix reformations = 2
-	step from line search         = 1.000000
-	convergence norms :     INITIAL         CURRENT         REQUIRED
-	   residual            9.089266e+04    7.793093e-07    0.000000e+00 
-	   energy              4.545033e+02    2.399660e-05    4.545033e+00 
-	   displacement        7.451929e+00    1.896093e-03    7.618234e-06 
-Reforming stiffness matrix: reformation #2
-
- 3
- Nonlinear solution status: time= 0.1
-	stiffness updates             = 0
-	right hand side evaluations   = 4
-	stiffness matrix reformations = 3
-	step from line search         = 1.000000
-	convergence norms :     INITIAL         CURRENT         REQUIRED
-	   residual            9.089266e+04    5.328092e-20    0.000000e+00 
-	   energy              4.545033e+02    3.209874e-15    4.545033e+00 
-	   displacement        7.451929e+00    4.961810e-10    7.618320e-06 
-
-
-------- converged at time : 0.1
-
- ]0;(10%) tempModel.feb - FEBio 2.7.0.9579  
-===== beginning time step 2 : 0.2 =====
- 1
- Nonlinear solution status: time= 0.2
-	stiffness updates             = 0
-	right hand side evaluations   = 2
-	stiffness matrix reformations = 1
-	step from line search         = 1.000000
-	convergence norms :     INITIAL         CURRENT         REQUIRED
-	   residual            1.010398e+05    3.268658e+00    0.000000e+00 
-	   energy              4.830522e+02    2.230264e+00    4.830522e+00 
-	   displacement        7.792931e+00    7.792931e+00    7.792931e-06 
-Reforming stiffness matrix: reformation #1
-
- 2
- Nonlinear solution status: time= 0.2
-	stiffness updates             = 0
-	right hand side evaluations   = 3
-	stiffness matrix reformations = 2
-	step from line search         = 1.000000
-	convergence norms :     INITIAL         CURRENT         REQUIRED
-	   residual            1.010398e+05    9.646912e-07    0.000000e+00 
-	   energy              4.830522e+02    2.883237e-05    4.830522e+00 
-	   displacement        7.792931e+00    2.211274e-03    7.980990e-06 
-Reforming stiffness matrix: reformation #2
-
- 3
- Nonlinear solution status: time= 0.2
-	stiffness updates             = 0
-	right hand side evaluations   = 4
-	stiffness matrix reformations = 3
-	step from line search         = 1.000000
-	convergence norms :     INITIAL         CURRENT         REQUIRED
-	   residual            1.010398e+05    8.437284e-20    0.000000e+00 
-	   energy              4.830522e+02    4.635225e-15    4.830522e+00 
-	   displacement        7.792931e+00    6.540418e-10    7.981093e-06 
-
-
-------- converged at time : 0.2
-
- ]0;(20%) tempModel.feb - FEBio 2.7.0.9579  
-===== beginning time step 3 : 0.3 =====
- 1
- Nonlinear solution status: time= 0.3
-	stiffness updates             = 0
-	right hand side evaluations   = 2
-	stiffness matrix reformations = 1
-	step from line search         = 1.000000
-	convergence norms :     INITIAL         CURRENT         REQUIRED
-	   residual            1.128323e+05    3.590516e+00    0.000000e+00 
-	   energy              5.143784e+02    2.450276e+00    5.143784e+00 
-	   displacement        8.178851e+00    8.178851e+00    8.178851e-06 
-Reforming stiffness matrix: reformation #1
-
- 2
- Nonlinear solution status: time= 0.3
-	stiffness updates             = 0
-	right hand side evaluations   = 3
-	stiffness matrix reformations = 2
-	step from line search         = 1.000000
-	convergence norms :     INITIAL         CURRENT         REQUIRED
-	   residual            1.128323e+05    1.202188e-06    0.000000e+00 
-	   energy              5.143784e+02    3.484344e-05    5.143784e+00 
-	   displacement        8.178851e+00    2.591433e-03    8.392340e-06 
-Reforming stiffness matrix: reformation #2
-
- 3
- Nonlinear solution status: time= 0.3
-	stiffness updates             = 0
-	right hand side evaluations   = 4
-	stiffness matrix reformations = 3
-	step from line search         = 1.000000
-	convergence norms :     INITIAL         CURRENT         REQUIRED
-	   residual            1.128323e+05    1.351228e-19    0.000000e+00 
-	   energy              5.143784e+02    6.768580e-15    5.143784e+00 
-	   displacement        8.178851e+00    8.696832e-10    8.392465e-06 
-
-
-------- converged at time : 0.3
-
- ]0;(30%) tempModel.feb - FEBio 2.7.0.9579  
-===== beginning time step 4 : 0.4 =====
- 1
- Nonlinear solution status: time= 0.4
-	stiffness updates             = 0
-	right hand side evaluations   = 2
-	stiffness matrix reformations = 1
-	step from line search         = 1.000000
-	convergence norms :     INITIAL         CURRENT         REQUIRED
-	   residual            1.266086e+05    3.955995e+00    0.000000e+00 
-	   energy              5.488543e+02    2.700180e+00    5.488543e+00 
-	   displacement        8.617333e+00    8.617333e+00    8.617333e-06 
-Reforming stiffness matrix: reformation #1
-
- 2
- Nonlinear solution status: time= 0.4
-	stiffness updates             = 0
-	right hand side evaluations   = 3
-	stiffness matrix reformations = 2
-	step from line search         = 1.000000
-	convergence norms :     INITIAL         CURRENT         REQUIRED
-	   residual            1.266086e+05    1.508836e-06    0.000000e+00 
-	   energy              5.488543e+02    4.236715e-05    5.488543e+00 
-	   displacement        8.617333e+00    3.052717e-03    8.860696e-06 
-Reforming stiffness matrix: reformation #2
-
- 3
- Nonlinear solution status: time= 0.4
-	stiffness updates             = 0
-	right hand side evaluations   = 4
-	stiffness matrix reformations = 3
-	step from line search         = 1.000000
-	convergence norms :     INITIAL         CURRENT         REQUIRED
-	   residual            1.266086e+05    2.201498e-19    0.000000e+00 
-	   energy              5.488543e+02    1.000604e-14    5.488543e+00 
-	   displacement        8.617333e+00    1.167202e-09    8.860849e-06 
-
-
-------- converged at time : 0.4
-
- ]0;(40%) tempModel.feb - FEBio 2.7.0.9579  
-===== beginning time step 5 : 0.5 =====
- 1
- Nonlinear solution status: time= 0.5
-	stiffness updates             = 0
-	right hand side evaluations   = 2
-	stiffness matrix reformations = 1
-	step from line search         = 1.000000
-	convergence norms :     INITIAL         CURRENT         REQUIRED
-	   residual            1.427917e+05    4.372683e+00    0.000000e+00 
-	   energy              5.869171e+02    2.985208e+00    5.869171e+00 
-	   displacement        9.117634e+00    9.117634e+00    9.117634e-06 
-Reforming stiffness matrix: reformation #1
-
- 2
- Nonlinear solution status: time= 0.5
-	stiffness updates             = 0
-	right hand side evaluations   = 3
-	stiffness matrix reformations = 2
-	step from line search         = 1.000000
-	convergence norms :     INITIAL         CURRENT         REQUIRED
-	   residual            1.427917e+05    1.908062e-06    0.000000e+00 
-	   energy              5.869171e+02    5.185316e-05    5.869171e+00 
-	   displacement        9.117634e+00    3.615999e-03    9.396280e-06 
-Reforming stiffness matrix: reformation #2
-
- 3
- Nonlinear solution status: time= 0.5
-	stiffness updates             = 0
-	right hand side evaluations   = 4
-	stiffness matrix reformations = 3
-	step from line search         = 1.000000
-	convergence norms :     INITIAL         CURRENT         REQUIRED
-	   residual            1.427917e+05    3.643593e-19    0.000000e+00 
-	   energy              5.869171e+02    1.498969e-14    5.869171e+00 
-	   displacement        9.117634e+00    1.582051e-09    9.396466e-06 
-
-
-------- converged at time : 0.5
-
- ]0;(50%) tempModel.feb - FEBio 2.7.0.9579  
-===== beginning time step 6 : 0.6 =====
- 1
- Nonlinear solution status: time= 0.6
-	stiffness updates             = 0
-	right hand side evaluations   = 2
-	stiffness matrix reformations = 1
-	step from line search         = 1.000000
-	convergence norms :     INITIAL         CURRENT         REQUIRED
-	   residual            1.619148e+05    4.849771e+00    0.000000e+00 
-	   energy              6.290828e+02    3.311715e+00    6.290828e+00 
-	   displacement        9.691031e+00    9.691031e+00    9.691031e-06 
-Reforming stiffness matrix: reformation #1
-
- 2
- Nonlinear solution status: time= 0.6
-	stiffness updates             = 0
-	right hand side evaluations   = 3
-	stiffness matrix reformations = 2
-	step from line search         = 1.000000
-	convergence norms :     INITIAL         CURRENT         REQUIRED
-	   residual            1.619148e+05    2.432378e-06    0.000000e+00 
-	   energy              6.290828e+02    6.390611e-05    6.290828e+00 
-	   displacement        9.691031e+00    4.308478e-03    1.001158e-05 
-Reforming stiffness matrix: reformation #2
-
- 3
- Nonlinear solution status: time= 0.6
-	stiffness updates             = 0
-	right hand side evaluations   = 4
-	stiffness matrix reformations = 3
-	step from line search         = 1.000000
-	convergence norms :     INITIAL         CURRENT         REQUIRED
-	   residual            1.619148e+05    6.139801e-19    0.000000e+00 
-	   energy              6.290828e+02    2.277094e-14    6.290828e+00 
-	   displacement        9.691031e+00    2.167028e-09    1.001181e-05 
-
-
-------- converged at time : 0.6
-
- ]0;(60%) tempModel.feb - FEBio 2.7.0.9579  
-===== beginning time step 7 : 0.7 =====
- 1
- Nonlinear solution status: time= 0.7
-	stiffness updates             = 0
-	right hand side evaluations   = 2
-	stiffness matrix reformations = 1
-	step from line search         = 1.000000
-	convergence norms :     INITIAL         CURRENT         REQUIRED
-	   residual            1.846549e+05    5.398420e+00    0.000000e+00 
-	   energy              6.759639e+02    3.687460e+00    6.759639e+00 
-	   displacement        1.035136e+01    1.035136e+01    1.035136e-05 
-Reforming stiffness matrix: reformation #1
-
- 2
- Nonlinear solution status: time= 0.7
-	stiffness updates             = 0
-	right hand side evaluations   = 3
-	stiffness matrix reformations = 2
-	step from line search         = 1.000000
-	convergence norms :     INITIAL         CURRENT         REQUIRED
-	   residual            1.846549e+05    3.127350e-06    0.000000e+00 
-	   energy              6.759639e+02    7.934591e-05    6.759639e+00 
-	   displacement        1.035136e+01    5.165862e-03    1.072197e-05 
-Reforming stiffness matrix: reformation #2
-
- 3
- Nonlinear solution status: time= 0.7
-	stiffness updates             = 0
-	right hand side evaluations   = 4
-	stiffness matrix reformations = 3
-	step from line search         = 1.000000
-	convergence norms :     INITIAL         CURRENT         REQUIRED
-	   residual            1.846549e+05    1.053604e-18    0.000000e+00 
-	   energy              6.759639e+02    3.510255e-14    6.759639e+00 
-	   displacement        1.035136e+01    3.001756e-09    1.072226e-05 
-
-
-------- converged at time : 0.7
-
- ]0;(70%) tempModel.feb - FEBio 2.7.0.9579  
-===== beginning time step 8 : 0.8 =====
- 1
- Nonlinear solution status: time= 0.8
-	stiffness updates             = 0
-	right hand side evaluations   = 2
-	stiffness matrix reformations = 1
-	step from line search         = 1.000000
-	convergence norms :     INITIAL         CURRENT         REQUIRED
-	   residual            2.118802e+05    6.032203e+00    0.000000e+00 
-	   energy              7.282924e+02    4.121947e+00    7.282924e+00 
-	   displacement        1.111568e+01    1.111568e+01    1.111568e-05 
-Reforming stiffness matrix: reformation #1
-
- 2
- Nonlinear solution status: time= 0.8
-	stiffness updates             = 0
-	right hand side evaluations   = 3
-	stiffness matrix reformations = 2
-	step from line search         = 1.000000
-	convergence norms :     INITIAL         CURRENT         REQUIRED
-	   residual            2.118802e+05    4.057413e-06    0.000000e+00 
-	   energy              7.282924e+02    9.929362e-05    7.282924e+00 
-	   displacement        1.111568e+01    6.235390e-03    1.154650e-05 
-Reforming stiffness matrix: reformation #2
-
- 3
- Nonlinear solution status: time= 0.8
-	stiffness updates             = 0
-	right hand side evaluations   = 4
-	stiffness matrix reformations = 3
-	step from line search         = 1.000000
-	convergence norms :     INITIAL         CURRENT         REQUIRED
-	   residual            2.118802e+05    1.842714e-18    0.000000e+00 
-	   energy              7.282924e+02    5.497185e-14    7.282924e+00 
-	   displacement        1.111568e+01    4.207870e-09    1.154686e-05 
-
-
-------- converged at time : 0.8
-
- ]0;(80%) tempModel.feb - FEBio 2.7.0.9579  
-===== beginning time step 9 : 0.9 =====
- 1
- Nonlinear solution status: time= 0.9
-	stiffness updates             = 0
-	right hand side evaluations   = 2
-	stiffness matrix reformations = 1
-	step from line search         = 1.000000
-	convergence norms :     INITIAL         CURRENT         REQUIRED
-	   residual            2.447145e+05    6.767581e+00    0.000000e+00 
-	   energy              7.869498e+02    4.626853e+00    7.869498e+00 
-	   displacement        1.200523e+01    1.200523e+01    1.200523e-05 
-Reforming stiffness matrix: reformation #1
-
- 2
- Nonlinear solution status: time= 0.9
-	stiffness updates             = 0
-	right hand side evaluations   = 3
-	stiffness matrix reformations = 2
-	step from line search         = 1.000000
-	convergence norms :     INITIAL         CURRENT         REQUIRED
-	   residual            2.447145e+05    5.314428e-06    0.000000e+00 
-	   energy              7.869498e+02    1.252929e-04    7.869498e+00 
-	   displacement        1.200523e+01    7.579955e-03    1.250891e-05 
-Reforming stiffness matrix: reformation #2
-
- 3
- Nonlinear solution status: time= 0.9
-	stiffness updates             = 0
-	right hand side evaluations   = 4
-	stiffness matrix reformations = 3
-	step from line search         = 1.000000
-	convergence norms :     INITIAL         CURRENT         REQUIRED
-	   residual            2.447145e+05    3.291125e-18    0.000000e+00 
-	   energy              7.869498e+02    8.752865e-14    7.869498e+00 
-	   displacement        1.200523e+01    5.973515e-09    1.250937e-05 
-
-
-------- converged at time : 0.9
-
- ]0;(90%) tempModel.feb - FEBio 2.7.0.9579  
-===== beginning time step 10 : 1 =====
- 1
- Nonlinear solution status: time= 1
-	stiffness updates             = 0
-	right hand side evaluations   = 2
-	stiffness matrix reformations = 1
-	step from line search         = 1.000000
-	convergence norms :     INITIAL         CURRENT         REQUIRED
-	   residual            2.846294e+05    7.624316e+00    0.000000e+00 
-	   energy              8.530058e+02    5.216503e+00    8.530058e+00 
-	   displacement        1.304658e+01    1.304658e+01    1.304658e-05 
-Reforming stiffness matrix: reformation #1
-
- 2
- Nonlinear solution status: time= 1
-	stiffness updates             = 0
-	right hand side evaluations   = 3
-	stiffness matrix reformations = 2
-	step from line search         = 1.000000
-	convergence norms :     INITIAL         CURRENT         REQUIRED
-	   residual            2.846294e+05    7.030040e-06    0.000000e+00 
-	   energy              8.530058e+02    1.594790e-04    8.530058e+00 
-	   displacement        1.304658e+01    9.283658e-03    1.363905e-05 
-Reforming stiffness matrix: reformation #2
-
- 3
- Nonlinear solution status: time= 1
-	stiffness updates             = 0
-	right hand side evaluations   = 4
-	stiffness matrix reformations = 3
-	step from line search         = 1.000000
-	convergence norms :     INITIAL         CURRENT         REQUIRED
-	   residual            2.846294e+05    6.004209e-18    0.000000e+00 
-	   energy              8.530058e+02    1.417952e-13    8.530058e+00 
-	   displacement        1.304658e+01    8.593006e-09    1.363963e-05 
-
-
-------- converged at time : 1
-
- ]0;(100%) tempModel.feb - FEBio 2.7.0.9579  
-
-N O N L I N E A R   I T E R A T I O N   I N F O R M A T I O N
-
-	Number of time steps completed .................... : 10
-
-	Total number of equilibrium iterations ............ : 30
-
-	Average number of equilibrium iterations .......... : 3
-
-	Total number of right hand evaluations ............ : 40
-
-	Total number of stiffness reformations ............ : 30
-
-	Time in linear solver: 0:00:00
-
-
- Elapsed time : 0:00:00
-
-
- N O R M A L   T E R M I N A T I O N
-
+--- STARTING FEBIO JOB --- 01-Jun-2018 14:08:19
 Waiting for log file...
-Proceeding to check log file...15-May-2018 16:05:52
+Proceeding to check log file...01-Jun-2018 14:08:19
 ------- converged at time : 0.1
 ------- converged at time : 0.2
 ------- converged at time : 0.3
@@ -816,7 +370,7 @@ Proceeding to check log file...15-May-2018 16:05:52
 ------- converged at time : 0.8
 ------- converged at time : 0.9
 ------- converged at time : 1
---- Done --- 15-May-2018 16:05:52
+--- Done --- 01-Jun-2018 14:08:22
 </pre><h2 id="16">Import FEBio results</h2><pre class="codeinput"><span class="keyword">if</span> runFlag==1 <span class="comment">%i.e. a succesful run</span>
 </pre><pre class="codeinput">    <span class="comment">% Importing nodal displacements from a log file</span>
     [~, N_disp_mat,~]=importFEBio_logfile(fullfile(savePath,febioLogFileName_disp)); <span class="comment">%Nodal displacements</span>
@@ -932,7 +486,7 @@ cubeSize=10;
 sampleWidth=cubeSize; %Width 
 sampleThickness=cubeSize; %Thickness 
 sampleHeight=cubeSize; %Height
-pointSpacings=2*ones(1,3); %Desired point spacing between nodes
+pointSpacings=1*ones(1,3); %Desired point spacing between nodes
 numElementsWidth=round(sampleWidth/pointSpacings(1)); %Number of elemens in dir 1
 numElementsThickness=round(sampleThickness/pointSpacings(2)); %Number of elemens in dir 2
 numElementsHeight=round(sampleHeight/pointSpacings(3)); %Number of elemens in dir 3
@@ -949,13 +503,29 @@ end
 displacementMagnitude=(stretchLoad*sampleHeight)-sampleHeight; %The displacement magnitude
 
 %Material parameter set
-c1=1e-3; %Shear-modulus-like parameter
-m1=12; %Material parameter setting degree of non-linearity of ground matrix
-ksi=c1*100; 
-beta=3;
-k_factor=1e3; %Bulk modulus factor 
+k_factor=500; %Bulk modulus factor    
+
+fiberType=2; 
+switch fiberType
+    case 1
+        c1=1e-3; %Shear-modulus-like parameter
+        m1=12; %Material parameter setting degree of non-linearity of ground matrix
+        ksi=c1*100;
+        beta=3;          
+        k=0.5.*(c1+ksi)*k_factor; %Bulk modulus
+    case 2
+        Q=0.5;
+        
+        c=6.115e-04;
+        c1=Q*c;
+        m1=2.007;
+        ksi_p=9.0590e-05;
+        beta=3.294*ones(1,3);
+        f_transiso=235.1;
+        k=(2*c1+ksi_p)*k_factor;
+        ksi=[ksi_p ksi_p f_transiso*ksi_p];
+end
 alphaFib=1/3*pi;
-k=0.5.*(c1+ksi)*k_factor; %Bulk modulus
 
 % FEA control settings
 numTimeSteps=10; %Number of time steps desired
@@ -1009,22 +579,19 @@ drawnow;
 % cube. These labels can be used to define boundary conditions. 
 
 %Define supported node sets
-logicFace=Cb==1; %Logic for current face set
-Fr=Fb(logicFace,:); %The current face set
-bcSupportList_X=unique(Fr(:)); %Node set part of selected face
+FX=Fb(Cb==1,:); %Face orthogonal to X
+FY=Fb(Cb==3,:); %Face orthogonal to Y
+FZ=Fb(Cb==5,:); %Face orthogonal to Z
 
-logicFace=Cb==3; %Logic for current face set
-Fr=Fb(logicFace,:); %The current face set
-bcSupportList_Y=unique(Fr(:)); %Node set part of selected face
+indAll=1:1:size(V,1);
+bcSupportList_X=indAll(ismember(indAll,FX) & ismember(indAll,FZ)); %Node set part of selected face
+bcSupportList_Y=indAll(ismember(indAll,FY) & ismember(indAll,FZ)); %Node set part of selected face
+bcSupportList_Z=unique(FZ(:)); %Node set part of selected face
 
-logicFace=Cb==5; %Logic for current face set
-Fr=Fb(logicFace,:); %The current face set
-bcSupportList_Z=unique(Fr(:)); %Node set part of selected face
 
 %Prescribed displacement nodes
-logicPrescribe=Cb==6; %Logic for current face set
-Fr=Fb(logicPrescribe,:); %The current face set
-bcPrescribeList=unique(Fr(:)); %Node set part of selected face
+F_fix=Fb(Cb==6,:); %The current face set
+bcPrescribeList=unique(F_fix(:)); %Node set part of selected face
 
 %% 
 % Visualizing boundary conditions. Markers plotted on the semi-transparent
@@ -1037,8 +604,8 @@ hold on;
 
 gpatch(Fb,V,'kw','k',0.5);
 
-hl(1)=plotV(V(bcSupportList_X,:),'r.','MarkerSize',markerSize);
-hl(2)=plotV(V(bcSupportList_Y,:),'g.','MarkerSize',markerSize);
+hl(1)=plotV(V(bcSupportList_X,:),'r.','MarkerSize',markerSize*2);
+hl(2)=plotV(V(bcSupportList_Y,:),'g.','MarkerSize',markerSize*2);
 hl(3)=plotV(V(bcSupportList_Z,:),'b.','MarkerSize',markerSize);
 hl(4)=plotV(V(bcPrescribeList,:),'k.','MarkerSize',markerSize);
 
@@ -1101,27 +668,34 @@ febio_spec.Control.max_refs=max_refs;
 febio_spec.Control.max_ups=max_ups;
 
 %Material section
-febio_spec.Material.material{1}.ATTR.type='uncoupled solid mixture';
+febio_spec.Material.material{1}.ATTR.type='solid mixture';
 febio_spec.Material.material{1}.ATTR.id=1;
 
-febio_spec.Material.material{1}.mat_axis.ATTR.type='vector';
-febio_spec.Material.material{1}.mat_axis.a=[1 0 0];
-febio_spec.Material.material{1}.mat_axis.d=[0 1 0];
+febio_spec.Material.material{1}.mat_axis.ATTR.type='user';
+% febio_spec.Material.material{1}.mat_axis.a=[1 0 0];
+% febio_spec.Material.material{1}.mat_axis.d=[0 1 0];
 
-febio_spec.Material.material{1}.solid{1}.ATTR.type='Ogden';
+febio_spec.Material.material{1}.solid{1}.ATTR.type='Ogden unconstrained';
 febio_spec.Material.material{1}.solid{1}.c1=c1;
 febio_spec.Material.material{1}.solid{1}.m1=m1;
 febio_spec.Material.material{1}.solid{1}.c2=c1;
 febio_spec.Material.material{1}.solid{1}.m2=-m1;
-febio_spec.Material.material{1}.solid{1}.k=k;
+febio_spec.Material.material{1}.solid{1}.cp=k;
 
-febio_spec.Material.material{1}.solid{2}.ATTR.type='fiber-exp-pow-uncoupled';
-febio_spec.Material.material{1}.solid{2}.ksi=ksi;
-febio_spec.Material.material{1}.solid{2}.alpha=1e-20;
-febio_spec.Material.material{1}.solid{2}.beta=beta;
-febio_spec.Material.material{1}.solid{2}.theta=0;
-febio_spec.Material.material{1}.solid{2}.phi=0;
-febio_spec.Material.material{1}.solid{2}.k=k;
+switch fiberType
+    case 1
+        febio_spec.Material.material{1}.solid{2}.ATTR.type='fiber-exp-pow-uncoupled';
+        febio_spec.Material.material{1}.solid{2}.ksi=ksi;
+        febio_spec.Material.material{1}.solid{2}.alpha=1e-20;
+        febio_spec.Material.material{1}.solid{2}.beta=beta;
+        febio_spec.Material.material{1}.solid{2}.theta=0;
+        febio_spec.Material.material{1}.solid{2}.phi=0;
+        febio_spec.Material.material{1}.solid{2}.k=k;
+    case 2
+        febio_spec.Material.material{1}.solid{2}.ATTR.type='ellipsoidal fiber distribution';
+        febio_spec.Material.material{1}.solid{2}.ksi=ksi;
+        febio_spec.Material.material{1}.solid{2}.beta=beta;
+end
 
 %Geometry section
 % -> Nodes
@@ -1207,6 +781,7 @@ febio_spec.Output.logfile.element_data{1}.VAL=1:size(E,1);
 
 %%
 % |febView(febio_spec); %Viewing the febio file|
+% febView(febio_spec);
 
 %% Exporting the FEBio input file
 % Exporting the febio_spec structure to an FEBio input file is done using
@@ -1226,7 +801,7 @@ febioAnalysis.run_filename=febioFebFileName; %The input file name
 febioAnalysis.run_logname=febioLogFileName; %The name for the log file
 febioAnalysis.disp_on=1; %Display information on the command window
 febioAnalysis.disp_log_on=1; %Display convergence information in the command window
-febioAnalysis.runMode='internal';%'internal';
+febioAnalysis.runMode='external';%'internal';
 febioAnalysis.t_check=0.25; %Time for checking log file (dont set too small)
 febioAnalysis.maxtpi=1e99; %Max analysis time
 febioAnalysis.maxLogCheckTime=3; %Max log file checking time

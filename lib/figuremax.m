@@ -1,6 +1,6 @@
-function [hf]=figuremax(varargin)
+function [varargout]=figuremax(varargin)
 
-% function [fig]=figuremax(Cbg,Cdef)
+% function [hf]=figuremax(Cbg,Cdef)
 % ------------------------------------------------------------------------
 %
 % This function opens a maximized figure window using the color settings
@@ -31,24 +31,17 @@ switch nargin
         Cdef=varargin{2};
 end
 
-%Open figure with handle
-figStruct.Name='GIBBON'; %Figure name
 figStruct.Color=Cbg; %Figure background color
+figStruct.ColorDef=Cdef; %Setting colordefinitions
 
-%Custom figure properties
-figStruct.ColorDef=Cdef; %Setting colordefinitions to black
-figStruct.ScreenOffset=0; 
-
+%Open custom figure
 hf=cFigure(figStruct); 
 
-% set(hf,'renderer','OpenGL'); %Default renderer changed, options: painters | zbuffer | OpenGL
+%Maximize figure window
+maxFig(hf);
 
-%Setting renderer. For RGB and colormap driven There are some bugs for the hardware option, hence changed here
-% if ispc
-    %opengl software;
-    %On UNIX systems, start MATLAB with the command, matlab softwareopengl
-% end
- 
+if nargout>0
+    varargout{1}=hf;
 end
  
 %% 

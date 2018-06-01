@@ -49,45 +49,44 @@ imSiz=imSiz([2 1 3]); %Image size (x, y corresponds to j,i in image coordinates,
 %%
 % Plotting the results
 
-hf1=cFigure;
+cFigure;
 subplot(1,2,1);
 title('Closed triangulated surface','FontSize',fontSize);
-xlabel('X','FontSize',fontSize);ylabel('Y','FontSize',fontSize); zlabel('Z','FontSize',fontSize);
 hold on;
-patch('Faces',F,'Vertices',V,'FaceColor','g','EdgeColor','k','FaceAlpha',faceAlpha1);
+
+gpatch(F,V,'gw','g',faceAlpha1)
 camlight('headlight'); lighting flat;
-axis equal; view(3); axis tight;  grid on;  set(gca,'FontSize',fontSize);
+axisGeom(gca,fontSize);
 
 subplot(1,2,2);
 title('Boundary, intertior and exterior image','FontSize',fontSize);
-xlabel('X','FontSize',fontSize);ylabel('Y','FontSize',fontSize); zlabel('Z','FontSize',fontSize);
 hold on;
 
-patch('Faces',F,'Vertices',V,'FaceColor','g','EdgeColor','none','FaceAlpha',faceAlpha2);
+gpatch(F,V,'g','none',faceAlpha2);
 L_plot=false(size(M));
 L_plot(:,:,round(size(M,3)/2))=1;
 [Fm,Vm,Cm]=ind2patch(L_plot,double(M),'sk');
 [Vm(:,1),Vm(:,2),Vm(:,3)]=im2cart(Vm(:,2),Vm(:,1),Vm(:,3),voxelSize*ones(1,3));
 Vm=Vm+imOrigin(ones(size(Vm,1),1),:);
-patch('Faces',Fm,'Vertices',Vm,'FaceColor','flat','CData',Cm,'EdgeColor','k','FaceAlpha',faceAlpha1);
+gpatch(Fm,Vm,Cm,'k',faceAlpha1);
 
 L_plot=false(size(M));L_plot(round(size(M,1)/2),:,:)=1;
 [Fm,Vm,Cm]=ind2patch(L_plot,M,'si');
 [Vm(:,1),Vm(:,2),Vm(:,3)]=im2cart(Vm(:,2),Vm(:,1),Vm(:,3),voxelSize*ones(1,3));
 Vm=Vm+imOrigin(ones(size(Vm,1),1),:);
-patch('Faces',Fm,'Vertices',Vm,'FaceColor','flat','CData',Cm,'EdgeColor','k','FaceAlpha',faceAlpha1);
+gpatch(Fm,Vm,Cm,'k',faceAlpha1);
 
 L_plot=false(size(M));L_plot(:,round(size(M,2)/2),:)=1;
 [Fm,Vm,Cm]=ind2patch(L_plot,M,'sj');
 [Vm(:,1),Vm(:,2),Vm(:,3)]=im2cart(Vm(:,2),Vm(:,1),Vm(:,3),voxelSize*ones(1,3));
 Vm=Vm+imOrigin(ones(size(Vm,1),1),:);
-patch('Faces',Fm,'Vertices',Vm,'FaceColor','flat','CData',Cm,'EdgeColor','k','FaceAlpha',faceAlpha1);
+gpatch(Fm,Vm,Cm,'k',faceAlpha1);
 
 colormap(gray(3)); caxis([0 2]);
 hc=colorbar;
 set(hc,'YTick',[1/3 1 5/3]);
 set(hc,'YTickLabel',{'Exterior','Boundary','Intertior'});
-axis equal; view(3); axis tight;  grid on;  set(gca,'FontSize',fontSize);
+axisGeom(gca,fontSize);
 drawnow;
 
 %% EXAMPLE 2: CONVERTING A TRIANGULATED SURFACE TO AN IMAGE WITHOUT SPECIFYING DESIRED SIZE, VOXEL SIZE AND ORIGIN
@@ -115,45 +114,116 @@ imOrigin=G.origin; %Image origin can be used to allign image with surface
 hf2=cFigure;
 subplot(1,2,1);
 title('Closed triangulated surface','FontSize',fontSize);
-xlabel('X','FontSize',fontSize);ylabel('Y','FontSize',fontSize); zlabel('Z','FontSize',fontSize);
 hold on;
-patch('Faces',F,'Vertices',V,'FaceColor','g','EdgeColor','k','FaceAlpha',faceAlpha1);
+
+gpatch(F,V,'gw','g',faceAlpha1)
 camlight('headlight'); lighting flat;
-axis equal; view(3); axis tight;  grid on;  set(gca,'FontSize',fontSize);
+axisGeom(gca,fontSize);
 
 subplot(1,2,2);
 title('Boundary, intertior and exterior image','FontSize',fontSize);
-xlabel('X','FontSize',fontSize);ylabel('Y','FontSize',fontSize); zlabel('Z','FontSize',fontSize);
 hold on;
 
-patch('Faces',F,'Vertices',V,'FaceColor','g','EdgeColor','none','FaceAlpha',faceAlpha2);
+gpatch(F,V,'g','none',faceAlpha2);
 L_plot=false(size(M));
 L_plot(:,:,round(size(M,3)/2))=1;
 [Fm,Vm,Cm]=ind2patch(L_plot,double(M),'sk');
 [Vm(:,1),Vm(:,2),Vm(:,3)]=im2cart(Vm(:,2),Vm(:,1),Vm(:,3),voxelSize*ones(1,3));
 Vm=Vm+imOrigin(ones(size(Vm,1),1),:);
-patch('Faces',Fm,'Vertices',Vm,'FaceColor','flat','CData',Cm,'EdgeColor','k','FaceAlpha',faceAlpha1);
+gpatch(Fm,Vm,Cm,'k',faceAlpha1);
 
 L_plot=false(size(M));L_plot(round(size(M,1)/2),:,:)=1;
 [Fm,Vm,Cm]=ind2patch(L_plot,M,'si');
 [Vm(:,1),Vm(:,2),Vm(:,3)]=im2cart(Vm(:,2),Vm(:,1),Vm(:,3),voxelSize*ones(1,3));
 Vm=Vm+imOrigin(ones(size(Vm,1),1),:);
-patch('Faces',Fm,'Vertices',Vm,'FaceColor','flat','CData',Cm,'EdgeColor','k','FaceAlpha',faceAlpha1);
+gpatch(Fm,Vm,Cm,'k',faceAlpha1);
 
 L_plot=false(size(M));L_plot(:,round(size(M,2)/2),:)=1;
 [Fm,Vm,Cm]=ind2patch(L_plot,M,'sj');
 [Vm(:,1),Vm(:,2),Vm(:,3)]=im2cart(Vm(:,2),Vm(:,1),Vm(:,3),voxelSize*ones(1,3));
 Vm=Vm+imOrigin(ones(size(Vm,1),1),:);
-patch('Faces',Fm,'Vertices',Vm,'FaceColor','flat','CData',Cm,'EdgeColor','k','FaceAlpha',faceAlpha1);
+gpatch(Fm,Vm,Cm,'k',faceAlpha1);
 
 colormap(gray(3)); caxis([0 2]);
 hc=colorbar;
 set(hc,'YTick',[1/3 1 5/3]);
 set(hc,'YTickLabel',{'Exterior','Boundary','Intertior'});
-axis equal; view(3); axis tight;  grid on;  set(gca,'FontSize',fontSize);
+axisGeom(gca,fontSize);
 drawnow;
 
-%% EXAMPLE 3: CONVERTING A TRIANGULATED SURFACE MODEL TO A VOXEL BASED HEXAHEDRAL MESH MODEL
+%% EXAMPLE 3: Using anisotropic voxels
+
+% Simulate image
+% Defining an example triangulated surface model
+
+% Defining a deformed and rotated torus shape
+r=1; %Sphere radius
+rc=2; %Central radius
+nr=16;
+nc=30;
+ptype='tri';
+[F,V]=patchTorus(r,nr,rc,nc,ptype);
+[THETA,RHO] = cart2pol(V(:,1),V(:,2));
+
+%%
+% Setting control parameters
+
+% Defining the full set of possible control parameters
+voxelSize=[0.075 0.125 0.2]; % The output image voxel size.
+imOrigin=min(V,[],1)-4*voxelSize([2 1 3]);
+imMax=max(V,[],1)+4*voxelSize([2 1 3]);
+imSiz=round((imMax-imOrigin)./voxelSize([2 1 3]));
+imSiz=imSiz([2 1 3]); %Image size (x, y corresponds to j,i in image coordinates, hence the permutation)
+
+% Using |triSurf2Im| function to convert patch data to image data
+[M,G,bwLabels]=triSurf2Im(F,V,voxelSize,imOrigin,imSiz);
+
+%calucalte coordinate in image system
+Vt=V-imOrigin(ones(size(V,1),1),:);
+
+%%
+% Plotting the results
+cFigure;
+subplot(1,2,1);
+title('Closed triangulated surface','FontSize',fontSize);
+hold on;
+
+gpatch(F,V,'gw','g',faceAlpha1)
+camlight('headlight'); lighting flat;
+axisGeom(gca,fontSize);
+
+subplot(1,2,2);
+title('Boundary, intertior and exterior image','FontSize',fontSize);
+hold on;
+
+gpatch(F,V,'g','none',faceAlpha2);
+L_plot=false(size(M));
+L_plot(:,:,round(size(M,3)/2))=1;
+[Fm,Vm,Cm]=ind2patch(L_plot,double(M),'sk');
+[Vm(:,1),Vm(:,2),Vm(:,3)]=im2cart(Vm(:,2),Vm(:,1),Vm(:,3),voxelSize);
+Vm=Vm+imOrigin(ones(size(Vm,1),1),:);
+gpatch(Fm,Vm,Cm,'k',faceAlpha1);
+
+L_plot=false(size(M));L_plot(round(size(M,1)/2),:,:)=1;
+[Fm,Vm,Cm]=ind2patch(L_plot,M,'si');
+[Vm(:,1),Vm(:,2),Vm(:,3)]=im2cart(Vm(:,2),Vm(:,1),Vm(:,3),voxelSize);
+Vm=Vm+imOrigin(ones(size(Vm,1),1),:);
+gpatch(Fm,Vm,Cm,'k',faceAlpha1);
+
+L_plot=false(size(M));L_plot(:,round(size(M,2)/2),:)=1;
+[Fm,Vm,Cm]=ind2patch(L_plot,M,'sj');
+[Vm(:,1),Vm(:,2),Vm(:,3)]=im2cart(Vm(:,2),Vm(:,1),Vm(:,3),voxelSize);
+Vm=Vm+imOrigin(ones(size(Vm,1),1),:);
+gpatch(Fm,Vm,Cm,'k',faceAlpha1);
+
+colormap(gray(3)); caxis([0 2]);
+hc=colorbar;
+set(hc,'YTick',[1/3 1 5/3]);
+set(hc,'YTickLabel',{'Exterior','Boundary','Intertior'});
+axisGeom(gca,fontSize);
+drawnow;
+
+%% EXAMPLE 4: CONVERTING A TRIANGULATED SURFACE MODEL TO A VOXEL BASED HEXAHEDRAL MESH MODEL
 % This example uses the same model as the previous example. This example
 % demonstrates how the |triSurf2Im| function in combination with the
 % |ind2patch| function can be used to convert a triangulated surface into a
@@ -184,20 +254,19 @@ V_hex=V_hex+imOrigin(ones(size(V_hex,1),1),:);
 hf3=cFigure;
 subplot(1,2,1);
 title('Full hexahedral model view','FontSize',fontSize);
-xlabel('X','FontSize',fontSize);ylabel('Y','FontSize',fontSize); zlabel('Z','FontSize',fontSize);
 hold on;
 
 %Pass through unique_patch to reduce "weight" of plot
 [Fp,Vp,~,~,~,F_count]=unique_patch(F_hex,V_hex,[],5);
 logicUni=F_count==1; %Logic for boundary faces
 
-patch('Faces',Fp(logicUni,:),'Vertices',Vp,'FaceColor','r','EdgeColor','k','FaceAlpha',faceAlpha1);
-axis equal; view(3); axis tight;  grid on;  set(gca,'FontSize',fontSize);
+gpatch(Fp(logicUni,:),Vp,'rw','r',faceAlpha1);
+
+axisGeom(gca,fontSize);
 camlight headlight; 
 
 subplot(1,2,2);
 title('Cut view','FontSize',fontSize);
-xlabel('X','FontSize',fontSize);ylabel('Y','FontSize',fontSize); zlabel('Z','FontSize',fontSize);
 hold on;
 
 Y=V_hex(:,2);
@@ -211,13 +280,13 @@ logicCut=Y_hex>0;
 [Fp,Vp,~,~,~,F_count]=unique_patch(F_hex_c,V_hex,[],5);
 logicUni=F_count==1; %Logic for boundary faces
 
-patch('Faces',F,'Vertices',V,'FaceColor','g','EdgeColor','none','FaceAlpha',faceAlpha2);
-patch('Faces',Fp,'Vertices',Vp,'FaceColor','r','EdgeColor','k','FaceAlpha',faceAlpha1);
-axis equal; view(3); axis tight;  grid on;  set(gca,'FontSize',fontSize);
+gpatch(F,V,'g','none',faceAlpha2);
+gpatch(Fp,Vp,'rw','r',faceAlpha1);
+axisGeom(gca,fontSize);
 camlight headlight; 
 drawnow;
 
-%% EXAMPLE 4: Using |triSurf2Im| combined with |logic2isosurface| to resample a surface
+%% EXAMPLE 5: Using |triSurf2Im| combined with |logic2isosurface| to resample a surface
 
 %%
 % Load surface geometry
@@ -247,45 +316,44 @@ imSiz=imSiz([2 1 3]); %Image size (x, y corresponds to j,i in image coordinates,
 %%
 % Plotting the results
 
-hf1=cFigure;
+cFigure;
 subplot(1,2,1);
 title('Closed triangulated surface','FontSize',fontSize);
-xlabel('X','FontSize',fontSize);ylabel('Y','FontSize',fontSize); zlabel('Z','FontSize',fontSize);
 hold on;
-patch('Faces',F,'Vertices',V,'FaceColor','g','EdgeColor','k','FaceAlpha',faceAlpha1);
+
+gpatch(F,V,'gw','g',faceAlpha1)
 camlight('headlight'); lighting flat;
-axis equal; view(3); axis tight;  grid on;  set(gca,'FontSize',fontSize);
+axisGeom(gca,fontSize);
 
 subplot(1,2,2);
 title('Boundary, intertior and exterior image','FontSize',fontSize);
-xlabel('X','FontSize',fontSize);ylabel('Y','FontSize',fontSize); zlabel('Z','FontSize',fontSize);
 hold on;
 
-patch('Faces',F,'Vertices',V,'FaceColor','g','EdgeColor','none','FaceAlpha',faceAlpha2);
+gpatch(F,V,'g','none',faceAlpha2);
 L_plot=false(size(M));
 L_plot(:,:,round(size(M,3)/2))=1;
 [Fm,Vm,Cm]=ind2patch(L_plot,double(M),'sk');
 [Vm(:,1),Vm(:,2),Vm(:,3)]=im2cart(Vm(:,2),Vm(:,1),Vm(:,3),voxelSize*ones(1,3));
 Vm=Vm+imOrigin(ones(size(Vm,1),1),:);
-patch('Faces',Fm,'Vertices',Vm,'FaceColor','flat','CData',Cm,'EdgeColor','k','FaceAlpha',faceAlpha1);
+gpatch(Fm,Vm,Cm,'k',faceAlpha1);
 
 L_plot=false(size(M));L_plot(round(size(M,1)/2),:,:)=1;
 [Fm,Vm,Cm]=ind2patch(L_plot,M,'si');
 [Vm(:,1),Vm(:,2),Vm(:,3)]=im2cart(Vm(:,2),Vm(:,1),Vm(:,3),voxelSize*ones(1,3));
 Vm=Vm+imOrigin(ones(size(Vm,1),1),:);
-patch('Faces',Fm,'Vertices',Vm,'FaceColor','flat','CData',Cm,'EdgeColor','k','FaceAlpha',faceAlpha1);
+gpatch(Fm,Vm,Cm,'k',faceAlpha1);
 
 L_plot=false(size(M));L_plot(:,round(size(M,2)/2),:)=1;
 [Fm,Vm,Cm]=ind2patch(L_plot,M,'sj');
 [Vm(:,1),Vm(:,2),Vm(:,3)]=im2cart(Vm(:,2),Vm(:,1),Vm(:,3),voxelSize*ones(1,3));
 Vm=Vm+imOrigin(ones(size(Vm,1),1),:);
-patch('Faces',Fm,'Vertices',Vm,'FaceColor','flat','CData',Cm,'EdgeColor','k','FaceAlpha',faceAlpha1);
+gpatch(Fm,Vm,Cm,'k',faceAlpha1);
 
 colormap(gray(3)); caxis([0 2]);
 hc=colorbar;
 set(hc,'YTick',[1/3 1 5/3]);
 set(hc,'YTickLabel',{'Exterior','Boundary','Intertior'});
-axis equal; view(3); axis tight;  grid on;  set(gca,'FontSize',fontSize);
+axisGeom(gca,fontSize);
 drawnow;
 
 %%
@@ -311,22 +379,22 @@ cFigure;
 
 subplot(1,2,1);
 title(['Original mesh ',num2str(size(F,1)),' triangles'],'fontSize',fontSize);
-xlabel('X','fontSize',fontSize);ylabel('Y','fontSize',fontSize); zlabel('Z','fontSize',fontSize); hold on;
+hold on;
 
-patch('Faces',F,'Vertices',V,'FaceColor','g','EdgeColor','k','FaceAlpha',faceAlpha1);
+gpatch(F,V,'gw','g',faceAlpha1)
 
-view(3); axis equal; axis tight; axis vis3d; grid on; 
+axisGeom(gca,fontSize);
 camlight('headlight');
 lighting flat;
 
 subplot(1,2,2);
 title(['Resampled mesh ',num2str(size(Fn,1)),' triangles'],'fontSize',fontSize);
-xlabel('X','fontSize',fontSize);ylabel('Y','fontSize',fontSize); zlabel('Z','fontSize',fontSize); hold on;
+hold on; 
 
-patch('Faces',Fn,'Vertices',Vn,'FaceColor','r','EdgeColor','k','FaceAlpha',faceAlpha1);
-patch('Faces',F,'Vertices',V,'FaceColor','g','EdgeColor','none','FaceAlpha',faceAlpha2);
+gpatch(Fn,Vn,'rw','r',faceAlpha1);
+gpatch(F,V,'g','none',faceAlpha2);
 
-view(3); axis equal; axis tight; axis vis3d; grid on; 
+axisGeom(gca,fontSize);
 camlight('headlight');
 lighting flat;
 drawnow;

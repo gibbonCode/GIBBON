@@ -1,5 +1,7 @@
 function [varargout]=getInnerPoint(varargin)
 
+% function [V_inner,M,G,ML]=getInnerPoint(F,V,searchRadius,voxelSize,plotOn)
+
 %%
 
 switch nargin

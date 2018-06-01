@@ -22,6 +22,7 @@ figStruct.Color='k'; %Figure background color
 figStruct.ColorDef='black'; %Setting colordefinitions to black
 
 vizOptStructDefault.colormap=gray(250);
+vizOptStructDefault.clim=[min(M(~isnan(M))) max(M(~isnan(M)))];
 vizOptStructDefault.fontColor='w';
 vizOptStructDefault.fontSize=20;
 vizOptStructDefault.figStruct=figStruct;
@@ -35,6 +36,7 @@ M=double(M);
 fontColor=vizOptStruct.fontColor;
 fontSize=vizOptStruct.fontSize;
 cMap=vizOptStruct.colormap;
+cLim=vizOptStruct.clim;
 figStruct=vizOptStruct.figStruct;
 
 %%
@@ -58,7 +60,7 @@ tickSizeMajor_K=round(size(M,3)/nTickMajor);
 hf=cFigure(figStruct);
 axis equal; axis tight; view(3);  axis vis3d; axis([ax(2) ax(1) ay(2) ay(1) az(2) az(1)]); grid on; box on; hold on;
 colormap(cMap); colorbar;
-caxis([min(M(:)) max(M(:))]);
+caxis(cLim);
 set(gca,'fontSize',fontSize);
 drawnow;
 
@@ -138,10 +140,12 @@ switch dirOpt
         logicPatch(:,:,sliceIndex)=1;
 end
 
+figure(hf); %TEMP FIX for bug in MATLAB 2018
+
 if isnan(hf.UserData.hp(dirOpt))    
     [F,V,C]=im2patch(M,logicPatch,patchType);
     [V(:,1),V(:,2),V(:,3)]=im2cart(V(:,2),V(:,1),V(:,3),v);    
-    hf.UserData.hp(dirOpt)= patch('Faces',F,'Vertices',V,'FaceColor','flat','CData',C,'EdgeColor','none');
+    hf.UserData.hp(dirOpt)= gpatch(F,V,C,'none',1);
 else    
     set(hf.UserData.hp(dirOpt),'CData',M(logicPatch));
     V=get(hf.UserData.hp(dirOpt),'Vertices');

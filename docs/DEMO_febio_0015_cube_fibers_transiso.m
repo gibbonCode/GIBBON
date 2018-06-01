@@ -50,7 +50,7 @@ cubeSize=10;
 sampleWidth=cubeSize; %Width 
 sampleThickness=cubeSize; %Thickness 
 sampleHeight=cubeSize; %Height
-pointSpacings=2*ones(1,3); %Desired point spacing between nodes
+pointSpacings=1*ones(1,3); %Desired point spacing between nodes
 numElementsWidth=round(sampleWidth/pointSpacings(1)); %Number of elemens in dir 1
 numElementsThickness=round(sampleThickness/pointSpacings(2)); %Number of elemens in dir 2
 numElementsHeight=round(sampleHeight/pointSpacings(3)); %Number of elemens in dir 3
@@ -67,13 +67,29 @@ end
 displacementMagnitude=(stretchLoad*sampleHeight)-sampleHeight; %The displacement magnitude
 
 %Material parameter set
-c1=1e-3; %Shear-modulus-like parameter
-m1=12; %Material parameter setting degree of non-linearity of ground matrix
-ksi=c1*100; 
-beta=3;
-k_factor=1e3; %Bulk modulus factor 
+k_factor=500; %Bulk modulus factor    
+
+fiberType=2; 
+switch fiberType
+    case 1
+        c1=1e-3; %Shear-modulus-like parameter
+        m1=12; %Material parameter setting degree of non-linearity of ground matrix
+        ksi=c1*100;
+        beta=3;          
+        k=0.5.*(c1+ksi)*k_factor; %Bulk modulus
+    case 2
+        Q=0.5;
+        
+        c=6.115e-04;
+        c1=Q*c;
+        m1=2.007;
+        ksi_p=9.0590e-05;
+        beta=3.294*ones(1,3);
+        f_transiso=235.1;
+        k=(2*c1+ksi_p)*k_factor;
+        ksi=[ksi_p ksi_p f_transiso*ksi_p];
+end
 alphaFib=1/3*pi;
-k=0.5.*(c1+ksi)*k_factor; %Bulk modulus
 
 % FEA control settings
 numTimeSteps=10; %Number of time steps desired
@@ -127,22 +143,18 @@ drawnow;
 % cube. These labels can be used to define boundary conditions. 
 
 %Define supported node sets
-logicFace=Cb==1; %Logic for current face set
-Fr=Fb(logicFace,:); %The current face set
-bcSupportList_X=unique(Fr(:)); %Node set part of selected face
+FX=Fb(Cb==1,:); %Face orthogonal to X
+FY=Fb(Cb==3,:); %Face orthogonal to Y
+FZ=Fb(Cb==5,:); %Face orthogonal to Z
 
-logicFace=Cb==3; %Logic for current face set
-Fr=Fb(logicFace,:); %The current face set
-bcSupportList_Y=unique(Fr(:)); %Node set part of selected face
-
-logicFace=Cb==5; %Logic for current face set
-Fr=Fb(logicFace,:); %The current face set
-bcSupportList_Z=unique(Fr(:)); %Node set part of selected face
+indAll=1:1:size(V,1);
+bcSupportList_X=indAll(ismember(indAll,FX) & ismember(indAll,FZ)); %Node set part of selected face
+bcSupportList_Y=indAll(ismember(indAll,FY) & ismember(indAll,FZ)); %Node set part of selected face
+bcSupportList_Z=unique(FZ(:)); %Node set part of selected face
 
 %Prescribed displacement nodes
-logicPrescribe=Cb==6; %Logic for current face set
-Fr=Fb(logicPrescribe,:); %The current face set
-bcPrescribeList=unique(Fr(:)); %Node set part of selected face
+F_fix=Fb(Cb==6,:); %The current face set
+bcPrescribeList=unique(F_fix(:)); %Node set part of selected face
 
 %% 
 % Visualizing boundary conditions. Markers plotted on the semi-transparent
@@ -155,8 +167,8 @@ hold on;
 
 gpatch(Fb,V,'kw','k',0.5);
 
-hl(1)=plotV(V(bcSupportList_X,:),'r.','MarkerSize',markerSize);
-hl(2)=plotV(V(bcSupportList_Y,:),'g.','MarkerSize',markerSize);
+hl(1)=plotV(V(bcSupportList_X,:),'r.','MarkerSize',markerSize*2);
+hl(2)=plotV(V(bcSupportList_Y,:),'g.','MarkerSize',markerSize*2);
 hl(3)=plotV(V(bcSupportList_Z,:),'b.','MarkerSize',markerSize);
 hl(4)=plotV(V(bcPrescribeList,:),'k.','MarkerSize',markerSize);
 
@@ -219,27 +231,34 @@ febio_spec.Control.max_refs=max_refs;
 febio_spec.Control.max_ups=max_ups;
 
 %Material section
-febio_spec.Material.material{1}.ATTR.type='uncoupled solid mixture';
+febio_spec.Material.material{1}.ATTR.type='solid mixture';
 febio_spec.Material.material{1}.ATTR.id=1;
 
-febio_spec.Material.material{1}.mat_axis.ATTR.type='vector';
-febio_spec.Material.material{1}.mat_axis.a=[1 0 0];
-febio_spec.Material.material{1}.mat_axis.d=[0 1 0];
+febio_spec.Material.material{1}.mat_axis.ATTR.type='user';
+% febio_spec.Material.material{1}.mat_axis.a=[1 0 0];
+% febio_spec.Material.material{1}.mat_axis.d=[0 1 0];
 
-febio_spec.Material.material{1}.solid{1}.ATTR.type='Ogden';
+febio_spec.Material.material{1}.solid{1}.ATTR.type='Ogden unconstrained';
 febio_spec.Material.material{1}.solid{1}.c1=c1;
 febio_spec.Material.material{1}.solid{1}.m1=m1;
 febio_spec.Material.material{1}.solid{1}.c2=c1;
 febio_spec.Material.material{1}.solid{1}.m2=-m1;
-febio_spec.Material.material{1}.solid{1}.k=k;
+febio_spec.Material.material{1}.solid{1}.cp=k;
 
-febio_spec.Material.material{1}.solid{2}.ATTR.type='fiber-exp-pow-uncoupled';
-febio_spec.Material.material{1}.solid{2}.ksi=ksi;
-febio_spec.Material.material{1}.solid{2}.alpha=1e-20;
-febio_spec.Material.material{1}.solid{2}.beta=beta;
-febio_spec.Material.material{1}.solid{2}.theta=0;
-febio_spec.Material.material{1}.solid{2}.phi=0;
-febio_spec.Material.material{1}.solid{2}.k=k;
+switch fiberType
+    case 1
+        febio_spec.Material.material{1}.solid{2}.ATTR.type='fiber-exp-pow-uncoupled';
+        febio_spec.Material.material{1}.solid{2}.ksi=ksi;
+        febio_spec.Material.material{1}.solid{2}.alpha=1e-20;
+        febio_spec.Material.material{1}.solid{2}.beta=beta;
+        febio_spec.Material.material{1}.solid{2}.theta=0;
+        febio_spec.Material.material{1}.solid{2}.phi=0;
+        febio_spec.Material.material{1}.solid{2}.k=k;
+    case 2
+        febio_spec.Material.material{1}.solid{2}.ATTR.type='ellipsoidal fiber distribution';
+        febio_spec.Material.material{1}.solid{2}.ksi=ksi;
+        febio_spec.Material.material{1}.solid{2}.beta=beta;
+end
 
 %Geometry section
 % -> Nodes
@@ -325,6 +344,7 @@ febio_spec.Output.logfile.element_data{1}.VAL=1:size(E,1);
 
 %%
 % |febView(febio_spec); %Viewing the febio file|
+% febView(febio_spec);
 
 %% Exporting the FEBio input file
 % Exporting the febio_spec structure to an FEBio input file is done using
@@ -344,7 +364,7 @@ febioAnalysis.run_filename=febioFebFileName; %The input file name
 febioAnalysis.run_logname=febioLogFileName; %The name for the log file
 febioAnalysis.disp_on=1; %Display information on the command window
 febioAnalysis.disp_log_on=1; %Display convergence information in the command window
-febioAnalysis.runMode='internal';%'internal';
+febioAnalysis.runMode='external';%'internal';
 febioAnalysis.t_check=0.25; %Time for checking log file (dont set too small)
 febioAnalysis.maxtpi=1e99; %Max analysis time
 febioAnalysis.maxLogCheckTime=3; %Max log file checking time

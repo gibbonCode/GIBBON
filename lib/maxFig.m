@@ -1,4 +1,4 @@
-function maximizeFigureWindow(varargin)
+function maxFig(varargin)
 
 %% Parse input
 
@@ -14,18 +14,23 @@ if isempty(hf)
 end
 
 %% Turn off warning (JavaFrame will become obsolete, this will lead to error in the future)
-warning('off','MATLAB:HandleGraphics:ObsoletedProperty:JavaFrame');
+% warning('off','MATLAB:HandleGraphics:ObsoletedProperty:JavaFrame');
+% 
+% %% Maximize using JaveFrame
+% try
+%     pause(0.01);     
+%     jFrame=get(hf,'JavaFrame');
+% %     set(jFrame,'Maximized',1);
+%     jFrame.setMaximized(1);
+% catch exception    
+%     rethrow(exception)
+% end
 
-%% Maximize using JaveFrame
-try
-    pause(0.01);     
-    jFrame=get(hf,'JavaFrame');
-%     set(jFrame,'Maximized',1);
-    jFrame.setMaximized(1);
-catch exception    
-    rethrow(exception)
-end
+%%
 
+jFrame=get(hf,'JavaFrame'); 
+drawnow;  %Next line throws error without pause or drawnow here
+jFrame.fHG2Client.setMaximized(true);
  
 %% 
 % _*GIBBON footer text*_ 

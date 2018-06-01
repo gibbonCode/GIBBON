@@ -42,8 +42,8 @@ savePath=fullfile(defaultFolder,'data','temp');
 febioFebFileNamePart='tempModel';
 febioFebFileName=fullfile(savePath,[febioFebFileNamePart,'.feb']); %FEB file name
 febioLogFileName=fullfile(savePath,[febioFebFileNamePart,'.txt']); %FEBio log file name
-febioLogFileName_disp=[febioFebFileNamePart,'_disp_out.txt']; %Log file name for exporting force
-febioLogFileName_strainEnergy=[febioFebFileNamePart,'_energy_out.txt']; %Log file name for exporting force
+febioLogFileName_disp=[febioFebFileNamePart,'_disp_out.txt']; %Log file name for exporting displacement
+febioLogFileName_strainEnergy=[febioFebFileNamePart,'_energy_out.txt']; %Log file name for exporting strain energy density
 
 %Specifying dimensions and number of elements
 cubeSize=10; 
@@ -130,13 +130,12 @@ gpatch(Fb,V,Cb,'k',faceAlpha1); view(3)
 colormap(gjet(12)); icolorbar;
 axisGeom(gca,fontSize);
 
-
 hs=subplot(1,2,2); hold on; 
 title('Cut view of solid mesh','FontSize',fontSize);
 optionStruct.hFig=[hFig hs];
 meshView(meshStruct,optionStruct);
 axisGeom(gca,fontSize);
-colormap(gca,gjet(2)); icolorbar;
+
 drawnow;
 
 %% Defining the boundary conditions
@@ -188,7 +187,6 @@ febio_spec.Module.ATTR.type='solid';
 
 %Create control structure for use by all steps
 stepStruct.Control.analysis.ATTR.type='static';
-stepStruct.Control.title='Cube analysis';
 stepStruct.Control.time_steps=numTimeSteps;
 stepStruct.Control.step_size=1/numTimeSteps;
 stepStruct.Control.time_stepper.dtmin=dtmin;

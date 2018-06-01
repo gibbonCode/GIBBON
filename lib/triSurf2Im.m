@@ -26,6 +26,7 @@ function [varargout]=triSurf2Im(varargin)
 % 
 % 28/08/2013 Updated for GIBBON
 % 2015/12/28 Updated input parsing
+% 2018/05/18 Updated to handle anisotropic voxels
 %------------------------------------------------------------------------
 
 %%
@@ -44,7 +45,7 @@ imOrigin=[];
 siz=[];
 
 %Removing unused points
-[F,V]=removeNotIndexed(F,V);
+[F,V]=patchCleanUnused(F,V);
 
 %Checking edge lenghts of surface
 [edgeLengths]=patchEdgeLengths(F,V);
@@ -68,18 +69,27 @@ if isempty(voxelSize)
     voxelSize=meanEdgeLength;
 end
 
+if numel(voxelSize)==1
+    %One number given so make it an isotropic voxel
+    voxelSize=voxelSize*ones(1,3);
+    outputVoxelVec=0;
+else
+    voxelSize=voxelSize(:)';
+    outputVoxelVec=1;
+end
+
 if isempty(imOrigin)
     %Determine surface set coordinate minima
     minV=min(V,[],1);
     
     %Determine shift so all coordinates are positive
-    imOrigin=(minV-voxelSize);
+    imOrigin=(minV-voxelSize([2 1 3]));
 end
     
 %%
 
 %Resample surface if voxelsize is small with respect to edgelenghts
-n=maxEdgeLength/voxelSize;
+n=max(maxEdgeLength./voxelSize);
 if (n-1)>eps(1)
     n=ceil(n);
     [~,V]=subtri(F,V,n);
@@ -90,7 +100,7 @@ V=V-imOrigin(ones(size(V,1),1),:);
 
 %Convert to image coordinates
 V_IJK=V;
-[V_IJK(:,1),V_IJK(:,2),V_IJK(:,3)]=cart2im(V(:,1),V(:,2),V(:,3),voxelSize*ones(1,3));
+[V_IJK(:,1),V_IJK(:,2),V_IJK(:,3)]=cart2im(V(:,1),V(:,2),V(:,3),voxelSize);
 
 %Rounding image coordinates to snap to voxel
 V_IJK=round(V_IJK);
@@ -128,7 +138,11 @@ M(logicVertices)=1; %The boundary is set to 1
 M(ismember(labeledImage,labelsInterior))=2; %Interior is set to 2
 
 %Storing image geometry metrics
-G.voxelSize=voxelSize;
+if outputVoxelVec %user specified a single scalar voxel size
+    G.voxelSize=voxelSize;
+else %user specified voxel vector
+    G.voxelSize=voxelSize(1);
+end
 G.origin=imOrigin;
 
 %Create output

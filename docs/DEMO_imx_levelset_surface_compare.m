@@ -17,7 +17,7 @@
 %%
 clear; close all; clc;
 
-%%close all
+%%
 % Plot settings
 fontSize=10;
 faceAlpha1=1;
@@ -47,8 +47,8 @@ ptype='tri';
 
 % Defining the full set of possible control parameters
 voxelSize=0.15; % The output image voxel size.
-imOrigin=min(V,[],1)-2*voxelSize;
-imMax=max(V,[],1)+2*voxelSize;
+imOrigin=min(V,[],1)-4*voxelSize;
+imMax=max(V,[],1)+4*voxelSize;
 imSiz=round((imMax-imOrigin)/voxelSize);
 imSiz=imSiz([2 1 3]); %Image size (x, y corresponds to j,i in image coordinates, hence the permutation)
 
@@ -116,6 +116,7 @@ drawnow;
 %% Example converting completed contours into levelset function
 % The surface should exist at the level 0
 
+
 % Start simple slice viewer
 sv3(M,v);
 drawnow;
@@ -123,18 +124,16 @@ drawnow;
 numContours=numel(loadNames);
 numSlices=size(M,3);
 
-levelSetType=2;
-vizStruct.colormap=gjet(250);
-
-%Loop over slices and compute levelset
-KK=repmat(M,1,1,1,2);
+levelSetType=3;
+logicIn=repmat(M,1,1,1,2);
+logicOn=repmat(M,1,1,1,2);
 for q=1:1:2
     loadName=fullfile(pathName,loadNames{q});
     load(loadName);
-    Vcs=saveStruct.ContourSet;
-    [K]=contour2levelset(M,v,Vcs,levelSetType);
-    KK(:,:,:,q)=K;
-    
+    Vcs=saveStruct.ContourSet;    
+    [L_in,L_on]=contour2logic(M,v,Vcs);
+    logicIn(:,:,:,q)=L_in;
+    logicOn(:,:,:,q)=L_on;
     for qSlice=1:1:numSlices
         numSubContours=numel(Vcs{qSlice});
         for qSub=1:1:numSubContours
@@ -145,17 +144,18 @@ for q=1:1:2
                 hp.LineWidth=5;
             end
         end
-    end    
+    end
+    
 end
-gpatch(F,Vt,'g','none',0.5); %Plot correct theoretical surface 
-drawnow;
+logicInside=(logicIn(:,:,:,1) | logicOn(:,:,:,1)) & ~logicIn(:,:,:,2); 
+
+[K]=logic2levelset(logicInside,v);
 
 %% 
 % Visualize levelset 
 
-KK(:,:,:,2)=-KK(:,:,:,2);
-K=max(KK,[],4);%KK(:,:,:,1);
-K(isnan(K))=nanmax(K(:));
+vizStruct.colormap=warmcold(250); %colormap 
+vizStruct.clim=[-max(abs(K(:))) max(abs(K(:)))]; %color limits
 
 hf1q=sv3(K,v,vizStruct);
 
@@ -178,7 +178,7 @@ Fi=fliplr(Fi); %Invert orientation
 cParSmooth.Method='HC';
 cParSmooth.Alpha=0.1;
 cParSmooth.Beta=0.5;
-cParSmooth.n=15;
+cParSmooth.n=10;
 [Vi]=patchSmooth(Fi,Vi,[],cParSmooth);
 
 %% Compare to theoretical original

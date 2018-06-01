@@ -25,7 +25,9 @@ else
 end
 
 [hFig]=xmlView(fileName,viewerOpt);
-varargout{1}=hFig;
+if nargout>0
+    varargout{1}=hFig;
+end
 
 end
 

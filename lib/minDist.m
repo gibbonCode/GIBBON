@@ -59,11 +59,12 @@ if numSteps>1 %In steps
     minIND=zeros(size(V1,1),1);
     for q=1:1:numSteps-1
         v1=V1(indSteps(q)+1:indSteps(q+1),:);
-        try 
+        if exist('dist','file')==2
             d=dist(v1,V2'); %dist from Neural network toolbox
-        catch
+        else            
             d=distND(v1,V2); %GIBBON's dist function
         end
+        
         if selfAvoid
             %Set "diagonal" to something too large so self is avoided in
             %minimum (could use NaN and nanmin but the latter is a toolbox
@@ -79,9 +80,9 @@ if numSteps>1 %In steps
         minIND(indSteps(q)+1:indSteps(q+1))=min_ind;        
     end
 else %In one go
-    try
+    if exist('dist','file')==2
         D=dist(V1,V2'); %dist from Neural network toolbox
-    catch
+    else
         D=distND(V1,V2); %GIBBON's dist function
     end    
     if selfAvoid
@@ -97,6 +98,7 @@ else %In one go
 end
 
 switch nargout
+    case 0
     case 1
         varargout{1}=D1;
     case 2
