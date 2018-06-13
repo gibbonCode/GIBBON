@@ -1,10 +1,11 @@
 function [D_map,seedIndex]=patchMarchDistMap(F,V,indStart,options)
 
-try    
+try 
     [D_map,~,seedIndex] = perform_fast_marching_mesh(V',F',indStart,options); % See: www.numerical-tours.com    
 catch ME
-    warning(ME.message)
-    warning('Missing external functions, mex compilation incomplete. Using experimental code instead!')
+    warning(['perform_fast_marching_mesh terminated with the error:',ME.message]);    
+    
+    warning('If mex files are not compiled, run compile_mex. Using experimental code instead!');
     
     numPoints=size(V,1);
     

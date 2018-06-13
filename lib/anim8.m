@@ -38,8 +38,22 @@ set(jSlider, 'MajorTickSpacing',tickSizeMajor_I, 'MinorTickSpacing',1, 'PaintTic
 
 %% Set resize function
 
-% set(hf,'ResizeFcn',{@setScrollSizeFunc,{hf,scrollBarWidth,jSlider}});
-set(hf,'ResizeFcn',@(h,e)setScrollSizeFunc(h,e,{hf,scrollBarWidth,jSlider}));
+% set(hf,'ResizeFcn',{@figResize,{hf,scrollBarWidth,jSlider}});
+% set(hf,'ResizeFcn',@(h,e)figResize(h,e,{hf,scrollBarWidth,jSlider}));
+
+hFunc=get(hf,'ResizeFcn');
+
+if iscell(hFunc)
+    warning('anim8 replaced the ResizeFcn function. Specify your ResizeFcn in the form @(h,e)figResize(h,e,c) to avoid this behavior');    
+    set(hf,'ResizeFcn',@(a,b)figResize(a,b,{hf,scrollBarWidth,jSlider}));
+else
+    if isempty(hFunc)
+        set(hf,'ResizeFcn',@(a,b)figResize(a,b,{hf,scrollBarWidth,jSlider}));
+    else        
+        set(hf,'ResizeFcn',@(a,b)(cellfun(@(x)feval(x,a,b),{hFunc,@(a,b)figResize(a,b,{hf,scrollBarWidth,jSlider})})));
+    end
+end
+
 
 %% Initialize figure callbacks
 
@@ -194,7 +208,7 @@ end
 
 %% Scroll bar resizing
 
-function setScrollSizeFunc(~,~,inputCell)
+function figResize(~,~,inputCell)
 hf=inputCell{1};
 scrollBarWidth=inputCell{2};
 

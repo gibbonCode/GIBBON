@@ -167,9 +167,56 @@ hTextInput2 = uicontrol(hf,'Style','edit','String',exportFigPath,...
 hf.UserData.uihandles.hTextInfo2=hTextInfo2;
 hf.UserData.uihandles.hTextInput2=hTextInput2;
 
+%% 
+
+hTextStatement.String='Please provide 3rd party package locations.';
+
 %% Create push button
+hf.UserData.pathDefinitionsDone=0;
+
 hconfirmButton = uicontrol('Style', 'pushbutton', 'String', 'Set paths','Position',[W hf.Position(4)-W*6 5*W round(W/1.5)],'Callback',{@setThirdpartyPaths,{hf}},'FontSize',12);
 hf.UserData.uihandles.hconfirmButton=hconfirmButton;
+
+%% Wait for path definitions to be set
+
+while hf.UserData.pathDefinitionsDone==0
+    pause(0.1);
+end
+
+%% Unzip compressed data
+hf.UserData.uihandles.hTextStatement.String='Unzipping compressed data'; 
+drawnow;
+
+dataFolder=fullfile(hf.UserData.gibbonPath,'data');
+unzipAll(dataFolder,1);
+
+hf.UserData.uihandles.hTextStatement.String='Done unzipping data'; drawnow;
+pause(0.5); 
+
+%% Integrating help/documentations
+hf.UserData.uihandles.hTextStatement.String='Integrating help'; drawnow;
+createHelpDemoDocumentation;
+hf.UserData.uihandles.hTextStatement.String='Done integrating help'; drawnow;
+pause(0.5); 
+
+%% Compiling MEX files
+hf.UserData.uihandles.hTextStatement.String='Compiling mex files (required for faster geodesic remeshing)'; drawnow;
+
+answer = questdlg('Would you like to try compile mex files now?','Compiling mex files','Yes','No','Yes');
+
+switch answer
+    case 'Yes'
+        compile_mex;
+        hf.UserData.uihandles.hTextStatement.String='Done compiling mex files'; drawnow;
+    otherwise
+        hf.UserData.uihandles.hTextStatement.String='Skipped compiling mex files'; drawnow;     
+end
+pause(0.5); 
+
+%%
+
+hf.UserData.uihandles.hTextStatement.String='Restart MATLAB to allow for the help and documentation integration changes to take effect';
+hf.UserData.uihandles.hTextTitle.String='Finished! GIBBON is installed. Feel free to close this window';
 
 end
 
@@ -256,24 +303,7 @@ savepath;
 hf.UserData.uihandles.hTextStatement.String='Done, saving path definitions';
 drawnow;
 
-%% Unzip compressed data
-hf.UserData.uihandles.hTextStatement.String='Unzipping compressed data'; 
-drawnow;
-
-dataFolder=fullfile(hf.UserData.gibbonPath,'data');
-unzipAll(dataFolder,1);
-
-hf.UserData.uihandles.hTextStatement.String='Done, unzipping data';
-drawnow;
-
-%% Integrating help/documentations
-
-hf.UserData.uihandles.hTextStatement.String='Integrating help'; drawnow;
-createHelpDemoDocumentation;
-
-hf.UserData.uihandles.hTextStatement.String='Restart MATLAB to allow for the help and documentation integration changes to take effect';
-
-hf.UserData.uihandles.hTextTitle.String='Finished! GIBBON is installed. Feel free to close this window';
+hf.UserData.pathDefinitionsDone=1;
 
 end
  

@@ -22,5 +22,5 @@ K=K(logicValid);
 
 IND=sub2ind(siz,I,J,K); 
 
-M_new=zeros(sizNew); 
+M_new=nan(sizNew); 
 M_new(logicValid)=M(IND);

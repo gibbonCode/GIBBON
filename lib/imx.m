@@ -872,7 +872,8 @@ function colorbarFunc(~,~)
 prompt = {'Minimum:','Maximum:'};
 dlg_title = 'Set colorbar limits';
 
-defaultOptions = {'0','1'};
+currentLimits=caxis;
+defaultOptions = {num2str(currentLimits(1)),num2str(currentLimits(2))};
 s=25+max([cellfun(@numel,prompt) cellfun(@numel,defaultOptions)]);
 
 Q = inputdlg(prompt,dlg_title,[1 s],defaultOptions);

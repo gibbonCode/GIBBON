@@ -22,10 +22,15 @@ files={files(1:end).name};
 files=sort(files(:));
 
 hw = waitbar(0,'Anonomizing DICOM info...');  
-for q=1:1:numel(files)   
-    fileName=fullfile(pathName,files{q});
-    dicomanon(fileName,fileName,varargin{:});
-    waitbar(q/numel(files),hw,['Anonomizing DICOM info...',num2str(round(100.*q/numel(files))),'%']);
+try
+    for q=1:1:numel(files)
+        fileName=fullfile(pathName,files{q});
+        dicomanon(fileName,fileName,varargin{:});
+        waitbar(q/numel(files),hw,['Anonomizing DICOM info...',num2str(round(100.*q/numel(files))),'%']);
+    end
+catch ME
+   close(hw);
+   rethrow(ME);
 end
 close(hw)
 %% 

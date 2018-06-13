@@ -86,7 +86,7 @@ exampleType=1; %Use to switch between different examples
 switch exampleType
     case 1 %A fast (~10 seconds) resampling to a coarser geodesic output mesh, without before/after refinement
         pointSpacing=1; %Desired point spacing
-        nRefineOriginal=0; %Set n>0 to refine the input mesh through sub-triangulation before resampling
+        nRefineOriginal=1; %Set n>0 to refine the input mesh through sub-triangulation before resampling
         nRefineOutput=0; %Number of output refinement steps
     case 2 %Same as 1 but with resampling/smoothening of the output surface (is mast and may be sufficient)
         %A fast resampling to coarse geodesic mesh, with refinement of output       
@@ -127,7 +127,7 @@ V1=(R*V1')'; %Rotate polygon
 regionCell={V1}; %A region between V1 and V2 (V2 forms a hole inside V1)
 
 % Meshing the region (See also |regionTriMesh2D|)
-[F,V]=regionTriMesh3D(regionCell,0.2,1,'natural');
+[F,V]=regionTriMesh3D(regionCell,0.15,1,'natural');
 
 %% Merge nodes if required (e.g. in case of STL import)
 % In some cases nodes are not shared for adjacent triangles (e.g. STL

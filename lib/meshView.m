@@ -144,10 +144,15 @@ anim8(hFig,animStruct);
 set(hFig.UserData.anim8.sliderHandles{1},'Value',round(numSliceSteps/2)); %Set to middle
 drawnow;
 
-%%
+%% Collect output
 
-varargout{1}=hFig;
-varargout{2}=hp;
+switch nargout
+    case 1
+        varargout{1}=hFig;
+    case 2
+        varargout{1}=hFig;
+        varargout{2}=hp;
+end
 
 %% 
 % _*GIBBON footer text*_ 

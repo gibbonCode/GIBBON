@@ -1,5 +1,7 @@
 function [varargout]=remeshTriSurfDistMap(varargin)
-% [Fd,Vd,seedIndex,indSeed]=remeshTriSurfDistMap(F,V,numSeeds,startInds,)
+
+% function [Fd,Vd,seedIndex,indSeed]=remeshTriSurfDistMap(F,V,numSeeds,startInds,W)
+% ------------------------------------------------------------------------
 % Inputs: 
 % F = input mesh faces
 % V = input mesh vertices
@@ -11,6 +13,14 @@ function [varargout]=remeshTriSurfDistMap(varargin)
 % Vd = Output mesh vertices
 % seedIndex = indices of selected output vertices for each index vertex
 % indSeed = indices of input vertices selected for the output mesh
+%
+% 
+% Kevin Mattheus Moerman
+% gibbon.toolbox@gmail.com
+% 
+% Change log;
+% 
+% ------------------------------------------------------------------------
 
 %% PARSE INPUT
 

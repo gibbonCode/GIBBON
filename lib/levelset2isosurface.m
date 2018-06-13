@@ -63,7 +63,6 @@ L_iso=L(useRange_I,useRange_J,useRange_K);
 
 %Derive isosurface
 [F,V] = isosurface(X_iso,Y_iso,Z_iso,L_iso,contourLevel);
-F=F(:,[3 2 1]); %Flip face order so normal is outward
 
 %Derive caps
 if capOpt==2
@@ -77,7 +76,6 @@ if capOpt==2
     V=V(ind1,:);
     F=ind2(F);
 end
-
  
 %% 
 % _*GIBBON footer text*_ 

@@ -5,15 +5,15 @@
 %	[D,S,Q] = perform_front_propagation_3d(W,start_points,end_points,nb_iter_max, H, L);
 %
 %   'D' is a 2D array containing the value of the distance function to seed.
-%	'S' is a 2D array containing the state of each point : 
+%	'S' is a 2D array containing the state of each point :
 %		-1 : dead, distance have been computed.
 %		 0 : open, distance is being computed but not set.
 %		 1 : far, distance not already computed.
 %	'W' is the weight matrix (inverse of the speed).
 %	'start_points' is a 3 x num_start_points matrix where k is the number of starting points.
 %	'H' is an heuristic (distance that remains to goal). This is a 2D matrix.
-%   
-%   Copyright (c) 2004 Gabriel Peyré
+%
+%   Copyright (c) 2004 Gabriel Peyrï¿½
 *=================================================================*/
 
 // select to test or not to test (debug purpose)
@@ -24,9 +24,9 @@
 // error display
 // #define ERROR_MSG(a) mexErrMsgTxt(a)
 #ifndef ERROR_MSG
-	#define ERROR_MSG(a) 
+	#define ERROR_MSG(a)
 #endif
-// #define WARN_MSG(a)  mexWarnMsgTxt(a) 
+// #define WARN_MSG(a)  mexWarnMsgTxt(a)
 #ifndef WARN_MSG
 	#define WARN_MSG(a)
 #endif
@@ -87,7 +87,7 @@ inline bool end_points_reached(const int i, const int j, const int k )
 	return false;
 }
 
-inline 
+inline
 int compare_points(void *x, void *y)
 {
 	point& a = *( (point*) x );
@@ -122,8 +122,8 @@ void check_heap( int i, int j, int k )
 	}
 }
 
-void perform_front_propagation_3d( T_callback_intert_node callback_insert_node ) 
-{ 
+void perform_front_propagation_3d( T_callback_intert_node callback_insert_node )
+{
 	// create the Fibonacci heap
 	struct fibheap* open_heap = fh_makeheap();
 	fh_setcmp(open_heap, compare_points);
@@ -141,7 +141,7 @@ void perform_front_propagation_3d( T_callback_intert_node callback_insert_node )
 	}
 
 	// record all the points
-	heap_pool = new fibheap_el*[n*p*q]; 
+	heap_pool = new fibheap_el*[n*p*q];
 	memset( heap_pool, NULL, n*p*q*sizeof(fibheap_el*) );
 
 	// initalize open list
@@ -158,10 +158,10 @@ void perform_front_propagation_3d( T_callback_intert_node callback_insert_node )
 		point* pt = new point( i,j,k );
 		existing_points.push_back( pt );			// for deleting at the end
 		heap_pool_(i,j,k) = fh_insert( open_heap, pt );			// add to heap
-		if( values==NULL ) 
+		if( values==NULL )
 			D_( i,j,k ) = 0;
 		else
-			D_( i,j,k ) = values[s];			
+			D_( i,j,k ) = values[s];
 		S_( i,j,k ) = kOpen;
 		Q_( i,j,k ) = s;
 	}
@@ -193,11 +193,11 @@ void perform_front_propagation_3d( T_callback_intert_node callback_insert_node )
 			int ii = nei_i[s];
 			int jj = nei_j[s];
 			int kk = nei_k[s];
-			
+
 			bool bInsert = true;
 			if( callback_insert_node!=NULL )
 				bInsert = callback_insert_node(i,j,k,ii,jj,kk);
-				
+
 			if( ii>=0 && jj>=0 && ii<n && jj<p && kk>=0 && kk<q && bInsert )
 			{
 				double P = h/W_(ii,jj,kk);
@@ -235,7 +235,7 @@ void perform_front_propagation_3d( T_callback_intert_node callback_insert_node )
 				if( A1<=a3 )
 				{
 					// at least a3 is too large, so we have
-					// a >= a2 >= a1  and  a<a3 so the equation is 
+					// a >= a2 >= a1  and  a<a3 so the equation is
 					//		(a-a1)^2+(a-a2)^2 - P^2 = 0
 					//=> 2*a^2 - 2*(a1+a2)*a + a1^2+a2^2-P^2
 					// delta = (a2+a1)^2 - 2*(a1^2 + a2^2 - P^2)
@@ -270,13 +270,13 @@ void perform_front_propagation_3d( T_callback_intert_node callback_insert_node )
 						if( cur_el!=NULL )
 							fh_replacedata( open_heap, cur_el, cur_el->fhe_data );	// use same data for update
 						else
-							ERROR_MSG("Error in heap pool allocation."); 							
+							ERROR_MSG("Error in heap pool allocation.");
 					}
 				}
 				else if( ((int) S_(ii,jj,kk)) == kFar )
 				{
 					if( D_(ii,jj,kk)!=GW_INFINITE )
-						WARN_MSG("Distance must be initialized to Inf");  
+						WARN_MSG("Distance must be initialized to Inf");
 					if( L==NULL || A1<=L_(ii,jj,kk) )
 					{
 						S_(ii,jj,kk) = kOpen;
@@ -286,11 +286,11 @@ void perform_front_propagation_3d( T_callback_intert_node callback_insert_node )
 						// add to open list
 						point* pt = new point(ii,jj,kk);
 						existing_points.push_back( pt );
-						heap_pool_(ii,jj,kk) = fh_insert( open_heap, pt );			// add to heap	
+						heap_pool_(ii,jj,kk) = fh_insert( open_heap, pt );			// add to heap
 					}
 				}
-				else 
-					WARN_MSG("Unkwnown state."); 
+				else
+					WARN_MSG("Unkwnown state.");
 			}	// end swich
 		}		// end for
 	}			// end while
@@ -302,6 +302,6 @@ void perform_front_propagation_3d( T_callback_intert_node callback_insert_node )
 		GW_DELETE( *it );
 	// free fibheap pool
 	GW_DELETEARRAY(heap_pool);
-	
+
 	return;
 }

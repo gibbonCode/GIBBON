@@ -2,7 +2,9 @@ function [varargout]=contour2logic(M,v,Vcs)
 
 % function [varargout]=contour2logic(M,v,Vcs)
 %-------------------------------------------------------------------------
-%
+% This function converts the set of contours contained in the input cell
+% Vcs to a logic array. The logic array matches the size of the input image
+% M with the voxel size v. 
 %
 % Change log:
 % 2018/05/23 Changed to have logicIn and logicOn
@@ -14,9 +16,9 @@ function [varargout]=contour2logic(M,v,Vcs)
 
 methodOption=2;
 switch methodOption
-    case 1
+    case 1 %Using inpolygon command
         [logicIn,logicOn,M]=inContourPolygon(M,v,Vcs);
-    case 2
+    case 2 %Using custom function
         [logicIn,logicOn,M]=inContour(M,v,Vcs);
 end
 
@@ -32,9 +34,15 @@ function [logicIn,logicOn,M]=inContour(M,v,Vcs)
 
 siz=size(M); %Size of the image dataset
 
-hw=waitbar(0,'Computing logic... ');
+hw=waitbar(0,'Computing logic... '); %Create waitbar
+
+try
+    
+%Initialize logic arrays
 logicIn=false(size(M));
 logicOn=false(size(M));
+
+%Check empty slices
 logicEmpty=cellfun(@(x) isempty(x{1}),Vcs);
 
 sliceRange=find(~logicEmpty);
@@ -47,7 +55,7 @@ for qSlice=sliceRange
     
     for qSub=1:1:numSubContours
         Vc=Vcs{qSlice}{qSub}; %Current contour
-        
+       
         Vcc=Vc;
         n=size(Vc,1);
         while 1
@@ -55,6 +63,13 @@ for qSlice=sliceRange
             [Vcc] = evenlySampleCurve(Vc,n,'linear',1);
             [I,J,~]=cart2im(Vcc(:,1),Vcc(:,2),Vcc(:,3),v);
             I=round(I);
+            
+            if any(I<1) || any(J<1) || any(I>size(logicOn_Now,1)) || any(J>size(logicOn_Now,2))
+                %warning('Contour contains points outside of image space');
+                I(I<1)=1; I(I>size(logicOn_Now,1))=size(logicOn_Now,1);
+                J(J<1)=1; J(J>size(logicOn_Now,2))=size(logicOn_Now,2);                
+            end
+            
             J=round(J);
             IND=sub2indn(size(logicOn_Now),[I(:) J(:)]);
             logicOn_Now(IND)=1;
@@ -64,7 +79,6 @@ for qSlice=sliceRange
                 n=n*2; %Increase curve sampling
             end
         end
-        
     end
 
 %%
@@ -94,6 +108,12 @@ logicOn(:,:,qSlice)=logicOn_Now;
 waitbar(c/numSteps,hw,['Computing logic. ',num2str(round((c/numSteps)*100)),'%']);
     c=c+1;
 end
+
+catch ME
+    close(hw);
+    rethrow(ME);
+end
+
 close(hw);
 
 end

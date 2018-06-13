@@ -504,7 +504,7 @@ FEB_struct.Materials{2}.Solid{2}.Properties={'T0','theta','phi'};
 FEB_struct.Materials{2}.Solid{2}.Values={T0_2,0,0};
 FEB_struct.Materials{2}.Solid{2}.AnisoType='mat_axis';
 
-FEB_struct.Materials{2}.Solid{2}.PropAttrName=cell(1,numel(FEB_struct.Materials{1}.Solid{2}.Properties));
+FEB_struct.Materials{2}.Solid{2}.PropAttrName=cell(1,numel(FEB_struct.Materials{2}.Solid{2}.Properties));
 FEB_struct.Materials{2}.Solid{2}.PropAttrName{1}='lc';
 FEB_struct.Materials{2}.Solid{2}.PropAttrVal{1}=1;
 

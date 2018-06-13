@@ -102,7 +102,11 @@ else
     [F,P,C]=quiver3Dpatch(P(:,1),P(:,2),P(:,3),V(:,1),V(:,2),V(:,3),colorSpec,vecSize);    
 end
 
-varargout{1}=gpatch(F,P,C,edgeColorOpt,alphaLevel);
+h=gpatch(F,P,C,edgeColorOpt,alphaLevel);
+
+if nargout>0
+    varargout{1}=h;
+end
  
 %% 
 % _*GIBBON footer text*_ 

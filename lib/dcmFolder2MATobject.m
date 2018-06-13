@@ -10,8 +10,9 @@ function dcmFolder2MATobject(varargin)
 % Kevin Mattheus Moerman
 % gibbon.toolbox@gmail.com
 %
-% 2013/10/23
-% 2016/01/22 
+% Change log
+% 2018/06/11 Suppressed/removed triggertime related warning (this appears
+% to be a custom field which is nearly always missing).   
 %------------------------------------------------------------------------
 
 %% PARSE INPUT
@@ -271,21 +272,12 @@ if NumberOfFiles>0
         TriggerTimesAll=[dcmInfo(:).TriggerTime];
         TriggerTimesUni=unique(TriggerTimesAll);
         NumberOfTemporalPositions=numel(TriggerTimesUni); %NumberOfPhasesMR
-    else
-        %TO DO! add proper warning here
-        if firstWarning_TriggerTime==0
-            warning('The field "TriggerTime" was not found! Assuming a single dynamic at time=0');
-            firstWarning_TriggerTime=1;
-        end
+    else    
         TriggerTimesAll=zeros(1,NumberOfFiles);
         TriggerTimesUni=unique(TriggerTimesAll);
-        try
+        if isfield(dcmInfo,'NumberOfTemporalPositions') %Multiple dynamics        
             NumberOfTemporalPositions=double(dcmInfo(1).NumberOfTemporalPositions);
-        catch %TO DO! add proper warning here
-            if firstWarning_TriggerTime==0
-                warning('The field "NumberOfTemporalPositions" was not found! Assuming a single dynamic at time=0');
-                firstWarning_TriggerTime=1;
-            end
+        else
             NumberOfTemporalPositions=1;
         end
     end
@@ -409,8 +401,7 @@ if NumberOfFiles>0
                             warning('Multi-dimensional (e.g. RGB) slices where converted to 2D grayscale');
                         end
                         if size(M,1)~=size(m,1)
-                            M(:,:,iSlice)=m'; %Try transpose
-                            %TO DO! add proper warning here
+                            M(:,:,iSlice)=m'; %Try transpose                            
                             if firstWarning_Rotation==0
                                 warning('Image data was rotated to match expected image size!');
                                 firstWarning_Rotation=1;
@@ -430,8 +421,7 @@ if NumberOfFiles>0
         end
     end
     close(hw);
-else
-    %TO DO! add proper warning here
+else    
     warning(['Folder ',PathName,' skipped since it does not contain .dcm files']);
 end
 

@@ -1,5 +1,28 @@
 function [varargout]=sv3(varargin)
 
+% function [hf]=sv3(M,v,vizOptStruct)
+% ------------------------------------------------------------------------
+% sv3 (slice view 3D) is a 3D slice viewer function. The 3D image data M is
+% rendered using 3 mutally orthogonal slices. The option input v is the
+% voxel size which scales the image appropriately in the 3 directions. The
+% 3rd optional input vixOptStruct which can be used to make custom
+% visualization settings. The default structure containts the following: 
+%
+% vizOptStructDefault.colormap=gray(250); %colormap
+% vizOptStructDefault.clim=[min(M(~isnan(M))) max(M(~isnan(M)))]; %color limits
+% vizOptStructDefault.fontColor='w'; %font color
+% vizOptStructDefault.fontSize=20; %font size
+% vizOptStructDefault.figStruct=figStruct; %figure options (see cFigure)
+% vizOptStructDefault.sliceIndices=round(size(M)/2); %Default mid-slices
+% vizOptStructDefault.thresholdLevels=[0 100]; %Default threshold levels
+%
+% See also: sliceViewer, sv2, imx
+%
+% Change log: 
+% 2018/06/06 Added initial slice indices as option to input structure
+% 2018/06/06 Added basic description at the top of this function
+% ------------------------------------------------------------------------
+
 %% Parse input
 
 switch nargin
@@ -16,16 +39,19 @@ switch nargin
         v=varargin{2};
         vizOptStruct=varargin{3};
 end
+M=double(M); %Conver the image to a double
 
 figStruct.Name='GIBBON: Slice viewer'; %Figure name
 figStruct.Color='k'; %Figure background color
 figStruct.ColorDef='black'; %Setting colordefinitions to black
 
-vizOptStructDefault.colormap=gray(250);
-vizOptStructDefault.clim=[min(M(~isnan(M))) max(M(~isnan(M)))];
-vizOptStructDefault.fontColor='w';
-vizOptStructDefault.fontSize=20;
-vizOptStructDefault.figStruct=figStruct;
+vizOptStructDefault.colormap=gray(250); %colormap
+vizOptStructDefault.clim=[min(M(~isnan(M))) max(M(~isnan(M)))]; %color limits
+vizOptStructDefault.fontColor='w'; %font color
+vizOptStructDefault.fontSize=20; %font size
+vizOptStructDefault.figStruct=figStruct; %figure options (see cFigure)
+vizOptStructDefault.sliceIndices=round(size(M)/2); %Default mid-slices
+vizOptStructDefault.thresholdLevels=[0 100]; %Default threshold levels
 
 [vizOptStruct]=structComplete(vizOptStruct,vizOptStructDefault,1);
 
@@ -42,11 +68,11 @@ figStruct=vizOptStruct.figStruct;
 %%
 
 %Defining row, column and slice indicices for slice patching
-sliceIndexI=round(size(M,1)/2); %(close to) middle row
-sliceIndexJ=round(size(M,2)/2); %(close to) middle column
-sliceIndexK=round(size(M,3)/2); %(close to) middle slice
+sliceIndexI=vizOptStruct.sliceIndices(1); %(close to) middle row
+sliceIndexJ=vizOptStruct.sliceIndices(2); %(close to) middle column
+sliceIndexK=vizOptStruct.sliceIndices(3); %(close to) middle slice
 
-Tf=[0 100]; %Threshold
+thresholdLevels=vizOptStruct.thresholdLevels; %Threshold
 
 nTickMajor=20;
 tickSizeMajor_I=round(size(M,1)/nTickMajor);
@@ -80,7 +106,7 @@ javacomponent(jSlider_K,[2*w,0,w,round(hf.Position(4))]);
 set(jSlider_K, 'MajorTickSpacing',tickSizeMajor_K, 'MinorTickSpacing',1, 'PaintTicks',true, 'PaintLabels',true,...
     'Background',java.awt.Color.white, 'snapToTicks',true, 'StateChangedCallback',{@plotSlice,{hf,jSlider_K,3}},'Orientation',jSlider_K.VERTICAL);
 
-jSlider_T = com.jidesoft.swing.RangeSlider(0,100,Tf(1),Tf(2));  % min,max,low,high
+jSlider_T = com.jidesoft.swing.RangeSlider(0,100,thresholdLevels(1),thresholdLevels(2));  % min,max,low,high
 javacomponent(jSlider_T,[3*w,0,w,round(hf.Position(4))]);
 set(jSlider_T, 'MajorTickSpacing',25, 'MinorTickSpacing',1, 'PaintTicks',true, 'PaintLabels',true,...
     'Background',java.awt.Color.white, 'snapToTicks',false, 'StateChangedCallback',{@setThreshold,{hf,jSlider_T,jSlider_I,jSlider_J,jSlider_K}},'Orientation',jSlider_T.VERTICAL);
@@ -104,8 +130,8 @@ hf.UserData.M_plot=M;
 set(jSlider_I,'Value',sliceIndexI);
 set(jSlider_J,'Value',sliceIndexJ);
 set(jSlider_K,'Value',sliceIndexK);
-set(jSlider_T,'HighValue',Tf(2));
-set(jSlider_T,'LowValue',Tf(1));
+set(jSlider_T,'HighValue',thresholdLevels(2));
+set(jSlider_T,'LowValue',thresholdLevels(1));
 
 setThreshold([],[],{hf,jSlider_T,jSlider_I,jSlider_J,jSlider_K});
 
@@ -174,14 +200,14 @@ jSlider_I=inputCell{3};
 jSlider_J=inputCell{4};
 jSlider_K=inputCell{5};
 
-Tf(1) = get(jSlider_T,'LowValue');
-Tf(2) = get(jSlider_T,'HighValue');
+thresholdLevels(1) = get(jSlider_T,'LowValue');
+thresholdLevels(2) = get(jSlider_T,'HighValue');
 
 M=hf.UserData.M;
 W=max(M(:))-min(M(:));
 
-T_low=min(M(:))+(W*Tf(1)/100);
-T_high=min(M(:))+(W*Tf(2)/100);
+T_low=min(M(:))+(W*thresholdLevels(1)/100);
+T_high=min(M(:))+(W*thresholdLevels(2)/100);
 logicThreshold=(M>=T_low & M<=T_high);
 
 hf.UserData.M_plot=M;
