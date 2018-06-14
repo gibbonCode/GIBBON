@@ -1,0 +1,26 @@
+function Lb=logicRemoveInterior(L)
+
+if isvector(L)
+    h=[1 1 1];
+elseif ismatrix(L)
+    h=[0 1 0;...
+       1 1 1;...
+       0 1 1];
+elseif ndims(L)==3
+    h=zeros(3,3,3);
+h(:,:,1)=[0 0 0;...
+          0 1 0;...
+          0 0 0];
+h(:,:,2)=[0 1 0;...
+          1 1 1;...
+          0 1 0];
+h(:,:,3)=[0 0 0;...
+          0 1 0;...
+          0 0 0];
+else
+    error('Array size not supported');
+end
+
+L=L>0;
+LC=convn(double(L),h,'same');
+Lb=L & ~(LC==sum(h(:)));

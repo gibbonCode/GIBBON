@@ -9,18 +9,24 @@ function [cmap_i]=resampleColormap(cmap,n)
 % Kevin Mattheus Moerman
 % gibbon.toolbox@gmail.com
 % 
+% Change log:
 % 2014/09/25
+% 2018/06/13 Added handling of single color colormap
 %------------------------------------------------------------------------
 
-ind=(1:1:size(cmap,1))';
-ind_i=linspace(1,size(cmap,1),n)';
-cmap_i=zeros(n,size(cmap,2));
-
-%Interpolate color data
-for q=1:1:size(cmap,2)
-    cmap_i(:,q)=interp1(ind,cmap(:,q),ind_i,'linear');
+if size(cmap,1)==1
+    % warning('Only one color provided in input color map. Copying colors instead');
+    cmap_i=cmap(ones(n,1),:);
+else
+    ind=(1:1:size(cmap,1))';
+    ind_i=linspace(1,size(cmap,1),n)';
+    cmap_i=zeros(n,size(cmap,2));
+    
+    %Interpolate color data
+    for q=1:1:size(cmap,2)
+        cmap_i(:,q)=interp1(ind,cmap(:,q),ind_i,'linear');
+    end
 end
- 
 %% 
 % _*GIBBON footer text*_ 
 % 

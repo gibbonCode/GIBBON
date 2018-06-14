@@ -55,7 +55,11 @@ end
 logicInside=logicInside>0; %Force to be a logic (in case resampling altered it)
 
 %Remove interior from logic
-logicOn = bwmorph3(logicInside,'remove');
+try    
+    logicOn = bwmorph3(logicInside,'remove'); %New in R2018a
+catch
+    logicOn=logicRemoveInterior(logicInside); %GIBBON alterative
+end
 
 %Do distance transform on isotropic image
 D = double(bwdist(logicOn,'euclidean')); %Compute distance

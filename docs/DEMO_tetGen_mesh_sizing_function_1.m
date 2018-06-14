@@ -42,24 +42,21 @@ boxEl=[numElementsWidth numElementsThickness numElementsHeight]; %Number of elem
 [Fq,Vq,faceBoundaryMarker_q]=quadBox(boxDim,boxEl);
 [F,V]=quad2tri(Fq,Vq,'f');
 
-faceBoundMarker1=2; 
-faceBoundaryMarker=faceBoundMarker1*ones(size(F,1),1); %Create boundary markers for faces
+faceBoundaryMarker=ones(size(F,1),1); %Create boundary markers for faces
 
 %%
 % Plotting surface models
-hf=cFigure;
+cFigure;
 title('The surface model','FontSize',fontSize);
-xlabel('X','FontSize',fontSize); ylabel('Y','FontSize',fontSize); zlabel('Z','FontSize',fontSize);
 hold on;
 
-patch('Faces',F,'Vertices',V,'FaceColor','flat','CData',faceBoundaryMarker,'FaceAlpha',faceAlpha1,'lineWidth',edgeWidth,'edgeColor',edgeColor);
+gpatch(F,V,faceBoundaryMarker,'k',0.8,edgeWidth);
 % [hp]=patchNormPlot(F,V,0.25);
 
-colormap(gjet(2));
-colorbar;
+colormap(gjet(2)); caxis([0 1]); icolorbar;
+axisGeom(gca,fontSize);
 camlight headlight;
-set(gca,'FontSize',fontSize);
-view(3); axis tight;  axis equal;  grid on;
+drawnow;
 
 %% Defining a size function on the boundary nodes
 
@@ -76,19 +73,17 @@ edgeSizeField=(edgeSizeField*minEdgeSize);
 
 %%
 % Plotting surface models
-hf=cFigure;
+cFigure;
 title('Boundary points where desired element size is specified','FontSize',fontSize);
-xlabel('X','FontSize',fontSize); ylabel('Y','FontSize',fontSize); zlabel('Z','FontSize',fontSize);
 hold on;
 
-patch('Faces',F,'Vertices',V,'FaceColor',0.5*ones(1,3),'FaceAlpha',0.1,'edgeColor','none');
-scatter3(V(:,1),V(:,2),V(:,3),75,edgeSizeField,'fill')
+gpatch(F,V,'kw','none',0.25);
+scatterV(V,75,edgeSizeField,'fill')
 
-colormap(gjet(250));
-colorbar;
+colormap(gjet(250)); colorbar;
+axisGeom(gca,fontSize);
 camlight headlight;
-set(gca,'FontSize',fontSize);
-view(3); axis tight;  axis equal;  grid on;
+drawnow;
 
 %% CREATING A SOLID TETRAHEDRAL MESH USING TETGEN
 
@@ -103,6 +98,8 @@ inputStruct.regionPoints=[0 0 0]; %region points
 %%
 % Mesh model using tetrahedral elements using tetGen 
 [meshOutput]=runTetGen(inputStruct); %Run tetGen
+
+meshView(meshOutput);
 
 %%
 % Accessing the model element and patch data
@@ -126,20 +123,17 @@ X=VT(:,3); XE=mean(X(E),2);
 L=XE<mean(X(:));
 [Fs,Cs]=element2patch(E(L,:),C(L),'tet4');
 
-hf1=cFigure;
-
+cFigure;
 title('Cut view of biased mesh','FontSize',fontSize);
-xlabel('X','FontSize',fontSize); ylabel('Y','FontSize',fontSize); zlabel('Z','FontSize',fontSize); hold on;
 
 [CV]=faceToVertexMeasure(Fs,VT,Cs);
-hps=patch('Faces',Fs,'Vertices',VT,'FaceColor','flat','CData',CV,'lineWidth',edgeWidth);
+hps=gpatch(Fs,VT,CV,'k',1,edgeWidth);
 shading interp; 
 set(hps,'edgeColor',edgeColor);
 
-view(3); axis tight;  axis equal;  grid on;
 colormap(gjet(250)); colorbar; 
+axisGeom(gca,fontSize);
 camlight headlight;
-set(gca,'FontSize',fontSize);
 drawnow;
 
 %% 
