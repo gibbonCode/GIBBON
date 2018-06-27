@@ -6,13 +6,7 @@ numFacesIni=size(F,1);
 [F,V]=removeNotIndexed(F,V);
 
 %Removing double vertices
-try
-    [~,IND_V,IND_IND]=unique(round(V,numDigitKeep,'significant'),'rows');
-catch
-    [~,IND_V,IND_IND]=unique(sround(V,numDigitKeep),'rows');
-end
-V_uni=V(IND_V,:);
-F=IND_IND(F); %Fix indices in F
+[F,V_uni,IND_V,IND_IND]=mergeVertices(F,V,numDigitKeep);
 
 %Removing double FACES
 [F_uni,IND_F,IND_F_2]=uniqueIntegerRow(F);

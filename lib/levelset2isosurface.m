@@ -69,12 +69,10 @@ if capOpt==2
     [Fc,Vc] = isocaps(X_iso,Y_iso,Z_iso,L_iso,contourLevel);
     Fc=Fc(:,[3 2 1]); %Flip face order so normal is outward
     
-    %Merge patch data
+    %Join and merge patch data
     F=[F;Fc+size(V,1);];
     V=[V;Vc;];
-    [~,ind1,ind2]=unique(pround(V,5),'rows');
-    V=V(ind1,:);
-    F=ind2(F);
+    [F,V]=mergeVertices(F,V);
 end
  
 %% 

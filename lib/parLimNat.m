@@ -8,9 +8,16 @@ function [varargout]=parLimNat(varargin)
 % Kevin Mattheus Moerman
 % gibbon.toolbox@gmail.com
 % 
+%
 % 2015/06/30 Updated for GIBBON, fixed case for limits equal to centre
 % 2015/08/31 Fixed behaviour for empty x, changed to varargin
+% 2018/06/21 Increased sampling to make output smoother
+% 2018/06/22 Added warning to refer to boxconstrain
 %------------------------------------------------------------------------
+
+%%
+
+warning('This function is obsolete and will be removed in future releases, use the boxconstrain function instead');
 
 %%
 
@@ -58,7 +65,7 @@ end
 
 %%
 
-nc=6; 
+nc=100; 
 
 if L_wn
     xtn=xx_c;

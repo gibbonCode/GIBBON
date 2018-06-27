@@ -12,29 +12,17 @@ allFiles = dir(fullfile(helpPath,'*.html'));
 allFiles={allFiles(1:end).name};
 allFiles=sort(allFiles(:));
 
-% try
-    logicDemo=contains(allFiles,'DEMO_');
-% catch 
-%     logicDemo=~cellfun(@isempty,strfind(allFiles,'DEMO_'));
-% end
+logicDemo=gcontains(allFiles,'DEMO_');
 
 demoFiles=allFiles(logicDemo);
 numDemoFiles=numel(demoFiles);
 
-% try    
-    logicHelp=contains(allFiles,'HELP_');
-% catch 
-%     logicHelp=~cellfun(@isempty,strfind(allFiles,'HELP_'));
-% end
+logicHelp=gcontains(allFiles,'HELP_');
 
 helpFiles=allFiles(logicHelp);
 numHelpFiles=numel(helpFiles);
 
-% try    
-    logicStart=contains(allFiles,'GIBBON_product_page');
-% catch 
-%     logicStart=~cellfun(@isempty,strfind(allFiles,'GIBBON_product_page'));
-% end
+logicStart=gcontains(allFiles,'GIBBON_product_page');
 
 startFile=allFiles{logicStart};
 

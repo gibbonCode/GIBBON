@@ -6,7 +6,7 @@
    <!--
 This HTML was auto-generated from MATLAB code.
 To make changes, update the MATLAB code and republish this document.
-      --><title>DEMO_FEBio_iFEA_uniaxial_01</title><meta name="generator" content="MATLAB 9.4"><link rel="schema.DC" href="http://purl.org/dc/elements/1.1/"><meta name="DC.date" content="2018-05-15"><meta name="DC.source" content="DEMO_FEBio_iFEA_uniaxial_01.m"><style type="text/css">
+      --><title>DEMO_FEBio_iFEA_uniaxial_01</title><meta name="generator" content="MATLAB 9.4"><link rel="schema.DC" href="http://purl.org/dc/elements/1.1/"><meta name="DC.date" content="2018-06-22"><meta name="DC.source" content="DEMO_FEBio_iFEA_uniaxial_01.m"><style type="text/css">
 html,body,div,span,applet,object,iframe,h1,h2,h3,h4,h5,h6,p,blockquote,pre,a,abbr,acronym,address,big,cite,code,del,dfn,em,font,img,ins,kbd,q,s,samp,small,strike,strong,sub,sup,tt,var,b,u,i,center,dl,dt,dd,ol,ul,li,fieldset,form,label,legend,table,caption,tbody,tfoot,thead,tr,th,td{margin:0;padding:0;border:0;outline:0;font-size:100%;vertical-align:baseline;background:transparent}body{line-height:1}ol,ul{list-style:none}blockquote,q{quotes:none}blockquote:before,blockquote:after,q:before,q:after{content:'';content:none}:focus{outine:0}ins{text-decoration:none}del{text-decoration:line-through}table{border-collapse:collapse;border-spacing:0}
 
 html { min-height:100%; margin-bottom:1px; }
@@ -66,7 +66,7 @@ table td { padding:7px 5px; text-align:left; vertical-align:top; border:1px soli
 
 
 
-  </style></head><body><div class="content"><h1>DEMO_FEBio_iFEA_uniaxial_01</h1><!--introduction--><p>Below is a demonstration for: 1) Inverse FEA based material parameter optimisation</p><!--/introduction--><h2>Contents</h2><div><ul><li><a href="#4">SIMULATE EXPERIMENTAL DATA</a></li><li><a href="#5">CREATING MESHED BOX</a></li><li><a href="#7">DEFINE BC's</a></li><li><a href="#9">CONSTRUCTING FEB MODEL</a></li><li><a href="#10">SAVING .FEB FILE</a></li><li><a href="#11">RUNNING FEBIO JOB</a></li><li><a href="#12">IMPORTING NODAL DISPLACEMENT RESULTS</a></li><li><a href="#13">CREATING NODE SET IN DEFORMED STATE</a></li><li><a href="#15">IMPORTING NODAL FORCES</a></li><li><a href="#18">CREATE STRUCTURES FOR OPTIMISATION</a></li><li><a href="#19">STARTING OPTIMISATION</a></li><li><a href="#21">Unnormalize and constrain parameters</a></li></ul></div><pre class="codeinput">clear; close <span class="string">all</span>; clc;
+  </style></head><body><div class="content"><h1>DEMO_FEBio_iFEA_uniaxial_01</h1><!--introduction--><p>Below is a demonstration for: 1) Inverse FEA based material parameter optimisation</p><!--/introduction--><h2>Contents</h2><div><ul><li><a href="#4">SIMULATE EXPERIMENTAL DATA</a></li><li><a href="#5">CREATING MESHED BOX</a></li><li><a href="#7">DEFINE BC's</a></li><li><a href="#9">CONSTRUCTING FEB MODEL</a></li><li><a href="#10">SAVING .FEB FILE</a></li><li><a href="#11">RUNNING FEBIO JOB</a></li><li><a href="#12">IMPORTING NODAL DISPLACEMENT RESULTS</a></li><li><a href="#13">CREATING NODE SET IN DEFORMED STATE</a></li><li><a href="#15">IMPORTING NODAL FORCES</a></li><li><a href="#18">CREATE STRUCTURES FOR OPTIMISATION</a></li><li><a href="#19">STARTING OPTIMISATION</a></li><li><a href="#21">Unnormalize and constrain parameters</a></li><li><a href="#25">Unnormalize and constrain parameters</a></li><li><a href="#26">SETTING MATERIAL PARAMETERS</a></li><li><a href="#27">START FEBio NOW</a></li></ul></div><pre class="codeinput">clear; close <span class="string">all</span>; clc;
 </pre><p>Plot settings</p><pre class="codeinput">fontSize=20;
 faceAlpha1=0.8;
 faceAlpha2=1;
@@ -268,7 +268,7 @@ Update your codes to use febioStruct2xml, see HELP_febioStruct2xml (furthermore
 febio_spec version 2.5 is recommended) 
  
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
---- Writing FEBio XML object --- 15-May-2018 15:45:32
+--- Writing FEBio XML object --- 22-Jun-2018 16:01:18
 Using febio_spec: 2.0
 Adding Module level
 Adding Control level
@@ -287,7 +287,7 @@ Adding Output level
 ----&gt; Adding plotfile field
 ----&gt; Adding logfile field
 Writing .feb file
---- Done --- 15-May-2018 15:45:32
+--- Done --- 22-Jun-2018 16:01:18
 </pre><h2 id="11">RUNNING FEBIO JOB</h2><pre class="codeinput"><span class="comment">% FEBioRunStruct.FEBioPath='C:\Program Files\febio2-2.2.6\bin\febio2.exe';</span>
 FEBioRunStruct.run_filename=FEB_struct.run_filename;
 FEBioRunStruct.run_logname=FEB_struct.run_logname;
@@ -302,9 +302,9 @@ FEBioRunStruct.cleanUpFileList=FEB_struct.run_output_names; <span class="comment
 [runFlag]=runMonitorFEBio(FEBioRunStruct);<span class="comment">%START FEBio NOW!!!!!!!!</span>
 </pre><pre class="codeoutput"> 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
---- STARTING FEBIO JOB --- 15-May-2018 15:45:32
+--- STARTING FEBIO JOB --- 22-Jun-2018 16:01:18
 Waiting for log file...
-Proceeding to check log file...15-May-2018 15:45:32
+Proceeding to check log file...22-Jun-2018 16:01:19
 ------- converged at time : 0.1
 ------- converged at time : 0.2
 ------- converged at time : 0.3
@@ -315,7 +315,7 @@ Proceeding to check log file...15-May-2018 15:45:32
 ------- converged at time : 0.8
 ------- converged at time : 0.9
 ------- converged at time : 1
---- Done --- 15-May-2018 15:45:32
+--- Done --- 22-Jun-2018 16:01:19
 </pre><h2 id="12">IMPORTING NODAL DISPLACEMENT RESULTS</h2><p>Importing nodal displacements from a log file</p><pre class="codeinput">[~, N_disp_mat,~]=importFEBio_logfile(FEB_struct.run_output_names{1}); <span class="comment">%Nodal displacements</span>
 
 DN=N_disp_mat(:,2:end,end); <span class="comment">%Final nodal displacements</span>
@@ -424,99 +424,19 @@ objectiveStruct.run_output_names=FEB_struct.run_output_names;
             <span class="string">'DiffMaxChange'</span>,0.5);
         [Pn_opt,OPT_out.resnorm,OPT_out.residual]= lsqnonlin(@(Pn) obj_DEMO_FEBio_iFEA_uniaxial_01(Pn,objectiveStruct),Pn,[],[],OPT_options);
 <span class="keyword">end</span>
-</pre><pre class="codeoutput">SETTING MATERIAL PARAMETERS...
-Proposed (norm.): 1.0000000000000000e+00 1.0000000000000000e+00 
-Proposed        : 6.4464428523599996e-04 3.0000000000000000e+00 
-Set (constr.)   : 6.4464428523599996e-04 3.0000000000000000e+00 
-Done
-SETTING MATERIAL PARAMETERS...
-Proposed (norm.): 1.0009999999999999e+00 1.0000000000000000e+00 
-Proposed        : 6.4528892952123585e-04 3.0000000000000000e+00 
-Set (constr.)   : 6.4584027880999404e-04 3.0000000000000000e+00 
-Done
-SETTING MATERIAL PARAMETERS...
-Proposed (norm.): 1.0000000000000000e+00 1.0009999999999999e+00 
-Proposed        : 6.4464428523599996e-04 3.0029999999999997e+00 
-Set (constr.)   : 6.4464428523599996e-04 3.0055662191396384e+00 
-Done
-
-                                        First-Order                    Norm of 
- Iteration  Func-count    Residual       optimality      Lambda           step
-     0           3         2.27203            11.4         0.01
-SETTING MATERIAL PARAMETERS...
-Proposed (norm.): 7.3038332166986297e-01 1.4570165659432903e+00 
-Proposed        : 4.7083743434616428e-04 4.3710496978298714e+00 
-Set (constr.)   : 2.8574271850998617e-04 5.6330970207030990e+00 
-Done
-SETTING MATERIAL PARAMETERS...
-Proposed (norm.): 7.3138332166986297e-01 1.4570165659432903e+00 
-Proposed        : 4.7148207863140023e-04 4.3710496978298714e+00 
-Set (constr.)   : 2.8692230774252705e-04 5.6330970207030990e+00 
-Done
-SETTING MATERIAL PARAMETERS...
-Proposed (norm.): 7.3038332166986297e-01 1.4584735825092336e+00 
-Proposed        : 4.7083743434616428e-04 4.3754207475277012e+00 
-Set (constr.)   : 2.8574271850998617e-04 5.6417551286824423e+00 
-Done
-     1           6        0.171597            3.75        0.001        0.53062
-SETTING MATERIAL PARAMETERS...
-Proposed (norm.): 7.6139883366763739e-01 1.5353733351441416e+00 
-Proposed        : 4.9083140690919813e-04 4.6061200054324249e+00 
-Set (constr.)   : 3.2373474277577134e-04 6.1008598862119570e+00 
-Done
-SETTING MATERIAL PARAMETERS...
-Proposed (norm.): 7.6239883366763739e-01 1.5353733351441416e+00 
-Proposed        : 4.9147605119443413e-04 4.6061200054324249e+00 
-Set (constr.)   : 3.2500410838897200e-04 6.1008598862119570e+00 
-Done
-SETTING MATERIAL PARAMETERS...
-Proposed (norm.): 7.6139883366763739e-01 1.5369087084792858e+00 
-Proposed        : 4.9083140690919813e-04 4.6107261254378571e+00 
-Set (constr.)   : 3.2373474277577134e-04 6.1100683741142472e+00 
-Done
-     2           9       0.0101784           0.365       0.0001      0.0842719
-SETTING MATERIAL PARAMETERS...
-Proposed (norm.): 7.6000527494267966e-01 1.5246772323604867e+00 
-Proposed        : 4.8993305724101337e-04 4.5740316970814598e+00 
-Set (constr.)   : 3.2197004419845721e-04 6.0367544463647711e+00 
-Done
-SETTING MATERIAL PARAMETERS...
-Proposed (norm.): 7.6100527494267967e-01 1.5246772323604867e+00 
-Proposed        : 4.9057770152624938e-04 4.5740316970814598e+00 
-Set (constr.)   : 3.2323586734418042e-04 6.0367544463647711e+00 
-Done
-SETTING MATERIAL PARAMETERS...
-Proposed (norm.): 7.6000527494267966e-01 1.5262019095928472e+00 
-Proposed        : 4.8993305724101337e-04 4.5786057287785411e+00 
-Set (constr.)   : 3.2197004419845721e-04 6.0458875389960083e+00 
-Done
-     3          12      0.00893876         0.00368        1e-05      0.0107865
-
-Local minimum possible.
-
-lsqnonlin stopped because the relative size of the current step is less than
-the selected value of the step size tolerance.
-
-
-
 </pre><pre class="codeinput">[Fopt,OPT_stats_out]=obj_DEMO_FEBio_iFEA_uniaxial_01(Pn_opt,objectiveStruct);
 
 <span class="comment">% type(fullfile(fileparts(filePath),'obj_DEMO_FEBio_iFEA_uniaxial_01'))</span>
-</pre><pre class="codeoutput">SETTING MATERIAL PARAMETERS...
-Proposed (norm.): 7.6000527494267966e-01 1.5246772323604867e+00 
-Proposed        : 4.8993305724101337e-04 4.5740316970814598e+00 
-Set (constr.)   : 3.2197004419845721e-04 6.0367544463647711e+00 
-Done
 </pre><h2 id="21">Unnormalize and constrain parameters</h2><pre class="codeinput">P_opt=Pn_opt.*objectiveStruct.parNormFactors; <span class="comment">%Scale back, undo normalization</span>
 
 <span class="comment">%Constraining parameters</span>
-<span class="keyword">for</span> q=1:1:numel(P_opt);
-    [P_opt(q)]=parLimNat(objectiveStruct.Pb_struct.xx_c(q),objectiveStruct.Pb_struct.xxlim(q,:),P_opt(q));
+<span class="keyword">for</span> q=1:1:numel(P)
+    [P(q)]=boxconstrain(P(q),objectiveStruct.Pb_struct.xxlim(q,1),objectiveStruct.Pb_struct.xxlim(q,2),objectiveStruct.Pb_struct.xx_c(q));
 <span class="keyword">end</span>
 
 disp_text=sprintf(<span class="string">'%6.16e,'</span>,P_opt); disp_text=disp_text(1:end-1);
 disp([<span class="string">'P_opt='</span>,disp_text]);
-</pre><pre class="codeoutput">P_opt=3.2197004419845721e-04,6.0367544463647711e+00
+</pre><pre class="codeoutput">P_opt=2.8929435555627203e-04,6.0398752127178490e+00
 </pre><pre class="codeinput">hf1=cFigure;
 title(<span class="string">'Stretch stress curves optimised'</span>,<span class="string">'FontSize'</span>,fontSize);
 xlabel(<span class="string">'\lambda Stretch [.]'</span>,<span class="string">'FontSize'</span>,fontSize); ylabel(<span class="string">'\sigma Cauchy stress [kPa]'</span>,<span class="string">'FontSize'</span>,fontSize); zlabel(<span class="string">'Z'</span>,<span class="string">'FontSize'</span>,fontSize); hold <span class="string">on</span>;
@@ -528,7 +448,169 @@ legend(Hn,{<span class="string">'Simulation'</span>,<span class="string">'Experi
 view(2); axis <span class="string">tight</span>;  grid <span class="string">on</span>;
 set(gca,<span class="string">'FontSize'</span>,fontSize);
 drawnow;
-</pre><img vspace="5" hspace="5" src="DEMO_FEBio_iFEA_uniaxial_01_05.png" alt=""> <p><img vspace="5" hspace="5" src="gibbVerySmall.gif" alt=""> </p><p><i><b>GIBBON</b></i> <a href="www.gibboncode.org">www.gibboncode.org</a></p><p><i>Kevin Mattheus Moerman</i>, <a href="gibbon.toolbox@gmail.com">gibbon.toolbox@gmail.com</a></p><p><i><b>GIBBON footer text</b></i></p><p>License: <a href="https://github.com/gibbonCode/GIBBON/blob/master/LICENSE">https://github.com/gibbonCode/GIBBON/blob/master/LICENSE</a></p><p>GIBBON: The Geometry and Image-based Bioengineering add-On. A toolbox for image segmentation, image-based modeling, meshing, and finite element analysis.</p><p>Copyright (C) 2018  Kevin Mattheus Moerman</p><p>This program is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.</p><p>This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for more details.</p><p>You should have received a copy of the GNU General Public License along with this program.  If not, see <a href="http://www.gnu.org/licenses/">http://www.gnu.org/licenses/</a>.</p><p class="footer"><br><a href="https://www.mathworks.com/products/matlab/">Published with MATLAB&reg; R2018a</a><br></p></div><!--
+</pre><img vspace="5" hspace="5" src="DEMO_FEBio_iFEA_uniaxial_01_05.png" alt=""> <pre class="codeinput"><span class="keyword">function</span> [Fopt,OPT_stats_out]=obj_DEMO_FEBio_iFEA_uniaxial_01(Pn,objectiveStruct)
+</pre><h2 id="25">Unnormalize and constrain parameters</h2><pre class="codeinput">P=Pn.*objectiveStruct.parNormFactors; <span class="comment">%Scale back, undo normalization</span>
+P_in=P; <span class="comment">%Proposed P</span>
+
+<span class="comment">%Constraining parameters</span>
+<span class="keyword">for</span> q=1:1:numel(P)
+    [P(q)]=boxconstrain(P(q),objectiveStruct.Pb_struct.xxlim(q,1),objectiveStruct.Pb_struct.xxlim(q,2),objectiveStruct.Pb_struct.xx_c(q));
+<span class="keyword">end</span>
+</pre><h2 id="26">SETTING MATERIAL PARAMETERS</h2><pre class="codeinput"><span class="comment">%Acces material parameters</span>
+mat_struct=objectiveStruct.mat_struct;
+mat_struct.par_values={P(1) P(2) P(1) -P(2) P(1)*objectiveStruct.k_factor};
+
+disp(<span class="string">'SETTING MATERIAL PARAMETERS...'</span>);
+disp([<span class="string">'Proposed (norm.): '</span>,sprintf(repmat(<span class="string">'%6.16e '</span>,[1,numel(Pn)]),Pn)]);
+disp([<span class="string">'Proposed        : '</span>,sprintf(repmat(<span class="string">'%6.16e '</span>,[1,numel(P_in)]),P_in)]);
+disp([<span class="string">'Set (constr.)   : '</span>,sprintf(repmat(<span class="string">'%6.16e '</span>,[1,numel(P)]),P)]);
+
+<span class="comment">%Assign material parameters</span>
+set_mat_par_FEBIO(objectiveStruct.FEB_struct.run_filename,objectiveStruct.FEB_struct.run_filename,{mat_struct});
+
+disp(<span class="string">'Done'</span>)
+</pre><pre class="codeoutput">SETTING MATERIAL PARAMETERS...
+Proposed (norm.): 1.0000000000000000e+00 1.0000000000000000e+00 
+Proposed        : 6.4464428523599996e-04 3.0000000000000000e+00 
+Set (constr.)   : 6.4464428523599996e-04 3.0000000000000000e+00 
+Done
+</pre><pre class="codeoutput">SETTING MATERIAL PARAMETERS...
+Proposed (norm.): 1.0009999999999999e+00 1.0000000000000000e+00 
+Proposed        : 6.4528892952123585e-04 3.0000000000000000e+00 
+Set (constr.)   : 6.4528892952121395e-04 3.0000000000000000e+00 
+Done
+</pre><pre class="codeoutput">SETTING MATERIAL PARAMETERS...
+Proposed (norm.): 1.0000000000000000e+00 1.0009999999999999e+00 
+Proposed        : 6.4464428523599996e-04 3.0029999999999997e+00 
+Set (constr.)   : 6.4464428523599996e-04 3.0029999999959256e+00 
+Done
+</pre><pre class="codeoutput">SETTING MATERIAL PARAMETERS...
+Proposed (norm.): 5.1152118897241494e-01 1.7806373220903706e+00 
+Proposed        : 3.2974921124819131e-04 5.3419119662711116e+00 
+Set (constr.)   : 3.5303826503152658e-04 5.3399757064420594e+00 
+Done
+</pre><pre class="codeoutput">SETTING MATERIAL PARAMETERS...
+Proposed (norm.): 5.1252118897241494e-01 1.7806373220903706e+00 
+Proposed        : 3.3039385553342731e-04 5.3419119662711116e+00 
+Set (constr.)   : 3.5354855786873696e-04 5.3399757064420594e+00 
+Done
+</pre><pre class="codeoutput">SETTING MATERIAL PARAMETERS...
+Proposed (norm.): 5.1152118897241494e-01 1.7824179594124610e+00 
+Proposed        : 3.2974921124819131e-04 5.3472538782373826e+00 
+Set (constr.)   : 3.5303826503152658e-04 5.3453043471434043e+00 
+Done
+</pre><pre class="codeoutput">SETTING MATERIAL PARAMETERS...
+Proposed (norm.): 4.5170273759101276e-01 2.0079657459231943e+00 
+Proposed        : 2.9118758841350286e-04 6.0238972377695834e+00 
+Set (constr.)   : 3.2338225219146936e-04 6.0197317522019240e+00 
+Done
+</pre><pre class="codeoutput">SETTING MATERIAL PARAMETERS...
+Proposed (norm.): 4.5270273759101276e-01 2.0079657459231943e+00 
+Proposed        : 2.9183223269873887e-04 6.0238972377695834e+00 
+Set (constr.)   : 3.2386378772280471e-04 6.0197317522019240e+00 
+Done
+</pre><pre class="codeoutput">SETTING MATERIAL PARAMETERS...
+Proposed (norm.): 4.5170273759101276e-01 2.0099737116691174e+00 
+Proposed        : 2.9118758841350286e-04 6.0299211350073527e+00 
+Set (constr.)   : 3.2338225219146936e-04 6.0257307332830008e+00 
+Done
+</pre><pre class="codeoutput">SETTING MATERIAL PARAMETERS...
+Proposed (norm.): 4.4876587318285666e-01 2.0132917375726165e+00 
+Proposed        : 2.8929435555627203e-04 6.0398752127178490e+00 
+Set (constr.)   : 3.2197087800665619e-04 6.0356434217108754e+00 
+Done
+</pre><pre class="codeoutput">SETTING MATERIAL PARAMETERS...
+Proposed (norm.): 4.4976587318285666e-01 2.0132917375726165e+00 
+Proposed        : 2.8993899984150804e-04 6.0398752127178490e+00 
+Set (constr.)   : 3.2245097543234791e-04 6.0356434217108754e+00 
+Done
+</pre><pre class="codeoutput">SETTING MATERIAL PARAMETERS...
+Proposed (norm.): 4.4876587318285666e-01 2.0153050293101891e+00 
+Proposed        : 2.8929435555627203e-04 6.0459150879305668e+00 
+Set (constr.)   : 3.2197087800665619e-04 6.0416580508430062e+00 
+Done
+</pre><pre class="codeoutput">SETTING MATERIAL PARAMETERS...
+Proposed (norm.): 4.4876587318285666e-01 2.0132917375726165e+00 
+Proposed        : 2.8929435555627203e-04 6.0398752127178490e+00 
+Set (constr.)   : 3.2197087800665619e-04 6.0356434217108754e+00 
+Done
+</pre><h2 id="27">START FEBio NOW</h2><pre class="codeinput">[runFlag]=runMonitorFEBio(objectiveStruct.FEBioRunStruct);
+
+pause(0.1);
+
+bcPrescribeList=objectiveStruct.bcPrescribeList;
+sampleHeight=objectiveStruct.sampleHeight;
+initialArea=objectiveStruct.initialArea;
+stretch_exp=objectiveStruct.stretch_exp;
+stress_cauchy_exp=objectiveStruct.stress_cauchy_exp;
+
+<span class="keyword">if</span> runFlag==1
+
+    <span class="comment">%Importing displacement</span>
+    [~,N_disp_mat,~]=importFEBio_logfile(objectiveStruct.FEB_struct.run_output_names{1}); <span class="comment">%Nodal displacements</span>
+
+    <span class="comment">%Importing force</span>
+    [~,N_force_mat,~]=importFEBio_logfile(objectiveStruct.FEB_struct.run_output_names{2}); <span class="comment">%Nodal displacements</span>
+
+    <span class="comment">%Get Z forces</span>
+    FZ=sum(N_force_mat(bcPrescribeList,end,:),1);
+    FZ=[0; FZ(:)]; <span class="comment">%Mean top surface nodal forces</span>
+
+    <span class="comment">%Derive applied stretch</span>
+    DZ_set=N_disp_mat(bcPrescribeList,end,:); <span class="comment">%Final nodal displacements</span>
+    DZ_set=mean(DZ_set,1);
+    stretch_sim=(DZ_set+sampleHeight)./sampleHeight;
+    stretch_sim=[1; stretch_sim(:)];
+
+    <span class="comment">%Derive simulated Cauchy stress</span>
+    currentArea=initialArea./stretch_sim;
+    stress_cauchy_sim=FZ./currentArea; <span class="comment">%Cauchy stress</span>
+    stress_cauchy_sim=stress_cauchy_sim.*1e3; <span class="comment">%Scale to kPa</span>
+
+    <span class="comment">%Interpolate experiment onto simulated points</span>
+    stress_cauchy_sim_exp = interp1(stretch_sim,stress_cauchy_sim,stretch_exp,<span class="string">'pchip'</span>);
+
+    <span class="comment">%Derive Fopt</span>
+    stressDev=stress_cauchy_exp-stress_cauchy_sim_exp;
+
+    <span class="keyword">switch</span> objectiveStruct.method
+        <span class="keyword">case</span> 1
+            Fopt=sum((stressDev).^2); <span class="comment">%Sum of squared differences</span>
+        <span class="keyword">case</span> 2
+            Fopt=stressDev;<span class="comment">%(stressDev).^2; %Squared differences</span>
+    <span class="keyword">end</span>
+
+    OPT_stats_out.stress_cauchy_sim=stress_cauchy_sim;
+    OPT_stats_out.stretch_sim=stretch_sim;
+    OPT_stats_out.stressDev=stressDev;
+    OPT_stats_out.Fopt=Fopt;
+
+<span class="keyword">else</span> <span class="comment">%Output NaN</span>
+    <span class="keyword">switch</span> objectiveStruct.method
+        <span class="keyword">case</span> 1
+            Fopt=NaN;
+        <span class="keyword">case</span> 2
+            Fopt=NaN(size(stress_cauchy_exp)); <span class="comment">%Squared differences</span>
+    <span class="keyword">end</span>
+    OPT_stats_out=[];
+<span class="keyword">end</span>
+</pre><pre class="codeinput"><span class="keyword">end</span>
+</pre><pre class="codeoutput">
+                                        First-Order                    Norm of 
+ Iteration  Func-count    Residual       optimality      Lambda           step
+     0           3         2.27203            6.12         0.01
+     1           6       0.0166134           0.198        0.001       0.920873
+     2           9      0.00898913          0.0276       0.0001       0.235067
+     3          12      0.00893872        0.000137        1e-05     0.00608205
+
+Local minimum possible.
+
+lsqnonlin stopped because the relative size of the current step is less than
+the selected value of the step size tolerance.
+
+
+
+</pre><p><img vspace="5" hspace="5" src="gibbVerySmall.gif" alt=""> </p><p><i><b>GIBBON</b></i> <a href="www.gibboncode.org">www.gibboncode.org</a></p><p><i>Kevin Mattheus Moerman</i>, <a href="gibbon.toolbox@gmail.com">gibbon.toolbox@gmail.com</a></p><p><i><b>GIBBON footer text</b></i></p><p>License: <a href="https://github.com/gibbonCode/GIBBON/blob/master/LICENSE">https://github.com/gibbonCode/GIBBON/blob/master/LICENSE</a></p><p>GIBBON: The Geometry and Image-based Bioengineering add-On. A toolbox for image segmentation, image-based modeling, meshing, and finite element analysis.</p><p>Copyright (C) 2018  Kevin Mattheus Moerman</p><p>This program is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.</p><p>This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for more details.</p><p>You should have received a copy of the GNU General Public License along with this program.  If not, see <a href="http://www.gnu.org/licenses/">http://www.gnu.org/licenses/</a>.</p><p class="footer"><br><a href="https://www.mathworks.com/products/matlab/">Published with MATLAB&reg; R2018a</a><br></p></div><!--
 ##### SOURCE BEGIN #####
 %% DEMO_FEBio_iFEA_uniaxial_01
 % Below is a demonstration for: 
@@ -918,8 +1000,8 @@ end
 P_opt=Pn_opt.*objectiveStruct.parNormFactors; %Scale back, undo normalization
 
 %Constraining parameters
-for q=1:1:numel(P_opt);
-    [P_opt(q)]=parLimNat(objectiveStruct.Pb_struct.xx_c(q),objectiveStruct.Pb_struct.xxlim(q,:),P_opt(q));
+for q=1:1:numel(P)
+    [P(q)]=boxconstrain(P(q),objectiveStruct.Pb_struct.xxlim(q,1),objectiveStruct.Pb_struct.xxlim(q,2),objectiveStruct.Pb_struct.xx_c(q));    
 end
 
 disp_text=sprintf('%6.16e,',P_opt); disp_text=disp_text(1:end-1);
@@ -938,6 +1020,101 @@ legend(Hn,{'Simulation','Experiment'},'Location','northwest');
 view(2); axis tight;  grid on;
 set(gca,'FontSize',fontSize);
 drawnow;
+
+%%
+
+function [Fopt,OPT_stats_out]=obj_DEMO_FEBio_iFEA_uniaxial_01(Pn,objectiveStruct)
+
+%% Unnormalize and constrain parameters
+
+P=Pn.*objectiveStruct.parNormFactors; %Scale back, undo normalization
+P_in=P; %Proposed P
+
+%Constraining parameters
+for q=1:1:numel(P)
+    [P(q)]=boxconstrain(P(q),objectiveStruct.Pb_struct.xxlim(q,1),objectiveStruct.Pb_struct.xxlim(q,2),objectiveStruct.Pb_struct.xx_c(q));    
+end
+
+%% SETTING MATERIAL PARAMETERS
+
+%Acces material parameters
+mat_struct=objectiveStruct.mat_struct;
+mat_struct.par_values={P(1) P(2) P(1) -P(2) P(1)*objectiveStruct.k_factor}; 
+
+disp('SETTING MATERIAL PARAMETERS...');
+disp(['Proposed (norm.): ',sprintf(repmat('%6.16e ',[1,numel(Pn)]),Pn)]);
+disp(['Proposed        : ',sprintf(repmat('%6.16e ',[1,numel(P_in)]),P_in)]);
+disp(['Set (constr.)   : ',sprintf(repmat('%6.16e ',[1,numel(P)]),P)]);
+
+%Assign material parameters
+set_mat_par_FEBIO(objectiveStruct.FEB_struct.run_filename,objectiveStruct.FEB_struct.run_filename,{mat_struct});
+
+disp('Done')
+
+%% START FEBio NOW
+
+[runFlag]=runMonitorFEBio(objectiveStruct.FEBioRunStruct);
+
+pause(0.1); 
+
+bcPrescribeList=objectiveStruct.bcPrescribeList;
+sampleHeight=objectiveStruct.sampleHeight;
+initialArea=objectiveStruct.initialArea;
+stretch_exp=objectiveStruct.stretch_exp;
+stress_cauchy_exp=objectiveStruct.stress_cauchy_exp;
+
+if runFlag==1    
+    
+    %Importing displacement
+    [~,N_disp_mat,~]=importFEBio_logfile(objectiveStruct.FEB_struct.run_output_names{1}); %Nodal displacements
+
+    %Importing force
+    [~,N_force_mat,~]=importFEBio_logfile(objectiveStruct.FEB_struct.run_output_names{2}); %Nodal displacements
+    
+    %Get Z forces
+    FZ=sum(N_force_mat(bcPrescribeList,end,:),1);
+    FZ=[0; FZ(:)]; %Mean top surface nodal forces
+    
+    %Derive applied stretch
+    DZ_set=N_disp_mat(bcPrescribeList,end,:); %Final nodal displacements
+    DZ_set=mean(DZ_set,1);
+    stretch_sim=(DZ_set+sampleHeight)./sampleHeight;
+    stretch_sim=[1; stretch_sim(:)];
+    
+    %Derive simulated Cauchy stress 
+    currentArea=initialArea./stretch_sim;
+    stress_cauchy_sim=FZ./currentArea; %Cauchy stress
+    stress_cauchy_sim=stress_cauchy_sim.*1e3; %Scale to kPa
+    
+    %Interpolate experiment onto simulated points
+    stress_cauchy_sim_exp = interp1(stretch_sim,stress_cauchy_sim,stretch_exp,'pchip');
+    
+    %Derive Fopt
+    stressDev=stress_cauchy_exp-stress_cauchy_sim_exp;  
+       
+    switch objectiveStruct.method
+        case 1
+            Fopt=sum((stressDev).^2); %Sum of squared differences
+        case 2
+            Fopt=stressDev;%(stressDev).^2; %Squared differences
+    end
+    
+    OPT_stats_out.stress_cauchy_sim=stress_cauchy_sim;
+    OPT_stats_out.stretch_sim=stretch_sim;
+    OPT_stats_out.stressDev=stressDev;
+    OPT_stats_out.Fopt=Fopt;
+    
+else %Output NaN
+    switch objectiveStruct.method
+        case 1
+            Fopt=NaN; 
+        case 2
+            Fopt=NaN(size(stress_cauchy_exp)); %Squared differences
+    end
+    OPT_stats_out=[];
+end
+
+end
 
 %% 
 %

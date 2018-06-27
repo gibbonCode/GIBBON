@@ -83,7 +83,7 @@ xmlwrite_xerces(fileName,domNode); %Custom XML write function
 %Import to cut out bad element names from text write mode
 T=txtfile2cell(fileName);
 
-logicKeep=~contains(T,'xxxxxxxxxxx_CUT');
+logicKeep=~gcontains(T,'xxxxxxxxxxx_CUT');
 cell2txtfile(fileName,T(logicKeep),0,0);
 
 %% Collect output

@@ -23,11 +23,7 @@ T=T(2:end);
 %% Getting time data and crop indices
 targetString='*Time';
 
-try
-    L=contains(T,targetString); 
-catch
-    L=cellfun(@(x)~isempty(x),(strfind(T,targetString)));
-end
+L=gcontains(T,targetString); 
 
 no_steps=(sum(L));
 

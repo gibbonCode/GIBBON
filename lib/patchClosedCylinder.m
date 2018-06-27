@@ -8,7 +8,7 @@ function [FT,VT,CT]=patchClosedCylinder(inputStruct)
 if isfield(inputStruct,'numDigitKeep')
     numDigitKeep=inputStruct.numDigitKeep;
 else
-    numDigitKeep=5;     
+    numDigitKeep=[];     
 end
 
 %%
@@ -60,9 +60,7 @@ Cb=3*ones(size(Fb,1),1); %Color for bottom faces
 [FT,VT,CT]=joinElementSets({F,Ft,Fb},{V,Vt,Vb},{C,Ct,Cb});
 
 %Merges nodes
-[~,indUnique,indFaceIndexFix]=unique(pround(VT,numDigitKeep),'rows');
-VT=VT(indUnique,:);
-FT=indFaceIndexFix(FT);
+[FT,VT]=mergeVertices(FT,VT,numDigitKeep);
 
  
 %% 

@@ -36,8 +36,8 @@ hf1=figuremax(figColor,figColorDef);
 title('The two surfaces','FontSize',fontSize);
 xlabel('X','FontSize',fontSize);ylabel('Y','FontSize',fontSize);zlabel('Z','FontSize',fontSize); 
 hold on; 
-patch('faces',F1,'vertices',V1,'FaceColor','g','FaceAlpha',faceAlpha1);
-patch('faces',F2,'vertices',V2,'FaceColor','b','FaceAlpha',faceAlpha1);
+gpatch(F1,V1,'gw','g',faceAlpha1);
+gpatch(F2,V2,'rw','r',faceAlpha1);
 
 axis equal; view(3); axis tight; grid on;
 set(gca,'FontSize',fontSize); 

@@ -10,9 +10,9 @@ clear; close all; clc;
 
 %%
 % Plot settings
-fontSize=10;
-faceColor1='r';
-faceColor2='g';
+fontSize=15;
+faceColor1='rw';
+faceColor2='gw';
 faceAlpha1=1;
 faceAlpha2=0.25;
 edgeColor=0*ones(1,3);
@@ -36,30 +36,25 @@ fileName=fullfile(pathName,'femur.stl');
 
 cFigure;
 title('Imported patch data from multi-solid STL','fontSize',fontSize);
-xlabel('X','fontSize',fontSize);ylabel('Y','fontSize',fontSize); zlabel('Z','fontSize',fontSize); hold on;
+hold on;
 for q=1:1:numel(stlStruct.solidNames)
     F=stlStruct.solidFaces{q};
     V=stlStruct.solidVertices{q};        
     V=V*1000; % Convert to mm for this particular surface
-    patch('Faces',F,'Vertices',V,'FaceColor',faceColor1,'EdgeColor','k','FaceAlpha',faceAlpha1);
+    gpatch(F,V,faceColor1);
 end
-view(3); axis equal; axis tight; axis vis3d; grid on;
+axisGeom(gca,fontSize); 
 view(viewAz,vieEl);
 camlight('headlight');
-lighting phong; 
 drawnow;
 
 %% Merging nodes
 % STL imported surfaces suffer from non-unique points since each face is
 % defined with its own coordinate set, even if it shares nodes with an
 % adjacent face. Hence in order to generate a closed surface these nodes
-% need to be merged. Here the |unique| function is used combined with
-% |pround| to achieve this. So effectively points are deemed the same if
-% they are the same after rounding to the 5th decimal place. 
+% need to be merged. 
 
-[~,ind1,ind2]=unique(pround(V,5),'rows');
-V=V(ind1,:);
-F=ind2(F);
+[F,V]=mergeVertices(F,V); %Merge nodes
 
 %% Search for "three-connected" points
 % A common issue in triangulated surfaces are "three-connected" nodes.
@@ -75,13 +70,12 @@ cFigure;
 title('Highlighted points that are "three-connected"','fontSize',fontSize);
 xlabel('X','fontSize',fontSize);ylabel('Y','fontSize',fontSize); zlabel('Z','fontSize',fontSize); hold on;
 
-patch('Faces',F,'Vertices',V,'FaceColor',faceColor1,'EdgeColor','k','FaceAlpha',faceAlpha1);
+gpatch(F,V,faceColor1);
 plotV(V(logicThree,:),'b.','MarkerSize',markerSize);
 
-view(3); axis equal; axis tight; axis vis3d; grid on;
+axisGeom(gca,fontSize); 
 view(viewAz,vieEl);
 camlight('headlight');
-lighting phong; 
 drawnow;
 
 %% Removing "3-connected" vertices in the middle of faces and replacing associated faces by a single face
@@ -98,29 +92,24 @@ C=double(L);
 %%
 % Plotting results
 
-hf=cFigure; hold on;
-subplot(1,2,1); 
+hf=cFigure;
+subplot(1,2,1);  hold on;
 title('Surface containing split triangles','FontSize',fontSize);
-xlabel('X','FontSize',fontSize); ylabel('Y','FontSize',fontSize); zlabel('Z','FontSize',fontSize);
-hp=patch('Faces',F,'Vertices',V,'FaceColor','flat','CData',C,'FaceAlpha',faceAlpha1,'lineWidth',edgeWidth,'edgeColor',edgeColor);
-set(gca,'FontSize',fontSize);
-view(3); axis tight;  axis equal;  axis vis3d; grid on; 
-view(viewAz,vieEl);
-colormap autumn; 
-camlight('headlight'); lighting flat;
 
-subplot(1,2,2); 
+gpatch(F,V,C,'k',faceAlpha1);
+
+axisGeom(gca,fontSize); 
+view(viewAz,vieEl);
+camlight('headlight');
+
+subplot(1,2,2);  hold on;
 title('Restored surface','FontSize',fontSize);
-xlabel('X','FontSize',fontSize); ylabel('Y','FontSize',fontSize); zlabel('Z','FontSize',fontSize);
-hp=patch('Faces',Ft,'Vertices',Vt,'FaceColor',faceColor2,'FaceAlpha',faceAlpha1,'lineWidth',edgeWidth,'edgeColor',edgeColor);
+gpatch(Ft,Vt,faceColor2,'k',faceAlpha1);
 % [hp]=patchNormPlot(Ft,Vt,0.25);
-set(gca,'FontSize',fontSize);
-view(3); axis tight;  axis equal;  axis vis3d; grid on; 
+axisGeom(gca,fontSize); 
 view(viewAz,vieEl);
-colormap autumn; 
-camlight('headlight'); lighting flat;
-
-drawnow; 
+camlight('headlight');
+drawnow;
 
 %% Surface smoothening
 
@@ -134,35 +123,18 @@ cPar.Method='HC';
 hf=cFigure; hold on;
 subplot(1,2,1); 
 title('Unsmoothened surface','FontSize',fontSize);
-xlabel('X','FontSize',fontSize); ylabel('Y','FontSize',fontSize); zlabel('Z','FontSize',fontSize);
-hp=patch('Faces',F,'Vertices',V,'FaceColor',faceColor1,'FaceAlpha',faceAlpha1,'lineWidth',edgeWidth,'edgeColor',edgeColor);
-set(gca,'FontSize',fontSize);
-view(3); axis tight;  axis equal;  axis vis3d; grid on; 
+gpatch(F,V,faceColor1);
+axisGeom(gca,fontSize); 
 view(viewAz,vieEl);
-colormap autumn; 
-camlight('headlight'); lighting flat;
+camlight('headlight');
 
 subplot(1,2,2); 
 title('Smoothened surface','FontSize',fontSize);
-xlabel('X','FontSize',fontSize); ylabel('Y','FontSize',fontSize); zlabel('Z','FontSize',fontSize);
-hp=patch('Faces',Ft,'Vertices',Vt,'FaceColor',faceColor2,'FaceAlpha',faceAlpha1,'lineWidth',edgeWidth,'edgeColor',edgeColor);
-set(gca,'FontSize',fontSize);
-view(3); axis tight;  axis equal;  axis vis3d; grid on; 
+gpatch(Ft,Vt,faceColor2,'k',faceAlpha1);
+axisGeom(gca,fontSize); 
 view(viewAz,vieEl);
-colormap autumn; 
-camlight('headlight'); lighting flat;
-drawnow; 
-
-hf=cFigure; hold on;
-title('Smoothened surface','FontSize',fontSize);
-xlabel('X','FontSize',fontSize); ylabel('Y','FontSize',fontSize); zlabel('Z','FontSize',fontSize);
-hp=patch('Faces',Ft,'Vertices',Vt,'FaceColor',faceColor2,'FaceAlpha',faceAlpha1,'lineWidth',edgeWidth,'edgeColor',edgeColor);
-set(gca,'FontSize',fontSize);
-view(3); axis tight;  axis equal;  axis vis3d; grid on; 
-view(viewAz,vieEl);
-colormap autumn; 
-camlight('headlight'); lighting flat;
-drawnow; 
+camlight('headlight');
+drawnow;
 
 %% Compare surface sets
 % Compute a surface distance metric
@@ -174,17 +146,16 @@ drawnow;
 
 cFigure;
 title('Distance based surface comparison','fontSize',fontSize);
-xlabel('X','fontSize',fontSize);ylabel('Y','fontSize',fontSize); zlabel('Z','fontSize',fontSize); hold on;
+hold on;
 
-patch('Faces',Ft,'Vertices',Vt,'FaceColor','flat','CData',D,'EdgeColor','none','FaceAlpha',faceAlpha1);
+gpatch(Ft,Vt,D,'k',faceAlpha1);
 colormap jet; colorbar; shading interp; 
 
-patch('Faces',F,'Vertices',V,'FaceColor','k','EdgeColor','none','FaceAlpha',faceAlpha2);
+gpatch(F,V,'kw','none',faceAlpha2);
 
-view(3); axis equal; axis tight; axis vis3d; grid on;
+axisGeom(gca,fontSize); 
 view(viewAz,vieEl);
 camlight('headlight');
-lighting phong; 
 drawnow;
 
 %% 

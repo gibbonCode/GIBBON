@@ -111,9 +111,7 @@ Vs=[Vi;Vc];
 Fs=[Fi;Fc+size(Vi,1)];
 
 %Merge nodes
-[~,ind1,ind2]=unique(pround(Vs,5),'rows');
-Vs=Vs(ind1,:);
-Fs=ind2(Fs);
+[Fs,Vs]=mergeVertices(Fs,Vs);
 
 cPar.Method='HC';
 cPar.n=25;

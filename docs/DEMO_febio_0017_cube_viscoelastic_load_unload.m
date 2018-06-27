@@ -44,9 +44,9 @@ savePath=fullfile(defaultFolder,'data','temp');
 febioFebFileNamePart='tempModel';
 febioFebFileName=fullfile(savePath,[febioFebFileNamePart,'.feb']); %FEB file name
 febioLogFileName=fullfile(savePath,[febioFebFileNamePart,'.txt']); %FEBio log file name
-febioLogFileName_disp=[febioFebFileNamePart,'_disp_out.txt']; %Log file name for exporting force
+febioLogFileName_disp=[febioFebFileNamePart,'_disp_out.txt']; %Log file name for exporting displacement
 febioLogFileName_force=[febioFebFileNamePart,'_force_out.txt']; %Log file name for exporting force
-febioLogFileName_stress=[febioFebFileNamePart,'_stress_out.txt']; %Log file name for exporting force
+febioLogFileName_stress=[febioFebFileNamePart,'_stress_out.txt']; %Log file name for exporting stress
 
 %Specifying dimensions and number of elements
 cubeSize=10; 
@@ -199,7 +199,15 @@ febio_spec.ATTR.version='2.5';
 %Module section
 febio_spec.Module.ATTR.type='solid'; 
 
+%Get control section from template
+stepStruct.Control=febio_spec.Control;
+
+%Remove control field (part of template) since step specific control sections are used
+febio_spec=rmfield(febio_spec,'Control'); 
+
 %Control sections for each step
+febio_spec.Step{1}.ATTR.id=1;
+febio_spec.Step{1}.Control=stepStruct.Control;
 febio_spec.Step{1}.Control.analysis.ATTR.type=analysisType;
 febio_spec.Step{1}.Control.time_steps=numTimeSteps1;
 febio_spec.Step{1}.Control.step_size=t_step1;
@@ -210,6 +218,8 @@ febio_spec.Step{1}.Control.time_stepper.opt_iter=opt_iter;
 febio_spec.Step{1}.Control.max_refs=max_refs;
 febio_spec.Step{1}.Control.max_ups=max_ups;
 
+febio_spec.Step{2}.ATTR.id=2;
+febio_spec.Step{2}.Control=stepStruct.Control;
 febio_spec.Step{2}.Control.analysis.ATTR.type=analysisType;
 febio_spec.Step{2}.Control.time_steps=numTimeSteps2;
 febio_spec.Step{2}.Control.step_size=t_step2;
@@ -273,16 +283,16 @@ febio_spec.Geometry.Elements{1}.elem.VAL=E;
 
 % -> NodeSets
 febio_spec.Geometry.NodeSet{1}.ATTR.name='bcSupportList_X';
-febio_spec.Geometry.NodeSet{1}.VAL=bcSupportList_X(:);
+febio_spec.Geometry.NodeSet{1}.node.ATTR.id=bcSupportList_X(:);
 
 febio_spec.Geometry.NodeSet{2}.ATTR.name='bcSupportList_Y';
-febio_spec.Geometry.NodeSet{2}.VAL=bcSupportList_Y(:);
+febio_spec.Geometry.NodeSet{2}.node.ATTR.id=bcSupportList_Y(:);
 
 febio_spec.Geometry.NodeSet{3}.ATTR.name='bcSupportList_Z';
-febio_spec.Geometry.NodeSet{3}.VAL=bcSupportList_Z(:);
+febio_spec.Geometry.NodeSet{3}.node.ATTR.id=bcSupportList_Z(:);
 
 febio_spec.Geometry.NodeSet{4}.ATTR.name='bcPrescribeList';
-febio_spec.Geometry.NodeSet{4}.VAL=bcPrescribeList(:);
+febio_spec.Geometry.NodeSet{4}.node.ATTR.id=bcPrescribeList(:);
 
 %Boundary condition section 
 % -> Fix boundary conditions

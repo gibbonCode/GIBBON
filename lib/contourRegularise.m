@@ -19,14 +19,14 @@ numContours=numel(Vcs);
 %Allocate coordinate matrices
 X=nan(numContours,np); Y=nan(numContours,np); Z=nan(numContours,np);
 startDefined=0;
-for q=1:1:numContours;
+for q=1:1:numContours
     
     %Join goups if present N.B. assumes they belong to the same curve!
     Vs=[];
     for qGroup=1:1:numel(Vcs{q})
         Vss=Vcs{q}{qGroup};
         if ~isempty(Vss)
-            if isPolyClockwise(Vss);
+            if isPolyClockwise(Vss)
                 Vss=flipud(Vss);
             end
             Vs=[Vs; Vss];
@@ -35,8 +35,9 @@ for q=1:1:numContours;
     
     %Resample curve so they have the same number of points
     if ~isempty(Vs)
+        numDigitsMerge=6-numOrder(mean(sum(diff(Vs,[],1).^2,2)));
+        [~,ind1,~]=unique(pround(Vs,numDigitsMerge),'rows');
         
-        [~,ind1,~]=unique(pround(Vs,5),'rows');
         Vs=Vs(ismember(1:size(Vs,1),ind1),:); %This maintains point order
         
         [Vs]=evenlySampleCurve(Vs,np,interpMethod,1);
@@ -61,7 +62,7 @@ end
 
 %%
 %Remove twist
-for q=2:1:size(numContours,1);
+for q=2:1:size(numContours,1)
     v1=[X(q-1,:)' Y(q-1,:)' Z(q-1,:)'];
     v2=[X(q,:)' Y(q,:)' Z(q,:)'];
     [v2f,~,~]=minPolyTwist(v1,v2);

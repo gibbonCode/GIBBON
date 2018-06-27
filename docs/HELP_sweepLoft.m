@@ -60,8 +60,8 @@ n1=R1(3,:); %First direction vector
 p2=mean(V2,1); %End point
 n2=R2(3,:); %End direction vector
 csapsSmoothPar=0.99; %Cubic smoothening spline smoothening parameter
-f=0.05; 
-[Vg]=sweepCurveSmooth(p1,p2,n1,n2,numStepsCurve,csapsSmoothPar,0.05);
+f=0.05; %Extent of tangential nature to boundary curves, surface will remain approximately orthogonal to input curves for f*distance between curves
+[Vg]=sweepCurveSmooth(p1,p2,n1,n2,numStepsCurve,csapsSmoothPar,f);
 
 %%
 % Create a basic loft feature using default settings (no twist, same number

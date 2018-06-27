@@ -1,6 +1,6 @@
 function [varargout]=mergeVertices(varargin)
 
-% function [F,V,ind1,ind2]=mergeVertices(F,V,nKeep)
+% function [F,V,ind1,ind2]=mergeVertices(F,V,numDigitsMerge)
 
 %% Parse input
 
@@ -8,20 +8,30 @@ switch nargin
     case 2
         F=varargin{1};
         V=varargin{2};
-        nKeep=5;
+        numDigitsMerge=[];
     case 3
         F=varargin{1};
         V=varargin{2};
-        nKeep=varargin{3};
+        numDigitsMerge=varargin{3};
     otherwise
         error('Wrong number of input arguments');
 end
 
+if isempty(numDigitsMerge)    
+    D=patchEdgeLengths(F,V);    
+    numDigitsMerge=6-numOrder(mean(D));
+end
+
 %% Merge nodes
 
-[~,ind1,ind2]=unique(pround(V,nKeep),'rows');
+[~,ind1,ind2]=unique(pround(V,numDigitsMerge),'rows');
 V=V(ind1,:);
-F=ind2(F);
+
+if size(F,1)==1
+    F=ind2(F)'; %Fix indices in F
+else
+    F=ind2(F); %Fix indices in F
+end
 
 %% Collect output
 

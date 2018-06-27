@@ -8,7 +8,9 @@ function [meshStruct]=tetMeshBox(boxDim,pointSpacing)
 
 [regionA]=tetVolMeanEst(F,V); %Volume for regular tets
 
-stringOpt='-pq1.2AaYQ';
+toleranceLevel=1*10^(numOrder(pointSpacing)-8); %tetgen's default is 1e-8
+toleranceLevelString=sprintf('%g',toleranceLevel);
+stringOpt=['-pq1.2AaY','T',toleranceLevelString];
 
 inputStruct.stringOpt=stringOpt;
 inputStruct.Faces=F;

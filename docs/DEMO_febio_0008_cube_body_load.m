@@ -37,7 +37,7 @@ savePath=fullfile(defaultFolder,'data','temp');
 febioFebFileNamePart='tempModel';
 febioFebFileName=fullfile(savePath,[febioFebFileNamePart,'.feb']); %FEB file name
 febioLogFileName=fullfile(savePath,[febioFebFileNamePart,'.txt']); %FEBio log file name
-febioLogFileName_disp=[febioFebFileNamePart,'_disp_out.txt']; %Log file name for exporting force
+febioLogFileName_disp=[febioFebFileNamePart,'_disp_out.txt']; %Log file name for exporting displacement
 febioLogFileName_force=[febioFebFileNamePart,'_force_out.txt']; %Log file name for exporting force
 
 %Specifying dimensions and number of elements
@@ -51,7 +51,7 @@ numElementsThickness=round(sampleThickness/pointSpacings(2)); %Number of elemens
 numElementsHeight=round(sampleHeight/pointSpacings(3)); %Number of elemens in dir 3
 
 %Define applied displacement 
-bodyLoadType='const'; % or 'non-const'
+bodyLoadType='non-const'; % or 'const'
 
 %Material parameter set
 c1=1e-3; %Shear-modulus-like parameter
@@ -189,7 +189,7 @@ febio_spec.Geometry.Elements{1}.elem.VAL=E;
 
 % -> NodeSets
 febio_spec.Geometry.NodeSet{1}.ATTR.name='bcSupportList';
-febio_spec.Geometry.NodeSet{1}.VAL=bcSupportList(:);
+febio_spec.Geometry.NodeSet{1}.node.ATTR.id=bcSupportList(:);
 
 %Boundary condition section 
 % -> Fix boundary conditions
@@ -256,7 +256,7 @@ febio_spec.Output.logfile.node_data{2}.VAL=1:size(V,1);
 % figure window. 
 
 %%
-febView(febio_spec); %Viewing the febio file
+% febView(febio_spec); %Viewing the febio file
 
 %% Exporting the FEBio input file
 % Exporting the febio_spec structure to an FEBio input file is done using
@@ -275,7 +275,7 @@ febioAnalysis.run_filename=febioFebFileName; %The input file name
 febioAnalysis.run_logname=febioLogFileName; %The name for the log file
 febioAnalysis.disp_on=1; %Display information on the command window
 febioAnalysis.disp_log_on=1; %Display convergence information in the command window
-febioAnalysis.runMode='internal';%'internal';
+febioAnalysis.runMode='external';%'internal';
 febioAnalysis.t_check=0.25; %Time for checking log file (dont set too small)
 febioAnalysis.maxtpi=1e99; %Max analysis time
 febioAnalysis.maxLogCheckTime=3; %Max log file checking time

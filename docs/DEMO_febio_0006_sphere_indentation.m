@@ -45,7 +45,7 @@ savePath=fullfile(defaultFolder,'data','temp');
 febioFebFileNamePart='tempModel';
 febioFebFileName=fullfile(savePath,[febioFebFileNamePart,'.feb']); %FEB file name
 febioLogFileName=fullfile(savePath,[febioFebFileNamePart,'.txt']); %FEBio log file name
-febioLogFileName_disp=[febioFebFileNamePart,'_disp_out.txt']; %Log file name for exporting force
+febioLogFileName_disp=[febioFebFileNamePart,'_disp_out.txt']; %Log file name for exporting displacement
 febioLogFileName_force=[febioFebFileNamePart,'_force_out.txt']; %Log file name for exporting force
 
 %Specifying dimensions and number of elements for slab
@@ -272,7 +272,7 @@ febio_spec.Geometry.Elements{2}.elem.VAL=E2;
 
 % -> NodeSets
 febio_spec.Geometry.NodeSet{1}.ATTR.name='bcSupportList';
-febio_spec.Geometry.NodeSet{1}.VAL=bcSupportList(:);
+febio_spec.Geometry.NodeSet{1}.node.ATTR.id=bcSupportList(:);
 
 % -> Surfaces
 febio_spec.Geometry.Surface{1}.ATTR.name='contact_master';

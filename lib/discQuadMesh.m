@@ -73,14 +73,7 @@ indEdge=((size(V,1)-size(Xr,1))+1):size(V,1);
 
 %% Removing double points
 
-numKeep=6; 
-try
-    [~,IND_V,IND_IND]=unique(round(V,numKeep,'significant'),'rows'); 
-catch
-    [~,IND_V,IND_IND]=unique(sround(V,numKeep),'rows'); 
-end
-V=V(IND_V,:);
-F=IND_IND(F);
+[F,V,~,IND_IND]=mergeVertices(F,V);
 indEdge=IND_IND(indEdge(1:end-1));
 
 %Scaling radius
@@ -92,9 +85,6 @@ varargout{1}=F;
 varargout{2}=V; 
 varargout{3}=C; 
 varargout{4}=indEdge; 
-
-
-
  
 %% 
 % _*GIBBON footer text*_ 

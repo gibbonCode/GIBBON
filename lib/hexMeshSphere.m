@@ -53,8 +53,8 @@ elseif makeHollow==0
     % Merging node sets
     VT=[V_core;V_mantel];
     ET=[E_core;E_mantel+size(V_core,1)];
-    [~,ind1,ind2]=unique(pround(VT,5),'rows');
-    VT=VT(ind1,:);
+    [FT]=element2patch(ET,[],'hex8');
+    [FT,VT,~,ind2]=mergeVertices(FT,VT);    
     ET=ind2(ET);
     F_mantel_outer=ind2(F_mantel_outer+size(V_core,1));
 %     F_mantel_inner=ind2(F_mantel_inner+size(V_core,1));

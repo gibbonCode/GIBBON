@@ -40,7 +40,7 @@ savePath=fullfile(defaultFolder,'data','temp');
 febioFebFileNamePart='tempModel';
 febioFebFileName=fullfile(savePath,[febioFebFileNamePart,'.feb']); %FEB file name
 febioLogFileName=fullfile(savePath,[febioFebFileNamePart,'.txt']); %FEBio log file name
-febioLogFileName_disp=[febioFebFileNamePart,'_disp_out.txt']; %Log file name for exporting force
+febioLogFileName_disp=[febioFebFileNamePart,'_disp_out.txt']; %Log file name for exporting displacement
 febioLogFileName_force=[febioFebFileNamePart,'_force_out.txt']; %Log file name for exporting force
 
 %Specifying dimensions and number of elements
@@ -204,10 +204,10 @@ febio_spec.Geometry.Elements{1}.elem.VAL=E;
 
 % -> NodeSets
 febio_spec.Geometry.NodeSet{1}.ATTR.name='bcSupportList';
-febio_spec.Geometry.NodeSet{1}.VAL=bcSupportList(:);
+febio_spec.Geometry.NodeSet{1}.node.ATTR.id=bcSupportList(:);
 
 febio_spec.Geometry.NodeSet{2}.ATTR.name='bcPrescribeList';
-febio_spec.Geometry.NodeSet{2}.VAL=bcPrescribeList(:);
+febio_spec.Geometry.NodeSet{2}.node.ATTR.id=bcPrescribeList(:);
 
 
 %Create steps
@@ -246,13 +246,6 @@ for q=1:1:numSteps
         febio_spec.Step{q}.Boundary.prescribe{q_dir}.relative=1;
         febio_spec.Step{q}.Boundary.prescribe{q_dir}.value.ATTR.node_data=febio_spec.MeshData.NodeData{c}.ATTR.name;
     end
-    
-%     febio_spec.Step{q}.Boundary.Prescribe{3}.Set=bcPrescribeList;
-%     febio_spec.Step{q}.Boundary.Prescribe{3}.bc='z';
-%     febio_spec.Step{q}.Boundary.Prescribe{3}.lc=1;
-%     febio_spec.Step{q}.Boundary.Prescribe{3}.nodeScale=bcPrescribeMagnitudesStep(:,3);
-%     febio_spec.Step{q}.Boundary.Prescribe{3}.Type='relative';
-
 end
 
 %Boundary condition section 

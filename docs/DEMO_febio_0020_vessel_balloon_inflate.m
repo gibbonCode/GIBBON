@@ -70,7 +70,6 @@ radiusInner1=5.4/2;
 radiusOuter2=5.8/2;
 radiusInner2=4.7/2;
 vesselLength=85;
-nKeep=5; %Number of decimal places used for merging nodes
 
 radiusBalloon=min([radiusInner1 radiusInner2])-contactInitialOffset;
 pointSpacingBalloon=pointSpacing/2;
@@ -354,10 +353,10 @@ febio_spec.Geometry.Elements{2}.elem.VAL=Fs;
 
 % -> NodeSets
 febio_spec.Geometry.NodeSet{1}.ATTR.name='bcSupportList_X';
-febio_spec.Geometry.NodeSet{1}.VAL=bcSupportList_X(:);
+febio_spec.Geometry.NodeSet{1}.node.ATTR.id=bcSupportList_X(:);
 
 febio_spec.Geometry.NodeSet{2}.ATTR.name='bcPrescribeList';
-febio_spec.Geometry.NodeSet{2}.VAL=bcPrescribeList(:);
+febio_spec.Geometry.NodeSet{2}.node.ATTR.id=bcPrescribeList(:);
 
 % -> Surfaces
 febio_spec.Geometry.Surface{1}.ATTR.name='contact_master';

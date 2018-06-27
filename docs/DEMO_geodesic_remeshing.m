@@ -133,10 +133,7 @@ regionCell={V1}; %A region between V1 and V2 (V2 forms a hole inside V1)
 % In some cases nodes are not shared for adjacent triangles (e.g. STL
 % imported geometry). In this case merging is required. 
 if mergeNodes==1
-    decPlaceRound=6; %Decimal place for rounding
-    [~,indUni,indF]=unique(pround(V,decPlaceRound),'rows'); %Get indices for unique point set
-    V=V(indUni,:); %Keep only unique
-    F=indF(F); %Fix indices in faces matrix
+    [F,V]=mergeVertices(F,V);
 end
 
 %% Refine input mesh before resampling

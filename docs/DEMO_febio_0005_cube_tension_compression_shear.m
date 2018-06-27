@@ -40,7 +40,7 @@ savePath=fullfile(defaultFolder,'data','temp');
 febioFebFileNamePart='tempModel';
 febioFebFileName=fullfile(savePath,[febioFebFileNamePart,'.feb']); %FEB file name
 febioLogFileName=fullfile(savePath,[febioFebFileNamePart,'.txt']); %FEBio log file name
-febioLogFileName_disp=[febioFebFileNamePart,'_disp_out.txt']; %Log file name for exporting force
+febioLogFileName_disp=[febioFebFileNamePart,'_disp_out.txt']; %Log file name for exporting displacement
 febioLogFileName_force=[febioFebFileNamePart,'_force_out.txt']; %Log file name for exporting force
 
 %Specifying dimensions and number of elements
@@ -159,7 +159,6 @@ febio_spec.Module.ATTR.type='solid';
 
 %Create control structure for use by all steps
 stepStruct.Control.analysis.ATTR.type='static';
-stepStruct.Control.title='Cube analysis';
 stepStruct.Control.time_steps=numTimeSteps;
 stepStruct.Control.step_size=1/numTimeSteps;
 stepStruct.Control.time_stepper.dtmin=dtmin;
@@ -210,10 +209,10 @@ febio_spec.Geometry.Elements{1}.elem.VAL=E;
 
 % -> NodeSets
 febio_spec.Geometry.NodeSet{1}.ATTR.name='bcSupportList';
-febio_spec.Geometry.NodeSet{1}.VAL=bcSupportList(:);
+febio_spec.Geometry.NodeSet{1}.node.ATTR.id=bcSupportList(:);
 
 febio_spec.Geometry.NodeSet{2}.ATTR.name='bcPrescribeList';
-febio_spec.Geometry.NodeSet{2}.VAL=bcPrescribeList(:);
+febio_spec.Geometry.NodeSet{2}.node.ATTR.id=bcPrescribeList(:);
 
 %Boundary condition section 
 % -> Fix boundary conditions

@@ -103,7 +103,7 @@ end
 [pathNames]=getSubPaths(gibbonPath);
 
 %Remove "hidden" folders with . in path name
-logicKeep=~contains(pathNames,'.');
+logicKeep=~gcontains(pathNames,'.');
 pathNames=pathNames(logicKeep);
 
 hw = waitbar(0,'Adding toolbox paths');

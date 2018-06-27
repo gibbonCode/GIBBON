@@ -40,12 +40,13 @@ savePath=fullfile(defaultFolder,'data','temp');
 febioFebFileNamePart='tempModel';
 febioFebFileName=fullfile(savePath,[febioFebFileNamePart,'.feb']); %FEB file name
 febioLogFileName=fullfile(savePath,[febioFebFileNamePart,'.txt']); %FEBio log file name
-febioLogFileName_disp=[febioFebFileNamePart,'_disp_out.txt']; %Log file name for exporting force
+febioLogFileName_disp=[febioFebFileNamePart,'_disp_out.txt']; %Log file name for exporting displacement
 febioLogFileName_stress=[febioFebFileNamePart,'_stress_out.txt']; %Log file name for exporting force
 
 %Load
-pressureValueMin=0; 
-pressureValueMax=2e-3; 
+pressureValueMin=0.1e-3;  
+pressureValueMax=2.0e-3;  
+loadType='pressure';%'traction';
 
 %Specifying dimensions and number of elements
 pointSpacing=1; 
@@ -75,23 +76,7 @@ dtmin=(1/numTimeSteps)/100; %Minimum time step size
 dtmax=1/numTimeSteps; %Maximum time step size
 
 %% Creating model geometry and mesh
-% % A box is created with tri-linear hexahedral (hex8) elements using the
-% % |hexMeshBox| function. The function offers the boundary faces with
-% % seperate labels for the top, bottom, left, right, front, and back sides.
-% % As such these can be used to define boundary conditions on the exterior. 
-% 
-% % Create a box with hexahedral elements
-% cubeDimensions=[sampleWidth sampleThickness sampleHeight]; %Dimensions
-% cubeElementNumbers=[numElementsWidth numElementsThickness numElementsHeight]; %Number of elements
-% outputStructType=2; %A structure compatible with mesh view
-% [meshStruct]=hexMeshBox(cubeDimensions,cubeElementNumbers,outputStructType);
-% 
-% %Access elements, nodes, and faces from the structure
-% E=meshStruct.elements; %The elements 
-% V=meshStruct.nodes; %The nodes (vertices)
-% Fb=meshStruct.facesBoundary; %The boundary faces
-% Cb=meshStruct.boundaryMarker; %The "colors" or labels for the boundary faces
-% elementMaterialIndices=ones(size(E,1),1); %Element material indices
+% The disc is meshed using tetrahedral elements using tetgen
 
 inputStruct.stringOpt='-pq1.2AaY';
 inputStruct.Faces=Fs;
@@ -141,7 +126,7 @@ logicFace=Cb==2; %Logic for current face set
 F_pressure=fliplr(Fb(logicFace,:)); %The current face set
 
 %Create spatially varying pressure
-X=V(:,1);
+X=V(:,1); 
 C_pressure=mean(X(F_pressure),2); %Initialize as X-coordinate
 C_pressure=C_pressure-min(C_pressure(:)); %Subtract minimum so range is 0-..
 C_pressure=C_pressure./max(C_pressure(:)); %Devide by maximum so range is 0-1
@@ -217,7 +202,7 @@ febio_spec.Geometry.Elements{1}.elem.VAL=E;
 
 % -> NodeSets
 febio_spec.Geometry.NodeSet{1}.ATTR.name='bcSupportList';
-febio_spec.Geometry.NodeSet{1}.VAL=bcSupportList(:);
+febio_spec.Geometry.NodeSet{1}.node.ATTR.id=bcSupportList(:);
 
 % -> Surfaces
 febio_spec.Geometry.Surface{1}.ATTR.name='Pressure_surface';
@@ -225,16 +210,20 @@ febio_spec.Geometry.Surface{1}.tri3.ATTR.lid=(1:size(F_pressure,1))';
 febio_spec.Geometry.Surface{1}.tri3.VAL=F_pressure;
 
 %MeshData
-% -> SurfaceData
-% <SurfaceData name="values" surf="surface1">
-% <face lid="1">1.23</face>
-% <face lid="2">3.45</face>
-% </SurfaceData>
-febio_spec.MeshData.SurfaceData{1}.ATTR.name='pressure_values';
-febio_spec.MeshData.SurfaceData{1}.ATTR.data_type='scalar'; 
-febio_spec.MeshData.SurfaceData{1}.ATTR.surface=febio_spec.Geometry.Surface{1}.ATTR.name;
-febio_spec.MeshData.SurfaceData{1}.face.VAL=C_pressure; 
-febio_spec.MeshData.SurfaceData{1}.face.ATTR.lid=(1:1:numel(C_pressure))'; 
+switch loadType
+    case 'pressure'
+        febio_spec.MeshData.SurfaceData{1}.ATTR.name='pressure_values';
+        febio_spec.MeshData.SurfaceData{1}.ATTR.data_type='scalar';
+        febio_spec.MeshData.SurfaceData{1}.ATTR.surface=febio_spec.Geometry.Surface{1}.ATTR.name;
+        febio_spec.MeshData.SurfaceData{1}.face.VAL=C_pressure;
+        febio_spec.MeshData.SurfaceData{1}.face.ATTR.lid=(1:1:numel(C_pressure))';
+    case 'traction'
+        febio_spec.MeshData.SurfaceData{1}.ATTR.name='traction_value';
+        febio_spec.MeshData.SurfaceData{1}.ATTR.data_type='vec3';
+        febio_spec.MeshData.SurfaceData{1}.ATTR.surface=febio_spec.Geometry.Surface{1}.ATTR.name;
+        febio_spec.MeshData.SurfaceData{1}.face.VAL=[zeros(size(C_pressure)) zeros(size(C_pressure)) -C_pressure];
+        febio_spec.MeshData.SurfaceData{1}.face.ATTR.lid=(1:1:numel(C_pressure))';
+end
 
 %Boundary condition section 
 % -> Fix boundary conditions
@@ -246,15 +235,20 @@ febio_spec.Boundary.fix{3}.ATTR.bc='z';
 febio_spec.Boundary.fix{3}.ATTR.node_set=febio_spec.Geometry.NodeSet{1}.ATTR.name;
 
 %Loads
-% <surface_load type="pressure" surface="surface1">
-% <pressure [lc="1"]>1.0</pressure>
-% <value surface_data="pressure_value"/>
-% </surface_load>
-febio_spec.Loads.surface_load{1}.ATTR.type='pressure';
-febio_spec.Loads.surface_load{1}.ATTR.surface=febio_spec.Geometry.Surface{1}.ATTR.name;
-febio_spec.Loads.surface_load{1}.pressure.VAL=1;
-febio_spec.Loads.surface_load{1}.pressure.ATTR.lc=1;
-febio_spec.Loads.surface_load{1}.value.ATTR.surface_data=febio_spec.MeshData.SurfaceData{1}.ATTR.name;
+switch loadType
+    case 'pressure'
+        febio_spec.Loads.surface_load{1}.ATTR.type='pressure';
+        febio_spec.Loads.surface_load{1}.ATTR.surface=febio_spec.Geometry.Surface{1}.ATTR.name;
+        febio_spec.Loads.surface_load{1}.pressure.VAL=1;
+        febio_spec.Loads.surface_load{1}.pressure.ATTR.lc=1;
+        febio_spec.Loads.surface_load{1}.value.ATTR.surface_data=febio_spec.MeshData.SurfaceData{1}.ATTR.name;
+    case 'traction'
+        febio_spec.Loads.surface_load{1}.ATTR.type='traction';
+        febio_spec.Loads.surface_load{1}.ATTR.surface=febio_spec.Geometry.Surface{1}.ATTR.name;
+        febio_spec.Loads.surface_load{1}.scale.VAL=1;
+        febio_spec.Loads.surface_load{1}.scale.ATTR.lc=1;
+        febio_spec.Loads.surface_load{1}.traction.ATTR.surface_data=febio_spec.MeshData.SurfaceData{1}.ATTR.name;
+end
 
 %Output section 
 % -> log file

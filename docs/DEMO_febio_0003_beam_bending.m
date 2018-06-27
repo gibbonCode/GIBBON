@@ -18,7 +18,7 @@
 % * static, solid
 % * hyperelastic, Ogden
 % * displacement logfile
-% * stress logfile
+% * force logfile
 
 %%
 
@@ -40,7 +40,7 @@ savePath=fullfile(defaultFolder,'data','temp');
 febioFebFileNamePart='tempModel';
 febioFebFileName=fullfile(savePath,[febioFebFileNamePart,'.feb']); %FEB file name
 febioLogFileName=fullfile(savePath,[febioFebFileNamePart,'.txt']); %FEBio log file name
-febioLogFileName_disp=[febioFebFileNamePart,'_disp_out.txt']; %Log file name for exporting force
+febioLogFileName_disp=[febioFebFileNamePart,'_disp_out.txt']; %Log file name for exporting displacement
 febioLogFileName_force=[febioFebFileNamePart,'_force_out.txt']; %Log file name for exporting force
 
 %Specifying dimensions and number of elements
@@ -191,7 +191,7 @@ febio_spec.Geometry.Elements{1}.elem.VAL=E;
 
 % -> NodeSets
 febio_spec.Geometry.NodeSet{1}.ATTR.name='bcSupportList';
-febio_spec.Geometry.NodeSet{1}.VAL=bcSupportList(:);
+febio_spec.Geometry.NodeSet{1}.node.ATTR.id=bcSupportList(:);
 
 % -> Surfaces
 febio_spec.Geometry.Surface{1}.ATTR.name='LoadedSurface';
@@ -212,7 +212,6 @@ febio_spec.Loads.surface_load{1}.ATTR.type='pressure';
 febio_spec.Loads.surface_load{1}.ATTR.surface=febio_spec.Geometry.Surface{1}.ATTR.name;
 febio_spec.Loads.surface_load{1}.pressure.ATTR.lc=1;
 febio_spec.Loads.surface_load{1}.pressure.VAL=appliedPressure;
-% febio_spec.Loads.surface_load{1}.value=appliedPressure;
 
 %Output section 
 % -> log file

@@ -221,8 +221,8 @@ indBoundary=unique(indBoundary(:));
 V=[V_tet;V_hex];
 E_hex=E_hex+size(V_tet,1);
 
-[~,ind1,ind2]=unique(pround(V,5),'rows');
-V=V(ind1,:);
+[~,V,ind1,ind2]=mergeVertices(F_tet_cut1,V);
+
 E_tet=ind2(E_tet);
 E_hex=ind2(E_hex);
 indBoundary=ind2(indBoundary);

@@ -35,7 +35,6 @@ plotColors=gjet(9);
 lineWidth1=2; 
 markerSize1=25; 
 
-
 %% Control parameters
 
 % Path names
@@ -77,7 +76,6 @@ boneRadius=10;
 wrapHeight=24;
 wrapThickness=5;
 pointSpacing=5; % Aproximate node spacing 
-digitKeep=5;
 
 %% Build tissue skin surface top
 
@@ -280,9 +278,7 @@ Cwbb=9*ones(size(Fwbb,1),1); %Wrap bottom
 [F,V,C]=joinElementSets({Fg1,Fg2,Fg3,Fw1,Fb,Ft,Fgb,Fwtt,Fwbb},{Vg1,Vg2,Vg3,Vw1,Vb,Vt,Vgb,Vwtt,Vwbb},{Cg1,Cg2,Cg3,Cw1,Cb,Ct,Cgb,Cwtt,Cwbb}); %joining sets together
 
 %merging sets
-[~,indUni,indFix]=unique(pround(V,digitKeep),'rows');
-V=V(indUni,:); %The merged point set
-F=indFix(F);
+[F,V]=mergeVertices(F,V);
 
 %%
 
@@ -435,6 +431,9 @@ stepStruct.Control.max_ups=max_ups;
 %Add template based default settings to proposed control section
 [stepStruct.Control]=structComplete(stepStruct.Control,febio_spec.Control,1); %Complement provided with default if missing
 
+%Remove control field (part of template) since step specific control sections are used
+febio_spec=rmfield(febio_spec,'Control');
+
 %Step specific control section
 %-> Step 1
 febio_spec.Step{1}.ATTR.id=1;
@@ -497,7 +496,7 @@ febio_spec.Geometry.Elements{2}.elem.VAL=E2;
 
 % -> NodeSets
 febio_spec.Geometry.NodeSet{1}.ATTR.name='bcSupportList';
-febio_spec.Geometry.NodeSet{1}.VAL=bcSupportList(:);
+febio_spec.Geometry.NodeSet{1}.node.ATTR.id=bcSupportList(:);
 
 % -> Surfaces
 febio_spec.Geometry.Surface{1}.ATTR.name='Pressure_surface';

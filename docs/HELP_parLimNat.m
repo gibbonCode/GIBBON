@@ -24,18 +24,18 @@ lineWidth2=1;
 
 %% Example: Constraining parameters (normal centre)
 xx_c=5;
-xx_min=4;
+xx_min=0;
 xx_max=10;
-x=linspace(xx_c-10,xx_c+10,250);
+x=linspace(xx_c-10,xx_c+10,1000);
 [xx,S]=parLimNat(xx_c,[xx_min xx_max],x);
 
-hf1=cFigure; hold on; grid on;
+cFigure; hold on; grid on;
 title('Constraining using parLimNat','FontSize',fontSize);
 xlabel('"free" x','FontSize',fontSize); ylabel('constrained x','FontSize',fontSize); 
 
-hf=plot(x,xx,'r-','LineWidth',lineWidth1);
-hf=plot(xx_min,xx_min,'k.','markerSize',markerSize);
-hf=plot(xx_max,xx_max,'k.','markerSize',markerSize);
+plot(x,xx,'r-','LineWidth',lineWidth1);
+plot(xx_min,xx_min,'k.','markerSize',markerSize);
+plot(xx_max,xx_max,'k.','markerSize',markerSize);
 plot(xx_c,xx_c,'k.','markerSize',markerSize);
 
 text(xx_c+0.5,xx_c,'xx_c = centre','Interpreter','none','FontSize',fontSize2);
@@ -53,13 +53,13 @@ xx_max=10;
 x=linspace(xx_c-10,xx_c+15,100);
 [xx,S]=parLimNat(xx_c,[xx_min xx_max],x);
 
-hf1=cFigure; hold on; grid on;
+cFigure; hold on; grid on;
 title('Constraining using parLimNat','FontSize',fontSize);
 xlabel('"free" x','FontSize',fontSize); ylabel('constrained x','FontSize',fontSize); 
 
-hf=plot(x,xx,'r-','LineWidth',lineWidth1);
-hf=plot(xx_min,xx_min,'k.','markerSize',markerSize);
-hf=plot(xx_max,xx_max,'k.','markerSize',markerSize);
+plot(x,xx,'r-','LineWidth',lineWidth1);
+plot(xx_min,xx_min,'k.','markerSize',markerSize);
+plot(xx_max,xx_max,'k.','markerSize',markerSize);
 plot(xx_c,xx_c,'k.','markerSize',markerSize);
 
 text(xx_c+0.5,xx_c,'xx_c = centre','Interpreter','none','FontSize',fontSize2);

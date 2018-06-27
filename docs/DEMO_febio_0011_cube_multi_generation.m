@@ -260,10 +260,10 @@ febio_spec.Geometry.Elements{2}.elem.ATTR.id=(1+nnz(elementMaterialID==1):1:nnz(
 
 % -> NodeSets
 febio_spec.Geometry.NodeSet{1}.ATTR.name='bcSupportList';
-febio_spec.Geometry.NodeSet{1}.VAL=bcSupportList(:);
+febio_spec.Geometry.NodeSet{1}.node.ATTR.id=bcSupportList(:);
 
 febio_spec.Geometry.NodeSet{2}.ATTR.name='bcPrescribeList';
-febio_spec.Geometry.NodeSet{2}.VAL=bcPrescribeList(:);
+febio_spec.Geometry.NodeSet{2}.node.ATTR.id=bcPrescribeList(:);
 
 %Boundary condition section 
 % -> Fix boundary conditions

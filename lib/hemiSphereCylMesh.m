@@ -114,9 +114,7 @@ Fcc=Fc+size(Vs,1); %Fix vertex ID's here
 Ft=[Fs;Fcc];
 
 %Removing double vertices and fixing face indices
-[~,ind1,ind2]=unique(pround(Vt,5),'rows');
-Vt=Vt(ind1,:);
-Ft=ind2(Ft);
+[Ft,Vt]=mergeVertices(Ft,Vt);
  
 %% 
 % _*GIBBON footer text*_ 

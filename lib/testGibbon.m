@@ -1,21 +1,35 @@
 function testGibbon(varargin)
 
 % function testGibbon(testSet,testMode,approveQuestion,startInd)
+%-------------------------------------------------------------------------
+% This function can be used to run, test, and if desired publish, all HELP_
+% and DEMO_ files. These files also define the help and documentation and
+% therefore publishing these codes generates the integrated help files.
+%
+%   testGibbon('all','test',0,1); %Test run all files   
+%   testGibbon('help','test',0,1); %Test run all HELP_ files
+%   testGibbon('demo','test',0,1); %Test run all DEMO_ files
+%   testGibbon('all','pub',0,1); %Test run and publish all files
+%   testGibbon('help','pub',0,1); %Test run and publish all HELP_ files
+%   testGibbon('demo','pub',0,1); %Test run and publish all DEMO_ files
+%-------------------------------------------------------------------------
+
+%% Parse input
 switch nargin
     case 0
         testSet='all';
         testMode='test';
-        approveQuestion=1;
+        approveQuestion=0;
         startInd=1;
     case 1
         testSet=varargin{1};
         testMode='test';
-        approveQuestion=1; 
+        approveQuestion=0; 
         startInd=1;
     case 2
         testSet=varargin{1};
         testMode=varargin{2};
-        approveQuestion=1;
+        approveQuestion=0;
         startInd=1;
     case 3
         testSet=varargin{1};
@@ -29,7 +43,7 @@ switch nargin
         startInd=varargin{4};
 end
 
-%%
+%% Running tests, publishing codes
 
 testFolder=fullfile(fileparts(fileparts(mfilename('fullpath'))),'docs');
 

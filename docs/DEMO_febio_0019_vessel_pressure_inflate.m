@@ -40,7 +40,7 @@ savePath=fullfile(defaultFolder,'data','temp');
 febioFebFileNamePart='tempModel';
 febioFebFileName=fullfile(savePath,[febioFebFileNamePart,'.feb']); %FEB file name
 febioLogFileName=fullfile(savePath,[febioFebFileNamePart,'.txt']); %FEBio log file name
-febioLogFileName_disp=[febioFebFileNamePart,'_disp_out.txt']; %Log file name for exporting force
+febioLogFileName_disp=[febioFebFileNamePart,'_disp_out.txt']; %Log file name for exporting displacement
 febioLogFileName_force=[febioFebFileNamePart,'_force_out.txt']; %Log file name for exporting force
 
 %Specifying geometry parameters
@@ -50,7 +50,6 @@ radiusInner1=9;
 radiusOuter2=9;
 radiusInner2=7;
 vesselLength=60;
-nKeep=5; %Number of decimal places used for merging nodes
 
 %Load
 pressureValue=3e-4; 
@@ -129,7 +128,7 @@ F3=fliplr(F3); %Invert orientation
 
 %Merging surface sets
 [Fv,Vv,Cv]=joinElementSets({F1,F2,F3,F4},{V1,V2,V3,V4});
-[Fv,Vv]=mergeVertices(Fv,Vv,nKeep);
+[Fv,Vv]=mergeVertices(Fv,Vv);
 Fv=fliplr(Fv);
 
 %%
@@ -258,7 +257,7 @@ febio_spec.Geometry.Elements{1}.elem.VAL=E;
 
 % -> NodeSets
 febio_spec.Geometry.NodeSet{1}.ATTR.name='bcSupportList';
-febio_spec.Geometry.NodeSet{1}.VAL=bcSupportList(:);
+febio_spec.Geometry.NodeSet{1}.node.ATTR.id=bcSupportList(:);
 
 % -> Surfaces
 febio_spec.Geometry.Surface{1}.ATTR.name='Pressure_surface';

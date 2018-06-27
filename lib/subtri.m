@@ -161,16 +161,7 @@ switch subMethod
         Vs=[Xi(:) Yi(:) Zi(:)];
         
         if uniqueOpt 
-            %this is based on rounding to 6th signigicant digit to avoid this use the split method            
-            numKeep=5; %Number of significant digits to keep
-            [~,ind_uni_1,ind_uni_2]=unique(pround(Vs,numKeep),'rows');
-%             try
-%                 [~,ind_uni_1,ind_uni_2]=unique(round(Vs,numKeep,'significant'),'rows');
-%             catch
-%                 [~,ind_uni_1,ind_uni_2]=unique(sround(Vs,numKeep),'rows');
-%             end
-            Vs=Vs(ind_uni_1,:);
-            Fs=ind_uni_2(Fs);
+            [Fs,Vs]=mergeVertices(Fs,Vs);
         end
         Vs=Vs./scaleFactor;
         if nDim==2

@@ -41,9 +41,9 @@ savePath=fullfile(defaultFolder,'data','temp');
 febioFebFileNamePart='tempModel';
 febioFebFileName=fullfile(savePath,[febioFebFileNamePart,'.feb']); %FEB file name
 febioLogFileName=fullfile(savePath,[febioFebFileNamePart,'.txt']); %FEBio log file name
-febioLogFileName_disp=[febioFebFileNamePart,'_disp_out.txt']; %Log file name for exporting force
+febioLogFileName_disp=[febioFebFileNamePart,'_disp_out.txt']; %Log file name for exporting displacement
 febioLogFileName_force=[febioFebFileNamePart,'_force_out.txt']; %Log file name for exporting force
-febioLogFileName_stress=[febioFebFileNamePart,'_stress_out.txt']; %Log file name for exporting force
+febioLogFileName_stress=[febioFebFileNamePart,'_stress_out.txt']; %Log file name for exporting stress
 
 %Specifying dimensions and number of elements
 cubeSize=10; 
@@ -68,9 +68,10 @@ displacementMagnitude=(stretchLoad*sampleHeight)-sampleHeight; %The displacement
 
 %Material parameter set
 c1=1e-3; %Shear-modulus-like parameter
-m1=8; %Material parameter setting degree of non-linearity
-k_factor=1e2; %Bulk modulus factor 
+m1=6; %Material parameter setting degree of non-linearity
+k_factor=500; %Bulk modulus factor 
 k=c1*k_factor; %Bulk modulus
+formulationType='uncoupled'; %coupled
 
 % FEA control settings
 numTimeSteps=10; %Number of time steps desired
@@ -189,13 +190,24 @@ febio_spec.Control.max_refs=max_refs;
 febio_spec.Control.max_ups=max_ups;
 
 %Material section
-febio_spec.Material.material{1}.ATTR.type='Ogden';
-febio_spec.Material.material{1}.ATTR.id=1;
-febio_spec.Material.material{1}.c1=c1;
-febio_spec.Material.material{1}.m1=m1;
-febio_spec.Material.material{1}.c2=c1;
-febio_spec.Material.material{1}.m2=-m1;
-febio_spec.Material.material{1}.k=k;
+switch formulationType
+    case 'coupled'
+        febio_spec.Material.material{1}.ATTR.type='Ogden unconstrained';
+        febio_spec.Material.material{1}.ATTR.id=1;
+        febio_spec.Material.material{1}.c1=c1;
+        febio_spec.Material.material{1}.m1=m1;
+        febio_spec.Material.material{1}.c2=c1;
+        febio_spec.Material.material{1}.m2=-m1;
+        febio_spec.Material.material{1}.cp=k;
+    case 'uncoupled'
+        febio_spec.Material.material{1}.ATTR.type='Ogden';
+        febio_spec.Material.material{1}.ATTR.id=1;
+        febio_spec.Material.material{1}.c1=c1;
+        febio_spec.Material.material{1}.m1=m1;
+        febio_spec.Material.material{1}.c2=c1;
+        febio_spec.Material.material{1}.m2=-m1;
+        febio_spec.Material.material{1}.k=k;
+end
 
 %Geometry section
 % -> Nodes
@@ -212,16 +224,16 @@ febio_spec.Geometry.Elements{1}.elem.VAL=E;
 
 % -> NodeSets
 febio_spec.Geometry.NodeSet{1}.ATTR.name='bcSupportList_X';
-febio_spec.Geometry.NodeSet{1}.VAL=bcSupportList_X(:);
+febio_spec.Geometry.NodeSet{1}.node.ATTR.id=bcSupportList_X(:);
 
 febio_spec.Geometry.NodeSet{2}.ATTR.name='bcSupportList_Y';
-febio_spec.Geometry.NodeSet{2}.VAL=bcSupportList_Y(:);
+febio_spec.Geometry.NodeSet{2}.node.ATTR.id=bcSupportList_Y(:);
 
 febio_spec.Geometry.NodeSet{3}.ATTR.name='bcSupportList_Z';
-febio_spec.Geometry.NodeSet{3}.VAL=bcSupportList_Z(:);
+febio_spec.Geometry.NodeSet{3}.node.ATTR.id=bcSupportList_Z(:);
 
 febio_spec.Geometry.NodeSet{4}.ATTR.name='bcPrescribeList';
-febio_spec.Geometry.NodeSet{4}.VAL=bcPrescribeList(:);
+febio_spec.Geometry.NodeSet{4}.node.ATTR.id=bcPrescribeList(:);
 
 %Boundary condition section 
 % -> Fix boundary conditions
@@ -358,7 +370,7 @@ if runFlag==1 %i.e. a succesful run
     cFigure;
     hold on;    
     title('Uniaxial stress-stretch curve','FontSize',fontSize);
-    xlabel('\lambda Stretch [.]','FontSize',fontSize); ylabel('\sigma Cauchy stress [kPa]','FontSize',fontSize); 
+    xlabel('\lambda Stretch [.]','FontSize',fontSize); ylabel('\sigma Cauchy stress [MPa]','FontSize',fontSize); 
     
     plot(stretch_sim(:),stress_cauchy_sim(:),'r-','lineWidth',lineWidth);
     

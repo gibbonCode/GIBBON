@@ -79,6 +79,7 @@ set(h,'EdgeColor','none'); shading interp;
 camlight('headlight'); lighting phong; 
 title('Surface with leaf colormap');
 colormap(hs,C_leaf); colorbar; 
+drawnow; 
 
 hs=subplot(2,3,6); 
 h=surf(X,Y,Z); axis tight; axis off; hold on; 
@@ -86,18 +87,20 @@ set(h,'EdgeColor','none'); shading interp;
 camlight('headlight'); lighting phong; 
 title('Surface with fire colormap');
 colormap(hs,C_fire); colorbar;  
+drawnow; 
 
 %% Example: adjust harvested colormap
 %%
 % Use fact that flipped fire colormap looks like ice colormap and combine
 
-C_fireIce=[rot90(C_fire,2); C_fire(2:end,:)];
+C_fireice=[rot90(C_fire,2); C_fire(2:end,:)];
 
 hs=cFigure; 
 h=surf(X,Y,Z); axis equal; axis tight; axis off; hold on; view(2); 
 set(h,'EdgeColor','none'); shading interp; 
-title('Surface with fireIce colormap');
-colormap(hs,C_fireIce); colorbar; caxis([-max(abs(Z(:))) max(abs(Z(:)))]);
+title('Surface with fireice colormap');
+colormap(hs,C_fireice); colorbar; caxis([-max(abs(Z(:))) max(abs(Z(:)))]);
+drawnow; 
 
 %% 
 %
@@ -118,7 +121,7 @@ colormap(hs,C_fireIce); colorbar; caxis([-max(abs(Z(:))) max(abs(Z(:)))]);
 % analysis.
 % 
 % Copyright (C) 2018  Kevin Mattheus Moerman
-% 
+% fireIce
 % This program is free software: you can redistribute it and/or modify
 % it under the terms of the GNU General Public License as published by
 % the Free Software Foundation, either version 3 of the License, or

@@ -86,8 +86,9 @@ if ~isempty(Q)
         Vg=[Q(1,IND1(q):IND2(q))' Q(2,IND1(q):IND2(q))']; %Get coordinates
         cLevel(q)=Q(1,IND1(q)-1); %Get level
         
-        %Check for non-unique points
-        [~,indUni,~]=unique(pround(Vg,5),'rows');
+        %Check for non-unique points        
+        numDigitsMerge=6-numOrder(mean(sum(diff(Vg,[],1).^2,2)));
+        [~,indUni,~]=unique(pround(Vg,numDigitsMerge),'rows');
         logicKeep=false(size(Vg,1),1);
         logicKeep(indUni)=1;
         Vg=Vg(logicKeep,:);

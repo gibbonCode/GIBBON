@@ -83,16 +83,8 @@ switch subMethod
         Fs=reshape(ind,[(n+1)*size(F,2),size(Vs,1)./((n+1)*size(F,2))])';
         
         %Merge non-unique nodes
-        numDigitKeep=5;
-        [~,ind1,ind2]=unique(pround(Vs,numDigitKeep),'rows');
-        Vs=Vs(ind1,:);
+        [Fs,Vs]=mergeVertices(Fs,Vs);
         
-        %Treat special case of 1 face
-        if size(Fs,1)>1
-            Fs=ind2(Fs);
-        else
-            Fs=ind2(Fs)';
-        end
 end
  
 %% 

@@ -238,7 +238,7 @@ if runFlag==1 %i.e. a succesful run
     
     %% IMPORTING ELEMENT STIFFNESS MATRICES
     % Importing element stiffness tensors from a log file
-    [~,stiffness_mat,~]=importFEBio_logfile(fullfile(savePath,FEB_struct.run_output_names{3})); %Nodal forces
+    [~,stiffness_mat,~]=importFEBio_logfile(fullfile(savePath,FEB_struct.run_output_names{3})); %Element stiffness
     
     stiffness_mat=stiffness_mat(:,2:end,end); %Final stiffness state
     

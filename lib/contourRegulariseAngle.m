@@ -28,14 +28,14 @@ numContours=numel(Vcs);
 %Allocate coordinate matrices
 Xcs=nan(numContours,np); Ycs=nan(numContours,np); Zcs=nan(numContours,np);
 startDefined=0;
-for q=1:1:numContours;
+for q=1:1:numContours
     
     %Join goups if present N.B. assumes they belong to the same curve!
     Vs=[];
     for qGroup=1:1:numel(Vcs{q})
         Vss=Vcs{q}{qGroup};
         if ~isempty(Vss)
-            if isPolyClockwise(Vss);
+            if isPolyClockwise(Vss)
                 Vss=flipud(Vss);
             end
             Vs=[Vs; Vss];
@@ -45,7 +45,9 @@ for q=1:1:numContours;
     %Resample curve so they have the same number of points
     if ~isempty(Vs)
  
-        [~,ind1,ind2]=unique(pround(Vs,5),'rows');
+        numDigitsMerge=6-numOrder(mean(sum(diff(Vs,[],1).^2,2)));
+        [~,ind1,ind2]=unique(pround(Vs,numDigitsMerge),'rows');
+       
         Vs=Vs(ismember(1:size(Vs,1),ind1),:);
         
 %         figure; plotV(Vs,'k.-'); hold on; 

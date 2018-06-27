@@ -101,9 +101,7 @@ switch tetOpt
         C=repmat(C,size(TET_format,1),1);        
         
         %Removing double vertices
-        [~,IND_V,IND_IND]=unique(pround(Vtet,6),'rows');
-        Vtet=Vtet(IND_V,:);
-        TET=IND_IND(TET); %Fix indices in F
+        [TET,Vtet]=mergeVertices(TET,Vtet);
 
     case 2 %Delaunay based 6 tetrahedron decomposition of cube applied to all
         HEX=HEX(:,[1 2 4 3 5 6 8 7]);

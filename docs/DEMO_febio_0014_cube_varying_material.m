@@ -67,7 +67,7 @@ end
 displacementMagnitude=(stretchLoad*sampleHeight)-sampleHeight; %The displacement magnitude
 
 %Material parameter sets
-testOpt=2; %Linear gradient of material, or gyroid based material distribution
+testOpt=2; %1=Linear gradient of material, or 2=gyroid based material distribution
 numMaterialLevels=numElementsWidth;
 c1_range=linspace(1e-6,1e-3,numMaterialLevels); %Shear-modulus-like parameter
 m1_range=8*ones(1,numMaterialLevels); %Material parameter setting degree of non-linearity
@@ -255,9 +255,9 @@ end
 
 % -> NodeSets
 febio_spec.Geometry.NodeSet{1}.ATTR.name='bcSupportList';
-febio_spec.Geometry.NodeSet{1}.VAL=bcSupportList(:);
+febio_spec.Geometry.NodeSet{1}.node.ATTR.id=bcSupportList(:);
 febio_spec.Geometry.NodeSet{2}.ATTR.name='bcPrescribeList';
-febio_spec.Geometry.NodeSet{2}.VAL=bcPrescribeList(:);
+febio_spec.Geometry.NodeSet{2}.node.ATTR.id=bcPrescribeList(:);
 
 %Boundary condition section 
 % -> Fix boundary conditions

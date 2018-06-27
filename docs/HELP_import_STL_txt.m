@@ -30,9 +30,7 @@ V=stlStruct.solidVertices{1};
 
 %%
 % Merging nodes example
-[~,ind1,ind2]=unique(pround(V,5),'rows');
-V=V(ind1,:);
-F=ind2(F);
+[F,V]=mergeVertices(F,V);
 
 %%
 % Plotting the model

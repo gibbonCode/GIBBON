@@ -105,7 +105,6 @@ end
 
 %%
 
-
 if ~isempty(Fb_tet4)
     
     %Edges matrix
@@ -126,58 +125,6 @@ if ~isempty(Fb_tet4)
 else
     Fb_tet10=[];
 end
-
-%% OLD
-% 
-% %Collect nodes
-% V_1_4=V_tet4;
-% V_5 =0.5.*(V_tet4(E_tet4(:,1),:)+V_tet4(E_tet4(:,2),:));
-% V_6 =0.5.*(V_tet4(E_tet4(:,2),:)+V_tet4(E_tet4(:,3),:));
-% V_7 =0.5.*(V_tet4(E_tet4(:,3),:)+V_tet4(E_tet4(:,1),:));
-% V_8 =0.5.*(V_tet4(E_tet4(:,1),:)+V_tet4(E_tet4(:,4),:));
-% V_9 =0.5.*(V_tet4(E_tet4(:,2),:)+V_tet4(E_tet4(:,4),:));
-% V_10=0.5.*(V_tet4(E_tet4(:,3),:)+V_tet4(E_tet4(:,4),:));
-% V_tet10=[V_1_4;V_5;V_6;V_7;V_8;V_9;V_10];
-% 
-% %Define elements
-% numTets=size(E_tet4,1);
-% num_V_1_4=size(V_1_4,1);
-% indTets=(1:numTets)';
-% E_tet10=[E_tet4...                            % 1-4
-%        indTets+num_V_1_4+(numTets*(1-1))... % 5
-%        indTets+num_V_1_4+(numTets*(2-1))... % 6
-%        indTets+num_V_1_4+(numTets*(3-1))... % 7
-%        indTets+num_V_1_4+(numTets*(4-1))... % 8
-%        indTets+num_V_1_4+(numTets*(5-1))... % 9
-%        indTets+num_V_1_4+(numTets*(6-1))];  % 10
-%    
-% %Removing double points
-% [~,ind_uni_1,ind_uni_2]=unique(pround(V_tet10,5),'rows');
-% V_tet10=V_tet10(ind_uni_1,:);
-% E_tet10=ind_uni_2(E_tet10); %Changing indices in faces matrix
-% 
-% if size(E_tet4,1)==1 %Transpose in this case due to MATLAB behaviour
-%     E_tet10=E_tet10';
-% end
-% 
-% %Derive V_tet10_cell
-% if ~isempty(V_tet4_cell)    
-%     V_tet10_cell=V_tet4_cell;
-%     for q=1:1:numel(V_tet4_cell)
-%         VX=double(V_tet4_cell{q});
-%         VX_1_4=VX;
-%         VX_5 =0.5.*(VX(E_tet4(:,1),:)+VX(E_tet4(:,2),:));
-%         VX_6 =0.5.*(VX(E_tet4(:,2),:)+VX(E_tet4(:,3),:));
-%         VX_7 =0.5.*(VX(E_tet4(:,3),:)+VX(E_tet4(:,1),:));
-%         VX_8 =0.5.*(VX(E_tet4(:,1),:)+VX(E_tet4(:,4),:));
-%         VX_9 =0.5.*(VX(E_tet4(:,2),:)+VX(E_tet4(:,4),:));
-%         VX_10=0.5.*(VX(E_tet4(:,3),:)+VX(E_tet4(:,4),:));
-%         VX10=[VX_1_4;VX_5;VX_6;VX_7;VX_8;VX_9;VX_10];        
-%         V_tet10_cell{q}=VX10(ind_uni_1,:);
-%     end
-% else
-%     V_tet10_cell={};
-% end
 
 %% Compose output
 varargout{1}=E_tet10;

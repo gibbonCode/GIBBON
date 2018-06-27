@@ -42,7 +42,7 @@ NumberOfFiles=numel(files);
 
 if NumberOfFiles>1
     for q=1:1:NumberOfFiles
-        if contains(files{q},fileTarget) %If it contains the search pattern
+        if gcontains(files{q},fileTarget) %If it contains the search pattern
             fileName=fullfile(documentationPath,files{q}); %The full pdf file name
             [hFig]=pdfView(fileName); %View pdf file using pdfView            
             if nargout==1

@@ -404,19 +404,8 @@ switch cPar.latticeSide
         end
 end
 
-%%
-
 %Removing double vertices
-[~,IND_V,IND_IND]=unique(pround(Vn,cPar.numDigitKeep),'rows');
-Vn=Vn(IND_V,:);
-
-if size(Fn,1)==1
-    Fn=IND_IND(Fn)'; %Fix indices in F
-else
-    Fn=IND_IND(Fn); %Fix indices in F
-end
-
-
+[Fn,Vn]=mergeVertices(Fn,Vn);
  
 %% 
 % _*GIBBON footer text*_ 

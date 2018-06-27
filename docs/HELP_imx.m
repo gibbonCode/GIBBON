@@ -16,7 +16,7 @@ clear; close all; clc;
 %% Example: Segmenting MRI data
 
 %% 
-% Get a 3D image (see als0 |dcmFolder2MATobject| to import DICOM data)
+% Get a 3D image (see also |dcmFolder2MATobject| to import DICOM data)
 testCase=2; 
 switch testCase
     case 1 %MATLAB brain data
@@ -37,6 +37,101 @@ end
 %%
 % Start segmentation using |imx|
 hf=imx(M,v);
+
+%% 
+% *Viewing*
+% 
+% * _Toolbar_ - Note all functions displayed in the graphical user
+% interface toolbar, equipt with an information panel and descriptions
+% of keyboard shortcuts just below the toolbar.
+% Instructions for each widget will appear along this top bar when in use.
+% Right click to exit from any given widget.
+% 
+% * _View manipulation_ - Use the View Control Widget to zoom, pan, and
+% rotate a figure using different mouse gestures (right mouse button
+% for zoom, left for panning, and middle/scroll for rotating).
+% Use the sliding bars on the left hand side of the graphical user
+% interface to change slice view from all 3 axes.
+% Press home to return to active slice.
+% Use the colorbar button to change the limits of the color axis displayed
+% below the slice, shifting the color contrast across a slice and
+% increasing the visibility of contour lines.
+% 
+% <<documentationView.gif>>
+% 
+% *Sketching a contour*
+% 
+% * _Sample_ - Begin segmenting an element with s = sample sketch contour.
+% With the activated widget, click on an area of contrast that outlines the
+% element to generate an approximate dotted contour. If the generated outline is
+% unsuitable, click elsewhere along the contrast to produce a new contour.
+% Once the sample contour is acceptable, right click out of the
+% widget. See below for an example of this process in segmenting the skin.
+% 
+% <<documentationSample.gif>>
+% 
+% * _Cut_ - Use c = cut sketched contour to edit a sample sketch by
+% boxing and removing an incorrect section of the outline.
+% 
+% <<documentationCut.gif>>
+% 
+% * _Draw_ - After cutting a portion of a sample sketch, use the drawing 
+% tool to complete the sketch if needed. Use d = draw contour to
+% place connected sketch points along a contour where the path needs to be filled in.
+% After exiting the widget, observe that the drawn sketch will be in a
+% different color compared to the original.
+% 
+% <<documentationDraw.gif>>
+% 
+% * _Adjust_ - To edit the alignment of certain points along a bad contour,
+% use the adjust tool. To move a sketch point to a new location, click on
+% the point and then click on its new placement.
+% 
+% <<documentationAdjust.gif>>
+% 
+% * _Delete_ - Use the delete tool to erase any sketch contour on the
+% slice.
+% 
+% <<documentationDelete.gif>>
+% 
+% 
+% *Accepting a contour*
+%
+% * _Select_ - Once a sketch contour is well fit to an element on the given
+% slice, use a = accept contour to select the contour, changing it to a
+% solid green path. If multiple sketches exist on the slice, select your
+% desired option from the displayed window to either add a new contour,
+% merge with another contour, or replace the existing accepted contours.
+% See below for an example of merging multiple contours of interest.
+% 
+% <<documentationAccept.gif>>
+% 
+% * _Convert_ - Use the convert button to easily switch from an accepted
+% contour back to a sketch contour if further adjustments are needed. Use
+% the reset button to return to the original, unsegmented slice.
+% 
+% <<documentationConvert.gif>>
+% 
+% * _Grow/Shrink_ - Use + = grow contour and - = shrink contour to
+% manipulate the size of an accepted contour to best fit a given element.
+% Growing and shrinking contour lines will likely wrinkle the path and
+% require smoothing (see Smooth).
+% 
+% <<documentationGrowShrink.gif>>
+% 
+% * _Smooth_ - Use q = smooth accepted contour to smoothen a contour path.
+% If more extreme smoothing is necessary, press p while the smoothing tool
+% is activated to adjust the smoothing parameter accordingly.
+% 
+% <<documentationSmooth.gif>>
+% 
+% *Finalizing segmentation* - After the slice is complete, press space to
+% go to the next slice and continue segmentation for all MRI slices.
+% Periodically check the view of all slices using the showHide tool to
+% verify continuity along the length of an element until completion.
+% 
+% <<documentationShowHide.gif>>
+% 
 
 %%
 % 

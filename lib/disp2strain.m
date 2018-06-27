@@ -47,7 +47,7 @@ for i=1:1:size(UG,1);
                 Cp(i,j,k)={Lpsq_ijk};
                 switch strain_type
                     case 1 %Principal Biot strain tensor
-                        Ep_ijk=(Up_ijk)-1; 
+                        Ep_ijk=(Up_ijk)-I_unity; 
                     case 2 %Principal logarithmic or Hencky strain tensor                        
                         Ep_ijk=I_unity; 
                         Ep_ijk(I_unity>0)=log(diag(Up)); %Log on eigenvalues avoids log(0)=-inf related issues

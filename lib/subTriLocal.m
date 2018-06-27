@@ -170,10 +170,8 @@ faceTypeLabel=[ones(size(Fk,1),1); 2*ones(size(Fs,1),1); 3*ones(size(Fct,1),1)];
 ind_Vn=ind_Vn+size(Vk,1)+size(Vs,1);
 indInitial=[1:size(Vk,1) (1:numPoints)+size(Vk,1)];
 
-%Merging nodes
-[~,ind1,ind2]=unique(pround(Vq,5),'rows');
-Vq=Vq(ind1,:);
-Fq=ind2(Fq);
+%Merge non-unique nodes
+[Fq,Vq,~,ind2]=mergeVertices(Fq,Vq);
 ind_Vn=ind2(ind_Vn);
 indInitial=ind2(indInitial);
 

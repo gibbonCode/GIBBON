@@ -41,9 +41,9 @@ savePath=fullfile(defaultFolder,'data','temp');
 febioFebFileNamePart='tempModel';
 febioFebFileName=fullfile(savePath,[febioFebFileNamePart,'.feb']); %FEB file name
 febioLogFileName=fullfile(savePath,[febioFebFileNamePart,'.txt']); %FEBio log file name
-febioLogFileName_disp=[febioFebFileNamePart,'_disp_out.txt']; %Log file name for exporting force
+febioLogFileName_disp=[febioFebFileNamePart,'_disp_out.txt']; %Log file name for exporting displacement
 febioLogFileName_force=[febioFebFileNamePart,'_force_out.txt']; %Log file name for exporting force
-febioLogFileName_stress=[febioFebFileNamePart,'_stress_out.txt']; %Log file name for exporting force
+febioLogFileName_stress=[febioFebFileNamePart,'_stress_out.txt']; %Log file name for exporting stress
 
 %Specifying dimensions and number of elements
 cubeSize=10; 
@@ -235,8 +235,6 @@ febio_spec.Material.material{1}.ATTR.type='solid mixture';
 febio_spec.Material.material{1}.ATTR.id=1;
 
 febio_spec.Material.material{1}.mat_axis.ATTR.type='user';
-% febio_spec.Material.material{1}.mat_axis.a=[1 0 0];
-% febio_spec.Material.material{1}.mat_axis.d=[0 1 0];
 
 febio_spec.Material.material{1}.solid{1}.ATTR.type='Ogden unconstrained';
 febio_spec.Material.material{1}.solid{1}.c1=c1;
@@ -275,20 +273,19 @@ febio_spec.Geometry.Elements{1}.elem.VAL=E;
 
 % -> NodeSets
 febio_spec.Geometry.NodeSet{1}.ATTR.name='bcSupportList_X';
-febio_spec.Geometry.NodeSet{1}.VAL=bcSupportList_X(:);
+febio_spec.Geometry.NodeSet{1}.node.ATTR.id=bcSupportList_X(:);
 
 febio_spec.Geometry.NodeSet{2}.ATTR.name='bcSupportList_Y';
-febio_spec.Geometry.NodeSet{2}.VAL=bcSupportList_Y(:);
+febio_spec.Geometry.NodeSet{2}.node.ATTR.id=bcSupportList_Y(:);
 
 febio_spec.Geometry.NodeSet{3}.ATTR.name='bcSupportList_Z';
-febio_spec.Geometry.NodeSet{3}.VAL=bcSupportList_Z(:);
+febio_spec.Geometry.NodeSet{3}.node.ATTR.id=bcSupportList_Z(:);
 
 febio_spec.Geometry.NodeSet{4}.ATTR.name='bcPrescribeList';
-febio_spec.Geometry.NodeSet{4}.VAL=bcPrescribeList(:);
+febio_spec.Geometry.NodeSet{4}.node.ATTR.id=bcPrescribeList(:);
 
 % -> ElementSets
 febio_spec.Geometry.ElementSet{1}.ATTR.name='elementSetTransiso';
-% febio_spec.Geometry.ElementSet{1}.VAL=(1:size(E,1))';
 febio_spec.Geometry.ElementSet{1}.elem.ATTR.id=(1:size(E,1))';
 
 %MeshData section
@@ -440,7 +437,7 @@ if runFlag==1 %i.e. a succesful run
     cFigure;
     hold on;    
     title('Uniaxial stress-stretch curve','FontSize',fontSize);
-    xlabel('\lambda Stretch [.]','FontSize',fontSize); ylabel('\sigma Cauchy stress [kPa]','FontSize',fontSize); 
+    xlabel('\lambda Stretch [.]','FontSize',fontSize); ylabel('\sigma Cauchy stress [MPa]','FontSize',fontSize); 
     
     plot(stretch_sim(:),stress_cauchy_sim(:),'r-','lineWidth',lineWidth);
     

@@ -2006,8 +2006,7 @@ while 1
                          delete(hCurve);
                          
                          D=pathLength(Vd);
-                         n=2*round(max(D(:))./min(v(1:2)));
-                         
+                         n=2*round(max(D(:))./min(v(1:2)));                         
                          [Vdd] = evenlySampleCurve(Vd,n,hf.UserData.adjustContourParSet{3},hf.UserData.adjustContourParSet{2});
                          
                          C{end+1}=Vdd;

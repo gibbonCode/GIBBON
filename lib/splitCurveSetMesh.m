@@ -122,13 +122,7 @@ V=[V1s;V2s];
 F=[F1s;F2s+size(V1s,1)];
 faceMarker=[2*ones(size(F1s,1),1); 3*ones(size(F2s,1),1);];
 
-try
-    [~,indUni,indF]=unique(round(V,6,'significant'),'rows');
-catch
-    [~,indUni,indF]=unique(sround(V,6),'rows');
-end
-V=V(indUni,:);
-F=indF(F);
+[F,V]=mergeVertices(F,V);
 
 %% FIND BOUNDARIES
 

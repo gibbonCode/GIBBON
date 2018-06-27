@@ -70,9 +70,7 @@ end
 
 %% REMOVING DOUBLE POINTS
 %Removing double points (region curve points may appear multiple times)
-[~,ind1,ind2]=unique(pround(V,5),'rows');
-V=V(ind1,:); %The unique point set
-F=ind2(F); %Fixing vertex indices in faces matrix
+[F,V]=mergeVertices(F,V);
  
 %% 
 % _*GIBBON footer text*_ 

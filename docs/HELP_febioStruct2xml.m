@@ -222,10 +222,6 @@ febio_spec.Geometry.Nodes{3}.node.VAL=rand(n,3);
 febio_spec.Geometry.NodeSet{1}.ATTR.name='nodeSet3';
 febio_spec.Geometry.NodeSet{1}.node.ATTR.id=(1:21)';
 
-% <NodeSet name="set1"> ... </NodeSet>
-febio_spec.Geometry.NodeSet{2}.ATTR.name='nodeSet4';
-febio_spec.Geometry.NodeSet{2}.VAL=(1:21);
-
 %%
 % Elements
 

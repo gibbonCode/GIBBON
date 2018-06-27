@@ -46,45 +46,85 @@ savePath=fullfile(defaultFolder,'data','temp');
 febioFebFileNamePart='tempModel';
 febioFebFileName=fullfile(savePath,[febioFebFileNamePart,'.feb']); %FEB file name
 febioLogFileName=fullfile(savePath,[febioFebFileNamePart,'.txt']); %FEBio log file name
-febioLogFileName_disp=[febioFebFileNamePart,'_disp_out.txt']; %Log file name for exporting force
+febioLogFileName_disp=[febioFebFileNamePart,'_disp_out.txt']; %Log file name for exporting displacement
 febioLogFileName_force=[febioFebFileNamePart,'_force_out.txt']; %Log file name for exporting force
-febioLogFileName_stress=[febioFebFileNamePart,'_stress_out.txt']; %Log file name for exporting force
+febioLogFileName_stress=[febioFebFileNamePart,'_stress_out.txt']; %Log file name for exporting stress
 
 %Specifying dimensions and number of elements
-cubeSize=10; 
-sampleWidth=cubeSize; %Width 
-sampleThickness=cubeSize; %Thickness 
-sampleHeight=cubeSize; %Height
-pointSpacings=2*ones(1,3); %Desired point spacing between nodes
-numElementsWidth=round(sampleWidth/pointSpacings(1)); %Number of elemens in dir 1
-numElementsThickness=round(sampleThickness/pointSpacings(2)); %Number of elemens in dir 2
-numElementsHeight=round(sampleHeight/pointSpacings(3)); %Number of elemens in dir 3
-
-%Define applied displacement 
-appliedStrain=0.3; %Linear strain (Only used to compute applied stretch)
-loadingOption='compression'; % or 'tension'
-switch loadingOption
-    case 'compression'
-        stretchLoad=1-appliedStrain; %The applied stretch for uniaxial loading
-    case 'tension'
-        stretchLoad=1+appliedStrain; %The applied stretch for uniaxial loading
+meshType='hex8'; %hex8 or tet4
+unitSystem=2; %1=m, 2=mm
+switch unitSystem
+    case 1
+        min_residual=1e-40;
+        cubeSize=10e-3;
+        sampleWidth=cubeSize; %Width
+        sampleThickness=cubeSize; %Thickness
+        sampleHeight=cubeSize; %Height
+        pointSpacings=2e-3*ones(1,3); %Desired point spacing between nodes
+        numElementsWidth=round(sampleWidth/pointSpacings(1)); %Number of elemens in dir 1
+        numElementsThickness=round(sampleThickness/pointSpacings(2)); %Number of elemens in dir 2
+        numElementsHeight=round(sampleHeight/pointSpacings(3)); %Number of elemens in dir 3
+        
+        %Define applied displacement
+        appliedStrain=0.3; %Linear strain (Only used to compute applied stretch)
+        loadingOption='compression'; % or 'tension'
+        switch loadingOption
+            case 'compression'
+                stretchLoad=1-appliedStrain; %The applied stretch for uniaxial loading
+            case 'tension'
+                stretchLoad=1+appliedStrain; %The applied stretch for uniaxial loading
+        end
+        displacementMagnitude=(stretchLoad*sampleHeight)-sampleHeight; %The displacement magnitude
+        
+        %Material parameter set
+        
+        %Hyperelastic parameters
+        c1=1000; %ogden c1
+        m1=6; %ogden m1
+        k_factor=1; %Bulk like modulus factor
+        k=c1*k_factor; %The bulk like modulus
+        
+        d=1000; %Density
+        
+        %Constant Isotropic Permeability parameters
+        phi0=0.5; %Solid volume fraction in reference configuration
+        permHydro=7.41e-11; %hydraulic permeability
+    case 2
+        min_residual=1e-40;
+        cubeSize=10;
+        sampleWidth=cubeSize; %Width
+        sampleThickness=cubeSize; %Thickness
+        sampleHeight=cubeSize; %Height
+        pointSpacings=2*ones(1,3); %Desired point spacing between nodes
+        numElementsWidth=round(sampleWidth/pointSpacings(1)); %Number of elemens in dir 1
+        numElementsThickness=round(sampleThickness/pointSpacings(2)); %Number of elemens in dir 2
+        numElementsHeight=round(sampleHeight/pointSpacings(3)); %Number of elemens in dir 3
+        
+        %Define applied displacement
+        appliedStrain=0.3; %Linear strain (Only used to compute applied stretch)
+        loadingOption='compression'; % or 'tension'
+        switch loadingOption
+            case 'compression'
+                stretchLoad=1-appliedStrain; %The applied stretch for uniaxial loading
+            case 'tension'
+                stretchLoad=1+appliedStrain; %The applied stretch for uniaxial loading
+        end
+        displacementMagnitude=(stretchLoad*sampleHeight)-sampleHeight; %The displacement magnitude
+        
+        %Material parameter set
+        
+        %Hyperelastic parameters
+        c1=1e-3; %ogden c1
+        m1=6; %ogden m1
+        k_factor=1; %Bulk like modulus factor
+        k=c1*k_factor; %The bulk like modulus
+        
+        d=1e-9; %Density
+        
+        %Constant Isotropic Permeability parameters
+        phi0=0.5; %Solid volume fraction in reference configuration
+        permHydro=7.41e1; %hydraulic permeability
 end
-displacementMagnitude=(stretchLoad*sampleHeight)-sampleHeight; %The displacement magnitude
-
-%Material parameter set
-
-%Hyperelastic parameters
-c1=1e-3; %ogden c1
-m1=6; %ogden m1
-k_factor=1; %Bulk like modulus factor
-k=c1*k_factor; %The bulk like modulus
-
-d=1e-9; %Density (not required for static analysis)
-
-%Constant Isotropic Permeability parameters
-phi0=0.5; %Solid volume fraction in reference configuration
-permHydro=1e4; %hydraulic permeability
-
 % FEA control settings
 analysisType='static'; 
 febioModule='biphasic';
@@ -101,7 +141,7 @@ t_step_ini2=t_step_ini1; %Initial desired step size
 numTimeSteps2=round(t_hold/t_step_ini2); %Number of time steps desired
 t_step2=t_hold/numTimeSteps2; %Step size
 dtmin2=t_step2/100; %Smallest allowed step size
-dtmax2=0.5; %Largest allowed step size
+dtmax2=0.25; %Largest allowed step size
 
 max_refs=25; %Max reforms
 max_ups=0; %Set to zero to use full-Newton iterations
@@ -117,8 +157,13 @@ max_retries=5; %Maximum number of retires
 % Create a box with hexahedral elements
 cubeDimensions=[sampleWidth sampleThickness sampleHeight]; %Dimensions
 cubeElementNumbers=[numElementsWidth numElementsThickness numElementsHeight]; %Number of elements
-outputStructType=2; %A structure compatible with mesh view
-[meshStruct]=hexMeshBox(cubeDimensions,cubeElementNumbers,outputStructType);
+
+switch meshType
+    case 'hex8' %hex8 structured
+        [meshStruct]=hexMeshBox(cubeDimensions,cubeElementNumbers,2);
+    case 'tet4' %tet4 unstructured
+        [meshStruct]=tetMeshBox(cubeDimensions,mean(pointSpacings));
+end
 
 %Access elements, nodes, and faces from the structure
 E=meshStruct.elements; %The elements 
@@ -203,7 +248,16 @@ febio_spec.ATTR.version='2.5';
 %Module section
 febio_spec.Module.ATTR.type=febioModule; 
 
+%Get control section from template
+stepStruct.Control=febio_spec.Control;
+stepStruct.Control.symmetric_stiffness=0; %Recommended for biphasic analysis
+
+%Remove control field (part of template) since step specific control sections are used
+febio_spec=rmfield(febio_spec,'Control'); 
+
 %Control sections for each step
+febio_spec.Step{1}.ATTR.id=1;
+febio_spec.Step{1}.Control=stepStruct.Control;
 febio_spec.Step{1}.Control.analysis.ATTR.type=analysisType;
 febio_spec.Step{1}.Control.time_steps=numTimeSteps1;
 febio_spec.Step{1}.Control.step_size=t_step1;
@@ -213,7 +267,10 @@ febio_spec.Step{1}.Control.time_stepper.max_retries=max_retries;
 febio_spec.Step{1}.Control.time_stepper.opt_iter=opt_iter;
 febio_spec.Step{1}.Control.max_refs=max_refs;
 febio_spec.Step{1}.Control.max_ups=max_ups;
+febio_spec.Step{1}.Control.min_residual=min_residual;
 
+febio_spec.Step{2}.ATTR.id=2;
+febio_spec.Step{2}.Control=stepStruct.Control;
 febio_spec.Step{2}.Control.analysis.ATTR.type=analysisType;
 febio_spec.Step{2}.Control.time_steps=numTimeSteps2;
 febio_spec.Step{2}.Control.step_size=t_step2;
@@ -223,6 +280,7 @@ febio_spec.Step{2}.Control.time_stepper.max_retries=max_retries;
 febio_spec.Step{2}.Control.time_stepper.opt_iter=opt_iter;
 febio_spec.Step{2}.Control.max_refs=max_refs;
 febio_spec.Step{2}.Control.max_ups=max_ups;
+febio_spec.Step{2}.Control.min_residual=min_residual;
 
 %Material section
 
@@ -252,7 +310,7 @@ febio_spec.Geometry.Nodes{1}.node.ATTR.id=(1:size(V,1))'; %The node id's
 febio_spec.Geometry.Nodes{1}.node.VAL=V; %The nodel coordinates
 
 % -> Elements
-febio_spec.Geometry.Elements{1}.ATTR.type='hex8'; %Element type of this set
+febio_spec.Geometry.Elements{1}.ATTR.type=meshType; %Element type of this set
 febio_spec.Geometry.Elements{1}.ATTR.mat=1; %material index for this set 
 febio_spec.Geometry.Elements{1}.ATTR.name='Cube'; %Name of the element set
 febio_spec.Geometry.Elements{1}.elem.ATTR.id=(1:1:size(E,1))'; %Element id's
@@ -260,16 +318,16 @@ febio_spec.Geometry.Elements{1}.elem.VAL=E;
 
 % -> NodeSets
 febio_spec.Geometry.NodeSet{1}.ATTR.name='bcSupportList_X';
-febio_spec.Geometry.NodeSet{1}.VAL=bcSupportList_X(:);
+febio_spec.Geometry.NodeSet{1}.node.ATTR.id=bcSupportList_X(:);
 
 febio_spec.Geometry.NodeSet{2}.ATTR.name='bcSupportList_Y';
-febio_spec.Geometry.NodeSet{2}.VAL=bcSupportList_Y(:);
+febio_spec.Geometry.NodeSet{2}.node.ATTR.id=bcSupportList_Y(:);
 
 febio_spec.Geometry.NodeSet{3}.ATTR.name='bcSupportList_Z';
-febio_spec.Geometry.NodeSet{3}.VAL=bcSupportList_Z(:);
+febio_spec.Geometry.NodeSet{3}.node.ATTR.id=bcSupportList_Z(:);
 
 febio_spec.Geometry.NodeSet{4}.ATTR.name='bcPrescribeList';
-febio_spec.Geometry.NodeSet{4}.VAL=bcPrescribeList(:);
+febio_spec.Geometry.NodeSet{4}.node.ATTR.id=bcPrescribeList(:);
 
 %Boundary condition section 
 % -> Fix boundary conditions
@@ -316,8 +374,6 @@ febio_spec.Output.logfile.element_data{1}.ATTR.file=febioLogFileName_stress;
 febio_spec.Output.logfile.element_data{1}.ATTR.data='sz';
 febio_spec.Output.logfile.element_data{1}.ATTR.delim=',';
 febio_spec.Output.logfile.element_data{1}.VAL=1:size(E,1);
-
-% ,'effective fluid pressure','fluid flux'};
 
 %% Quick viewing of the FEBio input file structure
 % The |febView| function can be used to view the xml structure in a MATLAB
@@ -420,7 +476,7 @@ if runFlag==1 %i.e. a succesful run
     cFigure;
     hold on;    
     title('Cauchy stress-time curve','FontSize',fontSize);
-    xlabel('Time [s]','FontSize',fontSize); ylabel('\sigma Cauchy stress [kPa]','FontSize',fontSize); 
+    xlabel('Time [s]','FontSize',fontSize); ylabel('\sigma Cauchy stress [Pa]','FontSize',fontSize); 
     
     plot(time_mat(:),stress_cauchy_sim(:),'r-','lineWidth',lineWidth);
     

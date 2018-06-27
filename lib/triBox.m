@@ -1,6 +1,31 @@
-function [varargout]=triBox(boxDim,pointSpacing)
+function [varargout]=triBox(varargin)
 
-% function [F,V,faceBoundaryMarker]=triBox(boxDim,pointSpacing)
+% function [F,V,faceBoundaryMarker]=triBox(boxDim,pointSpacing,numDigitsMerge)
+%-------------------------------------------------------------------------
+%
+%
+%-------------------------------------------------------------------------
+
+%%
+
+switch nargin
+    case 1
+        boxDim=varargin{1};
+        pointSpacing=mean(boxDim)/10;
+        numDigitsMerge=[];
+    case 2
+        boxDim=varargin{1};
+        pointSpacing=varargin{2};
+        numDigitsMerge=[];
+    case 3
+        boxDim=varargin{1};
+        pointSpacing=varargin{2};
+        numDigitsMerge=varargin{3};
+end
+
+if isempty(numDigitsMerge)    
+   numDigitsMerge=6-numOrder(pointSpacing);
+end
 
 %% Create quadrilateral box
 
@@ -49,8 +74,12 @@ F6=fliplr(F5);
 V6=V5; 
 V6(:,3)=max(Vq(:,3));
 
-%% Merge face sets
+%% Join face sets
 [F,V,faceBoundaryMarker]=joinElementSets({F1,F2,F3,F4,F5,F6},{V1,V2,V3,V4,V5,V6});
+
+%% Merge face sets
+
+[F,V]=mergeVertices(F,V,numDigitsMerge);
 
 %% Collect output
 varargout{1}=F;
