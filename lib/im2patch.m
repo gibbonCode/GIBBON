@@ -25,7 +25,7 @@ function [varargout]=im2patch(varargin)
 % gibbon.toolbox@gmail.com
 % 
 % Change log:
-% 2016/12/13 Created as improvement on (future replacement of) ind2patch
+% 2016/12/13 Created as improvement on (and future replacement of) ind2patch
 %------------------------------------------------------------------------
 
 %% Parse input
@@ -51,6 +51,8 @@ switch nargin
         indPatch=varargin{2};
         patchType=varargin{3};
         v=varargin{4};
+    otherwise
+        error('Wrong number of input arguments')
 end
 
 if isempty(patchType)

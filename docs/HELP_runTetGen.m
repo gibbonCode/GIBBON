@@ -490,8 +490,8 @@ drawnow;
 %% Meshing from a quadrilateral input surface
 % Build a quadrilateral surface
 
-boxDim=[4 5 6];
-boxEl=[4 5 6];
+boxDim=[32*4 32 18];
+boxEl=round(boxDim./10);
 [Fq,Vq,faceBoundaryMarker_q]=quadBox(boxDim,boxEl);
 
 %%
@@ -516,31 +516,64 @@ inputStruct.modelName=modelName;
 [meshOutput]=runTetGen(inputStruct); %Run tetGen 
 
 %% 
-% Access model element and patch data
-Fb=meshOutput.facesBoundary;
-Cb=meshOutput.boundaryMarker;
-V=meshOutput.nodes;
-CE=meshOutput.elementMaterialID;
-E=meshOutput.elements;
+% Visualizing mesh
+
+meshView(meshOutput);
+
+
+%% Specifying a sizing function to control local mesh density
+
+%%
+% Build example geometry
+boxDim=[32*4 32 18];
+boxEl=round(boxDim./10);
+[F,V,faceBoundaryMarker]=quadBox(boxDim,boxEl);
 
 %% 
-% Visualizing mesh 
+% Defining a size function on the boundary nodes
 
-%Selecting half of the model to see interior
-Y=V(:,2); YE=mean(Y(E),2);
-logicCutView=YE>mean(Y);
-[Fs,Cs]=element2patch(E(logicCutView,:),CE(logicCutView),'tet4');
+%Get edge lengths and base minimum size on input edge lengths
+[edgeLengths]=patchEdgeLengths(F,V);
+minEdgeSize=mean(edgeLengths)/5; %The smallest element size
 
-cFigure;
-hold on; 
-title('Cut view of tetrahedral mesh model','FontSize',fontSize);
-gpatch(Fb,V,0.5*ones(1,3),'none',faceAlpha1);
-gpatch(Fs,V,Cs,'k',faceAlpha2);
-plotV(V(unique(Fs(:)),:),'k.','MarkerSize',markerSize);
+n=5; %The largest element edge length is n times minEdgeSize
+edgeSizeField=V(:,1);
+edgeSizeField=edgeSizeField-min(edgeSizeField(:));
+edgeSizeField=edgeSizeField./max(edgeSizeField(:));
+edgeSizeField=(edgeSizeField*(n-1))+1; %Range from 0-n depending on V(:,1) i.e. X-dir
+edgeSizeField=(edgeSizeField*minEdgeSize);
+
+%%
+% CREATING THE INPUT STRUCTURE
+
+inputStruct.stringOpt='-pq1.1Aa';
+inputStruct.Faces=F;
+inputStruct.Nodes=V;
+inputStruct.sizeData=edgeSizeField; %The size data
+inputStruct.holePoints=[];
+inputStruct.faceBoundaryMarker=faceBoundaryMarker; %Face boundary markers
+inputStruct.regionPoints=[0 0 0]; %region points
+
+%% 
+% Mesh model using tetrahedral elements using tetGen
+[meshOutput]=runTetGen(inputStruct); %Run tetGen 
+
+%%
+% Visualize sizing function and result
+hf=cFigure;
+subplot(1,2,1); hold on;
+title('The sizing field on input nodes','FontSize',fontSize);
+gpatch(F,V,'kw','none',0.25);
+scatterV(V,75,edgeSizeField,'fill')
+colormap(gjet(250)); colorbar;
+axisGeom(gca,fontSize);
 camlight headlight;
-axisGeom(gca,fontSize); 
-axis off; 
-colormap(cMap); 
+
+hs=subplot(1,2,2); hold on;
+title('Cut view of the mesh','FontSize',fontSize);
+optionStruct.hFig=[hf hs];
+meshView(meshOutput,optionStruct);
+axisGeom(gca,fontSize);
 drawnow;
 
 %% Meshing 10-node (i.e. quadratic) tetrahedral elements

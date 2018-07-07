@@ -34,9 +34,9 @@ if isempty(extCell) %Delete all files
     fileList = dir(pathName);
     fileList={fileList(1:end).name}; %Current file list
     
-    for q=1:1:numel(fileList); %For all files
+    for q=1:1:numel(fileList) %For all files
         fileName=fullfile(pathName,fileList{q}); %Current file name
-        if ~isdir(fileName); %If it is not a directory
+        if ~isdir(fileName) %If it is not a directory
             delete(fileName); %Delete the file
         end
     end
@@ -46,8 +46,8 @@ else %Delete files matching extension list
         fileList = dir(fullfile(pathName,['*.',ext]));
         fileList={fileList(1:end).name}; %Current file list
         
-        if ~isempty(fileList); %For all files matching the extenion            
-            for q=1:1:numel(fileList);
+        if ~isempty(fileList) %For all files matching the extenion            
+            for q=1:1:numel(fileList)
                 fileName=fullfile(pathName,fileList{q}); %Current file name
                 delete(fileName); %Delete the file
             end

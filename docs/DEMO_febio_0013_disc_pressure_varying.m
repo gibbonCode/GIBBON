@@ -115,7 +115,7 @@ drawnow;
 
 %% Defining the boundary conditions
 % The visualization of the model boundary shows colors for each side of the
-% cube. These labels can be used to define boundary conditions. 
+% disc. These labels can be used to define boundary conditions. 
 
 %Define supported node sets
 logicFace=Cb==1; %Logic for current face set

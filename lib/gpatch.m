@@ -208,10 +208,10 @@ else
 end
 
 if numel(A)==1 %Plain single alpha
-    argInPatch.FaceAlpha=A;
+    argInPatch.FaceAlpha=double(A);
 elseif size(A,2)==1 %Alpha mapping
     argInPatch.FaceAlpha='flat';
-    argInPatch.FaceVertexAlphaData=A;
+    argInPatch.FaceVertexAlphaData=double(A);
 else
     error('Invalid alpha data input');
 end

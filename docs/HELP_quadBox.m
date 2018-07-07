@@ -4,8 +4,20 @@
 %%
 clear; close all; clc;
 
+%% Syntax
+% |[F,V,faceBoundaryMarker]=quadBox(boxDim,boxEl);|
+
+%% Description
+% This function generates the patch data for a quadrilateral mesh
+% rectangular box. The patch data consists of the faces (F), the vertices
+% (V), and face color/label data (faceBoundaryMarker). The input parameters
+% boxDim (1x3 vector) and BoxEl (1x3 vector) define the dimensions of the
+% box and the number of elements to use in all 3 directions. 
+
+%% Examples
+
 %%
-% PLOT SETTINGS
+% Plot settings
 fontSize=15;
 faceAlpha1=0.5;
 
@@ -13,7 +25,7 @@ faceAlpha1=0.5;
 
 %% 
 % Specifying dimensions and number of elements for each direction
-boxDim=[4 5 6]; %Width in each direction
+boxDim=[4 5 6]; %Size of the box in each direction
 boxEl=[3 4 5]; %Number of elements per direction 
 
 %%
@@ -26,11 +38,12 @@ boxEl=[3 4 5]; %Number of elements per direction
 cFigure; hold on;
 title('Box quadrilateral faces and normals','FontSize',fontSize);
 
-gpatch(F,V,faceBoundaryMarker,'k',1);
-patchNormPlot(F,V);
+gpatch(F,V,faceBoundaryMarker,'k',faceAlpha1);
+% patchNormPlot(F,V);
 
 colormap(gjet(6)); icolorbar; 
 axisGeom(gca,fontSize);
+camlight headlight;
 drawnow;
 
 %% 

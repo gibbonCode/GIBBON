@@ -69,8 +69,8 @@ Cb=meshStruct.boundaryMarker;
 V=meshStruct.nodes;
 CE=meshStruct.elementMaterialID;
 E=meshStruct.elements;
-F=meshStruct.faces;
-CF=meshStruct.faceMaterialID;
+% F=meshStruct.faces;
+% CF=meshStruct.faceMaterialID;
 
 numMaterials=numel(unique(CE(:)));
 if isempty(cMap)

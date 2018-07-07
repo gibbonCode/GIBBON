@@ -1,11 +1,11 @@
-%% DEMO_febio_0012_disc_pressure
-% Below is a demonstration for:
+%% DEMO_febio_0024_active_contraction_tongue
 % 
-% * Building geometry for a thin disc with tetrahedral elements
+% * Importing geometry for a basic tongue model
+% * Assigning fiber directions
 % * Defining the boundary conditions 
 % * Coding the febio structure
 % * Running the model
-% * Importing and visualizing the displacement and stress results
+% * Importing and visualizing results
 
 %% Keywords
 %
@@ -24,11 +24,12 @@
 
 clear; close all; clc;
 
-%% Plot settings
-fontSize=20;
-faceAlpha1=0.8;
-markerSize=40;
-lineWidth=3;
+%%
+% Plot settings
+fontSize=15;
+markerSize=35;
+plotColor=[1 0.5 0.4];
+vectorPlotSize=10;
 
 %% Control parameters
 
@@ -41,29 +42,16 @@ febioFebFileNamePart='tempModel';
 febioFebFileName=fullfile(savePath,[febioFebFileNamePart,'.feb']); %FEB file name
 febioLogFileName=fullfile(savePath,[febioFebFileNamePart,'.txt']); %FEBio log file name
 febioLogFileName_disp=[febioFebFileNamePart,'_disp_out.txt']; %Log file name for exporting displacement
-febioLogFileName_stress=[febioFebFileNamePart,'_stress_out.txt']; %Log file name for exporting force
-
-%Load
-pressureValue=0.5e-3; 
-loadType='pressure';%'traction';
-
-%Specifying dimensions and number of elements
-pointSpacing=1; 
-inputStruct.cylRadius=30;
-inputStruct.numRadial=round((inputStruct.cylRadius*pi)/pointSpacing);
-inputStruct.cylHeight=3;
-inputStruct.numHeight=round(inputStruct.cylHeight/pointSpacing);
-inputStruct.meshType='tri';
-inputStruct.closeOpt=1;
-
-% Derive patch data for a cylinder
-[Fs,Vs,Cs]=patchcylinder(inputStruct); 
 
 %Material parameter set
 c1=1e-3; %Shear-modulus-like parameter
 m1=8; %Material parameter setting degree of non-linearity
+ksi=c1*100; %Fiber "modulus"
+beta=3; %Fiber "nonlinearity" parameter
 k_factor=1e2; %Bulk modulus factor 
-k=c1*k_factor; %Bulk modulus
+k=0.5.*(c1+ksi)*k_factor; %Bulk modulus
+T0=10e-3; %Active stress
+formulationType=1; %1=uncoupled, 2=coupled
 
 % FEA control settings
 numTimeSteps=10; %Number of time steps desired
@@ -74,74 +62,70 @@ max_retries=5; %Maximum number of retires
 dtmin=(1/numTimeSteps)/100; %Minimum time step size
 dtmax=1/numTimeSteps; %Maximum time step size
 
-%% Creating model geometry and mesh
-% The disc is meshed using tetrahedral elements using tetgen
+%% Set up geometry for the tongue model
 
-inputStruct.stringOpt='-pq1.2AaY';
-inputStruct.Faces=Fs;
-inputStruct.Nodes=Vs;
-inputStruct.holePoints=[];
-inputStruct.faceBoundaryMarker=Cs; %Face boundary markers
-inputStruct.regionPoints=getInnerPoint(Fs,Vs); %region points
-inputStruct.regionA=tetVolMeanEst(Fs,Vs); %Volume for regular tets
-inputStruct.minRegionMarker=2; %Minimum region marker
-[meshStruct]=runTetGen(inputStruct); % Mesh model using tetrahedral elements using tetGen 
+% Import model geometry. This geometry was obtained with permission from the Artisynth project (https://www.artisynth.org/Demo/BiomechanicalTongueModel)
+loadNameOff=fullfile(defaultFolder,'data','OFF','tongue_mesh.off'); %File name for off file
+[E,V] = import_off(loadNameOff); %Import mesh data
+
+[F,~]=element2patch(E,[]); %Get mesh faces for visualization
 
 %% 
-% Access model element and patch data
-Fb=meshStruct.facesBoundary;
-Cb=meshStruct.boundaryMarker;
-V=meshStruct.nodes;
-CE=meshStruct.elementMaterialID;
-E=meshStruct.elements;
+% Visualize imported mesh
 
-%% 
-% Plotting model boundary surfaces and a cut view
-
-hFig=cFigure; 
-subplot(1,2,1); hold on; 
-title('Model boundary surfaces and labels','FontSize',fontSize);
-gpatch(Fb,V,Cb,'k',faceAlpha1); 
-colormap(gjet(6)); icolorbar;
+% Plotting model
+cFigure; hold on;
+gtitle('Tongue model geometry',fontSize);
+gpatch(F,V,plotColor,'k',0.5); %Visualize mesh faces
+% patchNormPlot(F,V); %Visualize normal directions
 axisGeom(gca,fontSize);
+camlight headlight;
+drawnow; 
 
-hs=subplot(1,2,2); hold on; 
-title('Cut view of solid mesh','FontSize',fontSize);
-optionStruct.hFig=[hFig hs];
-meshView(meshStruct,optionStruct);
+%% Defining fiber directions and boundary conditions
+% Fiber directions are here defined as running from the bottom of elements
+% to the top of elements, this is not physiological. 
+
+%Get boundary faces
+[indBoundary]=tesBoundary(F,V); %Get boundary face indices
+Fb=F(indBoundary,:); %Boundary faces
+
+%Get top and bottom faces for boundary conditions
+F_element_bottoms=E(:,[1 4 8 5]); %Get element bottom faces
+F_element_tops=E(:,[2 3 7 6]); %Get element top faces
+
+X=V(:,1); Y=V(:,2); Z=V(:,3); % Nodal coordinate components
+
+%Compute element centre coordinates (used as fiber origins in visualization)
+[VE]=patchCentre(E,V);
+
+%Define fibers as going from one face center to the other
+V_fib_bottom=patchCentre(F_element_bottoms,V); %Middle of bottom faces
+V_fib_top=patchCentre(F_element_tops,V); %Middle of top faces
+V_fib=vecnormalize(V_fib_top-V_fib_bottom); %Normalized fiber vectors
+[a,d]=vectorOrthogonalPair(V_fib); %Get orthogonal vector pair
+
+%Get boundary directions faces to set-up support
+F_bottom=F_element_bottoms(all(ismember(F_element_bottoms,Fb),2),:); %The faces at the bottom
+bcSupportList=unique(F_bottom(:)); %The node list for the bottom nodes
+
+%%
+% Visualize boundary conditions
+
+cFigure; hold on;
+gtitle('Boundary conditions and fiber directions',fontSize);
+hl(1)=gpatch(Fb,V,plotColor,'none',0.25);
+hl(2)=quiverVec(VE,V_fib,vectorPlotSize,'k');
+quiverVec(VE,a,vectorPlotSize/2,'kw');
+quiverVec(VE,d,vectorPlotSize/2,'kw');
+
+hl(3)=gpatch(F_bottom,V,'rw','r',1);
+hl(4)=plotV(V(bcSupportList,:),'r.','MarkerSize',markerSize);
+
+legend(hl,{'Boundary faces','Fiber vectors','Bottom faces','Supported nodes'});
+
 axisGeom(gca,fontSize);
-drawnow;
-
-%% Defining the boundary conditions
-% The visualization of the model boundary shows colors for each side of the
-% disc. These labels can be used to define boundary conditions. 
-
-%Define supported node sets
-logicFace=Cb==1; %Logic for current face set
-Fr=Fb(logicFace,:); %The current face set
-bcSupportList=unique(Fr(:)); %Node set part of selected face
-
-logicFace=Cb==2; %Logic for current face set
-F_pressure=fliplr(Fb(logicFace,:)); %The current face set
-
-%% 
-% Visualizing boundary conditions. Markers plotted on the semi-transparent
-% model denote the nodes in the various boundary condition lists. 
-
-hf=cFigure;
-title('Boundary conditions','FontSize',fontSize);
-xlabel('X','FontSize',fontSize); ylabel('Y','FontSize',fontSize); zlabel('Z','FontSize',fontSize);
-hold on;
-
-gpatch(Fb,V,'kw','none',0.5);
-
-hl(1)=plotV(V(bcSupportList,:),'k.','MarkerSize',markerSize);
-hl(2)=gpatch(F_pressure,V,'r','k',1);
-patchNormPlot(F_pressure,V);
-legend(hl,{'BC full support','Pressure surface'});
-
-axisGeom(gca,fontSize);
-camlight headlight; 
+camlight headlight;
 drawnow; 
 
 %% Defining the FEBio input structure
@@ -159,7 +143,6 @@ febio_spec.Module.ATTR.type='solid';
 
 %Control section
 febio_spec.Control.analysis.ATTR.type='static';
-febio_spec.Control.title='Disc analysis';
 febio_spec.Control.time_steps=numTimeSteps;
 febio_spec.Control.step_size=1/numTimeSteps;
 febio_spec.Control.time_stepper.dtmin=dtmin;
@@ -170,14 +153,57 @@ febio_spec.Control.max_refs=max_refs;
 febio_spec.Control.max_ups=max_ups;
 
 %Material section
-febio_spec.Material.material{1}.ATTR.type='Ogden';
+febio_spec.Material.material{1}.ATTR.type='solid mixture';
 febio_spec.Material.material{1}.ATTR.id=1;
-febio_spec.Material.material{1}.c1=c1;
-febio_spec.Material.material{1}.m1=m1;
-febio_spec.Material.material{1}.c2=c1;
-febio_spec.Material.material{1}.m2=-m1;
-febio_spec.Material.material{1}.k=k;
 
+febio_spec.Material.material{1}.mat_axis.ATTR.type='user';
+
+switch formulationType
+    case 1
+        %The gound matrix
+        febio_spec.Material.material{1}.solid{1}.ATTR.type='Ogden';
+        febio_spec.Material.material{1}.solid{1}.c1=c1;
+        febio_spec.Material.material{1}.solid{1}.m1=m1;
+        febio_spec.Material.material{1}.solid{1}.c2=c1;
+        febio_spec.Material.material{1}.solid{1}.m2=-m1;
+        febio_spec.Material.material{1}.solid{1}.k=k;
+        %The passive fiber component
+        febio_spec.Material.material{1}.solid{2}.ATTR.type='fiber-exp-pow-uncoupled';
+        febio_spec.Material.material{1}.solid{2}.ksi=ksi;
+        febio_spec.Material.material{1}.solid{2}.alpha=1e-20;
+        febio_spec.Material.material{1}.solid{2}.beta=beta;
+        febio_spec.Material.material{1}.solid{2}.theta=0;
+        febio_spec.Material.material{1}.solid{2}.phi=0;
+        febio_spec.Material.material{1}.solid{2}.k=k;
+        %The active fiber component
+        febio_spec.Material.material{1}.solid{3}.ATTR.type='uncoupled prescribed uniaxial active contraction';
+        febio_spec.Material.material{1}.solid{3}.T0.VAL=T0;
+        febio_spec.Material.material{1}.solid{3}.T0.ATTR.lc=1;
+        febio_spec.Material.material{1}.solid{3}.theta=0;
+        febio_spec.Material.material{1}.solid{3}.phi=0;
+    case 2
+        %The gound matrix
+        febio_spec.Material.material{1}.solid{1}.ATTR.type='Ogden unconstrained';
+        febio_spec.Material.material{1}.solid{1}.c1=c1;
+        febio_spec.Material.material{1}.solid{1}.m1=m1;
+        febio_spec.Material.material{1}.solid{1}.c2=c1;
+        febio_spec.Material.material{1}.solid{1}.m2=-m1;
+        febio_spec.Material.material{1}.solid{1}.cp=k;
+        %The passive fiber component
+        febio_spec.Material.material{1}.solid{2}.ATTR.type='fiber-exp-pow';
+        febio_spec.Material.material{1}.solid{2}.ksi=ksi;
+        febio_spec.Material.material{1}.solid{2}.alpha=1e-20;
+        febio_spec.Material.material{1}.solid{2}.beta=beta;
+        febio_spec.Material.material{1}.solid{2}.theta=0;
+        febio_spec.Material.material{1}.solid{2}.phi=0;
+        febio_spec.Material.material{1}.solid{2}.k=k;
+        %The active fiber component
+        febio_spec.Material.material{1}.solid{3}.ATTR.type='prescribed uniaxial active contraction';
+        febio_spec.Material.material{1}.solid{3}.T0.VAL=T0;
+        febio_spec.Material.material{1}.solid{3}.T0.ATTR.lc=1;
+        febio_spec.Material.material{1}.solid{3}.theta=0;
+        febio_spec.Material.material{1}.solid{3}.phi=0;
+end
 %Geometry section
 % -> Nodes
 febio_spec.Geometry.Nodes{1}.ATTR.name='nodeSet_all'; %The node set name
@@ -185,9 +211,9 @@ febio_spec.Geometry.Nodes{1}.node.ATTR.id=(1:size(V,1))'; %The node id's
 febio_spec.Geometry.Nodes{1}.node.VAL=V; %The nodel coordinates
 
 % -> Elements
-febio_spec.Geometry.Elements{1}.ATTR.type='tet4'; %Element type of this set
+febio_spec.Geometry.Elements{1}.ATTR.type='hex8'; %Element type of this set
 febio_spec.Geometry.Elements{1}.ATTR.mat=1; %material index for this set 
-febio_spec.Geometry.Elements{1}.ATTR.name='Disc'; %Name of the element set
+febio_spec.Geometry.Elements{1}.ATTR.name='Tongue'; %Name of the element set
 febio_spec.Geometry.Elements{1}.elem.ATTR.id=(1:1:size(E,1))'; %Element id's
 febio_spec.Geometry.Elements{1}.elem.VAL=E;
 
@@ -195,10 +221,20 @@ febio_spec.Geometry.Elements{1}.elem.VAL=E;
 febio_spec.Geometry.NodeSet{1}.ATTR.name='bcSupportList';
 febio_spec.Geometry.NodeSet{1}.node.ATTR.id=bcSupportList(:);
 
-% -> Surfaces
-febio_spec.Geometry.Surface{1}.ATTR.name='Pressure_surface';
-febio_spec.Geometry.Surface{1}.tri3.ATTR.lid=(1:size(F_pressure,1))';
-febio_spec.Geometry.Surface{1}.tri3.VAL=F_pressure;
+% -> ElementSets
+febio_spec.Geometry.ElementSet{1}.ATTR.name='elementSetTransiso';
+febio_spec.Geometry.ElementSet{1}.elem.ATTR.id=(1:size(E,1))';
+
+%MeshData section
+% -> ElementData
+febio_spec.MeshData.ElementData{1}.ATTR.elem_set=febio_spec.Geometry.ElementSet{1}.ATTR.name;
+febio_spec.MeshData.ElementData{1}.ATTR.var='mat_axis';
+
+for q=1:1:size(E,1)
+    febio_spec.MeshData.ElementData{1}.elem{q}.ATTR.lid=q;
+    febio_spec.MeshData.ElementData{1}.elem{q}.a=a(q,:);
+    febio_spec.MeshData.ElementData{1}.elem{q}.d=d(q,:);
+end
 
 %Boundary condition section 
 % -> Fix boundary conditions
@@ -209,21 +245,6 @@ febio_spec.Boundary.fix{2}.ATTR.node_set=febio_spec.Geometry.NodeSet{1}.ATTR.nam
 febio_spec.Boundary.fix{3}.ATTR.bc='z';
 febio_spec.Boundary.fix{3}.ATTR.node_set=febio_spec.Geometry.NodeSet{1}.ATTR.name;
 
-%Loads
-switch loadType
-    case 'pressure'
-        febio_spec.Loads.surface_load{1}.ATTR.type='pressure';
-        febio_spec.Loads.surface_load{1}.ATTR.surface=febio_spec.Geometry.Surface{1}.ATTR.name;
-        febio_spec.Loads.surface_load{1}.pressure.VAL=pressureValue;
-        febio_spec.Loads.surface_load{1}.pressure.ATTR.lc=1;
-    case 'traction'
-        febio_spec.Loads.surface_load{1}.ATTR.type='traction';
-        febio_spec.Loads.surface_load{1}.ATTR.surface=febio_spec.Geometry.Surface{1}.ATTR.name;
-        febio_spec.Loads.surface_load{1}.scale.VAL=pressureValue;
-        febio_spec.Loads.surface_load{1}.scale.ATTR.lc=1;
-        febio_spec.Loads.surface_load{1}.traction=[0 0 -1];
-end
-
 %Output section 
 % -> log file
 febio_spec.Output.logfile.ATTR.file=febioLogFileName;
@@ -231,11 +252,6 @@ febio_spec.Output.logfile.node_data{1}.ATTR.file=febioLogFileName_disp;
 febio_spec.Output.logfile.node_data{1}.ATTR.data='ux;uy;uz';
 febio_spec.Output.logfile.node_data{1}.ATTR.delim=',';
 febio_spec.Output.logfile.node_data{1}.VAL=1:size(V,1);
-
-febio_spec.Output.logfile.element_data{1}.ATTR.file=febioLogFileName_stress;
-febio_spec.Output.logfile.element_data{1}.ATTR.data='sz';
-febio_spec.Output.logfile.element_data{1}.ATTR.delim=',';
-febio_spec.Output.logfile.element_data{1}.VAL=1:size(E,1);
 
 %% Quick viewing of the FEBio input file structure
 % The |febView| function can be used to view the xml structure in a MATLAB
@@ -249,7 +265,6 @@ febio_spec.Output.logfile.element_data{1}.VAL=1:size(E,1);
 % the |febioStruct2xml| function. 
 
 febioStruct2xml(febio_spec,febioFebFileName); %Exporting to file and domNode
-% febView(febioFebFileName); 
 
 %% Running the FEBio analysis
 % To run the analysis defined by the created FEBio input file the
@@ -274,8 +289,9 @@ febioAnalysis.maxLogCheckTime=3; %Max log file checking time
 if runFlag==1 %i.e. a succesful run
     
     % Importing nodal displacements from a log file
-    [~, N_disp_mat,~]=importFEBio_logfile(fullfile(savePath,febioLogFileName_disp)); %Nodal displacements    
-    
+    [time_mat, N_disp_mat,~]=importFEBio_logfile(fullfile(savePath,febioLogFileName_disp)); %Nodal displacements    
+    time_mat=[0; time_mat(:)]; %Time
+
     N_disp_mat=N_disp_mat(:,2:end,:);
     sizImport=size(N_disp_mat);
     sizImport(3)=sizImport(3)+1;
@@ -287,11 +303,6 @@ if runFlag==1 %i.e. a succesful run
     V_def=V+DN;
     [CF]=vertexToFaceMeasure(Fb,DN_magnitude);
     
-    % Importing element stress from a log file
-    [time_mat, E_stress_mat,~]=importFEBio_logfile(fullfile(savePath,febioLogFileName_stress)); %Nodal forces
-    time_mat=[0; time_mat(:)]; %Time
-    stress_cauchy_sim=[0; mean(squeeze(E_stress_mat(:,end,:)),1)'];
-    
     %% 
     % Plotting the simulated results using |anim8| to visualize and animate
     % deformations 
@@ -300,13 +311,12 @@ if runFlag==1 %i.e. a succesful run
     hf=cFigure; %Open figure  
     gtitle([febioFebFileNamePart,': Press play to animate']);
     hp=gpatch(Fb,V_def,CF,'k',1); %Add graphics object to animate
-    gpatch(Fb,V,'kw','none',0.25); %A static graphics object
+    gpatch(Fb,V,0.5*ones(1,3),'none',0.25); %A static graphics object
     
     axisGeom(gca,fontSize); 
     colormap(gjet(250)); colorbar;
     caxis([0 max(DN_magnitude)]);    
     axis([min(V_def(:,1)) max(V_def(:,1)) min(V_def(:,2)) max(V_def(:,2)) min(V_def(:,3)) max(V_def(:,3))]); %Set axis limits statically
-    view(130,25); %Set view direction
     camlight headlight;        
         
     % Set up animation features
@@ -326,6 +336,18 @@ if runFlag==1 %i.e. a succesful run
     drawnow;
     
 end
+
+%%
+% Publishing GIF animation in html folder to render documentation with
+% gif
+[docsPath,docName,~]=fileparts(mfilename('fullpath'));
+inputStruct.defaultPath=fullfile(defaultFolder,'docs','html');
+inputStruct.imName=[docName,'_anim8'];
+exportGifAnim8(hf,inputStruct,0);
+
+%%
+%
+% <<DEMO_febio_0024_active_contraction_tongue_anim8.gif>>
 
 %% 
 %

@@ -31,7 +31,7 @@ if exist(helpCheckName,'file')
 elseif exist(demoCheckName,'file')
     web(demoCheckName, '-helpbrowser');
 else
-    disp('No matching HELP or DEMO files found. Searhing all documentation instead');
+    disp('No matching HELP or DEMO files found. Searching all documentation instead');
     docsearch(topic);
 end
 
