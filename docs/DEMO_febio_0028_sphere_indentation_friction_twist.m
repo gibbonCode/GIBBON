@@ -313,7 +313,7 @@ switch contactType
     case 'sticky'
         febio_spec.Contact.contact{1}.ATTR.surface_pair=febio_spec.Geometry.SurfacePair{1}.ATTR.name;
         febio_spec.Contact.contact{1}.ATTR.type='sticky';
-        febio_spec.Contact.contact{1}.penalty=10;
+        febio_spec.Contact.contact{1}.penalty=100;
         febio_spec.Contact.contact{1}.laugon=0;
         febio_spec.Contact.contact{1}.tolerance=0.1;
         febio_spec.Contact.contact{1}.minaug=0;
@@ -324,7 +324,7 @@ switch contactType
     case 'facet-to-facet sliding'
         febio_spec.Contact.contact{1}.ATTR.surface_pair=febio_spec.Geometry.SurfacePair{1}.ATTR.name;
         febio_spec.Contact.contact{1}.ATTR.type='facet-to-facet sliding';
-        febio_spec.Contact.contact{1}.penalty=10;
+        febio_spec.Contact.contact{1}.penalty=200;
         febio_spec.Contact.contact{1}.auto_penalty=1;
         febio_spec.Contact.contact{1}.two_pass=0;
         febio_spec.Contact.contact{1}.laugon=0;
@@ -337,7 +337,7 @@ switch contactType
     case 'sliding_with_gaps'
         febio_spec.Contact.contact{1}.ATTR.surface_pair=febio_spec.Geometry.SurfacePair{1}.ATTR.name;
         febio_spec.Contact.contact{1}.ATTR.type='sliding_with_gaps';
-        febio_spec.Contact.contact{1}.penalty=10;
+        febio_spec.Contact.contact{1}.penalty=100;
         febio_spec.Contact.contact{1}.auto_penalty=1;
         febio_spec.Contact.contact{1}.two_pass=0;
         febio_spec.Contact.contact{1}.laugon=0;
@@ -353,7 +353,7 @@ switch contactType
     case 'sliding2'
         febio_spec.Contact.contact{1}.ATTR.surface_pair=febio_spec.Geometry.SurfacePair{1}.ATTR.name;
         febio_spec.Contact.contact{1}.ATTR.type='sliding2';
-        febio_spec.Contact.contact{1}.penalty=10;
+        febio_spec.Contact.contact{1}.penalty=30;
         febio_spec.Contact.contact{1}.auto_penalty=1;
         febio_spec.Contact.contact{1}.two_pass=0;
         febio_spec.Contact.contact{1}.laugon=0;

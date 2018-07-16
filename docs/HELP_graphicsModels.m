@@ -32,7 +32,7 @@ for q=1:1:7
     
     xlabel('X','FontSize',fontSize); ylabel('Y','FontSize',fontSize); zlabel('Z','FontSize',fontSize);
     
-    hp=patch('Faces',F,'Vertices',V,'FaceColor',cMap(q,:),'FaceAlpha',faceAlpha,'lineWidth',edgeWidth,'edgeColor','none');
+    gpatch(F,V,cMap(q,:),'none');
     
     set(gca,'FontSize',fontSize);
     view(3); axis tight;  axis equal;  axis vis3d; axis off;

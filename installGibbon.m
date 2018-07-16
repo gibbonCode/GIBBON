@@ -130,9 +130,9 @@ FEBioPath=getFEBioPath;
 
 if isempty(FEBioPath)
     if ispc
-        FEBioPath='e.g. C:\Program Files\febio-2.6.4\bin\FEBio2.exe';
+        FEBioPath='C:\Program Files\febio-2.7.1\bin\FEBio2.exe';
     else
-        FEBioPath='e.g. /home/febio-2.6.4/bin/febio2.lnx64';
+        FEBioPath='/home/febio-2.7.1/bin/febio2.lnx64';
     end
 end
 

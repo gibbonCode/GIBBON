@@ -49,26 +49,17 @@ febioLogFileName_disp=[febioFebFileNamePart,'_disp_out.txt']; %Log file name for
 febioLogFileName_force=[febioFebFileNamePart,'_force_out.txt']; %Log file name for exporting force
 
 %Specifying dimensions and number of elements for slab
-sampleHeight=5; %Height
-sampleWidth=sampleHeight*2; %Width 
-sampleThickness=sampleHeight*2; %Thickness 
-pointSpacings=0.5*ones(1,3); %Desired point spacing between nodes
-numElementsWidth=round(sampleWidth/pointSpacings(1)); %Number of elemens in dir 1
-numElementsThickness=round(sampleThickness/pointSpacings(2)); %Number of elemens in dir 2
-numElementsHeight=round(sampleHeight/pointSpacings(3)); %Number of elemens in dir 3
-
-%Sphere parameters
-numRefineStepsSphere=3; 
-sphereRadius=sampleHeight/2;
-
-%Define applied displacement
-sphereDisplacement=sphereRadius; 
+sampleHeight=2; %Height
+sampleWidth=sampleHeight; %Width 
+sampleThickness=sampleHeight; %Thickness 
+    
+numElementsWidth=[4 3 5 4]; %Number of elemens in dir 1
+numElementsThickness=numElementsWidth; %Number of elemens in dir 2
+numElementsHeight=numElementsWidth; %Number of elemens in dir 3
 
 %Material parameter set
-c1=1e-3; %Shear-modulus-like parameter
-m1=8; %Material parameter setting degree of non-linearity
-k_factor=1e2; %Bulk modulus factor 
-k=c1*k_factor; %Bulk modulus
+youngsModuli=[0.3 10 0.3 10];
+poissonsRatios=[0.4 0.1 0.4 0.1]; 
 
 % FEA control settings
 numTimeSteps=10; %Number of time steps desired
@@ -81,119 +72,98 @@ dtmax=1/numTimeSteps; %Maximum time step size
 
 %Contact parameters
 contactInitialOffset=0.1;
-contactAlg=1;
-switch contactAlg
-    case 1
-        contactType='sticky';
-    case 2
-        contactType='facet-to-facet sliding'; 
-    case 3
-        contactType='sliding_with_gaps';
-    case 4
-        contactType='sliding2';
-end
+
+boxOffsets=sampleHeight+contactInitialOffset;
+
 %% Creating model geometry and mesh
 % A box is created with tri-linear hexahedral (hex8) elements using the
 % |hexMeshBox| function. The function offers the boundary faces with
 % seperate labels for the top, bottom, left, right, front, and back sides.
 % As such these can be used to define boundary conditions on the exterior. 
 
-% Create a box with hexahedral elements
-beamDimensions=[sampleWidth sampleThickness sampleHeight]; %Dimensions
-beamElementNumbers=[numElementsWidth numElementsThickness numElementsHeight]; %Number of elements
-outputStructType=2; %A structure compatible with mesh view
-[meshStruct]=hexMeshBox(beamDimensions,beamElementNumbers,outputStructType);
+E=[];
+elementMaterialID=[];
+V=[];
+Fb=[];
+Cb=[];
+for q=1:1:4
+    
+    % Create a box with hexahedral elements
+    beamDimensions=[sampleWidth sampleThickness sampleHeight]; %Dimensions
+    beamElementNumbers=[numElementsWidth(q) numElementsThickness(q) numElementsHeight(q)]; %Number of elements
+    outputStructType=2; %A structure compatible with mesh view
+    [meshStruct]=hexMeshBox(beamDimensions,beamElementNumbers,outputStructType);
+    
+    %Access elements, nodes, and faces from the structure
+    E1=meshStruct.elements; %The elements
+    V1=meshStruct.nodes; %The nodes (vertices)
+    Fb1=meshStruct.facesBoundary; %The boundary faces
+    Cb1=meshStruct.boundaryMarker; %The "colors" or labels for the boundary faces
+    elementMaterialIndices=ones(size(E1,1),1); %Element material indices
 
-%Access elements, nodes, and faces from the structure
-E1=meshStruct.elements; %The elements 
-V1=meshStruct.nodes; %The nodes (vertices)
-Fb1=meshStruct.facesBoundary; %The boundary faces
-Cb1=meshStruct.boundaryMarker; %The "colors" or labels for the boundary faces
-elementMaterialIndices=ones(size(E1,1),1); %Element material indices
-
-%% Creating triangulated sphere surface model
-
-[E2,V2,~]=geoSphere(numRefineStepsSphere,sphereRadius); 
-
-%Offset indentor
-minZ=min(V2(:,3));
-V2(:,3)=V2(:,3)-minZ+(sampleHeight/2)+contactInitialOffset;
-
-center_of_mass=mean(V2,1);
+    V1(:,3)=V1(:,3)+(q-1)*boxOffsets;
+    
+    E=[E;E1+size(V,1)];
+    Fb=[Fb;Fb1+size(V,1)];
+    V=[V;V1];    
+    colorOffset=max(Cb(:));
+    if isempty(colorOffset)
+        colorOffset=0;
+    end
+    Cb=[Cb;Cb1+colorOffset];
+    
+    elementMaterialID=[elementMaterialID;q*ones(size(E1,1),1)];
+    
+end
+V(:,3)=V(:,3)-min(V(:,3)); %Shift so bottom is at 0
 
 %% 
 % Plotting model boundary surfaces and a cut view
 
 hFig=cFigure; 
-
-subplot(1,2,1); hold on; 
+hold on; 
 title('Model boundary surfaces and labels','FontSize',fontSize);
-gpatch(Fb1,V1,Cb1,'k',faceAlpha1); 
-gpatch(E2,V2,'kw','k',faceAlpha1); 
-colormap(gjet(6)); icolorbar;
+gpatch(Fb,V,Cb,'k',faceAlpha1); 
+colormap(gjet(250)); icolorbar;
 axisGeom(gca,fontSize);
-
-hs=subplot(1,2,2); hold on; 
-title('Cut view of solid mesh','FontSize',fontSize);
-optionStruct.hFig=[hFig hs];
-gpatch(E2,V2,'kw','k',1); 
-meshView(meshStruct,optionStruct);
-axisGeom(gca,fontSize);
-
 drawnow;
-
-%% Joining node sets
-V=[V1;V2;]; %Combined node sets
-E2=E2+size(V1,1); %Fixed element indices
 
 %%
-% Plotting joined geometry
-cFigure;
-title('Joined node sets','FontSize',fontSize);
-xlabel('X','FontSize',fontSize); ylabel('Y','FontSize',fontSize); zlabel('Z','FontSize',fontSize);
-hold on;
-gpatch(Fb1,V,Cb1,'k',faceAlpha1); 
-gpatch(E2,V,'kw','k',faceAlpha1);
-colormap(gjet(6)); icolorbar; 
+
+logicTops=false(size(Cb,1),4);
+logicBottoms=false(size(Cb,1),4);
+for q=1:1:4
+    logicTops(:,q)=Cb==6+(6*(q-1));   
+    logicBottoms(:,q)=Cb==5+(6*(q-1));   
+end
+
+
+%% 
+% Plotting model boundary surfaces 
+
+hFig=cFigure; 
+hold on; 
+title('Contact faces','FontSize',fontSize);
+gpatch(Fb,V,'kw','none',0.2);
+for q=1:1:size(logicTops,2)
+    gpatch(Fb(logicTops(:,q),:),V,Cb(logicTops(:,q),:),'k',1);
+    gpatch(Fb(logicBottoms(:,q),:),V,Cb(logicBottoms(:,q),:),'k',1);
+end
+
+colormap(gjet(250)); icolorbar;
 axisGeom(gca,fontSize);
-camlight headlight;
-drawnow;
-
-%% Define contact surfaces
-
-% The rigid master surface of the sphere
-F_contact_master=E2;
-
-% The deformable slave surface of the slab
-logicContactSurf1=Cb1==6;
-F_contact_slave=Fb1(logicContactSurf1,:);
-
-% Plotting surface models
-cFigure; hold on;
-title('Contact sets and normal directions','FontSize',fontSize);
-
-gpatch(Fb1,V,'kw','none',faceAlpha2); 
-hl(1)=gpatch(F_contact_master,V,'g','k',1); 
-patchNormPlot(F_contact_master,V);
-hl(2)=gpatch(F_contact_slave,V,'b','k',1);
-patchNormPlot(F_contact_slave,V);
-
-legend(hl,{'Master','Slave'});
-
-axisGeom(gca,fontSize);
-camlight headlight;
 drawnow;
 
 %% Define boundary conditions
 
-%Supported nodes
-logicRigid=Cb1==5;
-Fr=Fb1(logicRigid,:);
-bcSupportList=unique(Fr(:));
+F_support=Fb(logicBottoms(:,1),:);
 
-%Prescribed displacement nodes
-bcPrescribeList=unique(E2(:));
-bcPrescribeMagnitudes=[0 0 -(sphereDisplacement+contactInitialOffset)];
+F_rigidBody=Fb(logicTops(:,end),:);
+indNodesRigidBody=unique(F_rigidBody(:));
+center_of_mass=mean(V(indNodesRigidBody,:),1);
+
+%Supported nodes
+bcSupportList=unique(F_support(:));
 
 %Visualize BC's
 hf=cFigure;
@@ -201,12 +171,12 @@ title('Boundary conditions model','FontSize',fontSize);
 xlabel('X','FontSize',fontSize); ylabel('Y','FontSize',fontSize); zlabel('Z','FontSize',fontSize);
 hold on;
 
-gpatch(Fb1,V,'kw','none',faceAlpha2); 
-hl2(1)=gpatch(E2,V,'kw','k',1); 
+gpatch(Fb,V,'kw','none',faceAlpha2); 
+hl(1)=gpatch(F_rigidBody,V,'rw','k',1); 
+hl(2)=plotV(V(bcSupportList,:),'k.','MarkerSize',markerSize);
+hl(3)=plotV(center_of_mass,'r.','MarkerSize',50);
 
-hl2(2)=plotV(V(bcSupportList,:),'k.','MarkerSize',markerSize);
-
-legend(hl2,{'Rigid body sphere','BC support'});
+legend(hl,{'Rigid body','BC support','Rigid body center of mass'});
 
 axisGeom(gca,fontSize);
 camlight headlight;
@@ -238,18 +208,17 @@ febio_spec.Control.max_refs=max_refs;
 febio_spec.Control.max_ups=max_ups;
 
 %Material section
-febio_spec.Material.material{1}.ATTR.type='Ogden';
-febio_spec.Material.material{1}.ATTR.id=1;
-febio_spec.Material.material{1}.c1=c1;
-febio_spec.Material.material{1}.m1=m1;
-febio_spec.Material.material{1}.c2=c1;
-febio_spec.Material.material{1}.m2=-m1;
-febio_spec.Material.material{1}.k=k;
+for q=1:1:numel(youngsModuli)
+    febio_spec.Material.material{q}.ATTR.type='neo-Hookean';
+    febio_spec.Material.material{q}.ATTR.id=q;
+    febio_spec.Material.material{q}.E=youngsModuli(q);
+    febio_spec.Material.material{q}.v=poissonsRatios(q);
+end
 
-febio_spec.Material.material{2}.ATTR.type='rigid body';
-febio_spec.Material.material{2}.ATTR.id=2;
-febio_spec.Material.material{2}.density=1;
-febio_spec.Material.material{2}.center_of_mass=center_of_mass;
+febio_spec.Material.material{numel(youngsModuli)+1}.ATTR.type='rigid body';
+febio_spec.Material.material{numel(youngsModuli)+1}.ATTR.id=numel(youngsModuli)+1;
+febio_spec.Material.material{numel(youngsModuli)+1}.density=1;
+febio_spec.Material.material{numel(youngsModuli)+1}.center_of_mass=center_of_mass;
 
 %Geometry section
 % -> Nodes
@@ -258,35 +227,46 @@ febio_spec.Geometry.Nodes{1}.node.ATTR.id=(1:size(V,1))'; %The node id's
 febio_spec.Geometry.Nodes{1}.node.VAL=V; %The nodel coordinates
 
 % -> Elements
-febio_spec.Geometry.Elements{1}.ATTR.type='hex8'; %Element type of this set
-febio_spec.Geometry.Elements{1}.ATTR.mat=1; %material index for this set 
-febio_spec.Geometry.Elements{1}.ATTR.name='Slab'; %Name of the element set
-febio_spec.Geometry.Elements{1}.elem.ATTR.id=(1:1:size(E1,1))'; %Element id's
-febio_spec.Geometry.Elements{1}.elem.VAL=E1;
-
-febio_spec.Geometry.Elements{2}.ATTR.type='tri3'; %Element type of this set
-febio_spec.Geometry.Elements{2}.ATTR.mat=2; %material index for this set 
-febio_spec.Geometry.Elements{2}.ATTR.name='Sphere'; %Name of the element set
-febio_spec.Geometry.Elements{2}.elem.ATTR.id=size(E1,1)+(1:1:size(E2,1))'; %Element id's
-febio_spec.Geometry.Elements{2}.elem.VAL=E2;
+n=1;
+for q=1:1:numel(youngsModuli)
+    logicMaterialNow=(elementMaterialID==q);
+    febio_spec.Geometry.Elements{q}.ATTR.type='hex8'; %Element type of this set
+    febio_spec.Geometry.Elements{q}.ATTR.mat=q; %material index for this set
+    febio_spec.Geometry.Elements{q}.ATTR.name=['Box_',num2str(q)]; %Name of the element set
+    febio_spec.Geometry.Elements{q}.elem.ATTR.id=(n:1:(n-1+nnz(logicMaterialNow)))'; %Element id's
+    febio_spec.Geometry.Elements{q}.elem.VAL=E(logicMaterialNow,:);    
+    n=n+nnz(logicMaterialNow);
+end
 
 % -> NodeSets
 febio_spec.Geometry.NodeSet{1}.ATTR.name='bcSupportList';
 febio_spec.Geometry.NodeSet{1}.node.ATTR.id=bcSupportList(:);
 
 % -> Surfaces
-febio_spec.Geometry.Surface{1}.ATTR.name='contact_master';
-febio_spec.Geometry.Surface{1}.tri3.ATTR.lid=(1:1:size(F_contact_master,1))';
-febio_spec.Geometry.Surface{1}.tri3.VAL=F_contact_master;
+c=1;
+for q=2:1:numel(youngsModuli)
+    F_contact_now=Fb(logicBottoms(q),:);
+    febio_spec.Geometry.Surface{c}.ATTR.name=['contact_',num2str(c)];
+    febio_spec.Geometry.Surface{c}.tri3.ATTR.lid=(1:1:size(F_contact_now,1))';
+    febio_spec.Geometry.Surface{c}.tri3.VAL=F_contact_now;
+    c=c+1;
+end
 
-febio_spec.Geometry.Surface{2}.ATTR.name='contact_slave';
-febio_spec.Geometry.Surface{2}.quad4.ATTR.lid=(1:1:size(F_contact_slave,1))';
-febio_spec.Geometry.Surface{2}.quad4.VAL=F_contact_slave;
+for q=1:1:numel(youngsModuli)-1    
+    c=numel(febio_spec.Geometry.Surface)+1;
+    F_contact_now=Fb(logicTops(q),:);    
+    febio_spec.Geometry.Surface{c}.ATTR.name=['contact_',num2str(c)];
+    febio_spec.Geometry.Surface{c}.tri3.ATTR.lid=(1:1:size(F_contact_now,1))';
+    febio_spec.Geometry.Surface{c}.tri3.VAL=F_contact_now;
+end
 
 % -> Surface pairs
-febio_spec.Geometry.SurfacePair{1}.ATTR.name='Contact1';
-febio_spec.Geometry.SurfacePair{1}.master.ATTR.surface=febio_spec.Geometry.Surface{1}.ATTR.name;
-febio_spec.Geometry.SurfacePair{1}.slave.ATTR.surface=febio_spec.Geometry.Surface{2}.ATTR.name;
+surfaceInd=1;
+for q=1:1:numel(youngsModuli)-1
+    febio_spec.Geometry.SurfacePair{q}.ATTR.name=['Contact_',num2str(q)];
+    febio_spec.Geometry.SurfacePair{q}.master.ATTR.surface=febio_spec.Geometry.Surface{q}.ATTR.name;
+    febio_spec.Geometry.SurfacePair{q}.slave.ATTR.surface=febio_spec.Geometry.Surface{q+numel(youngsModuli)-1}.ATTR.name;
+end
 
 %Boundary condition section 
 % -> Fix boundary conditions
@@ -298,7 +278,7 @@ febio_spec.Boundary.fix{3}.ATTR.bc='z';
 febio_spec.Boundary.fix{3}.ATTR.node_set=febio_spec.Geometry.NodeSet{1}.ATTR.name;
 
 % -> Prescribed boundary conditions on the rigid body
-febio_spec.Boundary.rigid_body{1}.ATTR.mat=2;
+febio_spec.Boundary.rigid_body{1}.ATTR.mat=numel(febio_spec.Material.material);
 febio_spec.Boundary.rigid_body{1}.fixed{1}.ATTR.bc='x';
 febio_spec.Boundary.rigid_body{1}.fixed{2}.ATTR.bc='y';
 febio_spec.Boundary.rigid_body{1}.fixed{3}.ATTR.bc='Rx';
@@ -309,60 +289,22 @@ febio_spec.Boundary.rigid_body{1}.prescribed.ATTR.lc=1;
 febio_spec.Boundary.rigid_body{1}.prescribed.VAL=bcPrescribeMagnitudes(3);
 
 %Contact section
-switch contactType
-    case 'sticky'
-        febio_spec.Contact.contact{1}.ATTR.surface_pair=febio_spec.Geometry.SurfacePair{1}.ATTR.name;
-        febio_spec.Contact.contact{1}.ATTR.type='sticky';
-        febio_spec.Contact.contact{1}.penalty=10;
-        febio_spec.Contact.contact{1}.laugon=0;
-        febio_spec.Contact.contact{1}.tolerance=0.1;
-        febio_spec.Contact.contact{1}.minaug=0;
-        febio_spec.Contact.contact{1}.maxaug=10;
-        febio_spec.Contact.contact{1}.snap_tol=0;
-        febio_spec.Contact.contact{1}.max_traction=0;
-        febio_spec.Contact.contact{1}.search_tolerance=0.1;
-    case 'facet-to-facet sliding'
-        febio_spec.Contact.contact{1}.ATTR.surface_pair=febio_spec.Geometry.SurfacePair{1}.ATTR.name;
-        febio_spec.Contact.contact{1}.ATTR.type='facet-to-facet sliding';
-        febio_spec.Contact.contact{1}.penalty=10;
-        febio_spec.Contact.contact{1}.auto_penalty=1;
-        febio_spec.Contact.contact{1}.two_pass=0;
-        febio_spec.Contact.contact{1}.laugon=0;
-        febio_spec.Contact.contact{1}.tolerance=0.1;
-        febio_spec.Contact.contact{1}.gaptol=0;
-        febio_spec.Contact.contact{1}.minaug=0;
-        febio_spec.Contact.contact{1}.maxaug=10;
-        febio_spec.Contact.contact{1}.search_tol=0.01;
-        febio_spec.Contact.contact{1}.search_radius=mean(pointSpacings)/2;
-    case 'sliding_with_gaps'
-        febio_spec.Contact.contact{1}.ATTR.surface_pair=febio_spec.Geometry.SurfacePair{1}.ATTR.name;
-        febio_spec.Contact.contact{1}.ATTR.type='sliding_with_gaps';
-        febio_spec.Contact.contact{1}.penalty=10;
-        febio_spec.Contact.contact{1}.auto_penalty=1;
-        febio_spec.Contact.contact{1}.two_pass=0;
-        febio_spec.Contact.contact{1}.laugon=0;
-        febio_spec.Contact.contact{1}.tolerance=0.1;
-        febio_spec.Contact.contact{1}.gaptol=0;
-        febio_spec.Contact.contact{1}.minaug=0;
-        febio_spec.Contact.contact{1}.maxaug=10;
-        febio_spec.Contact.contact{1}.fric_coeff=0;
-        febio_spec.Contact.contact{1}.fric_penalty=0;
-        febio_spec.Contact.contact{1}.ktmult=1;
-        febio_spec.Contact.contact{1}.seg_up=0;
-        febio_spec.Contact.contact{1}.search_tol=0.01;
-    case 'sliding2'
-        febio_spec.Contact.contact{1}.ATTR.surface_pair=febio_spec.Geometry.SurfacePair{1}.ATTR.name;
-        febio_spec.Contact.contact{1}.ATTR.type='sliding2';
-        febio_spec.Contact.contact{1}.penalty=10;
-        febio_spec.Contact.contact{1}.auto_penalty=1;
-        febio_spec.Contact.contact{1}.two_pass=0;
-        febio_spec.Contact.contact{1}.laugon=0;
-        febio_spec.Contact.contact{1}.tolerance=0.1;
-        febio_spec.Contact.contact{1}.gaptol=0;
-        febio_spec.Contact.contact{1}.symmetric_stiffness=0;
-        febio_spec.Contact.contact{1}.search_tol=0.01;
-        febio_spec.Contact.contact{1}.search_radius=mean(pointSpacings)/2;
+for q=1:1:numel(youngsModuli)-1
+    febio_spec.Contact.contact{q}.ATTR.surface_pair=febio_spec.Geometry.SurfacePair{q}.ATTR.name;
+    febio_spec.Contact.contact{q}.ATTR.type='sliding-elastic';
+    febio_spec.Contact.contact{q}.penalty=1;
+    febio_spec.Contact.contact{q}.auto_penalty=1;
+    febio_spec.Contact.contact{q}.two_pass=1;
+    febio_spec.Contact.contact{q}.laugon=1;
+    febio_spec.Contact.contact{q}.tolerance=0.1;
+    febio_spec.Contact.contact{q}.gaptol=0;
+    febio_spec.Contact.contact{q}.minaug=0;
+    febio_spec.Contact.contact{q}.maxaug=10;
+    febio_spec.Contact.contact{q}.search_tol=0.01;
+    febio_spec.Contact.contact{q}.search_radius=mean(pointSpacings)/2;
 end
+
+fsdfafdsfa
 
 %Output section 
 % -> log file

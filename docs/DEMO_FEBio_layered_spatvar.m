@@ -40,8 +40,6 @@ S(:,:,1:numElemIncLayer)=repmat(G,[1 1 numElemIncLayer]);
 %%
 % Control parameters
 
-P=2*1e-3;
-
 nBins=50; 
 minC=1e-3; %minimum value
 maxC=minC*100; %Maximum value
