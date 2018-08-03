@@ -1,6 +1,6 @@
 function [varargout]=tesIND(varargin)
 
-% function [IND_F,IND_V,IND_FF]=tesIND(F,V,sparseOpt);
+% function [IND_F,IND_V,IND_FF]=tesIND(TES,V,sparseOpt);
 % ------------------------------------------------------------------------
 %
 %
@@ -37,6 +37,11 @@ else
 end
 
 sizTES2=size(TES,2);
+
+% Check errors
+if isempty(TES)
+   error('Input tesselation is empty') ;
+end
 
 %% COMPUTE VERTEX-FACE CONNECTIVITY
 

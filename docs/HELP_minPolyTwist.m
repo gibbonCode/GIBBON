@@ -36,22 +36,19 @@ V2=[x(:) y(:) z(:)];
 %Also distoring curve direction
 % V2=flipud(V2);
 
-%%
-
-
 %% FIXING CURVE POINT ORDER TO MINIMIZE TWIST
 
 [V2f,indSort]=minPolyTwist(V1,V2);
 
 %%
 % Plotting results
-hf1=figuremax(figColor,figColorDef);
+cFigure;
 subplot(1,2,1);
 title('Twisted connectivity','FontSize',fontSize);
 xlabel('X','FontSize',fontSize);ylabel('Y','FontSize',fontSize); zlabel('Z','FontSize',fontSize);
 hold on;
 
-% Create patch data to vizualise twist
+% Create patch data to visualize twist
 X=linspacen(V1(:,1),V2(:,1),2)';
 Y=linspacen(V1(:,2),V2(:,2),2)';
 Z=linspacen(V1(:,3),V2(:,3),2)';
@@ -97,7 +94,7 @@ V2=flipud(V2);
 
 %%
 % Plotting results
-hf1=figuremax(figColor,figColorDef);
+cFigure;
 subplot(1,2,1);
 title('Twisted connectivity','FontSize',fontSize);
 xlabel('X','FontSize',fontSize);ylabel('Y','FontSize',fontSize); zlabel('Z','FontSize',fontSize);

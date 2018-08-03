@@ -1,18 +1,75 @@
-function [TI,BC]=pointLocationTR(TR,QP,distCropOpt,chullCropOpt,waitbarOpt)
+function [TI,BC]=pointLocationTR(varargin)
 
-% function [TI,BC]=pointLocationTR(TR,QP,distCropOpt,chullCropOpt,waitbarOpt)
+% function [TI,BC]=pointLocationTR(TR,QP,distCropOpt,chullCropOpt,waitbarOpt,toleranceMagnitude)
 % ------------------------------------------------------------------------
-%
+% 
 % This function finds the triangles or tetrahedrons in which the query
 % points QP are contained. In addition it outputs the barycentric
 % coordinates.
 %
 %
+% [TI,BC]=pointLocationTR(TR,QP,distCropOpt,chullCropOpt,waitbarOpt,toleranceMagnitude)
+% [TI,BC]=pointLocationTR(TR,QP,optionStruct)
+%
+% Default options: 
+% optionStructDef.distCropOpt=0;
+% optionStructDef.chullCropOpt=0;
+% optionStructDef.waitbarOpt=1;
+% optionStructDef.toleranceMagnitude=0;
+%
+%
 % Kevin Mattheus Moerman
-% kevinmoerman@hotmail.com
-% 2014/04/01
+% gibbon.toolbox@gmail.com
+% 
+% Change log:
+% 2014/04/01 Created
+% 2018/08/03 Fixed bug in relation to tolerance level 
+% 2018/08/03 Added tolerance level as input
+% 2018/08/03 Added input structure to handle options
 %------------------------------------------------------------------------
+%% Parse input
+TR=varargin{1};
+QP=varargin{2};
 
+%Default options
+optionStructDef.distCropOpt=0;
+optionStructDef.chullCropOpt=0;
+optionStructDef.waitbarOpt=1;
+optionStructDef.toleranceMagnitude=0;
+
+switch nargin
+    case 2
+        optionStruct=[];
+    case 3
+        if isa(varargin{3},'struct')
+            optionStruct=varargin{3};
+        else
+            optionStruct.distCropOpt=varargin{3};
+        end
+    case 4
+        optionStruct.distCropOpt=varargin{3};
+        optionStruct.chullCropOpt=varargin{4};
+        optionStruct.waitbarOpt=[];
+        optionStruct.toleranceMagnitude=[];
+    case 5
+        optionStruct.distCropOpt=varargin{3};
+        optionStruct.chullCropOpt=varargin{4};        
+        optionStruct.waitbarOpt=varargin{5};
+        optionStruct.toleranceMagnitude=[];
+    case 6    
+        optionStruct.distCropOpt=varargin{3};
+        optionStruct.chullCropOpt=varargin{4};
+        optionStruct.waitbarOpt=varargin{5};
+        optionStruct.toleranceMagnitude=varargin{6};
+end
+
+[optionStruct]=structComplete(optionStruct,optionStructDef,1); %Complement provided with default if missing
+distCropOpt=optionStruct.distCropOpt;
+chullCropOpt=optionStruct.chullCropOpt;
+waitbarOpt=optionStruct.waitbarOpt;
+toleranceMagnitude=optionStruct.toleranceMagnitude;
+
+%%
 E=TR.ConnectivityList;
 numPerE=size(E,2);
 numElements=size(E,1);
@@ -21,13 +78,17 @@ if distCropOpt==1
     [TR_centre_all,TR_rad_all] = circumcenter(TR,(1:numElements)');   
 end
 
-if chullCropOpt==1
-    FBtri = freeBoundary(TR);
-    DT=delaunayTriangulation(TR.Points(unique(FBtri(:)),:));
-    ti_DT= pointLocation(DT,QP);
-    
-    logicDT=~isnan(ti_DT);
-    QP=QP(logicDT,:);    
+if chullCropOpt==1    
+    if size(TR.ConnectivityList,2)>3 %ie tetrahedra
+        FBtri = freeBoundary(TR);
+        DT=delaunayTriangulation(TR.Points(unique(FBtri(:)),:));
+        ti_DT= pointLocation(DT,QP);
+        logicDT=~isnan(ti_DT);
+        QP=QP(logicDT,:);    
+    else
+        warning('chullCropOpt not available for traingulated meshes');
+        logicDT=true(size(QP,1),1);
+    end
 else
     logicDT=true(size(QP,1),1);
 end
@@ -53,16 +114,16 @@ for q=1:1:numElements
         %Check distance with current points        
         QP_min=QP-TR_centre(ones(size(QP,1),1),:); %Query points with current element centre subtracted
         QP_dist=sqrt(sum(QP_min.^2,2)); %Distances of query points to current element centre        
-        logicClose=QP_dist<=(TR_rad_max+eps(TR_rad_max)); 
+        logicClose=QP_dist<=(TR_rad_max+toleranceMagnitude); 
         bcClose=nan(size(logicClose,1),numPerE);
         QP_test=QP(logicClose,:);
         if nnz(logicClose)>0
-            [logicClose_sub,bcClose_sub]=isInsideTR(TR,QP_test,q*ones(size(QP_test,1),1),0.01);
+            [logicClose_sub,bcClose_sub]=isInsideTR(TR,QP_test,q*ones(size(QP_test,1),1),toleranceMagnitude);
             bcClose(logicClose,:)=bcClose_sub;            
             logicClose(logicClose)=logicClose_sub;        
         end             
     else
-        [logicClose,bcClose]=isInsideTR(TR,QP,q*ones(size(QP,1),1));        
+        [logicClose,bcClose]=isInsideTR(TR,QP,q*ones(size(QP,1),1),toleranceMagnitude);        
     end
     
     ti(logicClose)=q;

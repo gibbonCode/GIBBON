@@ -21,27 +21,7 @@ if size(V,2)~=3
     V(:,3)=0;
 end
 
-if size(F,2)>3 %Convert to triangles
-    
-    %     ind_face=ones(size(F,2),1)*(1:1:size(F,1));
-    %     ind_face=ind_face(:);
-    %     ind_centres=ind_face+size(V,1);
-    %
-    %     re_order=[1:1:size(F,2) ((1:1:size(F,2))+1)];
-    %     re_order(re_order>size(F,2))=1;
-    %     Ft=reshape(F(:,re_order)',[2,numel(F)])';
-    %     Ft(:,3)=ind_centres
-    %
-    %     X=V(:,1); Y=V(:,2); Z=V(:,3);
-    %
-    %     if size(F,1)==1 %If its only a single face the behaviour of indexing changes
-    %         Vc=[mean(X(F(:))) mean(Y(F(:))) mean(Z(F(:)))];
-    %     else
-    %         Vc=[mean(X(F),2) mean(Y(F),2) mean(Z(F),2)];
-    %     end
-    %
-    %     Vt=[V;Vc];
-    
+if size(F,2)>3 %Convert to triangles    
     %Format of column index in F
     EColumnInd=[(1:size(F,2)); (1:size(F,2))];
     EColumnInd=[EColumnInd(2:end) EColumnInd(1)];

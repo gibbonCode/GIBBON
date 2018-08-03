@@ -30,6 +30,13 @@ distLocal=inputStruct.distLocal;
 startInd=inputStruct.startInd;
 plotOn=inputStruct.plotOn;
 
+%% Check for input errors
+
+% %Non-unique points
+% if (numel(ind1)~=numel(unique(ind1)) || numel(ind2)~=numel(unique(ind2)))
+%     error('Input curves contain non-unique points');
+% end
+
 %%
 
 ind2=ind2+size(V1,1);
@@ -78,8 +85,7 @@ while 1
     numGroupStep=1;
     lastTry=0;
     while 1
-        try
-            
+        try            
             if plotOn==1 %%Plot if plotting is on
                 delete(h1); h1=[];
             end
@@ -109,7 +115,7 @@ while 1
                 numGroup=numel(indGroup); %Get new current group size
             end
             
-            if numel(indGroup)>2
+            if any(ismember(indGroup,ind1)) && any(ismember(indGroup,ind2)) 
                 
                 %Get curve start and end points
                 logicMember=all(ismember(E,indGroup),2); %Logic for all edges touching the current groupt
@@ -122,11 +128,17 @@ while 1
                 
                 %Compose sub-curves
                 logicSub1=all(ismember(E_sub,ind1),2);
+                if ~any(logicSub1)
+                    warning('None of the current edges nodes are a member of ind1');
+                end
                 E_sub1=E_sub(logicSub1,:);
                 [indListSub1]=edgeListToCurve(E_sub1);
                 indListSub1=indListSub1(:);
                 
                 logicSub2=all(ismember(E_sub,ind2),2);
+                if ~any(logicSub2)
+                   warning('None of the current edges nodes are a member of ind2');
+                end
                 E_sub2=E_sub(logicSub2,:);
                 [indListSub2]=edgeListToCurve(E_sub2);
                 indListSub2=indListSub2(:);
@@ -183,17 +195,17 @@ while 1
                 %Remove first and last triangles if there are more than 3 triangles, this
                 %will improve triangulation quality as these triangles were not fully
                 %embedded in the point set.
-                if size(f,1)>2
-                    logicKeep=~(any(ismember(f,indEndPoints1(~ismember(indEndPoints1,Fn))),2)...
-                        & any(ismember(f,indEndPoints2(~ismember(indEndPoints2,Fn))),2))...
-                        | any(ismember(f,startInd),2);
-                    f=f(logicKeep,:);
-                    
-                    [~,~,IND_FF]=tesIND(f,V);
-                    logicNeighbours=sum(IND_FF>1,2)>1;
-                    logicNeighbours(any(ismember(f,startInd),2))=1;
-                    f=f(logicNeighbours,:);
-                end                
+%                 if size(f,1)>2
+%                     logicKeep=~(any(ismember(f,indEndPoints1(~ismember(indEndPoints1,Fn))),2)...
+%                         & any(ismember(f,indEndPoints2(~ismember(indEndPoints2,Fn))),2))...
+%                         | any(ismember(f,startInd),2);
+%                     f=f(logicKeep,:);
+%                     
+%                     [~,~,IND_FF]=tesIND(f,V);
+%                     logicNeighbours=sum(IND_FF>1,2)>1;
+%                     logicNeighbours(any(ismember(f,startInd),2))=1;
+%                     f=f(logicNeighbours,:);
+%                 end                
             else
                 f=unique([indGroup(:); startInd(:)])';
             end

@@ -21,9 +21,7 @@ clear; close all; clc;
 m=5; %The middle
 lb=0; %The lower bound
 ub=10; %The upper bound
-
 x=linspace(m-20,m+20,1000); % x paremeters for plotting
-
 [y]=boxconstrain(x,lb,ub,m);
 
 %%

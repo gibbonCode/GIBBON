@@ -3,6 +3,19 @@ function [indList]=edgeListToCurve(E)
 if size(E,1)==1
     indList=E;
 else
+    
+    %% Check for errors
+    if any(E(:,1)==E(:,2))
+        ind=find(E(:,1)==E(:,2));
+        error(['Invalid edges encountered, edge(s) "',sprintf('%d, ',ind),'" have the same start and end point']);
+    end
+    
+    if isempty(E)
+       error('The edge matrix is empty') ;
+    end
+    
+    %%
+
     [~,indV,~]=tesIND(E,[],0);
     logicEndPoints=sum(indV>0,2)==1;
     
@@ -29,8 +42,6 @@ else
         E_now=Es(indE_next,:);
         Es(indE_next,:)=NaN;
         ind3=E_now(E_now~=ind2);
-        
-        
         indList(q)=ind3;
         ind2=ind3;
         if nnz(isnan(Es))==numel(Es)

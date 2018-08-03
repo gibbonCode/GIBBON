@@ -1,10 +1,26 @@
 %% pointLocationTR
 % Below is a demonstration of the features of the |pointLocationTR| function
 
-%%
+%% Syntax
+% |[TI,BC]=pointLocationTR(TR,QP,distCropOpt,chullCropOpt,waitbarOpt,toleranceMagnitude);|
+% |[TI,BC]=pointLocationTR(TR,QP,optionStruct);|
+
+%% Description
+% This function finds the triangles or tetrahedrons in which the query
+% points QP are contained. In addition it outputs the barycentric
+% coordinates.
+%
+% Default options: 
+% optionStructDef.distCropOpt=1;
+% optionStructDef.chullCropOpt=1;
+% optionStructDef.waitbarOpt=1;
+% optionStructDef.toleranceMagnitude=0;
+
+%% Examples
+
 clear; close all; clc;
 
-%% 
+%%
 % Plot settings
 fontSize=15;
 faceColor1='g';
@@ -14,14 +30,67 @@ faceAlpha2=1;
 edgeColor=0.4*ones(1,3);
 edgeWidth=2;
 markerSize=2;
-cMap=jet(250);
+cMap=gjet(250);
 
-%% FINDING POINTS INSIDE A TESSELATION
+%% Example: Finding points inside a triangulated mesh
+
+
+%Boundary 1
+ns=150;
+t=linspace(0,2*pi,ns);
+t=t(1:end-1);
+r=6+2.*sin(5*t);
+[x,y] = pol2cart(t,r);
+V1=[x(:) y(:)];
+
+%Boundary 2
+[x,y] = pol2cart(t,ones(size(t)));
+V2=[x(:) y(:)+4];
+
+%Boundary 3
+[x,y] = pol2cart(t,2*ones(size(t)));
+V3=[x(:) y(:)-0.5];
+
+regionCell={V1,V2,V3}; %A region between V1 and V2 (V2 forms a hole inside V1)
+pointSpacing=1; 
+[F,V]=regionTriMesh2D(regionCell,pointSpacing,1,0);
+
+V(:,3)=sin(V(:,1)); %Z coordinate
+
+[~,QP]=subtri(F,V,2);
+
+%%
+% Convert tesselation to triangulation class
+TR = triangulation(F,V);
+
+%% 
+% Use |pointLocationTR| to test points
+optionStruct.toleranceMagnitude=1e-3;
+[ti,bc]=pointLocationTR(TR,QP,optionStruct);
+L=any(isnan(bc),2);
+
+%%
+%
+logicPlot=~isnan(ti); %Point selection logic
+
+cFigure;
+hold on; 
+gpatch(F,V,'kw','k',0.5);
+plotV(QP,'k.','markerSize',25);
+plotV(QP(L,:),'r.','markerSize',50);
+scatterV(QP(logicPlot,:),50,ti(logicPlot),'fill','markerEdgeColor','k');
+axisGeom;
+colormap(cMap(randperm(size(cMap,1))',:));
+camlight headlight;
+drawnow;
+
+%% Example: Finding points inside a tetrahedral mesh
 
 %%
 % Create a test tesselation
+
 r=1; %Radius of tetrahedron circumsphere
-[V,F]=platonic_solid(1,r);
+[V,~]=platonic_solid(1,r);
 
 E=[1 2 3 4];
 
@@ -83,7 +152,7 @@ view([-50,12])
 set(gca,'FontSize',fontSize);
 drawnow;
 
-%% EXAMPLE USING BARY CENTRIC COORDINATE OUTPUT TO MAP POINTS IN A DEFORMED MODEL
+%% Example: Using barycentric coordinates to interpolate data (map points in deformed model)
 % Changing shape
 V=TR.Points; 
 V(:,1)=V(:,1)+0.5.*sin(pi*V(:,3)); 
@@ -110,8 +179,7 @@ view([-50,12])
 set(gca,'FontSize',fontSize);
 drawnow;
 
-%% EXAMPLE USE FOR FINDING VOXELS INSIDE TETRHEDRAL ELEMENTS
-%% 
+%% Example: Finding voxels inside a tetrahedral mesh
 % Simulate image data
 load mri;
 M=double(squeeze(D)); %example image data set
@@ -136,16 +204,15 @@ Cv=Cv./max(Cv(:));
 % Simulate a tesselated model
 
 Vv_mean=mean(Vv,1);
-[V,F]=platonic_solid(1,max(FOV)/2);
+[V,~]=platonic_solid(1,max(FOV)/2);
 V=V+Vv_mean(ones(1,size(V,1)),:);
 E=[1 2 3 4];
 
 n=4; 
-E=E; V=V; 
 for q=1:1:n
     [E,V]=subTet(E,V,1);
 end
-C=[1:size(E,1)]';
+C=(1:size(E,1))';
 
 %%
 [F,CF]=element2patch(E,C);    
@@ -195,7 +262,7 @@ colormap gray; colorbar;
 axis equal; view(3); axis tight;  grid on;  set(gca,'FontSize',fontSize);
 drawnow;
 
-%% EXAMPLE USE FOR INTERPOLATION OF IMAGE DATA ONTO VOLUME ELEMENTS
+%% Example: Interpolation of image data onto volume elements
 % Hence deriving image based intensity values becomes a matter of averaging
 % across each element index label. If the voxels are sufficiently small
 % with respect to the elements then this method actually partially takes

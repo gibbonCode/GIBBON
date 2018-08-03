@@ -7,8 +7,10 @@ n2=size(V2,1);
 if n1==n2
     
     %Fix overall direction if required
+    
     [L1]=isPolyClockwise(V1);
     [L2]=isPolyClockwise(V2);
+    
     flipReq=L1~=L2;
     
     if flipReq

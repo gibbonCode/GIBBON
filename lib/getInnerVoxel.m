@@ -55,7 +55,8 @@ if any(L(:))
         gpatch(Fm,Vm,Cm,'k',faceAlpha1);
         
         colormap(gray(3));
-        axisGeom(gca,fontSize);                
+        axisGeom(gca,fontSize);   
+        camlight headlight;
         drawnow;
     end
 else

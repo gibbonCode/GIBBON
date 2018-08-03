@@ -47,6 +47,7 @@ ind1=ind1(1:end)';
 [Eb2,E2,indBoundary2]=patchBoundary(F2,V2);
 [ind2]=edgeListToCurve(Eb2);
 ind2=ind2(1:end)';
+ind2=flipud(ind2);
 
 startInd1=ind1(1);
 [~,startInd2]=minDist(V1(startInd1,:),V2);
@@ -56,9 +57,15 @@ startInd=[startInd1 startInd2]';
 %%
 % Visualizing surface sets
 
-cFigure;
-gpatch(F1,V1,'r','r');
-gpatch(F2,V2,'b','b');
+cFigure; hold on;
+gpatch(F1,V1,'rw','r');
+gpatch(F2,V2,'bw','b');
+
+plotV(V1(ind1,:),'r-','LineWidth',3);
+plotV(V2(ind2,:),'b-','LineWidth',3);
+
+plotV(V1(startInd(1),:),'r.','MarkerSize',50);
+plotV(V2(startInd(2),:),'b.','MarkerSize',50);
 
 axisGeom;
 camlight headlight;

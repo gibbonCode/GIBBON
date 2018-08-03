@@ -9,22 +9,22 @@ switch nargin
         TR=varargin{1};
         QP=TR.Points; 
         ti=[];
-        epsCheck=0;
+        toleranceMagnitude=0;
     case 2
         TR=varargin{1};
         QP=varargin{2};
         ti=[];
-        epsCheck=0;
+        toleranceMagnitude=0;
     case 3
         TR=varargin{1};
         QP=varargin{2};
         ti=varargin{3};
-        epsCheck=0;
+        toleranceMagnitude=0;
     case 4
         TR=varargin{1};
         QP=varargin{2};
         ti=varargin{3};
-        epsCheck=varargin{4};
+        toleranceMagnitude=varargin{4};
     otherwise 
         error('Wrong number of input arguments');
 end
@@ -36,8 +36,7 @@ end
 %Get barycentric coordinates of points
 baryCoords=cartesianToBarycentric(TR,ti(:),QP);
 
-% logicFoundEnclosing=all(baryCoords>0,2);
-logicFoundEnclosing=all(baryCoords>=-epsCheck,2);
+logicFoundEnclosing=all(baryCoords>=-toleranceMagnitude,2);
 
 varargout{1}=logicFoundEnclosing;
 if nargout==2
