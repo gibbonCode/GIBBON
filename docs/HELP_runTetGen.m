@@ -201,8 +201,6 @@ axisGeom(gca,fontSize);
 plotV(V_in1,'k.','MarkerSize',25);
 plotV(V_in2,'r.','MarkerSize',25);
 
-dfsafa
-
 %%
 % DEFINE FACE BOUNDARY MARKERS
 faceBoundaryMarker=C;

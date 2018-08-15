@@ -77,6 +77,7 @@ switch nargout
         varargout{1}=N;
         varargout{2}=Vn;
         [Nv]=faceToVertexMeasure(F,V,N);
+        Nv=vecnormalize(Nv); %Normalize vectors
         varargout{3}=Nv;
 end
 

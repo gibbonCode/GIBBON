@@ -19,8 +19,12 @@ switch dirOpt
     case 2 %Remove sharp stand-alone triangles from list
         indNotInLogic=unique(F(~L,:));
         L_fixed=L & ~all(ismember(F,indNotInLogic),2);                
-    case 3
+    case 3 %First 1 then 2
         [L]=triSurfLogicSharpFix(F,L,1);
         [L]=triSurfLogicSharpFix(F,L,2);        
+        L_fixed=L;
+    case 4 %First 2 then 1
+        [L]=triSurfLogicSharpFix(F,L,2);
+        [L]=triSurfLogicSharpFix(F,L,1);
         L_fixed=L;
 end
