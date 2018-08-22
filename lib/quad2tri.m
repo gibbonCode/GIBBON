@@ -10,6 +10,7 @@ function [varargout]=quad2tri(varargin)
 % gibbon.toolbox@gmail.com
 % 
 % 2014/11/03
+% 2018/08/21 Added tolerances for edge and angle based slashing
 %------------------------------------------------------------------------
 
 
@@ -49,9 +50,12 @@ switch triType
         Vt=Vq;        
         Ct=repmat(Cq,[2,1]);
     case 'e'        
+        D=patchEdgeLengths(Fq,Vq);
+        edgeTolerance=min(D)./1000; %Tolerance level
         d1=sum((Vq(Fq(:,1),:)-Vq(Fq(:,3),:)).^2,2);
         d2=sum((Vq(Fq(:,2),:)-Vq(Fq(:,4),:)).^2,2);
-        L1=(d1<d2);
+        d=d1-d2;                 
+        L1=d<-edgeTolerance; %Flip if difference is more than tolerance        
         Ft=[Fq(L1,[1 2 3]);Fq(L1,[3 4 1]); Fq(~L1,[1 2 4]);Fq(~L1,[2 3 4])];
         Vt=Vq;
         if ~isempty(Cq)
@@ -60,6 +64,7 @@ switch triType
             Ct=repmat(Cq,[2,1]);
         end
     case 'a'        
+        angleTolerance=(pi/3)/1000; %Tolerance level
         F1=[Fq(:,[1 2 3]);Fq(:,[3 4 1])];
         F2=[Fq(:,[1 2 4]);Fq(:,[2 3 4])];
         [a1]=patchEdgeAngles(F1,Vq);
@@ -69,7 +74,8 @@ switch triType
         [a2]=patchEdgeAngles(F2,Vq);
         a2=reshape(a2,[size(Fq,1),6]);
         d2=sum(abs(a2-(pi/3)),2);
-        L1=(d1<d2);
+        d=d1-d2;                 
+        L1=d<-angleTolerance; %Flip if difference is more than tolerance
         Ft=[Fq(L1,[1 2 3]);Fq(L1,[3 4 1]); Fq(~L1,[1 2 4]);Fq(~L1,[2 3 4])];
         Vt=Vq;
         if ~isempty(Cq)

@@ -34,7 +34,7 @@ Vc=[x(:) y(:) z(:)];
 %%
 % Extruding polygon to obtain the surface model
 
-cPar.pointSpacing=0.5;
+cPar.pointSpacing=0.55;
 cPar.depth=7; 
 cPar.patchType='quad'; 
 cPar.dir=0;

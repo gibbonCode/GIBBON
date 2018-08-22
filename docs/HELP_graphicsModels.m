@@ -22,22 +22,20 @@ edgeWidth=0.5;
 
 hf=cFigure; 
 
-cMap=gjet(7);
-cNames={'Stanford bunny','Utah teapot','cow','parasaurolophus','femur','hip implant','elephant'};
-for q=1:1:7
+surfaceNames={'stanford_bunny','utah_teapot','cow','parasaurolophus','femur','hip_implant','elephant','dolphin'};
+plotColors=gjet(numel(surfaceNames));
+for q=1:1:numel(surfaceNames)
    subplot(3,3,q); 
-    [F,V]=graphicsModels(q);
-    
-    title(cNames{q},'FontSize',fontSize);
-    
-    xlabel('X','FontSize',fontSize); ylabel('Y','FontSize',fontSize); zlabel('Z','FontSize',fontSize);
-    
-    gpatch(F,V,cMap(q,:),'none');
-    
-    set(gca,'FontSize',fontSize);
-    view(3); axis tight;  axis equal;  axis vis3d; axis off;
-    camlight('headlight'); lighting flat;
+   
+    [F,V]=graphicsModels(surfaceNames{q}); % Get surface
+        
+    title(surfaceNames{q},'FontSize',fontSize,'Interpreter','none');
+    gpatch(F,V,plotColors(q,:),'none');    
+    axisGeom(gca,fontSize);
+    camlight('headlight'); 
+    axis off;
 end
+drawnow; 
 
 %% 
 %

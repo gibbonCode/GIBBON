@@ -96,7 +96,7 @@ drawnow;
 %%
 % Extruding model
 cPar.pointSpacing=10;
-cPar.depth=450; 
+cPar.depth=85; 
 cPar.patchType='tri'; 
 cPar.dir=0;
 cPar.n=[0 0 1];

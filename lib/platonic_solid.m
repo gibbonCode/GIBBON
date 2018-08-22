@@ -1,5 +1,4 @@
-
-function [V,F]=platonic_solid(n,r)
+function [V,F]=platonic_solid(varargin)
 
 % function [V,F]=platonic_solid(n,r)
 % ------------------------------------------------------------------------
@@ -12,38 +11,24 @@ function [V,F]=platonic_solid(n,r)
 % n=4 -> Icosahedron
 % n=5 -> Dodecahedron
 %
-% %%%Example
-% clear all; close all; clc;
-% 
-% r=1;
-% figure; hold on; 
-% 
-% [V,F]=platonic_solid(1,r);
-% subplot(2,3,1);
-% patch('Faces',F,'Vertices',V,'FaceColor','b','FaceAlpha',0.6,'EdgeColor','k','LineWidth',2); axis equal tight; grid on; hold on; view(3); 
-% 
-% [V,F]=platonic_solid(2,r);
-% subplot(2,3,2);
-% patch('Faces',F,'Vertices',V,'FaceColor','b','FaceAlpha',0.6,'EdgeColor','k','LineWidth',2); axis equal tight; grid on; hold on; view(3); 
-% 
-% [V,F]=platonic_solid(3,r);
-% subplot(2,3,3);
-% patch('Faces',F,'Vertices',V,'FaceColor','b','FaceAlpha',0.6,'EdgeColor','k','LineWidth',2); axis equal tight; grid on; hold on; view(3); 
-% 
-% [V,F]=platonic_solid(4,r);
-% subplot(2,3,4);
-% patch('Faces',F,'Vertices',V,'FaceColor','b','FaceAlpha',0.6,'EdgeColor','k','LineWidth',2); axis equal tight; grid on; hold on; view(3); 
-% 
-% [V,F]=platonic_solid(5,r);
-% subplot(2,3,5);
-% patch('Faces',F,'Vertices',V,'FaceColor','b','FaceAlpha',0.6,'EdgeColor','k','LineWidth',2); axis equal tight; grid on; hold on; view(3); 
-%
 %
 % Kevin Mattheus Moerman
 % gibbon.toolbox@gmail.com
 % 
 % 12/08/2014 Updated for GIBBON
 %------------------------------------------------------------------------
+%% Parse input
+
+switch nargin
+    case 1
+        n=varargin{1};
+        r=1;
+    case 2
+        n=varargin{1};
+        r=varargin{2};
+end
+
+%%
 switch n
     case 1 % Tetrahedron
         X=[-0.5;0.5;0;0;];

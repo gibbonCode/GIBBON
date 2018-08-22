@@ -38,29 +38,24 @@ markerSize=5;
 %% Example:  Creating a hemisphere mesh using the |hemiSphereRegionMesh| function
 % Defining hemi-sphere parameters
 hemiSphereStruct.sphereRadius=1; %Sphere radius
-hemiSphereStruct.nRefineRegions=2; %Number of refinement steps for regions
+hemiSphereStruct.nRefineRegions=1; %Number of refinement steps for regions
 hemiSphereStruct.nRefineMesh=2; %Number of refinement steps for mesh
 
 % Get hemi-sphere mesh
-[F,V,regionIndSub]=hemiSphereRegionMesh(hemiSphereStruct);
+[F,V,regionInd]=hemiSphereRegionMesh(hemiSphereStruct);
 
 %% 
 % Plotting results
+
 %Creating a random color for the each mesh region
-cmap=hsv(max(regionIndSub(:)));
+cmap=hsv(max(regionInd(:)));
 cmap=cmap(randperm(size(cmap,1)),:); %scramble colors
 
-hf=cFigure;
-hold on; view(3); 
-title('Half dome showing regions with subtriangulated mesh','FontSize',fontSize);
-xlabel('X','FontSize',fontSize); ylabel('Y','FontSize',fontSize); zlabel('Z','FontSize',fontSize);
-
-hp=patch('Faces',F,'Vertices',V);
-set(hp,'FaceColor','flat','EdgeColor','k','CData',regionIndSub,'FaceAlpha',faceAlpha,'LineWidth',lineWidth,'Marker','o','MarkerFaceColor','k','MarkerEdgeColor','none','MarkerSize',markerSize);
-
-colormap(cmap); %colorbar; 
-axis tight;  axis equal;  grid on;
-set(gca,'FontSize',fontSize);
+hf=cFigure; hold on; 
+gtitle('Half dome showing regions with subtriangulated mesh',fontSize);
+gpatch(F,V,regionInd);
+colormap(cmap);
+axisGeom(gca,fontSize);
 camlight headlight; 
 drawnow;
 

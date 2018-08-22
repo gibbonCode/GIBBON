@@ -24,6 +24,7 @@ for q=1:1:5
     subplot(2,3,q); hold on;
     
     hp=gpatch(F,V,pColor(q,:),'k',faceAlpha,3);
+    patchNormPlot(F,V);
     
     axisGeom(gca,fontSize);    
     camlight('headlight'); lighting flat;

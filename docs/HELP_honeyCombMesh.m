@@ -36,7 +36,6 @@ gpatch(Fh,Vh,C,'k',1,lineWidth1);
 
 colormap autumn; 
 axisGeom(gca,fontSize);
-view(2);
 drawnow;
 
 %% 

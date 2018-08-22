@@ -1,6 +1,6 @@
-function [Ft,Vt]=hemiSphereCylMesh(S)
+function [varargout]=hemiSphereCylMesh(inputStruct)
 
-% function [Ft,Vt]=hemiSphereCylMesh(S)
+% function [Ft,Vt,Ct]=hemiSphereCylMesh(inputStruct)
 % ------------------------------------------------------------------------
 % Creates the faces (Ft) and vertices (Vt) for a triangular surface
 % describing a hemisphere connected to a cylinder. The input is a structure
@@ -18,22 +18,18 @@ function [Ft,Vt]=hemiSphereCylMesh(S)
 % ------------------------------------------------------------------------
 
 %% Defining hemi-sphere portion
-patchType=S.patchType;
+patchType=inputStruct.patchType;
 switch patchType
-    case 'tri' %Triangular sphere mesh
-        hemiStruct.sphereRadius=S.sphereRadius; %Sphere radius
-        hemiStruct.nRefineRegions=S.nRefine; %Number of refinement steps for regions
-        hemiStruct.nRefineMesh=1; %Number of refinement steps for mesh
-        [Fs,Vs,~]=hemiSphereRegionMesh(hemiStruct);
-        Fs=fliplr(Fs); %flip face orientation
+    case {'tri','tri_slash'} %Triangular sphere mesh        
+        [Fs,Vs]=hemiSphereMesh(inputStruct.nRefine,inputStruct.sphereRadius,0);        
         Ft=Fs;
     case 'quad' %Create quadrilateral sphere mesh        
-        [Vs,Fs]=platonic_solid(2,S.sphereRadius);
-        Fs=fliplr(Fs); %flip face orientation
-        for q=1:1:S.nRefine
+        [Vs,Fs]=platonic_solid(2,inputStruct.sphereRadius);
+        
+        for q=1:1:(inputStruct.nRefine)
             [Fs,Vs]=subQuad(Fs,Vs,1);
             [T,P,R] = cart2sph(Vs(:,1),Vs(:,2),Vs(:,3));
-            [Vs(:,1),Vs(:,2),Vs(:,3)]=sph2cart(T,P,ones(size(R)).*S.sphereRadius);
+            [Vs(:,1),Vs(:,2),Vs(:,3)]=sph2cart(T,P,ones(size(R)).*inputStruct.sphereRadius);
         end
         
         %Get top hemi-sphere
@@ -51,71 +47,60 @@ switch patchType
         Ft=fliplr(Ft); %flip face orientation
 end
 Vs(:,3)=Vs(:,3)-max(Vs(:,3)); %Set max at zero
-Vs(:,3)=-Vs(:,3); %Flip around
+%Rotate upside down
+R=euler2DCM([pi 0 0]);
+Vs=(R*Vs')';
 
 %% Defining cylindrical portion
 
 %Cylinder parameters
-cylinderHeight=S.cylinderHeight; %Cylinder height
-cylinderStepSize=S.cylinderStepSize; %Edge length in Z direction for cylinder
+cylinderHeight=inputStruct.cylinderHeight; %Cylinder height
+cylinderStepSize=inputStruct.cylinderStepSize; %Edge length in Z direction for cylinder
 
 % Find hemi-sphere edge
-TR =triangulation(Ft,Vs);
-edgeDome = freeBoundary(TR);
-indEdges=unique(edgeDome(:));
-V_edge=Vs(indEdges,:);
-
-%Reorder edge points to create curve
-% [V_edge,~]=curvePathOrderFix(V_edge);
-[x,y,~]=getColumns(V_edge); %Get coordinates
-T = atan2(y,x); %polar angles 
-[~,indSort]=sort(T); %Sort angles
-V_edge=V_edge(indSort,:);
-[x,y,z]=getColumns(V_edge); %Reorder and get coordinates
-
+[Eb]=patchBoundary(Ft,Vs);
+indCurve=edgeListToCurve(Eb);
+indCurve=indCurve(1:end-1);
+V_edge=Vs(indCurve,:);
+if isPolyClockwise(V_edge)
+   V_edge=flipud(V_edge);  
+end
 %Determine Z step sizes
 if isempty(cylinderStepSize)
     cylinderStepSize=mean(sqrt(sum(diff(V_edge,1,1).^2,2))); %mean point spacing on edge
 end
 nStepsCylinder=round(cylinderHeight./cylinderStepSize);
 
-%Create cylinder mesh from edge points
-X=x(:,ones(1,nStepsCylinder));
-Y=y(:,ones(1,nStepsCylinder));
-Z=linspacen(z,z+cylinderHeight,nStepsCylinder);
-
-X=X'; Y=Y'; Z=Z';
-%Create patch data
-[F,Vc] = surf2patch(X,Y,Z);
-
-%Stitch ends together
-I=[(2:size(Z,1))' (2:size(Z,1))' (1:size(Z,1)-1)' (1:size(Z,1)-1)'];
-J=[ones(size(Z,1)-1,1) size(Z,2).*ones(size(Z,1)-1,1) size(Z,2).*ones(size(Z,1)-1,1) ones(size(Z,1)-1,1)];
-F_sub1=sub2ind(size(Z),I,J);
-Fq=[F;F_sub1];
-
-%%
-switch patchType
-    case 'tri' %Triangular sphere mesh
-        %Convert to triangles
-        Fc=[Fq(:,1) Fq(:,3) Fq(:,2); Fq(:,1) Fq(:,4) Fq(:,3)];
-        Fc=fliplr(Fc); %flip face orientation
-    case 'quad' %Create quadrilateral sphere mesh
-        Fc=Fq;
+if nStepsCylinder<2
+    nStepsCylinder=2; 
 end
+
+if strcmp(patchType,'tri')
+    nStepsCylinder=nStepsCylinder+iseven(nStepsCylinder);
+end
+
+controlParameterStruct.numSteps=nStepsCylinder;
+controlParameterStruct.depth=cylinderHeight; 
+controlParameterStruct.patchType=patchType; 
+controlParameterStruct.dir=1;
+controlParameterStruct.closeLoopOpt=1; 
+[Fc,Vc]=polyExtrude(V_edge,controlParameterStruct);
 
 %% MERGING MODEL PORTIONS
 
-%Combining vertices
-Vt=[Vs;Vc];
-
-%Combining faces
-Fcc=Fc+size(Vs,1); %Fix vertex ID's here
-Ft=[Fs;Fcc];
+%Join element sets
+[Ft,Vt,Ct]=joinElementSets({Fs,Fc},{Vs,Vc});
 
 %Removing double vertices and fixing face indices
 [Ft,Vt]=mergeVertices(Ft,Vt);
- 
+
+%% Collect output
+varargout{1}=Ft;
+varargout{2}=Vt;
+if nargout==3
+    varargout{3}=Ct;
+end
+
 %% 
 % _*GIBBON footer text*_ 
 % 

@@ -48,8 +48,8 @@ end
 if ~isfield(controlParameterStruct,'n')    
     [R_fit]=pointSetPrincipalDir(Vc);
     nDir=R_fit(:,3);
-    if dot(nDir,[0 0 1])<1 %Make the z direction the default upward direction
-        nDir=-nDir;
+    if dot(nDir,[0 0 1])<0 %Make the z direction the default upward direction
+        nDir=-nDir;        
     end
     controlParameterStruct.n=nDir; %Default normal direction to polygon
 end

@@ -1,4 +1,4 @@
-function [Fs,Vs]=subtri(F,V,n,uniqueOpt)
+function [Fs,Vs]=subtri(varargin)
 
 % function [Fs,Vs]=subtri(F,V,n,uniqueOpt)
 % ------------------------------------------------------------------------
@@ -22,9 +22,23 @@ function [Fs,Vs]=subtri(F,V,n,uniqueOpt)
 % 2017/11/29 Updated (removed example in) help text in function
 % ------------------------------------------------------------------------
 
-%%
-if nargin==3
-    uniqueOpt=1;
+%% Parse input
+switch nargin
+    case 2
+        F=varargin{1};
+        V=varargin{2};
+        n=1;
+        uniqueOpt=1;
+    case 3
+        F=varargin{1};
+        V=varargin{2};
+        n=varargin{3};
+        uniqueOpt=1;
+    case 4
+        F=varargin{1};
+        V=varargin{2};
+        n=varargin{3};
+        uniqueOpt=varargin{4};
 end
 
 %%

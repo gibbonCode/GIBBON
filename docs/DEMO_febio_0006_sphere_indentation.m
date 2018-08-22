@@ -132,6 +132,7 @@ gpatch(Fb1,V1,Cb1,'k',faceAlpha1);
 gpatch(E2,V2,'kw','k',faceAlpha1); 
 colormap(gjet(6)); icolorbar;
 axisGeom(gca,fontSize);
+camlight headlight; 
 
 hs=subplot(1,2,2); hold on; 
 title('Cut view of solid mesh','FontSize',fontSize);
@@ -195,7 +196,8 @@ bcSupportList=unique(Fr(:));
 bcPrescribeList=unique(E2(:));
 bcPrescribeMagnitudes=[0 0 -(sphereDisplacement+contactInitialOffset)];
 
-%Visualize BC's
+%%
+% Visualize BC's
 hf=cFigure;
 title('Boundary conditions model','FontSize',fontSize);
 xlabel('X','FontSize',fontSize); ylabel('Y','FontSize',fontSize); zlabel('Z','FontSize',fontSize);
@@ -227,7 +229,6 @@ febio_spec.Module.ATTR.type='solid';
 
 %Control section
 febio_spec.Control.analysis.ATTR.type='static';
-febio_spec.Control.title='Cube analysis';
 febio_spec.Control.time_steps=numTimeSteps;
 febio_spec.Control.step_size=1/numTimeSteps;
 febio_spec.Control.time_stepper.dtmin=dtmin;

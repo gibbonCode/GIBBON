@@ -6,7 +6,7 @@
    <!--
 This HTML was auto-generated from MATLAB code.
 To make changes, update the MATLAB code and republish this document.
-      --><title>graphicsModels</title><meta name="generator" content="MATLAB 9.4"><link rel="schema.DC" href="http://purl.org/dc/elements/1.1/"><meta name="DC.date" content="2018-06-25"><meta name="DC.source" content="HELP_graphicsModels.m"><style type="text/css">
+      --><title>graphicsModels</title><meta name="generator" content="MATLAB 9.5"><link rel="schema.DC" href="http://purl.org/dc/elements/1.1/"><meta name="DC.date" content="2018-08-19"><meta name="DC.source" content="HELP_graphicsModels.m"><style type="text/css">
 html,body,div,span,applet,object,iframe,h1,h2,h3,h4,h5,h6,p,blockquote,pre,a,abbr,acronym,address,big,cite,code,del,dfn,em,font,img,ins,kbd,q,s,samp,small,strike,strong,sub,sup,tt,var,b,u,i,center,dl,dt,dd,ol,ul,li,fieldset,form,label,legend,table,caption,tbody,tfoot,thead,tr,th,td{margin:0;padding:0;border:0;outline:0;font-size:100%;vertical-align:baseline;background:transparent}body{line-height:1}ol,ul{list-style:none}blockquote,q{quotes:none}blockquote:before,blockquote:after,q:before,q:after{content:'';content:none}:focus{outine:0}ins{text-decoration:none}del{text-decoration:line-through}table{border-collapse:collapse;border-spacing:0}
 
 html { min-height:100%; margin-bottom:1px; }
@@ -76,23 +76,21 @@ edgeColor=<span class="string">'k'</span>;
 edgeWidth=0.5;
 </pre><pre class="codeinput">hf=cFigure;
 
-cMap=gjet(7);
-cNames={<span class="string">'Stanford bunny'</span>,<span class="string">'Utah teapot'</span>,<span class="string">'cow'</span>,<span class="string">'parasaurolophus'</span>,<span class="string">'femur'</span>,<span class="string">'hip implant'</span>,<span class="string">'elephant'</span>};
-<span class="keyword">for</span> q=1:1:7
+surfaceNames={<span class="string">'stanford_bunny'</span>,<span class="string">'utah_teapot'</span>,<span class="string">'cow'</span>,<span class="string">'parasaurolophus'</span>,<span class="string">'femur'</span>,<span class="string">'hip_implant'</span>,<span class="string">'elephant'</span>,<span class="string">'dolphin'</span>};
+plotColors=gjet(numel(surfaceNames));
+<span class="keyword">for</span> q=1:1:numel(surfaceNames)
    subplot(3,3,q);
-    [F,V]=graphicsModels(q);
 
-    title(cNames{q},<span class="string">'FontSize'</span>,fontSize);
+    [F,V]=graphicsModels(surfaceNames{q}); <span class="comment">% Get surface</span>
 
-    xlabel(<span class="string">'X'</span>,<span class="string">'FontSize'</span>,fontSize); ylabel(<span class="string">'Y'</span>,<span class="string">'FontSize'</span>,fontSize); zlabel(<span class="string">'Z'</span>,<span class="string">'FontSize'</span>,fontSize);
-
-    hp=patch(<span class="string">'Faces'</span>,F,<span class="string">'Vertices'</span>,V,<span class="string">'FaceColor'</span>,cMap(q,:),<span class="string">'FaceAlpha'</span>,faceAlpha,<span class="string">'lineWidth'</span>,edgeWidth,<span class="string">'edgeColor'</span>,<span class="string">'none'</span>);
-
-    set(gca,<span class="string">'FontSize'</span>,fontSize);
-    view(3); axis <span class="string">tight</span>;  axis <span class="string">equal</span>;  axis <span class="string">vis3d</span>; axis <span class="string">off</span>;
-    camlight(<span class="string">'headlight'</span>); lighting <span class="string">flat</span>;
+    title(surfaceNames{q},<span class="string">'FontSize'</span>,fontSize,<span class="string">'Interpreter'</span>,<span class="string">'none'</span>);
+    gpatch(F,V,plotColors(q,:),<span class="string">'none'</span>);
+    axisGeom(gca,fontSize);
+    camlight(<span class="string">'headlight'</span>);
+    axis <span class="string">off</span>;
 <span class="keyword">end</span>
-</pre><img vspace="5" hspace="5" src="HELP_graphicsModels_01.png" alt=""> <p><img vspace="5" hspace="5" src="gibbVerySmall.gif" alt=""> </p><p><i><b>GIBBON</b></i> <a href="www.gibboncode.org">www.gibboncode.org</a></p><p><i>Kevin Mattheus Moerman</i>, <a href="gibbon.toolbox@gmail.com">gibbon.toolbox@gmail.com</a></p><p><i><b>GIBBON footer text</b></i></p><p>License: <a href="https://github.com/gibbonCode/GIBBON/blob/master/LICENSE">https://github.com/gibbonCode/GIBBON/blob/master/LICENSE</a></p><p>GIBBON: The Geometry and Image-based Bioengineering add-On. A toolbox for image segmentation, image-based modeling, meshing, and finite element analysis.</p><p>Copyright (C) 2018  Kevin Mattheus Moerman</p><p>This program is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.</p><p>This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for more details.</p><p>You should have received a copy of the GNU General Public License along with this program.  If not, see <a href="http://www.gnu.org/licenses/">http://www.gnu.org/licenses/</a>.</p><p class="footer"><br><a href="https://www.mathworks.com/products/matlab/">Published with MATLAB&reg; R2018a</a><br></p></div><!--
+drawnow;
+</pre><img vspace="5" hspace="5" src="HELP_graphicsModels_01.png" alt=""> <p><img vspace="5" hspace="5" src="gibbVerySmall.gif" alt=""> </p><p><i><b>GIBBON</b></i> <a href="www.gibboncode.org">www.gibboncode.org</a></p><p><i>Kevin Mattheus Moerman</i>, <a href="gibbon.toolbox@gmail.com">gibbon.toolbox@gmail.com</a></p><p><i><b>GIBBON footer text</b></i></p><p>License: <a href="https://github.com/gibbonCode/GIBBON/blob/master/LICENSE">https://github.com/gibbonCode/GIBBON/blob/master/LICENSE</a></p><p>GIBBON: The Geometry and Image-based Bioengineering add-On. A toolbox for image segmentation, image-based modeling, meshing, and finite element analysis.</p><p>Copyright (C) 2018  Kevin Mattheus Moerman</p><p>This program is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.</p><p>This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for more details.</p><p>You should have received a copy of the GNU General Public License along with this program.  If not, see <a href="http://www.gnu.org/licenses/">http://www.gnu.org/licenses/</a>.</p><p class="footer"><br><a href="https://www.mathworks.com/products/matlab/">Published with MATLAB&reg; R2018b</a><br></p></div><!--
 ##### SOURCE BEGIN #####
 %% graphicsModels
 % Below is a demonstration of the features of the |graphicsModels| function
@@ -118,22 +116,20 @@ edgeWidth=0.5;
 
 hf=cFigure; 
 
-cMap=gjet(7);
-cNames={'Stanford bunny','Utah teapot','cow','parasaurolophus','femur','hip implant','elephant'};
-for q=1:1:7
+surfaceNames={'stanford_bunny','utah_teapot','cow','parasaurolophus','femur','hip_implant','elephant','dolphin'};
+plotColors=gjet(numel(surfaceNames));
+for q=1:1:numel(surfaceNames)
    subplot(3,3,q); 
-    [F,V]=graphicsModels(q);
-    
-    title(cNames{q},'FontSize',fontSize);
-    
-    xlabel('X','FontSize',fontSize); ylabel('Y','FontSize',fontSize); zlabel('Z','FontSize',fontSize);
-    
-    hp=patch('Faces',F,'Vertices',V,'FaceColor',cMap(q,:),'FaceAlpha',faceAlpha,'lineWidth',edgeWidth,'edgeColor','none');
-    
-    set(gca,'FontSize',fontSize);
-    view(3); axis tight;  axis equal;  axis vis3d; axis off;
-    camlight('headlight'); lighting flat;
+   
+    [F,V]=graphicsModels(surfaceNames{q}); % Get surface
+        
+    title(surfaceNames{q},'FontSize',fontSize,'Interpreter','none');
+    gpatch(F,V,plotColors(q,:),'none');    
+    axisGeom(gca,fontSize);
+    camlight('headlight'); 
+    axis off;
 end
+drawnow; 
 
 %% 
 %

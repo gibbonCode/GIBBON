@@ -6,7 +6,7 @@
    <!--
 This HTML was auto-generated from MATLAB code.
 To make changes, update the MATLAB code and republish this document.
-      --><title>hemiSphereRegionMesh</title><meta name="generator" content="MATLAB 9.4"><link rel="schema.DC" href="http://purl.org/dc/elements/1.1/"><meta name="DC.date" content="2018-06-25"><meta name="DC.source" content="HELP_hemiSphereRegionMesh.m"><style type="text/css">
+      --><title>hemiSphereRegionMesh</title><meta name="generator" content="MATLAB 9.5"><link rel="schema.DC" href="http://purl.org/dc/elements/1.1/"><meta name="DC.date" content="2018-08-19"><meta name="DC.source" content="HELP_hemiSphereRegionMesh.m"><style type="text/css">
 html,body,div,span,applet,object,iframe,h1,h2,h3,h4,h5,h6,p,blockquote,pre,a,abbr,acronym,address,big,cite,code,del,dfn,em,font,img,ins,kbd,q,s,samp,small,strike,strong,sub,sup,tt,var,b,u,i,center,dl,dt,dd,ol,ul,li,fieldset,form,label,legend,table,caption,tbody,tfoot,thead,tr,th,td{margin:0;padding:0;border:0;outline:0;font-size:100%;vertical-align:baseline;background:transparent}body{line-height:1}ol,ul{list-style:none}blockquote,q{quotes:none}blockquote:before,blockquote:after,q:before,q:after{content:'';content:none}:focus{outine:0}ins{text-decoration:none}del{text-decoration:line-through}table{border-collapse:collapse;border-spacing:0}
 
 html { min-height:100%; margin-bottom:1px; }
@@ -73,29 +73,23 @@ faceAlpha=1;
 lineWidth=1;
 markerSize=5;
 </pre><h2 id="7">Example:  Creating a hemisphere mesh using the <tt>hemiSphereRegionMesh</tt> function</h2><p>Defining hemi-sphere parameters</p><pre class="codeinput">hemiSphereStruct.sphereRadius=1; <span class="comment">%Sphere radius</span>
-hemiSphereStruct.nRefineRegions=2; <span class="comment">%Number of refinement steps for regions</span>
+hemiSphereStruct.nRefineRegions=1; <span class="comment">%Number of refinement steps for regions</span>
 hemiSphereStruct.nRefineMesh=2; <span class="comment">%Number of refinement steps for mesh</span>
 
 <span class="comment">% Get hemi-sphere mesh</span>
-[F,V,regionIndSub]=hemiSphereRegionMesh(hemiSphereStruct);
+[F,V,regionInd]=hemiSphereRegionMesh(hemiSphereStruct);
 </pre><p>Plotting results</p><pre class="codeinput"><span class="comment">%Creating a random color for the each mesh region</span>
-cmap=hsv(max(regionIndSub(:)));
+cmap=hsv(max(regionInd(:)));
 cmap=cmap(randperm(size(cmap,1)),:); <span class="comment">%scramble colors</span>
 
-hf=cFigure;
-hold <span class="string">on</span>; view(3);
-title(<span class="string">'Half dome showing regions with subtriangulated mesh'</span>,<span class="string">'FontSize'</span>,fontSize);
-xlabel(<span class="string">'X'</span>,<span class="string">'FontSize'</span>,fontSize); ylabel(<span class="string">'Y'</span>,<span class="string">'FontSize'</span>,fontSize); zlabel(<span class="string">'Z'</span>,<span class="string">'FontSize'</span>,fontSize);
-
-hp=patch(<span class="string">'Faces'</span>,F,<span class="string">'Vertices'</span>,V);
-set(hp,<span class="string">'FaceColor'</span>,<span class="string">'flat'</span>,<span class="string">'EdgeColor'</span>,<span class="string">'k'</span>,<span class="string">'CData'</span>,regionIndSub,<span class="string">'FaceAlpha'</span>,faceAlpha,<span class="string">'LineWidth'</span>,lineWidth,<span class="string">'Marker'</span>,<span class="string">'o'</span>,<span class="string">'MarkerFaceColor'</span>,<span class="string">'k'</span>,<span class="string">'MarkerEdgeColor'</span>,<span class="string">'none'</span>,<span class="string">'MarkerSize'</span>,markerSize);
-
-colormap(cmap); <span class="comment">%colorbar;</span>
-axis <span class="string">tight</span>;  axis <span class="string">equal</span>;  grid <span class="string">on</span>;
-set(gca,<span class="string">'FontSize'</span>,fontSize);
+hf=cFigure; hold <span class="string">on</span>;
+gtitle(<span class="string">'Half dome showing regions with subtriangulated mesh'</span>,fontSize);
+gpatch(F,V,regionInd);
+colormap(cmap);
+axisGeom(gca,fontSize);
 camlight <span class="string">headlight</span>;
 drawnow;
-</pre><img vspace="5" hspace="5" src="HELP_hemiSphereRegionMesh_01.png" alt=""> <p><img vspace="5" hspace="5" src="gibbVerySmall.gif" alt=""> </p><p><i><b>GIBBON</b></i> <a href="www.gibboncode.org">www.gibboncode.org</a></p><p><i>Kevin Mattheus Moerman</i>, <a href="gibbon.toolbox@gmail.com">gibbon.toolbox@gmail.com</a></p><p><i><b>GIBBON footer text</b></i></p><p>License: <a href="https://github.com/gibbonCode/GIBBON/blob/master/LICENSE">https://github.com/gibbonCode/GIBBON/blob/master/LICENSE</a></p><p>GIBBON: The Geometry and Image-based Bioengineering add-On. A toolbox for image segmentation, image-based modeling, meshing, and finite element analysis.</p><p>Copyright (C) 2018  Kevin Mattheus Moerman</p><p>This program is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.</p><p>This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for more details.</p><p>You should have received a copy of the GNU General Public License along with this program.  If not, see <a href="http://www.gnu.org/licenses/">http://www.gnu.org/licenses/</a>.</p><p class="footer"><br><a href="https://www.mathworks.com/products/matlab/">Published with MATLAB&reg; R2018a</a><br></p></div><!--
+</pre><img vspace="5" hspace="5" src="HELP_hemiSphereRegionMesh_01.png" alt=""> <p><img vspace="5" hspace="5" src="gibbVerySmall.gif" alt=""> </p><p><i><b>GIBBON</b></i> <a href="www.gibboncode.org">www.gibboncode.org</a></p><p><i>Kevin Mattheus Moerman</i>, <a href="gibbon.toolbox@gmail.com">gibbon.toolbox@gmail.com</a></p><p><i><b>GIBBON footer text</b></i></p><p>License: <a href="https://github.com/gibbonCode/GIBBON/blob/master/LICENSE">https://github.com/gibbonCode/GIBBON/blob/master/LICENSE</a></p><p>GIBBON: The Geometry and Image-based Bioengineering add-On. A toolbox for image segmentation, image-based modeling, meshing, and finite element analysis.</p><p>Copyright (C) 2018  Kevin Mattheus Moerman</p><p>This program is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.</p><p>This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for more details.</p><p>You should have received a copy of the GNU General Public License along with this program.  If not, see <a href="http://www.gnu.org/licenses/">http://www.gnu.org/licenses/</a>.</p><p class="footer"><br><a href="https://www.mathworks.com/products/matlab/">Published with MATLAB&reg; R2018b</a><br></p></div><!--
 ##### SOURCE BEGIN #####
 %% hemiSphereRegionMesh
 % Below is a demonstration of the features of the |ind2patch| function
@@ -137,29 +131,24 @@ markerSize=5;
 %% Example:  Creating a hemisphere mesh using the |hemiSphereRegionMesh| function
 % Defining hemi-sphere parameters
 hemiSphereStruct.sphereRadius=1; %Sphere radius
-hemiSphereStruct.nRefineRegions=2; %Number of refinement steps for regions
+hemiSphereStruct.nRefineRegions=1; %Number of refinement steps for regions
 hemiSphereStruct.nRefineMesh=2; %Number of refinement steps for mesh
 
 % Get hemi-sphere mesh
-[F,V,regionIndSub]=hemiSphereRegionMesh(hemiSphereStruct);
+[F,V,regionInd]=hemiSphereRegionMesh(hemiSphereStruct);
 
 %% 
 % Plotting results
+
 %Creating a random color for the each mesh region
-cmap=hsv(max(regionIndSub(:)));
+cmap=hsv(max(regionInd(:)));
 cmap=cmap(randperm(size(cmap,1)),:); %scramble colors
 
-hf=cFigure;
-hold on; view(3); 
-title('Half dome showing regions with subtriangulated mesh','FontSize',fontSize);
-xlabel('X','FontSize',fontSize); ylabel('Y','FontSize',fontSize); zlabel('Z','FontSize',fontSize);
-
-hp=patch('Faces',F,'Vertices',V);
-set(hp,'FaceColor','flat','EdgeColor','k','CData',regionIndSub,'FaceAlpha',faceAlpha,'LineWidth',lineWidth,'Marker','o','MarkerFaceColor','k','MarkerEdgeColor','none','MarkerSize',markerSize);
-
-colormap(cmap); %colorbar; 
-axis tight;  axis equal;  grid on;
-set(gca,'FontSize',fontSize);
+hf=cFigure; hold on; 
+gtitle('Half dome showing regions with subtriangulated mesh',fontSize);
+gpatch(F,V,regionInd);
+colormap(cmap);
+axisGeom(gca,fontSize);
 camlight headlight; 
 drawnow;
 

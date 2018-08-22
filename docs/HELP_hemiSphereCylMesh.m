@@ -4,80 +4,93 @@
 %%
 clear; close all; clc;
 
-%% Plot settings
+%% Syntax
+% |[F,V]=hemiSphereCylMesh(inputStruct);|
+
+%% Description
+% This function generates patch data for a cylinder which ends with a
+% hemispherical head. 
+
+%% Examples
+
+%%
+% Plot settings
 figColor='w'; figColorDef='white';
-fontSize=8;
+fontSize=15;
 faceAlpha=1;
 lineWidth=1;
 markerSize1=10;
 
-%% CONTROL PARAMETERS
-S1.sphereRadius=3; %Sphere radius
-S1.nRefine=2; %Number of refinement steps for sphere regions
-S1.cylinderHeight=4; %Height of the cylindrical part
-S1.cylinderStepSize=[]; %Aproximate desired node spacing for cylindrical part, empty uses spacing of hemi-sphere mesh
-S1.patchType='tri';
+%% 
+% Creating 3 example input structures 
 
-S2.sphereRadius=3; %Sphere radius
-S2.nRefine=2; %Number of refinement steps for sphere regions
-S2.cylinderHeight=4; %Height of the cylindrical part
-S2.cylinderStepSize=1; %Aproximate desired node spacing for cylindrical part, empty uses spacing of hemi-sphere mesh
-S2.patchType='tri';
+inputStruct1.sphereRadius=3; %Sphere radius
+inputStruct1.nRefine=2; %Number of refinement steps for sphere regions
+inputStruct1.cylinderHeight=5; %Height of the cylindrical part
+inputStruct1.cylinderStepSize=[]; %Aproximate desired node spacing for cylindrical part, empty uses spacing of hemi-sphere mesh
+inputStruct1.patchType='tri';
 
-S3.sphereRadius=3; %Sphere radius
-S3.nRefine=4; %Number of refinement steps for sphere regions
-S3.cylinderHeight=4; %Height of the cylindrical part
-S3.cylinderStepSize=[]; %Aproximate desired node spacing for cylindrical part, empty uses spacing of hemi-sphere mesh
-S3.patchType='quad';
+inputStruct2.sphereRadius=3; %Sphere radius
+inputStruct2.nRefine=2; %Number of refinement steps for sphere regions
+inputStruct2.cylinderHeight=5; %Height of the cylindrical part
+inputStruct2.cylinderStepSize=1; %Aproximate desired node spacing for cylindrical part, empty uses spacing of hemi-sphere mesh
+inputStruct2.patchType='tri_slash';
+
+inputStruct3.sphereRadius=3; %Sphere radius
+inputStruct3.nRefine=2; %Number of refinement steps for sphere regions
+inputStruct3.cylinderHeight=5; %Height of the cylindrical part
+inputStruct3.cylinderStepSize=[]; %Aproximate desired node spacing for cylindrical part, empty uses spacing of hemi-sphere mesh
+inputStruct3.patchType='quad';
 
 %% CREATING A SURFACE TRIANGULATION COMPOSED OF A MERGED HEMI-SPHERE AND CYLINDER
-[Ft1,Vt1]=hemiSphereCylMesh(S1);
-[Ft2,Vt2]=hemiSphereCylMesh(S2);
-[Ft3,Vt3]=hemiSphereCylMesh(S3);
+[F1,V1]=hemiSphereCylMesh(inputStruct1);
+[F2,V2]=hemiSphereCylMesh(inputStruct2);
+[F3,V3]=hemiSphereCylMesh(inputStruct3);
 
 %% PLOTTING MODEL
 
-hf=figuremax(figColor,figColorDef);
-subplot(1,3,1);
-hold on; 
-title('Hemi-sphere and cylinder mesh - auto cyl. point spacing','FontSize',fontSize);
-xlabel('X','FontSize',fontSize); ylabel('Y','FontSize',fontSize); zlabel('Z','FontSize',fontSize);
+cFigure; 
+subplot(1,3,1); hold on; 
+title('auto point spacing, tri','FontSize',fontSize);
+gpatch(F1,V1,'gw');
+patchNormPlot(F1,V1);
+axisGeom(gca,fontSize); 
+camlight headlight; 
 
-hp=patch('Faces',Ft1,'Vertices',Vt1);
-set(hp,'FaceColor','g','EdgeColor','k','FaceAlpha',faceAlpha,'LineWidth',lineWidth,'Marker','.','MarkerSize',markerSize1);
-% [hn]=patchNormPlot(Ft,Vt,0.3);
+subplot(1,3,2); hold on; 
+title('custom point spacing, tri_slash','FontSize',fontSize,'interpreter','none');
+gpatch(F2,V2,'gw');
+patchNormPlot(F2,V2);
+axisGeom(gca,fontSize); 
+camlight headlight; 
 
-view(3); axis tight;  axis equal;  grid on;
-camlight('headlight'); lighting phong;
-set(gca,'FontSize',fontSize);
+subplot(1,3,3); hold on; 
+title('auto point spacing, quad','FontSize',fontSize);
+gpatch(F3,V3,'gw');
+patchNormPlot(F3,V3);
+axisGeom(gca,fontSize); 
+camlight headlight; 
+
 drawnow; 
 
-subplot(1,3,2);
-hold on; 
-title('Hemi-sphere and cylinder mesh - custom cyl. point spacing','FontSize',fontSize);
-xlabel('X','FontSize',fontSize); ylabel('Y','FontSize',fontSize); zlabel('Z','FontSize',fontSize);
+%% Example: Face color data
+% Colors can be used as handles to surface components. The option color
+% data output can be used to seperate the hemisphere form the cylindrical
+% part of the mesh. 
 
-hp=patch('Faces',Ft2,'Vertices',Vt2);
-set(hp,'FaceColor','g','EdgeColor','k','FaceAlpha',faceAlpha,'LineWidth',lineWidth,'Marker','.','MarkerSize',markerSize1);
-% [hn]=patchNormPlot(Ft,Vt,0.3);
+%%
+% Create mesh
+[F1,V1,C1]=hemiSphereCylMesh(inputStruct1);
 
-view(3); axis tight;  axis equal;  grid on;
-camlight('headlight'); lighting phong;
-set(gca,'FontSize',fontSize);
-drawnow; 
+%%
+% Visualize color data
 
-subplot(1,3,3);
-hold on; 
-title('Hemi-sphere and cylinder mesh - quadrilateral faces','FontSize',fontSize);
-xlabel('X','FontSize',fontSize); ylabel('Y','FontSize',fontSize); zlabel('Z','FontSize',fontSize);
-
-hp=patch('Faces',Ft3,'Vertices',Vt3);
-set(hp,'FaceColor','g','EdgeColor','k','FaceAlpha',faceAlpha,'LineWidth',lineWidth,'Marker','.','MarkerSize',markerSize1);
-% [hn]=patchNormPlot(Ft,Vt,0.3);
-
-view(3); axis tight;  axis equal;  grid on;
-camlight('headlight'); lighting phong;
-set(gca,'FontSize',fontSize);
+cFigure; hold on; 
+title('Face color data','FontSize',fontSize);
+gpatch(F1,V1,C1);
+axisGeom(gca,fontSize);
+colormap gjet; icolorbar; 
+camlight headlight; 
 drawnow; 
 
 %% 

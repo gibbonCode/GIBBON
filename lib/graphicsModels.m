@@ -22,32 +22,36 @@ end
 %%
 defaultFolder = fileparts(fileparts(mfilename('fullpath')));
 pathName=fullfile(defaultFolder,'data','libSurf');
+
 switch modelID
-    case 1
+    case {1,'stanford_bunny'}
         fileName=fullfile(pathName,'stanford_bunny_closed.mat');
-        D=load(fileName);
-    case 2
+        meshData=load(fileName);
+    case {2,'utah_teapot'}
         fileName=fullfile(pathName,'utah_teapot.mat');
-        D=load(fileName);
-    case 3
+        meshData=load(fileName);
+    case {3,'cow'}
         fileName=fullfile(pathName,'cow.mat');
-        D=load(fileName);
-    case 4
+        meshData=load(fileName);
+    case {4,'parasaurolophus'}
         fileName=fullfile(pathName,'parasaurolophus.mat');
-        D=load(fileName);
-    case 5
+        meshData=load(fileName);
+    case {5,'femur'}
         fileName=fullfile(pathName,'femur.mat');
-        D=load(fileName);
-    case 6
+        meshData=load(fileName);
+    case {6,'hip_implant'}
         fileName=fullfile(pathName,'hip_implant.mat');
-        D=load(fileName);
-    case 7 
+        meshData=load(fileName);
+    case {7,'elephant'} 
         fileName=fullfile(pathName,'elephant.mat');
-        D=load(fileName);
+        meshData=load(fileName);
+    case {8,'dolphin'}
+        fileName=fullfile(pathName,'dolphin.mat');      
+        meshData=load(fileName);
 end
 
-F=D.F;
-V=D.V;
+F=meshData.F;
+V=meshData.V;
  
 %% 
 % _*GIBBON footer text*_ 

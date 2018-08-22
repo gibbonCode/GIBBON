@@ -25,7 +25,6 @@ markerSize=25;
 %% Building a mesh of a torus
 
 %Torus parameters
-np=100;
 r=1; %Sphere radius
 rc=2.5; %Central radius
 nr=16;
@@ -51,10 +50,9 @@ for q=1:1:4
 end
 drawnow;
 
-%% Simulate  a doughnut
+%% Simulate a doughnut
 
 %Torus parameters
-np=100;
 r=1; %Sphere radius
 rc=2.5; %Central radius
 n=2; 
