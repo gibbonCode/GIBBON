@@ -60,14 +60,14 @@ for testCase=1:6
     cFigure; 
     subplot(1,2,1); hold on; 
     title('Raw face data');
-    gpatch(F,V,C,'k');
+    gpatch(F,V,C,'none');
     colorbar(gca); caxis([min(C_clean) max(C_clean)]);
     axisGeom;
     camlight headlight; 
     
     subplot(1,2,2); hold on;
     title('Smoothed face data');
-    gpatch(F,V,C_smooth,'k');
+    gpatch(F,V,C_smooth,'none');
     colorbar(gca); caxis([min(C_clean) max(C_clean)]);
     axisGeom;
     camlight headlight; 

@@ -18,12 +18,19 @@ end
 
 smoothParDefault.lambda=0.5;
 smoothParDefault.n=1;
+smoothParDefault.faceFaceConnectivity=[];
 smoothPar=structComplete(smoothPar,smoothParDefault,1);
 
 %% Get connectivity array
+if isempty(smoothPar.faceFaceConnectivity)
+    [connectivityStruct]=patchConnectivity(F,V);
+    faceFaceConnectivity=connectivityStruct.face.face;
+end
 
-[connectivityStruct]=patchConnectivity(F,V);
-faceFaceConnectivity=connectivityStruct.face.face;
+%%
+
+numSmoothIterations=smoothPar.n; 
+lambdaSmooth=smoothPar.lambda;
 
 %%
 
@@ -31,7 +38,7 @@ nDims=size(C,2); %Number of dimensions
 logicValid=faceFaceConnectivity>0;
 C_smooth=C;
 C_smooth_step=C; 
-for qIter=1:smoothPar.n 
+for qIter=1:numSmoothIterations
     %Loop for all dimensions
     for qDim=1:1:nDims
         Xp=NaN(size(C,1),size(faceFaceConnectivity,2));
@@ -39,5 +46,5 @@ for qIter=1:smoothPar.n
         Xp=nanmean(Xp,2);       
         C_smooth_step(:,qDim)=Xp;
     end
-    C_smooth=((1-smoothPar.lambda).*C_smooth)+(smoothPar.lambda.*C_smooth_step);
+    C_smooth=((1-lambdaSmooth).*C_smooth)+(lambdaSmooth.*C_smooth_step);
 end
