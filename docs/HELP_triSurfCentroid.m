@@ -11,7 +11,6 @@ clear; close all; clc;
 
 %% Examples
 
-
 clear; close all; clc;
 
 %% 

@@ -13,19 +13,31 @@ function [VV]=triSurfVolume(F,V)
 % VVt=(4/3)*pi*r.^3; %Theoretical volume of the sphere
 % [VV]=triSurfVolume(F,V); %estimate based on triangulated surface
 %
+%
 % Kevin Mattheus Moerman
-% kevinmoerman@hotmail.com
+% gibbon.toolbox@gmail.com
+% 
+% Change log:
 % 26/11/2013
+% 2018/08/24 Fixed bug in relation to surface not centred on centroid and
+% surfaces with inhomogeneous node distributions
 %------------------------------------------------------------------------
 %%
 
+% Centre on centroid
+Vm=triSurfCentroid(F,V);
+V=V-Vm(ones(size(V,1),1),:);
+
+% meanV=mean(V,1);
+% V=V-meanV(ones(size(V,1),1),:);
+
 [N,~]=trinorm(F,V); %Face normals
 aa=tri_area(F,V); %Areas
-Zm = (V(F(:,1),3)+V(F(:,2),3)+V(F(:,3),3))./3; %Mean Z
+[Vm]=patchCentre(F,V);
+Zm=Vm(:,3); %Mean Z
 Nz = N(:,3); %Z component of normal
 vv = aa.*Zm.*Nz; %Contributions
 VV = sum(abs(vv)); %Total volume
-
  
 %% 
 % _*GIBBON footer text*_ 

@@ -52,27 +52,29 @@ nBlur=1;
 numMaterials=25;
 volumeFactor=2;
 
-runMode='external';
+runMode='internal';
 
 %Material parameter set
-c1=1e-3; %Shear-modulus-like parameter
-m1=8; %Material parameter setting degree of non-linearity
-k_factor=1e2; %Bulk modulus factor
+c1=18000; %Shear-modulus-like parameter
+m1=2; %Material parameter setting degree of non-linearity
+k_factor=10; %Bulk modulus factor
 k=c1*k_factor; %Bulk modulus
 
 % FEA control settings
-numTimeSteps=25; %Number of time steps desired
+numTimeSteps=10; %Number of time steps desired
 max_refs=25; %Max reforms
 max_ups=0; %Set to zero to use full-Newton iterations
 opt_iter=10; %Optimum number of iterations
 max_retries=5; %Maximum number of retires
 dtmin=(1/numTimeSteps)/100; %Minimum time step size
 dtmax=1/numTimeSteps; %Maximum time step size
+min_residual=1e-60;
+symmetric_stiffness=0;
 
 %Contact parameters
 contactInitialOffset=0.1;
-contactAlg=2;
-contactPenalty=10;
+contactAlg=1;
+contactPenalty=100000;
 switch contactAlg
     case 1
         contactType='sticky';
@@ -82,9 +84,11 @@ switch contactAlg
         contactType='sliding_with_gaps';
     case 4
         contactType='sliding2';
+    case 5
+        contactType='sliding-elastic';
 end
 
-zDisp=-3;
+zDisp=-6-contactInitialOffset;
 
 %% Prepare bone geometry
 
@@ -156,15 +160,15 @@ Vc3(:,1)=Vc3(:,1)+60;
 
 logicSelect=min(Vc1(:,1))<Vs(:,1) & max(Vc1(:,1))>Vs(:,1);
 zOffset=max(Vs(logicSelect,3));
-Vc1(:,3)=Vc1(:,3)-min(Vc1(:,3))+zOffset;
+Vc1(:,3)=Vc1(:,3)-min(Vc1(:,3))+zOffset+contactInitialOffset;
 
 logicSelect=min(Vc2(:,1))<Vs(:,1) & max(Vc2(:,1))>Vs(:,1);
 zOffset=min(Vs(logicSelect,3));
-Vc2(:,3)=Vc2(:,3)-max(Vc2(:,3))+zOffset;
+Vc2(:,3)=Vc2(:,3)-max(Vc2(:,3))+zOffset-contactInitialOffset;
 
 logicSelect=min(Vc3(:,1))<Vs(:,1) & max(Vc3(:,1))>Vs(:,1);
 zOffset=min(Vs(logicSelect,3));
-Vc3(:,3)=Vc3(:,3)-max(Vc3(:,3))+zOffset;
+Vc3(:,3)=Vc3(:,3)-max(Vc3(:,3))+zOffset-contactInitialOffset;
 
 %%
 % Plotting surface geometry
@@ -367,15 +371,17 @@ febio_spec.Control.time_stepper.max_retries=max_retries;
 febio_spec.Control.time_stepper.opt_iter=opt_iter;
 febio_spec.Control.max_refs=max_refs;
 febio_spec.Control.max_ups=max_ups;
+febio_spec.Control.symmetric_stiffness=symmetric_stiffness; 
+febio_spec.Control.min_residual=min_residual;
 
 %Material section
-febio_spec.Material.material{1}.ATTR.type='Ogden';
+febio_spec.Material.material{1}.ATTR.type='Ogden unconstrained';
 febio_spec.Material.material{1}.ATTR.id=1;
 febio_spec.Material.material{1}.c1=c1;
 febio_spec.Material.material{1}.m1=m1;
 febio_spec.Material.material{1}.c2=c1;
 febio_spec.Material.material{1}.m2=-m1;
-febio_spec.Material.material{1}.k=k;
+febio_spec.Material.material{1}.cp=k;
 
 febio_spec.Material.material{2}.ATTR.type='rigid body';
 febio_spec.Material.material{2}.ATTR.id=2;
@@ -502,22 +508,22 @@ for qc=1:1:3
             febio_spec.Contact.contact{qc}.ATTR.type='sticky';
             febio_spec.Contact.contact{qc}.penalty=contactPenalty;
             febio_spec.Contact.contact{qc}.laugon=0;
-            febio_spec.Contact.contact{qc}.tolerance=0.1;
-            febio_spec.Contact.contact{qc}.minaug=0;
+            febio_spec.Contact.contact{qc}.tolerance=0.2;
+            febio_spec.Contact.contact{qc}.minaug=1;
             febio_spec.Contact.contact{qc}.maxaug=10;
             febio_spec.Contact.contact{qc}.snap_tol=0;
             febio_spec.Contact.contact{qc}.max_traction=0;
-            febio_spec.Contact.contact{qc}.search_tolerance=0.1;
+            febio_spec.Contact.contact{qc}.search_tolerance=0.01;
         case 'facet-to-facet sliding'
             febio_spec.Contact.contact{qc}.ATTR.surface_pair=febio_spec.Geometry.SurfacePair{qc}.ATTR.name;
             febio_spec.Contact.contact{qc}.ATTR.type='facet-to-facet sliding';
             febio_spec.Contact.contact{qc}.penalty=contactPenalty;
             febio_spec.Contact.contact{qc}.auto_penalty=1;
-            febio_spec.Contact.contact{qc}.two_pass=0;
-            febio_spec.Contact.contact{qc}.laugon=0;
+            febio_spec.Contact.contact{qc}.two_pass=1;
+            febio_spec.Contact.contact{qc}.laugon=1;
             febio_spec.Contact.contact{qc}.tolerance=0.1;
             febio_spec.Contact.contact{qc}.gaptol=0;
-            febio_spec.Contact.contact{qc}.minaug=0;
+            febio_spec.Contact.contact{qc}.minaug=1;
             febio_spec.Contact.contact{qc}.maxaug=10;
             febio_spec.Contact.contact{qc}.search_tol=0.01;
             febio_spec.Contact.contact{qc}.search_radius=mean(pointSpacing)/2;
@@ -549,9 +555,23 @@ for qc=1:1:3
             febio_spec.Contact.contact{qc}.symmetric_stiffness=0;
             febio_spec.Contact.contact{qc}.search_tol=0.01;
             febio_spec.Contact.contact{qc}.search_radius=mean(pointSpacings)/2;
+        case 'sliding-elastic'
+            febio_spec.Contact.contact{qc}.ATTR.surface_pair=febio_spec.Geometry.SurfacePair{qc}.ATTR.name;
+            febio_spec.Contact.contact{qc}.ATTR.type='sliding-elastic';
+            febio_spec.Contact.contact{qc}.two_pass=1;
+            febio_spec.Contact.contact{qc}.laugon=1;
+            febio_spec.Contact.contact{qc}.tolerance=0.2;
+            febio_spec.Contact.contact{qc}.gaptol=0;
+            febio_spec.Contact.contact{qc}.minaug=1;
+            febio_spec.Contact.contact{qc}.maxaug=10;
+            febio_spec.Contact.contact{qc}.search_tol=0.01;
+            febio_spec.Contact.contact{qc}.search_radius=1;
+            febio_spec.Contact.contact{qc}.symmetric_stiffness=0;
+            febio_spec.Contact.contact{qc}.auto_penalty=1;
+            febio_spec.Contact.contact{qc}.penalty=contactPenalty;
+            febio_spec.Contact.contact{qc}.fric_coeff=0.5;
     end
 end
-
 %Output section
 % -> log file
 febio_spec.Output.logfile.ATTR.file=febioLogFileName;
