@@ -100,7 +100,7 @@ else
             [F]=quad2tri(F,V);
         case 'tri' %Convert quads to approximate equilateral triangles
             
-            logicSlashType=repmat(iseven(C),2,1);
+            logicSlashType=repmat(iseven(C),2,1);            
             
             Xi=X;
             x=X(1,:);

@@ -1,6 +1,6 @@
 function D=pathLength(V)
 
-% function [F,V,C]=ind2patch(IND,M,ptype)
+% function D=pathLength(V)
 % ------------------------------------------------------------------------
 %
 % This function calculates the "current" curve patch length for each of the

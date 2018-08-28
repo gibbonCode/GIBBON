@@ -1,13 +1,23 @@
-function [meshStruct]=hexMeshSphere(cPar)
-
-%%
+function [meshStruct]=hexMeshSphere(controlParameterStruct)
 
 %% Parse input
-sphereRadius=cPar.sphereRadius;
-coreRadius=cPar.coreRadius;
-numElementsMantel=cPar.numElementsMantel;
-numElementsCore=cPar.numElementsCore;
-makeHollow=cPar.makeHollow;
+
+%Compare to default structure
+controlParameterStructDefault.sphereRadius=1;
+controlParameterStructDefault.coreRadius=controlParameterStructDefault.sphereRadius/2;
+controlParameterStructDefault.numElementsMantel=3;
+controlParameterStructDefault.numElementsCore=3; 
+controlParameterStructDefault.makeHollow=0;
+controlParameterStructDefault.outputStructType=1;
+[controlParameterStruct]=structComplete(controlParameterStruct,controlParameterStructDefault,1);
+
+% Get input parameters
+sphereRadius=controlParameterStruct.sphereRadius;
+coreRadius=controlParameterStruct.coreRadius;
+numElementsMantel=controlParameterStruct.numElementsMantel;
+numElementsCore=controlParameterStruct.numElementsCore;
+makeHollow=controlParameterStruct.makeHollow;
+outputStructType=controlParameterStruct.outputStructType;
 
 %% CREATING A HEXAHEDRAL MESH CUBE
 
@@ -67,33 +77,49 @@ end
 
 %% Smoothing
 
-if ~isfield(cPar,'cParSmooth')
-    cPar.cParSmooth.Method='LAP';
-    cPar.cParSmooth.LambdaSmooth=0.5;
-    cPar.cParSmooth.n=5;
+if ~isfield(controlParameterStruct,'cParSmooth')
+    controlParameterStruct.cParSmooth.Method='LAP';
+    controlParameterStruct.cParSmooth.LambdaSmooth=0.5;
+    controlParameterStruct.cParSmooth.n=5;
 end
 
 % F_rigid=[F_mantel_outer; F_mantel_inner];
 
-cPar.cParSmooth.RigidConstraints=unique(FTb(:));
+controlParameterStruct.cParSmooth.RigidConstraints=unique(FTb(:));
 
 [F,~,~]=uniqueIntegerRow(FT);
 
-if cPar.cParSmooth.n>0
-    [VT]=tesSmooth(F,VT,[],cPar.cParSmooth);
+if controlParameterStruct.cParSmooth.n>0
+    [VT]=tesSmooth(F,VT,[],controlParameterStruct.cParSmooth);
 end
 
 %% Collect output
 
-meshStruct.E=ET; 
-if makeHollow==0
-    meshStruct.elementRegionLabel=[1*ones(size(E_core,1),1); 2*ones(size(E_mantel,1),1);];
+switch outputStructType
+    case 1
+        meshStruct.E=ET;
+        if makeHollow==0
+            meshStruct.elementRegionLabel=[1*ones(size(E_core,1),1); 2*ones(size(E_mantel,1),1);];
+        end
+        meshStruct.V=VT;
+        meshStruct.F=FT;
+        meshStruct.Fb=FTb;
+        meshStruct.faceBoundaryMarker=faceBoundaryMarker;
+        meshStruct.faceBoundaryMarkerBox=faceBoundaryMarkerBox;
+    case 2
+        meshStruct.nodes=VT;
+        meshStruct.facesBoundary=FTb;
+        meshStruct.boundaryMarker=faceBoundaryMarker;
+        meshStruct.faces=FT;
+        meshStruct.elements=ET;        
+        if makeHollow==0
+            meshStruct.elementMaterialID=[1*ones(size(E_core,1),1); 2*ones(size(E_mantel,1),1);];
+        else
+            meshStruct.elementMaterialID=ones(size(ET,1),1);
+        end
+        meshStruct.faceMaterialID=ones(size(meshStruct.faces,1),1);
 end
-meshStruct.V=VT; 
-meshStruct.F=FT;
-meshStruct.Fb=FTb;
-meshStruct.faceBoundaryMarker=faceBoundaryMarker;
-meshStruct.faceBoundaryMarkerBox=faceBoundaryMarkerBox; 
+
 
 end
  

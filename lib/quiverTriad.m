@@ -1,5 +1,10 @@
 function [varargout]=quiverTriad(varargin)
 
+% function [h]=quiverTriad(V,R,vecSize,colorOpt,alphaLevel)
+% ------------------------------------------------------------------------
+%
+%
+% ------------------------------------------------------------------------
 
 %% Parse input
 

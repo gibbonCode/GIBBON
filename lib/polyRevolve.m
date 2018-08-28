@@ -1,10 +1,11 @@
 function [F,V,C]=polyRevolve(Vc,controlParameterStruct)
- 
+
 %% Parse input
 controlParameterStructDefault.numSteps=[];
 controlParameterStructDefault.theta=2*pi;
 controlParameterStructDefault.w=[0 0 1];
 controlParameterStructDefault.closeLoopOpt=1;
+% controlParameterStructDefault.patchType='quad';
 
 [controlParameterStruct]=structComplete(controlParameterStruct,controlParameterStructDefault,0);
 
@@ -18,7 +19,7 @@ if size(Vc,2)==2
     Vc(:,3)=0;
 end
 
-%% 
+%%
 D=pathLength(Vc);
 d=max(pathLength(Vc)); %Compute curve length for point sampling
 % numPointsCurve=size(Vc,1);
@@ -31,8 +32,6 @@ if isempty(numSteps)
     arcMax=max(abs(dot(Vc22,Vc,2)))*theta;
     numSteps=ceil(arcMax/pointSpacingCurve);
 end
-
-
 
 %% Define rotation matrix
 
@@ -58,6 +57,8 @@ C=c(:,ones(1,size(Z,2)));
 
 indStart=1:numSteps:size(V,1);
 indEnd=numSteps:numSteps:size(V,1);
+Vc_start=V(indStart,:);
+Vc_end=V(indEnd,:);
 
 %% Close patch if required
 if closeLoopOpt
@@ -72,27 +73,26 @@ else
 end
 C=round(C);
 
-
-%% 
-% _*GIBBON footer text*_ 
-% 
+%%
+% _*GIBBON footer text*_
+%
 % License: <https://github.com/gibbonCode/GIBBON/blob/master/LICENSE>
-% 
+%
 % GIBBON: The Geometry and Image-based Bioengineering add-On. A toolbox for
 % image segmentation, image-based modeling, meshing, and finite element
 % analysis.
-% 
+%
 % Copyright (C) 2018  Kevin Mattheus Moerman
-% 
+%
 % This program is free software: you can redistribute it and/or modify
 % it under the terms of the GNU General Public License as published by
 % the Free Software Foundation, either version 3 of the License, or
 % (at your option) any later version.
-% 
+%
 % This program is distributed in the hope that it will be useful,
 % but WITHOUT ANY WARRANTY; without even the implied warranty of
 % MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 % GNU General Public License for more details.
-% 
+%
 % You should have received a copy of the GNU General Public License
 % along with this program.  If not, see <http://www.gnu.org/licenses/>.

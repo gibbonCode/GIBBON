@@ -69,6 +69,29 @@ camlight('headlight');
 lighting phong; axis off; 
 drawnow;
 
+%%
+
+[M,ellipStretchFit,R_fit,MU]=ellipsoidFit_centered(V,[]);
+
+%Create sphere
+[F_fit,V_fit,~]=geoSphere(4,1);
+
+%Transforming sphere to ellipsoid
+V_fit_t=V_fit;
+V_fit_t(:,end+1)=1;
+V_fit_t=(M*V_fit_t')'; %Rotate polyhedron
+V_fit=V_fit_t(:,1:end-1);
+cFigure; hold on; 
+title('The true (green) and fitted ellipsoid (red) and axis directions (solid, transparant respectively)','FontSize',fontSize);
+
+gpatch(F,V,'gw','k',1);
+gpatch(F_fit,V_fit,'rw','none',0.2);
+
+axisGeom;
+camlight('headlight');
+drawnow;
+
+
 %% 
 %
 % <<gibbVerySmall.gif>>

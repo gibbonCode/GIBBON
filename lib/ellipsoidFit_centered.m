@@ -19,6 +19,10 @@ switch nargin
         MU=varargin{2};    
 end
 
+if isempty(MU)
+    MU=mean(X,1); %Point set mean
+end
+
 %%
 
 %Centre on mean
