@@ -1,6 +1,6 @@
-function [F,V,C]=sweepLoft(varargin)
+function [varargout]=sweepLoft(varargin)
 
-% function [F,V,C]=sweepLoft(V1,V2,n1,n2,Vg,numSteps,numTwist,plotOn)
+% function [F,V,C,S]=sweepLoft(V1,V2,n1,n2,Vg,numSteps,numTwist,plotOn)
 %------------------------------------------------------------------------
 %
 % The |sweepLoft| function creates a swept loft (as in CAD terminology for
@@ -59,7 +59,7 @@ p1=Vg(1,:);
 p2=Vg(end,:);
 
 %%
-%Resample guid curve evenly using numSteps
+%Resample guide curve evenly using numSteps
 [Vg] = evenlySampleCurve(Vg,numSteps,'linear',0);
 
 stepSize=sqrt(sum((Vg(1,:)-Vg(2,:)).^2,2));
@@ -291,6 +291,22 @@ if plotOn==1
     drawnow;
 end
  
+%%
+
+varargout{1}=F; 
+varargout{2}=V; 
+switch nargout
+    case 3
+        varargout{3}=C;
+    case 4
+        arargout{3}=C;
+        
+        S.X=X;
+        S.Y=Y;
+        S.Z=Z;
+        varargout{4}=S;
+end
+
 %% 
 % _*GIBBON footer text*_ 
 % 

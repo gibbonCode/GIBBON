@@ -171,8 +171,7 @@ drawnow;
 %Create the time vector
 animStruct.Time=linspace(0,2*pi,nSteps);
 
-for q=1:1:nSteps    
-    
+for q=1:1:nSteps        
     tNow=t(q); %The current t
     xNow=x(q); %The current x
     yNow=y(q); %The current y

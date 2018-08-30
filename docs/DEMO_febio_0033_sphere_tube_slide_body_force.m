@@ -1,4 +1,4 @@
-%% DEMO_febio_0032_blob_aspiration
+%% DEMO_febio_0033_sphere_tube_slide_body_force
 % Below is a demonstration for:
 % 
 % * Building geometry for a spherical blob with tetrahedral elements
@@ -14,11 +14,11 @@
 % * febio_spec version 2.5
 % * febio, FEBio
 % * indentation
-% * contact, sliding, sticky, friction
+% * contact, sliding, friction
 % * rigid body constraints
 % * tetrahedral elements, tet4
 % * triangular elements, tri3
-% * slab, block, rectangular
+% * shell elements
 % * sphere
 % * static, solid
 % * hyperelastic, Ogden
@@ -49,42 +49,39 @@ febioLogFileName=fullfile(savePath,[febioFebFileNamePart,'.txt']); %FEBio log fi
 febioLogFileName_disp=[febioFebFileNamePart,'_disp_out.txt']; %Log file name for exporting displacement
 % febioLogFileName_force=[febioFebFileNamePart,'_force_out.txt']; %Log file name for exporting force
 
-% Hemi-sphere parameters
+% Sphere parameters
 sphereRadius=1; 
-nRefine=3; 
-closeOption=1; 
-smoothEdge=1; 
+nRefine=3;
 
 % Ground plate parameters
-tubeRadius=0.75*sphereRadius; 
+tubeRadius=0.65*sphereRadius; 
 inletRadius=tubeRadius/3;
-tubeLength=3; 
-
-% Probe parameters
-probeWidth=3*sphereRadius; 
-filletProbe=0.5; %Fillet radius
-
-% Define probe displacement
-probeDisplacement=sphereRadius*2; 
-proveOverlapFactor=0.4;
+tubeLength=4; 
 
 % Material parameter set
-c1=1e-3; %Shear-modulus-like parameter
-m1=8; %Material parameter setting degree of non-linearity
-k_factor=1e2; %Bulk modulus factor 
+c1=2e-3; %Shear-modulus-like parameter
+m1=2; %Material parameter setting degree of non-linearity
+k_factor=10; %Bulk modulus factor 
 k=c1*k_factor; %Bulk modulus
 
 % FEA control settings
+timeTotal=60;
 numTimeSteps=15; %Number of time steps desired
 max_refs=25; %Max reforms
 max_ups=0; %Set to zero to use full-Newton iterations
-opt_iter=15; %Optimum number of iterations
+opt_iter=10; %Optimum number of iterations
 max_retries=10; %Maximum number of retires
-dtmin=(1/numTimeSteps)/100; %Minimum time step size
-dtmax=1/(numTimeSteps); %Maximum time step size
-symmetric_stiffness=1;
+step_size=timeTotal/numTimeSteps;
+dtmin=(timeTotal/numTimeSteps)/100; %Minimum time step size
+dtmax=timeTotal/(numTimeSteps); %Maximum time step size
+symmetric_stiffness=0;
+min_residual=1e-20;
+analysisType='dynamic';
 
-pressureValue=1e-9;
+contactPenalty=5;
+fric_coeff=0.1; 
+
+bodyLoadMagnitude=0.0032;
 
 %% Creating model geometry and mesh
 % 
@@ -98,7 +95,7 @@ pointSpacingBlob=mean(patchEdgeLengths(F_blob,V_blob));
 % Visualize hemi-sphere surface
 
 cFigure; hold on;
-gtitle('The hemi-sphere surface mesh',fontSize);
+gtitle('The sphere surface mesh',fontSize);
 gpatch(F_blob,V_blob,C_blob,'k',0.85);
 patchNormPlot(F_blob,V_blob);
 axisGeom(gca,fontSize);
@@ -133,7 +130,7 @@ E_blob=meshOutput.elements;
 
 hFig=cFigure; 
 subplot(1,2,1); hold on;
-gpatch(Fb_blob,V_blob,Cb_blob,'k',1);
+gpatch(Fb_blob,V_blob,Cb_blob,'k',0.8);
 patchNormPlot(Fb_blob,V_blob);
 axisGeom(gca,fontSize);
 colormap(gjet); icolorbar;
@@ -149,7 +146,7 @@ drawnow;
 
 %% Creating tube model
 % 
-pointSpacingTube=pointSpacingBlob/3;
+pointSpacingTube=pointSpacingBlob/2;
 t=linspace(-0.1*pi,pi,100);
 x=inletRadius*sin(t);
 y=inletRadius*cos(t);
@@ -213,6 +210,8 @@ drawnow;
 %% Get contact surfaces
 %
 
+F_contact_blob=Fb_blob;
+
 %%
 % Visualize contact surfaces
 
@@ -220,30 +219,9 @@ cFigure; hold on;
 title('Tube blob contact pair','fontsize',fontSize);
 hl(1)=gpatch(F_tube,V,'rw','k',1);
 patchNormPlot(F_tube,V);
-hl(2)=gpatch(Fb_blob,V,'gw','k',1);
-patchNormPlot(Fb_blob,V);
+hl(2)=gpatch(F_contact_blob,V,'gw','k',1);
+patchNormPlot(F_contact_blob,V);
 legend(hl,{'Master','Slave'}); clear hl;
-axisGeom(gca,fontSize);
-camlight headlight; 
-drawnow; 
-
-%%
-
-V_F_tube_centre=patchCentre(F_tube,V);
-V_F_blob_centre=patchCentre(Fb_blob,V);
-logicPressure=V_F_blob_centre(:,1)<max(V_F_tube_centre(:,1));
-[logicPressure]=triSurfLogicSharpFix(Fb_blob,logicPressure,3);
-Fb_blob_pressure=Fb_blob(logicPressure,:);
-
-indForce=unique(Fb_blob_pressure);
-
-cFigure; hold on; 
-title('Plate blob contact pair','fontsize',fontSize);
-hl(1)=gpatch(F_tube,V,'rw','none',0.5);
-hl(2)=gpatch(Fb_blob,V,'gw','none',0.5);
-hl(3)=gpatch(Fb_blob_pressure,V,'bw','k',1);
-plotV(V(indForce,:),'k.','MarkerSize',25);
-legend(hl,{'Tube','Blob','Blob pressure surface'}); clear hl;
 axisGeom(gca,fontSize);
 camlight headlight; 
 drawnow; 
@@ -262,9 +240,9 @@ febio_spec.ATTR.version='2.5';
 febio_spec.Module.ATTR.type='solid'; 
 
 %Control section
-febio_spec.Control.analysis.ATTR.type='static';
+febio_spec.Control.analysis.ATTR.type=analysisType;
 febio_spec.Control.time_steps=numTimeSteps;
-febio_spec.Control.step_size=1/numTimeSteps;
+febio_spec.Control.step_size=step_size;
 febio_spec.Control.time_stepper.dtmin=dtmin;
 febio_spec.Control.time_stepper.dtmax=dtmax; 
 febio_spec.Control.time_stepper.max_retries=max_retries;
@@ -272,15 +250,16 @@ febio_spec.Control.time_stepper.opt_iter=opt_iter;
 febio_spec.Control.max_refs=max_refs;
 febio_spec.Control.max_ups=max_ups;
 febio_spec.Control.symmetric_stiffness=symmetric_stiffness; 
+febio_spec.Control.min_residual=min_residual;
 
 %Material section
-febio_spec.Material.material{1}.ATTR.type='Ogden';
+febio_spec.Material.material{1}.ATTR.type='Ogden unconstrained';
 febio_spec.Material.material{1}.ATTR.id=1;
 febio_spec.Material.material{1}.c1=c1;
 febio_spec.Material.material{1}.m1=m1;
 febio_spec.Material.material{1}.c2=c1;
 febio_spec.Material.material{1}.m2=-m1;
-febio_spec.Material.material{1}.k=k;
+febio_spec.Material.material{1}.cp=k;
 
 febio_spec.Material.material{2}.ATTR.type='rigid body';
 febio_spec.Material.material{2}.ATTR.id=2;
@@ -306,22 +285,14 @@ febio_spec.Geometry.Elements{2}.ATTR.name='Tube'; %Name of the element set
 febio_spec.Geometry.Elements{2}.elem.ATTR.id=size(E_blob,1)+(1:1:size(F_tube,1))'; %Element id's
 febio_spec.Geometry.Elements{2}.elem.VAL=F_tube;
 
-% -> NodeSets
-febio_spec.Geometry.NodeSet{1}.ATTR.name='bcMove';
-febio_spec.Geometry.NodeSet{1}.node.ATTR.id=indForce(:);
-
 % % -> Surfaces
 febio_spec.Geometry.Surface{1}.ATTR.name='contact_master1';
-febio_spec.Geometry.Surface{1}.tri3.ATTR.lid=(1:1:size(F_tube,1))';
-febio_spec.Geometry.Surface{1}.tri3.VAL=F_tube;
+febio_spec.Geometry.Surface{1}.quad4.ATTR.lid=(1:1:size(F_tube,1))';
+febio_spec.Geometry.Surface{1}.quad4.VAL=F_tube;
 
 febio_spec.Geometry.Surface{2}.ATTR.name='contact_slave1';
-febio_spec.Geometry.Surface{2}.tri3.ATTR.lid=(1:1:size(Fb_blob,1))';
-febio_spec.Geometry.Surface{2}.tri3.VAL=Fb_blob;
-
-febio_spec.Geometry.Surface{3}.ATTR.name='pressure';
-febio_spec.Geometry.Surface{3}.tri3.ATTR.lid=(1:1:size(Fb_blob_pressure,1))';
-febio_spec.Geometry.Surface{3}.tri3.VAL=Fb_blob_pressure;
+febio_spec.Geometry.Surface{2}.tri3.ATTR.lid=(1:1:size(F_contact_blob,1))';
+febio_spec.Geometry.Surface{2}.tri3.VAL=F_contact_blob;
 
 % -> Surface pairs
 febio_spec.Geometry.SurfacePair{1}.ATTR.name='Contact1_tube_blob';
@@ -332,24 +303,15 @@ febio_spec.Geometry.SurfacePair{1}.slave.ATTR.surface=febio_spec.Geometry.Surfac
 % -> Fix boundary conditions
 % febio_spec.Boundary.fix{1}.ATTR.bc='x';
 % febio_spec.Boundary.fix{1}.ATTR.node_set=febio_spec.Geometry.NodeSet{1}.ATTR.name;
-% febio_spec.Boundary.fix{2}.ATTR.bc='y';
+% febio_spec.Boundary.fix{1}.ATTR.bc='y';
+% febio_spec.Boundary.fix{1}.ATTR.node_set=febio_spec.Geometry.NodeSet{1}.ATTR.name;
+% febio_spec.Boundary.fix{2}.ATTR.bc='z';
 % febio_spec.Boundary.fix{2}.ATTR.node_set=febio_spec.Geometry.NodeSet{1}.ATTR.name;
-% febio_spec.Boundary.fix{3}.ATTR.bc='z';
-% febio_spec.Boundary.fix{3}.ATTR.node_set=febio_spec.Geometry.NodeSet{1}.ATTR.name;
-% 
-% febio_spec.Boundary.prescribe{1}.ATTR.bc='x';
-% febio_spec.Boundary.prescribe{1}.ATTR.relative=1;
-% febio_spec.Boundary.prescribe{1}.ATTR.node_set=febio_spec.Geometry.NodeSet{1}.ATTR.name;
-% febio_spec.Boundary.prescribe{1}.scale.ATTR.lc=1;
-% febio_spec.Boundary.prescribe{1}.scale.VAL=1;
-% febio_spec.Boundary.prescribe{1}.relative=1;
-% febio_spec.Boundary.prescribe{1}.value=-0.25;
 
-febio_spec.Loads.nodal_load{1}.ATTR.bc='x';
-febio_spec.Loads.nodal_load{1}.ATTR.node_set=febio_spec.Geometry.NodeSet{1}.ATTR.name;
-febio_spec.Loads.nodal_load{1}.scale.ATTR.lc=1;
-febio_spec.Loads.nodal_load{1}.scale.VAL=1;
-febio_spec.Loads.nodal_load{1}.value=1e-9;
+
+febio_spec.Loads.body_load{1}.ATTR.type='const';
+febio_spec.Loads.body_load{1}.x.VAL=bodyLoadMagnitude;
+febio_spec.Loads.body_load{1}.x.ATTR.lc=1;
 
 % -> Prescribed boundary conditions on the rigid body
 febio_spec.Boundary.rigid_body{1}.ATTR.mat=2;
@@ -361,52 +323,20 @@ febio_spec.Boundary.rigid_body{1}.fixed{5}.ATTR.bc='Ry';
 febio_spec.Boundary.rigid_body{1}.fixed{6}.ATTR.bc='Rz';
 
 %Contact section
-% -> Contact 1
 febio_spec.Contact.contact{1}.ATTR.surface_pair=febio_spec.Geometry.SurfacePair{1}.ATTR.name;
-febio_spec.Contact.contact{1}.ATTR.type='facet-to-facet sliding';
-febio_spec.Contact.contact{1}.penalty=0.1;
-febio_spec.Contact.contact{1}.auto_penalty=1;
-febio_spec.Contact.contact{1}.two_pass=0;
-febio_spec.Contact.contact{1}.laugon=0;
-febio_spec.Contact.contact{1}.tolerance=0.1;
+febio_spec.Contact.contact{1}.ATTR.type='sliding-elastic';
+febio_spec.Contact.contact{1}.two_pass=1;
+febio_spec.Contact.contact{1}.laugon=1;
+febio_spec.Contact.contact{1}.tolerance=0.2;
 febio_spec.Contact.contact{1}.gaptol=0;
-febio_spec.Contact.contact{1}.minaug=0;
+febio_spec.Contact.contact{1}.minaug=1;
 febio_spec.Contact.contact{1}.maxaug=10;
 febio_spec.Contact.contact{1}.search_tol=0.01;
-febio_spec.Contact.contact{1}.search_radius=pointSpacingBlob/2;
-% febio_spec.Contact.contact{1}.ATTR.surface_pair=febio_spec.Geometry.SurfacePair{1}.ATTR.name;
-% febio_spec.Contact.contact{1}.ATTR.type='sliding-elastic';
-% febio_spec.Contact.contact{1}.two_pass=1;
-% febio_spec.Contact.contact{1}.laugon=1;
-% febio_spec.Contact.contact{1}.tolerance=0.2;
-% febio_spec.Contact.contact{1}.gaptol=0;
-% febio_spec.Contact.contact{1}.minaug=1;
-% febio_spec.Contact.contact{1}.maxaug=10;
-% febio_spec.Contact.contact{1}.search_tol=0.01;
-% febio_spec.Contact.contact{1}.search_radius=0.1;
-% febio_spec.Contact.contact{1}.symmetric_stiffness=0;
-% febio_spec.Contact.contact{1}.auto_penalty=1;
-% febio_spec.Contact.contact{1}.penalty=1;
-% febio_spec.Contact.contact{1}.fric_coeff=0.01;
-
-%Loads section
-% loadType='traction';
-% switch loadType
-%     case 'pressure'
-%         febio_spec.Loads.surface_load{1}.ATTR.type='pressure';
-%         febio_spec.Loads.surface_load{1}.ATTR.surface=febio_spec.Geometry.Surface{3}.ATTR.name;
-%         febio_spec.Loads.surface_load{1}.pressure.VAL=pressureValue;
-%         febio_spec.Loads.surface_load{1}.pressure.ATTR.lc=1;
-%     case 'traction'
-%         febio_spec.Loads.surface_load{1}.ATTR.type='traction';
-%         febio_spec.Loads.surface_load{1}.ATTR.surface=febio_spec.Geometry.Surface{3}.ATTR.name;
-%         febio_spec.Loads.surface_load{1}.scale.VAL=pressureValue;
-%         febio_spec.Loads.surface_load{1}.scale.ATTR.lc=1;
-%         febio_spec.Loads.surface_load{1}.traction=[-1 0 0];
-% end
-% febio_spec.Loads.body_load{1}.ATTR.type='const';
-% febio_spec.Loads.body_load{1}.x.VAL=-1e-12;
-% febio_spec.Loads.body_load{1}.x.ATTR.lc=1;
+febio_spec.Contact.contact{1}.search_radius=0.1;
+febio_spec.Contact.contact{1}.symmetric_stiffness=0;
+febio_spec.Contact.contact{1}.auto_penalty=1;
+febio_spec.Contact.contact{1}.penalty=contactPenalty;
+febio_spec.Contact.contact{1}.fric_coeff=fric_coeff;
 
 %Output section 
 % -> log file

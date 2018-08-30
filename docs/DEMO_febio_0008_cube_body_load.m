@@ -51,7 +51,7 @@ numElementsThickness=round(sampleThickness/pointSpacings(2)); %Number of elemens
 numElementsHeight=round(sampleHeight/pointSpacings(3)); %Number of elemens in dir 3
 
 %Define applied displacement 
-bodyLoadType='non-const'; % or 'const'
+bodyLoadType='const'; % or 'non-const'
 
 %Material parameter set
 c1=1e-3; %Shear-modulus-like parameter
@@ -205,19 +205,19 @@ febio_spec.Boundary.fix{3}.ATTR.node_set=febio_spec.Geometry.NodeSet{1}.ATTR.nam
 switch bodyLoadType
     case 'const'
         febio_spec.Loads.body_load.ATTR.type='const';
-        febio_spec.Loads.body_load.x.ATTR.lc=1;
-        febio_spec.Loads.body_load.x.VAL=1e-5;
-        febio_spec.Loads.body_load.y.ATTR.lc=2;
-        febio_spec.Loads.body_load.y.VAL=1e-5;
-        febio_spec.Loads.body_load.z.ATTR.lc=3;
-        febio_spec.Loads.body_load.z.VAL=1e-5;
+%         febio_spec.Loads.body_load.x.ATTR.lc=1;
+%         febio_spec.Loads.body_load.x.VAL=1e-5;
+%         febio_spec.Loads.body_load.y.ATTR.lc=1;
+%         febio_spec.Loads.body_load.y.VAL=1e-5;
+        febio_spec.Loads.body_load.z.ATTR.lc=1;
+        febio_spec.Loads.body_load.z.VAL=10e-5;
     case 'non-const'
         febio_spec.Loads.body_load.ATTR.type='non-const';
         febio_spec.Loads.body_load.x.ATTR.lc=1;
         febio_spec.Loads.body_load.x.VAL='-0.00001*x';
-        febio_spec.Loads.body_load.y.ATTR.lc=2;
+        febio_spec.Loads.body_load.y.ATTR.lc=1;
         febio_spec.Loads.body_load.y.VAL='0.000002*y';
-        febio_spec.Loads.body_load.z.ATTR.lc=3;
+        febio_spec.Loads.body_load.z.ATTR.lc=1;
         febio_spec.Loads.body_load.z.VAL='0.000006*z';
 end
         
@@ -227,16 +227,6 @@ febio_spec.LoadData.loadcurve{1}.ATTR.id=1;
 febio_spec.LoadData.loadcurve{1}.ATTR.type='linear';
 febio_spec.LoadData.loadcurve{1}.point.VAL=[0 0; 1 1];
 febio_spec.LoadData.loadcurve{1}.ATTR.extend='constant';
-
-febio_spec.LoadData.loadcurve{2}.ATTR.id=2;
-febio_spec.LoadData.loadcurve{2}.ATTR.type='linear';
-febio_spec.LoadData.loadcurve{2}.point.VAL=[0 0; 1 1];
-febio_spec.LoadData.loadcurve{2}.ATTR.extend='constant';
-
-febio_spec.LoadData.loadcurve{3}.ATTR.id=3;
-febio_spec.LoadData.loadcurve{3}.ATTR.type='linear';
-febio_spec.LoadData.loadcurve{3}.point.VAL=[0 0; 1 1];
-febio_spec.LoadData.loadcurve{3}.ATTR.extend='constant';
 
 %Output section 
 % -> log file

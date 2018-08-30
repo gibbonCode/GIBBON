@@ -69,7 +69,7 @@ E=elementStruct.E; %The elements
 %% 
 % Displaying the model
 %Get patch data for plotting
-if ~isempty(strfind(elementStruct.E_type,'S4R')) || ~isempty(strfind(elementStruct.E_type,'STRI3')); %quad or tri elements
+if ~isempty(strfind(elementStruct.E_type,'S4R')) || ~isempty(strfind(elementStruct.E_type,'STRI3')) %quad or tri elements
     F=E; %elements already describe faces
 else %hex or tet elements
     [F,~]=element2patch(E,[]);    

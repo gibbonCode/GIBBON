@@ -14,11 +14,11 @@
 % * febio_spec version 2.5
 % * febio, FEBio
 % * indentation
-% * contact, sliding, sticky, friction
+% * contact, sliding, friction
 % * rigid body constraints
 % * tetrahedral elements, tet4
 % * triangular elements, tri3
-% * slab, block, rectangular
+% * shell elements
 % * sphere
 % * static, solid
 % * hyperelastic, Ogden
