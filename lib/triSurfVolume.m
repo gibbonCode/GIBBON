@@ -1,6 +1,6 @@
-function [VV]=triSurfVolume(F,V)
+function [surfaceVolume]=triSurfVolume(F,V)
 
-% function [VV]=triSurfVolume(F,V)
+% function [surfaceVolume]=triSurfVolume(F,V)
 % ------------------------------------------------------------------------
 %Volume derivation based on Gauss divergence theorem
 %
@@ -24,20 +24,13 @@ function [VV]=triSurfVolume(F,V)
 %------------------------------------------------------------------------
 %%
 
-% Centre on centroid
-Vm=triSurfCentroid(F,V);
-V=V-Vm(ones(size(V,1),1),:);
-
-% meanV=mean(V,1);
-% V=V-meanV(ones(size(V,1),1),:);
-
 [N,~]=trinorm(F,V); %Face normals
-aa=tri_area(F,V); %Areas
-[Vm]=patchCentre(F,V);
-Zm=Vm(:,3); %Mean Z
+surfaceAreas=tri_area(F,V); %Face areas
+Z=V(:,3); %Z-coordinates 
+Zm=mean(Z(F),2); %Mean Z-coordinates for faces
 Nz = N(:,3); %Z component of normal
-vv = aa.*Zm.*Nz; %Contributions
-VV = sum(abs(vv)); %Total volume
+surfaceVolumeContributions = surfaceAreas.*Zm.*Nz; %Contributions
+surfaceVolume = sum(surfaceVolumeContributions); %Total volume
  
 %% 
 % _*GIBBON footer text*_ 
