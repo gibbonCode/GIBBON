@@ -1,0 +1,474 @@
+
+<!DOCTYPE html
+  PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html><head>
+      <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+   <!--
+This HTML was auto-generated from MATLAB code.
+To make changes, update the MATLAB code and republish this document.
+      --><title>DEMO_stent_hexahedral_sweeping</title><meta name="generator" content="MATLAB 9.5"><link rel="schema.DC" href="http://purl.org/dc/elements/1.1/"><meta name="DC.date" content="2018-08-31"><meta name="DC.source" content="DEMO_stent_hexahedral_sweeping.m"><style type="text/css">
+html,body,div,span,applet,object,iframe,h1,h2,h3,h4,h5,h6,p,blockquote,pre,a,abbr,acronym,address,big,cite,code,del,dfn,em,font,img,ins,kbd,q,s,samp,small,strike,strong,sub,sup,tt,var,b,u,i,center,dl,dt,dd,ol,ul,li,fieldset,form,label,legend,table,caption,tbody,tfoot,thead,tr,th,td{margin:0;padding:0;border:0;outline:0;font-size:100%;vertical-align:baseline;background:transparent}body{line-height:1}ol,ul{list-style:none}blockquote,q{quotes:none}blockquote:before,blockquote:after,q:before,q:after{content:'';content:none}:focus{outine:0}ins{text-decoration:none}del{text-decoration:line-through}table{border-collapse:collapse;border-spacing:0}
+
+html { min-height:100%; margin-bottom:1px; }
+html body { height:100%; margin:0px; font-family:Arial, Helvetica, sans-serif; font-size:10px; color:#000; line-height:140%; background:#fff none; overflow-y:scroll; }
+html body td { vertical-align:top; text-align:left; }
+
+h1 { padding:0px; margin:0px 0px 25px; font-family:Arial, Helvetica, sans-serif; font-size:1.5em; color:#d55000; line-height:100%; font-weight:normal; }
+h2 { padding:0px; margin:0px 0px 8px; font-family:Arial, Helvetica, sans-serif; font-size:1.2em; color:#000; font-weight:bold; line-height:140%; border-bottom:1px solid #d6d4d4; display:block; }
+h3 { padding:0px; margin:0px 0px 5px; font-family:Arial, Helvetica, sans-serif; font-size:1.1em; color:#000; font-weight:bold; line-height:140%; }
+
+a { color:#005fce; text-decoration:none; }
+a:hover { color:#005fce; text-decoration:underline; }
+a:visited { color:#004aa0; text-decoration:none; }
+
+p { padding:0px; margin:0px 0px 20px; }
+img { padding:0px; margin:0px 0px 20px; border:none; }
+p img, pre img, tt img, li img, h1 img, h2 img { margin-bottom:0px; } 
+
+ul { padding:0px; margin:0px 0px 20px 23px; list-style:square; }
+ul li { padding:0px; margin:0px 0px 7px 0px; }
+ul li ul { padding:5px 0px 0px; margin:0px 0px 7px 23px; }
+ul li ol li { list-style:decimal; }
+ol { padding:0px; margin:0px 0px 20px 0px; list-style:decimal; }
+ol li { padding:0px; margin:0px 0px 7px 23px; list-style-type:decimal; }
+ol li ol { padding:5px 0px 0px; margin:0px 0px 7px 0px; }
+ol li ol li { list-style-type:lower-alpha; }
+ol li ul { padding-top:7px; }
+ol li ul li { list-style:square; }
+
+.content { font-size:1.2em; line-height:140%; padding: 20px; }
+
+pre, code { font-size:12px; }
+tt { font-size: 1.2em; }
+pre { margin:0px 0px 20px; }
+pre.codeinput { padding:10px; border:1px solid #d3d3d3; background:#f7f7f7; }
+pre.codeoutput { padding:10px 11px; margin:0px 0px 20px; color:#4c4c4c; }
+pre.error { color:red; }
+
+@media print { pre.codeinput, pre.codeoutput { word-wrap:break-word; width:100%; } }
+
+span.keyword { color:#0000FF }
+span.comment { color:#228B22 }
+span.string { color:#A020F0 }
+span.untermstring { color:#B20000 }
+span.syscmd { color:#B28C00 }
+
+.footer { width:auto; padding:10px 0px; margin:25px 0px 0px; border-top:1px dotted #878787; font-size:0.8em; line-height:140%; font-style:italic; color:#878787; text-align:left; float:none; }
+.footer p { margin:0px; }
+.footer a { color:#878787; }
+.footer a:hover { color:#878787; text-decoration:underline; }
+.footer a:visited { color:#878787; }
+
+table th { padding:7px 5px; text-align:left; vertical-align:middle; border: 1px solid #d6d4d4; font-weight:bold; }
+table td { padding:7px 5px; text-align:left; vertical-align:top; border:1px solid #d6d4d4; }
+
+
+
+
+
+  </style></head><body><div class="content"><h1>DEMO_stent_hexahedral_sweeping</h1><!--introduction--><p>Below is a demonstration for:</p><div><ul><li>Creating a hexahedral mesh for a vascular stent by sweeping allong a curve and copying over the segments.</li></ul></div><!--/introduction--><h2>Contents</h2><div><ul><li><a href="#1">Keywords</a></li><li><a href="#4">Contol parameters</a></li><li><a href="#5">Build stent section</a></li><li><a href="#7">Create guide curve</a></li><li><a href="#9">Position stent section at the start and end of the guide curve</a></li><li><a href="#11">Sweeping section allong curve</a></li><li><a href="#12">Construct hexahedral mesh</a></li><li><a href="#14">Refine mesh</a></li><li><a href="#16">Create additional segments</a></li><li><a href="#19">Export inp file</a></li></ul></div><h2 id="1">Keywords</h2><div><ul><li>Sweeping, sweepLoft</li><li>Hexahedral mesh</li><li>stent, vascular</li><li>Exporting Abaqus, .inp</li></ul></div><pre class="codeinput">clear; close <span class="string">all</span>; clc;
+</pre><p>plot settings</p><pre class="codeinput">fontSize=25;
+markerSize=10;
+lineWidth=1;
+</pre><h2 id="4">Contol parameters</h2><pre class="codeinput">stentRadius=3; <span class="comment">%The outer radius of the stent</span>
+numPeriodsWave=10; <span class="comment">%The number of periods to use for a sinusoidal modulation</span>
+numStepsPeriod=100; <span class="comment">%Number of sweeping steps allong a single period segment for sweeping</span>
+waveAmplitude=0.9; <span class="comment">%Amplitude of the sinusoidal modulation</span>
+stentSectionHeight=0.1; <span class="comment">%Height of the stent wire</span>
+stentSectionWidth=0.1; <span class="comment">%Width of the stent wire</span>
+numStepsCircumference=(numPeriodsWave*numStepsPeriod)+1; <span class="comment">%Number of sweeping steps across curve</span>
+overSampleFactorCurve=10; <span class="comment">%Oversample factor curve</span>
+numSegments=8; <span class="comment">%Number of stent segments to stack</span>
+segmentAxialOffset=waveAmplitude*2; <span class="comment">%Axial offset for stacking stents</span>
+</pre><h2 id="5">Build stent section</h2><p>The rectangular stent wire section is created here.</p><pre class="codeinput">V_section=[-stentSectionWidth/2  stentSectionHeight/2 0; <span class="keyword">...</span>
+            stentSectionWidth/2  stentSectionHeight/2 0; <span class="keyword">...</span>
+            stentSectionWidth/2 -stentSectionHeight/2 0; <span class="keyword">...</span>
+           -stentSectionWidth/2 -stentSectionHeight/2 0; <span class="keyword">...</span>
+            ];
+</pre><p>Visualize stent section</p><pre class="codeinput">cFigure; hold <span class="string">on</span>;
+title(<span class="string">'Stent section'</span>,<span class="string">'fontSize'</span>,fontSize);
+plotV(V_section,<span class="string">'b.-'</span>,<span class="string">'lineWidth'</span>,lineWidth,<span class="string">'MarkerSize'</span>,markerSize);
+view(2); axis <span class="string">tight</span>; axis <span class="string">equal</span>; grid <span class="string">on</span>; box <span class="string">on</span>;
+set(gca,<span class="string">'fontSize'</span>,fontSize);
+drawnow;
+</pre><img vspace="5" hspace="5" src="DEMO_stent_hexahedral_sweeping_01.png" alt=""> <h2 id="7">Create guide curve</h2><p>The sweepLoft (see <tt>HELP_sweepLoft</tt>) is created here. First and angle based parameterization is created. Next this curve is evenly sample across the curve length (see <tt>HELP_evenlySampleCurve</tt>).</p><pre class="codeinput">t=linspace(0,2*pi,numStepsCircumference*overSampleFactorCurve); <span class="comment">%Angles</span>
+t=t(1:end-1); <span class="comment">%Remove last point so it is not closed for resampling</span>
+x=stentRadius.*sin(t); <span class="comment">%x-coordinates</span>
+y=stentRadius.*cos(t); <span class="comment">%y-coordinates</span>
+z=waveAmplitude.*sin(numPeriodsWave*t); <span class="comment">%z-coordinates</span>
+V_guide_curve=[x(:) y(:) z(:)]; <span class="comment">%Collected curve nodes</span>
+[V_guide_curve] = evenlySampleCurve(V_guide_curve,numStepsCircumference-1,<span class="string">'pchip'</span>,1); <span class="comment">%Resample curve evenly</span>
+V_guide_curve(end+1,:)=V_guide_curve(1,:); <span class="comment">%Append start to end so it is a closed loop</span>
+</pre><p>Visualize guide curve</p><pre class="codeinput">cFigure; hold <span class="string">on</span>;
+title(<span class="string">'Stent guide curve'</span>,<span class="string">'fontSize'</span>,fontSize);
+plotV(V_guide_curve,<span class="string">'k.-'</span>,<span class="string">'lineWidth'</span>,lineWidth,<span class="string">'MarkerSize'</span>,markerSize);
+axisGeom;
+drawnow;
+</pre><img vspace="5" hspace="5" src="DEMO_stent_hexahedral_sweeping_02.png" alt=""> <h2 id="9">Position stent section at the start and end of the guide curve</h2><p>Next the section is translated and rotated so it is placed at the start of the guide curve such that the curve normal points allong the curve.</p><pre class="codeinput"><span class="comment">% Create rotation matrix</span>
+n3=vecnormalize(V_guide_curve(2,:)-V_guide_curve(1,:)); <span class="comment">%Out of section normal direction z ish direction</span>
+[~,indMin]=min(dot(n3(ones(1,2),:),[1 0 0; 0 1 0],2)); <span class="comment">%Get index most appropriate initial other axis</span>
+<span class="keyword">switch</span> indMin
+    <span class="keyword">case</span> 1
+        n1=[1 0 0]; <span class="comment">%Initialized x direction</span>
+        n2=vecnormalize(cross(n3,n1)); <span class="comment">%y ish direction</span>
+        n1=vecnormalize(cross(n2,n3)); <span class="comment">%Proper x ish direction</span>
+        R=[n1; n2; n3]; <span class="comment">%Rotation matrix</span>
+    <span class="keyword">case</span> 2
+        n2=[0 1 0]; <span class="comment">%Initialized y direction</span>
+        n1=vecnormalize(cross(n2,n3)); <span class="comment">%x ish direction</span>
+        n2=vecnormalize(cross(n3,n1)); <span class="comment">%Proper y ish direction</span>
+        R=[n1; n2; n3]; <span class="comment">%Rotation matrix</span>
+<span class="keyword">end</span>
+
+p1=V_guide_curve(1,:); <span class="comment">%The start node</span>
+V_section=V_section*R; <span class="comment">%Rotate the section</span>
+V_section=V_section+p1(ones(size(V_section,1),1),:); <span class="comment">% Translate coordinate to start</span>
+</pre><p>Visualize guide curve</p><pre class="codeinput">cFigure; hold <span class="string">on</span>;
+title(<span class="string">'Stent section positioned on guide curve'</span>,<span class="string">'fontSize'</span>,fontSize);
+plotV(V_guide_curve,<span class="string">'k-'</span>,<span class="string">'lineWidth'</span>,1);
+plotV(V_section,<span class="string">'k.-'</span>,<span class="string">'lineWidth'</span>,lineWidth,<span class="string">'MarkerSize'</span>,markerSize);
+quiverVec(p1,n1,1,<span class="string">'r'</span>);
+quiverVec(p1,n2,1,<span class="string">'g'</span>);
+quiverVec(p1,n3,1,<span class="string">'b'</span>);
+axisGeom;
+drawnow;
+</pre><img vspace="5" hspace="5" src="DEMO_stent_hexahedral_sweeping_03.png" alt=""> <img vspace="5" hspace="5" src="DEMO_stent_hexahedral_sweeping_04.png" alt=""> <h2 id="11">Sweeping section allong curve</h2><p>Normally <tt>sweepLoft</tt> produces patch data as an output (e.g. faces and vertices). However these outputs are supressed here and the coordinate mesh output is instead used to create a hexahedral mesh. See also <tt>HELP_sweepLoft</tt></p><pre class="codeinput">numTwist=0; <span class="comment">%Number of additional twists of loft feature around guide curve</span>
+numStepsSweep=numStepsCircumference; <span class="comment">%Number of steps for loft feature from sketch 1 to sketch 2</span>
+plotOn=0; <span class="comment">%Turn on plotting to view lofting behaviour</span>
+[~,~,~,S]=sweepLoft(V_section,V_section,n3,n3,V_guide_curve,numStepsSweep,numTwist,plotOn);
+</pre><h2 id="12">Construct hexahedral mesh</h2><pre class="codeinput">X=S.X'; Y=S.Y'; Z=S.Z'; <span class="comment">%Coordinate matrices</span>
+V=[X(:) Y(:) Z(:)]; <span class="comment">%Create node list</span>
+
+F=reshape((1:1:size(V,1)),4,size(V,1)/4)'; <span class="comment">%All top and bottom faces</span>
+E=[F(2:end,:) F(1:end-1,:)]; <span class="comment">%The hexahedral elements</span>
+[E,V]=mergeVertices(E,V); <span class="comment">%Merge nodes (start and end are not shared yet)</span>
+C=hexVol(E,V); <span class="comment">%Get hexahedral element volumes</span>
+</pre><p>Visualize hexahedral mesh</p><pre class="codeinput">[F,CF]=element2patch(E,C); <span class="comment">%Create face data for plotting</span>
+
+cFigure; hold <span class="string">on</span>;
+title(<span class="string">'Stent hexahedral mesh'</span>,<span class="string">'fontSize'</span>,fontSize);
+plotV(V_guide_curve,<span class="string">'k-'</span>,<span class="string">'lineWidth'</span>,3);
+gpatch(F,V,CF,<span class="string">'k'</span>,1);
+<span class="comment">% patchNormPlot(F,V); %Check normal directions</span>
+colormap <span class="string">gjet</span>; colorbar;
+axisGeom;
+camlight <span class="string">headlight</span>;
+drawnow;
+</pre><img vspace="5" hspace="5" src="DEMO_stent_hexahedral_sweeping_05.png" alt=""> <img vspace="5" hspace="5" src="DEMO_stent_hexahedral_sweeping_06.png" alt=""> <h2 id="14">Refine mesh</h2><p>The swept mesh can be refined through slitting. The splitting can be homogeneous or only in a particular direction (see HELP_subHex|) Split method explanation: 1: Overall splitting in all directions 2: Split allong curve direction 3: Split axially 4: Splint inward</p><pre class="codeinput">splitMethod=3;
+nRefine=1;
+[E,V,Cs]=subHex(E,V,nRefine,splitMethod);
+
+splitMethod=4;
+nRefine=1;
+[E,V,Css]=subHex(E,V,nRefine,splitMethod);
+C=hexVol(E,V); <span class="comment">%Get hexahedral element volumes</span>
+
+Cs=Cs(Css); <span class="comment">%Colors for original element indices (and sweeping steps)</span>
+</pre><p>Visualize hexahedral mesh</p><pre class="codeinput">[F,CF]=element2patch(E,C); <span class="comment">%Create face data for plotting</span>
+
+cFigure; hold <span class="string">on</span>;
+title(<span class="string">'Stent hexahedral mesh'</span>,<span class="string">'fontSize'</span>,fontSize);
+plotV(V_guide_curve,<span class="string">'k-'</span>,<span class="string">'lineWidth'</span>,3);
+gpatch(F,V,CF,<span class="string">'k'</span>,1);
+<span class="comment">% patchNormPlot(F,V);</span>
+colormap <span class="string">gjet</span>; colorbar;
+axisGeom;
+camlight <span class="string">headlight</span>;
+drawnow;
+</pre><img vspace="5" hspace="5" src="DEMO_stent_hexahedral_sweeping_07.png" alt=""> <h2 id="16">Create additional segments</h2><pre class="codeinput">E_cell=repmat({E},1,numSegments);
+V_cell=repmat({V},1,numSegments);
+<span class="keyword">for</span> q=1:1:numSegments
+    V_cell{q}(:,3)=V_cell{q}(:,3)+((q-1)*segmentAxialOffset);
+<span class="keyword">end</span>
+[ET,VT,CT]=joinElementSets(E_cell,V_cell);
+</pre><p>Visualize composed segments and animate sweep</p><pre class="codeinput">[FT,CTF]=element2patch(ET,CT); <span class="comment">%Create face data for plotting</span>
+
+hf=cFigure;
+gtitle(<span class="string">'Stent hexahedral mesh'</span>,fontSize);
+subplot(1,2,1); hold <span class="string">on</span>;
+plotV(V_guide_curve,<span class="string">'k-'</span>,<span class="string">'lineWidth'</span>,3);
+hp=gpatch(F,V,<span class="string">'gw'</span>,<span class="string">'k'</span>,1);
+plotV(V_guide_curve,<span class="string">'k-'</span>,<span class="string">'lineWidth'</span>,3);
+axisGeom;
+camlight <span class="string">headlight</span>;
+axis <span class="string">off</span>; axis <span class="string">manual</span>;
+
+subplot(1,2,2); hold <span class="string">on</span>;
+gpatch(FT,VT,<span class="string">'gw'</span>,<span class="string">'none'</span>,1);
+axisGeom;
+camlight <span class="string">headlight</span>;
+lighting <span class="string">gouraud</span>
+axis <span class="string">off</span>;
+drawnow;
+</pre><img vspace="5" hspace="5" src="DEMO_stent_hexahedral_sweeping_08.png" alt=""> <img vspace="5" hspace="5" src="DEMO_stent_hexahedral_sweeping_09.png" alt=""> <pre class="codeinput">[F,CFs]=element2patch(E,Cs); <span class="comment">%Create face data for plotting</span>
+
+nSteps=40; <span class="comment">%Number of animation steps</span>
+animStruct.Time=round(linspace(1,max(CFs(:)),nSteps));<span class="comment">%Create the time vector</span>
+
+<span class="keyword">for</span> q=1:1:nSteps
+    F_now=F(ismember(CFs,1:animStruct.Time(q)),:);
+    <span class="comment">%Set entries in animation structure</span>
+    animStruct.Handles{q}=hp; <span class="comment">%Handles of objects to animate</span>
+    animStruct.Props{q}={<span class="string">'Faces'</span>}; <span class="comment">%Properties of objects to animate</span>
+    animStruct.Set{q}={F_now}; <span class="comment">%Property values for to set in order to animate</span>
+<span class="keyword">end</span>
+
+anim8(hf,animStruct);
+</pre><img vspace="5" hspace="5" src="DEMO_stent_hexahedral_sweeping_10.png" alt=""> <h2 id="19">Export inp file</h2><pre class="codeinput">elementStruct.E=ET;
+elementStruct.E_ind=(1:size(ET,1))';
+elementStruct.E_type=<span class="string">'*ELEMENT, TYPE=C3D8, ELSET=PART-STENT'</span>;
+nodeStruct.N=VT;
+nodeStruct.N_ind=(1:size(VT,1))';
+
+pathName = fileparts(fileparts(mfilename(<span class="string">'fullpath'</span>)));
+fileName=fullfile(pathName,<span class="string">'data'</span>,<span class="string">'INP'</span>,<span class="string">'stentMesh.inp'</span>);
+export_INP(elementStruct,nodeStruct,fileName);
+</pre><pre class="codeoutput">--- export_INP ---
+CREATING NODE AND ELEMENT TEXT FIELDS
+---&gt; Creating node text field
+---&gt; Creating element text field
+EXPORTING TO INP FILE...
+DONE!
+</pre><p class="footer"><br><a href="https://www.mathworks.com/products/matlab/">Published with MATLAB&reg; R2018b</a><br></p></div><!--
+##### SOURCE BEGIN #####
+%% DEMO_stent_hexahedral_sweeping
+% Below is a demonstration for:
+% 
+% * Creating a hexahedral mesh for a vascular stent by sweeping allong a
+% curve and copying over the segments. 
+
+%% Keywords
+% * Sweeping, sweepLoft
+% * Hexahedral mesh
+% * stent, vascular
+% * Exporting Abaqus, .inp
+
+%%
+clear; close all; clc;
+
+%%
+% plot settings
+
+fontSize=25; 
+markerSize=10;
+lineWidth=1;
+
+%% Contol parameters
+
+stentRadius=3; %The outer radius of the stent
+numPeriodsWave=10; %The number of periods to use for a sinusoidal modulation
+numStepsPeriod=100; %Number of sweeping steps allong a single period segment for sweeping 
+waveAmplitude=0.9; %Amplitude of the sinusoidal modulation
+stentSectionHeight=0.1; %Height of the stent wire
+stentSectionWidth=0.1; %Width of the stent wire
+numStepsCircumference=(numPeriodsWave*numStepsPeriod)+1; %Number of sweeping steps across curve
+overSampleFactorCurve=10; %Oversample factor curve
+numSegments=8; %Number of stent segments to stack
+segmentAxialOffset=waveAmplitude*2; %Axial offset for stacking stents
+
+%% Build stent section 
+% The rectangular stent wire section is created here. 
+
+V_section=[-stentSectionWidth/2  stentSectionHeight/2 0; ...
+            stentSectionWidth/2  stentSectionHeight/2 0; ...
+            stentSectionWidth/2 -stentSectionHeight/2 0; ...
+           -stentSectionWidth/2 -stentSectionHeight/2 0; ...
+            ];
+        
+%%
+% Visualize stent section 
+cFigure; hold on; 
+title('Stent section','fontSize',fontSize);
+plotV(V_section,'b.-','lineWidth',lineWidth,'MarkerSize',markerSize);
+view(2); axis tight; axis equal; grid on; box on; 
+set(gca,'fontSize',fontSize);
+drawnow; 
+
+%% Create guide curve
+% The sweepLoft (see |HELP_sweepLoft|) is created here. First and angle
+% based parameterization is created. Next this curve is evenly sample
+% across the curve length (see |HELP_evenlySampleCurve|).
+t=linspace(0,2*pi,numStepsCircumference*overSampleFactorCurve); %Angles
+t=t(1:end-1); %Remove last point so it is not closed for resampling
+x=stentRadius.*sin(t); %x-coordinates
+y=stentRadius.*cos(t); %y-coordinates
+z=waveAmplitude.*sin(numPeriodsWave*t); %z-coordinates
+V_guide_curve=[x(:) y(:) z(:)]; %Collected curve nodes
+[V_guide_curve] = evenlySampleCurve(V_guide_curve,numStepsCircumference-1,'pchip',1); %Resample curve evenly
+V_guide_curve(end+1,:)=V_guide_curve(1,:); %Append start to end so it is a closed loop
+
+%%
+% Visualize guide curve
+cFigure; hold on; 
+title('Stent guide curve','fontSize',fontSize);
+plotV(V_guide_curve,'k.-','lineWidth',lineWidth,'MarkerSize',markerSize);
+axisGeom; 
+drawnow; 
+
+%% Position stent section at the start and end of the guide curve
+% Next the section is translated and rotated so it is placed at the start
+% of the guide curve such that the curve normal points allong the curve. 
+
+% Create rotation matrix
+n3=vecnormalize(V_guide_curve(2,:)-V_guide_curve(1,:)); %Out of section normal direction z ish direction
+[~,indMin]=min(dot(n3(ones(1,2),:),[1 0 0; 0 1 0],2)); %Get index most appropriate initial other axis
+switch indMin
+    case 1
+        n1=[1 0 0]; %Initialized x direction
+        n2=vecnormalize(cross(n3,n1)); %y ish direction
+        n1=vecnormalize(cross(n2,n3)); %Proper x ish direction
+        R=[n1; n2; n3]; %Rotation matrix
+    case 2
+        n2=[0 1 0]; %Initialized y direction
+        n1=vecnormalize(cross(n2,n3)); %x ish direction
+        n2=vecnormalize(cross(n3,n1)); %Proper y ish direction
+        R=[n1; n2; n3]; %Rotation matrix
+end
+
+p1=V_guide_curve(1,:); %The start node
+V_section=V_section*R; %Rotate the section 
+V_section=V_section+p1(ones(size(V_section,1),1),:); % Translate coordinate to start
+
+%%
+% Visualize guide curve
+cFigure; hold on; 
+title('Stent section positioned on guide curve','fontSize',fontSize);
+plotV(V_guide_curve,'k-','lineWidth',1);
+plotV(V_section,'k.-','lineWidth',lineWidth,'MarkerSize',markerSize);
+quiverVec(p1,n1,1,'r');
+quiverVec(p1,n2,1,'g');
+quiverVec(p1,n3,1,'b');
+axisGeom; 
+drawnow; 
+
+%% Sweeping section allong curve
+% Normally |sweepLoft| produces patch data as an output (e.g. faces and
+% vertices). However these outputs are supressed here and the coordinate
+% mesh output is instead used to create a hexahedral mesh. See also |HELP_sweepLoft|
+
+numTwist=0; %Number of additional twists of loft feature around guide curve
+numStepsSweep=numStepsCircumference; %Number of steps for loft feature from sketch 1 to sketch 2
+plotOn=0; %Turn on plotting to view lofting behaviour
+[~,~,~,S]=sweepLoft(V_section,V_section,n3,n3,V_guide_curve,numStepsSweep,numTwist,plotOn);
+
+%% Construct hexahedral mesh
+
+X=S.X'; Y=S.Y'; Z=S.Z'; %Coordinate matrices
+V=[X(:) Y(:) Z(:)]; %Create node list
+
+F=reshape((1:1:size(V,1)),4,size(V,1)/4)'; %All top and bottom faces
+E=[F(2:end,:) F(1:end-1,:)]; %The hexahedral elements
+[E,V]=mergeVertices(E,V); %Merge nodes (start and end are not shared yet) 
+C=hexVol(E,V); %Get hexahedral element volumes
+
+%%
+% Visualize hexahedral mesh
+[F,CF]=element2patch(E,C); %Create face data for plotting
+
+cFigure; hold on; 
+title('Stent hexahedral mesh','fontSize',fontSize);
+plotV(V_guide_curve,'k-','lineWidth',3);
+gpatch(F,V,CF,'k',1);
+% patchNormPlot(F,V); %Check normal directions
+colormap gjet; colorbar; 
+axisGeom; 
+camlight headlight;
+drawnow; 
+
+%% Refine mesh
+% The swept mesh can be refined through slitting. The splitting can be
+% homogeneous or only in a particular direction (see HELP_subHex|)
+% Split method explanation:
+% 1: Overall splitting in all directions
+% 2: Split allong curve direction
+% 3: Split axially
+% 4: Splint inward
+
+splitMethod=3; 
+nRefine=1; 
+[E,V,Cs]=subHex(E,V,nRefine,splitMethod);
+
+splitMethod=4; 
+nRefine=1; 
+[E,V,Css]=subHex(E,V,nRefine,splitMethod);
+C=hexVol(E,V); %Get hexahedral element volumes
+
+Cs=Cs(Css); %Colors for original element indices (and sweeping steps)
+
+%%
+% Visualize hexahedral mesh
+[F,CF]=element2patch(E,C); %Create face data for plotting
+
+cFigure; hold on; 
+title('Stent hexahedral mesh','fontSize',fontSize);
+plotV(V_guide_curve,'k-','lineWidth',3);
+gpatch(F,V,CF,'k',1);
+% patchNormPlot(F,V);
+colormap gjet; colorbar; 
+axisGeom; 
+camlight headlight;
+drawnow; 
+
+%% Create additional segments
+E_cell=repmat({E},1,numSegments);
+V_cell=repmat({V},1,numSegments);
+for q=1:1:numSegments    
+    V_cell{q}(:,3)=V_cell{q}(:,3)+((q-1)*segmentAxialOffset);    
+end
+[ET,VT,CT]=joinElementSets(E_cell,V_cell);
+
+%%
+% Visualize composed segments and animate sweep
+
+[FT,CTF]=element2patch(ET,CT); %Create face data for plotting
+
+hf=cFigure; 
+gtitle('Stent hexahedral mesh',fontSize);
+subplot(1,2,1); hold on; 
+plotV(V_guide_curve,'k-','lineWidth',3);
+hp=gpatch(F,V,'gw','k',1);
+plotV(V_guide_curve,'k-','lineWidth',3);
+axisGeom; 
+camlight headlight;
+axis off; axis manual;
+
+subplot(1,2,2); hold on; 
+gpatch(FT,VT,'gw','none',1);
+axisGeom; 
+camlight headlight;
+lighting gouraud
+axis off; 
+drawnow; 
+
+%%
+
+[F,CFs]=element2patch(E,Cs); %Create face data for plotting
+
+nSteps=40; %Number of animation steps
+animStruct.Time=round(linspace(1,max(CFs(:)),nSteps));%Create the time vector
+
+for q=1:1:nSteps    
+    F_now=F(ismember(CFs,1:animStruct.Time(q)),:);    
+    %Set entries in animation structure
+    animStruct.Handles{q}=hp; %Handles of objects to animate
+    animStruct.Props{q}={'Faces'}; %Properties of objects to animate
+    animStruct.Set{q}={F_now}; %Property values for to set in order to animate
+end
+
+anim8(hf,animStruct);
+
+%% Export inp file
+% 
+elementStruct.E=ET;
+elementStruct.E_ind=(1:size(ET,1))';
+elementStruct.E_type='*ELEMENT, TYPE=C3D8, ELSET=PART-STENT';
+nodeStruct.N=VT;
+nodeStruct.N_ind=(1:size(VT,1))';
+
+pathName = fileparts(fileparts(mfilename('fullpath')));
+fileName=fullfile(pathName,'data','INP','stentMesh.inp');
+export_INP(elementStruct,nodeStruct,fileName);
+
+
+##### SOURCE END #####
+--></body></html>
