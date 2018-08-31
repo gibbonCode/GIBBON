@@ -42,7 +42,7 @@ drawnow;
 %%
 %Populate the animaStruct
 
-nSteps=150; %Number of animation steps
+nSteps=25; %Number of animation steps
 
 %Create the time vector
 animStruct.Time=linspace(0,1,nSteps);

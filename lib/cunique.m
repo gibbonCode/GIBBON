@@ -5,7 +5,7 @@ function [varargout]=cunique(A)
 %This function is similar to MATLAB's unique function. There are three
 %differences: 1) An additional 4th optional output is available providing
 %the count, or number of occurances, for each element in the input array.
-%2) The 2nd output mathces the size of the first input, 3) The 3rd output
+%2) The 2nd output mathes the size of the first input, 3) The 3rd output
 %is reshaped to be the size of the input variable. 
 %
 % See also: unique

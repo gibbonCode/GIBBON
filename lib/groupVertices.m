@@ -12,6 +12,10 @@ function [varargout]=groupVertices(varargin)
 %% Parse input
 
 switch nargin
+    case 1
+        F=varargin{1};
+        V=[];
+        waitBarOption=0;
     case 2
         F=varargin{1};
         V=varargin{2};
@@ -23,11 +27,16 @@ switch nargin
 end
 waitBarOption=waitBarOption>0;
 
+if isempty(V) %If not provided assume max in F is appropriate
+    numVertices=max(F(:));
+else
+    numVertices=size(V,1);
+end
+
 %% Get vertex-vertex connectivity
 
 % C=patchConnectivity(F,V);
 % vertexVertexConnectivity=C.vertex.vertex;
-numVertices=size(V,1);
 E=patchEdges(F,0); %The non-unique edge set
 E_sort=sort(E,2); %Sorted in column dir so 1 2 looks the same as 2 1
 indEdges=sub2indn(numVertices*ones(1,2),E_sort); %Create "virtual" indices
@@ -45,7 +54,7 @@ if waitBarOption==1
     hw = waitbar(0,'Grouping vertices...');
 end
 
-groupIndexVertices=zeros(size(V,1),1);
+groupIndexVertices=zeros(numVertices,1);
 groupCounter=1; %The group counter
 allDone=0;
 while allDone==0
