@@ -1,0 +1,639 @@
+
+<!DOCTYPE html
+  PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html><head>
+      <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+   <!--
+This HTML was auto-generated from MATLAB code.
+To make changes, update the MATLAB code and republish this document.
+      --><title>DEMO_stent_design_sigmoid_01</title><meta name="generator" content="MATLAB 9.5"><link rel="schema.DC" href="http://purl.org/dc/elements/1.1/"><meta name="DC.date" content="2018-09-05"><meta name="DC.source" content="DEMO_stent_design_sigmoid_01.m"><style type="text/css">
+html,body,div,span,applet,object,iframe,h1,h2,h3,h4,h5,h6,p,blockquote,pre,a,abbr,acronym,address,big,cite,code,del,dfn,em,font,img,ins,kbd,q,s,samp,small,strike,strong,sub,sup,tt,var,b,u,i,center,dl,dt,dd,ol,ul,li,fieldset,form,label,legend,table,caption,tbody,tfoot,thead,tr,th,td{margin:0;padding:0;border:0;outline:0;font-size:100%;vertical-align:baseline;background:transparent}body{line-height:1}ol,ul{list-style:none}blockquote,q{quotes:none}blockquote:before,blockquote:after,q:before,q:after{content:'';content:none}:focus{outine:0}ins{text-decoration:none}del{text-decoration:line-through}table{border-collapse:collapse;border-spacing:0}
+
+html { min-height:100%; margin-bottom:1px; }
+html body { height:100%; margin:0px; font-family:Arial, Helvetica, sans-serif; font-size:10px; color:#000; line-height:140%; background:#fff none; overflow-y:scroll; }
+html body td { vertical-align:top; text-align:left; }
+
+h1 { padding:0px; margin:0px 0px 25px; font-family:Arial, Helvetica, sans-serif; font-size:1.5em; color:#d55000; line-height:100%; font-weight:normal; }
+h2 { padding:0px; margin:0px 0px 8px; font-family:Arial, Helvetica, sans-serif; font-size:1.2em; color:#000; font-weight:bold; line-height:140%; border-bottom:1px solid #d6d4d4; display:block; }
+h3 { padding:0px; margin:0px 0px 5px; font-family:Arial, Helvetica, sans-serif; font-size:1.1em; color:#000; font-weight:bold; line-height:140%; }
+
+a { color:#005fce; text-decoration:none; }
+a:hover { color:#005fce; text-decoration:underline; }
+a:visited { color:#004aa0; text-decoration:none; }
+
+p { padding:0px; margin:0px 0px 20px; }
+img { padding:0px; margin:0px 0px 20px; border:none; }
+p img, pre img, tt img, li img, h1 img, h2 img { margin-bottom:0px; } 
+
+ul { padding:0px; margin:0px 0px 20px 23px; list-style:square; }
+ul li { padding:0px; margin:0px 0px 7px 0px; }
+ul li ul { padding:5px 0px 0px; margin:0px 0px 7px 23px; }
+ul li ol li { list-style:decimal; }
+ol { padding:0px; margin:0px 0px 20px 0px; list-style:decimal; }
+ol li { padding:0px; margin:0px 0px 7px 23px; list-style-type:decimal; }
+ol li ol { padding:5px 0px 0px; margin:0px 0px 7px 0px; }
+ol li ol li { list-style-type:lower-alpha; }
+ol li ul { padding-top:7px; }
+ol li ul li { list-style:square; }
+
+.content { font-size:1.2em; line-height:140%; padding: 20px; }
+
+pre, code { font-size:12px; }
+tt { font-size: 1.2em; }
+pre { margin:0px 0px 20px; }
+pre.codeinput { padding:10px; border:1px solid #d3d3d3; background:#f7f7f7; }
+pre.codeoutput { padding:10px 11px; margin:0px 0px 20px; color:#4c4c4c; }
+pre.error { color:red; }
+
+@media print { pre.codeinput, pre.codeoutput { word-wrap:break-word; width:100%; } }
+
+span.keyword { color:#0000FF }
+span.comment { color:#228B22 }
+span.string { color:#A020F0 }
+span.untermstring { color:#B20000 }
+span.syscmd { color:#B28C00 }
+
+.footer { width:auto; padding:10px 0px; margin:25px 0px 0px; border-top:1px dotted #878787; font-size:0.8em; line-height:140%; font-style:italic; color:#878787; text-align:left; float:none; }
+.footer p { margin:0px; }
+.footer a { color:#878787; }
+.footer a:hover { color:#878787; text-decoration:underline; }
+.footer a:visited { color:#878787; }
+
+table th { padding:7px 5px; text-align:left; vertical-align:middle; border: 1px solid #d6d4d4; font-weight:bold; }
+table td { padding:7px 5px; text-align:left; vertical-align:top; border:1px solid #d6d4d4; }
+
+
+
+
+
+  </style></head><body><div class="content"><h1>DEMO_stent_design_sigmoid_01</h1><!--introduction--><p>Below is a demonstration for:</p><div><ul><li>Creating a hexahedral mesh for a vascular stent by sweeping allong a curve and copying over the segments.</li></ul></div><!--/introduction--><h2>Contents</h2><div><ul><li><a href="#1">Keywords</a></li><li><a href="#3">Plot settings</a></li><li><a href="#7">Create curves for a single stent segment</a></li><li><a href="#13">Offset in the angular direction</a></li><li><a href="#14">Offset in the axial direction</a></li><li><a href="#16">Wrap stent to create cylinder</a></li><li><a href="#17">Thicken quadrilateral elements to build hexahedral elements</a></li></ul></div><h2 id="1">Keywords</h2><div><ul><li>Sigmoid</li><li>quadThicken</li><li>Hexahedral mesh</li><li>stent, vascular</li><li>Exporting Abaqus, .inp</li></ul></div><pre class="codeinput">clear; close <span class="string">all</span>; clc;
+</pre><h2 id="3">Plot settings</h2><pre class="codeinput">fontSize=25;
+markerSize1=15;
+markerSize2=10;
+lineWidth1=2;
+lineWidth2=0.5;
+</pre><pre class="codeinput">stentRadius=3;
+numRadialSegments=5;
+numAxialSegments=8;
+nSubQuad=0;
+
+stentSectionWidth=0.1;
+pointSpacing=stentSectionWidth*0.5;
+segmentSeperation=stentSectionWidth/4;
+
+
+wb=((pi*stentRadius)/numRadialSegments)/3-stentSectionWidth;<span class="comment">%(pi/numRadialSegments)/;</span>
+h=2;
+f=2;
+</pre><p>Create sigmoid curve</p><pre class="codeinput">n=1000;
+y=linspace(-1,1,n);
+<span class="keyword">if</span> f==0
+    x=y;
+<span class="keyword">else</span>
+    x(y&gt;=0) =(exp(-f*abs(y(y&gt;0)))-1)./(exp(-f)-1);
+    x(y&lt;0)  =-(exp(-f*abs(y(y&lt;0)))-1)./(exp(-f)-1);
+<span class="keyword">end</span>
+x=wb/2.*x; <span class="comment">%Scale width</span>
+x=x+wb/2; <span class="comment">%Shift</span>
+y=y+h/2; <span class="comment">%shift;</span>
+V=[x(:) y(:)];
+
+<span class="comment">%Resample based on point spacing</span>
+numPointsResample=round(max(pathLength(V))/pointSpacing);
+[V] = evenlySampleCurve(V,numPointsResample,<span class="string">'pchip'</span>,0);
+x=V(:,1)-min(V(:,1));
+y=V(:,2);
+</pre><p>Visualize sigmoid curve</p><pre class="codeinput">cFigure; hold <span class="string">on</span>
+gtitle(<span class="string">'The sigmoid curve'</span>,fontSize);
+plotV(V,<span class="string">'b.-'</span>,<span class="string">'MarkerSize'</span>,markerSize1,<span class="string">'LineWidth'</span>,lineWidth1);
+axis <span class="string">equal</span>; axis <span class="string">tight</span>; grid <span class="string">on</span>; box <span class="string">on</span>;
+set(gca,<span class="string">'FontSize'</span>,fontSize);
+drawnow;
+</pre><img vspace="5" hspace="5" src="DEMO_stent_design_sigmoid_01_01.png" alt=""> <h2 id="7">Create curves for a single stent segment</h2><pre class="codeinput">offsetTotal=segmentSeperation+stentSectionWidth;
+
+n1=floor(offsetTotal/pointSpacing)+1;
+V1=[zeros(n1,1) linspace(-offsetTotal,0,n1)'];
+
+V2=[x(:) y(:)];
+V2(:,1)=V2(:,1)-min(V2(1,1));
+V2(:,2)=V2(:,2)-min(V2(1,2));
+
+numStepsRadial=round((pi*stentSectionWidth)./pointSpacing);
+t=linspace(-pi/2,pi/2,numStepsRadial);
+xc=stentSectionWidth*sin(t);
+yc=stentSectionWidth*cos(t);
+V3=[xc(:) yc(:)];
+V3(:,1)=V3(:,1)-V3(1,1)+V2(end,1);
+V3(:,2)=V3(:,2)-V3(1,2)+V2(end,2);
+
+x4=-x;
+V4=flipud([x4(:) y(:)]);
+V4(:,1)=V4(:,1)-V4(1,1)+V3(end,1);
+V4(:,2)=V4(:,2)-V4(1,2)+V3(end,2);
+
+V5=flipud([-V4(:,1) V4(:,2)]);
+V5(:,1)=V5(:,1)-V5(1,1)+V4(end,1);
+V5(:,2)=V5(:,2)-V5(1,2)+V4(end,2);
+
+V6=V1;
+V6(:,1)=V6(:,1)-V6(1,1)+V5(end,1);
+V6(:,2)=V6(:,2)-V6(1,2)+V5(end,2);
+
+V7=V1;
+V7(:,1)=V7(:,1)+stentSectionWidth;
+
+v=[V2(2:end,:)-V2(1:end-1,:); V2(2,:)-V2(1,:)];
+v=vecnormalize(v);
+v(:,3)=0;
+z=[0 0 1];
+v2=cross(v,z(ones(size(v,1),1),:),2);
+v2(1,:)=[1 0 0];
+v2(end,:)=[1 0 0];
+v2=v2(:,[1 2]);
+V8=V2+v2*stentSectionWidth;
+[V8] = evenlySampleCurve(V8,size(V8,1),<span class="string">'pchip'</span>,0);
+
+V9=flipud(V8);
+V9(:,1)=-V9(:,1);
+V9(:,1)=V9(:,1)-V9(1,1)+V8(end,1);
+
+V10=(V3);
+V10(:,2)=-V10(:,2);
+V10(:,1)=V10(:,1)-V10(1,1)+V9(end,1);
+V10(:,2)=V10(:,2)-V10(1,2)+V9(end,2);
+
+V11=V8;
+V11(:,1)=V11(:,1)-V11(1,1)+V10(end,1);
+
+V12=V1;
+V12(:,1)=V12(:,1)-V12(1,1)+V11(end,1);
+V12(:,2)=V12(:,2)-V12(1,2)+V11(end,2);
+
+V_curve_part1=[V1; V2; V3; V4; V5; V6;  ];
+V_curve_part2=[V7; V8; V9; V10; V11; V12];
+V_curve=[V_curve_part1; flipud(V_curve_part2) ];
+
+[~,ind1,ind2]=unique(pround(V_curve,5),<span class="string">'rows'</span>);
+L=false(size(V,1),1);
+L(ind1)=1;
+V_curve=V_curve(L,:);
+</pre><pre class="codeinput">nPlot=12;
+plotColors=hsv(nPlot);
+
+cFigure; hold <span class="string">on</span>;
+gtitle(<span class="string">'The curve parts'</span>,fontSize);
+hp=plotV(V1,<span class="string">'k.-'</span>,<span class="string">'MarkerSize'</span>,markerSize1,<span class="string">'LineWidth'</span>,lineWidth1); hp.Color=plotColors(1,:);
+hp=plotV(V2,<span class="string">'k.-'</span>,<span class="string">'MarkerSize'</span>,markerSize1,<span class="string">'LineWidth'</span>,lineWidth1); hp.Color=plotColors(2,:);
+hp=plotV(V3,<span class="string">'k.-'</span>,<span class="string">'MarkerSize'</span>,markerSize1,<span class="string">'LineWidth'</span>,lineWidth1); hp.Color=plotColors(3,:);
+hp=plotV(V4,<span class="string">'k.-'</span>,<span class="string">'MarkerSize'</span>,markerSize1,<span class="string">'LineWidth'</span>,lineWidth1); hp.Color=plotColors(4,:);
+hp=plotV(V5,<span class="string">'k.-'</span>,<span class="string">'MarkerSize'</span>,markerSize1,<span class="string">'LineWidth'</span>,lineWidth1); hp.Color=plotColors(5,:);
+hp=plotV(V6,<span class="string">'k.-'</span>,<span class="string">'MarkerSize'</span>,markerSize1,<span class="string">'LineWidth'</span>,lineWidth1); hp.Color=plotColors(6,:);
+hp=plotV(V7,<span class="string">'k.-'</span>,<span class="string">'MarkerSize'</span>,markerSize1,<span class="string">'LineWidth'</span>,lineWidth1); hp.Color=plotColors(7,:);
+hp=plotV(V8,<span class="string">'k.-'</span>,<span class="string">'MarkerSize'</span>,markerSize1,<span class="string">'LineWidth'</span>,lineWidth1); hp.Color=plotColors(8,:);
+hp=plotV(V9,<span class="string">'k.-'</span>,<span class="string">'MarkerSize'</span>,markerSize1,<span class="string">'LineWidth'</span>,lineWidth1); hp.Color=plotColors(9,:);
+hp=plotV(V10,<span class="string">'k.-'</span>,<span class="string">'MarkerSize'</span>,markerSize1,<span class="string">'LineWidth'</span>,lineWidth1); hp.Color=plotColors(10,:);
+hp=plotV(V11,<span class="string">'k.-'</span>,<span class="string">'MarkerSize'</span>,markerSize1,<span class="string">'LineWidth'</span>,lineWidth1); hp.Color=plotColors(11,:);
+hp=plotV(V12,<span class="string">'k.-'</span>,<span class="string">'MarkerSize'</span>,markerSize1,<span class="string">'LineWidth'</span>,lineWidth1); hp.Color=plotColors(12,:);
+plotV(V_curve,<span class="string">'k.-'</span>,<span class="string">'MarkerSize'</span>,markerSize2,<span class="string">'LineWidth'</span>,lineWidth2);
+quiverVec(V2,v2,stentSectionWidth,<span class="string">'k'</span>);
+colormap(plotColors); caxis([1 nPlot]); icolorbar;
+axis <span class="string">equal</span>; axis <span class="string">tight</span>; grid <span class="string">on</span>; box <span class="string">on</span>;
+set(gca,<span class="string">'FontSize'</span>,fontSize);
+drawnow;
+</pre><img vspace="5" hspace="5" src="DEMO_stent_design_sigmoid_01_02.png" alt=""> <pre class="codeinput"><span class="comment">%Initial Delaunay triangulation</span>
+ns= size(V_curve,1);
+Cs=[(1:ns)' [2:ns 1]'];
+DT = delaunayTriangulation(V_curve(:,1),V_curve(:,2),Cs);
+Vs=DT.Points;
+Fs=DT.ConnectivityList;
+
+<span class="comment">%Remove faces not inside region</span>
+L = isInterior(DT);
+Fs=Fs(L,:);
+
+maxAngleDeviation=40*(pi/180);
+[F_quad,V_quad]=tri2quadGroupSplit(Fs,Vs,maxAngleDeviation);
+
+np=size(V_quad,1);
+V_quad=[V_quad; V_quad];
+V_quad(np+1:end,1)=-V_quad(np+1:end,1)+2*max(V_quad(:,1));
+F_quad=[F_quad; fliplr(F_quad)+np];
+V_quad(:,2)=V_quad(:,2)-min(V_quad(:,2)); <span class="comment">%Shift so bottom is at zero</span>
+</pre><pre class="codeinput"><span class="keyword">if</span> nSubQuad&gt;0
+    [F_quad,V_quad]=subQuad(F_quad,V_quad,nSubQuad);
+<span class="keyword">end</span>
+</pre><pre class="codeinput">[Eb,E,indBoundary]=patchBoundary(F_quad,V_quad);
+
+smoothPar.LambdaSmooth=0.5;
+smoothPar.n=250;
+smoothPar.Tolerance=0.01;
+smoothPar.RigidConstraints=unique(Eb(:));
+[V_quad]=tesSmooth(F_quad,V_quad,[],smoothPar);
+</pre><pre class="codeinput">cFigure;
+hold <span class="string">on</span>;
+gtitle(<span class="string">'Quadrilateral mesh of stent segment'</span>,fontSize);
+gpatch(F_quad,V_quad,<span class="string">'gw'</span>,<span class="string">'g'</span>);
+axis <span class="string">equal</span>; axis <span class="string">tight</span>; grid <span class="string">on</span>; box <span class="string">on</span>;
+set(gca,<span class="string">'FontSize'</span>,fontSize);
+drawnow;
+</pre><img vspace="5" hspace="5" src="DEMO_stent_design_sigmoid_01_03.png" alt=""> <h2 id="13">Offset in the angular direction</h2><pre class="codeinput">V_quad_cell=repmat({V_quad},1,numRadialSegments);
+F_quad_cell=repmat({F_quad},1,numRadialSegments);
+<span class="keyword">for</span> q=1:1:numRadialSegments
+    V_quad_cell{q}(:,1)=V_quad_cell{q}(:,1)+q*max(V_quad(:,1));
+<span class="keyword">end</span>
+
+[F_quad,V_quad]=joinElementSets(F_quad_cell,V_quad_cell);
+[F_quad,V_quad]=mergeVertices(F_quad,V_quad);
+</pre><h2 id="14">Offset in the axial direction</h2><pre class="codeinput">h=max(V_quad(:,2))-min(V_quad(:,2));
+V_quad_cell=repmat({V_quad},1,numAxialSegments);
+F_quad_cell=repmat({F_quad},1,numAxialSegments);
+<span class="keyword">for</span> q=2:1:numAxialSegments
+    V_now=V_quad_cell{q};
+    <span class="keyword">if</span> iseven(q)
+        F_quad_cell{q}=fliplr(F_quad_cell{q});
+        V_now(:,2)=-V_now(:,2);
+        V_now(:,2)=V_now(:,2)-min(V_now(:,2));
+        V_quad_cell{q}(:,2)=V_now(:,2)-(q-1)*h;
+    <span class="keyword">else</span>
+        V_quad_cell{q}(:,2)=V_now(:,2)-(q-1)*h;
+    <span class="keyword">end</span>
+
+<span class="keyword">end</span>
+
+[F_quad,V_quad]=joinElementSets(F_quad_cell,V_quad_cell);
+[F_quad,V_quad]=mergeVertices(F_quad,V_quad);
+</pre><pre class="codeinput">cFigure; hold <span class="string">on</span>;
+gtitle(<span class="string">'Quadrilateral mesh of unwrapped stent'</span>,fontSize);
+gpatch(F_quad,V_quad,<span class="string">'gw'</span>,<span class="string">'g'</span>);
+axis <span class="string">equal</span>; axis <span class="string">tight</span>; grid <span class="string">on</span>; box <span class="string">on</span>;
+set(gca,<span class="string">'FontSize'</span>,fontSize);
+drawnow;
+</pre><img vspace="5" hspace="5" src="DEMO_stent_design_sigmoid_01_04.png" alt=""> <h2 id="16">Wrap stent to create cylinder</h2><pre class="codeinput">T=V_quad(:,1)/stentRadius;
+[V_quad(:,1),V_quad(:,2),V_quad(:,3)]=pol2cart(T,stentRadius.*ones(size(V_quad(:,3),1),1),V_quad(:,2));
+[F_quad,V_quad,ind1]=mergeVertices(F_quad,V_quad);
+
+cFigure; hold <span class="string">on</span>;
+gtitle(<span class="string">'Quadrilateral mesh of wrapped stent'</span>,fontSize);
+gpatch(F_quad,V_quad,<span class="string">'gw'</span>,<span class="string">'g'</span>);
+<span class="comment">% patchNormPlot(F_quad,V_quad);</span>
+<span class="comment">% plotV(V_quad(Eb(:),:),'r.','MarkerSize',15);</span>
+axisGeom(gca,fontSize);
+camlight <span class="string">headlight</span>;
+drawnow;
+</pre><img vspace="5" hspace="5" src="DEMO_stent_design_sigmoid_01_05.png" alt=""> <h2 id="17">Thicken quadrilateral elements to build hexahedral elements</h2><pre class="codeinput">[E,V,Fq1,Fq2]=quadThick(F_quad,V_quad,1,stentSectionWidth,round(stentSectionWidth./pointSpacing));
+</pre><p>Visualize mesh</p><pre class="codeinput">[F,CFs]=element2patch(E,Cs); <span class="comment">%Create face data for plotting</span>
+
+cFigure; hold <span class="string">on</span>;
+gtitle(<span class="string">'Hexahedral mesh of stent'</span>,fontSize);
+gpatch(F,V,<span class="string">'bw'</span>,<span class="string">'b'</span>);
+axisGeom(gca,fontSize);
+camlight <span class="string">headlight</span>;
+drawnow;
+
+<span class="comment">% %% Export inp file</span>
+<span class="comment">% %</span>
+<span class="comment">% elementStruct.E=ET;</span>
+<span class="comment">% elementStruct.E_ind=(1:size(ET,1))';</span>
+<span class="comment">% elementStruct.E_type='*ELEMENT, TYPE=C3D8, ELSET=PART-STENT';</span>
+<span class="comment">% nodeStruct.N=VT;</span>
+<span class="comment">% nodeStruct.N_ind=(1:size(VT,1))';</span>
+<span class="comment">%</span>
+<span class="comment">% pathName = fileparts(fileparts(mfilename('fullpath')));</span>
+<span class="comment">% fileName=fullfile(pathName,'data','INP','stentMesh.inp');</span>
+<span class="comment">% export_INP(elementStruct,nodeStruct,fileName);</span>
+</pre><img vspace="5" hspace="5" src="DEMO_stent_design_sigmoid_01_06.png" alt=""> <p><img vspace="5" hspace="5" src="gibbVerySmall.gif" alt=""> </p><p><i><b>GIBBON</b></i> <a href="www.gibboncode.org">www.gibboncode.org</a></p><p><i>Kevin Mattheus Moerman</i>, <a href="gibbon.toolbox@gmail.com">gibbon.toolbox@gmail.com</a></p><p><i><b>GIBBON footer text</b></i></p><p>License: <a href="https://github.com/gibbonCode/GIBBON/blob/master/LICENSE">https://github.com/gibbonCode/GIBBON/blob/master/LICENSE</a></p><p>GIBBON: The Geometry and Image-based Bioengineering add-On. A toolbox for image segmentation, image-based modeling, meshing, and finite element analysis.</p><p>Copyright (C) 2018  Kevin Mattheus Moerman</p><p>This program is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.</p><p>This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for more details.</p><p>You should have received a copy of the GNU General Public License along with this program.  If not, see <a href="http://www.gnu.org/licenses/">http://www.gnu.org/licenses/</a>.</p><p class="footer"><br><a href="https://www.mathworks.com/products/matlab/">Published with MATLAB&reg; R2018b</a><br></p></div><!--
+##### SOURCE BEGIN #####
+%% DEMO_stent_design_sigmoid_01
+% Below is a demonstration for:
+% 
+% * Creating a hexahedral mesh for a vascular stent by sweeping allong a
+% curve and copying over the segments. 
+
+%% Keywords
+% * Sigmoid
+% * quadThicken
+% * Hexahedral mesh
+% * stent, vascular
+% * Exporting Abaqus, .inp
+
+%%
+clear; close all; clc;
+
+%% Plot settings
+fontSize=25; 
+markerSize1=15; 
+markerSize2=10; 
+lineWidth1=2; 
+lineWidth2=0.5;
+
+%%
+
+stentRadius=3; 
+numRadialSegments=5; 
+numAxialSegments=8;
+nSubQuad=0; 
+
+stentSectionWidth=0.1;
+pointSpacing=stentSectionWidth*0.5;
+segmentSeperation=stentSectionWidth/4;
+
+
+wb=((pi*stentRadius)/numRadialSegments)/3-stentSectionWidth;%(pi/numRadialSegments)/;
+h=2;
+f=2;
+
+%%
+% Create sigmoid curve
+n=1000;
+y=linspace(-1,1,n);
+if f==0
+    x=y;
+else
+    x(y>=0) =(exp(-f*abs(y(y>0)))-1)./(exp(-f)-1);
+    x(y<0)  =-(exp(-f*abs(y(y<0)))-1)./(exp(-f)-1);
+end
+x=wb/2.*x; %Scale width
+x=x+wb/2; %Shift
+y=y+h/2; %shift;
+V=[x(:) y(:)];
+
+%Resample based on point spacing
+numPointsResample=round(max(pathLength(V))/pointSpacing);
+[V] = evenlySampleCurve(V,numPointsResample,'pchip',0);
+x=V(:,1)-min(V(:,1));
+y=V(:,2);
+
+%%
+% Visualize sigmoid curve
+cFigure; hold on
+gtitle('The sigmoid curve',fontSize);
+plotV(V,'b.-','MarkerSize',markerSize1,'LineWidth',lineWidth1);
+axis equal; axis tight; grid on; box on;
+set(gca,'FontSize',fontSize);
+drawnow; 
+
+%% Create curves for a single stent segment
+
+offsetTotal=segmentSeperation+stentSectionWidth;
+
+n1=floor(offsetTotal/pointSpacing)+1;
+V1=[zeros(n1,1) linspace(-offsetTotal,0,n1)'];
+
+V2=[x(:) y(:)];
+V2(:,1)=V2(:,1)-min(V2(1,1));
+V2(:,2)=V2(:,2)-min(V2(1,2));
+
+numStepsRadial=round((pi*stentSectionWidth)./pointSpacing);
+t=linspace(-pi/2,pi/2,numStepsRadial);
+xc=stentSectionWidth*sin(t);
+yc=stentSectionWidth*cos(t);
+V3=[xc(:) yc(:)];
+V3(:,1)=V3(:,1)-V3(1,1)+V2(end,1);
+V3(:,2)=V3(:,2)-V3(1,2)+V2(end,2);
+
+x4=-x;
+V4=flipud([x4(:) y(:)]);
+V4(:,1)=V4(:,1)-V4(1,1)+V3(end,1); 
+V4(:,2)=V4(:,2)-V4(1,2)+V3(end,2); 
+
+V5=flipud([-V4(:,1) V4(:,2)]);
+V5(:,1)=V5(:,1)-V5(1,1)+V4(end,1); 
+V5(:,2)=V5(:,2)-V5(1,2)+V4(end,2); 
+
+V6=V1;
+V6(:,1)=V6(:,1)-V6(1,1)+V5(end,1); 
+V6(:,2)=V6(:,2)-V6(1,2)+V5(end,2); 
+
+V7=V1; 
+V7(:,1)=V7(:,1)+stentSectionWidth;
+
+v=[V2(2:end,:)-V2(1:end-1,:); V2(2,:)-V2(1,:)];
+v=vecnormalize(v);
+v(:,3)=0;
+z=[0 0 1];
+v2=cross(v,z(ones(size(v,1),1),:),2);
+v2(1,:)=[1 0 0];
+v2(end,:)=[1 0 0];
+v2=v2(:,[1 2]);
+V8=V2+v2*stentSectionWidth;
+[V8] = evenlySampleCurve(V8,size(V8,1),'pchip',0);
+
+V9=flipud(V8);
+V9(:,1)=-V9(:,1);
+V9(:,1)=V9(:,1)-V9(1,1)+V8(end,1); 
+
+V10=(V3);
+V10(:,2)=-V10(:,2);
+V10(:,1)=V10(:,1)-V10(1,1)+V9(end,1); 
+V10(:,2)=V10(:,2)-V10(1,2)+V9(end,2); 
+
+V11=V8;
+V11(:,1)=V11(:,1)-V11(1,1)+V10(end,1); 
+
+V12=V1;
+V12(:,1)=V12(:,1)-V12(1,1)+V11(end,1); 
+V12(:,2)=V12(:,2)-V12(1,2)+V11(end,2); 
+
+V_curve_part1=[V1; V2; V3; V4; V5; V6;  ];
+V_curve_part2=[V7; V8; V9; V10; V11; V12];
+V_curve=[V_curve_part1; flipud(V_curve_part2) ];
+
+[~,ind1,ind2]=unique(pround(V_curve,5),'rows');
+L=false(size(V,1),1);
+L(ind1)=1;
+V_curve=V_curve(L,:);
+
+%%
+
+nPlot=12;
+plotColors=hsv(nPlot);
+
+cFigure; hold on; 
+gtitle('The curve parts',fontSize);
+hp=plotV(V1,'k.-','MarkerSize',markerSize1,'LineWidth',lineWidth1); hp.Color=plotColors(1,:);
+hp=plotV(V2,'k.-','MarkerSize',markerSize1,'LineWidth',lineWidth1); hp.Color=plotColors(2,:);
+hp=plotV(V3,'k.-','MarkerSize',markerSize1,'LineWidth',lineWidth1); hp.Color=plotColors(3,:);
+hp=plotV(V4,'k.-','MarkerSize',markerSize1,'LineWidth',lineWidth1); hp.Color=plotColors(4,:);
+hp=plotV(V5,'k.-','MarkerSize',markerSize1,'LineWidth',lineWidth1); hp.Color=plotColors(5,:);
+hp=plotV(V6,'k.-','MarkerSize',markerSize1,'LineWidth',lineWidth1); hp.Color=plotColors(6,:);
+hp=plotV(V7,'k.-','MarkerSize',markerSize1,'LineWidth',lineWidth1); hp.Color=plotColors(7,:);
+hp=plotV(V8,'k.-','MarkerSize',markerSize1,'LineWidth',lineWidth1); hp.Color=plotColors(8,:);
+hp=plotV(V9,'k.-','MarkerSize',markerSize1,'LineWidth',lineWidth1); hp.Color=plotColors(9,:);
+hp=plotV(V10,'k.-','MarkerSize',markerSize1,'LineWidth',lineWidth1); hp.Color=plotColors(10,:);
+hp=plotV(V11,'k.-','MarkerSize',markerSize1,'LineWidth',lineWidth1); hp.Color=plotColors(11,:);
+hp=plotV(V12,'k.-','MarkerSize',markerSize1,'LineWidth',lineWidth1); hp.Color=plotColors(12,:);
+plotV(V_curve,'k.-','MarkerSize',markerSize2,'LineWidth',lineWidth2);
+quiverVec(V2,v2,stentSectionWidth,'k');
+colormap(plotColors); caxis([1 nPlot]); icolorbar;
+axis equal; axis tight; grid on; box on;
+set(gca,'FontSize',fontSize);
+drawnow; 
+
+%%
+
+%Initial Delaunay triangulation
+ns= size(V_curve,1);
+Cs=[(1:ns)' [2:ns 1]'];
+DT = delaunayTriangulation(V_curve(:,1),V_curve(:,2),Cs);
+Vs=DT.Points;
+Fs=DT.ConnectivityList;
+
+%Remove faces not inside region
+L = isInterior(DT);
+Fs=Fs(L,:);
+
+maxAngleDeviation=40*(pi/180);
+[F_quad,V_quad]=tri2quadGroupSplit(Fs,Vs,maxAngleDeviation);
+
+np=size(V_quad,1);
+V_quad=[V_quad; V_quad];
+V_quad(np+1:end,1)=-V_quad(np+1:end,1)+2*max(V_quad(:,1));
+F_quad=[F_quad; fliplr(F_quad)+np];
+V_quad(:,2)=V_quad(:,2)-min(V_quad(:,2)); %Shift so bottom is at zero
+
+%%
+
+if nSubQuad>0
+    [F_quad,V_quad]=subQuad(F_quad,V_quad,nSubQuad);
+end
+
+%%
+[Eb,E,indBoundary]=patchBoundary(F_quad,V_quad);
+
+smoothPar.LambdaSmooth=0.5;
+smoothPar.n=250;
+smoothPar.Tolerance=0.01;
+smoothPar.RigidConstraints=unique(Eb(:));
+[V_quad]=tesSmooth(F_quad,V_quad,[],smoothPar);
+
+%%
+
+cFigure;
+hold on; 
+gtitle('Quadrilateral mesh of stent segment',fontSize); 
+gpatch(F_quad,V_quad,'gw','g');
+axis equal; axis tight; grid on; box on;
+set(gca,'FontSize',fontSize);
+drawnow; 
+
+%% Offset in the angular direction
+
+V_quad_cell=repmat({V_quad},1,numRadialSegments);
+F_quad_cell=repmat({F_quad},1,numRadialSegments);
+for q=1:1:numRadialSegments
+    V_quad_cell{q}(:,1)=V_quad_cell{q}(:,1)+q*max(V_quad(:,1));
+end
+
+[F_quad,V_quad]=joinElementSets(F_quad_cell,V_quad_cell);
+[F_quad,V_quad]=mergeVertices(F_quad,V_quad);
+
+%% Offset in the axial direction
+
+h=max(V_quad(:,2))-min(V_quad(:,2));
+V_quad_cell=repmat({V_quad},1,numAxialSegments);
+F_quad_cell=repmat({F_quad},1,numAxialSegments);
+for q=2:1:numAxialSegments
+    V_now=V_quad_cell{q};    
+    if iseven(q)
+        F_quad_cell{q}=fliplr(F_quad_cell{q}); 
+        V_now(:,2)=-V_now(:,2);
+        V_now(:,2)=V_now(:,2)-min(V_now(:,2));        
+        V_quad_cell{q}(:,2)=V_now(:,2)-(q-1)*h;
+    else
+        V_quad_cell{q}(:,2)=V_now(:,2)-(q-1)*h;
+    end
+    
+end
+
+[F_quad,V_quad]=joinElementSets(F_quad_cell,V_quad_cell);
+[F_quad,V_quad]=mergeVertices(F_quad,V_quad);
+
+%%
+
+cFigure; hold on; 
+gtitle('Quadrilateral mesh of unwrapped stent',fontSize); 
+gpatch(F_quad,V_quad,'gw','g');
+axis equal; axis tight; grid on; box on;
+set(gca,'FontSize',fontSize);
+drawnow; 
+
+%% Wrap stent to create cylinder
+
+T=V_quad(:,1)/stentRadius;
+[V_quad(:,1),V_quad(:,2),V_quad(:,3)]=pol2cart(T,stentRadius.*ones(size(V_quad(:,3),1),1),V_quad(:,2));
+[F_quad,V_quad,ind1]=mergeVertices(F_quad,V_quad);
+
+cFigure; hold on; 
+gtitle('Quadrilateral mesh of wrapped stent',fontSize); 
+gpatch(F_quad,V_quad,'gw','g');
+% patchNormPlot(F_quad,V_quad);
+% plotV(V_quad(Eb(:),:),'r.','MarkerSize',15);
+axisGeom(gca,fontSize);
+camlight headlight;
+drawnow; 
+
+%% Thicken quadrilateral elements to build hexahedral elements
+
+[E,V,Fq1,Fq2]=quadThick(F_quad,V_quad,1,stentSectionWidth,round(stentSectionWidth./pointSpacing));
+
+%%
+% Visualize mesh
+
+[F,CFs]=element2patch(E,Cs); %Create face data for plotting
+
+cFigure; hold on; 
+gtitle('Hexahedral mesh of stent',fontSize);
+gpatch(F,V,'bw','b');
+axisGeom(gca,fontSize);
+camlight headlight; 
+drawnow;
+
+% %% Export inp file
+% % 
+% elementStruct.E=ET;
+% elementStruct.E_ind=(1:size(ET,1))';
+% elementStruct.E_type='*ELEMENT, TYPE=C3D8, ELSET=PART-STENT';
+% nodeStruct.N=VT;
+% nodeStruct.N_ind=(1:size(VT,1))';
+% 
+% pathName = fileparts(fileparts(mfilename('fullpath')));
+% fileName=fullfile(pathName,'data','INP','stentMesh.inp');
+% export_INP(elementStruct,nodeStruct,fileName);
+
+
+
+%% 
+%
+% <<gibbVerySmall.gif>>
+% 
+% _*GIBBON*_ 
+% <www.gibboncode.org>
+% 
+% _Kevin Mattheus Moerman_, <gibbon.toolbox@gmail.com>
+ 
+%% 
+% _*GIBBON footer text*_ 
+% 
+% License: <https://github.com/gibbonCode/GIBBON/blob/master/LICENSE>
+% 
+% GIBBON: The Geometry and Image-based Bioengineering add-On. A toolbox for
+% image segmentation, image-based modeling, meshing, and finite element
+% analysis.
+% 
+% Copyright (C) 2018  Kevin Mattheus Moerman
+% 
+% This program is free software: you can redistribute it and/or modify
+% it under the terms of the GNU General Public License as published by
+% the Free Software Foundation, either version 3 of the License, or
+% (at your option) any later version.
+% 
+% This program is distributed in the hope that it will be useful,
+% but WITHOUT ANY WARRANTY; without even the implied warranty of
+% MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+% GNU General Public License for more details.
+% 
+% You should have received a copy of the GNU General Public License
+% along with this program.  If not, see <http://www.gnu.org/licenses/>.
+
+##### SOURCE END #####
+--></body></html>

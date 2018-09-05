@@ -1,5 +1,6 @@
 function [varargout]=tri2quad(varargin)
 
+% function [Fq,Vq,Cq]=tri2quad(Ft,Vt,convertMethod)
 
 %%
 switch nargin
@@ -13,6 +14,10 @@ switch nargin
         convertMethod=varargin{3};         
 end
 
+%Cope with 2D input
+if size(Vt,2)==2
+    Vt(:,3)=0; 
+end
 %% Mid edge sets
 
 edgeMat=[Ft(:,[1 2]); Ft(:,[2 3]);  Ft(:,[3 1])]; 
