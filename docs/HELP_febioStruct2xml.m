@@ -207,7 +207,7 @@ febio_spec.Geometry.Nodes{2}.node.VAL=rand(7,3);
 
 %Nodes without a set name
 % febio_spec.Geometry.Nodes{3}.ATTR.name='nodeSet3';
-n=7; %Number of nodes to test
+n=10; %Number of nodes to test
 febio_spec.Geometry.Nodes{3}.node.ATTR.id=(1:n)';
 febio_spec.Geometry.Nodes{3}.node.VAL=rand(n,3);
 
@@ -515,16 +515,10 @@ optionStruct.arrayParseMethod=1;
 [domNode]=febioStruct2xml(febio_spec,fileName,optionStruct);
 
 %% Viewing the FEBio input file
-% The |febView| command can be used to render and XML file in a figure
-% window. 
-%%
-% NOTE: The figure below does not render in documentation due to a
-% MATLAB but (or limitation). The code |[hFig]=febView(domNode);| is
-% therefore suppressed. (see also |xmlView|);
-%%
-% |[hFig]=febView(fileName);|
+% The |febView| command can be used to render an XML file in a figure
+% window. Alternatively the |textView| command can be used:
+textView(fileName);
 
-febView(febio_spec)
 %% 
 %
 % <<gibbVerySmall.gif>>

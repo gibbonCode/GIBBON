@@ -1,8 +1,8 @@
 %% DEMO_stent_design_sigmoid_01
 % Below is a demonstration for:
 % 
-% * Creating a hexahedral mesh for a vascular stent by sweeping allong a
-% curve and copying over the segments. 
+% * Creating a hexahedral mesh for a vascular stent by thickening
+% quadrilateral elements. 
 
 %% Keywords
 % * Sigmoid
@@ -206,7 +206,7 @@ smoothPar.RigidConstraints=unique(Eb(:));
 cFigure;
 hold on; 
 gtitle('Quadrilateral mesh of stent segment',fontSize); 
-gpatch(F_quad,V_quad,'gw','g');
+gpatch(F_quad,V_quad,'gw','k');
 axis equal; axis tight; grid on; box on;
 set(gca,'FontSize',fontSize);
 drawnow; 

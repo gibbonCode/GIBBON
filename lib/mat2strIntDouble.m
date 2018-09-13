@@ -1,6 +1,12 @@
 function [t]=mat2strIntDouble(varargin)
 
 % function [t]=mat2strIntDouble(A,optionStruct)
+%-------------------------------------------------------------------------
+%
+% Change log; 
+% 2018/09/06 Altered behavior so column vectors are not forced to row
+% vector text output. 
+%-------------------------------------------------------------------------
 
 %% Parse input
 
@@ -17,6 +23,7 @@ end
 defaultOptionStruct.formatDouble='%6.7e';
 defaultOptionStruct.formatInteger='%d';
 defaultOptionStruct.dlmChar=',';
+% defaultOptionStruct.forceRow=1;
 
 %Fix option structure, complete and remove empty values
 [optionStruct]=structComplete(optionStruct,defaultOptionStruct,1); %Complement provided with default if missing or empty
@@ -32,33 +39,26 @@ dlmChar=optionStruct.dlmChar;
 if isnumeric(A) %If it is numeric
     
     % Alter behaviour based on vector/matrix input
-    if isvector(A)
-        n=numel(A);
-    else
-        n=size(A,2);
-        A=A'; %transpose
-    end
+    n=size(A,2);
+    A=A'; %transpose
     
     A=double(A); %Convert to double
     if all(isrounded(A)) %If it looks like an integer
-        t_form=repmat([formatInteger,dlmChar,' '],1,n); 
+        t_form=repmat([formatInteger,dlmChar,' '],1,n);        
     else %Not an integer
         t_form=repmat([formatDouble,dlmChar,' '],1,n); 
     end
     t_form=t_form(1:end-1-numel(dlmChar)); %Take away last space and comma
-    
+
     %Append end of line character
-    if ~isvector(A)
-        t_form=[t_form,'\n'];
-    end
+    t_form=[t_form,'\n'];
     
     %Convert to string
     t=sprintf(t_form,A);
     
     %Take away last end of line character
-    if ~isvector(A)
-        t=t(1:end-1);
-    end
+    t=t(1:end-1);
+
 elseif ischar(A)
     t=A;
 elseif iscell(A)

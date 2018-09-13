@@ -8,16 +8,30 @@ switch nargin
     case 1
         titleString=varargin{1};
         fontSize=[];
-        hf=[];        
+        hf=[];     
+        optionStruct=[];
     case 2
         titleString=varargin{1};
         fontSize=varargin{2};
         hf=[];
+        optionStruct=[];
     case 3
         titleString=varargin{1};
         fontSize=varargin{2};
         hf=varargin{3};
+        optionStruct=[];
+    case 4
+        titleString=varargin{1};
+        fontSize=varargin{2};
+        hf=varargin{3};
+        optionStruct=varargin{4};
 end
+
+%%
+defaultOptionStruct.HorizontalAlignment='Center';
+defaultOptionStruct.FontWeight='bold';
+defaultOptionStruct.FontName='Helvetica';
+[optionStruct]=structComplete(optionStruct,defaultOptionStruct,1); %Complement provided with default if missing or empty
 
 %%
 
@@ -41,7 +55,10 @@ else
     textColor='k';    
 end
 
-hText = uicontrol(hf,'Style','text','String',titleString,'BackgroundColor',backGroundColor,'HorizontalAlignment','Center','FontSize',fontSize,'FontWeight','bold','Units','Points','ForegroundColor',textColor);
+hText = uicontrol(hf,'Style','text','String',titleString,'BackgroundColor',backGroundColor,...
+    'HorizontalAlignment',optionStruct.HorizontalAlignment,'FontSize',fontSize,...
+    'FontWeight',optionStruct.FontWeight,'Units','Points','ForegroundColor',textColor,...
+    'FontName',optionStruct.FontName);
 
 % Set the control to be non-opaque and repaint it
 j_hText = findjobj(hText);

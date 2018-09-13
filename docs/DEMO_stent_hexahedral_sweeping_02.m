@@ -72,15 +72,14 @@ for q=1:1:numSegments
     [F,CF]=element2patch(E,C); %Create face data for plotting
     
     [indBoundary]=tesBoundary(F,V);
-    faceMarker=ones(size(E,1),1)*(1:6);
-    faceMarker=faceMarker(:);
-    Fb=F(indBoundary,:);
-    faceBoundaryMarker=faceMarker(indBoundary,:)-2;
+    faceMarker=ones(size(E,1),1)*(1:6); %The 6 face colors for the hexahedral faces    
+    faceMarker=faceMarker(:); %Force as a column
+    Fb=F(indBoundary,:); %Select the boundary faces (which will exclude tops (1) and bottoms (2))
+    faceBoundaryMarker=faceMarker(indBoundary,:)-2; %Get boundary colors and subtract 2 so they are 1-4
     
     %%
-    
-    gpatch(Fb,V,'kw','k',1);
-    
+    gpatch(Fb,V,faceBoundaryMarker,'k',1);
+   
     %%
     
     F_inner = Fb(faceBoundaryMarker==2,:);
@@ -154,15 +153,15 @@ drawnow;
 
 %% Export inp file
 % 
-elementStruct.E=E;
-elementStruct.E_ind=(1:size(E,1))';
-elementStruct.E_type='*ELEMENT, TYPE=C3D8, ELSET=PART-STENT';
-nodeStruct.N=V;
-nodeStruct.N_ind=(1:size(V,1))';
-
-pathName = fileparts(fileparts(mfilename('fullpath')));
-fileName=fullfile(pathName,'data','INP','stentMeshSheet.inp');
-export_INP(elementStruct,nodeStruct,fileName);
+% elementStruct.E=E;
+% elementStruct.E_ind=(1:size(E,1))';
+% elementStruct.E_type='*ELEMENT, TYPE=C3D8, ELSET=PART-STENT';
+% nodeStruct.N=V;
+% nodeStruct.N_ind=(1:size(V,1))';
+% 
+% pathName = fileparts(fileparts(mfilename('fullpath')));
+% fileName=fullfile(pathName,'data','INP','stentMeshSheet.inp');
+% export_INP(elementStruct,nodeStruct,fileName);
 
 
 %% FUNCTIONS

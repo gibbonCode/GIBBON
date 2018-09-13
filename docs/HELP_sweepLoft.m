@@ -22,7 +22,6 @@ clear; close all; clc;
 
 %% Examples 
 
-
 %% A sweep loft allong a guide curve
 
 %%

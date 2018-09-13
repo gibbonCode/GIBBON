@@ -1,11 +1,13 @@
 function [varargout]=meshView(varargin)
 
 % function [varargout]=meshView(varargin)
-% 
+% ------------------------------------------------------------------------
 % 2018/01/23 Updated to allow for subfigure plotting
 % 2018/04/16 Added control of direction of cutting (X,Y, or Z) and also
 % what side is viewed/cut away. 
-
+% 2019/09/07 Fixed bug in relation to single element/face input
+% 2019/09/07 Updated handling of cutting direction
+% ------------------------------------------------------------------------
 %% Parse input
 
 switch nargin
@@ -110,19 +112,18 @@ end
 %%
 % Set up animation
 
-X=V(:,cutDir); 
-XE=mean(X(E),2);
-
+[VE]=patchCentre(E,V);
+XE=VE(:,cutDir);
 animStruct.Time=linspace(0,1,numSliceSteps); %Time vector
-cutLevel=linspace(min(X(:)),max(X(:)),numSliceSteps); %Property to set
+cutLevel=linspace(min(XE)-max(eps(XE)),max(XE)+max(eps(XE)),numSliceSteps); %Property to set
 
 for q=1:1:numSliceSteps %Step through time       
     cutLevelNow=cutLevel(q); %The current cut level    
     
     if cutSide==1
-        logicCutView=XE>cutLevelNow;
+        logicCutView=XE>=cutLevelNow;
     elseif cutSide==-1
-        logicCutView=XE<cutLevelNow;
+        logicCutView=XE<=cutLevelNow;
     end
     
     [Fs,Cs]=element2patch(E(logicCutView,:),CE(logicCutView));

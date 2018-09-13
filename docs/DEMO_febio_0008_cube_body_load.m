@@ -205,10 +205,6 @@ febio_spec.Boundary.fix{3}.ATTR.node_set=febio_spec.Geometry.NodeSet{1}.ATTR.nam
 switch bodyLoadType
     case 'const'
         febio_spec.Loads.body_load.ATTR.type='const';
-%         febio_spec.Loads.body_load.x.ATTR.lc=1;
-%         febio_spec.Loads.body_load.x.VAL=1e-5;
-%         febio_spec.Loads.body_load.y.ATTR.lc=1;
-%         febio_spec.Loads.body_load.y.VAL=1e-5;
         febio_spec.Loads.body_load.z.ATTR.lc=1;
         febio_spec.Loads.body_load.z.VAL=10e-5;
     case 'non-const'

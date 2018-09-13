@@ -62,69 +62,42 @@ if ~strcmp(grootUnits,'pixels')
     graphicalRoot.Units='pixels';
 end
 
+%Default settings
+defaultFigStruct.Visible='on';
+defaultFigStruct.ColorDef='white';
+defaultFigStruct.Color='w';
+screenSizeGroot = get(groot,'ScreenSize'); %Get screen size
+defaultFigStruct.ScreenOffset=round(max(screenSizeGroot)*0.1); %i.e. figures are spaced around 10% of the sreensize from the edges        
+defaultFigStruct.Clipping='off';
+defaultFigStruct.efw=1;
+defaultFigStruct.vcw={'pan','rot','zoomz','zoomz'};
+
 switch nargin
     case 0
-        %Create defaults
-        figStruct.Visible='on';
-        figStruct.ColorDef='white';
-        figStruct.Color='w';
-%         figStruct.Colormap=gjet(250);
-        screenSizeGroot = get(groot,'ScreenSize');
-        figStruct.ScreenOffset=round(max(screenSizeGroot)*0.1); %i.e. figures are spaced around 10% of the sreensize from the edges
-        vcwOpt={'pan','rot','zoomz','zoomz'};
-        efwOpt=1;
-    case 1
-        %Use custom
-        figStruct=varargin{1};
-        
-        %Use defaults where nothing is provided
-        if ~isfield(figStruct,'Visible')
-            figStruct.Visible='on';
-        end
-        
-        if ~isfield(figStruct,'ColorDef')
-            figStruct.ColorDef='white';
-        end
-        
-        if ~isfield(figStruct,'Color')
-            figStruct.Color='w';
-        end
-        
-        if ~isfield(figStruct,'ScreenOffset')
-            screenSizeGroot = get(groot,'ScreenSize');
-            figStruct.ScreenOffset=round(max(screenSizeGroot)*0.1); %i.e. figures are spaced around 10% of the sreensize from the edges
-        end
-        
-        if ~isfield(figStruct,'vcw')
-            vcwOpt={'pan','rot','zoomz','zoomz'};
-        else
-            vcwOpt=figStruct.vcw;
-            figStruct=rmfield(figStruct,'vcw'); %Remove field from structure array
-        end
-        
-        if ~isfield(figStruct,'efw')
-            efwOpt=1;
-        else
-            efwOpt=figStruct.efw;
-            figStruct=rmfield(figStruct,'efw'); %Remove field from structure array
-        end
-        
+       figStruct=[]; %Use default
+    case 1        
+        figStruct=varargin{1}; %Use custom
 end
 
-% if ~isfield(figStruct,'Clipping');
-%     figStruct.Clipping='off';
-% end
+%Fix option structure, complete and remove empty values
+[figStruct]=structComplete(figStruct,defaultFigStruct,1);
 
+%Get export figure option and remove field
+efwOpt=figStruct.efw;
+figStruct=rmfield(figStruct,'efw'); %Remove field from structure array
+
+%Get view control widget options and remove field
+vcwOpt=figStruct.vcw;
+figStruct=rmfield(figStruct,'vcw'); %Remove field from structure array
+            
 %%
 
 isOld=verLessThan('matlab', '8.4.0.150421 (R2014b)');
 
 %% Create a hidden figure
-
 hf = figure('Visible', 'off'); %create an invisible figure
 
 %% Setcolor definition and associated defaults
-
 hf=colordef(hf,figStruct.ColorDef); %Update figure handle
 figStruct=rmfield(figStruct,'ColorDef'); %Remove field from structure array
 

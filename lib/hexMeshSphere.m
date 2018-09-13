@@ -9,6 +9,9 @@ controlParameterStructDefault.numElementsMantel=3;
 controlParameterStructDefault.numElementsCore=3; 
 controlParameterStructDefault.makeHollow=0;
 controlParameterStructDefault.outputStructType=1;
+controlParameterStructDefault.cParSmooth.Method='LAP';
+controlParameterStructDefault.cParSmooth.LambdaSmooth=0.5;
+controlParameterStructDefault.cParSmooth.n=5;
 [controlParameterStruct]=structComplete(controlParameterStruct,controlParameterStructDefault,1);
 
 % Get input parameters
@@ -76,14 +79,6 @@ end
 [FT,~]=element2patch(ET,[],'hex8');
 
 %% Smoothing
-
-if ~isfield(controlParameterStruct,'cParSmooth')
-    controlParameterStruct.cParSmooth.Method='LAP';
-    controlParameterStruct.cParSmooth.LambdaSmooth=0.5;
-    controlParameterStruct.cParSmooth.n=5;
-end
-
-% F_rigid=[F_mantel_outer; F_mantel_inner];
 
 controlParameterStruct.cParSmooth.RigidConstraints=unique(FTb(:));
 

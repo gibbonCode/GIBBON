@@ -56,7 +56,7 @@ switch viewerOpt
         [~,browserContainer] = javacomponent(browser,[1,1,max(posPanel(3)-1,1),max(posPanel(4)-1,1)],hFig);
         set(browserContainer,'Units','normalized');
         drawnow;
-    case 2 %Broswer viewer
+    case 2 %Browser viewer
         [~,hFig]=web(fileName);%,'-new');
 end
 
