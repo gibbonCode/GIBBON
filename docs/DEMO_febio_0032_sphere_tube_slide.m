@@ -344,19 +344,6 @@ febio_spec.Boundary.rigid_body{1}.fixed{6}.ATTR.bc='Rz';
 
 %Contact section
 % -> Contact 1
-% febio_spec.Contact.contact{1}.ATTR.surface_pair=febio_spec.Geometry.SurfacePair{1}.ATTR.name;
-% febio_spec.Contact.contact{1}.ATTR.type='facet-to-facet sliding';
-% febio_spec.Contact.contact{1}.penalty=10;
-% febio_spec.Contact.contact{1}.auto_penalty=1;
-% febio_spec.Contact.contact{1}.two_pass=0;
-% febio_spec.Contact.contact{1}.laugon=0;
-% febio_spec.Contact.contact{1}.tolerance=0.1;
-% febio_spec.Contact.contact{1}.gaptol=0;
-% febio_spec.Contact.contact{1}.minaug=0;
-% febio_spec.Contact.contact{1}.maxaug=10;
-% febio_spec.Contact.contact{1}.search_tol=0.01;
-% febio_spec.Contact.contact{1}.search_radius=pointSpacingBlob/2;
-
 febio_spec.Contact.contact{1}.ATTR.surface_pair=febio_spec.Geometry.SurfacePair{1}.ATTR.name;
 febio_spec.Contact.contact{1}.ATTR.type='sliding-elastic';
 febio_spec.Contact.contact{1}.two_pass=1;

@@ -242,6 +242,9 @@ if iscell(valueData)
             end
         else
             t=vec2strIntDouble(valueData{q_value},'%6.7e');
+            if isrow(valueData{q_value})
+                t=strwrap(t,16,', '); %Wrap to max width of 16 entries
+            end
             fprintf(file_id,'%s \n',t);
         end
         
@@ -249,6 +252,9 @@ if iscell(valueData)
 else
     %Write value entry
     t=vec2strIntDouble(valueData,'%6.7e');
+    if isrow(valueData)
+        t=strwrap(t,16,', '); %Wrap to max width of 16 entries
+    end
     fprintf(file_id,'%s \n',t);
 end
 end

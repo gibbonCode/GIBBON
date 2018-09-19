@@ -140,8 +140,6 @@ end
 varargout{1}=IND_F;
 varargout{2}=IND_V;
 varargout{3}=IND_FF;
-
-
  
 %% 
 % _*GIBBON footer text*_ 

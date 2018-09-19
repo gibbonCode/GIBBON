@@ -298,23 +298,22 @@ abaqus_spec.Part.Element{1}.VAL={elementIds,ET};
 abaqus_spec.Part.Elset{1}.ATTR.elset='Set-1';
 abaqus_spec.Part.Elset{1}.VAL=elementIds;
 
-% *Elset, elset=_OUTERSTENTSURF_S1, internal, generate
-%      1,  19468,      1
-% *Surface, type=ELEMENT, name=OUTERSTENTSURF
-% _OUTERSTENTSURF_S1, S1
-abaqus_spec.Part.Elset{2}.ATTR.elset='inner_elements';
-abaqus_spec.Part.Elset{2}.ATTR.internal='';
-abaqus_spec.Part.Elset{2}.VAL=indicesElementsInner(:)';
+surfaceElementSetName='elementSetSideSurface';
+abaqus_spec.Part.Elset{2}.ATTR.elset=surfaceElementSetName;
+abaqus_spec.Part.Elset{2}.ATTR.internal=''; %Remains hidden uppon import
+abaqus_spec.Part.Elset{2}.VAL=indicesElementsInner(:);
 
+% Surfaces
+sidePick=5;
 abaqus_spec.Part.Surface{1}.ATTR.type='ELEMENT';
-abaqus_spec.Part.Surface{1}.ATTR.name='_inner_elements_S4';
-abaqus_spec.Part.Surface{1}.VAL={abaqus_spec.Part.Elset{2}.ATTR.elset,'S4'};
+abaqus_spec.Part.Surface{1}.ATTR.name=[surfaceElementSetName,'_side',num2str(sidePick)];
+abaqus_spec.Part.Surface{1}.VAL={surfaceElementSetName,['S',num2str(sidePick)]};
 
 % Sections
 abaqus_spec.Part.Solid_section.ATTR.elset='Set-1';
 abaqus_spec.Part.Solid_section.ATTR.material='Elastic';
 
-%%--> Assembly
+%--> Assembly
 abaqus_spec.Assembly.ATTR.name='Assembly-1';
 abaqus_spec.Assembly.Instance.ATTR.name='Stent-assembly';
 abaqus_spec.Assembly.Instance.ATTR.part='Stent';
@@ -322,6 +321,8 @@ abaqus_spec.Assembly.Instance.ATTR.part='Stent';
 abaqus_spec.Assembly.Nset{1}.ATTR.nset='Set-1';
 abaqus_spec.Assembly.Nset{1}.ATTR.instance=abaqus_spec.Assembly.Instance.ATTR.name;
 abaqus_spec.Assembly.Nset{1}.VAL=indicesNodesInner(:);
+
+%%
 
 %%--> Material
 abaqus_spec.Material.ATTR.name='Elastic';
@@ -360,13 +361,8 @@ savePath=fullfile(defaultFolder,'data','temp');
 fileName=fullfile(savePath,'tempModel.inp');
 [~,fileNamePart,~]=fileparts(fileName);
 
-%%
-
-[T]=abaqusStruct2inp(abaqus_spec,fileName);
-
-%% View the inp file
-%
-% textView(fileName);
+% Export INP file
+abaqusStruct2inp(abaqus_spec,fileName);
 
 %% 
 %

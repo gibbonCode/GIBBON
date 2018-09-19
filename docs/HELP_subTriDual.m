@@ -11,14 +11,14 @@ clear; close all; clc;
 % This function refines the surface region defined by the logicFaces
 % beloning to the surface given by the faces F and vertices V. The region
 % is refined by: 1) taking the dual tesselation, 2) retriangulating the
-% dual mesh to include the original points. 
+% dual mesh to include the original points.
 % See also: |triPolyDualRefine|
 
 %% Examples
 
 %%
 % Plot settings
-fontSize=25;
+fontSize=15;
 cMap=gjet(4);
 faceAlpha=0.5;
 plotColor1=cMap(1,:);
@@ -30,13 +30,15 @@ markerSize=10;
 
 %% Example: Illustrating the refinement process
 
-%% 
+%%
 % Building example geometry
 
 %Defining geodesic dome
 r=1; %sphere radius
-n=1; %Refinements   
+n=1; %Refinements
 [F,V,~]=geoSphere(n,r);
+
+%%
 
 %%
 % Deriving the dual of the patch data
@@ -50,7 +52,7 @@ n=1; %Refinements
 %%
 
 %Plotting results
-cFigure; 
+cFigure;
 subplot(1,3,1); hold on;
 title('Original triangulation','FontSize',fontSize);
 
@@ -95,7 +97,7 @@ drawnow;
 
 %% Example: Refining a closed surface
 
-%% 
+%%
 % Building example geometry
 r=1; %Radius
 rc=2.5; %Central radius
@@ -127,17 +129,17 @@ plotV(Vt(indIni,:),'k.','MarkerSize',25);
 
 axisGeom(gca,fontSize);
 camlight headlight;
-colormap gjet; 
+colormap gjet;
 drawnow;
 
 %% Example: Refining a local region of a mesh (e.g. region on a sphere)
 
-%% 
+%%
 % Building example geometry
 
 %Defining geodesic dome
 r=1; %sphere radius
-n=3; %Refinements   
+n=3; %Refinements
 [F,V,~]=geoSphere(n,r);
 
 %%
@@ -161,8 +163,8 @@ cPar.RigidConstraints=indIni;
 E=patchBoundary(Ft(Ct==1,:),Vt);
 indEdge=unique(E(:));
 logicEdge=false(size(Vt,1),1);
-logicEdge(indEdge)=1; 
-indRigid=find(~logicEdge); 
+logicEdge(indEdge)=1;
+indRigid=find(~logicEdge);
 
 cPar.Method='HC';
 cPar.n=50;
@@ -189,7 +191,7 @@ gpatch(Ft,Vt,Ct);
 plotV(Vt(indIni,:),'k.','MarkerSize',25);
 plotV(Vt(logicEdge,:),'y.','MarkerSize',50);
 
-colormap gjet; 
+colormap gjet;
 axisGeom(gca,fontSize);
 camlight headlight;
 drawnow;
@@ -211,30 +213,30 @@ cFigure;
 subplot(2,2,1); hold on;
 title('Input surface','FontSize',fontSize);
 gpatch(F,V,C);
-axisGeom(gca,fontSize); 
-colormap gjet; colorbar; 
+axisGeom(gca,fontSize);
+colormap gjet; colorbar;
 camlight headlight;
 
-subplot(2,2,2); hold on 
+subplot(2,2,2); hold on
 title('Output surface','FontSize',fontSize);
 gpatch(Ft,Vt,Ct);
-axisGeom(gca,fontSize); 
-colormap gjet; colorbar; 
+axisGeom(gca,fontSize);
+colormap gjet; colorbar;
 camlight headlight;
 
 subplot(2,2,3);
 hold on;
 title('Input surface','FontSize',fontSize);
 gpatch(F,V,C2);
-axisGeom(gca,fontSize); 
-colormap gjet; colorbar; 
+axisGeom(gca,fontSize);
+colormap gjet; colorbar;
 camlight headlight;
 
 subplot(2,2,4); hold on
 title('Output surface','FontSize',fontSize);
 gpatch(Ft,Vt,Ct2);
-axisGeom(gca,fontSize); 
-colormap gjet; colorbar; 
+axisGeom(gca,fontSize);
+colormap gjet; colorbar;
 camlight headlight;
 
 drawnow;
@@ -278,18 +280,18 @@ V3=(R*V3')'; %Rotate polygon
 
 regionCell={V1,V2,V3}; %A region between V1 and V2 (V2 forms a hole inside V1)
 
-%% 
+%%
 % Meshing the region (See also |regionTriMesh2D|)
 
 %Defining a region and control parameters (See also |regionTriMesh2D|)
 pointSpacing=1; %Desired point spacing
-resampleCurveOpt=1; 
+resampleCurveOpt=1;
 interpMethod='linear'; %or 'natural'
 [F,V]=regionTriMesh3D(regionCell,pointSpacing,resampleCurveOpt,interpMethod);
 
 %%
 
-logicFaces=true(size(F,1),1); 
+logicFaces=true(size(F,1),1);
 [Ft,Vt,Ct,indIni]=subTriDual(F,V,logicFaces);
 
 %%
@@ -298,12 +300,12 @@ cFigure;
 subplot(1,2,1); hold on;
 title('Input surface','FontSize',fontSize);
 gpatch(F,V,'g');
-axisGeom(gca,fontSize); 
+axisGeom(gca,fontSize);
 
 subplot(1,2,2); hold on;
 title('Output surface','FontSize',fontSize);
 gpatch(Ft,Vt,'r'); view(2);
-axisGeom(gca,fontSize); 
+axisGeom(gca,fontSize);
 drawnow;
 
 %% Example: Iterative refinement
@@ -315,15 +317,15 @@ ns=150;
 t=linspace(0,2*pi,ns);
 t=t(1:end-1);
 r=12;
-x=r*sin(t); 
+x=r*sin(t);
 y=r*cos(t);
 V1=[x(:) y(:)];
-regionCell={V1}; 
+regionCell={V1};
 pointSpacing=2; %Desired point spacing
-resampleCurveOpt=1; 
+resampleCurveOpt=1;
 interpMethod='linear'; %or 'natural'
 [F,V]=regionTriMesh2D(regionCell,pointSpacing,resampleCurveOpt,interpMethod);
-V(:,3)=0; 
+V(:,3)=0;
 
 %%
 
@@ -355,13 +357,13 @@ for q=1:numel(distanceSplitSteps)
     indEdge=indEdge(logicValid);
     logicEdge=false(size(Vt,1),1);
     logicEdge(indEdge)=1;
-    indRigid=find(~logicEdge);    
+    indRigid=find(~logicEdge);
     
     cPar.Method='HC';
     cPar.n=50;
     cPar.RigidConstraints=indRigid;
     [Vt]=tesSmooth(Ft,Vt,[],cPar);
-
+    
 end
 
 %%
@@ -370,43 +372,43 @@ cFigure;
 subplot(1,2,1); hold on;
 title('Input surface','FontSize',fontSize);
 gpatch(F,V,'g');
-axisGeom(gca,fontSize); view(2); axis off; 
+axisGeom(gca,fontSize); view(2); axis off;
 
 subplot(1,2,2); hold on;
 title('Output surface','FontSize',fontSize);
 gpatch(Ft,Vt,'r'); view(2);
-axisGeom(gca,fontSize); view(2); axis off;  
+axisGeom(gca,fontSize); view(2); axis off;
 drawnow;
 
-%% 
+%%
 %
 % <<gibbVerySmall.gif>>
-% 
-% _*GIBBON*_ 
+%
+% _*GIBBON*_
 % <www.gibboncode.org>
-% 
+%
 % _Kevin Mattheus Moerman_, <gibbon.toolbox@gmail.com>
- 
-%% 
-% _*GIBBON footer text*_ 
-% 
+
+%%
+% _*GIBBON footer text*_
+%
 % License: <https://github.com/gibbonCode/GIBBON/blob/master/LICENSE>
-% 
+%
 % GIBBON: The Geometry and Image-based Bioengineering add-On. A toolbox for
 % image segmentation, image-based modeling, meshing, and finite element
 % analysis.
-% 
+%
 % Copyright (C) 2018  Kevin Mattheus Moerman
-% 
+%
 % This program is free software: you can redistribute it and/or modify
 % it under the terms of the GNU General Public License as published by
 % the Free Software Foundation, either version 3 of the License, or
 % (at your option) any later version.
-% 
+%
 % This program is distributed in the hope that it will be useful,
 % but WITHOUT ANY WARRANTY; without even the implied warranty of
 % MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 % GNU General Public License for more details.
-% 
+%
 % You should have received a copy of the GNU General Public License
 % along with this program.  If not, see <http://www.gnu.org/licenses/>.

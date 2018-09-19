@@ -1,8 +1,8 @@
 %% DEMO_abaqus_0001_cube_uniaxial
 % Below is a demonstration for:
-% 
+%
 % * Building geometry for a cube with hexahedral elements
-% * Defining the boundary conditions 
+% * Defining the boundary conditions
 % * Coding the abaqus structure
 % * Running the model
 % * Importing and visualizing the displacement and stress results
@@ -39,18 +39,19 @@ savePath=fullfile(defaultFolder,'data','temp');
 % Defining file names
 abaqusInpFileNamePart='tempModel';
 abaqusInpFileName=fullfile(savePath,[abaqusInpFileNamePart,'.inp']); %INP file name
+abaqusDATFileName=fullfile(savePath,[abaqusInpFileNamePart,'.dat']); %DAT file name
 
 %Specifying dimensions and number of elements
-cubeSize=10; 
-sampleWidth=cubeSize; %Width 
-sampleThickness=cubeSize; %Thickness 
+cubeSize=10;
+sampleWidth=cubeSize; %Width
+sampleThickness=cubeSize; %Thickness
 sampleHeight=cubeSize; %Height
-pointSpacings=1*ones(1,3); %Desired point spacing between nodes
+pointSpacings=2*ones(1,3); %Desired point spacing between nodes
 numElementsWidth=round(sampleWidth/pointSpacings(1)); %Number of elemens in dir 1
 numElementsThickness=round(sampleThickness/pointSpacings(2)); %Number of elemens in dir 2
 numElementsHeight=round(sampleHeight/pointSpacings(3)); %Number of elemens in dir 3
 
-%Define applied displacement 
+%Define applied displacement
 appliedStrain=0.3; %Linear strain (Only used to compute applied stretch)
 loadingOption='compression'; % or 'tension'
 switch loadingOption
@@ -64,7 +65,7 @@ displacementMagnitude=(stretchLoad*sampleHeight)-sampleHeight; %The displacement
 %Material parameter set
 c1=1e-3; %Shear-modulus-like parameter
 m1=6; %Material parameter setting degree of non-linearity
-k_factor=500; %Bulk modulus factor 
+k_factor=500; %Bulk modulus factor
 k=c1*k_factor; %Bulk modulus
 formulationType='uncoupled'; %coupled
 
@@ -81,7 +82,7 @@ dtmax=1/numTimeSteps; %Maximum time step size
 % A box is created with tri-linear hexahedral (hex8) elements using the
 % |hexMeshBox| function. The function offers the boundary faces with
 % seperate labels for the top, bottom, left, right, front, and back sides.
-% As such these can be used to define boundary conditions on the exterior. 
+% As such these can be used to define boundary conditions on the exterior.
 
 % Create a box with hexahedral elements
 cubeDimensions=[sampleWidth sampleThickness sampleHeight]; %Dimensions
@@ -90,24 +91,24 @@ outputStructType=2; %A structure compatible with mesh view
 [meshStruct]=hexMeshBox(cubeDimensions,cubeElementNumbers,outputStructType);
 
 %Access elements, nodes, and faces from the structure
-E=meshStruct.elements; %The elements 
+E=meshStruct.elements; %The elements
 V=meshStruct.nodes; %The nodes (vertices)
 Fb=meshStruct.facesBoundary; %The boundary faces
 Cb=meshStruct.boundaryMarker; %The "colors" or labels for the boundary faces
 elementMaterialIndices=ones(size(E,1),1); %Element material indices
 
-%% 
+%%
 % Plotting model boundary surfaces and a cut view
 
-hFig=cFigure; 
+hFig=cFigure;
 
-subplot(1,2,1); hold on; 
+subplot(1,2,1); hold on;
 title('Model boundary surfaces and labels','FontSize',fontSize);
-gpatch(Fb,V,Cb,'k',faceAlpha1); 
+gpatch(Fb,V,Cb,'k',faceAlpha1);
 colormap(gjet(6)); icolorbar;
 axisGeom(gca,fontSize);
 
-hs=subplot(1,2,2); hold on; 
+hs=subplot(1,2,2); hold on;
 title('Cut view of solid mesh','FontSize',fontSize);
 optionStruct.hFig=[hFig hs];
 meshView(meshStruct,optionStruct);
@@ -117,7 +118,7 @@ drawnow;
 
 %% Defining the boundary conditions
 % The visualization of the model boundary shows colors for each side of the
-% cube. These labels can be used to define boundary conditions. 
+% cube. These labels can be used to define boundary conditions.
 
 %Define supported node sets
 logicFace=Cb==1; %Logic for current face set
@@ -137,9 +138,9 @@ logicPrescribe=Cb==6; %Logic for current face set
 Fr=Fb(logicPrescribe,:); %The current face set
 bcPrescribeList=unique(Fr(:)); %Node set part of selected face
 
-%% 
+%%
 % Visualizing boundary conditions. Markers plotted on the semi-transparent
-% model denote the nodes in the various boundary condition lists. 
+% model denote the nodes in the various boundary condition lists.
 
 hf=cFigure;
 title('Boundary conditions','FontSize',fontSize);
@@ -156,11 +157,11 @@ hl(4)=plotV(V(bcPrescribeList,:),'ko','MarkerSize',markerSize);
 legend(hl,{'BC x support','BC y support','BC z support','BC z prescribe'});
 
 axisGeom(gca,fontSize);
-camlight headlight; 
-drawnow; 
+camlight headlight;
+drawnow;
 
 %% Defining the abaqus input structure
-% See also |abaqusStructTemplate| and |abaqusStruct2xml| and the abaqus user
+% See also |abaqusStructTemplate| and |abaqusStruct2inp| and the abaqus user
 % manual.
 
 %%--> Heading
@@ -182,9 +183,9 @@ abaqus_spec.Part.ATTR.name='Cube';
 abaqus_spec.Part.Node={nodeIds,V};
 
 % Element
-elementIds=(1:1:size(E,1))';
+elementIds=(1:1:size(E,1));
 abaqus_spec.Part.Element{1}.ATTR.type='C3D8';%'C3D8R';
-abaqus_spec.Part.Element{1}.VAL={elementIds,E};
+abaqus_spec.Part.Element{1}.VAL={elementIds(:),E};
 
 % Element sets
 abaqus_spec.Part.Elset{1}.ATTR.elset='Set-1';
@@ -217,7 +218,7 @@ abaqus_spec.Assembly.Nset{4}.VAL=bcPrescribeList(:)';
 
 abaqus_spec.Assembly.Nset{5}.ATTR.nset='all';
 abaqus_spec.Assembly.Nset{5}.ATTR.instance='Cube-assembly';
-abaqus_spec.Assembly.Nset{5}.VAL=[1:1:size(V,1)];
+abaqus_spec.Assembly.Nset{5}.VAL=1:1:size(V,1);
 
 %%--> Material
 abaqus_spec.Material.ATTR.name='Elastic';
@@ -232,7 +233,7 @@ abaqus_spec.Step.Static=[0.1 1 1e-5 0.1];
 abaqus_spec.Step.Boundary{1}.VAL={'Set-1',[1,1]};
 abaqus_spec.Step.Boundary{2}.VAL={'Set-2',[2,2]};
 abaqus_spec.Step.Boundary{3}.VAL={'Set-3',[3,3]};
-abaqus_spec.Step.Boundary{4}.VAL={'Set-4',[3,3],-0.1};
+abaqus_spec.Step.Boundary{4}.VAL={'Set-4',[3,3],displacementMagnitude};
 
 %Output
 abaqus_spec.Step.Restart.ATTR.write='';
@@ -245,7 +246,8 @@ abaqus_spec.Step.Output{2}.ATTR.variable='PRESELECT';
 abaqus_spec.Step.Node_print.ATTR.nset='all';
 abaqus_spec.Step.Node_print.ATTR.frequency = 1;
 abaqus_spec.Step.Node_print.VAL='COORD';
-abaqus_spec.Step.El_print.VAL='S';
+abaqus_spec.Step.El_print{1}.VAL='S';
+abaqus_spec.Step.El_print{2}.VAL='E';
 
 %%
 
@@ -263,125 +265,100 @@ if exist(lockFileName,'file')
 end
 
 %%
-cd(savePath);
+
+oldPath=pwd; %Get current working directory
+cd(savePath); %Set new working directory to match save patch
+
+abaqusPath='abaqus';%'/usr/bin/abaqus'; %Abaqus excute command or path
+runFlag=system([abaqusPath,' inp=',abaqusInpFileName,' job=',abaqusInpFileNamePart,' interactive ask_delete=OFF']);
+
+cd(oldPath); %Restore working directory
+
+%% Import and visualize abaqus results
+% Importing the abaqus .dat file 
+
+[abaqusData]=importAbaqusDat(abaqusDATFileName);
 
 %%
+% Plotting the simulated results using |anim8| to visualize and animate
+% deformations
 
-abaqusPath='/usr/bin/abaqus';
+%Getting final nodal coordinates
+V_def=[abaqusData.STEP(1).INCREMENT(end).nodeOutput.data.COOR1...
+    abaqusData.STEP(1).INCREMENT(end).nodeOutput.data.COOR2...
+    abaqusData.STEP(1).INCREMENT(end).nodeOutput.data.COOR3];
+U=V_def-V; %Displacements
 
-system([abaqusPath,' inp=',abaqusInpFileName,' job=',abaqusInpFileNamePart,' interactive ask_delete=OFF'])
+colorDataVertices=sqrt(sum(U(:,3).^2,2)); %Displacement magnitude data in z-dir for coloring 
 
+timeVec=[0 abaqusData.STEP(1).INCREMENT(:).TOTAL_TIME_COMPLETED];
 
-fdsafsafsa
+% Get limits for plotting
+minV=min([V;V_def],[],1); %Minima
+maxV=max([V;V_def],[],1); %Maxima
 
-%% Import abaqus results 
+% Create basic view and store graphics handle to initiate animation
+hf=cFigure; %Open figure
+gtitle([abaqusInpFileNamePart,': Press play to animate']);
+hp=gpatch(Fb,V_def,colorDataVertices,'k',1); %Add graphics object to animate
+gpatch(Fb,V,0.5*ones(1,3),'k',0.25); %A static graphics object
+axisGeom(gca,fontSize);
+colormap(gjet(250)); colorbar;
+caxis([0 max(colorDataVertices)]);
+axis([minV(1) maxV(1) minV(2) maxV(2) minV(3) maxV(3)]); %Set axis limits statically
+view(130,25); %Set view direction
+camlight headlight;
 
-if runFlag==1 %i.e. a succesful run
-    
-    % Importing nodal displacements from a log file
-    [~, N_disp_mat,~]=importabaqus_logfile(fullfile(savePath,abaqusLogFileName_disp)); %Nodal displacements    
-    
-    N_disp_mat=N_disp_mat(:,2:end,:);
-    sizImport=size(N_disp_mat);
-    sizImport(3)=sizImport(3)+1;
-    N_disp_mat_n=zeros(sizImport);
-    N_disp_mat_n(:,:,2:end)=N_disp_mat;
-    N_disp_mat=N_disp_mat_n;
-    DN=N_disp_mat(:,:,end);
-    DN_magnitude=sqrt(sum(DN(:,3).^2,2));
-    V_def=V+DN;
-    [CF]=vertexToFaceMeasure(Fb,DN_magnitude);
-    
-    % Importing element stress from a log file
-    [time_mat, E_stress_mat,~]=importabaqus_logfile(fullfile(savePath,abaqusLogFileName_stress)); %Nodal forces
-    time_mat=[0; time_mat(:)]; %Time
-    stress_cauchy_sim=[0; mean(squeeze(E_stress_mat(:,end,:)),1)'];
-    
-    %% 
-    % Plotting the simulated results using |anim8| to visualize and animate
-    % deformations 
-    
-    % Create basic view and store graphics handle to initiate animation
-    hf=cFigure; %Open figure  
-    gtitle([abaqusInpFileNamePart,': Press play to animate']);
-    hp=gpatch(Fb,V_def,CF,'k',1); %Add graphics object to animate
-    gpatch(Fb,V,0.5*ones(1,3),'k',0.25); %A static graphics object
-    
-    axisGeom(gca,fontSize); 
-    colormap(gjet(250)); colorbar;
-    caxis([0 max(DN_magnitude)]);    
-    axis([min(V_def(:,1)) max(V_def(:,1)) min(V_def(:,2)) max(V_def(:,2)) min(V_def(:,3)) max(V_def(:,3))]); %Set axis limits statically
-    view(130,25); %Set view direction
-    camlight headlight;        
-        
-    % Set up animation features
-    animStruct.Time=time_mat; %The time vector    
-    for qt=1:1:size(N_disp_mat,3) %Loop over time increments        
-        DN=N_disp_mat(:,:,qt); %Current displacement
-        DN_magnitude=sqrt(sum(DN.^2,2)); %Current displacement magnitude
-        V_def=V+DN; %Current nodal coordinates
-        [CF]=vertexToFaceMeasure(Fb,DN_magnitude); %Current color data to use
-        
-        %Set entries in animation structure
-        animStruct.Handles{qt}=[hp hp]; %Handles of objects to animate
-        animStruct.Props{qt}={'Vertices','CData'}; %Properties of objects to animate
-        animStruct.Set{qt}={V_def,CF}; %Property values for to set in order to animate
-    end        
-    anim8(hf,animStruct); %Initiate animation feature    
-    drawnow;
-    
-    %% 
-    % Calculate the simulated applied uniaxial stretch
-    
-    DZ_set=N_disp_mat(bcPrescribeList,end,:); %Z displacements of the prescribed set
-    DZ_set=mean(DZ_set,1); %Calculate mean Z displacements across nodes
-    stretch_sim=(DZ_set(:)+sampleHeight)./sampleHeight; %Derive stretch
-        
-    %%    
-    % Visualize stress-stretch curve
-    
-    cFigure;
-    hold on;    
-    title('Uniaxial stress-stretch curve','FontSize',fontSize);
-    xlabel('\lambda Stretch [.]','FontSize',fontSize); ylabel('\sigma Cauchy stress [MPa]','FontSize',fontSize); 
-    
-    plot(stretch_sim(:),stress_cauchy_sim(:),'r-','lineWidth',lineWidth);
-    
-    view(2); axis tight;  grid on; axis square; box on; 
-    set(gca,'FontSize',fontSize);
-    drawnow;
-    
+% Set up animation features
+animStruct.Time=timeVec; %The time vector
+for qt=1:1:numel(timeVec) %Loop over time increments    
+    if qt>1
+        V_def=[abaqusData.STEP(1).INCREMENT(qt-1).nodeOutput.data.COOR1...
+            abaqusData.STEP(1).INCREMENT(qt-1).nodeOutput.data.COOR2...
+            abaqusData.STEP(1).INCREMENT(qt-1).nodeOutput.data.COOR3];
+    else
+        V_def=V;
+    end    
+    U=V_def-V; %Displacements
+    colorDataVertices=sqrt(sum(U(:,3).^2,2)); %New color data
+   
+    %Set entries in animation structure
+    animStruct.Handles{qt}=[hp hp]; %Handles of objects to animate
+    animStruct.Props{qt}={'Vertices','CData'}; %Properties of objects to animate
+    animStruct.Set{qt}={V_def,colorDataVertices}; %Property values for to set in order to animate
 end
+anim8(hf,animStruct); %Initiate animation feature
+drawnow;
 
-%% 
+%%
 %
 % <<gibbVerySmall.gif>>
-% 
-% _*GIBBON*_ 
+%
+% _*GIBBON*_
 % <www.gibboncode.org>
-% 
+%
 % _Kevin Mattheus Moerman_, <gibbon.toolbox@gmail.com>
- 
-%% 
-% _*GIBBON footer text*_ 
-% 
+
+%%
+% _*GIBBON footer text*_
+%
 % License: <https://github.com/gibbonCode/GIBBON/blob/master/LICENSE>
-% 
+%
 % GIBBON: The Geometry and Image-based Bioengineering add-On. A toolbox for
 % image segmentation, image-based modeling, meshing, and finite element
 % analysis.
-% 
+%
 % Copyright (C) 2018  Kevin Mattheus Moerman
-% 
+%
 % This program is free software: you can redistribute it and/or modify
 % it under the terms of the GNU General Public License as published by
 % the Free Software Foundation, either version 3 of the License, or
 % (at your option) any later version.
-% 
+%
 % This program is distributed in the hope that it will be useful,
 % but WITHOUT ANY WARRANTY; without even the implied warranty of
 % MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 % GNU General Public License for more details.
-% 
+%
 % You should have received a copy of the GNU General Public License
 % along with this program.  If not, see <http://www.gnu.org/licenses/>.

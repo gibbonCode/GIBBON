@@ -71,6 +71,7 @@ end
 %%
 
 addpath(testFolder);
+cd(testFolder); %Make testFolder current directory
 
 for q_test=startInd:1:numel(testFileList)
 
@@ -80,25 +81,37 @@ for q_test=startInd:1:numel(testFileList)
     disp(' ');
     
     mFileNow=fullfile(testFolder,testFileList{q_test});
+    
     initialVars_publish = who;        
     save('tempPub.mat'); %Save current variables
     
     switch testMode
-        case 'test' %Test
-            run(mFileNow);
+        case 'test' %Test            
+            try
+                run(mFileNow);
+                drawnow;
+                pause(1);
+            catch ME
+                load('tempPub.mat'); %Load variables
+                disp(['Error in: ',mFileNow]);
+                disp(['To restart from this file use start index: ',num2str(q_test)]);
+                disp(' ');
+                rethrow(ME);
+            end            
         case 'pub' %Publish
             try
                 publish(mFileNow,'catchError',false,'figureSnapMethod','getframe','maxWidth',1000);
                 drawnow;
                 pause(1);
             catch ME                             
+                load('tempPub.mat'); %Load variables
                 disp(['Error in: ',mFileNow]);
                 disp(['To restart from this file use start index: ',num2str(q_test)]);
                 disp(' ');
                 rethrow(ME);
             end
     end
-            
+    
     load('tempPub.mat'); %Load variables
     delete('tempPub.mat'); %Clean up
      

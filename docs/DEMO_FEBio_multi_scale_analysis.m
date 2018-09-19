@@ -9,7 +9,7 @@ clear; close all; clc;
 
 %% First run other demo with hexahedral elements
 
-DEMO_FEBio_block_uniaxial_compression;
+DEMO_febio_0001_cube_uniaxial;
 
 close all; %Close figures
 

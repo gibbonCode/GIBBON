@@ -177,8 +177,8 @@ Fs=DT.ConnectivityList;
 L = isInterior(DT);
 Fs=Fs(L,:);
 
-maxAngleDeviation=40*(pi/180);
-[F_quad,V_quad]=tri2quadGroupSplit(Fs,Vs,maxAngleDeviation);
+optionStruct.maxAngleDeviation=40*(pi/180);
+[F_quad,V_quad]=tri2quadGroupSplit(Fs,Vs,optionStruct);
 
 np=size(V_quad,1);
 V_quad=[V_quad; V_quad];
@@ -278,7 +278,8 @@ drawnow;
 
 cFigure; hold on; 
 gtitle('Hexahedral mesh of stent',fontSize);
-gpatch(F,V,'bw','b');
+hp=gpatch(F,V,'bw','k');
+hp.LineWidth=0.5;
 axisGeom(gca,fontSize);
 camlight headlight; 
 drawnow;

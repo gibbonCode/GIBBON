@@ -107,17 +107,18 @@ Fn=[indB(logicTwo) Fn(:,end-1:end)];
 
 indThree=indB(sum(IND_V>0,2)==3);
 
-[Nn,~,~]=patchNormal(Fn,Vd);
-ind1=Fn(:,1);
-ind1(ind1>size(Vd,1))=ind1(ind1>size(Vd,1))-size(Vd,1);
-logicFlip=dot(Nn,N(ind1,:),2)<0;
-Fn(logicFlip,:)=fliplr(Fn(logicFlip,:));
-
+if ~isempty(Fn)
+    [Nn,~,~]=patchNormal(Fn,Vd);
+    ind1=Fn(:,1);
+    ind1(ind1>size(Vd,1))=ind1(ind1>size(Vd,1))-size(Vd,1);
+    logicFlip=dot(Nn,N(ind1,:),2)<0;
+    Fn(logicFlip,:)=fliplr(Fn(logicFlip,:));
+end
 Cn=CFs(ind1,:);
 
 %%
 try
-    if numel(indThree)>0
+    if ~isempty(indThree)
         Fn3=zeros(numel(indThree),3);
         for q=1:1:numel(indThree)
             L=any(E==indThree(q),2);

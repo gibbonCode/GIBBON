@@ -1,6 +1,6 @@
 function [varargout]=triPolyDualRefine(varargin)
 
-% function [Ft,Vt,Ct,indIni]=triPolyDualRefine(F,V)
+% function [Ft,Vt,Ct,indIni]=triPolyDualRefine(F,V,fixBoundaryOpt)
 % ------------------------------------------------------------------------
 % 
 %
