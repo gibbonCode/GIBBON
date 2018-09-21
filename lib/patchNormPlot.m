@@ -76,13 +76,16 @@ end
 
 function hp=patchNormPlotStep(F,V,a,patchType,patchColor)
 
-%%
 %Check if a is empty, if so replace length by mean edge length of surface
-if isempty(a)
-    [A]=patchEdgeLengths(F,V);
-    a=mean(A(~isnan(A)))*ones(1,2)/2; %half the edge length by default
-elseif numel(a)==1
-    a=a*ones(1,2);
+if isnumeric(a)
+    if isempty(a)
+        [A]=patchEdgeLengths(F,V);
+        a=mean(A(~isnan(A)))*ones(1,2)/2; %half the edge length by default
+    elseif numel(a)==1
+        a=a*ones(1,2);
+    end
+else
+    error('The variable a should be numeric to denote vector lengths')
 end
 
 %%

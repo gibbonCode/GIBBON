@@ -1,4 +1,4 @@
-%% DEMO_febio_0031_blob_shear_contact
+%% DEMO_febio_0035_blob_shear_contact_hex8
 % Below is a demonstration for:
 % 
 % * Building geometry for a hemi-spherical blob with tetrahedral elements
@@ -50,9 +50,8 @@ febioLogFileName_disp=[febioFebFileNamePart,'_disp_out.txt']; %Log file name for
 % febioLogFileName_force=[febioFebFileNamePart,'_force_out.txt']; %Log file name for exporting force
 
 % Hemi-sphere parameters
-hemiSphereRadius=1; 
-nRefine=2; 
-closeOption=1; 
+hemiSphereRadius=1;
+numElementsMantel=5;
 smoothEdge=1; 
 
 % Ground plate parameters
@@ -60,20 +59,21 @@ plateRadius=2*hemiSphereRadius;
 
 % Probe parameters
 probeWidth=3*hemiSphereRadius; 
-filletProbe=0.25; %Fillet radius
+filletProbe=0.5; %Fillet radius
 
 % Define probe displacement
 probeDisplacement=hemiSphereRadius*2; 
 probeOverlapFactor=0.4;
+probeLength=hemiSphereRadius*3; 
 
 % Material parameter set
 c1=1e-3; %Shear-modulus-like parameter
 m1=2; %Material parameter setting degree of non-linearity
-k_factor=10; %Bulk modulus factor 
+k_factor=100; %Bulk modulus factor 
 k=c1*k_factor; %Bulk modulus
 
 % FEA control settings
-numTimeSteps=30;
+numTimeSteps=20;
 max_refs=25; %Max reforms
 max_ups=0; %Set to zero to use full-Newton iterations
 opt_iter=10; %Optimum number of iterations
@@ -82,74 +82,64 @@ symmetric_stiffness=0;
 min_residual=1e-20;
 step_size=1/numTimeSteps;
 dtmin=(1/numTimeSteps)/100; %Minimum time step size
-dtmax=(1/(numTimeSteps)); %Maximum time step size
+dtmax=1/(numTimeSteps); %Maximum time step size
 
 %Contact parameters
-contactPenalty=1;
+contactPenalty=5;
 laugon=0;
 minaug=1;
 maxaug=10;
 fric_coeff=0.01; 
-max_traction=0; 
+max_traction=0;  
 
 %% Creating model geometry and mesh
 % 
 
-% Create hemi-sphere mesh
-[F_blob,V_blob,C_blob]=hemiSphereMesh(nRefine,hemiSphereRadius,1);
-pointSpacingBlob=mean(patchEdgeLengths(F_blob,V_blob));
+%Control settings
+optionStruct.sphereRadius=hemiSphereRadius;
+optionStruct.coreRadius=optionStruct.sphereRadius/2;
+optionStruct.numElementsMantel=numElementsMantel;
+optionStruct.numElementsCore=optionStruct.numElementsMantel*2;
+optionStruct.outputStructType=2;
+optionStruct.makeHollow=0;
+optionStruct.cParSmooth.n=25;
+
+% %Creating sphere
+[meshStruct]=hexMeshHemiSphere(optionStruct);
+
+% Access model element and patch data
+Fb_blob=meshStruct.facesBoundary;
+Cb_blob=meshStruct.boundaryMarker;
+V_blob=meshStruct.nodes;
+E_blob=meshStruct.elements;
+
+F_blob=element2patch(E_blob);
+
+%%
+
+pointSpacingBlob=mean(patchEdgeLengths(Fb_blob,V_blob));
 
 %Smoothen edges
 if smoothEdge==1
     %Get rigid region
     ind=1:1:size(V_blob,1); %Indices for all nodes
-    indRigid=find(ismember(ind,F_blob(C_blob==2,:)) & ~ismember(ind,F_blob(C_blob==1,:))); %Indices for new bottom surface nodes
+    indRigid1=find(ismember(ind,Fb_blob(Cb_blob==2,:)) & ~ismember(ind,Fb_blob(Cb_blob==1,:))); %Indices for new bottom surface nodes
+    indRigid2=find(ismember(ind,Fb_blob(Cb_blob==1,:)) & ~ismember(ind,Fb_blob(Cb_blob==2,:))); %Indices for new bottom surface nodes
+    indRigid=[indRigid1(:); indRigid2(:);];
     
     %Smoothing
     cPar.Method='HC';
     cPar.n=250;
     cPar.RigidConstraints=indRigid;
-    [V_blob]=patchSmooth(F_blob,V_blob,[],cPar);
-    
+    [Vb_blob]=patchSmooth(F_blob,V_blob,[],cPar);
+    indSmooth=unique(F_blob(:));
+    V_blob(indSmooth,:)=Vb_blob(indSmooth,:);
     %Fix color data with new bottom surface
-    C_blob=ones(size(C_blob));
-    C_blob(all(ismember(F_blob,indRigid),2))=2;
+    Cb_blob=ones(size(Cb_blob));
+    Cb_blob(all(ismember(Fb_blob,indRigid1),2))=2;
 
+    meshStruct.nodes=V_blob;
 end
-
-%%
-% Visualize hemi-sphere surface
-
-cFigure; hold on;
-gtitle('The hemi-sphere surface mesh',fontSize);
-gpatch(F_blob,V_blob,C_blob,'k',0.85);
-patchNormPlot(F_blob,V_blob);
-axisGeom(gca,fontSize);
-colormap(gjet); icolorbar;
-camlight headlight; 
-drawnow; 
-
-%% 
-% Using tetgen to create a tetrahedral mesh
-
-% Tetgen input structure
-inputStruct.stringOpt='-pq1.2AaY';
-inputStruct.Faces=F_blob;
-inputStruct.Nodes=V_blob;
-inputStruct.holePoints=[];
-inputStruct.faceBoundaryMarker=C_blob; %Face boundary markers
-inputStruct.regionPoints=getInnerPoint(F_blob,V_blob); %region points
-inputStruct.regionA=tetVolMeanEst(F_blob,V_blob);
-inputStruct.minRegionMarker=2; %Minimum region marker
- 
-% Create tetrahedral mesh using tetGen 
-[meshOutput]=runTetGen(inputStruct); %Run tetGen 
- 
-% Access model element and patch data
-Fb_blob=fliplr(meshOutput.facesBoundary);
-Cb_blob=meshOutput.boundaryMarker;
-V_blob=meshOutput.nodes;
-E_blob=meshOutput.elements;
 
 %%
 % Visualize blob mesh
@@ -157,7 +147,8 @@ E_blob=meshOutput.elements;
 hFig=cFigure; 
 subplot(1,2,1); hold on;
 gpatch(Fb_blob,V_blob,Cb_blob,'k',1);
-patchNormPlot(Fb_blob,V_blob);
+% patchNormPlot(Fb_blob,V_blob);
+% plotV(V_blob(indRigid,:),'g.','MarkerSize',25);
 axisGeom(gca,fontSize);
 colormap(gjet); icolorbar;
 camlight headlight; 
@@ -166,20 +157,14 @@ hs=subplot(1,2,2); hold on;
 title('Cut view of solid mesh','FontSize',fontSize);
 optionStruct.hFig=[hFig hs];
 gpatch(Fb_blob,V_blob,'kw','none',0.25);
-meshView(meshOutput,optionStruct);
+meshView(meshStruct,optionStruct);
 axisGeom(gca,fontSize);
 drawnow; 
 
 %% Creating rigid body ground plate
 % 
 
-%Get outer surve of ground surface 
-[Eb]=patchBoundary(Fb_blob(Cb_blob==2,:),V_blob);
-indCurveBottom=edgeListToCurve(Eb);
-indCurveBottom=indCurveBottom(1:end-1);
-
-% Derive point spacing for plate
-pointSpacingPlate=pointSpacingBlob; 
+pointSpacingPlate=pointSpacingBlob;
 
 % Compose outer curve of the plate
 nPlateCurve=ceil((2*pi*plateRadius)/pointSpacingPlate);
@@ -189,13 +174,13 @@ x=plateRadius.*sin(t);
 y=plateRadius.*cos(t); 
 Vp_outer_curve=[x(:) y(:)];
 
-% Copy inner curve from the hemi-sphere
-Vp_inner_curve=V_blob(indCurveBottom,[1 2]);
-
 % Create mesh out outer region
-regionCell={Vp_outer_curve,Vp_inner_curve};
+regionCell={Vp_outer_curve};
 [F_plate,V_plate]=regionTriMesh2D(regionCell,pointSpacingPlate,0,0);
 V_plate(:,3)=0; %Add z-direction
+
+optionStruct.maxAngleDeviation=45;
+[F_plate,V_plate]=tri2quadGroupSplit(F_plate,V_plate,optionStruct);
 
 % Copy mesh for inner region
 [F_plate_inner,V_plate_inner]=patchCleanUnused(fliplr(Fb_blob(Cb_blob==2,:)),V_blob);
@@ -222,7 +207,7 @@ drawnow;
 pointSpacingProbe=pointSpacingBlob/2; 
 
 %Sketching side profile
-x=[-hemiSphereRadius hemiSphereRadius hemiSphereRadius]-hemiSphereRadius*2;
+x=[-probeLength-hemiSphereRadius -hemiSphereRadius -hemiSphereRadius];
 y=[0 0 0];
 z=[hemiSphereRadius*(1-probeOverlapFactor) hemiSphereRadius*(1-probeOverlapFactor) hemiSphereRadius*1.5];
 V_probe_curve_sketch=[x(:) y(:) z(:)];
@@ -238,7 +223,7 @@ numPointsProbeCurve=ceil(max(pathLength(V_probe_curve))/pointSpacingProbe);
 controlParametersExtrude.depth=hemiSphereRadius*2.5; 
 controlParametersExtrude.numSteps=ceil(controlParametersExtrude.depth/pointSpacingProbe);
 controlParametersExtrude.numSteps=controlParametersExtrude.numSteps+iseven(controlParametersExtrude.numSteps); %Force uneven
-controlParametersExtrude.patchType='tri'; 
+controlParametersExtrude.patchType='quad'; 
 controlParametersExtrude.dir=0;
 controlParametersExtrude.n=[0 1 0];
 controlParametersExtrude.closeLoopOpt=0; 
@@ -285,9 +270,6 @@ drawnow;
 
 %% Get contact surfaces
 %
-
-% F_contact_blob1=Fb_blob(Cb_blob==1,:);
-% F_contact_blob2=Fb_blob(Cb_blob==2,:);
 
 %%
 % Visualize contact surfaces
@@ -367,19 +349,19 @@ febio_spec.Geometry.Nodes{1}.node.ATTR.id=(1:size(V,1))'; %The node id's
 febio_spec.Geometry.Nodes{1}.node.VAL=V; %The nodel coordinates
 
 % -> Elements
-febio_spec.Geometry.Elements{1}.ATTR.type='tet4'; %Element type of this set
+febio_spec.Geometry.Elements{1}.ATTR.type='hex8'; %Element type of this set
 febio_spec.Geometry.Elements{1}.ATTR.mat=1; %material index for this set 
 febio_spec.Geometry.Elements{1}.ATTR.name='Blob'; %Name of the element set
 febio_spec.Geometry.Elements{1}.elem.ATTR.id=(1:1:size(E_blob,1))'; %Element id's
 febio_spec.Geometry.Elements{1}.elem.VAL=E_blob;
 
-febio_spec.Geometry.Elements{2}.ATTR.type='tri3'; %Element type of this set
+febio_spec.Geometry.Elements{2}.ATTR.type='quad4'; %Element type of this set
 febio_spec.Geometry.Elements{2}.ATTR.mat=2; %material index for this set 
 febio_spec.Geometry.Elements{2}.ATTR.name='Plate'; %Name of the element set
 febio_spec.Geometry.Elements{2}.elem.ATTR.id=size(E_blob,1)+(1:1:size(F_plate,1))'; %Element id's
 febio_spec.Geometry.Elements{2}.elem.VAL=F_plate;
 
-febio_spec.Geometry.Elements{2}.ATTR.type='tri3'; %Element type of this set
+febio_spec.Geometry.Elements{2}.ATTR.type='quad4'; %Element type of this set
 febio_spec.Geometry.Elements{2}.ATTR.mat=3; %material index for this set 
 febio_spec.Geometry.Elements{2}.ATTR.name='Probe'; %Name of the element set
 febio_spec.Geometry.Elements{2}.elem.ATTR.id=size(E_blob,1)+size(F_plate,1)+(1:1:size(F_probe,1))'; %Element id's
@@ -390,20 +372,20 @@ febio_spec.Geometry.Elements{2}.elem.VAL=F_probe;
 
 % % -> Surfaces
 febio_spec.Geometry.Surface{1}.ATTR.name='contact_master1';
-febio_spec.Geometry.Surface{1}.tri3.ATTR.lid=(1:1:size(F_plate,1))';
-febio_spec.Geometry.Surface{1}.tri3.VAL=F_plate;
+febio_spec.Geometry.Surface{1}.quad4.ATTR.lid=(1:1:size(F_plate,1))';
+febio_spec.Geometry.Surface{1}.quad4.VAL=F_plate;
 
 febio_spec.Geometry.Surface{2}.ATTR.name='contact_slave1';
-febio_spec.Geometry.Surface{2}.tri3.ATTR.lid=(1:1:size(Fb_blob,1))';
-febio_spec.Geometry.Surface{2}.tri3.VAL=Fb_blob;
+febio_spec.Geometry.Surface{2}.quad4.ATTR.lid=(1:1:size(Fb_blob,1))';
+febio_spec.Geometry.Surface{2}.quad4.VAL=Fb_blob;
 
 febio_spec.Geometry.Surface{3}.ATTR.name='contact_master2';
-febio_spec.Geometry.Surface{3}.tri3.ATTR.lid=(1:1:size(F_probe,1))';
-febio_spec.Geometry.Surface{3}.tri3.VAL=F_probe;
+febio_spec.Geometry.Surface{3}.quad4.ATTR.lid=(1:1:size(F_probe,1))';
+febio_spec.Geometry.Surface{3}.quad4.VAL=F_probe;
 
 febio_spec.Geometry.Surface{4}.ATTR.name='contact_slave2';
-febio_spec.Geometry.Surface{4}.tri3.ATTR.lid=(1:1:size(Fb_blob(Cb_blob==1,:),1))';
-febio_spec.Geometry.Surface{4}.tri3.VAL=Fb_blob(Cb_blob==1,:);
+febio_spec.Geometry.Surface{4}.quad4.ATTR.lid=(1:1:size(Fb_blob(Cb_blob==1,:),1))';
+febio_spec.Geometry.Surface{4}.quad4.VAL=Fb_blob(Cb_blob==1,:);
 
 % -> Surface pairs
 febio_spec.Geometry.SurfacePair{1}.ATTR.name='Contact1_plate_blob';
@@ -526,7 +508,7 @@ if 1%runFlag==1 %i.e. a succesful run
     Z_DEF=V_DEF(:,3,:);
 %     [CF]=vertexToFaceMeasure(Fb_all,DN_magnitude);
     
-    % 
+    %% 
     % Plotting the simulated results using |anim8| to visualize and animate
     % deformations 
     

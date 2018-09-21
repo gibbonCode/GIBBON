@@ -1,5 +1,5 @@
-%% hexMeshSphere
-% Below is a demonstration of the features of the |hexMeshSphere| function
+%% hexMeshHemiSphere
+% Below is a demonstration of the features of the |hexMeshHemiSphere| function
 
 %%
 
@@ -16,21 +16,22 @@ edgeWidth=2;
 % Creating a solid hexahedral mesh sphere
 
 %Control settings
-optionStruct.sphereRadius=10;
-optionStruct.coreRadius=5;
-optionStruct.numElementsMantel=5; 
-optionStruct.numElementsCore=8; 
-optionStruct.makeHollow=0;
+optionStruct.sphereRadius=1;
+optionStruct.coreRadius=optionStruct.sphereRadius/2;
+optionStruct.numElementsMantel=6;
+optionStruct.numElementsCore=optionStruct.numElementsMantel*2;
 optionStruct.outputStructType=2;
+optionStruct.makeHollow=0;
+optionStruct.cParSmooth.n=25;
 
-%Creating sphere
-[meshStruct]=hexMeshSphere(optionStruct);
+% %Creating sphere
+[meshOutput]=hexMeshHemiSphere(optionStruct);
 
 % Access model element and patch data
-Fb=meshStruct.facesBoundary;
-Cb=meshStruct.boundaryMarker;
-V=meshStruct.nodes;
-E=meshStruct.elements;
+Fb=meshOutput.facesBoundary;
+Cb=meshOutput.boundaryMarker;
+V=meshOutput.nodes;
+E=meshOutput.elements;
 
 %%
 % Visualize mesh
@@ -48,29 +49,30 @@ hs=subplot(1,2,2); hold on;
 title('Cut view of solid mesh','FontSize',fontSize);
 optionStruct.hFig=[hFig hs];
 gpatch(Fb,V,'kw','none',0.25);
-meshView(meshStruct,optionStruct);
+meshView(meshOutput,optionStruct);
 axisGeom(gca,fontSize);
 drawnow; 
 
-%% Creating a hollow hexahedral mesh sphere 
-% Creating a hollow hexahedral mesh sphere
+%% Creating a hollow hexahedral mesh hemisphere 
+% Creating a hollow hexahedral mesh hemisphere
 
 %Control settings
-optionStruct.sphereRadius=10;
-optionStruct.coreRadius=5;
-optionStruct.numElementsMantel=5; 
-optionStruct.numElementsCore=8; 
-optionStruct.makeHollow=1;
+optionStruct.sphereRadius=1;
+optionStruct.coreRadius=optionStruct.sphereRadius/2;
+optionStruct.numElementsMantel=6;
+optionStruct.numElementsCore=optionStruct.numElementsMantel*2;
 optionStruct.outputStructType=2;
+optionStruct.makeHollow=1;
+optionStruct.cParSmooth.n=25;
 
-%Creating sphere
-[meshStruct]=hexMeshSphere(optionStruct);
+% %Creating sphere
+[meshOutput]=hexMeshHemiSphere(optionStruct);
 
 % Access model element and patch data
-Fb=meshStruct.facesBoundary;
-Cb=meshStruct.boundaryMarker;
-V=meshStruct.nodes;
-E=meshStruct.elements;
+Fb=meshOutput.facesBoundary;
+Cb=meshOutput.boundaryMarker;
+V=meshOutput.nodes;
+E=meshOutput.elements;
 
 %%
 % Visualize mesh
@@ -88,7 +90,7 @@ hs=subplot(1,2,2); hold on;
 title('Cut view of solid mesh','FontSize',fontSize);
 optionStruct.hFig=[hFig hs];
 gpatch(Fb,V,'kw','none',0.25);
-meshView(meshStruct,optionStruct);
+meshView(meshOutput,optionStruct);
 axisGeom(gca,fontSize);
 drawnow; 
 

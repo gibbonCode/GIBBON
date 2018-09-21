@@ -1,4 +1,4 @@
-function [meshStruct]=hexMeshSphere(optionStruct)
+function [meshStruct]=hexMeshHemiSphere(optionStruct)
 
 %% Parse input
 
@@ -14,6 +14,7 @@ defaultOptionStruct.cParSmooth.LambdaSmooth=0.5;
 defaultOptionStruct.cParSmooth.n=5;
 [optionStruct]=structComplete(optionStruct,defaultOptionStruct,1);
 
+
 % Get input parameters
 sphereRadius=optionStruct.sphereRadius;
 coreRadius=optionStruct.coreRadius;
@@ -22,18 +23,22 @@ numElementsCore=optionStruct.numElementsCore;
 makeHollow=optionStruct.makeHollow;
 outputStructType=optionStruct.outputStructType;
 
-%% CREATING A HEXAHEDRAL MESH CUBE
-
 %Create box 1
 sphereDim=1/sqrt(3)*2*coreRadius*ones(1,3); 
+sphereDim(3)=sphereDim(3)/2;
 sphereEl=numElementsCore*ones(1,3); %Number of elements
+sphereEl(3)=round(numElementsCore/2);
 [boxMeshStruct]=hexMeshBox(sphereDim,sphereEl);
 E_core=boxMeshStruct.E;
 V_core=boxMeshStruct.V;
+V_core(:,3)=V_core(:,3)-min(V_core(:,3));
+
 Fb=boxMeshStruct.Fb;
 faceBoundaryMarkerBox=boxMeshStruct.faceBoundaryMarker;
 
-indBoundary=unique(Fb(:));
+logicTop=faceBoundaryMarkerBox~=5;
+
+indBoundary=unique(Fb(logicTop,:));
 V_core_boundary=V_core(indBoundary,:);
 
 %% MAPPING OUTER SURFACE TO A SPHERE
@@ -45,7 +50,7 @@ V_core(indBoundary,:)=V_core_boundary;
 %% Adding mantel
 
 mantelThickness=sphereRadius-coreRadius;
-[Fq,Vq,~]=patchCleanUnused(Fb,V_core);
+[Fq,Vq,~]=patchCleanUnused(Fb(logicTop,:),V_core);
 [E_mantel,V_mantel,F_mantel_inner,F_mantel_outer]=quadThick(Fq,Vq,1,mantelThickness,numElementsMantel);
 
 %Fix outer radii
@@ -57,11 +62,19 @@ V_mantel_boundary=V_mantel(indBoundary,:);
 V_mantel(indBoundary,:)=V_mantel_boundary;
 
 %%
+
 if makeHollow==1
     ET=E_mantel; 
     VT=V_mantel; 
-    FTb=[F_mantel_outer; F_mantel_inner];
-    faceBoundaryMarker=[ones(size(F_mantel_outer,1),1); 2*ones(size(F_mantel_inner,1),1)];
+    [FT,~]=element2patch(ET,[],'hex8');
+    [indBoundary]=tesBoundary(FT,VT);
+    FTb=FT(indBoundary,:);
+    logicTopFaces=all(ismember(FTb,F_mantel_outer),2);
+    logicInnerFaces=all(ismember(FTb,F_mantel_inner),2);
+    
+    faceBoundaryMarker=ones(size(FTb,1),1);
+    faceBoundaryMarker(~logicTopFaces)=2;
+    faceBoundaryMarker(logicInnerFaces)=3;    
 elseif makeHollow==0    
     % Merging node sets
     VT=[V_core;V_mantel];
@@ -70,22 +83,28 @@ elseif makeHollow==0
     [FT,VT,~,ind2]=mergeVertices(FT,VT);    
     ET=ind2(ET);
     F_mantel_outer=ind2(F_mantel_outer+size(V_core,1));
-%     F_mantel_inner=ind2(F_mantel_inner+size(V_core,1));
-    FTb=F_mantel_outer;
-    faceBoundaryMarker=ones(size(F_mantel_outer,1),1);
+    [indBoundary]=tesBoundary(FT,VT);
+    FTb=FT(indBoundary,:);
+    logicTopFaces=all(ismember(FTb,F_mantel_outer),2);
+    faceBoundaryMarker=ones(size(FTb,1),1);
+    faceBoundaryMarker(~logicTopFaces)=2;
 end
-
-%Get faces
-[FT,~]=element2patch(ET,[],'hex8');
 
 %% Smoothing
 
-optionStruct.cParSmooth.RigidConstraints=unique(FTb(:));
-
 [F,~,~]=uniqueIntegerRow(FT);
 
-if optionStruct.cParSmooth.n>0
-    [VT]=tesSmooth(F,VT,[],optionStruct.cParSmooth);
+numSmoothSteps=optionStruct.cParSmooth.n;
+if numSmoothSteps>0    
+    optionStruct.cParSmooth.n=1;
+    indRigid_XYZ=unique(FTb(faceBoundaryMarker~=2,:));
+    indRigid_Z=unique(FTb(faceBoundaryMarker==2,:));
+    VT_ori=VT;
+    for q=1:1:numSmoothSteps
+        [VT]=tesSmooth(F,VT,[],optionStruct.cParSmooth);
+        VT(indRigid_XYZ,:)=VT_ori(indRigid_XYZ,:); %Fully constrained
+        VT(indRigid_Z,3)=VT_ori(indRigid_Z,3)*0; %Z constrained
+    end
 end
 
 %% Collect output

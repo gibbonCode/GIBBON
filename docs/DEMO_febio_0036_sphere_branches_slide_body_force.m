@@ -1,4 +1,4 @@
-%% DEMO_febio_0034_sphere_cone_slide_body_force
+%% DEMO_febio_0036_sphere_branches_slide_body_force
 % Below is a demonstration for:
 % 
 % * Building geometry for a spherical blob with tetrahedral elements
@@ -35,8 +35,7 @@ faceAlpha1=0.8;
 faceAlpha2=0.3;
 markerSize=40;
 lineWidth=3;
-cMap=[1 0.5 0.4; 0.9 0.3 0.27; 0.8 0.2 0.18; 0.7 0.1 0.09; 0.6 0 0; 0.5 0 0; 0.4 0 0;];
-[cMap]=resampleColormap(cMap,250);
+cMap=blood(250);
 
 %% Control parameters
 

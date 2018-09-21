@@ -33,21 +33,31 @@ switch nargin
         pointSpacing=[];
         resampleCurveOpt=0;
         plotOn=0;
+        gridType='tri';
     case 2
         regionCell=varargin{1};
         pointSpacing=varargin{2};
         resampleCurveOpt=0;
         plotOn=0;
+        gridType='tri';
     case 3
         regionCell=varargin{1};
         pointSpacing=varargin{2};
         resampleCurveOpt=varargin{3};
         plotOn=0;
+        gridType='tri';
     case 4
         regionCell=varargin{1};
         pointSpacing=varargin{2};
         resampleCurveOpt=varargin{3};
         plotOn=varargin{4};
+        gridType='tri';
+    case 5
+        regionCell=varargin{1};
+        pointSpacing=varargin{2};
+        resampleCurveOpt=varargin{3};
+        plotOn=varargin{4};
+        gridType=varargin{5};
 end
 
 if isempty(pointSpacing)
@@ -111,43 +121,19 @@ end
 
 %% DEFINE INTERNAL MESH SEED POINTS
 
-methodOpt=2;
-
 %region extrema
 maxVi=max(V(:,[1 2]),[],1);
 minVi=min(V(:,[1 2]),[],1);
 
-switch methodOpt
-    case 1 %Approximate regular triangles but more symmetric
-        %Mesh point spacing for aproximately equilateral triangular mesh
-        pointSpacingXY=[pointSpacing pointSpacing.*0.5.*sqrt(3)];
-        
-        maxV=maxVi+pointSpacingXY;
-        minV=minVi-pointSpacingXY;
-        
-        %Region "Field Of View" size
-        FOV=abs(maxV-minV);
-        
-        %Calculate number of points in each direction
-        FOV_dev=FOV./pointSpacingXY;
-        
-        npXY=round(FOV_dev);
-        
-        %Get mesh of seed points
-        xRange=linspace(minV(1),maxV(1),npXY(1));
-        yRange=linspace(minV(2),maxV(2),npXY(2));
-        [X,Y]=meshgrid(xRange,yRange);
-        
-        %Offset mesh in X direction to obtain aproximate equilateral triangular mesh
-        X(1:2:end,:)=X(1:2:end,:)+(pointSpacing/2);
-        
-    case 2 %Close to regular triangles but possibly assymetric
+switch gridType
+    case 'tri'
         [~,Vt]=triMeshEquilateral(minVi,maxVi,pointSpacing);
         X=Vt(:,1); Y=Vt(:,2);
+    case 'quad'
+        w=maxVi-minVi;
+        n=round(w./pointSpacing);
+        [X,Y]=meshgrid();
 end
-
-X=X(:);
-Y=Y(:);
 
 %% Remove edge points
 

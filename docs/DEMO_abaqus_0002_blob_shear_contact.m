@@ -11,15 +11,12 @@
 
 %% Keywords
 %
-% * febio_spec version 2.5
-% * febio, FEBio
+% * Abaqus
 % * indentation
 % * contact, sliding, sticky, friction
 % * rigid body constraints
-% * tetrahedral elements, tet4
-% * triangular elements, tri3
-% * slab, block, rectangular
-% * sphere
+% * hexahedral elements
+% * hemisphere
 % * static, solid
 % * hyperelastic, Ogden
 % * displacement logfile
@@ -48,7 +45,7 @@ abaqusInpFileName=fullfile(savePath,[abaqusInpFileNamePart,'.inp']); %INP file n
 
 % Hemi-sphere parameters
 hemiSphereRadius=1; 
-nRefine=1; 
+numElementsMantel=6; 
 closeOption=1; 
 smoothEdge=1; 
 
@@ -91,69 +88,60 @@ fric_coeff=0.1;
 %% Creating model geometry and mesh
 % 
 
-% Create hemi-sphere mesh
-[F_blob,V_blob,C_blob]=hemiSphereMesh(nRefine,hemiSphereRadius,1);
-pointSpacingBlob=mean(patchEdgeLengths(F_blob,V_blob));
+%Control settings
+optionStruct.sphereRadius=1;
+optionStruct.coreRadius=optionStruct.sphereRadius/2;
+optionStruct.numElementsMantel=6;
+optionStruct.numElementsCore=optionStruct.numElementsMantel*2;
+optionStruct.outputStructType=2;
+optionStruct.makeHollow=0;
+optionStruct.cParSmooth.n=25;
+
+% %Creating sphere
+[meshStruct]=hexMeshHemiSphere(optionStruct);
+
+% Access model element and patch data
+Fb=meshStruct.facesBoundary;
+Cb=meshStruct.boundaryMarker;
+V=meshStruct.nodes;
+E=meshStruct.elements;
+
+F=element2patch(E);
+
+%%
+
+pointSpacingBlob=mean(patchEdgeLengths(Fb,V));
 
 %Smoothen edges
 if smoothEdge==1
     %Get rigid region
-    ind=1:1:size(V_blob,1); %Indices for all nodes
-    indRigid=find(ismember(ind,F_blob(C_blob==2,:)) & ~ismember(ind,F_blob(C_blob==1,:))); %Indices for new bottom surface nodes
+    ind=1:1:size(V,1); %Indices for all nodes
+    indRigid1=find(ismember(ind,Fb(Cb==2,:)) & ~ismember(ind,Fb(Cb==1,:))); %Indices for new bottom surface nodes
+    indRigid2=find(ismember(ind,Fb(Cb==1,:)) & ~ismember(ind,Fb(Cb==2,:))); %Indices for new bottom surface nodes
+    indRigid=[indRigid1(:); indRigid2(:);];
     
     %Smoothing
     cPar.Method='HC';
     cPar.n=250;
     cPar.RigidConstraints=indRigid;
-    [V_blob]=patchSmooth(F_blob,V_blob,[],cPar);
-    
+    [Vb_blob]=patchSmooth(F,V,[],cPar);
+    indSmooth=unique(F(:));
+    V(indSmooth,:)=Vb_blob(indSmooth,:);
     %Fix color data with new bottom surface
-    C_blob=ones(size(C_blob));
-    C_blob(all(ismember(F_blob,indRigid),2))=2;
+    Cb=ones(size(Cb));
+    Cb(all(ismember(Fb,indRigid1),2))=2;
 
+    meshStruct.nodes=V;
 end
-
-%%
-% Visualize hemi-sphere surface
-
-cFigure; hold on;
-gtitle('The hemi-sphere surface mesh',fontSize);
-gpatch(F_blob,V_blob,C_blob,'k',0.85);
-patchNormPlot(F_blob,V_blob);
-axisGeom(gca,fontSize);
-colormap(gjet); icolorbar;
-camlight headlight; 
-drawnow; 
-
-%% 
-% Using tetgen to create a tetrahedral mesh
-
-% Tetgen input structure
-inputStruct.stringOpt='-pq1.2AaY';
-inputStruct.Faces=F_blob;
-inputStruct.Nodes=V_blob;
-inputStruct.holePoints=[];
-inputStruct.faceBoundaryMarker=C_blob; %Face boundary markers
-inputStruct.regionPoints=getInnerPoint(F_blob,V_blob); %region points
-inputStruct.regionA=tetVolMeanEst(F_blob,V_blob);
-inputStruct.minRegionMarker=2; %Minimum region marker
- 
-% Create tetrahedral mesh using tetGen 
-[meshOutput]=runTetGen(inputStruct); %Run tetGen 
- 
-% Access model element and patch data
-Fb_blob=fliplr(meshOutput.facesBoundary);
-Cb_blob=meshOutput.boundaryMarker;
-V_blob=meshOutput.nodes;
-E_blob=meshOutput.elements;
 
 %%
 % Visualize blob mesh
 
 hFig=cFigure; 
 subplot(1,2,1); hold on;
-gpatch(Fb_blob,V_blob,Cb_blob,'k',1);
-patchNormPlot(Fb_blob,V_blob);
+gpatch(Fb,V,Cb,'k',1);
+% patchNormPlot(Fb_blob,V_blob);
+plotV(V(indRigid,:),'g.','MarkerSize',25);
 axisGeom(gca,fontSize);
 colormap(gjet); icolorbar;
 camlight headlight; 
@@ -161,8 +149,8 @@ camlight headlight;
 hs=subplot(1,2,2); hold on; 
 title('Cut view of solid mesh','FontSize',fontSize);
 optionStruct.hFig=[hFig hs];
-gpatch(Fb_blob,V_blob,'kw','none',0.25);
-meshView(meshOutput,optionStruct);
+gpatch(Fb,V,'kw','none',0.25);
+meshView(meshStruct,optionStruct);
 axisGeom(gca,fontSize);
 drawnow; 
 
@@ -170,7 +158,7 @@ drawnow;
 % 
 
 %Get outer surve of ground surface 
-[Eb]=patchBoundary(Fb_blob(Cb_blob==2,:),V_blob);
+[Eb]=patchBoundary(Fb(Cb==2,:),V);
 indCurveBottom=edgeListToCurve(Eb);
 indCurveBottom=indCurveBottom(1:end-1);
 
@@ -183,35 +171,9 @@ t=linspace(0,2*pi,nPlateCurve);
 t=t(1:end-1); 
 x=plateRadius.*sin(t);
 y=plateRadius.*cos(t); 
-Vp_outer_curve=[x(:) y(:)];
+V_plate_curve=[x(:) y(:) zeros(size(x(:)))];
 
-% Copy inner curve from the hemi-sphere
-Vp_inner_curve=V_blob(indCurveBottom,[1 2]);
-
-% Create mesh out outer region
-regionCell={Vp_outer_curve,Vp_inner_curve};
-[F_plate,V_plate]=regionTriMesh2D(regionCell,pointSpacingPlate,0,0);
-V_plate(:,3)=0; %Add z-direction
-
-% Copy mesh for inner region
-[F_plate_inner,V_plate_inner]=patchCleanUnused(fliplr(Fb_blob(Cb_blob==2,:)),V_blob);
-[F_plate,V_plate,C_plate]=joinElementSets({F_plate,F_plate_inner},{V_plate,V_plate_inner});
-[F_plate,V_plate]=mergeVertices(F_plate,V_plate);
-
-center_of_mass_plate=mean(V_plate,1);
-
-%%
-% Visualizing plate mesh
-
-cFigure; hold on;
-gtitle('The plate surface mesh',fontSize);
-gpatch(Fb_blob,V_blob,'kw','none',0.5);
-gpatch(F_plate,V_plate,C_plate,'k',1);
-patchNormPlot(F_plate,V_plate);
-axisGeom(gca,fontSize);
-colormap(gjet); icolorbar;
-camlight headlight; 
-drawnow; 
+center_of_mass_plate=mean(V_plate_curve,1);
 
 %% Creating rigid body shear surface
 
@@ -226,89 +188,34 @@ V_probe_curve_sketch=[x(:) y(:) z(:)];
 %Fillet sketch
 np=100; %Number of points used to construct each fillet edge
 [V_probe_curve]=filletCurve(V_probe_curve_sketch,filletProbe,np,0);
-numPointsProbeCurve=ceil(max(pathLength(V_probe_curve))/pointSpacingProbe);
-[V_probe_curve] = evenlySampleCurve(V_probe_curve,numPointsProbeCurve,'pchip',0);
+% numPointsProbeCurve=ceil(max(pathLength(V_probe_curve))/pointSpacingProbe);
+% [V_probe_curve] = evenlySampleCurve(V_probe_curve,numPointsProbeCurve,'pchip',0);
 
-% Extruding curve
-% controlParametersExtrude.pointSpacing=pointSpacingProbe;
-controlParametersExtrude.depth=hemiSphereRadius*2.5; 
-controlParametersExtrude.numSteps=ceil(controlParametersExtrude.depth/pointSpacingProbe);
-controlParametersExtrude.numSteps=controlParametersExtrude.numSteps+iseven(controlParametersExtrude.numSteps); %Force uneven
-controlParametersExtrude.patchType='tri'; 
-controlParametersExtrude.dir=0;
-controlParametersExtrude.n=[0 1 0];
-controlParametersExtrude.closeLoopOpt=0; 
+center_of_mass_probe=mean(V_probe_curve,1);
 
-[F_probe,V_probe]=polyExtrude(V_probe_curve,controlParametersExtrude);
-F_probe=fliplr(F_probe); %Invert face orientation so normals point to blob
-
-center_of_mass_probe=mean(V_probe,1);
-
+V_probe_curve_1=V_probe_curve(1,:);
+V_probe_curve_2=V_probe_curve(2,:);
+V_probe_curve_3=V_probe_curve(2+np-1,:);
+V_probe_curve_4=V_probe_curve(2,:);
+V_probe_curve_4(:,3)=V_probe_curve_4(:,3)+filletProbe;
+V_probe_curve_5=V_probe_curve(end,:);
 %%
-% Visualizing probe mesh
+% Visualizing curves
 
 cFigure; hold on;
-title('The probe surface mesh','fontSize',fontSize);
-gpatch(Fb_blob,V_blob,'kw','none',0.5);
-gpatch(F_plate,V_plate,'kw','none',0.5);
-hl(1)=plotV(V_probe_curve_sketch,'k.-.','lineWidth',3,'MarkerSize',25);
-hl(2)=plotV(V_probe_curve,'r-','lineWidth',3,'MarkerSize',25);
-hl(3)=gpatch(F_probe,V_probe,'gw','k',1);
-legend(hl,{'Sketched probe curve','Rounded probe curve','Probe surface mesh'}); clear hl;
+title('Sketched components','fontSize',fontSize);
+gpatch(Fb,V,'kw','none',0.5);
+hl(1)=plotV(V_plate_curve,'k.-','lineWidth',2,'MarkerSize',15);
+hl(2)=plotV(V_probe_curve,'k-','lineWidth',2);
+hl(3)=plotV(V_probe_curve_1,'r.','MarkerSize',50);
+hl(4)=plotV(V_probe_curve_2,'g.','MarkerSize',50);
+hl(5)=plotV(V_probe_curve_3,'b.','MarkerSize',50);
+hl(6)=plotV(V_probe_curve_4,'y.','MarkerSize',50);
+hl(7)=plotV(V_probe_curve_5,'c.','MarkerSize',50);
+legend(hl,{'Plate curve','Rounded probe curve','1','2','3','4','5'}); clear hl;
 axisGeom(gca,fontSize);
 camlight headlight; 
-drawnow; 
-
-%% Join model node sets
-
-V=[V_blob; V_plate; V_probe];
-F_plate=F_plate+size(V_blob,1);
-F_probe=F_probe+size(V_blob,1)+size(V_plate,1);
-Fb_all=[Fb_blob;F_plate;F_probe];
-
-%%
-% Visualizing model
-
-cFigure; hold on;
-gtitle('Model components',fontSize);
-hl(1)=gpatch(Fb_blob,V,'rw','k',0.8);
-hl(2)=gpatch(F_plate,V,'bw','k',0.8);
-hl(3)=gpatch(F_probe,V,'gw','k',0.8);
-legend(hl,{'Blob','Plate','Probe'}); clear hl;
-axisGeom(gca,fontSize);
-camlight headlight; 
-drawnow; 
-
-%% Get contact surfaces
-%
-
-% F_contact_blob1=Fb_blob(Cb_blob==1,:);
-% F_contact_blob2=Fb_blob(Cb_blob==2,:);
-
-%%
-% Visualize contact surfaces
-
-cFigure; 
-subplot(1,2,1); hold on;
-title('Probe blob contact pair','fontsize',fontSize);
-hl(1)=gpatch(F_probe,V,'rw','k',1);
-patchNormPlot(F_probe,V);
-hl(2)=gpatch(Fb_blob,V,'gw','k',1);
-patchNormPlot(Fb_blob,V);
-legend(hl,{'Master','Slave'}); clear hl;
-axisGeom(gca,fontSize);
-camlight headlight; 
-
-subplot(1,2,2); hold on;
-title('Plate blob contact pair','fontsize',fontSize);
-hl(1)=gpatch(F_plate,V,'rw','k',1);
-patchNormPlot(F_plate,V);
-hl(2)=gpatch(Fb_blob,V,'gw','k',1);
-patchNormPlot(Fb_blob,V);
-legend(hl,{'Master','Slave'}); clear hl;
-axisGeom(gca,fontSize);
-camlight headlight; 
-
+view(0,0);
 drawnow; 
 
 %% Defining the abaqus input structure
@@ -329,35 +236,63 @@ abaqus_spec.Preprint.ATTR.contact='NO';
 
 % Node
 nodeIds=(1:1:size(V,1))';
-abaqus_spec.Part.COMMENT='This section defines the part geometry in terms of nodes and elements';
-abaqus_spec.Part.ATTR.name='Cube';
-abaqus_spec.Part.Node={nodeIds,V};
+abaqus_spec.Part{1}.COMMENT='This section defines the part geometry in terms of nodes and elements';
+abaqus_spec.Part{1}.ATTR.name='Blob';
+abaqus_spec.Part{1}.Node={nodeIds,V};
 
 % Element
-elementIds=(1:1:size(E_blob,1))';
-abaqus_spec.Part.Element{1}.ATTR.type='C3D8';%'C3D8R';
-abaqus_spec.Part.Element{1}.VAL={elementIds,E_blob};
+elementIds=(1:1:size(E,1))';
+abaqus_spec.Part{1}.Element{1}.ATTR.type='C3D8';%'C3D8R';
+abaqus_spec.Part{1}.Element{1}.VAL={elementIds,E};
 
 % Element sets
-abaqus_spec.Part.Elset{1}.ATTR.elset='Set-1';
-abaqus_spec.Part.Elset{1}.VAL=elementIds;
+abaqus_spec.Part{1}.Elset{1}.ATTR.elset='Set-1';
+abaqus_spec.Part{1}.Elset{1}.VAL=elementIds';
 
 % Sections
-abaqus_spec.Part.Solid_section.ATTR.elset='Set-1';
-abaqus_spec.Part.Solid_section.ATTR.material='Elastic';
+abaqus_spec.Part{1}.Solid_section.ATTR.elset='Set-1';
+abaqus_spec.Part{1}.Solid_section.ATTR.material='Elastic';
+
+%Surfaces
+abaqus_spec.Part{2}.COMMENT='This section defines the part geometry in terms of nodes and elements';
+abaqus_spec.Part{2}.ATTR.name='rigid_surface';
+abaqus_spec.Part{2}.Node={1,V_probe_curve_1};
+
+abaqus_spec.Part{2}.surface.ATTR.type='cylinder';
+abaqus_spec.Part{2}.surface.ATTR.name='probe_surface';
+abaqus_spec.Part{2}.surface.VAL{1,1}={[0 0 0],[1 0 0]};
+abaqus_spec.Part{2}.surface.VAL{2,1}={[0 1 0]};
+abaqus_spec.Part{2}.surface.VAL{3,1}={{'start';'line';},[V_probe_curve_1(:,[1 3]);V_probe_curve_2(:,[1 3]);]};
+abaqus_spec.Part{2}.surface.VAL{4,1}={{'circl'},[V_probe_curve_3(:,[1 3]) V_probe_curve_4(:,[1 3])]};
+abaqus_spec.Part{2}.surface.VAL{5,1}={{'line'},V_probe_curve_5(:,[1 3])};
+
+% Rigid body
+%RIGID BODY, ANALYTICAL SURFACE=name, REF NODE=n
+abaqus_spec.Part{2}.rigid_body.ATTR.analytical_surface='probe_surface';
+abaqus_spec.Part{2}.rigid_body.ATTR.ref_node=1;
+
 
 %%--> Assembly
-abaqus_spec.Assembly.ATTR.name='Assembly-1';
-abaqus_spec.Assembly.Instance.ATTR.name='Test-assembly';
-abaqus_spec.Assembly.Instance.ATTR.part='Test';
+abaqus_spec.Assembly{1}.ATTR.name='Assembly-1';
+abaqus_spec.Assembly{1}.Instance{1}.ATTR.name='Blob-assembly';
+abaqus_spec.Assembly{1}.Instance{1}.ATTR.part='Blob';
+abaqus_spec.Assembly{1}.Instance{2}.ATTR.name='rigid_surface-assembly';
+abaqus_spec.Assembly{1}.Instance{2}.ATTR.part='rigid_surface';
+abaqus_spec.Assembly{1}.Instance{2}.VAL{1,1}={[0 0 0]};
+abaqus_spec.Assembly{1}.Instance{2}.VAL{2,1}={[0 0 0 1 0 0 90]};
 
-abaqus_spec.Assembly.Nset{1}.ATTR.nset='All';
-abaqus_spec.Assembly.Nset{1}.ATTR.instance=abaqus_spec.Assembly.Instance.ATTR.name;
-abaqus_spec.Assembly.Nset{1}.VAL=[1:1:size(V,1)];
+% abaqus_spec.Assembly{1}.Nset{1}.ATTR.nset='All';
+% abaqus_spec.Assembly{1}.Nset{1}.ATTR.instance=abaqus_spec.Assembly{1}.Instance{1}.ATTR.name;
+% abaqus_spec.Assembly{1}.Nset{1}.VAL=[1:1:size(V,1)];
+
+% % Rigid body
+% %RIGID BODY, ANALYTICAL SURFACE=name, REF NODE=n
+% abaqus_spec.Assembly{1}.rigid_body.ATTR.analytical_surface='probe_surface';
+% abaqus_spec.Assembly{1}.rigid_body.ATTR.ref_node=1;
 
 %%--> Material
-abaqus_spec.Material.ATTR.name='Elastic';
-abaqus_spec.Material.Elastic=[0.5 0.4];
+abaqus_spec.Material{1}.ATTR.name='Elastic';
+abaqus_spec.Material{1}.Elastic=[1 0.45];
 
 %%--> Step
 abaqus_spec.Step.ATTR.name='Step-1';
@@ -385,10 +320,13 @@ abaqus_spec.Step.Output{2}.ATTR.variable='PRESELECT';
 
 %%
 
-[T]=abaqusStruct2inp(abaqus_spec,abaqusInpFileName);
+abaqusStruct2inp(abaqus_spec,abaqusInpFileName);
 
+%%
 % textView(abaqusInpFileName);
-
+pause(1);
+system(['atom ',abaqusInpFileName])
+ 
 %% 
 %
 % <<gibbVerySmall.gif>>

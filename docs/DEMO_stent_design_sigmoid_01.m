@@ -32,7 +32,6 @@ stentSectionWidth=0.1;
 pointSpacing=stentSectionWidth*0.5;
 segmentSeperation=stentSectionWidth/4;
 
-
 wb=((pi*stentRadius)/numRadialSegments)/3-stentSectionWidth;%(pi/numRadialSegments)/;
 h=2;
 f=2;

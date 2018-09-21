@@ -30,15 +30,7 @@ triangleConvert=optionStruct.triangleConvert;
 EV=C.edge.vertex;
 EF=C.edge.face;
 
-N_tri=patchNormal(F_tri,V_tri);
-N_tri_E=zeros(size(EV,1),size(N_tri,2));
-for q=1:1:size(N_tri,2)
-    X=N_tri(:,q);
-    XE=nan(size(EF));
-    XE(EF>0)=X(EF(EF>0));    
-    N_tri_E(:,q)=nanmean(XE,2);
-end
-N_tri_E=vecnormalize(N_tri_E); 
+[~,~,NV_tri]=patchNormal(F_tri,V_tri);
 
 logicValid=all(EF>0,2);
 EF=EF(logicValid,:);
@@ -61,15 +53,15 @@ FQ=S;
 A1=sum(patchEdgeAngles(FQ,V_tri),2);
 A2=sum(patchEdgeAngles(FQ(:,[2 1 3 4]),V_tri),2);
 FQ=[FQ(A1>=A2,:);FQ(A1<A2,[2 1 3 4]);];
-N_tri_E=[N_tri_E(A1>=A2,:);N_tri_E(A1<A2,:);];
 
 A1=sum(patchEdgeAngles(FQ,V_tri),2);
 A2=sum(patchEdgeAngles(FQ(:,[1 3 2 4]),V_tri),2);
 FQ=[FQ(A1>=A2,:);FQ(A1<A2,[1 3 2 4]);];
-N_tri_E=[N_tri_E(A1>=A2,:);N_tri_E(A1<A2,:);];
 
-NQ=patchNormal(FQ,V_tri);
-logicFlip=dot(NQ,N_tri_E,2)<0;
+[NQ]=patchNormal(FQ,V_tri);
+[NV_tri_FQ]=vertexToFaceMeasure(FQ,NV_tri);
+NV_tri_FQ=vecnormalize(NV_tri_FQ);
+logicFlip=dot(NV_tri_FQ,NQ,2)<0;
 FQ(logicFlip,:)=fliplr(FQ(logicFlip,:));
 
 A=patchEdgeAngles(FQ,V_tri);

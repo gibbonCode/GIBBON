@@ -85,6 +85,8 @@ fieldNameSet = fieldnames(parseStruct);
 
 for q_field=1:1:numel(fieldNameSet) %Loop for all field names
     
+    loopedOverCell=0;
+    
     %Get current field names and values
     currentFieldName=fieldNameSet{q_field}; %attribute name or element name
     currentFieldValue=parseStruct.(fieldNameSet{q_field}); %attribute value or element value
@@ -95,7 +97,7 @@ for q_field=1:1:numel(fieldNameSet) %Loop for all field names
     %Replace _ with a space
     fieldLine=strrep(fieldLine,'_',' ');
     
-    if ~isempty(currentFieldValue)        
+    if ~isempty(currentFieldValue)
         if ~isstruct(currentFieldValue) %Assume it is value data
             if iscell(currentFieldValue)
                 if any(cellfun(@isstruct,currentFieldValue)) %Cell containing structures
@@ -103,24 +105,26 @@ for q_field=1:1:numel(fieldNameSet) %Loop for all field names
                         currentFieldValueSub=currentFieldValue{q_cell};
                         if numel(fieldnames(currentFieldValueSub))~=0 %Not an empty structure
                             optionStructSub=optionStruct;
-                            optionStructSub.addLines=0;
+                            optionStructSub.addLines=0;                            
                             tempStruct.(currentFieldName)=currentFieldValueSub;
                             [file_id]=abaqusStruct2inpStep(file_id,tempStruct,optionStructSub);
                             clear tempStruct;
+                            loopedOverCell=1;
                         end
+                        
                     end
                 elseif any(cellfun(@iscell,currentFieldValue)) %Cell containing cells
                     for q_cell=1:1:numel(currentFieldValue)
                         currentFieldValueSub=currentFieldValue{q_cell};
                         optionStructSub=optionStruct;
-                        optionStructSub.addLines=0;
+                        optionStructSub.addLines=0;                        
                         tempStruct.(currentFieldName)=currentFieldValueSub;
                         [file_id]=abaqusStruct2inpStep(file_id,tempStruct,optionStructSub);
                         clear tempStruct;
                     end
                 else
                     %Write current field line
-                    fprintf(file_id,'%s \n',fieldLine);                    
+                    fprintf(file_id,'%s \n',fieldLine);
                     if numel(currentFieldValue)>1
                         [file_id]=writeValueData(file_id,{currentFieldValue});
                     else
@@ -141,6 +145,9 @@ for q_field=1:1:numel(fieldNameSet) %Loop for all field names
                 for q_attr=1:1:numel(attributeNameSet)
                     attributeNameNow=attributeNameSet{q_attr};
                     attributeValueNow=vec2strIntDouble(attributeStruct.(attributeNameNow),'%6.7e');
+                    
+                    %Replace _ with a space
+                    attributeNameNow=strrep(attributeNameNow,'_',' ');
                     if ~isempty(attributeValueNow)
                         fieldLine=[fieldLine,', ',attributeNameNow,'=',attributeValueNow];
                     else %empty attribute field does not use equals sign
@@ -186,7 +193,7 @@ for q_field=1:1:numel(fieldNameSet) %Loop for all field names
             end
         end
     end
-    if any(strcmpi(optionStruct.addEnd,currentFieldName))
+    if any(strcmpi(optionStruct.addEnd,currentFieldName)) && loopedOverCell==0
         fprintf(file_id,'%s \n',['* End ',currentFieldName]); %Also write end statement for master field
     end
     
@@ -225,21 +232,44 @@ function [file_id]=writeValueData(file_id,valueData)
 if iscell(valueData)
     %Write multiple value entries
     for q_value=1:1:numel(valueData)
+        
         if iscell(valueData{q_value})
-            for q_value_col=1:1:numel(valueData{q_value})
-                if q_value_col==1
-                    t = vec2strIntDouble(valueData{q_value}{q_value_col},'%6.7e');
-                    t=strsplit(t,'\n')';
-                else
-                    tn = vec2strIntDouble(valueData{q_value}{q_value_col},'%6.7e');
-                    TN=strsplit(tn,'\n')';
-                    D=repmat({', '},size(t,1),1);
-                    t = strcat(t,D,TN);
+            C=valueData{q_value};
+            if iscolumn(C)
+                for qr=1:1:numel(C)
+                   c=C{qr} ;
+                    for q_value_col=1:1:numel(c)
+                        if q_value_col==1
+                            t = vec2strIntDouble(c{q_value_col},'%6.7e');
+                            t=strsplit(t,'\n')';
+                        else
+                            tn = vec2strIntDouble(c{q_value_col},'%6.7e');
+                            TN=strsplit(tn,'\n')';
+                            D=repmat({', '},size(t,1),1);
+                            t = strcat(t,D,TN);
+                        end
+                    end
+                    for qt=1:1:numel(t)
+                        fprintf(file_id,'%s \n',t{qt});
+                    end
+                end
+            else
+                for q_value_col=1:1:numel(C)
+                    if q_value_col==1
+                        t = vec2strIntDouble(C{q_value_col},'%6.7e');
+                        t=strsplit(t,'\n')';
+                    else
+                        tn = vec2strIntDouble(C{q_value_col},'%6.7e');
+                        TN=strsplit(tn,'\n')';
+                        D=repmat({', '},size(t,1),1);
+                        t = strcat(t,D,TN);
+                    end
+                end
+                for qt=1:1:numel(t)
+                    fprintf(file_id,'%s \n',t{qt});
                 end
             end
-            for qt=1:1:numel(t)
-                fprintf(file_id,'%s \n',t{qt});
-            end
+            
         else
             t=vec2strIntDouble(valueData{q_value},'%6.7e');
             if isrow(valueData{q_value})
