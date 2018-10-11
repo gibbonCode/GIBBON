@@ -34,11 +34,16 @@ if numDim < 2
     error('Invalid size specified. The number of dimensions should be equal or larger than 2');
 end
 
-if size(A,2) ~= numDim
-    error('The specified array size and number of subscript index columns do not match');
+if any(size(A)==0)
+    A=[];
 end
 
 if ~isempty(A)    
+    
+    if size(A,2) ~= numDim
+        error('The specified array size and number of subscript index columns do not match');
+    end
+
     if ~nanOutBound
         if any(A(:)<1) || any(max(A,[],1)>siz)
             %Verify subscripts are within range

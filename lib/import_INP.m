@@ -49,7 +49,7 @@ i_target=1;
 while 1
     l=T{lineCount};
     target=targets{i_target};
-    if (strfind(l,target))
+    if contains(upper(l),target)
         lineIndexTarget(i_target)=lineCount;
         i_target=i_target+1;
         disp(['---> Found target:',target,' on line ',num2str(lineCount)]);

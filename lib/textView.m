@@ -62,7 +62,7 @@ for q=1:1:numel(optionSet)
    hEdit.(optionSet{q})=optionStruct.(optionSet{q}); 
 end
 
-%# enable horizontal scrolling
+% %# enable horizontal scrolling
 jEdit = findjobj(hEdit);
 jEditbox = jEdit.getViewport().getComponent(0);
 jEditbox.setWrapping(false);                %# turn off word-wrapping

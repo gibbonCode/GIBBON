@@ -240,7 +240,7 @@ imOrigin=G.origin; %Image origin can be used to allign image with surface
 
 % Use ind2patch to create hexahedral mesh
 L_model=(M>0); %Interior&Boundary choosen here
-[E_hex,V_hex,C_hex]=ind2patch(L_model,M,'hu');
+[E_hex,V_hex,C_hex]=im2patch(M,L_model,'h');
 
 % Convert Coordinates
 [V_hex(:,1),V_hex(:,2),V_hex(:,3)]=im2cart(V_hex(:,2),V_hex(:,1),V_hex(:,3),elementSize*ones(1,3));

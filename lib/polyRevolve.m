@@ -53,25 +53,19 @@ c=(1:1:size(Z,1))';
 C=c(:,ones(1,size(Z,2)));
 
 %Create quad patch data
-[F,V,C] = surf2patch(X,Y,Z,C);
-
+[F,V,C] = surf2patch(X',Y',Z',C');
+F=fliplr(F); 
 indStart=1:numSteps:size(V,1);
 indEnd=numSteps:numSteps:size(V,1);
-Vc_start=V(indStart,:);
-Vc_end=V(indEnd,:);
 
 %% Close patch if required
 if closeLoopOpt
-    I=[(2:size(Z,1))' (2:size(Z,1))' (1:size(Z,1)-1)' (1:size(Z,1)-1)'];
-    J=[ones(size(Z,1)-1,1) size(Z,2).*ones(size(Z,1)-1,1) size(Z,2).*ones(size(Z,1)-1,1) ones(size(Z,1)-1,1)];
-    F_sub=sub2ind(size(Z),I,J);
-    F=[F;F_sub];
-    [C]=vertexToFaceMeasure(F,C);
-    C(end-size(F_sub,1):end,:)=C(end-size(F_sub,1):end,:)+0.5;
-else
-    [C]=vertexToFaceMeasure(F,C);
+    ind=1:1:size(V,1);
+    ind(indEnd)=indStart;
+    F=ind(F);
 end
-C=round(C);
+[C]=vertexToFaceMeasure(F,C);
+C=round(C-1);
 
 %%
 % _*GIBBON footer text*_

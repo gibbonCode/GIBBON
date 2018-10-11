@@ -80,6 +80,51 @@ plotV(V3,'b-','LineWidth',2);
 axis tight; 
 drawnow;
 
+%% CREATING A REGION MESH WITH HOLES
+
+%% 
+% Creating boundary curves 
+
+%Boundary 1
+ns=10000;
+t=linspace(0,2*pi,ns);
+t=t(1:end-1);
+r=5;
+a=2;
+R=r-(a.*cos(7*(t-pi).^2)-a);
+[x,y] = pol2cart(t,R);
+V1=[x(:) y(:)];
+
+%Boundary 2
+[x,y] = pol2cart(t,(0.75*r)*ones(size(t)));
+V2=[x(:) y(:)];
+
+%%
+% Meshing the region
+
+% The input variable regionCell is a cell array containing all the boundary
+% curves, e.g. for a two curve region 1 we would have something like
+% regionSpec{1}={V1,V2} where V1 and V2 are the boundary curves. Multiple
+% curves may be given here. The first curve should form the outer boundary
+% of the entire region, the curves that follow should define holes inside
+% this boundary and the space inside them is therefore not meshed. 
+
+%Defining a region
+regionCell={V1,V2}; %A region between V1 and V2 (V2 forms a hole inside V1)
+
+plotOn=1; %This turns on/off plotting
+
+%Desired point spacing
+pointSpacing=0.25; 
+
+[F,V]=regionTriMesh2D(regionCell,pointSpacing,1,plotOn);
+plotV(V1,'b-','LineWidth',2);
+plotV(V2,'b-','LineWidth',2);
+axis tight; 
+drawnow;
+
+
+
 %% 
 %
 % <<gibbVerySmall.gif>>

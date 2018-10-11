@@ -232,7 +232,7 @@ abaqus_spec.Step.Static=[0.1 1 1e-5 0.1];
 % Boundary
 abaqus_spec.Step.Boundary{1}.VAL={'Set-1',[1,1]};
 abaqus_spec.Step.Boundary{2}.VAL={'Set-2',[2,2]};
-abaqus_spec.Step.Boundary{3}.VAL={'Set-3',[3,3]};
+abaqus_spec.Step.Boundary45{3}.VAL={'Set-3',[3,3]};
 abaqus_spec.Step.Boundary{4}.VAL={'Set-4',[3,3],displacementMagnitude};
 
 %Output
@@ -251,9 +251,9 @@ abaqus_spec.Step.El_print{2}.VAL='E';
 
 %%
 
-[T]=abaqusStruct2inp(abaqus_spec,abaqusInpFileName);
+abaqusStruct2inp(abaqus_spec,abaqusInpFileName);
 
-textView(abaqusInpFileName);
+% textView(abaqusInpFileName);
 
 %%
 %% Run the job using Abaqus

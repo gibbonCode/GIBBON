@@ -46,8 +46,8 @@ hold on;
 
 hp1=plotV(Vc,'r-','lineWidth',lineWidth);
 hp2=quiverVec([0 0 0],cPar.w,5,'k');
-hp3=gpatch(F,V,'g','k');
-
+hp3=gpatch(F,V,C,'k');
+patchNormPlot(F,V);
 axisGeom(gca,fontSize);
 camlight headlight;
 legend([hp1 hp2 hp3],'The input polygon','Revolution axis','The revolved surface');

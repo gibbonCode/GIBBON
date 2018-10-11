@@ -132,7 +132,8 @@ switch gridType
     case 'quad'
         w=maxVi-minVi;
         n=round(w./pointSpacing);
-        [X,Y]=meshgrid();
+        [X,Y]=meshgrid(linspace(minVi(1),maxVi(1),n(1)),linspace(minVi(2),maxVi(2),n(2)));
+        X=X(:); Y=Y(:);
 end
 
 %% Remove edge points

@@ -96,7 +96,7 @@ contactPenalty=20;
 laugon=0;
 minaug=1;
 maxaug=10;
-fric_coeff=0.7; 
+fric_coeff=0.1; 
 
 %Specifying load
 sphereVolume=4/3*(pi*sphereRadius^3); %Sphere Volume in mm^3
@@ -472,6 +472,8 @@ if 1%runFlag==1 %i.e. a succesful run
     axis off;
     drawnow; 
     
+    LMid=1;
+    
     % Set up animation features
     animStruct.Time=time_mat; %The time vector    
     for qt=1:1:size(N_disp_mat,3) %Loop over time increments        
@@ -490,6 +492,8 @@ if 1%runFlag==1 %i.e. a succesful run
         
         xMid=mean([xStart xEnd]);%sum([rStart rEnd].*[xStart xEnd])./sum([rStart rEnd]);
         rMid=sphereRadius+(xMid.*((sphereRadius-tubeRadius(2))/tubeLength));
+        
+        LMid=min(LMid,rMid/sphereRadius);
         
         V_plot_xEnd=[xEnd*ones(size(t)) rEnd*cos(t) rEnd*sin(t)];
         V_plot_xMid=[xMid*ones(size(t)) rMid*cos(t) rMid*sin(t)];

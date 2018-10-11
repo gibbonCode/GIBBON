@@ -6,8 +6,6 @@ clear; close all; clc;
 
 %%
 % Plot settings
-fig_color='w'; 
-fig_colordef='white'; 
 faceAlpha=0.5;
 fontSize=25; 
 
@@ -56,12 +54,11 @@ else %hex or tet elements
     [F,~]=element2patch(E,[]);    
 end
 
-figuremax(fig_color,fig_colordef);
+cFigure;
 title('INP imported model','fontSize',fontSize);
-xlabel('X','fontSize',fontSize);ylabel('Y','fontSize',fontSize); zlabel('Z','fontSize',fontSize); hold on;
-
-hpm=patch('Faces',F,'Vertices',V,'EdgeColor','k','FaceColor','g','FaceAlpha',1);
-view(3); axis equal; axis tight; axis vis3d; grid on; 
+gpatch(F,V,'bw','b');
+axisGeom;
+camlight headlight; 
 drawnow;
 
 %%

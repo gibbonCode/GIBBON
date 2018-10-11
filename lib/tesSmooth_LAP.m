@@ -37,12 +37,12 @@ if isempty(IND_V)
     [~,IND_V]=patchIND(TES,V,2);
 end
 logicValid=IND_V>0;
+indNoneValid=find(sum(logicValid,2)==0);
 
 %%
 
 nDims=size(V,2); %Number of dimensions
 
-VP=NaN(size(IND_V,1),size(IND_V,2),nDims);
 P=V;
 PP=V; 
 Q=V;
@@ -52,9 +52,10 @@ for qIter=1:nMax
     
     %Loop for all dimensions
     for qDim=1:1:nDims
-        Xp=VP(:,:,qDim);
+        Xp=NaN(size(IND_V,1),size(IND_V,2));
         Xp(logicValid)=P(IND_V(logicValid),qDim);
         Xp=nanmean(Xp,2);       
+        Xp(indNoneValid)=V(indNoneValid,qDim);
         PP(:,qDim)=Xp;
     end
     P=P+LambdaSmooth.*(PP-P);

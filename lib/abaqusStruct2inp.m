@@ -103,15 +103,16 @@ for q_field=1:1:numel(fieldNameSet) %Loop for all field names
                 if any(cellfun(@isstruct,currentFieldValue)) %Cell containing structures
                     for q_cell=1:1:numel(currentFieldValue)
                         currentFieldValueSub=currentFieldValue{q_cell};
-                        if numel(fieldnames(currentFieldValueSub))~=0 %Not an empty structure
-                            optionStructSub=optionStruct;
-                            optionStructSub.addLines=0;                            
-                            tempStruct.(currentFieldName)=currentFieldValueSub;
-                            [file_id]=abaqusStruct2inpStep(file_id,tempStruct,optionStructSub);
-                            clear tempStruct;
-                            loopedOverCell=1;
+                        if isa(currentFieldValueSub,'struct')
+                            if numel(fieldnames(currentFieldValueSub))~=0 %Not an empty structure
+                                optionStructSub=optionStruct;
+                                optionStructSub.addLines=0;
+                                tempStruct.(currentFieldName)=currentFieldValueSub;
+                                [file_id]=abaqusStruct2inpStep(file_id,tempStruct,optionStructSub);
+                                clear tempStruct;
+                                loopedOverCell=1;
+                            end
                         end
-                        
                     end
                 elseif any(cellfun(@iscell,currentFieldValue)) %Cell containing cells
                     for q_cell=1:1:numel(currentFieldValue)

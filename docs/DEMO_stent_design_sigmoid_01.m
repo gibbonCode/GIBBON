@@ -43,7 +43,7 @@ y=linspace(-1,1,n);
 if f==0
     x=y;
 else
-    x(y>=0) =(exp(-f*abs(y(y>0)))-1)./(exp(-f)-1);
+    x(y>=0) =(exp(-f*abs(y(y>=0)))-1)./(exp(-f)-1);
     x(y<0)  =-(exp(-f*abs(y(y<0)))-1)./(exp(-f)-1);
 end
 x=wb/2.*x; %Scale width
@@ -176,7 +176,7 @@ Fs=DT.ConnectivityList;
 L = isInterior(DT);
 Fs=Fs(L,:);
 
-optionStruct.maxAngleDeviation=40*(pi/180);
+optionStruct.maxAngleDeviation=60*(pi/180);
 [F_quad,V_quad]=tri2quadGroupSplit(Fs,Vs,optionStruct);
 
 np=size(V_quad,1);

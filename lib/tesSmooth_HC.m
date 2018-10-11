@@ -43,12 +43,11 @@ if isempty(IND_V)
     [~,IND_V]=patchIND(TES,V,2);
 end
 logicValid=IND_V>0;
+indNoneValid=find(sum(logicValid,2)==0);
 
 %%
 
 nDims=size(V,2); %Number of dimensions
-
-VP=NaN(size(IND_V,1),size(IND_V,2),nDims);
 
 %Initializing coordinate sets
 O=V; %Original point set
@@ -65,18 +64,20 @@ for qIter=1:nMax
     for qDim=1:1:nDims
         
         %Simple Laplacian operation
-        Xq=VP(:,:,qDim);
+        Xq=NaN(size(IND_V,1),size(IND_V,2));
         Xq(logicValid)=Q(IND_V(logicValid),qDim);
         Xq=nanmean(Xq,2);           
+%         Xq(indNoneValid)=V(indNoneValid,qDim);
         P(:,qDim)=Xq;   
         
         %
         B(:,qDim)=P(:,qDim)-((alp*O(:,qDim))+(((1-alp)*Q(:,qDim))));
         
         %
-        Xb=VP(:,:,qDim);
+        Xb=NaN(size(IND_V,1),size(IND_V,2));
         Xb(logicValid)=B(IND_V(logicValid),qDim);
         Xb=nanmean(Xb,2);
+%         Xb(indNoneValid)=V(indNoneValid,qDim);
         P(:,qDim)= P(:,qDim)-((bet*B(:,qDim))+(((1-bet)*Xb)));
         
     end

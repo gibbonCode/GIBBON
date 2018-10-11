@@ -29,21 +29,14 @@ clear; close all; clc;
 
 %%
 % Create test data set
-testCase=3;
-switch testCase
-    case 1
-        [F_tri,V_tri]=geoSphere(2,1);
-    case 2
-        [F_tri,V_tri]=stanford_bunny;
-    case 3
-        [F_tri,V_tri]=parasaurolophus;
-end
+[F_tri,V_tri]=geoSphere(3,1);
 
 %% Convert adjacent triangles by picking the best candidates, keeping unconverted triangles
 
 optionStruct.maxAngleDeviation=60*(pi/180);
 optionStruct.selectionMethod='best';
 optionStruct.triangleConvert=0;
+optionStruct.fourConnectConvert=0;
 [F_quad,V_quad,F_tri_remain,V_tri_remain]=tri2quadGroupSplit(F_tri,V_tri,optionStruct);
 
 %%
@@ -67,9 +60,14 @@ drawnow;
 
 %% Convert adjacent triangles by picking best candidates, converting remaining triangles by splitting
 
+%%
+% Create test data set
+[F_tri,V_tri]=stanford_bunny;
+
 optionStruct.maxAngleDeviation=60*(pi/180);
 optionStruct.selectionMethod='best';
 optionStruct.triangleConvert=1;
+optionStruct.fourConnectConvert=1;
 [F_quad,V_quad]=tri2quadGroupSplit(F_tri,V_tri,optionStruct);
 
 %%
@@ -96,6 +94,10 @@ drawnow;
 % that different results are obtained each time. This way one could keep
 % the results yielding the smallest number of remaining triangles. 
 
+%%
+% Create test data set
+[F_tri,V_tri]=parasaurolophus;
+
 numAttempts=10;
 F_cell=cell(1,10);
 F_tri_cell=cell(1,10);
@@ -103,7 +105,8 @@ V_cell=cell(1,10);
 for q=1:1:numAttempts
     optionStruct.maxAngleDeviation=45*(pi/180);
     optionStruct.selectionMethod='random';
-    optionStruct.triangleConvert=1;
+    optionStruct.triangleConvert=1;    
+    optionStruct.fourConnectConvert=0;
     [F_quad,V_quad,F_tri_remaining]=tri2quadGroupSplit(F_tri,V_tri,optionStruct);
     F_cell{q}=F_quad;
     F_tri_cell{q}=F_tri_remaining;
@@ -133,3 +136,36 @@ axisGeom; axis off;
 camlight headlight;
 zoom(1.5);
 drawnow;
+
+%%
+% Create test data set
+
+[X,Y,Z]=peaks(15);
+Z=Z/4;
+[Fq,Vq,~]=surf2patch(X,Y,Z,Z);
+[F_tri,V_tri]=quad2tri(Fq,Vq,'x');
+
+optionStruct.maxAngleDeviation=60*(pi/180);
+optionStruct.selectionMethod='best';
+optionStruct.triangleConvert=0;
+optionStruct.fourConnectConvert=1;
+
+[F_quad,V_quad,F_tri_remaining]=tri2quadGroupSplit(F_tri,V_tri,optionStruct);
+
+%%
+% Visualize results 
+
+cFigure;
+gtitle('Converting four-connected sets to quads');
+subplot(1,2,1); hold on;
+gpatch(F_tri,V_tri,'rw','k',1);
+axisGeom; axis off;
+camlight headlight;
+
+subplot(1,2,2); hold on;
+gpatch(F_quad,V_quad,'bw','k');
+axisGeom; axis off;
+camlight headlight;
+drawnow;
+
+

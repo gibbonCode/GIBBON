@@ -95,7 +95,8 @@ ind=ind(logicValid);
 ind_F_F=sparse(ind,ind_F_F(:),ind_F_F(:),numFaces,numFaces,numel(ind));
 ind_F_F(inddiag(ind_F_F))=0;
 ind_F_F=sort(ind_F_F,2,'descend');
-ind_F_F=full(ind_F_F(:,1:numFaceVertices));
+[~,J,~] = find(ind_F_F);
+ind_F_F=full(ind_F_F(:,1:max(J)));
 
 %% Edge-edge connectivity
 A=ind_V_E(E_uni(:),:);

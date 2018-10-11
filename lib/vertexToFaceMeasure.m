@@ -4,6 +4,9 @@ CF=ones(size(F,1),size(CV,2));
 for q=1:1:size(CV,2)
     cf=CV(:,q);            
     cv=cf(F);
+    if size(F,1)==1 %handle case of 1 face
+        cv=cv';
+    end
     cv=mean(cv,2);
     CF(:,q)=cv; 
 end

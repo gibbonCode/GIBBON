@@ -26,7 +26,7 @@ plotColor2=cMap(2,:);
 plotColor3=cMap(4,:);
 faceColor1=0.5*ones(1,3);
 edgeWidth=2;
-markerSize=10;
+markerSize=25;
 
 %% Example: Illustrating the refinement process
 
@@ -41,11 +41,10 @@ n=1; %Refinements
 %%
 
 %%
-% Deriving the dual of the patch data
+% Deriving the dual of the patch data for visualization purposes
 [Vd,Fd]=patch_dual(V,F);
 
-%%
-
+%%    
 % Refine surface region using subTriDual
 [Ft,Vt,Ct,indIni]=subTriDual(F,V);
 
@@ -54,45 +53,45 @@ n=1; %Refinements
 %Plotting results
 cFigure;
 subplot(1,3,1); hold on;
-title('Original triangulation','FontSize',fontSize);
-
-hp=gpatch(F,V,faceColor1,plotColor1);
-set(hp,'LineWidth',edgeWidth,'Marker','o','MarkerFaceColor',plotColor1,'MarkerEdgeColor','none','MarkerSize',markerSize);
-
+title('Original','FontSize',fontSize);
+gpatch(F,V,'bw','k',1,edgeWidth);
+plotV(V,'b.','MarkerSize',markerSize);
 axisGeom(gca,fontSize);
 camlight headlight;
+ha=axis;
+axis off; 
 
 subplot(1,3,2); hold on;
-title('The dual tesselation','FontSize',fontSize);
+title('Triangulated dual','FontSize',fontSize);
+
+gpatch(Ft,Vt,'none','k',0,0.25);
 
 for i=1:1:numel(Fd)
     Fs=Fd{i};
-    hp=gpatch(Fs,Vd,faceColor1,plotColor2);
-    set(hp,'LineWidth',edgeWidth,'Marker','o','MarkerFaceColor',plotColor2,'MarkerEdgeColor','none','MarkerSize',markerSize);
+    gpatch(Fs,Vd,'rw','r',1,edgeWidth);
 end
+plotV(Vd,'r.','MarkerSize',markerSize);
 
 axisGeom(gca,fontSize);
 camlight headlight;
+axis off; 
+axis(ha);
 
 subplot(1,3,3); hold on;
-title('Refinement by triangulating merged pointsets','FontSize',fontSize);
+title('Dual refined','FontSize',fontSize);
 
-gpatch(Ft,Vt,faceColor1,plotColor3);
-
-
-hp=plotV(V,'k.','MarkerSize',markerSize*3);
-set(hp,'Color',plotColor1);
-
-for i=1:1:numel(Fd)
-    Fs=Fd{i};
-    hp=gpatch(Fs,Vd,'none',plotColor2);
-    set(hp,'LineWidth',edgeWidth,'Marker','o','MarkerFaceColor',plotColor2,'MarkerEdgeColor','none','MarkerSize',markerSize);
-end
-
-hp=plotV(Vt(indIni,:),'k.'); set(hp,'Color',plotColor1,'MarkerSize',markerSize)
-
+gpatch(Ft,Vt,'gw','k',1,edgeWidth);
+% for i=1:1:numel(Fd)
+%     Fs=Fd{i};
+%     hp=gpatch(Fs,Vd,'none','r',1,edgeWidth);    
+% end
+% plotV(Vt,'r.','MarkerSize',markerSize);
+% plotV(Vt(indIni,:),'b.','MarkerSize',markerSize);
+plotV(Vt,'g.','MarkerSize',markerSize);
 axisGeom(gca,fontSize);
 camlight headlight;
+axis off;
+axis(ha);
 drawnow;
 
 %% Example: Refining a closed surface

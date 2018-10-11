@@ -34,17 +34,62 @@ if size(V,2)==2
 end
 
 %%
-%Get input tesselation vertex-normals
-[~,~,Nv]=patchNormal(F,V);
 
-%Get indices of face neighbourhood
-[IND_F]=tesIND(F,V,0);
+if iscell(F)
+%     numFacesperSet=cellfun(@(x) size(x,1),F);
+    
+    N=[];
+    vertexFaceConnectivity=[];
+    numFacesPrevous=0;
+    for q=1:1:numel(F)
+        %The current face set
+        f=F{q};
+        
+        %Get indices of face neighbourhood
+        [vertexFaceConnectivity_f]=tesIND(f,V,0);    
+        
+        %Offset face indices by previous 
+        vertexFaceConnectivity_f(vertexFaceConnectivity_f>0)=vertexFaceConnectivity_f(vertexFaceConnectivity_f>0)+numFacesPrevous;
+        
+        %Get face-vertex connectivity
+        vertexFaceConnectivity=[vertexFaceConnectivity vertexFaceConnectivity_f];
+        
+        %Derive vertex normals
+        N=[N; patchNormal(f,V)];
+
+        numFacesPrevous=numFacesPrevous+size(f,1);        
+    end
+    vertexFaceConnectivity=sort(vertexFaceConnectivity,2);
+    [~,J,~] = find(vertexFaceConnectivity);
+    vertexFaceConnectivity=vertexFaceConnectivity(:,min(J):end);
+    vertexFaceConnectivity=full(vertexFaceConnectivity);
+    
+    L=vertexFaceConnectivity>0;
+    
+    Nv=ones(size(V,1),size(N,2));
+    for q=1:1:size(N,2)
+        nf=N(:,q);
+        nv=nan(size(vertexFaceConnectivity));
+        nv(L)=nf(vertexFaceConnectivity(L));
+        nv=nanmean(nv,2);
+        Nv(:,q)=nv;
+    end
+else
+    %Get indices of face neighbourhood
+    [vertexFaceConnectivity]=tesIND(F,V,0);
+    
+    %Get input tesselation vertex-normals
+    [~,~,Nv]=patchNormal(F,V);
+end
 
 %Create central face coordinates
-VF=zeros(size(F,1),size(V,2));
-for q=1:1:size(V,2)
-    X=V(:,q);
-    VF(:,q)=mean(X(F),2);
+if iscell(F)
+    VF=[];
+    for q=1:1:numel(F)        
+        VF=[VF; patchCentre(F{q},V)];
+    end
+else
+    VF=patchCentre(F,V);
 end
 
 if fixBoundaryOption>0
@@ -65,20 +110,20 @@ if fixBoundaryOption>0
                 Vd=[VF; VE; ];
                 
                 %Add new points in IND_F
-                IND_F(Eb(:,1),end+1)=(1:size(VE,1))'+size(VF,1);
-                ind1=IND_F(ind_Eb,end);
-                IND_F(Eb(:,2),end+1)=(1:size(VE,1))'+size(VF,1);
-                ind2=IND_F(ind_Eb,end);
-                IND_F(ind_Eb,end+1)=(1:1:numel(ind_Eb))'+size(VF,1)+size(VE,1);
+                vertexFaceConnectivity(Eb(:,1),end+1)=(1:size(VE,1))'+size(VF,1);
+                ind1=vertexFaceConnectivity(ind_Eb,end);
+                vertexFaceConnectivity(Eb(:,2),end+1)=(1:size(VE,1))'+size(VF,1);
+                ind2=vertexFaceConnectivity(ind_Eb,end);
+                vertexFaceConnectivity(ind_Eb,end+1)=(1:1:numel(ind_Eb))'+size(VF,1)+size(VE,1);
                 
                 VB=(Vd(ind1,:)+Vd(ind2,:))/2; %Use this average for now to avoid inverted elements VB=V(ind_Eb,:);
                                 
                 %Collect point sets
                 Vd=[VF; VE; VB];
                 
-                IND_F=sort(IND_F,2,'descend');
-                indMax=find(sum(IND_F,1)==0,1);
-                IND_F=IND_F(:,1:indMax);
+                vertexFaceConnectivity=sort(vertexFaceConnectivity,2,'descend');
+                indMax=find(sum(vertexFaceConnectivity,1)==0,1);
+                vertexFaceConnectivity=vertexFaceConnectivity(:,1:indMax);
                 
                 replaceVb=1; %Replace on so average is replaced later by real boundary vertices
             case 2 % Do not include original boundary vertices
@@ -93,12 +138,12 @@ if fixBoundaryOption>0
                 Vd=[VF; VE; ];
                 
                 %Add new points in IND_F
-                IND_F(Eb(:,1),end+1)=(1:size(VE,1))'+size(VF,1);
-                IND_F(Eb(:,2),end+1)=(1:size(VE,1))'+size(VF,1);                
+                vertexFaceConnectivity(Eb(:,1),end+1)=(1:size(VE,1))'+size(VF,1);
+                vertexFaceConnectivity(Eb(:,2),end+1)=(1:size(VE,1))'+size(VF,1);                
                 
-                IND_F=sort(IND_F,2,'descend');
-                indMax=find(sum(IND_F,1)==0,1);
-                IND_F=IND_F(:,1:indMax);
+                vertexFaceConnectivity=sort(vertexFaceConnectivity,2,'descend');
+                indMax=find(sum(vertexFaceConnectivity,1)==0,1);
+                vertexFaceConnectivity=vertexFaceConnectivity(:,1:indMax);
                 
                 replaceVb=0;
         end
@@ -135,11 +180,11 @@ else
 end
 
 %Creating arrays for faces
-[I,J,v] = find(IND_F);
+[I,J,v] = find(vertexFaceConnectivity);
 
-Xfd=accumarray({I,J},Vd(v,1),size(IND_F),[],NaN); 
-Yfd=accumarray({I,J},Vd(v,2),size(IND_F),[],NaN); 
-Zfd=accumarray({I,J},Vd(v,3),size(IND_F),[],NaN); 
+Xfd=accumarray({I,J},Vd(v,1),size(vertexFaceConnectivity),[],NaN); 
+Yfd=accumarray({I,J},Vd(v,2),size(vertexFaceConnectivity),[],NaN); 
+Zfd=accumarray({I,J},Vd(v,3),size(vertexFaceConnectivity),[],NaN); 
 
 Xfd_mean=nanmean(Xfd,2); 
 Yfd_mean=nanmean(Yfd,2); 
@@ -169,7 +214,7 @@ I_sort=I_sort(:,ones(1,size(J_sort,2)));
 IND_sort = sub2ind(size(J_sort),I_sort,J_sort);
 
 % Creating faces matrix
-Fds=IND_F(IND_sort);
+Fds=vertexFaceConnectivity(IND_sort);
 
 %Splitting up into seperate face types and fix face normals
 n_sum=sum(Fds>0,2);
