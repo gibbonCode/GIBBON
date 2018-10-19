@@ -19,8 +19,9 @@ function [Vg] = evenlySampleCurve(varargin)
 % 
 % 11/07/2013: Created
 % 2013-2015: No log
-% 05/05/2015: Improved csaps based smoothening
-% 05/05/2015: Updated help and documentation
+% 2015/05/05: Improved csaps based smoothening
+% 2015/05/05: Updated help and documentation
+% 2018/10/15: Added additional resampling for non-linear methods
 %------------------------------------------------------------------------
 
 %% Parse input
@@ -71,19 +72,15 @@ if closeLoopOpt==1
     
     V=[V;V(1,:)]; %Close loop by adding start to end
     
-%     if ~ischar(interpPar) %CSAPS SMOOTHEN, interpret interpPar as smoothening parameter                
-        midInd=round(size(V,1)/2);
-        %Close loop and aid periodicity by adding start and end points
-        V_addBefore=V(midInd:end-1,:);
-        V_addAfter=V(2:midInd,:);
-        V=[V_addBefore; V; V_addAfter]; 
-             
-        startInd=1+size(V_addBefore,1);
-        endInd=sizV(1)+size(V_addBefore,1)+1;
-%     else
-%         startInd=1;
-%         endInd=size(V,1);
-%     end
+    midInd=round(size(V,1)/2);
+    
+    %Close loop and aid periodicity by adding start and end points
+    V_addBefore=V(midInd:end-1,:);
+    V_addAfter=V(2:midInd,:);
+    V=[V_addBefore; V; V_addAfter];
+    
+    startInd=1+size(V_addBefore,1);
+    endInd=sizV(1)+size(V_addBefore,1)+1;
     
 else
     startInd=1;
@@ -104,10 +101,11 @@ if ~ischar(interpPar) %CSAPS SMOOTHEN, interpret interpPar as smoothening parame
     Vg = csaps(D,V',interpPar,Dg)'; %Smoothened ppform
 else %NORMAL METHODS
     for q=1:size(V,2)
-        if strcmp(interpPar,'biharmonic')
-            Vg(:,q)=biharmonicSplineInterpolation(D,V(:,q),Dg);
-        else
-            Vg(:,q)=interp1(D,V(:,q),Dg,interpPar);
+        switch interpPar
+            case 'biharmonic'
+                Vg(:,q)=biharmonicSplineInterpolation(D,V(:,q),Dg);            
+            otherwise
+                Vg(:,q)=interp1(D,V(:,q),Dg,interpPar);
         end
     end
 end
@@ -117,12 +115,13 @@ if closeLoopOpt==1
     Vg=Vg(1:end-1,:);
 end
 
-%Resample using normal method if csaps was used since smoothening alters spacing of points
-if ~ischar(interpPar) %CSAPS
-    [Vg] = evenlySampleCurve(Vg,n_in,'linear',closeLoopOpt);
+%Resample again if needed
+switch interpPar
+    case {'linear','nearest','next','previous'}
+        
+    otherwise %Resample again using linear method, non-linear methods may alter shape and point spacing
+        [Vg]=evenlySampleCurve(Vg,n_in,'linear',closeLoopOpt);
 end
-
-
  
 %% 
 % _*GIBBON footer text*_ 

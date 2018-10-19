@@ -20,10 +20,10 @@ function [cMap]=matplotlibColormap(varargin)
 switch nargin
     case 0
         c=4;
-        n=250;
+        n=[];
     case 1
         c=varargin{1};
-        n=250;
+        n=[];
     case 2
         c=varargin{1};
         n=varargin{2};
@@ -1061,5 +1061,13 @@ switch c
                 0.993248, 0.906157, 0.143936];
 end
 
-[cMap]=resampleColormap(cMap,n);
+%Set n equal to current sampling if empty
+if isempty(n)
+    n=size(cMap,1);
+end
+
+%Resample if needed 
+if n~=size(cMap,1)
+    [cMap]=resampleColormap(cMap,n);
+end
 

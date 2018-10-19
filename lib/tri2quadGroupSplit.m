@@ -45,6 +45,12 @@ if fourConnectConvert
     numFriends=sum(IND_V>0,2); %Number of vertex neighbours
     logicFour=numFriends==4; %Logic for vertices with only 4 connected neighbours
     
+    %Make sure four connected points are not shared in potential quads
+    indFour=find(logicFour);
+    logicEdgeFourConnect=all(ismember(EV,indFour),2);
+    indEdgeFourConnect=EV(logicEdgeFourConnect,:);    
+    logicFour(indEdgeFourConnect(:,1))=0;
+
     %Remove boundary points from logic    
     logicFour(logicBoundary)=0;
     

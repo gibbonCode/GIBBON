@@ -16,7 +16,7 @@ function [cMap]=viridis(varargin)
 %%
 switch nargin
     case 0
-        n=250;
+        n=[];
     case 1
         n=varargin{1};
 end

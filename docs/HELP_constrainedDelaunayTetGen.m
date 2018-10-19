@@ -17,7 +17,6 @@ clear; close all; clc;
 
 %%
 % Plot settings
-figColor='w'; figColorDef='white';
 fontSize=15;
 faceAlpha1=1;
 faceAlpha2=0.5;
@@ -28,7 +27,6 @@ markerSize=25;
 % path names
 filePath=mfilename('fullpath');
 savePath=fullfile(fileparts(filePath),'data','temp');
-
 
 %% 
 % Creating example surface input data 
@@ -47,16 +45,13 @@ V=V*R;
 
 %%
 % Plotting surface model
-hf=figuremax(figColor,figColorDef);
+cFigure;
 title('The surface model','FontSize',fontSize);
-xlabel('X','FontSize',fontSize); ylabel('Y','FontSize',fontSize); zlabel('Z','FontSize',fontSize);
 hold on;
-
-patch('Faces',F,'Vertices',V,'FaceColor','g','FaceAlpha',faceAlpha1,'lineWidth',edgeWidth,'edgeColor',edgeColor);
-
+gpatch(F,V,'gw','k');
 camlight headlight;
-set(gca,'FontSize',fontSize);
-view(3); axis tight;  axis equal;  grid on;
+axisGeom(gca,fontSize);
+drawnow; 
 
 %% Example: Using MATLAB's |delaunayTriangulation| to compute the unconstrained 3D Delaunay tesselation 
 % Computing the unconstrained 3D Delaunay tesselation of point set
@@ -81,25 +76,22 @@ V2=TR.Points;
 
 %%
 % Plotting surface model
-hf=figuremax(figColor,figColorDef);
+cFigure;
 
 subplot(1,2,1);
 title('The unconstrained MATLAB tesselation','FontSize',fontSize);
-xlabel('X','FontSize',fontSize); ylabel('Y','FontSize',fontSize); zlabel('Z','FontSize',fontSize);
 hold on;
-patch('Faces',F1,'Vertices',V1,'FaceColor','r','FaceAlpha',faceAlpha2,'lineWidth',edgeWidth,'edgeColor',edgeColor);
+gpatch(F1,V1,'rw','k');
 camlight headlight;
-set(gca,'FontSize',fontSize);
-view(3); axis tight;  axis equal;  grid on;
+axisGeom(gca,fontSize);
 
 subplot(1,2,2);
 title('The unconstrained TetGen tesselation','FontSize',fontSize);
-xlabel('X','FontSize',fontSize); ylabel('Y','FontSize',fontSize); zlabel('Z','FontSize',fontSize);
 hold on;
-patch('Faces',F2,'Vertices',V2,'FaceColor','g','FaceAlpha',faceAlpha2,'lineWidth',edgeWidth,'edgeColor',edgeColor);
+gpatch(F2,V2,'gw','k');
 camlight headlight;
-set(gca,'FontSize',fontSize);
-view(3); axis tight;  axis equal;  grid on;
+axisGeom(gca,fontSize);
+drawnow; 
 
 %% Example: Using TetGen based |constrainedDelaunayTetGen| to compute the constrained 3D Delaunay tesselation 
 % Computing the constrained 3D Delaunay tesselation of point set (i.e.
@@ -113,25 +105,22 @@ V2=TR.Points;
 
 %%
 % Plotting surface model
-hf=figuremax(figColor,figColorDef);
+cFigure;
 
 subplot(1,2,1);
 title('The unconstrained tesselation (convex hull)','FontSize',fontSize);
-xlabel('X','FontSize',fontSize); ylabel('Y','FontSize',fontSize); zlabel('Z','FontSize',fontSize);
 hold on;
-patch('Faces',F1,'Vertices',V1,'FaceColor','r','FaceAlpha',faceAlpha2,'lineWidth',edgeWidth,'edgeColor',edgeColor);
+gpatch(F1,V1,'rw','k');
 camlight headlight;
-set(gca,'FontSize',fontSize);
-view(3); axis tight;  axis equal;  grid on;
+axisGeom(gca,fontSize);
 
 subplot(1,2,2);
 title('The constrained TetGen tesselation','FontSize',fontSize);
-xlabel('X','FontSize',fontSize); ylabel('Y','FontSize',fontSize); zlabel('Z','FontSize',fontSize);
 hold on;
-patch('Faces',F2,'Vertices',V2,'FaceColor','g','FaceAlpha',faceAlpha2,'lineWidth',edgeWidth,'edgeColor',edgeColor);
+gpatch(F2,V2,'gw','k');
 camlight headlight;
-set(gca,'FontSize',fontSize);
-view(3); axis tight;  axis equal;  grid on;
+axisGeom(gca,fontSize);
+drawnow; 
 
 %% Example: Computing constrained 3D Delaunay tesselations with interior points
 
@@ -150,45 +139,45 @@ imOrigin=G.origin;
 %%
 % Visualize interor voxels
 
-hf1=figuremax(figColor,figColorDef);
+cFigure;
 subplot(1,2,1);
 title('Closed triangulated surface','FontSize',fontSize);
-xlabel('X','FontSize',fontSize);ylabel('Y','FontSize',fontSize); zlabel('Z','FontSize',fontSize);
 hold on;
-patch('Faces',F,'Vertices',V,'FaceColor','g','EdgeColor','k','FaceAlpha',faceAlpha1);
-camlight('headlight'); lighting flat;
-axis equal; view(3); axis tight;  grid on;  set(gca,'FontSize',fontSize);
+gpatch(F,V,'g','k',faceAlpha1);
+camlight('headlight');
+axisGeom(gca,fontSize);
 
 subplot(1,2,2);
 title('Boundary, intertior and exterior image','FontSize',fontSize);
-xlabel('X','FontSize',fontSize);ylabel('Y','FontSize',fontSize); zlabel('Z','FontSize',fontSize);
 hold on;
 
-patch('Faces',F,'Vertices',V,'FaceColor','g','EdgeColor','none','FaceAlpha',faceAlpha2);
+gpatch(F,V,'g','none',faceAlpha2);
+
 L_plot=false(size(M));
 L_plot(:,:,round(size(M,3)/2))=1;
 [Fm,Vm,Cm]=ind2patch(L_plot,double(M),'sk');
 [Vm(:,1),Vm(:,2),Vm(:,3)]=im2cart(Vm(:,2),Vm(:,1),Vm(:,3),voxelSize*ones(1,3));
 Vm=Vm+imOrigin(ones(size(Vm,1),1),:);
-patch('Faces',Fm,'Vertices',Vm,'FaceColor','flat','CData',Cm,'EdgeColor','k','FaceAlpha',faceAlpha1);
+gpatch(Fm,Vm,Cm,'k',faceAlpha1);
 
 L_plot=false(size(M));L_plot(round(size(M,1)/2),:,:)=1;
 [Fm,Vm,Cm]=ind2patch(L_plot,M,'si');
 [Vm(:,1),Vm(:,2),Vm(:,3)]=im2cart(Vm(:,2),Vm(:,1),Vm(:,3),voxelSize*ones(1,3));
 Vm=Vm+imOrigin(ones(size(Vm,1),1),:);
-patch('Faces',Fm,'Vertices',Vm,'FaceColor','flat','CData',Cm,'EdgeColor','k','FaceAlpha',faceAlpha1);
+gpatch(Fm,Vm,Cm,'k',faceAlpha1);
 
 L_plot=false(size(M));L_plot(:,round(size(M,2)/2),:)=1;
 [Fm,Vm,Cm]=ind2patch(L_plot,M,'sj');
 [Vm(:,1),Vm(:,2),Vm(:,3)]=im2cart(Vm(:,2),Vm(:,1),Vm(:,3),voxelSize*ones(1,3));
 Vm=Vm+imOrigin(ones(size(Vm,1),1),:);
-patch('Faces',Fm,'Vertices',Vm,'FaceColor','flat','CData',Cm,'EdgeColor','k','FaceAlpha',faceAlpha1);
+gpatch(Fm,Vm,Cm,'k',faceAlpha1);
 
 colormap(gray(3)); caxis([0 2]);
 hc=colorbar;
 set(hc,'YTick',[1/3 1 5/3]);
 set(hc,'YTickLabel',{'Exterior','Boundary','Intertior'});
-axis equal; view(3); axis tight;  grid on;  set(gca,'FontSize',fontSize);
+camlight('headlight');
+axisGeom(gca,fontSize);
 drawnow;
 
 %%
@@ -202,17 +191,14 @@ Vi=Vi+imOrigin(ones(size(Vi,1),1),:);
 
 %%
 % Plotting surface model and interior points
-hf=figuremax(figColor,figColorDef);
+cFigure;
 title('Visualizing a mesh of interior points','FontSize',fontSize);
-xlabel('X','FontSize',fontSize); ylabel('Y','FontSize',fontSize); zlabel('Z','FontSize',fontSize);
 hold on;
-
-patch('Faces',F,'Vertices',V,'FaceColor',0.5*ones(1,3),'FaceAlpha',0.1,'edgeColor','none');
+gpatch(F,V,'kw','none',0.1);
 plotV(Vi,'k.','MarkerSize',markerSize);
-
-camlight headlight;
-set(gca,'FontSize',fontSize);
-view(2); axis tight;  axis equal;  grid on;
+camlight('headlight');
+axisGeom(gca,fontSize);
+drawnow;
 
 %%
 % Compute constrained Delaunay tesselation
@@ -231,25 +217,22 @@ L=XE<mean(X(:));
 
 %%
 % Plotting meshed model
-hf=figuremax(figColor,figColorDef);
 
+cFigure;
 subplot(1,2,1);
 title('The full constrained tesselation','FontSize',fontSize);
-xlabel('X','FontSize',fontSize); ylabel('Y','FontSize',fontSize); zlabel('Z','FontSize',fontSize);
 hold on;
-patch('Faces',F3,'Vertices',V3,'FaceColor','g','FaceAlpha',faceAlpha1,'lineWidth',edgeWidth,'edgeColor',edgeColor);
-camlight headlight;
-set(gca,'FontSize',fontSize);
-view(3); axis tight;  axis equal;  grid on;
+gpatch(F3,V3,'g','k',faceAlpha1);
+camlight('headlight');
+axisGeom(gca,fontSize);
 
 subplot(1,2,2);
 title('Cut view of interior mesh','FontSize',fontSize);
-xlabel('X','FontSize',fontSize); ylabel('Y','FontSize',fontSize); zlabel('Z','FontSize',fontSize);
 hold on;
-patch('Faces',F3c,'Vertices',V3,'FaceColor','g','FaceAlpha',faceAlpha1,'lineWidth',edgeWidth,'edgeColor',edgeColor);
-camlight headlight;
-set(gca,'FontSize',fontSize);
-view(2); axis tight;  axis equal;  grid on;
+gpatch(F3c,V3,'g','k',faceAlpha1);
+camlight('headlight');
+axisGeom(gca,fontSize);
+drawnow;
 
 %% 
 %

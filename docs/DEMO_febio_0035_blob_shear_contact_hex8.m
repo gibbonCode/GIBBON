@@ -268,6 +268,27 @@ axisGeom(gca,fontSize);
 camlight headlight; 
 drawnow; 
 
+%%
+
+[N3,Vn]=patchNormal(Fb_blob,V);
+[N1,N2]=vectorOrthogonalPair(N3); %Get orthogonal vector pair
+
+%%
+% Visualizing model
+
+cFigure; hold on;
+gtitle('Local material axes',fontSize);
+hl(1)=gpatch(Fb_blob,V,'rw','k',0.9);
+hl(2)=quiverVec(Vn,N1,pointSpacingBlob,'y');
+hl(3)=quiverVec(Vn,N2,pointSpacingBlob,'g');
+hl(4)=quiverVec(Vn,N3,pointSpacingBlob,'b');
+legend(hl,{'Blob','1st axis','2nd axis','3rd axis'}); clear hl;
+axisGeom(gca,fontSize);
+camlight headlight; 
+drawnow; 
+
+sdafasfs
+
 %% Get contact surfaces
 %
 

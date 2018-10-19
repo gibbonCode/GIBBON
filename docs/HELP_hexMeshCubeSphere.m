@@ -1,3 +1,7 @@
+%% hexMeshCubeSphere
+% Below is a demonstration of the features of the |hexMeshCubeSphere| function
+
+%%
 clear; close all; clc;
 
 %%

@@ -46,13 +46,13 @@ V=[x(:) y(:)];
 % For instance the spacing is smallest in flat regions and lowest in steep
 % regions.Various interpolation methods are shown.
 
-interpMethods={'linear','pchip','biharmonic'};
+interpMethods={'linear','pchip','spline','biharmonic'};
 closeLoopOpt=0; %Option for closed curve
 n=ns*2; %New number of points
 
 cFigure; 
-subplot(2,2,1); hold on; 
-title('Unevenly sampled');
+subplot(2,3,1); hold on; 
+title('Input data');
 plotV(V,'k-','MarkerSize',markerSize1);
 plotV(V,'r.','MarkerSize',markerSize1);
 view(2); grid on; axis equal; axis tight; box on;
@@ -62,15 +62,56 @@ for q=1:1:numel(interpMethods)
     
     [Vg]=evenlySampleCurve(V,n,interpMethods{q},closeLoopOpt);
 
-    subplot(2,2,q+1); hold on;
-    title(['Resample ',interpMethods{q},' interpolation']);
+    subplot(2,3,q+1); hold on;
+    title(['Resampled ',interpMethods{q},' interpolation']);
     plotV(Vg,'k-','MarkerSize',markerSize1);
     plotV(Vg,'g.','MarkerSize',markerSize1);
     view(2); grid on; axis equal; axis tight; box on;
 end
 drawnow;
 
-%% EXAMPLE 2: Evenly sampling a closed curve
+%% EXAMPLE 2: Upsample a closed polygon
+
+%Simulating the case of an unevenly sampled curve
+ns=4;
+t=linspace(0,2*pi,ns+1)';
+t=t(1:end-1);%+0.25*pi;
+V=[cos(t) sin(t)];
+
+%%
+% Resampling a curve evenly in terms of point spacing.
+
+%% 
+% Below original and resampled curves are shown. Note that the original
+% curve is sampled evenly allong x-axis but not in terms of point spacing.
+% For instance the spacing is smallest in flat regions and lowest in steep
+% regions.Various interpolation methods are shown.
+
+interpMethods={'linear','pchip','spline','biharmonic'};
+closeLoopOpt=1; %Option for closed curve
+n=ns*20; %New number of points
+
+cFigure; 
+subplot(2,3,1); hold on; 
+title('Input data');
+plotV(V,'k-','MarkerSize',markerSize1);
+plotV(V,'r.','MarkerSize',markerSize1);
+view(2); grid on; axis equal; axis tight; box on;
+drawnow; 
+
+for q=1:1:numel(interpMethods)
+    
+    [Vg]=evenlySampleCurve(V,n,interpMethods{q},closeLoopOpt);
+
+    subplot(2,3,q+1); hold on;
+    title(['Resampled ',interpMethods{q},' interpolation']);
+    plotV(Vg,'k-','MarkerSize',markerSize1);
+    plotV(Vg,'g.','MarkerSize',markerSize1);
+    view(2); grid on; axis equal; axis tight; box on;
+end
+drawnow;
+
+%% EXAMPLE 3: Evenly sampling a closed curve
 
 %Simulating the case of an unevenly sampled loop curve
 ns=75;
@@ -96,13 +137,13 @@ n=200;
 % For instance the spacing is smallest in flat regions and lowest in steep
 % regions.Various interpolation methods are shown.
 
-interpMethods={'linear','pchip','biharmonic'};
+interpMethods={'linear','pchip','spline','biharmonic'};
 closeLoopOpt=1; %Option for closed curve
 n=ns*2; %New number of points
 
 cFigure; 
-subplot(2,2,1); hold on; 
-title('Unevenly sampled');
+subplot(2,3,1); hold on; 
+title('Input data');
 plotV(V,'k-','MarkerSize',markerSize1);
 plotV(V,'r.','MarkerSize',markerSize1);
 view(3); grid on; axis equal; axis tight; box on;
@@ -112,7 +153,7 @@ for q=1:1:numel(interpMethods)
     
     [Vg]=evenlySampleCurve(V,n,interpMethods{q},closeLoopOpt);
 
-    subplot(2,2,q+1); hold on;
+    subplot(2,3,q+1); hold on;
     title(['Resampled with ',interpMethods{q},' interpolation']);
     plotV(Vg,'k-','MarkerSize',markerSize1);
     plotV(Vg,'g.','MarkerSize',markerSize1);

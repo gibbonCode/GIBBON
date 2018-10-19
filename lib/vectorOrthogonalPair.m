@@ -13,6 +13,8 @@ function [a,d]=vectorOrthogonalPair(f)
 %
 % 2017/05/08: Updated for GIBBON
 % 2017/05/08: Fixed bug in relation to co-linear output.
+% 2018/10/16: Added axis switching and flipping so that a,d,f system is
+% most similar to e1, e2, e3. 
 
 %%
 
@@ -26,11 +28,6 @@ E1=e1(ones(size(f,1),1),:);
 E2=e2(ones(size(f,1),1),:);
 E3=e3(ones(size(f,1),1),:);
  
-% T=abs(real([acos(dot(f,E1,2)) acos(dot(f,E2,2)) acos(dot(f,E3,2))]));
-% T(T>pi)=(T(T>pi)-pi);
-% T=abs(T-0.5*pi);
-% [~,J_min]=min(T,[],2);
-
 [~,J_min]=min(abs(f),[],2);
 
 d=zeros(size(f));
@@ -51,7 +48,23 @@ end
 [d]=vecnormalize(d);
 a=cross(f,d,2); [a]=vecnormalize(a); %d is orthogonal to f and a
 d=cross(f,a,2); [d]=vecnormalize(d); %a is reset to be orthogonal to both f and d
- 
+
+%Switch axes so a is closest to e1
+dot1=dot(a,e1(ones(size(a,1),1),:),2);
+dot2=dot(d,e1(ones(size(d,1),1),:),2);
+logicSwitch=abs(dot1)<abs(dot2);
+
+aa=a; 
+aa(logicSwitch,:)=d(logicSwitch,:);
+d(logicSwitch,:)=-a(logicSwitch,:);
+a(logicSwitch,:)=aa(logicSwitch,:);
+
+%Flip axes so a points allong e1
+dot1=dot(a,e1(ones(size(a,1),1),:),2);
+logicFlip=dot1<0;
+a(logicFlip,:)=-a(logicFlip,:);
+d(logicFlip,:)=-d(logicFlip,:);
+
 %% 
 % _*GIBBON footer text*_ 
 % 
