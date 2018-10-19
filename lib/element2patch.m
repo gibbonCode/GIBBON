@@ -94,8 +94,13 @@ switch elementType
             E(:,[5 8 4 1]);]; %back                
         C=repmat(C,6,1);
     case 'hex20' %Hexahedral elements
-        %TO DO
-        error('hex20 elements not implemented yet');
+        F =[E(:,[4  11 3  10 2  9  1 12]);... %top
+            E(:,[5  13 6  14 7  15 8 16]);... %bottom
+            E(:,[1  9  2  18 6  13 5 17]);... %side 1
+            E(:,[3  11 4  20 8  15 7 19]);... %side 2
+            E(:,[2  10 3  19 7  14 6 18]);... %front
+            E(:,[5  16 8  20 4  12 1 17]);]; %back
+        C=repmat(C,6,1);        
     case 'unknown'
         F=E;
         C=C;

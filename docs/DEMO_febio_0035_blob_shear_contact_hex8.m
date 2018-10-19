@@ -268,13 +268,13 @@ axisGeom(gca,fontSize);
 camlight headlight; 
 drawnow; 
 
-%%
+%% Get local material axes
 
 [N3,Vn]=patchNormal(Fb_blob,V);
 [N1,N2]=vectorOrthogonalPair(N3); %Get orthogonal vector pair
 
 %%
-% Visualizing model
+% Visualizing axes
 
 cFigure; hold on;
 gtitle('Local material axes',fontSize);
@@ -286,8 +286,6 @@ legend(hl,{'Blob','1st axis','2nd axis','3rd axis'}); clear hl;
 axisGeom(gca,fontSize);
 camlight headlight; 
 drawnow; 
-
-sdafasfs
 
 %% Get contact surfaces
 %
@@ -317,6 +315,8 @@ axisGeom(gca,fontSize);
 camlight headlight; 
 
 drawnow; 
+
+dfsafa
 
 %% Defining the FEBio input structure
 % See also |febioStructTemplate| and |febioStruct2xml| and the FEBio user
@@ -353,15 +353,38 @@ febio_spec.Material.material{1}.c2=c1;
 febio_spec.Material.material{1}.m2=-m1;
 febio_spec.Material.material{1}.k=k;
 
-febio_spec.Material.material{2}.ATTR.type='rigid body';
-febio_spec.Material.material{2}.ATTR.id=2;
-febio_spec.Material.material{2}.density=1;
-febio_spec.Material.material{2}.center_of_mass=center_of_mass_plate;
+% 		<material id="1" name="Material2" type="Fung orthotropic">
+% 			<density>1e-09</density>
+% 			<E1>6857.08</E1>
+% 			<E2>6857.08</E2>
+% 			<E3>1.39992</E3>
+% 			<G12>2000.2</G12>
+% 			<G23>1000.1</G23>
+% 			<G31>1000.1</G31>
+% 			<v12>0.714271</v12>
+% 			<v23>0.204092</v23>
+% 			<v31>4.16667e-05</v31>
+% 			<c>10</c>
+% 			<k>10000</k>
+% 		</material>
+         
+febio_spec.Material.material{2}.ATTR.type='Ogden';
+febio_spec.Material.material{2}.ATTR.id=1;
+febio_spec.Material.material{2}.c1=c1;
+febio_spec.Material.material{2}.m1=m1;
+febio_spec.Material.material{2}.c2=c1;
+febio_spec.Material.material{2}.m2=-m1;
+febio_spec.Material.material{2}.k=k;
 
 febio_spec.Material.material{3}.ATTR.type='rigid body';
 febio_spec.Material.material{3}.ATTR.id=3;
 febio_spec.Material.material{3}.density=1;
-febio_spec.Material.material{3}.center_of_mass=center_of_mass_probe;
+febio_spec.Material.material{3}.center_of_mass=center_of_mass_plate;
+
+febio_spec.Material.material{4}.ATTR.type='rigid body';
+febio_spec.Material.material{4}.ATTR.id=4;
+febio_spec.Material.material{4}.density=1;
+febio_spec.Material.material{4}.center_of_mass=center_of_mass_probe;
 
 %Geometry section
 % -> Nodes
@@ -376,17 +399,23 @@ febio_spec.Geometry.Elements{1}.ATTR.name='Blob'; %Name of the element set
 febio_spec.Geometry.Elements{1}.elem.ATTR.id=(1:1:size(E_blob,1))'; %Element id's
 febio_spec.Geometry.Elements{1}.elem.VAL=E_blob;
 
-febio_spec.Geometry.Elements{2}.ATTR.type='quad4'; %Element type of this set
-febio_spec.Geometry.Elements{2}.ATTR.mat=2; %material index for this set 
-febio_spec.Geometry.Elements{2}.ATTR.name='Plate'; %Name of the element set
-febio_spec.Geometry.Elements{2}.elem.ATTR.id=size(E_blob,1)+(1:1:size(F_plate,1))'; %Element id's
-febio_spec.Geometry.Elements{2}.elem.VAL=F_plate;
+febio_spec.Geometry.Elements{1}.ATTR.type='quad4'; %Element type of this set
+febio_spec.Geometry.Elements{1}.ATTR.mat=1; %material index for this set 
+febio_spec.Geometry.Elements{1}.ATTR.name='Blob'; %Name of the element set
+febio_spec.Geometry.Elements{1}.elem.ATTR.id=(1:1:size(E_blob,1))'; %Element id's
+febio_spec.Geometry.Elements{1}.elem.VAL=E_blob;
 
-febio_spec.Geometry.Elements{2}.ATTR.type='quad4'; %Element type of this set
-febio_spec.Geometry.Elements{2}.ATTR.mat=3; %material index for this set 
-febio_spec.Geometry.Elements{2}.ATTR.name='Probe'; %Name of the element set
-febio_spec.Geometry.Elements{2}.elem.ATTR.id=size(E_blob,1)+size(F_plate,1)+(1:1:size(F_probe,1))'; %Element id's
-febio_spec.Geometry.Elements{2}.elem.VAL=F_probe;
+febio_spec.Geometry.Elements{3}.ATTR.type='quad4'; %Element type of this set
+febio_spec.Geometry.Elements{3}.ATTR.mat=3; %material index for this set 
+febio_spec.Geometry.Elements{3}.ATTR.name='Plate'; %Name of the element set
+febio_spec.Geometry.Elements{3}.elem.ATTR.id=size(E_blob,1)+(1:1:size(F_plate,1))'; %Element id's
+febio_spec.Geometry.Elements{3}.elem.VAL=F_plate;
+
+febio_spec.Geometry.Elements{4}.ATTR.type='quad4'; %Element type of this set
+febio_spec.Geometry.Elements{4}.ATTR.mat=3; %material index for this set 
+febio_spec.Geometry.Elements{4}.ATTR.name='Probe'; %Name of the element set
+febio_spec.Geometry.Elements{4}.elem.ATTR.id=size(E_blob,1)+size(F_plate,1)+(1:1:size(F_probe,1))'; %Element id's
+febio_spec.Geometry.Elements{4}.elem.VAL=F_probe;
 
 % -> NodeSets
 

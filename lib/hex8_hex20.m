@@ -1,49 +1,42 @@
-function [varargout]=tet4_tet10(varargin)
+function [varargout]=hex8_hex20(varargin)
 
-% function [E_tet10,V_tet10,V_tet10_cell,Fb_tet10,S]=tet4_tet10(E_tet4,V_tet4,V_tet4_cell,Fb_tet4)
+% function [E_hex20,V_hex20,V_hex20_cell,Fb_hex20,S]=hex8_hex20(E_hex8,V_hex8,V_hex8_cell,Fb_hex8)
 % ------------------------------------------------------------------------
-% This function converts 4 node (e.g. linear) tetrahedral elements into 10
-% node (e.g. quadratic) tetrahedral elements compatible with FEBio. 
+% This function converts 8 node (e.g. linear) hexahedral elements into 20
+% node (e.g. quadratic) hexahedral elements compatible with FEBio. 
 %
 %
-% varargout{1}=E_tet10;
-% varargout{2}=V_tet10;
-% varargout{3}=V_tet10_cell;
-% varargout{4}=Fb_tet10;
+% varargout{1}=E_hex20;
+% varargout{2}=V_hex20;
+% varargout{3}=V_hex20_cell;
+% varargout{4}=Fb_hex20;
 % varargout{5}=S;
 %
 %
 % Kevin Mattheus Moerman
 % gibbon.toolbox@gmail.com
 % 
-% 2014/09/25
-% 2015/09/22 Renamed variables
-% 2015/09/22 Updated "bookkeeping" of indices of added points to avoid
-% unique operation
-% 2015/09/22 Added "bookkeeping" of faces e.g. boundaries
-% 2015/09/22 Added sparse index array output option
-% 2018/10/19 Added some comments
-% 2018/10/19 Removed loops over coordinate dimensions
+% 2018/10/19 Created based on tet4_tet10
 %------------------------------------------------------------------------
 %%
 
 %% Parse input
 switch nargin
     case 2
-        E_tet4=varargin{1};
-        V_tet4=varargin{2};
-        V_tet4_cell={};    
-        Fb_tet4={};
+        E_hex8=varargin{1};
+        V_hex8=varargin{2};
+        V_hex8_cell={};    
+        Fb_hex8={};
     case 3
-        E_tet4=varargin{1};
-        V_tet4=varargin{2};
-        V_tet4_cell=varargin{3};
-        Fb_tet4={};
+        E_hex8=varargin{1};
+        V_hex8=varargin{2};
+        V_hex8_cell=varargin{3};
+        Fb_hex8={};
     case 4
-        E_tet4=varargin{1};
-        V_tet4=varargin{2};
-        V_tet4_cell=varargin{3};
-        Fb_tet4=varargin{4};
+        E_hex8=varargin{1};
+        V_hex8=varargin{2};
+        V_hex8_cell=varargin{3};
+        Fb_hex8=varargin{4};
     otherwise
         error('wrong number of input arguments');
 end
@@ -51,11 +44,11 @@ end
 %% Create element set
 
 %Creating "egdge indices" matrices
-matVirtSize=size(V_tet4,1)*ones(1,2);
+matVirtSize=size(V_hex8,1)*ones(1,2);
 
 %Edges matrix
-indMatrix_1=[E_tet4(:,1) E_tet4(:,2) E_tet4(:,3) E_tet4(:,1) E_tet4(:,2) E_tet4(:,3)];
-indMatrix_2=[E_tet4(:,2) E_tet4(:,3) E_tet4(:,1) E_tet4(:,4) E_tet4(:,4) E_tet4(:,4)];
+indMatrix_1=[E_hex8(:,1) E_hex8(:,2) E_hex8(:,3) E_hex8(:,4)  E_hex8(:,5) E_hex8(:,6) E_hex8(:,7) E_hex8(:,8)  E_hex8(:,5) E_hex8(:,6) E_hex8(:,7) E_hex8(:,8)];
+indMatrix_2=[E_hex8(:,2) E_hex8(:,3) E_hex8(:,4) E_hex8(:,1)  E_hex8(:,6) E_hex8(:,7) E_hex8(:,8) E_hex8(:,5)  E_hex8(:,1) E_hex8(:,2) E_hex8(:,3) E_hex8(:,4)];
 
 %3D edges matrix, first layer, first points, second layer, second points
 edgeMatrix=indMatrix_1;
@@ -68,40 +61,40 @@ edgeIndexMatrix=sub2ind(matVirtSize,edgeMatrix(:,:,1),edgeMatrix(:,:,2));
 %Compose unique set
 [edgeIndexUni,ind1,ind2]=unique(edgeIndexMatrix(:));
 
-indTet10_new=reshape(ind2,size(edgeIndexMatrix));
+indhex20_new=reshape(ind2,size(edgeIndexMatrix));
 
 %Create unique point index matrices
 [indMatrix_1_uni,indMatrix_2_uni]=ind2sub(matVirtSize,edgeIndexUni);
 
 S = sparse(indMatrix_1_uni,indMatrix_2_uni,ind2(ind1),matVirtSize(1),matVirtSize(2),numel(ind1));
 
-E_tet10=[E_tet4 indTet10_new+size(V_tet4,1)];
+E_hex20=[E_hex8 indhex20_new+size(V_hex8,1)];
 
 %% Create and add new coordinates
 % Calculate coordinates for unique new points
-V_new=0.5*(V_tet4(indMatrix_1_uni,:)+V_tet4(indMatrix_2_uni,:));%
-V_tet10=[V_tet4;V_new];
+V_new=0.5*(V_hex8(indMatrix_1_uni,:)+V_hex8(indMatrix_2_uni,:));%
+V_hex20=[V_hex8;V_new];
 
 %% Process cell data 
 
-if ~isempty(V_tet4_cell)
-    V_tet10_cell=V_tet4_cell;
-    for qc=1:1:numel(V_tet10_cell)
-        XX_tet4=V_tet4_cell{qc};        
-        XX_new=0.5*(XX_tet4(indMatrix_1_uni,:)+XX_tet4(indMatrix_2_uni,:));
-        XX_tet10=[XX_tet4;XX_new];
-        V_tet10_cell{qc}=XX_tet10;
+if ~isempty(V_hex8_cell)
+    V_hex20_cell=V_hex8_cell;
+    for qc=1:1:numel(V_hex20_cell)
+        XX_hex8=V_hex8_cell{qc};        
+        XX_new=0.5*(XX_hex8(indMatrix_1_uni,:)+XX_hex8(indMatrix_2_uni,:));
+        XX_hex20=[XX_hex8;XX_new];
+        V_hex20_cell{qc}=XX_hex20;
     end
 else
-    V_tet10_cell={};
+    V_hex20_cell={};
 end
 
 %% Process boundary faces
 
-if ~isempty(Fb_tet4)    
+if ~isempty(Fb_hex8)    
     %Edges matrix
-    indMatrix_1=[Fb_tet4(:,1) Fb_tet4(:,2) Fb_tet4(:,3)];
-    indMatrix_2=[Fb_tet4(:,2) Fb_tet4(:,3) Fb_tet4(:,1)];
+    indMatrix_1=[Fb_hex8(:,1) Fb_hex8(:,2) Fb_hex8(:,3) Fb_hex8(:,4)];
+    indMatrix_2=[Fb_hex8(:,2) Fb_hex8(:,3) Fb_hex8(:,4) Fb_hex8(:,1)];
     
     %3D edges matrix, first layer, first points, second layer, second points
     edgeMatrix=indMatrix_1;
@@ -109,20 +102,20 @@ if ~isempty(Fb_tet4)
     edgeMatrix=sort(edgeMatrix,3);
     
     edgeIndexMatrix=sub2ind(matVirtSize,edgeMatrix(:,:,1),edgeMatrix(:,:,2));
+
+    indhex20_new=full(S(edgeIndexMatrix));
     
-    indTet10_new=full(S(edgeIndexMatrix));
-    
-    Fb_tet10=[Fb_tet4 indTet10_new+size(V_tet4,1)];
-    Fb_tet10=Fb_tet10(:,[1 4 2 5 3 6]);
+    Fb_hex20=[Fb_hex8 indhex20_new+size(V_hex8,1)];
+    Fb_hex20=Fb_hex20(:,[1 5 2 6 3 7 4 8]);
 else
-    Fb_tet10=[];
+    Fb_hex20=[];
 end
 
 %% Compose output
-varargout{1}=E_tet10;
-varargout{2}=V_tet10;
-varargout{3}=V_tet10_cell;
-varargout{4}=Fb_tet10;
+varargout{1}=E_hex20;
+varargout{2}=V_hex20;
+varargout{3}=V_hex20_cell;
+varargout{4}=Fb_hex20;
 varargout{5}=S;   
  
 %% 

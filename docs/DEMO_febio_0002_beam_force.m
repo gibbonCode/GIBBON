@@ -13,7 +13,7 @@
 % * febio, FEBio
 % * beam force loading
 % * force control boundary condition
-% * hexahedral elements, hex8
+% * hexahedral elements, hex8, hex20
 % * beam, rectangular
 % * static, solid
 % * hyperelastic, Ogden
@@ -28,6 +28,7 @@ clear; close all; clc;
 fontSize=20;
 faceAlpha1=0.8;
 markerSize=40;
+markerSize2=20;
 lineWidth=3;
 
 %% Control parameters
@@ -48,13 +49,15 @@ beamWidth=10;
 sampleWidth=beamWidth; %Width 
 sampleThickness=4*beamWidth; %Thickness 
 sampleHeight=beamWidth; %Height
-pointSpacings=2*ones(1,3); %Desired point spacing between nodes
+pointSpacings=3*ones(1,3); %Desired point spacing between nodes
 numElementsWidth=round(sampleWidth/pointSpacings(1)); %Number of elemens in dir 1
 numElementsThickness=round(sampleThickness/pointSpacings(2)); %Number of elemens in dir 2
 numElementsHeight=round(sampleHeight/pointSpacings(3)); %Number of elemens in dir 3
 
+elementType='hex20'; %'hex8'
+
 %Define applied force 
-appliedForce=[0 0 -5e-5]; 
+appliedForce=[0 0 -2e-3]; 
 
 %Material parameter set
 c1=1e-3; %Shear-modulus-like parameter
@@ -90,6 +93,13 @@ Fb=meshStruct.facesBoundary; %The boundary faces
 Cb=meshStruct.boundaryMarker; %The "colors" or labels for the boundary faces
 elementMaterialIndices=ones(size(E,1),1); %Element material indices
 
+if strcmp(elementType,'hex20')
+    [E,V,~,Fb]=hex8_hex20(E,V,{},Fb);
+    meshStruct.elements=E;
+    meshStruct.nodes=V;
+    meshStruct.Fb=Fb;
+end
+
 %% 
 % Plotting model boundary surfaces and a cut view
 
@@ -97,7 +107,10 @@ hFig=cFigure;
 
 subplot(1,2,1); hold on; 
 title('Model boundary surfaces and labels','FontSize',fontSize);
-gpatch(Fb,V,Cb,'k',faceAlpha1); 
+hp=gpatch(Fb,V,Cb,'k',faceAlpha1); 
+hp.Marker='.';
+hp.MarkerSize=markerSize2;
+
 colormap(gjet(6)); icolorbar;
 axisGeom(gca,fontSize);
 
@@ -158,7 +171,6 @@ febio_spec.Module.ATTR.type='solid';
 
 %Control section
 febio_spec.Control.analysis.ATTR.type='static';
-febio_spec.Control.title='Cube analysis';
 febio_spec.Control.time_steps=numTimeSteps;
 febio_spec.Control.step_size=1/numTimeSteps;
 febio_spec.Control.time_stepper.dtmin=dtmin;
@@ -184,7 +196,7 @@ febio_spec.Geometry.Nodes{1}.node.ATTR.id=(1:size(V,1))'; %The node id's
 febio_spec.Geometry.Nodes{1}.node.VAL=V; %The nodel coordinates
 
 % -> Elements
-febio_spec.Geometry.Elements{1}.ATTR.type='hex8'; %Element type of this set
+febio_spec.Geometry.Elements{1}.ATTR.type=elementType; %Element type of this set
 febio_spec.Geometry.Elements{1}.ATTR.mat=1; %material index for this set 
 febio_spec.Geometry.Elements{1}.ATTR.name='Beam'; %Name of the element set
 febio_spec.Geometry.Elements{1}.elem.ATTR.id=(1:1:size(E,1))'; %Element id's
@@ -212,19 +224,19 @@ febio_spec.Loads.nodal_load{1}.ATTR.bc='x';
 febio_spec.Loads.nodal_load{1}.ATTR.node_set=febio_spec.Geometry.NodeSet{2}.ATTR.name;
 febio_spec.Loads.nodal_load{1}.scale.ATTR.lc=1;
 febio_spec.Loads.nodal_load{1}.scale.VAL=1;
-febio_spec.Loads.nodal_load{1}.value=appliedForce(1);
+febio_spec.Loads.nodal_load{1}.value=appliedForce(1)/numel(bcPrescribeList);
 
 febio_spec.Loads.nodal_load{2}.ATTR.bc='y';
 febio_spec.Loads.nodal_load{2}.ATTR.node_set=febio_spec.Geometry.NodeSet{2}.ATTR.name;
 febio_spec.Loads.nodal_load{2}.scale.ATTR.lc=1;
 febio_spec.Loads.nodal_load{2}.scale.VAL=1;
-febio_spec.Loads.nodal_load{2}.value=appliedForce(2);
+febio_spec.Loads.nodal_load{2}.value=appliedForce(2)/numel(bcPrescribeList);
 
 febio_spec.Loads.nodal_load{3}.ATTR.bc='z';
 febio_spec.Loads.nodal_load{3}.ATTR.node_set=febio_spec.Geometry.NodeSet{2}.ATTR.name;
 febio_spec.Loads.nodal_load{3}.scale.ATTR.lc=1;
 febio_spec.Loads.nodal_load{3}.scale.VAL=1;
-febio_spec.Loads.nodal_load{3}.value=appliedForce(3);
+febio_spec.Loads.nodal_load{3}.value=appliedForce(3)/numel(bcPrescribeList);
 
 %Output section 
 % -> log file
@@ -297,6 +309,9 @@ if runFlag==1 %i.e. a succesful run
     hf=cFigure; %Open figure  
     gtitle([febioFebFileNamePart,': Press play to animate']);
     hp=gpatch(Fb,V_def,CF,'k',1); %Add graphics object to animate
+    hp.Marker='.';
+    hp.MarkerSize=markerSize2;
+
     gpatch(Fb,V,0.5*ones(1,3),'none',0.25); %A static graphics object
     
     axisGeom(gca,fontSize); 

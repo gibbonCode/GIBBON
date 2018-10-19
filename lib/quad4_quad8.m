@@ -1,37 +1,36 @@
-function [varargout]=tri3_tri6(varargin)
+function [varargout]=quad4_quad8(varargin)
 
-% function [TRI6,V6,VX6C]=tri3_tri6(TRI3,V3,VXC)
+% function [QUAD8,V8,VX8C]=quad4_quad8(QUAD4,V4,VXC)
 %
-% This function converts 3 node (e.g. linear) triangular elements into 6
-% node (e.g. quadratic) triangular elements compatible with FEBio.
+% This function converts 4 node (e.g. linear) quadrilaterial elements into
+% 8 node (e.g. quadratic) quadrilateral elements compatible with FEBio.
 %
 % Kevin Mattheus Moerman
 % gibbon.toolbox@gmail.com
-% 2013/09/12
-% 2018/06/26
-% 2018/10/19 Altered so merging nodes is no longer required 
+%
+% 2018/10/19 Created based on tri3_tri6
 %----------------------------------------------------------------------
 %%
 
 switch nargin
     case 2
-        TRI3=varargin{1};
-        V3=varargin{2};
+        QUAD4=varargin{1};
+        V4=varargin{2};
         VXC={};
     case 3
-        TRI3=varargin{1};
-        V3=varargin{2};
+        QUAD4=varargin{1};
+        V4=varargin{2};
         VXC=varargin{3};
 end
 
 %%
 
-E=[TRI3(:,[1 2]); TRI3(:,[2 3]);  TRI3(:,[3 1])]; %Edges matrix
+E=[QUAD4(:,[1 2]); QUAD4(:,[2 3]); QUAD4(:,[3 4]); QUAD4(:,[4 1])]; %Edges matrix
 Es=sort(E,2); %Sorted edges matrix
-[~,ind1,~]=unique(Es,'rows');
-E=E(ind1,:);
+[~,ind1,~]=unique(Es,'rows'); %Indices for unique edges
+E=E(ind1,:); %The unique esges
 
-numPoints = size(V3,1);
+numPoints = size(V4,1);
 numEdges = size(E,1);
 
 % Get indices of the three edges associated with each face
@@ -39,42 +38,45 @@ A = sparse(E(:,1),E(:,2),(1:numEdges)+numPoints,numPoints,numPoints,numEdges);
 A = max(A,A'); %Copy symmetric
 
 %Indices for A matrix
-indA_12=TRI3(:,1)+(TRI3(:,2)-1)*numPoints;
-indA_23=TRI3(:,2)+(TRI3(:,3)-1)*numPoints;
-indA_31=TRI3(:,3)+(TRI3(:,1)-1)*numPoints;
+indA_12=QUAD4(:,1)+(QUAD4(:,2)-1)*numPoints;
+indA_23=QUAD4(:,2)+(QUAD4(:,3)-1)*numPoints;
+indA_34=QUAD4(:,3)+(QUAD4(:,4)-1)*numPoints;
+indA_41=QUAD4(:,4)+(QUAD4(:,1)-1)*numPoints;
 
 %Get indices for vertex array
 indV_12=full(A(indA_12));
 indV_23=full(A(indA_23));
-indV_31=full(A(indA_31));
+indV_34=full(A(indA_34));
+indV_41=full(A(indA_41));
 
 %Create faces array
-TRI6=[TRI3(:,1) TRI3(:,2) TRI3(:,3) indV_12 indV_23 indV_31];
+QUAD8=[QUAD4(:,1) QUAD4(:,2) QUAD4(:,3) QUAD4(:,4) indV_12 indV_23 indV_34 indV_41];
 
 %Create vertex array
-Vn=0.5*(V3(E(:,1),:)+V3(E(:,2),:)); %new mid-edge points
-V6 = [V3; Vn]; %Join point sets
+Vn=0.5*(V4(E(:,1),:)+V4(E(:,2),:)); %new mid-edge points
+V8 = [V4; Vn]; %Join point sets
 
 %%
-varargout{1}=TRI6;
-varargout{2}=V6;
+varargout{1}=QUAD8;
+varargout{2}=V8;
 
 if nargout==3
-    %Derive VX6C
+    %Derive VX8C
     if ~isempty(VXC)
-        VX6C=VXC;
+        VX8C=VXC;
         for q=1:1:numel(VXC)
             VX=VXC{q};
-            VX_1_3=VX;
-            VX_4_6=0.5*(VX(E(:,1),:)+VX(E(:,2),:)); %new mid-edge data
-            VX6=[VX_1_3; VX_4_6];
-            VX6C{q}=VX6;
+            VX_1_4=VX;
+            VX_5_8=0.5*(VX(E(:,1),:)+VX(E(:,2),:)); %new mid-edge data
+            VX8=[VX_1_4; VX_5_8];
+            VX8C{q}=VX8;
         end
     else
-        VX6C={};
+        VX8C={};
     end
-    varargout{3}=VX6C;
+    varargout{3}=VX8C;
 end
+
 %%
 % _*GIBBON footer text*_
 %

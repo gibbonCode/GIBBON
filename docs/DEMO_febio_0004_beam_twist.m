@@ -13,7 +13,7 @@
 % * febio, FEBio
 % * beam torsion twist loading
 % * prescribed displacement boundary condition
-% * hexahedral elements, hex8
+% * hexahedral elements, hex8, hex20
 % * beam, rectangular
 % * static, solid, multi-step
 % * hyperelastic, Ogden
@@ -28,6 +28,7 @@ clear; close all; clc;
 fontSize=20;
 faceAlpha1=0.8;
 markerSize=40;
+markerSize2=20;
 lineWidth=3;
 
 %% Control parameters
@@ -48,18 +49,20 @@ beamWidth=10;
 sampleWidth=beamWidth; %Width 
 sampleThickness=4*beamWidth; %Thickness 
 sampleHeight=beamWidth; %Height
-pointSpacings=2*ones(1,3); %Desired point spacing between nodes
+pointSpacings=3*ones(1,3); %Desired point spacing between nodes
 numElementsWidth=round(sampleWidth/pointSpacings(1)); %Number of elemens in dir 1
 numElementsThickness=round(sampleThickness/pointSpacings(2)); %Number of elemens in dir 2
 numElementsHeight=round(sampleHeight/pointSpacings(3)); %Number of elemens in dir 3
 
+elementType='hex20'; %'hex8'
+
 %Define applied torsion angle
-alphaRotTotal=2*pi;%0.5*pi; %Total twist angle
+alphaRotTotal=3*pi;%0.5*pi; %Total twist angle
 numSteps=50; %Number of steps
 
 %Material parameter set
 c1=1e-3; %Shear-modulus-like parameter
-m1=8; %Material parameter setting degree of non-linearity
+m1=2; %Material parameter setting degree of non-linearity
 k_factor=1e2; %Bulk modulus factor 
 k=c1*k_factor; %Bulk modulus
 
@@ -68,7 +71,7 @@ numTimeSteps=1; %Number of time steps desired
 max_refs=25; %Max reforms
 max_ups=0; %Set to zero to use full-Newton iterations
 opt_iter=10; %Optimum number of iterations
-max_retries=5; %Maximum number of retires
+max_retries=10; %Maximum number of retires
 dtmin=(1/numTimeSteps)/100; %Minimum time step size
 dtmax=1/numTimeSteps; %Maximum time step size
 
@@ -91,6 +94,13 @@ Fb=meshStruct.facesBoundary; %The boundary faces
 Cb=meshStruct.boundaryMarker; %The "colors" or labels for the boundary faces
 elementMaterialIndices=ones(size(E,1),1); %Element material indices
 
+if strcmp(elementType,'hex20')
+    [E,V,~,Fb]=hex8_hex20(E,V,{},Fb);
+    meshStruct.elements=E;
+    meshStruct.nodes=V;
+    meshStruct.Fb=Fb;
+end
+
 %% 
 % Plotting model boundary surfaces and a cut view
 
@@ -98,7 +108,10 @@ hFig=cFigure;
 
 subplot(1,2,1); hold on; 
 title('Model boundary surfaces and labels','FontSize',fontSize);
-gpatch(Fb,V,Cb,'k',faceAlpha1); 
+hp=gpatch(Fb,V,Cb,'k',faceAlpha1); 
+hp.Marker='.';
+hp.MarkerSize=markerSize2;
+
 colormap(gjet(6)); icolorbar;
 axisGeom(gca,fontSize);
 
@@ -196,7 +209,7 @@ febio_spec.Geometry.Nodes{1}.node.ATTR.id=(1:size(V,1))'; %The node id's
 febio_spec.Geometry.Nodes{1}.node.VAL=V; %The nodel coordinates
 
 % -> Elements
-febio_spec.Geometry.Elements{1}.ATTR.type='hex8'; %Element type of this set
+febio_spec.Geometry.Elements{1}.ATTR.type=elementType; %Element type of this set
 febio_spec.Geometry.Elements{1}.ATTR.mat=1; %material index for this set 
 febio_spec.Geometry.Elements{1}.ATTR.name='Beam'; %Name of the element set
 febio_spec.Geometry.Elements{1}.elem.ATTR.id=(1:1:size(E,1))'; %Element id's
@@ -315,34 +328,38 @@ if runFlag==1 %i.e. a succesful run
     N_disp_mat_n=zeros(sizImport);
     N_disp_mat_n(:,:,2:end)=N_disp_mat;
     N_disp_mat=N_disp_mat_n;
-    DN=N_disp_mat(:,:,end);
-    DN_magnitude=sqrt(sum(DN(:,3).^2,2));
-    V_def=V+DN;
-    [CF]=vertexToFaceMeasure(Fb,DN_magnitude);
     
+    displacementMagnitude_mat=squeeze(sqrt(sum(N_disp_mat.^2,2)));
+        
+    V_def=V+N_disp_mat(:,:,end);
+     
     %% 
     % Plotting the simulated results using |anim8| to visualize and animate
     % deformations 
+    [CF]=vertexToFaceMeasure(Fb,displacementMagnitude_mat(:,end));
     
     % Create basic view and store graphics handle to initiate animation
     hf=cFigure; %Open figure  
     gtitle([febioFebFileNamePart,': Press play to animate']);
     hp=gpatch(Fb,V_def,CF,'k',1); %Add graphics object to animate
+    hp.Marker='.';
+    hp.MarkerSize=markerSize2;
+    
     gpatch(Fb,V,0.5*ones(1,3),'none',0.25); %A static graphics object
     
     axisGeom(gca,fontSize); 
     colormap(gjet(250)); colorbar;
-    caxis([0 max(DN_magnitude)]);    
+    caxis([0 max(displacementMagnitude_mat(:))]);    
     axis([min(V_def(:,1)) max(V_def(:,1)) min(V_def(:,2)) max(V_def(:,2)) min(V_def(:,3)) max(V_def(:,3))]); %Set axis limits statically
     camlight headlight;        
-        
+    
     % Set up animation features
     animStruct.Time=time_mat; %The time vector    
-    for qt=1:1:size(N_disp_mat,3) %Loop over time increments        
-        DN=N_disp_mat(:,:,qt); %Current displacement
-        DN_magnitude=sqrt(sum(DN.^2,2)); %Current displacement magnitude
-        V_def=V+DN; %Current nodal coordinates
-        [CF]=vertexToFaceMeasure(Fb,DN_magnitude); %Current color data to use
+    for qt=1:1:size(N_disp_mat,3) %Loop over time increments       
+        
+        V_def=V+N_disp_mat(:,:,qt);
+        
+        [CF]=vertexToFaceMeasure(Fb,displacementMagnitude_mat(:,qt));
         
         %Set entries in animation structure
         animStruct.Handles{qt}=[hp hp]; %Handles of objects to animate
