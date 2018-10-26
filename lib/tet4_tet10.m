@@ -1,6 +1,6 @@
 function [varargout]=tet4_tet10(varargin)
 
-% function [E_tet10,V_tet10,V_tet10_cell,Fb_tet10,S]=tet4_tet10(E_tet4,V_tet4,V_tet4_cell,Fb_tet4)
+% function [E_tet10,V_tet10,V_tet10_cell,Fb_tet10,Fb_tet10_tri6]=tet4_tet10(E_tet4,V_tet4,V_tet4_cell,Fb_tet4)
 % ------------------------------------------------------------------------
 % This function converts 4 node (e.g. linear) tetrahedral elements into 10
 % node (e.g. quadratic) tetrahedral elements compatible with FEBio. 
@@ -10,7 +10,7 @@ function [varargout]=tet4_tet10(varargin)
 % varargout{2}=V_tet10;
 % varargout{3}=V_tet10_cell;
 % varargout{4}=Fb_tet10;
-% varargout{5}=S;
+% varargout{5}=Fb_tet10_tri6;
 %
 %
 % Kevin Mattheus Moerman
@@ -73,8 +73,6 @@ indTet10_new=reshape(ind2,size(edgeIndexMatrix));
 %Create unique point index matrices
 [indMatrix_1_uni,indMatrix_2_uni]=ind2sub(matVirtSize,edgeIndexUni);
 
-S = sparse(indMatrix_1_uni,indMatrix_2_uni,ind2(ind1),matVirtSize(1),matVirtSize(2),numel(ind1));
-
 E_tet10=[E_tet4 indTet10_new+size(V_tet4,1)];
 
 %% Create and add new coordinates
@@ -96,34 +94,39 @@ else
     V_tet10_cell={};
 end
 
-%% Process boundary faces
-
-if ~isempty(Fb_tet4)    
-    %Edges matrix
-    indMatrix_1=[Fb_tet4(:,1) Fb_tet4(:,2) Fb_tet4(:,3)];
-    indMatrix_2=[Fb_tet4(:,2) Fb_tet4(:,3) Fb_tet4(:,1)];
-    
-    %3D edges matrix, first layer, first points, second layer, second points
-    edgeMatrix=indMatrix_1;
-    edgeMatrix(:,:,2)=indMatrix_2;
-    edgeMatrix=sort(edgeMatrix,3);
-    
-    edgeIndexMatrix=sub2ind(matVirtSize,edgeMatrix(:,:,1),edgeMatrix(:,:,2));
-    
-    indTet10_new=full(S(edgeIndexMatrix));
-    
-    Fb_tet10=[Fb_tet4 indTet10_new+size(V_tet4,1)];
-    Fb_tet10=Fb_tet10(:,[1 4 2 5 3 6]);
-else
-    Fb_tet10=[];
-end
-
 %% Compose output
 varargout{1}=E_tet10;
 varargout{2}=V_tet10;
 varargout{3}=V_tet10_cell;
-varargout{4}=Fb_tet10;
-varargout{5}=S;   
+
+if nargout>3
+    if ~isempty(Fb_tet4)
+        
+        S = sparse(indMatrix_1_uni,indMatrix_2_uni,ind2(ind1),matVirtSize(1),matVirtSize(2),numel(ind1));
+        
+        %Edges matrix
+        indMatrix_1=[Fb_tet4(:,1) Fb_tet4(:,2) Fb_tet4(:,3)];
+        indMatrix_2=[Fb_tet4(:,2) Fb_tet4(:,3) Fb_tet4(:,1)];
+        
+        %3D edges matrix, first layer, first points, second layer, second points
+        edgeMatrix=indMatrix_1;
+        edgeMatrix(:,:,2)=indMatrix_2;
+        edgeMatrix=sort(edgeMatrix,3);
+        
+        edgeIndexMatrix=sub2ind(matVirtSize,edgeMatrix(:,:,1),edgeMatrix(:,:,2));
+        
+        indTet10_new=full(S(edgeIndexMatrix));
+        
+        Fb_tet10_tri6=[Fb_tet4 indTet10_new+size(V_tet4,1)];
+        Fb_tet10=Fb_tet10_tri6(:,[1 4 2 5 3 6]);
+    else
+        Fb_tet10=[];
+        Fb_tet10_tri6=[];
+    end
+    varargout{4}=Fb_tet10;
+    varargout{5}=Fb_tet10_tri6;
+end
+
  
 %% 
 % _*GIBBON footer text*_ 

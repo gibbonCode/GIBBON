@@ -2,7 +2,7 @@
 % Below is a demonstration of the features of the |hex8_hex20| function
 
 %% Syntax
-% |[E_HEX20,V_HEX20,V_HEX20_cell,Fb_HEX20,S]=hex8_hex20(E_HEX8,V_HEX8,V_HEX8_cell,Fb_HEX8);|
+% |[E_HEX20,V_HEX20,V_HEX20_cell,Fb_HEX20,Fb_HEX20_QUAD8]=hex8_hex20(E_HEX8,V_HEX8,V_HEX8_cell,Fb_HEX8);|
 
 %% Description
 % The |hex8_hex20| converts 4-node tetrahedral elements to 10-node

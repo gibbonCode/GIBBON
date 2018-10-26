@@ -2,7 +2,7 @@
 % Below is a demonstration of the features of the |tet4_tet10| function
 
 %% Syntax
-% |[E_tet10,V_tet10,V_tet10_cell,Fb_tet10,S]=tet4_tet10(E_tet4,V_tet4,V_tet4_cell,Fb_tet4);|
+% |[E_tet10,V_tet10,V_tet10_cell,Fb_tet10,Fb_tet10_tri6]=tet4_tet10(E_tet4,V_tet4,V_tet4_cell,Fb_tet4);|
 
 %% Description
 % The |tet4_tet10| converts 4-node tetrahedral elements to 10-node

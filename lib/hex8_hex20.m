@@ -66,8 +66,6 @@ indhex20_new=reshape(ind2,size(edgeIndexMatrix));
 %Create unique point index matrices
 [indMatrix_1_uni,indMatrix_2_uni]=ind2sub(matVirtSize,edgeIndexUni);
 
-S = sparse(indMatrix_1_uni,indMatrix_2_uni,ind2(ind1),matVirtSize(1),matVirtSize(2),numel(ind1));
-
 E_hex20=[E_hex8 indhex20_new+size(V_hex8,1)];
 
 %% Create and add new coordinates
@@ -89,36 +87,43 @@ else
     V_hex20_cell={};
 end
 
-%% Process boundary faces
-
-if ~isempty(Fb_hex8)    
-    %Edges matrix
-    indMatrix_1=[Fb_hex8(:,1) Fb_hex8(:,2) Fb_hex8(:,3) Fb_hex8(:,4)];
-    indMatrix_2=[Fb_hex8(:,2) Fb_hex8(:,3) Fb_hex8(:,4) Fb_hex8(:,1)];
-    
-    %3D edges matrix, first layer, first points, second layer, second points
-    edgeMatrix=indMatrix_1;
-    edgeMatrix(:,:,2)=indMatrix_2;
-    edgeMatrix=sort(edgeMatrix,3);
-    
-    edgeIndexMatrix=sub2ind(matVirtSize,edgeMatrix(:,:,1),edgeMatrix(:,:,2));
-
-    indhex20_new=full(S(edgeIndexMatrix));
-    
-    Fb_hex20=[Fb_hex8 indhex20_new+size(V_hex8,1)];
-    Fb_hex20=Fb_hex20(:,[1 5 2 6 3 7 4 8]);
-else
-    Fb_hex20=[];
-end
 
 %% Compose output
 varargout{1}=E_hex20;
 varargout{2}=V_hex20;
 varargout{3}=V_hex20_cell;
-varargout{4}=Fb_hex20;
-varargout{5}=S;   
- 
-%% 
+
+if nargout>3
+    
+    % Process boundary faces
+    if ~isempty(Fb_hex8)
+        
+        S = sparse(indMatrix_1_uni,indMatrix_2_uni,ind2(ind1),matVirtSize(1),matVirtSize(2),numel(ind1));
+        
+        %Edges matrix
+        indMatrix_1=[Fb_hex8(:,1) Fb_hex8(:,2) Fb_hex8(:,3) Fb_hex8(:,4)];
+        indMatrix_2=[Fb_hex8(:,2) Fb_hex8(:,3) Fb_hex8(:,4) Fb_hex8(:,1)];
+        
+        %3D edges matrix, first layer, first points, second layer, second points
+        edgeMatrix=indMatrix_1;
+        edgeMatrix(:,:,2)=indMatrix_2;
+        edgeMatrix=sort(edgeMatrix,3);
+        
+        edgeIndexMatrix=sub2ind(matVirtSize,edgeMatrix(:,:,1),edgeMatrix(:,:,2));
+        
+        indhex20_new=full(S(edgeIndexMatrix));
+        
+        Fb_hex20_quad8=[Fb_hex8 indhex20_new+size(V_hex8,1)];
+        Fb_hex20=Fb_hex20_quad8(:,[1 5 2 6 3 7 4 8]);
+    else
+        Fb_hex20_quad8=[];
+        Fb_hex20=[];
+    end
+    varargout{4}=Fb_hex20;
+    varargout{5}=Fb_hex20_quad8;
+end
+
+%%
 % _*GIBBON footer text*_ 
 % 
 % License: <https://github.com/gibbonCode/GIBBON/blob/master/LICENSE>

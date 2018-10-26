@@ -204,15 +204,18 @@ else
     
     %% CONSTRAINED SMOOTHENING OF THE MESH
     
-    TR = triangulation(F,V);
-    boundEdges = freeBoundary(TR);
-    boundaryInd=unique(boundEdges(:));
-    
-    smoothPar.LambdaSmooth=0.5;
-    smoothPar.n=250;
-    smoothPar.Tolerance=0.01;
-    smoothPar.RigidConstraints=boundaryInd;
-    [V]=tesSmooth(F,V,[],smoothPar);
+%     switch gridType
+%         case 'tri'
+            TR = triangulation(F,V);
+            boundEdges = freeBoundary(TR);
+            boundaryInd=unique(boundEdges(:));
+            
+            smoothPar.LambdaSmooth=0.5;
+            smoothPar.n=250;
+            smoothPar.Tolerance=0.01;
+            smoothPar.RigidConstraints=boundaryInd;
+            [V]=tesSmooth(F,V,[],smoothPar);
+%     end
     
     %% PLOTTING
     if plotOn==1
