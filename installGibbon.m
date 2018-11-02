@@ -118,9 +118,9 @@ hTextStatement.String='Done adding toolbox paths';
 drawnow;
 
 %% Add 3rd party paths
-hTextStatement.String='Please provide 3rd party package locations.';
+hTextStatement.String='Please provide 3rd party package locations. Leave blank if associated features are not needed.';
 
-hTextInfoStringDefault='Full path to FEBio excutable (leave blank if not needed):';
+hTextInfoStringDefault='Full path to FEBio excutable, e.g. /home/febio-2.7.1/bin/febio2.lnx64 (or FEBio2.exe for windows):';
 
 hTextInfo1 = uicontrol(hf,'Style','text','String',hTextInfoStringDefault,...
     'Position',[W hf.Position(4)-W*3 round(hf.Position(3))-W*2 round(W/1.5)],...
@@ -130,9 +130,9 @@ FEBioPath=getFEBioPath;
 
 if isempty(FEBioPath)
     if ispc
-        FEBioPath='C:\Program Files\febio-2.7.1\bin\FEBio2.exe';
+        FEBioPath='C:\Program Files\febio-2.8.3\bin\FEBio2.exe';
     else
-        FEBioPath='/home/febio-2.7.1/bin/febio2.lnx64';
+        FEBioPath='/home/febio-2.8.3/bin/febio2.lnx64';
     end
 end
 
