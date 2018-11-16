@@ -103,10 +103,16 @@ abaqus_spec.Assembly.Nset{6}.VAL=[1:1:8];
 
 %% The material section
 %
+% *Material, name=Material-1
+% *Hyperelastic, neo hooke
+%  0.03,1.
 
-abaqus_spec.Material.ATTR.name='Elastic';
-abaqus_spec.Material.Elastic=[0.5 0.49];
+abaqus_spec.Material.ATTR.name='Neo-Hooke';
+abaqus_spec.Material.Hyperelastic.VAL=[0.03 1];
+abaqus_spec.Material.Hyperelastic.ATTR.neo_hooke='';
 
+% abaqus_spec.Material.ATTR.name='Elastic';
+% abaqus_spec.Material.Elastic=[0.5 0.49];
 %% The step section
 %
 
@@ -120,6 +126,15 @@ abaqus_spec.Step.Boundary{2}.VAL={repmat({'origin'},3,1) [1 1; 2 2; 3 3]};
 abaqus_spec.Step.Boundary{3}.VAL={'Set-3',[1,1]};
 abaqus_spec.Step.Boundary{4}.VAL={'Set-4',[2,2]};
 abaqus_spec.Step.Boundary{5}.VAL={'Set-5',[3,3]};
+
+% Loads
+% ** LOADS
+% ** 
+% ** Name: Load-1   Type: Pressure
+% *Dsload
+% Surf-1, P, 0.00533
+% ** 
+abaqus_spec.Step.Dsload{1}.VAL={'Surf-1','P',0.00533};
 
 %Output
 abaqus_spec.Step.Restart.ATTR.write='';

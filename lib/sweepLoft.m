@@ -20,35 +20,61 @@ function [varargout]=sweepLoft(varargin)
 %
 % 2016/08/01 Created
 % 2017/06/27 Fixed bug in relation to compensatory/corrective rotation
+% 2018/11/07 Updated so users have the option of using an input structure instead
+% 2018/11/07 Added close section option, enabling open or closed sections
+% sweeps
 %------------------------------------------------------------------------
 
 %% Parse input
 
-if nargin<5
-    error('Insufficient input parameters');
-end
-
-V1=varargin{1};
-V2=varargin{2};
-n1=varargin{3};
-n2=varargin{4};
-Vg=varargin{5};
-numSteps=[];
-numTwist=0;
-plotOn=0;
+defaultOptionStruct.numSteps=[];
+defaultOptionStruct.numTwist=0;
+defaultOptionStruct.plotOn=0;
+defaultOptionStruct.closeSection=1; 
 
 switch nargin
-    case 6
+    case 1 %Assume an input structure is used
+        optionStruct=varargin{1};
+        
+        %Check optionStruct against default
+        [optionStruct]=structComplete(optionStruct,defaultOptionStruct,1); %Complement provided with default if missing or empty
+        
+        V1=optionStruct.V1;
+        V2=optionStruct.V2;
+        n1=optionStruct.n1;
+        n2=optionStruct.n2;
+        Vg=optionStruct.Vg;
+        numSteps=optionStruct.numSteps;
+        numTwist=optionStruct.numTwist;
+        plotOn=optionStruct.plotOn;
+        closeSection=optionStruct.closeSection;
+        
+    otherwise %Assume inputs are provided seperately
+        if nargin<5
+            error('Insufficient input parameters');
+        end        
+        V1=varargin{1};
+        V2=varargin{2};
+        n1=varargin{3};
+        n2=varargin{4};
         Vg=varargin{5};
-        numSteps=varargin{6};
-    case 7
-        Vg=varargin{5};
-        numSteps=varargin{6};
-        numTwist=varargin{7};
-    case 8
-        numSteps=varargin{6};
-        numTwist=varargin{7};
-        plotOn=varargin{8};
+        numSteps=defaultOptionStruct.numSteps;
+        numTwist=defaultOptionStruct.numTwist;
+        plotOn=defaultOptionStruct.plotOn;     
+        closeSection=defaultOptionStruct.closeSection;
+        switch nargin
+            case 6
+                Vg=varargin{5};
+                numSteps=varargin{6};
+            case 7
+                Vg=varargin{5};
+                numSteps=varargin{6};
+                numTwist=varargin{7};
+            case 8
+                numSteps=varargin{6};
+                numTwist=varargin{7};
+                plotOn=varargin{8};
+        end
 end
 
 if isempty(numSteps)
@@ -122,7 +148,7 @@ for q=2:size(Vg,1)
     a=U(q-1,:);
     b=U(q,:);
     
-    theta=real(acos(dot(a,b))); %Complex if dot product is out of range [-1.1] due to precission issues    
+    theta=real(acos(dot(a,b))); %Complex if dot product is out of range [-1.1] due to precission issues
     w=vecnormalize(cross(b,a));
     
     if norm(w)>0.5
@@ -198,13 +224,13 @@ end
 %%
 W=repmat(w(:)',[numSteps,1]);
 wt=w;
-for q=numSteps-1:-1:1        
-    mean_V_now=mean([X(q,:)' Y(q,:)' Z(q,:)'],1);        
-    wt=(wt'*R_curve(:,:,q+1)'*R_curve(:,:,q))';    
+for q=numSteps-1:-1:1
+    mean_V_now=mean([X(q,:)' Y(q,:)' Z(q,:)'],1);
+    wt=(wt'*R_curve(:,:,q+1)'*R_curve(:,:,q))';
     if plotOn==1
-        quiverVec(mean_V_now,wt',stepSize,'k'); drawnow;        
-    end    
-    W(q,:)=wt(:)';    
+        quiverVec(mean_V_now,wt',stepSize,'k'); drawnow;
+    end
+    W(q,:)=wt(:)';
 end
 
 %%
@@ -236,7 +262,7 @@ for q=1:1:size(Vg,1)
     
     [Rc]=vecAngle2Rot(theta_step(q),W(q,:));
     Vn=(Rc'*Vn')';
-
+    
     if numTwist>0
         [Rc]=vecAngle2Rot(theta_step_twist(q),U(q,:));
         Vn=(Rc'*Vn')';
@@ -273,15 +299,16 @@ C=c(:,ones(1,size(Z,2)));
 %Create quad patch data
 [F,V,C] = surf2patch(X,Y,Z,C);
 
-%Close patch if required
-I=[(2:size(Z,1))' (2:size(Z,1))' (1:size(Z,1)-1)' (1:size(Z,1)-1)'];
-J=[ones(size(Z,1)-1,1) size(Z,2).*ones(size(Z,1)-1,1) size(Z,2).*ones(size(Z,1)-1,1) ones(size(Z,1)-1,1)];
-F_sub=sub2ind(size(Z),I,J);
-F=[F;F_sub];
-
-[C]=vertexToFaceMeasure(F,C);
-C(end-size(F_sub,1):end,:)=C(end-size(F_sub,1):end,:)+0.5;
-C=round(C);
+%Close section if required
+if closeSection==1
+    I=[(2:size(Z,1))' (2:size(Z,1))' (1:size(Z,1)-1)' (1:size(Z,1)-1)'];
+    J=[ones(size(Z,1)-1,1) size(Z,2).*ones(size(Z,1)-1,1) size(Z,2).*ones(size(Z,1)-1,1) ones(size(Z,1)-1,1)];
+    F_sub=sub2ind(size(Z),I,J);
+    F=[F;F_sub];    
+    C(end-size(F_sub,1):end,:)=C(end-size(F_sub,1):end,:)+0.5;   
+end
+[C]=vertexToFaceMeasure(F,C); %Convert vertex colors to face colors
+C=round(C)-1;
 
 if plotOn==1
     subplot(1,3,3);
@@ -290,16 +317,16 @@ if plotOn==1
     camlight headlight;
     drawnow;
 end
- 
+
 %%
 
-varargout{1}=F; 
-varargout{2}=V; 
+varargout{1}=F;
+varargout{2}=V;
 switch nargout
     case 3
         varargout{3}=C;
     case 4
-        arargout{3}=C;
+        varargout{3}=C;
         
         S.X=X;
         S.Y=Y;
@@ -307,26 +334,26 @@ switch nargout
         varargout{4}=S;
 end
 
-%% 
-% _*GIBBON footer text*_ 
-% 
+%%
+% _*GIBBON footer text*_
+%
 % License: <https://github.com/gibbonCode/GIBBON/blob/master/LICENSE>
-% 
+%
 % GIBBON: The Geometry and Image-based Bioengineering add-On. A toolbox for
 % image segmentation, image-based modeling, meshing, and finite element
 % analysis.
-% 
+%
 % Copyright (C) 2018  Kevin Mattheus Moerman
-% 
+%
 % This program is free software: you can redistribute it and/or modify
 % it under the terms of the GNU General Public License as published by
 % the Free Software Foundation, either version 3 of the License, or
 % (at your option) any later version.
-% 
+%
 % This program is distributed in the hope that it will be useful,
 % but WITHOUT ANY WARRANTY; without even the implied warranty of
 % MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 % GNU General Public License for more details.
-% 
+%
 % You should have received a copy of the GNU General Public License
 % along with this program.  If not, see <http://www.gnu.org/licenses/>.

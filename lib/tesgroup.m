@@ -1,6 +1,6 @@
-function varargout=tesgroup(F)
+function varargout=tesgroup(varargin)
 
-% function [G,G_iter]=tesgroup(F)
+% function [G,G_iter]=tesgroup(F,indExclude)
 % ------------------------------------------------------------------------
 %
 % This function finds groups in the tesselation defined by F. F may
@@ -11,39 +11,33 @@ function varargout=tesgroup(F)
 % size(F,1) rows and "number of groups" columns. Each column represents a
 % group and ones appear in the column for each face belonging to the group.
 %
-% % %EXAMPLE:
-% clear all; close all; clc;
-% 
-% 
-% %% Simulating some isosurface data
-% [X,Y,Z]=meshgrid(linspace(-5,5,35));
-% phi=(1+sqrt(5))/2;
-% M=2 - (cos(X + phi*Y) + cos(X - phi*Y) + cos(Y + phi*Z) + cos(Y - phi*Z) + cos(Z - phi*X) + cos(Z + phi*X));
-% M=M./max(M(:)); 
-% [F,V] = isosurface(X,Y,Z,M,0.1);
-% 
-% %% Normal isosurface plot showing seperate patch objects
-% figure; 
-% h=patch('faces',F,'vertices',V); 
-% set(h,'FaceColor','b','EdgeColor','none','FaceAlpha',0.5);
-% view(3);light; grid on; axis vis3d;
-% 
-% %% Iso surface plots showing grouped patch objects
-% 
-% G=tesgroup(F); %Logic array for patch groups
-% pcolors=jet(size(G,2));
-% figure; 
-% for i=1:1:size(G,2);    
-%     hg=patch('faces',F(G(:,i),:),'vertices',V); %Plotting individual group
-%     set(hg,'FaceColor',pcolors(i,:),'EdgeColor','none','FaceAlpha',0.8);
-% end
-% view(3);light; grid on; axis vis3d;
-% colormap(pcolors); colorbar; caxis([0 size(G,2)]);
 %
 % Kevin Mattheus Moerman
-% kevinmoerman@hotmail.com
-% 15/07/2010
+% gibbon.toolbox@gmail.com
+%
+% 2010/07/15 Created
+% 2018/11/05 Cleaned up some comments
+% 2018/11/05 Added exclude points 
 %------------------------------------------------------------------------
+
+%% Parse input
+
+switch nargin
+    case 1
+        F=varargin{1};
+        indExclude=[];
+    case 2
+        F=varargin{1};
+        indExclude=varargin{2};
+end
+
+%%
+
+if isempty(indExclude)
+    excludeOption=0; 
+else
+    excludeOption=1; 
+end
 
 IND_F=(1:1:size(F,1))';
 IND_F_search=IND_F;
@@ -69,7 +63,13 @@ while done==0
         L = any(ismember(F,v_search), 2);
         IND_F_search(L)=0; %Setting found to zero
     end
-    v_new=F(L,:); 
+    v_new=F(L,:);
+    
+    %Remove exclude points
+    if excludeOption        
+        v_new=v_new(~ismember(v_new,indExclude)); 
+    end
+    
     v_search=unique([v_search; v_new(:)]); %Growing number of search vertices    
     
     G_ind(L&~L_previous)=q;

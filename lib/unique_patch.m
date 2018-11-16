@@ -1,5 +1,25 @@
-function [F_uni,V_uni,C_uni,IND_V,IND_F,F_count]=unique_patch(F,V,C,numDigitKeep)
+function [F_uni,V_uni,C_uni,IND_V,IND_F,F_count]=unique_patch(varargin)
 
+%%
+
+switch nargin
+    case 2
+        F=varargin{1};
+        V=varargin{2};
+        C=[];
+        numDigitKeep=[];
+    case 3
+        F=varargin{1};
+        V=varargin{2};
+        C=varargin{3};
+        numDigitKeep=[];
+    case 4
+        F=varargin{1};
+        V=varargin{2};
+        C=varargin{3};
+        numDigitKeep=varargin{4};
+end
+%%
 numFacesIni=size(F,1);
 
 %Removing unused vertices

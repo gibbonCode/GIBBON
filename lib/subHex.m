@@ -127,15 +127,8 @@ if n>0
                 
                 %% Create vertex array
                 Vn=0.5*(V(edgeMat(:,1),:)+V(edgeMat(:,2),:)); %new mid-edge points
-                Vm=zeros(size(E,1),3);
-                for q=1:1:size(V,2)
-                    X=V(:,q);
-                    if size(E,1)==1
-                        Vm(:,q)=mean(X(E)',2);
-                    else
-                        Vm(:,q)=mean(X(E),2);
-                    end
-                end
+                Vm=patchCentre(E,V); %Mid element nodes
+                
                 Vf=zeros(size(F,1),3);
                 for q=1:1:size(V,2)
                     X=V(:,q);
@@ -258,6 +251,7 @@ if n>0
                 
         end
         
+        %% Override input
         C=repmat(C,[size(Es,1)/size(E,1),1]);
         E=Es;
         V=Vs;

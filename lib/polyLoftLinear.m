@@ -72,8 +72,22 @@ C=c(:,ones(1,size(Z,2)));
 %Create quad patch data
 [F,V,C] = surf2patch(X,Y,Z,C);
 
-indStart=1:numSteps:size(V,1);
+%Get start and end curves
+indStart=1:numSteps:size(V,1); 
 indEnd=numSteps:numSteps:size(V,1);
+
+%Check if indices are consistent with edges
+Eb=patchBoundary(F,V); %Patch edges
+e=indStart(1:2); 
+logicFlip= ~any((Eb(:,1)==e(1)) & (Eb(:,2)==e(2)));
+if logicFlip
+    indStart=flip(indStart); 
+end
+e=indEnd(1:2); 
+logicFlip= ~any((Eb(:,1)==e(1)) & (Eb(:,2)==e(2)));
+if logicFlip
+    indEnd=flip(indEnd); 
+end
 
 %% Close patch if required
 if cPar.closeLoopOpt

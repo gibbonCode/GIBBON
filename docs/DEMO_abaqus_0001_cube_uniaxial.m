@@ -63,20 +63,8 @@ end
 displacementMagnitude=(stretchLoad*sampleHeight)-sampleHeight; %The displacement magnitude
 
 %Material parameter set
-c1=1e-3; %Shear-modulus-like parameter
-m1=6; %Material parameter setting degree of non-linearity
-k_factor=500; %Bulk modulus factor
-k=c1*k_factor; %Bulk modulus
-formulationType='uncoupled'; %coupled
-
-% FEA control settings
-numTimeSteps=10; %Number of time steps desired
-max_refs=25; %Max reforms
-max_ups=0; %Set to zero to use full-Newton iterations
-opt_iter=6; %Optimum number of iterations
-max_retries=5; %Maximum number of retires
-dtmin=(1/numTimeSteps)/100; %Minimum time step size
-dtmax=1/numTimeSteps; %Maximum time step size
+E_youngs=1e-3;
+v_poisson=0.4;
 
 %% Creating model geometry and mesh
 % A box is created with tri-linear hexahedral (hex8) elements using the
@@ -222,7 +210,7 @@ abaqus_spec.Assembly.Nset{5}.VAL=1:1:size(V,1);
 
 %%--> Material
 abaqus_spec.Material.ATTR.name='Elastic';
-abaqus_spec.Material.Elastic=[0.5 0.4];
+abaqus_spec.Material.Elastic=[E_youngs v_poisson];
 
 %%--> Step
 abaqus_spec.Step.ATTR.name='Step-1';
@@ -232,7 +220,7 @@ abaqus_spec.Step.Static=[0.1 1 1e-5 0.1];
 % Boundary
 abaqus_spec.Step.Boundary{1}.VAL={'Set-1',[1,1]};
 abaqus_spec.Step.Boundary{2}.VAL={'Set-2',[2,2]};
-abaqus_spec.Step.Boundary45{3}.VAL={'Set-3',[3,3]};
+abaqus_spec.Step.Boundary{3}.VAL={'Set-3',[3,3]};
 abaqus_spec.Step.Boundary{4}.VAL={'Set-4',[3,3],displacementMagnitude};
 
 %Output

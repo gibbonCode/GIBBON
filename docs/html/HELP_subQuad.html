@@ -6,7 +6,7 @@
    <!--
 This HTML was auto-generated from MATLAB code.
 To make changes, update the MATLAB code and republish this document.
-      --><title>subQuad</title><meta name="generator" content="MATLAB 9.4"><link rel="schema.DC" href="http://purl.org/dc/elements/1.1/"><meta name="DC.date" content="2018-06-25"><meta name="DC.source" content="HELP_subQuad.m"><style type="text/css">
+      --><title>subQuad</title><meta name="generator" content="MATLAB 9.5"><link rel="schema.DC" href="http://purl.org/dc/elements/1.1/"><meta name="DC.date" content="2018-11-06"><meta name="DC.source" content="HELP_subQuad.m"><style type="text/css">
 html,body,div,span,applet,object,iframe,h1,h2,h3,h4,h5,h6,p,blockquote,pre,a,abbr,acronym,address,big,cite,code,del,dfn,em,font,img,ins,kbd,q,s,samp,small,strike,strong,sub,sup,tt,var,b,u,i,center,dl,dt,dd,ol,ul,li,fieldset,form,label,legend,table,caption,tbody,tfoot,thead,tr,th,td{margin:0;padding:0;border:0;outline:0;font-size:100%;vertical-align:baseline;background:transparent}body{line-height:1}ol,ul{list-style:none}blockquote,q{quotes:none}blockquote:before,blockquote:after,q:before,q:after{content:'';content:none}:focus{outine:0}ins{text-decoration:none}del{text-decoration:line-through}table{border-collapse:collapse;border-spacing:0}
 
 html { min-height:100%; margin-bottom:1px; }
@@ -66,7 +66,7 @@ table td { padding:7px 5px; text-align:left; vertical-align:top; border:1px soli
 
 
 
-  </style></head><body><div class="content"><h1>subQuad</h1><!--introduction--><p>Below is a demonstration of the features of the <tt>subQuad</tt> function</p><!--/introduction--><h2>Contents</h2><div><ul><li><a href="#1">Syntax</a></li><li><a href="#2">Description</a></li><li><a href="#3">Examples</a></li><li><a href="#5">Refining a quadrilateral</a></li><li><a href="#6">Refining a cube</a></li><li><a href="#7">Refining quadrilateral surfaces in general</a></li></ul></div><h2 id="1">Syntax</h2><p><tt>[Fs,Vs]=subQuad(F,V,n);</tt></p><h2 id="2">Description</h2><p>The <tt>subQuad</tt> function enables refinement of quadrangulated data</p><h2 id="3">Examples</h2><pre class="codeinput">clear; close <span class="string">all</span>; clc;
+  </style></head><body><div class="content"><h1>subQuad</h1><!--introduction--><p>Below is a demonstration of the features of the <tt>subQuad</tt> function</p><!--/introduction--><h2>Contents</h2><div><ul><li><a href="#1">Syntax</a></li><li><a href="#2">Description</a></li><li><a href="#3">Examples</a></li><li><a href="#5">Refining a quadrilateral</a></li><li><a href="#6">Refining a cube</a></li><li><a href="#7">Refining quadrilateral surfaces in general</a></li><li><a href="#8">Example: Subdeviding in 1 direction by specifying splitMethod</a></li><li><a href="#9">Example: Maintaining face data (e.g. face color)</a></li></ul></div><h2 id="1">Syntax</h2><p><tt>[Fs,Vs]=subQuad(F,V,n);</tt></p><h2 id="2">Description</h2><p>The <tt>subQuad</tt> function enables refinement of quadrangulated data</p><h2 id="3">Examples</h2><pre class="codeinput">clear; close <span class="string">all</span>; clc;
 </pre><p>Plot Settings</p><pre class="codeinput">fontSize=15;
 faceAlpha=1;
 edgeColor=0.2*ones(1,3);
@@ -85,6 +85,7 @@ cFigure;
     subplot(2,2,q); hold <span class="string">on</span>;
     title([num2str(n(q)),<span class="string">' split iterations'</span>],<span class="string">'FontSize'</span>,fontSize);
     gpatch(Fs,Vs,pColors(q,:),<span class="string">'k'</span>);
+<span class="comment">%     patchNormPlot(Fs,Vs);</span>
     plotV(Vs,<span class="string">'k.'</span>,<span class="string">'markerSize'</span>,markerSize2);
     plotV(V,<span class="string">'k.'</span>,<span class="string">'markerSize'</span>,markerSize);
 
@@ -102,13 +103,14 @@ cFigure;
     subplot(2,2,q); hold <span class="string">on</span>;
     title([num2str(n(q)),<span class="string">' split iterations'</span>],<span class="string">'FontSize'</span>,fontSize);
     gpatch(Fs,Vs,pColors(q,:),<span class="string">'k'</span>);
+<span class="comment">%     patchNormPlot(Fs,Vs);</span>
     plotV(Vs,<span class="string">'k.'</span>,<span class="string">'markerSize'</span>,markerSize2);
     plotV(V,<span class="string">'k.'</span>,<span class="string">'markerSize'</span>,markerSize);
     axisGeom(gca,fontSize);
     camlight <span class="string">headlight</span>;
 <span class="keyword">end</span>
 drawnow;
-</pre><img vspace="5" hspace="5" src="HELP_subQuad_02.png" alt=""> <h2 id="7">Refining quadrilateral surfaces in general</h2><pre class="codeinput">[X,Y,Z]=peaks(15);
+</pre><img vspace="5" hspace="5" src="HELP_subQuad_02.png" alt=""> <img vspace="5" hspace="5" src="HELP_subQuad_03.png" alt=""> <h2 id="7">Refining quadrilateral surfaces in general</h2><pre class="codeinput">[X,Y,Z]=peaks(15);
 Z=Z/5;
 [F,V]=surf2patch(X,Y,Z);
 
@@ -121,11 +123,60 @@ cFigure;
     subplot(2,2,q); hold <span class="string">on</span>;
     title([num2str(n(q)),<span class="string">' split iterations'</span>],<span class="string">'FontSize'</span>,fontSize);
     gpatch(Fs,Vs,pColors(q,:),<span class="string">'k'</span>);
+<span class="comment">%     patchNormPlot(Fs,Vs);</span>
     axisGeom(gca,fontSize);
     camlight <span class="string">headlight</span>;
 <span class="keyword">end</span>
 drawnow;
-</pre><img vspace="5" hspace="5" src="HELP_subQuad_03.png" alt=""> <p><img vspace="5" hspace="5" src="gibbVerySmall.gif" alt=""> </p><p><i><b>GIBBON</b></i> <a href="www.gibboncode.org">www.gibboncode.org</a></p><p><i>Kevin Mattheus Moerman</i>, <a href="gibbon.toolbox@gmail.com">gibbon.toolbox@gmail.com</a></p><p><i><b>GIBBON footer text</b></i></p><p>License: <a href="https://github.com/gibbonCode/GIBBON/blob/master/LICENSE">https://github.com/gibbonCode/GIBBON/blob/master/LICENSE</a></p><p>GIBBON: The Geometry and Image-based Bioengineering add-On. A toolbox for image segmentation, image-based modeling, meshing, and finite element analysis.</p><p>Copyright (C) 2018  Kevin Mattheus Moerman</p><p>This program is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.</p><p>This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for more details.</p><p>You should have received a copy of the GNU General Public License along with this program.  If not, see <a href="http://www.gnu.org/licenses/">http://www.gnu.org/licenses/</a>.</p><p class="footer"><br><a href="https://www.mathworks.com/products/matlab/">Published with MATLAB&reg; R2018a</a><br></p></div><!--
+</pre><img vspace="5" hspace="5" src="HELP_subQuad_04.png" alt=""> <img vspace="5" hspace="5" src="HELP_subQuad_05.png" alt=""> <h2 id="8">Example: Subdeviding in 1 direction by specifying splitMethod</h2><pre class="codeinput">V=[0 0 0; 1 0 0; 1 1 0; 0 1 0];
+F=[1 2 3 4];
+
+pColors=gjet(numel(n));
+
+n=2;
+
+cFigure;
+subplot(2,2,1); hold <span class="string">on</span>;
+title(<span class="string">'Original'</span>,<span class="string">'FontSize'</span>,fontSize);
+gpatch(F,V,pColors(1,:),<span class="string">'k'</span>,1,3);
+patchNormPlot(F,V);
+axisGeom(gca,fontSize);
+camlight <span class="string">headlight</span>;
+
+<span class="keyword">for</span> q=1:1:3
+    splitMethod=q;
+    [Fs,Vs]=subQuad(F,V,n,splitMethod);
+    subplot(2,2,q+1); hold <span class="string">on</span>;
+    title([<span class="string">'Refined set method: '</span>,num2str(q)],<span class="string">'FontSize'</span>,fontSize);
+    gpatch(Fs,Vs,pColors(q+1,:),<span class="string">'k'</span>,1,3);
+    patchNormPlot(Fs,Vs);
+    axisGeom(gca,fontSize);
+    camlight <span class="string">headlight</span>;
+<span class="comment">%     view(2);</span>
+<span class="keyword">end</span>
+drawnow;
+</pre><img vspace="5" hspace="5" src="HELP_subQuad_06.png" alt=""> <img vspace="5" hspace="5" src="HELP_subQuad_07.png" alt=""> <h2 id="9">Example: Maintaining face data (e.g. face color)</h2><pre class="codeinput">[X,Y,Z]=peaks(25);
+[F,V,CV]=surf2patch(X,Y,Z,Z);
+C=vertexToFaceMeasure(F,CV);
+</pre><p>Requesting additional output to allow for "book keeping" of face data</p><pre class="codeinput">[Fs,Vs,Css]=subQuad(F,V,1,1);
+</pre><p>The additional output Css contains face indices, i.e. each refined face in Fs belongs to an initial face in F and this mapping is defined in Css. Hence the following operation "picks" out the appropriate color data for each face from the original array.</p><pre class="codeinput">Cs=C(Css); <span class="comment">%Get colors for refined faces from color data of original</span>
+</pre><pre class="codeinput">cFigure;
+subplot(1,2,1); hold <span class="string">on</span>;
+title(<span class="string">'Original'</span>,<span class="string">'FontSize'</span>,fontSize);
+gpatch(F,V,C,<span class="string">'k'</span>);
+axisGeom(gca,fontSize);
+colormap <span class="string">gjet</span>;
+camlight <span class="string">headlight</span>;
+
+subplot(1,2,2); hold <span class="string">on</span>;
+title(<span class="string">'Refined'</span>,<span class="string">'FontSize'</span>,fontSize);
+gpatch(Fs,Vs,Cs,<span class="string">'k'</span>);
+axisGeom(gca,fontSize);
+colormap <span class="string">gjet</span>;
+camlight <span class="string">headlight</span>;
+
+drawnow;
+</pre><img vspace="5" hspace="5" src="HELP_subQuad_08.png" alt=""> <img vspace="5" hspace="5" src="HELP_subQuad_09.png" alt=""> <p><img vspace="5" hspace="5" src="gibbVerySmall.gif" alt=""> </p><p><i><b>GIBBON</b></i> <a href="www.gibboncode.org">www.gibboncode.org</a></p><p><i>Kevin Mattheus Moerman</i>, <a href="gibbon.toolbox@gmail.com">gibbon.toolbox@gmail.com</a></p><p><i><b>GIBBON footer text</b></i></p><p>License: <a href="https://github.com/gibbonCode/GIBBON/blob/master/LICENSE">https://github.com/gibbonCode/GIBBON/blob/master/LICENSE</a></p><p>GIBBON: The Geometry and Image-based Bioengineering add-On. A toolbox for image segmentation, image-based modeling, meshing, and finite element analysis.</p><p>Copyright (C) 2018  Kevin Mattheus Moerman</p><p>This program is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.</p><p>This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for more details.</p><p>You should have received a copy of the GNU General Public License along with this program.  If not, see <a href="http://www.gnu.org/licenses/">http://www.gnu.org/licenses/</a>.</p><p class="footer"><br><a href="https://www.mathworks.com/products/matlab/">Published with MATLAB&reg; R2018b</a><br></p></div><!--
 ##### SOURCE BEGIN #####
 %% subQuad
 % Below is a demonstration of the features of the |subQuad| function
@@ -163,6 +214,7 @@ for q=1:1:numel(n)
     subplot(2,2,q); hold on;
     title([num2str(n(q)),' split iterations'],'FontSize',fontSize);
     gpatch(Fs,Vs,pColors(q,:),'k');
+%     patchNormPlot(Fs,Vs);
     plotV(Vs,'k.','markerSize',markerSize2); 
     plotV(V,'k.','markerSize',markerSize);
     
@@ -183,6 +235,7 @@ for q=1:1:numel(n)
     subplot(2,2,q); hold on;
     title([num2str(n(q)),' split iterations'],'FontSize',fontSize);
     gpatch(Fs,Vs,pColors(q,:),'k');
+%     patchNormPlot(Fs,Vs);
     plotV(Vs,'k.','markerSize',markerSize2); 
     plotV(V,'k.','markerSize',markerSize);    
     axisGeom(gca,fontSize);
@@ -205,9 +258,75 @@ for q=1:1:numel(n)
     subplot(2,2,q); hold on;
     title([num2str(n(q)),' split iterations'],'FontSize',fontSize);
     gpatch(Fs,Vs,pColors(q,:),'k');    
+%     patchNormPlot(Fs,Vs);
     axisGeom(gca,fontSize);
     camlight headlight;     
 end
+drawnow; 
+
+%% Example: Subdeviding in 1 direction by specifying splitMethod
+
+V=[0 0 0; 1 0 0; 1 1 0; 0 1 0];
+F=[1 2 3 4];
+
+pColors=gjet(numel(n));
+
+n=2; 
+
+cFigure; 
+subplot(2,2,1); hold on;
+title('Original','FontSize',fontSize);
+gpatch(F,V,pColors(1,:),'k',1,3);
+patchNormPlot(F,V);
+axisGeom(gca,fontSize);
+camlight headlight;
+
+for q=1:1:3
+    splitMethod=q;
+    [Fs,Vs]=subQuad(F,V,n,splitMethod); 
+    subplot(2,2,q+1); hold on;
+    title(['Refined set method: ',num2str(q)],'FontSize',fontSize);
+    gpatch(Fs,Vs,pColors(q+1,:),'k',1,3);    
+    patchNormPlot(Fs,Vs);
+    axisGeom(gca,fontSize);    
+    camlight headlight;    
+%     view(2);
+end
+drawnow; 
+
+%% Example: Maintaining face data (e.g. face color)
+
+[X,Y,Z]=peaks(25);
+[F,V,CV]=surf2patch(X,Y,Z,Z);
+C=vertexToFaceMeasure(F,CV);
+
+%%
+% Requesting additional output to allow for "book keeping" of face data
+[Fs,Vs,Css]=subQuad(F,V,1,1); 
+
+%%
+% The additional output Css contains face indices, i.e. each refined face
+% in Fs belongs to an initial face in F and this mapping is defined in Css.
+% Hence the following operation "picks" out the appropriate color data for
+% each face from the original array. 
+Cs=C(Css); %Get colors for refined faces from color data of original
+
+%%
+cFigure; 
+subplot(1,2,1); hold on;
+title('Original','FontSize',fontSize);
+gpatch(F,V,C,'k');
+axisGeom(gca,fontSize);
+colormap gjet;
+camlight headlight;
+
+subplot(1,2,2); hold on;
+title('Refined','FontSize',fontSize);
+gpatch(Fs,Vs,Cs,'k');
+axisGeom(gca,fontSize);
+colormap gjet;
+camlight headlight;
+
 drawnow; 
 
 %% 

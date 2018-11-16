@@ -1,15 +1,39 @@
-function [F,V,curveIndices,faceMarker]=splitCurveSetMesh(V_cell,ns,patchType,smoothPar,splitMethod)
+function [varargout]=splitCurveSetMesh(varargin)
+
+% function [F,V,curveIndices,faceMarker]=splitCurveSetMesh(V_cell,ns,patchType,smoothPar,splitMethod,w)
+% ------------------------------------------------------------------------
+%
+% 2012
+% 2018/11/08 Added varargout
+% 2018/11/08 
+% ------------------------------------------------------------------------
+
+%% Parse input
+
+switch nargin   
+    case 5
+        V_cell=varargin{1};
+        numSteps=varargin{2};
+        patchType=varargin{3};
+        smoothPar=varargin{4};
+        splitMethod=varargin{5};
+        w=0;
+    case 6
+        V_cell=varargin{1};
+        numSteps=varargin{2};
+        patchType=varargin{3};
+        smoothPar=varargin{4};
+        splitMethod=varargin{5};
+        w=varargin{6};
+end
+
+%%
 
 V1=V_cell{1};
 V2=V_cell{2};
 V3=V_cell{3};
 
 n1=size(V1,1);
-
-%Resampling curves
-[V1]=evenlySampleCurve(V1,n1,'pchip',1);
-% [V2]=evenlySampleCurve(V2,n1,'pchip',1);
-% [V3]=evenlySampleCurve(V3,n1,'pchip',1);
 
 %Compute distance metric used for parametric representation
 D=pathLength(V1);
@@ -63,8 +87,6 @@ switch splitMethod
 
 end
 
-
-
 indPoints=[indMin,indMax];
 indMin=min(indPoints);
 indMax=max(indPoints);
@@ -80,7 +102,15 @@ Vc2=V1(ind2,:);
 
 nc3=ceil(distCrossing/pointSpacing)+1;
 
-[Vc3]=evenlySampleCurve(V1([indMin indMax],:),nc3+2,'pchip',0);
+[d,indDistMin]=minDist(V2,V3);
+[~,indIndDistMin]=min(d); 
+indClosest1=indIndDistMin; 
+indClosest2=indDistMin(indIndDistMin); 
+
+V_midSaddle=w*((V2(indClosest1,:)+V3(indClosest2,:))/2)+(1-w)*((V1(indMin,:)+V1(indMax,:))/2);
+
+Vc3=[V1(indMin,:); V_midSaddle; V1(indMax,:);];
+[Vc3]=evenlySampleCurve(Vc3,nc3+2,'spline',0);
 
 V1s1=[flipud(Vc3); Vc1(2:end-1,:);];
 V1s2=[(Vc3); Vc2(2:end-1,:); ];
@@ -92,9 +122,9 @@ d12=sqrt(sum((meanV1s1-meanV2).^2));
 d13=sqrt(sum((meanV1s1-meanV3).^2));
 if d13<d12 %Swith curve sets
     switchDone=1;
-   V_temp=V1s2;
-   V1s2=V1s1;
-   V1s1=V_temp;  
+    V_temp=V1s2;
+    V1s2=V1s1;
+    V1s1=V_temp;
 else
     switchDone=0;
 end
@@ -103,17 +133,17 @@ end
 %Derive "grid"
 [V2s]=evenlySampleCurve(V2,size(V1s1,1),'pchip',1); %Resampling curve
 [V2f]=minPolyTwist(V1s1,V2s); %Fix curve order
-X=linspacen(V1s1(:,1),V2f(:,1),ns)';
-Y=linspacen(V1s1(:,2),V2f(:,2),ns)';
-Z=linspacen(V1s1(:,3),V2f(:,3),ns)';
+X=linspacen(V1s1(:,1),V2f(:,1),numSteps)';
+Y=linspacen(V1s1(:,2),V2f(:,2),numSteps)';
+Z=linspacen(V1s1(:,3),V2f(:,3),numSteps)';
 [F1s,V1s,~]=patchCylSurfClose(X,Y,Z,[]);
 
 %Derive "grid"
 [V3s]=evenlySampleCurve(V3,size(V1s2,1),'pchip',1); %Resampling curve
 [V3f]=minPolyTwist(V1s2,V3s); %Fix curve order
-X=linspacen(V1s2(:,1),V3f(:,1),ns)';
-Y=linspacen(V1s2(:,2),V3f(:,2),ns)';
-Z=linspacen(V1s2(:,3),V3f(:,3),ns)';
+X=linspacen(V1s2(:,1),V3f(:,1),numSteps)';
+Y=linspacen(V1s2(:,2),V3f(:,2),numSteps)';
+Z=linspacen(V1s2(:,3),V3f(:,3),numSteps)';
 [F2s,V2s,~]=patchCylSurfClose(X,Y,Z,[]);
 
 %%
@@ -126,12 +156,8 @@ faceMarker=[2*ones(size(F1s,1),1); 3*ones(size(F2s,1),1);];
 
 %% FIND BOUNDARIES
 
-Ft=fliplr([F(:,1) F(:,3) F(:,2); F(:,1) F(:,4) F(:,3)]);
-faceMarker_t=[faceMarker;faceMarker];
 
-TR = triangulation(Ft,V);
-boundEdges = freeBoundary(TR);
-
+boundEdges = patchBoundary(F,V);
 
 epsMax=pointSpacing/2;%max(eps(V(:)))*10;
 edgeGroups=tesgroup(boundEdges);
@@ -176,26 +202,16 @@ end
 if ~isempty(smoothPar)
     %Adding point constaints
     boundaryInd=unique(boundEdges(:));
-    smoothPar.RigidConstraints=boundaryInd; %Points to hold on to
-    
-    switch smoothPar.Method
-        case 'HC'
-            %         smoothPar.Method='HC';
-            %         smoothPar.Alpa=0.1; %Alpha scale factor to push points back to original
-            %         smoothPar.Beta=0.5; %Beta
-            %         smoothPar.n=250; %Number of iterations
-            %         smoothPar.Tolerance=0.001; %Tolerance
-            [V]=tesSmooth_HC(F,V,[],smoothPar);
-        case 'LAP'
-            % smoothPar.Method='LAP';
-            % smoothPar.LambdaSmooth=0.25;
-            % smoothPar.n=250;
-            % smoothPar.Tolerance=0.001;
-            [V]=tesSmooth(F,V,[],smoothPar);
-    end
+    smoothPar.RigidConstraints=boundaryInd; %Points to hold on to    
+    V=patchSmooth(F,V,[],smoothPar);
 end
 
 %%
+
+varargout{1}=F; 
+varargout{2}=V; 
+varargout{3}=curveIndices;
+varargout{4}=faceMarker;
  
 %% 
 % _*GIBBON footer text*_ 

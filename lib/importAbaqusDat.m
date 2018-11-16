@@ -60,7 +60,6 @@ defaultOptionStruct.getNodeData=1;
 
 T=txtfile2cell(fileName);
 
-
 for qStep=1:1:1
     
     incrementLines = find(~cellfun(@isempty,regexp(T,'INCREMENT.*SUMMARY')));
@@ -70,15 +69,18 @@ for qStep=1:1:1
         
         %Get increment data
         s=T{incrementLines(qIncrement)};
+        %Scans this type of line: '                                INCREMENT     1 SUMMARY'
         abaqusData.STEP(qStep).INCREMENT(qIncrement).id=str2double(cell2mat(regexp(s,'\d+\.?\d*|-\d+\.?\d*|\.?\d+|-\.?\d+','match')));
         
+        %Scans this type of line: ' TIME INCREMENT COMPLETED  5.000E-02,  FRACTION OF STEP COMPLETED  5.000E-02'
         s=T{incrementLines(qIncrement)+3};
-        d=cellfun(@str2double,regexp(s,'\d+\.?\d*|-\d+\.?\d*|\.?\d+|-\.?\d+','match'));
+        d=cellfun(@str2double,regexp(s,'([\+-]?((\d*\.\d+)|\d+))(E[\+-]?\d+)?','match'));
         abaqusData.STEP(qStep).INCREMENT(qIncrement).TIME_INCREMENT_COMPLETED=d(1);
         abaqusData.STEP(qStep).INCREMENT(qIncrement).FRACTION_OF_STEP_COMPLETED=d(2);
         
+        %Scans this type of line: '  STEP TIME COMPLETED       5.000E-02,  TOTAL TIME COMPLETED        5.000E-02'
         s=T{incrementLines(qIncrement)+4};
-        d=cellfun(@str2double,regexp(s,'\d+\.?\d*|-\d+\.?\d*|\.?\d+|-\.?\d+','match'));
+        d=cellfun(@str2double,regexp(s,'([\+-]?((\d*\.\d+)|\d+))(E[\+-]?\d+)?','match'));
         abaqusData.STEP(qStep).INCREMENT(qIncrement).STEP_TIME_COMPLETED=d(1);
         abaqusData.STEP(qStep).INCREMENT(qIncrement).TOTAL_TIME_COMPLETED=d(2);
         

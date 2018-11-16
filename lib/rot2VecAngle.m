@@ -1,9 +1,27 @@
 function [theta,w]=rot2VecAngle(R)
 
+% function [theta,w]=rot2VecAngle(R)
+% ------------------------------------------------------------------------
+%
+% 2015
+% 2018/11/08 Fixed bug in relation to R close to eye(3,3) causing a zero
+% angle and an all NaN rotation vector. 
+% ------------------------------------------------------------------------
+
+%%
+if any(isnan(R(:)))
+    error('Invalid rotation matrix. Matrix contains NaNs');
+end
+
 theta=acos(0.5*(trace(R)-1));
 theta=real(theta);
 w=(1./(2*sin(theta)))*([R(3,2)-R(2,3); R(1,3)-R(3,1); R(2,1)-R(1,2)]);
 w=vecnormalize(w);
+
+%Treat devide by zero
+if any(isnan(w))
+   w=[1 0 0]';
+end
  
 %% 
 % _*GIBBON footer text*_ 

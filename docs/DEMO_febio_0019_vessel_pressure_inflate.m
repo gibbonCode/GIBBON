@@ -52,20 +52,20 @@ radiusInner2=7;
 vesselLength=60;
 
 %Load
-pressureValue=3e-4; 
+pressureValue=5e-3; 
 
 %Material parameter set
-c1=1e-3; %Shear-modulus-like parameter
-m1=8; %Material parameter setting degree of non-linearity
+c1=0.03; %Shear-modulus-like parameter
+m1=2; %Material parameter setting degree of non-linearity
 k_factor=1e2; %Bulk modulus factor 
 k=c1*k_factor; %Bulk modulus
 
 % FEA control settings
-numTimeSteps=10; %Number of time steps desired
+numTimeSteps=20; %Number of time steps desired
 max_refs=25; %Max reforms
 max_ups=0; %Set to zero to use full-Newton iterations
-opt_iter=6; %Optimum number of iterations
-max_retries=5; %Maximum number of retires
+opt_iter=12; %Optimum number of iterations
+max_retries=10; %Maximum number of retires
 dtmin=(1/numTimeSteps)/100; %Minimum time step size
 dtmax=1/numTimeSteps; %Maximum time step size
 

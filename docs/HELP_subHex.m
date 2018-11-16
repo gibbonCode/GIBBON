@@ -124,7 +124,7 @@ set(gca,'FontSize',fontSize);
 
 drawnow;
 
-%% Example: Subdeviding in 1 direction
+%% Example: Subdeviding in 1 direction by specifying splitMethod
 % The hexahedral elements can also be split in a single direction. If an
 % additional input splitMethod is provided. By setting splitMethod=1 the
 % element is split in the top-bottom direction, by setting splitMethod=2 the

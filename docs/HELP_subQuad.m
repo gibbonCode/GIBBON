@@ -34,6 +34,7 @@ for q=1:1:numel(n)
     subplot(2,2,q); hold on;
     title([num2str(n(q)),' split iterations'],'FontSize',fontSize);
     gpatch(Fs,Vs,pColors(q,:),'k');
+%     patchNormPlot(Fs,Vs);
     plotV(Vs,'k.','markerSize',markerSize2); 
     plotV(V,'k.','markerSize',markerSize);
     
@@ -54,6 +55,7 @@ for q=1:1:numel(n)
     subplot(2,2,q); hold on;
     title([num2str(n(q)),' split iterations'],'FontSize',fontSize);
     gpatch(Fs,Vs,pColors(q,:),'k');
+%     patchNormPlot(Fs,Vs);
     plotV(Vs,'k.','markerSize',markerSize2); 
     plotV(V,'k.','markerSize',markerSize);    
     axisGeom(gca,fontSize);
@@ -76,9 +78,75 @@ for q=1:1:numel(n)
     subplot(2,2,q); hold on;
     title([num2str(n(q)),' split iterations'],'FontSize',fontSize);
     gpatch(Fs,Vs,pColors(q,:),'k');    
+%     patchNormPlot(Fs,Vs);
     axisGeom(gca,fontSize);
     camlight headlight;     
 end
+drawnow; 
+
+%% Example: Subdeviding in 1 direction by specifying splitMethod
+
+V=[0 0 0; 1 0 0; 1 1 0; 0 1 0];
+F=[1 2 3 4];
+
+pColors=gjet(numel(n));
+
+n=2; 
+
+cFigure; 
+subplot(2,2,1); hold on;
+title('Original','FontSize',fontSize);
+gpatch(F,V,pColors(1,:),'k',1,3);
+patchNormPlot(F,V);
+axisGeom(gca,fontSize);
+camlight headlight;
+
+for q=1:1:3
+    splitMethod=q;
+    [Fs,Vs]=subQuad(F,V,n,splitMethod); 
+    subplot(2,2,q+1); hold on;
+    title(['Refined set method: ',num2str(q)],'FontSize',fontSize);
+    gpatch(Fs,Vs,pColors(q+1,:),'k',1,3);    
+    patchNormPlot(Fs,Vs);
+    axisGeom(gca,fontSize);    
+    camlight headlight;    
+%     view(2);
+end
+drawnow; 
+
+%% Example: Maintaining face data (e.g. face color)
+
+[X,Y,Z]=peaks(25);
+[F,V,CV]=surf2patch(X,Y,Z,Z);
+C=vertexToFaceMeasure(F,CV);
+
+%%
+% Requesting additional output to allow for "book keeping" of face data
+[Fs,Vs,Css]=subQuad(F,V,1,1); 
+
+%%
+% The additional output Css contains face indices, i.e. each refined face
+% in Fs belongs to an initial face in F and this mapping is defined in Css.
+% Hence the following operation "picks" out the appropriate color data for
+% each face from the original array. 
+Cs=C(Css); %Get colors for refined faces from color data of original
+
+%%
+cFigure; 
+subplot(1,2,1); hold on;
+title('Original','FontSize',fontSize);
+gpatch(F,V,C,'k');
+axisGeom(gca,fontSize);
+colormap gjet;
+camlight headlight;
+
+subplot(1,2,2); hold on;
+title('Refined','FontSize',fontSize);
+gpatch(Fs,Vs,Cs,'k');
+axisGeom(gca,fontSize);
+colormap gjet;
+camlight headlight;
+
 drawnow; 
 
 %% 

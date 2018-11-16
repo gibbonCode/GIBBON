@@ -99,7 +99,7 @@ for qIter=1:nMax
         %Store current metrics        
         SSQD_old=SSQD_new;        
         if abs(1-SSQD_ratio)<=SSQD_Tol
-            disp('Tolerance reached!');
+%             disp(['Tolerance reached at iteration ',num2str(qIter)]);
            break %STOP SMOOTHING LOOP IF TOLERANCE IS REACHED 
         end
     end

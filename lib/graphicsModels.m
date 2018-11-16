@@ -48,6 +48,10 @@ switch modelID
     case {8,'dolphin'}
         fileName=fullfile(pathName,'dolphin.mat');      
         meshData=load(fileName);
+    case {9,'david'}
+        % Reduced density version of a David model from SMK - Statens Museum for Kunst
+        fileName=fullfile(pathName,'david.mat');
+        meshData=load(fileName);
 end
 
 F=meshData.F;
