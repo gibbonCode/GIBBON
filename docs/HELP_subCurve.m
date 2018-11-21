@@ -67,7 +67,6 @@ plotV(VN,'r.-','lineWidth',lineWidth1/2,'MarkerSize',markerSize1/2);
 axis equal; view(3); axis tight;  grid on;  set(gca,'FontSize',fontSize);
 drawnow;
 
-
 %% 
 %
 % <<gibbVerySmall.gif>>

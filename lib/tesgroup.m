@@ -1,6 +1,6 @@
 function varargout=tesgroup(varargin)
 
-% function [G,G_iter]=tesgroup(F,indExclude)
+% function [G,G_iter]=tesgroup(F,optionStruct)
 % ------------------------------------------------------------------------
 %
 % This function finds groups in the tesselation defined by F. F may
@@ -18,6 +18,9 @@ function varargout=tesgroup(varargin)
 % 2010/07/15 Created
 % 2018/11/05 Cleaned up some comments
 % 2018/11/05 Added exclude points 
+% 2018/11/21 Added option structure input
+% 2018/11/21 Added label ouput type which is more efficient when there are
+% many groups as it avoids the creation of large arrays. 
 %------------------------------------------------------------------------
 
 %% Parse input
@@ -25,11 +28,20 @@ function varargout=tesgroup(varargin)
 switch nargin
     case 1
         F=varargin{1};
-        indExclude=[];
+        optionStruct=[];
     case 2
         F=varargin{1};
-        indExclude=varargin{2};
+        optionStruct=varargin{2};
 end
+
+%Check optionStruct against default
+defaultOptionStruct.indExclude=[];
+defaultOptionStruct.outputType='array';
+[optionStruct]=structComplete(optionStruct,defaultOptionStruct,1); %Complement provided with default if missing or empty
+
+%Get variables from structure
+indExclude=optionStruct.indExclude;
+outputType=optionStruct.outputType;
 
 %%
 
@@ -41,7 +53,7 @@ end
 
 IND_F=(1:1:size(F,1))';
 IND_F_search=IND_F;
-G=false(size(F,1),1);
+G=zeros(size(F,1),1);
 L=false(size(F,1),1);
 L_previous=false(size(F,1),1);
 
@@ -78,7 +90,12 @@ while done==0
     if numel(v_search)==num_v_search %If the group has not grown
         group_found=1;        
         group_n=group_n+1;
-        G(:,group_n)=L;        
+        switch outputType
+            case 'array'
+                G(:,group_n)=L;        
+            case 'label'
+                G(L)=group_n;        
+        end
         v_search=[ ];
     end
     
@@ -96,6 +113,12 @@ while done==0
     q=q+1; %Increment counter
 end
 
+switch outputType
+    case 'array'
+        G=G>0;
+    case 'label'
+        
+end
 %%
 
 G_iter=G_ind(:,ones(size(G,2),1));

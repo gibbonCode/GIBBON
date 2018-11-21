@@ -59,7 +59,9 @@ indExclude=find(logicVertexBowtied);
 
 %%
 
-[G,G_iter]=tesgroup(F,indExclude);
+optionStruct.indExclude=indExclude;
+
+[G,G_iter]=tesgroup(F,optionStruct);
 [I,J]=find(G);
 C=double(G);
 C(G)=J;
