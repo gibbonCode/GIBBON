@@ -133,7 +133,7 @@ controlParameter.latticeSide=1; %1=side 1 the edge lattice, 2=side 2 the dual la
 
 %Refine mesh allong the truss
 if numSplitIterationsTruss>0
-    [Es,Vs,Cs]=subHex(Es,Vs,numSplitIterationsTruss,3); %Subdevide into 8 sub-cubes
+    [Es,Vs,Cs]=subHex(Es,Vs,numSplitIterationsTruss,3); %Split each hex allong truss direction
 end
 [Fs,CsF]=element2patch(Es,Cs); %Patch data for plotting
 
