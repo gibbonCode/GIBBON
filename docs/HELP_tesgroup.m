@@ -9,9 +9,10 @@ clear; close all; clc;
 
 %% Description
 
-%% Examples
+%% Example: grouping while avoiding bowtie problem
 
-%% Create example bowtie problem
+%%
+% Create example bowtie problem
 
 V=[-1 1 0; -1 -1 0; 0 0 0; 1 -1 0; 1 1 0];
 F=[1 2 3; 3 4 5];

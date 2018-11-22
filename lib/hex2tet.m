@@ -165,6 +165,72 @@ switch tetOpt
             C=C(:);
         end
         Vtet=V;
+    case 6 % tets for octet-truss lattice
+         [F,~]=element2patch(HEX,C,'hex8');
+        
+        numV=size(V,1);
+        numE=size(HEX,1);
+        
+        %The original vertices
+        X=V(:,1); Y=V(:,2); Z=V(:,3);
+        
+        %The mid-element points
+        if numE==1
+            Vm=[mean(X(HEX),1) mean(Y(HEX),1) mean(Z(HEX),1)];
+        else
+            Vm=[mean(X(HEX),2) mean(Y(HEX),2) mean(Z(HEX),2)];
+        end
+        
+        %The mid-face points
+        Vf=[mean(X(F),2) mean(Y(F),2) mean(Z(F),2)];
+        
+        %TET point collection
+        Vtet=[V; Vm; Vf];
+        
+        %Defining tetrahedral node list per hex element
+        numV2=numV+numE+1;
+        indAdd=reshape(numV2:(numV2+6*numE)-1,numE,6);        
+        TET_set=[HEX (numV+1:numV+numE)' indAdd];
+
+        TET_format=[...
+%                     %
+%                     14 13 9 10;...
+%                     12 14 9 10;...
+%                     15 12 9 10;...
+%                     13 15 9 10;...
+%                     %
+%                     13 14 9 11;...
+%                     14 12 9 11;...
+%                     12 15 9 11;...
+%                     15 13 9 11;...
+                    %
+                    1 10 12 15;...
+                    2 10 14 12;...
+                    3 10 13 14;...
+                    4 10 15 13;...
+                    %
+                    5 11 15 12;...
+                    6 11 12 14;...
+                    7 11 14 13;...
+                    8 11 13 15;...
+
+                    %
+                    1 5 15 12;...
+                    2 6 12 14;...
+                    3 7 14 13;...
+                    4 8 13 15;...
+                    ];
+                
+        %Reform TET_set as an nx4
+        TET_set_reform1=TET_set(:,TET_format(:))';        
+        TET_set_reform2=reshape(TET_set_reform1,size(TET_format,1),numel(TET_set_reform1)/size(TET_format,1))';
+        TET=reshape(TET_set_reform2,4,numel(TET_set_reform2)/4)';
+        
+        %Fix color information
+        C=repmat(C,size(TET_format,1),1);        
+        
+        %Removing double vertices
+        [TET,Vtet]=mergeVertices(TET,Vtet);
 end
 
 TET=TET(:,[1 2 4 3]); %Invert
