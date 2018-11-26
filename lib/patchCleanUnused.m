@@ -18,6 +18,7 @@ varargout{1}=Fc;
 varargout{2}=Vc;
 varargout{3}=indFix2;
 varargout{4}=logicValid;
+varargout{5}=indUni;
  
 %% 
 % _*GIBBON footer text*_ 

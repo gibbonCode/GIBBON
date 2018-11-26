@@ -12,6 +12,10 @@
 % tet4, tet10, hex8). The output consists of the element faces F and the
 % colordata for the elements sampled at the faces CF. 
 
+%%
+
+clear; close all; clc;
+
 %% Examples
 
 %%
@@ -35,18 +39,55 @@ C=(1:1:size(E,1))'; %Example data on elements, e.g. element number or stress
 
 %%
 % Using |element2patch| to obtain patch data for plotting
-[F,CF]=element2patch(E,C,'hex8');
+[F,C_faces,C_sides]=element2patch(E,C,'hex8');
 
 %%
 % Plotting model
 cFigure;
+subplot(1,2,1); title('Element colors');
+gpatch(F,V,C_faces,'k',0.5);
+axisGeom(gca,fontSize); 
+camlight headlight;
+colormap(gca,gjet(250)); colorbar;
 
-gpatch(F,V,CF,'k',0.5);
+subplot(1,2,2); title('Face side type colors');
+gpatch(F,V,C_sides,'k',0.9);
 
 axisGeom(gca,fontSize); 
 camlight headlight;
-colormap gjet; colorbar;
+colormap(gca,gjet(6)); icolorbar;
+
 drawnow;
+
+%% Example: Visualizing a tetrahedral mesh
+
+[meshStruct]=tetMeshBox(boxDim,2);
+E=meshStruct.elements;
+V=meshStruct.nodes;
+C=(1:1:size(E,1))'; %Example data on elements, e.g. element number or stress
+
+%%
+% Using |element2patch| to obtain patch data for plotting
+[F,C_faces,C_sides]=element2patch(E,C,'tet4');
+
+%%
+% Plotting model
+cFigure;
+subplot(1,2,1); title('Element colors');
+gpatch(F,V,C_faces,'k',0.5);
+axisGeom(gca,fontSize); 
+camlight headlight;
+colormap(gca,gjet(250)); colorbar;
+
+subplot(1,2,2); title('Face side type colors');
+gpatch(F,V,C_sides,'k',0.9);
+
+axisGeom(gca,fontSize); 
+camlight headlight;
+colormap(gca,gjet(6)); icolorbar;
+
+drawnow;
+
 
 %% 
 %

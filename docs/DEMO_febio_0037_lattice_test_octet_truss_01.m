@@ -65,7 +65,7 @@ numElementsWidth=round(sampleWidth/pointSpacings(1)); %Number of elemens in dir 
 numElementsThickness=round(sampleThickness/pointSpacings(2)); %Number of elemens in dir 2
 numElementsHeight=round(sampleHeight/pointSpacings(3)); %Number of elemens in dir 3
 
-numSplitIterationsTruss=1;
+numSplitIterationsTruss=2;
 
 %Define applied displacement 
 appliedStrain=0.3; %Linear strain (Only used to compute applied stretch)
