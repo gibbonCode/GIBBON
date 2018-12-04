@@ -15,21 +15,29 @@ clear; close all; clc;
 % Plot settings
 fontSize=25; 
 
-%% Import a txt type STL file as patch data
+%%
+% Set path and file name
 
 %Set main folder
 defaultFolder = fileparts(fileparts(mfilename('fullpath')));
 pathName=fullfile(defaultFolder,'data','STL'); 
+
+%File name for STL
 fileName=fullfile(pathName,'femur.stl'); 
+
+%% Import a txt type STL file as patch data
 [stlStruct] = import_STL(fileName);
 
 %%
-F=stlStruct.solidFaces{1};
-V=stlStruct.solidVertices{1};
+% Access the data from the STL struct
+F=stlStruct.solidFaces{1}; %Faces
+V=stlStruct.solidVertices{1}; %Vertices
 
 %%
-% Merging nodes example
-[F,V]=mergeVertices(F,V);
+% In STL files nodes are not shared between triangles. Therefore the need
+% to be merged with they are intended to be shared. 
+
+[F,V]=mergeVertices(F,V); % Merging nodes
 
 %%
 % Plotting the model
@@ -44,20 +52,17 @@ drawnow;
 
 %% Import a binary type STL file as patch data
 
-%Set main folder
-defaultFolder = fileparts(fileparts(mfilename('fullpath')));
-pathName=fullfile(defaultFolder,'data','STL'); 
 fileName=fullfile(pathName,'femur_bin.stl'); 
 [stlStruct] = import_STL(fileName);
 
-F=stlStruct.solidFaces{1};
-V=stlStruct.solidVertices{1};
+%%
+% Access the data from the STL struct
+F=stlStruct.solidFaces{1}; %Faces
+V=stlStruct.solidVertices{1}; %Vertices
 
 %%
-% Merging nodes example
-[~,ind1,ind2]=unique(pround(V,5),'rows');
-V=V(ind1,:);
-F=ind2(F);
+% Merge nodes
+[F,V]=mergeVertices(F,V); % Merging nodes
 
 %%
 % Plotting the model

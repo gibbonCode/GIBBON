@@ -35,7 +35,6 @@ padAmount=20; %Pixels padded around string
 %%
 % Visualizing the text image
 cFigure;
-title('patch type: v');
 imagesc(M);
 axis equal; axis tight; grid off;  
 colormap(cMap); caxis([min(M(:)) max(M(:))]); colorbar;
@@ -62,7 +61,6 @@ padAmount=25; %Pixels padded around string
 %%
 % Visualizing the text image
 cFigure;
-title('patch type: v');
 imagesc(M);
 axis equal; axis tight; grid off;  
 colormap(cMap); caxis([min(M(:)) max(M(:))]); colorbar;
