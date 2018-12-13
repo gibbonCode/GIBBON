@@ -1,4 +1,4 @@
-function [A_out,B_out]=reactionDiffussionMesh(varargin)
+function [A_out,B_out]=reactionDiffusionMesh(varargin)
 
 %% Parse input
 
@@ -71,7 +71,7 @@ else
 end
 
 if waitbarOption
-    hw=waitbar(0,'Reaction diffussion computation... ');
+    hw=waitbar(0,'Reaction diffusion computation... ');
 end
 
 if numSaveSteps>1
@@ -96,7 +96,7 @@ for q=2:1:nSteps
     B = B + (db*LB + A.*B.^2 - (k+f)*B)*dt; 
     
     if waitbarOption
-        waitbar(q/nSteps,hw,['Reaction diffussion computation... ',num2str(round((q/nSteps)*100)),'%']);
+        waitbar(q/nSteps,hw,['Reaction diffusion computation... ',num2str(round((q/nSteps)*100)),'%']);
     end      
     
     if any(saveSteps==q)

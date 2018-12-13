@@ -6,7 +6,7 @@
    <!--
 This HTML was auto-generated from MATLAB code.
 To make changes, update the MATLAB code and republish this document.
-      --><title>checkerBoard3D</title><meta name="generator" content="MATLAB 9.4"><link rel="schema.DC" href="http://purl.org/dc/elements/1.1/"><meta name="DC.date" content="2018-06-25"><meta name="DC.source" content="HELP_checkerBoard3D.m"><style type="text/css">
+      --><title>checkerBoard3D</title><meta name="generator" content="MATLAB 9.5"><link rel="schema.DC" href="http://purl.org/dc/elements/1.1/"><meta name="DC.date" content="2018-12-10"><meta name="DC.source" content="HELP_checkerBoard3D.m"><style type="text/css">
 html,body,div,span,applet,object,iframe,h1,h2,h3,h4,h5,h6,p,blockquote,pre,a,abbr,acronym,address,big,cite,code,del,dfn,em,font,img,ins,kbd,q,s,samp,small,strike,strong,sub,sup,tt,var,b,u,i,center,dl,dt,dd,ol,ul,li,fieldset,form,label,legend,table,caption,tbody,tfoot,thead,tr,th,td{margin:0;padding:0;border:0;outline:0;font-size:100%;vertical-align:baseline;background:transparent}body{line-height:1}ol,ul{list-style:none}blockquote,q{quotes:none}blockquote:before,blockquote:after,q:before,q:after{content:'';content:none}:focus{outine:0}ins{text-decoration:none}del{text-decoration:line-through}table{border-collapse:collapse;border-spacing:0}
 
 html { min-height:100%; margin-bottom:1px; }
@@ -66,7 +66,7 @@ table td { padding:7px 5px; text-align:left; vertical-align:top; border:1px soli
 
 
 
-  </style></head><body><div class="content"><h1>checkerBoard3D</h1><!--introduction--><p>Below is a demonstration of the features of the <tt>checkerBoard3D</tt> function</p><!--/introduction--><h2>Contents</h2><div><ul><li><a href="#2">Syntax</a></li><li><a href="#3">Description</a></li><li><a href="#4">Examples</a></li><li><a href="#6">Example creating a 2D checkerboard image</a></li><li><a href="#8">Example creating a 3D checkerboard image</a></li></ul></div><pre class="codeinput">clear; close <span class="string">all</span>; clc;
+  </style></head><body><div class="content"><h1>checkerBoard3D</h1><!--introduction--><p>Below is a demonstration of the features of the <tt>checkerBoard3D</tt> function</p><!--/introduction--><h2>Contents</h2><div><ul><li><a href="#2">Syntax</a></li><li><a href="#3">Description</a></li><li><a href="#4">Examples</a></li><li><a href="#6">Example creating a 2D checkerboard image</a></li><li><a href="#8">Example creating a 3D checkerboard image</a></li><li><a href="#10">Example, changing checkerboard block size</a></li></ul></div><pre class="codeinput">clear; close <span class="string">all</span>; clc;
 </pre><h2 id="2">Syntax</h2><p><tt>M=checkerBoard3D(siz);</tt></p><h2 id="3">Description</h2><p>This function creates a checkboard image of the size siz whereby elements are either black (0) or white (1). The first element is white.</p><h2 id="4">Examples</h2><p>Plot settings</p><pre class="codeinput">fontSize=15;
 </pre><h2 id="6">Example creating a 2D checkerboard image</h2><pre class="codeinput">siz=[4 6]; <span class="comment">%Image size</span>
 M=checkerBoard3D(siz); <span class="comment">%Create checkerboard image</span>
@@ -82,20 +82,45 @@ set(gca,<span class="string">'FontSize'</span>,fontSize);
 drawnow;
 </pre><img vspace="5" hspace="5" src="HELP_checkerBoard3D_01.png" alt=""> <h2 id="8">Example creating a 3D checkerboard image</h2><pre class="codeinput">siz=[6 6 3]; <span class="comment">%Image size</span>
 M=checkerBoard3D(siz); <span class="comment">%Create checkerboard image</span>
-</pre><p>Plotting results</p><pre class="codeinput">[Fv,Vv,Cv]=ind2patch(1:numel(M),M,<span class="string">'vu'</span>); <span class="comment">%Create patch data for plotting</span>
+</pre><p>Plotting results</p><pre class="codeinput">[Fv,Vv,Cv]=im2patch(M,1:numel(M),<span class="string">'vb'</span>); <span class="comment">%Create patch data for plotting</span>
 
-cFigure;
+cFigure; hold <span class="string">on</span>;
 title(<span class="string">'A 3D checkerboard pattern'</span>,<span class="string">'FontSize'</span>,fontSize);
-xlabel(<span class="string">'X'</span>,<span class="string">'FontSize'</span>,fontSize);ylabel(<span class="string">'Y'</span>,<span class="string">'FontSize'</span>,fontSize); zlabel(<span class="string">'Z'</span>,<span class="string">'FontSize'</span>,fontSize);
-hold <span class="string">on</span>;
-hp= patch(<span class="string">'Faces'</span>,Fv,<span class="string">'Vertices'</span>,Vv,<span class="string">'FaceColor'</span>,<span class="string">'flat'</span>,<span class="string">'CData'</span>,Cv,<span class="string">'EdgeColor'</span>,<span class="string">'r'</span>,<span class="string">'FaceAlpha'</span>,1);
+gpatch(Fv,Vv,Cv);
 
 camlight(<span class="string">'headlight'</span>);
 colormap <span class="string">gray</span>;
-axis <span class="string">equal</span>; view(3); axis <span class="string">tight</span>;  grid <span class="string">on</span>; box <span class="string">on</span>;
+axisGeom;
 set(gca,<span class="string">'FontSize'</span>,fontSize);
 drawnow;
-</pre><img vspace="5" hspace="5" src="HELP_checkerBoard3D_02.png" alt=""> <p><img vspace="5" hspace="5" src="gibbVerySmall.gif" alt=""> </p><p><i><b>GIBBON</b></i> <a href="www.gibboncode.org">www.gibboncode.org</a></p><p><i>Kevin Mattheus Moerman</i>, <a href="gibbon.toolbox@gmail.com">gibbon.toolbox@gmail.com</a></p><p><i><b>GIBBON footer text</b></i></p><p>License: <a href="https://github.com/gibbonCode/GIBBON/blob/master/LICENSE">https://github.com/gibbonCode/GIBBON/blob/master/LICENSE</a></p><p>GIBBON: The Geometry and Image-based Bioengineering add-On. A toolbox for image segmentation, image-based modeling, meshing, and finite element analysis.</p><p>Copyright (C) 2018  Kevin Mattheus Moerman</p><p>This program is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.</p><p>This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for more details.</p><p>You should have received a copy of the GNU General Public License along with this program.  If not, see <a href="http://www.gnu.org/licenses/">http://www.gnu.org/licenses/</a>.</p><p class="footer"><br><a href="https://www.mathworks.com/products/matlab/">Published with MATLAB&reg; R2018a</a><br></p></div><!--
+</pre><img vspace="5" hspace="5" src="HELP_checkerBoard3D_02.png" alt=""> <h2 id="10">Example, changing checkerboard block size</h2><pre class="codeinput">siz=[50 50]; <span class="comment">%Image size</span>
+blockSize=10; <span class="comment">%Block size in pixel units</span>
+M=checkerBoard3D(siz,blockSize); <span class="comment">%Create checkerboard image</span>
+</pre><p>Plotting results</p><pre class="codeinput">[Fv,Vv,Cv]=im2patch(M,1:numel(M),<span class="string">'vb'</span>); <span class="comment">%Create patch data for plotting</span>
+
+cFigure; hold <span class="string">on</span>;
+title(<span class="string">'A 2D checkerboard pattern'</span>,<span class="string">'FontSize'</span>,fontSize);
+gpatch(Fv,Vv,Cv,<span class="string">'r'</span>,1,1);
+
+colormap <span class="string">gray</span>;
+axisGeom; view(2);
+set(gca,<span class="string">'FontSize'</span>,fontSize);
+drawnow;
+</pre><img vspace="5" hspace="5" src="HELP_checkerBoard3D_03.png" alt=""> <pre class="codeinput">siz=[12 12 6]; <span class="comment">%Image size</span>
+blockSize=3; <span class="comment">%Block size in pixel units</span>
+M=checkerBoard3D(siz,blockSize); <span class="comment">%Create checkerboard image</span>
+</pre><p>Plotting results</p><pre class="codeinput">[Fv,Vv,Cv]=im2patch(M,1:numel(M),<span class="string">'vb'</span>); <span class="comment">%Create patch data for plotting</span>
+
+cFigure; hold <span class="string">on</span>;
+title(<span class="string">'A 3D checkerboard pattern'</span>,<span class="string">'FontSize'</span>,fontSize);
+gpatch(Fv,Vv,Cv,<span class="string">'r'</span>,1,1);
+
+camlight(<span class="string">'headlight'</span>);
+colormap <span class="string">gray</span>;
+axisGeom;
+set(gca,<span class="string">'FontSize'</span>,fontSize);
+drawnow;
+</pre><img vspace="5" hspace="5" src="HELP_checkerBoard3D_04.png" alt=""> <p><img vspace="5" hspace="5" src="gibbVerySmall.gif" alt=""> </p><p><i><b>GIBBON</b></i> <a href="www.gibboncode.org">www.gibboncode.org</a></p><p><i>Kevin Mattheus Moerman</i>, <a href="gibbon.toolbox@gmail.com">gibbon.toolbox@gmail.com</a></p><p><i><b>GIBBON footer text</b></i></p><p>License: <a href="https://github.com/gibbonCode/GIBBON/blob/master/LICENSE">https://github.com/gibbonCode/GIBBON/blob/master/LICENSE</a></p><p>GIBBON: The Geometry and Image-based Bioengineering add-On. A toolbox for image segmentation, image-based modeling, meshing, and finite element analysis.</p><p>Copyright (C) 2018  Kevin Mattheus Moerman</p><p>This program is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.</p><p>This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for more details.</p><p>You should have received a copy of the GNU General Public License along with this program.  If not, see <a href="http://www.gnu.org/licenses/">http://www.gnu.org/licenses/</a>.</p><p class="footer"><br><a href="https://www.mathworks.com/products/matlab/">Published with MATLAB&reg; R2018b</a><br></p></div><!--
 ##### SOURCE BEGIN #####
 %% checkerBoard3D
 % Below is a demonstration of the features of the |checkerBoard3D| function
@@ -143,17 +168,56 @@ M=checkerBoard3D(siz); %Create checkerboard image
 %%
 % Plotting results
 
-[Fv,Vv,Cv]=ind2patch(1:numel(M),M,'vu'); %Create patch data for plotting
+[Fv,Vv,Cv]=im2patch(M,1:numel(M),'vb'); %Create patch data for plotting
 
-cFigure;
+cFigure; hold on;
 title('A 3D checkerboard pattern','FontSize',fontSize);
-xlabel('X','FontSize',fontSize);ylabel('Y','FontSize',fontSize); zlabel('Z','FontSize',fontSize);
-hold on;
-hp= patch('Faces',Fv,'Vertices',Vv,'FaceColor','flat','CData',Cv,'EdgeColor','r','FaceAlpha',1);
+gpatch(Fv,Vv,Cv);
 
 camlight('headlight');
 colormap gray;
-axis equal; view(3); axis tight;  grid on; box on; 
+axisGeom;
+set(gca,'FontSize',fontSize);
+drawnow;
+
+%% Example, changing checkerboard block size
+
+siz=[50 50]; %Image size
+blockSize=10; %Block size in pixel units
+M=checkerBoard3D(siz,blockSize); %Create checkerboard image
+
+%%
+% Plotting results
+
+[Fv,Vv,Cv]=im2patch(M,1:numel(M),'vb'); %Create patch data for plotting
+
+cFigure; hold on;
+title('A 2D checkerboard pattern','FontSize',fontSize);
+gpatch(Fv,Vv,Cv,'r',1,1);
+
+colormap gray;
+axisGeom; view(2); 
+set(gca,'FontSize',fontSize);
+drawnow;
+
+%%
+
+siz=[12 12 6]; %Image size
+blockSize=3; %Block size in pixel units
+M=checkerBoard3D(siz,blockSize); %Create checkerboard image
+
+%%
+% Plotting results
+
+[Fv,Vv,Cv]=im2patch(M,1:numel(M),'vb'); %Create patch data for plotting
+
+cFigure; hold on;
+title('A 3D checkerboard pattern','FontSize',fontSize);
+gpatch(Fv,Vv,Cv,'r',1,1);
+
+camlight('headlight');
+colormap gray;
+axisGeom;
 set(gca,'FontSize',fontSize);
 drawnow;
 

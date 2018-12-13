@@ -113,6 +113,16 @@ abaqus_spec.Material.Hyperelastic.ATTR.neo_hooke='';
 
 % abaqus_spec.Material.ATTR.name='Elastic';
 % abaqus_spec.Material.Elastic=[0.5 0.49];
+
+%% Orientation
+
+% *Orientation, name=Ori-1, system=RECTANGULAR
+% Ori-1-DiscOrient
+% 2, 90.
+abaqus_spec.Orientation.ATTR.name='Ori-1';
+abaqus_spec.Orientation.ATTR.system='RECTANGULAR';
+abaqus_spec.Orientation.VAL=['Ori-1-DiscOrient' newline vec2strIntDouble([2 90],'%i')];
+
 %% The step section
 %
 

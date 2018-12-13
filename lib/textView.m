@@ -7,7 +7,7 @@ defaultOptionStruct.ForegroundColor=[168 177 190]/255;
 defaultOptionStruct.HorizontalAlignment='Left';
 defaultOptionStruct.FontName='Monospaced';
 defaultOptionStruct.FontWeight='Bold';
-defaultOptionStruct.FontSize=10;
+defaultOptionStruct.FontSize=12;
 
 switch nargin
     case 1
@@ -63,6 +63,7 @@ for q=1:1:numel(optionSet)
 end
 
 % %# enable horizontal scrolling
+try
 jEdit = findjobj(hEdit);
 jEditbox = jEdit.getViewport().getComponent(0);
 jEditbox.setWrapping(false);                %# turn off word-wrapping
@@ -73,7 +74,8 @@ set(jEdit,'HorizontalScrollBarPolicy',30);  %# HORIZONTAL_SCROLLBAR_AS_NEEDED
 hjEdit = handle(jEdit,'CallbackProperties');
 set(hjEdit, 'ComponentResizedCallback',...
     'set(gcbo,''HorizontalScrollBarPolicy'',30)')
-
+catch
+end
 drawnow; 
 
 %%

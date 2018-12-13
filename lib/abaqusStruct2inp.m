@@ -10,6 +10,7 @@ function [varargout]=abaqusStruct2inp(varargin)
 % gibbon.toolbox@gmail.com
 %
 % 2018/09/06 Created
+% 2018/12/04 Added field order entries
 %------------------------------------------------------------------------
 
 %% Parse input
@@ -17,8 +18,8 @@ function [varargout]=abaqusStruct2inp(varargin)
 defaultOptionStruct.attributeKeyword='ATTR';
 defaultOptionStruct.valueKeyword='VAL';
 defaultOptionStruct.commentKeyword='COMMENT';
-defaultOptionStruct.fieldOrder={'heading','preprint','part','node','element',...
-    'assembly','material','step','boundary','restart','output'};
+defaultOptionStruct.fieldOrder={'heading','preprint','part','node','element','surface','distribution','orientation','section',...
+    'assembly','distribution_table','material','Depvar','User_Material','step','boundary','restart','output'};
 defaultOptionStruct.addEnd={'part','assembly','instance','step'};
 defaultOptionStruct.addLines=1;
 

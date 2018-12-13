@@ -51,6 +51,11 @@ function [varargout]=cFigure(varargin)
 % 2015/04/15 %Added vcw functionality
 % 2018/02/02 %Fixed bug in relation to groot units (e.g. figure size is
 % wrong if units are not pixels). 
+% 2018/12/05 %Updated figure size handling which now accepts either a
+% screen offset or a scaling factor. 
+%
+% TO DO: 
+% Check handling of multiple screens for figure size setting
 %------------------------------------------------------------------------
 
 %% Parse input and set defaults
@@ -61,13 +66,14 @@ grootUnits=graphicalRoot.Units;
 if ~strcmp(grootUnits,'pixels')
     graphicalRoot.Units='pixels';
 end
+screenSizeGroot = graphicalRoot.ScreenSize(3:4); %Get screen widht and height
 
 %Default settings
 defaultFigStruct.Visible='on';
 defaultFigStruct.ColorDef='white';
 defaultFigStruct.Color='w';
-screenSizeGroot = get(groot,'ScreenSize'); %Get screen size
-defaultFigStruct.ScreenOffset=round(max(screenSizeGroot)*0.1); %i.e. figures are spaced around 10% of the sreensize from the edges        
+defaultFigStruct.ScreenScale=0.85; %Figure size is based on scaled screensize
+% defaultFigStruct.ScreenOffset=round(max(screenSizeGroot)*0.1); %i.e. figures are spaced around 10% of the sreensize from the edges        
 defaultFigStruct.Clipping='off';
 defaultFigStruct.efw=1;
 defaultFigStruct.vcw={'pan','rot','zoomz','zoomz'};
@@ -103,22 +109,40 @@ figStruct=rmfield(figStruct,'ColorDef'); %Remove field from structure array
 
 %% Set figure size
 
-if isfield(figStruct,'ScreenOffset')
-    screenSizeGroot = get(groot,'ScreenSize');
-    screenSizeGroot=screenSizeGroot(3:4); % width, height
-    figSizeEdgeOffset=figStruct.ScreenOffset; % Figure offset from border
-    figSize=screenSizeGroot-figSizeEdgeOffset; % width, height
-    
-    if isOld
-        set(hf,'units','pixels');
-        set(hf,'outerPosition',[(screenSizeGroot(1)-figSize(1))/2 (screenSizeGroot(2)-figSize(2))/2 figSize(1) figSize(2)]); % left bottom width height
-    else
-        hf.Units='pixels';
-        hf.Position=[(screenSizeGroot(1)-figSize(1))/2 (screenSizeGroot(2)-figSize(2))/2 figSize(1) figSize(2)]; % left bottom width height
-    end
-    
-    figStruct=rmfield(figStruct,'ScreenOffset'); %Remove field from structure array
+%Set figure units
+if isOld
+    set(hf,'units','pixels');    
+else
+    hf.Units='pixels';    
 end
+
+%Set figure size
+if isfield(figStruct,'ScreenOffset')        
+    figSizeEdgeOffset=figStruct.ScreenOffset/2; % Figure offset from border    
+    figStruct=rmfield(figStruct,'ScreenOffset'); %Remove field from structure array
+elseif isfield(figStruct,'ScreenScale')
+    %Compute screen offset
+    figSizeEdgeOffset=(screenSizeGroot-(screenSizeGroot*figStruct.ScreenScale))/2;    
+    figStruct=rmfield(figStruct,'ScreenScale'); %Remove field from structure array
+end
+
+%Get/set units
+figUnits=hf.Units; %Get current figure units (users may change defaults)
+hf.Units=graphicalRoot.Units; %Force units the same
+
+%Compute figure size in terms of width and height
+figSize=screenSizeGroot-figSizeEdgeOffset*2; % width, height offsets
+
+%Position and resize figure
+if isOld
+    set(hf,'outerPosition',[(screenSizeGroot(1)-figSize(1))/2 (screenSizeGroot(2)-figSize(2))/2 figSize(1) figSize(2)]); % left bottom width height
+else
+%     hf.Position=[figSizeEdgeOffset(1) figSizeEdgeOffset(2) figSize(1) figSize(2)]; % left bottom width height
+    hf.Position=[(screenSizeGroot(1)-figSize(1))/2 (screenSizeGroot(2)-figSize(2))/2 figSize(1) figSize(2)]; % left bottom width height
+end
+
+%Set figure units back
+hf.Units=figUnits;
 
 %% Parse remaining figure properties
 

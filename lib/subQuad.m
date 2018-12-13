@@ -1,10 +1,10 @@
 function [varargout]=subQuad(varargin)
 
-% function [Fs,Vs,C,CV]=subQuad(F,V,n)
+% function [Fs,Vs,C,CV]=subQuad(F,V,n,splitMethod)
 % ------------------------------------------------------------------------
 % Sub-devides the quadrilateral faces defined by the patch format data F
-% (faces) and V (vertices). Each face is split n times.
-%
+% (faces) and V (vertices). Each face is split n times using the specified
+% split method (splitMethod).
 %
 %
 % Kevin Mattheus Moerman

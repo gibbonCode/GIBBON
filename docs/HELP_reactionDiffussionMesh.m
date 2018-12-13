@@ -1,18 +1,18 @@
-%% reactionDiffussionMesh
-% Below is a demonstration of the features of the |reactionDiffussionMesh| function
+%% reactionDiffusionMesh
+% Below is a demonstration of the features of the |reactionDiffusionMesh| function
 
 %%
 clear; close all; clc;
 
 %% Syntax
-% |[A,B]=reactionDiffussionMesh(F,V,controlPar);|
+% |[A,B]=reactionDiffusionMesh(F,V,controlPar);|
 
 %% Description 
 % 
 
 %% Examples 
 
-%% Example: Reaction diffussion on gridded mesh
+%% Example: Reaction diffusion on gridded mesh
 
 %%
 % Get surface data 
@@ -60,9 +60,9 @@ controlPar.waitbar=1;
 controlPar.numSaveSteps=50;
 
 %%
-% Compute reaction diffussion process
+% Compute reaction diffusion process
 
-[~,B]=reactionDiffussionMesh(F,V,controlPar);
+[~,B]=reactionDiffusionMesh(F,V,controlPar);
 
 %%
 % Create animated view of results
@@ -87,13 +87,12 @@ for q=1:1:controlPar.numSaveSteps
 end
 anim8(hf1,animStruct);
 
-%% Example: Reaction diffussion on a closed surface mesh
+%% Example: Reaction diffusion on a closed surface mesh
 
 %%
 % Get surface data 
-% [F,V]=stanford_bunny; %Bunny mesh
-% [F,V]=subtri(F,V,2); %Refined version
-[F,V]=graphicsModels(1);
+[F,V]=stanford_bunny; %Bunny mesh
+[F,V]=subtri(F,V,1); %Refined version
 
 %%
 % Set initial values
@@ -137,9 +136,9 @@ controlPar.waitbar=1;
 controlPar.numSaveSteps=50;
 
 %%
-% Compute reaction diffussion process
+% Compute reaction diffusion process
 
-[A,B]=reactionDiffussionMesh(F,V,controlPar);
+[A,B]=reactionDiffusionMesh(F,V,controlPar);
 
 %%
 % Create animated view of results
@@ -164,3 +163,84 @@ for q=1:1:controlPar.numSaveSteps
 end
 anim8(hf2,animStruct);
 
+%% Example: Deforming mesh based on reaction diffusion pattern
+
+r=1;
+[F,V]=geoSphere(5,r);
+
+%%
+% Set initial values
+L=V(:,3)>=0.98;
+
+A=double(~L); %Initial A values
+B=double(L); %Initial B values
+
+%%
+% Create control parameter structure
+
+patternType=2;
+
+% Kill rates
+switch patternType
+    case 1 %Coral
+        controlPar.f=0.055; 
+        controlPar.k=0.062;
+    case 2 %Spots
+        controlPar.f=0.0367; 
+        controlPar.k=0.0649;
+end
+
+% Initial valus
+controlPar.A=A; 
+controlPar.B=B; 
+
+% Diffusion rates
+controlPar.da=1;
+controlPar.db=0.5;
+
+% Time stepping parameters
+controlPar.timeTotal = 10000; %Final time
+controlPar.dt=0.5; %Time step size
+
+%
+controlPar.waitbar=1;
+controlPar.numSaveSteps=50;
+
+%%
+% Compute reaction diffusion process
+
+[A,B]=reactionDiffusionMesh(F,V,controlPar);
+
+
+%%
+% Compute vertex normals
+[~,~,N]=patchNormal(F,V); %Normal vectors for each node
+heightOffset=mean(patchEdgeLengths(F,V))*20;
+
+%%
+% Create animated view of results
+
+Vn=V+(B(:,size(B,2)*ones(1,3)).*N.*heightOffset); %Add offset to coordinates
+
+hf2=cFigure;
+hp=gpatch(F,Vn,B(:,end),'none');
+hp.FaceColor='interp'; 
+axisGeom;
+camlight headlight; lighting gouraud;
+colormap(fireice); %colorbar;
+axis off;
+drawnow;
+
+%Create the time vector
+animStruct.Time=linspace(0,controlPar.timeTotal,controlPar.numSaveSteps);
+
+for q=1:1:controlPar.numSaveSteps
+    
+    Vn=V+(B(:,q*ones(1,3)).*N.*heightOffset);
+    
+    %Set entries in animation structure
+    animStruct.Handles{q}=[hp,hp]; %Handles of objects to animate
+    animStruct.Props{q}={'CData','Vertices'}; %Properties of objects to animate
+    animStruct.Set{q}={B(:,q),Vn}; %Property values for to set in order to animate
+end
+anim8(hf2,animStruct);

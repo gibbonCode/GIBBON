@@ -99,7 +99,6 @@ if isa(F,'cell') %Assume all entries are cells defining multiple patch data sets
         else
             a=A;
         end
-        
         hp(q)=plotPatch(f,v,c,ce,a,L);
     end
 else

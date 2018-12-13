@@ -44,17 +44,56 @@ M=checkerBoard3D(siz); %Create checkerboard image
 %%
 % Plotting results
 
-[Fv,Vv,Cv]=ind2patch(1:numel(M),M,'vu'); %Create patch data for plotting
+[Fv,Vv,Cv]=im2patch(M,1:numel(M),'vb'); %Create patch data for plotting
 
-cFigure;
+cFigure; hold on;
 title('A 3D checkerboard pattern','FontSize',fontSize);
-xlabel('X','FontSize',fontSize);ylabel('Y','FontSize',fontSize); zlabel('Z','FontSize',fontSize);
-hold on;
-hp= patch('Faces',Fv,'Vertices',Vv,'FaceColor','flat','CData',Cv,'EdgeColor','r','FaceAlpha',1);
+gpatch(Fv,Vv,Cv);
 
 camlight('headlight');
 colormap gray;
-axis equal; view(3); axis tight;  grid on; box on; 
+axisGeom;
+set(gca,'FontSize',fontSize);
+drawnow;
+
+%% Example, changing checkerboard block size
+
+siz=[50 50]; %Image size
+blockSize=10; %Block size in pixel units
+M=checkerBoard3D(siz,blockSize); %Create checkerboard image
+
+%%
+% Plotting results
+
+[Fv,Vv,Cv]=im2patch(M,1:numel(M),'vb'); %Create patch data for plotting
+
+cFigure; hold on;
+title('A 2D checkerboard pattern','FontSize',fontSize);
+gpatch(Fv,Vv,Cv,'r',1,1);
+
+colormap gray;
+axisGeom; view(2); 
+set(gca,'FontSize',fontSize);
+drawnow;
+
+%%
+
+siz=[12 12 6]; %Image size
+blockSize=3; %Block size in pixel units
+M=checkerBoard3D(siz,blockSize); %Create checkerboard image
+
+%%
+% Plotting results
+
+[Fv,Vv,Cv]=im2patch(M,1:numel(M),'vb'); %Create patch data for plotting
+
+cFigure; hold on;
+title('A 3D checkerboard pattern','FontSize',fontSize);
+gpatch(Fv,Vv,Cv,'r',1,1);
+
+camlight('headlight');
+colormap gray;
+axisGeom;
 set(gca,'FontSize',fontSize);
 drawnow;
 
