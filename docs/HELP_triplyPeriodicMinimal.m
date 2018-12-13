@@ -4,6 +4,18 @@
 %%
 clear; close all; clc;
 
+%% Syntax
+% |S=triplyPeriodicMinimal(X,Y,Z,typeStr);|
+
+%% Description
+% This function creates the image S which can be used to define triply
+% periodic minimal surfaces. The input consists of a grid of coordinates
+% (X,Y,Z) and the surface type (typeStr). 
+
+%% Examples
+
+clear; close all; clc;
+
 %%
 % Plot settings
 cMap=jet(250);
@@ -12,19 +24,32 @@ faceAlpha2=0.65;
 edgeColor1='none';
 edgeColor2='none';
 fontSize=25; 
-
-%% SURFACE VISUALIZATIONS
-
 pColors=gjet(6);
 
-n=50;
+%% Example: Construct triply periodic minimal surfaces
 
+%Create a grid
+n=35;
 [X,Y,Z]=meshgrid(linspace(-pi,pi,n));
+
+%Evaluate triply periodic function
 S=triplyPeriodicMinimal(X,Y,Z,'p');
-[F,V] = isosurface(X,Y,Z,S,0.1);
+
+%Construct iso-surface
+[F,V] = isosurface(X,Y,Z,S,0);
 
 %%
-% Visualization
+% Visualize surface
+cFigure;
+hold on;
+title('Schwarz P-surface','FontSize',fontSize);
+gpatch(F,V,'kw','k',1);
+axisGeom; 
+camlight headlight;
+drawnow; 
+
+%% 
+% Visualization all variations
 
 cFigure;
 
@@ -33,7 +58,7 @@ title('Schwarz P-surface','FontSize',fontSize);
 hold on;
 gpatch(F,V,pColors(1,:),'none',1);
 axisGeom; 
-camlight headlight;
+camlight headlight; lighting gouraud;
 view(-50,30);
 
 [X,Y,Z]=meshgrid(linspace(-pi,pi,n));
@@ -45,7 +70,7 @@ title('d','FontSize',fontSize);
 hold on;
 gpatch(F,V,pColors(2,:),'none',1);
 axisGeom; 
-camlight headlight;
+camlight headlight; lighting gouraud;
 view(-50,30);
 
 [X,Y,Z]=meshgrid(linspace(-2*pi,2*pi,n));
@@ -57,7 +82,7 @@ title('Gyroid','FontSize',fontSize);
 hold on;
 gpatch(F,V,pColors(3,:),'none',1);
 axisGeom; 
-camlight headlight;
+camlight headlight; lighting gouraud;
 view(-50,30);
 
 [X,Y,Z]=meshgrid(linspace(-pi,pi,n));
@@ -69,7 +94,7 @@ title('Neovius','FontSize',fontSize);
 hold on;
 gpatch(F,V,pColors(4,:),'none',1);
 axisGeom; 
-camlight headlight;
+camlight headlight; lighting gouraud;
 view(-50,30);
 
 [X,Y,Z]=meshgrid(linspace(-pi,pi,n));
@@ -81,7 +106,7 @@ title('w','FontSize',fontSize);
 hold on;
 gpatch(F,V,pColors(5,:),'none',1);
 axisGeom; 
-camlight headlight;
+camlight headlight; lighting gouraud;
 view(-50,30);
 
 [X,Y,Z]=meshgrid(linspace(-pi,pi,n));
@@ -93,12 +118,14 @@ title('pw','FontSize',fontSize);
 hold on;
 gpatch(F,V,pColors(6,:),'none',1);
 axisGeom; 
-camlight headlight;
+camlight headlight; lighting gouraud;
 view(-50,30);
 
 drawnow;
 
-%% EXAMPLE SIMULATING REGULARIZED TRABECULAE OR POROUS MEDIA
+%% Example: Creating a hexahedral mesh of for a regular trabecular structure
+% This example renders boundary faces. Use the 'h' option for im2patch to
+% obtain hexehadral elements. 
 
 n=50;
 [X,Y,Z]=meshgrid(linspace(-2*pi,2*pi,n));
@@ -135,6 +162,78 @@ caxis([min(S(:)) max(S(:))]);
 camlight headlight;
 
 drawnow;
+
+%% Example: Thickening the surfaces
+
+n=75;
+typeStr='g';
+switch typeStr
+    case 'p'        
+        [X,Y,Z]=meshgrid(linspace(-pi,pi,n)); 
+        S=triplyPeriodicMinimal(X,Y,Z,'p'); 
+        [F,V] = isosurface(X,Y,Z,S,0);
+    case 'g'
+        [X,Y,Z]=meshgrid(linspace(-1.9*pi,1.9*pi,n));
+        S=triplyPeriodicMinimal(X,Y,Z,'g');
+        [F,V] = isosurface(X,Y,Z,S,0.6);
+end
+F1=F; V1=V; %Store originals
+
+%Get boundary edges
+Eb=patchBoundary(F,V);
+
+% %Smoothen surface
+% controlPar.Method='HC';
+% controlPar.n=5;
+% controlPar.RigidConstraints=unique(Eb(:));
+% V=patchSmooth(F,V,[],controlPar);
+
+%%
+% Thicken surface in ward
+
+thicknessOffset=0.25; %The desired thickness
+[~,~,N]=patchNormal(F,V); %Vertex normal vectors
+V2=V+N*thicknessOffset; %The offset coordinates
+numVertices=size(V,1);
+V=[V;V2]; %Append new coordinates
+F=[F;fliplr(F)+numVertices]; %Append new faces (note offset in indices)
+%%
+% Close boundary features
+optionStruct.outputType='label';
+G=tesgroup(Eb,optionStruct); %grouping of boundary edges
+
+for q=1:1:max(G(:))
+    logicGroup=(G==q);
+    Eb_now=Eb(logicGroup,:);
+    fq=[Eb_now fliplr(Eb_now)+numVertices]; %New quadrilateral faces
+    f=[fq(:,[1 2 3]); fq(:,[3 4 1]);]; %New triangular faces
+    F=[F;fliplr(f)]; %Append new faces
+end
+
+%%
+% Visualize thickened surface
+
+cFigure;
+% subplot(1,2,1); 
+% hold on;
+% title('Vertex normals','FontSize',fontSize);
+% gpatch(F1,V1,'rw','r',1);
+% patchNormPlot(F1,V1,[],'v'); %Visualize vertex normal directions
+% axisGeom; 
+% camlight headlight;
+% 
+% subplot(1,2,2); 
+hold on;
+title('Thickened  surface','FontSize',fontSize);
+gpatch(F,V,'bw','none',1);
+% patchNormPlot(F,V); %Visualize face normal directions
+axisGeom; 
+camlight headlight;
+drawnow; 
+
+%%
+% The model can be exported to an STL file using export_STL_txt, see
+% |HELP_export_STL_txt|. 
 
 %% 
 %

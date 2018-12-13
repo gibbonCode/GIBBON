@@ -21,6 +21,7 @@ function varargout=tesgroup(varargin)
 % 2018/11/21 Added option structure input
 % 2018/11/21 Added label ouput type which is more efficient when there are
 % many groups as it avoids the creation of large arrays. 
+% 2018/12/13 Fixed bug in relation to label output for 2 group system
 %------------------------------------------------------------------------
 
 %% Parse input
@@ -54,7 +55,7 @@ end
 IND_F=(1:1:size(F,1))';
 IND_F_search=IND_F;
 G=zeros(size(F,1),1);
-L=false(size(F,1),1);
+
 L_previous=false(size(F,1),1);
 
 G_ind=nan(size(F,1),1);
@@ -95,7 +96,7 @@ while done==0
                 G(:,group_n)=L;        
             case 'label'
                 G(L)=group_n;        
-        end
+        end        
         v_search=[ ];
     end
     
@@ -104,7 +105,12 @@ while done==0
         group_found=1;        
         group_n=group_n+1;
         if ~all(any(G,2))%if not all points are grouped keep remainder
-            G(:,group_n)=L;
+            switch outputType
+                case 'array'
+                    G(:,group_n)=L;
+                case 'label'
+                    G(L)=group_n;
+            end
         end        
         v_search=[ ];
     end    
@@ -119,6 +125,7 @@ switch outputType
     case 'label'
         
 end
+
 %%
 
 G_iter=G_ind(:,ones(size(G,2),1));
