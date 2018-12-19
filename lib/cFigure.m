@@ -47,14 +47,16 @@ function [varargout]=cFigure(varargin)
 % Kevin Mattheus Moerman
 % gibbon.toolbox@gmail.com
 %
-% 2014/11/25 %Created
-% 2015/04/15 %Added vcw functionality
-% 2018/02/02 %Fixed bug in relation to groot units (e.g. figure size is
+% Change log:
+% 2014/11/25 Created
+% 2015/04/15 Added vcw functionality
+% 2018/02/02 Fixed bug in relation to groot units (e.g. figure size is
 % wrong if units are not pixels). 
-% 2018/12/05 %Updated figure size handling which now accepts either a
+% 2018/12/05 Updated figure size handling which now accepts either a
 % screen offset or a scaling factor. 
-%
-% TO DO: 
+% 2018/12/19 Fixed bug to handle when both offset and scaling are specified
+% 
+% To do: 
 % Check handling of multiple screens for figure size setting
 %------------------------------------------------------------------------
 
@@ -118,11 +120,19 @@ end
 
 %Set figure size
 if isfield(figStruct,'ScreenOffset')        
-    figSizeEdgeOffset=figStruct.ScreenOffset/2; % Figure offset from border    
-    figStruct=rmfield(figStruct,'ScreenOffset'); %Remove field from structure array
+    %Compute figure offset from border        
+    figSizeEdgeOffset=figStruct.ScreenOffset/2; 
 elseif isfield(figStruct,'ScreenScale')
     %Compute screen offset
-    figSizeEdgeOffset=(screenSizeGroot-(screenSizeGroot*figStruct.ScreenScale))/2;    
+    figSizeEdgeOffset=(screenSizeGroot-(screenSizeGroot*figStruct.ScreenScale))/2;        
+end
+
+%Remove custom fields from structure
+if isfield(figStruct,'ScreenOffset')        
+    figStruct=rmfield(figStruct,'ScreenOffset'); %Remove field from structure array
+end
+
+if isfield(figStruct,'ScreenScale')
     figStruct=rmfield(figStruct,'ScreenScale'); %Remove field from structure array
 end
 

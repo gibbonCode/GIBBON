@@ -263,6 +263,7 @@ camlight headlight;
 drawnow;
 
 %%
+% Join geometries together
 
 [F,V,C]=joinElementSets({Fs,Fs2},{Vs,Vs2});
 
@@ -277,11 +278,11 @@ camlight headlight;
 drawnow;
 
 %%
-% CREATING THE INPUT STRUCTURE
+% Mesh using tetgen
 
 [regionA]=tetVolMeanEst(F,V); %Volume estimate for regular tets
 
-stringOpt='-pq1.2AaY';
+stringOpt='-pq1.2AaY'; %tetgen options
 
 inputStruct.stringOpt=stringOpt;
 inputStruct.Faces=F;

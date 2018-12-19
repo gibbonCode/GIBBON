@@ -16,7 +16,7 @@ function [varargout]=patchcylinder(varargin)
 defaultOptionStruct.cylRadius=1;
 defaultOptionStruct.numRadial=10;
 defaultOptionStruct.cylHeight=2*defaultOptionStruct.cylRadius;
-defaultOptionStruct.numHeight=defaultOptionStruct.numRadial;
+defaultOptionStruct.numHeight=[];
 defaultOptionStruct.meshType='quad';
 defaultOptionStruct.closeOpt=0;
 switch nargin    
@@ -34,6 +34,10 @@ end
 
 %Complement/fix input with default
 [optionStruct]=structComplete(optionStruct,defaultOptionStruct,1); %Complement provided with default if missing or empty
+
+if isempty(optionStruct.numHeight)
+    optionStruct.numHeight=round(optionStruct.cylHeight/((2*pi*optionStruct.cylRadius)/optionStruct.numRadial));
+end
 
 %Access parameters
 cylRadius=optionStruct.cylRadius;

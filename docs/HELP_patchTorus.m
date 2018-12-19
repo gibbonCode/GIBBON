@@ -55,7 +55,7 @@ drawnow;
 %Torus parameters
 r=1; %Sphere radius
 rc=2.5; %Central radius
-n=2; 
+n=3; 
 nr=64*n;
 nc=100*n;
 patchType='tri';
@@ -64,41 +64,38 @@ patchType='tri';
 C_bread=[254 191 78]./255;
 C_red=pColors(end,:);
 C_blue=pColors(1,:);
-C=C_bread(ones(size(F,1),1),:);
+C=C_bread(ones(size(V,1),1),:);
 
 X=V(:,3);
-XF=mean(X(F),2);
-L=XF>mean(XF);
+L=X>mean(X);
 C(L,:)=ones(nnz(L),3);
 
 X=V(:,1);
-XF=mean(X(F),2);
-Lr=XF>-2 & XF<-1.8 & L;
+Lr=X>-2 & X<-1.8 & L;
 C(Lr,:)=C_red(ones(nnz(Lr),1),:);
 
-Lr=XF>-0.1 & XF<0.1 & L;
+Lr=X>-0.1 & X<0.1 & L;
 C(Lr,:)=C_red(ones(nnz(Lr),1),:);
 
-Lr=XF>1.8 & XF<2 & L;
+Lr=X>1.8 & X<2 & L;
 C(Lr,:)=C_red(ones(nnz(Lr),1),:);
 
 d=0.25;
-X=V(:,1);
-XF=mean(X(F),2);
-Lr=XF>-2-d & XF<-1.8-d & L;
+Lr=X>-2-d & X<-1.8-d & L;
 C(Lr,:)=C_blue(ones(nnz(Lr),1),:);
 
-Lr=XF>-0.1-d & XF<0.1-d & L;
+Lr=X>-0.1-d & X<0.1-d & L;
 C(Lr,:)=C_blue(ones(nnz(Lr),1),:);
 
-Lr=XF>1.8-d & XF<2-d & L;
+Lr=X>1.8-d & X<2-d & L;
 C(Lr,:)=C_blue(ones(nnz(Lr),1),:);
 
 %%
 % Visualize a doughnut
 cFigure; hold on;
 title('doughnut','FontSize',fontSize); 
-gpatch(F,V,C,'none');
+hp=gpatch(F,V,C,'none');
+hp.FaceColor='interp';
 axisGeom(gca,fontSize);
 camlight headlight; lighting phong;
 drawnow;

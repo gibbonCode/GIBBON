@@ -26,6 +26,7 @@ function [varargout]=im2patch(varargin)
 % 
 % Change log:
 % 2016/12/13 Created as improvement on (and future replacement of) ind2patch
+% 2018/12/19 Added patchCleanUnused to remove unused vertices
 %------------------------------------------------------------------------
 
 %% Parse input
@@ -187,6 +188,8 @@ if ~isempty(v)
 else
     V=[Jv Iv Kv]; %N.B. I and J direction are switched
 end
+
+[F,V]=patchCleanUnused(F,V); % Remove unused vertices
 
 %% Gather output
 
