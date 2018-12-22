@@ -43,7 +43,11 @@ logicIn=false(size(M));
 logicOn=false(size(M));
 
 %Check empty slices
-logicEmpty=cellfun(@(x) isempty(x{1}),Vcs);
+try
+    logicEmpty=cellfun(@(x) isempty(x{1}),Vcs);
+catch
+    logicEmpty=cellfun(@(x) isempty(x),Vcs);
+end
 
 sliceRange=find(~logicEmpty);
 c=1;
@@ -55,28 +59,29 @@ for qSlice=sliceRange
     
     for qSub=1:1:numSubContours
         Vc=Vcs{qSlice}{qSub}; %Current contour
-       
-        Vcc=Vc;
-        n=size(Vc,1);
-        while 1
-            logicVertices_previous=logicOn_Now;
-            [Vcc] = evenlySampleCurve(Vc,n,'linear',1);
-            [I,J,~]=cart2im(Vcc(:,1),Vcc(:,2),Vcc(:,3),v);
-            I=round(I);
-            
-            if any(I<1) || any(J<1) || any(I>size(logicOn_Now,1)) || any(J>size(logicOn_Now,2))
-                %warning('Contour contains points outside of image space');
-                I(I<1)=1; I(I>size(logicOn_Now,1))=size(logicOn_Now,1);
-                J(J<1)=1; J(J>size(logicOn_Now,2))=size(logicOn_Now,2);                
-            end
-            
-            J=round(J);
-            IND=sub2indn(size(logicOn_Now),[I(:) J(:)]);
-            logicOn_Now(IND)=1;
-            if all(logicVertices_previous(:)==logicOn_Now(:)) %If no change
-                break %Terminate while loop
-            else
-                n=n*2; %Increase curve sampling
+        if ~isempty(Vc)
+            Vcc=Vc;
+            n=size(Vc,1);
+            while 1
+                logicVertices_previous=logicOn_Now;
+                [Vcc] = evenlySampleCurve(Vc,n,'linear',1);
+                [I,J,~]=cart2im(Vcc(:,1),Vcc(:,2),Vcc(:,3),v);
+                I=round(I);
+                
+                if any(I<1) || any(J<1) || any(I>size(logicOn_Now,1)) || any(J>size(logicOn_Now,2))
+                    %warning('Contour contains points outside of image space');
+                    I(I<1)=1; I(I>size(logicOn_Now,1))=size(logicOn_Now,1);
+                    J(J<1)=1; J(J>size(logicOn_Now,2))=size(logicOn_Now,2);
+                end
+                
+                J=round(J);
+                IND=sub2indn(size(logicOn_Now),[I(:) J(:)]);
+                logicOn_Now(IND)=1;
+                if all(logicVertices_previous(:)==logicOn_Now(:)) %If no change
+                    break %Terminate while loop
+                else
+                    n=n*2; %Increase curve sampling
+                end
             end
         end
     end

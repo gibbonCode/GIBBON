@@ -17,7 +17,7 @@ clear; close all; clc;
 %%
 % Plot settings
 fontSize=15;
-lineWidth=4;
+lineWidth=8;
 
 %% Example: Revolving a polygon
 

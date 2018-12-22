@@ -42,10 +42,10 @@ V3=[x(:) y(:)];
 regionSpec{1}={V1,V2}; 
 regionSpec{2}={V2,V3}; 
 regionSpec{3}={V3}; 
-BoundaryPointSpacings{1}={1,0.5}; %A region between V1 and V2 (V2 forms a hole inside V1)
-BoundaryPointSpacings{2}={0.5,0.75}; %A region bound by V2 containing a set of holes defined by V3 up to V6
-BoundaryPointSpacings{3}={0.75}; %A region bound by V2 containing a set of holes defined by V3 up to V6
-MeshPointSpacings=[1 0.25 0.75];
+BoundaryPointSpacings{1}={0.75,0.5}; %A region between V1 and V2 (V2 forms a hole inside V1)
+BoundaryPointSpacings{2}={0.5,0.25}; %A region bound by V2 containing a set of holes defined by V3 up to V6
+BoundaryPointSpacings{3}={0.25}; %A region bound by V2 containing a set of holes defined by V3 up to V6
+MeshPointSpacings=[0.75 0.5 0.25];
 
 plotOn=1; %This turns on/off plotting
 
@@ -55,7 +55,6 @@ plotOn=1; %This turns on/off plotting
 % plotV(V1,'b-','LineWidth',2);
 % plotV(V2,'b-','LineWidth',2);
 % plotV(V3,'b-','LineWidth',2);
-
 
 %%
 %

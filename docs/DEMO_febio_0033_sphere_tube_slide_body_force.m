@@ -50,19 +50,25 @@ febioLogFileName_disp=[febioFebFileNamePart,'_disp_out.txt']; %Log file name for
 % febioLogFileName_force=[febioFebFileNamePart,'_force_out.txt']; %Log file name for exporting force
 
 % Sphere parameters
-sphereRadius=1; 
+sphereRadius=5; 
 nRefine=3;
 
 % Ground plate parameters
 tubeRadius=0.65*sphereRadius; 
 inletRadius=tubeRadius/3;
-tubeLength=4; 
+tubeLength=sphereRadius*4; 
 
 % Material parameter set
+
+materialType=1; 
+
 c1=2e-3; %Shear-modulus-like parameter
 m1=2; %Material parameter setting degree of non-linearity
 k_factor=10; %Bulk modulus factor 
 k=c1*k_factor; %Bulk modulus
+g1=1/2; %Viscoelastic QLV proportional coefficient
+t1=12; %Viscoelastic QLV time coefficient
+materialDensity=1e-9;
 
 % FEA control settings
 timeTotal=60;
@@ -81,7 +87,7 @@ analysisType='dynamic';
 contactPenalty=5;
 fric_coeff=0.1; 
 
-bodyLoadMagnitude=0.0032;
+bodyLoadMagnitude=0.032;
 
 %% Creating model geometry and mesh
 % 
@@ -253,14 +259,34 @@ febio_spec.Control.symmetric_stiffness=symmetric_stiffness;
 febio_spec.Control.min_residual=min_residual;
 
 %Material section
-febio_spec.Material.material{1}.ATTR.type='Ogden unconstrained';
-febio_spec.Material.material{1}.ATTR.id=1;
-febio_spec.Material.material{1}.c1=c1;
-febio_spec.Material.material{1}.m1=m1;
-febio_spec.Material.material{1}.c2=c1;
-febio_spec.Material.material{1}.m2=-m1;
-febio_spec.Material.material{1}.cp=k;
-
+switch materialType
+    case 1
+        %Viscoelastic part
+        febio_spec.Material.material{1}.ATTR.type='viscoelastic';
+        febio_spec.Material.material{1}.ATTR.Name='Block_material';
+        febio_spec.Material.material{1}.ATTR.id=1;
+        febio_spec.Material.material{1}.g1=g1;
+        febio_spec.Material.material{1}.t1=t1;
+        febio_spec.Material.material{1}.density=materialDensity;
+        
+        %Elastic part
+        febio_spec.Material.material{1}.elastic{1}.ATTR.type='Ogden unconstrained';
+        febio_spec.Material.material{1}.elastic{1}.c1=c1;
+        febio_spec.Material.material{1}.elastic{1}.m1=m1;
+        febio_spec.Material.material{1}.elastic{1}.c2=c1;
+        febio_spec.Material.material{1}.elastic{1}.m2=-m1;
+        febio_spec.Material.material{1}.elastic{1}.cp=k;
+        febio_spec.Material.material{1}.elastic{1}.density=materialDensity;
+    case 0
+        febio_spec.Material.material{1}.ATTR.type='Ogden unconstrained';
+        febio_spec.Material.material{1}.ATTR.id=1;
+        febio_spec.Material.material{1}.c1=c1;
+        febio_spec.Material.material{1}.m1=m1;
+        febio_spec.Material.material{1}.c2=c1;
+        febio_spec.Material.material{1}.m2=-m1;
+        febio_spec.Material.material{1}.cp=k;
+        febio_spec.Material.material{1}.density=materialDensity;
+end
 febio_spec.Material.material{2}.ATTR.type='rigid body';
 febio_spec.Material.material{2}.ATTR.id=2;
 febio_spec.Material.material{2}.density=1;
@@ -379,7 +405,7 @@ febioAnalysis.maxLogCheckTime=3; %Max log file checking time
 
 %% Import FEBio results 
 
-if 1%runFlag==1 %i.e. a succesful run
+if runFlag==1 %i.e. a succesful run
     
     % Importing nodal displacements from a log file
     [time_mat, N_disp_mat,~]=importFEBio_logfile(fullfile(savePath,febioLogFileName_disp)); %Nodal displacements    

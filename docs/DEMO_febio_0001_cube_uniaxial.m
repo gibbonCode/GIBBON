@@ -44,6 +44,7 @@ febioLogFileName=fullfile(savePath,[febioFebFileNamePart,'.txt']); %FEBio log fi
 febioLogFileName_disp=[febioFebFileNamePart,'_disp_out.txt']; %Log file name for exporting displacement
 febioLogFileName_force=[febioFebFileNamePart,'_force_out.txt']; %Log file name for exporting force
 febioLogFileName_stress=[febioFebFileNamePart,'_stress_out.txt']; %Log file name for exporting stress
+febioLogFileName_stiffness=[febioFebFileNamePart,'_stiffness_out.txt']; %Log file name for exporting stiffness
 
 %Specifying dimensions and number of elements
 cubeSize=10; 
@@ -270,6 +271,11 @@ febio_spec.Output.logfile.element_data{1}.ATTR.data='sz';
 febio_spec.Output.logfile.element_data{1}.ATTR.delim=',';
 febio_spec.Output.logfile.element_data{1}.VAL=1:size(E,1);
 
+febio_spec.Output.logfile.element_data{2}.ATTR.file=febioLogFileName_stiffness;
+febio_spec.Output.logfile.element_data{2}.ATTR.data='cxxxx;cxxyy;cyyyy;cxxzz;cyyzz;czzzz;cxxxy;cyyxy;czzxy;cxyxy;cxxyz;cyyyz;czzyz;cxyyz;cyzyz;cxxxz;cyyxz;czzxz;cxyxz;cyzxz;cxzxz';
+febio_spec.Output.logfile.element_data{2}.ATTR.delim=',';
+febio_spec.Output.logfile.element_data{2}.VAL=1:size(E,1);
+
 %% Quick viewing of the FEBio input file structure
 % The |febView| function can be used to view the xml structure in a MATLAB
 % figure window. 
@@ -306,7 +312,7 @@ febioAnalysis.maxLogCheckTime=3; %Max log file checking time
 if runFlag==1 %i.e. a succesful run
     
     % Importing nodal displacements from a log file
-    [~, N_disp_mat,~]=importFEBio_logfile(fullfile(savePath,febioLogFileName_disp)); %Nodal displacements    
+    [~, N_disp_mat,~]=importFEBio_logfile(fullfile(savePath,febioLogFileName_disp));
     
     N_disp_mat=N_disp_mat(:,2:end,:);
     sizImport=size(N_disp_mat);
@@ -320,9 +326,37 @@ if runFlag==1 %i.e. a succesful run
     [CF]=vertexToFaceMeasure(Fb,DN_magnitude);
     
     % Importing element stress from a log file
-    [time_mat, E_stress_mat,~]=importFEBio_logfile(fullfile(savePath,febioLogFileName_stress)); %Nodal forces
+    [time_mat, E_stress_mat,~]=importFEBio_logfile(fullfile(savePath,febioLogFileName_stress)); 
     time_mat=[0; time_mat(:)]; %Time
     stress_cauchy_sim=[0; mean(squeeze(E_stress_mat(:,end,:)),1)'];
+    
+    %% Importing stiffness data
+    % Importing element stiffness tensors from a log file
+    [~,stiffness_mat,~]=importFEBio_logfile(fullfile(savePath,febioLogFileName_stiffness)); 
+    
+    stiffness_mat=stiffness_mat(:,2:end,end); %Final stiffness state
+    
+    stiffness_mat_voigt=stiffness_mat(:,[1  2  4  11 16 7;...
+                                         2  3  5  12 17 8;...
+                                         4  5  6  13 18 9;...
+                                         11 12 13 15 20 14;...
+                                         16 17 18 20 21 19;...
+                                         7  8  9  14 19 10]);
+    stiffness_mat_voigt=reshape(stiffness_mat_voigt',6,6,size(stiffness_mat_voigt,1));
+    stiffness_mat_voigt=reshape(mat2cell(stiffness_mat_voigt,6,6,...
+        ones(size(stiffness_mat_voigt,3),1)),[size(stiffness_mat,1),1]);
+    
+    stiffness_mat_kelvin=stiffness_mat_voigt; 
+    for q=1:1:numel(stiffness_mat_voigt)
+        cVoigt=stiffness_mat_voigt{q};
+        c=voigtUnMap(cVoigt);
+        cKelvin=kelvinMap(c);
+        stiffness_mat_kelvin{q}=cKelvin;
+    end
+    
+    %%
+    
+    viewFourthOrderTensor(c); %Visualize tensor C
     
     %% 
     % Plotting the simulated results using |anim8| to visualize and animate

@@ -34,7 +34,7 @@ figStruct.Color='k';
 % surface types. 
 
 %Testing settings
-testCase=1; %1= sphere, 2=bunny, 3=dino
+testCase=2; %1= sphere, 2=bunny, 3=dino
 meshType=1; %1=triangles, 2=quadrilaterials
 cutMesh=0; %0=not cut, 1=cut in half
 
