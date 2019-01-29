@@ -41,8 +41,7 @@ switch typeStr
     case 'n' %Neovius
         S=3*(cos(X)+ cos(Y)+ cos(Z))+ (4*cos(X).*cos(Y).*cos(Z));
     case 'w'
-        S=cos(X).*cos(Y)+cos(Y).*cos(Z)...
-            +cos(Z).*cos(X)-cos(X).*cos(Y).*cos(Z);
+        S=2*(cos(X).*cos(Y)+cos(Z).*cos(X)+cos(Y).*cos(Z))-(cos(2*X)+cos(2*Y)+cos(2*Z));
     case 'pw'
         S=(4.*(cos(X).*cos(Y)+cos(Y).*cos(Z)...
             +cos(Z).*cos(X))-3.*cos(X).*cos(Y).*cos(Z))+2.4;
