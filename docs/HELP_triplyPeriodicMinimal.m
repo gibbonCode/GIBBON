@@ -99,7 +99,7 @@ view(-50,30);
 
 [X,Y,Z]=meshgrid(linspace(-pi,pi,n));
 S=triplyPeriodicMinimal(X,Y,Z,'w');
-[F,V] = isosurface(X,Y,Z,S,-0.1);
+[F,V] = isosurface(X,Y,Z,S,0);
 
 subplot(2,3,5);
 title('w','FontSize',fontSize);
