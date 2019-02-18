@@ -271,8 +271,9 @@ while strcmp(get(hf.UserData.anim8.ButtonHandles.Play,'State'),'on')
     drawnow;
     
     t=toc;
-    if (hf.UserData.anim8.pauseTime-t)>0
-        pause(hf.UserData.anim8.pauseTime-t);
+    tPause=hf.UserData.anim8.pauseTime-t; 
+    if tPause>0
+        pause(tPause);
     end
 end
 

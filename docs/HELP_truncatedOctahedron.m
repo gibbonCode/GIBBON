@@ -1,36 +1,35 @@
-%% rhombicDodecahedron
-% Below is a demonstration of the features of the |rhombicDodecahedron| function
+%% truncatedOctahedron
+% Below is a demonstration of the features of the |truncatedOctahedron| function
 
 %%
 clear; close all; clc;
 
+%% Syntax
+% |[F,V,C]=truncatedOctahedron(r)|
+
+%% Description
+% This function creates the faces (F) and vertices (V) for a
+% truncated octahedron. The output C contains a labelling for the faces
+% where 0 denotes hexagons and 1 denotes squares. 
+
 %% 
 % Plot settings
 fontSize=25;
-faceAlpha1=0.3;
-edgeColor='k';
-lineWidth1=3;
-markerSize=55;
-faceColor=0.5*ones(1,3);
 
 %% Creating a patch model of a rhombic dodecahedron
 
-r=sqrt(2)/2; %Radii, results in a width of 1
+r=sqrt(5)/4; %Radii, results in a width of 1
 
-[F,V]=rhombicDodecahedron(r);
+[F,V,C]=truncatedOctahedron(r);
 
 %%
-% Plotting results
-cFigure;
-title('A rhombic dodecahedron','FontSize',fontSize);
-hold on;
-
-gpatch(F,V,faceColor,edgeColor,faceAlpha1,lineWidth1);
-plotV(V,'k.','MarkerSize',markerSize);
-
+% Plotting results5
+cFigure; hold on;
+title('A truncated octahedron','FontSize',fontSize);
+gpatch(F,V,C);
 axisGeom(gca,fontSize);
-view(-10,25);
 camlight('headlight'); 
+icolorbar;
 drawnow;
 
 %% 

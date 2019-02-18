@@ -292,7 +292,6 @@ febio_spec.Geometry.ElementSet{1}.elem.ATTR.id=(1:size(E,1))';
 % -> ElementData
 febio_spec.MeshData.ElementData{1}.ATTR.elem_set=febio_spec.Geometry.ElementSet{1}.ATTR.name;
 febio_spec.MeshData.ElementData{1}.ATTR.var='mat_axis';
-% febio_spec.MeshData.ElementData{1}.elem.ATTR.lid=(1:1:size(E,1))';
 
 for q=1:1:size(E,1)
     febio_spec.MeshData.ElementData{1}.elem{q}.ATTR.lid=q;

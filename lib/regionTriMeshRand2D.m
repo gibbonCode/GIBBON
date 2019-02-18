@@ -28,7 +28,7 @@ closeLoopOpt=1;
 minConnectivity=3; 
 
 %% PLOT SETTINGS
-if plotOn==1;
+if plotOn==1
     figColor='w'; figColorDef='white';
     fontSize=20;
     fAlpha=1;

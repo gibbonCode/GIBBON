@@ -3,7 +3,7 @@ function hg=gauss_kernel(k,nd,f,m)
 switch m
     case {'sigma',1}
         %NOTE: This method is equivalent to using hg = fspecial('gaussian',[k k], S)
-        S=f;
+        S=f3;
         switch nd
             case 1
                 x = linspace(-((k-1)/2),((k-1)/2),k);

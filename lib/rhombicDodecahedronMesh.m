@@ -1,5 +1,30 @@
 function [Fc_Q,Fc_T,Ft_Q,Ft_T,Ct_Q,Ct_T,Vt]=rhombicDodecahedronMesh(r,nCopies)
 
+% function [Fc_Q,Fc_T,Ft_Q,Ft_T,Ct_Q,Ct_T,Vt]=rhombicDodecahedronMesh(r,nCopies)
+% ------------------------------------------------------------------------
+% Creates a rhombic dodecahedron mesh where r sets the radias and nCopies
+% (a 1x3 vector) sets the number of copies in the x, y, and z direction.
+% The output consists of:
+%
+% Fc_Q, Fc_T: the quadrilateral and triangular face cell arrays (1 cell
+% entry per element). 
+%
+% Ft_Q, Ft,T: the quadrilateral and triangular face arrays
+%
+% Ct_Q, Ct,T: color/label data for the face arrays
+%
+% Vt: the vertex array
+%
+% 
+% 
+% Kevin Mattheus Moerman
+% gibbon.toolbox@gmail.com
+% 
+% 2019/02/08 Created
+% ------------------------------------------------------------------------
+
+%%
+
 %Get rhombic dodecahedron
 [Fs,Vs]=rhombicDodecahedron(r);
 Fst=[Fs(:,[1 2 3]); Fs(:,[3 4 1])]; %Triangular faces
@@ -35,7 +60,7 @@ indF_T=ones(size(Fst,1),1)*(1:1:nTotal);
 indF_T=indF_T(:);
 indF_T=(indF_T-1);
 
-%Defining the quad faces matrix
+%Defining the tri faces matrix
 Ft_T=repmat(Fst,nTotal,1)+size(Vs,1).*indF_T(:,ones(1,size(Fst,2))); 
 
 %Defining offsets
@@ -47,8 +72,7 @@ D3=K*2*Vn(offsetDirs(3),:); % Z offsets
 %Defining vertices matrix
 Vt=repmat(Vs,nTotal,1)+(D1+D2+D3);
 
-%% REMOVING DOUBLE POINTS
-%N.B. removal of points here based on rounding!
+%Merging points
 [~,IND_V,IND_IND]=unique(round(Vt.*(1e5)),'rows');
 Vt=Vt(IND_V,:);
 Ft_Q=IND_IND(Ft_Q);

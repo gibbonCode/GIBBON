@@ -93,21 +93,21 @@ V_IJK=round(V_IJK);
 
 %Determine image size if not provided
 if nargin<5    
-    siz=max(V_IJK,[],1)+1;
+    imSiz=max(V_IJK,[],1)+1;
 else
-    siz=varargin{5};
+    imSiz=varargin{5};
     
     %Remove invalid indices
-    V_IJK=V_IJK(V_IJK(:,1)<=siz(1) & V_IJK(:,1)>=1,:);
-    V_IJK=V_IJK(V_IJK(:,2)<=siz(2) & V_IJK(:,2)>=1,:);
-    V_IJK=V_IJK(V_IJK(:,3)<=siz(3) & V_IJK(:,3)>=1,:);       
+    V_IJK=V_IJK(V_IJK(:,1)<=imSiz(1) & V_IJK(:,1)>=1,:);
+    V_IJK=V_IJK(V_IJK(:,2)<=imSiz(2) & V_IJK(:,2)>=1,:);
+    V_IJK=V_IJK(V_IJK(:,3)<=imSiz(3) & V_IJK(:,3)>=1,:);       
 end
 
 %Get linear indices of points
-indVertices=sub2ind(siz,V_IJK(:,1),V_IJK(:,2),V_IJK(:,3));
+indVertices=sub2ind(imSiz,V_IJK(:,1),V_IJK(:,2),V_IJK(:,3));
 
 %Create surface boundary image
-M=zeros(siz);
+M=zeros(imSiz);
 M(indVertices)=1;
 
 %Storing image geometry metrics

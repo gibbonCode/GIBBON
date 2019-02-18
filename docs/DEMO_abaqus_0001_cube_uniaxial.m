@@ -268,6 +268,58 @@ cd(oldPath); %Restore working directory
 [abaqusData]=importAbaqusDat(abaqusDATFileName);
 
 %%
+
+
+
+
+%% Get element data
+
+E_effectiveStress=zeros(size(E,1),numel(abaqusData.STEP.INCREMENT)+1);
+E_effectiveStrain=zeros(size(E,1),numel(abaqusData.STEP.INCREMENT)+1);
+for q=1:1:numel(abaqusData.STEP.INCREMENT)
+    
+    for d=1:1:2        
+        dataSet=abaqusData.STEP.INCREMENT(q).elementOutput(d); %Get data structure
+        switch d
+            case 1
+                % Get element data across all 8 integration points
+                D11_PT=reshape(dataSet.data.S11,8,size(E,1))';
+                D22_PT=reshape(dataSet.data.S22,8,size(E,1))';
+                D33_PT=reshape(dataSet.data.S33,8,size(E,1))';
+                D12_PT=reshape(dataSet.data.S12,8,size(E,1))';
+                D13_PT=reshape(dataSet.data.S13,8,size(E,1))';
+                D23_PT=reshape(dataSet.data.S23,8,size(E,1))';
+            case 2
+                % Get element data across all 8 integration points
+                D11_PT=reshape(dataSet.data.E11,8,size(E,1))';
+                D22_PT=reshape(dataSet.data.E22,8,size(E,1))';
+                D33_PT=reshape(dataSet.data.E33,8,size(E,1))';
+                D12_PT=reshape(dataSet.data.E12,8,size(E,1))';
+                D13_PT=reshape(dataSet.data.E13,8,size(E,1))';
+                D23_PT=reshape(dataSet.data.E23,8,size(E,1))';                
+        end
+        
+        % Get mean element metrics
+        D11=mean(D11_PT,2);
+        D22=mean(D22_PT,2);
+        D33=mean(D33_PT,2);
+        D12=mean(D12_PT,2);
+        D13=mean(D13_PT,2);
+        D23=mean(D23_PT,2);
+        
+        % Calculate effective (Von Mises) metrics
+        switch d
+            case 1
+                E_effectiveStress(:,q+1)=(1/sqrt(2)).*sqrt((D11-D22).^2+(D11-D33).^2+(D33-D11).^2+6*D12.^2+6*D23.^2+6*D13.^2);
+            case 2
+                E_effectiveStrain(:,q+1)=(1/sqrt(2)).*sqrt((D11-D22).^2+(D11-D33).^2+(D33-D11).^2+6*D12.^2+6*D23.^2+6*D13.^2);
+        end
+    end
+end
+
+% diff(E_effectiveStress,1,2)./diff(E_effectiveStrain,1,2)
+
+%%
 % Plotting the simulated results using |anim8| to visualize and animate
 % deformations
 
@@ -277,7 +329,7 @@ V_def=[abaqusData.STEP(1).INCREMENT(end).nodeOutput.data.COOR1...
     abaqusData.STEP(1).INCREMENT(end).nodeOutput.data.COOR3];
 U=V_def-V; %Displacements
 
-colorDataVertices=sqrt(sum(U(:,3).^2,2)); %Displacement magnitude data in z-dir for coloring 
+colorDataVertices=sqrt(sum(U.^2,2)); %Displacement magnitude data for coloring 
 
 timeVec=[0 abaqusData.STEP(1).INCREMENT(:).TOTAL_TIME_COMPLETED];
 
@@ -287,7 +339,7 @@ maxV=max([V;V_def],[],1); %Maxima
 
 % Create basic view and store graphics handle to initiate animation
 hf=cFigure; %Open figure
-gtitle([abaqusInpFileNamePart,': Press play to animate']);
+gtitle([abaqusInpFileNamePart,': Displacement data. Press play to animate']);
 hp=gpatch(Fb,V_def,colorDataVertices,'k',1); %Add graphics object to animate
 gpatch(Fb,V,0.5*ones(1,3),'k',0.25); %A static graphics object
 axisGeom(gca,fontSize);
@@ -314,6 +366,62 @@ for qt=1:1:numel(timeVec) %Loop over time increments
     animStruct.Handles{qt}=[hp hp]; %Handles of objects to animate
     animStruct.Props{qt}={'Vertices','CData'}; %Properties of objects to animate
     animStruct.Set{qt}={V_def,colorDataVertices}; %Property values for to set in order to animate
+end
+anim8(hf,animStruct); %Initiate animation feature
+drawnow;
+
+%%
+% Plotting the simulated results using |anim8| to visualize and animate
+% deformations
+
+%Getting final nodal coordinates
+V_def=[abaqusData.STEP(1).INCREMENT(end).nodeOutput.data.COOR1...
+    abaqusData.STEP(1).INCREMENT(end).nodeOutput.data.COOR2...
+    abaqusData.STEP(1).INCREMENT(end).nodeOutput.data.COOR3];
+U=V_def-V; %Displacements
+
+[FE,C_FE_effectiveStress]=element2patch(E,E_effectiveStress(:,end),'hex8');
+[indBoundary]=tesBoundary(FE,V);
+FEb=FE(indBoundary,:);
+colorDataFaces=C_FE_effectiveStress(indBoundary); 
+
+timeVec=[0 abaqusData.STEP(1).INCREMENT(:).TOTAL_TIME_COMPLETED];
+
+% Get limits for plotting
+minV=min([V;V_def],[],1); %Minima
+maxV=max([V;V_def],[],1); %Maxima
+
+% Create basic view and store graphics handle to initiate animation
+hf=cFigure; %Open figure
+gtitle([abaqusInpFileNamePart,': Effective stress data. Press play to animate']);
+hp=gpatch(FEb,V_def,colorDataFaces,'k',1); %Add graphics object to animate
+gpatch(FEb,V,0.5*ones(1,3),'k',0.25); %A static graphics object
+axisGeom(gca,fontSize);
+colormap(gjet(250)); colorbar;
+caxis([0 max(E_effectiveStress(:))]);
+axis([minV(1) maxV(1) minV(2) maxV(2) minV(3) maxV(3)]); %Set axis limits statically
+view(130,25); %Set view direction
+camlight headlight;
+
+% Set up animation features
+animStruct.Time=timeVec; %The time vector
+for qt=1:1:numel(timeVec) %Loop over time increments    
+    if qt>1
+        V_def=[abaqusData.STEP(1).INCREMENT(qt-1).nodeOutput.data.COOR1...
+            abaqusData.STEP(1).INCREMENT(qt-1).nodeOutput.data.COOR2...
+            abaqusData.STEP(1).INCREMENT(qt-1).nodeOutput.data.COOR3];
+    else
+        V_def=V;
+    end    
+    U=V_def-V; %Displacements
+    
+    [~,C_FE_effectiveStress]=element2patch(E,E_effectiveStress(:,qt),'hex8');
+    colorDataFaces=C_FE_effectiveStress(indBoundary); %New color data
+   
+    %Set entries in animation structure
+    animStruct.Handles{qt}=[hp hp]; %Handles of objects to animate
+    animStruct.Props{qt}={'Vertices','CData'}; %Properties of objects to animate
+    animStruct.Set{qt}={V_def,colorDataFaces}; %Property values for to set in order to animate
 end
 anim8(hf,animStruct); %Initiate animation feature
 drawnow;

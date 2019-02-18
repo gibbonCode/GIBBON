@@ -4,6 +4,23 @@
 %%
 clear; close all; clc;
 
+%% Syntax
+% |[Fc_Q,Fc_T,Ft_Q,Ft_T,Ct_Q,Ct_T,Vt]=rhombicDodecahedronMesh(r,nCopies)|
+
+%% Description
+% Creates a rhombic dodecahedron mesh where r sets the radias and nCopies
+% (a 1x3 vector) sets the number of copies in the x, y, and z direction.
+% The output consists of:
+%
+% Fc_Q, Fc_T: the quadrilateral and triangular face cell arrays (1 cell
+% entry per element). 
+%
+% Ft_Q, Ft,T: the quadrilateral and triangular face arrays
+%
+% Ct_Q, Ct,T: color/label data for the face arrays
+%
+% Vt: the vertex array
+
 %% 
 % Plot settings
 fontSize=15;
@@ -11,7 +28,7 @@ faceAlpha1=1;
 
 %% Creating a mesh of rhombic dodecahedra
 
-r=sqrt(2)/2; %Radii, the chosen level results in X,Y spacings of 1
+r=sqrt(2)/2; %Radii, results in a width of 1
 n=5; %Desired number of copies in each direction 
 
 %The actual input 

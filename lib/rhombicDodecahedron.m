@@ -1,5 +1,12 @@
 function [F,V]=rhombicDodecahedron(r)
 
+% function [F,V]=rhombicDodecahedron(r)
+% ------------------------------------------------------------------------
+% This function creates a rhombic dodecahedron with a radius r. 
+%
+% ------------------------------------------------------------------------
+
+
 %% Construct rhombic dodecahedron using cube and octahedron
 
 %Get cube
