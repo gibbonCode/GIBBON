@@ -301,8 +301,8 @@ C=c(:,ones(1,size(Z,2)));
 
 %Close section if required
 if closeSection==1
-    I=[(2:size(Z,1))' (2:size(Z,1))' (1:size(Z,1)-1)' (1:size(Z,1)-1)'];
-    J=[ones(size(Z,1)-1,1) size(Z,2).*ones(size(Z,1)-1,1) size(Z,2).*ones(size(Z,1)-1,1) ones(size(Z,1)-1,1)];
+    I=[(1:size(Z,1)-1)' (1:size(Z,1)-1)' (2:size(Z,1))' (2:size(Z,1))' ];
+    J=[size(Z,2).*ones(size(Z,1)-1,1) ones(size(Z,1)-1,1) ones(size(Z,1)-1,1) size(Z,2).*ones(size(Z,1)-1,1)];
     F_sub=sub2ind(size(Z),I,J);
     F=[F;F_sub];    
     C(end-size(F_sub,1):end,:)=C(end-size(F_sub,1):end,:)+0.5;   

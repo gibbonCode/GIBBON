@@ -41,14 +41,33 @@ cutMesh=0; %0=not cut, 1=cut in half
 switch testCase
     case 1
         [F,V,~]=geoSphere(2,1); % Building a geodesic dome surface model
+        shrinkFactor=0.25;
     case 2
         [F,V]=stanford_bunny('g'); %Bunny
         V_mean=mean(V,1);
         V=V-V_mean(ones(size(V,1),1),:);
+        shrinkFactor=0.25;
     case 3
         [F,V]=parasaurolophus; %dino
         V_mean=mean(V,1);
         V=V-V_mean(ones(size(V,1),1),:);
+        shrinkFactor=0.25;
+    case 4
+        defaultFolder = fileparts(fileparts(mfilename('fullpath')));
+        pathName=fullfile(defaultFolder,'data','libSurf');
+        
+        dataStruct=load(fullfile(pathName,'sprocket.mat'));
+        F=dataStruct.F;
+        V=dataStruct.V;
+        shrinkFactor=0.5;
+    case 5
+        defaultFolder = fileparts(fileparts(mfilename('fullpath')));
+        pathName=fullfile(defaultFolder,'data','libSurf');
+        
+        dataStruct=load(fullfile(pathName,'enginePart_p1.mat'));
+        F=dataStruct.F;
+        V=dataStruct.V;
+        shrinkFactor=0.5;
 end
 
 if meshType==2
@@ -67,7 +86,7 @@ end
 %% 
 % Define |dualClad| settings, i.e. the cladMethod and the shrink factor.
 cladMethods=[1 2 3]; %1= fact-to-face connections, 2=
-shrinkFactor=0.25;
+
 
 
 %%

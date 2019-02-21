@@ -91,8 +91,8 @@ Z=reshape(VC(:,3),[nr,size(V,1)])';
 
 [Fs,Vs,Cs_ind] = surf2patch(X,Y,Z,colorInd);
 
-I=[(2:size(Z,1))' (2:size(Z,1))' (1:size(Z,1)-1)' (1:size(Z,1)-1)'];
-J=[ones(size(Z,1)-1,1) size(Z,2).*ones(size(Z,1)-1,1) size(Z,2).*ones(size(Z,1)-1,1) ones(size(Z,1)-1,1)];
+I=[(1:size(Z,1)-1)' (1:size(Z,1)-1)' (2:size(Z,1))' (2:size(Z,1))'];
+J=[size(Z,2).*ones(size(Z,1)-1,1) ones(size(Z,1)-1,1) ones(size(Z,1)-1,1) size(Z,2).*ones(size(Z,1)-1,1)];
 Fs_sub=sub2ind(size(Z),I,J);
 Fs=[Fs;Fs_sub];
 

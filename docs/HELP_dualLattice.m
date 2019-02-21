@@ -13,17 +13,21 @@ clear; close all; clc;
 %%
 % Example geometry
 
-testCase=1;
+testCase=3;
 
 switch testCase
-    case 1
+    case 1 %Box
         featureSize=0.5;
         pointSpacing=6;
         shrinkFactor=featureSize/pointSpacing;
         boxDim=[36 36 36]; %Width in each direction        
-        [meshStruct]=tetMeshBox(boxDim,pointSpacing);
-    case 2
+        [meshStruct]=tetMeshBox(boxDim,pointSpacing);              
+        F=meshStruct.faces;
+        V=meshStruct.nodes;
+        C=meshStruct.boundaryMarker;
+    case 2 %Bunny
         [F,V]=stanford_bunny('g');
+        C=ones(size(F,1),1);
         faceBoundaryMarker=ones(size(F,1),1);
         [V_regions]=getInnerPoint(F,V);
         V_holes=[];
@@ -41,6 +45,88 @@ switch testCase
 
         pointSpacing=mean(patchEdgeLengths(F,V));
         featureSize=pointSpacing/15;        
+        shrinkFactor=featureSize/pointSpacing;
+    case 3 %Sprocket
+        
+        defaultFolder = fileparts(fileparts(mfilename('fullpath')));
+        pathName=fullfile(defaultFolder,'data','libSurf');
+
+        dataStruct=load(fullfile(pathName,'sprocket.mat'));
+        F=dataStruct.F; 
+        V=dataStruct.V; 
+        C=dataStruct.C;
+        
+        faceBoundaryMarker=ones(size(F,1),1);
+        [V_regions]=getInnerPoint(F,V);
+        V_holes=[];
+        [regionA]=tetVolMeanEst(F,V); %Volume for regular tets
+        stringOpt='-pq1.2AaYQ';
+        inputStruct.stringOpt=stringOpt;
+        inputStruct.Faces=fliplr(F);
+        inputStruct.Nodes=V;
+        inputStruct.holePoints=V_holes;
+        inputStruct.faceBoundaryMarker=faceBoundaryMarker; %Face boundary markers
+        inputStruct.regionPoints=V_regions; %region points
+        inputStruct.regionA=regionA;
+        inputStruct.minRegionMarker=2; %Minimum region marker        
+        [meshStruct]=runTetGen(inputStruct); %Run tetGen
+
+        pointSpacing=mean(patchEdgeLengths(F,V));
+        featureSize=pointSpacing/10;        
+        shrinkFactor=featureSize/pointSpacing;
+    case 4
+        defaultFolder = fileparts(fileparts(mfilename('fullpath')));
+        pathName=fullfile(defaultFolder,'data','libSurf');
+        
+        dataStruct=load(fullfile(pathName,'enginePart_p1.mat'));
+        F=dataStruct.F;
+        V=dataStruct.V;
+        C=dataStruct.C;
+        
+        faceBoundaryMarker=ones(size(F,1),1);
+        [V_regions]=getInnerPoint(F,V);
+        V_holes=[];
+        [regionA]=tetVolMeanEst(F,V); %Volume for regular tets
+        stringOpt='-pq1.2AaYQ';
+        inputStruct.stringOpt=stringOpt;
+        inputStruct.Faces=fliplr(F);
+        inputStruct.Nodes=V;
+        inputStruct.holePoints=V_holes;
+        inputStruct.faceBoundaryMarker=faceBoundaryMarker; %Face boundary markers
+        inputStruct.regionPoints=V_regions; %region points
+        inputStruct.regionA=regionA;
+        inputStruct.minRegionMarker=2; %Minimum region marker
+        [meshStruct]=runTetGen(inputStruct); %Run tetGen
+        
+        pointSpacing=mean(patchEdgeLengths(F,V));
+        featureSize=pointSpacing/10;
+        shrinkFactor=featureSize/pointSpacing;
+    case 5
+        defaultFolder = fileparts(fileparts(mfilename('fullpath')));
+        pathName=fullfile(defaultFolder,'data','libSurf');
+        
+        dataStruct=load(fullfile(pathName,'ConnectingRod.mat'));
+        F=dataStruct.F;
+        V=dataStruct.V;
+        C=dataStruct.C;
+        
+        faceBoundaryMarker=ones(size(F,1),1);
+        [V_regions]=getInnerPoint(F,V);
+        V_holes=[];
+        [regionA]=tetVolMeanEst(F,V); %Volume for regular tets
+        stringOpt='-pq1.2AaYQ';
+        inputStruct.stringOpt=stringOpt;
+        inputStruct.Faces=fliplr(F);
+        inputStruct.Nodes=V;
+        inputStruct.holePoints=V_holes;
+        inputStruct.faceBoundaryMarker=faceBoundaryMarker; %Face boundary markers
+        inputStruct.regionPoints=V_regions; %region points
+        inputStruct.regionA=regionA;
+        inputStruct.minRegionMarker=2; %Minimum region marker
+        [meshStruct]=runTetGen(inputStruct); %Run tetGen
+        
+        pointSpacing=mean(patchEdgeLengths(F,V));
+        featureSize=pointSpacing/10;
         shrinkFactor=featureSize/pointSpacing;
 end
 
@@ -68,10 +154,21 @@ cladOpt=1;
 cFigure; hold on;
 gpatch(FT,VT,CT,'none',1);
 % patchNormPlot(FT,VT);
+colormap(viridis(4)); icolorbar; 
 camlight headlight;
-colormap(gjet(4)); icolorbar; 
 axisGeom;
 drawnow;
+
+%%
+cFigure; hold on;
+hp1=gpatch(FT,VT,CT,'none',1);
+hp2=gpatch(F,V,'kw','none',0.8);
+% patchNormPlot(FT,VT);
+colormap(viridis(4)); %icolorbar; 
+camlight headlight;
+axisGeom;
+drawnow;
+
 
 %% Example: Create a dual lattice mesh without outer surface cladding
 
@@ -85,7 +182,7 @@ cFigure; hold on;
 gpatch(FT,VT,CT,'none',1);
 % patchNormPlot(FT,VT);
 camlight headlight;
-colormap(gjet(4)); icolorbar; 
+colormap(viridis(4)); icolorbar; 
 axisGeom;
 drawnow;
 

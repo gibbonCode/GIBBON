@@ -1,6 +1,6 @@
 function [varargout]=element2patch(varargin)
 
-% function [F,C]=element2patch(E,C,elementType);
+% function [F,C,CF]=element2patch(E,C,elementType);
 % ------------------------------------------------------------------------
 % This function generates faces F for the input elements E such that the
 % elements can be visualized using patch graphics. Color data C on the

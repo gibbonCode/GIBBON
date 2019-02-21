@@ -88,6 +88,53 @@ colormap(gca,gjet(6)); icolorbar;
 
 drawnow;
 
+%% Example: Studying the element face side labels 
+
+% Creating an example polygon
+ns=15;
+t=linspace(0,pi,ns);
+x=cos(t);
+y=sin(t);
+z=zeros(size(x));
+Vc=flipud([x(:) y(:) z(:)]);
+
+%Extruding polygon to a quadrilateral surface
+cPar.depth=2; 
+cPar.patchType='quad'; 
+cPar.dir=0;
+cPar.closeLoopOpt=0; 
+cPar.numSteps=8;
+[F,V]=polyExtrude(Vc,cPar);
+
+%Thickening quadrilaterial surface to hexahedral elements
+layerThickness=0.5; 
+numSteps=3; 
+[E,VE,Fq1,Fq2]=quadThick(F,V,1,layerThickness,numSteps);
+
+%Use element2patch to get patch data 
+[FE,~,faceSideType]=element2patch(E);
+
+
+%%
+% Visualize the face side labels
+
+plotColors=gjet(6);
+
+cFigure; 
+subplot(3,3,1); hold on;
+title('Hexahedral mesh')
+gpatch(FE,VE,'kw','k',1);
+axisGeom;
+camlight headlight;
+for q=1:1:6
+    subplot(3,3,q+1); hold on;
+    title(['Element sides ',num2str(q)]);
+    gpatch(FE,VE,'kw','none',0.25);
+    gpatch(FE(faceSideType==q,:),VE,plotColors(q,:),'k',1);    
+    axisGeom;
+    camlight headlight;
+end
+drawnow;
 
 %% 
 %

@@ -22,26 +22,27 @@ V=[x(:) y(:) z(:)];
 %% BUIDLING THE TUBE
 
 optStruct.r=0.25;
-optStruct.nr=5;
+optStruct.nr=12;
 optStruct.patchType='tri';
 [Fs,Vs,Cs,Cs_rgb,Cs_d]=polyTube(V,optStruct);
 
 %%
 
-hf1=figuremax(fig_color,fig_colordef); hold on;
+cFigure; hold on;
 title('A curve tube with color representing curve distance','fontSize',fontSize);
-hp=patch('Faces',Fs,'Vertices',Vs,'EdgeColor','none','FaceColor','flat','CData',Cs_d,'FaceAlpha',1);
-camlight headlight;
-lighting phong; 
-colormap jet; 
-drawnow; view(3); grid on; axis equal; axis tight; 
+gpatch(Fs,Vs,Cs_d,'none');
+camlight headlight; lighting gouraud; 
+colormap gjet; 
+axisGeom; 
+drawnow; 
 
-hf1=figuremax(fig_color,fig_colordef); hold on;
+cFigure; hold on;
 title('A curve tube with color representing direction','fontSize',fontSize);
-hp=patch('Faces',Fs,'Vertices',Vs,'EdgeColor','none','FaceColor','flat','FaceVertexCData',Cs_rgb,'FaceAlpha',1);
-camlight headlight;
-lighting flat; %png export gave bug for HTML publishing while using phong lighting
-drawnow; view(3); grid on; axis equal; axis tight; 
+gpatch(Fs,Vs,Cs_rgb,'none');
+camlight headlight; lighting gouraud; 
+colormap gjet; 
+axisGeom; 
+drawnow; 
 
 %% 
 %

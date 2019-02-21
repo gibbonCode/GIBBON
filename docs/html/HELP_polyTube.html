@@ -6,7 +6,7 @@
    <!--
 This HTML was auto-generated from MATLAB code.
 To make changes, update the MATLAB code and republish this document.
-      --><title>polyTube</title><meta name="generator" content="MATLAB 9.4"><link rel="schema.DC" href="http://purl.org/dc/elements/1.1/"><meta name="DC.date" content="2018-06-25"><meta name="DC.source" content="HELP_polyTube.m"><style type="text/css">
+      --><title>polyTube</title><meta name="generator" content="MATLAB 9.6"><link rel="schema.DC" href="http://purl.org/dc/elements/1.1/"><meta name="DC.date" content="2019-02-18"><meta name="DC.source" content="HELP_polyTube.m"><style type="text/css">
 html,body,div,span,applet,object,iframe,h1,h2,h3,h4,h5,h6,p,blockquote,pre,a,abbr,acronym,address,big,cite,code,del,dfn,em,font,img,ins,kbd,q,s,samp,small,strike,strong,sub,sup,tt,var,b,u,i,center,dl,dt,dd,ol,ul,li,fieldset,form,label,legend,table,caption,tbody,tfoot,thead,tr,th,td{margin:0;padding:0;border:0;outline:0;font-size:100%;vertical-align:baseline;background:transparent}body{line-height:1}ol,ul{list-style:none}blockquote,q{quotes:none}blockquote:before,blockquote:after,q:before,q:after{content:'';content:none}:focus{outine:0}ins{text-decoration:none}del{text-decoration:line-through}table{border-collapse:collapse;border-spacing:0}
 
 html { min-height:100%; margin-bottom:1px; }
@@ -80,24 +80,25 @@ r=10+7.*sin(8*t);
 z=7*cos(10.*t);
 V=[x(:) y(:) z(:)];
 </pre><h2 id="3">BUIDLING THE TUBE</h2><pre class="codeinput">optStruct.r=0.25;
-optStruct.nr=5;
+optStruct.nr=12;
 optStruct.patchType=<span class="string">'tri'</span>;
 [Fs,Vs,Cs,Cs_rgb,Cs_d]=polyTube(V,optStruct);
-</pre><pre class="codeinput">hf1=figuremax(fig_color,fig_colordef); hold <span class="string">on</span>;
+</pre><pre class="codeinput">cFigure; hold <span class="string">on</span>;
 title(<span class="string">'A curve tube with color representing curve distance'</span>,<span class="string">'fontSize'</span>,fontSize);
-hp=patch(<span class="string">'Faces'</span>,Fs,<span class="string">'Vertices'</span>,Vs,<span class="string">'EdgeColor'</span>,<span class="string">'none'</span>,<span class="string">'FaceColor'</span>,<span class="string">'flat'</span>,<span class="string">'CData'</span>,Cs_d,<span class="string">'FaceAlpha'</span>,1);
-camlight <span class="string">headlight</span>;
-lighting <span class="string">phong</span>;
-colormap <span class="string">jet</span>;
-drawnow; view(3); grid <span class="string">on</span>; axis <span class="string">equal</span>; axis <span class="string">tight</span>;
+gpatch(Fs,Vs,Cs_d,<span class="string">'none'</span>);
+camlight <span class="string">headlight</span>; lighting <span class="string">gouraud</span>;
+colormap <span class="string">gjet</span>;
+axisGeom;
+drawnow;
 
-hf1=figuremax(fig_color,fig_colordef); hold <span class="string">on</span>;
+cFigure; hold <span class="string">on</span>;
 title(<span class="string">'A curve tube with color representing direction'</span>,<span class="string">'fontSize'</span>,fontSize);
-hp=patch(<span class="string">'Faces'</span>,Fs,<span class="string">'Vertices'</span>,Vs,<span class="string">'EdgeColor'</span>,<span class="string">'none'</span>,<span class="string">'FaceColor'</span>,<span class="string">'flat'</span>,<span class="string">'FaceVertexCData'</span>,Cs_rgb,<span class="string">'FaceAlpha'</span>,1);
-camlight <span class="string">headlight</span>;
-lighting <span class="string">flat</span>; <span class="comment">%png export gave bug for HTML publishing while using phong lighting</span>
-drawnow; view(3); grid <span class="string">on</span>; axis <span class="string">equal</span>; axis <span class="string">tight</span>;
-</pre><img vspace="5" hspace="5" src="HELP_polyTube_01.png" alt=""> <img vspace="5" hspace="5" src="HELP_polyTube_02.png" alt=""> <p><img vspace="5" hspace="5" src="gibbVerySmall.gif" alt=""> </p><p><i><b>GIBBON</b></i> <a href="www.gibboncode.org">www.gibboncode.org</a></p><p><i>Kevin Mattheus Moerman</i>, <a href="gibbon.toolbox@gmail.com">gibbon.toolbox@gmail.com</a></p><p><i><b>GIBBON footer text</b></i></p><p>License: <a href="https://github.com/gibbonCode/GIBBON/blob/master/LICENSE">https://github.com/gibbonCode/GIBBON/blob/master/LICENSE</a></p><p>GIBBON: The Geometry and Image-based Bioengineering add-On. A toolbox for image segmentation, image-based modeling, meshing, and finite element analysis.</p><p>Copyright (C) 2018  Kevin Mattheus Moerman</p><p>This program is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.</p><p>This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for more details.</p><p>You should have received a copy of the GNU General Public License along with this program.  If not, see <a href="http://www.gnu.org/licenses/">http://www.gnu.org/licenses/</a>.</p><p class="footer"><br><a href="https://www.mathworks.com/products/matlab/">Published with MATLAB&reg; R2018a</a><br></p></div><!--
+gpatch(Fs,Vs,Cs_rgb,<span class="string">'none'</span>);
+camlight <span class="string">headlight</span>; lighting <span class="string">gouraud</span>;
+colormap <span class="string">gjet</span>;
+axisGeom;
+drawnow;
+</pre><img vspace="5" hspace="5" src="HELP_polyTube_01.png" alt=""> <img vspace="5" hspace="5" src="HELP_polyTube_02.png" alt=""> <p><img vspace="5" hspace="5" src="gibbVerySmall.gif" alt=""> </p><p><i><b>GIBBON</b></i> <a href="www.gibboncode.org">www.gibboncode.org</a></p><p><i>Kevin Mattheus Moerman</i>, <a href="gibbon.toolbox@gmail.com">gibbon.toolbox@gmail.com</a></p><p><i><b>GIBBON footer text</b></i></p><p>License: <a href="https://github.com/gibbonCode/GIBBON/blob/master/LICENSE">https://github.com/gibbonCode/GIBBON/blob/master/LICENSE</a></p><p>GIBBON: The Geometry and Image-based Bioengineering add-On. A toolbox for image segmentation, image-based modeling, meshing, and finite element analysis.</p><p>Copyright (C) 2018  Kevin Mattheus Moerman</p><p>This program is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.</p><p>This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for more details.</p><p>You should have received a copy of the GNU General Public License along with this program.  If not, see <a href="http://www.gnu.org/licenses/">http://www.gnu.org/licenses/</a>.</p><p class="footer"><br><a href="https://www.mathworks.com/products/matlab/">Published with MATLAB&reg; R2019a</a><br></p></div><!--
 ##### SOURCE BEGIN #####
 %% polyTube
 % Below is a basic demonstration of the features of the |polyTube| function.
@@ -123,26 +124,27 @@ V=[x(:) y(:) z(:)];
 %% BUIDLING THE TUBE
 
 optStruct.r=0.25;
-optStruct.nr=5;
+optStruct.nr=12;
 optStruct.patchType='tri';
 [Fs,Vs,Cs,Cs_rgb,Cs_d]=polyTube(V,optStruct);
 
 %%
 
-hf1=figuremax(fig_color,fig_colordef); hold on;
+cFigure; hold on;
 title('A curve tube with color representing curve distance','fontSize',fontSize);
-hp=patch('Faces',Fs,'Vertices',Vs,'EdgeColor','none','FaceColor','flat','CData',Cs_d,'FaceAlpha',1);
-camlight headlight;
-lighting phong; 
-colormap jet; 
-drawnow; view(3); grid on; axis equal; axis tight; 
+gpatch(Fs,Vs,Cs_d,'none');
+camlight headlight; lighting gouraud; 
+colormap gjet; 
+axisGeom; 
+drawnow; 
 
-hf1=figuremax(fig_color,fig_colordef); hold on;
+cFigure; hold on;
 title('A curve tube with color representing direction','fontSize',fontSize);
-hp=patch('Faces',Fs,'Vertices',Vs,'EdgeColor','none','FaceColor','flat','FaceVertexCData',Cs_rgb,'FaceAlpha',1);
-camlight headlight;
-lighting flat; %png export gave bug for HTML publishing while using phong lighting
-drawnow; view(3); grid on; axis equal; axis tight; 
+gpatch(Fs,Vs,Cs_rgb,'none');
+camlight headlight; lighting gouraud; 
+colormap gjet; 
+axisGeom; 
+drawnow; 
 
 %% 
 %

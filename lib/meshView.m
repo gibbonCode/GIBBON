@@ -22,7 +22,7 @@ switch nargin
 end
 
 defaultOptionStruct.hFig=[];
-defaultOptionStruct.numSLiceSteps=25; %Number of animation steps
+defaultOptionStruct.numSliceSteps=25; %Number of animation steps
 defaultOptionStruct.cMap=[];
 defaultOptionStruct.cutDir=2;
 defaultOptionStruct.cutSide=1;
@@ -46,7 +46,7 @@ else
     hSub=[];
 end
 
-numSliceSteps=optionStruct.numSLiceSteps;
+numSliceSteps=optionStruct.numSliceSteps;
 cMap=optionStruct.cMap;
 cutDir=optionStruct.cutDir; 
 cutSide=optionStruct.cutSide; 
@@ -65,12 +65,26 @@ fontSize=15;
 %     elementMaterialID: [2036×1 double]
 %        faceMaterialID: [8144×1 double]
 %        loadNameStruct: [1×1 struct]
-   
-Fb=meshStruct.facesBoundary;
-Cb=meshStruct.boundaryMarker;
-V=meshStruct.nodes;
-CE=meshStruct.elementMaterialID;
+
 E=meshStruct.elements;
+V=meshStruct.nodes;
+
+if isfield(meshStruct,'facesBoundary')
+    Fb=meshStruct.facesBoundary;
+    Cb=meshStruct.boundaryMarker;
+else
+    F=meshStruct.faces;
+    indBoundary=tesBoundary(F,V);
+    Fb=F(indBoundary,:);
+    Cb=ones(size(Fb,1),1);
+end
+
+if isfield(meshStruct,'elementMaterialID')
+    CE=meshStruct.elementMaterialID;
+else
+    CE=ones(size(E,1),1);
+end
+
 % F=meshStruct.faces;
 % CF=meshStruct.faceMaterialID;
 
