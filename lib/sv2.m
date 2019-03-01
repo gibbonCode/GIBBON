@@ -88,6 +88,7 @@ drawnow;
 %% Set user data
 
 hf.UserData.sv2.M=M;
+hf.UserData.sv2.siz=size(M);
 hf.UserData.sv2.v=v;
 hf.UserData.sv2.patchTypes={'si','sj','sk'};
 hf.UserData.sv2.H=H;
@@ -151,6 +152,7 @@ if cax==hf.UserData.sv2.H(1) %JK view -> I slice
     kk=round(kk);
     hf.UserData.sv2.sliceIndices(2)=jj;
     hf.UserData.sv2.sliceIndices(3)=kk;
+    hf=fixSliceIndices(hf);
 elseif cax==hf.UserData.sv2.H(2) %IK view -> J slice
     %     hp=plot(pt_ax(1,1),pt_ax(1,3),'r.');
     [ii,~,kk]=cart2im(0,pt_ax(1,2),pt_ax(1,3),v);
@@ -158,6 +160,7 @@ elseif cax==hf.UserData.sv2.H(2) %IK view -> J slice
     kk=round(kk);
     hf.UserData.sv2.sliceIndices(1)=ii;
     hf.UserData.sv2.sliceIndices(3)=kk;
+    hf=fixSliceIndices(hf);
 elseif cax==hf.UserData.sv2.H(3) %IJ view -> K slice
     %     hp=plot(pt_ax(1,1),pt_ax(1,2),'r.');
     [ii,jj,~]=cart2im(pt_ax(1,1),pt_ax(1,2),0,v);
@@ -165,11 +168,24 @@ elseif cax==hf.UserData.sv2.H(3) %IJ view -> K slice
     jj=round(jj);
     hf.UserData.sv2.sliceIndices(1)=ii;
     hf.UserData.sv2.sliceIndices(2)=jj;
+    hf=fixSliceIndices(hf);
 else     
     return
 end
 
 updateSlices(hf);
+
+end
+
+function hf=fixSliceIndices(hf)
+
+siz=hf.UserData.sv2.siz; %Get image size
+sliceIndices= hf.UserData.sv2.sliceIndices; %Get proposed slice indices
+
+%Fix indices to be between 1 and siz
+sliceIndices(sliceIndices<1)=1; 
+sliceIndices(sliceIndices>siz)=siz(sliceIndices>siz);
+hf.UserData.sv2.sliceIndices=sliceIndices; 
 
 end
 
@@ -185,7 +201,7 @@ for dirOpt=1:1:3
     patchType=hf.UserData.sv2.patchTypes{dirOpt};
     logicPatch=false(size(M));
     sliceIndex=sliceIndices(dirOpt);
-    
+
     switch dirOpt
         case 1
             logicPatch(sliceIndex,:,:)=1;
