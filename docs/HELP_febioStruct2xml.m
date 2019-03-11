@@ -171,14 +171,108 @@ febio_spec.Globals.Solutes{2}.density=3.21;
 
 %% Material section
 
+%%
+% An uncouple material
 febio_spec.Material.material{1}.ATTR.type='Ogden';
 febio_spec.Material.material{1}.ATTR.id=1;
 febio_spec.Material.material{1}.c1=1;
 febio_spec.Material.material{1}.m1=6;
-febio_spec.Material.material{1}.c2=1;
-febio_spec.Material.material{1}.m2=-6;
 febio_spec.Material.material{1}.k=100;
 
+
+%%
+% A visco-elastic material
+
+%Viscoelastic part
+febio_spec.Material.material{2}.ATTR.type='uncoupled viscoelastic';
+febio_spec.Material.material{2}.ATTR.Name='Block_material';
+febio_spec.Material.material{2}.ATTR.id=1;
+febio_spec.Material.material{2}.g1=0.1;
+febio_spec.Material.material{2}.t1=0.01;
+febio_spec.Material.material{2}.density=1e-9;
+
+%Elastic part
+febio_spec.Material.material{2}.elastic{1}.ATTR.type='Ogden';
+febio_spec.Material.material{2}.elastic{1}.c1=1;
+febio_spec.Material.material{2}.elastic{1}.m1=2;
+febio_spec.Material.material{2}.elastic{1}.k=100;
+febio_spec.Material.material{2}.elastic{1}.density=1e-9;
+
+%%
+% A poro-elastic material
+
+%Viscous part
+febio_spec.Material.material{3}.ATTR.type='biphasic';
+febio_spec.Material.material{3}.ATTR.name='Block_material';
+febio_spec.Material.material{3}.ATTR.id=1;
+febio_spec.Material.material{3}.phi0=0.5;
+febio_spec.Material.material{3}.permeability.ATTR.type='perm-const-iso';
+febio_spec.Material.material{3}.permeability.ATTR.name='permeability';
+febio_spec.Material.material{3}.permeability.perm=7.41e-11; %hydraulic permeability
+febio_spec.Material.material{3}.fluid_density=1e-9;
+
+%Solid part
+febio_spec.Material.material{3}.solid{1}.ATTR.type='Ogden unconstrained';
+febio_spec.Material.material{3}.solid{1}.c1=1;
+febio_spec.Material.material{3}.solid{1}.m1=2;
+febio_spec.Material.material{3}.solid{1}.cp=100;
+febio_spec.Material.material{3}.solid{1}.density=1e-9;
+
+%%
+% A poro-elastic and visco-elastic material
+
+% 	<Material>
+% 		<material id="1" name="Biphasic-Viscoelastic" type="biphasic">
+% 			<phi0>0.2</phi0>
+% 			<solid type="viscoelastic">
+% 				<g1>0.5</g1>
+% 				<t1>3000</t1>
+% 				<elastic type="solid mixture">
+% 					<solid type="neo-Hookean">
+% 						<density>1</density>
+% 						<E>0.5</E>
+% 						<v>0</v>
+% 					</solid>
+% 					<solid type="ellipsoidal fiber distribution">
+% 						<beta>2,2,2</beta>
+% 						<ksi>5,5,5</ksi>
+% 					</solid>
+% 				</elastic>
+% 			</solid>
+% 			<permeability type="perm-Holmes-Mow">
+% 				<perm>0.001</perm>
+% 				<M>3</M>
+% 				<alpha>2</alpha>
+% 			</permeability>
+% 		</material>
+
+%Viscous part
+febio_spec.Material.material{4}.ATTR.type='biphasic';
+febio_spec.Material.material{4}.ATTR.name='Biphasic-Viscoelastic';
+febio_spec.Material.material{4}.ATTR.id=1;
+febio_spec.Material.material{4}.phi0=0.2;
+febio_spec.Material.material{4}.permeability.ATTR.type='perm-Holmes-Mow';
+febio_spec.Material.material{4}.permeability.perm=0.001; 
+febio_spec.Material.material{4}.permeability.M=3; 
+febio_spec.Material.material{4}.permeability.alpha=2; 
+
+%Solid part
+%-> Viscoelastic part
+febio_spec.Material.material{4}.solid{1}.ATTR.type='viscoelastic';
+febio_spec.Material.material{4}.solid{1}.g1=0.5;
+febio_spec.Material.material{4}.solid{1}.t1=3000;
+febio_spec.Material.material{4}.solid{1}.density=1e-9;
+
+%-> Elastic part
+febio_spec.Material.material{4}.solid{1}.elastic{1}.ATTR.type='solid mixture';
+febio_spec.Material.material{4}.solid{1}.elastic{1}.solid{1}.ATTR.type='neo-Hookean';
+febio_spec.Material.material{4}.solid{1}.elastic{1}.solid{1}.density=1e-9;
+febio_spec.Material.material{4}.solid{1}.elastic{1}.solid{1}.E=0.5;
+febio_spec.Material.material{4}.solid{1}.elastic{1}.solid{1}.v=0;
+febio_spec.Material.material{4}.solid{1}.elastic{1}.solid{2}.ATTR.type='ellipsoidal fiber distribution';
+febio_spec.Material.material{4}.solid{1}.elastic{1}.solid{2}.beta=[2 2 2];
+febio_spec.Material.material{4}.solid{1}.elastic{1}.solid{2}.ksi=[5 5 5];
+         
 %% Geometry section
 
 %%

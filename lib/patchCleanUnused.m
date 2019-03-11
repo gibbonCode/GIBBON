@@ -1,5 +1,15 @@
 function [varargout]=patchCleanUnused(F,V)
 
+% function [Fc,Vc,indFix2,logicValid,indUni]=patchCleanUnused(F,V)
+%-------------------------------------------------------------------------
+%
+%
+% 2010 Created
+% 2019/03/04 Added basic description header to function
+%-------------------------------------------------------------------------
+
+%%
+
 logicValid =F>0;% %Treat 0,NaN,inf
 
 numPoints=size(V,1);

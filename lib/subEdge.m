@@ -1,4 +1,4 @@
-function [Fs,Vs]=subEdge(varargin)
+function [varargout]=subEdge(varargin)
 
 %%
 
@@ -87,6 +87,12 @@ switch subMethod
         
 end
  
+%% Collect output
+varargout{1}=Fs;
+varargout{2}=Vs;
+
+
+end
 %% 
 % _*GIBBON footer text*_ 
 % 

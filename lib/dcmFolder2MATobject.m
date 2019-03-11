@@ -141,11 +141,11 @@ if NumberOfFiles>0
     fName='IMDAT';
     foldername_out=fullfile(PathName,fName,filesep);
     if ~exist(foldername_out,'dir') %create output folder if it does not exist already
-        mkdir(foldername_out);
+        mkdir(foldername_out); %Create new dir
     end
     savename_out1=fullfile(foldername_out,'IMDAT.mat');
-    if exist(savename_out1,'file') %create output folder if it does not exist already
-        delete(savename_out1); %Recreate file if it already exists
+    if exist(savename_out1,'file') %Check if file exist already
+        delete(savename_out1); %Remove file
     end
     matObj = matfile(savename_out1,'Writable',true);
     
