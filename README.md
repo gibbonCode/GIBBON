@@ -66,7 +66,7 @@ One method to generate surface geometry for lattices is the use of triply-period
 </div>
 
 ### Finite Element Analysis <a name="FEA"></a>
-For finite element analysis GIBBON currently links with either the free and open source software [FEBio](http://febio.org/) or with Simulia ABAQUS. Both the FEBio and ABAQUS interface is based on MATLAB® structures. The image below shows the coding of a material section in a MATLAB® structure (top row) and how these components are represented in the input files for FEBio or ABAQUS (bottom row). Through this structure to input file conversion process **any FEBio or ABAQUS functionality can be directly coded in MATLAB®**. 
+For finite element analysis GIBBON currently links with either the free and open source software [FEBio](http://febio.org/) or with Simulia ABAQUS. Both the FEBio and ABAQUS interface is based on MATLAB® structures. The image below shows the coding of a material section in a MATLAB® structure (top row) and how these components are represented in the input files for FEBio or ABAQUS (bottom row). Through this structure to input file conversion process **any FEBio or ABAQUS functionality can be directly coded in MATLAB®**.
 <div>
 <img src="docs/img/FEA_interface_syntax.jpg" width="100%">   
 </div>
@@ -129,7 +129,7 @@ By running `installGibbon.m` the GIBBON, FEBio, and export_fig path definitions 
 
 # Testing <a name="Test"></a>
 GIBBON's core functionality can be tested by running `testGibbon('all','test');`. Use `testGibbon('demo','test');` or `testGibbon('help','test');` for running the demo or help files only.     
-GIBBON is currently developed and tested using the most recent version of MATLAB (or the latest pre-release) and has been tested on Windows 10, Ubuntu 14.10/16.04/17.10, and Mac OS. Most of GIBBON's functionality is compatible with older MATLAB versions, especially MATLAB R2014a and newer (Delaunay tessellation and toolbox help integration are amongst things that have undergone large changes). Please inform the developers (or open an issue) if a particular function does not work for your MATLAB environment. It is likely that codes can be easily altered to work for your version.    
+GIBBON is currently developed and tested using the most recent version of MATLAB (or the latest pre-release) and has been tested on Windows 10, Ubuntu (14.10 up to 18.10), and Mac OS. Most of GIBBON's functionality is compatible with older MATLAB versions, especially MATLAB R2014a and newer (Delaunay tessellation and toolbox help integration are amongst things that have undergone large changes). Please inform the developers (or open an issue) if a particular function does not work for your MATLAB environment. It is likely that codes can be easily altered to work for your version.    
 A large portion of GIBBON's functionality does not rely on special MATLAB toolboxes. However some functions do. Here is a list of toolboxes which appear to be used in GIBBON:
 * Image Processing Toolbox
 * Bioinformatics Toolbox
@@ -141,19 +141,21 @@ A large portion of GIBBON's functionality does not rely on special MATLAB toolbo
 * Parallel Computing Toolbox
 * Mapping Toolbox    
 
-Geodesic remeshing (`DEMO_geodesic_remeshing`) currently only works for Windows OS, for other operational systems special mex file compilation is required or an alternative (experimental function) is used instead.
-
 # License <a name="License"></a>
-GIBBON is provided under:  [![License](https://img.shields.io/badge/License-GNU_GPLv3-orange.svg)](https://opensource.org/licenses/GPL-3.0). The [license file](https://github.com/gibbonCode/GIBBON/blob/master/LICENSE) is found on the GitHub repository.
+GIBBON is provided under: [![the GNU_GPLv3 License](https://img.shields.io/badge/License-GNU_GPLv3-orange.svg)](https://opensource.org/licenses/GPL-3.0). The [license file](https://github.com/gibbonCode/GIBBON/blob/master/LICENSE) is found on the GitHub repository.
 
 # Citing GIBBON <a name="Cite"></a>
-Cite the Journal of Open Source Software paper: [![DOI](http://joss.theoj.org/papers/10.21105/joss.00506/status.svg)](https://doi.org/10.21105/joss.00506)    
+If you use GIBBON in your work you should cite the following paper:  
+[![DOI](http://joss.theoj.org/papers/10.21105/joss.00506/status.svg)](https://doi.org/10.21105/joss.00506)    
 
-Moerman, (2018). GIBBON: _The Geometry and Image-Based Bioengineering add-On_. Journal of Open Source Software, 3(22), 506, [https://doi.org/10.21105/joss.00506](https://doi.org/10.21105/joss.00506)
+
+> Moerman, (2018). GIBBON: _The Geometry and Image-Based Bioengineering add-On_. Journal of Open Source Software, 3(22), 506, [https://doi.org/10.21105/joss.00506](https://doi.org/10.21105/joss.00506)
+
 
 # Contributing <a name="Contributing"></a>
-See [CONTRIBUTING](CONTRIBUTING.md)    
-[![Join the chat at https://gitter.im/GIBBONchat/Lobby](https://badges.gitter.im/GIBBONchat/Lobby.svg)](https://gitter.im/GIBBONchat/Lobby?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
+We'd love for you to contribute to GIBBON or even to join the development team! We welcome all sorts of contributions including technical content, documentation developments, or website improvements. Please read our [contributing guidelines](CONTRIBUTING.md).
+
+You can also ask questions and learn more about contributing via Gitter chat: [![Join the chat at https://gitter.im/GIBBONchat/Lobby](https://badges.gitter.im/GIBBONchat/Lobby.svg)](https://gitter.im/GIBBONchat/Lobby?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
 
 # Code of conduct <a name="CodeOfConduct"></a>
 See [CODE_OF_CONDUCT](CODE_OF_CONDUCT.md)
