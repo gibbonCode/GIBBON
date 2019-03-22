@@ -92,6 +92,7 @@ switch contactAlg
     case 4
         contactType='sliding2';
 end
+
 %% Creating model geometry and mesh
 % A box is created with tri-linear hexahedral (hex8) elements using the
 % |hexMeshBox| function. The function offers the boundary faces with

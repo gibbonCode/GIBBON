@@ -1,4 +1,4 @@
-%% DEMO_febio_0006_sphere_indentation
+%% DEMO_febio_0028_sphere_indentation_friction_twist
 % Below is a demonstration for:
 % 
 % * Building geometry for a slab with hexahedral elements, and a
@@ -64,6 +64,9 @@ sphereRadius=sampleHeight/2;
 %Define applied displacement
 sphereDisplacement=sphereRadius; 
 
+%Define prescribed rotation
+prescribedRotation_Z=pi/2;
+
 %Material parameter set
 c1=1e-3; %Shear-modulus-like parameter
 m1=8; %Material parameter setting degree of non-linearity
@@ -71,7 +74,7 @@ k_factor=1e2; %Bulk modulus factor
 k=c1*k_factor; %Bulk modulus
 
 % FEA control settings
-numTimeSteps=10; %Number of time steps desired
+numTimeSteps=20; %Number of time steps desired
 max_refs=25; %Max reforms
 max_ups=0; %Set to zero to use full-Newton iterations
 opt_iter=10; %Optimum number of iterations
@@ -132,6 +135,7 @@ gpatch(Fb1,V1,Cb1,'k',faceAlpha1);
 gpatch(E2,V2,'kw','k',faceAlpha1); 
 colormap(gjet(6)); icolorbar;
 axisGeom(gca,fontSize);
+camlight headlight; 
 
 hs=subplot(1,2,2); hold on; 
 title('Cut view of solid mesh','FontSize',fontSize);
@@ -195,7 +199,8 @@ bcSupportList=unique(Fr(:));
 bcPrescribeList=unique(E2(:));
 bcPrescribeMagnitudes=[0 0 -(sphereDisplacement+contactInitialOffset)];
 
-%Visualize BC's
+%%
+% Visualize BC's
 hf=cFigure;
 title('Boundary conditions model','FontSize',fontSize);
 xlabel('X','FontSize',fontSize); ylabel('Y','FontSize',fontSize); zlabel('Z','FontSize',fontSize);
@@ -227,7 +232,6 @@ febio_spec.Module.ATTR.type='solid';
 
 %Control section
 febio_spec.Control.analysis.ATTR.type='static';
-febio_spec.Control.title='Cube analysis';
 febio_spec.Control.time_steps=numTimeSteps;
 febio_spec.Control.step_size=1/numTimeSteps;
 febio_spec.Control.time_stepper.dtmin=dtmin;
@@ -304,16 +308,21 @@ febio_spec.Boundary.rigid_body{1}.fixed{2}.ATTR.bc='y';
 febio_spec.Boundary.rigid_body{1}.fixed{3}.ATTR.bc='Rx';
 febio_spec.Boundary.rigid_body{1}.fixed{4}.ATTR.bc='Ry';
 febio_spec.Boundary.rigid_body{1}.fixed{5}.ATTR.bc='Rz';
-febio_spec.Boundary.rigid_body{1}.prescribed.ATTR.bc='z';
-febio_spec.Boundary.rigid_body{1}.prescribed.ATTR.lc=1;
-febio_spec.Boundary.rigid_body{1}.prescribed.VAL=bcPrescribeMagnitudes(3);
+
+febio_spec.Boundary.rigid_body{1}.prescribed{1}.ATTR.bc='z';
+febio_spec.Boundary.rigid_body{1}.prescribed{1}.ATTR.lc=1;
+febio_spec.Boundary.rigid_body{1}.prescribed{1}.VAL=bcPrescribeMagnitudes(3);
+
+febio_spec.Boundary.rigid_body{1}.prescribed{2}.ATTR.bc='Rz';
+febio_spec.Boundary.rigid_body{1}.prescribed{2}.ATTR.lc=2;
+febio_spec.Boundary.rigid_body{1}.prescribed{2}.VAL=prescribedRotation_Z;
 
 %Contact section
 switch contactType
     case 'sticky'
         febio_spec.Contact.contact{1}.ATTR.surface_pair=febio_spec.Geometry.SurfacePair{1}.ATTR.name;
         febio_spec.Contact.contact{1}.ATTR.type='sticky';
-        febio_spec.Contact.contact{1}.penalty=100;
+        febio_spec.Contact.contact{1}.penalty=10;
         febio_spec.Contact.contact{1}.laugon=0;
         febio_spec.Contact.contact{1}.tolerance=0.1;
         febio_spec.Contact.contact{1}.minaug=0;
@@ -324,7 +333,7 @@ switch contactType
     case 'facet-to-facet sliding'
         febio_spec.Contact.contact{1}.ATTR.surface_pair=febio_spec.Geometry.SurfacePair{1}.ATTR.name;
         febio_spec.Contact.contact{1}.ATTR.type='facet-to-facet sliding';
-        febio_spec.Contact.contact{1}.penalty=200;
+        febio_spec.Contact.contact{1}.penalty=10;
         febio_spec.Contact.contact{1}.auto_penalty=1;
         febio_spec.Contact.contact{1}.two_pass=0;
         febio_spec.Contact.contact{1}.laugon=0;
@@ -337,7 +346,7 @@ switch contactType
     case 'sliding_with_gaps'
         febio_spec.Contact.contact{1}.ATTR.surface_pair=febio_spec.Geometry.SurfacePair{1}.ATTR.name;
         febio_spec.Contact.contact{1}.ATTR.type='sliding_with_gaps';
-        febio_spec.Contact.contact{1}.penalty=100;
+        febio_spec.Contact.contact{1}.penalty=10;
         febio_spec.Contact.contact{1}.auto_penalty=1;
         febio_spec.Contact.contact{1}.two_pass=0;
         febio_spec.Contact.contact{1}.laugon=0;
@@ -353,7 +362,7 @@ switch contactType
     case 'sliding2'
         febio_spec.Contact.contact{1}.ATTR.surface_pair=febio_spec.Geometry.SurfacePair{1}.ATTR.name;
         febio_spec.Contact.contact{1}.ATTR.type='sliding2';
-        febio_spec.Contact.contact{1}.penalty=30;
+        febio_spec.Contact.contact{1}.penalty=10;
         febio_spec.Contact.contact{1}.auto_penalty=1;
         febio_spec.Contact.contact{1}.two_pass=0;
         febio_spec.Contact.contact{1}.laugon=0;
@@ -363,6 +372,18 @@ switch contactType
         febio_spec.Contact.contact{1}.search_tol=0.01;
         febio_spec.Contact.contact{1}.search_radius=mean(pointSpacings)/2;
 end
+
+%LoadData section
+febio_spec.LoadData.loadcurve{1}.ATTR.id=1;
+febio_spec.LoadData.loadcurve{1}.ATTR.type='linear';
+febio_spec.LoadData.loadcurve{1}.point.VAL=[0 0; 1 1];
+
+t=linspace(0,1,25); 
+l=(1-cos(t*2*pi))/2;
+febio_spec.LoadData.loadcurve{2}.ATTR.id=2;
+febio_spec.LoadData.loadcurve{2}.ATTR.type='linear';
+febio_spec.LoadData.loadcurve{2}.point.VAL=[t(:) l(:)];
+
 
 %Output section 
 % -> log file
@@ -423,7 +444,7 @@ if runFlag==1 %i.e. a succesful run
     N_disp_mat_n(:,:,2:end)=N_disp_mat;
     N_disp_mat=N_disp_mat_n;
     DN=N_disp_mat(:,:,end);
-    DN_magnitude=sqrt(sum(DN(:,3).^2,2));
+    DN_magnitude=sqrt(sum(DN.^2,2));
     V_def=V+DN;
     V_DEF=N_disp_mat+repmat(V,[1 1 size(N_disp_mat,3)]);
     X_DEF=V_DEF(:,1,:);
@@ -436,11 +457,15 @@ if runFlag==1 %i.e. a succesful run
     % deformations 
     
     % Create basic view and store graphics handle to initiate animation
+    [t,p,R]=cart2sph(V_def(:,1),V_def(:,2),V_def(:,3));
+    
     hf=cFigure; %Open figure  
     gtitle([febioFebFileNamePart,': Press play to animate']);
     hp1=gpatch(Fb1,V_def,CF,'k',1); %Add graphics object to animate
-    hp2=gpatch(E2,V_def,'kw','none',faceAlpha2); %Add graphics object to animate
-    gpatch(Fb1,V,0.5*ones(1,3),'none',0.25); %A static graphics object
+    
+    hp2=gpatch(E2,V_def,[0.5*(sin(6*t)+1)*ones(1,3)],'none',1); %Add graphics object to animate
+    hp2.FaceColor='interp';
+%     gpatch(Fb1,V,0.5*ones(1,3),'none',0.25); %A static graphics object
     
     axisGeom(gca,fontSize); 
     colormap(gjet(250)); colorbar;

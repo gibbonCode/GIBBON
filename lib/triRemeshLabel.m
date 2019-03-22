@@ -42,7 +42,7 @@ end
 [Fb,Vb]=patchCleanUnused(Fb,Vb);
 
 % Remove three connected triangles
-[Fb,Vb,Cb]=triSurfRemoveThreeConnect(Fb,Vb,Cb);
+% [Fb,Vb,Cb]=triSurfRemoveThreeConnect(Fb,Vb,Cb);
 
 %% 
 % _*GIBBON footer text*_ 

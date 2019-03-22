@@ -338,12 +338,13 @@ if runFlag==1 %i.e. a succesful run
 end
 
 %%
-% Publishing GIF animation in html folder to render documentation with
-% gif
-[docsPath,docName,~]=fileparts(mfilename('fullpath'));
-inputStruct.defaultPath=fullfile(defaultFolder,'docs','html');
-inputStruct.imName=[docName,'_anim8'];
-exportGifAnim8(hf,inputStruct,0);
+% Publishing GIF animation in html folder to render documentation with gif 
+
+% Uncomment to re-create gif
+% [docsPath,docName,~]=fileparts(mfilename('fullpath'));
+% inputStruct.defaultPath=fullfile(defaultFolder,'docs','html');
+% inputStruct.imName=[docName,'_anim8'];
+% exportGifAnim8(hf,inputStruct,0);
 
 %%
 %

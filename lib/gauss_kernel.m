@@ -1,5 +1,12 @@
 function hg=gauss_kernel(k,nd,f,m)
 
+% function hg=gauss_kernel(k,nd,f,m)
+% ------------------------------------------------------------------------
+% 
+%
+% ------------------------------------------------------------------------
+
+%%
 switch m
     case {'sigma',1}
         %NOTE: This method is equivalent to using hg = fspecial('gaussian',[k k], S)
