@@ -32,7 +32,7 @@ end
 %%
 
 V_new=zeros(size(F,1),size(V,2));
-for q=1:1:size(V,2);
+for q=1:1:size(V,2)
     X=V(:,q);
     V_new(:,q)=mean(X(F),2);    
 end
@@ -45,7 +45,7 @@ Vt=[V;V_new];
 indAddRep=repmat(indAdd(:)',size(F,2),1);
 Ft(:,3)=indAddRep(:);
 
-%Color vector now assumes all schemes allow for simply copying of the color
+%Color vector now assumes all schemes allow for simple copying of the color
 %information
 if ~isempty(C)
     Ct=C(Ft(:,3)-size(V,1));
@@ -53,10 +53,10 @@ else
     Ct=[];
 end
 
+%% Collect output
 varargout{1}=Ft;
 varargout{2}=Vt;
 varargout{3}=Ct;
-
  
 %% 
 % _*GIBBON footer text*_ 

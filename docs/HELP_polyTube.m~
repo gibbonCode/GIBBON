@@ -70,15 +70,44 @@ drawnow;
 optStruct.r=r;
 optStruct.nr=12;
 optStruct.patchType='tri';
-optStruct.closeOpt=1;
+optStruct.closeOption=0;
 [Fs,Vs,Cs,Cs_rgb,Cs_d]=polyTube(V,optStruct);
+
+%%
+
+%% 
+numHeight=size(V,1);
+
+indTop=numHeight:numHeight:size(Vs,1);
+[Ft,Vt]=regionTriMesh3D({Vs(indTop,:)},[],0);
+
+indBottom=1:numHeight:size(Vs,1);
+[Fb,Vb]=regionTriMesh3D({Vs(indBottom,:)},[],0);
+
+[Fs,Vs,Cs]=joinElementSets({Fs,Ft,Fb},{Vs,Vt,Vb});
+[Fs,Vs,~,ind2]=mergeVertices(Fs,Vs);
+
+E1=patchEdges(Fs(Cs==1,:),0);
+for q=2:1:3
+    Eb=patchBoundary(Fs(Cs==q,:),Vs);
+    if any(isrowmember(Eb,E1,0))
+        Fs(Cs==q,:)=fliplr(Fs(Cs==q,:));
+    end
     
+end
+   
+    
+% [Fs,Ls]=patchNormalFix(Fs,[],1);
+
 %%
 
 cFigure; hold on;
 title('Spatially varying the radius','fontSize',fontSize);
+
 gpatch(Fs,Vs,'kw','k');
 patchNormPlot(Fs,Vs);
+% plotV(Vs(indTop,:),'r.','MarkerSize',25);
+% plotV(Vs(indBottom,:),'r.','MarkerSize',25);
 camlight headlight; lighting gouraud; 
 colormap gjet; 
 axisGeom; 

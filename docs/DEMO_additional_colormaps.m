@@ -18,13 +18,17 @@ Z=10*exp( -0.5.*((X./s).^2+(Y./s).^2));
 Z(X<0)=-Z(X<0);
 
 [F,V,C]=surf2patch(X,Y,Z,Z);
-% F=[F(:,[1 2 3]);F(:,[3 4 1]);];
 
-colormapset={'gjet','grayjet','graygjet','warmcold','wjet','bloodbone','fireice','che','wcbp','viridis','magma','inferno','plasma'};
+colormapset={'gjet','grayjet','graygjet',...
+    'warmcold','wjet','bloodbone',...
+    'fireice','che','wcbp',...
+    'viridis','magma','inferno',...
+    'plasma','gviridis','igviridis'};
 
 %% The gibbon color maps
-% A jet like colormap inspired by the Google colors. Has quite a
-% homogeneous color intensity.
+
+%%
+% Visualizing all additional color maps
 
 for q=1:1:numel(colormapset)    
 cFigure; 
@@ -40,8 +44,8 @@ subplot(1,2,2); hold on;
 imagesc(Z);
 colormap(colormapset{q}); colorbar;
 axis tight; axis equal; axis xy; box on;
-end
 drawnow; 
+end
 
 %%
 %

@@ -2,7 +2,10 @@ function [varargout]=patchNormalFix(varargin)
 
 % function [F,L]=patchNormalFix(F,logicGroup,waitbarOn)
 % ------------------------------------------------------------------------
-
+%
+%
+% Change log (started 2019/03/29): 
+%  
 % ------------------------------------------------------------------------
 
 %% Parse input

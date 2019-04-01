@@ -80,8 +80,8 @@ if closeOpt==1
     Fb=fliplr(Fb);
     
     [F,V,C]=joinElementSets({F,Ft,Fb},{V,Vt,Vb});
-    nKeep=5; 
-    [F,V,~,ind2]=mergeVertices(F,V,nKeep);
+    
+    [F,V,~,ind2]=mergeVertices(F,V);
     indTop=ind2(indTop);
     indBottom=ind2(indBottom);
 else
