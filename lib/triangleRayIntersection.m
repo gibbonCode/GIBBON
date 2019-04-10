@@ -57,7 +57,7 @@ function [V_intersect,L_intersect,T] = triangleRayIntersection (V_ori,R,V,F,optS
 %  * http://fileadmin.cs.lth.se/cs/Personal/Tomas_Akenine-Moller/raytri/
 %  * http://fileadmin.cs.lth.se/cs/Personal/Tomas_Akenine-Moller/raytri/raytri.c
 %
-% Kevin Matthaus Moerman (kevinmoerman@hotmail.com)
+% Kevin Mattheus Moerman (kevinmoerman@hotmail.com)
 % 2013/12/18: Changed for patch type input and Cartesian coordinate output
 % TO DO: Full validation, help adjustment according to changes, generation
 % of DEMO file

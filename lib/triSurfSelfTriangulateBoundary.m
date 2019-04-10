@@ -1,5 +1,16 @@
 function [F1,V1,ind1]=triSurfSelfTriangulateBoundary(F1,V1,ind1,angleThreshold,isClosedLoop)
 
+% function [F1,V1,ind1]=triSurfSelfTriangulateBoundary(F1,V1,ind1,angleThreshold,isClosedLoop)
+% ------------------------------------------------------------------------
+%
+%
+%
+% ------------------------------------------------------------------------
+
+%%
+
+ind1=ind1(:); %Force column
+
 if ind1(1)==ind1(end)
     ind1=ind1(1:end-1);
     cropNeeded=1;
@@ -38,6 +49,11 @@ while 1
     indVertexNow=ind1(indSharp(indNow));
     indEdges=(es(any(es==indVertexNow,2),:));
     f=fliplr(ind1(ismember(ind1,indEdges(:)))');
+
+    if size(f,2)~=3
+        warning('Invalid new triangle proposed');
+        break
+    end
     
     F1=[F1;f];    
     
@@ -53,6 +69,7 @@ end
 if cropNeeded
     ind1(end+1)=ind1(1);
 end
+
 %% 
 % _*GIBBON footer text*_ 
 % 

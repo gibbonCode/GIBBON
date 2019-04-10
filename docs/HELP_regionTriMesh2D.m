@@ -123,7 +123,15 @@ plotV(V2,'b-','LineWidth',2);
 axis tight; 
 drawnow;
 
+%%
 
+[F,V,boundaryInd]=regionTriMesh2D(regionCell,pointSpacing,1,plotOn);
+
+cFigure; hold on;
+gpatch(F,V,'gw');
+plotV(V(boundaryInd,:),'b.','markerSize',25);
+axisGeom;
+drawnow; 
 
 %% 
 %

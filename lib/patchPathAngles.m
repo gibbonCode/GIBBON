@@ -1,5 +1,7 @@
 function [indAngles]=patchPathAngles(F,V,ind,isClosedLoop)
 
+ind=ind(:);
+
 %Get non-unique edge set
 E=patchEdges(F,0);
 Es=sort(E,2); 

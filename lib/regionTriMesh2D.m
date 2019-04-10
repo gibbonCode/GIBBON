@@ -1,4 +1,4 @@
-function [F,V]=regionTriMesh2D(varargin)
+function [varargout]=regionTriMesh2D(varargin)
 
 % function [F,V]=regionTriMesh2D(regionCell,pointSpacing,resampleCurveOpt,plotOn)
 % ------------------------------------------------------------------------
@@ -205,9 +205,8 @@ else
     %% CONSTRAINED SMOOTHENING OF THE MESH
     
 %     switch gridType
-%         case 'tri'
-            TR = triangulation(F,V);
-            boundEdges = freeBoundary(TR);
+%         case 'tri'           
+            boundEdges = patchBoundary(F,V);
             boundaryInd=unique(boundEdges(:));
             
             smoothPar.LambdaSmooth=0.5;
@@ -231,6 +230,11 @@ else
     
 end
  
+%% Collect ouput
+varargout{1}=F;
+varargout{2}=V;
+varargout{3}=boundaryInd;
+
 %% 
 % _*GIBBON footer text*_ 
 % 

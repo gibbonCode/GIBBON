@@ -28,7 +28,11 @@ function [elementStruct,nodeStruct]=import_INP(fileName,numberNodesElement,logic
 %
 % Kevin Mattheus Moerman
 % kevinmoerman@hotmail.com
-% 23/08/2012
+%
+% Change log: 
+% 2009/01/01
+% 2012/08/23
+% 2019/04/09 Fix end of file error if ** is not found
 %------------------------------------------------------------------------
 
 %%
@@ -36,61 +40,116 @@ disp('--- import_INP ---');
 
 %% IMPORTING .INP FILE INTO CELL ARRAY
 disp('IMPORTING .INP FILE INTO CELL ARRAY');
-[T]=txtfile2cell(fileName);
-
-%% Finding node and element fields
-
-targets={'*NODE','*ELEMENT','**'}; %Text form targets
-
-%Start scanning
-lineCount=1;
-lineIndexTarget=zeros(size(targets));
-i_target=1;
-while 1
-    l=T{lineCount};
-    target=targets{i_target};
-    if contains(upper(l),target)
-        lineIndexTarget(i_target)=lineCount;
-        i_target=i_target+1;
-        disp(['---> Found target:',target,' on line ',num2str(lineCount)]);
-    end    
-    lineCount=lineCount+1;
-    if nnz(lineIndexTarget)==(numel(targets))
-        break
-    end
-end
-nodeTextField=T(lineIndexTarget(1)+1:lineIndexTarget(2)-3); %NODE TEXT FIELD
-elementTextField=T(lineIndexTarget(2)+1:lineIndexTarget(3)-1); %ELEMENT TEXT FIELD
-
-%% CONVERTING TEXT DATA TO MATLAB ARRAYS
-
-disp('CONVERTING TEXT FIELDS TO MATLAB ARRAYS');
-
-%Element data
-elementTextScanFormat=repmat('%f,',1,numberNodesElement+1); %+1 due to element index number followed by nodal connectivity
-elementTextScanFormat=elementTextScanFormat(1:end-1); %Trim off trailing comma
-elementDataField=cell2mat(cellfun(@(x) cell2mat(textscan(x,elementTextScanFormat)),elementTextField,'UniformOutput',0));
-E=elementDataField(:,2:end); %The element connectivity matrix
-elementIndex=elementDataField(:,1); %The element connectivity matrix
-elementStruct.E=E;
-elementStruct.E_ind=elementIndex(:);
-elementStruct.E_type=T{lineIndexTarget(2)};
-disp('---> Created elementStruct');
-        
-%Node data
-nodeTextScanFormat=repmat('%f,',1,4); %4 due to node index number followed by x,y,z
-nodeTextScanFormat=nodeTextScanFormat(1:end-1); %Trim off trailing comma
-nodeDataField=cell2mat(cellfun(@(x) cell2mat(textscan(x,nodeTextScanFormat)),nodeTextField,'UniformOutput',0));
-N=nodeDataField(:,2:end); %The nodal coordinates
-nodeIndex=nodeDataField(:,1);
-nodeStruct.N=N;
-nodeStruct.N_ind=nodeIndex(:);
-disp('---> Created nodeStruct');
+T=txtfile2cell(fileName);
 
 %%
 
-E=elementStruct.E;
-N=nodeStruct.N;
+targets={'*NODE','*ELEMENT'}; %Text form targets
+
+%Start scanning
+lineCount=1;
+numLines=numel(T);
+while 1
+    l=T{lineCount}; 
+    if contains(l,targets,'IgnoreCase',true)
+        targetIndex=0;
+        for q=1:1:numel(targets)
+            if contains(l,targets{q},'IgnoreCase',true)
+                targetIndex=q;
+            end
+        end                
+        switch targetIndex
+            case 1 %Node reading mode                
+                
+                siz=[numel(T),4];
+                D=readLines(T,lineCount+1,siz);
+                logicKeep=~any(isnan(D),2);
+                NN=D(logicKeep,:);
+                nodeIndex=NN(:,1);
+                N=NN(:,2:end);
+            case 2 %Element reading mode                
+                elementStruct.E_type=l;
+                siz=[numel(T),numberNodesElement+1];
+                D=readLines(T,lineCount+1,siz);
+                logicKeep=~any(isnan(D),2);
+                EE=D(logicKeep,:);
+                elementIndex=EE(:,1);
+                E=EE(:,2:end);
+        end        
+    end    
+    if lineCount>=numLines        
+        break
+    end    
+    lineCount=lineCount+1;
+end
+
+%%
+% %% Finding node and element fields
+% 
+% targets={'*NODE','*ELEMENT','*'}; %Text form targets
+% 
+% %Start scanning
+% lineCount=1;
+% lineIndexTarget=zeros(size(targets));
+% i_target=1;
+% numLines=numel(T);
+% while 1
+%     l=T{lineCount};
+%     target=targets{i_target};
+%     if contains(upper(l),target)
+%         lineIndexTarget(i_target)=lineCount;
+%         i_target=i_target+1;
+%         disp(['---> Found target:',target,' on line ',num2str(lineCount)]);
+%     end    
+%     lineCount=lineCount+1;
+%     if nnz(lineIndexTarget)==(numel(targets))
+%         break
+%     end
+%     
+%     if lineCount>=numLines
+%         lineIndexTarget(end)=numLines;
+%         break
+%     end
+% end
+% nodeTextField=T(lineIndexTarget(1)+1:lineIndexTarget(2)-3); %NODE TEXT FIELD
+% elementTextField=T(lineIndexTarget(2)+1:lineIndexTarget(3)-1); %ELEMENT TEXT FIELD
+% 
+% %% CONVERTING TEXT DATA TO MATLAB ARRAYS
+% 
+% disp('CONVERTING TEXT FIELDS TO MATLAB ARRAYS');
+% 
+% %Element data
+% elementTextScanFormat=repmat('%f,',1,numberNodesElement+1); %+1 due to element index number followed by nodal connectivity
+% elementTextScanFormat=elementTextScanFormat(1:end-1); %Trim off trailing comma
+% elementDataField=cell2mat(cellfun(@(x) cell2mat(textscan(x,elementTextScanFormat)),elementTextField,'UniformOutput',0));
+% E=elementDataField(:,2:end); %The element connectivity matrix
+% elementIndex=elementDataField(:,1); %The element connectivity matrix
+% elementStruct.E=E;
+% elementStruct.E_ind=elementIndex(:);
+% elementStruct.E_type=T{lineIndexTarget(2)};
+% disp('---> Created elementStruct');
+%         
+% %Node data
+% nodeTextScanFormat=repmat('%f,',1,4); %4 due to node index number followed by x,y,z
+% nodeTextScanFormat=nodeTextScanFormat(1:end-1); %Trim off trailing comma
+% nodeDataField=cell2mat(cellfun(@(x) cell2mat(textscan(x,nodeTextScanFormat)),nodeTextField,'UniformOutput',0));
+% N=nodeDataField(:,2:end); %The nodal coordinates
+% nodeIndex=nodeDataField(:,1);
+% nodeStruct.N=N;
+% nodeStruct.N_ind=nodeIndex(:);
+% disp('---> Created nodeStruct');
+% %% 
+% 
+% E=elementStruct.E;
+% N=nodeStruct.N;
+
+%%
+
+elementStruct.E=E;
+elementStruct.E_ind=elementIndex(:);
+
+nodeStruct.N=N;
+nodeStruct.N_ind=nodeIndex(:);
 
 %% REMOVING JUMPS IN NODE NUMBERING IF REQUESTED
 
@@ -108,6 +167,22 @@ end
 disp('DONE!');
 end
 
+%%
+function D=readLines(T,lineCount,siz)
+
+formatSpec=repmat('%f, ',1,siz(2)+1);
+formatSpec=formatSpec(1:end-2);
+
+D=nan(siz);
+for q=lineCount:numel(T)
+    try          
+        D(q,:)=sscanf(T{q},formatSpec);
+    catch 
+        break
+    end
+end
+
+end
  
 %% 
 % _*GIBBON footer text*_ 

@@ -1,4 +1,4 @@
-function [F,V]=regionTriMesh3D(varargin)
+function [varargout]=regionTriMesh3D(varargin)
 
 % function [F,V]=regionTriMesh3D(regionCell,pointSpacing,resampleCurveOpt,interpMethod)
 % ------------------------------------------------------------------------
@@ -111,7 +111,7 @@ end
 
 %% Use regionTriMesh2D to mesh region in 2D
 
-[F,V]=regionTriMesh2D(regionCell2D,pointSpacing,resampleCurveOpt,0);
+[F,V,boundaryInd]=regionTriMesh2D(regionCell2D,pointSpacing,resampleCurveOpt,0);
 
 %% Interpolate to obtain Z coordinates
 
@@ -119,6 +119,11 @@ interpFunc = scatteredInterpolant(Vtcr(:,[1 2]),Vtcr(:,3),interpMethod);
 V(:,3)=interpFunc(V(:,[1 2]));
 V=(R_fit*V')';
 V=V+Vt_mean(ones(size(V,1),1),:);
+
+%% Collect ouput
+varargout{1}=F;
+varargout{2}=V;
+varargout{3}=boundaryInd;
 
 %% Smoothen
 % TR = triangulation(F,V);

@@ -1,5 +1,6 @@
 function [F_uni,V_uni,C_uni,IND_V,IND_F,F_count]=unique_patch(varargin)
 
+% function [F_uni,V_uni,C_uni,IND_V,IND_F,F_count]=unique_patch(F,V,C,numDigitKeep)
 %%
 
 switch nargin

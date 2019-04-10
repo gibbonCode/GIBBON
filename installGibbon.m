@@ -200,18 +200,18 @@ hf.UserData.uihandles.hTextStatement.String='Done integrating help'; drawnow;
 pause(0.5); 
 
 %% Compiling MEX files
-hf.UserData.uihandles.hTextStatement.String='Compiling mex files (required for faster geodesic remeshing)'; drawnow;
-
-answer = questdlg('Would you like to try compile mex files now?','Compiling mex files','Yes','No','Yes');
-
-switch answer
-    case 'Yes'
-        compile_mex;
-        hf.UserData.uihandles.hTextStatement.String='Done compiling mex files'; drawnow;
-    otherwise
-        hf.UserData.uihandles.hTextStatement.String='Skipped compiling mex files'; drawnow;     
-end
-pause(0.5); 
+% hf.UserData.uihandles.hTextStatement.String='Compiling mex files (required for faster geodesic remeshing)'; drawnow;
+% 
+% answer = questdlg('Would you like to try compile mex files now?','Compiling mex files','Yes','No','Yes');
+% 
+% switch answer
+%     case 'Yes'
+%         compile_mex;
+%         hf.UserData.uihandles.hTextStatement.String='Done compiling mex files'; drawnow;
+%     otherwise
+%         hf.UserData.uihandles.hTextStatement.String='Skipped compiling mex files'; drawnow;     
+% end
+% pause(0.5); 
 
 %%
 

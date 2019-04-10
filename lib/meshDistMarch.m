@@ -36,7 +36,6 @@ function [varargout]=meshDistMarch(varargin)
 
 %Default option structure
 defaultOptionStruct.toleranceLevel=0;
-defaultOptionStruct.numSeeds=1;
 defaultOptionStruct.waitBarOn=false(1,1);
 defaultOptionStruct.unitEdgeOn=false(1,1);
 defaultOptionStruct.W=[];
@@ -57,6 +56,8 @@ switch nargin
         indStart=varargin{3};
         optionStruct=varargin{4};
 end
+defaultOptionStruct.numSeeds=numel(indStart);
+
 [optionStruct]=structComplete(optionStruct,defaultOptionStruct,1);
 
 if nargout==2
