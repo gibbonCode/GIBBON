@@ -60,9 +60,15 @@ end
 %%
 
 if isa(F,'cell') %Cell array of faces
-    hp=[];
-    for q=1:1:numel(F)
-        hp(q)=patchNormPlotStep(F{q},V,a,patchType,patchColor);
+    hp=gobjects(numel(F),1);
+    if isa(V,'cell') %Cell array of vertices
+        for q=1:1:numel(F)
+            hp(q)=patchNormPlotStep(F{q},V{q},a,patchType,patchColor);
+        end
+    else       
+        for q=1:1:numel(F)
+            hp(q)=patchNormPlotStep(F{q},V,a,patchType,patchColor);
+        end
     end
 else
     hp=patchNormPlotStep(F,V,a,patchType,patchColor);

@@ -60,6 +60,22 @@ end
 %%
 
 switch elementType
+    case 'penta6'
+        F_tri=[E(:,[3 2 1]);... %face 1
+           E(:,[4 5 6]);... %face 2
+            ]; 
+        F_quad=[E(:,[1 2 5 4]);... %face 3
+                E(:,[2 3 6 5]);... %face 4
+                E(:,[2 3 6 5]);... %face 5
+                E(:,[3 1 4 6]);... %face 6
+            ];
+        F={F_tri,F_quad};
+        
+        C_tri=repmat(C,2,1);
+        C_quad=repmat(C,4,1);
+        C={C_tri,C_quad};
+        
+        CF=C;
     case 'tri3' %Linear triangles
         F=E;
         C=C;

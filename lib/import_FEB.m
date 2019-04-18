@@ -43,9 +43,10 @@ febXML = xmlread(febFileName);
 
 %% RETRIEVING ELEMENT DATA
 
-
 switch febio_spec
     case '2.0'
+        [elementCell]=get_FEB_elements(febXML);
+    case '2.5'
         [elementCell]=get_FEB_elements(febXML);
     otherwise % assume compatible with 1.2
         [elementCell]=get_FEB_elements_v1p2(febXML);

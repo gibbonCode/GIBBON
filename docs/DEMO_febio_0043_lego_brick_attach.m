@@ -53,7 +53,7 @@ k_factor=25; %Bulk modulus factor
 k=c1*k_factor; %Bulk modulus
 
 % FEA control settings
-numTimeSteps=25; %Number of time steps desired
+numTimeSteps=10; %Number of time steps desired
 max_refs=25; %Max reforms
 max_ups=0; %Set to zero to use full-Newton iterations
 opt_iter=12; %Optimum number of iterations
@@ -71,8 +71,8 @@ maxaug=10;
 fric_coeff=0.1;
 
 % Boundary condition parameters
-displacementMagnitude=-1;
-initialOffset=0.1;
+initialOffset=2;
+displacementMagnitude=-1.6973-initialOffset; %1.6973
 
 %% Creating model geometry and mesh
 
@@ -206,14 +206,15 @@ Fb2=Fb2+size(V1,1);
 E1=E;
 E2=E+size(V1,1); 
 E=[E1;E2]; 
-
+Fb=[Fb1;Fb2];
+% Cb=[Cb;Cb_max(Cb(:))];
 %%
 % Plotting joined geometry
 cFigure;
 title('Joined node sets','FontSize',fontSize);
 hold on;
-gpatch(Fb1,V,'r','k'); 
-gpatch(Fb2,V,'b','k');
+gpatch(Fb1,V,'rw','k'); 
+gpatch(Fb2,V,'bw','k');
 axisGeom(gca,fontSize);
 camlight headlight;
 drawnow;
@@ -365,21 +366,21 @@ febio_spec.Boundary.prescribe{1}.scale.VAL=1;
 febio_spec.Boundary.prescribe{1}.relative=1;
 febio_spec.Boundary.prescribe{1}.value=displacementMagnitude;
 
-%Contact section
-febio_spec.Contact.contact{1}.ATTR.surface_pair=febio_spec.Geometry.SurfacePair{1}.ATTR.name;
-febio_spec.Contact.contact{1}.ATTR.type='sliding-elastic';
-febio_spec.Contact.contact{1}.two_pass=1;
-febio_spec.Contact.contact{1}.laugon=laugon;
-febio_spec.Contact.contact{1}.tolerance=0.2;
-febio_spec.Contact.contact{1}.gaptol=0;
-febio_spec.Contact.contact{1}.minaug=minaug;
-febio_spec.Contact.contact{1}.maxaug=maxaug;
-febio_spec.Contact.contact{1}.search_tol=0.01;
-febio_spec.Contact.contact{1}.search_radius=0.1;
-febio_spec.Contact.contact{1}.symmetric_stiffness=0;
-febio_spec.Contact.contact{1}.auto_penalty=1;
-febio_spec.Contact.contact{1}.penalty=contactPenalty;
-febio_spec.Contact.contact{1}.fric_coeff=fric_coeff;
+% %Contact section
+% febio_spec.Contact.contact{1}.ATTR.surface_pair=febio_spec.Geometry.SurfacePair{1}.ATTR.name;
+% febio_spec.Contact.contact{1}.ATTR.type='sliding-elastic';
+% febio_spec.Contact.contact{1}.two_pass=1;
+% febio_spec.Contact.contact{1}.laugon=laugon;
+% febio_spec.Contact.contact{1}.tolerance=0.2;
+% febio_spec.Contact.contact{1}.gaptol=0;
+% febio_spec.Contact.contact{1}.minaug=minaug;
+% febio_spec.Contact.contact{1}.maxaug=maxaug;
+% febio_spec.Contact.contact{1}.search_tol=0.01;
+% febio_spec.Contact.contact{1}.search_radius=0.1;
+% febio_spec.Contact.contact{1}.symmetric_stiffness=0;
+% febio_spec.Contact.contact{1}.auto_penalty=1;
+% febio_spec.Contact.contact{1}.penalty=contactPenalty;
+% febio_spec.Contact.contact{1}.fric_coeff=fric_coeff;
 
 %LoadData section
 febio_spec.LoadData.loadcurve{1}.ATTR.id=1;
@@ -446,36 +447,21 @@ if runFlag==1 %i.e. a succesful run
     X_DEF=V_DEF(:,1,:);
     Y_DEF=V_DEF(:,2,:);
     Z_DEF=V_DEF(:,3,:);
-        
-    % Importing element strain energies from a log file
-    [~,E_energy,~]=importFEBio_logfile(fullfile(savePath,febioLogFileName_strainEnergy)); %Element stresses
-    
-    %Remove nodal index column
-    E_energy=E_energy(:,2:end,:);
-    
-    %Add initial state i.e. zero displacement
-    sizImport=size(E_energy); 
-    sizImport(3)=sizImport(3)+1;
-    E_energy_mat_n=zeros(sizImport);
-    E_energy_mat_n(:,:,2:end)=E_energy;
-    E_energy=E_energy_mat_n;
-        
-    C=faceToVertexMeasure(E,V,E_energy(:,:,end));
-        
-    %% 
+
+    %%
     % Plotting the simulated results using |anim8| to visualize and animate
     % deformations 
     
     % Create basic view and store graphics handle to initiate animation    
     hf=cFigure; %Open figure  
     gtitle([febioFebFileNamePart,': Press play to animate']);
-    hp1=gpatch(Fb,V_def,C,'k',1); %Add graphics object to animate    
+    hp1=gpatch(Fb,V_def,DN_magnitude,DN_magnitude,1); %Add graphics object to animate    
     hp1.FaceColor='interp';
-    hp2=gpatch(Fc,V_def,'kw','none',0.5); %Add graphics object to animate
+%     gpatch(Fb,V,'kw','none',0.5); %Add graphics object to animate
     
     axisGeom(gca,fontSize); 
     colormap(gjet(250)); colorbar;
-    caxis([0 max(E_energy(:))/40]);
+    caxis([0 max(DN_magnitude(:))]);
     axis([min(X_DEF(:)) max(X_DEF(:)) min(Y_DEF(:)) max(Y_DEF(:)) min(Z_DEF(:)) max(Z_DEF(:))]);
     camlight headlight;
     
@@ -485,13 +471,11 @@ if runFlag==1 %i.e. a succesful run
         DN=N_disp_mat(:,:,qt); %Current displacement
         DN_magnitude=sqrt(sum(DN.^2,2)); %Current displacement magnitude
         V_def=V+DN; %Current nodal coordinates
-        
-        C=faceToVertexMeasure(E,V,E_energy(:,:,qt));
-         
+                 
         %Set entries in animation structure
-        animStruct.Handles{qt}=[hp1 hp1 hp2]; %Handles of objects to animate
-        animStruct.Props{qt}={'Vertices','CData','Vertices'}; %Properties of objects to animate
-        animStruct.Set{qt}={V_def,C,V_def}; %Property values for to set in order to animate
+        animStruct.Handles{qt}=[hp1 hp1]; %Handles of objects to animate
+        animStruct.Props{qt}={'Vertices','CData'}; %Properties of objects to animate
+        animStruct.Set{qt}={V_def,DN_magnitude}; %Property values for to set in order to animate
     end        
     anim8(hf,animStruct); %Initiate animation feature    
     drawnow;
