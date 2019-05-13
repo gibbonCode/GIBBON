@@ -22,18 +22,17 @@ minV=[-10 -10];
 
 %% CREATING A HONEY-COMB MESH
 
-[Fh,Vh]=honeyCombMesh(minV,maxV,pointSpacing);
+[F,V]=honeyCombMesh(minV,maxV,pointSpacing);
 
 %%
 % Plottting model
 
-C=rand(size(Fh,1),1); %Random color for visualization
+C=rand(size(F,1),1); %Random color for visualization
 
 cFigure; hold on;
 title('The honey-comb mesh','FontSize',fontSize);
-
-gpatch(Fh,Vh,C,'k',1,lineWidth1);
-
+gpatch(F,V,C,'k',1,lineWidth1);
+% patchNormPlot(F,V);
 colormap autumn; 
 axisGeom(gca,fontSize);
 drawnow;

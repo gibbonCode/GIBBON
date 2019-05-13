@@ -2,7 +2,7 @@
 % Below is a demonstration of the features of the |patchConnectivity| function
 
 %% Syntax
-% |[C]=patchConnectivity(F,V);|
+% |[C]=patchConnectivity(F,V,conType);|
 
 %% Description
 % This functions creates connectivity matrices for the input patch data
@@ -20,6 +20,13 @@
 % C.face.vertex
 % C.face.face
 % C.face.edge
+%
+% If the 3rd optional input conType is not provided its default value is
+% 'all' and all connectivity matrices are output in the structure. If not
+% all types are desired the user may request only particular types by
+% setting conType. The following conTypes can be specified: 
+% conType (v stands for vertex, f for face, e for edge): 
+% 'all','vv','vf','ve','ev','ef','ee','fv','ff','fe'
 
 %% Examples
 
@@ -30,7 +37,7 @@ clear; close all; clc;
 % Plot settings
 markerSize=50;
 
-%% Demonstrating |patchConnectivity| for different patch types
+%% Example 1: Demonstrating |patchConnectivity| for different patch types
 
 for testCase=1:3
     
@@ -231,6 +238,37 @@ for testCase=1:3
     drawnow;
     
 end
+
+%% Example 2: Using the conTypes input to control output request
+
+%%
+% Request only the edge-edge connectivity
+C=patchConnectivity(F,V,'ee')
+
+%%
+% Request both the edge-edge connectivity and the face-face connectivity
+C=patchConnectivity(F,V,{'ee','ff'})
+
+%%
+% Loop over all types and compare computation speed
+
+conTypeSet={'all','vv','vf','ve','ev','ef','ee','fv','ff','fe'};
+for q=1:1:numel(conTypeSet)    
+    tic
+    C=patchConnectivity(F,V,conTypeSet{q});    
+    t=toc;
+    disp([conTypeSet{q},': ',num2str(t),' seconds'])
+end
+
+%% 
+%
+% <<gibbVerySmall.gif>>
+% 
+% _*GIBBON*_ 
+% <www.gibboncode.org>
+% 
+% _Kevin Mattheus Moerman_, <gibbon.toolbox@gmail.com>
+ 
 %% 
 % _*GIBBON footer text*_ 
 % 

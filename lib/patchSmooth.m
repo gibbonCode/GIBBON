@@ -24,6 +24,17 @@ end
 
 if isempty(IND_V)
     [~,IND_V]=patchIND(F,V,2);
+%     if isa(F,'cell')        
+%         IND_V=[];
+%         for q=1:1:numel(F)
+%             C=patchConnectivity(F{q},V,'vv');
+%             IND_V=[IND_V C.vertex.vertex];            
+%         end
+%     else
+%         C=patchConnectivity(F,V,'vv');
+%         IND_V=C.vertex.vertex;
+%     end
+
 end
 
 %Smooth

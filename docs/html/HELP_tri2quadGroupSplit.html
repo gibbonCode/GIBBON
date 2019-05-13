@@ -6,7 +6,7 @@
    <!--
 This HTML was auto-generated from MATLAB code.
 To make changes, update the MATLAB code and republish this document.
-      --><title>tri2quadGroupSplit</title><meta name="generator" content="MATLAB 9.5"><link rel="schema.DC" href="http://purl.org/dc/elements/1.1/"><meta name="DC.date" content="2018-09-13"><meta name="DC.source" content="HELP_tri2quadGroupSplit.m"><style type="text/css">
+      --><title>tri2quadGroupSplit</title><meta name="generator" content="MATLAB 9.6"><link rel="schema.DC" href="http://purl.org/dc/elements/1.1/"><meta name="DC.date" content="2019-04-23"><meta name="DC.source" content="HELP_tri2quadGroupSplit.m"><style type="text/css">
 html,body,div,span,applet,object,iframe,h1,h2,h3,h4,h5,h6,p,blockquote,pre,a,abbr,acronym,address,big,cite,code,del,dfn,em,font,img,ins,kbd,q,s,samp,small,strike,strong,sub,sup,tt,var,b,u,i,center,dl,dt,dd,ol,ul,li,fieldset,form,label,legend,table,caption,tbody,tfoot,thead,tr,th,td{margin:0;padding:0;border:0;outline:0;font-size:100%;vertical-align:baseline;background:transparent}body{line-height:1}ol,ul{list-style:none}blockquote,q{quotes:none}blockquote:before,blockquote:after,q:before,q:after{content:'';content:none}:focus{outine:0}ins{text-decoration:none}del{text-decoration:line-through}table{border-collapse:collapse;border-spacing:0}
 
 html { min-height:100%; margin-bottom:1px; }
@@ -66,72 +66,81 @@ table td { padding:7px 5px; text-align:left; vertical-align:top; border:1px soli
 
 
 
-  </style></head><body><div class="content"><h1>tri2quadGroupSplit</h1><!--introduction--><p>Below is a demonstration of the features of the <tt>tri2quadGroupSplit</tt> function</p><!--/introduction--><h2>Contents</h2><div><ul><li><a href="#2">Syntax</a></li><li><a href="#3">Description</a></li><li><a href="#4">Examples</a></li><li><a href="#6">Convert adjacent triangles by picking the best candidates, keeping unconverted triangles</a></li><li><a href="#8">Convert adjacent triangles by picking best candidates, converting remaining triangles by splitting</a></li><li><a href="#10">Convert adjacent triangles by picking random candidates</a></li></ul></div><pre class="codeinput">clear; close <span class="string">all</span>; clc;
-</pre><h2 id="2">Syntax</h2><p><tt>[F_quad,V_quad,F_tri_remain,V_tri_remain]=tri2quadGroupSplit(F_tri,V_tri,optionStruct);</tt></p><h2 id="3">Description</h2><p>The <tt>tri2quadGroupSplit</tt> function converts the triangulated input data F_tri (faces) and V_tri (vertices) to quadrilateral elements F_quad (faces) and V_quad (vertices). Quadrilateral elements are formed by grouping adjacent triangles. Once a maximum number of quadrilateral elements are formes some triagles may remain. If desired these can also be converted to quadrilateral elements through splitting. If splitting is used the grouped quadrilaterals also require splitting to create a mesh with shared nodal connectivity. Splitting based conversion can be turned off. The remaining triangle set can also be obtained if desired through the optional outputs F_tri_remain (faces) and V_tri_remain (vertices). The third input is the option structure optionStruct with the fields:</p><p>optionStruct.maxAngleDeviation=60*(pi/180); %The maximum angle used for optionStruct.selectionMethod='best'; % or 'random' optionStruct.triangleConvert=0; %Convert the remaining triangles (1) or not (0)</p><h2 id="4">Examples</h2><p>Create test data set</p><pre class="codeinput">testCase=3;
-<span class="keyword">switch</span> testCase
-    <span class="keyword">case</span> 1
-        [F_tri,V_tri]=geoSphere(2,1);
-    <span class="keyword">case</span> 2
-        [F_tri,V_tri]=stanford_bunny;
-    <span class="keyword">case</span> 3
-        [F_tri,V_tri]=parasaurolophus;
-<span class="keyword">end</span>
-</pre><h2 id="6">Convert adjacent triangles by picking the best candidates, keeping unconverted triangles</h2><pre class="codeinput">optionStruct.maxAngleDeviation=60*(pi/180);
+  </style></head><body><div class="content"><h1>tri2quadGroupSplit</h1><!--introduction--><p>Below is a demonstration of the features of the <tt>tri2quadGroupSplit</tt> function</p><!--/introduction--><h2>Contents</h2><div><ul><li><a href="#2">Syntax</a></li><li><a href="#3">Description</a></li><li><a href="#4">Examples</a></li><li><a href="#7">Convert adjacent triangles by picking the best candidates, keeping unconverted triangles</a></li><li><a href="#9">Convert adjacent triangles by picking best candidates, converting remaining triangles by splitting</a></li><li><a href="#12">Convert adjacent triangles by picking random candidates</a></li></ul></div><pre class="codeinput">clear; close <span class="string">all</span>; clc;
+</pre><h2 id="2">Syntax</h2><p><tt>[F_quad,V_quad,F_tri_remain,V_tri_remain]=tri2quadGroupSplit(F_tri,V_tri,optionStruct);</tt></p><h2 id="3">Description</h2><p>The <tt>tri2quadGroupSplit</tt> function converts the triangulated input data F_tri (faces) and V_tri (vertices) to quadrilateral elements F_quad (faces) and V_quad (vertices). Quadrilateral elements are formed by grouping adjacent triangles. Once a maximum number of quadrilateral elements are formes some triagles may remain. If desired these can also be converted to quadrilateral elements through splitting. If splitting is used the grouped quadrilaterals also require splitting to create a mesh with shared nodal connectivity. Splitting based conversion can be turned off. The remaining triangle set can also be obtained if desired through the optional outputs F_tri_remain (faces) and V_tri_remain (vertices). The third input is the option structure optionStruct with the fields:</p><p>optionStruct.maxAngleDeviation=60*(pi/180); %The maximum angle used for optionStruct.selectionMethod='best'; % or 'random' optionStruct.triangleConvert=0; %Convert the remaining triangles (1) or not (0)</p><h2 id="4">Examples</h2><p>Plot settings</p><pre class="codeinput">plotColors=gjet(4);
+</pre><p>Create test data set</p><pre class="codeinput">[F_tri,V_tri]=geoSphere(3,1);
+</pre><h2 id="7">Convert adjacent triangles by picking the best candidates, keeping unconverted triangles</h2><pre class="codeinput">optionStruct.maxAngleDeviation=60*(pi/180);
 optionStruct.selectionMethod=<span class="string">'best'</span>;
 optionStruct.triangleConvert=0;
-[F_quad,V_quad,F_tri_remain,V_tri_remain]=tri2quadGroupSplit(F_tri,V_tri,optionStruct);
+optionStruct.fourConnectConvert=0;
+[FQ,VQ]=tri2quadGroupSplit(F_tri,V_tri,optionStruct);
+
+<span class="comment">%Create color data for visualization</span>
+<span class="keyword">if</span> iscell(FQ)
+    CQ=FQ;
+    <span class="keyword">for</span> q=1:1:numel(FQ)
+       CQ{q}=q*ones(size(FQ{q},1),1);
+    <span class="keyword">end</span>
+<span class="keyword">end</span>
 </pre><p>Visualize result</p><pre class="codeinput">cFigure;
-gtitle(<span class="string">'Creating quads without splitting based conversion'</span>);
 subplot(1,2,1); hold <span class="string">on</span>;
+title(<span class="string">'Input triangulation'</span>);
 gpatch(F_tri,V_tri,<span class="string">'rw'</span>,<span class="string">'k'</span>,1);
-axisGeom; axis <span class="string">off</span>;
+axisGeom;
 camlight <span class="string">headlight</span>;
-zoom(1.5);
 
 subplot(1,2,2); hold <span class="string">on</span>;
-gpatch(F_quad,V_quad,<span class="string">'bw'</span>,<span class="string">'k'</span>);
-gpatch(F_tri_remain,V_tri_remain,<span class="string">'r'</span>,<span class="string">'k'</span>,1);
-axisGeom; axis <span class="string">off</span>;
+title(<span class="string">'Mixed quad/tri output mesh'</span>);
+gpatch(FQ,VQ,CQ,<span class="string">'k'</span>);
+axisGeom;
 camlight <span class="string">headlight</span>;
-zoom(1.5);
+icolorbar;
 drawnow;
-</pre><img vspace="5" hspace="5" src="HELP_tri2quadGroupSplit_01.png" alt=""> <h2 id="8">Convert adjacent triangles by picking best candidates, converting remaining triangles by splitting</h2><pre class="codeinput">optionStruct.maxAngleDeviation=60*(pi/180);
+</pre><img vspace="5" hspace="5" src="HELP_tri2quadGroupSplit_01.png" alt=""> <h2 id="9">Convert adjacent triangles by picking best candidates, converting remaining triangles by splitting</h2><p>Create test data set</p><pre class="codeinput">[F_tri,V_tri]=stanford_bunny;
+
+optionStruct.maxAngleDeviation=60*(pi/180);
 optionStruct.selectionMethod=<span class="string">'best'</span>;
 optionStruct.triangleConvert=1;
-[F_quad,V_quad]=tri2quadGroupSplit(F_tri,V_tri,optionStruct);
+optionStruct.fourConnectConvert=1;
+[FQ,VQ]=tri2quadGroupSplit(F_tri,V_tri,optionStruct);
 </pre><p>Visualize results</p><pre class="codeinput">cFigure;
 gtitle(<span class="string">'Creating quads with splitting based conversion'</span>);
 subplot(1,2,1); hold <span class="string">on</span>;
 gpatch(F_tri,V_tri,<span class="string">'rw'</span>,<span class="string">'k'</span>,1);
-axisGeom; axis <span class="string">off</span>;
+axisGeom;
 camlight <span class="string">headlight</span>;
-zoom(1.5);
 
 subplot(1,2,2); hold <span class="string">on</span>;
-gpatch(F_quad,V_quad,<span class="string">'bw'</span>,<span class="string">'k'</span>);
-axisGeom; axis <span class="string">off</span>;
+gpatch(FQ,VQ,<span class="string">'bw'</span>,<span class="string">'k'</span>);
+axisGeom;
 camlight <span class="string">headlight</span>;
-zoom(1.5);
 drawnow;
-</pre><img vspace="5" hspace="5" src="HELP_tri2quadGroupSplit_02.png" alt=""> <h2 id="10">Convert adjacent triangles by picking random candidates</h2><p>Random picking may be useful if the smallest amount of remaining triangles is of interest. E.g. one could randomly pick the next quad such that different results are obtained each time. This way one could keep the results yielding the smallest number of remaining triangles.</p><pre class="codeinput">numAttempts=10;
-F_cell=cell(1,10);
-F_tri_cell=cell(1,10);
-V_cell=cell(1,10);
+</pre><img vspace="5" hspace="5" src="HELP_tri2quadGroupSplit_02.png" alt=""> <img vspace="5" hspace="5" src="HELP_tri2quadGroupSplit_03.png" alt=""> <h2 id="12">Convert adjacent triangles by picking random candidates</h2><p>Random picking may be useful if the smallest amount of remaining triangles is of interest. E.g. one could randomly pick the next quad such that different results are obtained each time. This way one could keep the results yielding the smallest number of remaining triangles.</p><p>Create test data set</p><pre class="codeinput">[F_tri,V_tri]=parasaurolophus;
+
+numAttempts=6;
+F_cell=cell(1,numAttempts);
+F_tri_cell=cell(1,numAttempts);
+V_cell=cell(1,numAttempts);
+numTrianglesRemaining=nan(1,numAttempts);
 <span class="keyword">for</span> q=1:1:numAttempts
     optionStruct.maxAngleDeviation=45*(pi/180);
     optionStruct.selectionMethod=<span class="string">'random'</span>;
     optionStruct.triangleConvert=1;
-    [F_quad,V_quad,F_tri_remaining]=tri2quadGroupSplit(F_tri,V_tri,optionStruct);
-    F_cell{q}=F_quad;
-    F_tri_cell{q}=F_tri_remaining;
-    V_cell{q}=V_quad;
+    optionStruct.fourConnectConvert=0;
+    [FQ,VQ]=tri2quadGroupSplit(F_tri,V_tri,optionStruct);
+    <span class="keyword">if</span> iscell(FQ)
+        numTrianglesRemaining(q)=numel(FQ{2});
+    <span class="keyword">else</span>
+        numTrianglesRemaining(q)=0;
+    <span class="keyword">end</span>
+    F_cell{q}=FQ;
+    V_cell{q}=VQ;
 <span class="keyword">end</span>
 
-numTrianglesRemaining=cellfun(@(x) size(x,1),F_tri_cell);
 [~,indMin]=min(numTrianglesRemaining);
 
-F_quad=F_cell{indMin};
-V_quad=V_cell{indMin};
+FQ=F_cell{indMin};
+VQ=V_cell{indMin};
 </pre><p>Visualize results</p><pre class="codeinput">cFigure;
 gtitle(<span class="string">'Creating quads with splitting based conversion'</span>);
 subplot(1,2,1); hold <span class="string">on</span>;
@@ -141,12 +150,35 @@ camlight <span class="string">headlight</span>;
 zoom(1.5);
 
 subplot(1,2,2); hold <span class="string">on</span>;
-gpatch(F_quad,V_quad,<span class="string">'bw'</span>,<span class="string">'k'</span>);
+gpatch(FQ,VQ,<span class="string">'bw'</span>,<span class="string">'k'</span>);
 axisGeom; axis <span class="string">off</span>;
 camlight <span class="string">headlight</span>;
 zoom(1.5);
 drawnow;
-</pre><img vspace="5" hspace="5" src="HELP_tri2quadGroupSplit_03.png" alt=""> <img vspace="5" hspace="5" src="HELP_tri2quadGroupSplit_04.png" alt=""> <p class="footer"><br><a href="https://www.mathworks.com/products/matlab/">Published with MATLAB&reg; R2018b</a><br></p></div><!--
+</pre><img vspace="5" hspace="5" src="HELP_tri2quadGroupSplit_04.png" alt=""> <img vspace="5" hspace="5" src="HELP_tri2quadGroupSplit_05.png" alt=""> <p>Create test data set</p><pre class="codeinput">[X,Y,Z]=peaks(15);
+Z=Z/4;
+[Fq,Vq,~]=surf2patch(X,Y,Z,Z);
+[F_tri,V_tri]=quad2tri(Fq,Vq,<span class="string">'x'</span>);
+
+optionStruct.maxAngleDeviation=60*(pi/180);
+optionStruct.selectionMethod=<span class="string">'best'</span>;
+optionStruct.triangleConvert=0;
+optionStruct.fourConnectConvert=1;
+
+[FQ,VQ]=tri2quadGroupSplit(F_tri,V_tri,optionStruct);
+</pre><p>Visualize results</p><pre class="codeinput">cFigure;
+gtitle(<span class="string">'Converting four-connected sets to quads'</span>);
+subplot(1,2,1); hold <span class="string">on</span>;
+gpatch(F_tri,V_tri,<span class="string">'rw'</span>,<span class="string">'k'</span>,1);
+axisGeom; axis <span class="string">off</span>;
+camlight <span class="string">headlight</span>;
+
+subplot(1,2,2); hold <span class="string">on</span>;
+gpatch(FQ,VQ,<span class="string">'bw'</span>,<span class="string">'k'</span>);
+axisGeom; axis <span class="string">off</span>;
+camlight <span class="string">headlight</span>;
+drawnow;
+</pre><img vspace="5" hspace="5" src="HELP_tri2quadGroupSplit_06.png" alt=""> <img vspace="5" hspace="5" src="HELP_tri2quadGroupSplit_07.png" alt=""> <p><img vspace="5" hspace="5" src="gibbVerySmall.gif" alt=""> </p><p><i><b>GIBBON</b></i> <a href="www.gibboncode.org">www.gibboncode.org</a></p><p><i>Kevin Mattheus Moerman</i>, <a href="gibbon.toolbox@gmail.com">gibbon.toolbox@gmail.com</a></p><p><i><b>GIBBON footer text</b></i></p><p>License: <a href="https://github.com/gibbonCode/GIBBON/blob/master/LICENSE">https://github.com/gibbonCode/GIBBON/blob/master/LICENSE</a></p><p>GIBBON: The Geometry and Image-based Bioengineering add-On. A toolbox for image segmentation, image-based modeling, meshing, and finite element analysis.</p><p>Copyright (C) 2019  Kevin Mattheus Moerman</p><p>This program is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.</p><p>This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for more details.</p><p>You should have received a copy of the GNU General Public License along with this program.  If not, see <a href="http://www.gnu.org/licenses/">http://www.gnu.org/licenses/</a>.</p><p class="footer"><br><a href="https://www.mathworks.com/products/matlab/">Published with MATLAB&reg; R2019a</a><br></p></div><!--
 ##### SOURCE BEGIN #####
 %% tri2quadGroupSplit
 % Below is a demonstration of the features of the |tri2quadGroupSplit| function
@@ -178,49 +210,58 @@ clear; close all; clc;
 %% Examples 
 
 %%
+% Plot settings
+plotColors=gjet(4);
+
+%%
 % Create test data set
-testCase=3;
-switch testCase
-    case 1
-        [F_tri,V_tri]=geoSphere(2,1);
-    case 2
-        [F_tri,V_tri]=stanford_bunny;
-    case 3
-        [F_tri,V_tri]=parasaurolophus;
-end
+[F_tri,V_tri]=geoSphere(3,1);
 
 %% Convert adjacent triangles by picking the best candidates, keeping unconverted triangles
 
 optionStruct.maxAngleDeviation=60*(pi/180);
 optionStruct.selectionMethod='best';
 optionStruct.triangleConvert=0;
-[F_quad,V_quad,F_tri_remain,V_tri_remain]=tri2quadGroupSplit(F_tri,V_tri,optionStruct);
+optionStruct.fourConnectConvert=0;
+[FQ,VQ]=tri2quadGroupSplit(F_tri,V_tri,optionStruct);
 
+%Create color data for visualization 
+if iscell(FQ)
+    CQ=FQ;
+    for q=1:1:numel(FQ)
+       CQ{q}=q*ones(size(FQ{q},1),1);
+    end
+end
+    
 %%
 % Visualize result
 
 cFigure;
-gtitle('Creating quads without splitting based conversion');
 subplot(1,2,1); hold on;
+title('Input triangulation');
 gpatch(F_tri,V_tri,'rw','k',1);
-axisGeom; axis off;
+axisGeom; 
 camlight headlight;
-zoom(1.5);
 
 subplot(1,2,2); hold on;
-gpatch(F_quad,V_quad,'bw','k');
-gpatch(F_tri_remain,V_tri_remain,'r','k',1);
-axisGeom; axis off;
+title('Mixed quad/tri output mesh');
+gpatch(FQ,VQ,CQ,'k');
+axisGeom; 
 camlight headlight;
-zoom(1.5);
+icolorbar;
 drawnow;
 
 %% Convert adjacent triangles by picking best candidates, converting remaining triangles by splitting
 
+%%
+% Create test data set
+[F_tri,V_tri]=stanford_bunny;
+
 optionStruct.maxAngleDeviation=60*(pi/180);
 optionStruct.selectionMethod='best';
 optionStruct.triangleConvert=1;
-[F_quad,V_quad]=tri2quadGroupSplit(F_tri,V_tri,optionStruct);
+optionStruct.fourConnectConvert=1;
+[FQ,VQ]=tri2quadGroupSplit(F_tri,V_tri,optionStruct);
 
 %%
 % Visualize results 
@@ -229,15 +270,13 @@ cFigure;
 gtitle('Creating quads with splitting based conversion');
 subplot(1,2,1); hold on;
 gpatch(F_tri,V_tri,'rw','k',1);
-axisGeom; axis off;
+axisGeom; 
 camlight headlight;
-zoom(1.5);
 
 subplot(1,2,2); hold on;
-gpatch(F_quad,V_quad,'bw','k');
-axisGeom; axis off;
+gpatch(FQ,VQ,'bw','k');
+axisGeom; 
 camlight headlight;
-zoom(1.5);
 drawnow;
 
 %% Convert adjacent triangles by picking random candidates
@@ -246,25 +285,34 @@ drawnow;
 % that different results are obtained each time. This way one could keep
 % the results yielding the smallest number of remaining triangles. 
 
-numAttempts=10;
-F_cell=cell(1,10);
-F_tri_cell=cell(1,10);
-V_cell=cell(1,10);
+%%
+% Create test data set
+[F_tri,V_tri]=parasaurolophus;
+
+numAttempts=6;
+F_cell=cell(1,numAttempts);
+F_tri_cell=cell(1,numAttempts);
+V_cell=cell(1,numAttempts);
+numTrianglesRemaining=nan(1,numAttempts);
 for q=1:1:numAttempts
     optionStruct.maxAngleDeviation=45*(pi/180);
     optionStruct.selectionMethod='random';
-    optionStruct.triangleConvert=1;
-    [F_quad,V_quad,F_tri_remaining]=tri2quadGroupSplit(F_tri,V_tri,optionStruct);
-    F_cell{q}=F_quad;
-    F_tri_cell{q}=F_tri_remaining;
-    V_cell{q}=V_quad;
+    optionStruct.triangleConvert=1;    
+    optionStruct.fourConnectConvert=0;
+    [FQ,VQ]=tri2quadGroupSplit(F_tri,V_tri,optionStruct);
+    if iscell(FQ)
+        numTrianglesRemaining(q)=numel(FQ{2});
+    else
+        numTrianglesRemaining(q)=0;
+    end
+    F_cell{q}=FQ;    
+    V_cell{q}=VQ;
 end
 
-numTrianglesRemaining=cellfun(@(x) size(x,1),F_tri_cell);
 [~,indMin]=min(numTrianglesRemaining);
 
-F_quad=F_cell{indMin};
-V_quad=V_cell{indMin};
+FQ=F_cell{indMin};
+VQ=V_cell{indMin};
 
 %%
 % Visualize results 
@@ -278,11 +326,75 @@ camlight headlight;
 zoom(1.5);
 
 subplot(1,2,2); hold on;
-gpatch(F_quad,V_quad,'bw','k');
+gpatch(FQ,VQ,'bw','k');
 axisGeom; axis off;
 camlight headlight;
 zoom(1.5);
 drawnow;
+
+%%
+% Create test data set
+
+[X,Y,Z]=peaks(15);
+Z=Z/4;
+[Fq,Vq,~]=surf2patch(X,Y,Z,Z);
+[F_tri,V_tri]=quad2tri(Fq,Vq,'x');
+
+optionStruct.maxAngleDeviation=60*(pi/180);
+optionStruct.selectionMethod='best';
+optionStruct.triangleConvert=0;
+optionStruct.fourConnectConvert=1;
+
+[FQ,VQ]=tri2quadGroupSplit(F_tri,V_tri,optionStruct);
+
+%%
+% Visualize results 
+
+cFigure;
+gtitle('Converting four-connected sets to quads');
+subplot(1,2,1); hold on;
+gpatch(F_tri,V_tri,'rw','k',1);
+axisGeom; axis off;
+camlight headlight;
+
+subplot(1,2,2); hold on;
+gpatch(FQ,VQ,'bw','k');
+axisGeom; axis off;
+camlight headlight;
+drawnow;
+
+%% 
+%
+% <<gibbVerySmall.gif>>
+% 
+% _*GIBBON*_ 
+% <www.gibboncode.org>
+% 
+% _Kevin Mattheus Moerman_, <gibbon.toolbox@gmail.com>
+ 
+%% 
+% _*GIBBON footer text*_ 
+% 
+% License: <https://github.com/gibbonCode/GIBBON/blob/master/LICENSE>
+% 
+% GIBBON: The Geometry and Image-based Bioengineering add-On. A toolbox for
+% image segmentation, image-based modeling, meshing, and finite element
+% analysis.
+% 
+% Copyright (C) 2019  Kevin Mattheus Moerman
+% 
+% This program is free software: you can redistribute it and/or modify
+% it under the terms of the GNU General Public License as published by
+% the Free Software Foundation, either version 3 of the License, or
+% (at your option) any later version.
+% 
+% This program is distributed in the hope that it will be useful,
+% but WITHOUT ANY WARRANTY; without even the implied warranty of
+% MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+% GNU General Public License for more details.
+% 
+% You should have received a copy of the GNU General Public License
+% along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 ##### SOURCE END #####
 --></body></html>

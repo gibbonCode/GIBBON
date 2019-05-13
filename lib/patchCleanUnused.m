@@ -6,22 +6,45 @@ function [varargout]=patchCleanUnused(F,V)
 %
 % 2010 Created
 % 2019/03/04 Added basic description header to function
+% 2019/04/22 Added handling of cell input 
 %-------------------------------------------------------------------------
 
 %%
 
-logicValid =F>0;% %Treat 0,NaN,inf
+if isa(F,'cell')
+    indUni=[];    
+    for q=1:1:numel(F)
+        f=F{q};
+        indUni=[indUni;f(:)];
+    end    
+else
+    indUni=unique(F(:));
+end
+indUni=unique(indUni(~isnan(indUni)));
 
-numPoints=size(V,1);
-indUni=unique(F(logicValid)); %Unique indices of used vertices
+%%
+
+numPointsOriginal=size(V,1); %Number of original points
+numPointsNew=numel(indUni); %Number of original points
 Vc=V(indUni,:); %Select relevant points
 
 %Fix indices in faces matrix
-indFix1=1:numel(indUni);
-indFix2=zeros(numPoints,1);
+indFix1=1:1:numPointsNew;
+indFix2=zeros(numPointsOriginal,1);
 indFix2(indUni)=indFix1;
-Fc=F; 
-Fc(logicValid)=indFix2(F(logicValid));
+
+Fc=F;
+if isa(F,'cell')
+    for q=1:1:numel(F)
+        fc=F{q};
+        logicValid=~isnan(fc);    
+        fc(logicValid)=indFix2(fc(logicValid));
+        Fc{q}=fc;
+    end
+else
+    logicValid=~isnan(F);    
+    Fc(logicValid)=indFix2(F(logicValid));
+end
 
 %Output
 varargout{1}=Fc;

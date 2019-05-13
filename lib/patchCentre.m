@@ -1,12 +1,33 @@
 function [Vm]=patchCentre(F,V)
 
-Vm=zeros(size(F,1),3);
-for q=1:1:size(V,2)
-    X=V(:,q);
-    if size(F,1)==1 %Treat single element case as MATLAB is not consistent
-        Vm(:,q)=mean(X(F));
-    else
-        Vm(:,q)=mean(X(F),2);
+% function [Vm]=patchCentre(F,V)
+% ------------------------------------------------------------------------
+%
+%
+%
+% Change log: 
+% 2014
+% 2019/04/22 Fixed such that output matches dimentionality of input (output
+% used to always be 3D even if input is 2D)
+% 2019/04/22 Updated to handle cell input
+% ------------------------------------------------------------------------
+
+%%
+
+if isa(F,'cell') %Cell of faces (e.g. potentially of different types)
+    Vm=repmat({zeros(size(F,1),3)},size(F)); %Allocate Vm to be a cell like F
+    for q=1:1:numel(F) %Loop over face sets       
+        Vm{q}=patchCentre(F{q},V); %Override cell entries by face centres
+    end    
+else
+    Vm=zeros(size(F,1),size(V,2)); %Allocate memory for
+    for q=1:1:size(V,2)
+        X=V(:,q);
+        if size(F,1)==1 %Treat single element case since MATLAB is not consistent
+            Vm(:,q)=mean(X(F));
+        else
+            Vm(:,q)=mean(X(F),2);
+        end
     end
 end
  

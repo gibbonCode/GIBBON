@@ -66,13 +66,12 @@ switch elementType
             ]; 
         F_quad=[E(:,[1 2 5 4]);... %face 3
                 E(:,[2 3 6 5]);... %face 4
-                E(:,[2 3 6 5]);... %face 5
-                E(:,[3 1 4 6]);... %face 6
+                E(:,[3 1 4 6]);... %face 5
             ];
         F={F_tri,F_quad};
         
         C_tri=repmat(C,2,1);
-        C_quad=repmat(C,4,1);
+        C_quad=repmat(C,3,1);
         C={C_tri,C_quad};
         
         CF=C;
@@ -133,6 +132,8 @@ switch elementType
         F=E;
         C=C;
         CF=C;
+    otherwise
+        error([elementType,' is not a known element type']);
 end
 
 %% Compose output

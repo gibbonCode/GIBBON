@@ -17,30 +17,50 @@ switch nargin
         error('Wrong number of input arguments');
 end
 
+cellMode=isa(F,'cell'); 
+
 if isempty(numDigitsMerge)    
-    D=patchEdgeLengths(F,V);    
-    numDigitsMerge=6-numOrder(mean(D));
+    D=patchEdgeLengths(F,V);
+    if cellMode
+        mean_D=mean(cellfun(@mean,D)); %Take mean across cell entries
+    else
+        mean_D=mean(D); %Mean across array
+    end    
+    numDigitsMerge=6-numOrder(mean_D); %base number of digits on mean
 end
 
 %% Merge nodes
 
-[~,ind1,ind2]=unique(pround(V,numDigitsMerge),'rows');
-V=V(ind1,:);
+[~,indKeep,indFix]=unique(pround(V,numDigitsMerge),'rows');
+V=V(indKeep,:);
 
-if size(F,1)==1
-    F=ind2(F)'; %Fix indices in F
+%% Fix indices in face array
+if isa(F,'cell')
+    for q=1:1:numel(F)
+        F{q}=fixFaces(F{q},indFix);
+    end
 else
-    F=ind2(F); %Fix indices in F
+    F=fixFaces(F,indFix);
 end
 
 %% Collect output
 
 varargout{1}=F;
 varargout{2}=V;
-varargout{3}=ind1;
-varargout{4}=ind2;
+varargout{3}=indKeep;
+varargout{4}=indFix;
 
-%%
+end
+
+%% Fix indices in face array
+function F=fixFaces(F,indFix)
+    if size(F,1)==1
+        F=indFix(F)'; %Fix indices in F
+    else
+        F=indFix(F); %Fix indices in F
+    end
+end
+
 %% 
 % _*GIBBON footer text*_ 
 % 

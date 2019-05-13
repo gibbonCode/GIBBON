@@ -6,7 +6,7 @@
    <!--
 This HTML was auto-generated from MATLAB code.
 To make changes, update the MATLAB code and republish this document.
-      --><title>patchConnectivity</title><meta name="generator" content="MATLAB 9.5"><link rel="schema.DC" href="http://purl.org/dc/elements/1.1/"><meta name="DC.date" content="2018-08-22"><meta name="DC.source" content="HELP_patchConnectivity.m"><style type="text/css">
+      --><title>patchConnectivity</title><meta name="generator" content="MATLAB 9.6"><link rel="schema.DC" href="http://purl.org/dc/elements/1.1/"><meta name="DC.date" content="2019-04-23"><meta name="DC.source" content="HELP_patchConnectivity.m"><style type="text/css">
 html,body,div,span,applet,object,iframe,h1,h2,h3,h4,h5,h6,p,blockquote,pre,a,abbr,acronym,address,big,cite,code,del,dfn,em,font,img,ins,kbd,q,s,samp,small,strike,strong,sub,sup,tt,var,b,u,i,center,dl,dt,dd,ol,ul,li,fieldset,form,label,legend,table,caption,tbody,tfoot,thead,tr,th,td{margin:0;padding:0;border:0;outline:0;font-size:100%;vertical-align:baseline;background:transparent}body{line-height:1}ol,ul{list-style:none}blockquote,q{quotes:none}blockquote:before,blockquote:after,q:before,q:after{content:'';content:none}:focus{outine:0}ins{text-decoration:none}del{text-decoration:line-through}table{border-collapse:collapse;border-spacing:0}
 
 html { min-height:100%; margin-bottom:1px; }
@@ -66,9 +66,9 @@ table td { padding:7px 5px; text-align:left; vertical-align:top; border:1px soli
 
 
 
-  </style></head><body><div class="content"><h1>patchConnectivity</h1><!--introduction--><p>Below is a demonstration of the features of the <tt>patchConnectivity</tt> function</p><!--/introduction--><h2>Contents</h2><div><ul><li><a href="#1">Syntax</a></li><li><a href="#2">Description</a></li><li><a href="#3">Examples</a></li><li><a href="#6">Demonstrating <tt>patchConnectivity</tt> for different patch types</a></li></ul></div><h2 id="1">Syntax</h2><p><tt>[C]=patchConnectivity(F,V);</tt></p><h2 id="2">Description</h2><p>This functions creates connectivity matrices for the input patch data defined by the faces F and the vertices V. The output is a structure containing the connectivity matrices:</p><p>C.vertex.vertex C.vertex.face C.vertex.edge</p><p>C.edge.face C.edge.vertex C.edge.edge</p><p>C.face.vertex C.face.face C.face.edge</p><h2 id="3">Examples</h2><pre class="codeinput">clear; close <span class="string">all</span>; clc;
+  </style></head><body><div class="content"><h1>patchConnectivity</h1><!--introduction--><p>Below is a demonstration of the features of the <tt>patchConnectivity</tt> function</p><!--/introduction--><h2>Contents</h2><div><ul><li><a href="#1">Syntax</a></li><li><a href="#2">Description</a></li><li><a href="#3">Examples</a></li><li><a href="#6">Example 1: Demonstrating <tt>patchConnectivity</tt> for different patch types</a></li><li><a href="#14">Example 2: Using the conTypes input to control output request</a></li></ul></div><h2 id="1">Syntax</h2><p><tt>[C]=patchConnectivity(F,V,conType);</tt></p><h2 id="2">Description</h2><p>This functions creates connectivity matrices for the input patch data defined by the faces F and the vertices V. The output is a structure containing the connectivity matrices:</p><p>C.vertex.vertex C.vertex.face C.vertex.edge</p><p>C.edge.face C.edge.vertex C.edge.edge</p><p>C.face.vertex C.face.face C.face.edge</p><p>If the 3rd optional input conType is not provided its default value is 'all' and all connectivity matrices are output in the structure. If not all types are desired the user may request only particular types by setting conType. The following conTypes can be specified: conType (v stands for vertex, f for face, e for edge): 'all','vv','vf','ve','ev','ef','ee','fv','ff','fe'</p><h2 id="3">Examples</h2><pre class="codeinput">clear; close <span class="string">all</span>; clc;
 </pre><p>Plot settings</p><pre class="codeinput">markerSize=50;
-</pre><h2 id="6">Demonstrating <tt>patchConnectivity</tt> for different patch types</h2><pre class="codeinput"><span class="keyword">for</span> testCase=1:3
+</pre><h2 id="6">Example 1: Demonstrating <tt>patchConnectivity</tt> for different patch types</h2><pre class="codeinput"><span class="keyword">for</span> testCase=1:3
 </pre><pre class="codeinput">    <span class="keyword">switch</span> testCase
         <span class="keyword">case</span> 1
             [F,V]=geoSphere(1,1);
@@ -247,13 +247,47 @@ table td { padding:7px 5px; text-align:left; vertical-align:top; border:1px soli
 
     drawnow;
 </pre><img vspace="5" hspace="5" src="HELP_patchConnectivity_03.png" alt=""> <img vspace="5" hspace="5" src="HELP_patchConnectivity_06.png" alt=""> <img vspace="5" hspace="5" src="HELP_patchConnectivity_09.png" alt=""> <pre class="codeinput"><span class="keyword">end</span>
-</pre><p class="footer"><br><a href="https://www.mathworks.com/products/matlab/">Published with MATLAB&reg; R2018b</a><br></p></div><!--
+</pre><h2 id="14">Example 2: Using the conTypes input to control output request</h2><p>Request only the edge-edge connectivity</p><pre class="codeinput">C=patchConnectivity(F,V,<span class="string">'ee'</span>)
+</pre><pre class="codeoutput">
+C = 
+
+  struct with fields:
+
+    edge: [1&times;1 struct]
+
+</pre><p>Request both the edge-edge connectivity and the face-face connectivity</p><pre class="codeinput">C=patchConnectivity(F,V,{<span class="string">'ee'</span>,<span class="string">'ff'</span>})
+</pre><pre class="codeoutput">
+C = 
+
+  struct with fields:
+
+    edge: [1&times;1 struct]
+    face: [1&times;1 struct]
+
+</pre><p>Loop over all types and compare computation speed</p><pre class="codeinput">conTypeSet={<span class="string">'all'</span>,<span class="string">'vv'</span>,<span class="string">'vf'</span>,<span class="string">'ve'</span>,<span class="string">'ev'</span>,<span class="string">'ef'</span>,<span class="string">'ee'</span>,<span class="string">'fv'</span>,<span class="string">'ff'</span>,<span class="string">'fe'</span>};
+<span class="keyword">for</span> q=1:1:numel(conTypeSet)
+    tic
+    C=patchConnectivity(F,V,conTypeSet{q});
+    t=toc;
+    disp([conTypeSet{q},<span class="string">': '</span>,num2str(t),<span class="string">' seconds'</span>])
+<span class="keyword">end</span>
+</pre><pre class="codeoutput">all: 0.002316 seconds
+vv: 0.001255 seconds
+vf: 0.000404 seconds
+ve: 0.00057 seconds
+ev: 0.000333 seconds
+ef: 0.000714 seconds
+ee: 0.000983 seconds
+fv: 0.000352 seconds
+ff: 0.001351 seconds
+fe: 0.000308 seconds
+</pre><p><img vspace="5" hspace="5" src="gibbVerySmall.gif" alt=""> </p><p><i><b>GIBBON</b></i> <a href="www.gibboncode.org">www.gibboncode.org</a></p><p><i>Kevin Mattheus Moerman</i>, <a href="gibbon.toolbox@gmail.com">gibbon.toolbox@gmail.com</a></p><p><i><b>GIBBON footer text</b></i></p><p>License: <a href="https://github.com/gibbonCode/GIBBON/blob/master/LICENSE">https://github.com/gibbonCode/GIBBON/blob/master/LICENSE</a></p><p>GIBBON: The Geometry and Image-based Bioengineering add-On. A toolbox for image segmentation, image-based modeling, meshing, and finite element analysis.</p><p>Copyright (C) 2019  Kevin Mattheus Moerman</p><p>This program is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.</p><p>This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for more details.</p><p>You should have received a copy of the GNU General Public License along with this program.  If not, see <a href="http://www.gnu.org/licenses/">http://www.gnu.org/licenses/</a>.</p><p class="footer"><br><a href="https://www.mathworks.com/products/matlab/">Published with MATLAB&reg; R2019a</a><br></p></div><!--
 ##### SOURCE BEGIN #####
 %% patchConnectivity
 % Below is a demonstration of the features of the |patchConnectivity| function
 
 %% Syntax
-% |[C]=patchConnectivity(F,V);|
+% |[C]=patchConnectivity(F,V,conType);|
 
 %% Description
 % This functions creates connectivity matrices for the input patch data
@@ -271,6 +305,13 @@ table td { padding:7px 5px; text-align:left; vertical-align:top; border:1px soli
 % C.face.vertex
 % C.face.face
 % C.face.edge
+%
+% If the 3rd optional input conType is not provided its default value is
+% 'all' and all connectivity matrices are output in the structure. If not
+% all types are desired the user may request only particular types by
+% setting conType. The following conTypes can be specified: 
+% conType (v stands for vertex, f for face, e for edge): 
+% 'all','vv','vf','ve','ev','ef','ee','fv','ff','fe'
 
 %% Examples
 
@@ -281,7 +322,7 @@ clear; close all; clc;
 % Plot settings
 markerSize=50;
 
-%% Demonstrating |patchConnectivity| for different patch types
+%% Example 1: Demonstrating |patchConnectivity| for different patch types
 
 for testCase=1:3
     
@@ -482,6 +523,60 @@ for testCase=1:3
     drawnow;
     
 end
+
+%% Example 2: Using the conTypes input to control output request
+
+%%
+% Request only the edge-edge connectivity
+C=patchConnectivity(F,V,'ee')
+
+%%
+% Request both the edge-edge connectivity and the face-face connectivity
+C=patchConnectivity(F,V,{'ee','ff'})
+
+%%
+% Loop over all types and compare computation speed
+
+conTypeSet={'all','vv','vf','ve','ev','ef','ee','fv','ff','fe'};
+for q=1:1:numel(conTypeSet)    
+    tic
+    C=patchConnectivity(F,V,conTypeSet{q});    
+    t=toc;
+    disp([conTypeSet{q},': ',num2str(t),' seconds'])
+end
+
+%% 
+%
+% <<gibbVerySmall.gif>>
+% 
+% _*GIBBON*_ 
+% <www.gibboncode.org>
+% 
+% _Kevin Mattheus Moerman_, <gibbon.toolbox@gmail.com>
+ 
+%% 
+% _*GIBBON footer text*_ 
+% 
+% License: <https://github.com/gibbonCode/GIBBON/blob/master/LICENSE>
+% 
+% GIBBON: The Geometry and Image-based Bioengineering add-On. A toolbox for
+% image segmentation, image-based modeling, meshing, and finite element
+% analysis.
+% 
+% Copyright (C) 2019  Kevin Mattheus Moerman
+% 
+% This program is free software: you can redistribute it and/or modify
+% it under the terms of the GNU General Public License as published by
+% the Free Software Foundation, either version 3 of the License, or
+% (at your option) any later version.
+% 
+% This program is distributed in the hope that it will be useful,
+% but WITHOUT ANY WARRANTY; without even the implied warranty of
+% MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+% GNU General Public License for more details.
+% 
+% You should have received a copy of the GNU General Public License
+% along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 ##### SOURCE END #####
 --></body></html>

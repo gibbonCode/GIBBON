@@ -17,28 +17,34 @@ function [D]=patchEdgeLengths(F,V)
 % gibbon.toolbox@gmail.com
 % 
 % 2014/03/17
+% 2019/04/23 Expanded for cell array input
 %------------------------------------------------------------------------
 
 %%
 
-%Derive edge array
-if size(F,2)>2 %The input is assumed to represent faces hence an edge array is derived
-    E=patchEdges(F,0);
-else %It is assumed that the input array represents an edges array
-    E=F; 
+if isa(F,'cell')
+    D=F; %Initialize as F
+    for q=1:1:numel(F) %Loop over cell entries and call function for each cell entry
+        D{q}=patchEdgeLengths(F{q},V); %parse cell entry
+    end    
+else   
+    %Derive edge array
+    if size(F,2)>2 %The input is assumed to represent faces hence an edge array is derived
+        E=patchEdges(F,0);
+    else %It is assumed that the input array represents an edges array
+        E=F;
+    end
+    
+    %Derive edge vertex arrays
+    V_E1=V(E(:,1),:);
+    V_E2=V(E(:,2),:);
+    
+    %Derive difference vectors
+    VD=(V_E1-V_E2);
+    
+    %Compute the edge lengths
+    D=sqrt(sum(VD.^2,2));    
 end
-
-%Derive edge vertex arrays
-V_E1=V(E(:,1),:);
-V_E2=V(E(:,2),:);
-
-%Derive difference vectors
-VD=(V_E1-V_E2);
-
-%Compute the edge lengths
-D=sqrt(sum(VD.^2,2));
-
- 
 %% 
 % _*GIBBON footer text*_ 
 % 

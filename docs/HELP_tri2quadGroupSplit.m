@@ -28,6 +28,10 @@ clear; close all; clc;
 %% Examples 
 
 %%
+% Plot settings
+plotColors=gjet(4);
+
+%%
 % Create test data set
 [F_tri,V_tri]=geoSphere(3,1);
 
@@ -37,25 +41,32 @@ optionStruct.maxAngleDeviation=60*(pi/180);
 optionStruct.selectionMethod='best';
 optionStruct.triangleConvert=0;
 optionStruct.fourConnectConvert=0;
-[F_quad,V_quad,F_tri_remain,V_tri_remain]=tri2quadGroupSplit(F_tri,V_tri,optionStruct);
+[FQ,VQ]=tri2quadGroupSplit(F_tri,V_tri,optionStruct);
 
+%Create color data for visualization 
+if iscell(FQ)
+    CQ=FQ;
+    for q=1:1:numel(FQ)
+       CQ{q}=q*ones(size(FQ{q},1),1);
+    end
+end
+    
 %%
 % Visualize result
 
 cFigure;
-gtitle('Creating quads without splitting based conversion');
 subplot(1,2,1); hold on;
+title('Input triangulation');
 gpatch(F_tri,V_tri,'rw','k',1);
-axisGeom; axis off;
+axisGeom; 
 camlight headlight;
-zoom(1.5);
 
 subplot(1,2,2); hold on;
-gpatch(F_quad,V_quad,'bw','k');
-gpatch(F_tri_remain,V_tri_remain,'r','k',1);
-axisGeom; axis off;
+title('Mixed quad/tri output mesh');
+gpatch(FQ,VQ,CQ,'k');
+axisGeom; 
 camlight headlight;
-zoom(1.5);
+icolorbar;
 drawnow;
 
 %% Convert adjacent triangles by picking best candidates, converting remaining triangles by splitting
@@ -68,7 +79,7 @@ optionStruct.maxAngleDeviation=60*(pi/180);
 optionStruct.selectionMethod='best';
 optionStruct.triangleConvert=1;
 optionStruct.fourConnectConvert=1;
-[F_quad,V_quad]=tri2quadGroupSplit(F_tri,V_tri,optionStruct);
+[FQ,VQ]=tri2quadGroupSplit(F_tri,V_tri,optionStruct);
 
 %%
 % Visualize results 
@@ -77,15 +88,13 @@ cFigure;
 gtitle('Creating quads with splitting based conversion');
 subplot(1,2,1); hold on;
 gpatch(F_tri,V_tri,'rw','k',1);
-axisGeom; axis off;
+axisGeom; 
 camlight headlight;
-zoom(1.5);
 
 subplot(1,2,2); hold on;
-gpatch(F_quad,V_quad,'bw','k');
-axisGeom; axis off;
+gpatch(FQ,VQ,'bw','k');
+axisGeom; 
 camlight headlight;
-zoom(1.5);
 drawnow;
 
 %% Convert adjacent triangles by picking random candidates
@@ -98,26 +107,30 @@ drawnow;
 % Create test data set
 [F_tri,V_tri]=parasaurolophus;
 
-numAttempts=10;
-F_cell=cell(1,10);
-F_tri_cell=cell(1,10);
-V_cell=cell(1,10);
+numAttempts=6;
+F_cell=cell(1,numAttempts);
+F_tri_cell=cell(1,numAttempts);
+V_cell=cell(1,numAttempts);
+numTrianglesRemaining=nan(1,numAttempts);
 for q=1:1:numAttempts
     optionStruct.maxAngleDeviation=45*(pi/180);
     optionStruct.selectionMethod='random';
     optionStruct.triangleConvert=1;    
     optionStruct.fourConnectConvert=0;
-    [F_quad,V_quad,F_tri_remaining]=tri2quadGroupSplit(F_tri,V_tri,optionStruct);
-    F_cell{q}=F_quad;
-    F_tri_cell{q}=F_tri_remaining;
-    V_cell{q}=V_quad;
+    [FQ,VQ]=tri2quadGroupSplit(F_tri,V_tri,optionStruct);
+    if iscell(FQ)
+        numTrianglesRemaining(q)=numel(FQ{2});
+    else
+        numTrianglesRemaining(q)=0;
+    end
+    F_cell{q}=FQ;    
+    V_cell{q}=VQ;
 end
 
-numTrianglesRemaining=cellfun(@(x) size(x,1),F_tri_cell);
 [~,indMin]=min(numTrianglesRemaining);
 
-F_quad=F_cell{indMin};
-V_quad=V_cell{indMin};
+FQ=F_cell{indMin};
+VQ=V_cell{indMin};
 
 %%
 % Visualize results 
@@ -131,7 +144,7 @@ camlight headlight;
 zoom(1.5);
 
 subplot(1,2,2); hold on;
-gpatch(F_quad,V_quad,'bw','k');
+gpatch(FQ,VQ,'bw','k');
 axisGeom; axis off;
 camlight headlight;
 zoom(1.5);
@@ -150,7 +163,7 @@ optionStruct.selectionMethod='best';
 optionStruct.triangleConvert=0;
 optionStruct.fourConnectConvert=1;
 
-[F_quad,V_quad,F_tri_remaining]=tri2quadGroupSplit(F_tri,V_tri,optionStruct);
+[FQ,VQ]=tri2quadGroupSplit(F_tri,V_tri,optionStruct);
 
 %%
 % Visualize results 
@@ -163,7 +176,7 @@ axisGeom; axis off;
 camlight headlight;
 
 subplot(1,2,2); hold on;
-gpatch(F_quad,V_quad,'bw','k');
+gpatch(FQ,VQ,'bw','k');
 axisGeom; axis off;
 camlight headlight;
 drawnow;

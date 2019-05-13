@@ -50,21 +50,21 @@ E=[5 6 8 7 1 2 4 3];
 elementIds=(1:1:size(E,1))';
 
 % Node
-abaqus_spec.Part.COMMENT='This section defines the part geometry in terms of nodes and elements';
-abaqus_spec.Part.ATTR.name='Cube';
-abaqus_spec.Part.Node={nodeIds,V};
+abaqus_spec.Part{1}.COMMENT='This section defines the part geometry in terms of nodes and elements';
+abaqus_spec.Part{1}.ATTR.name='Cube';
+abaqus_spec.Part{1}.Node={nodeIds,V};
 
 % Element
-abaqus_spec.Part.Element{1}.ATTR.type='C3D8R';
-abaqus_spec.Part.Element{1}.VAL={elementIds,E};
+abaqus_spec.Part{1}.Element{1}.ATTR.type='C3D8R';
+abaqus_spec.Part{1}.Element{1}.VAL={elementIds,E};
 
 %Element sets
-abaqus_spec.Part.Elset{1}.ATTR.elset='Set-1';
-abaqus_spec.Part.Elset{1}.VAL=1;
+abaqus_spec.Part{1}.Elset{1}.ATTR.elset='Set-1';
+abaqus_spec.Part{1}.Elset{1}.VAL=1;
 
 %Sections
-abaqus_spec.Part.Solid_section.ATTR.elset='Set-1';
-abaqus_spec.Part.Solid_section.ATTR.material='Elastic';
+abaqus_spec.Part{1}.Solid_section.ATTR.elset='Set-1';
+abaqus_spec.Part{1}.Solid_section.ATTR.material='Elastic';
 
 %% The assembly section
 %

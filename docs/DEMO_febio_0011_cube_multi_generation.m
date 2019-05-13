@@ -400,12 +400,12 @@ if runFlag==1 %i.e. a succesful run
     
     %%
     % Importing element strain energies from a log file
-    [~,E_energy,~]=importFEBio_logfile(fullfile(savePath,febioLogFileName_strainEnergy)); %Element stresses
+    [~,E_energy,~]=importFEBio_logfile(fullfile(savePath,febioLogFileName_strainEnergy)); %Element strain energy
     
     %Remove nodal index column
     E_energy=E_energy(:,2:end,:);
     
-    %Add initial state i.e. zero displacement
+    %Add initial state i.e. zero energy
     sizImport=size(E_energy); 
     sizImport(3)=sizImport(3)+1;
     E_energy_mat_n=zeros(sizImport);

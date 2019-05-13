@@ -114,7 +114,6 @@ numSteps=3;
 %Use element2patch to get patch data 
 [FE,~,faceSideType]=element2patch(E);
 
-
 %%
 % Visualize the face side labels
 

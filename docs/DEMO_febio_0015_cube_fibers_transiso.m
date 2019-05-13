@@ -50,14 +50,14 @@ cubeSize=10;
 sampleWidth=cubeSize; %Width 
 sampleThickness=cubeSize; %Thickness 
 sampleHeight=cubeSize; %Height
-pointSpacings=1*ones(1,3); %Desired point spacing between nodes
+pointSpacings=3*ones(1,3); %Desired point spacing between nodes
 numElementsWidth=round(sampleWidth/pointSpacings(1)); %Number of elemens in dir 1
 numElementsThickness=round(sampleThickness/pointSpacings(2)); %Number of elemens in dir 2
 numElementsHeight=round(sampleHeight/pointSpacings(3)); %Number of elemens in dir 3
 
 %Define applied displacement 
 appliedStrain=0.3; %Linear strain (Only used to compute applied stretch)
-loadingOption='compression'; % or 'tension'
+loadingOption='tension'; % or 'tension'
 switch loadingOption
     case 'compression'
         stretchLoad=1-appliedStrain; %The applied stretch for uniaxial loading
@@ -69,13 +69,14 @@ displacementMagnitude=(stretchLoad*sampleHeight)-sampleHeight; %The displacement
 %Material parameter set
 k_factor=500; %Bulk modulus factor    
 
-fiberType=2; 
+fiberType=1; 
 switch fiberType
     case 1
-        c1=1e-3; %Shear-modulus-like parameter
-        m1=12; %Material parameter setting degree of non-linearity of ground matrix
-        ksi=c1*100;
-        beta=3;          
+        c1=0.2; %Shear-modulus-like parameter
+        m1=2; %Material parameter setting degree of non-linearity of ground matrix
+        ksi=c1/8;
+        alphaPar=2;
+        beta=2;          
         k=0.5.*(c1+ksi)*k_factor; %Bulk modulus
     case 2
         Q=0.5;
@@ -89,10 +90,10 @@ switch fiberType
         k=(2*c1+ksi_p)*k_factor;
         ksi=[ksi_p ksi_p f_transiso*ksi_p];
 end
-alphaFib=1/3*pi;
+alphaFib=0*pi;
 
 % FEA control settings
-numTimeSteps=10; %Number of time steps desired
+numTimeSteps=20; %Number of time steps desired
 max_refs=25; %Max reforms
 max_ups=0; %Set to zero to use full-Newton iterations
 opt_iter=6; %Optimum number of iterations
@@ -245,13 +246,12 @@ febio_spec.Material.material{1}.solid{1}.cp=k;
 
 switch fiberType
     case 1
-        febio_spec.Material.material{1}.solid{2}.ATTR.type='fiber-exp-pow-uncoupled';
+        febio_spec.Material.material{1}.solid{2}.ATTR.type='fiber-exp-pow';
         febio_spec.Material.material{1}.solid{2}.ksi=ksi;
-        febio_spec.Material.material{1}.solid{2}.alpha=1e-20;
+        febio_spec.Material.material{1}.solid{2}.alpha=alphaPar;
         febio_spec.Material.material{1}.solid{2}.beta=beta;
         febio_spec.Material.material{1}.solid{2}.theta=0;
-        febio_spec.Material.material{1}.solid{2}.phi=0;
-        febio_spec.Material.material{1}.solid{2}.k=k;
+        febio_spec.Material.material{1}.solid{2}.phi=0;        
     case 2
         febio_spec.Material.material{1}.solid{2}.ATTR.type='ellipsoidal fiber distribution';
         febio_spec.Material.material{1}.solid{2}.ksi=ksi;
@@ -386,7 +386,7 @@ if runFlag==1 %i.e. a succesful run
     [CF]=vertexToFaceMeasure(Fb,DN_magnitude);
     
     % Importing element stress from a log file
-    [time_mat, E_stress_mat,~]=importFEBio_logfile(fullfile(savePath,febioLogFileName_stress)); %Nodal forces
+    [time_mat, E_stress_mat,~]=importFEBio_logfile(fullfile(savePath,febioLogFileName_stress)); %Element stresses
     time_mat=[0; time_mat(:)]; %Time
     stress_cauchy_sim=[0; mean(squeeze(E_stress_mat(:,end,:)),1)'];
     

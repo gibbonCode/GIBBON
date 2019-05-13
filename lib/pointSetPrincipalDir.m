@@ -1,7 +1,15 @@
 function [varargout]=pointSetPrincipalDir(X)
+% function [varargout]=pointSetPrincipalDir(X)
+% ------------------------------------------------------------------------
+%
+%
+% ------------------------------------------------------------------------
+%%
 
-
-%% 
+%Cope with 2D input
+if size(X,2)==2
+    X(:,3)=0; %Force 3D
+end
 
 %Centre on own mean
 MU=mean(X,1); %Point set mean

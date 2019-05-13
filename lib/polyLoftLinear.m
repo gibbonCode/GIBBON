@@ -51,9 +51,10 @@ if isempty(numSteps)
     numSteps=numSteps+iseven(numSteps);
 end
 
-% if numSteps==1
-%     numSteps=2;
-% end
+%Cope with single step, i.e. force at least 2
+if numSteps==1
+    numSteps=2;
+end
 
 %% Remove twist
 if untwistOpt

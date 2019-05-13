@@ -1,6 +1,16 @@
 function [varargout]=tri2quadGroupSplit(varargin)
 
-% function [F_quad,V_quad,F_tri,V_tri]=tri2quadGroupSplit(F_tri,V_tri,optionStruct)
+% function [F_quad,V_quad]=tri2quadGroupSplit(F_tri,V_tri,optionStruct)
+% ------------------------------------------------------------------------
+%
+%
+%
+% Change log:
+% 2018
+% 2019/04/22 Updated to create cell output for a mixed mesh i.e. containing
+% quads followed by triangles
+%
+% ------------------------------------------------------------------------
 
 %% Parse input
 
@@ -80,6 +90,11 @@ if fourConnectConvert
         FQc(logicFlip,:)=fliplr(FQc(logicFlip,:));
         
         F_tri=F_tri(~any(logicFour(F_tri),2),:);
+        
+        F_cell={F_tri,FQc};
+        [F_cell,V_tri]=patchCleanUnused(F_cell,V_tri);
+        F_tri=F_cell{1};
+        FQc=F_cell{2};
     else
         FQc=[];
     end
@@ -158,37 +173,28 @@ if ~isempty(F_tri)
     end
     V_quad=V_tri;
     
-    if ~isempty(F_tri)
-        if triangleConvert==1
-            [F_quad_sub,V_quad_sub]=subQuad(F_quad,V_quad,1);
-            [F_quad2,V_quad2]=tri2quad(F_tri,V_tri);
-            [F_quad,V_quad]=joinElementSets({F_quad_sub,F_quad2},{V_quad_sub,V_quad2});
-            [F_quad,V_quad]=patchCleanUnused(F_quad,V_quad);
-            [F_quad,V_quad]=mergeVertices(F_quad,V_quad);
-        else
-            [F_quad,V_quad]=patchCleanUnused(F_quad,V_quad);
-            [F_tri,V_tri]=patchCleanUnused(F_tri,V_tri);
-        end
+    if ~isempty(F_tri) && triangleConvert==1        
+        [F_quad_sub,V_quad_sub]=subQuad(F_quad,V_quad,1);
+        [F_quad2,V_quad2]=tri2quad(F_tri,V_tri);
+        [F_quad,V_quad]=joinElementSets({F_quad_sub,F_quad2},{V_quad_sub,V_quad2});
+        [F_quad,V_quad]=patchCleanUnused(F_quad,V_quad);
+        [F_quad,V_quad]=mergeVertices(F_quad,V_quad);
+        F_tri=[]; %Force empty (since now converted) to output is skipped
     end
-    %% Collect output
     
-    varargout{1}=F_quad;
+    %% Collect output
+    if isempty(F_tri)
+        varargout{1}=F_quad;
+    else %Create cell output containing quads followed by triangles
+        varargout{1}={F_quad, F_tri};
+    end
     varargout{2}=V_quad;
-    varargout{3}=F_tri;
-    varargout{4}=V_tri;
     
-else
-    
-    %% Collect output
-    
+else    
+    %% Collect output    
     varargout{1}=FQc;
     varargout{2}=V_tri;
-    varargout{3}=[];
-    varargout{4}=[];
-    
 end
-
-
 
 %% 
 % _*GIBBON footer text*_ 

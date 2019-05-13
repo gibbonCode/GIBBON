@@ -1,8 +1,15 @@
 function [Fc,Vc]=patchDetach(varargin)
 
 % function [Fc,Vc]=patchDetach(F,V,scaleFactor)
+%-------------------------------------------------------------------------
+%
+% 
+% Change log: 
+% 2010
+% 2019/04/23 Updated function header text
+%-------------------------------------------------------------------------
 
-%% Parse input
+%%
 
 [Fc,Vc]=scalePatch(varargin{:});
  

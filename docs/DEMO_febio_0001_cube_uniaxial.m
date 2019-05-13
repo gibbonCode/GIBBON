@@ -57,8 +57,8 @@ numElementsThickness=round(sampleThickness/pointSpacings(2)); %Number of elemens
 numElementsHeight=round(sampleHeight/pointSpacings(3)); %Number of elemens in dir 3
 
 %Define applied displacement 
-appliedStrain=0.3; %Linear strain (Only used to compute applied stretch)
-loadingOption='compression'; % or 'tension'
+appliedStrain=0.4; %Linear strain (Only used to compute applied stretch)
+loadingOption='tension'; % or 'tension'
 switch loadingOption
     case 'compression'
         stretchLoad=1-appliedStrain; %The applied stretch for uniaxial loading
@@ -68,8 +68,8 @@ end
 displacementMagnitude=(stretchLoad*sampleHeight)-sampleHeight; %The displacement magnitude
 
 %Material parameter set
-c1=1e-3; %Shear-modulus-like parameter
-m1=6; %Material parameter setting degree of non-linearity
+c1=0.7; %Shear-modulus-like parameter
+m1=2; %Material parameter setting degree of non-linearity
 k_factor=500; %Bulk modulus factor 
 k=c1*k_factor; %Bulk modulus
 formulationType='uncoupled'; %coupled

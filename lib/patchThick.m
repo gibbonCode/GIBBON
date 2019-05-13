@@ -10,7 +10,7 @@ function [varargout]=patchThick(varargin)
 % 2019/04/18 Created based on quadThick
 % ------------------------------------------------------------------------
 
-%%
+%% Parse input
 
 switch nargin
     case 2
@@ -39,8 +39,6 @@ switch nargin
         numSteps=varargin{5};
 end
 
-%%
-
 if size(dirSet,2)==3 %single vector or vector set for offsetting
     if size(dirSet,1)==1 %If one vector is given copy for all points
         Nv=dirSet(ones(size(Vp1,1),1),:);
@@ -57,6 +55,8 @@ else
     Nv=Nv.*dirSet;
 end
 
+%% Compute coordinates
+
 %Thicken inwards
 Vp2=Vp1+layerThickness.*Nv;
 
@@ -68,9 +68,32 @@ Z=linspacen(Vp1(:,3),Vp2(:,3),numSteps+1);
 %Collect node set
 V=[X(:) Y(:) Z(:)];
 
+%% Create element sets 
+
+if isa(Fp1,'cell')
+    E=Fp1;
+    Fp1n=Fp1;
+    Fp2n=Fp1;
+    for q=1:1:numel(Fp1)
+        [E{q},Fp1n{q},Fp2n{q}]=createElementSet(Fp1{q},Vp1,numSteps);
+    end
+else     
+    [E,Fp1n,Fp2n]=createElementSet(Fp1,Vp1,numSteps);    
+end
+
+%% Collect output
+varargout{1}=E;
+varargout{2}=V;
+varargout{3}=Fp1n;
+varargout{4}=Fp2n;
+ 
+end
+
+function [E,Fp1,Fp2]=createElementSet(Fp1,Vp1,numSteps)
+
 %Create element matrix
 E=repmat(Fp1,[numSteps,2]);
-E_add=0:size(Vp1,1):size(Vp1,1)*(numSteps-1); 
+E_add=0:size(Vp1,1):size(Vp1,1)*(numSteps-1);
 E_add=E_add(ones(size(Fp1,1),1),:);
 E_add=E_add(:);
 E_add=E_add(:,ones(size(Fp1,2),1));
@@ -81,12 +104,7 @@ E=E+E_add;
 Fp1=E(1:size(Fp1,1),1:size(Fp1,2));
 Fp2=E(1+(end-size(Fp1,1)):end,size(Fp1,2)+1:end);
 
-%Collect output
-varargout{1}=E;
-varargout{2}=V;
-varargout{3}=Fp1;
-varargout{4}=Fp2;
- 
+end
 %% 
 % _*GIBBON footer text*_ 
 % 

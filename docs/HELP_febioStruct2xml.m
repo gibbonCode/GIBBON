@@ -611,7 +611,7 @@ optionStruct.arrayParseMethod=1;
 %% Viewing the FEBio input file
 % The |febView| command can be used to render an XML file in a figure
 % window. Alternatively the |textView| command can be used:
-textView(fileName);
+febView(fileName);
 
 %% 
 %

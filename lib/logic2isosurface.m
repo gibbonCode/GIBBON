@@ -1,7 +1,17 @@
-function [F,V]=logic2isosurface(L,controlPar)
+function [varargout]=logic2isosurface(L,controlPar)
+% function [varargout]=logic2isosurface(L,controlPar)
+% ------------------------------------------------------------------------
+% 
+%
+% Kevin Moerman
+%
+% Change log: 
+% 2019/05/01, Kevin Moerman: Added varargout support
+% 2019/05/01, Kevin Moerman: Added colordata export option so caps can be retrieved
+% 2019/05/01, Kevin Moerman: Minor updates to comments and code organisation
+% ------------------------------------------------------------------------
 
-
-%% GET CONTROL PARAMETERS
+%% Parse input
 
 if isfield(controlPar,'kernelSize')    
     kernelSize=controlPar.kernelSize;
@@ -41,19 +51,23 @@ end
 
 siz=size(L);
 
-%% SMOOTHEN LOGIC
+%% Smoothen logic
 
-%Define smoothening kernel
-switch kernelType
-    case 1 %Simple averaging kernel
-        hg=ones(kernelSize,kernelSize,kernelSize);
-        hg=hg./sum(hg(:));
-    case 2
-        hg=gauss_kernel(kernelSize,ndims(L),2,'width');
+if ~isnan(kernelSize) && ~isnan(kernelType)
+    %Define smoothening kernel
+    switch kernelType
+        case 1 %Simple averaging kernel
+            hg=ones(kernelSize,kernelSize,kernelSize);
+            hg=hg./sum(hg(:));
+        case 2
+            hg=gauss_kernel(kernelSize,ndims(L),2,'width');
+    end
+    
+    %Convolve logic
+    L=convn(double(L),hg,'same');
+else
+    L=double(L);
 end
-
-%Convolve logic
-L=convn(double(L),hg,'same');
 
 %% CREATE ISO-SURFACE
 
@@ -93,18 +107,23 @@ L_iso=L(useRange_I,useRange_J,useRange_K);
 %Derive isosurface
 [F,V] = isosurface(X_iso,Y_iso,Z_iso,L_iso,contourLevel);
 F=F(:,[3 2 1]); %Flip face order so normal is outward
+C=ones(size(F,1),1); %Add color data
 
+%%
 %Derive caps
 if capOpt==2
-    [Fc,Vc] = isocaps(X_iso,Y_iso,Z_iso,L_iso,contourLevel);
-    Fc=Fc(:,[3 2 1]); %Flip face order so normal is outward
-    
-    %Join and merge patch data
-    F=[F;Fc+size(V,1);];
-    V=[V;Vc;];
-    [F,V]=mergeVertices(F,V);
+    [Fc,Vc] = isocaps(X_iso,Y_iso,Z_iso,L_iso,contourLevel); %Get caps
+    if ~isempty(Fc)
+        Fc=fliplr(Fc); %Flip face order so normal is outward
+        [F,V,C]=joinElementSets({F,Fc},{V,Vc},{C,2*ones(size(Fc,1),1)}); %Join sets
+        [F,V]=mergeVertices(F,V); %merge isosurface and cap nodes
+    end
 end
 
+%%
+varargout{1}=F;
+varargout{2}=V;
+varargout{3}=C;
  
 %% 
 % _*GIBBON footer text*_ 

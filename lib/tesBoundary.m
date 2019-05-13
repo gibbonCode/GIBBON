@@ -1,22 +1,61 @@
-function [indBoundary]=tesBoundary(F,V)
+function [indBoundary]=tesBoundary(varargin)
+
+% function [indBoundary]=tesBoundary(varargin)
+% ------------------------------------------------------------------------
+%
+% Change log: 
+% 2009
+% 2019/04/24 Added varargin support since V can be skipped
+% 2019/04/24 Started working on cell (e.g. mixed mesh) support, not
+% completed yet 
+% ------------------------------------------------------------------------
+
+%% Parse input
+
+switch nargin
+    case 1
+        F=varargin{1};
+        V=max(F(:)); 
+    case 2
+        F=varargin{1};
+        V=varargin{2};
+end
 
 if numel(V)==1
     numPoints=V;
 else
     numPoints=size(V,1);
 end
+
+%%
+
+% if isa(F,'cell')
+%     FC=F;
+%     siz1=cellfun(@(x) size(x,1),FC);
+%     siz2=cellfun(@(x) size(x,2),FC);
+%     numFaces=sum(siz1);
+%     numVerticesMax=max(siz2);
+%     F=zeros(numFaces,numVerticesMax);
+%     indNow=0;
+% 
+%     for q=1:1:numel(FC)            
+%         F(indNow+1:indNow+siz1(q),1:siz2(q))=FC{q};
+%         indNow=indNow+siz1(q);        
+%     end        
+%     
+% end
+
 Fbs=sort(F,2);
-sizVirt=numPoints*ones(1,size(F,2));
+sizVirt=numPoints*ones(1,size(Fbs,2));
 ind_F = sub2indn(sizVirt,Fbs);
 [~,indUni1,~]=unique(Fbs,'rows'); %Get indices for unique faces
-% F_uni=F(indUni1,:);
 ind_F_uni=ind_F(indUni1,:);
-ind=1:1:size(F,1);
+ind=1:1:size(Fbs,1);
 ind=ind(~ismember(ind,indUni1));
 ind_Fb_cut=ind_F(ind,:);
 L_uni=~ismember(ind_F_uni,ind_Fb_cut);
 indBoundary=indUni1(L_uni,:);
- 
+
 %% 
 % _*GIBBON footer text*_ 
 % 

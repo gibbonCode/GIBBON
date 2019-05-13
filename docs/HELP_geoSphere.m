@@ -86,6 +86,7 @@ for q=solidTypes
     subplot(2,3,q); hold on;
     title(['Based on: ',titleCell{q}],'FontSize',fontSize);    
     gpatch(F,V,pColors(q,:));   
+    % patchNormPlot(F,V);
     camlight headlight; 
     axisGeom(gca,fontSize);    
 end

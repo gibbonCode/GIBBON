@@ -8,8 +8,8 @@ clear; close all; clc;
 % |[indAngles]=patchPathAngles(F,V,ind,isClosedLoop);|
 
 %% Description 
-% The |patchPathAngles| function 
-%
+% The |patchPathAngles| function computes the angles between adjacent edges
+% on a curve on a patch. 
 
 %% Examples 
 

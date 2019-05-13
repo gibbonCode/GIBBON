@@ -175,6 +175,9 @@ if FEBio_go==0
     %Scan log file for the following targets
     targets={'------- converged at time :',' N O R M A L   T E R M I N A T I O N',' E R R O R   T E R M I N A T I O N'};
     line_count=1;
+    previousEndLine=[];
+    
+    tStartCheck=datevec(now); 
     while FEBio_go==0
         
         pause(FEBioRunStruct.t_check); %Wait
@@ -182,43 +185,62 @@ if FEBio_go==0
         %Import log file
         [T_log]=txtfile2cell(FEBioRunStruct.run_logname);
         
-        %Check log file content
-        while 1
-            if line_count>numel(T_log)
-                break;
-            end
+        if ~strcmp(T_log{end},previousEndLine) %Change in last line observed            
+            tStartCheck=datevec(now); %reset change checking clock
             
-            %Get line
-            l=T_log{line_count};
-            
-            %Display line
-            if (strfind(l,targets{1}))
-                if FEBioRunStruct.disp_on==1 && FEBioRunStruct.disp_log_on==1
-                    disp(l); %display line
+            %Check log file content
+            while 1
+                if line_count>numel(T_log)
+                    break;
                 end
-            end
-            
-            %Check for normal termination
-            if (strfind(l,targets{2})) % Found: N O R M A L  T E R M I N A T I O N
-                runFlag=1;
-                FEBio_go=1;
-                break
-            end
-            
-            %Check for error termination
-            if (strfind(l,targets{3})) % Found: E R R O R   T E R M I N A T I O N
-                if FEBioRunStruct.disp_on==1
-                    disp(l); %display line
+                
+                %Get line
+                l=T_log{line_count};
+                
+                %Display line
+                if (strfind(l,targets{1}))
+                    if FEBioRunStruct.disp_on==1 && FEBioRunStruct.disp_log_on==1
+                        disp(l); %display line
+                    end
                 end
+                
+                %Check for normal termination
+                if (strfind(l,targets{2})) % Found: N O R M A L  T E R M I N A T I O N
+                    runFlag=1;
+                    FEBio_go=1;
+                    break
+                end
+                
+                %Check for error termination
+                if (strfind(l,targets{3})) % Found: E R R O R   T E R M I N A T I O N
+                    if FEBioRunStruct.disp_on==1
+                        disp(l); %display line
+                    end
+                    runFlag=0;
+                    FEBio_go=1;
+                    if FEBioRunStruct.disp_on==1
+                        disp(['--- FAILED: FEBio error! Check log-file --- ',datestr(now)]);
+                    end
+                    break
+                end
+                line_count=line_count+1;
+            end
+        else
+            tNow=datevec(now); 
+            dt=etime(tNow,tStartCheck);            
+            if dt>FEBioRunStruct.maxLogCheckTime
                 runFlag=0;
                 FEBio_go=1;
                 if FEBioRunStruct.disp_on==1
-                    disp(['--- FAILED: FEBio error! Check log-file --- ',datestr(now)]);
+                    warning(['--- FAILED: Log file was not changed within maxLogCheckTime. ',datestr(now)]);
+%                     try
+%                         system(FEBioRunStruct.run_string_quit);
+%                     end
                 end
                 break
             end
-            line_count=line_count+1;
         end
+        previousEndLine=T_log{end};
         
         switch FEBioRunStruct.runMode
             case 'internal'

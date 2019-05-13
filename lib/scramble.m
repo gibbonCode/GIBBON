@@ -8,7 +8,9 @@ function [B,scrambleIndices]=scramble(varargin)
 % Kevin Mattheus Moerman
 % gibbon.toolbox@gmail.com
 %
-% 2019/03/28
+% Change log:
+% 2019/03/28 Created
+% 2019/05/03 Fixed bug in relation to scrambling allong a dimension
 %------------------------------------------------------------------------
 
 %% Parse input
@@ -28,11 +30,11 @@ if isempty(scrambleDim)
     scrambleIndices=randperm(numel(A));
     B=B(scrambleIndices);
 else
-    scrambleIndices=randperm(size(A,scrambleDim));    
-    subIND=ind2subn(size(A),1:1:numel(A)); %Subscript index matrix
+    scrambleIndices=randperm(size(A,scrambleDim))';   
+    subIND=ind2subn(size(A),1:1:numel(A)); %Subscript index matrix    
     subIND(:,scrambleDim)=scrambleIndices(subIND(:,scrambleDim));
     IND=sub2indn(size(A),subIND); %Linear index matrix
-    B(1:end)=A(IND);
+    B(IND)=A(1:end);
 end
 
 %%
