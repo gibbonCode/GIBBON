@@ -38,88 +38,74 @@ edgeWidth=2;
 edgeColor='k';
 faceAlpha1=1; 
 
-%%
-% path names
+%% Control parameters
+
+% Path names
 defaultFolder = fileparts(fileparts(mfilename('fullpath')));
 savePath=fullfile(defaultFolder,'data','temp');
 
-%%
-gelRadius=119/2;
-gelHeight=100;
+% Defining file names
+febioFebFileNamePart='tempModel';
+febioFebFileName=fullfile(savePath,[febioFebFileNamePart,'.feb']); %FEB file name
+febioLogFileName=fullfile(savePath,[febioFebFileNamePart,'.txt']); %FEBio log file name
+febioLogFileName_disp=[febioFebFileNamePart,'_disp_out.txt']; %Log file name for exporting displacement
+febioLogFileName_force=[febioFebFileNamePart,'_force_out.txt']; %Log file name for exporting force
+febioLogFileName_strainEnergy=[febioFebFileNamePart,'_energy_out.txt']; %Log file name for exporting strain energy density
+febioLogFileName_strain=[febioFebFileNamePart,'_strain_out.txt']; %Log file name for exporting strain
 
-sphereRadius=30/2; % The radius of the hemi-spher portion
+probeHeight=75;
+
+probeRadius=2; % The radius of the hemi-spher portion
 nRefine=1;  % Number of |subtri| refinements for icosahedron
-cylinderHeight=55/2;  % height of the cylinder part
-pointSpacing=6; % Aproximate node spacing for cylinder portion
 
-displacementMagnitude=[0 0 -15];
+pointSpacing=2; 
+dAdd=7;
+tissueRadius=probeRadius+dAdd;
+tissueHeight=probeHeight+dAdd;
+volumeFactor=5;
+
+displacementMagnitude=-1;
+
+%Material parameter set
+c1=1e-3; %Shear-modulus-like parameter
+m1=8; %Material parameter setting degree of non-linearity
+k_factor=1e2; %Bulk modulus factor 
+k=c1*k_factor; %Bulk modulus
 
 % FEA control settings
-numTimeSteps=10; %Number of time steps desired
+numTimeSteps=20; %Number of time steps desired
 max_refs=25; %Max reforms
 max_ups=0; %Set to zero to use full-Newton iterations
-opt_iter=10; %Optimum number of iterations
+opt_iter=6; %Optimum number of iterations
 max_retries=5; %Maximum number of retires
 dtmin=(1/numTimeSteps)/100; %Minimum time step size
 dtmax=1/numTimeSteps; %Maximum time step size
 
-%% Build indentor sphere
+%% Build probe
 
-hemiStruct.sphereRadius=sphereRadius; %Sphere radius
-hemiStruct.nRefineRegions=nRefine; %Number of refinement steps for regions
-hemiStruct.nRefineMesh=1; %Number of refinement steps for mesh
-[F1,V1,~]=hemiSphereRegionMesh(hemiStruct);
-F1=fliplr(F1); %flip face orientation
-V1(:,3)=-V1(:,3); %Flip
+probeMeshInputStruct.sphereRadius=probeRadius;% => The radius of the hemi-spher portion
+probeMeshInputStruct.nRefine=nRefine;% => Number of |subtri| refinements for icosahedron
+probeMeshInputStruct.cylinderHeight=probeHeight-probeRadius;% => height of the cylinder part
+probeMeshInputStruct.cylinderStepSize=[];% => Aproximate node spacing for cylinder portion
+probeMeshInputStruct.patchType='tri';
 
-% Find hemi-sphere edge
-TR =triangulation(F1,V1);
-E = freeBoundary(TR);
-[indList]=edgeListToCurve(E);
+[Fp,Vp,Cp]=hemiSphereCylMesh(probeMeshInputStruct);
+Fp=fliplr(Fp); %Invert face orientation
 
-%% Build indentor shaft
+Vp(:,3)=Vp(:,3)-max(Vp(:,3));
 
-Vc=V1(indList(1:end-1),:); 
-
-% Extruding model
-cPar.numSteps=round(cylinderHeight/pointSpacing);
-cPar.depth=cylinderHeight; 
-cPar.patchType='tri'; 
-cPar.dir=1;
-cPar.closeLoopOpt=1; 
-[F2,V2]=polyExtrude(Vc,cPar);
-
-
-%% Compose indentor
-
-Vs=[V1;V2];
-Fs=[F1;F2+size(V1,1);];
-
-[~,ind1,ind2]=unique(pround(Vs,5),'rows');
-Fs=ind2(Fs);
-Vs=Vs(ind1,:);
-Vs(:,3)=Vs(:,3)-max(Vs(:,3)); %Flip
-
-Fs=fliplr(Fs); %flip face orientation
-
-TR =triangulation(Fs,Vs);
-E = freeBoundary(TR);
-[indList]=edgeListToCurve(E);
-Vst=Vs(indList(1:end-1),:);
+%Get top curve
+Eb=patchBoundary(Fp,Vp);
+indProbeTop=edgeListToCurve(Eb);
+indProbeTop=indProbeTop(1:end-1);
+Vst=Vp(indProbeTop,:);
 
 %%
-
-cFigure;
-xlabel('X','FontSize',fontSize); ylabel('Y','FontSize',fontSize); zlabel('Z','FontSize',fontSize)
-hold on;
-
-patch('Faces',Fs,'Vertices',Vs,'FaceColor','g','EdgeColor','k');
-% hp=patchNormPlot(F,V,2);
-
-% patch('Faces',F1,'Vertices',V1,'FaceColor','g','EdgeColor','k');
-% patch('Faces',F2,'Vertices',V2,'FaceColor','r','EdgeColor','k');
-
-axis equal; view(3); axis tight;  axis vis3d; grid off;  set(gca,'FontSize',fontSize);
+cFigure; hold on;
+gpatch(Fp,Vp,'gw','k');
+plotV(Vst,'b.-','lineWidth',lineWidth1,'MarkerSize',markerSize1);
+patchNormPlot(Fp,Vp);
+axisGeom(gca,fontSize);
 drawnow; 
 
 %% Build gel
@@ -129,39 +115,25 @@ ns=150;
 t=linspace(0,2*pi,ns);
 t=t(1:end-1);
 
-x=gelRadius*cos(t);
-y=gelRadius*sin(t);
+x=tissueRadius*cos(t);
+y=tissueRadius*sin(t);
 z=zeros(size(x));
 Vc=[x(:) y(:) z(:)];
 np=ceil(max(pathLength(Vc))./pointSpacing);
 [Vc]=evenlySampleCurve(Vc,np,'pchip',1);
  
 % Extruding model
-cPar.numSteps=round(gelHeight/pointSpacing);
-cPar.depth=gelHeight; 
+cPar.numSteps=round(tissueHeight/pointSpacing);
+cPar.depth=tissueHeight; 
 cPar.patchType='tri'; 
 cPar.dir=-1;
 cPar.closeLoopOpt=1; 
 [Fg,Vg]=polyExtrude(Vc,cPar);
+Fg=fliplr(Fg);
 
 Vgb=Vg(cPar.numSteps:cPar.numSteps:end,:); 
 
 Vgt=Vg(1:cPar.numSteps:end,:); 
-
-cFigure;
-xlabel('X','FontSize',fontSize); ylabel('Y','FontSize',fontSize); zlabel('Z','FontSize',fontSize)
-hold on;
-
-patch('Faces',Fs,'Vertices',Vs,'FaceColor','g','EdgeColor','k');
-% hp=patchNormPlot(F,V,2);
-
-patch('Faces',Fg,'Vertices',Vg,'FaceColor','r','EdgeColor','k');
-plotV(Vgb,'b.-','lineWidth',lineWidth1,'MarkerSize',markerSize1);
-plotV(Vgt,'b.-','lineWidth',lineWidth1,'MarkerSize',markerSize1);
-plotV(Vst,'b.-','lineWidth',lineWidth1,'MarkerSize',markerSize1);
-
-axis equal; view(3); axis tight;  axis vis3d; grid off;  set(gca,'FontSize',fontSize);
-drawnow; 
 
 %% Cap ends
 
@@ -169,62 +141,75 @@ regionCell={Vgt(:,[1 2]),Vst(:,[1 2])};
 [Ft,Vt]=regionTriMesh2D(regionCell,pointSpacing,0,0);
 Vt(:,3)=mean(Vgt(:,3));
 
-patch('Faces',Ft,'Vertices',Vt,'FaceColor','b','EdgeColor','k');
-
 regionCell={Vgb(:,[1 2])};
 [Fb,Vb]=regionTriMesh2D(regionCell,pointSpacing,0,0);
 Fb=fliplr(Fb); %flip face orientation
 Vb(:,3)=mean(Vgb(:,3));
 
-patch('Faces',Fb,'Vertices',Vb,'FaceColor','b','EdgeColor','k');
+%%
+% Visualize
 
-%% Merge model
+cFigure; hold on;
 
-V=[Vg; Vt; Vb; Vs; ];
-F=[Fg; Ft+size(Vg,1); Fb+size(Vg,1)+size(Vt,1); Fs+size(Vg,1)+size(Vt,1)+size(Vb,1); ];
-C=[ones(size(Fg,1),1); 2*ones(size(Ft,1),1); 3*ones(size(Fb,1),1); 4*ones(size(Fs,1),1); ];
+gpatch(Fp,Vp,'rw','k',0.5);
+gpatch(Fg,Vg,'gw','k',0.5);
+gpatch(Fb,Vb,'bw','k',0.5);
+gpatch(Ft,Vt,'bw','k',0.5);
 
-[~,ind1,ind2]=unique(pround(V,5),'rows');
-F=ind2(F);
-V=V(ind1,:);
+plotV(Vgb,'b.-','lineWidth',lineWidth1,'MarkerSize',markerSize1);
+plotV(Vgt,'b.-','lineWidth',lineWidth1,'MarkerSize',markerSize1);
+plotV(Vst,'b.-','lineWidth',lineWidth1,'MarkerSize',markerSize1);
+
+axisGeom(gca,fontSize);
+drawnow; 
+
+%% Merge model components
+
+[F,V,C]=joinElementSets({Fg,Ft,Fb,Fp},{Vg,Vt,Vb,Vp});
+[F,V]=mergeVertices(F,V);
 
 %%
 
-cFigure;
-xlabel('X','FontSize',fontSize); ylabel('Y','FontSize',fontSize); zlabel('Z','FontSize',fontSize)
-hold on;
+cFigure; 
+subplot(1,2,1); hold on;
+gpatch(F,V,C,'none',0.5);
+axisGeom(gca,fontSize);
+colormap gjet; icolorbar;
 
-patch('Faces',F,'Vertices',V,'FaceColor','flat','CData',C,'EdgeColor','k');
-hp=patchNormPlot(F,V,2);
+subplot(1,2,2); hold on;
+gpatch(F,V,C);
+patchNormPlot(F,V,2);
 plotV(Vst,'b.-','lineWidth',lineWidth1,'MarkerSize',markerSize1);
+axisGeom(gca,fontSize);
+colormap gjet; icolorbar;
 
-axis equal; view(3); axis tight;  axis vis3d; grid off;  set(gca,'FontSize',fontSize);
 drawnow; 
 
 %% Mesh solid using tetgen
 
 %%
 % Create tetgen meshing input structure
-modelName=fullfile(savePath,'tempModel');
 
-% Regional mesh volume parameter
 [regionA]=tetVolMeanEst(F,V); %Volume for a regular tet based on edge lengths
+V_inner=getInnerPoint(F,V); %Interior point for region
 
 inputStruct.stringOpt='-pq1.2AaY';
 inputStruct.Faces=F;
 inputStruct.Nodes=V;
 inputStruct.holePoints=[];
 inputStruct.faceBoundaryMarker=C; %Face boundary markers
-inputStruct.regionPoints=[0 -50 -50]; %region points
-inputStruct.regionA=regionA*3; %Desired volume for tets
+inputStruct.regionPoints=V_inner; %region points
+inputStruct.regionA=regionA*volumeFactor; %Desired volume for tets
 inputStruct.minRegionMarker=2; %Minimum region marker
-inputStruct.modelName=modelName;
 
 %% 
-% Mesh model using tetrahedral elements using tetGen (see:
-% <http://wias-berlin.de/software/tetgen/>)
+% Mesh model using tetrahedral elements using tetGen
 
 [meshOutput]=runTetGen(inputStruct); %Run tetGen 
+
+%%
+% Visualize mesh
+
 meshView(meshOutput);
 
 %% 
@@ -241,180 +226,290 @@ Cb=meshOutput.boundaryMarker;
 %% Define boundary condition node sets
 
 logicRigid= Cb==1 | Cb==3;
-indRigid=Fb(logicRigid,:);
-indRigid=unique(indRigid(:));
+bcSupportList=Fb(logicRigid,:);
+bcSupportList=unique(bcSupportList(:));
 
 logicIndentor= Cb==4;
-indIndentor=Fb(logicIndentor,:);
-indIndentor=unique(indIndentor(:));
+bcPrescribeList=Fb(logicIndentor,:);
+bcPrescribeList=unique(bcPrescribeList(:));
 
 %%
-% Plot boundary condition nodes
-cFigure;
-xlabel('X','FontSize',fontSize); ylabel('Y','FontSize',fontSize); zlabel('Z','FontSize',fontSize)
-hold on;
+% Visualize boundary conditions
 
-patch('Faces',Fb,'Vertices',V,'FaceColor','flat','CData',Cb,'EdgeColor','k');
-plotV(V(indRigid,:),'r.','lineWidth',lineWidth1,'MarkerSize',markerSize1);
-
-plotV(V(indIndentor,:),'g.','lineWidth',lineWidth1,'MarkerSize',markerSize1);
-
-axis equal; view(3); axis tight;  axis vis3d; grid off;  set(gca,'FontSize',fontSize);
+cFigure; hold on;
+gpatch(Fb,V,'bw','none',0.5);
+hp(1)=plotV(V(bcSupportList,:),'k.','lineWidth',lineWidth1,'MarkerSize',markerSize1);
+hp(2)=plotV(V(bcPrescribeList,:),'r.','lineWidth',lineWidth1,'MarkerSize',markerSize1);
+legend(hp,{'BC Full support','BC Prescribed displacement'});
+axisGeom(gca,fontSize);
 drawnow; 
 
+%% Defining the FEBio input structure
+% See also |febioStructTemplate| and |febioStruct2xml| and the FEBio user
+% manual.
+
+%Get a template with default settings 
+[febio_spec]=febioStructTemplate;
+
+%febio_spec version 
+febio_spec.ATTR.version='2.5'; 
+
+%Module section
+febio_spec.Module.ATTR.type='solid'; 
+
+%Create control structure for use by all steps
+stepStruct.Control.analysis.ATTR.type='static';
+stepStruct.Control.time_steps=numTimeSteps;
+stepStruct.Control.step_size=1/numTimeSteps;
+stepStruct.Control.time_stepper.dtmin=dtmin;
+stepStruct.Control.time_stepper.dtmax=dtmax; 
+stepStruct.Control.time_stepper.max_retries=max_retries;
+stepStruct.Control.time_stepper.opt_iter=opt_iter;
+stepStruct.Control.max_refs=max_refs;
+stepStruct.Control.max_ups=max_ups;
+
+%Add template based default settings to proposed control section
+[stepStruct.Control]=structComplete(stepStruct.Control,febio_spec.Control,1); %Complement provided with default if missing
+
+%Remove control field (part of template) since step specific control sections are used
+febio_spec=rmfield(febio_spec,'Control'); 
+
+febio_spec.Step{1}.Control=stepStruct.Control;
+febio_spec.Step{1}.ATTR.id=1;
+febio_spec.Step{2}.Control=stepStruct.Control;
+febio_spec.Step{2}.ATTR.id=2;
+
+%Material section
+febio_spec.Material.material{1}.ATTR.type='Ogden';
+febio_spec.Material.material{1}.ATTR.id=1;
+febio_spec.Material.material{1}.c1=c1;
+febio_spec.Material.material{1}.m1=m1;
+febio_spec.Material.material{1}.c2=c1;
+febio_spec.Material.material{1}.m2=-m1;
+febio_spec.Material.material{1}.k=k;
+
+%Geometry section
+% -> Nodes
+febio_spec.Geometry.Nodes{1}.ATTR.name='nodeSet_all'; %The node set name
+febio_spec.Geometry.Nodes{1}.node.ATTR.id=(1:size(V,1))'; %The node id's
+febio_spec.Geometry.Nodes{1}.node.VAL=V; %The nodel coordinates
+
+% -> Elements
+febio_spec.Geometry.Elements{1}.ATTR.type='tet4'; %Element type of this set
+febio_spec.Geometry.Elements{1}.ATTR.mat=1; %material index for this set 
+febio_spec.Geometry.Elements{1}.ATTR.name='Tissue'; %Name of the element set
+febio_spec.Geometry.Elements{1}.elem.ATTR.id=(1:1:size(E,1))'; %Element id's
+febio_spec.Geometry.Elements{1}.elem.VAL=E;
+
+% -> NodeSets
+febio_spec.Geometry.NodeSet{1}.ATTR.name='bcSupportList';
+febio_spec.Geometry.NodeSet{1}.node.ATTR.id=bcSupportList(:);
+
+febio_spec.Geometry.NodeSet{2}.ATTR.name='bcPrescribeList';
+febio_spec.Geometry.NodeSet{2}.node.ATTR.id=bcPrescribeList(:);
+
+%Boundary condition section 
+% -> Fix boundary conditions
+febio_spec.Boundary.fix{1}.ATTR.bc='x';
+febio_spec.Boundary.fix{1}.ATTR.node_set=febio_spec.Geometry.NodeSet{1}.ATTR.name;
+febio_spec.Boundary.fix{2}.ATTR.bc='y';
+febio_spec.Boundary.fix{2}.ATTR.node_set=febio_spec.Geometry.NodeSet{1}.ATTR.name;
+febio_spec.Boundary.fix{3}.ATTR.bc='z';
+febio_spec.Boundary.fix{3}.ATTR.node_set=febio_spec.Geometry.NodeSet{1}.ATTR.name;
+
+% -> Prescribe boundary conditions
+%STEP 1 Up/down
+febio_spec.Step{1}.Boundary.prescribe{1}.ATTR.bc='x';
+febio_spec.Step{1}.Boundary.prescribe{1}.ATTR.node_set=febio_spec.Geometry.NodeSet{2}.ATTR.name;
+febio_spec.Step{1}.Boundary.prescribe{1}.scale.ATTR.lc=1;
+febio_spec.Step{1}.Boundary.prescribe{1}.scale.VAL=1;
+febio_spec.Step{1}.Boundary.prescribe{1}.relative=1;
+febio_spec.Step{1}.Boundary.prescribe{1}.value=0;
+
+febio_spec.Step{1}.Boundary.prescribe{2}.ATTR.bc='y';
+febio_spec.Step{1}.Boundary.prescribe{2}.ATTR.node_set=febio_spec.Geometry.NodeSet{2}.ATTR.name;
+febio_spec.Step{1}.Boundary.prescribe{2}.scale.ATTR.lc=1;
+febio_spec.Step{1}.Boundary.prescribe{2}.scale.VAL=1;
+febio_spec.Step{1}.Boundary.prescribe{2}.relative=1;
+febio_spec.Step{1}.Boundary.prescribe{2}.value=0;
+
+febio_spec.Step{1}.Boundary.prescribe{3}.ATTR.bc='z';
+febio_spec.Step{1}.Boundary.prescribe{3}.ATTR.node_set=febio_spec.Geometry.NodeSet{2}.ATTR.name;
+febio_spec.Step{1}.Boundary.prescribe{3}.scale.ATTR.lc=1;
+febio_spec.Step{1}.Boundary.prescribe{3}.scale.VAL=1;
+febio_spec.Step{1}.Boundary.prescribe{3}.relative=1;
+febio_spec.Step{1}.Boundary.prescribe{3}.value=displacementMagnitude;
+
+%STEP 3 Sideways
+febio_spec.Step{2}.Boundary.prescribe{1}.ATTR.bc='x';
+febio_spec.Step{2}.Boundary.prescribe{1}.ATTR.node_set=febio_spec.Geometry.NodeSet{2}.ATTR.name;
+febio_spec.Step{2}.Boundary.prescribe{1}.scale.ATTR.lc=2;
+febio_spec.Step{2}.Boundary.prescribe{1}.scale.VAL=1;
+febio_spec.Step{2}.Boundary.prescribe{1}.relative=1;
+febio_spec.Step{2}.Boundary.prescribe{1}.value=displacementMagnitude;
+
+febio_spec.Step{2}.Boundary.prescribe{2}.ATTR.bc='y';
+febio_spec.Step{2}.Boundary.prescribe{2}.ATTR.node_set=febio_spec.Geometry.NodeSet{2}.ATTR.name;
+febio_spec.Step{2}.Boundary.prescribe{2}.scale.ATTR.lc=2;
+febio_spec.Step{2}.Boundary.prescribe{2}.scale.VAL=1;
+febio_spec.Step{2}.Boundary.prescribe{2}.relative=1;
+febio_spec.Step{2}.Boundary.prescribe{2}.value=0;
+
+febio_spec.Step{2}.Boundary.prescribe{3}.ATTR.bc='z';
+febio_spec.Step{2}.Boundary.prescribe{3}.ATTR.node_set=febio_spec.Geometry.NodeSet{2}.ATTR.name;
+febio_spec.Step{2}.Boundary.prescribe{3}.scale.ATTR.lc=2;
+febio_spec.Step{2}.Boundary.prescribe{3}.scale.VAL=1;
+febio_spec.Step{2}.Boundary.prescribe{3}.relative=1;
+febio_spec.Step{2}.Boundary.prescribe{3}.value=0;
+
+%LoadData section
+febio_spec.LoadData.loadcurve{1}.ATTR.id=1;
+febio_spec.LoadData.loadcurve{1}.ATTR.type='linear';
+febio_spec.LoadData.loadcurve{1}.point.VAL=[0 0; 0.25 1; 0.5 0; 0.75 -1; 1 0];
+
+febio_spec.LoadData.loadcurve{2}.ATTR.id=2;
+febio_spec.LoadData.loadcurve{2}.ATTR.type='linear';
+febio_spec.LoadData.loadcurve{2}.point.VAL=[1 0; 1.25 1; 1.5 0; 1.75 -1; 2 0];
+
+%Output section 
+% -> log file
+febio_spec.Output.logfile.ATTR.file=febioLogFileName;
+febio_spec.Output.logfile.node_data{1}.ATTR.file=febioLogFileName_disp;
+febio_spec.Output.logfile.node_data{1}.ATTR.data='ux;uy;uz';
+febio_spec.Output.logfile.node_data{1}.ATTR.delim=',';
+febio_spec.Output.logfile.node_data{1}.VAL=1:size(V,1);
+
+febio_spec.Output.logfile.node_data{2}.ATTR.file=febioLogFileName_force;
+febio_spec.Output.logfile.node_data{2}.ATTR.data='Rx;Ry;Rz';
+febio_spec.Output.logfile.node_data{2}.ATTR.delim=',';
+febio_spec.Output.logfile.node_data{2}.VAL=1:size(V,1);
+
+febio_spec.Output.logfile.element_data{1}.ATTR.file=febioLogFileName_strain;
+febio_spec.Output.logfile.element_data{1}.ATTR.data='E1;E2;E3';
+febio_spec.Output.logfile.element_data{1}.ATTR.delim=',';
+febio_spec.Output.logfile.element_data{1}.VAL=1:size(E,1);
+
+%% Quick viewing of the FEBio input file structure
+% The |febView| function can be used to view the xml structure in a MATLAB
+% figure window. 
+
 %%
-% % PLOTTING MODEL 
-% 
-% %Selecting half of the model to see interior
-% Y=V(:,2); YE=mean(Y(E),2);
-% L=YE>mean(Y);
-% [Fs,Cs]=element2patch(E(L,:),C(L),'tet4');
-% 
-% cFigure;
-% subplot(1,2,1);
-% title('Solid tetrahedral mesh model','FontSize',fontSize);
-% xlabel('X','FontSize',fontSize); ylabel('Y','FontSize',fontSize); zlabel('Z','FontSize',fontSize); hold on;
-% hps=patch('Faces',F,'Vertices',V,'FaceColor','flat','CData',C,'lineWidth',edgeWidth,'edgeColor',edgeColor);
-% view(3); axis tight;  axis equal;  grid on;
-% colormap(autumn); 
-% camlight headlight;
-% set(gca,'FontSize',fontSize);
-% subplot(1,2,2);
-% title('Cut view of Solid tetrahedral mesh model','FontSize',fontSize);
-% xlabel('X','FontSize',fontSize); ylabel('Y','FontSize',fontSize); zlabel('Z','FontSize',fontSize); hold on;
-% hps=patch('Faces',Fs,'Vertices',V,'FaceColor','flat','CData',Cs,'lineWidth',edgeWidth,'edgeColor',edgeColor);
-% view(3); axis tight;  axis equal;  grid on;
-% colormap(autumn); 
-% camlight headlight;
-% set(gca,'FontSize',fontSize);
-% drawnow;
+% |febView(febio_spec); %Viewing the febio file|
 
-%% CONSTRUCTING FEB MODEL
+%% Exporting the FEBio input file
+% Exporting the febio_spec structure to an FEBio input file is done using
+% the |febioStruct2xml| function. 
 
-FEB_struct.febio_spec.version='2.0';
-FEB_struct.Module.Type='solid';
+febioStruct2xml(febio_spec,febioFebFileName); %Exporting to file and domNode
 
-% Defining file names
-FEB_struct.run_filename=[modelName,'.feb']; %FEB file name
-FEB_struct.run_logname=[modelName,'.txt']; %FEBio log file name
+%% Running the FEBio analysis
+% To run the analysis defined by the created FEBio input file the
+% |runMonitorFEBio| function is used. The input for this function is a
+% structure defining job settings e.g. the FEBio input file name. The
+% optional output runFlag informs the user if the analysis was run
+% succesfully. 
 
-%Creating FEB_struct
-FEB_struct.Geometry.Nodes=V;
-FEB_struct.Geometry.Elements={E}; %The element sets
-FEB_struct.Geometry.ElementType={'tet4'}; %The element types
-FEB_struct.Geometry.ElementMat={ones(size(E,1),1)};
-FEB_struct.Geometry.ElementsPartName={'Phantom'};
+febioAnalysis.run_filename=febioFebFileName; %The input file name
+febioAnalysis.run_logname=febioLogFileName; %The name for the log file
+febioAnalysis.disp_on=1; %Display information on the command window
+febioAnalysis.disp_log_on=1; %Display convergence information in the command window
+febioAnalysis.runMode='internal';%'internal' or 'external';
+febioAnalysis.t_check=0.25; %Time for checking log file (dont set too small)
+febioAnalysis.maxtpi=1e99; %Max analysis time
+febioAnalysis.maxLogCheckTime=25; %Max log file checking time
 
-% DEFINING MATERIALS
-c1=1e-3;
-k=c1*1e3;
-FEB_struct.Materials{1}.Type='Mooney-Rivlin';
-FEB_struct.Materials{1}.Name='gel_mat';
-FEB_struct.Materials{1}.Properties={'c1','c2','k'};
-FEB_struct.Materials{1}.Values={c1,0,k};
+[runFlag]=runMonitorFEBio(febioAnalysis);%START FEBio NOW!!!!!!!!
 
-%Control section
-FEB_struct.Control.AnalysisType='static';
-FEB_struct.Control.Properties={'time_steps','step_size',...
-    'max_refs','max_ups',...
-    'dtol','etol','rtol','lstol'};
-FEB_struct.Control.Values={numTimeSteps,1/numTimeSteps,...
-    max_refs,max_ups,...
-    0.001,0.01,0,0.9};
-FEB_struct.Control.TimeStepperProperties={'dtmin','dtmax','max_retries','opt_iter'};
-FEB_struct.Control.TimeStepperValues={dtmin,dtmax,max_retries,opt_iter};
+%% Import FEBio results 
 
-%Defining node sets
-FEB_struct.Geometry.NodeSet{1}.Set=indRigid;
-FEB_struct.Geometry.NodeSet{1}.Name='indRigid';
-FEB_struct.Geometry.NodeSet{2}.Set=indIndentor;
-FEB_struct.Geometry.NodeSet{2}.Name='indIndentor';
-
-%Adding BC information
-FEB_struct.Boundary.Fix{1}.bc='x';
-FEB_struct.Boundary.Fix{1}.SetName=FEB_struct.Geometry.NodeSet{1}.Name;
-FEB_struct.Boundary.Fix{2}.bc='y';
-FEB_struct.Boundary.Fix{2}.SetName=FEB_struct.Geometry.NodeSet{1}.Name;
-FEB_struct.Boundary.Fix{3}.bc='z';
-FEB_struct.Boundary.Fix{3}.SetName=FEB_struct.Geometry.NodeSet{1}.Name;
-
-FEB_struct.Boundary.Prescribe{1}.Set=indIndentor;
-FEB_struct.Boundary.Prescribe{1}.bc='x';
-FEB_struct.Boundary.Prescribe{1}.lc=1;
-FEB_struct.Boundary.Prescribe{1}.nodeScale=displacementMagnitude(ones(numel(indIndentor),1),1);
-FEB_struct.Boundary.Prescribe{1}.Type='relative';
-
-FEB_struct.Boundary.Prescribe{1}.Set=indIndentor;
-FEB_struct.Boundary.Prescribe{1}.bc='y';
-FEB_struct.Boundary.Prescribe{1}.lc=1;
-FEB_struct.Boundary.Prescribe{1}.nodeScale=displacementMagnitude(ones(numel(indIndentor),1),2);
-FEB_struct.Boundary.Prescribe{1}.Type='relative';
-
-FEB_struct.Boundary.Prescribe{1}.Set=indIndentor;
-FEB_struct.Boundary.Prescribe{1}.bc='z';
-FEB_struct.Boundary.Prescribe{1}.lc=1;
-FEB_struct.Boundary.Prescribe{1}.nodeScale=displacementMagnitude(ones(numel(indIndentor),1),3);
-FEB_struct.Boundary.Prescribe{1}.Type='relative';
-
-%Load curves
-FEB_struct.LoadData.LoadCurves.id=1;
-FEB_struct.LoadData.LoadCurves.type={'linear'};
-FEB_struct.LoadData.LoadCurves.loadPoints={[0 0;1 1;]};
-
-%Adding output requests
-FEB_struct.Output.VarTypes={'displacement','stress','relative volume'};
-
-%Specify log file output
-run_node_output_name=[FEB_struct.run_filename(1:end-4),'_node_out.txt'];
-FEB_struct.run_output_names={run_node_output_name};
-FEB_struct.output_types={'node_data'};
-FEB_struct.data_types={'ux;uy;uz'};
-
-%% SAVING .FEB FILE
-
-FEB_struct.disp_opt=0; %Display waitbars option
-febStruct2febFile(FEB_struct);
-
-%% RUNNING FEBIO JOB
-
-% FEBioRunStruct.FEBioPath='C:\Program Files\febio2-2.2.6\bin\febio2.exe';
-FEBioRunStruct.run_filename=FEB_struct.run_filename;
-FEBioRunStruct.run_logname=FEB_struct.run_logname;
-FEBioRunStruct.disp_on=1;
-FEBioRunStruct.disp_log_on=1;
-FEBioRunStruct.runMode='external';%'internal';
-FEBioRunStruct.t_check=0.25; %Time for checking log file (dont set too small)
-FEBioRunStruct.maxtpi=1e99; %Max analysis time
-FEBioRunStruct.maxLogCheckTime=3; %Max log file checking time
-
-[runFlag]=runMonitorFEBio(FEBioRunStruct);%START FEBio NOW!!!!!!!!
-
-%% IMPORTING NODAL DISPLACEMENT RESULTS
-% Importing nodal displacements from a log file
-[~, N_disp_mat,~]=importFEBio_logfile(FEB_struct.run_output_names{1}); %Nodal displacements
-
-DN=N_disp_mat(:,2:end,end); %Final nodal displacements
-
-%% CREATING NODE SET IN DEFORMED STATE
-V_def=V+DN;
-DN_magnitude=sqrt(sum(DN.^2,2));
-
-%%
-% Plotting the deformed model
-
-[CF]=vertexToFaceMeasure(F,DN_magnitude);
-
-cFigure;
-title('The deformed model','FontSize',fontSize);
-xlabel('X','FontSize',fontSize); ylabel('Y','FontSize',fontSize); zlabel('Z','FontSize',fontSize); hold on;
-
-hps=patch('Faces',F,'Vertices',V_def,'FaceColor','flat','CData',CF,'lineWidth',edgeWidth,'edgeColor',edgeColor,'FaceAlpha',faceAlpha1);
-
-view(3); axis tight;  axis equal;  grid on;
-colormap jet; colorbar;
-camlight headlight;
-set(gca,'FontSize',fontSize);
-drawnow;
+if runFlag==1 %i.e. a succesful run
+    
+    % Importing nodal displacements from a log file
+    [time_mat, N_disp_mat,~]=importFEBio_logfile(fullfile(savePath,febioLogFileName_disp)); %Nodal displacements    
+    time_mat=[0; time_mat(:)]; %Time
+    
+    N_disp_mat=N_disp_mat(:,2:end,:);
+    sizImport=size(N_disp_mat);
+    sizImport(3)=sizImport(3)+1;
+    N_disp_mat_n=zeros(sizImport);
+    N_disp_mat_n(:,:,2:end)=N_disp_mat;
+    N_disp_mat=N_disp_mat_n;
+    
+    DN_MAG=sqrt(sum(N_disp_mat.^2,2));
+    DN=N_disp_mat(:,:,end);
+    DN_magnitude=sqrt(sum(DN(:,3).^2,2));
+    V_def=V+DN;
+    V_DEF=N_disp_mat+repmat(V,[1 1 size(N_disp_mat,3)]);
+    X_DEF=V_DEF(:,1,:);
+    Y_DEF=V_DEF(:,2,:);
+    Z_DEF=V_DEF(:,3,:);
+    [CF_def]=vertexToFaceMeasure(Fb,DN_magnitude);
+    
+     %%
+    % Importing element data from a log file
+    [~,E_data,~]=importFEBio_logfile(fullfile(savePath,febioLogFileName_strain)); %Element data
+    
+    %Remove nodal index column
+    E_data=E_data(:,2:end,:);
+    
+    E_data=sqrt(0.5*( (E_data(:,1,:)-E_data(:,2,:)).^2 + (E_data(:,2,:)-E_data(:,3,:)).^2 + (E_data(:,3,:)-E_data(:,1,:)).^2 ));
+        
+    %Add initial state i.e. zero 
+    sizImport=size(E_data); 
+    sizImport(3)=sizImport(3)+1;
+    E_data_mat_n=zeros(sizImport);
+    E_data_mat_n(:,:,2:end)=E_data;
+    E_data=E_data_mat_n;
+        
+    VE=patchCentre(E,V);
+    logicCutElements=VE(:,2)>=0;
+    
+    [F_cut,CF_cut_data]=element2patch(E(logicCutElements,:),E_data(logicCutElements,:,1));
+    [indBoundary]=tesBoundary(F_cut,V);
+    
+    CV=faceToVertexMeasure(F_cut(indBoundary,:),V,CF_cut_data(indBoundary,:));
+    
+    %% 
+    % Plotting the simulated results using |anim8| to visualize and animate
+    % deformations 
+    
+    % Create basic view and store graphics handle to initiate animation
+    hf=cFigure; %Open figure      
+    gtitle([febioFebFileNamePart,': Press play to animate']);
+%     subplot(1,2,1);    
+    hp1=gpatch(Fb,V_def,'kw','none',0.25); %Add graphics object to animate
+    hp2=gpatch(F_cut(indBoundary,:),V_def,CV,'k',1); %Add graphics object to animate
+    hp2.FaceColor='interp';
+%     gpatch(Fb,V,0.5*ones(1,3),'k',0.25); %A static graphics object    
+    colormap(gjet(250)); colorbar;
+    caxis([0 max(E_data(:))/3]);
+    axisGeom(gca,fontSize);
+    axis([min(X_DEF(:)) max(X_DEF(:)) min(Y_DEF(:)) max(Y_DEF(:)) min(Z_DEF(:)) max(Z_DEF(:))]);
+    axis manual; 
+    camlight headlight;   
+    
+    drawnow;     
+    
+    % Set up animation features
+    animStruct.Time=time_mat; %The time vector    
+    for qt=1:1:size(N_disp_mat,3) %Loop over time increments        
+        DN=N_disp_mat(:,:,qt); %Current displacement
+        DN_magnitude=sqrt(sum(DN.^2,2)); %Current displacement magnitude
+        V_def=V+DN; %Current nodal coordinates
+%         [CF_def]=vertexToFaceMeasure(Fb,DN_magnitude); %Current color data to use
+    
+        [~,CF_cut_data]=element2patch(E(logicCutElements,:),E_data(logicCutElements,:,qt));
+        CV=faceToVertexMeasure(F_cut(indBoundary,:),V,CF_cut_data(indBoundary,:));
+        
+        %Set entries in animation structure
+        animStruct.Handles{qt}=[hp1 hp2 hp2]; %Handles of objects to animate
+        animStruct.Props{qt}={'Vertices','Vertices','CData'}; %Properties of objects to animate
+        animStruct.Set{qt}={V_def,V_def,CV}; %Property values for to set in order to animate
+    end        
+    anim8(hf,animStruct); %Initiate animation feature    
+    drawnow;
+       
+end
 
 %% 
 %

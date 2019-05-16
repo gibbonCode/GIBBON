@@ -51,7 +51,7 @@ beta=3; %Fiber "nonlinearity" parameter
 k_factor=1e2; %Bulk modulus factor 
 k=0.5.*(c1+ksi)*k_factor; %Bulk modulus
 T0=10e-3; %Active stress
-formulationType=2; %1=uncoupled, 2=coupled
+formulationType=1; %1=uncoupled, 2=coupled
 
 % FEA control settings
 numTimeSteps=10; %Number of time steps desired
