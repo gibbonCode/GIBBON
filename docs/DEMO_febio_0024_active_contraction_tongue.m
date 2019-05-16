@@ -51,7 +51,7 @@ beta=3; %Fiber "nonlinearity" parameter
 k_factor=1e2; %Bulk modulus factor 
 k=0.5.*(c1+ksi)*k_factor; %Bulk modulus
 T0=10e-3; %Active stress
-formulationType=1; %1=uncoupled, 2=coupled
+formulationType=2; %1=uncoupled, 2=coupled
 
 % FEA control settings
 numTimeSteps=10; %Number of time steps desired
@@ -167,6 +167,7 @@ switch formulationType
         febio_spec.Material.material{1}.solid{1}.c2=c1;
         febio_spec.Material.material{1}.solid{1}.m2=-m1;
         febio_spec.Material.material{1}.solid{1}.k=k;
+        
         %The passive fiber component
         febio_spec.Material.material{1}.solid{2}.ATTR.type='fiber-exp-pow-uncoupled';
         febio_spec.Material.material{1}.solid{2}.ksi=ksi;
@@ -175,6 +176,7 @@ switch formulationType
         febio_spec.Material.material{1}.solid{2}.theta=0;
         febio_spec.Material.material{1}.solid{2}.phi=0;
         febio_spec.Material.material{1}.solid{2}.k=k;
+        
         %The active fiber component
         febio_spec.Material.material{1}.solid{3}.ATTR.type='uncoupled prescribed uniaxial active contraction';
         febio_spec.Material.material{1}.solid{3}.T0.VAL=T0;
@@ -189,6 +191,7 @@ switch formulationType
         febio_spec.Material.material{1}.solid{1}.c2=c1;
         febio_spec.Material.material{1}.solid{1}.m2=-m1;
         febio_spec.Material.material{1}.solid{1}.cp=k;
+        
         %The passive fiber component
         febio_spec.Material.material{1}.solid{2}.ATTR.type='fiber-exp-pow';
         febio_spec.Material.material{1}.solid{2}.ksi=ksi;
@@ -196,7 +199,7 @@ switch formulationType
         febio_spec.Material.material{1}.solid{2}.beta=beta;
         febio_spec.Material.material{1}.solid{2}.theta=0;
         febio_spec.Material.material{1}.solid{2}.phi=0;
-        febio_spec.Material.material{1}.solid{2}.k=k;
+        
         %The active fiber component
         febio_spec.Material.material{1}.solid{3}.ATTR.type='prescribed uniaxial active contraction';
         febio_spec.Material.material{1}.solid{3}.T0.VAL=T0;
@@ -277,7 +280,7 @@ febioAnalysis.run_filename=febioFebFileName; %The input file name
 febioAnalysis.run_logname=febioLogFileName; %The name for the log file
 febioAnalysis.disp_on=1; %Display information on the command window
 febioAnalysis.disp_log_on=1; %Display convergence information in the command window
-febioAnalysis.runMode='external';%'internal';
+febioAnalysis.runMode='internal';%'internal';
 febioAnalysis.t_check=0.25; %Time for checking log file (dont set too small)
 febioAnalysis.maxtpi=1e99; %Max analysis time
 febioAnalysis.maxLogCheckTime=3; %Max log file checking time
@@ -301,6 +304,10 @@ if runFlag==1 %i.e. a succesful run
     DN=N_disp_mat(:,:,end);
     DN_magnitude=sqrt(sum(DN(:,3).^2,2));
     V_def=V+DN;
+    V_DEF=N_disp_mat+repmat(V,[1 1 size(N_disp_mat,3)]);
+    X_DEF=V_DEF(:,1,:);
+    Y_DEF=V_DEF(:,2,:);
+    Z_DEF=V_DEF(:,3,:);
     [CF]=vertexToFaceMeasure(Fb,DN_magnitude);
     
     %% 
@@ -316,7 +323,7 @@ if runFlag==1 %i.e. a succesful run
     axisGeom(gca,fontSize); 
     colormap(gjet(250)); colorbar;
     caxis([0 max(DN_magnitude)]);    
-    axis([min(V_def(:,1)) max(V_def(:,1)) min(V_def(:,2)) max(V_def(:,2)) min(V_def(:,3)) max(V_def(:,3))]); %Set axis limits statically
+    axis([min(X_DEF(:)) max(X_DEF(:)) min(Y_DEF(:)) max(Y_DEF(:)) min(Z_DEF(:)) max(Z_DEF(:))]);
     camlight headlight;        
         
     % Set up animation features

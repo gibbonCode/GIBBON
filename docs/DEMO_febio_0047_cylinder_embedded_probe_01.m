@@ -1,5 +1,27 @@
-%% DEMO_FEBio_cylinder_embedded_indentor_01
+%% DEMO_febio_0047_cylinder_embedded_probe_01
+% Below is a demonstration for:
 % 
+% * Building geometry for a tissue segment with an embedded probe
+% * Defining the boundary conditions 
+% * Coding the febio structure
+% * Running the model
+% * Importing and visualizing the displacement results
+
+%% Keywords
+%
+% * febio_spec version 2.5
+% * febio, FEBio
+% * probe
+% * contact, sliding, sticky, friction
+% * rigid body constraints
+% * hexahedral elements, hex8
+% * triangular elements, tri3
+% * slab, block, rectangular
+% * sphere
+% * static, solid
+% * hyperelastic, Ogden
+% * displacement logfile
+% * stress logfile
 
 %%
 clear; close all; clc;
@@ -92,15 +114,13 @@ xlabel('X','FontSize',fontSize); ylabel('Y','FontSize',fontSize); zlabel('Z','Fo
 hold on;
 
 patch('Faces',Fs,'Vertices',Vs,'FaceColor','g','EdgeColor','k');
-hp=patchNormPlot(Fs,Vs,2);
+% hp=patchNormPlot(F,V,2);
 
 % patch('Faces',F1,'Vertices',V1,'FaceColor','g','EdgeColor','k');
 % patch('Faces',F2,'Vertices',V2,'FaceColor','r','EdgeColor','k');
 
 axis equal; view(3); axis tight;  axis vis3d; grid off;  set(gca,'FontSize',fontSize);
 drawnow; 
-
-sadDS
 
 %% Build gel
 
@@ -180,8 +200,6 @@ plotV(Vst,'b.-','lineWidth',lineWidth1,'MarkerSize',markerSize1);
 
 axis equal; view(3); axis tight;  axis vis3d; grid off;  set(gca,'FontSize',fontSize);
 drawnow; 
-
-asfafdsafdas
 
 %% Mesh solid using tetgen
 
