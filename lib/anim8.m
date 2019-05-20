@@ -1,11 +1,28 @@
 function hf=anim8(varargin)
 
+% function hf=anim8(hf,animStruct)
+% ------------------------------------------------------------------------
+% 
+% Change log: 
+% 2019/05/20: Added loading of saved anim8 figure by using the path to the
+% figure as sole input (or no input which triggers uigetfile)
+% ------------------------------------------------------------------------
+
 %% Parse input
 
 switch nargin
-    case 2
-        hf=varargin{1};
-        animStruct=varargin{2};
+    case {0,1} %Load previous 
+        if nargin==1 %If path to figure is specified 
+            figureFullPath=varargin{1};
+        else %If no path is specified
+            [figureFileName,figurePath]=uigetfile;
+            figureFullPath=fullfile(figurePath,figureFileName);
+        end
+        hf=open(figureFullPath); %Open figure and keep handle
+        animStruct=hf.UserData.anim8.animStruct; %Get anim8 structure
+    case 2 %Create new
+        hf=varargin{1}; %Figure handle
+        animStruct=varargin{2}; %The anim8 structure
 end
 
 %% Visualisation settings
@@ -13,7 +30,6 @@ end
 % fontColor='w';
 fontSize=15;
 % cMap=gjet(250);
-
 scrollBarWidth=50;
 
 %% Defining slider
@@ -59,14 +75,26 @@ end
 
 set(hf,'KeyPressFcn', {@figKeyPressFunc,{hf}});%'WindowButtonDownFcn', {@figMouseDown,{hf}},'WindowButtonUpFcn', {@mouseup,hf});
 
-%% Initialise buttons
+%% Initialise tool bar and buttons
 
 filePath=mfilename('fullpath');
 toolboxPath=fileparts(fileparts(filePath));
 iconPath=fullfile(toolboxPath,'icons');
 
-% hb = findall(hf,'Type','uitoolbar');
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%Toolbar
+
+toolbarTag='anim8_toolbar';
+
+%Remove existing anim8 toolbar
+hb = findall(hf,'Tag',toolbarTag); % hb = findall(hf,'Type','uitoolbar');
+if ~isempty(hb) 
+    delete(hb)
+end
+
+%Create new anim8 toolbar
 hb = uitoolbar(hf);
+hb.Tag=toolbarTag;
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %Help button

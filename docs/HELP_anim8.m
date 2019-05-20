@@ -15,6 +15,13 @@ clear; close all; clc;
 % create a figure window with features to animate (e.g. plots, surfaces,
 % views, etc.). Next create a structure containing the object handles,
 % object properties to alter, and the property values. 
+% The anim8 function takes in 0, 1, or 2 inputs. 
+% No input: Anim8 will assume you want to browse to a previously saved
+% anim8 figure and reload it. 
+% 1 input: Anim8 will assume the input is a path to a previously saved
+% anim8 figure to be reloaded. 
+% 2 inputs: Anim8 will assume the first input is the figure handle, and the
+% second input the anim8 structure. 
 
 %% Examples 
 
