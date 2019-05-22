@@ -22,6 +22,10 @@ clear; close all; clc;
 
 %% Examples 
 
+%%
+% Plot settings
+lineWidth=3; 
+
 %% A sweep loft allong a guide curve
 
 %%
@@ -32,19 +36,21 @@ t=t(1:end-1);
 r=3+2.*sin(4*t);
 [x,y] = pol2cart(t,r);
 V1=[x(:) y(:) zeros(size(x(:)))];
+V1=evenlySampleCurve(V1,size(V1,1),'pchip',1);
 
-E=[0.1*pi 0 0];
+E=[0.6*pi 0 0];
 R1=euler2DCM(E);
 t=[1 2 -3];
 V1=(V1*R1)+t; 
 
 t=linspace(0,2*pi,ns);
 t=t(1:end-1);
-r=4+1.*sin(4*t);
+r=4+3.*sin(2*t);
 [x,y] = pol2cart(t,r);
 V2=[x(:) y(:) zeros(size(x(:)))];
+V2=evenlySampleCurve(V2,size(V2,1),'pchip',1);
 
-E=[0 0.25*pi 0];
+E=[0 0.3*pi 0];
 R2=euler2DCM(E);
 t=[-16 25  15];
 V2=((V2*R2)+t); 
@@ -58,7 +64,7 @@ p1=mean(V1,1); %First point
 n1=R1(3,:); %First direction vector
 p2=mean(V2,1); %End point
 n2=R2(3,:); %End direction vector
-csapsSmoothPar=0.99; %Cubic smoothening spline smoothening parameter
+csapsSmoothPar=1; %Cubic smoothening spline smoothening parameter
 f=0.05; %Extent of tangential nature to boundary curves, surface will remain approximately orthogonal to input curves for f*distance between curves
 [Vg]=sweepCurveSmooth(p1,p2,n1,n2,numStepsCurve,csapsSmoothPar,f);
 
@@ -74,17 +80,18 @@ f=0.05; %Extent of tangential nature to boundary curves, surface will remain app
 cFigure; 
 subplot(1,2,1);
 hold on;
-plotV(Vg,'k.-');
-plotV(V1,'r.-');
-plotV(V2,'g.-');
+h(1)=plotV(Vg,'k.-','LineWidth',lineWidth);
+h(2)=plotV(V1,'r.-','LineWidth',lineWidth);
+h(3)=plotV(V2,'g.-','LineWidth',lineWidth);
+h(4)=quiverVec(p1,n1,5,'r');
+h(5)=quiverVec(p2,n2,5,'g');
+legend(h,{'Guide curve','Start section','End section','Start direction vector','End direction vector'});
 axisGeom;
 
 subplot(1,2,2); hold on; 
-plotV(Vg,'k.-');
-plotV(V1,'r.-');
-plotV(V2,'g.-');
-gpatch(F,V,C,'k');
+h=gpatch(F,V,C,'k');
 axisGeom;
+legend(h,{'Loften surface'});
 colormap(gjet(250));
 camlight headlight
 drawnow;
@@ -95,7 +102,7 @@ drawnow;
 % Create loft feature with twist
 
 numTwist=2; %Number of additional twists of loft feature around guide curve
-numStepsSweep=50; %Number of steps for loft feature from sketch 1 to sketch 2
+numStepsSweep=75; %Number of steps for loft feature from sketch 1 to sketch 2
 plotOn=1; %Turn on plotting to view lofting behaviour
 [F,V,C]=sweepLoft(V1,V2,n1,n2,Vg,numStepsSweep,numTwist,plotOn);
 

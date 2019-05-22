@@ -92,20 +92,28 @@ stepSize=sqrt(sum((Vg(1,:)-Vg(2,:)).^2,2));
 %%
 
 if plotOn
-    cFigure;
-    for q=1:1:3
-        subplot(1,3,q);
-        hold on;
-        plotV(V1,'r-','lineWidth',3);
-        plotV(V2,'b-','lineWidth',3);
-        plotV(Vg,'g-','lineWidth',3);
-        plotV(p1,'r.','MarkerSize',15);
-        plotV(p2,'b.','MarkerSize',15);
-        quiverVec(p1,n1,stepSize,'r');
-        quiverVec(p2,n2,stepSize,'b');
-        axisGeom;
-        drawnow;
-    end
+    lineWidth1=6;
+    lineWidth2=2;    
+    lineWidth3=1; 
+    markerSize=25;
+    triadSize=stepSize*7; 
+    fontSize=35;
+    
+    hf=cFigure; hold on;
+    ht=gtitle('Mapping coordinate systems allong guide curve',fontSize);    
+    hp(1)=plotV(V1,'r-','LineWidth',lineWidth1);
+    hp(2)=plotV(V2,'g-','LineWidth',lineWidth1);
+    hp(3)=plotV(Vg,'k--','LineWidth',lineWidth2);
+    hp(4)=quiverVec(p1,n1,triadSize,'r');        
+    hp(5)=quiverVec(p2,n2,triadSize,'g');
+    
+    axisGeom(gca,fontSize); camlight headlight; 
+    axis manual; 
+    colormap gjet;
+    ha=gca;
+    ha.GridAlpha=0.25;
+    ha.LineWidth=1;
+    drawnow;
 end
 
 %% Define allong curve coordinate systems
@@ -136,12 +144,10 @@ R2=[e1;e2;e3];
 R_curve=repmat(eye(3,3),[1,1,size(Vg,1)]);
 R_curve(:,:,1)=R1;
 
-R_curve2(:,:,1)=R1;
-
 R=R1;
 
-if plotOn
-    quiverTriad(Vg(1,:),R1',stepSize); drawnow;
+if plotOn==1
+    hTriad=gobjects(1,1);
 end
 
 for q=2:size(Vg,1)
@@ -155,8 +161,9 @@ for q=2:size(Vg,1)
         [Rn]=vecAngle2Rot(theta,w);
         R=R*Rn;
         if plotOn
-            subplot(1,3,1);
-            quiverTriad(Vg(q,:),R',stepSize);
+            figure(hf);
+            delete(hTriad);
+            hTriad=quiverTriad(Vg(q,:),R',triadSize);
             drawnow;
         end
     end
@@ -184,6 +191,10 @@ Z=reshape(Vs(:,3),size(Z));
 
 %%
 
+if plotOn==1
+    h1=gobjects(1,numSteps);
+end
+
 for q=1:1:numSteps
     
     V2p=[X(q,:)' Y(q,:)' Z(q,:)'];
@@ -191,10 +202,12 @@ for q=1:1:numSteps
     V2p=V2p+Vg(q*ones(size(V2p,1),1),:);
     
     if plotOn==1
-        subplot(1,3,2);
-        hold on;
-        plotV(V2p,'b-','LineWidth',1); drawnow;
-        axisGeom;
+        figure(hf);
+        ht.String='Initial Morphing and sweeping of sections allong guide curve';
+        h1(q)=plotV(V2p([1:end 1],:),'k-','LineWidth',lineWidth1);        
+        if q>1
+            h1(q-1).LineWidth=lineWidth3;
+        end
         drawnow;
     end
     X(q,:)=V2p(:,1);
@@ -217,18 +230,23 @@ end
 [theta,w]=rot2VecAngle(Rc);
 % theta=0; w=n2';
 
-if plotOn==1
-    quiverVec(mean_V2,w',stepSize*2,0.5*ones(1,3)); drawnow;
-end
-
 %%
 W=repmat(w(:)',[numSteps,1]);
 wt=w;
+if plotOn==1
+    hVec=gobjects(1,1);
+    delete(hTriad);
+end
 for q=numSteps-1:-1:1
     mean_V_now=mean([X(q,:)' Y(q,:)' Z(q,:)'],1);
     wt=(wt'*R_curve(:,:,q+1)'*R_curve(:,:,q))';
     if plotOn==1
-        quiverVec(mean_V_now,wt',stepSize,'k'); drawnow;
+        figure(hf);        
+        
+        delete(h1(q));
+        ht.String='Back tracking to find orientation mismatch';
+        delete(hVec);
+        hVec=quiverVec(mean_V_now,wt',triadSize,'k'); drawnow;
     end
     W(q,:)=wt(:)';
 end
@@ -241,9 +259,11 @@ V2p=(Rc'*V2p')';
 V2p=V2p+V2p_c(ones(size(V2p,1),1),:);
 
 if plotOn==1
-    subplot(1,3,2);
-    hold on;
-    plotV(V2p,'g--','lineWidth',3); drawnow;
+    figure(hf);
+    delete(hVec);
+    delete(h1(end));
+    plotV(V2p,'k--','LineWidth',lineWidth1);    
+    drawnow;
 end
 
 %%
@@ -253,6 +273,11 @@ theta_step=theta*theta_w;
 
 if numTwist>0
     theta_step_twist=linspace(0,2*pi*numTwist,size(Vg,1));
+end
+
+if plotOn==1
+    h2=gobjects(1,size(Vg,1));   
+    hTriad2=gobjects(1,1);
 end
 
 for q=1:1:size(Vg,1)
@@ -270,14 +295,25 @@ for q=1:1:size(Vg,1)
     
     Vn=Vn+Vn_mean(ones(size(Vn,1),1),:);
     
-    if plotOn==1
-        subplot(1,3,2);
-        plotV(Vn,'k-','lineWidth',1,'MarkerSize',25); drawnow;
+    if plotOn==1        
+        figure(hf);
+        ht.String='Correct orientations and add potential twist';
+        h2(q)=plotV(Vn([1:end 1],:),'k-','LineWidth',lineWidth1);        
+        if q>1
+            h2(q-1).LineWidth=lineWidth3;
+        end        
+        delete(hTriad2);
+        hTriad2=quiverTriad(Vg(q,:),(R_curve(:,:,q)*Rc)',triadSize);
+        drawnow;
     end
     
     X(q,:)=Vn(:,1);
     Y(q,:)=Vn(:,2);
     Z(q,:)=Vn(:,3);
+end
+
+if plotOn==1
+    delete(hTriad2);
 end
 
 %% Override start and end with input curves
@@ -310,11 +346,11 @@ end
 [C]=vertexToFaceMeasure(F,C); %Convert vertex colors to face colors
 C=round(C)-1;
 
-if plotOn==1
-    subplot(1,3,3);
-    h=gpatch(F,V,C,'k',1);
-    colormap gjet;
-    camlight headlight;
+if plotOn==1    
+    figure(hf);
+    delete(h2);
+    ht.String='Loft surface';
+    gpatch(F,V,C,'k',1);        
     drawnow;
 end
 
