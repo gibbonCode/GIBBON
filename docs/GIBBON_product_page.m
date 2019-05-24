@@ -12,6 +12,12 @@
 % combination provides a highly flexible image-based modelling environment
 % and enables advanced inverse finite element analysis.
 
+%% Citing GIBBON
+% Please cite GIBBON as: 
+% Moerman, (2018). GIBBON: The Geometry and Image-Based Bioengineering
+% add-On. Journal of Open Source Software, 3(22), 506,
+% <https://doi.org/10.21105/joss.00506>
+
 %% Updates
 % Get the latest development version via GitHub:
 % <https://github.com/gibbonCode/GIBBON>

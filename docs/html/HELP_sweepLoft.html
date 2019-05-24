@@ -6,7 +6,7 @@
    <!--
 This HTML was auto-generated from MATLAB code.
 To make changes, update the MATLAB code and republish this document.
-      --><title>sweepLoft</title><meta name="generator" content="MATLAB 9.4"><link rel="schema.DC" href="http://purl.org/dc/elements/1.1/"><meta name="DC.date" content="2018-06-25"><meta name="DC.source" content="HELP_sweepLoft.m"><style type="text/css">
+      --><title>sweepLoft</title><meta name="generator" content="MATLAB 9.6"><link rel="schema.DC" href="http://purl.org/dc/elements/1.1/"><meta name="DC.date" content="2019-05-23"><meta name="DC.source" content="HELP_sweepLoft.m"><style type="text/css">
 html,body,div,span,applet,object,iframe,h1,h2,h3,h4,h5,h6,p,blockquote,pre,a,abbr,acronym,address,big,cite,code,del,dfn,em,font,img,ins,kbd,q,s,samp,small,strike,strong,sub,sup,tt,var,b,u,i,center,dl,dt,dd,ol,ul,li,fieldset,form,label,legend,table,caption,tbody,tfoot,thead,tr,th,td{margin:0;padding:0;border:0;outline:0;font-size:100%;vertical-align:baseline;background:transparent}body{line-height:1}ol,ul{list-style:none}blockquote,q{quotes:none}blockquote:before,blockquote:after,q:before,q:after{content:'';content:none}:focus{outine:0}ins{text-decoration:none}del{text-decoration:line-through}table{border-collapse:collapse;border-spacing:0}
 
 html { min-height:100%; margin-bottom:1px; }
@@ -66,26 +66,29 @@ table td { padding:7px 5px; text-align:left; vertical-align:top; border:1px soli
 
 
 
-  </style></head><body><div class="content"><h1>sweepLoft</h1><!--introduction--><p>Below is a demonstration of the features of the <tt>sweepLoft</tt> function</p><!--/introduction--><h2>Contents</h2><div><ul><li><a href="#2">Syntax</a></li><li><a href="#3">Description</a></li><li><a href="#4">Examples</a></li><li><a href="#5">A sweep loft allong a guide curve</a></li><li><a href="#10">A sweep loft allong a guide curve with twist</a></li><li><a href="#12">A ring shaped sweep loft</a></li><li><a href="#16">A sweep loft to create a coil</a></li></ul></div><pre class="codeinput">clear; close <span class="string">all</span>; clc;
-</pre><h2 id="2">Syntax</h2><p><tt>[F,V,C]=sweepLoft(V1,V2,n1,n2,Vg,numSteps,numTwist,plotOn);</tt></p><h2 id="3">Description</h2><p>The <tt>sweepLoft</tt> function creates a swept loft (as in CAD terminology for a shape formed by merging a set of sketches towards each other allong a given path or guide curve). The inputs to the function are the start and end sketchs (V1 and V2), the start and end normal directions (n1 and n2), and the guid curve (Vg). Optional additional inputs are: the number of steps for the loft feature (numSteps, same as number of points in guide curve if not provided), the number of twists (numTwists, default is zero) the shape undergoes around the guide curve, and finally plotOn (default is 0, i.e. off) which is a logic to turn on or off plotting within the function. The function outputs are patch data i.e. faces (F), the vertices (V) and face colors (C, denoting step in lofting process).</p><h2 id="4">Examples</h2><h2 id="5">A sweep loft allong a guide curve</h2><p>Creating sketches</p><pre class="codeinput">ns=50;
+  </style></head><body><div class="content"><h1>sweepLoft</h1><!--introduction--><p>Below is a demonstration of the features of the <tt>sweepLoft</tt> function</p><!--/introduction--><h2>Contents</h2><div><ul><li><a href="#2">Syntax</a></li><li><a href="#3">Description</a></li><li><a href="#4">Examples</a></li><li><a href="#6">A sweep loft allong a guide curve</a></li><li><a href="#11">A sweep loft allong a guide curve with twist</a></li><li><a href="#13">A ring shaped sweep loft</a></li><li><a href="#17">A sweep loft to create a coil</a></li></ul></div><pre class="codeinput">clear; close <span class="string">all</span>; clc;
+</pre><h2 id="2">Syntax</h2><p><tt>[F,V,C]=sweepLoft(V1,V2,n1,n2,Vg,numSteps,numTwist,plotOn);</tt></p><h2 id="3">Description</h2><p>The <tt>sweepLoft</tt> function creates a swept loft (as in CAD terminology for a shape formed by merging a set of sketches towards each other allong a given path or guide curve). The inputs to the function are the start and end sketchs (V1 and V2), the start and end normal directions (n1 and n2), and the guid curve (Vg). Optional additional inputs are: the number of steps for the loft feature (numSteps, same as number of points in guide curve if not provided), the number of twists (numTwists, default is zero) the shape undergoes around the guide curve, and finally plotOn (default is 0, i.e. off) which is a logic to turn on or off plotting within the function. The function outputs are patch data i.e. faces (F), the vertices (V) and face colors (C, denoting step in lofting process).</p><h2 id="4">Examples</h2><p>Plot settings</p><pre class="codeinput">lineWidth=3;
+</pre><h2 id="6">A sweep loft allong a guide curve</h2><p>Creating sketches</p><pre class="codeinput">ns=50;
 t=linspace(0,2*pi,ns);
 t=t(1:end-1);
 r=3+2.*sin(4*t);
 [x,y] = pol2cart(t,r);
 V1=[x(:) y(:) zeros(size(x(:)))];
+V1=evenlySampleCurve(V1,size(V1,1),<span class="string">'pchip'</span>,1);
 
-E=[0.1*pi 0 0];
+E=[0.6*pi 0 0];
 R1=euler2DCM(E);
 t=[1 2 -3];
 V1=(V1*R1)+t;
 
 t=linspace(0,2*pi,ns);
 t=t(1:end-1);
-r=4+1.*sin(4*t);
+r=4+3.*sin(2*t);
 [x,y] = pol2cart(t,r);
 V2=[x(:) y(:) zeros(size(x(:)))];
+V2=evenlySampleCurve(V2,size(V2,1),<span class="string">'pchip'</span>,1);
 
-E=[0 0.25*pi 0];
+E=[0 0.3*pi 0];
 R2=euler2DCM(E);
 t=[-16 25  15];
 V2=((V2*R2)+t);
@@ -95,32 +98,33 @@ p1=mean(V1,1); <span class="comment">%First point</span>
 n1=R1(3,:); <span class="comment">%First direction vector</span>
 p2=mean(V2,1); <span class="comment">%End point</span>
 n2=R2(3,:); <span class="comment">%End direction vector</span>
-csapsSmoothPar=0.99; <span class="comment">%Cubic smoothening spline smoothening parameter</span>
+csapsSmoothPar=1; <span class="comment">%Cubic smoothening spline smoothening parameter</span>
 f=0.05; <span class="comment">%Extent of tangential nature to boundary curves, surface will remain approximately orthogonal to input curves for f*distance between curves</span>
 [Vg]=sweepCurveSmooth(p1,p2,n1,n2,numStepsCurve,csapsSmoothPar,f);
 </pre><p>Create a basic loft feature using default settings (no twist, same number of steps as number of points as in guide curve, plotting off)</p><pre class="codeinput">[F,V,C]=sweepLoft(V1,V2,n1,n2,Vg);
 </pre><p>Visualize loft feature</p><pre class="codeinput">cFigure;
 subplot(1,2,1);
 hold <span class="string">on</span>;
-plotV(Vg,<span class="string">'k.-'</span>);
-plotV(V1,<span class="string">'r.-'</span>);
-plotV(V2,<span class="string">'g.-'</span>);
+h(1)=plotV(Vg,<span class="string">'k.-'</span>,<span class="string">'LineWidth'</span>,lineWidth);
+h(2)=plotV(V1,<span class="string">'r.-'</span>,<span class="string">'LineWidth'</span>,lineWidth);
+h(3)=plotV(V2,<span class="string">'g.-'</span>,<span class="string">'LineWidth'</span>,lineWidth);
+h(4)=quiverVec(p1,n1,5,<span class="string">'r'</span>);
+h(5)=quiverVec(p2,n2,5,<span class="string">'g'</span>);
+legend(h,{<span class="string">'Guide curve'</span>,<span class="string">'Start section'</span>,<span class="string">'End section'</span>,<span class="string">'Start direction vector'</span>,<span class="string">'End direction vector'</span>});
 axisGeom;
 
 subplot(1,2,2); hold <span class="string">on</span>;
-plotV(Vg,<span class="string">'k.-'</span>);
-plotV(V1,<span class="string">'r.-'</span>);
-plotV(V2,<span class="string">'g.-'</span>);
-gpatch(F,V,C,<span class="string">'k'</span>);
+h=gpatch(F,V,C,<span class="string">'k'</span>);
 axisGeom;
+legend(h,{<span class="string">'Loften surface'</span>});
 colormap(gjet(250));
 camlight <span class="string">headlight</span>
 drawnow;
-</pre><img vspace="5" hspace="5" src="HELP_sweepLoft_01.png" alt=""> <h2 id="10">A sweep loft allong a guide curve with twist</h2><p>Create loft feature with twist</p><pre class="codeinput">numTwist=2; <span class="comment">%Number of additional twists of loft feature around guide curve</span>
-numStepsSweep=50; <span class="comment">%Number of steps for loft feature from sketch 1 to sketch 2</span>
+</pre><img vspace="5" hspace="5" src="HELP_sweepLoft_01.png" alt=""> <h2 id="11">A sweep loft allong a guide curve with twist</h2><p>Create loft feature with twist</p><pre class="codeinput">numTwist=2; <span class="comment">%Number of additional twists of loft feature around guide curve</span>
+numStepsSweep=75; <span class="comment">%Number of steps for loft feature from sketch 1 to sketch 2</span>
 plotOn=1; <span class="comment">%Turn on plotting to view lofting behaviour</span>
 [F,V,C]=sweepLoft(V1,V2,n1,n2,Vg,numStepsSweep,numTwist,plotOn);
-</pre><img vspace="5" hspace="5" src="HELP_sweepLoft_02.png" alt=""> <h2 id="12">A ring shaped sweep loft</h2><p>Creating sketches</p><pre class="codeinput">ns=50;
+</pre><img vspace="5" hspace="5" src="HELP_sweepLoft_02.png" alt=""> <img vspace="5" hspace="5" src="HELP_sweepLoft_03.png" alt=""> <h2 id="13">A ring shaped sweep loft</h2><p>Creating sketches</p><pre class="codeinput">ns=50;
 t=linspace(0,2*pi,ns);
 t=t(1:end-1);
 r=3+2.5.*sin(4*t);
@@ -147,7 +151,7 @@ Vg=[x zeros(size(x)) z];
 numStepsSweep=numStepsCurve; <span class="comment">%Number of steps for loft feature from sketch 1 to sketch 2</span>
 plotOn=1; <span class="comment">%Turn on plotting to view lofting behaviour</span>
 [F,V,C]=sweepLoft(V1,V2,n1,n2,Vg,numStepsSweep,numTwist,plotOn);
-</pre><img vspace="5" hspace="5" src="HELP_sweepLoft_03.png" alt=""> <h2 id="16">A sweep loft to create a coil</h2><pre class="codeinput">numStepsCurve=75;
+</pre><img vspace="5" hspace="5" src="HELP_sweepLoft_04.png" alt=""> <h2 id="17">A sweep loft to create a coil</h2><pre class="codeinput">numStepsCurve=75;
 
 optionStruct.numSteps=numStepsCurve; <span class="comment">%Number of points used to define the curve.</span>
 optionStruct.numTwist=4; <span class="comment">%Number of twists (for an unmodulated coil)</span>
@@ -184,7 +188,7 @@ n2=n2*R;
 Vg=Vg*R;
 
 [F,V,C]=sweepLoft(V1,V2,n1,n2,Vg,optionStruct.numSteps,0,1);
-</pre><img vspace="5" hspace="5" src="HELP_sweepLoft_04.png" alt=""> <p>Visualize loft feature</p><pre class="codeinput">cFigure;
+</pre><img vspace="5" hspace="5" src="HELP_sweepLoft_05.png" alt=""> <p>Visualize loft feature</p><pre class="codeinput">cFigure;
 subplot(1,2,1);
 hold <span class="string">on</span>;
 plotV(Vg,<span class="string">'k.-'</span>);
@@ -201,7 +205,7 @@ axisGeom;
 colormap(gjet(250));
 camlight <span class="string">headlight</span>
 drawnow;
-</pre><img vspace="5" hspace="5" src="HELP_sweepLoft_05.png" alt=""> <p><img vspace="5" hspace="5" src="gibbVerySmall.gif" alt=""> </p><p><i><b>GIBBON</b></i> <a href="www.gibboncode.org">www.gibboncode.org</a></p><p><i>Kevin Mattheus Moerman</i>, <a href="gibbon.toolbox@gmail.com">gibbon.toolbox@gmail.com</a></p><p><i><b>GIBBON footer text</b></i></p><p>License: <a href="https://github.com/gibbonCode/GIBBON/blob/master/LICENSE">https://github.com/gibbonCode/GIBBON/blob/master/LICENSE</a></p><p>GIBBON: The Geometry and Image-based Bioengineering add-On. A toolbox for image segmentation, image-based modeling, meshing, and finite element analysis.</p><p>Copyright (C) 2018  Kevin Mattheus Moerman</p><p>This program is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.</p><p>This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for more details.</p><p>You should have received a copy of the GNU General Public License along with this program.  If not, see <a href="http://www.gnu.org/licenses/">http://www.gnu.org/licenses/</a>.</p><p class="footer"><br><a href="https://www.mathworks.com/products/matlab/">Published with MATLAB&reg; R2018a</a><br></p></div><!--
+</pre><img vspace="5" hspace="5" src="HELP_sweepLoft_06.png" alt=""> <p><img vspace="5" hspace="5" src="gibbVerySmall.gif" alt=""> </p><p><i><b>GIBBON</b></i> <a href="www.gibboncode.org">www.gibboncode.org</a></p><p><i>Kevin Mattheus Moerman</i>, <a href="gibbon.toolbox@gmail.com">gibbon.toolbox@gmail.com</a></p><p><i><b>GIBBON footer text</b></i></p><p>License: <a href="https://github.com/gibbonCode/GIBBON/blob/master/LICENSE">https://github.com/gibbonCode/GIBBON/blob/master/LICENSE</a></p><p>GIBBON: The Geometry and Image-based Bioengineering add-On. A toolbox for image segmentation, image-based modeling, meshing, and finite element analysis.</p><p>Copyright (C) 2019  Kevin Mattheus Moerman</p><p>This program is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.</p><p>This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for more details.</p><p>You should have received a copy of the GNU General Public License along with this program.  If not, see <a href="http://www.gnu.org/licenses/">http://www.gnu.org/licenses/</a>.</p><p class="footer"><br><a href="https://www.mathworks.com/products/matlab/">Published with MATLAB&reg; R2019a</a><br></p></div><!--
 ##### SOURCE BEGIN #####
 %% sweepLoft
 % Below is a demonstration of the features of the |sweepLoft| function
@@ -227,6 +231,9 @@ clear; close all; clc;
 
 %% Examples 
 
+%%
+% Plot settings
+lineWidth=3; 
 
 %% A sweep loft allong a guide curve
 
@@ -238,19 +245,21 @@ t=t(1:end-1);
 r=3+2.*sin(4*t);
 [x,y] = pol2cart(t,r);
 V1=[x(:) y(:) zeros(size(x(:)))];
+V1=evenlySampleCurve(V1,size(V1,1),'pchip',1);
 
-E=[0.1*pi 0 0];
+E=[0.6*pi 0 0];
 R1=euler2DCM(E);
 t=[1 2 -3];
 V1=(V1*R1)+t; 
 
 t=linspace(0,2*pi,ns);
 t=t(1:end-1);
-r=4+1.*sin(4*t);
+r=4+3.*sin(2*t);
 [x,y] = pol2cart(t,r);
 V2=[x(:) y(:) zeros(size(x(:)))];
+V2=evenlySampleCurve(V2,size(V2,1),'pchip',1);
 
-E=[0 0.25*pi 0];
+E=[0 0.3*pi 0];
 R2=euler2DCM(E);
 t=[-16 25  15];
 V2=((V2*R2)+t); 
@@ -264,7 +273,7 @@ p1=mean(V1,1); %First point
 n1=R1(3,:); %First direction vector
 p2=mean(V2,1); %End point
 n2=R2(3,:); %End direction vector
-csapsSmoothPar=0.99; %Cubic smoothening spline smoothening parameter
+csapsSmoothPar=1; %Cubic smoothening spline smoothening parameter
 f=0.05; %Extent of tangential nature to boundary curves, surface will remain approximately orthogonal to input curves for f*distance between curves
 [Vg]=sweepCurveSmooth(p1,p2,n1,n2,numStepsCurve,csapsSmoothPar,f);
 
@@ -280,17 +289,18 @@ f=0.05; %Extent of tangential nature to boundary curves, surface will remain app
 cFigure; 
 subplot(1,2,1);
 hold on;
-plotV(Vg,'k.-');
-plotV(V1,'r.-');
-plotV(V2,'g.-');
+h(1)=plotV(Vg,'k.-','LineWidth',lineWidth);
+h(2)=plotV(V1,'r.-','LineWidth',lineWidth);
+h(3)=plotV(V2,'g.-','LineWidth',lineWidth);
+h(4)=quiverVec(p1,n1,5,'r');
+h(5)=quiverVec(p2,n2,5,'g');
+legend(h,{'Guide curve','Start section','End section','Start direction vector','End direction vector'});
 axisGeom;
 
 subplot(1,2,2); hold on; 
-plotV(Vg,'k.-');
-plotV(V1,'r.-');
-plotV(V2,'g.-');
-gpatch(F,V,C,'k');
+h=gpatch(F,V,C,'k');
 axisGeom;
+legend(h,{'Loften surface'});
 colormap(gjet(250));
 camlight headlight
 drawnow;
@@ -301,7 +311,7 @@ drawnow;
 % Create loft feature with twist
 
 numTwist=2; %Number of additional twists of loft feature around guide curve
-numStepsSweep=50; %Number of steps for loft feature from sketch 1 to sketch 2
+numStepsSweep=75; %Number of steps for loft feature from sketch 1 to sketch 2
 plotOn=1; %Turn on plotting to view lofting behaviour
 [F,V,C]=sweepLoft(V1,V2,n1,n2,Vg,numStepsSweep,numTwist,plotOn);
 
@@ -425,7 +435,7 @@ drawnow;
 % image segmentation, image-based modeling, meshing, and finite element
 % analysis.
 % 
-% Copyright (C) 2018  Kevin Mattheus Moerman
+% Copyright (C) 2019  Kevin Mattheus Moerman
 % 
 % This program is free software: you can redistribute it and/or modify
 % it under the terms of the GNU General Public License as published by

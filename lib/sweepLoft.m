@@ -100,7 +100,7 @@ if plotOn
     fontSize=35;
     
     hf=cFigure; hold on;
-    ht=gtitle('Mapping coordinate systems allong guide curve',fontSize);    
+    ht=gtitle('Mapping coordinate systems along guide curve',fontSize);    
     hp(1)=plotV(V1,'r-','LineWidth',lineWidth1);
     hp(2)=plotV(V2,'g-','LineWidth',lineWidth1);
     hp(3)=plotV(Vg,'k--','LineWidth',lineWidth2);
@@ -203,7 +203,7 @@ for q=1:1:numSteps
     
     if plotOn==1
         figure(hf);
-        ht.String='Initial Morphing and sweeping of sections allong guide curve';
+        ht.String='Initial morphing and sweeping of sections along guide curve';
         h1(q)=plotV(V2p([1:end 1],:),'k-','LineWidth',lineWidth1);        
         if q>1
             h1(q-1).LineWidth=lineWidth3;
@@ -244,7 +244,7 @@ for q=numSteps-1:-1:1
         figure(hf);        
         
         delete(h1(q));
-        ht.String='Back tracking to find orientation mismatch';
+        ht.String='Back tracking and fixing initial orientation mismatch';
         delete(hVec);
         hVec=quiverVec(mean_V_now,wt',triadSize,'k'); drawnow;
     end
