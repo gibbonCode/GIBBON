@@ -1,4 +1,4 @@
-function [I,J,K]=cart2im(X,Y,Z,v)
+function [varargout]=cart2im(varargin)
 
 % function [I J K]=cart2im(X,Y,Z,v)
 % ------------------------------------------------------------------------
@@ -12,11 +12,58 @@ function [I,J,K]=cart2im(X,Y,Z,v)
 % Kevin Mattheus Moerman
 % gibbon.toolbox@gmail.com
 % 2008/08/15
+% 2019/05/24 Added handling of variable input and output
 % ------------------------------------------------------------------------
 
+%% Parse input
+
+switch nargin
+    case 1
+        XYZ=varargin{1};         
+        v=[];        
+        X=XYZ(:,1);
+        Y=XYZ(:,2);
+        Z=XYZ(:,3);
+    case 2
+        XYZ=varargin{1};        
+        v=varargin{2};        
+        X=XYZ(:,1);
+        Y=XYZ(:,2);
+        Z=XYZ(:,3);
+    case 3
+        X=varargin{1};
+        Y=varargin{2};
+        Z=varargin{3};
+        v=[];
+    case 4
+        X=varargin{1};
+        Y=varargin{2};
+        Z=varargin{3};
+        v=varargin{4};
+end
+
+if isempty(v)
+    v=ones(1,3);
+end
+
+if numel(v)==1
+    v=v*ones(1,3);
+end
+
+%% Process conversion
 I=(Y./v(1))+0.5;
 J=(X./v(2))+0.5;
 K=(Z./v(3))+0.5;
+
+%% Collect output
+switch nargout
+    case 1
+        varargout{1}=[I(:) J(:) K(:)];
+    otherwise
+        varargout{1}=I;
+        varargout{2}=J;
+        varargout{3}=K;
+end
  
 %% 
 % _*GIBBON footer text*_ 

@@ -1,4 +1,4 @@
-function [X,Y,Z]=im2cart(varargin)
+function [varargout]=im2cart(varargin)
 
 % function [X Y Z]=im2cart(I,J,K,v)
 % ------------------------------------------------------------------------
@@ -12,6 +12,7 @@ function [X,Y,Z]=im2cart(varargin)
 % Kevin Mattheus Moerman
 % gibbon.toolbox@gmail.com
 % 2008/08/15
+% 2019/05/24 Added handling of variable output
 % ------------------------------------------------------------------------
 
 %% Parse input
@@ -49,10 +50,20 @@ if numel(v)==1
     v=v*ones(1,3);
 end
 
-%%
+%% Process conversion
 X=(J-0.5).*v(2);
 Y=(I-0.5).*v(1);
 Z=(K-0.5).*v(3);
+
+%% Collect output
+switch nargout
+    case 1
+        varargout{1}=[X(:) Y(:) Z(:)];
+    otherwise
+        varargout{1}=X;
+        varargout{2}=Y;
+        varargout{3}=Z;
+end
  
 %% 
 % _*GIBBON footer text*_ 
