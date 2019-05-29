@@ -258,6 +258,11 @@ end
 % Start |anim8| gui
 anim8(hf,animStruct);
 
+%% Loading a saved anim8 figure; 
+loadPath=fullfile(fileparts(fileparts(mfilename('fullpath'))),'data','fig');
+loadName=fullfile(loadPath,'exampleSavedAnim8Figure.fig');
+anim8(loadName);
+
 %%
 % 
 % <<gibbVerySmall.gif>>

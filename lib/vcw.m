@@ -131,7 +131,7 @@ end
 
 
 %% Initialise button and button/keypress wait
-hb = findall(hf,'Type','uitoolbar');
+hb = findall(hf,'Tag','FigureToolBar'); % hb = findall(hf,'Type','uitoolbar');
 
 %Check for presence of a vcw button
 hp = findobj(hb,'Tag','tBar');

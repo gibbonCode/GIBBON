@@ -19,6 +19,14 @@ switch nargin
             figureFullPath=fullfile(figurePath,figureFileName);
         end
         hf=open(figureFullPath); %Open figure and keep handle
+          
+        %Add view control widget
+        hp=vcw(hf);
+        hf.UserData.cFigure.Handles.vcw=hp;
+        
+        %Add export figure widget
+        efw(hf);
+        
         animStruct=hf.UserData.anim8.animStruct; %Get anim8 structure
     case 2 %Create new
         hf=varargin{1}; %Figure handle

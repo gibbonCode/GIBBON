@@ -1,0 +1,924 @@
+
+<!DOCTYPE html
+  PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html><head>
+      <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+   <!--
+This HTML was auto-generated from MATLAB code.
+To make changes, update the MATLAB code and republish this document.
+      --><title>DEMO_volumetric_SED_eval</title><meta name="generator" content="MATLAB 9.6"><link rel="schema.DC" href="http://purl.org/dc/elements/1.1/"><meta name="DC.date" content="2019-05-29"><meta name="DC.source" content="DEMO_volumetric_SED_eval.m"><style type="text/css">
+html,body,div,span,applet,object,iframe,h1,h2,h3,h4,h5,h6,p,blockquote,pre,a,abbr,acronym,address,big,cite,code,del,dfn,em,font,img,ins,kbd,q,s,samp,small,strike,strong,sub,sup,tt,var,b,u,i,center,dl,dt,dd,ol,ul,li,fieldset,form,label,legend,table,caption,tbody,tfoot,thead,tr,th,td{margin:0;padding:0;border:0;outline:0;font-size:100%;vertical-align:baseline;background:transparent}body{line-height:1}ol,ul{list-style:none}blockquote,q{quotes:none}blockquote:before,blockquote:after,q:before,q:after{content:'';content:none}:focus{outine:0}ins{text-decoration:none}del{text-decoration:line-through}table{border-collapse:collapse;border-spacing:0}
+
+html { min-height:100%; margin-bottom:1px; }
+html body { height:100%; margin:0px; font-family:Arial, Helvetica, sans-serif; font-size:10px; color:#000; line-height:140%; background:#fff none; overflow-y:scroll; }
+html body td { vertical-align:top; text-align:left; }
+
+h1 { padding:0px; margin:0px 0px 25px; font-family:Arial, Helvetica, sans-serif; font-size:1.5em; color:#d55000; line-height:100%; font-weight:normal; }
+h2 { padding:0px; margin:0px 0px 8px; font-family:Arial, Helvetica, sans-serif; font-size:1.2em; color:#000; font-weight:bold; line-height:140%; border-bottom:1px solid #d6d4d4; display:block; }
+h3 { padding:0px; margin:0px 0px 5px; font-family:Arial, Helvetica, sans-serif; font-size:1.1em; color:#000; font-weight:bold; line-height:140%; }
+
+a { color:#005fce; text-decoration:none; }
+a:hover { color:#005fce; text-decoration:underline; }
+a:visited { color:#004aa0; text-decoration:none; }
+
+p { padding:0px; margin:0px 0px 20px; }
+img { padding:0px; margin:0px 0px 20px; border:none; }
+p img, pre img, tt img, li img, h1 img, h2 img { margin-bottom:0px; } 
+
+ul { padding:0px; margin:0px 0px 20px 23px; list-style:square; }
+ul li { padding:0px; margin:0px 0px 7px 0px; }
+ul li ul { padding:5px 0px 0px; margin:0px 0px 7px 23px; }
+ul li ol li { list-style:decimal; }
+ol { padding:0px; margin:0px 0px 20px 0px; list-style:decimal; }
+ol li { padding:0px; margin:0px 0px 7px 23px; list-style-type:decimal; }
+ol li ol { padding:5px 0px 0px; margin:0px 0px 7px 0px; }
+ol li ol li { list-style-type:lower-alpha; }
+ol li ul { padding-top:7px; }
+ol li ul li { list-style:square; }
+
+.content { font-size:1.2em; line-height:140%; padding: 20px; }
+
+pre, code { font-size:12px; }
+tt { font-size: 1.2em; }
+pre { margin:0px 0px 20px; }
+pre.codeinput { padding:10px; border:1px solid #d3d3d3; background:#f7f7f7; }
+pre.codeoutput { padding:10px 11px; margin:0px 0px 20px; color:#4c4c4c; }
+pre.error { color:red; }
+
+@media print { pre.codeinput, pre.codeoutput { word-wrap:break-word; width:100%; } }
+
+span.keyword { color:#0000FF }
+span.comment { color:#228B22 }
+span.string { color:#A020F0 }
+span.untermstring { color:#B20000 }
+span.syscmd { color:#B28C00 }
+
+.footer { width:auto; padding:10px 0px; margin:25px 0px 0px; border-top:1px dotted #878787; font-size:0.8em; line-height:140%; font-style:italic; color:#878787; text-align:left; float:none; }
+.footer p { margin:0px; }
+.footer a { color:#878787; }
+.footer a:hover { color:#878787; text-decoration:underline; }
+.footer a:visited { color:#878787; }
+
+table th { padding:7px 5px; text-align:left; vertical-align:middle; border: 1px solid #d6d4d4; font-weight:bold; }
+table td { padding:7px 5px; text-align:left; vertical-align:top; border:1px solid #d6d4d4; }
+
+
+
+
+
+  </style></head><body><div class="content"><h1>DEMO_volumetric_SED_eval</h1><!--introduction--><p>This demo was developed as part of the paper: Moerman et al. "Novel Hyperelastic Models for Large Volumetric Deformations".</p><p>The demo features: * Implementations of hyperelastic volumetric strain energy density functions (SEDs) * Visualizations of the SED, hydrostatic stress, and tangent as a function of the volume ratio.</p><!--/introduction--><h2>Contents</h2><div><ul><li><a href="#1">Keywords</a></li><li><a href="#3">Plot settings</a></li><li><a href="#4">Control parameters</a></li><li><a href="#5">Get or set formulation specific data and parameters</a></li><li><a href="#7">Calculate SED</a></li><li><a href="#8">Visualize data</a></li><li><a href="#10">Evaluate SED</a></li></ul></div><h2 id="1">Keywords</h2><div><ul><li>Strain energy density</li><li>Volumetric</li><li>Visualization</li></ul></div><pre class="codeinput">clear; close <span class="string">all</span>; clc;
+</pre><h2 id="3">Plot settings</h2><pre class="codeinput">fontSize=36;
+fontSizeInner=fontSize+15;
+fontSizeLabel=fontSize+30;
+plotColors=gjet(4);
+plotColors=plotColors([1 2 4],:);
+
+lineWidth=6;
+gridAlpha=0.3;
+LineWidthAxis=2;
+legendHeight=0.05;
+numXTicks=5;
+</pre><h2 id="4">Control parameters</h2><pre class="codeinput">formulationCases=1:12;  <span class="comment">%Choose formulation 1:12</span>
+k=1; <span class="comment">%Default bulk modulus (except for hyperfoam)</span>
+
+J_max=2;
+numPoints=2000; <span class="comment">%Number of points for plotting</span>
+J=linspace(0.1,J_max,numPoints)'; <span class="comment">%The volume ratios</span>
+xtickRange=linspace(0,max(J),numXTicks); <span class="comment">%X-axis tick range</span>
+</pre><h2 id="5">Get or set formulation specific data and parameters</h2><pre class="codeinput"><span class="keyword">for</span> formulationCase=formulationCases
+</pre><pre class="codeinput">    <span class="keyword">switch</span> formulationCase
+        <span class="keyword">case</span> 1 <span class="comment">%Hencky</span>
+            formulationName=<span class="string">'Hencky'</span>;
+            parSet(1)=k; <span class="comment">%Bulk modulus</span>
+        <span class="keyword">case</span> 2 <span class="comment">%Simo</span>
+            formulationName=<span class="string">'Simo'</span>;
+            parSet(1)=k; <span class="comment">%Bulk modulus</span>
+        <span class="keyword">case</span> 3 <span class="comment">%Bischoff</span>
+            formulationName=<span class="string">'Bischoff'</span>;
+            b=2; <span class="comment">%Beta</span>
+            parSet(1)=k; <span class="comment">%Bulk modulus</span>
+            parSet(2)=b; <span class="comment">%Beta</span>
+        <span class="keyword">case</span> 4 <span class="comment">%Modified Ogden</span>
+            formulationName=<span class="string">'Modified Ogden'</span>;
+            b=2;<span class="comment">%Beta</span>
+            parSet(1)=k; <span class="comment">%Bulk modulus</span>
+            parSet(2)=b; <span class="comment">%Beta</span>
+        <span class="keyword">case</span> 5 <span class="comment">%Hyperfoam</span>
+            formulationName=<span class="string">'Hyperfoam'</span>;
+            mu=1;
+            a=2; <span class="comment">%Alpha</span>
+            b=2; <span class="comment">%Beta</span>
+            parSet(1)=mu; <span class="comment">%Mu</span>
+            parSet(2)=a; <span class="comment">%Alpha</span>
+            parSet(3)=b; <span class="comment">%Beta</span>
+        <span class="keyword">case</span> 6 <span class="comment">%Doll and Schweizerhoff</span>
+            formulationName=<span class="string">'Doll and Schweizerhoff'</span>;
+            a=3; <span class="comment">%Alpha</span>
+            b=2; <span class="comment">%Beta</span>
+            parSet(1)=k; <span class="comment">%Bulk modulus</span>
+            parSet(2)=a; <span class="comment">%Alpha</span>
+            parSet(3)=b; <span class="comment">%Beta</span>
+        <span class="keyword">case</span> 7 <span class="comment">%Moerman 1</span>
+            formulationName=<span class="string">'Moerman 1'</span>;
+            b1=3;
+            b2=2;
+            parSet(1)=k; <span class="comment">%Bulk modulus</span>
+            parSet(2)=b1; <span class="comment">%Alpha</span>
+            parSet(3)=b2; <span class="comment">%Beta</span>
+        <span class="keyword">case</span> 8 <span class="comment">%Moerman 1A</span>
+            formulationName=<span class="string">'Moerman 1A'</span>;
+            b1=3;
+            b2=2;
+            q=0.5;
+            parSet(1)=k; <span class="comment">%Bulk modulus</span>
+            parSet(2)=b1; <span class="comment">%Alpha</span>
+            parSet(3)=b2; <span class="comment">%Beta</span>
+            parSet(4)=q; <span class="comment">%Weigthing factor</span>
+        <span class="keyword">case</span> 9 <span class="comment">%Moerman 1B</span>
+            formulationName=<span class="string">'Moerman 1B'</span>;
+            b1=3;
+            b2=2;
+            parSet(1)=k; <span class="comment">%Bulk modulus</span>
+            parSet(2)=b1; <span class="comment">%Alpha</span>
+            parSet(3)=b2; <span class="comment">%Beta</span>
+        <span class="keyword">case</span> 10 <span class="comment">%Moerman 2</span>
+            formulationName=<span class="string">'Moerman 2'</span>;
+            J1=max(J)+0.1;
+            J2=0;
+            parSet(1)=k; <span class="comment">%Bulk modulus</span>
+            parSet(2)=J1; <span class="comment">%J1</span>
+            parSet(3)=J2; <span class="comment">%J2</span>
+        <span class="keyword">case</span> 11 <span class="comment">%Moerman 2A</span>
+            formulationName=<span class="string">'Moerman 2A'</span>;
+            b1=3;
+            b2=2;
+            parSet(1)=k; <span class="comment">%Bulk modulus</span>
+            parSet(2)=b1; <span class="comment">%Alpha</span>
+            parSet(3)=b2; <span class="comment">%Beta</span>
+        <span class="keyword">case</span> 12 <span class="comment">%Moerman 3</span>
+            formulationName=<span class="string">'Moerman 3'</span>;
+            J1=max(J)+0.1;
+            J2=0;
+            s1=0.15;
+            s2=0.15;
+            q1=0.9;
+            q2=0.9;
+            parSet(1)=k; <span class="comment">%Bulk modulus</span>
+            parSet(2)=J1; <span class="comment">%J1</span>
+            parSet(3)=J2; <span class="comment">%J2</span>
+            parSet(4)=s1; <span class="comment">%s1</span>
+            parSet(5)=s2; <span class="comment">%s2</span>
+            parSet(6)=q2; <span class="comment">%q1</span>
+            parSet(7)=q2; <span class="comment">%q2</span>
+    <span class="keyword">end</span>
+</pre><h2 id="7">Calculate SED</h2><pre class="codeinput">    <span class="comment">%Get normalized SED</span>
+    [W,S,T]=SED_eval(formulationCase,parSet,J);
+</pre><h2 id="8">Visualize data</h2><pre class="codeinput">    hf=cFigure;
+    ht=suptitle(formulationName);
+    ht.FontSize=fontSizeLabel;
+    ht.Interpreter=<span class="string">'latex'</span>;
+
+    subplot(1,3,1); hold <span class="string">on</span>;
+    set(gca,<span class="string">'FontSize'</span>,fontSize,<span class="string">'LineWidth'</span>,LineWidthAxis,<span class="string">'GridAlpha'</span>,gridAlpha);
+    xlabel(<span class="string">'$J$'</span>,<span class="string">'FontSize'</span>,fontSizeLabel,<span class="string">'Interpreter'</span>,<span class="string">'latex'</span>);
+    ylabel(<span class="string">'$\Psi/\kappa$'</span>,<span class="string">'FontSize'</span>,fontSizeLabel,<span class="string">'Interpreter'</span>,<span class="string">'latex'</span>);
+
+    hp1=plot(J,W,<span class="string">'k-'</span>,<span class="string">'LineWidth'</span>,lineWidth);
+    hp1.Color=plotColors(1,:);
+
+    grid <span class="string">on</span>; axis <span class="string">tight</span>; axis <span class="string">square</span>; box <span class="string">on</span>;
+    xlim([0 max(J(:))]);
+    set(gca,<span class="string">'XTick'</span>,xtickRange);
+
+    subplot(1,3,2); hold <span class="string">on</span>;
+    set(gca,<span class="string">'FontSize'</span>,fontSize,<span class="string">'LineWidth'</span>,LineWidthAxis,<span class="string">'GridAlpha'</span>,gridAlpha);
+    xlabel(<span class="string">'$J$'</span>,<span class="string">'FontSize'</span>,fontSizeLabel,<span class="string">'Interpreter'</span>,<span class="string">'Latex'</span>);
+    ylabel(<span class="string">'$\sigma_{h}/\kappa$'</span>,<span class="string">'FontSize'</span>,fontSizeLabel,<span class="string">'Interpreter'</span>,<span class="string">'Latex'</span>);
+    grid <span class="string">on</span>; axis <span class="string">tight</span>; axis <span class="string">square</span>; box <span class="string">on</span>;
+
+    hp2=plot(J,S,<span class="string">'k-'</span>,<span class="string">'LineWidth'</span>,lineWidth);
+    hp2.Color=plotColors(2,:);
+
+    grid <span class="string">on</span>; axis <span class="string">tight</span>; axis <span class="string">square</span>; box <span class="string">on</span>;
+    xlim([0 max(J(:))]);
+    set(gca,<span class="string">'XTick'</span>,xtickRange);
+
+    subplot(1,3,3); hold <span class="string">on</span>;
+    set(gca,<span class="string">'FontSize'</span>,fontSize,<span class="string">'LineWidth'</span>,LineWidthAxis,<span class="string">'GridAlpha'</span>,gridAlpha);
+    xlabel(<span class="string">'$J$'</span>,<span class="string">'FontSize'</span>,fontSizeLabel,<span class="string">'Interpreter'</span>,<span class="string">'latex'</span>);
+    ylabel(<span class="string">'$\frac{\partial^2 \Psi}{\partial J^2} /\kappa$'</span>,<span class="string">'FontSize'</span>,fontSizeLabel,<span class="string">'Interpreter'</span>,<span class="string">'Latex'</span>);
+
+    hp3=plot(J,T,<span class="string">'k-'</span>,<span class="string">'LineWidth'</span>,lineWidth);
+    hp3.Color=plotColors(3,:);
+
+    grid <span class="string">on</span>; axis <span class="string">tight</span>; axis <span class="string">square</span>; box <span class="string">on</span>;
+    xlim([0 max(J(:))]);
+    ylim([0 max(T(:))]);
+    set(gca,<span class="string">'XTick'</span>,xtickRange);
+
+    drawnow;
+</pre><img vspace="5" hspace="5" src="DEMO_volumetric_SED_eval_01.png" alt=""> <img vspace="5" hspace="5" src="DEMO_volumetric_SED_eval_02.png" alt=""> <img vspace="5" hspace="5" src="DEMO_volumetric_SED_eval_03.png" alt=""> <img vspace="5" hspace="5" src="DEMO_volumetric_SED_eval_04.png" alt=""> <img vspace="5" hspace="5" src="DEMO_volumetric_SED_eval_05.png" alt=""> <img vspace="5" hspace="5" src="DEMO_volumetric_SED_eval_06.png" alt=""> <img vspace="5" hspace="5" src="DEMO_volumetric_SED_eval_07.png" alt=""> <img vspace="5" hspace="5" src="DEMO_volumetric_SED_eval_08.png" alt=""> <img vspace="5" hspace="5" src="DEMO_volumetric_SED_eval_09.png" alt=""> <img vspace="5" hspace="5" src="DEMO_volumetric_SED_eval_10.png" alt=""> <img vspace="5" hspace="5" src="DEMO_volumetric_SED_eval_11.png" alt=""> <img vspace="5" hspace="5" src="DEMO_volumetric_SED_eval_12.png" alt=""> <pre class="codeinput"><span class="keyword">end</span>
+</pre><h2 id="10">Evaluate SED</h2><pre class="codeinput"><span class="keyword">function</span> [W,S,T]=SED_eval(formulationCase,parSet,J)
+
+<span class="keyword">switch</span> formulationCase
+    <span class="keyword">case</span> 1 <span class="comment">%Hencky</span>
+        k=parSet(1);
+        W=k/2*log(J).^2;
+        S=k*log(J)./J;
+        T=(k-k*log(J))./J.^2;
+    <span class="keyword">case</span> 2 <span class="comment">%Simo</span>
+        k=parSet(1);
+        W=(k/2).*(J-1).^2;
+        S=(k/2).*(2*J-2);
+        T=k*ones(size(J));
+    <span class="keyword">case</span> 3 <span class="comment">%Bischoff</span>
+        k=parSet(1);
+        b=parSet(2);
+        W=(k./b.^2).*(cosh(b*(J-1))-1);
+        S=(k./b)   .* sinh(b*(J-1));
+        T=k           .* cosh(b*(J-1));
+    <span class="keyword">case</span> 4 <span class="comment">%Modified Ogden</span>
+        k=parSet(1);
+        b=parSet(2);
+        W=(k./b.^2).*(J.^-b - 1 + b.*log(J));
+        S=(k./b)   .*(1./J     - J.^(-b-1));
+        T=(k./b)   .*(-1./J.^2  + (b+1).*J.^(-b-2));
+    <span class="keyword">case</span> 5 <span class="comment">%Hyperfoam</span>
+        mu=parSet(1);
+        a=parSet(2);
+        b=parSet(3);
+        k=mu.*(b+1/3);
+        W=(2*mu./(a.^2)).*( 3*(J.^(a/3)-1)<span class="keyword">...</span>
+            +(1./b.*( (J.^(-a.*b))-1 )) );
+        S=(1./J).*(2*mu./a).*(J.^(a/3)<span class="keyword">...</span>
+            -J.^(-a.*b) );
+        T=(1./(J.^2)).*(2*mu/a).*((a./3-1).*J.^(a./3) +<span class="keyword">...</span>
+            (a.*b+1).*J.^(-a*b) );
+    <span class="keyword">case</span> 6 <span class="comment">%Doll and Schweizerhoff</span>
+        k=parSet(1);
+        a=parSet(2);
+        b=parSet(3);
+        W=( (k/(a+b)).*( ((1/(a+1)).*(J.^(a+1))) + ((1/(b-1)).*(J.^(-b+1)))) )<span class="keyword">...</span>
+            -(k.*(1/(a+1)).*(1/(b-1)));
+        S=(k/(a+b)).*(J.^a-J.^(-b));
+        T=(k/(a+b)).*(a*J.^(a-1)+b*J.^(-b-1));
+    <span class="keyword">case</span> 7 <span class="comment">%Moerman 1</span>
+        k=parSet(1);
+        b1=parSet(2);
+        b2=parSet(3);
+        W=(k/4)      .*( (1/b1^2).*((J.^ b1)-1).^2 + <span class="keyword">...</span>
+            (1/b2^2).*((J.^-b2)-1).^2 );
+        S=(k/2)./J   .*( (1/b1  ).*(J.^( 2*b1) - J.^b1 ) - <span class="keyword">...</span>
+            (1/b2  ).*(J.^(-2*b2) - J.^-b2) );
+        T=(k/2)./J.^2.*( ((2-1/b1)*J.^( 2*b1)-(1-1/b1)*J.^b1) + <span class="keyword">...</span>
+            ((2+1/b2)*J.^(-2*b2)-(1+1/b2)*J.^-b2) );
+    <span class="keyword">case</span> 8 <span class="comment">%Moerman 1A</span>
+        k=parSet(1);
+        b1=parSet(2);
+        b2=parSet(3);
+        q=parSet(4);
+
+        W1=(k/(2*b1^2)).*(  q).*((J.^ b1)-1).^2;
+        W2=(k/(2*b2^2)).*(1-q).*((J.^-b2)-1).^2;
+        W=W1+W2;
+
+        S1= (k/b1)./J.*(  q).*(J.^( 2*b1)-J.^b1 );
+        S2=-(k/b2)./J.*(1-q).*(J.^(-2*b2)-J.^-b2);
+        S=S1+S2;
+
+        T1=(k./J.^2).*(  q).*((2-1/b1)*J.^( 2*b1)-(1-1/b1)*J.^b1 );
+        T2=(k./J.^2).*(1-q).*((2+1/b2)*J.^(-2*b2)-(1+1/b2)*J.^-b2);
+        T=T1+T2;
+    <span class="keyword">case</span> 9 <span class="comment">%Moerman 1B</span>
+        k=parSet(1);
+        b1=parSet(2);
+        b2=parSet(3);
+
+        L1=(J&gt;=1);
+        L2=(J&lt;1);
+
+        W=zeros(size(J));
+        W(L1)=(k/(2*b1^2)).*((J(L1).^ b1)-1).^2;
+        W(L2)=(k/(2*b2^2)).*((J(L2).^-b2)-1).^2;
+
+        S=zeros(size(J));
+        S(L1)= (k/b1).*(J(L1).^( 2*b1-1)-J(L1).^( b1-1));
+        S(L2)=-(k/b2).*(J(L2).^(-2*b2-1)-J(L2).^(-b2-1));
+
+        T=zeros(size(J));
+        T(L1)=(k/b1).*((2*b1-1)*J(L1).^( 2*b1-2)-(b1-1)*J(L1).^( b1-2));
+        T(L2)=(k/b2).*((2*b2+1)*J(L2).^(-2*b2-2)-(b2+1)*J(L2).^(-b2-2));
+    <span class="keyword">case</span> 10 <span class="comment">%Moerman 2</span>
+        k=parSet(1);
+        J1=parSet(2);
+        J2=parSet(3);
+
+        a1=(2/pi)*(J1-1);
+        a2=(2/pi)*(J2-1);
+
+        W1=(-k*a1.^2)*log(cos((J-1)/a1));
+        W2=(-k*a2.^2)*log(cos((J-1)/a2));
+
+        W=zeros(size(W1));
+        W(J&gt;=1)=W1(J&gt;=1);
+        W(J&lt;1)=W2(J&lt;1);
+        W=real(W);
+        W(J&gt;=J1)=inf;
+        W(J&lt;=J2)=inf;
+
+        S1=(k.*a1).*tan((J-1)/a1);
+        S2=(k.*a2).*tan((J-1)/a2);
+        S=zeros(size(S1));
+        S(J&gt;=1)=S1(J&gt;=1);
+        S(J&lt;1)=S2(J&lt;1);
+        S(J&gt;=J1)=inf;
+        S(J&lt;=J2)=-inf;
+
+        T1=k*sec((J-1)/a1).^2;
+        T2=k*sec((J-1)/a2).^2;
+        T=zeros(size(T1));
+        T(J&gt;=1)=T1(J&gt;=1);
+        T(J&lt;1)=T2(J&lt;1);
+        T(J&gt;=J1)=inf;
+        T(J&lt;=J2)=inf;
+    <span class="keyword">case</span> 11 <span class="comment">%Moerman 2A</span>
+        k=parSet(1);
+        b1=parSet(2);
+        b2=parSet(3);
+
+        W1=(k./b1.^2).*(cosh(b1*(J-1))-1);
+        S1=(k./b1)   .* sinh(b1*(J-1));
+        T1=k            .* cosh(b1*(J-1));
+
+        W2=(k./b2.^2).*(cosh(b2*(J-1))-1);
+        S2=(k./b2)   .* sinh(b2*(J-1));
+        T2=k            .* cosh(b2*(J-1));
+
+        W3=k.*(-4/pi^2) .*log(cos(pi/2*(1-J)));
+        S3=k.*(-2/pi)   .*tan(pi/2*(1-J));
+        T3=k            .*sec(pi/2*(1-J)).^2;
+
+        W=W1;
+        S=S1;
+        T=T1;
+
+        W(J&lt;1)=W2(J&lt;1)/2+W3(J&lt;1)/2;
+        S(J&lt;1)=S2(J&lt;1)/2+S3(J&lt;1)/2;
+        T(J&lt;1)=T2(J&lt;1)/2+T3(J&lt;1)/2;
+    <span class="keyword">case</span> 12 <span class="comment">%Moerman 3</span>
+</pre><pre class="codeinput">        k=parSet(1);
+        J1=parSet(2);
+        J2=parSet(3);
+        s_1=parSet(4);
+        s_2=parSet(5);
+        q1=parSet(6);
+        q2=parSet(7);
+
+        L=J&lt;1;
+
+        <span class="comment">% PART 1</span>
+        a1=(pi/2)*(1/(J1-1));
+        a2=(pi/2)*(1/(J2-1));
+
+        <span class="comment">%SED</span>
+        W11=(-1/a1.^2)*log(cos((J-1).*a1));
+        W21=(-1/a2.^2)*log(cos((J-1).*a2));
+        W1=zeros(size(J));
+        W1(~L)=W11(~L);
+        W1(L)=W21(L);
+        W1=real(W1);
+        W1(J&gt;J1)=inf;
+        W1(J&lt;J2)=inf;
+
+        <span class="comment">%Stress</span>
+        S11=(1./a1).*tan((J-1).*a1);
+        S21=(1./a2).*tan((J-1).*a2);
+        S1=zeros(size(J));
+        S1(~L)=S11(~L);
+        S1(L)=S21(L);
+        S1(J&gt;J1)=inf;
+        S1(J&lt;J2)=-inf;
+
+        <span class="comment">%Tangent</span>
+        T11=sec((J-1).*a1).^2;
+        T21=sec((J-1).*a2).^2;
+        T1=zeros(size(J));
+        T1(~L)=T11(~L);
+        T1(L)=T21(L);
+        T1(J&gt;J1)=inf;
+        T1(J&lt;J2)=inf;
+
+        <span class="comment">% PART 2</span>
+        b1= k/(s_1);
+        b2= k/(s_2);
+
+        W12=(1/b1.^2)*log(cosh((J-1).*b1));
+        W22=(1/b2.^2)*log(cosh((J-1).*b2));
+        W2=zeros(size(J));
+        W2(~L)=W12(~L);
+        W2(L)=W22(L);
+        W2=real(W2);
+
+        S12=1/b1*tanh((J-1)*b1);
+        S22=1/b2*tanh((J-1)*b2);
+        S2=zeros(size(J));
+        S2(~L)=S12(~L);
+        S2(L)=S22(L);
+
+        T12=sech((J-1).*b1).^2;
+        T22=sech((J-1).*b2).^2;
+        T2=zeros(size(J));
+        T2(~L)=T12(~L);
+        T2(L)=T22(L);
+
+        <span class="comment">% SUM</span>
+
+        W(~L)=k*((1-q1)*W1(~L)+q1*W2(~L));
+        S(~L)=k*((1-q1)*S1(~L)+q1*S2(~L));
+        T(~L)=k*((1-q1)*T1(~L)+q1*T2(~L));
+
+        W(L)=k*((1-q2)*W1(L)+q2*W2(L));
+        S(L)=k*((1-q2)*S1(L)+q2*S2(L));
+        T(L)=k*((1-q2)*T1(L)+q2*T2(L));
+</pre><pre class="codeinput">        W(J&gt;=J1)=inf;
+        W(J&lt;=J2)=inf;
+
+        S(J&gt;=J1)=inf;
+        S(J&lt;=J2)=-inf;
+
+        T(J&gt;=J1)=inf;
+        T(J&lt;=J2)=inf;
+</pre><pre class="codeinput"><span class="keyword">end</span>
+
+<span class="comment">%Normalise based on bulk-modulus</span>
+W=W/k; S=S/k; T=T/k;
+
+<span class="keyword">end</span>
+</pre><p><img vspace="5" hspace="5" src="gibbVerySmall.gif" alt=""> </p><p><i><b>GIBBON</b></i> <a href="www.gibboncode.org">www.gibboncode.org</a></p><p><i>Kevin Mattheus Moerman</i>, <a href="gibbon.toolbox@gmail.com">gibbon.toolbox@gmail.com</a></p><p><i><b>GIBBON footer text</b></i></p><p>License: <a href="https://github.com/gibbonCode/GIBBON/blob/master/LICENSE">https://github.com/gibbonCode/GIBBON/blob/master/LICENSE</a></p><p>GIBBON: The Geometry and Image-based Bioengineering add-On. A toolbox for image segmentation, image-based modeling, meshing, and finite element analysis.</p><p>Copyright (C) 2019  Kevin Mattheus Moerman</p><p>This program is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.</p><p>This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for more details.</p><p>You should have received a copy of the GNU General Public License along with this program.  If not, see <a href="http://www.gnu.org/licenses/">http://www.gnu.org/licenses/</a>.</p><p class="footer"><br><a href="https://www.mathworks.com/products/matlab/">Published with MATLAB&reg; R2019a</a><br></p></div><!--
+##### SOURCE BEGIN #####
+%% DEMO_volumetric_SED_eval
+% This demo was developed as part of the paper:
+% Moerman et al. "Novel Hyperelastic Models for Large Volumetric
+% Deformations". 
+% 
+% The demo features: 
+% * Implementations of hyperelastic volumetric strain energy density
+% functions (SEDs)
+% * Visualizations of the SED, hydrostatic stress, and tangent as a
+% function of the volume ratio.
+
+%% Keywords
+%
+% * Strain energy density
+% * Volumetric
+% * Visualization
+
+%%
+
+clear; close all; clc;
+
+%% Plot settings
+fontSize=36;
+fontSizeInner=fontSize+15;
+fontSizeLabel=fontSize+30;
+plotColors=gjet(4);
+plotColors=plotColors([1 2 4],:);
+
+lineWidth=6;
+gridAlpha=0.3;
+LineWidthAxis=2;
+legendHeight=0.05;
+numXTicks=5;
+
+%% Control parameters
+
+formulationCases=1:12;  %Choose formulation 1:12
+k=1; %Default bulk modulus (except for hyperfoam)
+
+J_max=2;
+numPoints=2000; %Number of points for plotting
+J=linspace(0.1,J_max,numPoints)'; %The volume ratios
+xtickRange=linspace(0,max(J),numXTicks); %X-axis tick range
+
+%% Get or set formulation specific data and parameters
+
+for formulationCase=formulationCases
+    
+    switch formulationCase
+        case 1 %Hencky
+            formulationName='Hencky';
+            parSet(1)=k; %Bulk modulus
+        case 2 %Simo
+            formulationName='Simo';
+            parSet(1)=k; %Bulk modulus
+        case 3 %Bischoff
+            formulationName='Bischoff';
+            b=2; %Beta
+            parSet(1)=k; %Bulk modulus
+            parSet(2)=b; %Beta
+        case 4 %Modified Ogden
+            formulationName='Modified Ogden';
+            b=2;%Beta
+            parSet(1)=k; %Bulk modulus
+            parSet(2)=b; %Beta
+        case 5 %Hyperfoam
+            formulationName='Hyperfoam';
+            mu=1;
+            a=2; %Alpha
+            b=2; %Beta
+            parSet(1)=mu; %Mu
+            parSet(2)=a; %Alpha
+            parSet(3)=b; %Beta
+        case 6 %Doll and Schweizerhoff
+            formulationName='Doll and Schweizerhoff';
+            a=3; %Alpha
+            b=2; %Beta
+            parSet(1)=k; %Bulk modulus
+            parSet(2)=a; %Alpha
+            parSet(3)=b; %Beta
+        case 7 %Moerman 1
+            formulationName='Moerman 1';
+            b1=3;
+            b2=2;
+            parSet(1)=k; %Bulk modulus
+            parSet(2)=b1; %Alpha
+            parSet(3)=b2; %Beta
+        case 8 %Moerman 1A
+            formulationName='Moerman 1A';
+            b1=3;
+            b2=2;
+            q=0.5;
+            parSet(1)=k; %Bulk modulus
+            parSet(2)=b1; %Alpha
+            parSet(3)=b2; %Beta
+            parSet(4)=q; %Weigthing factor
+        case 9 %Moerman 1B
+            formulationName='Moerman 1B';
+            b1=3;
+            b2=2;
+            parSet(1)=k; %Bulk modulus
+            parSet(2)=b1; %Alpha
+            parSet(3)=b2; %Beta
+        case 10 %Moerman 2
+            formulationName='Moerman 2';
+            J1=max(J)+0.1;
+            J2=0;
+            parSet(1)=k; %Bulk modulus
+            parSet(2)=J1; %J1
+            parSet(3)=J2; %J2
+        case 11 %Moerman 2A
+            formulationName='Moerman 2A';
+            b1=3;
+            b2=2;
+            parSet(1)=k; %Bulk modulus
+            parSet(2)=b1; %Alpha
+            parSet(3)=b2; %Beta
+        case 12 %Moerman 3
+            formulationName='Moerman 3';
+            J1=max(J)+0.1;
+            J2=0;
+            s1=0.15;
+            s2=0.15;
+            q1=0.9;
+            q2=0.9;
+            parSet(1)=k; %Bulk modulus
+            parSet(2)=J1; %J1
+            parSet(3)=J2; %J2
+            parSet(4)=s1; %s1
+            parSet(5)=s2; %s2
+            parSet(6)=q2; %q1
+            parSet(7)=q2; %q2
+    end
+    
+    %% Calculate SED
+    
+    %Get normalized SED
+    [W,S,T]=SED_eval(formulationCase,parSet,J);
+    
+    %% Visualize data
+    
+    hf=cFigure;
+    ht=suptitle(formulationName);
+    ht.FontSize=fontSizeLabel;
+    ht.Interpreter='latex';
+    
+    subplot(1,3,1); hold on;
+    set(gca,'FontSize',fontSize,'LineWidth',LineWidthAxis,'GridAlpha',gridAlpha);
+    xlabel('$J$','FontSize',fontSizeLabel,'Interpreter','latex');
+    ylabel('$\Psi/\kappa$','FontSize',fontSizeLabel,'Interpreter','latex');
+    
+    hp1=plot(J,W,'k-','LineWidth',lineWidth);
+    hp1.Color=plotColors(1,:);
+    
+    grid on; axis tight; axis square; box on;
+    xlim([0 max(J(:))]);
+    set(gca,'XTick',xtickRange);
+    
+    subplot(1,3,2); hold on;
+    set(gca,'FontSize',fontSize,'LineWidth',LineWidthAxis,'GridAlpha',gridAlpha);
+    xlabel('$J$','FontSize',fontSizeLabel,'Interpreter','Latex');
+    ylabel('$\sigma_{h}/\kappa$','FontSize',fontSizeLabel,'Interpreter','Latex');
+    grid on; axis tight; axis square; box on;
+    
+    hp2=plot(J,S,'k-','LineWidth',lineWidth);
+    hp2.Color=plotColors(2,:);
+    
+    grid on; axis tight; axis square; box on;
+    xlim([0 max(J(:))]);
+    set(gca,'XTick',xtickRange);
+    
+    subplot(1,3,3); hold on;
+    set(gca,'FontSize',fontSize,'LineWidth',LineWidthAxis,'GridAlpha',gridAlpha);
+    xlabel('$J$','FontSize',fontSizeLabel,'Interpreter','latex');
+    ylabel('$\frac{\partial^2 \Psi}{\partial J^2} /\kappa$','FontSize',fontSizeLabel,'Interpreter','Latex');
+    
+    hp3=plot(J,T,'k-','LineWidth',lineWidth);
+    hp3.Color=plotColors(3,:);
+    
+    grid on; axis tight; axis square; box on;
+    xlim([0 max(J(:))]);
+    ylim([0 max(T(:))]);
+    set(gca,'XTick',xtickRange);
+    
+    drawnow;
+    
+end
+
+%% Evaluate SED
+
+function [W,S,T]=SED_eval(formulationCase,parSet,J)
+
+switch formulationCase
+    case 1 %Hencky
+        k=parSet(1);
+        W=k/2*log(J).^2;
+        S=k*log(J)./J;
+        T=(k-k*log(J))./J.^2;
+    case 2 %Simo
+        k=parSet(1);
+        W=(k/2).*(J-1).^2;
+        S=(k/2).*(2*J-2);
+        T=k*ones(size(J));
+    case 3 %Bischoff
+        k=parSet(1);
+        b=parSet(2);
+        W=(k./b.^2).*(cosh(b*(J-1))-1);
+        S=(k./b)   .* sinh(b*(J-1));
+        T=k           .* cosh(b*(J-1));
+    case 4 %Modified Ogden
+        k=parSet(1);
+        b=parSet(2);
+        W=(k./b.^2).*(J.^-b - 1 + b.*log(J));
+        S=(k./b)   .*(1./J     - J.^(-b-1));
+        T=(k./b)   .*(-1./J.^2  + (b+1).*J.^(-b-2));
+    case 5 %Hyperfoam
+        mu=parSet(1);
+        a=parSet(2);
+        b=parSet(3);
+        k=mu.*(b+1/3);
+        W=(2*mu./(a.^2)).*( 3*(J.^(a/3)-1)...
+            +(1./b.*( (J.^(-a.*b))-1 )) );
+        S=(1./J).*(2*mu./a).*(J.^(a/3)...
+            -J.^(-a.*b) );
+        T=(1./(J.^2)).*(2*mu/a).*((a./3-1).*J.^(a./3) +...
+            (a.*b+1).*J.^(-a*b) );
+    case 6 %Doll and Schweizerhoff
+        k=parSet(1);
+        a=parSet(2);
+        b=parSet(3);
+        W=( (k/(a+b)).*( ((1/(a+1)).*(J.^(a+1))) + ((1/(b-1)).*(J.^(-b+1)))) )...
+            -(k.*(1/(a+1)).*(1/(b-1)));
+        S=(k/(a+b)).*(J.^a-J.^(-b));
+        T=(k/(a+b)).*(a*J.^(a-1)+b*J.^(-b-1));
+    case 7 %Moerman 1
+        k=parSet(1);
+        b1=parSet(2);
+        b2=parSet(3);
+        W=(k/4)      .*( (1/b1^2).*((J.^ b1)-1).^2 + ...
+            (1/b2^2).*((J.^-b2)-1).^2 );
+        S=(k/2)./J   .*( (1/b1  ).*(J.^( 2*b1) - J.^b1 ) - ...
+            (1/b2  ).*(J.^(-2*b2) - J.^-b2) );
+        T=(k/2)./J.^2.*( ((2-1/b1)*J.^( 2*b1)-(1-1/b1)*J.^b1) + ...
+            ((2+1/b2)*J.^(-2*b2)-(1+1/b2)*J.^-b2) );
+    case 8 %Moerman 1A
+        k=parSet(1);
+        b1=parSet(2);
+        b2=parSet(3);
+        q=parSet(4);
+        
+        W1=(k/(2*b1^2)).*(  q).*((J.^ b1)-1).^2;
+        W2=(k/(2*b2^2)).*(1-q).*((J.^-b2)-1).^2;
+        W=W1+W2;
+        
+        S1= (k/b1)./J.*(  q).*(J.^( 2*b1)-J.^b1 );
+        S2=-(k/b2)./J.*(1-q).*(J.^(-2*b2)-J.^-b2);
+        S=S1+S2;
+        
+        T1=(k./J.^2).*(  q).*((2-1/b1)*J.^( 2*b1)-(1-1/b1)*J.^b1 );
+        T2=(k./J.^2).*(1-q).*((2+1/b2)*J.^(-2*b2)-(1+1/b2)*J.^-b2);
+        T=T1+T2;
+    case 9 %Moerman 1B
+        k=parSet(1);
+        b1=parSet(2);
+        b2=parSet(3);
+        
+        L1=(J>=1);
+        L2=(J<1);
+        
+        W=zeros(size(J));
+        W(L1)=(k/(2*b1^2)).*((J(L1).^ b1)-1).^2;
+        W(L2)=(k/(2*b2^2)).*((J(L2).^-b2)-1).^2;
+        
+        S=zeros(size(J));
+        S(L1)= (k/b1).*(J(L1).^( 2*b1-1)-J(L1).^( b1-1));
+        S(L2)=-(k/b2).*(J(L2).^(-2*b2-1)-J(L2).^(-b2-1));
+        
+        T=zeros(size(J));
+        T(L1)=(k/b1).*((2*b1-1)*J(L1).^( 2*b1-2)-(b1-1)*J(L1).^( b1-2));
+        T(L2)=(k/b2).*((2*b2+1)*J(L2).^(-2*b2-2)-(b2+1)*J(L2).^(-b2-2));
+    case 10 %Moerman 2
+        k=parSet(1);
+        J1=parSet(2);
+        J2=parSet(3);
+        
+        a1=(2/pi)*(J1-1);
+        a2=(2/pi)*(J2-1);
+        
+        W1=(-k*a1.^2)*log(cos((J-1)/a1));
+        W2=(-k*a2.^2)*log(cos((J-1)/a2));
+        
+        W=zeros(size(W1));
+        W(J>=1)=W1(J>=1);
+        W(J<1)=W2(J<1);
+        W=real(W);
+        W(J>=J1)=inf;
+        W(J<=J2)=inf;
+        
+        S1=(k.*a1).*tan((J-1)/a1);
+        S2=(k.*a2).*tan((J-1)/a2);
+        S=zeros(size(S1));
+        S(J>=1)=S1(J>=1);
+        S(J<1)=S2(J<1);
+        S(J>=J1)=inf;
+        S(J<=J2)=-inf;
+        
+        T1=k*sec((J-1)/a1).^2;
+        T2=k*sec((J-1)/a2).^2;
+        T=zeros(size(T1));
+        T(J>=1)=T1(J>=1);
+        T(J<1)=T2(J<1);
+        T(J>=J1)=inf;
+        T(J<=J2)=inf;
+    case 11 %Moerman 2A
+        k=parSet(1);
+        b1=parSet(2);
+        b2=parSet(3);
+        
+        W1=(k./b1.^2).*(cosh(b1*(J-1))-1);
+        S1=(k./b1)   .* sinh(b1*(J-1));
+        T1=k            .* cosh(b1*(J-1));
+        
+        W2=(k./b2.^2).*(cosh(b2*(J-1))-1);
+        S2=(k./b2)   .* sinh(b2*(J-1));
+        T2=k            .* cosh(b2*(J-1));
+        
+        W3=k.*(-4/pi^2) .*log(cos(pi/2*(1-J)));
+        S3=k.*(-2/pi)   .*tan(pi/2*(1-J));
+        T3=k            .*sec(pi/2*(1-J)).^2;
+        
+        W=W1;
+        S=S1;
+        T=T1;
+        
+        W(J<1)=W2(J<1)/2+W3(J<1)/2;
+        S(J<1)=S2(J<1)/2+S3(J<1)/2;
+        T(J<1)=T2(J<1)/2+T3(J<1)/2;
+    case 12 %Moerman 3
+        k=parSet(1);
+        J1=parSet(2);
+        J2=parSet(3);
+        s_1=parSet(4);
+        s_2=parSet(5);
+        q1=parSet(6);
+        q2=parSet(7);
+        
+        L=J<1;
+        
+        % PART 1
+        a1=(pi/2)*(1/(J1-1));
+        a2=(pi/2)*(1/(J2-1));
+        
+        %SED
+        W11=(-1/a1.^2)*log(cos((J-1).*a1));
+        W21=(-1/a2.^2)*log(cos((J-1).*a2));
+        W1=zeros(size(J));
+        W1(~L)=W11(~L);
+        W1(L)=W21(L);
+        W1=real(W1);
+        W1(J>J1)=inf;
+        W1(J<J2)=inf;
+        
+        %Stress
+        S11=(1./a1).*tan((J-1).*a1);
+        S21=(1./a2).*tan((J-1).*a2);
+        S1=zeros(size(J));
+        S1(~L)=S11(~L);
+        S1(L)=S21(L);
+        S1(J>J1)=inf;
+        S1(J<J2)=-inf;
+        
+        %Tangent
+        T11=sec((J-1).*a1).^2;
+        T21=sec((J-1).*a2).^2;
+        T1=zeros(size(J));
+        T1(~L)=T11(~L);
+        T1(L)=T21(L);
+        T1(J>J1)=inf;
+        T1(J<J2)=inf;
+        
+        % PART 2
+        b1= k/(s_1);
+        b2= k/(s_2);
+        
+        W12=(1/b1.^2)*log(cosh((J-1).*b1));
+        W22=(1/b2.^2)*log(cosh((J-1).*b2));
+        W2=zeros(size(J));
+        W2(~L)=W12(~L);
+        W2(L)=W22(L);
+        W2=real(W2);
+        
+        S12=1/b1*tanh((J-1)*b1);
+        S22=1/b2*tanh((J-1)*b2);
+        S2=zeros(size(J));
+        S2(~L)=S12(~L);
+        S2(L)=S22(L);
+        
+        T12=sech((J-1).*b1).^2;
+        T22=sech((J-1).*b2).^2;
+        T2=zeros(size(J));
+        T2(~L)=T12(~L);
+        T2(L)=T22(L);
+        
+        % SUM
+        
+        W(~L)=k*((1-q1)*W1(~L)+q1*W2(~L));
+        S(~L)=k*((1-q1)*S1(~L)+q1*S2(~L));
+        T(~L)=k*((1-q1)*T1(~L)+q1*T2(~L));
+        
+        W(L)=k*((1-q2)*W1(L)+q2*W2(L));
+        S(L)=k*((1-q2)*S1(L)+q2*S2(L));
+        T(L)=k*((1-q2)*T1(L)+q2*T2(L));
+        
+        %%
+        
+        W(J>=J1)=inf;
+        W(J<=J2)=inf;
+        
+        S(J>=J1)=inf;
+        S(J<=J2)=-inf;
+        
+        T(J>=J1)=inf;
+        T(J<=J2)=inf;
+        
+end
+
+%Normalise based on bulk-modulus
+W=W/k; S=S/k; T=T/k;
+
+end
+
+%%
+%
+% <<gibbVerySmall.gif>>
+%
+% _*GIBBON*_
+% <www.gibboncode.org>
+%
+% _Kevin Mattheus Moerman_, <gibbon.toolbox@gmail.com>
+
+%%
+% _*GIBBON footer text*_
+%
+% License: <https://github.com/gibbonCode/GIBBON/blob/master/LICENSE>
+%
+% GIBBON: The Geometry and Image-based Bioengineering add-On. A toolbox for
+% image segmentation, image-based modeling, meshing, and finite element
+% analysis.
+%
+% Copyright (C) 2019  Kevin Mattheus Moerman
+%
+% This program is free software: you can redistribute it and/or modify
+% it under the terms of the GNU General Public License as published by
+% the Free Software Foundation, either version 3 of the License, or
+% (at your option) any later version.
+%
+% This program is distributed in the hope that it will be useful,
+% but WITHOUT ANY WARRANTY; without even the implied warranty of
+% MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+% GNU General Public License for more details.
+%
+% You should have received a copy of the GNU General Public License
+% along with this program.  If not, see <http://www.gnu.org/licenses/>.
+
+##### SOURCE END #####
+--></body></html>

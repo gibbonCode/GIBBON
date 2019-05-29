@@ -44,7 +44,7 @@ if ~ishandle(hf)
 end
 
 %% Initialise button
-hb = findall(hf,'Type','uitoolbar');
+hb = findall(hf,'Tag','FigureToolBar'); % hb = findall(hf,'Type','uitoolbar');
 
 %Check for presence of a efw button
 hp = findobj(hb,'Tag','efw_button');
@@ -82,24 +82,24 @@ if isempty(hp) %If efw button is not present create one
         hf.UserData.efw.imExt='png';
         hf.UserData.efw.imRes='100';
         hf.UserData.efw.exportFigOpt='-transparent';
-    else        
-        if ~isfield(hf.UserData.efw('defaultPath'))
+    else                
+        if ~isfield(hf.UserData.efw,'defaultPath')
             hf.UserData.efw.defaultPath=fullfile(cd,'efw');
         end
         
-        if ~isfield(hf.UserData.efw('imName'))
+        if ~isfield(hf.UserData.efw,'imName')
             hf.UserData.efw.imName=['figure',num2str(get(hf,'Number'))];
         end
         
-        if ~isfield(hf.UserData.efw('imExt'))
+        if ~isfield(hf.UserData.efw,'imExt')
             hf.UserData.efw.imExt='png';
         end
         
-        if ~isfield(hf.UserData.efw('imRes'))
+        if ~isfield(hf.UserData.efw,'imRes')
             hf.UserData.efw.imRes='100';
         end
         
-        if ~isfield(hf.UserData.efw('exportFigOpt'))
+        if ~isfield(hf.UserData.efw,'exportFigOpt')
             hf.UserData.efw.exportFigOpt='-transparent';
         end
     end
