@@ -27,7 +27,11 @@ switch nargin
         %Add export figure widget
         efw(hf);
         
-        animStruct=hf.UserData.anim8.animStruct; %Get anim8 structure
+        if ~isfield(hf.UserData,'anim8')
+            error('Loaded figure lacks an anim8 structure as UserData');
+        else
+            animStruct=hf.UserData.anim8.animStruct; %Get anim8 structure
+        end
     case 2 %Create new
         hf=varargin{1}; %Figure handle
         animStruct=varargin{2}; %The anim8 structure
@@ -91,13 +95,24 @@ iconPath=fullfile(toolboxPath,'icons');
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %Toolbar
-
 toolbarTag='anim8_toolbar';
 
 %Remove existing anim8 toolbar
 hb = findall(hf,'Tag',toolbarTag); % hb = findall(hf,'Type','uitoolbar');
-if ~isempty(hb) 
+if ~isempty(hb)     
     delete(hb)
+else    
+    %Find all toolbars
+    hb = findall(hf,'Type','uitoolbar');
+    
+    %Remove them if they are not the default bar
+    if ~isempty(hb)
+        for q=1:1:numel(hb)
+            if ~strcmp(hb(q).Tag,'FigureToolBar')
+                delete(hb(q));
+            end
+        end
+    end    
 end
 
 %Create new anim8 toolbar
