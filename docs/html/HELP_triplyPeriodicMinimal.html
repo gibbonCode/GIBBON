@@ -1,0 +1,524 @@
+
+<!DOCTYPE html
+  PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html><head>
+      <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+   <!--
+This HTML was auto-generated from MATLAB code.
+To make changes, update the MATLAB code and republish this document.
+      --><title>triplyPeriodicMinimal</title><meta name="generator" content="MATLAB 9.6"><link rel="schema.DC" href="http://purl.org/dc/elements/1.1/"><meta name="DC.date" content="2019-06-04"><meta name="DC.source" content="HELP_triplyPeriodicMinimal.m"><style type="text/css">
+html,body,div,span,applet,object,iframe,h1,h2,h3,h4,h5,h6,p,blockquote,pre,a,abbr,acronym,address,big,cite,code,del,dfn,em,font,img,ins,kbd,q,s,samp,small,strike,strong,sub,sup,tt,var,b,u,i,center,dl,dt,dd,ol,ul,li,fieldset,form,label,legend,table,caption,tbody,tfoot,thead,tr,th,td{margin:0;padding:0;border:0;outline:0;font-size:100%;vertical-align:baseline;background:transparent}body{line-height:1}ol,ul{list-style:none}blockquote,q{quotes:none}blockquote:before,blockquote:after,q:before,q:after{content:'';content:none}:focus{outine:0}ins{text-decoration:none}del{text-decoration:line-through}table{border-collapse:collapse;border-spacing:0}
+
+html { min-height:100%; margin-bottom:1px; }
+html body { height:100%; margin:0px; font-family:Arial, Helvetica, sans-serif; font-size:10px; color:#000; line-height:140%; background:#fff none; overflow-y:scroll; }
+html body td { vertical-align:top; text-align:left; }
+
+h1 { padding:0px; margin:0px 0px 25px; font-family:Arial, Helvetica, sans-serif; font-size:1.5em; color:#d55000; line-height:100%; font-weight:normal; }
+h2 { padding:0px; margin:0px 0px 8px; font-family:Arial, Helvetica, sans-serif; font-size:1.2em; color:#000; font-weight:bold; line-height:140%; border-bottom:1px solid #d6d4d4; display:block; }
+h3 { padding:0px; margin:0px 0px 5px; font-family:Arial, Helvetica, sans-serif; font-size:1.1em; color:#000; font-weight:bold; line-height:140%; }
+
+a { color:#005fce; text-decoration:none; }
+a:hover { color:#005fce; text-decoration:underline; }
+a:visited { color:#004aa0; text-decoration:none; }
+
+p { padding:0px; margin:0px 0px 20px; }
+img { padding:0px; margin:0px 0px 20px; border:none; }
+p img, pre img, tt img, li img, h1 img, h2 img { margin-bottom:0px; } 
+
+ul { padding:0px; margin:0px 0px 20px 23px; list-style:square; }
+ul li { padding:0px; margin:0px 0px 7px 0px; }
+ul li ul { padding:5px 0px 0px; margin:0px 0px 7px 23px; }
+ul li ol li { list-style:decimal; }
+ol { padding:0px; margin:0px 0px 20px 0px; list-style:decimal; }
+ol li { padding:0px; margin:0px 0px 7px 23px; list-style-type:decimal; }
+ol li ol { padding:5px 0px 0px; margin:0px 0px 7px 0px; }
+ol li ol li { list-style-type:lower-alpha; }
+ol li ul { padding-top:7px; }
+ol li ul li { list-style:square; }
+
+.content { font-size:1.2em; line-height:140%; padding: 20px; }
+
+pre, code { font-size:12px; }
+tt { font-size: 1.2em; }
+pre { margin:0px 0px 20px; }
+pre.codeinput { padding:10px; border:1px solid #d3d3d3; background:#f7f7f7; }
+pre.codeoutput { padding:10px 11px; margin:0px 0px 20px; color:#4c4c4c; }
+pre.error { color:red; }
+
+@media print { pre.codeinput, pre.codeoutput { word-wrap:break-word; width:100%; } }
+
+span.keyword { color:#0000FF }
+span.comment { color:#228B22 }
+span.string { color:#A020F0 }
+span.untermstring { color:#B20000 }
+span.syscmd { color:#B28C00 }
+
+.footer { width:auto; padding:10px 0px; margin:25px 0px 0px; border-top:1px dotted #878787; font-size:0.8em; line-height:140%; font-style:italic; color:#878787; text-align:left; float:none; }
+.footer p { margin:0px; }
+.footer a { color:#878787; }
+.footer a:hover { color:#878787; text-decoration:underline; }
+.footer a:visited { color:#878787; }
+
+table th { padding:7px 5px; text-align:left; vertical-align:middle; border: 1px solid #d6d4d4; font-weight:bold; }
+table td { padding:7px 5px; text-align:left; vertical-align:top; border:1px solid #d6d4d4; }
+
+
+
+
+
+  </style></head><body><div class="content"><h1>triplyPeriodicMinimal</h1><!--introduction--><p>Below is a demonstration of the features of the <tt>triplyPeriodicMinimal</tt> function</p><!--/introduction--><h2>Contents</h2><div><ul><li><a href="#2">Syntax</a></li><li><a href="#3">Description</a></li><li><a href="#4">Examples</a></li><li><a href="#6">Example: Construct triply periodic minimal surfaces</a></li><li><a href="#9">Example: Creating a hexahedral mesh of for a regular trabecular structure</a></li><li><a href="#11">Example: Thickening the surfaces</a></li></ul></div><pre class="codeinput">clear; close <span class="string">all</span>; clc;
+</pre><h2 id="2">Syntax</h2><p><tt>S=triplyPeriodicMinimal(X,Y,Z,typeStr);</tt></p><h2 id="3">Description</h2><p>This function creates the image S which can be used to define triply periodic minimal surfaces. The input consists of a grid of coordinates (X,Y,Z) and the surface type (typeStr).</p><h2 id="4">Examples</h2><pre class="codeinput">clear; close <span class="string">all</span>; clc;
+</pre><p>Plot settings</p><pre class="codeinput">cMap=jet(250);
+faceAlpha1=1;
+faceAlpha2=0.65;
+edgeColor1=<span class="string">'none'</span>;
+edgeColor2=<span class="string">'none'</span>;
+fontSize=25;
+pColors=gjet(6);
+</pre><h2 id="6">Example: Construct triply periodic minimal surfaces</h2><pre class="codeinput"><span class="comment">%Create a grid</span>
+n=35;
+[X,Y,Z]=meshgrid(linspace(-pi,pi,n));
+
+<span class="comment">%Evaluate triply periodic function</span>
+S=triplyPeriodicMinimal(X,Y,Z,<span class="string">'p'</span>);
+
+<span class="comment">%Construct iso-surface</span>
+[F,V] = isosurface(X,Y,Z,S,0);
+</pre><p>Visualize surface</p><pre class="codeinput">cFigure;
+hold <span class="string">on</span>;
+title(<span class="string">'Schwarz P-surface'</span>,<span class="string">'FontSize'</span>,fontSize);
+gpatch(F,V,<span class="string">'kw'</span>,<span class="string">'k'</span>,1);
+axisGeom;
+camlight <span class="string">headlight</span>;
+drawnow;
+</pre><img width="100%" height="auto" vspace="5" hspace="5" src="HELP_triplyPeriodicMinimal_01.jpg" alt=""> <p>Visualization all variations</p><pre class="codeinput">cFigure;
+
+subplot(2,3,1);
+title(<span class="string">'Schwarz P-surface'</span>,<span class="string">'FontSize'</span>,fontSize);
+hold <span class="string">on</span>;
+gpatch(F,V,pColors(1,:),<span class="string">'none'</span>,1);
+axisGeom;
+camlight <span class="string">headlight</span>; lighting <span class="string">gouraud</span>;
+view(-50,30);
+
+[X,Y,Z]=meshgrid(linspace(-pi,pi,n));
+S=triplyPeriodicMinimal(X,Y,Z,<span class="string">'d'</span>);
+[F,V] = isosurface(X,Y,Z,S,0.1);
+
+subplot(2,3,2);
+title(<span class="string">'d'</span>,<span class="string">'FontSize'</span>,fontSize);
+hold <span class="string">on</span>;
+gpatch(F,V,pColors(2,:),<span class="string">'none'</span>,1);
+axisGeom;
+camlight <span class="string">headlight</span>; lighting <span class="string">gouraud</span>;
+view(-50,30);
+
+[X,Y,Z]=meshgrid(linspace(-2*pi,2*pi,n));
+S=triplyPeriodicMinimal(X,Y,Z,<span class="string">'g'</span>);
+[F,V] = isosurface(X,Y,Z,S,0.6);
+
+subplot(2,3,3);
+title(<span class="string">'Gyroid'</span>,<span class="string">'FontSize'</span>,fontSize);
+hold <span class="string">on</span>;
+gpatch(F,V,pColors(3,:),<span class="string">'none'</span>,1);
+axisGeom;
+camlight <span class="string">headlight</span>; lighting <span class="string">gouraud</span>;
+view(-50,30);
+
+[X,Y,Z]=meshgrid(linspace(-pi,pi,n));
+S=triplyPeriodicMinimal(X,Y,Z,<span class="string">'n'</span>);
+[F,V] = isosurface(X,Y,Z,S,0);
+
+subplot(2,3,4);
+title(<span class="string">'Neovius'</span>,<span class="string">'FontSize'</span>,fontSize);
+hold <span class="string">on</span>;
+gpatch(F,V,pColors(4,:),<span class="string">'none'</span>,1);
+axisGeom;
+camlight <span class="string">headlight</span>; lighting <span class="string">gouraud</span>;
+view(-50,30);
+
+[X,Y,Z]=meshgrid(linspace(-pi,pi,n));
+S=triplyPeriodicMinimal(X,Y,Z,<span class="string">'w'</span>);
+[F,V] = isosurface(X,Y,Z,S,0);
+
+subplot(2,3,5);
+title(<span class="string">'w'</span>,<span class="string">'FontSize'</span>,fontSize);
+hold <span class="string">on</span>;
+gpatch(F,V,pColors(5,:),<span class="string">'none'</span>,1);
+axisGeom;
+camlight <span class="string">headlight</span>; lighting <span class="string">gouraud</span>;
+view(-50,30);
+
+[X,Y,Z]=meshgrid(linspace(-pi,pi,n));
+S=triplyPeriodicMinimal(X,Y,Z,<span class="string">'pw'</span>);
+[F,V] = isosurface(X,Y,Z,S,0.5);
+
+subplot(2,3,6);
+title(<span class="string">'pw'</span>,<span class="string">'FontSize'</span>,fontSize);
+hold <span class="string">on</span>;
+gpatch(F,V,pColors(6,:),<span class="string">'none'</span>,1);
+axisGeom;
+camlight <span class="string">headlight</span>; lighting <span class="string">gouraud</span>;
+view(-50,30);
+
+drawnow;
+</pre><img width="100%" height="auto" vspace="5" hspace="5" src="HELP_triplyPeriodicMinimal_02.jpg" alt=""> <h2 id="9">Example: Creating a hexahedral mesh of for a regular trabecular structure</h2><p>This example renders boundary faces. Use the 'h' option for im2patch to obtain hexehadral elements.</p><pre class="codeinput">n=50;
+[X,Y,Z]=meshgrid(linspace(-2*pi,2*pi,n));
+S=triplyPeriodicMinimal(X,Y,Z,<span class="string">'g'</span>);
+
+T=0.6;
+c=(max(S(:))*T);
+L=S&gt;=c;
+[F1,V1,C1]=im2patch(S,L,<span class="string">'vb'</span>);
+
+L=S&lt;c;
+[F2,V2,C2]=im2patch(S,L,<span class="string">'vb'</span>);
+</pre><p>Visualization</p><pre class="codeinput">cFigure;
+subplot(1,2,1);
+title(<span class="string">'Gyroid based "network"'</span>,<span class="string">'FontSize'</span>,fontSize);
+xlabel(<span class="string">'J'</span>,<span class="string">'FontSize'</span>,fontSize);ylabel(<span class="string">'I'</span>,<span class="string">'FontSize'</span>,fontSize); zlabel(<span class="string">'K'</span>,<span class="string">'FontSize'</span>,fontSize); hold <span class="string">on</span>;
+gpatch(F1,V1,C1,<span class="string">'k'</span>,1);
+axisGeom;
+colormap(cMap);
+caxis([min(S(:)) max(S(:))]);
+camlight <span class="string">headlight</span>;
+
+subplot(1,2,2);
+title(<span class="string">'Gyroid based "matrix"'</span>,<span class="string">'FontSize'</span>,fontSize);
+xlabel(<span class="string">'J'</span>,<span class="string">'FontSize'</span>,fontSize);ylabel(<span class="string">'I'</span>,<span class="string">'FontSize'</span>,fontSize); zlabel(<span class="string">'K'</span>,<span class="string">'FontSize'</span>,fontSize); hold <span class="string">on</span>;
+gpatch(F2,V2,C2,<span class="string">'k'</span>,1);
+axisGeom;
+colormap(cMap);
+caxis([min(S(:)) max(S(:))]);
+camlight <span class="string">headlight</span>;
+
+drawnow;
+</pre><img width="100%" height="auto" vspace="5" hspace="5" src="HELP_triplyPeriodicMinimal_03.jpg" alt=""> <h2 id="11">Example: Thickening the surfaces</h2><pre class="codeinput">n=75;
+typeStr=<span class="string">'g'</span>;
+<span class="keyword">switch</span> typeStr
+    <span class="keyword">case</span> <span class="string">'p'</span>
+        [X,Y,Z]=meshgrid(linspace(-pi,pi,n));
+        S=triplyPeriodicMinimal(X,Y,Z,<span class="string">'p'</span>);
+        [F,V] = isosurface(X,Y,Z,S,0);
+    <span class="keyword">case</span> <span class="string">'g'</span>
+        [X,Y,Z]=meshgrid(linspace(-1.9*pi,1.9*pi,n));
+        S=triplyPeriodicMinimal(X,Y,Z,<span class="string">'g'</span>);
+        [F,V] = isosurface(X,Y,Z,S,0.6);
+<span class="keyword">end</span>
+F1=F; V1=V; <span class="comment">%Store originals</span>
+
+<span class="comment">%Get boundary edges</span>
+Eb=patchBoundary(F,V);
+
+<span class="comment">% %Smoothen surface</span>
+<span class="comment">% controlPar.Method='HC';</span>
+<span class="comment">% controlPar.n=5;</span>
+<span class="comment">% controlPar.RigidConstraints=unique(Eb(:));</span>
+<span class="comment">% V=patchSmooth(F,V,[],controlPar);</span>
+</pre><p>Thicken surface in ward</p><pre class="codeinput">thicknessOffset=0.25; <span class="comment">%The desired thickness</span>
+[~,~,N]=patchNormal(F,V); <span class="comment">%Vertex normal vectors</span>
+V2=V+N*thicknessOffset; <span class="comment">%The offset coordinates</span>
+numVertices=size(V,1);
+V=[V;V2]; <span class="comment">%Append new coordinates</span>
+F=[F;fliplr(F)+numVertices]; <span class="comment">%Append new faces (note offset in indices)</span>
+</pre><p>Close boundary features</p><pre class="codeinput">optionStruct.outputType=<span class="string">'label'</span>;
+G=tesgroup(Eb,optionStruct); <span class="comment">%grouping of boundary edges</span>
+
+<span class="keyword">for</span> q=1:1:max(G(:))
+    logicGroup=(G==q);
+    Eb_now=Eb(logicGroup,:);
+    fq=[Eb_now fliplr(Eb_now)+numVertices]; <span class="comment">%New quadrilateral faces</span>
+    f=[fq(:,[1 2 3]); fq(:,[3 4 1]);]; <span class="comment">%New triangular faces</span>
+    F=[F;fliplr(f)]; <span class="comment">%Append new faces</span>
+<span class="keyword">end</span>
+</pre><p>Visualize thickened surface</p><pre class="codeinput">cFigure;
+<span class="comment">% subplot(1,2,1);</span>
+<span class="comment">% hold on;</span>
+<span class="comment">% title('Vertex normals','FontSize',fontSize);</span>
+<span class="comment">% gpatch(F1,V1,'rw','r',1);</span>
+<span class="comment">% patchNormPlot(F1,V1,[],'v'); %Visualize vertex normal directions</span>
+<span class="comment">% axisGeom;</span>
+<span class="comment">% camlight headlight;</span>
+<span class="comment">%</span>
+<span class="comment">% subplot(1,2,2);</span>
+hold <span class="string">on</span>;
+title(<span class="string">'Thickened  surface'</span>,<span class="string">'FontSize'</span>,fontSize);
+gpatch(F,V,<span class="string">'bw'</span>,<span class="string">'none'</span>,1);
+<span class="comment">% patchNormPlot(F,V); %Visualize face normal directions</span>
+axisGeom;
+camlight <span class="string">headlight</span>;
+drawnow;
+</pre><img width="100%" height="auto" vspace="5" hspace="5" src="HELP_triplyPeriodicMinimal_04.jpg" alt=""> <p>The model can be exported to an STL file using export_STL_txt, see <tt>HELP_export_STL_txt</tt>.</p><p><img vspace="5" hspace="5" src="gibbVerySmall.gif" alt=""> </p><p><i><b>GIBBON</b></i> <a href="www.gibboncode.org">www.gibboncode.org</a></p><p><i>Kevin Mattheus Moerman</i>, <a href="gibbon.toolbox@gmail.com">gibbon.toolbox@gmail.com</a></p><p><i><b>GIBBON footer text</b></i></p><p>License: <a href="https://github.com/gibbonCode/GIBBON/blob/master/LICENSE">https://github.com/gibbonCode/GIBBON/blob/master/LICENSE</a></p><p>GIBBON: The Geometry and Image-based Bioengineering add-On. A toolbox for image segmentation, image-based modeling, meshing, and finite element analysis.</p><p>Copyright (C) 2019  Kevin Mattheus Moerman</p><p>This program is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.</p><p>This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for more details.</p><p>You should have received a copy of the GNU General Public License along with this program.  If not, see <a href="http://www.gnu.org/licenses/">http://www.gnu.org/licenses/</a>.</p><p class="footer"><br><a href="https://www.mathworks.com/products/matlab/">Published with MATLAB&reg; R2019a</a><br></p></div><!--
+##### SOURCE BEGIN #####
+%% triplyPeriodicMinimal
+% Below is a demonstration of the features of the |triplyPeriodicMinimal| function
+
+%%
+clear; close all; clc;
+
+%% Syntax
+% |S=triplyPeriodicMinimal(X,Y,Z,typeStr);|
+
+%% Description
+% This function creates the image S which can be used to define triply
+% periodic minimal surfaces. The input consists of a grid of coordinates
+% (X,Y,Z) and the surface type (typeStr). 
+
+%% Examples
+
+clear; close all; clc;
+
+%%
+% Plot settings
+cMap=jet(250);
+faceAlpha1=1;
+faceAlpha2=0.65;
+edgeColor1='none';
+edgeColor2='none';
+fontSize=25; 
+pColors=gjet(6);
+
+%% Example: Construct triply periodic minimal surfaces
+
+%Create a grid
+n=35;
+[X,Y,Z]=meshgrid(linspace(-pi,pi,n));
+
+%Evaluate triply periodic function
+S=triplyPeriodicMinimal(X,Y,Z,'p');
+
+%Construct iso-surface
+[F,V] = isosurface(X,Y,Z,S,0);
+
+%%
+% Visualize surface
+cFigure;
+hold on;
+title('Schwarz P-surface','FontSize',fontSize);
+gpatch(F,V,'kw','k',1);
+axisGeom; 
+camlight headlight;
+drawnow; 
+
+%% 
+% Visualization all variations
+
+cFigure;
+
+subplot(2,3,1);
+title('Schwarz P-surface','FontSize',fontSize);
+hold on;
+gpatch(F,V,pColors(1,:),'none',1);
+axisGeom; 
+camlight headlight; lighting gouraud;
+view(-50,30);
+
+[X,Y,Z]=meshgrid(linspace(-pi,pi,n));
+S=triplyPeriodicMinimal(X,Y,Z,'d');
+[F,V] = isosurface(X,Y,Z,S,0.1);
+
+subplot(2,3,2);
+title('d','FontSize',fontSize);
+hold on;
+gpatch(F,V,pColors(2,:),'none',1);
+axisGeom; 
+camlight headlight; lighting gouraud;
+view(-50,30);
+
+[X,Y,Z]=meshgrid(linspace(-2*pi,2*pi,n));
+S=triplyPeriodicMinimal(X,Y,Z,'g');
+[F,V] = isosurface(X,Y,Z,S,0.6);
+
+subplot(2,3,3);
+title('Gyroid','FontSize',fontSize);
+hold on;
+gpatch(F,V,pColors(3,:),'none',1);
+axisGeom; 
+camlight headlight; lighting gouraud;
+view(-50,30);
+
+[X,Y,Z]=meshgrid(linspace(-pi,pi,n));
+S=triplyPeriodicMinimal(X,Y,Z,'n');
+[F,V] = isosurface(X,Y,Z,S,0);
+
+subplot(2,3,4);
+title('Neovius','FontSize',fontSize);
+hold on;
+gpatch(F,V,pColors(4,:),'none',1);
+axisGeom; 
+camlight headlight; lighting gouraud;
+view(-50,30);
+
+[X,Y,Z]=meshgrid(linspace(-pi,pi,n));
+S=triplyPeriodicMinimal(X,Y,Z,'w');
+[F,V] = isosurface(X,Y,Z,S,0);
+
+subplot(2,3,5);
+title('w','FontSize',fontSize);
+hold on;
+gpatch(F,V,pColors(5,:),'none',1);
+axisGeom; 
+camlight headlight; lighting gouraud;
+view(-50,30);
+
+[X,Y,Z]=meshgrid(linspace(-pi,pi,n));
+S=triplyPeriodicMinimal(X,Y,Z,'pw');
+[F,V] = isosurface(X,Y,Z,S,0.5);
+
+subplot(2,3,6);
+title('pw','FontSize',fontSize);
+hold on;
+gpatch(F,V,pColors(6,:),'none',1);
+axisGeom; 
+camlight headlight; lighting gouraud;
+view(-50,30);
+
+drawnow;
+
+%% Example: Creating a hexahedral mesh of for a regular trabecular structure
+% This example renders boundary faces. Use the 'h' option for im2patch to
+% obtain hexehadral elements. 
+
+n=50;
+[X,Y,Z]=meshgrid(linspace(-2*pi,2*pi,n));
+S=triplyPeriodicMinimal(X,Y,Z,'g');
+
+T=0.6;      
+c=(max(S(:))*T);
+L=S>=c;
+[F1,V1,C1]=im2patch(S,L,'vb'); 
+
+L=S<c;
+[F2,V2,C2]=im2patch(S,L,'vb'); 
+
+%%
+% Visualization
+
+cFigure;
+subplot(1,2,1);
+title('Gyroid based "network"','FontSize',fontSize);
+xlabel('J','FontSize',fontSize);ylabel('I','FontSize',fontSize); zlabel('K','FontSize',fontSize); hold on;
+gpatch(F1,V1,C1,'k',1);
+axisGeom; 
+colormap(cMap); 
+caxis([min(S(:)) max(S(:))]);
+camlight headlight;
+
+subplot(1,2,2);
+title('Gyroid based "matrix"','FontSize',fontSize);
+xlabel('J','FontSize',fontSize);ylabel('I','FontSize',fontSize); zlabel('K','FontSize',fontSize); hold on;
+gpatch(F2,V2,C2,'k',1);
+axisGeom; 
+colormap(cMap); 
+caxis([min(S(:)) max(S(:))]);
+camlight headlight;
+
+drawnow;
+
+%% Example: Thickening the surfaces
+
+n=75;
+typeStr='g';
+switch typeStr
+    case 'p'        
+        [X,Y,Z]=meshgrid(linspace(-pi,pi,n)); 
+        S=triplyPeriodicMinimal(X,Y,Z,'p'); 
+        [F,V] = isosurface(X,Y,Z,S,0);
+    case 'g'
+        [X,Y,Z]=meshgrid(linspace(-1.9*pi,1.9*pi,n));
+        S=triplyPeriodicMinimal(X,Y,Z,'g');
+        [F,V] = isosurface(X,Y,Z,S,0.6);
+end
+F1=F; V1=V; %Store originals
+
+%Get boundary edges
+Eb=patchBoundary(F,V);
+
+% %Smoothen surface
+% controlPar.Method='HC';
+% controlPar.n=5;
+% controlPar.RigidConstraints=unique(Eb(:));
+% V=patchSmooth(F,V,[],controlPar);
+
+%%
+% Thicken surface in ward
+
+thicknessOffset=0.25; %The desired thickness
+[~,~,N]=patchNormal(F,V); %Vertex normal vectors
+V2=V+N*thicknessOffset; %The offset coordinates
+numVertices=size(V,1);
+V=[V;V2]; %Append new coordinates
+F=[F;fliplr(F)+numVertices]; %Append new faces (note offset in indices)
+%%
+% Close boundary features
+optionStruct.outputType='label';
+G=tesgroup(Eb,optionStruct); %grouping of boundary edges
+
+for q=1:1:max(G(:))
+    logicGroup=(G==q);
+    Eb_now=Eb(logicGroup,:);
+    fq=[Eb_now fliplr(Eb_now)+numVertices]; %New quadrilateral faces
+    f=[fq(:,[1 2 3]); fq(:,[3 4 1]);]; %New triangular faces
+    F=[F;fliplr(f)]; %Append new faces
+end
+
+%%
+% Visualize thickened surface
+
+cFigure;
+% subplot(1,2,1); 
+% hold on;
+% title('Vertex normals','FontSize',fontSize);
+% gpatch(F1,V1,'rw','r',1);
+% patchNormPlot(F1,V1,[],'v'); %Visualize vertex normal directions
+% axisGeom; 
+% camlight headlight;
+% 
+% subplot(1,2,2); 
+hold on;
+title('Thickened  surface','FontSize',fontSize);
+gpatch(F,V,'bw','none',1);
+% patchNormPlot(F,V); %Visualize face normal directions
+axisGeom; 
+camlight headlight;
+drawnow; 
+
+%%
+% The model can be exported to an STL file using export_STL_txt, see
+% |HELP_export_STL_txt|. 
+
+%% 
+%
+% <<gibbVerySmall.gif>>
+% 
+% _*GIBBON*_ 
+% <www.gibboncode.org>
+% 
+% _Kevin Mattheus Moerman_, <gibbon.toolbox@gmail.com>
+ 
+%% 
+% _*GIBBON footer text*_ 
+% 
+% License: <https://github.com/gibbonCode/GIBBON/blob/master/LICENSE>
+% 
+% GIBBON: The Geometry and Image-based Bioengineering add-On. A toolbox for
+% image segmentation, image-based modeling, meshing, and finite element
+% analysis.
+% 
+% Copyright (C) 2019  Kevin Mattheus Moerman
+% 
+% This program is free software: you can redistribute it and/or modify
+% it under the terms of the GNU General Public License as published by
+% the Free Software Foundation, either version 3 of the License, or
+% (at your option) any later version.
+% 
+% This program is distributed in the hope that it will be useful,
+% but WITHOUT ANY WARRANTY; without even the implied warranty of
+% MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+% GNU General Public License for more details.
+% 
+% You should have received a copy of the GNU General Public License
+% along with this program.  If not, see <http://www.gnu.org/licenses/>.
+
+##### SOURCE END #####
+--></body></html>

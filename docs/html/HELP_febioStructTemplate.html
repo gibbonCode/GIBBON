@@ -6,7 +6,7 @@
    <!--
 This HTML was auto-generated from MATLAB code.
 To make changes, update the MATLAB code and republish this document.
-      --><title>febioStructTemplate</title><meta name="generator" content="MATLAB 9.4"><link rel="schema.DC" href="http://purl.org/dc/elements/1.1/"><meta name="DC.date" content="2018-06-25"><meta name="DC.source" content="HELP_febioStructTemplate.m"><style type="text/css">
+      --><title>febioStructTemplate</title><meta name="generator" content="MATLAB 9.6"><link rel="schema.DC" href="http://purl.org/dc/elements/1.1/"><meta name="DC.date" content="2019-06-03"><meta name="DC.source" content="HELP_febioStructTemplate.m"><style type="text/css">
 html,body,div,span,applet,object,iframe,h1,h2,h3,h4,h5,h6,p,blockquote,pre,a,abbr,acronym,address,big,cite,code,del,dfn,em,font,img,ins,kbd,q,s,samp,small,strike,strong,sub,sup,tt,var,b,u,i,center,dl,dt,dd,ol,ul,li,fieldset,form,label,legend,table,caption,tbody,tfoot,thead,tr,th,td{margin:0;padding:0;border:0;outline:0;font-size:100%;vertical-align:baseline;background:transparent}body{line-height:1}ol,ul{list-style:none}blockquote,q{quotes:none}blockquote:before,blockquote:after,q:before,q:after{content:'';content:none}:focus{outine:0}ins{text-decoration:none}del{text-decoration:line-through}table{border-collapse:collapse;border-spacing:0}
 
 html { min-height:100%; margin-bottom:1px; }
@@ -122,118 +122,118 @@ ans =
        min_residual: 1.0000e-20
        output_level: 'OUTPUT_MAJOR_ITRS'
 
-</pre><p><img vspace="5" hspace="5" src="gibbVerySmall.gif" alt=""> </p><p><i><b>GIBBON</b></i> <a href="www.gibboncode.org">www.gibboncode.org</a></p><p><i>Kevin Mattheus Moerman</i>, <a href="gibbon.toolbox@gmail.com">gibbon.toolbox@gmail.com</a></p><p><i><b>GIBBON footer text</b></i></p><p>License: <a href="https://github.com/gibbonCode/GIBBON/blob/master/LICENSE">https://github.com/gibbonCode/GIBBON/blob/master/LICENSE</a></p><p>GIBBON: The Geometry and Image-based Bioengineering add-On. A toolbox for image segmentation, image-based modeling, meshing, and finite element analysis.</p><p>Copyright (C) 2018  Kevin Mattheus Moerman</p><p>This program is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.</p><p>This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for more details.</p><p>You should have received a copy of the GNU General Public License along with this program.  If not, see <a href="http://www.gnu.org/licenses/">http://www.gnu.org/licenses/</a>.</p><p class="footer"><br><a href="https://www.mathworks.com/products/matlab/">Published with MATLAB&reg; R2018a</a><br></p></div><!--
+</pre><p><img vspace="5" hspace="5" src="gibbVerySmall.gif" alt=""> </p><p><i><b>GIBBON</b></i> <a href="www.gibboncode.org">www.gibboncode.org</a></p><p><i>Kevin Mattheus Moerman</i>, <a href="gibbon.toolbox@gmail.com">gibbon.toolbox@gmail.com</a></p><p><i><b>GIBBON footer text</b></i></p><p>License: <a href="https://github.com/gibbonCode/GIBBON/blob/master/LICENSE">https://github.com/gibbonCode/GIBBON/blob/master/LICENSE</a></p><p>GIBBON: The Geometry and Image-based Bioengineering add-On. A toolbox for image segmentation, image-based modeling, meshing, and finite element analysis.</p><p>Copyright (C) 2019  Kevin Mattheus Moerman</p><p>This program is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.</p><p>This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for more details.</p><p>You should have received a copy of the GNU General Public License along with this program.  If not, see <a href="http://www.gnu.org/licenses/">http://www.gnu.org/licenses/</a>.</p><p class="footer"><br><a href="https://www.mathworks.com/products/matlab/">Published with MATLAB&reg; R2019a</a><br></p></div><!--
 ##### SOURCE BEGIN #####
-%% febioStructTemplate
-% Below is a demonstration of the features of the |febioStructTemplate| function
-
-%%
-clear; close all; clc;
-
-%% Syntax
-% |[domNode]=febioStructTemplate(febio_spec,fileName,optionStruct);|
-
-%% Description
-% This function creates a template FEBio input file structure. 
-
-%%
-% See also: |febioStruct2xml|
-
-%% Creating a template FEBio input structure
-% The created template contains the following sections: module, control,
-% globals, loadData, and output
-[febio_spec]=febioStructTemplate;
-
-%% Viewing the FEBio structure
-% The |febView| command can be used to render the XML form of the febio structure in a figure
-% window. 
-
-%%
-% NOTE: The figure below does not render in documentation due to a
-% MATLAB but (or limitation). The code |[hFig]=febView(domNode);| is
-% therefore suppressed.
-%%
-% |[hFig]=febView(febio_spec);|
-
-%% Export to an FEBio input file
-% You can use |febioStruct2xml| to write the xml data to a file AND/OR a
-% domNode object (optional output). Leave the fileName variable empty to
-% supress file export. 
-
-%Create file name for XML file
-defaultFolder = fileparts(fileparts(mfilename('fullpath')));
-savePath=fullfile(defaultFolder,'data','temp');
-fileName=fullfile(savePath,'tempModel.feb');
-
-febioStruct2xml(febio_spec,fileName); %Exporting to file and domNode
-
-%% Viewing a FEBio file
-% One can also use |febView| for file febio fil viewing: 
-
-%%
-% |febView(fileName);|
-
-%%
-% Clear variable for next example
-clear febio_spec
-
-%% Overriding defaults
-
-%%
-% Create your own settings
-
-% Some custom entries to override default
-febio_spec.Control.time_steps=33;
-febio_spec.Control.step_size=1/febio_spec.Control.time_steps;
-
-% Some custom fields/entries not part of the default
-febio_spec.Control.someField='Some custom thing';
-febio_spec.Control.someStruct.someData=pi;
-
-%%
-% What the custom set looks like:
-febio_spec.Control
-
-%%
-% Use |febioStructTemplate| to "fill in the gaps"
-[febio_spec]=febioStructTemplate(febio_spec);
-
-%%
-% What the set looks like after filling in gaps based on the templete:
-febio_spec.Control
-
-%% 
-%
-% <<gibbVerySmall.gif>>
-% 
-% _*GIBBON*_ 
-% <www.gibboncode.org>
-% 
-% _Kevin Mattheus Moerman_, <gibbon.toolbox@gmail.com>
-
-%% 
-% _*GIBBON footer text*_ 
-% 
-% License: <https://github.com/gibbonCode/GIBBON/blob/master/LICENSE>
-% 
-% GIBBON: The Geometry and Image-based Bioengineering add-On. A toolbox for
-% image segmentation, image-based modeling, meshing, and finite element
-% analysis.
-% 
-% Copyright (C) 2018  Kevin Mattheus Moerman
-% 
-% This program is free software: you can redistribute it and/or modify
-% it under the terms of the GNU General Public License as published by
-% the Free Software Foundation, either version 3 of the License, or
-% (at your option) any later version.
-% 
-% This program is distributed in the hope that it will be useful,
-% but WITHOUT ANY WARRANTY; without even the implied warranty of
-% MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-% GNU General Public License for more details.
-% 
-% You should have received a copy of the GNU General Public License
-% along with this program.  If not, see <http://www.gnu.org/licenses/>.
+%% febioStructTemplate
+% Below is a demonstration of the features of the |febioStructTemplate| function
+
+%%
+clear; close all; clc;
+
+%% Syntax
+% |[domNode]=febioStructTemplate(febio_spec,fileName,optionStruct);|
+
+%% Description
+% This function creates a template FEBio input file structure. 
+
+%%
+% See also: |febioStruct2xml|
+
+%% Creating a template FEBio input structure
+% The created template contains the following sections: module, control,
+% globals, loadData, and output
+[febio_spec]=febioStructTemplate;
+
+%% Viewing the FEBio structure
+% The |febView| command can be used to render the XML form of the febio structure in a figure
+% window. 
+
+%%
+% NOTE: The figure below does not render in documentation due to a
+% MATLAB but (or limitation). The code |[hFig]=febView(domNode);| is
+% therefore suppressed.
+%%
+% |[hFig]=febView(febio_spec);|
+
+%% Export to an FEBio input file
+% You can use |febioStruct2xml| to write the xml data to a file AND/OR a
+% domNode object (optional output). Leave the fileName variable empty to
+% supress file export. 
+
+%Create file name for XML file
+defaultFolder = fileparts(fileparts(mfilename('fullpath')));
+savePath=fullfile(defaultFolder,'data','temp');
+fileName=fullfile(savePath,'tempModel.feb');
+
+febioStruct2xml(febio_spec,fileName); %Exporting to file and domNode
+
+%% Viewing a FEBio file
+% One can also use |febView| for file febio fil viewing: 
+
+%%
+% |febView(fileName);|
+
+%%
+% Clear variable for next example
+clear febio_spec
+
+%% Overriding defaults
+
+%%
+% Create your own settings
+
+% Some custom entries to override default
+febio_spec.Control.time_steps=33;
+febio_spec.Control.step_size=1/febio_spec.Control.time_steps;
+
+% Some custom fields/entries not part of the default
+febio_spec.Control.someField='Some custom thing';
+febio_spec.Control.someStruct.someData=pi;
+
+%%
+% What the custom set looks like:
+febio_spec.Control
+
+%%
+% Use |febioStructTemplate| to "fill in the gaps"
+[febio_spec]=febioStructTemplate(febio_spec);
+
+%%
+% What the set looks like after filling in gaps based on the templete:
+febio_spec.Control
+
+%% 
+%
+% <<gibbVerySmall.gif>>
+% 
+% _*GIBBON*_ 
+% <www.gibboncode.org>
+% 
+% _Kevin Mattheus Moerman_, <gibbon.toolbox@gmail.com>
+
+%% 
+% _*GIBBON footer text*_ 
+% 
+% License: <https://github.com/gibbonCode/GIBBON/blob/master/LICENSE>
+% 
+% GIBBON: The Geometry and Image-based Bioengineering add-On. A toolbox for
+% image segmentation, image-based modeling, meshing, and finite element
+% analysis.
+% 
+% Copyright (C) 2019  Kevin Mattheus Moerman
+% 
+% This program is free software: you can redistribute it and/or modify
+% it under the terms of the GNU General Public License as published by
+% the Free Software Foundation, either version 3 of the License, or
+% (at your option) any later version.
+% 
+% This program is distributed in the hope that it will be useful,
+% but WITHOUT ANY WARRANTY; without even the implied warranty of
+% MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+% GNU General Public License for more details.
+% 
+% You should have received a copy of the GNU General Public License
+% along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 ##### SOURCE END #####
 --></body></html>

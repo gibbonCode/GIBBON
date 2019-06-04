@@ -6,7 +6,7 @@
    <!--
 This HTML was auto-generated from MATLAB code.
 To make changes, update the MATLAB code and republish this document.
-      --><title>HELP_ellipsoidFit_centered</title><meta name="generator" content="MATLAB 9.4"><link rel="schema.DC" href="http://purl.org/dc/elements/1.1/"><meta name="DC.date" content="2018-06-25"><meta name="DC.source" content="HELP_ellipsoidFit_centered.m"><style type="text/css">
+      --><title>HELP_ellipsoidFit_centered</title><meta name="generator" content="MATLAB 9.6"><link rel="schema.DC" href="http://purl.org/dc/elements/1.1/"><meta name="DC.date" content="2019-06-03"><meta name="DC.source" content="HELP_ellipsoidFit_centered.m"><style type="text/css">
 html,body,div,span,applet,object,iframe,h1,h2,h3,h4,h5,h6,p,blockquote,pre,a,abbr,acronym,address,big,cite,code,del,dfn,em,font,img,ins,kbd,q,s,samp,small,strike,strong,sub,sup,tt,var,b,u,i,center,dl,dt,dd,ol,ul,li,fieldset,form,label,legend,table,caption,tbody,tfoot,thead,tr,th,td{margin:0;padding:0;border:0;outline:0;font-size:100%;vertical-align:baseline;background:transparent}body{line-height:1}ol,ul{list-style:none}blockquote,q{quotes:none}blockquote:before,blockquote:after,q:before,q:after{content:'';content:none}:focus{outine:0}ins{text-decoration:none}del{text-decoration:line-through}table{border-collapse:collapse;border-spacing:0}
 
 html { min-height:100%; margin-bottom:1px; }
@@ -75,28 +75,28 @@ ellipStretchTrue=[pi 2 0.5];
 MU_true=[1 6 pi];
 
 <span class="comment">% Create ellipsoid patch data</span>
-[F,X,~]=geoSphere(3,1);
-x=X(:,1);
-FX=mean(x(F),2);
+[F,V,~]=geoSphere(3,1);
+v=V(:,1);
+FX=mean(v(F),2);
 logicKeep=FX&gt;0;
 F=F(logicKeep,:);
 indKeep=unique(F(:));
-indFix=nan(size(X,1),1);
+indFix=nan(size(V,1),1);
 indFix(indKeep)=1:numel(indKeep);
-X=X(indKeep,:);
+V=V(indKeep,:);
 F=indFix(F);
-X=X.*ellipStretchTrue(ones(size(X,1),1),:);
+V=V.*ellipStretchTrue(ones(size(V,1),1),:);
 
 <span class="comment">%Create Euler angles to set directions</span>
 E=[0.25*pi 0.25*pi -0.25*pi];
 [R_true,~]=euler2DCM(E); <span class="comment">%The true directions for X, Y and Z axis</span>
-X=(R_true*X')'; <span class="comment">%Rotate polyhedron</span>
+V=(R_true*V')'; <span class="comment">%Rotate polyhedron</span>
 
-X=X+MU_true(ones(size(X,1),1),:); <span class="comment">%Centre points around mean</span>
+V=V+MU_true(ones(size(V,1),1),:); <span class="comment">%Centre points around mean</span>
 
 <span class="comment">%Add noise</span>
 n_std=0.2;  <span class="comment">%Standard deviation</span>
-Xn=X+n_std.*randn(size(X));
+Vn=V+n_std.*randn(size(V));
 </pre><p>This is the true axis system</p><pre class="codeinput">R_true
 </pre><pre class="codeoutput">
 R_true =
@@ -111,20 +111,20 @@ ellipStretchTrue =
 
     3.1416    2.0000    0.5000
 
-</pre><pre class="codeinput">[M,ellipStretchFit,R_fit,MU]=ellipsoidFit_centered(Xn,MU_true);
+</pre><pre class="codeinput">[M,ellipsStretchFit,R_fit,MU]=ellipsoidFit_centered(Vn,MU_true);
 </pre><p>This is the fitted axis system. The system axes should be colinear with the true axes but can be oposite in direction.</p><pre class="codeinput">R_fit=R_fit(1:3,1:3)
 </pre><pre class="codeoutput">
 R_fit =
 
-    0.5039   -0.5141   -0.6941
-   -0.1571   -0.8447    0.5117
-   -0.8493   -0.1488   -0.5064
+    0.4966   -0.5180   -0.6965
+   -0.1575   -0.8428    0.5146
+   -0.8536   -0.1459   -0.5001
 
-</pre><p>These are the fitted stretch factors</p><pre class="codeinput">ellipStretchFit
+</pre><p>These are the fitted stretch factors</p><pre class="codeinput">ellipsStretchFit
 </pre><pre class="codeoutput">
-ellipStretchFit =
+ellipsStretchFit =
 
-    2.9888    2.0215    0.6127
+    3.0311    1.9956    0.5983
 
 </pre><p>Building a fitted (clean) ellipsoid for visualization</p><pre class="codeinput"><span class="comment">%Create sphere</span>
 [F_fit,V_fit,~]=geoSphere(4,1);
@@ -134,183 +134,153 @@ V_fit_t=V_fit;
 V_fit_t(:,end+1)=1;
 V_fit_t=(M*V_fit_t')'; <span class="comment">%Rotate polyhedron</span>
 V_fit=V_fit_t(:,1:end-1);
-</pre><p>Visualizing results</p><pre class="codeinput">MU=mean(X,1); <span class="comment">%Origin for vectors</span>
-a=[7 7]; <span class="comment">%Vector size</span>
-
-[Fq,Vq,Cq]=quiver3Dpatch(MU(1)*ones(1,3),MU(2)*ones(1,3),MU(3)*ones(1,3),R_fit(1,:),R_fit(2,:),R_fit(3,:),eye(3,3),a); <span class="comment">%Fitted vectors</span>
-[Fq2,Vq2,Cq2]=quiver3Dpatch(MU(1)*ones(1,3),MU(2)*ones(1,3),MU(3)*ones(1,3),R_true(1,:),R_true(2,:),R_true(3,:),eye(3,3),a); <span class="comment">%True vectors</span>
-
-figuremax(figColor,figColorDef);
+</pre><p>Visualizing results</p><pre class="codeinput">cFigure; hold <span class="string">on</span>;
 title(<span class="string">'The true (green) and fitted ellipsoid (red) and axis directions (solid, transparant respectively)'</span>,<span class="string">'FontSize'</span>,fontSize);
-xlabel(<span class="string">'X'</span>,<span class="string">'FontSize'</span>,fontSize); ylabel(<span class="string">'Y'</span>,<span class="string">'FontSize'</span>,fontSize); zlabel(<span class="string">'Z'</span>,<span class="string">'FontSize'</span>,fontSize);
-hold <span class="string">on</span>;
-
-plotV(Xn,<span class="string">'k.'</span>,<span class="string">'MarkerSize'</span>,15);
-
-hp=patch(<span class="string">'Faces'</span>,F,<span class="string">'Vertices'</span>,X);
-set(hp,<span class="string">'FaceColor'</span>,<span class="string">'g'</span>,<span class="string">'FaceAlpha'</span>,1,<span class="string">'EdgeColor'</span>,<span class="string">'k'</span>);
-
-hp=patch(<span class="string">'Faces'</span>,F_fit,<span class="string">'Vertices'</span>,V_fit);
-set(hp,<span class="string">'FaceColor'</span>,<span class="string">'r'</span>,<span class="string">'FaceAlpha'</span>,0.2,<span class="string">'EdgeColor'</span>,<span class="string">'none'</span>);
-
-patch(<span class="string">'Faces'</span>,Fq,<span class="string">'Vertices'</span>,Vq,<span class="string">'FaceColor'</span>,<span class="string">'flat'</span>,<span class="string">'FaceVertexCData'</span>,Cq,<span class="string">'FaceAlpha'</span>,1);
-patch(<span class="string">'Faces'</span>,Fq2,<span class="string">'Vertices'</span>,Vq2,<span class="string">'FaceColor'</span>,<span class="string">'flat'</span>,<span class="string">'FaceVertexCData'</span>,Cq2,<span class="string">'FaceAlpha'</span>,0.2,<span class="string">'EdgeColor'</span>,<span class="string">'none'</span>);
+plotV(Vn,<span class="string">'k.'</span>,<span class="string">'MarkerSize'</span>,15);
+gpatch(F,V,<span class="string">'gw'</span>,<span class="string">'k'</span>,1);
+gpatch(F_fit,V_fit,<span class="string">'rw'</span>,<span class="string">'none'</span>,0.2);
+quiverTriad(MU,R_fit,7,[],0.2);
+quiverTriad(MU,R_true,7,[],1);
+axisGeom;
 camlight(<span class="string">'headlight'</span>);
-axis <span class="string">equal</span>; view(3); axis <span class="string">vis3d</span>; axis <span class="string">tight</span>;  grid <span class="string">on</span>;
-set(gca,<span class="string">'FontSize'</span>,fontSize);
 drawnow;
-</pre><img vspace="5" hspace="5" src="HELP_ellipsoidFit_centered_01.png" alt=""> <p><img vspace="5" hspace="5" src="gibbVerySmall.gif" alt=""> </p><p><i><b>GIBBON</b></i> <a href="www.gibboncode.org">www.gibboncode.org</a></p><p><i>Kevin Mattheus Moerman</i>, <a href="gibbon.toolbox@gmail.com">gibbon.toolbox@gmail.com</a></p><p><i><b>GIBBON footer text</b></i></p><p>License: <a href="https://github.com/gibbonCode/GIBBON/blob/master/LICENSE">https://github.com/gibbonCode/GIBBON/blob/master/LICENSE</a></p><p>GIBBON: The Geometry and Image-based Bioengineering add-On. A toolbox for image segmentation, image-based modeling, meshing, and finite element analysis.</p><p>Copyright (C) 2018  Kevin Mattheus Moerman</p><p>This program is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.</p><p>This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for more details.</p><p>You should have received a copy of the GNU General Public License along with this program.  If not, see <a href="http://www.gnu.org/licenses/">http://www.gnu.org/licenses/</a>.</p><p class="footer"><br><a href="https://www.mathworks.com/products/matlab/">Published with MATLAB&reg; R2018a</a><br></p></div><!--
+</pre><img width="100%" height="auto" vspace="5" hspace="5" src="HELP_ellipsoidFit_centered_01.jpg" alt=""> <p><img vspace="5" hspace="5" src="gibbVerySmall.gif" alt=""> </p><p><i><b>GIBBON</b></i> <a href="www.gibboncode.org">www.gibboncode.org</a></p><p><i>Kevin Mattheus Moerman</i>, <a href="gibbon.toolbox@gmail.com">gibbon.toolbox@gmail.com</a></p><p><i><b>GIBBON footer text</b></i></p><p>License: <a href="https://github.com/gibbonCode/GIBBON/blob/master/LICENSE">https://github.com/gibbonCode/GIBBON/blob/master/LICENSE</a></p><p>GIBBON: The Geometry and Image-based Bioengineering add-On. A toolbox for image segmentation, image-based modeling, meshing, and finite element analysis.</p><p>Copyright (C) 2019  Kevin Mattheus Moerman</p><p>This program is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.</p><p>This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for more details.</p><p>You should have received a copy of the GNU General Public License along with this program.  If not, see <a href="http://www.gnu.org/licenses/">http://www.gnu.org/licenses/</a>.</p><p class="footer"><br><a href="https://www.mathworks.com/products/matlab/">Published with MATLAB&reg; R2019a</a><br></p></div><!--
 ##### SOURCE BEGIN #####
-%% HELP_ellipsoidFit_centered
-% Below is a demonstration of the features of the |ellipsoidFit_centered| function
-
-%% Syntax
-% |[M,ellipStretch,R,MU]=ellipsoidFit_centered(X,MU);|
-
-%% Description 
-% The |ellipsoidFit_centered| function fits an ellipsoid to data when the
-% ellipsoid centre is known. If the centre is not provided the mean of the
-% input point set will be assumed to be the centre. 
-
-%% Examples
-
-%% 
-clear; close all; clc;
-
-%%
-% Plot settings
-
-figColor='w';
-figColorDef='white';
-fontSize=11;
-
-%% Example: Using |ellipsoidFit_centered| to fit an ellipsoid to a point cloud with known centre
-
-%%
-% Simulating an ellipsoid with known directions
-
-% Ellipsoid axis stretch factors
-ellipStretchTrue=[pi 2 0.5];
-MU_true=[1 6 pi];
-
-% Create ellipsoid patch data
-[F,X,~]=geoSphere(3,1);
-x=X(:,1); 
-FX=mean(x(F),2);
-logicKeep=FX>0;
-F=F(logicKeep,:);
-indKeep=unique(F(:));
-indFix=nan(size(X,1),1);
-indFix(indKeep)=1:numel(indKeep);
-X=X(indKeep,:);
-F=indFix(F); 
-X=X.*ellipStretchTrue(ones(size(X,1),1),:);
-
-%Create Euler angles to set directions
-E=[0.25*pi 0.25*pi -0.25*pi];
-[R_true,~]=euler2DCM(E); %The true directions for X, Y and Z axis
-X=(R_true*X')'; %Rotate polyhedron
-
-X=X+MU_true(ones(size(X,1),1),:); %Centre points around mean
-
-%Add noise
-n_std=0.2;  %Standard deviation
-Xn=X+n_std.*randn(size(X));
-
-%%
-% This is the true axis system
-R_true
-
-%%
-% These are the true stretch factors
-ellipStretchTrue
-
-%%
-
-[M,ellipStretchFit,R_fit,MU]=ellipsoidFit_centered(Xn,MU_true);
-
-%%
-% This is the fitted axis system. The system axes should be colinear with
-% the true axes but can be oposite in direction. 
-R_fit=R_fit(1:3,1:3)
-
-%%
-% These are the fitted stretch factors
-ellipStretchFit
-
-%%
-% Building a fitted (clean) ellipsoid for visualization
-
-%Create sphere
-[F_fit,V_fit,~]=geoSphere(4,1);
-
-%Transforming sphere to ellipsoid
-V_fit_t=V_fit;
-V_fit_t(:,end+1)=1;
-V_fit_t=(M*V_fit_t')'; %Rotate polyhedron
-V_fit=V_fit_t(:,1:end-1);
-
-%%
-% Visualizing results
-
-MU=mean(X,1); %Origin for vectors
-a=[7 7]; %Vector size
-
-[Fq,Vq,Cq]=quiver3Dpatch(MU(1)*ones(1,3),MU(2)*ones(1,3),MU(3)*ones(1,3),R_fit(1,:),R_fit(2,:),R_fit(3,:),eye(3,3),a); %Fitted vectors
-[Fq2,Vq2,Cq2]=quiver3Dpatch(MU(1)*ones(1,3),MU(2)*ones(1,3),MU(3)*ones(1,3),R_true(1,:),R_true(2,:),R_true(3,:),eye(3,3),a); %True vectors
-
-figuremax(figColor,figColorDef);
-title('The true (green) and fitted ellipsoid (red) and axis directions (solid, transparant respectively)','FontSize',fontSize);
-xlabel('X','FontSize',fontSize); ylabel('Y','FontSize',fontSize); zlabel('Z','FontSize',fontSize);
-hold on;
-
-plotV(Xn,'k.','MarkerSize',15);
-
-hp=patch('Faces',F,'Vertices',X);
-set(hp,'FaceColor','g','FaceAlpha',1,'EdgeColor','k');
-
-hp=patch('Faces',F_fit,'Vertices',V_fit);
-set(hp,'FaceColor','r','FaceAlpha',0.2,'EdgeColor','none');
-
-patch('Faces',Fq,'Vertices',Vq,'FaceColor','flat','FaceVertexCData',Cq,'FaceAlpha',1);
-patch('Faces',Fq2,'Vertices',Vq2,'FaceColor','flat','FaceVertexCData',Cq2,'FaceAlpha',0.2,'EdgeColor','none');
-camlight('headlight');
-axis equal; view(3); axis vis3d; axis tight;  grid on;
-set(gca,'FontSize',fontSize);
-drawnow;
-
-%%
-%
-% <<gibbVerySmall.gif>>
-%
-% _*GIBBON*_
-% <www.gibboncode.org>
-%
-% _Kevin Mattheus Moerman_, <gibbon.toolbox@gmail.com>
- 
-%% 
-% _*GIBBON footer text*_ 
-% 
-% License: <https://github.com/gibbonCode/GIBBON/blob/master/LICENSE>
-% 
-% GIBBON: The Geometry and Image-based Bioengineering add-On. A toolbox for
-% image segmentation, image-based modeling, meshing, and finite element
-% analysis.
-% 
-% Copyright (C) 2018  Kevin Mattheus Moerman
-% 
-% This program is free software: you can redistribute it and/or modify
-% it under the terms of the GNU General Public License as published by
-% the Free Software Foundation, either version 3 of the License, or
-% (at your option) any later version.
-% 
-% This program is distributed in the hope that it will be useful,
-% but WITHOUT ANY WARRANTY; without even the implied warranty of
-% MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-% GNU General Public License for more details.
-% 
-% You should have received a copy of the GNU General Public License
-% along with this program.  If not, see <http://www.gnu.org/licenses/>.
+%% HELP_ellipsoidFit_centered
+% Below is a demonstration of the features of the |ellipsoidFit_centered| function
+
+%% Syntax
+% |[M,ellipStretch,R,MU]=ellipsoidFit_centered(X,MU);|
+
+%% Description 
+% The |ellipsoidFit_centered| function fits an ellipsoid to data when the
+% ellipsoid centre is known. If the centre is not provided the mean of the
+% input point set will be assumed to be the centre. 
+
+%% Examples
+
+%% 
+clear; close all; clc;
+
+%%
+% Plot settings
+
+figColor='w';
+figColorDef='white';
+fontSize=11;
+
+%% Example: Using |ellipsoidFit_centered| to fit an ellipsoid to a point cloud with known centre
+
+%%
+% Simulating an ellipsoid with known directions
+
+% Ellipsoid axis stretch factors
+ellipStretchTrue=[pi 2 0.5];
+MU_true=[1 6 pi];
+
+% Create ellipsoid patch data
+[F,V,~]=geoSphere(3,1);
+v=V(:,1); 
+FX=mean(v(F),2);
+logicKeep=FX>0;
+F=F(logicKeep,:);
+indKeep=unique(F(:));
+indFix=nan(size(V,1),1);
+indFix(indKeep)=1:numel(indKeep);
+V=V(indKeep,:);
+F=indFix(F); 
+V=V.*ellipStretchTrue(ones(size(V,1),1),:);
+
+%Create Euler angles to set directions
+E=[0.25*pi 0.25*pi -0.25*pi];
+[R_true,~]=euler2DCM(E); %The true directions for X, Y and Z axis
+V=(R_true*V')'; %Rotate polyhedron
+
+V=V+MU_true(ones(size(V,1),1),:); %Centre points around mean
+
+%Add noise
+n_std=0.2;  %Standard deviation
+Vn=V+n_std.*randn(size(V));
+
+%%
+% This is the true axis system
+R_true
+
+%%
+% These are the true stretch factors
+ellipStretchTrue
+
+%%
+
+[M,ellipsStretchFit,R_fit,MU]=ellipsoidFit_centered(Vn,MU_true);
+
+%%
+% This is the fitted axis system. The system axes should be colinear with
+% the true axes but can be oposite in direction. 
+R_fit=R_fit(1:3,1:3)
+
+%%
+% These are the fitted stretch factors
+ellipsStretchFit
+
+%%
+% Building a fitted (clean) ellipsoid for visualization
+
+%Create sphere
+[F_fit,V_fit,~]=geoSphere(4,1);
+
+%Transforming sphere to ellipsoid
+V_fit_t=V_fit;
+V_fit_t(:,end+1)=1;
+V_fit_t=(M*V_fit_t')'; %Rotate polyhedron
+V_fit=V_fit_t(:,1:end-1);
+
+%%
+% Visualizing results
+
+cFigure; hold on; 
+title('The true (green) and fitted ellipsoid (red) and axis directions (solid, transparant respectively)','FontSize',fontSize);
+plotV(Vn,'k.','MarkerSize',15);
+gpatch(F,V,'gw','k',1);
+gpatch(F_fit,V_fit,'rw','none',0.2);
+quiverTriad(MU,R_fit,7,[],0.2);
+quiverTriad(MU,R_true,7,[],1);
+axisGeom;
+camlight('headlight');
+drawnow;
+
+%%
+%
+% <<gibbVerySmall.gif>>
+%
+% _*GIBBON*_
+% <www.gibboncode.org>
+%
+% _Kevin Mattheus Moerman_, <gibbon.toolbox@gmail.com>
+ 
+%% 
+% _*GIBBON footer text*_ 
+% 
+% License: <https://github.com/gibbonCode/GIBBON/blob/master/LICENSE>
+% 
+% GIBBON: The Geometry and Image-based Bioengineering add-On. A toolbox for
+% image segmentation, image-based modeling, meshing, and finite element
+% analysis.
+% 
+% Copyright (C) 2019  Kevin Mattheus Moerman
+% 
+% This program is free software: you can redistribute it and/or modify
+% it under the terms of the GNU General Public License as published by
+% the Free Software Foundation, either version 3 of the License, or
+% (at your option) any later version.
+% 
+% This program is distributed in the hope that it will be useful,
+% but WITHOUT ANY WARRANTY; without even the implied warranty of
+% MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+% GNU General Public License for more details.
+% 
+% You should have received a copy of the GNU General Public License
+% along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 ##### SOURCE END #####
 --></body></html>

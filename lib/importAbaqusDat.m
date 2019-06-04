@@ -92,12 +92,20 @@ for qStep=1:1:1
         if optionStruct.getNodeData==1 %Get node data
             dataTypeStr=optionStruct.nodeData.dataTypeStr;
             startTarget=optionStruct.nodeData.startTarget;
-            abaqusData.STEP(qStep).INCREMENT(qIncrement).nodeOutput=getDataField(T_sub,dataTypeStr,startTarget,stopTarget);
-        end        
+            try
+                abaqusData.STEP(qStep).INCREMENT(qIncrement).nodeOutput=getDataField(T_sub,dataTypeStr,startTarget,stopTarget);
+            catch
+                abaqusData.STEP(qStep).INCREMENT(qIncrement).nodeOutput=NaN;
+            end 
+        end
         if optionStruct.getElementData==1 %Get element data
             dataTypeStr=optionStruct.elementData.dataTypeStr;
             startTarget=optionStruct.elementData.startTarget;
-            abaqusData.STEP(qStep).INCREMENT(qIncrement).elementOutput=getDataField(T_sub,dataTypeStr,startTarget,stopTarget);
+            try
+                abaqusData.STEP(qStep).INCREMENT(qIncrement).elementOutput=getDataField(T_sub,dataTypeStr,startTarget,stopTarget);
+            catch
+                abaqusData.STEP(qStep).INCREMENT(qIncrement).elementOutput=NaN;
+            end
         end                
     end
 end
@@ -123,7 +131,11 @@ if dataOutput==1 %Element data found
         headerSet=headerSet(~logicRemove);
         numHeadersKeep=numel(headerSet);
         s=T_sub(dataOutputStartLines(q_dataOutput)+3:dataOutputEndLines(q_dataOutput)); %Data text field        
-        D=cell2mat(cellfun(@(x) sscanf(x,'%f')',s,'uniformOutput',0)); %Data array        
+        try
+            D=cell2mat(cellfun(@(x) sscanf(x,'%f')',s,'uniformOutput',0)); %Data array
+        catch %Alternative which ignores character components
+            D=cell2mat(cellfun(@str2double,regexp(s,'([\+-]?((\d*\.\d+)|\d+))(E[\+-]?\d+)?','match'),'UniformOutput',0)); %Data array
+        end
         
         %Create output structure with subfields names after headers
         for q=1:1:numHeadersKeep
@@ -134,6 +146,7 @@ if dataOutput==1 %Element data found
     end
 end
 end
+
 %% 
 % _*GIBBON footer text*_ 
 % 

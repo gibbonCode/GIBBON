@@ -16,8 +16,8 @@
 % * indentation
 % * contact, sliding, friction
 % * rigid body constraints
-% * tetrahedral elements, tet4
-% * triangular elements, tri3
+% * hexahedral elements, hex8
+% * quadrilateral elements, quad4
 % * shell elements
 % * sphere
 % * static, solid
@@ -51,28 +51,30 @@ febioLogFileName_disp=[febioFebFileNamePart,'_disp_out.txt']; %Log file name for
 
 % Sphere parameters
 sphereRadius=5; 
-nRefine=3;
+pointSpacing=0.4; 
 
 % Ground plate parameters
-tubeRadius=0.65*sphereRadius; 
+tubeRadius=0.75*sphereRadius; 
 inletRadius=tubeRadius/3;
-tubeLength=sphereRadius*4; 
+tubeLength=sphereRadius*5; 
 
 % Material parameter set
 
 materialType=1; 
 
-c1=2e-3; %Shear-modulus-like parameter
+c1=1e-3; %Shear-modulus-like parameter
 m1=2; %Material parameter setting degree of non-linearity
 k_factor=10; %Bulk modulus factor 
 k=c1*k_factor; %Bulk modulus
-g1=1/2; %Viscoelastic QLV proportional coefficient
+g1=0.5; %Viscoelastic QLV proportional coefficient
 t1=12; %Viscoelastic QLV time coefficient
-materialDensity=1e-9;
+materialDensity=1e-9*100000; %Density
 
 % FEA control settings
-timeTotal=60;
-numTimeSteps=15; %Number of time steps desired
+timeRamp=1; %Time for ramping up body force from 0-100%
+timeTotal=5; %Total simulation time
+stepSizeDesired=0.25; %Desired time increment size
+numTimeSteps=round(timeTotal/stepSizeDesired); %Number of time steps desired
 max_refs=25; %Max reforms
 max_ups=0; %Set to zero to use full-Newton iterations
 opt_iter=10; %Optimum number of iterations
@@ -80,64 +82,45 @@ max_retries=10; %Maximum number of retires
 step_size=timeTotal/numTimeSteps;
 dtmin=(timeTotal/numTimeSteps)/100; %Minimum time step size
 dtmax=timeTotal/(numTimeSteps); %Maximum time step size
-symmetric_stiffness=0;
+symmetric_stiffness=0; 
 min_residual=1e-20;
 analysisType='dynamic';
 
-contactPenalty=5;
+%Contact parameters
+two_pass=1;
+contactPenalty=25;
 fric_coeff=0.1; 
 
-bodyLoadMagnitude=0.032;
+bodyLoadMagnitude=2;
 
 %% Creating model geometry and mesh
-% 
+% Creating a solid hexahedral mesh sphere
 
-% Create hemi-sphere mesh
-[F_blob,V_blob]=geoSphere(nRefine,sphereRadius);
-C_blob=ones(size(F_blob,1),1);
-pointSpacingBlob=mean(patchEdgeLengths(F_blob,V_blob));
+%Control settings
+optionStruct.sphereRadius=sphereRadius;
+optionStruct.coreRadius=sphereRadius.*0.75;
+optionStruct.numElementsCore=ceil((sphereRadius/2)/pointSpacing); 
+optionStruct.numElementsMantel=ceil((sphereRadius-optionStruct.coreRadius)/(2*pointSpacing)); 
+optionStruct.makeHollow=0;
+optionStruct.outputStructType=2;
 
-%%
-% Visualize hemi-sphere surface
+%Creating sphere
+[meshOutput]=hexMeshSphere(optionStruct);
 
-cFigure; hold on;
-gtitle('The sphere surface mesh',fontSize);
-gpatch(F_blob,V_blob,C_blob,'k',0.85);
-patchNormPlot(F_blob,V_blob);
-axisGeom(gca,fontSize);
-colormap(gjet); icolorbar;
-camlight headlight; 
-drawnow; 
-
-%% 
-% Using tetgen to create a tetrahedral mesh
-
-% Tetgen input structure
-inputStruct.stringOpt='-pq1.2AaY';
-inputStruct.Faces=F_blob;
-inputStruct.Nodes=V_blob;
-inputStruct.holePoints=[];
-inputStruct.faceBoundaryMarker=C_blob; %Face boundary markers
-inputStruct.regionPoints=getInnerPoint(F_blob,V_blob); %region points
-inputStruct.regionA=tetVolMeanEst(F_blob,V_blob);
-inputStruct.minRegionMarker=2; %Minimum region marker
- 
-% Create tetrahedral mesh using tetGen 
-[meshOutput]=runTetGen(inputStruct); %Run tetGen 
- 
 % Access model element and patch data
-Fb_blob=fliplr(meshOutput.facesBoundary);
+Fb_blob=meshOutput.facesBoundary;
 Cb_blob=meshOutput.boundaryMarker;
 V_blob=meshOutput.nodes;
 E_blob=meshOutput.elements;
 
 %%
-% Visualize blob mesh
+% Visualize mesh
 
 hFig=cFigure; 
 subplot(1,2,1); hold on;
-gpatch(Fb_blob,V_blob,Cb_blob,'k',0.8);
-patchNormPlot(Fb_blob,V_blob);
+title('Boundary surfaces','FontSize',fontSize);
+gpatch(Fb_blob,V_blob,Cb_blob,'k',0.5);
+% patchNormPlot(Fb,V);
 axisGeom(gca,fontSize);
 colormap(gjet); icolorbar;
 camlight headlight; 
@@ -152,7 +135,7 @@ drawnow;
 
 %% Creating tube model
 % 
-pointSpacingTube=pointSpacingBlob/2;
+pointSpacingTube=mean(patchEdgeLengths(Fb_blob,V_blob))/2;
 t=linspace(-0.1*pi,pi,100);
 x=inletRadius*sin(t);
 y=inletRadius*cos(t);
@@ -160,6 +143,7 @@ V_curve_tube=[x(:) y(:) zeros(size(x(:)))];
 V_curve_tube(:,1)=V_curve_tube(:,1)-inletRadius;
 V_curve_tube(:,2)=V_curve_tube(:,2)+inletRadius+tubeRadius;
 V_curve_tube(end+1,:)=[-tubeLength tubeRadius 0];
+V_curve_tube(end+1,:)=[-tubeLength tubeRadius/6 0];
 nResample=ceil(max(pathLength(V_curve_tube))./pointSpacingTube);
 V_curve_tube=evenlySampleCurve(V_curve_tube,nResample,'pchip',0);
 
@@ -188,7 +172,7 @@ center_of_mass_tube=mean(V_tube,1);
 % Visualizing plate mesh
 
 cFigure; hold on;
-gtitle('The plate surface mesh',fontSize);
+gtitle('The surface meshes',fontSize);
 gpatch(Fb_blob,V_blob,'kw','none',0.5);
 gpatch(F_tube,V_tube,'bw','none',0.5);
 % patchNormPlot(F_tube,V_tube);
@@ -222,7 +206,7 @@ F_contact_blob=Fb_blob;
 % Visualize contact surfaces
 
 cFigure; hold on;
-title('Tube blob contact pair','fontsize',fontSize);
+title('The contact pair','fontsize',fontSize);
 hl(1)=gpatch(F_tube,V,'rw','k',1);
 patchNormPlot(F_tube,V);
 hl(2)=gpatch(F_contact_blob,V,'gw','k',1);
@@ -260,6 +244,15 @@ febio_spec.Control.min_residual=min_residual;
 
 %Material section
 switch materialType
+    case 0
+        febio_spec.Material.material{1}.ATTR.type='Ogden unconstrained';
+        febio_spec.Material.material{1}.ATTR.id=1;
+        febio_spec.Material.material{1}.c1=c1;
+        febio_spec.Material.material{1}.m1=m1;
+        febio_spec.Material.material{1}.c2=c1;
+        febio_spec.Material.material{1}.m2=-m1;
+        febio_spec.Material.material{1}.cp=k;
+        febio_spec.Material.material{1}.density=materialDensity;
     case 1
         %Viscoelastic part
         febio_spec.Material.material{1}.ATTR.type='viscoelastic';
@@ -277,15 +270,6 @@ switch materialType
         febio_spec.Material.material{1}.elastic{1}.m2=-m1;
         febio_spec.Material.material{1}.elastic{1}.cp=k;
         febio_spec.Material.material{1}.elastic{1}.density=materialDensity;
-    case 0
-        febio_spec.Material.material{1}.ATTR.type='Ogden unconstrained';
-        febio_spec.Material.material{1}.ATTR.id=1;
-        febio_spec.Material.material{1}.c1=c1;
-        febio_spec.Material.material{1}.m1=m1;
-        febio_spec.Material.material{1}.c2=c1;
-        febio_spec.Material.material{1}.m2=-m1;
-        febio_spec.Material.material{1}.cp=k;
-        febio_spec.Material.material{1}.density=materialDensity;
 end
 febio_spec.Material.material{2}.ATTR.type='rigid body';
 febio_spec.Material.material{2}.ATTR.id=2;
@@ -299,7 +283,7 @@ febio_spec.Geometry.Nodes{1}.node.ATTR.id=(1:size(V,1))'; %The node id's
 febio_spec.Geometry.Nodes{1}.node.VAL=V; %The nodel coordinates
 
 % -> Elements
-febio_spec.Geometry.Elements{1}.ATTR.type='tet4'; %Element type of this set
+febio_spec.Geometry.Elements{1}.ATTR.type='hex8'; %Element type of this set
 febio_spec.Geometry.Elements{1}.ATTR.mat=1; %material index for this set 
 febio_spec.Geometry.Elements{1}.ATTR.name='Blob'; %Name of the element set
 febio_spec.Geometry.Elements{1}.elem.ATTR.id=(1:1:size(E_blob,1))'; %Element id's
@@ -317,8 +301,8 @@ febio_spec.Geometry.Surface{1}.quad4.ATTR.lid=(1:1:size(F_tube,1))';
 febio_spec.Geometry.Surface{1}.quad4.VAL=F_tube;
 
 febio_spec.Geometry.Surface{2}.ATTR.name='contact_slave1';
-febio_spec.Geometry.Surface{2}.tri3.ATTR.lid=(1:1:size(F_contact_blob,1))';
-febio_spec.Geometry.Surface{2}.tri3.VAL=F_contact_blob;
+febio_spec.Geometry.Surface{2}.quad4.ATTR.lid=(1:1:size(F_contact_blob,1))';
+febio_spec.Geometry.Surface{2}.quad4.VAL=F_contact_blob;
 
 % -> Surface pairs
 febio_spec.Geometry.SurfacePair{1}.ATTR.name='Contact1_tube_blob';
@@ -334,10 +318,15 @@ febio_spec.Geometry.SurfacePair{1}.slave.ATTR.surface=febio_spec.Geometry.Surfac
 % febio_spec.Boundary.fix{2}.ATTR.bc='z';
 % febio_spec.Boundary.fix{2}.ATTR.node_set=febio_spec.Geometry.NodeSet{1}.ATTR.name;
 
-
+%Loads
 febio_spec.Loads.body_load{1}.ATTR.type='const';
 febio_spec.Loads.body_load{1}.x.VAL=bodyLoadMagnitude;
 febio_spec.Loads.body_load{1}.x.ATTR.lc=1;
+
+%LoadData section
+febio_spec.LoadData.loadcurve{1}.ATTR.id=1;
+febio_spec.LoadData.loadcurve{1}.ATTR.type='linear';
+febio_spec.LoadData.loadcurve{1}.point.VAL=[0 0; timeRamp 1];
 
 % -> Prescribed boundary conditions on the rigid body
 febio_spec.Boundary.rigid_body{1}.ATTR.mat=2;
@@ -351,20 +340,20 @@ febio_spec.Boundary.rigid_body{1}.fixed{6}.ATTR.bc='Rz';
 %Contact section
 febio_spec.Contact.contact{1}.ATTR.surface_pair=febio_spec.Geometry.SurfacePair{1}.ATTR.name;
 febio_spec.Contact.contact{1}.ATTR.type='sliding-elastic';
-febio_spec.Contact.contact{1}.two_pass=1;
-febio_spec.Contact.contact{1}.laugon=1;
+febio_spec.Contact.contact{1}.two_pass=two_pass;
+febio_spec.Contact.contact{1}.laugon=0;
 febio_spec.Contact.contact{1}.tolerance=0.2;
 febio_spec.Contact.contact{1}.gaptol=0;
 febio_spec.Contact.contact{1}.minaug=1;
 febio_spec.Contact.contact{1}.maxaug=10;
 febio_spec.Contact.contact{1}.search_tol=0.01;
-febio_spec.Contact.contact{1}.search_radius=0.1;
+febio_spec.Contact.contact{1}.search_radius=pointSpacing/10;
 febio_spec.Contact.contact{1}.symmetric_stiffness=0;
 febio_spec.Contact.contact{1}.auto_penalty=1;
 febio_spec.Contact.contact{1}.penalty=contactPenalty;
 febio_spec.Contact.contact{1}.fric_coeff=fric_coeff;
 
-%Output section 
+%Output section
 % -> log file
 febio_spec.Output.logfile.ATTR.file=febioLogFileName;
 febio_spec.Output.logfile.node_data{1}.ATTR.file=febioLogFileName_disp;

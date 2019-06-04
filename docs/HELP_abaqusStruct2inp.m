@@ -178,15 +178,6 @@ fileName=fullfile(savePath,'tempModel.inp');
 %
 textView(fileName);
 
-%%
-% NOTE: The figure below does not render in documentation due to a
-% MATLAB bug (or limitation). The code |[hFig]=inpView(fileName);| is
-% therefore suppressed.
-%%
-% |[hFig]=inpView(fileName);|
-
-% inpView(abaqus_spec)
-
 %% 
 %
 % <<gibbVerySmall.gif>>

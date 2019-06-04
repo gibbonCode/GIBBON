@@ -324,8 +324,6 @@ abaqusStruct2inp(abaqus_spec,abaqusInpFileName);
 
 %%
 % textView(abaqusInpFileName);
-pause(1);
-system(['atom ',abaqusInpFileName])
  
 %% 
 %

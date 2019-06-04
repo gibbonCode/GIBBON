@@ -6,7 +6,7 @@
    <!--
 This HTML was auto-generated from MATLAB code.
 To make changes, update the MATLAB code and republish this document.
-      --><title>pointLocationTR</title><meta name="generator" content="MATLAB 9.4"><link rel="schema.DC" href="http://purl.org/dc/elements/1.1/"><meta name="DC.date" content="2018-06-25"><meta name="DC.source" content="HELP_pointLocationTR.m"><style type="text/css">
+      --><title>pointLocationTR</title><meta name="generator" content="MATLAB 9.6"><link rel="schema.DC" href="http://purl.org/dc/elements/1.1/"><meta name="DC.date" content="2019-06-03"><meta name="DC.source" content="HELP_pointLocationTR.m"><style type="text/css">
 html,body,div,span,applet,object,iframe,h1,h2,h3,h4,h5,h6,p,blockquote,pre,a,abbr,acronym,address,big,cite,code,del,dfn,em,font,img,ins,kbd,q,s,samp,small,strike,strong,sub,sup,tt,var,b,u,i,center,dl,dt,dd,ol,ul,li,fieldset,form,label,legend,table,caption,tbody,tfoot,thead,tr,th,td{margin:0;padding:0;border:0;outline:0;font-size:100%;vertical-align:baseline;background:transparent}body{line-height:1}ol,ul{list-style:none}blockquote,q{quotes:none}blockquote:before,blockquote:after,q:before,q:after{content:'';content:none}:focus{outine:0}ins{text-decoration:none}del{text-decoration:line-through}table{border-collapse:collapse;border-spacing:0}
 
 html { min-height:100%; margin-bottom:1px; }
@@ -66,7 +66,7 @@ table td { padding:7px 5px; text-align:left; vertical-align:top; border:1px soli
 
 
 
-  </style></head><body><div class="content"><h1>pointLocationTR</h1><!--introduction--><p>Below is a demonstration of the features of the <tt>pointLocationTR</tt> function</p><!--/introduction--><h2>Contents</h2><div><ul><li><a href="#3">FINDING POINTS INSIDE A TESSELATION</a></li><li><a href="#10">EXAMPLE USING BARY CENTRIC COORDINATE OUTPUT TO MAP POINTS IN A DEFORMED MODEL</a></li><li><a href="#12">EXAMPLE USE FOR FINDING VOXELS INSIDE TETRHEDRAL ELEMENTS</a></li><li><a href="#20">EXAMPLE USE FOR INTERPOLATION OF IMAGE DATA ONTO VOLUME ELEMENTS</a></li></ul></div><pre class="codeinput">clear; close <span class="string">all</span>; clc;
+  </style></head><body><div class="content"><h1>pointLocationTR</h1><!--introduction--><p>Below is a demonstration of the features of the <tt>pointLocationTR</tt> function</p><!--/introduction--><h2>Contents</h2><div><ul><li><a href="#1">Syntax</a></li><li><a href="#2">Description</a></li><li><a href="#3">Examples</a></li><li><a href="#5">Example: Finding points inside a triangulated mesh</a></li><li><a href="#9">Example: Finding points inside a tetrahedral mesh</a></li><li><a href="#16">Example: Using barycentric coordinates to interpolate data (map points in deformed model)</a></li><li><a href="#18">Example: Finding voxels inside a tetrahedral mesh</a></li><li><a href="#25">Example: Interpolation of image data onto volume elements</a></li></ul></div><h2 id="1">Syntax</h2><p><tt>[TI,BC]=pointLocationTR(TR,QP,distCropOpt,chullCropOpt,waitbarOpt,toleranceMagnitude);</tt> <tt>[TI,BC]=pointLocationTR(TR,QP,optionStruct);</tt></p><h2 id="2">Description</h2><p>This function finds the triangles or tetrahedrons in which the query points QP are contained. In addition it outputs the barycentric coordinates.</p><p>Default options: optionStructDef.distCropOpt=1; optionStructDef.chullCropOpt=1; optionStructDef.waitbarOpt=1; optionStructDef.toleranceMagnitude=0;</p><h2 id="3">Examples</h2><pre class="codeinput">clear; close <span class="string">all</span>; clc;
 </pre><p>Plot settings</p><pre class="codeinput">fontSize=15;
 faceColor1=<span class="string">'g'</span>;
 faceColor2=<span class="string">'r'</span>;
@@ -75,9 +75,48 @@ faceAlpha2=1;
 edgeColor=0.4*ones(1,3);
 edgeWidth=2;
 markerSize=2;
-cMap=jet(250);
-</pre><h2 id="3">FINDING POINTS INSIDE A TESSELATION</h2><p>Create a test tesselation</p><pre class="codeinput">r=1; <span class="comment">%Radius of tetrahedron circumsphere</span>
-[V,F]=platonic_solid(1,r);
+cMap=gjet(250);
+</pre><h2 id="5">Example: Finding points inside a triangulated mesh</h2><pre class="codeinput"><span class="comment">%Boundary 1</span>
+ns=150;
+t=linspace(0,2*pi,ns);
+t=t(1:end-1);
+r=6+2.*sin(5*t);
+[x,y] = pol2cart(t,r);
+V1=[x(:) y(:)];
+
+<span class="comment">%Boundary 2</span>
+[x,y] = pol2cart(t,ones(size(t)));
+V2=[x(:) y(:)+4];
+
+<span class="comment">%Boundary 3</span>
+[x,y] = pol2cart(t,2*ones(size(t)));
+V3=[x(:) y(:)-0.5];
+
+regionCell={V1,V2,V3}; <span class="comment">%A region between V1 and V2 (V2 forms a hole inside V1)</span>
+pointSpacing=1;
+[F,V]=regionTriMesh2D(regionCell,pointSpacing,1,0);
+
+V(:,3)=sin(V(:,1)); <span class="comment">%Z coordinate</span>
+
+[~,QP]=subtri(F,V,2);
+</pre><p>Convert tesselation to triangulation class</p><pre class="codeinput">TR = triangulation(F,V);
+</pre><p>Use <tt>pointLocationTR</tt> to test points</p><pre class="codeinput">optionStruct.toleranceMagnitude=1e-3;
+[ti,bc]=pointLocationTR(TR,QP,optionStruct);
+L=any(isnan(bc),2);
+</pre><pre class="codeinput">logicPlot=~isnan(ti); <span class="comment">%Point selection logic</span>
+
+cFigure;
+hold <span class="string">on</span>;
+gpatch(F,V,<span class="string">'kw'</span>,<span class="string">'k'</span>,0.5);
+plotV(QP,<span class="string">'k.'</span>,<span class="string">'markerSize'</span>,25);
+plotV(QP(L,:),<span class="string">'r.'</span>,<span class="string">'markerSize'</span>,50);
+scatterV(QP(logicPlot,:),50,ti(logicPlot),<span class="string">'fill'</span>,<span class="string">'markerEdgeColor'</span>,<span class="string">'k'</span>);
+axisGeom;
+colormap(cMap(randperm(size(cMap,1))',:));
+camlight <span class="string">headlight</span>;
+drawnow;
+</pre><img width="100%" height="auto" vspace="5" hspace="5" src="HELP_pointLocationTR_01.jpg" alt=""> <h2 id="9">Example: Finding points inside a tetrahedral mesh</h2><p>Create a test tesselation</p><pre class="codeinput">r=1; <span class="comment">%Radius of tetrahedron circumsphere</span>
+[V,~]=platonic_solid(1,r);
 
 E=[1 2 3 4];
 
@@ -106,7 +145,7 @@ view(3); grid <span class="string">on</span>; axis <span class="string">equal</s
 view([-50,12])
 set(gca,<span class="string">'FontSize'</span>,fontSize);
 drawnow;
-</pre><img vspace="5" hspace="5" src="HELP_pointLocationTR_01.png" alt=""> <p>Convert tesselation to triangulation class</p><pre class="codeinput">TR = triangulation(E,V);
+</pre><img width="100%" height="auto" vspace="5" hspace="5" src="HELP_pointLocationTR_02.jpg" alt=""> <p>Convert tesselation to triangulation class</p><pre class="codeinput">TR = triangulation(E,V);
 </pre><p>Use <tt>pointLocationTR</tt> to test points</p><pre class="codeinput">[ti,bc]=pointLocationTR(TR,QP,1,1,1);
 </pre><p>Plot results and color points to the element number they are contained in</p><pre class="codeinput">cFigure;
 title(<span class="string">'Interior query points colored to element index'</span>,<span class="string">'FontSize'</span>,fontSize);
@@ -123,7 +162,7 @@ view(3); axis <span class="string">equal</span>; axis <span class="string">tight
 view([-50,12])
 set(gca,<span class="string">'FontSize'</span>,fontSize);
 drawnow;
-</pre><img vspace="5" hspace="5" src="HELP_pointLocationTR_02.png" alt=""> <h2 id="10">EXAMPLE USING BARY CENTRIC COORDINATE OUTPUT TO MAP POINTS IN A DEFORMED MODEL</h2><p>Changing shape</p><pre class="codeinput">V=TR.Points;
+</pre><img width="100%" height="auto" vspace="5" hspace="5" src="HELP_pointLocationTR_03.jpg" alt=""> <h2 id="16">Example: Using barycentric coordinates to interpolate data (map points in deformed model)</h2><p>Changing shape</p><pre class="codeinput">V=TR.Points;
 V(:,1)=V(:,1)+0.5.*sin(pi*V(:,3));
 V(:,2)=V(:,2)+0.5.*cos(pi*V(:,3));
 
@@ -144,7 +183,7 @@ view(3); axis <span class="string">equal</span>; axis <span class="string">tight
 view([-50,12])
 set(gca,<span class="string">'FontSize'</span>,fontSize);
 drawnow;
-</pre><img vspace="5" hspace="5" src="HELP_pointLocationTR_03.png" alt=""> <h2 id="12">EXAMPLE USE FOR FINDING VOXELS INSIDE TETRHEDRAL ELEMENTS</h2><p>Simulate image data</p><pre class="codeinput">load <span class="string">mri</span>;
+</pre><img width="100%" height="auto" vspace="5" hspace="5" src="HELP_pointLocationTR_04.jpg" alt=""> <h2 id="18">Example: Finding voxels inside a tetrahedral mesh</h2><p>Simulate image data</p><pre class="codeinput">load <span class="string">mri</span>;
 M=double(squeeze(D)); <span class="comment">%example image data set</span>
 clear <span class="string">D</span>;
 M=M(1:2:end,1:2:end,:);
@@ -160,16 +199,15 @@ logicVoxels=(M&gt;T_low);
 Cv=Cv./max(Cv(:));
 [Vv(:,1),Vv(:,2),Vv(:,3)]=im2cart(Vv(:,2),Vv(:,1),Vv(:,3),voxelSize);
 </pre><p>Simulate a tesselated model</p><pre class="codeinput">Vv_mean=mean(Vv,1);
-[V,F]=platonic_solid(1,max(FOV)/2);
+[V,~]=platonic_solid(1,max(FOV)/2);
 V=V+Vv_mean(ones(1,size(V,1)),:);
 E=[1 2 3 4];
 
 n=4;
-E=E; V=V;
 <span class="keyword">for</span> q=1:1:n
     [E,V]=subTet(E,V,1);
 <span class="keyword">end</span>
-C=[1:size(E,1)]';
+C=(1:size(E,1))';
 </pre><pre class="codeinput">[F,CF]=element2patch(E,C);
 
 cFigure;
@@ -183,7 +221,7 @@ hp1= patch(<span class="string">'Faces'</span>,Fv,<span class="string">'Vertices
 colormap(cMap); colorbar;
 view(3); grid <span class="string">on</span>; axis <span class="string">equal</span>; axis <span class="string">tight</span>;
 drawnow;
-</pre><img vspace="5" hspace="5" src="HELP_pointLocationTR_04.png" alt=""> <p>Setting up query points, in this case voxel coordinates</p><pre class="codeinput">[Jv,Iv,Kv]=meshgrid(1:1:size(M,2),1:1:size(M,1),1:1:size(M,3)); <span class="comment">%Voxel image coordinates</span>
+</pre><img width="100%" height="auto" vspace="5" hspace="5" src="HELP_pointLocationTR_05.jpg" alt=""> <p>Setting up query points, in this case voxel coordinates</p><pre class="codeinput">[Jv,Iv,Kv]=meshgrid(1:1:size(M,2),1:1:size(M,1),1:1:size(M,3)); <span class="comment">%Voxel image coordinates</span>
 [Xv,Yv,Zv]=im2cart(Iv,Jv,Kv,voxelSize); <span class="comment">%Voxel cartesian coordinates</span>
 Vq=[Xv(:) Yv(:) Zv(:)];
 </pre><p>Find what elements the voxels are contained in</p><pre class="codeinput">TR = triangulation(E,V);
@@ -207,7 +245,7 @@ patch(<span class="string">'Faces'</span>,Fm,<span class="string">'Vertices'</sp
 colormap <span class="string">gray</span>; colorbar;
 axis <span class="string">equal</span>; view(3); axis <span class="string">tight</span>;  grid <span class="string">on</span>;  set(gca,<span class="string">'FontSize'</span>,fontSize);
 drawnow;
-</pre><img vspace="5" hspace="5" src="HELP_pointLocationTR_05.png" alt=""> <h2 id="20">EXAMPLE USE FOR INTERPOLATION OF IMAGE DATA ONTO VOLUME ELEMENTS</h2><p>Hence deriving image based intensity values becomes a matter of averaging across each element index label. If the voxels are sufficiently small with respect to the elements then this method actually partially takes into account partial voluming effects. i.e. the intensity of an element becomes the mean of the voxels contained within it which in some cases is more accurate then an interpolation which does not take into account the volumetric nature of the mesh (e.g. methods based on sampling/interpolating the intensities at the centre point or nodal points of the mesh only instead).</p><pre class="codeinput">[E_color]=imlabelMean(M,ML); <span class="comment">%The image based element colors</span>
+</pre><img width="100%" height="auto" vspace="5" hspace="5" src="HELP_pointLocationTR_06.jpg" alt=""> <h2 id="25">Example: Interpolation of image data onto volume elements</h2><p>Hence deriving image based intensity values becomes a matter of averaging across each element index label. If the voxels are sufficiently small with respect to the elements then this method actually partially takes into account partial voluming effects. i.e. the intensity of an element becomes the mean of the voxels contained within it which in some cases is more accurate then an interpolation which does not take into account the volumetric nature of the mesh (e.g. methods based on sampling/interpolating the intensities at the centre point or nodal points of the mesh only instead).</p><pre class="codeinput">[E_color]=imlabelMean(M,ML); <span class="comment">%The image based element colors</span>
 </pre><p>Plotting results</p><pre class="codeinput">cFigure;
 title(<span class="string">'The image data and the tesselation colored towards the image data'</span>,<span class="string">'FontSize'</span>,fontSize);
 xlabel(<span class="string">'X'</span>,<span class="string">'FontSize'</span>,fontSize);ylabel(<span class="string">'Y'</span>,<span class="string">'FontSize'</span>,fontSize); zlabel(<span class="string">'Z'</span>,<span class="string">'FontSize'</span>,fontSize);
@@ -240,286 +278,353 @@ patch(<span class="string">'Faces'</span>,Fm,<span class="string">'Vertices'</sp
 colormap <span class="string">gray</span>; colorbar;
 axis <span class="string">equal</span>; view(3); axis <span class="string">tight</span>;  grid <span class="string">on</span>;  set(gca,<span class="string">'FontSize'</span>,fontSize);
 drawnow;
-</pre><img vspace="5" hspace="5" src="HELP_pointLocationTR_06.png" alt=""> <p><img vspace="5" hspace="5" src="gibbVerySmall.gif" alt=""> </p><p><i><b>GIBBON</b></i> <a href="www.gibboncode.org">www.gibboncode.org</a></p><p><i>Kevin Mattheus Moerman</i>, <a href="gibbon.toolbox@gmail.com">gibbon.toolbox@gmail.com</a></p><p><i><b>GIBBON footer text</b></i></p><p>License: <a href="https://github.com/gibbonCode/GIBBON/blob/master/LICENSE">https://github.com/gibbonCode/GIBBON/blob/master/LICENSE</a></p><p>GIBBON: The Geometry and Image-based Bioengineering add-On. A toolbox for image segmentation, image-based modeling, meshing, and finite element analysis.</p><p>Copyright (C) 2018  Kevin Mattheus Moerman</p><p>This program is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.</p><p>This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for more details.</p><p>You should have received a copy of the GNU General Public License along with this program.  If not, see <a href="http://www.gnu.org/licenses/">http://www.gnu.org/licenses/</a>.</p><p class="footer"><br><a href="https://www.mathworks.com/products/matlab/">Published with MATLAB&reg; R2018a</a><br></p></div><!--
+</pre><img width="100%" height="auto" vspace="5" hspace="5" src="HELP_pointLocationTR_07.jpg" alt=""> <p><img vspace="5" hspace="5" src="gibbVerySmall.gif" alt=""> </p><p><i><b>GIBBON</b></i> <a href="www.gibboncode.org">www.gibboncode.org</a></p><p><i>Kevin Mattheus Moerman</i>, <a href="gibbon.toolbox@gmail.com">gibbon.toolbox@gmail.com</a></p><p><i><b>GIBBON footer text</b></i></p><p>License: <a href="https://github.com/gibbonCode/GIBBON/blob/master/LICENSE">https://github.com/gibbonCode/GIBBON/blob/master/LICENSE</a></p><p>GIBBON: The Geometry and Image-based Bioengineering add-On. A toolbox for image segmentation, image-based modeling, meshing, and finite element analysis.</p><p>Copyright (C) 2019  Kevin Mattheus Moerman</p><p>This program is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.</p><p>This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for more details.</p><p>You should have received a copy of the GNU General Public License along with this program.  If not, see <a href="http://www.gnu.org/licenses/">http://www.gnu.org/licenses/</a>.</p><p class="footer"><br><a href="https://www.mathworks.com/products/matlab/">Published with MATLAB&reg; R2019a</a><br></p></div><!--
 ##### SOURCE BEGIN #####
-%% pointLocationTR
-% Below is a demonstration of the features of the |pointLocationTR| function
-
-%%
-clear; close all; clc;
-
-%% 
-% Plot settings
-fontSize=15;
-faceColor1='g';
-faceColor2='r';
-faceAlpha1=0.3;
-faceAlpha2=1;
-edgeColor=0.4*ones(1,3);
-edgeWidth=2;
-markerSize=2;
-cMap=jet(250);
-
-%% FINDING POINTS INSIDE A TESSELATION
-
-%%
-% Create a test tesselation
-r=1; %Radius of tetrahedron circumsphere
-[V,F]=platonic_solid(1,r);
-
-E=[1 2 3 4];
-
-n=3; 
-E=E; V=V; 
-for q=1:1:n
-    [E,V]=subTet(E,V,1);
-end
-C=(1:size(E,1))';
-
-%%
-% Define query points
-n=50; 
-[X,Y,Z]=meshgrid(linspace(-r,r,n));
-
-QP=[X(:) Y(:) Z(:)];
-
-%%
-% Plotting the test case
-[F,CF]=element2patch(E,C);    
-
-cFigure;
-title(['A ',num2str(size(E,1)),' element tesselation with ',num2str(size(QP,1)),' query points'],'FontSize',fontSize);
-xlabel('X','FontSize',fontSize); ylabel('Y','FontSize',fontSize); zlabel('Z','FontSize',fontSize);
-hold on;
-
-patch('Faces',F,'Vertices',V,'FaceColor','flat','CData',CF,'EdgeColor',edgeColor,'FaceAlpha',faceAlpha1,'lineWidth',edgeWidth);
-plotV(QP,'b.','MarkerSize',markerSize);
-
-colormap(cMap); colorbar;
-view(3); grid on; axis equal; axis tight;
-view([-50,12])
-set(gca,'FontSize',fontSize);
-drawnow;
-
-%%
-% Convert tesselation to triangulation class
-TR = triangulation(E,V);
-
-%% 
-% Use |pointLocationTR| to test points
-[ti,bc]=pointLocationTR(TR,QP,1,1,1);
-
-%%
-% Plot results and color points to the element number they are contained in
-cFigure;
-title('Interior query points colored to element index','FontSize',fontSize);
-hold on;
-
-patch('Faces',F,'Vertices',V,'FaceColor','flat','CData',CF,'EdgeColor',edgeColor,'FaceAlpha',faceAlpha1,'lineWidth',edgeWidth);
-
-logicPlot=~isnan(ti); %Point selection logic
-% plotV(QP(logicPlot,:),'b.','MarkerSize',markerSize);
-scatter3(QP(logicPlot,1),QP(logicPlot,2),QP(logicPlot,3),75,ti(logicPlot),'fill','markerEdgeColor','k');
-
-colormap(cMap); colorbar;
-view(3); axis equal; axis tight; axis off; 
-view([-50,12])
-set(gca,'FontSize',fontSize);
-drawnow;
-
-%% EXAMPLE USING BARY CENTRIC COORDINATE OUTPUT TO MAP POINTS IN A DEFORMED MODEL
-% Changing shape
-V=TR.Points; 
-V(:,1)=V(:,1)+0.5.*sin(pi*V(:,3)); 
-V(:,2)=V(:,2)+0.5.*cos(pi*V(:,3)); 
-
-% Fixing triangulation
-TR = triangulation(E,V);
-QPm = barycentricToCartesian(TR,ti(logicPlot),bc(logicPlot,:));
-
-%%
-% Plotting deformed shape
-cFigure;
-title('Mapping of points in deformed object','FontSize',fontSize);
-xlabel('X','FontSize',fontSize); ylabel('Y','FontSize',fontSize); zlabel('Z','FontSize',fontSize);
-hold on;
-
-patch('Faces',F,'Vertices',V,'FaceColor','flat','CData',CF,'EdgeColor',edgeColor,'FaceAlpha',faceAlpha1,'lineWidth',edgeWidth);
-
-scatter3(QPm(:,1),QPm(:,2),QPm(:,3),75,ti(logicPlot),'fill','markerEdgeColor','k');
-
-colormap(cMap); colorbar;
-view(3); axis equal; axis tight; axis off; 
-view([-50,12])
-set(gca,'FontSize',fontSize);
-drawnow;
-
-%% EXAMPLE USE FOR FINDING VOXELS INSIDE TETRHEDRAL ELEMENTS
-%% 
-% Simulate image data
-load mri;
-M=double(squeeze(D)); %example image data set
-clear D;
-M=M(1:2:end,1:2:end,:);
-
-voxelSize=2./[1,1,.4]; %Voxel size
-voxelSize(1)=voxelSize(1)*2;
-voxelSize(2)=voxelSize(2)*2;
-siz=size(M); %Image size
-FOV=siz.*voxelSize; %Field of view size
-
-%% 
-% Get patch data
-T_low=min(M(:))+((max(M(:))-min(M(:)))/10); %Threshold example
-logicVoxels=(M>T_low);
-[Fv,Vv,Cv]=ind2patch(logicVoxels,M,'vb'); 
-Cv=Cv./max(Cv(:));
-[Vv(:,1),Vv(:,2),Vv(:,3)]=im2cart(Vv(:,2),Vv(:,1),Vv(:,3),voxelSize); 
-
-%%
-% Simulate a tesselated model
-
-Vv_mean=mean(Vv,1);
-[V,F]=platonic_solid(1,max(FOV)/2);
-V=V+Vv_mean(ones(1,size(V,1)),:);
-E=[1 2 3 4];
-
-n=4; 
-E=E; V=V; 
-for q=1:1:n
-    [E,V]=subTet(E,V,1);
-end
-C=[1:size(E,1)]';
-
-%%
-[F,CF]=element2patch(E,C);    
-
-cFigure;
-title('Image data and a tetrahedral tesselation','FontSize',fontSize);
-xlabel('X','FontSize',fontSize); ylabel('Y','FontSize',fontSize); zlabel('Z','FontSize',fontSize);
-hold on;
-
-patch('Faces',F,'Vertices',V,'FaceColor','flat','CData',CF,'EdgeColor',edgeColor,'FaceAlpha',faceAlpha1,'lineWidth',edgeWidth);
-hp1= patch('Faces',Fv,'Vertices',Vv,'FaceColor','flat','FaceVertexCData',Cv(:,ones(1,3)),'EdgeColor','k','FaceAlpha',faceAlpha1);
-
-colormap(cMap); colorbar;
-view(3); grid on; axis equal; axis tight;
-drawnow;
-
-%%
-% Setting up query points, in this case voxel coordinates
-[Jv,Iv,Kv]=meshgrid(1:1:size(M,2),1:1:size(M,1),1:1:size(M,3)); %Voxel image coordinates
-[Xv,Yv,Zv]=im2cart(Iv,Jv,Kv,voxelSize); %Voxel cartesian coordinates
-Vq=[Xv(:) Yv(:) Zv(:)];
-
-%% 
-% Find what elements the voxels are contained in
-TR = triangulation(E,V);
-[TI,BC]=pointLocationTR(TR,Vq,1,1,1); 
-
-% Reshaping the output TI leads in effect to a labeled image whereby each
-% voxels containes an index (or group/label number) for an element
-ML=reshape(TI',size(M));
-
-%%
-% Plotting the result
-cFigure;
-title('Image data found inside the tetrahedral tesselation','FontSize',fontSize);
-xlabel('X','FontSize',fontSize);ylabel('Y','FontSize',fontSize); zlabel('Z','FontSize',fontSize);
-hold on;
-
-patch('Faces',F,'Vertices',V,'FaceColor','g','EdgeColor','none','FaceAlpha',0.1);
-
-logicVoxels=~isnan(ML);
-[Fm,Vm,Cm]=ind2patch(logicVoxels,M,'vb');
-[Vm(:,1),Vm(:,2),Vm(:,3)]=im2cart(Vm(:,2),Vm(:,1),Vm(:,3),voxelSize);
-patch('Faces',Fm,'Vertices',Vm,'FaceColor','flat','CData',Cm,'EdgeColor','k','FaceAlpha',faceAlpha2);
-
-colormap gray; colorbar; 
-axis equal; view(3); axis tight;  grid on;  set(gca,'FontSize',fontSize);
-drawnow;
-
-%% EXAMPLE USE FOR INTERPOLATION OF IMAGE DATA ONTO VOLUME ELEMENTS
-% Hence deriving image based intensity values becomes a matter of averaging
-% across each element index label. If the voxels are sufficiently small
-% with respect to the elements then this method actually partially takes
-% into account partial voluming effects. i.e. the intensity of an element
-% becomes the mean of the voxels contained within it which in some cases is
-% more accurate then an interpolation which does not take into account the
-% volumetric nature of the mesh (e.g. methods based on
-% sampling/interpolating the intensities at the centre point or nodal
-% points of the mesh only instead). 
-% 
-[E_color]=imlabelMean(M,ML); %The image based element colors
-
-%%
-% Plotting results
-
-cFigure;
-title('The image data and the tesselation colored towards the image data','FontSize',fontSize);
-xlabel('X','FontSize',fontSize);ylabel('Y','FontSize',fontSize); zlabel('Z','FontSize',fontSize);
-hold on;
-
-[F,C]=element2patch(E,E_color); 
-
-L=~isnan(C);
-patch('Faces',F(L,:),'Vertices',V,'FaceColor','flat','CData',C(L),'EdgeColor','k','FaceAlpha',faceAlpha2);
-
-L_plot=false(siz);
-L_plot(:,:,round(size(M,3)/2))=1;
-L_plot=L_plot;
-[Fm,Vm,Cm]=ind2patch(L_plot,double(M),'sk');
-[Vm(:,1),Vm(:,2),Vm(:,3)]=im2cart(Vm(:,2),Vm(:,1),Vm(:,3),voxelSize);
-patch('Faces',Fm,'Vertices',Vm,'FaceColor','flat','CData',Cm,'EdgeColor','k','FaceAlpha',faceAlpha2);
-
-L_plot=false(siz);L_plot(round(size(M,1)/2),:,:)=1;
-L_plot=L_plot;
-[Fm,Vm,Cm]=ind2patch(L_plot,M,'si');
-[Vm(:,1),Vm(:,2),Vm(:,3)]=im2cart(Vm(:,2),Vm(:,1),Vm(:,3),voxelSize);
-patch('Faces',Fm,'Vertices',Vm,'FaceColor','flat','CData',Cm,'EdgeColor','k','FaceAlpha',faceAlpha2);
-
-L_plot=false(siz);L_plot(:,round(size(M,2)/2),:)=1;
-L_plot=L_plot;
-[Fm,Vm,Cm]=ind2patch(L_plot,M,'sj');
-[Vm(:,1),Vm(:,2),Vm(:,3)]=im2cart(Vm(:,2),Vm(:,1),Vm(:,3),voxelSize);
-patch('Faces',Fm,'Vertices',Vm,'FaceColor','flat','CData',Cm,'EdgeColor','k','FaceAlpha',faceAlpha2);
-
-colormap gray; colorbar; 
-axis equal; view(3); axis tight;  grid on;  set(gca,'FontSize',fontSize);
-drawnow;
-
-%% 
-%
-% <<gibbVerySmall.gif>>
-% 
-% _*GIBBON*_ 
-% <www.gibboncode.org>
-% 
-% _Kevin Mattheus Moerman_, <gibbon.toolbox@gmail.com>
- 
-%% 
-% _*GIBBON footer text*_ 
-% 
-% License: <https://github.com/gibbonCode/GIBBON/blob/master/LICENSE>
-% 
-% GIBBON: The Geometry and Image-based Bioengineering add-On. A toolbox for
-% image segmentation, image-based modeling, meshing, and finite element
-% analysis.
-% 
-% Copyright (C) 2018  Kevin Mattheus Moerman
-% 
-% This program is free software: you can redistribute it and/or modify
-% it under the terms of the GNU General Public License as published by
-% the Free Software Foundation, either version 3 of the License, or
-% (at your option) any later version.
-% 
-% This program is distributed in the hope that it will be useful,
-% but WITHOUT ANY WARRANTY; without even the implied warranty of
-% MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-% GNU General Public License for more details.
-% 
-% You should have received a copy of the GNU General Public License
-% along with this program.  If not, see <http://www.gnu.org/licenses/>.
+%% pointLocationTR
+% Below is a demonstration of the features of the |pointLocationTR| function
+
+%% Syntax
+% |[TI,BC]=pointLocationTR(TR,QP,distCropOpt,chullCropOpt,waitbarOpt,toleranceMagnitude);|
+% |[TI,BC]=pointLocationTR(TR,QP,optionStruct);|
+
+%% Description
+% This function finds the triangles or tetrahedrons in which the query
+% points QP are contained. In addition it outputs the barycentric
+% coordinates.
+%
+% Default options: 
+% optionStructDef.distCropOpt=1;
+% optionStructDef.chullCropOpt=1;
+% optionStructDef.waitbarOpt=1;
+% optionStructDef.toleranceMagnitude=0;
+
+%% Examples
+
+clear; close all; clc;
+
+%%
+% Plot settings
+fontSize=15;
+faceColor1='g';
+faceColor2='r';
+faceAlpha1=0.3;
+faceAlpha2=1;
+edgeColor=0.4*ones(1,3);
+edgeWidth=2;
+markerSize=2;
+cMap=gjet(250);
+
+%% Example: Finding points inside a triangulated mesh
+
+
+%Boundary 1
+ns=150;
+t=linspace(0,2*pi,ns);
+t=t(1:end-1);
+r=6+2.*sin(5*t);
+[x,y] = pol2cart(t,r);
+V1=[x(:) y(:)];
+
+%Boundary 2
+[x,y] = pol2cart(t,ones(size(t)));
+V2=[x(:) y(:)+4];
+
+%Boundary 3
+[x,y] = pol2cart(t,2*ones(size(t)));
+V3=[x(:) y(:)-0.5];
+
+regionCell={V1,V2,V3}; %A region between V1 and V2 (V2 forms a hole inside V1)
+pointSpacing=1; 
+[F,V]=regionTriMesh2D(regionCell,pointSpacing,1,0);
+
+V(:,3)=sin(V(:,1)); %Z coordinate
+
+[~,QP]=subtri(F,V,2);
+
+%%
+% Convert tesselation to triangulation class
+TR = triangulation(F,V);
+
+%% 
+% Use |pointLocationTR| to test points
+optionStruct.toleranceMagnitude=1e-3;
+[ti,bc]=pointLocationTR(TR,QP,optionStruct);
+L=any(isnan(bc),2);
+
+%%
+%
+logicPlot=~isnan(ti); %Point selection logic
+
+cFigure;
+hold on; 
+gpatch(F,V,'kw','k',0.5);
+plotV(QP,'k.','markerSize',25);
+plotV(QP(L,:),'r.','markerSize',50);
+scatterV(QP(logicPlot,:),50,ti(logicPlot),'fill','markerEdgeColor','k');
+axisGeom;
+colormap(cMap(randperm(size(cMap,1))',:));
+camlight headlight;
+drawnow;
+
+%% Example: Finding points inside a tetrahedral mesh
+
+%%
+% Create a test tesselation
+
+r=1; %Radius of tetrahedron circumsphere
+[V,~]=platonic_solid(1,r);
+
+E=[1 2 3 4];
+
+n=3; 
+E=E; V=V; 
+for q=1:1:n
+    [E,V]=subTet(E,V,1);
+end
+C=(1:size(E,1))';
+
+%%
+% Define query points
+n=50; 
+[X,Y,Z]=meshgrid(linspace(-r,r,n));
+
+QP=[X(:) Y(:) Z(:)];
+
+%%
+% Plotting the test case
+[F,CF]=element2patch(E,C);    
+
+cFigure;
+title(['A ',num2str(size(E,1)),' element tesselation with ',num2str(size(QP,1)),' query points'],'FontSize',fontSize);
+xlabel('X','FontSize',fontSize); ylabel('Y','FontSize',fontSize); zlabel('Z','FontSize',fontSize);
+hold on;
+
+patch('Faces',F,'Vertices',V,'FaceColor','flat','CData',CF,'EdgeColor',edgeColor,'FaceAlpha',faceAlpha1,'lineWidth',edgeWidth);
+plotV(QP,'b.','MarkerSize',markerSize);
+
+colormap(cMap); colorbar;
+view(3); grid on; axis equal; axis tight;
+view([-50,12])
+set(gca,'FontSize',fontSize);
+drawnow;
+
+%%
+% Convert tesselation to triangulation class
+TR = triangulation(E,V);
+
+%% 
+% Use |pointLocationTR| to test points
+[ti,bc]=pointLocationTR(TR,QP,1,1,1);
+
+%%
+% Plot results and color points to the element number they are contained in
+cFigure;
+title('Interior query points colored to element index','FontSize',fontSize);
+hold on;
+
+patch('Faces',F,'Vertices',V,'FaceColor','flat','CData',CF,'EdgeColor',edgeColor,'FaceAlpha',faceAlpha1,'lineWidth',edgeWidth);
+
+logicPlot=~isnan(ti); %Point selection logic
+% plotV(QP(logicPlot,:),'b.','MarkerSize',markerSize);
+scatter3(QP(logicPlot,1),QP(logicPlot,2),QP(logicPlot,3),75,ti(logicPlot),'fill','markerEdgeColor','k');
+
+colormap(cMap); colorbar;
+view(3); axis equal; axis tight; axis off; 
+view([-50,12])
+set(gca,'FontSize',fontSize);
+drawnow;
+
+%% Example: Using barycentric coordinates to interpolate data (map points in deformed model)
+% Changing shape
+V=TR.Points; 
+V(:,1)=V(:,1)+0.5.*sin(pi*V(:,3)); 
+V(:,2)=V(:,2)+0.5.*cos(pi*V(:,3)); 
+
+% Fixing triangulation
+TR = triangulation(E,V);
+QPm = barycentricToCartesian(TR,ti(logicPlot),bc(logicPlot,:));
+
+%%
+% Plotting deformed shape
+cFigure;
+title('Mapping of points in deformed object','FontSize',fontSize);
+xlabel('X','FontSize',fontSize); ylabel('Y','FontSize',fontSize); zlabel('Z','FontSize',fontSize);
+hold on;
+
+patch('Faces',F,'Vertices',V,'FaceColor','flat','CData',CF,'EdgeColor',edgeColor,'FaceAlpha',faceAlpha1,'lineWidth',edgeWidth);
+
+scatter3(QPm(:,1),QPm(:,2),QPm(:,3),75,ti(logicPlot),'fill','markerEdgeColor','k');
+
+colormap(cMap); colorbar;
+view(3); axis equal; axis tight; axis off; 
+view([-50,12])
+set(gca,'FontSize',fontSize);
+drawnow;
+
+%% Example: Finding voxels inside a tetrahedral mesh
+% Simulate image data
+load mri;
+M=double(squeeze(D)); %example image data set
+clear D;
+M=M(1:2:end,1:2:end,:);
+
+voxelSize=2./[1,1,.4]; %Voxel size
+voxelSize(1)=voxelSize(1)*2;
+voxelSize(2)=voxelSize(2)*2;
+siz=size(M); %Image size
+FOV=siz.*voxelSize; %Field of view size
+
+%% 
+% Get patch data
+T_low=min(M(:))+((max(M(:))-min(M(:)))/10); %Threshold example
+logicVoxels=(M>T_low);
+[Fv,Vv,Cv]=ind2patch(logicVoxels,M,'vb'); 
+Cv=Cv./max(Cv(:));
+[Vv(:,1),Vv(:,2),Vv(:,3)]=im2cart(Vv(:,2),Vv(:,1),Vv(:,3),voxelSize); 
+
+%%
+% Simulate a tesselated model
+
+Vv_mean=mean(Vv,1);
+[V,~]=platonic_solid(1,max(FOV)/2);
+V=V+Vv_mean(ones(1,size(V,1)),:);
+E=[1 2 3 4];
+
+n=4; 
+for q=1:1:n
+    [E,V]=subTet(E,V,1);
+end
+C=(1:size(E,1))';
+
+%%
+[F,CF]=element2patch(E,C);    
+
+cFigure;
+title('Image data and a tetrahedral tesselation','FontSize',fontSize);
+xlabel('X','FontSize',fontSize); ylabel('Y','FontSize',fontSize); zlabel('Z','FontSize',fontSize);
+hold on;
+
+patch('Faces',F,'Vertices',V,'FaceColor','flat','CData',CF,'EdgeColor',edgeColor,'FaceAlpha',faceAlpha1,'lineWidth',edgeWidth);
+hp1= patch('Faces',Fv,'Vertices',Vv,'FaceColor','flat','FaceVertexCData',Cv(:,ones(1,3)),'EdgeColor','k','FaceAlpha',faceAlpha1);
+
+colormap(cMap); colorbar;
+view(3); grid on; axis equal; axis tight;
+drawnow;
+
+%%
+% Setting up query points, in this case voxel coordinates
+[Jv,Iv,Kv]=meshgrid(1:1:size(M,2),1:1:size(M,1),1:1:size(M,3)); %Voxel image coordinates
+[Xv,Yv,Zv]=im2cart(Iv,Jv,Kv,voxelSize); %Voxel cartesian coordinates
+Vq=[Xv(:) Yv(:) Zv(:)];
+
+%% 
+% Find what elements the voxels are contained in
+TR = triangulation(E,V);
+[TI,BC]=pointLocationTR(TR,Vq,1,1,1); 
+
+% Reshaping the output TI leads in effect to a labeled image whereby each
+% voxels containes an index (or group/label number) for an element
+ML=reshape(TI',size(M));
+
+%%
+% Plotting the result
+cFigure;
+title('Image data found inside the tetrahedral tesselation','FontSize',fontSize);
+xlabel('X','FontSize',fontSize);ylabel('Y','FontSize',fontSize); zlabel('Z','FontSize',fontSize);
+hold on;
+
+patch('Faces',F,'Vertices',V,'FaceColor','g','EdgeColor','none','FaceAlpha',0.1);
+
+logicVoxels=~isnan(ML);
+[Fm,Vm,Cm]=ind2patch(logicVoxels,M,'vb');
+[Vm(:,1),Vm(:,2),Vm(:,3)]=im2cart(Vm(:,2),Vm(:,1),Vm(:,3),voxelSize);
+patch('Faces',Fm,'Vertices',Vm,'FaceColor','flat','CData',Cm,'EdgeColor','k','FaceAlpha',faceAlpha2);
+
+colormap gray; colorbar; 
+axis equal; view(3); axis tight;  grid on;  set(gca,'FontSize',fontSize);
+drawnow;
+
+%% Example: Interpolation of image data onto volume elements
+% Hence deriving image based intensity values becomes a matter of averaging
+% across each element index label. If the voxels are sufficiently small
+% with respect to the elements then this method actually partially takes
+% into account partial voluming effects. i.e. the intensity of an element
+% becomes the mean of the voxels contained within it which in some cases is
+% more accurate then an interpolation which does not take into account the
+% volumetric nature of the mesh (e.g. methods based on
+% sampling/interpolating the intensities at the centre point or nodal
+% points of the mesh only instead). 
+% 
+[E_color]=imlabelMean(M,ML); %The image based element colors
+
+%%
+% Plotting results
+
+cFigure;
+title('The image data and the tesselation colored towards the image data','FontSize',fontSize);
+xlabel('X','FontSize',fontSize);ylabel('Y','FontSize',fontSize); zlabel('Z','FontSize',fontSize);
+hold on;
+
+[F,C]=element2patch(E,E_color); 
+
+L=~isnan(C);
+patch('Faces',F(L,:),'Vertices',V,'FaceColor','flat','CData',C(L),'EdgeColor','k','FaceAlpha',faceAlpha2);
+
+L_plot=false(siz);
+L_plot(:,:,round(size(M,3)/2))=1;
+L_plot=L_plot;
+[Fm,Vm,Cm]=ind2patch(L_plot,double(M),'sk');
+[Vm(:,1),Vm(:,2),Vm(:,3)]=im2cart(Vm(:,2),Vm(:,1),Vm(:,3),voxelSize);
+patch('Faces',Fm,'Vertices',Vm,'FaceColor','flat','CData',Cm,'EdgeColor','k','FaceAlpha',faceAlpha2);
+
+L_plot=false(siz);L_plot(round(size(M,1)/2),:,:)=1;
+L_plot=L_plot;
+[Fm,Vm,Cm]=ind2patch(L_plot,M,'si');
+[Vm(:,1),Vm(:,2),Vm(:,3)]=im2cart(Vm(:,2),Vm(:,1),Vm(:,3),voxelSize);
+patch('Faces',Fm,'Vertices',Vm,'FaceColor','flat','CData',Cm,'EdgeColor','k','FaceAlpha',faceAlpha2);
+
+L_plot=false(siz);L_plot(:,round(size(M,2)/2),:)=1;
+L_plot=L_plot;
+[Fm,Vm,Cm]=ind2patch(L_plot,M,'sj');
+[Vm(:,1),Vm(:,2),Vm(:,3)]=im2cart(Vm(:,2),Vm(:,1),Vm(:,3),voxelSize);
+patch('Faces',Fm,'Vertices',Vm,'FaceColor','flat','CData',Cm,'EdgeColor','k','FaceAlpha',faceAlpha2);
+
+colormap gray; colorbar; 
+axis equal; view(3); axis tight;  grid on;  set(gca,'FontSize',fontSize);
+drawnow;
+
+%% 
+%
+% <<gibbVerySmall.gif>>
+% 
+% _*GIBBON*_ 
+% <www.gibboncode.org>
+% 
+% _Kevin Mattheus Moerman_, <gibbon.toolbox@gmail.com>
+ 
+%% 
+% _*GIBBON footer text*_ 
+% 
+% License: <https://github.com/gibbonCode/GIBBON/blob/master/LICENSE>
+% 
+% GIBBON: The Geometry and Image-based Bioengineering add-On. A toolbox for
+% image segmentation, image-based modeling, meshing, and finite element
+% analysis.
+% 
+% Copyright (C) 2019  Kevin Mattheus Moerman
+% 
+% This program is free software: you can redistribute it and/or modify
+% it under the terms of the GNU General Public License as published by
+% the Free Software Foundation, either version 3 of the License, or
+% (at your option) any later version.
+% 
+% This program is distributed in the hope that it will be useful,
+% but WITHOUT ANY WARRANTY; without even the implied warranty of
+% MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+% GNU General Public License for more details.
+% 
+% You should have received a copy of the GNU General Public License
+% along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 ##### SOURCE END #####
 --></body></html>

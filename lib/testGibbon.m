@@ -20,27 +20,27 @@ switch nargin
         testSet='all';
         testMode='test';
         approveQuestion=0;
-        startInd=1;
+        startLoc=1;
     case 1
         testSet=varargin{1};
         testMode='test';
         approveQuestion=0; 
-        startInd=1;
+        startLoc=1;
     case 2
         testSet=varargin{1};
         testMode=varargin{2};
         approveQuestion=0;
-        startInd=1;
+        startLoc=1;
     case 3
         testSet=varargin{1};
         testMode=varargin{2};
         approveQuestion=varargin{3};    
-        startInd=1;
+        startLoc=1;
     case 4
         testSet=varargin{1};
         testMode=varargin{2};
         approveQuestion=varargin{3};
-        startInd=varargin{4};
+        startLoc=varargin{4};
 end
 
 %% Running tests, publishing codes
@@ -66,6 +66,16 @@ switch testSet
         testFileList=allFiles_publish(logicHelp & ~logicNot);      
     otherwise
         error([testMode,' is not a valid option. Use: all, demo, or help']);
+end
+
+%% Get start index
+if ischar(startLoc) || isstring(startLoc)
+    startInd=find(contains(testFileList,startLoc));
+    if isempty(startInd)
+        error(['Start file "',startLoc,'" not found in list'])
+    end
+else
+    startInd=startLoc;
 end
 
 %%
@@ -100,7 +110,8 @@ for q_test=startInd:1:numel(testFileList)
             end            
         case 'pub' %Publish
             try
-                publish(mFileNow,'catchError',false,'figureSnapMethod','getframe','maxWidth',1000);
+                gpublish(mFileNow);
+                % publish(mFileNow,'catchError',false,'figureSnapMethod','getframe','maxWidth',1000);
                 drawnow;
                 pause(1);
             catch ME                             

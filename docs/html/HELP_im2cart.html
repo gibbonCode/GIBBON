@@ -6,7 +6,7 @@
    <!--
 This HTML was auto-generated from MATLAB code.
 To make changes, update the MATLAB code and republish this document.
-      --><title>im2cart</title><meta name="generator" content="MATLAB 9.4"><link rel="schema.DC" href="http://purl.org/dc/elements/1.1/"><meta name="DC.date" content="2018-06-25"><meta name="DC.source" content="HELP_im2cart.m"><style type="text/css">
+      --><title>im2cart</title><meta name="generator" content="MATLAB 9.6"><link rel="schema.DC" href="http://purl.org/dc/elements/1.1/"><meta name="DC.date" content="2019-06-03"><meta name="DC.source" content="HELP_im2cart.m"><style type="text/css">
 html,body,div,span,applet,object,iframe,h1,h2,h3,h4,h5,h6,p,blockquote,pre,a,abbr,acronym,address,big,cite,code,del,dfn,em,font,img,ins,kbd,q,s,samp,small,strike,strong,sub,sup,tt,var,b,u,i,center,dl,dt,dd,ol,ul,li,fieldset,form,label,legend,table,caption,tbody,tfoot,thead,tr,th,td{margin:0;padding:0;border:0;outline:0;font-size:100%;vertical-align:baseline;background:transparent}body{line-height:1}ol,ul{list-style:none}blockquote,q{quotes:none}blockquote:before,blockquote:after,q:before,q:after{content:'';content:none}:focus{outine:0}ins{text-decoration:none}del{text-decoration:line-through}table{border-collapse:collapse;border-spacing:0}
 
 html { min-height:100%; margin-bottom:1px; }
@@ -122,135 +122,135 @@ colormap(gray(250)); colorbar;
 camlight <span class="string">headlight</span>;
 set(gca,<span class="string">'fontSize'</span>,fontSize);
 drawnow;
-</pre><img vspace="5" hspace="5" src="HELP_im2cart_01.png" alt=""> <p><img vspace="5" hspace="5" src="gibbVerySmall.gif" alt=""> </p><p><i><b>GIBBON</b></i> <a href="www.gibboncode.org">www.gibboncode.org</a></p><p><i>Kevin Mattheus Moerman</i>, <a href="gibbon.toolbox@gmail.com">gibbon.toolbox@gmail.com</a></p><p><i><b>GIBBON footer text</b></i></p><p>License: <a href="https://github.com/gibbonCode/GIBBON/blob/master/LICENSE">https://github.com/gibbonCode/GIBBON/blob/master/LICENSE</a></p><p>GIBBON: The Geometry and Image-based Bioengineering add-On. A toolbox for image segmentation, image-based modeling, meshing, and finite element analysis.</p><p>Copyright (C) 2018  Kevin Mattheus Moerman</p><p>This program is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.</p><p>This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for more details.</p><p>You should have received a copy of the GNU General Public License along with this program.  If not, see <a href="http://www.gnu.org/licenses/">http://www.gnu.org/licenses/</a>.</p><p class="footer"><br><a href="https://www.mathworks.com/products/matlab/">Published with MATLAB&reg; R2018a</a><br></p></div><!--
+</pre><img width="100%" height="auto" vspace="5" hspace="5" src="HELP_im2cart_01.jpg" alt=""> <p><img vspace="5" hspace="5" src="gibbVerySmall.gif" alt=""> </p><p><i><b>GIBBON</b></i> <a href="www.gibboncode.org">www.gibboncode.org</a></p><p><i>Kevin Mattheus Moerman</i>, <a href="gibbon.toolbox@gmail.com">gibbon.toolbox@gmail.com</a></p><p><i><b>GIBBON footer text</b></i></p><p>License: <a href="https://github.com/gibbonCode/GIBBON/blob/master/LICENSE">https://github.com/gibbonCode/GIBBON/blob/master/LICENSE</a></p><p>GIBBON: The Geometry and Image-based Bioengineering add-On. A toolbox for image segmentation, image-based modeling, meshing, and finite element analysis.</p><p>Copyright (C) 2019  Kevin Mattheus Moerman</p><p>This program is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.</p><p>This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for more details.</p><p>You should have received a copy of the GNU General Public License along with this program.  If not, see <a href="http://www.gnu.org/licenses/">http://www.gnu.org/licenses/</a>.</p><p class="footer"><br><a href="https://www.mathworks.com/products/matlab/">Published with MATLAB&reg; R2019a</a><br></p></div><!--
 ##### SOURCE BEGIN #####
-%% im2cart
-% Below is a demonstration of the features of the |im2cart| function
-
-%%
-clear; close all; clc;
-
-%% Syntax
-% |[X,Y,Z]=im2cart(I,J,K,v);|
-
-%% Description
-% This function converts the image coordinates I,J,K to the cartesian
-% coordinates X,Y,Z using the voxel dimension v. 
-%
-% I,J,K can be scalars, vectors or matrices. 
-% v is a vector of length 3 where v(1), v(2) and v(3) correspond to the
-% voxel dimensions in the x,y and z direction respectively. 
-
-%% Examples
-
-%%
-% Plot settings
-cMap=gjet(250);
-faceAlpha1=1;
-faceAlpha2=0.65;
-edgeColor1='none';
-edgeColor2='none';
-fontSize=15; 
-
-%% Example: Medical image data and coordinate manipulation due to voxel size
-
-% Get a 3D image
-load mri;
-M=squeeze(D); %example image data set
-v=[2 2 5]; %example voxel size, not voxels are ellongated in slice direction
-
-%%
-% The voxels to display can be specified as a list (vector) of voxels
-% numbers (linear indices) or using a mask (logic array).
-
-%Defining row, column and slice indicices for slice patching
-sliceIndexI=round(size(M,1)/2); %(close to) middle row
-sliceIndexJ=round(size(M,2)/2); %(close to) middle column
-sliceIndexK=round(size(M,3)/2); %(close to) middle slice
-
-%Defining "masks" i.e. logic arrays with ones for voxels of interest
-logicSliceI=false(size(M)); 
-logicSliceI(sliceIndexI,:,:)=1;
-logicSliceI=logicSliceI & M>0;
-
-logicSliceJ=false(size(M)); 
-logicSliceJ(:,sliceIndexJ,:)=1;
-logicSliceJ=logicSliceJ & M>0;
-
-logicSliceK=false(size(M)); 
-logicSliceK(:,:,sliceIndexK)=1;
-logicSliceK=logicSliceK & M>0;
-
-%Defining voxel indices for voxels of interest
-T_low=min(M(:))+((max(M(:))-min(M(:)))/10); %Threshold example
-logicVoxels=(M>T_low);
-logicVoxels(:,1:sliceIndexJ,:)=0;
-
-%%
-% Creating patch data
-% The patch data consists of a matrix array defining the faces, a matrix
-% array defining the vertices and a vector for the colour data. The
-% vertices are based on the image coordinates however they are formatted
-% as: [X(:) Y(:) Z(:)]. X relates to columns, Y to rows and Z to slices. 
-% Use a function like |im2cart| , or |im2mrcart| to convert image to cartesian
-% coordinates. 
- 
-[Fv,Vv,Cv]=ind2patch(logicVoxels,M,'vb'); 
-[Fx,Vx,Cx]=ind2patch(logicSliceJ,M,'sj');
-[Fy,Vy,Cy]=ind2patch(logicSliceI,M,'si');
-[Fz,Vz,Cz]=ind2patch(logicSliceK,M,'sk');
-
-% Convert image coordinates to cartesian coordinates
-[Vv(:,1),Vv(:,2),Vv(:,3)]=im2cart(Vv(:,2),Vv(:,1),Vv(:,3),v); 
-[Vx(:,1),Vx(:,2),Vx(:,3)]=im2cart(Vx(:,2),Vx(:,1),Vx(:,3),v);
-[Vy(:,1),Vy(:,2),Vy(:,3)]=im2cart(Vy(:,2),Vy(:,1),Vy(:,3),v);
-[Vz(:,1),Vz(:,2),Vz(:,3)]=im2cart(Vz(:,2),Vz(:,1),Vz(:,3),v);
-
-h8=cFigure;
-title('MRI visualisation, slices and voxels in cartesian coordinates with aid of voxel size');
-xlabel('X (mm)');ylabel('Y (mm)'); zlabel('Z (mm)'); hold on;
-hp1= patch('Faces',Fv,'Vertices',Vv,'FaceColor','flat','CData',Cv,'EdgeColor',edgeColor1,'FaceAlpha',faceAlpha1);
-hp2= patch('Faces',Fx,'Vertices',Vx,'FaceColor','flat','CData',Cx,'EdgeColor',edgeColor2,'FaceAlpha',faceAlpha1);
-hp3= patch('Faces',Fy,'Vertices',Vy,'FaceColor','flat','CData',Cy,'EdgeColor',edgeColor2,'FaceAlpha',faceAlpha1);
-hp4= patch('Faces',Fz,'Vertices',Vz,'FaceColor','flat','CData',Cz,'EdgeColor',edgeColor2,'FaceAlpha',faceAlpha1);
-axis equal; view(3); axis tight; axis vis3d; grid on;  
-colormap(gray(250)); colorbar; 
-camlight headlight;
-set(gca,'fontSize',fontSize); 
-drawnow;
-
-%% 
-%
-% <<gibbVerySmall.gif>>
-% 
-% _*GIBBON*_ 
-% <www.gibboncode.org>
-% 
-% _Kevin Mattheus Moerman_, <gibbon.toolbox@gmail.com>
- 
-%% 
-% _*GIBBON footer text*_ 
-% 
-% License: <https://github.com/gibbonCode/GIBBON/blob/master/LICENSE>
-% 
-% GIBBON: The Geometry and Image-based Bioengineering add-On. A toolbox for
-% image segmentation, image-based modeling, meshing, and finite element
-% analysis.
-% 
-% Copyright (C) 2018  Kevin Mattheus Moerman
-% 
-% This program is free software: you can redistribute it and/or modify
-% it under the terms of the GNU General Public License as published by
-% the Free Software Foundation, either version 3 of the License, or
-% (at your option) any later version.
-% 
-% This program is distributed in the hope that it will be useful,
-% but WITHOUT ANY WARRANTY; without even the implied warranty of
-% MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-% GNU General Public License for more details.
-% 
-% You should have received a copy of the GNU General Public License
-% along with this program.  If not, see <http://www.gnu.org/licenses/>.
+%% im2cart
+% Below is a demonstration of the features of the |im2cart| function
+
+%%
+clear; close all; clc;
+
+%% Syntax
+% |[X,Y,Z]=im2cart(I,J,K,v);|
+
+%% Description
+% This function converts the image coordinates I,J,K to the cartesian
+% coordinates X,Y,Z using the voxel dimension v. 
+%
+% I,J,K can be scalars, vectors or matrices. 
+% v is a vector of length 3 where v(1), v(2) and v(3) correspond to the
+% voxel dimensions in the x,y and z direction respectively. 
+
+%% Examples
+
+%%
+% Plot settings
+cMap=gjet(250);
+faceAlpha1=1;
+faceAlpha2=0.65;
+edgeColor1='none';
+edgeColor2='none';
+fontSize=15; 
+
+%% Example: Medical image data and coordinate manipulation due to voxel size
+
+% Get a 3D image
+load mri;
+M=squeeze(D); %example image data set
+v=[2 2 5]; %example voxel size, not voxels are ellongated in slice direction
+
+%%
+% The voxels to display can be specified as a list (vector) of voxels
+% numbers (linear indices) or using a mask (logic array).
+
+%Defining row, column and slice indicices for slice patching
+sliceIndexI=round(size(M,1)/2); %(close to) middle row
+sliceIndexJ=round(size(M,2)/2); %(close to) middle column
+sliceIndexK=round(size(M,3)/2); %(close to) middle slice
+
+%Defining "masks" i.e. logic arrays with ones for voxels of interest
+logicSliceI=false(size(M)); 
+logicSliceI(sliceIndexI,:,:)=1;
+logicSliceI=logicSliceI & M>0;
+
+logicSliceJ=false(size(M)); 
+logicSliceJ(:,sliceIndexJ,:)=1;
+logicSliceJ=logicSliceJ & M>0;
+
+logicSliceK=false(size(M)); 
+logicSliceK(:,:,sliceIndexK)=1;
+logicSliceK=logicSliceK & M>0;
+
+%Defining voxel indices for voxels of interest
+T_low=min(M(:))+((max(M(:))-min(M(:)))/10); %Threshold example
+logicVoxels=(M>T_low);
+logicVoxels(:,1:sliceIndexJ,:)=0;
+
+%%
+% Creating patch data
+% The patch data consists of a matrix array defining the faces, a matrix
+% array defining the vertices and a vector for the colour data. The
+% vertices are based on the image coordinates however they are formatted
+% as: [X(:) Y(:) Z(:)]. X relates to columns, Y to rows and Z to slices. 
+% Use a function like |im2cart| , or |im2mrcart| to convert image to cartesian
+% coordinates. 
+ 
+[Fv,Vv,Cv]=ind2patch(logicVoxels,M,'vb'); 
+[Fx,Vx,Cx]=ind2patch(logicSliceJ,M,'sj');
+[Fy,Vy,Cy]=ind2patch(logicSliceI,M,'si');
+[Fz,Vz,Cz]=ind2patch(logicSliceK,M,'sk');
+
+% Convert image coordinates to cartesian coordinates
+[Vv(:,1),Vv(:,2),Vv(:,3)]=im2cart(Vv(:,2),Vv(:,1),Vv(:,3),v); 
+[Vx(:,1),Vx(:,2),Vx(:,3)]=im2cart(Vx(:,2),Vx(:,1),Vx(:,3),v);
+[Vy(:,1),Vy(:,2),Vy(:,3)]=im2cart(Vy(:,2),Vy(:,1),Vy(:,3),v);
+[Vz(:,1),Vz(:,2),Vz(:,3)]=im2cart(Vz(:,2),Vz(:,1),Vz(:,3),v);
+
+h8=cFigure;
+title('MRI visualisation, slices and voxels in cartesian coordinates with aid of voxel size');
+xlabel('X (mm)');ylabel('Y (mm)'); zlabel('Z (mm)'); hold on;
+hp1= patch('Faces',Fv,'Vertices',Vv,'FaceColor','flat','CData',Cv,'EdgeColor',edgeColor1,'FaceAlpha',faceAlpha1);
+hp2= patch('Faces',Fx,'Vertices',Vx,'FaceColor','flat','CData',Cx,'EdgeColor',edgeColor2,'FaceAlpha',faceAlpha1);
+hp3= patch('Faces',Fy,'Vertices',Vy,'FaceColor','flat','CData',Cy,'EdgeColor',edgeColor2,'FaceAlpha',faceAlpha1);
+hp4= patch('Faces',Fz,'Vertices',Vz,'FaceColor','flat','CData',Cz,'EdgeColor',edgeColor2,'FaceAlpha',faceAlpha1);
+axis equal; view(3); axis tight; axis vis3d; grid on;  
+colormap(gray(250)); colorbar; 
+camlight headlight;
+set(gca,'fontSize',fontSize); 
+drawnow;
+
+%% 
+%
+% <<gibbVerySmall.gif>>
+% 
+% _*GIBBON*_ 
+% <www.gibboncode.org>
+% 
+% _Kevin Mattheus Moerman_, <gibbon.toolbox@gmail.com>
+ 
+%% 
+% _*GIBBON footer text*_ 
+% 
+% License: <https://github.com/gibbonCode/GIBBON/blob/master/LICENSE>
+% 
+% GIBBON: The Geometry and Image-based Bioengineering add-On. A toolbox for
+% image segmentation, image-based modeling, meshing, and finite element
+% analysis.
+% 
+% Copyright (C) 2019  Kevin Mattheus Moerman
+% 
+% This program is free software: you can redistribute it and/or modify
+% it under the terms of the GNU General Public License as published by
+% the Free Software Foundation, either version 3 of the License, or
+% (at your option) any later version.
+% 
+% This program is distributed in the hope that it will be useful,
+% but WITHOUT ANY WARRANTY; without even the implied warranty of
+% MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+% GNU General Public License for more details.
+% 
+% You should have received a copy of the GNU General Public License
+% along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 ##### SOURCE END #####
 --></body></html>

@@ -6,7 +6,7 @@
    <!--
 This HTML was auto-generated from MATLAB code.
 To make changes, update the MATLAB code and republish this document.
-      --><title>edgeNormal</title><meta name="generator" content="MATLAB 9.5"><link rel="schema.DC" href="http://purl.org/dc/elements/1.1/"><meta name="DC.date" content="2018-10-26"><meta name="DC.source" content="HELP_edgeNormal.m"><style type="text/css">
+      --><title>edgeNormal</title><meta name="generator" content="MATLAB 9.6"><link rel="schema.DC" href="http://purl.org/dc/elements/1.1/"><meta name="DC.date" content="2019-06-03"><meta name="DC.source" content="HELP_edgeNormal.m"><style type="text/css">
 html,body,div,span,applet,object,iframe,h1,h2,h3,h4,h5,h6,p,blockquote,pre,a,abbr,acronym,address,big,cite,code,del,dfn,em,font,img,ins,kbd,q,s,samp,small,strike,strong,sub,sup,tt,var,b,u,i,center,dl,dt,dd,ol,ul,li,fieldset,form,label,legend,table,caption,tbody,tfoot,thead,tr,th,td{margin:0;padding:0;border:0;outline:0;font-size:100%;vertical-align:baseline;background:transparent}body{line-height:1}ol,ul{list-style:none}blockquote,q{quotes:none}blockquote:before,blockquote:after,q:before,q:after{content:'';content:none}:focus{outine:0}ins{text-decoration:none}del{text-decoration:line-through}table{border-collapse:collapse;border-spacing:0}
 
 html { min-height:100%; margin-bottom:1px; }
@@ -90,7 +90,7 @@ axisGeom;
 camlight <span class="string">headlight</span>;
 colormap <span class="string">viridis</span>
 drawnow;
-</pre><img vspace="5" hspace="5" src="HELP_edgeNormal_01.png" alt=""> <h2 id="9">Calculate edge normals for general patch data</h2><p>Create example patch surface data</p><pre class="codeinput">[F,V]=geoSphere(1,1); <span class="comment">%A geodesic sphere triangulation</span>
+</pre><img width="100%" height="auto" vspace="5" hspace="5" src="HELP_edgeNormal_01.jpg" alt=""> <h2 id="9">Calculate edge normals for general patch data</h2><p>Create example patch surface data</p><pre class="codeinput">[F,V]=geoSphere(1,1); <span class="comment">%A geodesic sphere triangulation</span>
 </pre><p>Get edge normals</p><pre class="codeinput">[NE,VE]=edgeNormal(F,V); <span class="comment">%Get edge normals</span>
 </pre><p>Visualize edge normals</p><pre class="codeinput"><span class="comment">%Use mean edge length devided by 4 as the length for visualizing edge</span>
 <span class="comment">%vectors.</span>
@@ -111,97 +111,120 @@ axisGeom;
 camlight <span class="string">headlight</span>;
 colormap <span class="string">viridis</span>
 drawnow;
-</pre><img vspace="5" hspace="5" src="HELP_edgeNormal_02.png" alt=""> <img vspace="5" hspace="5" src="HELP_edgeNormal_03.png" alt=""> <p class="footer"><br><a href="https://www.mathworks.com/products/matlab/">Published with MATLAB&reg; R2018b</a><br></p></div><!--
+</pre><img width="100%" height="auto" vspace="5" hspace="5" src="HELP_edgeNormal_02.jpg" alt=""> <p><i><b>GIBBON footer text</b></i></p><p>License: <a href="https://github.com/gibbonCode/GIBBON/blob/master/LICENSE">https://github.com/gibbonCode/GIBBON/blob/master/LICENSE</a></p><p>GIBBON: The Geometry and Image-based Bioengineering add-On. A toolbox for image segmentation, image-based modeling, meshing, and finite element analysis.</p><p>Copyright (C) 2019  Kevin Mattheus Moerman</p><p>This program is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.</p><p>This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for more details.</p><p>You should have received a copy of the GNU General Public License along with this program.  If not, see <a href="http://www.gnu.org/licenses/">http://www.gnu.org/licenses/</a>.</p><p class="footer"><br><a href="https://www.mathworks.com/products/matlab/">Published with MATLAB&reg; R2019a</a><br></p></div><!--
 ##### SOURCE BEGIN #####
-%% edgeNormal
-% Below is a demonstration of the features of the |edgeNormal| function
-
-%%
-clear; close all; clc;
-
-%% Syntax
-% |[NE,VE]=edgeNormal(F,V);|
-
-%% Description
-% This function computes the edge normal vectors (NE), and optionally the
-% position vectors for these normal vectors (VE), for the input patch data
-% defined by faces (F) and vertices (V). 
-
-%% Examples
-
-%% Calculate edge normals for patch data for a single face
-
-%%
-% Create example patch surface data
-
-%A single triangle
-V=[0 0 0; 1 0 0; 1 1 0];
-F=[1 2 3];
-
-%%
-% Get edge normals
-
-[NE,VE]=edgeNormal(F,V); %Get edge normals
-
-%%
-% Visualize edge normals
-
-%Use mean edge length devided by 4 as the length for visualizing edge
-%vectors.
-d=mean(patchEdgeLengths(F,V))/4; 
-
-%Create example color data for faces and edges
-C=(1:size(F,1))'; %Color data for each face equal to face numbers
-CE=[C(:,ones(size(F,2),1))]'; %Get corresponding colors for edges
-CE=CE(:);
-
-%Visualize
-cFigure; 
-gpatch(F,V,C,'k');
-hp(1)=patchNormPlot(F,V); %Plot face normals
-hp(2)=quiverVec(VE,NE,d,CE,'r'); %Plot edge normals
-legend(hp,{'Face normals','Edge normals'});
-axisGeom;
-camlight headlight; 
-colormap viridis
-drawnow; 
-
-%% Calculate edge normals for general patch data
-
-%%
-% Create example patch surface data
-
-[F,V]=geoSphere(1,1); %A geodesic sphere triangulation
-
-%%
-% Get edge normals
-
-[NE,VE]=edgeNormal(F,V); %Get edge normals
-
-%%
-% Visualize edge normals
-
-%Use mean edge length devided by 4 as the length for visualizing edge
-%vectors.
-d=mean(patchEdgeLengths(F,V))/4; 
-
-%Create example color data for faces and edges
-C=(1:size(F,1))'; %Color data for each face equal to face numbers
-CE=[C(:,ones(size(F,2),1))]'; %Get corresponding colors for edges
-CE=CE(:);
-
-%Visualize
-cFigure; 
-gpatch(F,V,C,'k');
-hp(1)=patchNormPlot(F,V); %Plot face normals
-hp(2)=quiverVec(VE,NE,d,CE,'r'); %Plot edge normals
-legend(hp,{'Face normals','Edge normals'});
-axisGeom;
-camlight headlight; 
-colormap viridis
-drawnow; 
-
-%%
+%% edgeNormal
+% Below is a demonstration of the features of the |edgeNormal| function
+
+%%
+clear; close all; clc;
+
+%% Syntax
+% |[NE,VE]=edgeNormal(F,V);|
+
+%% Description
+% This function computes the edge normal vectors (NE), and optionally the
+% position vectors for these normal vectors (VE), for the input patch data
+% defined by faces (F) and vertices (V). 
+
+%% Examples
+
+%% Calculate edge normals for patch data for a single face
+
+%%
+% Create example patch surface data
+
+%A single triangle
+V=[0 0 0; 1 0 0; 1 1 0];
+F=[1 2 3];
+
+%%
+% Get edge normals
+
+[NE,VE]=edgeNormal(F,V); %Get edge normals
+
+%%
+% Visualize edge normals
+
+%Use mean edge length devided by 4 as the length for visualizing edge
+%vectors.
+d=mean(patchEdgeLengths(F,V))/4; 
+
+%Create example color data for faces and edges
+C=(1:size(F,1))'; %Color data for each face equal to face numbers
+CE=[C(:,ones(size(F,2),1))]'; %Get corresponding colors for edges
+CE=CE(:);
+
+%Visualize
+cFigure; 
+gpatch(F,V,C,'k');
+hp(1)=patchNormPlot(F,V); %Plot face normals
+hp(2)=quiverVec(VE,NE,d,CE,'r'); %Plot edge normals
+legend(hp,{'Face normals','Edge normals'});
+axisGeom;
+camlight headlight; 
+colormap viridis
+drawnow; 
+
+%% Calculate edge normals for general patch data
+
+%%
+% Create example patch surface data
+
+[F,V]=geoSphere(1,1); %A geodesic sphere triangulation
+
+%%
+% Get edge normals
+
+[NE,VE]=edgeNormal(F,V); %Get edge normals
+
+%%
+% Visualize edge normals
+
+%Use mean edge length devided by 4 as the length for visualizing edge
+%vectors.
+d=mean(patchEdgeLengths(F,V))/4; 
+
+%Create example color data for faces and edges
+C=(1:size(F,1))'; %Color data for each face equal to face numbers
+CE=[C(:,ones(size(F,2),1))]'; %Get corresponding colors for edges
+CE=CE(:);
+
+%Visualize
+cFigure; 
+gpatch(F,V,C,'k');
+hp(1)=patchNormPlot(F,V); %Plot face normals
+hp(2)=quiverVec(VE,NE,d,CE,'r'); %Plot edge normals
+legend(hp,{'Face normals','Edge normals'});
+axisGeom;
+camlight headlight; 
+colormap viridis
+drawnow; 
+
+%%
+%% 
+% _*GIBBON footer text*_ 
+% 
+% License: <https://github.com/gibbonCode/GIBBON/blob/master/LICENSE>
+% 
+% GIBBON: The Geometry and Image-based Bioengineering add-On. A toolbox for
+% image segmentation, image-based modeling, meshing, and finite element
+% analysis.
+% 
+% Copyright (C) 2019  Kevin Mattheus Moerman
+% 
+% This program is free software: you can redistribute it and/or modify
+% it under the terms of the GNU General Public License as published by
+% the Free Software Foundation, either version 3 of the License, or
+% (at your option) any later version.
+% 
+% This program is distributed in the hope that it will be useful,
+% but WITHOUT ANY WARRANTY; without even the implied warranty of
+% MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+% GNU General Public License for more details.
+% 
+% You should have received a copy of the GNU General Public License
+% along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 ##### SOURCE END #####
 --></body></html>

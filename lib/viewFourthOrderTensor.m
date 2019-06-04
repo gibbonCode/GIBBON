@@ -5,37 +5,32 @@ function viewFourthOrderTensor(varargin)
 
 %% Parse input
 
+numDigits=[];
+fontSizeIm=[];
+fontSize=[];
+toleranceLevel=eps(1);
 switch nargin
     case 1
-        C=varargin{1};
-        numDigits=5;
-        fontSizeIm=15;
-        fontSize=15;
+        C=varargin{1};        
         toleranceLevel=eps(1);
     case 2
         C=varargin{1};
-        numDigits=varargin{2};
-        fontSizeIm=15;
-        fontSize=15;
-        toleranceLevel=eps(1);
+        numDigits=varargin{2};                
     case 3
         C=varargin{1};
         numDigits=varargin{2};
-        fontSizeIm=varargin{3};
-        fontSize=15;
-        toleranceLevel=eps(1);
+        fontSizeIm=varargin{3};        
     case 4
         C=varargin{1};
         numDigits=varargin{2};
         fontSizeIm=varargin{3};
-        fontSize=varargin{4};
-        toleranceLevel=eps(1);
+        fontSize=varargin{4};        
     case 5        
         C=varargin{1};
         numDigits=varargin{2};
         fontSizeIm=varargin{3};
         fontSize=varargin{4};
-        toleranceLevel=eps(1);
+        toleranceLevel=varargin{5};
 end
 
 if isempty(C)
@@ -44,15 +39,15 @@ if isempty(C)
 end
 
 if isempty(numDigits)
-    numDigits=5; 
+    numDigits=3; 
 end
 
 if isempty(fontSizeIm)
-    fontSizeIm=15; 
+    fontSizeIm=30; 
 end
 
 if isempty(fontSize)
-    fontSize=15; 
+    fontSize=30; 
 end
 
 %%
@@ -70,10 +65,10 @@ kronD_KL=(K==L);
 switch class(C)
     case 'sym'
         CV=sym(zeros(6,6));
-        symOn=1;
+        logicSym=1;
     otherwise
         CV=zeros(6,6);
-        symOn=0;
+        logicSym=0;
 end
 
 
@@ -97,21 +92,15 @@ CV(ind_CV_uni)=C(ind_C_uni);
 %Derive 9x9 matrix representation
 [CM]=fourthOrderMat(C);
 
-switch class(C)
-    case 'sym'
-        logicSym=1;
-        
-        symbolicVariableSet=symvar(CM);
-        C_dummy=double(subs(CM,symbolicVariableSet,1:numel(symbolicVariableSet)));
-        logicEntry=abs(C_dummy)>toleranceLevel;
-        
-        C_dummy_V=double(subs(CV,symbolicVariableSet,1:numel(symbolicVariableSet)));
-        logicEntry_V=abs(C_dummy_V)>toleranceLevel;
-        
-    otherwise
-        logicSym=0;
-        logicEntry=abs(CM)>toleranceLevel;
-        logicEntry_V=abs(CV)>toleranceLevel;
+if logicSym
+    symbolicVariableSet=symvar(CM);
+    C_dummy=double(subs(CM,symbolicVariableSet,1:numel(symbolicVariableSet)));
+    logicEntry=abs(C_dummy)>toleranceLevel;
+    C_dummy_V=double(subs(CV,symbolicVariableSet,1:numel(symbolicVariableSet)));
+    logicEntry_V=abs(C_dummy_V)>toleranceLevel;
+else
+    logicEntry=abs(CM)>toleranceLevel;
+    logicEntry_V=abs(CV)>toleranceLevel;
 end
 
 %%
@@ -123,8 +112,9 @@ logicEntry_CV=CM_V>eps(CM_V);
 
 %%
 hf1=cFigure;
-title('9x9 array mapping of 4^{th} order tensor','fontSize',fontSize);
-xlabel('q=3*(j-1)+l','fontSize',fontSize);ylabel('p=3*(i-1)+k','fontSize',fontSize);
+title('9x9 array mapping of $4^{th}$ order tensor','fontSize',fontSize,'Interpreter','LATEX');
+xlabel('$q=3(j-1)+l$','fontSize',fontSize,'Interpreter','LATEX');
+ylabel('$p=3(i-1)+k$','fontSize',fontSize,'Interpreter','LATEX');
 
 if logicSym
     [Fp,Vp,Cp]=ind2patch(logicEntry,C_dummy,'sk');    
@@ -134,7 +124,7 @@ else
     gpatch(Fp,Vp,Cp,0.25.*ones(1,3),faceAlpha);
 end
 colormap gjet;
-if ~symOn
+if ~logicSym
     colorbar;
 end
 
@@ -148,15 +138,16 @@ patch('Faces',Fp,'Vertices',Vp,'FaceColor',0.25.*ones(1,3),'EdgeColor','k','line
 
 image_numeric(CM,hf1,numDigits,fontSizeIm,'k','tex');
 
-view(2); axis tight; axis ij;
+view(2); axis tight; axis ij; axis square;
 set(gca,'FontSize',fontSize);
 drawnow;
 
 %%
 
 hf2=cFigure;
-title('Voigt array mapping of 4^{th} order tensor','fontSize',fontSize);
-xlabel('q=k*\delta_{kl}+(1-\delta_{kl})*(9-k-l)','fontSize',fontSize);ylabel('p=i*\delta_{ij}+(1-\delta_{ij})*(9-i-j)','fontSize',fontSize);
+title('Voigt array mapping of $4^{th}$ order tensor','fontSize',fontSize,'Interpreter','LATEX');
+xlabel('$q=k\delta_{kl}+(1-\delta_{kl})(9-k-l)$','fontSize',fontSize,'Interpreter','LATEX');
+ylabel('$p=i\delta_{ij}+(1-\delta_{ij})(9-i-j)$','fontSize',fontSize,'Interpreter','LATEX');
 
 if logicSym
     [Fp,Vp,Cp]=ind2patch(logicEntry_V,C_dummy_V,'sk');
@@ -166,7 +157,7 @@ else
     gpatch(Fp,Vp,Cp,0.25.*ones(1,3),faceAlpha);
 end
 colormap gjet;
-if ~symOn
+if ~logicSym
     colorbar;
 end
 
@@ -176,7 +167,7 @@ Vp(:,[1 2])=3*Vp(:,[1 2])-1;
 patch('Faces',Fp,'Vertices',Vp,'FaceColor','none','EdgeColor','k','lineWidth',5);
 
 image_numeric(CV,hf2,numDigits,fontSizeIm,'k','tex');
-view(2); axis tight; axis ij;
+view(2); axis tight; axis ij; axis square;
 set(gca,'FontSize',fontSize);
 drawnow;
 

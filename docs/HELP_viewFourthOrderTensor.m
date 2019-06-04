@@ -37,15 +37,19 @@ C=lambda.*II1+2.*mu.*II3; %Construct 4th order stiffness tensor
 % Visualizing the tensor using |viewFourthOrderTensor|
 
 viewFourthOrderTensor(C); %Visualize tensor C
-
-%% Viewing fourth-order stiffness tensors with symbolic variables
-
-syms mu lambda; %Create symbolic Lame parameters
-C=lambda.*II1+2.*mu.*II3; %Construct 4th order stiffness tensor
-
-%%
-% Visualizing the tensor using |viewFourthOrderTensor|
-viewFourthOrderTensor(C); %Visualize tensor C
+% 
+% %% Viewing fourth-order stiffness tensors with symbolic variables
+% 
+% syms mu lambda; %Create symbolic Lame parameters
+% C=lambda.*II1+2.*mu.*II3; %Construct 4th order stiffness tensor
+% 
+% %%
+% % Visualizing the tensor using |viewFourthOrderTensor|
+% 
+% numDigits=0;
+% fontSizeIm=25;
+% fontSize=50;
+% viewFourthOrderTensor(C,numDigits,fontSizeIm,fontSize); %Visualize tensor C
 
 %%
 % 

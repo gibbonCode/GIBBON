@@ -1,0 +1,641 @@
+
+<!DOCTYPE html
+  PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html><head>
+      <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+   <!--
+This HTML was auto-generated from MATLAB code.
+To make changes, update the MATLAB code and republish this document.
+      --><title>DEMO_stent_hexahedral_sweeping_02</title><meta name="generator" content="MATLAB 9.6"><link rel="schema.DC" href="http://purl.org/dc/elements/1.1/"><meta name="DC.date" content="2019-06-04"><meta name="DC.source" content="DEMO_stent_hexahedral_sweeping_02.m"><style type="text/css">
+html,body,div,span,applet,object,iframe,h1,h2,h3,h4,h5,h6,p,blockquote,pre,a,abbr,acronym,address,big,cite,code,del,dfn,em,font,img,ins,kbd,q,s,samp,small,strike,strong,sub,sup,tt,var,b,u,i,center,dl,dt,dd,ol,ul,li,fieldset,form,label,legend,table,caption,tbody,tfoot,thead,tr,th,td{margin:0;padding:0;border:0;outline:0;font-size:100%;vertical-align:baseline;background:transparent}body{line-height:1}ol,ul{list-style:none}blockquote,q{quotes:none}blockquote:before,blockquote:after,q:before,q:after{content:'';content:none}:focus{outine:0}ins{text-decoration:none}del{text-decoration:line-through}table{border-collapse:collapse;border-spacing:0}
+
+html { min-height:100%; margin-bottom:1px; }
+html body { height:100%; margin:0px; font-family:Arial, Helvetica, sans-serif; font-size:10px; color:#000; line-height:140%; background:#fff none; overflow-y:scroll; }
+html body td { vertical-align:top; text-align:left; }
+
+h1 { padding:0px; margin:0px 0px 25px; font-family:Arial, Helvetica, sans-serif; font-size:1.5em; color:#d55000; line-height:100%; font-weight:normal; }
+h2 { padding:0px; margin:0px 0px 8px; font-family:Arial, Helvetica, sans-serif; font-size:1.2em; color:#000; font-weight:bold; line-height:140%; border-bottom:1px solid #d6d4d4; display:block; }
+h3 { padding:0px; margin:0px 0px 5px; font-family:Arial, Helvetica, sans-serif; font-size:1.1em; color:#000; font-weight:bold; line-height:140%; }
+
+a { color:#005fce; text-decoration:none; }
+a:hover { color:#005fce; text-decoration:underline; }
+a:visited { color:#004aa0; text-decoration:none; }
+
+p { padding:0px; margin:0px 0px 20px; }
+img { padding:0px; margin:0px 0px 20px; border:none; }
+p img, pre img, tt img, li img, h1 img, h2 img { margin-bottom:0px; } 
+
+ul { padding:0px; margin:0px 0px 20px 23px; list-style:square; }
+ul li { padding:0px; margin:0px 0px 7px 0px; }
+ul li ul { padding:5px 0px 0px; margin:0px 0px 7px 23px; }
+ul li ol li { list-style:decimal; }
+ol { padding:0px; margin:0px 0px 20px 0px; list-style:decimal; }
+ol li { padding:0px; margin:0px 0px 7px 23px; list-style-type:decimal; }
+ol li ol { padding:5px 0px 0px; margin:0px 0px 7px 0px; }
+ol li ol li { list-style-type:lower-alpha; }
+ol li ul { padding-top:7px; }
+ol li ul li { list-style:square; }
+
+.content { font-size:1.2em; line-height:140%; padding: 20px; }
+
+pre, code { font-size:12px; }
+tt { font-size: 1.2em; }
+pre { margin:0px 0px 20px; }
+pre.codeinput { padding:10px; border:1px solid #d3d3d3; background:#f7f7f7; }
+pre.codeoutput { padding:10px 11px; margin:0px 0px 20px; color:#4c4c4c; }
+pre.error { color:red; }
+
+@media print { pre.codeinput, pre.codeoutput { word-wrap:break-word; width:100%; } }
+
+span.keyword { color:#0000FF }
+span.comment { color:#228B22 }
+span.string { color:#A020F0 }
+span.untermstring { color:#B20000 }
+span.syscmd { color:#B28C00 }
+
+.footer { width:auto; padding:10px 0px; margin:25px 0px 0px; border-top:1px dotted #878787; font-size:0.8em; line-height:140%; font-style:italic; color:#878787; text-align:left; float:none; }
+.footer p { margin:0px; }
+.footer a { color:#878787; }
+.footer a:hover { color:#878787; text-decoration:underline; }
+.footer a:visited { color:#878787; }
+
+table th { padding:7px 5px; text-align:left; vertical-align:middle; border: 1px solid #d6d4d4; font-weight:bold; }
+table td { padding:7px 5px; text-align:left; vertical-align:top; border:1px solid #d6d4d4; }
+
+
+
+
+
+  </style></head><body><div class="content"><h1>DEMO_stent_hexahedral_sweeping_02</h1><!--introduction--><p>Below is a demonstration for:</p><div><ul><li>Creating a hexahedral mesh for a vascular stent by sweeping allong a curve and copying over the segments.</li></ul></div><!--/introduction--><h2>Contents</h2><div><ul><li><a href="#1">Keywords</a></li><li><a href="#4">Contol parameters</a></li><li><a href="#12">Merge components</a></li><li><a href="#14">Export inp file</a></li><li><a href="#15">FUNCTIONS</a></li><li><a href="#17">parse input</a></li><li><a href="#18">plot settings</a></li><li><a href="#19">Build stent section</a></li><li><a href="#21">Create guide curve</a></li><li><a href="#23">Position stent section at the start and end of the guide curve</a></li><li><a href="#25">Sweeping section allong curve</a></li><li><a href="#26">Construct hexahedral mesh</a></li><li><a href="#27">Refine mesh</a></li></ul></div><h2 id="1">Keywords</h2><div><ul><li>Sweeping, sweepLoft</li><li>Hexahedral mesh</li><li>stent, vascular</li><li>Exporting Abaqus, .inp</li></ul></div><pre class="codeinput">clear; close <span class="string">all</span>; clc;
+</pre><p>plot settings</p><pre class="codeinput">fontSize=25;
+markerSize=10;
+lineWidth=3;
+</pre><h2 id="4">Contol parameters</h2><pre class="codeinput">controlParameterSet.stentRadius=3; <span class="comment">%The outer radius of the stent</span>
+controlParameterSet.numPeriodsWave=10; <span class="comment">%The number of periods to use for a sinusoidal modulation</span>
+numStepsPeriod=100; <span class="comment">%Number of sweeping steps allong a single period segment for sweeping</span>
+controlParameterSet.stentSectionHeight=0.1; <span class="comment">%Height of the stent wire</span>
+controlParameterSet.stentSectionWidth=0.1; <span class="comment">%Width of the stent wire</span>
+controlParameterSet.numStepsCircumference=(controlParameterSet.numPeriodsWave*numStepsPeriod)+1; <span class="comment">%Number of sweeping steps across curve</span>
+controlParameterSet.overSampleFactorCurve=10; <span class="comment">%Oversample factor curve</span>
+controlParameterSet.numSplitSteps_axial=1;
+controlParameterSet.numSplitSteps_inward=1;
+controlParameterSet.plotOn=0;
+<span class="comment">% controlParameterSet.waveAmplitude=0.9; %Amplitude of the sinusoidal modulation</span>
+
+sheetLayerThickness=0.025;
+numStepsSheet=1;
+</pre><pre class="codeinput">numSegments=8;
+waveAmplitudes=0.6*ones(1,numSegments);
+waveAmplitudes(2)=0.9;
+offsetLevels=waveAmplitudes*2;
+
+offSetTotal=0;
+
+cFigure; hold <span class="string">on</span>;
+title(<span class="string">'Stent hexahedral mesh'</span>,<span class="string">'fontSize'</span>,fontSize);
+colormap(gjet(4)); caxis([1 4]); icolorbar;
+axisGeom;
+camlight <span class="string">headlight</span>;
+drawnow;
+
+E_stent_cell=cell(numSegments,1);
+V_stent_cell=cell(numSegments,1);
+E_sheet_cell=cell(numSegments,1);
+V_sheet_cell=cell(numSegments,1);
+<span class="keyword">for</span> q=1:1:numSegments
+</pre><pre class="codeinput">    controlParameterSet.waveAmplitude=waveAmplitudes(q); <span class="comment">%Amplitude of the sinusoidal modulation</span>
+    [E,V]=stentSegmentDesign(controlParameterSet);
+
+    offSetTotal=offSetTotal+offsetLevels(q);
+    V(:,3)=V(:,3)+offSetTotal;
+</pre><pre class="codeinput">    C=hexVol(E,V); <span class="comment">%Get hexahedral element volumes</span>
+
+    [F,CF]=element2patch(E,C); <span class="comment">%Create face data for plotting</span>
+
+    [indBoundary]=tesBoundary(F,V);
+    faceMarker=ones(size(E,1),1)*(1:6); <span class="comment">%The 6 face colors for the hexahedral faces</span>
+    faceMarker=faceMarker(:); <span class="comment">%Force as a column</span>
+    Fb=F(indBoundary,:); <span class="comment">%Select the boundary faces (which will exclude tops (1) and bottoms (2))</span>
+    faceBoundaryMarker=faceMarker(indBoundary,:)-2; <span class="comment">%Get boundary colors and subtract 2 so they are 1-4</span>
+</pre><pre class="codeinput">    gpatch(Fb,V,faceBoundaryMarker,<span class="string">'k'</span>,1);
+</pre><img width="100%" height="auto" vspace="5" hspace="5" src="DEMO_stent_hexahedral_sweeping_02_01.jpg" alt=""> <img width="100%" height="auto" vspace="5" hspace="5" src="DEMO_stent_hexahedral_sweeping_02_04.jpg" alt=""> <img width="100%" height="auto" vspace="5" hspace="5" src="DEMO_stent_hexahedral_sweeping_02_07.jpg" alt=""> <img width="100%" height="auto" vspace="5" hspace="5" src="DEMO_stent_hexahedral_sweeping_02_10.jpg" alt=""> <img width="100%" height="auto" vspace="5" hspace="5" src="DEMO_stent_hexahedral_sweeping_02_13.jpg" alt=""> <img width="100%" height="auto" vspace="5" hspace="5" src="DEMO_stent_hexahedral_sweeping_02_16.jpg" alt=""> <img width="100%" height="auto" vspace="5" hspace="5" src="DEMO_stent_hexahedral_sweeping_02_19.jpg" alt=""> <img width="100%" height="auto" vspace="5" hspace="5" src="DEMO_stent_hexahedral_sweeping_02_22.jpg" alt=""> <pre class="codeinput">    F_inner = Fb(faceBoundaryMarker==2,:);
+    [edgesBoundaryInner]=patchBoundary(F_inner,V);
+
+    edgesBottom=F_inner(:,[4 1]);
+    edgesTop=F_inner(:,[2 3]);
+
+    edgesBoundaryInnerTop=edgesBoundaryInner(all(ismember(edgesBoundaryInner,edgesTop),2),:);
+    edgesBoundaryInnerBottom=edgesBoundaryInner(all(ismember(edgesBoundaryInner,edgesBottom),2),:);
+
+    indCurveTop=edgeListToCurve(edgesBoundaryInnerTop);
+    indCurveTop=flip(indCurveTop(1:end-1));
+    indCurveBottom=edgeListToCurve(edgesBoundaryInnerBottom);
+    indCurveBottom=indCurveBottom(1:end-1);
+
+    plotV(V(indCurveTop(:),:),<span class="string">'r-'</span>,<span class="string">'LineWidth'</span>,lineWidth);
+    plotV(V(indCurveBottom(:),:),<span class="string">'b-'</span>,<span class="string">'LineWidth'</span>,lineWidth);
+
+    drawnow;
+</pre><img width="100%" height="auto" vspace="5" hspace="5" src="DEMO_stent_hexahedral_sweeping_02_02.jpg" alt=""> <img width="100%" height="auto" vspace="5" hspace="5" src="DEMO_stent_hexahedral_sweeping_02_05.jpg" alt=""> <img width="100%" height="auto" vspace="5" hspace="5" src="DEMO_stent_hexahedral_sweeping_02_08.jpg" alt=""> <img width="100%" height="auto" vspace="5" hspace="5" src="DEMO_stent_hexahedral_sweeping_02_11.jpg" alt=""> <img width="100%" height="auto" vspace="5" hspace="5" src="DEMO_stent_hexahedral_sweeping_02_14.jpg" alt=""> <img width="100%" height="auto" vspace="5" hspace="5" src="DEMO_stent_hexahedral_sweeping_02_17.jpg" alt=""> <img width="100%" height="auto" vspace="5" hspace="5" src="DEMO_stent_hexahedral_sweeping_02_20.jpg" alt=""> <img width="100%" height="auto" vspace="5" hspace="5" src="DEMO_stent_hexahedral_sweeping_02_23.jpg" alt=""> <pre class="codeinput">   <span class="keyword">if</span> q==1
+       [FQ,VQ]=patchCleanUnused(F_inner,V);
+   <span class="keyword">else</span>
+       cPar.closeLoopOpt=1;
+       cPar.patchType=<span class="string">'quad'</span>;
+       [Fq,Vq]=polyLoftLinear(V_curveTopPrevious,V(indCurveBottom(:),:),cPar);
+<span class="comment">%        gpatch(Fq,Vq,'rw','rw',1);</span>
+       [F_inner_clean,V_inner_clean]=patchCleanUnused(F_inner,V);
+       [FQ,VQ]=joinElementSets({Fq,F_inner_clean},{Vq,V_inner_clean});
+       [FQ,VQ]=mergeVertices(FQ,VQ);
+<span class="comment">%        gpatch(FQ,VQ,'rw','rw',1);</span>
+<span class="comment">%        patchNormPlot(FQ,VQ);</span>
+   <span class="keyword">end</span>
+
+   [E_sheet,V_sheet,Fq1,Fq2]=quadThick(FQ,VQ,1,sheetLayerThickness,numStepsSheet);
+
+   [F_sheet]=element2patch(E_sheet); <span class="comment">%Create face data for plotting</span>
+   gpatch(F_sheet,V_sheet,<span class="string">'gw'</span>,<span class="string">'gw'</span>,1);
+   <span class="comment">%        patchNormPlot(F_sheet,V_sheet);</span>
+
+   E_sheet_cell{q}=E_sheet;
+   V_sheet_cell{q}=V_sheet;
+
+   V_curveTopPrevious=V(indCurveTop(:),:);
+
+   E_stent_cell{q}=E;
+   V_stent_cell{q}=V;
+</pre><img width="100%" height="auto" vspace="5" hspace="5" src="DEMO_stent_hexahedral_sweeping_02_03.jpg" alt=""> <img width="100%" height="auto" vspace="5" hspace="5" src="DEMO_stent_hexahedral_sweeping_02_06.jpg" alt=""> <img width="100%" height="auto" vspace="5" hspace="5" src="DEMO_stent_hexahedral_sweeping_02_09.jpg" alt=""> <img width="100%" height="auto" vspace="5" hspace="5" src="DEMO_stent_hexahedral_sweeping_02_12.jpg" alt=""> <img width="100%" height="auto" vspace="5" hspace="5" src="DEMO_stent_hexahedral_sweeping_02_15.jpg" alt=""> <img width="100%" height="auto" vspace="5" hspace="5" src="DEMO_stent_hexahedral_sweeping_02_18.jpg" alt=""> <img width="100%" height="auto" vspace="5" hspace="5" src="DEMO_stent_hexahedral_sweeping_02_21.jpg" alt=""> <img width="100%" height="auto" vspace="5" hspace="5" src="DEMO_stent_hexahedral_sweeping_02_24.jpg" alt=""> <pre class="codeinput"><span class="keyword">end</span>
+</pre><h2 id="12">Merge components</h2><pre class="codeinput">[E_stent,V_stent,C_stent]=joinElementSets(E_stent_cell,V_stent_cell);
+[E_sheet,V_sheet,C_sheet]=joinElementSets(E_sheet_cell,V_sheet_cell);
+[E,V,C]=joinElementSets({E_stent,E_sheet},{V_stent,V_sheet},{C_stent,C_sheet+max(C_stent)});
+[E,V]=mergeVertices(E,V);
+
+[F,CF]=element2patch(E,C); <span class="comment">%Create face data for plotting</span>
+</pre><pre class="codeinput">cFigure; hold <span class="string">on</span>;
+title(<span class="string">'Stent hexahedral mesh'</span>,<span class="string">'fontSize'</span>,fontSize);
+gpatch(F,V,CF,<span class="string">'none'</span>,1);
+<span class="comment">% patchNormPlot(F,V);</span>
+colormap <span class="string">gjet</span>; icolorbar
+axisGeom;
+camlight <span class="string">headlight</span>;
+drawnow;
+</pre><img width="100%" height="auto" vspace="5" hspace="5" src="DEMO_stent_hexahedral_sweeping_02_25.jpg" alt=""> <h2 id="14">Export inp file</h2><p>elementStruct.E=E; elementStruct.E_ind=(1:size(E,1))'; elementStruct.E_type='*ELEMENT, TYPE=C3D8, ELSET=PART-STENT'; nodeStruct.N=V; nodeStruct.N_ind=(1:size(V,1))';</p><p>pathName = fileparts(fileparts(mfilename('fullpath'))); fileName=fullfile(pathName,'data','INP','stentMeshSheet.inp'); export_INP(elementStruct,nodeStruct,fileName);</p><h2 id="15">FUNCTIONS</h2><pre class="codeinput"><span class="keyword">function</span> [E,V]=stentSegmentDesign(controlParameterSet)
+</pre><h2 id="17">parse input</h2><pre class="codeinput">stentRadius=controlParameterSet.stentRadius; <span class="comment">%The outer radius of the stent</span>
+numPeriodsWave=controlParameterSet.numPeriodsWave; <span class="comment">%The number of periods to use for a sinusoidal modulation</span>
+waveAmplitude=controlParameterSet.waveAmplitude; <span class="comment">%Amplitude of the sinusoidal modulation</span>
+stentSectionHeight=controlParameterSet.stentSectionHeight; <span class="comment">%Height of the stent wire</span>
+stentSectionWidth=controlParameterSet.stentSectionWidth; <span class="comment">%Width of the stent wire</span>
+numStepsCircumference=controlParameterSet.numStepsCircumference; <span class="comment">%Number of sweeping steps across curve</span>
+overSampleFactorCurve=controlParameterSet.overSampleFactorCurve; <span class="comment">%Oversample factor curve</span>
+numSplitSteps_axial=controlParameterSet.numSplitSteps_axial;
+numSplitSteps_inward=controlParameterSet.numSplitSteps_inward;
+plotOn=controlParameterSet.plotOn;
+</pre><h2 id="18">plot settings</h2><pre class="codeinput"><span class="keyword">if</span> plotOn==1
+    fontSize=25;
+    markerSize=10;
+    lineWidth=1;
+<span class="keyword">end</span>
+</pre><h2 id="19">Build stent section</h2><p>The rectangular stent wire section is created here.</p><pre class="codeinput">V_section=[-stentSectionWidth/2  stentSectionHeight/2 0; <span class="keyword">...</span>
+    stentSectionWidth/2  stentSectionHeight/2 0; <span class="keyword">...</span>
+    stentSectionWidth/2 -stentSectionHeight/2 0; <span class="keyword">...</span>
+    -stentSectionWidth/2 -stentSectionHeight/2 0; <span class="keyword">...</span>
+    ];
+</pre><p>V=isualize stent section</p><pre class="codeinput"><span class="keyword">if</span> plotOn==1
+    cFigure; hold <span class="string">on</span>;
+    title(<span class="string">'Stent section'</span>,<span class="string">'fontSize'</span>,fontSize);
+    plotV(V_section,<span class="string">'b.-'</span>,<span class="string">'lineWidth'</span>,lineWidth,<span class="string">'MarkerSize'</span>,markerSize);
+    view(2); axis <span class="string">tight</span>; axis <span class="string">equal</span>; grid <span class="string">on</span>; box <span class="string">on</span>;
+    set(gca,<span class="string">'fontSize'</span>,fontSize);
+    drawnow;
+<span class="keyword">end</span>
+</pre><h2 id="21">Create guide curve</h2><p>The sweepLoft (see <tt>HELP_sweepLoft</tt>) is created here. First and angle based parameterization is created. Next this curve is evenly sample across the curve length (see <tt>HELP_evenlySampleCurve</tt>).</p><pre class="codeinput">t=linspace(0,2*pi,numStepsCircumference*overSampleFactorCurve); <span class="comment">%Angles</span>
+t=t(1:end-1); <span class="comment">%Remove last point so it is not closed for resampling</span>
+x=stentRadius.*sin(t); <span class="comment">%x-coordinates</span>
+y=stentRadius.*cos(t); <span class="comment">%y-coordinates</span>
+z=waveAmplitude.*sin(numPeriodsWave*t); <span class="comment">%z-coordinates</span>
+V_guide_curve=[x(:) y(:) z(:)]; <span class="comment">%Collected curve nodes</span>
+[V_guide_curve] = evenlySampleCurve(V_guide_curve,numStepsCircumference-1,<span class="string">'pchip'</span>,1); <span class="comment">%Resample curve evenly</span>
+V_guide_curve(end+1,:)=V_guide_curve(1,:); <span class="comment">%Append start to end so it is a closed loop</span>
+</pre><p>Visualize guide curve</p><pre class="codeinput"><span class="keyword">if</span> plotOn==1
+    cFigure; hold <span class="string">on</span>;
+    title(<span class="string">'Stent guide curve'</span>,<span class="string">'fontSize'</span>,fontSize);
+    plotV(V_guide_curve,<span class="string">'k.-'</span>,<span class="string">'lineWidth'</span>,lineWidth,<span class="string">'MarkerSize'</span>,markerSize);
+    axisGeom;
+    drawnow;
+<span class="keyword">end</span>
+</pre><h2 id="23">Position stent section at the start and end of the guide curve</h2><p>Next the section is translated and rotated so it is placed at the start of the guide curve such that the curve normal points allong the curve.</p><pre class="codeinput"><span class="comment">% Create rotation matrix</span>
+n3=vecnormalize(V_guide_curve(2,:)-V_guide_curve(1,:)); <span class="comment">%Out of section normal direction z ish direction</span>
+[~,indMin]=min(dot(n3(ones(1,2),:),[1 0 0; 0 1 0],2)); <span class="comment">%Get index most appropriate initial other axis</span>
+<span class="keyword">switch</span> indMin
+    <span class="keyword">case</span> 1
+        n1=[1 0 0]; <span class="comment">%Initialized x direction</span>
+        n2=vecnormalize(cross(n3,n1)); <span class="comment">%y ish direction</span>
+        n1=vecnormalize(cross(n2,n3)); <span class="comment">%Proper x ish direction</span>
+        R=[n1; n2; n3]; <span class="comment">%Rotation matrix</span>
+    <span class="keyword">case</span> 2
+        n2=[0 1 0]; <span class="comment">%Initialized y direction</span>
+        n1=vecnormalize(cross(n2,n3)); <span class="comment">%x ish direction</span>
+        n2=vecnormalize(cross(n3,n1)); <span class="comment">%Proper y ish direction</span>
+        R=[n1; n2; n3]; <span class="comment">%Rotation matrix</span>
+<span class="keyword">end</span>
+
+p1=V_guide_curve(1,:); <span class="comment">%The start node</span>
+V_section=V_section*R; <span class="comment">%Rotate the section</span>
+V_section=V_section+p1(ones(size(V_section,1),1),:); <span class="comment">% Translate coordinate to start</span>
+</pre><p>Visualize guide curve</p><pre class="codeinput"><span class="keyword">if</span> plotOn==1
+    cFigure; hold <span class="string">on</span>;
+    title(<span class="string">'Stent section positioned on guide curve'</span>,<span class="string">'fontSize'</span>,fontSize);
+    plotV(V_guide_curve,<span class="string">'k-'</span>,<span class="string">'lineWidth'</span>,1);
+    plotV(V_section,<span class="string">'k.-'</span>,<span class="string">'lineWidth'</span>,lineWidth,<span class="string">'MarkerSize'</span>,markerSize);
+    quiverVec(p1,n1,1,<span class="string">'r'</span>);
+    quiverVec(p1,n2,1,<span class="string">'g'</span>);
+    quiverVec(p1,n3,1,<span class="string">'b'</span>);
+    axisGeom;
+    drawnow;
+<span class="keyword">end</span>
+</pre><h2 id="25">Sweeping section allong curve</h2><p>Normally <tt>sweepLoft</tt> produces patch data as an output (e.g. faces and vertices). However these outputs are supressed here and the coordinate mesh output is instead used to create a hexahedral mesh. See also <tt>HELP_sweepLoft</tt></p><pre class="codeinput">numTwist=0; <span class="comment">%Number of additional twists of loft feature around guide curve</span>
+numStepsSweep=numStepsCircumference; <span class="comment">%Number of steps for loft feature from sketch 1 to sketch 2</span>
+[~,~,~,S]=sweepLoft(V_section,V_section,n3,n3,V_guide_curve,numStepsSweep,numTwist,0);
+</pre><h2 id="26">Construct hexahedral mesh</h2><pre class="codeinput">X=S.X'; Y=S.Y'; Z=S.Z'; <span class="comment">%Coordinate matrices</span>
+V=[X(:) Y(:) Z(:)]; <span class="comment">%Create node list</span>
+
+F=reshape((1:1:size(V,1)),4,size(V,1)/4)'; <span class="comment">%All top and bottom faces</span>
+E=[F(2:end,:) F(1:end-1,:)]; <span class="comment">%The hexahedral elements</span>
+[E,V]=mergeVertices(E,V); <span class="comment">%Merge nodes (start and end are not shared yet)</span>
+</pre><h2 id="27">Refine mesh</h2><p>The swept mesh can be refined through slitting. The splitting can be homogeneous or only in a particular direction (see HELP_subHex|) Split method explanation: 1: Overall splitting in all directions 2: Split allong curve direction 3: Split axially 4: Splint inward</p><pre class="codeinput">splitMethod=3;
+nRefine=numSplitSteps_axial;
+[E,V]=subHex(E,V,nRefine,splitMethod);
+
+splitMethod=4;
+nRefine=numSplitSteps_inward;
+[E,V]=subHex(E,V,nRefine,splitMethod);
+</pre><p>Visualize hexahedral mesh</p><pre class="codeinput"><span class="keyword">if</span> plotOn==1
+
+    [F]=element2patch(E); <span class="comment">%Create face data for plotting</span>
+
+    cFigure; hold <span class="string">on</span>;
+    title(<span class="string">'Stent hexahedral mesh'</span>,<span class="string">'fontSize'</span>,fontSize);
+    plotV(V_guide_curve,<span class="string">'k-'</span>,<span class="string">'lineWidth'</span>,3);
+    gpatch(F,V,<span class="string">'gw'</span>,<span class="string">'k'</span>,1);
+    patchNormPlot(F,V);
+    axisGeom;
+    camlight <span class="string">headlight</span>;
+    drawnow;
+<span class="keyword">end</span>
+</pre><pre class="codeinput"><span class="keyword">end</span>
+</pre><p><i><b>GIBBON footer text</b></i></p><p>License: <a href="https://github.com/gibbonCode/GIBBON/blob/master/LICENSE">https://github.com/gibbonCode/GIBBON/blob/master/LICENSE</a></p><p>GIBBON: The Geometry and Image-based Bioengineering add-On. A toolbox for image segmentation, image-based modeling, meshing, and finite element analysis.</p><p>Copyright (C) 2019  Kevin Mattheus Moerman</p><p>This program is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.</p><p>This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for more details.</p><p>You should have received a copy of the GNU General Public License along with this program.  If not, see <a href="http://www.gnu.org/licenses/">http://www.gnu.org/licenses/</a>.</p><p class="footer"><br><a href="https://www.mathworks.com/products/matlab/">Published with MATLAB&reg; R2019a</a><br></p></div><!--
+##### SOURCE BEGIN #####
+%% DEMO_stent_hexahedral_sweeping_02
+% Below is a demonstration for:
+%
+% * Creating a hexahedral mesh for a vascular stent by sweeping allong a
+% curve and copying over the segments.
+
+%% Keywords
+% * Sweeping, sweepLoft
+% * Hexahedral mesh
+% * stent, vascular
+% * Exporting Abaqus, .inp
+
+%%
+clear; close all; clc;
+
+%%
+% plot settings
+
+fontSize=25;
+markerSize=10;
+lineWidth=3;
+
+%% Contol parameters
+
+controlParameterSet.stentRadius=3; %The outer radius of the stent
+controlParameterSet.numPeriodsWave=10; %The number of periods to use for a sinusoidal modulation
+numStepsPeriod=100; %Number of sweeping steps allong a single period segment for sweeping
+controlParameterSet.stentSectionHeight=0.1; %Height of the stent wire
+controlParameterSet.stentSectionWidth=0.1; %Width of the stent wire
+controlParameterSet.numStepsCircumference=(controlParameterSet.numPeriodsWave*numStepsPeriod)+1; %Number of sweeping steps across curve
+controlParameterSet.overSampleFactorCurve=10; %Oversample factor curve
+controlParameterSet.numSplitSteps_axial=1;
+controlParameterSet.numSplitSteps_inward=1;
+controlParameterSet.plotOn=0;
+% controlParameterSet.waveAmplitude=0.9; %Amplitude of the sinusoidal modulation
+
+sheetLayerThickness=0.025;
+numStepsSheet=1; 
+
+%%
+
+numSegments=8;
+waveAmplitudes=0.6*ones(1,numSegments);
+waveAmplitudes(2)=0.9; 
+offsetLevels=waveAmplitudes*2; 
+
+offSetTotal=0;
+
+cFigure; hold on;
+title('Stent hexahedral mesh','fontSize',fontSize);
+colormap(gjet(4)); caxis([1 4]); icolorbar;
+axisGeom;
+camlight headlight;
+drawnow;
+    
+E_stent_cell=cell(numSegments,1);
+V_stent_cell=cell(numSegments,1);
+E_sheet_cell=cell(numSegments,1);
+V_sheet_cell=cell(numSegments,1);
+for q=1:1:numSegments
+    
+    controlParameterSet.waveAmplitude=waveAmplitudes(q); %Amplitude of the sinusoidal modulation
+    [E,V]=stentSegmentDesign(controlParameterSet);
+    
+    offSetTotal=offSetTotal+offsetLevels(q);
+    V(:,3)=V(:,3)+offSetTotal;
+    
+    %%
+    
+    C=hexVol(E,V); %Get hexahedral element volumes
+    
+    [F,CF]=element2patch(E,C); %Create face data for plotting
+    
+    [indBoundary]=tesBoundary(F,V);
+    faceMarker=ones(size(E,1),1)*(1:6); %The 6 face colors for the hexahedral faces    
+    faceMarker=faceMarker(:); %Force as a column
+    Fb=F(indBoundary,:); %Select the boundary faces (which will exclude tops (1) and bottoms (2))
+    faceBoundaryMarker=faceMarker(indBoundary,:)-2; %Get boundary colors and subtract 2 so they are 1-4
+    
+    %%
+    gpatch(Fb,V,faceBoundaryMarker,'k',1);
+   
+    %%
+    
+    F_inner = Fb(faceBoundaryMarker==2,:);
+    [edgesBoundaryInner]=patchBoundary(F_inner,V);
+    
+    edgesBottom=F_inner(:,[4 1]);
+    edgesTop=F_inner(:,[2 3]);
+    
+    edgesBoundaryInnerTop=edgesBoundaryInner(all(ismember(edgesBoundaryInner,edgesTop),2),:);
+    edgesBoundaryInnerBottom=edgesBoundaryInner(all(ismember(edgesBoundaryInner,edgesBottom),2),:);
+    
+    indCurveTop=edgeListToCurve(edgesBoundaryInnerTop);
+    indCurveTop=flip(indCurveTop(1:end-1));
+    indCurveBottom=edgeListToCurve(edgesBoundaryInnerBottom);
+    indCurveBottom=indCurveBottom(1:end-1);
+    
+    plotV(V(indCurveTop(:),:),'r-','LineWidth',lineWidth);
+    plotV(V(indCurveBottom(:),:),'b-','LineWidth',lineWidth);
+    
+    drawnow; 
+    
+   %%
+   if q==1
+       [FQ,VQ]=patchCleanUnused(F_inner,V);
+   else
+       cPar.closeLoopOpt=1;
+       cPar.patchType='quad';
+       [Fq,Vq]=polyLoftLinear(V_curveTopPrevious,V(indCurveBottom(:),:),cPar);       
+%        gpatch(Fq,Vq,'rw','rw',1);
+       [F_inner_clean,V_inner_clean]=patchCleanUnused(F_inner,V);
+       [FQ,VQ]=joinElementSets({Fq,F_inner_clean},{Vq,V_inner_clean});
+       [FQ,VQ]=mergeVertices(FQ,VQ);
+%        gpatch(FQ,VQ,'rw','rw',1);
+%        patchNormPlot(FQ,VQ);
+   end
+
+   [E_sheet,V_sheet,Fq1,Fq2]=quadThick(FQ,VQ,1,sheetLayerThickness,numStepsSheet);
+   
+   [F_sheet]=element2patch(E_sheet); %Create face data for plotting
+   gpatch(F_sheet,V_sheet,'gw','gw',1);
+   %        patchNormPlot(F_sheet,V_sheet);
+
+   E_sheet_cell{q}=E_sheet;
+   V_sheet_cell{q}=V_sheet;
+   
+   V_curveTopPrevious=V(indCurveTop(:),:); 
+   
+   E_stent_cell{q}=E;
+   V_stent_cell{q}=V;
+   
+end
+
+%% Merge components
+
+[E_stent,V_stent,C_stent]=joinElementSets(E_stent_cell,V_stent_cell);
+[E_sheet,V_sheet,C_sheet]=joinElementSets(E_sheet_cell,V_sheet_cell);
+[E,V,C]=joinElementSets({E_stent,E_sheet},{V_stent,V_sheet},{C_stent,C_sheet+max(C_stent)});
+[E,V]=mergeVertices(E,V);
+    
+[F,CF]=element2patch(E,C); %Create face data for plotting
+
+%%
+cFigure; hold on;
+title('Stent hexahedral mesh','fontSize',fontSize);
+gpatch(F,V,CF,'none',1);
+% patchNormPlot(F,V);
+colormap gjet; icolorbar
+axisGeom;
+camlight headlight;
+drawnow;
+
+%% Export inp file
+% 
+% elementStruct.E=E;
+% elementStruct.E_ind=(1:size(E,1))';
+% elementStruct.E_type='*ELEMENT, TYPE=C3D8, ELSET=PART-STENT';
+% nodeStruct.N=V;
+% nodeStruct.N_ind=(1:size(V,1))';
+% 
+% pathName = fileparts(fileparts(mfilename('fullpath')));
+% fileName=fullfile(pathName,'data','INP','stentMeshSheet.inp');
+% export_INP(elementStruct,nodeStruct,fileName);
+
+
+%% FUNCTIONS
+
+function [E,V]=stentSegmentDesign(controlParameterSet)
+
+%% parse input
+
+stentRadius=controlParameterSet.stentRadius; %The outer radius of the stent
+numPeriodsWave=controlParameterSet.numPeriodsWave; %The number of periods to use for a sinusoidal modulation
+waveAmplitude=controlParameterSet.waveAmplitude; %Amplitude of the sinusoidal modulation
+stentSectionHeight=controlParameterSet.stentSectionHeight; %Height of the stent wire
+stentSectionWidth=controlParameterSet.stentSectionWidth; %Width of the stent wire
+numStepsCircumference=controlParameterSet.numStepsCircumference; %Number of sweeping steps across curve
+overSampleFactorCurve=controlParameterSet.overSampleFactorCurve; %Oversample factor curve
+numSplitSteps_axial=controlParameterSet.numSplitSteps_axial;
+numSplitSteps_inward=controlParameterSet.numSplitSteps_inward;
+plotOn=controlParameterSet.plotOn;
+
+%% plot settings
+if plotOn==1
+    fontSize=25;
+    markerSize=10;
+    lineWidth=1;
+end
+
+%% Build stent section
+% The rectangular stent wire section is created here.
+
+V_section=[-stentSectionWidth/2  stentSectionHeight/2 0; ...
+    stentSectionWidth/2  stentSectionHeight/2 0; ...
+    stentSectionWidth/2 -stentSectionHeight/2 0; ...
+    -stentSectionWidth/2 -stentSectionHeight/2 0; ...
+    ];
+
+%%
+% V=isualize stent section
+if plotOn==1
+    cFigure; hold on;
+    title('Stent section','fontSize',fontSize);
+    plotV(V_section,'b.-','lineWidth',lineWidth,'MarkerSize',markerSize);
+    view(2); axis tight; axis equal; grid on; box on;
+    set(gca,'fontSize',fontSize);
+    drawnow;
+end
+
+%% Create guide curve
+% The sweepLoft (see |HELP_sweepLoft|) is created here. First and angle
+% based parameterization is created. Next this curve is evenly sample
+% across the curve length (see |HELP_evenlySampleCurve|).
+t=linspace(0,2*pi,numStepsCircumference*overSampleFactorCurve); %Angles
+t=t(1:end-1); %Remove last point so it is not closed for resampling
+x=stentRadius.*sin(t); %x-coordinates
+y=stentRadius.*cos(t); %y-coordinates
+z=waveAmplitude.*sin(numPeriodsWave*t); %z-coordinates
+V_guide_curve=[x(:) y(:) z(:)]; %Collected curve nodes
+[V_guide_curve] = evenlySampleCurve(V_guide_curve,numStepsCircumference-1,'pchip',1); %Resample curve evenly
+V_guide_curve(end+1,:)=V_guide_curve(1,:); %Append start to end so it is a closed loop
+
+%%
+% Visualize guide curve
+if plotOn==1
+    cFigure; hold on;
+    title('Stent guide curve','fontSize',fontSize);
+    plotV(V_guide_curve,'k.-','lineWidth',lineWidth,'MarkerSize',markerSize);
+    axisGeom;
+    drawnow;
+end
+
+%% Position stent section at the start and end of the guide curve
+% Next the section is translated and rotated so it is placed at the start
+% of the guide curve such that the curve normal points allong the curve.
+
+% Create rotation matrix
+n3=vecnormalize(V_guide_curve(2,:)-V_guide_curve(1,:)); %Out of section normal direction z ish direction
+[~,indMin]=min(dot(n3(ones(1,2),:),[1 0 0; 0 1 0],2)); %Get index most appropriate initial other axis
+switch indMin
+    case 1
+        n1=[1 0 0]; %Initialized x direction
+        n2=vecnormalize(cross(n3,n1)); %y ish direction
+        n1=vecnormalize(cross(n2,n3)); %Proper x ish direction
+        R=[n1; n2; n3]; %Rotation matrix
+    case 2
+        n2=[0 1 0]; %Initialized y direction
+        n1=vecnormalize(cross(n2,n3)); %x ish direction
+        n2=vecnormalize(cross(n3,n1)); %Proper y ish direction
+        R=[n1; n2; n3]; %Rotation matrix
+end
+
+p1=V_guide_curve(1,:); %The start node
+V_section=V_section*R; %Rotate the section
+V_section=V_section+p1(ones(size(V_section,1),1),:); % Translate coordinate to start
+
+%%
+% Visualize guide curve
+
+if plotOn==1
+    cFigure; hold on;
+    title('Stent section positioned on guide curve','fontSize',fontSize);
+    plotV(V_guide_curve,'k-','lineWidth',1);
+    plotV(V_section,'k.-','lineWidth',lineWidth,'MarkerSize',markerSize);
+    quiverVec(p1,n1,1,'r');
+    quiverVec(p1,n2,1,'g');
+    quiverVec(p1,n3,1,'b');
+    axisGeom;
+    drawnow;
+end
+
+%% Sweeping section allong curve
+% Normally |sweepLoft| produces patch data as an output (e.g. faces and
+% vertices). However these outputs are supressed here and the coordinate
+% mesh output is instead used to create a hexahedral mesh. See also |HELP_sweepLoft|
+
+numTwist=0; %Number of additional twists of loft feature around guide curve
+numStepsSweep=numStepsCircumference; %Number of steps for loft feature from sketch 1 to sketch 2
+[~,~,~,S]=sweepLoft(V_section,V_section,n3,n3,V_guide_curve,numStepsSweep,numTwist,0);
+
+%% Construct hexahedral mesh
+
+X=S.X'; Y=S.Y'; Z=S.Z'; %Coordinate matrices
+V=[X(:) Y(:) Z(:)]; %Create node list
+
+F=reshape((1:1:size(V,1)),4,size(V,1)/4)'; %All top and bottom faces
+E=[F(2:end,:) F(1:end-1,:)]; %The hexahedral elements
+[E,V]=mergeVertices(E,V); %Merge nodes (start and end are not shared yet)
+
+%% Refine mesh
+% The swept mesh can be refined through slitting. The splitting can be
+% homogeneous or only in a particular direction (see HELP_subHex|)
+% Split method explanation:
+% 1: Overall splitting in all directions
+% 2: Split allong curve direction
+% 3: Split axially
+% 4: Splint inward
+
+splitMethod=3;
+nRefine=numSplitSteps_axial;
+[E,V]=subHex(E,V,nRefine,splitMethod);
+
+splitMethod=4;
+nRefine=numSplitSteps_inward;
+[E,V]=subHex(E,V,nRefine,splitMethod);
+
+%%
+% Visualize hexahedral mesh
+
+if plotOn==1
+    
+    [F]=element2patch(E); %Create face data for plotting
+
+    cFigure; hold on;
+    title('Stent hexahedral mesh','fontSize',fontSize);
+    plotV(V_guide_curve,'k-','lineWidth',3);
+    gpatch(F,V,'gw','k',1);
+    patchNormPlot(F,V);    
+    axisGeom;
+    camlight headlight;
+    drawnow;
+end
+
+%%
+
+
+
+end
+%% 
+% _*GIBBON footer text*_ 
+% 
+% License: <https://github.com/gibbonCode/GIBBON/blob/master/LICENSE>
+% 
+% GIBBON: The Geometry and Image-based Bioengineering add-On. A toolbox for
+% image segmentation, image-based modeling, meshing, and finite element
+% analysis.
+% 
+% Copyright (C) 2019  Kevin Mattheus Moerman
+% 
+% This program is free software: you can redistribute it and/or modify
+% it under the terms of the GNU General Public License as published by
+% the Free Software Foundation, either version 3 of the License, or
+% (at your option) any later version.
+% 
+% This program is distributed in the hope that it will be useful,
+% but WITHOUT ANY WARRANTY; without even the implied warranty of
+% MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+% GNU General Public License for more details.
+% 
+% You should have received a copy of the GNU General Public License
+% along with this program.  If not, see <http://www.gnu.org/licenses/>.
+
+##### SOURCE END #####
+--></body></html>

@@ -6,7 +6,7 @@
    <!--
 This HTML was auto-generated from MATLAB code.
 To make changes, update the MATLAB code and republish this document.
-      --><title>dualLattice</title><meta name="generator" content="MATLAB 9.4"><link rel="schema.DC" href="http://purl.org/dc/elements/1.1/"><meta name="DC.date" content="2018-06-25"><meta name="DC.source" content="HELP_dualLattice.m"><style type="text/css">
+      --><title>dualLattice</title><meta name="generator" content="MATLAB 9.6"><link rel="schema.DC" href="http://purl.org/dc/elements/1.1/"><meta name="DC.date" content="2019-06-03"><meta name="DC.source" content="HELP_dualLattice.m"><style type="text/css">
 html,body,div,span,applet,object,iframe,h1,h2,h3,h4,h5,h6,p,blockquote,pre,a,abbr,acronym,address,big,cite,code,del,dfn,em,font,img,ins,kbd,q,s,samp,small,strike,strong,sub,sup,tt,var,b,u,i,center,dl,dt,dd,ol,ul,li,fieldset,form,label,legend,table,caption,tbody,tfoot,thead,tr,th,td{margin:0;padding:0;border:0;outline:0;font-size:100%;vertical-align:baseline;background:transparent}body{line-height:1}ol,ul{list-style:none}blockquote,q{quotes:none}blockquote:before,blockquote:after,q:before,q:after{content:'';content:none}:focus{outine:0}ins{text-decoration:none}del{text-decoration:line-through}table{border-collapse:collapse;border-spacing:0}
 
 html { min-height:100%; margin-bottom:1px; }
@@ -66,18 +66,22 @@ table td { padding:7px 5px; text-align:left; vertical-align:top; border:1px soli
 
 
 
-  </style></head><body><div class="content"><h1>dualLattice</h1><!--introduction--><p>Below is a demonstration of the features of the <tt>dualLattice</tt> function</p><!--/introduction--><h2>Contents</h2><div><ul><li><a href="#1">Syntax</a></li><li><a href="#2">Description</a></li><li><a href="#3">Examples</a></li><li><a href="#6">Example: Create a dual lattice mesh with outer surface cladding</a></li><li><a href="#8">Example: Create a dual lattice mesh without outer surface cladding</a></li></ul></div><h2 id="1">Syntax</h2><p><tt>[FT,VT,CT]=dualLattice(E,V,shrinkFactor,cladOpt);</tt></p><h2 id="2">Description</h2><p>Work in progress</p><h2 id="3">Examples</h2><pre class="codeinput">clear; close <span class="string">all</span>; clc;
-</pre><p>Example geometry</p><pre class="codeinput">testCase=1;
+  </style></head><body><div class="content"><h1>dualLattice</h1><!--introduction--><p>Below is a demonstration of the features of the <tt>dualLattice</tt> function</p><!--/introduction--><h2>Contents</h2><div><ul><li><a href="#1">Syntax</a></li><li><a href="#2">Description</a></li><li><a href="#3">Examples</a></li><li><a href="#6">Example: Create a dual lattice mesh with outer surface cladding</a></li><li><a href="#9">Example: Create a dual lattice mesh without outer surface cladding</a></li></ul></div><h2 id="1">Syntax</h2><p><tt>[FT,VT,CT]=dualLattice(E,V,shrinkFactor,cladOpt);</tt></p><h2 id="2">Description</h2><p>Work in progress</p><h2 id="3">Examples</h2><pre class="codeinput">clear; close <span class="string">all</span>; clc;
+</pre><p>Example geometry</p><pre class="codeinput">testCase=3;
 
 <span class="keyword">switch</span> testCase
-    <span class="keyword">case</span> 1
+    <span class="keyword">case</span> 1 <span class="comment">%Box</span>
         featureSize=0.5;
         pointSpacing=6;
         shrinkFactor=featureSize/pointSpacing;
         boxDim=[36 36 36]; <span class="comment">%Width in each direction</span>
         [meshStruct]=tetMeshBox(boxDim,pointSpacing);
-    <span class="keyword">case</span> 2
+        F=meshStruct.faces;
+        V=meshStruct.nodes;
+        C=meshStruct.boundaryMarker;
+    <span class="keyword">case</span> 2 <span class="comment">%Bunny</span>
         [F,V]=stanford_bunny(<span class="string">'g'</span>);
+        C=ones(size(F,1),1);
         faceBoundaryMarker=ones(size(F,1),1);
         [V_regions]=getInnerPoint(F,V);
         V_holes=[];
@@ -96,6 +100,88 @@ table td { padding:7px 5px; text-align:left; vertical-align:top; border:1px soli
         pointSpacing=mean(patchEdgeLengths(F,V));
         featureSize=pointSpacing/15;
         shrinkFactor=featureSize/pointSpacing;
+    <span class="keyword">case</span> 3 <span class="comment">%Sprocket</span>
+
+        defaultFolder = fileparts(fileparts(mfilename(<span class="string">'fullpath'</span>)));
+        pathName=fullfile(defaultFolder,<span class="string">'data'</span>,<span class="string">'libSurf'</span>);
+
+        dataStruct=load(fullfile(pathName,<span class="string">'sprocket.mat'</span>));
+        F=dataStruct.F;
+        V=dataStruct.V;
+        C=dataStruct.C;
+
+        faceBoundaryMarker=ones(size(F,1),1);
+        [V_regions]=getInnerPoint(F,V);
+        V_holes=[];
+        [regionA]=tetVolMeanEst(F,V); <span class="comment">%Volume for regular tets</span>
+        stringOpt=<span class="string">'-pq1.2AaYQ'</span>;
+        inputStruct.stringOpt=stringOpt;
+        inputStruct.Faces=fliplr(F);
+        inputStruct.Nodes=V;
+        inputStruct.holePoints=V_holes;
+        inputStruct.faceBoundaryMarker=faceBoundaryMarker; <span class="comment">%Face boundary markers</span>
+        inputStruct.regionPoints=V_regions; <span class="comment">%region points</span>
+        inputStruct.regionA=regionA;
+        inputStruct.minRegionMarker=2; <span class="comment">%Minimum region marker</span>
+        [meshStruct]=runTetGen(inputStruct); <span class="comment">%Run tetGen</span>
+
+        pointSpacing=mean(patchEdgeLengths(F,V));
+        featureSize=pointSpacing/10;
+        shrinkFactor=featureSize/pointSpacing;
+    <span class="keyword">case</span> 4
+        defaultFolder = fileparts(fileparts(mfilename(<span class="string">'fullpath'</span>)));
+        pathName=fullfile(defaultFolder,<span class="string">'data'</span>,<span class="string">'libSurf'</span>);
+
+        dataStruct=load(fullfile(pathName,<span class="string">'enginePart_p1.mat'</span>));
+        F=dataStruct.F;
+        V=dataStruct.V;
+        C=dataStruct.C;
+
+        faceBoundaryMarker=ones(size(F,1),1);
+        [V_regions]=getInnerPoint(F,V);
+        V_holes=[];
+        [regionA]=tetVolMeanEst(F,V); <span class="comment">%Volume for regular tets</span>
+        stringOpt=<span class="string">'-pq1.2AaYQ'</span>;
+        inputStruct.stringOpt=stringOpt;
+        inputStruct.Faces=fliplr(F);
+        inputStruct.Nodes=V;
+        inputStruct.holePoints=V_holes;
+        inputStruct.faceBoundaryMarker=faceBoundaryMarker; <span class="comment">%Face boundary markers</span>
+        inputStruct.regionPoints=V_regions; <span class="comment">%region points</span>
+        inputStruct.regionA=regionA;
+        inputStruct.minRegionMarker=2; <span class="comment">%Minimum region marker</span>
+        [meshStruct]=runTetGen(inputStruct); <span class="comment">%Run tetGen</span>
+
+        pointSpacing=mean(patchEdgeLengths(F,V));
+        featureSize=pointSpacing/10;
+        shrinkFactor=featureSize/pointSpacing;
+    <span class="keyword">case</span> 5
+        defaultFolder = fileparts(fileparts(mfilename(<span class="string">'fullpath'</span>)));
+        pathName=fullfile(defaultFolder,<span class="string">'data'</span>,<span class="string">'libSurf'</span>);
+
+        dataStruct=load(fullfile(pathName,<span class="string">'ConnectingRod.mat'</span>));
+        F=dataStruct.F;
+        V=dataStruct.V;
+        C=dataStruct.C;
+
+        faceBoundaryMarker=ones(size(F,1),1);
+        [V_regions]=getInnerPoint(F,V);
+        V_holes=[];
+        [regionA]=tetVolMeanEst(F,V); <span class="comment">%Volume for regular tets</span>
+        stringOpt=<span class="string">'-pq1.2AaYQ'</span>;
+        inputStruct.stringOpt=stringOpt;
+        inputStruct.Faces=fliplr(F);
+        inputStruct.Nodes=V;
+        inputStruct.holePoints=V_holes;
+        inputStruct.faceBoundaryMarker=faceBoundaryMarker; <span class="comment">%Face boundary markers</span>
+        inputStruct.regionPoints=V_regions; <span class="comment">%region points</span>
+        inputStruct.regionA=regionA;
+        inputStruct.minRegionMarker=2; <span class="comment">%Minimum region marker</span>
+        [meshStruct]=runTetGen(inputStruct); <span class="comment">%Run tetGen</span>
+
+        pointSpacing=mean(patchEdgeLengths(F,V));
+        featureSize=pointSpacing/10;
+        shrinkFactor=featureSize/pointSpacing;
 <span class="keyword">end</span>
 
 <span class="comment">%%inputStruct.modelName=modelName;</span>
@@ -106,206 +192,271 @@ Fb=meshStruct.facesBoundary;
 V=meshStruct.nodes;
 </pre><pre class="codeoutput"> 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
---- TETGEN Tetrahedral meshing --- 25-Jun-2018 16:03:40
+--- TETGEN Tetrahedral meshing --- 03-Jun-2019 17:24:13
  
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
---- Writing SMESH file --- 25-Jun-2018 16:03:40
+--- Writing SMESH file --- 03-Jun-2019 17:24:13
 ----&gt; Adding node field
 ----&gt; Adding facet field
 ----&gt; Adding holes specification
 ----&gt; Adding region specification
---- Done --- 25-Jun-2018 16:03:40
---- Running TetGen to mesh input boundary--- 25-Jun-2018 16:03:40
-Opening /mnt/data/MATLAB/GIT/GIBBON/data/temp/temp.smesh.
-Delaunizing vertices...
-Delaunay seconds:  0.006518
-Creating surface mesh ...
-Surface mesh seconds:  0.001105
-Recovering boundaries...
-Boundary recovery seconds:  0.00113
-Removing exterior tetrahedra ...
-Spreading region attributes.
-Exterior tets removal seconds:  0.000265
-Recovering Delaunayness...
-Delaunay recovery seconds:  0.002527
-Refining mesh...
-Refinement seconds:  0.017284
-Optimizing mesh...
-Optimization seconds:  0.002006
-
-Writing /mnt/data/MATLAB/GIT/GIBBON/data/temp/temp.1.node.
-Writing /mnt/data/MATLAB/GIT/GIBBON/data/temp/temp.1.ele.
-Writing /mnt/data/MATLAB/GIT/GIBBON/data/temp/temp.1.face.
-Writing /mnt/data/MATLAB/GIT/GIBBON/data/temp/temp.1.edge.
-
-Output seconds:  0.00571
-Total running seconds:  0.036631
-
-Statistics:
-
-  Input points: 266
-  Input facets: 528
-  Input segments: 792
-  Input holes: 0
-  Input regions: 1
-
-  Mesh points: 629
-  Mesh tetrahedra: 3011
-  Mesh faces: 6286
-  Mesh faces on exterior boundary: 528
-  Mesh faces on input facets: 528
-  Mesh edges on input segments: 792
-  Steiner points inside domain: 363
-
---- Done --- 25-Jun-2018 16:03:40
+--- Done --- 03-Jun-2019 17:24:13
+--- Running TetGen to mesh input boundary--- 03-Jun-2019 17:24:13
+Opening /mnt/data/MATLAB/GIBBON/data/temp/temp.smesh.
+--- Done --- 03-Jun-2019 17:24:14
  
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
---- Importing TetGen files --- 25-Jun-2018 16:03:40
---- Done --- 25-Jun-2018 16:03:40
+--- Importing TetGen files --- 03-Jun-2019 17:24:14
+--- Done --- 03-Jun-2019 17:24:14
 </pre><p>Visualize input geometry</p><pre class="codeinput">meshView(meshStruct);
-</pre><img vspace="5" hspace="5" src="HELP_dualLattice_01.png" alt=""> <h2 id="6">Example: Create a dual lattice mesh with outer surface cladding</h2><p>See also: <tt>dualClad</tt></p><pre class="codeinput">cladOpt=1;
+</pre><img width="100%" height="auto" vspace="5" hspace="5" src="HELP_dualLattice_01.jpg" alt=""> <h2 id="6">Example: Create a dual lattice mesh with outer surface cladding</h2><p>See also: <tt>dualClad</tt></p><pre class="codeinput">cladOpt=1;
+[FT,VT,CT]=dualLattice(E,V,shrinkFactor,cladOpt);
+</pre><p>Visualize results</p><pre class="codeinput">cFigure; hold <span class="string">on</span>;
+gpatch(FT,VT,CT,<span class="string">'none'</span>,1);
+<span class="comment">% patchNormPlot(FT,VT);</span>
+colormap(viridis(4)); icolorbar;
+camlight <span class="string">headlight</span>;
+axisGeom;
+drawnow;
+</pre><img width="100%" height="auto" vspace="5" hspace="5" src="HELP_dualLattice_02.jpg" alt=""> <pre class="codeinput">cFigure; hold <span class="string">on</span>;
+hp1=gpatch(FT,VT,CT,<span class="string">'none'</span>,1);
+hp2=gpatch(F,V,<span class="string">'kw'</span>,<span class="string">'none'</span>,0.8);
+<span class="comment">% patchNormPlot(FT,VT);</span>
+colormap(viridis(4)); <span class="comment">%icolorbar;</span>
+camlight <span class="string">headlight</span>;
+axisGeom;
+drawnow;
+</pre><img width="100%" height="auto" vspace="5" hspace="5" src="HELP_dualLattice_03.jpg" alt=""> <h2 id="9">Example: Create a dual lattice mesh without outer surface cladding</h2><pre class="codeinput">cladOpt=0;
 [FT,VT,CT]=dualLattice(E,V,shrinkFactor,cladOpt);
 </pre><p>Visualize results</p><pre class="codeinput">cFigure; hold <span class="string">on</span>;
 gpatch(FT,VT,CT,<span class="string">'none'</span>,1);
 <span class="comment">% patchNormPlot(FT,VT);</span>
 camlight <span class="string">headlight</span>;
-colormap(gjet(4)); icolorbar;
+colormap(viridis(4)); icolorbar;
 axisGeom;
 drawnow;
-</pre><img vspace="5" hspace="5" src="HELP_dualLattice_02.png" alt=""> <h2 id="8">Example: Create a dual lattice mesh without outer surface cladding</h2><pre class="codeinput">cladOpt=0;
-[FT,VT,CT]=dualLattice(E,V,shrinkFactor,cladOpt);
-</pre><p>Visualize results</p><pre class="codeinput">cFigure; hold <span class="string">on</span>;
-gpatch(FT,VT,CT,<span class="string">'none'</span>,1);
-<span class="comment">% patchNormPlot(FT,VT);</span>
-camlight <span class="string">headlight</span>;
-colormap(gjet(4)); icolorbar;
-axisGeom;
-drawnow;
-</pre><img vspace="5" hspace="5" src="HELP_dualLattice_03.png" alt=""> <p><img vspace="5" hspace="5" src="gibbVerySmall.gif" alt=""> </p><p><i><b>GIBBON</b></i> <a href="www.gibboncode.org">www.gibboncode.org</a></p><p><i>Kevin Mattheus Moerman</i>, <a href="gibbon.toolbox@gmail.com">gibbon.toolbox@gmail.com</a></p><p><i><b>GIBBON footer text</b></i></p><p>License: <a href="https://github.com/gibbonCode/GIBBON/blob/master/LICENSE">https://github.com/gibbonCode/GIBBON/blob/master/LICENSE</a></p><p>GIBBON: The Geometry and Image-based Bioengineering add-On. A toolbox for image segmentation, image-based modeling, meshing, and finite element analysis.</p><p>Copyright (C) 2018  Kevin Mattheus Moerman</p><p>This program is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.</p><p>This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for more details.</p><p>You should have received a copy of the GNU General Public License along with this program.  If not, see <a href="http://www.gnu.org/licenses/">http://www.gnu.org/licenses/</a>.</p><p class="footer"><br><a href="https://www.mathworks.com/products/matlab/">Published with MATLAB&reg; R2018a</a><br></p></div><!--
+</pre><img width="100%" height="auto" vspace="5" hspace="5" src="HELP_dualLattice_04.jpg" alt=""> <p><img vspace="5" hspace="5" src="gibbVerySmall.gif" alt=""> </p><p><i><b>GIBBON</b></i> <a href="www.gibboncode.org">www.gibboncode.org</a></p><p><i>Kevin Mattheus Moerman</i>, <a href="gibbon.toolbox@gmail.com">gibbon.toolbox@gmail.com</a></p><p><i><b>GIBBON footer text</b></i></p><p>License: <a href="https://github.com/gibbonCode/GIBBON/blob/master/LICENSE">https://github.com/gibbonCode/GIBBON/blob/master/LICENSE</a></p><p>GIBBON: The Geometry and Image-based Bioengineering add-On. A toolbox for image segmentation, image-based modeling, meshing, and finite element analysis.</p><p>Copyright (C) 2019  Kevin Mattheus Moerman</p><p>This program is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.</p><p>This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for more details.</p><p>You should have received a copy of the GNU General Public License along with this program.  If not, see <a href="http://www.gnu.org/licenses/">http://www.gnu.org/licenses/</a>.</p><p class="footer"><br><a href="https://www.mathworks.com/products/matlab/">Published with MATLAB&reg; R2019a</a><br></p></div><!--
 ##### SOURCE BEGIN #####
-%% dualLattice
-% Below is a demonstration of the features of the |dualLattice| function
-
-%% Syntax
-% |[FT,VT,CT]=dualLattice(E,V,shrinkFactor,cladOpt);|
-
-%% Description
-% Work in progress
-
-%% Examples
-clear; close all; clc;
-
-%%
-% Example geometry
-
-testCase=1;
-
-switch testCase
-    case 1
-        featureSize=0.5;
-        pointSpacing=6;
-        shrinkFactor=featureSize/pointSpacing;
-        boxDim=[36 36 36]; %Width in each direction        
-        [meshStruct]=tetMeshBox(boxDim,pointSpacing);
-    case 2
-        [F,V]=stanford_bunny('g');
-        faceBoundaryMarker=ones(size(F,1),1);
-        [V_regions]=getInnerPoint(F,V);
-        V_holes=[];
-        [regionA]=tetVolMeanEst(F,V); %Volume for regular tets
-        stringOpt='-pq1.2AaYQ';
-        inputStruct.stringOpt=stringOpt;
-        inputStruct.Faces=fliplr(F);
-        inputStruct.Nodes=V;
-        inputStruct.holePoints=V_holes;
-        inputStruct.faceBoundaryMarker=faceBoundaryMarker; %Face boundary markers
-        inputStruct.regionPoints=V_regions; %region points
-        inputStruct.regionA=regionA;
-        inputStruct.minRegionMarker=2; %Minimum region marker        
-        [meshStruct]=runTetGen(inputStruct); %Run tetGen
-
-        pointSpacing=mean(patchEdgeLengths(F,V));
-        featureSize=pointSpacing/15;        
-        shrinkFactor=featureSize/pointSpacing;
-end
-
-%%inputStruct.modelName=modelName;
-% Access mesh data
-
-E=meshStruct.elements;
-Fb=meshStruct.facesBoundary;
-V=meshStruct.nodes;
-
-%%
-% Visualize input geometry 
-
-meshView(meshStruct);
-
-%% Example: Create a dual lattice mesh with outer surface cladding
-% See also: |dualClad|
-
-cladOpt=1;
-[FT,VT,CT]=dualLattice(E,V,shrinkFactor,cladOpt);
- 
-%%
-% Visualize results
-
-cFigure; hold on;
-gpatch(FT,VT,CT,'none',1);
-% patchNormPlot(FT,VT);
-camlight headlight;
-colormap(gjet(4)); icolorbar; 
-axisGeom;
-drawnow;
-
-%% Example: Create a dual lattice mesh without outer surface cladding
-
-cladOpt=0;
-[FT,VT,CT]=dualLattice(E,V,shrinkFactor,cladOpt);
- 
-%%
-% Visualize results
-
-cFigure; hold on;
-gpatch(FT,VT,CT,'none',1);
-% patchNormPlot(FT,VT);
-camlight headlight;
-colormap(gjet(4)); icolorbar; 
-axisGeom;
-drawnow;
-
-%% 
-%
-% <<gibbVerySmall.gif>>
-% 
-% _*GIBBON*_ 
-% <www.gibboncode.org>
-% 
-% _Kevin Mattheus Moerman_, <gibbon.toolbox@gmail.com>
- 
-%% 
-% _*GIBBON footer text*_ 
-% 
-% License: <https://github.com/gibbonCode/GIBBON/blob/master/LICENSE>
-% 
-% GIBBON: The Geometry and Image-based Bioengineering add-On. A toolbox for
-% image segmentation, image-based modeling, meshing, and finite element
-% analysis.
-% 
-% Copyright (C) 2018  Kevin Mattheus Moerman
-% 
-% This program is free software: you can redistribute it and/or modify
-% it under the terms of the GNU General Public License as published by
-% the Free Software Foundation, either version 3 of the License, or
-% (at your option) any later version.
-% 
-% This program is distributed in the hope that it will be useful,
-% but WITHOUT ANY WARRANTY; without even the implied warranty of
-% MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-% GNU General Public License for more details.
-% 
-% You should have received a copy of the GNU General Public License
-% along with this program.  If not, see <http://www.gnu.org/licenses/>.
+%% dualLattice
+% Below is a demonstration of the features of the |dualLattice| function
+
+%% Syntax
+% |[FT,VT,CT]=dualLattice(E,V,shrinkFactor,cladOpt);|
+
+%% Description
+% Work in progress
+
+%% Examples
+clear; close all; clc;
+
+%%
+% Example geometry
+
+testCase=3;
+
+switch testCase
+    case 1 %Box
+        featureSize=0.5;
+        pointSpacing=6;
+        shrinkFactor=featureSize/pointSpacing;
+        boxDim=[36 36 36]; %Width in each direction        
+        [meshStruct]=tetMeshBox(boxDim,pointSpacing);              
+        F=meshStruct.faces;
+        V=meshStruct.nodes;
+        C=meshStruct.boundaryMarker;
+    case 2 %Bunny
+        [F,V]=stanford_bunny('g');
+        C=ones(size(F,1),1);
+        faceBoundaryMarker=ones(size(F,1),1);
+        [V_regions]=getInnerPoint(F,V);
+        V_holes=[];
+        [regionA]=tetVolMeanEst(F,V); %Volume for regular tets
+        stringOpt='-pq1.2AaYQ';
+        inputStruct.stringOpt=stringOpt;
+        inputStruct.Faces=fliplr(F);
+        inputStruct.Nodes=V;
+        inputStruct.holePoints=V_holes;
+        inputStruct.faceBoundaryMarker=faceBoundaryMarker; %Face boundary markers
+        inputStruct.regionPoints=V_regions; %region points
+        inputStruct.regionA=regionA;
+        inputStruct.minRegionMarker=2; %Minimum region marker        
+        [meshStruct]=runTetGen(inputStruct); %Run tetGen
+
+        pointSpacing=mean(patchEdgeLengths(F,V));
+        featureSize=pointSpacing/15;        
+        shrinkFactor=featureSize/pointSpacing;
+    case 3 %Sprocket
+        
+        defaultFolder = fileparts(fileparts(mfilename('fullpath')));
+        pathName=fullfile(defaultFolder,'data','libSurf');
+
+        dataStruct=load(fullfile(pathName,'sprocket.mat'));
+        F=dataStruct.F; 
+        V=dataStruct.V; 
+        C=dataStruct.C;
+        
+        faceBoundaryMarker=ones(size(F,1),1);
+        [V_regions]=getInnerPoint(F,V);
+        V_holes=[];
+        [regionA]=tetVolMeanEst(F,V); %Volume for regular tets
+        stringOpt='-pq1.2AaYQ';
+        inputStruct.stringOpt=stringOpt;
+        inputStruct.Faces=fliplr(F);
+        inputStruct.Nodes=V;
+        inputStruct.holePoints=V_holes;
+        inputStruct.faceBoundaryMarker=faceBoundaryMarker; %Face boundary markers
+        inputStruct.regionPoints=V_regions; %region points
+        inputStruct.regionA=regionA;
+        inputStruct.minRegionMarker=2; %Minimum region marker        
+        [meshStruct]=runTetGen(inputStruct); %Run tetGen
+
+        pointSpacing=mean(patchEdgeLengths(F,V));
+        featureSize=pointSpacing/10;        
+        shrinkFactor=featureSize/pointSpacing;
+    case 4
+        defaultFolder = fileparts(fileparts(mfilename('fullpath')));
+        pathName=fullfile(defaultFolder,'data','libSurf');
+        
+        dataStruct=load(fullfile(pathName,'enginePart_p1.mat'));
+        F=dataStruct.F;
+        V=dataStruct.V;
+        C=dataStruct.C;
+        
+        faceBoundaryMarker=ones(size(F,1),1);
+        [V_regions]=getInnerPoint(F,V);
+        V_holes=[];
+        [regionA]=tetVolMeanEst(F,V); %Volume for regular tets
+        stringOpt='-pq1.2AaYQ';
+        inputStruct.stringOpt=stringOpt;
+        inputStruct.Faces=fliplr(F);
+        inputStruct.Nodes=V;
+        inputStruct.holePoints=V_holes;
+        inputStruct.faceBoundaryMarker=faceBoundaryMarker; %Face boundary markers
+        inputStruct.regionPoints=V_regions; %region points
+        inputStruct.regionA=regionA;
+        inputStruct.minRegionMarker=2; %Minimum region marker
+        [meshStruct]=runTetGen(inputStruct); %Run tetGen
+        
+        pointSpacing=mean(patchEdgeLengths(F,V));
+        featureSize=pointSpacing/10;
+        shrinkFactor=featureSize/pointSpacing;
+    case 5
+        defaultFolder = fileparts(fileparts(mfilename('fullpath')));
+        pathName=fullfile(defaultFolder,'data','libSurf');
+        
+        dataStruct=load(fullfile(pathName,'ConnectingRod.mat'));
+        F=dataStruct.F;
+        V=dataStruct.V;
+        C=dataStruct.C;
+        
+        faceBoundaryMarker=ones(size(F,1),1);
+        [V_regions]=getInnerPoint(F,V);
+        V_holes=[];
+        [regionA]=tetVolMeanEst(F,V); %Volume for regular tets
+        stringOpt='-pq1.2AaYQ';
+        inputStruct.stringOpt=stringOpt;
+        inputStruct.Faces=fliplr(F);
+        inputStruct.Nodes=V;
+        inputStruct.holePoints=V_holes;
+        inputStruct.faceBoundaryMarker=faceBoundaryMarker; %Face boundary markers
+        inputStruct.regionPoints=V_regions; %region points
+        inputStruct.regionA=regionA;
+        inputStruct.minRegionMarker=2; %Minimum region marker
+        [meshStruct]=runTetGen(inputStruct); %Run tetGen
+        
+        pointSpacing=mean(patchEdgeLengths(F,V));
+        featureSize=pointSpacing/10;
+        shrinkFactor=featureSize/pointSpacing;
+end
+
+%%inputStruct.modelName=modelName;
+% Access mesh data
+
+E=meshStruct.elements;
+Fb=meshStruct.facesBoundary;
+V=meshStruct.nodes;
+
+%%
+% Visualize input geometry 
+
+meshView(meshStruct);
+
+%% Example: Create a dual lattice mesh with outer surface cladding
+% See also: |dualClad|
+
+cladOpt=1;
+[FT,VT,CT]=dualLattice(E,V,shrinkFactor,cladOpt);
+ 
+%%
+% Visualize results
+
+cFigure; hold on;
+gpatch(FT,VT,CT,'none',1);
+% patchNormPlot(FT,VT);
+colormap(viridis(4)); icolorbar; 
+camlight headlight;
+axisGeom;
+drawnow;
+
+%%
+cFigure; hold on;
+hp1=gpatch(FT,VT,CT,'none',1);
+hp2=gpatch(F,V,'kw','none',0.8);
+% patchNormPlot(FT,VT);
+colormap(viridis(4)); %icolorbar; 
+camlight headlight;
+axisGeom;
+drawnow;
+
+
+%% Example: Create a dual lattice mesh without outer surface cladding
+
+cladOpt=0;
+[FT,VT,CT]=dualLattice(E,V,shrinkFactor,cladOpt);
+ 
+%%
+% Visualize results
+
+cFigure; hold on;
+gpatch(FT,VT,CT,'none',1);
+% patchNormPlot(FT,VT);
+camlight headlight;
+colormap(viridis(4)); icolorbar; 
+axisGeom;
+drawnow;
+
+%% 
+%
+% <<gibbVerySmall.gif>>
+% 
+% _*GIBBON*_ 
+% <www.gibboncode.org>
+% 
+% _Kevin Mattheus Moerman_, <gibbon.toolbox@gmail.com>
+ 
+%% 
+% _*GIBBON footer text*_ 
+% 
+% License: <https://github.com/gibbonCode/GIBBON/blob/master/LICENSE>
+% 
+% GIBBON: The Geometry and Image-based Bioengineering add-On. A toolbox for
+% image segmentation, image-based modeling, meshing, and finite element
+% analysis.
+% 
+% Copyright (C) 2019  Kevin Mattheus Moerman
+% 
+% This program is free software: you can redistribute it and/or modify
+% it under the terms of the GNU General Public License as published by
+% the Free Software Foundation, either version 3 of the License, or
+% (at your option) any later version.
+% 
+% This program is distributed in the hope that it will be useful,
+% but WITHOUT ANY WARRANTY; without even the implied warranty of
+% MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+% GNU General Public License for more details.
+% 
+% You should have received a copy of the GNU General Public License
+% along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 ##### SOURCE END #####
 --></body></html>

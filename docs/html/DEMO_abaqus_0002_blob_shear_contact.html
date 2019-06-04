@@ -1,0 +1,695 @@
+
+<!DOCTYPE html
+  PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html><head>
+      <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+   <!--
+This HTML was auto-generated from MATLAB code.
+To make changes, update the MATLAB code and republish this document.
+      --><title>DEMO_febio_0031_blob_shear_contact</title><meta name="generator" content="MATLAB 9.6"><link rel="schema.DC" href="http://purl.org/dc/elements/1.1/"><meta name="DC.date" content="2019-06-04"><meta name="DC.source" content="DEMO_abaqus_0002_blob_shear_contact.m"><style type="text/css">
+html,body,div,span,applet,object,iframe,h1,h2,h3,h4,h5,h6,p,blockquote,pre,a,abbr,acronym,address,big,cite,code,del,dfn,em,font,img,ins,kbd,q,s,samp,small,strike,strong,sub,sup,tt,var,b,u,i,center,dl,dt,dd,ol,ul,li,fieldset,form,label,legend,table,caption,tbody,tfoot,thead,tr,th,td{margin:0;padding:0;border:0;outline:0;font-size:100%;vertical-align:baseline;background:transparent}body{line-height:1}ol,ul{list-style:none}blockquote,q{quotes:none}blockquote:before,blockquote:after,q:before,q:after{content:'';content:none}:focus{outine:0}ins{text-decoration:none}del{text-decoration:line-through}table{border-collapse:collapse;border-spacing:0}
+
+html { min-height:100%; margin-bottom:1px; }
+html body { height:100%; margin:0px; font-family:Arial, Helvetica, sans-serif; font-size:10px; color:#000; line-height:140%; background:#fff none; overflow-y:scroll; }
+html body td { vertical-align:top; text-align:left; }
+
+h1 { padding:0px; margin:0px 0px 25px; font-family:Arial, Helvetica, sans-serif; font-size:1.5em; color:#d55000; line-height:100%; font-weight:normal; }
+h2 { padding:0px; margin:0px 0px 8px; font-family:Arial, Helvetica, sans-serif; font-size:1.2em; color:#000; font-weight:bold; line-height:140%; border-bottom:1px solid #d6d4d4; display:block; }
+h3 { padding:0px; margin:0px 0px 5px; font-family:Arial, Helvetica, sans-serif; font-size:1.1em; color:#000; font-weight:bold; line-height:140%; }
+
+a { color:#005fce; text-decoration:none; }
+a:hover { color:#005fce; text-decoration:underline; }
+a:visited { color:#004aa0; text-decoration:none; }
+
+p { padding:0px; margin:0px 0px 20px; }
+img { padding:0px; margin:0px 0px 20px; border:none; }
+p img, pre img, tt img, li img, h1 img, h2 img { margin-bottom:0px; } 
+
+ul { padding:0px; margin:0px 0px 20px 23px; list-style:square; }
+ul li { padding:0px; margin:0px 0px 7px 0px; }
+ul li ul { padding:5px 0px 0px; margin:0px 0px 7px 23px; }
+ul li ol li { list-style:decimal; }
+ol { padding:0px; margin:0px 0px 20px 0px; list-style:decimal; }
+ol li { padding:0px; margin:0px 0px 7px 23px; list-style-type:decimal; }
+ol li ol { padding:5px 0px 0px; margin:0px 0px 7px 0px; }
+ol li ol li { list-style-type:lower-alpha; }
+ol li ul { padding-top:7px; }
+ol li ul li { list-style:square; }
+
+.content { font-size:1.2em; line-height:140%; padding: 20px; }
+
+pre, code { font-size:12px; }
+tt { font-size: 1.2em; }
+pre { margin:0px 0px 20px; }
+pre.codeinput { padding:10px; border:1px solid #d3d3d3; background:#f7f7f7; }
+pre.codeoutput { padding:10px 11px; margin:0px 0px 20px; color:#4c4c4c; }
+pre.error { color:red; }
+
+@media print { pre.codeinput, pre.codeoutput { word-wrap:break-word; width:100%; } }
+
+span.keyword { color:#0000FF }
+span.comment { color:#228B22 }
+span.string { color:#A020F0 }
+span.untermstring { color:#B20000 }
+span.syscmd { color:#B28C00 }
+
+.footer { width:auto; padding:10px 0px; margin:25px 0px 0px; border-top:1px dotted #878787; font-size:0.8em; line-height:140%; font-style:italic; color:#878787; text-align:left; float:none; }
+.footer p { margin:0px; }
+.footer a { color:#878787; }
+.footer a:hover { color:#878787; text-decoration:underline; }
+.footer a:visited { color:#878787; }
+
+table th { padding:7px 5px; text-align:left; vertical-align:middle; border: 1px solid #d6d4d4; font-weight:bold; }
+table td { padding:7px 5px; text-align:left; vertical-align:top; border:1px solid #d6d4d4; }
+
+
+
+
+
+  </style></head><body><div class="content"><h1>DEMO_febio_0031_blob_shear_contact</h1><!--introduction--><p>Below is a demonstration for:</p><div><ul><li>Building geometry for a hemi-spherical blob with tetrahedral elements which is being sheared by a rigid wall. This demo consists off:</li><li>Defining the boundary conditions</li><li>Coding the febio structure</li><li>Running the model</li><li>Importing and visualizing the displacement results</li></ul></div><!--/introduction--><h2>Contents</h2><div><ul><li><a href="#1">Keywords</a></li><li><a href="#3">Plot settings</a></li><li><a href="#4">Control parameters</a></li><li><a href="#5">Creating model geometry and mesh</a></li><li><a href="#8">Creating rigid body ground plate</a></li><li><a href="#9">Creating rigid body shear surface</a></li><li><a href="#11">Defining the abaqus input structure</a></li></ul></div><h2 id="1">Keywords</h2><div><ul><li>Abaqus</li><li>indentation</li><li>contact, sliding, sticky, friction</li><li>rigid body constraints</li><li>hexahedral elements</li><li>hemisphere</li><li>static, solid</li><li>hyperelastic, Ogden</li><li>displacement logfile</li><li>stress logfile</li></ul></div><pre class="codeinput">clear; close <span class="string">all</span>; clc;
+</pre><h2 id="3">Plot settings</h2><pre class="codeinput">fontSize=15;
+faceAlpha1=0.8;
+faceAlpha2=0.3;
+markerSize=40;
+lineWidth=3;
+</pre><h2 id="4">Control parameters</h2><pre class="codeinput"><span class="comment">% Path names</span>
+defaultFolder = fileparts(fileparts(mfilename(<span class="string">'fullpath'</span>)));
+savePath=fullfile(defaultFolder,<span class="string">'data'</span>,<span class="string">'temp'</span>);
+
+<span class="comment">% Defining file names</span>
+abaqusInpFileNamePart=<span class="string">'tempModel'</span>;
+abaqusInpFileName=fullfile(savePath,[abaqusInpFileNamePart,<span class="string">'.inp'</span>]); <span class="comment">%INP file name</span>
+
+<span class="comment">% Hemi-sphere parameters</span>
+hemiSphereRadius=1;
+numElementsMantel=6;
+closeOption=1;
+smoothEdge=1;
+
+<span class="comment">% Ground plate parameters</span>
+plateRadius=2*hemiSphereRadius;
+
+<span class="comment">% Probe parameters</span>
+probeWidth=3*hemiSphereRadius;
+filletProbe=0.5; <span class="comment">%Fillet radius</span>
+
+<span class="comment">% Define probe displacement</span>
+probeDisplacement=hemiSphereRadius*2;
+proveOverlapFactor=0.4;
+
+<span class="comment">% Material parameter set</span>
+c1=1e-3; <span class="comment">%Shear-modulus-like parameter</span>
+m1=8; <span class="comment">%Material parameter setting degree of non-linearity</span>
+k_factor=1e2; <span class="comment">%Bulk modulus factor</span>
+k=c1*k_factor; <span class="comment">%Bulk modulus</span>
+
+<span class="comment">% FEA control settings</span>
+numTimeSteps=15;
+max_refs=25; <span class="comment">%Max reforms</span>
+max_ups=0; <span class="comment">%Set to zero to use full-Newton iterations</span>
+opt_iter=10; <span class="comment">%Optimum number of iterations</span>
+max_retries=25; <span class="comment">%Maximum number of retires</span>
+symmetric_stiffness=0;
+min_residual=1e-20;
+step_size=1/numTimeSteps;
+dtmin=(1/numTimeSteps)/100; <span class="comment">%Minimum time step size</span>
+dtmax=1/(numTimeSteps); <span class="comment">%Maximum time step size</span>
+
+<span class="comment">%Contact parameters</span>
+contactPenalty=20;
+laugon=0;
+minaug=1;
+maxaug=10;
+fric_coeff=0.1;
+</pre><h2 id="5">Creating model geometry and mesh</h2><pre class="codeinput"><span class="comment">%Control settings</span>
+optionStruct.sphereRadius=1;
+optionStruct.coreRadius=optionStruct.sphereRadius/2;
+optionStruct.numElementsMantel=6;
+optionStruct.numElementsCore=optionStruct.numElementsMantel*2;
+optionStruct.outputStructType=2;
+optionStruct.makeHollow=0;
+optionStruct.cParSmooth.n=25;
+
+<span class="comment">% %Creating sphere</span>
+[meshStruct]=hexMeshHemiSphere(optionStruct);
+
+<span class="comment">% Access model element and patch data</span>
+Fb=meshStruct.facesBoundary;
+Cb=meshStruct.boundaryMarker;
+V=meshStruct.nodes;
+E=meshStruct.elements;
+
+F=element2patch(E);
+</pre><pre class="codeinput">pointSpacingBlob=mean(patchEdgeLengths(Fb,V));
+
+<span class="comment">%Smoothen edges</span>
+<span class="keyword">if</span> smoothEdge==1
+    <span class="comment">%Get rigid region</span>
+    ind=1:1:size(V,1); <span class="comment">%Indices for all nodes</span>
+    indRigid1=find(ismember(ind,Fb(Cb==2,:)) &amp; ~ismember(ind,Fb(Cb==1,:))); <span class="comment">%Indices for new bottom surface nodes</span>
+    indRigid2=find(ismember(ind,Fb(Cb==1,:)) &amp; ~ismember(ind,Fb(Cb==2,:))); <span class="comment">%Indices for new bottom surface nodes</span>
+    indRigid=[indRigid1(:); indRigid2(:);];
+
+    <span class="comment">%Smoothing</span>
+    cPar.Method=<span class="string">'HC'</span>;
+    cPar.n=250;
+    cPar.RigidConstraints=indRigid;
+    [Vb_blob]=patchSmooth(F,V,[],cPar);
+    indSmooth=unique(F(:));
+    V(indSmooth,:)=Vb_blob(indSmooth,:);
+    <span class="comment">%Fix color data with new bottom surface</span>
+    Cb=ones(size(Cb));
+    Cb(all(ismember(Fb,indRigid1),2))=2;
+
+    meshStruct.nodes=V;
+<span class="keyword">end</span>
+</pre><p>Visualize blob mesh</p><pre class="codeinput">hFig=cFigure;
+subplot(1,2,1); hold <span class="string">on</span>;
+gpatch(Fb,V,Cb,<span class="string">'k'</span>,1);
+<span class="comment">% patchNormPlot(Fb_blob,V_blob);</span>
+plotV(V(indRigid,:),<span class="string">'g.'</span>,<span class="string">'MarkerSize'</span>,25);
+axisGeom(gca,fontSize);
+colormap(gjet); icolorbar;
+camlight <span class="string">headlight</span>;
+
+hs=subplot(1,2,2); hold <span class="string">on</span>;
+title(<span class="string">'Cut view of solid mesh'</span>,<span class="string">'FontSize'</span>,fontSize);
+optionStruct.hFig=[hFig hs];
+gpatch(Fb,V,<span class="string">'kw'</span>,<span class="string">'none'</span>,0.25);
+meshView(meshStruct,optionStruct);
+axisGeom(gca,fontSize);
+drawnow;
+</pre><img width="100%" height="auto" vspace="5" hspace="5" src="DEMO_abaqus_0002_blob_shear_contact_01.jpg" alt=""> <h2 id="8">Creating rigid body ground plate</h2><pre class="codeinput"><span class="comment">%Get outer surve of ground surface</span>
+[Eb]=patchBoundary(Fb(Cb==2,:),V);
+indCurveBottom=edgeListToCurve(Eb);
+indCurveBottom=indCurveBottom(1:end-1);
+
+<span class="comment">% Derive point spacing for plate</span>
+pointSpacingPlate=pointSpacingBlob;
+
+<span class="comment">% Compose outer curve of the plate</span>
+nPlateCurve=ceil((2*pi*plateRadius)/pointSpacingPlate);
+t=linspace(0,2*pi,nPlateCurve);
+t=t(1:end-1);
+x=plateRadius.*sin(t);
+y=plateRadius.*cos(t);
+V_plate_curve=[x(:) y(:) zeros(size(x(:)))];
+
+center_of_mass_plate=mean(V_plate_curve,1);
+</pre><h2 id="9">Creating rigid body shear surface</h2><pre class="codeinput">pointSpacingProbe=pointSpacingBlob/2;
+
+<span class="comment">%Sketching side profile</span>
+x=[-hemiSphereRadius hemiSphereRadius hemiSphereRadius]-hemiSphereRadius*2;
+y=[0 0 0];
+z=[hemiSphereRadius*(1-proveOverlapFactor) hemiSphereRadius*(1-proveOverlapFactor) hemiSphereRadius*1.5];
+V_probe_curve_sketch=[x(:) y(:) z(:)];
+
+<span class="comment">%Fillet sketch</span>
+np=100; <span class="comment">%Number of points used to construct each fillet edge</span>
+[V_probe_curve]=filletCurve(V_probe_curve_sketch,filletProbe,np,0);
+<span class="comment">% numPointsProbeCurve=ceil(max(pathLength(V_probe_curve))/pointSpacingProbe);</span>
+<span class="comment">% [V_probe_curve] = evenlySampleCurve(V_probe_curve,numPointsProbeCurve,'pchip',0);</span>
+
+center_of_mass_probe=mean(V_probe_curve,1);
+
+V_probe_curve_1=V_probe_curve(1,:);
+V_probe_curve_2=V_probe_curve(2,:);
+V_probe_curve_3=V_probe_curve(2+np-1,:);
+V_probe_curve_4=V_probe_curve(2,:);
+V_probe_curve_4(:,3)=V_probe_curve_4(:,3)+filletProbe;
+V_probe_curve_5=V_probe_curve(end,:);
+</pre><p>Visualizing curves</p><pre class="codeinput">cFigure; hold <span class="string">on</span>;
+title(<span class="string">'Sketched components'</span>,<span class="string">'fontSize'</span>,fontSize);
+gpatch(Fb,V,<span class="string">'kw'</span>,<span class="string">'none'</span>,0.5);
+hl(1)=plotV(V_plate_curve,<span class="string">'k.-'</span>,<span class="string">'lineWidth'</span>,2,<span class="string">'MarkerSize'</span>,15);
+hl(2)=plotV(V_probe_curve,<span class="string">'k-'</span>,<span class="string">'lineWidth'</span>,2);
+hl(3)=plotV(V_probe_curve_1,<span class="string">'r.'</span>,<span class="string">'MarkerSize'</span>,50);
+hl(4)=plotV(V_probe_curve_2,<span class="string">'g.'</span>,<span class="string">'MarkerSize'</span>,50);
+hl(5)=plotV(V_probe_curve_3,<span class="string">'b.'</span>,<span class="string">'MarkerSize'</span>,50);
+hl(6)=plotV(V_probe_curve_4,<span class="string">'y.'</span>,<span class="string">'MarkerSize'</span>,50);
+hl(7)=plotV(V_probe_curve_5,<span class="string">'c.'</span>,<span class="string">'MarkerSize'</span>,50);
+legend(hl,{<span class="string">'Plate curve'</span>,<span class="string">'Rounded probe curve'</span>,<span class="string">'1'</span>,<span class="string">'2'</span>,<span class="string">'3'</span>,<span class="string">'4'</span>,<span class="string">'5'</span>}); clear <span class="string">hl</span>;
+axisGeom(gca,fontSize);
+camlight <span class="string">headlight</span>;
+view(0,0);
+drawnow;
+</pre><img width="100%" height="auto" vspace="5" hspace="5" src="DEMO_abaqus_0002_blob_shear_contact_02.jpg" alt=""> <h2 id="11">Defining the abaqus input structure</h2><p>See also <tt>abaqusStructTemplate</tt> and <tt>abaqusStruct2inp</tt> and the abaqus user manual.</p><pre class="codeinput"><span class="comment">%%--&gt; Heading</span>
+abaqus_spec.Heading.COMMENT{1}=<span class="string">'Job name: ABAQUS inp file creation demo'</span>;
+abaqus_spec.Heading.COMMENT{2}=<span class="string">'Generated by: GIBBON'</span>;
+
+<span class="comment">%%--&gt; Preprint</span>
+abaqus_spec.Preprint.ATTR.echo=<span class="string">'NO'</span>;
+abaqus_spec.Preprint.ATTR.model=<span class="string">'NO'</span>;
+abaqus_spec.Preprint.ATTR.history=<span class="string">'NO'</span>;
+abaqus_spec.Preprint.ATTR.contact=<span class="string">'NO'</span>;
+
+<span class="comment">%--&gt; Part</span>
+
+<span class="comment">% Node</span>
+nodeIds=(1:1:size(V,1))';
+abaqus_spec.Part{1}.COMMENT=<span class="string">'This section defines the part geometry in terms of nodes and elements'</span>;
+abaqus_spec.Part{1}.ATTR.name=<span class="string">'Blob'</span>;
+abaqus_spec.Part{1}.Node={nodeIds,V};
+
+<span class="comment">% Element</span>
+elementIds=(1:1:size(E,1))';
+abaqus_spec.Part{1}.Element{1}.ATTR.type=<span class="string">'C3D8'</span>;<span class="comment">%'C3D8R';</span>
+abaqus_spec.Part{1}.Element{1}.VAL={elementIds,E};
+
+<span class="comment">% Element sets</span>
+abaqus_spec.Part{1}.Elset{1}.ATTR.elset=<span class="string">'Set-1'</span>;
+abaqus_spec.Part{1}.Elset{1}.VAL=elementIds';
+
+<span class="comment">% Sections</span>
+abaqus_spec.Part{1}.Solid_section.ATTR.elset=<span class="string">'Set-1'</span>;
+abaqus_spec.Part{1}.Solid_section.ATTR.material=<span class="string">'Elastic'</span>;
+
+<span class="comment">%Surfaces</span>
+abaqus_spec.Part{2}.COMMENT=<span class="string">'This section defines the part geometry in terms of nodes and elements'</span>;
+abaqus_spec.Part{2}.ATTR.name=<span class="string">'rigid_surface'</span>;
+abaqus_spec.Part{2}.Node={1,V_probe_curve_1};
+
+abaqus_spec.Part{2}.surface.ATTR.type=<span class="string">'cylinder'</span>;
+abaqus_spec.Part{2}.surface.ATTR.name=<span class="string">'probe_surface'</span>;
+abaqus_spec.Part{2}.surface.VAL{1,1}={[0 0 0],[1 0 0]};
+abaqus_spec.Part{2}.surface.VAL{2,1}={[0 1 0]};
+abaqus_spec.Part{2}.surface.VAL{3,1}={{<span class="string">'start'</span>;<span class="string">'line'</span>;},[V_probe_curve_1(:,[1 3]);V_probe_curve_2(:,[1 3]);]};
+abaqus_spec.Part{2}.surface.VAL{4,1}={{<span class="string">'circl'</span>},[V_probe_curve_3(:,[1 3]) V_probe_curve_4(:,[1 3])]};
+abaqus_spec.Part{2}.surface.VAL{5,1}={{<span class="string">'line'</span>},V_probe_curve_5(:,[1 3])};
+
+<span class="comment">% Rigid body</span>
+<span class="comment">%RIGID BODY, ANALYTICAL SURFACE=name, REF NODE=n</span>
+abaqus_spec.Part{2}.rigid_body.ATTR.analytical_surface=<span class="string">'probe_surface'</span>;
+abaqus_spec.Part{2}.rigid_body.ATTR.ref_node=1;
+
+
+<span class="comment">%%--&gt; Assembly</span>
+abaqus_spec.Assembly{1}.ATTR.name=<span class="string">'Assembly-1'</span>;
+abaqus_spec.Assembly{1}.Instance{1}.ATTR.name=<span class="string">'Blob-assembly'</span>;
+abaqus_spec.Assembly{1}.Instance{1}.ATTR.part=<span class="string">'Blob'</span>;
+abaqus_spec.Assembly{1}.Instance{2}.ATTR.name=<span class="string">'rigid_surface-assembly'</span>;
+abaqus_spec.Assembly{1}.Instance{2}.ATTR.part=<span class="string">'rigid_surface'</span>;
+abaqus_spec.Assembly{1}.Instance{2}.VAL{1,1}={[0 0 0]};
+abaqus_spec.Assembly{1}.Instance{2}.VAL{2,1}={[0 0 0 1 0 0 90]};
+
+<span class="comment">% abaqus_spec.Assembly{1}.Nset{1}.ATTR.nset='All';</span>
+<span class="comment">% abaqus_spec.Assembly{1}.Nset{1}.ATTR.instance=abaqus_spec.Assembly{1}.Instance{1}.ATTR.name;</span>
+<span class="comment">% abaqus_spec.Assembly{1}.Nset{1}.VAL=[1:1:size(V,1)];</span>
+
+<span class="comment">% % Rigid body</span>
+<span class="comment">% %RIGID BODY, ANALYTICAL SURFACE=name, REF NODE=n</span>
+<span class="comment">% abaqus_spec.Assembly{1}.rigid_body.ATTR.analytical_surface='probe_surface';</span>
+<span class="comment">% abaqus_spec.Assembly{1}.rigid_body.ATTR.ref_node=1;</span>
+
+<span class="comment">%%--&gt; Material</span>
+abaqus_spec.Material{1}.ATTR.name=<span class="string">'Elastic'</span>;
+abaqus_spec.Material{1}.Elastic=[1 0.45];
+
+<span class="comment">%%--&gt; Step</span>
+abaqus_spec.Step.ATTR.name=<span class="string">'Step-1'</span>;
+abaqus_spec.Step.ATTR.nlgeom=<span class="string">'YES'</span>;
+abaqus_spec.Step.Static=[0.1 1 1e-5 0.1];
+
+<span class="comment">% Boundary</span>
+<span class="comment">% abaqus_spec.Step.Boundary{1}.VAL={'Set-1',[1,1]};</span>
+<span class="comment">% abaqus_spec.Step.Boundary{2}.VAL={'Set-2',[2,2]};</span>
+<span class="comment">% abaqus_spec.Step.Boundary{3}.VAL={'Set-3',[3,3]};</span>
+<span class="comment">% abaqus_spec.Step.Boundary{4}.VAL={'Set-4',[3,3],-0.1};</span>
+
+<span class="comment">%Output</span>
+abaqus_spec.Step.Restart.ATTR.write=<span class="string">''</span>;
+abaqus_spec.Step.Restart.ATTR.frequency=0;
+
+abaqus_spec.Step.Output{1}.ATTR.field=<span class="string">''</span>;
+abaqus_spec.Step.Output{1}.ATTR.variable=<span class="string">'PRESELECT'</span>;
+abaqus_spec.Step.Output{2}.ATTR.history=<span class="string">''</span>;
+abaqus_spec.Step.Output{2}.ATTR.variable=<span class="string">'PRESELECT'</span>;
+<span class="comment">% abaqus_spec.Step.Node_print.ATTR.nset='all';</span>
+<span class="comment">% abaqus_spec.Step.Node_print.ATTR.frequency = 1;</span>
+<span class="comment">% abaqus_spec.Step.Node_print.VAL='COORD';</span>
+<span class="comment">% abaqus_spec.Step.El_print.VAL='S';</span>
+</pre><pre class="codeinput">abaqusStruct2inp(abaqus_spec,abaqusInpFileName);
+</pre><p>textView(abaqusInpFileName);</p><p><img vspace="5" hspace="5" src="gibbVerySmall.gif" alt=""> </p><p><i><b>GIBBON</b></i> <a href="www.gibboncode.org">www.gibboncode.org</a></p><p><i>Kevin Mattheus Moerman</i>, <a href="gibbon.toolbox@gmail.com">gibbon.toolbox@gmail.com</a></p><p><i><b>GIBBON footer text</b></i></p><p>License: <a href="https://github.com/gibbonCode/GIBBON/blob/master/LICENSE">https://github.com/gibbonCode/GIBBON/blob/master/LICENSE</a></p><p>GIBBON: The Geometry and Image-based Bioengineering add-On. A toolbox for image segmentation, image-based modeling, meshing, and finite element analysis.</p><p>Copyright (C) 2019  Kevin Mattheus Moerman</p><p>This program is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.</p><p>This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for more details.</p><p>You should have received a copy of the GNU General Public License along with this program.  If not, see <a href="http://www.gnu.org/licenses/">http://www.gnu.org/licenses/</a>.</p><p class="footer"><br><a href="https://www.mathworks.com/products/matlab/">Published with MATLAB&reg; R2019a</a><br></p></div><!--
+##### SOURCE BEGIN #####
+%% DEMO_febio_0031_blob_shear_contact
+% Below is a demonstration for:
+% 
+% * Building geometry for a hemi-spherical blob with tetrahedral elements
+% which is being sheared by a rigid wall. 
+% This demo consists off:
+% * Defining the boundary conditions 
+% * Coding the febio structure
+% * Running the model
+% * Importing and visualizing the displacement results
+
+%% Keywords
+%
+% * Abaqus
+% * indentation
+% * contact, sliding, sticky, friction
+% * rigid body constraints
+% * hexahedral elements
+% * hemisphere
+% * static, solid
+% * hyperelastic, Ogden
+% * displacement logfile
+% * stress logfile
+
+%%
+
+clear; close all; clc;
+
+%% Plot settings
+fontSize=15;
+faceAlpha1=0.8;
+faceAlpha2=0.3;
+markerSize=40;
+lineWidth=3;
+
+%% Control parameters
+
+% Path names
+defaultFolder = fileparts(fileparts(mfilename('fullpath')));
+savePath=fullfile(defaultFolder,'data','temp');
+
+% Defining file names
+abaqusInpFileNamePart='tempModel';
+abaqusInpFileName=fullfile(savePath,[abaqusInpFileNamePart,'.inp']); %INP file name
+
+% Hemi-sphere parameters
+hemiSphereRadius=1; 
+numElementsMantel=6; 
+closeOption=1; 
+smoothEdge=1; 
+
+% Ground plate parameters
+plateRadius=2*hemiSphereRadius; 
+
+% Probe parameters
+probeWidth=3*hemiSphereRadius; 
+filletProbe=0.5; %Fillet radius
+
+% Define probe displacement
+probeDisplacement=hemiSphereRadius*2; 
+proveOverlapFactor=0.4;
+
+% Material parameter set
+c1=1e-3; %Shear-modulus-like parameter
+m1=8; %Material parameter setting degree of non-linearity
+k_factor=1e2; %Bulk modulus factor 
+k=c1*k_factor; %Bulk modulus
+
+% FEA control settings
+numTimeSteps=15;
+max_refs=25; %Max reforms
+max_ups=0; %Set to zero to use full-Newton iterations
+opt_iter=10; %Optimum number of iterations
+max_retries=25; %Maximum number of retires
+symmetric_stiffness=0;
+min_residual=1e-20;
+step_size=1/numTimeSteps;
+dtmin=(1/numTimeSteps)/100; %Minimum time step size
+dtmax=1/(numTimeSteps); %Maximum time step size
+
+%Contact parameters
+contactPenalty=20;
+laugon=0;
+minaug=1;
+maxaug=10;
+fric_coeff=0.1; 
+
+%% Creating model geometry and mesh
+% 
+
+%Control settings
+optionStruct.sphereRadius=1;
+optionStruct.coreRadius=optionStruct.sphereRadius/2;
+optionStruct.numElementsMantel=6;
+optionStruct.numElementsCore=optionStruct.numElementsMantel*2;
+optionStruct.outputStructType=2;
+optionStruct.makeHollow=0;
+optionStruct.cParSmooth.n=25;
+
+% %Creating sphere
+[meshStruct]=hexMeshHemiSphere(optionStruct);
+
+% Access model element and patch data
+Fb=meshStruct.facesBoundary;
+Cb=meshStruct.boundaryMarker;
+V=meshStruct.nodes;
+E=meshStruct.elements;
+
+F=element2patch(E);
+
+%%
+
+pointSpacingBlob=mean(patchEdgeLengths(Fb,V));
+
+%Smoothen edges
+if smoothEdge==1
+    %Get rigid region
+    ind=1:1:size(V,1); %Indices for all nodes
+    indRigid1=find(ismember(ind,Fb(Cb==2,:)) & ~ismember(ind,Fb(Cb==1,:))); %Indices for new bottom surface nodes
+    indRigid2=find(ismember(ind,Fb(Cb==1,:)) & ~ismember(ind,Fb(Cb==2,:))); %Indices for new bottom surface nodes
+    indRigid=[indRigid1(:); indRigid2(:);];
+    
+    %Smoothing
+    cPar.Method='HC';
+    cPar.n=250;
+    cPar.RigidConstraints=indRigid;
+    [Vb_blob]=patchSmooth(F,V,[],cPar);
+    indSmooth=unique(F(:));
+    V(indSmooth,:)=Vb_blob(indSmooth,:);
+    %Fix color data with new bottom surface
+    Cb=ones(size(Cb));
+    Cb(all(ismember(Fb,indRigid1),2))=2;
+
+    meshStruct.nodes=V;
+end
+
+%%
+% Visualize blob mesh
+
+hFig=cFigure; 
+subplot(1,2,1); hold on;
+gpatch(Fb,V,Cb,'k',1);
+% patchNormPlot(Fb_blob,V_blob);
+plotV(V(indRigid,:),'g.','MarkerSize',25);
+axisGeom(gca,fontSize);
+colormap(gjet); icolorbar;
+camlight headlight; 
+
+hs=subplot(1,2,2); hold on; 
+title('Cut view of solid mesh','FontSize',fontSize);
+optionStruct.hFig=[hFig hs];
+gpatch(Fb,V,'kw','none',0.25);
+meshView(meshStruct,optionStruct);
+axisGeom(gca,fontSize);
+drawnow; 
+
+%% Creating rigid body ground plate
+% 
+
+%Get outer surve of ground surface 
+[Eb]=patchBoundary(Fb(Cb==2,:),V);
+indCurveBottom=edgeListToCurve(Eb);
+indCurveBottom=indCurveBottom(1:end-1);
+
+% Derive point spacing for plate
+pointSpacingPlate=pointSpacingBlob; 
+
+% Compose outer curve of the plate
+nPlateCurve=ceil((2*pi*plateRadius)/pointSpacingPlate);
+t=linspace(0,2*pi,nPlateCurve);
+t=t(1:end-1); 
+x=plateRadius.*sin(t);
+y=plateRadius.*cos(t); 
+V_plate_curve=[x(:) y(:) zeros(size(x(:)))];
+
+center_of_mass_plate=mean(V_plate_curve,1);
+
+%% Creating rigid body shear surface
+
+pointSpacingProbe=pointSpacingBlob/2; 
+
+%Sketching side profile
+x=[-hemiSphereRadius hemiSphereRadius hemiSphereRadius]-hemiSphereRadius*2;
+y=[0 0 0];
+z=[hemiSphereRadius*(1-proveOverlapFactor) hemiSphereRadius*(1-proveOverlapFactor) hemiSphereRadius*1.5];
+V_probe_curve_sketch=[x(:) y(:) z(:)];
+
+%Fillet sketch
+np=100; %Number of points used to construct each fillet edge
+[V_probe_curve]=filletCurve(V_probe_curve_sketch,filletProbe,np,0);
+% numPointsProbeCurve=ceil(max(pathLength(V_probe_curve))/pointSpacingProbe);
+% [V_probe_curve] = evenlySampleCurve(V_probe_curve,numPointsProbeCurve,'pchip',0);
+
+center_of_mass_probe=mean(V_probe_curve,1);
+
+V_probe_curve_1=V_probe_curve(1,:);
+V_probe_curve_2=V_probe_curve(2,:);
+V_probe_curve_3=V_probe_curve(2+np-1,:);
+V_probe_curve_4=V_probe_curve(2,:);
+V_probe_curve_4(:,3)=V_probe_curve_4(:,3)+filletProbe;
+V_probe_curve_5=V_probe_curve(end,:);
+%%
+% Visualizing curves
+
+cFigure; hold on;
+title('Sketched components','fontSize',fontSize);
+gpatch(Fb,V,'kw','none',0.5);
+hl(1)=plotV(V_plate_curve,'k.-','lineWidth',2,'MarkerSize',15);
+hl(2)=plotV(V_probe_curve,'k-','lineWidth',2);
+hl(3)=plotV(V_probe_curve_1,'r.','MarkerSize',50);
+hl(4)=plotV(V_probe_curve_2,'g.','MarkerSize',50);
+hl(5)=plotV(V_probe_curve_3,'b.','MarkerSize',50);
+hl(6)=plotV(V_probe_curve_4,'y.','MarkerSize',50);
+hl(7)=plotV(V_probe_curve_5,'c.','MarkerSize',50);
+legend(hl,{'Plate curve','Rounded probe curve','1','2','3','4','5'}); clear hl;
+axisGeom(gca,fontSize);
+camlight headlight; 
+view(0,0);
+drawnow; 
+
+%% Defining the abaqus input structure
+% See also |abaqusStructTemplate| and |abaqusStruct2inp| and the abaqus user
+% manual.
+
+%%REPLACE_WITH_DASH_DASH> Heading
+abaqus_spec.Heading.COMMENT{1}='Job name: ABAQUS inp file creation demo';
+abaqus_spec.Heading.COMMENT{2}='Generated by: GIBBON';
+
+%%REPLACE_WITH_DASH_DASH> Preprint
+abaqus_spec.Preprint.ATTR.echo='NO';
+abaqus_spec.Preprint.ATTR.model='NO';
+abaqus_spec.Preprint.ATTR.history='NO';
+abaqus_spec.Preprint.ATTR.contact='NO';
+
+%REPLACE_WITH_DASH_DASH> Part
+
+% Node
+nodeIds=(1:1:size(V,1))';
+abaqus_spec.Part{1}.COMMENT='This section defines the part geometry in terms of nodes and elements';
+abaqus_spec.Part{1}.ATTR.name='Blob';
+abaqus_spec.Part{1}.Node={nodeIds,V};
+
+% Element
+elementIds=(1:1:size(E,1))';
+abaqus_spec.Part{1}.Element{1}.ATTR.type='C3D8';%'C3D8R';
+abaqus_spec.Part{1}.Element{1}.VAL={elementIds,E};
+
+% Element sets
+abaqus_spec.Part{1}.Elset{1}.ATTR.elset='Set-1';
+abaqus_spec.Part{1}.Elset{1}.VAL=elementIds';
+
+% Sections
+abaqus_spec.Part{1}.Solid_section.ATTR.elset='Set-1';
+abaqus_spec.Part{1}.Solid_section.ATTR.material='Elastic';
+
+%Surfaces
+abaqus_spec.Part{2}.COMMENT='This section defines the part geometry in terms of nodes and elements';
+abaqus_spec.Part{2}.ATTR.name='rigid_surface';
+abaqus_spec.Part{2}.Node={1,V_probe_curve_1};
+
+abaqus_spec.Part{2}.surface.ATTR.type='cylinder';
+abaqus_spec.Part{2}.surface.ATTR.name='probe_surface';
+abaqus_spec.Part{2}.surface.VAL{1,1}={[0 0 0],[1 0 0]};
+abaqus_spec.Part{2}.surface.VAL{2,1}={[0 1 0]};
+abaqus_spec.Part{2}.surface.VAL{3,1}={{'start';'line';},[V_probe_curve_1(:,[1 3]);V_probe_curve_2(:,[1 3]);]};
+abaqus_spec.Part{2}.surface.VAL{4,1}={{'circl'},[V_probe_curve_3(:,[1 3]) V_probe_curve_4(:,[1 3])]};
+abaqus_spec.Part{2}.surface.VAL{5,1}={{'line'},V_probe_curve_5(:,[1 3])};
+
+% Rigid body
+%RIGID BODY, ANALYTICAL SURFACE=name, REF NODE=n
+abaqus_spec.Part{2}.rigid_body.ATTR.analytical_surface='probe_surface';
+abaqus_spec.Part{2}.rigid_body.ATTR.ref_node=1;
+
+
+%%REPLACE_WITH_DASH_DASH> Assembly
+abaqus_spec.Assembly{1}.ATTR.name='Assembly-1';
+abaqus_spec.Assembly{1}.Instance{1}.ATTR.name='Blob-assembly';
+abaqus_spec.Assembly{1}.Instance{1}.ATTR.part='Blob';
+abaqus_spec.Assembly{1}.Instance{2}.ATTR.name='rigid_surface-assembly';
+abaqus_spec.Assembly{1}.Instance{2}.ATTR.part='rigid_surface';
+abaqus_spec.Assembly{1}.Instance{2}.VAL{1,1}={[0 0 0]};
+abaqus_spec.Assembly{1}.Instance{2}.VAL{2,1}={[0 0 0 1 0 0 90]};
+
+% abaqus_spec.Assembly{1}.Nset{1}.ATTR.nset='All';
+% abaqus_spec.Assembly{1}.Nset{1}.ATTR.instance=abaqus_spec.Assembly{1}.Instance{1}.ATTR.name;
+% abaqus_spec.Assembly{1}.Nset{1}.VAL=[1:1:size(V,1)];
+
+% % Rigid body
+% %RIGID BODY, ANALYTICAL SURFACE=name, REF NODE=n
+% abaqus_spec.Assembly{1}.rigid_body.ATTR.analytical_surface='probe_surface';
+% abaqus_spec.Assembly{1}.rigid_body.ATTR.ref_node=1;
+
+%%REPLACE_WITH_DASH_DASH> Material
+abaqus_spec.Material{1}.ATTR.name='Elastic';
+abaqus_spec.Material{1}.Elastic=[1 0.45];
+
+%%REPLACE_WITH_DASH_DASH> Step
+abaqus_spec.Step.ATTR.name='Step-1';
+abaqus_spec.Step.ATTR.nlgeom='YES';
+abaqus_spec.Step.Static=[0.1 1 1e-5 0.1];
+
+% Boundary
+% abaqus_spec.Step.Boundary{1}.VAL={'Set-1',[1,1]};
+% abaqus_spec.Step.Boundary{2}.VAL={'Set-2',[2,2]};
+% abaqus_spec.Step.Boundary{3}.VAL={'Set-3',[3,3]};
+% abaqus_spec.Step.Boundary{4}.VAL={'Set-4',[3,3],-0.1};
+
+%Output
+abaqus_spec.Step.Restart.ATTR.write='';
+abaqus_spec.Step.Restart.ATTR.frequency=0;
+
+abaqus_spec.Step.Output{1}.ATTR.field='';
+abaqus_spec.Step.Output{1}.ATTR.variable='PRESELECT';
+abaqus_spec.Step.Output{2}.ATTR.history='';
+abaqus_spec.Step.Output{2}.ATTR.variable='PRESELECT';
+% abaqus_spec.Step.Node_print.ATTR.nset='all';
+% abaqus_spec.Step.Node_print.ATTR.frequency = 1;
+% abaqus_spec.Step.Node_print.VAL='COORD';
+% abaqus_spec.Step.El_print.VAL='S';
+
+%%
+
+abaqusStruct2inp(abaqus_spec,abaqusInpFileName);
+
+%%
+% textView(abaqusInpFileName);
+ 
+%% 
+%
+% <<gibbVerySmall.gif>>
+% 
+% _*GIBBON*_ 
+% <www.gibboncode.org>
+% 
+% _Kevin Mattheus Moerman_, <gibbon.toolbox@gmail.com>
+ 
+%% 
+% _*GIBBON footer text*_ 
+% 
+% License: <https://github.com/gibbonCode/GIBBON/blob/master/LICENSE>
+% 
+% GIBBON: The Geometry and Image-based Bioengineering add-On. A toolbox for
+% image segmentation, image-based modeling, meshing, and finite element
+% analysis.
+% 
+% Copyright (C) 2019  Kevin Mattheus Moerman
+% 
+% This program is free software: you can redistribute it and/or modify
+% it under the terms of the GNU General Public License as published by
+% the Free Software Foundation, either version 3 of the License, or
+% (at your option) any later version.
+% 
+% This program is distributed in the hope that it will be useful,
+% but WITHOUT ANY WARRANTY; without even the implied warranty of
+% MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+% GNU General Public License for more details.
+% 
+% You should have received a copy of the GNU General Public License
+% along with this program.  If not, see <http://www.gnu.org/licenses/>.
+
+##### SOURCE END #####
+--></body></html>

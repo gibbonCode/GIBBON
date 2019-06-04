@@ -6,7 +6,7 @@
    <!--
 This HTML was auto-generated from MATLAB code.
 To make changes, update the MATLAB code and republish this document.
-      --><title>patchSmoothFaceMeasure</title><meta name="generator" content="MATLAB 9.5"><link rel="schema.DC" href="http://purl.org/dc/elements/1.1/"><meta name="DC.date" content="2018-08-22"><meta name="DC.source" content="HELP_patchSmoothFaceMeasure.m"><style type="text/css">
+      --><title>patchSmoothFaceMeasure</title><meta name="generator" content="MATLAB 9.6"><link rel="schema.DC" href="http://purl.org/dc/elements/1.1/"><meta name="DC.date" content="2019-06-03"><meta name="DC.source" content="HELP_patchSmoothFaceMeasure.m"><style type="text/css">
 html,body,div,span,applet,object,iframe,h1,h2,h3,h4,h5,h6,p,blockquote,pre,a,abbr,acronym,address,big,cite,code,del,dfn,em,font,img,ins,kbd,q,s,samp,small,strike,strong,sub,sup,tt,var,b,u,i,center,dl,dt,dd,ol,ul,li,fieldset,form,label,legend,table,caption,tbody,tfoot,thead,tr,th,td{margin:0;padding:0;border:0;outline:0;font-size:100%;vertical-align:baseline;background:transparent}body{line-height:1}ol,ul{list-style:none}blockquote,q{quotes:none}blockquote:before,blockquote:after,q:before,q:after{content:'';content:none}:focus{outine:0}ins{text-decoration:none}del{text-decoration:line-through}table{border-collapse:collapse;border-spacing:0}
 
 html { min-height:100%; margin-bottom:1px; }
@@ -104,100 +104,123 @@ smoothPar.n=25; <span class="comment">%Number of smooth iterations</span>
 </pre><pre class="codeinput">    cFigure;
     subplot(1,2,1); hold <span class="string">on</span>;
     title(<span class="string">'Raw face data'</span>);
-    gpatch(F,V,C,<span class="string">'k'</span>);
+    gpatch(F,V,C,<span class="string">'none'</span>);
     colorbar(gca); caxis([min(C_clean) max(C_clean)]);
     axisGeom;
     camlight <span class="string">headlight</span>;
 
     subplot(1,2,2); hold <span class="string">on</span>;
     title(<span class="string">'Smoothed face data'</span>);
-    gpatch(F,V,C_smooth,<span class="string">'k'</span>);
+    gpatch(F,V,C_smooth,<span class="string">'none'</span>);
     colorbar(gca); caxis([min(C_clean) max(C_clean)]);
     axisGeom;
     camlight <span class="string">headlight</span>;
 
     drawnow;
-</pre><img vspace="5" hspace="5" src="HELP_patchSmoothFaceMeasure_01.png" alt=""> <img vspace="5" hspace="5" src="HELP_patchSmoothFaceMeasure_02.png" alt=""> <img vspace="5" hspace="5" src="HELP_patchSmoothFaceMeasure_03.png" alt=""> <img vspace="5" hspace="5" src="HELP_patchSmoothFaceMeasure_04.png" alt=""> <img vspace="5" hspace="5" src="HELP_patchSmoothFaceMeasure_05.png" alt=""> <img vspace="5" hspace="5" src="HELP_patchSmoothFaceMeasure_06.png" alt=""> <pre class="codeinput"><span class="keyword">end</span>
-</pre><p class="footer"><br><a href="https://www.mathworks.com/products/matlab/">Published with MATLAB&reg; R2018b</a><br></p></div><!--
+</pre><img width="100%" height="auto" vspace="5" hspace="5" src="HELP_patchSmoothFaceMeasure_01.jpg" alt=""> <img width="100%" height="auto" vspace="5" hspace="5" src="HELP_patchSmoothFaceMeasure_02.jpg" alt=""> <img width="100%" height="auto" vspace="5" hspace="5" src="HELP_patchSmoothFaceMeasure_03.jpg" alt=""> <img width="100%" height="auto" vspace="5" hspace="5" src="HELP_patchSmoothFaceMeasure_04.jpg" alt=""> <img width="100%" height="auto" vspace="5" hspace="5" src="HELP_patchSmoothFaceMeasure_05.jpg" alt=""> <img width="100%" height="auto" vspace="5" hspace="5" src="HELP_patchSmoothFaceMeasure_06.jpg" alt=""> <pre class="codeinput"><span class="keyword">end</span>
+</pre><p><i><b>GIBBON footer text</b></i></p><p>License: <a href="https://github.com/gibbonCode/GIBBON/blob/master/LICENSE">https://github.com/gibbonCode/GIBBON/blob/master/LICENSE</a></p><p>GIBBON: The Geometry and Image-based Bioengineering add-On. A toolbox for image segmentation, image-based modeling, meshing, and finite element analysis.</p><p>Copyright (C) 2019  Kevin Mattheus Moerman</p><p>This program is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.</p><p>This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for more details.</p><p>You should have received a copy of the GNU General Public License along with this program.  If not, see <a href="http://www.gnu.org/licenses/">http://www.gnu.org/licenses/</a>.</p><p class="footer"><br><a href="https://www.mathworks.com/products/matlab/">Published with MATLAB&reg; R2019a</a><br></p></div><!--
 ##### SOURCE BEGIN #####
-%% patchSmoothFaceMeasure
-% Below is a demonstration of the features of the |patchSmoothFaceMeasure| function
-
-%% Syntax
-% |[C_smooth]=patchSmoothFaceMeasure(F,V,C,smoothPar);|
-
-%% Description
-% 
-
-%% Examples
-
-%%
-clear; close all; clc;
-
-%% 
-% Plot settings
-markerSize=50;
-
-%% Demonstrating 
-
-smoothPar.lambda=0.5; %Lambda for smoothing
-smoothPar.n=25; %Number of smooth iterations
-
-for testCase=1:6
-    [F,V]=graphicsModels(testCase);
-    switch testCase
-        case 1 %Cut patch data with unused points
-            [F,V]=geoSphere(4,1);
-            Z=V(:,3);
-            F=F(mean(Z(F),2)>0,:);
-        case 2 %Cut patch data
-            [F,V]=geoSphere(4,1);
-            Z=V(:,3);
-            F=F(mean(Z(F),2)>0,:);
-            [F,V]=patchCleanUnused(F,V);
-        case 3 %Quadrilateral patch data
-            [F,V]=quadSphere(4,1);
-        case 4 %A larger mesh
-            [F,V]=graphicsModels(1);
-        case 5 %A tangled mesh
-            [F,V]=graphicsModels(8);
-        case 6
-            r=1; %Sphere radius
-            rc=2.5; %Central radius
-            nr=16;
-            nc=25;
-            patchType='honey';
-            [F,V]=patchTorus(r,nr,rc,nc,patchType);
-    end
-      
-    %%
-    Z=V(:,3);
-    C_clean=mean(Z(F),2);
-    C=C_clean+(max(C_clean)-min(C_clean))/5*randn(size(F,1),1);    
-    
-    %%
-    [C_smooth]=patchSmoothFaceMeasure(F,V,C,smoothPar);
-    
-    %%
-    cFigure; 
-    subplot(1,2,1); hold on; 
-    title('Raw face data');
-    gpatch(F,V,C,'k');
-    colorbar(gca); caxis([min(C_clean) max(C_clean)]);
-    axisGeom;
-    camlight headlight; 
-    
-    subplot(1,2,2); hold on;
-    title('Smoothed face data');
-    gpatch(F,V,C_smooth,'k');
-    colorbar(gca); caxis([min(C_clean) max(C_clean)]);
-    axisGeom;
-    camlight headlight; 
-    
-    drawnow;
-    
-end
-
+%% patchSmoothFaceMeasure
+% Below is a demonstration of the features of the |patchSmoothFaceMeasure| function
+
+%% Syntax
+% |[C_smooth]=patchSmoothFaceMeasure(F,V,C,smoothPar);|
+
+%% Description
+% 
+
+%% Examples
+
+%%
+clear; close all; clc;
+
+%% 
+% Plot settings
+markerSize=50;
+
+%% Demonstrating 
+
+smoothPar.lambda=0.5; %Lambda for smoothing
+smoothPar.n=25; %Number of smooth iterations
+
+for testCase=1:6
+    [F,V]=graphicsModels(testCase);
+    switch testCase
+        case 1 %Cut patch data with unused points
+            [F,V]=geoSphere(4,1);
+            Z=V(:,3);
+            F=F(mean(Z(F),2)>0,:);
+        case 2 %Cut patch data
+            [F,V]=geoSphere(4,1);
+            Z=V(:,3);
+            F=F(mean(Z(F),2)>0,:);
+            [F,V]=patchCleanUnused(F,V);
+        case 3 %Quadrilateral patch data
+            [F,V]=quadSphere(4,1);
+        case 4 %A larger mesh
+            [F,V]=graphicsModels(1);
+        case 5 %A tangled mesh
+            [F,V]=graphicsModels(8);
+        case 6
+            r=1; %Sphere radius
+            rc=2.5; %Central radius
+            nr=16;
+            nc=25;
+            patchType='honey';
+            [F,V]=patchTorus(r,nr,rc,nc,patchType);
+    end
+      
+    %%
+    Z=V(:,3);
+    C_clean=mean(Z(F),2);
+    C=C_clean+(max(C_clean)-min(C_clean))/5*randn(size(F,1),1);    
+    
+    %%
+    [C_smooth]=patchSmoothFaceMeasure(F,V,C,smoothPar);
+    
+    %%
+    cFigure; 
+    subplot(1,2,1); hold on; 
+    title('Raw face data');
+    gpatch(F,V,C,'none');
+    colorbar(gca); caxis([min(C_clean) max(C_clean)]);
+    axisGeom;
+    camlight headlight; 
+    
+    subplot(1,2,2); hold on;
+    title('Smoothed face data');
+    gpatch(F,V,C_smooth,'none');
+    colorbar(gca); caxis([min(C_clean) max(C_clean)]);
+    axisGeom;
+    camlight headlight; 
+    
+    drawnow;
+    
+end
+
+%% 
+% _*GIBBON footer text*_ 
+% 
+% License: <https://github.com/gibbonCode/GIBBON/blob/master/LICENSE>
+% 
+% GIBBON: The Geometry and Image-based Bioengineering add-On. A toolbox for
+% image segmentation, image-based modeling, meshing, and finite element
+% analysis.
+% 
+% Copyright (C) 2019  Kevin Mattheus Moerman
+% 
+% This program is free software: you can redistribute it and/or modify
+% it under the terms of the GNU General Public License as published by
+% the Free Software Foundation, either version 3 of the License, or
+% (at your option) any later version.
+% 
+% This program is distributed in the hope that it will be useful,
+% but WITHOUT ANY WARRANTY; without even the implied warranty of
+% MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+% GNU General Public License for more details.
+% 
+% You should have received a copy of the GNU General Public License
+% along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 ##### SOURCE END #####
 --></body></html>

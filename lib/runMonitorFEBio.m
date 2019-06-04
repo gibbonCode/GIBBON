@@ -175,7 +175,7 @@ if FEBio_go==0
     %Scan log file for the following targets
     targets={'------- converged at time :',' N O R M A L   T E R M I N A T I O N',' E R R O R   T E R M I N A T I O N'};
     line_count=1;
-    previousEndLine=[];
+    numLinesPrevious=-1;
     
     tStartCheck=datevec(now); 
     while FEBio_go==0
@@ -185,7 +185,7 @@ if FEBio_go==0
         %Import log file
         [T_log]=txtfile2cell(FEBioRunStruct.run_logname);
         
-        if ~strcmp(T_log{end},previousEndLine) %Change in last line observed            
+        if ~isempty(T_log) && numel(T_log)~=numLinesPrevious %Change in number of lines 
             tStartCheck=datevec(now); %reset change checking clock
             
             %Check log file content
@@ -240,7 +240,7 @@ if FEBio_go==0
                 break
             end
         end
-        previousEndLine=T_log{end};
+        numLinesPrevious=numel(T_log);
         
         switch FEBioRunStruct.runMode
             case 'internal'

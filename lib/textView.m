@@ -62,15 +62,15 @@ for q=1:1:numel(optionSet)
    hEdit.(optionSet{q})=optionStruct.(optionSet{q}); 
 end
 
-% %# enable horizontal scrolling
+% enable horizontal scrolling
 try
 jEdit = findjobj(hEdit);
 jEditbox = jEdit.getViewport().getComponent(0);
-jEditbox.setWrapping(false);                %# turn off word-wrapping
-jEditbox.setEditable(false);                %# non-editable
-set(jEdit,'HorizontalScrollBarPolicy',30);  %# HORIZONTAL_SCROLLBAR_AS_NEEDED
+jEditbox.setWrapping(false);                % turn off word-wrapping
+jEditbox.setEditable(false);                % non-editable
+set(jEdit,'HorizontalScrollBarPolicy',30);  % HORIZONTAL_SCROLLBAR_AS_NEEDED
 
-%# maintain horizontal scrollbar policy which reverts back on component resize
+% maintain horizontal scrollbar policy which reverts back on component resize
 hjEdit = handle(jEdit,'CallbackProperties');
 set(hjEdit, 'ComponentResizedCallback',...
     'set(gcbo,''HorizontalScrollBarPolicy'',30)')

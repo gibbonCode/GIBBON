@@ -71,8 +71,8 @@ displacementMagnitude=(stretchLoad*sampleHeight)-sampleHeight; %The displacement
 
 %Material parameter set
 c1=1e-3; %Shear-modulus-like parameter
-m1=8; %Material parameter setting degree of non-linearity
-k_factor=1e2; %Bulk modulus factor 
+m1=2; %Material parameter setting degree of non-linearity
+k_factor=100; %Bulk modulus factor 
 k=c1*k_factor; %Bulk modulus
 g1=1/2; %Viscoelastic QLV proportional coefficient
 t1=12; %Viscoelastic QLV time coefficient
@@ -90,14 +90,12 @@ t_step1=t_load/numTimeSteps1; %Step size
 dtmin1=t_step1/100; %Smallest allowed step size
 dtmax1=t_step1; %Largest allowed step size
 
-
 t_hold=100;
 t_step_ini2=t_step_ini1; %Initial desired step size
 numTimeSteps2=round(t_hold/t_step_ini2); %Number of time steps desired
 t_step2=t_hold/numTimeSteps2; %Step size
 dtmin2=t_step2/100; %Smallest allowed step size
 dtmax2=1; %Largest allowed step size
-
 
 max_refs=25; %Max reforms
 max_ups=0; %Set to zero to use full-Newton iterations
@@ -361,9 +359,9 @@ febioAnalysis.run_logname=febioLogFileName; %The name for the log file
 febioAnalysis.disp_on=1; %Display information on the command window
 febioAnalysis.disp_log_on=1; %Display convergence information in the command window
 febioAnalysis.runMode='external';%'internal';
-febioAnalysis.t_check=0.25; %Time for checking log file (dont set too small)
+febioAnalysis.t_check=0.1; %Time for checking log file (dont set too small)
 febioAnalysis.maxtpi=1e99; %Max analysis time
-febioAnalysis.maxLogCheckTime=3; %Max log file checking time
+febioAnalysis.maxLogCheckTime=5; %Max log file checking time
 
 [runFlag]=runMonitorFEBio(febioAnalysis);%START FEBio NOW!!!!!!!!
 

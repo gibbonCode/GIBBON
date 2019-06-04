@@ -1,7 +1,7 @@
 # About GIBBON
 
 ## Summary
-GIBBON (The Geometry and Image-Based Bioengineering add-On) is an open-source MATLAB toolbox for segmentation, image-based modeling, visualization, meshing, and finite element analysis. GIBBON includes an array of image and geometry visualization and processing tools and is interfaced with free open source software such as [TetGen](http://wias-berlin.de/software/tetgen/), for robust tetrahedral meshing, and [FEBio](http://febio.org/) for finite element analysis. The combination provides a highly flexible image-based modelling environment and enables advanced inverse finite element analysis.   
+GIBBON (The Geometry and Image-Based Bioengineering add-On) is an open-source MATLAB toolbox for segmentation, image-based modelling, visualization, meshing, and finite element analysis. GIBBON includes an array of image and geometry visualization and processing tools and is interfaced with free open source software such as [TetGen](http://wias-berlin.de/software/tetgen/), for robust tetrahedral meshing, and [FEBio](http://febio.org/) for finite element analysis. The combination provides a highly flexible image-based modelling environment and enables advanced inverse finite element analysis.   
 ![Overview of GIBBON](html/GIBBON_overview.jpg){:width="70%"}
 
 ## Application highlights   
@@ -21,7 +21,7 @@ Multi-material tetrahedral meshing is enabled using [TetGen](http://wias-berlin.
 
 ### Finite Element Analysis <a name="FEA"></a>   
 Finite element analysis is enabled through the FEBio interface (see also the `runMonitorFEBio` function.
-The image below is for large strain analysis of a twisting bar and stems from the demo `DEMO_FEBio_bar_twist`. Other `DEMO_FEBio_...` files cover uni-axial tension/compression, bending, indentation, viscoelastic analysis, contact and indentation problems, multi-generational materials for pre-load analysis.   
+The image below is for large strain analysis of a twisting bar and stems from the demo `DEMO_febio_0004_beam_twist`. Other `DEMO_febio_...` files cover uni-axial tension/compression, bending, indentation, viscoelastic analysis, contact and indentation problems, multi-generational materials for pre-load analysis.   
 ![Large strain analysis](/img/barTwist.gif){:width="70%"}
 
 ### Geometric tools <a name="Geometric"></a>   

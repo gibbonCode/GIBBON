@@ -6,7 +6,7 @@
    <!--
 This HTML was auto-generated from MATLAB code.
 To make changes, update the MATLAB code and republish this document.
-      --><title>import_STL</title><meta name="generator" content="MATLAB 9.4"><link rel="schema.DC" href="http://purl.org/dc/elements/1.1/"><meta name="DC.date" content="2018-06-25"><meta name="DC.source" content="HELP_import_STL.m"><style type="text/css">
+      --><title>import_STL</title><meta name="generator" content="MATLAB 9.6"><link rel="schema.DC" href="http://purl.org/dc/elements/1.1/"><meta name="DC.date" content="2019-06-03"><meta name="DC.source" content="HELP_import_STL.m"><style type="text/css">
 html,body,div,span,applet,object,iframe,h1,h2,h3,h4,h5,h6,p,blockquote,pre,a,abbr,acronym,address,big,cite,code,del,dfn,em,font,img,ins,kbd,q,s,samp,small,strike,strong,sub,sup,tt,var,b,u,i,center,dl,dt,dd,ol,ul,li,fieldset,form,label,legend,table,caption,tbody,tfoot,thead,tr,th,td{margin:0;padding:0;border:0;outline:0;font-size:100%;vertical-align:baseline;background:transparent}body{line-height:1}ol,ul{list-style:none}blockquote,q{quotes:none}blockquote:before,blockquote:after,q:before,q:after{content:'';content:none}:focus{outine:0}ins{text-decoration:none}del{text-decoration:line-through}table{border-collapse:collapse;border-spacing:0}
 
 html { min-height:100%; margin-bottom:1px; }
@@ -66,19 +66,30 @@ table td { padding:7px 5px; text-align:left; vertical-align:top; border:1px soli
 
 
 
-  </style></head><body><div class="content"><h1>import_STL</h1><!--introduction--><p>Below is a demonstration of the features of the <tt>import_STL</tt> function</p><!--/introduction--><h2>Contents</h2><div><ul><li><a href="#1">Syntax</a></li><li><a href="#2">Description</a></li><li><a href="#3">Examples</a></li><li><a href="#5">Import a txt type STL file as patch data</a></li><li><a href="#8">Import a binary type STL file as patch data</a></li></ul></div><h2 id="1">Syntax</h2><p><tt>[stlStruct] = import_STL(fileName);</tt></p><h2 id="2">Description</h2><p>Use <tt>import_STL</tt> to import binary or txt type STL files.</p><h2 id="3">Examples</h2><pre class="codeinput">clear; close <span class="string">all</span>; clc;
+  </style></head><body><div class="content"><h1>import_STL</h1><!--introduction--><p>Below is a demonstration of the features of the <tt>import_STL</tt> function</p><!--/introduction--><h2>Contents</h2><div><ul><li><a href="#1">Syntax</a></li><li><a href="#2">Description</a></li><li><a href="#3">Examples</a></li><li><a href="#6">Import a txt type STL file as patch data</a></li><li><a href="#10">Import a binary type STL file as patch data</a></li></ul></div><h2 id="1">Syntax</h2><p><tt>[stlStruct] = import_STL(fileName);</tt></p><h2 id="2">Description</h2><p>Use <tt>import_STL</tt> to import binary or txt type STL files.</p><h2 id="3">Examples</h2><pre class="codeinput">clear; close <span class="string">all</span>; clc;
 </pre><p>Plot settings</p><pre class="codeinput">fontSize=25;
-</pre><h2 id="5">Import a txt type STL file as patch data</h2><pre class="codeinput"><span class="comment">%Set main folder</span>
+</pre><p>Set path and file name</p><pre class="codeinput"><span class="comment">%Set main folder</span>
 defaultFolder = fileparts(fileparts(mfilename(<span class="string">'fullpath'</span>)));
 pathName=fullfile(defaultFolder,<span class="string">'data'</span>,<span class="string">'STL'</span>);
+
+<span class="comment">%File name for STL</span>
 fileName=fullfile(pathName,<span class="string">'femur.stl'</span>);
+</pre><h2 id="6">Import a txt type STL file as patch data</h2><pre class="codeinput">[stlStruct] = import_STL(fileName);
+</pre><p>Access the data from the STL struct</p><pre class="codeinput">F=stlStruct.solidFaces{1}; <span class="comment">%Faces</span>
+V=stlStruct.solidVertices{1}; <span class="comment">%Vertices</span>
+</pre><p>In STL files nodes are not shared between triangles. Therefore the need to be merged with they are intended to be shared.</p><pre class="codeinput">[F,V]=mergeVertices(F,V); <span class="comment">% Merging nodes</span>
+</pre><p>Plotting the model</p><pre class="codeinput">cFigure;
+title(<span class="string">'Imported patch data from STL'</span>,<span class="string">'fontSize'</span>,25);
+gpatch(F,V,<span class="string">'g'</span>);
+axisGeom;
+camlight(<span class="string">'headlight'</span>);
+lighting <span class="string">phong</span>; axis <span class="string">off</span>;
+drawnow;
+</pre><img width="100%" height="auto" vspace="5" hspace="5" src="HELP_import_STL_01.jpg" alt=""> <h2 id="10">Import a binary type STL file as patch data</h2><pre class="codeinput">fileName=fullfile(pathName,<span class="string">'femur_bin.stl'</span>);
 [stlStruct] = import_STL(fileName);
-
-F=stlStruct.solidFaces{1};
-V=stlStruct.solidVertices{1};
-</pre><p>Merging nodes example</p><pre class="codeinput">[~,ind1,ind2]=unique(pround(V,5),<span class="string">'rows'</span>);
-V=V(ind1,:);
-F=ind2(F);
+</pre><p>Access the data from the STL struct</p><pre class="codeinput">F=stlStruct.solidFaces{1}; <span class="comment">%Faces</span>
+V=stlStruct.solidVertices{1}; <span class="comment">%Vertices</span>
+</pre><p>Merge nodes</p><pre class="codeinput">[F,V]=mergeVertices(F,V); <span class="comment">% Merging nodes</span>
 </pre><p>Plotting the model</p><pre class="codeinput">cFigure;
 title(<span class="string">'Imported patch data from STL'</span>,<span class="string">'fontSize'</span>,fontSize);
 gpatch(F,V,<span class="string">'g'</span>);
@@ -86,131 +97,117 @@ axisGeom;
 camlight(<span class="string">'headlight'</span>);
 lighting <span class="string">phong</span>; axis <span class="string">off</span>;
 drawnow;
-</pre><img vspace="5" hspace="5" src="HELP_import_STL_01.png" alt=""> <h2 id="8">Import a binary type STL file as patch data</h2><pre class="codeinput"><span class="comment">%Set main folder</span>
-defaultFolder = fileparts(fileparts(mfilename(<span class="string">'fullpath'</span>)));
-pathName=fullfile(defaultFolder,<span class="string">'data'</span>,<span class="string">'STL'</span>);
-fileName=fullfile(pathName,<span class="string">'femur_bin.stl'</span>);
-[stlStruct] = import_STL(fileName);
-
-F=stlStruct.solidFaces{1};
-V=stlStruct.solidVertices{1};
-</pre><p>Merging nodes example</p><pre class="codeinput">[~,ind1,ind2]=unique(pround(V,5),<span class="string">'rows'</span>);
-V=V(ind1,:);
-F=ind2(F);
-</pre><p>Plotting the model</p><pre class="codeinput">cFigure;
-title(<span class="string">'Imported patch data from STL'</span>,<span class="string">'fontSize'</span>,fontSize);
-gpatch(F,V,<span class="string">'g'</span>);
-axisGeom;
-camlight(<span class="string">'headlight'</span>);
-lighting <span class="string">phong</span>; axis <span class="string">off</span>;
-drawnow;
-</pre><img vspace="5" hspace="5" src="HELP_import_STL_02.png" alt=""> <p><img vspace="5" hspace="5" src="gibbVerySmall.gif" alt=""> </p><p><i><b>GIBBON</b></i> <a href="www.gibboncode.org">www.gibboncode.org</a></p><p><i>Kevin Mattheus Moerman</i>, <a href="gibbon.toolbox@gmail.com">gibbon.toolbox@gmail.com</a></p><p><i><b>GIBBON footer text</b></i></p><p>License: <a href="https://github.com/gibbonCode/GIBBON/blob/master/LICENSE">https://github.com/gibbonCode/GIBBON/blob/master/LICENSE</a></p><p>GIBBON: The Geometry and Image-based Bioengineering add-On. A toolbox for image segmentation, image-based modeling, meshing, and finite element analysis.</p><p>Copyright (C) 2018  Kevin Mattheus Moerman</p><p>This program is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.</p><p>This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for more details.</p><p>You should have received a copy of the GNU General Public License along with this program.  If not, see <a href="http://www.gnu.org/licenses/">http://www.gnu.org/licenses/</a>.</p><p class="footer"><br><a href="https://www.mathworks.com/products/matlab/">Published with MATLAB&reg; R2018a</a><br></p></div><!--
+</pre><img width="100%" height="auto" vspace="5" hspace="5" src="HELP_import_STL_02.jpg" alt=""> <p><img vspace="5" hspace="5" src="gibbVerySmall.gif" alt=""> </p><p><i><b>GIBBON</b></i> <a href="www.gibboncode.org">www.gibboncode.org</a></p><p><i>Kevin Mattheus Moerman</i>, <a href="gibbon.toolbox@gmail.com">gibbon.toolbox@gmail.com</a></p><p><i><b>GIBBON footer text</b></i></p><p>License: <a href="https://github.com/gibbonCode/GIBBON/blob/master/LICENSE">https://github.com/gibbonCode/GIBBON/blob/master/LICENSE</a></p><p>GIBBON: The Geometry and Image-based Bioengineering add-On. A toolbox for image segmentation, image-based modeling, meshing, and finite element analysis.</p><p>Copyright (C) 2019  Kevin Mattheus Moerman</p><p>This program is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.</p><p>This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for more details.</p><p>You should have received a copy of the GNU General Public License along with this program.  If not, see <a href="http://www.gnu.org/licenses/">http://www.gnu.org/licenses/</a>.</p><p class="footer"><br><a href="https://www.mathworks.com/products/matlab/">Published with MATLAB&reg; R2019a</a><br></p></div><!--
 ##### SOURCE BEGIN #####
-%% import_STL
-% Below is a demonstration of the features of the |import_STL| function
-
-%% Syntax
-% |[stlStruct] = import_STL(fileName);|
-
-%% Description
-% Use |import_STL| to import binary or txt type STL files.
-
-%% Examples
-
-clear; close all; clc;
-
-%%
-% Plot settings
-fontSize=25; 
-
-%% Import a txt type STL file as patch data
-
-%Set main folder
-defaultFolder = fileparts(fileparts(mfilename('fullpath')));
-pathName=fullfile(defaultFolder,'data','STL'); 
-fileName=fullfile(pathName,'femur.stl'); 
-[stlStruct] = import_STL(fileName);
-
-F=stlStruct.solidFaces{1};
-V=stlStruct.solidVertices{1};
-
-%%
-% Merging nodes example
-[~,ind1,ind2]=unique(pround(V,5),'rows');
-V=V(ind1,:);
-F=ind2(F);
-
-%%
-% Plotting the model
-
-cFigure;
-title('Imported patch data from STL','fontSize',fontSize);
-gpatch(F,V,'g');
-axisGeom;
-camlight('headlight');
-lighting phong; axis off; 
-drawnow;
-
-%% Import a binary type STL file as patch data
-
-%Set main folder
-defaultFolder = fileparts(fileparts(mfilename('fullpath')));
-pathName=fullfile(defaultFolder,'data','STL'); 
-fileName=fullfile(pathName,'femur_bin.stl'); 
-[stlStruct] = import_STL(fileName);
-
-F=stlStruct.solidFaces{1};
-V=stlStruct.solidVertices{1};
-
-%%
-% Merging nodes example
-[~,ind1,ind2]=unique(pround(V,5),'rows');
-V=V(ind1,:);
-F=ind2(F);
-
-%%
-% Plotting the model
-
-cFigure;
-title('Imported patch data from STL','fontSize',fontSize);
-gpatch(F,V,'g');
-axisGeom;
-camlight('headlight');
-lighting phong; axis off; 
-drawnow;
-
-%% 
-%
-% <<gibbVerySmall.gif>>
-% 
-% _*GIBBON*_ 
-% <www.gibboncode.org>
-% 
-% _Kevin Mattheus Moerman_, <gibbon.toolbox@gmail.com>
- 
-%% 
-% _*GIBBON footer text*_ 
-% 
-% License: <https://github.com/gibbonCode/GIBBON/blob/master/LICENSE>
-% 
-% GIBBON: The Geometry and Image-based Bioengineering add-On. A toolbox for
-% image segmentation, image-based modeling, meshing, and finite element
-% analysis.
-% 
-% Copyright (C) 2018  Kevin Mattheus Moerman
-% 
-% This program is free software: you can redistribute it and/or modify
-% it under the terms of the GNU General Public License as published by
-% the Free Software Foundation, either version 3 of the License, or
-% (at your option) any later version.
-% 
-% This program is distributed in the hope that it will be useful,
-% but WITHOUT ANY WARRANTY; without even the implied warranty of
-% MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-% GNU General Public License for more details.
-% 
-% You should have received a copy of the GNU General Public License
-% along with this program.  If not, see <http://www.gnu.org/licenses/>.
+%% import_STL
+% Below is a demonstration of the features of the |import_STL| function
+
+%% Syntax
+% |[stlStruct] = import_STL(fileName);|
+
+%% Description
+% Use |import_STL| to import binary or txt type STL files.
+
+%% Examples
+
+clear; close all; clc;
+
+%%
+% Plot settings
+fontSize=25; 
+
+%%
+% Set path and file name
+
+%Set main folder
+defaultFolder = fileparts(fileparts(mfilename('fullpath')));
+pathName=fullfile(defaultFolder,'data','STL'); 
+
+%File name for STL
+fileName=fullfile(pathName,'femur.stl'); 
+
+%% Import a txt type STL file as patch data
+[stlStruct] = import_STL(fileName);
+
+%%
+% Access the data from the STL struct
+F=stlStruct.solidFaces{1}; %Faces
+V=stlStruct.solidVertices{1}; %Vertices
+
+%%
+% In STL files nodes are not shared between triangles. Therefore the need
+% to be merged with they are intended to be shared. 
+
+[F,V]=mergeVertices(F,V); % Merging nodes
+
+%%
+% Plotting the model
+
+cFigure;
+title('Imported patch data from STL','fontSize',25);
+gpatch(F,V,'g');
+axisGeom;
+camlight('headlight');
+lighting phong; axis off; 
+drawnow;
+
+%% Import a binary type STL file as patch data
+
+fileName=fullfile(pathName,'femur_bin.stl'); 
+[stlStruct] = import_STL(fileName);
+
+%%
+% Access the data from the STL struct
+F=stlStruct.solidFaces{1}; %Faces
+V=stlStruct.solidVertices{1}; %Vertices
+
+%%
+% Merge nodes
+[F,V]=mergeVertices(F,V); % Merging nodes
+
+%%
+% Plotting the model
+
+cFigure;
+title('Imported patch data from STL','fontSize',fontSize);
+gpatch(F,V,'g');
+axisGeom;
+camlight('headlight');
+lighting phong; axis off; 
+drawnow;
+
+%% 
+%
+% <<gibbVerySmall.gif>>
+% 
+% _*GIBBON*_ 
+% <www.gibboncode.org>
+% 
+% _Kevin Mattheus Moerman_, <gibbon.toolbox@gmail.com>
+ 
+%% 
+% _*GIBBON footer text*_ 
+% 
+% License: <https://github.com/gibbonCode/GIBBON/blob/master/LICENSE>
+% 
+% GIBBON: The Geometry and Image-based Bioengineering add-On. A toolbox for
+% image segmentation, image-based modeling, meshing, and finite element
+% analysis.
+% 
+% Copyright (C) 2019  Kevin Mattheus Moerman
+% 
+% This program is free software: you can redistribute it and/or modify
+% it under the terms of the GNU General Public License as published by
+% the Free Software Foundation, either version 3 of the License, or
+% (at your option) any later version.
+% 
+% This program is distributed in the hope that it will be useful,
+% but WITHOUT ANY WARRANTY; without even the implied warranty of
+% MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+% GNU General Public License for more details.
+% 
+% You should have received a copy of the GNU General Public License
+% along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 ##### SOURCE END #####
 --></body></html>

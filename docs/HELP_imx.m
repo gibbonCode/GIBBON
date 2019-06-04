@@ -57,7 +57,7 @@ hf=imx(M,v);
 % below the slice, shifting the color contrast across a slice and
 % increasing the visibility of contour lines.
 % 
-% <<documentationView.gif>>
+% <<HELP_imx_View.gif>>
 % 
 % *Sketching a contour*
 % 
@@ -68,12 +68,12 @@ hf=imx(M,v);
 % Once the sample contour is acceptable, right click out of the
 % widget. See below for an example of this process in segmenting the skin.
 % 
-% <<documentationSample.gif>>
+% <<HELP_imx_Sample.gif>>
 % 
 % * _Cut_ - Use c = cut sketched contour to edit a sample sketch by
 % boxing and removing an incorrect section of the outline.
 % 
-% <<documentationCut.gif>>
+% <<HELP_imx_Cut.gif>>
 % 
 % * _Draw_ - After cutting a portion of a sample sketch, use the drawing 
 % tool to complete the sketch if needed. Use d = draw contour to
@@ -81,18 +81,18 @@ hf=imx(M,v);
 % After exiting the widget, observe that the drawn sketch will be in a
 % different color compared to the original.
 % 
-% <<documentationDraw.gif>>
+% <<HELP_imx_Draw.gif>>
 % 
 % * _Adjust_ - To edit the alignment of certain points along a bad contour,
 % use the adjust tool. To move a sketch point to a new location, click on
 % the point and then click on its new placement.
 % 
-% <<documentationAdjust.gif>>
+% <<HELP_imx_Adjust.gif>>
 % 
 % * _Delete_ - Use the delete tool to erase any sketch contour on the
 % slice.
 % 
-% <<documentationDelete.gif>>
+% <<HELP_imx_Delete.gif>>
 % 
 % 
 % *Accepting a contour*
@@ -104,33 +104,33 @@ hf=imx(M,v);
 % merge with another contour, or replace the existing accepted contours.
 % See below for an example of merging multiple contours of interest.
 % 
-% <<documentationAccept.gif>>
+% <<HELP_imx_Accept.gif>>
 % 
 % * _Convert_ - Use the convert button to easily switch from an accepted
 % contour back to a sketch contour if further adjustments are needed. Use
 % the reset button to return to the original, unsegmented slice.
 % 
-% <<documentationConvert.gif>>
+% <<HELP_imx_Convert.gif>>
 % 
 % * _Grow/Shrink_ - Use + = grow contour and - = shrink contour to
 % manipulate the size of an accepted contour to best fit a given element.
 % Growing and shrinking contour lines will likely wrinkle the path and
 % require smoothing (see Smooth).
 % 
-% <<documentationGrowShrink.gif>>
+% <<HELP_imx_GrowShrink.gif>>
 % 
 % * _Smooth_ - Use q = smooth accepted contour to smoothen a contour path.
 % If more extreme smoothing is necessary, press p while the smoothing tool
 % is activated to adjust the smoothing parameter accordingly.
 % 
-% <<documentationSmooth.gif>>
+% <<HELP_imx_Smooth.gif>>
 % 
 % *Finalizing segmentation* - After the slice is complete, press space to
 % go to the next slice and continue segmentation for all MRI slices.
 % Periodically check the view of all slices using the showHide tool to
 % verify continuity along the length of an element until completion.
 % 
-% <<documentationShowHide.gif>>
+% <<HELP_imx_ShowHide.gif>>
 % 
 
 %%

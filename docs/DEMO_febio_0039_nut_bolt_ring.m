@@ -53,9 +53,8 @@ febioLogFileName=fullfile(savePath,[febioFebFileNamePart,'.txt']); %FEBio log fi
 febioLogFileName_disp=[febioFebFileNamePart,'_disp_out.txt']; %Log file name for exporting displacement
 
 %Define prescribed rotation
-numRotations=1;
-prescribedRotation_Z=-(pi/2)*numRotations;
-prescribedDisplacement_Z=-numRotations*0.5; 
+prescribedRotation_Z=-(pi/4);
+prescribedDisplacement_Z=-0.25; 
 
 %Material parameter set
 c1=1e-3; %Shear-modulus-like parameter
@@ -65,10 +64,10 @@ k=c1*k_factor; %Bulk modulus
 d=1e-9; %Density
 
 % FEA control settings
-numTimeSteps=25; %Number of time steps desired
+numTimeSteps=15; %Number of time steps desired
 max_refs=25; %Max reforms
 max_ups=0; %Set to zero to use full-Newton iterations
-opt_iter=16; %Optimum number of iterations
+opt_iter=20; %Optimum number of iterations
 max_retries=5; %Maximum number of retires
 dtmin=(1/numTimeSteps)/100; %Minimum time step size
 dtmax=1/numTimeSteps; %Maximum time step size
@@ -194,7 +193,9 @@ cFigure; hold on;
 gpatch(F_nut,V,'rw','k',1);
 gpatch(F_bolt,V,'gw','k',1);
 gpatch(Fwb,V,Cwb,'k',1);
-patchNormPlot(Fwb,V)
+patchNormPlot(F_bolt,V);
+patchNormPlot(F_nut,V);
+patchNormPlot(Fwb,V);
 colormap(gjet(4)); icolorbar;
 axisGeom;
 camlight headlight;
@@ -397,7 +398,7 @@ febioAnalysis.run_filename=febioFebFileName; %The input file name
 febioAnalysis.run_logname=febioLogFileName; %The name for the log file
 febioAnalysis.disp_on=1; %Display information on the command window
 febioAnalysis.disp_log_on=1; %Display convergence information in the command window
-febioAnalysis.runMode='external';%'internal';
+febioAnalysis.runMode='internal';%'internal';
 febioAnalysis.t_check=0.25; %Time for checking log file (dont set too small)
 febioAnalysis.maxtpi=1e99; %Max analysis time
 febioAnalysis.maxLogCheckTime=3; %Max log file checking time
@@ -441,8 +442,8 @@ if runFlag==1 %i.e. a succesful run
     hp2.FaceColor='interp';
     
     axisGeom(gca,fontSize); 
-    colormap(jet(250)); colorbar;caxis([0 max(DN_magnitude)]);
-    caxis([0 2.5]);%max(DN_magnitude)]);
+    colormap(gjet(250)); colorbar;
+    caxis([0 max(DN_magnitude)]);    
     axis([min(X_DEF(:)) max(X_DEF(:)) min(Y_DEF(:)) max(Y_DEF(:)) min(Z_DEF(:)) max(Z_DEF(:))]);
     camlight headlight;
         

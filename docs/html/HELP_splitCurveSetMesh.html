@@ -6,7 +6,7 @@
    <!--
 This HTML was auto-generated from MATLAB code.
 To make changes, update the MATLAB code and republish this document.
-      --><title>splitCurveSetMesh</title><meta name="generator" content="MATLAB 9.4"><link rel="schema.DC" href="http://purl.org/dc/elements/1.1/"><meta name="DC.date" content="2018-06-25"><meta name="DC.source" content="HELP_splitCurveSetMesh.m"><style type="text/css">
+      --><title>splitCurveSetMesh</title><meta name="generator" content="MATLAB 9.6"><link rel="schema.DC" href="http://purl.org/dc/elements/1.1/"><meta name="DC.date" content="2019-06-04"><meta name="DC.source" content="HELP_splitCurveSetMesh.m"><style type="text/css">
 html,body,div,span,applet,object,iframe,h1,h2,h3,h4,h5,h6,p,blockquote,pre,a,abbr,acronym,address,big,cite,code,del,dfn,em,font,img,ins,kbd,q,s,samp,small,strike,strong,sub,sup,tt,var,b,u,i,center,dl,dt,dd,ol,ul,li,fieldset,form,label,legend,table,caption,tbody,tfoot,thead,tr,th,td{margin:0;padding:0;border:0;outline:0;font-size:100%;vertical-align:baseline;background:transparent}body{line-height:1}ol,ul{list-style:none}blockquote,q{quotes:none}blockquote:before,blockquote:after,q:before,q:after{content:'';content:none}:focus{outine:0}ins{text-decoration:none}del{text-decoration:line-through}table{border-collapse:collapse;border-spacing:0}
 
 html { min-height:100%; margin-bottom:1px; }
@@ -67,14 +67,13 @@ table td { padding:7px 5px; text-align:left; vertical-align:top; border:1px soli
 
 
   </style></head><body><div class="content"><h1>splitCurveSetMesh</h1><!--introduction--><p>Below is a demonstration of the features of the <tt>splitCurveSetMesh</tt> function</p><!--/introduction--><h2>Contents</h2><div><ul><li><a href="#3">MESHING BIFURCATION BASED ON INPUT CURVES: from narrowed curve to split curves</a></li><li><a href="#8">MESHING BIFURCATION BASED ON INPUT CURVES: from ellips curve to split curves</a></li><li><a href="#13">ABOUT SMOOTHENING METHODS</a></li></ul></div><pre class="codeinput">clear; close <span class="string">all</span>; clc;
-</pre><p>PLOT SETTINGS</p><pre class="codeinput">figColor=<span class="string">'w'</span>; figColorDef=<span class="string">'white'</span>;
-fontSize=15;
+</pre><p>PLOT SETTINGS</p><pre class="codeinput">fontSize=15;
 faceAlpha1=1;
 faceAlpha2=0.5;
 edgeColor=0.25*ones(1,3);
 edgeWidth=1.5;
 markerSize1=50;
-</pre><h2 id="3">MESHING BIFURCATION BASED ON INPUT CURVES: from narrowed curve to split curves</h2><p>Create example curves</p><pre class="codeinput">t=linspace(0.25*pi,2.25*pi,50);
+</pre><h2 id="3">MESHING BIFURCATION BASED ON INPUT CURVES: from narrowed curve to split curves</h2><p>Create example curves</p><pre class="codeinput">t=linspace(0.25*pi,2.25*pi,75);
 t=t(1:end-1);
 x=sin(t(:));
 y=cos(t(:));
@@ -84,7 +83,7 @@ r=r-0.75*cos(2*t);
 z=zeros(size(x));
 V1=[x(:) y(:) z(:)];
 
-t=linspace(0,2*pi,25);
+t=linspace(0,2*pi,135);
 r2=0.8;
 x=r2.*sin(t);
 y=r2.*cos(t);
@@ -102,7 +101,7 @@ V3(:,2)=V3(:,2)+2.2;
 V_cell={V1,V2,V3};
 patchType=<span class="string">'quad'</span>;
 smoothPar.Method=<span class="string">'HC'</span>;
-smoothPar.n=250;
+smoothPar.n=0;
 smoothPar.Tolerance=0.001;
 <span class="keyword">switch</span> smoothPar.Method
     <span class="keyword">case</span> <span class="string">'HC'</span>
@@ -114,21 +113,17 @@ smoothPar.Tolerance=0.001;
 splitMethod=<span class="string">'nearMid'</span>;
 </pre><p>Meshing bifurcation</p><pre class="codeinput">[F,V,curveIndices,faceMarker]=splitCurveSetMesh(V_cell,ns,patchType,smoothPar,splitMethod);
 </pre><pre class="codeinput"><span class="comment">% Plotting results</span>
-hf1=figuremax(figColor,figColorDef);
+cFigure; hold <span class="string">on</span>;
 title(<span class="string">'Input contours and connected mesh'</span>,<span class="string">'FontSize'</span>,fontSize);
-xlabel(<span class="string">'X'</span>,<span class="string">'FontSize'</span>,fontSize);ylabel(<span class="string">'Y'</span>,<span class="string">'FontSize'</span>,fontSize); zlabel(<span class="string">'Z'</span>,<span class="string">'FontSize'</span>,fontSize);
-hold <span class="string">on</span>;
-
-<span class="comment">% hpy=patch('Faces',F,'Vertices',V,'EdgeColor','k','FaceColor',0.5.*ones(1,3),'FaceAlpha',faceAlpha1);</span>
-hpy=patch(<span class="string">'Faces'</span>,F,<span class="string">'Vertices'</span>,V,<span class="string">'EdgeColor'</span>,<span class="string">'k'</span>,<span class="string">'FaceColor'</span>,<span class="string">'flat'</span>,<span class="string">'CData'</span>,faceMarker,<span class="string">'FaceAlpha'</span>,faceAlpha1);
-
+gpatch(F,V,faceMarker);
 plotV(V(curveIndices{1},:),<span class="string">'r.-'</span>,<span class="string">'MarkerSize'</span>,25);
 plotV(V(curveIndices{2},:),<span class="string">'g.-'</span>,<span class="string">'MarkerSize'</span>,25);
 plotV(V(curveIndices{3},:),<span class="string">'b.-'</span>,<span class="string">'MarkerSize'</span>,25);
-
-axis <span class="string">equal</span>; axis <span class="string">tight</span>; view(3); grid <span class="string">on</span>; set(gca,<span class="string">'FontSize'</span>,fontSize);
+axisGeom(gca,fontSize);
+colormap <span class="string">gjet</span>; icolorbar;
+camlight <span class="string">headlight</span>;
 drawnow;
-</pre><img vspace="5" hspace="5" src="HELP_splitCurveSetMesh_01.png" alt=""> <h2 id="8">MESHING BIFURCATION BASED ON INPUT CURVES: from ellips curve to split curves</h2><p>Create example curves</p><pre class="codeinput">t=linspace(0.25*pi,2.25*pi,50);
+</pre><img width="100%" height="auto" vspace="5" hspace="5" src="HELP_splitCurveSetMesh_01.jpg" alt=""> <h2 id="8">MESHING BIFURCATION BASED ON INPUT CURVES: from ellips curve to split curves</h2><p>Create example curves</p><pre class="codeinput">t=linspace(0.25*pi,2.25*pi,50);
 t=t(1:end-1);
 x=2*sin(t(:));
 y=cos(t(:));
@@ -166,27 +161,28 @@ splitMethod=<span class="string">'nearMid'</span>;
 </pre><p>Meshing bifurcation</p><pre class="codeinput">[F_1,V_1,curveIndices_1,faceMarker_1]=splitCurveSetMesh(V_cell,ns,patchType,smoothPar,<span class="string">'nearMid'</span>);
 [F_2,V_2,curveIndices_2,faceMarker_2]=splitCurveSetMesh(V_cell,ns,patchType,smoothPar,<span class="string">'ortho'</span>);
 </pre><pre class="codeinput"><span class="comment">% Plotting results</span>
-hf1=figuremax(figColor,figColorDef);
-subplot(1,2,1);
+
+subplot(1,2,1); hold <span class="string">on</span>;
 title(<span class="string">'nearMid is inappropriate in this case'</span>,<span class="string">'FontSize'</span>,fontSize);
-xlabel(<span class="string">'X'</span>,<span class="string">'FontSize'</span>,fontSize);ylabel(<span class="string">'Y'</span>,<span class="string">'FontSize'</span>,fontSize); zlabel(<span class="string">'Z'</span>,<span class="string">'FontSize'</span>,fontSize);
-hold <span class="string">on</span>;
+gpatch(F_1,V_1,faceMarker_1);
+plotV(V_1(curveIndices_1{1},:),<span class="string">'r.-'</span>,<span class="string">'MarkerSize'</span>,25);
+plotV(V_1(curveIndices_1{2},:),<span class="string">'g.-'</span>,<span class="string">'MarkerSize'</span>,25);
+plotV(V_1(curveIndices_1{3},:),<span class="string">'b.-'</span>,<span class="string">'MarkerSize'</span>,25);
+axisGeom(gca,fontSize);
+colormap(gca,gjet(2)); icolorbar;
+camlight <span class="string">headlight</span>;
 
-hpy=patch(<span class="string">'Faces'</span>,F_1,<span class="string">'Vertices'</span>,V_1,<span class="string">'EdgeColor'</span>,<span class="string">'k'</span>,<span class="string">'FaceColor'</span>,<span class="string">'flat'</span>,<span class="string">'CData'</span>,faceMarker_1,<span class="string">'FaceAlpha'</span>,faceAlpha1);
-
-axis <span class="string">equal</span>; axis <span class="string">tight</span>; view(3); grid <span class="string">on</span>; set(gca,<span class="string">'FontSize'</span>,fontSize);
-drawnow;
-
-subplot(1,2,2);
+subplot(1,2,2); hold <span class="string">on</span>;
 title(<span class="string">'ortho performs better'</span>,<span class="string">'FontSize'</span>,fontSize);
-xlabel(<span class="string">'X'</span>,<span class="string">'FontSize'</span>,fontSize);ylabel(<span class="string">'Y'</span>,<span class="string">'FontSize'</span>,fontSize); zlabel(<span class="string">'Z'</span>,<span class="string">'FontSize'</span>,fontSize);
-hold <span class="string">on</span>;
-
-hpy=patch(<span class="string">'Faces'</span>,F_2,<span class="string">'Vertices'</span>,V_2,<span class="string">'EdgeColor'</span>,<span class="string">'k'</span>,<span class="string">'FaceColor'</span>,<span class="string">'flat'</span>,<span class="string">'CData'</span>,faceMarker_2,<span class="string">'FaceAlpha'</span>,faceAlpha1);
-
-axis <span class="string">equal</span>; axis <span class="string">tight</span>; view(3); grid <span class="string">on</span>; set(gca,<span class="string">'FontSize'</span>,fontSize);
+gpatch(F_2,V_2,faceMarker_2);
+plotV(V_2(curveIndices_2{1},:),<span class="string">'r.-'</span>,<span class="string">'MarkerSize'</span>,25);
+plotV(V_2(curveIndices_2{2},:),<span class="string">'g.-'</span>,<span class="string">'MarkerSize'</span>,25);
+plotV(V_2(curveIndices_2{3},:),<span class="string">'b.-'</span>,<span class="string">'MarkerSize'</span>,25);
+axisGeom(gca,fontSize);
+colormap(gca,gjet(2)); icolorbar;
+camlight <span class="string">headlight</span>;
 drawnow;
-</pre><img vspace="5" hspace="5" src="HELP_splitCurveSetMesh_02.png" alt=""> <h2 id="13">ABOUT SMOOTHENING METHODS</h2><pre class="codeinput">ns=5;
+</pre><img width="100%" height="auto" vspace="5" hspace="5" src="HELP_splitCurveSetMesh_02.jpg" alt=""> <h2 id="13">ABOUT SMOOTHENING METHODS</h2><pre class="codeinput">ns=5;
 V_cell={V1,V2,V3};
 patchType=<span class="string">'quad'</span>;
 splitMethod=<span class="string">'ortho'</span>;
@@ -201,7 +197,7 @@ smoothPar.Tolerance=0.001;
     <span class="keyword">case</span> <span class="string">'LAP'</span>
         smoothPar.LambdaSmooth=0.25;
 <span class="keyword">end</span>
-[F_1,V_1,~,~]=splitCurveSetMesh(V_cell,ns,patchType,smoothPar,splitMethod);
+[F_1,V_1,curveIndices_1,faceMarker_1]=splitCurveSetMesh(V_cell,ns,patchType,smoothPar,splitMethod);
 
 smoothPar.Method=<span class="string">'LAP'</span>;
 smoothPar.n=250;
@@ -213,278 +209,280 @@ smoothPar.Tolerance=0.001;
     <span class="keyword">case</span> <span class="string">'LAP'</span>
         smoothPar.LambdaSmooth=0.25;
 <span class="keyword">end</span>
-[F_2,V_2,curveIndices,faceMarker]=splitCurveSetMesh(V_cell,ns,patchType,smoothPar,splitMethod);
+[F_2,V_2,curveIndices_2,faceMarker_2]=splitCurveSetMesh(V_cell,ns,patchType,smoothPar,splitMethod);
 </pre><pre class="codeinput"><span class="comment">% Plotting results</span>
-hf1=figuremax(figColor,figColorDef);
-subplot(1,2,1);
+
+<span class="comment">% Plotting results</span>
+cFigure;
+subplot(1,2,1); hold <span class="string">on</span>;
 title(<span class="string">'HC smoothed'</span>,<span class="string">'FontSize'</span>,fontSize);
-xlabel(<span class="string">'X'</span>,<span class="string">'FontSize'</span>,fontSize);ylabel(<span class="string">'Y'</span>,<span class="string">'FontSize'</span>,fontSize); zlabel(<span class="string">'Z'</span>,<span class="string">'FontSize'</span>,fontSize);
-hold <span class="string">on</span>;
+gpatch(F_1,V_1,faceMarker_1);
+plotV(V_1(curveIndices_1{1},:),<span class="string">'r.-'</span>,<span class="string">'MarkerSize'</span>,25);
+plotV(V_1(curveIndices_1{2},:),<span class="string">'g.-'</span>,<span class="string">'MarkerSize'</span>,25);
+plotV(V_1(curveIndices_1{3},:),<span class="string">'b.-'</span>,<span class="string">'MarkerSize'</span>,25);
+axisGeom(gca,fontSize);
+colormap(gca,gjet(2)); icolorbar;
+camlight <span class="string">headlight</span>;
 
-hpy=patch(<span class="string">'Faces'</span>,F_1,<span class="string">'Vertices'</span>,V_1,<span class="string">'EdgeColor'</span>,<span class="string">'k'</span>,<span class="string">'FaceColor'</span>,<span class="string">'flat'</span>,<span class="string">'CData'</span>,faceMarker,<span class="string">'FaceAlpha'</span>,faceAlpha1);
-
-axis <span class="string">equal</span>; axis <span class="string">tight</span>; view(3); grid <span class="string">on</span>; set(gca,<span class="string">'FontSize'</span>,fontSize);
+subplot(1,2,2); hold <span class="string">on</span>;
+title(<span class="string">'LAP smoothed (shrinkage/growth not prevented)'</span>,<span class="string">'FontSize'</span>,fontSize);
+gpatch(F_2,V_2,faceMarker_2);
+plotV(V_2(curveIndices_2{1},:),<span class="string">'r.-'</span>,<span class="string">'MarkerSize'</span>,25);
+plotV(V_2(curveIndices_2{2},:),<span class="string">'g.-'</span>,<span class="string">'MarkerSize'</span>,25);
+plotV(V_2(curveIndices_2{3},:),<span class="string">'b.-'</span>,<span class="string">'MarkerSize'</span>,25);
+axisGeom(gca,fontSize);
+colormap(gca,gjet(2)); icolorbar;
+camlight <span class="string">headlight</span>;
 drawnow;
-
-subplot(1,2,2);
-title(<span class="string">'LAP smoothed (shrinkage not prevented)'</span>,<span class="string">'FontSize'</span>,fontSize);
-xlabel(<span class="string">'X'</span>,<span class="string">'FontSize'</span>,fontSize);ylabel(<span class="string">'Y'</span>,<span class="string">'FontSize'</span>,fontSize); zlabel(<span class="string">'Z'</span>,<span class="string">'FontSize'</span>,fontSize);
-hold <span class="string">on</span>;
-
-hpy=patch(<span class="string">'Faces'</span>,F_2,<span class="string">'Vertices'</span>,V_2,<span class="string">'EdgeColor'</span>,<span class="string">'k'</span>,<span class="string">'FaceColor'</span>,<span class="string">'flat'</span>,<span class="string">'CData'</span>,faceMarker,<span class="string">'FaceAlpha'</span>,faceAlpha1);
-
-axis <span class="string">equal</span>; axis <span class="string">tight</span>; view(3); grid <span class="string">on</span>; set(gca,<span class="string">'FontSize'</span>,fontSize);
-drawnow;
-</pre><img vspace="5" hspace="5" src="HELP_splitCurveSetMesh_03.png" alt=""> <p><img vspace="5" hspace="5" src="gibbVerySmall.gif" alt=""> </p><p><i><b>GIBBON</b></i> <a href="www.gibboncode.org">www.gibboncode.org</a></p><p><i>Kevin Mattheus Moerman</i>, <a href="gibbon.toolbox@gmail.com">gibbon.toolbox@gmail.com</a></p><p><i><b>GIBBON footer text</b></i></p><p>License: <a href="https://github.com/gibbonCode/GIBBON/blob/master/LICENSE">https://github.com/gibbonCode/GIBBON/blob/master/LICENSE</a></p><p>GIBBON: The Geometry and Image-based Bioengineering add-On. A toolbox for image segmentation, image-based modeling, meshing, and finite element analysis.</p><p>Copyright (C) 2018  Kevin Mattheus Moerman</p><p>This program is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.</p><p>This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for more details.</p><p>You should have received a copy of the GNU General Public License along with this program.  If not, see <a href="http://www.gnu.org/licenses/">http://www.gnu.org/licenses/</a>.</p><p class="footer"><br><a href="https://www.mathworks.com/products/matlab/">Published with MATLAB&reg; R2018a</a><br></p></div><!--
+</pre><img width="100%" height="auto" vspace="5" hspace="5" src="HELP_splitCurveSetMesh_03.jpg" alt=""> <p><img vspace="5" hspace="5" src="gibbVerySmall.gif" alt=""> </p><p><i><b>GIBBON</b></i> <a href="www.gibboncode.org">www.gibboncode.org</a></p><p><i>Kevin Mattheus Moerman</i>, <a href="gibbon.toolbox@gmail.com">gibbon.toolbox@gmail.com</a></p><p><i><b>GIBBON footer text</b></i></p><p>License: <a href="https://github.com/gibbonCode/GIBBON/blob/master/LICENSE">https://github.com/gibbonCode/GIBBON/blob/master/LICENSE</a></p><p>GIBBON: The Geometry and Image-based Bioengineering add-On. A toolbox for image segmentation, image-based modeling, meshing, and finite element analysis.</p><p>Copyright (C) 2019  Kevin Mattheus Moerman</p><p>This program is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.</p><p>This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for more details.</p><p>You should have received a copy of the GNU General Public License along with this program.  If not, see <a href="http://www.gnu.org/licenses/">http://www.gnu.org/licenses/</a>.</p><p class="footer"><br><a href="https://www.mathworks.com/products/matlab/">Published with MATLAB&reg; R2019a</a><br></p></div><!--
 ##### SOURCE BEGIN #####
-%% splitCurveSetMesh
-% Below is a demonstration of the features of the |splitCurveSetMesh| function
-
-%%
-clear; close all; clc;
-
-%%
-% PLOT SETTINGS
-figColor='w'; figColorDef='white';
-fontSize=15;
-faceAlpha1=1;
-faceAlpha2=0.5;
-edgeColor=0.25*ones(1,3);
-edgeWidth=1.5;
-markerSize1=50;
-
-%% MESHING BIFURCATION BASED ON INPUT CURVES: from narrowed curve to split curves
-
-%%
-% Create example curves
-
-t=linspace(0.25*pi,2.25*pi,50);
-t=t(1:end-1);
-x=sin(t(:));
-y=cos(t(:));
-[t,r] = cart2pol(x,y);
-r=r-0.75*cos(2*t);
-[x,y] = pol2cart(t,r);
-z=zeros(size(x));
-V1=[x(:) y(:) z(:)];
-
-t=linspace(0,2*pi,25);
-r2=0.8;
-x=r2.*sin(t);
-y=r2.*cos(t);
-z=0.5*ones(size(x));
-V2=[x(:) y(:) z(:)];
-V2=V2(1:end-1,:);
-
-V2(:,1)=V2(:,1);
-V2(:,2)=V2(:,2)-1.1;
-
-V3=V2;
-V3(:,1)=V3(:,1);
-V3(:,2)=V3(:,2)+2.2;
-
-%%
-
-ns=5; 
-V_cell={V1,V2,V3};
-patchType='quad';
-smoothPar.Method='HC';
-smoothPar.n=250;
-smoothPar.Tolerance=0.001;
-switch smoothPar.Method
-    case 'HC'
-        smoothPar.Alpa=0.1; %Alpha scale factor to push points back to original
-        smoothPar.Beta=0.5; %Beta
-    case 'LAP'
-        smoothPar.LambdaSmooth=0.25;
-end
-splitMethod='nearMid';
-
-%%
-% Meshing bifurcation
-
-[F,V,curveIndices,faceMarker]=splitCurveSetMesh(V_cell,ns,patchType,smoothPar,splitMethod);
-
-
-%%
-
-% Plotting results
-hf1=figuremax(figColor,figColorDef);
-title('Input contours and connected mesh','FontSize',fontSize);
-xlabel('X','FontSize',fontSize);ylabel('Y','FontSize',fontSize); zlabel('Z','FontSize',fontSize);
-hold on;
-
-% hpy=patch('Faces',F,'Vertices',V,'EdgeColor','k','FaceColor',0.5.*ones(1,3),'FaceAlpha',faceAlpha1);
-hpy=patch('Faces',F,'Vertices',V,'EdgeColor','k','FaceColor','flat','CData',faceMarker,'FaceAlpha',faceAlpha1);
-
-plotV(V(curveIndices{1},:),'r.-','MarkerSize',25);
-plotV(V(curveIndices{2},:),'g.-','MarkerSize',25);
-plotV(V(curveIndices{3},:),'b.-','MarkerSize',25);
-
-axis equal; axis tight; view(3); grid on; set(gca,'FontSize',fontSize);
-drawnow;
-
-%% MESHING BIFURCATION BASED ON INPUT CURVES: from ellips curve to split curves
-
-%%
-% Create example curves
-
-t=linspace(0.25*pi,2.25*pi,50);
-t=t(1:end-1);
-x=2*sin(t(:));
-y=cos(t(:));
-z=zeros(size(x));
-V1=[x(:) y(:) z(:)];
-
-t=linspace(0,2*pi,25);
-r2=0.8;
-x=r2.*sin(t);
-y=r2.*cos(t);
-z=0.5*ones(size(x));
-V2=[x(:) y(:) z(:)];
-V2=V2(1:end-1,:);
-
-V2(:,1)=V2(:,1);
-V2(:,2)=V2(:,2)-1.1;
-
-V3=V2;
-V3(:,1)=V3(:,1);
-V3(:,2)=V3(:,2)+2.2;
-
-%%
-
-ns=5; 
-V_cell={V1,V2,V3};
-patchType='quad';
-smoothPar.Method='HC';
-smoothPar.n=250;
-smoothPar.Tolerance=0.001;
-switch smoothPar.Method
-    case 'HC'
-        smoothPar.Alpa=0.1; %Alpha scale factor to push points back to original
-        smoothPar.Beta=0.5; %Beta
-    case 'LAP'
-        smoothPar.LambdaSmooth=0.25;
-end
-splitMethod='nearMid';
-
-%%
-% Meshing bifurcation
-
-[F_1,V_1,curveIndices_1,faceMarker_1]=splitCurveSetMesh(V_cell,ns,patchType,smoothPar,'nearMid');
-[F_2,V_2,curveIndices_2,faceMarker_2]=splitCurveSetMesh(V_cell,ns,patchType,smoothPar,'ortho');
-
-%%
-
-% Plotting results
-hf1=figuremax(figColor,figColorDef);
-subplot(1,2,1);
-title('nearMid is inappropriate in this case','FontSize',fontSize);
-xlabel('X','FontSize',fontSize);ylabel('Y','FontSize',fontSize); zlabel('Z','FontSize',fontSize);
-hold on;
-
-hpy=patch('Faces',F_1,'Vertices',V_1,'EdgeColor','k','FaceColor','flat','CData',faceMarker_1,'FaceAlpha',faceAlpha1);
-
-axis equal; axis tight; view(3); grid on; set(gca,'FontSize',fontSize);
-drawnow;
-
-subplot(1,2,2);
-title('ortho performs better','FontSize',fontSize);
-xlabel('X','FontSize',fontSize);ylabel('Y','FontSize',fontSize); zlabel('Z','FontSize',fontSize);
-hold on;
-
-hpy=patch('Faces',F_2,'Vertices',V_2,'EdgeColor','k','FaceColor','flat','CData',faceMarker_2,'FaceAlpha',faceAlpha1);
-
-axis equal; axis tight; view(3); grid on; set(gca,'FontSize',fontSize);
-drawnow;
-
-%% ABOUT SMOOTHENING METHODS
-
-ns=5; 
-V_cell={V1,V2,V3};
-patchType='quad';
-splitMethod='ortho';
-
-smoothPar.Method='HC';
-smoothPar.n=250;
-smoothPar.Tolerance=0.001;
-switch smoothPar.Method
-    case 'HC'
-        smoothPar.Alpa=0.1; %Alpha scale factor to push points back to original
-        smoothPar.Beta=0.5; %Beta
-    case 'LAP'
-        smoothPar.LambdaSmooth=0.25;
-end
-[F_1,V_1,~,~]=splitCurveSetMesh(V_cell,ns,patchType,smoothPar,splitMethod);
-
-smoothPar.Method='LAP';
-smoothPar.n=250;
-smoothPar.Tolerance=0.001;
-switch smoothPar.Method
-    case 'HC'
-        smoothPar.Alpa=0.1; %Alpha scale factor to push points back to original
-        smoothPar.Beta=0.5; %Beta
-    case 'LAP'
-        smoothPar.LambdaSmooth=0.25;
-end
-[F_2,V_2,curveIndices,faceMarker]=splitCurveSetMesh(V_cell,ns,patchType,smoothPar,splitMethod);
-
-%%
-
-% Plotting results
-hf1=figuremax(figColor,figColorDef);
-subplot(1,2,1);
-title('HC smoothed','FontSize',fontSize);
-xlabel('X','FontSize',fontSize);ylabel('Y','FontSize',fontSize); zlabel('Z','FontSize',fontSize);
-hold on;
-
-hpy=patch('Faces',F_1,'Vertices',V_1,'EdgeColor','k','FaceColor','flat','CData',faceMarker,'FaceAlpha',faceAlpha1);
-
-axis equal; axis tight; view(3); grid on; set(gca,'FontSize',fontSize);
-drawnow;
-
-subplot(1,2,2);
-title('LAP smoothed (shrinkage not prevented)','FontSize',fontSize);
-xlabel('X','FontSize',fontSize);ylabel('Y','FontSize',fontSize); zlabel('Z','FontSize',fontSize);
-hold on;
-
-hpy=patch('Faces',F_2,'Vertices',V_2,'EdgeColor','k','FaceColor','flat','CData',faceMarker,'FaceAlpha',faceAlpha1);
-
-axis equal; axis tight; view(3); grid on; set(gca,'FontSize',fontSize);
-drawnow;
-
-%% 
-%
-% <<gibbVerySmall.gif>>
-% 
-% _*GIBBON*_ 
-% <www.gibboncode.org>
-% 
-% _Kevin Mattheus Moerman_, <gibbon.toolbox@gmail.com>
- 
-%% 
-% _*GIBBON footer text*_ 
-% 
-% License: <https://github.com/gibbonCode/GIBBON/blob/master/LICENSE>
-% 
-% GIBBON: The Geometry and Image-based Bioengineering add-On. A toolbox for
-% image segmentation, image-based modeling, meshing, and finite element
-% analysis.
-% 
-% Copyright (C) 2018  Kevin Mattheus Moerman
-% 
-% This program is free software: you can redistribute it and/or modify
-% it under the terms of the GNU General Public License as published by
-% the Free Software Foundation, either version 3 of the License, or
-% (at your option) any later version.
-% 
-% This program is distributed in the hope that it will be useful,
-% but WITHOUT ANY WARRANTY; without even the implied warranty of
-% MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-% GNU General Public License for more details.
-% 
-% You should have received a copy of the GNU General Public License
-% along with this program.  If not, see <http://www.gnu.org/licenses/>.
+%% splitCurveSetMesh
+% Below is a demonstration of the features of the |splitCurveSetMesh| function
+
+%%
+clear; close all; clc;
+
+%%
+% PLOT SETTINGS
+fontSize=15;
+faceAlpha1=1;
+faceAlpha2=0.5;
+edgeColor=0.25*ones(1,3);
+edgeWidth=1.5;
+markerSize1=50;
+
+%% MESHING BIFURCATION BASED ON INPUT CURVES: from narrowed curve to split curves
+
+%%
+% Create example curves
+
+t=linspace(0.25*pi,2.25*pi,75);
+t=t(1:end-1);
+x=sin(t(:));
+y=cos(t(:));
+[t,r] = cart2pol(x,y);
+r=r-0.75*cos(2*t);
+[x,y] = pol2cart(t,r);
+z=zeros(size(x));
+V1=[x(:) y(:) z(:)];
+
+t=linspace(0,2*pi,135);
+r2=0.8;
+x=r2.*sin(t);
+y=r2.*cos(t);
+z=0.5*ones(size(x));
+V2=[x(:) y(:) z(:)];
+V2=V2(1:end-1,:);
+
+V2(:,1)=V2(:,1);
+V2(:,2)=V2(:,2)-1.1;
+
+V3=V2;
+V3(:,1)=V3(:,1);
+V3(:,2)=V3(:,2)+2.2;
+
+%%
+
+ns=5; 
+V_cell={V1,V2,V3};
+patchType='quad';
+smoothPar.Method='HC';
+smoothPar.n=0;
+smoothPar.Tolerance=0.001;
+switch smoothPar.Method
+    case 'HC'
+        smoothPar.Alpa=0.1; %Alpha scale factor to push points back to original
+        smoothPar.Beta=0.5; %Beta
+    case 'LAP'
+        smoothPar.LambdaSmooth=0.25;
+end
+splitMethod='nearMid';
+
+%%
+% Meshing bifurcation
+
+[F,V,curveIndices,faceMarker]=splitCurveSetMesh(V_cell,ns,patchType,smoothPar,splitMethod);
+
+
+%%
+
+% Plotting results
+cFigure; hold on;
+title('Input contours and connected mesh','FontSize',fontSize);
+gpatch(F,V,faceMarker);
+plotV(V(curveIndices{1},:),'r.-','MarkerSize',25);
+plotV(V(curveIndices{2},:),'g.-','MarkerSize',25);
+plotV(V(curveIndices{3},:),'b.-','MarkerSize',25);
+axisGeom(gca,fontSize);
+colormap gjet; icolorbar;
+camlight headlight; 
+drawnow;
+
+%% MESHING BIFURCATION BASED ON INPUT CURVES: from ellips curve to split curves
+
+%%
+% Create example curves
+
+t=linspace(0.25*pi,2.25*pi,50);
+t=t(1:end-1);
+x=2*sin(t(:));
+y=cos(t(:));
+z=zeros(size(x));
+V1=[x(:) y(:) z(:)];
+
+t=linspace(0,2*pi,25);
+r2=0.8;
+x=r2.*sin(t);
+y=r2.*cos(t);
+z=0.5*ones(size(x));
+V2=[x(:) y(:) z(:)];
+V2=V2(1:end-1,:);
+
+V2(:,1)=V2(:,1);
+V2(:,2)=V2(:,2)-1.1;
+
+V3=V2;
+V3(:,1)=V3(:,1);
+V3(:,2)=V3(:,2)+2.2;
+
+%%
+ns=5; 
+V_cell={V1,V2,V3};
+patchType='quad';
+smoothPar.Method='HC';
+smoothPar.n=250;
+smoothPar.Tolerance=0.001;
+switch smoothPar.Method
+    case 'HC'
+        smoothPar.Alpa=0.1; %Alpha scale factor to push points back to original
+        smoothPar.Beta=0.5; %Beta
+    case 'LAP'
+        smoothPar.LambdaSmooth=0.25;
+end
+splitMethod='nearMid';
+
+%%
+% Meshing bifurcation
+
+[F_1,V_1,curveIndices_1,faceMarker_1]=splitCurveSetMesh(V_cell,ns,patchType,smoothPar,'nearMid');
+[F_2,V_2,curveIndices_2,faceMarker_2]=splitCurveSetMesh(V_cell,ns,patchType,smoothPar,'ortho');
+
+
+%%
+
+% Plotting results
+
+subplot(1,2,1); hold on;
+title('nearMid is inappropriate in this case','FontSize',fontSize);
+gpatch(F_1,V_1,faceMarker_1);
+plotV(V_1(curveIndices_1{1},:),'r.-','MarkerSize',25);
+plotV(V_1(curveIndices_1{2},:),'g.-','MarkerSize',25);
+plotV(V_1(curveIndices_1{3},:),'b.-','MarkerSize',25);
+axisGeom(gca,fontSize);
+colormap(gca,gjet(2)); icolorbar;
+camlight headlight; 
+
+subplot(1,2,2); hold on;
+title('ortho performs better','FontSize',fontSize);
+gpatch(F_2,V_2,faceMarker_2);
+plotV(V_2(curveIndices_2{1},:),'r.-','MarkerSize',25);
+plotV(V_2(curveIndices_2{2},:),'g.-','MarkerSize',25);
+plotV(V_2(curveIndices_2{3},:),'b.-','MarkerSize',25);
+axisGeom(gca,fontSize);
+colormap(gca,gjet(2)); icolorbar;
+camlight headlight; 
+drawnow;
+
+%% ABOUT SMOOTHENING METHODS
+
+ns=5; 
+V_cell={V1,V2,V3};
+patchType='quad';
+splitMethod='ortho';
+
+smoothPar.Method='HC';
+smoothPar.n=250;
+smoothPar.Tolerance=0.001;
+switch smoothPar.Method
+    case 'HC'
+        smoothPar.Alpa=0.1; %Alpha scale factor to push points back to original
+        smoothPar.Beta=0.5; %Beta
+    case 'LAP'
+        smoothPar.LambdaSmooth=0.25;
+end
+[F_1,V_1,curveIndices_1,faceMarker_1]=splitCurveSetMesh(V_cell,ns,patchType,smoothPar,splitMethod);
+
+smoothPar.Method='LAP';
+smoothPar.n=250;
+smoothPar.Tolerance=0.001;
+switch smoothPar.Method
+    case 'HC'
+        smoothPar.Alpa=0.1; %Alpha scale factor to push points back to original
+        smoothPar.Beta=0.5; %Beta
+    case 'LAP'
+        smoothPar.LambdaSmooth=0.25;
+end
+[F_2,V_2,curveIndices_2,faceMarker_2]=splitCurveSetMesh(V_cell,ns,patchType,smoothPar,splitMethod);
+
+%%
+
+% Plotting results
+
+% Plotting results
+cFigure; 
+subplot(1,2,1); hold on;
+title('HC smoothed','FontSize',fontSize);
+gpatch(F_1,V_1,faceMarker_1);
+plotV(V_1(curveIndices_1{1},:),'r.-','MarkerSize',25);
+plotV(V_1(curveIndices_1{2},:),'g.-','MarkerSize',25);
+plotV(V_1(curveIndices_1{3},:),'b.-','MarkerSize',25);
+axisGeom(gca,fontSize);
+colormap(gca,gjet(2)); icolorbar;
+camlight headlight; 
+
+subplot(1,2,2); hold on;
+title('LAP smoothed (shrinkage/growth not prevented)','FontSize',fontSize);
+gpatch(F_2,V_2,faceMarker_2);
+plotV(V_2(curveIndices_2{1},:),'r.-','MarkerSize',25);
+plotV(V_2(curveIndices_2{2},:),'g.-','MarkerSize',25);
+plotV(V_2(curveIndices_2{3},:),'b.-','MarkerSize',25);
+axisGeom(gca,fontSize);
+colormap(gca,gjet(2)); icolorbar;
+camlight headlight; 
+drawnow;
+
+%% 
+%
+% <<gibbVerySmall.gif>>
+% 
+% _*GIBBON*_ 
+% <www.gibboncode.org>
+% 
+% _Kevin Mattheus Moerman_, <gibbon.toolbox@gmail.com>
+ 
+%% 
+% _*GIBBON footer text*_ 
+% 
+% License: <https://github.com/gibbonCode/GIBBON/blob/master/LICENSE>
+% 
+% GIBBON: The Geometry and Image-based Bioengineering add-On. A toolbox for
+% image segmentation, image-based modeling, meshing, and finite element
+% analysis.
+% 
+% Copyright (C) 2019  Kevin Mattheus Moerman
+% 
+% This program is free software: you can redistribute it and/or modify
+% it under the terms of the GNU General Public License as published by
+% the Free Software Foundation, either version 3 of the License, or
+% (at your option) any later version.
+% 
+% This program is distributed in the hope that it will be useful,
+% but WITHOUT ANY WARRANTY; without even the implied warranty of
+% MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+% GNU General Public License for more details.
+% 
+% You should have received a copy of the GNU General Public License
+% along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 ##### SOURCE END #####
 --></body></html>
