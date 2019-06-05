@@ -1,0 +1,199 @@
+---
+layout: pagefullwidth
+title: "Documentation"
+logo: "img/home-bg.jpg"
+description: "Help and demo links"
+header-img: "img/home-bg.jpg"
+ordernumber: 4
+---
+
+<!doctype html>
+<html lang = "en">
+   <head>
+      <meta charset = "utf-8">
+      <title>jQuery UI selectable-7</title>
+      <link href = "https://code.jquery.com/ui/1.10.4/themes/ui-lightness/jquery-ui.css" rel = "stylesheet">
+      <script src = "https://code.jquery.com/jquery-1.10.2.js"></script>
+      <script src = "https://code.jquery.com/ui/1.10.4/jquery-ui.js"></script>
+
+      <style>
+         table {
+               border-collapse: collapse;
+               width: 100%;
+               }
+
+         td, th {
+               border: 1px solid #dddddd;
+               text-align: left;
+               }
+
+         tr:nth-child(even) {
+               background-color: #dddddd;
+               }
+      </style>
+
+      <script type="text/javascript">
+        function changeText(text) {
+           document.getElementById('chgtext').src = text;
+           document.getElementById('hyperTxt').href = text;
+        }
+
+        function resizeIframe(obj) {
+           obj.style.height = obj.contentWindow.document.body.scrollHeight + 'px';
+        }
+      </script>
+
+
+</head>
+
+<body>
+
+   <div class="row">
+   <div class="col-xs-4 col-sm-4 col-md-2  col-lg-1 col-xl-1">
+
+      <table align="left" valign="top" width="100%" >
+         <tr>
+            <th height="1em" width="100%">
+               HELP/DEMO
+            </th>
+            <!-- <th rowspan="0" valign="top">
+               <span>
+                  <a id="hyperTxt" href=""> <i class="fa fa-arrow-right" aria-hidden="true"></i>  <i class="fa fa-file" aria-hidden="true"></i> <u>Full page view</u> </a>
+                 <iframe   src="{{ site.baseurl}}/html/GIBBON_product_page.html" width="100%" height="100%" frameborder="1" id="chgtext" scrolling="no" style="font-size:65%;" onload="resizeIframe(this)"> </iframe>
+               </span>
+            </th> -->
+         </tr>
+
+         <tr>
+            <td height="2em">
+               <a href="#" onclick="changeText('{{ site.baseurl}}/html/GIBBON_product_page.html')">HOME</a>
+            </td>
+         </tr>
+
+         {% for help_html in site.static_files %}
+           {% if help_html.path contains '/html' %}
+             {% if help_html.basename contains 'HELP' %}
+               {% if help_html.extname contains 'html' %}
+
+                 <tr>
+                    <td height="2em">
+                       <a href="#" onclick="changeText('{{ site.baseurl}}{{ help_html.path}}')">{{ help_html.basename}}</a>
+                    </td>
+                 </tr>
+
+               {% endif %}
+             {% endif %}
+           {% endif %}
+         {% endfor %}
+
+         {% for help_html in site.static_files %}
+           {% if help_html.path contains '/html' %}
+             {% if help_html.basename contains 'DEMO' %}
+               {% if help_html.extname contains 'html' %}
+
+                 <tr>
+                    <td height="2em">
+                       <a href="#" onclick="changeText('{{ site.baseurl}}{{ help_html.path}}')">{{ help_html.basename}}</a>
+                    </td>
+                 </tr>
+
+               {% endif %}
+             {% endif %}
+           {% endif %}
+         {% endfor %}
+
+         <tr>
+            <td>
+
+            </td>
+         </tr>
+      </table>
+      </div>
+<div class="col-xs-8 col-sm-8 col-md-10 col-lg-11 col-xl-11">
+      <span>
+         <a id="hyperTxt" href=""> <i class="fa fa-arrow-right" aria-hidden="true"></i>  <i class="fa fa-file" aria-hidden="true"></i> <u>Full page view</u> </a>
+        <!-- <iframe   src="{{ site.baseurl}}/html/GIBBON_product_page.html" width="100%" height="100%" frameborder="1" id="chgtext" scrolling="yes" style="font-size:65%;" onload="resizeIframe(this)"> </iframe> -->
+         <iframe   src="{{ site.baseurl}}/html/GIBBON_product_page.html" width="100%" id="chgtext" height="2500" frameborder="1" scrolling="yes" style="font-size:65%;"> </iframe>
+      </span>
+</div>
+
+</div>
+
+</body>
+</html>
+
+
+
+<!--
+<div style="background-color:lightgray">
+  {% for help_html in site.static_files %}
+    {% if help_html.path contains '/html' %}
+      {% if help_html.basename contains 'HELP' %}
+        {% if help_html.extname contains 'html' %}
+
+        <details>
+          <summary>
+            <u><i class="fa fa-plus-square" aria-hidden="true"></i> {{help_html.basename}}</u>
+            <br>
+            {% for image in site.static_files %}
+              {% if image.path contains help_html.basename %}
+                 {% if image.path contains '.jpg'%}
+                    {% if image.basename != help_html.basename %}
+                      <img src="{{ site.baseurl }}{{ image.path }}" width="25%">
+                    {% endif %}
+                 {% endif %}
+              {% endif %}
+            {% endfor %}
+          </summary>
+
+          <a href="{{ site.baseurl}}{{ help_html.path}}"> <i class="fa fa-arrow-right" aria-hidden="true"></i>  <i class="fa fa-file" aria-hidden="true"></i> <u>Full page view</u> </a>
+
+          <span style="font-size:65%;">
+            <iframe   src="{{ site.baseurl}}{{ help_html.path}}" width="100%" height="1000" frameborder="1" allowfullscreen> </iframe>
+          </span>
+        </details>
+
+        <hr>
+
+        {% endif %}
+      {% endif %}
+    {% endif %}
+  {% endfor %}
+</div>
+
+# Demo files <a name="demo"></a>
+<div style="background-color:lightgray">
+  {% for help_html in site.static_files %}
+    {% if help_html.path contains '/html' %}
+      {% if help_html.basename contains 'DEMO' %}
+        {% if help_html.extname contains 'html' %}
+
+        <details>
+          <summary>
+            <u><i class="fa fa-plus-square" aria-hidden="true"></i> {{help_html.basename}}</u>
+            <br>
+            {% for image in site.static_files %}
+              {% if image.path contains help_html.basename %}
+                 {% if image.path contains '.jpg'%}
+                    {% if image.basename != help_html.basename %}
+                      <img src="{{ site.baseurl }}{{ image.path }}" width="25%">
+                    {% endif %}
+                 {% endif %}
+              {% endif %}
+            {% endfor %}
+          </summary>
+
+          <a href="{{ site.baseurl}}{{ help_html.path}}"> <i class="fa fa-arrow-right" aria-hidden="true"></i>  <i class="fa fa-file" aria-hidden="true"></i> <u>Full page view</u> </a>
+
+          <span style="font-size:65%;">
+            <iframe   src="{{ site.baseurl}}{{ help_html.path}}" width="100%" height="1000" frameborder="1" allowfullscreen> </iframe>
+          </span>
+        </details>
+
+        <hr>
+
+        {% endif %}
+      {% endif %}
+    {% endif %}
+  {% endfor %}
+</div> -->
