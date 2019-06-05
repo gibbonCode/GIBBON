@@ -8,14 +8,14 @@ ordernumber: 4
 ---
 
 # Documentation
-If GIBBON is installed properly the documentation is also available (and fully searchable) from within MATLAB (see [installation instructions]({{ site.baseurl }}/Installation/)). The name for all function help files (the files that generate the help/documentation when published with MATLAB) starts with `HELP_`, all demo files start with `DEMO_`. This way users may explore/open/edit these files by typing `open HELP_functionName` or `open DEMO_demoName` in the MATLAB command window.
+If GIBBON is installed properly the documentation is also available (and fully searchable) from within MATLAB (see [installation instructions]({{ site.baseurl }}/Installation/)).
 
 __The documentation is a work in progress__. Not all functions have associated help files and not all functionality is covered by the demos. The help files currently cover about 50% of the functions and the demos mainly cover the use of FEBio.  
 
 ## HELP and DEMO files
-Click the links below to expand the documentation. Click on `Full page view` to open the documentation file in a seperate window.   
+The name for all function help files starts with `HELP_`, and all demo files start with `DEMO_`. This way users may explore/open/edit these files by typing `open HELP_functionName` or `open DEMO_demoName` in the MATLAB command window.
 
-<div style="background-color:lightgray">
+<div style="background-color:white">
 
 <style>         
    table {
@@ -31,31 +31,74 @@ Click the links below to expand the documentation. Click on `Full page view` to 
    tr:nth-child(even) {
          background-color: #dddddd;
          }
+
+         {
+           box-sizing: border-box;
+         }
+
+         #myInput {
+           background-image: url('/img/icons/search.png');
+           background-position: 10px 12px;
+           background-repeat: no-repeat;
+           width: 100%;
+           font-size: 16px;
+           padding: 12px 20px 12px 40px;
+           border: 1px solid #ddd;
+           margin-bottom: 12px;
+         }
+
+         #myUL {
+           list-style-type: none;
+           padding: 0;
+           margin: 0;
+         }
+
+         #myUL li a {
+           border: 1px solid #ddd;
+           margin-top: -1px; /* Prevent double borders */
+           background-color: #f6f6f6;
+           padding: 12px;
+           text-decoration: none;
+           font-size: 18px;
+           color: black;
+           display: block
+         }
+
+         #myUL li a:hover:not(.header) {
+           background-color: #eee;
+         }
+
 </style>
 
-<table style="width:100%">
- <tr>
-   <th> </th>
- </tr>
+<script>
+function myFunction() {
+    var input, filter, ul, li, a, i, txtValue;
+    input = document.getElementById("myInput");
+    filter = input.value.toUpperCase();
+    ul = document.getElementById("myUL");
+    li = ul.getElementsByTagName("li");
+    for (i = 0; i < li.length; i++) {
+        a = li[i].getElementsByTagName("a")[0];
+        txtValue = a.textContent || a.innerText;
+        if (txtValue.toUpperCase().indexOf(filter) > -1) {
+            li[i].style.display = "";
+        } else {
+            li[i].style.display = "none";
+        }
+    }
+}
+</script>
+
+<input type="text" id="myInput" onkeyup="myFunction()" placeholder=" Search documentation files.." title="Type in a name">
+
+
+<ul id="myUL">
 
    {% for help_html in site.static_files %}
      {% if help_html.path contains '/html' %}
        {% if help_html.basename contains 'HELP'%}
          {% if help_html.extname contains 'html' %}            
-         <tr>
-           <td>
-         <details>
-           <summary>
-             <u> <i class="fa fa-plus-square" aria-hidden="true"></i> {{help_html.basename}} </u>
-             <br>
-           </summary>
-           <a href="{{ site.baseurl}}{{ help_html.path}}"> <i class="fa fa-arrow-right" aria-hidden="true"></i>  <i class="fa fa-file" aria-hidden="true"></i> <u>Full page view</u> </a>     
-           <span style="font-size:65%;">            
-             <iframe   src="{{ site.baseurl}}{{ help_html.path}}" width="100%" id="chgtext" height="2500" frameborder="1" scrolling="yes" style="font-size:65%;"> </iframe>
-           </span>
-         </details>
-         </td>   
-       </tr>
+         <li> <a href="{{ site.baseurl}}{{ help_html.path}}"> {{help_html.basename  | remove: "HELP_"}} </a>  </li>        
          {% endif %}
        {% endif %}
      {% endif %}
@@ -65,24 +108,12 @@ Click the links below to expand the documentation. Click on `Full page view` to 
      {% if help_html.path contains '/html' %}
        {% if help_html.basename contains 'DEMO' %}
          {% if help_html.extname contains 'html' %}            
-         <tr>
-           <td>
-         <details>
-           <summary>
-             <u> <i class="fa fa-plus-square" aria-hidden="true"></i> {{help_html.basename}} </u>
-             <br>
-           </summary>
-           <a href="{{ site.baseurl}}{{ help_html.path}}"> <i class="fa fa-arrow-right" aria-hidden="true"></i>  <i class="fa fa-file" aria-hidden="true"></i> <u>Full page view</u> </a>     
-           <span style="font-size:65%;">            
-             <iframe   src="{{ site.baseurl}}{{ help_html.path}}" width="100%" id="chgtext" height="2500" frameborder="1" scrolling="yes" style="font-size:65%;"> </iframe>
-           </span>
-         </details>
-         </td>   
-       </tr>
+         <li> <a href="{{ site.baseurl}}{{ help_html.path}}"> {{help_html.basename}} </a>  </li>        
          {% endif %}
        {% endif %}
      {% endif %}
    {% endfor %}  
-</table>
+
+</ul>
 
 </div>
