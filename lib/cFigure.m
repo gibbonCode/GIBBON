@@ -201,8 +201,7 @@ end
 
 pos=hf.Position;
 for q=1:1:10    
-    drawnow;
-    hf.Position
+    drawnow;    
     if ~all(pos==hf.Position)        
         break
     end
