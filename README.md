@@ -75,8 +75,6 @@ For finite element analysis GIBBON currently links with either the free and open
 GIBBON can be used as a pre- and post- processor for FEBio as it enables code-based development of meshes, boundary conditions, and input files. FEBio files can be directly exported based on dedicated MATLAB® structures (`HELP_febioStruct2xml`). Furthermore, GIBBON can be used to start and control FEBio simulations. As such, iterative and inverse FEA (e.g. based on MATLAB® optimization routines) is also enabled. All `DEMO_febio_...` files are FEBio demos, e.g. `DEMO_febio_0001_cube_uniaxial` is a simple uniaxial loading example, and `DEMO_febio_0042_inverse_FEA_cube_uniaxial` is an example of inverse FEA.    
 The image below is for large strain analysis of a twisting bar and stems from the demo `DEMO_febio_0004_beam_twist`. Other demos cover tension, compression, shear, applied forces, applied pressures, applied displacements, bending, poroelasticity, dynamic and viscoelastic analysis, contact and indentation problems, multi-generational materials for pre-load analysis.     
 
-_Users are encouraged to focus on the `DEMO_febio_0...` demos since these are the latest febio_spec 2.5 (the deprecated `DEMO_FEBio_...` demos are for the older febio_spec 2.0)_
-
 <div>
 <img src="docs/img/barTwist.gif" width="40%">
 <img src="docs/img/slidingBall.gif" width="40%">  
