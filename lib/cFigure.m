@@ -195,6 +195,19 @@ if ~strcmp(grootUnits,'pixels')
     graphicalRoot.Units=grootUnits;
 end
 
+%%
+% Initiate a set of drawnow events to cope with MATLAB bug (observed in
+% MATLAB 2019a). Figure position might alter after several drawnow events. 
+
+pos=hf.Position;
+for q=1:1:10    
+    drawnow;
+    hf.Position
+    if ~all(pos==hf.Position)        
+        break
+    end
+end
+
 %% 
 % _*GIBBON footer text*_ 
 % 
