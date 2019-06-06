@@ -459,7 +459,7 @@ switch eventData.Key
             caxUserDataStruct=get(cax,'UserData');
             caxUserDataStruct.defaultView=camview(cax);
             set(cax,'UserData',caxUserDataStruct);
-        end
+        end        
     case 'd' % Reset all the axes to default
         if linkedOn==1
             for h = findobj(hf, 'Type', 'axes', '-depth', 1)'
