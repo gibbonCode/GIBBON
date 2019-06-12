@@ -5,14 +5,28 @@
 clear; close all; clc;
 
 %% Syntax
-% |[Ft,Vt,Ct,indIni]=subTriDual(F,V,logicFaces);|
+% |[Ft,Vt,C_type,indIni,Ct]=subTriDual(F,V,logicFaces,C);|
 
 %% Description
-% This function refines the surface region defined by the logicFaces
-% beloning to the surface given by the faces F and vertices V. The region
+% This function refines the surface region defined by the logic logicFaces,
+% belonging to the surface given by the faces F and vertices V. The region
 % is refined by: 1) taking the dual tesselation, 2) retriangulating the
 % dual mesh to include the original points.
-% See also: |triPolyDualRefine|
+%
+% The input consists of:
+% F:          the faces
+% V:          the vertices
+% logicFaces: A logic for the faces requiring refinement
+% C:          color data on either the faces or the vertices
+% 
+% The ouput can consist of: 
+% FT:     Faces
+% VT:     Vertices
+% C_type: Color/label for triangle type, i.e. original (1), refined (2), or
+%         boundary (3) 
+% indIni: Indices for original points
+% C_new:  New color data for faces or vertices
+
 
 %% Examples
 
@@ -46,7 +60,7 @@ n=1; %Refinements
 
 %%    
 % Refine surface region using subTriDual
-[Ft,Vt,Ct,indIni]=subTriDual(F,V);
+[Ft,Vt]=subTriDual(F,V);
 
 %%
 
@@ -148,7 +162,7 @@ logicFaces=all(logicNodes(F),2);
 
 %%
 % Refine surface region using subTriDual
-[Ft,Vt,Ct,indIni]=subTriDual(F,V,logicFaces);
+[Ft,Vt,C_type,indIni]=subTriDual(F,V,logicFaces);
 
 %% Example Smoothening the mesh
 
@@ -159,7 +173,7 @@ cPar.RigidConstraints=indIni;
 [Vt]=tesSmooth(Ft,Vt,[],cPar);
 
 %Smoothen boundary nodes on original mesh nodes
-E=patchBoundary(Ft(Ct==1,:),Vt);
+E=patchBoundary(Ft(C_type==1,:),Vt);
 indEdge=unique(E(:));
 logicEdge=false(size(Vt,1),1);
 logicEdge(indEdge)=1;
@@ -184,7 +198,7 @@ subplot(1,2,2);
 title('Output surface','FontSize',fontSize);
 hold on;
 
-gpatch(Ft,Vt,Ct);
+gpatch(Ft,Vt,C_type);
 
 % [hp]=patchNormPlot(Ft,Vt,0.25);
 plotV(Vt(indIni,:),'k.','MarkerSize',25);
@@ -202,8 +216,8 @@ C=cos(XF*2*pi);%Continuous color
 C2=double(C<0); %"Sparse" color to help show averaging at transitions
 
 % Refine surface using subTriDual
-[Ft,Vt,~,indIni,Ct]=subTriDual(F,V,logicFaces,C);
-[~,~,~,indIni,Ct2]=subTriDual(F,V,logicFaces,C2);
+[Ft,Vt,~,~,C_new]=subTriDual(F,V,logicFaces,C);
+[~,~,~,~,C2_new]=subTriDual(F,V,logicFaces,C2);
 
 %%
 % Plotting surface models
@@ -218,7 +232,7 @@ camlight headlight;
 
 subplot(2,2,2); hold on
 title('Output surface','FontSize',fontSize);
-gpatch(Ft,Vt,Ct);
+gpatch(Ft,Vt,C_new);
 axisGeom(gca,fontSize);
 colormap gjet; colorbar;
 camlight headlight;
@@ -233,7 +247,7 @@ camlight headlight;
 
 subplot(2,2,4); hold on
 title('Output surface','FontSize',fontSize);
-gpatch(Ft,Vt,Ct2);
+gpatch(Ft,Vt,C2_new);
 axisGeom(gca,fontSize);
 colormap gjet; colorbar;
 camlight headlight;
@@ -291,19 +305,19 @@ interpMethod='linear'; %or 'natural'
 %%
 
 logicFaces=true(size(F,1),1);
-[Ft,Vt,Ct,indIni]=subTriDual(F,V,logicFaces);
+[Ft,Vt,C_type,indIni]=subTriDual(F,V,logicFaces);
 
 %%
 % Plotting surface models
 cFigure;
 subplot(1,2,1); hold on;
 title('Input surface','FontSize',fontSize);
-gpatch(F,V,'g');
+gpatch(F,V,'gw');
 axisGeom(gca,fontSize);
 
 subplot(1,2,2); hold on;
 title('Output surface','FontSize',fontSize);
-gpatch(Ft,Vt,'r'); view(2);
+gpatch(Ft,Vt,'rw'); view(2);
 axisGeom(gca,fontSize);
 drawnow;
 
@@ -339,7 +353,7 @@ for q=1:numel(distanceSplitSteps)
     indNodesFaces=Ft(logicFaces,:);
     indNodesFaces=unique(indNodesFaces(:))+size(Ft,1);
     
-    [Ft,Vt,Ct,indIni]=subTriDual(Ft,Vt,logicFaces);
+    [Ft,Vt,C_type,indIni]=subTriDual(Ft,Vt,logicFaces);
     
     %Smoothen newly introduced nodes
     cPar.Method='HC';
@@ -348,10 +362,10 @@ for q=1:numel(distanceSplitSteps)
     [Vt]=tesSmooth(Ft,Vt,[],cPar);
     
     %Smoothen boundary nodes on original mesh nodes
-    E=patchBoundary(Ft(Ct==1,:),Vt);
+    E=patchBoundary(Ft(C_type==1,:),Vt);
     indEdge=unique(E(:));
     
-    indNodesFaces=Ft(Ct~=1,:);
+    indNodesFaces=Ft(C_type~=1,:);
     logicValid=ismember(indEdge,indNodesFaces);
     indEdge=indEdge(logicValid);
     logicEdge=false(size(Vt,1),1);
@@ -370,12 +384,12 @@ end
 cFigure;
 subplot(1,2,1); hold on;
 title('Input surface','FontSize',fontSize);
-gpatch(F,V,'g');
+gpatch(F,V,'gw');
 axisGeom(gca,fontSize); view(2); axis off;
 
 subplot(1,2,2); hold on;
 title('Output surface','FontSize',fontSize);
-gpatch(Ft,Vt,'r'); view(2);
+gpatch(Ft,Vt,'rw'); view(2);
 axisGeom(gca,fontSize); view(2); axis off;
 drawnow;
 
@@ -388,29 +402,6 @@ drawnow;
 %
 % _Kevin Mattheus Moerman_, <gibbon.toolbox@gmail.com>
 
-%%
-% _*GIBBON footer text*_
-%
-% License: <https://github.com/gibbonCode/GIBBON/blob/master/LICENSE>
-%
-% GIBBON: The Geometry and Image-based Bioengineering add-On. A toolbox for
-% image segmentation, image-based modeling, meshing, and finite element
-% analysis.
-%
-% Copyright (C) 2018  Kevin Mattheus Moerman
-%
-% This program is free software: you can redistribute it and/or modify
-% it under the terms of the GNU General Public License as published by
-% the Free Software Foundation, either version 3 of the License, or
-% (at your option) any later version.
-%
-% This program is distributed in the hope that it will be useful,
-% but WITHOUT ANY WARRANTY; without even the implied warranty of
-% MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-% GNU General Public License for more details.
-%
-% You should have received a copy of the GNU General Public License
-% along with this program.  If not, see <http://www.gnu.org/licenses/>.
 %% 
 % _*GIBBON footer text*_ 
 % 

@@ -168,8 +168,9 @@ while 1
     dp=d;
 end
 center_of_mass_tube=mean(V_tube,1);
-%
-% Visualizing plate mesh
+
+%%
+% Visualization
 
 cFigure; hold on;
 gtitle('The surface meshes',fontSize);

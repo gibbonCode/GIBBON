@@ -52,6 +52,8 @@ vizOptStructDefault.fontSize=20; %font size
 vizOptStructDefault.figStruct=figStruct; %figure options (see cFigure)
 vizOptStructDefault.sliceIndices=round(size(M)/2); %Default mid-slices
 vizOptStructDefault.thresholdLevels=[0 100]; %Default threshold levels
+vizOptStructDefault.alphaLevel=1;
+vizOptStructDefault.origin=[0 0 0];
 
 [vizOptStruct]=structComplete(vizOptStruct,vizOptStructDefault,1);
 
@@ -64,6 +66,12 @@ fontSize=vizOptStruct.fontSize;
 cMap=vizOptStruct.colormap;
 cLim=vizOptStruct.clim;
 figStruct=vizOptStruct.figStruct;
+alphaLevel=vizOptStruct.alphaLevel;
+originLoc=vizOptStruct.origin;
+
+if diff(cLim)<eps
+   cLim=cLim+[-1 1];
+end
 
 %%
 
@@ -117,14 +125,17 @@ set(hf,'ResizeFcn',{@setScrollSizeFunc,{hf,w,jSlider_T,jSlider_I,jSlider_J,jSlid
 
 
 %%
-hf.UserData.M=M;
-hf.UserData.Name=figStruct.Name;
-hf.UserData.v=v;
-hf.UserData.patchTypes={'si','sj','sk'};
-hf.UserData.sliceIndices=[sliceIndexI sliceIndexJ sliceIndexK];
-hf.UserData.fontColor=fontColor;
-hf.UserData.hp=nan(3,1);
-hf.UserData.M_plot=M;
+hf.UserData.sv3.Name=figStruct.Name;
+hf.UserData.sv3.M=M;
+hf.UserData.sv3.v=v;
+hf.UserData.sv3.patchTypes={'si','sj','sk'};
+hf.UserData.sv3.sliceIndices=[sliceIndexI sliceIndexJ sliceIndexK];
+hf.UserData.sv3.fontColor=fontColor;
+hf.UserData.sv3.hp=nan(3,1);
+hf.UserData.sv3.M_plot=M;
+hf.UserData.sv3.alphaLevel=alphaLevel;
+hf.UserData.sv3.origin=originLoc;
+hf.UserData.sv3.sliderHandles=[jSlider_T,jSlider_I,jSlider_J,jSlider_K];
 
 %%
 set(jSlider_I,'Value',sliceIndexI);
@@ -149,12 +160,12 @@ hf=inputCell{1};
 jSlider=inputCell{2};
 dirOpt=inputCell{3};
 sliceIndex = get(jSlider,'Value');
-hf.UserData.sliceIndices(dirOpt)=sliceIndex;
-sliceIndices=hf.UserData.sliceIndices;
+hf.UserData.sv3.sliceIndices(dirOpt)=sliceIndex;
+sliceIndices=hf.UserData.sv3.sliceIndices;
 
-M=hf.UserData.M_plot;
-v=hf.UserData.v;
-patchType=hf.UserData.patchTypes{dirOpt}; 
+M=hf.UserData.sv3.M_plot;
+v=hf.UserData.sv3.v;
+patchType=hf.UserData.sv3.patchTypes{dirOpt}; 
 
 logicPatch=false(size(M));
 switch dirOpt
@@ -168,13 +179,14 @@ end
 
 figure(hf); %TEMP FIX for bug in MATLAB 2018
 
-if isnan(hf.UserData.hp(dirOpt))    
+if isnan(hf.UserData.sv3.hp(dirOpt))    
     [F,V,C]=im2patch(M,logicPatch,patchType);
-    [V(:,1),V(:,2),V(:,3)]=im2cart(V(:,2),V(:,1),V(:,3),v);    
-    hf.UserData.hp(dirOpt)= gpatch(F,V,C,'none',1);
+    [V(:,1),V(:,2),V(:,3)]=im2cart(V(:,2),V(:,1),V(:,3),v); 
+    V=V+hf.UserData.sv3.origin(ones(size(V,1),1),:);
+    hf.UserData.sv3.hp(dirOpt)= gpatch(F,V,C,'none',hf.UserData.sv3.alphaLevel);
 else    
-    set(hf.UserData.hp(dirOpt),'CData',M(logicPatch));
-    V=get(hf.UserData.hp(dirOpt),'Vertices');
+    set(hf.UserData.sv3.hp(dirOpt),'CData',M(logicPatch));
+    V=get(hf.UserData.sv3.hp(dirOpt),'Vertices');
     switch dirOpt
         case 1
             V(:,2)=(sliceIndex-0.5).*v(1);
@@ -183,12 +195,12 @@ else
         case 3
             V(:,3)=(sliceIndex-0.5).*v(3);
     end
-    set(hf.UserData.hp(dirOpt),'Vertices',V);
+    set(hf.UserData.sv3.hp(dirOpt),'Vertices',V);
 end
 
 navString=['I: ',num2str(sliceIndices(1)),', J:  ',num2str(sliceIndices(2)),', K: ',num2str(sliceIndices(3))];
-title(navString,'color',hf.UserData.fontColor);
-hf.Name=[hf.UserData.Name,' ',navString];
+title(navString,'color',hf.UserData.sv3.fontColor);
+hf.Name=[hf.UserData.sv3.Name,' ',navString];
 
 end
 
@@ -203,15 +215,15 @@ jSlider_K=inputCell{5};
 thresholdLevels(1) = get(jSlider_T,'LowValue');
 thresholdLevels(2) = get(jSlider_T,'HighValue');
 
-M=hf.UserData.M;
+M=hf.UserData.sv3.M;
 W=max(M(:))-min(M(:));
 
 T_low=min(M(:))+(W*thresholdLevels(1)/100);
 T_high=min(M(:))+(W*thresholdLevels(2)/100);
 logicThreshold=(M>=T_low & M<=T_high);
 
-hf.UserData.M_plot=M;
-hf.UserData.M_plot(~logicThreshold)=NaN;
+hf.UserData.sv3.M_plot=M;
+hf.UserData.sv3.M_plot(~logicThreshold)=NaN;
 
 plotSlice([],[],{hf,jSlider_I,1});
 plotSlice([],[],{hf,jSlider_J,2});

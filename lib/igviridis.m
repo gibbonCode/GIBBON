@@ -24,6 +24,7 @@ end
 g=gray(9);
 g=g(1:8,:);
 g(8,:)=1;
+
 cMap=[g; flipud(viridis(6)); zeros(1,3)];
 cMap=resampleColormap(cMap,n);
 

@@ -6,7 +6,7 @@
    <!--
 This HTML was auto-generated from MATLAB code.
 To make changes, update the MATLAB code and republish this document.
-      --><title>subTriDual</title><meta name="generator" content="MATLAB 9.6"><link rel="schema.DC" href="http://purl.org/dc/elements/1.1/"><meta name="DC.date" content="2019-06-04"><meta name="DC.source" content="HELP_subTriDual.m"><style type="text/css">
+      --><title>subTriDual</title><meta name="generator" content="MATLAB 9.6"><link rel="schema.DC" href="http://purl.org/dc/elements/1.1/"><meta name="DC.date" content="2019-06-12"><meta name="DC.source" content="HELP_subTriDual.m"><style type="text/css">
 html,body,div,span,applet,object,iframe,h1,h2,h3,h4,h5,h6,p,blockquote,pre,a,abbr,acronym,address,big,cite,code,del,dfn,em,font,img,ins,kbd,q,s,samp,small,strike,strong,sub,sup,tt,var,b,u,i,center,dl,dt,dd,ol,ul,li,fieldset,form,label,legend,table,caption,tbody,tfoot,thead,tr,th,td{margin:0;padding:0;border:0;outline:0;font-size:100%;vertical-align:baseline;background:transparent}body{line-height:1}ol,ul{list-style:none}blockquote,q{quotes:none}blockquote:before,blockquote:after,q:before,q:after{content:'';content:none}:focus{outine:0}ins{text-decoration:none}del{text-decoration:line-through}table{border-collapse:collapse;border-spacing:0}
 
 html { min-height:100%; margin-bottom:1px; }
@@ -67,7 +67,7 @@ table td { padding:7px 5px; text-align:left; vertical-align:top; border:1px soli
 
 
   </style></head><body><div class="content"><h1>subTriDual</h1><!--introduction--><p>Below is a demonstration of the features of the <tt>subTriDual</tt> function</p><!--/introduction--><h2>Contents</h2><div><ul><li><a href="#2">Syntax</a></li><li><a href="#3">Description</a></li><li><a href="#4">Examples</a></li><li><a href="#6">Example: Illustrating the refinement process</a></li><li><a href="#12">Example: Refining a closed surface</a></li><li><a href="#16">Example: Refining a local region of a mesh (e.g. region on a sphere)</a></li><li><a href="#20">Example Smoothening the mesh</a></li><li><a href="#22">Example: Keeping track of surface data e.g. color</a></li><li><a href="#24">Example: use for non-closed 3D surfaces with voids</a></li><li><a href="#29">Example: Iterative refinement</a></li></ul></div><pre class="codeinput">clear; close <span class="string">all</span>; clc;
-</pre><h2 id="2">Syntax</h2><p><tt>[Ft,Vt,Ct,indIni]=subTriDual(F,V,logicFaces);</tt></p><h2 id="3">Description</h2><p>This function refines the surface region defined by the logicFaces beloning to the surface given by the faces F and vertices V. The region is refined by: 1) taking the dual tesselation, 2) retriangulating the dual mesh to include the original points. See also: <tt>triPolyDualRefine</tt></p><h2 id="4">Examples</h2><p>Plot settings</p><pre class="codeinput">fontSize=15;
+</pre><h2 id="2">Syntax</h2><p><tt>[Ft,Vt,C_type,indIni,Ct]=subTriDual(F,V,logicFaces,C);</tt></p><h2 id="3">Description</h2><p>This function refines the surface region defined by the logic logicFaces, belonging to the surface given by the faces F and vertices V. The region is refined by: 1) taking the dual tesselation, 2) retriangulating the dual mesh to include the original points.</p><p>The input consists of: F:          the faces V:          the vertices logicFaces: A logic for the faces requiring refinement C:          color data on either the faces or the vertices</p><p>The ouput can consist of: FT:     Faces VT:     Vertices C_type: Color/label for triangle type, i.e. original (1), refined (2), or         boundary (3) indIni: Indices for original points C_new:  New color data for faces or vertices</p><h2 id="4">Examples</h2><p>Plot settings</p><pre class="codeinput">fontSize=15;
 cMap=gjet(4);
 faceAlpha=0.5;
 plotColor1=cMap(1,:);
@@ -81,7 +81,7 @@ r=1; <span class="comment">%sphere radius</span>
 n=1; <span class="comment">%Refinements</span>
 [F,V,~]=geoSphere(n,r);
 </pre><p>Deriving the dual of the patch data for visualization purposes</p><pre class="codeinput">[Vd,Fd]=patch_dual(V,F);
-</pre><p>Refine surface region using subTriDual</p><pre class="codeinput">[Ft,Vt,Ct,indIni]=subTriDual(F,V);
+</pre><p>Refine surface region using subTriDual</p><pre class="codeinput">[Ft,Vt]=subTriDual(F,V);
 </pre><pre class="codeinput"><span class="comment">%Plotting results</span>
 cFigure;
 subplot(1,3,1); hold <span class="string">on</span>;
@@ -157,7 +157,7 @@ n=3; <span class="comment">%Refinements</span>
 [F,V,~]=geoSphere(n,r);
 </pre><p>Define face list for refinement</p><pre class="codeinput">logicNodes=V(:,3)&gt;0.6 | V(:,2)&lt;-0.5;
 logicFaces=all(logicNodes(F),2);
-</pre><p>Refine surface region using subTriDual</p><pre class="codeinput">[Ft,Vt,Ct,indIni]=subTriDual(F,V,logicFaces);
+</pre><p>Refine surface region using subTriDual</p><pre class="codeinput">[Ft,Vt,C_type,indIni]=subTriDual(F,V,logicFaces);
 </pre><h2 id="20">Example Smoothening the mesh</h2><pre class="codeinput"><span class="comment">%Smoothen newly introduced nodes</span>
 cPar.Method=<span class="string">'HC'</span>;
 cPar.n=50;
@@ -165,7 +165,7 @@ cPar.RigidConstraints=indIni;
 [Vt]=tesSmooth(Ft,Vt,[],cPar);
 
 <span class="comment">%Smoothen boundary nodes on original mesh nodes</span>
-E=patchBoundary(Ft(Ct==1,:),Vt);
+E=patchBoundary(Ft(C_type==1,:),Vt);
 indEdge=unique(E(:));
 logicEdge=false(size(Vt,1),1);
 logicEdge(indEdge)=1;
@@ -187,7 +187,7 @@ subplot(1,2,2);
 title(<span class="string">'Output surface'</span>,<span class="string">'FontSize'</span>,fontSize);
 hold <span class="string">on</span>;
 
-gpatch(Ft,Vt,Ct);
+gpatch(Ft,Vt,C_type);
 
 <span class="comment">% [hp]=patchNormPlot(Ft,Vt,0.25);</span>
 plotV(Vt(indIni,:),<span class="string">'k.'</span>,<span class="string">'MarkerSize'</span>,25);
@@ -203,8 +203,8 @@ C=cos(XF*2*pi);<span class="comment">%Continuous color</span>
 C2=double(C&lt;0); <span class="comment">%"Sparse" color to help show averaging at transitions</span>
 
 <span class="comment">% Refine surface using subTriDual</span>
-[Ft,Vt,~,indIni,Ct]=subTriDual(F,V,logicFaces,C);
-[~,~,~,indIni,Ct2]=subTriDual(F,V,logicFaces,C2);
+[Ft,Vt,~,~,C_new]=subTriDual(F,V,logicFaces,C);
+[~,~,~,~,C2_new]=subTriDual(F,V,logicFaces,C2);
 </pre><p>Plotting surface models</p><pre class="codeinput">cFigure;
 subplot(2,2,1); hold <span class="string">on</span>;
 title(<span class="string">'Input surface'</span>,<span class="string">'FontSize'</span>,fontSize);
@@ -215,7 +215,7 @@ camlight <span class="string">headlight</span>;
 
 subplot(2,2,2); hold <span class="string">on</span>
 title(<span class="string">'Output surface'</span>,<span class="string">'FontSize'</span>,fontSize);
-gpatch(Ft,Vt,Ct);
+gpatch(Ft,Vt,C_new);
 axisGeom(gca,fontSize);
 colormap <span class="string">gjet</span>; colorbar;
 camlight <span class="string">headlight</span>;
@@ -230,7 +230,7 @@ camlight <span class="string">headlight</span>;
 
 subplot(2,2,4); hold <span class="string">on</span>
 title(<span class="string">'Output surface'</span>,<span class="string">'FontSize'</span>,fontSize);
-gpatch(Ft,Vt,Ct2);
+gpatch(Ft,Vt,C2_new);
 axisGeom(gca,fontSize);
 colormap <span class="string">gjet</span>; colorbar;
 camlight <span class="string">headlight</span>;
@@ -276,16 +276,16 @@ resampleCurveOpt=1;
 interpMethod=<span class="string">'linear'</span>; <span class="comment">%or 'natural'</span>
 [F,V]=regionTriMesh3D(regionCell,pointSpacing,resampleCurveOpt,interpMethod);
 </pre><pre class="codeinput">logicFaces=true(size(F,1),1);
-[Ft,Vt,Ct,indIni]=subTriDual(F,V,logicFaces);
+[Ft,Vt,C_type,indIni]=subTriDual(F,V,logicFaces);
 </pre><p>Plotting surface models</p><pre class="codeinput">cFigure;
 subplot(1,2,1); hold <span class="string">on</span>;
 title(<span class="string">'Input surface'</span>,<span class="string">'FontSize'</span>,fontSize);
-gpatch(F,V,<span class="string">'g'</span>);
+gpatch(F,V,<span class="string">'gw'</span>);
 axisGeom(gca,fontSize);
 
 subplot(1,2,2); hold <span class="string">on</span>;
 title(<span class="string">'Output surface'</span>,<span class="string">'FontSize'</span>,fontSize);
-gpatch(Ft,Vt,<span class="string">'r'</span>); view(2);
+gpatch(Ft,Vt,<span class="string">'rw'</span>); view(2);
 axisGeom(gca,fontSize);
 drawnow;
 </pre><img width="100%" height="auto" vspace="5" hspace="5" src="HELP_subTriDual_05.jpg" alt=""> <h2 id="29">Example: Iterative refinement</h2><p>Creating example geometry</p><pre class="codeinput">ns=150;
@@ -312,7 +312,7 @@ Ft=F; Vt=V;
     indNodesFaces=Ft(logicFaces,:);
     indNodesFaces=unique(indNodesFaces(:))+size(Ft,1);
 
-    [Ft,Vt,Ct,indIni]=subTriDual(Ft,Vt,logicFaces);
+    [Ft,Vt,C_type,indIni]=subTriDual(Ft,Vt,logicFaces);
 
     <span class="comment">%Smoothen newly introduced nodes</span>
     cPar.Method=<span class="string">'HC'</span>;
@@ -321,10 +321,10 @@ Ft=F; Vt=V;
     [Vt]=tesSmooth(Ft,Vt,[],cPar);
 
     <span class="comment">%Smoothen boundary nodes on original mesh nodes</span>
-    E=patchBoundary(Ft(Ct==1,:),Vt);
+    E=patchBoundary(Ft(C_type==1,:),Vt);
     indEdge=unique(E(:));
 
-    indNodesFaces=Ft(Ct~=1,:);
+    indNodesFaces=Ft(C_type~=1,:);
     logicValid=ismember(indEdge,indNodesFaces);
     indEdge=indEdge(logicValid);
     logicEdge=false(size(Vt,1),1);
@@ -340,15 +340,15 @@ Ft=F; Vt=V;
 </pre><p>Plotting surface models</p><pre class="codeinput">cFigure;
 subplot(1,2,1); hold <span class="string">on</span>;
 title(<span class="string">'Input surface'</span>,<span class="string">'FontSize'</span>,fontSize);
-gpatch(F,V,<span class="string">'g'</span>);
+gpatch(F,V,<span class="string">'gw'</span>);
 axisGeom(gca,fontSize); view(2); axis <span class="string">off</span>;
 
 subplot(1,2,2); hold <span class="string">on</span>;
 title(<span class="string">'Output surface'</span>,<span class="string">'FontSize'</span>,fontSize);
-gpatch(Ft,Vt,<span class="string">'r'</span>); view(2);
+gpatch(Ft,Vt,<span class="string">'rw'</span>); view(2);
 axisGeom(gca,fontSize); view(2); axis <span class="string">off</span>;
 drawnow;
-</pre><img width="100%" height="auto" vspace="5" hspace="5" src="HELP_subTriDual_06.jpg" alt=""> <p><img vspace="5" hspace="5" src="gibbVerySmall.gif" alt=""> </p><p><i><b>GIBBON</b></i> <a href="www.gibboncode.org">www.gibboncode.org</a></p><p><i>Kevin Mattheus Moerman</i>, <a href="gibbon.toolbox@gmail.com">gibbon.toolbox@gmail.com</a></p><p><i><b>GIBBON footer text</b></i></p><p>License: <a href="https://github.com/gibbonCode/GIBBON/blob/master/LICENSE">https://github.com/gibbonCode/GIBBON/blob/master/LICENSE</a></p><p>GIBBON: The Geometry and Image-based Bioengineering add-On. A toolbox for image segmentation, image-based modeling, meshing, and finite element analysis.</p><p>Copyright (C) 2018  Kevin Mattheus Moerman</p><p>This program is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.</p><p>This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for more details.</p><p>You should have received a copy of the GNU General Public License along with this program.  If not, see <a href="http://www.gnu.org/licenses/">http://www.gnu.org/licenses/</a>.</p><p><i><b>GIBBON footer text</b></i></p><p>License: <a href="https://github.com/gibbonCode/GIBBON/blob/master/LICENSE">https://github.com/gibbonCode/GIBBON/blob/master/LICENSE</a></p><p>GIBBON: The Geometry and Image-based Bioengineering add-On. A toolbox for image segmentation, image-based modeling, meshing, and finite element analysis.</p><p>Copyright (C) 2019  Kevin Mattheus Moerman</p><p>This program is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.</p><p>This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for more details.</p><p>You should have received a copy of the GNU General Public License along with this program.  If not, see <a href="http://www.gnu.org/licenses/">http://www.gnu.org/licenses/</a>.</p><p class="footer"><br><a href="https://www.mathworks.com/products/matlab/">Published with MATLAB&reg; R2019a</a><br></p></div><!--
+</pre><img width="100%" height="auto" vspace="5" hspace="5" src="HELP_subTriDual_06.jpg" alt=""> <p><img vspace="5" hspace="5" src="gibbVerySmall.gif" alt=""> </p><p><i><b>GIBBON</b></i> <a href="www.gibboncode.org">www.gibboncode.org</a></p><p><i>Kevin Mattheus Moerman</i>, <a href="gibbon.toolbox@gmail.com">gibbon.toolbox@gmail.com</a></p><p><i><b>GIBBON footer text</b></i></p><p>License: <a href="https://github.com/gibbonCode/GIBBON/blob/master/LICENSE">https://github.com/gibbonCode/GIBBON/blob/master/LICENSE</a></p><p>GIBBON: The Geometry and Image-based Bioengineering add-On. A toolbox for image segmentation, image-based modeling, meshing, and finite element analysis.</p><p>Copyright (C) 2019  Kevin Mattheus Moerman</p><p>This program is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.</p><p>This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for more details.</p><p>You should have received a copy of the GNU General Public License along with this program.  If not, see <a href="http://www.gnu.org/licenses/">http://www.gnu.org/licenses/</a>.</p><p class="footer"><br><a href="https://www.mathworks.com/products/matlab/">Published with MATLAB&reg; R2019a</a><br></p></div><!--
 ##### SOURCE BEGIN #####
 %% subTriDual
 % Below is a demonstration of the features of the |subTriDual| function
@@ -357,14 +357,28 @@ drawnow;
 clear; close all; clc;
 
 %% Syntax
-% |[Ft,Vt,Ct,indIni]=subTriDual(F,V,logicFaces);|
+% |[Ft,Vt,C_type,indIni,Ct]=subTriDual(F,V,logicFaces,C);|
 
 %% Description
-% This function refines the surface region defined by the logicFaces
-% beloning to the surface given by the faces F and vertices V. The region
+% This function refines the surface region defined by the logic logicFaces,
+% belonging to the surface given by the faces F and vertices V. The region
 % is refined by: 1) taking the dual tesselation, 2) retriangulating the
 % dual mesh to include the original points.
-% See also: |triPolyDualRefine|
+%
+% The input consists of:
+% F:          the faces
+% V:          the vertices
+% logicFaces: A logic for the faces requiring refinement
+% C:          color data on either the faces or the vertices
+% 
+% The ouput can consist of: 
+% FT:     Faces
+% VT:     Vertices
+% C_type: Color/label for triangle type, i.e. original (1), refined (2), or
+%         boundary (3) 
+% indIni: Indices for original points
+% C_new:  New color data for faces or vertices
+
 
 %% Examples
 
@@ -398,7 +412,7 @@ n=1; %Refinements
 
 %%    
 % Refine surface region using subTriDual
-[Ft,Vt,Ct,indIni]=subTriDual(F,V);
+[Ft,Vt]=subTriDual(F,V);
 
 %%
 
@@ -500,7 +514,7 @@ logicFaces=all(logicNodes(F),2);
 
 %%
 % Refine surface region using subTriDual
-[Ft,Vt,Ct,indIni]=subTriDual(F,V,logicFaces);
+[Ft,Vt,C_type,indIni]=subTriDual(F,V,logicFaces);
 
 %% Example Smoothening the mesh
 
@@ -511,7 +525,7 @@ cPar.RigidConstraints=indIni;
 [Vt]=tesSmooth(Ft,Vt,[],cPar);
 
 %Smoothen boundary nodes on original mesh nodes
-E=patchBoundary(Ft(Ct==1,:),Vt);
+E=patchBoundary(Ft(C_type==1,:),Vt);
 indEdge=unique(E(:));
 logicEdge=false(size(Vt,1),1);
 logicEdge(indEdge)=1;
@@ -536,7 +550,7 @@ subplot(1,2,2);
 title('Output surface','FontSize',fontSize);
 hold on;
 
-gpatch(Ft,Vt,Ct);
+gpatch(Ft,Vt,C_type);
 
 % [hp]=patchNormPlot(Ft,Vt,0.25);
 plotV(Vt(indIni,:),'k.','MarkerSize',25);
@@ -554,8 +568,8 @@ C=cos(XF*2*pi);%Continuous color
 C2=double(C<0); %"Sparse" color to help show averaging at transitions
 
 % Refine surface using subTriDual
-[Ft,Vt,~,indIni,Ct]=subTriDual(F,V,logicFaces,C);
-[~,~,~,indIni,Ct2]=subTriDual(F,V,logicFaces,C2);
+[Ft,Vt,~,~,C_new]=subTriDual(F,V,logicFaces,C);
+[~,~,~,~,C2_new]=subTriDual(F,V,logicFaces,C2);
 
 %%
 % Plotting surface models
@@ -570,7 +584,7 @@ camlight headlight;
 
 subplot(2,2,2); hold on
 title('Output surface','FontSize',fontSize);
-gpatch(Ft,Vt,Ct);
+gpatch(Ft,Vt,C_new);
 axisGeom(gca,fontSize);
 colormap gjet; colorbar;
 camlight headlight;
@@ -585,7 +599,7 @@ camlight headlight;
 
 subplot(2,2,4); hold on
 title('Output surface','FontSize',fontSize);
-gpatch(Ft,Vt,Ct2);
+gpatch(Ft,Vt,C2_new);
 axisGeom(gca,fontSize);
 colormap gjet; colorbar;
 camlight headlight;
@@ -643,19 +657,19 @@ interpMethod='linear'; %or 'natural'
 %%
 
 logicFaces=true(size(F,1),1);
-[Ft,Vt,Ct,indIni]=subTriDual(F,V,logicFaces);
+[Ft,Vt,C_type,indIni]=subTriDual(F,V,logicFaces);
 
 %%
 % Plotting surface models
 cFigure;
 subplot(1,2,1); hold on;
 title('Input surface','FontSize',fontSize);
-gpatch(F,V,'g');
+gpatch(F,V,'gw');
 axisGeom(gca,fontSize);
 
 subplot(1,2,2); hold on;
 title('Output surface','FontSize',fontSize);
-gpatch(Ft,Vt,'r'); view(2);
+gpatch(Ft,Vt,'rw'); view(2);
 axisGeom(gca,fontSize);
 drawnow;
 
@@ -691,7 +705,7 @@ for q=1:numel(distanceSplitSteps)
     indNodesFaces=Ft(logicFaces,:);
     indNodesFaces=unique(indNodesFaces(:))+size(Ft,1);
     
-    [Ft,Vt,Ct,indIni]=subTriDual(Ft,Vt,logicFaces);
+    [Ft,Vt,C_type,indIni]=subTriDual(Ft,Vt,logicFaces);
     
     %Smoothen newly introduced nodes
     cPar.Method='HC';
@@ -700,10 +714,10 @@ for q=1:numel(distanceSplitSteps)
     [Vt]=tesSmooth(Ft,Vt,[],cPar);
     
     %Smoothen boundary nodes on original mesh nodes
-    E=patchBoundary(Ft(Ct==1,:),Vt);
+    E=patchBoundary(Ft(C_type==1,:),Vt);
     indEdge=unique(E(:));
     
-    indNodesFaces=Ft(Ct~=1,:);
+    indNodesFaces=Ft(C_type~=1,:);
     logicValid=ismember(indEdge,indNodesFaces);
     indEdge=indEdge(logicValid);
     logicEdge=false(size(Vt,1),1);
@@ -722,12 +736,12 @@ end
 cFigure;
 subplot(1,2,1); hold on;
 title('Input surface','FontSize',fontSize);
-gpatch(F,V,'g');
+gpatch(F,V,'gw');
 axisGeom(gca,fontSize); view(2); axis off;
 
 subplot(1,2,2); hold on;
 title('Output surface','FontSize',fontSize);
-gpatch(Ft,Vt,'r'); view(2);
+gpatch(Ft,Vt,'rw'); view(2);
 axisGeom(gca,fontSize); view(2); axis off;
 drawnow;
 
@@ -740,29 +754,6 @@ drawnow;
 %
 % _Kevin Mattheus Moerman_, <gibbon.toolbox@gmail.com>
 
-%%
-% _*GIBBON footer text*_
-%
-% License: <https://github.com/gibbonCode/GIBBON/blob/master/LICENSE>
-%
-% GIBBON: The Geometry and Image-based Bioengineering add-On. A toolbox for
-% image segmentation, image-based modeling, meshing, and finite element
-% analysis.
-%
-% Copyright (C) 2018  Kevin Mattheus Moerman
-%
-% This program is free software: you can redistribute it and/or modify
-% it under the terms of the GNU General Public License as published by
-% the Free Software Foundation, either version 3 of the License, or
-% (at your option) any later version.
-%
-% This program is distributed in the hope that it will be useful,
-% but WITHOUT ANY WARRANTY; without even the implied warranty of
-% MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-% GNU General Public License for more details.
-%
-% You should have received a copy of the GNU General Public License
-% along with this program.  If not, see <http://www.gnu.org/licenses/>.
 %% 
 % _*GIBBON footer text*_ 
 % 

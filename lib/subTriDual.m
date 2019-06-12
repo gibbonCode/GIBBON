@@ -1,163 +1,107 @@
 function [varargout]=subTriDual(varargin)
 
-%% Parse input
+% function [FT,VT,C_type,indIni,C_new]=subTriDual(F,V,logicFaces,C)
+% ------------------------------------------------------------------------
+% This function can globally or locally refine the input triangulation
+% based on so-called "dual refinement". The process of refinement can be
+% visualized as first taking the dual, and to triangulate the dual by
+% incorporating the original points as well. 
+%
+% The input consists of:
+% F:          the faces
+% V:          the vertices
+% logicFaces: A logic for the faces requiring refinement
+% C:          color data on either the faces or the vertices
+% 
+% The ouput can consist of: 
+% FT:     Faces
+% VT:     Vertices
+% C_type: Color/label for triangle type, i.e. original (1), refined (2), or
+%         boundary (3) 
+% indIni: Indices for original points
+% C_new:  New color data for faces or vertices
+%
+% Change log: 
+% 2010/01/01 Added for GIBBON
+% 2019/06/12 Fixed bug when logic contains "sharp teeth"
+% 2019/06/12 Rewrote whole function in a different way using most recent
+% tools and capabilities. Code is now much more efficient, handles face or
+% vertex color data, fixes several bugs in old code. 
+% ------------------------------------------------------------------------
 
+%% Parse input
 switch nargin
     case 2
         F=varargin{1};
         V=varargin{2};
         logicFaces=true(size(F,1),1);
-        CF=[];
+        C=[];
     case 3
         F=varargin{1};
         V=varargin{2};
         logicFaces=varargin{3};
-        CF=[];
+        C=[];
     case 4
         F=varargin{1};
         V=varargin{2};
         logicFaces=varargin{3};
-        CF=varargin{4};
+        C=varargin{4};
 end
 
 if isempty(logicFaces)
     logicFaces=true(size(F,1),1);
 end
 
-if isempty(CF)
-    CF=ones(size(F,1),1);
-end
-
-[CV]=faceToVertexMeasure(F,V,CF);
-
-%% Remove isolated faces
-
-Fs=F(logicFaces,:);
-[IND_F,~,~]=tesIND(Fs,V,0);
-logicFree=(sum((IND_F>0),2))==1;
-logicFree_F=sum(logicFree(Fs),2)==1;
-logicFaces(logicFaces)=~logicFree_F;
-Fs=F(logicFaces,:);
-CFs=CF(logicFaces,:);
-
 %%
 
-[N]=patchNormal(Fs,V); %Get face normals
+% Get connectivity data
+conStruct=patchConnectivity(F(logicFaces,:),V,{'ef','ev'}); %Connectivity structure
+EF=conStruct.edge.face; %Edge-face connectivity
+E=conStruct.edge.vertex; %Edge-vertex connectivity
 
-[Fq,Vq,Cq,indIni]=triPolyDualRefine(Fs,V,0);
+% Check boundary regions
+logicBoundary=any(EF==0,2);
+indF=EF(logicBoundary,1);
 
-Cq=CV(Cq);
+% Create new coordinate array
+VF=patchCentre(F(logicFaces,:),V); %New face centre coordinates
+VT=[V;VF]; %The new vertex array
 
-Fqs=sort(Fq,2);
-logicInvalid=any(diff(Fqs,1,2)==0,2);
+% Compone new face matrix
 
-Fq=Fq(~logicInvalid,:);
+e=E(~logicBoundary,:); %Edge-vertex indices not part of boundary
+ef=EF(~logicBoundary,:); %Edge-face indices not part of boundary
 
-%%
+FT=[F(~logicFaces,:);... %The unaltered faces
+    e(:,1) ef(:,1)+size(V,1) ef(:,2)+size(V,1);... %New refined face 1 
+    e(:,2) ef(:,2)+size(V,1) ef(:,1)+size(V,1);... %New refined face 2
+    E(logicBoundary,:) indF+size(V,1);... %New boundary face
+    ];
 
-[Nq]=patchNormal(Fq,Vq);
+% Get color/label data for original (1), refined (2), or boundary (3)
+C_type=[ones(nnz(~logicFaces),1); 2*ones(2*nnz(~logicBoundary),1);3*ones(nnz(logicBoundary),1); ];
 
-ind1=Fq(:,1);
-ind1(ind1>size(Vq,1))=ind1(ind1>size(Vq,1))-size(Vq,1);
-logicFlip=dot(Nq,N(ind1,:),2)<0;
-Fd=Fq(~logicFlip,:);
-Cd=Cq(~logicFlip,:);
-Vd=Vq;
-
-[Eb]=patchBoundary(Fs,V);
-indFree=unique(Eb(:));
-logicFree_FV=false(size(V,1),1);
-logicFree_FV(indFree)=1;
-
-[Eb]=patchBoundary(Fd,Vd);
-indFree=unique(Eb(:));
-logicFree=false(size(Vd,1),1);
-logicFree(indFree)=1;
-
-logicFree_FV_Fd=false(size(Vd,1),1);
-logicFree_FV_Fd(indIni)=logicFree_FV;
-
-logic_Fd_FV_Fd=logicFree_FV_Fd(Fd);
-logic_Fd=logicFree(Fd);
-logic_Fd_invalid=logic_Fd_FV_Fd;
-logic_Fd_invalid(logic_Fd)=0;
-logic_Fd_invalid=any(logic_Fd_invalid,2)&sum(logic_Fd,2)==2;
-
-%%
-
-Cd=Cd(~logic_Fd_invalid,:);
-Fd=Fd(~logic_Fd_invalid,:);
-
-[E]=patchBoundary(Fd,Vd);
-
-logicMember=ismember(E,indIni);
-indA=unique(E(logicMember));
-indB=unique(E(~logicMember));
-
-[~,IND_V,~]=tesIND(Fd,Vd,0);
-
-logicNotMember=~ismember(IND_V,indA(:));
-IND_V(logicNotMember)=0;
-IND_V=IND_V(indB,:);
-
-logicTwo=sum(IND_V>0,2)==2;
-
-Fn=sort(IND_V(logicTwo,:),2);
-Fn=[indB(logicTwo) Fn(:,end-1:end)];
-
-indThree=indB(sum(IND_V>0,2)==3);
-
-if ~isempty(Fn)
-    [Nn,~,~]=patchNormal(Fn,Vd);
-    ind1=Fn(:,1);
-    ind1(ind1>size(Vd,1))=ind1(ind1>size(Vd,1))-size(Vd,1);
-    logicFlip=dot(Nn,N(ind1,:),2)<0;
-    Fn(logicFlip,:)=fliplr(Fn(logicFlip,:));
-end
-Cn=CFs(ind1,:);
-
-%%
-try
-    if ~isempty(indThree)
-        Fn3=zeros(numel(indThree),3);
-        for q=1:1:numel(indThree)
-            L=any(E==indThree(q),2);
-            f=unique(E(L,:));
-            Fn3(q,:)=f(:);
-        end
-        [Nn3,~,~]=patchNormal(Fn3,Vd);
-        ind1=Fn3(:,1);
-        ind1(ind1>size(Vd,1))=ind1(ind1>size(Vd,1))-size(Vd,1);
-        logicFlip=dot(Nn3,N(ind1,:),2)<0;
-        Fn3(logicFlip,:)=fliplr(Fn3(logicFlip,:));
-        Cn3=CFs(ind1,:);
-    else
-        Fn3=[];
-        Cn3=[];
+%Derive color data for refined set
+if ~isempty(C) && nargout>4
+    if size(C,1)==size(F,1) %Face color data
+        indFaces=find(logicFaces);
+        C_new=[C(~logicFaces,:); repmat((C(indFaces(ef(:,1)),:)+C(indFaces(ef(:,2)),:))/2,2,1); C(indFaces(indF),:); ];
+    elseif size(C,1)==size(V,1) %Vertex color data
+        CC=vertexToFaceMeasure(F(logicFaces,:),C);
+        C_new=[C;CC];
+    else 
+        error('Color data should be nxq in size whereby n is the number of faces or the number of vertices');
     end
-catch
-    error('Error. Input mesh may be too coarse for dual based subtriangulation');
-end
-
-%%
-
-if ~isempty(CF)
-    Ctf=[CF(~logicFaces,:); Cd; Cn; Cn3];
 else
-    Ctf=[];
+    C_new=[];
 end
-
-Ct=[ones(nnz(~logicFaces),1); 2*ones(size(Fd,1),1); 3*ones(size(Fn,1),1); 4*ones(size(Fn3,1),1)];
-Ft=[F(~logicFaces,:)+nnz(logicFaces); Fd; Fn; Fn3];
-Vt=Vd;
 
 %% Collect output
-
-varargout{1}=Ft;
-varargout{2}=Vt;
-varargout{3}=Ct;
-varargout{4}=indIni;
-varargout{5}=Ctf;
+varargout{1}=FT; %Faces
+varargout{2}=VT; %Vertices
+varargout{3}=C_type; %Color/label for triangle type
+varargout{4}=1:1:size(V,1); %Indices for original points
+varargout{5}=C_new; %New color data for faces or vertices
 
 %%
 % _*GIBBON footer text*_

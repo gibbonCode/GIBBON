@@ -45,7 +45,6 @@ numSeeds=120;
 %Option set
 [~,indStart]=min(V(:,1)); %Index of the start point
 optionStruct.toleranceLevel=0; %Tolerance for convergence
-optionStruct.numSeeds=numSeeds; %Number of seeds
 optionStruct.waitBarOn=1; %Turn on/off waitbar
 
 %Compute distances on mesh description
@@ -55,9 +54,9 @@ optionStruct.waitBarOn=1; %Turn on/off waitbar
 %%
 % Visualization
 
-cFigure; 
+cFigure;
 subplot(1,3,1); hold on;
-title('Seed indices','fontSize',fontSize);
+title('Distances on a triangulated surface model','fontSize',fontSize);
 hp(1)=gpatch(F,V,d,'none',1); hp(1).FaceColor='Interp';
 hp(2)=plotV(V(indSeeds,:),'k.','MarkerSize',markerSize);
 legend(hp,{'Mesh distances','Seed point(s)'},'Location','SouthOutSide');
@@ -66,7 +65,7 @@ camlight headlight;
 colormap(gca,cMapDist); colorbar;
 
 subplot(1,3,2); hold on;
-title('Distances on a triangulated surface model','fontSize',fontSize);
+title('Seed indices','fontSize',fontSize);
 hp(1)=gpatch(F,V,ind2,'none',1); 
 hp(2)=plotV(V(indSeeds,:),'k.','MarkerSize',markerSize);
 legend(hp,{'Mesh seed indices','Seed point(s)'},'Location','SouthOutSide');
@@ -201,9 +200,9 @@ optionStruct.waitBarOn=1; %Turn on/off waitbar
 %%
 % Visualization
 
-cFigure; 
+cFigure;
 subplot(1,3,1); hold on;
-title('Seed indices','fontSize',fontSize);
+title('Distances on a triangulated surface model','fontSize',fontSize);
 hp(1)=gpatch(F,V,d,'none',1); hp(1).FaceColor='Interp';
 hp(2)=plotV(V(indSeeds,:),'k.','MarkerSize',markerSize);
 legend(hp,{'Mesh distances','Seed point(s)'},'Location','SouthOutSide');
@@ -212,7 +211,7 @@ camlight headlight;
 colormap(gca,cMapDist); colorbar;
 
 subplot(1,3,2); hold on;
-title('Distances on a triangulated surface model','fontSize',fontSize);
+title('Seed indices','fontSize',fontSize);
 hp(1)=gpatch(F,V,ind2,'none',1); 
 hp(2)=plotV(V(indSeeds,:),'k.','MarkerSize',markerSize);
 legend(hp,{'Mesh seed indices','Seed point(s)'},'Location','SouthOutSide');
@@ -225,7 +224,7 @@ title('Resampled surface model','fontSize',fontSize);
 plotV(V(indSeeds,:),'k.','MarkerSize',50);
 hp(1)=gpatch(F,V,'kw','none',0.5);
 hp(2)=gpatch(Fn,Vn,'gw','k',1,2);
-legend(hp,{'Original mesh','Resampled mesh','Seed point(s)'},'Location','SouthOutSide');
+legend(hp,{'Original mesh','Resampled mesh'},'Location','SouthOutSide');
 
 axisGeom;
 camlight headlight;

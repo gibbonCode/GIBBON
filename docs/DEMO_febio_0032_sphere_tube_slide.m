@@ -236,9 +236,6 @@ hl(2)=gpatch(Fb_blob,V,'gw','none',0.25);
 hl(3)=plotV(V(bcPrescribeSet,:),'k.','MarkerSize',15);
 legend(hl,{'Tube','Blob','Prescribed nodes'}); clear hl;
 axisGeom(gca,fontSize);
-camlight headlight; 
-drawnow; 
-
 
 %% Defining the FEBio input structure
 % See also |febioStructTemplate| and |febioStruct2xml| and the FEBio user
