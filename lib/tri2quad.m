@@ -77,8 +77,7 @@ switch convertMethod
             else
                 Vm(:,q)=mean(X(Ft),2);
             end
-        end
-        
+        end        
     case 2        
         %new mid-face points
         TR=triangulation(Ft,Vt);

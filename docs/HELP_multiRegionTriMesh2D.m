@@ -64,6 +64,7 @@ plotV(V3,'b-','LineWidth',2);
 plotV(V4,'b-','LineWidth',2);
 plotV(V5,'b-','LineWidth',2);
 plotV(V6,'b-','LineWidth',2);
+view(2);
 axis tight; 
 
 %%

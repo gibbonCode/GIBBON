@@ -65,14 +65,14 @@ cFigure;
 subplot(1,2,1); hold on; 
 title('Initial','FontSize',fontSize);
 gpatch(F,V,C);
-colormap(gca,gjet(2)); icolorbar; 
+colormap(gca,gjet(2)); icolorbar;
 axisGeom(gca,fontSize);
 camlight headlight;
 
 subplot(1,2,2); hold on; 
 title('Refined','FontSize',fontSize);
 gpatch(Fq,Vq,Cq);
-colormap(gca,gjet(3)); icolorbar; 
+colormap(gca,gjet(3)); icolorbar;
 axisGeom(gca,fontSize);
 camlight headlight;
 
@@ -104,14 +104,14 @@ cFigure;
 subplot(1,2,1); hold on; 
 title('Initial','FontSize',fontSize);
 gpatch(F,V,C);
-colormap(gca,gjet(2)); icolorbar; 
+colormap(gca,gjet(2)); icolorbar;
 axisGeom(gca,fontSize);
 camlight headlight;
 
 subplot(1,2,2); hold on; 
 title('Refined','FontSize',fontSize);
 gpatch(Fq,Vq,Cq);
-colormap(gca,gjet(3)); icolorbar; 
+colormap(gca,gjet(3)); icolorbar;
 axisGeom(gca,fontSize);
 camlight headlight;
 
@@ -155,14 +155,14 @@ cFigure;
 subplot(1,2,1); hold on; 
 title('Initial','FontSize',fontSize);
 gpatch(F,V,C);
-colormap(gca,gjet(2)); icolorbar; 
+colormap(gca,gjet(2)); icolorbar;
 axisGeom(gca,fontSize);
 camlight headlight;
 
 subplot(1,2,2); hold on; 
 title('Refined','FontSize',fontSize);
 gpatch(Fq,Vq,Cq);
-colormap(gca,gjet(3)); icolorbar; 
+colormap(gca,gjet(3)); icolorbar;
 axisGeom(gca,fontSize);
 camlight headlight;
 
@@ -195,10 +195,65 @@ camlight headlight;
 subplot(1,2,2); hold on; 
 title('Refined','FontSize',fontSize);
 gpatch(Fq,Vq,Cq);
-colormap(gjet(size(Cq,1))); colorbar; 
+colormap(gjet(size(Cq,1))); icolorbar; 
 axisGeom(gca,fontSize);
 camlight headlight;
 
+drawnow; 
+
+%%
+
+ns=50;
+t=linspace(0,2*pi,ns);
+t=t(1:end-1);
+r=12;
+x=r*sin(t);
+y=r*cos(t);
+V1=[x(:) y(:)];
+
+ns=50;
+t=linspace(0,2*pi,ns);
+t=t(1:end-1);
+x=r/6*sin(t);
+y=r/6*cos(t);
+V2=[x(:) y(:)];
+
+regionCell={V1,V2};
+pointSpacing=1; %Desired point spacing
+resampleCurveOpt=1;
+[F,V]=regionTriMesh2D(regionCell,pointSpacing,resampleCurveOpt);
+V(:,3)=0;
+
+VE=patchCentre(F,V);
+R=sqrt(sum(VE.^2,2));
+L=R<r/2;
+L=triSurfLogicSharpFix(F,L,3);
+inputStruct.F=F; 
+inputStruct.V=V; 
+inputStruct.C=L; 
+inputStruct.indFaces=find(L); 
+[outputStruct]=subTriLocal(inputStruct);
+Fq=outputStruct.F; 
+Vq=outputStruct.V; 
+Cq=outputStruct.faceTypeLabel;
+
+%%
+% Plotting results
+
+cFigure;
+subplot(1,2,1); hold on; 
+title('Initial','FontSize',fontSize);
+gpatch(F,V,L);
+colormap(gca,gjet(2)); icolorbar;
+axisGeom(gca,fontSize);
+view(2)
+
+subplot(1,2,2); hold on; 
+title('Refined','FontSize',fontSize);
+gpatch(Fq,Vq,Cq);
+colormap(gca,gjet(size(Cq,1))); icolorbar; 
+axisGeom(gca,fontSize);
+view(2)
 drawnow; 
 
 %% 

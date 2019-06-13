@@ -63,7 +63,7 @@ end
 if plotOn==1  
     figure(hf1);
     gpatch(F,V,regionInd);
-    colormap(autumn(numel(regionSpec))); colorbar;
+    colormap(gjet(numel(regionSpec))); icolorbar;
     axisGeom(gca,fontSize);    
     drawnow;
 end

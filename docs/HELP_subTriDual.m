@@ -32,7 +32,7 @@ clear; close all; clc;
 
 %%
 % Plot settings
-fontSize=15;
+fontSize=25;
 cMap=gjet(4);
 faceAlpha=0.5;
 plotColor1=cMap(1,:);
@@ -145,7 +145,52 @@ camlight headlight;
 colormap gjet;
 drawnow;
 
-%% Example: Refining a local region of a mesh (e.g. region on a sphere)
+%% Example: Refining a local region of a mesh 
+
+%%
+% Building example geometry
+[F,V]=graphicsModels(9);
+
+%%
+% Refine surface using subTriDual
+D=sqrt(sum((V-[32 24 107]).^2,2));
+logicVertices=D<12; %Vertex logic
+logicFaces=any(logicVertices(F),2); %Convert to face logic
+logicFaces=triSurfLogicSharpFix(F,logicFaces,3);
+
+[Ft,Vt,C_type,indIni]=subTriDual(F,V,logicFaces);
+
+%Smoothen newly introduced nodes
+cPar.Method='HC'; %Smoothing method
+cPar.n=50; %Number of iterations
+cPar.RigidConstraints=indIni; %Constrained points
+[Vt]=tesSmooth(Ft,Vt,[],cPar);
+
+%%
+% Plotting input surface model
+cFigure;
+gtitle('Input surface (left), refined (right)',fontSize);
+subplot(1,2,1); hold on;
+
+gpatch(F,V,'w','k');
+gpatch(F(logicFaces,:),V,'gw','k');
+axisGeom(gca,fontSize);
+camlight headlight;
+view(0,0);zoom(2);
+axis off; 
+
+subplot(1,2,2); hold on;
+gpatch(Ft,Vt,'w','k');
+gpatch(Ft(C_type==2,:),Vt,'gw','k');
+gpatch(Ft(C_type==3,:),Vt,'bw','k');
+axisGeom(gca,fontSize);
+camlight headlight;
+colormap(gca,gjet); %icolorbar;
+view(0,0);zoom(2);
+axis off; 
+drawnow;
+
+%% Example: Refining a local region of a sphere mesh
 
 %%
 % Building example geometry
@@ -164,12 +209,16 @@ logicFaces=all(logicNodes(F),2);
 % Refine surface region using subTriDual
 [Ft,Vt,C_type,indIni]=subTriDual(F,V,logicFaces);
 
-%% Example Smoothening the mesh
+%% Example Smoothing the mesh
+% Since |subTriDual| outputs |indIni| which are the indices for the initial
+% nodes in the unrefined mesh, smoothing can be performed while holding on
+% to these nodes, i.e. only the newly introduces nodes will be adjusted
+% during smoothing. 
 
 %Smoothen newly introduced nodes
-cPar.Method='HC';
-cPar.n=50;
-cPar.RigidConstraints=indIni;
+cPar.Method='HC'; %Smoothing method
+cPar.n=50; %Number of iterations
+cPar.RigidConstraints=indIni; %Constrained points
 [Vt]=tesSmooth(Ft,Vt,[],cPar);
 
 %Smoothen boundary nodes on original mesh nodes
@@ -384,13 +433,13 @@ end
 cFigure;
 subplot(1,2,1); hold on;
 title('Input surface','FontSize',fontSize);
-gpatch(F,V,'gw');
-axisGeom(gca,fontSize); view(2); axis off;
+gpatch(F,V,'gw','k',1,2);
+axisGeom(gca,fontSize); view(2); axis off; zoom(1.3);
 
 subplot(1,2,2); hold on;
 title('Output surface','FontSize',fontSize);
-gpatch(Ft,Vt,'rw'); view(2);
-axisGeom(gca,fontSize); view(2); axis off;
+gpatch(Ft,Vt,'rw','k',1,2); 
+axisGeom(gca,fontSize); view(2); axis off; zoom(1.3);
 drawnow;
 
 %%

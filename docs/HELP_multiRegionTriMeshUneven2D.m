@@ -56,6 +56,44 @@ plotOn=1; %This turns on/off plotting
 % plotV(V2,'b-','LineWidth',2);
 % plotV(V3,'b-','LineWidth',2);
 
+%% MESHES WITH HOLES
+
+ns=150;
+t=linspace(0,2*pi,ns);
+t=t(1:end-1);
+r=12;
+x=r*sin(t);
+y=r*cos(t);
+V1=[x(:) y(:)];
+x=r/1.25*sin(t);
+y=r/1.25*cos(t);
+V2=[x(:) y(:)];
+x=r/2*sin(t);
+y=r/2*cos(t);
+V3=[x(:) y(:)];
+x=r/5*sin(t);
+y=r/5*cos(t);
+V4=[x(:) y(:)];
+
+
+%Defining 4 regions
+regionSpec{1}={V1,V2}; 
+regionSpec{2}={V2,V3}; 
+regionSpec{3}={V3,V4}; 
+BoundaryPointSpacings{1}={1,1}; %A region between V1 and V2 (V2 forms a hole inside V1)
+BoundaryPointSpacings{2}={1,0.2}; %A region bound by V2 containing a set of holes defined by V3 up to V6
+BoundaryPointSpacings{3}={0.2,0.2}; %A region bound by V2 containing a set of holes defined by V3 up to V6
+MeshPointSpacings=[1 0.5 0.2];
+
+plotOn=1; %This turns on/off plotting
+
+%Desired point spacing
+[F,V,regionInd]=multiRegionTriMeshUneven2D(regionSpec,BoundaryPointSpacings,MeshPointSpacings,plotOn);
+% [F,V,regionInd]=multiRegionTriMesh2D(regionSpec,pointSpacing,plotOn);
+% plotV(V1,'b-','LineWidth',2);
+% plotV(V2,'b-','LineWidth',2);
+% plotV(V3,'b-','LineWidth',2);
+
 %%
 %
 % <<gibbVerySmall.gif>>

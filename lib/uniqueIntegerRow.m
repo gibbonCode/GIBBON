@@ -1,9 +1,15 @@
-function [F_uni,IND_F,IND_F_2]=uniqueIntegerRow(F)
+function [varargout]=uniqueIntegerRow(F)
 
 Fs=sort(F,2); %Sort so faces with same nodes have the same rows
 [~,IND_F,IND_F_2]=unique(Fs,'rows');
 F_uni=F(IND_F,:);
  
+%%
+
+varargout{1}=F_uni;
+varargout{2}=IND_F;
+varargout{3}=IND_F_2;
+
 %% 
 % _*GIBBON footer text*_ 
 % 

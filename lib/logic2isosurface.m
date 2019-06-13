@@ -120,6 +120,13 @@ if capOpt==2
     end
 end
 
+%% Other improvements
+
+[F,V,C]=triSurfRemoveThreeConnect(F,V,C);
+[F,V]=mergeVertices(F,V);
+F=patchRemoveCollapsed(F);
+[F,V]=patchCleanUnused(F,V);
+
 %%
 varargout{1}=F;
 varargout{2}=V;

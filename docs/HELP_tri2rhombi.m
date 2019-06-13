@@ -46,7 +46,7 @@ markerSize=25;
 
 %%
 % Building example geometry
-[F,V]=stanford_bunny;
+[F,V]=graphicsModels(9);
 
 %%    
 % Refine surface region using tri2rhombi
@@ -58,10 +58,10 @@ markerSize=25;
 cFigure;
 subplot(1,2,1); hold on;
 title('Original','FontSize',fontSize);
-gpatch(F,V,'bw','k',1,edgeWidth);
+gpatch(F,V,'rw','k',1,edgeWidth);
 axisGeom(gca,fontSize);
 camlight headlight;
-ha=axis;
+view(0,0); zoom(2);
 axis off; 
 
 subplot(1,2,2); hold on;
@@ -69,8 +69,8 @@ title('Rhombi','FontSize',fontSize);
 gpatch(Ft,Vt,'gw','k',1,edgeWidth);
 axisGeom(gca,fontSize);
 camlight headlight;
+view(0,0); zoom(2);
 axis off;
-axis(ha);
 drawnow;
 
 %% Example: Converting triangles to rhombi on a non-closed surface
@@ -93,10 +93,9 @@ n=1; %Refinements
 cFigure;
 subplot(1,2,1); hold on;
 title('Original','FontSize',fontSize);
-gpatch(F,V,'bw','k',1,edgeWidth);
+gpatch(F,V,'rw','k',1,edgeWidth);
 axisGeom(gca,fontSize);
 camlight headlight;
-ha=axis;
 axis off; 
 
 subplot(1,2,2); hold on;
@@ -105,7 +104,6 @@ gpatch(Ft,Vt,'gw','k',1,edgeWidth);
 axisGeom(gca,fontSize);
 camlight headlight;
 axis off;
-axis(ha);
 drawnow;
 
 %%

@@ -38,6 +38,7 @@ triangleConvert=optionStruct.triangleConvert;
 fourConnectConvert=optionStruct.fourConnectConvert;
 
 %%
+indIni=(1:1:size(V_tri,1))';
 
 if fourConnectConvert
 
@@ -92,7 +93,10 @@ if fourConnectConvert
         F_tri=F_tri(~any(logicFour(F_tri),2),:);
         
         F_cell={F_tri,FQc};
-        [F_cell,V_tri]=patchCleanUnused(F_cell,V_tri);
+        [F_cell,V_tri,indFix]=patchCleanUnused(F_cell,V_tri);
+        indIni=indFix(indIni);
+        indIni=indIni(indIni>0);
+        
         F_tri=F_cell{1};
         FQc=F_cell{2};
     else
@@ -119,6 +123,7 @@ if ~isempty(F_tri)
     I=I(:);
     
     S=sparse(I,FS,1,size(EV,1),size(V_tri,1),numel(FS))>0;
+    
     [~,J]=find(S);
     S=double(S);
     S(S>0)=J;
@@ -172,14 +177,29 @@ if ~isempty(F_tri)
         F_quad=[F_quad;FQc];
     end
     V_quad=V_tri;
-    
+        
     if ~isempty(F_tri) && triangleConvert==1        
-        [F_quad_sub,V_quad_sub]=subQuad(F_quad,V_quad,1);
-        [F_quad2,V_quad2]=tri2quad(F_tri,V_tri);
+        [F_quad_sub,V_quad_sub,CVq]=subQuad(F_quad,V_quad,1);
+        indIni_subquad=find(CVq==0);
+        
+        [F_quad2,V_quad2,CVq]=tri2quad(F_tri,V_tri);
+        indIni_quad2=find(CVq==0);
+        
         [F_quad,V_quad]=joinElementSets({F_quad_sub,F_quad2},{V_quad_sub,V_quad2});
-        [F_quad,V_quad]=patchCleanUnused(F_quad,V_quad);
-        [F_quad,V_quad]=mergeVertices(F_quad,V_quad);
-        F_tri=[]; %Force empty (since now converted) to output is skipped
+        indIni_quad2=indIni_quad2+size(V_quad_sub,1); %Shift indices
+        
+        indIni=unique([indIni(:); indIni_subquad(:); indIni_quad2]);
+        indIni=indIni(indIni>0);
+        
+        [F_quad,V_quad,indFix]=patchCleanUnused(F_quad,V_quad);
+        indIni=indFix(indIni);
+        indIni=indIni(indIni>0);
+        
+        [F_quad,V_quad,~,indFix]=mergeVertices(F_quad,V_quad);
+        indIni=indFix(indIni);
+        indIni=indIni(indIni>0);
+        
+        F_tri=[]; %Force empty (since now converted) so output is skipped
     end
     
     %% Collect output
@@ -189,12 +209,12 @@ if ~isempty(F_tri)
         varargout{1}={F_quad, F_tri};
     end
     varargout{2}=V_quad;
-    
 else    
     %% Collect output    
     varargout{1}=FQc;
     varargout{2}=V_tri;
 end
+varargout{3}=indIni;
 
 %% 
 % _*GIBBON footer text*_ 

@@ -41,7 +41,7 @@ optionStruct.maxAngleDeviation=60*(pi/180);
 optionStruct.selectionMethod='best';
 optionStruct.triangleConvert=0;
 optionStruct.fourConnectConvert=0;
-[FQ,VQ]=tri2quadGroupSplit(F_tri,V_tri,optionStruct);
+[FQ,VQ,indIni]=tri2quadGroupSplit(F_tri,V_tri,optionStruct);
 
 %Create color data for visualization 
 if iscell(FQ)
@@ -52,35 +52,6 @@ if iscell(FQ)
 end
     
 %%
-% Visualize result
-
-cFigure;
-subplot(1,2,1); hold on;
-title('Input triangulation');
-gpatch(F_tri,V_tri,'rw','k',1);
-axisGeom; 
-camlight headlight;
-
-subplot(1,2,2); hold on;
-title('Mixed quad/tri output mesh');
-gpatch(FQ,VQ,CQ,'k');
-axisGeom; 
-camlight headlight;
-icolorbar;
-drawnow;
-
-%% Convert adjacent triangles by picking best candidates, converting remaining triangles by splitting
-
-%%
-% Create test data set
-[F_tri,V_tri]=stanford_bunny;
-
-optionStruct.maxAngleDeviation=60*(pi/180);
-optionStruct.selectionMethod='best';
-optionStruct.triangleConvert=1;
-optionStruct.fourConnectConvert=1;
-[FQ,VQ]=tri2quadGroupSplit(F_tri,V_tri,optionStruct);
-
 %%
 % Visualize results 
 
@@ -93,6 +64,48 @@ camlight headlight;
 
 subplot(1,2,2); hold on;
 gpatch(FQ,VQ,'bw','k');
+axisGeom; 
+camlight headlight;
+drawnow;
+
+%% Convert adjacent triangles by picking best candidates, converting remaining triangles by splitting
+
+%%
+% Create test data set
+[F_tri,V_tri]=stanford_bunny;
+
+optionStruct.maxAngleDeviation=60*(pi/180);
+optionStruct.selectionMethod='best';
+optionStruct.triangleConvert=1;
+optionStruct.fourConnectConvert=0;
+[FQ,VQ,indIni]=tri2quadGroupSplit(F_tri,V_tri,optionStruct);
+
+%% 
+% Since |subTriDual| outputs |indIni| which are the indices for the initial
+% nodes in the unrefined mesh, smoothing can be performed while holding on
+% to these nodes, i.e. only the newly introduces nodes will be adjusted
+% during smoothing. 
+
+%Smoothen newly introduced nodes
+cPar.Method='HC'; %Smoothing method
+cPar.n=50; %Number of iterations
+cPar.RigidConstraints=indIni; %Constrained points
+[VQ]=tesSmooth(FQ,VQ,[],cPar);
+
+%%
+% Visualize results 
+
+cFigure;
+gtitle('Creating quads with splitting based conversion');
+subplot(1,2,1); hold on;
+gpatch(F_tri,V_tri,'rw','k',1);
+plotV(VQ(indIni,:),'r.','MarkerSize',25);
+axisGeom; 
+camlight headlight;
+
+subplot(1,2,2); hold on;
+gpatch(FQ,VQ,'bw','k');
+plotV(VQ(indIni,:),'r.','MarkerSize',25);
 axisGeom; 
 camlight headlight;
 drawnow;
