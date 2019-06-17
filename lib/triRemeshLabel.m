@@ -17,7 +17,7 @@ modelTemp = createpde('thermal','steadystate');
 modelTemp.Geometry = geometryFromMesh(modelTemp,V',F');
 
 % Mesh
-modelMesh=generateMesh(modelTemp,'Hmax',pointSpacing,'GeometricOrder','linear');
+modelMesh=generateMesh(modelTemp,'Hmin',pointSpacing*0.9,'Hmax',pointSpacing*1.1,'GeometricOrder','linear');
 
 % Access PDE-toolbox created mesh
 V=modelTemp.Mesh.Nodes';

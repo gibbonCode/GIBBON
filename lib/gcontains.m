@@ -1,6 +1,6 @@
 function TF=gcontains(varargin)
 
-try
+try    
     TF=contains(varargin{:}); %Added in R2018a
 catch ME
     %Use alternative
@@ -43,12 +43,19 @@ catch ME
         end
     elseif isa(strPattern,'string')
         for q=1:1:numel(strPattern)
-            TF=TF | ~cellfun(@isempty,strfind(str,strPattern{q}));
+            TF=TF | ~cellfun(@isempty,strfind(str,strPattern(q)));
         end
+    elseif isa(strPattern,'char')        
+        TF=strfind(str,strPattern); 
+        if isa(TF,'cell')
+            TF=~cellfun(@isempty,TF);
+        else
+            TF=~isempty(TF);
+        end        
     else
-        TF=cellfun(@isempty,strfind(str,strPattern));
+        TF=~cellfun(@isempty,strfind(str,strPattern));
     end
-    warning(ME.message)
+    % warning(ME.message)
 end
 %% 
 % _*GIBBON footer text*_ 

@@ -70,7 +70,7 @@ end
 
 %% Get start index
 if ischar(startLoc) || isstring(startLoc)
-    startInd=find(contains(testFileList,startLoc));
+    startInd=find(gcontains(testFileList,startLoc));
     if isempty(startInd)
         error(['Start file "',startLoc,'" not found in list'])
     end

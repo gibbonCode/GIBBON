@@ -127,7 +127,7 @@ if dataOutput==1 %Element data found
         s=s(2:end-1); %Remove initial and final space        
         headerSet=strsplit(s,' '); %Header set in cell        
         %         numHeadersAll=numel(headerSet);
-        logicRemove=contains(headerSet,ignoreSet);
+        logicRemove=gcontains(headerSet,ignoreSet);
         headerSet=headerSet(~logicRemove);
         numHeadersKeep=numel(headerSet);
         s=T_sub(dataOutputStartLines(q_dataOutput)+3:dataOutputEndLines(q_dataOutput)); %Data text field        

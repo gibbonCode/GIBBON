@@ -108,7 +108,7 @@ if nnz(logicThree)>0
     F_keep=Fd(~logicFacesThree,:);
     C_keep=Cd(~logicFacesThree,:);
     
-    %Merge and create vertex/face/color sets
+    %Join and create vertex/face/color sets
     Ft=[F_keep;F_new];
     Ct=[C_keep;C_new];
     

@@ -51,10 +51,10 @@ lineCount=1;
 numLines=numel(T);
 while 1
     l=T{lineCount}; 
-    if contains(l,targets,'IgnoreCase',true)
+    if gcontains(l,targets,'IgnoreCase',true)
         targetIndex=0;
         for q=1:1:numel(targets)
-            if contains(l,targets{q},'IgnoreCase',true)
+            if gcontains(l,targets{q},'IgnoreCase',true)
                 targetIndex=q;
             end
         end                
@@ -96,7 +96,7 @@ end
 % while 1
 %     l=T{lineCount};
 %     target=targets{i_target};
-%     if contains(upper(l),target)
+%     if gcontains(upper(l),target)
 %         lineIndexTarget(i_target)=lineCount;
 %         i_target=i_target+1;
 %         disp(['---> Found target:',target,' on line ',num2str(lineCount)]);

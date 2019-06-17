@@ -48,7 +48,7 @@ for q=1:1:numel(indImgLine)
        imgLineCheck_end=regexp(txtLineNow(indStart:end),'>');
        indEnd=imgLineCheck_end(1);
        imgPart=txtLineNow(indStart:indStart+indEnd);       
-       if contains(imgPart,docName)           
+       if gcontains(imgPart,docName)           
            imgPartNew=[imgPart(1:4),strAdd,imgPart(5:end)];     
            txtLineNow=[txtLineNow(1:indStart-1),imgPartNew,txtLineNow(indStart+indEnd+1:end)];
            indOffset=indOffset+numel(strAdd);
@@ -58,6 +58,4 @@ for q=1:1:numel(indImgLine)
       
 end
 cell2txtfile(htmlName,T,0,0);
-
-% width="100%" height="auto"
 

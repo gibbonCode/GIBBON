@@ -43,8 +43,6 @@ delete(ht);
 
 set(hf,'ResizeFcn',{@resizeAll,{hf}});
 
-% [left bottom width height]
-
 hf.UserData.W=W;
 hf.UserData.gibbonPath=gibbonPath;
 

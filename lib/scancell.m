@@ -6,7 +6,7 @@ IND_found=cell(numel(targets),1);
 if isempty(found_count)
     while 1
         for i=1:1:numel(targets)
-            if ~isempty(strfind(T{line_count},targets{i}));
+            if ~isempty(strfind(T{line_count},targets{i}))
                 IND_found{i}=[IND_found{i} line_count];
             end
         end
@@ -19,7 +19,7 @@ else
     FOUND_count=zeros(size(found_count));
     while 1
         for i=1:1:numel(targets)
-            if ~isempty(strfind(T{line_count},targets{i}));
+            if ~isempty(strfind(T{line_count},targets{i}))
                 IND_found{i}=[IND_found{i} line_count];
                 FOUND_count(i)=FOUND_count(i)+1;
             end

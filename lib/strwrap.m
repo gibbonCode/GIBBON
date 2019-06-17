@@ -31,7 +31,12 @@ if isempty(pattern)
 end
 
 %%
-N = count(str,pattern);
+try %Use count as introduced in R2016b
+    N = count(str,pattern); 
+catch %Use old approach
+    N = numel(strfind(str,pattern));
+end
+
 rangeSteps=n:n:N;
 for q=1:1:numel(rangeSteps)
     str=regexprep(str,pattern,'\n',rangeSteps(q)-(q-1));
