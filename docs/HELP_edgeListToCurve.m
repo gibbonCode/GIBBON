@@ -1,13 +1,71 @@
 %% edgeListToCurve
-% Below is a basic demonstration of the features of the |edgeListToCurve| function.
+% Below is a demonstration of the features of the |edgeListToCurve| function
 
-%% 
-
+%%
 clear; close all; clc;
 
-%% CREATING A REGION MESH
+%% Syntax
+% |[indList]=edgeListToCurve(E);|
 
-% Creating boundary curves 
+%% Description 
+% This function converts the nx2 edges array |E|, which should define a
+% single curve, to an ordered list of mx1 indices |indList| for that curve.
+% Note that iff the edges define a closed curve the first and last indices
+% in the ordered list are the same and therefore repeated. 
+
+%% Examples 
+% 
+
+%%
+% Plot settings
+markerSize=40;
+lineWidth=4;
+fontSize=25;
+
+%% Getting indices for a single boundary curve
+
+%%
+% Creating example geometry
+t=linspace(0,2*pi,50); t=t(1:end-1); %Angles
+V1=[cos(t(:)) sin(t(:))];
+
+%Desired point spacing
+pointSpacing=0.5; 
+
+[F,V]=regionTriMesh2D({V1},pointSpacing,1,0);
+
+%%
+% Get boundary edges
+Eb=patchBoundary(F,V);
+
+%%
+% Use |edgeListToCurve| to get curve indices
+indList=edgeListToCurve(Eb);
+
+%%
+% Visualize example mesh and boundary edges/curves
+
+cFigure; 
+subplot(1,2,1); hold on; 
+title('Boundary edges','FontSize',fontSize)
+hp1=gpatch(F,V,'kw','k',1,1);
+hp2=gpatch(Eb,V,'none',(1:1:size(Eb,1))',1,lineWidth);
+legend([hp1 hp2],{'Mesh','Boundary edges'});
+axisGeom(gca,fontSize); view(2);
+
+subplot(1,2,2); hold on; 
+title('Boundary curve','FontSize',fontSize)
+hp1=gpatch(F,V,'kw','k',1,1);
+hp2=plotV(V(indList,:),'r.-','MarkerSize',markerSize,'LineWidth',lineWidth);
+legend([hp1 hp2],{'Mesh','Ordered boundary curve'});
+axisGeom(gca,fontSize); view(2);
+
+drawnow;
+
+%% Getting indices for a multiple boundary curves
+
+%%
+% Creating example geometry with multiple boundary sets
 
 %Boundary 1
 ns=150;
@@ -36,36 +94,35 @@ pointSpacing=0.5;
 [F,V]=regionTriMesh2D(regionCell,pointSpacing,1,0);
 
 %%
-cFigure; hold on; 
-gpatch(F,V,'g');
-
-axisGeom; view(2);
-drawnow;
+% Get boundary edges
+Eb=patchBoundary(F,V);
 
 %%
-E=patchBoundary(F,V);
-% E=E(all(ismember(E,find(V(:,1)<4.15)),2),:);
+% Use grouping to "seperate" boundary sets
+optionStruct.outputType='label';
+G=tesgroup(Eb,optionStruct);
 
+%%
 
-% [indList]=edgeListToCurve(E);
-[G,G_iter]=tesgroup(E);
+cFigure; hold on;
+gpatch(F,V,'kw','k',1,1);
+axisGeom(gca,fontSize); view(2);
 
-for q=1:1:size(G,2)
+plotColors=gjet(max(G(:)));
+for q=1:1:max(G(:))
         
-    E_now=E(G(:,q),:);
+    E_now=Eb(G==q,:);
 
     plotV(V(E_now,:),'b.','markersize',25);
 
-
     [indListNow]=edgeListToCurve(E_now);
     
-    plotV(V(indListNow,:),'b.-','markersize',25,'lineWidt',5);
-    for w=1:1:numel(indListNow)
-        plotV(V(indListNow(w),:),'r.','markersize',25);
-        drawnow;
-    end
+    hp=plotV(V(indListNow,:),'b.-','MarkerSize',markerSize,'LineWidth',lineWidth);
+    hp.Color=plotColors(q,:);
     
 end
+
+drawnow;
 
 %% 
 %

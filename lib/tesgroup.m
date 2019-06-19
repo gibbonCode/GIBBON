@@ -37,7 +37,7 @@ end
 
 %Check optionStruct against default
 defaultOptionStruct.indExclude=[];
-defaultOptionStruct.outputType='array';
+defaultOptionStruct.outputType='array'; %'label'
 [optionStruct]=structComplete(optionStruct,defaultOptionStruct,1); %Complement provided with default if missing or empty
 
 %Get variables from structure

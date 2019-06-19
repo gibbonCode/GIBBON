@@ -6,7 +6,7 @@
    <!--
 This HTML was auto-generated from MATLAB code.
 To make changes, update the MATLAB code and republish this document.
-      --><title>edgeListToCurve</title><meta name="generator" content="MATLAB 9.6"><link rel="schema.DC" href="http://purl.org/dc/elements/1.1/"><meta name="DC.date" content="2019-06-03"><meta name="DC.source" content="HELP_edgeListToCurve.m"><style type="text/css">
+      --><title>edgeListToCurve</title><meta name="generator" content="MATLAB 9.6"><link rel="schema.DC" href="http://purl.org/dc/elements/1.1/"><meta name="DC.date" content="2019-06-19"><meta name="DC.source" content="HELP_edgeListToCurve.m"><style type="text/css">
 html,body,div,span,applet,object,iframe,h1,h2,h3,h4,h5,h6,p,blockquote,pre,a,abbr,acronym,address,big,cite,code,del,dfn,em,font,img,ins,kbd,q,s,samp,small,strike,strong,sub,sup,tt,var,b,u,i,center,dl,dt,dd,ol,ul,li,fieldset,form,label,legend,table,caption,tbody,tfoot,thead,tr,th,td{margin:0;padding:0;border:0;outline:0;font-size:100%;vertical-align:baseline;background:transparent}body{line-height:1}ol,ul{list-style:none}blockquote,q{quotes:none}blockquote:before,blockquote:after,q:before,q:after{content:'';content:none}:focus{outine:0}ins{text-decoration:none}del{text-decoration:line-through}table{border-collapse:collapse;border-spacing:0}
 
 html { min-height:100%; margin-bottom:1px; }
@@ -66,10 +66,36 @@ table td { padding:7px 5px; text-align:left; vertical-align:top; border:1px soli
 
 
 
-  </style></head><body><div class="content"><h1>edgeListToCurve</h1><!--introduction--><p>Below is a basic demonstration of the features of the <tt>edgeListToCurve</tt> function.</p><!--/introduction--><h2>Contents</h2><div><ul><li><a href="#2">CREATING A REGION MESH</a></li></ul></div><pre class="codeinput">clear; close <span class="string">all</span>; clc;
-</pre><h2 id="2">CREATING A REGION MESH</h2><pre class="codeinput"><span class="comment">% Creating boundary curves</span>
+  </style></head><body><div class="content"><h1>edgeListToCurve</h1><!--introduction--><p>Below is a demonstration of the features of the <tt>edgeListToCurve</tt> function</p><!--/introduction--><h2>Contents</h2><div><ul><li><a href="#2">Syntax</a></li><li><a href="#3">Description</a></li><li><a href="#4">Examples</a></li><li><a href="#6">Getting indices for a single boundary curve</a></li><li><a href="#11">Getting indices for a multiple boundary curves</a></li></ul></div><pre class="codeinput">clear; close <span class="string">all</span>; clc;
+</pre><h2 id="2">Syntax</h2><p><tt>[indList]=edgeListToCurve(E);</tt></p><h2 id="3">Description</h2><p>This function converts the nx2 edges array <tt>E</tt>, which should define a single curve, to an ordered list of mx1 indices <tt>indList</tt> for that curve. Note that iff the edges define a closed curve the first and last indices in the ordered list are the same and therefore repeated.</p><h2 id="4">Examples</h2><p>Plot settings</p><pre class="codeinput">markerSize=40;
+lineWidth=4;
+fontSize=25;
+</pre><h2 id="6">Getting indices for a single boundary curve</h2><p>Creating example geometry</p><pre class="codeinput">t=linspace(0,2*pi,50); t=t(1:end-1); <span class="comment">%Angles</span>
+V1=[cos(t(:)) sin(t(:))];
 
-<span class="comment">%Boundary 1</span>
+<span class="comment">%Desired point spacing</span>
+pointSpacing=0.5;
+
+[F,V]=regionTriMesh2D({V1},pointSpacing,1,0);
+</pre><p>Get boundary edges</p><pre class="codeinput">Eb=patchBoundary(F,V);
+</pre><p>Use <tt>edgeListToCurve</tt> to get curve indices</p><pre class="codeinput">indList=edgeListToCurve(Eb);
+</pre><p>Visualize example mesh and boundary edges/curves</p><pre class="codeinput">cFigure;
+subplot(1,2,1); hold <span class="string">on</span>;
+title(<span class="string">'Boundary edges'</span>,<span class="string">'FontSize'</span>,fontSize)
+hp1=gpatch(F,V,<span class="string">'kw'</span>,<span class="string">'k'</span>,1,1);
+hp2=gpatch(Eb,V,<span class="string">'none'</span>,(1:1:size(Eb,1))',1,lineWidth);
+legend([hp1 hp2],{<span class="string">'Mesh'</span>,<span class="string">'Boundary edges'</span>});
+axisGeom(gca,fontSize); view(2);
+
+subplot(1,2,2); hold <span class="string">on</span>;
+title(<span class="string">'Boundary curve'</span>,<span class="string">'FontSize'</span>,fontSize)
+hp1=gpatch(F,V,<span class="string">'kw'</span>,<span class="string">'k'</span>,1,1);
+hp2=plotV(V(indList,:),<span class="string">'r.-'</span>,<span class="string">'MarkerSize'</span>,markerSize,<span class="string">'LineWidth'</span>,lineWidth);
+legend([hp1 hp2],{<span class="string">'Mesh'</span>,<span class="string">'Ordered boundary curve'</span>});
+axisGeom(gca,fontSize); view(2);
+
+drawnow;
+</pre><img width="100%" height="auto" vspace="5" hspace="5" src="HELP_edgeListToCurve_01.jpg" alt=""> <h2 id="11">Getting indices for a multiple boundary curves</h2><p>Creating example geometry with multiple boundary sets</p><pre class="codeinput"><span class="comment">%Boundary 1</span>
 ns=150;
 t=linspace(0,2*pi,ns);
 t=t(1:end-1);
@@ -94,46 +120,98 @@ plotOn=1; <span class="comment">%This turns on/off plotting</span>
 pointSpacing=0.5;
 
 [F,V]=regionTriMesh2D(regionCell,pointSpacing,1,0);
+</pre><p>Get boundary edges</p><pre class="codeinput">Eb=patchBoundary(F,V);
+</pre><p>Use grouping to "seperate" boundary sets</p><pre class="codeinput">optionStruct.outputType=<span class="string">'label'</span>;
+G=tesgroup(Eb,optionStruct);
 </pre><pre class="codeinput">cFigure; hold <span class="string">on</span>;
-gpatch(F,V,<span class="string">'g'</span>);
+gpatch(F,V,<span class="string">'kw'</span>,<span class="string">'k'</span>,1,1);
+axisGeom(gca,fontSize); view(2);
 
-axisGeom; view(2);
-drawnow;
-</pre><img width="100%" height="auto" vspace="5" hspace="5" src="HELP_edgeListToCurve_01.jpg" alt=""> <pre class="codeinput">E=patchBoundary(F,V);
-<span class="comment">% E=E(all(ismember(E,find(V(:,1)&lt;4.15)),2),:);</span>
+plotColors=gjet(max(G(:)));
+<span class="keyword">for</span> q=1:1:max(G(:))
 
-
-<span class="comment">% [indList]=edgeListToCurve(E);</span>
-[G,G_iter]=tesgroup(E);
-
-<span class="keyword">for</span> q=1:1:size(G,2)
-
-    E_now=E(G(:,q),:);
+    E_now=Eb(G==q,:);
 
     plotV(V(E_now,:),<span class="string">'b.'</span>,<span class="string">'markersize'</span>,25);
 
-
     [indListNow]=edgeListToCurve(E_now);
 
-    plotV(V(indListNow,:),<span class="string">'b.-'</span>,<span class="string">'markersize'</span>,25,<span class="string">'lineWidt'</span>,5);
-    <span class="keyword">for</span> w=1:1:numel(indListNow)
-        plotV(V(indListNow(w),:),<span class="string">'r.'</span>,<span class="string">'markersize'</span>,25);
-        drawnow;
-    <span class="keyword">end</span>
+    hp=plotV(V(indListNow,:),<span class="string">'b.-'</span>,<span class="string">'MarkerSize'</span>,markerSize,<span class="string">'LineWidth'</span>,lineWidth);
+    hp.Color=plotColors(q,:);
 
 <span class="keyword">end</span>
+
+drawnow;
 </pre><img width="100%" height="auto" vspace="5" hspace="5" src="HELP_edgeListToCurve_02.jpg" alt=""> <p><img vspace="5" hspace="5" src="gibbVerySmall.gif" alt=""> </p><p><i><b>GIBBON</b></i> <a href="www.gibboncode.org">www.gibboncode.org</a></p><p><i>Kevin Mattheus Moerman</i>, <a href="gibbon.toolbox@gmail.com">gibbon.toolbox@gmail.com</a></p><p><i><b>GIBBON footer text</b></i></p><p>License: <a href="https://github.com/gibbonCode/GIBBON/blob/master/LICENSE">https://github.com/gibbonCode/GIBBON/blob/master/LICENSE</a></p><p>GIBBON: The Geometry and Image-based Bioengineering add-On. A toolbox for image segmentation, image-based modeling, meshing, and finite element analysis.</p><p>Copyright (C) 2019  Kevin Mattheus Moerman</p><p>This program is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.</p><p>This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for more details.</p><p>You should have received a copy of the GNU General Public License along with this program.  If not, see <a href="http://www.gnu.org/licenses/">http://www.gnu.org/licenses/</a>.</p><p class="footer"><br><a href="https://www.mathworks.com/products/matlab/">Published with MATLAB&reg; R2019a</a><br></p></div><!--
 ##### SOURCE BEGIN #####
 %% edgeListToCurve
-% Below is a basic demonstration of the features of the |edgeListToCurve| function.
+% Below is a demonstration of the features of the |edgeListToCurve| function
 
-%% 
-
+%%
 clear; close all; clc;
 
-%% CREATING A REGION MESH
+%% Syntax
+% |[indList]=edgeListToCurve(E);|
 
-% Creating boundary curves 
+%% Description 
+% This function converts the nx2 edges array |E|, which should define a
+% single curve, to an ordered list of mx1 indices |indList| for that curve.
+% Note that iff the edges define a closed curve the first and last indices
+% in the ordered list are the same and therefore repeated. 
+
+%% Examples 
+% 
+
+%%
+% Plot settings
+markerSize=40;
+lineWidth=4;
+fontSize=25;
+
+%% Getting indices for a single boundary curve
+
+%%
+% Creating example geometry
+t=linspace(0,2*pi,50); t=t(1:end-1); %Angles
+V1=[cos(t(:)) sin(t(:))];
+
+%Desired point spacing
+pointSpacing=0.5; 
+
+[F,V]=regionTriMesh2D({V1},pointSpacing,1,0);
+
+%%
+% Get boundary edges
+Eb=patchBoundary(F,V);
+
+%%
+% Use |edgeListToCurve| to get curve indices
+indList=edgeListToCurve(Eb);
+
+%%
+% Visualize example mesh and boundary edges/curves
+
+cFigure; 
+subplot(1,2,1); hold on; 
+title('Boundary edges','FontSize',fontSize)
+hp1=gpatch(F,V,'kw','k',1,1);
+hp2=gpatch(Eb,V,'none',(1:1:size(Eb,1))',1,lineWidth);
+legend([hp1 hp2],{'Mesh','Boundary edges'});
+axisGeom(gca,fontSize); view(2);
+
+subplot(1,2,2); hold on; 
+title('Boundary curve','FontSize',fontSize)
+hp1=gpatch(F,V,'kw','k',1,1);
+hp2=plotV(V(indList,:),'r.-','MarkerSize',markerSize,'LineWidth',lineWidth);
+legend([hp1 hp2],{'Mesh','Ordered boundary curve'});
+axisGeom(gca,fontSize); view(2);
+
+drawnow;
+
+%% Getting indices for a multiple boundary curves
+
+%%
+% Creating example geometry with multiple boundary sets
 
 %Boundary 1
 ns=150;
@@ -162,36 +240,35 @@ pointSpacing=0.5;
 [F,V]=regionTriMesh2D(regionCell,pointSpacing,1,0);
 
 %%
-cFigure; hold on; 
-gpatch(F,V,'g');
-
-axisGeom; view(2);
-drawnow;
+% Get boundary edges
+Eb=patchBoundary(F,V);
 
 %%
-E=patchBoundary(F,V);
-% E=E(all(ismember(E,find(V(:,1)<4.15)),2),:);
+% Use grouping to "seperate" boundary sets
+optionStruct.outputType='label';
+G=tesgroup(Eb,optionStruct);
 
+%%
 
-% [indList]=edgeListToCurve(E);
-[G,G_iter]=tesgroup(E);
+cFigure; hold on;
+gpatch(F,V,'kw','k',1,1);
+axisGeom(gca,fontSize); view(2);
 
-for q=1:1:size(G,2)
+plotColors=gjet(max(G(:)));
+for q=1:1:max(G(:))
         
-    E_now=E(G(:,q),:);
+    E_now=Eb(G==q,:);
 
     plotV(V(E_now,:),'b.','markersize',25);
 
-
     [indListNow]=edgeListToCurve(E_now);
     
-    plotV(V(indListNow,:),'b.-','markersize',25,'lineWidt',5);
-    for w=1:1:numel(indListNow)
-        plotV(V(indListNow(w),:),'r.','markersize',25);
-        drawnow;
-    end
+    hp=plotV(V(indListNow,:),'b.-','MarkerSize',markerSize,'LineWidth',lineWidth);
+    hp.Color=plotColors(q,:);
     
 end
+
+drawnow;
 
 %% 
 %
