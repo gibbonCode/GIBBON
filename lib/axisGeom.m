@@ -1,6 +1,6 @@
 function axisGeom(varargin)
 
-% function axisGeom(varargin)
+% function axisGeom(h,fontSize)
 %-------------------------------------------------------------------------
 % This function sets axis properties commonly used for viewing geometry in
 % 3D, e.g. axis equal; axis vis3d; axis tight; The optional inputs include
