@@ -1,9 +1,11 @@
 function [varargout]=pointSetPrincipalDir(X)
-% function [varargout]=pointSetPrincipalDir(X)
+
+% function [V,S,U]=pointSetPrincipalDir(X)
 % ------------------------------------------------------------------------
 %
 %
 % ------------------------------------------------------------------------
+
 %%
 
 %Cope with 2D input
@@ -19,18 +21,9 @@ X=X-MU(ones(size(X,1),1),:); %Centre points around mean
 [U,S,V]=svd(X,0); 
 
 %% Collect output
-switch nargout
-    case 1
-        varargout{1}=V; 
-    case 2
-        varargout{1}=V;
-        varargout{2}=S; 
-    case 3
-        varargout{1}=V;
-        varargout{2}=S;
-        varargout{3}=U; 
-end
-
+varargout{1}=V;
+varargout{2}=S;
+varargout{3}=U;
  
 %% 
 % _*GIBBON footer text*_ 

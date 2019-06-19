@@ -1,15 +1,22 @@
-%% HELP_pointSetPrincipalDir
+%% pointSetPrincipalDir
 % Below is a demonstration of the features of the |pointSetPrincipalDir| function
 
 %%
 clear; close all; clc;
 
+%% Syntax
+% |[V,S,U]=pointSetPrincipalDir(X)|
+
+%% Description
+
+%% Examples
+
 %%
 % Plot settings
+fontSize=15;
+markerSize=25;
 
-fontSize=11;
-
-%% Using |pointSetPrincipalDir| to determine main directions of a polyhedron
+%% Using |pointSetPrincipalDir| to determine main directions of a point cloud
 
 %%
 % Simulating an ellipsoid with known directions
@@ -18,12 +25,12 @@ fontSize=11;
 ellipStretchTrue=[pi 2 1]
 
 % Create ellipsoid patch data
-[F,V,~]=geoSphere(2,1);
+[F,V,~]=geoSphere(3,1);
 
 V=V.*ellipStretchTrue(ones(size(V,1),1),:);
 
 %Create Euler angles to set directions
-E=[0.25*pi 0.25*pi 0.25*pi]; 
+E=[-0.25*pi 0.25*pi 0.25*pi]; 
 [R_true,~]=euler2DCM(E); %The true directions for X, Y and Z axis
 V=(R_true*V')'; %Rotate polyhedron
 
@@ -40,32 +47,20 @@ R_true
 %% 
 % Visualizing results
 
-cFigure;
-title('The polyhedron with true (transparant) and determined (solid) axis directions','FontSize',fontSize);
-hold on;
-
-gpatch(F,V,0.75*ones(1,3),'k',1);
-quiverTriad(mean(V,1),R_fit,7,[],1);
-quiverTriad(mean(V,1),R_true,10,[],0.2);
-
+cFigure; hold on;
+gtitle('The polyhedron with true (transparant) and determined (solid) axis directions',fontSize);
+gpatch(F,V,0.75*ones(1,3),'none',0.5);
+plotV(V,'k.','MarkerSize',markerSize);
+hl1=quiverTriad(mean(V,1),R_true,10,[],0.2);
+hl2=quiverTriad(mean(V,1),R_fit,7,[],1);
+legend([hl1 hl2],{'True directions','Fitted directions'});
 camlight('headlight');
 axisGeom(gca,fontSize); 
 drawnow;
 
-%%
-% What is clear from the above is that a different system is obtained. This
-% is due to the symmetry properties of the ellipsoid. However all vectors
-% are colinear with the true vector directions. The output direction matrix
-% is ordered in size (as per the singular value decomposition). The vectors
-% turned out colinear with R_true due to the fact that the ellipsoid
-% directions were biased in a similar sense. However if the order is
-% altered the first, second and third axes no longer allign with what was
-% viewed here as the true directions. However the singular values can also
-% be requested as an output allowing the user to reorder the output
-% direction matrix if desired. 
+%% Output of the singular value decomposition data data
 
-[R_fit,S]=pointSetPrincipalDir(V);
-S
+[R_fit,S,U]=pointSetPrincipalDir(V)
 
 %% 
 %

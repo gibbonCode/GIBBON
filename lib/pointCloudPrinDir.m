@@ -8,7 +8,7 @@ function [Q]=pointCloudPrinDir(V)
 % ------------------------------------------------------------------------
 
 [Q]=pointSetPrincipalDir(V);
- 
+
 %% 
 % _*GIBBON footer text*_ 
 % 

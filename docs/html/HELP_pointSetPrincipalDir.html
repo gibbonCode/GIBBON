@@ -6,7 +6,7 @@
    <!--
 This HTML was auto-generated from MATLAB code.
 To make changes, update the MATLAB code and republish this document.
-      --><title>HELP_pointSetPrincipalDir</title><meta name="generator" content="MATLAB 9.6"><link rel="schema.DC" href="http://purl.org/dc/elements/1.1/"><meta name="DC.date" content="2019-06-03"><meta name="DC.source" content="HELP_pointSetPrincipalDir.m"><style type="text/css">
+      --><title>pointSetPrincipalDir</title><meta name="generator" content="MATLAB 9.6"><link rel="schema.DC" href="http://purl.org/dc/elements/1.1/"><meta name="DC.date" content="2019-06-18"><meta name="DC.source" content="HELP_pointSetPrincipalDir.m"><style type="text/css">
 html,body,div,span,applet,object,iframe,h1,h2,h3,h4,h5,h6,p,blockquote,pre,a,abbr,acronym,address,big,cite,code,del,dfn,em,font,img,ins,kbd,q,s,samp,small,strike,strong,sub,sup,tt,var,b,u,i,center,dl,dt,dd,ol,ul,li,fieldset,form,label,legend,table,caption,tbody,tfoot,thead,tr,th,td{margin:0;padding:0;border:0;outline:0;font-size:100%;vertical-align:baseline;background:transparent}body{line-height:1}ol,ul{list-style:none}blockquote,q{quotes:none}blockquote:before,blockquote:after,q:before,q:after{content:'';content:none}:focus{outine:0}ins{text-decoration:none}del{text-decoration:line-through}table{border-collapse:collapse;border-spacing:0}
 
 html { min-height:100%; margin-bottom:1px; }
@@ -66,18 +66,19 @@ table td { padding:7px 5px; text-align:left; vertical-align:top; border:1px soli
 
 
 
-  </style></head><body><div class="content"><h1>HELP_pointSetPrincipalDir</h1><!--introduction--><p>Below is a demonstration of the features of the <tt>pointSetPrincipalDir</tt> function</p><!--/introduction--><h2>Contents</h2><div><ul><li><a href="#3">Using <tt>pointSetPrincipalDir</tt> to determine main directions of a polyhedron</a></li></ul></div><pre class="codeinput">clear; close <span class="string">all</span>; clc;
-</pre><p>Plot settings</p><pre class="codeinput">fontSize=11;
-</pre><h2 id="3">Using <tt>pointSetPrincipalDir</tt> to determine main directions of a polyhedron</h2><p>Simulating an ellipsoid with known directions</p><pre class="codeinput"><span class="comment">% Ellipsoid axis stretch factors</span>
+  </style></head><body><div class="content"><h1>pointSetPrincipalDir</h1><!--introduction--><p>Below is a demonstration of the features of the <tt>pointSetPrincipalDir</tt> function</p><!--/introduction--><h2>Contents</h2><div><ul><li><a href="#2">Syntax</a></li><li><a href="#3">Description</a></li><li><a href="#4">Examples</a></li><li><a href="#6">Using <tt>pointSetPrincipalDir</tt> to determine main directions of a point cloud</a></li><li><a href="#11">Output of the singular value decomposition data data</a></li></ul></div><pre class="codeinput">clear; close <span class="string">all</span>; clc;
+</pre><h2 id="2">Syntax</h2><p><tt>[V,S,U]=pointSetPrincipalDir(X)</tt></p><h2 id="3">Description</h2><h2 id="4">Examples</h2><p>Plot settings</p><pre class="codeinput">fontSize=15;
+markerSize=25;
+</pre><h2 id="6">Using <tt>pointSetPrincipalDir</tt> to determine main directions of a point cloud</h2><p>Simulating an ellipsoid with known directions</p><pre class="codeinput"><span class="comment">% Ellipsoid axis stretch factors</span>
 ellipStretchTrue=[pi 2 1]
 
 <span class="comment">% Create ellipsoid patch data</span>
-[F,V,~]=geoSphere(2,1);
+[F,V,~]=geoSphere(3,1);
 
 V=V.*ellipStretchTrue(ones(size(V,1),1),:);
 
 <span class="comment">%Create Euler angles to set directions</span>
-E=[0.25*pi 0.25*pi 0.25*pi];
+E=[-0.25*pi 0.25*pi 0.25*pi];
 [R_true,~]=euler2DCM(E); <span class="comment">%The true directions for X, Y and Z axis</span>
 V=(R_true*V')'; <span class="comment">%Rotate polyhedron</span>
 </pre><pre class="codeoutput">
@@ -90,51 +91,709 @@ ellipStretchTrue =
 R_true =
 
     0.5000   -0.5000    0.7071
-    0.8536    0.1464   -0.5000
     0.1464    0.8536    0.5000
+   -0.8536   -0.1464    0.5000
 
 </pre><p>Determine principal directions of the point set (in this case an ellipsoidal polyhedron).</p><pre class="codeinput">[R_fit]=pointSetPrincipalDir(V)
 </pre><pre class="codeoutput">
 R_fit =
 
     0.5000   -0.5000    0.7071
-    0.8536    0.1464   -0.5000
     0.1464    0.8536    0.5000
+   -0.8536   -0.1464    0.5000
 
-</pre><p>Visualizing results</p><pre class="codeinput">cFigure;
-title(<span class="string">'The polyhedron with true (transparant) and determined (solid) axis directions'</span>,<span class="string">'FontSize'</span>,fontSize);
-hold <span class="string">on</span>;
-
-gpatch(F,V,0.75*ones(1,3),<span class="string">'k'</span>,1);
-quiverTriad(mean(V,1),R_fit,7,[],1);
-quiverTriad(mean(V,1),R_true,10,[],0.2);
-
+</pre><p>Visualizing results</p><pre class="codeinput">cFigure; hold <span class="string">on</span>;
+gtitle(<span class="string">'The polyhedron with true (transparant) and determined (solid) axis directions'</span>,fontSize);
+gpatch(F,V,0.75*ones(1,3),<span class="string">'none'</span>,0.5);
+plotV(V,<span class="string">'k.'</span>,<span class="string">'MarkerSize'</span>,markerSize);
+hl1=quiverTriad(mean(V,1),R_true,10,[],0.2);
+hl2=quiverTriad(mean(V,1),R_fit,7,[],1);
+legend([hl1 hl2],{<span class="string">'True directions'</span>,<span class="string">'Fitted directions'</span>});
 camlight(<span class="string">'headlight'</span>);
 axisGeom(gca,fontSize);
 drawnow;
-</pre><img width="100%" height="auto" vspace="5" hspace="5" src="HELP_pointSetPrincipalDir_01.jpg" alt=""> <p>What is clear from the above is that a different system is obtained. This is due to the symmetry properties of the ellipsoid. However all vectors are colinear with the true vector directions. The output direction matrix is ordered in size (as per the singular value decomposition). The vectors turned out colinear with R_true due to the fact that the ellipsoid directions were biased in a similar sense. However if the order is altered the first, second and third axes no longer allign with what was viewed here as the true directions. However the singular values can also be requested as an output allowing the user to reorder the output direction matrix if desired.</p><pre class="codeinput">[R_fit,S]=pointSetPrincipalDir(V);
-S
+</pre><img width="100%" height="auto" vspace="5" hspace="5" src="HELP_pointSetPrincipalDir_01.jpg" alt=""> <h2 id="11">Output of the singular value decomposition data data</h2><pre class="codeinput">[R_fit,S,U]=pointSetPrincipalDir(V)
 </pre><pre class="codeoutput">
+R_fit =
+
+    0.5000   -0.5000    0.7071
+    0.1464    0.8536    0.5000
+   -0.8536   -0.1464    0.5000
+
+
 S =
 
-   23.0859         0         0
-         0   14.6969         0
-         0         0    7.3485
+   45.9575         0         0
+         0   29.2575         0
+         0         0   14.6287
+
+
+U =
+
+    0.0000   -0.0359   -0.0581
+   -0.0000   -0.0359    0.0581
+    0.0000    0.0359    0.0581
+   -0.0000    0.0359   -0.0581
+   -0.0359   -0.0581   -0.0000
+   -0.0359    0.0581    0.0000
+    0.0359    0.0581    0.0000
+    0.0359   -0.0581   -0.0000
+   -0.0581    0.0000   -0.0359
+    0.0581    0.0000   -0.0359
+    0.0581   -0.0000    0.0359
+   -0.0581   -0.0000    0.0359
+    0.0000    0.0000   -0.0684
+   -0.0211   -0.0553   -0.0342
+    0.0211   -0.0553   -0.0342
+   -0.0342   -0.0211   -0.0553
+    0.0342   -0.0211   -0.0553
+    0.0000   -0.0000    0.0684
+   -0.0211   -0.0553    0.0342
+    0.0211   -0.0553    0.0342
+    0.0342   -0.0211    0.0553
+   -0.0342   -0.0211    0.0553
+   -0.0211    0.0553    0.0342
+    0.0211    0.0553    0.0342
+    0.0342    0.0211    0.0553
+   -0.0342    0.0211    0.0553
+   -0.0211    0.0553   -0.0342
+    0.0211    0.0553   -0.0342
+   -0.0342    0.0211   -0.0553
+    0.0342    0.0211   -0.0553
+   -0.0000   -0.0684   -0.0000
+   -0.0553   -0.0342   -0.0211
+   -0.0553   -0.0342    0.0211
+   -0.0000    0.0684    0.0000
+   -0.0553    0.0342   -0.0211
+   -0.0553    0.0342    0.0211
+    0.0553    0.0342   -0.0211
+    0.0553    0.0342    0.0211
+    0.0553   -0.0342   -0.0211
+    0.0553   -0.0342    0.0211
+   -0.0684    0.0000   -0.0000
+    0.0684   -0.0000    0.0000
+    0.0000   -0.0187   -0.0658
+   -0.0110   -0.0474   -0.0480
+    0.0110   -0.0474   -0.0480
+   -0.0178   -0.0297   -0.0590
+    0.0178   -0.0297   -0.0590
+    0.0000   -0.0187    0.0658
+   -0.0110   -0.0474    0.0480
+    0.0110   -0.0474    0.0480
+    0.0178   -0.0297    0.0590
+   -0.0178   -0.0297    0.0590
+    0.0000    0.0187    0.0658
+   -0.0110    0.0474    0.0480
+    0.0110    0.0474    0.0480
+    0.0178    0.0297    0.0590
+   -0.0178    0.0297    0.0590
+   -0.0000    0.0187   -0.0658
+   -0.0110    0.0474   -0.0480
+    0.0110    0.0474   -0.0480
+   -0.0178    0.0297   -0.0590
+    0.0178    0.0297   -0.0590
+   -0.0297   -0.0590   -0.0178
+   -0.0297   -0.0590    0.0178
+   -0.0187   -0.0658   -0.0000
+   -0.0474   -0.0480   -0.0110
+   -0.0474   -0.0480    0.0110
+   -0.0297    0.0590    0.0178
+   -0.0297    0.0590   -0.0178
+   -0.0187    0.0658    0.0000
+   -0.0474    0.0480   -0.0110
+   -0.0474    0.0480    0.0110
+    0.0297    0.0590    0.0178
+    0.0297    0.0590   -0.0178
+    0.0187    0.0658    0.0000
+    0.0474    0.0480   -0.0110
+    0.0474    0.0480    0.0110
+    0.0297   -0.0590   -0.0178
+    0.0297   -0.0590    0.0178
+    0.0187   -0.0658   -0.0000
+    0.0474   -0.0480   -0.0110
+    0.0474   -0.0480    0.0110
+   -0.0480   -0.0110   -0.0474
+   -0.0480    0.0110   -0.0474
+   -0.0590   -0.0178   -0.0297
+   -0.0590    0.0178   -0.0297
+   -0.0658    0.0000   -0.0187
+    0.0480   -0.0110   -0.0474
+    0.0480    0.0110   -0.0474
+    0.0590    0.0178   -0.0297
+    0.0590   -0.0178   -0.0297
+    0.0658   -0.0000   -0.0187
+    0.0480   -0.0110    0.0474
+    0.0480    0.0110    0.0474
+    0.0590    0.0178    0.0297
+    0.0590   -0.0178    0.0297
+    0.0658   -0.0000    0.0187
+   -0.0480   -0.0110    0.0474
+   -0.0480    0.0110    0.0474
+   -0.0590   -0.0178    0.0297
+   -0.0590    0.0178    0.0297
+   -0.0658    0.0000    0.0187
+   -0.0180   -0.0111   -0.0650
+    0.0180   -0.0111   -0.0650
+   -0.0180    0.0111   -0.0650
+    0.0180    0.0111   -0.0650
+   -0.0000   -0.0581   -0.0359
+   -0.0291   -0.0402   -0.0470
+   -0.0111   -0.0650   -0.0180
+   -0.0402   -0.0470   -0.0291
+    0.0291   -0.0402   -0.0470
+    0.0111   -0.0650   -0.0180
+    0.0402   -0.0470   -0.0291
+   -0.0359    0.0000   -0.0581
+   -0.0470   -0.0291   -0.0402
+    0.0359    0.0000   -0.0581
+    0.0470   -0.0291   -0.0402
+    0.0180   -0.0111    0.0650
+   -0.0180   -0.0111    0.0650
+    0.0180    0.0111    0.0650
+   -0.0180    0.0111    0.0650
+    0.0000   -0.0581    0.0359
+   -0.0291   -0.0402    0.0470
+   -0.0111   -0.0650    0.0180
+   -0.0402   -0.0470    0.0291
+    0.0291   -0.0402    0.0470
+    0.0111   -0.0650    0.0180
+    0.0402   -0.0470    0.0291
+    0.0359   -0.0000    0.0581
+    0.0470   -0.0291    0.0402
+   -0.0359   -0.0000    0.0581
+   -0.0470   -0.0291    0.0402
+    0.0000    0.0581    0.0359
+   -0.0291    0.0402    0.0470
+   -0.0111    0.0650    0.0180
+   -0.0402    0.0470    0.0291
+    0.0291    0.0402    0.0470
+    0.0111    0.0650    0.0180
+    0.0402    0.0470    0.0291
+    0.0470    0.0291    0.0402
+   -0.0470    0.0291    0.0402
+   -0.0000    0.0581   -0.0359
+   -0.0291    0.0402   -0.0470
+   -0.0111    0.0650   -0.0180
+   -0.0402    0.0470   -0.0291
+    0.0291    0.0402   -0.0470
+    0.0111    0.0650   -0.0180
+    0.0402    0.0470   -0.0291
+   -0.0470    0.0291   -0.0402
+    0.0470    0.0291   -0.0402
+   -0.0581   -0.0359    0.0000
+   -0.0650   -0.0180   -0.0111
+   -0.0650   -0.0180    0.0111
+   -0.0581    0.0359   -0.0000
+   -0.0650    0.0180   -0.0111
+   -0.0650    0.0180    0.0111
+    0.0581    0.0359    0.0000
+    0.0650    0.0180   -0.0111
+    0.0650    0.0180    0.0111
+    0.0581   -0.0359    0.0000
+    0.0650   -0.0180   -0.0111
+    0.0650   -0.0180    0.0111
+   -0.0000   -0.0276   -0.0626
+   -0.0055   -0.0421   -0.0536
+    0.0055   -0.0421   -0.0536
+   -0.0090   -0.0331   -0.0591
+    0.0090   -0.0331   -0.0591
+    0.0000   -0.0276    0.0626
+   -0.0055   -0.0421    0.0536
+    0.0055   -0.0421    0.0536
+    0.0090   -0.0331    0.0591
+   -0.0090   -0.0331    0.0591
+    0.0000    0.0276    0.0626
+   -0.0055    0.0421    0.0536
+    0.0055    0.0421    0.0536
+    0.0090    0.0331    0.0591
+   -0.0090    0.0331    0.0591
+    0.0000    0.0276   -0.0626
+   -0.0055    0.0421   -0.0536
+    0.0055    0.0421   -0.0536
+   -0.0090    0.0331   -0.0591
+    0.0090    0.0331   -0.0591
+   -0.0331   -0.0591   -0.0090
+   -0.0331   -0.0591    0.0090
+   -0.0276   -0.0626   -0.0000
+   -0.0421   -0.0536   -0.0055
+   -0.0421   -0.0536    0.0055
+   -0.0331    0.0591    0.0090
+   -0.0331    0.0591   -0.0090
+   -0.0276    0.0626    0.0000
+   -0.0421    0.0536   -0.0055
+   -0.0421    0.0536    0.0055
+    0.0331    0.0591    0.0090
+    0.0331    0.0591   -0.0090
+    0.0276    0.0626    0.0000
+    0.0421    0.0536   -0.0055
+    0.0421    0.0536    0.0055
+    0.0331   -0.0591   -0.0090
+    0.0331   -0.0591    0.0090
+    0.0276   -0.0626   -0.0000
+    0.0421   -0.0536   -0.0055
+    0.0421   -0.0536    0.0055
+   -0.0536   -0.0055   -0.0421
+   -0.0536    0.0055   -0.0421
+   -0.0591   -0.0090   -0.0331
+   -0.0591    0.0090   -0.0331
+   -0.0626    0.0000   -0.0276
+    0.0536   -0.0055   -0.0421
+    0.0536    0.0055   -0.0421
+    0.0591    0.0090   -0.0331
+    0.0591   -0.0090   -0.0331
+    0.0626    0.0000   -0.0276
+    0.0536   -0.0055    0.0421
+    0.0536    0.0055    0.0421
+    0.0591    0.0090    0.0331
+    0.0591   -0.0090    0.0331
+    0.0626   -0.0000    0.0276
+   -0.0536   -0.0055    0.0421
+   -0.0536    0.0055    0.0421
+   -0.0591   -0.0090    0.0331
+   -0.0591    0.0090    0.0331
+   -0.0626   -0.0000    0.0276
+   -0.0000   -0.0094   -0.0677
+    0.0000    0.0094   -0.0677
+   -0.0091   -0.0056   -0.0675
+    0.0091   -0.0056   -0.0675
+   -0.0091    0.0056   -0.0675
+    0.0091    0.0056   -0.0675
+   -0.0162   -0.0519   -0.0415
+   -0.0256   -0.0577   -0.0262
+   -0.0107   -0.0574   -0.0355
+   -0.0254   -0.0483   -0.0411
+   -0.0163   -0.0609   -0.0264
+   -0.0310   -0.0518   -0.0320
+    0.0162   -0.0519   -0.0415
+    0.0256   -0.0577   -0.0262
+    0.0107   -0.0574   -0.0355
+    0.0254   -0.0483   -0.0411
+    0.0163   -0.0609   -0.0264
+    0.0310   -0.0518   -0.0320
+   -0.0262   -0.0256   -0.0577
+   -0.0415   -0.0162   -0.0519
+   -0.0264   -0.0163   -0.0609
+   -0.0320   -0.0310   -0.0518
+   -0.0355   -0.0107   -0.0574
+   -0.0411   -0.0254   -0.0483
+    0.0262   -0.0256   -0.0577
+    0.0415   -0.0162   -0.0519
+    0.0264   -0.0163   -0.0609
+    0.0320   -0.0310   -0.0518
+    0.0355   -0.0107   -0.0574
+    0.0411   -0.0254   -0.0483
+    0.0000   -0.0094    0.0677
+    0.0000    0.0094    0.0677
+    0.0091   -0.0056    0.0675
+   -0.0091   -0.0056    0.0675
+    0.0091    0.0056    0.0675
+   -0.0091    0.0056    0.0675
+   -0.0162   -0.0519    0.0415
+   -0.0256   -0.0577    0.0262
+   -0.0107   -0.0574    0.0355
+   -0.0254   -0.0483    0.0411
+   -0.0163   -0.0609    0.0264
+   -0.0310   -0.0518    0.0320
+    0.0162   -0.0519    0.0415
+    0.0256   -0.0577    0.0262
+    0.0107   -0.0574    0.0355
+    0.0254   -0.0483    0.0411
+    0.0163   -0.0609    0.0264
+    0.0310   -0.0518    0.0320
+    0.0262   -0.0256    0.0577
+    0.0415   -0.0162    0.0519
+    0.0264   -0.0163    0.0609
+    0.0320   -0.0310    0.0518
+    0.0355   -0.0107    0.0574
+    0.0411   -0.0254    0.0483
+   -0.0262   -0.0256    0.0577
+   -0.0415   -0.0162    0.0519
+   -0.0264   -0.0163    0.0609
+   -0.0320   -0.0310    0.0518
+   -0.0355   -0.0107    0.0574
+   -0.0411   -0.0254    0.0483
+   -0.0162    0.0519    0.0415
+   -0.0256    0.0577    0.0262
+   -0.0107    0.0574    0.0355
+   -0.0254    0.0483    0.0411
+   -0.0163    0.0609    0.0264
+   -0.0310    0.0518    0.0320
+    0.0162    0.0519    0.0415
+    0.0256    0.0577    0.0262
+    0.0107    0.0574    0.0355
+    0.0254    0.0483    0.0411
+    0.0163    0.0609    0.0264
+    0.0310    0.0518    0.0320
+    0.0262    0.0256    0.0577
+    0.0415    0.0162    0.0519
+    0.0264    0.0163    0.0609
+    0.0355    0.0107    0.0574
+    0.0320    0.0310    0.0518
+    0.0411    0.0254    0.0483
+   -0.0262    0.0256    0.0577
+   -0.0415    0.0162    0.0519
+   -0.0264    0.0163    0.0609
+   -0.0355    0.0107    0.0574
+   -0.0320    0.0310    0.0518
+   -0.0411    0.0254    0.0483
+   -0.0162    0.0519   -0.0415
+   -0.0256    0.0577   -0.0262
+   -0.0107    0.0574   -0.0355
+   -0.0254    0.0483   -0.0411
+   -0.0163    0.0609   -0.0264
+   -0.0310    0.0518   -0.0320
+    0.0162    0.0519   -0.0415
+    0.0256    0.0577   -0.0262
+    0.0107    0.0574   -0.0355
+    0.0254    0.0483   -0.0411
+    0.0163    0.0609   -0.0264
+    0.0310    0.0518   -0.0320
+   -0.0262    0.0256   -0.0577
+   -0.0415    0.0162   -0.0519
+   -0.0264    0.0163   -0.0609
+   -0.0355    0.0107   -0.0574
+   -0.0320    0.0310   -0.0518
+   -0.0411    0.0254   -0.0483
+    0.0262    0.0256   -0.0577
+    0.0415    0.0162   -0.0519
+    0.0264    0.0163   -0.0609
+    0.0355    0.0107   -0.0574
+    0.0320    0.0310   -0.0518
+    0.0411    0.0254   -0.0483
+   -0.0094   -0.0677   -0.0000
+    0.0094   -0.0677    0.0000
+   -0.0056   -0.0675   -0.0091
+    0.0056   -0.0675   -0.0091
+   -0.0056   -0.0675    0.0091
+    0.0056   -0.0675    0.0091
+   -0.0519   -0.0415   -0.0162
+   -0.0577   -0.0262   -0.0256
+   -0.0483   -0.0411   -0.0254
+   -0.0518   -0.0320   -0.0310
+   -0.0574   -0.0355   -0.0107
+   -0.0609   -0.0264   -0.0163
+   -0.0519   -0.0415    0.0162
+   -0.0577   -0.0262    0.0256
+   -0.0483   -0.0411    0.0254
+   -0.0518   -0.0320    0.0310
+   -0.0574   -0.0355    0.0107
+   -0.0609   -0.0264    0.0163
+   -0.0094    0.0677    0.0000
+    0.0094    0.0677    0.0000
+   -0.0056    0.0675    0.0091
+    0.0056    0.0675    0.0091
+   -0.0056    0.0675   -0.0091
+    0.0056    0.0675   -0.0091
+   -0.0519    0.0415   -0.0162
+   -0.0577    0.0262   -0.0256
+   -0.0483    0.0411   -0.0254
+   -0.0518    0.0320   -0.0310
+   -0.0574    0.0355   -0.0107
+   -0.0609    0.0264   -0.0163
+   -0.0519    0.0415    0.0162
+   -0.0577    0.0262    0.0256
+   -0.0483    0.0411    0.0254
+   -0.0518    0.0320    0.0310
+   -0.0574    0.0355    0.0107
+   -0.0609    0.0264    0.0163
+    0.0519    0.0415   -0.0162
+    0.0577    0.0262   -0.0256
+    0.0483    0.0411   -0.0254
+    0.0518    0.0320   -0.0310
+    0.0574    0.0355   -0.0107
+    0.0609    0.0264   -0.0163
+    0.0519    0.0415    0.0162
+    0.0577    0.0262    0.0256
+    0.0483    0.0411    0.0254
+    0.0518    0.0320    0.0310
+    0.0574    0.0355    0.0107
+    0.0609    0.0264    0.0163
+    0.0519   -0.0415   -0.0162
+    0.0577   -0.0262   -0.0256
+    0.0483   -0.0411   -0.0254
+    0.0518   -0.0320   -0.0310
+    0.0574   -0.0355   -0.0107
+    0.0609   -0.0264   -0.0163
+    0.0519   -0.0415    0.0162
+    0.0577   -0.0262    0.0256
+    0.0483   -0.0411    0.0254
+    0.0518   -0.0320    0.0310
+    0.0574   -0.0355    0.0107
+    0.0609   -0.0264    0.0163
+   -0.0677    0.0000   -0.0094
+   -0.0677    0.0000    0.0094
+   -0.0675   -0.0091   -0.0056
+   -0.0675   -0.0091    0.0056
+   -0.0675    0.0091   -0.0056
+   -0.0675    0.0091    0.0056
+    0.0677   -0.0000   -0.0094
+    0.0677   -0.0000    0.0094
+    0.0675    0.0091   -0.0056
+    0.0675    0.0091    0.0056
+    0.0675   -0.0091   -0.0056
+    0.0675   -0.0091    0.0056
+   -0.0090   -0.0245   -0.0632
+    0.0090   -0.0245   -0.0632
+   -0.0091   -0.0150   -0.0661
+    0.0091   -0.0150   -0.0661
+   -0.0000   -0.0480   -0.0486
+   -0.0146   -0.0390   -0.0542
+   -0.0055   -0.0533   -0.0424
+   -0.0202   -0.0443   -0.0480
+    0.0146   -0.0390   -0.0542
+    0.0055   -0.0533   -0.0424
+    0.0202   -0.0443   -0.0480
+   -0.0181   -0.0206   -0.0626
+   -0.0237   -0.0353   -0.0536
+    0.0181   -0.0206   -0.0626
+    0.0237   -0.0353   -0.0536
+    0.0090   -0.0245    0.0632
+   -0.0090   -0.0245    0.0632
+    0.0091   -0.0150    0.0661
+   -0.0091   -0.0150    0.0661
+    0.0000   -0.0480    0.0486
+   -0.0146   -0.0390    0.0542
+   -0.0055   -0.0533    0.0424
+   -0.0202   -0.0443    0.0480
+    0.0146   -0.0390    0.0542
+    0.0055   -0.0533    0.0424
+    0.0202   -0.0443    0.0480
+    0.0181   -0.0206    0.0626
+    0.0237   -0.0353    0.0536
+   -0.0181   -0.0206    0.0626
+   -0.0237   -0.0353    0.0536
+    0.0090    0.0245    0.0632
+   -0.0090    0.0245    0.0632
+    0.0091    0.0150    0.0661
+   -0.0091    0.0150    0.0661
+    0.0000    0.0480    0.0486
+   -0.0146    0.0390    0.0542
+   -0.0055    0.0533    0.0424
+   -0.0202    0.0443    0.0480
+    0.0146    0.0390    0.0542
+    0.0055    0.0533    0.0424
+    0.0202    0.0443    0.0480
+    0.0181    0.0206    0.0626
+    0.0237    0.0353    0.0536
+   -0.0181    0.0206    0.0626
+   -0.0237    0.0353    0.0536
+   -0.0090    0.0245   -0.0632
+    0.0090    0.0245   -0.0632
+   -0.0091    0.0150   -0.0661
+    0.0091    0.0150   -0.0661
+   -0.0000    0.0480   -0.0486
+   -0.0146    0.0390   -0.0542
+   -0.0055    0.0533   -0.0424
+   -0.0202    0.0443   -0.0480
+    0.0146    0.0390   -0.0542
+    0.0055    0.0533   -0.0424
+    0.0202    0.0443   -0.0480
+   -0.0181    0.0206   -0.0626
+   -0.0237    0.0353   -0.0536
+    0.0181    0.0206   -0.0626
+    0.0237    0.0353   -0.0536
+   -0.0245   -0.0632   -0.0090
+   -0.0390   -0.0542   -0.0146
+   -0.0206   -0.0626   -0.0181
+   -0.0353   -0.0536   -0.0237
+   -0.0245   -0.0632    0.0090
+   -0.0390   -0.0542    0.0146
+   -0.0206   -0.0626    0.0181
+   -0.0353   -0.0536    0.0237
+   -0.0150   -0.0661   -0.0091
+   -0.0150   -0.0661    0.0091
+   -0.0480   -0.0486   -0.0000
+   -0.0443   -0.0480   -0.0202
+   -0.0533   -0.0424   -0.0055
+   -0.0443   -0.0480    0.0202
+   -0.0533   -0.0424    0.0055
+   -0.0245    0.0632    0.0090
+   -0.0390    0.0542    0.0146
+   -0.0206    0.0626    0.0181
+   -0.0353    0.0536    0.0237
+   -0.0245    0.0632   -0.0090
+   -0.0390    0.0542   -0.0146
+   -0.0206    0.0626   -0.0181
+   -0.0353    0.0536   -0.0237
+   -0.0150    0.0661    0.0091
+   -0.0150    0.0661   -0.0091
+   -0.0480    0.0486    0.0000
+   -0.0443    0.0480   -0.0202
+   -0.0533    0.0424   -0.0055
+   -0.0443    0.0480    0.0202
+   -0.0533    0.0424    0.0055
+    0.0245    0.0632    0.0090
+    0.0390    0.0542    0.0146
+    0.0206    0.0626    0.0181
+    0.0353    0.0536    0.0237
+    0.0245    0.0632   -0.0090
+    0.0390    0.0542   -0.0146
+    0.0206    0.0626   -0.0181
+    0.0353    0.0536   -0.0237
+    0.0150    0.0661    0.0091
+    0.0150    0.0661   -0.0091
+    0.0480    0.0486    0.0000
+    0.0443    0.0480   -0.0202
+    0.0533    0.0424   -0.0055
+    0.0443    0.0480    0.0202
+    0.0533    0.0424    0.0055
+    0.0245   -0.0632   -0.0090
+    0.0390   -0.0542   -0.0146
+    0.0206   -0.0626   -0.0181
+    0.0353   -0.0536   -0.0237
+    0.0245   -0.0632    0.0090
+    0.0390   -0.0542    0.0146
+    0.0206   -0.0626    0.0181
+    0.0353   -0.0536    0.0237
+    0.0150   -0.0661   -0.0091
+    0.0150   -0.0661    0.0091
+    0.0480   -0.0486   -0.0000
+    0.0443   -0.0480   -0.0202
+    0.0533   -0.0424   -0.0055
+    0.0443   -0.0480    0.0202
+    0.0533   -0.0424    0.0055
+   -0.0486    0.0000   -0.0480
+   -0.0542   -0.0146   -0.0390
+   -0.0424   -0.0055   -0.0533
+   -0.0480   -0.0202   -0.0443
+   -0.0542    0.0146   -0.0390
+   -0.0424    0.0055   -0.0533
+   -0.0480    0.0202   -0.0443
+   -0.0632   -0.0090   -0.0245
+   -0.0536   -0.0237   -0.0353
+   -0.0626   -0.0181   -0.0206
+   -0.0632    0.0090   -0.0245
+   -0.0536    0.0237   -0.0353
+   -0.0626    0.0181   -0.0206
+   -0.0661   -0.0091   -0.0150
+   -0.0661    0.0091   -0.0150
+    0.0486    0.0000   -0.0480
+    0.0542   -0.0146   -0.0390
+    0.0424   -0.0055   -0.0533
+    0.0480   -0.0202   -0.0443
+    0.0542    0.0146   -0.0390
+    0.0424    0.0055   -0.0533
+    0.0480    0.0202   -0.0443
+    0.0632    0.0090   -0.0245
+    0.0536    0.0237   -0.0353
+    0.0626    0.0181   -0.0206
+    0.0632   -0.0090   -0.0245
+    0.0536   -0.0237   -0.0353
+    0.0626   -0.0181   -0.0206
+    0.0661    0.0091   -0.0150
+    0.0661   -0.0091   -0.0150
+    0.0486   -0.0000    0.0480
+    0.0542   -0.0146    0.0390
+    0.0424   -0.0055    0.0533
+    0.0480   -0.0202    0.0443
+    0.0542    0.0146    0.0390
+    0.0424    0.0055    0.0533
+    0.0480    0.0202    0.0443
+    0.0632    0.0090    0.0245
+    0.0536    0.0237    0.0353
+    0.0626    0.0181    0.0206
+    0.0632   -0.0090    0.0245
+    0.0536   -0.0237    0.0353
+    0.0626   -0.0181    0.0206
+    0.0661    0.0091    0.0150
+    0.0661   -0.0091    0.0150
+   -0.0486   -0.0000    0.0480
+   -0.0542   -0.0146    0.0390
+   -0.0424   -0.0055    0.0533
+   -0.0480   -0.0202    0.0443
+   -0.0542    0.0146    0.0390
+   -0.0424    0.0055    0.0533
+   -0.0480    0.0202    0.0443
+   -0.0632   -0.0090    0.0245
+   -0.0536   -0.0237    0.0353
+   -0.0626   -0.0181    0.0206
+   -0.0632    0.0090    0.0245
+   -0.0536    0.0237    0.0353
+   -0.0626    0.0181    0.0206
+   -0.0661   -0.0091    0.0150
+   -0.0661    0.0091    0.0150
+   -0.0182    0.0000   -0.0659
+   -0.0273   -0.0056   -0.0624
+    0.0182    0.0000   -0.0659
+    0.0273   -0.0056   -0.0624
+   -0.0273    0.0056   -0.0624
+    0.0273    0.0056   -0.0624
+   -0.0056   -0.0624   -0.0273
+    0.0056   -0.0624   -0.0273
+   -0.0351   -0.0442   -0.0386
+   -0.0386   -0.0351   -0.0442
+   -0.0000   -0.0659   -0.0182
+   -0.0442   -0.0386   -0.0351
+    0.0351   -0.0442   -0.0386
+    0.0386   -0.0351   -0.0442
+    0.0442   -0.0386   -0.0351
+    0.0182   -0.0000    0.0659
+    0.0273   -0.0056    0.0624
+   -0.0182   -0.0000    0.0659
+   -0.0273   -0.0056    0.0624
+    0.0273    0.0056    0.0624
+   -0.0273    0.0056    0.0624
+   -0.0056   -0.0624    0.0273
+    0.0056   -0.0624    0.0273
+   -0.0351   -0.0442    0.0386
+   -0.0386   -0.0351    0.0442
+   -0.0000   -0.0659    0.0182
+   -0.0442   -0.0386    0.0351
+    0.0351   -0.0442    0.0386
+    0.0386   -0.0351    0.0442
+    0.0442   -0.0386    0.0351
+   -0.0056    0.0624    0.0273
+    0.0056    0.0624    0.0273
+   -0.0351    0.0442    0.0386
+   -0.0386    0.0351    0.0442
+   -0.0000    0.0659    0.0182
+   -0.0442    0.0386    0.0351
+    0.0351    0.0442    0.0386
+    0.0386    0.0351    0.0442
+    0.0442    0.0386    0.0351
+   -0.0056    0.0624   -0.0273
+    0.0056    0.0624   -0.0273
+   -0.0351    0.0442   -0.0386
+   -0.0386    0.0351   -0.0442
+   -0.0000    0.0659   -0.0182
+   -0.0442    0.0386   -0.0351
+    0.0351    0.0442   -0.0386
+    0.0386    0.0351   -0.0442
+    0.0442    0.0386   -0.0351
+   -0.0624   -0.0273   -0.0056
+   -0.0624   -0.0273    0.0056
+   -0.0659   -0.0182   -0.0000
+   -0.0624    0.0273   -0.0056
+   -0.0624    0.0273    0.0056
+   -0.0659    0.0182   -0.0000
+    0.0624    0.0273   -0.0056
+    0.0624    0.0273    0.0056
+    0.0659    0.0182    0.0000
+    0.0624   -0.0273   -0.0056
+    0.0624   -0.0273    0.0056
+    0.0659   -0.0182    0.0000
 
 </pre><p><img vspace="5" hspace="5" src="gibbVerySmall.gif" alt=""> </p><p><i><b>GIBBON</b></i> <a href="www.gibboncode.org">www.gibboncode.org</a></p><p><i>Kevin Mattheus Moerman</i>, <a href="gibbon.toolbox@gmail.com">gibbon.toolbox@gmail.com</a></p><p><i><b>GIBBON footer text</b></i></p><p>License: <a href="https://github.com/gibbonCode/GIBBON/blob/master/LICENSE">https://github.com/gibbonCode/GIBBON/blob/master/LICENSE</a></p><p>GIBBON: The Geometry and Image-based Bioengineering add-On. A toolbox for image segmentation, image-based modeling, meshing, and finite element analysis.</p><p>Copyright (C) 2019  Kevin Mattheus Moerman</p><p>This program is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.</p><p>This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for more details.</p><p>You should have received a copy of the GNU General Public License along with this program.  If not, see <a href="http://www.gnu.org/licenses/">http://www.gnu.org/licenses/</a>.</p><p class="footer"><br><a href="https://www.mathworks.com/products/matlab/">Published with MATLAB&reg; R2019a</a><br></p></div><!--
 ##### SOURCE BEGIN #####
-%% HELP_pointSetPrincipalDir
+%% pointSetPrincipalDir
 % Below is a demonstration of the features of the |pointSetPrincipalDir| function
 
 %%
 clear; close all; clc;
 
+%% Syntax
+% |[V,S,U]=pointSetPrincipalDir(X)|
+
+%% Description
+
+%% Examples
+
 %%
 % Plot settings
+fontSize=15;
+markerSize=25;
 
-fontSize=11;
-
-%% Using |pointSetPrincipalDir| to determine main directions of a polyhedron
+%% Using |pointSetPrincipalDir| to determine main directions of a point cloud
 
 %%
 % Simulating an ellipsoid with known directions
@@ -143,12 +802,12 @@ fontSize=11;
 ellipStretchTrue=[pi 2 1]
 
 % Create ellipsoid patch data
-[F,V,~]=geoSphere(2,1);
+[F,V,~]=geoSphere(3,1);
 
 V=V.*ellipStretchTrue(ones(size(V,1),1),:);
 
 %Create Euler angles to set directions
-E=[0.25*pi 0.25*pi 0.25*pi]; 
+E=[-0.25*pi 0.25*pi 0.25*pi]; 
 [R_true,~]=euler2DCM(E); %The true directions for X, Y and Z axis
 V=(R_true*V')'; %Rotate polyhedron
 
@@ -165,32 +824,20 @@ R_true
 %% 
 % Visualizing results
 
-cFigure;
-title('The polyhedron with true (transparant) and determined (solid) axis directions','FontSize',fontSize);
-hold on;
-
-gpatch(F,V,0.75*ones(1,3),'k',1);
-quiverTriad(mean(V,1),R_fit,7,[],1);
-quiverTriad(mean(V,1),R_true,10,[],0.2);
-
+cFigure; hold on;
+gtitle('The polyhedron with true (transparant) and determined (solid) axis directions',fontSize);
+gpatch(F,V,0.75*ones(1,3),'none',0.5);
+plotV(V,'k.','MarkerSize',markerSize);
+hl1=quiverTriad(mean(V,1),R_true,10,[],0.2);
+hl2=quiverTriad(mean(V,1),R_fit,7,[],1);
+legend([hl1 hl2],{'True directions','Fitted directions'});
 camlight('headlight');
 axisGeom(gca,fontSize); 
 drawnow;
 
-%%
-% What is clear from the above is that a different system is obtained. This
-% is due to the symmetry properties of the ellipsoid. However all vectors
-% are colinear with the true vector directions. The output direction matrix
-% is ordered in size (as per the singular value decomposition). The vectors
-% turned out colinear with R_true due to the fact that the ellipsoid
-% directions were biased in a similar sense. However if the order is
-% altered the first, second and third axes no longer allign with what was
-% viewed here as the true directions. However the singular values can also
-% be requested as an output allowing the user to reorder the output
-% direction matrix if desired. 
+%% Output of the singular value decomposition data data
 
-[R_fit,S]=pointSetPrincipalDir(V);
-S
+[R_fit,S,U]=pointSetPrincipalDir(V)
 
 %% 
 %

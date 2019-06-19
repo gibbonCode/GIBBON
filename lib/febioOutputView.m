@@ -1,10 +1,15 @@
 function [varargout]=febioOutputView(pathName,febio_spec)
 
-
-%Check all surface element types
+% function [hf]=febioOutputView(pathName,febio_spec)
+% ------------------------------------------------------------------------
+%
+%
+%
+% ------------------------------------------------------------------------
 
 %%
 % optionStruct=[];
+
 %%
 fontSize=15;
 
@@ -37,23 +42,16 @@ for q=1:1:numel(nodeDataCellAll)
         V_def=V+U_end;       
     end
 end
+nodalDisplacementMagnitudeAll=sqrt(sum(nodalDisplacementAll.^2,2));
 
 hf.UserData.febioOutputView.colorData=[];
-hf.UserData.febioOutputView.nodalDisplacementAll=nodalDisplacementAll;
-hf.UserData.febioOutputView.nodalDisplacementMagnitudeAll=sqrt(sum(nodalDisplacementAll.^2,2));
 hf.UserData.febioOutputView.pathName=pathName;
 hf.UserData.febioOutputView.febio_spec=febio_spec;
 
 %%
-
-
-
-%%
-
-
 % Create basic view and store graphics handle to initiate animation
 
-gtitle('Model results');
+hf.UserData.febioOutputView.ht=gtitle(' - '); %Figure axis title
 
 handleSet=gobjects(1,numel(E_cell));
 for q=1:1:numel(E_cell)
@@ -68,17 +66,24 @@ for q=1:1:numel(E_cell)
     end
     
     handleSet(q)=gpatch(facesNow,V,U_mag,'k',1); %Add graphics object to animate
-    
+    handleSet(q).FaceColor='interp';
 end
 
 axisGeom(gca,fontSize);
 colormap(gjet(250)); colorbar;
-caxis([0 max(U_mag)]);
+cLim=[min(nodalDisplacementMagnitudeAll(:)) max(nodalDisplacementMagnitudeAll(:))];
+if abs(cLim(2)-cLim(1))<eps(1)
+    cLim(1)=cLim(1)-1;
+    cLim(2)=cLim(2)+1;
+end
+hf.UserData.febioOutputView.cLim=cLim;
+caxis(cLim);
 VV=[V;V_def];
 axis([min(VV(:,1)) max(VV(:,1)) min(VV(:,2)) max(VV(:,2)) min(VV(:,3)) max(VV(:,3))]); %Set axis limits statically
 camlight headlight;
 
 hf.UserData.febioOutputView.handleSet=handleSet;
+
 
 %%
         
@@ -87,7 +92,12 @@ if isfield(febio_spec.Output.logfile,'element_data')
     outputDataCellAll=[outputDataCellAll febio_spec.Output.logfile.element_data];
 end
 
-popUpString={};
+
+popUpString=cell(1,1);
+%Initialize with displacement magnitude
+popUpString{1}='um';
+hf.UserData.febioOutputView.data.um=nodalDisplacementMagnitudeAll;
+
 for q=1:1:numel(outputDataCellAll)
     
     dataTypeString=outputDataCellAll{q}.ATTR.data;
@@ -150,49 +160,49 @@ end
 figResize([],[],{hf,hPop});
 
 %%
+
+clear animStruct;
+
 % Set up animation features
 animStruct.Time=timeVec; %The time vector
-c1=repmat({'Vertices'},1,numel(handleSet));
-c2=repmat({'CData'},1,numel(handleSet));
+propertySetVert=repmat({'Vertices'},1,numel(handleSet));
+propertySetCData=repmat({'CData'},1,numel(handleSet));
 
 for qt=1:1:size(nodalDisplacementAll,3) %Loop over time increments
     U_now=nodalDisplacementAll(:,:,qt); %Current displacement
-    V_def=V+U_now; %Current nodal coordinates
-    
+    V_def=V+U_now; %Current nodal coordinates    
     d1=repmat({V_def},1,numel(handleSet));
     
     %Initialize animation structure with nodal coordinate and displacement animation
     animStruct.Handles{qt}=[handleSet]; %Handles of objects to animate
-    animStruct.Props{qt}={c1{:}}; %Properties of objects to animate
+    animStruct.Props{qt}={propertySetVert{:}}; %Properties of objects to animate
     animStruct.Set{qt}={d1{:}}; %Property values for to set in order to animate
-    
-    animStruct.Handles
-    
+      
     %Add colordata animations for faces
-    colorData=hf.UserData.febioOutputView.nodalDisplacementMagnitudeAll(:,:,qt);
+    colorData=nodalDisplacementMagnitudeAll(:,:,qt);
     
     d2={};
     for qs=1:1:numel(handleSet)
-        colorDataNow=colorData;
-        if size(colorData,1)==size(V,1)            
-            f=handleSet(qs).Faces;
-            [colorDataNow]=vertexToFaceMeasure(f,colorData);
+        colorDataNow=colorData;        
+%         if size(colorData,1)==size(V,1)            
+%             f=handleSet(qs).Faces;
+%             [colorDataNow]=vertexToFaceMeasure(f,colorData);
+%         end
+        f=handleSet(qs).Faces;
+        if size(colorData,1)==size(f,1)                    
+            [colorDataNow]=faceToVertexMeasure(f,V,colorData);            
         end
-        d2{qs}=colorDataNow;
-        
-    end
-    
-        animStruct.Handles{qt}(1:2*numel(handleSet))=[handleSet handleSet]; %Handles of objects to animate
-        animStruct.Props{qt}{end+1}=c2{:}; %Properties of objects to animate
-        animStruct.Set{qt}{end+1}=d2{:}; %Property values for to set in order to animate
-
+        d2{qs}=colorDataNow;        
+    end    
+    animStruct.Handles{qt}(1:2*numel(handleSet))=[handleSet handleSet]; %Handles of objects to animate
+    animStruct.Props{qt}(end+1:end+numel(propertySetCData))={propertySetCData{:}}; %Properties of objects to animate
+    animStruct.Set{qt}(end+1:end+numel(propertySetCData))={d2{:}}; %Property values for to set in order to animate
 end
 
 anim8(hf,animStruct); %Initiate animation feature
 drawnow;
 
 %%
-
 
 if nargout>0
     varargout{1}=hf;
@@ -202,6 +212,7 @@ end
 
 
 %%
+
 function figResize(~,~,inputCell)
 
 hf=inputCell{1};
@@ -227,24 +238,57 @@ indexValue = source.Value;
 stringSet = source.String;
 
 dataTypeStringNow = stringSet{indexValue};
+hf.UserData.febioOutputView.ht.String=dataTypeStringNow;
 
 hf.UserData.febioOutputView.colorData=hf.UserData.febioOutputView.data.(dataTypeStringNow);
 
 updateFaceColor(hf);
 
+caxis(hf.UserData.febioOutputView.cLim);
+drawnow;
+
 end
+
+%%
 
 function updateFaceColor(hf)
 
 for qt=1:1:numel(hf.UserData.anim8.animStruct.Time)
+    cLim=[];    
     for qh=numel(hf.UserData.febioOutputView.handleSet)+1:1:2*numel(hf.UserData.febioOutputView.handleSet)        
-        d2=repmat({hf.UserData.febioOutputView.colorData(:,:,qt)},1,numel(hf.UserData.febioOutputView.handleSet));
+        c=hf.UserData.febioOutputView.colorData(:,:,qt);
+        d2=repmat({c},1,numel(hf.UserData.febioOutputView.handleSet));
         hf.UserData.anim8.animStruct.Set{qt}{qh}=d2{:}; %Property values for to set in order to animate
+        
+        if isempty(cLim)
+            cLim=[min(c(:)) max(c(:))];
+        else
+            cLim(1)=min(min(c(:)),cLim(1));
+            cLim(2)=max(max(c(:)),cLim(2));
+        end
     end
 end
 
+if abs(cLim(2)-cLim(1))<eps(1)
+    cLim(1)=cLim(1)-1;
+    cLim(2)=cLim(2)+1;
 end
-%%
+hf.UserData.febioOutputView.cLim=cLim;
+
+%Briefly toggle slider to trigger anim8 redraw event
+jSlider=hf.UserData.anim8.sliderHandles{1};
+v=get(jSlider,'Value');
+if v>1
+    set(jSlider,'Value',v-1);
+    set(jSlider,'Value',v);
+else
+    set(jSlider,'Value',v+1);
+    set(jSlider,'Value',v);
+end
+
+end
+
+
 %% 
 % _*GIBBON footer text*_ 
 % 
