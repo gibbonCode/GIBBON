@@ -2,6 +2,7 @@ function y=gd(x)
 
 % Gudermannian function
 y=asin(tanh(x));
+
 %% 
 % _*GIBBON footer text*_ 
 % 

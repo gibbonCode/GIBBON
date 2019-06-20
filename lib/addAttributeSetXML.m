@@ -1,5 +1,22 @@
 function [domNode]=addAttributeSetXML(domNode,elementNode,parseStruct)
 
+% function [domNode]=addAttributeSetXML(domNode,elementNode,parseStruct)
+% -----------------------------------------------------------------------
+% This function adds a set of attributes defined by the structure
+% |parseStruct| the XML defined by the XML object domNode. 
+% Attributes are defined in structure arrays. The structure fieldname
+% defines the attribute name and the structure value is the attribute
+% value. The attribute value can be a character/string or numerical data.
+% Vector valued data is transformed to comma separated values e.g. 1:3 will
+% become 1, 2, 3. Integer values will remain integer type. For non-integer
+% numberical data exponential notation is used e.g. pi becomes
+% 3.1415927e+00. 
+%
+% 
+% -----------------------------------------------------------------------
+
+%%
+
 fieldNameSet = fieldnames(parseStruct);
 for q_field=1:1:numel(fieldNameSet)
     attrName=fieldNameSet{q_field};

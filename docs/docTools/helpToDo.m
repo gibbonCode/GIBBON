@@ -7,7 +7,7 @@ toolboxPath=fileparts(fileparts(fileparts(filePath)));
 
 libFolder=fullfile(toolboxPath,'lib');
 helpFolder=fullfile(toolboxPath,'docs');
-outputFolder=fullfile(toolboxPath,'docs','todo');
+outputFolder=fullfile(toolboxPath,'docs');
 
 %%
 
@@ -25,11 +25,28 @@ NumberOfHelpFiles=numel(fileListHelp);
 
 %%
 
+licenseBoilerPlate=fullfile(toolboxPath,'licenseBoilerPlate.txt');
+[T_license]=txtfile2cell(licenseBoilerPlate);
+
+footerTargetText='% _*GIBBON footer text*_ ';
+licenseLink='https://github.com/gibbonCode/GIBBON/blob/master/LICENSE';
+
+%Add comment symbols
+for q=1:1:numel(T_license)
+    T_license{q}=['% ',T_license{q}];
+end
+
+%Add target header
+T_license=[{'%% '};{footerTargetText};{'% '};{['% License: <',licenseLink,'>']};T_license(1:end)];
+
+%%
+
 if exist(outputFolder,'dir')==0
    mkdir(outputFolder);  
 end
 addpath(outputFolder);
 
+hw = waitbar(0,'Creating documentation templates...');
 for q=1:1:NumberOfLibFiles
    libFileName=fileListLib{q};
    libFileNameFull=fullfile(libFolder,libFileName);
@@ -68,14 +85,14 @@ for q=1:1:NumberOfLibFiles
        T{end+1,1}='% <www.gibboncode.org>';
        T{end+1,1}='% ';
        T{end+1,1}='% _Kevin Mattheus Moerman_, <gibbon.toolbox@gmail.com>';
+       T(end+1:end+numel(T_license),1)=T_license;
        
        cell2txtfile(helpFileNameNew,T,0);
-       
-%        publish(helpFileNameNew);
 
    end
+   waitbar(q/NumberOfLibFiles,hw,sprintf('%6.2f',q/NumberOfLibFiles))
 end
-
+delete(hw);
  
 %% 
 % _*GIBBON footer text*_ 
