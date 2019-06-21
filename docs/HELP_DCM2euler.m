@@ -5,12 +5,51 @@
 clear; close all; clc;
 
 %% Syntax
-% |[a]=DCM2euler(R);|
+% |[a]=DCM2euler(Q);|
 
 %% Description 
-% UNDOCUMENTED 
+% This function is the inverse of the euler2DCM function. The Euler angles
+% |a| are derived based on the input rotatin tensor |Q|. 
+
 %% Examples 
 % 
+
+%%
+% Plot settings
+fontSize=25;
+
+%% Retrieving the Euler andles from a rotation tensor
+
+%% 
+% Get example patch data
+[F,V]=parasaurolophus;
+
+%%
+% Defining sets of true Euler angles for X, Y and Z axis rotation
+a_true=[0.25*pi 0.25*pi -0.25*pi]
+
+%%
+% Use |euler2DCM| function to define the rotation tensor
+[Q]=euler2DCM(a_true);
+
+%%
+% Use |DCM2euler| to retrieve the Euler angles
+a_fit=DCM2euler(Q)
+
+%% Handling symbolic expressions
+
+try
+    syms a b c
+    
+    a_true=[a b c]
+    Q=euler2DCM(a_true);
+    
+    a_fit=DCM2euler(Q)
+    
+catch
+    warning('Symbolic toolbox likely missing')
+end
+
 %%
 % 
 % <<gibbVerySmall.gif>>

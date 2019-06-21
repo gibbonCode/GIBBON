@@ -6,7 +6,7 @@
    <!--
 This HTML was auto-generated from MATLAB code.
 To make changes, update the MATLAB code and republish this document.
-      --><title>HELP_euler2DCM</title><meta name="generator" content="MATLAB 9.6"><link rel="schema.DC" href="http://purl.org/dc/elements/1.1/"><meta name="DC.date" content="2019-06-20"><meta name="DC.source" content="HELP_euler2DCM.m"><style type="text/css">
+      --><title>HELP_euler2DCM</title><meta name="generator" content="MATLAB 9.6"><link rel="schema.DC" href="http://purl.org/dc/elements/1.1/"><meta name="DC.date" content="2019-06-21"><meta name="DC.source" content="HELP_euler2DCM.m"><style type="text/css">
 html,body,div,span,applet,object,iframe,h1,h2,h3,h4,h5,h6,p,blockquote,pre,a,abbr,acronym,address,big,cite,code,del,dfn,em,font,img,ins,kbd,q,s,samp,small,strike,strong,sub,sup,tt,var,b,u,i,center,dl,dt,dd,ol,ul,li,fieldset,form,label,legend,table,caption,tbody,tfoot,thead,tr,th,td{margin:0;padding:0;border:0;outline:0;font-size:100%;vertical-align:baseline;background:transparent}body{line-height:1}ol,ul{list-style:none}blockquote,q{quotes:none}blockquote:before,blockquote:after,q:before,q:after{content:'';content:none}:focus{outine:0}ins{text-decoration:none}del{text-decoration:line-through}table{border-collapse:collapse;border-spacing:0}
 
 html { min-height:100%; margin-bottom:1px; }
@@ -66,105 +66,130 @@ table td { padding:7px 5px; text-align:left; vertical-align:top; border:1px soli
 
 
 
-  </style></head><body><div class="content"><h1>HELP_euler2DCM</h1><!--introduction--><p>Below is a demonstration of the features of the <tt>euler2DCM</tt> function</p><!--/introduction--><h2>Contents</h2><div><ul><li><a href="#3">Creating a rotation matrix using Euler angles</a></li><li><a href="#12">Creating multiple rotation matrices</a></li></ul></div><pre class="codeinput">clear; close <span class="string">all</span>; clc;
-</pre><p>Plot settings</p><pre class="codeinput">fig_color=<span class="string">'w'</span>; fig_colordef=<span class="string">'white'</span>;
-fontSize=15;
-faceAlpha=1;
-edgeColor=0*ones(1,3);
-edgeWidth=1;
-</pre><h2 id="3">Creating a rotation matrix using Euler angles</h2><p>Search wikipedia for information on Euler angles to define a rotation or direction cosine matrix (DCM).</p><p>Load example patch data</p><pre class="codeinput">[F,V]=parasaurolophus;
-</pre><p>Defining sets of Euler angles for X, Y and Z axis rotation</p><pre class="codeinput">E1=[0.5*pi 0 0];
-E2=[0 0.5*pi 0];
-E3=[0 0 0.5*pi];
-E4=[0.25*pi 0.25*pi 0.25*pi];
+  </style></head><body><div class="content"><h1>HELP_euler2DCM</h1><!--introduction--><p>Below is a demonstration of the features of the <tt>euler2DCM</tt> function</p><!--/introduction--><h2>Contents</h2><div><ul><li><a href="#2">Syntax</a></li><li><a href="#3">Description</a></li><li><a href="#4">Examples</a></li><li><a href="#6">Setting up rotation matrices based on angles.</a></li><li><a href="#15">Creating multiple rotation matrices</a></li><li><a href="#17">Using symbolic angles</a></li></ul></div><pre class="codeinput">clear; close <span class="string">all</span>; clc;
+</pre><h2 id="2">Syntax</h2><p><tt>[Q]=euler2DCM(a);</tt></p><h2 id="3">Description</h2><p>This function uses the input Euler angle set <tt>a</tt>, a 1x3 vector, to compute a rotation tensor <tt>Q</tt>, also known as a direction cosine matrix (DCM). See also DCM2euler</p><h2 id="4">Examples</h2><p>Plot settings</p><pre class="codeinput">fontSize=25;
+</pre><h2 id="6">Setting up rotation matrices based on angles.</h2><p>Get example patch data</p><pre class="codeinput">[F,V]=parasaurolophus;
+</pre><p>Defining sets of Euler angles for X, Y and Z axis rotation</p><pre class="codeinput">E1=[0.5*pi 0 0]; <span class="comment">%Just x</span>
+E2=[0 0.5*pi 0]; <span class="comment">%Just y</span>
+E3=[0 0 0.5*pi]; <span class="comment">%Just z</span>
+E4=[0.25*pi 0.25*pi 0.25*pi]; <span class="comment">%All</span>
 </pre><p>Use <tt>euler2DCM</tt> function to define the rotation matrices</p><pre class="codeinput">[R1]=euler2DCM(E1);
 [R2]=euler2DCM(E2);
 [R3]=euler2DCM(E3);
 [R4]=euler2DCM(E4);
-</pre><p>Rotate the coordinates</p><pre class="codeinput">V1=(R1*V')';
+</pre><p>Rotate the coordinates. One may define the rotation in the form <tt>V*R</tt> or <tt>(R*V')'</tt> depending if pre-, or post-rotation is applied, whereby <tt>V*R=(R'*V')'</tt>.</p><pre class="codeinput">V1=(R1*V')';
 V2=(R2*V')';
 V3=(R3*V')';
 V4=(R4*V')';
-</pre><p>Plotting data</p><pre class="codeinput">hf=figuremax(fig_color,fig_colordef);
+</pre><p>Plotting data</p><pre class="codeinput">hf=cFigure;
 
 subplot(2,2,1);
 title(<span class="string">'X-axis rotation'</span>,<span class="string">'FontSize'</span>,fontSize);
-xlabel(<span class="string">'X'</span>,<span class="string">'FontSize'</span>,fontSize); ylabel(<span class="string">'Y'</span>,<span class="string">'FontSize'</span>,fontSize); zlabel(<span class="string">'Z'</span>,<span class="string">'FontSize'</span>,fontSize);
-hp=patch(<span class="string">'Faces'</span>,F,<span class="string">'Vertices'</span>,V,<span class="string">'FaceColor'</span>,0.5*ones(1,3),<span class="string">'FaceAlpha'</span>,faceAlpha,<span class="string">'lineWidth'</span>,edgeWidth,<span class="string">'edgeColor'</span>,edgeColor);
-hp=patch(<span class="string">'Faces'</span>,F,<span class="string">'Vertices'</span>,V1,<span class="string">'FaceColor'</span>,<span class="string">'r'</span>,<span class="string">'FaceAlpha'</span>,faceAlpha,<span class="string">'lineWidth'</span>,edgeWidth,<span class="string">'edgeColor'</span>,edgeColor);
+gpatch(F,V,<span class="string">'kw'</span>,<span class="string">'none'</span>,0.5);
+gpatch(F,V1,<span class="string">'rw'</span>);
+axisGeom(gca,fontSize);
 camlight <span class="string">headlight</span>;
-set(gca,<span class="string">'FontSize'</span>,fontSize);
-view(3); axis <span class="string">tight</span>;  axis <span class="string">equal</span>;
 
 subplot(2,2,2);
 title(<span class="string">'Y-axis rotation'</span>,<span class="string">'FontSize'</span>,fontSize);
-xlabel(<span class="string">'X'</span>,<span class="string">'FontSize'</span>,fontSize); ylabel(<span class="string">'Y'</span>,<span class="string">'FontSize'</span>,fontSize); zlabel(<span class="string">'Z'</span>,<span class="string">'FontSize'</span>,fontSize);
-hp=patch(<span class="string">'Faces'</span>,F,<span class="string">'Vertices'</span>,V,<span class="string">'FaceColor'</span>,0.5*ones(1,3),<span class="string">'FaceAlpha'</span>,faceAlpha,<span class="string">'lineWidth'</span>,edgeWidth,<span class="string">'edgeColor'</span>,edgeColor);
-hp=patch(<span class="string">'Faces'</span>,F,<span class="string">'Vertices'</span>,V2,<span class="string">'FaceColor'</span>,<span class="string">'g'</span>,<span class="string">'FaceAlpha'</span>,faceAlpha,<span class="string">'lineWidth'</span>,edgeWidth,<span class="string">'edgeColor'</span>,edgeColor);
+gpatch(F,V,<span class="string">'kw'</span>,<span class="string">'none'</span>,0.5);
+gpatch(F,V2,<span class="string">'gw'</span>);
+axisGeom(gca,fontSize);
 camlight <span class="string">headlight</span>;
-set(gca,<span class="string">'FontSize'</span>,fontSize);
-view(3); axis <span class="string">tight</span>;  axis <span class="string">equal</span>;
 
 subplot(2,2,3);
 title(<span class="string">'Z-axis rotation'</span>,<span class="string">'FontSize'</span>,fontSize);
-xlabel(<span class="string">'X'</span>,<span class="string">'FontSize'</span>,fontSize); ylabel(<span class="string">'Y'</span>,<span class="string">'FontSize'</span>,fontSize); zlabel(<span class="string">'Z'</span>,<span class="string">'FontSize'</span>,fontSize);
-hp=patch(<span class="string">'Faces'</span>,F,<span class="string">'Vertices'</span>,V,<span class="string">'FaceColor'</span>,0.5*ones(1,3),<span class="string">'FaceAlpha'</span>,faceAlpha,<span class="string">'lineWidth'</span>,edgeWidth,<span class="string">'edgeColor'</span>,edgeColor);
-hp=patch(<span class="string">'Faces'</span>,F,<span class="string">'Vertices'</span>,V3,<span class="string">'FaceColor'</span>,<span class="string">'b'</span>,<span class="string">'FaceAlpha'</span>,faceAlpha,<span class="string">'lineWidth'</span>,edgeWidth,<span class="string">'edgeColor'</span>,edgeColor);
+gpatch(F,V,<span class="string">'kw'</span>,<span class="string">'none'</span>,0.5);
+gpatch(F,V3,<span class="string">'bw'</span>);
+axisGeom(gca,fontSize);
 camlight <span class="string">headlight</span>;
-set(gca,<span class="string">'FontSize'</span>,fontSize);
-view(3); axis <span class="string">tight</span>;  axis <span class="string">equal</span>;
 
 subplot(2,2,4);
 title(<span class="string">'Off-axis rotation'</span>,<span class="string">'FontSize'</span>,fontSize);
-xlabel(<span class="string">'X'</span>,<span class="string">'FontSize'</span>,fontSize); ylabel(<span class="string">'Y'</span>,<span class="string">'FontSize'</span>,fontSize); zlabel(<span class="string">'Z'</span>,<span class="string">'FontSize'</span>,fontSize);
-hp=patch(<span class="string">'Faces'</span>,F,<span class="string">'Vertices'</span>,V,<span class="string">'FaceColor'</span>,0.5*ones(1,3),<span class="string">'FaceAlpha'</span>,faceAlpha,<span class="string">'lineWidth'</span>,edgeWidth,<span class="string">'edgeColor'</span>,edgeColor);
-hp=patch(<span class="string">'Faces'</span>,F,<span class="string">'Vertices'</span>,V4,<span class="string">'FaceColor'</span>,<span class="string">'y'</span>,<span class="string">'FaceAlpha'</span>,faceAlpha,<span class="string">'lineWidth'</span>,edgeWidth,<span class="string">'edgeColor'</span>,edgeColor);
+gpatch(F,V,<span class="string">'kw'</span>,<span class="string">'none'</span>,0.5);
+gpatch(F,V4,<span class="string">'yw'</span>);
+axisGeom(gca,fontSize);
 camlight <span class="string">headlight</span>;
-set(gca,<span class="string">'FontSize'</span>,fontSize);
-view(3); axis <span class="string">tight</span>;  axis <span class="string">equal</span>;
 
 drawnow;
-</pre><img width="100%" height="auto" vspace="5" hspace="5" src="HELP_euler2DCM_01.jpg" alt=""> <p>A second output can also be requested which is the inverse rotation matrix.</p><pre class="codeinput">[R,Ri]=euler2DCM([randn(1,3)*pi]);
-R
-Ri
+</pre><img width="100%" height="auto" vspace="5" hspace="5" src="HELP_euler2DCM_01.jpg" alt=""> <p>A second output can also be requested which is the inverse rotation matrix.</p><pre class="codeinput">[Q,Qi]=euler2DCM([randn(1,3)*pi]);
+Q
+Qi
 </pre><pre class="codeoutput">
-R =
+Q =
 
-    0.7263    0.3733    0.5771
-   -0.0682    0.8747   -0.4799
-   -0.6840    0.3092    0.6608
+    0.8566   -0.3911   -0.3366
+    0.3092    0.9113   -0.2720
+    0.4131    0.1289    0.9015
 
 
-Ri =
+Qi =
 
-    0.7263   -0.0682   -0.6840
-    0.3733    0.8747    0.3092
-    0.5771   -0.4799    0.6608
+    0.8566    0.3092    0.4131
+   -0.3911    0.9113    0.1289
+   -0.3366   -0.2720    0.9015
 
-</pre><p>i.e. such that the following :</p><pre class="codeinput">Vr=(R*V')'; <span class="comment">%The rotated coordinates</span>
-Vn=(Ri*Vr')'; <span class="comment">%The normal coordinates after transforming back the rotated coordinates using inverse matrix</span>
+</pre><p>i.e. such that the following :</p><pre class="codeinput">Vr=(Q*V')'; <span class="comment">%The rotated coordinates</span>
+Vn=(Qi*Vr')'; <span class="comment">%The normal coordinates after transforming back the rotated coordinates using inverse matrix</span>
 </pre><p>Note that the sum of squared differences for instance is nearly zero</p><pre class="codeinput">D=sum((V(:)-Vn(:)).^2)
 </pre><pre class="codeoutput">
 D =
 
-   9.5427e-29
+   8.5943e-29
 
-</pre><h2 id="12">Creating multiple rotation matrices</h2><p>It is possible to define multiple rotation matrices at once by specifying a multi-row angle set</p><pre class="codeinput">E=[0.25*pi 0 0; 0 0.5*pi 0]; <span class="comment">%E.g. two angle sets are specified, 1 for each row</span>
-</pre><p>In this case the rotation matrices are stacked in the 3rd dimension</p><pre class="codeinput">[R]=euler2DCM(E)
+</pre><h2 id="15">Creating multiple rotation matrices</h2><p>It is possible to define multiple rotation matrices at once by specifying a multi-row angle set</p><pre class="codeinput">E=[0.25*pi 0 0; 0 0.5*pi 0]; <span class="comment">%E.g. two angle sets are specified, 1 for each row</span>
+</pre><p>In this case the rotation matrices are stacked in the 3rd dimension</p><pre class="codeinput">[Q]=euler2DCM(E)
 </pre><pre class="codeoutput">
-R(:,:,1) =
+Q(:,:,1) =
 
     1.0000         0         0
          0    0.7071   -0.7071
          0    0.7071    0.7071
 
 
-R(:,:,2) =
+Q(:,:,2) =
 
     0.0000         0    1.0000
          0    1.0000         0
    -1.0000         0    0.0000
 
+</pre><h2 id="17">Using symbolic angles</h2><pre class="codeinput"><span class="keyword">try</span>
+    syms <span class="string">a</span> <span class="string">b</span> <span class="string">c</span>
+    [Q1]=euler2DCM([a 0 0])
+    [Q2]=euler2DCM([0 b 0])
+    [Q3]=euler2DCM([0 0 c])
+    [Q4]=euler2DCM([a b c])
+<span class="keyword">catch</span>
+    warning(<span class="string">'Symbolic toolbox likely missing'</span>)
+<span class="keyword">end</span>
+</pre><pre class="codeoutput"> 
+Q1 =
+ 
+[ 1,      0,       0]
+[ 0, cos(a), -sin(a)]
+[ 0, sin(a),  cos(a)]
+ 
+ 
+Q2 =
+ 
+[  cos(b), 0, sin(b)]
+[       0, 1,      0]
+[ -sin(b), 0, cos(b)]
+ 
+ 
+Q3 =
+ 
+[ cos(c), -sin(c), 0]
+[ sin(c),  cos(c), 0]
+[      0,       0, 1]
+ 
+ 
+Q4 =
+ 
+[                        cos(b)*cos(c),                       -cos(b)*sin(c),         sin(b)]
+[ cos(a)*sin(c) + cos(c)*sin(a)*sin(b), cos(a)*cos(c) - sin(a)*sin(b)*sin(c), -cos(b)*sin(a)]
+[ sin(a)*sin(c) - cos(a)*cos(c)*sin(b), cos(c)*sin(a) + cos(a)*sin(b)*sin(c),  cos(a)*cos(b)]
+ 
 </pre><p><img vspace="5" hspace="5" src="gibbVerySmall.gif" alt=""> </p><p><i><b>GIBBON</b></i> <a href="www.gibboncode.org">www.gibboncode.org</a></p><p><i>Kevin Mattheus Moerman</i>, <a href="gibbon.toolbox@gmail.com">gibbon.toolbox@gmail.com</a></p><p><i><b>GIBBON footer text</b></i></p><p>License: <a href="https://github.com/gibbonCode/GIBBON/blob/master/LICENSE">https://github.com/gibbonCode/GIBBON/blob/master/LICENSE</a></p><p>GIBBON: The Geometry and Image-based Bioengineering add-On. A toolbox for image segmentation, image-based modeling, meshing, and finite element analysis.</p><p>Copyright (C) 2019  Kevin Mattheus Moerman</p><p>This program is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.</p><p>This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for more details.</p><p>You should have received a copy of the GNU General Public License along with this program.  If not, see <a href="http://www.gnu.org/licenses/">http://www.gnu.org/licenses/</a>.</p><p class="footer"><br><a href="https://www.mathworks.com/products/matlab/">Published with MATLAB&reg; R2019a</a><br></p></div><!--
 ##### SOURCE BEGIN #####
 %% HELP_euler2DCM
@@ -173,40 +198,46 @@ R(:,:,2) =
 %%
 clear; close all; clc;
 
+%% Syntax
+% |[Q]=euler2DCM(a);|
+
+%% Description 
+% This function uses the input Euler angle set |a|, a 1x3 vector, to
+% compute a rotation tensor |Q|, also known as a direction cosine matrix
+% (DCM). 
+% See also DCM2euler
+
+%% Examples 
+% 
+
 %%
 % Plot settings
-fig_color='w'; fig_colordef='white';
-fontSize=15;
-faceAlpha=1;
-edgeColor=0*ones(1,3);
-edgeWidth=1;
+fontSize=25;
 
-%% Creating a rotation matrix using Euler angles
-% Search wikipedia for information on Euler angles to define a rotation or
-% direction cosine matrix (DCM). 
+%% Setting up rotation matrices based on angles. 
 
 %% 
-% Load example patch data
+% Get example patch data
 [F,V]=parasaurolophus;
 
 %%
 % Defining sets of Euler angles for X, Y and Z axis rotation
-
-E1=[0.5*pi 0 0]; 
-E2=[0 0.5*pi 0]; 
-E3=[0 0 0.5*pi]; 
-E4=[0.25*pi 0.25*pi 0.25*pi]; 
+E1=[0.5*pi 0 0]; %Just x
+E2=[0 0.5*pi 0]; %Just y
+E3=[0 0 0.5*pi]; %Just z
+E4=[0.25*pi 0.25*pi 0.25*pi]; %All
 
 %%
 % Use |euler2DCM| function to define the rotation matrices
-
 [R1]=euler2DCM(E1);
 [R2]=euler2DCM(E2);
 [R3]=euler2DCM(E3);
 [R4]=euler2DCM(E4);
 
 %%
-% Rotate the coordinates
+% Rotate the coordinates. One may define the rotation in the form |V*R| or
+% |(R*V')'| depending if pre-, or post-rotation is applied, whereby
+% |V*R=(R'*V')'|.
 
 V1=(R1*V')'; 
 V2=(R2*V')'; 
@@ -216,57 +247,49 @@ V4=(R4*V')';
 %%
 % Plotting data
 
-hf=figuremax(fig_color,fig_colordef);
+hf=cFigure;
 
 subplot(2,2,1);
 title('X-axis rotation','FontSize',fontSize);
-xlabel('X','FontSize',fontSize); ylabel('Y','FontSize',fontSize); zlabel('Z','FontSize',fontSize);
-hp=patch('Faces',F,'Vertices',V,'FaceColor',0.5*ones(1,3),'FaceAlpha',faceAlpha,'lineWidth',edgeWidth,'edgeColor',edgeColor);
-hp=patch('Faces',F,'Vertices',V1,'FaceColor','r','FaceAlpha',faceAlpha,'lineWidth',edgeWidth,'edgeColor',edgeColor);
+gpatch(F,V,'kw','none',0.5);
+gpatch(F,V1,'rw');
+axisGeom(gca,fontSize);
 camlight headlight;
-set(gca,'FontSize',fontSize);
-view(3); axis tight;  axis equal; 
 
 subplot(2,2,2);
 title('Y-axis rotation','FontSize',fontSize);
-xlabel('X','FontSize',fontSize); ylabel('Y','FontSize',fontSize); zlabel('Z','FontSize',fontSize);
-hp=patch('Faces',F,'Vertices',V,'FaceColor',0.5*ones(1,3),'FaceAlpha',faceAlpha,'lineWidth',edgeWidth,'edgeColor',edgeColor);
-hp=patch('Faces',F,'Vertices',V2,'FaceColor','g','FaceAlpha',faceAlpha,'lineWidth',edgeWidth,'edgeColor',edgeColor);
+gpatch(F,V,'kw','none',0.5);
+gpatch(F,V2,'gw');
+axisGeom(gca,fontSize);
 camlight headlight;
-set(gca,'FontSize',fontSize);
-view(3); axis tight;  axis equal; 
 
 subplot(2,2,3);
 title('Z-axis rotation','FontSize',fontSize);
-xlabel('X','FontSize',fontSize); ylabel('Y','FontSize',fontSize); zlabel('Z','FontSize',fontSize);
-hp=patch('Faces',F,'Vertices',V,'FaceColor',0.5*ones(1,3),'FaceAlpha',faceAlpha,'lineWidth',edgeWidth,'edgeColor',edgeColor);
-hp=patch('Faces',F,'Vertices',V3,'FaceColor','b','FaceAlpha',faceAlpha,'lineWidth',edgeWidth,'edgeColor',edgeColor);
+gpatch(F,V,'kw','none',0.5);
+gpatch(F,V3,'bw');
+axisGeom(gca,fontSize);
 camlight headlight;
-set(gca,'FontSize',fontSize);
-view(3); axis tight;  axis equal; 
 
 subplot(2,2,4);
 title('Off-axis rotation','FontSize',fontSize);
-xlabel('X','FontSize',fontSize); ylabel('Y','FontSize',fontSize); zlabel('Z','FontSize',fontSize);
-hp=patch('Faces',F,'Vertices',V,'FaceColor',0.5*ones(1,3),'FaceAlpha',faceAlpha,'lineWidth',edgeWidth,'edgeColor',edgeColor);
-hp=patch('Faces',F,'Vertices',V4,'FaceColor','y','FaceAlpha',faceAlpha,'lineWidth',edgeWidth,'edgeColor',edgeColor);
+gpatch(F,V,'kw','none',0.5);
+gpatch(F,V4,'yw');
+axisGeom(gca,fontSize);
 camlight headlight;
-set(gca,'FontSize',fontSize);
-view(3); axis tight;  axis equal; 
 
 drawnow; 
 
 %%
 % A second output can also be requested which is the inverse rotation matrix. 
-[R,Ri]=euler2DCM([randn(1,3)*pi]);
-R
-Ri
+[Q,Qi]=euler2DCM([randn(1,3)*pi]);
+Q
+Qi
 
 %%
 % i.e. such that the following :
 
-Vr=(R*V')'; %The rotated coordinates
-Vn=(Ri*Vr')'; %The normal coordinates after transforming back the rotated coordinates using inverse matrix
+Vr=(Q*V')'; %The rotated coordinates
+Vn=(Qi*Vr')'; %The normal coordinates after transforming back the rotated coordinates using inverse matrix
 
 %%
 % Note that the sum of squared differences for instance is nearly zero 
@@ -281,7 +304,18 @@ E=[0.25*pi 0 0; 0 0.5*pi 0]; %E.g. two angle sets are specified, 1 for each row
 %%
 % In this case the rotation matrices are stacked in the 3rd dimension
 
-[R]=euler2DCM(E)
+[Q]=euler2DCM(E)
+
+%% Using symbolic angles
+try
+    syms a b c    
+    [Q1]=euler2DCM([a 0 0])
+    [Q2]=euler2DCM([0 b 0])
+    [Q3]=euler2DCM([0 0 c])
+    [Q4]=euler2DCM([a b c])    
+catch
+    warning('Symbolic toolbox likely missing')
+end
 
 %% 
 %

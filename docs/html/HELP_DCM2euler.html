@@ -6,7 +6,7 @@
    <!--
 This HTML was auto-generated from MATLAB code.
 To make changes, update the MATLAB code and republish this document.
-      --><title>DCM2euler</title><meta name="generator" content="MATLAB 9.6"><link rel="schema.DC" href="http://purl.org/dc/elements/1.1/"><meta name="DC.date" content="2019-06-20"><meta name="DC.source" content="HELP_DCM2euler.m"><style type="text/css">
+      --><title>DCM2euler</title><meta name="generator" content="MATLAB 9.6"><link rel="schema.DC" href="http://purl.org/dc/elements/1.1/"><meta name="DC.date" content="2019-06-21"><meta name="DC.source" content="HELP_DCM2euler.m"><style type="text/css">
 html,body,div,span,applet,object,iframe,h1,h2,h3,h4,h5,h6,p,blockquote,pre,a,abbr,acronym,address,big,cite,code,del,dfn,em,font,img,ins,kbd,q,s,samp,small,strike,strong,sub,sup,tt,var,b,u,i,center,dl,dt,dd,ol,ul,li,fieldset,form,label,legend,table,caption,tbody,tfoot,thead,tr,th,td{margin:0;padding:0;border:0;outline:0;font-size:100%;vertical-align:baseline;background:transparent}body{line-height:1}ol,ul{list-style:none}blockquote,q{quotes:none}blockquote:before,blockquote:after,q:before,q:after{content:'';content:none}:focus{outine:0}ins{text-decoration:none}del{text-decoration:line-through}table{border-collapse:collapse;border-spacing:0}
 
 html { min-height:100%; margin-bottom:1px; }
@@ -66,8 +66,44 @@ table td { padding:7px 5px; text-align:left; vertical-align:top; border:1px soli
 
 
 
-  </style></head><body><div class="content"><h1>DCM2euler</h1><!--introduction--><p>Below is a demonstration of the features of the <tt>DCM2euler</tt> function</p><!--/introduction--><h2>Contents</h2><div><ul><li><a href="#2">Syntax</a></li><li><a href="#3">Description</a></li><li><a href="#4">Examples</a></li></ul></div><pre class="codeinput">clear; close <span class="string">all</span>; clc;
-</pre><h2 id="2">Syntax</h2><p><tt>[a]=DCM2euler&reg;;</tt></p><h2 id="3">Description</h2><p>UNDOCUMENTED</p><h2 id="4">Examples</h2><p><img vspace="5" hspace="5" src="gibbVerySmall.gif" alt=""> </p><p><i><b>GIBBON</b></i> <a href="www.gibboncode.org">www.gibboncode.org</a></p><p><i>Kevin Mattheus Moerman</i>, <a href="gibbon.toolbox@gmail.com">gibbon.toolbox@gmail.com</a></p><p><i><b>GIBBON footer text</b></i></p><p>License: <a href="https://github.com/gibbonCode/GIBBON/blob/master/LICENSE">https://github.com/gibbonCode/GIBBON/blob/master/LICENSE</a></p><p>GIBBON: The Geometry and Image-based Bioengineering add-On. A toolbox for image segmentation, image-based modeling, meshing, and finite element analysis.</p><p>Copyright (C) 2019  Kevin Mattheus Moerman</p><p>This program is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.</p><p>This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for more details.</p><p>You should have received a copy of the GNU General Public License along with this program.  If not, see <a href="http://www.gnu.org/licenses/">http://www.gnu.org/licenses/</a>.</p><p class="footer"><br><a href="https://www.mathworks.com/products/matlab/">Published with MATLAB&reg; R2019a</a><br></p></div><!--
+  </style></head><body><div class="content"><h1>DCM2euler</h1><!--introduction--><p>Below is a demonstration of the features of the <tt>DCM2euler</tt> function</p><!--/introduction--><h2>Contents</h2><div><ul><li><a href="#2">Syntax</a></li><li><a href="#3">Description</a></li><li><a href="#4">Examples</a></li><li><a href="#6">Retrieving the Euler andles from a rotation tensor</a></li><li><a href="#11">Handling symbolic expressions</a></li></ul></div><pre class="codeinput">clear; close <span class="string">all</span>; clc;
+</pre><h2 id="2">Syntax</h2><p><tt>[a]=DCM2euler(Q);</tt></p><h2 id="3">Description</h2><p>This function is the inverse of the euler2DCM function. The Euler angles <tt>a</tt> are derived based on the input rotatin tensor <tt>Q</tt>.</p><h2 id="4">Examples</h2><p>Plot settings</p><pre class="codeinput">fontSize=25;
+</pre><h2 id="6">Retrieving the Euler andles from a rotation tensor</h2><p>Get example patch data</p><pre class="codeinput">[F,V]=parasaurolophus;
+</pre><p>Defining sets of true Euler angles for X, Y and Z axis rotation</p><pre class="codeinput">a_true=[0.25*pi 0.25*pi -0.25*pi]
+</pre><pre class="codeoutput">
+a_true =
+
+    0.7854    0.7854   -0.7854
+
+</pre><p>Use <tt>euler2DCM</tt> function to define the rotation tensor</p><pre class="codeinput">[Q]=euler2DCM(a_true);
+</pre><p>Use <tt>DCM2euler</tt> to retrieve the Euler angles</p><pre class="codeinput">a_fit=DCM2euler(Q)
+</pre><pre class="codeoutput">
+a_fit =
+
+    0.7854    0.7854   -0.7854
+
+</pre><h2 id="11">Handling symbolic expressions</h2><pre class="codeinput"><span class="keyword">try</span>
+    syms <span class="string">a</span> <span class="string">b</span> <span class="string">c</span>
+
+    a_true=[a b c]
+    Q=euler2DCM(a_true);
+
+    a_fit=DCM2euler(Q)
+
+<span class="keyword">catch</span>
+    warning(<span class="string">'Symbolic toolbox likely missing'</span>)
+<span class="keyword">end</span>
+</pre><pre class="codeoutput"> 
+a_true =
+ 
+[ a, b, c]
+ 
+ 
+a_fit =
+ 
+[ -atan2(-cos(b)*sin(a), cos(a)*cos(b)), -atan2(-sin(b), (cos(a)^2*cos(b)^2 + cos(b)^2*sin(a)^2)^(1/2)), -atan2(-cos(b)*sin(c), cos(b)*cos(c))]
+ 
+</pre><p><img vspace="5" hspace="5" src="gibbVerySmall.gif" alt=""> </p><p><i><b>GIBBON</b></i> <a href="www.gibboncode.org">www.gibboncode.org</a></p><p><i>Kevin Mattheus Moerman</i>, <a href="gibbon.toolbox@gmail.com">gibbon.toolbox@gmail.com</a></p><p><i><b>GIBBON footer text</b></i></p><p>License: <a href="https://github.com/gibbonCode/GIBBON/blob/master/LICENSE">https://github.com/gibbonCode/GIBBON/blob/master/LICENSE</a></p><p>GIBBON: The Geometry and Image-based Bioengineering add-On. A toolbox for image segmentation, image-based modeling, meshing, and finite element analysis.</p><p>Copyright (C) 2019  Kevin Mattheus Moerman</p><p>This program is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.</p><p>This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for more details.</p><p>You should have received a copy of the GNU General Public License along with this program.  If not, see <a href="http://www.gnu.org/licenses/">http://www.gnu.org/licenses/</a>.</p><p class="footer"><br><a href="https://www.mathworks.com/products/matlab/">Published with MATLAB&reg; R2019a</a><br></p></div><!--
 ##### SOURCE BEGIN #####
 %% DCM2euler
 % Below is a demonstration of the features of the |DCM2euler| function
@@ -76,12 +112,51 @@ table td { padding:7px 5px; text-align:left; vertical-align:top; border:1px soli
 clear; close all; clc;
 
 %% Syntax
-% |[a]=DCM2euler(R);|
+% |[a]=DCM2euler(Q);|
 
 %% Description 
-% UNDOCUMENTED 
+% This function is the inverse of the euler2DCM function. The Euler angles
+% |a| are derived based on the input rotatin tensor |Q|. 
+
 %% Examples 
 % 
+
+%%
+% Plot settings
+fontSize=25;
+
+%% Retrieving the Euler andles from a rotation tensor
+
+%% 
+% Get example patch data
+[F,V]=parasaurolophus;
+
+%%
+% Defining sets of true Euler angles for X, Y and Z axis rotation
+a_true=[0.25*pi 0.25*pi -0.25*pi]
+
+%%
+% Use |euler2DCM| function to define the rotation tensor
+[Q]=euler2DCM(a_true);
+
+%%
+% Use |DCM2euler| to retrieve the Euler angles
+a_fit=DCM2euler(Q)
+
+%% Handling symbolic expressions
+
+try
+    syms a b c
+    
+    a_true=[a b c]
+    Q=euler2DCM(a_true);
+    
+    a_fit=DCM2euler(Q)
+    
+catch
+    warning('Symbolic toolbox likely missing')
+end
+
 %%
 % 
 % <<gibbVerySmall.gif>>

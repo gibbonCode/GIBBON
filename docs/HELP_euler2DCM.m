@@ -4,40 +4,46 @@
 %%
 clear; close all; clc;
 
+%% Syntax
+% |[Q]=euler2DCM(a);|
+
+%% Description 
+% This function uses the input Euler angle set |a|, a 1x3 vector, to
+% compute a rotation tensor |Q|, also known as a direction cosine matrix
+% (DCM). 
+% See also DCM2euler
+
+%% Examples 
+% 
+
 %%
 % Plot settings
-fig_color='w'; fig_colordef='white';
-fontSize=15;
-faceAlpha=1;
-edgeColor=0*ones(1,3);
-edgeWidth=1;
+fontSize=25;
 
-%% Creating a rotation matrix using Euler angles
-% Search wikipedia for information on Euler angles to define a rotation or
-% direction cosine matrix (DCM). 
+%% Setting up rotation matrices based on angles. 
 
 %% 
-% Load example patch data
+% Get example patch data
 [F,V]=parasaurolophus;
 
 %%
 % Defining sets of Euler angles for X, Y and Z axis rotation
-
-E1=[0.5*pi 0 0]; 
-E2=[0 0.5*pi 0]; 
-E3=[0 0 0.5*pi]; 
-E4=[0.25*pi 0.25*pi 0.25*pi]; 
+E1=[0.5*pi 0 0]; %Just x
+E2=[0 0.5*pi 0]; %Just y
+E3=[0 0 0.5*pi]; %Just z
+E4=[0.25*pi 0.25*pi 0.25*pi]; %All
 
 %%
 % Use |euler2DCM| function to define the rotation matrices
-
 [R1]=euler2DCM(E1);
 [R2]=euler2DCM(E2);
 [R3]=euler2DCM(E3);
 [R4]=euler2DCM(E4);
 
 %%
-% Rotate the coordinates
+% Rotate the coordinates. One may define the rotation in the form |V*R| or
+% |(R*V')'| depending if pre-, or post-rotation is applied, whereby
+% |V*R=(R'*V')'|.
 
 V1=(R1*V')'; 
 V2=(R2*V')'; 
@@ -47,57 +53,49 @@ V4=(R4*V')';
 %%
 % Plotting data
 
-hf=figuremax(fig_color,fig_colordef);
+hf=cFigure;
 
 subplot(2,2,1);
 title('X-axis rotation','FontSize',fontSize);
-xlabel('X','FontSize',fontSize); ylabel('Y','FontSize',fontSize); zlabel('Z','FontSize',fontSize);
-hp=patch('Faces',F,'Vertices',V,'FaceColor',0.5*ones(1,3),'FaceAlpha',faceAlpha,'lineWidth',edgeWidth,'edgeColor',edgeColor);
-hp=patch('Faces',F,'Vertices',V1,'FaceColor','r','FaceAlpha',faceAlpha,'lineWidth',edgeWidth,'edgeColor',edgeColor);
+gpatch(F,V,'kw','none',0.5);
+gpatch(F,V1,'rw');
+axisGeom(gca,fontSize);
 camlight headlight;
-set(gca,'FontSize',fontSize);
-view(3); axis tight;  axis equal; 
 
 subplot(2,2,2);
 title('Y-axis rotation','FontSize',fontSize);
-xlabel('X','FontSize',fontSize); ylabel('Y','FontSize',fontSize); zlabel('Z','FontSize',fontSize);
-hp=patch('Faces',F,'Vertices',V,'FaceColor',0.5*ones(1,3),'FaceAlpha',faceAlpha,'lineWidth',edgeWidth,'edgeColor',edgeColor);
-hp=patch('Faces',F,'Vertices',V2,'FaceColor','g','FaceAlpha',faceAlpha,'lineWidth',edgeWidth,'edgeColor',edgeColor);
+gpatch(F,V,'kw','none',0.5);
+gpatch(F,V2,'gw');
+axisGeom(gca,fontSize);
 camlight headlight;
-set(gca,'FontSize',fontSize);
-view(3); axis tight;  axis equal; 
 
 subplot(2,2,3);
 title('Z-axis rotation','FontSize',fontSize);
-xlabel('X','FontSize',fontSize); ylabel('Y','FontSize',fontSize); zlabel('Z','FontSize',fontSize);
-hp=patch('Faces',F,'Vertices',V,'FaceColor',0.5*ones(1,3),'FaceAlpha',faceAlpha,'lineWidth',edgeWidth,'edgeColor',edgeColor);
-hp=patch('Faces',F,'Vertices',V3,'FaceColor','b','FaceAlpha',faceAlpha,'lineWidth',edgeWidth,'edgeColor',edgeColor);
+gpatch(F,V,'kw','none',0.5);
+gpatch(F,V3,'bw');
+axisGeom(gca,fontSize);
 camlight headlight;
-set(gca,'FontSize',fontSize);
-view(3); axis tight;  axis equal; 
 
 subplot(2,2,4);
 title('Off-axis rotation','FontSize',fontSize);
-xlabel('X','FontSize',fontSize); ylabel('Y','FontSize',fontSize); zlabel('Z','FontSize',fontSize);
-hp=patch('Faces',F,'Vertices',V,'FaceColor',0.5*ones(1,3),'FaceAlpha',faceAlpha,'lineWidth',edgeWidth,'edgeColor',edgeColor);
-hp=patch('Faces',F,'Vertices',V4,'FaceColor','y','FaceAlpha',faceAlpha,'lineWidth',edgeWidth,'edgeColor',edgeColor);
+gpatch(F,V,'kw','none',0.5);
+gpatch(F,V4,'yw');
+axisGeom(gca,fontSize);
 camlight headlight;
-set(gca,'FontSize',fontSize);
-view(3); axis tight;  axis equal; 
 
 drawnow; 
 
 %%
 % A second output can also be requested which is the inverse rotation matrix. 
-[R,Ri]=euler2DCM([randn(1,3)*pi]);
-R
-Ri
+[Q,Qi]=euler2DCM([randn(1,3)*pi]);
+Q
+Qi
 
 %%
 % i.e. such that the following :
 
-Vr=(R*V')'; %The rotated coordinates
-Vn=(Ri*Vr')'; %The normal coordinates after transforming back the rotated coordinates using inverse matrix
+Vr=(Q*V')'; %The rotated coordinates
+Vn=(Qi*Vr')'; %The normal coordinates after transforming back the rotated coordinates using inverse matrix
 
 %%
 % Note that the sum of squared differences for instance is nearly zero 
@@ -112,7 +110,18 @@ E=[0.25*pi 0 0; 0 0.5*pi 0]; %E.g. two angle sets are specified, 1 for each row
 %%
 % In this case the rotation matrices are stacked in the 3rd dimension
 
-[R]=euler2DCM(E)
+[Q]=euler2DCM(E)
+
+%% Using symbolic angles
+try
+    syms a b c    
+    [Q1]=euler2DCM([a 0 0])
+    [Q2]=euler2DCM([0 b 0])
+    [Q3]=euler2DCM([0 0 c])
+    [Q4]=euler2DCM([a b c])    
+catch
+    warning('Symbolic toolbox likely missing')
+end
 
 %% 
 %
