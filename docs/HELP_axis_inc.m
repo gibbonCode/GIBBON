@@ -8,9 +8,61 @@ clear; close all; clc;
 % |h=axis_inc(s);|
 
 %% Description 
-% UNDOCUMENTED 
+% This function widens the axis limits for the axis with the handle |hs|
+% using the scale factor |s| (e.g. if s=2 the axis width is doubled). The
+% scaling parameter |s| can be a single scalar or a vector such that each
+% axis direction is scaled differently.  
+% 
 %% Examples 
 % 
+
+%%
+% Plot settings
+fontSize=25;
+lineWidth=3; 
+
+%% Scaling limits on a 2D plot
+
+scaleFactor=2; 
+
+cFigure; 
+h1=subplot(1,2,1); hold on; 
+title('Original axis limits');
+plot([-1 1 1 -1],[-1 -1 1 1],'b-','LineWidth',lineWidth);
+axis tight; axis equal; view(2); box on; grid on;
+set(h1,'FontSize',fontSize);
+
+h2=subplot(1,2,2); hold on; 
+title(['Axis limits expanded using scale factor of ',sprintf('%.2f',scaleFactor)]);
+plot([-1 1 1 -1],[-1 -1 1 1],'b-','LineWidth',lineWidth);
+axis tight; axis equal; view(2); box on; grid on;
+axis_inc(scaleFactor,h2);
+set(h2,'FontSize',fontSize);
+drawnow; 
+
+%% Scaling limits on a 3D plot
+
+[F,V]=graphicsModels(8);
+
+scaleFactor=[2 4 2]; 
+
+cFigure; 
+h1=subplot(1,2,1); hold on; 
+title('Original axis limits');
+gpatch(F,V,'bw','none');
+axisGeom(h1,fontSize);
+set(h1,'FontSize',fontSize);
+camlight headlight;
+
+h2=subplot(1,2,2); hold on; 
+title(['Axis limits expanded using scale factor of ',sprintf('%.2f, %.2f, %.2f',scaleFactor)]);
+gpatch(F,V,'bw','none');
+axisGeom(h1,fontSize);
+axis_inc(scaleFactor,h2);
+set(h2,'FontSize',fontSize);
+camlight headlight;
+drawnow; 
+
 %%
 % 
 % <<gibbVerySmall.gif>>

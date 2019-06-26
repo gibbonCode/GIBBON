@@ -1,37 +1,53 @@
-function h=axis_inc(s)
+function [varargout]=axis_inc(varargin)
 
-%This function widens the axis limits by h_inc=w*(s-1), where w is the
-%length of the diagonal of the axis window and s the scaling factor
+% function [h]=axis_inc(s,ha)
+% ------------------------------------------------------------------------
+% This function widens the axis limits for the axis with the handle |hs|
+% using the scale factor |s| (e.g. if s=2 the axis width is doubled). The
+% scaling parameter |s| can be a single scalar or a vector such that each
+% axis direction is scaled differently.  
+% 
+% Change log: 
+% 2019/06/26 Added variable input/output handling
+% ------------------------------------------------------------------------
 
-%%
+%% Parse input
+
+switch nargin
+    case 1
+        s=varargin{1};
+        ha=gca; 
+    case 2
+        s=varargin{1};
+        ha=varargin{2};        
+end
+
+if numel(s)==1
+    s=s*ones(1,3);    
+end
+
+%% Set new axis limits
 
 %Get axis limits
-h=axis;
+limSet={'XLim','YLim','ZLim'};
 
-%Calculate increments
-wx=h(2)-h(1); 
-h_inc_x=wx*(s-1); %Axis limit increment
-
-wy=h(4)-h(3); 
-h_inc_y=wy*(s-1); %Axis limit increment
-
-if numel(h)==6
-    wz=h(6)-h(5);
-    h_inc_z=wz*(s-1); %Axis limit increments
+for q=1:1:numel(limSet)
+    try
+        limNow=get(ha,limSet{q});
+        w=limNow(2)-limNow(1);
+        if w<=eps(0)
+            w=1; %Force 1 if too small
+        end
+        limInc=w*(s(q)-1)/2; %Axis limit increment
+        limNew=limNow+[-limInc limInc];
+        set(ha,limSet{q},limNew);
+    catch
+        
+    end
 end
 
-%Adjusting extrema
-h(1)=h(1)-h_inc_x;
-h(2)=h(2)+h_inc_x;
-h(3)=h(3)-h_inc_y;
-h(4)=h(4)+h_inc_y;
-if numel(h)==6
-    h(5)=h(5)-h_inc_z;
-    h(6)=h(6)+h_inc_z;
-end
-
-%Setting axis limits
-axis(h);
+%% Collect output
+varargout{1}=ha;
 
 end
  
