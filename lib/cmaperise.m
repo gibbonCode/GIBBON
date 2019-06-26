@@ -1,6 +1,46 @@
-function Cmapped=cmaperise(C,cmap,clim)
+function Cmapped=cmaperise(varargin)
 
-C=C(:);
+% function Cmapped=cmaperise(C,cmap,clim)
+%-------------------------------------------------------------------------
+% This function creates RGB colors for the data C using the colormap cmap
+% and the limits clim. 
+%
+%
+% Change log:
+% 2019/06/25 Added variable input handling
+%-------------------------------------------------------------------------
+
+%% Parse input 
+
+switch nargin
+    case 1
+        C=varargin{1};
+        cmap=[];
+        clim=[];
+    case 2
+        C=varargin{1};
+        cmap=varargin{2};
+        clim=[];        
+    case 3
+        C=varargin{1};
+        cmap=varargin{2};
+        clim=varargin{3};
+end
+
+if isempty(cmap)
+    cmap=viridis(250);
+end
+
+if isempty(clim)
+   clim=[min(C(:)) max(C(:))];   
+   if diff(clim)<eps(0)
+       clim=[0 1];
+   end
+end
+    
+%% Use colormap to define RGB values
+
+C=C(:); %Color data as column
 p=(C-clim(1))./(clim(2)-clim(1));
 p(p<0)=0;
 p(p>1)=1;

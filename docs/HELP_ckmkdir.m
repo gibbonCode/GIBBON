@@ -8,7 +8,10 @@ clear; close all; clc;
 % |[varargout]=ckmkdir(dirName);|
 
 %% Description 
-% UNDOCUMENTED 
+% Check for the existance of the directory dirName and make the directory
+% if it does not. The optional output is the exitFlag which is 0 if it did
+% not exist and 1 if it did. 
+%
 %% Examples 
 % 
 %%

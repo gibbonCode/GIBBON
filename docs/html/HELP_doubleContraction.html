@@ -6,7 +6,7 @@
    <!--
 This HTML was auto-generated from MATLAB code.
 To make changes, update the MATLAB code and republish this document.
-      --><title>doubleContraction</title><meta name="generator" content="MATLAB 9.6"><link rel="schema.DC" href="http://purl.org/dc/elements/1.1/"><meta name="DC.date" content="2019-06-20"><meta name="DC.source" content="HELP_doubleContraction.m"><style type="text/css">
+      --><title>doubleContraction</title><meta name="generator" content="MATLAB 9.6"><link rel="schema.DC" href="http://purl.org/dc/elements/1.1/"><meta name="DC.date" content="2019-06-26"><meta name="DC.source" content="HELP_doubleContraction.m"><style type="text/css">
 html,body,div,span,applet,object,iframe,h1,h2,h3,h4,h5,h6,p,blockquote,pre,a,abbr,acronym,address,big,cite,code,del,dfn,em,font,img,ins,kbd,q,s,samp,small,strike,strong,sub,sup,tt,var,b,u,i,center,dl,dt,dd,ol,ul,li,fieldset,form,label,legend,table,caption,tbody,tfoot,thead,tr,th,td{margin:0;padding:0;border:0;outline:0;font-size:100%;vertical-align:baseline;background:transparent}body{line-height:1}ol,ul{list-style:none}blockquote,q{quotes:none}blockquote:before,blockquote:after,q:before,q:after{content:'';content:none}:focus{outine:0}ins{text-decoration:none}del{text-decoration:line-through}table{border-collapse:collapse;border-spacing:0}
 
 html { min-height:100%; margin-bottom:1px; }
@@ -66,8 +66,115 @@ table td { padding:7px 5px; text-align:left; vertical-align:top; border:1px soli
 
 
 
-  </style></head><body><div class="content"><h1>doubleContraction</h1><!--introduction--><p>Below is a demonstration of the features of the <tt>doubleContraction</tt> function</p><!--/introduction--><h2>Contents</h2><div><ul><li><a href="#2">Syntax</a></li><li><a href="#3">Description</a></li><li><a href="#4">Examples</a></li></ul></div><pre class="codeinput">clear; close <span class="string">all</span>; clc;
-</pre><h2 id="2">Syntax</h2><p><tt>C=doubleContraction(A,B);</tt></p><h2 id="3">Description</h2><p>UNDOCUMENTED</p><h2 id="4">Examples</h2><p><img vspace="5" hspace="5" src="gibbVerySmall.gif" alt=""> </p><p><i><b>GIBBON</b></i> <a href="www.gibboncode.org">www.gibboncode.org</a></p><p><i>Kevin Mattheus Moerman</i>, <a href="gibbon.toolbox@gmail.com">gibbon.toolbox@gmail.com</a></p><p><i><b>GIBBON footer text</b></i></p><p>License: <a href="https://github.com/gibbonCode/GIBBON/blob/master/LICENSE">https://github.com/gibbonCode/GIBBON/blob/master/LICENSE</a></p><p>GIBBON: The Geometry and Image-based Bioengineering add-On. A toolbox for image segmentation, image-based modeling, meshing, and finite element analysis.</p><p>Copyright (C) 2019  Kevin Mattheus Moerman</p><p>This program is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.</p><p>This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for more details.</p><p>You should have received a copy of the GNU General Public License along with this program.  If not, see <a href="http://www.gnu.org/licenses/">http://www.gnu.org/licenses/</a>.</p><p class="footer"><br><a href="https://www.mathworks.com/products/matlab/">Published with MATLAB&reg; R2019a</a><br></p></div><!--
+  </style></head><body><div class="content"><h1>doubleContraction</h1><!--introduction--><p>Below is a demonstration of the features of the <tt>doubleContraction</tt> function</p><!--/introduction--><h2>Contents</h2><div><ul><li><a href="#2">Syntax</a></li><li><a href="#3">Description</a></li><li><a href="#4">Examples</a></li><li><a href="#5">Double contraction of a 2nd-order and a 2nd-order tensor</a></li><li><a href="#8">Double contraction of a 4th-order and a 2nd-order tensor</a></li><li><a href="#11">Using symbolic variables</a></li></ul></div><pre class="codeinput">clear; close <span class="string">all</span>; clc;
+</pre><h2 id="2">Syntax</h2><p><tt>C=doubleContraction(A,B,subContract);</tt></p><h2 id="3">Description</h2><p>This function performs a double contraction of two tensors <tt>A</tt> and <tt>B</tt> to produce the output tensor <tt>C</tt>. The tensors are either both 3x3 second order tensors or <tt>A</tt> is a 4th order 3x3x3x3 tensor. The optional 3rd input <tt>subContract</tt> defines the indices to contract over for 4th order tensors e.g. <tt>subContract=[1 2]</tt> would contract over the first 2 indices.</p><h2 id="4">Examples</h2><h2 id="5">Double contraction of a 2nd-order and a 2nd-order tensor</h2><p>Creating an example tensor. Here a tensor <tt>A</tt> with all zeros except for the 3,3 component is created. Next a tensor <tt>B</tt> which, through double contraction, can "pick out" this scalar value is created. Finally the double contraction is performed illustrating this process.</p><pre class="codeinput"><span class="comment">%Create example tensor A</span>
+A=zeros(3,3); A(3,3)=pi; <span class="comment">%Zeros with Azz=A33=pi</span>
+R=euler2DCM([0.25*pi 0.25*pi 0]); <span class="comment">%Rotation matrix</span>
+A=R*A*R' <span class="comment">%Rotated version of A</span>
+
+<span class="comment">% Create 'structure' tensor example B</span>
+b=[0 0 1]*R.'; <span class="comment">%Rotated Z vector</span>
+B=b.'*b <span class="comment">%Rotated "structure" tensor for vector b</span>
+</pre><pre class="codeoutput">
+A =
+
+    1.5708   -1.1107    1.1107
+   -1.1107    0.7854   -0.7854
+    1.1107   -0.7854    0.7854
+
+
+B =
+
+    0.5000   -0.3536    0.3536
+   -0.3536    0.2500   -0.2500
+    0.3536   -0.2500    0.2500
+
+</pre><p>Double contraction using <tt>doubleContraction</tt></p><pre class="codeinput">s=doubleContraction(A,B)
+</pre><pre class="codeoutput">
+s =
+
+    3.1416
+
+</pre><h2 id="8">Double contraction of a 4th-order and a 2nd-order tensor</h2><p>Example for Hooke's law of linear elasticity</p><pre class="codeinput"><span class="comment">%Creating the 4th order linear elastic stiffness tensor</span>
+I=eye(3,3); <span class="comment">%The 2nd order identity tensor</span>
+II1=dyadicProduct(I,I,1); <span class="comment">%4th order base tensor 1</span>
+II3=dyadicProduct(I,I,3); <span class="comment">%4th order base tensor 3</span>
+
+<span class="comment">%Parameters for Hooke's law</span>
+mu=1; <span class="comment">%The shear modulus</span>
+lambda=5; <span class="comment">%The lambda lame parameter</span>
+
+<span class="comment">%Compose stiffness tensor</span>
+C=lambda.*II1+2.*mu.*II3;
+
+<span class="comment">%Create strain tensor</span>
+E=rand(3,3); E=E*E'
+</pre><pre class="codeoutput">
+E =
+
+    1.0793    0.8967    1.4848
+    0.8967    0.8533    1.4394
+    1.4848    1.4394    2.4337
+
+</pre><p>Double contraction using <tt>doubleContraction</tt></p><pre class="codeinput">subContract=[3 4];
+S=doubleContraction(C,E,subContract)
+</pre><pre class="codeoutput">
+S =
+
+   23.9903    1.7933    2.9697
+    1.7933   23.5381    2.8788
+    2.9697    2.8788   26.6990
+
+</pre><h2 id="11">Using symbolic variables</h2><p>Example for Hooke's law of linear elasticity</p><pre class="codeinput"><span class="comment">%Creating the 4th order linear elastic stiffness tensor</span>
+I=eye(3,3); <span class="comment">%The 2nd order identity tensor</span>
+II1=dyadicProduct(I,I,1); <span class="comment">%4th order base tensor 1</span>
+II3=dyadicProduct(I,I,3); <span class="comment">%4th order base tensor 3</span>
+
+<span class="comment">%Parameters for Hooke's law</span>
+<span class="keyword">try</span>
+    syms <span class="string">mu</span> <span class="string">lambda</span>
+<span class="keyword">catch</span>
+    mu=1; <span class="comment">%The shear modulus</span>
+    lambda=5; <span class="comment">%The lambda lame parameter</span>
+<span class="keyword">end</span>
+<span class="comment">%Compose stiffness tensor</span>
+C=lambda.*II1+2.*mu.*II3;
+
+<span class="comment">%Display Voigt mapped version</span>
+c=voigtMap(C)
+
+<span class="comment">%Create strain tensor</span>
+syms <span class="string">E1_1</span> <span class="string">E2_2</span> <span class="string">E3_3</span> <span class="string">E1_2</span> <span class="string">E1_3</span> <span class="string">E2_3</span>;
+E=[E1_1 E1_2 E1_3;<span class="keyword">...</span>
+   E1_2 E2_2 E2_3;<span class="keyword">...</span>
+   E1_3 E2_3 E3_3]
+</pre><pre class="codeoutput"> 
+c =
+ 
+[ lambda + 2*mu,        lambda,        lambda,  0,  0,  0]
+[        lambda, lambda + 2*mu,        lambda,  0,  0,  0]
+[        lambda,        lambda, lambda + 2*mu,  0,  0,  0]
+[             0,             0,             0, mu,  0,  0]
+[             0,             0,             0,  0, mu,  0]
+[             0,             0,             0,  0,  0, mu]
+ 
+ 
+E =
+ 
+[ E1_1, E1_2, E1_3]
+[ E1_2, E2_2, E2_3]
+[ E1_3, E2_3, E3_3]
+ 
+</pre><p>Double contraction using <tt>doubleContraction</tt></p><pre class="codeinput">subContract=[3 4];
+S=doubleContraction(C,E,subContract)
+</pre><pre class="codeoutput"> 
+S =
+ 
+[ E2_2*lambda + E3_3*lambda + E1_1*(lambda + 2*mu),                                        2*E1_2*mu,                                        2*E1_3*mu]
+[                                        2*E1_2*mu, E1_1*lambda + E3_3*lambda + E2_2*(lambda + 2*mu),                                        2*E2_3*mu]
+[                                        2*E1_3*mu,                                        2*E2_3*mu, E1_1*lambda + E2_2*lambda + E3_3*(lambda + 2*mu)]
+ 
+</pre><p><img vspace="5" hspace="5" src="gibbVerySmall.gif" alt=""> </p><p><i><b>GIBBON</b></i> <a href="www.gibboncode.org">www.gibboncode.org</a></p><p><i>Kevin Mattheus Moerman</i>, <a href="gibbon.toolbox@gmail.com">gibbon.toolbox@gmail.com</a></p><p><i><b>GIBBON footer text</b></i></p><p>License: <a href="https://github.com/gibbonCode/GIBBON/blob/master/LICENSE">https://github.com/gibbonCode/GIBBON/blob/master/LICENSE</a></p><p>GIBBON: The Geometry and Image-based Bioengineering add-On. A toolbox for image segmentation, image-based modeling, meshing, and finite element analysis.</p><p>Copyright (C) 2019  Kevin Mattheus Moerman</p><p>This program is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.</p><p>This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for more details.</p><p>You should have received a copy of the GNU General Public License along with this program.  If not, see <a href="http://www.gnu.org/licenses/">http://www.gnu.org/licenses/</a>.</p><p class="footer"><br><a href="https://www.mathworks.com/products/matlab/">Published with MATLAB&reg; R2019a</a><br></p></div><!--
 ##### SOURCE BEGIN #####
 %% doubleContraction
 % Below is a demonstration of the features of the |doubleContraction| function
@@ -76,12 +183,100 @@ table td { padding:7px 5px; text-align:left; vertical-align:top; border:1px soli
 clear; close all; clc;
 
 %% Syntax
-% |C=doubleContraction(A,B);|
+% |C=doubleContraction(A,B,subContract);|
 
 %% Description 
-% UNDOCUMENTED 
+% This function performs a double contraction of two tensors |A| and |B| to
+% produce the output tensor |C|. The tensors are either both 3x3 second
+% order tensors or |A| is a 4th order 3x3x3x3 tensor. The optional 3rd
+% input |subContract| defines the indices to contract over for 4th order
+% tensors e.g. |subContract=[1 2]| would contract over the first 2 indices.
+% 
+
 %% Examples 
 % 
+
+%% Double contraction of a 2nd-order and a 2nd-order tensor
+
+%%
+% Creating an example tensor. Here a tensor |A| with all zeros except for
+% the 3,3 component is created. Next a tensor |B| which, through double
+% contraction, can "pick out" this scalar value is created. Finally the
+% double contraction is performed illustrating this process. 
+
+%Create example tensor A
+A=zeros(3,3); A(3,3)=pi; %Zeros with Azz=A33=pi
+R=euler2DCM([0.25*pi 0.25*pi 0]); %Rotation matrix
+A=R*A*R' %Rotated version of A
+
+% Create 'structure' tensor example B
+b=[0 0 1]*R.'; %Rotated Z vector
+B=b.'*b %Rotated "structure" tensor for vector b
+
+%%
+% Double contraction using |doubleContraction|
+s=doubleContraction(A,B)
+
+%% Double contraction of a 4th-order and a 2nd-order tensor
+
+%%
+% Example for Hooke's law of linear elasticity
+
+%Creating the 4th order linear elastic stiffness tensor
+I=eye(3,3); %The 2nd order identity tensor
+II1=dyadicProduct(I,I,1); %4th order base tensor 1                                                                
+II3=dyadicProduct(I,I,3); %4th order base tensor 3
+
+%Parameters for Hooke's law
+mu=1; %The shear modulus
+lambda=5; %The lambda lame parameter
+
+%Compose stiffness tensor
+C=lambda.*II1+2.*mu.*II3; 
+
+%Create strain tensor
+E=rand(3,3); E=E*E'
+
+%%
+% Double contraction using |doubleContraction|
+subContract=[3 4];
+S=doubleContraction(C,E,subContract)
+
+%% Using symbolic variables
+
+%%
+% Example for Hooke's law of linear elasticity
+
+%Creating the 4th order linear elastic stiffness tensor
+I=eye(3,3); %The 2nd order identity tensor
+II1=dyadicProduct(I,I,1); %4th order base tensor 1                                                                
+II3=dyadicProduct(I,I,3); %4th order base tensor 3
+
+%Parameters for Hooke's law
+try
+    syms mu lambda
+catch
+    mu=1; %The shear modulus
+    lambda=5; %The lambda lame parameter
+end
+%Compose stiffness tensor
+C=lambda.*II1+2.*mu.*II3;
+
+%Display Voigt mapped version
+c=voigtMap(C)
+
+%Create strain tensor
+syms E1_1 E2_2 E3_3 E1_2 E1_3 E2_3;
+E=[E1_1 E1_2 E1_3;...
+   E1_2 E2_2 E2_3;...
+   E1_3 E2_3 E3_3]
+
+%%
+% Double contraction using |doubleContraction|
+
+subContract=[3 4];
+S=doubleContraction(C,E,subContract)
+
 %%
 % 
 % <<gibbVerySmall.gif>>

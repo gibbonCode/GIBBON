@@ -5,12 +5,46 @@
 clear; close all; clc;
 
 %% Syntax
-% |[R_sq]=R_squared(yi,fi);|
+% |[R_sq]=R_squared(y,yf);|
 
 %% Description 
-% UNDOCUMENTED 
+% This function calculates the coefficient of determination (R-Squared) for
+% the (e.g. measurement) data |y| and the data |yf| (e.g. a model fit). 
+% NaN entries in either inputs are ignored. 
+
 %% Examples 
 % 
+
+%%
+% Plot settings
+lineWidth=3;
+markerSize=50;
+fontSize=25; 
+
+%%
+% Example data
+t=linspace(0,2*pi,25);
+y=sin(t)+0.1*randn(size(t));
+
+%%
+% Example fit
+yf=sin(t); 
+
+%% 
+% Compute R-squared
+[R_sq]=R_squared(y,yf)
+
+%%
+% Visualize 
+
+cFigure; hold on;
+title(['R^2=',sprintf('%.4f',R_sq)],'Interpreter','Tex');
+plot(t,y,'k.','MarkerSize',markerSize); 
+plot(t,yf,'g-','LineWidth',lineWidth); 
+set(gca,'FontSize',fontSize);
+axis tight; axis square; box on; grid on;
+drawnow; 
+
 %%
 % 
 % <<gibbVerySmall.gif>>

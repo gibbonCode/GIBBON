@@ -6,7 +6,7 @@
    <!--
 This HTML was auto-generated from MATLAB code.
 To make changes, update the MATLAB code and republish this document.
-      --><title>R_squared</title><meta name="generator" content="MATLAB 9.6"><link rel="schema.DC" href="http://purl.org/dc/elements/1.1/"><meta name="DC.date" content="2019-06-20"><meta name="DC.source" content="HELP_R_squared.m"><style type="text/css">
+      --><title>R_squared</title><meta name="generator" content="MATLAB 9.6"><link rel="schema.DC" href="http://purl.org/dc/elements/1.1/"><meta name="DC.date" content="2019-06-26"><meta name="DC.source" content="HELP_R_squared.m"><style type="text/css">
 html,body,div,span,applet,object,iframe,h1,h2,h3,h4,h5,h6,p,blockquote,pre,a,abbr,acronym,address,big,cite,code,del,dfn,em,font,img,ins,kbd,q,s,samp,small,strike,strong,sub,sup,tt,var,b,u,i,center,dl,dt,dd,ol,ul,li,fieldset,form,label,legend,table,caption,tbody,tfoot,thead,tr,th,td{margin:0;padding:0;border:0;outline:0;font-size:100%;vertical-align:baseline;background:transparent}body{line-height:1}ol,ul{list-style:none}blockquote,q{quotes:none}blockquote:before,blockquote:after,q:before,q:after{content:'';content:none}:focus{outine:0}ins{text-decoration:none}del{text-decoration:line-through}table{border-collapse:collapse;border-spacing:0}
 
 html { min-height:100%; margin-bottom:1px; }
@@ -67,7 +67,26 @@ table td { padding:7px 5px; text-align:left; vertical-align:top; border:1px soli
 
 
   </style></head><body><div class="content"><h1>R_squared</h1><!--introduction--><p>Below is a demonstration of the features of the <tt>R_squared</tt> function</p><!--/introduction--><h2>Contents</h2><div><ul><li><a href="#2">Syntax</a></li><li><a href="#3">Description</a></li><li><a href="#4">Examples</a></li></ul></div><pre class="codeinput">clear; close <span class="string">all</span>; clc;
-</pre><h2 id="2">Syntax</h2><p><tt>[R_sq]=R_squared(yi,fi);</tt></p><h2 id="3">Description</h2><p>UNDOCUMENTED</p><h2 id="4">Examples</h2><p><img vspace="5" hspace="5" src="gibbVerySmall.gif" alt=""> </p><p><i><b>GIBBON</b></i> <a href="www.gibboncode.org">www.gibboncode.org</a></p><p><i>Kevin Mattheus Moerman</i>, <a href="gibbon.toolbox@gmail.com">gibbon.toolbox@gmail.com</a></p><p><i><b>GIBBON footer text</b></i></p><p>License: <a href="https://github.com/gibbonCode/GIBBON/blob/master/LICENSE">https://github.com/gibbonCode/GIBBON/blob/master/LICENSE</a></p><p>GIBBON: The Geometry and Image-based Bioengineering add-On. A toolbox for image segmentation, image-based modeling, meshing, and finite element analysis.</p><p>Copyright (C) 2019  Kevin Mattheus Moerman</p><p>This program is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.</p><p>This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for more details.</p><p>You should have received a copy of the GNU General Public License along with this program.  If not, see <a href="http://www.gnu.org/licenses/">http://www.gnu.org/licenses/</a>.</p><p class="footer"><br><a href="https://www.mathworks.com/products/matlab/">Published with MATLAB&reg; R2019a</a><br></p></div><!--
+</pre><h2 id="2">Syntax</h2><p><tt>[R_sq]=R_squared(y,yf);</tt></p><h2 id="3">Description</h2><p>This function calculates the coefficient of determination (R-Squared) for the (e.g. measurement) data <tt>y</tt> and the data <tt>yf</tt> (e.g. a model fit). NaN entries in either inputs are ignored.</p><h2 id="4">Examples</h2><p>Plot settings</p><pre class="codeinput">lineWidth=3;
+markerSize=50;
+fontSize=25;
+</pre><p>Example data</p><pre class="codeinput">t=linspace(0,2*pi,25);
+y=sin(t)+0.1*randn(size(t));
+</pre><p>Example fit</p><pre class="codeinput">yf=sin(t);
+</pre><p>Compute R-squared</p><pre class="codeinput">[R_sq]=R_squared(y,yf)
+</pre><pre class="codeoutput">
+R_sq =
+
+    0.9885
+
+</pre><p>Visualize</p><pre class="codeinput">cFigure; hold <span class="string">on</span>;
+title([<span class="string">'R^2='</span>,sprintf(<span class="string">'%.4f'</span>,R_sq)],<span class="string">'Interpreter'</span>,<span class="string">'Tex'</span>);
+plot(t,y,<span class="string">'k.'</span>,<span class="string">'MarkerSize'</span>,markerSize);
+plot(t,yf,<span class="string">'g-'</span>,<span class="string">'LineWidth'</span>,lineWidth);
+set(gca,<span class="string">'FontSize'</span>,fontSize);
+axis <span class="string">tight</span>; axis <span class="string">square</span>; box <span class="string">on</span>; grid <span class="string">on</span>;
+drawnow;
+</pre><img width="100%" height="auto" vspace="5" hspace="5" src="HELP_R_squared_01.jpg" alt=""> <p><img vspace="5" hspace="5" src="gibbVerySmall.gif" alt=""> </p><p><i><b>GIBBON</b></i> <a href="www.gibboncode.org">www.gibboncode.org</a></p><p><i>Kevin Mattheus Moerman</i>, <a href="gibbon.toolbox@gmail.com">gibbon.toolbox@gmail.com</a></p><p><i><b>GIBBON footer text</b></i></p><p>License: <a href="https://github.com/gibbonCode/GIBBON/blob/master/LICENSE">https://github.com/gibbonCode/GIBBON/blob/master/LICENSE</a></p><p>GIBBON: The Geometry and Image-based Bioengineering add-On. A toolbox for image segmentation, image-based modeling, meshing, and finite element analysis.</p><p>Copyright (C) 2019  Kevin Mattheus Moerman</p><p>This program is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.</p><p>This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for more details.</p><p>You should have received a copy of the GNU General Public License along with this program.  If not, see <a href="http://www.gnu.org/licenses/">http://www.gnu.org/licenses/</a>.</p><p class="footer"><br><a href="https://www.mathworks.com/products/matlab/">Published with MATLAB&reg; R2019a</a><br></p></div><!--
 ##### SOURCE BEGIN #####
 %% R_squared
 % Below is a demonstration of the features of the |R_squared| function
@@ -76,12 +95,46 @@ table td { padding:7px 5px; text-align:left; vertical-align:top; border:1px soli
 clear; close all; clc;
 
 %% Syntax
-% |[R_sq]=R_squared(yi,fi);|
+% |[R_sq]=R_squared(y,yf);|
 
 %% Description 
-% UNDOCUMENTED 
+% This function calculates the coefficient of determination (R-Squared) for
+% the (e.g. measurement) data |y| and the data |yf| (e.g. a model fit). 
+% NaN entries in either inputs are ignored. 
+
 %% Examples 
 % 
+
+%%
+% Plot settings
+lineWidth=3;
+markerSize=50;
+fontSize=25; 
+
+%%
+% Example data
+t=linspace(0,2*pi,25);
+y=sin(t)+0.1*randn(size(t));
+
+%%
+% Example fit
+yf=sin(t); 
+
+%% 
+% Compute R-squared
+[R_sq]=R_squared(y,yf)
+
+%%
+% Visualize 
+
+cFigure; hold on;
+title(['R^2=',sprintf('%.4f',R_sq)],'Interpreter','Tex');
+plot(t,y,'k.','MarkerSize',markerSize); 
+plot(t,yf,'g-','LineWidth',lineWidth); 
+set(gca,'FontSize',fontSize);
+axis tight; axis square; box on; grid on;
+drawnow; 
+
 %%
 % 
 % <<gibbVerySmall.gif>>

@@ -5,8 +5,16 @@
 clear; close all; clc;
 
 %% Syntax
-% |[X,Y,Z]=im2cart(I,J,K,v);|
-
+% |[X,Y,Z]=im2cart(I,J,K,v);|   
+%%
+% |[X,Y,Z]=im2cart(I,J,K);|   
+%%
+% |[V_xyz]=im2cart(V_ijk,v);|   
+%%
+% |[V_xyz]=im2cart(V_ijk);|   
+%%
+% |[V_xyz]=im2cart(V_ij);|   
+ 
 %% Description
 % This function converts the image coordinates I,J,K to the cartesian
 % coordinates X,Y,Z using the voxel dimension v. 
@@ -14,6 +22,19 @@ clear; close all; clc;
 % I,J,K can be scalars, vectors or matrices. 
 % v is a vector of length 3 where v(1), v(2) and v(3) correspond to the
 % voxel dimensions in the x,y and z direction respectively. 
+%
+% This function maps the row, column, slice coordinates I,J,K to
+% "real-world" Cartesian coordinates X,Y,Z based on: 
+% X=(J-0.5).*v(2);
+% Y=(I-0.5).*v(1);
+% Z=(K-0.5).*v(3);
+%
+% Note that the columns relate to X while rows relate to Y. 
+%
+% A single coordinate array may also be specified whereby the columns
+% define the I, J, and K coordinates. If a single output is requested the 
+% output will also consist of such an array whereby columns are the X, Y,
+% and Z coordinates
 
 %% Examples
 
@@ -22,75 +43,114 @@ clear; close all; clc;
 cMap=gjet(250);
 faceAlpha1=1;
 faceAlpha2=0.65;
-edgeColor1='none';
-edgeColor2='none';
-fontSize=15; 
+fontSize=25; 
 
-%% Example: Medical image data and coordinate manipulation due to voxel size
+%% Example: 2D image coordinate systems
+% In this example a 2D image with an anisotropic voxel (pixel) size is
+% used. It is first visualized in image coordinates which, since voxel size
+% is not taken in to account , appears stretcged. Next it is also
+% visualized using "real-world" Cartesian coordinates which do take the
+% real anisotropic voxel size into account (using |im2cart|). This image
+% appears unstretched. 
+% 
+%%
+% Get example image data
 
-% Get a 3D image
-load mri;
-M=squeeze(D); %example image data set
-v=[2 2 5]; %example voxel size, not voxels are ellongated in slice direction
+imageData=load('mandrill'); %Image data for photograph
+M=double(imageData.X); %Get gray scale intensity information
+M=M(1:2:end,1:6:end); %Reduce density of image and make anisotropic
+v=[1 3 1]; %example voxel size 
 
 %%
-% The voxels to display can be specified as a list (vector) of voxels
-% numbers (linear indices) or using a mask (logic array).
+% Create row (I) and column (J) image coordinates for all voxel centers
+
+[I,J]=ndgrid(1:1:size(M,1),1:1:size(M,2)); %Row and column coordinates
+K=ones(size(I)); %Slice coordinates 
+P_IJ=[I(:) J(:) K(:)]; %The collected coordinate array
+
+%%
+% Use |im2cart| to convert to "Cartesian" or real world coordinates
+
+P_XY=im2cart(P_IJ,v); %Real world coordinates. 
+
+%%
+% Create patch data for plotting 
+
+%Get patch data 
+[F,V,C]=im2patch(M,true(size(M)),'sk');
+
+%%
+% Use |im2cart| to convert to "Cartesian" or real world coordinates
+
+V_XY=im2cart(V(:,[2 1 3]),v);
+
+%% 
+% Visualize 
+cFigure;
+subplot(1,2,1); hold on; 
+title('Image coordinate system');
+hp1=gpatch(F,V,C,'none');
+hp2=plotV(P_IJ(:,[2 1 3]),'r.','markerSize',5);
+legend([hp1,hp2],{'Image data','Points'})
+axis ij; axis tight; axis equal; 
+set(gca,'FontSize',fontSize);
+colormap gray;
+
+subplot(1,2,2); hold on; 
+title('"real-world" coordinate system');
+hp1=gpatch(F,V_XY,C,'none');
+hp2=plotV(P_XY,'g.','markerSize',5);
+legend([hp1,hp2],{'Image data','Points'})
+axis ij; axis tight; axis equal; 
+set(gca,'FontSize',fontSize);
+colormap gray;
+
+drawnow; 
+
+%% Example: 3D image coordinate handling and visualization
+
+%%
+% Get example image data
+
+load mri;
+M=squeeze(D); %example image data set
+v=[2 2 5]; %example voxel size, note voxels are ellongated in slice direction
+
+%%
+% Use |im2patch| to get coordinates of voxel data for plotting
 
 %Defining row, column and slice indicices for slice patching
 sliceIndexI=round(size(M,1)/2); %(close to) middle row
 sliceIndexJ=round(size(M,2)/2); %(close to) middle column
 sliceIndexK=round(size(M,3)/2); %(close to) middle slice
 
-%Defining "masks" i.e. logic arrays with ones for voxels of interest
-logicSliceI=false(size(M)); 
-logicSliceI(sliceIndexI,:,:)=1;
-logicSliceI=logicSliceI & M>0;
+logicPlot=false(size(M));
+logicPlot(sliceIndexI,:,:)=1;
+logicPlot(:,sliceIndexJ,:)=1;
+logicPlot(:,:,sliceIndexK)=1;
 
-logicSliceJ=false(size(M)); 
-logicSliceJ(:,sliceIndexJ,:)=1;
-logicSliceJ=logicSliceJ & M>0;
-
-logicSliceK=false(size(M)); 
-logicSliceK(:,:,sliceIndexK)=1;
-logicSliceK=logicSliceK & M>0;
-
-%Defining voxel indices for voxels of interest
-T_low=min(M(:))+((max(M(:))-min(M(:)))/10); %Threshold example
-logicVoxels=(M>T_low);
-logicVoxels(:,1:sliceIndexJ,:)=0;
+%Get patch data 
+[F,V,C]=ind2patch(logicPlot,M,'vb'); 
 
 %%
-% Creating patch data
-% The patch data consists of a matrix array defining the faces, a matrix
-% array defining the vertices and a vector for the colour data. The
-% vertices are based on the image coordinates however they are formatted
-% as: [X(:) Y(:) Z(:)]. X relates to columns, Y to rows and Z to slices. 
-% Use a function like |im2cart| , or |im2mrcart| to convert image to cartesian
-% coordinates. 
+% Use |im2cart| to scale coordinates based on voxel size. The patch data
+% consists of a matrix array defining the faces, a matrix array defining
+% the vertices and a vector for the colour data. The vertices are based on
+% the image coordinates however they are formatted as: [X(:) Y(:) Z(:)]. X
+% relates to columns, Y to rows and Z to slices.  
  
-[Fv,Vv,Cv]=ind2patch(logicVoxels,M,'vb'); 
-[Fx,Vx,Cx]=ind2patch(logicSliceJ,M,'sj');
-[Fy,Vy,Cy]=ind2patch(logicSliceI,M,'si');
-[Fz,Vz,Cz]=ind2patch(logicSliceK,M,'sk');
-
 % Convert image coordinates to cartesian coordinates
-[Vv(:,1),Vv(:,2),Vv(:,3)]=im2cart(Vv(:,2),Vv(:,1),Vv(:,3),v); 
-[Vx(:,1),Vx(:,2),Vx(:,3)]=im2cart(Vx(:,2),Vx(:,1),Vx(:,3),v);
-[Vy(:,1),Vy(:,2),Vy(:,3)]=im2cart(Vy(:,2),Vy(:,1),Vy(:,3),v);
-[Vz(:,1),Vz(:,2),Vz(:,3)]=im2cart(Vz(:,2),Vz(:,1),Vz(:,3),v);
+[V(:,1),V(:,2),V(:,3)]=im2cart(V(:,2),V(:,1),V(:,3),v); 
 
-h8=cFigure;
-title('MRI visualisation, slices and voxels in cartesian coordinates with aid of voxel size');
+%%
+% Visualize 
+cFigure;
+title('3D image data visualization');
 xlabel('X (mm)');ylabel('Y (mm)'); zlabel('Z (mm)'); hold on;
-hp1= patch('Faces',Fv,'Vertices',Vv,'FaceColor','flat','CData',Cv,'EdgeColor',edgeColor1,'FaceAlpha',faceAlpha1);
-hp2= patch('Faces',Fx,'Vertices',Vx,'FaceColor','flat','CData',Cx,'EdgeColor',edgeColor2,'FaceAlpha',faceAlpha1);
-hp3= patch('Faces',Fy,'Vertices',Vy,'FaceColor','flat','CData',Cy,'EdgeColor',edgeColor2,'FaceAlpha',faceAlpha1);
-hp4= patch('Faces',Fz,'Vertices',Vz,'FaceColor','flat','CData',Cz,'EdgeColor',edgeColor2,'FaceAlpha',faceAlpha1);
-axis equal; view(3); axis tight; axis vis3d; grid on;  
+gpatch(F,V,C);
+axisGeom(gca,fontSize); 
 colormap(gray(250)); colorbar; 
 camlight headlight;
-set(gca,'fontSize',fontSize); 
 drawnow;
 
 %% 

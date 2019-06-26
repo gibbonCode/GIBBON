@@ -11,7 +11,7 @@ function [varargout]=discQuadMesh(varargin)
 % 10/05/2016 Updated for GIBBON
 %------------------------------------------------------------------------
 
-
+%% Parse input 
 switch nargin
     case 1
         nElements=varargin{1};

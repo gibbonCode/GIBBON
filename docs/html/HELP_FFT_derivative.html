@@ -6,7 +6,7 @@
    <!--
 This HTML was auto-generated from MATLAB code.
 To make changes, update the MATLAB code and republish this document.
-      --><title>FFT_derivative</title><meta name="generator" content="MATLAB 9.6"><link rel="schema.DC" href="http://purl.org/dc/elements/1.1/"><meta name="DC.date" content="2019-06-20"><meta name="DC.source" content="HELP_FFT_derivative.m"><style type="text/css">
+      --><title>FFT_derivative</title><meta name="generator" content="MATLAB 9.6"><link rel="schema.DC" href="http://purl.org/dc/elements/1.1/"><meta name="DC.date" content="2019-06-24"><meta name="DC.source" content="HELP_FFT_derivative.m"><style type="text/css">
 html,body,div,span,applet,object,iframe,h1,h2,h3,h4,h5,h6,p,blockquote,pre,a,abbr,acronym,address,big,cite,code,del,dfn,em,font,img,ins,kbd,q,s,samp,small,strike,strong,sub,sup,tt,var,b,u,i,center,dl,dt,dd,ol,ul,li,fieldset,form,label,legend,table,caption,tbody,tfoot,thead,tr,th,td{margin:0;padding:0;border:0;outline:0;font-size:100%;vertical-align:baseline;background:transparent}body{line-height:1}ol,ul{list-style:none}blockquote,q{quotes:none}blockquote:before,blockquote:after,q:before,q:after{content:'';content:none}:focus{outine:0}ins{text-decoration:none}del{text-decoration:line-through}table{border-collapse:collapse;border-spacing:0}
 
 html { min-height:100%; margin-bottom:1px; }
@@ -66,8 +66,105 @@ table td { padding:7px 5px; text-align:left; vertical-align:top; border:1px soli
 
 
 
-  </style></head><body><div class="content"><h1>FFT_derivative</h1><!--introduction--><p>Below is a demonstration of the features of the <tt>FFT_derivative</tt> function</p><!--/introduction--><h2>Contents</h2><div><ul><li><a href="#2">Syntax</a></li><li><a href="#3">Description</a></li><li><a href="#4">Examples</a></li></ul></div><pre class="codeinput">clear; close <span class="string">all</span>; clc;
-</pre><h2 id="2">Syntax</h2><p><tt>[dY,fft_dY]=FFT_derivative(Y,dt,dimDir,derOrder);</tt></p><h2 id="3">Description</h2><p>UNDOCUMENTED</p><h2 id="4">Examples</h2><p><img vspace="5" hspace="5" src="gibbVerySmall.gif" alt=""> </p><p><i><b>GIBBON</b></i> <a href="www.gibboncode.org">www.gibboncode.org</a></p><p><i>Kevin Mattheus Moerman</i>, <a href="gibbon.toolbox@gmail.com">gibbon.toolbox@gmail.com</a></p><p><i><b>GIBBON footer text</b></i></p><p>License: <a href="https://github.com/gibbonCode/GIBBON/blob/master/LICENSE">https://github.com/gibbonCode/GIBBON/blob/master/LICENSE</a></p><p>GIBBON: The Geometry and Image-based Bioengineering add-On. A toolbox for image segmentation, image-based modeling, meshing, and finite element analysis.</p><p>Copyright (C) 2019  Kevin Mattheus Moerman</p><p>This program is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.</p><p>This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for more details.</p><p>You should have received a copy of the GNU General Public License along with this program.  If not, see <a href="http://www.gnu.org/licenses/">http://www.gnu.org/licenses/</a>.</p><p class="footer"><br><a href="https://www.mathworks.com/products/matlab/">Published with MATLAB&reg; R2019a</a><br></p></div><!--
+  </style></head><body><div class="content"><h1>FFT_derivative</h1><!--introduction--><p>Below is a demonstration of the features of the <tt>FFT_derivative</tt> function</p><!--/introduction--><h2>Contents</h2><div><ul><li><a href="#2">Syntax</a></li><li><a href="#3">Description</a></li><li><a href="#4">Examples</a></li><li><a href="#6">FFT derivatives of evenly spaced vector data</a></li><li><a href="#10">Using extrapolation to suppress edge effects</a></li><li><a href="#13">FFT derivatives of multi-dimensional data</a></li></ul></div><pre class="codeinput">clear; close <span class="string">all</span>; clc;
+</pre><h2 id="2">Syntax</h2><p><tt>[dY,fft_dY]=FFT_derivative(dt,Y,dimDer,derOrder,numPad);</tt></p><h2 id="3">Description</h2><p>This function uses the Fourier transform method to compute the derivative of order <tt>derOrder</tt> for the input data <tt>Y</tt>, allong direction <tt>dimDer</tt>. The array X</p><h2 id="4">Examples</h2><p>Plot settings</p><pre class="codeinput">fontSize=20;
+lineWidth=5;
+</pre><h2 id="6">FFT derivatives of evenly spaced vector data</h2><p>Create example data</p><pre class="codeinput">n=50; <span class="comment">%Number of samples</span>
+x=linspace(0,3*pi,n); <span class="comment">%x-vector</span>
+y=sin(x); <span class="comment">%y-vector</span>
+dy=cos(x); <span class="comment">%True derivative for comparison</span>
+</pre><p>Use <tt>FFT_derivative</tt> to compute the derivative</p><pre class="codeinput">dimDer=2; <span class="comment">%Direction for derivative</span>
+derOrder=1; <span class="comment">%Order of derivative</span>
+dt=x(2)-x(1);
+dy_fft=FFT_derivative(dt,y,dimDer,derOrder);
+</pre><p>Visualize data</p><pre class="codeinput">cFigure;
+subplot(1,2,1); hold <span class="string">on</span>;
+title(<span class="string">'Input curve'</span>);
+xlabel(<span class="string">'X'</span>,<span class="string">'FontSize'</span>,fontSize); ylabel(<span class="string">'Y'</span>,<span class="string">'FontSize'</span>,fontSize);
+plot(x,y,<span class="string">'k.-'</span>,<span class="string">'lineWidth'</span>,lineWidth,<span class="string">'MarkerSize'</span>,25);
+axis <span class="string">square</span>; axis <span class="string">tight</span>; grid <span class="string">on</span>; box <span class="string">on</span>;
+set(gca,<span class="string">'FontSize'</span>,fontSize);
+
+subplot(1,2,2); hold <span class="string">on</span>;
+title(<span class="string">'derivatives'</span>);
+xlabel(<span class="string">'X'</span>,<span class="string">'FontSize'</span>,fontSize); ylabel(<span class="string">'Y'</span>,<span class="string">'FontSize'</span>,fontSize);
+hp1=plot(x,dy,<span class="string">'k.-'</span>,<span class="string">'lineWidth'</span>,lineWidth,<span class="string">'MarkerSize'</span>,25);
+hp2=plot(x,dy_fft,<span class="string">'r.-'</span>,<span class="string">'lineWidth'</span>,lineWidth/2,<span class="string">'MarkerSize'</span>,25);
+axis <span class="string">square</span>; axis <span class="string">tight</span>; grid <span class="string">on</span>; box <span class="string">on</span>;
+set(gca,<span class="string">'FontSize'</span>,fontSize);
+legend([hp1 hp2],{<span class="string">'True derivative'</span>,<span class="string">'FFT based derivative'</span>});
+
+drawnow;
+
+<span class="comment">%</span>
+</pre><img width="100%" height="auto" vspace="5" hspace="5" src="HELP_FFT_derivative_01.jpg" alt=""> <h2 id="10">Using extrapolation to suppress edge effects</h2><p>Use <tt>FFT_derivative</tt> to compute the derivative</p><pre class="codeinput">dimDer=2; <span class="comment">%Direction for derivative</span>
+derOrder=1; <span class="comment">%Order of derivative</span>
+numPad=ceil(size(y,dimDer)/4);
+dt=x(2)-x(1);
+dy_fft=FFT_derivative(dt,y,dimDer,derOrder,numPad);
+</pre><p>Visualize data</p><pre class="codeinput">cFigure;
+subplot(1,2,1); hold <span class="string">on</span>;
+title(<span class="string">'Input curve'</span>);
+xlabel(<span class="string">'X'</span>,<span class="string">'FontSize'</span>,fontSize); ylabel(<span class="string">'Y'</span>,<span class="string">'FontSize'</span>,fontSize);
+plot(x,y,<span class="string">'k.-'</span>,<span class="string">'lineWidth'</span>,lineWidth,<span class="string">'MarkerSize'</span>,25);
+axis <span class="string">square</span>; axis <span class="string">tight</span>; grid <span class="string">on</span>; box <span class="string">on</span>;
+set(gca,<span class="string">'FontSize'</span>,fontSize);
+
+subplot(1,2,2); hold <span class="string">on</span>;
+title(<span class="string">'derivatives'</span>);
+xlabel(<span class="string">'X'</span>,<span class="string">'FontSize'</span>,fontSize); ylabel(<span class="string">'Y'</span>,<span class="string">'FontSize'</span>,fontSize);
+hp1=plot(x,dy,<span class="string">'k.-'</span>,<span class="string">'lineWidth'</span>,lineWidth,<span class="string">'MarkerSize'</span>,25);
+hp2=plot(x,dy_fft,<span class="string">'r.-'</span>,<span class="string">'lineWidth'</span>,lineWidth/2,<span class="string">'MarkerSize'</span>,25);
+axis <span class="string">square</span>; axis <span class="string">tight</span>; grid <span class="string">on</span>; box <span class="string">on</span>;
+set(gca,<span class="string">'FontSize'</span>,fontSize);
+legend([hp1 hp2],{<span class="string">'True derivative'</span>,<span class="string">'FFT based derivative'</span>});
+
+drawnow;
+</pre><img width="100%" height="auto" vspace="5" hspace="5" src="HELP_FFT_derivative_02.jpg" alt=""> <h2 id="13">FFT derivatives of multi-dimensional data</h2><p>Create example data array</p><pre class="codeinput"><span class="comment">% Expand x-data from previous example into array</span>
+nRep=25;
+X=x(ones(nRep,1),:); <span class="comment">%X-data array</span>
+Y=sin(X); <span class="comment">%Y-data array</span>
+DY=cos(X); <span class="comment">%True derivative</span>
+</pre><pre class="codeinput">dimDer=2;
+derOrder=1;
+numPad=ceil(size(y,dimDer)/4);
+dt=x(2)-x(1);
+dY_fft=FFT_derivative(dt,Y,dimDer,derOrder,numPad);
+</pre><pre class="codeinput">cFigure;
+subplot(2,2,1); hold <span class="string">on</span>;
+title(<span class="string">'Input data '</span>)
+xlabel(<span class="string">'X'</span>,<span class="string">'FontSize'</span>,fontSize); ylabel(<span class="string">'Y'</span>,<span class="string">'FontSize'</span>,fontSize);
+imagesc(Y);
+axis <span class="string">square</span>; axis <span class="string">tight</span>; grid <span class="string">on</span>;
+set(gca,<span class="string">'FontSize'</span>,fontSize);
+colorbar;
+
+subplot(2,2,2); hold <span class="string">on</span>;
+title(<span class="string">'True derivative'</span>)
+xlabel(<span class="string">'X'</span>,<span class="string">'FontSize'</span>,fontSize); ylabel(<span class="string">'Y'</span>,<span class="string">'FontSize'</span>,fontSize);
+imagesc(DY);
+axis <span class="string">square</span>; axis <span class="string">tight</span>; grid <span class="string">on</span>;
+set(gca,<span class="string">'FontSize'</span>,fontSize);
+colorbar;
+
+subplot(2,2,3); hold <span class="string">on</span>;
+title(<span class="string">'FFT based derivative'</span>)
+xlabel(<span class="string">'X'</span>,<span class="string">'FontSize'</span>,fontSize); ylabel(<span class="string">'Y'</span>,<span class="string">'FontSize'</span>,fontSize);
+imagesc(dY_fft);
+axis <span class="string">square</span>; axis <span class="string">tight</span>; grid <span class="string">on</span>;
+set(gca,<span class="string">'FontSize'</span>,fontSize);
+colorbar;
+
+subplot(2,2,4); hold <span class="string">on</span>;
+title(<span class="string">'Difference'</span>)
+xlabel(<span class="string">'X'</span>,<span class="string">'FontSize'</span>,fontSize); ylabel(<span class="string">'Y'</span>,<span class="string">'FontSize'</span>,fontSize);
+imagesc(DY-dY_fft);
+axis <span class="string">square</span>; axis <span class="string">tight</span>; grid <span class="string">on</span>;
+set(gca,<span class="string">'FontSize'</span>,fontSize);
+colorbar;
+
+drawnow;
+</pre><img width="100%" height="auto" vspace="5" hspace="5" src="HELP_FFT_derivative_03.jpg" alt=""> <p><img vspace="5" hspace="5" src="gibbVerySmall.gif" alt=""> </p><p><i><b>GIBBON</b></i> <a href="www.gibboncode.org">www.gibboncode.org</a></p><p><i>Kevin Mattheus Moerman</i>, <a href="gibbon.toolbox@gmail.com">gibbon.toolbox@gmail.com</a></p><p><i><b>GIBBON footer text</b></i></p><p>License: <a href="https://github.com/gibbonCode/GIBBON/blob/master/LICENSE">https://github.com/gibbonCode/GIBBON/blob/master/LICENSE</a></p><p>GIBBON: The Geometry and Image-based Bioengineering add-On. A toolbox for image segmentation, image-based modeling, meshing, and finite element analysis.</p><p>Copyright (C) 2019  Kevin Mattheus Moerman</p><p>This program is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.</p><p>This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for more details.</p><p>You should have received a copy of the GNU General Public License along with this program.  If not, see <a href="http://www.gnu.org/licenses/">http://www.gnu.org/licenses/</a>.</p><p class="footer"><br><a href="https://www.mathworks.com/products/matlab/">Published with MATLAB&reg; R2019a</a><br></p></div><!--
 ##### SOURCE BEGIN #####
 %% FFT_derivative
 % Below is a demonstration of the features of the |FFT_derivative| function
@@ -76,12 +173,146 @@ table td { padding:7px 5px; text-align:left; vertical-align:top; border:1px soli
 clear; close all; clc;
 
 %% Syntax
-% |[dY,fft_dY]=FFT_derivative(Y,dt,dimDir,derOrder);|
+% |[dY,fft_dY]=FFT_derivative(dt,Y,dimDer,derOrder,numPad);|
 
 %% Description 
-% UNDOCUMENTED 
+% This function uses the Fourier transform method to compute the derivative
+% of order |derOrder| for the input data |Y|, allong direction |dimDer|.
+% The array X 
+
 %% Examples 
-% 
+
+%%
+% Plot settings
+fontSize=20;
+lineWidth=5; 
+
+%% FFT derivatives of evenly spaced vector data
+
+%%
+% Create example data 
+
+n=50; %Number of samples
+x=linspace(0,3*pi,n); %x-vector
+y=sin(x); %y-vector
+dy=cos(x); %True derivative for comparison
+
+%% 
+% Use |FFT_derivative| to compute the derivative
+dimDer=2; %Direction for derivative
+derOrder=1; %Order of derivative 
+dt=x(2)-x(1);
+dy_fft=FFT_derivative(dt,y,dimDer,derOrder);
+
+%%
+% Visualize data 
+cFigure; 
+subplot(1,2,1); hold on; 
+title('Input curve');
+xlabel('X','FontSize',fontSize); ylabel('Y','FontSize',fontSize); 
+plot(x,y,'k.-','lineWidth',lineWidth,'MarkerSize',25);
+axis square; axis tight; grid on; box on; 
+set(gca,'FontSize',fontSize);
+
+subplot(1,2,2); hold on; 
+title('derivatives');
+xlabel('X','FontSize',fontSize); ylabel('Y','FontSize',fontSize); 
+hp1=plot(x,dy,'k.-','lineWidth',lineWidth,'MarkerSize',25);
+hp2=plot(x,dy_fft,'r.-','lineWidth',lineWidth/2,'MarkerSize',25);
+axis square; axis tight; grid on; box on; 
+set(gca,'FontSize',fontSize);
+legend([hp1 hp2],{'True derivative','FFT based derivative'});
+
+drawnow;
+
+%
+%% Using extrapolation to suppress edge effects
+
+%% 
+% Use |FFT_derivative| to compute the derivative
+dimDer=2; %Direction for derivative
+derOrder=1; %Order of derivative 
+numPad=ceil(size(y,dimDer)/4);
+dt=x(2)-x(1);
+dy_fft=FFT_derivative(dt,y,dimDer,derOrder,numPad);
+
+%%
+% Visualize data 
+cFigure; 
+subplot(1,2,1); hold on; 
+title('Input curve');
+xlabel('X','FontSize',fontSize); ylabel('Y','FontSize',fontSize); 
+plot(x,y,'k.-','lineWidth',lineWidth,'MarkerSize',25);
+axis square; axis tight; grid on; box on; 
+set(gca,'FontSize',fontSize);
+
+subplot(1,2,2); hold on; 
+title('derivatives');
+xlabel('X','FontSize',fontSize); ylabel('Y','FontSize',fontSize); 
+hp1=plot(x,dy,'k.-','lineWidth',lineWidth,'MarkerSize',25);
+hp2=plot(x,dy_fft,'r.-','lineWidth',lineWidth/2,'MarkerSize',25);
+axis square; axis tight; grid on; box on; 
+set(gca,'FontSize',fontSize);
+legend([hp1 hp2],{'True derivative','FFT based derivative'});
+
+drawnow;
+
+%% FFT derivatives of multi-dimensional data 
+
+%%
+% Create example data array 
+
+% Expand x-data from previous example into array
+nRep=25;
+X=x(ones(nRep,1),:); %X-data array
+Y=sin(X); %Y-data array
+DY=cos(X); %True derivative
+
+%%
+
+dimDer=2;
+derOrder=1;
+numPad=ceil(size(y,dimDer)/4);
+dt=x(2)-x(1);
+dY_fft=FFT_derivative(dt,Y,dimDer,derOrder,numPad);
+
+%%
+
+cFigure;
+subplot(2,2,1); hold on; 
+title('Input data ')
+xlabel('X','FontSize',fontSize); ylabel('Y','FontSize',fontSize); 
+imagesc(Y); 
+axis square; axis tight; grid on; 
+set(gca,'FontSize',fontSize);
+colorbar; 
+
+subplot(2,2,2); hold on; 
+title('True derivative')
+xlabel('X','FontSize',fontSize); ylabel('Y','FontSize',fontSize); 
+imagesc(DY); 
+axis square; axis tight; grid on; 
+set(gca,'FontSize',fontSize);
+colorbar; 
+
+subplot(2,2,3); hold on;
+title('FFT based derivative')
+xlabel('X','FontSize',fontSize); ylabel('Y','FontSize',fontSize); 
+imagesc(dY_fft); 
+axis square; axis tight; grid on; 
+set(gca,'FontSize',fontSize);
+colorbar; 
+
+subplot(2,2,4); hold on; 
+title('Difference')
+xlabel('X','FontSize',fontSize); ylabel('Y','FontSize',fontSize); 
+imagesc(DY-dY_fft); 
+axis square; axis tight; grid on; 
+set(gca,'FontSize',fontSize);
+colorbar; 
+
+drawnow;
+
 %%
 % 
 % <<gibbVerySmall.gif>>

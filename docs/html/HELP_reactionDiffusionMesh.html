@@ -6,7 +6,7 @@
    <!--
 This HTML was auto-generated from MATLAB code.
 To make changes, update the MATLAB code and republish this document.
-      --><title>reactionDiffusionMesh</title><meta name="generator" content="MATLAB 9.6"><link rel="schema.DC" href="http://purl.org/dc/elements/1.1/"><meta name="DC.date" content="2019-06-20"><meta name="DC.source" content="HELP_reactionDiffusionMesh.m"><style type="text/css">
+      --><title>reactionDiffusionMesh</title><meta name="generator" content="MATLAB 9.6"><link rel="schema.DC" href="http://purl.org/dc/elements/1.1/"><meta name="DC.date" content="2019-06-24"><meta name="DC.source" content="HELP_reactionDiffusionMesh.m"><style type="text/css">
 html,body,div,span,applet,object,iframe,h1,h2,h3,h4,h5,h6,p,blockquote,pre,a,abbr,acronym,address,big,cite,code,del,dfn,em,font,img,ins,kbd,q,s,samp,small,strike,strong,sub,sup,tt,var,b,u,i,center,dl,dt,dd,ol,ul,li,fieldset,form,label,legend,table,caption,tbody,tfoot,thead,tr,th,td{margin:0;padding:0;border:0;outline:0;font-size:100%;vertical-align:baseline;background:transparent}body{line-height:1}ol,ul{list-style:none}blockquote,q{quotes:none}blockquote:before,blockquote:after,q:before,q:after{content:'';content:none}:focus{outine:0}ins{text-decoration:none}del{text-decoration:line-through}table{border-collapse:collapse;border-spacing:0}
 
 html { min-height:100%; margin-bottom:1px; }
@@ -66,8 +66,179 @@ table td { padding:7px 5px; text-align:left; vertical-align:top; border:1px soli
 
 
 
-  </style></head><body><div class="content"><h1>reactionDiffusionMesh</h1><!--introduction--><p>Below is a demonstration of the features of the <tt>reactionDiffusionMesh</tt> function</p><!--/introduction--><h2>Contents</h2><div><ul><li><a href="#2">Syntax</a></li><li><a href="#3">Description</a></li><li><a href="#4">Examples</a></li></ul></div><pre class="codeinput">clear; close <span class="string">all</span>; clc;
-</pre><h2 id="2">Syntax</h2><p><tt>[A_out,B_out]=reactionDiffusionMesh(varargin);</tt></p><h2 id="3">Description</h2><p>UNDOCUMENTED</p><h2 id="4">Examples</h2><p><img vspace="5" hspace="5" src="gibbVerySmall.gif" alt=""> </p><p><i><b>GIBBON</b></i> <a href="www.gibboncode.org">www.gibboncode.org</a></p><p><i>Kevin Mattheus Moerman</i>, <a href="gibbon.toolbox@gmail.com">gibbon.toolbox@gmail.com</a></p><p><i><b>GIBBON footer text</b></i></p><p>License: <a href="https://github.com/gibbonCode/GIBBON/blob/master/LICENSE">https://github.com/gibbonCode/GIBBON/blob/master/LICENSE</a></p><p>GIBBON: The Geometry and Image-based Bioengineering add-On. A toolbox for image segmentation, image-based modeling, meshing, and finite element analysis.</p><p>Copyright (C) 2019  Kevin Mattheus Moerman</p><p>This program is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.</p><p>This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for more details.</p><p>You should have received a copy of the GNU General Public License along with this program.  If not, see <a href="http://www.gnu.org/licenses/">http://www.gnu.org/licenses/</a>.</p><p class="footer"><br><a href="https://www.mathworks.com/products/matlab/">Published with MATLAB&reg; R2019a</a><br></p></div><!--
+  </style></head><body><div class="content"><h1>reactionDiffusionMesh</h1><!--introduction--><p>Below is a demonstration of the features of the <tt>reactionDiffusionMesh</tt> function</p><!--/introduction--><h2>Contents</h2><div><ul><li><a href="#2">Syntax</a></li><li><a href="#3">Description</a></li><li><a href="#4">Examples</a></li><li><a href="#5">Example: Reaction diffusion on gridded mesh</a></li><li><a href="#11">Example: Reaction diffusion on a closed surface mesh</a></li><li><a href="#17">Example: Deforming mesh based on reaction diffusion pattern</a></li></ul></div><pre class="codeinput">clear; close <span class="string">all</span>; clc;
+</pre><h2 id="2">Syntax</h2><p><tt>[A,B]=reactionDiffusionMesh(F,V,controlPar);</tt></p><h2 id="3">Description</h2><h2 id="4">Examples</h2><h2 id="5">Example: Reaction diffusion on gridded mesh</h2><p>Get surface data</p><pre class="codeinput">n=75;
+[X,Y]=ndgrid(linspace(-1,1,n));
+Z=zeros(size(X));
+[F,V]=surf2patch(X,Y,Z);
+</pre><p>Set initial values</p><pre class="codeinput">L=heaviside(V(:,1))&gt;0 &amp; heaviside(V(:,2))&gt;0;
+
+A=double(~L); <span class="comment">%Initial A values</span>
+B=double(L); <span class="comment">%Initial B values</span>
+</pre><p>Create control parameter structure</p><pre class="codeinput">patternType=2;
+
+<span class="comment">% Kill rates</span>
+<span class="keyword">switch</span> patternType
+    <span class="keyword">case</span> 1 <span class="comment">%Coral</span>
+        controlPar.f=0.055;
+        controlPar.k=0.062;
+    <span class="keyword">case</span> 2 <span class="comment">%Spots</span>
+        controlPar.f=0.0367;
+        controlPar.k=0.0649;
+<span class="keyword">end</span>
+
+<span class="comment">% Initial valus</span>
+controlPar.A=A;
+controlPar.B=B;
+
+<span class="comment">% Diffusion rates</span>
+controlPar.da=1;
+controlPar.db=0.5;
+
+<span class="comment">% Time stepping parameters</span>
+controlPar.timeTotal = 10000; <span class="comment">%Final time</span>
+controlPar.dt=0.5; <span class="comment">%Time step size</span>
+
+<span class="comment">%</span>
+controlPar.waitbar=1;
+controlPar.numSaveSteps=50;
+</pre><p>Compute reaction diffusion process</p><pre class="codeinput">[~,B]=reactionDiffusionMesh(F,V,controlPar);
+</pre><p>Create animated view of results</p><pre class="codeinput">hf1=cFigure;
+hp=gpatch(F,V,B(:,end),B(:,end));
+<span class="comment">% shading interp;</span>
+axisGeom;
+camlight <span class="string">headlight</span>;
+colormap(fireice); <span class="comment">%colorbar;</span>
+axis <span class="string">off</span>; view(2);
+drawnow;
+
+<span class="comment">%Create the time vector</span>
+animStruct.Time=linspace(0,controlPar.timeTotal,controlPar.numSaveSteps);
+
+<span class="keyword">for</span> q=1:1:controlPar.numSaveSteps
+    <span class="comment">%Set entries in animation structure</span>
+    animStruct.Handles{q}=[hp]; <span class="comment">%Handles of objects to animate</span>
+    animStruct.Props{q}={<span class="string">'CData'</span>}; <span class="comment">%Properties of objects to animate</span>
+    animStruct.Set{q}={B(:,q)}; <span class="comment">%Property values for to set in order to animate</span>
+<span class="keyword">end</span>
+anim8(hf1,animStruct);
+</pre><img width="100%" height="auto" vspace="5" hspace="5" src="HELP_reactionDiffusionMesh_01.jpg" alt=""> <h2 id="11">Example: Reaction diffusion on a closed surface mesh</h2><p>Get surface data</p><pre class="codeinput">[F,V]=stanford_bunny; <span class="comment">%Bunny mesh</span>
+[F,V]=subtri(F,V,1); <span class="comment">%Refined version</span>
+</pre><p>Set initial values</p><pre class="codeinput">X=V(:,1); Y=V(:,2); Z=V(:,3);
+[zMax,indMax]=max(Z(:));
+r=sqrt((X-X(indMax)).^2+(Y-Y(indMax)).^2);
+L=r&lt;0.1*max(r(:)) &amp; Z&gt;0.9.*max(Z(indMax));
+
+A=double(~L); <span class="comment">%Initial A values</span>
+B=double(L); <span class="comment">%Initial B values</span>
+</pre><p>Create control parameter structure</p><pre class="codeinput">patternType=1;
+
+<span class="comment">% Kill rates</span>
+<span class="keyword">switch</span> patternType
+    <span class="keyword">case</span> 1 <span class="comment">%Coral</span>
+        controlPar.f=0.055;
+        controlPar.k=0.062;
+    <span class="keyword">case</span> 2 <span class="comment">%Spots</span>
+        controlPar.f=0.0367;
+        controlPar.k=0.0649;
+<span class="keyword">end</span>
+
+<span class="comment">% Initial valus</span>
+controlPar.A=A;
+controlPar.B=B;
+
+<span class="comment">% Diffusion rates</span>
+controlPar.da=1;
+controlPar.db=0.5;
+
+<span class="comment">% Time stepping parameters</span>
+controlPar.timeTotal = 8000; <span class="comment">%Final time</span>
+controlPar.dt=0.5; <span class="comment">%Time step size</span>
+
+<span class="comment">%</span>
+controlPar.waitbar=1;
+controlPar.numSaveSteps=50;
+</pre><p>Compute reaction diffusion process</p><pre class="codeinput">[A,B]=reactionDiffusionMesh(F,V,controlPar);
+</pre><p>Create animated view of results</p><pre class="codeinput">hf2=cFigure;
+hp=gpatch(F,V,B(:,end),<span class="string">'none'</span>);
+shading <span class="string">interp</span>;
+axisGeom;
+camlight <span class="string">headlight</span>; lighting <span class="string">gouraud</span>;
+colormap(fireice); <span class="comment">%colorbar;</span>
+axis <span class="string">off</span>;
+drawnow;
+
+<span class="comment">%Create the time vector</span>
+animStruct.Time=linspace(0,controlPar.timeTotal,controlPar.numSaveSteps);
+
+<span class="keyword">for</span> q=1:1:controlPar.numSaveSteps
+    <span class="comment">%Set entries in animation structure</span>
+    animStruct.Handles{q}=[hp]; <span class="comment">%Handles of objects to animate</span>
+    animStruct.Props{q}={<span class="string">'CData'</span>}; <span class="comment">%Properties of objects to animate</span>
+    animStruct.Set{q}={B(:,q)}; <span class="comment">%Property values for to set in order to animate</span>
+<span class="keyword">end</span>
+anim8(hf2,animStruct);
+</pre><img width="100%" height="auto" vspace="5" hspace="5" src="HELP_reactionDiffusionMesh_02.jpg" alt=""> <h2 id="17">Example: Deforming mesh based on reaction diffusion pattern</h2><pre class="codeinput">r=1;
+[F,V]=geoSphere(5,r);
+</pre><p>Set initial values</p><pre class="codeinput">L=V(:,3)&gt;=0.98;
+
+A=double(~L); <span class="comment">%Initial A values</span>
+B=double(L); <span class="comment">%Initial B values</span>
+</pre><p>Create control parameter structure</p><pre class="codeinput">patternType=2;
+
+<span class="comment">% Kill rates</span>
+<span class="keyword">switch</span> patternType
+    <span class="keyword">case</span> 1 <span class="comment">%Coral</span>
+        controlPar.f=0.055;
+        controlPar.k=0.062;
+    <span class="keyword">case</span> 2 <span class="comment">%Spots</span>
+        controlPar.f=0.0367;
+        controlPar.k=0.0649;
+<span class="keyword">end</span>
+
+<span class="comment">% Initial valus</span>
+controlPar.A=A;
+controlPar.B=B;
+
+<span class="comment">% Diffusion rates</span>
+controlPar.da=1;
+controlPar.db=0.5;
+
+<span class="comment">% Time stepping parameters</span>
+controlPar.timeTotal = 10000; <span class="comment">%Final time</span>
+controlPar.dt=0.5; <span class="comment">%Time step size</span>
+
+<span class="comment">%</span>
+controlPar.waitbar=1;
+controlPar.numSaveSteps=50;
+</pre><p>Compute reaction diffusion process</p><pre class="codeinput">[A,B]=reactionDiffusionMesh(F,V,controlPar);
+</pre><img width="100%" height="auto" vspace="5" hspace="5" src="HELP_reactionDiffusionMesh_03.jpg" alt=""> <img width="100%" height="auto" vspace="5" hspace="5" src="HELP_reactionDiffusionMesh_04.jpg" alt=""> <p>Compute vertex normals</p><pre class="codeinput">[~,~,N]=patchNormal(F,V); <span class="comment">%Normal vectors for each node</span>
+heightOffset=mean(patchEdgeLengths(F,V))*20;
+</pre><p>Create animated view of results</p><pre class="codeinput">Vn=V+(B(:,size(B,2)*ones(1,3)).*N.*heightOffset); <span class="comment">%Add offset to coordinates</span>
+
+hf2=cFigure;
+hp=gpatch(F,Vn,B(:,end),<span class="string">'none'</span>);
+hp.FaceColor=<span class="string">'interp'</span>;
+axisGeom;
+camlight <span class="string">headlight</span>; lighting <span class="string">gouraud</span>;
+colormap(fireice); <span class="comment">%colorbar;</span>
+axis <span class="string">off</span>;
+drawnow;
+
+<span class="comment">%Create the time vector</span>
+animStruct.Time=linspace(0,controlPar.timeTotal,controlPar.numSaveSteps);
+
+<span class="keyword">for</span> q=1:1:controlPar.numSaveSteps
+
+    Vn=V+(B(:,q*ones(1,3)).*N.*heightOffset);
+
+    <span class="comment">%Set entries in animation structure</span>
+    animStruct.Handles{q}=[hp,hp]; <span class="comment">%Handles of objects to animate</span>
+    animStruct.Props{q}={<span class="string">'CData'</span>,<span class="string">'Vertices'</span>}; <span class="comment">%Properties of objects to animate</span>
+    animStruct.Set{q}={B(:,q),Vn}; <span class="comment">%Property values for to set in order to animate</span>
+<span class="keyword">end</span>
+anim8(hf2,animStruct);
+</pre><img width="100%" height="auto" vspace="5" hspace="5" src="HELP_reactionDiffusionMesh_05.jpg" alt=""> <p><i><b>GIBBON footer text</b></i></p><p>License: <a href="https://github.com/gibbonCode/GIBBON/blob/master/LICENSE">https://github.com/gibbonCode/GIBBON/blob/master/LICENSE</a></p><p>GIBBON: The Geometry and Image-based Bioengineering add-On. A toolbox for image segmentation, image-based modeling, meshing, and finite element analysis.</p><p>Copyright (C) 2019  Kevin Mattheus Moerman</p><p>This program is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.</p><p>This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for more details.</p><p>You should have received a copy of the GNU General Public License along with this program.  If not, see <a href="http://www.gnu.org/licenses/">http://www.gnu.org/licenses/</a>.</p><p class="footer"><br><a href="https://www.mathworks.com/products/matlab/">Published with MATLAB&reg; R2019a</a><br></p></div><!--
 ##### SOURCE BEGIN #####
 %% reactionDiffusionMesh
 % Below is a demonstration of the features of the |reactionDiffusionMesh| function
@@ -76,20 +247,245 @@ table td { padding:7px 5px; text-align:left; vertical-align:top; border:1px soli
 clear; close all; clc;
 
 %% Syntax
-% |[A_out,B_out]=reactionDiffusionMesh(varargin);|
+% |[A,B]=reactionDiffusionMesh(F,V,controlPar);|
 
 %% Description 
-% UNDOCUMENTED 
+% 
+
 %% Examples 
-% 
+
+%% Example: Reaction diffusion on gridded mesh
+
 %%
-% 
-% <<gibbVerySmall.gif>>
-% 
-% _*GIBBON*_ 
-% <www.gibboncode.org>
-% 
-% _Kevin Mattheus Moerman_, <gibbon.toolbox@gmail.com>
+% Get surface data 
+n=75;
+[X,Y]=ndgrid(linspace(-1,1,n));
+Z=zeros(size(X));
+[F,V]=surf2patch(X,Y,Z);
+    
+%%
+% Set initial values
+L=heaviside(V(:,1))>0 & heaviside(V(:,2))>0;
+
+A=double(~L); %Initial A values
+B=double(L); %Initial B values
+
+%%
+% Create control parameter structure
+
+patternType=2;
+
+% Kill rates
+switch patternType
+    case 1 %Coral
+        controlPar.f=0.055; 
+        controlPar.k=0.062;
+    case 2 %Spots
+        controlPar.f=0.0367; 
+        controlPar.k=0.0649;
+end
+
+% Initial valus
+controlPar.A=A; 
+controlPar.B=B; 
+
+% Diffusion rates
+controlPar.da=1;
+controlPar.db=0.5;
+
+% Time stepping parameters
+controlPar.timeTotal = 10000; %Final time
+controlPar.dt=0.5; %Time step size
+
+%
+controlPar.waitbar=1;
+controlPar.numSaveSteps=50;
+
+%%
+% Compute reaction diffusion process
+
+[~,B]=reactionDiffusionMesh(F,V,controlPar);
+
+%%
+% Create animated view of results
+
+hf1=cFigure;
+hp=gpatch(F,V,B(:,end),B(:,end));
+% shading interp; 
+axisGeom;
+camlight headlight;
+colormap(fireice); %colorbar;
+axis off; view(2);
+drawnow;
+
+%Create the time vector
+animStruct.Time=linspace(0,controlPar.timeTotal,controlPar.numSaveSteps);
+
+for q=1:1:controlPar.numSaveSteps
+    %Set entries in animation structure
+    animStruct.Handles{q}=[hp]; %Handles of objects to animate
+    animStruct.Props{q}={'CData'}; %Properties of objects to animate
+    animStruct.Set{q}={B(:,q)}; %Property values for to set in order to animate
+end
+anim8(hf1,animStruct);
+
+%% Example: Reaction diffusion on a closed surface mesh
+
+%%
+% Get surface data 
+[F,V]=stanford_bunny; %Bunny mesh
+[F,V]=subtri(F,V,1); %Refined version
+
+%%
+% Set initial values
+X=V(:,1); Y=V(:,2); Z=V(:,3);
+[zMax,indMax]=max(Z(:));
+r=sqrt((X-X(indMax)).^2+(Y-Y(indMax)).^2);
+L=r<0.1*max(r(:)) & Z>0.9.*max(Z(indMax));
+
+A=double(~L); %Initial A values
+B=double(L); %Initial B values
+
+%%
+% Create control parameter structure
+
+patternType=1;
+
+% Kill rates
+switch patternType
+    case 1 %Coral
+        controlPar.f=0.055; 
+        controlPar.k=0.062;
+    case 2 %Spots
+        controlPar.f=0.0367; 
+        controlPar.k=0.0649;
+end
+
+% Initial valus
+controlPar.A=A; 
+controlPar.B=B; 
+
+% Diffusion rates
+controlPar.da=1;
+controlPar.db=0.5;
+
+% Time stepping parameters
+controlPar.timeTotal = 8000; %Final time
+controlPar.dt=0.5; %Time step size
+
+%
+controlPar.waitbar=1;
+controlPar.numSaveSteps=50;
+
+%%
+% Compute reaction diffusion process
+
+[A,B]=reactionDiffusionMesh(F,V,controlPar);
+
+%%
+% Create animated view of results
+
+hf2=cFigure;
+hp=gpatch(F,V,B(:,end),'none');
+shading interp; 
+axisGeom;
+camlight headlight; lighting gouraud;
+colormap(fireice); %colorbar;
+axis off;
+drawnow;
+
+%Create the time vector
+animStruct.Time=linspace(0,controlPar.timeTotal,controlPar.numSaveSteps);
+
+for q=1:1:controlPar.numSaveSteps
+    %Set entries in animation structure
+    animStruct.Handles{q}=[hp]; %Handles of objects to animate
+    animStruct.Props{q}={'CData'}; %Properties of objects to animate
+    animStruct.Set{q}={B(:,q)}; %Property values for to set in order to animate
+end
+anim8(hf2,animStruct);
+
+%% Example: Deforming mesh based on reaction diffusion pattern
+
+r=1;
+[F,V]=geoSphere(5,r);
+
+%%
+% Set initial values
+L=V(:,3)>=0.98;
+
+A=double(~L); %Initial A values
+B=double(L); %Initial B values
+
+%%
+% Create control parameter structure
+
+patternType=2;
+
+% Kill rates
+switch patternType
+    case 1 %Coral
+        controlPar.f=0.055; 
+        controlPar.k=0.062;
+    case 2 %Spots
+        controlPar.f=0.0367; 
+        controlPar.k=0.0649;
+end
+
+% Initial valus
+controlPar.A=A; 
+controlPar.B=B; 
+
+% Diffusion rates
+controlPar.da=1;
+controlPar.db=0.5;
+
+% Time stepping parameters
+controlPar.timeTotal = 10000; %Final time
+controlPar.dt=0.5; %Time step size
+
+%
+controlPar.waitbar=1;
+controlPar.numSaveSteps=50;
+
+%%
+% Compute reaction diffusion process
+
+[A,B]=reactionDiffusionMesh(F,V,controlPar);
+
+
+%%
+% Compute vertex normals
+[~,~,N]=patchNormal(F,V); %Normal vectors for each node
+heightOffset=mean(patchEdgeLengths(F,V))*20;
+
+%%
+% Create animated view of results
+
+Vn=V+(B(:,size(B,2)*ones(1,3)).*N.*heightOffset); %Add offset to coordinates
+
+hf2=cFigure;
+hp=gpatch(F,Vn,B(:,end),'none');
+hp.FaceColor='interp'; 
+axisGeom;
+camlight headlight; lighting gouraud;
+colormap(fireice); %colorbar;
+axis off;
+drawnow;
+
+%Create the time vector
+animStruct.Time=linspace(0,controlPar.timeTotal,controlPar.numSaveSteps);
+
+for q=1:1:controlPar.numSaveSteps
+    
+    Vn=V+(B(:,q*ones(1,3)).*N.*heightOffset);
+    
+    %Set entries in animation structure
+    animStruct.Handles{q}=[hp,hp]; %Handles of objects to animate
+    animStruct.Props{q}={'CData','Vertices'}; %Properties of objects to animate
+    animStruct.Set{q}={B(:,q),Vn}; %Property values for to set in order to animate
+end
+anim8(hf2,animStruct);
 %% 
 % _*GIBBON footer text*_ 
 % 

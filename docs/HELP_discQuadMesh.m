@@ -12,11 +12,12 @@ clear; close all; clc;
 
 %% PLOT SETTINGS
 
-fontSize=20;
+fontSize=35;
+edgeWidth=3; 
 
 %% Building a quadrilateral circular mesh
 
-ne=12; %Elements in radius
+ne=8; %Elements in radius
 r=2; %Outer radius of disc
 f=0.5; %Fraction (with respect to outer radius) where central square appears
 
@@ -28,24 +29,16 @@ f=0.5; %Fraction (with respect to outer radius) where central square appears
 
 cFigure; hold on;
 title('A circle meshed with quadrilateral elements','FontSize',fontSize);
-xlabel('X','FontSize',fontSize);ylabel('Y','FontSize',fontSize); zlabel('Z','FontSize',fontSize);
-
-patch('Faces',Fc,'Vertices',Vc,'EdgeColor','k','FaceColor','g','FaceAlpha',1);
-
-axis equal; axis tight; view(2); box on; grid on; 
-set(gca,'FontSize',fontSize);
+gpatch(Fc,Vc,'gw','k',1,edgeWidth);
+axisGeom(gca,fontSize);
+view(2); 
 drawnow;
 
-%% Using other outputs
+%% Option face label output
 % The additional outputs Cc and indEdge provide a color labelling for the
 % central square and other elements, and the indices for the outer edge
 % respectively. 
 
-ne=18; %Elements in radius
-r=1; %Outer radius of disc
-f=0.6; %Fraction (with respect to outer radius) where central square appears
-
-%Create the mesh
 [Fc,Vc,Cc,indEdge]=discQuadMesh(ne,r,f);
 
 %%
@@ -53,13 +46,33 @@ f=0.6; %Fraction (with respect to outer radius) where central square appears
 
 cFigure; hold on;
 title('A circle meshed with quadrilateral elements','FontSize',fontSize);
-xlabel('X','FontSize',fontSize);ylabel('Y','FontSize',fontSize); zlabel('Z','FontSize',fontSize);
+gpatch(Fc,Vc,Cc,'k',1,edgeWidth);
+axisGeom(gca,fontSize);
+view(2); 
+drawnow;
 
-patch('Faces',Fc,'Vertices',Vc,'FaceColor','flat','CData',Cc,'EdgeColor','k','FaceAlpha',1);
-plotV(Vc(indEdge,:),'g.-','MarkerSize',25,'LineWidth',2);
-colormap(gjet(2)); 
-axis equal; axis tight; view(2); box on; grid on; 
-set(gca,'FontSize',fontSize);
+%% Constrained smoothing of mesh
+
+Eb=patchBoundary(Fc,Vc);
+
+cPar.n=100;
+cPar.Method='LAP';
+cPar.RigidConstraints=unique(Eb(:));
+[Vcs]=patchSmooth(Fc,Vc,[],cPar);
+
+cFigure; 
+subplot(1,2,1); hold on;
+title('Raw','FontSize',fontSize);
+gpatch(Fc,Vc,Cc,'k',1,edgeWidth);
+axisGeom(gca,fontSize);
+view(2); 
+
+subplot(1,2,2); hold on;
+title('Smoothed','FontSize',fontSize);
+gpatch(Fc,Vcs,Cc,'k',1,edgeWidth);
+axisGeom(gca,fontSize);
+view(2); 
+
 drawnow;
 
 %%
@@ -70,10 +83,6 @@ drawnow;
 % <www.gibboncode.org>
 % 
 % _Kevin Mattheus Moerman_, <gibbon.toolbox@gmail.com>
-
-
-
-
  
 %% 
 % _*GIBBON footer text*_ 

@@ -18,8 +18,8 @@ clear; close all; clc;
 %%
 % PLOT SETTINGS
 fontSize=15;
-markerSize=30;
-lineWidth=2;
+markerSize=35;
+lineWidth=3;
 
 %% Example: Using |interp1_ND| for 1D arrays (similar to |interp1| function)
 
@@ -50,29 +50,29 @@ cFigure;
 subplot(2,2,1); hold on; 
 title('nearest','FontSize',fontSize);
 xlabel('X','FontSize',fontSize);ylabel('Y','FontSize',fontSize);
-plot(x,y,'k.','markerSize',markerSize);
-plot(xi,yi_1,'r-','lineWidth',lineWidth);
+plot(x,y,'k.','MarkerSize',markerSize);
+plot(xi,yi_1,'r-','LineWidth',lineWidth);
 axis tight; axis equal; box on; grid on; 
 
 subplot(2,2,2); hold on; 
 title('linear','FontSize',fontSize);
 xlabel('X','FontSize',fontSize);ylabel('Y','FontSize',fontSize);
-plot(x,y,'k.','markerSize',markerSize);
-plot(xi,yi_2,'g-','lineWidth',lineWidth);
+plot(x,y,'k.','MarkerSize',markerSize);
+plot(xi,yi_2,'g-','LineWidth',lineWidth);
 axis tight; axis equal; box on; grid on; 
 
 subplot(2,2,3); hold on; 
 title('cubic','FontSize',fontSize);
 xlabel('X','FontSize',fontSize);ylabel('Y','FontSize',fontSize);
-plot(x,y,'k.','markerSize',markerSize);
-plot(xi,yi_3,'b-','lineWidth',lineWidth);
+plot(x,y,'k.','MarkerSize',markerSize);
+plot(xi,yi_3,'b-','LineWidth',lineWidth);
 axis tight; axis equal; box on; grid on; 
 
 subplot(2,2,4); hold on; 
 title('pchip','FontSize',fontSize);
 xlabel('X','FontSize',fontSize);ylabel('Y','FontSize',fontSize);
-plot(x,y,'k.','markerSize',markerSize);
-plot(xi,yi_4,'y-','lineWidth',lineWidth);
+plot(x,y,'k.','MarkerSize',markerSize);
+plot(xi,yi_4,'c-','LineWidth',lineWidth);
 axis tight; axis equal; box on; grid on; 
 
 drawnow; 
@@ -110,8 +110,8 @@ cFigure; hold on;
 title('Using interp1_ND for 2D arrays','FontSize',fontSize,'Interpreter','none');
 xlabel('X','FontSize',fontSize);ylabel('Y','FontSize',fontSize);
 
-plot(x,y,'k.','markerSize',markerSize);
-plot(xi,yi,'b.-','markerSize',markerSize/3);
+plot(x,y,'k.','MarkerSize',markerSize);
+plot(xi,yi,'b.-','MarkerSize',markerSize/3,'LineWidth',lineWidth);
 axis tight; axis equal; box on; grid on; 
 drawnow; 
 
@@ -171,8 +171,8 @@ cFigure; hold on;
 title('Using interp1_ND for 3D arrays','FontSize',fontSize,'Interpreter','none');
 xlabel('X','FontSize',fontSize);ylabel('Y','FontSize',fontSize);
 
-plot(x,y,'k.','markerSize',markerSize);
-plot(xi,yi,'b.-','markerSize',markerSize/3);
+plot(x,y,'k.','MarkerSize',markerSize);
+plot(xi,yi,'b.-','MarkerSize',markerSize/3,'LineWidth',lineWidth);
 axis tight; axis equal; box on; grid on; 
 drawnow; 
 

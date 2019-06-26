@@ -1,19 +1,26 @@
-function [R_sq]=R_squared(yi,fi)  
+function [R_sq]=R_squared(y,yf)  
 
-% function [R_squared]=R_squared()  
+% function [R_squared]=R_squared(y,yf)  
 % ------------------------------------------------------------------------
-% This function calculates R^2 using the data in vector yi and the modelled
-% data in the vector fi. 
+% This function calculates the coefficient of determination (R-Squared) for
+% the (e.g. measurement) data |y| and the data |yf| (e.g. a model fit). 
+% NaN entries in either inputs are ignored. 
 %
-% Kevin Mattheus Moerman
-% kevinmoerman@hotmail.com
-% 05/10/2008
+%
+% Change log: 
+% 2008/10/05
+% 2019/06/26 Updated description
+% 2019/06/26 Updated handling of NaN entries in the data
 % ------------------------------------------------------------------------
 
-y_bar=nanmean(yi);
-SS_err=nansum((yi-fi).^2);
-SS_tot=nansum((yi-y_bar).^2);
-R_sq=1-(SS_err./SS_tot);
+%%
+
+L=~isnan(y) & ~isnan(yf); %Logic for non-NaN entries
+
+y_bar=mean(y(L)); %Mean of y
+SS_err=sum((y(L)-yf(L)).^2); %Sum of differences Of y with yf
+SS_tot=sum((y(L)-y_bar).^2); %Sum of differences of y with mean
+R_sq=1-(SS_err./SS_tot); %R-squared value
  
 %% 
 % _*GIBBON footer text*_ 

@@ -1,5 +1,12 @@
 function changeFileExtensions(pathName,extOld,extNew)
 
+% function changeFileExtensions(pathName,extOld,extNew)
+%------------------------------------------------------------------------
+% 
+%
+%
+%------------------------------------------------------------------------
+
 %%
 if isempty(extOld)
     files = dir(pathName);
@@ -11,7 +18,7 @@ end
 
 for q=1:1:numel(files)
     oldNameFull=fullfile(pathName,files{q});
-    if ~isdir(oldNameFull)
+    if exist(oldNameFull,'file')
         [~,oldName,extFile] = fileparts(oldNameFull);
         if isempty(extNew)
             newNameFull=fullfile(pathName,oldName);
@@ -20,7 +27,7 @@ for q=1:1:numel(files)
         end
         if strcmp(oldNameFull,newNameFull)==0
             if isempty(extOld)
-                if strcmp(extFile,extOld);
+                if strcmp(extFile,extOld)
                     movefileNow(oldNameFull,newNameFull);
                 end
             else                

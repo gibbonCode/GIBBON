@@ -1,5 +1,14 @@
-function [F,V]=coarsepatch(F,V,f)
+function [varargout]=coarsepatch(F,V,f)
 
+% function [F,V,Eb]=coarsepatch(F,V,f)
+%-------------------------------------------------------------------------
+% 
+% 
+% 
+% Change log: 
+% 2019/06/25 Added variable output handling as well as outputting of
+% boundary edges
+%-------------------------------------------------------------------------
 %%
 % Run reducepatch
 [F,V] = reducepatch(F,V,f,'fast');
@@ -11,6 +20,17 @@ function [F,V]=coarsepatch(F,V,f)
 F=patchRemoveCollapsed(F); %remove collapsed (edges)
 F=uniqueIntegerRow(F); %Removing double faces
 [F,V]=patchCleanUnused(F,V); %Remove unused points
+
+%%
+
+varargout{1}=F;
+varargout{2}=V;
+
+if nargout==3
+    %Also compute boundary
+    varargout{3}=patchBoundary(F,V);
+end
+
 %% 
 % _*GIBBON footer text*_ 
 % 

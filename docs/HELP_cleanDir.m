@@ -8,7 +8,15 @@ clear; close all; clc;
 % |cleanDir(varargin);|
 
 %% Description 
-% UNDOCUMENTED 
+% This function can clean a folder by removing either all files in a folder
+% or all files with the extensions specified in the cell array extCell.
+%
+% E.g. if one is interested in removing all .txt and .xml files from the
+% folder specified by pathName on could use: 
+% pathName='D:\MATLAB\GIBBON'
+% extCell={'txt','xml'}; %Extensions of files to delete
+% cleanDir(pathName,extCell);
+
 %% Examples 
 % 
 %%

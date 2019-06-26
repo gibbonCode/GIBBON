@@ -1,6 +1,53 @@
-function [dY,fft_dY]=FFT_derivative(Y,dt,dimDir,derOrder)
+function [varargout]=FFT_derivative(varargin)
 
-N=size(Y,dimDir); 
+% function [dY,fft_dY]=FFT_derivative(dt,Y,dimDer,derOrder,numPad)
+% ------------------------------------------------------------------------
+%
+%
+%
+%
+% ------------------------------------------------------------------------
+
+%% Parse input
+
+switch nargin
+    case 2
+        dt=varargin{1};
+        Y=varargin{2};
+        dimDer=1;
+        derOrder=1;
+        numPad=0;
+    case 3
+        dt=varargin{1};
+        Y=varargin{2};
+        dimDer=varargin{3};
+        derOrder=1; 
+        numPad=0;
+    case 4
+        dt=varargin{1};
+        Y=varargin{2};
+        dimDer=varargin{3};
+        derOrder=varargin{4};
+        numPad=0;
+    case 5
+        dt=varargin{1};
+        Y=varargin{2};
+        dimDer=varargin{3};
+        derOrder=varargin{4};
+        numPad=varargin{5};
+end
+
+%% Pad linearly
+
+if numPad>0    
+    siz=size(Y);
+    [Y,indOriginal]=padLinDim(Y,numPad,dimDer,'both');
+end
+
+%%
+
+% Get N
+N=size(Y,dimDer); 
 
 %Calculate frequencies
 if iseven(N)    
@@ -8,19 +55,33 @@ if iseven(N)
 else    
     nx = ((-(N-1)/2:(N-1)/2)/N);
 end
-kx = ifftshift((2*pi/dt).*nx); 
+kx = ifftshift((2*pi./dt).*nx); 
 
 %Reshape for bsxfun
-if dimDir == 1
+if dimDer == 1
     kx = reshape(kx, N, 1);
 else
-    kx = reshape(kx, [ones(1,dimDir-1), N]);
+    kx = reshape(kx, [ones(1,dimDer-1), N]);
 end
 
-fft_dY=bsxfun(@times,(1i*kx).^derOrder,fft(Y,[],dimDir));
+fft_dY=(1i*kx).^derOrder.*fft(Y,[],dimDer);
 
-dY=ifft(fft_dY,[],dimDir,'symmetric');
- 
+dY=ifft(fft_dY,[],dimDer,'symmetric');
+
+%% Crop padded back
+if numPad>0  
+    dY=reshape(dY(indOriginal),siz);
+end
+
+%% Collect output
+
+varargout{1}=dY; 
+varargout{2}=fft_dY; 
+varargout{3}=kx; 
+if numPad>0
+    varargout{4}=indOriginal;
+end
+
 %% 
 % _*GIBBON footer text*_ 
 % 

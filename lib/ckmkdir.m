@@ -1,5 +1,13 @@
 function [varargout]=ckmkdir(dirName)
 
+% function [varargout]=ckmkdir(dirName)
+% ------------------------------------------------------------------------
+% Check for the existance of the directory dirName and make the directory
+% if it does not. The optional output is the exitFlag which is 0 if it did
+% not exist and 1 if it did. 
+%
+% ------------------------------------------------------------------------
+
 %%
 
 % Check for existence of directory
@@ -12,6 +20,7 @@ end
 if nargout==1
     varargout{1}=existFlag;
 end
+
 %% 
 % _*GIBBON footer text*_ 
 % 

@@ -21,25 +21,34 @@ switch nargin
     case 1
         XYZ=varargin{1};         
         v=[];        
-        X=XYZ(:,1);
-        Y=XYZ(:,2);
-        Z=XYZ(:,3);
+        compactInput=1;
     case 2
         XYZ=varargin{1};        
         v=varargin{2};        
-        X=XYZ(:,1);
-        Y=XYZ(:,2);
-        Z=XYZ(:,3);
+        compactInput=1;
     case 3
         X=varargin{1};
         Y=varargin{2};
         Z=varargin{3};
         v=[];
+        compactInput=0;
     case 4
         X=varargin{1};
         Y=varargin{2};
         Z=varargin{3};
         v=varargin{4};
+        compactInput=0;
+end
+
+%Get X,Y,Z if provided in a single array
+if compactInput==1
+    X=XYZ(:,1);
+    Y=XYZ(:,2);
+    if size(XYZ,2)>2
+        Z=XYZ(:,3);
+    else
+        Z=[];
+    end
 end
 
 if isempty(v)
@@ -48,6 +57,10 @@ end
 
 if numel(v)==1
     v=v*ones(1,3);
+end
+
+if isempty(Z)
+    Z=0.5.*v(3)*ones(size(X)); %Initialize as "mid-slice" for 2D input
 end
 
 %% Process conversion

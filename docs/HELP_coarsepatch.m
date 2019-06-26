@@ -5,12 +5,79 @@
 clear; close all; clc;
 
 %% Syntax
-% |[F,V]=coarsepatch(F,V,f);|
+% |[F,V,Eb]=coarsepatch(F,V,f);|
 
 %% Description 
-% UNDOCUMENTED 
+% This function can reduce the density of patch data defined by faces |F|
+% and vertices |V|. The input |f| either defines a scaling factor between
+% 0-1 or a desired number of faces. 
+% This function uses MATLAB's |[F,V] = reducepatch(F,V,f,'fast');|. However
+% it also proceeds to clean up the mesh to avoid several reducepatch issues
+% (collapsed triangles etc). 
+% The 3rd optional output consists of the boundary edges |Eb|. If the input
+% does not have boundary edges then the coarsening operation introduced
+% holes. 
+
 %% Examples 
 % 
+
+%% Specifying a scaling factor
+[F1,V1]=graphicsModels(9);
+
+f=1/3; %Scaling factor (if <=1) or new number of faces
+
+[F2,V2]=coarsepatch(F1,V1,f);
+
+%%
+
+cFigure; 
+subplot(1,2,1);
+title(['Original: ',num2str(size(V1,1)),' vertices, ',num2str(size(F1,1)),' faces']);
+gpatch(F1,V1,'w','k');
+axisGeom;
+camlight headlight;
+view(0,0);
+axis off; 
+
+subplot(1,2,2);
+title(['Resampled: ',num2str(size(V2,1)),' vertices, ',num2str(size(F2,1)),' faces']);
+gpatch(F2,V2,'w','k');
+axisGeom;
+camlight headlight;
+view(0,0);
+axis off; 
+
+drawnow; 
+
+%% Specifying desired number of faces
+
+[F1,V1]=graphicsModels(9);
+
+f=1500; %Scaling factor (if <=1) or new number of faces
+
+[F2,V2]=coarsepatch(F1,V1,f);
+
+%%
+
+cFigure; 
+subplot(1,2,1);
+title(['Original: ',num2str(size(V1,1)),' vertices, ',num2str(size(F1,1)),' faces']);
+gpatch(F1,V1,'w','k');
+axisGeom;
+camlight headlight;
+view(0,0);
+axis off; 
+
+subplot(1,2,2);
+title(['Resampled: ',num2str(size(V2,1)),' vertices, ',num2str(size(F2,1)),' faces']);
+gpatch(F2,V2,'w','k');
+axisGeom;
+camlight headlight;
+view(0,0);
+axis off; 
+
+drawnow; 
+
 %%
 % 
 % <<gibbVerySmall.gif>>

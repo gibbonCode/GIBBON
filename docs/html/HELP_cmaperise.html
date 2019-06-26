@@ -6,7 +6,7 @@
    <!--
 This HTML was auto-generated from MATLAB code.
 To make changes, update the MATLAB code and republish this document.
-      --><title>cmaperise</title><meta name="generator" content="MATLAB 9.6"><link rel="schema.DC" href="http://purl.org/dc/elements/1.1/"><meta name="DC.date" content="2019-06-20"><meta name="DC.source" content="HELP_cmaperise.m"><style type="text/css">
+      --><title>cmaperise</title><meta name="generator" content="MATLAB 9.6"><link rel="schema.DC" href="http://purl.org/dc/elements/1.1/"><meta name="DC.date" content="2019-06-25"><meta name="DC.source" content="HELP_cmaperise.m"><style type="text/css">
 html,body,div,span,applet,object,iframe,h1,h2,h3,h4,h5,h6,p,blockquote,pre,a,abbr,acronym,address,big,cite,code,del,dfn,em,font,img,ins,kbd,q,s,samp,small,strike,strong,sub,sup,tt,var,b,u,i,center,dl,dt,dd,ol,ul,li,fieldset,form,label,legend,table,caption,tbody,tfoot,thead,tr,th,td{margin:0;padding:0;border:0;outline:0;font-size:100%;vertical-align:baseline;background:transparent}body{line-height:1}ol,ul{list-style:none}blockquote,q{quotes:none}blockquote:before,blockquote:after,q:before,q:after{content:'';content:none}:focus{outine:0}ins{text-decoration:none}del{text-decoration:line-through}table{border-collapse:collapse;border-spacing:0}
 
 html { min-height:100%; margin-bottom:1px; }
@@ -66,8 +66,49 @@ table td { padding:7px 5px; text-align:left; vertical-align:top; border:1px soli
 
 
 
-  </style></head><body><div class="content"><h1>cmaperise</h1><!--introduction--><p>Below is a demonstration of the features of the <tt>cmaperise</tt> function</p><!--/introduction--><h2>Contents</h2><div><ul><li><a href="#2">Syntax</a></li><li><a href="#3">Description</a></li><li><a href="#4">Examples</a></li></ul></div><pre class="codeinput">clear; close <span class="string">all</span>; clc;
-</pre><h2 id="2">Syntax</h2><p><tt>Cmapped=cmaperise(C,cmap,clim);</tt></p><h2 id="3">Description</h2><p>UNDOCUMENTED</p><h2 id="4">Examples</h2><p><img vspace="5" hspace="5" src="gibbVerySmall.gif" alt=""> </p><p><i><b>GIBBON</b></i> <a href="www.gibboncode.org">www.gibboncode.org</a></p><p><i>Kevin Mattheus Moerman</i>, <a href="gibbon.toolbox@gmail.com">gibbon.toolbox@gmail.com</a></p><p><i><b>GIBBON footer text</b></i></p><p>License: <a href="https://github.com/gibbonCode/GIBBON/blob/master/LICENSE">https://github.com/gibbonCode/GIBBON/blob/master/LICENSE</a></p><p>GIBBON: The Geometry and Image-based Bioengineering add-On. A toolbox for image segmentation, image-based modeling, meshing, and finite element analysis.</p><p>Copyright (C) 2019  Kevin Mattheus Moerman</p><p>This program is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.</p><p>This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for more details.</p><p>You should have received a copy of the GNU General Public License along with this program.  If not, see <a href="http://www.gnu.org/licenses/">http://www.gnu.org/licenses/</a>.</p><p class="footer"><br><a href="https://www.mathworks.com/products/matlab/">Published with MATLAB&reg; R2019a</a><br></p></div><!--
+  </style></head><body><div class="content"><h1>cmaperise</h1><!--introduction--><p>Below is a demonstration of the features of the <tt>cmaperise</tt> function</p><!--/introduction--><h2>Contents</h2><div><ul><li><a href="#2">Syntax</a></li><li><a href="#3">Description</a></li><li><a href="#4">Examples</a></li><li><a href="#5">Visualize</a></li></ul></div><pre class="codeinput">clear; close <span class="string">all</span>; clc;
+</pre><h2 id="2">Syntax</h2><p><tt>Cmapped=cmaperise(C,cmap,clim);</tt></p><h2 id="3">Description</h2><p>This function creates RGB colors for the data C using the colormap cmap and the limits clim.</p><h2 id="4">Examples</h2><pre class="codeinput">[X,Y,Z]=peaks(50);
+[F,V,C]=surf2patch(X,Y,Z,Z);
+
+clim=[min(C(:)) max(C(:))];
+
+<span class="comment">%RGB color set with map 1</span>
+cmap=viridis(250);
+C_rgb_1=cmaperise(C,cmap,clim);
+
+<span class="comment">%RGB color set with map 2</span>
+cmap=gray(250);
+C_rgb_2=cmaperise(C,cmap,clim);
+
+<span class="comment">%RGB color set with map 3</span>
+cmap=gjet(250);
+C_rgb_3=cmaperise(C,cmap,clim);
+</pre><h2 id="5">Visualize</h2><pre class="codeinput"><span class="comment">% Offset coordinates so plots are side by side</span>
+V2=V;
+V2(:,1)=V2(:,1)-min(V2(:,1))+max(V(:,1));
+V3=V2;
+V3(:,1)=V3(:,1)-min(V3(:,1))+max(V2(:,1));
+
+cFigure;
+
+subplot(1,2,1);
+title(<span class="string">'Colormapped'</span>)
+hp=gpatch(F,V,C);
+legend(hp,<span class="string">'Colormapped data'</span>);
+axisGeom;
+camlight <span class="string">headlight</span>; colormap <span class="string">viridis</span>; colorbar;
+
+subplot(1,2,2);
+title(<span class="string">'RGB (red-green-blue) painted'</span>)
+hp1=gpatch(F,V,C_rgb_1);
+hp2=gpatch(F,V2,C_rgb_2);
+hp3=gpatch(F,V3,C_rgb_3);
+legend([hp1 hp2 hp3],{<span class="string">'RGB colored with map 1'</span>,<span class="string">'RGB colored with map 2'</span>,<span class="string">'RGB colored with map 3'</span>});
+axisGeom;
+camlight <span class="string">headlight</span>;
+
+drawnow;
+</pre><img width="100%" height="auto" vspace="5" hspace="5" src="HELP_cmaperise_01.jpg" alt=""> <p><img vspace="5" hspace="5" src="gibbVerySmall.gif" alt=""> </p><p><i><b>GIBBON</b></i> <a href="www.gibboncode.org">www.gibboncode.org</a></p><p><i>Kevin Mattheus Moerman</i>, <a href="gibbon.toolbox@gmail.com">gibbon.toolbox@gmail.com</a></p><p><i><b>GIBBON footer text</b></i></p><p>License: <a href="https://github.com/gibbonCode/GIBBON/blob/master/LICENSE">https://github.com/gibbonCode/GIBBON/blob/master/LICENSE</a></p><p>GIBBON: The Geometry and Image-based Bioengineering add-On. A toolbox for image segmentation, image-based modeling, meshing, and finite element analysis.</p><p>Copyright (C) 2019  Kevin Mattheus Moerman</p><p>This program is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.</p><p>This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for more details.</p><p>You should have received a copy of the GNU General Public License along with this program.  If not, see <a href="http://www.gnu.org/licenses/">http://www.gnu.org/licenses/</a>.</p><p class="footer"><br><a href="https://www.mathworks.com/products/matlab/">Published with MATLAB&reg; R2019a</a><br></p></div><!--
 ##### SOURCE BEGIN #####
 %% cmaperise
 % Below is a demonstration of the features of the |cmaperise| function
@@ -79,9 +120,58 @@ clear; close all; clc;
 % |Cmapped=cmaperise(C,cmap,clim);|
 
 %% Description 
-% UNDOCUMENTED 
+% This function creates RGB colors for the data C using the colormap cmap
+% and the limits clim. 
+
 %% Examples 
 % 
+
+[X,Y,Z]=peaks(50);
+[F,V,C]=surf2patch(X,Y,Z,Z);
+
+clim=[min(C(:)) max(C(:))];
+
+%RGB color set with map 1
+cmap=viridis(250);
+C_rgb_1=cmaperise(C,cmap,clim);
+
+%RGB color set with map 2
+cmap=gray(250);
+C_rgb_2=cmaperise(C,cmap,clim);
+
+%RGB color set with map 3
+cmap=gjet(250);
+C_rgb_3=cmaperise(C,cmap,clim);
+
+
+%% Visualize
+
+% Offset coordinates so plots are side by side
+V2=V;
+V2(:,1)=V2(:,1)-min(V2(:,1))+max(V(:,1));
+V3=V2;
+V3(:,1)=V3(:,1)-min(V3(:,1))+max(V2(:,1));
+
+cFigure;
+
+subplot(1,2,1);
+title('Colormapped')
+hp=gpatch(F,V,C);
+legend(hp,'Colormapped data');
+axisGeom;
+camlight headlight; colormap viridis; colorbar;
+
+subplot(1,2,2);
+title('RGB (red-green-blue) painted')
+hp1=gpatch(F,V,C_rgb_1);
+hp2=gpatch(F,V2,C_rgb_2);
+hp3=gpatch(F,V3,C_rgb_3);
+legend([hp1 hp2 hp3],{'RGB colored with map 1','RGB colored with map 2','RGB colored with map 3'});
+axisGeom;
+camlight headlight; 
+
+drawnow; 
+
 %%
 % 
 % <<gibbVerySmall.gif>>

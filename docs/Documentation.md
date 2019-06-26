@@ -94,21 +94,23 @@ function myFunction() {
 
 <ul id="myUL">
 
-   {% for help_html in site.static_files %}
+{% assign sortedFiles = site.static_files | sort_natural: 'basename' %}
+
+   {% for help_html in sortedFiles %}
      {% if help_html.path contains '/html' %}
        {% if help_html.basename contains 'HELP'%}
          {% if help_html.extname contains 'html' %}            
-         <li> <a href="{{ site.baseurl}}{{ help_html.path}}"> {{help_html.basename  | remove: "HELP_"}} </a>  </li>        
+            <li> <a href="{{ site.baseurl}}{{ help_html.path}}"> {{help_html.basename  | remove: "HELP_"}} </a>  </li>        
          {% endif %}
        {% endif %}
      {% endif %}
    {% endfor %}  
 
-   {% for help_html in site.static_files %}
+  {% for help_html in sortedFiles %}
      {% if help_html.path contains '/html' %}
        {% if help_html.basename contains 'DEMO' %}
          {% if help_html.extname contains 'html' %}            
-         <li> <a href="{{ site.baseurl}}{{ help_html.path}}"> {{help_html.basename}} </a>  </li>        
+            <li> <a href="{{ site.baseurl}}{{ help_html.path}}"> {{help_html.basename}} </a>  </li>        
          {% endif %}
        {% endif %}
      {% endif %}

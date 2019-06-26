@@ -8,7 +8,10 @@ clear; close all; clc;
 % |cleanUpTetGen(pathNameTempFiles);|
 
 %% Description 
-% UNDOCUMENTED 
+% This function can clean a folder from tetgen output files. 
+% 
+% See also |cleanDir|
+
 %% Examples 
 % 
 %%
