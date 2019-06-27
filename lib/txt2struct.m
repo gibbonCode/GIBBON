@@ -28,6 +28,7 @@ if exist(fileName,'file')
     entryCell=dataArray{2};    
     [S]=cellPair2struct(nameCell,entryCell,1);
 end
+
 %% 
 % _*GIBBON footer text*_ 
 % 

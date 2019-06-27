@@ -28,6 +28,7 @@ end
 s=25+max([cellfun(@numel,nameCell) cellfun(@numel,defaultOptions)]); %Set sizes
 entryCell = inputdlg(nameCell,dialogTitle,[1 s],defaultOptions); %Open dialog box
 [S]=cellPair2struct(nameCell,entryCell,1); %Convert output to structure
+
 %% 
 % _*GIBBON footer text*_ 
 % 

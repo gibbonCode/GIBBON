@@ -5,12 +5,38 @@
 clear; close all; clc;
 
 %% Syntax
-% |[S]=cellPair2struct(nameCell,entryCell,convertOption);|
+% |[S]=cellPair2struct(fieldNameCell,fieldDataCell,convertOption,optionStruct);|
 
 %% Description 
-% UNDOCUMENTED 
+% Converts a cell array pair to a structure. The cell |fieldNameCell|
+% contains field names and the cell |fieldDataCell| contains the data. The
+% data may be anything a structure can hold. The option parameter
+% |convertOption| can be used to convert numeric data to text. The optional
+% |optionStruct| structure can be used to control this conversion (see
+% |mat2strIntDouble|). 
+
 %% Examples 
 % 
+
+fieldNameCell={'bob','mary','banana','qwerty_yuiop'};
+fieldDataCell={5,'sure',[pi 1 3.5],[1 2 3]};
+
+%%
+% Convert all numerical data
+convertOption=1;
+[S]=cellPair2struct(fieldNameCell,fieldDataCell,convertOption)
+
+%%
+% No conversion
+convertOption=0;
+[S]=cellPair2struct(fieldNameCell,fieldDataCell,convertOption)
+
+%%
+% Convert some of the entries
+convertOption=[1 0 0 1];
+[S]=cellPair2struct(fieldNameCell,fieldDataCell,convertOption)
+
+
 %%
 % 
 % <<gibbVerySmall.gif>>

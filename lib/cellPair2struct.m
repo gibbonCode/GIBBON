@@ -1,19 +1,59 @@
-function [S]=cellPair2struct(nameCell,entryCell,convertOption)
+function [S]=cellPair2struct(varargin)
 
+% function [S]=cellPair2struct(fieldNameCell,fieldDataCell,convertOption,optionStruct)
+% ------------------------------------------------------------------------
+% Converts a cell array pair to a structure. The cell |fieldNameCell|
+% contains field names and the cell |fieldDataCell| contains the data. The
+% data may be anything a structure can hold. The option parameter
+% |convertOption| can be used to convert numeric data to text. The optional
+% |optionStruct| structure can be used to control this conversion (see
+% |mat2strIntDouble|). 
+%
+% 2019/06/27 Updated input handling
+% 2019/06/27 Added extra conversion options based on mat2strIntDouble
+% 2019/06/27 Updated description
+% ------------------------------------------------------------------------
+
+%% Parse input
+
+switch nargin
+    case 2
+        fieldNameCell=varargin{1};
+        fieldDataCell=varargin{2};
+        convertOption=zeros(1,numel(fieldNameCell));
+        optionStruct=[];
+    case 3
+        fieldNameCell=varargin{1}; 
+        fieldDataCell=varargin{2};
+        convertOption=varargin{3}; 
+        optionStruct=[];
+    case 4
+        fieldNameCell=varargin{1};
+        fieldDataCell=varargin{2};
+        convertOption=varargin{3};
+        optionStruct=varargin{4};
+end
+
+if numel(convertOption)==1
+    convertOption=convertOption*ones(1,numel(fieldNameCell));
+end
+
+defaultOptionStruct.formatDouble='%6.7e';
+defaultOptionStruct.formatInteger='%d';
+defaultOptionStruct.dlmChar=',';
+[optionStruct]=structComplete(optionStruct,defaultOptionStruct,1); %Complement provided with default if missing or empty
+
+%%
 % Convert cell to structure
 S=[];
-for q=1:numel(nameCell)
-    if convertOption==1
-        numberFix = sscanf(entryCell{q},'%f');
+for q=1:numel(fieldNameCell)
+    if convertOption(q)==1 && isnumeric(fieldDataCell{q})
+        S.(fieldNameCell{q})=mat2strIntDouble(fieldDataCell{q},optionStruct);
     else
-        numberFix=[];
-    end
-    if ~isempty(numberFix)
-        S.(nameCell{q})=numberFix;
-    else
-        S.(nameCell{q})=entryCell{q};
+        S.(fieldNameCell{q})=fieldDataCell{q};
     end
 end
+
 %% 
 % _*GIBBON footer text*_ 
 % 
