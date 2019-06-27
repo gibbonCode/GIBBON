@@ -18,7 +18,7 @@ switch nargin
 end
 
 %% Define colors
-cMap=[0 49 79; 214 20 28; 122 141 155; 254 229 163; ]./255; 
+cMap=[122 141 155; 0 49 79; 214 20 28; 254 229 163; ]./255; 
 
 %% Resample colormap
 [cMap]=resampleColormap(cMap,n);

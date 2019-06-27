@@ -1,27 +1,43 @@
-function d=divisors(x,arg)
+function d=divisors(varargin)
 
+% function d=divisors(x,arg)
+% -----------------------------------------------------------------------
 % Determine divisors of input x (which needs to be natural number)
 % By default the output provides a vector containing all positive divisors
 % but this can be altered depending on arg. 
+%
+% Change log: 
+% 2019/06/27 Added variable input handling, improved error handling
+% -----------------------------------------------------------------------
 
+%% Parse input
 
-%Default if no option is given
-if exist('arg')==0
-    arg='pos';
+switch nargin
+    case 1
+        x=varargin{1};
+        outputType='pos';
+    case 2
+        x=varargin{1};
+        outputType=varargin{2};
 end
 
-x=abs(x);
-X=0:1:x;
+%%
 
-d=X(ismember(X,abs(x)./X));
-switch arg
+x=abs(x); %Force absolute
+X=0:1:x; %The candidate range [0,x]
+
+d=X(ismember(X,x./X)); %Keep entries which apear as integers after division
+
+%Check if negative output is requested
+switch outputType
     case 'pos'
+        
     case 'neg'
         d=-fliplr(d);
     case 'all'
         d=[-fliplr(d) d];
     otherwise
-        error('False input!');
+        error('Incorrect outputType provided, valid options are pos, neg or all');
 end
 
 end

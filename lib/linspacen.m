@@ -6,41 +6,44 @@ function [C]=linspacen(A,B,n)
 % dimensions. The output C is a matrix of size [size(A) n] such that "it
 % goes from A to B in n steps in the last dimention. The input variables A
 % and B (scalars, vectors or matrices). For scalar input this function is
-% equivalent to linspace (but slower due to repmat operation).
-% Clearly the inputs A and B should have the same size.
+% equivalent to linspace.
+% The inputs A and B should have the same size.
 %
-% Kevin Mattheus Moerman
-% kevinmoerman@hotmail.com
-% Updated: 15/07/2010
+% Change log:
+% 2010/07/15 Updated
+% 2019/06/29 Fixed bug in relation to numerical precission
+% 2019/06/29 Improved error handling
+% 2019/06/29 Avoid NaN if n=1, and copy behaviour of linspace for this case
+%
 %------------------------------------------------------------------------
 
 %%
 
-v=isvector(A);
-size_A=size(A);
-A=A(:);
-B=B(:);
+size_A=size(A); %Store size
 
-C=repmat(A,[1,n])+((B-A)./(n-1))*(0:1:n-1);
-% C(:,end)=B;
-
-if v~=1
-    C=reshape(C,[size_A n]);
+if ~all(size(A)==size(B))
+    error('A and B should be the same size');
 end
 
+if n==1 %Same behaviour as linspace
+    C=B;
+else
+    logicReshape=~isvector(A);
+    
+    %Make columns
+    A=A(:);
+    B=B(:);
+    
+    C=repmat(A,[1,n])+((B-A)./(n-1))*(0:1:n-1);
+    
+    %Force start and end to match (also avoids numerical precission issues) 
+    C(:,1)=A; %Overide start
+    C(:,end)=B; %Overide end
+    if logicReshape
+        C=reshape(C,[size_A n]);
+    end
+end
 
-% %Alternative without REPMAT
-% q=permute(linspace(0,1,n),(numel(size(A))+2):-1:1);
-% Q=zeros([size(A) n]);
-% Q=q(ones(size(A,1),1),ones(size(A,2),1),ones(size(A,3),1),:);
-% A=A(:,:,:,ones(n,1));
-% B=B(:,:,:,ones(n,1));
-% D=B-A;
-% D=D(:,:,:,ones(n,1));
-% C=A+Q.*D;
-
-
- 
 %% 
 % _*GIBBON footer text*_ 
 % 

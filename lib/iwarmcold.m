@@ -1,10 +1,9 @@
-function [cMap]=warmcold(varargin)
+function [cMap]=iwarmcold(varargin)
 
-% function [cMap]=warmcold(n)
+% function [cMap]=iwarmcold(n)
 % ------------------------------------------------------------------------
-% Creates the colormap data for n levels for the warm-cold colormap. Low
-% values define a cold blue color while high values define a warm/hot (red)
-% color. 
+% Creates the colormap data for n levels for the  inverse warm-cold
+% colormap. 
 %
 % Kevin Mattheus Moerman
 % gibbon.toolbox@gmail.com
@@ -20,13 +19,13 @@ switch nargin
 end
 
 cf=[213 15  37; 238 178 17;]./255;
-c=rot90(flipud(cf),2);
-h=flipud(cf);
+c=rot90(cf,2);
+h=cf;
 
 h=resampleColormap(h,3);
 c=resampleColormap(c,3);
 
-cMap=[c; [1 1 1]; h];
+cMap=[c; [0 0 0]; h];
 
 [cMap]=resampleColormap(cMap,n);
  

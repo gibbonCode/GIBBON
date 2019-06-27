@@ -7,7 +7,9 @@ switch nargin
         n=varargin{1};
 end
 
-cMap=[1 0.95 0.8; 0.6 0 0];
+b=blood(8*20);
+bb=linspacen([1 0.95 0.8],b(1,:),3*20)';
+cMap=[bb(1:end-1,:); b];
 [cMap]=resampleColormap(cMap,n);
 
 end 

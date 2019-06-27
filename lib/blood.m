@@ -1,5 +1,15 @@
 function cMap=blood(varargin)
 
+% function cMap=blood(n)
+% -----------------------------------------------------------------------
+% This function creates the colormap data |cMap| for the blood colormap
+% using |n| levels. If |n| is not provided the default used is 250. 
+%
+% 2019/06/27 Updated description
+% -----------------------------------------------------------------------
+
+%% Parse input
+
 switch nargin
     case 0
         n=250;
@@ -7,9 +17,16 @@ switch nargin
         n=varargin{1};
 end
 
-cMap=[1 0.5 0.4; 0.9 0.3 0.27; 0.8 0.2 0.18; 0.7 0.1 0.09; 0.6 0 0; 0.5 0 0; 0.4 0 0;];
-
+%%
+cMap=[1   0.6 0.48;...
+      1   0.5 0.4 ;...
+      0.9 0.3 0.27;...      
+      0.7 0.1 0.09;...
+      0.6 0   0;...
+      0.3 0   0;];
+  
 [cMap]=resampleColormap(cMap,n);
+
 %% 
 % _*GIBBON footer text*_ 
 % 

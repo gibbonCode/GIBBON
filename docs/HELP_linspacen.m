@@ -22,7 +22,7 @@ clear; close all; clc;
 %%
 % Plot settings
 fontSize=15;
-cMap=gjet(250);
+cMap=viridis(250);
 
 %% 
 % Control parameters for examples
@@ -84,9 +84,9 @@ drawnow;
 % whereby the entries go from input A to B allong the last dimension in n
 % steps. 
 
-A=zeros(5,5,5);
+A=zeros(3,4,2)
 B=ones(size(A));
-C=linspacen(A,B,n);
+C=linspacen(A,B,n)
 
 %%
 % Plotting results

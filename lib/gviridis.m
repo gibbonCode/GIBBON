@@ -9,7 +9,9 @@ function [cMap]=gviridis(varargin)
 % Kevin Mattheus Moerman
 % gibbon.toolbox@gmail.com
 %
+% Change log: 
 % 2019/03/28
+% 2019/06/27 Increased color resolution
 %------------------------------------------------------------------------
 
 %%
@@ -21,11 +23,18 @@ switch nargin
 end
 
 %%
-g=gray(9);
-g=g(1:8,:);
-g(8,:)=1;
 
-cMap=[ flipud(g); viridis(6); ones(1,3);];
+Ng=250;
+Nw=75;
+Nk=50;
+Nv=Ng-Nk-Nw;
+
+g=linspacen([1 1 1],[0 0 0],Ng)';
+v=viridis(Nv);
+k=linspacen([0 0 0],v(1,:),Nk)';
+w=linspacen(v(end,:),[1 1 1],Nw)';
+
+cMap=[g(1:end-1,:); [0 0 0]; k; v; w];
 cMap=resampleColormap(cMap,n);
 
 %%

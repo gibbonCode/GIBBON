@@ -1,17 +1,14 @@
-function [cMap]=igviridis(varargin)
+function [cMap]=kvw(varargin)
 
-% function [cMap]=igviridis(n)
+% function [cMap]=kvw(n)
 % ------------------------------------------------------------------------
-% Creates the colormap data for the inver gray-viridis colormap. This
-% colormap combines gray scale colors with the viridis colors. The colormap
-% is circular in that it starts and ends with white. 
+% Creates the colormap data for the black-viridis-white colormap. This
+% colormap start black, continues as the viridis colormap and ends white. 
 % 
 % Kevin Mattheus Moerman
 % gibbon.toolbox@gmail.com
 %
-% Change log: 
-% 2019/03/28
-% 2019/06/27 Increased color resolution
+% 2019/06/27
 %------------------------------------------------------------------------
 
 %%
@@ -23,18 +20,12 @@ switch nargin
 end
 
 %%
+ns=75;
+v=viridis(250);
+k=linspacen([0 0 0],v(1,:),ns)';
+w=linspacen(v(end,:),[1 1 1],ns)';
 
-Ng=250;
-Nw=75;
-Nk=50;
-Nv=Ng-Nk-Nw;
-
-g=linspacen([0 0 0],[1 1 1],Ng)';
-v=flipud(viridis(Nv));
-k=linspacen(v(end,:),[0 0 0],Nk)';
-w=linspacen([1 1 1],v(1,:),Nw)';
-
-cMap=[g(1:end-1,:); [1 1 1]; w; v; k];
+cMap=[k(1:end-1,:);v;w(2:end,:)];
 cMap=resampleColormap(cMap,n);
 
 %%
