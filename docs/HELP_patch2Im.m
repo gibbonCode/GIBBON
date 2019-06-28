@@ -51,7 +51,7 @@ L_plot(:,:,round(size(M,3)/2))=1;
 L_plot(round(size(M,1)/2),:,:)=1;
 L_plot(:,round(size(M,2)/2),:)=1;
 L_plot=L_plot & ~isnan(M);
-[Fm,Vm,Cm]=ind2patch(L_plot,double(M),'v');
+[Fm,Vm,Cm]=im2patch(M,L_plot,'v');
 [Vm(:,1),Vm(:,2),Vm(:,3)]=im2cart(Vm(:,2),Vm(:,1),Vm(:,3),voxelSize*ones(1,3));
 Vm=Vm+imOrigin(ones(size(Vm,1),1),:);
 
@@ -101,7 +101,7 @@ L_plot(:,:,round(size(M,3)/2))=1;
 L_plot(round(size(M,1)/2),:,:)=1;
 L_plot(:,round(size(M,2)/2),:)=1;
 L_plot=L_plot & ~isnan(M);
-[Fm,Vm,Cm]=ind2patch(L_plot,double(M),'v');
+[Fm,Vm,Cm]=im2patch(M,L_plot,'v');
 [Vm(:,1),Vm(:,2),Vm(:,3)]=im2cart(Vm(:,2),Vm(:,1),Vm(:,3),voxelSize*ones(1,3));
 Vm=Vm+imOrigin(ones(size(Vm,1),1),:);
 
@@ -166,7 +166,7 @@ L_plot(:,:,round(size(M,3)/2))=1;
 L_plot(round(size(M,1)/2),:,:)=1;
 L_plot(:,round(size(M,2)/2),:)=1;
 L_plot=L_plot & ~isnan(M);
-[Fm,Vm,Cm]=ind2patch(L_plot,double(M),'v');
+[Fm,Vm,Cm]=im2patch(M,L_plot,'v');
 [Vm(:,1),Vm(:,2),Vm(:,3)]=im2cart(Vm(:,2),Vm(:,1),Vm(:,3),voxelSize*ones(1,3));
 Vm=Vm+imOrigin(ones(size(Vm,1),1),:);
 
