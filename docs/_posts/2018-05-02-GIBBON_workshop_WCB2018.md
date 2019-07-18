@@ -2,10 +2,10 @@
 layout:     post
 title:      GIBBON workshop at WCB2018
 author:     Kevin Mattheus Moerman
-tags: 		  post
-subtitle:  	Workshop at the World Congress of Biomechanics 2018
+tags: 	    post
+subtitle:   Workshop at the World Congress of Biomechanics 2018
 category:   Blog
-thumbnail:  /img/logos/gibbonlogo.png
+thumbnail:  /img/WCB.jpg
 ---
 
 # GIBBON Workshop [WCB 2018](http://wcb2018.com/)

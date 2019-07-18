@@ -1,5 +1,10 @@
-function [F,V]=levelset2isosurface(L,controlPar)
-
+function [varargout]=levelset2isosurface(L,controlPar)
+% function [F,V,C]=levelset2isosurface(L,controlPar)
+% ------------------------------------------------------------------------
+%
+% Change log:
+% 2019/07/03 Added face (cap/other) color label output
+% ------------------------------------------------------------------------
 
 %% GET CONTROL PARAMETERS
 
@@ -69,12 +74,27 @@ if capOpt==2
     [Fc,Vc] = isocaps(X_iso,Y_iso,Z_iso,L_iso,contourLevel);
     Fc=Fc(:,[3 2 1]); %Flip face order so normal is outward
     
-    %Join and merge patch data
-    F=[F;Fc+size(V,1);];
-    V=[V;Vc;];
+    %Join and patch data
+    C=[ones(size(F,1),1);2*ones(size(Fc,1),1)]; %Face label data
+    F=[F;Fc+size(V,1);]; %Faces    
+    V=[V;Vc;]; %Vertices
+    
+    %Merge vertices
     [F,V]=mergeVertices(F,V);
+else
+    C=ones(size(F,1),1);
 end
+
+% Clean-up/improve mesh
+F=patchRemoveCollapsed(F); %remove collapsed (edges)
+[F,V]=triSurfRemoveThreeConnect(F,V); %Remove 3-connected
+[F,V]=patchCleanUnused(F,V); %Remove unused points
  
+%% Collect output
+varargout{1}=F;
+varargout{2}=V;
+varargout{3}=C;
+
 %% 
 % _*GIBBON footer text*_ 
 % 

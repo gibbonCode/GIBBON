@@ -1,6 +1,11 @@
 function varargout=minDist(varargin)
 
 % function [D1,minIND]=minDist(V1,V2,maxVarSize,selfAvoid,numFreeBytes)
+% -----------------------------------------------------------------------
+%
+%
+%
+% -----------------------------------------------------------------------
 
 %% Parse input
 if nargin<2
@@ -13,19 +18,19 @@ switch nargin
     case 2        
         maxVarSize=[]; %Empty will force calcucation below
         selfAvoid=0; 
-        numFreeBytes=[];
+        numFreeBytes=[];        
     case 3
         maxVarSize=varargin{3};
         selfAvoid=0; 
-        numFreeBytes=[];
+        numFreeBytes=[];        
     case 4
         maxVarSize=varargin{3};
         selfAvoid=varargin{4}; 
-        numFreeBytes=[];
+        numFreeBytes=[];        
     case 5
         maxVarSize=varargin{3};
         selfAvoid=varargin{4};
-        numFreeBytes=varargin{5};        
+        numFreeBytes=varargin{5};                    
 end
 
 %Get free memory
@@ -59,6 +64,7 @@ if numSteps>1 %In steps
     minIND=zeros(size(V1,1),1);
     for q=1:1:numSteps-1
         v1=V1(indSteps(q)+1:indSteps(q+1),:);
+        w=W(indSteps(q)+1:indSteps(q+1),:);
         if exist('dist','file')==2
             d=dist(v1,V2'); %dist from Neural network toolbox
         else            
@@ -73,8 +79,7 @@ if numSteps>1 %In steps
             J=indSteps(q)+1:indSteps(q+1);
             ind=sub2ind(size(d),I,J); %Indices of selfies            
             d(ind)=1+max(d(:)); %Overide selfies
-        end
-        
+        end        
         [min_d,min_ind]=min(d,[],2);
         D1(indSteps(q)+1:indSteps(q+1))=min_d;
         minIND(indSteps(q)+1:indSteps(q+1))=min_ind;        
@@ -91,7 +96,7 @@ else %In one go
         %function) 
         L=eye(size(D))>0;
         D(L)=1+max(D(:));
-    end
+    end    
     [D1,minIND]=min(D,[],2);         
     D1=D1(:);
     minIND=minIND(:);

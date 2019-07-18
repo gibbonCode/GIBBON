@@ -20,6 +20,7 @@ function [varargout]=gpatch(varargin)
 % 
 % 2017 
 % 2018/02/07 Added support for colormapped edges
+% 2019/07/03 Added handling of empty alpha data
 %------------------------------------------------------------------------
 
 switch nargin
@@ -70,6 +71,10 @@ end
 
 if isempty(CE)
     C='k';
+end
+
+if isempty(A)
+    A=1;
 end
 
 if isa(F,'cell') %Assume all entries are cells defining multiple patch data sets

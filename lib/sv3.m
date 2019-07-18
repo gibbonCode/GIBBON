@@ -91,7 +91,10 @@ tickSizeMajor_K=round(size(M,3)/nTickMajor);
 
 [ax,ay,az]=im2cart([size(M,1)+1 0],[size(M,2)+1 0],[size(M,3)+1 0],v);
 
+navString=['I: ',num2str(sliceIndexI),', J:  ',num2str(sliceIndexJ),', K: ',num2str(sliceIndexK)];
+
 hf=cFigure(figStruct);
+ht=gtitle(navString);
 axis equal; axis tight; view(3);  axis vis3d; axis([ax(2) ax(1) ay(2) ay(1) az(2) az(1)]); grid on; box on; hold on;
 colormap(cMap); colorbar;
 caxis(cLim);
@@ -131,7 +134,9 @@ hf.UserData.sv3.v=v;
 hf.UserData.sv3.patchTypes={'si','sj','sk'};
 hf.UserData.sv3.sliceIndices=[sliceIndexI sliceIndexJ sliceIndexK];
 hf.UserData.sv3.fontColor=fontColor;
+hf.UserData.sv3.fontSize=fontSize;
 hf.UserData.sv3.hp=nan(3,1);
+hf.UserData.sv3.ht=ht;
 hf.UserData.sv3.M_plot=M;
 hf.UserData.sv3.alphaLevel=alphaLevel;
 hf.UserData.sv3.origin=originLoc;
@@ -199,7 +204,9 @@ else
 end
 
 navString=['I: ',num2str(sliceIndices(1)),', J:  ',num2str(sliceIndices(2)),', K: ',num2str(sliceIndices(3))];
-title(navString,'color',hf.UserData.sv3.fontColor);
+
+set(hf.UserData.sv3.ht,'string',navString);
+
 hf.Name=[hf.UserData.sv3.Name,' ',navString];
 
 end

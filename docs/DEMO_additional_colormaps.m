@@ -12,8 +12,8 @@ fontSize=15;
 
 % Create example data for visualizations
 n=250;
-s=5;
-[X,Y]=ndgrid(linspace(-4*s,4*s,n));
+s=1;
+[X,Y]=ndgrid(linspace(-3*s,3*s,n));
 Z=exp( -0.5.*((X./s).^2+(Y./s).^2));
 Z=Z./max(Z(:));
 Z(X<0)=-Z(X<0);
@@ -21,7 +21,7 @@ clim=[-1 1];
 colormapset={'gjet','wjet','graygjet','grayjet',...
     'fire','ice','fireice','warmcold','iwarmcold','blood','bloodbone',...
     'che','wcbp','viridis','magma','inferno',...
-    'plasma','gviridis','igviridis','kvw'};
+    'plasma','gviridis','igviridis','kvw','cividis'};
 
 %% The gibbon color maps
 

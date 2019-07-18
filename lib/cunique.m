@@ -1,4 +1,4 @@
-function [varargout]=cunique(A)
+function [varargout]=cunique(varargin)
 
 % function [A_uni,ind1,ind2,Ac]=cunique(A)
 %-------------------------------------------------------------------------
@@ -13,24 +13,48 @@ function [varargout]=cunique(A)
 % Kevin Mattheus Moerman
 % gibbon.toolbox@gmail.com
 %
-% 2018/03/21: Created
+% Change log: 
+% 2018/03/21 Created
+% 2019/07/02 Adding varargin handling (pass unique options) including
+% 'rows' support. 
 %-------------------------------------------------------------------------
 
 %%
 
-[A_uni,ind1,ind2]=unique(A);
+A=varargin{1};
 
-varargout{1}=A_uni;
-varargout{2}=reshape(ind1,size(A_uni));
-varargout{3}=reshape(ind2,size(A));
+[A_uni,ind1,ind2]=unique(varargin{:});
+
+if any(strcmp(varargin,'rows'))
+    typeOpt=2;
+else
+    typeOpt=1;
+end
+
+switch typeOpt
+    case 1
+        varargout{1}=A_uni;
+        varargout{2}=reshape(ind1,size(A_uni));
+        varargout{3}=reshape(ind2,size(A));
+    case 2
+        varargout{1}=A_uni;
+        varargout{2}=reshape(ind1,[size(A_uni,1) 1]);
+        varargout{3}=reshape(ind2,[size(A,1) 1]);        
+end
 
 if nargout==4
     [subInd] = ind2subn(size(A_uni),ind2);
     Ac=accumarray(subInd,ones(numel(ind2),1),size(A_uni));
-    Ac=reshape(Ac(ind2),size(A));
+    switch typeOpt
+        case 1
+            Ac=reshape(Ac(ind2),size(A));            
+        case 2            
+            Ac=reshape(Ac(ind2),[size(A,1) 1]);            
+    end
     varargout{4}=Ac;
 end
-%% 
+
+%%
 % _*GIBBON footer text*_ 
 % 
 % License: <https://github.com/gibbonCode/GIBBON/blob/master/LICENSE>

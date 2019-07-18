@@ -1,6 +1,10 @@
 function L=isrounded(A)
 
-L=double(A)==round(double(A));
+if ~isinteger(A)
+    L=(A==round(A));
+else
+    L=true(size(A));
+end
 
 %% 
 % _*GIBBON footer text*_ 

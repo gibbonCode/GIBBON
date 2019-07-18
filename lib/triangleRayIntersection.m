@@ -1,5 +1,7 @@
-function [V_intersect,L_intersect,T] = triangleRayIntersection (V_ori,R,V,F,optStruct)
+function [varargout] = triangleRayIntersection (V_ori,R,V,F,optStruct)
 
+% function [V_intersect,L_intersect,T] = triangleRayIntersection (V_ori,R,V,F,optStruct)
+% ------------------------------------------------------------------------
 %
 % Ray/triangle intersection using the algorithm proposed by M�ller and
 % Trumbore (1997)
@@ -57,10 +59,10 @@ function [V_intersect,L_intersect,T] = triangleRayIntersection (V_ori,R,V,F,optS
 %  * http://fileadmin.cs.lth.se/cs/Personal/Tomas_Akenine-Moller/raytri/
 %  * http://fileadmin.cs.lth.se/cs/Personal/Tomas_Akenine-Moller/raytri/raytri.c
 %
-% Kevin Mattheus Moerman (kevinmoerman@hotmail.com)
-% 2013/12/18: Changed for patch type input and Cartesian coordinate output
-% TO DO: Full validation, help adjustment according to changes, generation
-% of DEMO file
+% Change log:
+% 2013/12/18 Changed for patch type input and Cartesian coordinate output
+% 2019/07/03 Added varargout type output
+% ------------------------------------------------------------------------
 
 %%
 
@@ -203,6 +205,12 @@ V_intersect=((1-U_bar(:,ones(1,3))-V_bar(:,ones(1,3))).*V0) + (U_bar(:,ones(1,3)
 V_intersect(~L_intersect,:)=NaN;
 T(~L_intersect,:)=NaN;
  
+%% Collect output
+
+varargout{1}=V_intersect;
+varargout{2}=L_intersect;
+varargout{3}=T;
+
 %% 
 % _*GIBBON footer text*_ 
 % 

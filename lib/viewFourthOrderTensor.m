@@ -43,11 +43,11 @@ if isempty(numDigits)
 end
 
 if isempty(fontSizeIm)
-    fontSizeIm=30; 
+    fontSizeIm=15; 
 end
 
 if isempty(fontSize)
-    fontSize=30; 
+    fontSize=15; 
 end
 
 %%
