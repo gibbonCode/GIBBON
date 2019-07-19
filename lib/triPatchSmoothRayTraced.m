@@ -2,7 +2,7 @@ function [VV]=triPatchSmoothRayTraced(F,V,optionStruct)
 
 nMax=optionStruct.n;
 LambdaSmooth=0.5;
-indRigid=[];
+indRigid=optionStruct.RigidConstraints;
 
 C=patchConnectivity(F,V,{'vv','vf'});
 

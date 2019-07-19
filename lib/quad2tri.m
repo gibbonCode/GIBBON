@@ -76,13 +76,13 @@ switch triType
         d2=sum(abs(a2-(pi/3)),2);
         d=d1-d2;                 
         L1=d<-angleTolerance; %Flip if difference is more than tolerance
-        Ft=[Fq(L1,[1 2 3]);Fq(L1,[3 4 1]); Fq(~L1,[1 2 4]);Fq(~L1,[2 3 4])];
+        Ft=[Fq(L1,[1 2 3]);Fq(L1,[3 4 1]); Fq(~L1,[1 2 4]);Fq(~L1,[2 3 4])];          
         Vt=Vq;
         if ~isempty(Cq)
             Ct=[Cq(L1,:); Cq(L1,:); Cq(~L1,:); Cq(~L1,:)];
         else
             Ct=repmat(Cq,[2,1]);
-        end
+        end                
     case 'x' %Cross type
         Vm=zeros(size(Fq,1),size(Vq,2));
         for q=1:1:size(Vq,2)

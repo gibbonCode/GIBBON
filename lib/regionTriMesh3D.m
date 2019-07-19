@@ -1,6 +1,6 @@
 function [varargout]=regionTriMesh3D(varargin)
 
-% function [F,V]=regionTriMesh3D(regionCell,pointSpacing,resampleCurveOpt,interpMethod)
+% function [F,V,boundaryInd]=regionTriMesh3D(regionCell,pointSpacing,resampleCurveOpt,interpMethod)
 % ------------------------------------------------------------------------
 % This function creates a 3D triangulation for the region specified in the
 % variable regionCell. The mesh aims to obtain a point spacing as defined
@@ -119,6 +119,18 @@ interpFunc = scatteredInterpolant(Vtcr(:,[1 2]),Vtcr(:,3),interpMethod);
 V(:,3)=interpFunc(V(:,[1 2]));
 V=(R_fit*V')';
 V=V+Vt_mean(ones(size(V,1),1),:);
+
+%% Check normal directions against input curve(s)
+
+% V_test=regionCell{1};
+% V_test=V_test(1:2,:);
+% size(V_test)
+% size(V)
+% [~,e]=minDist(V_test,V);
+% E=patchEdges(F,1);
+% if ~any(E(:,1)==e(1) & E(:,2)==e(2))
+%    F=fliplr(F); %Invert if edge does not seem member of faces 
+% end
 
 %% Collect ouput
 varargout{1}=F;

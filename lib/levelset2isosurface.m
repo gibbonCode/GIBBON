@@ -68,11 +68,16 @@ L_iso=L(useRange_I,useRange_J,useRange_K);
 
 %Derive isosurface
 [F,V] = isosurface(X_iso,Y_iso,Z_iso,L_iso,contourLevel);
+F=patchRemoveCollapsed(F); %remove collapsed (edges)
+[F,V]=patchCleanUnused(F,V); %Remove unused points
 
 %Derive caps
 if capOpt==2
     [Fc,Vc] = isocaps(X_iso,Y_iso,Z_iso,L_iso,contourLevel);
-    Fc=Fc(:,[3 2 1]); %Flip face order so normal is outward
+%     Fc=Fc(:,[3 2 1]); %Flip face order so normal is outward
+
+    F=patchRemoveCollapsed(F); %remove collapsed (edges)    
+    [F,V]=patchCleanUnused(F,V); %Remove unused points
     
     %Join and patch data
     C=[ones(size(F,1),1);2*ones(size(Fc,1),1)]; %Face label data
@@ -85,11 +90,6 @@ else
     C=ones(size(F,1),1);
 end
 
-% Clean-up/improve mesh
-F=patchRemoveCollapsed(F); %remove collapsed (edges)
-[F,V]=triSurfRemoveThreeConnect(F,V); %Remove 3-connected
-[F,V]=patchCleanUnused(F,V); %Remove unused points
- 
 %% Collect output
 varargout{1}=F;
 varargout{2}=V;
