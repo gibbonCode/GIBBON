@@ -1,0 +1,296 @@
+
+<!DOCTYPE html
+  PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html><head>
+      <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+   <!--
+This HTML was auto-generated from MATLAB code.
+To make changes, update the MATLAB code and republish this document.
+      --><title>DEMO_JOSS_logo</title><meta name="generator" content="MATLAB 9.7"><link rel="schema.DC" href="http://purl.org/dc/elements/1.1/"><meta name="DC.date" content="2019-07-24"><meta name="DC.source" content="DEMO_JOSS_logo.m"><style type="text/css">
+html,body,div,span,applet,object,iframe,h1,h2,h3,h4,h5,h6,p,blockquote,pre,a,abbr,acronym,address,big,cite,code,del,dfn,em,font,img,ins,kbd,q,s,samp,small,strike,strong,sub,sup,tt,var,b,u,i,center,dl,dt,dd,ol,ul,li,fieldset,form,label,legend,table,caption,tbody,tfoot,thead,tr,th,td{margin:0;padding:0;border:0;outline:0;font-size:100%;vertical-align:baseline;background:transparent}body{line-height:1}ol,ul{list-style:none}blockquote,q{quotes:none}blockquote:before,blockquote:after,q:before,q:after{content:'';content:none}:focus{outine:0}ins{text-decoration:none}del{text-decoration:line-through}table{border-collapse:collapse;border-spacing:0}
+
+html { min-height:100%; margin-bottom:1px; }
+html body { height:100%; margin:0px; font-family:Arial, Helvetica, sans-serif; font-size:10px; color:#000; line-height:140%; background:#fff none; overflow-y:scroll; }
+html body td { vertical-align:top; text-align:left; }
+
+h1 { padding:0px; margin:0px 0px 25px; font-family:Arial, Helvetica, sans-serif; font-size:1.5em; color:#d55000; line-height:100%; font-weight:normal; }
+h2 { padding:0px; margin:0px 0px 8px; font-family:Arial, Helvetica, sans-serif; font-size:1.2em; color:#000; font-weight:bold; line-height:140%; border-bottom:1px solid #d6d4d4; display:block; }
+h3 { padding:0px; margin:0px 0px 5px; font-family:Arial, Helvetica, sans-serif; font-size:1.1em; color:#000; font-weight:bold; line-height:140%; }
+
+a { color:#005fce; text-decoration:none; }
+a:hover { color:#005fce; text-decoration:underline; }
+a:visited { color:#004aa0; text-decoration:none; }
+
+p { padding:0px; margin:0px 0px 20px; }
+img { padding:0px; margin:0px 0px 20px; border:none; }
+p img, pre img, tt img, li img, h1 img, h2 img { margin-bottom:0px; } 
+
+ul { padding:0px; margin:0px 0px 20px 23px; list-style:square; }
+ul li { padding:0px; margin:0px 0px 7px 0px; }
+ul li ul { padding:5px 0px 0px; margin:0px 0px 7px 23px; }
+ul li ol li { list-style:decimal; }
+ol { padding:0px; margin:0px 0px 20px 0px; list-style:decimal; }
+ol li { padding:0px; margin:0px 0px 7px 23px; list-style-type:decimal; }
+ol li ol { padding:5px 0px 0px; margin:0px 0px 7px 0px; }
+ol li ol li { list-style-type:lower-alpha; }
+ol li ul { padding-top:7px; }
+ol li ul li { list-style:square; }
+
+.content { font-size:1.2em; line-height:140%; padding: 20px; }
+
+pre, code { font-size:12px; }
+tt { font-size: 1.2em; }
+pre { margin:0px 0px 20px; }
+pre.codeinput { padding:10px; border:1px solid #d3d3d3; background:#f7f7f7; }
+pre.codeoutput { padding:10px 11px; margin:0px 0px 20px; color:#4c4c4c; }
+pre.error { color:red; }
+
+@media print { pre.codeinput, pre.codeoutput { word-wrap:break-word; width:100%; } }
+
+span.keyword { color:#0000FF }
+span.comment { color:#228B22 }
+span.string { color:#A020F0 }
+span.untermstring { color:#B20000 }
+span.syscmd { color:#B28C00 }
+
+.footer { width:auto; padding:10px 0px; margin:25px 0px 0px; border-top:1px dotted #878787; font-size:0.8em; line-height:140%; font-style:italic; color:#878787; text-align:left; float:none; }
+.footer p { margin:0px; }
+.footer a { color:#878787; }
+.footer a:hover { color:#878787; text-decoration:underline; }
+.footer a:visited { color:#878787; }
+
+table th { padding:7px 5px; text-align:left; vertical-align:middle; border: 1px solid #d6d4d4; font-weight:bold; }
+table td { padding:7px 5px; text-align:left; vertical-align:top; border:1px solid #d6d4d4; }
+
+
+
+
+
+  </style></head><body><div class="content"><h1>DEMO_JOSS_logo</h1><!--introduction--><p>Below is a demonstration for:</p><div><ul><li>Building geometry for the logo of the Journal Of Open Source Software (JOSS: <a href="http://joss.theoj.org">http://joss.theoj.org</a>)</li></ul></div><!--/introduction--><h2>Contents</h2><div><ul><li><a href="#1">Keywords</a></li><li><a href="#3">Plot settings</a></li><li><a href="#4">Control parameters</a></li><li><a href="#5">Create inner shape</a></li><li><a href="#6">Create rotation matrix</a></li><li><a href="#7">Create outer shape</a></li><li><a href="#8">Rotate geometries</a></li><li><a href="#9">Visualizaing surface models</a></li></ul></div><h2 id="1">Keywords</h2><div><ul><li>platonic_solid, geoSphere, patch_dual, foamWrap</li></ul></div><pre class="codeinput">clear; close <span class="string">all</span>; clc;
+</pre><h2 id="3">Plot settings</h2><pre class="codeinput">patchColorInner=0.25*ones(1,3);
+patchColorOuter=[64 120 192]/255;
+</pre><h2 id="4">Control parameters</h2><pre class="codeinput">rSphereInner=3; <span class="comment">%Sphere radius</span>
+rSphereOuter=2.075; <span class="comment">%Sphere radius</span>
+numRefine=3; <span class="comment">%Number of refinement steps for geoSphere</span>
+
+smoothParInner.n=5;
+smoothParInner.Method=<span class="string">'LAP'</span>; <span class="comment">%Laplacian smoothing</span>
+
+smoothParOuter.n=50;
+smoothParOuter.Method=<span class="string">'HC'</span>; <span class="comment">%Humphreys-Classes smoothing</span>
+
+controlParFaomWrap.n=3;
+controlParFaomWrap.dirFlip=1;
+controlParFaomWrap.foamThickness=[]; <span class="comment">%Empty uses default which is mean edgelength based</span>
+controlParFaomWrap.cParSmooth=smoothParOuter;
+</pre><h2 id="5">Create inner shape</h2><pre class="codeinput"><span class="comment">% Create a sphere surface model</span>
+[Fs,Vs,~]=geoSphere(numRefine,rSphereInner); <span class="comment">%Geodesic sphere triangulation</span>
+
+<span class="comment">% Create an icosahedron surface model</span>
+[Vi,~]=platonic_solid(4,rSphereInner); <span class="comment">%Get icosahedron</span>
+
+<span class="comment">% Compute distances from the sphere to the icosahedron vertices</span>
+[D,indMin]=minDist(Vs,Vi);
+
+<span class="comment">% Adjust distance</span>
+D=D.^2; <span class="comment">%Square distance</span>
+D=D-min(D(:)); D=D./max(D(:)); <span class="comment">%Normalize [0 1]</span>
+D=D.*rSphereInner; <span class="comment">%Multiply by radius [0 rSphere]</span>
+
+<span class="comment">% Morph shape of sphere using distance data</span>
+[Ts,Ps,Rs] = cart2sph(Vs(:,1),Vs(:,2),Vs(:,3)); <span class="comment">%Get spherical coordinates</span>
+Rs_n=Rs-2*1/2.5*D; <span class="comment">%Create adjusted radius</span>
+[Vs(:,1),Vs(:,2),Vs(:,3)] = sph2cart(Ts,Ps,Rs_n); <span class="comment">%Convert back to Cartesian coordinates</span>
+[Vs]=patchSmooth(Fs,Vs,[],smoothParInner); <span class="comment">%Smoothen the result</span>
+
+<span class="comment">%Compute the dual of the triangulation</span>
+[V_inner,F_inner]=patch_dual(Vs,Fs);
+</pre><h2 id="6">Create rotation matrix</h2><p>A rotation matrix is created to reorient the shapes such that one of the icosahedron vertices points at the camera</p><pre class="codeinput">n1=vecnormalize(Vi(1,:)); <span class="comment">%Position vector 1 normalized to be axis 1</span>
+n2=vecnormalize(Vi(2,:)); <span class="comment">%Position vector 2 normalized</span>
+n3=vecnormalize(cross(n1,n2)); <span class="comment">%Axis 3 created as orthogonal to both n1 and n2</span>
+n2=vecnormalize(cross(n1,n3)); <span class="comment">%Form axis 2 as orthogonal to both n1 and n3</span>
+Q=[n1; n2; n3]; <span class="comment">%Create rotation matrix</span>
+</pre><h2 id="7">Create outer shape</h2><p>First create an icosahedron, refine it, and compute the structure that wraps the surface.</p><pre class="codeinput"><span class="comment">% Create refine icosahedron surface</span>
+[Vi,Fi]=platonic_solid(4,rSphereOuter); <span class="comment">%Get icosahedron</span>
+[Fi,Vi,C,indIni]=triPolyDualRefine(Fi,Vi); <span class="comment">%Refine the icosahedron</span>
+
+<span class="comment">% Wrap surface</span>
+[F_outer,V_outer,C_outer,C_outer_c]=foamWrap(Fi,Vi,C,controlParFaomWrap);
+
+<span class="comment">% Keep only subset of surface components</span>
+F_outer=F_outer(C_outer_c~=1,:);
+[F_outer,V_outer,~]=patchCleanUnused(F_outer,V_outer);
+[F_outer,V_outer]=mergeVertices(F_outer,V_outer);
+[F_outer,V_outer]=subtri(F_outer,V_outer,1); <span class="comment">%Refine 1 iteration</span>
+
+<span class="comment">%Smoothen to round the shape</span>
+[V_outer]=patchSmooth(F_outer,V_outer,[],smoothParOuter);
+</pre><h2 id="8">Rotate geometries</h2><pre class="codeinput">V_inner=V_inner*Q;
+V_outer=V_outer*Q;
+</pre><h2 id="9">Visualizaing surface models</h2><p>A slightly messy plot (light is used twice to produce a bright look). Use the export figure widget to export images.</p><pre class="codeinput">hf=cFigure; hold <span class="string">on</span>;
+
+<span class="comment">%Plot inner surface</span>
+<span class="keyword">for</span> q=1:1:numel(F_inner)
+    hp=patch(<span class="string">'Faces'</span>,F_inner{q},<span class="string">'Vertices'</span>,V_inner,<span class="string">'FaceColor'</span>,0.25*ones(1,3),<span class="string">'FaceAlpha'</span>,1,<span class="string">'lineWidth'</span>,1,<span class="string">'edgeColor'</span>,<span class="string">'k'</span>);<span class="comment">%0.25*ones(1,3));</span>
+<span class="keyword">end</span>
+
+<span class="comment">%Plot outer surface</span>
+gpatch(F_outer,V_outer,patchColorOuter);
+
+axisGeom; axis <span class="string">off</span>;
+view(0,0);
+camlight <span class="string">headlight</span>;
+camlight <span class="string">headlight</span>;
+lighting <span class="string">flat</span>;
+drawnow;
+</pre><img width="100%" height="auto" vspace="5" hspace="5" src="DEMO_JOSS_logo_01.jpg" alt=""> <p><img vspace="5" hspace="5" src="gibbVerySmall.gif" alt=""> </p><p><i><b>GIBBON</b></i> <a href="www.gibboncode.org">www.gibboncode.org</a></p><p><i>Kevin Mattheus Moerman</i>, <a href="gibbon.toolbox@gmail.com">gibbon.toolbox@gmail.com</a></p><p><i><b>GIBBON footer text</b></i></p><p>License: <a href="https://github.com/gibbonCode/GIBBON/blob/master/LICENSE">https://github.com/gibbonCode/GIBBON/blob/master/LICENSE</a></p><p>GIBBON: The Geometry and Image-based Bioengineering add-On. A toolbox for image segmentation, image-based modeling, meshing, and finite element analysis.</p><p>Copyright (C) 2019  Kevin Mattheus Moerman</p><p>This program is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.</p><p>This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for more details.</p><p>You should have received a copy of the GNU General Public License along with this program.  If not, see <a href="http://www.gnu.org/licenses/">http://www.gnu.org/licenses/</a>.</p><p class="footer"><br><a href="https://www.mathworks.com/products/matlab/">Published with MATLAB&reg; R2019b</a><br></p></div><!--
+##### SOURCE BEGIN #####
+%% DEMO_JOSS_logo
+% Below is a demonstration for:
+% 
+% * Building geometry for the logo of the Journal Of Open Source Software
+% (JOSS: <http://joss.theoj.org>)
+
+%% Keywords
+%
+% * platonic_solid, geoSphere, patch_dual, foamWrap
+
+%%
+
+clear; close all; clc; 
+
+%% Plot settings
+patchColorInner=0.25*ones(1,3);
+patchColorOuter=[64 120 192]/255; 
+
+%% Control parameters
+rSphereInner=3; %Sphere radius
+rSphereOuter=2.075; %Sphere radius
+numRefine=3; %Number of refinement steps for geoSphere
+
+smoothParInner.n=5;
+smoothParInner.Method='LAP'; %Laplacian smoothing
+
+smoothParOuter.n=50;
+smoothParOuter.Method='HC'; %Humphreys-Classes smoothing
+
+controlParFaomWrap.n=3; 
+controlParFaomWrap.dirFlip=1; 
+controlParFaomWrap.foamThickness=[]; %Empty uses default which is mean edgelength based
+controlParFaomWrap.cParSmooth=smoothParOuter; 
+
+%% Create inner shape 
+
+% Create a sphere surface model
+[Fs,Vs,~]=geoSphere(numRefine,rSphereInner); %Geodesic sphere triangulation
+
+% Create an icosahedron surface model
+[Vi,~]=platonic_solid(4,rSphereInner); %Get icosahedron
+
+% Compute distances from the sphere to the icosahedron vertices
+[D,indMin]=minDist(Vs,Vi);
+
+% Adjust distance 
+D=D.^2; %Square distance 
+D=D-min(D(:)); D=D./max(D(:)); %Normalize [0 1]
+D=D.*rSphereInner; %Multiply by radius [0 rSphere]
+
+% Morph shape of sphere using distance data 
+[Ts,Ps,Rs] = cart2sph(Vs(:,1),Vs(:,2),Vs(:,3)); %Get spherical coordinates
+Rs_n=Rs-2*1/2.5*D; %Create adjusted radius
+[Vs(:,1),Vs(:,2),Vs(:,3)] = sph2cart(Ts,Ps,Rs_n); %Convert back to Cartesian coordinates
+[Vs]=patchSmooth(Fs,Vs,[],smoothParInner); %Smoothen the result
+
+%Compute the dual of the triangulation
+[V_inner,F_inner]=patch_dual(Vs,Fs);
+
+%% Create rotation matrix
+% A rotation matrix is created to reorient the shapes such that one of the
+% icosahedron vertices points at the camera
+
+n1=vecnormalize(Vi(1,:)); %Position vector 1 normalized to be axis 1
+n2=vecnormalize(Vi(2,:)); %Position vector 2 normalized
+n3=vecnormalize(cross(n1,n2)); %Axis 3 created as orthogonal to both n1 and n2
+n2=vecnormalize(cross(n1,n3)); %Form axis 2 as orthogonal to both n1 and n3
+Q=[n1; n2; n3]; %Create rotation matrix
+
+%% Create outer shape 
+% First create an icosahedron, refine it, and compute the structure that
+% wraps the surface. 
+
+% Create refine icosahedron surface
+[Vi,Fi]=platonic_solid(4,rSphereOuter); %Get icosahedron
+[Fi,Vi,C,indIni]=triPolyDualRefine(Fi,Vi); %Refine the icosahedron
+
+% Wrap surface
+[F_outer,V_outer,C_outer,C_outer_c]=foamWrap(Fi,Vi,C,controlParFaomWrap);
+
+% Keep only subset of surface components 
+F_outer=F_outer(C_outer_c~=1,:);
+[F_outer,V_outer,~]=patchCleanUnused(F_outer,V_outer);
+[F_outer,V_outer]=mergeVertices(F_outer,V_outer);
+[F_outer,V_outer]=subtri(F_outer,V_outer,1); %Refine 1 iteration
+
+%Smoothen to round the shape
+[V_outer]=patchSmooth(F_outer,V_outer,[],smoothParOuter);
+
+%% Rotate geometries
+V_inner=V_inner*Q;
+V_outer=V_outer*Q;
+
+%% Visualizaing surface models
+% A slightly messy plot (light is used twice to produce a bright look). Use
+% the export figure widget to export images. 
+
+hf=cFigure; hold on; 
+
+%Plot inner surface
+for q=1:1:numel(F_inner)
+    hp=patch('Faces',F_inner{q},'Vertices',V_inner,'FaceColor',0.25*ones(1,3),'FaceAlpha',1,'lineWidth',1,'edgeColor','k');%0.25*ones(1,3));
+end
+
+%Plot outer surface
+gpatch(F_outer,V_outer,patchColorOuter);
+
+axisGeom; axis off; 
+view(0,0);
+camlight headlight; 
+camlight headlight;
+lighting flat; 
+drawnow; 
+ 
+%% 
+%
+% <<gibbVerySmall.gif>>
+% 
+% _*GIBBON*_ 
+% <www.gibboncode.org>
+% 
+% _Kevin Mattheus Moerman_, <gibbon.toolbox@gmail.com>
+ 
+%% 
+% _*GIBBON footer text*_ 
+% 
+% License: <https://github.com/gibbonCode/GIBBON/blob/master/LICENSE>
+% 
+% GIBBON: The Geometry and Image-based Bioengineering add-On. A toolbox for
+% image segmentation, image-based modeling, meshing, and finite element
+% analysis.
+% 
+% Copyright (C) 2019  Kevin Mattheus Moerman
+% 
+% This program is free software: you can redistribute it and/or modify
+% it under the terms of the GNU General Public License as published by
+% the Free Software Foundation, either version 3 of the License, or
+% (at your option) any later version.
+% 
+% This program is distributed in the hope that it will be useful,
+% but WITHOUT ANY WARRANTY; without even the implied warranty of
+% MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+% GNU General Public License for more details.
+% 
+% You should have received a copy of the GNU General Public License
+% along with this program.  If not, see <http://www.gnu.org/licenses/>.
+
+##### SOURCE END #####
+--></body></html>

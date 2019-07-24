@@ -29,22 +29,6 @@ end
 
 %%
 
-% if isa(F,'cell')
-%     FC=F;
-%     siz1=cellfun(@(x) size(x,1),FC);
-%     siz2=cellfun(@(x) size(x,2),FC);
-%     numFaces=sum(siz1);
-%     numVerticesMax=max(siz2);
-%     F=zeros(numFaces,numVerticesMax);
-%     indNow=0;
-% 
-%     for q=1:1:numel(FC)            
-%         F(indNow+1:indNow+siz1(q),1:siz2(q))=FC{q};
-%         indNow=indNow+siz1(q);        
-%     end        
-%     
-% end
-
 Fbs=sort(F,2);
 sizVirt=numPoints*ones(1,size(Fbs,2));
 ind_F = sub2indn(sizVirt,Fbs);

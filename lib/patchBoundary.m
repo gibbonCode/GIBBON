@@ -52,9 +52,9 @@ else
     [indBoundary]=tesBoundary(E,V);
     
     % Boundary edges
-    Eb=E(indBoundary,:);
-    
+    Eb=E(indBoundary,:);    
 end
+
 % Output
 varargout{1}=Eb; %Boundary edges
 varargout{2}=E; %All edges

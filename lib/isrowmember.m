@@ -2,7 +2,7 @@ function logicMember=isrowmember(varargin)
 
 % function logicMember=isrowmember(F1,F2,orderOption)
 % ------------------------------------------------------------------------
-%
+% 
 % ------------------------------------------------------------------------
 
 %% Parse input 

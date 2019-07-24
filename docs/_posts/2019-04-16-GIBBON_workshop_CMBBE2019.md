@@ -11,7 +11,7 @@ thumbnail:  /img/CMBBE_2019.png
 # GIBBON Workshop [CMBBE 2019](https://cmbbe2019.com)
 **Time**: Friday August 16th, 11:00am-12:30pm    
 **Location:**  See conference programme      
-**Contact details:** [Dr. Kevin Moerman](https://kevinmoerman.org/), _NUIG Galway, Ireland_, ([kevin.moerman@nuigalway.ie](mailto:kevin.moerman@nuigalway.ie))    
+**Presenter:** [Dr. Kevin Moerman](https://kevinmoerman.org/), _NUIG Galway, Ireland_, ([kevin.moerman@nuigalway.ie](mailto:kevin.moerman@nuigalway.ie))    
 
 Join this workshop to learn about [GIBBON](https://www.gibboncode.org): a **FREE and open-source** MATLAB toolbox for segmentation, image-based modelling, visualization, meshing, and finite element analysis. GIBBON includes an array of image and geometry visualization and processing tools and is interfaced with free open source software such as TetGen, for robust tetrahedral meshing, and FEBio (or Abaqus) for finite element analysis. The combination provides a highly flexible image-based modelling environment and enables advanced inverse finite element analysis.
 
