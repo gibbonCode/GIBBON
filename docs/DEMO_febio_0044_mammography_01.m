@@ -242,7 +242,7 @@ Fb=meshOutput.facesBoundary;
 Cb=meshOutput.boundaryMarker;
 V=meshOutput.nodes;
 CE=meshOutput.elementMaterialID;
-E=meshOutput.elements;z
+E=meshOutput.elements;
 
 %%
 

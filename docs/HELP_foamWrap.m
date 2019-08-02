@@ -32,21 +32,17 @@ cmap=gjet(250);
 
 %%
 cFigure;
-xlabel('X','FontSize',fontSize); ylabel('Y','FontSize',fontSize); zlabel('Z','FontSize',fontSize);
-
-patch('Faces',F,'Vertices',V,'FaceColor','flat','CData',C,'FaceAlpha',faceAlpha,'lineWidth',edgeWidth,'edgeColor','k');
-
-camlight headlight; 
+gpatch(F,V,C);
 colormap(cmap);
-set(gca,'FontSize',fontSize);
-view(3); axis tight;  axis equal;  grid on; axis off; 
-view(0,59);
+axisGeom(gca,fontSize); 
+camlight headlight; 
+drawnow;
 
 %%
 
 cPar.n=3; 
 cPar.dirFlip=1; 
-cPar.foamThickness=[]; %Empty uses default which is mean edgelength based
+cPar.foamThickness=0.05; %Empty uses default which is mean edgelength based
 cParSmooth.Method='HC';
 cParSmooth.n=25;
 cPar.cParSmooth=cParSmooth; 
@@ -61,12 +57,12 @@ xlabel('X','FontSize',fontSize); ylabel('Y','FontSize',fontSize); zlabel('Z','Fo
 
 gpatch(FT,VT,CT_c,'none',1);
 
-colormap(gray(250)); icolorbar;
-set(gca,'FontSize',fontSize);
-view(3); axis tight;  axis equal;  grid on;
+axisGeom(gca,fontSize); 
 view(0,58.25);
 camlight headlight; 
 axis off;
+colormap(gray(4)); icolorbar;
+drawnow;
 
 %% 
 %
