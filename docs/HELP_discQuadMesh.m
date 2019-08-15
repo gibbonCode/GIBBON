@@ -12,8 +12,8 @@ clear; close all; clc;
 
 %% PLOT SETTINGS
 
-fontSize=35;
-edgeWidth=3; 
+fontSize=15;
+edgeWidth=2; 
 
 %% Building a quadrilateral circular mesh
 

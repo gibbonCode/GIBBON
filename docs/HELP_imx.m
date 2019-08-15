@@ -8,8 +8,8 @@ clear; close all; clc;
 % |hf=imx(varargin);|
 
 %% Description 
-% The |imx| function provides a figure window based GUI for 3D image
-% segmentation
+% The imx (image explorer) function is a GUI to navigate and segment 3D
+% image data. 
 
 %% Examples 
 %
@@ -18,13 +18,15 @@ clear; close all; clc;
 %% 
 % Get a 3D image (see also |dcmFolder2MATobject| to import DICOM data)
 testCase=2; 
+
+defaultFolder = fileparts(fileparts(mfilename('fullpath'))); %Set main folder
+loadSavePath=fullfile(defaultFolder,'data','imseg'); %Path for loading and saving segmentation data
 switch testCase
     case 1 %MATLAB brain data
         load mri;
         M=squeeze(D); %example image data set
         v=2./[1,1,.4]; %example voxel size
-    case 2 %MRI imported from DICOM files, see also HELP_dcmFolder2MATobject
-        defaultFolder = fileparts(fileparts(mfilename('fullpath'))); %Set main folder
+    case 2 %MRI imported from DICOM files, see also HELP_dcmFolder2MATobject        
         pathName=fullfile(defaultFolder,'data','DICOM','0001_human_calf');        
         loadName=fullfile(pathName,'IMDAT','IMDAT.mat');
         
@@ -36,7 +38,7 @@ end
 
 %%
 % Start segmentation using |imx|
-hf=imx(M,v);
+hf=imx(M,v,loadSavePath);
 
 %% 
 % *Viewing*

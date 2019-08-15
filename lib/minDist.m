@@ -63,8 +63,7 @@ if numSteps>1 %In steps
     D1=zeros(size(V1,1),1);
     minIND=zeros(size(V1,1),1);
     for q=1:1:numSteps-1
-        v1=V1(indSteps(q)+1:indSteps(q+1),:);
-        w=W(indSteps(q)+1:indSteps(q+1),:);
+        v1=V1(indSteps(q)+1:indSteps(q+1),:);        
         if exist('dist','file')==2
             d=dist(v1,V2'); %dist from Neural network toolbox
         else            

@@ -1,7 +1,13 @@
 function [varargout]=gtitle(varargin)
 
 % function hText=gtitle(titleString,fontSize,hf)
-
+% -----------------------------------------------------------------------
+%
+%
+% Change log: 
+% 2019/08/09 Wrapped try statement around JavaFrame based background color
+% removal and suppressed warning occuring in MATLAB R2019b
+% -----------------------------------------------------------------------
 %% Parse input
 
 switch nargin
@@ -60,20 +66,25 @@ hText = uicontrol(hf,'Style','text','String',titleString,'BackgroundColor',backG
     'FontWeight',optionStruct.FontWeight,'Units','Points','ForegroundColor',textColor,...
     'FontName',optionStruct.FontName);
 
-% Set the control to be non-opaque and repaint it
-j_hText = findjobj(hText);
-j_hText.setOpaque(false);
-j_hText.repaint();
+% Attempt to turn of background color
+try %JavaFrame approach
+    warning 'off'
+    j_hText = findjobj(hText);
+    j_hText.setOpaque(false);
+    j_hText.repaint();
+    warning 'on'
+catch
+    % Not possible to make background transparent yet without JavaFrame
+end
 
 hText.Units = 'Points';
 
 figResize([],[],{hf,hText});
 
-
 hFunc=get(hf,'ResizeFcn');
 
 if iscell(hFunc)
-    warning('gtitle replaced the ResizeFcn function. Specify your ResizeFcn in the form @(h,e)figResize(h,e,c) to avoid this behavior');    
+%     warning('gtitle replaced the ResizeFcn function. Specify your ResizeFcn in the form @(h,e)figResize(h,e,c) to avoid this behavior');    
     set(hf,'ResizeFcn',@(a,b)figResize(a,b,{hf,hText}));
 else
     if isempty(hFunc)
@@ -82,7 +93,6 @@ else
         set(hf,'ResizeFcn',@(a,b)(cellfun(@(x)feval(x,a,b),{hFunc,@(a,b)figResize(a,b,{hf,hText})})));
     end
 end
-
 
 %% Collect output
 

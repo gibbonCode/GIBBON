@@ -74,11 +74,6 @@ end
 IND_FF=[];
 if nargout==3
     
-    % IND_FF=[];
-    % for q=1:1:sizTES2;
-    %     IND_FF=[IND_FF IND_F(TES(:,q),:)];
-    % end
-    
     nnzMax=size(TES,2).*full(nnz(IND_F));
     
     IND_FF=sparse([],[],[],size(TES,1),size(IND_F,2)*size(TES,2),nnzMax);

@@ -2,7 +2,9 @@ function [varargout]=hemiSphereMesh(varargin)
 
 % function [F,V,C]=hemiSphereMesh(nRefineSteps,sphereRadius,closeOpt)
 %-------------------------------------------------------------------------
-% 
+% Creates the patch data (faces F, vertices V, and colordata C) for a
+% hemisphere with a radius equal to sphereRadius. The hemisphere is
+% refined nRefineSteps times and is closed if closeOpt==1
 %
 %
 % 

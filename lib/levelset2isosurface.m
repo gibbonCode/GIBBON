@@ -68,6 +68,12 @@ L_iso=L(useRange_I,useRange_J,useRange_K);
 
 %Derive isosurface
 [F,V] = isosurface(X_iso,Y_iso,Z_iso,L_iso,contourLevel);
+
+%Clean isosurface
+[F,V]=mergeVertices(F,V); %merge nodes
+[~,indUni,~]=unique(sort(F,2),'rows'); %Check for unique faces
+F=F(indUni,:); %Keep unique faces
+[F,V]=patchCleanUnused(F,V); %Remove unused 
 F=patchRemoveCollapsed(F); %remove collapsed (edges)
 [F,V]=patchCleanUnused(F,V); %Remove unused points
 
@@ -88,6 +94,25 @@ if capOpt==2
     [F,V]=mergeVertices(F,V);
 else
     C=ones(size(F,1),1);
+end
+
+if capOpt>0
+    % remove "flag" triangles
+    while 1
+        C=patchConnectivity(F,V,{'ef'});
+        EF=C.edge.face;        
+        logicRemove= (sum(EF>0,2)==1);        
+        if nnz(logicRemove)==0
+            break
+        end
+        indRemove=unique(EF(logicRemove,:));
+        indRemove=indRemove(indRemove>0);
+        logicKeep=true(size(F,1),1);
+        logicKeep(indRemove)=0;
+        
+        F=F(logicKeep,:);
+        [F,V]=patchCleanUnused(F,V);
+    end
 end
 
 %% Collect output

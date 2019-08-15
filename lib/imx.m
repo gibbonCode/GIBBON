@@ -1,7 +1,16 @@
 function hf=imx(varargin)
+% function hf=imx(M,v,savePath)
+% ------------------------------------------------------------------------
+% The imx (image explorer) function is a GUI to navigate and segment 3D
+% image data. 
+% 
+% Change log: 
+% 2019/08/09 Update to not depend on javax jSliders but to use MATLAB
+% uicontrol sliders instead. Also added update frequency such that sliding
+% does not create an excessive amount of plot updates. 
+% ------------------------------------------------------------------------
 
 %%
-
 
 %% Parse input
 
@@ -45,23 +54,19 @@ end
 fontColor='w';
 fontSize=20;
 cMap=gray(250);
-
+scrollBarWidth=20; %Scrollbar width
 figStruct.Name='Image Segmentation Widget'; %Figure name
 figStruct.Color=0.*ones(1,3); %Figure background color
 figStruct.ColorDef='black'; %Setting colordefinitions to black
 % figStruct.ScreenOffset=100; %Setting spacing of figure with respect to screen edges
 
+%%
+updateFrequency=10; 
+
 %% Defining row, column and slice indicices for slice patching
 sliceIndexI=round(siz(1)/2); %(close to) middle row
 sliceIndexJ=round(siz(2)/2); %(close to) middle column
 sliceIndexK=round(siz(3)/2); %(close to) middle slice
-
-Tf=[0 100]; %Threshold
-
-nTickMajor=20;
-tickSizeMajor_I=round(siz(1)/nTickMajor);
-tickSizeMajor_J=round(siz(2)/nTickMajor);
-tickSizeMajor_K=round(siz(3)/nTickMajor);
 
 %% Initialize display
 
@@ -82,11 +87,11 @@ hColorBar=colorbar;
 hColorBar.Units='pixels';
 hColorBar.AxisLocation='in';
 hColorBar.Location='south';
-
-hColorBar.Position(1)=4*60;
+hColorBar.Position(1)=(3*scrollBarWidth)+10;
 hColorBar.Position(2)=10;
-hColorBar.Position(3)=hf.Position(3)-(4*60)-10;
+hColorBar.Position(3)=hf.Position(3)-hColorBar.Position(1)-10;
 hColorBar.Position(4)=25;
+
 hColorBar.Label.String = '';
 % hColorBar.FontSize=10;
 set(gca,'fontSize',fontSize);
@@ -104,30 +109,27 @@ caxis([min(M(:)) max(M(:))]);
 set(gca,'fontSize',fontSize);
 drawnow;
 
-scrollBarWidth=50; %Scrollbar width
-jSlider_I = javax.swing.JSlider(1,siz(1));
-javacomponent(jSlider_I,[0,0,scrollBarWidth,round(hf.Position(4))]);
-set(jSlider_I, 'MajorTickSpacing',tickSizeMajor_I, 'MinorTickSpacing',1, 'PaintTicks',true, 'PaintLabels',true,...
-    'Background',java.awt.Color.white, 'snapToTicks',true, 'StateChangedCallback',{@plotSlice,{hf,jSlider_I,1}},'Orientation',jSlider_I.VERTICAL);
+%%
 
-jSlider_J = javax.swing.JSlider(1,siz(2));
-javacomponent(jSlider_J,[1*scrollBarWidth,0,scrollBarWidth,round(hf.Position(4))]);
-set(jSlider_J, 'MajorTickSpacing',tickSizeMajor_J, 'MinorTickSpacing',1, 'PaintTicks',true, 'PaintLabels',true,...
-    'Background',java.awt.Color.white, 'snapToTicks',true, 'StateChangedCallback',{@plotSlice,{hf,jSlider_J,2}},'Orientation',jSlider_J.VERTICAL);
+%Initialize sliders
+hSlider_I= uicontrol(hf,'Style','slider','Position',[0,0,scrollBarWidth,round(hf.Position(4))]);
+set(hSlider_I,'Value',sliceIndexI,'Min',1,'Max',size(M,1),'SliderStep',[1/(size(M,1)-1) 1/(size(M,1)-1)]);
+hSlider_I.Callback={@plotSlice,{hf,hSlider_I,1}};
+addlistener(hSlider_I,'ContinuousValueChange',@(hObject, event) plotSlice(hObject,event,{hf,hSlider_I,1}));
 
-jSlider_K = javax.swing.JSlider(1,siz(3));
-javacomponent(jSlider_K,[2*scrollBarWidth,0,scrollBarWidth,round(hf.Position(4))]);
-set(jSlider_K, 'MajorTickSpacing',tickSizeMajor_K, 'MinorTickSpacing',1, 'PaintTicks',true, 'PaintLabels',true,...
-    'Background',java.awt.Color.white, 'snapToTicks',true, 'StateChangedCallback',{@plotSlice,{hf,jSlider_K,3}},'Orientation',jSlider_K.VERTICAL);
+hSlider_J= uicontrol(hf,'Style','slider','Position',[1*scrollBarWidth,0,scrollBarWidth,round(hf.Position(4))]);
+set(hSlider_J,'Value',sliceIndexJ,'Min',1,'Max',size(M,2),'SliderStep',[1/(size(M,2)-1) 1/(size(M,2)-1)]);
+hSlider_J.Callback={@plotSlice,{hf,hSlider_J,2}};
+addlistener(hSlider_J,'ContinuousValueChange',@(hObject, event) plotSlice(hObject,event,{hf,hSlider_J,2}));
 
-jSlider_T = com.jidesoft.swing.RangeSlider(0,100,Tf(1),Tf(2));  % min,max,low,high
-javacomponent(jSlider_T,[3*scrollBarWidth,0,scrollBarWidth,round(hf.Position(4))]);
-set(jSlider_T, 'MajorTickSpacing',25, 'MinorTickSpacing',1, 'PaintTicks',true, 'PaintLabels',true,...
-    'Background',java.awt.Color.white, 'snapToTicks',false, 'StateChangedCallback',{@setThresholdFunc,{hf,jSlider_T,jSlider_I,jSlider_J,jSlider_K}},'Orientation',jSlider_T.VERTICAL);
+hSlider_K= uicontrol(hf,'Style','slider','Position',[2*scrollBarWidth,0,scrollBarWidth,round(hf.Position(4))]);
+set(hSlider_K,'Value',sliceIndexK,'Min',1,'Max',size(M,3),'SliderStep',[1/(size(M,3)-1) 1/(size(M,3)-1)]);
+hSlider_K.Callback={@plotSlice,{hf,hSlider_K,3}};
+addlistener(hSlider_K,'ContinuousValueChange',@(hObject, event) plotSlice(hObject,event,{hf,hSlider_K,3}));
 
 %% Set resize function
 
-set(hf,'ResizeFcn',{@setScrollSizeFunc,{hf,scrollBarWidth,jSlider_T,jSlider_I,jSlider_J,jSlider_K}});
+set(hf,'ResizeFcn',{@setScrollSizeFunc,{hf,scrollBarWidth,hSlider_I,hSlider_J,hSlider_K}});
 
 %% Initialize figure callbacks
 % set(hf, 'WindowButtonDownFcn', {@FigMouseDown,hf}, ...
@@ -479,11 +481,6 @@ hMove=uitoggletool(hb,'TooltipString','Move','CData',S,'Tag','move_button','Clic
 % % Create a uipushtool in the toolbar
 % uitoggletool(hb,'TooltipString','Target','CData',S,'Tag','target_button',);%,'ClickedCallback',{@loadFunc,{hf}});
 
-%% Popup
-% hPopUp1 = uicontrol('Style', 'popup',...
-%     'String', {'gray','gjet','jet','hsv'},...
-%     'Position', [hf.Position(3)-100 hf.Position(4)-20 100 20],...
-%     'Callback', @funcColormap);
 
 % %% Text overlay
 %
@@ -492,14 +489,18 @@ hMove=uitoggletool(hb,'TooltipString','Move','CData',S,'Tag','move_button','Clic
 % hTopText = uicontrol('Style','text','Position',pos,'String',topTextString,'BackgroundColor',0.5*ones(1,3),'FontSize',10,'ForegroundColor',abs(1-figStruct.Color));
 
 %% Text fields
-        
-hTextInfoStringDefault=' s=sample sketch contour, c=cut sketched contour,d=draw contour, delete=delete sketch contour, home=return to active slice, a=accept contour, q=smooth accepted contour, +=grow contour, -=shrink contour, space=go to next slice, left/right arrow=increase/decrease transparancy, v=activate vcw';
-hTextInfo = uicontrol(hf,'Style','text','String',hTextInfoStringDefault,...
-    'Position',[scrollBarWidth*4 hf.Position(4)-round(scrollBarWidth/1.5) round(hf.Position(3))-scrollBarWidth*4 round(scrollBarWidth/1.5)],...
-    'BackgroundColor',[1 1 1],'HorizontalAlignment','Left','FontSize',10);
-            
+hTextInfoStringDefault=' s=sample sketch contour, c=cut sketched contour, d=draw contour, delete=delete sketch contour, home=return to active slice, a=accept contour, q=smooth accepted contour, +=grow contour, -=shrink contour, space=go to next slice, left/right arrow=increase/decrease transparancy, v=activate vcw';
+hTextInfo = uicontrol(hf,'Style','text','String',hTextInfoStringDefault,...    
+    'BackgroundColor',hf.Color,'ForegroundColor',[1 1 1],'HorizontalAlignment','Left','FontSize',10);
+
+textBoxWidth=round(hf.Position(3))-scrollBarWidth*3;
+textBoxHeight=hTextInfo.Extent(4).*ceil(hTextInfo.Extent(3)./textBoxWidth);
+set(hTextInfo,'Position',[scrollBarWidth*3 hf.Position(4)-textBoxHeight textBoxWidth textBoxHeight]);
+
 %% Set figure UserData
 
+t=clock;
+hf.UserData.time=t;
 hf.UserData.M=M;
 hf.UserData.M_plot=M;
 hf.UserData.Name=figStruct.Name;
@@ -541,7 +542,7 @@ hf.UserData.hAxis=hAxis;
 hf.UserData.sketchContourHandle=[];
 hf.UserData.contourSetHandle=[];
 
-hf.UserData.sliderHandles={jSlider_I,jSlider_J,jSlider_K,jSlider_T};
+hf.UserData.sliderHandles={hSlider_I,hSlider_J,hSlider_K};
 
 hf.UserData.savePath=savePath;
 hf.UserData.saveName='imseg'; %Save name
@@ -564,18 +565,21 @@ hf.UserData.csapsSmoothPar=0.5;
 hf.UserData.growShrinkStepSize=1/4; 
 hf.UserData.adjustContourParSet={4,1,0.5}; 
 hf.UserData.MoveStepSize=mean(v(1:2));
-hf.UserData.showAll=1; 
+hf.UserData.showAll=-1; 
+hf.UserData.updateFrequency=updateFrequency;
 
 %% Initialize slider locations
-set(jSlider_I,'Value',sliceIndexI);
-set(jSlider_J,'Value',sliceIndexJ);
-set(jSlider_K,'Value',sliceIndexK);
-set(jSlider_T,'HighValue',Tf(2));
-set(jSlider_T,'LowValue',Tf(1));
+set(hSlider_I,'Value',sliceIndexI);
+set(hSlider_J,'Value',sliceIndexJ);
+set(hSlider_K,'Value',sliceIndexK);
 
-setThresholdFunc([],[],{hf,jSlider_T,jSlider_I,jSlider_J,jSlider_K});
-
-%%
+%Initialize view
+pause(1/updateFrequency); %Wait so plot will update
+plotSlice([],[],{hf,hSlider_I,1});
+hf.UserData.time=t; %Reset clock so this happens now
+plotSlice([],[],{hf,hSlider_J,2}); 
+hf.UserData.time=t; %Reset clock so this happens now
+plotSlice([],[],{hf,hSlider_K,3});
 
 drawnow;
 
@@ -585,109 +589,80 @@ end
 function plotSlice(~,~,inputCell)
 
 hf=inputCell{1};
+
 jSlider=inputCell{2};
 dirOpt=inputCell{3};
-sliceIndex = get(jSlider,'Value');
+sliceIndex=round(get(jSlider,'Value'));
 hf.UserData.sliceIndices(dirOpt)=sliceIndex;
 sliceIndices=hf.UserData.sliceIndices;
 
-M=hf.UserData.M_plot;
-v=hf.UserData.v;
-patchType=hf.UserData.patchTypes{dirOpt}; 
+dt=1/hf.UserData.updateFrequency; 
+t=hf.UserData.time;
+t2=clock;
+dtt=etime(t2,t); %Elapsed time
 
-logicPatch=false(size(M));
-switch dirOpt
-    case 1
-        logicPatch(sliceIndex,:,:)=1;
-    case 2
-        logicPatch(:,sliceIndex,:)=1;
-    case 3
-        logicPatch(:,:,sliceIndex)=1;
-end
-
-if isnan(hf.UserData.hp(dirOpt))    
-    [F,V,C]=im2patch(M,logicPatch,patchType,v);
-    hf.UserData.hp(dirOpt)= patch('Faces',F,'Vertices',V,'FaceColor','flat','CData',C,'EdgeColor','none','FaceAlpha',hf.UserData.faceAlpha);
-else    
-    set(hf.UserData.hp(dirOpt),'CData',M(logicPatch),'FaceAlpha',hf.UserData.faceAlpha);
-    V=get(hf.UserData.hp(dirOpt),'Vertices');
+if dtt>dt %If ready to update
+    hf.UserData.time=t2;
+    
+    M=hf.UserData.M_plot;
+    v=hf.UserData.v;
+    patchType=hf.UserData.patchTypes{dirOpt};
+    
+    logicPatch=false(size(M));
     switch dirOpt
         case 1
-            V(:,2)=(sliceIndex-0.5).*v(1);
+            logicPatch(sliceIndex,:,:)=1;
         case 2
-            V(:,1)=(sliceIndex-0.5).*v(2);            
+            logicPatch(:,sliceIndex,:)=1;
         case 3
-            V(:,3)=(sliceIndex-0.5).*v(3);
+            logicPatch(:,:,sliceIndex)=1;
     end
-    set(hf.UserData.hp(dirOpt),'Vertices',V);
-end
-
-if dirOpt==3
-    if hf.UserData.showAll<0
-        plotContourSet(hf);
+    
+    figure(hf); %TEMP FIX for bug in MATLAB 2018
+    
+    if isnan(hf.UserData.hp(dirOpt))
+        [F,V,C]=im2patch(M,logicPatch,patchType);
+        [V(:,1),V(:,2),V(:,3)]=im2cart(V(:,2),V(:,1),V(:,3),v);
+%         V=V+hf.UserData.origin(ones(size(V,1),1),:);
+        hf.UserData.hp(dirOpt)= gpatch(F,V,C,'none',hf.UserData.faceAlpha);
+    else
+        V=get(hf.UserData.hp(dirOpt),'Vertices');
+        switch dirOpt
+            case 1
+                V(:,2)=(sliceIndex-0.5).*v(1);
+            case 2
+                V(:,1)=(sliceIndex-0.5).*v(2);
+            case 3
+                V(:,3)=(sliceIndex-0.5).*v(3);
+        end
+        set(hf.UserData.hp(dirOpt),'CData',M(logicPatch)); %Set color data
+        set(hf.UserData.hp(dirOpt),'Vertices',V); %Set vertices
     end
+    
+    navString=['I: ',num2str(sliceIndices(1)),', J:  ',num2str(sliceIndices(2)),', K: ',num2str(sliceIndices(3))];
+    
+    hf.Name=[hf.UserData.Name,' ',navString];
 end
-
-navString=['I: ',num2str(sliceIndices(1)),', J:  ',num2str(sliceIndices(2)),', K: ',num2str(sliceIndices(3))];
-hf.UserData.colorBarhandle.Label.String=navString;
-hf.Name=[hf.UserData.Name,' ',navString];
-
-end
-
-%% Change threshold
-
-function setThresholdFunc(~,~,inputCell)
-
-hf=inputCell{1};
-jSlider_T=inputCell{2};
-jSlider_I=inputCell{3};
-jSlider_J=inputCell{4};
-jSlider_K=inputCell{5};
-
-Tf(1) = get(jSlider_T,'LowValue');
-Tf(2) = get(jSlider_T,'HighValue');
-
-M=hf.UserData.M;
-W=max(M(:))-min(M(:));
-
-T_low=min(M(:))+(W*Tf(1)/100);
-T_high=min(M(:))+(W*Tf(2)/100);
-logicThreshold=(M>=T_low & M<=T_high);
-
-hf.UserData.M_plot=M;
-hf.UserData.M_plot(~logicThreshold)=NaN;
-hf.UserData.logicThreshold=logicThreshold;
-
-plotSlice([],[],{hf,jSlider_I,1});
-plotSlice([],[],{hf,jSlider_J,2});
-plotSlice([],[],{hf,jSlider_K,3});
-
 end
 
 %% Scroll bar resizing
 
 function setScrollSizeFunc(~,~,inputCell)
 hf=inputCell{1};
-scrollBarWidth=inputCell{2};
+w=inputCell{2};
 
-for q=3:6
-    jSlider=inputCell{q};
-    javacomponent(jSlider,[scrollBarWidth*(q-3),0,scrollBarWidth,round(hf.Position(4))]);
+for q=3:numel(inputCell)
+    hSlider=inputCell{q};
+    posData=[w*(q-3),0,w,round(hf.Position(4))];
+    set(hSlider,'Position',posData);    
 end
-
-% hColorBar=hf.UserData.colorBarhandle;
-% hColorBar.Units='pixels';
-% hColorBar.AxisLocation='in';
-% hColorBar.Position(1)=hf.Position(3)-50;
-% hColorBar.Position(2)=50;
-% hColorBar.Position(4)=hf.Position(4)-100;
 
 hColorBar=hf.UserData.colorBarhandle;
 hColorBar.Units='pixels';
 hColorBar.AxisLocation='in';
-hColorBar.Position(1)=4*60;
+hColorBar.Position(1)=(3*(w))+10;
 hColorBar.Position(2)=10;
-hColorBar.Position(3)=hf.Position(3)-(4*60)-10;
+hColorBar.Position(3)=hf.Position(3)-hColorBar.Position(1)-10;
 hColorBar.Position(4)=25;
 
 % hPopUp1=hf.UserData.hPopUp1;
@@ -700,7 +675,9 @@ hAxis.Position(2)=50;
 hAxis.Position(4)=hf.Position(4)-100;
 hAxis.Units=axis_units;
 
-set(hf.UserData.ButtonHandles.hTextInfo,'Position',[scrollBarWidth*4 hf.Position(4)-round(scrollBarWidth/1.5) round(hf.Position(3))-scrollBarWidth*4 round(scrollBarWidth/1.5)]);
+textBoxWidth=round(hf.Position(3))-w*3;
+textBoxHeight=hf.UserData.ButtonHandles.hTextInfo.Extent(4).*ceil(hf.UserData.ButtonHandles.hTextInfo.Extent(3)./textBoxWidth);
+set(hf.UserData.ButtonHandles.hTextInfo,'Position',[w*3 hf.Position(4)-textBoxHeight textBoxWidth textBoxHeight]);
 
 end
 
@@ -857,23 +834,14 @@ hAxis.Position(4)=hf.Position(4)-100;
 hAxis.Units=axis_units;
 end
 
-%% colormap
-% 
-% function funcColormap(source,~)
-% selectIndex = source.Value;
-% cMapStrings = source.String;
-% cMapStringNew = cMapStrings{selectIndex};
-% colormap(cMapStringNew);
-% end
-
 %% colorbar
 
 function colorbarFunc(~,~)
-prompt = {'Minimum:','Maximum:'};
-dlg_title = 'Set colorbar limits';
+prompt = {'Minimum:','Maximum:', 'Colormap:'};
+dlg_title = 'Set colorbar limits and colormap';
 
 currentLimits=caxis;
-defaultOptions = {num2str(currentLimits(1)),num2str(currentLimits(2))};
+defaultOptions = {num2str(currentLimits(1)),num2str(currentLimits(2)),'gray'};
 s=25+max([cellfun(@numel,prompt) cellfun(@numel,defaultOptions)]);
 
 Q = inputdlg(prompt,dlg_title,[1 s],defaultOptions);
@@ -881,6 +849,11 @@ if ~isempty(Q)
     minC=str2double(Q{1});
     maxC=str2double(Q{2});
     caxis([minC maxC]);
+    try
+        colormap(Q{3})
+    catch
+        warning(['Undefined colormap ',Q{3},'. Ignoring colormap change']);
+    end
 end
 
 end
@@ -894,17 +867,20 @@ hf=inputCell{1}; %Figure handle
 prompt = {'Enter alpha level:'};
 dlg_title = 'Set transparency';
 
-defaultOptions = {'0.8'};
+defaultOptions = {num2str(hf.UserData.faceAlpha)};
 s=25+max([cellfun(@numel,prompt) cellfun(@numel,defaultOptions)]);
 
 Q = inputdlg(prompt,dlg_title,[1 s],defaultOptions);
 if ~isempty(Q)
     hf.UserData.faceAlpha=str2double(Q{1});
     
-    %Update slices
-    plotSlice([],[],{hf,hf.UserData.sliderHandles{1},1});
-    plotSlice([],[],{hf,hf.UserData.sliderHandles{2},2});
-    plotSlice([],[],{hf,hf.UserData.sliderHandles{3},3});
+    for q=1:1:numel(hf.UserData.hp)
+        set(hf.UserData.hp(q),'FaceAlpha',hf.UserData.faceAlpha);
+    end
+%     %Update slices
+%     plotSlice([],[],{hf,hf.UserData.sliderHandles{1},1});
+%     plotSlice([],[],{hf,hf.UserData.sliderHandles{2},2});
+%     plotSlice([],[],{hf,hf.UserData.sliderHandles{3},3});
 end
 
 end

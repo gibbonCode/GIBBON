@@ -111,10 +111,9 @@ pointSpacing=mean(patchEdgeLengths(F,V)); % Get point spacing from mesh
 % %% 
 % % Visualize hemi-sphere
 % cFigure; hold on;
-% gpatch(F,V,C);
+% gpatch(F,V,C_hemiSphereLabel);
 % axisGeom;
 % camlight headlight;
-% axis(r*[-1 1 -1 1 0 2]);
 % icolorbar;
 % drawnow;
 
@@ -219,6 +218,8 @@ plotV(V_regions,'k.','markerSize',50);
 axisGeom;
 camlight headlight;
 drawnow;
+
+fdasfas
 
 %%
 

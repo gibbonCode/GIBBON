@@ -4,8 +4,10 @@ function hf=anim8(varargin)
 % ------------------------------------------------------------------------
 % 
 % Change log: 
-% 2019/05/20: Added loading of saved anim8 figure by using the path to the
+% 2019/05/20 Added loading of saved anim8 figure by using the path to the
 % figure as sole input (or no input which triggers uigetfile)
+% 2019/08/09 Changed to use uicontrol slider rather than java slider due
+% to future removal of javacomponent
 % ------------------------------------------------------------------------
 
 %% Parse input
@@ -32,6 +34,29 @@ switch nargin
         else
             animStruct=hf.UserData.anim8.animStruct; %Get anim8 structure
         end
+        
+        try %Try to remove a slider if present
+            hSlider=hf.UserData.anim8.sliderHandles{1};
+            if isa(hSlider,'matlab.ui.control.UIControl')
+                delete(hSlider)
+            else %Old jSlider type 
+                try %javacomponent is scheduled to be removed but try it here for old slider bar type
+                    warning off %Disable all warnings
+                    [~,hc]=javacomponent(hSlider);
+                    delete(hc);
+                    warning on %Enable warnings again
+                catch
+                    %No fix if the above throws an error
+                end
+            end
+        catch %Nothing to delete
+        end
+        
+        try %Try to remove text label above slider if present
+            delete(hf.UserData.anim8.ButtonHandles.hTextTime)
+        catch %Nothing to delete
+        end        
+        
     case 2 %Create new
         hf=varargin{1}; %Figure handle
         animStruct=varargin{2}; %The anim8 structure
@@ -42,43 +67,36 @@ end
 % fontColor='w';
 fontSize=15;
 % cMap=gjet(250);
-scrollBarWidth=50;
+scrollBarWidth=30;
 
 %% Defining slider
-
-animTime=animStruct.Time(:);
-
-minT=1;
-maxT=numel(animTime);
-w=maxT-minT;
-sliceIndexI=numel(animTime); %Initial index
-tickSizeMajor_I=ceil(w/20);
-
-%% Initialize display
-
 figure(hf); drawnow;
 
+animTime=animStruct.Time(:);
+sliceIndexI=numel(animTime); %Initial index at end
+
 %Initialize slider
-jSlider = javax.swing.JSlider(minT,maxT);
-javacomponent(jSlider,[0,0,round(hf.Position(3)),scrollBarWidth]);
-set(jSlider, 'MajorTickSpacing',tickSizeMajor_I, 'MinorTickSpacing',1, 'PaintTicks',true, 'PaintLabels',true,...
-    'Background',java.awt.Color.white, 'snapToTicks',true, 'StateChangedCallback',{@updateViewFunc,{hf,jSlider}},'Orientation',jSlider.HORIZONTAL);
+hSlider= uicontrol(hf,'Style','slider','Position',[0,0,round(hf.Position(3)),scrollBarWidth]);
+set(hSlider,'Value',sliceIndexI,'Min',1,'Max',numel(animTime),'SliderStep',[1/(numel(animTime)-1) 1/(numel(animTime)-1)]);
+hSlider.Callback={@updateViewFunc,hf};
+% hSlider.KeyPressFcn={@updateViewFunc,hf};
+addlistener(hSlider,'ContinuousValueChange',@(hObject, event) updateViewFunc(hObject, event,hf));
 
 %% Set resize function
 
-% set(hf,'ResizeFcn',{@figResize,{hf,scrollBarWidth,jSlider}});
-% set(hf,'ResizeFcn',@(h,e)figResize(h,e,{hf,scrollBarWidth,jSlider}));
+% set(hf,'ResizeFcn',{@figResize,{hf,scrollBarWidth,hSlider}});
+% set(hf,'ResizeFcn',@(h,e)figResize(h,e,{hf,scrollBarWidth,hSlider}));
 
 hFunc=get(hf,'ResizeFcn');
 
 if iscell(hFunc)
     warning('anim8 replaced the ResizeFcn function. Specify your ResizeFcn in the form @(h,e)figResize(h,e,c) to avoid this behavior');    
-    set(hf,'ResizeFcn',@(a,b)figResize(a,b,{hf,scrollBarWidth,jSlider}));
+    set(hf,'ResizeFcn',@(a,b)figResize(a,b,{hf,scrollBarWidth,hSlider}));
 else
     if isempty(hFunc)
-        set(hf,'ResizeFcn',@(a,b)figResize(a,b,{hf,scrollBarWidth,jSlider}));
+        set(hf,'ResizeFcn',@(a,b)figResize(a,b,{hf,scrollBarWidth,hSlider}));
     else        
-        set(hf,'ResizeFcn',@(a,b)(cellfun(@(x)feval(x,a,b),{hFunc,@(a,b)figResize(a,b,{hf,scrollBarWidth,jSlider})})));
+        set(hf,'ResizeFcn',@(a,b)(cellfun(@(x)feval(x,a,b),{hFunc,@(a,b)figResize(a,b,{hf,scrollBarWidth,hSlider})})));
     end
 end
 
@@ -214,11 +232,13 @@ uipushtool(hb,'TooltipString','Save .gif animation','CData',S,'Tag','saveAnimati
 
 hTextTime = uicontrol(hf,'Style','text',...
     'String',[' Time: ',sprintf('%f',animTime(1))],...
-    'Position',[0 scrollBarWidth round(hf.Position(3)) round(scrollBarWidth/2)],'BackgroundColor',[1 1 1],'HorizontalAlignment','Left'); %hf.Color
+    'Position',[0 scrollBarWidth round(hf.Position(3)) scrollBarWidth],...
+    'BackgroundColor',[1 1 1],'HorizontalAlignment','Left',...
+    'fontSize',fontSize);
 
 %% Set figure UserData
 
-hf.UserData.anim8.sliderHandles={jSlider};
+hf.UserData.anim8.sliderHandles={hSlider};
 % hf.UserData.anim8.ButtonHandles.Sample=hSample;
 hf.UserData.anim8.animStruct=animStruct;
 hf.UserData.anim8.fontSize=fontSize;
@@ -251,7 +271,7 @@ hf.UserData.efw.exportFigOpt='-nocrop';
 hf.UserData.efw.exportGifOpt='1';
 
 %% Initialize slider locations
-set(jSlider,'Value',sliceIndexI);
+set(hSlider,'Value',sliceIndexI);
 
 %%
 drawnow;
@@ -263,10 +283,23 @@ function figResize(~,~,inputCell)
 hf=inputCell{1};
 scrollBarWidth=inputCell{2};
 
-jSlider=inputCell{3};
-javacomponent(jSlider,[0,0,round(hf.Position(3)), scrollBarWidth]);
+hSlider=inputCell{3};
+if isa(hSlider,'matlab.ui.control.UIControl') %Check if its a MATLAB style slider
+    set(hSlider,'Position',[0,0,round(hf.Position(3)), scrollBarWidth]);
+    set(hf.UserData.anim8.ButtonHandles.hTextTime,'Position',[0 scrollBarWidth round(hf.Position(3)) scrollBarWidth]);    
+else %Old JAVA jSlider
+%     try
+% %         delete(hSlider)
+%     catch
+%     end
+%     try %javacomponent is scheduled to be removed but try it here for old slider bar type
+%         jc=javacomponent(hSlider,[0,0,round(hf.Position(3)), scrollBarWidth]);
+%         jc.delete
+%     catch
+%         %No fix if the above throws an error
+%     end
+end
 
-set(hf.UserData.anim8.ButtonHandles.hTextTime,'Position',[0 scrollBarWidth round(hf.Position(3)) round(scrollBarWidth/2)]);
 end
 
 %% Help
@@ -294,15 +327,14 @@ set(hf.UserData.anim8.ButtonHandles.Play,'CData',hf.UserData.anim8.icons.stop,'T
 
 while strcmp(get(hf.UserData.anim8.ButtonHandles.Play,'State'),'on')
     tic
-    if strcmp(get(hf.UserData.anim8.ButtonHandles.hCycle,'State'),'on')
+    if strcmp(get(hf.UserData.anim8.ButtonHandles.hCycle,'State'),'on')        
+        hSlider=hf.UserData.anim8.sliderHandles{1};
         
-        jSlider=hf.UserData.anim8.sliderHandles{1};
-        
-        sliderValue=get(jSlider,'Value');
+        sliderValue=get(hSlider,'Value');
         sliderValueNew=sliderValue+(shiftMag*hf.UserData.anim8.playDir);
         
-        sliderMax=get(jSlider,'Maximum');
-        sliderMin=get(jSlider,'Minimum');
+        sliderMax=get(hSlider,'Max');
+        sliderMin=get(hSlider,'Min');
         
         if sliderValueNew<sliderMin
             hf.UserData.anim8.playDir=hf.UserData.anim8.playDir*-1;
@@ -310,15 +342,12 @@ while strcmp(get(hf.UserData.anim8.ButtonHandles.Play,'State'),'on')
         elseif sliderValueNew>sliderMax
             hf.UserData.anim8.playDir=hf.UserData.anim8.playDir*-1;
             sliderValueNew=sliderValue+(shiftMag*hf.UserData.anim8.playDir);
-        end
-        
-        set(jSlider,'Value',sliderValueNew);
-        
+        end        
+        set(hSlider,'Value',sliderValueNew);        
     else
         shiftSlider(hf.UserData.anim8.sliderHandles{1},shiftMag);
     end
-    
-    
+    updateViewFunc([],[],hf);
     drawnow;
     
     t=toc;
@@ -367,22 +396,25 @@ end
 function figKeyPressFunc(~,eventData,inputCell)
 
 hf=inputCell{1}; %Figure handle
-
-% step = 1;
-% if ismember('shift', eventData.Modifier)
-%     step = -step; %Make negative while shift is down
-% end
-%
-% if ismember('control', eventData.Modifier)
-%     step = step * 4; %Increase speed
-% end
-
+    
 % Key input options
 switch eventData.Key
     case {'leftarrow','downarrow'}
         shiftSlider(hf.UserData.anim8.sliderHandles{1},-1*hf.UserData.anim8.shiftMag);
+        updateViewFunc([],[],hf);
     case {'rightarrow','uparrow'}
         shiftSlider(hf.UserData.anim8.sliderHandles{1},1*hf.UserData.anim8.shiftMag);
+        updateViewFunc([],[],hf);
+    case 'home' % Go to the start
+        hSlider=hf.UserData.anim8.sliderHandles{1};
+        sliderVal=get(hSlider,'Min');
+        set(hSlider,'Value',sliderVal);        
+        updateViewFunc([],[],hf);
+    case 'end' % Go to the end
+        hSlider=hf.UserData.anim8.sliderHandles{1};
+        sliderVal=get(hSlider,'Max');
+        set(hSlider,'Value',sliderVal);
+        updateViewFunc([],[],hf);
     case 'v' % Activate vcw
         set(hf.UserData.cFigure.Handles.vcw,'State','On');
     case'space'
@@ -398,13 +430,12 @@ end
 
 %% updateViewFunc
 
-function updateViewFunc(~,~,inputCell)
+function updateViewFunc(~,~,hf)
 
-hf=inputCell{1};
-jSlider=inputCell{2};
 animStruct=hf.UserData.anim8.animStruct;
-
-sliderValue=get(jSlider,'Value');
+hSlider=hf.UserData.anim8.sliderHandles{1};
+sliderValue=round(get(hSlider,'Value'));
+set(hSlider,'Value',sliderValue);
 
 T=animStruct.Time(sliderValue);
 H=animStruct.Handles{sliderValue};%e.g. [hp,hp]; %Handles of objects to animate
@@ -424,20 +455,20 @@ end
 
 %% Shift slider
 
-function shiftSlider(jSlider,shiftMag)
+function shiftSlider(hSlider,shiftMag)
 
-sliderValue=get(jSlider,'Value');
+sliderValue=get(hSlider,'Value');
 sliderValueNew=sliderValue+shiftMag;
 
-sliderMax=get(jSlider,'Maximum');
-sliderMin=get(jSlider,'Minimum');
+sliderMax=get(hSlider,'Max');
+sliderMin=get(hSlider,'Min');
 
 if sliderValueNew<sliderMin
-    set(jSlider,'Value',sliderMax);
+    set(hSlider,'Value',sliderMax);
 elseif sliderValueNew>sliderMax
-    set(jSlider,'Value',1);
+    set(hSlider,'Value',1);
 else
-    set(jSlider,'Value',sliderValueNew);
+    set(hSlider,'Value',sliderValueNew);
 end
 
 end

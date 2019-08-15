@@ -8,7 +8,7 @@ function [D]=logic2levelset(varargin)
 % 
 % 
 % Change log: 
-%
+% 
 % ------------------------------------------------------------------------
 %%
 
@@ -75,6 +75,7 @@ if resampleOn==1
     IND=reshape(sub2indn(sizNew,[I(:) J(:) K(:)],1),size(I)); %Convert to linear indices
     D=D(IND); %Override D to be data sampled at original image points
 end
+
 %% 
 % _*GIBBON footer text*_ 
 % 

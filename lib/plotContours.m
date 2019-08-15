@@ -1,5 +1,5 @@
-function plotContours(varargin)
-% function [varargout]=plotContours(contourSet,optionStruct)
+function [varargout]=plotContours(varargin)
+% function [handleCell]=plotContours(contourSet,optionStruct)
 
 
 %% Parse input
@@ -21,6 +21,7 @@ numContours=numel(contourSet);
 optionStructDef.LineWidth=5; 
 optionStructDef.Color=gjet(numContours);    
 optionStructDef.pathName=[];
+optionStructDef.hAxis=gca;
 [optionStruct]=structComplete(optionStruct,optionStructDef,1); %Complement provided with default if missing
 
 %%
@@ -36,19 +37,25 @@ else
         else
             loadName=contourSet{q};
         end        
-        load(loadName);        
-        contourData{q}=saveStruct.ContourSet;
+        loadedData=load(loadName);
+        contourData{q}=loadedData.saveStruct.ContourSet;
     end
 end
 
+handleCell=cell(numContours,1);
+axes(optionStruct.hAxis);
 for q=1:1:numContours
-    Vcs=contourData{q};
+    HP=gobjects(1,1);
+    c=1;
+    Vcs=contourData{q};    
     for qSlice=1:1:numel(Vcs)
-        numSubContours=numel(Vcs{qSlice});
+        numSubContours=numel(Vcs{qSlice});        
         for qSub=1:1:numSubContours
             Vd=Vcs{qSlice}{qSub}; %Current contour            
-            if ~isempty(Vd)
+            if ~isempty(Vd)                
                 hp=plotV(Vd,'w-');
+                HP(c,1)=hp;
+                c=c+1; 
                 if isnumeric(optionStruct.Color)
                     if size(optionStruct.Color,1)>1
                         hp.Color=optionStruct.Color(q,:);
@@ -66,7 +73,11 @@ for q=1:1:numContours
             end
         end
     end
+    handleCell{q}=HP;
 end
+
+varargout{1}=handleCell;
+
 %% 
 % _*GIBBON footer text*_ 
 % 

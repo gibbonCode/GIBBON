@@ -153,17 +153,17 @@ switch patchType
         C_ind=C_ind(indBounary,:);
     case {'vu'} %Removing double FACES
         Fs=sort(F,2); %Sort so faces with same nodes have the same rows
-        [~,IND_F,IND_F_2]=unique(Fs,'rows'); %integer unique operation
+        [~,IND_F,IND_F_2,F_count]=cunique(Fs,'rows'); %get indices for unique faces   
+        F_count=F_count(IND_F);
+        
         F=F(IND_F,:);
         
         %Averaring colors
-        numF=size(Fs,1); numFuni=size(F,1);
-        CS=C;
-        CS(CS==0)=NaN; %Set real zeros to NaN to avoid "loss" in sparse array
-        sharedColourMatrixSparse=sparse(IND_F_2,1:numF,CS,numFuni,numF,numF);
-        logicColourMatrixEntry=sharedColourMatrixSparse~=0;
-        F_count=full(sum(logicColourMatrixEntry,2)); %Face counts
-        C=full(nansum(sharedColourMatrixSparse,2))./F_count; %Averaging color
+        numF=size(Fs,1); numFuni=size(F,1);        
+        C(isnan(C))=0; % Replace NaN's by zeros
+        sharedColourMatrixSparse=sparse(IND_F_2,1:numF,C,numFuni,numF,numF);        
+        C=full(sum(sharedColourMatrixSparse,2))./F_count; %Averaging color
+        
         C_ind=sort(sparse(IND_F_2,1:numF,C_ind,numFuni,numF,numF),2);
         C_ind=full(C_ind(:,end-max(F_count)+1:end));
 end

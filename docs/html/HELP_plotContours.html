@@ -6,7 +6,7 @@
    <!--
 This HTML was auto-generated from MATLAB code.
 To make changes, update the MATLAB code and republish this document.
-      --><title>plotContours</title><meta name="generator" content="MATLAB 9.6"><link rel="schema.DC" href="http://purl.org/dc/elements/1.1/"><meta name="DC.date" content="2019-06-20"><meta name="DC.source" content="HELP_plotContours.m"><style type="text/css">
+      --><title>plotContours</title><meta name="generator" content="MATLAB 9.7"><link rel="schema.DC" href="http://purl.org/dc/elements/1.1/"><meta name="DC.date" content="2019-08-11"><meta name="DC.source" content="HELP_plotContours.m"><style type="text/css">
 html,body,div,span,applet,object,iframe,h1,h2,h3,h4,h5,h6,p,blockquote,pre,a,abbr,acronym,address,big,cite,code,del,dfn,em,font,img,ins,kbd,q,s,samp,small,strike,strong,sub,sup,tt,var,b,u,i,center,dl,dt,dd,ol,ul,li,fieldset,form,label,legend,table,caption,tbody,tfoot,thead,tr,th,td{margin:0;padding:0;border:0;outline:0;font-size:100%;vertical-align:baseline;background:transparent}body{line-height:1}ol,ul{list-style:none}blockquote,q{quotes:none}blockquote:before,blockquote:after,q:before,q:after{content:'';content:none}:focus{outine:0}ins{text-decoration:none}del{text-decoration:line-through}table{border-collapse:collapse;border-spacing:0}
 
 html { min-height:100%; margin-bottom:1px; }
@@ -66,8 +66,41 @@ table td { padding:7px 5px; text-align:left; vertical-align:top; border:1px soli
 
 
 
-  </style></head><body><div class="content"><h1>plotContours</h1><!--introduction--><p>Below is a demonstration of the features of the <tt>plotContours</tt> function</p><!--/introduction--><h2>Contents</h2><div><ul><li><a href="#2">Syntax</a></li><li><a href="#3">Description</a></li><li><a href="#4">Examples</a></li></ul></div><pre class="codeinput">clear; close <span class="string">all</span>; clc;
-</pre><h2 id="2">Syntax</h2><p><tt>plotContours(varargin);</tt></p><h2 id="3">Description</h2><p>UNDOCUMENTED</p><h2 id="4">Examples</h2><p><img vspace="5" hspace="5" src="gibbVerySmall.gif" alt=""> </p><p><i><b>GIBBON</b></i> <a href="www.gibboncode.org">www.gibboncode.org</a></p><p><i>Kevin Mattheus Moerman</i>, <a href="gibbon.toolbox@gmail.com">gibbon.toolbox@gmail.com</a></p><p><i><b>GIBBON footer text</b></i></p><p>License: <a href="https://github.com/gibbonCode/GIBBON/blob/master/LICENSE">https://github.com/gibbonCode/GIBBON/blob/master/LICENSE</a></p><p>GIBBON: The Geometry and Image-based Bioengineering add-On. A toolbox for image segmentation, image-based modeling, meshing, and finite element analysis.</p><p>Copyright (C) 2019  Kevin Mattheus Moerman</p><p>This program is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.</p><p>This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for more details.</p><p>You should have received a copy of the GNU General Public License along with this program.  If not, see <a href="http://www.gnu.org/licenses/">http://www.gnu.org/licenses/</a>.</p><p class="footer"><br><a href="https://www.mathworks.com/products/matlab/">Published with MATLAB&reg; R2019a</a><br></p></div><!--
+  </style></head><body><div class="content"><h1>plotContours</h1><!--introduction--><p>Below is a demonstration of the features of the <tt>plotContours</tt> function</p><!--/introduction--><h2>Contents</h2><div><ul><li><a href="#2">Syntax</a></li><li><a href="#3">Description</a></li><li><a href="#4">Import image data for this demo</a></li><li><a href="#5">Example: Visualize a segmented contour</a></li><li><a href="#8">Example: Visualize a set of segmented contours</a></li></ul></div><pre class="codeinput">clear; close <span class="string">all</span>; clc;
+</pre><h2 id="2">Syntax</h2><p><tt>[handleCell]=plotContours(contourSet,optionStruct);</tt></p><h2 id="3">Description</h2><p>This function plots segmented contours</p><h2 id="4">Import image data for this demo</h2><pre class="codeinput">defaultFolder = fileparts(fileparts(mfilename(<span class="string">'fullpath'</span>))); <span class="comment">%Set main folder</span>
+pathNameImageData=fullfile(defaultFolder,<span class="string">'data'</span>,<span class="string">'DICOM'</span>,<span class="string">'0001_human_calf'</span>);
+loadNameImageData=fullfile(pathNameImageData,<span class="string">'IMDAT'</span>,<span class="string">'IMDAT.mat'</span>);
+IMDAT_struct=load(loadNameImageData); <span class="comment">%The image data structure</span>
+G = IMDAT_struct.G; <span class="comment">%Geometric/spatial information</span>
+v=G.v; <span class="comment">%The voxel size</span>
+M= IMDAT_struct.type_1; <span class="comment">%The image data</span>
+</pre><h2 id="5">Example: Visualize a segmented contour</h2><p>In this example the contour data is first loaded and then the plotting is done.</p><p>Visualize image data</p><pre class="codeinput">sv3(M,v);
+drawnow;
+</pre><img width="100%" height="auto" vspace="5" hspace="5" src="HELP_plotContours_01.jpg" alt=""> <p>Add contour plots</p><pre class="codeinput">contourName=<span class="string">'imseg_calf_tibia'</span>; <span class="comment">%Contour name</span>
+pathName=fullfile(defaultFolder,<span class="string">'data'</span>,<span class="string">'imseg'</span>); <span class="comment">%Folder name for contours</span>
+contourData=load(fullfile(pathName,contourName));
+
+contourSet={contourData.saveStruct.ContourSet}; <span class="comment">%Cell containing 1 contour in this case</span>
+
+<span class="comment">%Plot contours</span>
+plotContours(contourSet);
+</pre><img width="100%" height="auto" vspace="5" hspace="5" src="HELP_plotContours_02.jpg" alt=""> <h2 id="8">Example: Visualize a set of segmented contours</h2><p>In this example the contour data is loaded by the plotting function. Only contour file and path names are passed to the plot function.</p><p>Visualize image data</p><pre class="codeinput">sv3(M,v);
+drawnow;
+</pre><img width="100%" height="auto" vspace="5" hspace="5" src="HELP_plotContours_03.jpg" alt=""> <p>Add contour plots</p><pre class="codeinput"><span class="comment">%Contour names</span>
+contourSet={<span class="string">'imseg_calf_skin'</span>,<span class="keyword">...</span>
+            <span class="string">'imseg_calf_muscle_fat'</span>,<span class="keyword">...</span>
+            <span class="string">'imseg_calf_tibia'</span>,<span class="keyword">...</span>
+            <span class="string">'imseg_calf_fibula'</span>};
+
+<span class="comment">%Fill option structure</span>
+optionStruct.LineWidth=5; <span class="comment">%Line width</span>
+optionStruct.Color=gjet(numel(contourSet));
+optionStruct.pathName=fullfile(defaultFolder,<span class="string">'data'</span>,<span class="string">'imseg'</span>); <span class="comment">%Folder name for contours</span>
+optionStruct.hAxis=gca; <span class="comment">%Axis to plot in</span>
+
+<span class="comment">%Plot contours</span>
+handleCell=plotContours(contourSet,optionStruct);
+</pre><img width="100%" height="auto" vspace="5" hspace="5" src="HELP_plotContours_04.jpg" alt=""> <p><img vspace="5" hspace="5" src="gibbVerySmall.gif" alt=""> </p><p><i><b>GIBBON</b></i> <a href="www.gibboncode.org">www.gibboncode.org</a></p><p><i>Kevin Mattheus Moerman</i>, <a href="gibbon.toolbox@gmail.com">gibbon.toolbox@gmail.com</a></p><p><i><b>GIBBON footer text</b></i></p><p>License: <a href="https://github.com/gibbonCode/GIBBON/blob/master/LICENSE">https://github.com/gibbonCode/GIBBON/blob/master/LICENSE</a></p><p>GIBBON: The Geometry and Image-based Bioengineering add-On. A toolbox for image segmentation, image-based modeling, meshing, and finite element analysis.</p><p>Copyright (C) 2019  Kevin Mattheus Moerman</p><p>This program is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.</p><p>This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for more details.</p><p>You should have received a copy of the GNU General Public License along with this program.  If not, see <a href="http://www.gnu.org/licenses/">http://www.gnu.org/licenses/</a>.</p><p class="footer"><br><a href="https://www.mathworks.com/products/matlab/">Published with MATLAB&reg; R2019b</a><br></p></div><!--
 ##### SOURCE BEGIN #####
 %% plotContours
 % Below is a demonstration of the features of the |plotContours| function
@@ -76,12 +109,68 @@ table td { padding:7px 5px; text-align:left; vertical-align:top; border:1px soli
 clear; close all; clc;
 
 %% Syntax
-% |plotContours(varargin);|
+% |[handleCell]=plotContours(contourSet,optionStruct);|
 
 %% Description 
-% UNDOCUMENTED 
-%% Examples 
-% 
+% This function plots segmented contours 
+
+%% Import image data for this demo
+defaultFolder = fileparts(fileparts(mfilename('fullpath'))); %Set main folder
+pathNameImageData=fullfile(defaultFolder,'data','DICOM','0001_human_calf');
+loadNameImageData=fullfile(pathNameImageData,'IMDAT','IMDAT.mat');
+IMDAT_struct=load(loadNameImageData); %The image data structure
+G = IMDAT_struct.G; %Geometric/spatial information
+v=G.v; %The voxel size
+M= IMDAT_struct.type_1; %The image data
+
+%% Example: Visualize a segmented contour  
+% In this example the contour data is first loaded and then the plotting is
+% done. 
+
+%%
+% Visualize image data
+sv3(M,v);
+drawnow;
+
+%%
+% Add contour plots 
+
+contourName='imseg_calf_tibia'; %Contour name
+pathName=fullfile(defaultFolder,'data','imseg'); %Folder name for contours
+contourData=load(fullfile(pathName,contourName));
+
+contourSet={contourData.saveStruct.ContourSet}; %Cell containing 1 contour in this case
+
+%Plot contours
+plotContours(contourSet);
+
+%% Example: Visualize a set of segmented contours  
+% In this example the contour data is loaded by the plotting function. Only
+% contour file and path names are passed to the plot function. 
+
+%%
+% Visualize image data
+sv3(M,v);
+drawnow;
+
+%%
+% Add contour plots 
+
+%Contour names
+contourSet={'imseg_calf_skin',...
+            'imseg_calf_muscle_fat',...
+            'imseg_calf_tibia',...
+            'imseg_calf_fibula'}; 
+
+%Fill option structure
+optionStruct.LineWidth=5; %Line width
+optionStruct.Color=gjet(numel(contourSet));     
+optionStruct.pathName=fullfile(defaultFolder,'data','imseg'); %Folder name for contours
+optionStruct.hAxis=gca; %Axis to plot in
+
+%Plot contours
+handleCell=plotContours(contourSet,optionStruct);
+
 %%
 % 
 % <<gibbVerySmall.gif>>

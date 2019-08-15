@@ -8,9 +8,21 @@ clear; close all; clc;
 % |[varargout]=sv3(varargin);|
 
 %% Description 
-% UNDOCUMENTED 
-%% Examples 
-% 
+% 3D slice viewer
+
+%% Example: Visualizing MRI data
+
+%% 
+% Example image data
+load mri;
+M=squeeze(D); %example image data set
+v=2./[1,1,.4]; %example voxel size
+
+%%
+% Using |sv3|
+
+hf=sv3(M,v);
+
 %%
 % 
 % <<gibbVerySmall.gif>>

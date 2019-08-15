@@ -1,6 +1,6 @@
 function [varargout]=sv3(varargin)
 
-% function [hf]=sv3(M,v,vizOptStruct)
+% function [hf]=sv3(M,v,optionStruct)
 % ------------------------------------------------------------------------
 % sv3 (slice view 3D) is a 3D slice viewer function. The 3D image data M is
 % rendered using 3 mutally orthogonal slices. The option input v is the
@@ -8,19 +8,22 @@ function [varargout]=sv3(varargin)
 % 3rd optional input vixOptStruct which can be used to make custom
 % visualization settings. The default structure containts the following: 
 %
-% vizOptStructDefault.colormap=gray(250); %colormap
-% vizOptStructDefault.clim=[min(M(~isnan(M))) max(M(~isnan(M)))]; %color limits
-% vizOptStructDefault.fontColor='w'; %font color
-% vizOptStructDefault.fontSize=20; %font size
-% vizOptStructDefault.figStruct=figStruct; %figure options (see cFigure)
-% vizOptStructDefault.sliceIndices=round(size(M)/2); %Default mid-slices
-% vizOptStructDefault.thresholdLevels=[0 100]; %Default threshold levels
+% optionStructDefault.colormap=gray(250); %colormap
+% optionStructDefault.clim=[min(M(~isnan(M))) max(M(~isnan(M)))]; %color limits
+% optionStructDefault.fontColor='w'; %font color
+% optionStructDefault.fontSize=20; %font size
+% optionStructDefault.figStruct=figStruct; %figure options (see cFigure)
+% optionStructDefault.sliceIndices=round(size(M)/2); %Default mid-slices
+% optionStructDefault.updateFrequency=100; %Max update frequency during slider
+% drag
 %
 % See also: sliceViewer, sv2, imx
 %
 % Change log: 
 % 2018/06/06 Added initial slice indices as option to input structure
 % 2018/06/06 Added basic description at the top of this function
+% 2019/08/09 Changed to use uicontrol slider rather than java slider due
+% to future removal of javacomponent
 % ------------------------------------------------------------------------
 
 %% Parse input
@@ -29,15 +32,15 @@ switch nargin
     case 1
         M=varargin{1};
         v=ones(1,3);
-        vizOptStruct=[];
+        optionStruct=[];
     case 2
         M=varargin{1};
         v=varargin{2}; 
-        vizOptStruct=[];
+        optionStruct=[];
     case 3
         M=varargin{1};
         v=varargin{2};
-        vizOptStruct=varargin{3};
+        optionStruct=varargin{3};
 end
 M=double(M); %Conver the image to a double
 
@@ -45,29 +48,31 @@ figStruct.Name='GIBBON: Slice viewer'; %Figure name
 figStruct.Color='k'; %Figure background color
 figStruct.ColorDef='black'; %Setting colordefinitions to black
 
-vizOptStructDefault.colormap=gray(250); %colormap
-vizOptStructDefault.clim=[min(M(~isnan(M))) max(M(~isnan(M)))]; %color limits
-vizOptStructDefault.fontColor='w'; %font color
-vizOptStructDefault.fontSize=20; %font size
-vizOptStructDefault.figStruct=figStruct; %figure options (see cFigure)
-vizOptStructDefault.sliceIndices=round(size(M)/2); %Default mid-slices
-vizOptStructDefault.thresholdLevels=[0 100]; %Default threshold levels
-vizOptStructDefault.alphaLevel=1;
-vizOptStructDefault.origin=[0 0 0];
+optionStructDefault.colormap=gray(250); %colormap
+optionStructDefault.clim=[min(M(~isnan(M))) max(M(~isnan(M)))]; %color limits
+optionStructDefault.fontColor='w'; %font color
+optionStructDefault.fontSize=20; %font size
+optionStructDefault.figStruct=figStruct; %figure options (see cFigure)
+optionStructDefault.sliceIndices=round(size(M)/2); %Default mid-slices
+optionStructDefault.alphaLevel=1;
+optionStructDefault.origin=[0 0 0];
+optionStructDefault.updateFrequency=10;
 
-[vizOptStruct]=structComplete(vizOptStruct,vizOptStructDefault,1);
+[optionStruct]=structComplete(optionStruct,optionStructDefault,1);
 
 M=double(M);
 
 %%
 % Plot settings
-fontColor=vizOptStruct.fontColor;
-fontSize=vizOptStruct.fontSize;
-cMap=vizOptStruct.colormap;
-cLim=vizOptStruct.clim;
-figStruct=vizOptStruct.figStruct;
-alphaLevel=vizOptStruct.alphaLevel;
-originLoc=vizOptStruct.origin;
+scrollBarWidth=20; %Scrollbar width
+fontColor=optionStruct.fontColor;
+fontSize=optionStruct.fontSize;
+cMap=optionStruct.colormap;
+cLim=optionStruct.clim;
+figStruct=optionStruct.figStruct;
+alphaLevel=optionStruct.alphaLevel;
+originLoc=optionStruct.origin;
+updateFrequency=optionStruct.updateFrequency; 
 
 if diff(cLim)<eps
    cLim=cLim+[-1 1];
@@ -76,16 +81,9 @@ end
 %%
 
 %Defining row, column and slice indicices for slice patching
-sliceIndexI=vizOptStruct.sliceIndices(1); %(close to) middle row
-sliceIndexJ=vizOptStruct.sliceIndices(2); %(close to) middle column
-sliceIndexK=vizOptStruct.sliceIndices(3); %(close to) middle slice
-
-thresholdLevels=vizOptStruct.thresholdLevels; %Threshold
-
-nTickMajor=20;
-tickSizeMajor_I=round(size(M,1)/nTickMajor);
-tickSizeMajor_J=round(size(M,2)/nTickMajor);
-tickSizeMajor_K=round(size(M,3)/nTickMajor);
+sliceIndexI=optionStruct.sliceIndices(1); %(close to) middle row
+sliceIndexJ=optionStruct.sliceIndices(2); %(close to) middle column
+sliceIndexK=optionStruct.sliceIndices(3); %(close to) middle slice
 
 %%
 
@@ -101,33 +99,49 @@ caxis(cLim);
 set(gca,'fontSize',fontSize);
 drawnow;
 
-w=50; %Scrollbar width
-jSlider_I = javax.swing.JSlider(1,size(M,1));
-javacomponent(jSlider_I,[0,0,w,round(hf.Position(4))]);
-set(jSlider_I, 'MajorTickSpacing',tickSizeMajor_I, 'MinorTickSpacing',1, 'PaintTicks',true, 'PaintLabels',true,...
-    'Background',java.awt.Color.white, 'snapToTicks',true, 'StateChangedCallback',{@plotSlice,{hf,jSlider_I,1}},'Orientation',jSlider_I.VERTICAL);
+%%
 
-jSlider_J = javax.swing.JSlider(1,size(M,2));
-javacomponent(jSlider_J,[1*w,0,w,round(hf.Position(4))]);
-set(jSlider_J, 'MajorTickSpacing',tickSizeMajor_J, 'MinorTickSpacing',1, 'PaintTicks',true, 'PaintLabels',true,...
-    'Background',java.awt.Color.white, 'snapToTicks',true, 'StateChangedCallback',{@plotSlice,{hf,jSlider_J,2}},'Orientation',jSlider_J.VERTICAL);
+%Initialize sliders
+hSlider_I= uicontrol(hf,'Style','slider','Position',[0,0,scrollBarWidth,round(hf.Position(4))]);
+set(hSlider_I,'Value',sliceIndexI,'Min',1,'Max',size(M,1),'SliderStep',[1/(size(M,1)-1) 1/(size(M,1)-1)]);
+hSlider_I.Callback={@plotSlice,{hf,hSlider_I,1}};
+addlistener(hSlider_I,'ContinuousValueChange',@(hObject, event) plotSlice(hObject,event,{hf,hSlider_I,1}));
 
-jSlider_K = javax.swing.JSlider(1,size(M,3));
-javacomponent(jSlider_K,[2*w,0,w,round(hf.Position(4))]);
-set(jSlider_K, 'MajorTickSpacing',tickSizeMajor_K, 'MinorTickSpacing',1, 'PaintTicks',true, 'PaintLabels',true,...
-    'Background',java.awt.Color.white, 'snapToTicks',true, 'StateChangedCallback',{@plotSlice,{hf,jSlider_K,3}},'Orientation',jSlider_K.VERTICAL);
+hSlider_J= uicontrol(hf,'Style','slider','Position',[1*scrollBarWidth,0,scrollBarWidth,round(hf.Position(4))]);
+set(hSlider_J,'Value',sliceIndexJ,'Min',1,'Max',size(M,2),'SliderStep',[1/(size(M,2)-1) 1/(size(M,2)-1)]);
+hSlider_J.Callback={@plotSlice,{hf,hSlider_J,2}};
+addlistener(hSlider_J,'ContinuousValueChange',@(hObject, event) plotSlice(hObject,event,{hf,hSlider_J,2}));
 
-jSlider_T = com.jidesoft.swing.RangeSlider(0,100,thresholdLevels(1),thresholdLevels(2));  % min,max,low,high
-javacomponent(jSlider_T,[3*w,0,w,round(hf.Position(4))]);
-set(jSlider_T, 'MajorTickSpacing',25, 'MinorTickSpacing',1, 'PaintTicks',true, 'PaintLabels',true,...
-    'Background',java.awt.Color.white, 'snapToTicks',false, 'StateChangedCallback',{@setThreshold,{hf,jSlider_T,jSlider_I,jSlider_J,jSlider_K}},'Orientation',jSlider_T.VERTICAL);
+hSlider_K= uicontrol(hf,'Style','slider','Position',[2*scrollBarWidth,0,scrollBarWidth,round(hf.Position(4))]);
+set(hSlider_K,'Value',sliceIndexK,'Min',1,'Max',size(M,3),'SliderStep',[1/(size(M,3)-1) 1/(size(M,3)-1)]);
+hSlider_K.Callback={@plotSlice,{hf,hSlider_K,3}};
+addlistener(hSlider_K,'ContinuousValueChange',@(hObject, event) plotSlice(hObject,event,{hf,hSlider_K,3}));
+
+%%
+ 
+% hSlider_I = javax.swing.JSlider(1,size(M,1));
+% javacomponent(hSlider_I,[0,0,scrollBarWidth,round(hf.Position(4))]);
+% set(hSlider_I, 'MajorTickSpacing',tickSizeMajor_I, 'MinorTickSpacing',1, 'PaintTicks',true, 'PaintLabels',true,...
+%     'Background',java.awt.Color.white, 'snapToTicks',true, 'StateChangedCallback',{@plotSlice,{hf,hSlider_I,1}},'Orientation',hSlider_I.VERTICAL);
+% 
+% hSlider_J = javax.swing.JSlider(1,size(M,2));
+% javacomponent(hSlider_J,[1*scrollBarWidth,0,scrollBarWidth,round(hf.Position(4))]);
+% set(hSlider_J, 'MajorTickSpacing',tickSizeMajor_J, 'MinorTickSpacing',1, 'PaintTicks',true, 'PaintLabels',true,...
+%     'Background',java.awt.Color.white, 'snapToTicks',true, 'StateChangedCallback',{@plotSlice,{hf,hSlider_J,2}},'Orientation',hSlider_J.VERTICAL);
+% 
+% hSlider_K = javax.swing.JSlider(1,size(M,3));
+% javacomponent(hSlider_K,[2*scrollBarWidth,0,scrollBarWidth,round(hf.Position(4))]);
+% set(hSlider_K, 'MajorTickSpacing',tickSizeMajor_K, 'MinorTickSpacing',1, 'PaintTicks',true, 'PaintLabels',true,...
+%     'Background',java.awt.Color.white, 'snapToTicks',true, 'StateChangedCallback',{@plotSlice,{hf,hSlider_K,3}},'Orientation',hSlider_K.VERTICAL);
 
 %% Set resize function 
 
-set(hf,'ResizeFcn',{@setScrollSizeFunc,{hf,w,jSlider_T,jSlider_I,jSlider_J,jSlider_K}});
-
+set(hf,'ResizeFcn',{@setScrollSizeFunc,{hf,scrollBarWidth,hSlider_I,hSlider_J,hSlider_K}});
 
 %%
+
+t=clock;
+hf.UserData.sv3.time=t;
 hf.UserData.sv3.Name=figStruct.Name;
 hf.UserData.sv3.M=M;
 hf.UserData.sv3.v=v;
@@ -140,20 +154,24 @@ hf.UserData.sv3.ht=ht;
 hf.UserData.sv3.M_plot=M;
 hf.UserData.sv3.alphaLevel=alphaLevel;
 hf.UserData.sv3.origin=originLoc;
-hf.UserData.sv3.sliderHandles=[jSlider_T,jSlider_I,jSlider_J,jSlider_K];
+hf.UserData.sv3.sliderHandles=[hSlider_I,hSlider_J,hSlider_K];
+hf.UserData.sv3.updateFrequency=updateFrequency;
 
 %%
-set(jSlider_I,'Value',sliceIndexI);
-set(jSlider_J,'Value',sliceIndexJ);
-set(jSlider_K,'Value',sliceIndexK);
-set(jSlider_T,'HighValue',thresholdLevels(2));
-set(jSlider_T,'LowValue',thresholdLevels(1));
+set(hSlider_I,'Value',sliceIndexI);
+set(hSlider_J,'Value',sliceIndexJ);
+set(hSlider_K,'Value',sliceIndexK);
 
-setThreshold([],[],{hf,jSlider_T,jSlider_I,jSlider_J,jSlider_K});
-
-%%
+%Initialize view
+pause(1/updateFrequency); %Wait so plot will update
+plotSlice([],[],{hf,hSlider_I,1});
+hf.UserData.sv3.time=t; %Reset clock so this happens now
+plotSlice([],[],{hf,hSlider_J,2}); 
+hf.UserData.sv3.time=t; %Reset clock so this happens now
+plotSlice([],[],{hf,hSlider_K,3});
 
 drawnow;
+
 %%
 varargout{1}=hf;
 
@@ -162,89 +180,72 @@ end
 function plotSlice(~,~,inputCell)
 
 hf=inputCell{1};
+
 jSlider=inputCell{2};
 dirOpt=inputCell{3};
-sliceIndex = get(jSlider,'Value');
+sliceIndex=round(get(jSlider,'Value'));
 hf.UserData.sv3.sliceIndices(dirOpt)=sliceIndex;
 sliceIndices=hf.UserData.sv3.sliceIndices;
 
-M=hf.UserData.sv3.M_plot;
-v=hf.UserData.sv3.v;
-patchType=hf.UserData.sv3.patchTypes{dirOpt}; 
+dt=1/hf.UserData.sv3.updateFrequency; 
+t=hf.UserData.sv3.time;
+t2=clock;
+dtt=etime(t2,t); %Elapsed time
 
-logicPatch=false(size(M));
-switch dirOpt
-    case 1
-        logicPatch(sliceIndex,:,:)=1;
-    case 2
-        logicPatch(:,sliceIndex,:)=1;
-    case 3
-        logicPatch(:,:,sliceIndex)=1;
-end
-
-figure(hf); %TEMP FIX for bug in MATLAB 2018
-
-if isnan(hf.UserData.sv3.hp(dirOpt))    
-    [F,V,C]=im2patch(M,logicPatch,patchType);
-    [V(:,1),V(:,2),V(:,3)]=im2cart(V(:,2),V(:,1),V(:,3),v); 
-    V=V+hf.UserData.sv3.origin(ones(size(V,1),1),:);
-    hf.UserData.sv3.hp(dirOpt)= gpatch(F,V,C,'none',hf.UserData.sv3.alphaLevel);
-else    
-    set(hf.UserData.sv3.hp(dirOpt),'CData',M(logicPatch));
-    V=get(hf.UserData.sv3.hp(dirOpt),'Vertices');
+if dtt>dt %If ready to update
+    hf.UserData.sv3.time=t2;
+    
+    M=hf.UserData.sv3.M_plot;
+    v=hf.UserData.sv3.v;
+    patchType=hf.UserData.sv3.patchTypes{dirOpt};
+    
+    logicPatch=false(size(M));
     switch dirOpt
         case 1
-            V(:,2)=(sliceIndex-0.5).*v(1);
+            logicPatch(sliceIndex,:,:)=1;
         case 2
-            V(:,1)=(sliceIndex-0.5).*v(2);            
+            logicPatch(:,sliceIndex,:)=1;
         case 3
-            V(:,3)=(sliceIndex-0.5).*v(3);
+            logicPatch(:,:,sliceIndex)=1;
     end
-    set(hf.UserData.sv3.hp(dirOpt),'Vertices',V);
+    
+    figure(hf); %TEMP FIX for bug in MATLAB 2018
+    
+    if isnan(hf.UserData.sv3.hp(dirOpt))
+        [F,V,C]=im2patch(M,logicPatch,patchType);
+        [V(:,1),V(:,2),V(:,3)]=im2cart(V(:,2),V(:,1),V(:,3),v);
+        V=V+hf.UserData.sv3.origin(ones(size(V,1),1),:);
+        hf.UserData.sv3.hp(dirOpt)= gpatch(F,V,C,'none',hf.UserData.sv3.alphaLevel);
+    else
+        V=get(hf.UserData.sv3.hp(dirOpt),'Vertices');
+        switch dirOpt
+            case 1
+                V(:,2)=(sliceIndex-0.5).*v(1);
+            case 2
+                V(:,1)=(sliceIndex-0.5).*v(2);
+            case 3
+                V(:,3)=(sliceIndex-0.5).*v(3);
+        end
+        set(hf.UserData.sv3.hp(dirOpt),'CData',M(logicPatch)); %Set color data
+        set(hf.UserData.sv3.hp(dirOpt),'Vertices',V); %Set vertices
+    end
+    
+    navString=['I: ',num2str(sliceIndices(1)),', J:  ',num2str(sliceIndices(2)),', K: ',num2str(sliceIndices(3))];
+    
+    set(hf.UserData.sv3.ht,'string',navString);
+    
+    hf.Name=[hf.UserData.sv3.Name,' ',navString];
 end
-
-navString=['I: ',num2str(sliceIndices(1)),', J:  ',num2str(sliceIndices(2)),', K: ',num2str(sliceIndices(3))];
-
-set(hf.UserData.sv3.ht,'string',navString);
-
-hf.Name=[hf.UserData.sv3.Name,' ',navString];
-
-end
-
-function setThreshold(~,~,inputCell)
-
-hf=inputCell{1};
-jSlider_T=inputCell{2};
-jSlider_I=inputCell{3};
-jSlider_J=inputCell{4};
-jSlider_K=inputCell{5};
-
-thresholdLevels(1) = get(jSlider_T,'LowValue');
-thresholdLevels(2) = get(jSlider_T,'HighValue');
-
-M=hf.UserData.sv3.M;
-W=max(M(:))-min(M(:));
-
-T_low=min(M(:))+(W*thresholdLevels(1)/100);
-T_high=min(M(:))+(W*thresholdLevels(2)/100);
-logicThreshold=(M>=T_low & M<=T_high);
-
-hf.UserData.sv3.M_plot=M;
-hf.UserData.sv3.M_plot(~logicThreshold)=NaN;
-
-plotSlice([],[],{hf,jSlider_I,1});
-plotSlice([],[],{hf,jSlider_J,2});
-plotSlice([],[],{hf,jSlider_K,3});
-
 end
 
 function setScrollSizeFunc(~,~,inputCell)
 hf=inputCell{1};
 w=inputCell{2};
 
-for q=3:6
-    jSlider=inputCell{q};
-    javacomponent(jSlider,[w*(q-3),0,w,round(hf.Position(4))]);
+for q=3:numel(inputCell)
+    hSlider=inputCell{q};
+    posData=[w*(q-3),0,w,round(hf.Position(4))];
+    set(hSlider,'Position',posData);    
 end
 
 end

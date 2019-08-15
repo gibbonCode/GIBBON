@@ -19,10 +19,10 @@ function axisGeom(varargin)
 switch nargin
     case 0
         h=gca;
-        fontSize=20;
+        fontSize=15;
     case 1
         h=varargin{1};
-        fontSize=20;
+        fontSize=15;
     case 2
         h=varargin{1};
         fontSize=varargin{2};

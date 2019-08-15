@@ -105,22 +105,6 @@ updateSlices(hf);
 
 set(hf,'WindowButtonDownFcn', {@ButtonDownFunction,hf},'BusyAction','cancel');
 
-%% Create slider for color limits
-
-w=50; %Scrollbar width
-
-jSlider_C = com.jidesoft.swing.RangeSlider(0,100,cLimScaled(1),cLimScaled(2));  % min,max,low,high
-javacomponent(jSlider_C,[0,0,w,round(hf.Position(4))]);
-set(jSlider_C, 'MajorTickSpacing',10, 'MinorTickSpacing',1, 'PaintTicks',true, 'PaintLabels',true,...
-    'Background',java.awt.Color.white, 'snapToTicks',false, 'StateChangedCallback',{@setColorLimits,{hf,jSlider_C}},'Orientation',jSlider_C.VERTICAL);
-
-set(jSlider_C,'LowValue',cLimScaled(1));
-set(jSlider_C,'HighValue',cLimScaled(2));
-
-%% Set resize function
-
-set(hf,'ResizeFcn',{@setScrollSizeFunc,{hf,w,jSlider_C}});
-
 %%
 
 drawnow;
@@ -295,14 +279,6 @@ titleString=['Image coordinates: ',num2str(sliceIndices(1)),' ',num2str(sliceInd
 hf.Name=titleString;
 
 end
-
-function setScrollSizeFunc(~,~,inputCell)
-hf=inputCell{1};
-w=inputCell{2};
-jSlider=inputCell{3};
-javacomponent(jSlider,[0,0,w,round(hf.Position(4))]);
-end
-
  
 %% 
 % _*GIBBON footer text*_ 

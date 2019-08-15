@@ -585,7 +585,7 @@ febioAnalysis.maxLogCheckTime=30; %Max log file checking time
 
 %% Import FEBio results
 
-if runFlag==1 | runFlag==0 %i.e. a succesful run
+if runFlag==1 %i.e. a succesful run
     
     % Importing nodal displacements from a log file
     [time_mat, N_disp_mat,~]=importFEBio_logfile(fullfile(savePath,febioLogFileName_disp)); %Nodal displacements

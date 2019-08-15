@@ -5,12 +5,39 @@
 clear; close all; clc;
 
 %% Syntax
-% |[varargout]=hemiSphereMesh(varargin);|
+% |[F,V,C]=hemiSphereMesh(nRefineSteps,sphereRadius,closeOpt);|
 
 %% Description 
-% UNDOCUMENTED 
+% Creates the patch data (faces F, vertices V, and colordata C) for a
+% hemisphere with a radius equal to sphereRadius. The hemisphere is
+% refined nRefineSteps times and is closed if closeOpt==1
+%
 %% Examples 
 % 
+
+nRefineSteps=2; %Number of refinement steps
+sphereRadius=1; %Radius
+closeOpt=1; %Option to close bottom of hemisphere
+
+[F,V,C]=hemiSphereMesh(nRefineSteps,sphereRadius,closeOpt); %Construct hemi-shere mesh
+
+%%
+% Visualize mesh
+
+cFigure; 
+subplot(1,2,1); hold on;
+gpatch(F,V,'w','k',1,2);
+axisGeom;
+camlight headlight;
+
+subplot(1,2,2); hold on;
+gpatch(F,V,C,'none',0.5);
+axisGeom;
+camlight headlight;
+colormap viridis; icolorbar; 
+
+drawnow;
+
 %%
 % 
 % <<gibbVerySmall.gif>>

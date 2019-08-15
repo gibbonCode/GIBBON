@@ -25,13 +25,13 @@ v=2./[1,1,.4]; %example voxel size
 % Visualise using viewerType=1 featuring clickable navigation in mutually
 % orthogonal 2D views
 viewerType=1; %1 is default
-hf=sliceViewer(M,v,viewerType);
+sliceViewer(M,v,viewerType);
 
 %%
 % Visualise using viewerType=2 featuring a single 3D view and GUI sliders
 % for navigation and thresholding
 viewerType=2; 
-hf=sliceViewer(M,v,viewerType);
+sliceViewer(M,v,viewerType);
 
 %%
 % 
