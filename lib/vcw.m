@@ -256,18 +256,18 @@ if isempty(cax)
     set(hp,'TooltipString','Activate View Control Widget (or enter v)');
     return
 end
-h = findobj(hf, 'Type', 'axes', '-depth', 1)'; %All axis handles
 
+h = findobj(hf, 'Type', 'axes', '-depth', 1)'; %All axis handles
 if ~isempty(h)
-    for h = findobj(hf, 'Type', 'axes', '-depth', 1)'
+    for hNow = h
         % Set everything to manual
-        set(h, 'CameraViewAngleMode', 'manual', 'CameraTargetMode', 'manual', 'CameraPositionMode', 'manual');
+        set(hNow, 'CameraViewAngleMode', 'manual', 'CameraTargetMode', 'manual', 'CameraPositionMode', 'manual');
         % Store the camera viewpoint
-        axes(h); axis vis3d;
-        caxUserDataStruct.defaultView=camview(h);
-        set(h, 'UserData',caxUserDataStruct);
+        axes(hNow); axis vis3d;
+        caxUserDataStruct.defaultView=camview(hNow);
+        set(hNow, 'UserData',caxUserDataStruct);
         %Turn clipping off
-        set(h,'Clipping','off');   
+        set(hNow,'Clipping','off');   
     end
     axes(cax);
 else

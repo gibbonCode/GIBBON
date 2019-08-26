@@ -6,7 +6,7 @@
    <!--
 This HTML was auto-generated from MATLAB code.
 To make changes, update the MATLAB code and republish this document.
-      --><title>contour2logic</title><meta name="generator" content="MATLAB 9.6"><link rel="schema.DC" href="http://purl.org/dc/elements/1.1/"><meta name="DC.date" content="2019-06-20"><meta name="DC.source" content="HELP_contour2logic.m"><style type="text/css">
+      --><title>contour2logic</title><meta name="generator" content="MATLAB 9.7"><link rel="schema.DC" href="http://purl.org/dc/elements/1.1/"><meta name="DC.date" content="2019-08-26"><meta name="DC.source" content="HELP_contour2logic.m"><style type="text/css">
 html,body,div,span,applet,object,iframe,h1,h2,h3,h4,h5,h6,p,blockquote,pre,a,abbr,acronym,address,big,cite,code,del,dfn,em,font,img,ins,kbd,q,s,samp,small,strike,strong,sub,sup,tt,var,b,u,i,center,dl,dt,dd,ol,ul,li,fieldset,form,label,legend,table,caption,tbody,tfoot,thead,tr,th,td{margin:0;padding:0;border:0;outline:0;font-size:100%;vertical-align:baseline;background:transparent}body{line-height:1}ol,ul{list-style:none}blockquote,q{quotes:none}blockquote:before,blockquote:after,q:before,q:after{content:'';content:none}:focus{outine:0}ins{text-decoration:none}del{text-decoration:line-through}table{border-collapse:collapse;border-spacing:0}
 
 html { min-height:100%; margin-bottom:1px; }
@@ -66,8 +66,47 @@ table td { padding:7px 5px; text-align:left; vertical-align:top; border:1px soli
 
 
 
-  </style></head><body><div class="content"><h1>contour2logic</h1><!--introduction--><p>Below is a demonstration of the features of the <tt>contour2logic</tt> function</p><!--/introduction--><h2>Contents</h2><div><ul><li><a href="#2">Syntax</a></li><li><a href="#3">Description</a></li><li><a href="#4">Examples</a></li></ul></div><pre class="codeinput">clear; close <span class="string">all</span>; clc;
-</pre><h2 id="2">Syntax</h2><p><tt>[varargout]=contour2logic(M,v,Vcs);</tt></p><h2 id="3">Description</h2><p>UNDOCUMENTED</p><h2 id="4">Examples</h2><p><img vspace="5" hspace="5" src="gibbVerySmall.gif" alt=""> </p><p><i><b>GIBBON</b></i> <a href="www.gibboncode.org">www.gibboncode.org</a></p><p><i>Kevin Mattheus Moerman</i>, <a href="gibbon.toolbox@gmail.com">gibbon.toolbox@gmail.com</a></p><p><i><b>GIBBON footer text</b></i></p><p>License: <a href="https://github.com/gibbonCode/GIBBON/blob/master/LICENSE">https://github.com/gibbonCode/GIBBON/blob/master/LICENSE</a></p><p>GIBBON: The Geometry and Image-based Bioengineering add-On. A toolbox for image segmentation, image-based modeling, meshing, and finite element analysis.</p><p>Copyright (C) 2019  Kevin Mattheus Moerman</p><p>This program is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.</p><p>This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for more details.</p><p>You should have received a copy of the GNU General Public License along with this program.  If not, see <a href="http://www.gnu.org/licenses/">http://www.gnu.org/licenses/</a>.</p><p class="footer"><br><a href="https://www.mathworks.com/products/matlab/">Published with MATLAB&reg; R2019a</a><br></p></div><!--
+  </style></head><body><div class="content"><h1>contour2logic</h1><!--introduction--><p>Below is a demonstration of the features of the <tt>contour2logic</tt> function</p><!--/introduction--><h2>Contents</h2><div><ul><li><a href="#2">Syntax</a></li><li><a href="#3">Description</a></li><li><a href="#5">Examples</a></li><li><a href="#6">Import image data for this demo</a></li><li><a href="#8">Compute levelset</a></li></ul></div><pre class="codeinput">clear; close <span class="string">all</span>; clc;
+</pre><h2 id="2">Syntax</h2><p><tt>[varargout]=contour2logic(M,v,Vcs);</tt></p><h2 id="3">Description</h2><p>This function converts contours to a logic or labelled data. The logics represent wether voxels are in, on, or outside the contour.</p><p>The input consists of:</p><div><ul><li>A 3D image <tt>M</tt> (or alternatively the size of M).</li><li>The <tt>vozelSize</tt> a 1x3 vector specifying the size of the voxels in the row, column, and slice direction.</li><li>A cell array <tt>Vcs</tt> containing one or more contours per slice. If the image has n slices then Vcs should be an nx1 cell array, i.e. contours are defined for each slice.</li></ul></div><h2 id="5">Examples</h2><h2 id="6">Import image data for this demo</h2><pre class="codeinput">defaultFolder = fileparts(fileparts(mfilename(<span class="string">'fullpath'</span>))); <span class="comment">%Set main folder</span>
+pathNameImageData=fullfile(defaultFolder,<span class="string">'data'</span>,<span class="string">'DICOM'</span>,<span class="string">'0001_human_calf'</span>);
+loadNameImageData=fullfile(pathNameImageData,<span class="string">'IMDAT'</span>,<span class="string">'IMDAT.mat'</span>);
+IMDAT_struct=load(loadNameImageData); <span class="comment">%The image data structure</span>
+G = IMDAT_struct.G; <span class="comment">%Geometric/spatial information</span>
+v=G.v; <span class="comment">%The voxel size</span>
+M= IMDAT_struct.type_1; <span class="comment">%The image data</span>
+</pre><pre class="codeinput">contourName=<span class="string">'imseg_calf_tibia'</span>;
+pathName=fullfile(defaultFolder,<span class="string">'data'</span>,<span class="string">'imseg'</span>); <span class="comment">%Folder name for contours</span>
+</pre><h2 id="8">Compute levelset</h2><pre class="codeinput">loadName=fullfile(pathName,contourName);
+load(loadName); <span class="comment">%Load segmentation structure</span>
+Vcs=saveStruct.ContourSet; <span class="comment">%Access the contour data</span>
+
+[logicIn,logicOn,N]=contour2logic(M,v,Vcs);
+</pre><p>Visualize logic image and contours together</p><pre class="codeinput"><span class="comment">%Visualize logic image</span>
+sv3(logicIn,v); <span class="comment">%Open slice viewer for levelset</span>
+
+<span class="comment">%Visualize contours</span>
+optionStruct.Color=<span class="string">'r'</span>;
+plotContours({Vcs},optionStruct);  <span class="comment">%Plot contours</span>
+
+<span class="comment">%Add colorbar labels</span>
+[~,hc]=icolorbar;
+hc.TickLabels={<span class="string">'Out'</span>,<span class="string">'In'</span>};
+
+drawnow;
+</pre><img width="100%" height="auto" vspace="5" hspace="5" src="HELP_contour2logic_01.jpg" alt=""> <p>Visualize labelled image and contours together</p><pre class="codeinput"><span class="comment">%Visualize label image</span>
+vizStruct.colormap=viridis(3); <span class="comment">%Set colormap for levelset visualization</span>
+hf2=sv3(N,v,vizStruct); <span class="comment">%Open slice viewer for levelset</span>
+
+<span class="comment">%Visualize contours</span>
+optionStruct.Color=<span class="string">'r'</span>;
+plotContours({Vcs},optionStruct);  <span class="comment">%Plot contours</span>
+
+<span class="comment">%Add colorbar labels</span>
+[~,hc]=icolorbar;
+hc.TickLabels={<span class="string">'Out'</span>,<span class="string">'On'</span>,<span class="string">'In'</span>};
+
+drawnow;
+</pre><img width="100%" height="auto" vspace="5" hspace="5" src="HELP_contour2logic_02.jpg" alt=""> <p><img vspace="5" hspace="5" src="gibbVerySmall.gif" alt=""> </p><p><i><b>GIBBON</b></i> <a href="www.gibboncode.org">www.gibboncode.org</a></p><p><i>Kevin Mattheus Moerman</i>, <a href="gibbon.toolbox@gmail.com">gibbon.toolbox@gmail.com</a></p><p><i><b>GIBBON footer text</b></i></p><p>License: <a href="https://github.com/gibbonCode/GIBBON/blob/master/LICENSE">https://github.com/gibbonCode/GIBBON/blob/master/LICENSE</a></p><p>GIBBON: The Geometry and Image-based Bioengineering add-On. A toolbox for image segmentation, image-based modeling, meshing, and finite element analysis.</p><p>Copyright (C) 2019  Kevin Mattheus Moerman</p><p>This program is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.</p><p>This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for more details.</p><p>You should have received a copy of the GNU General Public License along with this program.  If not, see <a href="http://www.gnu.org/licenses/">http://www.gnu.org/licenses/</a>.</p><p class="footer"><br><a href="https://www.mathworks.com/products/matlab/">Published with MATLAB&reg; R2019b</a><br></p></div><!--
 ##### SOURCE BEGIN #####
 %% contour2logic
 % Below is a demonstration of the features of the |contour2logic| function
@@ -79,9 +118,76 @@ clear; close all; clc;
 % |[varargout]=contour2logic(M,v,Vcs);|
 
 %% Description 
-% UNDOCUMENTED 
+% This function converts contours to a logic or labelled data. The logics
+% represent wether voxels are in, on, or outside the contour. 
+%
+% The input consists of: 
+%%
+% 
+% * A 3D image |M| (or alternatively the size of M). 
+% * The |vozelSize| a 1x3 vector specifying the size of the voxels in the
+% row, column, and slice direction.
+% * A cell array |Vcs| containing one or more contours per slice. If the
+% image has n slices then Vcs should be an nx1 cell array, i.e. contours
+% are defined for each slice. 
+
 %% Examples 
 % 
+%% Import image data for this demo
+
+defaultFolder = fileparts(fileparts(mfilename('fullpath'))); %Set main folder
+pathNameImageData=fullfile(defaultFolder,'data','DICOM','0001_human_calf');
+loadNameImageData=fullfile(pathNameImageData,'IMDAT','IMDAT.mat');
+IMDAT_struct=load(loadNameImageData); %The image data structure
+G = IMDAT_struct.G; %Geometric/spatial information
+v=G.v; %The voxel size
+M= IMDAT_struct.type_1; %The image data
+
+%%
+contourName='imseg_calf_tibia';
+pathName=fullfile(defaultFolder,'data','imseg'); %Folder name for contours
+
+%% Compute levelset
+
+loadName=fullfile(pathName,contourName);
+load(loadName); %Load segmentation structure
+Vcs=saveStruct.ContourSet; %Access the contour data
+
+[logicIn,logicOn,N]=contour2logic(M,v,Vcs);
+
+%%
+% Visualize logic image and contours together
+
+%Visualize logic image
+sv3(logicIn,v); %Open slice viewer for levelset
+
+%Visualize contours
+optionStruct.Color='r';
+plotContours({Vcs},optionStruct);  %Plot contours
+
+%Add colorbar labels
+[~,hc]=icolorbar;
+hc.TickLabels={'Out','In'};
+
+drawnow;
+
+%%
+% Visualize labelled image and contours together
+
+%Visualize label image
+vizStruct.colormap=viridis(3); %Set colormap for levelset visualization
+hf2=sv3(N,v,vizStruct); %Open slice viewer for levelset
+
+%Visualize contours
+optionStruct.Color='r';
+plotContours({Vcs},optionStruct);  %Plot contours
+
+%Add colorbar labels
+[~,hc]=icolorbar;
+hc.TickLabels={'Out','On','In'};
+
+drawnow;
+
 %%
 % 
 % <<gibbVerySmall.gif>>

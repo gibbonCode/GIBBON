@@ -5,10 +5,23 @@
 clear; close all; clc;
 
 %% Syntax
-% |[F,V]=levelset2isosurface(L,controlPar);|
+% |[F,V]=levelset2isosurface(K,controlPar);|
 
 %% Description 
-% UNDOCUMENTED 
+% This function computes the isosurface for an input levelset image at a
+% desired intensity level. 
+%
+% The input consists of: 
+%%
+% 
+% * A 3D levelset image |K| 
+% * A structure with control parameters |controlPar| with the fields:
+% contourLevel (the level for the isosurface), voxelSize (specifying the
+% voxel size), capOpt (specifying how to cap the surface if needed), and
+% nSub (specifying if the surface should be drawn at the native resolution
+% nSub=[1 1 1] or if it should be courser, e.g. by skippin every 2nd voxels
+% if nSub=[2 2 2]).
+
 %% Examples 
 
 %% Import image data for this demo
@@ -47,9 +60,8 @@ vizStruct.sliceIndices=[i,j,k]; %Set indices as slices to plot
 hf2=sv3(K,v,vizStruct); %Open slice viewer for levelset
 
 %Visualize contours
-optionStruct.pathName=pathName;
 optionStruct.Color='k';
-plotContours(contourName,optionStruct);  %Plot contours
+plotContours({Vcs},optionStruct);  %Plot contours
 drawnow;
 
 %%

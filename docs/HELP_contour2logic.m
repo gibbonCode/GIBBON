@@ -8,9 +8,76 @@ clear; close all; clc;
 % |[varargout]=contour2logic(M,v,Vcs);|
 
 %% Description 
-% UNDOCUMENTED 
+% This function converts contours to a logic or labelled data. The logics
+% represent wether voxels are in, on, or outside the contour. 
+%
+% The input consists of: 
+%%
+% 
+% * A 3D image |M| (or alternatively the size of M). 
+% * The |vozelSize| a 1x3 vector specifying the size of the voxels in the
+% row, column, and slice direction.
+% * A cell array |Vcs| containing one or more contours per slice. If the
+% image has n slices then Vcs should be an nx1 cell array, i.e. contours
+% are defined for each slice. 
+
 %% Examples 
 % 
+%% Import image data for this demo
+
+defaultFolder = fileparts(fileparts(mfilename('fullpath'))); %Set main folder
+pathNameImageData=fullfile(defaultFolder,'data','DICOM','0001_human_calf');
+loadNameImageData=fullfile(pathNameImageData,'IMDAT','IMDAT.mat');
+IMDAT_struct=load(loadNameImageData); %The image data structure
+G = IMDAT_struct.G; %Geometric/spatial information
+v=G.v; %The voxel size
+M= IMDAT_struct.type_1; %The image data
+
+%%
+contourName='imseg_calf_tibia';
+pathName=fullfile(defaultFolder,'data','imseg'); %Folder name for contours
+
+%% Compute levelset
+
+loadName=fullfile(pathName,contourName);
+load(loadName); %Load segmentation structure
+Vcs=saveStruct.ContourSet; %Access the contour data
+
+[logicIn,logicOn,N]=contour2logic(M,v,Vcs);
+
+%%
+% Visualize logic image and contours together
+
+%Visualize logic image
+sv3(logicIn,v); %Open slice viewer for levelset
+
+%Visualize contours
+optionStruct.Color='r';
+plotContours({Vcs},optionStruct);  %Plot contours
+
+%Add colorbar labels
+[~,hc]=icolorbar;
+hc.TickLabels={'Out','In'};
+
+drawnow;
+
+%%
+% Visualize labelled image and contours together
+
+%Visualize label image
+vizStruct.colormap=viridis(3); %Set colormap for levelset visualization
+hf2=sv3(N,v,vizStruct); %Open slice viewer for levelset
+
+%Visualize contours
+optionStruct.Color='r';
+plotContours({Vcs},optionStruct);  %Plot contours
+
+%Add colorbar labels
+[~,hc]=icolorbar;
+hc.TickLabels={'Out','On','In'};
+
+drawnow;
+
 %%
 % 
 % <<gibbVerySmall.gif>>

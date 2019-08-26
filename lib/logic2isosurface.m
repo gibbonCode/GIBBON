@@ -1,5 +1,6 @@
 function [varargout]=logic2isosurface(L,controlPar)
-% function [varargout]=logic2isosurface(L,controlPar)
+
+% function [F,V,C]=logic2isosurface(L,controlPar)
 % ------------------------------------------------------------------------
 % 
 %

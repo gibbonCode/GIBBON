@@ -81,6 +81,7 @@ set(hSlider,'Value',sliceIndexI,'Min',1,'Max',numel(animTime),'SliderStep',[1/(n
 hSlider.Callback={@updateViewFunc,hf};
 % hSlider.KeyPressFcn={@updateViewFunc,hf};
 addlistener(hSlider,'ContinuousValueChange',@(hObject, event) updateViewFunc(hObject, event,hf));
+addlistener(hSlider,'Value','PostSet',@(hObject, event) updateViewFunc(hObject, event,hf));
 
 %% Set resize function
 

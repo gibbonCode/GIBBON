@@ -8,11 +8,27 @@ clear; close all; clc;
 % |[K]=contour2levelset(M,voxelSize,Vcs,levelSetType);|
 
 %% Description
-% UNDOCUMENTED
+% This function converts contours to a levelset image. The outpu levelset
+% image |K| represents distances to the contour. 
+%
+% The input consists of: 
+%%
+% 
+% * A 3D image |M| (or alternatively the size of M). 
+% * The |vozelSize| a 1x3 vector specifying the size of the voxels in the
+% row, column, and slice direction.
+% * A cell array |Vcs| containing one or more contours per slice. If the
+% image has n slices then Vcs should be an nx1 cell array, i.e. contours
+% are defined for each slice. 
+% * The |levelSetType|, this variable determines the levelset type to use.
+% If it equals 1 then the levelset image is formulated using 2D distances
+% for each slice. If it equals 2 3D distances are computed (most
+% computationally intensive). If it equals 3 the distance metric is the 
+% minimum between a 3D distance is based on distance transform and the 2D
+% per slice distances. 
+
 %% Examples
 %
-
-%%
 
 %% Import image data for this demo
 
@@ -49,9 +65,9 @@ vizStruct.sliceIndices=[i,j,k]; %Set indices as slices to plot
 hf2=sv3(K,v,vizStruct); %Open slice viewer for levelset
 
 %Visualize contours
-optionStruct.pathName=pathName;
 optionStruct.Color='k';
-plotContours(contourName,optionStruct);  %Plot contours
+plotContours({Vcs},optionStruct);  %Plot contours
+
 drawnow;
 
 %%

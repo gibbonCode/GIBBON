@@ -486,6 +486,9 @@ axisGeom(gca,fontSize);
 camlight headlight;
 drawnow;
 
+fdsafa
+
+
 %% Defining the FEBio input structure
 % See also |febioStructTemplate| and |febioStruct2xml| and the FEBio user
 % manual.

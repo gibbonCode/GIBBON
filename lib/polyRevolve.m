@@ -39,7 +39,7 @@ thetaRange=linspace(0,theta,numSteps);
 
 X=zeros(size(Vc,1),numSteps);
 Y=X;
-Z=Z;
+Z=X;
 for q=1:1:numSteps
     [R]=vecAngle2Rot(thetaRange(q),w);
     Vc_now=(R*Vc')'; %Rotate the polygon

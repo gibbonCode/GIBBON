@@ -1,0 +1,1504 @@
+
+<!DOCTYPE html
+  PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html><head>
+      <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+   <!--
+This HTML was auto-generated from MATLAB code.
+To make changes, update the MATLAB code and republish this document.
+      --><title>DEMO_febio_0050_foot_insole_01</title><meta name="generator" content="MATLAB 9.7"><link rel="schema.DC" href="http://purl.org/dc/elements/1.1/"><meta name="DC.date" content="2019-08-26"><meta name="DC.source" content="DEMO_febio_0050_foot_insole_01.m"><style type="text/css">
+html,body,div,span,applet,object,iframe,h1,h2,h3,h4,h5,h6,p,blockquote,pre,a,abbr,acronym,address,big,cite,code,del,dfn,em,font,img,ins,kbd,q,s,samp,small,strike,strong,sub,sup,tt,var,b,u,i,center,dl,dt,dd,ol,ul,li,fieldset,form,label,legend,table,caption,tbody,tfoot,thead,tr,th,td{margin:0;padding:0;border:0;outline:0;font-size:100%;vertical-align:baseline;background:transparent}body{line-height:1}ol,ul{list-style:none}blockquote,q{quotes:none}blockquote:before,blockquote:after,q:before,q:after{content:'';content:none}:focus{outine:0}ins{text-decoration:none}del{text-decoration:line-through}table{border-collapse:collapse;border-spacing:0}
+
+html { min-height:100%; margin-bottom:1px; }
+html body { height:100%; margin:0px; font-family:Arial, Helvetica, sans-serif; font-size:10px; color:#000; line-height:140%; background:#fff none; overflow-y:scroll; }
+html body td { vertical-align:top; text-align:left; }
+
+h1 { padding:0px; margin:0px 0px 25px; font-family:Arial, Helvetica, sans-serif; font-size:1.5em; color:#d55000; line-height:100%; font-weight:normal; }
+h2 { padding:0px; margin:0px 0px 8px; font-family:Arial, Helvetica, sans-serif; font-size:1.2em; color:#000; font-weight:bold; line-height:140%; border-bottom:1px solid #d6d4d4; display:block; }
+h3 { padding:0px; margin:0px 0px 5px; font-family:Arial, Helvetica, sans-serif; font-size:1.1em; color:#000; font-weight:bold; line-height:140%; }
+
+a { color:#005fce; text-decoration:none; }
+a:hover { color:#005fce; text-decoration:underline; }
+a:visited { color:#004aa0; text-decoration:none; }
+
+p { padding:0px; margin:0px 0px 20px; }
+img { padding:0px; margin:0px 0px 20px; border:none; }
+p img, pre img, tt img, li img, h1 img, h2 img { margin-bottom:0px; } 
+
+ul { padding:0px; margin:0px 0px 20px 23px; list-style:square; }
+ul li { padding:0px; margin:0px 0px 7px 0px; }
+ul li ul { padding:5px 0px 0px; margin:0px 0px 7px 23px; }
+ul li ol li { list-style:decimal; }
+ol { padding:0px; margin:0px 0px 20px 0px; list-style:decimal; }
+ol li { padding:0px; margin:0px 0px 7px 23px; list-style-type:decimal; }
+ol li ol { padding:5px 0px 0px; margin:0px 0px 7px 0px; }
+ol li ol li { list-style-type:lower-alpha; }
+ol li ul { padding-top:7px; }
+ol li ul li { list-style:square; }
+
+.content { font-size:1.2em; line-height:140%; padding: 20px; }
+
+pre, code { font-size:12px; }
+tt { font-size: 1.2em; }
+pre { margin:0px 0px 20px; }
+pre.codeinput { padding:10px; border:1px solid #d3d3d3; background:#f7f7f7; }
+pre.codeoutput { padding:10px 11px; margin:0px 0px 20px; color:#4c4c4c; }
+pre.error { color:red; }
+
+@media print { pre.codeinput, pre.codeoutput { word-wrap:break-word; width:100%; } }
+
+span.keyword { color:#0000FF }
+span.comment { color:#228B22 }
+span.string { color:#A020F0 }
+span.untermstring { color:#B20000 }
+span.syscmd { color:#B28C00 }
+
+.footer { width:auto; padding:10px 0px; margin:25px 0px 0px; border-top:1px dotted #878787; font-size:0.8em; line-height:140%; font-style:italic; color:#878787; text-align:left; float:none; }
+.footer p { margin:0px; }
+.footer a { color:#878787; }
+.footer a:hover { color:#878787; text-decoration:underline; }
+.footer a:visited { color:#878787; }
+
+table th { padding:7px 5px; text-align:left; vertical-align:middle; border: 1px solid #d6d4d4; font-weight:bold; }
+table td { padding:7px 5px; text-align:left; vertical-align:top; border:1px solid #d6d4d4; }
+
+
+
+
+
+  </style></head><body><div class="content"><h1>DEMO_febio_0050_foot_insole_01</h1><!--introduction--><p>Below is a demonstration for:</p><div><ul><li>Building triangulated surface geometry for a foot</li><li>Meshing the foot using tetrahedral elements</li><li>Building surface model of an insole and meshing it with quads</li><li>Extruding the surface to a thickened layer of hexahedral elements</li><li>Defining the boundary conditions</li><li>Coding the febio structure</li><li>Running the model</li><li>Importing and visualizing results</li></ul></div><!--/introduction--><h2>Contents</h2><div><ul><li><a href="#1">Keywords</a></li><li><a href="#4">Control parameters</a></li><li><a href="#5">Import surface models</a></li><li><a href="#7">Compute mesh derived parameters</a></li><li><a href="#8">Reorient surfaces</a></li><li><a href="#10">Cut skin surface</a></li><li><a href="#14">Close over top of skin</a></li><li><a href="#16">Joining surface features</a></li><li><a href="#17">Merge shared nodes</a></li><li><a href="#19">Mesh foot with tetrahedral elements</a></li><li><a href="#26">Build insole</a></li><li><a href="#34">Joining node sets</a></li><li><a href="#36">Define contact surfaces</a></li><li><a href="#38">Define boundary conditions</a></li><li><a href="#40">Defining the FEBio input structure</a></li><li><a href="#41">Quick viewing of the FEBio input file structure</a></li><li><a href="#43">Exporting the FEBio input file</a></li><li><a href="#44">Running the FEBio analysis</a></li><li><a href="#45">Import FEBio results</a></li></ul></div><h2 id="1">Keywords</h2><div><ul><li>febio_spec version 2.5</li><li>febio, FEBio</li><li>shoe insole</li><li>contact, sliding, friction</li><li>tetrahedral elements, tet4</li><li>hexahedral elements, hex8</li><li>static, solid</li><li>hyperelastic, Ogden</li><li>displacement logfile</li></ul></div><pre class="codeinput">clear; close <span class="string">all</span>; clc;
+</pre><p>Plot settings</p><pre class="codeinput">fontSize=10;
+faceAlpha1=1;
+faceAlpha2=0.3;
+markerSize1=15;
+markerSize2=10;
+lineWidth=2;
+</pre><h2 id="4">Control parameters</h2><pre class="codeinput"><span class="comment">% Path names</span>
+defaultFolder = fileparts(fileparts(mfilename(<span class="string">'fullpath'</span>)));
+savePath=fullfile(defaultFolder,<span class="string">'data'</span>,<span class="string">'temp'</span>);
+loadPathSurfaces=fullfile(defaultFolder,<span class="string">'data'</span>,<span class="string">'STL'</span>,<span class="string">'leg'</span>,<span class="string">'post'</span>);
+
+<span class="comment">% Defining file names</span>
+febioFebFileNamePart=<span class="string">'tempModel'</span>;
+febioFebFileName=fullfile(savePath,[febioFebFileNamePart,<span class="string">'.feb'</span>]); <span class="comment">%FEB file name</span>
+febioLogFileName=fullfile(savePath,[febioFebFileNamePart,<span class="string">'.txt'</span>]); <span class="comment">%FEBio log file name</span>
+febioLogFileName_disp=[febioFebFileNamePart,<span class="string">'_disp_out.txt'</span>]; <span class="comment">%Log file name for exporting displacement</span>
+febioLogFileName_force=[febioFebFileNamePart,<span class="string">'_force_out.txt'</span>]; <span class="comment">%Log file name for exporting force</span>
+febioLogFileName_strainEnergy=[febioFebFileNamePart,<span class="string">'_energy_out.txt'</span>]; <span class="comment">%Log file name for exporting strain energy density</span>
+<span class="comment">% Surface model file names</span>
+fileNameBones=fullfile(loadPathSurfaces,<span class="string">'Foot_bulk.stl'</span>);
+fileNameSkin=fullfile(loadPathSurfaces,<span class="string">'Skin_coarse.stl'</span>);
+
+<span class="comment">%Geometric parameters</span>
+soleOffsetOutward=3; <span class="comment">%How much the insole protrudes outward from the foot</span>
+numSmoothIterations_sole_Z=10; <span class="comment">%Number of smoothing iterations for the sole Z value</span>
+soleMinThickness=6; <span class="comment">%Sole thickness</span>
+volumeFactor=2; <span class="comment">%Volume factor used in tetgen, larger means larger internal elements</span>
+
+<span class="comment">%Material parameter set</span>
+c1_1=1e-3; <span class="comment">%Shear-modulus-like parameter</span>
+m1_1=2; <span class="comment">%Material parameter setting degree of non-linearity</span>
+k_1=c1_1*100; <span class="comment">%Bulk modulus</span>
+
+c1_2=c1_1*10; <span class="comment">%Shear-modulus-like parameter</span>
+m1_2=2; <span class="comment">%Material parameter setting degree of non-linearity</span>
+k_2=c1_2*10; <span class="comment">%Bulk modulus</span>
+
+<span class="comment">% FEA control settings</span>
+numTimeSteps=10; <span class="comment">%Number of time steps desired</span>
+max_refs=25; <span class="comment">%Max reforms</span>
+max_ups=0; <span class="comment">%Set to zero to use full-Newton iterations</span>
+opt_iter=10; <span class="comment">%Optimum number of iterations</span>
+max_retries=5; <span class="comment">%Maximum number of retires</span>
+dtmin=(1/numTimeSteps)/100; <span class="comment">%Minimum time step size</span>
+dtmax=1/numTimeSteps; <span class="comment">%Maximum time step size</span>
+symmetric_stiffness=0;
+min_residual=1e-20;
+
+<span class="comment">%Boundary condition parameters</span>
+displacementMagnitude=-3; <span class="comment">%Displacement applied to the bones</span>
+
+<span class="comment">%Contact parameters</span>
+contactPenalty=20;
+laugon=0;
+minaug=1;
+maxaug=10;
+fric_coeff=0.25;
+</pre><h2 id="5">Import surface models</h2><pre class="codeinput"><span class="comment">%Import STL file for the bones</span>
+[stlStruct] = import_STL(fileNameBones);
+F1=stlStruct.solidFaces{1}; <span class="comment">%Faces</span>
+V1=stlStruct.solidVertices{1}; <span class="comment">%Vertices</span>
+[F1,V1]=mergeVertices(F1,V1); <span class="comment">%Merge nodes</span>
+
+<span class="comment">%Import STL file for the skin</span>
+[stlStruct] = import_STL(fileNameSkin);
+F2=stlStruct.solidFaces{1}; <span class="comment">%Faces</span>
+V2=stlStruct.solidVertices{1}; <span class="comment">%Vertices</span>
+[F2,V2]=mergeVertices(F2,V2); <span class="comment">%Merge nodes</span>
+V2=V2*100; <span class="comment">%Scale</span>
+</pre><p>Visualize imported surfaces</p><pre class="codeinput">cFigure; hold <span class="string">on</span>;
+gpatch(F1,V1,<span class="string">'bw'</span>,<span class="string">'none'</span>,1);
+gpatch(F2,V2,<span class="string">'rw'</span>,<span class="string">'none'</span>,0.5);
+camlight(<span class="string">'headlight'</span>);
+axisGeom(gca,fontSize);
+drawnow;
+</pre><img width="100%" height="auto" vspace="5" hspace="5" src="DEMO_febio_0050_foot_insole_01_01.jpg" alt=""> <h2 id="7">Compute mesh derived parameters</h2><p>Compute point spacings for the surfaces meshes. These are useful to relate other mesh sizes to.</p><pre class="codeinput">pointSpacing1=mean(patchEdgeLengths(F1,V1));
+pointSpacing2=mean(patchEdgeLengths(F2,V2));
+pointSpacing=mean([pointSpacing1 pointSpacing2]);
+</pre><h2 id="8">Reorient surfaces</h2><p>Reorient so that the leg points up in a forward view with the toes pointing towards the viewer.</p><pre class="codeinput">R=euler2DCM([-0.5*pi 0 -0.5*pi]);
+V1=V1*R;
+V2=V2*R;
+</pre><p>Visualize reoriented surfaces</p><pre class="codeinput">cFigure; hold <span class="string">on</span>;
+gpatch(F1,V1,<span class="string">'bw'</span>,<span class="string">'none'</span>,1);
+gpatch(F2,V2,<span class="string">'rw'</span>,<span class="string">'none'</span>,0.5);
+camlight(<span class="string">'headlight'</span>);
+axisGeom(gca,fontSize);
+drawnow;
+</pre><img width="100%" height="auto" vspace="5" hspace="5" src="DEMO_febio_0050_foot_insole_01_02.jpg" alt=""> <h2 id="10">Cut skin surface</h2><p>The skin surface is cut such that it stops where the bones of the ankle end in the z direction.</p><pre class="codeinput"><span class="comment">%Create a logic for cutting away faces</span>
+max_Z1=max(V1(:,3))+2*pointSpacing; <span class="comment">%Max Z-level used for cutting</span>
+logicVertices=V2(:,3)&lt;max_Z1; <span class="comment">%Logic for the points below this level</span>
+logicFaces=all(logicVertices(F2),2); <span class="comment">%Logic for the faces</span>
+logicFaces=triSurfLogicSharpFix(F2,logicFaces,3); <span class="comment">%Altered logic so it is smoother</span>
+</pre><p>Visualize</p><pre class="codeinput">cFigure; hold <span class="string">on</span>;
+gpatch(F1,V1,<span class="string">'bw'</span>,<span class="string">'none'</span>,1);
+gpatch(F2,V2,logicFaces,<span class="string">'none'</span>,0.5);
+camlight(<span class="string">'headlight'</span>);
+axisGeom(gca,fontSize);
+drawnow;
+</pre><img width="100%" height="auto" vspace="5" hspace="5" src="DEMO_febio_0050_foot_insole_01_03.jpg" alt=""> <p>Cut away faces using logic</p><pre class="codeinput">F2=F2(logicFaces,:); <span class="comment">%The faces to keep</span>
+[F2,V2]=patchCleanUnused(F2,V2); <span class="comment">%Remove unused points</span>
+
+<span class="comment">%Attempt to self triangulate potentially jagged edge</span>
+Eb=patchBoundary(F2,V2); <span class="comment">%Get boundary edges</span>
+indBoundary=edgeListToCurve(Eb); <span class="comment">%Convert boundary edges to a curve list</span>
+indBoundary=indBoundary(1:end-1); <span class="comment">%Trim off last point since it is equal to first on a closed loop</span>
+angleThreshold=pi*(120/180); <span class="comment">%threshold for self triangulation</span>
+[F2,V2,indBoundaryTop]=triSurfSelfTriangulateBoundary(F2,V2,indBoundary,angleThreshold,1);
+
+<span class="comment">%Force boundary to have the max Z level chosen</span>
+V2(indBoundaryTop,3)=max_Z1;
+</pre><p>Visualize</p><pre class="codeinput">cFigure; hold <span class="string">on</span>;
+gpatch(F1,V1,<span class="string">'bw'</span>,<span class="string">'none'</span>,1);
+gpatch(F2,V2,<span class="string">'rw'</span>,<span class="string">'k'</span>,0.5);
+plotV(V2(indBoundaryTop,:),<span class="string">'r-'</span>,<span class="string">'LineWidth'</span>,lineWidth);
+camlight(<span class="string">'headlight'</span>);
+axisGeom(gca,fontSize);
+drawnow;
+</pre><img width="100%" height="auto" vspace="5" hspace="5" src="DEMO_febio_0050_foot_insole_01_04.jpg" alt=""> <h2 id="14">Close over top of skin</h2><p>The top boundary curve of the cut surface is filled with triangles. This is a 2D method. The z-coordinate is added after.</p><pre class="codeinput">[F2t,V2t]=regionTriMesh2D({V2(indBoundaryTop,[1 2])},pointSpacing2,0,0);
+V2t(:,3)=max_Z1; <span class="comment">%Add/set z-level</span>
+</pre><p>Visualize</p><pre class="codeinput">cFigure; hold <span class="string">on</span>;
+gpatch(F1,V1,<span class="string">'bw'</span>,<span class="string">'none'</span>,1);
+gpatch(F2,V2,<span class="string">'rw'</span>,<span class="string">'k'</span>,0.5);
+gpatch(F2t,V2t,<span class="string">'gw'</span>,<span class="string">'k'</span>,1);
+plotV(V2(indBoundaryTop,:),<span class="string">'r-'</span>,<span class="string">'LineWidth'</span>,lineWidth);
+camlight(<span class="string">'headlight'</span>);
+axisGeom(gca,fontSize);
+drawnow;
+</pre><img width="100%" height="auto" vspace="5" hspace="5" src="DEMO_febio_0050_foot_insole_01_05.jpg" alt=""> <h2 id="16">Joining surface features</h2><p>Add all surface sets together in joint list of faces, vertices</p><pre class="codeinput">[FT,VT,CT]=joinElementSets({F1,F2,F2t},{V1,V2,V2t});
+</pre><h2 id="17">Merge shared nodes</h2><p>The join operation only adds the sets together. Nodes with the same coordinates are not seen as the same yet and need to be merged.</p><pre class="codeinput">[FT,VT]=mergeVertices(FT,VT); <span class="comment">%Merge nodes</span>
+</pre><p>Visualize</p><pre class="codeinput">cFigure; hold <span class="string">on</span>;
+gpatch(FT,VT,CT,<span class="string">'k'</span>,0.5);
+patchNormPlot(FT,VT);
+camlight(<span class="string">'headlight'</span>);
+axisGeom(gca,fontSize);
+colormap <span class="string">gjet</span>; icolorbar;
+drawnow;
+</pre><img width="100%" height="auto" vspace="5" hspace="5" src="DEMO_febio_0050_foot_insole_01_06.jpg" alt=""> <h2 id="19">Mesh foot with tetrahedral elements</h2><p>Tet meshing is based on tetgen. TetGen requires a interior points for regions to be meshed, as well as intertior points for holes.</p><p>Define region points</p><pre class="codeinput">[V_region]=getInnerPoint({FT(CT==2 | CT==3,:),FT(CT==1,:)},{VT,VT});
+[V_hole]=getInnerPoint(FT(CT==1,:),VT);
+</pre><p>Visualize interior points</p><pre class="codeinput">cFigure; hold <span class="string">on</span>;
+gpatch(FT,VT,<span class="string">'kw'</span>,<span class="string">'none'</span>,0.2);
+hp1=plotV(V_region,<span class="string">'r.'</span>,<span class="string">'markerSize'</span>,markerSize1);
+hp2=plotV(V_hole,<span class="string">'b.'</span>,<span class="string">'markerSize'</span>,markerSize1);
+legend([hp1 hp2],{<span class="string">'Region point'</span>,<span class="string">'Hole point'</span>});
+camlight(<span class="string">'headlight'</span>);
+axisGeom(gca,fontSize);
+drawnow;
+</pre><img width="100%" height="auto" vspace="5" hspace="5" src="DEMO_febio_0050_foot_insole_01_07.jpg" alt=""> <p>Mesh using tetgen</p><pre class="codeinput">inputStruct.stringOpt=<span class="string">'-pq1.2AaY'</span>; <span class="comment">%TetGen option string</span>
+inputStruct.Faces=FT; <span class="comment">%The faces</span>
+inputStruct.Nodes=VT; <span class="comment">%The vertices</span>
+inputStruct.holePoints=V_hole; <span class="comment">%The hole interior points</span>
+inputStruct.faceBoundaryMarker=CT; <span class="comment">%Face boundary markers</span>
+inputStruct.regionPoints=V_region; <span class="comment">%The region interior points</span>
+inputStruct.regionA=tetVolMeanEst(FT,VT)*volumeFactor; <span class="comment">%Volume for regular tets</span>
+</pre><p>Mesh model using tetrahedral elements using tetGen</p><pre class="codeinput">[meshOutput]=runTetGen(inputStruct); <span class="comment">%Run tetGen</span>
+</pre><pre class="codeoutput"> 
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+--- TETGEN Tetrahedral meshing --- 26-Aug-2019 22:02:05
+ 
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+--- Writing SMESH file --- 26-Aug-2019 22:02:05
+----&gt; Adding node field
+----&gt; Adding facet field
+----&gt; Adding holes specification
+----&gt; Adding region specification
+--- Done --- 26-Aug-2019 22:02:05
+--- Running TetGen to mesh input boundary--- 26-Aug-2019 22:02:05
+Opening /mnt/data/MATLAB/GIBBON/data/temp/temp.smesh.
+Delaunizing vertices...
+Delaunay seconds:  0.039281
+Creating surface mesh ...
+Surface mesh seconds:  0.011722
+Recovering boundaries...
+Boundary recovery seconds:  0.025185
+Removing exterior tetrahedra ...
+Spreading region attributes.
+Exterior tets removal seconds:  0.014681
+Recovering Delaunayness...
+Delaunay recovery seconds:  0.012726
+Refining mesh...
+Refinement seconds:  0.25109
+Optimizing mesh...
+Optimization seconds:  0.013221
+
+Writing /mnt/data/MATLAB/GIBBON/data/temp/temp.1.node.
+Writing /mnt/data/MATLAB/GIBBON/data/temp/temp.1.ele.
+Writing /mnt/data/MATLAB/GIBBON/data/temp/temp.1.face.
+Writing /mnt/data/MATLAB/GIBBON/data/temp/temp.1.edge.
+
+Output seconds:  0.172519
+Total running seconds:  0.540901
+
+Statistics:
+
+  Input points: 6509
+  Input facets: 13010
+  Input segments: 19515
+  Input holes: 1
+  Input regions: 1
+
+  Mesh points: 14265
+  Mesh tetrahedra: 70418
+  Mesh faces: 147341
+  Mesh faces on exterior boundary: 13010
+  Mesh faces on input facets: 13010
+  Mesh edges on input segments: 19515
+  Steiner points inside domain: 7756
+
+--- Done --- 26-Aug-2019 22:02:06
+ 
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+--- Importing TetGen files --- 26-Aug-2019 22:02:06
+--- Done --- 26-Aug-2019 22:02:07
+</pre><p>Access model element and patch data</p><pre class="codeinput">Fb_foot=meshOutput.facesBoundary; <span class="comment">%Boundary faces of the foot</span>
+Cb_foot=meshOutput.boundaryMarker; <span class="comment">%Boundary marker/color data for the foot</span>
+V_foot=meshOutput.nodes; <span class="comment">%The vertices/nodes</span>
+E_foot=meshOutput.elements; <span class="comment">%The tet4 elements</span>
+</pre><p>Visualizing mesh using <tt>meshView</tt>, see also <tt>anim8</tt></p><pre class="codeinput">meshView(meshOutput);
+</pre><img width="100%" height="auto" vspace="5" hspace="5" src="DEMO_febio_0050_foot_insole_01_08.jpg" alt=""> <h2 id="26">Build insole</h2><p>The insole is created by taking the 2D convex hull of the foot (ignoring the z-direction). Next this convex hull is resampled and filled with triangular elements. The z-coordinates are then based on the nearest foot nodes. The z-coordinate data is next smoothed to create a smooth surface. This surface is next thickened to form hexahedral elements.</p><p>Create sole boundary curve in 2D</p><pre class="codeinput"><span class="comment">% Offset surface outward to thicken so sole is enlarged outward</span>
+[~,~,Nv]=patchNormal(FT,VT);
+VT_sole=VT+soleOffsetOutward.*Nv;
+
+P=VT_sole(:,[1 2]); <span class="comment">%Point set flattened to 2D</span>
+DT=delaunayTriangulation(P); <span class="comment">%Delaunay triangulation of 2D set</span>
+VD=DT.Points; <span class="comment">%Delaunay point set</span>
+VD(:,3)=min(VT(:,3)); <span class="comment">%Set z-coord to minimum for now</span>
+indChull=DT.convexHull; <span class="comment">%Ordered point list for conhex hull</span>
+indChull=indChull(1:end-1); <span class="comment">%Trim away last (=start) point to avoid double</span>
+V_chull=VD(indChull,:); <span class="comment">%Vertices for convex hull</span>
+D=max(pathLength(V_chull)); <span class="comment">%Get length of sole curve for resampling</span>
+numResample=ceil(D./pointSpacing);
+V_sole_curve=evenlySampleCurve(V_chull,numResample,<span class="string">'pchip'</span>,1);
+</pre><p>Visualize</p><pre class="codeinput">cFigure; hold <span class="string">on</span>;
+gpatch(FT,VT,<span class="string">'kw'</span>,<span class="string">'none'</span>,0.25);
+plotV(P,<span class="string">'k.'</span>,<span class="string">'MarkerSize'</span>,markerSize2);
+plotV(V_chull,<span class="string">'r.'</span>,<span class="string">'MarkerSize'</span>,markerSize1*2);
+plotV(V_sole_curve,<span class="string">'b.-'</span>,<span class="string">'MarkerSize'</span>,markerSize1,<span class="string">'LineWidth'</span>,lineWidth);
+camlight(<span class="string">'headlight'</span>);
+axisGeom(gca,fontSize);
+colormap <span class="string">gjet</span>; icolorbar;
+drawnow;
+</pre><img width="100%" height="auto" vspace="5" hspace="5" src="DEMO_febio_0050_foot_insole_01_09.jpg" alt=""> <p>Build sole top surface</p><pre class="codeinput">[F_sole_top,V_sole_top]=regionTriMesh2D({V_sole_curve(:,[1 2])},pointSpacing*2,0,0);
+V_sole_top(:,3)=mean(V_sole_curve(:,3));
+
+tri2quad_optionStruct.maxAngleDeviation=60*(pi/180);
+tri2quad_optionStruct.selectionMethod=<span class="string">'best'</span>;
+tri2quad_optionStruct.triangleConvert=1;
+tri2quad_optionStruct.fourConnectConvert=1;
+[F_sole_top,V_sole_top]=tri2quadGroupSplit(F_sole_top,V_sole_top,tri2quad_optionStruct);
+Eb=patchBoundary(F_sole_top,V_sole_top);
+indB=unique(Eb(:));
+
+<span class="comment">%Free smoothing of boundary</span>
+clear <span class="string">cParSmooth</span>;
+cParSmooth.n=25;
+cParSmooth.Method=<span class="string">'HC'</span>;
+[p]=patchSmooth(Eb,V_sole_top,[],cParSmooth);
+V_sole_top(indB,:)=p(indB,:);
+
+<span class="comment">%Constrained smoothing</span>
+clear <span class="string">cParSmooth</span>;
+cParSmooth.n=25;
+cParSmooth.Method=<span class="string">'HC'</span>;
+cParSmooth.RigidConstraints=indB;
+[V_sole_top]=patchSmooth(F_sole_top,V_sole_top,[],cParSmooth);
+
+<span class="comment">%Get z-coordinate</span>
+[~,indMin]=minDist(V_sole_top,VT);
+V_sole_top(:,3)=VT(indMin,3);
+
+clear <span class="string">cParSmooth</span>;
+cParSmooth.n=numSmoothIterations_sole_Z;
+cParSmooth.Method=<span class="string">'LAP'</span>;
+[V_sole_top(:,3)]=patchSmooth(F_sole_top,V_sole_top(:,3),[],cParSmooth);
+
+<span class="comment">%Free smoothing of boundary</span>
+clear <span class="string">cParSmooth</span>;
+cParSmooth.n=numSmoothIterations_sole_Z;
+cParSmooth.Method=<span class="string">'LAP'</span>;
+[p]=patchSmooth(Eb,V_sole_top,[],cParSmooth);
+V_sole_top(indB,3)=p(indB,3);
+
+V_sole_top(:,3)=V_sole_top(:,3)-pointSpacing/3;
+
+pointSpacingSole=mean(patchEdgeLengths(F_sole_top,V_sole_top));
+</pre><p>Visualize</p><pre class="codeinput">cFigure; hold <span class="string">on</span>;
+gpatch(FT,VT,<span class="string">'kw'</span>,<span class="string">'none'</span>,0.25);
+gpatch(F_sole_top,V_sole_top,<span class="string">'gw'</span>,<span class="string">'k'</span>,1);
+patchNormPlot(F_sole_top,V_sole_top);
+camlight(<span class="string">'headlight'</span>);
+axisGeom(gca,fontSize);
+colormap <span class="string">gjet</span>; icolorbar;
+drawnow;
+</pre><img width="100%" height="auto" vspace="5" hspace="5" src="DEMO_febio_0050_foot_insole_01_10.jpg" alt=""> <p>Create bottom surface of sole</p><pre class="codeinput">F_sole_bottom=F_sole_top;
+V_sole_bottom=V_sole_top;
+V_sole_bottom(:,3)=(V_sole_top(:,3))-soleMinThickness;
+
+cFigure; hold <span class="string">on</span>;
+gpatch(FT,VT,<span class="string">'kw'</span>,<span class="string">'none'</span>,0.25);
+gpatch(F_sole_top,V_sole_top,<span class="string">'gw'</span>,<span class="string">'k'</span>,1);
+gpatch(F_sole_bottom,V_sole_bottom,<span class="string">'bw'</span>,<span class="string">'k'</span>,1);
+patchNormPlot(F_sole_top,V_sole_top);
+camlight(<span class="string">'headlight'</span>);
+axisGeom(gca,fontSize);
+colormap <span class="string">gjet</span>; icolorbar;
+drawnow;
+</pre><img width="100%" height="auto" vspace="5" hspace="5" src="DEMO_febio_0050_foot_insole_01_11.jpg" alt=""> <p>Create hexahedral elements</p><pre class="codeinput">V_sole=[V_sole_bottom;V_sole_top];
+E_sole=[F_sole_bottom F_sole_top+size(V_sole_bottom,1)];
+F_sole_top=F_sole_top+size(V_sole_bottom,1); <span class="comment">%Fix indices</span>
+
+<span class="comment">%Use element2patch to get patch data</span>
+F_E_sole=element2patch(E_sole);
+indBoundaryFaces=tesBoundary(F_E_sole,V_sole);
+Fb_sole=F_E_sole(indBoundaryFaces,:);
+</pre><p>Visualize</p><pre class="codeinput">cFigure; hold <span class="string">on</span>;
+title(<span class="string">'Hexahedral mesh'</span>);
+gpatch(FT,VT,<span class="string">'kw'</span>,<span class="string">'none'</span>,0.25);
+gpatch(Fb_sole,V_sole,<span class="string">'bw'</span>,<span class="string">'k'</span>,1);
+patchNormPlot(Fb_sole,V_sole);
+axisGeom;
+camlight <span class="string">headlight</span>;
+drawnow;
+</pre><img width="100%" height="auto" vspace="5" hspace="5" src="DEMO_febio_0050_foot_insole_01_12.jpg" alt=""> <h2 id="34">Joining node sets</h2><pre class="codeinput">V=[V_foot;V_sole;]; <span class="comment">%Combined node sets</span>
+E_sole=E_sole+size(V_foot,1); <span class="comment">%Fixed element indices</span>
+F_sole_top=F_sole_top+size(V_foot,1); <span class="comment">%Fixed element indices</span>
+F_sole_bottom=F_sole_bottom+size(V_foot,1); <span class="comment">%Fixed indices</span>
+F_E_sole=F_E_sole+size(V_foot,1); <span class="comment">%Fixed element indices</span>
+Fb_sole=Fb_sole+size(V_foot,1); <span class="comment">%Fixed element indices</span>
+</pre><p>Visualize</p><pre class="codeinput">cFigure; hold <span class="string">on</span>;
+title(<span class="string">'Hexahedral mesh'</span>);
+gpatch(Fb_foot,V,Cb_foot,<span class="string">'k'</span>,1);
+gpatch(Fb_sole,V,<span class="string">'kw'</span>,<span class="string">'k'</span>,1);
+<span class="comment">% patchNormPlot(FEs,V);</span>
+colormap <span class="string">gjet</span>; icolorbar;
+axisGeom;
+camlight <span class="string">headlight</span>;
+drawnow;
+</pre><img width="100%" height="auto" vspace="5" hspace="5" src="DEMO_febio_0050_foot_insole_01_13.jpg" alt=""> <h2 id="36">Define contact surfaces</h2><pre class="codeinput"><span class="comment">% The rigid master surface of the sphere</span>
+F_contact_master=F_sole_top;
+
+<span class="comment">% The deformable slave surface of the slab</span>
+F_contact_slave=fliplr(Fb_foot(Cb_foot==2,:));
+</pre><p>Visualize contact surfaces</p><pre class="codeinput">cFigure; hold <span class="string">on</span>;
+title(<span class="string">'Contact sets and normal directions'</span>,<span class="string">'FontSize'</span>,fontSize);
+
+gpatch(Fb_foot,V,<span class="string">'kw'</span>,<span class="string">'none'</span>,faceAlpha2);
+gpatch(Fb_sole,V,<span class="string">'kw'</span>,<span class="string">'none'</span>,faceAlpha2);
+
+hl(1)=gpatch(F_contact_master,V,<span class="string">'gw'</span>,<span class="string">'k'</span>,1);
+patchNormPlot(F_contact_master,V);
+hl(2)=gpatch(F_contact_slave,V,<span class="string">'bw'</span>,<span class="string">'k'</span>,1);
+patchNormPlot(F_contact_slave,V);
+
+legend(hl,{<span class="string">'Master'</span>,<span class="string">'Slave'</span>});
+
+axisGeom(gca,fontSize);
+camlight <span class="string">headlight</span>;
+drawnow;
+</pre><img width="100%" height="auto" vspace="5" hspace="5" src="DEMO_febio_0050_foot_insole_01_14.jpg" alt=""> <h2 id="38">Define boundary conditions</h2><pre class="codeinput"><span class="comment">%Supported nodes</span>
+bcSupportList=unique(F_sole_bottom);
+
+<span class="comment">%Prescribed displacement nodes</span>
+bcPrescribeList=unique(Fb_foot(Cb_foot==1,:));
+</pre><p>Visualize BC's</p><pre class="codeinput">hf=cFigure; hold <span class="string">on</span>;
+title(<span class="string">'Boundary conditions model'</span>,<span class="string">'FontSize'</span>,fontSize);
+gpatch(Fb_foot,V,<span class="string">'kw'</span>,<span class="string">'none'</span>,faceAlpha2);
+gpatch(Fb_sole,V,<span class="string">'kw'</span>,<span class="string">'none'</span>,faceAlpha2);
+hl2(1)=plotV(V(bcPrescribeList,:),<span class="string">'r.'</span>,<span class="string">'MarkerSize'</span>,markerSize2);
+hl2(2)=plotV(V(bcSupportList,:),<span class="string">'k.'</span>,<span class="string">'MarkerSize'</span>,markerSize2);
+legend(hl2,{<span class="string">'BC prescribe'</span>,<span class="string">'BC support'</span>});
+axisGeom(gca,fontSize);
+camlight <span class="string">headlight</span>;
+drawnow;
+</pre><img width="100%" height="auto" vspace="5" hspace="5" src="DEMO_febio_0050_foot_insole_01_15.jpg" alt=""> <h2 id="40">Defining the FEBio input structure</h2><p>See also <tt>febioStructTemplate</tt> and <tt>febioStruct2xml</tt> and the FEBio user manual.</p><pre class="codeinput"><span class="comment">%Get a template with default settings</span>
+[febio_spec]=febioStructTemplate;
+
+<span class="comment">%febio_spec version</span>
+febio_spec.ATTR.version=<span class="string">'2.5'</span>;
+
+<span class="comment">%Module section</span>
+febio_spec.Module.ATTR.type=<span class="string">'solid'</span>;
+
+<span class="comment">%Control section</span>
+febio_spec.Control.analysis.ATTR.type=<span class="string">'static'</span>;
+febio_spec.Control.time_steps=numTimeSteps;
+febio_spec.Control.step_size=1/numTimeSteps;
+febio_spec.Control.time_stepper.dtmin=dtmin;
+febio_spec.Control.time_stepper.dtmax=dtmax;
+febio_spec.Control.time_stepper.max_retries=max_retries;
+febio_spec.Control.time_stepper.opt_iter=opt_iter;
+febio_spec.Control.max_refs=max_refs;
+febio_spec.Control.max_ups=max_ups;
+febio_spec.Control.symmetric_stiffness=symmetric_stiffness;
+febio_spec.Control.min_residual=min_residual;
+
+<span class="comment">%Material section</span>
+febio_spec.Material.material{1}.ATTR.type=<span class="string">'Ogden'</span>;
+febio_spec.Material.material{1}.ATTR.id=1;
+febio_spec.Material.material{1}.c1=c1_1;
+febio_spec.Material.material{1}.m1=m1_1;
+febio_spec.Material.material{1}.c2=c1_1;
+febio_spec.Material.material{1}.m2=-m1_1;
+febio_spec.Material.material{1}.k=k_1;
+
+febio_spec.Material.material{2}.ATTR.type=<span class="string">'Ogden unconstrained'</span>;
+febio_spec.Material.material{2}.ATTR.id=2;
+febio_spec.Material.material{2}.c1=c1_2;
+febio_spec.Material.material{2}.m1=m1_2;
+febio_spec.Material.material{2}.c2=c1_2;
+febio_spec.Material.material{2}.m2=-m1_2;
+febio_spec.Material.material{2}.cp=k_2;
+
+<span class="comment">%Geometry section</span>
+<span class="comment">% -&gt; Nodes</span>
+febio_spec.Geometry.Nodes{1}.ATTR.name=<span class="string">'nodeSet_all'</span>; <span class="comment">%The node set name</span>
+febio_spec.Geometry.Nodes{1}.node.ATTR.id=(1:size(V,1))'; <span class="comment">%The node id's</span>
+febio_spec.Geometry.Nodes{1}.node.VAL=V; <span class="comment">%The nodel coordinates</span>
+
+<span class="comment">% -&gt; Elements</span>
+febio_spec.Geometry.Elements{1}.ATTR.type=<span class="string">'tet4'</span>; <span class="comment">%Element type of this set</span>
+febio_spec.Geometry.Elements{1}.ATTR.mat=1; <span class="comment">%material index for this set</span>
+febio_spec.Geometry.Elements{1}.ATTR.name=<span class="string">'Foot'</span>; <span class="comment">%Name of the element set</span>
+febio_spec.Geometry.Elements{1}.elem.ATTR.id=(1:1:size(E_foot,1))'; <span class="comment">%Element id's</span>
+febio_spec.Geometry.Elements{1}.elem.VAL=E_foot;
+
+febio_spec.Geometry.Elements{2}.ATTR.type=<span class="string">'hex8'</span>; <span class="comment">%Element type of this set</span>
+febio_spec.Geometry.Elements{2}.ATTR.mat=2; <span class="comment">%material index for this set</span>
+febio_spec.Geometry.Elements{2}.ATTR.name=<span class="string">'Sole'</span>; <span class="comment">%Name of the element set</span>
+febio_spec.Geometry.Elements{2}.elem.ATTR.id=size(E_foot,1)+(1:1:size(E_sole,1))'; <span class="comment">%Element id's</span>
+febio_spec.Geometry.Elements{2}.elem.VAL=E_sole;
+
+<span class="comment">% -&gt; NodeSets</span>
+febio_spec.Geometry.NodeSet{1}.ATTR.name=<span class="string">'bcSupportList'</span>;
+febio_spec.Geometry.NodeSet{1}.node.ATTR.id=bcSupportList(:);
+
+febio_spec.Geometry.NodeSet{2}.ATTR.name=<span class="string">'bcPrescribeList'</span>;
+febio_spec.Geometry.NodeSet{2}.node.ATTR.id=bcPrescribeList(:);
+
+<span class="comment">% -&gt; Surfaces</span>
+febio_spec.Geometry.Surface{1}.ATTR.name=<span class="string">'contact_master'</span>;
+febio_spec.Geometry.Surface{1}.quad4.ATTR.lid=(1:1:size(F_contact_master,1))';
+febio_spec.Geometry.Surface{1}.quad4.VAL=F_contact_master;
+
+febio_spec.Geometry.Surface{2}.ATTR.name=<span class="string">'contact_slave'</span>;
+febio_spec.Geometry.Surface{2}.tri3.ATTR.lid=(1:1:size(F_contact_slave,1))';
+febio_spec.Geometry.Surface{2}.tri3.VAL=F_contact_slave;
+
+<span class="comment">% -&gt; Surface pairs</span>
+febio_spec.Geometry.SurfacePair{1}.ATTR.name=<span class="string">'Contact1'</span>;
+febio_spec.Geometry.SurfacePair{1}.master.ATTR.surface=febio_spec.Geometry.Surface{1}.ATTR.name;
+febio_spec.Geometry.SurfacePair{1}.slave.ATTR.surface=febio_spec.Geometry.Surface{2}.ATTR.name;
+
+<span class="comment">%Boundary condition section</span>
+<span class="comment">% -&gt; Fix boundary conditions</span>
+febio_spec.Boundary.fix{1}.ATTR.bc=<span class="string">'x'</span>;
+febio_spec.Boundary.fix{1}.ATTR.node_set=febio_spec.Geometry.NodeSet{1}.ATTR.name;
+febio_spec.Boundary.fix{2}.ATTR.bc=<span class="string">'y'</span>;
+febio_spec.Boundary.fix{2}.ATTR.node_set=febio_spec.Geometry.NodeSet{1}.ATTR.name;
+febio_spec.Boundary.fix{3}.ATTR.bc=<span class="string">'z'</span>;
+febio_spec.Boundary.fix{3}.ATTR.node_set=febio_spec.Geometry.NodeSet{1}.ATTR.name;
+
+febio_spec.Boundary.fix{4}.ATTR.bc=<span class="string">'x'</span>;
+febio_spec.Boundary.fix{4}.ATTR.node_set=febio_spec.Geometry.NodeSet{2}.ATTR.name;
+febio_spec.Boundary.fix{5}.ATTR.bc=<span class="string">'y'</span>;
+febio_spec.Boundary.fix{5}.ATTR.node_set=febio_spec.Geometry.NodeSet{2}.ATTR.name;
+
+<span class="comment">% -&gt; Prescribed boundary conditions</span>
+febio_spec.Boundary.prescribe{1}.ATTR.bc=<span class="string">'z'</span>;
+febio_spec.Boundary.prescribe{1}.ATTR.node_set=febio_spec.Geometry.NodeSet{2}.ATTR.name;
+febio_spec.Boundary.prescribe{1}.scale.ATTR.lc=1;
+febio_spec.Boundary.prescribe{1}.scale.VAL=1;
+febio_spec.Boundary.prescribe{1}.relative=1;
+febio_spec.Boundary.prescribe{1}.value=displacementMagnitude;
+
+<span class="comment">%Contact section</span>
+<span class="comment">%Contact section</span>
+febio_spec.Contact.contact{1}.ATTR.surface_pair=febio_spec.Geometry.SurfacePair{1}.ATTR.name;
+febio_spec.Contact.contact{1}.ATTR.type=<span class="string">'sliding-elastic'</span>;
+febio_spec.Contact.contact{1}.two_pass=1;
+febio_spec.Contact.contact{1}.laugon=laugon;
+febio_spec.Contact.contact{1}.tolerance=0.2;
+febio_spec.Contact.contact{1}.gaptol=0;
+febio_spec.Contact.contact{1}.minaug=minaug;
+febio_spec.Contact.contact{1}.maxaug=maxaug;
+febio_spec.Contact.contact{1}.search_tol=0.01;
+febio_spec.Contact.contact{1}.search_radius=0.1;
+febio_spec.Contact.contact{1}.symmetric_stiffness=0;
+febio_spec.Contact.contact{1}.auto_penalty=1;
+febio_spec.Contact.contact{1}.penalty=contactPenalty;
+febio_spec.Contact.contact{1}.fric_coeff=fric_coeff;
+
+<span class="comment">%Output section</span>
+<span class="comment">% -&gt; log file</span>
+febio_spec.Output.logfile.ATTR.file=febioLogFileName;
+febio_spec.Output.logfile.node_data{1}.ATTR.file=febioLogFileName_disp;
+febio_spec.Output.logfile.node_data{1}.ATTR.data=<span class="string">'ux;uy;uz'</span>;
+febio_spec.Output.logfile.node_data{1}.ATTR.delim=<span class="string">','</span>;
+febio_spec.Output.logfile.node_data{1}.VAL=1:size(V,1);
+
+febio_spec.Output.logfile.node_data{2}.ATTR.file=febioLogFileName_force;
+febio_spec.Output.logfile.node_data{2}.ATTR.data=<span class="string">'Rx;Ry;Rz'</span>;
+febio_spec.Output.logfile.node_data{2}.ATTR.delim=<span class="string">','</span>;
+febio_spec.Output.logfile.node_data{2}.VAL=1:size(V,1);
+
+febio_spec.Output.logfile.element_data{1}.ATTR.file=febioLogFileName_strainEnergy;
+febio_spec.Output.logfile.element_data{1}.ATTR.data=<span class="string">'sed'</span>;
+febio_spec.Output.logfile.element_data{1}.ATTR.delim=<span class="string">','</span>;
+febio_spec.Output.logfile.element_data{1}.VAL=1:size(E_foot,1);
+</pre><h2 id="41">Quick viewing of the FEBio input file structure</h2><p>The <tt>febView</tt> function can be used to view the xml structure in a MATLAB figure window.</p><p><tt>febView(febio_spec); %Viewing the febio file</tt></p><h2 id="43">Exporting the FEBio input file</h2><p>Exporting the febio_spec structure to an FEBio input file is done using the <tt>febioStruct2xml</tt> function.</p><pre class="codeinput">febioStruct2xml(febio_spec,febioFebFileName); <span class="comment">%Exporting to file and domNode</span>
+</pre><h2 id="44">Running the FEBio analysis</h2><p>To run the analysis defined by the created FEBio input file the <tt>runMonitorFEBio</tt> function is used. The input for this function is a structure defining job settings e.g. the FEBio input file name. The optional output runFlag informs the user if the analysis was run succesfully.</p><pre class="codeinput">febioAnalysis.run_filename=febioFebFileName; <span class="comment">%The input file name</span>
+febioAnalysis.run_logname=febioLogFileName; <span class="comment">%The name for the log file</span>
+febioAnalysis.disp_on=1; <span class="comment">%Display information on the command window</span>
+febioAnalysis.disp_log_on=1; <span class="comment">%Display convergence information in the command window</span>
+febioAnalysis.runMode=<span class="string">'external'</span>;<span class="comment">%'internal';</span>
+febioAnalysis.t_check=0.25; <span class="comment">%Time for checking log file (dont set too small)</span>
+febioAnalysis.maxtpi=1e99; <span class="comment">%Max analysis time</span>
+febioAnalysis.maxLogCheckTime=10; <span class="comment">%Max log file checking time</span>
+
+[runFlag]=runMonitorFEBio(febioAnalysis);<span class="comment">%START FEBio NOW!!!!!!!!</span>
+</pre><pre class="codeoutput"> 
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+--- STARTING FEBIO JOB --- 26-Aug-2019 22:02:16
+Waiting for log file...
+Proceeding to check log file...26-Aug-2019 22:02:17
+------- converged at time : 0.1
+------- converged at time : 0.2
+------- converged at time : 0.3
+------- converged at time : 0.4
+------- converged at time : 0.5
+------- converged at time : 0.6
+------- converged at time : 0.695393
+------- converged at time : 0.782561
+------- converged at time : 0.862222
+------- converged at time : 0.932212
+------- converged at time : 0.996191
+------- converged at time : 1
+--- Done --- 26-Aug-2019 22:04:30
+</pre><h2 id="45">Import FEBio results</h2><pre class="codeinput"><span class="keyword">if</span> runFlag==1 <span class="comment">%i.e. a succesful run</span>
+</pre><pre class="codeinput">    <span class="comment">% Importing nodal displacements from a log file</span>
+    [time_mat, N_disp_mat,~]=importFEBio_logfile(fullfile(savePath,febioLogFileName_disp)); <span class="comment">%Nodal displacements</span>
+    time_mat=[0; time_mat(:)]; <span class="comment">%Time</span>
+
+    N_disp_mat=N_disp_mat(:,2:end,:);
+    sizImport=size(N_disp_mat);
+    sizImport(3)=sizImport(3)+1;
+    N_disp_mat_n=zeros(sizImport);
+    N_disp_mat_n(:,:,2:end)=N_disp_mat;
+    N_disp_mat=N_disp_mat_n;
+    DN=N_disp_mat(:,:,end);
+
+    V_def=V+DN;
+    V_DEF=N_disp_mat+repmat(V,[1 1 size(N_disp_mat,3)]);
+    X_DEF=V_DEF(:,1,:);
+    Y_DEF=V_DEF(:,2,:);
+    Z_DEF=V_DEF(:,3,:);
+
+    C=sqrt(sum(DN(:,3).^2,2));
+    [CF]=vertexToFaceMeasure(Fb_foot,C);
+</pre><p>Importing element strain energies from a log file</p><pre class="codeinput">    [~,E_energy,~]=importFEBio_logfile(fullfile(savePath,febioLogFileName_strainEnergy)); <span class="comment">%Element strain energy</span>
+
+    <span class="comment">%Remove nodal index column</span>
+    E_energy=E_energy(:,2:end,:);
+
+    <span class="comment">%Add initial state i.e. zero energy</span>
+    sizImport=size(E_energy);
+    sizImport(3)=sizImport(3)+1;
+    E_energy_mat_n=zeros(sizImport);
+    E_energy_mat_n(:,:,2:end)=E_energy;
+    E_energy=E_energy_mat_n;
+
+    [FE_foot,C_energy_foot]=element2patch(E_foot,E_energy(:,:,end));
+<span class="comment">%     [FE_foot,C_energy_foot]=element2patch(E_foot,E_energy(1:size(E_foot,1),:,1));</span>
+    indBoundaryFacesFoot=tesBoundary(FE_foot,V);
+</pre><p>Plotting the simulated results using <tt>anim8</tt> to visualize and animate deformations</p><pre class="codeinput">    <span class="comment">% Create basic view and store graphics handle to initiate animation</span>
+    hf=cFigure; <span class="comment">%Open figure</span>
+    gtitle([febioFebFileNamePart,<span class="string">': Press play to animate'</span>]);
+    hp1=gpatch(Fb_foot,V_def,[1 0.95 0.8],<span class="string">'none'</span>,0.25); <span class="comment">%Add graphics object to animate</span>
+    hp2=gpatch(F_sole_top,V_def,C,<span class="string">'none'</span>,1); <span class="comment">%Add graphics object to animate</span>
+    hp2.FaceColor=<span class="string">'Interp'</span>;
+<span class="comment">%     gpatch(Fb_sole,V_def,'kw','none',0.2); %Add graphics object to animate</span>
+
+    axisGeom(gca,fontSize);
+    colormap(flipud(kvw(250))); colorbar;
+    caxis([0 max(C)/6]);
+    axis([min(X_DEF(:)) max(X_DEF(:)) min(Y_DEF(:)) max(Y_DEF(:)) min(Z_DEF(:)) max(Z_DEF(:))]);
+    view([-30 -30]);
+    camlight <span class="string">headlight</span>;
+    lighting <span class="string">gouraud</span>;
+
+    <span class="comment">% Set up animation features</span>
+    animStruct.Time=time_mat; <span class="comment">%The time vector</span>
+    <span class="keyword">for</span> qt=1:1:size(N_disp_mat,3) <span class="comment">%Loop over time increments</span>
+        DN=N_disp_mat(:,:,qt); <span class="comment">%Current displacement</span>
+        V_def=V+DN; <span class="comment">%Current nodal coordinates</span>
+
+        C=sqrt(sum(DN(:,3).^2,2)); <span class="comment">%New color</span>
+
+        <span class="comment">%Set entries in animation structure</span>
+        animStruct.Handles{qt}=[hp2 hp2 hp1]; <span class="comment">%Handles of objects to animate</span>
+        animStruct.Props{qt}={<span class="string">'Vertices'</span>,<span class="string">'CData'</span>,<span class="string">'Vertices'</span>}; <span class="comment">%Properties of objects to animate</span>
+        animStruct.Set{qt}={V_def,C,V_def}; <span class="comment">%Property values for to set in order to animate</span>
+    <span class="keyword">end</span>
+    anim8(hf,animStruct); <span class="comment">%Initiate animation feature</span>
+    drawnow;
+</pre><img width="100%" height="auto" vspace="5" hspace="5" src="DEMO_febio_0050_foot_insole_01_16.jpg" alt=""> <p>Plotting the simulated results using <tt>anim8</tt> to visualize and animate deformations</p><pre class="codeinput">    <span class="comment">% Create basic view and store graphics handle to initiate animation</span>
+    hf=cFigure; <span class="comment">%Open figure</span>
+    gtitle([febioFebFileNamePart,<span class="string">': Press play to animate'</span>]);
+    [CV]=faceToVertexMeasure(FE_foot(indBoundaryFacesFoot,:),V,C_energy_foot(indBoundaryFacesFoot,:));
+    hp1=gpatch(FE_foot(indBoundaryFacesFoot,:),V_def,CV,<span class="string">'w'</span>,1); <span class="comment">%Add graphics object to animate</span>
+    hp1.FaceColor=<span class="string">'Interp'</span>;
+    hp2=gpatch(Fb_sole,V_def,<span class="string">'gw'</span>,<span class="string">'none'</span>,0.5); <span class="comment">%Add graphics object to animate</span>
+
+    axisGeom(gca,fontSize);
+    colormap(gjet(250)); colorbar;
+    caxis([0 max(C_energy_foot)/100]);
+    axis([min(X_DEF(:)) max(X_DEF(:)) min(Y_DEF(:)) max(Y_DEF(:)) min(Z_DEF(:)) max(Z_DEF(:))]);
+    view([-30 -30]);
+    camlight <span class="string">headlight</span>;
+    lighting <span class="string">gouraud</span>;
+
+    <span class="comment">% Set up animation features</span>
+    animStruct.Time=time_mat; <span class="comment">%The time vector</span>
+    <span class="keyword">for</span> qt=1:1:size(N_disp_mat,3) <span class="comment">%Loop over time increments</span>
+        DN=N_disp_mat(:,:,qt); <span class="comment">%Current displacement</span>
+        V_def=V+DN; <span class="comment">%Current nodal coordinates</span>
+
+        [FE_foot,C_energy_foot]=element2patch(E_foot,E_energy(:,:,qt));
+        [CV]=faceToVertexMeasure(FE_foot(indBoundaryFacesFoot,:),V,C_energy_foot(indBoundaryFacesFoot,:));
+        <span class="comment">%Set entries in animation structure</span>
+        animStruct.Handles{qt}=[hp1 hp1 hp2]; <span class="comment">%Handles of objects to animate</span>
+        animStruct.Props{qt}={<span class="string">'Vertices'</span>,<span class="string">'CData'</span>,<span class="string">'Vertices'</span>}; <span class="comment">%Properties of objects to animate</span>
+        animStruct.Set{qt}={V_def,CV,V_def}; <span class="comment">%Property values for to set in order to animate</span>
+    <span class="keyword">end</span>
+    anim8(hf,animStruct); <span class="comment">%Initiate animation feature</span>
+    drawnow;
+</pre><img width="100%" height="auto" vspace="5" hspace="5" src="DEMO_febio_0050_foot_insole_01_17.jpg" alt=""> <pre class="codeinput"><span class="keyword">end</span>
+</pre><p><img vspace="5" hspace="5" src="gibbVerySmall.gif" alt=""> </p><p><i><b>GIBBON</b></i> <a href="www.gibboncode.org">www.gibboncode.org</a></p><p><i>Kevin Mattheus Moerman</i>, <a href="gibbon.toolbox@gmail.com">gibbon.toolbox@gmail.com</a></p><p><i><b>GIBBON footer text</b></i></p><p>License: <a href="https://github.com/gibbonCode/GIBBON/blob/master/LICENSE">https://github.com/gibbonCode/GIBBON/blob/master/LICENSE</a></p><p>GIBBON: The Geometry and Image-based Bioengineering add-On. A toolbox for image segmentation, image-based modeling, meshing, and finite element analysis.</p><p>Copyright (C) 2019  Kevin Mattheus Moerman</p><p>This program is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.</p><p>This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for more details.</p><p>You should have received a copy of the GNU General Public License along with this program.  If not, see <a href="http://www.gnu.org/licenses/">http://www.gnu.org/licenses/</a>.</p><p class="footer"><br><a href="https://www.mathworks.com/products/matlab/">Published with MATLAB&reg; R2019b</a><br></p></div><!--
+##### SOURCE BEGIN #####
+%% DEMO_febio_0050_foot_insole_01
+% Below is a demonstration for:
+% 
+% * Building triangulated surface geometry for a foot 
+% * Meshing the foot using tetrahedral elements
+% * Building surface model of an insole and meshing it with quads
+% * Extruding the surface to a thickened layer of hexahedral elements
+% * Defining the boundary conditions 
+% * Coding the febio structure
+% * Running the model
+% * Importing and visualizing results
+
+%% Keywords
+%
+% * febio_spec version 2.5
+% * febio, FEBio
+% * shoe insole
+% * contact, sliding, friction
+% * tetrahedral elements, tet4
+% * hexahedral elements, hex8
+% * static, solid
+% * hyperelastic, Ogden
+% * displacement logfile
+
+%%
+
+clear; close all; clc;
+
+%%
+% Plot settings
+fontSize=10;
+faceAlpha1=1;
+faceAlpha2=0.3;
+markerSize1=15;
+markerSize2=10;
+lineWidth=2; 
+
+%% Control parameters
+
+% Path names
+defaultFolder = fileparts(fileparts(mfilename('fullpath')));
+savePath=fullfile(defaultFolder,'data','temp');
+loadPathSurfaces=fullfile(defaultFolder,'data','STL','leg','post');
+
+% Defining file names
+febioFebFileNamePart='tempModel';
+febioFebFileName=fullfile(savePath,[febioFebFileNamePart,'.feb']); %FEB file name
+febioLogFileName=fullfile(savePath,[febioFebFileNamePart,'.txt']); %FEBio log file name
+febioLogFileName_disp=[febioFebFileNamePart,'_disp_out.txt']; %Log file name for exporting displacement
+febioLogFileName_force=[febioFebFileNamePart,'_force_out.txt']; %Log file name for exporting force
+febioLogFileName_strainEnergy=[febioFebFileNamePart,'_energy_out.txt']; %Log file name for exporting strain energy density
+% Surface model file names
+fileNameBones=fullfile(loadPathSurfaces,'Foot_bulk.stl');
+fileNameSkin=fullfile(loadPathSurfaces,'Skin_coarse.stl');
+
+%Geometric parameters
+soleOffsetOutward=3; %How much the insole protrudes outward from the foot
+numSmoothIterations_sole_Z=10; %Number of smoothing iterations for the sole Z value
+soleMinThickness=6; %Sole thickness
+volumeFactor=2; %Volume factor used in tetgen, larger means larger internal elements
+
+%Material parameter set
+c1_1=1e-3; %Shear-modulus-like parameter
+m1_1=2; %Material parameter setting degree of non-linearity
+k_1=c1_1*100; %Bulk modulus
+
+c1_2=c1_1*10; %Shear-modulus-like parameter
+m1_2=2; %Material parameter setting degree of non-linearity
+k_2=c1_2*10; %Bulk modulus
+
+% FEA control settings
+numTimeSteps=10; %Number of time steps desired
+max_refs=25; %Max reforms
+max_ups=0; %Set to zero to use full-Newton iterations
+opt_iter=10; %Optimum number of iterations
+max_retries=5; %Maximum number of retires
+dtmin=(1/numTimeSteps)/100; %Minimum time step size
+dtmax=1/numTimeSteps; %Maximum time step size
+symmetric_stiffness=0;
+min_residual=1e-20;
+
+%Boundary condition parameters
+displacementMagnitude=-3; %Displacement applied to the bones
+
+%Contact parameters
+contactPenalty=20;
+laugon=0;
+minaug=1;
+maxaug=10;
+fric_coeff=0.25;
+
+%% Import surface models
+
+%Import STL file for the bones
+[stlStruct] = import_STL(fileNameBones);
+F1=stlStruct.solidFaces{1}; %Faces
+V1=stlStruct.solidVertices{1}; %Vertices
+[F1,V1]=mergeVertices(F1,V1); %Merge nodes
+
+%Import STL file for the skin
+[stlStruct] = import_STL(fileNameSkin);
+F2=stlStruct.solidFaces{1}; %Faces
+V2=stlStruct.solidVertices{1}; %Vertices
+[F2,V2]=mergeVertices(F2,V2); %Merge nodes
+V2=V2*100; %Scale
+
+%% 
+% Visualize imported surfaces
+
+cFigure; hold on;
+gpatch(F1,V1,'bw','none',1);
+gpatch(F2,V2,'rw','none',0.5);
+camlight('headlight'); 
+axisGeom(gca,fontSize);
+drawnow; 
+
+%% Compute mesh derived parameters
+% Compute point spacings for the surfaces meshes. These are useful to
+% relate other mesh sizes to. 
+pointSpacing1=mean(patchEdgeLengths(F1,V1));
+pointSpacing2=mean(patchEdgeLengths(F2,V2));
+pointSpacing=mean([pointSpacing1 pointSpacing2]);
+
+%% Reorient surfaces
+% Reorient so that the leg points up in a forward view with the toes
+% pointing towards the viewer. 
+R=euler2DCM([-0.5*pi 0 -0.5*pi]);
+V1=V1*R;
+V2=V2*R;
+
+%%
+% Visualize reoriented surfaces
+
+cFigure; hold on;
+gpatch(F1,V1,'bw','none',1);
+gpatch(F2,V2,'rw','none',0.5);
+camlight('headlight'); 
+axisGeom(gca,fontSize);
+drawnow; 
+
+%% Cut skin surface
+% The skin surface is cut such that it stops where the bones of the ankle
+% end in the z direction. 
+
+%Create a logic for cutting away faces
+max_Z1=max(V1(:,3))+2*pointSpacing; %Max Z-level used for cutting
+logicVertices=V2(:,3)<max_Z1; %Logic for the points below this level
+logicFaces=all(logicVertices(F2),2); %Logic for the faces
+logicFaces=triSurfLogicSharpFix(F2,logicFaces,3); %Altered logic so it is smoother
+
+%% 
+% Visualize
+cFigure; hold on;
+gpatch(F1,V1,'bw','none',1);
+gpatch(F2,V2,logicFaces,'none',0.5);
+camlight('headlight'); 
+axisGeom(gca,fontSize);
+drawnow; 
+
+%%
+% Cut away faces using logic
+F2=F2(logicFaces,:); %The faces to keep
+[F2,V2]=patchCleanUnused(F2,V2); %Remove unused points
+
+%Attempt to self triangulate potentially jagged edge
+Eb=patchBoundary(F2,V2); %Get boundary edges
+indBoundary=edgeListToCurve(Eb); %Convert boundary edges to a curve list
+indBoundary=indBoundary(1:end-1); %Trim off last point since it is equal to first on a closed loop
+angleThreshold=pi*(120/180); %threshold for self triangulation 
+[F2,V2,indBoundaryTop]=triSurfSelfTriangulateBoundary(F2,V2,indBoundary,angleThreshold,1);
+
+%Force boundary to have the max Z level chosen
+V2(indBoundaryTop,3)=max_Z1;
+
+%% 
+% Visualize
+cFigure; hold on;
+gpatch(F1,V1,'bw','none',1);
+gpatch(F2,V2,'rw','k',0.5);
+plotV(V2(indBoundaryTop,:),'r-','LineWidth',lineWidth);
+camlight('headlight'); 
+axisGeom(gca,fontSize);
+drawnow; 
+
+%% Close over top of skin
+% The top boundary curve of the cut surface is filled with triangles. This
+% is a 2D method. The z-coordinate is added after. 
+[F2t,V2t]=regionTriMesh2D({V2(indBoundaryTop,[1 2])},pointSpacing2,0,0); 
+V2t(:,3)=max_Z1; %Add/set z-level
+
+%% 
+% Visualize
+cFigure; hold on;
+gpatch(F1,V1,'bw','none',1);
+gpatch(F2,V2,'rw','k',0.5);
+gpatch(F2t,V2t,'gw','k',1);
+plotV(V2(indBoundaryTop,:),'r-','LineWidth',lineWidth);
+camlight('headlight'); 
+axisGeom(gca,fontSize);
+drawnow; 
+
+%% Joining surface features
+% Add all surface sets together in joint list of faces, vertices
+[FT,VT,CT]=joinElementSets({F1,F2,F2t},{V1,V2,V2t});
+
+%% Merge shared nodes
+% The join operation only adds the sets together. Nodes with the same
+% coordinates are not seen as the same yet and need to be merged. 
+[FT,VT]=mergeVertices(FT,VT); %Merge nodes
+
+%% 
+% Visualize
+
+cFigure; hold on;
+gpatch(FT,VT,CT,'k',0.5);
+patchNormPlot(FT,VT);
+camlight('headlight'); 
+axisGeom(gca,fontSize);
+colormap gjet; icolorbar;
+drawnow; 
+
+%% Mesh foot with tetrahedral elements
+% Tet meshing is based on tetgen. TetGen requires a interior points for
+% regions to be meshed, as well as intertior points for holes. 
+
+%%
+% Define region points
+[V_region]=getInnerPoint({FT(CT==2 | CT==3,:),FT(CT==1,:)},{VT,VT});
+[V_hole]=getInnerPoint(FT(CT==1,:),VT);
+
+%%
+% Visualize interior points
+
+cFigure; hold on;
+gpatch(FT,VT,'kw','none',0.2);
+hp1=plotV(V_region,'r.','markerSize',markerSize1);
+hp2=plotV(V_hole,'b.','markerSize',markerSize1);
+legend([hp1 hp2],{'Region point','Hole point'});
+camlight('headlight'); 
+axisGeom(gca,fontSize);
+drawnow; 
+
+%% 
+% Mesh using tetgen
+inputStruct.stringOpt='-pq1.2AaY'; %TetGen option string
+inputStruct.Faces=FT; %The faces
+inputStruct.Nodes=VT; %The vertices
+inputStruct.holePoints=V_hole; %The hole interior points
+inputStruct.faceBoundaryMarker=CT; %Face boundary markers
+inputStruct.regionPoints=V_region; %The region interior points
+inputStruct.regionA=tetVolMeanEst(FT,VT)*volumeFactor; %Volume for regular tets
+
+%% 
+% Mesh model using tetrahedral elements using tetGen 
+[meshOutput]=runTetGen(inputStruct); %Run tetGen 
+
+%% 
+% Access model element and patch data
+Fb_foot=meshOutput.facesBoundary; %Boundary faces of the foot
+Cb_foot=meshOutput.boundaryMarker; %Boundary marker/color data for the foot
+V_foot=meshOutput.nodes; %The vertices/nodes
+E_foot=meshOutput.elements; %The tet4 elements
+
+%% 
+% Visualizing mesh using |meshView|, see also |anim8|
+meshView(meshOutput);
+
+%% Build insole 
+% The insole is created by taking the 2D convex hull of the foot (ignoring
+% the z-direction). Next this convex hull is resampled and filled with
+% triangular elements. The z-coordinates are then based on the nearest foot
+% nodes. The z-coordinate data is next smoothed to create a smooth surface.
+% This surface is next thickened to form hexahedral elements. 
+
+%%
+% Create sole boundary curve in 2D
+
+% Offset surface outward to thicken so sole is enlarged outward
+[~,~,Nv]=patchNormal(FT,VT);
+VT_sole=VT+soleOffsetOutward.*Nv; 
+
+P=VT_sole(:,[1 2]); %Point set flattened to 2D
+DT=delaunayTriangulation(P); %Delaunay triangulation of 2D set
+VD=DT.Points; %Delaunay point set
+VD(:,3)=min(VT(:,3)); %Set z-coord to minimum for now
+indChull=DT.convexHull; %Ordered point list for conhex hull
+indChull=indChull(1:end-1); %Trim away last (=start) point to avoid double
+V_chull=VD(indChull,:); %Vertices for convex hull
+D=max(pathLength(V_chull)); %Get length of sole curve for resampling
+numResample=ceil(D./pointSpacing);
+V_sole_curve=evenlySampleCurve(V_chull,numResample,'pchip',1);
+
+%%
+% Visualize
+
+cFigure; hold on;
+gpatch(FT,VT,'kw','none',0.25);
+plotV(P,'k.','MarkerSize',markerSize2);
+plotV(V_chull,'r.','MarkerSize',markerSize1*2);
+plotV(V_sole_curve,'b.-','MarkerSize',markerSize1,'LineWidth',lineWidth);
+camlight('headlight'); 
+axisGeom(gca,fontSize);
+colormap gjet; icolorbar;
+drawnow; 
+
+%%
+% Build sole top surface
+
+[F_sole_top,V_sole_top]=regionTriMesh2D({V_sole_curve(:,[1 2])},pointSpacing*2,0,0);
+V_sole_top(:,3)=mean(V_sole_curve(:,3));
+
+tri2quad_optionStruct.maxAngleDeviation=60*(pi/180);
+tri2quad_optionStruct.selectionMethod='best';
+tri2quad_optionStruct.triangleConvert=1;
+tri2quad_optionStruct.fourConnectConvert=1;
+[F_sole_top,V_sole_top]=tri2quadGroupSplit(F_sole_top,V_sole_top,tri2quad_optionStruct);
+Eb=patchBoundary(F_sole_top,V_sole_top);
+indB=unique(Eb(:));
+
+%Free smoothing of boundary
+clear cParSmooth; 
+cParSmooth.n=25;
+cParSmooth.Method='HC';
+[p]=patchSmooth(Eb,V_sole_top,[],cParSmooth);
+V_sole_top(indB,:)=p(indB,:);
+
+%Constrained smoothing
+clear cParSmooth; 
+cParSmooth.n=25;
+cParSmooth.Method='HC';
+cParSmooth.RigidConstraints=indB;
+[V_sole_top]=patchSmooth(F_sole_top,V_sole_top,[],cParSmooth);
+
+%Get z-coordinate 
+[~,indMin]=minDist(V_sole_top,VT);
+V_sole_top(:,3)=VT(indMin,3);
+
+clear cParSmooth; 
+cParSmooth.n=numSmoothIterations_sole_Z;
+cParSmooth.Method='LAP';
+[V_sole_top(:,3)]=patchSmooth(F_sole_top,V_sole_top(:,3),[],cParSmooth);
+
+%Free smoothing of boundary
+clear cParSmooth; 
+cParSmooth.n=numSmoothIterations_sole_Z;
+cParSmooth.Method='LAP';
+[p]=patchSmooth(Eb,V_sole_top,[],cParSmooth);
+V_sole_top(indB,3)=p(indB,3);
+
+V_sole_top(:,3)=V_sole_top(:,3)-pointSpacing/3;
+
+pointSpacingSole=mean(patchEdgeLengths(F_sole_top,V_sole_top));
+
+%%
+% Visualize 
+
+cFigure; hold on;
+gpatch(FT,VT,'kw','none',0.25);
+gpatch(F_sole_top,V_sole_top,'gw','k',1);
+patchNormPlot(F_sole_top,V_sole_top);
+camlight('headlight'); 
+axisGeom(gca,fontSize);
+colormap gjet; icolorbar;
+drawnow; 
+
+%%
+% Create bottom surface of sole
+F_sole_bottom=F_sole_top;
+V_sole_bottom=V_sole_top;
+V_sole_bottom(:,3)=(V_sole_top(:,3))-soleMinThickness;
+
+cFigure; hold on;
+gpatch(FT,VT,'kw','none',0.25);
+gpatch(F_sole_top,V_sole_top,'gw','k',1);
+gpatch(F_sole_bottom,V_sole_bottom,'bw','k',1);
+patchNormPlot(F_sole_top,V_sole_top);
+camlight('headlight'); 
+axisGeom(gca,fontSize);
+colormap gjet; icolorbar;
+drawnow; 
+
+%%
+% Create hexahedral elements
+V_sole=[V_sole_bottom;V_sole_top];
+E_sole=[F_sole_bottom F_sole_top+size(V_sole_bottom,1)]; 
+F_sole_top=F_sole_top+size(V_sole_bottom,1); %Fix indices
+
+%Use element2patch to get patch data 
+F_E_sole=element2patch(E_sole);
+indBoundaryFaces=tesBoundary(F_E_sole,V_sole);
+Fb_sole=F_E_sole(indBoundaryFaces,:);
+
+%%
+% Visualize
+
+cFigure; hold on;
+title('Hexahedral mesh');
+gpatch(FT,VT,'kw','none',0.25);
+gpatch(Fb_sole,V_sole,'bw','k',1);
+patchNormPlot(Fb_sole,V_sole);
+axisGeom;
+camlight headlight;
+drawnow;
+
+%% Joining node sets
+V=[V_foot;V_sole;]; %Combined node sets
+E_sole=E_sole+size(V_foot,1); %Fixed element indices
+F_sole_top=F_sole_top+size(V_foot,1); %Fixed element indices
+F_sole_bottom=F_sole_bottom+size(V_foot,1); %Fixed indices
+F_E_sole=F_E_sole+size(V_foot,1); %Fixed element indices
+Fb_sole=Fb_sole+size(V_foot,1); %Fixed element indices
+
+%%
+% Visualize
+
+cFigure; hold on;
+title('Hexahedral mesh');
+gpatch(Fb_foot,V,Cb_foot,'k',1);
+gpatch(Fb_sole,V,'kw','k',1);
+% patchNormPlot(FEs,V);
+colormap gjet; icolorbar;
+axisGeom;
+camlight headlight;
+drawnow;
+
+%% Define contact surfaces
+
+% The rigid master surface of the sphere
+F_contact_master=F_sole_top;
+
+% The deformable slave surface of the slab
+F_contact_slave=fliplr(Fb_foot(Cb_foot==2,:));
+
+%%
+% Visualize contact surfaces
+
+cFigure; hold on;
+title('Contact sets and normal directions','FontSize',fontSize);
+
+gpatch(Fb_foot,V,'kw','none',faceAlpha2); 
+gpatch(Fb_sole,V,'kw','none',faceAlpha2); 
+
+hl(1)=gpatch(F_contact_master,V,'gw','k',1); 
+patchNormPlot(F_contact_master,V);
+hl(2)=gpatch(F_contact_slave,V,'bw','k',1);
+patchNormPlot(F_contact_slave,V);
+
+legend(hl,{'Master','Slave'});
+
+axisGeom(gca,fontSize);
+camlight headlight;
+drawnow;
+
+%% Define boundary conditions
+
+%Supported nodes
+bcSupportList=unique(F_sole_bottom);
+
+%Prescribed displacement nodes
+bcPrescribeList=unique(Fb_foot(Cb_foot==1,:));
+
+%%
+% Visualize BC's
+
+hf=cFigure; hold on;
+title('Boundary conditions model','FontSize',fontSize);
+gpatch(Fb_foot,V,'kw','none',faceAlpha2); 
+gpatch(Fb_sole,V,'kw','none',faceAlpha2); 
+hl2(1)=plotV(V(bcPrescribeList,:),'r.','MarkerSize',markerSize2);
+hl2(2)=plotV(V(bcSupportList,:),'k.','MarkerSize',markerSize2);
+legend(hl2,{'BC prescribe','BC support'});
+axisGeom(gca,fontSize);
+camlight headlight;
+drawnow;
+
+%% Defining the FEBio input structure
+% See also |febioStructTemplate| and |febioStruct2xml| and the FEBio user
+% manual.
+
+%Get a template with default settings 
+[febio_spec]=febioStructTemplate;
+
+%febio_spec version 
+febio_spec.ATTR.version='2.5'; 
+
+%Module section
+febio_spec.Module.ATTR.type='solid'; 
+
+%Control section
+febio_spec.Control.analysis.ATTR.type='static';
+febio_spec.Control.time_steps=numTimeSteps;
+febio_spec.Control.step_size=1/numTimeSteps;
+febio_spec.Control.time_stepper.dtmin=dtmin;
+febio_spec.Control.time_stepper.dtmax=dtmax; 
+febio_spec.Control.time_stepper.max_retries=max_retries;
+febio_spec.Control.time_stepper.opt_iter=opt_iter;
+febio_spec.Control.max_refs=max_refs;
+febio_spec.Control.max_ups=max_ups;
+febio_spec.Control.symmetric_stiffness=symmetric_stiffness; 
+febio_spec.Control.min_residual=min_residual;
+
+%Material section
+febio_spec.Material.material{1}.ATTR.type='Ogden';
+febio_spec.Material.material{1}.ATTR.id=1;
+febio_spec.Material.material{1}.c1=c1_1;
+febio_spec.Material.material{1}.m1=m1_1;
+febio_spec.Material.material{1}.c2=c1_1;
+febio_spec.Material.material{1}.m2=-m1_1;
+febio_spec.Material.material{1}.k=k_1;
+
+febio_spec.Material.material{2}.ATTR.type='Ogden unconstrained';
+febio_spec.Material.material{2}.ATTR.id=2;
+febio_spec.Material.material{2}.c1=c1_2;
+febio_spec.Material.material{2}.m1=m1_2;
+febio_spec.Material.material{2}.c2=c1_2;
+febio_spec.Material.material{2}.m2=-m1_2;
+febio_spec.Material.material{2}.cp=k_2;
+
+%Geometry section
+% -> Nodes
+febio_spec.Geometry.Nodes{1}.ATTR.name='nodeSet_all'; %The node set name
+febio_spec.Geometry.Nodes{1}.node.ATTR.id=(1:size(V,1))'; %The node id's
+febio_spec.Geometry.Nodes{1}.node.VAL=V; %The nodel coordinates
+
+% -> Elements
+febio_spec.Geometry.Elements{1}.ATTR.type='tet4'; %Element type of this set
+febio_spec.Geometry.Elements{1}.ATTR.mat=1; %material index for this set 
+febio_spec.Geometry.Elements{1}.ATTR.name='Foot'; %Name of the element set
+febio_spec.Geometry.Elements{1}.elem.ATTR.id=(1:1:size(E_foot,1))'; %Element id's
+febio_spec.Geometry.Elements{1}.elem.VAL=E_foot;
+
+febio_spec.Geometry.Elements{2}.ATTR.type='hex8'; %Element type of this set
+febio_spec.Geometry.Elements{2}.ATTR.mat=2; %material index for this set 
+febio_spec.Geometry.Elements{2}.ATTR.name='Sole'; %Name of the element set
+febio_spec.Geometry.Elements{2}.elem.ATTR.id=size(E_foot,1)+(1:1:size(E_sole,1))'; %Element id's
+febio_spec.Geometry.Elements{2}.elem.VAL=E_sole;
+
+% -> NodeSets
+febio_spec.Geometry.NodeSet{1}.ATTR.name='bcSupportList';
+febio_spec.Geometry.NodeSet{1}.node.ATTR.id=bcSupportList(:);
+
+febio_spec.Geometry.NodeSet{2}.ATTR.name='bcPrescribeList';
+febio_spec.Geometry.NodeSet{2}.node.ATTR.id=bcPrescribeList(:);
+
+% -> Surfaces
+febio_spec.Geometry.Surface{1}.ATTR.name='contact_master';
+febio_spec.Geometry.Surface{1}.quad4.ATTR.lid=(1:1:size(F_contact_master,1))';
+febio_spec.Geometry.Surface{1}.quad4.VAL=F_contact_master;
+
+febio_spec.Geometry.Surface{2}.ATTR.name='contact_slave';
+febio_spec.Geometry.Surface{2}.tri3.ATTR.lid=(1:1:size(F_contact_slave,1))';
+febio_spec.Geometry.Surface{2}.tri3.VAL=F_contact_slave;
+
+% -> Surface pairs
+febio_spec.Geometry.SurfacePair{1}.ATTR.name='Contact1';
+febio_spec.Geometry.SurfacePair{1}.master.ATTR.surface=febio_spec.Geometry.Surface{1}.ATTR.name;
+febio_spec.Geometry.SurfacePair{1}.slave.ATTR.surface=febio_spec.Geometry.Surface{2}.ATTR.name;
+
+%Boundary condition section 
+% -> Fix boundary conditions
+febio_spec.Boundary.fix{1}.ATTR.bc='x';
+febio_spec.Boundary.fix{1}.ATTR.node_set=febio_spec.Geometry.NodeSet{1}.ATTR.name;
+febio_spec.Boundary.fix{2}.ATTR.bc='y';
+febio_spec.Boundary.fix{2}.ATTR.node_set=febio_spec.Geometry.NodeSet{1}.ATTR.name;
+febio_spec.Boundary.fix{3}.ATTR.bc='z';
+febio_spec.Boundary.fix{3}.ATTR.node_set=febio_spec.Geometry.NodeSet{1}.ATTR.name;
+
+febio_spec.Boundary.fix{4}.ATTR.bc='x';
+febio_spec.Boundary.fix{4}.ATTR.node_set=febio_spec.Geometry.NodeSet{2}.ATTR.name;
+febio_spec.Boundary.fix{5}.ATTR.bc='y';
+febio_spec.Boundary.fix{5}.ATTR.node_set=febio_spec.Geometry.NodeSet{2}.ATTR.name;
+
+% -> Prescribed boundary conditions
+febio_spec.Boundary.prescribe{1}.ATTR.bc='z';
+febio_spec.Boundary.prescribe{1}.ATTR.node_set=febio_spec.Geometry.NodeSet{2}.ATTR.name;
+febio_spec.Boundary.prescribe{1}.scale.ATTR.lc=1;
+febio_spec.Boundary.prescribe{1}.scale.VAL=1;
+febio_spec.Boundary.prescribe{1}.relative=1;
+febio_spec.Boundary.prescribe{1}.value=displacementMagnitude;
+
+%Contact section
+%Contact section
+febio_spec.Contact.contact{1}.ATTR.surface_pair=febio_spec.Geometry.SurfacePair{1}.ATTR.name;
+febio_spec.Contact.contact{1}.ATTR.type='sliding-elastic';
+febio_spec.Contact.contact{1}.two_pass=1;
+febio_spec.Contact.contact{1}.laugon=laugon;
+febio_spec.Contact.contact{1}.tolerance=0.2;
+febio_spec.Contact.contact{1}.gaptol=0;
+febio_spec.Contact.contact{1}.minaug=minaug;
+febio_spec.Contact.contact{1}.maxaug=maxaug;
+febio_spec.Contact.contact{1}.search_tol=0.01;
+febio_spec.Contact.contact{1}.search_radius=0.1;
+febio_spec.Contact.contact{1}.symmetric_stiffness=0;
+febio_spec.Contact.contact{1}.auto_penalty=1;
+febio_spec.Contact.contact{1}.penalty=contactPenalty;
+febio_spec.Contact.contact{1}.fric_coeff=fric_coeff;
+
+%Output section 
+% -> log file
+febio_spec.Output.logfile.ATTR.file=febioLogFileName;
+febio_spec.Output.logfile.node_data{1}.ATTR.file=febioLogFileName_disp;
+febio_spec.Output.logfile.node_data{1}.ATTR.data='ux;uy;uz';
+febio_spec.Output.logfile.node_data{1}.ATTR.delim=',';
+febio_spec.Output.logfile.node_data{1}.VAL=1:size(V,1);
+
+febio_spec.Output.logfile.node_data{2}.ATTR.file=febioLogFileName_force;
+febio_spec.Output.logfile.node_data{2}.ATTR.data='Rx;Ry;Rz';
+febio_spec.Output.logfile.node_data{2}.ATTR.delim=',';
+febio_spec.Output.logfile.node_data{2}.VAL=1:size(V,1);
+
+febio_spec.Output.logfile.element_data{1}.ATTR.file=febioLogFileName_strainEnergy;
+febio_spec.Output.logfile.element_data{1}.ATTR.data='sed';
+febio_spec.Output.logfile.element_data{1}.ATTR.delim=',';
+febio_spec.Output.logfile.element_data{1}.VAL=1:size(E_foot,1);
+
+%% Quick viewing of the FEBio input file structure
+% The |febView| function can be used to view the xml structure in a MATLAB
+% figure window. 
+
+%%
+% |febView(febio_spec); %Viewing the febio file|
+
+%% Exporting the FEBio input file
+% Exporting the febio_spec structure to an FEBio input file is done using
+% the |febioStruct2xml| function. 
+
+febioStruct2xml(febio_spec,febioFebFileName); %Exporting to file and domNode
+
+%% Running the FEBio analysis
+% To run the analysis defined by the created FEBio input file the
+% |runMonitorFEBio| function is used. The input for this function is a
+% structure defining job settings e.g. the FEBio input file name. The
+% optional output runFlag informs the user if the analysis was run
+% succesfully. 
+
+febioAnalysis.run_filename=febioFebFileName; %The input file name
+febioAnalysis.run_logname=febioLogFileName; %The name for the log file
+febioAnalysis.disp_on=1; %Display information on the command window
+febioAnalysis.disp_log_on=1; %Display convergence information in the command window
+febioAnalysis.runMode='external';%'internal';
+febioAnalysis.t_check=0.25; %Time for checking log file (dont set too small)
+febioAnalysis.maxtpi=1e99; %Max analysis time
+febioAnalysis.maxLogCheckTime=10; %Max log file checking time
+
+[runFlag]=runMonitorFEBio(febioAnalysis);%START FEBio NOW!!!!!!!!
+
+%% Import FEBio results 
+
+if runFlag==1 %i.e. a succesful run
+    
+    % Importing nodal displacements from a log file
+    [time_mat, N_disp_mat,~]=importFEBio_logfile(fullfile(savePath,febioLogFileName_disp)); %Nodal displacements    
+    time_mat=[0; time_mat(:)]; %Time
+
+    N_disp_mat=N_disp_mat(:,2:end,:);
+    sizImport=size(N_disp_mat);
+    sizImport(3)=sizImport(3)+1;
+    N_disp_mat_n=zeros(sizImport);
+    N_disp_mat_n(:,:,2:end)=N_disp_mat;
+    N_disp_mat=N_disp_mat_n;
+    DN=N_disp_mat(:,:,end);
+    
+    V_def=V+DN;
+    V_DEF=N_disp_mat+repmat(V,[1 1 size(N_disp_mat,3)]);
+    X_DEF=V_DEF(:,1,:);
+    Y_DEF=V_DEF(:,2,:);
+    Z_DEF=V_DEF(:,3,:);
+  
+    C=sqrt(sum(DN(:,3).^2,2));
+    [CF]=vertexToFaceMeasure(Fb_foot,C);
+    
+    %%
+    % Importing element strain energies from a log file
+    [~,E_energy,~]=importFEBio_logfile(fullfile(savePath,febioLogFileName_strainEnergy)); %Element strain energy
+    
+    %Remove nodal index column
+    E_energy=E_energy(:,2:end,:);
+    
+    %Add initial state i.e. zero energy
+    sizImport=size(E_energy); 
+    sizImport(3)=sizImport(3)+1;
+    E_energy_mat_n=zeros(sizImport);
+    E_energy_mat_n(:,:,2:end)=E_energy;
+    E_energy=E_energy_mat_n;
+    
+    [FE_foot,C_energy_foot]=element2patch(E_foot,E_energy(:,:,end));
+%     [FE_foot,C_energy_foot]=element2patch(E_foot,E_energy(1:size(E_foot,1),:,1));
+    indBoundaryFacesFoot=tesBoundary(FE_foot,V);
+        
+    %%
+    % Plotting the simulated results using |anim8| to visualize and animate
+    % deformations 
+    
+    % Create basic view and store graphics handle to initiate animation
+    hf=cFigure; %Open figure  
+    gtitle([febioFebFileNamePart,': Press play to animate']);
+    hp1=gpatch(Fb_foot,V_def,[1 0.95 0.8],'none',0.25); %Add graphics object to animate
+    hp2=gpatch(F_sole_top,V_def,C,'none',1); %Add graphics object to animate
+    hp2.FaceColor='Interp';
+%     gpatch(Fb_sole,V_def,'kw','none',0.2); %Add graphics object to animate
+        
+    axisGeom(gca,fontSize); 
+    colormap(flipud(kvw(250))); colorbar;
+    caxis([0 max(C)/6]);
+    axis([min(X_DEF(:)) max(X_DEF(:)) min(Y_DEF(:)) max(Y_DEF(:)) min(Z_DEF(:)) max(Z_DEF(:))]);
+    view([-30 -30]);
+    camlight headlight;
+    lighting gouraud;
+        
+    % Set up animation features
+    animStruct.Time=time_mat; %The time vector    
+    for qt=1:1:size(N_disp_mat,3) %Loop over time increments        
+        DN=N_disp_mat(:,:,qt); %Current displacement        
+        V_def=V+DN; %Current nodal coordinates
+        
+        C=sqrt(sum(DN(:,3).^2,2)); %New color
+                
+        %Set entries in animation structure
+        animStruct.Handles{qt}=[hp2 hp2 hp1]; %Handles of objects to animate
+        animStruct.Props{qt}={'Vertices','CData','Vertices'}; %Properties of objects to animate
+        animStruct.Set{qt}={V_def,C,V_def}; %Property values for to set in order to animate
+    end        
+    anim8(hf,animStruct); %Initiate animation feature    
+    drawnow;
+    
+    %% 
+    % Plotting the simulated results using |anim8| to visualize and animate
+    % deformations 
+    
+    % Create basic view and store graphics handle to initiate animation
+    hf=cFigure; %Open figure  
+    gtitle([febioFebFileNamePart,': Press play to animate']);
+    [CV]=faceToVertexMeasure(FE_foot(indBoundaryFacesFoot,:),V,C_energy_foot(indBoundaryFacesFoot,:));
+    hp1=gpatch(FE_foot(indBoundaryFacesFoot,:),V_def,CV,'w',1); %Add graphics object to animate    
+    hp1.FaceColor='Interp';
+    hp2=gpatch(Fb_sole,V_def,'gw','none',0.5); %Add graphics object to animate
+        
+    axisGeom(gca,fontSize); 
+    colormap(gjet(250)); colorbar;
+    caxis([0 max(C_energy_foot)/100]);
+    axis([min(X_DEF(:)) max(X_DEF(:)) min(Y_DEF(:)) max(Y_DEF(:)) min(Z_DEF(:)) max(Z_DEF(:))]);
+    view([-30 -30]);
+    camlight headlight;
+    lighting gouraud;
+        
+    % Set up animation features
+    animStruct.Time=time_mat; %The time vector    
+    for qt=1:1:size(N_disp_mat,3) %Loop over time increments        
+        DN=N_disp_mat(:,:,qt); %Current displacement        
+        V_def=V+DN; %Current nodal coordinates
+                
+        [FE_foot,C_energy_foot]=element2patch(E_foot,E_energy(:,:,qt));
+        [CV]=faceToVertexMeasure(FE_foot(indBoundaryFacesFoot,:),V,C_energy_foot(indBoundaryFacesFoot,:));
+        %Set entries in animation structure
+        animStruct.Handles{qt}=[hp1 hp1 hp2]; %Handles of objects to animate
+        animStruct.Props{qt}={'Vertices','CData','Vertices'}; %Properties of objects to animate
+        animStruct.Set{qt}={V_def,CV,V_def}; %Property values for to set in order to animate
+    end        
+    anim8(hf,animStruct); %Initiate animation feature    
+    drawnow;
+
+end
+
+%% 
+%
+% <<gibbVerySmall.gif>>
+% 
+% _*GIBBON*_ 
+% <www.gibboncode.org>
+% 
+% _Kevin Mattheus Moerman_, <gibbon.toolbox@gmail.com>
+ 
+%% 
+% _*GIBBON footer text*_ 
+% 
+% License: <https://github.com/gibbonCode/GIBBON/blob/master/LICENSE>
+% 
+% GIBBON: The Geometry and Image-based Bioengineering add-On. A toolbox for
+% image segmentation, image-based modeling, meshing, and finite element
+% analysis.
+% 
+% Copyright (C) 2019  Kevin Mattheus Moerman
+% 
+% This program is free software: you can redistribute it and/or modify
+% it under the terms of the GNU General Public License as published by
+% the Free Software Foundation, either version 3 of the License, or
+% (at your option) any later version.
+% 
+% This program is distributed in the hope that it will be useful,
+% but WITHOUT ANY WARRANTY; without even the implied warranty of
+% MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+% GNU General Public License for more details.
+% 
+% You should have received a copy of the GNU General Public License
+% along with this program.  If not, see <http://www.gnu.org/licenses/>.
+
+##### SOURCE END #####
+--></body></html>

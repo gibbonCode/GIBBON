@@ -1,6 +1,6 @@
 function [varargout]=icolorbar(varargin)
 
-% function [h]=icolorbar(cLim,h)
+% function [h,hc]=icolorbar(cLim,h)
 %-------------------------------------------------------------------------
 % 
 %

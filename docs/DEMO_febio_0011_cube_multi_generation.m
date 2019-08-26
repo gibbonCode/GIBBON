@@ -10,7 +10,7 @@
 %% Keywords
 %
 % * febio_spec version 2.5
-% * febio, FEBio% * 
+% * febio, FEBio 
 % * compression, tension, compressive, tensile
 % * displacement control, displacement boundary condition
 % * hexahedral elements, hex8

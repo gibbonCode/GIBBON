@@ -106,16 +106,19 @@ hSlider_I= uicontrol(hf,'Style','slider','Position',[0,0,scrollBarWidth,round(hf
 set(hSlider_I,'Value',sliceIndexI,'Min',1,'Max',size(M,1),'SliderStep',[1/(size(M,1)-1) 1/(size(M,1)-1)]);
 hSlider_I.Callback={@plotSlice,{hf,hSlider_I,1}};
 addlistener(hSlider_I,'ContinuousValueChange',@(hObject, event) plotSlice(hObject,event,{hf,hSlider_I,1}));
+addlistener(hSlider_I,'Value','PostSet',@(hObject, event) plotSlice(hObject,event,{hf,hSlider_I,1}));
 
 hSlider_J= uicontrol(hf,'Style','slider','Position',[1*scrollBarWidth,0,scrollBarWidth,round(hf.Position(4))]);
 set(hSlider_J,'Value',sliceIndexJ,'Min',1,'Max',size(M,2),'SliderStep',[1/(size(M,2)-1) 1/(size(M,2)-1)]);
 hSlider_J.Callback={@plotSlice,{hf,hSlider_J,2}};
 addlistener(hSlider_J,'ContinuousValueChange',@(hObject, event) plotSlice(hObject,event,{hf,hSlider_J,2}));
+addlistener(hSlider_J,'Value','PostSet',@(hObject, event) plotSlice(hObject,event,{hf,hSlider_J,2}));
 
 hSlider_K= uicontrol(hf,'Style','slider','Position',[2*scrollBarWidth,0,scrollBarWidth,round(hf.Position(4))]);
 set(hSlider_K,'Value',sliceIndexK,'Min',1,'Max',size(M,3),'SliderStep',[1/(size(M,3)-1) 1/(size(M,3)-1)]);
 hSlider_K.Callback={@plotSlice,{hf,hSlider_K,3}};
 addlistener(hSlider_K,'ContinuousValueChange',@(hObject, event) plotSlice(hObject,event,{hf,hSlider_K,3}));
+addlistener(hSlider_K,'Value','PostSet',@(hObject, event) plotSlice(hObject,event,{hf,hSlider_K,3}));
 
 %%
  
