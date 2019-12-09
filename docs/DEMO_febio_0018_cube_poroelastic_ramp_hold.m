@@ -126,7 +126,7 @@ switch unitSystem
         permHydro=7.41e1; %hydraulic permeability
 end
 % FEA control settings
-analysisType='static'; 
+analysisType='transient'; 
 febioModule='biphasic';
 
 t_load=0.1; %Time from start to max load

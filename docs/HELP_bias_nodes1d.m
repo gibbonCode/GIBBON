@@ -15,7 +15,6 @@ clear; close all; clc;
 
 %%
 % Plot settings
-figColor='w'; figColorDef='white';
 fontSize=15;
 markerSize1=25;
 
@@ -28,7 +27,7 @@ x=linspace(0,10,n);
 
 %%
 % Plotting results
-hf1=figuremax(figColor,figColorDef);
+hf1=cFigure;
 title('Biased nodes','FontSize',fontSize);
 xlabel('X','FontSize',fontSize);ylabel('Y','FontSize',fontSize); zlabel('Z','FontSize',fontSize);
 hold on;

@@ -15,8 +15,6 @@ clear; close all; clc;
 
 %% 
 % Plot settings
-figColor='w';
-figColorDef='white';
 fontSize=10;
 
 %% Example: Using |adjacentdircount| to compute "connectivity" 
@@ -82,23 +80,23 @@ L=m>0;
 
 %%
 % Plotting the results
-hf=figuremax(figColor,figColorDef); 
+hf=cFigure; 
 hold on; 
 subplot(1,3,1);
 imagesc(L);
-colormap jet; colorbar;
+colormap gjet; colorbar;
 axis equal; axis tight; 
 set(gca,'FontSize',fontSize);
 
 subplot(1,3,2);
 imagesc(Lc1);
-colormap jet; colorbar;
+colormap gjet; colorbar;
 axis equal; axis tight; 
 set(gca,'FontSize',fontSize);
 
 subplot(1,3,3);
 imagesc(Lc2);
-colormap jet; colorbar;
+colormap gjet; colorbar;
 axis equal; axis tight; 
 set(gca,'FontSize',fontSize);
 
@@ -120,33 +118,33 @@ logicPatch(:,:,midInd:end)=0; %Crop off half to visualize interior
 [F2,V2,C2]=ind2patch(logicPatch,Lc2,'vb');
 [F3,V3,C3]=ind2patch(logicPatch,Lc3,'vb');
 
-figuremax(figColor,figColorDef);
+cFigure;
 subplot(2,2,1);
 xlabel('J');ylabel('I'); zlabel('K'); hold on;
 patch('Faces',F,'Vertices',V,'FaceColor','flat','CData',C,'EdgeColor','k');
 axis equal; view(3); axis tight; axis vis3d; grid off;  
-colormap jet; colorbar;
+colormap gjet; colorbar;
 set(gca,'FontSize',fontSize);
 
 subplot(2,2,2);
 xlabel('J');ylabel('I'); zlabel('K'); hold on;
 patch('Faces',F1,'Vertices',V1,'FaceColor','flat','CData',C1,'EdgeColor','k');
 axis equal; view(3); axis tight; axis vis3d; grid off;  
-colormap jet; colorbar;
+colormap gjet; colorbar;
 set(gca,'FontSize',fontSize);
 
 subplot(2,2,3);
 xlabel('J');ylabel('I'); zlabel('K'); hold on;
 patch('Faces',F2,'Vertices',V2,'FaceColor','flat','CData',C2,'EdgeColor','k');
 axis equal; view(3); axis tight; axis vis3d; grid off;  
-colormap jet; colorbar;
+colormap gjet; colorbar;
 set(gca,'FontSize',fontSize);
 
 subplot(2,2,4);
 xlabel('J');ylabel('I'); zlabel('K'); hold on;
 patch('Faces',F3,'Vertices',V3,'FaceColor','flat','CData',C3,'EdgeColor','k');
 axis equal; view(3); axis tight; axis vis3d; grid off;  
-colormap jet; colorbar;
+colormap gjet; colorbar;
 set(gca,'FontSize',fontSize);
 
 drawnow;

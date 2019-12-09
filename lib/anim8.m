@@ -8,6 +8,8 @@ function hf=anim8(varargin)
 % figure as sole input (or no input which triggers uigetfile)
 % 2019/08/09 Changed to use uicontrol slider rather than java slider due
 % to future removal of javacomponent
+% 2019/10/13 Fixed bug in relation to handling a single time step (no
+% annimation), fixed by copying state twice and animating clones states. 
 % ------------------------------------------------------------------------
 
 %% Parse input
@@ -72,12 +74,21 @@ scrollBarWidth=30;
 %% Defining slider
 figure(hf); drawnow;
 
+if numel(animStruct.Time)==1
+    warning('Only 1 step for animation');
+    animStruct.Time(end+1)=animStruct.Time(end);
+    animStruct.Handles{end+1}=animStruct.Handles{end}; %Handles of objects to animate
+    animStruct.Props{end+1}=animStruct.Props{end}; %Properties of objects to animate
+    animStruct.Set{end+1}=animStruct.Set{end};
+end
+
 animTime=animStruct.Time(:);
 sliceIndexI=numel(animTime); %Initial index at end
+sliderStep=[1/(numel(animTime)-1) 1/(numel(animTime)-1)]; %Slider step sizes
 
 %Initialize slider
 hSlider= uicontrol(hf,'Style','slider','Position',[0,0,round(hf.Position(3)),scrollBarWidth]);
-set(hSlider,'Value',sliceIndexI,'Min',1,'Max',numel(animTime),'SliderStep',[1/(numel(animTime)-1) 1/(numel(animTime)-1)]);
+set(hSlider,'Value',sliceIndexI,'Min',1,'Max',numel(animTime),'SliderStep',sliderStep);
 hSlider.Callback={@updateViewFunc,hf};
 % hSlider.KeyPressFcn={@updateViewFunc,hf};
 addlistener(hSlider,'ContinuousValueChange',@(hObject, event) updateViewFunc(hObject, event,hf));
@@ -272,10 +283,10 @@ hf.UserData.efw.exportFigOpt='-nocrop';
 hf.UserData.efw.exportGifOpt='1';
 
 %% Initialize slider locations
+set(hSlider,'Value',round(sliceIndexI/2));
 set(hSlider,'Value',sliceIndexI);
-
-%%
 drawnow;
+
 end
 
 %% Scroll bar resizing

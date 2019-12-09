@@ -107,9 +107,15 @@ abaqus_spec.Assembly.Nset{6}.VAL=[1:1:8];
 % *Hyperelastic, neo hooke
 %  0.03,1.
 
+% abaqus_spec.Material.ATTR.name='Neo-Hooke';
+% abaqus_spec.Material.Hyperelastic.VAL=[0.03 1];
+% abaqus_spec.Material.Hyperelastic.ATTR.neo_hooke='';
+
 abaqus_spec.Material.ATTR.name='Neo-Hooke';
 abaqus_spec.Material.Hyperelastic.VAL=[0.03 1];
 abaqus_spec.Material.Hyperelastic.ATTR.neo_hooke='';
+% abaqus_spec.Material.Plastic.ATTR.neo_hooke='';
+abaqus_spec.Material.Plastic.VAL={pi '0'};
 
 % abaqus_spec.Material.ATTR.name='Elastic';
 % abaqus_spec.Material.Elastic=[0.5 0.49];

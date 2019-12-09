@@ -4,6 +4,16 @@
 %%
 clear; close all; clc;
 
+%% Syntax
+% |[F,V]=rhombicDodecahedron(r);|
+
+%% Description 
+% This function creates the faces (F) and vertices (V) for a
+% rhombic-dodecahedron. 
+
+%% Examples 
+% 
+
 %% 
 % Plot settings
 fontSize=25;
@@ -27,7 +37,7 @@ hold on;
 
 gpatch(F,V,faceColor,edgeColor,faceAlpha1,lineWidth1);
 plotV(V,'k.','MarkerSize',markerSize);
-
+patchAnnotate(F,V,[]);
 axisGeom(gca,fontSize);
 view(-10,25);
 camlight('headlight'); 

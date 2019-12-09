@@ -6,7 +6,6 @@
 clear; close all; clc;
 
 % PLOT SETTINGS
-fig_color='w'; fig_colordef='white';
 markerSize1=5;
 markerSize2=5;
 lineWidth=2;
@@ -57,7 +56,7 @@ Fw=5;
 % exactly. Blue points are the initial and mapped points. Tesselation shows
 % connectivity (which may become distorted)
 
-hf1=figuremax(fig_color,fig_colordef);
+hf1=cFigure;;
 subplot(1,2,1); hold on; 
 title('Initial','FontSize',fontSize);
 patch('faces',DT.ConnectivityList,'Vertices',P1i,'FaceColor','g','FaceAlpha',faceAlpha);
@@ -106,7 +105,7 @@ Fw=5;
 % exactly. Blue points are the initial and mapped points. Tesselation shows
 % connectivity (which may become distorted)
 
-hf2=figuremax(fig_color,fig_colordef);
+hf2=cFigure;;
 subplot(1,2,1); hold on; 
 title('Initial','FontSize',fontSize);
 patch('faces',F,'Vertices',P1,'FaceColor','g','FaceAlpha',faceAlpha);
@@ -154,7 +153,7 @@ logicColourMatrixEntry=sparse(IND_F_2,1:numF,1,numFuni,numF,numF);
 F_count=full(sum(logicColourMatrixEntry,2));
 Ftu=F_uni(F_count==1,:); %Get outer surfaces
 
-hf3=figuremax(fig_color,fig_colordef);
+hf3=cFigure;;
 subplot(1,2,1); hold on; 
 title('Initial','FontSize',fontSize);
 patch('faces',Ftu,'Vertices',V1,'FaceColor','g');

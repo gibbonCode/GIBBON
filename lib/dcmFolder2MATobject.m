@@ -24,18 +24,21 @@ switch nargin
         reOrderOpt=0;
         dicomDictFactory=0;
         fileExtension='.dcm';
+        optionStruct=[];
     case 2
         PathName=varargin{1};
         MaxVarSize=varargin{2};
         reOrderOpt=0;
         dicomDictFactory=0;
         fileExtension='.dcm';
+        optionStruct=[];
     case 3
         PathName=varargin{1};
         MaxVarSize=varargin{2};
         reOrderOpt=varargin{3};
         dicomDictFactory=0;
         fileExtension='.dcm';
+        optionStruct=[];
     case 4
         PathName=varargin{1};
         MaxVarSize=varargin{2};
@@ -47,8 +50,21 @@ switch nargin
         MaxVarSize=varargin{2};
         reOrderOpt=varargin{3};
         dicomDictFactory=varargin{4};
-        fileExtension=varargin{5};        
+        fileExtension=varargin{5};   
+        optionStruct=[];
+    case 6
+        PathName=varargin{1};
+        MaxVarSize=varargin{2};
+        reOrderOpt=varargin{3};
+        dicomDictFactory=varargin{4};
+        fileExtension=varargin{5};
+        optionStruct=varargin{6};
 end
+
+defaultOptionStruct.ignoreDynamic=0;
+
+%Fix option structure, complete and remove empty values
+[optionStruct]=structComplete(optionStruct,defaultOptionStruct,1);
 
 %%
 %Get/set maximum variable size (sets save steps in case the variable size
@@ -72,8 +88,19 @@ end
 %% Getting DICOM file names and image dimension parameters
 files = dir(fullfile(PathName,['*',fileExtension]));
 files={files(1:end).name};
-files=sort(files(:));
 NumberOfFiles=numel(files);
+
+%% Attempt to sort files
+% This sorting assumes the files names make sense in terms of slice
+% numbers. 
+
+try %Try to get numbers from image file names
+    nameNumbers=cellfun(@str2double,regexp(files,'\d+\d*','match'));
+    [~,indSort]=sort(nameNumbers); %Get sort order
+    files=files(indSort); %Sort file list based on numeric data in names
+catch %Normal sort instead
+    files=sort(files(:)); %Attempt sort (might cause dcm1,dcm10,...)
+end
 
 %%
 
@@ -274,24 +301,28 @@ if NumberOfFiles>0
     ImageTypesUni=unique(ImageTypesAll);
     matObj.ImageTypesUni=ImageTypesUni;
     NumImageTypes=numel(ImageTypesUni);
-    
+   
     if isfield(dcmInfo,'TriggerTime') %Multiple dynamics
         TriggerTimesAll=[dcmInfo(:).TriggerTime];
         TriggerTimesUni=unique(TriggerTimesAll);
         NumberOfTemporalPositions=numel(TriggerTimesUni); %NumberOfPhasesMR
-    else    
+    else
         TriggerTimesAll=zeros(1,NumberOfFiles);
         TriggerTimesUni=unique(TriggerTimesAll);
-        if isfield(dcmInfo,'NumberOfTemporalPositions') %Multiple dynamics        
+        if isfield(dcmInfo,'NumberOfTemporalPositions') %Multiple dynamics
             NumberOfTemporalPositions=double(dcmInfo(1).NumberOfTemporalPositions);
         else
             NumberOfTemporalPositions=1;
         end
     end
     
-    NumberOfSlices=NumberOfFiles/NumImageTypes/NumEchoTimes/NumberOfTemporalPositions; %NumberOfSlicesMR
+    if optionStruct.ignoreDynamic==1   
+        NumberOfTemporalPositions=1;
+    end
     
-    NumberOfFilesPerType=NumberOfSlices*NumberOfTemporalPositions;
+    NumberOfSlices=NumberOfFiles/NumImageTypes/NumEchoTimes/NumberOfTemporalPositions; %NumberOfSlicesMR           
+%     NumberOfFilesPerType=NumberOfSlices*NumberOfTemporalPositions;
+    
     switch dictSetting
         case 1 %PHILIPS
             %             NumberOfRows=double(dcmInfo(1).Width);

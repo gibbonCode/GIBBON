@@ -1,9 +1,9 @@
 %% DEMO_febio_0044_mammography_01.m
 % Below is a demonstration for:
-% 
+%
 % * Building geometry for a slab with hexahedral elements, and a
-% triangulated sphere. 
-% * Defining the boundary conditions 
+% triangulated sphere.
+% * Defining the boundary conditions
 % * Coding the febio structure
 % * Running the model
 % * Importing and visualizing the displacement results
@@ -46,7 +46,7 @@ h=r2;
 dx=r/2;
 nRefine=3; %Number of refine steps for hemi-sphere
 plateDisplacement=28;
-volumeFactor=3; 
+volumeFactor=3;
 
 %% Control parameters
 
@@ -64,12 +64,12 @@ febioLogFileName_force=[febioFebFileNamePart,'_force_out.txt']; %Log file name f
 %Material parameter set
 c1_1=1e-3; %Shear-modulus-like parameter
 m1_1=6; %Material parameter setting degree of non-linearity
-k_factor=1e2; %Bulk modulus factor 
+k_factor=1e2; %Bulk modulus factor
 k_1=c1_1*k_factor; %Bulk modulus
 
 c1_2=5e-3; %Shear-modulus-like parameter
 m1_2=2; %Material parameter setting degree of non-linearity
-k_factor=1e2; %Bulk modulus factor 
+k_factor=1e2; %Bulk modulus factor
 k_2=c1_2*k_factor; %Bulk modulus
 
 % FEA control settings
@@ -86,16 +86,16 @@ min_residual=1e-20;
 %Contact parameters
 contactInitialOffset=0.1;
 contactAlg=5;
-contactPenalty=50;
+contactPenalty=10;
 laugon=0;
 minaug=1;
 maxaug=10;
-fric_coeff=0.1; 
+fric_coeff=0.1;
 switch contactAlg
     case 1
         contactType='sticky';
     case 2
-        contactType='facet-to-facet sliding'; 
+        contactType='facet-to-facet sliding';
     case 3
         contactType='sliding_with_gaps';
     case 4
@@ -108,7 +108,7 @@ end
 [F,V,C_hemiSphereLabel]=hemiSphereMesh(nRefine,r,1); %Construct hemi-shere mesh
 pointSpacing=mean(patchEdgeLengths(F,V)); % Get point spacing from mesh
 
-% %% 
+% %%
 % % Visualize hemi-sphere
 % cFigure; hold on;
 % gpatch(F,V,C_hemiSphereLabel);
@@ -219,8 +219,6 @@ axisGeom;
 camlight headlight;
 drawnow;
 
-fdasfas
-
 %%
 
 faceBoundaryMarker=C;
@@ -235,9 +233,9 @@ inputStruct.regionPoints=V_regions; %region points
 inputStruct.regionA=regionA*ones(size(V_regions,1),1)*volumeFactor;
 inputStruct.minRegionMarker=2; %Minimum region marker
 
-% Mesh model using tetrahedral elements using tetGen 
-[meshOutput]=runTetGen(inputStruct); %Run tetGen 
- 
+% Mesh model using tetrahedral elements using tetGen
+[meshOutput]=runTetGen(inputStruct); %Run tetGen
+
 % Access model element and patch data
 Fb=meshOutput.facesBoundary;
 Cb=meshOutput.boundaryMarker;
@@ -275,10 +273,10 @@ closedLoopOption=0; %Use 1 if curve represents a closed loop but containes uniqu
 [Vc]=filletCurve(Vt,rFillet,np,closedLoopOption);
 
 cPar.pointSpacing=pointSpacing/2;
-cPar.depth=3*r; 
-cPar.patchType='quad'; 
+cPar.depth=3*r;
+cPar.patchType='quad';
 cPar.dir=0;
-cPar.closeLoopOpt=0; 
+cPar.closeLoopOpt=0;
 [Fp1,Vp1]=polyExtrude(Vc,cPar);
 Fp1=fliplr(Fp1);
 Vp1(:,3)=Vp1(:,3)-max(Vp1(:,3))+min(V(:,3));
@@ -330,10 +328,10 @@ F_contact_slave=fliplr(Fb(logicContactSurf1,:));
 cFigure; hold on;
 title('Contact sets and normal directions','FontSize',fontSize);
 
-gpatch(Fb,V,'kw','none',faceAlpha2); 
-hl(1)=gpatch(F_contact_master1,V,'gw','k',1); 
+gpatch(Fb,V,'kw','none',faceAlpha2);
+hl(1)=gpatch(F_contact_master1,V,'gw','k',1);
 patchNormPlot(F_contact_master1,V);
-hl(2)=gpatch(F_contact_master2,V,'rw','k',1); 
+hl(2)=gpatch(F_contact_master2,V,'rw','k',1);
 patchNormPlot(F_contact_master2,V);
 hl(3)=gpatch(F_contact_slave,V,'bw','k',1);
 patchNormPlot(F_contact_slave,V);
@@ -358,7 +356,7 @@ title('Boundary conditions model','FontSize',fontSize);
 xlabel('X','FontSize',fontSize); ylabel('Y','FontSize',fontSize); zlabel('Z','FontSize',fontSize);
 hold on;
 
-gpatch(Fb,V,'kw','none',faceAlpha2); 
+gpatch(Fb,V,'kw','none',faceAlpha2);
 
 hl2(1)=plotV(V(bcSupportList,:),'k.','MarkerSize',markerSize);
 
@@ -372,26 +370,26 @@ drawnow;
 % See also |febioStructTemplate| and |febioStruct2xml| and the FEBio user
 % manual.
 
-%Get a template with default settings 
+%Get a template with default settings
 [febio_spec]=febioStructTemplate;
 
-%febio_spec version 
-febio_spec.ATTR.version='2.5'; 
+%febio_spec version
+febio_spec.ATTR.version='2.5';
 
 %Module section
-febio_spec.Module.ATTR.type='solid'; 
+febio_spec.Module.ATTR.type='solid';
 
 %Control section
 febio_spec.Control.analysis.ATTR.type='static';
 febio_spec.Control.time_steps=numTimeSteps;
 febio_spec.Control.step_size=1/numTimeSteps;
 febio_spec.Control.time_stepper.dtmin=dtmin;
-febio_spec.Control.time_stepper.dtmax=dtmax; 
+febio_spec.Control.time_stepper.dtmax=dtmax;
 febio_spec.Control.time_stepper.max_retries=max_retries;
 febio_spec.Control.time_stepper.opt_iter=opt_iter;
 febio_spec.Control.max_refs=max_refs;
 febio_spec.Control.max_ups=max_ups;
-febio_spec.Control.symmetric_stiffness=symmetric_stiffness; 
+febio_spec.Control.symmetric_stiffness=symmetric_stiffness;
 febio_spec.Control.min_residual=min_residual;
 
 %Material section
@@ -429,25 +427,25 @@ febio_spec.Geometry.Nodes{1}.node.VAL=V; %The nodel coordinates
 
 % -> Elements
 febio_spec.Geometry.Elements{1}.ATTR.type='tet4'; %Element type of this set
-febio_spec.Geometry.Elements{1}.ATTR.mat=1; %material index for this set 
+febio_spec.Geometry.Elements{1}.ATTR.mat=1; %material index for this set
 febio_spec.Geometry.Elements{1}.ATTR.name='breastNormal'; %Name of the element set
 febio_spec.Geometry.Elements{1}.elem.ATTR.id=(1:1:size(E1,1))'; %Element id's
 febio_spec.Geometry.Elements{1}.elem.VAL=E1;
 
 febio_spec.Geometry.Elements{2}.ATTR.type='tet4'; %Element type of this set
-febio_spec.Geometry.Elements{2}.ATTR.mat=2; %material index for this set 
+febio_spec.Geometry.Elements{2}.ATTR.mat=2; %material index for this set
 febio_spec.Geometry.Elements{2}.ATTR.name='breastInclusion'; %Name of the element set
 febio_spec.Geometry.Elements{2}.elem.ATTR.id=size(E1,1)+(1:1:size(E2,1))'; %Element id's
 febio_spec.Geometry.Elements{2}.elem.VAL=E2;
 
 febio_spec.Geometry.Elements{3}.ATTR.type='quad4'; %Element type of this set
-febio_spec.Geometry.Elements{3}.ATTR.mat=3; %material index for this set 
+febio_spec.Geometry.Elements{3}.ATTR.mat=3; %material index for this set
 febio_spec.Geometry.Elements{3}.ATTR.name='PlateBottom'; %Name of the element set
 febio_spec.Geometry.Elements{3}.elem.ATTR.id=size(E1,1)+size(E2,1)+(1:1:size(Fp1,1))'; %Element id's
 febio_spec.Geometry.Elements{3}.elem.VAL=Fp1;
 
 febio_spec.Geometry.Elements{4}.ATTR.type='quad4'; %Element type of this set
-febio_spec.Geometry.Elements{4}.ATTR.mat=4; %material index for this set 
+febio_spec.Geometry.Elements{4}.ATTR.mat=4; %material index for this set
 febio_spec.Geometry.Elements{4}.ATTR.name='PlateTop'; %Name of the element set
 febio_spec.Geometry.Elements{4}.elem.ATTR.id=size(E1,1)+size(E2,1)+size(Fp1,1)+(1:1:size(Fp2,1))'; %Element id's
 febio_spec.Geometry.Elements{4}.elem.VAL=Fp2;
@@ -478,7 +476,7 @@ febio_spec.Geometry.SurfacePair{2}.ATTR.name='Contact2';
 febio_spec.Geometry.SurfacePair{2}.master.ATTR.surface=febio_spec.Geometry.Surface{2}.ATTR.name;
 febio_spec.Geometry.SurfacePair{2}.slave.ATTR.surface=febio_spec.Geometry.Surface{3}.ATTR.name;
 
-%Boundary condition section 
+%Boundary condition section
 % -> Fix boundary conditions
 febio_spec.Boundary.fix{1}.ATTR.bc='x';
 febio_spec.Boundary.fix{1}.ATTR.node_set=febio_spec.Geometry.NodeSet{1}.ATTR.name;
@@ -581,7 +579,7 @@ for q=1:1:2
     end
 end
 
-%Output section 
+%Output section
 % -> log file
 febio_spec.Output.logfile.ATTR.file=febioLogFileName;
 febio_spec.Output.logfile.node_data{1}.ATTR.file=febioLogFileName_disp;
@@ -596,14 +594,14 @@ febio_spec.Output.logfile.node_data{2}.VAL=1:size(V,1);
 
 %% Quick viewing of the FEBio input file structure
 % The |febView| function can be used to view the xml structure in a MATLAB
-% figure window. 
+% figure window.
 
 %%
 % |febView(febio_spec); %Viewing the febio file|
 
 %% Exporting the FEBio input file
 % Exporting the febio_spec structure to an FEBio input file is done using
-% the |febioStruct2xml| function. 
+% the |febioStruct2xml| function.
 
 febioStruct2xml(febio_spec,febioFebFileName); %Exporting to file and domNode
 
@@ -612,27 +610,27 @@ febioStruct2xml(febio_spec,febioFebFileName); %Exporting to file and domNode
 % |runMonitorFEBio| function is used. The input for this function is a
 % structure defining job settings e.g. the FEBio input file name. The
 % optional output runFlag informs the user if the analysis was run
-% succesfully. 
+% succesfully.
 
 febioAnalysis.run_filename=febioFebFileName; %The input file name
 febioAnalysis.run_logname=febioLogFileName; %The name for the log file
 febioAnalysis.disp_on=1; %Display information on the command window
 febioAnalysis.disp_log_on=1; %Display convergence information in the command window
-febioAnalysis.runMode='internal';%'internal';
+febioAnalysis.runMode='external';%'internal';
 febioAnalysis.t_check=0.25; %Time for checking log file (dont set too small)
 febioAnalysis.maxtpi=1e99; %Max analysis time
 febioAnalysis.maxLogCheckTime=3; %Max log file checking time
 
 [runFlag]=runMonitorFEBio(febioAnalysis);%START FEBio NOW!!!!!!!!
 
-%% Import FEBio results 
+%% Import FEBio results
 
 if runFlag==1 %i.e. a succesful run
     
     % Importing nodal displacements from a log file
-    [time_mat, N_disp_mat,~]=importFEBio_logfile(fullfile(savePath,febioLogFileName_disp)); %Nodal displacements    
+    [time_mat, N_disp_mat,~]=importFEBio_logfile(fullfile(savePath,febioLogFileName_disp)); %Nodal displacements
     time_mat=[0; time_mat(:)]; %Time
-
+    
     N_disp_mat=N_disp_mat(:,2:end,:);
     sizImport=size(N_disp_mat);
     sizImport(3)=sizImport(3)+1;
@@ -648,27 +646,27 @@ if runFlag==1 %i.e. a succesful run
     Z_DEF=V_DEF(:,3,:);
     [CF]=vertexToFaceMeasure(Fb,DN_magnitude);
     
-    %% 
+    %%
     % Plotting the simulated results using |anim8| to visualize and animate
-    % deformations 
+    % deformations
     
     % Create basic view and store graphics handle to initiate animation
-    hf=cFigure; %Open figure  
+    hf=cFigure; %Open figure
     gtitle([febioFebFileNamePart,': Press play to animate']);
     hp1=gpatch(Fb,V_def,CF,'k',1); %Add graphics object to animate
     hp2=gpatch(Fp1,V_def,'kw','none',0.5); %Add graphics object to animate
     hp3=gpatch(Fp2,V_def,'kw','none',0.5); %Add graphics object to animate
-%     gpatch(Fb,V,0.5*ones(1,3),'none',0.25); %A static graphics object
+    %     gpatch(Fb,V,0.5*ones(1,3),'none',0.25); %A static graphics object
     
-    axisGeom(gca,fontSize); 
+    axisGeom(gca,fontSize);
     colormap(gjet(250)); colorbar;
     caxis([0 max(DN_magnitude)]);
     axis([min(X_DEF(:)) max(X_DEF(:)) min(Y_DEF(:)) max(Y_DEF(:)) min(Z_DEF(:)) max(Z_DEF(:))]);
     camlight headlight;
-        
+    
     % Set up animation features
-    animStruct.Time=time_mat; %The time vector    
-    for qt=1:1:size(N_disp_mat,3) %Loop over time increments        
+    animStruct.Time=time_mat; %The time vector
+    for qt=1:1:size(N_disp_mat,3) %Loop over time increments
         DN=N_disp_mat(:,:,qt); %Current displacement
         DN_magnitude=sqrt(sum(DN.^2,2)); %Current displacement magnitude
         V_def=V+DN; %Current nodal coordinates
@@ -678,82 +676,82 @@ if runFlag==1 %i.e. a succesful run
         animStruct.Handles{qt}=[hp1 hp1 hp2 hp3]; %Handles of objects to animate
         animStruct.Props{qt}={'Vertices','CData','Vertices','Vertices'}; %Properties of objects to animate
         animStruct.Set{qt}={V_def,CF,V_def,V_def}; %Property values for to set in order to animate
-    end        
-    anim8(hf,animStruct); %Initiate animation feature    
+    end
+    anim8(hf,animStruct); %Initiate animation feature
     drawnow;
-
+    
     %%
     
-%     [M,G,bwLabels]=patch2Im(Fb,V_def,Cb,1);
-%     M(M==1)=0.25;
-%     M(M==3)=1;
-%     M(M==0)=0.1;
-%     M=M+0.25*rand(size(M));
-%     
-%     voxelSize=G.voxelSize; 
-% imOrigin=G.origin; 
-% 
-% L_plot=false(size(M));
-% L_plot(:,:,round(size(M,3)/2)-7)=1;
-% L_plot(round(size(M,1)/2)-10,:,:)=1;
-% L_plot(:,round(size(M,2)/2),:)=1;
-% L_plot=L_plot & ~isnan(M);
-% [Fm,Vm,Cm]=ind2patch(L_plot,double(M),'v');
-% [Vm(:,1),Vm(:,2),Vm(:,3)]=im2cart(Vm(:,2),Vm(:,1),Vm(:,3),voxelSize*ones(1,3));
-% Vm=Vm+imOrigin(ones(size(Vm,1),1),:);
-% 
-% cFigure;
-% subplot(1,2,1); hold on;
-% title('Closed patch surface','FontSize',fontSize);
-% 
-% gpatch(Fb,V_def,CF,'k',0.5);
-% axisGeom(gca,fontSize);
-% camlight('headlight'); 
-% colormap(gca,gjet(250)); colorbar;
-% 
-% subplot(1,2,2); hold on;
-% title('Patch data derived image data (3 slices)','FontSize',fontSize);
-% 
-% gpatch(Fb,V_def,'kw','none',0.25);
-% gpatch(Fm,Vm,Cm,'k',faceAlpha1);
-% 
-% colormap(gca,gray(250)); colorbar; caxis([0 1]);
-% axisGeom(gca,fontSize);
-% camlight('headlight'); 
-% drawnow;
-
+    %     [M,G,bwLabels]=patch2Im(Fb,V_def,Cb,1);
+    %     M(M==1)=0.25;
+    %     M(M==3)=1;
+    %     M(M==0)=0.1;
+    %     M=M+0.25*rand(size(M));
+    %
+    %     voxelSize=G.voxelSize;
+    % imOrigin=G.origin;
+    %
+    % L_plot=false(size(M));
+    % L_plot(:,:,round(size(M,3)/2)-7)=1;
+    % L_plot(round(size(M,1)/2)-10,:,:)=1;
+    % L_plot(:,round(size(M,2)/2),:)=1;
+    % L_plot=L_plot & ~isnan(M);
+    % [Fm,Vm,Cm]=ind2patch(L_plot,double(M),'v');
+    % [Vm(:,1),Vm(:,2),Vm(:,3)]=im2cart(Vm(:,2),Vm(:,1),Vm(:,3),voxelSize*ones(1,3));
+    % Vm=Vm+imOrigin(ones(size(Vm,1),1),:);
+    %
+    % cFigure;
+    % subplot(1,2,1); hold on;
+    % title('Closed patch surface','FontSize',fontSize);
+    %
+    % gpatch(Fb,V_def,CF,'k',0.5);
+    % axisGeom(gca,fontSize);
+    % camlight('headlight');
+    % colormap(gca,gjet(250)); colorbar;
+    %
+    % subplot(1,2,2); hold on;
+    % title('Patch data derived image data (3 slices)','FontSize',fontSize);
+    %
+    % gpatch(Fb,V_def,'kw','none',0.25);
+    % gpatch(Fm,Vm,Cm,'k',faceAlpha1);
+    %
+    % colormap(gca,gray(250)); colorbar; caxis([0 1]);
+    % axisGeom(gca,fontSize);
+    % camlight('headlight');
+    % drawnow;
     
-    end
+    
+end
 
-%% 
+%%
 %
 % <<gibbVerySmall.gif>>
-% 
-% _*GIBBON*_ 
+%
+% _*GIBBON*_
 % <www.gibboncode.org>
-% 
+%
 % _Kevin Mattheus Moerman_, <gibbon.toolbox@gmail.com>
- 
-%% 
-% _*GIBBON footer text*_ 
-% 
+
+%%
+% _*GIBBON footer text*_
+%
 % License: <https://github.com/gibbonCode/GIBBON/blob/master/LICENSE>
-% 
+%
 % GIBBON: The Geometry and Image-based Bioengineering add-On. A toolbox for
 % image segmentation, image-based modeling, meshing, and finite element
 % analysis.
-% 
+%
 % Copyright (C) 2019  Kevin Mattheus Moerman
-% 
+%
 % This program is free software: you can redistribute it and/or modify
 % it under the terms of the GNU General Public License as published by
 % the Free Software Foundation, either version 3 of the License, or
 % (at your option) any later version.
-% 
+%
 % This program is distributed in the hope that it will be useful,
 % but WITHOUT ANY WARRANTY; without even the implied warranty of
 % MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 % GNU General Public License for more details.
-% 
+%
 % You should have received a copy of the GNU General Public License
 % along with this program.  If not, see <http://www.gnu.org/licenses/>.

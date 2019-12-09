@@ -6,7 +6,7 @@
    <!--
 This HTML was auto-generated from MATLAB code.
 To make changes, update the MATLAB code and republish this document.
-      --><title>box_indices</title><meta name="generator" content="MATLAB 9.6"><link rel="schema.DC" href="http://purl.org/dc/elements/1.1/"><meta name="DC.date" content="2019-06-20"><meta name="DC.source" content="HELP_box_indices.m"><style type="text/css">
+      --><title>box_indices</title><meta name="generator" content="MATLAB 9.7"><link rel="schema.DC" href="http://purl.org/dc/elements/1.1/"><meta name="DC.date" content="2019-12-09"><meta name="DC.source" content="HELP_box_indices.m"><style type="text/css">
 html,body,div,span,applet,object,iframe,h1,h2,h3,h4,h5,h6,p,blockquote,pre,a,abbr,acronym,address,big,cite,code,del,dfn,em,font,img,ins,kbd,q,s,samp,small,strike,strong,sub,sup,tt,var,b,u,i,center,dl,dt,dd,ol,ul,li,fieldset,form,label,legend,table,caption,tbody,tfoot,thead,tr,th,td{margin:0;padding:0;border:0;outline:0;font-size:100%;vertical-align:baseline;background:transparent}body{line-height:1}ol,ul{list-style:none}blockquote,q{quotes:none}blockquote:before,blockquote:after,q:before,q:after{content:'';content:none}:focus{outine:0}ins{text-decoration:none}del{text-decoration:line-through}table{border-collapse:collapse;border-spacing:0}
 
 html { min-height:100%; margin-bottom:1px; }
@@ -67,8 +67,7 @@ table td { padding:7px 5px; text-align:left; vertical-align:top; border:1px soli
 
 
   </style></head><body><div class="content"><h1>box_indices</h1><!--introduction--><p>Below is a demonstration of the features of the <tt>box_indices</tt> function</p><!--/introduction--><h2>Contents</h2><div><ul><li><a href="#1">Syntax</a></li><li><a href="#2">Description</a></li><li><a href="#3">Examples</a></li><li><a href="#6">Example: <tt>box_indices</tt> for 2D arrays</a></li><li><a href="#8">Example: <tt>box_indices</tt> for 3D arrays</a></li></ul></div><h2 id="1">Syntax</h2><p><tt>[IND]=box_indices(siz);</tt></p><h2 id="2">Description</h2><p>The <tt>box_indices</tt> function returns the indices of the outer boundary elements of an array (which can be thought of as defining a box), i.e. the indices of the first and last row, columsn, slice, etc..</p><h2 id="3">Examples</h2><pre class="codeinput">clear; close <span class="string">all</span>; clc;
-</pre><p>Plot settings</p><pre class="codeinput">fig_color=<span class="string">'w'</span>; fig_colordef=<span class="string">'white'</span>;
-faceAlpha1=1;
+</pre><p>Plot settings</p><pre class="codeinput">faceAlpha1=1;
 faceAlpha2=0.65;
 edgeColor1=<span class="string">'none'</span>;
 edgeColor2=<span class="string">'none'</span>;
@@ -76,17 +75,17 @@ edgeColor2=<span class="string">'none'</span>;
 M=ones(siz);
 [indBox]=box_indices(size(M));
 M(indBox)=0; <span class="comment">%setting edge indices to 0 for visualization</span>
-</pre><p>Plotting results</p><pre class="codeinput">figuremax(fig_color,fig_colordef);
+</pre><p>Plotting results</p><pre class="codeinput">cFigure;
 title(<span class="string">'Black pixels denote edge or box entries'</span>); hold <span class="string">on</span>;
 imagesc(M);
 axis <span class="string">equal</span>; axis <span class="string">tight</span>; axis <span class="string">vis3d</span>; grid <span class="string">off</span>;
 colormap <span class="string">gray</span>; caxis([0 1]); colorbar;
 drawnow;
-</pre><img width="100%" height="auto" vspace="5" hspace="5" src="HELP_box_indices_01.jpg" alt=""> <h2 id="8">Example: <tt>box_indices</tt> for 3D arrays</h2><pre class="codeinput">siz=[25 25 25];
+</pre><img vspace="5" hspace="5" src="HELP_box_indices_01.png" alt=""> <h2 id="8">Example: <tt>box_indices</tt> for 3D arrays</h2><pre class="codeinput">siz=[25 25 25];
 M=ones(siz);
 [indBox]=box_indices(size(M));
 M(indBox)=0; <span class="comment">%setting edge indices to 0 for visualization</span>
-</pre><p>Plotting results. Visualization shows 3 mutally orthogonal slices but black voxels are actually all around the 3D matrix.</p><pre class="codeinput"><span class="comment">% Creating patch data for voxel display</span>
+</pre><img vspace="5" hspace="5" src="HELP_box_indices_02.png" alt=""> <p>Plotting results. Visualization shows 3 mutally orthogonal slices but black voxels are actually all around the 3D matrix.</p><pre class="codeinput"><span class="comment">% Creating patch data for voxel display</span>
 logicPlot=false(size(M));
 logicPlot(:,:,round(size(M,3)/2))=1;
 logicPlot(:,round(size(M,2)/2),:)=1;
@@ -95,7 +94,7 @@ logicPlot(round(size(M,1)/2),:,:)=1;
 
 <span class="comment">% [F2,V2,C2]=ind2patch(M==0,M,'vb');</span>
 
-figuremax(fig_color,fig_colordef);
+cFigure;
 title(<span class="string">'Black voxels denote edge or box entries'</span>); hold <span class="string">on</span>;
 xlabel(<span class="string">'J - columns'</span>);ylabel(<span class="string">'I - rows'</span>); zlabel(<span class="string">'K - slices'</span>); hold <span class="string">on</span>;
 
@@ -105,112 +104,111 @@ patch(<span class="string">'Faces'</span>,F,<span class="string">'Vertices'</spa
 axis <span class="string">equal</span>; view(3); axis <span class="string">tight</span>; axis <span class="string">vis3d</span>; grid <span class="string">off</span>;  box <span class="string">on</span>;
 colormap <span class="string">gray</span>; caxis([0 1]); colorbar;
 drawnow;
-</pre><img width="100%" height="auto" vspace="5" hspace="5" src="HELP_box_indices_02.jpg" alt=""> <p><img vspace="5" hspace="5" src="gibbVerySmall.gif" alt=""> </p><p><i><b>GIBBON</b></i> <a href="www.gibboncode.org">www.gibboncode.org</a></p><p><i>Kevin Mattheus Moerman</i>, <a href="gibbon.toolbox@gmail.com">gibbon.toolbox@gmail.com</a></p><p><i><b>GIBBON footer text</b></i></p><p>License: <a href="https://github.com/gibbonCode/GIBBON/blob/master/LICENSE">https://github.com/gibbonCode/GIBBON/blob/master/LICENSE</a></p><p>GIBBON: The Geometry and Image-based Bioengineering add-On. A toolbox for image segmentation, image-based modeling, meshing, and finite element analysis.</p><p>Copyright (C) 2019  Kevin Mattheus Moerman</p><p>This program is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.</p><p>This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for more details.</p><p>You should have received a copy of the GNU General Public License along with this program.  If not, see <a href="http://www.gnu.org/licenses/">http://www.gnu.org/licenses/</a>.</p><p class="footer"><br><a href="https://www.mathworks.com/products/matlab/">Published with MATLAB&reg; R2019a</a><br></p></div><!--
+</pre><img vspace="5" hspace="5" src="HELP_box_indices_03.png" alt=""> <img vspace="5" hspace="5" src="HELP_box_indices_04.png" alt=""> <p><img vspace="5" hspace="5" src="gibbVerySmall.gif" alt=""> </p><p><i><b>GIBBON</b></i> <a href="www.gibboncode.org">www.gibboncode.org</a></p><p><i>Kevin Mattheus Moerman</i>, <a href="gibbon.toolbox@gmail.com">gibbon.toolbox@gmail.com</a></p><p><i><b>GIBBON footer text</b></i></p><p>License: <a href="https://github.com/gibbonCode/GIBBON/blob/master/LICENSE">https://github.com/gibbonCode/GIBBON/blob/master/LICENSE</a></p><p>GIBBON: The Geometry and Image-based Bioengineering add-On. A toolbox for image segmentation, image-based modeling, meshing, and finite element analysis.</p><p>Copyright (C) 2019  Kevin Mattheus Moerman</p><p>This program is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.</p><p>This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for more details.</p><p>You should have received a copy of the GNU General Public License along with this program.  If not, see <a href="http://www.gnu.org/licenses/">http://www.gnu.org/licenses/</a>.</p><p class="footer"><br><a href="https://www.mathworks.com/products/matlab/">Published with MATLAB&reg; R2019b</a><br></p></div><!--
 ##### SOURCE BEGIN #####
-%% box_indices
-% Below is a demonstration of the features of the |box_indices| function
-%
-
-%% Syntax
-% |[IND]=box_indices(siz);|
-
-%% Description 
-% The |box_indices| function returns the indices of the outer boundary
-% elements of an array (which can be thought of as defining a box), i.e.
-% the indices of the first and last row, columsn, slice, etc.. 
-
-%% Examples
-
-%%
-clear; close all; clc;
-
-%% 
-% Plot settings
-fig_color='w'; fig_colordef='white'; 
-faceAlpha1=1;
-faceAlpha2=0.65;
-edgeColor1='none';
-edgeColor2='none';
-
-%% Example: |box_indices| for 2D arrays
-
-siz=[25 25];
-M=ones(siz);
-[indBox]=box_indices(size(M));
-M(indBox)=0; %setting edge indices to 0 for visualization
-
-%%
-% Plotting results
-figuremax(fig_color,fig_colordef);
-title('Black pixels denote edge or box entries'); hold on; 
-imagesc(M);
-axis equal; axis tight; axis vis3d; grid off;  
-colormap gray; caxis([0 1]); colorbar;
-drawnow;
-
-%% Example: |box_indices| for 3D arrays
-
-siz=[25 25 25];
-M=ones(siz);
-[indBox]=box_indices(size(M));
-M(indBox)=0; %setting edge indices to 0 for visualization
-
-%%
-% Plotting results. Visualization shows 3 mutally orthogonal slices but
-% black voxels are actually all around the 3D matrix. 
-
-% Creating patch data for voxel display
-logicPlot=false(size(M));
-logicPlot(:,:,round(size(M,3)/2))=1; 
-logicPlot(:,round(size(M,2)/2),:)=1; 
-logicPlot(round(size(M,1)/2),:,:)=1; 
-[F,V,C]=ind2patch(logicPlot,M,'v'); 
-
-% [F2,V2,C2]=ind2patch(M==0,M,'vb'); 
-
-figuremax(fig_color,fig_colordef);
-title('Black voxels denote edge or box entries'); hold on; 
-xlabel('J - columns');ylabel('I - rows'); zlabel('K - slices'); hold on;
-
-patch('Faces',F,'Vertices',V,'FaceColor','flat','CData',C,'EdgeColor','g','FaceAlpha',1);
-% patch('Faces',F2,'Vertices',V2,'FaceColor','flat','CData',C2,'EdgeColor','k','FaceAlpha',0.1);
-
-axis equal; view(3); axis tight; axis vis3d; grid off;  box on; 
-colormap gray; caxis([0 1]); colorbar;
-drawnow;
-
-%% 
-%
-% <<gibbVerySmall.gif>>
-% 
-% _*GIBBON*_ 
-% <www.gibboncode.org>
-% 
-% _Kevin Mattheus Moerman_, <gibbon.toolbox@gmail.com>
- 
-%% 
-% _*GIBBON footer text*_ 
-% 
-% License: <https://github.com/gibbonCode/GIBBON/blob/master/LICENSE>
-% 
-% GIBBON: The Geometry and Image-based Bioengineering add-On. A toolbox for
-% image segmentation, image-based modeling, meshing, and finite element
-% analysis.
-% 
-% Copyright (C) 2019  Kevin Mattheus Moerman
-% 
-% This program is free software: you can redistribute it and/or modify
-% it under the terms of the GNU General Public License as published by
-% the Free Software Foundation, either version 3 of the License, or
-% (at your option) any later version.
-% 
-% This program is distributed in the hope that it will be useful,
-% but WITHOUT ANY WARRANTY; without even the implied warranty of
-% MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-% GNU General Public License for more details.
-% 
-% You should have received a copy of the GNU General Public License
-% along with this program.  If not, see <http://www.gnu.org/licenses/>.
+%% box_indices
+% Below is a demonstration of the features of the |box_indices| function
+%
+
+%% Syntax
+% |[IND]=box_indices(siz);|
+
+%% Description 
+% The |box_indices| function returns the indices of the outer boundary
+% elements of an array (which can be thought of as defining a box), i.e.
+% the indices of the first and last row, columsn, slice, etc.. 
+
+%% Examples
+
+%%
+clear; close all; clc;
+
+%% 
+% Plot settings
+faceAlpha1=1;
+faceAlpha2=0.65;
+edgeColor1='none';
+edgeColor2='none';
+
+%% Example: |box_indices| for 2D arrays
+
+siz=[25 25];
+M=ones(siz);
+[indBox]=box_indices(size(M));
+M(indBox)=0; %setting edge indices to 0 for visualization
+
+%%
+% Plotting results
+cFigure;
+title('Black pixels denote edge or box entries'); hold on; 
+imagesc(M);
+axis equal; axis tight; axis vis3d; grid off;  
+colormap gray; caxis([0 1]); colorbar;
+drawnow;
+
+%% Example: |box_indices| for 3D arrays
+
+siz=[25 25 25];
+M=ones(siz);
+[indBox]=box_indices(size(M));
+M(indBox)=0; %setting edge indices to 0 for visualization
+
+%%
+% Plotting results. Visualization shows 3 mutally orthogonal slices but
+% black voxels are actually all around the 3D matrix. 
+
+% Creating patch data for voxel display
+logicPlot=false(size(M));
+logicPlot(:,:,round(size(M,3)/2))=1; 
+logicPlot(:,round(size(M,2)/2),:)=1; 
+logicPlot(round(size(M,1)/2),:,:)=1; 
+[F,V,C]=ind2patch(logicPlot,M,'v'); 
+
+% [F2,V2,C2]=ind2patch(M==0,M,'vb'); 
+
+cFigure;
+title('Black voxels denote edge or box entries'); hold on; 
+xlabel('J - columns');ylabel('I - rows'); zlabel('K - slices'); hold on;
+
+patch('Faces',F,'Vertices',V,'FaceColor','flat','CData',C,'EdgeColor','g','FaceAlpha',1);
+% patch('Faces',F2,'Vertices',V2,'FaceColor','flat','CData',C2,'EdgeColor','k','FaceAlpha',0.1);
+
+axis equal; view(3); axis tight; axis vis3d; grid off;  box on; 
+colormap gray; caxis([0 1]); colorbar;
+drawnow;
+
+%% 
+%
+% <<gibbVerySmall.gif>>
+% 
+% _*GIBBON*_ 
+% <www.gibboncode.org>
+% 
+% _Kevin Mattheus Moerman_, <gibbon.toolbox@gmail.com>
+ 
+%% 
+% _*GIBBON footer text*_ 
+% 
+% License: <https://github.com/gibbonCode/GIBBON/blob/master/LICENSE>
+% 
+% GIBBON: The Geometry and Image-based Bioengineering add-On. A toolbox for
+% image segmentation, image-based modeling, meshing, and finite element
+% analysis.
+% 
+% Copyright (C) 2019  Kevin Mattheus Moerman
+% 
+% This program is free software: you can redistribute it and/or modify
+% it under the terms of the GNU General Public License as published by
+% the Free Software Foundation, either version 3 of the License, or
+% (at your option) any later version.
+% 
+% This program is distributed in the hope that it will be useful,
+% but WITHOUT ANY WARRANTY; without even the implied warranty of
+% MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+% GNU General Public License for more details.
+% 
+% You should have received a copy of the GNU General Public License
+% along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 ##### SOURCE END #####
 --></body></html>

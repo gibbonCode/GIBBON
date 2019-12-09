@@ -28,81 +28,20 @@ faceAlpha1=1;
 
 %% Creating a mesh of rhombic dodecahedra
 
-r=sqrt(2)/2; %Radii, results in a width of 1
-n=5; %Desired number of copies in each direction 
+r=0.5; %Radii, results in a width of 1
+nCopies=[3 3 3]; %Number of offset copies
 
-%The actual input 
-nCopies=[n+1 n+1 n+ceil((n+1)/2)]; %Number of offset copies
-
-[Fc_Q,Fc_T,Ft_Q,Ft_T,Ct_Q,Ct_T,Vt]=rhombicDodecahedronMesh(r,nCopies);
+[E,V,C,F,CF]=rhombicDodecahedronMesh(r,nCopies);
 
 %%
 % Plotting results
 cFigure; hold on;
 title('A mesh of rhombicDodecahedra','FontSize',fontSize);
-gpatch(Ft_Q,Vt,Ct_Q,'k',faceAlpha1);
-colormap(gjet);
+gpatch(F,V,CF,'k',faceAlpha1);
+colormap(gjet); 
 axisGeom(gca,fontSize);
 camlight('headlight'); 
 drawnow; 
-
-%%
-
-cFigure; hold on;
-title('A mesh of rhombicDodecahedra plotted with triangular faces','FontSize',fontSize);
-gpatch(Ft_T,Vt,Ct_T,'k',faceAlpha1);
-colormap(gjet);
-axisGeom(gca,fontSize);
-camlight('headlight'); 
-drawnow; 
-
-%% EXAMPLE: Creating a "bubble image"
-% The triangular surface output can but used with the function |triSurf2Im|
-% to convert the patch data to image data where the interior and exterior
-% are labelled differently. For the mesh created the result is like a
-% highly regular bubble image. 
-voxelSize=0.05;
-[M,G,ML]=triSurf2Im(Ft_T,Vt,voxelSize);
-imOrigin=G.origin;
-
-%%
-% Plot results
-
-cFigure;
-hold on;
-% title('"Bubble image"','FontSize',fontSize);
-
-gpatch(Ft_Q,Vt,0.5*ones(1,3),'none',0.1);
-
-L_plot=false(size(ML));
-L_plot(:,:,round(size(ML,3)/2))=1;
-L_plot=L_plot&~isnan(ML);
-[Fm,Vm,Cm]=ind2patch(L_plot,ML,'sk');
-[Vm(:,1),Vm(:,2),Vm(:,3)]=im2cart(Vm(:,2),Vm(:,1),Vm(:,3),voxelSize*ones(1,3));
-Vm=Vm+imOrigin(ones(size(Vm,1),1),:);
-gpatch(Fm,Vm,Cm,'none',faceAlpha1);
-
-L_plot=false(size(ML));
-L_plot(round(size(ML,1)/2),:,:)=1;
-L_plot=L_plot&~isnan(ML);
-[Fm,Vm,Cm]=ind2patch(L_plot,ML,'si');
-[Vm(:,1),Vm(:,2),Vm(:,3)]=im2cart(Vm(:,2),Vm(:,1),Vm(:,3),voxelSize*ones(1,3));
-Vm=Vm+imOrigin(ones(size(Vm,1),1),:);
-gpatch(Fm,Vm,Cm,'none',faceAlpha1);
-
-L_plot=false(size(ML));
-L_plot(:,round(size(ML,2)/2),:)=1;
-L_plot=L_plot&~isnan(ML);
-[Fm,Vm,Cm]=ind2patch(L_plot,ML,'sj');
-[Vm(:,1),Vm(:,2),Vm(:,3)]=im2cart(Vm(:,2),Vm(:,1),Vm(:,3),voxelSize*ones(1,3));
-Vm=Vm+imOrigin(ones(size(Vm,1),1),:);
-gpatch(Fm,Vm,Cm,'none',faceAlpha1);
-
-colormap(gjet(max(ML(:)))); colorbar;
-camlight('headlight'); 
-axisGeom(gca,fontSize);
-
-drawnow;
 
 %% 
 %

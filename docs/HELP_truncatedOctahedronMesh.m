@@ -49,6 +49,7 @@ colormap(gjet);
 axisGeom(gca,fontSize);
 camlight('headlight'); 
 drawnow; 
+
 %% 
 % _*GIBBON footer text*_ 
 % 

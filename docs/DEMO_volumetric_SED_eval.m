@@ -20,13 +20,13 @@
 clear; close all; clc;
 
 %% Plot settings
-fontSize=36;
+fontSize=20;
 fontSizeInner=fontSize+15;
 fontSizeLabel=fontSize+30;
 plotColors=gjet(4);
 plotColors=plotColors([1 2 4],:);
 
-lineWidth=6;
+lineWidth=3;
 gridAlpha=0.3;
 LineWidthAxis=2;
 legendHeight=0.05;
@@ -78,14 +78,26 @@ for formulationCase=formulationCases
             parSet(1)=k; %Bulk modulus
             parSet(2)=a; %Alpha
             parSet(3)=b; %Beta
-        case 7 %Moerman 1
+        case 7 %Montella et al.
+            formulationName='Montella et al.';
+            k1=1;
+            beta1=1/8;
+            k2=1;
+            beta2=1/8;
+            m=4;
+            parSet(1)=k; %Bulk modulus
+            parSet(2)=beta1; 
+            parSet(3)=k2; 
+            parSet(4)=beta2; 
+            parSet(5)=m; 
+        case 8 %Moerman 1
             formulationName='Moerman 1';
             b1=3;
             b2=2;
             parSet(1)=k; %Bulk modulus
             parSet(2)=b1; %Alpha
             parSet(3)=b2; %Beta
-        case 8 %Moerman 1A
+        case 9 %Moerman 1A
             formulationName='Moerman 1A';
             b1=3;
             b2=2;
@@ -94,28 +106,28 @@ for formulationCase=formulationCases
             parSet(2)=b1; %Alpha
             parSet(3)=b2; %Beta
             parSet(4)=q; %Weigthing factor
-        case 9 %Moerman 1B
+        case 10 %Moerman 1B
             formulationName='Moerman 1B';
             b1=3;
             b2=2;
             parSet(1)=k; %Bulk modulus
             parSet(2)=b1; %Alpha
             parSet(3)=b2; %Beta
-        case 10 %Moerman 2
+        case 11 %Moerman 2
             formulationName='Moerman 2';
             J1=max(J)+0.1;
             J2=0;
             parSet(1)=k; %Bulk modulus
             parSet(2)=J1; %J1
             parSet(3)=J2; %J2
-        case 11 %Moerman 2A
+        case 12 %Moerman 2A
             formulationName='Moerman 2A';
             b1=3;
             b2=2;
             parSet(1)=k; %Bulk modulus
             parSet(2)=b1; %Alpha
             parSet(3)=b2; %Beta
-        case 12 %Moerman 3
+        case 13 %Moerman 3
             formulationName='Moerman 3';
             J1=max(J)+0.1;
             J2=0;
@@ -232,7 +244,29 @@ switch formulationCase
             -(k.*(1/(a+1)).*(1/(b-1)));
         S=(k/(a+b)).*(J.^a-J.^(-b));
         T=(k/(a+b)).*(a*J.^(a-1)+b*J.^(-b-1));
-    case 7 %Moerman 1
+    case 7
+        k=parSet(1);
+        beta1=parSet(2);
+        k2=parSet(3);
+        beta2=parSet(4);
+        m=parSet(5);
+        
+        %SED
+        W1=k./(2.*beta1).*exp(beta1.*   (log(J).^2))-(k/(2*beta1));
+        W2=k2./(m.*beta2).*exp(beta2.*abs(log(J).^m))-(k2/(m*beta2));
+        W=W1+W2;
+        
+        %Stress
+        S1=(k./J).*(exp(beta1.*    log(J).^2) .*     log(J));
+        S2=(k2./J).*(exp(beta2.*abs(log(J)).^m).*(abs(log(J)).^(m-1)).*sign(log(J)));
+        S=S1+S2;
+        
+        %Tangent
+        T1=(k./J.^2) .* exp(beta1.*    log(J) .^2).*(beta1.*2.*    log(J) .^2 - log(J) + 1);
+        T2=(k2./J.^2) .* exp(beta2.*abs(log(J)).^m).*(beta2.*m.*abs(log(J)).^m - log(J) + m -1).*abs(log(J)).^(m-2);
+        T=T1+T2;
+
+    case 8 %Moerman 1
         k=parSet(1);
         b1=parSet(2);
         b2=parSet(3);
@@ -242,7 +276,7 @@ switch formulationCase
             (1/b2  ).*(J.^(-2*b2) - J.^-b2) );
         T=(k/2)./J.^2.*( ((2-1/b1)*J.^( 2*b1)-(1-1/b1)*J.^b1) + ...
             ((2+1/b2)*J.^(-2*b2)-(1+1/b2)*J.^-b2) );
-    case 8 %Moerman 1A
+    case 9 %Moerman 1A
         k=parSet(1);
         b1=parSet(2);
         b2=parSet(3);
@@ -259,7 +293,7 @@ switch formulationCase
         T1=(k./J.^2).*(  q).*((2-1/b1)*J.^( 2*b1)-(1-1/b1)*J.^b1 );
         T2=(k./J.^2).*(1-q).*((2+1/b2)*J.^(-2*b2)-(1+1/b2)*J.^-b2);
         T=T1+T2;
-    case 9 %Moerman 1B
+    case 10 %Moerman 1B
         k=parSet(1);
         b1=parSet(2);
         b2=parSet(3);
@@ -278,7 +312,7 @@ switch formulationCase
         T=zeros(size(J));
         T(L1)=(k/b1).*((2*b1-1)*J(L1).^( 2*b1-2)-(b1-1)*J(L1).^( b1-2));
         T(L2)=(k/b2).*((2*b2+1)*J(L2).^(-2*b2-2)-(b2+1)*J(L2).^(-b2-2));
-    case 10 %Moerman 2
+    case 11 %Moerman 2
         k=parSet(1);
         J1=parSet(2);
         J2=parSet(3);
@@ -311,7 +345,7 @@ switch formulationCase
         T(J<1)=T2(J<1);
         T(J>=J1)=inf;
         T(J<=J2)=inf;
-    case 11 %Moerman 2A
+    case 12 %Moerman 2A
         k=parSet(1);
         b1=parSet(2);
         b2=parSet(3);
@@ -335,7 +369,7 @@ switch formulationCase
         W(J<1)=W2(J<1)/2+W3(J<1)/2;
         S(J<1)=S2(J<1)/2+S3(J<1)/2;
         T(J<1)=T2(J<1)/2+T3(J<1)/2;
-    case 12 %Moerman 3
+    case 13 %Moerman 3
         k=parSet(1);
         J1=parSet(2);
         J2=parSet(3);

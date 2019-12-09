@@ -58,6 +58,7 @@ scrollBarWidth=20; %Scrollbar width
 figStruct.Name='Image Segmentation Widget'; %Figure name
 figStruct.Color=0.*ones(1,3); %Figure background color
 figStruct.ColorDef='black'; %Setting colordefinitions to black
+figStruct.vcw=0;
 % figStruct.ScreenOffset=100; %Setting spacing of figure with respect to screen edges
 
 %%
@@ -160,7 +161,7 @@ D=importdata(fullfile(iconPath,'help.jpg'));
 S=double(D);
 S=S-min(S(:));
 S=S./max(S(:));
-S(S==1)=NaN;
+logicOne=repmat(all(S==1,3),1,1,size(S,3)); S(logicOne)=NaN;
 if size(S,3)==1
     S=repmat(S,[1 1 3]);
 end
@@ -175,7 +176,7 @@ D=importdata(fullfile(iconPath,'save.jpg'));
 S=double(D);
 S=S-min(S(:));
 S=S./max(S(:));
-S(S==1)=NaN;
+logicOne=repmat(all(S==1,3),1,1,size(S,3)); S(logicOne)=NaN;
 if size(S,3)==1
     S=repmat(S,[1 1 3]);
 end
@@ -191,7 +192,7 @@ D=importdata(fullfile(iconPath,'load.jpg'));
 S=double(D);
 S=S-min(S(:));
 S=S./max(S(:));
-S(S==1)=NaN;
+logicOne=repmat(all(S==1,3),1,1,size(S,3)); S(logicOne)=NaN;
 if size(S,3)==1
     S=repmat(S,[1 1 3]);
 end
@@ -206,7 +207,7 @@ D=importdata(fullfile(iconPath,'colorbar.jpg'));
 S=double(D);
 S=S-min(S(:));
 S=S./max(S(:));
-S(S==1)=NaN;
+logicOne=repmat(all(S==1,3),1,1,size(S,3)); S(logicOne)=NaN;
 if size(S,3)==1
     S=repmat(S,[1 1 3]);
 end
@@ -221,7 +222,7 @@ D=importdata(fullfile(iconPath,'ghost.jpg'));
 S=double(D);
 S=S-min(S(:));
 S=S./max(S(:));
-S(S==1)=NaN;
+logicOne=repmat(all(S==1,3),1,1,size(S,3)); S(logicOne)=NaN;
 if size(S,3)==1
     S=repmat(S,[1 1 3]);
 end
@@ -236,7 +237,7 @@ D=importdata(fullfile(iconPath,'eye.jpg'));
 S=double(D);
 S=S-min(S(:));
 S=S./max(S(:));
-S(S==1)=NaN;
+logicOne=repmat(all(S==1,3),1,1,size(S,3)); S(logicOne)=NaN;
 if size(S,3)==1
     S=repmat(S,[1 1 3]);
 end
@@ -251,7 +252,7 @@ D=importdata(fullfile(iconPath,'home.jpg'));
 S=double(D);
 S=S-min(S(:));
 S=S./max(S(:));
-S(S==1)=NaN;
+logicOne=repmat(all(S==1,3),1,1,size(S,3)); S(logicOne)=NaN;
 if size(S,3)==1
     S=repmat(S,[1 1 3]);
 end
@@ -266,7 +267,7 @@ D=importdata(fullfile(iconPath,'sample.jpg'));
 S=double(D);
 S=S-min(S(:));
 S=S./max(S(:));
-S(S==1)=NaN;
+logicOne=repmat(all(S==1,3),1,1,size(S,3)); S(logicOne)=NaN;
 if size(S,3)==1
     S=repmat(S,[1 1 3]);
 end
@@ -281,7 +282,7 @@ D=importdata(fullfile(iconPath,'cut.jpg'));
 S=double(D);
 S=S-min(S(:));
 S=S./max(S(:));
-S(S==1)=NaN;
+logicOne=repmat(all(S==1,3),1,1,size(S,3)); S(logicOne)=NaN;
 if size(S,3)==1
     S=repmat(S,[1 1 3]);
 end
@@ -296,7 +297,7 @@ D=importdata(fullfile(iconPath,'draw.jpg'));
 S=double(D);
 S=S-min(S(:));
 S=S./max(S(:));
-S(S==1)=NaN;
+logicOne=repmat(all(S==1,3),1,1,size(S,3)); S(logicOne)=NaN;
 if size(S,3)==1
     S=repmat(S,[1 1 3]);
 end
@@ -311,7 +312,7 @@ D=importdata(fullfile(iconPath,'select.jpg'));
 S=double(D);
 S=S-min(S(:));
 S=S./max(S(:));
-S(S==1)=NaN;
+logicOne=repmat(all(S==1,3),1,1,size(S,3)); S(logicOne)=NaN;
 if size(S,3)==1
     S=repmat(S,[1 1 3]);
 end
@@ -326,7 +327,7 @@ D=importdata(fullfile(iconPath,'delete.jpg'));
 S=double(D);
 S=S-min(S(:));
 S=S./max(S(:));
-S(S==1)=NaN;
+logicOne=repmat(all(S==1,3),1,1,size(S,3)); S(logicOne)=NaN;
 if size(S,3)==1
     S=repmat(S,[1 1 3]);
 end
@@ -342,7 +343,7 @@ D=importdata(fullfile(iconPath,'polygonSelect.jpg'));
 S=double(D);
 S=S-min(S(:));
 S=S./max(S(:));
-S(S==1)=NaN;
+logicOne=repmat(all(S==1,3),1,1,size(S,3)); S(logicOne)=NaN;
 if size(S,3)==1
     S=repmat(S,[1 1 3]);
 end
@@ -357,7 +358,7 @@ D=importdata(fullfile(iconPath,'reset.jpg'));
 S=double(D);
 S=S-min(S(:));
 S=S./max(S(:));
-S(S==1)=NaN;
+logicOne=repmat(all(S==1,3),1,1,size(S,3)); S(logicOne)=NaN;
 if size(S,3)==1
     S=repmat(S,[1 1 3]);
 end
@@ -372,7 +373,7 @@ D=importdata(fullfile(iconPath,'convert.jpg'));
 S=double(D);
 S=S-min(S(:));
 S=S./max(S(:));
-% S(S==1)=NaN;
+% logicOne=repmat(all(S==1,3),1,1,size(S,3)); S(logicOne)=NaN;
 if size(S,3)==1
     S=repmat(S,[1 1 3]);
 end
@@ -387,7 +388,7 @@ D=importdata(fullfile(iconPath,'closePolygon.jpg'));
 S=double(D);
 S=S-min(S(:));
 S=S./max(S(:));
-S(S==1)=NaN;
+logicOne=repmat(all(S==1,3),1,1,size(S,3)); S(logicOne)=NaN;
 if size(S,3)==1
     S=repmat(S,[1 1 3]);
 end
@@ -402,12 +403,27 @@ D=importdata(fullfile(iconPath,'smooth.jpg'));
 S=double(D);
 S=S-min(S(:));
 S=S./max(S(:));
-S(S==1)=NaN;
+logicOne=repmat(all(S==1,3),1,1,size(S,3)); S(logicOne)=NaN;
 if size(S,3)==1
     S=repmat(S,[1 1 3]);
 end
 % Create a uipushtool in the toolbar
 hSmooth=uitoggletool(hb,'TooltipString','Smooth','CData',S,'Tag','smooth_button','ClickedCallback',{@smoothFunc,{hf}});
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%Mark button
+
+%get icon
+D=importdata(fullfile(iconPath,'mark.jpg'));
+S=double(D);
+S=S-min(S(:));
+S=S./max(S(:));
+logicOne=repmat(all(S==1,3),1,1,size(S,3)); S(logicOne)=NaN;
+if size(S,3)==1
+    S=repmat(S,[1 1 3]);
+end
+% Create a uipushtool in the toolbar
+hMark=uitoggletool(hb,'TooltipString','Markers','CData',S,'Tag','mark_button','ClickedCallback',{@markFunc,{hf}});
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %Ellipse button
@@ -417,7 +433,7 @@ D=importdata(fullfile(iconPath,'ellipse.jpg'));
 S=double(D);
 S=S-min(S(:));
 S=S./max(S(:));
-% S(S==1)=NaN;
+% logicOne=repmat(all(S==1,3),1,1,size(S,3)); S(logicOne)=NaN;
 if size(S,3)==1
     S=repmat(S,[1 1 3]);
 end
@@ -432,7 +448,7 @@ D=importdata(fullfile(iconPath,'grow.jpg'));
 S=double(D);
 S=S-min(S(:));
 S=S./max(S(:));
-S(S==1)=NaN;
+logicOne=repmat(all(S==1,3),1,1,size(S,3)); S(logicOne)=NaN;
 if size(S,3)==1
     S=repmat(S,[1 1 3]);
 end
@@ -447,7 +463,7 @@ D=importdata(fullfile(iconPath,'shrink.jpg'));
 S=double(D);
 S=S-min(S(:));
 S=S./max(S(:));
-S(S==1)=NaN;
+logicOne=repmat(all(S==1,3),1,1,size(S,3)); S(logicOne)=NaN;
 if size(S,3)==1
     S=repmat(S,[1 1 3]);
 end
@@ -462,7 +478,7 @@ D=importdata(fullfile(iconPath,'move.jpg'));
 S=double(D);
 S=S-min(S(:));
 S=S./max(S(:));
-S(S==1)=NaN;
+logicOne=repmat(all(S==1,3),1,1,size(S,3)); S(logicOne)=NaN;
 if size(S,3)==1
     S=repmat(S,[1 1 3]);
 end
@@ -477,7 +493,7 @@ hMove=uitoggletool(hb,'TooltipString','Move','CData',S,'Tag','move_button','Clic
 % S=double(D);
 % S=S-min(S(:));
 % S=S./max(S(:));
-% S(S==1)=NaN;
+% logicOne=repmat(all(S==1,3),1,1,size(S,3)); S(logicOne)=NaN;
 % if size(S,3)==1
 %     S=repmat(S,[1 1 3]);
 % end
@@ -492,7 +508,7 @@ hMove=uitoggletool(hb,'TooltipString','Move','CData',S,'Tag','move_button','Clic
 % hTopText = uicontrol('Style','text','Position',pos,'String',topTextString,'BackgroundColor',0.5*ones(1,3),'FontSize',10,'ForegroundColor',abs(1-figStruct.Color));
 
 %% Text fields
-hTextInfoStringDefault=' s=sample sketch contour, c=cut sketched contour, d=draw contour, delete=delete sketch contour, home=return to active slice, a=accept contour, q=smooth accepted contour, +=grow contour, -=shrink contour, space=go to next slice, left/right arrow=increase/decrease transparancy, v=activate vcw';
+hTextInfoStringDefault=' s=sample sketch contour, c=cut sketched contour, d=draw contour, delete=delete sketch contour, home=return to active slice, a=accept contour, q=smooth accepted contour, +=grow contour, -=shrink contour, space=go to next slice, left/right arrow=increase/decrease transparancy, l=add marker points';
 hTextInfo = uicontrol(hf,'Style','text','String',hTextInfoStringDefault,...    
     'BackgroundColor',hf.Color,'ForegroundColor',[1 1 1],'HorizontalAlignment','Left','FontSize',10);
 
@@ -526,6 +542,7 @@ hf.UserData.ButtonHandles.Draw=hDraw;
 hf.UserData.ButtonHandles.Select=hSelect;
 hf.UserData.ButtonHandles.Delete=hDelete;
 hf.UserData.ButtonHandles.hSmooth=hSmooth;
+hf.UserData.ButtonHandles.hMark=hMark;
 hf.UserData.ButtonHandles.hEllipse=hEllipse;
 hf.UserData.ButtonHandles.hGrow=hGrow;
 hf.UserData.ButtonHandles.hShrink=hShrink;
@@ -542,16 +559,18 @@ hf.UserData.colorBarhandle=hColorBar;
 % hf.UserData.hPopUp1=hPopUp1;
 hf.UserData.hAxis=hAxis;
 
-hf.UserData.sketchContourHandle=[];
-hf.UserData.contourSetHandle=[];
-
 hf.UserData.sliderHandles={hSlider_I,hSlider_J,hSlider_K};
 
 hf.UserData.savePath=savePath;
 hf.UserData.saveName='imseg'; %Save name
 
+hf.UserData.sketchContourHandle=[];
+hf.UserData.contourSetHandle=[];
 hf.UserData.sketchContour={};
 hf.UserData.ContourSet=repmat({{[]}},1,siz(3));
+
+hf.UserData.markerSetHandle=[];
+hf.UserData.MarkerSet=repmat({[]},1,siz(3)); %Empty marker set
 
 cMapContours=gjet(4);
 hf.UserData.colormapSketch=[cMapContours(3,:); cMapContours(4,:)]; %red to yellow
@@ -763,6 +782,7 @@ if ~isempty(Q)
         'lineColors',...
         'sketchContour',...
         'ContourSet',...
+        'MarkerSet',...
         'colormapSketch',...
         'colormapSet',...
         'csapsSmoothPar',...
@@ -921,7 +941,7 @@ view(0,90);
 v=hf.UserData.v;
 zs=(qSlice-0.5).*v(3); %z-level for contourslice
 
-set(hf.UserData.ButtonHandles.hTextInfo,'String',' Draw contour: Left click to add point, right click (or any other key) to exit');
+set(hf.UserData.ButtonHandles.hTextInfo,'String',' Draw contour: Left click to add point, Backspace to remove last point, right click (or any other key) to exit');
 
 hpd=[];
 drawDone=0;
@@ -935,6 +955,12 @@ while drawDone==0
                 Vd=[Vd; Xd Yd zs];
                 delete(hpd);
                 hpd=plotV(Vd,'b.-','MarkerSize',20,'lineWidth',2);
+            case 8 %Backspace
+                if size(Vd,1)>0
+                    Vd=Vd(1:end-1,:);
+                    delete(hpd);
+                    hpd=plotV(Vd,'b.-','MarkerSize',20,'lineWidth',2);
+                end
             case 3
                 drawDone=1;
             otherwise
@@ -1241,7 +1267,7 @@ switch eventData.Key
             end
         end
     case 'v' % Activate vcw
-        set(hf.UserData.cFigure.Handles.vcw,'State','On');
+%         set(hf.UserData.cFigure.Handles.vcw,'State','On');
     case 's' % Sample
         set(hf.UserData.ButtonHandles.Sample,'State','On');
         sampleFunc([],[],inputCell);
@@ -1286,6 +1312,9 @@ switch eventData.Key
     case 'm'
         set(hf.UserData.ButtonHandles.hMove,'State','On');        
         moveFunc([],[],{hf});
+    case 'l'
+        set(hf.UserData.ButtonHandles.hMark,'State','On');
+        markFunc([],[],inputCell);
 end
 
 end
@@ -1714,6 +1743,69 @@ if ~isempty(Vcs{qSlice}{1})
 end
 
 %Reset info text 
+set(hf.UserData.ButtonHandles.hTextInfo,'String',hf.UserData.hTextInfoStringDefault);
+
+end
+
+%% Mark
+
+function markFunc(~,~,inputCell)
+
+hf=inputCell{1};
+view(0,90);
+[qSlice]=updateSliceIndex(hf);
+
+v=hf.UserData.v;
+zs=(qSlice-0.5).*v(3); %z-level for contourslice
+
+%Set info text
+set(hf.UserData.ButtonHandles.hTextInfo,'String','Label point: Left click to create point, Backspace to remove last point, right click (or any other key) to exit');
+
+
+markDone=0;
+Vd=hf.UserData.MarkerSet{qSlice};
+if ~isempty(Vd)
+    hpd=plotV(Vd,'ko','MarkerFaceColor','r','MarkerSize',10,'LineWidth',2);                    
+else
+    hpd=[];
+end
+[mousePointerType]=specialPointerShape('pen');
+while markDone==0
+    [Xd,Yd,bd]=qginput(1,mousePointerType);
+    if ~isempty(bd)
+        switch bd
+            case 1
+                Vd=[Vd; Xd Yd zs];
+                delete(hpd);
+                hpd=plotV(Vd,'ko','MarkerFaceColor','r','MarkerSize',10,'LineWidth',2);                    
+            case 8 %Backspace
+                if size(Vd,1)>0
+                    Vd=Vd(1:end-1,:);
+                    delete(hpd);
+                    hpd=plotV(Vd,'ko','MarkerFaceColor','r','MarkerSize',10,'LineWidth',2);                    
+                end
+            case 3
+                markDone=1;
+            otherwise
+                markDone=1;
+        end
+    else
+        markDone=1;
+    end
+        
+end
+delete(hpd);
+
+if ~isempty(Vd)    
+    hf.UserData.MarkerSet{qSlice}=Vd; %Add marker set
+    plotContourSet(hf); %Update plot    
+end
+
+%Turn off button
+set(hf.UserData.ButtonHandles.hMark,'State','Off');
+
+setDefaultPointer; %Set default pointer
+
 set(hf.UserData.ButtonHandles.hTextInfo,'String',hf.UserData.hTextInfoStringDefault);
 
 end
@@ -2342,11 +2434,21 @@ end
 
 function plotContourSet(hf)
 
-%Remove current sketch contour if it exists
-if isfield(hf.UserData,'sketchContourHandle')
+%Remove current contour plots if it exists
+if isfield(hf.UserData,'contourSetHandle')
     if ~isempty(hf.UserData.contourSetHandle)
         delete(hf.UserData.contourSetHandle);
         hf.UserData.contourSetHandle=[];
+    end
+else
+    hf.UserData.contourSetHandle=[];
+end
+
+%Remove current marker plot if it exists
+if isfield(hf.UserData,'markerSetHandle')
+    if ~isempty(hf.UserData.markerSetHandle)
+        delete(hf.UserData.markerSetHandle);
+        hf.UserData.markerSetHandle=[];
     end
 else
     hf.UserData.contourSetHandle=[];
@@ -2357,7 +2459,6 @@ Vcs=hf.UserData.ContourSet;
 
 if hf.UserData.showAll<0
     sliceRange=updateSliceIndex(hf);
-%     sliceRange=hf.UserData.sliceIndices(3);
 else    
     sliceRange=1:1:numel(Vcs);        
 end
@@ -2372,6 +2473,15 @@ for qSlice=sliceRange
         end
     end
 end
+
+for qSlice=sliceRange
+    V_markers=hf.UserData.MarkerSet{qSlice};
+    if ~isempty(V_markers)
+        h=plotV(V_markers,'ko','MarkerFaceColor','y','MarkerSize',12,'LineWidth',2);                            
+        hf.UserData.markerSetHandle=[hf.UserData.markerSetHandle h];
+    end
+end
+
 drawnow;
 
 end

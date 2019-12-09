@@ -1,6 +1,6 @@
 function [varargout]=patch_dual(varargin)
 
-% function [Vd,Fd,Fds]=patch_dual(V,F)
+% function [Vd,Fd,Fds]=patch_dual(V,F,fixBoundaryOption)
 % ------------------------------------------------------------------------
 % Computes the dual of the input tesselation defined by the vertices V and
 % faces F. 

@@ -1,10 +1,9 @@
 function [V_path]=inc2cumDisp(V1_C,D_C,V1i,Method,ExtrapolationMethod,siz,plotOn)
 
-if plotOn==1;    
-    fig_color='w'; fig_colordef='white';
+if plotOn==1    
     font_size=25;
 
-    hf1=figuremax(fig_color,fig_colordef);
+    hf1=cFigure;;
     subplot(1,2,1);
     xlabel('X (mm)','FontSize',font_size);ylabel('Y (mm)','FontSize',font_size); %zlabel('Z','FontSize',font_size);
     hold on;

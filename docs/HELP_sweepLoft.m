@@ -106,6 +106,35 @@ numStepsSweep=75; %Number of steps for loft feature from sketch 1 to sketch 2
 plotOn=1; %Turn on plotting to view lofting behaviour
 [F,V,C]=sweepLoft(V1,V2,n1,n2,Vg,numStepsSweep,numTwist,plotOn);
 
+%% Create a partial ring
+% Note the rotation of the end curve
+
+a=pi; %Rotation induced by sweep
+t=linspace(0,a,50)';
+r=30;
+Vg=[zeros(size(t(:))) r*cos(t) r*sin(t)];
+
+ns=50;
+t=linspace(0,2*pi,ns);
+t=t(1:end-1);
+r=3+2.5.*sin(5*t);
+[x,y] = pol2cart(t,r);
+V1=[x(:) y(:) zeros(size(x(:)))];
+n1=[0 0 1];
+
+R=euler2DCM([-a 0 0]); %Rotation matrix
+V2=V1; %Initialize second set as first
+V2=V2*R; %Rotate to match state induced by sweep
+n2=n1*R; %Rotate normal by same matrix
+
+V1=V1+Vg(1,:); %Place first curve at start
+V2=V2+Vg(end,:); %Place second curve at end
+
+numTwist=0; %Number of additional twists of loft feature around guide curve
+numStepsSweep=75; %Number of steps for loft feature from sketch 1 to sketch 2
+plotOn=1; %Turn on plotting to view lofting behaviour
+[F,V,C]=sweepLoft(V1,V2,n1,n2,(Vg),numStepsSweep,numTwist,plotOn);
+
 %% A ring shaped sweep loft
 
 %%

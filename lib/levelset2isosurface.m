@@ -99,8 +99,8 @@ end
 if capOpt>0
     % remove "flag" triangles
     while 1
-        C=patchConnectivity(F,V,{'ef'});
-        EF=C.edge.face;        
+        CS=patchConnectivity(F,V,{'ef'});
+        EF=CS.edge.face;        
         logicRemove= (sum(EF>0,2)==1);        
         if nnz(logicRemove)==0
             break

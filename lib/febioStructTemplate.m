@@ -75,7 +75,7 @@ febio_spec.Output.plotfile.var{1}.ATTR.type='displacement';
 febio_spec.Output.plotfile.var{2}.ATTR.type='stress';
 febio_spec.Output.plotfile.var{3}.ATTR.type='strain energy density';
 febio_spec.Output.plotfile.var{4}.ATTR.type='relative volume';
-% febio_spec.Output.plotfile.var{5}.ATTR.type='elasticity';
+febio_spec.Output.plotfile.var{5}.ATTR.type='reaction forces';
 
 %% Fill in missing if input structure is provided
 

@@ -38,7 +38,6 @@ controlParameter.shrinkFactor=0.2; %Strut sides are formed by shrinking the inpu
 controlParameter.numDigitKeep=5; %used for merging nodes
 controlParameter.meshType='quad'; %desired output mesh type
 controlParameter.indBoundary=indBoundary; %indices of the boundary faces
-
 controlParameter.latticeSide=1; %1=side 1 the edge lattice, 2=side 2 the dual lattice to the edge lattice
 [Fs1,Vs1,Cs1]=element2lattice(E,V,controlParameter); %Get lattice structure
 
@@ -537,8 +536,15 @@ F=meshOutput.faces;
 
 %%
 % Create lattice structure
+
+% Define spatially varying (on nodes) shrink factor
+s=V(:,1);
+s=s-min(s(:));
+s=s./max(s(:)); 
+s=(s*0.6)+0.05;
+
 clear controlParameter
-controlParameter.shrinkFactor=0.2; %Strut sides are formed by shrinking the input mesh faces by this factor
+controlParameter.shrinkFactor=s; %Strut sides are formed by shrinking the input mesh faces by this factor
 controlParameter.numDigitKeep=5; %used for merging nodes
 controlParameter.meshType='quad'; %desired output mesh type
 controlParameter.indBoundary=indBoundary; %indices of the boundary faces

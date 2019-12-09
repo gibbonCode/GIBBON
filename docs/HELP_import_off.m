@@ -6,8 +6,6 @@ clear; close all; clc;
 
 %%
 % Plot settings
-fig_color='w'; 
-fig_colordef='white'; 
 faceAlpha=1;
 fontSize=10; 
 
@@ -33,16 +31,13 @@ fileName=fullfile(pathName,offName);
 %%
 % Plotting the models 
 
-figuremax(fig_color,fig_colordef);
+cFigure;
 title('Imported patch data from OFF file','fontSize',fontSize);
-xlabel('X','fontSize',fontSize);ylabel('Y','fontSize',fontSize); zlabel('Z','fontSize',fontSize); hold on;
 
-patch('Faces',F,'Vertices',V,'FaceColor',0.5*ones(1,3),'EdgeColor','k','FaceAlpha',faceAlpha);
+gpatch(F,V,'gw');
 
-view(3); axis equal; axis tight; axis vis3d; grid on; axis off; 
-view(194.5,-40);
+axisGeom;
 camlight('headlight');
-lighting flat;
 drawnow;
 
 %%

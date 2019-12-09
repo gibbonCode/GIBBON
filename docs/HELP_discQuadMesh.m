@@ -17,7 +17,7 @@ edgeWidth=2;
 
 %% Building a quadrilateral circular mesh
 
-ne=8; %Elements in radius
+ne=4; %Elements in radius
 r=2; %Outer radius of disc
 f=0.5; %Fraction (with respect to outer radius) where central square appears
 

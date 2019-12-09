@@ -6,8 +6,6 @@ clear; close all; clc;
 
 %%
 % Plot settings
-fig_color='w'; 
-fig_colordef='white'; 
 faceAlpha=0.5;
 fontSize=25; 
 
@@ -20,27 +18,30 @@ V1=V1./max(V1(:))/2;
 meanV=mean(V2,1);
 V2=V2-meanV(ones(1,size(V2,1)),:);
 V2=V2./max(V2(:));
+V2=V2+max(V1,[],1);
 
 %% Create the stlStruct
 
-stlStruct.solidNames={'stanford_bunny','parasaurolophus'};
-stlStruct.solidVertices={V1,V2};
-stlStruct.solidFaces={F1,F2};
-stlStruct.solidNormals={[],[]};
+stlStruct.solidNames={'stanford_bunny','parasaurolophus'}; %names of parts
+stlStruct.solidVertices={V1,V2}; %Vertices
+stlStruct.solidFaces={F1,F2}; %Faces
+stlStruct.solidNormals={[],[]}; %Face normals (optional)
 
 %%
 % Plotting the models 
-pColors=autumn(numel(stlStruct.solidNames));
+pColors=gjet(numel(stlStruct.solidNames));
 
-figuremax(fig_color,fig_colordef);
+cFigure;
 title('Patch data to export to multi-solid STL','fontSize',fontSize);
-xlabel('X','fontSize',fontSize);ylabel('Y','fontSize',fontSize); zlabel('Z','fontSize',fontSize); hold on;
+
 for q=1:1:numel(stlStruct.solidNames)
-    F=stlStruct.solidFaces{q};
-    V=stlStruct.solidVertices{q};
-    patch('Faces',F,'Vertices',V,'FaceColor',pColors(q,:),'EdgeColor','k','FaceAlpha',faceAlpha);
+    F=stlStruct.solidFaces{q}; %Faces
+    V=stlStruct.solidVertices{q}; %Vertices
+    
+    gpatch(F,V,pColors(q,:));
 end
-view(3); axis equal; axis tight; axis vis3d; grid on; 
+
+axisGeom
 camlight('headlight');
 lighting phong; axis off; 
 drawnow;

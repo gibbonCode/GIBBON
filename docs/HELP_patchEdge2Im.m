@@ -6,8 +6,6 @@
 clear; close all; clc;
 
 % Plot settings for the examples below
-figColor='w'; 
-figColorDef='white';
 fontSize=10;
 faceAlpha1=1;
 faceAlpha2=0.3;
@@ -40,7 +38,7 @@ n=50;
 %%
 % Plotting the results
 
-hf1=figuremax(figColor,figColorDef);
+hf1=cFigure;
 subplot(1,2,1);
 title('The patch model','FontSize',fontSize);
 xlabel('X','FontSize',fontSize);ylabel('Y','FontSize',fontSize); zlabel('Z','FontSize',fontSize);
@@ -114,21 +112,17 @@ Fs=[Fi;Fc+size(Vi,1)];
 [Fs,Vs]=mergeVertices(Fs,Vs);
 
 cPar.Method='HC';
-cPar.n=25;
+cPar.n=50;
 [Vs]=patchSmooth(Fs,Vs,[],cPar);
 
 %%
 % Plotting the results
 
-hf2=figuremax(figColor,figColorDef);
+cFigure; hold on;
 title('iso-surface of thickened structure','FontSize',fontSize);
-xlabel('X','FontSize',fontSize);ylabel('Y','FontSize',fontSize); zlabel('Z','FontSize',fontSize);
-hold on;
-
-patch('Faces',Fs,'Vertices',Vs,'FaceColor','b','EdgeColor','none','FaceAlpha',faceAlpha1);
-
-camlight('headlight'); lighting phong; 
-axis equal; view(3); axis tight;  grid on;  set(gca,'FontSize',fontSize);
+gpatch(Fs,Vs,'bw');
+camlight('headlight');
+axisGeom;
 drawnow;
 
 %%

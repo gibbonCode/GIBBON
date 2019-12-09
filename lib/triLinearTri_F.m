@@ -33,7 +33,13 @@ dN_dRST =[-1    -1 ;...
 
 %Compute derivatives of initial position vectors with respect to shape functions
 dX_dRST=zeros(3,3);
-for q=1:1:4;
+for q=1:1:4
+    size(dX_dRST)
+    size(X(q,:))
+    size(dN_dRST(q,:))
+    
+    (X(q,:)'*dN_dRST(q,:))
+    
     dX_dRST=dX_dRST+(X(q,:)'*dN_dRST(q,:));
 end
 dX_dRST_invT=inv(dX_dRST).';

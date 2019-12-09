@@ -17,7 +17,6 @@ clear; close all; clc;
 
 %% 
 % Plot settings
-fig_color='w'; fig_colordef='white'; 
 faceAlpha1=1;
 faceAlpha2=0.65;
 edgeColor1='none';
@@ -32,7 +31,7 @@ M(indBox)=0; %setting edge indices to 0 for visualization
 
 %%
 % Plotting results
-figuremax(fig_color,fig_colordef);
+cFigure;
 title('Black pixels denote edge or box entries'); hold on; 
 imagesc(M);
 axis equal; axis tight; axis vis3d; grid off;  
@@ -59,7 +58,7 @@ logicPlot(round(size(M,1)/2),:,:)=1;
 
 % [F2,V2,C2]=ind2patch(M==0,M,'vb'); 
 
-figuremax(fig_color,fig_colordef);
+cFigure;
 title('Black voxels denote edge or box entries'); hold on; 
 xlabel('J - columns');ylabel('I - rows'); zlabel('K - slices'); hold on;
 

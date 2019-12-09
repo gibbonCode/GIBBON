@@ -13,7 +13,7 @@ clear; close all; clc;
 %%
 % Example geometry
 
-testCase=3;
+testCase=5;
 
 switch testCase
     case 1 %Box
@@ -162,13 +162,12 @@ drawnow;
 %%
 cFigure; hold on;
 hp1=gpatch(FT,VT,CT,'none',1);
-hp2=gpatch(F,V,'kw','none',0.8);
+hp2=gpatch(Fb,V,'kw','none',0.25);
 % patchNormPlot(FT,VT);
 colormap(viridis(4)); %icolorbar; 
 camlight headlight;
 axisGeom;
 drawnow;
-
 
 %% Example: Create a dual lattice mesh without outer surface cladding
 

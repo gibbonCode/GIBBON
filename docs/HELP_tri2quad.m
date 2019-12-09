@@ -32,7 +32,7 @@ edgeWidth=1;
 %%
 % Visualisation
 
-hf=figuremax(fig_color,fig_colordef); 
+hf=cFigure; 
 subplot(1,2,1);
 title('Triangulation','FontSize',fontSize);
 gpatch(F,V,'rw','r');

@@ -97,7 +97,7 @@ if plotOn
     lineWidth3=1; 
     markerSize=25;
     triadSize=stepSize*7; 
-    fontSize=35;
+    fontSize=20;
     
     hf=cFigure; hold on;
     ht=gtitle('Mapping coordinate systems along guide curve',fontSize);    

@@ -11,13 +11,12 @@ end
 
 if plotOn==1; 
     %Plot settings
-    figColor='w'; 
-    figColorDef='white';  
+
     fontSize=20;    
     tP=1; %Pause time
 
     %Open figure
-    hf=figuremax(figColor,figColorDef);  set(gcf,'renderer','OpenGL');
+    hf=cFigure;  set(gcf,'renderer','OpenGL');
     xlabel('X (mm)','FontSize',fontSize); ylabel('Y (mm)','FontSize',fontSize); zlabel('Z (mm)','FontSize',fontSize);
     hold on;
     

@@ -6,8 +6,6 @@ clear; close all; clc;
 
 %%
 % PLOT SETTINGS
-figColor='w'; 
-figColorDef='white';
 fontSize=10;
 cmap=gray(250);
 faceAlpha1=0.5;
@@ -32,7 +30,7 @@ n1=Vs(:,3)+(ampDef-ampDefDiff)+ampDef*sin(freqDef*Vs(:,1));
 %%
 % Plotting surfaces
 
-hf1=figuremax(figColor,figColorDef);
+hf1=cFigure;
 title('The two surfaces','FontSize',fontSize);
 xlabel('X','FontSize',fontSize);ylabel('Y','FontSize',fontSize);zlabel('Z','FontSize',fontSize); 
 hold on; 
@@ -56,7 +54,7 @@ D2=minDist(V2,V1);
 
 [CF]=vertexToFaceMeasure(F2,D2);
 
-hf2=figuremax(figColor,figColorDef);
+hf2=cFigure;
 title('Closest point distance metric on surface 2','FontSize',fontSize);
 xlabel('X','FontSize',fontSize);ylabel('Y','FontSize',fontSize);zlabel('Z','FontSize',fontSize); 
 hold on; 
@@ -101,7 +99,7 @@ C2_true=triplyPeriodicMinimal(6.*V2,'g');
 [CF2]=vertexToFaceMeasure(F2,C2);
 [CF2_true]=vertexToFaceMeasure(F2,C2_true);
 
-hf2=figuremax(figColor,figColorDef);
+hf2=cFigure;
 subplot(1,3,1);
 title('Coarse input','FontSize',fontSize);
 xlabel('X','FontSize',fontSize);ylabel('Y','FontSize',fontSize);zlabel('Z','FontSize',fontSize); 

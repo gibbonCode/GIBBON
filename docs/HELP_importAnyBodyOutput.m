@@ -7,8 +7,6 @@ clear; close all; clc;
 
 %%
 % Plot settings
-fig_color='w'; 
-fig_colordef='white'; 
 faceAlpha=1;
 fontSize=25; 
 markerSize=25; 
@@ -34,7 +32,7 @@ fileName=fullfile(pathName_STL,'femur.stl');
 % Plotting the models 
 pColors=autumn(numel(stlStruct.solidNames));
 
-figuremax(fig_color,fig_colordef);
+cFigure;
 title('AnyBody surface model and force vectors','fontSize',fontSize);
 xlabel('X','fontSize',fontSize);ylabel('Y','fontSize',fontSize); zlabel('Z','fontSize',fontSize); hold on;
 for q=1:1:numel(stlStruct.solidNames)

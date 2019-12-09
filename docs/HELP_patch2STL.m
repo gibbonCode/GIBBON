@@ -17,7 +17,7 @@ edgeColor2='none';
 %%
 % Plotting the model 
 
-figuremax(fig_color,fig_colordef);
+cFigure;;
 xlabel('X');ylabel('Y'); zlabel('Z'); hold on;
 
 patch('Faces',F,'Vertices',V,'FaceColor','b','EdgeColor','k','FaceAlpha',1);

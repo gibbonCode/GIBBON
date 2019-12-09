@@ -8,9 +8,44 @@ clear; close all; clc;
 % |[E,V]=rhombicDodecahedronHex(r);|
 
 %% Description 
-% UNDOCUMENTED 
+% This function generates a rhombic dodecahedron domain which is subdevided
+% into hexahedral elements. The input is the bounding sphere radius, the
+% outputs are the hexahedral element array and the vertices. 
+
 %% Examples 
 % 
+
+%% 
+% Plot settings
+fontSize=15;
+faceAlpha1=0.5;
+edgeColor='k';
+lineWidth1=3;
+markerSize=55;
+
+%% Creating a patch model of a rhombic dodecahedron
+
+r=sqrt(2)/2; %Radii, results in a width of 1
+
+[E,V]=rhombicDodecahedronHex(r);
+C=(1:1:size(E,1))';
+[F,CF]=element2patch(E,C); 
+
+%%
+% Plotting results
+cFigure;
+title('A hexahedral mesh of a rhombic dodecahedron','FontSize',fontSize);
+hold on;
+
+gpatch(F,V,CF,'k',faceAlpha1,lineWidth1);
+plotV(V,'k.','MarkerSize',markerSize);
+
+axisGeom(gca,fontSize);
+view(-10,25);
+camlight('headlight'); 
+colormap gjet; icolorbar;
+drawnow;
+
 %%
 % 
 % <<gibbVerySmall.gif>>

@@ -163,7 +163,7 @@ else
     
     %% PLOTTING
     if plotOn==1
-        figuremax(figColor,figColorDef);
+        cFigure;
         title('Smoothened triangulated mesh','FontSize',fontSize);
         xlabel('X','FontSize',fontSize);ylabel('Y','FontSize',fontSize);zlabel('Z','FontSize',fontSize);
         hold on;

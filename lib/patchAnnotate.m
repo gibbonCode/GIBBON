@@ -23,7 +23,7 @@ faceIndices=1:1:size(F,1);
 %% Get coordinates for text segments
 
 if isempty(d) 
-    d=mean(patchEdgeLengths(F,V))/5; %
+    d=mean(patchEdgeLengths(F,V))/10; %
 end
 
 [NF,VF,NV]=patchNormal(F,V);

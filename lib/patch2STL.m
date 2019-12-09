@@ -41,11 +41,11 @@ end
 switch nargin
     case 3 %N, solidName and writeOpt not provided
         N=[];
-        solidName='path2STL_Kevin_Moerman';
+        solidName='path2STL';
         writeOpt='w';
     case 4 %solidName and writeOpt not provided
         N=varargin{4};        
-        solidName='path2STL_Kevin_Moerman';
+        solidName='path2STL';
         writeOpt='w';
     case 5
         N=varargin{4};

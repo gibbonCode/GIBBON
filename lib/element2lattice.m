@@ -21,17 +21,6 @@ switch nargin
         cPar=varargin{3};
 end
 
-switch size(E,2)
-    case 4
-        elementType='tet4';
-    case 8
-        elementType='hex8';
-    otherwise
-        error('Element type not supported');
-end
-
-[F]=element2patch(E,elementType); %Element faces
-
 %The default control parameters
 cParDefault.shrinkFactor=0.25;
 cParDefault.latticeSide=1;
@@ -40,14 +29,38 @@ cParDefault.meshType='tri';
 cParDefault.indBoundary=[];
 cParDefault.hexSplit=0;
 cParDefault.hexMethod=2;
+cParDefault.elementType=[];
 
-if ~isfield(cPar,'indBoundary')
-    %If no boundary entry is provided 
-    cPar.indBoundary=tesBoundary(F,V);
-end
-    
 %Complement input structure with default
 [cPar]=structComplete(cPar,cParDefault,0);
+
+if isempty(cPar.elementType)
+    switch size(E,2)
+        case 4
+            cPar.elementType='tet4';        
+        case 8
+            cPar.elementType='hex8';
+        case 14 
+            cPar.elementType='rhomdo14';
+        otherwise
+            error('Element type missing');
+    end
+end
+
+elementType=cPar.elementType;
+switch elementType
+    case 'tet4'
+    case 'hex8'
+    case 'rhomdo14'        
+    otherwise
+        error('Element type missing or not supported');
+end
+[F]=element2patch(E,elementType); %Element faces
+
+%If no boundary entry is provided 
+if isempty(cPar.indBoundary)     
+    cPar.indBoundary=tesBoundary(F,V);
+end
 
 %%
 
@@ -55,6 +68,12 @@ if cPar.latticeSide==1
     cPar.shrinkFactor=1-cPar.shrinkFactor;
 end
 
+if size(cPar.shrinkFactor,1)==size(V,1)
+   spatVarMode=true(1);
+else
+    spatVarMode=false(1);
+end
+    
 %Get shrunk face coordinates
 Vc=zeros(size(F,1)*size(F,2),size(V,2));
 for q=1:1:size(V,2)
@@ -64,9 +83,16 @@ for q=1:1:size(V,2)
     else
         FX=X(F);
     end
+    
+    if spatVarMode
+        S=mean(cPar.shrinkFactor(F),2);
+    else
+        S=cPar.shrinkFactor;
+    end
+    
     FX_mean=mean(FX,2);
     FX_mean=FX_mean(:,ones(size(FX,2),1));
-    FX=((FX-FX_mean)*cPar.shrinkFactor)+FX_mean;
+    FX=((FX-FX_mean).*S)+FX_mean;
     Vc(:,q)=FX(:);
 end
 Fc=reshape(1:size(Vc,1),size(F,1),size(F,2));
@@ -81,10 +107,15 @@ for q=1:1:size(V,2)
     else
         EX=X(E);
     end
+    if spatVarMode
+        S=mean(cPar.shrinkFactor(E),2);
+    else
+        S=cPar.shrinkFactor;
+    end
     EX_mean=mean(EX,2);
     Vcc_Ecc_mean(:,q)=EX_mean;
     EX_mean=EX_mean(:,ones(size(EX,2),1));
-    EX=((EX-EX_mean)*cPar.shrinkFactor)+EX_mean;
+    EX=((EX-EX_mean).*S)+EX_mean;
     Vcc(:,q)=EX(:);
 end
 Ecc=reshape(1:size(Vcc,1),size(E,1),size(E,2));
@@ -101,9 +132,16 @@ for q=1:1:size(V,2)
     else
         EX=X(Fe);
     end
+    
+    if spatVarMode
+        S=mean(cPar.shrinkFactor(Fe),2);
+    else
+        S=cPar.shrinkFactor;
+    end
+    
     EX_mean=mean(EX,2);
     EX_mean=EX_mean(:,ones(size(EX,2),1));
-    EX=((EX-EX_mean)*cPar.shrinkFactor)+EX_mean;
+    EX=((EX-EX_mean).*S)+EX_mean;
     Ve(:,q)=EX(:);
 end
 Fec=reshape(1:size(Ve,1),size(Fe,1),size(Fe,2));
@@ -214,7 +252,58 @@ switch cPar.latticeSide
                             end
                             Fn=[El; Es];                            
                             Cn=[zeros(size(El,1),1);ones(size(Es,1),1)];
+                    end  
+                case 'rhomdo14'
+                                        
+                    Vn=[Vc;Vcc;V;];
+                    Fcc=Fcc+size(Vc,1);
+                    F=F+size(Vc,1)+size(Vcc,1);                    
+                    
+                    ind1 = 1:size(E,1);
+                    ind2 = ind1+size(E,1);
+                    ind3 = ind2+size(E,1);
+                    ind4 = ind3+size(E,1);
+                    ind5 = ind4+size(E,1);
+                    ind6 = ind5+size(E,1);
+                    ind7 = ind6+size(E,1);
+                    ind8 = ind7+size(E,1);
+                    ind9 = ind8+size(E,1);
+                    ind10= ind9+size(E,1);
+                    ind11= ind10+size(E,1);
+                    ind12= ind11+size(E,1);
+                    
+                    Fn=[... 
+                        F(ind5,3)  Fc(ind5,3)  Fcc(ind5,3)  Fc(ind2,3)  F(ind5,2)  Fc(ind5,2)  Fcc(ind5,2)  Fc(ind2,4) ;... %1
+                        F(ind1,3)  Fc(ind1,3)  Fcc(ind1,3)  Fc(ind5,1)  F(ind1,2)  Fc(ind1,2)  Fcc(ind1,2)  Fc(ind5,2);... %2
+                        F(ind5,1)  Fc(ind5,1)  Fcc(ind5,1)  Fc(ind8,3)  F(ind5,4)  Fc(ind5,4)  Fcc(ind5,4)  Fc(ind8,4);... %3
+                        F(ind5,4)  Fc(ind5,4)  Fcc(ind5,4)  Fc(ind6,4)  F(ind5,3)  Fc(ind5,3)  Fcc(ind5,3)  Fc(ind6,1);... %4
+                        F(ind1,4)  Fc(ind1,4)  Fcc(ind1,4)  Fc(ind8,2)  F(ind1,3)  Fc(ind1,3)  Fcc(ind1,3)  Fc(ind8,3);... %5
+                        F(ind1,1)  Fc(ind1,1)  Fcc(ind1,1)  Fc(ind12,3) F(ind1,4)  Fc(ind1,4)  Fcc(ind1,4)  Fc(ind12,4);... %6
+                        F(ind1,2)  Fc(ind1,2)  Fcc(ind1,2)  Fc(ind9,4)  F(ind1,1)  Fc(ind1,1)  Fcc(ind1,1)  Fc(ind9,1);...%7
+                        F(ind8,2)  Fc(ind8,2)  Fcc(ind8,2)  Fc(ind4,2)  F(ind8,1)  Fc(ind8,1)  Fcc(ind8,1)  Fc(ind4,3) ;... %8
+                        F(ind8,1)  Fc(ind8,1)  Fcc(ind8,1)  Fc(ind7,3)  F(ind8,4)  Fc(ind8,4)  Fcc(ind8,4)  Fc(ind7,4);... %9
+                        F(ind9,4)  Fc(ind9,4)  Fcc(ind9,4)  Fc(ind2,4)  F(ind9,3)  Fc(ind9,3)  Fcc(ind9,3)  Fc(ind2,1)  ;... %10
+                        F(ind2,2)  Fc(ind2,2)  Fcc(ind2,2)  Fc(ind10,4) F(ind2,1)  Fc(ind2,1)  Fcc(ind2,1)  Fc(ind10,1);... %11
+                        F(ind2,3)  Fc(ind2,3)  Fcc(ind2,3)  Fc(ind6,1)  F(ind2,2)  Fc(ind2,2)  Fcc(ind2,2)  Fc(ind6,2) ;... %12
+                        F(ind6,3)  Fc(ind6,3)  Fcc(ind6,3)  Fc(ind3,3)  F(ind6,2)  Fc(ind6,2)  Fcc(ind6,2)  Fc(ind3,4);... %13
+                        F(ind6,4)  Fc(ind6,4)  Fcc(ind6,4)  Fc(ind7,4)  F(ind6,3)  Fc(ind6,3)  Fcc(ind6,3)  Fc(ind7,1);... %14
+                        F(ind3,3)  Fc(ind3,3)  Fcc(ind3,3)  Fc(ind7,1)  F(ind3,2)  Fc(ind3,2)  Fcc(ind3,2)  Fc(ind7,2) ;... %15
+                        F(ind4,4)  Fc(ind4,4)  Fcc(ind4,4)  Fc(ind7,2)  F(ind4,3)  Fc(ind4,3)  Fcc(ind4,3)  Fc(ind7,3);... %16
+                        F(ind3,1)  Fc(ind3,1)  Fcc(ind3,1)  Fc(ind10,3) F(ind3,4)  Fc(ind3,4)  Fcc(ind3,4)  Fc(ind10,4) ;... %17
+                        F(ind3,2)  Fc(ind3,2)  Fcc(ind3,2)  Fc(ind11,4) F(ind3,1)  Fc(ind3,1)  Fcc(ind3,1)  Fc(ind11,1) ;... %18
+                        F(ind9,3)  Fc(ind9,3)  Fcc(ind9,3)  Fc(ind10,1) F(ind9,2)  Fc(ind9,2)  Fcc(ind9,2)  Fc(ind10,2);... %19
+                        F(ind9,2)  Fc(ind9,2)  Fcc(ind9,2)  Fc(ind12,2) F(ind9,1)  Fc(ind9,1)  Fcc(ind9,1)  Fc(ind12,3);... %20
+                        F(ind10,3) Fc(ind10,3) Fcc(ind10,3) Fc(ind11,1) F(ind10,2) Fc(ind10,2) Fcc(ind10,2) Fc(ind11,2);... %21
+                        F(ind11,3) Fc(ind11,3) Fcc(ind11,3) Fc(ind12,1) F(ind11,2) Fc(ind11,2) Fcc(ind11,2) Fc(ind12,2);... %22
+                        F(ind4,1)  Fc(ind4,1)  Fcc(ind4,1)  Fc(ind11,3) F(ind4,4)  Fc(ind4,4)  Fcc(ind4,4)  Fc(ind11,4);... %23
+                        F(ind4,2)  Fc(ind4,2)  Fcc(ind4,2)  Fc(ind12,4) F(ind4,1)  Fc(ind4,1)  Fcc(ind4,1)  Fc(ind12,1) ;... %24
+                        ];
+                    
+                    if cPar.hexSplit>0
+                        [Fn,Vn]=subHex(Fn,Vn,cPar.hexSplit,2);
                     end                    
+                    Cn=zeros(size(Fn,1),1);
+                    
             end
         else
             switch elementType
@@ -327,16 +416,58 @@ switch cPar.latticeSide
                             Fn=[El; Es];
                             Cn=[zeros(size(El,1),1);ones(size(Es,1),1)];
                     end
+                case 'rhomdo14'
+                    V_ce=patchCentre(E,V);
+                    Vn=[Vc;Vcc;V_ce];
+                    Fcc=Fcc+size(Vc,1);                    
+                    ind_ce=(1:1:size(V_ce,1))'+size(Vc,1)+size(Vcc,1);
+                    
+                    ind1 = 1:size(E,1);
+                    ind2 = ind1+size(E,1);
+                    ind3 = ind2+size(E,1);
+                    ind4 = ind3+size(E,1);
+                    ind5 = ind4+size(E,1);
+                    ind6 = ind5+size(E,1);
+                    ind7 = ind6+size(E,1);
+                    ind8 = ind7+size(E,1);
+                    ind9 = ind8+size(E,1);
+                    ind10= ind9+size(E,1);
+                    ind11= ind10+size(E,1);
+                    ind12= ind11+size(E,1);
+                    
+                    
+                    E1=[fliplr(Fcc(ind1,:)) fliplr([ind_ce Fcc(ind5,3) Fcc(ind5,4) Fcc(ind8,1)]) ];
+                    E2=[fliplr(Fcc(ind2,:))  fliplr([Fcc(ind9,2) Fcc(ind10,3) ind_ce Fcc(ind9,1)]) ];
+                    E3=[fliplr(Fcc(ind3,:)) fliplr([ind_ce  Fcc(ind7,3) Fcc(ind6,4) Fcc(ind6,1)]) ];
+                    E4=[fliplr((Fcc(ind4,:))) fliplr([Fcc(ind12,2) Fcc(ind12,3) ind_ce Fcc(ind11,1)])  ];
+                    
+                    Fn=[...
+                        Fcc(ind1,:)  Fc(ind1,:);... %1
+                        Fcc(ind2,:)  Fc(ind2,:);... %2
+                        Fcc(ind3,:)  Fc(ind3,:);... %3
+                        Fcc(ind4,:)  Fc(ind4,:);... %4
+                        Fcc(ind5,:)  Fc(ind5,:);... %5
+                        Fcc(ind6,:)  Fc(ind6,:);... %6
+                        Fcc(ind7,:)  Fc(ind7,:);... %7
+                        Fcc(ind8,:)  Fc(ind8,:);... %8
+                        Fcc(ind9,:)  Fc(ind9,:);... %9
+                        Fcc(ind10,:) Fc(ind10,:);... %10
+                        Fcc(ind11,:) Fc(ind11,:);... %11
+                        Fcc(ind12,:) Fc(ind12,:);... %12
+                        ];
+                    
+                    if cPar.hexSplit>0
+                        [Fn,Vn]=subHex(Fn,Vn,cPar.hexSplit,2);
+                    end
+                    Cn=[zeros(size(Fn,1),1);ones(4*size(E1,1),1)];                    
+                    Fn=[Fn;E1;E2;E3;E4];
+                    
             end
         else
             switch elementType
                 case 'tet4'
                     switch cPar.meshType
                         case 'tri'
-                            %Quad
-%                             Fn=[Fc(:,1) Fcc(:,1)+size(Vc,1) Fcc(:,2)+size(Vc,1) Fc(:,2);...
-%                                 Fc(:,2) Fcc(:,2)+size(Vc,1) Fcc(:,3)+size(Vc,1) Fc(:,3);...
-%                                 Fc(:,3) Fcc(:,3)+size(Vc,1) Fcc(:,1)+size(Vc,1) Fc(:,1)];
                             Fn=[Fcc(:,1)+size(Vc,1) Fcc(:,1)+size(Vc,1) Fcc(:,2)+size(Vc,1) Fcc(:,2)+size(Vc,1);...
                                 Fcc(:,2)+size(Vc,1) Fcc(:,2)+size(Vc,1) Fcc(:,3)+size(Vc,1) Fcc(:,3)+size(Vc,1);...
                                 Fcc(:,3)+size(Vc,1) Fcc(:,3)+size(Vc,1) Fcc(:,1)+size(Vc,1) Fcc(:,1)+size(Vc,1)];

@@ -54,7 +54,7 @@ febioLogFileName_stiffness=[febioFebFileNamePart,'_stiffness_out.txt']; %Log fil
 sampleSize=10;
 
 %Define applied displacement 
-appliedStrain=0.3; %Linear strain (Only used to compute applied stretch)
+appliedStrain=0.2; %Linear strain (Only used to compute applied stretch)
 loadingOption='compression'; % or 'tension'
 switch loadingOption
     case 'compression'
@@ -66,8 +66,8 @@ displacementMagnitude=(stretchLoad*sampleSize)-sampleSize; %The displacement mag
 
 %Material parameter set
 c1=1e-3; %Shear-modulus-like parameter
-m1=6; %Material parameter setting degree of non-linearity
-k_factor=500; %Bulk modulus factor 
+m1=2; %Material parameter setting degree of non-linearity
+k_factor=50; %Bulk modulus factor 
 k=c1*k_factor; %Bulk modulus
 formulationType='uncoupled'; %coupled
 
@@ -91,12 +91,21 @@ E=1:8; %Element description of the 8-node cube (hexahedral element)
 [E,V,C]=subHex(E,V); %Subdevide into 8 sub-cubes
 [E,V,C]=hex2tet(E,V,C,1); %Convert to tetrahedral elements
 [F,~]=element2patch(E,C); %Patch data for plotting
+[indBoundary]=tesBoundary(F,V);
 
+%%
 % Create lattice structure
-controlParameter.growSteps=1; %0 is normal, positive or negative integers increase or decrease the edge lattice thickness respectively
-controlParameter.latticeSide=2; %Empty outputs both, 1=side 1 the edge lattice, 2=side 2 the dual lattice to the edge lattice
-[Es,Vs,Cs]=element2HexLattice(E,V,controlParameter); %Get lattice structure
-elementMaterialIndices=ones(size(Es,1),1);
+controlParameter.shrinkFactor=0.2; %Strut sides are formed by shrinking the input mesh faces by this factor
+controlParameter.numDigitKeep=5; %used for merging nodes
+controlParameter.meshType='hex'; %desired output mesh type
+controlParameter.indBoundary=indBoundary; %indices of the boundary faces
+controlParameter.latticeSide=2; %1=side 1 the edge lattice, 2=side 2 the dual lattice to the edge lattice
+[Es,Vs,Cs]=element2lattice(E,V,controlParameter);
+
+%Subdivide hex elements 
+splitMethod=3; %3 refers to allong strut length direction
+numSplitIterations=1; %Number of times the hex elements are split
+[Es,Vs]=subHex(Es,Vs,numSplitIterations,splitMethod);
 
 % Create patch Data for visualization
 [Fs,CsF]=element2patch(Es,Cs); %Patch data for plotting
@@ -152,22 +161,8 @@ YF=mean(Y(Fb),2);
 logicSides_Fb3=(d>0.9) & YF>=(max(Vs(:,2))-eps(sampleSize));
 logicSides_Fb4=(d<-0.9) & YF<=(min(Vs(:,2))+eps(sampleSize));
 
-logicSides_Fb=logicSides_Fb1 | logicSides_Fb2 | logicSides_Fb3 | logicSides_Fb4;
-
 faceBoundaryMarker(logicBottom_Fb)=1;
 faceBoundaryMarker(logicTop_Fb)=2;
-faceBoundaryMarker(logicSides_Fb)=3;
-
-cFigure;
-hold on;
-gpatch(Fs,Vs,'kw','none',0.2);
-gpatch(Fb(faceBoundaryMarker==1,:),Vs,'r','k',1);
-gpatch(Fb(faceBoundaryMarker==2,:),Vs,'b','k',1);
-% gpatch(Fb(faceBoundaryMarker==3,:),Vs,'g','k',1);
-axisGeom(gca,fontSize); 
-colormap(cMap);
-camlight headlight; lighting flat;
-drawnow;
 
 %% DEFINE BC's
 
@@ -187,7 +182,7 @@ bcPrescribeMagnitudes=displacementMagnitude(ones(1,numel(bcPrescribeList)),:);
 
 cFigure; hold on;
 title('Boundary conditions','FontSize',fontSize);
-gpatch(Fb,Vs,0.5*ones(1,3),'none',0.4);
+gpatch(Fb,Vs,'kw','none',0.4);
 hl(1)=plotV(Vs(bcRigidList,:),'k.','MarkerSize',markerSize);
 hl(2)=plotV(Vs(bcPrescribeList,:),'r.','MarkerSize',markerSize);
 legend(hl,{'BC full support','BC prescribed Z displacement'})
@@ -196,29 +191,37 @@ camlight headlight;
 set(gca,'FontSize',fontSize);
 drawnow; 
 
-%%
+%% Smoothen lattice
 
+%Get "clean" surface mesh for only the boundary 
 [Fb_clean,Vb_clean,indFix]=patchCleanUnused(Fb,Vs);
 
-cPar.Method='HC';
-cPar.n=15;
+%Find indices of points to hold on to during smoothing
 indKeep=Fb_clean(faceBoundaryMarker>0,:);
 indKeep=unique(indKeep(:));
-cPar.RigidConstraints=indKeep;
 
+%Smoothing
+cPar.Method='HC';
+cPar.n=15;
+cPar.RigidConstraints=indKeep;
 [Vb_clean]=tesSmooth(Fb_clean,Vb_clean,[],cPar);
+
+%Override coordinates in full mesh with smoothed coordinates
 ind=Fb(:);
 ind=unique(ind(:));
 Vs(ind,:)=Vb_clean;
 
 %%
+% Visualize smoothed mesh
 
 cFigure; hold on;
 title('Smoothed mesh','FontSize',fontSize);
-gpatch(Fs,Vs,'kw','k',1);
+gpatch(F,V,'kw','none',0.1);
+gpatch(Fb,Vs,'bw','none',1);
 axisGeom;
 camlight headlight;
 set(gca,'FontSize',fontSize);
+% axis off
 drawnow; 
 
 %% Defining the FEBio input structure
@@ -306,6 +309,7 @@ febio_spec.Boundary.prescribe{1}.scale.ATTR.lc=1;
 febio_spec.Boundary.prescribe{1}.scale.VAL=1;
 febio_spec.Boundary.prescribe{1}.relative=1;
 febio_spec.Boundary.prescribe{1}.value=displacementMagnitude;
+
 
 %Output section 
 % -> log file
@@ -395,7 +399,7 @@ if runFlag==1 %i.e. a succesful run
     axis([min([Vs_def(:,1);Vs(:,1)]) max([Vs_def(:,1);Vs(:,1)])...
           min([Vs_def(:,2);Vs(:,2)]) max([Vs_def(:,2);Vs(:,2)])...
           min([Vs_def(:,3);Vs(:,3)]) max([Vs_def(:,3);Vs(:,3)]) ]); %Set axis limits statically
-    view(130,25); %Set view direction
+%     view(130,25); %Set view direction
     camlight headlight;        
         
     % Set up animation features

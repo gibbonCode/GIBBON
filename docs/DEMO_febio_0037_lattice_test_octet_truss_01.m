@@ -68,8 +68,8 @@ numElementsHeight=round(sampleHeight/pointSpacings(3)); %Number of elemens in di
 numSplitIterationsTruss=2;
 
 %Define applied displacement 
-appliedStrain=0.3; %Linear strain (Only used to compute applied stretch)
-loadingOption='tension'; % or 'tension'
+appliedStrain=0.25; %Linear strain (Only used to compute applied stretch)
+loadingOption='compression'; % or 'tension'
 switch loadingOption
     case 'compression'
         stretchLoad=1-appliedStrain; %The applied stretch for uniaxial loading
@@ -86,10 +86,10 @@ k=c1*k_factor; %Bulk modulus
 formulationType='uncoupled'; %coupled
 
 % FEA control settings
-numTimeSteps=10; %Number of time steps desired
+numTimeSteps=25; %Number of time steps desired
 max_refs=25; %Max reforms
 max_ups=0; %Set to zero to use full-Newton iterations
-opt_iter=6; %Optimum number of iterations
+opt_iter=12; %Optimum number of iterations
 max_retries=5; %Maximum number of retires
 dtmin=(1/numTimeSteps)/100; %Minimum time step size
 dtmax=1/numTimeSteps; %Maximum time step size

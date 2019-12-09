@@ -5,12 +5,39 @@
 clear; close all; clc;
 
 %% Syntax
-% |[e] = ellipseFit3(varargin);|
+% |[e] = ellipseFit3(V,optMethod,numSample);|
 
 %% Description 
-% UNDOCUMENTED 
+
 %% Examples 
 % 
+
+n=25;
+t=linspace(0,2*pi,n+1); 
+t=t(1:end-1);
+
+x=2*cos(t);
+y=3*sin(t);
+V=[x(:) y(:) zeros(size(x(:)))]+5*randn(1,3);
+V=V+0.1*randn(size(V));
+R=euler2DCM([0 0 0.25*pi]);
+V=V*R';
+
+%% Fit ellipse
+
+% Fit ellipse
+[A] = ellipseFit3(V);
+
+% Get coordinates for plotting
+[VF]=ellipseCoord3(A,linspace(0,2*pi,500));
+
+%%
+cFigure;hold on;
+plotV(VF,'b-','LineWidth',2);
+plotV(V,'r.','MarkerSize',35);
+axis equal; box on;
+drawnow; 
+
 %%
 % 
 % <<gibbVerySmall.gif>>

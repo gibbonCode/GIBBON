@@ -1,4 +1,4 @@
-function [F1c,F2c,F1,F2,C1,C2,VT]=truncatedOctahedronMesh(r,nCopies)
+function [F1c,F2c,F1,F2,C1,C2,VT]=truncatedOctahedronMesh(varargin)
 
 % function [F1c,F2c,F1,F2,C1,C2,VT]=truncatedOctahedronMesh(r,nCopies)
 % ------------------------------------------------------------------------
@@ -9,7 +9,27 @@ function [F1c,F2c,F1,F2,C1,C2,VT]=truncatedOctahedronMesh(r,nCopies)
 % gibbon.toolbox@gmail.com
 % 
 % 2019/02/08 Created
+% 2019/10/13 
 % ------------------------------------------------------------------------
+
+%% Parse input
+
+switch nargin
+    case 1
+        r=varargin{1};
+        nCopies=2;
+    case 2
+        r=varargin{1};
+        nCopies=varargin{2};
+end
+
+if isempty(nCopies)
+    nCopies=2;
+end
+
+if numel(nCopies)==1
+    nCopies=nCopies*ones(1,3);
+end
 
 %%
 %Get truncated octahedron

@@ -324,8 +324,7 @@ set(gca,'fontSize',fontSize);
 drawnow;
 
 %% Example: Combining colormap and RGB driven patch colours 
-% N.B. The figure renderer might have to be set to OPENGL. This is the
-% default renderer for the |figuremax| function
+% N.B. The figure renderer might have to be set to OPENGL.
 
 %%
 % Convert voxels colouring to RGB type, here a simple conversion to a gray

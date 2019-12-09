@@ -8,19 +8,16 @@ if isempty(plotOptions)
     plotOn=0;
 else
     plotOn=1;
+    fontSize=20;
     
-    fig_color='w'; fig_colordef='white';
-    font_size=20;
-    
-    hf1=figuremax(fig_color,fig_colordef);
-    title('slicePatch','FontSize',font_size);
-    xlabel('X','FontSize',font_size);ylabel('Y','FontSize',font_size); zlabel('Z','FontSize',font_size);
+    hf1=cFigure;
+    title('slicePatch','FontSize',fontSize);    
     hold on;
     
     hp= patch('Faces',F,'Vertices',V,'FaceColor',plotOptions.faceColorPatch,'EdgeColor','k','FaceAlpha',plotOptions.faceAlphaPatch);
     
     camlight('headlight'); lighting flat;
-    axis equal; view(3); axis tight;  grid on;  set(gca,'FontSize',font_size);
+    axisGeom;
     drawnow;
     
     if plotOptions.plotPlanes

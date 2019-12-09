@@ -178,7 +178,7 @@ for qd=1:1:siz4
         
         %% PLOTTING DATA IN REAL WORLD SPACE
         
-        hf1=figuremax(figColor,figColorDef);  set(gcf,'renderer','OpenGL');
+        hf1=cFigure;  set(gcf,'renderer','OpenGL');
         xlabel('X (mm)','FontSize',fontSize); ylabel('Y (mm)','FontSize',fontSize); zlabel('Z (mm)','FontSize',fontSize);
         title('Real-world cartesian space','FontSize',fontSize);
         hold on;
@@ -199,7 +199,7 @@ for qd=1:1:siz4
         
         %% PLOTTING DATA IN IMAGE SPACE OF SET 1
         
-        hf2=figuremax(figColor,figColorDef); set(gcf,'renderer','OpenGL');
+        hf2=cFigure; set(gcf,'renderer','OpenGL');
         xlabel('J','FontSize',fontSize); ylabel('I','FontSize',fontSize); zlabel('K','FontSize',fontSize);
         title('Image space of set 1','FontSize',fontSize);
         hold on;
@@ -221,7 +221,7 @@ for qd=1:1:siz4
         
         %% PLOTTING MERGED IMAGE IN IMAGE SPACE
         
-        hf3=figuremax(figColor,figColorDef); set(gcf,'renderer','OpenGL');
+        hf3=cFigure; set(gcf,'renderer','OpenGL');
         xlabel('J','FontSize',fontSize); ylabel('I','FontSize',fontSize); zlabel('K','FontSize',fontSize);
         title('Image space of merged set','FontSize',fontSize);
         hold on;
@@ -237,7 +237,7 @@ for qd=1:1:siz4
 
         %%
         
-        hf4=figuremax(figColor,figColorDef);  set(gcf,'renderer','OpenGL');
+        hf4=cFigure;  set(gcf,'renderer','OpenGL');
         xlabel('J','FontSize',fontSize); ylabel('I','FontSize',fontSize); zlabel('K','FontSize',fontSize);
         title('Image space of set 1','FontSize',fontSize);
         hold on;

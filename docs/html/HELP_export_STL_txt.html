@@ -6,7 +6,7 @@
    <!--
 This HTML was auto-generated from MATLAB code.
 To make changes, update the MATLAB code and republish this document.
-      --><title>export_STL_txt</title><meta name="generator" content="MATLAB 9.6"><link rel="schema.DC" href="http://purl.org/dc/elements/1.1/"><meta name="DC.date" content="2019-06-20"><meta name="DC.source" content="HELP_export_STL_txt.m"><style type="text/css">
+      --><title>export_STL_txt</title><meta name="generator" content="MATLAB 9.7"><link rel="schema.DC" href="http://purl.org/dc/elements/1.1/"><meta name="DC.date" content="2019-12-09"><meta name="DC.source" content="HELP_export_STL_txt.m"><style type="text/css">
 html,body,div,span,applet,object,iframe,h1,h2,h3,h4,h5,h6,p,blockquote,pre,a,abbr,acronym,address,big,cite,code,del,dfn,em,font,img,ins,kbd,q,s,samp,small,strike,strong,sub,sup,tt,var,b,u,i,center,dl,dt,dd,ol,ul,li,fieldset,form,label,legend,table,caption,tbody,tfoot,thead,tr,th,td{margin:0;padding:0;border:0;outline:0;font-size:100%;vertical-align:baseline;background:transparent}body{line-height:1}ol,ul{list-style:none}blockquote,q{quotes:none}blockquote:before,blockquote:after,q:before,q:after{content:'';content:none}:focus{outine:0}ins{text-decoration:none}del{text-decoration:line-through}table{border-collapse:collapse;border-spacing:0}
 
 html { min-height:100%; margin-bottom:1px; }
@@ -67,9 +67,7 @@ table td { padding:7px 5px; text-align:left; vertical-align:top; border:1px soli
 
 
   </style></head><body><div class="content"><h1>export_STL_txt</h1><!--introduction--><p>Below is a demonstration of the features of the <tt>export_STL_txt</tt> function</p><!--/introduction--><h2>Contents</h2><div><ul><li><a href="#3">Get patch data sets</a></li><li><a href="#4">Create the stlStruct</a></li><li><a href="#6">Exporting an STL file from the multi-solid patch data</a></li></ul></div><pre class="codeinput">clear; close <span class="string">all</span>; clc;
-</pre><p>Plot settings</p><pre class="codeinput">fig_color=<span class="string">'w'</span>;
-fig_colordef=<span class="string">'white'</span>;
-faceAlpha=0.5;
+</pre><p>Plot settings</p><pre class="codeinput">faceAlpha=0.5;
 fontSize=25;
 </pre><h2 id="3">Get patch data sets</h2><pre class="codeinput">[F1,V1]=stanford_bunny;
 meanV=mean(V1,1);
@@ -79,120 +77,124 @@ V1=V1./max(V1(:))/2;
 meanV=mean(V2,1);
 V2=V2-meanV(ones(1,size(V2,1)),:);
 V2=V2./max(V2(:));
-</pre><h2 id="4">Create the stlStruct</h2><pre class="codeinput">stlStruct.solidNames={<span class="string">'stanford_bunny'</span>,<span class="string">'parasaurolophus'</span>};
-stlStruct.solidVertices={V1,V2};
-stlStruct.solidFaces={F1,F2};
-stlStruct.solidNormals={[],[]};
-</pre><p>Plotting the models</p><pre class="codeinput">pColors=autumn(numel(stlStruct.solidNames));
+V2=V2+max(V1,[],1);
+</pre><h2 id="4">Create the stlStruct</h2><pre class="codeinput">stlStruct.solidNames={<span class="string">'stanford_bunny'</span>,<span class="string">'parasaurolophus'</span>}; <span class="comment">%names of parts</span>
+stlStruct.solidVertices={V1,V2}; <span class="comment">%Vertices</span>
+stlStruct.solidFaces={F1,F2}; <span class="comment">%Faces</span>
+stlStruct.solidNormals={[],[]}; <span class="comment">%Face normals (optional)</span>
+</pre><p>Plotting the models</p><pre class="codeinput">pColors=gjet(numel(stlStruct.solidNames));
 
-figuremax(fig_color,fig_colordef);
+cFigure;
 title(<span class="string">'Patch data to export to multi-solid STL'</span>,<span class="string">'fontSize'</span>,fontSize);
-xlabel(<span class="string">'X'</span>,<span class="string">'fontSize'</span>,fontSize);ylabel(<span class="string">'Y'</span>,<span class="string">'fontSize'</span>,fontSize); zlabel(<span class="string">'Z'</span>,<span class="string">'fontSize'</span>,fontSize); hold <span class="string">on</span>;
+
 <span class="keyword">for</span> q=1:1:numel(stlStruct.solidNames)
-    F=stlStruct.solidFaces{q};
-    V=stlStruct.solidVertices{q};
-    patch(<span class="string">'Faces'</span>,F,<span class="string">'Vertices'</span>,V,<span class="string">'FaceColor'</span>,pColors(q,:),<span class="string">'EdgeColor'</span>,<span class="string">'k'</span>,<span class="string">'FaceAlpha'</span>,faceAlpha);
+    F=stlStruct.solidFaces{q}; <span class="comment">%Faces</span>
+    V=stlStruct.solidVertices{q}; <span class="comment">%Vertices</span>
+
+    gpatch(F,V,pColors(q,:));
 <span class="keyword">end</span>
-view(3); axis <span class="string">equal</span>; axis <span class="string">tight</span>; axis <span class="string">vis3d</span>; grid <span class="string">on</span>;
+
+axisGeom
 camlight(<span class="string">'headlight'</span>);
 lighting <span class="string">phong</span>; axis <span class="string">off</span>;
 drawnow;
-</pre><img width="100%" height="auto" vspace="5" hspace="5" src="HELP_export_STL_txt_01.jpg" alt=""> <h2 id="6">Exporting an STL file from the multi-solid patch data</h2><pre class="codeinput"><span class="comment">%Set main folder and fileName</span>
+</pre><img vspace="5" hspace="5" src="HELP_export_STL_txt_01.png" alt=""> <h2 id="6">Exporting an STL file from the multi-solid patch data</h2><pre class="codeinput"><span class="comment">%Set main folder and fileName</span>
 defaultFolder = fileparts(fileparts(mfilename(<span class="string">'fullpath'</span>)));
 pathName=fullfile(defaultFolder,<span class="string">'data'</span>,<span class="string">'STL'</span>);
 fileName=fullfile(pathName,<span class="string">'stanford_bunny_multi.stl'</span>);
 
 export_STL_txt(fileName,stlStruct);
-</pre><p><img vspace="5" hspace="5" src="gibbVerySmall.gif" alt=""> </p><p><i><b>GIBBON</b></i> <a href="www.gibboncode.org">www.gibboncode.org</a></p><p><i>Kevin Mattheus Moerman</i>, <a href="gibbon.toolbox@gmail.com">gibbon.toolbox@gmail.com</a></p><p><i><b>GIBBON footer text</b></i></p><p>License: <a href="https://github.com/gibbonCode/GIBBON/blob/master/LICENSE">https://github.com/gibbonCode/GIBBON/blob/master/LICENSE</a></p><p>GIBBON: The Geometry and Image-based Bioengineering add-On. A toolbox for image segmentation, image-based modeling, meshing, and finite element analysis.</p><p>Copyright (C) 2019  Kevin Mattheus Moerman</p><p>This program is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.</p><p>This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for more details.</p><p>You should have received a copy of the GNU General Public License along with this program.  If not, see <a href="http://www.gnu.org/licenses/">http://www.gnu.org/licenses/</a>.</p><p class="footer"><br><a href="https://www.mathworks.com/products/matlab/">Published with MATLAB&reg; R2019a</a><br></p></div><!--
+</pre><p><img vspace="5" hspace="5" src="gibbVerySmall.gif" alt=""> </p><p><i><b>GIBBON</b></i> <a href="www.gibboncode.org">www.gibboncode.org</a></p><p><i>Kevin Mattheus Moerman</i>, <a href="gibbon.toolbox@gmail.com">gibbon.toolbox@gmail.com</a></p><p><i><b>GIBBON footer text</b></i></p><p>License: <a href="https://github.com/gibbonCode/GIBBON/blob/master/LICENSE">https://github.com/gibbonCode/GIBBON/blob/master/LICENSE</a></p><p>GIBBON: The Geometry and Image-based Bioengineering add-On. A toolbox for image segmentation, image-based modeling, meshing, and finite element analysis.</p><p>Copyright (C) 2019  Kevin Mattheus Moerman</p><p>This program is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.</p><p>This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for more details.</p><p>You should have received a copy of the GNU General Public License along with this program.  If not, see <a href="http://www.gnu.org/licenses/">http://www.gnu.org/licenses/</a>.</p><p class="footer"><br><a href="https://www.mathworks.com/products/matlab/">Published with MATLAB&reg; R2019b</a><br></p></div><!--
 ##### SOURCE BEGIN #####
-%% export_STL_txt
-% Below is a demonstration of the features of the |export_STL_txt| function
-
-%%
-clear; close all; clc;
-
-%%
-% Plot settings
-fig_color='w'; 
-fig_colordef='white'; 
-faceAlpha=0.5;
-fontSize=25; 
-
-%% Get patch data sets
-[F1,V1]=stanford_bunny;
-meanV=mean(V1,1);
-V1=V1-meanV(ones(1,size(V1,1)),:);
-V1=V1./max(V1(:))/2;
-[F2,V2]=parasaurolophus;
-meanV=mean(V2,1);
-V2=V2-meanV(ones(1,size(V2,1)),:);
-V2=V2./max(V2(:));
-
-%% Create the stlStruct
-
-stlStruct.solidNames={'stanford_bunny','parasaurolophus'};
-stlStruct.solidVertices={V1,V2};
-stlStruct.solidFaces={F1,F2};
-stlStruct.solidNormals={[],[]};
-
-%%
-% Plotting the models 
-pColors=autumn(numel(stlStruct.solidNames));
-
-figuremax(fig_color,fig_colordef);
-title('Patch data to export to multi-solid STL','fontSize',fontSize);
-xlabel('X','fontSize',fontSize);ylabel('Y','fontSize',fontSize); zlabel('Z','fontSize',fontSize); hold on;
-for q=1:1:numel(stlStruct.solidNames)
-    F=stlStruct.solidFaces{q};
-    V=stlStruct.solidVertices{q};
-    patch('Faces',F,'Vertices',V,'FaceColor',pColors(q,:),'EdgeColor','k','FaceAlpha',faceAlpha);
-end
-view(3); axis equal; axis tight; axis vis3d; grid on; 
-camlight('headlight');
-lighting phong; axis off; 
-drawnow;
-
-%% Exporting an STL file from the multi-solid patch data
-
-%Set main folder and fileName
-defaultFolder = fileparts(fileparts(mfilename('fullpath')));
-pathName=fullfile(defaultFolder,'data','STL'); 
-fileName=fullfile(pathName,'stanford_bunny_multi.stl'); 
-
-export_STL_txt(fileName,stlStruct);
-
-%% 
-%
-% <<gibbVerySmall.gif>>
-% 
-% _*GIBBON*_ 
-% <www.gibboncode.org>
-% 
-% _Kevin Mattheus Moerman_, <gibbon.toolbox@gmail.com>
- 
-%% 
-% _*GIBBON footer text*_ 
-% 
-% License: <https://github.com/gibbonCode/GIBBON/blob/master/LICENSE>
-% 
-% GIBBON: The Geometry and Image-based Bioengineering add-On. A toolbox for
-% image segmentation, image-based modeling, meshing, and finite element
-% analysis.
-% 
-% Copyright (C) 2019  Kevin Mattheus Moerman
-% 
-% This program is free software: you can redistribute it and/or modify
-% it under the terms of the GNU General Public License as published by
-% the Free Software Foundation, either version 3 of the License, or
-% (at your option) any later version.
-% 
-% This program is distributed in the hope that it will be useful,
-% but WITHOUT ANY WARRANTY; without even the implied warranty of
-% MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-% GNU General Public License for more details.
-% 
-% You should have received a copy of the GNU General Public License
-% along with this program.  If not, see <http://www.gnu.org/licenses/>.
+%% export_STL_txt
+% Below is a demonstration of the features of the |export_STL_txt| function
+
+%%
+clear; close all; clc;
+
+%%
+% Plot settings
+faceAlpha=0.5;
+fontSize=25; 
+
+%% Get patch data sets
+[F1,V1]=stanford_bunny;
+meanV=mean(V1,1);
+V1=V1-meanV(ones(1,size(V1,1)),:);
+V1=V1./max(V1(:))/2;
+[F2,V2]=parasaurolophus;
+meanV=mean(V2,1);
+V2=V2-meanV(ones(1,size(V2,1)),:);
+V2=V2./max(V2(:));
+V2=V2+max(V1,[],1);
+
+%% Create the stlStruct
+
+stlStruct.solidNames={'stanford_bunny','parasaurolophus'}; %names of parts
+stlStruct.solidVertices={V1,V2}; %Vertices
+stlStruct.solidFaces={F1,F2}; %Faces
+stlStruct.solidNormals={[],[]}; %Face normals (optional)
+
+%%
+% Plotting the models 
+pColors=gjet(numel(stlStruct.solidNames));
+
+cFigure;
+title('Patch data to export to multi-solid STL','fontSize',fontSize);
+
+for q=1:1:numel(stlStruct.solidNames)
+    F=stlStruct.solidFaces{q}; %Faces
+    V=stlStruct.solidVertices{q}; %Vertices
+    
+    gpatch(F,V,pColors(q,:));
+end
+
+axisGeom
+camlight('headlight');
+lighting phong; axis off; 
+drawnow;
+
+%% Exporting an STL file from the multi-solid patch data
+
+%Set main folder and fileName
+defaultFolder = fileparts(fileparts(mfilename('fullpath')));
+pathName=fullfile(defaultFolder,'data','STL'); 
+fileName=fullfile(pathName,'stanford_bunny_multi.stl'); 
+
+export_STL_txt(fileName,stlStruct);
+
+%% 
+%
+% <<gibbVerySmall.gif>>
+% 
+% _*GIBBON*_ 
+% <www.gibboncode.org>
+% 
+% _Kevin Mattheus Moerman_, <gibbon.toolbox@gmail.com>
+ 
+%% 
+% _*GIBBON footer text*_ 
+% 
+% License: <https://github.com/gibbonCode/GIBBON/blob/master/LICENSE>
+% 
+% GIBBON: The Geometry and Image-based Bioengineering add-On. A toolbox for
+% image segmentation, image-based modeling, meshing, and finite element
+% analysis.
+% 
+% Copyright (C) 2019  Kevin Mattheus Moerman
+% 
+% This program is free software: you can redistribute it and/or modify
+% it under the terms of the GNU General Public License as published by
+% the Free Software Foundation, either version 3 of the License, or
+% (at your option) any later version.
+% 
+% This program is distributed in the hope that it will be useful,
+% but WITHOUT ANY WARRANTY; without even the implied warranty of
+% MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+% GNU General Public License for more details.
+% 
+% You should have received a copy of the GNU General Public License
+% along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 ##### SOURCE END #####
 --></body></html>

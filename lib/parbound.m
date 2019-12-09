@@ -24,7 +24,7 @@ function Pb=parbound(P,Ps)
 % w=Ps.ub-Ps.lb;
 % P=linspace(Ps.c-Ps.f*w,Ps.c+Ps.f*w,500);
 % Pb=parbound(P,Ps);
-% hf1=figuremax(fig_color,fig_colordef); hold on; grid on;
+% hf1=cFigure; hold on; grid on;
 % xlabel('P','FontSize'); ylabel('Pb','FontSize'); 
 % hf=plot(P,Pb,'b-','LineWidth',5);
 % hf=plot(P,(Ps.ub-(0.5*(1-Ps.t)*w))*ones(size(P)),'g-','LineWidth',5);

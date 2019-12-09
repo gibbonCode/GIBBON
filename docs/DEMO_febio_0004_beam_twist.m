@@ -240,7 +240,7 @@ for q=1:1:numSteps
     %Define prescribed displacements
     bcPrescribeMagnitudesStep=V2(bcPrescribeList,:)-V2n(bcPrescribeList,:);
 
-    %Define mesh data and presrived displacements
+    %Define mesh data and prescribed displacements
     for q_dir=1:1:3 %Loop over coordinates dimensions        
         
         %Define mesh data for displacement increments

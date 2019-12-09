@@ -6,7 +6,7 @@
    <!--
 This HTML was auto-generated from MATLAB code.
 To make changes, update the MATLAB code and republish this document.
-      --><title>rhombicDodecahedronMesh</title><meta name="generator" content="MATLAB 9.6"><link rel="schema.DC" href="http://purl.org/dc/elements/1.1/"><meta name="DC.date" content="2019-06-20"><meta name="DC.source" content="HELP_rhombicDodecahedronMesh.m"><style type="text/css">
+      --><title>rhombicDodecahedronMesh</title><meta name="generator" content="MATLAB 9.7"><link rel="schema.DC" href="http://purl.org/dc/elements/1.1/"><meta name="DC.date" content="2019-12-09"><meta name="DC.source" content="HELP_rhombicDodecahedronMesh.m"><style type="text/css">
 html,body,div,span,applet,object,iframe,h1,h2,h3,h4,h5,h6,p,blockquote,pre,a,abbr,acronym,address,big,cite,code,del,dfn,em,font,img,ins,kbd,q,s,samp,small,strike,strong,sub,sup,tt,var,b,u,i,center,dl,dt,dd,ol,ul,li,fieldset,form,label,legend,table,caption,tbody,tfoot,thead,tr,th,td{margin:0;padding:0;border:0;outline:0;font-size:100%;vertical-align:baseline;background:transparent}body{line-height:1}ol,ul{list-style:none}blockquote,q{quotes:none}blockquote:before,blockquote:after,q:before,q:after{content:'';content:none}:focus{outine:0}ins{text-decoration:none}del{text-decoration:line-through}table{border-collapse:collapse;border-spacing:0}
 
 html { min-height:100%; margin-bottom:1px; }
@@ -66,208 +66,99 @@ table td { padding:7px 5px; text-align:left; vertical-align:top; border:1px soli
 
 
 
-  </style></head><body><div class="content"><h1>rhombicDodecahedronMesh</h1><!--introduction--><p>Below is a demonstration of the features of the <tt>rhombicDodecahedronMesh</tt> function</p><!--/introduction--><h2>Contents</h2><div><ul><li><a href="#2">Syntax</a></li><li><a href="#3">Description</a></li><li><a href="#5">Creating a mesh of rhombic dodecahedra</a></li><li><a href="#8">EXAMPLE: Creating a "bubble image"</a></li></ul></div><pre class="codeinput">clear; close <span class="string">all</span>; clc;
+  </style></head><body><div class="content"><h1>rhombicDodecahedronMesh</h1><!--introduction--><p>Below is a demonstration of the features of the <tt>rhombicDodecahedronMesh</tt> function</p><!--/introduction--><h2>Contents</h2><div><ul><li><a href="#2">Syntax</a></li><li><a href="#3">Description</a></li><li><a href="#5">Creating a mesh of rhombic dodecahedra</a></li></ul></div><pre class="codeinput">clear; close <span class="string">all</span>; clc;
 </pre><h2 id="2">Syntax</h2><p><tt>[Fc_Q,Fc_T,Ft_Q,Ft_T,Ct_Q,Ct_T,Vt]=rhombicDodecahedronMesh(r,nCopies)</tt></p><h2 id="3">Description</h2><p>Creates a rhombic dodecahedron mesh where r sets the radias and nCopies (a 1x3 vector) sets the number of copies in the x, y, and z direction. The output consists of:</p><p>Fc_Q, Fc_T: the quadrilateral and triangular face cell arrays (1 cell entry per element).</p><p>Ft_Q, Ft,T: the quadrilateral and triangular face arrays</p><p>Ct_Q, Ct,T: color/label data for the face arrays</p><p>Vt: the vertex array</p><p>Plot settings</p><pre class="codeinput">fontSize=15;
 faceAlpha1=1;
-</pre><h2 id="5">Creating a mesh of rhombic dodecahedra</h2><pre class="codeinput">r=sqrt(2)/2; <span class="comment">%Radii, results in a width of 1</span>
-n=5; <span class="comment">%Desired number of copies in each direction</span>
+</pre><h2 id="5">Creating a mesh of rhombic dodecahedra</h2><pre class="codeinput">r=0.5; <span class="comment">%Radii, results in a width of 1</span>
+nCopies=[3 3 3]; <span class="comment">%Number of offset copies</span>
 
-<span class="comment">%The actual input</span>
-nCopies=[n+1 n+1 n+ceil((n+1)/2)]; <span class="comment">%Number of offset copies</span>
-
-[Fc_Q,Fc_T,Ft_Q,Ft_T,Ct_Q,Ct_T,Vt]=rhombicDodecahedronMesh(r,nCopies);
+[E,V,C,F,CF]=rhombicDodecahedronMesh(r,nCopies);
 </pre><p>Plotting results</p><pre class="codeinput">cFigure; hold <span class="string">on</span>;
 title(<span class="string">'A mesh of rhombicDodecahedra'</span>,<span class="string">'FontSize'</span>,fontSize);
-gpatch(Ft_Q,Vt,Ct_Q,<span class="string">'k'</span>,faceAlpha1);
+gpatch(F,V,CF,<span class="string">'k'</span>,faceAlpha1);
 colormap(gjet);
 axisGeom(gca,fontSize);
 camlight(<span class="string">'headlight'</span>);
 drawnow;
-</pre><img width="100%" height="auto" vspace="5" hspace="5" src="HELP_rhombicDodecahedronMesh_01.jpg" alt=""> <pre class="codeinput">cFigure; hold <span class="string">on</span>;
-title(<span class="string">'A mesh of rhombicDodecahedra plotted with triangular faces'</span>,<span class="string">'FontSize'</span>,fontSize);
-gpatch(Ft_T,Vt,Ct_T,<span class="string">'k'</span>,faceAlpha1);
-colormap(gjet);
-axisGeom(gca,fontSize);
-camlight(<span class="string">'headlight'</span>);
-drawnow;
-</pre><img width="100%" height="auto" vspace="5" hspace="5" src="HELP_rhombicDodecahedronMesh_02.jpg" alt=""> <h2 id="8">EXAMPLE: Creating a "bubble image"</h2><p>The triangular surface output can but used with the function <tt>triSurf2Im</tt> to convert the patch data to image data where the interior and exterior are labelled differently. For the mesh created the result is like a highly regular bubble image.</p><pre class="codeinput">voxelSize=0.05;
-[M,G,ML]=triSurf2Im(Ft_T,Vt,voxelSize);
-imOrigin=G.origin;
-</pre><p>Plot results</p><pre class="codeinput">cFigure;
-hold <span class="string">on</span>;
-<span class="comment">% title('"Bubble image"','FontSize',fontSize);</span>
-
-gpatch(Ft_Q,Vt,0.5*ones(1,3),<span class="string">'none'</span>,0.1);
-
-L_plot=false(size(ML));
-L_plot(:,:,round(size(ML,3)/2))=1;
-L_plot=L_plot&amp;~isnan(ML);
-[Fm,Vm,Cm]=ind2patch(L_plot,ML,<span class="string">'sk'</span>);
-[Vm(:,1),Vm(:,2),Vm(:,3)]=im2cart(Vm(:,2),Vm(:,1),Vm(:,3),voxelSize*ones(1,3));
-Vm=Vm+imOrigin(ones(size(Vm,1),1),:);
-gpatch(Fm,Vm,Cm,<span class="string">'none'</span>,faceAlpha1);
-
-L_plot=false(size(ML));
-L_plot(round(size(ML,1)/2),:,:)=1;
-L_plot=L_plot&amp;~isnan(ML);
-[Fm,Vm,Cm]=ind2patch(L_plot,ML,<span class="string">'si'</span>);
-[Vm(:,1),Vm(:,2),Vm(:,3)]=im2cart(Vm(:,2),Vm(:,1),Vm(:,3),voxelSize*ones(1,3));
-Vm=Vm+imOrigin(ones(size(Vm,1),1),:);
-gpatch(Fm,Vm,Cm,<span class="string">'none'</span>,faceAlpha1);
-
-L_plot=false(size(ML));
-L_plot(:,round(size(ML,2)/2),:)=1;
-L_plot=L_plot&amp;~isnan(ML);
-[Fm,Vm,Cm]=ind2patch(L_plot,ML,<span class="string">'sj'</span>);
-[Vm(:,1),Vm(:,2),Vm(:,3)]=im2cart(Vm(:,2),Vm(:,1),Vm(:,3),voxelSize*ones(1,3));
-Vm=Vm+imOrigin(ones(size(Vm,1),1),:);
-gpatch(Fm,Vm,Cm,<span class="string">'none'</span>,faceAlpha1);
-
-colormap(gjet(max(ML(:)))); colorbar;
-camlight(<span class="string">'headlight'</span>);
-axisGeom(gca,fontSize);
-
-drawnow;
-</pre><img width="100%" height="auto" vspace="5" hspace="5" src="HELP_rhombicDodecahedronMesh_03.jpg" alt=""> <p><img vspace="5" hspace="5" src="gibbVerySmall.gif" alt=""> </p><p><i><b>GIBBON</b></i> <a href="www.gibboncode.org">www.gibboncode.org</a></p><p><i>Kevin Mattheus Moerman</i>, <a href="gibbon.toolbox@gmail.com">gibbon.toolbox@gmail.com</a></p><p><i><b>GIBBON footer text</b></i></p><p>License: <a href="https://github.com/gibbonCode/GIBBON/blob/master/LICENSE">https://github.com/gibbonCode/GIBBON/blob/master/LICENSE</a></p><p>GIBBON: The Geometry and Image-based Bioengineering add-On. A toolbox for image segmentation, image-based modeling, meshing, and finite element analysis.</p><p>Copyright (C) 2019  Kevin Mattheus Moerman</p><p>This program is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.</p><p>This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for more details.</p><p>You should have received a copy of the GNU General Public License along with this program.  If not, see <a href="http://www.gnu.org/licenses/">http://www.gnu.org/licenses/</a>.</p><p class="footer"><br><a href="https://www.mathworks.com/products/matlab/">Published with MATLAB&reg; R2019a</a><br></p></div><!--
+</pre><img vspace="5" hspace="5" src="HELP_rhombicDodecahedronMesh_01.png" alt=""> <p><img vspace="5" hspace="5" src="gibbVerySmall.gif" alt=""> </p><p><i><b>GIBBON</b></i> <a href="www.gibboncode.org">www.gibboncode.org</a></p><p><i>Kevin Mattheus Moerman</i>, <a href="gibbon.toolbox@gmail.com">gibbon.toolbox@gmail.com</a></p><p><i><b>GIBBON footer text</b></i></p><p>License: <a href="https://github.com/gibbonCode/GIBBON/blob/master/LICENSE">https://github.com/gibbonCode/GIBBON/blob/master/LICENSE</a></p><p>GIBBON: The Geometry and Image-based Bioengineering add-On. A toolbox for image segmentation, image-based modeling, meshing, and finite element analysis.</p><p>Copyright (C) 2019  Kevin Mattheus Moerman</p><p>This program is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.</p><p>This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for more details.</p><p>You should have received a copy of the GNU General Public License along with this program.  If not, see <a href="http://www.gnu.org/licenses/">http://www.gnu.org/licenses/</a>.</p><p class="footer"><br><a href="https://www.mathworks.com/products/matlab/">Published with MATLAB&reg; R2019b</a><br></p></div><!--
 ##### SOURCE BEGIN #####
-%% rhombicDodecahedronMesh
-% Below is a demonstration of the features of the |rhombicDodecahedronMesh| function
-
-%%
-clear; close all; clc;
-
-%% Syntax
-% |[Fc_Q,Fc_T,Ft_Q,Ft_T,Ct_Q,Ct_T,Vt]=rhombicDodecahedronMesh(r,nCopies)|
-
-%% Description
-% Creates a rhombic dodecahedron mesh where r sets the radias and nCopies
-% (a 1x3 vector) sets the number of copies in the x, y, and z direction.
-% The output consists of:
-%
-% Fc_Q, Fc_T: the quadrilateral and triangular face cell arrays (1 cell
-% entry per element). 
-%
-% Ft_Q, Ft,T: the quadrilateral and triangular face arrays
-%
-% Ct_Q, Ct,T: color/label data for the face arrays
-%
-% Vt: the vertex array
-
-%% 
-% Plot settings
-fontSize=15;
-faceAlpha1=1;
-
-%% Creating a mesh of rhombic dodecahedra
-
-r=sqrt(2)/2; %Radii, results in a width of 1
-n=5; %Desired number of copies in each direction 
-
-%The actual input 
-nCopies=[n+1 n+1 n+ceil((n+1)/2)]; %Number of offset copies
-
-[Fc_Q,Fc_T,Ft_Q,Ft_T,Ct_Q,Ct_T,Vt]=rhombicDodecahedronMesh(r,nCopies);
-
-%%
-% Plotting results
-cFigure; hold on;
-title('A mesh of rhombicDodecahedra','FontSize',fontSize);
-gpatch(Ft_Q,Vt,Ct_Q,'k',faceAlpha1);
-colormap(gjet);
-axisGeom(gca,fontSize);
-camlight('headlight'); 
-drawnow; 
-
-%%
-
-cFigure; hold on;
-title('A mesh of rhombicDodecahedra plotted with triangular faces','FontSize',fontSize);
-gpatch(Ft_T,Vt,Ct_T,'k',faceAlpha1);
-colormap(gjet);
-axisGeom(gca,fontSize);
-camlight('headlight'); 
-drawnow; 
-
-%% EXAMPLE: Creating a "bubble image"
-% The triangular surface output can but used with the function |triSurf2Im|
-% to convert the patch data to image data where the interior and exterior
-% are labelled differently. For the mesh created the result is like a
-% highly regular bubble image. 
-voxelSize=0.05;
-[M,G,ML]=triSurf2Im(Ft_T,Vt,voxelSize);
-imOrigin=G.origin;
-
-%%
-% Plot results
-
-cFigure;
-hold on;
-% title('"Bubble image"','FontSize',fontSize);
-
-gpatch(Ft_Q,Vt,0.5*ones(1,3),'none',0.1);
-
-L_plot=false(size(ML));
-L_plot(:,:,round(size(ML,3)/2))=1;
-L_plot=L_plot&~isnan(ML);
-[Fm,Vm,Cm]=ind2patch(L_plot,ML,'sk');
-[Vm(:,1),Vm(:,2),Vm(:,3)]=im2cart(Vm(:,2),Vm(:,1),Vm(:,3),voxelSize*ones(1,3));
-Vm=Vm+imOrigin(ones(size(Vm,1),1),:);
-gpatch(Fm,Vm,Cm,'none',faceAlpha1);
-
-L_plot=false(size(ML));
-L_plot(round(size(ML,1)/2),:,:)=1;
-L_plot=L_plot&~isnan(ML);
-[Fm,Vm,Cm]=ind2patch(L_plot,ML,'si');
-[Vm(:,1),Vm(:,2),Vm(:,3)]=im2cart(Vm(:,2),Vm(:,1),Vm(:,3),voxelSize*ones(1,3));
-Vm=Vm+imOrigin(ones(size(Vm,1),1),:);
-gpatch(Fm,Vm,Cm,'none',faceAlpha1);
-
-L_plot=false(size(ML));
-L_plot(:,round(size(ML,2)/2),:)=1;
-L_plot=L_plot&~isnan(ML);
-[Fm,Vm,Cm]=ind2patch(L_plot,ML,'sj');
-[Vm(:,1),Vm(:,2),Vm(:,3)]=im2cart(Vm(:,2),Vm(:,1),Vm(:,3),voxelSize*ones(1,3));
-Vm=Vm+imOrigin(ones(size(Vm,1),1),:);
-gpatch(Fm,Vm,Cm,'none',faceAlpha1);
-
-colormap(gjet(max(ML(:)))); colorbar;
-camlight('headlight'); 
-axisGeom(gca,fontSize);
-
-drawnow;
-
-%% 
-%
-% <<gibbVerySmall.gif>>
-% 
-% _*GIBBON*_ 
-% <www.gibboncode.org>
-% 
-% _Kevin Mattheus Moerman_, <gibbon.toolbox@gmail.com>
- 
-%% 
-% _*GIBBON footer text*_ 
-% 
-% License: <https://github.com/gibbonCode/GIBBON/blob/master/LICENSE>
-% 
-% GIBBON: The Geometry and Image-based Bioengineering add-On. A toolbox for
-% image segmentation, image-based modeling, meshing, and finite element
-% analysis.
-% 
-% Copyright (C) 2019  Kevin Mattheus Moerman
-% 
-% This program is free software: you can redistribute it and/or modify
-% it under the terms of the GNU General Public License as published by
-% the Free Software Foundation, either version 3 of the License, or
-% (at your option) any later version.
-% 
-% This program is distributed in the hope that it will be useful,
-% but WITHOUT ANY WARRANTY; without even the implied warranty of
-% MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-% GNU General Public License for more details.
-% 
-% You should have received a copy of the GNU General Public License
-% along with this program.  If not, see <http://www.gnu.org/licenses/>.
+%% rhombicDodecahedronMesh
+% Below is a demonstration of the features of the |rhombicDodecahedronMesh| function
+
+%%
+clear; close all; clc;
+
+%% Syntax
+% |[Fc_Q,Fc_T,Ft_Q,Ft_T,Ct_Q,Ct_T,Vt]=rhombicDodecahedronMesh(r,nCopies)|
+
+%% Description
+% Creates a rhombic dodecahedron mesh where r sets the radias and nCopies
+% (a 1x3 vector) sets the number of copies in the x, y, and z direction.
+% The output consists of:
+%
+% Fc_Q, Fc_T: the quadrilateral and triangular face cell arrays (1 cell
+% entry per element). 
+%
+% Ft_Q, Ft,T: the quadrilateral and triangular face arrays
+%
+% Ct_Q, Ct,T: color/label data for the face arrays
+%
+% Vt: the vertex array
+
+%% 
+% Plot settings
+fontSize=15;
+faceAlpha1=1;
+
+%% Creating a mesh of rhombic dodecahedra
+
+r=0.5; %Radii, results in a width of 1
+nCopies=[3 3 3]; %Number of offset copies
+
+[E,V,C,F,CF]=rhombicDodecahedronMesh(r,nCopies);
+
+%%
+% Plotting results
+cFigure; hold on;
+title('A mesh of rhombicDodecahedra','FontSize',fontSize);
+gpatch(F,V,CF,'k',faceAlpha1);
+colormap(gjet); 
+axisGeom(gca,fontSize);
+camlight('headlight'); 
+drawnow; 
+
+%% 
+%
+% <<gibbVerySmall.gif>>
+% 
+% _*GIBBON*_ 
+% <www.gibboncode.org>
+% 
+% _Kevin Mattheus Moerman_, <gibbon.toolbox@gmail.com>
+ 
+%% 
+% _*GIBBON footer text*_ 
+% 
+% License: <https://github.com/gibbonCode/GIBBON/blob/master/LICENSE>
+% 
+% GIBBON: The Geometry and Image-based Bioengineering add-On. A toolbox for
+% image segmentation, image-based modeling, meshing, and finite element
+% analysis.
+% 
+% Copyright (C) 2019  Kevin Mattheus Moerman
+% 
+% This program is free software: you can redistribute it and/or modify
+% it under the terms of the GNU General Public License as published by
+% the Free Software Foundation, either version 3 of the License, or
+% (at your option) any later version.
+% 
+% This program is distributed in the hope that it will be useful,
+% but WITHOUT ANY WARRANTY; without even the implied warranty of
+% MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+% GNU General Public License for more details.
+% 
+% You should have received a copy of the GNU General Public License
+% along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 ##### SOURCE END #####
 --></body></html>

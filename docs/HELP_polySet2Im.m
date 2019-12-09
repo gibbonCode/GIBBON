@@ -6,8 +6,6 @@
 clear; close all; clc;
 
 % Plot settings for the examples below
-figColor='w'; 
-figColorDef='white';
 fontSize=10;
 faceAlpha1=1;
 faceAlpha2=0.3;
@@ -43,7 +41,7 @@ E=patchEdges(F,1);
 %%
 % Plotting the results
 
-hf1=figuremax(figColor,figColorDef);
+hf1=cFigure;
 subplot(1,2,1);
 title('The polygon','FontSize',fontSize);
 xlabel('X','FontSize',fontSize);ylabel('Y','FontSize',fontSize); zlabel('Z','FontSize',fontSize);
@@ -114,7 +112,7 @@ n=50;
 %%
 % Plotting the results
 
-hf1=figuremax(figColor,figColorDef);
+hf1=cFigure;
 subplot(1,2,1);
 title('The patch model','FontSize',fontSize);
 xlabel('X','FontSize',fontSize);ylabel('Y','FontSize',fontSize); zlabel('Z','FontSize',fontSize);
@@ -194,7 +192,7 @@ cPar.n=25;
 %%
 % Plotting the results
 
-hf2=figuremax(figColor,figColorDef);
+hf2=cFigure;
 title('iso-surface of thickened structure','FontSize',fontSize);
 xlabel('X','FontSize',fontSize);ylabel('Y','FontSize',fontSize); zlabel('Z','FontSize',fontSize);
 hold on;

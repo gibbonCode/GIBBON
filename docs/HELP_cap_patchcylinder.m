@@ -15,8 +15,6 @@ clear; close all; clc;
 
 %%
 % Plot settings
-figColor='w'; 
-figColorDef='white';
 fontSize=10;
 faceAlpha1=0.4;
 
@@ -31,7 +29,7 @@ ptype='tri';
 
 %%
 % Plottting model
-hf1=figuremax(figColor,figColorDef);
+hf1=cFigure;
 title('Regular cylinder from patchcylinder','FontSize',fontSize);
 xlabel('X','FontSize',fontSize);ylabel('Y','FontSize',fontSize); zlabel('Z','FontSize',fontSize);
 hold on;
@@ -63,7 +61,7 @@ V2=V;
 
 %% 
 % Plotting walls
-hf2=figuremax(figColor,figColorDef);
+hf2=cFigure;
 title('Two seperate walls','FontSize',fontSize);
 xlabel('X','FontSize',fontSize);ylabel('Y','FontSize',fontSize); zlabel('Z','FontSize',fontSize);
 hold on;
@@ -78,7 +76,7 @@ drawnow;
 
 [Fm,Vm]=cap_patchcylinder(F,V,F,V2,nr,nz);
 
-hf3=figuremax(figColor,figColorDef);
+hf3=cFigure;
 title('Closed (capped) vessel model','FontSize',fontSize);
 xlabel('X','FontSize',fontSize);ylabel('Y','FontSize',fontSize); zlabel('Z','FontSize',fontSize);
 hold on;
