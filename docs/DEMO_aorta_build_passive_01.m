@@ -1,3 +1,18 @@
+%% DEMO_aorta_build_passive_01
+% Below is a demonstration for:
+% 
+% * Building geometry for a subject-specific aorta
+% * Creating the FEA mesh
+% * Coding the abaqus structure
+
+%% Keywords
+%
+% * ABAQUS
+% * aorta
+% * hexahedral elements, hex8
+
+%%
+
 clear; close all; clc;
 
 %% Directory
@@ -24,7 +39,7 @@ numThickenSteps=2;
 smoothFactorCentreLine=0.01; %Cubic smooth spline parameter [0-1] use empty to turn off
 smoothFactorSegments=0.01; %Cubic smooth spline parameter [0-1], 0=straight line, 1=cubic
 trunkSegmentReduceFactor=1; %
-% numQuadSplitSteps=0; %Additional splitting in sweep direction e.g. if trunkSegmentReduceFactor>1
+
 numSmoothTrunk=100; %
 numSmoothPants_LAP=100; %Number of Laplacian smoothing iterations for Iliacs
 numSmoothPants_HC=100; %Number of HC smoothing iterations for Iliacs
@@ -158,16 +173,9 @@ end
 axisGeom;
 drawnow;
 
-%% Crop center line and compute allong line distance/lenght metric
-% Center line is cropped to start at first section and end at the last section
-% Get center line distance metric for each plane
-V_cent_crop=V_cent(indexPlanePoints_V_cent(1):indexPlanePoints_V_cent(end),:);
-indexPlanePoints_V_cent_crop=(indexPlanePoints_V_cent-indexPlanePoints_V_cent(1))+1;
-d=pathLength(V_cent_crop);
-d=d./max(d(:)); %Normalised curve length
-curveLengthPlanePoints=d(indexPlanePoints_V_cent_crop);
-
 %% Perform main trunk loft
+% 
+
 % Initialize figure with center line
 hf1=cFigure(figStruct); hold on;
 plotV(V_cent,'b.-','LineWidth',3,'markerSize',25);
@@ -235,7 +243,9 @@ for indNow=1:1:(size(segmentCell,2)-1)
     C_main_gradient_cell{indNow}=Cs+maxC;
     maxC=maxC+max(Cs);
     logicBoundary=[logicBoundary; logicBoundaryNow];
-    %Plot Loft of main trunk
+    
+    %%
+    % Plot Loft of main trunk
     figure(hf1);
     gpatch(Fs,Vs,'kw','kw',0.85);
     plotV(V_cent_part_smooth,'m.-','LineWidth',2,'markerSize',15);
@@ -277,13 +287,6 @@ for q=1:1:numel(segmentCurve_cell)
     segmentCurve_cell{q}=indFix(segmentCurve_cell{q});
 end
 logicBoundary=logicBoundary(ind1);
-
-% if numQuadSplitSteps>1
-%     splitMethod=3;
-%     [F_main,V_main,C_cor,CV_cor]=subQuad(F_main,V_main,numQuadSplitSteps,splitMethod);
-%     C_main=C_main(C_cor);
-%     C_path=C_path(C_cor);
-% end
 
 % Perform Smoothing on main trunk
 controlParameter.n=numSmoothTrunk;
@@ -385,7 +388,7 @@ for q=1:1:numel(segmentCurve_cell)
 end
 
 %% Perform Smoothing on Transition Region
-indTouch=[indLowerCurve(:)];
+indTouch=indLowerCurve(:);
 numSmoothGrowSteps=3;
 for q=1:1:numSmoothGrowSteps
     logicFacesTouch=any(ismember(F_main,indTouch),2);
@@ -395,7 +398,9 @@ smoothControlParameters.n=numSmoothPants_HC;
 smoothControlParameters.Method='HC';
 smoothControlParameters.RigidConstraints=[unique(F_main(~logicFacesTouch,:)); indLowerCurve];
 [V_main]=patchSmooth(F_main,V_main,[],smoothControlParameters);
-%%Plot Main and Transition Region
+
+%% 
+% Plot Main and Transition Region
 cFigure(figStruct); hold on;
 gpatch(F_main,V_main,logicFacesTouch,'none');
 patchNormPlot(F_main,V_main);
@@ -418,7 +423,9 @@ splitMethod='nearMid';
 controlParSmooth.Method='LAP';
 controlParSmooth.n=numSmoothPants_LAP;
 [F_split,V_split,curveIndices,C_split]=splitCurveSetMesh(V_cell,ns,patchType,controlParSmooth,splitMethod,1);
-%%Plot
+
+%%
+% Plot
 cFigure(figStruct); hold on;
 % gpatch(F_main,V_main,'kw','k');
 gpatch(F_split,V_split,C_split,'k');
@@ -481,7 +488,9 @@ for q=1:1:2
     Vc(1,:)=mean(V1,1); %Overide first point with mean of segment
     np=ceil(max(pathLength(Vc))/pointSpacing)+1;
     Vc = evenlySampleCurve(Vc,np,'spline',0);
-    %plot loft paths and profile
+    
+    %%
+    % plot loft paths and profile
     cFigure(figStruct); hold on;
     plotV(V1,'b.-','markerSize',25);
     plotV(V2,'r.-','markerSize',25);
@@ -491,7 +500,8 @@ for q=1:1:2
     camlight headlight;
     lighting gouraud;
     drawnow;
-    %
+    
+    %%
     V2 = evenlySampleCurve(V2,size(V1,1),'spline',1);
     v1=vecnormalize(Vc(2,:)-Vc(1,:));
     [Q]=pointSetPrincipalDir(V1-Vc(ones(size(V1,1),1),:));
@@ -516,7 +526,9 @@ F_branch1=F_iliac_cell{1};
 V_branch1=V_iliac_cell{1};
 F_branch2=F_iliac_cell{2};
 V_branch2=V_iliac_cell{2};
-%Plot Iliac extension Loft
+
+%%
+% Plot Iliac extension Loft
 cFigure(figStruct); hold on;
 % gpatch(F_main,V_main,C_main,'k');
 % gpatch(F_main(C_main==max(C_main),:),V_main,'kw','none');
@@ -554,7 +566,9 @@ smoothControlParameters.n=numSmoothPants_HC;
 smoothControlParameters.Method='HC';
 smoothControlParameters.RigidConstraints=[unique(Fp(~logicFacesTouch,:)); indEndBifurc_split];
 [Vp]=patchSmooth(Fp,Vp,[],smoothControlParameters);
-%%Plot Iliacs
+
+%%
+% Plot Iliacs
 cFigure(figStruct); hold on;
 gpatch(Fp,Vp,logicFacesTouch,'k');
 patchNormPlot(Fp,Vp);
@@ -565,6 +579,8 @@ colormap gjet;
 camlight headlight;
 lighting gouraud;
 drawnow;
+
+%%
 % Add to main trunk
 F_main=[F_main; Fp+size(V_main,1)];
 indBranch11=indBranch11+size(V_main,1);
@@ -821,7 +837,9 @@ V_main=[V_main; V_branch];
 C_main=[C_main; C_branch+max(C_main)];
 C_path_branch=thicknessIndicesBranches(C_branch);
 C_path=[C_path; C_path_branch(:)];
-%plot
+
+%%
+% plot
 cFigure(figStruct); hold on;
 gpatch(F_main,V_main,'kw','none',0.5);
 axisGeom;
@@ -836,6 +854,9 @@ for q=1:1:numel(V_cut_cell)
     c=C_path_mat(indMin);
     C_path_mat=[C_path_mat; c*ones(size(F_branch_cell{q},1),1)];
 end
+
+%%
+
 %Fix curve indices for joining sets
 for q=1:1:numel(indBranchBottom_cell)
     indBranchTop_cell{q}=indBranchTop_cell{q}+numVerticesInitial;
@@ -857,40 +878,17 @@ E_rings=indFix(E_rings);
 % Snapping material color data to number of materials
 C_path_index=C_path_mat;
 C_path_mat=round(rescale(C_path_mat,1,numMaterials));
-%plot
-hf=cFigure(figStruct); hold on;
-xlim([140 200]);
-ylim([120 200]);
-zlim([20 370]);
-gpatch(F_main,V_main,C_path,'k',0.65);
+
+%%
+% plot
+cFigure(figStruct); hold on;
+gpatch(F_main,V_main,C_path,'k',1);
 axisGeom;
 colormap gjet; colorbar;
-%camlight headlight;
+camlight headlight;
 drawnow;
 
-%
-hf=cFigure(figStruct); hold on;
-xlim([140 200]); ylim([120 200]); zlim([20 370]);
-gpatch(F_main,V_main,C_path_mat,'k',1);
-axisGeom;
-colormap(gjet(numMaterials)); colorbar;
-%view(3); axis equal; axis tight; axis vis3d; grid on; box on;
-h_ax=gca; %Store handle for use in animation
-nSteps=150; %Number of animation steps
-%Create the time vector
-animStruct.Time=linspace(0,10,nSteps);
-%Create angles to set view
-a=linspace(h_ax.View(1),h_ax.View(1)+360,nSteps);
-for q=1:1:nSteps
-    aNow=a(q); %The current angle
-    %Set entries in animation structure
-    animStruct.Handles{q}=h_ax; %Handles of objects to animate
-    animStruct.Props{q}={'View'}; %Properties of objects to animate
-    animStruct.Set{q}={[aNow h_ax.View(2)]}; %Property values for to set in order to animate
-end
-%camlight headlight;
-drawnow;
-anim8(hf,animStruct);
+%%
 %Smoothing of Branches
 indTouch=[indBranchBottom_cell{:}];
 numSmoothGrowSteps=3;
@@ -898,68 +896,25 @@ for q=1:1:numSmoothGrowSteps
     logicFacesTouch=any(ismember(F_main,indTouch),2);
     indTouch=F_main(logicFacesTouch,:);
 end
-% cFigure(figStruct); hold on;
-% gpatch(F_main,V_main,logicFacesTouch,'k',1);
-% colormap gjet; icolorbar;
-% axisGeom;
-% camlight headlight;
-% drawnow;
-%
+
 smoothControlParameters.n=numSmoothBranches;
 smoothControlParameters.Method='HC';
 smoothControlParameters.RigidConstraints=unique(F_main(~logicFacesTouch,:));
 [V_main]=patchSmooth(F_main,V_main,[],smoothControlParameters);
-%
-% cFigure(figStruct); hold on;
-% gpatch(F_main,V_main,logicFacesTouch,'k',1);
-% colormap gjet; icolorbar;
-% axisGeom;
-% camlight headlight;
-% drawnow;
-%
-% cFigure(figStruct); hold on;
-% gpatch(F_main,V_main,C_main,'k',1);
-% colormap gjet; icolorbar;
-% axisGeom;
-% camlight headlight;
-% % lighting gouraud;
-% drawnow;
-%
+
 % Interpolating thicknesses
 thicknessData=dataStruct.WallThickness; %Thickness data
 indexData=1:1:numel(thicknessData); %Index data for x-axis for interpolation
 C_thickness=interp1(indexData,thicknessData,C_path,'spline');
+
+%%
 % plot
 hf=cFigure(figStruct); hold on;
 gtitle('Wall Thickness')
 gpatch(F_main,V_main,C_thickness,'k',1);
 axisGeom;
 colormap(gjet(250)); colorbar;
-%camlight headlight;
-box off
-grid off
-axis off
-set(gcf,'color','none');
-set(gca,'Color','none')
-xlim([140 200]);
-ylim([120 200]);
-zlim([20 370]);
-h_ax=gca; %Store handle for use in animation
-nSteps=150; %Number of animation steps
-%Create the time vector
-animStruct.Time=linspace(0,10,nSteps);
-%Create angles to set view
-a=linspace(h_ax.View(1),h_ax.View(1)+360,nSteps);
-for q=1:1:nSteps
-    aNow=a(q); %The current angle
-    %Set entries in animation structure
-    animStruct.Handles{q}=h_ax; %Handles of objects to animate
-    animStruct.Props{q}={'View'}; %Properties of objects to animate
-    animStruct.Set{q}={[aNow h_ax.View(2)]}; %Property values for to set in order to animate
-end
-%camlight headlight;
-drawnow;
-anim8(hf,animStruct);
+camlight headlight;
 drawnow;
 
 %% Inverting offset direction
@@ -1005,12 +960,13 @@ for q=1:1:numel(segmentCurve_cell)
     segmentCurve_cell{q}=segmentCurve_cell{q}+size(V_main,1)*numThickenSteps;
 end
 
-%%
 [FT,CFT]=element2patch(ET,CT);
 
+%%
+% plot
 cFigure(figStruct); hold on;
-gpatch(FT,VT,CFT,'kw',0.5);
-gpatch(FT_inner,VT,'g','r',0.8);
+gpatch(FT,VT,CFT,'k',0.5);
+gpatch(FT_inner,VT,'g','k',1);
 
 for q=1:1:numel(segmentCurve_cell)
     plotV(VT(segmentCurve_cell{q},:),'g.-','LineWidth',5,'markerSize',15);
@@ -1043,6 +999,7 @@ for q=1:1:max(G_rings)
 end
 
 %% 
+% plot
 cFigure(figStruct); hold on;
 gpatch(FT,VT,'kw','none',0.5);
 
@@ -1055,19 +1012,7 @@ end
 axisGeom;
 colormap(gjet(250)); colorbar;
 camlight headlight;
-% camview([4.94677273245074,5.09728437003394,7.60680211357346,-3922.74902226873;2.97108716858766,-9.07159094081672,4.14670780857802,-614.482778409814;-0.832217684447853,-0.0192736541540334,0.554113934085585,116.414940302892;119.080602317486,0,0,0]);
 drawnow;
-
-%%
-
-% cFigure(figStruct); hold on;
-% gpatch(FT,VT,CFT,'none',0.5);
-% 
-% axisGeom;
-% colormap(gjet(250)); colorbar;
-% camlight headlight;
-% drawnow;
-
 
 %% Create color data for hex elements
 
@@ -1078,7 +1023,8 @@ logicBranchEndElement=logicBranchEndElement(CT); %Colors for original element in
 logicElementsInner=any(ismember(ET,indicesNodesInner),2);
 indicesElementsInner=find(logicElementsInner);
 
-%plot
+%%
+% plot
 cFigure(figStruct); hold on;
 gpatch(FT_inner,VT,'gw','none',0.5);
 gpatch(FT_outer,VT,'rw','none',0.5);
@@ -1088,39 +1034,13 @@ colormap(gjet(250)); colorbar;
 camlight headlight;
 drawnow;
 
-%%
-
-% FT=element2patch(ET);
-%
-% cFigure(figStruct); hold on;
-% gpatch(FT,VT,'bw','b',1);
-% for q=1:1:numel(segmentCurve_cell)
-%     plotV(VT(segmentCurve_cell{q},:),'g.-','LineWidth',5,'markerSize',35);
-% end
-% axisGeom;
-% colormap(gjet(250)); colorbar;
-% camlight headlight;
-% drawnow;
-
-% [FT,CFT]=element2patch(ET,logicElementsInner);
-% 
-% cFigure(figStruct); hold on;
-% gpatch(FT,VT,CFT,'k',1);
-% 
-% axisGeom;
-% colormap(gjet(250)); colorbar;
-% camlight headlight;
-% drawnow;
-
 %% Material Properties
 % Assign element material parameters
 % Derive interpolatable parameters [Vcol,Vela,Ee,xeps,mu]
 indexData=1:1:numel(xeps_data);
 indexDataInterp=linspace(1,numel(xeps_data),numMaterials);
 indexData_ET=1:1:numMaterials;
-%
-%mu_vector=interp1(indexData,mu_data,indexDataInterp,'spline');
-%mu_ET=interp1(indexData_ET,mu_vector,C_ET_path_mat_index,'spline');
+
 xeps_vector=interp1(indexData,xeps_data,indexDataInterp,'spline');
 xeps_ET=interp1(indexData_ET,xeps_vector,C_ET_path_mat_index,'spline');
 Ee_vector=interp1(indexData,Ee_data,indexDataInterp,'spline');
@@ -1136,14 +1056,11 @@ Vsmc_ET=interp1(indexData_ET,Vsmc_vector,C_ET_path_mat_index,'spline');
 [FT,CFT]=element2patch(ET,logicElementsInner);
 [~,CFT_logicBranchEndElement]=element2patch(ET,logicBranchEndElement);
 [~,CFT_path_mat]=element2patch(ET,C_ET_path_mat_index);
-%[~,mu_FT]=element2patch(ET,mu_ET);
 [~,xeps_FT]=element2patch(ET,xeps_ET);
 [~,Ee_FT]=element2patch(ET,Ee_ET);
 [~,Vela_FT]=element2patch(ET,Vela_ET);
-%[~,q_FT]=element2patch(ET,q_ET);
 [~,Vcol_FT]=element2patch(ET,Vcol_ET);
 [~,Vsmc_FT]=element2patch(ET,Vsmc_ET);
-%[~,k2_FT]=element2patch(ET,k2_ET);
 indBoundary=tesBoundary(FT,VT);
 Fb=FT(indBoundary,:);
 F1=sort(ET(:,[1 2 3 4]),2);
@@ -1157,6 +1074,7 @@ indVirt_FT=sub2indn(sizVirt,sort(FT,2));
 CFT_logicBranchEndElement=CFT_logicBranchEndElement & ismember(indVirt_FT,indVirt_FT_boundary); %Only keep boundary members
 CFT_logicBranchEndElement=CFT_logicBranchEndElement & ~ismember(indVirt_FT,indVirt_F1); %Cant be member of top
 CFT_logicBranchEndElement=CFT_logicBranchEndElement & ~ismember(indVirt_FT,indVirt_F2); %Cant be member of bottom
+
 %Nodes for boundary conditions
 indNodesFix=FT(CFT_logicBranchEndElement,:);
 indNodesFix=unique(indNodesFix(:));
@@ -1173,52 +1091,43 @@ drawnow;
 
 %%
 % plot interpolated parameters 
-v=[8.36565435123113,6.18256353099528,0.327193129165048,-2415.71992977193;-2.31646548480901,2.61560159098883,9.80346550245082,-2026.93820873207;-0.551673959770910,0.764160928646383,-0.334236319452244,2145.11889669050;2105.46816409150,0,0,0];
+
 cFigure(figStruct);
 subplot(2,3,1);hold on;
 title('Indexing color');
 gpatch(FT(indBoundary,:),VT,CFT_path_mat(indBoundary,:),'none',1);
 axisGeom;
 colormap(gjet(250)); colorbar;
-camview(v);
-% view(43.7,26);
 camlight headlight;
+
 subplot(2,3,2);hold on;
-title('\mu');
-%gpatch(FT(indBoundary,:),VT,mu_FT(indBoundary,:),'none',1);
-axisGeom;
-colormap(gjet(250)); colorbar;
-camview(v);
-camlight headlight;
-subplot(2,3,3);hold on;
 title('xeps');
 gpatch(FT(indBoundary,:),VT,xeps_FT(indBoundary,:),'none',1);
 axisGeom;
 colormap(gjet(250)); colorbar;
-camview(v);
 camlight headlight;
-subplot(2,3,4);hold on;
+
+subplot(2,3,3);hold on;
 title('Ee');
 gpatch(FT(indBoundary,:),VT,Ee_FT(indBoundary,:),'none',1);
 axisGeom;
 colormap(gjet(250)); colorbar;
-camview(v);
 caxis([min(Ee_data) max(Ee_data)]);
 camlight headlight;
-subplot(2,3,5);hold on;
+
+subplot(2,3,4);hold on;
 title('Vcol');
 gpatch(FT(indBoundary,:),VT,Vcol_FT(indBoundary,:),'none',1);
 axisGeom;
 colormap(gjet(250)); colorbar;
-camview(v);
 camlight headlight;
 %axis off
-subplot(2,3,6);hold on;
+
+subplot(2,3,5);hold on;
 title('Vela');
 gpatch(FT(indBoundary,:),VT,Vela_FT(indBoundary,:),'none',1);
 axisGeom;
 colormap(gjet(250)); colorbar;
-camview(v);
 camlight headlight;
 %axis off
 drawnow;
@@ -1376,10 +1285,11 @@ if saveOn==1
     saveStruct.segmentCurve_cell=segmentCurve_cell;
     saveStruct.abaqus_spec=abaqus_spec;
     save(matfileSaveName,'-struct','saveStruct');
+    
+    disp('inp file write complete')
 end
-disp('inp file write complete')
-%% %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
+%% FUNCTIONS %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 function [Fs,Vs,Cs,indEnd,logicRemoveFaces,segmentCurve_cell,E_rings]=circleCutExtrude(F,V,C,V_cent,V_cut,pointSpacing,plotOn,smoothControlParameters,segmentCurve_cell,E_rings)
 
