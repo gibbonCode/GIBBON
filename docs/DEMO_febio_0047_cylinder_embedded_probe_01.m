@@ -416,7 +416,7 @@ febioAnalysis.disp_log_on=1; %Display convergence information in the command win
 febioAnalysis.runMode='internal';%'internal' or 'external';
 febioAnalysis.t_check=0.25; %Time for checking log file (dont set too small)
 febioAnalysis.maxtpi=1e99; %Max analysis time
-febioAnalysis.maxLogCheckTime=25; %Max log file checking time
+febioAnalysis.maxLogCheckTime=10; %Max log file checking time
 
 [runFlag]=runMonitorFEBio(febioAnalysis);%START FEBio NOW!!!!!!!!
 
