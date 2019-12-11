@@ -54,7 +54,7 @@ if nargout==4
     varargout{4}=Ac;
 end
 
-%%
+%% 
 % _*GIBBON footer text*_ 
 % 
 % License: <https://github.com/gibbonCode/GIBBON/blob/master/LICENSE>

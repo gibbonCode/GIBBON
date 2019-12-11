@@ -31,7 +31,7 @@ for q_path=1:1:numPaths
         fileName=fullfile(pathName,files{q_file});
         [T_now]=txtfile2cell(fileName);
         targetStartIndex = find(strcmp(footerTargetStart,T_now));       
-        if ~isempty(targetStartIndex)
+        if ~isempty(targetStartIndex)            
             targetStartIndex=targetStartIndex(end); %Keep last occurance
             T_now=T_now(1:targetStartIndex-1-1); %NB -1 is used to remove %% above target 
             cell2txtfile(fileName,T_now,0,0);
