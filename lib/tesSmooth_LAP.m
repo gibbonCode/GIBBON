@@ -54,7 +54,7 @@ for qIter=1:nMax
     for qDim=1:1:nDims
         Xp=NaN(size(IND_V,1),size(IND_V,2));
         Xp(logicValid)=P(IND_V(logicValid),qDim);
-        Xp=nanmean(Xp,2);       
+        Xp=gnanmean(Xp,2);       
         Xp(indNoneValid)=V(indNoneValid,qDim);
         PP(:,qDim)=Xp;
     end
