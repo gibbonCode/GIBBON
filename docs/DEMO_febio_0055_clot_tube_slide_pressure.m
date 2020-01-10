@@ -75,37 +75,21 @@ max_retries=25; %Maximum number of retires
 symmetric_stiffness=0;
 min_residual=1e-20;
 
-analysisType1='dynamic';
-timeTotal1=1; %Analysis time
-numTimeSteps1=100; %Number of time steps desired
-step_size1=timeTotal1/numTimeSteps1;
-dtmin1=(timeTotal1/numTimeSteps1)/100; %Minimum time step size
-dtmax1=timeTotal1/10; %Maximum time step size
-
-analysisType2='dynamic';
-timeTotal2=100; %Analysis time
-numTimeSteps2=10; %Number of time steps desired
-step_size2=timeTotal2/numTimeSteps2;
-dtmin2=(timeTotal2/numTimeSteps2)/100; %Minimum time step size
-dtmax2=timeTotal2/2; %Maximum time step size
-
-timeTotal=timeTotal1+timeTotal2;
+timeTotal=3; %Analysis time
+numTimeSteps=500; %Number of time steps desired
+step_size=timeTotal/numTimeSteps;
+dtmin=(timeTotal/numTimeSteps)/100; %Minimum time step size
+dtmax=(timeTotal/numTimeSteps)*3; %Maximum time step size
 
 %Contact parameters
-contactPenalty=20;
+contactPenalty=10;
 laugon=0;
 minaug=1;
 maxaug=10;
 fric_coeff=0.1; 
 
 %Specifying load
-sphereVolume=4/3*(pi*sphereRadius^3); %Sphere Volume in mm^3
-sphereMass=sphereVolume.*d; %Sphere mass in tone
-sphereSectionArea=pi*sphereRadius^2;
-bodyLoadMagnitude=(9.81*1000)*75;
-
-forceBodyLoad=sphereMass.*bodyLoadMagnitude;
-stressBodyLoad=forceBodyLoad/sphereSectionArea;
+pressureValue=1e-6;
 
 %% Creating model geometry and mesh
 % 
@@ -147,8 +131,6 @@ meshView(meshOutput,optionStruct);
 axisGeom(gca,fontSize);
 drawnow; 
 
-fdasfas
-
 %% Creating tube model
 % 
 
@@ -165,7 +147,7 @@ cPar.closeLoopOpt=1;
 cPar.numSteps=[]; %If empty the number of steps is derived from point spacing of input curve
 cPar.w=[1 0 0];
 [F_tube,V_tube]=polyRevolve(V_curve_tube,cPar);
-
+[F_tube,V_tube]=mergeVertices(F_tube,V_tube);
 center_of_mass_tube=mean(V_tube,1);
 
 %% Join model node sets
@@ -204,6 +186,30 @@ axisGeom(gca,fontSize);
 camlight headlight; 
 drawnow; 
 
+%% Get pressure surface
+
+N=patchNormal(F_contact_blob,V);
+x=[1 0 0];
+D=dot(N,x(ones(size(N,1),1),:),2);
+
+logicFace=D>-1e-6; %Logic for current face set
+F_pressure=F_contact_blob(logicFace,:); %The current face set
+
+%% 
+% Visualizing boundary conditions. Markers plotted on the semi-transparent
+% model denote the nodes in the various boundary condition lists. 
+
+cFigure; hold on;
+title('Pressure surface','fontsize',fontSize);
+
+gpatch(F_pressure,V,'kw','k',0.5);
+patchNormPlot(F_pressure,V);
+
+% legend(hl,{'Master','Slave'}); clear hl;
+axisGeom(gca,fontSize);
+camlight headlight; 
+drawnow; 
+
 %% Defining the FEBio input structure
 % See also |febioStructTemplate| and |febioStruct2xml| and the FEBio user
 % manual.
@@ -218,41 +224,15 @@ febio_spec.ATTR.version='2.5';
 febio_spec.Module.ATTR.type='solid'; 
 
 %Control section
-stepStruct1.Control.analysis.ATTR.type=analysisType1;
-stepStruct1.Control.time_steps=numTimeSteps1;
-stepStruct1.Control.step_size=step_size1;
-stepStruct1.Control.time_stepper.dtmin=dtmin1;
-stepStruct1.Control.time_stepper.dtmax=dtmax1; 
-stepStruct1.Control.time_stepper.max_retries=max_retries;
-stepStruct1.Control.time_stepper.opt_iter=opt_iter;
-stepStruct1.Control.max_refs=max_refs;
-stepStruct1.Control.max_ups=max_ups;
-stepStruct1.Control.symmetric_stiffness=symmetric_stiffness; 
-stepStruct1.Control.min_residual=min_residual;
-
-stepStruct2.Control.analysis.ATTR.type=analysisType2;
-stepStruct2.Control.time_steps=numTimeSteps2;
-stepStruct2.Control.step_size=step_size2;
-stepStruct2.Control.time_stepper.dtmin=dtmin2;
-stepStruct2.Control.time_stepper.dtmax=dtmax2; 
-stepStruct2.Control.time_stepper.max_retries=max_retries;
-stepStruct2.Control.time_stepper.opt_iter=opt_iter;
-stepStruct2.Control.max_refs=max_refs;
-stepStruct2.Control.max_ups=max_ups;
-stepStruct2.Control.symmetric_stiffness=symmetric_stiffness; 
-stepStruct2.Control.min_residual=min_residual;
-
-%Add template based default settings to proposed control section
-[stepStruct1.Control]=structComplete(stepStruct1.Control,febio_spec.Control,1); %Complement provided with default if missing
-[stepStruct2.Control]=structComplete(stepStruct2.Control,febio_spec.Control,1); %Complement provided with default if missing
-
-%Remove control field (part of template) since step specific control sections are used
-febio_spec=rmfield(febio_spec,'Control'); 
-
-febio_spec.Step{1}.Control=stepStruct1.Control;
-febio_spec.Step{1}.ATTR.id=1;
-febio_spec.Step{2}.Control=stepStruct2.Control;
-febio_spec.Step{2}.ATTR.id=2;
+febio_spec.Control.analysis.ATTR.type='dynamic';
+febio_spec.Control.time_steps=numTimeSteps;
+febio_spec.Control.step_size=1/numTimeSteps;
+febio_spec.Control.time_stepper.dtmin=dtmin;
+febio_spec.Control.time_stepper.dtmax=dtmax; 
+febio_spec.Control.time_stepper.max_retries=max_retries;
+febio_spec.Control.time_stepper.opt_iter=opt_iter;
+febio_spec.Control.max_refs=max_refs;
+febio_spec.Control.max_ups=max_ups;
 
 %Material section
 febio_spec.Material.material{1}.ATTR.type='Ogden unconstrained';
@@ -297,24 +277,20 @@ febio_spec.Geometry.Surface{2}.ATTR.name='contact_slave1';
 febio_spec.Geometry.Surface{2}.quad4.ATTR.lid=(1:1:size(F_contact_blob,1))';
 febio_spec.Geometry.Surface{2}.quad4.VAL=F_contact_blob;
 
+febio_spec.Geometry.Surface{3}.ATTR.name='Pressure_surface';
+febio_spec.Geometry.Surface{3}.quad4.ATTR.lid=(1:size(F_pressure,1))';
+febio_spec.Geometry.Surface{3}.quad4.VAL=F_pressure;
+
 % -> Surface pairs
 febio_spec.Geometry.SurfacePair{1}.ATTR.name='Contact1_tube_blob';
 febio_spec.Geometry.SurfacePair{1}.master.ATTR.surface=febio_spec.Geometry.Surface{1}.ATTR.name;
 febio_spec.Geometry.SurfacePair{1}.slave.ATTR.surface=febio_spec.Geometry.Surface{2}.ATTR.name;
 
-%Boundary condition section 
-% -> Fix boundary conditions
-% febio_spec.Boundary.fix{1}.ATTR.bc='x';
-% febio_spec.Boundary.fix{1}.ATTR.node_set=febio_spec.Geometry.NodeSet{1}.ATTR.name;
-% febio_spec.Boundary.fix{1}.ATTR.bc='y';
-% febio_spec.Boundary.fix{1}.ATTR.node_set=febio_spec.Geometry.NodeSet{1}.ATTR.name;
-% febio_spec.Boundary.fix{2}.ATTR.bc='z';
-% febio_spec.Boundary.fix{2}.ATTR.node_set=febio_spec.Geometry.NodeSet{1}.ATTR.name;
-
-
-febio_spec.Loads.body_load{1}.ATTR.type='const';
-febio_spec.Loads.body_load{1}.x.VAL=bodyLoadMagnitude;
-febio_spec.Loads.body_load{1}.x.ATTR.lc=1;
+%Loads
+febio_spec.Loads.surface_load{1}.ATTR.type='pressure';
+febio_spec.Loads.surface_load{1}.ATTR.surface=febio_spec.Geometry.Surface{3}.ATTR.name;
+febio_spec.Loads.surface_load{1}.pressure.VAL=pressureValue;
+febio_spec.Loads.surface_load{1}.pressure.ATTR.lc=1;
 
 % -> Prescribed boundary conditions on the rigid body
 febio_spec.Boundary.rigid_body{1}.ATTR.mat=2;
@@ -344,7 +320,7 @@ febio_spec.Contact.contact{1}.fric_coeff=fric_coeff;
 %LoadData
 febio_spec.LoadData.loadcurve{1}.ATTR.id=1;
 febio_spec.LoadData.loadcurve{1}.ATTR.type='linear';
-febio_spec.LoadData.loadcurve{1}.point.VAL=[0 0; timeTotal1 1; timeTotal 1];
+febio_spec.LoadData.loadcurve{1}.point.VAL=[0 0; timeTotal 1; timeTotal 1];
 
 %Output section 
 % -> log file
