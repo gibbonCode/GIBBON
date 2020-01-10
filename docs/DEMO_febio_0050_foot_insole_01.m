@@ -49,6 +49,7 @@ febioLogFileName=fullfile(savePath,[febioFebFileNamePart,'.txt']); %FEBio log fi
 febioLogFileName_disp=[febioFebFileNamePart,'_disp_out.txt']; %Log file name for exporting displacement
 febioLogFileName_force=[febioFebFileNamePart,'_force_out.txt']; %Log file name for exporting force
 febioLogFileName_strainEnergy=[febioFebFileNamePart,'_energy_out.txt']; %Log file name for exporting strain energy density
+
 % Surface model file names
 fileNameBones=fullfile(loadPathSurfaces,'Foot_bulk.stl');
 fileNameSkin=fullfile(loadPathSurfaces,'Skin_coarse.stl');

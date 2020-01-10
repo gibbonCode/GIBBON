@@ -61,7 +61,7 @@ colormap(gca,gjet(max(Ac(:))));
 icolorbar; 
 drawnow;
 
-%% Example 2: Getting unique entries and occurance counts for NxMx... arrays
+%% Example 3: Getting unique entries and occurance counts for NxMx... arrays
 
 n=3;
 m=4;
@@ -73,6 +73,18 @@ A
 
 %Get unique set and counts
 [A_uni,ind1,ind2,Ac]=cunique(A)
+
+%% Example 4: Using 'rows' option
+
+n=5;
+m=3;
+
+A=round(25*rand(n,m)); %Rounded random set in range 0-25
+A(1,:)=A(end,:); %Force at least one double row for this example
+A
+
+%Get unique set and counts
+[A_uni,ind1,ind2,Ac]=cunique(A,'rows')
 
 %%
 % 

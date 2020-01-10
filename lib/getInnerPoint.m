@@ -64,7 +64,7 @@ k=k./sum(k(:)); %Normalize kernel
 %Convolve interior image with kernel
 ML=convn(double(L_test),k,'same');
 ML(M~=1)=NaN; %Set other sites to NaN
-[~,indInternal]=nanmax(ML(:)); %Kernel should yield max at "deep" (related to search radius) point
+[~,indInternal]=gnanmax(ML(:)); %Kernel should yield max at "deep" (related to search radius) point
 [I_in,J_in,K_in]=ind2sub(size(M),indInternal); %Convert to subscript coordinates
 
 %Derive point coordinates

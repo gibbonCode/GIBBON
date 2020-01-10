@@ -120,15 +120,15 @@ end
 X=Vc(:,1);
 XF=X(Fc).*logicEdge;
 XF(~logicEdge)=NaN;
-Xn=nanmean(XF,2);
+Xn=gnanmean(XF,2);
 Y=Vc(:,2);
 YF=Y(Fc).*logicEdge;
 YF(~logicEdge)=NaN;
-Yn=nanmean(YF,2);
+Yn=gnanmean(YF,2);
 Z=Vc(:,3);
 ZF=Z(Fc).*logicEdge;
 ZF(~logicEdge)=NaN;
-Zn=nanmean(ZF,2);
+Zn=gnanmean(ZF,2);
 Vn=[Xn Yn Zn];
 
 Vct=[Vc;Vn]; %The total node set for cut faces

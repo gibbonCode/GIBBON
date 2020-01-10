@@ -150,8 +150,7 @@ drawnow;
 
 %% EXAMPLE OF "HYBRID APPROACH" 
 % A hybrid approach is also possible whereby the output is the smallest
-% distance for the two methods (nanmin is used so NaN values due to ray
-% tracing enforces the distance method on these locations instead). 
+% distance for the two methods. 
 
 %Compute distance metric
 [D2]=triSurfSetDist(F2,V2,F1,V1,'dist-ray');

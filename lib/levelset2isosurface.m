@@ -40,7 +40,7 @@ siz=size(L);
 
 %Pad with zeros if desired
 if capOpt==1
-    Lpad=nanmax(L(:))*ones(size(L)+2*kernelSize);
+    Lpad=gnanmax(L(:))*ones(size(L)+2*kernelSize);
     Lpad(1+kernelSize:siz(1)+kernelSize,1+kernelSize:siz(2)+kernelSize,1+kernelSize:siz(3)+kernelSize)=L;
     L=Lpad;
     siz=size(L);

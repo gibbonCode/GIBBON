@@ -122,7 +122,7 @@ Uf=[diff(Vg,1,1); nan(1,size(Vg,2))];
 Ub=-[nan(1,size(Vg,2)); flipud(diff(flipud(Vg),1,1))];
 U=Uf;
 U(:,:,2)=Ub;
-U=nanmean(U,3);
+U=gnanmean(U,3);
 U=vecnormalize(U);
 
 mean_V1=mean(V1,1);

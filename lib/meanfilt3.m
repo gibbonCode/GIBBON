@@ -20,7 +20,7 @@ INT_mask=nan(size(IND_mask));
 INT_mask(L_valid)=INT_valid;
 
 %Calculating median, ignoring NaN's
-M_mean=nanmean(INT_mask,2);
+M_mean=gnanmean(INT_mask,2);
 
 %Calculating number of elements used in median calculation
 n=sum(~isnan(INT_mask),2);

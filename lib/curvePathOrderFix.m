@@ -17,7 +17,7 @@ indFix=ones(1,size(V,1));
 numPoints=size(V,1);
 for qIter=2:1:numPoints
 %     waitbar(qIter/numPoints);    
-    [~,indMin]=nanmin(D,[],2); 
+    [~,indMin]=gnanmin(D,[],2); 
     indFix(qIter)=indMin(indFix(qIter-1));    
     D(:,indFix)=NaN;                
 end

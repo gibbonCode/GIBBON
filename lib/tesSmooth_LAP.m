@@ -69,7 +69,7 @@ for qIter=1:nMax
     
     if ~isempty(SSQD_Tol)
         %Compute sum of squared differences with respect to previous iteration
-        SSQD_new=nansum((P(:)-Q(:)).^2);
+        SSQD_new=gnansum((P(:)-Q(:)).^2);
         if ~isempty(SSQD_old)
             SSQD_ratio=SSQD_new./SSQD_old;            
         end

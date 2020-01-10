@@ -71,7 +71,7 @@ if iscell(F)
         nf=N(:,q);
         nv=nan(size(vertexFaceConnectivity));
         nv(L)=nf(vertexFaceConnectivity(L));
-        nv=nanmean(nv,2);
+        nv=gnanmean(nv,2);
         Nv(:,q)=nv;
     end
 else
@@ -186,9 +186,9 @@ Xfd=accumarray({I,J},Vd(v,1),size(vertexFaceConnectivity),[],NaN);
 Yfd=accumarray({I,J},Vd(v,2),size(vertexFaceConnectivity),[],NaN); 
 Zfd=accumarray({I,J},Vd(v,3),size(vertexFaceConnectivity),[],NaN); 
 
-Xfd_mean=nanmean(Xfd,2); 
-Yfd_mean=nanmean(Yfd,2); 
-Zfd_mean=nanmean(Zfd,2); 
+Xfd_mean=gnanmean(Xfd,2); 
+Yfd_mean=gnanmean(Yfd,2); 
+Zfd_mean=gnanmean(Zfd,2); 
 
 Xfd=Xfd-Xfd_mean(:,ones(1,(size(Xfd,2))));
 Yfd=Yfd-Yfd_mean(:,ones(1,(size(Yfd,2))));

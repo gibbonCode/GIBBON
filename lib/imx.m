@@ -1081,7 +1081,7 @@ for ig=1:1:num_C
             end
             
             groupFirstIter=1;
-            for q_group=nanmin(groupIndices(:)):1:nanmax(groupIndices(:))
+            for q_group=gnanmin(groupIndices(:)):1:gnanmax(groupIndices(:))
                 
                 Vg=V(groupIndices==q_group,:); %Current curve
                 

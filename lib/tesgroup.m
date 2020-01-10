@@ -130,7 +130,7 @@ end
 
 G_iter=G_ind(:,ones(size(G,2),1));
 G_iter(~G)=NaN;
-G_iter_min=nanmin(G_iter,[],1);
+G_iter_min=gnanmin(G_iter,[],1);
 G_iter=G_iter-G_iter_min(ones(size(G_iter,1),1),:)+1;
 
 %% Prepare output

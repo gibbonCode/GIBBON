@@ -51,8 +51,7 @@ if numSteps>1 %In steps
         end
         if selfAvoid
             %Set "diagonal" to something too large so self is avoided in
-            %minimum (could use NaN and nanmin but the latter is a toolbox
-            %function)
+            %minimum 
             I=1:size(v1,1);
             J=indSteps(q)+1:indSteps(q+1);
             ind=sub2ind(size(d),I,J); %Indices of selfies            
@@ -71,8 +70,7 @@ else %In one go
     end    
     if selfAvoid
         %Set "diagonal" to something too large so self is avoided in
-        %minimum (could use NaN and nanmin but the latter is a toolbox
-        %function) 
+        %minimum 
         L=eye(size(D))>0;
         D(L)=1+max(D(:));
     end

@@ -68,7 +68,7 @@ if nnz(logicThree)>0
     Xp(logicValid)=Vd(IND_V_three(logicValid),1);
     Yp(logicValid)=Vd(IND_V_three(logicValid),2);
     Zp(logicValid)=Vd(IND_V_three(logicValid),3);
-    Vp=[nanmean(Xp,2) nanmean(Yp,2) nanmean(Zp,2)];
+    Vp=[gnanmean(Xp,2) gnanmean(Yp,2) gnanmean(Zp,2)];
     Vd(logicThree,:)=Vp; %Replace points
     
     %Get new faces
@@ -102,7 +102,7 @@ if nnz(logicThree)>0
     
     C_F_three=nan(size(IND_F_three));
     C_F_three(logicValid)=Cd(IND_F_three(logicValid));
-    C_new=nanmean(C_F_three,2);
+    C_new=gnanmean(C_F_three,2);
     
     %Faces to keep
     F_keep=Fd(~logicFacesThree,:);

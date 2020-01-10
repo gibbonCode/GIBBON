@@ -3,8 +3,8 @@ function [y]=gnanmean(varargin)
 %------------------------------------------------------------------------
 % this function is a replacement for nanmean which is part of the
 % statistics and machine learning toolbox. 
-% The use of mean with the omitnan is used or if this does not work (for
-% old MATLAB versions) a custom implementation is used. 
+% The use of mean with the omitnan flag is used or if this does not work
+% (for old MATLAB versions) a custom implementation is used. 
 %
 % Change log:
 % 2020/01/09 Created
@@ -30,5 +30,6 @@ catch
     y=S./Q;
     y(all(L,dimDir))=NaN;
 end
+
 end
 

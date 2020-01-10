@@ -16,8 +16,8 @@ p=V; cc=0; i=1;
 while cc==0
     q=p;
     Xp(L)=p(IND_V(L),1); Yp(L)=p(IND_V(L),2); Zp(L)=p(IND_V(L),3);
-    p=[nanmean(Xp,2) nanmean(Yp,2) nanmean(Zp,2)]; %Mean of neighbourhood, Laplacian operation
-    SSQD_new=nansum((p(:)-q(:)).^2);
+    p=[gnanmean(Xp,2) gnanmean(Yp,2) gnanmean(Zp,2)]; %Mean of neighbourhood, Laplacian operation
+    SSQD_new=gnansum((p(:)-q(:)).^2);
     if i>1
         SSQD_ratio=SSQD_new./SSQD_old;
         if disp_on
@@ -45,7 +45,7 @@ while cc==0
     
     b=p-((alp.*V)+((1-alp).*q)); %Difference at centre vertex
     Xp(L)=b(IND_V(L),1); Yp(L)=b(IND_V(L),2); Zp(L)=b(IND_V(L),3);
-    c=[nanmean(Xp,2) nanmean(Yp,2) nanmean(Zp,2)]; %Mean of difference at centre vertex of neighbourhood
+    c=[gnanmean(Xp,2) gnanmean(Yp,2) gnanmean(Zp,2)]; %Mean of difference at centre vertex of neighbourhood
     p=p-((bet.*b)+(1-bet).*(c));
     i=i+1;
 end

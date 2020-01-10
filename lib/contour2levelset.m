@@ -67,7 +67,7 @@ switch levelSetType
                     [D,~]=minDist([x(:) y(:)],Vd(:,[1 2])); %Compute distances to contour
                     D(logicInside)=-D(logicInside); %Negate distances inside contour
                     k_sub=reshape(D,[size(M,1) size(M,2)]); %The sub-levelset
-                    K(:,:,qSlice)=nanmin(K(:,:,qSlice),k_sub); %Add to current slice
+                    K(:,:,qSlice)=gnanmin(K(:,:,qSlice),k_sub); %Add to current slice
                 end
             end
             waitbar(c/numSteps,hw,['Computing distances. ',num2str(round((c/numSteps)*100)),'%']);

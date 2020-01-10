@@ -14,19 +14,19 @@ switch opt
     case 1 %Laplacian
         p=V;      
         Ls=par;
-        for i=1:n;         
+        for i=1:n         
             Xp(L)=p(IND_V(L),1); Yp(L)=p(IND_V(L),2); Zp(L)=p(IND_V(L),3);
-            Vp=[nanmean(Xp,2) nanmean(Yp,2) nanmean(Zp,2)];
+            Vp=[gnanmean(Xp,2) gnanmean(Yp,2) gnanmean(Zp,2)];
             p=p+Ls.*(Vp-p);    
         end
     case 2 %Humphreys Classes Smoothening
         p=V;        
         alp=par(1);
         bet=par(2);
-        for i=1:n;            
+        for i=1:n            
             q=p;
             Xp(L)=p(IND_V(L),1); Yp(L)=p(IND_V(L),2); Zp(L)=p(IND_V(L),3);            
-            p=[nanmean(Xp,2) nanmean(Yp,2) nanmean(Zp,2)]; %Mean of neighbourhood, Laplacian operation   
+            p=[gnanmean(Xp,2) gnanmean(Yp,2) gnanmean(Zp,2)]; %Mean of neighbourhood, Laplacian operation   
             SSQD_new=sum((p(:)-q(:)).^2);
             if i>1
                 cf=SSQD_new./SSQD_old; disp(['SSQD ratio: ',num2str(cf)]);
@@ -36,7 +36,7 @@ switch opt
             b=p-((alp.*V)+((1-alp).*q)); %Difference at centre vertex
             
             Xp(L)=b(IND_V(L),1); Yp(L)=b(IND_V(L),2); Zp(L)=b(IND_V(L),3);            
-            c=[nanmean(Xp,2) nanmean(Yp,2) nanmean(Zp,2)]; %Mean of difference at centre vertex of neighbourhood           
+            c=[gnanmean(Xp,2) gnanmean(Yp,2) gnanmean(Zp,2)]; %Mean of difference at centre vertex of neighbourhood           
             p=p-((bet.*b)+(1-bet).*(c));            
         end        
     case 3 %Humphreys Classes Smoothening convergence, n(1) is max number of iterations, n(2) is used as tolerance on SSQD ratio
@@ -47,7 +47,7 @@ switch opt
         while cc==0
             q=p;
             Xp(L)=p(IND_V(L),1); Yp(L)=p(IND_V(L),2); Zp(L)=p(IND_V(L),3);            
-            p=[nanmean(Xp,2) nanmean(Yp,2) nanmean(Zp,2)]; %Mean of neighbourhood, Laplacian operation   
+            p=[gnanmean(Xp,2) gnanmean(Yp,2) gnanmean(Zp,2)]; %Mean of neighbourhood, Laplacian operation   
             SSQD_new=sum((p(:)-q(:)).^2);
             if i>1
                 SSQD_ratio=SSQD_new./SSQD_old; disp(['Iteration ',num2str(i),', SSQD ratio: ',num2str(SSQD_ratio)]);
@@ -67,7 +67,7 @@ switch opt
             
             b=p-((alp.*V)+((1-alp).*q)); %Difference at centre vertex            
             Xp(L)=b(IND_V(L),1); Yp(L)=b(IND_V(L),2); Zp(L)=b(IND_V(L),3);            
-            c=[nanmean(Xp,2) nanmean(Yp,2) nanmean(Zp,2)]; %Mean of difference at centre vertex of neighbourhood           
+            c=[gnanmean(Xp,2) gnanmean(Yp,2) gnanmean(Zp,2)]; %Mean of difference at centre vertex of neighbourhood           
             p=p-((bet.*b)+(1-bet).*(c));
             i=i+1;
         end        

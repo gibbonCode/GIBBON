@@ -17,6 +17,7 @@ function [varargout]=cunique(varargin)
 % 2018/03/21 Created
 % 2019/07/02 Adding varargin handling (pass unique options) including
 % 'rows' support. 
+% 2020/01/10 Fixed bug in accumarray array size specification
 %-------------------------------------------------------------------------
 
 %%
@@ -44,7 +45,8 @@ end
 
 if nargout==4
     [subInd] = ind2subn(size(A_uni),ind2);
-    Ac=accumarray(subInd,ones(numel(ind2),1),[size(A_uni,1),1]);
+%     Ac=accumarray(subInd,ones(numel(ind2),1),[size(A_uni,1),1]);
+    Ac=accumarray(subInd,ones(numel(ind2),1),size(A_uni));
     switch typeOpt
         case 1
             Ac=reshape(Ac(ind2),size(A));            

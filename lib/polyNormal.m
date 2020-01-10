@@ -52,7 +52,7 @@ switch dirOpt
         Ub=-[nan(1,size(Vg,2)); flipud(diff(flipud(Vg),1,1))];
         U=Uf;
         U(:,:,2)=Ub;
-        U=nanmean(U,3);        
+        U=gnanmean(U,3);        
 end
 U=vecnormalize(U);
 

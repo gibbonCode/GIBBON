@@ -43,7 +43,7 @@ for qIter=1:numSmoothIterations
     for qDim=1:1:nDims
         Xp=NaN(size(C,1),size(faceFaceConnectivity,2));
         Xp(logicValid)=C_smooth(faceFaceConnectivity(logicValid),qDim);
-        Xp=nanmean(Xp,2);       
+        Xp=gnanmean(Xp,2);       
         C_smooth_step(:,qDim)=Xp;
     end
     C_smooth=((1-lambdaSmooth).*C_smooth)+(lambdaSmooth.*C_smooth_step);

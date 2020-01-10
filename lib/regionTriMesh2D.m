@@ -196,19 +196,19 @@ V=V(indUni,:);
 
 numPointsPost=size(V,1);
 
+boundEdges = patchBoundary(F,V);
+boundaryInd=unique(boundEdges(:));
+
 if numPoints==numPointsPost
     warning('No points removed in contrained Delaunay triangulation. Possibly due to large pointSpacing with respect to curve size. Meshing skipped!');
-    F=[];
-    V=[];
+%     F=[];
+%     V=[];
 else
     
     %% CONSTRAINED SMOOTHENING OF THE MESH
     
 %     switch gridType
 %         case 'tri'           
-            boundEdges = patchBoundary(F,V);
-            boundaryInd=unique(boundEdges(:));
-            
             smoothPar.LambdaSmooth=0.5;
             smoothPar.n=250;
             smoothPar.Tolerance=0.01;

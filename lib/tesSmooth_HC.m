@@ -66,7 +66,7 @@ for qIter=1:nMax
         %Simple Laplacian operation
         Xq=NaN(size(IND_V,1),size(IND_V,2));
         Xq(logicValid)=Q(IND_V(logicValid),qDim);
-        Xq=nanmean(Xq,2);           
+        Xq=gnanmean(Xq,2);           
 %         Xq(indNoneValid)=V(indNoneValid,qDim);
         P(:,qDim)=Xq;   
         
@@ -76,7 +76,7 @@ for qIter=1:nMax
         %
         Xb=NaN(size(IND_V,1),size(IND_V,2));
         Xb(logicValid)=B(IND_V(logicValid),qDim);
-        Xb=nanmean(Xb,2);
+        Xb=gnanmean(Xb,2);
 %         Xb(indNoneValid)=V(indNoneValid,qDim);
         P(:,qDim)= P(:,qDim)-((bet*B(:,qDim))+(((1-bet)*Xb)));
         
@@ -91,7 +91,7 @@ for qIter=1:nMax
     
     if ~isempty(SSQD_Tol)
         %Compute sum of squared differences with respect to previous iteration
-        SSQD_new=nansum((P(:)-Q(:)).^2);
+        SSQD_new=gnansum((P(:)-Q(:)).^2);
         if ~isempty(SSQD_old)
             SSQD_ratio=SSQD_new./SSQD_old;            
         end

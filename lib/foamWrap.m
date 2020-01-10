@@ -109,8 +109,8 @@ Cs=C(Cs);
 L=IND_Fs>0;     
 Cv=nan(size(IND_Fs));
 Cv(L)=Cs(IND_Fs(L));
-Cv_max=nanmax(Cv,[],2);
-Cv_min=nanmin(Cv,[],2);
+Cv_max=gnanmax(Cv,[],2);
+Cv_min=gnanmin(Cv,[],2);
 logicMulti=~(Cv_max==Cv_min);
 
 %%
@@ -147,8 +147,8 @@ indFaces=find(Css==1);
 L=IND_Fss>0;     
 Cv=nan(size(IND_Fss));
 Cv(L)=Css(IND_Fss(L));
-Cv_max=nanmax(Cv,[],2);
-Cv_min=nanmin(Cv,[],2);
+Cv_max=gnanmax(Cv,[],2);
+Cv_min=gnanmin(Cv,[],2);
 logicMulti=~(Cv_max==Cv_min);
 indBoundary=find(logicMulti);
 

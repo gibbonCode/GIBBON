@@ -124,6 +124,8 @@ Mh_trace=cellTrace(H);
 
 %%
 % Visualize results
+[I,J]=ndgrid(1:size(H,1),1:size(H,2));
+P=[J(:) I(:)];
 
 cFigure;
 

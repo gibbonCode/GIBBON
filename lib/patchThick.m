@@ -43,6 +43,7 @@ if size(dirSet,2)==3 %single vector or vector set for offsetting
     if size(dirSet,1)==1 %If one vector is given copy for all points
         Nv=dirSet(ones(size(Vp1,1),1),:);
     else %assume vectors are provided for all points
+        Nv=dirSet;
         if size(dirSet,1)~=size(Vp1,1)
             error('Number of normals should match number of points');
         end
