@@ -39,16 +39,50 @@ clear; close all; clc;
 %     OR: [3x1 double] %The location of the origin
 %      r: [3x1 double] %Direction vector for rows
 %      c: [3x1 double] %Direction vector for Columns
+%
+% The full input set is used like this: 
+% dcmFolder2MATobject(PathName,MaxVarSize,reOrderOpt,dicomDictType,fileExtension)
+%
+% The first input is required (the path name for the DICOM data folder),
+% all other inputs are optional. 
+% 
+% PathName:   The path name to the folder containing the DICOM data
+% MaxVarSize: default=>1e12, the maximum variable size. If the image data
+% exceeds this size e.g. as a 4D array, each 3D subarray is seperately
+% saved
+% 
+% reOrderOpt: default=>0, if 1 the files are sorted based on the
+% "InstanceNumber" DICOM field, instead of the file names. 
+% 
+% dicomDictType: default=>0, If zero the best dicom dictionary is selected
+% based on the DICOM file vendor description. If 1 then the MATLAB "factory
+% default" is used. 
+% 
+% fileExtension: default=>'.dcm', specifies the file extension for the
+% DICOM files. The default is the typical .dcm extension. Alternatively an
+% empty file extension '' or [] may be specified. In which case all files
+% without an extension contained in the DICOM folder are deemed DICOM
+% files. 
 
 %% 
 % Path name for dicom files
 
+testCase=1;
 defaultFolder = fileparts(fileparts(mfilename('fullpath'))); %Set main folder
-pathName=fullfile(defaultFolder,'data','DICOM','0001_human_calf');
+
+switch testCase 
+    case 1 %DICOM data with .dcm as file extensions
+        fileExtension='.dcm';
+        pathName=fullfile(defaultFolder,'data','DICOM','0001_human_calf');
+    case 2 %DICOM data without file extensions
+        fileExtension='';
+        pathName=fullfile(defaultFolder,'data','DICOM','0001_human_calf_no_ext');
+end
 
 %%
 % Converting dicom data to the IMDAT format
-dcmFolder2MATobject(pathName);%Get DICOM data
+
+dcmFolder2MATobject(pathName,[],[],[],fileExtension);%Get DICOM data
 
 %% Example: LOADING OR HANDLING THE MAT OBJECT
 % Here is an example for loading in the entire data structure

@@ -70,7 +70,7 @@ defaultOptionStruct.ignoreDynamic=0;
 %Get/set maximum variable size (sets save steps in case the variable size
 %is exceeded)
 if isempty(MaxVarSize)
-    MaxVarSize=1e9; %Default
+    MaxVarSize=1e12; %Default
 end
 
 if isempty(reOrderOpt)
@@ -82,11 +82,24 @@ if isempty(dicomDictFactory)
 end
 
 if isempty(fileExtension)
-    fileExtension='.dcm'; %Default
+%     fileExtension='.dcm'; %Default
 end
 
 %% Getting DICOM file names and image dimension parameters
-files = dir(fullfile(PathName,['*',fileExtension]));
+if ~isempty(fileExtension)
+    files = dir(fullfile(PathName,['*',fileExtension]));
+else %No file extension
+    files = dir(fullfile(PathName));
+    
+    %Remove files and hidden folders containing dot in path
+    logicKeep=false(1,numel(files));
+    for q=1:1:numel(files)
+        if isempty(strfind(files(q).name,'.')) && isempty(strfind(files(q).name,'IMDAT'))
+            logicKeep(q)=1;
+        end
+    end
+    files=files(logicKeep);
+end
 files={files(1:end).name};
 NumberOfFiles=numel(files);
 
@@ -222,9 +235,9 @@ if NumberOfFiles>0
             dcmInfo_full=dicominfo(fName);
         end
     elseif dicomDictFactory==1
-%         dicomdict('factory');
-%         dcmInfo_full=dicominfo(fName);
-%         dictSetting=3;
+        dicomdict('factory');
+        dcmInfo_full=dicominfo(fName);
+        dictSetting=3;
     end
         
     %% LOADING DICOM INFO

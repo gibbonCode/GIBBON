@@ -6,7 +6,7 @@
    <!--
 This HTML was auto-generated from MATLAB code.
 To make changes, update the MATLAB code and republish this document.
-      --><title>dcmFolder2MATobject</title><meta name="generator" content="MATLAB 9.6"><link rel="schema.DC" href="http://purl.org/dc/elements/1.1/"><meta name="DC.date" content="2019-06-20"><meta name="DC.source" content="HELP_dcmFolder2MATobject.m"><style type="text/css">
+      --><title>dcmFolder2MATobject</title><meta name="generator" content="MATLAB 9.7"><link rel="schema.DC" href="http://purl.org/dc/elements/1.1/"><meta name="DC.date" content="2020-02-19"><meta name="DC.source" content="HELP_dcmFolder2MATobject.m"><style type="text/css">
 html,body,div,span,applet,object,iframe,h1,h2,h3,h4,h5,h6,p,blockquote,pre,a,abbr,acronym,address,big,cite,code,del,dfn,em,font,img,ins,kbd,q,s,samp,small,strike,strong,sub,sup,tt,var,b,u,i,center,dl,dt,dd,ol,ul,li,fieldset,form,label,legend,table,caption,tbody,tfoot,thead,tr,th,td{margin:0;padding:0;border:0;outline:0;font-size:100%;vertical-align:baseline;background:transparent}body{line-height:1}ol,ul{list-style:none}blockquote,q{quotes:none}blockquote:before,blockquote:after,q:before,q:after{content:'';content:none}:focus{outine:0}ins{text-decoration:none}del{text-decoration:line-through}table{border-collapse:collapse;border-spacing:0}
 
 html { min-height:100%; margin-bottom:1px; }
@@ -74,9 +74,18 @@ table td { padding:7px 5px; text-align:left; vertical-align:top; border:1px soli
      type_1_info: [1x340 struct] % The harvested DICOM information</pre><p>The geometry set G contains: G =</p><pre>    v: [3x1 double] %The voxel size
    OR: [3x1 double] %The location of the origin
     r: [3x1 double] %Direction vector for rows
-    c: [3x1 double] %Direction vector for Columns</pre><p>Path name for dicom files</p><pre class="codeinput">defaultFolder = fileparts(fileparts(mfilename(<span class="string">'fullpath'</span>))); <span class="comment">%Set main folder</span>
-pathName=fullfile(defaultFolder,<span class="string">'data'</span>,<span class="string">'DICOM'</span>,<span class="string">'0001_human_calf'</span>);
-</pre><p>Converting dicom data to the IMDAT format</p><pre class="codeinput">dcmFolder2MATobject(pathName);<span class="comment">%Get DICOM data</span>
+    c: [3x1 double] %Direction vector for Columns</pre><p>The full input set is used like this: dcmFolder2MATobject(PathName,MaxVarSize,reOrderOpt,dicomDictType,fileExtension)</p><p>The first input is required (the path name for the DICOM data folder), all other inputs are optional.</p><p>PathName:   The path name to the folder containing the DICOM data MaxVarSize: default=&gt;1e12, the maximum variable size. If the image data exceeds this size e.g. as a 4D array, each 3D subarray is seperately saved</p><p>reOrderOpt: default=&gt;0, if 1 the files are sorted based on the "InstanceNumber" DICOM field, instead of the file names.</p><p>dicomDictType: default=&gt;0, If zero the best dicom dictionary is selected based on the DICOM file vendor description. If 1 then the MATLAB "factory default" is used.</p><p>fileExtension: default=&gt;'.dcm', specifies the file extension for the DICOM files. The default is the typical .dcm extension. Alternatively an empty file extension '' or [] may be specified. In which case all files without an extension contained in the DICOM folder are deemed DICOM files.</p><p>Path name for dicom files</p><pre class="codeinput">testCase=1;
+defaultFolder = fileparts(fileparts(mfilename(<span class="string">'fullpath'</span>))); <span class="comment">%Set main folder</span>
+
+<span class="keyword">switch</span> testCase
+    <span class="keyword">case</span> 1 <span class="comment">%DICOM data with .dcm as file extensions</span>
+        fileExtension=<span class="string">'.dcm'</span>;
+        pathName=fullfile(defaultFolder,<span class="string">'data'</span>,<span class="string">'DICOM'</span>,<span class="string">'0001_human_calf'</span>);
+    <span class="keyword">case</span> 2 <span class="comment">%DICOM data without file extensions</span>
+        fileExtension=<span class="string">''</span>;
+        pathName=fullfile(defaultFolder,<span class="string">'data'</span>,<span class="string">'DICOM'</span>,<span class="string">'0001_human_calf_no_ext'</span>);
+<span class="keyword">end</span>
+</pre><p>Converting dicom data to the IMDAT format</p><pre class="codeinput">dcmFolder2MATobject(pathName,[],[],[],fileExtension);<span class="comment">%Get DICOM data</span>
 </pre><pre class="codeoutput">Detected Philips Healthcare files
 DICOM dictionary set to: gibbon_dict.txt
 </pre><h2 id="7">Example: LOADING OR HANDLING THE MAT OBJECT</h2><p>Here is an example for loading in the entire data structure</p><pre class="codeinput">loadName=fullfile(pathName,<span class="string">'IMDAT'</span>,<span class="string">'IMDAT.mat'</span>);
@@ -85,7 +94,7 @@ IMDAT_struct=load(loadName);
 G = matObj.G;
 M= matObj.type_1;
 </pre><p>Viewing the image data</p><pre class="codeinput">sv3(M,G.v);
-</pre><img width="100%" height="auto" vspace="5" hspace="5" src="HELP_dcmFolder2MATobject_01.jpg" alt=""> <p>Viewing the image data using <tt>ind2patch</tt> Alternatively the image data can be viewed using the <tt>ind2patch</tt> function. See the associated help for more information.</p><p><img vspace="5" hspace="5" src="gibbVerySmall.gif" alt=""> </p><p><i><b>GIBBON</b></i> <a href="www.gibboncode.org">www.gibboncode.org</a></p><p><i>Kevin Mattheus Moerman</i>, <a href="gibbon.toolbox@gmail.com">gibbon.toolbox@gmail.com</a></p><p><i><b>GIBBON footer text</b></i></p><p>License: <a href="https://github.com/gibbonCode/GIBBON/blob/master/LICENSE">https://github.com/gibbonCode/GIBBON/blob/master/LICENSE</a></p><p>GIBBON: The Geometry and Image-based Bioengineering add-On. A toolbox for image segmentation, image-based modeling, meshing, and finite element analysis.</p><p>Copyright (C) 2019  Kevin Mattheus Moerman</p><p>This program is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.</p><p>This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for more details.</p><p>You should have received a copy of the GNU General Public License along with this program.  If not, see <a href="http://www.gnu.org/licenses/">http://www.gnu.org/licenses/</a>.</p><p class="footer"><br><a href="https://www.mathworks.com/products/matlab/">Published with MATLAB&reg; R2019a</a><br></p></div><!--
+</pre><img width="100%" height="auto" vspace="5" hspace="5" src="HELP_dcmFolder2MATobject_01.jpg" alt=""> <p>Viewing the image data using <tt>ind2patch</tt> Alternatively the image data can be viewed using the <tt>ind2patch</tt> function. See the associated help for more information.</p><p><img vspace="5" hspace="5" src="gibbVerySmall.gif" alt=""> </p><p><i><b>GIBBON</b></i> <a href="www.gibboncode.org">www.gibboncode.org</a></p><p><i>Kevin Mattheus Moerman</i>, <a href="gibbon.toolbox@gmail.com">gibbon.toolbox@gmail.com</a></p><p><i><b>GIBBON footer text</b></i></p><p>License: <a href="https://github.com/gibbonCode/GIBBON/blob/master/LICENSE">https://github.com/gibbonCode/GIBBON/blob/master/LICENSE</a></p><p>GIBBON: The Geometry and Image-based Bioengineering add-On. A toolbox for image segmentation, image-based modeling, meshing, and finite element analysis.</p><p>Copyright (C) 2019  Kevin Mattheus Moerman</p><p>This program is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.</p><p>This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for more details.</p><p>You should have received a copy of the GNU General Public License along with this program.  If not, see <a href="http://www.gnu.org/licenses/">http://www.gnu.org/licenses/</a>.</p><p class="footer"><br><a href="https://www.mathworks.com/products/matlab/">Published with MATLAB&reg; R2019b</a><br></p></div><!--
 ##### SOURCE BEGIN #####
 %% dcmFolder2MATobject
 % Below is a demonstration of the features of the |dcmFolder2MATobject| function
@@ -128,16 +137,50 @@ clear; close all; clc;
 %     OR: [3x1 double] %The location of the origin
 %      r: [3x1 double] %Direction vector for rows
 %      c: [3x1 double] %Direction vector for Columns
+%
+% The full input set is used like this: 
+% dcmFolder2MATobject(PathName,MaxVarSize,reOrderOpt,dicomDictType,fileExtension)
+%
+% The first input is required (the path name for the DICOM data folder),
+% all other inputs are optional. 
+% 
+% PathName:   The path name to the folder containing the DICOM data
+% MaxVarSize: default=>1e12, the maximum variable size. If the image data
+% exceeds this size e.g. as a 4D array, each 3D subarray is seperately
+% saved
+% 
+% reOrderOpt: default=>0, if 1 the files are sorted based on the
+% "InstanceNumber" DICOM field, instead of the file names. 
+% 
+% dicomDictType: default=>0, If zero the best dicom dictionary is selected
+% based on the DICOM file vendor description. If 1 then the MATLAB "factory
+% default" is used. 
+% 
+% fileExtension: default=>'.dcm', specifies the file extension for the
+% DICOM files. The default is the typical .dcm extension. Alternatively an
+% empty file extension '' or [] may be specified. In which case all files
+% without an extension contained in the DICOM folder are deemed DICOM
+% files. 
 
 %% 
 % Path name for dicom files
 
+testCase=1;
 defaultFolder = fileparts(fileparts(mfilename('fullpath'))); %Set main folder
-pathName=fullfile(defaultFolder,'data','DICOM','0001_human_calf');
+
+switch testCase 
+    case 1 %DICOM data with .dcm as file extensions
+        fileExtension='.dcm';
+        pathName=fullfile(defaultFolder,'data','DICOM','0001_human_calf');
+    case 2 %DICOM data without file extensions
+        fileExtension='';
+        pathName=fullfile(defaultFolder,'data','DICOM','0001_human_calf_no_ext');
+end
 
 %%
 % Converting dicom data to the IMDAT format
-dcmFolder2MATobject(pathName);%Get DICOM data
+
+dcmFolder2MATobject(pathName,[],[],[],fileExtension);%Get DICOM data
 
 %% Example: LOADING OR HANDLING THE MAT OBJECT
 % Here is an example for loading in the entire data structure
