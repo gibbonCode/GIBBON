@@ -54,7 +54,7 @@ febioLogFileName_stiffness=[febioFebFileNamePart,'_stiffness_out.txt']; %Log fil
 sampleSize=10;
 
 %Define applied displacement 
-appliedStrain=0.2; %Linear strain (Only used to compute applied stretch)
+appliedStrain=0.3; %Linear strain (Only used to compute applied stretch)
 loadingOption='compression'; % or 'tension'
 switch loadingOption
     case 'compression'
@@ -95,18 +95,24 @@ E=1:8; %Element description of the 8-node cube (hexahedral element)
 
 %%
 % Create lattice structure
-controlParameter.shrinkFactor=0.2; %Strut sides are formed by shrinking the input mesh faces by this factor
-controlParameter.numDigitKeep=5; %used for merging nodes
+
+testCase=1;
+
 controlParameter.meshType='hex'; %desired output mesh type
 controlParameter.indBoundary=indBoundary; %indices of the boundary faces
-controlParameter.latticeSide=2; %1=side 1 the edge lattice, 2=side 2 the dual lattice to the edge lattice
-[Es,Vs,Cs]=element2lattice(E,V,controlParameter);
-
-%Subdivide hex elements 
-splitMethod=3; %3 refers to allong strut length direction
-numSplitIterations=1; %Number of times the hex elements are split
-[Es,Vs]=subHex(Es,Vs,numSplitIterations,splitMethod);
-
+switch testCase
+    case 1
+    controlParameter.shrinkFactor=0.2; %Strut sides are formed by shrinking the input mesh faces by this factor
+    
+    controlParameter.latticeSide=2; %1=side 1 the edge lattice, 2=side 2 the dual lattice to the edge lattice
+    [Es,Vs,Cs]=element2lattice(E,V,controlParameter);
+    
+    %Subdivide hex elements
+    splitMethod=3; %3 refers to allong strut length direction
+    numSplitIterations=1; %Number of times the hex elements are split
+    [Es,Vs]=subHex(Es,Vs,numSplitIterations,splitMethod);
+    case 2
+end
 % Create patch Data for visualization
 [Fs,CsF]=element2patch(Es,Cs); %Patch data for plotting
 
@@ -167,14 +173,10 @@ faceBoundaryMarker(logicTop_Fb)=2;
 %% DEFINE BC's
 
 %Supported nodes
-logicRigid=faceBoundaryMarker==1;
-Fr=Fb(logicRigid,:);
-bcRigidList=unique(Fr(:));
+bcRigidList=unique(Fb(faceBoundaryMarker==1,:));
 
 %Prescribed force nodes
-logicPrescribe=faceBoundaryMarker==2;
-Fr=Fb(logicPrescribe,:);
-bcPrescribeList=unique(Fr(:));
+bcPrescribeList=unique(Fb(faceBoundaryMarker==2,:));
 bcPrescribeMagnitudes=displacementMagnitude(ones(1,numel(bcPrescribeList)),:);
 
 %%
@@ -417,7 +419,35 @@ if runFlag==1 %i.e. a succesful run
     end        
     anim8(hf,animStruct); %Initiate animation feature    
     drawnow;
+    
+    %%    
+    % Importing nodal forces from a log file
+    
+    [~, N_force_mat,~]=importFEBio_logfile(fullfile(savePath,febioLogFileName_force)); %Nodal forces
+    
+    N_force_mat=N_force_mat(:,2:end,:);
+    sizImport=size(N_force_mat);
+    sizImport(3)=sizImport(3)+1;
+    N_force_mat_n=zeros(sizImport);
+    N_force_mat_n(:,:,2:end)=N_force_mat;
+    N_force_mat=N_force_mat_n;
+    
+    f_sum_z=squeeze(sum(N_force_mat(bcPrescribeList,3,:),1)); 
 
+    %% 
+    % Visualize force data
+    
+    displacementApplied=time_mat.*displacementMagnitude;
+    lambdaApplied=(sampleSize+displacementApplied)./sampleSize;
+    
+    cFigure; hold on; 
+    xlabel('$\lambda$ [.]','Interpreter','Latex');
+    ylabel('$F_z$','Interpreter','Latex');
+    hp=plot(lambdaApplied(:),f_sum_z(:),'b-','LineWidth',3);
+    grid on; box on; axis square; axis tight; 
+    set(gca,'FontSize',fontSize);
+    drawnow; 
+    
 end
 
 %% 
