@@ -28,6 +28,10 @@ switch nargin
         r=varargin{2};
 end
 
+if isempty(r)
+    r=1; 
+end
+
 %%
 switch n
     case 1 % Tetrahedron

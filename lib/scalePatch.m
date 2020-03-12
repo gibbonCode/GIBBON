@@ -1,4 +1,4 @@
-function [Fc,Vc]=scalePatch(varargin)
+function [varargout]=scalePatch(varargin)
 
 % --------------------------------------------------------------------
 % function [Fc,Vc]=scalePatch(F,V,scaleFactor)
@@ -35,6 +35,9 @@ end
 
 %%
 Vc=zeros(size(F,1)*size(F,2),size(V,2));
+if nargout==3
+    Vcc=Vc;
+end
 for q=1:1:size(V,2)
     X=V(:,q);
     if size(F,1)==1
@@ -42,6 +45,11 @@ for q=1:1:size(V,2)
     else
         FX=X(F);
     end
+    
+    if nargout==3
+        Vcc(:,q)=FX(:);
+    end
+    
     if any(scaleFactor~=1)
         FX_mean=mean(FX,2);
         FX=((FX-FX_mean).*scaleFactor)+FX_mean;
@@ -51,6 +59,12 @@ end
     
 Fc=reshape(1:size(Vc,1),size(F,1),size(F,2));
 
+%% Collect output
+varargout{1}=Fc;
+varargout{2}=Vc;
+if nargout==3
+    varargout{3}=Vcc;
+end
 %% 
 % _*GIBBON footer text*_ 
 % 

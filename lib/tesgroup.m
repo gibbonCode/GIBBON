@@ -1,4 +1,4 @@
-function varargout=tesgroup(varargin)
+function [varargout]=tesgroup(varargin)
 
 % function [G,G_iter]=tesgroup(F,optionStruct)
 % ------------------------------------------------------------------------
@@ -134,14 +134,22 @@ G_iter_min=gnanmin(G_iter,[],1);
 G_iter=G_iter-G_iter_min(ones(size(G_iter,1),1),:)+1;
 
 %% Prepare output
-switch nargout
-    case 1
-        varargout{1}=G;
-    case 2
-        varargout{1}=G;
-        varargout{2}=G_iter;
+varargout{1}=G;
+varargout{2}=G_iter;
+
+if nargout==3
+    switch outputType
+        case 'array'
+            groupSize=sum(G,1);
+        case 'label'
+            groupSize=zeros(1,max(G(:)));
+            for q=1:1:max(G(:))
+                groupSize(q)=nnz(G==q);
+            end
+    end
+    varargout{3}=groupSize;
 end
- 
+
 %% 
 % _*GIBBON footer text*_ 
 % 

@@ -1,6 +1,6 @@
 function [indBoundary]=tesBoundary(varargin)
 
-% function [indBoundary]=tesBoundary(varargin)
+% function [indBoundary]=tesBoundary(F,V)
 % ------------------------------------------------------------------------
 %
 % Change log: 

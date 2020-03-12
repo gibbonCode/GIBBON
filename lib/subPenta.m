@@ -1,6 +1,6 @@
 function [varargout]=subPenta(varargin)
 
-% function [E,V,C,CV]=subPenta(E,V,n)
+% function [E,V,C,CV]=subPenta(E,V,n,splitMethod)
 % ------------------------------------------------------------------------
 %
 % Kevin Mattheus Moerman
