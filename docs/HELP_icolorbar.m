@@ -8,9 +8,37 @@ clear; close all; clc;
 % |[varargout]=icolorbar(varargin);|
 
 %% Description 
-% UNDOCUMENTED 
+% The icolorbar function adds an "integer colorbar" to the current axis. An
+% interger colorbar has integer levels which and denotes at the center of
+% the color bins. 
+
 %% Examples 
 % 
+
+%%
+% Create example patch data 
+[F,V]=geoSphere(3,1); %Create patch data for a sphere
+
+%Create color data 
+X=patchCentre(F,V);
+C=ones(size(F,1),1); %1 for the bottom
+C(X(:,3)>-0.5)=2; %2 for the next level
+C(X(:,3)>0)=3; %3 for the next level
+C(X(:,3)>0.5)=4; %4 for the next level
+
+%%
+% Visualize patch data with integer color data
+
+cFigure;
+title('Integer colorbar, example with 4 colors')
+gpatch(F,V,C);
+axisGeom; 
+colormap(gjet(4)); 
+view([0,0]); 
+camlight headlight; 
+icolorbar;
+drawnow; 
+
 %%
 % 
 % <<gibbVerySmall.gif>>

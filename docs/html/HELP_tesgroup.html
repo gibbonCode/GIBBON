@@ -6,7 +6,7 @@
    <!--
 This HTML was auto-generated from MATLAB code.
 To make changes, update the MATLAB code and republish this document.
-      --><title>tesgroup</title><meta name="generator" content="MATLAB 9.6"><link rel="schema.DC" href="http://purl.org/dc/elements/1.1/"><meta name="DC.date" content="2019-06-20"><meta name="DC.source" content="HELP_tesgroup.m"><style type="text/css">
+      --><title>tesgroup</title><meta name="generator" content="MATLAB 9.7"><link rel="schema.DC" href="http://purl.org/dc/elements/1.1/"><meta name="DC.date" content="2020-02-19"><meta name="DC.source" content="HELP_tesgroup.m"><style type="text/css">
 html,body,div,span,applet,object,iframe,h1,h2,h3,h4,h5,h6,p,blockquote,pre,a,abbr,acronym,address,big,cite,code,del,dfn,em,font,img,ins,kbd,q,s,samp,small,strike,strong,sub,sup,tt,var,b,u,i,center,dl,dt,dd,ol,ul,li,fieldset,form,label,legend,table,caption,tbody,tfoot,thead,tr,th,td{margin:0;padding:0;border:0;outline:0;font-size:100%;vertical-align:baseline;background:transparent}body{line-height:1}ol,ul{list-style:none}blockquote,q{quotes:none}blockquote:before,blockquote:after,q:before,q:after{content:'';content:none}:focus{outine:0}ins{text-decoration:none}del{text-decoration:line-through}table{border-collapse:collapse;border-spacing:0}
 
 html { min-height:100%; margin-bottom:1px; }
@@ -66,8 +66,33 @@ table td { padding:7px 5px; text-align:left; vertical-align:top; border:1px soli
 
 
 
-  </style></head><body><div class="content"><h1>tesgroup</h1><!--introduction--><p>Below is a demonstration of the features of the <tt>tesgroup</tt> function</p><!--/introduction--><h2>Contents</h2><div><ul><li><a href="#2">Syntax</a></li><li><a href="#3">Description</a></li><li><a href="#4">Example: grouping while avoiding bowtie problem</a></li></ul></div><pre class="codeinput">clear; close <span class="string">all</span>; clc;
-</pre><h2 id="2">Syntax</h2><p><tt>[G,G_iter]=tesgroup(F,indExclude);</tt></p><h2 id="3">Description</h2><h2 id="4">Example: grouping while avoiding bowtie problem</h2><p>Create example bowtie problem</p><pre class="codeinput">V=[-1 1 0; -1 -1 0; 0 0 0; 1 -1 0; 1 1 0];
+  </style></head><body><div class="content"><h1>tesgroup</h1><!--introduction--><p>Below is a demonstration of the features of the <tt>tesgroup</tt> function</p><!--/introduction--><h2>Contents</h2><div><ul><li><a href="#2">Syntax</a></li><li><a href="#3">Description</a></li><li><a href="#4">Example: grouping detached mesh components</a></li><li><a href="#7">Example: grouping while avoiding bowtie problem</a></li></ul></div><pre class="codeinput">clear; close <span class="string">all</span>; clc;
+</pre><h2 id="2">Syntax</h2><p><tt>[G,G_iter]=tesgroup(F,indExclude);</tt></p><h2 id="3">Description</h2><h2 id="4">Example: grouping detached mesh components</h2><pre class="codeinput"><span class="comment">% Simulating a mesh consisting of seperate pieces.</span>
+
+[F,V]=graphicsModels(9);
+
+<span class="comment">%Cut mesh in different directions</span>
+logicRemoveVertices=false(size(V,1),1);
+<span class="keyword">for</span> q=2:3
+    w=max(V(:,q))-min(V(:,q));
+    m=0.5*(max(V(:,q))+min(V(:,q)));
+    logicRemoveVertices=logicRemoveVertices | ((V(:,q)&gt;=(m-w/25)) &amp; V(:,q)&lt;=(m+w/25));
+<span class="keyword">end</span>
+logicKeep=all(~logicRemoveVertices(F),2);
+
+<span class="comment">% Creating detached mesh set</span>
+[Fs,Vs]=patchCleanUnused(F(logicKeep,:),V);
+</pre><p>Grouping mesh components</p><pre class="codeinput">optionStruct.outputType=<span class="string">'label'</span>;
+G=tesgroup(Fs,optionStruct);
+</pre><p>Visualize grouped mesh</p><pre class="codeinput">cFigure;
+gpatch(F,V,<span class="string">'w'</span>,<span class="string">'none'</span>,0.3);
+gpatch(Fs,Vs,G,<span class="string">'k'</span>,1);
+axisGeom;
+view([-90, 0]);
+camlight <span class="string">headlight</span>;
+colormap <span class="string">gjet</span>; icolorbar;
+drawnow;
+</pre><img width="100%" height="auto" vspace="5" hspace="5" src="HELP_tesgroup_01.jpg" alt=""> <h2 id="7">Example: grouping while avoiding bowtie problem</h2><p>Create example bowtie problem</p><pre class="codeinput">V=[-1 1 0; -1 -1 0; 0 0 0; 1 -1 0; 1 1 0];
 F=[1 2 3; 3 4 5];
 
 V(:,2)=V(:,2)+1;
@@ -107,7 +132,8 @@ indBoundaryVertices=unique(Eb(:));
 logicVertexBowtied=sum(vertexBoundaryEdgeConnectivity,2)&gt;2;
 
 indExclude=find(logicVertexBowtied);
-</pre><pre class="codeinput">optionStruct.indExclude=indExclude;
+</pre><pre class="codeinput">clear <span class="string">optionStruct</span>;
+optionStruct.indExclude=indExclude;
 
 [G,G_iter]=tesgroup(F,optionStruct);
 [I,J]=find(G);
@@ -120,7 +146,7 @@ gpatch(F,V,C);
 axisGeom;
 colormap <span class="string">gjet</span>; icolorbar;
 drawnow;
-</pre><img width="100%" height="auto" vspace="5" hspace="5" src="HELP_tesgroup_01.jpg" alt=""> <p><img vspace="5" hspace="5" src="gibbVerySmall.gif" alt=""> </p><p><i><b>GIBBON</b></i> <a href="www.gibboncode.org">www.gibboncode.org</a></p><p><i>Kevin Mattheus Moerman</i>, <a href="gibbon.toolbox@gmail.com">gibbon.toolbox@gmail.com</a></p><p><i><b>GIBBON footer text</b></i></p><p>License: <a href="https://github.com/gibbonCode/GIBBON/blob/master/LICENSE">https://github.com/gibbonCode/GIBBON/blob/master/LICENSE</a></p><p>GIBBON: The Geometry and Image-based Bioengineering add-On. A toolbox for image segmentation, image-based modeling, meshing, and finite element analysis.</p><p>Copyright (C) 2019  Kevin Mattheus Moerman</p><p>This program is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.</p><p>This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for more details.</p><p>You should have received a copy of the GNU General Public License along with this program.  If not, see <a href="http://www.gnu.org/licenses/">http://www.gnu.org/licenses/</a>.</p><p class="footer"><br><a href="https://www.mathworks.com/products/matlab/">Published with MATLAB&reg; R2019a</a><br></p></div><!--
+</pre><img width="100%" height="auto" vspace="5" hspace="5" src="HELP_tesgroup_02.jpg" alt=""> <p><img vspace="5" hspace="5" src="gibbVerySmall.gif" alt=""> </p><p><i><b>GIBBON</b></i> <a href="www.gibboncode.org">www.gibboncode.org</a></p><p><i>Kevin Mattheus Moerman</i>, <a href="gibbon.toolbox@gmail.com">gibbon.toolbox@gmail.com</a></p><p><i><b>GIBBON footer text</b></i></p><p>License: <a href="https://github.com/gibbonCode/GIBBON/blob/master/LICENSE">https://github.com/gibbonCode/GIBBON/blob/master/LICENSE</a></p><p>GIBBON: The Geometry and Image-based Bioengineering add-On. A toolbox for image segmentation, image-based modeling, meshing, and finite element analysis.</p><p>Copyright (C) 2019  Kevin Mattheus Moerman</p><p>This program is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.</p><p>This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for more details.</p><p>You should have received a copy of the GNU General Public License along with this program.  If not, see <a href="http://www.gnu.org/licenses/">http://www.gnu.org/licenses/</a>.</p><p class="footer"><br><a href="https://www.mathworks.com/products/matlab/">Published with MATLAB&reg; R2019b</a><br></p></div><!--
 ##### SOURCE BEGIN #####
 %% tesgroup
 % Below is a demonstration of the features of the |tesgroup| function
@@ -132,6 +158,42 @@ clear; close all; clc;
 % |[G,G_iter]=tesgroup(F,indExclude);|
 
 %% Description
+
+%% Example: grouping detached mesh components 
+
+% Simulating a mesh consisting of seperate pieces. 
+
+[F,V]=graphicsModels(9);
+
+%Cut mesh in different directions
+logicRemoveVertices=false(size(V,1),1);
+for q=2:3
+    w=max(V(:,q))-min(V(:,q));
+    m=0.5*(max(V(:,q))+min(V(:,q)));
+    logicRemoveVertices=logicRemoveVertices | ((V(:,q)>=(m-w/25)) & V(:,q)<=(m+w/25));    
+end
+logicKeep=all(~logicRemoveVertices(F),2);
+
+% Creating detached mesh set
+[Fs,Vs]=patchCleanUnused(F(logicKeep,:),V);
+
+%% 
+% Grouping mesh components
+
+optionStruct.outputType='label';
+G=tesgroup(Fs,optionStruct);
+
+%%
+% Visualize grouped mesh
+
+cFigure; 
+gpatch(F,V,'w','none',0.3);
+gpatch(Fs,Vs,G,'k',1);
+axisGeom;
+view([-90, 0]);
+camlight headlight; 
+colormap gjet; icolorbar;
+drawnow; 
 
 %% Example: grouping while avoiding bowtie problem
 
@@ -183,7 +245,7 @@ logicVertexBowtied=sum(vertexBoundaryEdgeConnectivity,2)>2;
 indExclude=find(logicVertexBowtied);
 
 %%
-
+clear optionStruct;
 optionStruct.indExclude=indExclude;
 
 [G,G_iter]=tesgroup(F,optionStruct);

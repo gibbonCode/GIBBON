@@ -66,6 +66,11 @@ abaqus_spec.Part{1}.Elset{1}.VAL=1;
 abaqus_spec.Part{1}.Solid_section.ATTR.elset='Set-1';
 abaqus_spec.Part{1}.Solid_section.ATTR.material='Elastic';
 
+% abaqus_spec.Part{1}.Shell_section.ATTR.elset='Set-1';
+% abaqus_spec.Part{1}.Shell_section.ATTR.material='Material-1';
+% % abaqus_spec.Part{1}.Shell_section.VAL=[10 5]; %Use numerical data
+% abaqus_spec.Part{1}.Shell_section.VAL='10., 5'; %Use custom text data
+
 %% The assembly section
 %
 

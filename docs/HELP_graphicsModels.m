@@ -22,7 +22,7 @@ edgeWidth=0.5;
 
 hf=cFigure; 
 
-surfaceNames={'stanford_bunny','utah_teapot','cow','parasaurolophus','femur','hip_implant','elephant','dolphin'};
+surfaceNames={'stanford_bunny','utah_teapot','cow','parasaurolophus','femur','hip_implant','elephant','dolphin','david'};
 plotColors=gjet(numel(surfaceNames));
 for q=1:1:numel(surfaceNames)
    subplot(3,3,q); 

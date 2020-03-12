@@ -9,6 +9,42 @@ clear; close all; clc;
 
 %% Description
 
+%% Example: grouping detached mesh components 
+
+% Simulating a mesh consisting of seperate pieces. 
+
+[F,V]=graphicsModels(9);
+
+%Cut mesh in different directions
+logicRemoveVertices=false(size(V,1),1);
+for q=2:3
+    w=max(V(:,q))-min(V(:,q));
+    m=0.5*(max(V(:,q))+min(V(:,q)));
+    logicRemoveVertices=logicRemoveVertices | ((V(:,q)>=(m-w/25)) & V(:,q)<=(m+w/25));    
+end
+logicKeep=all(~logicRemoveVertices(F),2);
+
+% Creating detached mesh set
+[Fs,Vs]=patchCleanUnused(F(logicKeep,:),V);
+
+%% 
+% Grouping mesh components
+
+optionStruct.outputType='label';
+G=tesgroup(Fs,optionStruct);
+
+%%
+% Visualize grouped mesh
+
+cFigure; 
+gpatch(F,V,'w','none',0.3);
+gpatch(Fs,Vs,G,'k',1);
+axisGeom;
+view([-90, 0]);
+camlight headlight; 
+colormap gjet; icolorbar;
+drawnow; 
+
 %% Example: grouping while avoiding bowtie problem
 
 %%
@@ -59,7 +95,7 @@ logicVertexBowtied=sum(vertexBoundaryEdgeConnectivity,2)>2;
 indExclude=find(logicVertexBowtied);
 
 %%
-
+clear optionStruct;
 optionStruct.indExclude=indExclude;
 
 [G,G_iter]=tesgroup(F,optionStruct);

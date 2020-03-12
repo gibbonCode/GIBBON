@@ -6,7 +6,7 @@
    <!--
 This HTML was auto-generated from MATLAB code.
 To make changes, update the MATLAB code and republish this document.
-      --><title>icolorbar</title><meta name="generator" content="MATLAB 9.6"><link rel="schema.DC" href="http://purl.org/dc/elements/1.1/"><meta name="DC.date" content="2019-06-20"><meta name="DC.source" content="HELP_icolorbar.m"><style type="text/css">
+      --><title>icolorbar</title><meta name="generator" content="MATLAB 9.7"><link rel="schema.DC" href="http://purl.org/dc/elements/1.1/"><meta name="DC.date" content="2020-03-12"><meta name="DC.source" content="HELP_icolorbar.m"><style type="text/css">
 html,body,div,span,applet,object,iframe,h1,h2,h3,h4,h5,h6,p,blockquote,pre,a,abbr,acronym,address,big,cite,code,del,dfn,em,font,img,ins,kbd,q,s,samp,small,strike,strong,sub,sup,tt,var,b,u,i,center,dl,dt,dd,ol,ul,li,fieldset,form,label,legend,table,caption,tbody,tfoot,thead,tr,th,td{margin:0;padding:0;border:0;outline:0;font-size:100%;vertical-align:baseline;background:transparent}body{line-height:1}ol,ul{list-style:none}blockquote,q{quotes:none}blockquote:before,blockquote:after,q:before,q:after{content:'';content:none}:focus{outine:0}ins{text-decoration:none}del{text-decoration:line-through}table{border-collapse:collapse;border-spacing:0}
 
 html { min-height:100%; margin-bottom:1px; }
@@ -67,7 +67,24 @@ table td { padding:7px 5px; text-align:left; vertical-align:top; border:1px soli
 
 
   </style></head><body><div class="content"><h1>icolorbar</h1><!--introduction--><p>Below is a demonstration of the features of the <tt>icolorbar</tt> function</p><!--/introduction--><h2>Contents</h2><div><ul><li><a href="#2">Syntax</a></li><li><a href="#3">Description</a></li><li><a href="#4">Examples</a></li></ul></div><pre class="codeinput">clear; close <span class="string">all</span>; clc;
-</pre><h2 id="2">Syntax</h2><p><tt>[varargout]=icolorbar(varargin);</tt></p><h2 id="3">Description</h2><p>UNDOCUMENTED</p><h2 id="4">Examples</h2><p><img vspace="5" hspace="5" src="gibbVerySmall.gif" alt=""> </p><p><i><b>GIBBON</b></i> <a href="www.gibboncode.org">www.gibboncode.org</a></p><p><i>Kevin Mattheus Moerman</i>, <a href="gibbon.toolbox@gmail.com">gibbon.toolbox@gmail.com</a></p><p><i><b>GIBBON footer text</b></i></p><p>License: <a href="https://github.com/gibbonCode/GIBBON/blob/master/LICENSE">https://github.com/gibbonCode/GIBBON/blob/master/LICENSE</a></p><p>GIBBON: The Geometry and Image-based Bioengineering add-On. A toolbox for image segmentation, image-based modeling, meshing, and finite element analysis.</p><p>Copyright (C) 2019  Kevin Mattheus Moerman</p><p>This program is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.</p><p>This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for more details.</p><p>You should have received a copy of the GNU General Public License along with this program.  If not, see <a href="http://www.gnu.org/licenses/">http://www.gnu.org/licenses/</a>.</p><p class="footer"><br><a href="https://www.mathworks.com/products/matlab/">Published with MATLAB&reg; R2019a</a><br></p></div><!--
+</pre><h2 id="2">Syntax</h2><p><tt>[varargout]=icolorbar(varargin);</tt></p><h2 id="3">Description</h2><p>The icolorbar function adds an "integer colorbar" to the current axis. An interger colorbar has integer levels which and denotes at the center of the color bins.</p><h2 id="4">Examples</h2><p>Create example patch data</p><pre class="codeinput">[F,V]=geoSphere(3,1); <span class="comment">%Create patch data for a sphere</span>
+
+<span class="comment">%Create color data</span>
+X=patchCentre(F,V);
+C=ones(size(F,1),1); <span class="comment">%1 for the bottom</span>
+C(X(:,3)&gt;-0.5)=2; <span class="comment">%2 for the next level</span>
+C(X(:,3)&gt;0)=3; <span class="comment">%3 for the next level</span>
+C(X(:,3)&gt;0.5)=4; <span class="comment">%4 for the next level</span>
+</pre><p>Visualize patch data with integer color data</p><pre class="codeinput">cFigure;
+title(<span class="string">'Integer colorbar, example with 4 colors'</span>)
+gpatch(F,V,C);
+axisGeom;
+colormap(gjet(4));
+view([0,0]);
+camlight <span class="string">headlight</span>;
+icolorbar;
+drawnow;
+</pre><img width="100%" height="auto" vspace="5" hspace="5" src="HELP_icolorbar_01.jpg" alt=""> <p><img vspace="5" hspace="5" src="gibbVerySmall.gif" alt=""> </p><p><i><b>GIBBON</b></i> <a href="www.gibboncode.org">www.gibboncode.org</a></p><p><i>Kevin Mattheus Moerman</i>, <a href="gibbon.toolbox@gmail.com">gibbon.toolbox@gmail.com</a></p><p><i><b>GIBBON footer text</b></i></p><p>License: <a href="https://github.com/gibbonCode/GIBBON/blob/master/LICENSE">https://github.com/gibbonCode/GIBBON/blob/master/LICENSE</a></p><p>GIBBON: The Geometry and Image-based Bioengineering add-On. A toolbox for image segmentation, image-based modeling, meshing, and finite element analysis.</p><p>Copyright (C) 2019  Kevin Mattheus Moerman</p><p>This program is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.</p><p>This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for more details.</p><p>You should have received a copy of the GNU General Public License along with this program.  If not, see <a href="http://www.gnu.org/licenses/">http://www.gnu.org/licenses/</a>.</p><p class="footer"><br><a href="https://www.mathworks.com/products/matlab/">Published with MATLAB&reg; R2019b</a><br></p></div><!--
 ##### SOURCE BEGIN #####
 %% icolorbar
 % Below is a demonstration of the features of the |icolorbar| function
@@ -79,9 +96,37 @@ clear; close all; clc;
 % |[varargout]=icolorbar(varargin);|
 
 %% Description 
-% UNDOCUMENTED 
+% The icolorbar function adds an "integer colorbar" to the current axis. An
+% interger colorbar has integer levels which and denotes at the center of
+% the color bins. 
+
 %% Examples 
 % 
+
+%%
+% Create example patch data 
+[F,V]=geoSphere(3,1); %Create patch data for a sphere
+
+%Create color data 
+X=patchCentre(F,V);
+C=ones(size(F,1),1); %1 for the bottom
+C(X(:,3)>-0.5)=2; %2 for the next level
+C(X(:,3)>0)=3; %3 for the next level
+C(X(:,3)>0.5)=4; %4 for the next level
+
+%%
+% Visualize patch data with integer color data
+
+cFigure;
+title('Integer colorbar, example with 4 colors')
+gpatch(F,V,C);
+axisGeom; 
+colormap(gjet(4)); 
+view([0,0]); 
+camlight headlight; 
+icolorbar;
+drawnow; 
+
 %%
 % 
 % <<gibbVerySmall.gif>>
