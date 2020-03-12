@@ -32,8 +32,8 @@ switch testCase
         
         IMDAT_struct=load(loadName); %The image data structure 
         G = IMDAT_struct.G; %Geometric/spatial information
-        v=G.v; %The voxel size
-        M= IMDAT_struct.type_1; %The image data
+        v = G.v; %The voxel size
+        M = IMDAT_struct.type_1; %The image data
 end
 
 %%

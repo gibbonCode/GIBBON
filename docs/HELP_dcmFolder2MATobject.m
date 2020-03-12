@@ -41,12 +41,13 @@ clear; close all; clc;
 %      c: [3x1 double] %Direction vector for Columns
 %
 % The full input set is used like this: 
-% dcmFolder2MATobject(PathName,MaxVarSize,reOrderOpt,dicomDictType,fileExtension)
+% dcmFolder2MATobject(PathName,MaxVarSize,reOrderOpt,dicomDictFactory,fileExtension)
 %
 % The first input is required (the path name for the DICOM data folder),
 % all other inputs are optional. 
 % 
 % PathName:   The path name to the folder containing the DICOM data
+% 
 % MaxVarSize: default=>1e12, the maximum variable size. If the image data
 % exceeds this size e.g. as a 4D array, each 3D subarray is seperately
 % saved
@@ -54,7 +55,7 @@ clear; close all; clc;
 % reOrderOpt: default=>0, if 1 the files are sorted based on the
 % "InstanceNumber" DICOM field, instead of the file names. 
 % 
-% dicomDictType: default=>0, If zero the best dicom dictionary is selected
+% dicomDictFactory: default=>0, If zero the best dicom dictionary is selected
 % based on the DICOM file vendor description. If 1 then the MATLAB "factory
 % default" is used. 
 % 
@@ -67,44 +68,58 @@ clear; close all; clc;
 %% 
 % Path name for dicom files
 
-testCase=1;
 defaultFolder = fileparts(fileparts(mfilename('fullpath'))); %Set main folder
+pathName=fullfile(defaultFolder,'data','DICOM','0001_human_calf');
 
-switch testCase 
-    case 1 %DICOM data with .dcm as file extensions
-        fileExtension='.dcm';
-        pathName=fullfile(defaultFolder,'data','DICOM','0001_human_calf');
-    case 2 %DICOM data without file extensions
-        fileExtension='';
-        pathName=fullfile(defaultFolder,'data','DICOM','0001_human_calf_no_ext');
-end
+%% Example: Convert all DICOM data in a folder to a mat-object
 
 %%
 % Converting dicom data to the IMDAT format
+dcmFolder2MATobject(pathName);%Get DICOM data
 
-dcmFolder2MATobject(pathName,[],[],[],fileExtension);%Get DICOM data
-
-%% Example: LOADING OR HANDLING THE MAT OBJECT
-% Here is an example for loading in the entire data structure
-
+%%
+% Loading in the entire data structure
 loadName=fullfile(pathName,'IMDAT','IMDAT.mat');
 IMDAT_struct=load(loadName);
 
-%%
-% Indexing into the MAT object to avoid loading entire structure
-% In somecases it is not desirable to load in the entire data set but only
-% say a certain slice. In this case the MAT object allows for indexing as
-% shows below. See also the help documentation for |matfile|
-% Although this type of indexing can be slow it does allow one to only
-% select a subset of the data which in some cases helps to save memory
-
-matObj = matfile(loadName);
-G = matObj.G;
-M= matObj.type_1;
+M=IMDAT_struct.type_1; %The image data (note: may not be of the double class)
+v=IMDAT_struct.G.v; %The voxel size
 
 %% 
 % Viewing the image data
-sv3(M,G.v);
+sv3(M,v);
+
+%%
+% Alternative using mat-object indexing. Indexing into the MAT object to
+% avoid loading entire structure In somecases it is not desirable to load
+% in the entire data set but only say a certain slice. In this case the MAT
+% object allows for indexing as shows below. See also the help
+% documentation for |matfile| Although this type of indexing can be slow it
+% does allow one to only select a subset of the data which in some cases
+% helps to save memory 
+
+% Load "link"/"handle" to mat-object
+matObj = matfile(loadName); 
+
+% Retrieve components from matobject
+G = matObj.G; %Geometry information
+v=G.v; %Voxel size
+m=matObj.type_1(:,:,5:10); %Only the 5th up to 10th slice 
+M= matObj.type_1; %The entire image for type_1
+
+%% Example: Convert all DICOM data in a folder with additional options
+
+MaxVarSize=[]; %Maximum variable size
+reOrderOpt=[]; %Option to reorder slices based on the "InstanceNumber" DICOM field
+dicomDictFactory=0; %Force to use factory default DICOM dictionary
+fileExtension='.dcm'; %File extension for DICOM files, can also be empty
+
+%Additional options are provided in an option structure
+optionStruct.nDownSample=[3 3 3]; %Under sample the image by these factors in row, column, slice directions
+optionStruct.skipInfo=1; %If 1 loading all DICOM info is skipped. Only the information from the first slice is used
+
+%%
+% |dcmFolder2MATobject(pathName,MaxVarSize,reOrderOpt,dicomDictFactory,fileExtension,optionStruct);%Get DICOM data |
 
 %% 
 % Viewing the image data using |ind2patch|

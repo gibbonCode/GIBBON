@@ -8,6 +8,8 @@ function hf=imx(varargin)
 % 2019/08/09 Update to not depend on javax jSliders but to use MATLAB
 % uicontrol sliders instead. Also added update frequency such that sliding
 % does not create an excessive amount of plot updates. 
+% 2019/12/01 Added land mark segmentation
+% 2020/03/10 Added land mark order tracking
 % ------------------------------------------------------------------------
 
 %%
@@ -571,6 +573,7 @@ hf.UserData.ContourSet=repmat({{[]}},1,siz(3));
 
 hf.UserData.markerSetHandle=[];
 hf.UserData.MarkerSet=repmat({[]},1,siz(3)); %Empty marker set
+hf.UserData.MarkerOrder=repmat({[]},1,siz(3)); %Empty marker set
 
 cMapContours=gjet(4);
 hf.UserData.colormapSketch=[cMapContours(3,:); cMapContours(4,:)]; %red to yellow
@@ -783,6 +786,7 @@ if ~isempty(Q)
         'sketchContour',...
         'ContourSet',...
         'MarkerSet',...
+        'MarkerOrder',...
         'colormapSketch',...
         'colormapSet',...
         'csapsSmoothPar',...
@@ -1763,7 +1767,13 @@ set(hf.UserData.ButtonHandles.hTextInfo,'String','Label point: Left click to cre
 
 
 markDone=0;
-Vd=hf.UserData.MarkerSet{qSlice};
+Vd=hf.UserData.MarkerSet{qSlice}; %markers for this slice
+markerOrderNum=hf.UserData.MarkerOrder{qSlice}; %order numbers for this slice
+lastMarkerNum=max([hf.UserData.MarkerOrder{:}]);
+if isempty(lastMarkerNum)
+    lastMarkerNum=0;
+end
+
 if ~isempty(Vd)
     hpd=plotV(Vd,'ko','MarkerFaceColor','r','MarkerSize',10,'LineWidth',2);                    
 else
@@ -1776,11 +1786,15 @@ while markDone==0
         switch bd
             case 1
                 Vd=[Vd; Xd Yd zs];
+                markerOrderNum=[markerOrderNum lastMarkerNum+1]; %Add marker order number                
+                lastMarkerNum=lastMarkerNum+1;
                 delete(hpd);
                 hpd=plotV(Vd,'ko','MarkerFaceColor','r','MarkerSize',10,'LineWidth',2);                    
             case 8 %Backspace
                 if size(Vd,1)>0
                     Vd=Vd(1:end-1,:);
+                    markerOrderNum=markerOrderNum(1:end-1); %Remove last order number
+                    lastMarkerNum=max([hf.UserData.MarkerOrder{:}]); %Update maximum
                     delete(hpd);
                     hpd=plotV(Vd,'ko','MarkerFaceColor','r','MarkerSize',10,'LineWidth',2);                    
                 end
@@ -1796,8 +1810,12 @@ while markDone==0
 end
 delete(hpd);
 
+if ~isempty(markerOrderNum)    
+    hf.UserData.MarkerOrder{qSlice}=markerOrderNum;
+end
+
 if ~isempty(Vd)    
-    hf.UserData.MarkerSet{qSlice}=Vd; %Add marker set
+    hf.UserData.MarkerSet{qSlice}=Vd; %Add marker set    
     plotContourSet(hf); %Update plot    
 end
 

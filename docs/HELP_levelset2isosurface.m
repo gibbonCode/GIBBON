@@ -64,7 +64,7 @@ optionStruct.Color='k';
 plotContours({Vcs},optionStruct);  %Plot contours
 drawnow;
 
-%%
+%% Compute surface
 
 pointSpacing=2; 
 
@@ -95,6 +95,7 @@ plotContours(contourName,optionStruct);  %Plot contours
 axisGeom;
 % camlight headlight; 
 drawnow;
+
 
 %%
 cFigure; 

@@ -17,6 +17,11 @@ switch nargin
         viewOpt=varargin{3};
 end
 
+%Expand voxel size if it is scalar
+if numel(v)==1
+    v=v.*ones(1,3);
+end
+
 %%
 
 M=double(M);

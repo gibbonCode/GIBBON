@@ -1,6 +1,6 @@
 function dcmFolder2MATobject(varargin)
 
-% function dcmFolder2MATobject(PathName,MaxVarSize,reOrderOpt,dicomDictType,fileExtension)
+% function dcmFolder2MATobject(PathName,MaxVarSize,reOrderOpt,dicomDictFactory,fileExtension)
 % ------------------------------------------------------------------------
 % This function converts the DICOM files in the folder PathName to a MAT
 % object which is stored as a file called IMDAT in a new subfolder called
@@ -62,9 +62,12 @@ switch nargin
 end
 
 defaultOptionStruct.ignoreDynamic=0;
-
+defaultOptionStruct.nDownSample=[1 1 1];
+defaultOptionStruct.skipInfo=0;
 %Fix option structure, complete and remove empty values
 [optionStruct]=structComplete(optionStruct,defaultOptionStruct,1);
+nDownSample=optionStruct.nDownSample;
+skipInfo=optionStruct.skipInfo;
 
 %%
 %Get/set maximum variable size (sets save steps in case the variable size
@@ -241,8 +244,15 @@ if NumberOfFiles>0
     end
         
     %% LOADING DICOM INFO
+    
+    if skipInfo==1
+        numInfoLoad=1; %Only first will be loaded
+    else
+        numInfoLoad=numel(files); %All will be loaded
+    end
+    
     hw = waitbar(0,'Loading DICOM info...');    
-    for c=1:1:numel(files)
+    for c=1:1:numInfoLoad
         fName=fullfile(PathName,files{c});
         %dicomdict('get');
         dcmInfo_full=dicominfo(fName);
@@ -255,9 +265,9 @@ if NumberOfFiles>0
         if c==1
             dcmInfo=repmat(dcmInfo,1,numel(files)); %Allocate after size of first is known
         end
-        waitbar(c/numel(files),hw,['Loading DICIM info...',num2str(round(100.*c/numel(files))),'%']);
+        waitbar(c/numInfoLoad,hw,['Loading DICIM info...',num2str(round(100.*c/numel(files))),'%']);
     end
-    waitbar(c/numel(files),hw,['Saving DICOM info to MAT-file...',num2str(round(100.*c/numel(files))),'%']);
+    waitbar(c/numInfoLoad,hw,['Saving DICOM info to MAT-file...',num2str(round(100.*c/numel(files))),'%']);
     % matObj.dcmInfo=dcmInfo;
     close(hw);
     
@@ -272,6 +282,8 @@ if NumberOfFiles>0
 
     %Geometry information based on first info file
     [G]=dicom3Dpar(dcmInfo(1));
+    G.v=G.v(:).*nDownSample(:);
+    
     matObj.G=G; %Saving geometry information
     
     %TODO this part is not memory protected yet, all DICOM info is loaded into
@@ -310,7 +322,14 @@ if NumberOfFiles>0
     NumEchoTimes=numel(EchoTimesUni);
     
     %Get image types
-    ImageTypesAll={dcmInfo.ImageType};
+    if isfield(dcmInfo,'ImageType')
+        ImageTypesAll={dcmInfo.ImageType};
+        checkType=1;
+    else
+        ImageTypesAll={'Unknown'};
+        checkType=0;
+        warning('ImageType information missing, using Unknown as type, assuming single type');
+    end    
     ImageTypesUni=unique(ImageTypesAll);
     matObj.ImageTypesUni=ImageTypesUni;
     NumImageTypes=numel(ImageTypesUni);
@@ -335,7 +354,7 @@ if NumberOfFiles>0
     
     NumberOfSlices=NumberOfFiles/NumImageTypes/NumEchoTimes/NumberOfTemporalPositions; %NumberOfSlicesMR           
 %     NumberOfFilesPerType=NumberOfSlices*NumberOfTemporalPositions;
-    
+
     switch dictSetting
         case 1 %PHILIPS
             %             NumberOfRows=double(dcmInfo(1).Width);
@@ -351,8 +370,18 @@ if NumberOfFiles>0
             %             NumberOfRows=double(dcmInfo(1).Width);
             %             NumberOfColumns=double(dcmInfo(1).Height);
     end
-    
+
+    %Determine image size 
     ImageSize=[NumberOfRows NumberOfColumns NumberOfSlices NumberOfTemporalPositions];
+    
+    rowSelectSet=1:nDownSample(1):NumberOfRows;
+    NumberOfRowsKeep=numel(rowSelectSet);
+    columnSelectSet=1:nDownSample(2):NumberOfColumns;
+    NumberOfColumnsKeep=numel(columnSelectSet);
+    sliceSelectSet=1:nDownSample(3):NumberOfSlices;
+    NumberOfSlicesKeep=numel(sliceSelectSet);
+    
+    ImageSizeKeep=[NumberOfRowsKeep NumberOfColumnsKeep NumberOfSlicesKeep NumberOfTemporalPositions];
     
 %     %Check if slice size matching DICOM parameters   
 %     if sizSlice(1)~=ImageSize(1)
@@ -364,7 +393,7 @@ if NumberOfFiles>0
 %         warning('Image size 2 does not match size specified in DICOM info. Using image size from image instead')
 %     end
         
-    matObj.ImageSize=ImageSize;
+    matObj.ImageSize=ImageSizeKeep;
     
     NumClass=['uint',num2str(dcmInfo_full.BitsAllocated)];
     
@@ -387,8 +416,12 @@ if NumberOfFiles>0
         for iType=1:NumImageTypes
             
             %Finding files for current type
-            ImageTypeNow=ImageTypesUni(iType); %The current image type
-            L_Type=strcmpi(ImageTypesAll,ImageTypeNow);
+            if checkType==1
+                ImageTypeNow=ImageTypesUni(iType); %The current image type
+                L_Type=strcmpi(ImageTypesAll,ImageTypeNow);
+            else
+                L_Type=true(size(ImageTypesAll));
+            end
             
             %Fix L_Echo in case EchoTIme is not defined
             if isnan(EchoTimesAll)
@@ -403,12 +436,12 @@ if NumberOfFiles>0
             TypeName=['type_',num2str(iType),echoNameAppend];
             TypeNameDcmInfo=[TypeName,'_info'];
             
-            VarSize=(prod(ImageSize))*dcmInfo_full.BitsAllocated/8;
+            VarSize=(prod(ImageSizeKeep))*dcmInfo_full.BitsAllocated/8;
             if VarSize>MaxVarSize %Save to MAT-file for each temporal step
-                if ImageSize(4)>1
-                    matObj.(TypeName)=zeros([ImageSize(1:3) 2],NumClass);
+                if ImageSizeKeep(4)>1
+                    matObj.(TypeName)=zeros([ImageSizeKeep(1:3) 2],NumClass);
                 else
-                    matObj.(TypeName)=zeros(ImageSize,NumClass);
+                    matObj.(TypeName)=zeros(ImageSizeKeep,NumClass);
                 end
                 for iTemp=1:1:NumberOfTemporalPositions
                     %Finding files for current temporal position
@@ -417,24 +450,32 @@ if NumberOfFiles>0
                     L_Temp=(TriggerTimesType==TriggerTime);
                     %Creating volume by assembling slices
                     TempTypeFiles=TypeFiles(L_Temp);
-                    M=zeros(ImageSize(1:3),NumClass);
-                    for iSlice=1:1:numel(TempTypeFiles)
+                    M=zeros(ImageSizeKeep(1:3),NumClass);
+                    sliceIndexResample=1;
+                    for iSlice=1:nDownSample(3):numel(TempTypeFiles)
+                        
                         waitbar(c/numel(files),hw,['Loading DICIM image data...',num2str(round(100.*c/numel(files))),'%']);
                         load_name=fullfile(PathName,TempTypeFiles{iSlice});
-                        m=dicomread(load_name);                        
+                        m=dicomread(load_name);  
+                        m=m(1:nDownSample(1):end,1:nDownSample(2):end,:); %Resample 
                         if size(m,3)>1                            
                             m=mean(double(m),3);
                             warning('Multi-dimensional (e.g. RGB) slices where converted to 2D grayscale');
                         end                        
-                        M(:,:,iSlice)=m;
+                        M(:,:,sliceIndexResample)=m;
                         
-                        c=c+1;
+                        sliceIndexResample=sliceIndexResample+1;
+                        if iSlice==1
+                            c=c+1;
+                        else
+                            c=c+nDownSample(3);
+                        end                            
                     end
                     waitbar(c/numel(files),hw,['Saving DICOM image data to MAT-file...',num2str(round(100.*c/numel(files))),'%']);
                     eval(['matObj.',TypeName,'(:,:,:,iTemp)=M;']);
                 end
             else %create 4D array and save whole array to MAT-file
-                N=zeros(ImageSize,NumClass);
+                N=zeros(ImageSizeKeep,NumClass);
                 for iTemp=1:1:NumberOfTemporalPositions
                     %Finding files for current temporal position
                     TriggerTimesType=TriggerTimesAll(L_now);%[dcmInfo(L_now).TriggerTime];
@@ -442,25 +483,32 @@ if NumberOfFiles>0
                     L_Temp=(TriggerTimesType==TriggerTime);
                     %Creating volume by assembling slices
                     TempTypeFiles=TypeFiles(L_Temp);
-                    M=zeros(ImageSize(1:3),NumClass);
-                    for iSlice=1:1:numel(TempTypeFiles)
+                    M=zeros(ImageSizeKeep(1:3),NumClass);
+                    sliceIndexResample=1;
+                    for iSlice=1:nDownSample(3):numel(TempTypeFiles)
                         waitbar(c/numel(files),hw,['Loading DICIM image data...',num2str(round(100.*c/numel(files))),'%']);
                         load_name=fullfile(PathName,TempTypeFiles{iSlice});
                         m=dicomread(load_name); %Current slice
+                        m=m(1:nDownSample(1):end,1:nDownSample(2):end,:); %Resample
                         if size(m,3)>1                            
                             m=mean(double(m),3);
                             warning('Multi-dimensional (e.g. RGB) slices where converted to 2D grayscale');
                         end
                         if size(M,1)~=size(m,1)
-                            M(:,:,iSlice)=m'; %Try transpose                            
+                            M(:,:,sliceIndexResample)=m'; %Try transpose                            
                             if firstWarning_Rotation==0
                                 warning('Image data was rotated to match expected image size!');
                                 firstWarning_Rotation=1;
                             end
                         else
-                            M(:,:,iSlice)=m;
+                            M(:,:,sliceIndexResample)=m;
                         end
-                        c=c+1;
+                        sliceIndexResample=sliceIndexResample+1;
+                        if iSlice==1
+                            c=c+1;
+                        else
+                            c=c+nDownSample(3);
+                        end
                     end 
                     N(:,:,:,iTemp)=M;
                 end

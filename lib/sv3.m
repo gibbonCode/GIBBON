@@ -42,6 +42,12 @@ switch nargin
         v=varargin{2};
         optionStruct=varargin{3};
 end
+
+%Expand voxel size if it is scalar
+if numel(v)==1
+    v=v.*ones(1,3);
+end
+
 M=double(M); %Conver the image to a double
 
 figStruct.Name='GIBBON: Slice viewer'; %Figure name
