@@ -234,69 +234,7 @@ optionStruct.cutDir=1;
 meshView(meshOutput,optionStruct);
 
 %%
-% [F1,V1]=patchCleanUnused(F(G==1,:),V);
-% [F2,V2]=patchCleanUnused(F(G==2,:),V);
-% 
-% N2=patchNormal(F2,V2);
-% n=[-1 0 0];
-% D=dot(N2,n(ones(size(N2,1),1),:),2);
-% logicLeft=D>0.9;
-% logicLeft=triSurfLogicSharpFix(F2,logicLeft,3);
-% 
-% [F2,V2]=patchCleanUnused(F2(~logicLeft,:),V2);
-% 
-% N1=patchNormal(F1,V1);
-% n=[1 0 0];
-% D=dot(N1,n(ones(size(N1,1),1),:),2);
-% logicLeft=D>0.999;
-% logicLeft=triSurfLogicSharpFix(F1,logicLeft,3);
-% [F1,V1]=patchCleanUnused(F1(~logicLeft,:),V1);
-% 
-% Eb1=patchBoundary(F1,V1);
-% ind1=edgeListToCurve(Eb1);
-% ind1=ind1(1:end-1);
-% Eb2=patchBoundary(F2,V2);
-% ind2=edgeListToCurve(Eb2);
-% ind2=ind2(1:end-1);
-% ind2=flip(ind2);
-% 
-% %Create input structure
-% [f,v,boundaryInd]=regionTriMesh3D({V1(ind1,:),V2(ind2,:)},[],'linear');
-% 
-% %%
-% 
-% cFigure; hold on;
-% gpatch(F1,V1,'rw','none',0.25);
-% gpatch(F2,V2,'bw');
-% gpatch(f,v,'gw');
-% plotV(V1(ind1,:),'r-','LineWidth',3);
-% plotV(V2(ind2,:),'b-','LineWidth',3);
-% plotV(V1(ind1(1),:),'r.','MarkerSize',30);
-% plotV(V2(ind2(1),:),'b.','MarkerSize',30);
-% axisGeom;
-% camlight headlight;
-% colorbar;
-% drawnow; 
-% 
-% %%
-% 
-% [F,V,C]=joinElementSets({F1,F2,f},{V1,V2,v});
-% 
-% [F,V]=mergeVertices(F,V);
-% 
-% cFigure; hold on;
-% gpatch(F,V,C,'k',1);
-% 
-% axisGeom;
-% camlight headlight;
-% colorbar;
-% drawnow; 
-% 
-% stlStruct.solidNames={'hip_model'};
-% stlStruct.solidVertices={V};
-% stlStruct.solidFaces={F};
-% fileName=fullfile(pathName,'hip_implant_iso_fix.stl'); 
-% export_STL_txt(fileName,stlStruct);
+
 %% 
 % _*GIBBON footer text*_ 
 % 

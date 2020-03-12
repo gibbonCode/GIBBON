@@ -231,9 +231,12 @@ abaqus_spec.Step.Output{1}.ATTR.field='';
 abaqus_spec.Step.Output{1}.ATTR.variable='PRESELECT';
 abaqus_spec.Step.Output{2}.ATTR.history='';
 abaqus_spec.Step.Output{2}.ATTR.variable='PRESELECT';
-abaqus_spec.Step.Node_print.ATTR.nset='all';
-abaqus_spec.Step.Node_print.ATTR.frequency = 1;
-abaqus_spec.Step.Node_print.VAL='COORD';
+
+%Nodal coordinates
+abaqus_spec.Step.Node_print{1}.ATTR.nset='all';
+abaqus_spec.Step.Node_print{1}.ATTR.frequency = 1;
+abaqus_spec.Step.Node_print{1}.VAL='COORD';
+
 abaqus_spec.Step.El_print{1}.VAL='S';
 abaqus_spec.Step.El_print{2}.VAL='E';
 
@@ -241,9 +244,8 @@ abaqus_spec.Step.El_print{2}.VAL='E';
 
 abaqusStruct2inp(abaqus_spec,abaqusInpFileName);
 
-% textView(abaqusInpFileName);
+%textView(abaqusInpFileName);
 
-%%
 %% Run the job using Abaqus
 
 lockFileName=fullfile(savePath,[abaqusInpFileNamePart,'.lck']);
@@ -266,11 +268,6 @@ cd(oldPath); %Restore working directory
 % Importing the abaqus .dat file 
 
 [abaqusData]=importAbaqusDat(abaqusDATFileName);
-
-%%
-
-
-
 
 %% Get element data
 
@@ -324,9 +321,9 @@ end
 % deformations
 
 %Getting final nodal coordinates
-V_def=[abaqusData.STEP(1).INCREMENT(end).nodeOutput.data.COOR1...
-    abaqusData.STEP(1).INCREMENT(end).nodeOutput.data.COOR2...
-    abaqusData.STEP(1).INCREMENT(end).nodeOutput.data.COOR3];
+V_def=[abaqusData.STEP(1).INCREMENT(end).nodeOutput(1).data.COOR1...
+    abaqusData.STEP(1).INCREMENT(end).nodeOutput(1).data.COOR2...
+    abaqusData.STEP(1).INCREMENT(end).nodeOutput(1).data.COOR3];
 U=V_def-V; %Displacements
 
 colorDataVertices=sqrt(sum(U.^2,2)); %Displacement magnitude data for coloring 
