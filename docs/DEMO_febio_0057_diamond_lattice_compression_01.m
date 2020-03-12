@@ -54,7 +54,7 @@ febioLogFileName_stiffness=[febioFebFileNamePart,'_stiffness_out.txt']; %Log fil
 nRepeat=3; %Number of repetitions of the lattice pattern
 sampleSize=30;
 nSubPenta=2;
-strutThickness=1; %Set the strut thickness
+strutThickness=2; %Set the strut thickness
 
 %Define applied displacement
 appliedStrain=0.3; %Linear strain (Only used to compute applied stretch)
@@ -69,7 +69,7 @@ displacementMagnitude=(stretchLoad*sampleSize)-sampleSize; %The displacement mag
 
 %Material parameter set
 c1=1; %Shear-modulus-like parameter
-m1=2;
+m1=2; %m=2 -> Neo-Hookean
 k=50*c1;
 
 % FEA control settings
@@ -157,8 +157,6 @@ febio_spec.Material.material{1}.ATTR.type='Ogden';
 febio_spec.Material.material{1}.ATTR.id=1;
 febio_spec.Material.material{1}.c1=c1;
 febio_spec.Material.material{1}.m1=m1;
-febio_spec.Material.material{1}.c2=c1;
-febio_spec.Material.material{1}.m2=-m1;
 febio_spec.Material.material{1}.k=k;
 
 %Geometry section
@@ -285,20 +283,35 @@ if runFlag==1 %i.e. a succesful run
     
     f_sum_z=squeeze(sum(N_force_mat(bcPrescribeList,3,:),1)); 
 
-    %% 
-    % Visualize force data
-    
     displacementApplied=time_mat.*displacementMagnitude;
     lambdaApplied=(sampleSize+displacementApplied)./sampleSize;
     
+    %% 
+    % Visualize force data
+    
     cFigure; hold on; 
-    xlabel('$\lambda$ [.]','Interpreter','Latex');
+    xlabel('$u$ [mm]','Interpreter','Latex');
     ylabel('$F_z$','Interpreter','Latex');
-    hp=plot(lambdaApplied(:),f_sum_z(:),'b-','LineWidth',3);
+    hp=plot(displacementApplied(:),f_sum_z(:),'b-','LineWidth',3);
     grid on; box on; axis square; axis tight; 
     set(gca,'FontSize',fontSize);
     drawnow; 
-         
+    
+    %%
+    % Visualize force data
+    
+    A0=sampleSize^2; %Initial area
+    S=f_sum_z./A0; 
+    E=(lambdaApplied-1)*100;
+    
+    cFigure; hold on; 
+    xlabel('$\epsilon$ [\%]','Interpreter','Latex');
+    ylabel('$S_z$ [MPa]','Interpreter','Latex');
+    hp=plot(E(:),S(:),'b-','LineWidth',3);
+    grid on; box on; axis square; axis tight; 
+    set(gca,'FontSize',fontSize);
+    drawnow; 
+        
     %%
     % Plotting the simulated results using |anim8| to visualize and animate
     % deformations
