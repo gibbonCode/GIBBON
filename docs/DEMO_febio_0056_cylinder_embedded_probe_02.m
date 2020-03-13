@@ -1,4 +1,4 @@
-%% DEMO_febio_0047_cylinder_embedded_probe_01
+%% DEMO_febio_0056_cylinder_embedded_probe_02
 % Below is a demonstration for:
 % 
 % * Building geometry for a tissue segment with an embedded probe

@@ -1,4 +1,4 @@
-%% DEMO_febio_0044_mammography_01.m
+%% DEMO_febio_0052_breast_gap_close_01.m
 % Below is a demonstration for:
 % 
 % * Building geometry for a slab with hexahedral elements, and a
@@ -12,13 +12,8 @@
 %
 % * febio_spec version 2.5
 % * febio, FEBio
-% * indentation
-% * contact, sliding, sticky, friction
-% * rigid body constraints
-% * hexahedral elements, hex8
-% * triangular elements, tri3
-% * slab, block, rectangular
-% * sphere
+% * Surgery
+% * Breast, soft tissue
 % * static, solid
 % * hyperelastic, Ogden
 % * displacement logfile

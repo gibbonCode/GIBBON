@@ -1,4 +1,4 @@
-%% DEMO_febio_0054_hexlattice_hydrostatic_01
+%% DEMO_febio_0054_lattice_hydrostatic_01
 % Below is a demonstration for:
 %
 % * Building geometry for a cube with hexahedral elements
