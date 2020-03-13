@@ -486,8 +486,9 @@ axisGeom(gca,fontSize);
 camlight headlight;
 drawnow;
 
-fdsafa
+%%
 
+error('DEMO unfinished')
 
 %% Defining the FEBio input structure
 % See also |febioStructTemplate| and |febioStruct2xml| and the FEBio user
