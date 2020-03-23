@@ -325,11 +325,12 @@ if NumberOfFiles>0
     if isfield(dcmInfo,'ImageType')
         ImageTypesAll={dcmInfo.ImageType};
         checkType=1;
-    else
-        ImageTypesAll={'Unknown'};
+    else        
+        ImageTypesAll=repmat({'Unknown'},1,numel(files));
         checkType=0;
         warning('ImageType information missing, using Unknown as type, assuming single type');
     end    
+
     ImageTypesUni=unique(ImageTypesAll);
     matObj.ImageTypesUni=ImageTypesUni;
     NumImageTypes=numel(ImageTypesUni);
@@ -422,14 +423,14 @@ if NumberOfFiles>0
             else
                 L_Type=true(size(ImageTypesAll));
             end
-            
+
             %Fix L_Echo in case EchoTIme is not defined
             if isnan(EchoTimesAll)
                 L_Echo=true(size(L_Type));
             end
             
-            L_now=L_Echo&L_Type;
-            
+            L_now=L_Echo&L_Type; 
+                    
             TypeFiles=files(L_now);
 %             iStart=((iType-1)*NumberOfFilesPerType)+1; %     iEnd=iStart-1+NumberOfFilesPerType;
             
@@ -481,6 +482,7 @@ if NumberOfFiles>0
                     TriggerTimesType=TriggerTimesAll(L_now);%[dcmInfo(L_now).TriggerTime];
                     TriggerTime=TriggerTimesUni(iTemp);
                     L_Temp=(TriggerTimesType==TriggerTime);
+
                     %Creating volume by assembling slices
                     TempTypeFiles=TypeFiles(L_Temp);
                     M=zeros(ImageSizeKeep(1:3),NumClass);

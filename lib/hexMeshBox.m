@@ -39,7 +39,7 @@ nZ=boxEl(3);
 
 %Creating 2D slice
 [X2,Y2]=meshgrid(linspace(-dX/2,dX/2,nX+1),linspace(-dY/2,dY/2,nY+1)); %mesh of single slice
-[F2,V2,~] = surf2patch(X2,Y2,zeros(size(X2)),zeros(size(X2))); %Convert to patch data (quadrilateral faces)
+[F2,V2,~] = grid2patch(X2,Y2,zeros(size(X2)),zeros(size(X2))); %Convert to patch data (quadrilateral faces)
 
 %Offsetting to create 3D model
 z_range=linspace(-dZ/2,dZ/2,nZ+1); %Offset steps

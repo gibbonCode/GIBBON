@@ -125,6 +125,7 @@ switch unitSystem
         phi0=0.5; %Solid volume fraction in reference configuration
         permHydro=7.41e1; %hydraulic permeability
 end
+
 % FEA control settings
 analysisType='transient'; 
 febioModule='biphasic';

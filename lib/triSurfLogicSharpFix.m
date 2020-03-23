@@ -28,6 +28,7 @@ switch dirOpt
         [L]=triSurfLogicSharpFix(F,L,1);
         L_fixed=L;
 end
+
 %% 
 % _*GIBBON footer text*_ 
 % 
