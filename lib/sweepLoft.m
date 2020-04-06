@@ -77,6 +77,13 @@ switch nargin
         end
 end
 
+if isa(plotOn,'matlab.ui.Figure')
+    hf=plotOn;
+    plotOn=1;
+else
+    hf=[];
+end
+
 if isempty(numSteps)
     numSteps=size(Vg,1);
 end
@@ -98,21 +105,24 @@ if plotOn
     markerSize=25;
     triadSize=stepSize*7; 
     fontSize=20;
-    
-    hf=cFigure; hold on;
+    if isempty(hf)
+        hf=cFigure; hold on;
+        axisGeom(gca,fontSize); %camlight headlight;        
+        colormap gjet;
+        ha=gca;
+        ha.GridAlpha=0.25;
+        ha.LineWidth=1;
+        camlight headlight;
+    else
+        figure(hf);hold on;
+    end
     ht=gtitle('Mapping coordinate systems along guide curve',fontSize);    
     hp(1)=plotV(V1,'r-','LineWidth',lineWidth1);
     hp(2)=plotV(V2,'g-','LineWidth',lineWidth1);
     hp(3)=plotV(Vg,'k--','LineWidth',lineWidth2);
     hp(4)=quiverVec(p1,n1,triadSize,'r');        
     hp(5)=quiverVec(p2,n2,triadSize,'g');
-    
-    axisGeom(gca,fontSize); camlight headlight; 
-    axis manual; 
-    colormap gjet;
-    ha=gca;
-    ha.GridAlpha=0.25;
-    ha.LineWidth=1;
+    axis manual;
     drawnow;
 end
 

@@ -52,6 +52,10 @@ switch modelID
         % Reduced density version of a David model from SMK - Statens Museum for Kunst
         fileName=fullfile(pathName,'david.mat');
         meshData=load(fileName);
+    case {10,'nefertiti'}
+        % Resampled version of duced density version of a David model from SMK - Statens Museum for Kunst
+        fileName=fullfile(pathName,'nefertiti.mat');
+        meshData=load(fileName);
 end
 
 F=meshData.F;

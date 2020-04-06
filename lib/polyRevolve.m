@@ -5,8 +5,6 @@ controlParameterStructDefault.numSteps=[];
 controlParameterStructDefault.theta=2*pi;
 controlParameterStructDefault.w=[0 0 1];
 controlParameterStructDefault.closeLoopOpt=1;
-% controlParameterStructDefault.patchType='quad';
-
 [controlParameterStruct]=structComplete(controlParameterStruct,controlParameterStructDefault,0);
 
 theta=controlParameterStruct.theta;

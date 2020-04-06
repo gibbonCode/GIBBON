@@ -1,239 +1,569 @@
-clear; close all; clc; 
+%% DEMO_febio_0051_hip_implant_01
+% Below is a demonstration for:
+% 
+% * Building geometry for a a hip implant and bone
+
+%% Keywords
+%
+% * febio_spec version 2.5
+% * febio, FEBio
+% * beam force loading
+% * force control boundary condition
+% * hexahedral elements, hex8, hex20
+% * beam, rectangular
+% * static, solid
+% * hyperelastic, Ogden
+% * displacement logfile
+% * stress logfile
 
 %%
 
-markerSize1=25; 
-fontSize=15; 
+clear; close all; clc;
 
-%%
+%% Plot settings
+fontSize=20;
+faceAlpha1=0.8;
+markerSize=40;
+markerSize2=20;
+lineWidth=3;
 
-% Load surface geometry
+%% Control parameters
+
+% Path names
 defaultFolder = fileparts(fileparts(mfilename('fullpath')));
-pathName=fullfile(defaultFolder,'data','STL'); 
+savePath=fullfile(defaultFolder,'data','temp');
 
-stlName='hip_implant_iso_merge.stl';
-fileName=fullfile(pathName,stlName); 
-[stlStruct] = import_STL(fileName);
-F1=stlStruct.solidFaces{1};
-V1=stlStruct.solidVertices{1};
-[F1,V1]=mergeVertices(F1,V1);
+% Defining file names
+febioFebFileNamePart='tempModel';
+febioFebFileName=fullfile(savePath,[febioFebFileNamePart,'.feb']); %FEB file name
+febioLogFileName=fullfile(savePath,[febioFebFileNamePart,'.txt']); %FEBio log file name
+febioLogFileName_disp=[febioFebFileNamePart,'_disp_out.txt']; %Log file name for exporting displacement
+febioLogFileName_force=[febioFebFileNamePart,'_force_out.txt']; %Log file name for exporting force
+febioLogFileName_stress=[febioFebFileNamePart,'_stress_out.txt']; %Log file name for exporting stresses
 
-Q=eye(3,3);
-V1=V1*10;
-R=euler2DCM([0 -0.5*pi 0]);
-V1=V1*R;
-Q=Q*R;
-R=euler2DCM([0 0 pi]);
-V1=V1*R;
-Q=Q*R;
-R=euler2DCM([-0.215*pi 0 0]);
-V1=V1*R;
-Q=Q*R;
-R=euler2DCM([0 -0.05*pi 0]);
-V1=V1*R;
-Q=Q*R;
-R=euler2DCM([0 0 0.15*pi]);
-V1=V1*R;
-Q=Q*R;
-V1=V1*Q';
+%Define applied force 
+forceBody=(80*9.81)/2;
+displacementMagnitude=-1;
 
-stlName='femur_iso.stl';
-fileName=fullfile(pathName,stlName); 
-[stlStruct] = import_STL(fileName);
-F2=stlStruct.solidFaces{1};
-V2=stlStruct.solidVertices{1};
-[F2,V2]=mergeVertices(F2,V2);
-V2=V2*1000;
-R=euler2DCM([-0.5*pi 0 0.5*pi]);
-V2=V2*R;
-R=euler2DCM([-0.05*pi 0 0]);
-V2=V2*R;
-R=euler2DCM([0 0 0.33*pi]);
-V2=V2*R;
-V2=V2*Q';
+%Material parameter set
+% Bone
+c1=500; %Shear-modulus-like parameter
+m1=2; %Material parameter setting degree of non-linearity
+k_factor=50; %Bulk modulus factor 
+k1=c1*k_factor; %Bulk modulus
+
+% Cement
+c2=500; %Shear-modulus-like parameter
+m2=2; %Material parameter setting degree of non-linearity
+k_factor=50; %Bulk modulus factor 
+k2=c1*k_factor; %Bulk modulus
+
+% FEA control settings
+numTimeSteps=10; %Number of time steps desired
+max_refs=25; %Max reforms
+max_ups=0; %Set to zero to use full-Newton iterations
+opt_iter=6; %Optimum number of iterations
+max_retries=5; %Maximum number of retires
+dtmin=(1/numTimeSteps)/100; %Minimum time step size
+dtmax=1/numTimeSteps; %Maximum time step size
+runMode='internal';
+
+%%
+n1=[1 0 0];
+n2=vecnormalize([1 1 0]);
+boneExtension=40;
+cementThickness=3;
+boneBaseThickness=6;
+boneScaleFactors=[1.1 1.1];
+volumeFactor=10;
+
+hipParStruct.ballRadius=20;
+hipParStruct.stickRadius=7;
+hipParStruct.stickLength=21;
+hipParStruct.stickLengthStraight=hipParStruct.stickLength-6;
+hipParStruct.neckRadius=15;
+hipParStruct.neckEllipseScale=2;
+hipParStruct.collarThickness=3; 
+hipParStruct.loftOffset=20;
+hipParStruct.loftLenght=40;
+hipParStruct.stemRadius=8;
+hipParStruct.stemLength=50;
+hipParStruct.stemAngle=0.25*pi;
+hipParStruct.pointSpacing=2;
+
+%%
+
+[F_implant,V_implant,C_implant,curveSet]=parHipImplant(hipParStruct);
+Qz=euler2DCM([0 0 0.25*pi]);
+Qy=euler2DCM([0 -0.5*pi 0 ]);
+Qzz=euler2DCM([0 0 0.5*pi]);
+
+pointSpacing=mean(patchEdgeLengths(F_implant,V_implant));
+[~,~,N_implant]=patchNormal(F_implant,V_implant);
+
+indTop=curveSet{2};
+indBottom=curveSet{4};
 
 %%
 
 cFigure; hold on;
-gpatch(F1,V1,'kw','k',1);
-gpatch(F2,V2,'bw','k',0.5);
-axisGeom;
-camlight headlight;
-drawnow; 
-
-%%
-D=minDist(V2,V1);
-logicCut=V2(:,1)<=49 & V2(:,2)>=min(V1(:,2))-5 & D<25;
-
-logicCut=all(logicCut(F2),2);
-logicCut=triSurfLogicSharpFix(F2,logicCut,3);
-
-cFigure; hold on;
-gpatch(F1,V1,'kw','k',1);
-gpatch(F2,V2,logicCut,'k',0.5);
-axisGeom;
-camlight headlight;
-drawnow; 
-
-%%
-[F2,V2]=patchCleanUnused(F2(~logicCut,:),V2);
-
-Eb2=patchBoundary(F2,V2);
-ind2=edgeListToCurve(Eb2);
-ind2=ind2(1:end-1);
-
-%%
-
-logicCut1=V1(:,1)<=43;
-logicCut1=all(logicCut1(F1),2);
-logicCut1=triSurfLogicSharpFix(F1,logicCut1,3);
-
-Eb1=patchBoundary(F1(logicCut1,:),V1);
-ind1=edgeListToCurve(Eb1);
-ind1=ind1(1:end-1);
-
-[f,v]=regionTriMesh3D({V2(ind2,:),V1(ind1,:)},[],'linear');
-[F2,V2,C2]=joinElementSets({F2,f},{V2,v});
-[F2,V2]=mergeVertices(F2,V2);
-
-%%
-cFigure; hold on;
-gpatch(F1,V1,'kw','k',1);
-gpatch(F2,V2,C2,'k',1);
-
-axisGeom;
-camlight headlight;
-drawnow; 
-
-%%
-
-logic2=C2==2; 
-for q=1:1:2
-    ind2=unique(F2(logic2,:));
-    logic2=any(ismember(F2,ind2),2);
+gpatch(F_implant,V_implant,C_implant,'k',1);
+% gpatch(F_bone,V_bone,boneColor,'k',1);
+for q=1:1:numel(curveSet)
+   plotV(V_implant(curveSet{q},:),'r.-','MarkerSize',25,'LineWidth',3); 
 end
-indRigid=unique(F2(~logic2,:));
-
-Eb=patchBoundary(F2,V2);
-indRigid=unique([indRigid;Eb(:)]);
-
-cPar.n=5;
-cPar.Method='HC';
-cPar.RigidConstraints=indRigid;
-[V2]=patchSmooth(F2,V2,[],cPar);
-
-cFigure; hold on;
-gpatch(F1,V1,logicCut1,'k',1);
-gpatch(F2,V2,'kw','none',0.5);
-
 axisGeom;
 camlight headlight;
-drawnow; 
+colormap gjet; icolorbar; 
+drawnow;
+
+%%
+logicSelect=ismember(C_implant,[4 5]);
+F_cement=F_implant(logicSelect,:);
+C_cement=C_implant(logicSelect);
+
+V_cement=V_implant;
+[F_cement,V_cement,indFix]=patchCleanUnused(F_cement,V_cement);
+indTopCement=indFix(indTop);
+indBottomCement=indFix(indBottom);
+[~,~,N_cement]=patchNormal(F_cement,V_cement);
+Eb_cement=patchBoundary(F_cement,V_cement);
+indBoundaryCement=unique(Eb_cement);
+N_cement(indTopCement,1)=0;
+N_cement(indTopCement,:)=vecnormalize(N_cement(indTopCement,:));
+V_cement=V_cement+cementThickness.*N_cement; 
+
+F_cement=F_cement(C_cement~=6,:);
+[F_cement,V_cement]=patchCleanUnused(F_cement,V_cement);
 
 %%
 
+numStepsExtrude=ceil(boneExtension./pointSpacing);
+numStepsExtrude=numStepsExtrude+double(iseven(numStepsExtrude));
 
-Eb=patchBoundary(F1(logicCut1,:),V1);
-ind=unique(Eb(:));
-[D2,indMin]=minDist(V2,V1(ind,:));
-
-Eb2=patchBoundary(F2,V2);
-indMove=find(D2<10);
-indMove=indMove(~ismember(indMove,Eb2));
-
-[N,Vn,Nv]=patchNormal(F1,V1);
-
-d=mean(patchEdgeLengths(F2,V2));
-
-V2(indMove,:)=V2(indMove,:)+0.25*d*Nv(ind(indMin(indMove)),:);
-
-%%
-cFigure; hold on;
-
-gpatch(F1,V1,'kw','k',1);
-patchNormPlot(F1,V1);
-gpatch(F2,V2,D2,'none',0.5);
-plotV(V2(indMove,:),'r.','markerSize',markerSize1);
-
-axisGeom;
-camlight headlight;
-drawnow; 
-
-% 
-% ind1=unique(F1(logicCut1,:));
-% D=minDist(V2,V1(ind1,:))<5;
-% 
-% cFigure; hold on;
-% gpatch(F1,V1,'kw','none',0.5);
-% gpatch(F2,V2,D,'k',1);
-% 
-% axisGeom;
-% camlight headlight;
-% drawnow; 
+clear cParExtrude;
+cParExtrude.depth=boneExtension; 
+cParExtrude.patchType='tri'; 
+cParExtrude.dir=1;
+cParExtrude.n=n2;
+cParExtrude.closeLoopOpt=1; 
+cParExtrude.numSteps=numStepsExtrude;
+[F_cement_extInner,V_cement_extInner]=polyExtrude(V_implant(indBottom,:),cParExtrude);
+indEndCementInner=numStepsExtrude:numStepsExtrude:size(V_cement_extInner,1);
+[F_cement_extOuter,V_cement_extOuter]=polyExtrude(V_cement(indBottomCement,:),cParExtrude);
+indEndCementOuter=numStepsExtrude:numStepsExtrude:size(V_cement_extOuter,1);
 
 %%
 
-[FT,VT,CT]=joinElementSets({F1,F2},{V1,V2},{double(logicCut1),2*ones(size(F2,1),1)});
-[FT,VT]=mergeVertices(FT,VT);
-VT=VT*Q;
+pointSpacingNow=mean(sqrt(sum(diff(V_cement_extOuter(indEndCementOuter,:),1,1).^2,2)));
+[F_cement_bottom,V_cement_bottom]=regionTriMesh3D({V_cement_extOuter(indEndCementOuter,:),...
+                                                   V_cement_extInner(indEndCementInner,:)},pointSpacingNow,0,'linear');
+N_cement_bottom=mean(patchNormal(F_cement_bottom,V_cement_bottom),1);
+if dot(N_cement_bottom,n2)<1
+    F_cement_bottom=fliplr(F_cement_bottom);
+end
 
+pointSpacingNow=mean(sqrt(sum(diff(V_implant(indTop,:),1,1).^2,2)));
+[F_cement_top,V_cement_top]=regionTriMesh3D({V_implant(indTop,:),...
+                                                   V_cement(indTopCement,:)},pointSpacingNow,0,'linear');
+N_cement_top=mean(patchNormal(F_cement_top,V_cement_top),1);
+if dot(N_cement_top,[1 0 0])>0
+    F_cement_top=fliplr(F_cement_top);
+end
+
+%%
+
+[Fc,Vc,Cc]=joinElementSets({F_cement,F_cement_top,F_cement_bottom,F_cement_extInner,F_cement_extOuter},...
+                           {V_cement,V_cement_top,V_cement_bottom,V_cement_extInner,V_cement_extOuter});
+[Fc,Vc]=mergeVertices(Fc,Vc);
+
+%%
 cFigure; hold on;
-gpatch(FT,VT,CT,'k',0.5);
-
-axisGeom;
-camlight headlight;
+title('Cement');
+gpatch(F_implant,V_implant,'w','none',0.5);
+gpatch(Fc,Vc,Cc,'k',0.5);
 colormap gjet; icolorbar;
-drawnow; 
+axisGeom; camlight headlight;
+drawnow;
 
 %%
 
+N_implant(indTop,1)=0;
+N_implant(indTop,:)=vecnormalize(N_implant(indTop,:));
 
+V_loft1=V_implant(indTop,:)+(boneBaseThickness+cementThickness).*N_implant(indTop,:);
+logicLow=V_loft1(:,2)<0;
+V_loft1(logicLow,2)=V_loft1(logicLow,2)*boneScaleFactors(1);
+V_loft1(~logicLow,2)=V_loft1(~logicLow,2)*boneScaleFactors(2);
+
+[~,indMax]=max(V_loft1(:,3));
+if indMax>1
+    V_loft1=V_loft1([indMax:size(V_loft1,1) 1:indMax-1],:);
+end
+V_loft2=V_implant(indBottom,:)+(boneBaseThickness+cementThickness).*N_implant(indBottom,:);
+V_loft2=V_loft2+boneExtension*n2(ones(size(V_loft2,1),1),:);
+
+[~,indMax]=max(V_loft2(:,3));
+if indMax>1
+    V_loft2=V_loft2([indMax:size(V_loft2,1) 1:indMax-1],:);
+end
+V_loft2=flipud(V_loft2);
+
+p1=mean(V_loft1,1);
+p2=mean(V_loft2,1);
+d=sqrt(sum((p1-p2).^2));
+numStepsCurve=ceil(d/pointSpacing);
+numStepsCurve=numStepsCurve+double(iseven(numStepsCurve));
+f=d/3;
+p=[p1;p1+f*n1; p2-f*n2;p2];
+
+Vg=bezierCurve(p,numStepsCurve);
+
+[F_loft,V_loft,C_loft]=sweepLoft(V_loft1,V_loft2,n1,n2,Vg);
+E=F_loft(iseven(C_loft),[1 2]);
+VE=patchCentre(E,V_loft);
+V_loft(E(:,1),:)=VE;
+indTopBone=1:numStepsCurve:size(V_loft,1);
+indBottomBone=numStepsCurve:numStepsCurve:size(V_loft,1);
+[F_loft,V_loft,C_loft]=quad2tri(F_loft,V_loft,'a',C_loft);
 
 %%
 
-%%
-% Define region points
-[V_region1]=getInnerPoint(FT(CT==0 | CT==2,:),VT);
-[V_region2]=getInnerPoint(FT(CT==0 | CT==1,:),VT);
+pointSpacingNow=mean(sqrt(sum(diff(V_loft(indTopBone,:),1,1).^2,2)));
+[F_bone_top,V_bone_top]=regionTriMesh3D({V_loft(indTopBone,:),...
+                                         V_cement(indTopCement,:)},pointSpacingNow,0,'linear');
+
+N_bone_top=mean(patchNormal(F_bone_top,V_bone_top),1);
+if dot(N_bone_top,[1 0 0])>0
+    F_bone_top=fliplr(F_bone_top);
+end
+
+pointSpacingNow=mean(sqrt(sum(diff(V_loft(indBottomBone,:),1,1).^2,2)));
+[F_bone_bottom,V_bone_bottom]=regionTriMesh3D({V_loft(indBottomBone,:),...
+                                         V_cement_extOuter(indEndCementOuter,:)},pointSpacingNow,0,'linear');
+
+N_bone_bottom=mean(patchNormal(F_bone_bottom,V_bone_bottom),1);
+if dot(N_bone_bottom,[1 0 0])>0
+    F_bone_bottom=fliplr(F_bone_bottom);
+end
 
 %%
-% Visualize interior points
+
+[F_bone,V_bone,C_bone]=joinElementSets({F_loft,F_bone_top,F_bone_bottom},...
+                           {V_loft,V_bone_top,V_bone_bottom});
+[F_bone,V_bone]=mergeVertices(F_bone,V_bone);
+
+%%
+cFigure; hold on;
+gpatch(F_implant,V_implant,'w','none',0.5);
+gpatch(Fc,Vc,'bw','none',0.5);
+gpatch(F_bone,V_bone,C_bone,'none',0.5);
+axisGeom; camlight headlight;
+drawnow;
+
+%%
+C_bone=C_bone+max(C_implant)+max(Cc);
+Cc=Cc+max(C_implant);
+[FT,VT,CT]=joinElementSets({F_implant,Fc,F_bone},{V_implant,Vc,V_bone},{C_implant,Cc,C_bone});
+[FT,VT]=mergeVertices(FT,VT);
+VT=VT*Qz*Qy*Qzz;
+
+%%
+cFigure; hold on;
+gpatch(FT,VT,CT,'none',0.5);
+axisGeom; camlight headlight;
+colormap gjet; icolorbar;
+drawnow;
+
+%%
+logicBone=ismember(CT,[7 11 12 13 14]);
+
+V_inner_bone=getInnerPoint(FT(logicBone,:),VT);
 
 cFigure; hold on;
-gpatch(FT,VT,'kw','none',0.2);
-plotV(V_region1,'r.','markerSize',markerSize1);
-plotV(V_region2,'b.','markerSize',markerSize1);
-camlight('headlight'); 
-axisGeom(gca,fontSize);
-drawnow; 
-
-%% 
-% Mesh using tetgen
-inputStruct.stringOpt='-pq1.2AaY'; %TetGen option string
-inputStruct.Faces=FT; %The faces
-inputStruct.Nodes=VT; %The vertices
-inputStruct.holePoints=[]; %The hole interior points
-inputStruct.faceBoundaryMarker=CT; %Face boundary markers
-inputStruct.regionPoints=[V_region1;V_region2]; %The region interior points
-inputStruct.regionA=[tetVolMeanEst(F2,V2) tetVolMeanEst(F1,V1)]*4; %Volume for regular tets
-
-%% 
-% Mesh model using tetrahedral elements using tetGen 
-[meshOutput]=runTetGen(inputStruct); %Run tetGen 
-
-%% 
-% Access model element and patch data
-Fb_foot=meshOutput.facesBoundary; %Boundary faces of the foot
-Cb_foot=meshOutput.boundaryMarker; %Boundary marker/color data for the foot
-V_foot=meshOutput.nodes; %The vertices/nodes
-E_foot=meshOutput.elements; %The tet4 elements
-
-%% 
-% Visualizing mesh using |meshView|, see also |anim8|
-optionStruct.cutDir=1;
-meshView(meshOutput,optionStruct);
+gpatch(FT(logicBone,:),VT,'w','none',0.5);
+plotV(V_inner_bone,'k.','MarkerSize',25)
+axisGeom; camlight headlight;
+drawnow;
 
 %%
+logicCement=ismember(CT,[4 5 7 8 9 10 11]);
+
+V_inner_cement=getInnerPoint(FT(logicCement,:),VT);
+
+cFigure; hold on;
+gpatch(FT(logicCement,:),VT,'w','none',0.5);
+plotV(V_inner_cement,'k.','MarkerSize',25)
+axisGeom; camlight headlight;
+drawnow;
+
+%%
+F_solid=FT(logicCement | logicBone,:);
+C_solid=CT(logicCement | logicBone);
+[F_solid,V_solid]=patchCleanUnused(F_solid,VT);
+
+logicImplant=ismember(CT,1:6);
+F_implant=FT(logicImplant,:);
+C_implant=CT(logicImplant);
+[F_implant,V_implant]=patchCleanUnused(F_implant,VT);
+
+%% 
+% Regional mesh volume parameter
+tetVolumes(1)=tetVolMeanEst(FT(logicBone,:),VT); %Volume for regular tets
+tetVolumes(2)=tetVolMeanEst(FT(logicCement,:),VT); %Volume for regular tets
+
+tetGenStruct.stringOpt='-pq1.2AaY';
+tetGenStruct.Faces=F_solid;
+tetGenStruct.Nodes=V_solid;
+tetGenStruct.holePoints=[];
+tetGenStruct.faceBoundaryMarker=C_solid; %Face boundary markers
+tetGenStruct.regionPoints=[V_inner_bone;V_inner_cement]; %region points
+tetGenStruct.regionA=tetVolumes*volumeFactor;
+
+[meshOutput]=runTetGen(tetGenStruct); %Run tetGen 
+
+% Access elements, nodes, and boundary faces
+E_solid=meshOutput.elements;
+V_solid=meshOutput.nodes;
+Fb_solid=meshOutput.facesBoundary;
+Cb_solid=meshOutput.boundaryMarker;
+CE_solid=meshOutput.elementMaterialID;
+
+%%
+V=[V_solid;V_implant];
+F_implant=F_implant+size(V_solid,1);
+
+numDigitsMerge=6-numOrder(mean(patchEdgeLengths(F_implant,V)));
+
+[~,indKeep,indFix]=unique(pround(V,numDigitsMerge),'rows');
+V=V(indKeep,:);
+F_implant=indFix(F_implant); 
+E_solid=indFix(E_solid); 
+Fb_solid=indFix(Fb_solid);
+E_cement=E_solid(CE_solid==-3,:);
+E_bone=E_solid(CE_solid==-2,:);
+
+%% Visualizing solid mesh 
+
+hFig=cFigure; hold on;
+gpatch(F_implant,V,'w','none',0.5);
+optionStruct.hFig=hFig;
+meshView(meshOutput,optionStruct);
+axisGeom; 
+drawnow;
+
+%% Visualizing boundary conditions
+
+F_bottomSupport=Fb_solid(ismember(Cb_solid,[9 14]),:);
+bcSupportList=unique(F_bottomSupport(:));
+
+hFig=cFigure; hold on;
+gpatch(Fb_solid,V,'kw','none',0.25);
+hl(1)=plotV(V(bcSupportList,:),'k.','MarkerSize',25);
+hl(2)=gpatch(F_implant,V,'rw','r',1);
+legend(hl,{'BC support','BC prescribe'});
+axisGeom; 
+camlight headlight;
+drawnow;
+
+%% Defining the FEBio input structure
+% See also |febioStructTemplate| and |febioStruct2xml| and the FEBio user
+% manual.
+
+%Get a template with default settings 
+[febio_spec]=febioStructTemplate;
+
+%febio_spec version 
+febio_spec.ATTR.version='2.5'; 
+
+%Module section
+febio_spec.Module.ATTR.type='solid'; 
+
+%Control section
+febio_spec.Control.analysis.ATTR.type='static';
+febio_spec.Control.time_steps=numTimeSteps;
+febio_spec.Control.step_size=1/numTimeSteps;
+febio_spec.Control.time_stepper.dtmin=dtmin;
+febio_spec.Control.time_stepper.dtmax=dtmax; 
+febio_spec.Control.time_stepper.max_retries=max_retries;
+febio_spec.Control.time_stepper.opt_iter=opt_iter;
+febio_spec.Control.max_refs=max_refs;
+febio_spec.Control.max_ups=max_ups;
+
+%Material section
+febio_spec.Material.material{1}.ATTR.type='Ogden';
+febio_spec.Material.material{1}.ATTR.id=1;
+febio_spec.Material.material{1}.c1=c1;
+febio_spec.Material.material{1}.m1=m1;
+febio_spec.Material.material{1}.k=k1;
+
+febio_spec.Material.material{2}.ATTR.type='Ogden';
+febio_spec.Material.material{2}.ATTR.id=2;
+febio_spec.Material.material{2}.c1=c2;
+febio_spec.Material.material{2}.m1=m2;
+febio_spec.Material.material{2}.k=k2;
+
+febio_spec.Material.material{3}.ATTR.type='rigid body';
+febio_spec.Material.material{3}.ATTR.id=3;
+febio_spec.Material.material{3}.density=1;
+febio_spec.Material.material{3}.center_of_mass=mean(V_implant,1);
+
+%Geometry section
+% -> Nodes
+febio_spec.Geometry.Nodes{1}.ATTR.name='nodeSet_all'; %The node set name
+febio_spec.Geometry.Nodes{1}.node.ATTR.id=(1:size(V,1))'; %The node id's
+febio_spec.Geometry.Nodes{1}.node.VAL=V; %The nodel coordinates
+
+% -> Elements
+febio_spec.Geometry.Elements{1}.ATTR.type='tet4'; %Element type of this set
+febio_spec.Geometry.Elements{1}.ATTR.mat=1; %material index for this set 
+febio_spec.Geometry.Elements{1}.ATTR.name='Bone'; %Name of the element set
+febio_spec.Geometry.Elements{1}.elem.ATTR.id=(1:1:size(E_bone,1))'; %Element id's
+febio_spec.Geometry.Elements{1}.elem.VAL=E_bone;
+
+febio_spec.Geometry.Elements{2}.ATTR.type='tet4'; %Element type of this set
+febio_spec.Geometry.Elements{2}.ATTR.mat=2; %material index for this set 
+febio_spec.Geometry.Elements{2}.ATTR.name='Cement'; %Name of the element set
+febio_spec.Geometry.Elements{2}.elem.ATTR.id=size(E_bone,1)+(1:1:size(E_cement,1))'; %Element id's
+febio_spec.Geometry.Elements{2}.elem.VAL=E_cement;
+
+febio_spec.Geometry.Elements{3}.ATTR.type='tri3'; %Element type of this set
+febio_spec.Geometry.Elements{3}.ATTR.mat=3; %material index for this set
+febio_spec.Geometry.Elements{3}.ATTR.name='Bone'; %Name of the element set
+febio_spec.Geometry.Elements{3}.elem.ATTR.id=size(E_bone,1)+size(E_cement,1)+(1:1:size(F_implant,1))'; %Element id's
+febio_spec.Geometry.Elements{3}.elem.VAL=F_implant;
+
+% -> NodeSets
+febio_spec.Geometry.NodeSet{1}.ATTR.name='bcSupportList';
+febio_spec.Geometry.NodeSet{1}.node.ATTR.id=bcSupportList(:);
+
+%Boundary condition section
+% -> Fix boundary conditions
+febio_spec.Boundary.fix{1}.ATTR.bc='x';
+febio_spec.Boundary.fix{1}.ATTR.node_set=febio_spec.Geometry.NodeSet{1}.ATTR.name;
+febio_spec.Boundary.fix{2}.ATTR.bc='y';
+febio_spec.Boundary.fix{2}.ATTR.node_set=febio_spec.Geometry.NodeSet{1}.ATTR.name;
+febio_spec.Boundary.fix{3}.ATTR.bc='z';
+febio_spec.Boundary.fix{3}.ATTR.node_set=febio_spec.Geometry.NodeSet{1}.ATTR.name;
+
+% -> Prescribed boundary conditions on the rigid body
+febio_spec.Boundary.rigid_body{1}.ATTR.mat=3;
+febio_spec.Boundary.rigid_body{1}.fixed{1}.ATTR.bc='x';
+febio_spec.Boundary.rigid_body{1}.fixed{2}.ATTR.bc='y';
+febio_spec.Boundary.rigid_body{1}.fixed{3}.ATTR.bc='Rx';
+febio_spec.Boundary.rigid_body{1}.fixed{4}.ATTR.bc='Ry';
+febio_spec.Boundary.rigid_body{1}.fixed{5}.ATTR.bc='Rz';
+% febio_spec.Boundary.rigid_body{1}.fixed{6}.ATTR.bc='z';
+
+% febio_spec.Boundary.rigid_body{1}.prescribed.ATTR.bc='z';
+% febio_spec.Boundary.rigid_body{1}.prescribed.ATTR.lc=1;
+% febio_spec.Boundary.rigid_body{1}.prescribed.VAL=displacementMagnitude;
+
+febio_spec.Boundary.rigid_body{1}.force.ATTR.bc='z';
+febio_spec.Boundary.rigid_body{1}.force.ATTR.lc=1;
+febio_spec.Boundary.rigid_body{1}.force.VAL=forceBody;
+
+%Output section 
+% -> log file
+febio_spec.Output.logfile.ATTR.file=febioLogFileName;
+febio_spec.Output.logfile.node_data{1}.ATTR.file=febioLogFileName_disp;
+febio_spec.Output.logfile.node_data{1}.ATTR.data='ux;uy;uz';
+febio_spec.Output.logfile.node_data{1}.ATTR.delim=',';
+febio_spec.Output.logfile.node_data{1}.VAL=1:size(V,1);
+
+febio_spec.Output.logfile.rigid_body_data{1}.ATTR.file=febioLogFileName_force;
+febio_spec.Output.logfile.rigid_body_data{1}.ATTR.data='Fx;Fy;Fz';
+febio_spec.Output.logfile.rigid_body_data{1}.ATTR.delim=',';
+febio_spec.Output.logfile.rigid_body_data{1}.VAL=3; %Rigid body material id
+
+febio_spec.Output.logfile.element_data{1}.ATTR.file=febioLogFileName_force;
+febio_spec.Output.logfile.element_data{1}.ATTR.data='s1;s2;s3';
+febio_spec.Output.logfile.element_data{1}.ATTR.delim=',';
+febio_spec.Output.logfile.element_data{1}.VAL=1:1:size(E_solid,1); %Rigid body material id
+
+%% Quick viewing of the FEBio input file structure
+% The |febView| function can be used to view the xml structure in a MATLAB
+% figure window. 
+
+%%
+% |febView(febio_spec); %Viewing the febio file|
+
+%% Exporting the FEBio input file
+% Exporting the febio_spec structure to an FEBio input file is done using
+% the |febioStruct2xml| function. 
+
+febioStruct2xml(febio_spec,febioFebFileName); %Exporting to file and domNode
+
+%% Running the FEBio analysis
+% To run the analysis defined by the created FEBio input file the
+% |runMonitorFEBio| function is used. The input for this function is a
+% structure defining job settings e.g. the FEBio input file name. The
+% optional output runFlag informs the user if the analysis was run
+% succesfully. 
+
+febioAnalysis.run_filename=febioFebFileName; %The input file name
+febioAnalysis.run_logname=febioLogFileName; %The name for the log file
+febioAnalysis.disp_on=1; %Display information on the command window
+febioAnalysis.disp_log_on=1; %Display convergence information in the command window
+febioAnalysis.runMode=runMode;%'internal';
+febioAnalysis.t_check=0.25; %Time for checking log file (dont set too small)
+febioAnalysis.maxtpi=1e99; %Max analysis time
+febioAnalysis.maxLogCheckTime=10; %Max log file checking time
+
+[runFlag]=runMonitorFEBio(febioAnalysis);%START FEBio NOW!!!!!!!!
+
+%% Import FEBio results 
+
+if runFlag==1 %i.e. a succesful run
+    
+    % Importing nodal displacements from a log file
+    [time_mat, N_disp_mat,~]=importFEBio_logfile(fullfile(savePath,febioLogFileName_disp)); %Nodal displacements    
+    time_mat=[0; time_mat(:)]; %Time
+
+    N_disp_mat=N_disp_mat(:,2:end,:);
+    sizImport=size(N_disp_mat);
+    sizImport(3)=sizImport(3)+1;
+    N_disp_mat_n=zeros(sizImport);
+    N_disp_mat_n(:,:,2:end)=N_disp_mat;
+    N_disp_mat=N_disp_mat_n;
+    DN=N_disp_mat(:,:,end);
+    DN_magnitude=sqrt(sum(DN(:,3).^2,2));
+    V_def=V+DN;
+
+    %% 
+    % Plotting the simulated results using |anim8| to visualize and animate
+    % deformations 
+    
+    % Create basic view and store graphics handle to initiate animation
+    hf=cFigure; %Open figure  
+    gtitle([febioFebFileNamePart,': Press play to animate']);
+    hp1=gpatch(Fb_solid,V_def,DN_magnitude,'k',1); %Add graphics object to animate
+    hp1.FaceColor='Interp';
+
+    hp2=gpatch(F_implant,V,0.5*ones(1,3),'none',0.25); %A static graphics object
+    
+    axisGeom(gca,fontSize); 
+    colormap(gjet(250)); colorbar;
+    caxis([0 max(DN_magnitude)]);    
+    axis([min(V_def(:,1)) max(V_def(:,1)) min(V_def(:,2)) max(V_def(:,2)) min(V_def(:,3)) max(V_def(:,3))]); %Set axis limits statically
+    camlight headlight;        
+        
+    % Set up animation features
+    animStruct.Time=time_mat; %The time vector    
+    for qt=1:1:size(N_disp_mat,3) %Loop over time increments        
+        DN=N_disp_mat(:,:,qt); %Current displacement
+        DN_magnitude=sqrt(sum(DN.^2,2)); %Current displacement magnitude
+        V_def=V+DN; %Current nodal coordinates
+        
+        %Set entries in animation structure
+        animStruct.Handles{qt}=[hp1 hp1 hp2]; %Handles of objects to animate
+        animStruct.Props{qt}={'Vertices','CData','Vertices'}; %Properties of objects to animate
+        animStruct.Set{qt}={V_def,DN_magnitude,V_def}; %Property values for to set in order to animate
+    end        
+    anim8(hf,animStruct); %Initiate animation feature    
+    drawnow;
+
+end
 
 %% 
 % _*GIBBON footer text*_ 

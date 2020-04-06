@@ -25,7 +25,7 @@ indUni=unique(indUni(~isnan(indUni)));
 %%
 
 numPointsOriginal=size(V,1); %Number of original points
-numPointsNew=numel(indUni); %Number of original points
+numPointsNew=numel(indUni); %Number of points in new set
 Vc=V(indUni,:); %Select relevant points
 
 %Fix indices in faces matrix
