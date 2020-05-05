@@ -37,7 +37,7 @@ lineWidth=3;
 
 %%
 
-r=40;
+r=40; %Breast radius
 r1=r/2.5;
 r2=r/7;
 rm=mean([r1 r2]);

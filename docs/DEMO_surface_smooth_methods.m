@@ -12,9 +12,7 @@ fontSize=15;
 cMap=gjet(250);
 
 %%
-C=gjet(4);
-c1=C(4,:);
-c2=C(2,:);
+
 [F,V]=stanford_bunny; %Some graphics data
 
 V_noisy=V+5*randn(size(V));
@@ -22,8 +20,7 @@ V_noisy=V+5*randn(size(V));
 V1=V_noisy;
 V2=V_noisy;
 
-nSteps=15;
-nSub=1;
+nSteps=25;
 
 %% Comparing smoothening methods
 
@@ -31,91 +28,63 @@ hf=cFigure;
 
 subplot(1,2,1); hold on; 
 ht1=title('Laplacian smoothing','FontSize',fontSize);
-gpatch(F,V,0.5*ones(1,3),'none',0.2);
-hp1=gpatch(F,V1,c1,'k',1);
+gpatch(F,V,'kw','none',0.2);
+hp1=gpatch(F,V1,'rw','r',1);
 
 axisGeom(gca,fontSize); axis manual; axis off; 
 camlight right;
-zoom(1.5);
+view(0,0);
 
 subplot(1,2,2); hold on; 
 ht2=title('Humphreys classes smoothing','FontSize',fontSize);
-gpatch(F,V,0.5*ones(1,3),'none',0.2);
-hp2=gpatch(F,V2,c2,'k',1);
+gpatch(F,V,'kw','none',0.2);
+hp2=gpatch(F,V2,'gw','g',1);
 
 axisGeom(gca,fontSize); axis manual; axis off; 
 camlight right;
-zoom(1.5);
+view(0,0);
 
 drawnow;
 
 %%
 
-
-animStruct.Time=linspace(0,1,nSteps);
+stepRange=0:1:nSteps;  
+animStruct.Time=stepRange;
 animStruct.Handles{1}=[hp1,hp2,ht1,ht2]; %Handles of objects to animate
 animStruct.Props{1}={'Vertices','Vertices','String','String'}; %Properties of objects to animate
 animStruct.Set{1}={V1,V2,'Laplacian smoothing i=0','Humphreys classes smoothing i=0'}; %Property values for to set in order to animate
     
-clear cPar;
-
-cPar1.n=nSub; %Number of iterations
 cPar1.Method='LAP'; %Smooth method
-
-cPar2.n=nSub; %Number of iterations
 cPar2.Method='HC'; %Smooth method
 
-for q=2:1:nSteps    
+q=1;
+for c=stepRange      
+    cPar1.n=c; %Number of iterations
+    [V1s]=patchSmooth(F,V1,[],cPar1);
     
-    [V1]=patchSmooth(F,V1,[],cPar1);
-    
-    [V2]=patchSmooth(F,V2,[],cPar2);
+    cPar2.n=c; %Number of iterations
+    [V2s]=patchSmooth(F,V2,[],cPar2);
     
     %Set entries in animation structure
     animStruct.Handles{q}=[hp1,hp2,ht1,ht2]; %Handles of objects to animate
     animStruct.Props{q}={'Vertices','Vertices','String','String'}; %Properties of objects to animate
-    animStruct.Set{q}={V1,V2,['Laplacian smoothing i=',num2str(q*nSub)],['Humphreys classes smoothing i=',num2str(q*nSub)]}; %Property values for to set in order to animate
+    animStruct.Set{q}={V1s,V2s,['Laplacian smoothing i=',num2str(c)],['Humphreys classes smoothing i=',num2str(c)]}; %Property values for to set in order to animate
+    q=q+1;
 end
 
 anim8(hf,animStruct);
 
-hf=cFigure; 
+%% Compute distance metric to original
 
-subplot(1,2,1); hold on; 
-ht1=title('Laplacian smoothing','FontSize',fontSize);
-gpatch(F,V,0.5*ones(1,3),'none',0.2);
-hp1=gpatch(F,V1,c1,'k',1);
-
-axisGeom(gca,fontSize); axis manual; axis off; 
-camlight right;
-zoom(1.5);
-
-subplot(1,2,2); hold on; 
-ht2=title('Humphreys classes smoothing','FontSize',fontSize);
-gpatch(F,V,0.5*ones(1,3),'none',0.2);
-hp2=gpatch(F,V2,c2,'k',1);
-
-axisGeom(gca,fontSize); axis manual; axis off; 
-camlight right;
-zoom(1.5);
-
-drawnow;
-
-%% Comparing using color
-
-clear hf animStruct;
-V1=V_noisy;
-V2=V_noisy;
-
-C1=minDist(V1,V);
-C2=minDist(V2,V);
+C1=minDist(V1s,V);
+C2=minDist(V2s,V);
 
 hf=cFigure; 
 
 subplot(1,2,1); hold on; 
 ht1=title('Laplacian smoothing','FontSize',fontSize);
-gpatch(F,V,0.5*ones(1,3),'none',0.2);
-hp1=gpatch(F,V1,C1,'k',1);
+gpatch(F,V,'kw','none',0.2);
+hp1=gpatch(F,V1s,C1,'k',1);
 
 axisGeom(gca,fontSize); axis manual; axis off; 
 camlight right;
@@ -125,8 +94,8 @@ colorbar;
 
 subplot(1,2,2); hold on; 
 ht2=title('Humphreys classes smoothing','FontSize',fontSize);
-gpatch(F,V,0.5*ones(1,3),'none',0.2);
-hp2=gpatch(F,V2,C2,'k',1);
+gpatch(F,V,'kw','none',0.2);
+hp2=gpatch(F,V2s,C2,'k',1);
 
 axisGeom(gca,fontSize); axis manual; axis off; 
 camlight right;
@@ -134,38 +103,7 @@ zoom(1.5);
 colormap(cMap); caxis(hc);
 colorbar;
 
-drawnow;
-
-%%
-
-animStruct.Time=linspace(0,1,nSteps);
-animStruct.Handles{1}=[hp1,hp2,ht1,ht2,hp1,hp2]; %Handles of objects to animate
-animStruct.Props{1}={'Vertices','Vertices','String','String','CData','CData'}; %Properties of objects to animate
-animStruct.Set{1}={V1,V2,'Laplacian smoothing i=0','Humphreys classes smoothing i=0',C1,C2}; %Property values for to set in order to animate
-    
-clear cPar;
-
-cPar1.n=nSub; %Number of iterations
-cPar1.Method='LAP'; %Smooth method
-
-cPar2.n=nSub; %Number of iterations
-cPar2.Method='HC'; %Smooth method
-
-for q=2:1:nSteps    
-    
-    [V1]=patchSmooth(F,V1,[],cPar1);    
-    [V2]=patchSmooth(F,V2,[],cPar2);
-    
-    C1=minDist(V1,V);
-    C2=minDist(V2,V);
-    
-    %Set entries in animation structure
-    animStruct.Handles{q}=[hp1,hp2,ht1,ht2,hp1,hp2]; %Handles of objects to animate
-    animStruct.Props{q}={'Vertices','Vertices','String','String','CData','CData'}; %Properties of objects to animate
-    animStruct.Set{q}={V1,V2,['Laplacian smoothing i=',num2str(q*nSub)],['Humphreys classes smoothing i=',num2str(q*nSub)],C1,C2}; %Property values for to set in order to animate
-end
-
-anim8(hf,animStruct);
+drawnow
 
 %%
 %

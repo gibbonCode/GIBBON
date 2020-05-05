@@ -40,6 +40,7 @@ febioLogFileName=fullfile(savePath,[febioFebFileNamePart,'.txt']); %FEBio log fi
 febioLogFileName_disp=[febioFebFileNamePart,'_disp_out.txt']; %Log file name for exporting displacement
 febioLogFileName_force=[febioFebFileNamePart,'_force_out.txt']; %Log file name for exporting force
 febioLogFileName_stress=[febioFebFileNamePart,'_stress_out.txt']; %Log file name for exporting stresses
+febioLogFileName_strainEnergy=[febioFebFileNamePart,'_energy_out.txt']; %Log file name for exporting strain energy density
 
 %Define applied force 
 forceBody=(80*9.81)/2;
@@ -66,7 +67,7 @@ opt_iter=6; %Optimum number of iterations
 max_retries=5; %Maximum number of retires
 dtmin=(1/numTimeSteps)/100; %Minimum time step size
 dtmax=1/numTimeSteps; %Maximum time step size
-runMode='internal';
+runMode='external'; %'external' or 'internal'
 
 %%
 n1=[1 0 0];
@@ -342,6 +343,7 @@ E_solid=indFix(E_solid);
 Fb_solid=indFix(Fb_solid);
 E_cement=E_solid(CE_solid==-3,:);
 E_bone=E_solid(CE_solid==-2,:);
+E_solid=[E_bone;E_cement];
 
 %% Visualizing solid mesh 
 
@@ -476,10 +478,15 @@ febio_spec.Output.logfile.rigid_body_data{1}.ATTR.data='Fx;Fy;Fz';
 febio_spec.Output.logfile.rigid_body_data{1}.ATTR.delim=',';
 febio_spec.Output.logfile.rigid_body_data{1}.VAL=3; %Rigid body material id
 
-febio_spec.Output.logfile.element_data{1}.ATTR.file=febioLogFileName_force;
+febio_spec.Output.logfile.element_data{1}.ATTR.file=febioLogFileName_stress;
 febio_spec.Output.logfile.element_data{1}.ATTR.data='s1;s2;s3';
 febio_spec.Output.logfile.element_data{1}.ATTR.delim=',';
 febio_spec.Output.logfile.element_data{1}.VAL=1:1:size(E_solid,1); %Rigid body material id
+
+febio_spec.Output.logfile.element_data{2}.ATTR.file=febioLogFileName_strainEnergy;
+febio_spec.Output.logfile.element_data{2}.ATTR.data='sed';
+febio_spec.Output.logfile.element_data{2}.ATTR.delim=',';
+febio_spec.Output.logfile.element_data{2}.VAL=1:1:size(E_solid,1);
 
 %% Quick viewing of the FEBio input file structure
 % The |febView| function can be used to view the xml structure in a MATLAB
@@ -530,21 +537,42 @@ if runFlag==1 %i.e. a succesful run
     DN_magnitude=sqrt(sum(DN(:,3).^2,2));
     V_def=V+DN;
 
+    %%
+    % Importing element strain energies from a log file
+    [~,E_energy,~]=importFEBio_logfile(fullfile(savePath,febioLogFileName_strainEnergy)); %Element strain energy
+    
+    %Remove nodal index column
+    E_energy=E_energy(:,2:end,:);
+    
+    %Add initial state i.e. zero energy
+    sizImport=size(E_energy);
+    sizImport(3)=sizImport(3)+1;
+    E_energy_mat_n=zeros(sizImport);
+    E_energy_mat_n(:,:,2:end)=E_energy;
+    E_energy=E_energy_mat_n;
+    
+    %%
+    [FE_face,C_energy_face]=element2patch(E_solid,E_energy(:,:,end),'tet4');
+    [CV]=faceToVertexMeasure(FE_face,V,C_energy_face);
+    [indBoundary]=tesBoundary(FE_face,V);
+    Fb_solid=FE_face(indBoundary,:);
+    
     %% 
     % Plotting the simulated results using |anim8| to visualize and animate
     % deformations 
     
     % Create basic view and store graphics handle to initiate animation
     hf=cFigure; %Open figure  
+    title('Strain energy density')
     gtitle([febioFebFileNamePart,': Press play to animate']);
-    hp1=gpatch(Fb_solid,V_def,DN_magnitude,'k',1); %Add graphics object to animate
+    hp1=gpatch(Fb_solid,V_def,CV,'k',1); %Add graphics object to animate
     hp1.FaceColor='Interp';
 
     hp2=gpatch(F_implant,V,0.5*ones(1,3),'none',0.25); %A static graphics object
     
     axisGeom(gca,fontSize); 
     colormap(gjet(250)); colorbar;
-    caxis([0 max(DN_magnitude)]);    
+    caxis([0 max(E_energy(:))/25]);    
     axis([min(V_def(:,1)) max(V_def(:,1)) min(V_def(:,2)) max(V_def(:,2)) min(V_def(:,3)) max(V_def(:,3))]); %Set axis limits statically
     camlight headlight;        
         
@@ -552,13 +580,17 @@ if runFlag==1 %i.e. a succesful run
     animStruct.Time=time_mat; %The time vector    
     for qt=1:1:size(N_disp_mat,3) %Loop over time increments        
         DN=N_disp_mat(:,:,qt); %Current displacement
-        DN_magnitude=sqrt(sum(DN.^2,2)); %Current displacement magnitude
+        
+        
         V_def=V+DN; %Current nodal coordinates
+        
+        [FE_face,C_energy_face]=element2patch(E_solid,E_energy(:,:,qt),'tet4');
+        [CV]=faceToVertexMeasure(FE_face,V,C_energy_face);
         
         %Set entries in animation structure
         animStruct.Handles{qt}=[hp1 hp1 hp2]; %Handles of objects to animate
         animStruct.Props{qt}={'Vertices','CData','Vertices'}; %Properties of objects to animate
-        animStruct.Set{qt}={V_def,DN_magnitude,V_def}; %Property values for to set in order to animate
+        animStruct.Set{qt}={V_def,CV,V_def}; %Property values for to set in order to animate
     end        
     anim8(hf,animStruct); %Initiate animation feature    
     drawnow;

@@ -13,7 +13,7 @@ clear; close all; clc;
 %%
 % Example geometry
 
-testCase=5;
+testCase=6;
 
 switch testCase
     case 1 %Box
@@ -127,6 +127,27 @@ switch testCase
         
         pointSpacing=mean(patchEdgeLengths(F,V));
         featureSize=pointSpacing/10;
+        shrinkFactor=featureSize/pointSpacing;
+    case 6
+        [F,V]=graphicsModels(5);
+        C=ones(size(F,1),1);
+        faceBoundaryMarker=ones(size(F,1),1);
+        [V_regions]=getInnerPoint(F,V);
+        V_holes=[];
+        [regionA]=tetVolMeanEst(F,V); %Volume for regular tets
+        stringOpt='-pq1.2AaYQ';
+        inputStruct.stringOpt=stringOpt;
+        inputStruct.Faces=fliplr(F);
+        inputStruct.Nodes=V;
+        inputStruct.holePoints=V_holes;
+        inputStruct.faceBoundaryMarker=faceBoundaryMarker; %Face boundary markers
+        inputStruct.regionPoints=V_regions; %region points
+        inputStruct.regionA=regionA;
+        inputStruct.minRegionMarker=2; %Minimum region marker        
+        [meshStruct]=runTetGen(inputStruct); %Run tetGen
+
+        pointSpacing=mean(patchEdgeLengths(F,V));
+        featureSize=pointSpacing/15;        
         shrinkFactor=featureSize/pointSpacing;
 end
 

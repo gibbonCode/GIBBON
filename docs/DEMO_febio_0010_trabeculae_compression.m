@@ -45,8 +45,8 @@ febioLogFileName_disp=[febioFebFileNamePart,'_disp_out.txt']; %Log file name for
 febioLogFileName_force=[febioFebFileNamePart,'_force_out.txt']; %Log file name for exporting force
 
 porousGeometryCase='g'; 
-ns=12; %Number of voxel steps across period for image data (roughly number of points on mesh period)
-nPeriods=[2 2 2]; %Number of periods in each direction
+ns=10; %Number of voxel steps across period for image data (roughly number of points on mesh period)
+nPeriods=[3 3 3]; %Number of periods in each direction
 sampleSize=10; %Heigh of the sample
 
 %Define applied displacement 
@@ -82,7 +82,7 @@ dtmax=1/numTimeSteps; %Maximum time step size
 switch porousGeometryCase
     case 'g' %Gyroid        
         n=nPeriods*ns; %Number of sample points
-        isoLevel=0.; %Iso-surface level
+        isoLevel=0.5; %Iso-surface level
         
         cutOffset=1/3*pi; %Cut level such that data "ends well"
         
