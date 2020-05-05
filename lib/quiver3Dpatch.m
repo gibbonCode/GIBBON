@@ -4,7 +4,7 @@ function [varargout]=quiver3Dpatch(x,y,z,ux,uy,uz,c,a)
 % ------------------------------------------------------------------------
 %
 % This function allows plotting of colored 3D arrows by generating patch
-% data (faces �F�, vertices �V� and color data �C�). The patch data which
+% data (faces F, vertices V and color data C). The patch data which
 % allows plotting of 3D quiver arrows with specified (e.g. colormap driven)
 % color. To save memory n arrows are created using only n*6 faces and n*7
 % vertices. The vector "a" defines arrow length scaling where a(1) is the

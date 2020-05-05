@@ -48,7 +48,9 @@ else %else use specified which could be 'k'
     h=gpatch(F,V,colorOpt,'none',alphaLevel);
 end
 
-varargout{1}=h;
+if nargout==1
+    varargout{1}=h;
+end
 
 
  

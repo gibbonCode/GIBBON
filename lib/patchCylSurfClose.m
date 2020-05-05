@@ -1,13 +1,45 @@
-function [F,V,C]=patchCylSurfClose(X,Y,Z,C)
+function [varargout]=patchCylSurfClose(varargin)
+
+% function [F,V,C]=patchCylSurfClose(X,Y,Z,C)
+% ------------------------------------------------------------------------
+%
+% ------------------------------------------------------------------------
+
+%% Parse input
+switch nargin
+    case 3
+        X=varargin{1};
+        Y=varargin{2};
+        Z=varargin{3};
+        C=[];
+    case 4
+        X=varargin{1};
+        Y=varargin{2};
+        Z=varargin{3};
+        C=varargin{4};
+end
+
+if isempty(C)
+    C=ones(size(Z));
+end
+
+%%
 
 [F,V,C]=surf2patch(X,Y,Z,C);
 I=[(1:size(Z,1)-1)' (1:size(Z,1)-1)' (2:size(Z,1))' (2:size(Z,1))'];
 J=[size(Z,2).*ones(size(Z,1)-1,1) ones(size(Z,1)-1,1) ones(size(Z,1)-1,1) size(Z,2).*ones(size(Z,1)-1,1)];
 F_sub=sub2ind(size(Z),I,J);
 F=[F;F_sub];
- 
-[C]=vertexToFaceMeasure(F,C);
-C(end-size(F_sub,1):end,:)=C(end-size(F_sub,1):end,:)+0.5;
+
+%% Collect output
+
+varargout{1}=F;
+varargout{2}=V;
+if nargout==3
+    C=vertexToFaceMeasure(F,C);
+    C(end-size(F_sub,1):end,:)=C(end-size(F_sub,1):end,:)+0.5;
+    varargout{3}=C;
+end
 
 %% 
 % _*GIBBON footer text*_ 

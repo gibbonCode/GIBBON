@@ -1,4 +1,4 @@
-function [F,V,logicValid,indFix2]=patchEdgeCollapse(F,V,E,logicKeep,meanOption)
+function [F,V,logicValid,indFix2]=patchEdgeCollapse(varargin)
 
 % function [F,V,logicValid,indFix2]=patchEdgeCollapse(F,V,E,logicKeep,meanOption)
 %-------------------------------------------------------------------------
@@ -7,6 +7,26 @@ function [F,V,logicValid,indFix2]=patchEdgeCollapse(F,V,E,logicKeep,meanOption)
 %-------------------------------------------------------------------------
 
 %% Parse input
+switch nargin
+    case 3
+        F=varargin{1};
+        V=varargin{2};
+        E=varargin{3};
+        logicKeep=[];
+        meanOption=1;
+    case 4
+        F=varargin{1};
+        V=varargin{2};
+        E=varargin{3};
+        logicKeep=varargin{4};
+        meanOption=1;
+    case 5
+        F=varargin{1};
+        V=varargin{2};
+        E=varargin{3};
+        logicKeep=varargin{4};
+        meanOption=varargin{5};
+end
 
 if isempty(logicKeep)
    logicKeep=false(size(E));
