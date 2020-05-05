@@ -23,13 +23,11 @@ V1=[-1 -1; -1 1; 1 1; 1 -1];
 
 %Defining a region
 regionCell={V1}; %A region between V1 and V2 (V2 forms a hole inside V1)
-
 plotOn=1; %This turns on/off plotting
+pointSpacing=0.1; %Desired point spacing
+resampleCurveOpt=1; %Option to turn on/off resampling of input boundary curves
 
-%Desired point spacing
-pointSpacing=0.1; 
-
-[F,V]=regionTriMesh2D(regionCell,pointSpacing,1,plotOn);
+[F,V]=regionTriMesh2D(regionCell,pointSpacing,resampleCurveOpt,plotOn);
 plotV(V1,'b-','LineWidth',2);
 axis tight; 
 drawnow;
@@ -41,7 +39,7 @@ drawnow;
 
 %Boundary 1
 ns=150;
-t=linspace(0,2*pi,ns);
+t=linspace(0,2*pi,ns+1);
 t=t(1:end-1);
 r=6+2.*sin(5*t);
 [x,y] = pol2cart(t,r);
@@ -67,27 +65,26 @@ V3=[x(:) y(:)-0.5];
 
 %Defining a region
 regionCell={V1,V2,V3}; %A region between V1 and V2 (V2 forms a hole inside V1)
-
 plotOn=1; %This turns on/off plotting
+pointSpacing=0.5; %Desired point spacing
+resampleCurveOpt=1; %Option to turn on/off resampling of input boundary curves
 
-%Desired point spacing
-pointSpacing=0.5; 
+[F,V]=regionTriMesh2D(regionCell,pointSpacing,resampleCurveOpt,plotOn);
 
-[F,V]=regionTriMesh2D(regionCell,pointSpacing,1,plotOn);
 plotV(V1,'b-','LineWidth',2);
 plotV(V2,'b-','LineWidth',2);
 plotV(V3,'b-','LineWidth',2);
 axis tight; 
 drawnow;
 
-%% CREATING A REGION MESH WITH HOLES
+%% Using input structure instead
 
-%% 
+%%
 % Creating boundary curves 
 
 %Boundary 1
-ns=10000;
-t=linspace(0,2*pi,ns);
+ns=500;
+t=linspace(0,2*pi,ns+1);
 t=t(1:end-1);
 r=5;
 a=2;
@@ -102,35 +99,49 @@ V2=[x(:) y(:)];
 %%
 % Meshing the region
 
-% The input variable regionCell is a cell array containing all the boundary
-% curves, e.g. for a two curve region 1 we would have something like
-% regionSpec{1}={V1,V2} where V1 and V2 are the boundary curves. Multiple
-% curves may be given here. The first curve should form the outer boundary
-% of the entire region, the curves that follow should define holes inside
-% this boundary and the space inside them is therefore not meshed. 
+%Defining input structure
+inputStructure.regionCell={V1,V2};
+inputStructure.pointSpacing=0.25; 
+inputStructure.resampleCurveOpt=1; 
+inputStructure.plotOn=0;
 
-%Defining a region
-regionCell={V1,V2}; %A region between V1 and V2 (V2 forms a hole inside V1)
-
-plotOn=1; %This turns on/off plotting
-
-%Desired point spacing
-pointSpacing=0.25; 
-
-[F,V]=regionTriMesh2D(regionCell,pointSpacing,1,plotOn);
-plotV(V1,'b-','LineWidth',2);
-plotV(V2,'b-','LineWidth',2);
-axis tight; 
-drawnow;
+[F,V,boundaryInd]=regionTriMesh2D(inputStructure);
 
 %%
 
-[F,V,boundaryInd]=regionTriMesh2D(regionCell,pointSpacing,1,plotOn);
+cFigure; hold on;
+gpatch(F,V,'r');
+plotV(V(boundaryInd,:),'b.','markerSize',15);
+
+axisGeom;
+view(2);
+drawnow; 
+
+%% Using must points
+
+% Create example boundary curve
+V=batman(150);
+
+% Create example interior points
+t=linspace(0,2*pi,15)'; t=t(1:end-1);
+Vm=[0.4*cos(t) 0.15*sin(t)+0.25];
+
+inputStructure.regionCell={V};
+inputStructure.pointSpacing=[]; 
+inputStructure.resampleCurveOpt=0; 
+inputStructure.plotOn=0;
+inputStructure.interiorPoints=Vm;
+inputStructure.smoothIterations=250;
+
+[F,V,boundaryInd,interiorInd]=regionTriMesh2D(inputStructure);
+
+%%
 
 cFigure; hold on;
-gpatch(F,V,'gw');
-plotV(V(boundaryInd,:),'b.','markerSize',25);
-axisGeom;
+hp(1)=gpatch(F,V,'gw','k');
+hp(2)=plotV(V(boundaryInd,:),'b.','markerSize',25);
+hp(3)=plotV(V(interiorInd,:),'r.','markerSize',35);
+axis tight; axis equal; view(2); grid on; box on; 
 drawnow; 
 
 %% 

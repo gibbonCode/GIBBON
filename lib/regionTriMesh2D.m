@@ -1,6 +1,6 @@
 function [varargout]=regionTriMesh2D(varargin)
 
-% function [F,V,boundaryInd]=regionTriMesh2D(regionCell,pointSpacing,resampleCurveOpt,plotOn)
+% function [F,V,boundaryInd]=regionTriMesh2D(inputStructure)
 % ------------------------------------------------------------------------
 % This function creates a 2D triangulation for the region specified in the
 % variable regionCell. The mesh aims to obtain a point spacing as defined
@@ -17,47 +17,86 @@ function [varargout]=regionTriMesh2D(varargin)
 % of the entire region, the curves that follow should define holes inside
 % this boundary and the space inside them is therefore not meshed.
 %
+%
 % Kevin Mattheus Moerman
 %
 % 2013/14/08
 % 2017/18/04 Added varargin style with defaults for missing parameters
 % 2017/18/04 Fixed bug which caused accidental removal of interior points
 % for multiregion meshes or meshes containing holes.
+% 2020/05/05 Updated to handle single input structure as alternative
+% 2020/05/05 Added interior "must points" option
 %------------------------------------------------------------------------
 
-%%
+%% Parse input
+
+defaultInputStructure.regionCell=[];
+defaultInputStructure.pointSpacing=[];
+defaultInputStructure.resampleCurveOpt=0;
+defaultInputStructure.plotOn=0;
+defaultInputStructure.gridType='tri';
+defaultInputStructure.interiorPoints=[];
+defaultInputStructure.smoothIterations=250;
 
 switch nargin
     case 1
-        regionCell=varargin{1};
-        pointSpacing=[];
-        resampleCurveOpt=0;
-        plotOn=0;
-        gridType='tri';
+        singleInput=varargin{1};
+        if isa(singleInput,'cell')
+            inputStructure.regionCell=singleInput;
+        elseif isa(singleInput,'struct')
+            inputStructure=singleInput;
+        else
+            error(['For single input the first input should be either a cell or a structure, currenty input is of class: ',class(singleInput)]);
+        end
     case 2
-        regionCell=varargin{1};
-        pointSpacing=varargin{2};
-        resampleCurveOpt=0;
-        plotOn=0;
-        gridType='tri';
+        inputStructure.regionCell=varargin{1};
+        inputStructure.pointSpacing=varargin{2};        
     case 3
-        regionCell=varargin{1};
-        pointSpacing=varargin{2};
-        resampleCurveOpt=varargin{3};
-        plotOn=0;
-        gridType='tri';
+        inputStructure.regionCell=varargin{1};
+        inputStructure.pointSpacing=varargin{2};
+        inputStructure.resampleCurveOpt=varargin{3};
     case 4
-        regionCell=varargin{1};
-        pointSpacing=varargin{2};
-        resampleCurveOpt=varargin{3};
-        plotOn=varargin{4};
-        gridType='tri';
+        inputStructure.regionCell=varargin{1};
+        inputStructure.pointSpacing=varargin{2};
+        inputStructure.resampleCurveOpt=varargin{3};
+        inputStructure.plotOn=varargin{4};        
     case 5
-        regionCell=varargin{1};
-        pointSpacing=varargin{2};
-        resampleCurveOpt=varargin{3};
-        plotOn=varargin{4};
-        gridType=varargin{5};
+        inputStructure.regionCell=varargin{1};
+        inputStructure.pointSpacing=varargin{2};
+        inputStructure.resampleCurveOpt=varargin{3};
+        inputStructure.plotOn=varargin{4};
+        inputStructure.gridType=varargin{5};
+    case 6
+        inputStructure.regionCell=varargin{1};
+        inputStructure.pointSpacing=varargin{2};
+        inputStructure.resampleCurveOpt=varargin{3};
+        inputStructure.plotOn=varargin{4};
+        inputStructure.gridType=varargin{5};
+        inputStructure.interiorPoints=varargin{6};        
+    case 7
+        inputStructure.regionCell=varargin{1};
+        inputStructure.pointSpacing=varargin{2};
+        inputStructure.resampleCurveOpt=varargin{3};
+        inputStructure.plotOn=varargin{4};
+        inputStructure.gridType=varargin{5};
+        inputStructure.interiorPoints=varargin{6};
+        inputStructure.smoothIterations=varargin{7};
+end
+
+%Check optionStruct against default
+[inputStructure]=structComplete(inputStructure,defaultInputStructure,1); %Complement provided with default if missing or empty
+
+%Access structure components
+regionCell=inputStructure.regionCell; 
+pointSpacing=inputStructure.pointSpacing; 
+resampleCurveOpt=inputStructure.resampleCurveOpt;
+plotOn=inputStructure.plotOn;
+gridType=inputStructure.gridType;
+V_extra=inputStructure.interiorPoints;
+smoothIterations=inputStructure.smoothIterations;
+
+if isempty(regionCell)
+    error('Empty regionCell provided');
 end
 
 if isempty(pointSpacing)
@@ -69,6 +108,14 @@ if isempty(pointSpacing)
         pointSpacingCurves(q)=mean(sqrt(sum(diff(V_now,1,1).^2,2)));        
     end    
     pointSpacing=mean(pointSpacingCurves);
+end
+
+if isempty(resampleCurveOpt)
+    resampleCurveOpt=0;
+end
+
+if isempty(plotOn)
+    plotOn=0;
 end
 
 %% CONTROL PARAMETERS
@@ -138,15 +185,17 @@ end
 
 %% Remove edge points
 
-[D,~]=minDist([X Y],VSS);
+D=minDist([X Y],[VSS;V_extra]);
 L=D>(pointSpacing*0.5*sqrt(3))/2;
-
 X=X(L);
 Y=Y(L);
 
+%% Define additional point set 
+
+V_add=[X(:) Y(:)];
+
 %%
 %Adding seed points to list
-V_add=[X(:) Y(:)];
 
 V=[V;V_add]; %Total point set of curves and seeds
 numPointsIni=size(V,1);
@@ -179,6 +228,13 @@ indFix(logicKeepList)=indNew;
 C=indFix(C);
 
 %Redo Delaunary triangulation
+% Add desired interior points
+if ~isempty(V_extra)
+    V=[V;V_extra];
+    [V,~,ind2]=unique(V,'rows');
+    C=ind2(C);    
+end
+
 DT = delaunayTriangulation(V(:,1),V(:,2),C);
 V=DT.Points;
 F=DT.ConnectivityList;
@@ -207,14 +263,19 @@ else
     
     %% CONSTRAINED SMOOTHENING OF THE MESH
     
-%     switch gridType
-%         case 'tri'           
-            smoothPar.LambdaSmooth=0.5;
-            smoothPar.n=250;
-            smoothPar.Tolerance=0.01;
-            smoothPar.RigidConstraints=boundaryInd;
-            [V]=tesSmooth(F,V,[],smoothPar);
-%     end
+    if ~isempty(V_extra)
+        [~,interiorInd]=minDist(V_extra,V);
+    else
+        interiorInd=[];
+    end
+    
+    if smoothIterations>0        
+        smoothPar.Method='LAP';
+        smoothPar.n=smoothIterations;
+        smoothPar.Tolerance=0.01;
+        smoothPar.RigidConstraints=[boundaryInd(:); interiorInd];
+        [V]=tesSmooth(F,V,[],smoothPar);
+    end
     
     %% PLOTTING
     if plotOn==1
@@ -234,6 +295,9 @@ end
 varargout{1}=F;
 varargout{2}=V;
 varargout{3}=boundaryInd;
+if ~isempty(V_extra)
+    varargout{4}=interiorInd;
+end
 
 %% 
 % _*GIBBON footer text*_ 
