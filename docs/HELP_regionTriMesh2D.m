@@ -138,10 +138,12 @@ inputStructure.smoothIterations=250;
 %%
 
 cFigure; hold on;
-hp(1)=gpatch(F,V,'gw','k');
+hp(1)=gpatch(F,V,'bw','b',1,2);
 hp(2)=plotV(V(boundaryInd,:),'b.','markerSize',25);
-hp(3)=plotV(V(interiorInd,:),'r.','markerSize',35);
-axis tight; axis equal; view(2); grid on; box on; 
+% hp(3)=plotV(V(interiorInd,:),'r.','markerSize',35);
+axisGeom; 
+camlight headlight; 
+view(2)
 drawnow; 
 
 %% 

@@ -2,8 +2,10 @@ function [varargout]=batman(n)
 
 % function [varargout]=batman(n)
 % ------------------------------------------------------------------------
-% This function computes the batman curve using n points. The output is
-% either a single nx2 array or two nx1 arrays (x and y seperately). 
+% The |batman| function implements a particular version of the so called
+% batmat-equation, a curve defining the batman logo. The input for this
+% function is the number of desired points n. The user may request a sigle
+% nx2 output array or two nx1 arrays (x and y coordinates). 
 %
 % This is a MATLAB implementation of the parameterised Batman equation
 % presented by Jerome White (http://www.talljerome.com/ @talljerome,
