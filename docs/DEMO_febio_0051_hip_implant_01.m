@@ -44,7 +44,6 @@ febioLogFileName_strainEnergy=[febioFebFileNamePart,'_energy_out.txt']; %Log fil
 
 %Define applied force 
 forceBody=(80*9.81)/2;
-displacementMagnitude=-1;
 
 %Material parameter set
 % Bone

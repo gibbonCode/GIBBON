@@ -49,13 +49,13 @@ febioLogFileName_disp=[febioFebFileNamePart,'_disp_out.txt']; %Log file name for
 febioLogFileName_strainEnergy=[febioFebFileNamePart,'_energy_out.txt']; %Log file name for exporting strain energy density
 
 % Propeller
-% pointSpacing=6; 
+pointSpacing=6; 
 
 % Bar
 barRadius=20;
 
 % Define prescribed rotation
-prescribedRotation_Z=pi/2;
+prescribedRotation_Z=pi/3;
 
 % Material parameter set
 c1=1e-3; %Shear-modulus-like parameter
@@ -67,7 +67,7 @@ t1=12; %Viscoelastic QLV time coefficient
 d=1e-9; %Density (not required for static analysis)
 
 % FEA control settings
-numTimeSteps=50; %Number of time steps desired
+numTimeSteps=20; %Number of time steps desired
 max_refs=25; %Max reforms
 max_ups=0; %Set to zero to use full-Newton iterations
 opt_iter=12; %Optimum number of iterations
@@ -76,13 +76,14 @@ dtmin=(1/numTimeSteps)/100; %Minimum time step size
 dtmax=(1/numTimeSteps); %Maximum time step size
 symmetric_stiffness=0;
 min_residual=1e-20;
+runMode='internal'; %'external';%
 
 %Contact parameters
 contactPenalty=1;
 laugon=0;
 minaug=1;
 maxaug=10;
-fric_coeff=0.5;
+fric_coeff=0.25;
 
 %% Creating model geometry and mesh
 
@@ -98,7 +99,6 @@ V=stlStruct.solidVertices{1}; %Vertices
 [F,V]=mergeVertices(F,V);
 
 % Remeshing and labelling
-pointSpacing=10;
 [Fp,Vp,Cp]=triRemeshLabel(F,V,pointSpacing);
 
 % % Import STL surface model
@@ -427,7 +427,7 @@ febioAnalysis.run_filename=febioFebFileName; %The input file name
 febioAnalysis.run_logname=febioLogFileName; %The name for the log file
 febioAnalysis.disp_on=1; %Display information on the command window
 febioAnalysis.disp_log_on=1; %Display convergence information in the command window
-febioAnalysis.runMode='external';%'internal';
+febioAnalysis.runMode=runMode;
 febioAnalysis.t_check=0.25; %Time for checking log file (dont set too small)
 febioAnalysis.maxtpi=1e99; %Max analysis time
 febioAnalysis.maxLogCheckTime=10; %Max log file checking time
@@ -484,7 +484,7 @@ if runFlag==1 %i.e. a succesful run
     
     axisGeom(gca,fontSize); 
     colormap(gjet(250)); colorbar;
-    caxis([0 max(E_energy(:))/40]);
+    caxis([0 max(E_energy(:))/10]);
     axis([min(X_DEF(:)) max(X_DEF(:)) min(Y_DEF(:)) max(Y_DEF(:)) min(Z_DEF(:)) max(Z_DEF(:))]);
     camlight headlight;
     
