@@ -73,18 +73,15 @@ interpMethod='linear'; %or 'natural'
 
 %%
 % Plotting meshed model
-hf1=cFigure;
+cFigure; hold on;
 title('The meshed model','FontSize',fontSize);
-xlabel('X','FontSize',fontSize);ylabel('Y','FontSize',fontSize); zlabel('Z','FontSize',fontSize);
-hold on;
 
-patch('Faces',F,'Vertices',V,'FaceColor','g');
-
+gpatch(F,V,'g');
 plotV(V1,'b-','LineWidth',2);
 plotV(V2,'b-','LineWidth',2);
 plotV(V3,'b-','LineWidth',2);
 
-axis equal; view(3); axis tight;  grid on;  set(gca,'FontSize',fontSize);
+axisGeom(gca,fontSize);
 camlight headlight;
 drawnow;
 

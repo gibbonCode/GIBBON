@@ -51,8 +51,8 @@ for q=1:1:size(V,2)
     end
     
     if any(scaleFactor~=1)
-        FX_mean=mean(FX,2);
-        FX=((FX-FX_mean).*scaleFactor)+FX_mean;
+        FX_mean=mean(FX,2);        
+        FX=((FX-FX_mean(:,ones(size(FX,2),1))).*scaleFactor)+FX_mean(:,ones(size(FX,2),1));
     end
     Vc(:,q)=FX(:);
 end

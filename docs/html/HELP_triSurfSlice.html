@@ -1,0 +1,480 @@
+
+<!DOCTYPE html
+  PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html><head>
+      <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+   <!--
+This HTML was auto-generated from MATLAB code.
+To make changes, update the MATLAB code and republish this document.
+      --><title>triSurfSlice</title><meta name="generator" content="MATLAB 9.8"><link rel="schema.DC" href="http://purl.org/dc/elements/1.1/"><meta name="DC.date" content="2020-05-05"><meta name="DC.source" content="HELP_triSurfSlice.m"><style type="text/css">
+html,body,div,span,applet,object,iframe,h1,h2,h3,h4,h5,h6,p,blockquote,pre,a,abbr,acronym,address,big,cite,code,del,dfn,em,font,img,ins,kbd,q,s,samp,small,strike,strong,sub,sup,tt,var,b,u,i,center,dl,dt,dd,ol,ul,li,fieldset,form,label,legend,table,caption,tbody,tfoot,thead,tr,th,td{margin:0;padding:0;border:0;outline:0;font-size:100%;vertical-align:baseline;background:transparent}body{line-height:1}ol,ul{list-style:none}blockquote,q{quotes:none}blockquote:before,blockquote:after,q:before,q:after{content:'';content:none}:focus{outine:0}ins{text-decoration:none}del{text-decoration:line-through}table{border-collapse:collapse;border-spacing:0}
+
+html { min-height:100%; margin-bottom:1px; }
+html body { height:100%; margin:0px; font-family:Arial, Helvetica, sans-serif; font-size:10px; color:#000; line-height:140%; background:#fff none; overflow-y:scroll; }
+html body td { vertical-align:top; text-align:left; }
+
+h1 { padding:0px; margin:0px 0px 25px; font-family:Arial, Helvetica, sans-serif; font-size:1.5em; color:#d55000; line-height:100%; font-weight:normal; }
+h2 { padding:0px; margin:0px 0px 8px; font-family:Arial, Helvetica, sans-serif; font-size:1.2em; color:#000; font-weight:bold; line-height:140%; border-bottom:1px solid #d6d4d4; display:block; }
+h3 { padding:0px; margin:0px 0px 5px; font-family:Arial, Helvetica, sans-serif; font-size:1.1em; color:#000; font-weight:bold; line-height:140%; }
+
+a { color:#005fce; text-decoration:none; }
+a:hover { color:#005fce; text-decoration:underline; }
+a:visited { color:#004aa0; text-decoration:none; }
+
+p { padding:0px; margin:0px 0px 20px; }
+img { padding:0px; margin:0px 0px 20px; border:none; }
+p img, pre img, tt img, li img, h1 img, h2 img { margin-bottom:0px; }
+
+ul { padding:0px; margin:0px 0px 20px 23px; list-style:square; }
+ul li { padding:0px; margin:0px 0px 7px 0px; }
+ul li ul { padding:5px 0px 0px; margin:0px 0px 7px 23px; }
+ul li ol li { list-style:decimal; }
+ol { padding:0px; margin:0px 0px 20px 0px; list-style:decimal; }
+ol li { padding:0px; margin:0px 0px 7px 23px; list-style-type:decimal; }
+ol li ol { padding:5px 0px 0px; margin:0px 0px 7px 0px; }
+ol li ol li { list-style-type:lower-alpha; }
+ol li ul { padding-top:7px; }
+ol li ul li { list-style:square; }
+
+.content { font-size:1.2em; line-height:140%; padding: 20px; }
+
+pre, code { font-size:12px; }
+tt { font-size: 1.2em; }
+pre { margin:0px 0px 20px; }
+pre.codeinput { padding:10px; border:1px solid #d3d3d3; background:#f7f7f7; }
+pre.codeoutput { padding:10px 11px; margin:0px 0px 20px; color:#4c4c4c; }
+pre.error { color:red; }
+
+@media print { pre.codeinput, pre.codeoutput { word-wrap:break-word; width:100%; } }
+
+span.keyword { color:#0000FF }
+span.comment { color:#228B22 }
+span.string { color:#A020F0 }
+span.untermstring { color:#B20000 }
+span.syscmd { color:#B28C00 }
+span.typesection { color:#A0522D }
+
+.footer { width:auto; padding:10px 0px; margin:25px 0px 0px; border-top:1px dotted #878787; font-size:0.8em; line-height:140%; font-style:italic; color:#878787; text-align:left; float:none; }
+.footer p { margin:0px; }
+.footer a { color:#878787; }
+.footer a:hover { color:#878787; text-decoration:underline; }
+.footer a:visited { color:#878787; }
+
+table th { padding:7px 5px; text-align:left; vertical-align:middle; border: 1px solid #d6d4d4; font-weight:bold; }
+table td { padding:7px 5px; text-align:left; vertical-align:top; border:1px solid #d6d4d4; }
+
+
+
+
+
+  </style></head><body><div class="content"><h1>triSurfSlice</h1><!--introduction--><p>Below is a demonstration of the features of the <tt>triSurfSlice</tt> function</p><!--/introduction--><h2>Contents</h2><div><ul><li><a href="#2">Syntax</a></li><li><a href="#3">Description</a></li><li><a href="#4">Examples</a></li><li><a href="#6">Example 1: Slicing a surface</a></li><li><a href="#8">Example 2: Slicing while keeping track of surface color data</a></li><li><a href="#10">Example 3: Slicing a surface and keeping one side</a></li><li><a href="#12">Example 4: Demo animation for changing orientation</a></li><li><a href="#13">Example 5: Demo animation illustrating "sharp triangle" problem</a></li><li><a href="#15">Example 6: Cutting non-closed surfaces</a></li></ul></div><pre class="codeinput">clear; close <span class="string">all</span>; clc;
+</pre><h2 id="2">Syntax</h2><p><tt>[F,V,C,logicSide,Eb]=triSurfSlice(F1,V1,C1,P,n,snapTolerance);</tt></p><h2 id="3">Description</h2><p>This function slices the input mesh (defined by faces F, vertices V and optional color data C) using a plane specified by a point P and a normal vector to the plane n. Edges crossing the plane are cut at the plane, and new points are introduced at the intersection, and new triangles are created. Points within snapTolerance from the plane are snapped to the plane.</p><h2 id="4">Examples</h2><p>Plot settings</p><pre class="codeinput">fontSize=15;
+</pre><h2 id="6">Example 1: Slicing a surface</h2><p>Create example surface data consisting of faces F and vertices V</p><pre class="codeinput">[F,V]=stanford_bunny; <span class="comment">%Get faces and vertices</span>
+C=[]; <span class="comment">%No color data used in this example so left empty</span>
+snapTolerance=mean(patchEdgeLengths(F,V))/100;
+n=vecnormalize([0 0 1]); <span class="comment">%Normal direction to plane</span>
+P=mean(V,1); <span class="comment">%Point on plane</span>
+
+<span class="comment">%Slicing surface (note 3rd color data output is supressed)</span>
+[Fc,Vc,~,logicSide,Eb]=triSurfSlice(F,V,C,P,n,snapTolerance);
+</pre><p>Visualize slices mesh</p><pre class="codeinput">cFigure;
+subplot(1,2,1); hold <span class="string">on</span>;
+hp1=gpatch(Fc(~logicSide,:),Vc,<span class="string">'bw'</span>,<span class="string">'k'</span>,1);
+hp2=gpatch(Fc(logicSide,:),Vc,<span class="string">'rw'</span>,<span class="string">'k'</span>,1);
+legend([hp1 hp2],{<span class="string">'Surface above plane'</span>,<span class="string">'Surface below plane'</span>})
+axisGeom; axis <span class="string">manual</span>; camlight <span class="string">headligth</span>;
+colormap <span class="string">gjet</span>;
+set(gca,<span class="string">'FontSize'</span>,fontSize);
+
+subplot(1,2,2); hold <span class="string">on</span>;
+gpatch(Fc(logicSide,:),Vc,<span class="string">'w'</span>,<span class="string">'k'</span>,1);
+gpatch(Fc(~logicSide,:),Vc,<span class="string">'w'</span>,<span class="string">'none'</span>,0.25);
+hp1=gpatch(Eb,Vc,<span class="string">'none'</span>,<span class="string">'b'</span>,1,3);
+hp2=quiverVec(P,n,50,<span class="string">'k'</span>);
+legend([hp1 hp2],{<span class="string">'Intersection curve'</span>,<span class="string">'Plane normal vector'</span>})
+axisGeom; axis <span class="string">manual</span>; camlight <span class="string">headligth</span>;
+set(gca,<span class="string">'FontSize'</span>,fontSize);
+drawnow;
+</pre><img width="100%" height="auto" vspace="5" hspace="5" src="HELP_triSurfSlice_01.jpg" alt=""> <h2 id="8">Example 2: Slicing while keeping track of surface color data</h2><p>Create example surface data consisting of faces F, vertices V, and (optionally) color data C.</p><pre class="codeinput">[F,V]=stanford_bunny; <span class="comment">%Get faces and vertices</span>
+
+<span class="comment">%Create example color data</span>
+FV=patchCentre(F,V)/5; <span class="comment">%Face centre coordinates</span>
+C=sin(FV(:,1)); <span class="comment">%Optional surface color data to "keep hold off"</span>
+
+snapTolerance=mean(patchEdgeLengths(F,V))/100;
+n=vecnormalize([0 0 1]); <span class="comment">%Normal direction to plane</span>
+P=mean(V,1); <span class="comment">%Point on plane</span>
+
+<span class="comment">%Slicing surface</span>
+[Fc,Vc,Cc,logicSide,Eb]=triSurfSlice(F,V,C,P,n,snapTolerance);
+</pre><p>Visualize color data handling</p><pre class="codeinput">cFigure;
+subplot(1,2,1); hold <span class="string">on</span>;
+title(<span class="string">'original color data'</span>);
+gpatch(F,V,C,<span class="string">'k'</span>,1);
+axisGeom; axis <span class="string">manual</span>; camlight <span class="string">headligth</span>;
+set(gca,<span class="string">'FontSize'</span>,fontSize);
+colormap <span class="string">gjet</span>;
+
+subplot(1,2,2); hold <span class="string">on</span>;
+title(<span class="string">'color data on "cut" surface'</span>);
+gpatch(Fc,Vc,Cc,<span class="string">'k'</span>,1);
+gpatch(Eb,Vc,<span class="string">'none'</span>,<span class="string">'k'</span>,1,3);
+axisGeom; axis <span class="string">manual</span>; camlight <span class="string">headligth</span>;
+set(gca,<span class="string">'FontSize'</span>,fontSize);
+drawnow;
+</pre><img width="100%" height="auto" vspace="5" hspace="5" src="HELP_triSurfSlice_02.jpg" alt=""> <h2 id="10">Example 3: Slicing a surface and keeping one side</h2><p>Create example surface data consisting of faces F, vertices V</p><pre class="codeinput">[F,V]=stanford_bunny; <span class="comment">%Get faces and vertices</span>
+snapTolerance=mean(patchEdgeLengths(F,V))/100;
+n=vecnormalize([0 0 1]); <span class="comment">%Normal direction to plane</span>
+P=mean(V,1); <span class="comment">%Point on plane</span>
+
+<span class="comment">%Slicing surface</span>
+[Fc,Vc,Cc,logicSide,Eb]=triSurfSlice(F,V,[],P,n,snapTolerance);
+
+<span class="comment">%Keep only part under plane and clean up</span>
+[Fcc,Vcc,indFix]=patchCleanUnused(Fc(logicSide,:),Vc);
+Eb_cc=indFix(Eb);
+</pre><p>Visualize slices mesh</p><pre class="codeinput">cFigure; hold <span class="string">on</span>;
+hp1=gpatch(F,V,<span class="string">'kw'</span>,<span class="string">'none'</span>,0.25);
+hp2=gpatch(Fcc,Vcc,<span class="string">'rw'</span>,<span class="string">'k'</span>,1);
+gpatch(Eb_cc,Vcc,<span class="string">'none'</span>,<span class="string">'b'</span>,1,3);
+legend([hp1 hp2],{<span class="string">'Original'</span>,<span class="string">'Cut surface'</span>})
+axisGeom; axis <span class="string">manual</span>; camlight <span class="string">headligth</span>;
+colormap <span class="string">gjet</span>;
+set(gca,<span class="string">'FontSize'</span>,fontSize);
+drawnow;
+</pre><img width="100%" height="auto" vspace="5" hspace="5" src="HELP_triSurfSlice_03.jpg" alt=""> <h2 id="12">Example 4: Demo animation for changing orientation</h2><p>Visualizing slicing operation for varying angles</p><pre class="codeinput">hf=cFigure;
+subplot(1,2,1); hold <span class="string">on</span>;
+hp4=gpatch(Fc,Vc,logicSide,<span class="string">'k'</span>,1);
+axisGeom; axis <span class="string">manual</span>; camlight <span class="string">headligth</span>;
+colormap <span class="string">gjet</span>;
+
+subplot(1,2,2); hold <span class="string">on</span>;
+hp1=gpatch(Fc(logicSide,:),Vc,<span class="string">'w'</span>,<span class="string">'k'</span>,1);
+hp2=gpatch(Fc(~logicSide,:),Vc,<span class="string">'w'</span>,<span class="string">'none'</span>,0.25);
+hp3=gpatch(Eb,Vc,<span class="string">'none'</span>,<span class="string">'b'</span>,1,3);
+
+axisGeom; axis <span class="string">manual</span>; camlight <span class="string">headligth</span>;
+drawnow;
+
+nSteps=50; <span class="comment">%Number of animation steps</span>
+
+<span class="comment">%Create the time vector</span>
+animStruct.Time=linspace(0,1,nSteps);
+
+<span class="comment">%The vector lengths</span>
+a=linspace(0,2*pi,nSteps);
+b=linspace(0,2*pi,nSteps);
+<span class="keyword">for</span> q=1:1:nSteps
+    R=euler2DCM([a(q) b(q) 0]);
+    nn=n*R;
+    [Fc,Vc,~,logicSide,Eb]=triSurfSlice(F,V,C,P,nn,snapTolerance);
+
+    <span class="comment">%Set entries in animation structure</span>
+    animStruct.Handles{q}=[hp1 hp1 hp2 hp2 hp3 hp3 hp4 hp4 hp4]; <span class="comment">%Handles of objects to animate</span>
+    animStruct.Props{q}={<span class="string">'Vertices'</span>,<span class="string">'Faces'</span>,<span class="keyword">...</span>
+                         <span class="string">'Vertices'</span>,<span class="string">'Faces'</span>,<span class="keyword">...</span>
+                         <span class="string">'Vertices'</span>,<span class="string">'Faces'</span>,<span class="keyword">...</span>
+                         <span class="string">'Vertices'</span>,<span class="string">'Faces'</span>,<span class="string">'CData'</span><span class="keyword">...</span>
+                         }; <span class="comment">%Properties of objects to animate</span>
+    animStruct.Set{q}={Vc,Fc(logicSide,:),Vc,Fc(~logicSide,:),Vc,Eb,Vc,Fc,double(logicSide)}; <span class="comment">%Property values for to set in order to animate</span>
+<span class="keyword">end</span>
+anim8(hf,animStruct);
+</pre><img width="100%" height="auto" vspace="5" hspace="5" src="HELP_triSurfSlice_04.jpg" alt=""> <h2 id="13">Example 5: Demo animation illustrating "sharp triangle" problem</h2><pre class="codeinput">[F,V]=quadBox([1 1 1],[5 5 5]);
+[F,V]=quad2tri(F,V,<span class="string">'x'</span>);
+FV=patchCentre(F,V)/5;
+C=sin(FV(:,1))+sin(FV(:,2))+sin(FV(:,3));
+snapTolerance=mean(patchEdgeLengths(F,V))/50; <span class="comment">%Snapping tolerance</span>
+n=vecnormalize([0 0 1]); <span class="comment">%Plane normal vector</span>
+
+P=mean(V,1); <span class="comment">%Point on plane</span>
+
+[Fc,Vc,Cc,logicSide]=triSurfSlice(F,V,C,P,n,snapTolerance);
+Eb=patchBoundary(Fc(logicSide,:),Vc);
+</pre><p>Visualizing slicing operation and sharp triangles. Animate this figure to view effect.</p><pre class="codeinput">hf=cFigure;
+subplot(1,2,1); hold <span class="string">on</span>;
+hp4=gpatch(Fc,Vc,logicSide,<span class="string">'k'</span>,1,3);
+axisGeom; axis <span class="string">manual</span>; camlight <span class="string">headligth</span>;
+colormap <span class="string">gjet</span>; axis <span class="string">off</span>;
+view(-90,0); zoom(1.25);
+
+subplot(1,2,2); hold <span class="string">on</span>;
+hp1=gpatch(Fc(logicSide,:),Vc,<span class="string">'w'</span>,<span class="string">'k'</span>,1,3);
+hp2=gpatch(Fc(~logicSide,:),Vc,<span class="string">'w'</span>,<span class="string">'none'</span>,0.25);
+hp3=gpatch(Eb,Vc,<span class="string">'none'</span>,<span class="string">'b'</span>,1,4);
+
+axisGeom; axis <span class="string">manual</span>; camlight <span class="string">headligth</span>;
+view(-90,0); zoom(1.25);axis <span class="string">off</span>;
+drawnow;
+
+nSteps=75; <span class="comment">%Number of animation steps</span>
+animStruct.Time=linspace(0,1,nSteps); <span class="comment">%Create the time vector</span>
+z=linspace(min(V(:,3)),max(V(:,3)),nSteps);
+<span class="keyword">for</span> q=1:1:nSteps
+    P=[0 0 z(q)];
+    [Fc,Vc,~,logicSide,Eb]=triSurfSlice(F,V,C,P,n,snapTolerance);
+
+    <span class="comment">%Set entries in animation structure</span>
+    animStruct.Handles{q}=[hp1 hp1 hp2 hp2 hp3 hp3 hp4 hp4 hp4]; <span class="comment">%Handles of objects to animate</span>
+    animStruct.Props{q}={<span class="string">'Vertices'</span>,<span class="string">'Faces'</span>,<span class="keyword">...</span>
+                         <span class="string">'Vertices'</span>,<span class="string">'Faces'</span>,<span class="keyword">...</span>
+                         <span class="string">'Vertices'</span>,<span class="string">'Faces'</span>,<span class="keyword">...</span>
+                         <span class="string">'Vertices'</span>,<span class="string">'Faces'</span>,<span class="string">'CData'</span><span class="keyword">...</span>
+                         }; <span class="comment">%Properties of objects to animate</span>
+    animStruct.Set{q}={Vc,Fc(logicSide,:),Vc,Fc(~logicSide,:),Vc,Eb,Vc,Fc,double(logicSide)}; <span class="comment">%Property values for to set in order to animate</span>
+<span class="keyword">end</span>
+anim8(hf,animStruct);
+</pre><img width="100%" height="auto" vspace="5" hspace="5" src="HELP_triSurfSlice_05.jpg" alt=""> <h2 id="15">Example 6: Cutting non-closed surfaces</h2><pre class="codeinput">[F,V]=graphicsModels(10); <span class="comment">%Get faces and vertices</span>
+
+snapTolerance=mean(patchEdgeLengths(F,V))/100;
+n=vecnormalize([0 0 1]); <span class="comment">%Normal direction to plane</span>
+P=mean(V,1); <span class="comment">%Point on plane</span>
+
+<span class="comment">%Slicing surface</span>
+[Fc,Vc,Cc,logicSide,Eb]=triSurfSlice(F,V,C,P,n,snapTolerance);
+</pre><p>Visualize slices mesh</p><pre class="codeinput">cFigure; hold <span class="string">on</span>;
+gpatch(Fc,Vc,logicSide,<span class="string">'k'</span>,1);
+gpatch(Eb,Vc,<span class="string">'none'</span>,<span class="string">'g'</span>,1,3);
+axisGeom; axis <span class="string">manual</span>; camlight <span class="string">headligth</span>;
+colormap <span class="string">gjet</span>;
+set(gca,<span class="string">'FontSize'</span>,fontSize);
+drawnow;
+</pre><img width="100%" height="auto" vspace="5" hspace="5" src="HELP_triSurfSlice_06.jpg" alt=""> <p class="footer"><br><a href="https://www.mathworks.com/products/matlab/">Published with MATLAB&reg; R2020a</a><br></p></div><!--
+##### SOURCE BEGIN #####
+%% triSurfSlice
+% Below is a demonstration of the features of the |triSurfSlice| function
+
+%%
+clear; close all; clc;
+
+%% Syntax
+% |[F,V,C,logicSide,Eb]=triSurfSlice(F1,V1,C1,P,n,snapTolerance);|
+
+%% Description
+% This function slices the input mesh (defined by faces F, vertices V and
+% optional color data C) using a plane specified by a point P and a normal
+% vector to the plane n. Edges crossing the plane are cut at the plane, and
+% new points are introduced at the intersection, and new triangles are
+% created. Points within snapTolerance from the plane are snapped to the
+% plane.  
+
+%% Examples
+
+%%
+% Plot settings
+fontSize=15;
+
+%% Example 1: Slicing a surface
+% Create example surface data consisting of faces F and vertices V
+
+[F,V]=stanford_bunny; %Get faces and vertices
+C=[]; %No color data used in this example so left empty
+snapTolerance=mean(patchEdgeLengths(F,V))/100; 
+n=vecnormalize([0 0 1]); %Normal direction to plane
+P=mean(V,1); %Point on plane
+
+%Slicing surface (note 3rd color data output is supressed)
+[Fc,Vc,~,logicSide,Eb]=triSurfSlice(F,V,C,P,n,snapTolerance);
+
+%%
+% Visualize slices mesh
+
+cFigure; 
+subplot(1,2,1); hold on; 
+hp1=gpatch(Fc(~logicSide,:),Vc,'bw','k',1);
+hp2=gpatch(Fc(logicSide,:),Vc,'rw','k',1);
+legend([hp1 hp2],{'Surface above plane','Surface below plane'})
+axisGeom; axis manual; camlight headligth;
+colormap gjet; 
+set(gca,'FontSize',fontSize);
+
+subplot(1,2,2); hold on; 
+gpatch(Fc(logicSide,:),Vc,'w','k',1);
+gpatch(Fc(~logicSide,:),Vc,'w','none',0.25);
+hp1=gpatch(Eb,Vc,'none','b',1,3);
+hp2=quiverVec(P,n,50,'k');
+legend([hp1 hp2],{'Intersection curve','Plane normal vector'})
+axisGeom; axis manual; camlight headligth;
+set(gca,'FontSize',fontSize);
+drawnow; 
+
+%% Example 2: Slicing while keeping track of surface color data 
+% Create example surface data consisting of faces F, vertices V, and
+% (optionally) color data C. 
+
+[F,V]=stanford_bunny; %Get faces and vertices
+
+%Create example color data 
+FV=patchCentre(F,V)/5; %Face centre coordinates
+C=sin(FV(:,1)); %Optional surface color data to "keep hold off"
+
+snapTolerance=mean(patchEdgeLengths(F,V))/100; 
+n=vecnormalize([0 0 1]); %Normal direction to plane
+P=mean(V,1); %Point on plane
+
+%Slicing surface
+[Fc,Vc,Cc,logicSide,Eb]=triSurfSlice(F,V,C,P,n,snapTolerance);
+
+%%
+% Visualize color data handling 
+
+cFigure; 
+subplot(1,2,1); hold on; 
+title('original color data');
+gpatch(F,V,C,'k',1);
+axisGeom; axis manual; camlight headligth;
+set(gca,'FontSize',fontSize);
+colormap gjet; 
+
+subplot(1,2,2); hold on; 
+title('color data on "cut" surface');
+gpatch(Fc,Vc,Cc,'k',1);
+gpatch(Eb,Vc,'none','k',1,3);
+axisGeom; axis manual; camlight headligth;
+set(gca,'FontSize',fontSize);
+drawnow; 
+
+%% Example 3: Slicing a surface and keeping one side
+% Create example surface data consisting of faces F, vertices V
+
+[F,V]=stanford_bunny; %Get faces and vertices
+snapTolerance=mean(patchEdgeLengths(F,V))/100; 
+n=vecnormalize([0 0 1]); %Normal direction to plane
+P=mean(V,1); %Point on plane
+
+%Slicing surface
+[Fc,Vc,Cc,logicSide,Eb]=triSurfSlice(F,V,[],P,n,snapTolerance);
+
+%Keep only part under plane and clean up
+[Fcc,Vcc,indFix]=patchCleanUnused(Fc(logicSide,:),Vc);
+Eb_cc=indFix(Eb);
+
+%%
+% Visualize slices mesh
+
+cFigure; hold on; 
+hp1=gpatch(F,V,'kw','none',0.25);
+hp2=gpatch(Fcc,Vcc,'rw','k',1);
+gpatch(Eb_cc,Vcc,'none','b',1,3);
+legend([hp1 hp2],{'Original','Cut surface'})
+axisGeom; axis manual; camlight headligth;
+colormap gjet; 
+set(gca,'FontSize',fontSize);
+drawnow; 
+
+%% Example 4: Demo animation for changing orientation 
+% Visualizing slicing operation for varying angles
+
+hf=cFigure; 
+subplot(1,2,1); hold on; 
+hp4=gpatch(Fc,Vc,logicSide,'k',1);
+axisGeom; axis manual; camlight headligth;
+colormap gjet; 
+
+subplot(1,2,2); hold on; 
+hp1=gpatch(Fc(logicSide,:),Vc,'w','k',1);
+hp2=gpatch(Fc(~logicSide,:),Vc,'w','none',0.25);
+hp3=gpatch(Eb,Vc,'none','b',1,3);
+
+axisGeom; axis manual; camlight headligth;
+drawnow; 
+
+nSteps=50; %Number of animation steps
+
+%Create the time vector
+animStruct.Time=linspace(0,1,nSteps);
+
+%The vector lengths
+a=linspace(0,2*pi,nSteps);
+b=linspace(0,2*pi,nSteps);
+for q=1:1:nSteps    
+    R=euler2DCM([a(q) b(q) 0]);
+    nn=n*R;    
+    [Fc,Vc,~,logicSide,Eb]=triSurfSlice(F,V,C,P,nn,snapTolerance);
+
+    %Set entries in animation structure
+    animStruct.Handles{q}=[hp1 hp1 hp2 hp2 hp3 hp3 hp4 hp4 hp4]; %Handles of objects to animate
+    animStruct.Props{q}={'Vertices','Faces',...
+                         'Vertices','Faces',...   
+                         'Vertices','Faces',... 
+                         'Vertices','Faces','CData'... 
+                         }; %Properties of objects to animate
+    animStruct.Set{q}={Vc,Fc(logicSide,:),Vc,Fc(~logicSide,:),Vc,Eb,Vc,Fc,double(logicSide)}; %Property values for to set in order to animate
+end
+anim8(hf,animStruct);
+
+%% Example 5: Demo animation illustrating "sharp triangle" problem
+
+[F,V]=quadBox([1 1 1],[5 5 5]);
+[F,V]=quad2tri(F,V,'x');
+FV=patchCentre(F,V)/5;
+C=sin(FV(:,1))+sin(FV(:,2))+sin(FV(:,3));
+snapTolerance=mean(patchEdgeLengths(F,V))/50; %Snapping tolerance
+n=vecnormalize([0 0 1]); %Plane normal vector
+
+P=mean(V,1); %Point on plane
+
+[Fc,Vc,Cc,logicSide]=triSurfSlice(F,V,C,P,n,snapTolerance);
+Eb=patchBoundary(Fc(logicSide,:),Vc);
+
+%%
+% Visualizing slicing operation and sharp triangles. Animate this figure to
+% view effect. 
+
+hf=cFigure; 
+subplot(1,2,1); hold on; 
+hp4=gpatch(Fc,Vc,logicSide,'k',1,3);
+axisGeom; axis manual; camlight headligth;
+colormap gjet; axis off; 
+view(-90,0); zoom(1.25);
+
+subplot(1,2,2); hold on; 
+hp1=gpatch(Fc(logicSide,:),Vc,'w','k',1,3);
+hp2=gpatch(Fc(~logicSide,:),Vc,'w','none',0.25);
+hp3=gpatch(Eb,Vc,'none','b',1,4);
+
+axisGeom; axis manual; camlight headligth;
+view(-90,0); zoom(1.25);axis off; 
+drawnow; 
+
+nSteps=75; %Number of animation steps
+animStruct.Time=linspace(0,1,nSteps); %Create the time vector
+z=linspace(min(V(:,3)),max(V(:,3)),nSteps);
+for q=1:1:nSteps    
+    P=[0 0 z(q)];    
+    [Fc,Vc,~,logicSide,Eb]=triSurfSlice(F,V,C,P,n,snapTolerance);
+
+    %Set entries in animation structure
+    animStruct.Handles{q}=[hp1 hp1 hp2 hp2 hp3 hp3 hp4 hp4 hp4]; %Handles of objects to animate
+    animStruct.Props{q}={'Vertices','Faces',...
+                         'Vertices','Faces',...   
+                         'Vertices','Faces',... 
+                         'Vertices','Faces','CData'... 
+                         }; %Properties of objects to animate
+    animStruct.Set{q}={Vc,Fc(logicSide,:),Vc,Fc(~logicSide,:),Vc,Eb,Vc,Fc,double(logicSide)}; %Property values for to set in order to animate
+end
+anim8(hf,animStruct);
+
+%% Example 6: Cutting non-closed surfaces
+
+[F,V]=graphicsModels(10); %Get faces and vertices
+
+snapTolerance=mean(patchEdgeLengths(F,V))/100; 
+n=vecnormalize([0 0 1]); %Normal direction to plane
+P=mean(V,1); %Point on plane
+
+%Slicing surface
+[Fc,Vc,Cc,logicSide,Eb]=triSurfSlice(F,V,C,P,n,snapTolerance);
+
+%%
+% Visualize slices mesh
+
+cFigure; hold on; 
+gpatch(Fc,Vc,logicSide,'k',1);
+gpatch(Eb,Vc,'none','g',1,3);
+axisGeom; axis manual; camlight headligth;
+colormap gjet; 
+set(gca,'FontSize',fontSize);
+drawnow; 
+
+##### SOURCE END #####
+--></body></html>

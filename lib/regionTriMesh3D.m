@@ -124,8 +124,7 @@ V=V+Vt_mean(ones(size(V,1),1),:);
 
 % V_test=regionCell{1};
 % V_test=V_test(1:2,:);
-% size(V_test)
-% size(V)
+
 % [~,e]=minDist(V_test,V);
 % E=patchEdges(F,1);
 % if ~any(E(:,1)==e(1) & E(:,2)==e(2))
@@ -136,16 +135,6 @@ V=V+Vt_mean(ones(size(V,1),1),:);
 varargout{1}=F;
 varargout{2}=V;
 varargout{3}=boundaryInd;
-
-%% Smoothen
-% TR = triangulation(F,V);
-% boundEdges = freeBoundary(TR);
-% boundaryInd=unique(boundEdges(:));
-% smoothPar.n=50;
-% smoothPar.Tolerance=0.001;
-% smoothPar.RigidConstraints=boundaryInd;
-% smoothPar.smoothMethod='HC';
-% [V]=tesSmooth(F,V,[],smoothPar);
 
 %% 
 % _*GIBBON footer text*_ 
