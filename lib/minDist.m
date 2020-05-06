@@ -14,6 +14,19 @@ end
 
 V1=varargin{1};
 V2=varargin{2};
+
+if isempty(V1)
+    D=[];    
+    minIND=[];
+    return
+end
+
+if isempty(V2)
+    D=[];    
+    minIND=[];
+    return
+end
+
 switch nargin
     case 2        
         maxVarSize=[]; %Empty will force calcucation below

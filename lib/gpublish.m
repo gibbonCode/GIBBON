@@ -1,13 +1,26 @@
 function gpublish(docName)
+% function gpublish(docName)
+% ------------------------------------------------------------------------
+% Publish the m-file defined by docName using the GIBBON documentation
+% publishing settings. 
+% 
+%
+% Kevin Mattheus Moerman
+%
+% Change log: 
+% 2020/05/06 Added removal of file extensions (.m extension used to throw
+%            an error). 
+% ------------------------------------------------------------------------
 
-%%
+%% Parse input
+
 if isempty(docName)    
     error('File name is empty');
 end
 
-%%
+%% Publish m-file
 
-[pathName,docNameClean,~]=fileparts(docName);
+[pathName,docName,~]=fileparts(docName);
 
 filePath=mfilename('fullpath');
 toolboxPath=fileparts(fileparts(filePath));
@@ -17,8 +30,7 @@ htmlPath=fullfile(helpPath,'html');
 if isempty(pathName)
     docNameFull=fullfile(helpPath,docName);
 else
-    docNameFull=docName;
-    docName=docNameClean;
+    docNameFull=fullfile(pathName,docName);    
 end
 
 publish(docNameFull,...

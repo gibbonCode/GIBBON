@@ -36,7 +36,7 @@ end
     
 if n==0 %No subdevision
     Vs=V;     
-elseif n>1 %Subdevision of segments
+elseif n>0 %Subdevision of segments
     Vs=zeros(size(V,1)+(size(V,1)-1)*n,size(V,2));
     for q=1:1:size(V,2)
         X=V(:,q);

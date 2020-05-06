@@ -30,7 +30,7 @@ end
 
 %% Distances from all points in X to all points in X
 
-D=dist(X,X'); 
+D=distND(X,X); 
 D(1:size(D,1)+1:numel(D)) = ones(1,size(D,1)); % Replace zeros on diagonal with ones
 
 %% Determine weights for interpolation
@@ -39,7 +39,7 @@ g(1:size(D,1)+1:numel(D)) = zeros(size(D,1),1); % Fixup value of Green's functio
 
 W = g \ V(:);
 
-D=dist(XI,X'); % Distance between points in X and XI
+D=distND(XI,X); % Distance between points in X and XI
 
 L=(D==0); D(L)=1; % Replace zeros with ones
 

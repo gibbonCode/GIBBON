@@ -35,8 +35,11 @@ defaultInputStructure.pointSpacing=[];
 defaultInputStructure.resampleCurveOpt=0;
 defaultInputStructure.plotOn=0;
 defaultInputStructure.gridType='tri';
-defaultInputStructure.interiorPoints=[];
+defaultInputStructure.mustPointsInner=[];
+defaultInputStructure.mustPointsBoundary=[];
 defaultInputStructure.smoothIterations=250;
+defaultInputStructure.removeDistInterior=[];
+defaultInputStructure.removeDistBoundary=[];
 
 switch nargin
     case 1
@@ -72,15 +75,24 @@ switch nargin
         inputStructure.resampleCurveOpt=varargin{3};
         inputStructure.plotOn=varargin{4};
         inputStructure.gridType=varargin{5};
-        inputStructure.interiorPoints=varargin{6};        
+        inputStructure.mustPointsInner=varargin{6};        
     case 7
         inputStructure.regionCell=varargin{1};
         inputStructure.pointSpacing=varargin{2};
         inputStructure.resampleCurveOpt=varargin{3};
         inputStructure.plotOn=varargin{4};
         inputStructure.gridType=varargin{5};
-        inputStructure.interiorPoints=varargin{6};
-        inputStructure.smoothIterations=varargin{7};
+        inputStructure.mustPointsInner=varargin{6};                
+        inputStructure.mustPointsBoundary=varargin{7};
+    case 8
+        inputStructure.regionCell=varargin{1};
+        inputStructure.pointSpacing=varargin{2};
+        inputStructure.resampleCurveOpt=varargin{3};
+        inputStructure.plotOn=varargin{4};
+        inputStructure.gridType=varargin{5};
+        inputStructure.mustPointsInner=varargin{6};
+        inputStructure.mustPointsBoundary=varargin{7};
+        inputStructure.smoothIterations=varargin{8};
 end
 
 %Check optionStruct against default
@@ -92,8 +104,11 @@ pointSpacing=inputStructure.pointSpacing;
 resampleCurveOpt=inputStructure.resampleCurveOpt;
 plotOn=inputStructure.plotOn;
 gridType=inputStructure.gridType;
-V_extra=inputStructure.interiorPoints;
+V_must_inner=inputStructure.mustPointsInner;
+V_must_boundary=inputStructure.mustPointsBoundary;
 smoothIterations=inputStructure.smoothIterations;
+removeDistInterior=inputStructure.removeDistInterior;
+removeDistBoundary=inputStructure.removeDistBoundary; 
 
 if isempty(regionCell)
     error('Empty regionCell provided');
@@ -116,6 +131,14 @@ end
 
 if isempty(plotOn)
     plotOn=0;
+end
+
+if isempty(removeDistInterior)
+    removeDistInterior=pointSpacing/2;
+end
+
+if isempty(removeDistBoundary)
+    removeDistBoundary=(pointSpacing*0.5*sqrt(3))/2;
 end
 
 %% CONTROL PARAMETERS
@@ -143,11 +166,16 @@ for qCurve=1:1:numel(regionCell)
     Vs=regionCell{qCurve};
     
     %Resample curve evenly based on point spacing
-    np=ceil(max(pathLength(Vs))./pointSpacing); %Calculate required number of points for curve
-    [Vss]=evenlySampleCurve(Vs,np,interpMethod,closeLoopOpt);
+    if ~isempty(V_must_boundary)
+        [~,indMust]=minDist(V_must_boundary,Vs);
+    else
+        indMust=[];
+    end
     
+    [Vss]=evenlySpaceCurve(Vs,pointSpacing,interpMethod,closeLoopOpt,indMust);
+
     %Create refined set for distance based edge point removal
-    [Vss_split]=evenlySampleCurve(Vs,np*2,interpMethod,closeLoopOpt);
+    [Vss_split]=subCurve(Vss,1,1);    
     
     %Resample curve
     if resampleCurveOpt==1
@@ -185,10 +213,17 @@ end
 
 %% Remove edge points
 
-D=minDist([X Y],[VSS;V_extra]);
-L=D>(pointSpacing*0.5*sqrt(3))/2;
+D=minDist([X Y],VSS);
+L=D>removeDistBoundary;
 X=X(L);
 Y=Y(L);
+
+if ~isempty(V_must_inner)
+    D=minDist([X Y],V_must_inner);
+    L=D>removeDistInterior;
+    X=X(L);
+    Y=Y(L);
+end
 
 %% Define additional point set 
 
@@ -229,8 +264,8 @@ C=indFix(C);
 
 %Redo Delaunary triangulation
 % Add desired interior points
-if ~isempty(V_extra)
-    V=[V;V_extra];
+if ~isempty(V_must_inner)
+    V=[V;V_must_inner];
     [V,~,ind2]=unique(V,'rows');
     C=ind2(C);    
 end
@@ -255,6 +290,8 @@ numPointsPost=size(V,1);
 boundEdges = patchBoundary(F,V);
 boundaryInd=unique(boundEdges(:));
 
+indMustPointsInner=[];
+indMustPointsBoundary=[];
 if numPoints==numPointsPost
     warning('No points removed in contrained Delaunay triangulation. Possibly due to large pointSpacing with respect to curve size. Meshing skipped!');
 %     F=[];
@@ -263,17 +300,15 @@ else
     
     %% CONSTRAINED SMOOTHENING OF THE MESH
     
-    if ~isempty(V_extra)
-        [~,interiorInd]=minDist(V_extra,V);
-    else
-        interiorInd=[];
+    if ~isempty(V_must_inner)
+        [~,indMustPointsInner]=minDist(V_must_inner,V);    
     end
     
     if smoothIterations>0        
         smoothPar.Method='LAP';
         smoothPar.n=smoothIterations;
         smoothPar.Tolerance=0.01;
-        smoothPar.RigidConstraints=[boundaryInd(:); interiorInd];
+        smoothPar.RigidConstraints=[boundaryInd(:); indMustPointsInner];
         [V]=tesSmooth(F,V,[],smoothPar);
     end
     
@@ -295,8 +330,12 @@ end
 varargout{1}=F;
 varargout{2}=V;
 varargout{3}=boundaryInd;
-if ~isempty(V_extra)
-    varargout{4}=interiorInd;
+if nargout>3
+    varargout{4}=indMustPointsInner;
+end
+if nargout>4
+    [~,indMin]=minDist(V_must_boundary,V(boundaryInd,:));
+    varargout{5}=boundaryInd(indMin);
 end
 
 %% 

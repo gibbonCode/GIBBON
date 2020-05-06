@@ -19,8 +19,6 @@ function D=pathLength(V)
 %Compute distance metric
 D=zeros(size(V,1),1); %Initialise with zeros (first values stays zero)
 D(2:end)=cumsum(sqrt(sum(diff(V,1,1).^2,2)),1);
-
-
  
 %% 
 % _*GIBBON footer text*_ 
