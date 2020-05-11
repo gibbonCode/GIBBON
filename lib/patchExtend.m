@@ -193,14 +193,14 @@ if plotOn==1
                'vertex edge vector','vertex extrude vector','Global or mean direction'},...
                'Location','SouthOutSide');    
     axisGeom; camlight headlight;   
-    drawnow;
-    
+        
     subplot(1,2,2); hold on;    
     hp2(1)=gpatch(F,V,'kw','k',1);
     hp2(2)=gpatch(Fn,Vn,'bw','k',1);        
     legend(hp2,{'Input surface','Extended surface'},'Location','SouthOutSide');        
     axisGeom; camlight headlight;   
-    drawnow;    
+    
+    gdrawnow;    
 end
  
 %% 

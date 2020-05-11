@@ -44,7 +44,7 @@ title('The Stanford bunny','FontSize',fontSize);
 gpatch(F,V,'g');
 axisGeom(gca,fontSize);
 camlight('headlight');
-drawnow; 
+gdrawnow; 
 
 %% 
 %

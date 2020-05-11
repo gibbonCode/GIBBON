@@ -55,6 +55,7 @@ function [varargout]=cFigure(varargin)
 % 2018/12/05 Updated figure size handling which now accepts either a
 % screen offset or a scaling factor. 
 % 2018/12/19 Fixed bug to handle when both offset and scaling are specified
+% 2020/05/11 Changed vcw default buttons: {'pan','rot','zoom','zoom'}
 % 
 % To do: 
 % Check handling of multiple screens for figure size setting
@@ -78,7 +79,7 @@ defaultFigStruct.ScreenScale=0.85; %Figure size is based on scaled screensize
 % defaultFigStruct.ScreenOffset=round(max(screenSizeGroot)*0.1); %i.e. figures are spaced around 10% of the sreensize from the edges        
 defaultFigStruct.Clipping='off';
 defaultFigStruct.efw=1;
-defaultFigStruct.vcw={'pan','rot','zoomz','zoomz'};
+defaultFigStruct.vcw={'pan','rot','zoom','zoom'};
 
 switch nargin
     case 0

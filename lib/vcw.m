@@ -8,11 +8,9 @@ function [varargout]=vcw(varargin)
 %   vcw(hf,buttonOpt)
 %
 % Allows the user to rotate, pan and zoom a figure using key presses and
-% mouse gestures. Additionally, press q to quit the widget, r to reset the
-% axes and escape to close the figure. This function is non-blocking, but
-% fixes axes aspect ratios.
+% mouse gestures. 
 %
-% IN:
+% Input:
 %   hf - Handle of the figure to be manipulated (default: gcf).
 %   buttonOpt - 4x1 cell array indicating the function to associate with
 %             each mouse button (left to right) and the scroll action.
@@ -20,7 +18,7 @@ function [varargout]=vcw(varargin)
 %                'rot' - Rotate about x and y axes of viewer's coordinate
 %                        frame
 %                'rotz' - Rotate about z axis of viewer's coordinate frame
-%                'zoom' - Zoom (change canera view angle)
+%                'zoom' - Zoom (change camera view angle)
 %                'zoomz' - Move along z axis of viewer's coordinate frame
 %                'pan' - Pan
 %                '' - Don't use that button
@@ -64,6 +62,8 @@ function [varargout]=vcw(varargin)
 % 2020/05/11 Fixed "double start" issue when pressing 'v' 
 % 2020/05/11 Have vcw hide the axis interactive toolbar for latest MATLAB
 % versions
+% 2020/05/11 Removed need for global variable
+% 2020/05/11 Fixed bug in scrolling
 %
 % TO DO: 1) Improved handling of colorbars. Currently requires colorbar
 % locations to be set to 'manual' for vcw. However this causes the figure
@@ -78,10 +78,10 @@ function [varargout]=vcw(varargin)
 switch nargin
     case 0
         hf = gcf;
-        buttonOpt = {'pan','rot','zoomz','zoomz'};
+        buttonOpt = {'pan','rot','zoom','zoom'};
     case 1
         hf=varargin{1};
-        buttonOpt = {'pan','rot','zoomz','zoomz'};
+        buttonOpt = {'pan','rot','zoom','zoom'};
     case 2
         hf=varargin{1};
         buttonOpt=varargin{2};
@@ -93,48 +93,6 @@ if ~ishandle(hf)
     buttonOpt=hf;
     hf = gcf;
 end
-
-%% Check axis limits
-
-h = findobj(hf, 'Type', 'axes', '-depth', 1)'; %All axis handles
-if ~isempty(h)
-    for h = findobj(hf, 'Type', 'axes', '-depth', 1)'
-        axis(h);
-        
-        xLim=get(h,'xlim');
-        yLim=get(h,'ylim');
-        zLim=get(h,'zlim');
-        
-        wx=abs(diff(xlim));
-        wy=abs(diff(ylim));
-        wz=abs(diff(zlim));
-        
-        w_max=max([wx wy wz]);
-        min_w=0.1;
-        if w_max<min_w
-            w_max=min_w;
-        end
-        
-        w_min=w_max/10;
-        if w_min<min_w
-            w_min=min_w;
-        end
-        w_add=[-w_min w_min]/2;
-        
-        if wx<w_min
-            set(h,'xlim',xLim+w_add);
-        end
-        
-        if wy<w_min
-            set(h,'ylim',yLim+w_add);
-        end
-        
-        if wz<w_min
-            set(h,'zlim',zLim+w_add);
-        end
-    end
-end
-
 
 %% Initialise button and button/keypress wait
 hb = findall(hf,'Tag','FigureToolBar'); % hb = findall(hf,'Type','uitoolbar');
@@ -168,10 +126,11 @@ if isempty(hp) %If vcw button is not present create one and wait for key/button 
     
     % Create a uipushtool in the toolbar
     hp=uitoggletool(hb,'TooltipString','Activate View Control Widget (or enter v)','CData',S,'Tag','tBar','Separator','on');
-    set(hp,'OnCallback',{@start_vcw_toggle,{hf,buttonOpt,hp}});
-    set(hp,'OffCallback',{@quit_vcw_toggle,{hf,buttonOpt,hp}});
+    set(hp,'OnCallback',{@start_vcw,{hf,buttonOpt,hp}});
+    set(hp,'OffCallback',{@quit_vcw,{hf,buttonOpt,hp}});
     
     %% Add entries/fields to figure UserData structure
+    hf.UserData.vcw.pos=[];
     hf.UserData.vcw.buttonHandle=hp; %The vcw button handle
     hf.UserData.vcw.colorbarHandles=[];
     hf.UserData.vcw.colorbarLocSet={};
@@ -183,7 +142,7 @@ if isempty(hp) %If vcw button is not present create one and wait for key/button 
 else 
     % activate
     drawnow; 
-    start_vcw(hf,buttonOpt,hp);
+    start_vcw([],[],{hf,buttonOpt,hp});
 end
 
 %% Outputs
@@ -195,9 +154,6 @@ end
 end
 
 %%
-function start_vcw_toggle(hObject,callbackdata,inputCell)
-start_vcw(inputCell{1},inputCell{2},inputCell{3});
-end
 
 function keyPress_wait(src,eventData,buttonOpt,hp,hf)
 
@@ -222,7 +178,11 @@ end
 
 end
 %%
-function start_vcw(hf,buttonOpt,hp)
+function start_vcw(hObject,callbackdata,inputCell)
+
+hf=inputCell{1};
+buttonOpt=inputCell{2};
+hp=inputCell{3};
 
 % Store current settings
 hf.UserData.WindowButtonDownFcn=hf.WindowButtonDownFcn;
@@ -231,7 +191,7 @@ hf.UserData.KeyPressFcn=hf.KeyPressFcn;
 hf.UserData.WindowScrollWheelFcn=hf.WindowScrollWheelFcn;
 hf.UserData.BusyAction=hf.BusyAction;
 
-checkAxisLimits(hf);
+% checkAxisLimits(hf);
 
 hp.State='On';
 set(hp,'TooltipString','Dectivate View Control Widget (or enter v)');
@@ -251,6 +211,7 @@ if ~isempty(H)
     hf.UserData.vcw.colorbarLocSet={H.Location};
     colorbarLocSet(hf,'manual'); %Set colorbar locations to manual
 end
+
 % Disable Plottools Buttons and Exploration Buttons
 initialState.toolbar = findobj(allchild(hf),'flat','Type','uitoolbar');
 if ~isempty(initialState.toolbar)
@@ -278,10 +239,18 @@ if ~isempty(h)
     for hNow = h
         % Set everything to manual
         set(hNow, 'CameraViewAngleMode', 'manual', 'CameraTargetMode', 'manual', 'CameraPositionMode', 'manual');
+                
+        %Set DataAspectRatioMode to manual to keep input aspect ratio
+        a=hNow.DataAspectRatio;
+        hNow.DataAspectRatio=a;
+        hNow.DataAspectRatioMode='manual';
+        hNow.DataAspectRatio=a;
+        
         % Store the camera viewpoint
-        axes(hNow); axis vis3d;
+        axes(hNow); % axis vis3d;
         caxUserDataStruct.defaultView=camview(hNow);
         set(hNow, 'UserData',caxUserDataStruct);
+        
         %Turn clipping off
         set(hNow,'Clipping','off');
    
@@ -290,6 +259,7 @@ if ~isempty(h)
             hNow.Toolbar.Visible = 'off';
         catch
         end
+        
     end
     axes(cax);
 else
@@ -302,7 +272,7 @@ end
 set(hf, 'WindowButtonDownFcn', {@mousedown, {str2func(['vcw_' buttonOpt{1}]), str2func(['vcw_' buttonOpt{2}]), str2func(['vcw_' buttonOpt{3}])},hf}, ...
     'WindowButtonUpFcn', {@mouseup,hf}, ...
     'KeyPressFcn', {@keypress,buttonOpt,hp,hf}, ...
-    'WindowScrollWheelFcn', {@scroll, str2func(['vcw_' buttonOpt{4}])}, ...
+    'WindowScrollWheelFcn', {@scroll, {str2func(['vcw_' buttonOpt{4}]),hf}}, ...
     'BusyAction', 'cancel');
 end
 
@@ -513,9 +483,9 @@ switch eventData.Key
             };
         helpButton = questdlg(msgText,'Help for vcw','OK','OK');
     case 'v' % Quit vcw mode
-        quit_vcw(hf,buttonOpt,hp);
+        quit_vcw([],[],{hf,buttonOpt,hp});
     otherwise
-        %         quit_vcw(hf,buttonOpt,hp);
+        % quit_vcw(hf,buttonOpt,hp);
 end
 
 if mnemOff==0
@@ -612,8 +582,8 @@ switch func2str(method)
 end
 
 % Record where the pointer is
-global VCW_POS
-VCW_POS = get(0, 'PointerLocation');
+hf.UserData.vcw.pos = get(0, 'PointerLocation');
+
 % Set the cursor and callback
 set(hf, 'Pointer', 'custom', 'pointershapecdata', shape, 'WindowButtonMotionFcn', {method, cax,hf});
 
@@ -626,7 +596,10 @@ set(hf, 'WindowButtonMotionFcn', '', 'Pointer', 'arrow');
 end
 
 %%
-function scroll(src, eventData, func, hf)
+function scroll(src, eventData, inputCell)
+func=inputCell{1};
+hf=inputCell{2};
+
 % Get the axes handle
 cax = overobj2('axes');
 if isempty(cax)
@@ -639,55 +612,27 @@ if isempty(cax)
 end
 
 % Call the scroll function
-func([], [0 -10*eventData.VerticalScrollCount], cax);
+func([], [0 -10*eventData.VerticalScrollCount], cax, hf);
 end
 
 %%
 
-function d = check_vals(s, d)
+function d = check_vals(s,d,hf)
 % Check the inputs to the manipulation methods are valid
-global VCW_POS
+
 if ~isempty(s)
     % Return the mouse pointers displacement
     new_pt = get(0, 'PointerLocation');
-    d = VCW_POS - new_pt;
-    VCW_POS = new_pt;
+    d = hf.UserData.vcw.pos - new_pt;
+    hf.UserData.vcw.pos = new_pt;
 end
 end
 
 %%
 
-% function setLightPos(hf,cax)
-%
-% hLights=findobj(cax,'Type','light');
-%
-% cameraPositionsNew=cax.CameraPosition;
-%
-% cameraPositionsOld=hf.UserData.CameraPosition;
-%
-% a=vecnormalize(cameraPositionsOld);
-% b=vecnormalize(cameraPositionsNew);
-% [R]=vecAngle2Rot(acos(dot(a,b)),vecnormalize(cross(a,b)));
-%
-% % [F,V,~]=quiver3Dpatch(0,0,0,a(1),a(2),a(3),[],[2 2]);
-% % patch('Faces',F,'Vertices',V,'FaceColor','r');
-% %
-% % c=b*R
-% %
-% % [F,V,~]=quiver3Dpatch(0,0,0,c(1),c(2),c(3),[],[2 2]);
-% % patch('Faces',F,'Vertices',V,'FaceColor','none','EdgeColor','g');
-%
-% for q=1:1:numel(hLights)
-%     hLights(q).Position=hLights(q).Position*R';
-%     drawnow;
-% end
-%
-% end
-
 % Figure manipulation functions
 function vcw_rot(s, d, cax, hf)
-d = check_vals(s, d);
-% hf.UserData.CameraPosition=cax.CameraPosition;
+d = check_vals(s,d,hf);
 try
     % Rotate XYt
     camorbit(cax, d(1), d(2), 'camera', [0 0 1]);
@@ -698,8 +643,7 @@ end
 end
 
 function vcw_rotz(s, d, cax, hf)
-%     hf.UserData.CameraPosition=cax.CameraPosition;
-d = check_vals(s, d);
+d = check_vals(s,d,hf);
 try
     % Rotate Z
     camroll(cax, d(2));
@@ -710,7 +654,7 @@ end
 end
 
 function vcw_zoom(s, d, cax, hf)
-d = check_vals(s, d);
+d = check_vals(s,d,hf);
 % Zoom
 d = (1 - 0.01 * sign(d(2))) ^ abs(d(2));
 try
@@ -722,7 +666,7 @@ end
 end
 
 function vcw_zoomz(s, d, cax, hf)
-d = check_vals(s, d);
+d = check_vals(s,d,hf);
 % Zoom by moving towards the camera
 d = (1 - 0.01 * sign(d(2))) ^ abs(d(2)) - 1;
 try
@@ -734,7 +678,7 @@ end
 end
 
 function vcw_pan(s, d, cax, hf)
-d = check_vals(s, d);
+d = check_vals(s,d,hf);
 try
     % Pan
     camdolly(cax, d(1), d(2), 0, 'movetarget', 'pixels');
@@ -756,58 +700,13 @@ for q=1:1:numel(hColorbarSet) %Loop over colorbar handles and set location prope
 end
 end
 
-function checkAxisLimits(hf)
-
-h = findobj(hf, 'Type', 'axes', '-depth', 1)'; %All axis handles
-if ~isempty(h)
-    for h = findobj(hf, 'Type', 'axes', '-depth', 1)'
-        axis(h);
-        
-        xLim=get(h,'xlim');
-        yLim=get(h,'ylim');
-        zLim=get(h,'zlim');
-        
-        wx=abs(diff(xlim));
-        wy=abs(diff(ylim));
-        wz=abs(diff(zlim));
-        
-        w_max=max([wx wy wz]);
-        min_w=1e-3;
-        if w_max<min_w
-            w_max=min_w;
-        end
-        
-        w_min=w_max/10;
-        if w_min<min_w
-            w_min=min_w;
-        end
-        w_add=[-w_min w_min]/2;
-        
-        if wx<w_min
-            set(h,'xlim',xLim+w_add);
-        end
-        
-        if wy<w_min
-            set(h,'ylim',yLim+w_add);
-        end
-        
-        if wz<w_min
-            set(h,'zlim',zLim+w_add);
-        end
-    end
-    drawnow;
-end
-
-end
-
-%%
-function quit_vcw_toggle(~,~,indputCell)
-quit_vcw(indputCell{1},indputCell{2},indputCell{3})
-end
-
 %%
 
-function quit_vcw(hf,buttonOpt,hp)
+function quit_vcw(hObject,callbackdata,inputCell)
+
+hf=inputCell{1};
+buttonOpt=inputCell{2};
+hp=inputCell{3};
 
 % Restore colorbar state
 if isfield(hf.UserData.vcw,'colorbarLocSet')    
