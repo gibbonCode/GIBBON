@@ -17,9 +17,9 @@ clear; close all; clc;
 
 %%
 % Plot settings
-cMap=gjet(250);
+cMap=parula(250);
 faceAlpha1=1;
-faceAlpha2=0.65;
+faceAlpha2=0.5;
 edgeColor1='none';
 edgeColor2='none';
 fontSize=15; 
@@ -40,11 +40,9 @@ indPatch=1:numel(M);
 cFigure;
 title('patch type: v');
 xlabel('J - columns');ylabel('I - rows'); zlabel('K - slices'); hold on;
-patch('Faces',F,'Vertices',V,'FaceColor','flat','CData',C,'EdgeColor','k','FaceAlpha',0.5);
-axis equal; view(3); axis tight; axis vis3d; grid off;  
-colormap(cMap); caxis([min(M(:)) max(M(:))]); colorbar;
-camlight headlight;
-set(gca,'fontSize',fontSize); 
+gpatch(F,V,C,'k',faceAlpha2);
+colormap(cMap); caxis([min(M(:)) max(M(:))]); colorbar; 
+axisGeom(gca,fontSize); camlight headlight;
 drawnow;
 
 %%
@@ -62,11 +60,9 @@ disp(num2str(size(V)));
 cFigure;
 title('patch type: vu');
 xlabel('J - columns');ylabel('I - rows'); zlabel('K - slices'); hold on;
-patch('Faces',F,'Vertices',V,'FaceColor','flat','CData',C,'EdgeColor','k','FaceAlpha',0.5);
-axis equal; view(3); axis tight; axis vis3d; grid off;  
-colormap(cMap); caxis([min(M(:)) max(M(:))]); colorbar;
-camlight headlight;
-set(gca,'fontSize',fontSize); 
+gpatch(F,V,C,'k',faceAlpha2);
+colormap(cMap); caxis([min(M(:)) max(M(:))]); colorbar; 
+axisGeom(gca,fontSize); camlight headlight;
 drawnow;
 
 %%
@@ -88,11 +84,9 @@ disp(num2str(size(V)));
 cFigure;
 title('patch type: vb');
 xlabel('J - columns');ylabel('I - rows'); zlabel('K - slices'); hold on;
-patch('Faces',F,'Vertices',V,'FaceColor','flat','CData',C,'EdgeColor','k','FaceAlpha',0.5);
-axis equal; view(3); axis tight; axis vis3d; grid off;  
-colormap(cMap); caxis([min(M(:)) max(M(:))]); colorbar;
-camlight headlight;
-set(gca,'fontSize',fontSize); 
+gpatch(F,V,C,'k',faceAlpha2);
+colormap(cMap); caxis([min(M(:)) max(M(:))]); colorbar; 
+axisGeom(gca,fontSize); camlight headlight;
 drawnow;
 
 %%
@@ -116,26 +110,25 @@ S=round(size(M,1)./2); %Selection of middle slice
 L_plot=false(size(M)); L_plot(S,:,:)=1;
 indPatch=find(L_plot);
 [F,V,C]=im2patch(M,indPatch,'si'); %Creating patch data for y mid-voxel slices
-hs=patch('Faces',F,'Vertices',V,'EdgeColor','k', 'CData',C,'FaceColor','flat','FaceAlpha',1);
+gpatch(F,V,C);
 
 %Setting up indices for J direction slices
 S=round(size(M,2)./2); %Selection of middle slice
 L_plot=false(size(M)); L_plot(:,S,:)=1;
 indPatch=find(L_plot);
 [F,V,C]=im2patch(M,indPatch,'sj'); %Creating patch data for x mid-voxel slices
-hs=patch('Faces',F,'Vertices',V,'EdgeColor','k', 'CData',C,'FaceColor','flat','FaceAlpha',1);
+gpatch(F,V,C);
 
 %Setting up indices for Z direction slices
 S=round(size(M,3)./2); %Selection of middle slice
 L_plot=false(size(M)); L_plot(:,:,S)=1;
 indPatch=find(L_plot);
 [F,V,C]=im2patch(M,indPatch,'sk'); %Creating patch data for z mid-voxel slices
-hs=patch('Faces',F,'Vertices',V,'EdgeColor','k', 'CData',C,'FaceColor','flat','FaceAlpha',1);
+gpatch(F,V,C);
 
-axis equal; view(3); axis tight; axis vis3d; grid on;  
 colormap(cMap); caxis([min(M(:)) max(M(:))]); colorbar; 
-camlight headlight;
-set(gca,'fontSize',fontSize); 
+axisGeom(gca,fontSize); camlight headlight;
+
 drawnow;
 
 %%
@@ -151,33 +144,31 @@ subplot(2,2,1);
 title('MATLAB imagesc function');
 xlabel('J - columns');ylabel('I - rows'); zlabel('K - slices'); hold on;
 imagesc(M(:,:,S));
-axis equal; view(2); axis tight; axis vis3d; axis xy; grid on;  
 colormap(cMap); caxis([min(M(:)) max(M(:))]);
-set(gca,'fontSize',fontSize); 
+axisGeom(gca,fontSize); view(2);
 
 subplot(2,2,2);
 title('MATLAB slice function');
 xlabel('J - columns');ylabel('I - rows'); zlabel('K - slices'); hold on;
 slice(M,[],[],S);
-axis equal; view(2); axis tight; axis vis3d; grid on;  
+axisGeom(gca,fontSize);
 colormap(cMap); caxis([min(M(:)) max(M(:))]);
-set(gca,'fontSize',fontSize); 
+axisGeom(gca,fontSize); view(2);
+
+subplot(2,2,3);
+title('im2patch function');
+xlabel('J - columns');ylabel('I - rows'); zlabel('K - slices'); hold on;
+gpatch(F,V,C);
+colormap(cMap); caxis([min(M(:)) max(M(:))]);
+axisGeom(gca,fontSize); view(2);
 
 subplot(2,2,4);
 title('MATLAB pcolor function');
 xlabel('J - columns');ylabel('I - rows'); zlabel('K - slices'); hold on;
 pcolor(M(:,:,S));
-axis equal; view(2); axis tight; axis vis3d; grid on;  
 colormap(cMap); caxis([min(M(:)) max(M(:))]);
-set(gca,'fontSize',fontSize); 
+axisGeom(gca,fontSize); view(2);
 
-subplot(2,2,3);
-title('im2patch function');
-xlabel('J - columns');ylabel('I - rows'); zlabel('K - slices'); hold on;
-hs=patch('Faces',F,'Vertices',V,'EdgeColor','none', 'CData',C,'FaceColor','flat','FaceAlpha',1);
-axis equal; view(2); axis tight; axis vis3d; grid on; 
-colormap(cMap); caxis([min(M(:)) max(M(:))]);
-set(gca,'fontSize',fontSize); 
 drawnow;
 
 %%
@@ -199,7 +190,7 @@ M=1/6*(2 - (cos(X + phi*Y) + cos(X - phi*Y) + cos(Y + phi*Z) + cos(Y - phi*Z) + 
 % specific logic description (i.e. a mask) for the voxels of interest
 
 cFigure;
-title('patch type: si, sj, sk, vb');
+title('Combined voxel and slice plotting');
 xlabel('J - columns');ylabel('I - rows'); zlabel('K - slices'); hold on;
 
 % Setting up indices for I direction slices
@@ -207,31 +198,29 @@ S=round(size(M,1)./2); %Selection of middle slice
 L_plot=false(size(M)); L_plot(S,:,:)=1;
 indPatch=find(L_plot);
 [F,V,C]=im2patch(M,indPatch,'si'); %Creating patch data for y mid-voxel slices
-hs=patch('Faces',F,'Vertices',V,'EdgeColor','none', 'CData',C,'FaceColor','flat','FaceAlpha',0.75);
+gpatch(F,V,C,'none',faceAlpha2);
 
 % Setting up indices for J direction slices
 S=round(size(M,2)./2); %Selection of middle slice
 L_plot=false(size(M)); L_plot(:,S,:)=1;
 indPatch=find(L_plot);
 [F,V,C]=im2patch(M,indPatch,'sj'); %Creating patch data for x mid-voxel slices
-hs=patch('Faces',F,'Vertices',V,'EdgeColor','none', 'CData',C,'FaceColor','flat','FaceAlpha',0.75);
+gpatch(F,V,C,'none',faceAlpha2);
 
 % Setting up indices for K direction slices
 S=round(size(M,3)./2); %Selection of middle slice
 L_plot=false(size(M)); L_plot(:,:,S)=1;
 indPatch=find(L_plot);
 [F,V,C]=im2patch(M,indPatch,'sk'); %Creating patch data for z mid-voxel slices
-hs=patch('Faces',F,'Vertices',V,'EdgeColor','none', 'CData',C,'FaceColor','flat','FaceAlpha',0.75);
+gpatch(F,V,C,'none',faceAlpha2);
 
 % Setting up indices for voxels to plot
 L_mask=M>-0.2 & M<0;
 [F,V,C]=im2patch(M,L_mask,'vb'); %Creating patch data for selection of high voxels
 
-hs=patch('Faces',F,'Vertices',V,'EdgeColor','k', 'CData',C,'FaceColor','flat','FaceAlpha',1);
-colormap(cMap); colorbar; caxis([min(M(:)) max(M(:))]);
-axis equal; view(3); axis tight; grid on;
-camlight headlight;
-set(gca,'fontSize',fontSize); 
+gpatch(F,V,C);
+colormap(cMap); colorbar; caxis([min(M(:)) max(M(:))]); 
+axisGeom(gca,fontSize); camlight headlight;
 drawnow;
 
 %% Example: Shrinking patch data through combination with |scalePatch| function
@@ -249,11 +238,9 @@ drawnow;
 cFigure;
 title('Scaled (shrunk) patch data');
 xlabel('J - columns');ylabel('I - rows'); zlabel('K - slices'); hold on;
-hp1= patch('Faces',Fvs,'Vertices',Vvs,'FaceColor','flat','CData',Cvs,'EdgeColor','k','FaceAlpha',faceAlpha1);
-axis equal; view(3); axis tight; axis vis3d; grid on;  
-colormap(cMap); colorbar; caxis([min(M(:)) max(M(:))]);
-camlight headlight;
-set(gca,'fontSize',fontSize); 
+gpatch(Fvs,Vvs,Cvs);
+colormap(cMap); colorbar; caxis([min(Cvs(:)) max(Cvs(:))]); 
+axisGeom(gca,fontSize); camlight headlight;
 drawnow;
 
 %% Example: Medical image data and coordinate manipulation due to voxel size
@@ -310,17 +297,17 @@ logicVoxels(:,1:sliceIndexJ,:)=0;
 [Vy(:,1),Vy(:,2),Vy(:,3)]=im2cart(Vy(:,2),Vy(:,1),Vy(:,3),v);
 [Vz(:,1),Vz(:,2),Vz(:,3)]=im2cart(Vz(:,2),Vz(:,1),Vz(:,3),v);
 
+%%
+% 
 cFigure;
 title('MRI visualisation, slices and voxels in cartesian coordinates with aid of voxel size');
 xlabel('X (mm)');ylabel('Y (mm)'); zlabel('Z (mm)'); hold on;
-hp1= patch('Faces',Fv,'Vertices',Vv,'FaceColor','flat','CData',Cv,'EdgeColor',edgeColor1,'FaceAlpha',faceAlpha1);
-hp2= patch('Faces',Fx,'Vertices',Vx,'FaceColor','flat','CData',Cx,'EdgeColor',edgeColor2,'FaceAlpha',faceAlpha1);
-hp3= patch('Faces',Fy,'Vertices',Vy,'FaceColor','flat','CData',Cy,'EdgeColor',edgeColor2,'FaceAlpha',faceAlpha1);
-hp4= patch('Faces',Fz,'Vertices',Vz,'FaceColor','flat','CData',Cz,'EdgeColor',edgeColor2,'FaceAlpha',faceAlpha1);
-axis equal; view(3); axis tight; axis vis3d; grid on;  
+gpatch(Fv,Vv,Cv,edgeColor1,faceAlpha2);
+gpatch(Fx,Vx,Cx,edgeColor1,faceAlpha1);
+gpatch(Fy,Vy,Cy,edgeColor1,faceAlpha1);
+gpatch(Fz,Vz,Cz,edgeColor1,faceAlpha1);
 colormap(gray(250)); colorbar; 
-camlight headlight;
-set(gca,'fontSize',fontSize); 
+axisGeom(gca,fontSize); camlight headlight;
 drawnow;
 
 %% Example: Combining colormap and RGB driven patch colours 
@@ -333,17 +320,21 @@ Cv=(Cv*ones(1,3))./max(Cv(:));
 
 %%
 % Plotting the voxels
+
 cFigure;
 title('MRI visualisation, slices and voxels, colormap and RGB driven respectively');
 xlabel('X (mm)');ylabel('Y (mm)'); zlabel('Z (mm)'); hold on;
-hp1= patch('Faces',Fv,'Vertices',Vv,'FaceColor','flat','FaceVertexCData',Cv,'EdgeColor',edgeColor1,'FaceAlpha',faceAlpha2);
-hp2= patch('Faces',Fx,'Vertices',Vx,'FaceColor','flat','CData',Cx,'EdgeColor',edgeColor2,'FaceAlpha',faceAlpha1);
-hp3= patch('Faces',Fy,'Vertices',Vy,'FaceColor','flat','CData',Cy,'EdgeColor',edgeColor2,'FaceAlpha',faceAlpha1);
-hp4= patch('Faces',Fz,'Vertices',Vz,'FaceColor','flat','CData',Cz,'EdgeColor',edgeColor2,'FaceAlpha',faceAlpha1);
-axis equal; view(3); axis tight; axis vis3d; grid on;  
+
+%RGB driven
+gpatch(Fv,Vv,Cv,edgeColor1,faceAlpha2);
+
+%Colormap driven
+gpatch(Fx,Vx,Cx,edgeColor1,faceAlpha1);
+gpatch(Fy,Vy,Cy,edgeColor1,faceAlpha1);
+gpatch(Fz,Vz,Cz,edgeColor1,faceAlpha1);
+
 colormap(cMap); colorbar; 
-camlight headlight;
-set(gca,'fontSize',fontSize); 
+axisGeom(gca,fontSize); camlight headlight;
 drawnow;
 
 %% 

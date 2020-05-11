@@ -28,17 +28,16 @@ function [varargout]=vcw(varargin)
 %
 % This code was inspired by the fcw function by Oliver Woodford (which was
 % based on Torsten Vogel's view3d function, which was in turn inspired by
-% rotate3d from The MathWorks, Inc.).
-%
-% See modification log below to see how vcw function differs from the fcw
-% function. 
+% rotate3d from The MathWorks, Inc.). Although vcw is inspired by and
+% similar to fcw function by Oliver Woodford, it offers many added features
+% and bug-fixes.  
 %
 %
 % Kevin Mattheus Moerman
 % gibbon.toolbox@gmail.com
 %
-% 2015/04/15 %Copied from fcw and renamed to vcw due to planned revision
-% 2015/04/15 %Added: 1) handing of colorbars (bug in fcw when view(2) is
+% 2015/04/15 Copied from fcw and renamed to vcw due to planned revision
+% 2015/04/15 Added: 1) handing of colorbars (bug in fcw when view(2) is
 % used combined with panning which induced zooming and panning), 2) overobj
 % axes selection so that the current axes is determined based on mouse
 % pointer location for most functions, 3) A toggle button for activation
@@ -54,10 +53,17 @@ function [varargout]=vcw(varargin)
 % 2015/04/20 Added to GIBBON toolbox
 % 2015/04/22 Added JavaFrame handling of ALT related mnemonics
 % 2015/04/28 Fixed behaviour for repated vcw; commands (only generate a
-% single vcw button even if vcw is called multiple times). 
+% single vcw button even if vcw is called multiple times).
 % 2015/04/28 Fixed behaviour for figures without axes. I.e. vcw will only
-% start if an axis is present. 
+% start if an axis is present.
 % 2016/01/13 Added that clipping is turned off
+% 2020/05/11 Have vcw trigger start of vcw when present in figure
+% 2020/05/11 Fixed bug in colorbar handling for subplots
+% 2020/05/11 Added entries to UserData struct for figure, started adding to
+% vcw field. 
+% 2020/05/11 Fixed "double start" issue when pressing 'v' 
+% 2020/05/11 Have vcw hide the axis interactive toolbar for latest MATLAB
+% versions
 %
 % TO DO: 1) Improved handling of colorbars. Currently requires colorbar
 % locations to be set to 'manual' for vcw. However this causes the figure
@@ -113,7 +119,7 @@ if ~isempty(h)
         if w_min<min_w
             w_min=min_w;
         end
-        w_add=[-w_min w_min]/2;       
+        w_add=[-w_min w_min]/2;
         
         if wx<w_min
             set(h,'xlim',xLim+w_add);
@@ -125,7 +131,7 @@ if ~isempty(h)
         
         if wz<w_min
             set(h,'zlim',zLim+w_add);
-        end              
+        end
     end
 end
 
@@ -164,11 +170,20 @@ if isempty(hp) %If vcw button is not present create one and wait for key/button 
     hp=uitoggletool(hb,'TooltipString','Activate View Control Widget (or enter v)','CData',S,'Tag','tBar','Separator','on');
     set(hp,'OnCallback',{@start_vcw_toggle,{hf,buttonOpt,hp}});
     set(hp,'OffCallback',{@quit_vcw_toggle,{hf,buttonOpt,hp}});
-
+    
+    %% Add entries/fields to figure UserData structure
+    hf.UserData.vcw.buttonHandle=hp; %The vcw button handle
+    hf.UserData.vcw.colorbarHandles=[];
+    hf.UserData.vcw.colorbarLocSet={};
+    
     %% Wait for start using key-press
     
     set(hf,'KeyPressFcn', {@keyPress_wait,buttonOpt,hp,hf},'BusyAction','cancel');
     
+else 
+    % activate
+    drawnow; 
+    start_vcw(hf,buttonOpt,hp);
 end
 
 %% Outputs
@@ -180,8 +195,8 @@ end
 end
 
 %%
-function start_vcw_toggle(hObject,callbackdata,indputCell)
-start_vcw(indputCell{1},indputCell{2},indputCell{3});
+function start_vcw_toggle(hObject,callbackdata,inputCell)
+start_vcw(inputCell{1},inputCell{2},inputCell{3});
 end
 
 function keyPress_wait(src,eventData,buttonOpt,hp,hf)
@@ -189,8 +204,8 @@ function keyPress_wait(src,eventData,buttonOpt,hp,hf)
 cax = overobj2('axes');
 
 if isempty(cax)
-%     cax=gca; %this gets current axis or if none exists creates one
-cax = get(hf, 'CurrentAxes');
+    %     cax=gca; %this gets current axis or if none exists creates one
+    cax = get(hf, 'CurrentAxes');
 else
     axes(cax)
 end
@@ -201,9 +216,10 @@ end
 
 %Key actions
 switch eventData.Key
-    case {'v'} %Start vcw        
-        start_vcw(hf,buttonOpt,hp);
+    case {'v'} %Start vcw
+        hp.State='On'; % start_vcw(hf,buttonOpt,hp);
 end
+
 end
 %%
 function start_vcw(hf,buttonOpt,hp)
@@ -217,23 +233,24 @@ hf.UserData.BusyAction=hf.BusyAction;
 
 checkAxisLimits(hf);
 
-set(hp,'State','On');
+hp.State='On';
 set(hp,'TooltipString','Dectivate View Control Widget (or enter v)');
 
 % Clear any visualization modes we might be in
-pan(hf, 'off');
-zoom(hf, 'off');
-rotate3d(hf, 'off');
+try
+    pan(hf, 'off');
+    zoom(hf, 'off');
+    rotate3d(hf, 'off');
+catch
+end
 
 %Quick fix for colorbars
-H=findobj(hf,'Type','colorbar'); %Handle set
-figUserDataStruct=get(hf,'UserData');
-if isempty(figUserDataStruct)
-    figUserDataStruct.colorbarLocSet=get(H,'Location');
-    set(hf,'UserData',figUserDataStruct);
+H=findobj(hf,'Type','colorbar'); %Handle set for all colorbars in figure;
+if ~isempty(H)
+    hf.UserData.vcw.colorbarHandles=H;
+    hf.UserData.vcw.colorbarLocSet={H.Location};
+    colorbarLocSet(hf,'manual'); %Set colorbar locations to manual
 end
-colorbarLocSet(hf,'manual');
-
 % Disable Plottools Buttons and Exploration Buttons
 initialState.toolbar = findobj(allchild(hf),'flat','Type','uitoolbar');
 if ~isempty(initialState.toolbar)
@@ -250,7 +267,6 @@ end
 
 % For each set of axes
 cax = get(hf,'CurrentAxes');
-% cax=gca; %this gets current axis or if none exists creates one
 if isempty(cax)
     set(hp,'State','Off');
     set(hp,'TooltipString','Activate View Control Widget (or enter v)');
@@ -267,7 +283,13 @@ if ~isempty(h)
         caxUserDataStruct.defaultView=camview(hNow);
         set(hNow, 'UserData',caxUserDataStruct);
         %Turn clipping off
-        set(hNow,'Clipping','off');   
+        set(hNow,'Clipping','off');
+   
+        %Attemp to turn of interactive toolbar for all axes
+        try
+            hNow.Toolbar.Visible = 'off';
+        catch
+        end
     end
     axes(cax);
 else
@@ -282,7 +304,6 @@ set(hf, 'WindowButtonDownFcn', {@mousedown, {str2func(['vcw_' buttonOpt{1}]), st
     'KeyPressFcn', {@keypress,buttonOpt,hp,hf}, ...
     'WindowScrollWheelFcn', {@scroll, str2func(['vcw_' buttonOpt{4}])}, ...
     'BusyAction', 'cancel');
-
 end
 
 %%
@@ -459,7 +480,7 @@ switch eventData.Key
             caxUserDataStruct=get(cax,'UserData');
             caxUserDataStruct.defaultView=camview(cax);
             set(cax,'UserData',caxUserDataStruct);
-        end        
+        end
     case 'd' % Reset all the axes to default
         if linkedOn==1
             for h = findobj(hf, 'Type', 'axes', '-depth', 1)'
@@ -494,7 +515,7 @@ switch eventData.Key
     case 'v' % Quit vcw mode
         quit_vcw(hf,buttonOpt,hp);
     otherwise
-%         quit_vcw(hf,buttonOpt,hp);
+        %         quit_vcw(hf,buttonOpt,hp);
 end
 
 if mnemOff==0
@@ -525,7 +546,7 @@ switch get(hf, 'SelectionType')
     case 'alt' % Right hand button
         method = funcs{3};
     case 'open' % Double click
-        caxUserDataStruct=get(cax,'UserData');
+        caxUserDataStruct=cax.UserData;
         camview(cax,caxUserDataStruct.defaultView);
         return;
     otherwise
@@ -637,30 +658,30 @@ end
 %%
 
 % function setLightPos(hf,cax)
-% 
+%
 % hLights=findobj(cax,'Type','light');
-% 
+%
 % cameraPositionsNew=cax.CameraPosition;
-% 
+%
 % cameraPositionsOld=hf.UserData.CameraPosition;
-% 
+%
 % a=vecnormalize(cameraPositionsOld);
 % b=vecnormalize(cameraPositionsNew);
 % [R]=vecAngle2Rot(acos(dot(a,b)),vecnormalize(cross(a,b)));
-% 
+%
 % % [F,V,~]=quiver3Dpatch(0,0,0,a(1),a(2),a(3),[],[2 2]);
 % % patch('Faces',F,'Vertices',V,'FaceColor','r');
-% % 
+% %
 % % c=b*R
-% % 
+% %
 % % [F,V,~]=quiver3Dpatch(0,0,0,c(1),c(2),c(3),[],[2 2]);
 % % patch('Faces',F,'Vertices',V,'FaceColor','none','EdgeColor','g');
-% 
-% for q=1:1:numel(hLights)    
-%     hLights(q).Position=hLights(q).Position*R';   
+%
+% for q=1:1:numel(hLights)
+%     hLights(q).Position=hLights(q).Position*R';
 %     drawnow;
 % end
-% 
+%
 % end
 
 % Figure manipulation functions
@@ -668,20 +689,20 @@ function vcw_rot(s, d, cax, hf)
 d = check_vals(s, d);
 % hf.UserData.CameraPosition=cax.CameraPosition;
 try
-    % Rotate XYt            
-    camorbit(cax, d(1), d(2), 'camera', [0 0 1]);              
+    % Rotate XYt
+    camorbit(cax, d(1), d(2), 'camera', [0 0 1]);
 catch
     % Error, so release mouse down
     mouseup([],[],hf);
 end
 end
 
-function vcw_rotz(s, d, cax, hf)    
-%     hf.UserData.CameraPosition=cax.CameraPosition;    
+function vcw_rotz(s, d, cax, hf)
+%     hf.UserData.CameraPosition=cax.CameraPosition;
 d = check_vals(s, d);
 try
     % Rotate Z
-    camroll(cax, d(2));        
+    camroll(cax, d(2));
 catch
     % Error, so release mouse down
     mouseup([],[],hf);
@@ -724,16 +745,16 @@ end
 end
 
 function colorbarLocSet(hf,locOpt)
-H=findobj(hf,'Type','colorbar'); %Handle set
-for q=1:1:numel(H)
+figUserDataStruct=get(hf,'UserData'); %Get user data struct
+hColorbarSet=figUserDataStruct.vcw.colorbarHandles; %Color bar handles
+for q=1:1:numel(hColorbarSet) %Loop over colorbar handles and set location property
     if isa(locOpt,'cell')
-        set(H(q),'Location',locOpt{q});
+        set(hColorbarSet(q),'Location',locOpt{q});
     else
-        set(H(q),'Location',locOpt);
+        set(hColorbarSet(q),'Location',locOpt);
     end
 end
 end
-
 
 function checkAxisLimits(hf)
 
@@ -760,7 +781,7 @@ if ~isempty(h)
         if w_min<min_w
             w_min=min_w;
         end
-        w_add=[-w_min w_min]/2;       
+        w_add=[-w_min w_min]/2;
         
         if wx<w_min
             set(h,'xlim',xLim+w_add);
@@ -772,9 +793,9 @@ if ~isempty(h)
         
         if wz<w_min
             set(h,'zlim',zLim+w_add);
-        end              
+        end
     end
-    drawnow; 
+    drawnow;
 end
 
 end
@@ -789,25 +810,27 @@ end
 function quit_vcw(hf,buttonOpt,hp)
 
 % Restore colorbar state
-figUserDataStruct=get(hf,'UserData');
-if isfield(figUserDataStruct,'colorbarLocSet')
-    colorbarLocSet(hf,figUserDataStruct.colorbarLocSet);
-end
-% Enable Plottools Buttons and Exploration Buttons
-initialState.toolbar = findobj(allchild(hf),'flat','Type','uitoolbar');
-if ~isempty(initialState.toolbar)
-    initialState.ptButtons = [uigettool(initialState.toolbar,'Plottools.PlottoolsOff'), ...
-        uigettool(initialState.toolbar,'Plottools.PlottoolsOn'),...
-        uigettool(initialState.toolbar,'Exploration.Rotate'), ...
-        uigettool(initialState.toolbar,'Exploration.Pan'),...
-        uigettool(initialState.toolbar,'Exploration.ZoomIn'),...
-        uigettool(initialState.toolbar,'Exploration.ZoomOut'),...
-        ];
-    initialState.ptState = get (initialState.ptButtons,'Enable');
-    set (initialState.ptButtons,'Enable','on');
+if isfield(hf.UserData.vcw,'colorbarLocSet')    
+    colorbarLocSet(hf,hf.UserData.vcw.colorbarLocSet);
 end
 
-%         hp=findobj(hf,'Tag','tBar');
+% Enable Plottools Buttons and Exploration Buttons
+try
+    initialState.toolbar = findobj(allchild(hf),'flat','Type','uitoolbar');
+    if ~isempty(initialState.toolbar)
+        initialState.ptButtons = [uigettool(initialState.toolbar,'Plottools.PlottoolsOff'), ...
+            uigettool(initialState.toolbar,'Plottools.PlottoolsOn'),...
+            uigettool(initialState.toolbar,'Exploration.Rotate'), ...
+            uigettool(initialState.toolbar,'Exploration.Pan'),...
+            uigettool(initialState.toolbar,'Exploration.ZoomIn'),...
+            uigettool(initialState.toolbar,'Exploration.ZoomOut'),...
+            ];
+        initialState.ptState = get (initialState.ptButtons,'Enable');
+        set (initialState.ptButtons,'Enable','on');
+    end
+catch
+end
+
 set(hp,'State','Off');
 set(hp,'TooltipString','Activate View Control Widget (or enter v)');
 
@@ -824,29 +847,40 @@ hf.WindowScrollWheelFcn=hf.UserData.WindowScrollWheelFcn;
 hf.BusyAction=hf.UserData.BusyAction;
 hf.MenuBar='figure';
 
+%Attemp to turn back on the interactive toolbar for all axes
+h = findobj(hf, 'Type', 'axes', '-depth', 1)'; %All axis handles
+if ~isempty(h)
+    for hNow = h        
+        try
+            hNow.Toolbar.Visible = 'on';
+        catch
+        end
+    end
 end
 
- 
-%% 
-% _*GIBBON footer text*_ 
-% 
+end
+
+
+%%
+% _*GIBBON footer text*_
+%
 % License: <https://github.com/gibbonCode/GIBBON/blob/master/LICENSE>
-% 
+%
 % GIBBON: The Geometry and Image-based Bioengineering add-On. A toolbox for
 % image segmentation, image-based modeling, meshing, and finite element
 % analysis.
-% 
+%
 % Copyright (C) 2006-2020 Kevin Mattheus Moerman
-% 
+%
 % This program is free software: you can redistribute it and/or modify
 % it under the terms of the GNU General Public License as published by
 % the Free Software Foundation, either version 3 of the License, or
 % (at your option) any later version.
-% 
+%
 % This program is distributed in the hope that it will be useful,
 % but WITHOUT ANY WARRANTY; without even the implied warranty of
 % MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 % GNU General Public License for more details.
-% 
+%
 % You should have received a copy of the GNU General Public License
 % along with this program.  If not, see <http://www.gnu.org/licenses/>.

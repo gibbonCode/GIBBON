@@ -6,7 +6,7 @@
    <!--
 This HTML was auto-generated from MATLAB code.
 To make changes, update the MATLAB code and republish this document.
-      --><title>im2patch</title><meta name="generator" content="MATLAB 9.6"><link rel="schema.DC" href="http://purl.org/dc/elements/1.1/"><meta name="DC.date" content="2019-06-20"><meta name="DC.source" content="HELP_im2patch.m"><style type="text/css">
+      --><title>im2patch</title><meta name="generator" content="MATLAB 9.8"><link rel="schema.DC" href="http://purl.org/dc/elements/1.1/"><meta name="DC.date" content="2020-05-11"><meta name="DC.source" content="HELP_im2patch.m"><style type="text/css">
 html,body,div,span,applet,object,iframe,h1,h2,h3,h4,h5,h6,p,blockquote,pre,a,abbr,acronym,address,big,cite,code,del,dfn,em,font,img,ins,kbd,q,s,samp,small,strike,strong,sub,sup,tt,var,b,u,i,center,dl,dt,dd,ol,ul,li,fieldset,form,label,legend,table,caption,tbody,tfoot,thead,tr,th,td{margin:0;padding:0;border:0;outline:0;font-size:100%;vertical-align:baseline;background:transparent}body{line-height:1}ol,ul{list-style:none}blockquote,q{quotes:none}blockquote:before,blockquote:after,q:before,q:after{content:'';content:none}:focus{outine:0}ins{text-decoration:none}del{text-decoration:line-through}table{border-collapse:collapse;border-spacing:0}
 
 html { min-height:100%; margin-bottom:1px; }
@@ -23,7 +23,7 @@ a:visited { color:#004aa0; text-decoration:none; }
 
 p { padding:0px; margin:0px 0px 20px; }
 img { padding:0px; margin:0px 0px 20px; border:none; }
-p img, pre img, tt img, li img, h1 img, h2 img { margin-bottom:0px; } 
+p img, pre img, tt img, li img, h1 img, h2 img { margin-bottom:0px; }
 
 ul { padding:0px; margin:0px 0px 20px 23px; list-style:square; }
 ul li { padding:0px; margin:0px 0px 7px 0px; }
@@ -52,6 +52,7 @@ span.comment { color:#228B22 }
 span.string { color:#A020F0 }
 span.untermstring { color:#B20000 }
 span.syscmd { color:#B28C00 }
+span.typesection { color:#A0522D }
 
 .footer { width:auto; padding:10px 0px; margin:25px 0px 0px; border-top:1px dotted #878787; font-size:0.8em; line-height:140%; font-style:italic; color:#878787; text-align:left; float:none; }
 .footer p { margin:0px; }
@@ -66,10 +67,10 @@ table td { padding:7px 5px; text-align:left; vertical-align:top; border:1px soli
 
 
 
-  </style></head><body><div class="content"><h1>im2patch</h1><!--introduction--><p>Below is a demonstration of the features of the <tt>im2patch</tt> function</p><!--/introduction--><h2>Contents</h2><div><ul><li><a href="#2">Syntax</a></li><li><a href="#3">Description</a></li><li><a href="#4">Examples</a></li><li><a href="#6">Example: Introduction to using <tt>im2patch</tt> for voxel plotting</a></li><li><a href="#13">Example: Introduction to using <tt>im2patch</tt> for slice plotting</a></li><li><a href="#15">Example: Comparison to standard MATLAB <tt>imagesc</tt> function and the patch type MATLAB functions <tt>slice</tt> and <tt>pcolor</tt></a></li><li><a href="#17">Example: Creating and plotting combined voxel and slice patch data</a></li><li><a href="#20">Example: Shrinking patch data through combination with <tt>scalePatch</tt> function</a></li><li><a href="#22">Example: Medical image data and coordinate manipulation due to voxel size</a></li><li><a href="#25">Example: Combining colormap and RGB driven patch colours</a></li></ul></div><pre class="codeinput">clear; close <span class="string">all</span>; clc;
-</pre><h2 id="2">Syntax</h2><p><tt>[F,V,C]=im2patch(M,IND,ptype);</tt></p><h2 id="3">Description</h2><p>This function generates patch data for 3D images. The patch data is only generated for the voxels specified by the indices (logic or linear indices). The patch data is created according to the patch type desired (e.g. voxel type of slice type).</p><h2 id="4">Examples</h2><p>Plot settings</p><pre class="codeinput">cMap=gjet(250);
+  </style></head><body><div class="content"><h1>im2patch</h1><!--introduction--><p>Below is a demonstration of the features of the <tt>im2patch</tt> function</p><!--/introduction--><h2>Contents</h2><div><ul><li><a href="#2">Syntax</a></li><li><a href="#3">Description</a></li><li><a href="#4">Examples</a></li><li><a href="#6">Example: Introduction to using <tt>im2patch</tt> for voxel plotting</a></li><li><a href="#13">Example: Introduction to using <tt>im2patch</tt> for slice plotting</a></li><li><a href="#15">Example: Comparison to standard MATLAB <tt>imagesc</tt> function and the patch type MATLAB functions <tt>slice</tt> and <tt>pcolor</tt></a></li><li><a href="#17">Example: Creating and plotting combined voxel and slice patch data</a></li><li><a href="#20">Example: Shrinking patch data through combination with <tt>scalePatch</tt> function</a></li><li><a href="#22">Example: Medical image data and coordinate manipulation due to voxel size</a></li><li><a href="#26">Example: Combining colormap and RGB driven patch colours</a></li></ul></div><pre class="codeinput">clear; close <span class="string">all</span>; clc;
+</pre><h2 id="2">Syntax</h2><p><tt>[F,V,C]=im2patch(M,IND,ptype);</tt></p><h2 id="3">Description</h2><p>This function generates patch data for 3D images. The patch data is only generated for the voxels specified by the indices (logic or linear indices). The patch data is created according to the patch type desired (e.g. voxel type of slice type).</p><h2 id="4">Examples</h2><p>Plot settings</p><pre class="codeinput">cMap=parula(250);
 faceAlpha1=1;
-faceAlpha2=0.65;
+faceAlpha2=0.5;
 edgeColor1=<span class="string">'none'</span>;
 edgeColor2=<span class="string">'none'</span>;
 fontSize=15;
@@ -82,11 +83,9 @@ indPatch=1:numel(M);
 cFigure;
 title(<span class="string">'patch type: v'</span>);
 xlabel(<span class="string">'J - columns'</span>);ylabel(<span class="string">'I - rows'</span>); zlabel(<span class="string">'K - slices'</span>); hold <span class="string">on</span>;
-patch(<span class="string">'Faces'</span>,F,<span class="string">'Vertices'</span>,V,<span class="string">'FaceColor'</span>,<span class="string">'flat'</span>,<span class="string">'CData'</span>,C,<span class="string">'EdgeColor'</span>,<span class="string">'k'</span>,<span class="string">'FaceAlpha'</span>,0.5);
-axis <span class="string">equal</span>; view(3); axis <span class="string">tight</span>; axis <span class="string">vis3d</span>; grid <span class="string">off</span>;
+gpatch(F,V,C,<span class="string">'k'</span>,faceAlpha2);
 colormap(cMap); caxis([min(M(:)) max(M(:))]); colorbar;
-camlight <span class="string">headlight</span>;
-set(gca,<span class="string">'fontSize'</span>,fontSize);
+axisGeom(gca,fontSize); camlight <span class="string">headlight</span>;
 drawnow;
 </pre><img width="100%" height="auto" vspace="5" hspace="5" src="HELP_im2patch_01.jpg" alt=""> <p>Study the size of the face and vertex arrays to confirm that the patch type <tt>'v'</tt> creates vertices and faces for each voxel. Shared vertices and faces are not removed. This option requires the most memory.</p><pre class="codeinput">disp(num2str(size(F)));
 disp(num2str(size(V)));
@@ -97,11 +96,9 @@ disp(num2str(size(V)));
 cFigure;
 title(<span class="string">'patch type: vu'</span>);
 xlabel(<span class="string">'J - columns'</span>);ylabel(<span class="string">'I - rows'</span>); zlabel(<span class="string">'K - slices'</span>); hold <span class="string">on</span>;
-patch(<span class="string">'Faces'</span>,F,<span class="string">'Vertices'</span>,V,<span class="string">'FaceColor'</span>,<span class="string">'flat'</span>,<span class="string">'CData'</span>,C,<span class="string">'EdgeColor'</span>,<span class="string">'k'</span>,<span class="string">'FaceAlpha'</span>,0.5);
-axis <span class="string">equal</span>; view(3); axis <span class="string">tight</span>; axis <span class="string">vis3d</span>; grid <span class="string">off</span>;
+gpatch(F,V,C,<span class="string">'k'</span>,faceAlpha2);
 colormap(cMap); caxis([min(M(:)) max(M(:))]); colorbar;
-camlight <span class="string">headlight</span>;
-set(gca,<span class="string">'fontSize'</span>,fontSize);
+axisGeom(gca,fontSize); camlight <span class="string">headlight</span>;
 drawnow;
 </pre><img width="100%" height="auto" vspace="5" hspace="5" src="HELP_im2patch_02.jpg" alt=""> <p>Study the size of the face and vertex arrays to confirm that the patch type <tt>'vu'</tt> ensures that shared faces and vertices are not shared. Each vertex and face is therefore unique. This saves memory with respect to using the <tt>'v'</tt> patch type for voxel display. The figures look identical except that shared faces may appear less dark when transparency is on since now one one face is used. Color information is shared too (averaged).</p><pre class="codeinput">disp(num2str(size(F)));
 disp(num2str(size(V)));
@@ -112,11 +109,9 @@ disp(num2str(size(V)));
 cFigure;
 title(<span class="string">'patch type: vb'</span>);
 xlabel(<span class="string">'J - columns'</span>);ylabel(<span class="string">'I - rows'</span>); zlabel(<span class="string">'K - slices'</span>); hold <span class="string">on</span>;
-patch(<span class="string">'Faces'</span>,F,<span class="string">'Vertices'</span>,V,<span class="string">'FaceColor'</span>,<span class="string">'flat'</span>,<span class="string">'CData'</span>,C,<span class="string">'EdgeColor'</span>,<span class="string">'k'</span>,<span class="string">'FaceAlpha'</span>,0.5);
-axis <span class="string">equal</span>; view(3); axis <span class="string">tight</span>; axis <span class="string">vis3d</span>; grid <span class="string">off</span>;
+gpatch(F,V,C,<span class="string">'k'</span>,faceAlpha2);
 colormap(cMap); caxis([min(M(:)) max(M(:))]); colorbar;
-camlight <span class="string">headlight</span>;
-set(gca,<span class="string">'fontSize'</span>,fontSize);
+axisGeom(gca,fontSize); camlight <span class="string">headlight</span>;
 drawnow;
 </pre><img width="100%" height="auto" vspace="5" hspace="5" src="HELP_im2patch_03.jpg" alt=""> <p>Study the size of the face and vertex arrays to confirm that the patch type <tt>'vb'</tt> helps to plot only non-shared vertices and faces. In the case of an enclosed shape filled with voxels thus only the boundary faces are displayed. This path type appears no different than the other is transparency is not on however it is much lighter on memory than the above path types.</p><pre class="codeinput">disp(num2str(size(F)));
 disp(num2str(size(V)));
@@ -131,65 +126,62 @@ S=round(size(M,1)./2); <span class="comment">%Selection of middle slice</span>
 L_plot=false(size(M)); L_plot(S,:,:)=1;
 indPatch=find(L_plot);
 [F,V,C]=im2patch(M,indPatch,<span class="string">'si'</span>); <span class="comment">%Creating patch data for y mid-voxel slices</span>
-hs=patch(<span class="string">'Faces'</span>,F,<span class="string">'Vertices'</span>,V,<span class="string">'EdgeColor'</span>,<span class="string">'k'</span>, <span class="string">'CData'</span>,C,<span class="string">'FaceColor'</span>,<span class="string">'flat'</span>,<span class="string">'FaceAlpha'</span>,1);
+gpatch(F,V,C);
 
 <span class="comment">%Setting up indices for J direction slices</span>
 S=round(size(M,2)./2); <span class="comment">%Selection of middle slice</span>
 L_plot=false(size(M)); L_plot(:,S,:)=1;
 indPatch=find(L_plot);
 [F,V,C]=im2patch(M,indPatch,<span class="string">'sj'</span>); <span class="comment">%Creating patch data for x mid-voxel slices</span>
-hs=patch(<span class="string">'Faces'</span>,F,<span class="string">'Vertices'</span>,V,<span class="string">'EdgeColor'</span>,<span class="string">'k'</span>, <span class="string">'CData'</span>,C,<span class="string">'FaceColor'</span>,<span class="string">'flat'</span>,<span class="string">'FaceAlpha'</span>,1);
+gpatch(F,V,C);
 
 <span class="comment">%Setting up indices for Z direction slices</span>
 S=round(size(M,3)./2); <span class="comment">%Selection of middle slice</span>
 L_plot=false(size(M)); L_plot(:,:,S)=1;
 indPatch=find(L_plot);
 [F,V,C]=im2patch(M,indPatch,<span class="string">'sk'</span>); <span class="comment">%Creating patch data for z mid-voxel slices</span>
-hs=patch(<span class="string">'Faces'</span>,F,<span class="string">'Vertices'</span>,V,<span class="string">'EdgeColor'</span>,<span class="string">'k'</span>, <span class="string">'CData'</span>,C,<span class="string">'FaceColor'</span>,<span class="string">'flat'</span>,<span class="string">'FaceAlpha'</span>,1);
+gpatch(F,V,C);
 
-axis <span class="string">equal</span>; view(3); axis <span class="string">tight</span>; axis <span class="string">vis3d</span>; grid <span class="string">on</span>;
 colormap(cMap); caxis([min(M(:)) max(M(:))]); colorbar;
-camlight <span class="string">headlight</span>;
-set(gca,<span class="string">'fontSize'</span>,fontSize);
+axisGeom(gca,fontSize); camlight <span class="string">headlight</span>;
+
 drawnow;
 </pre><img width="100%" height="auto" vspace="5" hspace="5" src="HELP_im2patch_04.jpg" alt=""> <p>The path type s*u are simular to s* but use shared vertices</p><h2 id="15">Example: Comparison to standard MATLAB <tt>imagesc</tt> function and the patch type MATLAB functions <tt>slice</tt> and <tt>pcolor</tt></h2><p>The comparison is what motivates the choice of coordinate system for im2patch i.e. that it is meant to aid in the visualization of image data as is expected of image data.</p><pre class="codeinput">cFigure;
 subplot(2,2,1);
 title(<span class="string">'MATLAB imagesc function'</span>);
 xlabel(<span class="string">'J - columns'</span>);ylabel(<span class="string">'I - rows'</span>); zlabel(<span class="string">'K - slices'</span>); hold <span class="string">on</span>;
 imagesc(M(:,:,S));
-axis <span class="string">equal</span>; view(2); axis <span class="string">tight</span>; axis <span class="string">vis3d</span>; axis <span class="string">xy</span>; grid <span class="string">on</span>;
 colormap(cMap); caxis([min(M(:)) max(M(:))]);
-set(gca,<span class="string">'fontSize'</span>,fontSize);
+axisGeom(gca,fontSize); view(2);
 
 subplot(2,2,2);
 title(<span class="string">'MATLAB slice function'</span>);
 xlabel(<span class="string">'J - columns'</span>);ylabel(<span class="string">'I - rows'</span>); zlabel(<span class="string">'K - slices'</span>); hold <span class="string">on</span>;
 slice(M,[],[],S);
-axis <span class="string">equal</span>; view(2); axis <span class="string">tight</span>; axis <span class="string">vis3d</span>; grid <span class="string">on</span>;
+axisGeom(gca,fontSize);
 colormap(cMap); caxis([min(M(:)) max(M(:))]);
-set(gca,<span class="string">'fontSize'</span>,fontSize);
+axisGeom(gca,fontSize); view(2);
+
+subplot(2,2,3);
+title(<span class="string">'im2patch function'</span>);
+xlabel(<span class="string">'J - columns'</span>);ylabel(<span class="string">'I - rows'</span>); zlabel(<span class="string">'K - slices'</span>); hold <span class="string">on</span>;
+gpatch(F,V,C);
+colormap(cMap); caxis([min(M(:)) max(M(:))]);
+axisGeom(gca,fontSize); view(2);
 
 subplot(2,2,4);
 title(<span class="string">'MATLAB pcolor function'</span>);
 xlabel(<span class="string">'J - columns'</span>);ylabel(<span class="string">'I - rows'</span>); zlabel(<span class="string">'K - slices'</span>); hold <span class="string">on</span>;
 pcolor(M(:,:,S));
-axis <span class="string">equal</span>; view(2); axis <span class="string">tight</span>; axis <span class="string">vis3d</span>; grid <span class="string">on</span>;
 colormap(cMap); caxis([min(M(:)) max(M(:))]);
-set(gca,<span class="string">'fontSize'</span>,fontSize);
+axisGeom(gca,fontSize); view(2);
 
-subplot(2,2,3);
-title(<span class="string">'im2patch function'</span>);
-xlabel(<span class="string">'J - columns'</span>);ylabel(<span class="string">'I - rows'</span>); zlabel(<span class="string">'K - slices'</span>); hold <span class="string">on</span>;
-hs=patch(<span class="string">'Faces'</span>,F,<span class="string">'Vertices'</span>,V,<span class="string">'EdgeColor'</span>,<span class="string">'none'</span>, <span class="string">'CData'</span>,C,<span class="string">'FaceColor'</span>,<span class="string">'flat'</span>,<span class="string">'FaceAlpha'</span>,1);
-axis <span class="string">equal</span>; view(2); axis <span class="string">tight</span>; axis <span class="string">vis3d</span>; grid <span class="string">on</span>;
-colormap(cMap); caxis([min(M(:)) max(M(:))]);
-set(gca,<span class="string">'fontSize'</span>,fontSize);
 drawnow;
 </pre><img width="100%" height="auto" vspace="5" hspace="5" src="HELP_im2patch_05.jpg" alt=""> <p>Note that the image size is wrong for the <tt>slice</tt> and <tt>pcolor</tt> commands. This is because intensities appear to be defined on voxels vertices (and are reinterpolated onto faces) for these functions instead of voxels centres as should be the case for image data.</p><h2 id="17">Example: Creating and plotting combined voxel and slice patch data</h2><p>Simulating 3D image</p><pre class="codeinput">[X,Y,Z]=meshgrid(linspace(-4.77,4.77,25));
 phi=(1+sqrt(5))/2;
 M=1/6*(2 - (cos(X + phi*Y) + cos(X - phi*Y) + cos(Y + phi*Z) + cos(Y - phi*Z) + cos(Z - phi*X) + cos(Z + phi*X)));
 </pre><p>Creating and plotting patch data. Last example illustrates the use of a specific logic description (i.e. a mask) for the voxels of interest</p><pre class="codeinput">cFigure;
-title(<span class="string">'patch type: si, sj, sk, vb'</span>);
+title(<span class="string">'Combined voxel and slice plotting'</span>);
 xlabel(<span class="string">'J - columns'</span>);ylabel(<span class="string">'I - rows'</span>); zlabel(<span class="string">'K - slices'</span>); hold <span class="string">on</span>;
 
 <span class="comment">% Setting up indices for I direction slices</span>
@@ -197,31 +189,29 @@ S=round(size(M,1)./2); <span class="comment">%Selection of middle slice</span>
 L_plot=false(size(M)); L_plot(S,:,:)=1;
 indPatch=find(L_plot);
 [F,V,C]=im2patch(M,indPatch,<span class="string">'si'</span>); <span class="comment">%Creating patch data for y mid-voxel slices</span>
-hs=patch(<span class="string">'Faces'</span>,F,<span class="string">'Vertices'</span>,V,<span class="string">'EdgeColor'</span>,<span class="string">'none'</span>, <span class="string">'CData'</span>,C,<span class="string">'FaceColor'</span>,<span class="string">'flat'</span>,<span class="string">'FaceAlpha'</span>,0.75);
+gpatch(F,V,C,<span class="string">'none'</span>,faceAlpha2);
 
 <span class="comment">% Setting up indices for J direction slices</span>
 S=round(size(M,2)./2); <span class="comment">%Selection of middle slice</span>
 L_plot=false(size(M)); L_plot(:,S,:)=1;
 indPatch=find(L_plot);
 [F,V,C]=im2patch(M,indPatch,<span class="string">'sj'</span>); <span class="comment">%Creating patch data for x mid-voxel slices</span>
-hs=patch(<span class="string">'Faces'</span>,F,<span class="string">'Vertices'</span>,V,<span class="string">'EdgeColor'</span>,<span class="string">'none'</span>, <span class="string">'CData'</span>,C,<span class="string">'FaceColor'</span>,<span class="string">'flat'</span>,<span class="string">'FaceAlpha'</span>,0.75);
+gpatch(F,V,C,<span class="string">'none'</span>,faceAlpha2);
 
 <span class="comment">% Setting up indices for K direction slices</span>
 S=round(size(M,3)./2); <span class="comment">%Selection of middle slice</span>
 L_plot=false(size(M)); L_plot(:,:,S)=1;
 indPatch=find(L_plot);
 [F,V,C]=im2patch(M,indPatch,<span class="string">'sk'</span>); <span class="comment">%Creating patch data for z mid-voxel slices</span>
-hs=patch(<span class="string">'Faces'</span>,F,<span class="string">'Vertices'</span>,V,<span class="string">'EdgeColor'</span>,<span class="string">'none'</span>, <span class="string">'CData'</span>,C,<span class="string">'FaceColor'</span>,<span class="string">'flat'</span>,<span class="string">'FaceAlpha'</span>,0.75);
+gpatch(F,V,C,<span class="string">'none'</span>,faceAlpha2);
 
 <span class="comment">% Setting up indices for voxels to plot</span>
 L_mask=M&gt;-0.2 &amp; M&lt;0;
 [F,V,C]=im2patch(M,L_mask,<span class="string">'vb'</span>); <span class="comment">%Creating patch data for selection of high voxels</span>
 
-hs=patch(<span class="string">'Faces'</span>,F,<span class="string">'Vertices'</span>,V,<span class="string">'EdgeColor'</span>,<span class="string">'k'</span>, <span class="string">'CData'</span>,C,<span class="string">'FaceColor'</span>,<span class="string">'flat'</span>,<span class="string">'FaceAlpha'</span>,1);
+gpatch(F,V,C);
 colormap(cMap); colorbar; caxis([min(M(:)) max(M(:))]);
-axis <span class="string">equal</span>; view(3); axis <span class="string">tight</span>; grid <span class="string">on</span>;
-camlight <span class="string">headlight</span>;
-set(gca,<span class="string">'fontSize'</span>,fontSize);
+axisGeom(gca,fontSize); camlight <span class="string">headlight</span>;
 drawnow;
 </pre><img width="100%" height="auto" vspace="5" hspace="5" src="HELP_im2patch_06.jpg" alt=""> <h2 id="20">Example: Shrinking patch data through combination with <tt>scalePatch</tt> function</h2><pre class="codeinput"><span class="comment">% Using the function |scalePatch| patch data can be shrunk to aid</span>
 <span class="comment">% visualisation (can be a tool to avoid memory costly transparency for</span>
@@ -233,11 +223,9 @@ drawnow;
 </pre><p>Plotting the voxels</p><pre class="codeinput">cFigure;
 title(<span class="string">'Scaled (shrunk) patch data'</span>);
 xlabel(<span class="string">'J - columns'</span>);ylabel(<span class="string">'I - rows'</span>); zlabel(<span class="string">'K - slices'</span>); hold <span class="string">on</span>;
-hp1= patch(<span class="string">'Faces'</span>,Fvs,<span class="string">'Vertices'</span>,Vvs,<span class="string">'FaceColor'</span>,<span class="string">'flat'</span>,<span class="string">'CData'</span>,Cvs,<span class="string">'EdgeColor'</span>,<span class="string">'k'</span>,<span class="string">'FaceAlpha'</span>,faceAlpha1);
-axis <span class="string">equal</span>; view(3); axis <span class="string">tight</span>; axis <span class="string">vis3d</span>; grid <span class="string">on</span>;
-colormap(cMap); colorbar; caxis([min(M(:)) max(M(:))]);
-camlight <span class="string">headlight</span>;
-set(gca,<span class="string">'fontSize'</span>,fontSize);
+gpatch(Fvs,Vvs,Cvs);
+colormap(cMap); colorbar; caxis([min(Cvs(:)) max(Cvs(:))]);
+axisGeom(gca,fontSize); camlight <span class="string">headlight</span>;
 drawnow;
 </pre><img width="100%" height="auto" vspace="5" hspace="5" src="HELP_im2patch_07.jpg" alt=""> <h2 id="22">Example: Medical image data and coordinate manipulation due to voxel size</h2><pre class="codeinput"><span class="comment">% Get a 3D image</span>
 load <span class="string">mri</span>;
@@ -275,33 +263,33 @@ logicVoxels(:,1:sliceIndexJ,:)=0;
 [Vx(:,1),Vx(:,2),Vx(:,3)]=im2cart(Vx(:,2),Vx(:,1),Vx(:,3),v);
 [Vy(:,1),Vy(:,2),Vy(:,3)]=im2cart(Vy(:,2),Vy(:,1),Vy(:,3),v);
 [Vz(:,1),Vz(:,2),Vz(:,3)]=im2cart(Vz(:,2),Vz(:,1),Vz(:,3),v);
-
-cFigure;
+</pre><pre class="codeinput">cFigure;
 title(<span class="string">'MRI visualisation, slices and voxels in cartesian coordinates with aid of voxel size'</span>);
 xlabel(<span class="string">'X (mm)'</span>);ylabel(<span class="string">'Y (mm)'</span>); zlabel(<span class="string">'Z (mm)'</span>); hold <span class="string">on</span>;
-hp1= patch(<span class="string">'Faces'</span>,Fv,<span class="string">'Vertices'</span>,Vv,<span class="string">'FaceColor'</span>,<span class="string">'flat'</span>,<span class="string">'CData'</span>,Cv,<span class="string">'EdgeColor'</span>,edgeColor1,<span class="string">'FaceAlpha'</span>,faceAlpha1);
-hp2= patch(<span class="string">'Faces'</span>,Fx,<span class="string">'Vertices'</span>,Vx,<span class="string">'FaceColor'</span>,<span class="string">'flat'</span>,<span class="string">'CData'</span>,Cx,<span class="string">'EdgeColor'</span>,edgeColor2,<span class="string">'FaceAlpha'</span>,faceAlpha1);
-hp3= patch(<span class="string">'Faces'</span>,Fy,<span class="string">'Vertices'</span>,Vy,<span class="string">'FaceColor'</span>,<span class="string">'flat'</span>,<span class="string">'CData'</span>,Cy,<span class="string">'EdgeColor'</span>,edgeColor2,<span class="string">'FaceAlpha'</span>,faceAlpha1);
-hp4= patch(<span class="string">'Faces'</span>,Fz,<span class="string">'Vertices'</span>,Vz,<span class="string">'FaceColor'</span>,<span class="string">'flat'</span>,<span class="string">'CData'</span>,Cz,<span class="string">'EdgeColor'</span>,edgeColor2,<span class="string">'FaceAlpha'</span>,faceAlpha1);
-axis <span class="string">equal</span>; view(3); axis <span class="string">tight</span>; axis <span class="string">vis3d</span>; grid <span class="string">on</span>;
+gpatch(Fv,Vv,Cv,edgeColor1,faceAlpha2);
+gpatch(Fx,Vx,Cx,edgeColor1,faceAlpha1);
+gpatch(Fy,Vy,Cy,edgeColor1,faceAlpha1);
+gpatch(Fz,Vz,Cz,edgeColor1,faceAlpha1);
 colormap(gray(250)); colorbar;
-camlight <span class="string">headlight</span>;
-set(gca,<span class="string">'fontSize'</span>,fontSize);
+axisGeom(gca,fontSize); camlight <span class="string">headlight</span>;
 drawnow;
-</pre><img width="100%" height="auto" vspace="5" hspace="5" src="HELP_im2patch_08.jpg" alt=""> <h2 id="25">Example: Combining colormap and RGB driven patch colours</h2><p>N.B. The figure renderer might have to be set to OPENGL. This is the default renderer for the <tt>figuremax</tt> function</p><p>Convert voxels colouring to RGB type, here a simple conversion to a gray scale description is used</p><pre class="codeinput">Cv=(Cv*ones(1,3))./max(Cv(:));
+</pre><img width="100%" height="auto" vspace="5" hspace="5" src="HELP_im2patch_08.jpg" alt=""> <h2 id="26">Example: Combining colormap and RGB driven patch colours</h2><p>N.B. The figure renderer might have to be set to OPENGL.</p><p>Convert voxels colouring to RGB type, here a simple conversion to a gray scale description is used</p><pre class="codeinput">Cv=(Cv*ones(1,3))./max(Cv(:));
 </pre><p>Plotting the voxels</p><pre class="codeinput">cFigure;
 title(<span class="string">'MRI visualisation, slices and voxels, colormap and RGB driven respectively'</span>);
 xlabel(<span class="string">'X (mm)'</span>);ylabel(<span class="string">'Y (mm)'</span>); zlabel(<span class="string">'Z (mm)'</span>); hold <span class="string">on</span>;
-hp1= patch(<span class="string">'Faces'</span>,Fv,<span class="string">'Vertices'</span>,Vv,<span class="string">'FaceColor'</span>,<span class="string">'flat'</span>,<span class="string">'FaceVertexCData'</span>,Cv,<span class="string">'EdgeColor'</span>,edgeColor1,<span class="string">'FaceAlpha'</span>,faceAlpha2);
-hp2= patch(<span class="string">'Faces'</span>,Fx,<span class="string">'Vertices'</span>,Vx,<span class="string">'FaceColor'</span>,<span class="string">'flat'</span>,<span class="string">'CData'</span>,Cx,<span class="string">'EdgeColor'</span>,edgeColor2,<span class="string">'FaceAlpha'</span>,faceAlpha1);
-hp3= patch(<span class="string">'Faces'</span>,Fy,<span class="string">'Vertices'</span>,Vy,<span class="string">'FaceColor'</span>,<span class="string">'flat'</span>,<span class="string">'CData'</span>,Cy,<span class="string">'EdgeColor'</span>,edgeColor2,<span class="string">'FaceAlpha'</span>,faceAlpha1);
-hp4= patch(<span class="string">'Faces'</span>,Fz,<span class="string">'Vertices'</span>,Vz,<span class="string">'FaceColor'</span>,<span class="string">'flat'</span>,<span class="string">'CData'</span>,Cz,<span class="string">'EdgeColor'</span>,edgeColor2,<span class="string">'FaceAlpha'</span>,faceAlpha1);
-axis <span class="string">equal</span>; view(3); axis <span class="string">tight</span>; axis <span class="string">vis3d</span>; grid <span class="string">on</span>;
+
+<span class="comment">%RGB driven</span>
+gpatch(Fv,Vv,Cv,edgeColor1,faceAlpha2);
+
+<span class="comment">%Colormap driven</span>
+gpatch(Fx,Vx,Cx,edgeColor1,faceAlpha1);
+gpatch(Fy,Vy,Cy,edgeColor1,faceAlpha1);
+gpatch(Fz,Vz,Cz,edgeColor1,faceAlpha1);
+
 colormap(cMap); colorbar;
-camlight <span class="string">headlight</span>;
-set(gca,<span class="string">'fontSize'</span>,fontSize);
+axisGeom(gca,fontSize); camlight <span class="string">headlight</span>;
 drawnow;
-</pre><img width="100%" height="auto" vspace="5" hspace="5" src="HELP_im2patch_09.jpg" alt=""> <p><img vspace="5" hspace="5" src="gibbVerySmall.gif" alt=""> </p><p><i><b>GIBBON</b></i> <a href="www.gibboncode.org">www.gibboncode.org</a></p><p><i>Kevin Mattheus Moerman</i>, <a href="gibbon.toolbox@gmail.com">gibbon.toolbox@gmail.com</a></p><p><i><b>GIBBON footer text</b></i></p><p>License: <a href="https://github.com/gibbonCode/GIBBON/blob/master/LICENSE">https://github.com/gibbonCode/GIBBON/blob/master/LICENSE</a></p><p>GIBBON: The Geometry and Image-based Bioengineering add-On. A toolbox for image segmentation, image-based modeling, meshing, and finite element analysis.</p><p>Copyright (C) 2019  Kevin Mattheus Moerman</p><p>This program is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.</p><p>This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for more details.</p><p>You should have received a copy of the GNU General Public License along with this program.  If not, see <a href="http://www.gnu.org/licenses/">http://www.gnu.org/licenses/</a>.</p><p class="footer"><br><a href="https://www.mathworks.com/products/matlab/">Published with MATLAB&reg; R2019a</a><br></p></div><!--
+</pre><img width="100%" height="auto" vspace="5" hspace="5" src="HELP_im2patch_09.jpg" alt=""> <p><img vspace="5" hspace="5" src="gibbVerySmall.gif" alt=""> </p><p><i><b>GIBBON</b></i> <a href="www.gibboncode.org">www.gibboncode.org</a></p><p><i>Kevin Mattheus Moerman</i>, <a href="gibbon.toolbox@gmail.com">gibbon.toolbox@gmail.com</a></p><p><i><b>GIBBON footer text</b></i></p><p>License: <a href="https://github.com/gibbonCode/GIBBON/blob/master/LICENSE">https://github.com/gibbonCode/GIBBON/blob/master/LICENSE</a></p><p>GIBBON: The Geometry and Image-based Bioengineering add-On. A toolbox for image segmentation, image-based modeling, meshing, and finite element analysis.</p><p>Copyright (C) 2006-2020 Kevin Mattheus Moerman</p><p>This program is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.</p><p>This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for more details.</p><p>You should have received a copy of the GNU General Public License along with this program.  If not, see <a href="http://www.gnu.org/licenses/">http://www.gnu.org/licenses/</a>.</p><p class="footer"><br><a href="https://www.mathworks.com/products/matlab/">Published with MATLAB&reg; R2020a</a><br></p></div><!--
 ##### SOURCE BEGIN #####
 %% im2patch
 % Below is a demonstration of the features of the |im2patch| function
@@ -322,9 +310,9 @@ clear; close all; clc;
 
 %%
 % Plot settings
-cMap=gjet(250);
+cMap=parula(250);
 faceAlpha1=1;
-faceAlpha2=0.65;
+faceAlpha2=0.5;
 edgeColor1='none';
 edgeColor2='none';
 fontSize=15; 
@@ -345,11 +333,9 @@ indPatch=1:numel(M);
 cFigure;
 title('patch type: v');
 xlabel('J - columns');ylabel('I - rows'); zlabel('K - slices'); hold on;
-patch('Faces',F,'Vertices',V,'FaceColor','flat','CData',C,'EdgeColor','k','FaceAlpha',0.5);
-axis equal; view(3); axis tight; axis vis3d; grid off;  
-colormap(cMap); caxis([min(M(:)) max(M(:))]); colorbar;
-camlight headlight;
-set(gca,'fontSize',fontSize); 
+gpatch(F,V,C,'k',faceAlpha2);
+colormap(cMap); caxis([min(M(:)) max(M(:))]); colorbar; 
+axisGeom(gca,fontSize); camlight headlight;
 drawnow;
 
 %%
@@ -367,11 +353,9 @@ disp(num2str(size(V)));
 cFigure;
 title('patch type: vu');
 xlabel('J - columns');ylabel('I - rows'); zlabel('K - slices'); hold on;
-patch('Faces',F,'Vertices',V,'FaceColor','flat','CData',C,'EdgeColor','k','FaceAlpha',0.5);
-axis equal; view(3); axis tight; axis vis3d; grid off;  
-colormap(cMap); caxis([min(M(:)) max(M(:))]); colorbar;
-camlight headlight;
-set(gca,'fontSize',fontSize); 
+gpatch(F,V,C,'k',faceAlpha2);
+colormap(cMap); caxis([min(M(:)) max(M(:))]); colorbar; 
+axisGeom(gca,fontSize); camlight headlight;
 drawnow;
 
 %%
@@ -393,11 +377,9 @@ disp(num2str(size(V)));
 cFigure;
 title('patch type: vb');
 xlabel('J - columns');ylabel('I - rows'); zlabel('K - slices'); hold on;
-patch('Faces',F,'Vertices',V,'FaceColor','flat','CData',C,'EdgeColor','k','FaceAlpha',0.5);
-axis equal; view(3); axis tight; axis vis3d; grid off;  
-colormap(cMap); caxis([min(M(:)) max(M(:))]); colorbar;
-camlight headlight;
-set(gca,'fontSize',fontSize); 
+gpatch(F,V,C,'k',faceAlpha2);
+colormap(cMap); caxis([min(M(:)) max(M(:))]); colorbar; 
+axisGeom(gca,fontSize); camlight headlight;
 drawnow;
 
 %%
@@ -421,26 +403,25 @@ S=round(size(M,1)./2); %Selection of middle slice
 L_plot=false(size(M)); L_plot(S,:,:)=1;
 indPatch=find(L_plot);
 [F,V,C]=im2patch(M,indPatch,'si'); %Creating patch data for y mid-voxel slices
-hs=patch('Faces',F,'Vertices',V,'EdgeColor','k', 'CData',C,'FaceColor','flat','FaceAlpha',1);
+gpatch(F,V,C);
 
 %Setting up indices for J direction slices
 S=round(size(M,2)./2); %Selection of middle slice
 L_plot=false(size(M)); L_plot(:,S,:)=1;
 indPatch=find(L_plot);
 [F,V,C]=im2patch(M,indPatch,'sj'); %Creating patch data for x mid-voxel slices
-hs=patch('Faces',F,'Vertices',V,'EdgeColor','k', 'CData',C,'FaceColor','flat','FaceAlpha',1);
+gpatch(F,V,C);
 
 %Setting up indices for Z direction slices
 S=round(size(M,3)./2); %Selection of middle slice
 L_plot=false(size(M)); L_plot(:,:,S)=1;
 indPatch=find(L_plot);
 [F,V,C]=im2patch(M,indPatch,'sk'); %Creating patch data for z mid-voxel slices
-hs=patch('Faces',F,'Vertices',V,'EdgeColor','k', 'CData',C,'FaceColor','flat','FaceAlpha',1);
+gpatch(F,V,C);
 
-axis equal; view(3); axis tight; axis vis3d; grid on;  
 colormap(cMap); caxis([min(M(:)) max(M(:))]); colorbar; 
-camlight headlight;
-set(gca,'fontSize',fontSize); 
+axisGeom(gca,fontSize); camlight headlight;
+
 drawnow;
 
 %%
@@ -456,33 +437,31 @@ subplot(2,2,1);
 title('MATLAB imagesc function');
 xlabel('J - columns');ylabel('I - rows'); zlabel('K - slices'); hold on;
 imagesc(M(:,:,S));
-axis equal; view(2); axis tight; axis vis3d; axis xy; grid on;  
 colormap(cMap); caxis([min(M(:)) max(M(:))]);
-set(gca,'fontSize',fontSize); 
+axisGeom(gca,fontSize); view(2);
 
 subplot(2,2,2);
 title('MATLAB slice function');
 xlabel('J - columns');ylabel('I - rows'); zlabel('K - slices'); hold on;
 slice(M,[],[],S);
-axis equal; view(2); axis tight; axis vis3d; grid on;  
+axisGeom(gca,fontSize);
 colormap(cMap); caxis([min(M(:)) max(M(:))]);
-set(gca,'fontSize',fontSize); 
+axisGeom(gca,fontSize); view(2);
+
+subplot(2,2,3);
+title('im2patch function');
+xlabel('J - columns');ylabel('I - rows'); zlabel('K - slices'); hold on;
+gpatch(F,V,C);
+colormap(cMap); caxis([min(M(:)) max(M(:))]);
+axisGeom(gca,fontSize); view(2);
 
 subplot(2,2,4);
 title('MATLAB pcolor function');
 xlabel('J - columns');ylabel('I - rows'); zlabel('K - slices'); hold on;
 pcolor(M(:,:,S));
-axis equal; view(2); axis tight; axis vis3d; grid on;  
 colormap(cMap); caxis([min(M(:)) max(M(:))]);
-set(gca,'fontSize',fontSize); 
+axisGeom(gca,fontSize); view(2);
 
-subplot(2,2,3);
-title('im2patch function');
-xlabel('J - columns');ylabel('I - rows'); zlabel('K - slices'); hold on;
-hs=patch('Faces',F,'Vertices',V,'EdgeColor','none', 'CData',C,'FaceColor','flat','FaceAlpha',1);
-axis equal; view(2); axis tight; axis vis3d; grid on; 
-colormap(cMap); caxis([min(M(:)) max(M(:))]);
-set(gca,'fontSize',fontSize); 
 drawnow;
 
 %%
@@ -504,7 +483,7 @@ M=1/6*(2 - (cos(X + phi*Y) + cos(X - phi*Y) + cos(Y + phi*Z) + cos(Y - phi*Z) + 
 % specific logic description (i.e. a mask) for the voxels of interest
 
 cFigure;
-title('patch type: si, sj, sk, vb');
+title('Combined voxel and slice plotting');
 xlabel('J - columns');ylabel('I - rows'); zlabel('K - slices'); hold on;
 
 % Setting up indices for I direction slices
@@ -512,31 +491,29 @@ S=round(size(M,1)./2); %Selection of middle slice
 L_plot=false(size(M)); L_plot(S,:,:)=1;
 indPatch=find(L_plot);
 [F,V,C]=im2patch(M,indPatch,'si'); %Creating patch data for y mid-voxel slices
-hs=patch('Faces',F,'Vertices',V,'EdgeColor','none', 'CData',C,'FaceColor','flat','FaceAlpha',0.75);
+gpatch(F,V,C,'none',faceAlpha2);
 
 % Setting up indices for J direction slices
 S=round(size(M,2)./2); %Selection of middle slice
 L_plot=false(size(M)); L_plot(:,S,:)=1;
 indPatch=find(L_plot);
 [F,V,C]=im2patch(M,indPatch,'sj'); %Creating patch data for x mid-voxel slices
-hs=patch('Faces',F,'Vertices',V,'EdgeColor','none', 'CData',C,'FaceColor','flat','FaceAlpha',0.75);
+gpatch(F,V,C,'none',faceAlpha2);
 
 % Setting up indices for K direction slices
 S=round(size(M,3)./2); %Selection of middle slice
 L_plot=false(size(M)); L_plot(:,:,S)=1;
 indPatch=find(L_plot);
 [F,V,C]=im2patch(M,indPatch,'sk'); %Creating patch data for z mid-voxel slices
-hs=patch('Faces',F,'Vertices',V,'EdgeColor','none', 'CData',C,'FaceColor','flat','FaceAlpha',0.75);
+gpatch(F,V,C,'none',faceAlpha2);
 
 % Setting up indices for voxels to plot
 L_mask=M>-0.2 & M<0;
 [F,V,C]=im2patch(M,L_mask,'vb'); %Creating patch data for selection of high voxels
 
-hs=patch('Faces',F,'Vertices',V,'EdgeColor','k', 'CData',C,'FaceColor','flat','FaceAlpha',1);
-colormap(cMap); colorbar; caxis([min(M(:)) max(M(:))]);
-axis equal; view(3); axis tight; grid on;
-camlight headlight;
-set(gca,'fontSize',fontSize); 
+gpatch(F,V,C);
+colormap(cMap); colorbar; caxis([min(M(:)) max(M(:))]); 
+axisGeom(gca,fontSize); camlight headlight;
 drawnow;
 
 %% Example: Shrinking patch data through combination with |scalePatch| function
@@ -554,11 +531,9 @@ drawnow;
 cFigure;
 title('Scaled (shrunk) patch data');
 xlabel('J - columns');ylabel('I - rows'); zlabel('K - slices'); hold on;
-hp1= patch('Faces',Fvs,'Vertices',Vvs,'FaceColor','flat','CData',Cvs,'EdgeColor','k','FaceAlpha',faceAlpha1);
-axis equal; view(3); axis tight; axis vis3d; grid on;  
-colormap(cMap); colorbar; caxis([min(M(:)) max(M(:))]);
-camlight headlight;
-set(gca,'fontSize',fontSize); 
+gpatch(Fvs,Vvs,Cvs);
+colormap(cMap); colorbar; caxis([min(Cvs(:)) max(Cvs(:))]); 
+axisGeom(gca,fontSize); camlight headlight;
 drawnow;
 
 %% Example: Medical image data and coordinate manipulation due to voxel size
@@ -615,22 +590,21 @@ logicVoxels(:,1:sliceIndexJ,:)=0;
 [Vy(:,1),Vy(:,2),Vy(:,3)]=im2cart(Vy(:,2),Vy(:,1),Vy(:,3),v);
 [Vz(:,1),Vz(:,2),Vz(:,3)]=im2cart(Vz(:,2),Vz(:,1),Vz(:,3),v);
 
+%%
+% 
 cFigure;
 title('MRI visualisation, slices and voxels in cartesian coordinates with aid of voxel size');
 xlabel('X (mm)');ylabel('Y (mm)'); zlabel('Z (mm)'); hold on;
-hp1= patch('Faces',Fv,'Vertices',Vv,'FaceColor','flat','CData',Cv,'EdgeColor',edgeColor1,'FaceAlpha',faceAlpha1);
-hp2= patch('Faces',Fx,'Vertices',Vx,'FaceColor','flat','CData',Cx,'EdgeColor',edgeColor2,'FaceAlpha',faceAlpha1);
-hp3= patch('Faces',Fy,'Vertices',Vy,'FaceColor','flat','CData',Cy,'EdgeColor',edgeColor2,'FaceAlpha',faceAlpha1);
-hp4= patch('Faces',Fz,'Vertices',Vz,'FaceColor','flat','CData',Cz,'EdgeColor',edgeColor2,'FaceAlpha',faceAlpha1);
-axis equal; view(3); axis tight; axis vis3d; grid on;  
+gpatch(Fv,Vv,Cv,edgeColor1,faceAlpha2);
+gpatch(Fx,Vx,Cx,edgeColor1,faceAlpha1);
+gpatch(Fy,Vy,Cy,edgeColor1,faceAlpha1);
+gpatch(Fz,Vz,Cz,edgeColor1,faceAlpha1);
 colormap(gray(250)); colorbar; 
-camlight headlight;
-set(gca,'fontSize',fontSize); 
+axisGeom(gca,fontSize); camlight headlight;
 drawnow;
 
 %% Example: Combining colormap and RGB driven patch colours 
-% N.B. The figure renderer might have to be set to OPENGL. This is the
-% default renderer for the |figuremax| function
+% N.B. The figure renderer might have to be set to OPENGL.
 
 %%
 % Convert voxels colouring to RGB type, here a simple conversion to a gray
@@ -639,17 +613,21 @@ Cv=(Cv*ones(1,3))./max(Cv(:));
 
 %%
 % Plotting the voxels
+
 cFigure;
 title('MRI visualisation, slices and voxels, colormap and RGB driven respectively');
 xlabel('X (mm)');ylabel('Y (mm)'); zlabel('Z (mm)'); hold on;
-hp1= patch('Faces',Fv,'Vertices',Vv,'FaceColor','flat','FaceVertexCData',Cv,'EdgeColor',edgeColor1,'FaceAlpha',faceAlpha2);
-hp2= patch('Faces',Fx,'Vertices',Vx,'FaceColor','flat','CData',Cx,'EdgeColor',edgeColor2,'FaceAlpha',faceAlpha1);
-hp3= patch('Faces',Fy,'Vertices',Vy,'FaceColor','flat','CData',Cy,'EdgeColor',edgeColor2,'FaceAlpha',faceAlpha1);
-hp4= patch('Faces',Fz,'Vertices',Vz,'FaceColor','flat','CData',Cz,'EdgeColor',edgeColor2,'FaceAlpha',faceAlpha1);
-axis equal; view(3); axis tight; axis vis3d; grid on;  
+
+%RGB driven
+gpatch(Fv,Vv,Cv,edgeColor1,faceAlpha2);
+
+%Colormap driven
+gpatch(Fx,Vx,Cx,edgeColor1,faceAlpha1);
+gpatch(Fy,Vy,Cy,edgeColor1,faceAlpha1);
+gpatch(Fz,Vz,Cz,edgeColor1,faceAlpha1);
+
 colormap(cMap); colorbar; 
-camlight headlight;
-set(gca,'fontSize',fontSize); 
+axisGeom(gca,fontSize); camlight headlight;
 drawnow;
 
 %% 
@@ -670,7 +648,7 @@ drawnow;
 % image segmentation, image-based modeling, meshing, and finite element
 % analysis.
 % 
-% Copyright (C) 2019  Kevin Mattheus Moerman
+% Copyright (C) 2006-2020 Kevin Mattheus Moerman
 % 
 % This program is free software: you can redistribute it and/or modify
 % it under the terms of the GNU General Public License as published by
