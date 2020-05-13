@@ -23,6 +23,8 @@ function [C]=patchConnectivity(varargin)
 % 2019/04/22 Changed variable names to be more descriptive
 % 2019/04/22 Improved function performance by creating optional output
 % requests for output structure. Can be controlled through input conTypes
+% 2020/05/13 Fixed bug in edgeFaceConnectivity when edges connect to more
+% than 2 faces
 %
 % To do: 
 % Check efficiency and compare to tesIND
@@ -80,7 +82,8 @@ if any(contains(conTypeSet(logicCompute),{'ef','ff'}))
     ind=ind(:); %Force as column
     edgeFaceConnectivity=sparse(faceEdgeConnectivity(:),ind,ind,numEdges,numFaces,numel(ind)); %Create sparse form of connectivity matrix
     edgeFaceConnectivity=sort(edgeFaceConnectivity,2,'descend'); %Sort the sparse array
-    edgeFaceConnectivity=full(edgeFaceConnectivity(:,[1 2])); %Keep relevant columns, convert to full array
+    [~,J,~] = find(edgeFaceConnectivity);
+    edgeFaceConnectivity=full(edgeFaceConnectivity(:,1:max(J))); %Keep relevant columns, convert to full array
 end
 
 %% Vertex-face connectivity

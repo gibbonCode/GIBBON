@@ -157,7 +157,7 @@ end
 %Add animation layer
 anim8(hFig,animStruct);
 set(hFig.UserData.anim8.sliderHandles{1},'Value',round(numSliceSteps/2)); %Set to middle
-drawnow;
+gdrawnow;
 
 %% Collect output
 

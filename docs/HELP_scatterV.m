@@ -5,12 +5,37 @@
 clear; close all; clc;
 
 %% Syntax
-% |[varargout]=scatterV(V,varargin);|
+% |[hp]=scatterV(V);|
+% |[hp]=scatterV(V,scatterMarkerSize,C);|
+% |[hp]=scatterV(V,scatterMarkerSize,C,'filled');|
 
 %% Description 
-% UNDOCUMENTED 
+% This function is similar to scatter3 except that the coordinate set can
+% be specified in a single nx3 array. In fact the function simply does: 
+% |hp=scatter3(V(:,1),V(:,2),V(:,3),varargin{:});|
+% In other words all additional inputs are directly passed to the scatter3
+% function. 
+%
+% See also: |scatter3|
+
 %% Examples 
-% 
+
+%%
+% Create example coordinates V and color data C
+
+[F,V]=geoSphere(3,1); %Gettting vertices of a sphere
+C=V(:,3); %The color data
+scatterMarkerSize=50; %The marker size to use
+
+%%
+cFigure; hold on;
+gpatch(F,V,'kw','none',0.1); %Visualize surface
+
+scatterV(V,scatterMarkerSize,C,'filled'); %using scatterV
+
+axisGeom;
+gdrawnow; 
+
 %%
 % 
 % <<gibbVerySmall.gif>>

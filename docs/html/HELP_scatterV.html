@@ -6,7 +6,7 @@
    <!--
 This HTML was auto-generated from MATLAB code.
 To make changes, update the MATLAB code and republish this document.
-      --><title>scatterV</title><meta name="generator" content="MATLAB 9.6"><link rel="schema.DC" href="http://purl.org/dc/elements/1.1/"><meta name="DC.date" content="2019-06-20"><meta name="DC.source" content="HELP_scatterV.m"><style type="text/css">
+      --><title>scatterV</title><meta name="generator" content="MATLAB 9.8"><link rel="schema.DC" href="http://purl.org/dc/elements/1.1/"><meta name="DC.date" content="2020-05-13"><meta name="DC.source" content="HELP_scatterV.m"><style type="text/css">
 html,body,div,span,applet,object,iframe,h1,h2,h3,h4,h5,h6,p,blockquote,pre,a,abbr,acronym,address,big,cite,code,del,dfn,em,font,img,ins,kbd,q,s,samp,small,strike,strong,sub,sup,tt,var,b,u,i,center,dl,dt,dd,ol,ul,li,fieldset,form,label,legend,table,caption,tbody,tfoot,thead,tr,th,td{margin:0;padding:0;border:0;outline:0;font-size:100%;vertical-align:baseline;background:transparent}body{line-height:1}ol,ul{list-style:none}blockquote,q{quotes:none}blockquote:before,blockquote:after,q:before,q:after{content:'';content:none}:focus{outine:0}ins{text-decoration:none}del{text-decoration:line-through}table{border-collapse:collapse;border-spacing:0}
 
 html { min-height:100%; margin-bottom:1px; }
@@ -23,7 +23,7 @@ a:visited { color:#004aa0; text-decoration:none; }
 
 p { padding:0px; margin:0px 0px 20px; }
 img { padding:0px; margin:0px 0px 20px; border:none; }
-p img, pre img, tt img, li img, h1 img, h2 img { margin-bottom:0px; } 
+p img, pre img, tt img, li img, h1 img, h2 img { margin-bottom:0px; }
 
 ul { padding:0px; margin:0px 0px 20px 23px; list-style:square; }
 ul li { padding:0px; margin:0px 0px 7px 0px; }
@@ -52,6 +52,7 @@ span.comment { color:#228B22 }
 span.string { color:#A020F0 }
 span.untermstring { color:#B20000 }
 span.syscmd { color:#B28C00 }
+span.typesection { color:#A0522D }
 
 .footer { width:auto; padding:10px 0px; margin:25px 0px 0px; border-top:1px dotted #878787; font-size:0.8em; line-height:140%; font-style:italic; color:#878787; text-align:left; float:none; }
 .footer p { margin:0px; }
@@ -67,7 +68,17 @@ table td { padding:7px 5px; text-align:left; vertical-align:top; border:1px soli
 
 
   </style></head><body><div class="content"><h1>scatterV</h1><!--introduction--><p>Below is a demonstration of the features of the <tt>scatterV</tt> function</p><!--/introduction--><h2>Contents</h2><div><ul><li><a href="#2">Syntax</a></li><li><a href="#3">Description</a></li><li><a href="#4">Examples</a></li></ul></div><pre class="codeinput">clear; close <span class="string">all</span>; clc;
-</pre><h2 id="2">Syntax</h2><p><tt>[varargout]=scatterV(V,varargin);</tt></p><h2 id="3">Description</h2><p>UNDOCUMENTED</p><h2 id="4">Examples</h2><p><img vspace="5" hspace="5" src="gibbVerySmall.gif" alt=""> </p><p><i><b>GIBBON</b></i> <a href="www.gibboncode.org">www.gibboncode.org</a></p><p><i>Kevin Mattheus Moerman</i>, <a href="gibbon.toolbox@gmail.com">gibbon.toolbox@gmail.com</a></p><p><i><b>GIBBON footer text</b></i></p><p>License: <a href="https://github.com/gibbonCode/GIBBON/blob/master/LICENSE">https://github.com/gibbonCode/GIBBON/blob/master/LICENSE</a></p><p>GIBBON: The Geometry and Image-based Bioengineering add-On. A toolbox for image segmentation, image-based modeling, meshing, and finite element analysis.</p><p>Copyright (C) 2019  Kevin Mattheus Moerman</p><p>This program is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.</p><p>This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for more details.</p><p>You should have received a copy of the GNU General Public License along with this program.  If not, see <a href="http://www.gnu.org/licenses/">http://www.gnu.org/licenses/</a>.</p><p class="footer"><br><a href="https://www.mathworks.com/products/matlab/">Published with MATLAB&reg; R2019a</a><br></p></div><!--
+</pre><h2 id="2">Syntax</h2><p><tt>[hp]=scatterV(V);</tt> <tt>[hp]=scatterV(V,scatterMarkerSize,C);</tt> <tt>[hp]=scatterV(V,scatterMarkerSize,C,'filled');</tt></p><h2 id="3">Description</h2><p>This function is similar to scatter3 except that the coordinate set can be specified in a single nx3 array. In fact the function simply does: <tt>hp=scatter3(V(:,1),V(:,2),V(:,3),varargin{:});</tt> In other words all additional inputs are directly passed to the scatter3 function.</p><p>See also: <tt>scatter3</tt></p><h2 id="4">Examples</h2><p>Create example coordinates V and color data C</p><pre class="codeinput">[F,V]=geoSphere(3,1); <span class="comment">%Gettting vertices of a sphere</span>
+C=V(:,3); <span class="comment">%The color data</span>
+scatterMarkerSize=50; <span class="comment">%The marker size to use</span>
+</pre><pre class="codeinput">cFigure; hold <span class="string">on</span>;
+gpatch(F,V,<span class="string">'kw'</span>,<span class="string">'none'</span>,0.1); <span class="comment">%Visualize surface</span>
+
+scatterV(V,scatterMarkerSize,C,<span class="string">'filled'</span>); <span class="comment">%using scatterV</span>
+
+axisGeom;
+gdrawnow;
+</pre><img width="100%" height="auto" vspace="5" hspace="5" src="HELP_scatterV_01.jpg" alt=""> <p><img vspace="5" hspace="5" src="gibbVerySmall.gif" alt=""> </p><p><i><b>GIBBON</b></i> <a href="www.gibboncode.org">www.gibboncode.org</a></p><p><i>Kevin Mattheus Moerman</i>, <a href="gibbon.toolbox@gmail.com">gibbon.toolbox@gmail.com</a></p><p><i><b>GIBBON footer text</b></i></p><p>License: <a href="https://github.com/gibbonCode/GIBBON/blob/master/LICENSE">https://github.com/gibbonCode/GIBBON/blob/master/LICENSE</a></p><p>GIBBON: The Geometry and Image-based Bioengineering add-On. A toolbox for image segmentation, image-based modeling, meshing, and finite element analysis.</p><p>Copyright (C) 2006-2020 Kevin Mattheus Moerman</p><p>This program is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.</p><p>This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for more details.</p><p>You should have received a copy of the GNU General Public License along with this program.  If not, see <a href="http://www.gnu.org/licenses/">http://www.gnu.org/licenses/</a>.</p><p class="footer"><br><a href="https://www.mathworks.com/products/matlab/">Published with MATLAB&reg; R2020a</a><br></p></div><!--
 ##### SOURCE BEGIN #####
 %% scatterV
 % Below is a demonstration of the features of the |scatterV| function
@@ -76,12 +87,37 @@ table td { padding:7px 5px; text-align:left; vertical-align:top; border:1px soli
 clear; close all; clc;
 
 %% Syntax
-% |[varargout]=scatterV(V,varargin);|
+% |[hp]=scatterV(V);|
+% |[hp]=scatterV(V,scatterMarkerSize,C);|
+% |[hp]=scatterV(V,scatterMarkerSize,C,'filled');|
 
 %% Description 
-% UNDOCUMENTED 
+% This function is similar to scatter3 except that the coordinate set can
+% be specified in a single nx3 array. In fact the function simply does: 
+% |hp=scatter3(V(:,1),V(:,2),V(:,3),varargin{:});|
+% In other words all additional inputs are directly passed to the scatter3
+% function. 
+%
+% See also: |scatter3|
+
 %% Examples 
-% 
+
+%%
+% Create example coordinates V and color data C
+
+[F,V]=geoSphere(3,1); %Gettting vertices of a sphere
+C=V(:,3); %The color data
+scatterMarkerSize=50; %The marker size to use
+
+%%
+cFigure; hold on;
+gpatch(F,V,'kw','none',0.1); %Visualize surface
+
+scatterV(V,scatterMarkerSize,C,'filled'); %using scatterV
+
+axisGeom;
+gdrawnow; 
+
 %%
 % 
 % <<gibbVerySmall.gif>>
@@ -99,7 +135,7 @@ clear; close all; clc;
 % image segmentation, image-based modeling, meshing, and finite element
 % analysis.
 % 
-% Copyright (C) 2019  Kevin Mattheus Moerman
+% Copyright (C) 2006-2020 Kevin Mattheus Moerman
 % 
 % This program is free software: you can redistribute it and/or modify
 % it under the terms of the GNU General Public License as published by

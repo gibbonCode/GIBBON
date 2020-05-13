@@ -1,5 +1,16 @@
 function [varargout]=scatterV(V,varargin)
 
+% function [hp]=scatterV(V,varargin)
+% ------------------------------------------------------------------------
+% This function is similar to scatter3 except that the coordinate set can
+% be specified in a single nx3 array. In fact the function simply does: 
+%
+%       hp=scatter3(V(:,1),V(:,2),V(:,3),varargin{:});
+%
+% Kevin Mattheus Moerman
+%
+% ------------------------------------------------------------------------
+
 %% 
 if ~isempty(V)
     nDims=size(V,2);

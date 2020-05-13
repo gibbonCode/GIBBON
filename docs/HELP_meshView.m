@@ -1,9 +1,6 @@
 %% meshView
 % Below is a demonstration of the features of the |meshView| function
 
-%%
-clear; close all; clc;
-
 %% Syntax
 % |[hFig,hp]=meshView(meshStruct,optionStruct);|
 
@@ -28,6 +25,9 @@ clear; close all; clc;
 % If tetgen is used the meshStruct can be the tetgen output structure. 
 
 %% Examples
+
+%%
+clear; close all; clc;
 
 %%
 % Plot settings
