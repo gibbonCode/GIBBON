@@ -1,6 +1,6 @@
 function [varargout]=tesgroup(varargin)
 
-% function [G,G_iter]=tesgroup(F,optionStruct)
+% function [G,G_iter,groupSize]=tesgroup(F,optionStruct)
 % ------------------------------------------------------------------------
 %
 % This function finds groups in the tesselation defined by F. F may

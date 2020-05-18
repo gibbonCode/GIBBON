@@ -1,6 +1,6 @@
 function [varargout]=triSurfSplitBoundary(varargin)
 
-% function [F,V]=triSurfSplitBoundary(F,V,E,n,CF,CV)
+% function [F,V,E,CF,CV]=triSurfSplitBoundary(F,V,E,n,CF,CV)
 % ------------------------------------------------------------------------
 %
 % 
@@ -40,6 +40,10 @@ switch nargin
         CV=varargin{6};
 end
 
+if isempty(CF)
+    CF=ones(size(F,1),1);
+end
+
 %%
 if isempty(E)
     error('Edge set is empty');
@@ -55,7 +59,7 @@ else
         numNodesPre=size(V,1); %Number of nodes before split
         [F,V,~,CF,CV]=triEdgeSplit(F,V,E(indMax,:),CF,CV);
         numNodesPost=size(V,1); %Number of nodes after split
-        Eb=patchBoundary(F,V); %All boundary edges
+        [Eb]=patchBoundaryLabelEdges(F,V,CF); %All boundary edges
         logicKeep=all(ismember(Eb,E) |...
             ismember(Eb,(numNodesPre+1):numNodesPost),2);
         E=Eb(logicKeep,:);

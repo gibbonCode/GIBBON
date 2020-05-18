@@ -19,10 +19,10 @@ switch distMetric
         for q=1:1:numSteps
             v1=V1(q,:);
             n1=N1(q,:);
-            [V_intersect,L_intersect,~] = triangleRayIntersection(v1(ones(size(F2,1),1),:),n1(ones(size(F2,1),1),:),V2,F2,optStruct);
+            [V_intersect,L_intersect] = triangleRayIntersection(v1(ones(size(F2,1),1),:),n1(ones(size(F2,1),1),:),V2,F2,optStruct);
             V_intersect=V_intersect(L_intersect,:);
             if nnz(L_intersect)>0
-                d=dist(v1,V_intersect');
+                d=distND(v1,V_intersect);
                 d1=min(d,[],2);
                 D1(q)=d1(:);
             end

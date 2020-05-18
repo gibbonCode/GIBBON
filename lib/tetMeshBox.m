@@ -10,7 +10,7 @@ function [meshStruct]=tetMeshBox(boxDim,pointSpacing)
 
 toleranceLevel=1*10^(numOrder(pointSpacing)-8); %tetgen's default is 1e-8
 toleranceLevelString=sprintf('%g',toleranceLevel);
-stringOpt=['-pq1.2AaY','T',toleranceLevelString];
+stringOpt=['-pq1.2AaYQ','T',toleranceLevelString];
 
 inputStruct.stringOpt=stringOpt;
 inputStruct.Faces=F;

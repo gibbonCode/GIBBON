@@ -1,0 +1,497 @@
+
+<!DOCTYPE html
+  PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html><head>
+      <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+   <!--
+This HTML was auto-generated from MATLAB code.
+To make changes, update the MATLAB code and republish this document.
+      --><title>meshCleave</title><meta name="generator" content="MATLAB 9.8"><link rel="schema.DC" href="http://purl.org/dc/elements/1.1/"><meta name="DC.date" content="2020-05-18"><meta name="DC.source" content="HELP_meshCleave.m"><style type="text/css">
+html,body,div,span,applet,object,iframe,h1,h2,h3,h4,h5,h6,p,blockquote,pre,a,abbr,acronym,address,big,cite,code,del,dfn,em,font,img,ins,kbd,q,s,samp,small,strike,strong,sub,sup,tt,var,b,u,i,center,dl,dt,dd,ol,ul,li,fieldset,form,label,legend,table,caption,tbody,tfoot,thead,tr,th,td{margin:0;padding:0;border:0;outline:0;font-size:100%;vertical-align:baseline;background:transparent}body{line-height:1}ol,ul{list-style:none}blockquote,q{quotes:none}blockquote:before,blockquote:after,q:before,q:after{content:'';content:none}:focus{outine:0}ins{text-decoration:none}del{text-decoration:line-through}table{border-collapse:collapse;border-spacing:0}
+
+html { min-height:100%; margin-bottom:1px; }
+html body { height:100%; margin:0px; font-family:Arial, Helvetica, sans-serif; font-size:10px; color:#000; line-height:140%; background:#fff none; overflow-y:scroll; }
+html body td { vertical-align:top; text-align:left; }
+
+h1 { padding:0px; margin:0px 0px 25px; font-family:Arial, Helvetica, sans-serif; font-size:1.5em; color:#d55000; line-height:100%; font-weight:normal; }
+h2 { padding:0px; margin:0px 0px 8px; font-family:Arial, Helvetica, sans-serif; font-size:1.2em; color:#000; font-weight:bold; line-height:140%; border-bottom:1px solid #d6d4d4; display:block; }
+h3 { padding:0px; margin:0px 0px 5px; font-family:Arial, Helvetica, sans-serif; font-size:1.1em; color:#000; font-weight:bold; line-height:140%; }
+
+a { color:#005fce; text-decoration:none; }
+a:hover { color:#005fce; text-decoration:underline; }
+a:visited { color:#004aa0; text-decoration:none; }
+
+p { padding:0px; margin:0px 0px 20px; }
+img { padding:0px; margin:0px 0px 20px; border:none; }
+p img, pre img, tt img, li img, h1 img, h2 img { margin-bottom:0px; }
+
+ul { padding:0px; margin:0px 0px 20px 23px; list-style:square; }
+ul li { padding:0px; margin:0px 0px 7px 0px; }
+ul li ul { padding:5px 0px 0px; margin:0px 0px 7px 23px; }
+ul li ol li { list-style:decimal; }
+ol { padding:0px; margin:0px 0px 20px 0px; list-style:decimal; }
+ol li { padding:0px; margin:0px 0px 7px 23px; list-style-type:decimal; }
+ol li ol { padding:5px 0px 0px; margin:0px 0px 7px 0px; }
+ol li ol li { list-style-type:lower-alpha; }
+ol li ul { padding-top:7px; }
+ol li ul li { list-style:square; }
+
+.content { font-size:1.2em; line-height:140%; padding: 20px; }
+
+pre, code { font-size:12px; }
+tt { font-size: 1.2em; }
+pre { margin:0px 0px 20px; }
+pre.codeinput { padding:10px; border:1px solid #d3d3d3; background:#f7f7f7; }
+pre.codeoutput { padding:10px 11px; margin:0px 0px 20px; color:#4c4c4c; }
+pre.error { color:red; }
+
+@media print { pre.codeinput, pre.codeoutput { word-wrap:break-word; width:100%; } }
+
+span.keyword { color:#0000FF }
+span.comment { color:#228B22 }
+span.string { color:#A020F0 }
+span.untermstring { color:#B20000 }
+span.syscmd { color:#B28C00 }
+span.typesection { color:#A0522D }
+
+.footer { width:auto; padding:10px 0px; margin:25px 0px 0px; border-top:1px dotted #878787; font-size:0.8em; line-height:140%; font-style:italic; color:#878787; text-align:left; float:none; }
+.footer p { margin:0px; }
+.footer a { color:#878787; }
+.footer a:hover { color:#878787; text-decoration:underline; }
+.footer a:visited { color:#878787; }
+
+table th { padding:7px 5px; text-align:left; vertical-align:middle; border: 1px solid #d6d4d4; font-weight:bold; }
+table td { padding:7px 5px; text-align:left; vertical-align:top; border:1px solid #d6d4d4; }
+
+
+
+
+
+  </style></head><body><div class="content"><h1>meshCleave</h1><!--introduction--><p>Below is a demonstration of the features of the <tt>meshCleave</tt> function</p><!--/introduction--><h2>Contents</h2><div><ul><li><a href="#2">Syntax</a></li><li><a href="#3">Description</a></li><li><a href="#4">Examples</a></li><li><a href="#5">Example: Cleaving a surface mesh</a></li><li><a href="#9">Example 2: Cleaving a tetrahedral mesh</a></li><li><a href="#14">Example 3: Cleaving a hexahedral mesh</a></li></ul></div><pre class="codeinput">clear; close <span class="string">all</span>; clc;
+</pre><h2 id="2">Syntax</h2><p><tt>[logicAt]=meshCleave(E,V);</tt> <tt>[logicAt]=meshCleave(E,V,P,n);</tt> <tt>[logicAt,logicAbove,logicBelow]=meshCleave(E,V,P,n,inclusiveSwitch);</tt> <tt>[logicAt,logicAbove,logicBelow]=meshCleave(E,V,P,n,inclusiveSwitch);</tt></p><h2 id="3">Description</h2><p>This function creates logic arrays for the mesh components (e.g. elements or faces) which are at, above, or below a plane defined by the point P, and the normal direction n. The optional incluseSwitch is a 2-component vector (default [0 0]) and sets how "inclusive", the below/above logic is, i.e. they set wether &lt; and &gt; is used ([0 0]), or &lt;= and &gt;= are used ([1 1]). A combination may also be used e.g. [1 0] results in below checks which features &lt;= and above checks using &gt;.</p><h2 id="4">Examples</h2><pre class="codeinput">clear; close <span class="string">all</span>; clc;
+</pre><h2 id="5">Example: Cleaving a surface mesh</h2><p>Create example patch data</p><pre class="codeinput">[F,V]=stanford_bunny;
+</pre><pre class="codeinput">n=[0 0 1]; <span class="comment">%Normal direction to plane</span>
+P=mean(V,1); <span class="comment">%Point on plane</span>
+[logicAt,logicAbove,logicBelow]=meshCleave(F,V,P,n);
+</pre><p>Visualize</p><pre class="codeinput">cFigure;
+subplot(1,3,1); hold <span class="string">on</span>;
+title(<span class="string">'At cleave plane'</span>);
+gpatch(F,V,<span class="string">'w'</span>,<span class="string">'none'</span>,0.2);
+gpatch(F(logicAt,:),V,<span class="string">'bw'</span>,<span class="string">'k'</span>,1);
+camlight <span class="string">headlight</span>;
+axisGeom;
+
+subplot(1,3,2); hold <span class="string">on</span>;
+title(<span class="string">'Above cleave plane'</span>);
+gpatch(F,V,<span class="string">'w'</span>,<span class="string">'none'</span>,0.2);
+gpatch(F(logicAbove,:),V,<span class="string">'bw'</span>,<span class="string">'k'</span>,1);
+camlight <span class="string">headlight</span>;
+axisGeom;
+
+subplot(1,3,3); hold <span class="string">on</span>;
+title(<span class="string">'Below cleave plane'</span>);
+gpatch(F,V,<span class="string">'w'</span>,<span class="string">'none'</span>,0.2);
+gpatch(F(logicBelow,:),V,<span class="string">'bw'</span>,<span class="string">'k'</span>,1);
+camlight <span class="string">headlight</span>;
+axisGeom;
+
+gdrawnow;
+</pre><img width="100%" height="auto" vspace="5" hspace="5" src="HELP_meshCleave_01.jpg" alt=""> <h2 id="9">Example 2: Cleaving a tetrahedral mesh</h2><p>Creating an example tetrahedral mesh</p><pre class="codeinput">boxDim=[5 5 5]; <span class="comment">% Box dimenstions</span>
+pointSpacing=0.25;
+[meshStruct]=tetMeshBox(boxDim,pointSpacing);
+E=meshStruct.elements;
+V=meshStruct.nodes;
+F=meshStruct.facesBoundary;
+VE=patchCentre(E,V);
+C=minDist(VE,mean(VE,1));
+</pre><pre class="codeoutput"> 
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+--- TETGEN Tetrahedral meshing --- 18-May-2020 23:01:48
+ 
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+--- Writing SMESH file --- 18-May-2020 23:01:48
+----&gt; Adding node field
+----&gt; Adding facet field
+----&gt; Adding holes specification
+----&gt; Adding region specification
+--- Done --- 18-May-2020 23:01:48
+--- Running TetGen to mesh input boundary--- 18-May-2020 23:01:48
+Opening /mnt/data/MATLAB/GIBBON/data/temp/temp.smesh.
+--- Done --- 18-May-2020 23:01:49
+ 
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+--- Importing TetGen files --- 18-May-2020 23:01:49
+--- Done --- 18-May-2020 23:01:49
+</pre><pre class="codeinput">n=[0 0 1]; <span class="comment">%Normal direction to plane</span>
+P=mean(V,1); <span class="comment">%Point on plane</span>
+[logicAt,logicAbove,logicBelow]=meshCleave(E,V,P,n);
+
+<span class="comment">% Get faces and matching color data for visualization</span>
+[F_cleave,CF_cleave]=element2patch(E(logicAt,:),C(logicAt));
+[F_above,CF_above]=element2patch(E(logicAbove,:),C(logicAbove));
+[F_below,CF_below]=element2patch(E(logicBelow,:),C(logicBelow));
+</pre><p>Visualize</p><pre class="codeinput">cFigure;
+subplot(1,3,1); hold <span class="string">on</span>;
+title(<span class="string">'At cleave plane'</span>);
+gpatch(F,V,<span class="string">'w'</span>,<span class="string">'none'</span>,0.2);
+gpatch(F_cleave,V,CF_cleave,<span class="string">'k'</span>,1);
+camlight <span class="string">headlight</span>;
+axisGeom;
+
+subplot(1,3,2); hold <span class="string">on</span>;
+title(<span class="string">'Above cleave plane'</span>);
+gpatch(F,V,<span class="string">'w'</span>,<span class="string">'none'</span>,0.2);
+gpatch(F_above,V,CF_above,<span class="string">'k'</span>,1);
+camlight <span class="string">headlight</span>;
+axisGeom;
+
+subplot(1,3,3); hold <span class="string">on</span>;
+title(<span class="string">'Below cleave plane'</span>);
+gpatch(F,V,<span class="string">'w'</span>,<span class="string">'none'</span>,0.2);
+gpatch(F_below,V,CF_below,<span class="string">'k'</span>,1);
+camlight <span class="string">headlight</span>;
+axisGeom;
+
+gdrawnow;
+</pre><img width="100%" height="auto" vspace="5" hspace="5" src="HELP_meshCleave_02.jpg" alt=""> <p>Visualizing cleaving operation for varying angles</p><pre class="codeinput">hf=cFigure; hold <span class="string">on</span>;
+gpatch(F,V,<span class="string">'w'</span>,<span class="string">'none'</span>,0.2);
+hp1=gpatch(F_cleave,V,CF_cleave,<span class="string">'k'</span>,1);
+axisGeom; axis <span class="string">manual</span>;
+camlight <span class="string">headligth</span>;
+gdrawnow;
+
+nSteps=50; <span class="comment">%Number of animation steps</span>
+
+<span class="comment">%Create the time vector</span>
+animStruct.Time=linspace(0,1,nSteps);
+
+<span class="comment">%The vector lengths</span>
+a=linspace(0,2*pi,nSteps);
+b=linspace(0,2*pi,nSteps);
+<span class="keyword">for</span> q=1:1:nSteps
+    R=euler2DCM([a(q) b(q) 0]);
+    nn=n*R;
+
+    logicAt=meshCleave(E,V,P,nn,[1 0]);
+
+    <span class="comment">% Get faces and matching color data for cleaves elements</span>
+    [F_cleave,CF_cleave]=element2patch(E(logicAt,:),C(logicAt));
+
+    <span class="comment">%Set entries in animation structure</span>
+    animStruct.Handles{q}=[hp1 hp1]; <span class="comment">%Handles of objects to animate</span>
+    animStruct.Props{q}={<span class="string">'Faces'</span>,<span class="string">'CData'</span>}; <span class="comment">%Properties of objects to animate</span>
+    animStruct.Set{q}={F_cleave,CF_cleave}; <span class="comment">%Property values for to set in order to animate</span>
+<span class="keyword">end</span>
+anim8(hf,animStruct);
+</pre><img width="100%" height="auto" vspace="5" hspace="5" src="HELP_meshCleave_03.jpg" alt=""> <h2 id="14">Example 3: Cleaving a hexahedral mesh</h2><pre class="codeinput">boxDim=[5 5 5]; <span class="comment">% Box dimenstions</span>
+boxEl=[20 20 20];
+[meshStruct]=hexMeshBox(boxDim,boxEl,2);
+
+E=meshStruct.elements;
+V=meshStruct.nodes;
+F=meshStruct.facesBoundary;
+VE=patchCentre(E,V);
+C=minDist(VE,mean(VE,1));
+</pre><pre class="codeinput">n=[0 0 1]; <span class="comment">%Normal direction to plane</span>
+P=mean(V,1); <span class="comment">%Point on plane</span>
+inclusiveSwitch=[1 0];
+[logicAt,logicAbove,logicBelow]=meshCleave(E,V,P,n,inclusiveSwitch);
+
+logicPlot=logicAt;
+
+<span class="comment">% Get faces and matching color data for visualization</span>
+[F_cleave,CF_cleave]=element2patch(E(logicAt,:),C(logicAt));
+[F_above,CF_above]=element2patch(E(logicAbove,:),C(logicAbove));
+[F_below,CF_below]=element2patch(E(logicBelow,:),C(logicBelow));
+</pre><p>Visualize</p><pre class="codeinput">cFigure;
+subplot(1,3,1); hold <span class="string">on</span>;
+title(<span class="string">'At cleave plane'</span>);
+gpatch(F,V,<span class="string">'w'</span>,<span class="string">'none'</span>,0.2);
+gpatch(F_cleave,V,CF_cleave,<span class="string">'k'</span>,1);
+camlight <span class="string">headlight</span>;
+axisGeom;
+
+subplot(1,3,2); hold <span class="string">on</span>;
+title(<span class="string">'Above cleave plane'</span>);
+gpatch(F,V,<span class="string">'w'</span>,<span class="string">'none'</span>,0.2);
+gpatch(F_above,V,CF_above,<span class="string">'k'</span>,1);
+camlight <span class="string">headlight</span>;
+axisGeom;
+
+subplot(1,3,3); hold <span class="string">on</span>;
+title(<span class="string">'Below cleave plane'</span>);
+gpatch(F,V,<span class="string">'w'</span>,<span class="string">'none'</span>,0.2);
+gpatch(F_below,V,CF_below,<span class="string">'k'</span>,1);
+camlight <span class="string">headlight</span>;
+axisGeom;
+
+gdrawnow;
+</pre><img width="100%" height="auto" vspace="5" hspace="5" src="HELP_meshCleave_04.jpg" alt=""> <p>Visualizing slicing operation for varying angles</p><pre class="codeinput">hf=cFigure; hold <span class="string">on</span>;
+gpatch(F,V,<span class="string">'w'</span>,<span class="string">'none'</span>,0.2);
+hp1=gpatch(F_cleave,V,CF_cleave,<span class="string">'k'</span>,1);
+axisGeom; axis <span class="string">manual</span>;
+camlight <span class="string">headligth</span>;
+gdrawnow;
+
+nSteps=50; <span class="comment">%Number of animation steps</span>
+
+<span class="comment">%Create the time vector</span>
+animStruct.Time=linspace(0,1,nSteps);
+
+<span class="comment">%The vector lengths</span>
+a=linspace(0,2*pi,nSteps);
+b=linspace(0,2*pi,nSteps);
+<span class="keyword">for</span> q=1:1:nSteps
+    R=euler2DCM([a(q) b(q) 0]);
+    nn=n*R;
+
+    logicAt=meshCleave(E,V,P,nn,inclusiveSwitch);
+
+    <span class="comment">% Get faces and matching color data for cleaves elements</span>
+    [F_cleave,CF_cleave]=element2patch(E(logicAt,:),C(logicAt));
+
+    <span class="comment">%Set entries in animation structure</span>
+    animStruct.Handles{q}=[hp1 hp1]; <span class="comment">%Handles of objects to animate</span>
+    animStruct.Props{q}={<span class="string">'Faces'</span>,<span class="string">'CData'</span>}; <span class="comment">%Properties of objects to animate</span>
+    animStruct.Set{q}={F_cleave,CF_cleave}; <span class="comment">%Property values for to set in order to animate</span>
+<span class="keyword">end</span>
+anim8(hf,animStruct);
+</pre><img width="100%" height="auto" vspace="5" hspace="5" src="HELP_meshCleave_05.jpg" alt=""> <p class="footer"><br><a href="https://www.mathworks.com/products/matlab/">Published with MATLAB&reg; R2020a</a><br></p></div><!--
+##### SOURCE BEGIN #####
+%% meshCleave
+% Below is a demonstration of the features of the |meshCleave| function
+
+%%
+clear; close all; clc;
+
+%% Syntax
+% |[logicAt]=meshCleave(E,V);|
+% |[logicAt]=meshCleave(E,V,P,n);|
+% |[logicAt,logicAbove,logicBelow]=meshCleave(E,V,P,n,inclusiveSwitch);|
+% |[logicAt,logicAbove,logicBelow]=meshCleave(E,V,P,n,inclusiveSwitch);|
+
+%% Description
+% This function creates logic arrays for the mesh components (e.g. elements
+% or faces) which are at, above, or below a plane defined by the point P,
+% and the normal direction n. 
+% The optional incluseSwitch is a 2-component vector (default [0 0]) and
+% sets how "inclusive", the below/above logic is, i.e. they set wether <
+% and > is used ([0 0]), or <= and >= are used ([1 1]). A combination may
+% also be used e.g. [1 0] results in below checks which features <= and
+% above checks using >. 
+
+%% Examples
+clear; close all; clc;
+
+%% Example: Cleaving a surface mesh
+
+%%
+% Create example patch data
+[F,V]=stanford_bunny; 
+
+%%
+
+n=[0 0 1]; %Normal direction to plane
+P=mean(V,1); %Point on plane
+[logicAt,logicAbove,logicBelow]=meshCleave(F,V,P,n);
+
+%%
+% Visualize
+cFigure; 
+subplot(1,3,1); hold on;
+title('At cleave plane');
+gpatch(F,V,'w','none',0.2);
+gpatch(F(logicAt,:),V,'bw','k',1);
+camlight headlight;
+axisGeom; 
+
+subplot(1,3,2); hold on;
+title('Above cleave plane');
+gpatch(F,V,'w','none',0.2);
+gpatch(F(logicAbove,:),V,'bw','k',1);
+camlight headlight;
+axisGeom; 
+
+subplot(1,3,3); hold on;
+title('Below cleave plane');
+gpatch(F,V,'w','none',0.2);
+gpatch(F(logicBelow,:),V,'bw','k',1);
+camlight headlight;
+axisGeom; 
+
+gdrawnow;
+
+%% Example 2: Cleaving a tetrahedral mesh
+
+%%
+% Creating an example tetrahedral mesh
+boxDim=[5 5 5]; % Box dimenstions   
+pointSpacing=0.25;
+[meshStruct]=tetMeshBox(boxDim,pointSpacing);
+E=meshStruct.elements;
+V=meshStruct.nodes;
+F=meshStruct.facesBoundary;
+VE=patchCentre(E,V);
+C=minDist(VE,mean(VE,1));
+
+%%
+
+n=[0 0 1]; %Normal direction to plane
+P=mean(V,1); %Point on plane
+[logicAt,logicAbove,logicBelow]=meshCleave(E,V,P,n);
+
+% Get faces and matching color data for visualization
+[F_cleave,CF_cleave]=element2patch(E(logicAt,:),C(logicAt));
+[F_above,CF_above]=element2patch(E(logicAbove,:),C(logicAbove));
+[F_below,CF_below]=element2patch(E(logicBelow,:),C(logicBelow));
+
+%%
+% Visualize
+cFigure; 
+subplot(1,3,1); hold on;
+title('At cleave plane');
+gpatch(F,V,'w','none',0.2);
+gpatch(F_cleave,V,CF_cleave,'k',1);
+camlight headlight;
+axisGeom; 
+
+subplot(1,3,2); hold on;
+title('Above cleave plane');
+gpatch(F,V,'w','none',0.2);
+gpatch(F_above,V,CF_above,'k',1);
+camlight headlight;
+axisGeom; 
+
+subplot(1,3,3); hold on;
+title('Below cleave plane');
+gpatch(F,V,'w','none',0.2);
+gpatch(F_below,V,CF_below,'k',1);
+camlight headlight;
+axisGeom; 
+
+gdrawnow;
+
+%% 
+% Visualizing cleaving operation for varying angles
+
+hf=cFigure; hold on; 
+gpatch(F,V,'w','none',0.2);
+hp1=gpatch(F_cleave,V,CF_cleave,'k',1);
+axisGeom; axis manual; 
+camlight headligth;
+gdrawnow; 
+
+nSteps=50; %Number of animation steps
+
+%Create the time vector
+animStruct.Time=linspace(0,1,nSteps);
+
+%The vector lengths
+a=linspace(0,2*pi,nSteps);
+b=linspace(0,2*pi,nSteps);
+for q=1:1:nSteps    
+    R=euler2DCM([a(q) b(q) 0]);
+    nn=n*R;    
+    
+    logicAt=meshCleave(E,V,P,nn,[1 0]);
+
+    % Get faces and matching color data for cleaves elements 
+    [F_cleave,CF_cleave]=element2patch(E(logicAt,:),C(logicAt));
+
+    %Set entries in animation structure
+    animStruct.Handles{q}=[hp1 hp1]; %Handles of objects to animate
+    animStruct.Props{q}={'Faces','CData'}; %Properties of objects to animate
+    animStruct.Set{q}={F_cleave,CF_cleave}; %Property values for to set in order to animate
+end
+anim8(hf,animStruct);
+
+%% Example 3: Cleaving a hexahedral mesh
+
+boxDim=[5 5 5]; % Box dimenstions
+boxEl=[20 20 20];
+[meshStruct]=hexMeshBox(boxDim,boxEl,2);
+
+E=meshStruct.elements;
+V=meshStruct.nodes;
+F=meshStruct.facesBoundary;
+VE=patchCentre(E,V);
+C=minDist(VE,mean(VE,1));
+
+%%
+
+n=[0 0 1]; %Normal direction to plane
+P=mean(V,1); %Point on plane
+inclusiveSwitch=[1 0];
+[logicAt,logicAbove,logicBelow]=meshCleave(E,V,P,n,inclusiveSwitch);
+
+logicPlot=logicAt;
+
+% Get faces and matching color data for visualization
+[F_cleave,CF_cleave]=element2patch(E(logicAt,:),C(logicAt));
+[F_above,CF_above]=element2patch(E(logicAbove,:),C(logicAbove));
+[F_below,CF_below]=element2patch(E(logicBelow,:),C(logicBelow));
+
+%%
+% Visualize
+cFigure; 
+subplot(1,3,1); hold on;
+title('At cleave plane');
+gpatch(F,V,'w','none',0.2);
+gpatch(F_cleave,V,CF_cleave,'k',1);
+camlight headlight;
+axisGeom; 
+
+subplot(1,3,2); hold on;
+title('Above cleave plane');
+gpatch(F,V,'w','none',0.2);
+gpatch(F_above,V,CF_above,'k',1);
+camlight headlight;
+axisGeom; 
+
+subplot(1,3,3); hold on;
+title('Below cleave plane');
+gpatch(F,V,'w','none',0.2);
+gpatch(F_below,V,CF_below,'k',1);
+camlight headlight;
+axisGeom; 
+
+gdrawnow;
+
+%% 
+% Visualizing slicing operation for varying angles
+
+hf=cFigure; hold on; 
+gpatch(F,V,'w','none',0.2);
+hp1=gpatch(F_cleave,V,CF_cleave,'k',1);
+axisGeom; axis manual; 
+camlight headligth;
+gdrawnow; 
+
+nSteps=50; %Number of animation steps
+
+%Create the time vector
+animStruct.Time=linspace(0,1,nSteps);
+
+%The vector lengths
+a=linspace(0,2*pi,nSteps);
+b=linspace(0,2*pi,nSteps);
+for q=1:1:nSteps    
+    R=euler2DCM([a(q) b(q) 0]);
+    nn=n*R;    
+    
+    logicAt=meshCleave(E,V,P,nn,inclusiveSwitch);
+
+    % Get faces and matching color data for cleaves elements 
+    [F_cleave,CF_cleave]=element2patch(E(logicAt,:),C(logicAt));
+
+    %Set entries in animation structure
+    animStruct.Handles{q}=[hp1 hp1]; %Handles of objects to animate
+    animStruct.Props{q}={'Faces','CData'}; %Properties of objects to animate
+    animStruct.Set{q}={F_cleave,CF_cleave}; %Property values for to set in order to animate
+end
+anim8(hf,animStruct);
+
+
+
+##### SOURCE END #####
+--></body></html>

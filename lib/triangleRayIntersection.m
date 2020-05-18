@@ -73,23 +73,23 @@ V2=V(F(:,3),:);
 
 %% verify that inputs are in correct format
 
-if (size(V_ori,1)==3 && size(V_ori,2)~=3);
+if (size(V_ori,1)==3 && size(V_ori,2)~=3)
     V_ori =V_ori';
 end
 
-if (size(R,1)==3 && size(R,2)~=3);
+if (size(R,1)==3 && size(R,2)~=3)
     R =R';
 end
 
-if (size(V0,1)==3 && size(V0,2)~=3);
+if (size(V0,1)==3 && size(V0,2)~=3)
     V0=V0';
 end
 
-if (size(V1,1)==3 && size(V1,2)~=3);
+if (size(V1,1)==3 && size(V1,2)~=3)
     V1=V1';
 end
 
-if (size(V2,1)==3 && size(V2,2)~=3);
+if (size(V2,1)==3 && size(V2,2)~=3)
     V2=V2';
 end
 
@@ -132,7 +132,10 @@ detMat   = sum(E1.*Pvec,2);   % determinant of the matrix M = dot(E1,Pvec)
 logicParalel = (abs(detMat)<optStruct.eps);    % if determinant is near zero then ray lies in the plane of the triangle
 
 if all(logicParalel) % if all parallel than no intersections
-    return;
+    varargout{1}=V_intersect;
+    varargout{2}=L_intersect;
+    varargout{3}=T;
+    return
 end
 
 switch optStruct.border
@@ -153,7 +156,10 @@ if strcmpi(optStruct.triangle,'two sided')          % treats triangles as two si
     L_ok = (~logicParalel & U_bar>=-zeroLim & U_bar<=1.0+zeroLim);% mask which allows performing next 2 operations only when needed
     
     if ~any(L_ok) % if all ray/plane intersections are outside the triangle than no intersections
-        return;
+        varargout{1}=V_intersect;
+        varargout{2}=L_intersect;
+        varargout{3}=T;
+        return
     end
     
     Qvec = cross(Tvec(L_ok,:), E1(L_ok,:),2); % prepare to test V parameter
@@ -178,7 +184,10 @@ else % treats triangles as one sided
     L_ok = (detMat>optStruct.eps & U_bar>=0.0 & U_bar<=detMat);        % mask which allows performing next 2 operations only when needed
     
     if ~any(L_ok) % if all ray/plane intersections are outside the triangle than no intersections
-        return;
+        varargout{1}=V_intersect;
+        varargout{2}=L_intersect;
+        varargout{3}=T;
+        return
     end
     
     Qvec = cross(Tvec(L_ok,:), E1(L_ok,:),2); % prepare to test V parameter
@@ -206,7 +215,6 @@ V_intersect(~L_intersect,:)=NaN;
 T(~L_intersect,:)=NaN;
  
 %% Collect output
-
 varargout{1}=V_intersect;
 varargout{2}=L_intersect;
 varargout{3}=T;
