@@ -11,6 +11,8 @@ function [varargout]=abaqusStruct2inp(varargin)
 %
 % 2018/09/06 Created
 % 2018/12/04 Added field order entries
+% 2020/05/20 Improved performance to fix wrapping. Now uses reshape
+% 2020/05/20 Fixed bug in wrapping of non-numeric data
 %------------------------------------------------------------------------
 
 %% Parse input
@@ -273,22 +275,46 @@ if iscell(valueData)
             end
             
         else
-            t=vec2strIntDouble(valueData{q_value},'%6.7e');
-            if isrow(valueData{q_value})
-                t=strwrap(t,16,', '); %Wrap to max width of 16 entries
-            end
+            t=toTextCheckWrap(valueData{q_value},16);            
             fprintf(file_id,'%s \n',t);
         end
         
     end
 else
     %Write value entry
-    t=vec2strIntDouble(valueData,'%6.7e');
-    if isrow(valueData)
-        t=strwrap(t,16,', '); %Wrap to max width of 16 entries
-    end
+    t=toTextCheckWrap(valueData,16);    
     fprintf(file_id,'%s \n',t);
 end
+end
+
+%%
+
+function [t]=toTextCheckWrap(valueData,wrapLength)
+
+if isnumeric(valueData)
+    if isrow(valueData) && numel(valueData)>wrapLength
+        %OLD and slow        
+        %t=vec2strIntDouble(valueData,'%6.7e');
+        %t=strwrap(t,wrapLength,', '); %Wrap to max width of wrapLength entries
+
+        if rem(numel(valueData),wrapLength)>0
+            valueDataTemp=nan(1,ceil(numel(valueData)/wrapLength)*wrapLength);
+            valueDataTemp(1:numel(valueData))=valueData;
+            valueDataTemp=reshape(valueDataTemp,wrapLength,numel(valueDataTemp)/wrapLength)';
+            t=vec2strIntDouble(valueDataTemp,'%6.7e');
+            t=regexprep(t,',(\s*)NaN',''); %remove nan
+        else
+            valueData=reshape(valueData,wrapLength,numel(valueData)/wrapLength)';
+            t=vec2strIntDouble(valueData,'%6.7e');
+        end                
+    else
+        t=vec2strIntDouble(valueData,'%6.7e');
+    end
+else
+    t=valueData;
+end
+
+
 end
 
 %% 

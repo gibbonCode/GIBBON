@@ -43,7 +43,7 @@ if isnumeric(A) %If it is numeric
     A=A'; %transpose
     
     A=double(A); %Convert to double
-    if all(isrounded(A)) %If it looks like an integer
+    if all(isrounded(A(~isnan(A)))) %If it looks like an integer
         t_form=repmat([formatInteger,dlmChar,' '],1,n);        
     else %Not an integer
         t_form=repmat([formatDouble,dlmChar,' '],1,n); 
