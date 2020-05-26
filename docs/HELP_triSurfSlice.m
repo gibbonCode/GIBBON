@@ -53,7 +53,7 @@ hp2=quiverVec(P,n,50,'k');
 legend([hp1 hp2],{'Intersection curve','Plane normal vector'})
 axisGeom; axis manual; camlight headligth;
 set(gca,'FontSize',fontSize);
-drawnow; 
+gdrawnow; 
 
 %% Example 2: Slicing while keeping track of surface color data 
 % Create example surface data consisting of faces F, vertices V, and
@@ -89,7 +89,7 @@ gpatch(Fc,Vc,Cc,'k',1);
 gpatch(Eb,Vc,'none','k',1,3);
 axisGeom; axis manual; camlight headligth;
 set(gca,'FontSize',fontSize);
-drawnow; 
+gdrawnow; 
 
 %% Example 3: Slicing a surface and keeping one side
 % Create example surface data consisting of faces F, vertices V
@@ -117,7 +117,7 @@ legend([hp1 hp2],{'Original','Cut surface'})
 axisGeom; axis manual; camlight headligth;
 colormap gjet; 
 set(gca,'FontSize',fontSize);
-drawnow; 
+gdrawnow; 
 
 %% Example 4: Demo animation for changing orientation 
 % Visualizing slicing operation for varying angles
@@ -132,9 +132,11 @@ subplot(1,2,2); hold on;
 hp1=gpatch(Fc(logicSide,:),Vc,'w','k',1);
 hp2=gpatch(Fc(~logicSide,:),Vc,'w','none',0.25);
 hp3=gpatch(Eb,Vc,'none','b',1,3);
-
+hp5=quiverVec(P,n,25,'k');
 axisGeom; axis manual; camlight headligth;
-drawnow; 
+gdrawnow; 
+
+vn=hp5.Vertices;
 
 nSteps=50; %Number of animation steps
 
@@ -149,16 +151,21 @@ for q=1:1:nSteps
     nn=n*R;    
     [Fc,Vc,~,logicSide,Eb]=triSurfSlice(F,V,C,P,nn,snapTolerance);
 
+    
+    vnn=(vn-P)*R+P;
     %Set entries in animation structure
-    animStruct.Handles{q}=[hp1 hp1 hp2 hp2 hp3 hp3 hp4 hp4 hp4]; %Handles of objects to animate
+    animStruct.Handles{q}=[hp1 hp1 hp2 hp2 hp3 hp3 hp4 hp4 hp4 hp5]; %Handles of objects to animate
     animStruct.Props{q}={'Vertices','Faces',...
                          'Vertices','Faces',...   
                          'Vertices','Faces',... 
-                         'Vertices','Faces','CData'... 
+                         'Vertices','Faces','CData',... 
+                         'Vertices'...
                          }; %Properties of objects to animate
-    animStruct.Set{q}={Vc,Fc(logicSide,:),Vc,Fc(~logicSide,:),Vc,Eb,Vc,Fc,double(logicSide)}; %Property values for to set in order to animate
+    animStruct.Set{q}={Vc,Fc(logicSide,:),Vc,Fc(~logicSide,:),Vc,Eb,Vc,Fc,double(logicSide),vnn}; %Property values for to set in order to animate
 end
 anim8(hf,animStruct);
+
+fsdfa
 
 %% Example 5: Demo animation illustrating "sharp triangle" problem
 
@@ -192,7 +199,7 @@ hp3=gpatch(Eb,Vc,'none','b',1,4);
 
 axisGeom; axis manual; camlight headligth;
 view(-90,0); zoom(1.25);axis off; 
-drawnow; 
+gdrawnow; 
 
 nSteps=75; %Number of animation steps
 animStruct.Time=linspace(0,1,nSteps); %Create the time vector
@@ -232,7 +239,7 @@ gpatch(Eb,Vc,'none','g',1,3);
 axisGeom; axis manual; camlight headligth;
 colormap gjet; 
 set(gca,'FontSize',fontSize);
-drawnow; 
+gdrawnow; 
 %% 
 % _*GIBBON footer text*_ 
 % 

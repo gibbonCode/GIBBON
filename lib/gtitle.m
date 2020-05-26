@@ -1,6 +1,6 @@
 function [varargout]=gtitle(varargin)
 
-% function hText=gtitle(titleString,fontSize,hf)
+% function hText=gtitle(titleString,fontSize,hf,optionStruct)
 % -----------------------------------------------------------------------
 %
 %

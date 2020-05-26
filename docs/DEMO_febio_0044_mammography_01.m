@@ -644,8 +644,7 @@ if runFlag==1 %i.e. a succesful run
     X_DEF=V_DEF(:,1,:);
     Y_DEF=V_DEF(:,2,:);
     Z_DEF=V_DEF(:,3,:);
-    [CF]=vertexToFaceMeasure(Fb,DN_magnitude);
-    
+        
     %%
     % Plotting the simulated results using |anim8| to visualize and animate
     % deformations
@@ -653,7 +652,8 @@ if runFlag==1 %i.e. a succesful run
     % Create basic view and store graphics handle to initiate animation
     hf=cFigure; %Open figure
     gtitle([febioFebFileNamePart,': Press play to animate']);
-    hp1=gpatch(Fb,V_def,CF,'k',1); %Add graphics object to animate
+    hp1=gpatch(Fb,V_def,DN_magnitude,'k',1); %Add graphics object to animate
+    hp1.FaceColor='Interp';
     hp2=gpatch(Fp1,V_def,'kw','none',0.5); %Add graphics object to animate
     hp3=gpatch(Fp2,V_def,'kw','none',0.5); %Add graphics object to animate
     %     gpatch(Fb,V,0.5*ones(1,3),'none',0.25); %A static graphics object
@@ -670,15 +670,14 @@ if runFlag==1 %i.e. a succesful run
         DN=N_disp_mat(:,:,qt); %Current displacement
         DN_magnitude=sqrt(sum(DN.^2,2)); %Current displacement magnitude
         V_def=V+DN; %Current nodal coordinates
-        [CF]=vertexToFaceMeasure(Fb,DN_magnitude); %Current color data to use
-        
+                
         %Set entries in animation structure
         animStruct.Handles{qt}=[hp1 hp1 hp2 hp3]; %Handles of objects to animate
         animStruct.Props{qt}={'Vertices','CData','Vertices','Vertices'}; %Properties of objects to animate
-        animStruct.Set{qt}={V_def,CF,V_def,V_def}; %Property values for to set in order to animate
+        animStruct.Set{qt}={V_def,DN_magnitude,V_def,V_def}; %Property values for to set in order to animate
     end
     anim8(hf,animStruct); %Initiate animation feature
-    drawnow;
+    gdrawnow;
     
     %%
     

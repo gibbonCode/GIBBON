@@ -75,7 +75,7 @@ fprintf(fid,['solid ',solidName,' \n']);
 hw = waitbar(0,'Writing STL-file, please wait...');
 
 %Start loop for all faces, vertices and normals
-for qFace = 1:1:size(F,1);
+for qFace = 1:1:size(F,1)
     
     %Write face normals
     fprintf(fid,'  facet normal %6.6e %6.6e %6.6e\n',N(qFace,:));

@@ -44,11 +44,11 @@ V=stlStruct.solidVertices{1}; %Vertices
 
 cFigure;
 title('Imported patch data from STL','fontSize',25);
-gpatch(F,V,'g');
+gpatch(F,V,'gw');
 axisGeom;
 camlight('headlight');
 lighting phong; axis off; 
-drawnow;
+gdrawnow;
 
 %% Import a binary type STL file as patch data
 
@@ -69,11 +69,11 @@ V=stlStruct.solidVertices{1}; %Vertices
 
 cFigure;
 title('Imported patch data from STL','fontSize',fontSize);
-gpatch(F,V,'g');
+gpatch(F,V,'gw');
 axisGeom;
 camlight('headlight');
 lighting phong; axis off; 
-drawnow;
+gdrawnow;
 
 %% 
 %

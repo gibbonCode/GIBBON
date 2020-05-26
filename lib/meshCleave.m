@@ -51,7 +51,7 @@ n=vecnormalize(n); %Normalize n vector
 %% Construct rotation matrix
 nz=[0 0 1]; %The z-vector
 dn=dot(n,nz);
-rotAngle=acos(dot(n,nz)); %Rotation angle
+rotAngle=acos(dn); %Rotation angle
 %Determine rotation axis and formulate rotation matrix
 if isapprox(dn,1,eps(1)) %n=nz
     R=eye(3,3);

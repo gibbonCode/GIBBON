@@ -1,6 +1,6 @@
-function Cmapped=cmaperise(varargin)
+function [varargout]=cmaperise(varargin)
 
-% function Cmapped=cmaperise(C,cmap,clim)
+% function [Cmapped,indMap]=cmaperise(C,cmap,clim)
 %-------------------------------------------------------------------------
 % This function creates RGB colors for the data C using the colormap cmap
 % and the limits clim. 
@@ -34,7 +34,7 @@ end
 if isempty(clim)
    clim=[min(C(:)) max(C(:))];   
    if diff(clim)<eps(0)
-       clim=[0 1];
+       clim=[min(C(:))-1e-3 max(C(:))+1e-3];
    end
 end
     
@@ -46,6 +46,12 @@ p(p<0)=0;
 p(p>1)=1;
 IND_cmap=round((p*(size(cmap,1)-1))+1);
 Cmapped=cmap(IND_cmap,:);
+
+%%
+varargout{1}=Cmapped;
+if nargout==2
+    varargout{2}=IND_cmap;
+end
 
 end
  

@@ -21,13 +21,13 @@ end
 %%
 
 %Sort if needed
-if orderOption
+if orderOption==1
     %Sort e.g. so that [4 3 2 1]=[1 2 3 4]
     F1=sort(F1,2);
     F2=sort(F2,2);
 end
 
-%Create virtual indicesf or each face
+%Create virtual indices for each face
 maxIndex=max([F1(:);F2(:)]);
 sizVirt=maxIndex*ones(1,size(F1,2));
 indVirt_F1=sub2indn(sizVirt,F1);
