@@ -13,6 +13,7 @@ connecticityStruct=patchConnectivity(F,V);
 edgeVertexConnectivity=connecticityStruct.edge.vertex;
 edgeFaceConnectivity=connecticityStruct.edge.face;
 faceEdgeConnectivity=connecticityStruct.face.edge;
+logicValidEdge  = sum(edgeFaceConnectivity>0,2)==2;
 
 numFaces = size(F,1); %Number of faces
 numEdges=size(edgeVertexConnectivity,1); %Number of edges
@@ -25,10 +26,12 @@ VE=VE./edgeVectorLength(:,ones(1,3)); %Normalized edge vector
 edgeVectorLength=edgeVectorLength./mean(edgeVectorLength); %Scale edge lengths to mean
 
 % Compute the un-signed angle
-beta = real(acos(dot(N(edgeFaceConnectivity(:,1),:),N(edgeFaceConnectivity(:,2),:),2)));
+beta = nan(size(edgeVertexConnectivity,1),1);
+beta(logicValidEdge) = real(acos(dot(N(edgeFaceConnectivity(logicValidEdge,1),:),N(edgeFaceConnectivity(logicValidEdge,2),:),2)));
 
 % Fix sign of angle
-cp = cross(N(edgeFaceConnectivity(:,1),:),N(edgeFaceConnectivity(:,2),:),2);
+cp = nan(size(edgeVertexConnectivity,1),3);
+cp(logicValidEdge,:) = cross(N(edgeFaceConnectivity(logicValidEdge,1),:),N(edgeFaceConnectivity(logicValidEdge,2),:),2);
 si = sign(dot(cp,VE,2));
 beta = beta .* si;
 
@@ -40,6 +43,7 @@ for qi=1:3
         T(qj,qi,:) = T(qi,qj,:);
     end
 end
+
 betaScale=beta.*edgeVectorLength;
 T = T.*repmat(permute(betaScale,[3 2 1]),[3,3,1]);
 
@@ -51,25 +55,29 @@ end
 TF=TF./size(F,2);
 
 % Do eigen decomposition
-C_min = zeros(numFaces,1); %Min eigen value
-C_max = zeros(numFaces,1); %Max eigen value
-U_min= zeros(numFaces,3); %Min eigen vector
-U_max= zeros(numFaces,3); %Max eigen vector
+C_min = nan(numFaces,1); %Min eigen value
+C_max = nan(numFaces,1); %Max eigen value
+U_min = nan(numFaces,3); %Min eigen vector
+U_max = nan(numFaces,3); %Max eigen vector
 for k=1:numFaces %Loop over all faces    
-    %Eigen decomposition    
-    [u,d] = eig(TF(:,:,k)); 
-    u=real(u); 
-    d = real(diag(d));
-    
-    %Cope with zero for normal and potential negative value for min and max
-    [~,indSort1] = sort(abs(d)); % sort so zero is first followed by min, max
-    [~,indSort2] = sort((d(indSort1(2:3)))); %Sort without zero
-    indKeep=indSort1(2:3);
-    indKeep=indKeep(indSort2);            
-    C_min(k) = d(indKeep(1));
-    C_max(k) = d(indKeep(2));
-    U_min(k,:) = u(:,indKeep(2))';
-    U_max(k,:) = u(:,indKeep(1))';
+    TF_now=TF(:,:,k);
+  
+    if ~any(isnan(TF_now(:)))
+        %Eigen decomposition
+        [u,d] = eig(TF_now);
+        u = real(u);
+        d = real(diag(d));
+        
+        %Cope with zero for normal and potential negative value for min and max
+        [~,indSort1] = sort(abs(d)); % sort so zero is first followed by min, max
+        [~,indSort2] = sort((d(indSort1(2:3)))); %Sort without zero
+        indKeep=indSort1(2:3);
+        indKeep=indKeep(indSort2);
+        C_min(k) = d(indKeep(1));
+        C_max(k) = d(indKeep(2));
+        U_min(k,:) = u(:,indKeep(2))';
+        U_max(k,:) = u(:,indKeep(1))';
+    end
 end
 
 C_mean = (C_min+C_max)/2;
