@@ -165,8 +165,6 @@ for q=1:1:nSteps
 end
 anim8(hf,animStruct);
 
-fsdfa
-
 %% Example 5: Demo animation illustrating "sharp triangle" problem
 
 [F,V]=quadBox([1 1 1],[5 5 5]);
@@ -240,6 +238,7 @@ axisGeom; axis manual; camlight headligth;
 colormap gjet; 
 set(gca,'FontSize',fontSize);
 gdrawnow; 
+
 %% 
 % _*GIBBON footer text*_ 
 % 
