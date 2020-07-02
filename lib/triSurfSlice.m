@@ -74,19 +74,7 @@ end
 
 %% Construct rotation matrix
 nz=[0 0 1]; %The z-vector
-dn=dot(n,nz);
-rotAngle=acos(dn); %Rotation angle
-%Determine rotation axis and formulate rotation matrix
-if isapprox(dn,1,eps(1)) %n=nz
-    R=eye(3,3);
-else
-    if isapprox(dn,-1,eps(1)) %n=-nz
-        rotAxis=cross(n,[0 1 0]); %Use x-axis as rotation vector
-    else % n~=nz and n~=-nz
-        rotAxis=vecnormalize(cross(n,nz));
-    end
-    R=vecAngle2Rot(rotAngle,rotAxis);
-end
+R=vecPair2Rot(n,nz);
 
 %% Derive connectivity arrays
 [CC]=patchConnectivity(F,V,{'fe','ev'});
