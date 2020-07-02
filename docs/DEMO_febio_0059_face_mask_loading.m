@@ -81,7 +81,7 @@ dtmax=(1/numTimeSteps); %Maximum time step size
 symmetric_stiffness=0;
 min_residual=1e-20;
 
-runMode='internal';
+runMode='external';
 
 %Boundary condition parameters
 initialOffset=0.1;
@@ -786,7 +786,7 @@ for q=1:1:numPoints
     [V_intersect,L_intersect,~] = triangleRayIntersection(v1(ones(size(F2,1),1),:),n1(ones(size(F2,1),1),:),V2,F2,optStructRayTrace);
     V_intersect=V_intersect(L_intersect,:);
     if nnz(L_intersect)>0
-        d=min(dist(V_intersect,v1'),[],2);
+        d=min(distND(V_intersect,v1),[],2);
         [~,indMin]=min(d);
         P(q,:)=V_intersect(indMin,:);
     end
