@@ -20,7 +20,7 @@ x=2*cos(t);
 y=3*sin(t);
 V=[x(:) y(:) zeros(size(x(:)))]+5*randn(1,3);
 V=V+0.1*randn(size(V));
-R=euler2DCM([0 0 0.25*pi]);
+R=euler2DCM([0 -0.25*pi 0.25*pi]);
 V=V*R';
 
 %% Fit ellipse
@@ -35,8 +35,8 @@ V=V*R';
 cFigure;hold on;
 plotV(VF,'b-','LineWidth',2);
 plotV(V,'r.','MarkerSize',35);
-axis equal; box on;
-drawnow; 
+axisGeom;
+gdrawnow; 
 
 %%
 % 
