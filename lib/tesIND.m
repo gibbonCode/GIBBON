@@ -7,7 +7,8 @@ function [varargout]=tesIND(varargin)
 % Kevin Mattheus Moerman
 % gibbon.toolbox@gmail.com
 % 
-% 2015/02/23
+% 2015/02/23 Added ti GIBBON
+% 2020/07/07 Added handling of collapsed faces/edges
 %------------------------------------------------------------------------
 
 %% PARSE INPUT
@@ -65,6 +66,13 @@ if nargout>=2
     E=patchEdges(TES,1);
     E=[E;fliplr(E)];
     
+    %Check collapsed edges
+    logicCollapsed = any(E(:,1)==E(:,2));
+    if any(logicCollapsed)
+       warning('Collapsed edges detected (i.e. E(:,1)==E(:,2)), and have been supressed'); 
+       E=E(~logicCollapsed,:);
+    end
+        
     %Create IND_V
     IND_V=sparse(E(:,1),E(:,2),E(:,2),numV,numV);
 end
