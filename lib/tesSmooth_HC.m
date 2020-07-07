@@ -67,7 +67,6 @@ for qIter=1:nMax
         Xq=NaN(size(IND_V,1),size(IND_V,2));
         Xq(logicValid)=Q(IND_V(logicValid),qDim);
         Xq=gnanmean(Xq,2);           
-%         Xq(indNoneValid)=V(indNoneValid,qDim);
         P(:,qDim)=Xq;   
         
         %
@@ -77,9 +76,8 @@ for qIter=1:nMax
         Xb=NaN(size(IND_V,1),size(IND_V,2));
         Xb(logicValid)=B(IND_V(logicValid),qDim);
         Xb=gnanmean(Xb,2);
-%         Xb(indNoneValid)=V(indNoneValid,qDim);
-        P(:,qDim)= P(:,qDim)-((bet*B(:,qDim))+(((1-bet)*Xb)));
         
+        P(:,qDim)= P(:,qDim)-((bet*B(:,qDim))+(((1-bet)*Xb)));        
     end
         
     %%
