@@ -3,9 +3,12 @@
 
 %% Syntax
 % |[F,V]=graphicsModels(modelId);|
+% |[F,V]=graphicsModels(modelName);|
 
 %% Description 
-% 
+% This function offers easy access to an array of different surface models
+% available in GIBBON. 
+
 %% Examples 
 
 %%
@@ -22,10 +25,10 @@ edgeWidth=0.5;
 
 hf=cFigure; 
 
-surfaceNames={'stanford_bunny','utah_teapot','cow','parasaurolophus','femur','hip_implant','elephant','dolphin','david'};
+surfaceNames={'stanford_bunny','utah_teapot','cow','parasaurolophus','femur','hip_implant','elephant','dolphin','david','nefertiti','vertebra'};
 plotColors=gjet(numel(surfaceNames));
 for q=1:1:numel(surfaceNames)
-   subplot(3,3,q); 
+   subplot(3,4,q); 
    
     [F,V]=graphicsModels(surfaceNames{q}); % Get surface
         
@@ -35,7 +38,7 @@ for q=1:1:numel(surfaceNames)
     camlight('headlight'); 
     axis off;
 end
-drawnow; 
+gdrawnow; 
 
 %% 
 %

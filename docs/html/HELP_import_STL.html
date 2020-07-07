@@ -6,7 +6,7 @@
    <!--
 This HTML was auto-generated from MATLAB code.
 To make changes, update the MATLAB code and republish this document.
-      --><title>import_STL</title><meta name="generator" content="MATLAB 9.6"><link rel="schema.DC" href="http://purl.org/dc/elements/1.1/"><meta name="DC.date" content="2019-06-20"><meta name="DC.source" content="HELP_import_STL.m"><style type="text/css">
+      --><title>import_STL</title><meta name="generator" content="MATLAB 9.8"><link rel="schema.DC" href="http://purl.org/dc/elements/1.1/"><meta name="DC.date" content="2020-07-07"><meta name="DC.source" content="HELP_import_STL.m"><style type="text/css">
 html,body,div,span,applet,object,iframe,h1,h2,h3,h4,h5,h6,p,blockquote,pre,a,abbr,acronym,address,big,cite,code,del,dfn,em,font,img,ins,kbd,q,s,samp,small,strike,strong,sub,sup,tt,var,b,u,i,center,dl,dt,dd,ol,ul,li,fieldset,form,label,legend,table,caption,tbody,tfoot,thead,tr,th,td{margin:0;padding:0;border:0;outline:0;font-size:100%;vertical-align:baseline;background:transparent}body{line-height:1}ol,ul{list-style:none}blockquote,q{quotes:none}blockquote:before,blockquote:after,q:before,q:after{content:'';content:none}:focus{outine:0}ins{text-decoration:none}del{text-decoration:line-through}table{border-collapse:collapse;border-spacing:0}
 
 html { min-height:100%; margin-bottom:1px; }
@@ -23,7 +23,7 @@ a:visited { color:#004aa0; text-decoration:none; }
 
 p { padding:0px; margin:0px 0px 20px; }
 img { padding:0px; margin:0px 0px 20px; border:none; }
-p img, pre img, tt img, li img, h1 img, h2 img { margin-bottom:0px; } 
+p img, pre img, tt img, li img, h1 img, h2 img { margin-bottom:0px; }
 
 ul { padding:0px; margin:0px 0px 20px 23px; list-style:square; }
 ul li { padding:0px; margin:0px 0px 7px 0px; }
@@ -52,6 +52,7 @@ span.comment { color:#228B22 }
 span.string { color:#A020F0 }
 span.untermstring { color:#B20000 }
 span.syscmd { color:#B28C00 }
+span.typesection { color:#A0522D }
 
 .footer { width:auto; padding:10px 0px; margin:25px 0px 0px; border-top:1px dotted #878787; font-size:0.8em; line-height:140%; font-style:italic; color:#878787; text-align:left; float:none; }
 .footer p { margin:0px; }
@@ -73,18 +74,18 @@ defaultFolder = fileparts(fileparts(mfilename(<span class="string">'fullpath'</s
 pathName=fullfile(defaultFolder,<span class="string">'data'</span>,<span class="string">'STL'</span>);
 
 <span class="comment">%File name for STL</span>
-fileName=fullfile(pathName,<span class="string">'femur.stl'</span>);
+fileName=fullfile(pathName,<span class="string">'vertebra.stl'</span>);
 </pre><h2 id="6">Import a txt type STL file as patch data</h2><pre class="codeinput">[stlStruct] = import_STL(fileName);
 </pre><p>Access the data from the STL struct</p><pre class="codeinput">F=stlStruct.solidFaces{1}; <span class="comment">%Faces</span>
 V=stlStruct.solidVertices{1}; <span class="comment">%Vertices</span>
 </pre><p>In STL files nodes are not shared between triangles. Therefore the need to be merged with they are intended to be shared.</p><pre class="codeinput">[F,V]=mergeVertices(F,V); <span class="comment">% Merging nodes</span>
 </pre><p>Plotting the model</p><pre class="codeinput">cFigure;
 title(<span class="string">'Imported patch data from STL'</span>,<span class="string">'fontSize'</span>,25);
-gpatch(F,V,<span class="string">'g'</span>);
+gpatch(F,V,<span class="string">'gw'</span>);
 axisGeom;
 camlight(<span class="string">'headlight'</span>);
 lighting <span class="string">phong</span>; axis <span class="string">off</span>;
-drawnow;
+gdrawnow;
 </pre><img width="100%" height="auto" vspace="5" hspace="5" src="HELP_import_STL_01.jpg" alt=""> <h2 id="10">Import a binary type STL file as patch data</h2><pre class="codeinput">fileName=fullfile(pathName,<span class="string">'femur_bin.stl'</span>);
 [stlStruct] = import_STL(fileName);
 </pre><p>Access the data from the STL struct</p><pre class="codeinput">F=stlStruct.solidFaces{1}; <span class="comment">%Faces</span>
@@ -92,12 +93,12 @@ V=stlStruct.solidVertices{1}; <span class="comment">%Vertices</span>
 </pre><p>Merge nodes</p><pre class="codeinput">[F,V]=mergeVertices(F,V); <span class="comment">% Merging nodes</span>
 </pre><p>Plotting the model</p><pre class="codeinput">cFigure;
 title(<span class="string">'Imported patch data from STL'</span>,<span class="string">'fontSize'</span>,fontSize);
-gpatch(F,V,<span class="string">'g'</span>);
+gpatch(F,V,<span class="string">'gw'</span>);
 axisGeom;
 camlight(<span class="string">'headlight'</span>);
 lighting <span class="string">phong</span>; axis <span class="string">off</span>;
-drawnow;
-</pre><img width="100%" height="auto" vspace="5" hspace="5" src="HELP_import_STL_02.jpg" alt=""> <p><img vspace="5" hspace="5" src="gibbVerySmall.gif" alt=""> </p><p><i><b>GIBBON</b></i> <a href="www.gibboncode.org">www.gibboncode.org</a></p><p><i>Kevin Mattheus Moerman</i>, <a href="gibbon.toolbox@gmail.com">gibbon.toolbox@gmail.com</a></p><p><i><b>GIBBON footer text</b></i></p><p>License: <a href="https://github.com/gibbonCode/GIBBON/blob/master/LICENSE">https://github.com/gibbonCode/GIBBON/blob/master/LICENSE</a></p><p>GIBBON: The Geometry and Image-based Bioengineering add-On. A toolbox for image segmentation, image-based modeling, meshing, and finite element analysis.</p><p>Copyright (C) 2019  Kevin Mattheus Moerman</p><p>This program is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.</p><p>This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for more details.</p><p>You should have received a copy of the GNU General Public License along with this program.  If not, see <a href="http://www.gnu.org/licenses/">http://www.gnu.org/licenses/</a>.</p><p class="footer"><br><a href="https://www.mathworks.com/products/matlab/">Published with MATLAB&reg; R2019a</a><br></p></div><!--
+gdrawnow;
+</pre><img width="100%" height="auto" vspace="5" hspace="5" src="HELP_import_STL_02.jpg" alt=""> <p><img vspace="5" hspace="5" src="gibbVerySmall.gif" alt=""> </p><p><i><b>GIBBON</b></i> <a href="www.gibboncode.org">www.gibboncode.org</a></p><p><i>Kevin Mattheus Moerman</i>, <a href="gibbon.toolbox@gmail.com">gibbon.toolbox@gmail.com</a></p><p><i><b>GIBBON footer text</b></i></p><p>License: <a href="https://github.com/gibbonCode/GIBBON/blob/master/LICENSE">https://github.com/gibbonCode/GIBBON/blob/master/LICENSE</a></p><p>GIBBON: The Geometry and Image-based Bioengineering add-On. A toolbox for image segmentation, image-based modeling, meshing, and finite element analysis.</p><p>Copyright (C) 2006-2020 Kevin Mattheus Moerman</p><p>This program is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.</p><p>This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for more details.</p><p>You should have received a copy of the GNU General Public License along with this program.  If not, see <a href="http://www.gnu.org/licenses/">http://www.gnu.org/licenses/</a>.</p><p class="footer"><br><a href="https://www.mathworks.com/products/matlab/">Published with MATLAB&reg; R2020a</a><br></p></div><!--
 ##### SOURCE BEGIN #####
 %% import_STL
 % Below is a demonstration of the features of the |import_STL| function
@@ -124,7 +125,7 @@ defaultFolder = fileparts(fileparts(mfilename('fullpath')));
 pathName=fullfile(defaultFolder,'data','STL'); 
 
 %File name for STL
-fileName=fullfile(pathName,'femur.stl'); 
+fileName=fullfile(pathName,'vertebra.stl'); 
 
 %% Import a txt type STL file as patch data
 [stlStruct] = import_STL(fileName);
@@ -145,11 +146,11 @@ V=stlStruct.solidVertices{1}; %Vertices
 
 cFigure;
 title('Imported patch data from STL','fontSize',25);
-gpatch(F,V,'g');
+gpatch(F,V,'gw');
 axisGeom;
 camlight('headlight');
 lighting phong; axis off; 
-drawnow;
+gdrawnow;
 
 %% Import a binary type STL file as patch data
 
@@ -170,11 +171,11 @@ V=stlStruct.solidVertices{1}; %Vertices
 
 cFigure;
 title('Imported patch data from STL','fontSize',fontSize);
-gpatch(F,V,'g');
+gpatch(F,V,'gw');
 axisGeom;
 camlight('headlight');
 lighting phong; axis off; 
-drawnow;
+gdrawnow;
 
 %% 
 %
@@ -194,7 +195,7 @@ drawnow;
 % image segmentation, image-based modeling, meshing, and finite element
 % analysis.
 % 
-% Copyright (C) 2019  Kevin Mattheus Moerman
+% Copyright (C) 2006-2020 Kevin Mattheus Moerman
 % 
 % This program is free software: you can redistribute it and/or modify
 % it under the terms of the GNU General Public License as published by

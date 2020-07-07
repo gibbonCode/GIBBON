@@ -23,7 +23,7 @@ defaultFolder = fileparts(fileparts(mfilename('fullpath')));
 pathName=fullfile(defaultFolder,'data','STL'); 
 
 %File name for STL
-fileName=fullfile(pathName,'femur.stl'); 
+fileName=fullfile(pathName,'vertebra.stl'); 
 
 %% Import a txt type STL file as patch data
 [stlStruct] = import_STL(fileName);
