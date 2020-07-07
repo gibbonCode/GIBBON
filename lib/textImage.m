@@ -1,5 +1,15 @@
 function [glyphImage]=textImage(varargin)
 
+% function [glyphImage]=textImage(textInput,FontName,FontSize,padAmount)
+% ------------------------------------------------------------------------
+% This function generates a 2D image containing text as provided in the
+% input. The text is of high intensity while the background is of low
+% intensity. The font type and font size can be specified allong with the
+% amount of padding around the text. 
+% 
+% 
+% ------------------------------------------------------------------------
+
 %%
 
 switch nargin
@@ -36,6 +46,10 @@ if isa(textInput,'cell')
     textString=char(textInput);
 else
     textString=textInput;
+end
+
+if isempty(FontName)
+    FontName=vision.internal.getDefaultFont();
 end
 
 %%
