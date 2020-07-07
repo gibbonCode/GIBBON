@@ -6,7 +6,7 @@
    <!--
 This HTML was auto-generated from MATLAB code.
 To make changes, update the MATLAB code and republish this document.
-      --><title>DEMO_febio_0062_femur_load_01</title><meta name="generator" content="MATLAB 9.8"><link rel="schema.DC" href="http://purl.org/dc/elements/1.1/"><meta name="DC.date" content="2020-07-07"><meta name="DC.source" content="DEMO_febio_0062_femur_load_01.m"><style type="text/css">
+      --><title>DEMO_febio_0063_custom_hip_implant_01.m</title><meta name="generator" content="MATLAB 9.8"><link rel="schema.DC" href="http://purl.org/dc/elements/1.1/"><meta name="DC.date" content="2020-07-07"><meta name="DC.source" content="DEMO_febio_0063_custom_hip_implant_01.m"><style type="text/css">
 html,body,div,span,applet,object,iframe,h1,h2,h3,h4,h5,h6,p,blockquote,pre,a,abbr,acronym,address,big,cite,code,del,dfn,em,font,img,ins,kbd,q,s,samp,small,strike,strong,sub,sup,tt,var,b,u,i,center,dl,dt,dd,ol,ul,li,fieldset,form,label,legend,table,caption,tbody,tfoot,thead,tr,th,td{margin:0;padding:0;border:0;outline:0;font-size:100%;vertical-align:baseline;background:transparent}body{line-height:1}ol,ul{list-style:none}blockquote,q{quotes:none}blockquote:before,blockquote:after,q:before,q:after{content:'';content:none}:focus{outine:0}ins{text-decoration:none}del{text-decoration:line-through}table{border-collapse:collapse;border-spacing:0}
 
 html { min-height:100%; margin-bottom:1px; }
@@ -67,7 +67,7 @@ table td { padding:7px 5px; text-align:left; vertical-align:top; border:1px soli
 
 
 
-  </style></head><body><div class="content"><h1>DEMO_febio_0062_femur_load_01</h1><!--introduction--><p>Below is a demonstration for:</p><div><ul><li>Building geometry femur bone</li><li>Applying a load to the femur head</li></ul></div><!--/introduction--><h2>Contents</h2><div><ul><li><a href="#1">Keywords</a></li><li><a href="#3">Plot settings</a></li><li><a href="#4">Control parameters</a></li><li><a href="#5">Import bone surface model</a></li><li><a href="#6">Scale and reorient</a></li><li><a href="#7">Visualize bone surface</a></li><li><a href="#8">Cut bone surface</a></li><li><a href="#9">Visualize bone surface</a></li><li><a href="#10">Mesh using tetgen</a></li><li><a href="#11">Visualize interior point</a></li><li><a href="#13">Define material regions in bone</a></li><li><a href="#14">Visualizing solid mesh</a></li><li><a href="#15">Find femoral head</a></li><li><a href="#17">Work out force distribution on femoral head surface nodes</a></li><li><a href="#19">Visualizing boundary conditions</a></li><li><a href="#20">Defining the FEBio input structure</a></li><li><a href="#21">Quick viewing of the FEBio input file structure</a></li><li><a href="#23">Exporting the FEBio input file</a></li><li><a href="#24">Running the FEBio analysis</a></li><li><a href="#25">Import FEBio results</a></li></ul></div><h2 id="1">Keywords</h2><div><ul><li>febio_spec version 2.5</li><li>febio, FEBio</li><li>beam force loading</li><li>force control boundary condition</li><li>tetrahedral elements, tet4</li><li>femur</li><li>static, solid</li><li>displacement logfile</li><li>stress logfile</li></ul></div><pre class="codeinput">clear; close <span class="string">all</span>; clc;
+  </style></head><body><div class="content"><h1>DEMO_febio_0063_custom_hip_implant_01.m</h1><!--introduction--><p>Below is a demonstration for:</p><div><ul><li>Importing bone geometry</li><li>Building geometry for a custom hip implant</li><li>Evaluating the implant using FEA</li></ul></div><!--/introduction--><h2>Contents</h2><div><ul><li><a href="#1">Keywords</a></li><li><a href="#3">Plot settings</a></li><li><a href="#4">Control parameters</a></li><li><a href="#5">Import bone model</a></li><li><a href="#6">Compute derived control parameters</a></li><li><a href="#7">Cut bone end off</a></li><li><a href="#9">Cut femoral head off</a></li><li><a href="#11">Add inner bone surface for implant to rest on (will attach to collar)</a></li><li><a href="#13">Create implant spherical head</a></li><li><a href="#16">Build colar</a></li><li><a href="#18">Build neck</a></li><li><a href="#20">Define shaft</a></li><li><a href="#22">Join bone and implant surfaces</a></li><li><a href="#24">Create tetrahedral elements for both regions</a></li><li><a href="#29">Define material regions in bone</a></li><li><a href="#30">Visualizing solid mesh</a></li><li><a href="#32">Find femoral head</a></li><li><a href="#34">Work out force distribution on femoral head surface nodes</a></li><li><a href="#36">Visualizing boundary conditions</a></li><li><a href="#37">Defining the FEBio input structure</a></li><li><a href="#38">Quick viewing of the FEBio input file structure</a></li><li><a href="#40">Exporting the FEBio input file</a></li><li><a href="#41">Running the FEBio analysis</a></li><li><a href="#42">Import FEBio results</a></li></ul></div><h2 id="1">Keywords</h2><div><ul><li>febio_spec version 2.5</li><li>febio, FEBio</li><li>beam force loading</li><li>force control boundary condition</li><li>tetrahedral elements, tet4</li><li>beam, rectangular</li><li>static, solid</li><li>hyperelastic, Ogden</li><li>displacancellousBone logfile</li><li>stress logfile</li></ul></div><pre class="codeinput">clear; close <span class="string">all</span>; clc;
 </pre><h2 id="3">Plot settings</h2><pre class="codeinput">fontSize=20;
 faceAlpha1=0.8;
 markerSize=40;
@@ -82,7 +82,7 @@ pathNameSTL=fullfile(defaultFolder,<span class="string">'data'</span>,<span clas
 febioFebFileNamePart=<span class="string">'tempModel'</span>;
 febioFebFileName=fullfile(savePath,[febioFebFileNamePart,<span class="string">'.feb'</span>]); <span class="comment">%FEB file name</span>
 febioLogFileName=fullfile(savePath,[febioFebFileNamePart,<span class="string">'.txt'</span>]); <span class="comment">%FEBio log file name</span>
-febioLogFileName_disp=[febioFebFileNamePart,<span class="string">'_disp_out.txt'</span>]; <span class="comment">%Log file name for exporting displacement</span>
+febioLogFileName_disp=[febioFebFileNamePart,<span class="string">'_disp_out.txt'</span>]; <span class="comment">%Log file name for exporting displacancellousBone</span>
 febioLogFileName_force=[febioFebFileNamePart,<span class="string">'_force_out.txt'</span>]; <span class="comment">%Log file name for exporting force</span>
 febioLogFileName_stress=[febioFebFileNamePart,<span class="string">'_stress_out.txt'</span>]; <span class="comment">%Log file name for exporting stresses</span>
 febioLogFileName_strainEnergy=[febioFebFileNamePart,<span class="string">'_energy_out.txt'</span>]; <span class="comment">%Log file name for exporting strain energy density</span>
@@ -90,7 +90,20 @@ febioLogFileName_strainEnergy=[febioFebFileNamePart,<span class="string">'_energ
 <span class="comment">%Geometric parameters</span>
 distanceCut=250; <span class="comment">%Distance from femur to cut bone at</span>
 corticalThickness=3; <span class="comment">%Thickness used for cortical material definition</span>
-volumeFactor=2; <span class="comment">%Factor to scale desired volume for interior elements w.r.t. boundary elements</span>
+volumeFactors=[2 2]; <span class="comment">%Factor to scale desired volume for interior elements w.r.t. boundary elements</span>
+
+stemCut=32;
+numSmoothStepsCutBottom=5;
+numSmoothStepsCutFemur=25;
+implantOffset=5;
+implantOffsetCollar=2;
+implantHeadRadius=20;
+implantStickRadius=10;
+implantCollarThickness=3;
+implantShaftLengthFraction=1/4;
+
+numLoftGuideSlicesShaft=8;
+numSmoothStepsShaft=20;
 
 <span class="comment">%Define applied force</span>
 forceTotal=[-405 -246 -1717.5]; <span class="comment">%x,y,z force in Newton</span>
@@ -104,6 +117,10 @@ nu1=0.25; <span class="comment">%Poissons ratio</span>
 E_youngs2=1500; <span class="comment">%Youngs modulus</span>
 nu2=0.25; <span class="comment">%Poissons ratio</span>
 
+<span class="comment">% Implant</span>
+E_youngs3=110000; <span class="comment">%Youngs modulus</span>
+nu3=0.25; <span class="comment">%Poissons ratio</span>
+
 <span class="comment">% FEA control settings</span>
 numTimeSteps=10; <span class="comment">%Number of time steps desired</span>
 max_refs=25; <span class="comment">%Max reforms</span>
@@ -113,11 +130,10 @@ max_retries=5; <span class="comment">%Maximum number of retires</span>
 dtmin=(1/numTimeSteps)/100; <span class="comment">%Minimum time step size</span>
 dtmax=1/numTimeSteps; <span class="comment">%Maximum time step size</span>
 runMode=<span class="string">'external'</span>; <span class="comment">%'external' or 'internal'</span>
-</pre><h2 id="5">Import bone surface model</h2><pre class="codeinput">[stlStruct] = import_STL(fullfile(pathNameSTL,<span class="string">'femur_iso.stl'</span>));
+</pre><h2 id="5">Import bone model</h2><pre class="codeinput">[stlStruct] = import_STL(fullfile(pathNameSTL,<span class="string">'femur_iso.stl'</span>));
 F_bone=stlStruct.solidFaces{1}; <span class="comment">%Faces</span>
 V_bone=stlStruct.solidVertices{1}; <span class="comment">%Vertices</span>
-</pre><h2 id="6">Scale and reorient</h2><pre class="codeinput">V_bone=V_bone.*1000; <span class="comment">%Scale to mm</span>
-
+V_bone=V_bone.*1000;
 [F_bone,V_bone]=mergeVertices(F_bone,V_bone); <span class="comment">% Merging nodes</span>
 Q1=euler2DCM([0 0 0.065*pi]);
 V_bone=V_bone*Q1;
@@ -125,147 +141,475 @@ Q2=euler2DCM([-0.5*pi 0 0]);
 V_bone=V_bone*Q2;
 Q3=euler2DCM([0 0 0.36*pi]);
 V_bone=V_bone*Q3;
-</pre><h2 id="7">Visualize bone surface</h2><pre class="codeinput">cFigure; hold <span class="string">on</span>;
-gpatch(F_bone,V_bone,<span class="string">'w'</span>,<span class="string">'k'</span>,1);
-<span class="comment">% patchNormPlot(F_bone,V_bone)</span>
-axisGeom; camlight <span class="string">headlight</span>;
-drawnow;
-</pre><img width="100%" height="auto" vspace="5" hspace="5" src="DEMO_febio_0062_femur_load_01_01.jpg" alt=""> <h2 id="8">Cut bone surface</h2><pre class="codeinput"><span class="comment">%Slicing surface</span>
-
+</pre><h2 id="6">Compute derived control parameters</h2><pre class="codeinput">pointSpacing=mean(patchEdgeLengths(F_bone,V_bone)); <span class="comment">%Points spacing of bone surface</span>
+snapTolerance=mean(patchEdgeLengths(F_bone,V_bone))/100; <span class="comment">%Tolerance for surface slicing</span>
+femurHeight=max(V_bone(:,3))-min(V_bone(:,3)); <span class="comment">%Height of the femur</span>
+shaftDepthFromHead=femurHeight.*implantShaftLengthFraction;
+</pre><h2 id="7">Cut bone end off</h2><pre class="codeinput"><span class="comment">%Cut bone</span>
 [F_bone,V_bone,~,logicSide,~]=triSurfSlice(F_bone,V_bone,[],[0 0 -distanceCut],[0 0 1]);
-
 F_bone=F_bone(logicSide==0,:);
 [F_bone,V_bone]=patchCleanUnused(F_bone,V_bone);
 
+<span class="comment">%Get boundary curve</span>
 Eb=patchBoundary(F_bone,V_bone);
 indCurve=edgeListToCurve(Eb);
 indCurve=indCurve(1:end-1);
 
-cparSmooth.n=5;
+<span class="comment">%Smooth curve edges</span>
+cparSmooth.n=numSmoothStepsCutBottom;
 cparSmooth.Method=<span class="string">'HC'</span>;
 [V_Eb_smooth]=patchSmooth(Eb,V_bone(:,[1 2]),[],cparSmooth);
 V_bone(indCurve,[1 2])=V_Eb_smooth(indCurve,:);
 
-cparSmooth.n=5;
+<span class="comment">%Smooth mesh at curve</span>
+clear <span class="string">cparSmooth</span>
+cparSmooth.n=numSmoothStepsCutBottom;
 cparSmooth.Method=<span class="string">'HC'</span>;
 cparSmooth.RigidConstraints=indCurve;
 [V_bone]=patchSmooth(F_bone,V_bone,[],cparSmooth);
 
-pointSpacing=mean(patchEdgeLengths(F_bone,V_bone));
-
+<span class="comment">%Mesh the bottom curfaces</span>
 [F_bone2,V_bone2]=regionTriMesh3D({V_bone(indCurve,:)},pointSpacing,0,<span class="string">'linear'</span>);
 <span class="keyword">if</span> dot(mean(patchNormal(F_bone2,V_bone2)),[0 0 1])&gt;0
     F_bone2=fliplr(F_bone2);
 <span class="keyword">end</span>
 
+<span class="comment">%Join cut bone with bottom to created a single node shared closed surface</span>
 [F_bone,V_bone,C_bone]=joinElementSets({F_bone,F_bone2},{V_bone,V_bone2});
 [F_bone,V_bone]=mergeVertices(F_bone,V_bone);
-</pre><h2 id="9">Visualize bone surface</h2><pre class="codeinput">cFigure; hold <span class="string">on</span>;
-gpatch(F_bone,V_bone,C_bone,<span class="string">'k'</span>,1);
-patchNormPlot(F_bone,V_bone);
+</pre><p>Visualize cut surface</p><pre class="codeinput">cFigure; hold <span class="string">on</span>;
+title(<span class="string">'The bone surface'</span>);
+gpatch(F_bone,V_bone,<span class="string">'bw'</span>,<span class="string">'k'</span>,1);
+axisGeom;
+camlight <span class="string">headlight</span>;
+gdrawnow;
+</pre><img width="100%" height="auto" vspace="5" hspace="5" src="DEMO_febio_0063_custom_hip_implant_01_01.jpg" alt=""> <h2 id="9">Cut femoral head off</h2><pre class="codeinput"><span class="comment">%Set-up orientation and location of cutting plane</span>
+n=vecnormalize([0 0 1]); <span class="comment">%Normal direction to plane</span>
+Q1=euler2DCM([0 -(63/180)*pi 0]);
+Q2=euler2DCM([0 0 (32/180)*pi]);
+Q=Q1*Q2;
+n=n*Q;
+P_cut=[0 0 0]-n*stemCut; <span class="comment">%Point on plane</span>
+
+<span class="comment">%Slicing surface</span>
+[Fc,Vc,Cc,logicSide,~]=triSurfSlice(F_bone,V_bone,C_bone,P_cut,n,snapTolerance);
+
+<span class="comment">%Compose isolated cut geometry and boundary curves</span>
+[F_bone_cut,V_bone_cut]=patchCleanUnused(Fc(logicSide,:),Vc);
+C_bone_cut=Cc(logicSide);
+
+Eb=patchBoundary(F_bone_cut,V_bone_cut);
+indCutCurve=edgeListToCurve(Eb);
+indCutCurve=indCutCurve(1:end-1);
+
+<span class="comment">%Smoothing cut</span>
+logicTouch=any(ismember(F_bone_cut,indCutCurve),2);
+indTouch=unique(F_bone_cut(logicTouch,:));
+logicTouch=any(ismember(F_bone_cut,indTouch),2);
+indRigid=unique(F_bone_cut(~logicTouch,:));
+indRigid=unique([indRigid(:);indCutCurve(:)]);
+
+clear <span class="string">cparSmooth</span>
+cparSmooth.n=numSmoothStepsCutFemur;
+cparSmooth.RigidConstraints=indRigid;
+[V_bone_cut]=patchSmooth(F_bone_cut,V_bone_cut,[],cparSmooth);
+
+clear <span class="string">cparSmooth</span>
+cparSmooth.n=numSmoothStepsCutFemur;
+[VEb]=patchSmooth(Eb,V_bone_cut,[],cparSmooth);
+V_bone_cut(indCutCurve,:)=VEb(indCutCurve,:);
+
+<span class="comment">%Get curve points and centre coordinate</span>
+V_bone_cut_curve=V_bone_cut(indCutCurve,:);
+PA=mean(V_bone_cut_curve,1); <span class="comment">%Mean of cut curve (middle of cut)</span>
+</pre><p>Visualize cut surface</p><pre class="codeinput">cFigure; hold <span class="string">on</span>;
+title(<span class="string">'The cut bone surface'</span>);
+gpatch(F_bone_cut,V_bone_cut,<span class="string">'bw'</span>,<span class="string">'k'</span>,1);
+plotV(V_bone_cut_curve,<span class="string">'r.-'</span>,<span class="string">'MarkerSize'</span>,25,<span class="string">'LineWidth'</span>,3)
+axisGeom;
+camlight <span class="string">headlight</span>;
+gdrawnow;
+</pre><img width="100%" height="auto" vspace="5" hspace="5" src="DEMO_febio_0063_custom_hip_implant_01_02.jpg" alt=""> <h2 id="11">Add inner bone surface for implant to rest on (will attach to collar)</h2><pre class="codeinput"><span class="comment">%Define collar curve</span>
+V_collar_1=V_bone_cut_curve;
+V_collar_1=V_collar_1-PA;
+
+d=sqrt(sum(V_collar_1.^2,2));
+shrinkFactor=(min(d(:))-implantOffsetCollar)./min(d(:));
+V_collar_1=V_collar_1.*shrinkFactor;
+V_collar_1=V_collar_1+PA;
+V_collar_1=evenlySpaceCurve(V_collar_1,pointSpacing,<span class="string">'pchip'</span>,1);
+
+<span class="comment">% Mesh cut bone top (space between collar curve and bone cut curve)</span>
+[F_bone_top,V_bone_top]=regionTriMesh3D({V_bone_cut_curve,V_collar_1},[],0,<span class="string">'linear'</span>);
+nTop=mean(patchNormal(F_bone_top,V_bone_top),1);
+<span class="keyword">if</span> dot(nTop,n)&lt;0
+    F_bone_top=fliplr(F_bone_top);
+<span class="keyword">end</span>
+
+<span class="comment">% Join and merge geometry</span>
+[F_bone_cut,V_bone_cut,C_bone_cut]=joinElementSets({F_bone_cut,F_bone_top},{V_bone_cut,V_bone_top},{C_bone_cut,max(C_bone_cut(:))+ones(size(F_bone_top,1),1)});
+[F_bone_cut,V_bone_cut]=mergeVertices(F_bone_cut,V_bone_cut);
+</pre><p>Visualize bone with meshed top</p><pre class="codeinput">cFigure; hold <span class="string">on</span>;
+title(<span class="string">'The cut bone surface with meshed top'</span>);
+gpatch(F_bone_cut,V_bone_cut,C_bone_cut,<span class="string">'k'</span>,1);
+
+plotV(V_bone_cut_curve,<span class="string">'r.-'</span>,<span class="string">'MarkerSize'</span>,15,<span class="string">'LineWidth'</span>,2)
+plotV(V_collar_1,<span class="string">'g.-'</span>,<span class="string">'MarkerSize'</span>,15,<span class="string">'LineWidth'</span>,2)
+axisGeom; icolorbar;
+camlight <span class="string">headlight</span>;
+gdrawnow;
+</pre><img width="100%" height="auto" vspace="5" hspace="5" src="DEMO_febio_0063_custom_hip_implant_01_03.jpg" alt=""> <h2 id="13">Create implant spherical head</h2><pre class="codeinput"><span class="comment">% Create sphere use will loop to define increasingly fine sphere</span>
+<span class="comment">% triangulations untill the point spacing of the sphere is smaller or equal</span>
+<span class="comment">% to the bone point spacing.</span>
+
+nRef=1;
+<span class="keyword">while</span> 1
+    [F_head,V_head]=geoSphere(nRef,implantHeadRadius);
+    pointSpacingNow=mean(patchEdgeLengths(F_head,V_head));
+    <span class="keyword">if</span> pointSpacingNow&lt;=pointSpacing
+        <span class="keyword">break</span>
+    <span class="keyword">else</span>
+        nRef=nRef+1;
+    <span class="keyword">end</span>
+<span class="keyword">end</span>
+</pre><p>Cutting the sphere</p><pre class="codeinput"><span class="comment">% Define ball cutting coordinate</span>
+xc=cos(asin(implantStickRadius/implantHeadRadius))*implantHeadRadius;
+
+logicRight=V_head(:,1)&gt;xc;
+logicCut=any(logicRight(F_head),2);
+logicCut=triSurfLogicSharpFix(F_head,logicCut,3);
+F_head=F_head(~logicCut,:);
+[F_head,V_head]=patchCleanUnused(F_head,V_head);
+Eb_head=patchBoundary(F_head,V_head);
+indB=unique(Eb_head(:));
+[T,P,R] = cart2sph(V_head(:,2),V_head(:,3),V_head(:,1));
+P(indB)=atan2(xc,implantHeadRadius*sin(acos(xc./implantHeadRadius)));
+[V_head(:,2),V_head(:,3),V_head(:,1)] = sph2cart(T,P,R);
+
+indHeadHole=edgeListToCurve(Eb_head);
+indHeadHole=indHeadHole(1:end-1);
+
+pointSpacingHead=mean(sqrt(sum(diff(V_head(indHeadHole,:),1,1).^2,2)));
+
+<span class="comment">%Reorient ball</span>
+nd=vecnormalize(-PA); <span class="comment">%Vector pointing to mean of cut curve</span>
+Q=vecPair2Rot(nd,[0 0 1]); <span class="comment">%Rotation matrix for ball</span>
+Q3=euler2DCM([0 -0.5*pi 0]);
+V_head=V_head*Q3;
+V_head=V_head*Q;
+</pre><p>Visualize head</p><pre class="codeinput">cFigure; hold <span class="string">on</span>;
+title(<span class="string">'The implant head surface'</span>);
+gpatch(F_bone_cut,V_bone_cut,<span class="string">'w'</span>,<span class="string">'none'</span>,0.5);
+gpatch(F_head,V_head,<span class="string">'bw'</span>,<span class="string">'k'</span>,1);
 axisGeom; camlight <span class="string">headlight</span>;
-drawnow;
-</pre><img width="100%" height="auto" vspace="5" hspace="5" src="DEMO_febio_0062_femur_load_01_02.jpg" alt=""> <h2 id="10">Mesh using tetgen</h2><pre class="codeinput"><span class="comment">%Find interior point</span>
-V_inner_bone=getInnerPoint(F_bone,V_bone);
-</pre><h2 id="11">Visualize interior point</h2><pre class="codeinput">cFigure; hold <span class="string">on</span>;
-gpatch(F_bone,V_bone,<span class="string">'w'</span>,<span class="string">'none'</span>,0.5);
-plotV(V_inner_bone,<span class="string">'r.'</span>,<span class="string">'MarkerSize'</span>,25)
+gdrawnow;
+</pre><img width="100%" height="auto" vspace="5" hspace="5" src="DEMO_febio_0063_custom_hip_implant_01_04.jpg" alt=""> <h2 id="16">Build colar</h2><pre class="codeinput"><span class="comment">%Create color offset curve</span>
+V_colarTop=V_collar_1;
+ve=[V_colarTop(2:end,:); V_colarTop(1,:)]-V_colarTop;
+
+vd=vecnormalize(cross(n(ones(size(ve,1),1),:),ve));
+<span class="comment">% vn2(:,1)=vn2(:,1)+collarThickness.*n;</span>
+V_colarTop=V_colarTop+implantCollarThickness.*n;
+
+nc=ceil((pi*implantCollarThickness/2)/pointSpacingHead);
+<span class="keyword">if</span> nc&lt;4
+    nc=4;
+<span class="keyword">end</span>
+vc=linspacen(V_collar_1,V_colarTop,nc);
+X=squeeze(vc(:,1,:));
+Y=squeeze(vc(:,2,:));
+Z=squeeze(vc(:,3,:));
+t=repmat(linspace(-1,1,nc),size(Z,1),1);
+a=acos(t);
+X=X+implantCollarThickness/2.*sin(a).*repmat(vd(:,1),1,nc);
+Y=Y+implantCollarThickness/2.*sin(a).*repmat(vd(:,2),1,nc);
+Z=Z+implantCollarThickness/2.*sin(a).*repmat(vd(:,3),1,nc);
+
+[F_collar,V_collar]=grid2patch(X,Y,Z,[],[1 0 0]);
+[F_collar,V_collar]=quad2tri(F_collar,V_collar,<span class="string">'a'</span>);
+
+indTopCollar=size(V_collar,1)+1-size(V_collar_1,1):size(V_collar,1);
+Eb_collar=[indTopCollar(:) [indTopCollar(2:end)'; indTopCollar(1)]];
+</pre><p>Visualize collar</p><pre class="codeinput">cFigure; hold <span class="string">on</span>;
+title(<span class="string">'The implant collar/rim'</span>);
+gpatch(F_bone_cut,V_bone_cut,<span class="string">'w'</span>,<span class="string">'none'</span>,0.5);
+gpatch(F_head,V_head,<span class="string">'w'</span>,<span class="string">'none'</span>,0.5);
+gpatch(F_collar,V_collar,<span class="string">'bw'</span>,<span class="string">'k'</span>,1);
 axisGeom; camlight <span class="string">headlight</span>;
-drawnow;
-</pre><img width="100%" height="auto" vspace="5" hspace="5" src="DEMO_febio_0062_femur_load_01_03.jpg" alt=""> <p>Regional mesh volume parameter</p><pre class="codeinput">tetVolume=tetVolMeanEst(F_bone,V_bone); <span class="comment">%Volume for regular tets</span>
+gdrawnow;
+</pre><img width="100%" height="auto" vspace="5" hspace="5" src="DEMO_febio_0063_custom_hip_implant_01_05.jpg" alt=""> <h2 id="18">Build neck</h2><pre class="codeinput"><span class="keyword">if</span> size(Eb_head,1)&lt;size(Eb_collar,1)
+    numEdgesNeeded=size(Eb_collar,1);
+    [F_head,V_head,Eb_head,~]=triSurfSplitBoundary(F_head,V_head,Eb_head,numEdgesNeeded,[]);
+<span class="keyword">elseif</span> size(Eb_collar,1)&lt;size(Eb_head,1)
+    numEdgesNeeded=size(Eb_head,1);
+    [F_collar,V_collar,Eb_collar,~]=triSurfSplitBoundary(F_collar,V_collar,Eb_collar,numEdgesNeeded,[]);
+<span class="keyword">end</span>
+indTopCollar=edgeListToCurve(Eb_collar); indTopCollar=indTopCollar(1:end-1);
+indHeadHole=edgeListToCurve(Eb_head); indHeadHole=indHeadHole(1:end-1);
 
-tetGenStruct.stringOpt=<span class="string">'-pq1.2AaY'</span>;
-tetGenStruct.Faces=F_bone;
-tetGenStruct.Nodes=V_bone;
-tetGenStruct.holePoints=[];
-tetGenStruct.faceBoundaryMarker=C_bone; <span class="comment">%Face boundary markers</span>
-tetGenStruct.regionPoints=V_inner_bone; <span class="comment">%region points</span>
-tetGenStruct.regionA=tetVolume*volumeFactor;
+[~,indStart]=minDist(V_collar(indTopCollar(1),:),V_head(indHeadHole,:));
 
-[meshOutput]=runTetGen(tetGenStruct); <span class="comment">%Run tetGen</span>
+<span class="keyword">if</span> indStart&gt;1
+    indHeadHole=[indHeadHole(indStart:end) indHeadHole(1:indStart-1)];
+<span class="keyword">end</span>
 
-<span class="comment">% Access elements, nodes, and boundary faces</span>
-E=meshOutput.elements;
-V=meshOutput.nodes;
-Fb=meshOutput.facesBoundary;
-Cb=meshOutput.boundaryMarker;
-CE=meshOutput.elementMaterialID;
+d1=sum((V_head(indHeadHole,:)-V_collar(indTopCollar,:)).^2,2);
+d2=sum((V_head(indHeadHole,:)-V_collar(flip(indTopCollar),:)).^2,2);
+<span class="keyword">if</span> max(d2(:))&lt;max(d1(:))
+    indTopCollar=flip(indTopCollar);
+<span class="keyword">end</span>
+
+cParLoft.closeLoopOpt=1;
+cParLoft.patchType=<span class="string">'tri_slash'</span>;
+[F_neck,V_neck,indNeckStart,indNeckEnd]=polyLoftLinear(V_collar(indTopCollar,:),V_head(indHeadHole,:),cParLoft);
+</pre><p>Visualize collar</p><pre class="codeinput">cFigure; hold <span class="string">on</span>;
+title(<span class="string">'The implant neck'</span>);
+gpatch(F_bone_cut,V_bone_cut,<span class="string">'w'</span>,<span class="string">'none'</span>,0.5);
+gpatch(F_head,V_head,<span class="string">'w'</span>,<span class="string">'none'</span>,0.5);
+gpatch(F_collar,V_collar,<span class="string">'w'</span>,<span class="string">'none'</span>,0.5);
+gpatch(F_neck,V_neck,<span class="string">'rw'</span>,<span class="string">'k'</span>,1);
+axisGeom; camlight <span class="string">headlight</span>;
+gdrawnow;
+</pre><img width="100%" height="auto" vspace="5" hspace="5" src="DEMO_febio_0063_custom_hip_implant_01_06.jpg" alt=""> <h2 id="20">Define shaft</h2><pre class="codeinput"><span class="comment">%Find lowest point on collar curve</span>
+[~,indMin]=min(V_collar_1(:,3));
+PB=V_collar_1(indMin,:);
+
+<span class="comment">%Define a normalized vector pointing from PA to PB</span>
+m=vecnormalize(PB-PA);
+
+<span class="comment">%Define based point for slicing</span>
+f=shaftDepthFromHead./abs(m(3));
+P=PA+f*m;
+
+<span class="comment">%Define normal directions for slicing (go linearly from n to z-dir)</span>
+nn=linspacen(n,[0 0 1],numLoftGuideSlicesShaft)';
+
+
+numPointsRadial=size(V_collar_1,1);
+Vp=V_collar_1;
+FL=[];
+VL=Vp;
+[~,indStart]=max(VL(:,1));
+<span class="keyword">if</span> indStart&gt;1
+    VL=[VL(indStart:end,:); VL(1:indStart-1,:)];
+<span class="keyword">end</span>
+R1=vecPair2Rot(n,[0 0 1]);
+e=[(1:numPointsRadial)' [(2:numPointsRadial)';1]];
+V_start=VL(1,:);
+t=linspace(0,2*pi,numPointsRadial+1); t=t(1:end-1);
+VC=cell(numLoftGuideSlicesShaft,1);
+VC{1}=V_collar_1;
+<span class="keyword">for</span> q=2:1:numLoftGuideSlicesShaft
+
+    Rn=vecPair2Rot(nn(q,:),[0 0 1]);
+
+    [~,Vqc,~,~,Ebc]=triSurfSlice(F_bone,V_bone,[],P,nn(q,:),snapTolerance);
+    indCutCurveNow=edgeListToCurve(Ebc);
+    indCutCurveNow=indCutCurveNow(1:end-1);
+    P2=mean(Vqc(indCutCurveNow,:),1);
+
+    <span class="keyword">if</span> P2(3)&gt;-50
+        Vp=V_collar_1-PA;
+        Vp=Vp*R1';
+        Vp=Vp*Rn;
+    <span class="keyword">else</span>
+        Vp=Vqc(indCutCurveNow,:);
+        Vp=Vp-P2;
+        d=sqrt(sum(Vp.^2,2));
+        shrinkFactor=(min(d(:))-implantOffset)./min(d(:));
+        Vp=Vp.*shrinkFactor;
+    <span class="keyword">end</span>
+
+    Vp=Vp+P2;
+    Vp=evenlySampleCurve(Vp,numPointsRadial,0.01,1);
+
+    [~,indStart]=max(Vp(:,1));
+    <span class="keyword">if</span> indStart&gt;1
+        Vp=[Vp(indStart:end,:); Vp(1:indStart-1,:)];
+    <span class="keyword">end</span>
+
+    f=[e+(q-2)*numPointsRadial fliplr(e)+(q-1)*numPointsRadial];
+
+    FL=[FL;f];
+    VL=[VL;Vp];
+
+    V_start=Vp(1,:);
+    VC{q}=Vqc(indCutCurveNow,:);
+<span class="keyword">end</span>
+
+[Fe,Ve]=regionTriMesh3D({Vp},[],0,<span class="string">'linear'</span>);
+ne=mean(patchNormal(Fe,Ve),1);
+<span class="keyword">if</span> dot(ne,[0 0 1])&gt;0
+    Fe=fliplr(Fe);
+<span class="keyword">end</span>
+d=minDist(Ve,Vp);
+r=max(d(:));
+d=d./max(d(:));
+a=acos(1-d);
+Ve(:,3)=Ve(:,3)-r*sin(a);
+[FL,VL]=subQuad(FL,VL,3,3);
+[FL,VL]=quad2tri(FL,VL,<span class="string">'a'</span>);
+
+[FL,VL]=joinElementSets({FL,Fe},{VL,Ve});
+[FL,VL]=mergeVertices(FL,VL);
+Eb=patchBoundary(FL,VL);
+
+cparSmooth.n=numSmoothStepsShaft;
+<span class="comment">% cPar.Method='HC';</span>
+cparSmooth.RigidConstraints=unique(Eb(:));
+VL=patchSmooth(FL,VL,[],cparSmooth);
+
+<span class="comment">% Join and merge surfaces</span>
+[F_implant,V_implant,C_implant]=joinElementSets({F_head,F_neck,F_collar,FL},{V_head,V_neck,V_collar,VL});
+[F_implant,V_implant]=mergeVertices(F_implant,V_implant);
+</pre><p>Visualize implant</p><pre class="codeinput">cFigure; hold <span class="string">on</span>;
+title(<span class="string">'Completed implant surface'</span>);
+gpatch(F_bone_cut,V_bone_cut,<span class="string">'w'</span>,<span class="string">'none'</span>,0.5);
+gpatch(F_implant,V_implant,C_implant,<span class="string">'none'</span>,1);
+
+<span class="keyword">for</span> q=1:1:numLoftGuideSlicesShaft
+    Vpp=VC{q};
+    plotV(Vpp([1:size(Vpp,1) 1],:),<span class="string">'k-'</span>,<span class="string">'LineWidth'</span>,4);
+<span class="keyword">end</span>
+
+axisGeom; camlight <span class="string">headlight</span>;
+colormap(gjet(250)); icolorbar;
+gdrawnow;
+</pre><img width="100%" height="auto" vspace="5" hspace="5" src="DEMO_febio_0063_custom_hip_implant_01_07.jpg" alt=""> <h2 id="22">Join bone and implant surfaces</h2><pre class="codeinput">[F,V,C]=joinElementSets({F_bone_cut,F_implant},{V_bone_cut,V_implant},{C_bone_cut,C_implant+max(C_bone_cut(:))});
+[F,V]=mergeVertices(F,V);
+</pre><p>Visualized merged set</p><pre class="codeinput">cFigure; hold <span class="string">on</span>;
+gpatch(F,V,C,<span class="string">'none'</span>,0.5);
+axisGeom; camlight <span class="string">headlight</span>;
+colormap(gjet(250)); icolorbar;
+gdrawnow;
+</pre><img width="100%" height="auto" vspace="5" hspace="5" src="DEMO_febio_0063_custom_hip_implant_01_08.jpg" alt=""> <h2 id="24">Create tetrahedral elements for both regions</h2><p>Define interior points</p><pre class="codeinput">logicRegion1=ismember(C,[1 2 3 7]); <span class="comment">%Bone region is defined by bone+shaft surfaces</span>
+V_region1=getInnerPoint(F(logicRegion1,:),V);
+
+logicRegion2=ismember(C,4:7); <span class="comment">%Logic for implant faces</span>
+V_region2=getInnerPoint(F(logicRegion2,:),V);
+
+V_regions=[V_region1; V_region2];
+</pre><p>Visualize mesh regions and interior points</p><pre class="codeinput">cFigure;
+subplot(1,2,1); hold <span class="string">on</span>;
+title(<span class="string">'Mesh region 1'</span>);
+gpatch(F(logicRegion1,:),V,<span class="string">'w'</span>,<span class="string">'none'</span>,0.5);
+plotV(V_region1,<span class="string">'k.'</span>,<span class="string">'MarkerSize'</span>,25);
+axisGeom; camlight <span class="string">headlight</span>;
+
+subplot(1,2,2); hold <span class="string">on</span>;
+title(<span class="string">'Mesh region 2'</span>);
+gpatch(F(logicRegion2,:),V,<span class="string">'w'</span>,<span class="string">'none'</span>,0.5);
+plotV(V_region2,<span class="string">'k.'</span>,<span class="string">'MarkerSize'</span>,25);
+axisGeom; camlight <span class="string">headlight</span>;
+
+gdrawnow;
+</pre><img width="100%" height="auto" vspace="5" hspace="5" src="DEMO_febio_0063_custom_hip_implant_01_09.jpg" alt=""> <p>Mesh using TetGen</p><pre class="codeinput">regionTetVolumes=volumeFactors.*tetVolMeanEst(F,V);
+
+<span class="comment">%Create tetgen input structure</span>
+inputStruct.stringOpt=<span class="string">'-pq1.2AaY'</span>; <span class="comment">%Options for tetgen</span>
+inputStruct.Faces=F; <span class="comment">%Boundary faces</span>
+inputStruct.Nodes=V; <span class="comment">%Nodes of boundary</span>
+inputStruct.faceBoundaryMarker=C;
+inputStruct.regionPoints=V_regions; <span class="comment">%Interior points for regions</span>
+inputStruct.holePoints=[]; <span class="comment">%Interior points for holes</span>
+inputStruct.regionA=regionTetVolumes; <span class="comment">%Desired tetrahedral volume for each region</span>
+
+<span class="comment">% Mesh model using tetrahedral elements using tetGen</span>
+[meshOutput]=runTetGen(inputStruct); <span class="comment">%Run tetGen</span>
 </pre><pre class="codeoutput"> 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
---- TETGEN Tetrahedral meshing --- 07-Jul-2020 21:58:13
+--- TETGEN Tetrahedral meshing --- 07-Jul-2020 21:55:40
  
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
---- Writing SMESH file --- 07-Jul-2020 21:58:13
+--- Writing SMESH file --- 07-Jul-2020 21:55:40
 ----&gt; Adding node field
 ----&gt; Adding facet field
 ----&gt; Adding holes specification
 ----&gt; Adding region specification
---- Done --- 07-Jul-2020 21:58:13
---- Running TetGen to mesh input boundary--- 07-Jul-2020 21:58:13
+--- Done --- 07-Jul-2020 21:55:40
+--- Running TetGen to mesh input boundary--- 07-Jul-2020 21:55:40
 Opening /mnt/data/MATLAB/GIBBON/data/temp/temp.smesh.
 Delaunizing vertices...
-Delaunay seconds:  0.02198
+Delaunay seconds:  0.035762
 Creating surface mesh ...
-Surface mesh seconds:  0.004832
+Surface mesh seconds:  0.00872
 Recovering boundaries...
-Boundary recovery seconds:  0.007776
+Boundary recovery seconds:  0.019582
 Removing exterior tetrahedra ...
 Spreading region attributes.
-Exterior tets removal seconds:  0.0048
+Exterior tets removal seconds:  0.00761
 Recovering Delaunayness...
-Delaunay recovery seconds:  0.004102
+Delaunay recovery seconds:  0.013057
 Refining mesh...
-Refinement seconds:  0.106503
+Refinement seconds:  0.233127
 Optimizing mesh...
-Optimization seconds:  0.007717
+Optimization seconds:  0.014575
 
 Writing /mnt/data/MATLAB/GIBBON/data/temp/temp.1.node.
 Writing /mnt/data/MATLAB/GIBBON/data/temp/temp.1.ele.
 Writing /mnt/data/MATLAB/GIBBON/data/temp/temp.1.face.
 Writing /mnt/data/MATLAB/GIBBON/data/temp/temp.1.edge.
 
-Output seconds:  0.104961
-Total running seconds:  0.262971
+Output seconds:  0.182366
+Total running seconds:  0.515206
 
 Statistics:
 
-  Input points: 2957
-  Input facets: 5910
-  Input segments: 8865
+  Input points: 4956
+  Input facets: 9935
+  Input segments: 14888
   Input holes: 0
-  Input regions: 1
+  Input regions: 2
 
-  Mesh points: 8145
-  Mesh tetrahedra: 41862
-  Mesh faces: 86679
-  Mesh faces on exterior boundary: 5910
-  Mesh faces on input facets: 5910
-  Mesh edges on input segments: 8865
-  Steiner points inside domain: 5188
+  Mesh points: 13494
+  Mesh tetrahedra: 74705
+  Mesh faces: 152672
+  Mesh faces on exterior boundary: 6524
+  Mesh faces on input facets: 9935
+  Mesh edges on input segments: 14888
+  Steiner points inside domain: 8538
 
---- Done --- 07-Jul-2020 21:58:13
+--- Done --- 07-Jul-2020 21:55:41
  
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
---- Importing TetGen files --- 07-Jul-2020 21:58:13
---- Done --- 07-Jul-2020 21:58:13
-</pre><h2 id="13">Define material regions in bone</h2><pre class="codeinput">indBoundary=unique(Fb(Cb==1,:));
+--- Importing TetGen files --- 07-Jul-2020 21:55:41
+--- Done --- 07-Jul-2020 21:55:41
+</pre><p>Access mesh output structure</p><pre class="codeinput">E=meshOutput.elements; <span class="comment">%The elements</span>
+V=meshOutput.nodes; <span class="comment">%The vertices or nodes</span>
+CE=meshOutput.elementMaterialID; <span class="comment">%Element material or region id</span>
+Fb=meshOutput.facesBoundary; <span class="comment">%The boundary faces</span>
+Cb=meshOutput.boundaryMarker; <span class="comment">%The boundary markers</span>
+</pre><h2 id="29">Define material regions in bone</h2><pre class="codeinput">logicImplantElements=CE==-3;
+
+indBoundary=unique(Fb(Cb==1,:));
 DE=minDist(V,V(indBoundary,:));
 logicCorticalNodes=DE&lt;=corticalThickness;
-logicCorticalElements=any(logicCorticalNodes(E),2);
-logicCancellousElements=~logicCorticalElements;
+logicCorticalElements=any(logicCorticalNodes(E),2) &amp; ~logicImplantElements;
+logicCancellousElements=~logicCorticalElements &amp; ~logicImplantElements;
 
 E1=E(logicCorticalElements,:);
 E2=E(logicCancellousElements,:);
-E=[E1;E2];
-elementMaterialID=[ones(size(E1,1),1);2*ones(size(E2,1),1);];
+E3=E(logicImplantElements,:);
+E=[E1;E2;E3];
+
+elementMaterialID=[ones(size(E1,1),1);2*ones(size(E2,1),1);3*ones(size(E3,1),1)];
+
 meshOutput.elements=E;
 meshOutput.elementMaterialID=elementMaterialID;
-</pre><h2 id="14">Visualizing solid mesh</h2><pre class="codeinput">hFig=cFigure; hold <span class="string">on</span>;
+</pre><h2 id="30">Visualizing solid mesh</h2><pre class="codeinput">hFig=cFigure; hold <span class="string">on</span>;
 optionStruct.hFig=hFig;
 meshView(meshOutput,optionStruct);
 axisGeom;
 drawnow;
-</pre><img width="100%" height="auto" vspace="5" hspace="5" src="DEMO_febio_0062_femur_load_01_04.jpg" alt=""> <h2 id="15">Find femoral head</h2><pre class="codeinput">w=100;
+</pre><img width="100%" height="auto" vspace="5" hspace="5" src="DEMO_febio_0063_custom_hip_implant_01_10.jpg" alt=""> <p>Visualize solid mesh</p><pre class="codeinput">hf=cFigure; hold <span class="string">on</span>;
+title(<span class="string">'Tetrahedral mesh'</span>,<span class="string">'FontSize'</span>,fontSize);
+<span class="comment">% Visualizing using |meshView|</span>
+optionStruct.hFig=hf;
+meshView(meshOutput,optionStruct);
+
+axisGeom(gca,fontSize);
+gdrawnow;
+</pre><img width="100%" height="auto" vspace="5" hspace="5" src="DEMO_febio_0063_custom_hip_implant_01_11.jpg" alt=""> <h2 id="32">Find femoral head</h2><pre class="codeinput">w=100;
 f=[1 2 3 4];
 v=w*[-1 -1 0; -1 1 0; 1 1 0; 1 -1 0];
 
@@ -286,7 +630,7 @@ gpatch(f,v,<span class="string">'r'</span>,<span class="string">'k'</span>,0.5);
 plotV(V(bcPrescribeList,:),<span class="string">'r.'</span>,<span class="string">'markerSize'</span>,15)
 axisGeom; camlight <span class="string">headlight</span>;
 drawnow;
-</pre><img width="100%" height="auto" vspace="5" hspace="5" src="DEMO_febio_0062_femur_load_01_05.jpg" alt=""> <h2 id="17">Work out force distribution on femoral head surface nodes</h2><p>This is based on surface normal directions. Forces are assumed to only be able to act in a compressive sense on the bone.</p><pre class="codeinput">[~,~,N]=patchNormal(fliplr(Fb),V); <span class="comment">%Nodal normal directions</span>
+</pre><img width="100%" height="auto" vspace="5" hspace="5" src="DEMO_febio_0063_custom_hip_implant_01_12.jpg" alt=""> <h2 id="34">Work out force distribution on femoral head surface nodes</h2><p>This is based on surface normal directions. Forces are assumed to only be able to act in a compressive sense on the bone.</p><pre class="codeinput">[~,~,N]=patchNormal(fliplr(Fb),V); <span class="comment">%Nodal normal directions</span>
 
 FX=[forceTotal(1) 0 0]; <span class="comment">%X force vector</span>
 FY=[0 forceTotal(2) 0]; <span class="comment">%Y force vector</span>
@@ -340,7 +684,7 @@ axisGeom; camlight <span class="string">headlight</span>;
 colormap(gca,gjet(250)); colorbar;
 
 drawnow;
-</pre><img width="100%" height="auto" vspace="5" hspace="5" src="DEMO_febio_0062_femur_load_01_06.jpg" alt=""> <h2 id="19">Visualizing boundary conditions</h2><pre class="codeinput">F_bottomSupport=Fb(Cb==2,:);
+</pre><img width="100%" height="auto" vspace="5" hspace="5" src="DEMO_febio_0063_custom_hip_implant_01_13.jpg" alt=""> <h2 id="36">Visualizing boundary conditions</h2><pre class="codeinput">F_bottomSupport=Fb(Cb==2,:);
 bcSupportList=unique(F_bottomSupport(:));
 
 hFig=cFigure; hold <span class="string">on</span>;
@@ -351,7 +695,7 @@ legend(hl,{<span class="string">'BC support'</span>,<span class="string">'BC for
 axisGeom;
 camlight <span class="string">headlight</span>;
 drawnow;
-</pre><img width="100%" height="auto" vspace="5" hspace="5" src="DEMO_febio_0062_femur_load_01_07.jpg" alt=""> <h2 id="20">Defining the FEBio input structure</h2><p>See also <tt>febioStructTemplate</tt> and <tt>febioStruct2xml</tt> and the FEBio user manual.</p><pre class="codeinput"><span class="comment">%Get a template with default settings</span>
+</pre><img width="100%" height="auto" vspace="5" hspace="5" src="DEMO_febio_0063_custom_hip_implant_01_14.jpg" alt=""> <h2 id="37">Defining the FEBio input structure</h2><p>See also <tt>febioStructTemplate</tt> and <tt>febioStruct2xml</tt> and the FEBio user manual.</p><pre class="codeinput"><span class="comment">%Get a template with default settings</span>
 [febio_spec]=febioStructTemplate;
 
 <span class="comment">%febio_spec version</span>
@@ -382,6 +726,11 @@ febio_spec.Material.material{2}.ATTR.id=2;
 febio_spec.Material.material{2}.E=E_youngs2;
 febio_spec.Material.material{2}.v=nu2;
 
+febio_spec.Material.material{3}.ATTR.type=<span class="string">'neo-Hookean'</span>;
+febio_spec.Material.material{3}.ATTR.id=3;
+febio_spec.Material.material{3}.E=E_youngs3;
+febio_spec.Material.material{3}.v=nu3;
+
 <span class="comment">%Geometry section</span>
 <span class="comment">% -&gt; Nodes</span>
 febio_spec.Geometry.Nodes{1}.ATTR.name=<span class="string">'nodeSet_all'</span>; <span class="comment">%The node set name</span>
@@ -400,6 +749,12 @@ febio_spec.Geometry.Elements{2}.ATTR.mat=2; <span class="comment">%material inde
 febio_spec.Geometry.Elements{2}.ATTR.name=<span class="string">'CancellousBone'</span>; <span class="comment">%Name of the element set</span>
 febio_spec.Geometry.Elements{2}.elem.ATTR.id=size(E1,1)+(1:1:size(E2,1))'; <span class="comment">%Element id's</span>
 febio_spec.Geometry.Elements{2}.elem.VAL=E2;
+
+febio_spec.Geometry.Elements{3}.ATTR.type=<span class="string">'tet4'</span>; <span class="comment">%Element type of this set</span>
+febio_spec.Geometry.Elements{3}.ATTR.mat=3; <span class="comment">%material index for this set</span>
+febio_spec.Geometry.Elements{3}.ATTR.name=<span class="string">'CancellousBone'</span>; <span class="comment">%Name of the element set</span>
+febio_spec.Geometry.Elements{3}.elem.ATTR.id=size(E1,1)+size(E2,1)+(1:1:size(E3,1))'; <span class="comment">%Element id's</span>
+febio_spec.Geometry.Elements{3}.elem.VAL=E3;
 
 <span class="comment">% -&gt; NodeSets</span>
 febio_spec.Geometry.NodeSet{1}.ATTR.name=<span class="string">'bcSupportList'</span>;
@@ -469,8 +824,8 @@ febio_spec.Output.logfile.element_data{2}.ATTR.file=febioLogFileName_strainEnerg
 febio_spec.Output.logfile.element_data{2}.ATTR.data=<span class="string">'sed'</span>;
 febio_spec.Output.logfile.element_data{2}.ATTR.delim=<span class="string">','</span>;
 febio_spec.Output.logfile.element_data{2}.VAL=1:1:size(E,1);
-</pre><h2 id="21">Quick viewing of the FEBio input file structure</h2><p>The <tt>febView</tt> function can be used to view the xml structure in a MATLAB figure window.</p><p><tt>febView(febio_spec); %Viewing the febio file</tt></p><h2 id="23">Exporting the FEBio input file</h2><p>Exporting the febio_spec structure to an FEBio input file is done using the <tt>febioStruct2xml</tt> function.</p><pre class="codeinput">febioStruct2xml(febio_spec,febioFebFileName); <span class="comment">%Exporting to file and domNode</span>
-</pre><h2 id="24">Running the FEBio analysis</h2><p>To run the analysis defined by the created FEBio input file the <tt>runMonitorFEBio</tt> function is used. The input for this function is a structure defining job settings e.g. the FEBio input file name. The optional output runFlag informs the user if the analysis was run succesfully.</p><pre class="codeinput">febioAnalysis.run_filename=febioFebFileName; <span class="comment">%The input file name</span>
+</pre><h2 id="38">Quick viewing of the FEBio input file structure</h2><p>The <tt>febView</tt> function can be used to view the xml structure in a MATLAB figure window.</p><p><tt>febView(febio_spec); %Viewing the febio file</tt></p><h2 id="40">Exporting the FEBio input file</h2><p>Exporting the febio_spec structure to an FEBio input file is done using the <tt>febioStruct2xml</tt> function.</p><pre class="codeinput">febioStruct2xml(febio_spec,febioFebFileName); <span class="comment">%Exporting to file and domNode</span>
+</pre><h2 id="41">Running the FEBio analysis</h2><p>To run the analysis defined by the created FEBio input file the <tt>runMonitorFEBio</tt> function is used. The input for this function is a structure defining job settings e.g. the FEBio input file name. The optional output runFlag informs the user if the analysis was run succesfully.</p><pre class="codeinput">febioAnalysis.run_filename=febioFebFileName; <span class="comment">%The input file name</span>
 febioAnalysis.run_logname=febioLogFileName; <span class="comment">%The name for the log file</span>
 febioAnalysis.disp_on=1; <span class="comment">%Display information on the command window</span>
 febioAnalysis.disp_log_on=1; <span class="comment">%Display convergence information in the command window</span>
@@ -482,9 +837,9 @@ febioAnalysis.maxLogCheckTime=10; <span class="comment">%Max log file checking t
 [runFlag]=runMonitorFEBio(febioAnalysis);<span class="comment">%START FEBio NOW!!!!!!!!</span>
 </pre><pre class="codeoutput"> 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
---- STARTING FEBIO JOB --- 07-Jul-2020 21:58:20
+--- STARTING FEBIO JOB --- 07-Jul-2020 21:55:51
 Waiting for log file...
-Proceeding to check log file...07-Jul-2020 21:58:21
+Proceeding to check log file...07-Jul-2020 21:55:51
 ------- converged at time : 0.1
 ------- converged at time : 0.2
 ------- converged at time : 0.3
@@ -495,8 +850,8 @@ Proceeding to check log file...07-Jul-2020 21:58:21
 ------- converged at time : 0.8
 ------- converged at time : 0.9
 ------- converged at time : 1
---- Done --- 07-Jul-2020 21:58:37
-</pre><h2 id="25">Import FEBio results</h2><pre class="codeinput"><span class="keyword">if</span> runFlag==1 <span class="comment">%i.e. a succesful run</span>
+--- Done --- 07-Jul-2020 21:56:23
+</pre><h2 id="42">Import FEBio results</h2><pre class="codeinput"><span class="keyword">if</span> runFlag==1 <span class="comment">%i.e. a succesful run</span>
 </pre><pre class="codeinput">    <span class="comment">% Importing nodal displacancellousBones from a log file</span>
     [time_mat, N_disp_mat,~]=importFEBio_logfile(fullfile(savePath,febioLogFileName_disp)); <span class="comment">%Nodal displacancellousBones</span>
     time_mat=[0; time_mat(:)]; <span class="comment">%Time</span>
@@ -555,14 +910,15 @@ Proceeding to check log file...07-Jul-2020 21:58:21
     <span class="keyword">end</span>
     anim8(hf,animStruct); <span class="comment">%Initiate animation feature</span>
     drawnow;
-</pre><img width="100%" height="auto" vspace="5" hspace="5" src="DEMO_febio_0062_femur_load_01_08.jpg" alt=""> <pre class="codeinput"><span class="keyword">end</span>
+</pre><img width="100%" height="auto" vspace="5" hspace="5" src="DEMO_febio_0063_custom_hip_implant_01_15.jpg" alt=""> <pre class="codeinput"><span class="keyword">end</span>
 </pre><p><i><b>GIBBON footer text</b></i></p><p>License: <a href="https://github.com/gibbonCode/GIBBON/blob/master/LICENSE">https://github.com/gibbonCode/GIBBON/blob/master/LICENSE</a></p><p>GIBBON: The Geometry and Image-based Bioengineering add-On. A toolbox for image segmentation, image-based modeling, meshing, and finite element analysis.</p><p>Copyright (C) 2006-2020 Kevin Mattheus Moerman</p><p>This program is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.</p><p>This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for more details.</p><p>You should have received a copy of the GNU General Public License along with this program.  If not, see <a href="http://www.gnu.org/licenses/">http://www.gnu.org/licenses/</a>.</p><p class="footer"><br><a href="https://www.mathworks.com/products/matlab/">Published with MATLAB&reg; R2020a</a><br></p></div><!--
 ##### SOURCE BEGIN #####
-%% DEMO_febio_0062_femur_load_01
+%% DEMO_febio_0063_custom_hip_implant_01.m
 % Below is a demonstration for:
-% 
-% * Building geometry femur bone
-% * Applying a load to the femur head
+%
+% * Importing bone geometry
+% * Building geometry for a custom hip implant
+% * Evaluating the implant using FEA
 
 %% Keywords
 %
@@ -571,9 +927,10 @@ Proceeding to check log file...07-Jul-2020 21:58:21
 % * beam force loading
 % * force control boundary condition
 % * tetrahedral elements, tet4
-% * femur
+% * beam, rectangular
 % * static, solid
-% * displacement logfile
+% * hyperelastic, Ogden
+% * displacancellousBone logfile
 % * stress logfile
 
 %%
@@ -592,13 +949,13 @@ lineWidth=3;
 % Path names
 defaultFolder = fileparts(fileparts(mfilename('fullpath')));
 savePath=fullfile(defaultFolder,'data','temp');
-pathNameSTL=fullfile(defaultFolder,'data','STL'); 
+pathNameSTL=fullfile(defaultFolder,'data','STL');
 
 % Defining file names
 febioFebFileNamePart='tempModel';
 febioFebFileName=fullfile(savePath,[febioFebFileNamePart,'.feb']); %FEB file name
 febioLogFileName=fullfile(savePath,[febioFebFileNamePart,'.txt']); %FEBio log file name
-febioLogFileName_disp=[febioFebFileNamePart,'_disp_out.txt']; %Log file name for exporting displacement
+febioLogFileName_disp=[febioFebFileNamePart,'_disp_out.txt']; %Log file name for exporting displacancellousBone
 febioLogFileName_force=[febioFebFileNamePart,'_force_out.txt']; %Log file name for exporting force
 febioLogFileName_stress=[febioFebFileNamePart,'_stress_out.txt']; %Log file name for exporting stresses
 febioLogFileName_strainEnergy=[febioFebFileNamePart,'_energy_out.txt']; %Log file name for exporting strain energy density
@@ -606,9 +963,22 @@ febioLogFileName_strainEnergy=[febioFebFileNamePart,'_energy_out.txt']; %Log fil
 %Geometric parameters
 distanceCut=250; %Distance from femur to cut bone at
 corticalThickness=3; %Thickness used for cortical material definition
-volumeFactor=2; %Factor to scale desired volume for interior elements w.r.t. boundary elements
+volumeFactors=[2 2]; %Factor to scale desired volume for interior elements w.r.t. boundary elements
 
-%Define applied force 
+stemCut=32;
+numSmoothStepsCutBottom=5;
+numSmoothStepsCutFemur=25;
+implantOffset=5;
+implantOffsetCollar=2;
+implantHeadRadius=20;
+implantStickRadius=10;
+implantCollarThickness=3;
+implantShaftLengthFraction=1/4;
+
+numLoftGuideSlicesShaft=8;
+numSmoothStepsShaft=20; 
+
+%Define applied force
 forceTotal=[-405 -246 -1717.5]; %x,y,z force in Newton
 
 %Material parameters (MPa if spatial units are mm)
@@ -620,6 +990,10 @@ nu1=0.25; %Poissons ratio
 E_youngs2=1500; %Youngs modulus
 nu2=0.25; %Poissons ratio
 
+% Implant
+E_youngs3=110000; %Youngs modulus
+nu3=0.25; %Poissons ratio
+
 % FEA control settings
 numTimeSteps=10; %Number of time steps desired
 max_refs=25; %Max reforms
@@ -630,15 +1004,11 @@ dtmin=(1/numTimeSteps)/100; %Minimum time step size
 dtmax=1/numTimeSteps; %Maximum time step size
 runMode='external'; %'external' or 'internal'
 
-%% Import bone surface model
+%% Import bone model
 [stlStruct] = import_STL(fullfile(pathNameSTL,'femur_iso.stl'));
 F_bone=stlStruct.solidFaces{1}; %Faces
 V_bone=stlStruct.solidVertices{1}; %Vertices
-
-%% Scale and reorient
-
-V_bone=V_bone.*1000; %Scale to mm
-
+V_bone=V_bone.*1000;
 [F_bone,V_bone]=mergeVertices(F_bone,V_bone); % Merging nodes
 Q1=euler2DCM([0 0 0.065*pi]);
 V_bone=V_bone*Q1;
@@ -647,100 +1017,483 @@ V_bone=V_bone*Q2;
 Q3=euler2DCM([0 0 0.36*pi]);
 V_bone=V_bone*Q3;
 
-%% Visualize bone surface
+%% Compute derived control parameters
+pointSpacing=mean(patchEdgeLengths(F_bone,V_bone)); %Points spacing of bone surface
+snapTolerance=mean(patchEdgeLengths(F_bone,V_bone))/100; %Tolerance for surface slicing
+femurHeight=max(V_bone(:,3))-min(V_bone(:,3)); %Height of the femur
+shaftDepthFromHead=femurHeight.*implantShaftLengthFraction;
 
-cFigure; hold on;
-gpatch(F_bone,V_bone,'w','k',1);
-% patchNormPlot(F_bone,V_bone)
-axisGeom; camlight headlight;
-drawnow;
+%% Cut bone end off
 
-%% Cut bone surface
-
-%Slicing surface
-
+%Cut bone
 [F_bone,V_bone,~,logicSide,~]=triSurfSlice(F_bone,V_bone,[],[0 0 -distanceCut],[0 0 1]);
-
 F_bone=F_bone(logicSide==0,:);
 [F_bone,V_bone]=patchCleanUnused(F_bone,V_bone);
 
+%Get boundary curve
 Eb=patchBoundary(F_bone,V_bone);
 indCurve=edgeListToCurve(Eb);
 indCurve=indCurve(1:end-1);
 
-cparSmooth.n=5;
+%Smooth curve edges
+cparSmooth.n=numSmoothStepsCutBottom;
 cparSmooth.Method='HC';
 [V_Eb_smooth]=patchSmooth(Eb,V_bone(:,[1 2]),[],cparSmooth);
 V_bone(indCurve,[1 2])=V_Eb_smooth(indCurve,:);
 
-cparSmooth.n=5;
+%Smooth mesh at curve
+clear cparSmooth
+cparSmooth.n=numSmoothStepsCutBottom;
 cparSmooth.Method='HC';
 cparSmooth.RigidConstraints=indCurve;
 [V_bone]=patchSmooth(F_bone,V_bone,[],cparSmooth);
 
-pointSpacing=mean(patchEdgeLengths(F_bone,V_bone));
-
+%Mesh the bottom curfaces
 [F_bone2,V_bone2]=regionTriMesh3D({V_bone(indCurve,:)},pointSpacing,0,'linear');
 if dot(mean(patchNormal(F_bone2,V_bone2)),[0 0 1])>0
     F_bone2=fliplr(F_bone2);
 end
 
+%Join cut bone with bottom to created a single node shared closed surface
 [F_bone,V_bone,C_bone]=joinElementSets({F_bone,F_bone2},{V_bone,V_bone2});
 [F_bone,V_bone]=mergeVertices(F_bone,V_bone);
 
-%% Visualize bone surface
+%%
+% Visualize cut surface
 
 cFigure; hold on;
-gpatch(F_bone,V_bone,C_bone,'k',1);
-patchNormPlot(F_bone,V_bone);
-axisGeom; camlight headlight;
-drawnow;
+title('The bone surface');
+gpatch(F_bone,V_bone,'bw','k',1);
+axisGeom;
+camlight headlight;
+gdrawnow;
 
-%% Mesh using tetgen
+%% Cut femoral head off
 
-%Find interior point
-V_inner_bone=getInnerPoint(F_bone,V_bone);
+%Set-up orientation and location of cutting plane
+n=vecnormalize([0 0 1]); %Normal direction to plane
+Q1=euler2DCM([0 -(63/180)*pi 0]);
+Q2=euler2DCM([0 0 (32/180)*pi]);
+Q=Q1*Q2;
+n=n*Q;
+P_cut=[0 0 0]-n*stemCut; %Point on plane
 
-%% Visualize interior point
+%Slicing surface
+[Fc,Vc,Cc,logicSide,~]=triSurfSlice(F_bone,V_bone,C_bone,P_cut,n,snapTolerance);
+
+%Compose isolated cut geometry and boundary curves
+[F_bone_cut,V_bone_cut]=patchCleanUnused(Fc(logicSide,:),Vc);
+C_bone_cut=Cc(logicSide);
+
+Eb=patchBoundary(F_bone_cut,V_bone_cut);
+indCutCurve=edgeListToCurve(Eb);
+indCutCurve=indCutCurve(1:end-1);
+
+%Smoothing cut
+logicTouch=any(ismember(F_bone_cut,indCutCurve),2);
+indTouch=unique(F_bone_cut(logicTouch,:));
+logicTouch=any(ismember(F_bone_cut,indTouch),2);
+indRigid=unique(F_bone_cut(~logicTouch,:));
+indRigid=unique([indRigid(:);indCutCurve(:)]);
+
+clear cparSmooth
+cparSmooth.n=numSmoothStepsCutFemur;
+cparSmooth.RigidConstraints=indRigid;
+[V_bone_cut]=patchSmooth(F_bone_cut,V_bone_cut,[],cparSmooth);
+
+clear cparSmooth
+cparSmooth.n=numSmoothStepsCutFemur;
+[VEb]=patchSmooth(Eb,V_bone_cut,[],cparSmooth);
+V_bone_cut(indCutCurve,:)=VEb(indCutCurve,:);
+
+%Get curve points and centre coordinate
+V_bone_cut_curve=V_bone_cut(indCutCurve,:);
+PA=mean(V_bone_cut_curve,1); %Mean of cut curve (middle of cut)
+
+%%
+% Visualize cut surface
+
 cFigure; hold on;
-gpatch(F_bone,V_bone,'w','none',0.5);
-plotV(V_inner_bone,'r.','MarkerSize',25)
+title('The cut bone surface');
+gpatch(F_bone_cut,V_bone_cut,'bw','k',1);
+plotV(V_bone_cut_curve,'r.-','MarkerSize',25,'LineWidth',3)
+axisGeom;
+camlight headlight;
+gdrawnow;
+
+%% Add inner bone surface for implant to rest on (will attach to collar)
+
+%Define collar curve
+V_collar_1=V_bone_cut_curve;
+V_collar_1=V_collar_1-PA;
+
+d=sqrt(sum(V_collar_1.^2,2));
+shrinkFactor=(min(d(:))-implantOffsetCollar)./min(d(:));
+V_collar_1=V_collar_1.*shrinkFactor;
+V_collar_1=V_collar_1+PA;
+V_collar_1=evenlySpaceCurve(V_collar_1,pointSpacing,'pchip',1);
+
+% Mesh cut bone top (space between collar curve and bone cut curve)
+[F_bone_top,V_bone_top]=regionTriMesh3D({V_bone_cut_curve,V_collar_1},[],0,'linear');
+nTop=mean(patchNormal(F_bone_top,V_bone_top),1);
+if dot(nTop,n)<0
+    F_bone_top=fliplr(F_bone_top);
+end
+
+% Join and merge geometry
+[F_bone_cut,V_bone_cut,C_bone_cut]=joinElementSets({F_bone_cut,F_bone_top},{V_bone_cut,V_bone_top},{C_bone_cut,max(C_bone_cut(:))+ones(size(F_bone_top,1),1)});
+[F_bone_cut,V_bone_cut]=mergeVertices(F_bone_cut,V_bone_cut);
+
+%%
+% Visualize bone with meshed top
+
+cFigure; hold on;
+title('The cut bone surface with meshed top');
+gpatch(F_bone_cut,V_bone_cut,C_bone_cut,'k',1);
+
+plotV(V_bone_cut_curve,'r.-','MarkerSize',15,'LineWidth',2)
+plotV(V_collar_1,'g.-','MarkerSize',15,'LineWidth',2)
+axisGeom; icolorbar;
+camlight headlight;
+gdrawnow;
+
+%% Create implant spherical head
+
+% Create sphere use will loop to define increasingly fine sphere
+% triangulations untill the point spacing of the sphere is smaller or equal
+% to the bone point spacing.
+
+nRef=1;
+while 1
+    [F_head,V_head]=geoSphere(nRef,implantHeadRadius);
+    pointSpacingNow=mean(patchEdgeLengths(F_head,V_head));
+    if pointSpacingNow<=pointSpacing
+        break
+    else
+        nRef=nRef+1;
+    end
+end
+
+%%
+% Cutting the sphere
+
+% Define ball cutting coordinate
+xc=cos(asin(implantStickRadius/implantHeadRadius))*implantHeadRadius;
+
+logicRight=V_head(:,1)>xc;
+logicCut=any(logicRight(F_head),2);
+logicCut=triSurfLogicSharpFix(F_head,logicCut,3);
+F_head=F_head(~logicCut,:);
+[F_head,V_head]=patchCleanUnused(F_head,V_head);
+Eb_head=patchBoundary(F_head,V_head);
+indB=unique(Eb_head(:));
+[T,P,R] = cart2sph(V_head(:,2),V_head(:,3),V_head(:,1));
+P(indB)=atan2(xc,implantHeadRadius*sin(acos(xc./implantHeadRadius)));
+[V_head(:,2),V_head(:,3),V_head(:,1)] = sph2cart(T,P,R);
+
+indHeadHole=edgeListToCurve(Eb_head);
+indHeadHole=indHeadHole(1:end-1);
+
+pointSpacingHead=mean(sqrt(sum(diff(V_head(indHeadHole,:),1,1).^2,2)));
+
+%Reorient ball
+nd=vecnormalize(-PA); %Vector pointing to mean of cut curve
+Q=vecPair2Rot(nd,[0 0 1]); %Rotation matrix for ball
+Q3=euler2DCM([0 -0.5*pi 0]);
+V_head=V_head*Q3;
+V_head=V_head*Q;
+
+%%
+% Visualize head
+
+cFigure; hold on;
+title('The implant head surface');
+gpatch(F_bone_cut,V_bone_cut,'w','none',0.5);
+gpatch(F_head,V_head,'bw','k',1);
 axisGeom; camlight headlight;
-drawnow;
+gdrawnow;
+
+%% Build colar
+
+%Create color offset curve
+V_colarTop=V_collar_1;
+ve=[V_colarTop(2:end,:); V_colarTop(1,:)]-V_colarTop;
+
+vd=vecnormalize(cross(n(ones(size(ve,1),1),:),ve));
+% vn2(:,1)=vn2(:,1)+collarThickness.*n;
+V_colarTop=V_colarTop+implantCollarThickness.*n;
+
+nc=ceil((pi*implantCollarThickness/2)/pointSpacingHead);
+if nc<4
+    nc=4;
+end
+vc=linspacen(V_collar_1,V_colarTop,nc);
+X=squeeze(vc(:,1,:));
+Y=squeeze(vc(:,2,:));
+Z=squeeze(vc(:,3,:));
+t=repmat(linspace(-1,1,nc),size(Z,1),1);
+a=acos(t);
+X=X+implantCollarThickness/2.*sin(a).*repmat(vd(:,1),1,nc);
+Y=Y+implantCollarThickness/2.*sin(a).*repmat(vd(:,2),1,nc);
+Z=Z+implantCollarThickness/2.*sin(a).*repmat(vd(:,3),1,nc);
+
+[F_collar,V_collar]=grid2patch(X,Y,Z,[],[1 0 0]);
+[F_collar,V_collar]=quad2tri(F_collar,V_collar,'a');
+
+indTopCollar=size(V_collar,1)+1-size(V_collar_1,1):size(V_collar,1);
+Eb_collar=[indTopCollar(:) [indTopCollar(2:end)'; indTopCollar(1)]];
+
+%%
+% Visualize collar
+
+cFigure; hold on;
+title('The implant collar/rim');
+gpatch(F_bone_cut,V_bone_cut,'w','none',0.5);
+gpatch(F_head,V_head,'w','none',0.5);
+gpatch(F_collar,V_collar,'bw','k',1);
+axisGeom; camlight headlight;
+gdrawnow;
+
+%% Build neck
+
+if size(Eb_head,1)<size(Eb_collar,1)
+    numEdgesNeeded=size(Eb_collar,1);
+    [F_head,V_head,Eb_head,~]=triSurfSplitBoundary(F_head,V_head,Eb_head,numEdgesNeeded,[]);
+elseif size(Eb_collar,1)<size(Eb_head,1)
+    numEdgesNeeded=size(Eb_head,1);
+    [F_collar,V_collar,Eb_collar,~]=triSurfSplitBoundary(F_collar,V_collar,Eb_collar,numEdgesNeeded,[]);
+end
+indTopCollar=edgeListToCurve(Eb_collar); indTopCollar=indTopCollar(1:end-1);
+indHeadHole=edgeListToCurve(Eb_head); indHeadHole=indHeadHole(1:end-1);
+
+[~,indStart]=minDist(V_collar(indTopCollar(1),:),V_head(indHeadHole,:));
+
+if indStart>1
+    indHeadHole=[indHeadHole(indStart:end) indHeadHole(1:indStart-1)];
+end
+
+d1=sum((V_head(indHeadHole,:)-V_collar(indTopCollar,:)).^2,2);
+d2=sum((V_head(indHeadHole,:)-V_collar(flip(indTopCollar),:)).^2,2);
+if max(d2(:))<max(d1(:))
+    indTopCollar=flip(indTopCollar);
+end
+
+cParLoft.closeLoopOpt=1;
+cParLoft.patchType='tri_slash';
+[F_neck,V_neck,indNeckStart,indNeckEnd]=polyLoftLinear(V_collar(indTopCollar,:),V_head(indHeadHole,:),cParLoft);
+
+%%
+% Visualize collar
+
+cFigure; hold on;
+title('The implant neck');
+gpatch(F_bone_cut,V_bone_cut,'w','none',0.5);
+gpatch(F_head,V_head,'w','none',0.5);
+gpatch(F_collar,V_collar,'w','none',0.5);
+gpatch(F_neck,V_neck,'rw','k',1);
+axisGeom; camlight headlight;
+gdrawnow;
+
+%% Define shaft
+
+%Find lowest point on collar curve
+[~,indMin]=min(V_collar_1(:,3));
+PB=V_collar_1(indMin,:);
+
+%Define a normalized vector pointing from PA to PB
+m=vecnormalize(PB-PA);
+
+%Define based point for slicing
+f=shaftDepthFromHead./abs(m(3));
+P=PA+f*m;
+
+%Define normal directions for slicing (go linearly from n to z-dir)
+nn=linspacen(n,[0 0 1],numLoftGuideSlicesShaft)';
+
+
+numPointsRadial=size(V_collar_1,1);
+Vp=V_collar_1;
+FL=[];
+VL=Vp;
+[~,indStart]=max(VL(:,1));
+if indStart>1
+    VL=[VL(indStart:end,:); VL(1:indStart-1,:)];
+end
+R1=vecPair2Rot(n,[0 0 1]);
+e=[(1:numPointsRadial)' [(2:numPointsRadial)';1]];
+V_start=VL(1,:);
+t=linspace(0,2*pi,numPointsRadial+1); t=t(1:end-1);
+VC=cell(numLoftGuideSlicesShaft,1);
+VC{1}=V_collar_1;
+for q=2:1:numLoftGuideSlicesShaft
+    
+    Rn=vecPair2Rot(nn(q,:),[0 0 1]);
+    
+    [~,Vqc,~,~,Ebc]=triSurfSlice(F_bone,V_bone,[],P,nn(q,:),snapTolerance);
+    indCutCurveNow=edgeListToCurve(Ebc);
+    indCutCurveNow=indCutCurveNow(1:end-1);
+    P2=mean(Vqc(indCutCurveNow,:),1);
+    
+    if P2(3)>-50
+        Vp=V_collar_1-PA;
+        Vp=Vp*R1';
+        Vp=Vp*Rn;
+    else
+        Vp=Vqc(indCutCurveNow,:);
+        Vp=Vp-P2;
+        d=sqrt(sum(Vp.^2,2));
+        shrinkFactor=(min(d(:))-implantOffset)./min(d(:));
+        Vp=Vp.*shrinkFactor;
+    end
+
+    Vp=Vp+P2;
+    Vp=evenlySampleCurve(Vp,numPointsRadial,0.01,1);
+    
+    [~,indStart]=max(Vp(:,1));
+    if indStart>1
+        Vp=[Vp(indStart:end,:); Vp(1:indStart-1,:)];
+    end
+
+    f=[e+(q-2)*numPointsRadial fliplr(e)+(q-1)*numPointsRadial];
+    
+    FL=[FL;f];
+    VL=[VL;Vp];
+    
+    V_start=Vp(1,:);
+    VC{q}=Vqc(indCutCurveNow,:);
+end
+
+[Fe,Ve]=regionTriMesh3D({Vp},[],0,'linear');
+ne=mean(patchNormal(Fe,Ve),1);
+if dot(ne,[0 0 1])>0
+    Fe=fliplr(Fe);
+end
+d=minDist(Ve,Vp);
+r=max(d(:));
+d=d./max(d(:));
+a=acos(1-d);
+Ve(:,3)=Ve(:,3)-r*sin(a);
+[FL,VL]=subQuad(FL,VL,3,3);
+[FL,VL]=quad2tri(FL,VL,'a');
+
+[FL,VL]=joinElementSets({FL,Fe},{VL,Ve});
+[FL,VL]=mergeVertices(FL,VL);
+Eb=patchBoundary(FL,VL);
+
+cparSmooth.n=numSmoothStepsShaft;
+% cPar.Method='HC';
+cparSmooth.RigidConstraints=unique(Eb(:));
+VL=patchSmooth(FL,VL,[],cparSmooth);
+
+% Join and merge surfaces
+[F_implant,V_implant,C_implant]=joinElementSets({F_head,F_neck,F_collar,FL},{V_head,V_neck,V_collar,VL});
+[F_implant,V_implant]=mergeVertices(F_implant,V_implant);
+
+%%
+% Visualize implant
+
+cFigure; hold on;
+title('Completed implant surface');
+gpatch(F_bone_cut,V_bone_cut,'w','none',0.5);
+gpatch(F_implant,V_implant,C_implant,'none',1);
+
+for q=1:1:numLoftGuideSlicesShaft
+    Vpp=VC{q};
+    plotV(Vpp([1:size(Vpp,1) 1],:),'k-','LineWidth',4);
+end
+
+axisGeom; camlight headlight;
+colormap(gjet(250)); icolorbar;
+gdrawnow;
+
+%% Join bone and implant surfaces
+
+[F,V,C]=joinElementSets({F_bone_cut,F_implant},{V_bone_cut,V_implant},{C_bone_cut,C_implant+max(C_bone_cut(:))});
+[F,V]=mergeVertices(F,V);
+
+%%
+% Visualized merged set
+
+cFigure; hold on;
+gpatch(F,V,C,'none',0.5);
+axisGeom; camlight headlight;
+colormap(gjet(250)); icolorbar;
+gdrawnow;
+
+%% Create tetrahedral elements for both regions
+
+%%
+% Define interior points
+
+logicRegion1=ismember(C,[1 2 3 7]); %Bone region is defined by bone+shaft surfaces
+V_region1=getInnerPoint(F(logicRegion1,:),V);
+
+logicRegion2=ismember(C,4:7); %Logic for implant faces
+V_region2=getInnerPoint(F(logicRegion2,:),V);
+
+V_regions=[V_region1; V_region2];
+
+%%
+% Visualize mesh regions and interior points
+
+cFigure; 
+subplot(1,2,1); hold on;
+title('Mesh region 1');
+gpatch(F(logicRegion1,:),V,'w','none',0.5);
+plotV(V_region1,'k.','MarkerSize',25);
+axisGeom; camlight headlight;
+
+subplot(1,2,2); hold on;
+title('Mesh region 2');
+gpatch(F(logicRegion2,:),V,'w','none',0.5);
+plotV(V_region2,'k.','MarkerSize',25);
+axisGeom; camlight headlight;
+
+gdrawnow;
+
+%%
+% Mesh using TetGen
+
+regionTetVolumes=volumeFactors.*tetVolMeanEst(F,V);
+
+%Create tetgen input structure
+inputStruct.stringOpt='-pq1.2AaY'; %Options for tetgen
+inputStruct.Faces=F; %Boundary faces
+inputStruct.Nodes=V; %Nodes of boundary
+inputStruct.faceBoundaryMarker=C; 
+inputStruct.regionPoints=V_regions; %Interior points for regions
+inputStruct.holePoints=[]; %Interior points for holes
+inputStruct.regionA=regionTetVolumes; %Desired tetrahedral volume for each region
+
+% Mesh model using tetrahedral elements using tetGen 
+[meshOutput]=runTetGen(inputStruct); %Run tetGen 
 
 %% 
-% Regional mesh volume parameter
-tetVolume=tetVolMeanEst(F_bone,V_bone); %Volume for regular tets
+% Access mesh output structure
 
-tetGenStruct.stringOpt='-pq1.2AaY';
-tetGenStruct.Faces=F_bone;
-tetGenStruct.Nodes=V_bone;
-tetGenStruct.holePoints=[];
-tetGenStruct.faceBoundaryMarker=C_bone; %Face boundary markers
-tetGenStruct.regionPoints=V_inner_bone; %region points
-tetGenStruct.regionA=tetVolume*volumeFactor;
-
-[meshOutput]=runTetGen(tetGenStruct); %Run tetGen 
-
-% Access elements, nodes, and boundary faces
-E=meshOutput.elements;
-V=meshOutput.nodes;
-Fb=meshOutput.facesBoundary;
-Cb=meshOutput.boundaryMarker;
-CE=meshOutput.elementMaterialID;
+E=meshOutput.elements; %The elements
+V=meshOutput.nodes; %The vertices or nodes
+CE=meshOutput.elementMaterialID; %Element material or region id
+Fb=meshOutput.facesBoundary; %The boundary faces
+Cb=meshOutput.boundaryMarker; %The boundary markers
 
 %% Define material regions in bone
+
+logicImplantElements=CE==-3;
 
 indBoundary=unique(Fb(Cb==1,:));
 DE=minDist(V,V(indBoundary,:));
 logicCorticalNodes=DE<=corticalThickness; 
-logicCorticalElements=any(logicCorticalNodes(E),2);
-logicCancellousElements=~logicCorticalElements;
+logicCorticalElements=any(logicCorticalNodes(E),2) & ~logicImplantElements;
+logicCancellousElements=~logicCorticalElements & ~logicImplantElements;
 
 E1=E(logicCorticalElements,:);
 E2=E(logicCancellousElements,:);
-E=[E1;E2];
-elementMaterialID=[ones(size(E1,1),1);2*ones(size(E2,1),1);];
+E3=E(logicImplantElements,:);
+E=[E1;E2;E3];
+
+elementMaterialID=[ones(size(E1,1),1);2*ones(size(E2,1),1);3*ones(size(E3,1),1)];
+
 meshOutput.elements=E;
 meshOutput.elementMaterialID=elementMaterialID;
 
@@ -751,6 +1504,18 @@ optionStruct.hFig=hFig;
 meshView(meshOutput,optionStruct);
 axisGeom; 
 drawnow;
+
+%%
+% Visualize solid mesh
+
+hf=cFigure; hold on;
+title('Tetrahedral mesh','FontSize',fontSize);
+% Visualizing using |meshView|
+optionStruct.hFig=hf;
+meshView(meshOutput,optionStruct);
+
+axisGeom(gca,fontSize); 
+gdrawnow;
 
 %% Find femoral head
 
@@ -889,6 +1654,11 @@ febio_spec.Material.material{2}.ATTR.id=2;
 febio_spec.Material.material{2}.E=E_youngs2;
 febio_spec.Material.material{2}.v=nu2;
 
+febio_spec.Material.material{3}.ATTR.type='neo-Hookean';
+febio_spec.Material.material{3}.ATTR.id=3;
+febio_spec.Material.material{3}.E=E_youngs3;
+febio_spec.Material.material{3}.v=nu3;
+
 %Geometry section
 % -> Nodes
 febio_spec.Geometry.Nodes{1}.ATTR.name='nodeSet_all'; %The node set name
@@ -907,6 +1677,12 @@ febio_spec.Geometry.Elements{2}.ATTR.mat=2; %material index for this set
 febio_spec.Geometry.Elements{2}.ATTR.name='CancellousBone'; %Name of the element set
 febio_spec.Geometry.Elements{2}.elem.ATTR.id=size(E1,1)+(1:1:size(E2,1))'; %Element id's
 febio_spec.Geometry.Elements{2}.elem.VAL=E2;
+
+febio_spec.Geometry.Elements{3}.ATTR.type='tet4'; %Element type of this set
+febio_spec.Geometry.Elements{3}.ATTR.mat=3; %material index for this set 
+febio_spec.Geometry.Elements{3}.ATTR.name='CancellousBone'; %Name of the element set
+febio_spec.Geometry.Elements{3}.elem.ATTR.id=size(E1,1)+size(E2,1)+(1:1:size(E3,1))'; %Element id's
+febio_spec.Geometry.Elements{3}.elem.VAL=E3;
 
 % -> NodeSets
 febio_spec.Geometry.NodeSet{1}.ATTR.name='bcSupportList';
@@ -1083,27 +1859,27 @@ if runFlag==1 %i.e. a succesful run
 
 end
 
-%% 
-% _*GIBBON footer text*_ 
-% 
+%%
+% _*GIBBON footer text*_
+%
 % License: <https://github.com/gibbonCode/GIBBON/blob/master/LICENSE>
-% 
+%
 % GIBBON: The Geometry and Image-based Bioengineering add-On. A toolbox for
 % image segmentation, image-based modeling, meshing, and finite element
 % analysis.
-% 
+%
 % Copyright (C) 2006-2020 Kevin Mattheus Moerman
-% 
+%
 % This program is free software: you can redistribute it and/or modify
 % it under the terms of the GNU General Public License as published by
 % the Free Software Foundation, either version 3 of the License, or
 % (at your option) any later version.
-% 
+%
 % This program is distributed in the hope that it will be useful,
 % but WITHOUT ANY WARRANTY; without even the implied warranty of
 % MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 % GNU General Public License for more details.
-% 
+%
 % You should have received a copy of the GNU General Public License
 % along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
