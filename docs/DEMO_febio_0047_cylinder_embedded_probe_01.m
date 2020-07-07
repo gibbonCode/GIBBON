@@ -56,7 +56,7 @@ febioLogFileName_strain=[febioFebFileNamePart,'_strain_out.txt']; %Log file name
 probeHeight=75;
 
 probeRadius=2; % The radius of the hemi-spher portion
-nRefine=1;  % Number of |subtri| refinements for icosahedron
+nRefine=1; % Number of |subtri| refinements for icosahedron
 
 pointSpacing=2; 
 dAdd=7;
@@ -211,8 +211,6 @@ inputStruct.minRegionMarker=2; %Minimum region marker
 % Visualize mesh
 
 meshView(meshOutput);
-
-dasdfasfd
 
 %% 
 % Access model element and patch data 
