@@ -1,5 +1,13 @@
 function [F_implant,V_implant,C_implant,curveSet]=parHipImplant(inputStruct)
 
+% function [F_implant,V_implant,C_implant,curveSet]=parHipImplant(inputStruct)
+% ------------------------------------------------------------------------
+%
+% 
+% ------------------------------------------------------------------------
+
+%% Parse input structure
+
 defaultInputStruct.ballRadius=20;
 defaultInputStruct.stickRadius=7;
 defaultInputStruct.stickLength=21;
@@ -244,6 +252,7 @@ curveSet{1}=indBallHole;
 curveSet{2}=indBoundaryCurve_head;
 curveSet{3}=indBoundaryCurve_stem;
 curveSet{4}=indBoundaryCurveTip;
+
 %% 
 % _*GIBBON footer text*_ 
 % 
