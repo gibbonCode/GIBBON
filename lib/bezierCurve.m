@@ -1,5 +1,11 @@
-function P=bezierCurve(p,n)
-
+function [V]=bezierCurve(p,n)
+% function [V]=bezierCurve(p,n)
+% ------------------------------------------------------------------------
+% This function uses the control points p to create a Bézier curve. The
+% output V consists of n points on the curve. 
+% 
+% 
+% ------------------------------------------------------------------------
 %%
 
 % if size(p,2)==2
@@ -13,7 +19,8 @@ N=size(p,1);
 nn=0:1:N-1;
 f=factorial(nn); 
 s=factorial(N-1)./( f.*flip(f) ); %Sigma
-P=( s.* ((1-t).^flip(nn)) .* (t.^nn) )*p; %Output
+V=( s.* ((1-t).^flip(nn)) .* (t.^nn) )*p; %Output
+
 %% 
 % _*GIBBON footer text*_ 
 % 
