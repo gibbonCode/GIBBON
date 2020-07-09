@@ -6,7 +6,7 @@
    <!--
 This HTML was auto-generated from MATLAB code.
 To make changes, update the MATLAB code and republish this document.
-      --><title>DEMO_febio_0052_breast_gap_close_01.m</title><meta name="generator" content="MATLAB 9.7"><link rel="schema.DC" href="http://purl.org/dc/elements/1.1/"><meta name="DC.date" content="2020-03-13"><meta name="DC.source" content="DEMO_febio_0052_breast_gap_close_01.m"><style type="text/css">
+      --><title>DEMO_febio_0052_breast_gap_close_01.m</title><meta name="generator" content="MATLAB 9.8"><link rel="schema.DC" href="http://purl.org/dc/elements/1.1/"><meta name="DC.date" content="2020-07-09"><meta name="DC.source" content="DEMO_febio_0052_breast_gap_close_01.m"><style type="text/css">
 html,body,div,span,applet,object,iframe,h1,h2,h3,h4,h5,h6,p,blockquote,pre,a,abbr,acronym,address,big,cite,code,del,dfn,em,font,img,ins,kbd,q,s,samp,small,strike,strong,sub,sup,tt,var,b,u,i,center,dl,dt,dd,ol,ul,li,fieldset,form,label,legend,table,caption,tbody,tfoot,thead,tr,th,td{margin:0;padding:0;border:0;outline:0;font-size:100%;vertical-align:baseline;background:transparent}body{line-height:1}ol,ul{list-style:none}blockquote,q{quotes:none}blockquote:before,blockquote:after,q:before,q:after{content:'';content:none}:focus{outine:0}ins{text-decoration:none}del{text-decoration:line-through}table{border-collapse:collapse;border-spacing:0}
 
 html { min-height:100%; margin-bottom:1px; }
@@ -23,7 +23,7 @@ a:visited { color:#004aa0; text-decoration:none; }
 
 p { padding:0px; margin:0px 0px 20px; }
 img { padding:0px; margin:0px 0px 20px; border:none; }
-p img, pre img, tt img, li img, h1 img, h2 img { margin-bottom:0px; } 
+p img, pre img, tt img, li img, h1 img, h2 img { margin-bottom:0px; }
 
 ul { padding:0px; margin:0px 0px 20px 23px; list-style:square; }
 ul li { padding:0px; margin:0px 0px 7px 0px; }
@@ -52,6 +52,7 @@ span.comment { color:#228B22 }
 span.string { color:#A020F0 }
 span.untermstring { color:#B20000 }
 span.syscmd { color:#B28C00 }
+span.typesection { color:#A0522D }
 
 .footer { width:auto; padding:10px 0px; margin:25px 0px 0px; border-top:1px dotted #878787; font-size:0.8em; line-height:140%; font-style:italic; color:#878787; text-align:left; float:none; }
 .footer p { margin:0px; }
@@ -66,13 +67,12 @@ table td { padding:7px 5px; text-align:left; vertical-align:top; border:1px soli
 
 
 
-  </style></head><body><div class="content"><h1>DEMO_febio_0052_breast_gap_close_01.m</h1><!--introduction--><p>Below is a demonstration for:</p><div><ul><li>Building geometry for a slab with hexahedral elements, and a triangulated sphere.</li><li>Defining the boundary conditions</li><li>Coding the febio structure</li><li>Running the model</li><li>Importing and visualizing the displacement results</li></ul></div><!--/introduction--><h2>Contents</h2><div><ul><li><a href="#1">Keywords</a></li><li><a href="#3">Plot settings</a></li><li><a href="#5">Control parameters</a></li><li><a href="#6">Create hemi-sphere</a></li><li><a href="#7">Change shape of hemi-sphere to create basic breat model</a></li><li><a href="#8">Rotate model</a></li><li><a href="#18">Visualizing mesh using <tt>meshView</tt>, see also <tt>anim8</tt></a></li><li><a href="#23">Define boundary conditions</a></li><li><a href="#25">Defining the FEBio input structure</a></li><li><a href="#26">Quick viewing of the FEBio input file structure</a></li><li><a href="#28">Exporting the FEBio input file</a></li><li><a href="#29">Running the FEBio analysis</a></li><li><a href="#30">Import FEBio results</a></li></ul></div><h2 id="1">Keywords</h2><div><ul><li>febio_spec version 2.5</li><li>febio, FEBio</li><li>Surgery</li><li>Breast, soft tissue</li><li>static, solid</li><li>hyperelastic, Ogden</li><li>displacement logfile</li><li>stress logfile</li></ul></div><pre class="codeinput">clear; close <span class="string">all</span>; clc;
+  </style></head><body><div class="content"><h1>DEMO_febio_0052_breast_gap_close_01.m</h1><!--introduction--><p>Below is a demonstration for:</p><div><ul><li>Building geometry for a slab with hexahedral elements, and a triangulated sphere.</li><li>Defining the boundary conditions</li><li>Coding the febio structure</li><li>Running the model</li><li>Importing and visualizing the displacement results</li></ul></div><!--/introduction--><h2>Contents</h2><div><ul><li><a href="#1">Keywords</a></li><li><a href="#3">Plot settings</a></li><li><a href="#5">Control parameters</a></li><li><a href="#6">Create hemi-sphere</a></li><li><a href="#7">Change shape of hemi-sphere to create basic breat model</a></li><li><a href="#8">Rotate model</a></li><li><a href="#17">Visualizing mesh using <tt>meshView</tt>, see also <tt>anim8</tt></a></li><li><a href="#22">Define boundary conditions</a></li><li><a href="#24">Defining the FEBio input structure</a></li><li><a href="#25">Quick viewing of the FEBio input file structure</a></li><li><a href="#27">Exporting the FEBio input file</a></li><li><a href="#28">Running the FEBio analysis</a></li><li><a href="#29">Import FEBio results</a></li></ul></div><h2 id="1">Keywords</h2><div><ul><li>febio_spec version 2.5</li><li>febio, FEBio</li><li>Surgery</li><li>Breast, soft tissue</li><li>static, solid</li><li>hyperelastic, Ogden</li><li>displacement logfile</li><li>stress logfile</li></ul></div><pre class="codeinput">clear; close <span class="string">all</span>; clc;
 </pre><h2 id="3">Plot settings</h2><pre class="codeinput">fontSize=15;
 faceAlpha1=0.8;
 faceAlpha2=0.3;
 markerSize=40;
 lineWidth=3;
-skinColor=[1 0.95 0.8];
 </pre><pre class="codeinput">r=40;
 r1=r/2.5;
 r2=r/7;
@@ -99,11 +99,6 @@ m1_1=6; <span class="comment">%Material parameter setting degree of non-linearit
 k_factor=1e2; <span class="comment">%Bulk modulus factor</span>
 k_1=c1_1*k_factor; <span class="comment">%Bulk modulus</span>
 
-c1_2=5e-3; <span class="comment">%Shear-modulus-like parameter</span>
-m1_2=2; <span class="comment">%Material parameter setting degree of non-linearity</span>
-k_factor=1e2; <span class="comment">%Bulk modulus factor</span>
-k_2=c1_2*k_factor; <span class="comment">%Bulk modulus</span>
-
 <span class="comment">% FEA control settings</span>
 numTimeSteps=10; <span class="comment">%Number of time steps desired</span>
 max_refs=25; <span class="comment">%Max reforms</span>
@@ -114,6 +109,7 @@ dtmin=(1/numTimeSteps)/100; <span class="comment">%Minimum time step size</span>
 dtmax=1/numTimeSteps; <span class="comment">%Maximum time step size</span>
 symmetric_stiffness=1;
 min_residual=1e-20;
+runMode=<span class="string">'external'</span>;<span class="comment">%'internal';</span>
 </pre><h2 id="6">Create hemi-sphere</h2><pre class="codeinput">[F,V,C_hemiSphereLabel]=hemiSphereMesh(nRefine,r,1); <span class="comment">%Construct hemi-shere mesh</span>
 pointSpacing=mean(patchEdgeLengths(F,V)); <span class="comment">% Get point spacing from mesh</span>
 </pre><h2 id="7">Change shape of hemi-sphere to create basic breat model</h2><pre class="codeinput">indExclude=unique(F(C_hemiSphereLabel==2,:));
@@ -154,31 +150,7 @@ V=V*R;
 </pre><p>Visualize breast model</p><pre class="codeinput">[C_skin_F]=vertexToFaceMeasure(F,C_skin);
 C_skin_F=round(C_skin_F);
 C_skin_F(C_hemiSphereLabel==2)=max(C_skin(:))+1;
-C_skin_F_RGB=cmaperise(C_skin_F,bloodbone(250),[0 5]);
-
-cFigure; hold <span class="string">on</span>;
-gpatch(F,V,C_skin_F_RGB,<span class="string">'none'</span>,1);
-
-axisGeom; view([-140,16]);
-camlight <span class="string">headlight</span>;
-drawnow;
-</pre><img width="100%" height="auto" vspace="5" hspace="5" src="DEMO_febio_0052_breast_gap_close_01_01.jpg" alt=""> <pre class="codeinput">cFigure; hold <span class="string">on</span>;
-gpatch(F,V,C_skin,<span class="string">'none'</span>,0.5);
-<span class="comment">% gpatch(Fs,Vs,'kw','none',1);</span>
-axisGeom; view([-140,16]);
-camlight <span class="string">headlight</span>;
-drawnow;
-</pre><img width="100%" height="auto" vspace="5" hspace="5" src="DEMO_febio_0052_breast_gap_close_01_02.jpg" alt=""> <pre class="codeinput"><span class="comment">% rCut=[10 20 23];</span>
-<span class="comment">% nRefineCut=nRefine;</span>
-<span class="comment">% [Fs,Vs]=geoSphere(nRefineCut,1);</span>
-<span class="comment">% Fs=fliplr(Fs);</span>
-<span class="comment">% R_cut=euler2DCM([0.5*pi -0.15*pi -0.25*pi]);</span>
-<span class="comment">% Vs=Vs.*rCut(ones(size(Vs,1),1),:);</span>
-<span class="comment">% Vs=Vs*R_cut;</span>
-<span class="comment">% T_cut=[-25 25 -25];</span>
-<span class="comment">% Vs=Vs+T_cut(ones(size(Vs,1),1),:);</span>
-
-rCut=[10 20 20];
+</pre><pre class="codeinput">rCut=[10 20 20];
 nRefineCut=nRefine;
 [Fs,Vs]=geoSphere(nRefineCut,1);
 Fs=fliplr(Fs);
@@ -190,13 +162,13 @@ Vs=Vs*R_cut;
 T_cut=[-25 25 -25];
 Vs=Vs+T_cut(ones(size(Vs,1),1),:);
 </pre><pre class="codeinput">cFigure; hold <span class="string">on</span>;
-gpatch(F,V,skinColor,<span class="string">'none'</span>,0.5);
+gpatch(F,V,<span class="string">'w'</span>,<span class="string">'none'</span>,0.5);
 gpatch(Fs,Vs,<span class="string">'gw'</span>,<span class="string">'none'</span>,1);
 
 axisGeom; view([-140,16]);
 camlight <span class="string">headlight</span>;
 drawnow;
-</pre><img width="100%" height="auto" vspace="5" hspace="5" src="DEMO_febio_0052_breast_gap_close_01_03.jpg" alt=""> <pre class="codeinput">[regionLabel]=simplexImIntersect(Fs,Vs,[],V,pointSpacing/2);
+</pre><img width="100%" height="auto" vspace="5" hspace="5" src="DEMO_febio_0052_breast_gap_close_01_01.jpg" alt=""> <pre class="codeinput">[regionLabel]=simplexImIntersect(Fs,Vs,[],V,pointSpacing/2);
 logicCutVertices=~isnan(regionLabel);
 logicCutFaces=any(logicCutVertices(F),2);
 logicCutFaces=triSurfLogicSharpFix(F,logicCutFaces,3);
@@ -237,14 +209,14 @@ ind2=ind2(1:end-1);
 [Fn,Vn]=regionTriMesh3D({V(ind1,:),Vs(ind2,:)},pointSpacing,0,<span class="string">'linear'</span>);
 Fn=fliplr(Fn);
 </pre><pre class="codeinput">cFigure; hold <span class="string">on</span>;
-gpatch(F,V,C_skin_F,<span class="string">'none'</span>,0.5);
+gpatch(F,V,<span class="string">'w'</span>,<span class="string">'none'</span>,0.5);
 gpatch(Fs,Vs,<span class="string">'rw'</span>,<span class="string">'k'</span>,1);
 gpatch(Fn,Vn,<span class="string">'bw'</span>,<span class="string">'k'</span>,1);
 axisGeom; view([-140,16]);
 camlight <span class="string">headlight</span>;
 colormap <span class="string">gjet</span>; icolorbar;
 drawnow;
-</pre><img width="100%" height="auto" vspace="5" hspace="5" src="DEMO_febio_0052_breast_gap_close_01_04.jpg" alt=""> <pre class="codeinput">[FT,VT,CT]=joinElementSets({F,Fs,Fn},{V,Vs,Vn},{C_skin_F,(max(C_skin_F)+1)*ones(size(Fs,1),1),(max(C_skin_F)+2)*ones(size(Fn,1),1)});
+</pre><img width="100%" height="auto" vspace="5" hspace="5" src="DEMO_febio_0052_breast_gap_close_01_02.jpg" alt=""> <pre class="codeinput">[FT,VT,CT]=joinElementSets({F,Fs,Fn},{V,Vs,Vn},{C_skin_F,(max(C_skin_F)+1)*ones(size(Fs,1),1),(max(C_skin_F)+2)*ones(size(Fn,1),1)});
 [FT,VT]=mergeVertices(FT,VT);
 
 indRim=unique(FT(CT==5,:));
@@ -264,7 +236,7 @@ axisGeom; view([-140,16]);
 camlight <span class="string">headlight</span>;
 colormap <span class="string">gjet</span>; icolorbar;
 drawnow;
-</pre><img width="100%" height="auto" vspace="5" hspace="5" src="DEMO_febio_0052_breast_gap_close_01_05.jpg" alt=""> <pre class="codeinput">V_regions=getInnerPoint(FT,VT);
+</pre><img width="100%" height="auto" vspace="5" hspace="5" src="DEMO_febio_0052_breast_gap_close_01_03.jpg" alt=""> <pre class="codeinput">V_regions=getInnerPoint(FT,VT);
 
 [regionA]=tetVolMeanEst(FT,VT); <span class="comment">%Volume for regular tets</span>
 inputStruct.stringOpt=<span class="string">'-pq1.2AaY'</span>;
@@ -286,69 +258,69 @@ CE=meshOutput.elementMaterialID;
 E=meshOutput.elements;
 </pre><pre class="codeoutput"> 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
---- TETGEN Tetrahedral meshing --- 13-Mar-2020 12:37:49
+--- TETGEN Tetrahedral meshing --- 09-Jul-2020 15:53:45
  
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
---- Writing SMESH file --- 13-Mar-2020 12:37:49
+--- Writing SMESH file --- 09-Jul-2020 15:53:45
 ----&gt; Adding node field
 ----&gt; Adding facet field
 ----&gt; Adding holes specification
 ----&gt; Adding region specification
---- Done --- 13-Mar-2020 12:37:49
---- Running TetGen to mesh input boundary--- 13-Mar-2020 12:37:49
+--- Done --- 09-Jul-2020 15:53:45
+--- Running TetGen to mesh input boundary--- 09-Jul-2020 15:53:45
 Opening /mnt/data/MATLAB/GIBBON/data/temp/temp.smesh.
 Delaunizing vertices...
-Delaunay seconds:  0.016227
+Delaunay seconds:  0.022219
 Creating surface mesh ...
-Surface mesh seconds:  0.004969
+Surface mesh seconds:  0.00403
 Recovering boundaries...
-Boundary recovery seconds:  0.00622
+Boundary recovery seconds:  0.00659
 Removing exterior tetrahedra ...
 Spreading region attributes.
-Exterior tets removal seconds:  0.001858
+Exterior tets removal seconds:  0.002067
 Recovering Delaunayness...
-Delaunay recovery seconds:  0.002516
+Delaunay recovery seconds:  0.003109
 Refining mesh...
-Refinement seconds:  0.067685
+Refinement seconds:  0.062284
 Optimizing mesh...
-Optimization seconds:  0.00487
+Optimization seconds:  0.004863
 
 Writing /mnt/data/MATLAB/GIBBON/data/temp/temp.1.node.
 Writing /mnt/data/MATLAB/GIBBON/data/temp/temp.1.ele.
 Writing /mnt/data/MATLAB/GIBBON/data/temp/temp.1.face.
 Writing /mnt/data/MATLAB/GIBBON/data/temp/temp.1.edge.
 
-Output seconds:  0.066552
-Total running seconds:  0.171112
+Output seconds:  0.059526
+Total running seconds:  0.164947
 
 Statistics:
 
-  Input points: 2091
-  Input facets: 4178
-  Input segments: 6267
+  Input points: 2094
+  Input facets: 4184
+  Input segments: 6276
   Input holes: 0
   Input regions: 1
 
-  Mesh points: 5049
-  Mesh tetrahedra: 25202
-  Mesh faces: 52493
-  Mesh faces on exterior boundary: 4178
-  Mesh faces on input facets: 4178
-  Mesh edges on input segments: 6267
-  Steiner points inside domain: 2958
+  Mesh points: 5085
+  Mesh tetrahedra: 25490
+  Mesh faces: 53072
+  Mesh faces on exterior boundary: 4184
+  Mesh faces on input facets: 4184
+  Mesh edges on input segments: 6276
+  Steiner points inside domain: 2991
 
---- Done --- 13-Mar-2020 12:37:49
+--- Done --- 09-Jul-2020 15:53:46
  
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
---- Importing TetGen files --- 13-Mar-2020 12:37:49
---- Done --- 13-Mar-2020 12:37:49
+--- Importing TetGen files --- 09-Jul-2020 15:53:46
+--- Done --- 09-Jul-2020 15:53:46
 </pre><pre class="codeinput">cFigure; hold <span class="string">on</span>;
 hp=gpatch(Fb,V,Cb,<span class="string">'none'</span>,0.5);
 axisGeom; view([-140,16]);
 camlight <span class="string">headlight</span>;
 icolorbar;
 drawnow;
-</pre><img width="100%" height="auto" vspace="5" hspace="5" src="DEMO_febio_0052_breast_gap_close_01_06.jpg" alt=""> <h2 id="18">Visualizing mesh using <tt>meshView</tt>, see also <tt>anim8</tt></h2><pre class="codeinput"><span class="comment">% meshView(meshOutput);</span>
+</pre><img width="100%" height="auto" vspace="5" hspace="5" src="DEMO_febio_0052_breast_gap_close_01_04.jpg" alt=""> <h2 id="17">Visualizing mesh using <tt>meshView</tt>, see also <tt>anim8</tt></h2><pre class="codeinput"><span class="comment">% meshView(meshOutput);</span>
 </pre><pre class="codeinput">Eb=patchBoundary(Fb(Cb==4,:),V);
 indRim=edgeListToCurve(Eb);
 indRim=indRim(1:end-1);
@@ -366,7 +338,7 @@ axisGeom; view([-140,16]);
 camlight <span class="string">headlight</span>;
 colormap <span class="string">gjet</span>; icolorbar;
 drawnow;
-</pre><img width="100%" height="auto" vspace="5" hspace="5" src="DEMO_febio_0052_breast_gap_close_01_07.jpg" alt=""> <pre class="codeinput">V_stitch_temp=V_stitch-T_cut(ones(size(V_stitch,1),1),:);
+</pre><img width="100%" height="auto" vspace="5" hspace="5" src="DEMO_febio_0052_breast_gap_close_01_05.jpg" alt=""> <pre class="codeinput">V_stitch_temp=V_stitch-T_cut(ones(size(V_stitch,1),1),:);
 V_stitch_temp=V_stitch_temp*R_cut';
 [~,indStart]=min((V_stitch_temp(:,2)));
 <span class="keyword">if</span> indStart&gt;1
@@ -383,7 +355,7 @@ V_stitchGoal=patchCentre(indStitchPair,V_stitch);
 u1=V_stitchGoal-V_stitch(indStitchOrigin,:);
 u2=V_stitchGoal-V_stitch(indStitchEnd,:);
 </pre><pre class="codeinput">cFigure; hold <span class="string">on</span>;
-gpatch(Fb,V,skinColor,<span class="string">'none'</span>,1);
+gpatch(Fb,V,<span class="string">'w'</span>,<span class="string">'none'</span>,1);
 <span class="comment">% plotV(V(indRim,:),'b-','LineWidth',3);</span>
 <span class="comment">% plotV(V_stitch,'y.-','MarkerSize',25,'LineWidth',3);</span>
 plotV(V_stitchGoal,<span class="string">'r+'</span>,<span class="string">'MarkerSize'</span>,25);
@@ -391,7 +363,7 @@ gpatch(indStitchPair,V_stitch,<span class="string">'none'</span>,<span class="st
 axisGeom; view([-140,16]);
 camlight <span class="string">headlight</span>;
 drawnow;
-</pre><img width="100%" height="auto" vspace="5" hspace="5" src="DEMO_febio_0052_breast_gap_close_01_08.jpg" alt=""> <h2 id="23">Define boundary conditions</h2><pre class="codeinput"><span class="comment">%Supported nodes</span>
+</pre><img width="100%" height="auto" vspace="5" hspace="5" src="DEMO_febio_0052_breast_gap_close_01_06.jpg" alt=""> <h2 id="22">Define boundary conditions</h2><pre class="codeinput"><span class="comment">%Supported nodes</span>
 logicRigid=Cb==3;
 Fr=Fb(logicRigid,:);
 bcSupportList=unique(Fr(:));
@@ -414,7 +386,7 @@ legend(hl2,{<span class="string">'BC support'</span>,<span class="string">'BC Pr
 axisGeom(gca,fontSize);
 camlight <span class="string">headlight</span>;
 drawnow;
-</pre><img width="100%" height="auto" vspace="5" hspace="5" src="DEMO_febio_0052_breast_gap_close_01_09.jpg" alt=""> <h2 id="25">Defining the FEBio input structure</h2><p>See also <tt>febioStructTemplate</tt> and <tt>febioStruct2xml</tt> and the FEBio user manual.</p><pre class="codeinput"><span class="comment">%Get a template with default settings</span>
+</pre><img width="100%" height="auto" vspace="5" hspace="5" src="DEMO_febio_0052_breast_gap_close_01_07.jpg" alt=""> <h2 id="24">Defining the FEBio input structure</h2><p>See also <tt>febioStructTemplate</tt> and <tt>febioStruct2xml</tt> and the FEBio user manual.</p><pre class="codeinput"><span class="comment">%Get a template with default settings</span>
 [febio_spec]=febioStructTemplate;
 
 <span class="comment">%febio_spec version</span>
@@ -527,12 +499,12 @@ febio_spec.Output.logfile.node_data{2}.ATTR.file=febioLogFileName_force;
 febio_spec.Output.logfile.node_data{2}.ATTR.data=<span class="string">'Rx;Ry;Rz'</span>;
 febio_spec.Output.logfile.node_data{2}.ATTR.delim=<span class="string">','</span>;
 febio_spec.Output.logfile.node_data{2}.VAL=1:size(V,1);
-</pre><h2 id="26">Quick viewing of the FEBio input file structure</h2><p>The <tt>febView</tt> function can be used to view the xml structure in a MATLAB figure window.</p><p><tt>febView(febio_spec); %Viewing the febio file</tt></p><h2 id="28">Exporting the FEBio input file</h2><p>Exporting the febio_spec structure to an FEBio input file is done using the <tt>febioStruct2xml</tt> function.</p><pre class="codeinput">febioStruct2xml(febio_spec,febioFebFileName); <span class="comment">%Exporting to file and domNode</span>
-</pre><h2 id="29">Running the FEBio analysis</h2><p>To run the analysis defined by the created FEBio input file the <tt>runMonitorFEBio</tt> function is used. The input for this function is a structure defining job settings e.g. the FEBio input file name. The optional output runFlag informs the user if the analysis was run succesfully.</p><pre class="codeinput">febioAnalysis.run_filename=febioFebFileName; <span class="comment">%The input file name</span>
+</pre><h2 id="25">Quick viewing of the FEBio input file structure</h2><p>The <tt>febView</tt> function can be used to view the xml structure in a MATLAB figure window.</p><p><tt>febView(febio_spec); %Viewing the febio file</tt></p><h2 id="27">Exporting the FEBio input file</h2><p>Exporting the febio_spec structure to an FEBio input file is done using the <tt>febioStruct2xml</tt> function.</p><pre class="codeinput">febioStruct2xml(febio_spec,febioFebFileName); <span class="comment">%Exporting to file and domNode</span>
+</pre><h2 id="28">Running the FEBio analysis</h2><p>To run the analysis defined by the created FEBio input file the <tt>runMonitorFEBio</tt> function is used. The input for this function is a structure defining job settings e.g. the FEBio input file name. The optional output runFlag informs the user if the analysis was run succesfully.</p><pre class="codeinput">febioAnalysis.run_filename=febioFebFileName; <span class="comment">%The input file name</span>
 febioAnalysis.run_logname=febioLogFileName; <span class="comment">%The name for the log file</span>
 febioAnalysis.disp_on=1; <span class="comment">%Display information on the command window</span>
 febioAnalysis.disp_log_on=1; <span class="comment">%Display convergence information in the command window</span>
-febioAnalysis.runMode=<span class="string">'internal'</span>;<span class="comment">%'internal';</span>
+febioAnalysis.runMode=runMode;
 febioAnalysis.t_check=0.25; <span class="comment">%Time for checking log file (dont set too small)</span>
 febioAnalysis.maxtpi=1e99; <span class="comment">%Max analysis time</span>
 febioAnalysis.maxLogCheckTime=10; <span class="comment">%Max log file checking time</span>
@@ -540,593 +512,9 @@ febioAnalysis.maxLogCheckTime=10; <span class="comment">%Max log file checking t
 [runFlag]=runMonitorFEBio(febioAnalysis);<span class="comment">%START FEBio NOW!!!!!!!!</span>
 </pre><pre class="codeoutput"> 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
---- STARTING FEBIO JOB --- 13-Mar-2020 12:37:54
-===========================================================================
-         ________    _________   _________     __     _________            
-        |        |\ |        |\ |        |\   |  |\  /         \\          
-        |    ____|| |    ____|| |    __  ||   |__|| |    ___    ||         
-        |   |\___\| |   |\___\| |   |\_| ||    \_\| |   //  \   ||         
-        |   ||      |   ||      |   || | ||    __   |  ||    |  ||         
-        |   ||__    |   ||__    |   ||_| ||   |  |\ |  ||    |  ||         
-        |       |\  |       |\  |         \\  |  || |  ||    |  ||         
-        |    ___||  |    ___||  |    ___   || |  || |  ||    |  ||         
-        |   |\__\|  |   |\__\|  |   |\__|  || |  || |  ||    |  ||         
-        |   ||      |   ||      |   ||  |  || |  || |  ||    |  ||         
-        |   ||      |   ||___   |   ||__|  || |  || |   \\__/   ||         
-        |   ||      |        |\ |          || |  || |           ||         
-        |___||      |________|| |__________|| |__||  \_________//          
-                                                                           
-      F I N I T E   E L E M E N T S   F O R   B I O M E C H A N I C S      
-                                                                           
-                 --- v e r s i o n - 2 . 9 . 1 ---                 
-                                                                           
-                                                                           
-  http://febio.org                                                         
-  FEBio is a registered trademark.                                         
-  copyright (c) 2006-2019 - All rights reserved                            
-                                                                           
-===========================================================================
-
-
-Reading file /mnt/data/MATLAB/GIBBON/data/temp/tempModel.feb ...SUCCESS!
- ]0;(0%) tempModel.feb - FEBio 2.9.1.0  
-===== beginning time step 1 : 0.1 =====
-Reforming stiffness matrix: reformation #1
-
-===== reforming stiffness matrix:
-	Nr of equations ........................... : 13215
-	Nr of nonzeroes in stiffness matrix ....... : 279510
-
- 1
- Nonlinear solution status: time= 0.1
-	stiffness updates             = 0
-	right hand side evaluations   = 2
-	stiffness matrix reformations = 1
-	step from line search         = 1.000000
-	convergence norms :     INITIAL         CURRENT         REQUIRED
-	   residual            2.928680e-01    8.672460e-04    0.000000e+00 
-	   energy              1.359467e+00    3.738028e-03    1.359467e-02 
-	   displacement        1.090775e+02    1.090775e+02    1.090775e-04 
-Reforming stiffness matrix: reformation #2
-
- 2
- Nonlinear solution status: time= 0.1
-	stiffness updates             = 0
-	right hand side evaluations   = 3
-	stiffness matrix reformations = 2
-	step from line search         = 1.000000
-	convergence norms :     INITIAL         CURRENT         REQUIRED
-	   residual            2.928680e-01    4.402008e-08    0.000000e+00 
-	   energy              1.359467e+00    4.928199e-06    1.359467e-02 
-	   displacement        1.090775e+02    1.002608e-01    1.111701e-04 
-Reforming stiffness matrix: reformation #3
-
- 3
- Nonlinear solution status: time= 0.1
-	stiffness updates             = 0
-	right hand side evaluations   = 4
-	stiffness matrix reformations = 3
-	step from line search         = 1.000000
-	convergence norms :     INITIAL         CURRENT         REQUIRED
-	   residual            2.928680e-01    1.911750e-13    0.000000e+00 
-	   energy              1.359467e+00    2.174501e-11    1.359467e-02 
-	   displacement        1.090775e+02    1.580928e-04    1.111788e-04 
-Reforming stiffness matrix: reformation #4
-
- 4
- Nonlinear solution status: time= 0.1
-	stiffness updates             = 0
-	right hand side evaluations   = 5
-	stiffness matrix reformations = 4
-	step from line search         = 1.000000
-	convergence norms :     INITIAL         CURRENT         REQUIRED
-	   residual            2.928680e-01    6.909171e-26    0.000000e+00 
-	   energy              1.359467e+00    6.756908e-20    1.359467e-02 
-	   displacement        1.090775e+02    5.131556e-11    1.111788e-04 
-
-------- converged at time : 0.1
-
- ]0;(10%) tempModel.feb - FEBio 2.9.1.0  
-===== beginning time step 2 : 0.2 =====
-Reforming stiffness matrix: reformation #1
-
- 1
- Nonlinear solution status: time= 0.2
-	stiffness updates             = 0
-	right hand side evaluations   = 2
-	stiffness matrix reformations = 1
-	step from line search         = 1.000000
-	convergence norms :     INITIAL         CURRENT         REQUIRED
-	   residual            2.910760e-01    8.301203e-04    0.000000e+00 
-	   energy              1.343481e+00    1.142225e-03    1.343481e-02 
-	   displacement        1.141560e+02    1.141560e+02    1.141560e-04 
-Reforming stiffness matrix: reformation #2
-
- 2
- Nonlinear solution status: time= 0.2
-	stiffness updates             = 0
-	right hand side evaluations   = 3
-	stiffness matrix reformations = 2
-	step from line search         = 1.000000
-	convergence norms :     INITIAL         CURRENT         REQUIRED
-	   residual            2.910760e-01    7.192927e-08    0.000000e+00 
-	   energy              1.343481e+00    1.990115e-07    1.343481e-02 
-	   displacement        1.141560e+02    2.079463e-01    1.175995e-04 
-Reforming stiffness matrix: reformation #3
-
- 3
- Nonlinear solution status: time= 0.2
-	stiffness updates             = 0
-	right hand side evaluations   = 4
-	stiffness matrix reformations = 3
-	step from line search         = 1.000000
-	convergence norms :     INITIAL         CURRENT         REQUIRED
-	   residual            2.910760e-01    4.622291e-13    0.000000e+00 
-	   energy              1.343481e+00    3.696269e-10    1.343481e-02 
-	   displacement        1.141560e+02    3.492711e-04    1.176572e-04 
-Reforming stiffness matrix: reformation #4
-
- 4
- Nonlinear solution status: time= 0.2
-	stiffness updates             = 0
-	right hand side evaluations   = 5
-	stiffness matrix reformations = 4
-	step from line search         = 1.000000
-	convergence norms :     INITIAL         CURRENT         REQUIRED
-	   residual            2.910760e-01    2.954653e-24    0.000000e+00 
-	   energy              1.343481e+00    3.709407e-18    1.343481e-02 
-	   displacement        1.141560e+02    4.142761e-10    1.176573e-04 
-
-------- converged at time : 0.2
-
- ]0;(20%) tempModel.feb - FEBio 2.9.1.0  
-===== beginning time step 3 : 0.3 =====
-Reforming stiffness matrix: reformation #1
-
- 1
- Nonlinear solution status: time= 0.3
-	stiffness updates             = 0
-	right hand side evaluations   = 2
-	stiffness matrix reformations = 1
-	step from line search         = 1.000000
-	convergence norms :     INITIAL         CURRENT         REQUIRED
-	   residual            2.968533e-01    8.541018e-04    0.000000e+00 
-	   energy              1.333299e+00    2.007871e-03    1.333299e-02 
-	   displacement        1.212335e+02    1.212335e+02    1.212335e-04 
-Reforming stiffness matrix: reformation #2
-
- 2
- Nonlinear solution status: time= 0.3
-	stiffness updates             = 0
-	right hand side evaluations   = 3
-	stiffness matrix reformations = 2
-	step from line search         = 1.000000
-	convergence norms :     INITIAL         CURRENT         REQUIRED
-	   residual            2.968533e-01    7.203372e-08    0.000000e+00 
-	   energy              1.333299e+00    3.311818e-06    1.333299e-02 
-	   displacement        1.212335e+02    1.486994e-01    1.241897e-04 
-Reforming stiffness matrix: reformation #3
-
- 3
- Nonlinear solution status: time= 0.3
-	stiffness updates             = 0
-	right hand side evaluations   = 4
-	stiffness matrix reformations = 3
-	step from line search         = 1.000000
-	convergence norms :     INITIAL         CURRENT         REQUIRED
-	   residual            2.968533e-01    1.135125e-13    0.000000e+00 
-	   energy              1.333299e+00    6.001232e-11    1.333299e-02 
-	   displacement        1.212335e+02    2.145444e-04    1.242340e-04 
-Reforming stiffness matrix: reformation #4
-
- 4
- Nonlinear solution status: time= 0.3
-	stiffness updates             = 0
-	right hand side evaluations   = 5
-	stiffness matrix reformations = 4
-	step from line search         = 1.000000
-	convergence norms :     INITIAL         CURRENT         REQUIRED
-	   residual            2.968533e-01    9.882961e-26    0.000000e+00 
-	   energy              1.333299e+00    1.855383e-19    1.333299e-02 
-	   displacement        1.212335e+02    6.948955e-11    1.242340e-04 
-
-------- converged at time : 0.3
-
- ]0;(30%) tempModel.feb - FEBio 2.9.1.0  
-===== beginning time step 4 : 0.4 =====
-Reforming stiffness matrix: reformation #1
-
- 1
- Nonlinear solution status: time= 0.4
-	stiffness updates             = 0
-	right hand side evaluations   = 2
-	stiffness matrix reformations = 1
-	step from line search         = 1.000000
-	convergence norms :     INITIAL         CURRENT         REQUIRED
-	   residual            3.101338e-01    9.674151e-04    0.000000e+00 
-	   energy              1.328828e+00    5.040657e-03    1.328828e-02 
-	   displacement        1.270455e+02    1.270455e+02    1.270455e-04 
-Reforming stiffness matrix: reformation #2
-
- 2
- Nonlinear solution status: time= 0.4
-	stiffness updates             = 0
-	right hand side evaluations   = 3
-	stiffness matrix reformations = 2
-	step from line search         = 1.000000
-	convergence norms :     INITIAL         CURRENT         REQUIRED
-	   residual            3.101338e-01    2.151820e-07    0.000000e+00 
-	   energy              1.328828e+00    8.974935e-07    1.328828e-02 
-	   displacement        1.270455e+02    1.547186e-01    1.291886e-04 
-Reforming stiffness matrix: reformation #3
-
- 3
- Nonlinear solution status: time= 0.4
-	stiffness updates             = 0
-	right hand side evaluations   = 4
-	stiffness matrix reformations = 3
-	step from line search         = 1.000000
-	convergence norms :     INITIAL         CURRENT         REQUIRED
-	   residual            3.101338e-01    3.273958e-13    0.000000e+00 
-	   energy              1.328828e+00    4.863657e-10    1.328828e-02 
-	   displacement        1.270455e+02    2.300121e-04    1.292531e-04 
-Reforming stiffness matrix: reformation #4
-
- 4
- Nonlinear solution status: time= 0.4
-	stiffness updates             = 0
-	right hand side evaluations   = 5
-	stiffness matrix reformations = 4
-	step from line search         = 1.000000
-	convergence norms :     INITIAL         CURRENT         REQUIRED
-	   residual            3.101338e-01    9.129925e-25    0.000000e+00 
-	   energy              1.328828e+00    1.364861e-18    1.328828e-02 
-	   displacement        1.270455e+02    1.338680e-10    1.292531e-04 
-
-------- converged at time : 0.4
-
- ]0;(40%) tempModel.feb - FEBio 2.9.1.0  
-===== beginning time step 5 : 0.5 =====
-Reforming stiffness matrix: reformation #1
-
- 1
- Nonlinear solution status: time= 0.5
-	stiffness updates             = 0
-	right hand side evaluations   = 2
-	stiffness matrix reformations = 1
-	step from line search         = 1.000000
-	convergence norms :     INITIAL         CURRENT         REQUIRED
-	   residual            3.323036e-01    1.307451e-03    0.000000e+00 
-	   energy              1.329367e+00    8.589758e-03    1.329367e-02 
-	   displacement        1.314389e+02    1.314389e+02    1.314389e-04 
-Reforming stiffness matrix: reformation #2
-
- 2
- Nonlinear solution status: time= 0.5
-	stiffness updates             = 0
-	right hand side evaluations   = 3
-	stiffness matrix reformations = 2
-	step from line search         = 1.000000
-	convergence norms :     INITIAL         CURRENT         REQUIRED
-	   residual            3.323036e-01    7.330027e-07    0.000000e+00 
-	   energy              1.329367e+00    1.334072e-05    1.329367e-02 
-	   displacement        1.314389e+02    2.958931e-01    1.334114e-04 
-Reforming stiffness matrix: reformation #3
-
- 3
- Nonlinear solution status: time= 0.5
-	stiffness updates             = 0
-	right hand side evaluations   = 4
-	stiffness matrix reformations = 3
-	step from line search         = 1.000000
-	convergence norms :     INITIAL         CURRENT         REQUIRED
-	   residual            3.323036e-01    1.326607e-11    0.000000e+00 
-	   energy              1.329367e+00    6.190166e-09    1.329367e-02 
-	   displacement        1.314389e+02    1.123378e-03    1.335649e-04 
-Reforming stiffness matrix: reformation #4
-
- 4
- Nonlinear solution status: time= 0.5
-	stiffness updates             = 0
-	right hand side evaluations   = 5
-	stiffness matrix reformations = 4
-	step from line search         = 1.000000
-	convergence norms :     INITIAL         CURRENT         REQUIRED
-	   residual            3.323036e-01    1.329518e-20    0.000000e+00 
-	   energy              1.329367e+00    1.011324e-15    1.329367e-02 
-	   displacement        1.314389e+02    7.552354e-09    1.335648e-04 
-
-------- converged at time : 0.5
-
- ]0;(50%) tempModel.feb - FEBio 2.9.1.0  
-===== beginning time step 6 : 0.6 =====
-Reforming stiffness matrix: reformation #1
-
- 1
- Nonlinear solution status: time= 0.6
-	stiffness updates             = 0
-	right hand side evaluations   = 2
-	stiffness matrix reformations = 1
-	step from line search         = 1.000000
-	convergence norms :     INITIAL         CURRENT         REQUIRED
-	   residual            3.634011e-01    2.080044e-03    0.000000e+00 
-	   energy              1.331153e+00    1.444125e-02    1.331153e-02 
-	   displacement        1.361844e+02    1.361844e+02    1.361844e-04 
-Reforming stiffness matrix: reformation #2
-
- 2
- Nonlinear solution status: time= 0.6
-	stiffness updates             = 0
-	right hand side evaluations   = 3
-	stiffness matrix reformations = 2
-	step from line search         = 1.000000
-	convergence norms :     INITIAL         CURRENT         REQUIRED
-	   residual            3.634011e-01    4.229441e-07    0.000000e+00 
-	   energy              1.331153e+00    1.147076e-05    1.331153e-02 
-	   displacement        1.361844e+02    4.035992e-01    1.389889e-04 
-Reforming stiffness matrix: reformation #3
-
- 3
- Nonlinear solution status: time= 0.6
-	stiffness updates             = 0
-	right hand side evaluations   = 4
-	stiffness matrix reformations = 3
-	step from line search         = 1.000000
-	convergence norms :     INITIAL         CURRENT         REQUIRED
-	   residual            3.634011e-01    5.251526e-10    0.000000e+00 
-	   energy              1.331153e+00    1.812969e-08    1.331153e-02 
-	   displacement        1.361844e+02    2.465817e-03    1.392521e-04 
-Reforming stiffness matrix: reformation #4
-
- 4
- Nonlinear solution status: time= 0.6
-	stiffness updates             = 0
-	right hand side evaluations   = 5
-	stiffness matrix reformations = 4
-	step from line search         = 1.000000
-	convergence norms :     INITIAL         CURRENT         REQUIRED
-	   residual            3.634011e-01    2.381372e-19    0.000000e+00 
-	   energy              1.331153e+00    3.014775e-14    1.331153e-02 
-	   displacement        1.361844e+02    2.697202e-08    1.392520e-04 
-
-------- converged at time : 0.6
-
- ]0;(60%) tempModel.feb - FEBio 2.9.1.0  
-===== beginning time step 7 : 0.7 =====
-Reforming stiffness matrix: reformation #1
-
- 1
- Nonlinear solution status: time= 0.7
-	stiffness updates             = 0
-	right hand side evaluations   = 2
-	stiffness matrix reformations = 1
-	step from line search         = 1.000000
-	convergence norms :     INITIAL         CURRENT         REQUIRED
-	   residual            4.009898e-01    3.054057e-03    0.000000e+00 
-	   energy              1.326274e+00    2.008057e-02    1.326274e-02 
-	   displacement        1.430077e+02    1.430077e+02    1.430077e-04 
-Reforming stiffness matrix: reformation #2
-
- 2
- Nonlinear solution status: time= 0.7
-	stiffness updates             = 0
-	right hand side evaluations   = 3
-	stiffness matrix reformations = 2
-	step from line search         = 1.000000
-	convergence norms :     INITIAL         CURRENT         REQUIRED
-	   residual            4.009898e-01    9.187322e-07    0.000000e+00 
-	   energy              1.326274e+00    4.986567e-05    1.326274e-02 
-	   displacement        1.430077e+02    4.005897e-01    1.471064e-04 
-Reforming stiffness matrix: reformation #3
-
- 3
- Nonlinear solution status: time= 0.7
-	stiffness updates             = 0
-	right hand side evaluations   = 4
-	stiffness matrix reformations = 3
-	step from line search         = 1.000000
-	convergence norms :     INITIAL         CURRENT         REQUIRED
-	   residual            4.009898e-01    3.937853e-10    0.000000e+00 
-	   energy              1.326274e+00    2.295298e-08    1.326274e-02 
-	   displacement        1.430077e+02    1.219457e-03    1.472262e-04 
-Reforming stiffness matrix: reformation #4
-
- 4
- Nonlinear solution status: time= 0.7
-	stiffness updates             = 0
-	right hand side evaluations   = 5
-	stiffness matrix reformations = 4
-	step from line search         = 1.000000
-	convergence norms :     INITIAL         CURRENT         REQUIRED
-	   residual            4.009898e-01    7.071632e-19    0.000000e+00 
-	   energy              1.326274e+00    4.299665e-14    1.326274e-02 
-	   displacement        1.430077e+02    4.113513e-08    1.472255e-04 
-
-------- converged at time : 0.7
-
- ]0;(70%) tempModel.feb - FEBio 2.9.1.0  
-===== beginning time step 8 : 0.8 =====
-Reforming stiffness matrix: reformation #1
-
- 1
- Nonlinear solution status: time= 0.8
-	stiffness updates             = 0
-	right hand side evaluations   = 2
-	stiffness matrix reformations = 1
-	step from line search         = 1.000000
-	convergence norms :     INITIAL         CURRENT         REQUIRED
-	   residual            4.454941e-01    3.603611e-03    0.000000e+00 
-	   energy              1.313593e+00    2.100314e-02    1.313593e-02 
-	   displacement        1.519769e+02    1.519769e+02    1.519769e-04 
-Reforming stiffness matrix: reformation #2
-
- 2
- Nonlinear solution status: time= 0.8
-	stiffness updates             = 0
-	right hand side evaluations   = 3
-	stiffness matrix reformations = 2
-	step from line search         = 1.000000
-	convergence norms :     INITIAL         CURRENT         REQUIRED
-	   residual            4.454941e-01    3.519672e-06    0.000000e+00 
-	   energy              1.313593e+00    7.542689e-05    1.313593e-02 
-	   displacement        1.519769e+02    2.909318e-01    1.568800e-04 
-Reforming stiffness matrix: reformation #3
-
- 3
- Nonlinear solution status: time= 0.8
-	stiffness updates             = 0
-	right hand side evaluations   = 4
-	stiffness matrix reformations = 3
-	step from line search         = 1.000000
-	convergence norms :     INITIAL         CURRENT         REQUIRED
-	   residual            4.454941e-01    2.654208e-11    0.000000e+00 
-	   energy              1.313593e+00    8.409875e-09    1.313593e-02 
-	   displacement        1.519769e+02    1.484091e-03    1.567447e-04 
-Reforming stiffness matrix: reformation #4
-
- 4
- Nonlinear solution status: time= 0.8
-	stiffness updates             = 0
-	right hand side evaluations   = 5
-	stiffness matrix reformations = 4
-	step from line search         = 1.000000
-	convergence norms :     INITIAL         CURRENT         REQUIRED
-	   residual            4.454941e-01    3.831961e-21    0.000000e+00 
-	   energy              1.313593e+00    3.528000e-16    1.313593e-02 
-	   displacement        1.519769e+02    3.381865e-09    1.567450e-04 
-
-------- converged at time : 0.8
-
- ]0;(80%) tempModel.feb - FEBio 2.9.1.0  
-===== beginning time step 9 : 0.9 =====
-Reforming stiffness matrix: reformation #1
-
- 1
- Nonlinear solution status: time= 0.9
-	stiffness updates             = 0
-	right hand side evaluations   = 2
-	stiffness matrix reformations = 1
-	step from line search         = 1.000000
-	convergence norms :     INITIAL         CURRENT         REQUIRED
-	   residual            4.959079e-01    3.259118e-03    0.000000e+00 
-	   energy              1.296495e+00    1.837207e-02    1.296495e-02 
-	   displacement        1.616369e+02    1.616369e+02    1.616369e-04 
-Reforming stiffness matrix: reformation #2
-
- 2
- Nonlinear solution status: time= 0.9
-	stiffness updates             = 0
-	right hand side evaluations   = 3
-	stiffness matrix reformations = 2
-	step from line search         = 1.000000
-	convergence norms :     INITIAL         CURRENT         REQUIRED
-	   residual            4.959079e-01    3.441999e-06    0.000000e+00 
-	   energy              1.296495e+00    5.539485e-05    1.296495e-02 
-	   displacement        1.616369e+02    1.974437e-01    1.664536e-04 
-Reforming stiffness matrix: reformation #3
-
- 3
- Nonlinear solution status: time= 0.9
-	stiffness updates             = 0
-	right hand side evaluations   = 4
-	stiffness matrix reformations = 3
-	step from line search         = 1.000000
-	convergence norms :     INITIAL         CURRENT         REQUIRED
-	   residual            4.959079e-01    2.066884e-11    0.000000e+00 
-	   energy              1.296495e+00    3.095502e-09    1.296495e-02 
-	   displacement        1.616369e+02    1.339703e-03    1.662608e-04 
-Reforming stiffness matrix: reformation #4
-
- 4
- Nonlinear solution status: time= 0.9
-	stiffness updates             = 0
-	right hand side evaluations   = 5
-	stiffness matrix reformations = 4
-	step from line search         = 1.000000
-	convergence norms :     INITIAL         CURRENT         REQUIRED
-	   residual            4.959079e-01    1.789842e-20    0.000000e+00 
-	   energy              1.296495e+00    6.306556e-16    1.296495e-02 
-	   displacement        1.616369e+02    1.434586e-08    1.662615e-04 
-
-------- converged at time : 0.9
-
- ]0;(90%) tempModel.feb - FEBio 2.9.1.0  
-===== beginning time step 10 : 1 =====
-Reforming stiffness matrix: reformation #1
-
- 1
- Nonlinear solution status: time= 1
-	stiffness updates             = 0
-	right hand side evaluations   = 2
-	stiffness matrix reformations = 1
-	step from line search         = 1.000000
-	convergence norms :     INITIAL         CURRENT         REQUIRED
-	   residual            5.431244e-01    2.676530e-03    0.000000e+00 
-	   energy              1.275596e+00    1.540717e-02    1.275596e-02 
-	   displacement        1.709856e+02    1.709856e+02    1.709856e-04 
-Reforming stiffness matrix: reformation #2
-
- 2
- Nonlinear solution status: time= 1
-	stiffness updates             = 0
-	right hand side evaluations   = 3
-	stiffness matrix reformations = 2
-	step from line search         = 1.000000
-	convergence norms :     INITIAL         CURRENT         REQUIRED
-	   residual            5.431244e-01    1.762891e-06    0.000000e+00 
-	   energy              1.275596e+00    4.057138e-05    1.275596e-02 
-	   displacement        1.709856e+02    1.546607e-01    1.757462e-04 
-Reforming stiffness matrix: reformation #3
-
- 3
- Nonlinear solution status: time= 1
-	stiffness updates             = 0
-	right hand side evaluations   = 4
-	stiffness matrix reformations = 3
-	step from line search         = 1.000000
-	convergence norms :     INITIAL         CURRENT         REQUIRED
-	   residual            5.431244e-01    3.387260e-12    0.000000e+00 
-	   energy              1.275596e+00    1.167939e-09    1.275596e-02 
-	   displacement        1.709856e+02    4.730198e-04    1.756567e-04 
-Reforming stiffness matrix: reformation #4
-
- 4
- Nonlinear solution status: time= 1
-	stiffness updates             = 0
-	right hand side evaluations   = 5
-	stiffness matrix reformations = 4
-	step from line search         = 1.000000
-	convergence norms :     INITIAL         CURRENT         REQUIRED
-	   residual            5.431244e-01    1.308478e-22    0.000000e+00 
-	   energy              1.275596e+00    1.159304e-18    1.275596e-02 
-	   displacement        1.709856e+02    1.809344e-09    1.756569e-04 
-
-------- converged at time : 1
-
- ]0;(100%) tempModel.feb - FEBio 2.9.1.0  
-
-N O N L I N E A R   I T E R A T I O N   I N F O R M A T I O N
-
-	Number of time steps completed .................... : 10
-
-	Total number of equilibrium iterations ............ : 40
-
-	Average number of equilibrium iterations .......... : 4
-
-	Total number of right hand evaluations ............ : 50
-
-	Total number of stiffness reformations ............ : 40
-
-	Time in linear solver: 0:00:07
-
-
- Elapsed time : 0:00:10
-
-
- N O R M A L   T E R M I N A T I O N
-
+--- STARTING FEBIO JOB --- 09-Jul-2020 15:53:52
 Waiting for log file...
-Proceeding to check log file...13-Mar-2020 12:38:04
+Proceeding to check log file...09-Jul-2020 15:53:52
 ------- converged at time : 0.1
 ------- converged at time : 0.2
 ------- converged at time : 0.3
@@ -1137,8 +525,8 @@ Proceeding to check log file...13-Mar-2020 12:38:04
 ------- converged at time : 0.8
 ------- converged at time : 0.9
 ------- converged at time : 1
---- Done --- 13-Mar-2020 12:38:04
-</pre><h2 id="30">Import FEBio results</h2><pre class="codeinput"><span class="keyword">if</span> runFlag==1 <span class="comment">%i.e. a succesful run</span>
+--- Done --- 09-Jul-2020 15:54:02
+</pre><h2 id="29">Import FEBio results</h2><pre class="codeinput"><span class="keyword">if</span> runFlag==1 <span class="comment">%i.e. a succesful run</span>
 </pre><pre class="codeinput">    <span class="comment">% Importing nodal displacements from a log file</span>
     [time_mat, N_disp_mat,~]=importFEBio_logfile(fullfile(savePath,febioLogFileName_disp)); <span class="comment">%Nodal displacements</span>
     time_mat=[0; time_mat(:)]; <span class="comment">%Time</span>
@@ -1187,7 +575,7 @@ Proceeding to check log file...13-Mar-2020 12:38:04
     <span class="keyword">end</span>
     anim8(hf,animStruct); <span class="comment">%Initiate animation feature</span>
     drawnow;
-</pre><img width="100%" height="auto" vspace="5" hspace="5" src="DEMO_febio_0052_breast_gap_close_01_10.jpg" alt=""> <pre class="codeinput"><span class="comment">%     [M,G,bwLabels]=patch2Im(Fb,V_def,Cb,1);</span>
+</pre><img width="100%" height="auto" vspace="5" hspace="5" src="DEMO_febio_0052_breast_gap_close_01_08.jpg" alt=""> <pre class="codeinput"><span class="comment">%     [M,G,bwLabels]=patch2Im(Fb,V_def,Cb,1);</span>
 <span class="comment">%     M(M==1)=0.25;</span>
 <span class="comment">%     M(M==3)=1;</span>
 <span class="comment">%     M(M==0)=0.1;</span>
@@ -1225,7 +613,7 @@ Proceeding to check log file...13-Mar-2020 12:38:04
 <span class="comment">% camlight('headlight');</span>
 <span class="comment">% drawnow;</span>
 </pre><pre class="codeinput">    <span class="keyword">end</span>
-</pre><p><img vspace="5" hspace="5" src="gibbVerySmall.gif" alt=""> </p><p><i><b>GIBBON</b></i> <a href="www.gibboncode.org">www.gibboncode.org</a></p><p><i>Kevin Mattheus Moerman</i>, <a href="gibbon.toolbox@gmail.com">gibbon.toolbox@gmail.com</a></p><p><i><b>GIBBON footer text</b></i></p><p>License: <a href="https://github.com/gibbonCode/GIBBON/blob/master/LICENSE">https://github.com/gibbonCode/GIBBON/blob/master/LICENSE</a></p><p>GIBBON: The Geometry and Image-based Bioengineering add-On. A toolbox for image segmentation, image-based modeling, meshing, and finite element analysis.</p><p>Copyright (C) 2019  Kevin Mattheus Moerman</p><p>This program is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.</p><p>This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for more details.</p><p>You should have received a copy of the GNU General Public License along with this program.  If not, see <a href="http://www.gnu.org/licenses/">http://www.gnu.org/licenses/</a>.</p><p class="footer"><br><a href="https://www.mathworks.com/products/matlab/">Published with MATLAB&reg; R2019b</a><br></p></div><!--
+</pre><p><img vspace="5" hspace="5" src="gibbVerySmall.gif" alt=""> </p><p><i><b>GIBBON</b></i> <a href="www.gibboncode.org">www.gibboncode.org</a></p><p><i>Kevin Mattheus Moerman</i>, <a href="gibbon.toolbox@gmail.com">gibbon.toolbox@gmail.com</a></p><p><i><b>GIBBON footer text</b></i></p><p>License: <a href="https://github.com/gibbonCode/GIBBON/blob/master/LICENSE">https://github.com/gibbonCode/GIBBON/blob/master/LICENSE</a></p><p>GIBBON: The Geometry and Image-based Bioengineering add-On. A toolbox for image segmentation, image-based modeling, meshing, and finite element analysis.</p><p>Copyright (C) 2006-2020 Kevin Mattheus Moerman</p><p>This program is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.</p><p>This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for more details.</p><p>You should have received a copy of the GNU General Public License along with this program.  If not, see <a href="http://www.gnu.org/licenses/">http://www.gnu.org/licenses/</a>.</p><p class="footer"><br><a href="https://www.mathworks.com/products/matlab/">Published with MATLAB&reg; R2020a</a><br></p></div><!--
 ##### SOURCE BEGIN #####
 %% DEMO_febio_0052_breast_gap_close_01.m
 % Below is a demonstration for:
@@ -1258,7 +646,6 @@ faceAlpha1=0.8;
 faceAlpha2=0.3;
 markerSize=40;
 lineWidth=3;
-skinColor=[1 0.95 0.8];
 
 %%
 
@@ -1291,11 +678,6 @@ m1_1=6; %Material parameter setting degree of non-linearity
 k_factor=1e2; %Bulk modulus factor 
 k_1=c1_1*k_factor; %Bulk modulus
 
-c1_2=5e-3; %Shear-modulus-like parameter
-m1_2=2; %Material parameter setting degree of non-linearity
-k_factor=1e2; %Bulk modulus factor 
-k_2=c1_2*k_factor; %Bulk modulus
-
 % FEA control settings
 numTimeSteps=10; %Number of time steps desired
 max_refs=25; %Max reforms
@@ -1306,7 +688,7 @@ dtmin=(1/numTimeSteps)/100; %Minimum time step size
 dtmax=1/numTimeSteps; %Maximum time step size
 symmetric_stiffness=1;
 min_residual=1e-20;
-
+runMode='external';%'internal';
 
 %% Create hemi-sphere
 [F,V,C_hemiSphereLabel]=hemiSphereMesh(nRefine,r,1); %Construct hemi-shere mesh
@@ -1358,35 +740,8 @@ V=V*R;
 [C_skin_F]=vertexToFaceMeasure(F,C_skin);
 C_skin_F=round(C_skin_F);
 C_skin_F(C_hemiSphereLabel==2)=max(C_skin(:))+1;
-C_skin_F_RGB=cmaperise(C_skin_F,bloodbone(250),[0 5]);
-
-cFigure; hold on;
-gpatch(F,V,C_skin_F_RGB,'none',1);
-
-axisGeom; view([-140,16]);
-camlight headlight;
-drawnow;
 
 %%
-
-cFigure; hold on;
-gpatch(F,V,C_skin,'none',0.5);
-% gpatch(Fs,Vs,'kw','none',1);
-axisGeom; view([-140,16]);
-camlight headlight;
-drawnow;
-
-%%
-
-% rCut=[10 20 23];
-% nRefineCut=nRefine;
-% [Fs,Vs]=geoSphere(nRefineCut,1);
-% Fs=fliplr(Fs);
-% R_cut=euler2DCM([0.5*pi -0.15*pi -0.25*pi]);
-% Vs=Vs.*rCut(ones(size(Vs,1),1),:);
-% Vs=Vs*R_cut;
-% T_cut=[-25 25 -25];
-% Vs=Vs+T_cut(ones(size(Vs,1),1),:);
 
 rCut=[10 20 20];
 nRefineCut=nRefine;
@@ -1402,7 +757,7 @@ Vs=Vs+T_cut(ones(size(Vs,1),1),:);
 
 %%
 cFigure; hold on;
-gpatch(F,V,skinColor,'none',0.5);
+gpatch(F,V,'w','none',0.5);
 gpatch(Fs,Vs,'gw','none',1);
 
 axisGeom; view([-140,16]);
@@ -1455,7 +810,7 @@ Fn=fliplr(Fn);
 %%
 
 cFigure; hold on;
-gpatch(F,V,C_skin_F,'none',0.5);
+gpatch(F,V,'w','none',0.5);
 gpatch(Fs,Vs,'rw','k',1);
 gpatch(Fn,Vn,'bw','k',1);
 axisGeom; view([-140,16]);
@@ -1566,7 +921,7 @@ u2=V_stitchGoal-V_stitch(indStitchEnd,:);
 %%
 
 cFigure; hold on;
-gpatch(Fb,V,skinColor,'none',1);
+gpatch(Fb,V,'w','none',1);
 % plotV(V(indRim,:),'b-','LineWidth',3);
 % plotV(V_stitch,'y.-','MarkerSize',25,'LineWidth',3);
 plotV(V_stitchGoal,'r+','MarkerSize',25);
@@ -1746,7 +1101,7 @@ febioAnalysis.run_filename=febioFebFileName; %The input file name
 febioAnalysis.run_logname=febioLogFileName; %The name for the log file
 febioAnalysis.disp_on=1; %Display information on the command window
 febioAnalysis.disp_log_on=1; %Display convergence information in the command window
-febioAnalysis.runMode='internal';%'internal';
+febioAnalysis.runMode=runMode;
 febioAnalysis.t_check=0.25; %Time for checking log file (dont set too small)
 febioAnalysis.maxtpi=1e99; %Max analysis time
 febioAnalysis.maxLogCheckTime=10; %Max log file checking time
@@ -1872,7 +1227,7 @@ if runFlag==1 %i.e. a succesful run
 % image segmentation, image-based modeling, meshing, and finite element
 % analysis.
 % 
-% Copyright (C) 2019  Kevin Mattheus Moerman
+% Copyright (C) 2006-2020 Kevin Mattheus Moerman
 % 
 % This program is free software: you can redistribute it and/or modify
 % it under the terms of the GNU General Public License as published by

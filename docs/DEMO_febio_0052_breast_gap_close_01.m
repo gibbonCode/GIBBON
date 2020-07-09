@@ -29,7 +29,6 @@ faceAlpha1=0.8;
 faceAlpha2=0.3;
 markerSize=40;
 lineWidth=3;
-skinColor=[1 0.95 0.8];
 
 %%
 
@@ -62,11 +61,6 @@ m1_1=6; %Material parameter setting degree of non-linearity
 k_factor=1e2; %Bulk modulus factor 
 k_1=c1_1*k_factor; %Bulk modulus
 
-c1_2=5e-3; %Shear-modulus-like parameter
-m1_2=2; %Material parameter setting degree of non-linearity
-k_factor=1e2; %Bulk modulus factor 
-k_2=c1_2*k_factor; %Bulk modulus
-
 % FEA control settings
 numTimeSteps=10; %Number of time steps desired
 max_refs=25; %Max reforms
@@ -77,7 +71,7 @@ dtmin=(1/numTimeSteps)/100; %Minimum time step size
 dtmax=1/numTimeSteps; %Maximum time step size
 symmetric_stiffness=1;
 min_residual=1e-20;
-
+runMode='external';%'internal';
 
 %% Create hemi-sphere
 [F,V,C_hemiSphereLabel]=hemiSphereMesh(nRefine,r,1); %Construct hemi-shere mesh
@@ -129,35 +123,8 @@ V=V*R;
 [C_skin_F]=vertexToFaceMeasure(F,C_skin);
 C_skin_F=round(C_skin_F);
 C_skin_F(C_hemiSphereLabel==2)=max(C_skin(:))+1;
-C_skin_F_RGB=cmaperise(C_skin_F,bloodbone(250),[0 5]);
-
-cFigure; hold on;
-gpatch(F,V,C_skin_F_RGB,'none',1);
-
-axisGeom; view([-140,16]);
-camlight headlight;
-drawnow;
 
 %%
-
-cFigure; hold on;
-gpatch(F,V,C_skin,'none',0.5);
-% gpatch(Fs,Vs,'kw','none',1);
-axisGeom; view([-140,16]);
-camlight headlight;
-drawnow;
-
-%%
-
-% rCut=[10 20 23];
-% nRefineCut=nRefine;
-% [Fs,Vs]=geoSphere(nRefineCut,1);
-% Fs=fliplr(Fs);
-% R_cut=euler2DCM([0.5*pi -0.15*pi -0.25*pi]);
-% Vs=Vs.*rCut(ones(size(Vs,1),1),:);
-% Vs=Vs*R_cut;
-% T_cut=[-25 25 -25];
-% Vs=Vs+T_cut(ones(size(Vs,1),1),:);
 
 rCut=[10 20 20];
 nRefineCut=nRefine;
@@ -173,7 +140,7 @@ Vs=Vs+T_cut(ones(size(Vs,1),1),:);
 
 %%
 cFigure; hold on;
-gpatch(F,V,skinColor,'none',0.5);
+gpatch(F,V,'w','none',0.5);
 gpatch(Fs,Vs,'gw','none',1);
 
 axisGeom; view([-140,16]);
@@ -226,7 +193,7 @@ Fn=fliplr(Fn);
 %%
 
 cFigure; hold on;
-gpatch(F,V,C_skin_F,'none',0.5);
+gpatch(F,V,'w','none',0.5);
 gpatch(Fs,Vs,'rw','k',1);
 gpatch(Fn,Vn,'bw','k',1);
 axisGeom; view([-140,16]);
@@ -337,7 +304,7 @@ u2=V_stitchGoal-V_stitch(indStitchEnd,:);
 %%
 
 cFigure; hold on;
-gpatch(Fb,V,skinColor,'none',1);
+gpatch(Fb,V,'w','none',1);
 % plotV(V(indRim,:),'b-','LineWidth',3);
 % plotV(V_stitch,'y.-','MarkerSize',25,'LineWidth',3);
 plotV(V_stitchGoal,'r+','MarkerSize',25);
@@ -517,7 +484,7 @@ febioAnalysis.run_filename=febioFebFileName; %The input file name
 febioAnalysis.run_logname=febioLogFileName; %The name for the log file
 febioAnalysis.disp_on=1; %Display information on the command window
 febioAnalysis.disp_log_on=1; %Display convergence information in the command window
-febioAnalysis.runMode='internal';%'internal';
+febioAnalysis.runMode=runMode;
 febioAnalysis.t_check=0.25; %Time for checking log file (dont set too small)
 febioAnalysis.maxtpi=1e99; %Max analysis time
 febioAnalysis.maxLogCheckTime=10; %Max log file checking time
