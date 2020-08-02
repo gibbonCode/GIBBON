@@ -6,17 +6,21 @@ Please check out our [contribution guidelines](https://github.com/gibbonCode/GIB
 
 ## Short term milestones
 
-### 1. Lattice structure geometry creation for FEA simulation and 3D printing
+### 1. Implement medical device design optimization functionality
+* Enable iterative optimization and topology optimization 
+* Add demos covering this funcitonality
+
+### 2. Lattice structure geometry creation for FEA simulation and 3D printing
 * Element to lattice conversion
 * Dual based lattice creation
 * Direct coding of diamond and octet-truss lattices
 * Demos for FEA of lattices and STL creation
 
-### 2. Functionality for branched blood vessel architecture meshing
+### 3. Functionality for branched blood vessel architecture meshing
 * Avoid self-intersection for polyTube and related functions
 * Finalize convex-hull based branch meshing
 
-### 3. Implement GEOGRAM remeshing functionality
+### 4. Implement GEOGRAM remeshing functionality
 * The open source project GEOMGRAM (you can test functionality here: https://members.loria.fr/Bruno.Levy/GEOGRAM/geobox.html) contains very efficient remeshing algorithms to produce high quality triangulations in input geometry. Making these accessible from GIBBON would make it a powerful solution for remeshing which is currently rather inefficient.
 
 ## Long term milestones
