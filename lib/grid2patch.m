@@ -1,6 +1,6 @@
 function [varargout]=grid2patch(varargin)
 
-% function [F,V,C]=grid2patch(X,Y,Z,C,perdiocOpt);
+% function [F,V,C,CV]=grid2patch(X,Y,Z,C,perdiocOpt);
 % ------------------------------------------------------------------------
 %
 %
@@ -89,6 +89,10 @@ varargout{1}=F;
 varargout{2}=V; 
 if nargout==3
     varargout{3}=vertexToFaceMeasure(F,C(:));
+end
+if nargout==4
+    A=C;
+    varargout{4}=A(:);
 end
 
 end

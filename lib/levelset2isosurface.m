@@ -69,32 +69,35 @@ L_iso=L(useRange_I,useRange_J,useRange_K);
 %Derive isosurface
 [F,V] = isosurface(X_iso,Y_iso,Z_iso,L_iso,contourLevel);
 
-%Clean isosurface
-[F,V]=mergeVertices(F,V); %merge nodes
-[~,indUni,~]=unique(sort(F,2),'rows'); %Check for unique faces
-F=F(indUni,:); %Keep unique faces
-[F,V]=patchCleanUnused(F,V); %Remove unused 
-F=patchRemoveCollapsed(F); %remove collapsed (edges)
-[F,V]=patchCleanUnused(F,V); %Remove unused points
-
 %Derive caps
 if capOpt==2
     [Fc,Vc] = isocaps(X_iso,Y_iso,Z_iso,L_iso,contourLevel);
-%     Fc=Fc(:,[3 2 1]); %Flip face order so normal is outward
 
-    F=patchRemoveCollapsed(F); %remove collapsed (edges)    
-    [F,V]=patchCleanUnused(F,V); %Remove unused points
-    
     %Join and patch data
     C=[ones(size(F,1),1);2*ones(size(Fc,1),1)]; %Face label data
     F=[F;Fc+size(V,1);]; %Faces    
-    V=[V;Vc;]; %Vertices
-    
-    %Merge vertices
-    [F,V]=mergeVertices(F,V);
+    V=[V;Vc;]; %Vertices    
 else
     C=ones(size(F,1),1);
 end
+
+%Clean isosurface
+[F,V]=mergeVertices(F,V); %merge nodes
+
+ %Check for unique faces
+[~,indUni,~]=unique(sort(F,2),'rows');
+F=F(indUni,:); %Keep unique faces
+C=C(indUni);
+
+%Remove collapsed faces
+[F,logicKeep]=patchRemoveCollapsed(F); 
+C=C(logicKeep);
+
+%Remove 3 connected vertices and replace triangle
+[F,V,C]=triSurfRemoveThreeConnect(F,V,C); 
+
+%Remove unused points
+[F,V]=patchCleanUnused(F,V); 
 
 if capOpt>0
     % remove "flag" triangles

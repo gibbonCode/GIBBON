@@ -1,4 +1,4 @@
-function [F,V]=graphicsModels(varargin)
+function [varargout]=graphicsModels(varargin)
 
 % function [F,V]=graphicsModels(modelID)
 % ------------------------------------------------------------------------
@@ -8,6 +8,9 @@ function [F,V]=graphicsModels(varargin)
 % gibbon.toolbox@gmail.com
 % 
 % 2015/04/25 Added to GIBBON
+% 2019 added David, dolfin
+% 2020 added spine
+% 2020/07/28 added zero output mode (show surface)
 %------------------------------------------------------------------------
 
 %% Parse input
@@ -62,7 +65,21 @@ end
 
 F=meshData.F;
 V=meshData.V;
- 
+
+switch nargout
+    case 0
+        cFigure; 
+        gpatch(F,V,'w','k');
+        axisGeom;
+        camlight headlight;
+        gdrawnow;
+    case 1
+        varargout{1}=meshData;
+    case 2
+        varargout{1}=F;
+        varargout{2}=V;
+end
+
 %% 
 % _*GIBBON footer text*_ 
 % 

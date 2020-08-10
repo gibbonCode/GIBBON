@@ -8,6 +8,8 @@ function [indBoundary]=tesBoundary(varargin)
 % 2019/04/24 Added varargin support since V can be skipped
 % 2019/04/24 Started working on cell (e.g. mixed mesh) support, not
 % completed yet 
+% 2020/07/09 Added mixed mesh support, works for pentahedra, needs work for
+% general case
 % ------------------------------------------------------------------------
 
 %% Parse input
@@ -15,30 +17,49 @@ function [indBoundary]=tesBoundary(varargin)
 switch nargin
     case 1
         F=varargin{1};
-        V=max(F(:)); 
+        V=[]; 
     case 2
         F=varargin{1};
         V=varargin{2};
 end
 
-if numel(V)==1
+if isempty(V)
+    if isa(F,'cell')
+        numPoints=max(cellfun(@(x) max(x(:)),FE));
+    else
+        numPoints=max(F(:));
+    end
+elseif size(V,2)==1 %Assume number of points provided
     numPoints=V;
-else
+else %Get number of points from data
     numPoints=size(V,1);
 end
 
 %%
 
-Fbs=sort(F,2);
-sizVirt=numPoints*ones(1,size(Fbs,2));
-ind_F = sub2indn(sizVirt,Fbs);
-[~,indUni1,~]=unique(Fbs,'rows'); %Get indices for unique faces
-ind_F_uni=ind_F(indUni1,:);
-ind=1:1:size(Fbs,1);
-ind=ind(~ismember(ind,indUni1));
-ind_Fb_cut=ind_F(ind,:);
-L_uni=~ismember(ind_F_uni,ind_Fb_cut);
-indBoundary=indUni1(L_uni,:);
+if isa(F,'cell')
+    indBoundary=cell(size(F));
+    for q=1:1:numel(F)
+        indBoundary{q}=getBoundary(F{q},numPoints);
+    end
+else
+    [indBoundary]=getBoundary(F,numPoints);
+end
+
+end
+
+function [indBoundary]=getBoundary(F,numPoints)
+    Fbs=sort(F,2);
+    sizVirt=numPoints*ones(1,size(Fbs,2));
+    ind_F = sub2indn(sizVirt,Fbs);
+    [~,indUni1,~]=unique(Fbs,'rows'); %Get indices for unique faces
+    ind_F_uni=ind_F(indUni1,:);
+    ind=1:1:size(Fbs,1);
+    ind=ind(~ismember(ind,indUni1));
+    ind_Fb_cut=ind_F(ind,:);
+    L_uni=~ismember(ind_F_uni,ind_Fb_cut);
+    indBoundary=indUni1(L_uni,:);
+end
 
 %% 
 % _*GIBBON footer text*_ 

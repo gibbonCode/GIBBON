@@ -18,7 +18,7 @@
 % * rigid body constraints
 % * hexahedral elements, hex8, hex20
 % * quadrilaterial elements, quad4, quad8
-% * shell elements% 
+% * shell elements 
 % * sphere
 % * static, solid
 % * hyperelastic, Ogden

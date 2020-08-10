@@ -50,45 +50,47 @@ febioLogFileName_disp=[febioFebFileNamePart,'_disp_out.txt']; %Log file name for
 febioLogFileName_force=[febioFebFileNamePart,'_force_out.txt']; %Log file name for exporting force
 febioLogFileName_strainEnergy=[febioFebFileNamePart,'_energy_out.txt']; %Log file name for exporting strain energy density
 febioLogFileName_strain=[febioFebFileNamePart,'_strain_out.txt']; %Log file name for exporting strain
+febioLogFileName_stress=[febioFebFileNamePart,'_stress_out.txt']; %Log file name for exporting strain
 
-probeHeight=75;
-
+%Geometric parameters
+probeHeight=60;
 probeRadius=3; % The radius of the hemi-spher portion
 nRefine=0;  % Number of |subtri| refinements for icosahedron
-
-numPointsLoadCurve=500;
-t_load_curve=linspace(0,1,numPointsLoadCurve)';
-t_load_curve=[t_load_curve; t_load_curve(2:end)+1];
-
-a_load_curve1=sin(t_load_curve*2*pi);
-a_load_curve1(t_load_curve>1)=0;
-
-a_load_curve2=sin(t_load_curve*2*pi);
-a_load_curve2(t_load_curve<1)=0;
-
 pointSpacingFactorTissue=2; 
-
 dAdd=3*probeRadius;
 tissueRadius=probeRadius+dAdd;
 tissueHeight=probeHeight+dAdd;
 volumeFactor=1;
 
-displacementMagnitude=-1;
+% Motion timing parameters
+motionFrequency=2; %Motion frequency
+cycleTime=1./motionFrequency;
+numMotionCycles=8; %Number of motion cycles
+timeTotal=cycleTime.*numMotionCycles; %Total simulation time
+displacementMagnitude=1; %displacement magnitude
+t_load_curve=(0:cycleTime/200:timeTotal)';
+a_load_curve=0.5+(0.5*sin((t_load_curve-cycleTime/4)*2*pi.*motionFrequency));
+timeSetMustPoints=(0:cycleTime/2:timeTotal)'; 
 
 %Material parameter set
+formulationType=2; %Elastic=1 Visco=2
 c1=1e-3; %Shear-modulus-like parameter
 m1=2; %Material parameter setting degree of non-linearity
 k_factor=1e2; %Bulk modulus factor 
 k=c1*k_factor; %Bulk modulus
+g1=0.8; %Viscoelastic QLV proportional coefficient
+t1=1; %Viscoelastic QLV time coefficient
+d=1e-9; %Density (not required for static analysis)
 
 % FEA control settings
-numTimeSteps=20; %Number of time steps desired
+analysisType='dynamic'; 
+numTimeSteps=numMotionCycles.*15; %Number of time steps desired
 max_refs=25; %Max reforms
 max_ups=0; %Set to zero to use full-Newton iterations
-opt_iter=6; %Optimum number of iterations
-max_retries=5; %Maximum number of retires
-dtmin=(1/numTimeSteps)/100; %Minimum time step size
-dtmax=1/numTimeSteps; %Maximum time step size
+opt_iter=8; %Optimum number of iterations
+max_retries=6; %Maximum number of retires
+dtmin=(timeTotal/numTimeSteps)/100; %Minimum time step size
+dtmax=timeTotal/numTimeSteps; %Maximum time step size
 symmetric_stiffness=0;
 min_residual=1e-20;
 runMode='internal'; %'internal' or 'external';
@@ -100,6 +102,21 @@ minaug=1;
 maxaug=10;
 fric_coeff=0.1;
 contactType=2; %1=sticky, 2=sliding-elastic
+
+%%
+% Visualize load curve
+
+cFigure; hold on;
+title('Time curve')
+xlabel('Time (s)'); ylabel('Displacement (mm)');
+for q=1:1:numel(timeSetMustPoints)
+    h1=plot(timeSetMustPoints(q*ones(2,1)),[0 displacementMagnitude],'r-','LineWidth',  1);
+end
+h2=plot(t_load_curve,a_load_curve.*displacementMagnitude,'b.-','MarkerSize',15,'LineWidth',2);
+legend([h1 h2],{'Must points','Load curve'},'Location','SouthOutside');    
+grid on; box on; axis tight; 
+set(gca,'FontSize',fontSize);
+drawnow;
 
 %% Build probe
 
@@ -317,37 +334,53 @@ febio_spec.ATTR.version='2.5';
 %Module section
 febio_spec.Module.ATTR.type='solid'; 
 
+febio_spec.Control.time_stepper=rmfield(febio_spec.Control.time_stepper,'dtmax');
+
 %Create control structure for use by all steps
-stepStruct.Control.analysis.ATTR.type='static';
-stepStruct.Control.time_steps=numTimeSteps;
-stepStruct.Control.step_size=1/numTimeSteps;
-stepStruct.Control.time_stepper.dtmin=dtmin;
-stepStruct.Control.time_stepper.dtmax=dtmax; 
-stepStruct.Control.time_stepper.max_retries=max_retries;
-stepStruct.Control.time_stepper.opt_iter=opt_iter;
-stepStruct.Control.max_refs=max_refs;
-stepStruct.Control.max_ups=max_ups;
-stepStruct.Control.symmetric_stiffness=symmetric_stiffness;
-stepStruct.Control.min_residual=min_residual;
-
-%Add template based default settings to proposed control section
-[stepStruct.Control]=structComplete(stepStruct.Control,febio_spec.Control,1); %Complement provided with default if missing
-
-%Remove control field (part of template) since step specific control sections are used
-febio_spec=rmfield(febio_spec,'Control'); 
-
-febio_spec.Step{1}.Control=stepStruct.Control;
-febio_spec.Step{1}.ATTR.id=1;
-febio_spec.Step{2}.Control=stepStruct.Control;
-febio_spec.Step{2}.ATTR.id=2;
+febio_spec.Control.analysis.ATTR.type=analysisType;
+febio_spec.Control.time_steps=numTimeSteps;
+febio_spec.Control.step_size=timeTotal./numTimeSteps;
+febio_spec.Control.time_stepper.dtmin=dtmin;
+febio_spec.Control.time_stepper.dtmax.VAL=dtmax; 
+febio_spec.Control.time_stepper.dtmax.ATTR.lc=2; 
+febio_spec.Control.time_stepper.max_retries=max_retries;
+febio_spec.Control.time_stepper.opt_iter=opt_iter;
+febio_spec.Control.max_refs=max_refs;
+febio_spec.Control.max_ups=max_ups;
+febio_spec.Control.symmetric_stiffness=symmetric_stiffness;
+febio_spec.Control.min_residual=min_residual;
 
 %Material section
-febio_spec.Material.material{1}.ATTR.type='Ogden';
-febio_spec.Material.material{1}.ATTR.id=1;
-febio_spec.Material.material{1}.c1=c1;
-febio_spec.Material.material{1}.m1=m1;
-febio_spec.Material.material{1}.k=k;
-
+switch formulationType
+    case 1 %Elastic
+        febio_spec.Material.material{1}.ATTR.type='Ogden';
+        febio_spec.Material.material{1}.ATTR.id=1;
+        febio_spec.Material.material{1}.c1=c1;
+        febio_spec.Material.material{1}.m1=m1;
+        febio_spec.Material.material{1}.k=k;
+        
+%         febio_spec.Material.material{1}.ATTR.type='neo-Hookean';
+%         febio_spec.Material.material{1}.ATTR.id=1;
+%         febio_spec.Material.material{1}.E=E_youngs1;
+%         febio_spec.Material.material{1}.v=nu1;
+    case 2 %Elastic        
+        
+        %Elastic part
+        febio_spec.Material.material{1}.elastic{1}.ATTR.type='Ogden';
+        febio_spec.Material.material{1}.elastic{1}.c1=c1;
+        febio_spec.Material.material{1}.elastic{1}.m1=m1;
+        febio_spec.Material.material{1}.elastic{1}.k=k;        
+        febio_spec.Material.material{1}.elastic{1}.density=d;
+        
+        %Viscoelastic part
+        febio_spec.Material.material{1}.ATTR.type='uncoupled viscoelastic';
+        febio_spec.Material.material{1}.ATTR.Name='Block_material';
+        febio_spec.Material.material{1}.ATTR.id=1;
+        febio_spec.Material.material{1}.g1=g1;
+        febio_spec.Material.material{1}.t1=t1;
+        febio_spec.Material.material{1}.density=d;     
+end
+        
 febio_spec.Material.material{2}.ATTR.type='rigid body';
 febio_spec.Material.material{2}.ATTR.id=2;
 febio_spec.Material.material{2}.density=1;
@@ -400,40 +433,26 @@ febio_spec.Boundary.fix{3}.ATTR.bc='z';
 febio_spec.Boundary.fix{3}.ATTR.node_set=febio_spec.Geometry.NodeSet{1}.ATTR.name;
 
 % -> Prescribed boundary conditions on the rigid body
-%STEP 1 Up/down
-febio_spec.Step{1}.Boundary.rigid_body{1}.ATTR.mat=2;
-febio_spec.Step{1}.Boundary.rigid_body{1}.fixed{1}.ATTR.bc='x';
-febio_spec.Step{1}.Boundary.rigid_body{1}.fixed{2}.ATTR.bc='y';
-febio_spec.Step{1}.Boundary.rigid_body{1}.fixed{3}.ATTR.bc='Rx';
-febio_spec.Step{1}.Boundary.rigid_body{1}.fixed{4}.ATTR.bc='Ry';
-febio_spec.Step{1}.Boundary.rigid_body{1}.fixed{5}.ATTR.bc='Rz';
-febio_spec.Step{1}.Boundary.rigid_body{1}.prescribed.ATTR.bc='z';
-febio_spec.Step{1}.Boundary.rigid_body{1}.prescribed.ATTR.lc=1;
-febio_spec.Step{1}.Boundary.rigid_body{1}.prescribed.VAL=displacementMagnitude;
-
-%STEP 2 Sideways
-febio_spec.Step{2}.Boundary.rigid_body{1}.ATTR.mat=2;
-febio_spec.Step{2}.Boundary.rigid_body{1}.fixed{1}.ATTR.bc='y';
-febio_spec.Step{2}.Boundary.rigid_body{1}.fixed{2}.ATTR.bc='z';
-febio_spec.Step{2}.Boundary.rigid_body{1}.fixed{3}.ATTR.bc='Rx';
-febio_spec.Step{2}.Boundary.rigid_body{1}.fixed{4}.ATTR.bc='Ry';
-febio_spec.Step{2}.Boundary.rigid_body{1}.fixed{5}.ATTR.bc='Rz';
-febio_spec.Step{2}.Boundary.rigid_body{1}.prescribed.ATTR.bc='x';
-febio_spec.Step{2}.Boundary.rigid_body{1}.prescribed.ATTR.lc=2;
-febio_spec.Step{2}.Boundary.rigid_body{1}.prescribed.VAL=displacementMagnitude;
-
+febio_spec.Boundary.rigid_body{1}.ATTR.mat=2;
+febio_spec.Boundary.rigid_body{1}.fixed{1}.ATTR.bc='y';
+febio_spec.Boundary.rigid_body{1}.fixed{2}.ATTR.bc='z';
+febio_spec.Boundary.rigid_body{1}.fixed{3}.ATTR.bc='Rx';
+febio_spec.Boundary.rigid_body{1}.fixed{4}.ATTR.bc='Ry';
+febio_spec.Boundary.rigid_body{1}.fixed{5}.ATTR.bc='Rz';
+febio_spec.Boundary.rigid_body{1}.prescribed.ATTR.bc='x';
+febio_spec.Boundary.rigid_body{1}.prescribed.ATTR.lc=1;
+febio_spec.Boundary.rigid_body{1}.prescribed.VAL=displacementMagnitude;
 
 %LoadData section
 febio_spec.LoadData.loadcurve{1}.ATTR.id=1;
 febio_spec.LoadData.loadcurve{1}.ATTR.type='linear';
-febio_spec.LoadData.loadcurve{1}.point.VAL=[t_load_curve(:) a_load_curve1(:)];
+febio_spec.LoadData.loadcurve{1}.point.VAL=[t_load_curve(:) a_load_curve(:)];
 
 febio_spec.LoadData.loadcurve{2}.ATTR.id=2;
-febio_spec.LoadData.loadcurve{2}.ATTR.type='linear';
-febio_spec.LoadData.loadcurve{2}.point.VAL=[t_load_curve(:) a_load_curve2(:)];
+febio_spec.LoadData.loadcurve{2}.ATTR.type='step';
+febio_spec.LoadData.loadcurve{2}.point.VAL=[timeSetMustPoints dtmax.*ones(size(timeSetMustPoints))];
 
 %Contact section
-
 switch contactType
     case 1
         febio_spec.Contact.contact{1}.ATTR.surface_pair=febio_spec.Geometry.SurfacePair{1}.ATTR.name;
@@ -480,6 +499,11 @@ febio_spec.Output.logfile.element_data{1}.ATTR.file=febioLogFileName_strain;
 febio_spec.Output.logfile.element_data{1}.ATTR.data='E1;E2;E3';
 febio_spec.Output.logfile.element_data{1}.ATTR.delim=',';
 febio_spec.Output.logfile.element_data{1}.VAL=1:size(E,1);
+
+febio_spec.Output.logfile.element_data{2}.ATTR.file=febioLogFileName_stress;
+febio_spec.Output.logfile.element_data{2}.ATTR.data='s1;s2;s3';%'sx;sy;sz;sxy;syz;sxz';
+febio_spec.Output.logfile.element_data{2}.ATTR.delim=',';
+febio_spec.Output.logfile.element_data{2}.VAL=1:size(E,1);
 
 %% Quick viewing of the FEBio input file structure
 % The |febView| function can be used to view the xml structure in a MATLAB
@@ -537,50 +561,52 @@ if runFlag==1 %i.e. a succesful run
     Z_DEF=V_DEF(:,3,:);
     [CF_def]=vertexToFaceMeasure(Fb,DN_magnitude);
     
-     %%
+    %%
+    
     % Importing element data from a log file
-    [~,E_data,~]=importFEBio_logfile(fullfile(savePath,febioLogFileName_strain)); %Element data
+    [~,E_stress,~]=importFEBio_logfile(fullfile(savePath,febioLogFileName_stress)); %Element data
     
     %Remove nodal index column
-    E_data=E_data(:,2:end,:);
-    
-    E_data=sqrt(0.5*( (E_data(:,1,:)-E_data(:,2,:)).^2 + (E_data(:,2,:)-E_data(:,3,:)).^2 + (E_data(:,3,:)-E_data(:,1,:)).^2 ));
-        
+    E_stress=E_stress(:,2:end,:);
+                
     %Add initial state i.e. zero 
-    sizImport=size(E_data); 
+    sizImport=size(E_stress); 
     sizImport(3)=sizImport(3)+1;
     E_data_mat_n=zeros(sizImport);
-    E_data_mat_n(:,:,2:end)=E_data;
-    E_data=E_data_mat_n;
-        
+    E_data_mat_n(:,:,2:end)=E_stress;
+    E_stress=E_data_mat_n;
+    
+    E_stress(isnan(E_stress))=0;
+    
+    E_stress1=E_stress(:,1,:);
+    E_stress2=E_stress(:,2,:);
+    E_stress3=E_stress(:,3,:);
+    E_stress_VM=sqrt(0.5*( (E_stress1-E_stress2).^2 + (E_stress2-E_stress3).^2 + (E_stress3-E_stress1).^2 ));
+    
     VE=patchCentre(E,V);
     logicCutElements=VE(:,2)>=0;
     
-    [F_cut,CF_cut_data]=element2patch(E(logicCutElements,:),E_data(logicCutElements,:,1));
+    [F_cut,CF_cut_data]=element2patch(E(logicCutElements,:),E_stress_VM(logicCutElements,:,1));
     [indBoundary]=tesBoundary(F_cut,V);
     
-    CV=faceToVertexMeasure(F_cut(indBoundary,:),V,CF_cut_data(indBoundary,:));
-    
-    %% 
-    % Plotting the simulated results using |anim8| to visualize and animate
-    % deformations 
+    CV_stress=faceToVertexMeasure(F_cut(indBoundary,:),V,CF_cut_data(indBoundary,:));
+
+    %%
+    % Plotting the simulated results using |anim8| to visualize and animate deformations 
     
     % Create basic view and store graphics handle to initiate animation
     hf=cFigure; %Open figure      
     gtitle([febioFebFileNamePart,': Press play to animate']);
-%     subplot(1,2,1);    
     hp1=gpatch(Fb,V_def,'kw','none',0.25); %Add graphics object to animate
-    hp2=gpatch(F_cut(indBoundary,:),V_def,CV,'k',1); %Add graphics object to animate
+    hp2=gpatch(F_cut(indBoundary,:),V_def,CV_stress,'k',1); %Add graphics object to animate
     hp2.FaceColor='interp';
     hp3=gpatch(Fp,V_def,'kw','none',1); %Add graphics object to animate
-%     gpatch(Fb,V,0.5*ones(1,3),'k',0.25); %A static graphics object    
     colormap(gjet(250)); colorbar;
-    caxis([0 max(E_data(:))/3]);
+    caxis([0 max(E_stress_VM(:))/3]);
     axisGeom(gca,fontSize);
     axis([min(X_DEF(:)) max(X_DEF(:)) min(Y_DEF(:)) max(Y_DEF(:)) min(Z_DEF(:)) max(Z_DEF(:))]);
     axis manual; 
-    camlight headlight;   
-    
+    camlight headlight;       
     drawnow;     
     
     % Set up animation features
@@ -588,10 +614,8 @@ if runFlag==1 %i.e. a succesful run
     for qt=1:1:size(N_disp_mat,3) %Loop over time increments        
         DN=N_disp_mat(:,:,qt); %Current displacement
         DN_magnitude=sqrt(sum(DN.^2,2)); %Current displacement magnitude
-        V_def=V+DN; %Current nodal coordinates
-%         [CF_def]=vertexToFaceMeasure(Fb,DN_magnitude); %Current color data to use
-    
-        [~,CF_cut_data]=element2patch(E(logicCutElements,:),E_data(logicCutElements,:,qt));
+        V_def=V+DN; %Current nodal coordinates    
+        [~,CF_cut_data]=element2patch(E(logicCutElements,:),E_stress_VM(logicCutElements,:,qt));
         CV=faceToVertexMeasure(F_cut(indBoundary,:),V,CF_cut_data(indBoundary,:));
         
         %Set entries in animation structure
@@ -601,7 +625,46 @@ if runFlag==1 %i.e. a succesful run
     end        
     anim8(hf,animStruct); %Initiate animation feature    
     drawnow;
-       
+    
+    %%
+        
+    S1_mean=squeeze(mean(E_stress1,1)); 
+    S2_mean=squeeze(mean(E_stress2,1)); 
+    S3_mean=squeeze(mean(E_stress3,1)); 
+    SVM_mean=squeeze(mean(E_stress_VM,1)); 
+    
+    t_max=(cycleTime/2:cycleTime:timeTotal)';
+    t_min=(0:cycleTime:timeTotal)';
+    [~,indUni]=unique(time_mat);
+    
+    S1_max=interp1(time_mat(indUni),S1_mean(indUni),t_max,'linear','extrap');
+    S1_min=interp1(time_mat(indUni),S1_mean(indUni),t_min,'linear','extrap');
+    
+    S2_max=interp1(time_mat(indUni),S2_mean(indUni),t_max,'linear','extrap');
+    S2_min=interp1(time_mat(indUni),S2_mean(indUni),t_min,'linear','extrap');
+    
+    S3_max=interp1(time_mat(indUni),S3_mean(indUni),t_max,'linear','extrap');
+    S3_min=interp1(time_mat(indUni),S3_mean(indUni),t_min,'linear','extrap');
+    
+    SVM_max=interp1(time_mat(indUni),SVM_mean(indUni),t_max,'linear','extrap');
+    SVM_min=interp1(time_mat(indUni),SVM_mean(indUni),t_min,'linear','extrap');
+    
+    %%
+    
+    cFigure; hold on;    
+    xlabel('Time (s)'); ylabel('Mean stress (MPa)');
+    
+    h1=plot(time_mat,S1_mean,'r-','MarkerSize',25,'LineWidth',3);    
+    h2=plot(time_mat,S3_mean,'b-','MarkerSize',25,'LineWidth',3);    
+    h3=plot(t_min,S1_min,'r.--','MarkerSize',50,'LineWidth',2);
+    h4=plot(t_max,S3_max,'b.--','MarkerSize',50,'LineWidth',2);
+    
+    legend([h1 h2 h3 h4],{'Mean 1st principal stress','Mean 3rd principal stress','Maxima','Minima'},'Location','SouthOutside');    
+    
+    grid on; box on; axis tight;
+    set(gca,'FontSize',fontSize);
+    drawnow;     
+
 end
 
 %% 

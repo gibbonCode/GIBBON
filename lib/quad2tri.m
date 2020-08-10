@@ -44,11 +44,19 @@ switch triType
     case 'b' %backward slash
         Ft=[Fq(:,[1 2 3]);Fq(:,[3 4 1]);];
         Vt=Vq;
-        Ct=repmat(Cq,[2,1]);
+        if size(Cq,1)==size(Fq,1) %Face colors
+            Ct=repmat(Cq,[2,1]);
+        else %Assume vertex colors
+            Ct=Cq;
+        end
     case 'f' %Forward slash
         Ft=[Fq(:,[1 2 4]);Fq(:,[2 3 4]);];        
         Vt=Vq;        
-        Ct=repmat(Cq,[2,1]);
+        if size(Cq,1)==size(Fq,1) %Face colors
+            Ct=repmat(Cq,[2,1]);
+        else %Assume vertex colors
+            Ct=Cq;
+        end
     case 'e'        
         D=patchEdgeLengths(Fq,Vq);
         edgeTolerance=min(D)./1000; %Tolerance level
@@ -58,11 +66,12 @@ switch triType
         L1=d<-edgeTolerance; %Flip if difference is more than tolerance        
         Ft=[Fq(L1,[1 2 3]);Fq(L1,[3 4 1]); Fq(~L1,[1 2 4]);Fq(~L1,[2 3 4])];
         Vt=Vq;
-        if ~isempty(Cq)
+        
+        if size(Cq,1)==size(Fq,1) %Face colors
             Ct=[Cq(L1,:); Cq(L1,:); Cq(~L1,:); Cq(~L1,:)];
-        else
-            Ct=repmat(Cq,[2,1]);
-        end
+        else %Assume vertex colors
+            Ct=Cq;
+        end        
     case 'a'        
         angleTolerance=(pi/3)/1000; %Tolerance level
         F1=[Fq(:,[1 2 3]);Fq(:,[3 4 1])];
@@ -78,10 +87,11 @@ switch triType
         L1=d<-angleTolerance; %Flip if difference is more than tolerance
         Ft=[Fq(L1,[1 2 3]);Fq(L1,[3 4 1]); Fq(~L1,[1 2 4]);Fq(~L1,[2 3 4])];          
         Vt=Vq;
-        if ~isempty(Cq)
+        
+        if size(Cq,1)==size(Fq,1) %Face colors
             Ct=[Cq(L1,:); Cq(L1,:); Cq(~L1,:); Cq(~L1,:)];
-        else
-            Ct=repmat(Cq,[2,1]);
+        else %Assume vertex colors
+            Ct=Cq;
         end                
     case 'x' %Cross type
         Vm=zeros(size(Fq,1),size(Vq,2));
@@ -102,7 +112,17 @@ switch triType
             Fq(:,2) Fq(:,3) indVm(:);...
             Fq(:,3) Fq(:,4) indVm(:);...
             Fq(:,4) Fq(:,1) indVm(:)];
-        Ct=repmat(Cq,[4,1]);
+        
+        if size(Cq,1)==size(Fq,1) %Face colors
+            Ct=repmat(Cq,[4,1]);
+        else %Assume vertex colors
+            Cm=zeros(size(Vm,1),size(Cq,2));
+            for q=1:1:size(Cq,2)
+                c=Cq(:,q);
+                Cm(:,q)=mean(c(Fq),2);
+            end
+            Ct=[Cq; Cm];
+        end
 end
     
 varargout{1}=Ft;

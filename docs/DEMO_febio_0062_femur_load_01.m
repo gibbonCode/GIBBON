@@ -33,6 +33,7 @@ lineWidth=3;
 defaultFolder = fileparts(fileparts(mfilename('fullpath')));
 savePath=fullfile(defaultFolder,'data','temp');
 pathNameSTL=fullfile(defaultFolder,'data','STL'); 
+saveName_SED=fullfile(savePath,'SED_no_implant.mat');
 
 % Defining file names
 febioFebFileNamePart='tempModel';
@@ -49,7 +50,32 @@ corticalThickness=3; %Thickness used for cortical material definition
 volumeFactor=2; %Factor to scale desired volume for interior elements w.r.t. boundary elements
 
 %Define applied force 
-forceTotal=[-405 -246 -1717.5]; %x,y,z force in Newton
+
+forceAbductor=[564.831 -132.696 704.511];
+forceVastusLateralis_Walking=[-7.857 -161.505 -811.017];
+forceVastusLateralis_StairClimbing=[-19.206 -195.552 -1,179.423];
+forceVastusMedialis_StairClimbing=[-76.824 -345.708 -2,331.783]; 
+forceVM_inactive=[0 0 0];
+
+n=1;
+switch n
+    case 1 
+        forceVastusLateralis=forceVastusLateralis_Walking; 
+        forceVastusMedialis=forceVM_inactive;
+    case 2 
+        forceVastusLateralis=forceVastusLateralis_StairClimbing;
+        forceVastusMedialis=forceVastusMedialis_StairClimbing; 
+    otherwise 
+        forceVastusLateralis=forceVastusLateralis_StairClimbing;
+        forceVastusMedialis=forceVastusMedialis_StairClimbing;
+end 
+% Distance markers and scaling factor
+zLevelWidthMeasure = -75;
+zLevelFCML = -395;
+scaleFactorSize=1;
+distanceMuscleAttachAbductor=15;
+distanceMuscleVastusLateralis=10;
+distanceMuscleAttachVastusMedialis=10;
 
 %Material parameters (MPa if spatial units are mm)
 % Cortical bone
@@ -78,6 +104,7 @@ V_bone=stlStruct.solidVertices{1}; %Vertices
 %% Scale and reorient
 
 V_bone=V_bone.*1000; %Scale to mm
+V_bone=V_bone.*scaleFactorSize; %Scale size further
 
 [F_bone,V_bone]=mergeVertices(F_bone,V_bone); % Merging nodes
 Q1=euler2DCM([0 0 0.065*pi]);
@@ -93,6 +120,46 @@ cFigure; hold on;
 gpatch(F_bone,V_bone,'w','k',1);
 % patchNormPlot(F_bone,V_bone)
 axisGeom; camlight headlight;
+drawnow;
+
+%% Determining femur length and person's height 
+
+% The Estimation of Stature on the Basis of Measurements of the Femur - height 
+% Estimating body mass and composition from proximal femur dimensions using dual energy x-ray absorptiometry - weight 
+
+% P3 = [-15 20 -75];
+% [~,indNode3]=minDist(P3,V_bone);
+
+femurLength = max(V_bone(:,3)) - min(V_bone(:,3)); %femur length 
+
+[~,V_bone_slice,~,~,Eb]=triSurfSlice(F_bone,V_bone,[],[0 0 scaleFactorSize.*zLevelWidthMeasure],[0 0 1]);
+indSliceCurve=edgeListToCurve(Eb);
+V_slice_curve=V_bone_slice(indSliceCurve,:);
+sliceArea = polyarea(V_slice_curve(:,1),V_slice_curve(:,2));
+subtrochanterMedLatDia = sqrt(sliceArea./(0.25*pi));
+
+[~,V_bone_slice_bottom,~,~,Eb2]=triSurfSlice(F_bone,V_bone,[],[0 0 scaleFactorSize.*zLevelFCML],[0 0 1]);
+indSliceCurveBottom=edgeListToCurve(Eb2);
+V_slice_curve_bottom=V_bone_slice_bottom(indSliceCurveBottom,:);
+sliceAreaBottom = polyarea(V_slice_curve_bottom(:,1),V_slice_curve_bottom(:,1));
+
+FCML = max(V_bone_slice_bottom(:,1)) - min(V_bone_slice_bottom(:,1)); %mediolateral breadth of the articular surface of the femoral condyles
+
+% subtrochanterMedLatDia = distND(V_bone(indNode3,:),V_bone(indNode4,:)); %subtrochanter medio-latreal diameter
+
+bodyHeight = 4*femurLength;
+bodyMass = 1.37 * (FCML-42.8);
+
+forceTotal=[-0.54 -0.32  -2.292].*bodyMass;
+
+%%
+
+cFigure; hold on;
+gpatch(F_bone,V_bone,'w','none',0.5);
+plotV(V_bone_slice(indSliceCurve,:),'r-','LineWidth',5)
+plotV(V_bone_slice_bottom(indSliceCurveBottom,:),'r-','LineWidth',5)
+axisGeom; 
+camlight headlight;
 drawnow;
 
 %% Cut bone surface
@@ -280,16 +347,44 @@ colormap(gca,gjet(250)); colorbar;
 
 drawnow;
 
+%% Marking muscle locations
+
+P_abductor_find = [-69.771045288206111 8.185179717034659 -5.575329878303917]; %Coordinate at centre of muscle attachment
+[~,indAbductor]=minDist(P_abductor_find,V); %Node number of point at centre of attachment
+dAbductor=meshDistMarch(Fb,V,indAbductor); %Distance (on mesh) from attachement centre
+bcPrescibeList_abductor=find(dAbductor<=distanceMuscleAttachAbductor); %Node numbers for attachment site
+
+P_VastusLateralis_find = [-58.763839901506827 19.145444610053566 -51.005278396808819]; %Coordinate at centre of muscle attachment
+[~,indVastusLateralis]=minDist(P_VastusLateralis_find,V); %Node number of point at centre of attachment
+dVastusLateralis=meshDistMarch(Fb,V,indVastusLateralis); %Distance (on mesh) from attachement centre
+bcPrescibeList_VastusLateralis=find(dVastusLateralis<=distanceMuscleVastusLateralis); %Node numbers for attachment site
+
+
+P_VastusMedialis_find = [-18.533631492778085 9.501312355952791 -85.666499329588035]; %Coordinate at centre of muscle attachment
+[~,indVastusMedialis]=minDist(P_VastusMedialis_find,V); %Node number of point at centre of attachment
+dVastusMedialis=meshDistMarch(Fb,V,indVastusMedialis); %Distance (on mesh) from attachement centre
+bcPrescibeList_VastusMedialis=find(dVastusMedialis<=distanceMuscleAttachVastusMedialis); %Node numbers for attachment site
+
+%%  Muscle force definition 
+forceAbductor_distributed=forceAbductor.*ones(numel(bcPrescibeList_abductor),1)./numel(bcPrescibeList_abductor);
+
+forceVastusLateralis_distributed=forceVastusLateralis.*ones(numel(bcPrescibeList_VastusLateralis),1)./numel(bcPrescibeList_VastusLateralis);
+
+forceVastusMedialis_distributed=forceVastusMedialis.*ones(numel(bcPrescibeList_VastusMedialis),1)./numel(bcPrescibeList_VastusMedialis);
+
 %% Visualizing boundary conditions
 
 F_bottomSupport=Fb(Cb==2,:);
 bcSupportList=unique(F_bottomSupport(:));
 
-hFig=cFigure; hold on;
-gpatch(Fb,V,'kw','none',0.25);
+cFigure; hold on;
+gpatch(Fb,V,'kw','none',0.7);
 hl(1)=plotV(V(bcSupportList,:),'k.','MarkerSize',25);
 hl(2)=plotV(V(bcPrescribeList,:),'r.','MarkerSize',25);
-legend(hl,{'BC support','BC force prescribe'});
+hl(3)=plotV(V(bcPrescibeList_abductor,:),'g.','MarkerSize',25);
+hl(4)=plotV(V(bcPrescibeList_VastusLateralis,:),'b.','MarkerSize',25);
+hl(5)=plotV(V(bcPrescibeList_VastusMedialis,:),'g.','MarkerSize',25);
+legend(hl,{'BC support','BC force prescribe','MAP abductor','MAP Vastus Lateralis','MAP Vastus Medialis'});
 axisGeom; 
 camlight headlight;
 drawnow;
@@ -355,6 +450,15 @@ febio_spec.Geometry.NodeSet{1}.node.ATTR.id=bcSupportList(:);
 febio_spec.Geometry.NodeSet{2}.ATTR.name='indicesHeadSurfaceNodes';
 febio_spec.Geometry.NodeSet{2}.node.ATTR.id=bcPrescribeList(:);
 
+febio_spec.Geometry.NodeSet{3}.ATTR.name='indicesAbductor';
+febio_spec.Geometry.NodeSet{3}.node.ATTR.id=bcPrescibeList_abductor(:);
+
+febio_spec.Geometry.NodeSet{4}.ATTR.name='indicesVastusLateralis';
+febio_spec.Geometry.NodeSet{4}.node.ATTR.id=bcPrescibeList_VastusLateralis(:);
+
+febio_spec.Geometry.NodeSet{5}.ATTR.name='indicesVastusMedialis';
+febio_spec.Geometry.NodeSet{5}.node.ATTR.id=bcPrescibeList_VastusMedialis(:);
+
 %Boundary condition section
 % -> Fix boundary conditions
 febio_spec.Boundary.fix{1}.ATTR.bc='x';
@@ -379,6 +483,51 @@ febio_spec.MeshData.NodeData{3}.ATTR.node_set=febio_spec.Geometry.NodeSet{2}.ATT
 febio_spec.MeshData.NodeData{3}.node.VAL=force_Z;
 febio_spec.MeshData.NodeData{3}.node.ATTR.lid=(1:1:numel(bcPrescribeList))';
 
+febio_spec.MeshData.NodeData{4}.ATTR.name='forceAbductor_X';
+febio_spec.MeshData.NodeData{4}.ATTR.node_set=febio_spec.Geometry.NodeSet{3}.ATTR.name;
+febio_spec.MeshData.NodeData{4}.node.VAL=forceAbductor_distributed(:,1);
+febio_spec.MeshData.NodeData{4}.node.ATTR.lid=(1:1:numel(bcPrescibeList_abductor))';
+
+febio_spec.MeshData.NodeData{5}.ATTR.name='forceAbductor_Y';
+febio_spec.MeshData.NodeData{5}.ATTR.node_set=febio_spec.Geometry.NodeSet{3}.ATTR.name;
+febio_spec.MeshData.NodeData{5}.node.VAL=forceAbductor_distributed(:,2);
+febio_spec.MeshData.NodeData{5}.node.ATTR.lid=(1:1:numel(bcPrescibeList_abductor))';
+
+febio_spec.MeshData.NodeData{6}.ATTR.name='forceAbductor_Z';
+febio_spec.MeshData.NodeData{6}.ATTR.node_set=febio_spec.Geometry.NodeSet{3}.ATTR.name;
+febio_spec.MeshData.NodeData{6}.node.VAL=forceAbductor_distributed(:,3);
+febio_spec.MeshData.NodeData{6}.node.ATTR.lid=(1:1:numel(bcPrescibeList_abductor))';
+
+febio_spec.MeshData.NodeData{7}.ATTR.name='forceVL_X';
+febio_spec.MeshData.NodeData{7}.ATTR.node_set=febio_spec.Geometry.NodeSet{4}.ATTR.name;
+febio_spec.MeshData.NodeData{7}.node.VAL=forceVastusLateralis_distributed(:,1);
+febio_spec.MeshData.NodeData{7}.node.ATTR.lid=(1:1:numel(bcPrescibeList_VastusLateralis))';
+
+febio_spec.MeshData.NodeData{8}.ATTR.name='forceVL_Y';
+febio_spec.MeshData.NodeData{8}.ATTR.node_set=febio_spec.Geometry.NodeSet{4}.ATTR.name;
+febio_spec.MeshData.NodeData{8}.node.VAL=forceVastusLateralis_distributed(:,2);
+febio_spec.MeshData.NodeData{8}.node.ATTR.lid=(1:1:numel(bcPrescibeList_VastusLateralis))';
+
+febio_spec.MeshData.NodeData{9}.ATTR.name='forceVL_Z';
+febio_spec.MeshData.NodeData{9}.ATTR.node_set=febio_spec.Geometry.NodeSet{4}.ATTR.name;
+febio_spec.MeshData.NodeData{9}.node.VAL=forceVastusLateralis_distributed(:,3);
+febio_spec.MeshData.NodeData{9}.node.ATTR.lid=(1:1:numel(bcPrescibeList_VastusLateralis))';
+
+febio_spec.MeshData.NodeData{10}.ATTR.name='forceVM_X';
+febio_spec.MeshData.NodeData{10}.ATTR.node_set=febio_spec.Geometry.NodeSet{5}.ATTR.name;
+febio_spec.MeshData.NodeData{10}.node.VAL=forceVastusMedialis_distributed(:,1);
+febio_spec.MeshData.NodeData{10}.node.ATTR.lid=(1:1:numel(bcPrescibeList_VastusMedialis))';
+
+febio_spec.MeshData.NodeData{11}.ATTR.name='forceVM_Y';
+febio_spec.MeshData.NodeData{11}.ATTR.node_set=febio_spec.Geometry.NodeSet{5}.ATTR.name;
+febio_spec.MeshData.NodeData{11}.node.VAL=forceVastusMedialis_distributed(:,2);
+febio_spec.MeshData.NodeData{11}.node.ATTR.lid=(1:1:numel(bcPrescibeList_VastusMedialis))';
+
+febio_spec.MeshData.NodeData{12}.ATTR.name='forceVM_Z';
+febio_spec.MeshData.NodeData{12}.ATTR.node_set=febio_spec.Geometry.NodeSet{5}.ATTR.name;
+febio_spec.MeshData.NodeData{12}.node.VAL=forceVastusMedialis_distributed(:,3);
+febio_spec.MeshData.NodeData{12}.node.ATTR.lid=(1:1:numel(bcPrescibeList_VastusMedialis))';
+
 %Loads section
 % -> Prescribed nodal forces
 febio_spec.Loads.nodal_load{1}.ATTR.bc='x';
@@ -398,6 +547,60 @@ febio_spec.Loads.nodal_load{3}.ATTR.node_set=febio_spec.Geometry.NodeSet{2}.ATTR
 febio_spec.Loads.nodal_load{3}.scale.ATTR.lc=1;
 febio_spec.Loads.nodal_load{3}.scale.VAL=1;
 febio_spec.Loads.nodal_load{3}.value.ATTR.node_data=febio_spec.MeshData.NodeData{3}.ATTR.name;
+
+febio_spec.Loads.nodal_load{4}.ATTR.bc='x';
+febio_spec.Loads.nodal_load{4}.ATTR.node_set=febio_spec.Geometry.NodeSet{3}.ATTR.name;
+febio_spec.Loads.nodal_load{4}.scale.ATTR.lc=1;
+febio_spec.Loads.nodal_load{4}.scale.VAL=1;
+febio_spec.Loads.nodal_load{4}.value.ATTR.node_data=febio_spec.MeshData.NodeData{4}.ATTR.name;
+
+febio_spec.Loads.nodal_load{5}.ATTR.bc='y';
+febio_spec.Loads.nodal_load{5}.ATTR.node_set=febio_spec.Geometry.NodeSet{3}.ATTR.name;
+febio_spec.Loads.nodal_load{5}.scale.ATTR.lc=1;
+febio_spec.Loads.nodal_load{5}.scale.VAL=1;
+febio_spec.Loads.nodal_load{5}.value.ATTR.node_data=febio_spec.MeshData.NodeData{5}.ATTR.name;
+
+febio_spec.Loads.nodal_load{6}.ATTR.bc='z';
+febio_spec.Loads.nodal_load{6}.ATTR.node_set=febio_spec.Geometry.NodeSet{3}.ATTR.name;
+febio_spec.Loads.nodal_load{6}.scale.ATTR.lc=1;
+febio_spec.Loads.nodal_load{6}.scale.VAL=1;
+febio_spec.Loads.nodal_load{6}.value.ATTR.node_data=febio_spec.MeshData.NodeData{6}.ATTR.name;
+
+febio_spec.Loads.nodal_load{7}.ATTR.bc='x';
+febio_spec.Loads.nodal_load{7}.ATTR.node_set=febio_spec.Geometry.NodeSet{4}.ATTR.name;
+febio_spec.Loads.nodal_load{7}.scale.ATTR.lc=1;
+febio_spec.Loads.nodal_load{7}.scale.VAL=1;
+febio_spec.Loads.nodal_load{7}.value.ATTR.node_data=febio_spec.MeshData.NodeData{7}.ATTR.name;
+
+febio_spec.Loads.nodal_load{8}.ATTR.bc='y';
+febio_spec.Loads.nodal_load{8}.ATTR.node_set=febio_spec.Geometry.NodeSet{4}.ATTR.name;
+febio_spec.Loads.nodal_load{8}.scale.ATTR.lc=1;
+febio_spec.Loads.nodal_load{8}.scale.VAL=1;
+febio_spec.Loads.nodal_load{8}.value.ATTR.node_data=febio_spec.MeshData.NodeData{8}.ATTR.name;
+
+febio_spec.Loads.nodal_load{9}.ATTR.bc='z';
+febio_spec.Loads.nodal_load{9}.ATTR.node_set=febio_spec.Geometry.NodeSet{4}.ATTR.name;
+febio_spec.Loads.nodal_load{9}.scale.ATTR.lc=1;
+febio_spec.Loads.nodal_load{9}.scale.VAL=1;
+febio_spec.Loads.nodal_load{9}.value.ATTR.node_data=febio_spec.MeshData.NodeData{9}.ATTR.name;
+
+febio_spec.Loads.nodal_load{10}.ATTR.bc='x';
+febio_spec.Loads.nodal_load{10}.ATTR.node_set=febio_spec.Geometry.NodeSet{5}.ATTR.name;
+febio_spec.Loads.nodal_load{10}.scale.ATTR.lc=1;
+febio_spec.Loads.nodal_load{10}.scale.VAL=1;
+febio_spec.Loads.nodal_load{10}.value.ATTR.node_data=febio_spec.MeshData.NodeData{10}.ATTR.name;
+
+febio_spec.Loads.nodal_load{11}.ATTR.bc='y';
+febio_spec.Loads.nodal_load{11}.ATTR.node_set=febio_spec.Geometry.NodeSet{5}.ATTR.name;
+febio_spec.Loads.nodal_load{11}.scale.ATTR.lc=1;
+febio_spec.Loads.nodal_load{11}.scale.VAL=1;
+febio_spec.Loads.nodal_load{11}.value.ATTR.node_data=febio_spec.MeshData.NodeData{11}.ATTR.name;
+
+febio_spec.Loads.nodal_load{12}.ATTR.bc='z';
+febio_spec.Loads.nodal_load{12}.ATTR.node_set=febio_spec.Geometry.NodeSet{5}.ATTR.name;
+febio_spec.Loads.nodal_load{12}.scale.ATTR.lc=1;
+febio_spec.Loads.nodal_load{12}.scale.VAL=1;
+febio_spec.Loads.nodal_load{12}.value.ATTR.node_data=febio_spec.MeshData.NodeData{12}.ATTR.name;
 
 %Output section 
 % -> log file
@@ -452,8 +655,8 @@ febioAnalysis.maxLogCheckTime=10; %Max log file checking time
 
 if runFlag==1 %i.e. a succesful run
     
-    % Importing nodal displacancellousBones from a log file
-    [time_mat, N_disp_mat,~]=importFEBio_logfile(fullfile(savePath,febioLogFileName_disp)); %Nodal displacancellousBones    
+    % Importing nodal displacement from a log file
+    [time_mat, N_disp_mat,~]=importFEBio_logfile(fullfile(savePath,febioLogFileName_disp)); %Nodal displacement    
     time_mat=[0; time_mat(:)]; %Time
 
     N_disp_mat=N_disp_mat(:,2:end,:);
@@ -479,12 +682,75 @@ if runFlag==1 %i.e. a succesful run
     E_energy_mat_n=zeros(sizImport);
     E_energy_mat_n(:,:,2:end)=E_energy;
     E_energy=E_energy_mat_n;
-    
+   
     %%
     [FE_face,C_energy_face]=element2patch(E,E_energy(:,:,end),'tet4');
     [CV]=faceToVertexMeasure(FE_face,V,C_energy_face);
     [indBoundary]=tesBoundary(FE_face,V);
     Fb=FE_face(indBoundary,:);
+
+    %% Saving strain energy data for comparison in implant demo
+    
+    %Element centre coordinates
+    VE=patchCentre(E,V);
+    
+    %Construct interpolation function
+    interpFuncEnergy=scatteredInterpolant(VE,E_energy(:,:,end),'natural','linear');
+    
+    %Store components in structure
+    outputStruct.SED=E_energy;
+    outputStruct.elements=E;
+    outputStruct.nodes=V;
+    outputStruct.boundaryFaces=Fb;
+    outputStruct.elementCenters=VE;
+    outputStruct.interpFuncEnergy=interpFuncEnergy;
+    
+    %Save structure
+    save(saveName_SED,'-struct','outputStruct');
+            
+    %%
+    
+    C_data=E_energy(:,:,end);
+    
+    n=[0 1 0]; %Normal direction to plane
+    P=mean(V,1); %Point on plane
+    [logicAt]=meshCleave(E,V,P,n);
+    
+    % Get faces and matching color data for visualization
+    [F_cleave,CF_cleave]=element2patch(E(logicAt,:),C_data(logicAt));
+    
+    hf=cFigure; hold on;
+    title('Strain energy density');
+    gpatch(Fb,V,'w','none',0.1); %Add graphics object to animate
+    
+    hp1=gpatch(F_cleave,V,CF_cleave,'k',1);
+    axisGeom(gca,fontSize);
+    colormap(gjet(250));
+    caxis([0 max(C_data)]/2);
+    colorbar; axis manual;
+    camlight headligth;
+    gdrawnow;
+    
+    nSteps=25; %Number of animation steps
+    
+    %Create the time vector
+    animStruct.Time=linspace(0,1,nSteps);
+    
+    %The vector lengths
+    y=linspace(min(V(:,2)),max(V(:,2)),nSteps);
+    for q=1:1:nSteps
+        %Get logic for slice of elements
+        logicAt=meshCleave(E,V,[0 y(q) 0],n,[1 0]);
+        
+        % Get faces and matching color data for cleaves elements
+        [F_cleave,CF_cleave]=element2patch(E(logicAt,:),C_data(logicAt));
+        
+        %Set entries in animation structure
+        animStruct.Handles{q}=[hp1 hp1]; %Handles of objects to animate
+        animStruct.Props{q}={'Faces','CData'}; %Properties of objects to animate
+        animStruct.Set{q}={F_cleave,CF_cleave}; %Property values for to set in order to animate
+    end
+    anim8(hf,animStruct);
     
     %% 
     % Plotting the simulated results using |anim8| to visualize and animate
@@ -522,6 +788,7 @@ if runFlag==1 %i.e. a succesful run
     drawnow;
 
 end
+
 
 %% 
 % _*GIBBON footer text*_ 

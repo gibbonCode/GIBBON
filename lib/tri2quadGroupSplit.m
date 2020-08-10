@@ -42,7 +42,7 @@ indIni=(1:1:size(V_tri,1))';
 
 if fourConnectConvert
 
-    [C]=patchConnectivity(F_tri,V_tri);
+    [C]=patchConnectivity(F_tri,V_tri,{'ev','ef','vv'});
     EV=C.edge.vertex;
     EF=C.edge.face;
 
@@ -106,13 +106,14 @@ if fourConnectConvert
 end
 
 if ~isempty(F_tri)
-    [C]=patchConnectivity(F_tri,V_tri);
+    [C]=patchConnectivity(F_tri,V_tri,{'ev','ef'});
     EV=C.edge.vertex;
     EF=C.edge.face;
+    nCon=sum(EF>0,2);
     
     [~,~,NV_tri]=patchNormal(F_tri,V_tri);
     
-    logicValid=all(EF>0,2);
+    logicValid=nCon==2;
     EF=EF(logicValid,:);
     EV=EV(logicValid,:);
     

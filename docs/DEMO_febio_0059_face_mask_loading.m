@@ -1,4 +1,4 @@
-%% DEMO_febio_0058_face_tube_loading
+%% DEMO_febio_0059_face_mask_loading
 % Below is a demonstration for:
 %
 % * Building triangulated surface geometry for a face
@@ -111,7 +111,7 @@ Vs=stlStruct.solidVertices{1}; %Vertices
 pointSpacing=mean(patchEdgeLengths(Fs,Vs));
 
 cFigure;  hold on;
-gpatch(Fs,Vs,'gw','k');
+gpatch(Fs,Vs,'w','k');
 % gpatch(Eb,Vs,'bw','b',1,2);
 % plotV(Vs(logicForce,:),'r.','MarkerSize',25);
 axisGeom;

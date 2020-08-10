@@ -1,7 +1,8 @@
-%% DEMO_febio_0057_diamon_lattice_compression_01
+%% DEMO_febio_0057_diamond_lattice_compression_01
 % Below is a demonstration for:
 %
-% * Building the geometry for the octet truss lattive with hexahedral elements
+% * Building the geometry for the diaomond lattice with pentahedral and
+% tetrahedral elements
 % * Defining the boundary conditions
 % * Coding the febio structure
 % * Running the model
@@ -13,7 +14,8 @@
 % * febio, FEBio
 % * compression, tension, compressive, tensile
 % * displacement control, displacement boundary condition
-% * hexahedral elements, hex8
+% * pentahedral penta6
+% * tetrahedral tet4
 % * cube, box, rectangular
 % * Lattice
 % * static, solid

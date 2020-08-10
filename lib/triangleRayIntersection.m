@@ -3,7 +3,7 @@ function [varargout] = triangleRayIntersection (V_ori,R,V,F,optStruct)
 % function [V_intersect,L_intersect,T] = triangleRayIntersection (V_ori,R,V,F,optStruct)
 % ------------------------------------------------------------------------
 %
-% Ray/triangle intersection using the algorithm proposed by M�ller and
+% Ray/triangle intersection using the algorithm proposed by Muller and
 % Trumbore (1997)
 % 
 % Based on implementation by: Jarek Tuszynski (jaroslaw.w.tuszynski@saic.com)
@@ -117,7 +117,6 @@ end
 %% initialize default output
 L_intersect = false(size(V_ori,1),1);
 T=nan(size(V_ori,1),1); 
-U_bar=T;
 V_bar=T;
 V_intersect=nan(size(V_ori));
 
@@ -166,15 +165,9 @@ if strcmpi(optStruct.triangle,'two sided')          % treats triangles as two si
     V_bar(L_ok,:) = sum(R(L_ok,:).*Qvec,2) ./ detMat(L_ok,:);  % calculate V parameter used to test bounds    
     L_intersect = (V_bar>=-zeroLim & U_bar+V_bar<=1.0+zeroLim & L_ok);
     
-%     if (nargout==1 && strcmpi(ray,'ray'));
-%         disp('RAY1');
-%         return;
-%     end
-    
     T(L_ok,:) = sum(E2(L_ok,:).*Qvec,2)./detMat(L_ok,:);
     
     if ~(strcmpi(optStruct.ray,'ray'))
-%         disp('RAY2');
         L_intersect = (L_intersect & T>=-zeroLim & T<=1.0+zeroLim);
     end
     
@@ -193,11 +186,7 @@ else % treats triangles as one sided
     Qvec = cross(Tvec(L_ok,:), E1(L_ok,:),2); % prepare to test V parameter
     V_bar(L_ok,:) = sum(R(L_ok,:).*Qvec,2);        % calculate V parameter used to test bounds
     L_intersect = (detMat>optStruct.eps & U_bar>=-zeroLim & V_bar>=-zeroLim & U_bar+V_bar<=detMat*(1+zeroLim));
-    
-%     if (nargout==1 && strcmpi(ray,'ray'));
-%         return;
-%     end
-    
+       
     T(L_ok,:)  = sum(E2(L_ok,:).*Qvec,2);
     inv_det = zeros(size(detMat));
     inv_det(L_ok,:) = 1./detMat(L_ok,:);
