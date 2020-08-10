@@ -1,6 +1,6 @@
-function [varargout]=polyTube(V,optionStruct)
+function [varargout]=polyTube(Vg,optionStruct)
 
-% function [varargout]=polyTube(V,optionStruct)
+% function [varargout]=polyTube(Vg,optionStruct)
 % ------------------------------------------------------------------------
 %
 %
@@ -13,15 +13,16 @@ function [varargout]=polyTube(V,optionStruct)
 
 %% Parse input
 
-numPoints=size(V,1);
+numSteps=size(Vg,1);
 
 %Create default option structure
-d=pathLength(V);
-defaultOptionStruct.r=min(diff(d))/2; %Half the minimum point spacing
-defaultOptionStruct.C=[1:1:numPoints]'; %Point indices
+dPath=pathLength(Vg);
+defaultOptionStruct.r=min(diff(dPath))/2; %Half the minimum point spacing
+defaultOptionStruct.C=(1:1:numSteps)'; %Point indices
 defaultOptionStruct.nr=3;
 defaultOptionStruct.patchType='quad';
 defaultOptionStruct.closeOpt=0;
+defaultOptionStruct.fixOpt=eps;
 
 %Parse input structure (complete with default)
 [optionStruct]=structComplete(optionStruct,defaultOptionStruct,1);
@@ -32,90 +33,177 @@ nr=optionStruct.nr;
 patchType=optionStruct.patchType;
 closeOpt=optionStruct.closeOpt;
 r=optionStruct.r;
+fixOpt=optionStruct.fixOpt;
+
 if numel(r)==1
-    r=r.*ones(numPoints,1);
+    r=r.*ones(numSteps,1);
+end
+r=r(:);
+
+indRepPath=repmat(1:1:numSteps,nr,1);
+indRepPath=indRepPath(:);
+colorCirc=repmat((1:1:numSteps),nr,1)';
+
+%% Create coordinates for circles
+
+%Create single circle
+t=linspace(0,2*pi,nr+1)'; t=t(1:end-1);
+Vc=[sin(t) cos(t) zeros(size(t))];
+
+%Replicate circle coordinates numSteps times
+VC=repmat(Vc,[numSteps,1]);
+
+%Assign radii to all circles by scaling
+RC=r(indRepPath);
+VC=VC.*RC(:,ones(1,size(VC,2)));
+
+%% Construct rotation tensors
+
+%Allong path edge vectors
+Ue=Vg(2:end,:)-Vg(1:end-1,:); 
+Ue(end+1,:)=Ue(end,:);
+Ue=vecnormalize(Ue);
+
+%Create allong path vertex vectors
+U=(Ue(2:end,:)+Ue(1:end-1,:))/2; %Average of adjacent
+U=[Ue(1,:); U];
+U=vecnormalize(U);
+
+%Define 3rd direction
+e3=vecnormalize(Vg(2,:)-Vg(1,:));
+
+%Set initial 2nd dir. as most orthogonal 
+I=eye(3,3);
+d=dot(e3(ones(3,1),:),I,2);
+[~,indBest]=min(d);
+e2=I(indBest,:);
+e1=vecnormalize(cross(e3,e2));
+e2=vecnormalize(cross(e3,e1));
+
+%Define rotation matrices for all points allong curve
+R_curve=zeros(size(Vg,1),9);
+R1=[e1; e2; e3]';
+R_curve(1,:)=R1([1 4 7 2 5 8 3 6 9]);
+
+for q=2:size(Vg,1)
+    a=U(q-1,:); b=U(q,:);    
+    theta=real(acos(dot(a,b))); %Complex if dot product is out of range [-1.1] due to precission issues
+    w=vecnormalize(cross(b,a));    
+    if norm(w)>0.5
+        [Rn]=vecAngle2Rot(theta,w);
+        R1=Rn'*R1;
+    end      
+    R_curve(q,:)=R1([1 4 7 2 5 8 3 6 9]);
 end
 
-%%
+R_mat=R_curve(indRepPath,:);
 
-t=linspace(0,2*pi,nr+1);
-t=t(1:end-1);
-x=sin(t);
-y=cos(t);
-z=zeros(size(t));
-Vc=[x(:) y(:) z(:)];
-V1=V(2:end,:)-V(1:end-1,:);
-V1(end+1,:)=V1(end,:);
+%% Rotate circles
 
-V1m=(V1(2:end,:)+V1(1:end-1,:))/2;
-V1m=[V1(1,:); V1m];
-
-VC=repmat(Vc,[numPoints,1]);
-
-RC=repmat(r(:)',[size(Vc,1),1]);
-RC=RC(:);
-VC=VC.*RC(:,ones(1,size(VC,2))); %Scale radii
-
-vr=[0 0 1]+rand(1,3); vr=vecnormalize(vr);
-V3=V1m+vr(ones(size(V1m,1),1),:); V3(:,3)=V3(:,3)+0.5; V3=vecnormalize(V3);
-V2=cross(V1m,V3,2); V2=vecnormalize(V2);
-V3=cross(V1m,V2,2); V3=vecnormalize(V3);
-
-for q=2:1:size(V1m,1)
-    V3(q,:)=V3(q-1,:);
-    V2(q,:)=cross(V3(q,:),V1m(q,:)); V2=vecnormalize(V2);
-    V3(q,:)=cross(V1m(q,:),V2(q,:)); V3=vecnormalize(V3);
-end
-
-X=V1m(:,ones(nr,1))';
-Y=V1m(:,2*ones(nr,1))';
-Z=V1m(:,3*ones(nr,1))';
-V1m_rep=[X(:) Y(:) Z(:)];
-
-X=V2(:,ones(nr,1))';
-Y=V2(:,2*ones(nr,1))';
-Z=V2(:,3*ones(nr,1))';
-V2_rep=[X(:) Y(:) Z(:)];
-
-X=V3(:,ones(nr,1))';
-Y=V3(:,2*ones(nr,1))';
-Z=V3(:,3*ones(nr,1))';
-V3_rep=[X(:) Y(:) Z(:)];
-
-R_mat=[V3_rep V2_rep V1m_rep];
-R_mat=R_mat(:,[1 4 7 2 5 8 3 6 9]);
 [VC]=vectorTensorProductArray(VC,R_mat);
 
-X=V(:,ones(nr,1))';
-Y=V(:,2*ones(nr,1))';
-Z=V(:,3*ones(nr,1))';
-VC_offset=[X(:) Y(:) Z(:)];
+%% Translate circles
 
-VC=VC+VC_offset;
+VS=VC+Vg(indRepPath,:);
 
-colorInd=reshape((1:1:size(V1m_rep,1))',[nr,numPoints])';
+%% Create coordinate grids for mesh formation
 
-X=reshape(VC(:,1),[nr,numPoints])';
-Y=reshape(VC(:,2),[nr,numPoints])';
-Z=reshape(VC(:,3),[nr,numPoints])';
+X=reshape(VS(:,1),[nr,numSteps])';
+Y=reshape(VS(:,2),[nr,numSteps])';
+Z=reshape(VS(:,3),[nr,numSteps])';
 
-[Fs,Vs,Cs_ind] = surf2patch(X,Y,Z,colorInd);
+%% Fix self intersections
 
-I=[(1:size(Z,1)-1)' (1:size(Z,1)-1)' (2:size(Z,1))' (2:size(Z,1))'];
-J=[size(Z,2).*ones(size(Z,1)-1,1) ones(size(Z,1)-1,1) ones(size(Z,1)-1,1) size(Z,2).*ones(size(Z,1)-1,1)];
-Fs_sub=sub2ind(size(Z),I,J);
-Fs=[Fs;Fs_sub];
+if fixOpt==1
+    
+    D=distND(VS,Vg);
+    logicSelf=repmat(indRepPath,1,size(Vg,1))==repmat(1:1:size(Vg,1),size(VS,1),1);
+    D(logicSelf)=NaN;
+    
+    logicInValid = any(D<RC,2);
+    logicInValidGrid=reshape(logicInValid,[nr,numSteps])';
+    
+%     %Force start and end to zero    
+%     if any(logicInValidGrid(1,:))
+%         v=[X(1,:)' Y(1,:)' Z(1,:)']; %Current curve
+%         v=evenlySampleCurve(v(~logicInValidGrid(1,:),:),nr,'spline',0);        
+%         X(1,:)=v(:,1);
+%         Y(1,:)=v(:,2);
+%         Z(1,:)=v(:,3);
+%     end
+%     
+%     if any(logicInValidGrid(end,:))
+%         v=[X(end,:)' Y(end,:)' Z(end,:)']; %Current curve
+%         v=evenlySampleCurve(v(~logicInValidGrid(end,:),:),nr,'spline',0);
+%         X(end,:)=v(:,1);
+%         Y(end,:)=v(:,2);
+%         Z(end,:)=v(:,3);
+%     end
+%     
+%     logicInValidGrid(1,:)=0;
+%     logicInValidGrid(end,:)=0;
+    
+    indColumnFix=find(any(logicInValidGrid,1));
+    
+    % for q=indColumnFix
+    %     logicInvalidNow=logicInValidGrid(:,q);
+    %
+    %     dd=diff(logicInvalidNow);
+    %     indStart=find([0; dd==1]);
+    %     indEnd=find([dd==-1; 0]);
+    %
+    %     v=[X(:,q) Y(:,q) Z(:,q)]; %Current curve
+    %
+    %     for qs=1:1:numel(indStart)
+    %         indStartNow=indStart(qs);
+    %         indEndNow=indEnd(qs);
+    %         ind=indStartNow:indEndNow;
+    %         v(ind,:)=linspacen(v(indStartNow,:),v(indEndNow,:),numel(ind))';
+    %
+    %         d=pathLength(v);
+    %         di=d(logicInvalidNow,:);
+    %         for qq=1:1:3
+    %             v(logicInvalidNow,qq)=interp1(d(~logicInvalidNow),v(~logicInvalidNow,qq),di,'spline');
+    %         end
+    %
+    %         d=pathLength(v);
+    %         di=linspace(d(indStartNow),d(indEndNow,:),numel(ind))';
+    %         numel(di)
+    %         nnz(logicInvalidNow)
+    %         for qq=1:1:3
+    %             v(ind,qq)=interp1(d,v(:,qq),di,'linear');
+    %         end
+    %     end
+    %     X(:,q)=v(:,1);
+    %     Y(:,q)=v(:,2);
+    %     Z(:,q)=v(:,3);
+    % end
+    
+    for q=1:1:size(X,2)
+        v=[X(:,q) Y(:,q) Z(:,q)]; %Current curve
+        v=evenlySampleCurve(v(~logicInValidGrid(:,q),:),size(v,1),'spline',0);
+        X(:,q)=v(:,1);
+        Y(:,q)=v(:,2);
+        Z(:,q)=v(:,3);
+    end
+    
+end
+
+[Fs,Vs,~,Cs_ind]=grid2patch(X,Y,Z,colorCirc,[0 1]);
+
+Fs=fliplr(Fs); 
 
 %% Create colors
-Cs_d=repmat(d,[1,nr]);
+Cs_d=repmat(dPath,[1,nr]);
 Cs_d=Cs_d(:);
-% Cs_d=vertexToFaceMeasure(Fs,Cs_d(:));
 
-Cs_rgb=vecnormalize(abs(V1m_rep(Cs_ind,:)));
+% Cs_rgb=vecnormalize(abs(U(Cs_ind,:)));
+Cs_rgb=vecnormalize(faceToVertexMeasure(Fs,Vs,abs(Vs(Fs(:,3),:)-Vs(Fs(:,2),:))));
 
-Cs_C=repmat(C,[1,nr]);
-Cs_C=Cs_C(:);
+% Cs_C=repmat(C,[1,nr]);
+% Cs_C=Cs_C(:);
 
+Cs_C=C(Cs_ind);
 
 %%
 
@@ -124,17 +212,21 @@ switch patchType
         if closeOpt
             error('Capping cylinder is currently only supported for the tri patch type');
         end
-    case 'tri'
-        [Fs,Vs]=quad2tri(Fs,Vs,'f');
+    case 'tri'        
+        [Fs,Vs,Cs_C]=quad2tri(Fs,Vs,'a',Cs_C);
+
         if closeOpt
-            indTop=numPoints:numPoints:size(Vs,1);
+            indTop=numSteps:numSteps:size(Vs,1);
             [Ft,Vt]=regionTriMesh3D({Vs(indTop,:)},[],0);
             
-            indBottom=1:numPoints:size(Vs,1);
+            indBottom=1:numSteps:size(Vs,1);
             [Fb,Vb]=regionTriMesh3D({Vs(indBottom,:)},[],0);
             
             [Fs,Vs,Cs]=joinElementSets({Fs,Ft,Fb},{Vs,Vt,Vb});
-            [Fs,Vs,ind1,ind2]=mergeVertices(Fs,Vs);
+            [Fs,Vs,ind1]=mergeVertices(Fs,Vs);
+            
+            Cs_C=[Cs_C; C(size(C,1).*ones(size(Vt,1),1),:); C(ones(size(Vb,1),1),:)];
+            Cs_C=Cs_C(ind1,:);
             
             %Fix normal directions for caps if needed
             E1=patchEdges(Fs(Cs==1,:),0);
