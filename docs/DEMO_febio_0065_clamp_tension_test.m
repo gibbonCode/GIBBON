@@ -9,12 +9,9 @@
 %
 % * febio_spec version 2.5
 % * febio, FEBio
-% * compression, tension, compressive, tensile
+% * tension, tensile
 % * displacement control, displacement boundary condition
-% * pentahedral penta6
-% * tetrahedral tet4
-% * cube, box, rectangular
-% * Lattice
+% * Hexahedral hex8
 % * static, solid
 % * hyperelastic, Ogden
 % * displacement logfile
@@ -38,7 +35,7 @@ febioFebFileNamePart='tempModel';
 febioFebFileName=fullfile(savePath,[febioFebFileNamePart,'.feb']); %FEB file name
 febioLogFileName=fullfile(savePath,[febioFebFileNamePart,'.txt']); %FEBio log file name
 febioLogFileName_disp=[febioFebFileNamePart,'_disp_out.txt']; %Log file name for exporting displacement
-febioLogFileName_strainEnergy=[febioFebFileNamePart,'_energy_out.txt']; %Log file name for exporting strain energy density
+febioLogFileName_strain=[febioFebFileNamePart,'_energy_out.txt']; %Log file name for exporting strain energy density
 
 %Specifying dimensions and number of elements
 pointspacing=1; 
@@ -487,7 +484,7 @@ febio_spec.Output.logfile.node_data{1}.ATTR.data='ux;uy;uz';
 febio_spec.Output.logfile.node_data{1}.ATTR.delim=',';
 febio_spec.Output.logfile.node_data{1}.VAL=1:size(V,1);
 
-febio_spec.Output.logfile.element_data{1}.ATTR.file=febioLogFileName_strainEnergy;
+febio_spec.Output.logfile.element_data{1}.ATTR.file=febioLogFileName_strain;
 febio_spec.Output.logfile.element_data{1}.ATTR.data='Ez';
 febio_spec.Output.logfile.element_data{1}.ATTR.delim=',';
 febio_spec.Output.logfile.element_data{1}.VAL=1:1:size(E,1);
@@ -544,19 +541,19 @@ if runFlag==1 %i.e. a succesful run
     
     %%
     % Importing element strain energies from a log file
-    [~,E_energy,~]=importFEBio_logfile(fullfile(savePath,febioLogFileName_strainEnergy)); %Element strain energy
+    [~,E_strain,~]=importFEBio_logfile(fullfile(savePath,febioLogFileName_strain)); %Element strain energy
     
     %Remove nodal index column
-    E_energy=E_energy(:,2:end,:);
+    E_strain=E_strain(:,2:end,:);
     
     %Add initial state i.e. zero energy
-    sizImport=size(E_energy); 
+    sizImport=size(E_strain); 
     sizImport(3)=sizImport(3)+1;
     E_energy_mat_n=zeros(sizImport);
-    E_energy_mat_n(:,:,2:end)=E_energy;
-    E_energy=E_energy_mat_n;
+    E_energy_mat_n(:,:,2:end)=E_strain;
+    E_strain=E_energy_mat_n;
     
-    [F,CF]=element2patch(E,E_energy(:,:,1));
+    [F,CF]=element2patch(E,E_strain(:,:,1));
     CF_V=faceToVertexMeasure(F,V,CF);
     
     %%
@@ -585,7 +582,7 @@ if runFlag==1 %i.e. a succesful run
     for qt=1:1:size(N_disp_mat,3) %Loop over time increments
         V_def=V+N_disp_mat(:,:,qt); %Current nodal coordinates
         
-        [~,CF]=element2patch(E,E_energy(:,:,qt));
+        [~,CF]=element2patch(E,E_strain(:,:,qt));
         CF_V=faceToVertexMeasure(F,V,CF);
         
         %Set entries in animation structure
