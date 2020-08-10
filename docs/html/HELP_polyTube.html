@@ -6,7 +6,7 @@
    <!--
 This HTML was auto-generated from MATLAB code.
 To make changes, update the MATLAB code and republish this document.
-      --><title>polyTube</title><meta name="generator" content="MATLAB 9.6"><link rel="schema.DC" href="http://purl.org/dc/elements/1.1/"><meta name="DC.date" content="2019-06-20"><meta name="DC.source" content="HELP_polyTube.m"><style type="text/css">
+      --><title>polyTube</title><meta name="generator" content="MATLAB 9.8"><link rel="schema.DC" href="http://purl.org/dc/elements/1.1/"><meta name="DC.date" content="2020-08-10"><meta name="DC.source" content="HELP_polyTube.m"><style type="text/css">
 html,body,div,span,applet,object,iframe,h1,h2,h3,h4,h5,h6,p,blockquote,pre,a,abbr,acronym,address,big,cite,code,del,dfn,em,font,img,ins,kbd,q,s,samp,small,strike,strong,sub,sup,tt,var,b,u,i,center,dl,dt,dd,ol,ul,li,fieldset,form,label,legend,table,caption,tbody,tfoot,thead,tr,th,td{margin:0;padding:0;border:0;outline:0;font-size:100%;vertical-align:baseline;background:transparent}body{line-height:1}ol,ul{list-style:none}blockquote,q{quotes:none}blockquote:before,blockquote:after,q:before,q:after{content:'';content:none}:focus{outine:0}ins{text-decoration:none}del{text-decoration:line-through}table{border-collapse:collapse;border-spacing:0}
 
 html { min-height:100%; margin-bottom:1px; }
@@ -23,7 +23,7 @@ a:visited { color:#004aa0; text-decoration:none; }
 
 p { padding:0px; margin:0px 0px 20px; }
 img { padding:0px; margin:0px 0px 20px; border:none; }
-p img, pre img, tt img, li img, h1 img, h2 img { margin-bottom:0px; } 
+p img, pre img, tt img, li img, h1 img, h2 img { margin-bottom:0px; }
 
 ul { padding:0px; margin:0px 0px 20px 23px; list-style:square; }
 ul li { padding:0px; margin:0px 0px 7px 0px; }
@@ -52,6 +52,7 @@ span.comment { color:#228B22 }
 span.string { color:#A020F0 }
 span.untermstring { color:#B20000 }
 span.syscmd { color:#B28C00 }
+span.typesection { color:#A0522D }
 
 .footer { width:auto; padding:10px 0px; margin:25px 0px 0px; border-top:1px dotted #878787; font-size:0.8em; line-height:140%; font-style:italic; color:#878787; text-align:left; float:none; }
 .footer p { margin:0px; }
@@ -66,184 +67,306 @@ table td { padding:7px 5px; text-align:left; vertical-align:top; border:1px soli
 
 
 
-  </style></head><body><div class="content"><h1>polyTube</h1><!--introduction--><p>Below is a basic demonstration of the features of the <tt>polyTube</tt> function.</p><!--/introduction--><h2>Contents</h2><div><ul><li><a href="#3">Creating a tube</a></li><li><a href="#5">Spatially varying the radius</a></li></ul></div><pre class="codeinput">clear; close <span class="string">all</span>; clc;
-
-<span class="comment">% PLOT SETTINGS</span>
-fig_color=<span class="string">'w'</span>; fig_colordef=<span class="string">'white'</span>;
-markerSize=15;
+  </style></head><body><div class="content"><h1>polyTube</h1><!--introduction--><p>Below is a demonstration of the features of the <tt>polyTube</tt> function</p><!--/introduction--><h2>Contents</h2><div><ul><li><a href="#2">Syntax</a></li><li><a href="#3">Description</a></li><li><a href="#4">Examples</a></li><li><a href="#6">Example 1: Creating a swept tube</a></li><li><a href="#10">Example 2: Variable radius</a></li><li><a href="#14">Example 3: Triangulated surface output and closed ends</a></li><li><a href="#19">Example 4: Using the fix option to attempt to fix self intersections</a></li></ul></div><pre class="codeinput">clear; close <span class="string">all</span>; clc;
+</pre><h2 id="2">Syntax</h2><p><tt>[Fs,Vs,Cs,Cs_rgb,Cs_d]=polyTube(Vg,optStruct);</tt></p><h2 id="3">Description</h2><p>The polyTube function can be used to</p><h2 id="4">Examples</h2><p>Plot settings</p><pre class="codeinput">markerSize=15;
 lineWidth=2;
 fontSize=10;
-</pre><p>Creating example curve</p><pre class="codeinput">ns=250;
-t=linspace(0,-pi,ns);
-r=10+7.*sin(8*t);
-[x,y] = pol2cart(t,r);
-z=7*cos(10.*t);
-V=[x(:) y(:) z(:)];
-</pre><h2 id="3">Creating a tube</h2><pre class="codeinput">optStruct.r=0.25;
-optStruct.nr=12;
+</pre><h2 id="6">Example 1: Creating a swept tube</h2><p>Creating example curve</p><pre class="codeinput">t=linspace(0,4*pi,50);
+Vg=[ t(:) sin(t(:)) cos(t(:))];
+Vg=evenlySampleCurve(Vg);
+</pre><p>Create tube</p><pre class="codeinput">clear <span class="string">optStruct</span>
+optStruct.r=1.2; <span class="comment">%Radius</span>
+optStruct.nr=25; <span class="comment">%Number of points allong circumference</span>
+optStruct.patchType=<span class="string">'quad'</span>; <span class="comment">%Output mesh type</span>
+optStruct.fixOpt=0; <span class="comment">%Option to fix self intersection</span>
+
+[Fs,Vs,Cs]=polyTube(Vg,optStruct);
+</pre><p>Visualization</p><pre class="codeinput">cFigure;
+subplot(1,2,1); hold <span class="string">on</span>;
+hp1=plotV(Vg,<span class="string">'k.-'</span>,<span class="string">'MarkerSize'</span>,markerSize,<span class="string">'LineWidth'</span>,lineWidth);
+axisGeom;
+
+subplot(1,2,2); hold <span class="string">on</span>;
+hp2=gpatch(Fs,Vs,Cs,<span class="string">'k'</span>,1,1);
+axisGeom; camlight <span class="string">headlight</span>;
+
+legend([hp1 hp2],{<span class="string">'Guide curve'</span>,<span class="string">'Tube'</span>});
+gdrawnow;
+</pre><img width="100%" height="auto" vspace="5" hspace="5" src="HELP_polyTube_01.jpg" alt=""> <h2 id="10">Example 2: Variable radius</h2><p>Creating example curve</p><pre class="codeinput">t=linspace(0,1.5*pi,50);
+r=linspace(0.25,1,50)'; <span class="comment">%Defining radius allong curve</span>
+Vg=[t(:) zeros(size(t(:))) sin(t(:))];
+Vg=evenlySampleCurve(Vg);
+</pre><p>Create tube</p><pre class="codeinput">clear <span class="string">optStruct</span>
+optStruct.r=r; <span class="comment">%Radius</span>
+optStruct.nr=25; <span class="comment">%Number of points allong circumference</span>
+optStruct.patchType=<span class="string">'quad'</span>; <span class="comment">%Output mesh type</span>
+optStruct.fixOpt=0; <span class="comment">%Option to fix self intersection</span>
+
+[Fs,Vs,Cs]=polyTube(Vg,optStruct);
+</pre><p>Visualization</p><pre class="codeinput">cFigure; hold <span class="string">on</span>;
+title(<span class="string">'Variable radius'</span>);
+gpatch(Fs,Vs,Cs,<span class="string">'k'</span>,1,1);
+axisGeom; camlight <span class="string">headlight</span>;
+gdrawnow;
+</pre><img width="100%" height="auto" vspace="5" hspace="5" src="HELP_polyTube_02.jpg" alt=""> <h2 id="14">Example 3: Triangulated surface output and closed ends</h2><p>Creating example curve</p><pre class="codeinput">r=linspace(0.25,1,30)'; <span class="comment">%Defining radius allong curve</span>
+t=linspace(0,pi,30);
+Vg=[t(:) zeros(size(t(:))) -2*sin(t(:))];
+Vg=evenlySampleCurve(Vg);
+</pre><p>Create tube with open ends</p><pre class="codeinput">clear <span class="string">optStruct</span>
+optStruct.r=1;
+optStruct.nr=25;
 optStruct.patchType=<span class="string">'tri'</span>;
-[Fs,Vs,Cs,Cs_rgb,Cs_d]=polyTube(V,optStruct);
-</pre><pre class="codeinput">cFigure; hold <span class="string">on</span>;
-title(<span class="string">'A curve tube with color representing curve distance'</span>,<span class="string">'fontSize'</span>,fontSize);
-gpatch(Fs,Vs,Cs_d,<span class="string">'none'</span>);
-camlight <span class="string">headlight</span>; lighting <span class="string">gouraud</span>;
-colormap <span class="string">gjet</span>;
-axisGeom;
-drawnow;
-
-cFigure; hold <span class="string">on</span>;
-title(<span class="string">'A curve tube with color representing direction'</span>,<span class="string">'fontSize'</span>,fontSize);
-gpatch(Fs,Vs,Cs_rgb,<span class="string">'none'</span>);
-camlight <span class="string">headlight</span>; lighting <span class="string">gouraud</span>;
-colormap <span class="string">gjet</span>;
-axisGeom;
-drawnow;
-</pre><img width="100%" height="auto" vspace="5" hspace="5" src="HELP_polyTube_01.jpg" alt=""> <img width="100%" height="auto" vspace="5" hspace="5" src="HELP_polyTube_02.jpg" alt=""> <h2 id="5">Spatially varying the radius</h2><pre class="codeinput">d=pathLength(V); <span class="comment">%Path length allong curve</span>
-d=2*pi*(d./max(d(:))); <span class="comment">%Convert for radius parameterization</span>
-r=0.1+(sin(2*d)+1)/2;
-
-optStruct.r=r;
-optStruct.nr=12;
-optStruct.patchType=<span class="string">'quad'</span>;
-[Fs,Vs,Cs,Cs_rgb,Cs_d]=polyTube(V,optStruct);
-</pre><pre class="codeinput">cFigure; hold <span class="string">on</span>;
-title(<span class="string">'Spatially varying the radius'</span>,<span class="string">'fontSize'</span>,fontSize);
-gpatch(Fs,Vs,Cs_d,<span class="string">'k'</span>);
-camlight <span class="string">headlight</span>; lighting <span class="string">gouraud</span>;
-colormap <span class="string">gjet</span>;
-axisGeom;
-drawnow;
-</pre><img width="100%" height="auto" vspace="5" hspace="5" src="HELP_polyTube_03.jpg" alt=""> <pre class="codeinput">optStruct.r=r;
-optStruct.nr=12;
+optStruct.closeOpt=0;
+[Fs1,Vs1,Cs1]=polyTube(Vg,optStruct);
+</pre><p>Create tube with closed ends</p><pre class="codeinput">clear <span class="string">optStruct</span>
+optStruct.r=1;
+optStruct.nr=25;
 optStruct.patchType=<span class="string">'tri'</span>;
 optStruct.closeOpt=1;
-[Fs,Vs,Cs,Cs_rgb,Cs_d]=polyTube(V,optStruct);
-</pre><pre class="codeinput">cFigure; hold <span class="string">on</span>;
-title(<span class="string">'Spatially varying the radius'</span>,<span class="string">'fontSize'</span>,fontSize);
-gpatch(Fs,Vs,<span class="string">'kw'</span>,<span class="string">'k'</span>);
-patchNormPlot(Fs,Vs);
-camlight <span class="string">headlight</span>; lighting <span class="string">gouraud</span>;
-colormap <span class="string">gjet</span>;
-axisGeom;
-drawnow;
-</pre><img width="100%" height="auto" vspace="5" hspace="5" src="HELP_polyTube_04.jpg" alt=""> <p><img vspace="5" hspace="5" src="gibbVerySmall.gif" alt=""> </p><p><i><b>GIBBON</b></i> <a href="www.gibboncode.org">www.gibboncode.org</a></p><p><i>Kevin Mattheus Moerman</i>, <a href="gibbon.toolbox@gmail.com">gibbon.toolbox@gmail.com</a></p><p><i><b>GIBBON footer text</b></i></p><p>License: <a href="https://github.com/gibbonCode/GIBBON/blob/master/LICENSE">https://github.com/gibbonCode/GIBBON/blob/master/LICENSE</a></p><p>GIBBON: The Geometry and Image-based Bioengineering add-On. A toolbox for image segmentation, image-based modeling, meshing, and finite element analysis.</p><p>Copyright (C) 2019  Kevin Mattheus Moerman</p><p>This program is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.</p><p>This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for more details.</p><p>You should have received a copy of the GNU General Public License along with this program.  If not, see <a href="http://www.gnu.org/licenses/">http://www.gnu.org/licenses/</a>.</p><p class="footer"><br><a href="https://www.mathworks.com/products/matlab/">Published with MATLAB&reg; R2019a</a><br></p></div><!--
+[Fs2,Vs2,Cs2]=polyTube(Vg,optStruct);
+</pre><p>Visualization</p><pre class="codeinput">cFigure;
+subplot(1,2,1); hold <span class="string">on</span>;
+title(<span class="string">'Open tube'</span>)
+gpatch(Fs1,Vs1,Cs1,<span class="string">'k'</span>,1,1);
+axisGeom; camlight <span class="string">headlight</span>;
+
+subplot(1,2,2); hold <span class="string">on</span>;
+title(<span class="string">'Closed tube'</span>)
+gpatch(Fs2,Vs2,Cs2,<span class="string">'k'</span>,1,1);
+axisGeom; camlight <span class="string">headlight</span>;
+
+gdrawnow;
+</pre><img width="100%" height="auto" vspace="5" hspace="5" src="HELP_polyTube_03.jpg" alt=""> <img width="100%" height="auto" vspace="5" hspace="5" src="HELP_polyTube_04.jpg" alt=""> <h2 id="19">Example 4: Using the fix option to attempt to fix self intersections</h2><p>Creating example curve</p><pre class="codeinput">t=linspace(0,pi,30);
+Vg=[t(:) 2*sin(t(:)) zeros(size(t(:))) ];
+Vg=evenlySampleCurve(Vg);
+</pre><p>Create tube without self-intersection fix</p><pre class="codeinput">clear <span class="string">optStruct</span>
+optStruct.r=1.2;
+optStruct.nr=25;
+optStruct.patchType=<span class="string">'quad'</span>;
+optStruct.fixOpt=0;
+[Fs1,Vs1,Cs1]=polyTube(Vg,optStruct);
+</pre><p>Create tube with self-intersection fix</p><pre class="codeinput">clear <span class="string">optStruct</span>
+optStruct.r=1.2;
+optStruct.nr=25;
+optStruct.patchType=<span class="string">'quad'</span>;
+optStruct.fixOpt=1;
+[Fs2,Vs2,Cs2]=polyTube(Vg,optStruct);
+</pre><p>Visualization</p><pre class="codeinput">cFigure;
+subplot(1,2,1); hold <span class="string">on</span>;
+title(<span class="string">'Self intersecting tube'</span>)
+gpatch(Fs1,Vs1,<span class="string">'rw'</span>,<span class="string">'k'</span>,0.5,2);
+axisGeom; camlight <span class="string">headlight</span>;
+view(2);
+
+subplot(1,2,2); hold <span class="string">on</span>;
+title(<span class="string">'Fixed tube'</span>)
+gpatch(Fs2,Vs2,<span class="string">'gw'</span>,<span class="string">'k'</span>,1,2);
+axisGeom; camlight <span class="string">headlight</span>;
+view(2);
+
+gdrawnow;
+</pre><img width="100%" height="auto" vspace="5" hspace="5" src="HELP_polyTube_05.jpg" alt=""> <img width="100%" height="auto" vspace="5" hspace="5" src="HELP_polyTube_06.jpg" alt=""> <p><img vspace="5" hspace="5" src="gibbVerySmall.gif" alt=""> </p><p><i><b>GIBBON</b></i> <a href="www.gibboncode.org">www.gibboncode.org</a></p><p><i>Kevin Mattheus Moerman</i>, <a href="gibbon.toolbox@gmail.com">gibbon.toolbox@gmail.com</a></p><p><i><b>GIBBON footer text</b></i></p><p>License: <a href="https://github.com/gibbonCode/GIBBON/blob/master/LICENSE">https://github.com/gibbonCode/GIBBON/blob/master/LICENSE</a></p><p>GIBBON: The Geometry and Image-based Bioengineering add-On. A toolbox for image segmentation, image-based modeling, meshing, and finite element analysis.</p><p>Copyright (C) 2006-2020 Kevin Mattheus Moerman</p><p>This program is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.</p><p>This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for more details.</p><p>You should have received a copy of the GNU General Public License along with this program.  If not, see <a href="http://www.gnu.org/licenses/">http://www.gnu.org/licenses/</a>.</p><p class="footer"><br><a href="https://www.mathworks.com/products/matlab/">Published with MATLAB&reg; R2020a</a><br></p></div><!--
 ##### SOURCE BEGIN #####
 %% polyTube
-% Below is a basic demonstration of the features of the |polyTube| function.
+% Below is a demonstration of the features of the |polyTube| function
 
 %%
 clear; close all; clc;
 
-% PLOT SETTINGS
-fig_color='w'; fig_colordef='white';
+%% Syntax
+% |[Fs,Vs,Cs,Cs_rgb,Cs_d]=polyTube(Vg,optStruct);|
+
+%% Description
+% The polyTube function can be used to 
+%% Examples
+
+%%
+% Plot settings
 markerSize=15;
 lineWidth=2;
-fontSize=10; 
+fontSize=10;
+
+%% Example 1: Creating a swept tube
+
+%%
+% Creating example curve
+
+t=linspace(0,4*pi,50);
+Vg=[ t(:) sin(t(:)) cos(t(:))];
+Vg=evenlySampleCurve(Vg);
+
+%%
+% Create tube
+clear optStruct
+optStruct.r=1.2; %Radius
+optStruct.nr=25; %Number of points allong circumference
+optStruct.patchType='quad'; %Output mesh type
+optStruct.fixOpt=0; %Option to fix self intersection
+
+[Fs,Vs,Cs]=polyTube(Vg,optStruct);
 
 %% 
+% Visualization
+
+cFigure; 
+subplot(1,2,1); hold on; 
+hp1=plotV(Vg,'k.-','MarkerSize',markerSize,'LineWidth',lineWidth);
+axisGeom; 
+
+subplot(1,2,2); hold on; 
+hp2=gpatch(Fs,Vs,Cs,'k',1,1);
+axisGeom; camlight headlight; 
+
+legend([hp1 hp2],{'Guide curve','Tube'});
+gdrawnow;
+
+%% Example 2: Variable radius
+
+%%
 % Creating example curve
-ns=250;
-t=linspace(0,-pi,ns);
-r=10+7.*sin(8*t);
-[x,y] = pol2cart(t,r);
-z=7*cos(10.*t);
-V=[x(:) y(:) z(:)];
 
-%% Creating a tube
+t=linspace(0,1.5*pi,50); 
+r=linspace(0.25,1,50)'; %Defining radius allong curve
+Vg=[t(:) zeros(size(t(:))) sin(t(:))];
+Vg=evenlySampleCurve(Vg);
 
-optStruct.r=0.25;
-optStruct.nr=12;
+%%
+% Create tube
+clear optStruct
+optStruct.r=r; %Radius
+optStruct.nr=25; %Number of points allong circumference
+optStruct.patchType='quad'; %Output mesh type
+optStruct.fixOpt=0; %Option to fix self intersection
+
+[Fs,Vs,Cs]=polyTube(Vg,optStruct);
+
+%% 
+% Visualization
+
+cFigure; hold on; 
+title('Variable radius');
+gpatch(Fs,Vs,Cs,'k',1,1);
+axisGeom; camlight headlight; 
+gdrawnow;
+
+%% Example 3: Triangulated surface output and closed ends
+
+%%
+% Creating example curve
+
+r=linspace(0.25,1,30)'; %Defining radius allong curve
+t=linspace(0,pi,30); 
+Vg=[t(:) zeros(size(t(:))) -2*sin(t(:))];
+Vg=evenlySampleCurve(Vg);
+
+%%
+% Create tube with open ends
+clear optStruct
+optStruct.r=1;
+optStruct.nr=25;
 optStruct.patchType='tri';
-[Fs,Vs,Cs,Cs_rgb,Cs_d]=polyTube(V,optStruct);
+optStruct.closeOpt=0;
+[Fs1,Vs1,Cs1]=polyTube(Vg,optStruct);
 
 %%
-
-cFigure; hold on;
-title('A curve tube with color representing curve distance','fontSize',fontSize);
-gpatch(Fs,Vs,Cs_d,'none');
-camlight headlight; lighting gouraud; 
-colormap gjet; 
-axisGeom; 
-drawnow; 
-
-cFigure; hold on;
-title('A curve tube with color representing direction','fontSize',fontSize);
-gpatch(Fs,Vs,Cs_rgb,'none');
-camlight headlight; lighting gouraud; 
-colormap gjet; 
-axisGeom; 
-drawnow; 
-
-%% Spatially varying the radius
-
-d=pathLength(V); %Path length allong curve
-d=2*pi*(d./max(d(:))); %Convert for radius parameterization
-r=0.1+(sin(2*d)+1)/2;
-
-optStruct.r=r;
-optStruct.nr=12;
-optStruct.patchType='quad';
-[Fs,Vs,Cs,Cs_rgb,Cs_d]=polyTube(V,optStruct);
-
-%%
-
-cFigure; hold on;
-title('Spatially varying the radius','fontSize',fontSize);
-gpatch(Fs,Vs,Cs_d,'k');
-camlight headlight; lighting gouraud; 
-colormap gjet; 
-axisGeom; 
-drawnow; 
-
-%%
-
-optStruct.r=r;
-optStruct.nr=12;
+% Create tube with closed ends
+clear optStruct
+optStruct.r=1;
+optStruct.nr=25;
 optStruct.patchType='tri';
 optStruct.closeOpt=1;
-[Fs,Vs,Cs,Cs_rgb,Cs_d]=polyTube(V,optStruct);
-    
-%%
-
-cFigure; hold on;
-title('Spatially varying the radius','fontSize',fontSize);
-gpatch(Fs,Vs,'kw','k');
-patchNormPlot(Fs,Vs);
-camlight headlight; lighting gouraud; 
-colormap gjet; 
-axisGeom; 
-drawnow; 
+[Fs2,Vs2,Cs2]=polyTube(Vg,optStruct);
 
 %% 
+% Visualization
+
+cFigure; 
+subplot(1,2,1); hold on;
+title('Open tube')
+gpatch(Fs1,Vs1,Cs1,'k',1,1);
+axisGeom; camlight headlight; 
+
+subplot(1,2,2); hold on;
+title('Closed tube')
+gpatch(Fs2,Vs2,Cs2,'k',1,1);
+axisGeom; camlight headlight; 
+
+gdrawnow;
+
+%% Example 4: Using the fix option to attempt to fix self intersections
+
+%%
+% Creating example curve
+t=linspace(0,pi,30);
+Vg=[t(:) 2*sin(t(:)) zeros(size(t(:))) ];
+Vg=evenlySampleCurve(Vg);
+
+%%
+% Create tube without self-intersection fix
+clear optStruct
+optStruct.r=1.2;
+optStruct.nr=25;
+optStruct.patchType='quad';
+optStruct.fixOpt=0;
+[Fs1,Vs1,Cs1]=polyTube(Vg,optStruct);
+
+%%
+% Create tube with self-intersection fix
+clear optStruct
+optStruct.r=1.2;
+optStruct.nr=25;
+optStruct.patchType='quad';
+optStruct.fixOpt=1;
+[Fs2,Vs2,Cs2]=polyTube(Vg,optStruct);
+
+%% 
+% Visualization
+
+cFigure; 
+subplot(1,2,1); hold on;
+title('Self intersecting tube')
+gpatch(Fs1,Vs1,'rw','k',0.5,2);
+axisGeom; camlight headlight; 
+view(2);
+
+subplot(1,2,2); hold on;
+title('Fixed tube')
+gpatch(Fs2,Vs2,'gw','k',1,2);
+axisGeom; camlight headlight; 
+view(2);
+
+gdrawnow;
+
+%%
 %
 % <<gibbVerySmall.gif>>
-% 
-% _*GIBBON*_ 
+%
+% _*GIBBON*_
 % <www.gibboncode.org>
-% 
+%
 % _Kevin Mattheus Moerman_, <gibbon.toolbox@gmail.com>
- 
-%% 
-% _*GIBBON footer text*_ 
-% 
+
+%%
+% _*GIBBON footer text*_
+%
 % License: <https://github.com/gibbonCode/GIBBON/blob/master/LICENSE>
-% 
+%
 % GIBBON: The Geometry and Image-based Bioengineering add-On. A toolbox for
 % image segmentation, image-based modeling, meshing, and finite element
 % analysis.
-% 
-% Copyright (C) 2019  Kevin Mattheus Moerman
-% 
+%
+% Copyright (C) 2006-2020 Kevin Mattheus Moerman
+%
 % This program is free software: you can redistribute it and/or modify
 % it under the terms of the GNU General Public License as published by
 % the Free Software Foundation, either version 3 of the License, or
 % (at your option) any later version.
-% 
+%
 % This program is distributed in the hope that it will be useful,
 % but WITHOUT ANY WARRANTY; without even the implied warranty of
 % MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 % GNU General Public License for more details.
-% 
+%
 % You should have received a copy of the GNU General Public License
 % along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
