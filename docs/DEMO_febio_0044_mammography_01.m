@@ -15,10 +15,8 @@
 % * indentation
 % * contact, sliding, sticky, friction
 % * rigid body constraints
-% * hexahedral elements, hex8
+% * tetrahedral elements, tet8
 % * triangular elements, tri3
-% * slab, block, rectangular
-% * sphere
 % * static, solid
 % * hyperelastic, Ogden
 % * displacement logfile
@@ -35,19 +33,6 @@ faceAlpha2=0.3;
 markerSize=40;
 lineWidth=3;
 
-%%
-
-r=40; %Breast radius
-r1=r/2.5;
-r2=r/7;
-rm=mean([r1 r2]);
-w=(r1-r2)/20;
-h=r2;
-dx=r/2;
-nRefine=3; %Number of refine steps for hemi-sphere
-plateDisplacement=28;
-volumeFactor=3;
-
 %% Control parameters
 
 % Path names
@@ -60,6 +45,19 @@ febioFebFileName=fullfile(savePath,[febioFebFileNamePart,'.feb']); %FEB file nam
 febioLogFileName=fullfile(savePath,[febioFebFileNamePart,'.txt']); %FEBio log file name
 febioLogFileName_disp=[febioFebFileNamePart,'_disp_out.txt']; %Log file name for exporting displacement
 febioLogFileName_force=[febioFebFileNamePart,'_force_out.txt']; %Log file name for exporting force
+
+%Breast geometry
+r=40; %Breast radius
+r1=r/2.5;
+r2=r/7;
+rm=mean([r1 r2]);
+w=(r1-r2)/20;
+h=r2;
+dx=r/2; %Gravity direction shape alteration factor
+nRefine=3; %Number of refine steps for hemi-sphere
+plateDisplacement=25;
+volumeFactor=3;
+loadAngle=(0/180)*pi;
 
 %Material parameter set
 c1_1=1e-3; %Shear-modulus-like parameter
@@ -115,9 +113,9 @@ pointSpacing=mean(patchEdgeLengths(F,V)); % Get point spacing from mesh
 % axisGeom;
 % camlight headlight;
 % icolorbar;
-% drawnow;
+% gdrawnow;
 
-%% Change shape of hemi-sphere to create basic breat model
+%% Change shape of hemi-sphere to create basic breast model
 
 indExclude=unique(F(C_hemiSphereLabel==2,:));
 logicExclude=false(size(V,1),1);
@@ -165,20 +163,6 @@ Vs(:,2)=Vs(:,2)-r/4;
 Vs(:,3)=Vs(:,3)-r/2;
 
 %%
-% Visualize breast model
-
-[C_skin_F]=vertexToFaceMeasure(F,C_skin);
-C_skin_F(C_hemiSphereLabel==2)=max(C_skin(:))+1;
-C_skin_F_RGB=cmaperise(C_skin_F,bloodbone(250),[0 5]);
-
-cFigure; hold on;
-gpatch(F,V,C_skin_F_RGB,'none',0.5);
-gpatch(Fs,Vs,'kw','none',1);
-axisGeom;
-camlight headlight;
-drawnow;
-
-%%
 
 C=[C_hemiSphereLabel;(max(C_hemiSphereLabel(:))+1)*ones(size(Fs,1),1)];
 F=[F;Fs+size(V,1)];
@@ -189,25 +173,11 @@ gpatch(F,V,C,'none',0.5);
 axisGeom;
 camlight headlight;
 icolorbar;
-drawnow;
+gdrawnow;
 
-%%
-
-CM=ones(size(C));
-CM(C==max(C(:)))=2;
-[M,G,bwLabels]=patch2Im(F,V,CM,pointSpacing);
-
-L=M==1;
-[indInternal]=getInnerVoxel(L,2,0);
-[I_in,J_in,K_in]=ind2sub(size(L),indInternal); %Convert to subscript coordinates
-[V_in1(:,1),V_in1(:,2),V_in1(:,3)]=im2cart(I_in,J_in,K_in,G.voxelSize*ones(1,3));
-V_in1=V_in1+G.origin(ones(size(V_in1,1),1),:);
-
-L=M==2;
-[indInternal]=getInnerVoxel(L,2,0);
-[I_in,J_in,K_in]=ind2sub(size(L),indInternal); %Convert to subscript coordinates
-[V_in2(:,1),V_in2(:,2),V_in2(:,3)]=im2cart(I_in,J_in,K_in,G.voxelSize*ones(1,3));
-V_in2=V_in2+G.origin(ones(size(V_in2,1),1),:);
+%% Get interior points
+[V_in1]=getInnerPoint({F,Fs},{V,Vs});
+[V_in2]=getInnerPoint(Fs,Vs);
 
 V_regions=[V_in1; V_in2];
 
@@ -217,7 +187,7 @@ gpatch(F,V,C,'none',0.5);
 plotV(V_regions,'k.','markerSize',50);
 axisGeom;
 camlight headlight;
-drawnow;
+gdrawnow;
 
 %%
 
@@ -245,12 +215,17 @@ E=meshOutput.elements;
 
 %%
 
+Q=euler2DCM([loadAngle 0 0]);
+V=V*Q; 
+
+%%
+
 cFigure; hold on;
 hp=gpatch(Fb,V,Cb,'none',0.5);
 axisGeom;
 camlight headlight;
 icolorbar;
-drawnow;
+gdrawnow;
 
 %% Visualizing mesh using |meshView|, see also |anim8|
 
@@ -261,17 +236,18 @@ meshView(meshOutput);
 E1=E(meshOutput.elementMaterialID==-2,:);
 E2=E(meshOutput.elementMaterialID==-3,:);
 
-%%
-% Simulating a curve with sharp features
+%% Building plate models
+
+%Basic side curve of plate
 Vt=[0 0 0; 0 0 15; 1.5*r 0 15; 1.5*r 0 0; ];
 
-%%
-%Setting control parameters
+%Fillet side curve of plate
 rFillet=6; %Fillet radius
 np=25; %Number of points used to construct each fillet edge
 closedLoopOption=0; %Use 1 if curve represents a closed loop but containes unique points
 [Vc]=filletCurve(Vt,rFillet,np,closedLoopOption);
 
+%Extrude to form plate
 cPar.pointSpacing=pointSpacing/2;
 cPar.depth=3*r;
 cPar.patchType='quad';
@@ -282,10 +258,11 @@ Fp1=fliplr(Fp1);
 Vp1(:,3)=Vp1(:,3)-max(Vp1(:,3))+min(V(:,3));
 Vp1(:,1)=Vp1(:,1)-max(Vp1(:,1))-r/7;
 
+%Copy to create second plate
 Fp2=fliplr(Fp1);
 Vp2=Vp1;
 Vp2(:,3)=-Vp2(:,3);
-Vp2(:,3)=Vp2(:,3)-min(Vp2(:,3))+r;
+Vp2(:,3)=Vp2(:,3)-min(Vp2(:,3))+max(V(:,3));
 
 cFigure; hold on;
 gpatch(Fb,V,'gw','k',1);
@@ -293,13 +270,17 @@ gpatch(Fp1,Vp1,'kw','bw',1);
 gpatch(Fp2,Vp2,'kw','rw',1);
 axisGeom;
 camlight headlight;
-drawnow;
+gdrawnow;
 
 %% Joining node sets
 
 Fp1=Fp1+size(V,1); %Fixed element indices
 Fp2=Fp2+size(V,1)+size(Vp1,1); %Fixed element indices
 V=[V;Vp1;Vp2;]; %Combined node sets
+
+V=V*Q';
+loadDir=[0 0 1]*Q';
+plateDisplacement_XYZ=plateDisplacement.*loadDir;
 
 %%
 % Plotting joined geometry
@@ -312,7 +293,7 @@ gpatch(Fp1,V,'kw','bw',1);
 gpatch(Fp2,V,'kw','rw',1);
 axisGeom;
 camlight headlight;
-drawnow;
+gdrawnow;
 
 %% Define contact surfaces
 
@@ -340,7 +321,7 @@ legend(hl,{'Master 1','Master 2','Slave'});
 
 axisGeom(gca,fontSize);
 camlight headlight;
-drawnow;
+gdrawnow;
 
 %% Define boundary conditions
 
@@ -364,7 +345,7 @@ legend(hl2,{'BC support'});
 
 axisGeom(gca,fontSize);
 camlight headlight;
-drawnow;
+gdrawnow;
 
 %% Defining the FEBio input structure
 % See also |febioStructTemplate| and |febioStruct2xml| and the FEBio user
@@ -487,24 +468,38 @@ febio_spec.Boundary.fix{3}.ATTR.node_set=febio_spec.Geometry.NodeSet{1}.ATTR.nam
 
 % -> Prescribed boundary conditions on the rigid body
 febio_spec.Boundary.rigid_body{1}.ATTR.mat=3;
-febio_spec.Boundary.rigid_body{1}.fixed{1}.ATTR.bc='x';
-febio_spec.Boundary.rigid_body{1}.fixed{2}.ATTR.bc='y';
-febio_spec.Boundary.rigid_body{1}.fixed{3}.ATTR.bc='Rx';
-febio_spec.Boundary.rigid_body{1}.fixed{4}.ATTR.bc='Ry';
-febio_spec.Boundary.rigid_body{1}.fixed{5}.ATTR.bc='Rz';
-febio_spec.Boundary.rigid_body{1}.prescribed.ATTR.bc='z';
-febio_spec.Boundary.rigid_body{1}.prescribed.ATTR.lc=1;
-febio_spec.Boundary.rigid_body{1}.prescribed.VAL=plateDisplacement;
+febio_spec.Boundary.rigid_body{1}.fixed{1}.ATTR.bc='Rx';
+febio_spec.Boundary.rigid_body{1}.fixed{2}.ATTR.bc='Ry';
+febio_spec.Boundary.rigid_body{1}.fixed{3}.ATTR.bc='Rz';
+
+febio_spec.Boundary.rigid_body{1}.prescribed{1}.ATTR.bc='x';
+febio_spec.Boundary.rigid_body{1}.prescribed{1}.ATTR.lc=1;
+febio_spec.Boundary.rigid_body{1}.prescribed{1}.VAL=plateDisplacement_XYZ(1);
+
+febio_spec.Boundary.rigid_body{1}.prescribed{2}.ATTR.bc='y';
+febio_spec.Boundary.rigid_body{1}.prescribed{2}.ATTR.lc=1;
+febio_spec.Boundary.rigid_body{1}.prescribed{2}.VAL=plateDisplacement_XYZ(2);
+
+febio_spec.Boundary.rigid_body{1}.prescribed{3}.ATTR.bc='z';
+febio_spec.Boundary.rigid_body{1}.prescribed{3}.ATTR.lc=1;
+febio_spec.Boundary.rigid_body{1}.prescribed{3}.VAL=plateDisplacement_XYZ(3);
 
 febio_spec.Boundary.rigid_body{2}.ATTR.mat=4;
-febio_spec.Boundary.rigid_body{2}.fixed{1}.ATTR.bc='x';
-febio_spec.Boundary.rigid_body{2}.fixed{2}.ATTR.bc='y';
-febio_spec.Boundary.rigid_body{2}.fixed{3}.ATTR.bc='Rx';
-febio_spec.Boundary.rigid_body{2}.fixed{4}.ATTR.bc='Ry';
-febio_spec.Boundary.rigid_body{2}.fixed{5}.ATTR.bc='Rz';
-febio_spec.Boundary.rigid_body{2}.prescribed.ATTR.bc='z';
-febio_spec.Boundary.rigid_body{2}.prescribed.ATTR.lc=1;
-febio_spec.Boundary.rigid_body{2}.prescribed.VAL=-plateDisplacement;
+febio_spec.Boundary.rigid_body{2}.fixed{1}.ATTR.bc='Rx';
+febio_spec.Boundary.rigid_body{2}.fixed{2}.ATTR.bc='Ry';
+febio_spec.Boundary.rigid_body{2}.fixed{3}.ATTR.bc='Rz';
+
+febio_spec.Boundary.rigid_body{2}.prescribed{1}.ATTR.bc='x';
+febio_spec.Boundary.rigid_body{2}.prescribed{1}.ATTR.lc=1;
+febio_spec.Boundary.rigid_body{2}.prescribed{1}.VAL=-plateDisplacement_XYZ(1);
+
+febio_spec.Boundary.rigid_body{2}.prescribed{2}.ATTR.bc='y';
+febio_spec.Boundary.rigid_body{2}.prescribed{2}.ATTR.lc=1;
+febio_spec.Boundary.rigid_body{2}.prescribed{2}.VAL=-plateDisplacement_XYZ(2);
+
+febio_spec.Boundary.rigid_body{2}.prescribed{3}.ATTR.bc='z';
+febio_spec.Boundary.rigid_body{2}.prescribed{3}.ATTR.lc=1;
+febio_spec.Boundary.rigid_body{2}.prescribed{3}.VAL=-plateDisplacement_XYZ(3);
 
 %Contact section
 for q=1:1:2
@@ -679,49 +674,9 @@ if runFlag==1 %i.e. a succesful run
     anim8(hf,animStruct); %Initiate animation feature
     gdrawnow;
     
-    %%
-    
-    %     [M,G,bwLabels]=patch2Im(Fb,V_def,Cb,1);
-    %     M(M==1)=0.25;
-    %     M(M==3)=1;
-    %     M(M==0)=0.1;
-    %     M=M+0.25*rand(size(M));
-    %
-    %     voxelSize=G.voxelSize;
-    % imOrigin=G.origin;
-    %
-    % L_plot=false(size(M));
-    % L_plot(:,:,round(size(M,3)/2)-7)=1;
-    % L_plot(round(size(M,1)/2)-10,:,:)=1;
-    % L_plot(:,round(size(M,2)/2),:)=1;
-    % L_plot=L_plot & ~isnan(M);
-    % [Fm,Vm,Cm]=ind2patch(L_plot,double(M),'v');
-    % [Vm(:,1),Vm(:,2),Vm(:,3)]=im2cart(Vm(:,2),Vm(:,1),Vm(:,3),voxelSize*ones(1,3));
-    % Vm=Vm+imOrigin(ones(size(Vm,1),1),:);
-    %
-    % cFigure;
-    % subplot(1,2,1); hold on;
-    % title('Closed patch surface','FontSize',fontSize);
-    %
-    % gpatch(Fb,V_def,CF,'k',0.5);
-    % axisGeom(gca,fontSize);
-    % camlight('headlight');
-    % colormap(gca,gjet(250)); colorbar;
-    %
-    % subplot(1,2,2); hold on;
-    % title('Patch data derived image data (3 slices)','FontSize',fontSize);
-    %
-    % gpatch(Fb,V_def,'kw','none',0.25);
-    % gpatch(Fm,Vm,Cm,'k',faceAlpha1);
-    %
-    % colormap(gca,gray(250)); colorbar; caxis([0 1]);
-    % axisGeom(gca,fontSize);
-    % camlight('headlight');
-    % drawnow;
-    
     
 end
-
+    
 %%
 %
 % <<gibbVerySmall.gif>>
