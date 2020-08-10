@@ -508,7 +508,7 @@ center_of_mass_bone=mean(V(bcPrescribeList,:),1);
 cFigure; hold on;
 % title('Boundary conditions model','FontSize',fontSize);
 gpatch(Fb_foot,V,'kw','none',faceAlpha2);
-gpatch(F_bone,V,'bw','b',1);
+gpatch(F_bone,V,'w','k',1);
 axisGeom(gca,fontSize);
 camlight headlight;
 drawnow;
@@ -544,7 +544,10 @@ end
 
 hf=cFigure; hold on;
 title('Material levels','FontSize',fontSize);
-gpatch(Fb_foot,V,'w','none',0.1);
+gpatch(Fb_foot(Cb_foot==1,:),V,'kw','none',1);
+gpatch(Fb_foot(Cb_foot~=1,:),V,'w','none',0.5);
+
+
 for q=1:1:numel(F_E_sole)
     gpatch(F_E_sole{q},V,C_F_E_sole{q},'k',1);
 end
@@ -555,7 +558,7 @@ icolorbar;
 %caxis([0 maxLevelColorbar_SED]);
 drawnow;
 
-%% Convert list of materials to
+%% Convert list of materials to element id
 
 %Sorting elements according to material label
 [elementMaterialID,indSortElements]=sort(elementMaterialID);
@@ -606,7 +609,7 @@ febio_spec.Material.material{2}.ATTR.id=2;
 febio_spec.Material.material{2}.density=1;
 febio_spec.Material.material{2}.center_of_mass=center_of_mass_bone;
 
-%Material section
+%Sole materials
 for q=1:1:numMaterials
     febio_spec.Material.material{q+2}.ATTR.type='Ogden unconstrained';
     febio_spec.Material.material{q+2}.ATTR.id=q+2;
