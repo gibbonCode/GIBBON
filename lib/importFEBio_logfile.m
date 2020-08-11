@@ -45,6 +45,14 @@ L=false(size(L));
 L(IND)=1;
 T_data=T(L);
 
+%% !!!!!!!!!! TEMP FIX !!!!!!!!!
+% Fix to cope with FEBio bug for Windows users
+% https://github.com/febiosoftware/FEBio/issues/6
+
+if ~isunix
+    T_data=regexprep(T_data,'-1.#IND,-1.#IND,-1.#IND','-nan,-nan,-nan');
+end
+
 %% Getting data
 DATA=cell2mat(cellfun(@(x) (sscanf(x,'%f,')'),T_data,'UniformOutput',0));
 
