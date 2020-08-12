@@ -1,6 +1,10 @@
-function [TIME, DATA, Data_label]=importFEBio_logfile(import_name)
+function [varargout]=importFEBio_logfile(varargin)
+
+% function [TIME, DATA, Data_label]=importFEBio_logfile(import_name)
+% ------------------------------------------------------------------------
+%
 % 
-% FORMAT:
+% Data format:
 %
 %   *Title:
 %   *Step  = 1
@@ -15,53 +19,109 @@ function [TIME, DATA, Data_label]=importFEBio_logfile(import_name)
 %   1, -5.01378, 0, 0
 %   2, -5.01378, 0, 1.24313
 %   3, -5.01378, 0, 2.48626
+%
+% ------------------------------------------------------------------------
+
+%% Parse input
+
+switch nargin
+    case 1 
+        fileNameImport=varargin{1};
+        addZeroInitialOpt=0;
+        removeIndicesOpt=0;
+    case 2
+        fileNameImport=varargin{1};
+        addZeroInitialOpt=varargin{2};
+        removeIndicesOpt=0;
+    case 3
+        fileNameImport=varargin{1};
+        addZeroInitialOpt=varargin{2};
+        removeIndicesOpt=varargin{3};
+end
 
 %% Loading .txt file into cell array
-[T]=txtfile2cell(import_name);
-T=T(2:end);
+[T]=txtfile2cell(fileNameImport);
 
-%% Getting time data and crop indices
-targetString='*Time';
+%% Access data and label parts
+logicData=~gcontains(T,'*'); 
+T_data=T(logicData);
+T_labels=T(~logicData);
 
-L=gcontains(T,targetString); 
-
-no_steps=(sum(L));
-
-T_time=T(L);
-TIME=cell2mat(cellfun(@(x) (sscanf(x,'*Time = %f')'),T_time,'UniformOutput',0));
-
-IND=find(L);
-IND1=IND+2;
-IND2=[IND(2:end)-2;size(T,1)];
-
-no_data=IND2(1)-IND1(1)+1;
-if no_data>1
-    [IND]=linspacen(IND1,IND2,no_data); IND=round(IND(:));
-else
-    IND=IND+2;
-end
-
-L=false(size(L));
-L(IND)=1;
-T_data=T(L);
-
-%% !!!!!!!!!! TEMP FIX !!!!!!!!!
-% Fix to cope with FEBio bug for Windows users
-% https://github.com/febiosoftware/FEBio/issues/6
-
-if ~isunix
-    T_data=regexprep(T_data,'-1.#IND,-1.#IND,-1.#IND','-nan,-nan,-nan');
-end
+%% Getting time increments
+logicTimeFlag=gcontains(T_labels,'*Time'); 
+% numSteps=nnz(logicTimeFlag);
+timeVec=cell2mat(cellfun(@(x) (sscanf(x,'*Time = %f')'),T_labels(logicTimeFlag),'UniformOutput',0));
 
 %% Getting data
-DATA=cell2mat(cellfun(@(x) (sscanf(x,'%f,')'),T_data,'UniformOutput',0));
 
-if no_data>1    
-    DATA=permute(reshape(permute(DATA,[2,3,1]),size(DATA,2),size(DATA,1)./no_steps,no_steps),[2,1,3]);
+logicDataLabel=gcontains(T_labels,'*Data'); 
+dataLabel=T_labels{find(logicDataLabel,1)};
+dataLabel=regexprep(dataLabel,'*Data  = ','');
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% TEMP FIX to cope with FEBio bug for Windows users https://github.com/febiosoftware/FEBio/issues/6
+if ~isunix
+    %Replace '-1.#IND,-1.#IND,-1.#IND' by '-nan,-nan,-nan'
+    T_data=regexprep(T_data,'-1.#IND,-1.#IND,-1.#IND','-nan,-nan,-nan');
+end
+%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+dataArray=cell2mat(cellfun(@(x) (sscanf(x,'%f,')'),T_data,'UniformOutput',0));
+
+if removeIndicesOpt==1
+    dataArray=dataArray(:,2:end);
 end
 
-Data_label=T{3,:}(9:end);
+if nnz(logicData)>1        
+    
+    %Check if last export was interupted
+    [setSizesAll]=adjacentdircount(logicData,1); %data part sizes   
+    setSizes=unique(setSizesAll(setSizesAll>0));     
+    numDataEntriesStep=max(setSizes); %The largest (assumed complete) set    
+    logicIncomplete=numel(setSizes)>1;
+    
+    %Trim data to completed parts only if needed
+    if logicIncomplete %If more than one size is discovered analysis was likely incomplete        
+        dataArray=dataArray(1:end-rem(size(dataArray,1),numDataEntriesStep),:);        
+        warning(['Incomplete data detected in: ',fileNameImport,', analysis may have terminated prematurely'])
+    end
+    
+    %Reshape data array into 3D matrix
+    dataMat=permute(reshape(permute(dataArray,[2,3,1]),size(dataArray,2),numDataEntriesStep,size(dataArray,1)./numDataEntriesStep),[2,1,3]);
+    
+    %Trim time vector to match number of entries kept for dataMat
+    timeVec=timeVec(1:size(dataMat,3));     
+end
 
+%% Add zero initial state if requested
+
+if addZeroInitialOpt==1    
+    %Add first time point
+    timeVec=[0; timeVec(:)]; 
+    
+    %Add initial zero data    
+    sizImport=size(dataMat);
+    sizImport(3)=sizImport(3)+1;
+    dataMat_n=zeros(sizImport);
+    dataMat_n(:,:,2:end)=dataMat;
+    dataMat=dataMat_n;
+end
+
+%% Collect output
+
+switch nargout
+    case 1
+        dataStruct.time=timeVec; 
+        dataStruct.data=dataMat;         
+        varargout{1}=dataStruct;
+    case 2
+        varargout{1}=timeVec;
+        varargout{2}=dataMat;
+        varargout{3}=dataLabel;
+    case 3
+        varargout{1}=timeVec;
+        varargout{2}=dataMat;
+        varargout{3}=dataLabel;
 end
  
 %% 

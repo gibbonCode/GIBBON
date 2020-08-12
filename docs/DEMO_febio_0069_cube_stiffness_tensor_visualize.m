@@ -29,7 +29,6 @@ clear; close all; clc;
 fontSize=20;
 faceAlpha1=0.8;
 markerSize=40;
-markerSize2=20;
 lineWidth=3;
 
 %% Control parameters
@@ -43,7 +42,9 @@ febioFebFileNamePart='tempModel';
 febioFebFileName=fullfile(savePath,[febioFebFileNamePart,'.feb']); %FEB file name
 febioLogFileName=fullfile(savePath,[febioFebFileNamePart,'.txt']); %FEBio log file name
 febioLogFileName_disp=[febioFebFileNamePart,'_disp_out.txt']; %Log file name for exporting displacement
+febioLogFileName_force=[febioFebFileNamePart,'_force_out.txt']; %Log file name for exporting force
 febioLogFileName_stress=[febioFebFileNamePart,'_stress_out.txt']; %Log file name for exporting stress
+febioLogFileName_stiffness=[febioFebFileNamePart,'_stiffness_out.txt']; %Log file name for exporting stiffness
 
 %Specifying dimensions and number of elements
 cubeSize=10; 
@@ -260,10 +261,20 @@ febio_spec.Output.logfile.node_data{1}.ATTR.data='ux;uy;uz';
 febio_spec.Output.logfile.node_data{1}.ATTR.delim=',';
 febio_spec.Output.logfile.node_data{1}.VAL=1:size(V,1);
 
+febio_spec.Output.logfile.node_data{2}.ATTR.file=febioLogFileName_force;
+febio_spec.Output.logfile.node_data{2}.ATTR.data='Rx;Ry;Rz';
+febio_spec.Output.logfile.node_data{2}.ATTR.delim=',';
+febio_spec.Output.logfile.node_data{2}.VAL=1:size(V,1);
+
 febio_spec.Output.logfile.element_data{1}.ATTR.file=febioLogFileName_stress;
 febio_spec.Output.logfile.element_data{1}.ATTR.data='sz';
 febio_spec.Output.logfile.element_data{1}.ATTR.delim=',';
 febio_spec.Output.logfile.element_data{1}.VAL=1:size(E,1);
+
+febio_spec.Output.logfile.element_data{2}.ATTR.file=febioLogFileName_stiffness;
+febio_spec.Output.logfile.element_data{2}.ATTR.data='cxxxx;cxxyy;cyyyy;cxxzz;cyyzz;czzzz;cxxxy;cyyxy;czzxy;cxyxy;cxxyz;cyyyz;czzyz;cxyyz;cyzyz;cxxxz;cyyxz;czzxz;cxyxz;cyzxz;cxzxz';
+febio_spec.Output.logfile.element_data{2}.ATTR.delim=',';
+febio_spec.Output.logfile.element_data{2}.VAL=1:size(E,1);
 
 %% Quick viewing of the FEBio input file structure
 % The |febView| function can be used to view the xml structure in a MATLAB
@@ -300,112 +311,100 @@ febioAnalysis.maxLogCheckTime=10; %Max log file checking time
 
 if runFlag==1 %i.e. a succesful run
     
-    %% 
     % Importing nodal displacements from a log file
-    dataStruct=importFEBio_logfile(fullfile(savePath,febioLogFileName_disp),1,1);
+    [~, N_disp_mat,~]=importFEBio_logfile(fullfile(savePath,febioLogFileName_disp));
     
-    %Access data
-    N_disp_mat=dataStruct.data; %Displacement
-    timeVec=dataStruct.time; %Time
+    N_disp_mat=N_disp_mat(:,2:end,:);
+    sizImport=size(N_disp_mat);
+    sizImport(3)=sizImport(3)+1;
+    N_disp_mat_n=zeros(sizImport);
+    N_disp_mat_n(:,:,2:end)=N_disp_mat;
+    N_disp_mat=N_disp_mat_n;
+    DN=N_disp_mat(:,:,end);
+    DN_magnitude=sqrt(sum(DN(:,3).^2,2));
+    V_def=V+DN;
+    [CF]=vertexToFaceMeasure(Fb,DN_magnitude);
     
-    %Create deformed coordinate set
-    V_DEF=N_disp_mat+repmat(V,[1 1 size(N_disp_mat,3)]);
-        
-    %%
     % Importing element stress from a log file
-    dataStruct=importFEBio_logfile(fullfile(savePath,febioLogFileName_stress),1,1);     
+    [time_mat, E_stress_mat,~]=importFEBio_logfile(fullfile(savePath,febioLogFileName_stress)); 
+    time_mat=[0; time_mat(:)]; %Time
+    stress_cauchy_sim=[0; mean(squeeze(E_stress_mat(:,end,:)),1)'];
     
-    %Access data
-    E_stress_mat=dataStruct.data;
-       
+    %% Importing stiffness data
+    % Importing element stiffness tensors from a log file
+    [~,stiffness_mat,~]=importFEBio_logfile(fullfile(savePath,febioLogFileName_stiffness)); 
+    
+    stiffness_mat=stiffness_mat(:,2:end,end); %Final stiffness state
+    
+    stiffness_mat_voigt=stiffness_mat(:,[1  2  4  11 16 7;...
+                                         2  3  5  12 17 8;...
+                                         4  5  6  13 18 9;...
+                                         11 12 13 15 20 14;...
+                                         16 17 18 20 21 19;...
+                                         7  8  9  14 19 10]);
+    stiffness_mat_voigt=reshape(stiffness_mat_voigt',6,6,size(stiffness_mat_voigt,1));
+    stiffness_mat_voigt=reshape(mat2cell(stiffness_mat_voigt,6,6,...
+        ones(size(stiffness_mat_voigt,3),1)),[size(stiffness_mat,1),1]);
+    
+    stiffness_mat_kelvin=stiffness_mat_voigt; 
+    for q=1:1:numel(stiffness_mat_voigt)
+        cVoigt=stiffness_mat_voigt{q};
+        c=voigtUnMap(cVoigt);
+        cKelvin=kelvinMap(c);
+        stiffness_mat_kelvin{q}=cKelvin;
+    end
+    
+    %%
+    
+    viewFourthOrderTensor(c); %Visualize tensor C
+    
     %% 
     % Plotting the simulated results using |anim8| to visualize and animate
     % deformations 
     
-    DN_magnitude=sqrt(sum(N_disp_mat(:,:,end).^2,2)); %Current displacement magnitude
-        
     % Create basic view and store graphics handle to initiate animation
     hf=cFigure; %Open figure  
     gtitle([febioFebFileNamePart,': Press play to animate']);
-    title('Displacement magnitude [mm]','Interpreter','Latex')
-    hp=gpatch(Fb,V_DEF(:,:,end),DN_magnitude,'k',1); %Add graphics object to animate
-    hp.Marker='.';
-    hp.MarkerSize=markerSize2;
-    hp.FaceColor='interp';
+    hp=gpatch(Fb,V_def,CF,'k',1); %Add graphics object to animate
     gpatch(Fb,V,0.5*ones(1,3),'k',0.25); %A static graphics object
     
     axisGeom(gca,fontSize); 
     colormap(gjet(250)); colorbar;
     caxis([0 max(DN_magnitude)]);    
-    axis(axisLim(V_DEF)); %Set axis limits statically
+    axis([min(V_def(:,1)) max(V_def(:,1)) min(V_def(:,2)) max(V_def(:,2)) min(V_def(:,3)) max(V_def(:,3))]); %Set axis limits statically
     view(130,25); %Set view direction
     camlight headlight;        
         
     % Set up animation features
-    animStruct.Time=timeVec; %The time vector    
+    animStruct.Time=time_mat; %The time vector    
     for qt=1:1:size(N_disp_mat,3) %Loop over time increments        
-        DN_magnitude=sqrt(sum(N_disp_mat(:,:,qt).^2,2)); %Current displacement magnitude
-                
-        %Set entries in animation structure
-        animStruct.Handles{qt}=[hp hp]; %Handles of objects to animate
-        animStruct.Props{qt}={'Vertices','CData'}; %Properties of objects to animate
-        animStruct.Set{qt}={V_DEF(:,:,qt),DN_magnitude}; %Property values for to set in order to animate
-    end        
-    anim8(hf,animStruct); %Initiate animation feature    
-    drawnow;
-            
-    %% 
-    % Plotting the simulated results using |anim8| to visualize and animate
-    % deformations 
-    
-    [CV]=faceToVertexMeasure(E,V,E_stress_mat(:,:,end));
-    
-    % Create basic view and store graphics handle to initiate animation
-    hf=cFigure; %Open figure  
-    gtitle([febioFebFileNamePart,': Press play to animate']);
-    title('$\sigma_{zz}$ [MPa]','Interpreter','Latex')
-    hp=gpatch(Fb,V_DEF(:,:,end),CV,'k',1); %Add graphics object to animate
-    hp.Marker='.';
-    hp.MarkerSize=markerSize2;
-    hp.FaceColor='interp';
-    gpatch(Fb,V,0.5*ones(1,3),'k',0.25); %A static graphics object
-    
-    axisGeom(gca,fontSize); 
-    colormap(gjet(250)); colorbar;
-    caxis([min(E_stress_mat(:)) max(E_stress_mat(:))]);    
-    axis(axisLim(V_DEF)); %Set axis limits statically
-    view(130,25); %Set view direction
-    camlight headlight;        
-        
-    % Set up animation features
-    animStruct.Time=timeVec; %The time vector    
-    for qt=1:1:size(N_disp_mat,3) %Loop over time increments        
-        
-        [CV]=faceToVertexMeasure(E,V,E_stress_mat(:,:,qt));
+        DN=N_disp_mat(:,:,qt); %Current displacement
+        DN_magnitude=sqrt(sum(DN.^2,2)); %Current displacement magnitude
+        V_def=V+DN; %Current nodal coordinates
+        [CF]=vertexToFaceMeasure(Fb,DN_magnitude); %Current color data to use
         
         %Set entries in animation structure
         animStruct.Handles{qt}=[hp hp]; %Handles of objects to animate
         animStruct.Props{qt}={'Vertices','CData'}; %Properties of objects to animate
-        animStruct.Set{qt}={V_DEF(:,:,qt),CV}; %Property values for to set in order to animate
+        animStruct.Set{qt}={V_def,CF}; %Property values for to set in order to animate
     end        
     anim8(hf,animStruct); %Initiate animation feature    
     drawnow;
     
     %% 
-    % Calculate metrics to visualize stretch-stress curve
+    % Calculate the simulated applied uniaxial stretch
     
     DZ_set=N_disp_mat(bcPrescribeList,end,:); %Z displacements of the prescribed set
     DZ_set=mean(DZ_set,1); %Calculate mean Z displacements across nodes
     stretch_sim=(DZ_set(:)+sampleHeight)./sampleHeight; %Derive stretch
-    stress_cauchy_sim=mean(squeeze(E_stress_mat(:,end,:)),1)';
-    
+        
     %%    
     % Visualize stress-stretch curve
     
-    cFigure; hold on;    
+    cFigure;
+    hold on;    
     title('Uniaxial stress-stretch curve','FontSize',fontSize);
-    xlabel('$\lambda$ [.]','FontSize',fontSize,'Interpreter','Latex'); 
-    ylabel('$\sigma_{zz}$ [MPa]','FontSize',fontSize,'Interpreter','Latex'); 
+    xlabel('\lambda Stretch [.]','FontSize',fontSize); ylabel('\sigma Cauchy stress [MPa]','FontSize',fontSize); 
     
     plot(stretch_sim(:),stress_cauchy_sim(:),'r-','lineWidth',lineWidth);
     
