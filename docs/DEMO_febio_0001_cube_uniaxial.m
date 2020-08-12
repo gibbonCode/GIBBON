@@ -337,8 +337,7 @@ if runFlag==1 %i.e. a succesful run
     axisGeom(gca,fontSize); 
     colormap(gjet(250)); colorbar;
     caxis([0 max(DN_magnitude)]);    
-    axis(axisLim(V_DEF)); %Set axis limits statically
-    view(130,25); %Set view direction
+    axis(axisLim(V_DEF)); %Set axis limits statically    
     camlight headlight;        
         
     % Set up animation features
@@ -373,8 +372,7 @@ if runFlag==1 %i.e. a succesful run
     axisGeom(gca,fontSize); 
     colormap(gjet(250)); colorbar;
     caxis([min(E_stress_mat(:)) max(E_stress_mat(:))]);    
-    axis(axisLim(V_DEF)); %Set axis limits statically
-    view(130,25); %Set view direction
+    axis(axisLim(V_DEF)); %Set axis limits statically    
     camlight headlight;        
         
     % Set up animation features
