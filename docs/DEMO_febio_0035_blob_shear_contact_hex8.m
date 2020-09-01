@@ -48,13 +48,12 @@ febioFebFileNamePart='tempModel';
 febioFebFileName=fullfile(savePath,[febioFebFileNamePart,'.feb']); %FEB file name
 febioLogFileName=fullfile(savePath,[febioFebFileNamePart,'.txt']); %FEBio log file name
 febioLogFileName_disp=[febioFebFileNamePart,'_disp_out.txt']; %Log file name for exporting displacement
-% febioLogFileName_force=[febioFebFileNamePart,'_force_out.txt']; %Log file name for exporting force
 
 % Hemi-sphere parameters
 hemiSphereRadius=6;
-numElementsMantel=3;
+numElementsMantel=4;
 smoothEdge=1; 
-solidElementType='hex20';%'hex20';
+solidElementType='hex8';%'hex20';
 membraneThickness=0.1; 
 
 % Ground plate parameters
@@ -66,7 +65,7 @@ filletProbe=hemiSphereRadius/2; %Fillet radius
 
 % Define probe displacement
 probeDisplacement=hemiSphereRadius*2; 
-probeOverlapFactor=0.4;
+probeOverlapFactor=0.3;
 probeLength=hemiSphereRadius*2; 
 
 % Material parameter set
@@ -104,10 +103,10 @@ materialPropertiesOgden.m1=2; %Material parameter setting degree of non-linearit
 materialPropertiesOgden.k=1000*materialPropertiesOgden.c1; %Bulk modulus
 
 % FEA control settings
-numTimeSteps=100;
+numTimeSteps=25;
 max_refs=25; %Max reforms
 max_ups=0; %Set to zero to use full-Newton iterations
-opt_iter=10; %Optimum number of iterations
+opt_iter=15; %Optimum number of iterations
 max_retries=25; %Maximum number of retires
 symmetric_stiffness=0;
 min_residual=1e-20;
@@ -148,7 +147,7 @@ F_blob=element2patch(E_blob);
 
 %%
 
-pointSpacingBlob=mean(patchEdgeLengths(Fb_blob,V_blob));
+pointSpacingBlob=max(patchEdgeLengths(Fb_blob,V_blob));
 
 %Smoothen edges
 if smoothEdge==1
@@ -213,7 +212,8 @@ drawnow;
 pointSpacingProbe=pointSpacingBlob/2; 
 
 %Sketching side profile
-x=[-probeLength-hemiSphereRadius -hemiSphereRadius -hemiSphereRadius];
+d=hemiSphereRadius*cos(asin(1-probeOverlapFactor));
+x=[-probeLength-hemiSphereRadius -d -d];
 y=[0 0 0];
 z=[hemiSphereRadius*(1-probeOverlapFactor) hemiSphereRadius*(1-probeOverlapFactor) hemiSphereRadius*1.5];
 V_probe_curve_sketch=[x(:) y(:) z(:)];
@@ -371,14 +371,6 @@ febio_spec.Material.material{1}.m1=materialPropertiesOgden.m1;
 febio_spec.Material.material{1}.c2=materialPropertiesOgden.c1;
 febio_spec.Material.material{1}.m2=-materialPropertiesOgden.m1;
 febio_spec.Material.material{1}.k=materialPropertiesOgden.k;
-
-% febio_spec.Material.material{2}.ATTR.type='Ogden';
-% febio_spec.Material.material{2}.ATTR.id=2;
-% febio_spec.Material.material{2}.c1=materialPropertiesOgden.c1;
-% febio_spec.Material.material{2}.m1=materialPropertiesOgden.m1;
-% febio_spec.Material.material{2}.c2=materialPropertiesOgden.c1;
-% febio_spec.Material.material{2}.m2=-materialPropertiesOgden.m1;
-% febio_spec.Material.material{2}.k=materialPropertiesOgden.k;
 
 febio_spec.Material.material{2}.ATTR.type='Fung orthotropic';
 febio_spec.Material.material{2}.ATTR.id=2;
@@ -543,24 +535,16 @@ febioAnalysis.maxLogCheckTime=10; %Max log file checking time
 
 if 1%runFlag==1 %i.e. a succesful run
     
+    %% 
     % Importing nodal displacements from a log file
-    [time_mat, N_disp_mat,~]=importFEBio_logfile(fullfile(savePath,febioLogFileName_disp)); %Nodal displacements    
-    time_mat=[0; time_mat(:)]; %Time
-
-    N_disp_mat=N_disp_mat(:,2:end,:);
-    sizImport=size(N_disp_mat);
-    sizImport(3)=sizImport(3)+1;
-    N_disp_mat_n=zeros(sizImport);
-    N_disp_mat_n(:,:,2:end)=N_disp_mat;
-    N_disp_mat=N_disp_mat_n;
-    DN=N_disp_mat(:,:,end);
-    DN_magnitude=sqrt(sum(DN(:,3).^2,2));
-    V_def=V+DN;
+    dataStruct=importFEBio_logfile(fullfile(savePath,febioLogFileName_disp),1,1);
+    
+    %Access data
+    N_disp_mat=dataStruct.data; %Displacement
+    timeVec=dataStruct.time; %Time
+    
+    %Create deformed coordinate set
     V_DEF=N_disp_mat+repmat(V,[1 1 size(N_disp_mat,3)]);
-    X_DEF=V_DEF(:,1,:);
-    Y_DEF=V_DEF(:,2,:);
-    Z_DEF=V_DEF(:,3,:);
-%     [CF]=vertexToFaceMeasure(Fb_all,DN_magnitude);
     
     %% 
     % Plotting the simulated results using |anim8| to visualize and animate
@@ -569,32 +553,29 @@ if 1%runFlag==1 %i.e. a succesful run
     % Create basic view and store graphics handle to initiate animation
     hf=cFigure; hold on;
     gtitle([febioFebFileNamePart,': Press play to animate']);
-    hp1=gpatch(Fb_blob_plot,V_def,DN_magnitude,'k',1); %Add graphics object to animate
-    hp2=gpatch(F_probe_plot,V_def,'kw','none',0.5); %Add graphics object to animate
+    hp1=gpatch(Fb_blob_plot,V_DEF(:,:,end),DN_magnitude,'k',1); %Add graphics object to animate
+    hp1.FaceColor='interp';
+    hp2=gpatch(F_probe_plot,V_DEF(:,:,end),'kw','none',0.5); %Add graphics object to animate
 %     gpatch(Fb_all,V,0.5*ones(1,3),'none',0.25); %A static graphics object
     
     axisGeom(gca,fontSize); 
     colormap(gjet(250)); colorbar;
-    caxis([0 max(DN_magnitude)]); caxis manual;
-    axis([min(X_DEF(:)) max(X_DEF(:)) min(Y_DEF(:)) max(Y_DEF(:)) min(Z_DEF(:)) max(Z_DEF(:))]);
+    caxis([0 max(DN_magnitude(Fb_blob_plot(:)))]); caxis manual;
+    axis(axisLim(V_DEF)); %Set axis limits statically
     camlight headlight;
     view(15,8); 
     drawnow; 
     % Set up animation features
     animStruct.Time=time_mat; %The time vector    
     for qt=1:1:size(N_disp_mat,3) %Loop over time increments        
-        DN=N_disp_mat(:,:,qt); %Current displacement
-        DN_magnitude=sqrt(sum(DN.^2,2)); %Current displacement magnitude
-        V_def=V+DN; %Current nodal coordinates
-%         [CF]=vertexToFaceMeasure(Fb_all,DN_magnitude); %Current color data to use
-        
+        DN_magnitude=sqrt(sum(N_disp_mat(:,:,qt).^2,2)); %Current displacement magnitude
+
         %Set entries in animation structure
         animStruct.Handles{qt}=[hp1 hp1 hp2]; %Handles of objects to animate
         animStruct.Props{qt}={'Vertices','CData','Vertices'}; %Properties of objects to animate
-        animStruct.Set{qt}={V_def,DN_magnitude,V_def}; %Property values for to set in order to animate
+        animStruct.Set{qt}={V_DEF(:,:,qt),DN_magnitude,V_DEF(:,:,qt)}; %Property values for to set in order to animate
     end        
     anim8(hf,animStruct); %Initiate animation feature    
-    caxis([0 max(DN_magnitude)]); caxis manual;
     drawnow;
 
 end

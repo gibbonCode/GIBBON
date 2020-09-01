@@ -571,34 +571,33 @@ febioAnalysis.maxLogCheckTime=10; %Max log file checking time
 
 if runFlag==1 %i.e. a succesful run
     
+    %% 
     % Importing nodal displacements from a log file
-    [time_mat, N_disp_mat,~]=importFEBio_logfile(fullfile(savePath,febioLogFileName_disp)); %Nodal displacements    
-    time_mat=[0; time_mat(:)]; %Time
+    dataStruct=importFEBio_logfile(fullfile(savePath,febioLogFileName_disp),1,1);
     
-    N_disp_mat=N_disp_mat(:,2:end,:);
-    sizImport=size(N_disp_mat);
-    sizImport(3)=sizImport(3)+1;
-    N_disp_mat_n=zeros(sizImport);
-    N_disp_mat_n(:,:,2:end)=N_disp_mat;
-    N_disp_mat=N_disp_mat_n;
-    DN=N_disp_mat(:,:,end);
-    DN_magnitude=sqrt(sum(DN(:,3).^2,2));
-    V_def=V+DN;
+    %Access data
+    N_disp_mat=dataStruct.data; %Displacement
+    timeVec=dataStruct.time; %Time
+    
+    %Create deformed coordinate set
     V_DEF=N_disp_mat+repmat(V,[1 1 size(N_disp_mat,3)]);
-    X_DEF=V_DEF(:,1,:);
-    Y_DEF=V_DEF(:,2,:);
-    Z_DEF=V_DEF(:,3,:);
     
-    [F]=element2patch(E);
-    [CF]=vertexToFaceMeasure(F,DN_magnitude);
+    %%
+    % Importing element stress from a log file
+    dataStruct=importFEBio_logfile(fullfile(savePath,febioLogFileName_strainEnergy),1,1);
     
+    %Access data
+    E_energy=dataStruct.data;
+          
     %% 
     % Plotting the simulated results using |anim8| to visualize and animate
     % deformations 
     
-     c1_plot=c1*ones(size(time_mat));
-    cg_plot=c1_g(1)*ones(size(time_mat));
-    cg_plot(time_mat>=1)=c1_g(2);
+    c1_plot=c1*ones(size(timeVec));
+    cg_plot=c1_g(1)*ones(size(timeVec));
+    cg_plot(timeVec>=1)=c1_g(2);
+    
+    [CV]=faceToVertexMeasure(E,V,E_energy(:,:,end));
     
     % Create basic view and store graphics handle to initiate animation
     hf=cFigure; %Open figure  
@@ -607,42 +606,40 @@ if runFlag==1 %i.e. a succesful run
     subplot(1,2,1); hold on;
     title('Ogden parameter c_1');
     xlabel('Time'); ylabel('c_1');
-    plot(time_mat,c1_plot,'b-','lineWidth',2);
-    plot(time_mat,cg_plot,'r-','lineWidth',2);
-    hp1=plot(time_mat(1),c1_plot(1),'b.','MarkerSize',50);
-    hp2=plot(time_mat(1),cg_plot(1),'r.','MarkerSize',50);
+    plot(timeVec,c1_plot,'b-','lineWidth',2);
+    plot(timeVec,cg_plot,'r-','lineWidth',2);
+    hp1=plot(timeVec(1),c1_plot(1),'b.','MarkerSize',50);
+    hp2=plot(timeVec(1),cg_plot(1),'r.','MarkerSize',50);
     legend([hp1 hp2],'Material 1','Material 2');
     axis tight; axis square; set(gca,'fontsize',fontSize);
     grid on;
     
     subplot(1,2,2); hold on;
-    hp3=gpatch(F,V_def,CF,'k',1); %Add graphics object to animate
-    gpatch(Fb,V,0.5*ones(1,3),'none',0.25); %A static graphics object
-    
+    hp3=gpatch(Fb,V_DEF(:,:,end),CV,'k',1); %Add graphics object to animate
+    hp3.FaceColor='interp';
     colormap(gjet(250)); hc=colorbar;
-    caxis([min(DN_magnitude) max(DN_magnitude)]); % caxis([0 max(E_energy(:))]);
+    caxis([0 max(E_energy(:))]/10);
     axisGeom(gca,fontSize);
-    axis([min(X_DEF(:)) max(X_DEF(:)) min(Y_DEF(:)) max(Y_DEF(:)) min(Z_DEF(:)) max(Z_DEF(:))]);
+    axis(axisLim(V_DEF)); %Set axis limits statically    
     axis manual; 
     camlight headlight;   
     drawnow;     
         
     % Set up animation features
-    animStruct.Time=time_mat; %The time vector    
+    animStruct.Time=timeVec; %The time vector    
     for qt=1:1:size(N_disp_mat,3) %Loop over time increments        
         DN=N_disp_mat(:,:,qt); %Current displacement
         DN_magnitude=sqrt(sum(DN.^2,2)); %Current displacement magnitude
-        V_def=V+DN; %Current nodal coordinates
-        [CF]=vertexToFaceMeasure(F,DN_magnitude);
+
+        [CV]=faceToVertexMeasure(E,V,E_energy(:,:,qt));        
         
         %Set entries in animation structure
         animStruct.Handles{qt}=[hp3 hp3 hp1 hp1 hp2 hp2]; %Handles of objects to animate
         animStruct.Props{qt}={'Vertices','CData','XData','YData','XData','YData'}; %Properties of objects to animate
-        animStruct.Set{qt}={V_def,CF,time_mat(qt),c1_plot(qt),time_mat(qt),cg_plot(qt)}; %Property values for to set in order to animate        
+        animStruct.Set{qt}={V_DEF(:,:,qt),CV,timeVec(qt),c1_plot(qt),timeVec(qt),cg_plot(qt)}; %Property values for to set in order to animate        
     end        
     anim8(hf,animStruct); %Initiate animation feature    
     drawnow;
-       
        
 end
 

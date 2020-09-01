@@ -34,6 +34,7 @@ lineWidth=3;
 defaultFolder = fileparts(fileparts(mfilename('fullpath')));
 savePath=fullfile(defaultFolder,'data','temp');
 pathNameSTL=fullfile(defaultFolder,'data','STL');
+loadName_SED=fullfile(savePath,'SED_no_implant.mat');
 
 % Defining file names
 febioFebFileNamePart='tempModel';
@@ -692,7 +693,6 @@ drawnow;
 
 %% Load SED data from non-implant model and form interpolation function
 
-loadName_SED='D:\GIBBON\GIBBON-master\docs\SED_no_implant.mat';
 outputStruct=load(loadName_SED);
 
 %Data without implant
@@ -1108,6 +1108,14 @@ febio_spec.Output.logfile.element_data{2}.VAL=1:1:size(E,1);
 
 %% Create structures for optimization
 
+%Initialize progress figure
+cFigure; hold on;
+xlabel('Function evaluation count'); ylabel('SSQD');
+hp=plot(0,nan,'r.-','MarkerSize',25,'LineWidth',2);
+axis tight; axis square; grid on; box;
+set(gca,'FontSize',fontSize);
+drawnow
+
 %Febio analysis information
 febioAnalysis.run_filename=febioFebFileName; %The input file name
 febioAnalysis.run_logname=febioLogFileName; %The name for the log file
@@ -1135,6 +1143,7 @@ objectiveStruct.numMaterialLevels=numMaterialLevels;
 objectiveStruct.materidIDsUsed=materidIDsUsed;
 objectiveStruct.logicBoneElements=logicBoneElements;
 objectiveStruct.optimType=optimType;
+objectiveStruct.hp=hp;
 
 paramNow=paramInitial;
 Pn=paramNow./objectiveStruct.parNormFactors;
@@ -1143,18 +1152,7 @@ switch evalMode
     case 1 %Run once using initial
         [Fopt,outputStructure]=objectiveFunction(Pn,objectiveStruct);
         Pn_opt=Pn;
-    case 2 %optimization
-        
-        %%
-        cFigure; hold on;
-        xlabel('Function evaluation count'); ylabel('SSQD');
-        objectiveStruct.hp=plot(0,nan,'r.-','MarkerSize',25,'LineWidth',2);
-        axis tight; axis square; grid on; box;    
-        set(gca,'FontSize',fontSize);
-        drawnow
-        
-        %%
-        
+    case 2 %optimization        
         switch objectiveStruct.method
             case 1 %fminsearch and Nelder-Mead
                 OPT_options=optimset('fminsearch'); % 'Nelder-Mead simplex direct search'
@@ -1203,46 +1201,29 @@ E_metric=outputStructure.E_metric;
 
 %% Import FEBio results
 
-% Importing nodal displacements
-[time_mat, N_disp_mat,~]=importFEBio_logfile(fullfile(savePath,febioLogFileName_disp)); %Nodal displacancellousBones
-time_mat=[0; time_mat(:)]; %Time
+%%
+% Importing nodal displacements from a log file
+dataStruct=importFEBio_logfile(fullfile(savePath,febioLogFileName_disp),1,1);
 
-N_disp_mat=N_disp_mat(:,2:end,:);
-sizImport=size(N_disp_mat);
-sizImport(3)=sizImport(3)+1;
-N_disp_mat_n=zeros(sizImport);
-N_disp_mat_n(:,:,2:end)=N_disp_mat;
-N_disp_mat=N_disp_mat_n;
-DN=N_disp_mat(:,:,end);
-DN_magnitude=sqrt(sum(DN(:,3).^2,2));
+%Access data
+N_disp_mat=dataStruct.data; %Displacement
+timeVec=dataStruct.time; %Time
+
+%Create deformed coordinate set
 V_DEF=N_disp_mat+repmat(V,[1 1 size(N_disp_mat,3)]);
 
 %%
 % Importing element strain energies from a log file
-[~,E_energy,~]=importFEBio_logfile(fullfile(savePath,febioLogFileName_strainEnergy)); %Element strain energy
+dataStruct=importFEBio_logfile(fullfile(savePath,febioLogFileName_strainEnergy),1,1);
 
-%Remove index column
-E_energy=E_energy(:,2:end,:);
-
-%Add initial state i.e. zero energy
-sizImport=size(E_energy);
-sizImport(3)=sizImport(3)+1;
-E_energy_mat_n=zeros(sizImport);
-E_energy_mat_n(:,:,2:end)=E_energy;
-E_energy=E_energy_mat_n;
+%Access data
+E_energy=dataStruct.data;
 
 %% Importing element stress from a log file
-[~, E_stress_mat,~]=importFEBio_logfile(fullfile(savePath,febioLogFileName_stress));
+dataStruct=importFEBio_logfile(fullfile(savePath,febioLogFileName_stress),1,1);
 
-%Remove index column
-E_stress_mat=E_stress_mat(:,2:end,:);
-
-%Add initial state i.e. zero energy
-sizImport=size(E_stress_mat);
-sizImport(3)=sizImport(3)+1;
-E_stress_mat_n=zeros(sizImport);
-E_stress_mat_n(:,:,2:end)=E_stress_mat;
-E_stress_mat=E_stress_mat_n;
+%Access data
+E_stress_mat=dataStruct.data;
 
 %%
 
@@ -1432,7 +1413,7 @@ axis(axLim(:)'); %Set axis limits statically
 camlight headlight;
 
 % Set up animation features
-animStruct.Time=time_mat; %The time vector
+animStruct.Time=timeVec; %The time vector
 for qt=1:1:size(N_disp_mat,3) %Loop over time increments
     DN=N_disp_mat(:,:,qt); %Current disp
     
@@ -1475,7 +1456,7 @@ axis(axLim(:)'); %Set axis limits statically
 camlight headlight;
 
 % Set up animation features
-animStruct.Time=time_mat; %The time vector
+animStruct.Time=timeVec; %The time vector
 for qt=1:1:size(N_disp_mat,3) %Loop over time increments
     DN=N_disp_mat(:,:,qt); %Current disp
     
@@ -1551,10 +1532,10 @@ disp('Done')
 
 if runFlag==1
     % import optimization metric
-    [~, E_metric,~]=importFEBio_logfile(logFileImportName);
+    dataStruct=importFEBio_logfile(logFileImportName,1,1);
     
     %Access data for last time step
-    E_metric=E_metric(logicBoneElements,2,end);
+    E_metric=dataStruct.data(logicBoneElements,:,end);
     
     %Difference between cases
     differenceData=E_metric-objCompareMetric;

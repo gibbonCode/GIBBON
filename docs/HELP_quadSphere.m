@@ -36,7 +36,7 @@ hf=cFigure;
 r=1; %sphere radius
 n=0:1:3; %Refinements   
 pColors=autumn(numel(n));
-for q=1:1:numel(n);
+for q=1:1:numel(n)
     [F,V]=quadSphere(n(q),r,2);
    
     subplot(2,2,q); hold on;

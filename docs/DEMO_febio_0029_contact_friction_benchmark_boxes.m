@@ -34,6 +34,7 @@ fontSize=15;
 faceAlpha1=0.8;
 faceAlpha2=0.3;
 markerSize=40;
+markerSize2=20;
 lineWidth=3;
 
 %% Control parameters
@@ -386,93 +387,63 @@ febioAnalysis.maxLogCheckTime=10; %Max log file checking time
 
 %% Import FEBio results 
 
-% if runFlag==1 %i.e. a succesful run
+if runFlag==1 %i.e. a succesful run
     
+ %% 
     % Importing nodal displacements from a log file
-    [time_mat, N_disp_mat,~]=importFEBio_logfile(fullfile(savePath,febioLogFileName_disp)); %Nodal displacements    
-    time_mat=[0; time_mat(:)]; %Time
-
-    N_disp_mat=N_disp_mat(:,2:end,:);
-    sizImport=size(N_disp_mat);
-    sizImport(3)=sizImport(3)+1;
-    N_disp_mat_n=zeros(sizImport);
-    N_disp_mat_n(:,:,2:end)=N_disp_mat;
-    N_disp_mat=N_disp_mat_n;
-    DN=N_disp_mat(:,:,end);
-    DN_magnitude=sqrt(sum(DN(:,3).^2,2));
-    V_def=V+DN;
+    dataStruct=importFEBio_logfile(fullfile(savePath,febioLogFileName_disp),1,1);
+    
+    %Access data
+    N_disp_mat=dataStruct.data; %Displacement
+    timeVec=dataStruct.time; %Time
+    
+    %Create deformed coordinate set
     V_DEF=N_disp_mat+repmat(V,[1 1 size(N_disp_mat,3)]);
-    X_DEF=V_DEF(:,1,:);
-    Y_DEF=V_DEF(:,2,:);
-    Z_DEF=V_DEF(:,3,:);
-        
-      %%
-    % Importing element strain energies from a log file
-    [~,E_energy,~]=importFEBio_logfile(fullfile(savePath,febioLogFileName_strainEnergy)); %Element stresses
+       
+     %%
+    % Importing element stress from a log file
+    dataStruct=importFEBio_logfile(fullfile(savePath,febioLogFileName_strainEnergy),1,1);
     
-    %Remove nodal index column
-    E_energy=E_energy(:,2:end,:);
-    
-    %Add initial state i.e. zero displacement
-    sizImport=size(E_energy); 
-    sizImport(3)=sizImport(3)+1;
-    E_energy_mat_n=zeros(sizImport);
-    E_energy_mat_n(:,:,2:end)=E_energy;
-    E_energy=E_energy_mat_n;
+    %Access data
+    E_energy=dataStruct.data;
     
     %% 
     % Plotting the simulated results using |anim8| to visualize and animate
     % deformations 
     
-    displayOpt=2;
-    switch displayOpt
-        case 1
-            [CF]=vertexToFaceMeasure(Fb,DN_magnitude);
-            Fp=Fb;
-            Cp=CF;
-        case 2            
-            [Fp,Cp]=element2patch(E,E_energy(:,:,1));            
-    end
+    [CV]=faceToVertexMeasure(E,V,E_energy(:,:,end));
     
     % Create basic view and store graphics handle to initiate animation
     hf=cFigure; %Open figure  
     gtitle([febioFebFileNamePart,': Press play to animate']);
-    hp1=gpatch(Fp,V_def,Cp,'k',1); %Add graphics object to animate
-    hp2=gpatch(F_rigidBody,V_def,'kw','none',faceAlpha2); %Add graphics object to animate
-    gpatch(Fb,V,0.5*ones(1,3),'none',0.25); %A static graphics object
+    title('$\sigma_{zz}$ [MPa]','Interpreter','Latex')
+    hp=gpatch(Fb,V_DEF(:,:,end),CV,'k',1); %Add graphics object to animate
+    hp.Marker='.';
+    hp.MarkerSize=markerSize2;
+    hp.FaceColor='interp';
+    hp2=gpatch(F_rigidBody,V_DEF(:,:,end),'w','k',1); %A static graphics object
     
     axisGeom(gca,fontSize); 
     colormap(gjet(250)); colorbar;
-    switch displayOpt
-        case 1
-            caxis([0 max(DN_magnitude)]);
-        case 2
-            caxis([0 max(E_energy(:))]);            
-    end
-    axis([min(X_DEF(:)) max(X_DEF(:)) min(Y_DEF(:)) max(Y_DEF(:)) min(Z_DEF(:)) max(Z_DEF(:))]);
-    camlight headlight;
+    caxis([min(E_energy(:)) max(E_energy(:))]/2);    
+    axis(axisLim(V_DEF)); %Set axis limits statically    
+    camlight headlight;        
         
     % Set up animation features
-    animStruct.Time=time_mat; %The time vector    
+    animStruct.Time=timeVec; %The time vector    
     for qt=1:1:size(N_disp_mat,3) %Loop over time increments        
-        DN=N_disp_mat(:,:,qt); %Current displacement
-        DN_magnitude=sqrt(sum(DN.^2,2)); %Current displacement magnitude
-        V_def=V+DN; %Current nodal coordinates
-        switch displayOpt
-            case 1
-                [Cp]=vertexToFaceMeasure(Fb,DN_magnitude); %Current color data to use
-            case 2
-                [~,Cp]=element2patch(E,E_energy(:,:,qt));
-        end
+        
+        [CV]=faceToVertexMeasure(E,V,E_energy(:,:,qt));
+        
         %Set entries in animation structure
-        animStruct.Handles{qt}=[hp1 hp1 hp2]; %Handles of objects to animate
+        animStruct.Handles{qt}=[hp hp hp2]; %Handles of objects to animate
         animStruct.Props{qt}={'Vertices','CData','Vertices'}; %Properties of objects to animate
-        animStruct.Set{qt}={V_def,Cp,V_def}; %Property values for to set in order to animate
+        animStruct.Set{qt}={V_DEF(:,:,qt),CV,V_DEF(:,:,qt)}; %Property values for to set in order to animate
     end        
     anim8(hf,animStruct); %Initiate animation feature    
     drawnow;
-
-% end
+    
+end
 
 %% 
 %

@@ -53,7 +53,7 @@ febioLogFileName_strainEnergy=[febioFebFileNamePart,'_energy_out.txt']; %Log fil
 
 % Sphere parameters
 sphereRadius=3;%
-numElementsMantel=6;
+numElementsMantel=4;
 
 % Ground plate parameters
 tubeRadius=sphereRadius.*[1 0.1]; 
@@ -68,28 +68,18 @@ k=c1*k_factor; %Bulk modulus
 d=1e-9; %Density
 
 % FEA control settings
+analysisType='dynamic';
+timeTotal=1; %Analysis time
+numTimeSteps=100; %Number of time steps desired
+step_size=timeTotal/numTimeSteps;
+dtmin=(timeTotal/numTimeSteps)/100; %Minimum time step size
+dtmax=timeTotal/20; %Maximum time step size
 max_refs=25; %Max reforms
 max_ups=0; %Set to zero to use full-Newton iterations
 opt_iter=15; %Optimum number of iterations
 max_retries=25; %Maximum number of retires
 symmetric_stiffness=0;
 min_residual=1e-20;
-
-analysisType1='dynamic';
-timeTotal1=1; %Analysis time
-numTimeSteps1=100; %Number of time steps desired
-step_size1=timeTotal1/numTimeSteps1;
-dtmin1=(timeTotal1/numTimeSteps1)/100; %Minimum time step size
-dtmax1=timeTotal1/10; %Maximum time step size
-
-analysisType2='dynamic';
-timeTotal2=100; %Analysis time
-numTimeSteps2=10; %Number of time steps desired
-step_size2=timeTotal2/numTimeSteps2;
-dtmin2=(timeTotal2/numTimeSteps2)/100; %Minimum time step size
-dtmax2=timeTotal2/2; %Maximum time step size
-
-timeTotal=timeTotal1+timeTotal2;
 
 %Contact parameters
 contactPenalty=20;
@@ -102,7 +92,7 @@ fric_coeff=0.1;
 sphereVolume=4/3*(pi*sphereRadius^3); %Sphere Volume in mm^3
 sphereMass=sphereVolume.*d; %Sphere mass in tone
 sphereSectionArea=pi*sphereRadius^2;
-bodyLoadMagnitude=(9.81*1000)*75;
+bodyLoadMagnitude=(9.81*1000)*5;
 
 forceBodyLoad=sphereMass.*bodyLoadMagnitude;
 stressBodyLoad=forceBodyLoad/sphereSectionArea;
@@ -150,7 +140,7 @@ drawnow;
 %% Creating tube model
 % 
 
-pointSpacingBlob=mean(patchEdgeLengths(Fb_blob,V_blob));
+pointSpacingBlob=max(patchEdgeLengths(Fb_blob,V_blob));
 pointSpacingTube=pointSpacingBlob/2;
 
 rEnd=sphereRadius+(sphereRadius.*((sphereRadius-tubeRadius(2))/tubeLength));    
@@ -216,41 +206,17 @@ febio_spec.ATTR.version='2.5';
 febio_spec.Module.ATTR.type='solid'; 
 
 %Control section
-stepStruct1.Control.analysis.ATTR.type=analysisType1;
-stepStruct1.Control.time_steps=numTimeSteps1;
-stepStruct1.Control.step_size=step_size1;
-stepStruct1.Control.time_stepper.dtmin=dtmin1;
-stepStruct1.Control.time_stepper.dtmax=dtmax1; 
-stepStruct1.Control.time_stepper.max_retries=max_retries;
-stepStruct1.Control.time_stepper.opt_iter=opt_iter;
-stepStruct1.Control.max_refs=max_refs;
-stepStruct1.Control.max_ups=max_ups;
-stepStruct1.Control.symmetric_stiffness=symmetric_stiffness; 
-stepStruct1.Control.min_residual=min_residual;
-
-stepStruct2.Control.analysis.ATTR.type=analysisType2;
-stepStruct2.Control.time_steps=numTimeSteps2;
-stepStruct2.Control.step_size=step_size2;
-stepStruct2.Control.time_stepper.dtmin=dtmin2;
-stepStruct2.Control.time_stepper.dtmax=dtmax2; 
-stepStruct2.Control.time_stepper.max_retries=max_retries;
-stepStruct2.Control.time_stepper.opt_iter=opt_iter;
-stepStruct2.Control.max_refs=max_refs;
-stepStruct2.Control.max_ups=max_ups;
-stepStruct2.Control.symmetric_stiffness=symmetric_stiffness; 
-stepStruct2.Control.min_residual=min_residual;
-
-%Add template based default settings to proposed control section
-[stepStruct1.Control]=structComplete(stepStruct1.Control,febio_spec.Control,1); %Complement provided with default if missing
-[stepStruct2.Control]=structComplete(stepStruct2.Control,febio_spec.Control,1); %Complement provided with default if missing
-
-%Remove control field (part of template) since step specific control sections are used
-febio_spec=rmfield(febio_spec,'Control'); 
-
-febio_spec.Step{1}.Control=stepStruct1.Control;
-febio_spec.Step{1}.ATTR.id=1;
-febio_spec.Step{2}.Control=stepStruct2.Control;
-febio_spec.Step{2}.ATTR.id=2;
+febio_spec.Control.analysis.ATTR.type=analysisType;
+febio_spec.Control.time_steps=numTimeSteps;
+febio_spec.Control.step_size=1/numTimeSteps;
+febio_spec.Control.time_stepper.dtmin=dtmin;
+febio_spec.Control.time_stepper.dtmax=dtmax; 
+febio_spec.Control.time_stepper.max_retries=max_retries;
+febio_spec.Control.time_stepper.opt_iter=opt_iter;
+febio_spec.Control.max_refs=max_refs;
+febio_spec.Control.max_ups=max_ups;
+febio_spec.Control.symmetric_stiffness=symmetric_stiffness; 
+febio_spec.Control.min_residual=min_residual;
 
 %Material section
 febio_spec.Material.material{1}.ATTR.type='Ogden unconstrained';
@@ -302,14 +268,6 @@ febio_spec.Geometry.SurfacePair{1}.slave.ATTR.surface=febio_spec.Geometry.Surfac
 
 %Boundary condition section 
 % -> Fix boundary conditions
-% febio_spec.Boundary.fix{1}.ATTR.bc='x';
-% febio_spec.Boundary.fix{1}.ATTR.node_set=febio_spec.Geometry.NodeSet{1}.ATTR.name;
-% febio_spec.Boundary.fix{1}.ATTR.bc='y';
-% febio_spec.Boundary.fix{1}.ATTR.node_set=febio_spec.Geometry.NodeSet{1}.ATTR.name;
-% febio_spec.Boundary.fix{2}.ATTR.bc='z';
-% febio_spec.Boundary.fix{2}.ATTR.node_set=febio_spec.Geometry.NodeSet{1}.ATTR.name;
-
-
 febio_spec.Loads.body_load{1}.ATTR.type='const';
 febio_spec.Loads.body_load{1}.x.VAL=bodyLoadMagnitude;
 febio_spec.Loads.body_load{1}.x.ATTR.lc=1;
@@ -342,7 +300,7 @@ febio_spec.Contact.contact{1}.fric_coeff=fric_coeff;
 %LoadData
 febio_spec.LoadData.loadcurve{1}.ATTR.id=1;
 febio_spec.LoadData.loadcurve{1}.ATTR.type='linear';
-febio_spec.LoadData.loadcurve{1}.point.VAL=[0 0; timeTotal1 1; timeTotal 1];
+febio_spec.LoadData.loadcurve{1}.point.VAL=[0 0; timeTotal 1; timeTotal 1];
 
 %Output section 
 % -> log file
@@ -393,38 +351,23 @@ febioAnalysis.maxLogCheckTime=10; %Max log file checking time
 
 if 1%runFlag==1 %i.e. a succesful run
     
+    %% 
     % Importing nodal displacements from a log file
-    [time_mat, N_disp_mat,~]=importFEBio_logfile(fullfile(savePath,febioLogFileName_disp)); %Nodal displacements    
-    time_mat=[0; time_mat(:)]; %Time
-
-    N_disp_mat=N_disp_mat(:,2:end,:);
-    sizImport=size(N_disp_mat);
-    sizImport(3)=sizImport(3)+1;
-    N_disp_mat_n=zeros(sizImport);
-    N_disp_mat_n(:,:,2:end)=N_disp_mat;
-    N_disp_mat=N_disp_mat_n;
-    DN=N_disp_mat(:,:,end);
-    DN_magnitude=sqrt(sum(DN.^2,2));
-    V_def=V+DN;
+    dataStruct=importFEBio_logfile(fullfile(savePath,febioLogFileName_disp),1,1);
+    
+    %Access data
+    N_disp_mat=dataStruct.data; %Displacement
+    timeVec=dataStruct.time; %Time
+    
+    %Create deformed coordinate set
     V_DEF=N_disp_mat+repmat(V,[1 1 size(N_disp_mat,3)]);
-    X_DEF=V_DEF(:,1,:);
-    Y_DEF=V_DEF(:,2,:);
-    Z_DEF=V_DEF(:,3,:);
-    %     [CF]=vertexToFaceMeasure(Fb_all,DN_magnitude);
     
     %%
-    % Importing element strain energies from a log file
-    [~,E_energy,~]=importFEBio_logfile(fullfile(savePath,febioLogFileName_strainEnergy)); %Element stresses
+    % Importing element stress from a log file
+    dataStruct=importFEBio_logfile(fullfile(savePath,febioLogFileName_strainEnergy),1,1);
     
-    %Remove nodal index column
-    E_energy=E_energy(:,2:end,:);
-    
-    %Add initial state i.e. zero displacement
-    sizImport=size(E_energy);
-    sizImport(3)=sizImport(3)+1;
-    E_energy_mat_n=zeros(sizImport);
-    E_energy_mat_n(:,:,2:end)=E_energy;
-    E_energy=E_energy_mat_n;
+    %Access data
+    E_energy=dataStruct.data;
     
     %%
     
@@ -452,20 +395,22 @@ if 1%runFlag==1 %i.e. a succesful run
     % Plotting the simulated results using |anim8| to visualize and animate
     % deformations 
     
+    DN_magnitude=sqrt(sum(N_disp_mat(:,:,end).^2,2)); %Current displacement magnitude
+        
     % Create basic view and store graphics handle to initiate animation
     hf=cFigure; hold on;
     ht=gtitle(['Radial stretch: ',num2str(rMid/sphereRadius)]);
-    hp1=gpatch(Fb_blob,V_def,DN_magnitude,'none',1); %Add graphics object to animate
+    hp1=gpatch(Fb_blob,V_DEF(:,:,end),DN_magnitude,'none',1); %Add graphics object to animate
     
     hp2=plotV(V_plot_xEnd  ,'r-','LineWidth',3);    
     hp3=plotV(V_plot_xMid  ,'r-','LineWidth',3);    
     hp4=plotV(V_plot_xStart,'r-','LineWidth',3);    
     
-    gpatch(F_tube,V_def,'kw','none',0.25); %Add graphics object to animate
+    gpatch(F_tube,V_DEF(:,:,end),'kw','none',0.25); %Add graphics object to animate
     axisGeom(gca,fontSize); 
     colormap(cMap); colorbar;
     caxis([0 max(DN_magnitude(:))]); caxis manual;
-    axis([min(X_DEF(:)) max(X_DEF(:)) min(Y_DEF(:)) max(Y_DEF(:)) min(Z_DEF(:)) max(Z_DEF(:))]);
+    axis(axisLim(V_DEF)); %Set axis limits statically    
     camlight headlight; lighting gouraud;
     view(0,0);
 %     view(-30,30); zoom(1.5);
@@ -475,11 +420,11 @@ if 1%runFlag==1 %i.e. a succesful run
     LMid=1;
     
     % Set up animation features
-    animStruct.Time=time_mat; %The time vector    
+    animStruct.Time=timeVec; %The time vector    
     for qt=1:1:size(N_disp_mat,3) %Loop over time increments        
         DN=N_disp_mat(:,:,qt); %Current displacement
         DN_magnitude=sqrt(sum(DN.^2,2));
-        V_def=V+DN; %Current nodal coordinates
+        V_def=V_DEF(:,:,qt); %Current nodal coordinates
                 
         V_def_blob=V_def(indBlob,:);
         [~,indMin]=min(V_def_blob(:,1));

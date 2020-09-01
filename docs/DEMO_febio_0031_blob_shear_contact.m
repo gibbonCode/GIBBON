@@ -507,59 +507,49 @@ febioAnalysis.maxLogCheckTime=10; %Max log file checking time
 
 if 1%runFlag==1 %i.e. a succesful run
     
+    %% 
     % Importing nodal displacements from a log file
-    [time_mat, N_disp_mat,~]=importFEBio_logfile(fullfile(savePath,febioLogFileName_disp)); %Nodal displacements    
-    time_mat=[0; time_mat(:)]; %Time
-
-    N_disp_mat=N_disp_mat(:,2:end,:);
-    sizImport=size(N_disp_mat);
-    sizImport(3)=sizImport(3)+1;
-    N_disp_mat_n=zeros(sizImport);
-    N_disp_mat_n(:,:,2:end)=N_disp_mat;
-    N_disp_mat=N_disp_mat_n;
-    DN=N_disp_mat(:,:,end);
-    DN_magnitude=sqrt(sum(DN(:,3).^2,2));
-    V_def=V+DN;
-    V_DEF=N_disp_mat+repmat(V,[1 1 size(N_disp_mat,3)]);
-    X_DEF=V_DEF(:,1,:);
-    Y_DEF=V_DEF(:,2,:);
-    Z_DEF=V_DEF(:,3,:);
-%     [CF]=vertexToFaceMeasure(Fb_all,DN_magnitude);
+    dataStruct=importFEBio_logfile(fullfile(savePath,febioLogFileName_disp),1,1);
     
-    % 
+    %Access data
+    N_disp_mat=dataStruct.data; %Displacement
+    timeVec=dataStruct.time; %Time
+    
+    %Create deformed coordinate set
+    V_DEF=N_disp_mat+repmat(V,[1 1 size(N_disp_mat,3)]);
+    
+    %%  
     % Plotting the simulated results using |anim8| to visualize and animate
     % deformations 
     
+    DN_magnitude=sqrt(sum(N_disp_mat(:,:,end).^2,2)); %Current displacement magnitude
+        
     % Create basic view and store graphics handle to initiate animation
     hf=cFigure; hold on;
     gtitle([febioFebFileNamePart,': Press play to animate']);
-    hp1=gpatch(Fb_blob,V_def,DN_magnitude,'k',1); %Add graphics object to animate
-    hp2=gpatch(F_probe,V_def,'kw','none',0.5); %Add graphics object to animate
-    hp3=gpatch(F_plate,V_def,'kw','none',0.5); %Add graphics object to animate
-%     gpatch(Fb_all,V,0.5*ones(1,3),'none',0.25); %A static graphics object
+    hp1=gpatch(Fb_blob,V_DEF(:,:,end),DN_magnitude,'k',1); %Add graphics object to animate
+    hp1.FaceColor='interp';
+    hp2=gpatch(F_probe,V_DEF(:,:,end),'kw','none',0.5); %Add graphics object to animate
+    hp3=gpatch(F_plate,V_DEF(:,:,end),'kw','none',0.5); %Add graphics object to animate
     
     axisGeom(gca,fontSize); 
     colormap(gjet(250)); colorbar;
-    caxis([0 max(DN_magnitude)]); caxis manual;
-    axis([min(X_DEF(:)) max(X_DEF(:)) min(Y_DEF(:)) max(Y_DEF(:)) min(Z_DEF(:)) max(Z_DEF(:))]);
+    caxis([0 max(DN_magnitude)]/3);
+    axis(axisLim(V_DEF)); %Set axis limits statically  
     camlight headlight;
-    view(15,8); 
     drawnow; 
+    
     % Set up animation features
-    animStruct.Time=time_mat; %The time vector    
-    for qt=1:1:size(N_disp_mat,3) %Loop over time increments        
-        DN=N_disp_mat(:,:,qt); %Current displacement
-        DN_magnitude=sqrt(sum(DN.^2,2)); %Current displacement magnitude
-        V_def=V+DN; %Current nodal coordinates
-%         [CF]=vertexToFaceMeasure(Fb_all,DN_magnitude); %Current color data to use
+    animStruct.Time=timeVec; %The time vector
+    for qt=1:1:size(N_disp_mat,3) %Loop over time increments
+        DN_magnitude=sqrt(sum(N_disp_mat(:,:,qt).^2,2)); %Current displacement magnitue
         
         %Set entries in animation structure
         animStruct.Handles{qt}=[hp1 hp1 hp2 hp3]; %Handles of objects to animate
         animStruct.Props{qt}={'Vertices','CData','Vertices','Vertices'}; %Properties of objects to animate
-        animStruct.Set{qt}={V_def,DN_magnitude,V_def,V_def}; %Property values for to set in order to animate
-    end        
-    anim8(hf,animStruct); %Initiate animation feature    
-    caxis([0 max(DN_magnitude)]); caxis manual;
+        animStruct.Set{qt}={V_DEF(:,:,qt),DN_magnitude,V_DEF(:,:,qt),V_DEF(:,:,qt)}; %Property values for to set in order to animate
+    end
+    anim8(hf,animStruct); %Initiate animation feature
     drawnow;
 
 end

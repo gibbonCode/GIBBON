@@ -29,6 +29,7 @@ clear; close all; clc;
 fontSize=20;
 faceAlpha1=0.8;
 markerSize=40;
+markerSize2=20;
 lineWidth=3;
 
 %% Control parameters
@@ -311,84 +312,57 @@ febioAnalysis.maxLogCheckTime=10; %Max log file checking time
 
 if runFlag==1 %i.e. a succesful run
     
+ %% 
     % Importing nodal displacements from a log file
-    [~, N_disp_mat,~]=importFEBio_logfile(fullfile(savePath,febioLogFileName_disp)); %Nodal displacements    
+    dataStruct=importFEBio_logfile(fullfile(savePath,febioLogFileName_disp),1,1);
     
-    N_disp_mat=N_disp_mat(:,2:end,:);
-    sizImport=size(N_disp_mat);
-    sizImport(3)=sizImport(3)+1;
-    N_disp_mat_n=zeros(sizImport);
-    N_disp_mat_n(:,:,2:end)=N_disp_mat;
-    N_disp_mat=N_disp_mat_n;
-    DN=N_disp_mat(:,:,end);
-    DN_magnitude=sqrt(sum(DN(:,3).^2,2));
-    V_def=V+DN;
-    [CF]=vertexToFaceMeasure(Fb,DN_magnitude);
+    %Access data
+    N_disp_mat=dataStruct.data; %Displacement
+    timeVec=dataStruct.time; %Time
     
-    % Importing element stress from a log file
-    [time_mat, E_stress_mat,~]=importFEBio_logfile(fullfile(savePath,febioLogFileName_stress)); %Element stresses
-    time_mat=[0; time_mat(:)]; %Time
-    stress_cauchy_sim=[0; mean(squeeze(E_stress_mat(:,end,:)),1)'];
-    
+    %Create deformed coordinate set
+    V_DEF=N_disp_mat+repmat(V,[1 1 size(N_disp_mat,3)]);
+               
     %% 
     % Plotting the simulated results using |anim8| to visualize and animate
     % deformations 
     
+    DN_magnitude=sqrt(sum(N_disp_mat(:,:,end).^2,2)); %Current displacement magnitude
+        
     % Create basic view and store graphics handle to initiate animation
     hf=cFigure; %Open figure  
     gtitle([febioFebFileNamePart,': Press play to animate']);
-    hp=gpatch(Fb,V_def,CF,'k',1); %Add graphics object to animate
+    title('Displacement magnitude [mm]','Interpreter','Latex')
+    hp=gpatch(Fb,V_DEF(:,:,end),DN_magnitude,'k',1); %Add graphics object to animate
+    hp.Marker='.';
+    hp.MarkerSize=markerSize2;
+    hp.FaceColor='interp';
     gpatch(Fb,V,0.5*ones(1,3),'k',0.25); %A static graphics object
     
     axisGeom(gca,fontSize); 
     colormap(gjet(250)); colorbar;
     caxis([0 max(DN_magnitude)]);    
-    axis([min(V_def(:,1)) max(V_def(:,1)) min(V_def(:,2)) max(V_def(:,2)) min(V_def(:,3)) max(V_def(:,3))]); %Set axis limits statically
-    view(130,25); %Set view direction
+    axis(axisLim(V_DEF)); %Set axis limits statically    
     camlight headlight;        
         
     % Set up animation features
-    animStruct.Time=time_mat; %The time vector    
+    animStruct.Time=timeVec; %The time vector    
     for qt=1:1:size(N_disp_mat,3) %Loop over time increments        
-        DN=N_disp_mat(:,:,qt); %Current displacement
-        DN_magnitude=sqrt(sum(DN.^2,2)); %Current displacement magnitude
-        V_def=V+DN; %Current nodal coordinates
-        [CF]=vertexToFaceMeasure(Fb,DN_magnitude); %Current color data to use
-        
+        DN_magnitude=sqrt(sum(N_disp_mat(:,:,qt).^2,2)); %Current displacement magnitude
+                
         %Set entries in animation structure
         animStruct.Handles{qt}=[hp hp]; %Handles of objects to animate
         animStruct.Props{qt}={'Vertices','CData'}; %Properties of objects to animate
-        animStruct.Set{qt}={V_def,CF}; %Property values for to set in order to animate
+        animStruct.Set{qt}={V_DEF(:,:,qt),DN_magnitude}; %Property values for to set in order to animate
     end        
     anim8(hf,animStruct); %Initiate animation feature    
     drawnow;
     
-    %% 
-    % Calculate the simulated applied uniaxial stretch
-    
-    DZ_set=N_disp_mat(bcPrescribeList,end,:); %Z displacements of the prescribed set
-    DZ_set=mean(DZ_set,1); %Calculate mean Z displacements across nodes
-    stretch_sim=(DZ_set(:)+sampleHeight)./sampleHeight; %Derive stretch
-        
-    %%    
-    % Visualize stress-stretch curve
-    
-    cFigure;
-    hold on;    
-    title('Uniaxial stress-stretch curve','FontSize',fontSize);
-    xlabel('\lambda Stretch [.]','FontSize',fontSize); ylabel('\sigma Cauchy stress [MPa]','FontSize',fontSize); 
-    
-    plot(stretch_sim(:),stress_cauchy_sim(:),'r-','lineWidth',lineWidth);
-    
-    view(2); axis tight;  grid on; axis square; box on; 
-    set(gca,'FontSize',fontSize);
-    drawnow;
-    
     %% IMPORTING ELEMENT STIFFNESS MATRICES
     % Importing element stiffness tensors from a log file
-    [~,stiffness_mat,~]=importFEBio_logfile(fullfile(savePath,febioLogFileName_stiffness)); %Nodal forces
+    dataStruct=importFEBio_logfile(fullfile(savePath,febioLogFileName_stiffness),0,1); %Nodal forces
     
-    stiffness_mat=stiffness_mat(:,2:end,end); %Final stiffness state
+    stiffness_mat=dataStruct.data(:,1:end,end); %Final stiffness state
     
     stiffness_mat_voigt=stiffness_mat(:,[1  2  4  11 16 7;...
                                          2  3  5  12 17 8;...

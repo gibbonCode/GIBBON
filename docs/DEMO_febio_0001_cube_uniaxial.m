@@ -310,14 +310,7 @@ if runFlag==1 %i.e. a succesful run
     
     %Create deformed coordinate set
     V_DEF=N_disp_mat+repmat(V,[1 1 size(N_disp_mat,3)]);
-        
-    %%
-    % Importing element stress from a log file
-    dataStruct=importFEBio_logfile(fullfile(savePath,febioLogFileName_stress),1,1);     
-    
-    %Access data
-    E_stress_mat=dataStruct.data;
-       
+               
     %% 
     % Plotting the simulated results using |anim8| to visualize and animate
     % deformations 
@@ -336,7 +329,7 @@ if runFlag==1 %i.e. a succesful run
     
     axisGeom(gca,fontSize); 
     colormap(gjet(250)); colorbar;
-    caxis([0 max(DN_magnitude)]);    
+    caxis([0 max(DN_magnitude)]); caxis manual;   
     axis(axisLim(V_DEF)); %Set axis limits statically    
     camlight headlight;        
         
@@ -353,6 +346,13 @@ if runFlag==1 %i.e. a succesful run
     anim8(hf,animStruct); %Initiate animation feature    
     drawnow;
             
+    %%
+    % Importing element stress from a log file
+    dataStruct=importFEBio_logfile(fullfile(savePath,febioLogFileName_stress),1,1);
+    
+    %Access data
+    E_stress_mat=dataStruct.data;
+    
     %% 
     % Plotting the simulated results using |anim8| to visualize and animate
     % deformations 

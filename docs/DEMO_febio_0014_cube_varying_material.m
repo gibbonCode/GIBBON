@@ -46,7 +46,7 @@ febioLogFileName_force=[febioFebFileNamePart,'_force_out.txt']; %Log file name f
 febioLogFileName_stress=[febioFebFileNamePart,'_stress_out.txt']; %Log file name for exporting force
 
 %Specifying dimensions and number of elements
-pointSpacings=0.4*ones(1,3); %Desired point spacing between nodes
+pointSpacings=0.5*ones(1,3); %Desired point spacing between nodes
 cubeSize=10; 
 sampleWidth=cubeSize; %Width 
 sampleThickness=cubeSize; %Thickness 
@@ -56,7 +56,7 @@ numElementsThickness=round(sampleThickness/pointSpacings(2)); %Number of elemens
 numElementsHeight=round(sampleHeight/pointSpacings(3)); %Number of elemens in dir 3
 
 %Define applied displacement 
-appliedStrain=0.2; %Linear strain (Only used to compute applied stretch)
+appliedStrain=0.1; %Linear strain (Only used to compute applied stretch)
 loadingOption='tension'; % or 'compression'
 switch loadingOption
     case 'compression'
@@ -70,7 +70,7 @@ displacementMagnitude=(stretchLoad*sampleHeight)-sampleHeight; %The displacement
 testOpt=2; %1=Linear gradient of material, or 2=gyroid based material distribution
 numMaterialLevels=numElementsWidth;
 c1_range=linspace(1e-6,1e-3,numMaterialLevels); %Shear-modulus-like parameter
-m1_range=8*ones(1,numMaterialLevels); %Material parameter setting degree of non-linearity
+m1_range=2*ones(1,numMaterialLevels); %Material parameter setting degree of non-linearity
 k_factor=1e2; %Bulk modulus factor 
 k_range=c1_range*k_factor; %Bulk modulus
 
@@ -344,68 +344,91 @@ febioAnalysis.maxLogCheckTime=10; %Max log file checking time
 
 if runFlag==1 %i.e. a succesful run
     
+     %% 
     % Importing nodal displacements from a log file
-    [~, N_disp_mat,~]=importFEBio_logfile(fullfile(savePath,febioLogFileName_disp)); %Nodal displacements    
+    dataStruct=importFEBio_logfile(fullfile(savePath,febioLogFileName_disp),1,1);
     
-    N_disp_mat=N_disp_mat(:,2:end,:);
-    sizImport=size(N_disp_mat);
-    sizImport(3)=sizImport(3)+1;
-    N_disp_mat_n=zeros(sizImport);
-    N_disp_mat_n(:,:,2:end)=N_disp_mat;
-    N_disp_mat=N_disp_mat_n;
-    DN=N_disp_mat(:,:,end);
-    DN_magnitude=sqrt(sum(DN.^2,2));
-    V_def=V+DN;
-    [CF]=vertexToFaceMeasure(Fb,DN_magnitude);
+    %Access data
+    N_disp_mat=dataStruct.data; %Displacement
+    timeVec=dataStruct.time; %Time
     
-    % Importing element stress from a log file
-    [time_mat, E_stress_mat,~]=importFEBio_logfile(fullfile(savePath,febioLogFileName_stress)); %Nodal forces
-    time_mat=[0; time_mat(:)]; %Time
-        
-    E_stress_mat=E_stress_mat(:,2:end,:);
-    sizImport=size(E_stress_mat);
-    sizImport(3)=sizImport(3)+1;
-    E_stress_mat_n=zeros(sizImport);
-    E_stress_mat_n(:,:,2:end)=E_stress_mat;
-    E_stress_mat=E_stress_mat_n;
-
-    S1=E_stress_mat;
-    
-    [FE,CE]=element2patch(E,S1(:,1,end),'hex8');
-        
+    %Create deformed coordinate set
+    V_DEF=N_disp_mat+repmat(V,[1 1 size(N_disp_mat,3)]);
+               
     %% 
     % Plotting the simulated results using |anim8| to visualize and animate
     % deformations 
     
+    DN_magnitude=sqrt(sum(N_disp_mat(:,:,end).^2,2)); %Current displacement magnitude
+        
     % Create basic view and store graphics handle to initiate animation
     hf=cFigure; %Open figure  
     gtitle([febioFebFileNamePart,': Press play to animate']);
-    CP=DN_magnitude;
-    hp=gpatch(FE,V_def,CE,'k',1); %Add graphics object to animate
-    gpatch(Fb,V,0.5*ones(1,3),'none',0.25); %A static graphics object
+    title('Displacement magnitude [mm]','Interpreter','Latex')
+    hp=gpatch(Fb,V_DEF(:,:,end),DN_magnitude,'k',1); %Add graphics object to animate
+    hp.FaceColor='interp';
     
     axisGeom(gca,fontSize); 
     colormap(gjet(250)); colorbar;
-    caxis([min(S1(:)) max(S1(:))]);    
-    axis([min(V_def(:,1)) max(V_def(:,1)) min(V_def(:,2)) max(V_def(:,2)) min(V_def(:,3)) max(V_def(:,3))]); %Set axis limits statically
+    caxis([0 max(DN_magnitude)]);    
+    axis(axisLim(V_DEF)); %Set axis limits statically    
     camlight headlight;        
         
     % Set up animation features
-    animStruct.Time=time_mat; %The time vector    
+    animStruct.Time=timeVec; %The time vector    
     for qt=1:1:size(N_disp_mat,3) %Loop over time increments        
-        DN=N_disp_mat(:,:,qt); %Current displacement        
-        V_def=V+DN; %Current nodal coordinates
-%         DN_magnitude=sqrt(sum(DN.^2,2));
-        [~,CE]=element2patch(E,S1(:,1,qt),'hex8');
+        DN_magnitude=sqrt(sum(N_disp_mat(:,:,qt).^2,2)); %Current displacement magnitude
+                
+        %Set entries in animation structure
+        animStruct.Handles{qt}=[hp hp]; %Handles of objects to animate
+        animStruct.Props{qt}={'Vertices','CData'}; %Properties of objects to animate
+        animStruct.Set{qt}={V_DEF(:,:,qt),DN_magnitude}; %Property values for to set in order to animate
+    end        
+    anim8(hf,animStruct); %Initiate animation feature    
+    drawnow;
+            
+    %%
+    % Importing element stress from a log file
+    dataStruct=importFEBio_logfile(fullfile(savePath,febioLogFileName_stress),1,1);
+    
+    %Access data
+    E_stress_mat=dataStruct.data;
+    
+    E_stress_mat(isnan(E_stress_mat))=0;
+    
+    %% 
+    % Plotting the simulated results using |anim8| to visualize and animate
+    % deformations 
+    
+    [CV]=faceToVertexMeasure(E,V,E_stress_mat(:,:,end));
+    
+    % Create basic view and store graphics handle to initiate animation
+    hf=cFigure; %Open figure  
+    gtitle([febioFebFileNamePart,': Press play to animate']);
+    title('$\sigma_{1}$ [MPa]','Interpreter','Latex')
+    hp=gpatch(Fb,V_DEF(:,:,end),CV,'k',1); %Add graphics object to animate
+    hp.FaceColor='interp';
+    
+    axisGeom(gca,fontSize); 
+    colormap(gjet(250)); colorbar;
+    caxis([min(E_stress_mat(:)) max(E_stress_mat(:))]/3);    
+    axis(axisLim(V_DEF)); %Set axis limits statically    
+    camlight headlight;        
+        
+    % Set up animation features
+    animStruct.Time=timeVec; %The time vector    
+    for qt=1:1:size(N_disp_mat,3) %Loop over time increments        
+        
+        [CV]=faceToVertexMeasure(E,V,E_stress_mat(:,:,qt));
         
         %Set entries in animation structure
         animStruct.Handles{qt}=[hp hp]; %Handles of objects to animate
         animStruct.Props{qt}={'Vertices','CData'}; %Properties of objects to animate
-        animStruct.Set{qt}={V_def,CE}; %Property values for to set in order to animate
+        animStruct.Set{qt}={V_DEF(:,:,qt),CV}; %Property values for to set in order to animate
     end        
     anim8(hf,animStruct); %Initiate animation feature    
     drawnow;
-
+    
 end
 
 %% 

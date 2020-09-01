@@ -42,9 +42,7 @@ febioFebFileNamePart='tempModel';
 febioFebFileName=fullfile(savePath,[febioFebFileNamePart,'.feb']); %FEB file name
 febioLogFileName=fullfile(savePath,[febioFebFileNamePart,'.txt']); %FEBio log file name
 febioLogFileName_disp=[febioFebFileNamePart,'_disp_out.txt']; %Log file name for exporting displacement
-febioLogFileName_stress=[febioFebFileNamePart,'_stress_out.txt']; %Log file name for exporting stress
 febioLogFileName_strain=[febioFebFileNamePart,'_strain_out.txt']; %Log file name for exporting strain
-febioLogFileName_volumeRatio=[febioFebFileNamePart,'_volumeRatio_out.txt']; %Log file name for exporting volume ratio
 
 %Contact parameters
 %***
@@ -163,6 +161,8 @@ F2=F2+size(V1,1);
 E=[F1 F2];
 V=[V1;V2];
 [FE]=element2patch(E,[],'hex8');
+indBoundary=tesBoundary(FE,V);
+Fb=FE(indBoundary,:);
 
 %Meshing balloon surface
 [Fs,Vs]=polyLoftLinear(v1_balloon,v2_balloon,controlStructLoft);
@@ -194,7 +194,6 @@ icolorbar;
 axisGeom(gca,fontSize);
 camlight headlight;
 drawnow;
-
 
 %% Joining node sets
 
@@ -536,20 +535,10 @@ febio_spec.Output.logfile.node_data{1}.ATTR.data='ux;uy;uz';
 febio_spec.Output.logfile.node_data{1}.ATTR.delim=',';
 febio_spec.Output.logfile.node_data{1}.VAL=1:size(V,1);
 
-febio_spec.Output.logfile.element_data{1}.ATTR.file=febioLogFileName_stress;
-febio_spec.Output.logfile.element_data{1}.ATTR.data='s1;s2;s3';
+febio_spec.Output.logfile.element_data{1}.ATTR.file=febioLogFileName_strain;
+febio_spec.Output.logfile.element_data{1}.ATTR.data='E1';
 febio_spec.Output.logfile.element_data{1}.ATTR.delim=',';
 febio_spec.Output.logfile.element_data{1}.VAL=1:size(E,1);
-
-febio_spec.Output.logfile.element_data{2}.ATTR.file=febioLogFileName_strain;
-febio_spec.Output.logfile.element_data{2}.ATTR.data='E1;E2;E3';
-febio_spec.Output.logfile.element_data{2}.ATTR.delim=',';
-febio_spec.Output.logfile.element_data{2}.VAL=1:size(E,1);
-
-febio_spec.Output.logfile.element_data{3}.ATTR.file=febioLogFileName_volumeRatio;
-febio_spec.Output.logfile.element_data{3}.ATTR.data='J';
-febio_spec.Output.logfile.element_data{3}.ATTR.delim=',';
-febio_spec.Output.logfile.element_data{3}.VAL=1:size(E,1);
 
 %% Quick viewing of the FEBio input file structure
 % The |febView| function can be used to view the xml structure in a MATLAB
@@ -583,108 +572,107 @@ febioAnalysis.maxLogCheckTime=10; %Max log file checking time
 
 [runFlag]=runMonitorFEBio(febioAnalysis);%START FEBio NOW!!!!!!!!
 
-%% Import FEBio results
+%% Import FEBio results 
 
 if runFlag==1 %i.e. a succesful run
     
+    %% 
     % Importing nodal displacements from a log file
-    [time_mat, N_disp_mat,~]=importFEBio_logfile(fullfile(savePath,febioLogFileName_disp)); %Nodal displacements
-    time_mat=[0; time_mat(:)]; %Time
+    dataStruct=importFEBio_logfile(fullfile(savePath,febioLogFileName_disp),1,1);
     
-    N_disp_mat=N_disp_mat(:,2:end,:);
-    sizImport=size(N_disp_mat);
-    sizImport(3)=sizImport(3)+1;
-    N_disp_mat_n=zeros(sizImport);
-    N_disp_mat_n(:,:,2:end)=N_disp_mat;
-    N_disp_mat=N_disp_mat_n;
+    %Access data
+    N_disp_mat=dataStruct.data; %Displacement
+    timeVec=dataStruct.time; %Time
     
-    DN_MAG=sqrt(sum(N_disp_mat.^2,2));
-    DN=N_disp_mat(:,:,end);
-    DN_magnitude=sqrt(sum(DN(:,3).^2,2));
-    V_def=V+DN;
+    %Create deformed coordinate set
     V_DEF=N_disp_mat+repmat(V,[1 1 size(N_disp_mat,3)]);
-    X_DEF=V_DEF(:,1,:);
-    Y_DEF=V_DEF(:,2,:);
-    Z_DEF=V_DEF(:,3,:);
-    %     [CF]=vertexToFaceMeasure(Fb,DN_magnitude);
+               
+    %% 
+    % Plotting the simulated results using |anim8| to visualize and animate
+    % deformations 
     
-    for q=1:1:numel(febio_spec.Output.logfile.element_data)
+    DN_magnitude=sqrt(sum(N_disp_mat(:,:,end).^2,2)); %Current displacement magnitude
         
-        elementDataFileName=febio_spec.Output.logfile.element_data{q}.ATTR.file;
+    % Create basic view and store graphics handle to initiate animation
+    hf=cFigure; %Open figure  
+    gtitle([febioFebFileNamePart,': Press play to animate']);
+    title('Displacement magnitude [mm]','Interpreter','Latex')
+    hp=gpatch(Fb,V_DEF(:,:,end),DN_magnitude,'k',1); %Add graphics object to animate
+    hp.FaceColor='interp';
+    hp2=gpatch(Fs,V,'w','k',1); %A static graphics object
+    
+    axisGeom(gca,fontSize); 
+    colormap(gjet(250)); colorbar;
+    caxis([0 max(DN_magnitude)]);    
+    axis(axisLim(V_DEF)); %Set axis limits statically    
+    camlight headlight;        
         
-        % Importing element data from log file
-        [~,E_data,~]=importFEBio_logfile(fullfile(savePath,elementDataFileName)); %Element data
-        
-        %Remove nodal index column
-        E_data=E_data(:,2:end,:);
-        
-        %Add initial state
-        sizImport=size(E_data);
-        sizImport(3)=sizImport(3)+1;
-        if strcmp('J',febio_spec.Output.logfile.element_data{q}.ATTR.data)
-            E_data_mat_n=ones(sizImport);
-        else
-            E_data_mat_n=zeros(sizImport);
-        end
-        E_data_mat_n(:,:,2:end)=E_data;
-        E_data=E_data_mat_n;
-        
-        for qd=1:1:size(E_data,2)
-            E_data_now=E_data(:,qd,:);
-            
-            [F,CF]=element2patch(E,E_data_now(:,:,1));
-            
-            % Plotting the simulated results using |anim8| to visualize and animate
-            % deformations
-            
-            % Create basic view and store graphics handle to initiate animation
-            hf=cFigure; %Open figure
-            gtitle([febioFebFileNamePart,', data: ',febio_spec.Output.logfile.element_data{q}.ATTR.data,', index: ',num2str(qd)]);
-            
-            hold on;
-            hp1=gpatch(F,V_def,CF,'k',1); %Add graphics object to animate
-            hp2=gpatch(Fs,V_def,'kw','k',1); %Add graphics object to animate
-            %     gpatch(FE,V,0.5*ones(1,3),'k',0.25); %A static graphics object
-            
-            colormap(gca,gjet(250)); hc=colorbar;
-            
-            caxis([min(E_data_now(:)) max(E_data_now(:))]);
-            axisGeom(gca,fontSize);
-            axis([min(X_DEF(:)) max(X_DEF(:)) min(Y_DEF(:)) max(Y_DEF(:)) min(Z_DEF(:)) max(Z_DEF(:))]);
-            axis manual;
-            camlight headlight;
-            drawnow;
-            
-            % Set up animation features
-            animStruct.Time=time_mat; %The time vector
-            for qt=1:1:size(N_disp_mat,3) %Loop over time increments
-                DN=N_disp_mat(:,:,qt); %Current displacement
-                DN_magnitude=sqrt(sum(DN.^2,2)); %Current displacement magnitude
-                V_def=V+DN; %Current nodal coordinates
-                [~,CF]=element2patch(E,E_data_now(:,:,qt));
+    % Set up animation features
+    animStruct.Time=timeVec; %The time vector    
+    for qt=1:1:size(N_disp_mat,3) %Loop over time increments        
+        DN_magnitude=sqrt(sum(N_disp_mat(:,:,qt).^2,2)); %Current displacement magnitude
                 
-                %Set entries in animation structure
-                animStruct.Handles{qt}=[hp1 hp1 hp2]; %Handles of objects to animate
-                animStruct.Props{qt}={'Vertices','CData','Vertices',}; %Properties of objects to animate
-                animStruct.Set{qt}={V_def,CF,V_def}; %Property values for to set in order to animate
-            end
-            anim8(hf,animStruct); %Initiate animation feature
-            drawnow;
+        %Set entries in animation structure
+        animStruct.Handles{qt}=[hp hp hp2]; %Handles of objects to animate
+        animStruct.Props{qt}={'Vertices','CData','Vertices'}; %Properties of objects to animate
+        animStruct.Set{qt}={V_DEF(:,:,qt),DN_magnitude,V_DEF(:,:,qt)}; %Property values for to set in order to animate
+    end        
+    anim8(hf,animStruct); %Initiate animation feature    
+    drawnow;
             
-        end
-    end
+    %%
+    % Importing element stress from a log file
+    dataStruct=importFEBio_logfile(fullfile(savePath,febioLogFileName_strain),1,1);
     
+    %Access data
+    E_strain_mat=dataStruct.data;
+    E_strain_mat(isnan(E_strain_mat))=0;
+    
+    %% 
+    % Plotting the simulated results using |anim8| to visualize and animate
+    % deformations 
+    
+    [CV]=faceToVertexMeasure(E,V,E_strain_mat(:,:,end));
+    
+    % Create basic view and store graphics handle to initiate animation
+    hf=cFigure; %Open figure  
+    gtitle([febioFebFileNamePart,': Press play to animate']);
+    title('$\varepsilon_{1}$ [.]','Interpreter','Latex')
+    hp=gpatch(Fb,V_DEF(:,:,end),CV,'k',1); %Add graphics object to animate
+    hp.FaceColor='interp';
+    hp2=gpatch(Fs,V,'w','k',1); %A static graphics object
+    
+    axisGeom(gca,fontSize); 
+    colormap(gjet(250)); colorbar;
+    caxis([min(E_strain_mat(:)) max(E_strain_mat(:))]);    
+    axis(axisLim(V_DEF)); %Set axis limits statically    
+    camlight headlight;        
+        
+    % Set up animation features
+    animStruct.Time=timeVec; %The time vector    
+    for qt=1:1:size(N_disp_mat,3) %Loop over time increments        
+        
+        [CV]=faceToVertexMeasure(E,V,E_strain_mat(:,:,qt));
+        
+        %Set entries in animation structure
+        animStruct.Handles{qt}=[hp hp hp2]; %Handles of objects to animate
+        animStruct.Props{qt}={'Vertices','CData','Vertices'}; %Properties of objects to animate
+        animStruct.Set{qt}={V_DEF(:,:,qt),CV,V_DEF(:,:,qt)}; %Property values for to set in order to animate
+    end        
+    anim8(hf,animStruct); %Initiate animation feature    
+    drawnow;
+        
 end
 
-%%
+%% 
 %
 % <<gibbVerySmall.gif>>
-%
-% _*GIBBON*_
+% 
+% _*GIBBON*_ 
 % <www.gibboncode.org>
-%
+% 
 % _Kevin Mattheus Moerman_, <gibbon.toolbox@gmail.com>
-
+ 
 %% 
 % _*GIBBON footer text*_ 
 % 
