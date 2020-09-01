@@ -62,7 +62,7 @@ max_retries=5; %Maximum number of retires
 dtmin=(1/numTimeSteps)/100; %Minimum time step size
 dtmax=(1/numTimeSteps)*2; %Maximum time step size
 
-runMode='internal';%'internal';
+runMode='external';%'internal';
 
 %%
 
