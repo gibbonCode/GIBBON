@@ -1,0 +1,214 @@
+
+<!DOCTYPE html
+  PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html><head>
+      <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+   <!--
+This HTML was auto-generated from MATLAB code.
+To make changes, update the MATLAB code and republish this document.
+      --><title>stochasticMicrostructure</title><meta name="generator" content="MATLAB 9.8"><link rel="schema.DC" href="http://purl.org/dc/elements/1.1/"><meta name="DC.date" content="2020-09-18"><meta name="DC.source" content="HELP_stochasticMicrostructure.m"><style type="text/css">
+html,body,div,span,applet,object,iframe,h1,h2,h3,h4,h5,h6,p,blockquote,pre,a,abbr,acronym,address,big,cite,code,del,dfn,em,font,img,ins,kbd,q,s,samp,small,strike,strong,sub,sup,tt,var,b,u,i,center,dl,dt,dd,ol,ul,li,fieldset,form,label,legend,table,caption,tbody,tfoot,thead,tr,th,td{margin:0;padding:0;border:0;outline:0;font-size:100%;vertical-align:baseline;background:transparent}body{line-height:1}ol,ul{list-style:none}blockquote,q{quotes:none}blockquote:before,blockquote:after,q:before,q:after{content:'';content:none}:focus{outine:0}ins{text-decoration:none}del{text-decoration:line-through}table{border-collapse:collapse;border-spacing:0}
+
+html { min-height:100%; margin-bottom:1px; }
+html body { height:100%; margin:0px; font-family:Arial, Helvetica, sans-serif; font-size:10px; color:#000; line-height:140%; background:#fff none; overflow-y:scroll; }
+html body td { vertical-align:top; text-align:left; }
+
+h1 { padding:0px; margin:0px 0px 25px; font-family:Arial, Helvetica, sans-serif; font-size:1.5em; color:#d55000; line-height:100%; font-weight:normal; }
+h2 { padding:0px; margin:0px 0px 8px; font-family:Arial, Helvetica, sans-serif; font-size:1.2em; color:#000; font-weight:bold; line-height:140%; border-bottom:1px solid #d6d4d4; display:block; }
+h3 { padding:0px; margin:0px 0px 5px; font-family:Arial, Helvetica, sans-serif; font-size:1.1em; color:#000; font-weight:bold; line-height:140%; }
+
+a { color:#005fce; text-decoration:none; }
+a:hover { color:#005fce; text-decoration:underline; }
+a:visited { color:#004aa0; text-decoration:none; }
+
+p { padding:0px; margin:0px 0px 20px; }
+img { padding:0px; margin:0px 0px 20px; border:none; }
+p img, pre img, tt img, li img, h1 img, h2 img { margin-bottom:0px; }
+
+ul { padding:0px; margin:0px 0px 20px 23px; list-style:square; }
+ul li { padding:0px; margin:0px 0px 7px 0px; }
+ul li ul { padding:5px 0px 0px; margin:0px 0px 7px 23px; }
+ul li ol li { list-style:decimal; }
+ol { padding:0px; margin:0px 0px 20px 0px; list-style:decimal; }
+ol li { padding:0px; margin:0px 0px 7px 23px; list-style-type:decimal; }
+ol li ol { padding:5px 0px 0px; margin:0px 0px 7px 0px; }
+ol li ol li { list-style-type:lower-alpha; }
+ol li ul { padding-top:7px; }
+ol li ul li { list-style:square; }
+
+.content { font-size:1.2em; line-height:140%; padding: 20px; }
+
+pre, code { font-size:12px; }
+tt { font-size: 1.2em; }
+pre { margin:0px 0px 20px; }
+pre.codeinput { padding:10px; border:1px solid #d3d3d3; background:#f7f7f7; }
+pre.codeoutput { padding:10px 11px; margin:0px 0px 20px; color:#4c4c4c; }
+pre.error { color:red; }
+
+@media print { pre.codeinput, pre.codeoutput { word-wrap:break-word; width:100%; } }
+
+span.keyword { color:#0000FF }
+span.comment { color:#228B22 }
+span.string { color:#A020F0 }
+span.untermstring { color:#B20000 }
+span.syscmd { color:#B28C00 }
+span.typesection { color:#A0522D }
+
+.footer { width:auto; padding:10px 0px; margin:25px 0px 0px; border-top:1px dotted #878787; font-size:0.8em; line-height:140%; font-style:italic; color:#878787; text-align:left; float:none; }
+.footer p { margin:0px; }
+.footer a { color:#878787; }
+.footer a:hover { color:#878787; text-decoration:underline; }
+.footer a:visited { color:#878787; }
+
+table th { padding:7px 5px; text-align:left; vertical-align:middle; border: 1px solid #d6d4d4; font-weight:bold; }
+table td { padding:7px 5px; text-align:left; vertical-align:top; border:1px solid #d6d4d4; }
+
+
+
+
+
+  </style></head><body><div class="content"><h1>stochasticMicrostructure</h1><!--introduction--><p>Below is a demonstration of the features of the <tt>stochasticMicrostructure</tt> function</p><!--/introduction--><h2>Contents</h2><div><ul><li><a href="#2">Syntax</a></li><li><a href="#3">Description</a></li><li><a href="#4">Examples</a></li><li><a href="#6">Example 1</a></li></ul></div><pre class="codeinput">clear; close <span class="string">all</span>; clc;
+</pre><h2 id="2">Syntax</h2><p><tt>[F,V,C]=stochasticMicrostructure(M,IND,ptype);</tt></p><h2 id="3">Description</h2><p>This function generates Stochastic Bicontinuous Microstructures</p><p>Input structure and default values:</p><pre class="language-matlab">inputStruct.L=1; <span class="comment">% characteristic length</span>
+inputStruct.Ns=80; <span class="comment">% number of sampling points</span>
+inputStruct.Nw=120; <span class="comment">% number of waves</span>
+inputStruct.q0=55; <span class="comment">% wave number</span>
+inputStruct.relD=0.5; <span class="comment">% relative density</span>
+inputStruct.anisotropyFactors=[1 1 1]; <span class="comment">%Anisotropy factors</span>
+inputStruct.isocap=1; <span class="comment">%Option to cap the isosurface</span>
+</pre><p>Based on: Soyarslan et al. "3D stochastic bicontinuous microstructures: Generation, topology and elasticity" <a href="https://doi.org/10.1016/j.actamat.2018.01.005">https://doi.org/10.1016/j.actamat.2018.01.005</a></p><p>Original author: Sebastien Callens, September 2020</p><h2 id="4">Examples</h2><p>Plot settings</p><pre class="codeinput">cMap=parula(250);
+faceAlpha1=1;
+faceAlpha2=0.5;
+edgeColor1=<span class="string">'none'</span>;
+edgeColor2=<span class="string">'none'</span>;
+fontSize=15;
+</pre><h2 id="6">Example 1</h2><pre class="codeinput">inputStruct.L=1; <span class="comment">% characteristic length</span>
+inputStruct.Ns=75; <span class="comment">% number of sampling points</span>
+inputStruct.Nw=120; <span class="comment">% number of waves</span>
+inputStruct.q0=55; <span class="comment">% wave number</span>
+inputStruct.relD=0.55; <span class="comment">% relative density</span>
+inputStruct.anisotropyFactors=[1 1 1]; <span class="comment">%Anisotropy factors</span>
+inputStruct.isocap=1; <span class="comment">%Option to cap the isosurface</span>
+</pre><p>Create stochastic structure</p><pre class="codeinput">[F,V,C]=stochasticMicrostructure(inputStruct);
+</pre><p>Using grouping to keep only largest group</p><pre class="codeinput">groupOptStruct.outputType=<span class="string">'label'</span>;
+[G,~,groupSize]=tesgroup(F,groupOptStruct); <span class="comment">%Group connected faces</span>
+[~,indKeep]=max(groupSize); <span class="comment">%Index of largest group</span>
+
+<span class="comment">%Keep only largest group</span>
+F=F(G==indKeep,:); <span class="comment">%Trim faces</span>
+C=C(G==indKeep,:); <span class="comment">%Trim color data</span>
+[F,V]=patchCleanUnused(F,V); <span class="comment">%Remove unused nodes</span>
+</pre><p>Visualize surface</p><pre class="codeinput">cFigure;
+gpatch(F,V,C,<span class="string">'none'</span>);
+axisGeom; camlight <span class="string">headlight</span>;
+colormap <span class="string">gjet</span>; icolorbar;
+gdrawnow;
+</pre><img width="100%" height="auto" vspace="5" hspace="5" src="HELP_stochasticMicrostructure_01.jpg" alt=""> <p><img vspace="5" hspace="5" src="gibbVerySmall.gif" alt=""> </p><p><i><b>GIBBON</b></i> <a href="www.gibboncode.org">www.gibboncode.org</a></p><p><i>Kevin Mattheus Moerman</i>, <a href="gibbon.toolbox@gmail.com">gibbon.toolbox@gmail.com</a></p><p><i><b>GIBBON footer text</b></i></p><p>License: <a href="https://github.com/gibbonCode/GIBBON/blob/master/LICENSE">https://github.com/gibbonCode/GIBBON/blob/master/LICENSE</a></p><p>GIBBON: The Geometry and Image-based Bioengineering add-On. A toolbox for image segmentation, image-based modeling, meshing, and finite element analysis.</p><p>Copyright (C) 2006-2020 Kevin Mattheus Moerman</p><p>This program is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.</p><p>This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for more details.</p><p>You should have received a copy of the GNU General Public License along with this program.  If not, see <a href="http://www.gnu.org/licenses/">http://www.gnu.org/licenses/</a>.</p><p class="footer"><br><a href="https://www.mathworks.com/products/matlab/">Published with MATLAB&reg; R2020a</a><br></p></div><!--
+##### SOURCE BEGIN #####
+%% stochasticMicrostructure
+% Below is a demonstration of the features of the |stochasticMicrostructure| function
+
+%%
+clear; close all; clc;
+
+%% Syntax
+% |[F,V,C]=stochasticMicrostructure(M,IND,ptype);|
+
+%% Description
+% This function generates Stochastic Bicontinuous Microstructures
+%
+% Input structure and default values:
+%
+%   inputStruct.L=1; % characteristic length
+%   inputStruct.Ns=80; % number of sampling points
+%   inputStruct.Nw=120; % number of waves
+%   inputStruct.q0=55; % wave number
+%   inputStruct.relD=0.5; % relative density
+%   inputStruct.anisotropyFactors=[1 1 1]; %Anisotropy factors
+%   inputStruct.isocap=1; %Option to cap the isosurface
+%
+% Based on: Soyarslan et al. "3D stochastic bicontinuous
+% microstructures: Generation, topology and elasticity"
+% https://doi.org/10.1016/j.actamat.2018.01.005 
+%
+% Original author: Sebastien Callens, September 2020
+
+%% Examples
+
+%%
+% Plot settings
+cMap=parula(250);
+faceAlpha1=1;
+faceAlpha2=0.5;
+edgeColor1='none';
+edgeColor2='none';
+fontSize=15; 
+
+%% Example 1
+inputStruct.L=1; % characteristic length
+inputStruct.Ns=75; % number of sampling points
+inputStruct.Nw=120; % number of waves
+inputStruct.q0=55; % wave number
+inputStruct.relD=0.55; % relative density
+inputStruct.anisotropyFactors=[1 1 1]; %Anisotropy factors
+inputStruct.isocap=1; %Option to cap the isosurface
+
+%% 
+% Create stochastic structure
+
+[F,V,C]=stochasticMicrostructure(inputStruct);
+
+%%
+% Using grouping to keep only largest group
+groupOptStruct.outputType='label';
+[G,~,groupSize]=tesgroup(F,groupOptStruct); %Group connected faces
+[~,indKeep]=max(groupSize); %Index of largest group
+
+%Keep only largest group
+F=F(G==indKeep,:); %Trim faces
+C=C(G==indKeep,:); %Trim color data 
+[F,V]=patchCleanUnused(F,V); %Remove unused nodes
+
+%%
+% Visualize surface
+
+cFigure; 
+gpatch(F,V,C,'none');
+axisGeom; camlight headlight; 
+colormap gjet; icolorbar;
+gdrawnow;
+
+%% 
+%
+% <<gibbVerySmall.gif>>
+% 
+% _*GIBBON*_ 
+% <www.gibboncode.org>
+% 
+% _Kevin Mattheus Moerman_, <gibbon.toolbox@gmail.com>
+ 
+%% 
+% _*GIBBON footer text*_ 
+% 
+% License: <https://github.com/gibbonCode/GIBBON/blob/master/LICENSE>
+% 
+% GIBBON: The Geometry and Image-based Bioengineering add-On. A toolbox for
+% image segmentation, image-based modeling, meshing, and finite element
+% analysis.
+% 
+% Copyright (C) 2006-2020 Kevin Mattheus Moerman
+% 
+% This program is free software: you can redistribute it and/or modify
+% it under the terms of the GNU General Public License as published by
+% the Free Software Foundation, either version 3 of the License, or
+% (at your option) any later version.
+% 
+% This program is distributed in the hope that it will be useful,
+% but WITHOUT ANY WARRANTY; without even the implied warranty of
+% MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+% GNU General Public License for more details.
+% 
+% You should have received a copy of the GNU General Public License
+% along with this program.  If not, see <http://www.gnu.org/licenses/>.
+
+##### SOURCE END #####
+--></body></html>
