@@ -93,7 +93,7 @@ dtmin=(timeTotal/numTimeSteps)/100; %Minimum time step size
 dtmax=timeTotal/numTimeSteps; %Maximum time step size
 symmetric_stiffness=0;
 min_residual=1e-20;
-runMode='internal'; %'internal' or 'external';
+runMode='external'; %'internal' or 'external';
 
 %Contact parameters
 contactPenalty=10; % Start low, study penetration, increase if needed e.g. 0.1->1->10...
