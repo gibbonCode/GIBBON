@@ -29,8 +29,9 @@ clear; close all; clc;
 fontSize=20;
 faceAlpha1=0.8;
 markerSize=40;
-markerSize2=20;
+markerSize2=35;
 lineWidth=3;
+cMap=viridis(20);
 
 %% Control parameters
 
@@ -57,7 +58,7 @@ numElementsHeight=round(sampleHeight/pointSpacings(3)); %Number of elemens in di
 
 %Define applied displacement 
 appliedStrain=0.4; %Linear strain (Only used to compute applied stretch)
-loadingOption='tension'; % or 'tension'
+loadingOption='compression'; % or 'tension'
 switch loadingOption
     case 'compression'
         stretchLoad=1-appliedStrain; %The applied stretch for uniaxial loading
@@ -321,16 +322,17 @@ if runFlag==1 %i.e. a succesful run
     hf=cFigure; %Open figure  
     gtitle([febioFebFileNamePart,': Press play to animate']);
     title('Displacement magnitude [mm]','Interpreter','Latex')
-    hp=gpatch(Fb,V_DEF(:,:,end),DN_magnitude,'k',1); %Add graphics object to animate
+    hp=gpatch(Fb,V_DEF(:,:,end),DN_magnitude,'k',1,2); %Add graphics object to animate
     hp.Marker='.';
     hp.MarkerSize=markerSize2;
     hp.FaceColor='interp';
-    gpatch(Fb,V,0.5*ones(1,3),'k',0.25); %A static graphics object
+    gpatch(Fb,V,0.5*ones(1,3),'none',0.25); %A static graphics object
     
     axisGeom(gca,fontSize); 
-    colormap(gjet(250)); colorbar;
+    colormap(cMap); colorbar;
     caxis([0 max(DN_magnitude)]); caxis manual;   
     axis(axisLim(V_DEF)); %Set axis limits statically    
+    view(140,30);
     camlight headlight;        
         
     % Set up animation features
@@ -363,16 +365,17 @@ if runFlag==1 %i.e. a succesful run
     hf=cFigure; %Open figure  
     gtitle([febioFebFileNamePart,': Press play to animate']);
     title('$\sigma_{zz}$ [MPa]','Interpreter','Latex')
-    hp=gpatch(Fb,V_DEF(:,:,end),CV,'k',1); %Add graphics object to animate
+    hp=gpatch(Fb,V_DEF(:,:,end),CV,'k',1,2); %Add graphics object to animate
     hp.Marker='.';
     hp.MarkerSize=markerSize2;
     hp.FaceColor='interp';
-    gpatch(Fb,V,0.5*ones(1,3),'k',0.25); %A static graphics object
+    gpatch(Fb,V,0.5*ones(1,3),'none',0.25); %A static graphics object
     
     axisGeom(gca,fontSize); 
-    colormap(gjet(250)); colorbar;
+    colormap(cMap); colorbar;
     caxis([min(E_stress_mat(:)) max(E_stress_mat(:))]);    
     axis(axisLim(V_DEF)); %Set axis limits statically    
+    view(140,30);
     camlight headlight;        
         
     % Set up animation features

@@ -563,8 +563,6 @@ axisGeom; camlight headlight;
 
 gdrawnow;
 
-asdfdas
-
 %%
 % Mesh using TetGen
 

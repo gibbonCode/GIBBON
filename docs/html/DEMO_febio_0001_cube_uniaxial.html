@@ -6,7 +6,7 @@
    <!--
 This HTML was auto-generated from MATLAB code.
 To make changes, update the MATLAB code and republish this document.
-      --><title>DEMO_febio_0001_cube_uniaxial</title><meta name="generator" content="MATLAB 9.8"><link rel="schema.DC" href="http://purl.org/dc/elements/1.1/"><meta name="DC.date" content="2020-08-12"><meta name="DC.source" content="DEMO_febio_0001_cube_uniaxial.m"><style type="text/css">
+      --><title>DEMO_febio_0001_cube_uniaxial</title><meta name="generator" content="MATLAB 9.8"><link rel="schema.DC" href="http://purl.org/dc/elements/1.1/"><meta name="DC.date" content="2020-10-14"><meta name="DC.source" content="DEMO_febio_0001_cube_uniaxial.m"><style type="text/css">
 html,body,div,span,applet,object,iframe,h1,h2,h3,h4,h5,h6,p,blockquote,pre,a,abbr,acronym,address,big,cite,code,del,dfn,em,font,img,ins,kbd,q,s,samp,small,strike,strong,sub,sup,tt,var,b,u,i,center,dl,dt,dd,ol,ul,li,fieldset,form,label,legend,table,caption,tbody,tfoot,thead,tr,th,td{margin:0;padding:0;border:0;outline:0;font-size:100%;vertical-align:baseline;background:transparent}body{line-height:1}ol,ul{list-style:none}blockquote,q{quotes:none}blockquote:before,blockquote:after,q:before,q:after{content:'';content:none}:focus{outine:0}ins{text-decoration:none}del{text-decoration:line-through}table{border-collapse:collapse;border-spacing:0}
 
 html { min-height:100%; margin-bottom:1px; }
@@ -71,8 +71,9 @@ table td { padding:7px 5px; text-align:left; vertical-align:top; border:1px soli
 </pre><h2 id="3">Plot settings</h2><pre class="codeinput">fontSize=20;
 faceAlpha1=0.8;
 markerSize=40;
-markerSize2=20;
+markerSize2=35;
 lineWidth=3;
+cMap=viridis(20);
 </pre><h2 id="4">Control parameters</h2><pre class="codeinput"><span class="comment">% Path names</span>
 defaultFolder = fileparts(fileparts(mfilename(<span class="string">'fullpath'</span>)));
 savePath=fullfile(defaultFolder,<span class="string">'data'</span>,<span class="string">'temp'</span>);
@@ -96,7 +97,7 @@ numElementsHeight=round(sampleHeight/pointSpacings(3)); <span class="comment">%N
 
 <span class="comment">%Define applied displacement</span>
 appliedStrain=0.4; <span class="comment">%Linear strain (Only used to compute applied stretch)</span>
-loadingOption=<span class="string">'tension'</span>; <span class="comment">% or 'tension'</span>
+loadingOption=<span class="string">'compression'</span>; <span class="comment">% or 'tension'</span>
 <span class="keyword">switch</span> loadingOption
     <span class="keyword">case</span> <span class="string">'compression'</span>
         stretchLoad=1-appliedStrain; <span class="comment">%The applied stretch for uniaxial loading</span>
@@ -290,9 +291,9 @@ febioAnalysis.maxLogCheckTime=10; <span class="comment">%Max log file checking t
 [runFlag]=runMonitorFEBio(febioAnalysis);<span class="comment">%START FEBio NOW!!!!!!!!</span>
 </pre><pre class="codeoutput"> 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
---- STARTING FEBIO JOB --- 12-Aug-2020 10:58:12
+--- STARTING FEBIO JOB --- 14-Oct-2020 10:28:46
 Waiting for log file...
-Proceeding to check log file...12-Aug-2020 10:58:13
+Proceeding to check log file...14-Oct-2020 10:28:46
 ------- converged at time : 0.1
 ------- converged at time : 0.2
 ------- converged at time : 0.3
@@ -303,7 +304,7 @@ Proceeding to check log file...12-Aug-2020 10:58:13
 ------- converged at time : 0.8
 ------- converged at time : 0.9
 ------- converged at time : 1
---- Done --- 12-Aug-2020 10:58:13
+--- Done --- 14-Oct-2020 10:28:47
 </pre><h2 id="14">Import FEBio results</h2><pre class="codeinput"><span class="keyword">if</span> runFlag==1 <span class="comment">%i.e. a succesful run</span>
 </pre><p>Importing nodal displacements from a log file</p><pre class="codeinput">    dataStruct=importFEBio_logfile(fullfile(savePath,febioLogFileName_disp),1,1);
 
@@ -313,27 +314,23 @@ Proceeding to check log file...12-Aug-2020 10:58:13
 
     <span class="comment">%Create deformed coordinate set</span>
     V_DEF=N_disp_mat+repmat(V,[1 1 size(N_disp_mat,3)]);
-</pre><p>Importing element stress from a log file</p><pre class="codeinput">    dataStruct=importFEBio_logfile(fullfile(savePath,febioLogFileName_stress),1,1);
-
-    <span class="comment">%Access data</span>
-    E_stress_mat=dataStruct.data;
 </pre><p>Plotting the simulated results using <tt>anim8</tt> to visualize and animate deformations</p><pre class="codeinput">    DN_magnitude=sqrt(sum(N_disp_mat(:,:,end).^2,2)); <span class="comment">%Current displacement magnitude</span>
 
     <span class="comment">% Create basic view and store graphics handle to initiate animation</span>
     hf=cFigure; <span class="comment">%Open figure</span>
     gtitle([febioFebFileNamePart,<span class="string">': Press play to animate'</span>]);
     title(<span class="string">'Displacement magnitude [mm]'</span>,<span class="string">'Interpreter'</span>,<span class="string">'Latex'</span>)
-    hp=gpatch(Fb,V_DEF(:,:,end),DN_magnitude,<span class="string">'k'</span>,1); <span class="comment">%Add graphics object to animate</span>
+    hp=gpatch(Fb,V_DEF(:,:,end),DN_magnitude,<span class="string">'k'</span>,1,2); <span class="comment">%Add graphics object to animate</span>
     hp.Marker=<span class="string">'.'</span>;
     hp.MarkerSize=markerSize2;
     hp.FaceColor=<span class="string">'interp'</span>;
-    gpatch(Fb,V,0.5*ones(1,3),<span class="string">'k'</span>,0.25); <span class="comment">%A static graphics object</span>
+    gpatch(Fb,V,0.5*ones(1,3),<span class="string">'none'</span>,0.25); <span class="comment">%A static graphics object</span>
 
     axisGeom(gca,fontSize);
-    colormap(gjet(250)); colorbar;
-    caxis([0 max(DN_magnitude)]);
+    colormap(cMap); colorbar;
+    caxis([0 max(DN_magnitude)]); caxis <span class="string">manual</span>;
     axis(axisLim(V_DEF)); <span class="comment">%Set axis limits statically</span>
-    view(130,25); <span class="comment">%Set view direction</span>
+    view(140,30);
     camlight <span class="string">headlight</span>;
 
     <span class="comment">% Set up animation features</span>
@@ -348,23 +345,27 @@ Proceeding to check log file...12-Aug-2020 10:58:13
     <span class="keyword">end</span>
     anim8(hf,animStruct); <span class="comment">%Initiate animation feature</span>
     drawnow;
-</pre><img width="100%" height="auto" vspace="5" hspace="5" src="DEMO_febio_0001_cube_uniaxial_03.jpg" alt=""> <p>Plotting the simulated results using <tt>anim8</tt> to visualize and animate deformations</p><pre class="codeinput">    [CV]=faceToVertexMeasure(E,V,E_stress_mat(:,:,end));
+</pre><img width="100%" height="auto" vspace="5" hspace="5" src="DEMO_febio_0001_cube_uniaxial_03.jpg" alt=""> <p>Importing element stress from a log file</p><pre class="codeinput">    dataStruct=importFEBio_logfile(fullfile(savePath,febioLogFileName_stress),1,1);
+
+    <span class="comment">%Access data</span>
+    E_stress_mat=dataStruct.data;
+</pre><p>Plotting the simulated results using <tt>anim8</tt> to visualize and animate deformations</p><pre class="codeinput">    [CV]=faceToVertexMeasure(E,V,E_stress_mat(:,:,end));
 
     <span class="comment">% Create basic view and store graphics handle to initiate animation</span>
     hf=cFigure; <span class="comment">%Open figure</span>
     gtitle([febioFebFileNamePart,<span class="string">': Press play to animate'</span>]);
     title(<span class="string">'$\sigma_{zz}$ [MPa]'</span>,<span class="string">'Interpreter'</span>,<span class="string">'Latex'</span>)
-    hp=gpatch(Fb,V_DEF(:,:,end),CV,<span class="string">'k'</span>,1); <span class="comment">%Add graphics object to animate</span>
+    hp=gpatch(Fb,V_DEF(:,:,end),CV,<span class="string">'k'</span>,1,2); <span class="comment">%Add graphics object to animate</span>
     hp.Marker=<span class="string">'.'</span>;
     hp.MarkerSize=markerSize2;
     hp.FaceColor=<span class="string">'interp'</span>;
-    gpatch(Fb,V,0.5*ones(1,3),<span class="string">'k'</span>,0.25); <span class="comment">%A static graphics object</span>
+    gpatch(Fb,V,0.5*ones(1,3),<span class="string">'none'</span>,0.25); <span class="comment">%A static graphics object</span>
 
     axisGeom(gca,fontSize);
-    colormap(gjet(250)); colorbar;
+    colormap(cMap); colorbar;
     caxis([min(E_stress_mat(:)) max(E_stress_mat(:))]);
     axis(axisLim(V_DEF)); <span class="comment">%Set axis limits statically</span>
-    view(130,25); <span class="comment">%Set view direction</span>
+    view(140,30);
     camlight <span class="string">headlight</span>;
 
     <span class="comment">% Set up animation features</span>
@@ -428,8 +429,9 @@ clear; close all; clc;
 fontSize=20;
 faceAlpha1=0.8;
 markerSize=40;
-markerSize2=20;
+markerSize2=35;
 lineWidth=3;
+cMap=viridis(20);
 
 %% Control parameters
 
@@ -456,7 +458,7 @@ numElementsHeight=round(sampleHeight/pointSpacings(3)); %Number of elemens in di
 
 %Define applied displacement 
 appliedStrain=0.4; %Linear strain (Only used to compute applied stretch)
-loadingOption='tension'; % or 'tension'
+loadingOption='compression'; % or 'tension'
 switch loadingOption
     case 'compression'
         stretchLoad=1-appliedStrain; %The applied stretch for uniaxial loading
@@ -709,14 +711,7 @@ if runFlag==1 %i.e. a succesful run
     
     %Create deformed coordinate set
     V_DEF=N_disp_mat+repmat(V,[1 1 size(N_disp_mat,3)]);
-        
-    %%
-    % Importing element stress from a log file
-    dataStruct=importFEBio_logfile(fullfile(savePath,febioLogFileName_stress),1,1);     
-    
-    %Access data
-    E_stress_mat=dataStruct.data;
-       
+               
     %% 
     % Plotting the simulated results using |anim8| to visualize and animate
     % deformations 
@@ -727,17 +722,17 @@ if runFlag==1 %i.e. a succesful run
     hf=cFigure; %Open figure  
     gtitle([febioFebFileNamePart,': Press play to animate']);
     title('Displacement magnitude [mm]','Interpreter','Latex')
-    hp=gpatch(Fb,V_DEF(:,:,end),DN_magnitude,'k',1); %Add graphics object to animate
+    hp=gpatch(Fb,V_DEF(:,:,end),DN_magnitude,'k',1,2); %Add graphics object to animate
     hp.Marker='.';
     hp.MarkerSize=markerSize2;
     hp.FaceColor='interp';
-    gpatch(Fb,V,0.5*ones(1,3),'k',0.25); %A static graphics object
+    gpatch(Fb,V,0.5*ones(1,3),'none',0.25); %A static graphics object
     
     axisGeom(gca,fontSize); 
-    colormap(gjet(250)); colorbar;
-    caxis([0 max(DN_magnitude)]);    
-    axis(axisLim(V_DEF)); %Set axis limits statically
-    view(130,25); %Set view direction
+    colormap(cMap); colorbar;
+    caxis([0 max(DN_magnitude)]); caxis manual;   
+    axis(axisLim(V_DEF)); %Set axis limits statically    
+    view(140,30);
     camlight headlight;        
         
     % Set up animation features
@@ -753,6 +748,13 @@ if runFlag==1 %i.e. a succesful run
     anim8(hf,animStruct); %Initiate animation feature    
     drawnow;
             
+    %%
+    % Importing element stress from a log file
+    dataStruct=importFEBio_logfile(fullfile(savePath,febioLogFileName_stress),1,1);
+    
+    %Access data
+    E_stress_mat=dataStruct.data;
+    
     %% 
     % Plotting the simulated results using |anim8| to visualize and animate
     % deformations 
@@ -763,17 +765,17 @@ if runFlag==1 %i.e. a succesful run
     hf=cFigure; %Open figure  
     gtitle([febioFebFileNamePart,': Press play to animate']);
     title('$\sigma_{zz}$ [MPa]','Interpreter','Latex')
-    hp=gpatch(Fb,V_DEF(:,:,end),CV,'k',1); %Add graphics object to animate
+    hp=gpatch(Fb,V_DEF(:,:,end),CV,'k',1,2); %Add graphics object to animate
     hp.Marker='.';
     hp.MarkerSize=markerSize2;
     hp.FaceColor='interp';
-    gpatch(Fb,V,0.5*ones(1,3),'k',0.25); %A static graphics object
+    gpatch(Fb,V,0.5*ones(1,3),'none',0.25); %A static graphics object
     
     axisGeom(gca,fontSize); 
-    colormap(gjet(250)); colorbar;
+    colormap(cMap); colorbar;
     caxis([min(E_stress_mat(:)) max(E_stress_mat(:))]);    
-    axis(axisLim(V_DEF)); %Set axis limits statically
-    view(130,25); %Set view direction
+    axis(axisLim(V_DEF)); %Set axis limits statically    
+    view(140,30);
     camlight headlight;        
         
     % Set up animation features

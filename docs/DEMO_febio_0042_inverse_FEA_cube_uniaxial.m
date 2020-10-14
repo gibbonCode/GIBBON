@@ -14,7 +14,10 @@ faceAlpha2=1;
 edgeColor=0.25*ones(1,3);
 edgeWidth=1.5;
 markerSize=25;
-lineWidth=3; 
+markerSize2=50;
+lineWidth=5; 
+lineWidth2=3; 
+cMap=viridis(20);
 
 %% Control parameters
 
@@ -275,54 +278,59 @@ febioAnalysis.maxLogCheckTime=10; %Max log file checking time
 
 if runFlag==1 %i.e. a succesful run
     
+    %% 
     % Importing nodal displacements from a log file
-    [~, N_disp_mat,~]=importFEBio_logfile(fullfile(savePath,febioLogFileName_disp));
+    dataStruct=importFEBio_logfile(fullfile(savePath,febioLogFileName_disp),1,1);
     
-    N_disp_mat=N_disp_mat(:,2:end,:);
-    sizImport=size(N_disp_mat);
-    sizImport(3)=sizImport(3)+1;
-    N_disp_mat_n=zeros(sizImport);
-    N_disp_mat_n(:,:,2:end)=N_disp_mat;
-    N_disp_mat=N_disp_mat_n;
-    DN=N_disp_mat(:,:,end);
-    DN_magnitude=sqrt(sum(DN(:,3).^2,2));
-    V_def=V+DN;
-    [CF]=vertexToFaceMeasure(Fb,DN_magnitude);
+    %Access data
+    N_disp_mat=dataStruct.data; %Displacement
+    timeVec=dataStruct.time; %Time
     
+    %Create deformed coordinate set
+    V_DEF=N_disp_mat+repmat(V,[1 1 size(N_disp_mat,3)]);
+
+    %%
     % Importing element stress from a log file
-    [time_mat, E_stress_mat,~]=importFEBio_logfile(fullfile(savePath,febioLogFileName_stress)); 
-    time_mat=[0; time_mat(:)]; %Time
-    stress_cauchy_sim=[0; mean(squeeze(E_stress_mat(:,end,:)),1)'];
+    dataStruct=importFEBio_logfile(fullfile(savePath,febioLogFileName_stress),1,1);
+    
+    %Access data
+    E_stress_mat=dataStruct.data;
+    
+    stress_cauchy_sim=mean(squeeze(E_stress_mat(:,end,:)),1)';
     
     %% 
     % Plotting the simulated results using |anim8| to visualize and animate
     % deformations 
     
+    [CV]=faceToVertexMeasure(E,V,E_stress_mat(:,:,end));
+    
     % Create basic view and store graphics handle to initiate animation
     hf=cFigure; %Open figure  
     gtitle([febioFebFileNamePart,': Press play to animate']);
-    hp=gpatch(Fb,V_def,CF,'k',1); %Add graphics object to animate
-    gpatch(Fb,V,0.5*ones(1,3),'k',0.25); %A static graphics object
+    title('$\sigma_{zz}$ [MPa]','Interpreter','Latex')
+    hp=gpatch(Fb,V_DEF(:,:,end),CV,'k',1); %Add graphics object to animate
+    hp.Marker='.';
+    hp.MarkerSize=markerSize2;
+    hp.FaceColor='interp';
+    gpatch(Fb,V,0.5*ones(1,3),'none',0.25); %A static graphics object
     
     axisGeom(gca,fontSize); 
-    colormap(gjet(250)); colorbar;
-    caxis([0 max(DN_magnitude)]);    
-    axis([min(V_def(:,1)) max(V_def(:,1)) min(V_def(:,2)) max(V_def(:,2)) min(V_def(:,3)) max(V_def(:,3))]); %Set axis limits statically
-    view(130,25); %Set view direction
+    colormap(cMap); colorbar;
+    caxis([min(E_stress_mat(:)) max(E_stress_mat(:))]);    
+    axis(axisLim(V_DEF)); %Set axis limits statically    
+    view(140,30);
     camlight headlight;        
         
     % Set up animation features
-    animStruct.Time=time_mat; %The time vector    
+    animStruct.Time=timeVec; %The time vector    
     for qt=1:1:size(N_disp_mat,3) %Loop over time increments        
-        DN=N_disp_mat(:,:,qt); %Current displacement
-        DN_magnitude=sqrt(sum(DN.^2,2)); %Current displacement magnitude
-        V_def=V+DN; %Current nodal coordinates
-        [CF]=vertexToFaceMeasure(Fb,DN_magnitude); %Current color data to use
+        
+        [CV]=faceToVertexMeasure(E,V,E_stress_mat(:,:,qt));
         
         %Set entries in animation structure
         animStruct.Handles{qt}=[hp hp]; %Handles of objects to animate
         animStruct.Props{qt}={'Vertices','CData'}; %Properties of objects to animate
-        animStruct.Set{qt}={V_def,CF}; %Property values for to set in order to animate
+        animStruct.Set{qt}={V_DEF(:,:,qt),CV}; %Property values for to set in order to animate
     end        
     anim8(hf,animStruct); %Initiate animation feature    
     drawnow;
@@ -340,20 +348,17 @@ if runFlag==1 %i.e. a succesful run
     %%    
     % Visualize stress-stretch curve
     
-    hf=cFigure;
-    hold on;    
-    title('Uniaxial stress-stretch curve','FontSize',fontSize);
-    xlabel('\lambda Stretch [.]','FontSize',fontSize); ylabel('\sigma Cauchy stress [MPa]','FontSize',fontSize); 
-            
-    hl(1)=plot(stretch_sim,stress_cauchy_sim,'r.-','lineWidth',lineWidth,'markerSize',markerSize);
-    hl(2)=plot(stretch_exp,stress_cauchy_exp,'g-','lineWidth',lineWidth);
-        
-    legend(hl,{'Simulation','Experiment'},'Location','northwest');
+    cFigure; hold on;
+    title('Stretch stress curves optimisation','FontSize',fontSize);
+    xlabel('\lambda Stretch [.]','FontSize',fontSize); ylabel('\sigma Cauchy stress [MPa]','FontSize',fontSize); zlabel('Z','FontSize',fontSize); hold on;
     
-
-    view(2); axis tight;  grid on; axis square; box on; 
+    Hn(1)=plot(stretch_exp,stress_cauchy_exp,'k-','lineWidth',lineWidth);    
+    view(2); axis tight;  grid on; axis square; axis manual; 
+    Hn(2)=plot(stretch_sim,stress_cauchy_sim,'r.-','lineWidth',lineWidth2,'markerSize',markerSize2);
+    legend(Hn,{'Experiment','Simulation'},'Location','northwest');
     set(gca,'FontSize',fontSize);
     drawnow;
+    
 end
 
 %% Create structures for optimization 
@@ -369,7 +374,7 @@ febioAnalysis.disp_on=0;
 febioAnalysis.disp_log_on=0; 
 
 %What should be known to the objective function:
-objectiveStruct.h=hl(1);
+objectiveStruct.h=Hn(2);
 objectiveStruct.bcPrescribeList=bcPrescribeList;
 objectiveStruct.stretch_exp=stretch_exp;
 objectiveStruct.stress_cauchy_exp=stress_cauchy_exp;
@@ -442,15 +447,15 @@ disp(['P_opt=',disp_text]);
 
 %%
 
-hf1=cFigure;
+cFigure; hold on;
 title('Stretch stress curves optimised','FontSize',fontSize);
-xlabel('\lambda Stretch [.]','FontSize',fontSize); ylabel('\sigma Cauchy stress','FontSize',fontSize); zlabel('Z','FontSize',fontSize); hold on;
+xlabel('\lambda Stretch [.]','FontSize',fontSize); ylabel('\sigma Cauchy stress [MPa]','FontSize',fontSize); zlabel('Z','FontSize',fontSize); hold on;
 
-Hn(1)=plot(OPT_stats_out.stretch_sim,OPT_stats_out.stress_cauchy_sim,'r.-','lineWidth',lineWidth,'markerSize',markerSize);
-Hn(2)=plot(stretch_exp,stress_cauchy_exp,'g-','lineWidth',lineWidth);
+Hn(1)=plot(stretch_exp,stress_cauchy_exp,'k-','lineWidth',lineWidth);
+Hn(2)=plot(OPT_stats_out.stretch_sim,OPT_stats_out.stress_cauchy_sim,'r.-','lineWidth',lineWidth2,'markerSize',markerSize2);
 
-legend(Hn,{'Simulation','Experiment'},'Location','northwest');
-view(2); axis tight;  grid on;
+legend(Hn,{'Experiment','Simulation'},'Location','northwest');
+view(2); axis tight;  grid on; 
 set(gca,'FontSize',fontSize);
 drawnow;
 
@@ -499,7 +504,7 @@ disp('Done')
 
 [runFlag]=runMonitorFEBio(objectiveStruct.febioAnalysis);
 
-pause(0.1); 
+%pause(0.1); 
 
 bcPrescribeList=objectiveStruct.bcPrescribeList;
 sampleHeight=objectiveStruct.sampleHeight;
@@ -509,23 +514,22 @@ stress_cauchy_exp=objectiveStruct.stress_cauchy_exp;
 if runFlag==1    
     
     %Importing displacement
-    [~,N_disp_mat,~]=importFEBio_logfile(objectiveStruct.run_output_names.displacement);
+    [~,N_disp_mat,~]=importFEBio_logfile(objectiveStruct.run_output_names.displacement,1,1);
 
     % Importing element stress from a log file
-    [time_mat, E_stress_mat,~]=importFEBio_logfile(objectiveStruct.run_output_names.stress);
-    time_mat=[0; time_mat(:)]; %Time
-    stress_cauchy_sim=[0; mean(squeeze(E_stress_mat(:,end,:)),1)'];
+    [~, E_stress_mat,~]=importFEBio_logfile(objectiveStruct.run_output_names.stress,1,1);
+    stress_cauchy_sim=mean(squeeze(E_stress_mat(:,end,:)),1)';
     
     %Derive applied stretch
     DZ_set=N_disp_mat(bcPrescribeList,end,:); %Final nodal displacements
     DZ_set=mean(DZ_set,1);
     stretch_sim=(DZ_set+sampleHeight)./sampleHeight;
-    stretch_sim=[1; stretch_sim(:)];
+    stretch_sim=stretch_sim(:);
     
     if ~isempty(objectiveStruct.h)
         objectiveStruct.h.XData=stretch_sim;
         objectiveStruct.h.YData=stress_cauchy_sim;
-        drawnow;
+        drawnow;        
     end
     
     %Interpolate experiment onto simulated points
