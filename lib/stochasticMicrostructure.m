@@ -1,4 +1,4 @@
-function [f,v,c]=stochasticMicrostructure(inputStruct)
+function [varargout]=stochasticMicrostructure(inputStruct)
 
 % -----------------------------------------------------------------------
 % This function generates Stochastic Bicontinuous Microstructures
@@ -130,6 +130,12 @@ c=c(logicKeep);
 
 %Invert faces
 f=fliplr(f); 
+
+%% Collect output
+varargout{1}=f;
+varargout{2}=v;
+varargout{3}=c;
+varargout{4}=funx_grid;
 
 %% 
 %

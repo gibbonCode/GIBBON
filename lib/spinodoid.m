@@ -1,4 +1,4 @@
-function [f,v,c]=spinodoid(inputStruct)
+function [varargout]=spinodoid(inputStruct)
 
 % -----------------------------------------------------------------------
 % This function generates Spinodoid microstructures which are non-periodic
@@ -166,6 +166,12 @@ c=c(logicKeep);
 
 %Invert faces
 f=fliplr(f); 
+
+%% Collect output
+varargout{1}=f;
+varargout{2}=v;
+varargout{3}=c;
+varargout{4}=GRF;
 
 end
 
