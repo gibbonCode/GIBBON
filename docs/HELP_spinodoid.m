@@ -31,6 +31,7 @@ clear; close all; clc;
 %                                xyz axes for controlling the anisotropy. 
 %                                Note: each entry must be either 0 or
 %                                between [15,90] degrees.
+% inputStruct.R = eye(3); % Rotate the GRF, R must be SO(3)
 %
 %
 % Original author: Siddhant Kumar, September 2020
@@ -56,6 +57,7 @@ inputStruct.waveNumber=15*pi; % GRF wave number
 inputStruct.numWaves=1000; % number of waves in GRF
 inputStruct.relativeDensity=0.5; % relative density: between [0.3,1]
 inputStruct.thetas=[90 0 0]; % conical half angles (in degrees) along xyz
+inputStruct.R = eye(3); % Rotate the GRF, R must be SO(3)
 
 % Create spinodoid
 [F,V,C]=spinodoid(inputStruct);
@@ -86,6 +88,7 @@ inputStruct.waveNumber=15*pi; % GRF wave number
 inputStruct.numWaves=1000; % number of waves in GRF
 inputStruct.relativeDensity=0.5; % relative density: between [0.3,1]
 inputStruct.thetas=[0 0 30]; % conical half angles (in degrees) along xyz
+inputStruct.R = [cos(pi/6),sin(pi/6),0; -sin(pi/6),cos(pi/6),0; 0,0,1]; % Rotate the GRF, R must be SO(3)
 
 % Create spinodoid
 [F,V,C]=spinodoid(inputStruct);
@@ -115,6 +118,7 @@ inputStruct.waveNumber=15*pi; % GRF wave number
 inputStruct.numWaves=1000; % number of waves in GRF
 inputStruct.relativeDensity=0.5; % relative density: between [0.3,1]
 inputStruct.thetas=[20 15 0]; % conical half angles (in degrees) along xyz
+inputStruct.R = eye(3); % Rotate the GRF, R must be SO(3)
 
 % Create spinodoid
 [F,V,C]=spinodoid(inputStruct);
@@ -145,6 +149,7 @@ inputStruct.waveNumber=15*pi; % GRF wave number
 inputStruct.numWaves=1000; % number of waves in GRF
 inputStruct.relativeDensity=0.5; % relative density: between [0.3,1]
 inputStruct.thetas=[20 20 20]; % conical half angles (in degrees) along xyz
+inputStruct.R = eye(3); % Rotate the GRF, R must be SO(3)
 
 % Create spinodoid
 [F,V,C]=spinodoid(inputStruct);

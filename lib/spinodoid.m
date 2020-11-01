@@ -23,6 +23,7 @@ function [varargout]=spinodoid(inputStruct)
 %                                xyz axes for controlling the anisotropy. 
 %                                Note: each entry must be either 0 or
 %                                between [15,90] degrees.
+% inputStruct.R = eye(3); % Rotate the GRF, R must be SO(3)
 %
 %
 % Original author: Siddhant Kumar, September 2020
@@ -45,6 +46,7 @@ defaultInputStruct.thetas=[15 15 0]; % conical half angles (in degrees)
 %                                     along xyz axes for controlling the 
 %                                     anisotropy. Note: each entry must be 
 %                                     either 0 or between [15,90] degrees.
+defaultInputStruct.R = eye(3); % Rotate the GRF, R must be SO(3)
 
 %Complete input with default if incomplete
 [inputStruct]=structComplete(inputStruct,defaultInputStruct,1); %Complement provided with default if missing or empty
@@ -57,6 +59,7 @@ waveNumber = inputStruct.waveNumber; % GRF wave number
 numWaves = inputStruct.numWaves; % number of waves in GRF
 relativeDensity = inputStruct.relativeDensity; % relative density: [0.3,1]
 thetas= inputStruct.thetas; % conical half angles (in degrees)
+R = inputStruct.R; % Rotate the GRF, R must be SO(3)
 
 %% Input checks
 if((relativeDensity<0.3) || (relativeDensity>1.0))
@@ -71,6 +74,29 @@ for i=1:3
     end
 end
 
+if(size(R,1)~=size(R,2))
+    error('Rotation matrix is not square')
+end
+if(size(R,1)~=3)
+    error('Rotation matrix must be 3x3 in size')
+end
+if(abs(det(R)-1)>1e-8)
+    error('Rotation matrix: det(R)~=1')
+end
+if(norm(R'*R-eye(3))>1e-8)
+    error('Rotation matrix is not orthogonal')
+end
+
+
+%% Define rotated axes
+axes1 = [1,0,0];
+axes2 = [0,1,0];
+axes3 = [0,0,1];
+
+axes1 = (R*axes1')';
+axes2 = (R*axes2')';
+axes3 = (R*axes3')';
+
 
 %% Generate wave directions for GRF
 %array of all wave directions
@@ -84,16 +110,16 @@ for i=1:numWaves
         % check for allowed wave vector directions
         % angle along first axis
         angle1 = min(...
-            acosd(dot(candidate,[1,0,0])),...
-            acosd(dot(candidate,-[1,0,0])));
+            acosd(dot(candidate,axes1)),...
+            acosd(dot(candidate,-axes1)));
         % angle along second axis
         angle2 = min(...
-            acosd(dot(candidate,[0,1,0])),...
-            acosd(dot(candidate,-[0,1,0])));
+            acosd(dot(candidate,axes2)),...
+            acosd(dot(candidate,-axes2)));
         % angle along third axis
         angle3 = min(...
-            acosd(dot(candidate,[0,0,1])),...
-            acosd(dot(candidate,-[0,0,1])));
+            acosd(dot(candidate,axes3)),...
+            acosd(dot(candidate,-axes3)));
         % check
         if(any([angle1,angle2,angle3]<thetas))
             flag = false;
