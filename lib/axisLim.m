@@ -6,11 +6,11 @@ function axLim=axisLim(V_DEF)
 % may be a 3-dimensional array where the 3rd direction could reflect
 % coordinates as a function of time for instance. 
 % 
-% 
-% Change log; 
-% 2020/08/12 Created
 % ------------------------------------------------------------------------
 
-axLim=[min(V_DEF,[],[1 3]); max(V_DEF,[],[1 3])];
+try
+    axLim=[min(V_DEF,[],[1 3]); max(V_DEF,[],[1 3])];
+catch 
+    axLim=[min(min(V_DEF,[],1),[],3); max(max(V_DEF,[],1),[],3)];
+end
 axLim=axLim(:)';
-
