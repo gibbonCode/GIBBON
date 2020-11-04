@@ -94,7 +94,7 @@ resampleCurveOpt=1; %Option to turn on/off resampling of input boundary curves
 plotV(V1,'b-','LineWidth',2);
 plotV(V2,'b-','LineWidth',2);
 plotV(V3,'b-','LineWidth',2);
-axis tight;
+axisGeom; view(2);
 drawnow;
 
 %% Using input structure instead
@@ -132,9 +132,7 @@ inputStructure.plotOn=0;
 cFigure; hold on;
 gpatch(F,V,'r');
 plotV(V(boundaryInd,:),'b.','markerSize',15);
-
-axisGeom;
-view(2);
+axisGeom; view(2);
 drawnow;
 
 %% Using must points in the interior and/or boundary, example 1
@@ -159,11 +157,11 @@ inputStructure.smoothIterations=250;
 %%
 
 cFigure; hold on;
-hp(1)=gpatch(F,V,'rw','k',1,1);
-hp(2)=plotV(V(boundaryInd,:),'b.','markerSize',25);
-hp(3)=plotV(V(indMustPointsInner,:),'g.','markerSize',35);
-hp(4)=plotV(V(indMustPointsBoundary,:),'r.','markerSize',35);
-legend(hp,{'Output mesh','Mesh boundary points','Interior must points','Boundary must points'},'Location','SouthEast');
+hp(1)=gpatch(F,V,'kw','k',1,1);
+hp(2)=plotV(V(indMustPointsInner,:),'g.','markerSize',35);
+hp(3)=plotV(V(indMustPointsBoundary,:),'r.','markerSize',35);
+hp(4)=plotV(V(boundaryInd,:),'b.','markerSize',25);
+legend(hp,{'Output mesh','Interior must points','Boundary must points','Mesh boundary points'},'Location','EastOutSide');
 axisGeom;
 camlight headlight;
 view(2)
@@ -199,11 +197,79 @@ inputStructure.smoothIterations=250;
 %% 
 
 cFigure; hold on;
-hp(1)=gpatch(F,V,'rw','k',1,1);
-hp(2)=plotV(V(boundaryInd,:),'b.','markerSize',25);
-hp(3)=plotV(V(indMustPointsInner,:),'g.','markerSize',35);
-hp(4)=plotV(V(indMustPointsBoundary,:),'r.','markerSize',35);
-legend(hp,{'Output mesh','Mesh boundary points','Interior must points','Boundary must points'},'Location','SouthEast');
+hp(1)=gpatch(F,V,'kw','k',1,1);
+hp(2)=plotV(V(indMustPointsInner,:),'g.','markerSize',35);
+hp(3)=plotV(V(indMustPointsBoundary,:),'r.','markerSize',35);
+hp(4)=plotV(V(boundaryInd,:),'b.','markerSize',25);
+legend(hp,{'Output mesh','Interior must points','Boundary must points','Mesh boundary points'},'Location','EastOutSide');
+axisGeom;
+camlight headlight;
+view(2)
+drawnow;
+
+%% Using must points in the interior and/or boundary, example 3
+% This example features must points on all boundary points and curve
+% resampling
+
+% Create example boundary curve
+V1=batman(50);
+
+% Create example interior points
+t=linspace(0,2*pi,15)'; t=t(1:end-1);
+Vm=[0.4*cos(t) 0.15*sin(t)+0.25];
+
+inputStructure.regionCell={V1};
+inputStructure.pointSpacing=0.05;
+inputStructure.resampleCurveOpt=1; %Turn on/off curve resampling
+inputStructure.plotOn=0;
+inputStructure.mustPointsInner=Vm;
+inputStructure.mustPointsBoundary=V1; %Hold on to all boundary points
+inputStructure.smoothIterations=250;
+
+[F,V,boundaryInd,indMustPointsInner,indMustPointsBoundary]=regionTriMesh2D(inputStructure);
+
+%%
+
+cFigure; hold on;
+hp(1)=gpatch(F,V,'kw','k',1,1);
+hp(2)=plotV(V(indMustPointsInner,:),'g.','markerSize',35);
+hp(3)=plotV(V(indMustPointsBoundary,:),'r.','markerSize',35);
+hp(4)=plotV(V(boundaryInd,:),'b.','markerSize',25);
+legend(hp,{'Output mesh','Interior must points','Boundary must points','Mesh boundary points'},'Location','EastOutSide');
+axisGeom;
+camlight headlight;
+view(2)
+drawnow;
+
+%% Using must points in the interior and/or boundary, example 4
+% This example features must points on all boundary points and no curve
+% resampling
+
+% Create example boundary curve
+V1=batman(50);
+
+% Create example interior points
+t=linspace(0,2*pi,15)'; t=t(1:end-1);
+Vm=[0.4*cos(t) 0.15*sin(t)+0.25];
+
+inputStructure.regionCell={V1};
+inputStructure.pointSpacing=0.05;
+inputStructure.resampleCurveOpt=0; %Turn on/off curve resampling
+inputStructure.plotOn=0;
+inputStructure.mustPointsInner=Vm;
+inputStructure.mustPointsBoundary=V1; %Hold on to all boundary points
+inputStructure.smoothIterations=250;
+
+[F,V,boundaryInd,indMustPointsInner,indMustPointsBoundary]=regionTriMesh2D(inputStructure);
+
+%%
+
+cFigure; hold on;
+hp(1)=gpatch(F,V,'kw','k',1,1);
+hp(2)=plotV(V(indMustPointsInner,:),'g.','markerSize',35);
+hp(3)=plotV(V(indMustPointsBoundary,:),'r.','markerSize',35);
+hp(4)=plotV(V(boundaryInd,:),'b.','markerSize',25);
+legend(hp,{'Output mesh','Interior must points','Boundary must points','Mesh boundary points'},'Location','EastOutSide');
 axisGeom;
 camlight headlight;
 view(2)

@@ -22,6 +22,8 @@ function [Vg] = evenlySampleCurve(varargin)
 % 2015/05/05: Updated help and documentation
 % 2018/10/15: Added additional resampling for non-linear methods
 % 2020/05/06: Added option to use point spacing instead
+% 2020/11/04: Added handling of all must point boundary and suppressed
+% warning for n=2 since it leads to reasonable/expected behaviour
 %------------------------------------------------------------------------
 
 %% Parse input
@@ -94,7 +96,7 @@ if spacingFlag==1
     [Vg] = evenlySampleCurve(V,n,interpPar,closeLoopOpt,0);    
 else    
     if n<2
-        warning('Too few points requested (or points spacing too large) leading to n<2, therefore n=2 was used');
+        %warning('Too few points requested (or points spacing too large) leading to n<2, therefore n=2 was used');
         n=2;
     end
     
@@ -121,25 +123,29 @@ else
         endInd=size(V,1);
     end
     
-    %Compute distance metric used for parametric representation
-    D=pathLength(V);
-    
-    %Redefine distance metric for evenly spaced points
-    Dg=linspace(D(startInd),D(endInd),n)';
-    
-    %Interpolate required x values for even spacing allong curve patch
-    Vg=zeros(n,size(V,2));
-    
-    %Interpolate using parametric representation
-    if ~ischar(interpPar) %CSAPS SMOOTHEN, interpret interpPar as smoothening parameter
-        Vg = csaps(D,V',interpPar,Dg)'; %Smoothened ppform
-    else %NORMAL METHODS
-        for q=1:size(V,2)
-            switch interpPar
-                case 'biharmonic'
-                    Vg(:,q)=biharmonicSplineInterpolation(D,V(:,q),Dg);
-                otherwise
-                    Vg(:,q)=interp1(D,V(:,q),Dg,interpPar);
+    if n==2 %No need for interpolation if n=2
+        Vg=[V(startInd,:); V(endInd,:)]; %Just keep start and end
+    else        
+        %Compute distance metric used for parametric representation
+        D=pathLength(V);
+        
+        %Redefine distance metric for evenly spaced points
+        Dg=linspace(D(startInd),D(endInd),n)';
+        
+        %Interpolate required x values for even spacing allong curve patch
+        Vg=zeros(n,size(V,2));
+        
+        %Interpolate using parametric representation
+        if ~ischar(interpPar) %CSAPS SMOOTHEN, interpret interpPar as smoothening parameter
+            Vg = csaps(D,V',interpPar,Dg)'; %Smoothened ppform
+        else %NORMAL METHODS
+            for q=1:size(V,2)
+                switch interpPar
+                    case 'biharmonic'
+                        Vg(:,q)=biharmonicSplineInterpolation(D,V(:,q),Dg);
+                    otherwise
+                        Vg(:,q)=interp1(D,V(:,q),Dg,interpPar);
+                end
             end
         end
     end

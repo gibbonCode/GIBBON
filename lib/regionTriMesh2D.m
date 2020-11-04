@@ -26,6 +26,7 @@ function [varargout]=regionTriMesh2D(varargin)
 % for multiregion meshes or meshes containing holes.
 % 2020/05/05 Updated to handle single input structure as alternative
 % 2020/05/05 Added interior "must points" option
+% 2020/11/04 Improved handling of all must point boundary
 %------------------------------------------------------------------------
 
 %% Parse input
@@ -168,10 +169,11 @@ for qCurve=1:1:numel(regionCell)
     %Resample curve evenly based on point spacing
     if ~isempty(V_must_boundary)
         [~,indMust]=minDist(V_must_boundary,Vs);
+        indMust=unique(indMust); %Force unique
     else
         indMust=[];
     end
-    
+        
     [Vss]=evenlySpaceCurve(Vs,pointSpacing,interpMethod,closeLoopOpt,indMust);
 
     %Create refined set for distance based edge point removal
