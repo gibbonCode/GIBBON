@@ -113,12 +113,14 @@ if numC>1
     imSiz=size(M);
     voxelSize=G.voxelSize;
     imOrigin=G.origin;
-    for q=2:1:numC
+    Mmulti = zeros(imSiz); %M matrix for multi-labelled data
+    for q=1:1:numC
         [Fs,Vs]=removeNotIndexed(F(C==C_uni_sort(q),:),V);
         [M_s]=triSurf2Im(Fs,Vs,voxelSize,imOrigin,imSiz);
         M(M_s==1)=0; %Boundary voxels
         M(M_s==2)=C_uni_sort(q); %Interior region
     end
+    M = Mmulti;
 end
 %%
 varargout{1}=M;
