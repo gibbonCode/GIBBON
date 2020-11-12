@@ -38,12 +38,11 @@ inputStruct.Ns=80; % number of sampling points
 inputStruct.anisotropyFactors=[1 1 1]; 
 inputStruct.isocap=1; %Option to cap the isosurface
 inputStruct.surfaceCase='g'; %Surface type
-inputStruct.numPeriods=[2 2 2]; %Number of periods in each direction
+inputStruct.numPeriods=[3 3 3]; %Number of periods in each direction
 inputStruct.levelset=0.5; %Isosurface level
 
 %% 
-% Create stochastic structure
-
+% Create triply periodic minimal surface
 [F,V,C]=triplyPeriodicMinimalSurface(inputStruct);
 
 %%
