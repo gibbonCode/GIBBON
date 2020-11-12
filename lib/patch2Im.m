@@ -1,6 +1,6 @@
 function [varargout]=patch2Im(varargin)
 
-% function [M,G,bwLabels]=patch2Im(F,V,C,voxelSize,imOrigin,imSiz)
+% function [M,G,bwLabels]=patch2Im(F,V,C,voxelSize,imOrigin,imSiz,boundaryType)
 % -----------------------------------------------------------------------
 % This function converts the input surface, specified by the
 % faces F and the vertices V into an image. The image size, origin and
@@ -24,12 +24,13 @@ function [varargout]=patch2Im(varargin)
 % Kevin Mattheus Moerman
 % gibbon.toolbox@gmail.com
 %
-% 22/12/2015 Based on triSurf2Im, expanded for patches in general
+% 2015/12/22 Based on triSurf2Im, expanded for patches in general
+% 2020/11/12 Adding handling of boundary types
 %------------------------------------------------------------------------
 
 %%
 
-if nargin<2 || nargin>6
+if nargin<2 || nargin>7
     error('Wrong number of input arguments!');
 end
 
@@ -41,6 +42,7 @@ switch nargin
         voxelSize=[];
         imOrigin=[];
         imSiz=[];
+        boundaryType=0;
     case 3
         F=varargin{1};
         V=varargin{2};
@@ -48,6 +50,7 @@ switch nargin
         voxelSize=[];
         imOrigin=[];
         imSiz=[];
+        boundaryType=0;
     case 4
         F=varargin{1};
         V=varargin{2};
@@ -55,6 +58,7 @@ switch nargin
         voxelSize=varargin{4};
         imOrigin=[];
         imSiz=[];
+        boundaryType=0;
     case 5
         F=varargin{1};
         V=varargin{2};
@@ -62,6 +66,7 @@ switch nargin
         voxelSize=varargin{4};
         imOrigin=varargin{5};
         imSiz=[];
+        boundaryType=0;
     case 6
         F=varargin{1};
         V=varargin{2};
@@ -69,6 +74,15 @@ switch nargin
         voxelSize=varargin{4};
         imOrigin=varargin{5};
         imSiz=varargin{6};
+        boundaryType=0;
+    case 7 
+        F=varargin{1};
+        V=varargin{2};
+        C=varargin{3};
+        voxelSize=varargin{4};
+        imOrigin=varargin{5};
+        imSiz=varargin{6};
+        boundaryType=varargin{7};
     otherwise
         error('Wrong number of input arguments!');
 end
@@ -101,25 +115,29 @@ numC=numel(C_uni); %Number of colors
 [~,indSort]=sort(abs(C_uni));
 C_uni_sort=C_uni(indSort);
 
+%%
 %Compute image and labels for all boundaries
 [MT,G,bwLabels]=triSurf2Im(F,V,voxelSize,imOrigin,imSiz);
-M=MT;
-M(MT==0)=NaN;
-M(MT==1)=0;
-M(MT==2)=C_uni_sort(1);
-
-if numC>1
-    %Store geometry and size information
-    imSiz=size(M);
-    voxelSize=G.voxelSize;
-    imOrigin=G.origin;
-    for q=2:1:numC
-        [Fs,Vs]=removeNotIndexed(F(C==C_uni_sort(q),:),V);
-        [M_s]=triSurf2Im(Fs,Vs,voxelSize,imOrigin,imSiz);
-        M(M_s==1)=0; %Boundary voxels
-        M(M_s==2)=C_uni_sort(q); %Interior region
+ 
+%Store geometry and size information
+imSiz=size(MT);
+voxelSize=G.voxelSize;
+imOrigin=G.origin;
+M=NaN(imSiz); %Initialize as all NaN
+for q=1:1:numC
+    [Fs,Vs]=removeNotIndexed(F(C==C_uni_sort(q),:),V);
+    [M_s]=triSurf2Im(Fs,Vs,voxelSize,imOrigin,imSiz);
+    switch boundaryType
+        case -1 %Exclusive, regard boundary as out
+            M(M_s==2)=C_uni_sort(q); %Interior region
+        case 0
+            M(M_s==1)=0; %Boundary voxels
+            M(M_s==2)=C_uni_sort(q); %Interior region
+        case 1 %Inclusive, regard boundary as in
+            M(M_s>0)=C_uni_sort(q); %Interior region
     end
 end
+
 %%
 varargout{1}=M;
 varargout{2}=G;
