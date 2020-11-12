@@ -191,6 +191,78 @@ axisGeom(gca,fontSize);
 
 drawnow;
 
+
+%% EXAMPLE 4: Special treatment of boundary voxels
+
+% Defining a multi boundary set
+
+r=2; %Sphere radius
+rc=3; %Central radius
+nr=15;
+nc=25;
+ptype='quad';
+[F1,V1]=patchTorus(r,nr,rc,nc,ptype);
+[F2,V2]=quadSphere(2,r,2);
+V2(:,2)=V2(:,2)-5;
+[F3,V3]=quadSphere(2,r/2,2);
+V3(:,2)=V3(:,2)-5;
+[F4,V4]=quadSphere(3,r/2,2);
+V4(:,1)=V4(:,1)+2;
+V4(:,2)=V4(:,2)+2;
+
+[F,V,C]=joinElementSets({F1,F2,F3,F4},{V1,V2,V3,V4});
+
+%%
+
+% Defining the full set of possible control parameters
+voxelSize=r/8; % The output image voxel size.
+imOrigin=min(V,[],1)-voxelSize;
+imMax=max(V,[],1)+voxelSize;
+imSiz=round((imMax-imOrigin)/voxelSize);
+imSiz=imSiz([2 1 3]); %Image size (x, y corresponds to j,i in image coordinates, hence the permutation)
+
+%%
+% Plotting the results
+
+
+cFigure;
+subplot(2,2,1); hold on;
+title('Closed patch surface','FontSize',fontSize);
+
+gpatch(F,V,C,'none',faceAlpha2);
+
+camlight('headlight'); 
+axisGeom(gca,fontSize);
+
+boundaryTypes=[-1 0 1];
+titleString={'Exclusive','Default','Inclusive'};
+
+for q=1:numel(boundaryTypes)    
+    % Using |patch2Im| function to convert patch data to image data
+    [M]=patch2Im(F,V,C,voxelSize,imOrigin,imSiz,boundaryTypes(q));
+    
+    L_plot=false(size(M));
+    L_plot(:,:,round(size(M,3)/2))=1;
+    L_plot(round(size(M,1)/2),:,:)=1;
+    L_plot(:,round(size(M,2)/2),:)=1;
+    L_plot=L_plot & ~isnan(M);
+    [Fm,Vm,Cm]=im2patch(M,L_plot,'v');
+    [Vm(:,1),Vm(:,2),Vm(:,3)]=im2cart(Vm(:,2),Vm(:,1),Vm(:,3),voxelSize*ones(1,3));
+    Vm=Vm+imOrigin(ones(size(Vm,1),1),:);
+    
+    subplot(2,2,q+1); hold on;
+    title(titleString{q},'FontSize',fontSize);
+    
+    gpatch(F,V,'kw','none',faceAlpha2);
+    gpatch(Fm,Vm,Cm,'k',faceAlpha1);
+    
+    colormap(gca,gjet(4)); icolorbar([0 4]);
+    camlight('headlight');
+    axisGeom(gca,fontSize);
+    drawnow;
+end
+
+
 %%
 %
 % <<gibbVerySmall.gif>>
