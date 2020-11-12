@@ -30,7 +30,7 @@ Z=V(:,3); %Z-coordinates
 Zm=mean(Z(F),2); %Mean Z-coordinates for faces
 Nz = N(:,3); %Z component of normal
 surfaceVolumeContributions = surfaceAreas.*Zm.*Nz; %Contributions
-surfaceVolume = sum(surfaceVolumeContributions); %Total volume
+surfaceVolume = sum(surfaceVolumeContributions(~isnan(surfaceVolumeContributions))); %Total volume. Ignore NaNs, which may result from normal computation on zero-area faces
  
 %% 
 % _*GIBBON footer text*_ 
