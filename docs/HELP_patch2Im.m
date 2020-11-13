@@ -20,6 +20,7 @@ clear; close all; clc;
 fontSize=10;
 faceAlpha1=1;
 faceAlpha2=0.3;
+cMap=[0.5 0.5 0.5; gjet(4)];
 
 %% EXAMPLE 1: CONVERTING PATCH DATA WITH A SINGLE BOUNDARY TO AN IMAGE
 % Defining an example surface model
@@ -70,7 +71,7 @@ title('Patch data derived image data (3 slices)','FontSize',fontSize);
 gpatch(F,V,'kw','none',faceAlpha2);
 gpatch(Fm,Vm,Cm,'k',faceAlpha1);
 
-colormap gjet; icolorbar;
+colormap(cMap); icolorbar;
 camlight('headlight'); 
 axisGeom(gca,fontSize);
 
@@ -120,7 +121,7 @@ title('Patch data derived image data (3 slices)','FontSize',fontSize);
 gpatch(F,V,'kw','none',faceAlpha2);
 gpatch(Fm,Vm,Cm,'k',faceAlpha1);
 
-colormap gjet; icolorbar;
+colormap(cMap); icolorbar;
 camlight('headlight'); 
 axisGeom(gca,fontSize);
 
@@ -178,6 +179,7 @@ gpatch(F,V,C,'none',faceAlpha2);
 
 camlight('headlight'); 
 axisGeom(gca,fontSize);
+colormap(gca,cMap); icolorbar([0 4]);
 
 subplot(1,2,2); hold on;
 title('Patch data derived image data (3 slices)','FontSize',fontSize);
@@ -185,12 +187,10 @@ title('Patch data derived image data (3 slices)','FontSize',fontSize);
 gpatch(F,V,'kw','none',faceAlpha2);
 gpatch(Fm,Vm,Cm,'k',faceAlpha1);
 
-colormap gjet; icolorbar;
 camlight('headlight'); 
 axisGeom(gca,fontSize);
-
+colormap(gca,cMap); icolorbar([0 4]);
 drawnow;
-
 
 %% EXAMPLE 4: Special treatment of boundary voxels
 
@@ -224,7 +224,6 @@ imSiz=imSiz([2 1 3]); %Image size (x, y corresponds to j,i in image coordinates,
 %%
 % Plotting the results
 
-
 cFigure;
 subplot(2,2,1); hold on;
 title('Closed patch surface','FontSize',fontSize);
@@ -233,6 +232,7 @@ gpatch(F,V,C,'none',faceAlpha2);
 
 camlight('headlight'); 
 axisGeom(gca,fontSize);
+colormap(gca,cMap); icolorbar([0 4]);
 
 boundaryTypes=[-1 0 1];
 titleString={'Exclusive','Default','Inclusive'};
@@ -256,12 +256,11 @@ for q=1:numel(boundaryTypes)
     gpatch(F,V,'kw','none',faceAlpha2);
     gpatch(Fm,Vm,Cm,'k',faceAlpha1);
     
-    colormap(gca,gjet(4)); icolorbar([0 4]);
     camlight('headlight');
     axisGeom(gca,fontSize);
-    drawnow;
+    colormap(gca,cMap); icolorbar([0 4]);
 end
-
+drawnow;
 
 %%
 %

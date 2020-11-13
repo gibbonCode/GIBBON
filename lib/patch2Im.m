@@ -118,31 +118,46 @@ C_uni_sort=C_uni(indSort);
 %%
 %Compute image and labels for all boundaries
 [MT,G,bwLabels]=triSurf2Im(F,V,voxelSize,imOrigin,imSiz);
- 
+
 %Store geometry and size information
 imSiz=size(MT);
 voxelSize=G.voxelSize;
 imOrigin=G.origin;
 M=NaN(imSiz); %Initialize as all NaN
-for q=1:1:numC
-    [Fs,Vs]=removeNotIndexed(F(C==C_uni_sort(q),:),V);
-    [M_s]=triSurf2Im(Fs,Vs,voxelSize,imOrigin,imSiz);
+
+if numC>1
+    for q=1:1:numC
+        [Fs,Vs]=removeNotIndexed(F(C==C_uni_sort(q),:),V);
+        [M_s]=triSurf2Im(Fs,Vs,voxelSize,imOrigin,imSiz);
+        switch boundaryType
+            case -1 %Exclusive, regard boundary as out
+                M(M_s==2)=C_uni_sort(q); %Interior region
+            case 0
+                M(M_s==1)=0; %Boundary voxels
+                M(M_s==2)=C_uni_sort(q); %Interior region
+            case 1 %Inclusive, regard boundary as in
+                M(M_s>0)=C_uni_sort(q); %Interior region
+        end
+    end
+else
     switch boundaryType
         case -1 %Exclusive, regard boundary as out
-            M(M_s==2)=C_uni_sort(q); %Interior region
+            M(MT==2)=C_uni_sort; %Interior region
         case 0
-            M(M_s==1)=0; %Boundary voxels
-            M(M_s==2)=C_uni_sort(q); %Interior region
+            M(MT==1)=0; %Boundary voxels
+            M(MT==2)=C_uni_sort; %Interior region
         case 1 %Inclusive, regard boundary as in
-            M(M_s>0)=C_uni_sort(q); %Interior region
+            M(MT>0)=C_uni_sort; %Interior region
     end
 end
 
-%%
+%% Gather output
 varargout{1}=M;
 varargout{2}=G;
 varargout{3}=bwLabels;
- 
+
+end
+
 %% 
 % _*GIBBON footer text*_ 
 % 

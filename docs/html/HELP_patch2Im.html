@@ -6,7 +6,7 @@
    <!--
 This HTML was auto-generated from MATLAB code.
 To make changes, update the MATLAB code and republish this document.
-      --><title>patch2Im</title><meta name="generator" content="MATLAB 9.8"><link rel="schema.DC" href="http://purl.org/dc/elements/1.1/"><meta name="DC.date" content="2020-11-12"><meta name="DC.source" content="HELP_patch2Im.m"><style type="text/css">
+      --><title>patch2Im</title><meta name="generator" content="MATLAB 9.8"><link rel="schema.DC" href="http://purl.org/dc/elements/1.1/"><meta name="DC.date" content="2020-11-13"><meta name="DC.source" content="HELP_patch2Im.m"><style type="text/css">
 html,body,div,span,applet,object,iframe,h1,h2,h3,h4,h5,h6,p,blockquote,pre,a,abbr,acronym,address,big,cite,code,del,dfn,em,font,img,ins,kbd,q,s,samp,small,strike,strong,sub,sup,tt,var,b,u,i,center,dl,dt,dd,ol,ul,li,fieldset,form,label,legend,table,caption,tbody,tfoot,thead,tr,th,td{margin:0;padding:0;border:0;outline:0;font-size:100%;vertical-align:baseline;background:transparent}body{line-height:1}ol,ul{list-style:none}blockquote,q{quotes:none}blockquote:before,blockquote:after,q:before,q:after{content:'';content:none}:focus{outine:0}ins{text-decoration:none}del{text-decoration:line-through}table{border-collapse:collapse;border-spacing:0}
 
 html { min-height:100%; margin-bottom:1px; }
@@ -71,6 +71,7 @@ table td { padding:7px 5px; text-align:left; vertical-align:top; border:1px soli
 </pre><h2 id="2">Syntax</h2><p><tt>[M,G,bwLabels]=patch2Im(F,V,C,voxelSize,imOrigin,imSiz);</tt></p><h2 id="3">Description</h2><p>This function converts patch surface data to images. The input C can be used to set the label for each surface and corresponding image region. The regions are assigned in order according to the color label in C. See also <tt>triSurf2Im</tt></p><h2 id="4">Examples</h2><p>Plot settings</p><pre class="codeinput">fontSize=10;
 faceAlpha1=1;
 faceAlpha2=0.3;
+cMap=[0.5 0.5 0.5; gjet(4)];
 </pre><h2 id="6">EXAMPLE 1: CONVERTING PATCH DATA WITH A SINGLE BOUNDARY TO AN IMAGE</h2><p>Defining an example surface model</p><pre class="codeinput"><span class="comment">% Defining a deformed and rotated torus shape</span>
 r=1; <span class="comment">%Sphere radius</span>
 rc=2; <span class="comment">%Central radius</span>
@@ -110,7 +111,7 @@ title(<span class="string">'Patch data derived image data (3 slices)'</span>,<sp
 gpatch(F,V,<span class="string">'kw'</span>,<span class="string">'none'</span>,faceAlpha2);
 gpatch(Fm,Vm,Cm,<span class="string">'k'</span>,faceAlpha1);
 
-colormap <span class="string">gjet</span>; icolorbar;
+colormap(cMap); icolorbar;
 camlight(<span class="string">'headlight'</span>);
 axisGeom(gca,fontSize);
 
@@ -149,12 +150,12 @@ title(<span class="string">'Patch data derived image data (3 slices)'</span>,<sp
 gpatch(F,V,<span class="string">'kw'</span>,<span class="string">'none'</span>,faceAlpha2);
 gpatch(Fm,Vm,Cm,<span class="string">'k'</span>,faceAlpha1);
 
-colormap <span class="string">gjet</span>; icolorbar;
+colormap(cMap); icolorbar;
 camlight(<span class="string">'headlight'</span>);
 axisGeom(gca,fontSize);
 
 drawnow;
-</pre><img width="100%" height="auto" vspace="5" hspace="5" src="HELP_patch2Im_02.jpg" alt=""> <img width="100%" height="auto" vspace="5" hspace="5" src="HELP_patch2Im_03.jpg" alt=""> <h2 id="12">EXAMPLE 3: CONVERTING PATCH DATA WITH A MULTIPLE BOUNDARIES AND PATCH TYPES TO AN IMAGE</h2><pre class="codeinput"><span class="comment">% Defining a multi boundary set</span>
+</pre><img width="100%" height="auto" vspace="5" hspace="5" src="HELP_patch2Im_02.jpg" alt=""> <h2 id="12">EXAMPLE 3: CONVERTING PATCH DATA WITH A MULTIPLE BOUNDARIES AND PATCH TYPES TO AN IMAGE</h2><pre class="codeinput"><span class="comment">% Defining a multi boundary set</span>
 
 r=2; <span class="comment">%Sphere radius</span>
 rc=3; <span class="comment">%Central radius</span>
@@ -197,6 +198,7 @@ gpatch(F,V,C,<span class="string">'none'</span>,faceAlpha2);
 
 camlight(<span class="string">'headlight'</span>);
 axisGeom(gca,fontSize);
+colormap(gca,cMap); icolorbar([0 4]);
 
 subplot(1,2,2); hold <span class="string">on</span>;
 title(<span class="string">'Patch data derived image data (3 slices)'</span>,<span class="string">'FontSize'</span>,fontSize);
@@ -204,12 +206,11 @@ title(<span class="string">'Patch data derived image data (3 slices)'</span>,<sp
 gpatch(F,V,<span class="string">'kw'</span>,<span class="string">'none'</span>,faceAlpha2);
 gpatch(Fm,Vm,Cm,<span class="string">'k'</span>,faceAlpha1);
 
-colormap <span class="string">gjet</span>; icolorbar;
 camlight(<span class="string">'headlight'</span>);
 axisGeom(gca,fontSize);
-
+colormap(gca,cMap); icolorbar([0 4]);
 drawnow;
-</pre><img width="100%" height="auto" vspace="5" hspace="5" src="HELP_patch2Im_04.jpg" alt=""> <img width="100%" height="auto" vspace="5" hspace="5" src="HELP_patch2Im_05.jpg" alt=""> <h2 id="15">EXAMPLE 4: Special treatment of boundary voxels</h2><pre class="codeinput"><span class="comment">% Defining a multi boundary set</span>
+</pre><img width="100%" height="auto" vspace="5" hspace="5" src="HELP_patch2Im_03.jpg" alt=""> <h2 id="15">EXAMPLE 4: Special treatment of boundary voxels</h2><pre class="codeinput"><span class="comment">% Defining a multi boundary set</span>
 
 r=2; <span class="comment">%Sphere radius</span>
 rc=3; <span class="comment">%Central radius</span>
@@ -240,6 +241,7 @@ gpatch(F,V,C,<span class="string">'none'</span>,faceAlpha2);
 
 camlight(<span class="string">'headlight'</span>);
 axisGeom(gca,fontSize);
+colormap(gca,cMap); icolorbar([0 4]);
 
 boundaryTypes=[-1 0 1];
 titleString={<span class="string">'Exclusive'</span>,<span class="string">'Default'</span>,<span class="string">'Inclusive'</span>};
@@ -263,12 +265,12 @@ titleString={<span class="string">'Exclusive'</span>,<span class="string">'Defau
     gpatch(F,V,<span class="string">'kw'</span>,<span class="string">'none'</span>,faceAlpha2);
     gpatch(Fm,Vm,Cm,<span class="string">'k'</span>,faceAlpha1);
 
-    colormap(gca,gjet(4)); icolorbar([0 4]);
     camlight(<span class="string">'headlight'</span>);
     axisGeom(gca,fontSize);
-    drawnow;
+    colormap(gca,cMap); icolorbar([0 4]);
 <span class="keyword">end</span>
-</pre><img width="100%" height="auto" vspace="5" hspace="5" src="HELP_patch2Im_06.jpg" alt=""> <p><img vspace="5" hspace="5" src="gibbVerySmall.gif" alt=""> </p><p><i><b>GIBBON</b></i> <a href="www.gibboncode.org">www.gibboncode.org</a></p><p><i>Kevin Mattheus Moerman</i>, <a href="gibbon.toolbox@gmail.com">gibbon.toolbox@gmail.com</a></p><p><i><b>GIBBON footer text</b></i></p><p>License: <a href="https://github.com/gibbonCode/GIBBON/blob/master/LICENSE">https://github.com/gibbonCode/GIBBON/blob/master/LICENSE</a></p><p>GIBBON: The Geometry and Image-based Bioengineering add-On. A toolbox for image segmentation, image-based modeling, meshing, and finite element analysis.</p><p>Copyright (C) 2006-2020 Kevin Mattheus Moerman</p><p>This program is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.</p><p>This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for more details.</p><p>You should have received a copy of the GNU General Public License along with this program.  If not, see <a href="http://www.gnu.org/licenses/">http://www.gnu.org/licenses/</a>.</p><p class="footer"><br><a href="https://www.mathworks.com/products/matlab/">Published with MATLAB&reg; R2020a</a><br></p></div><!--
+drawnow;
+</pre><img width="100%" height="auto" vspace="5" hspace="5" src="HELP_patch2Im_04.jpg" alt=""> <p><img vspace="5" hspace="5" src="gibbVerySmall.gif" alt=""> </p><p><i><b>GIBBON</b></i> <a href="www.gibboncode.org">www.gibboncode.org</a></p><p><i>Kevin Mattheus Moerman</i>, <a href="gibbon.toolbox@gmail.com">gibbon.toolbox@gmail.com</a></p><p><i><b>GIBBON footer text</b></i></p><p>License: <a href="https://github.com/gibbonCode/GIBBON/blob/master/LICENSE">https://github.com/gibbonCode/GIBBON/blob/master/LICENSE</a></p><p>GIBBON: The Geometry and Image-based Bioengineering add-On. A toolbox for image segmentation, image-based modeling, meshing, and finite element analysis.</p><p>Copyright (C) 2006-2020 Kevin Mattheus Moerman</p><p>This program is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.</p><p>This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for more details.</p><p>You should have received a copy of the GNU General Public License along with this program.  If not, see <a href="http://www.gnu.org/licenses/">http://www.gnu.org/licenses/</a>.</p><p class="footer"><br><a href="https://www.mathworks.com/products/matlab/">Published with MATLAB&reg; R2020a</a><br></p></div><!--
 ##### SOURCE BEGIN #####
 %% patch2Im
 % Below is a demonstration of the features of the |patch2Im| function
@@ -292,6 +294,7 @@ clear; close all; clc;
 fontSize=10;
 faceAlpha1=1;
 faceAlpha2=0.3;
+cMap=[0.5 0.5 0.5; gjet(4)];
 
 %% EXAMPLE 1: CONVERTING PATCH DATA WITH A SINGLE BOUNDARY TO AN IMAGE
 % Defining an example surface model
@@ -342,7 +345,7 @@ title('Patch data derived image data (3 slices)','FontSize',fontSize);
 gpatch(F,V,'kw','none',faceAlpha2);
 gpatch(Fm,Vm,Cm,'k',faceAlpha1);
 
-colormap gjet; icolorbar;
+colormap(cMap); icolorbar;
 camlight('headlight'); 
 axisGeom(gca,fontSize);
 
@@ -392,7 +395,7 @@ title('Patch data derived image data (3 slices)','FontSize',fontSize);
 gpatch(F,V,'kw','none',faceAlpha2);
 gpatch(Fm,Vm,Cm,'k',faceAlpha1);
 
-colormap gjet; icolorbar;
+colormap(cMap); icolorbar;
 camlight('headlight'); 
 axisGeom(gca,fontSize);
 
@@ -450,6 +453,7 @@ gpatch(F,V,C,'none',faceAlpha2);
 
 camlight('headlight'); 
 axisGeom(gca,fontSize);
+colormap(gca,cMap); icolorbar([0 4]);
 
 subplot(1,2,2); hold on;
 title('Patch data derived image data (3 slices)','FontSize',fontSize);
@@ -457,12 +461,10 @@ title('Patch data derived image data (3 slices)','FontSize',fontSize);
 gpatch(F,V,'kw','none',faceAlpha2);
 gpatch(Fm,Vm,Cm,'k',faceAlpha1);
 
-colormap gjet; icolorbar;
 camlight('headlight'); 
 axisGeom(gca,fontSize);
-
+colormap(gca,cMap); icolorbar([0 4]);
 drawnow;
-
 
 %% EXAMPLE 4: Special treatment of boundary voxels
 
@@ -505,6 +507,7 @@ gpatch(F,V,C,'none',faceAlpha2);
 
 camlight('headlight'); 
 axisGeom(gca,fontSize);
+colormap(gca,cMap); icolorbar([0 4]);
 
 boundaryTypes=[-1 0 1];
 titleString={'Exclusive','Default','Inclusive'};
@@ -528,12 +531,11 @@ for q=1:numel(boundaryTypes)
     gpatch(F,V,'kw','none',faceAlpha2);
     gpatch(Fm,Vm,Cm,'k',faceAlpha1);
     
-    colormap(gca,gjet(4)); icolorbar([0 4]);
     camlight('headlight');
     axisGeom(gca,fontSize);
-    drawnow;
+    colormap(gca,cMap); icolorbar([0 4]);
 end
-
+drawnow;
 
 %%
 %
