@@ -8,9 +8,39 @@ clear; close all; clc;
 % |setFEBioPath(FEBioPathSpec);|
 
 %% Description 
-% UNDOCUMENTED 
+% This function sets the FEBio path defined by FEBioPathSpec. Setting the
+% path means it is stored in the GIBBON configuration file:
+% /GIBBON/config/FEBioPath.txt. 
+%
+% See also |getFEBioPath|
+
 %% Examples 
-% 
+% This example shows how the febio path can be specified and set for use in
+% GIBBON
+
+%% 
+% The FEBio path should be the full path to the FEBio executable file (and
+% should include the extendion for Windows). 
+
+%%
+% These are examples of paths defined for Windows and Linux (Ubuntu):
+% Windows: 
+% C:\Program Files\febio-2.9.1\bin\FEBio2.exe
+%
+% Linux: 
+% /home/kevin/FEBio-2.9.1/bin/febio2
+
+%%
+% To avoid this demo from undoing the path settings for a user the current
+% path is here instead uploaded with |getFEBioPath|
+
+%Define FEBio path
+febioPath=getFEBioPath; % Example: febioPath='/home/kevin/FEBio-2.9.1/bin/febio2'
+
+%%
+% Setting the FEBio path
+setFEBioPath(febioPath); 
+
 %%
 % 
 % <<gibbVerySmall.gif>>

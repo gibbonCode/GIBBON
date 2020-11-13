@@ -1,5 +1,13 @@
 function setFEBioPath(FEBioPathSpec)
 
+% function setFEBioPath(FEBioPathSpec)
+% -----------------------------------------------------------------------
+% This function sets the FEBio path defined by FEBioPathSpec. Setting the
+% path means it is stored in the GIBBON configuration file:
+% /GIBBON/config/FEBioPath.txt. 
+% 
+% -----------------------------------------------------------------------
+
 %%
 filePath=mfilename('fullpath');
 toolboxPath=fileparts(fileparts(filePath));
@@ -18,11 +26,15 @@ switch class(FEBioPathSpec)
             pathNameNow=FEBioPathSpec{q};
             if exist(pathNameNow,'file')==2
                 T{q+1}=FEBioPathSpec{q};
+            else
+                error('Path specified does not exist')
             end
         end
     otherwise
         if exist(FEBioPathSpec,'file')==2
             T{2}=FEBioPathSpec;
+        else
+            error('Path specified does not exist')
         end
 end
 
