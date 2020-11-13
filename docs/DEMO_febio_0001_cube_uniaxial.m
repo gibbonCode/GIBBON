@@ -36,7 +36,7 @@ cMap=viridis(20);
 %% Control parameters
 
 % Path names
-defaultFolder = fileparts(fileparts(mfilename('fullpath')));
+defaultFolder = fileparts(fileparts(mfilename('fullpath'))); 
 savePath=fullfile(defaultFolder,'data','temp');
 
 % Defining file names
@@ -45,6 +45,7 @@ febioFebFileName=fullfile(savePath,[febioFebFileNamePart,'.feb']); %FEB file nam
 febioLogFileName=fullfile(savePath,[febioFebFileNamePart,'.txt']); %FEBio log file name
 febioLogFileName_disp=[febioFebFileNamePart,'_disp_out.txt']; %Log file name for exporting displacement
 febioLogFileName_stress=[febioFebFileNamePart,'_stress_out.txt']; %Log file name for exporting stress
+febioLogFileName_stress_prin=[febioFebFileNamePart,'_stress_prin_out.txt']; %Log file name for exporting principal stress
 
 %Specifying dimensions and number of elements
 cubeSize=10; 
@@ -70,7 +71,7 @@ displacementMagnitude=(stretchLoad*sampleHeight)-sampleHeight; %The displacement
 %Material parameter set
 c1=0.7; %Shear-modulus-like parameter
 m1=2; %Material parameter setting degree of non-linearity
-k_factor=500; %Bulk modulus factor 
+k_factor=100; %Bulk modulus factor 
 k=c1*k_factor; %Bulk modulus
 formulationType='uncoupled'; %coupled
 
@@ -266,6 +267,11 @@ febio_spec.Output.logfile.element_data{1}.ATTR.data='sz';
 febio_spec.Output.logfile.element_data{1}.ATTR.delim=',';
 febio_spec.Output.logfile.element_data{1}.VAL=1:size(E,1);
 
+febio_spec.Output.logfile.element_data{2}.ATTR.file=febioLogFileName_stress_prin;
+febio_spec.Output.logfile.element_data{2}.ATTR.data='s1;s2;s3';
+febio_spec.Output.logfile.element_data{2}.ATTR.delim=',';
+febio_spec.Output.logfile.element_data{2}.VAL=1:size(E,1);
+
 %% Quick viewing of the FEBio input file structure
 % The |febView| function can be used to view the xml structure in a MATLAB
 % figure window. 
@@ -290,7 +296,7 @@ febioAnalysis.run_filename=febioFebFileName; %The input file name
 febioAnalysis.run_logname=febioLogFileName; %The name for the log file
 febioAnalysis.disp_on=1; %Display information on the command window
 febioAnalysis.disp_log_on=1; %Display convergence information in the command window
-febioAnalysis.runMode='external';%'internal';
+febioAnalysis.runMode='internal';%'internal';
 febioAnalysis.t_check=0.25; %Time for checking log file (dont set too small)
 febioAnalysis.maxtpi=1e99; %Max analysis time
 febioAnalysis.maxLogCheckTime=10; %Max log file checking time
@@ -362,7 +368,8 @@ if runFlag==1 %i.e. a succesful run
     [CV]=faceToVertexMeasure(E,V,E_stress_mat(:,:,end));
     
     % Create basic view and store graphics handle to initiate animation
-    hf=cFigure; %Open figure  
+    hf=cFigure; %Open figure  /usr/local/MATLAB/R2020a/bin/glnxa64/jcef_helper: symbol lookup error: /lib/x86_64-linux-gnu/libpango-1.0.so.0: undefined symbol: g_ptr_array_copy
+
     gtitle([febioFebFileNamePart,': Press play to animate']);
     title('$\sigma_{zz}$ [MPa]','Interpreter','Latex')
     hp=gpatch(Fb,V_DEF(:,:,end),CV,'k',1,2); %Add graphics object to animate
@@ -411,6 +418,30 @@ if runFlag==1 %i.e. a succesful run
     plot(stretch_sim(:),stress_cauchy_sim(:),'r-','lineWidth',lineWidth);
     
     view(2); axis tight;  grid on; axis square; box on; 
+    set(gca,'FontSize',fontSize);
+    drawnow;
+    
+    %%
+    % Importing element principal stresses from a log file
+    dataStruct=importFEBio_logfile(fullfile(savePath,febioLogFileName_stress_prin),1,1);
+    
+    %Access data
+    E_stress_prin_mat=dataStruct.data;
+    
+    %Compute pressure
+    P = squeeze(-1/3*mean(sum(E_stress_prin_mat,2),1));
+    
+    %%
+    % Visualize pressure-stretch curve
+    
+    cFigure; hold on;
+    title('Pressure-stretch curve','FontSize',fontSize);
+    xlabel('$\lambda$ [.]','FontSize',fontSize,'Interpreter','Latex');
+    ylabel('$p$ [MPa]','FontSize',fontSize,'Interpreter','Latex');
+    
+    plot(stretch_sim(:),P(:),'r-','lineWidth',lineWidth);
+    
+    view(2); axis tight;  grid on; axis square; box on;
     set(gca,'FontSize',fontSize);
     drawnow;
     

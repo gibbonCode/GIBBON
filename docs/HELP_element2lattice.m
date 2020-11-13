@@ -61,7 +61,21 @@ drawnow;
 %% Example: Different lattice sides
 
 %%
-% Computer other "lattice side"
+% Creating example geometry.
+boxDim=[1 1 1];
+boxEl=[1 1 1];
+[meshStruct]=hexMeshBox(boxDim,boxEl);
+E=meshStruct.E;
+V=meshStruct.V;
+F=meshStruct.F;
+[indBoundary]=tesBoundary(F,V);
+
+%%
+% Compute other "lattice side"
+controlParameter.shrinkFactor=0.2; %Strut sides are formed by shrinking the input mesh faces by this factor
+controlParameter.numDigitKeep=5; %used for merging nodes
+controlParameter.meshType='quad'; %desired output mesh type
+controlParameter.indBoundary=indBoundary; %indices of the boundary faces
 controlParameter.latticeSide=2; %1=side 1 the edge lattice, 2=side 2 the dual lattice to the edge lattice
 [Fs2,Vs2,Cs2]=element2lattice(E,V,controlParameter); %Get lattice structure
 
@@ -184,7 +198,7 @@ drawnow;
 %% Example: Different lattice sides
 
 %%
-% Computer other "lattice side"
+% Compute other "lattice side"
 controlParameter.latticeSide=2; %1=side 1 the edge lattice, 2=side 2 the dual lattice to the edge lattice
 [Fs2,Vs2,Cs2]=element2lattice(E,V,controlParameter); %Get lattice structure
 

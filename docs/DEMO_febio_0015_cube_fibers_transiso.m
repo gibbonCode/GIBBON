@@ -57,7 +57,7 @@ numElementsHeight=round(sampleHeight/pointSpacings(3)); %Number of elemens in di
 
 %Define applied displacement 
 appliedStrain=0.3; %Linear strain (Only used to compute applied stretch)
-loadingOption='tension'; % or 'compression'
+loadingOption='compression'; % or 'tension'
 switch loadingOption
     case 'compression'
         stretchLoad=1-appliedStrain; %The applied stretch for uniaxial loading
@@ -69,7 +69,7 @@ displacementMagnitude=(stretchLoad*sampleHeight)-sampleHeight; %The displacement
 %Material parameter set
 k_factor=100; %Bulk modulus factor    
 
-fiberType=1; 
+fiberType=2; 
 switch fiberType
     case 1
         c1=0.2; %Shear-modulus-like parameter

@@ -5,7 +5,7 @@
 clear; close all; clc;
 
 %% Syntax
-% |[F,V,C]=stochasticMicrostructure(M,IND,ptype);|
+% |[F,V,C]=stochasticMicrostructure(inputStruct);|
 
 %% Description
 % This function generates Stochastic Bicontinuous Microstructures

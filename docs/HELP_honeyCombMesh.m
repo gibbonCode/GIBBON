@@ -4,6 +4,18 @@
 %%
 clear; close all; clc;
 
+%% Syntax
+% |[Fh,Vh]=honeyCombMesh(minV,maxV,pointSpacing);|
+
+%% Description
+% This function creates the faces (Fh) and vertices (Vh) for a hexagon
+% (honey comb) mesh. The hexagons are created between the limits minV
+% (containing desired minimum X and Y coordinates) and maxV (containing
+% desired maximum X and Y coordinates). The size of the hexagons is set by
+% the desired point spacing.  
+
+%% Examples
+
 %%
 % Plot settings
 fontSize=15;

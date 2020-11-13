@@ -38,8 +38,9 @@ for q=1:1:numel(n)
     set(gca,'FontSize',fontSize);
     view(2); axis tight;  axis equal;  axis off; 
 end
+drawnow; 
 
-%% Refining  the edges of 3D patch data
+%% Refining  the edges of 3D patch data example 1
 
 [F,V]=quadSphere(2,1);
 
@@ -57,6 +58,32 @@ for q=1:1:numel(n)
     view(3); axis tight;  axis equal;  axis off; 
     camlight headlight; 
 end
+drawnow; 
+
+
+%% Refining  the edges of 3D patch data example 2
+%Torus parameters
+r=1; %Sphere radius
+rc=2.5; %Central radius
+nr=6;
+nc=12;
+[F,V]=patchTorus(r,nr,rc,nc,'honey');
+
+n=0:1:3; %Number of added edge nodes
+pColors=gjet(numel(n));
+cFigure; 
+for q=1:1:numel(n)
+    [Fs,Vs]=subEdge(F,V,n(q)); 
+    subplot(2,2,q); hold on;
+    title([num2str(n(q)),' added edge nodes'],'FontSize',fontSize);
+    gpatch(Fs,Vs,pColors(q,:),edgeColor,faceAlpha); 
+    plotV(Vs,'k.','markerSize',markerSize2);
+    plotV(V,'k.','markerSize',markerSize);    
+    set(gca,'FontSize',fontSize);
+    view(3); axis tight;  axis equal;  axis off; 
+    camlight headlight; 
+end
+drawnow; 
 
 %% 
 %

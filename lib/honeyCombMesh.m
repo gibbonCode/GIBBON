@@ -1,5 +1,15 @@
 function [Fh,Vh]=honeyCombMesh(minV,maxV,pointSpacing)
 
+% function [Fh,Vh]=honeyCombMesh(minV,maxV,pointSpacing)
+% -----------------------------------------------------------------------
+% This function creates the faces (Fh) and vertices (Vh) for a hexagon
+% (honey comb) mesh. The hexagons are created between the limits minV
+% (containing desired minimum X and Y coordinates) and maxV (containing
+% desired maximum X and Y coordinates). The size of the hexagons is set by
+% the desired point spacing.  
+%
+% -----------------------------------------------------------------------
+
 %% CREATE TRIANGULATION
 
 maxV(2)=maxV(2)+pointSpacing; 
@@ -10,7 +20,9 @@ maxV(2)=maxV(2)+pointSpacing;
 [Vh,Fd]=patch_dual(V,F,0);
 numVert=cellfun(@(x) size(x,2),Fd);
 Fh=Fd{numVert==6};
- 
+
+[Fh,Vh]=patchCleanUnused(Fh,Vh);
+
 %% 
 % _*GIBBON footer text*_ 
 % 
