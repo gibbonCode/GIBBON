@@ -1,5 +1,15 @@
 function cKelvin=kelvinMap(c)
 
+% function cKelvin=kelvinMap(c)
+% ------------------------------------------------------------------------
+%
+% This function creates the Kelvin mapped (6x6) tensor form of the 4-th
+% order (3x3x3x3) input tensor. 
+%
+% ------------------------------------------------------------------------
+
+%%
+
 cVoigt=voigtMap(c);
 x=[1 1 1 sqrt(2) sqrt(2) sqrt(2)]; %conversion Voigt to Kelvin form
 

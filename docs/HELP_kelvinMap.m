@@ -8,9 +8,98 @@ clear; close all; clc;
 % |cKelvin=kelvinMap(c);|
 
 %% Description 
-% UNDOCUMENTED 
+% This function creates the Kelvin mapped (6x6) tensor form of the 4-th
+% order (3x3x3x3) input tensor. 
+
 %% Examples 
 % 
+
+%% Example 1: The Kelvin mapping of the elasticity tensor for Hooke's law with Lame parameters
+
+%%
+
+%Constructing 4th order base tensor set
+I=eye(3,3); %The 2nd order identity tensor
+II1=dyadicProduct(I,I,1); %4th order base tensor 1                                                                
+II3=dyadicProduct(I,I,3); %4th order base tensor 3
+
+%Lame parameters for Hooke's law
+mu=2; %The shear modulus
+lambda=3; %The lambda lame parameter
+
+%Construct 4th order stiffness tensor
+C=lambda.*II1+2.*mu.*II3; 
+
+%%
+% Derive Kelvin mapped tensor
+Ck=kelvinMap(C) 
+
+%%
+% The Kelvin mapping for eigenstiffness determination
+[V,D]=eig(Ck)
+
+%%
+% Using symbolic variables
+
+try
+    %Lame parameters for Hooke's law
+    syms mu lambda; %Create symbolic parameters
+    
+    %Construct 4th order stiffness tensor
+    C=lambda.*II1+2.*mu.*II3; 
+    
+    %%
+    % Derive Kelvin mapped tensor
+    
+    Ck=kelvinMap(C)
+    
+    %%
+    % The Kelvin mapping for eigenstiffness determination
+    
+    [V,D]=eig(Ck)
+
+end
+
+%% Example 2: The Kelvin mapping of the elasticity tensor for Hooke's law with bulk/shear modulus
+
+% Using mu and bulk modulus parameters
+mu=2; %The shear modulus
+lambda=3; %The lambda lame parameter
+k=lambda+2/3*mu; %Bulk modulus
+
+%Construct 4th order stiffness tensor
+C=(k-2/3*mu).*II1+2.*mu.*II3; %Construct 4th order stiffness tensor
+
+%%
+% Derive Kelvin mapped tensor
+
+Ck=kelvinMap(C) 
+
+%%
+% The Kelvin mapping for eigenstiffness determination
+[V,D]=eig(Ck)
+
+%% 
+% Using symbolic variables
+
+try
+    syms mu k; %Create symbolic parameters
+    
+    %Construct 4th order stiffness tensor
+    C=(k-2/3*mu).*II1+2.*mu.*II3; %Construct 4th order stiffness tensor
+    
+    %%
+    % Derive Kelvin mapped tensor
+    
+    Ck=kelvinMap(C)
+    
+    %%
+    % The Kelvin mapping for eigenstiffness determination
+    
+    [V,D]=eig(Ck)
+
+end
+
 %%
 % 
 % <<gibbVerySmall.gif>>
