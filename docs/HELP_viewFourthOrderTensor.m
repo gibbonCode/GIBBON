@@ -41,11 +41,12 @@ viewFourthOrderTensor(C); %Visualize tensor C
 %% Viewing fourth-order stiffness tensors with symbolic variables
 
 try
-    syms mu k; %Create symbolic Lame parameters
-    %Construct 4th order stiffness tensor
-    C1=k.*II1;
-    C2=2.*mu.*II3;
-    C3=-2.*mu*1/3*II1; 
+    %%
+    
+    syms mu lambda; %Create symbolic Lame parameters
+    
+    %Parameters for Hooke's law    
+    C=lambda.*II1+2.*mu.*II3; %Construct 4th order stiffness tensor
     
     %%
     % Visualizing the tensor using |viewFourthOrderTensor|
@@ -53,9 +54,25 @@ try
     numDigits=0;
     fontSizeIm=15;
     fontSize=25;
-    viewFourthOrderTensor(C1,numDigits,fontSizeIm,fontSize); %Visualize tensor C
-    viewFourthOrderTensor(C2,numDigits,fontSizeIm,fontSize); %Visualize tensor C
-    viewFourthOrderTensor(C3,numDigits,fontSizeIm,fontSize); %Visualize tensor C
+    viewFourthOrderTensor(C,numDigits,fontSizeIm,fontSize); %Visualize tensor C
+
+    %% 
+    syms mu k; %Create symbolic Lame parameters
+    
+    %Construct 4th order stiffness tensor
+    k=lambda+2/3*mu; %Bulk modulus
+
+    %Construct 4th order stiffness tensor
+    C=(k-2/3*mu).*II1+2.*mu.*II3; %Construct 4th order stiffness tensor
+    
+    %%
+    % Visualizing the tensor using |viewFourthOrderTensor|
+    
+    numDigits=0;
+    fontSizeIm=15;
+    fontSize=25;
+    viewFourthOrderTensor(C,numDigits,fontSizeIm,fontSize); %Visualize tensor C
+
 end
 
 %%

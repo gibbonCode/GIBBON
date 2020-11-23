@@ -27,6 +27,7 @@ function [varargout]=stochasticMicrostructure(inputStruct)
 % 2020/09/18 Kevin M. Moerman: Added face color data
 % 2020/09/18 Kevin M. Moerman: Added anisotropy factors
 % 2020/09/18 Kevin M. Moerman: Inverted face orientation
+% 2020/11/23 KMM Negated levelset
 % -----------------------------------------------------------------------
 
 %% Parse input
@@ -84,7 +85,7 @@ end
 funx_grid = reshape(funx,size(U));
 
 %% Controlling relative density
-ksi = sqrt(2)*erfinv(2*relD-1);
+ksi = -sqrt(2)*erfinv(2*relD-1);
 
 %% Generation of level sets and exporting
 

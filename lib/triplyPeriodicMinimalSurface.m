@@ -7,7 +7,6 @@ function [varargout]=triplyPeriodicMinimalSurface(inputStruct)
 %
 % inputStruct.L=1; % characteristic length
 % inputStruct.Ns=80; % number of sampling points
-% inputStruct.anisotropyFactors=[1 1 1]; 
 % inputStruct.isocap=1; %Option to cap the isosurface
 % inputStruct.surfaceCase='g'; %Surface type
 % inputStruct.numPeriods=[1 1 1]; %Number of periods in each direction
@@ -22,11 +21,11 @@ function [varargout]=triplyPeriodicMinimalSurface(inputStruct)
 %Create default structure
 defaultInputStruct.L=1; % characteristic length
 defaultInputStruct.Ns=80; % number of sampling points
-defaultInputStruct.anisotropyFactors=[1 1 1]; 
 defaultInputStruct.isocap=1; %Option to cap the isosurface
 defaultInputStruct.surfaceCase='g';
 defaultInputStruct.numPeriods=[1 1 1]; 
 defaultInputStruct.levelset=0.5;
+defaultInputStruct.surfaceSide=1;
 
 %Complete input with default if incomplete
 [inputStruct]=structComplete(inputStruct,defaultInputStruct,1); %Complement provided with default if missing or empty
@@ -71,27 +70,30 @@ Z=((Z./abs(zMax-zMin)).*L);
 %% Generation of level sets and exporting
 
 %Iso-surface
-[f,v] = isosurface(X,Y,Z,S,levelset);
-c=zeros(size(f,1),1);
-
-%Isocaps
-if isocap==1
-    %Compute isocaps
-    [fc,vc] = isocaps(X,Y,Z,S,levelset);
-
-    nc=patchNormal(fc,vc);
-    cc=zeros(size(fc,1),1);
-    cc(nc(:,1)<-0.5)=1;
-    cc(nc(:,1)>0.5)=2;
-    cc(nc(:,2)<-0.5)=3;
-    cc(nc(:,2)>0.5)=4;
-    cc(nc(:,3)<-0.5)=5;
-    cc(nc(:,3)>0.5)=6;    
-    
-    %Join sets
-    [f,v,c]=joinElementSets({f,fc},{v,vc},{c,cc});
-    
+switch inputStruct.surfaceSide
+    case 0
+        [f,v,c]=getSurface(X,Y,Z,S,levelset);
+        if isocap==1
+            [fc1,vc1,cc1]=getCaps(X,Y,Z,S,levelset);
+            [fc2,vc2,cc2]=getCaps(X,Y,Z,-S,-levelset);
+            [f,v,c]=joinElementSets({f,fc1,fc2},{v,vc1,vc2},{c,cc1,cc2+6});
+        end
+    case 1 
+        [f,v,c]=getSurface(X,Y,Z,S,levelset);        
+        if isocap==1
+            [fc,vc,cc]=getCaps(X,Y,Z,S,levelset);
+        end
+        %Join sets
+        [f,v,c]=joinElementSets({f,fc},{v,vc},{c,cc});
+    case -1
+        [f,v,c]=getSurface(X,Y,Z,-S,-levelset);        
+        if isocap==1 
+            [fc,vc,cc]=getCaps(X,Y,Z,-S,-levelset);
+        end
+        %Join sets
+        [f,v,c]=joinElementSets({f,fc},{v,vc},{c,cc});
 end
+
 
 %% Merge nodes and clean-up mesh 
 
@@ -118,6 +120,27 @@ varargout{1}=f;
 varargout{2}=v;
 varargout{3}=c;
 varargout{4}=S;
+
+end
+%%
+
+function [f,v,c]=getSurface(X,Y,Z,S,levelset)
+    [f,v] = isosurface(X,Y,Z,S,levelset);
+    c=zeros(size(f,1),1);
+end
+
+function [fc,vc,cc]=getCaps(X,Y,Z,S,levelset)
+    [fc,vc] = isocaps(X,Y,Z,S,levelset);     %Compute isocaps
+    
+    nc=patchNormal(fc,vc);
+    cc=zeros(size(fc,1),1);
+    cc(nc(:,1)<-0.5)=1;
+    cc(nc(:,1)>0.5)=2;
+    cc(nc(:,2)<-0.5)=3;
+    cc(nc(:,2)>0.5)=4;
+    cc(nc(:,3)<-0.5)=5;
+    cc(nc(:,3)>0.5)=6;    
+end
 
 %% 
 %
