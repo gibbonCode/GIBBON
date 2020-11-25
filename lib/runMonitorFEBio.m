@@ -61,7 +61,7 @@ end
 %% Display start message
 
 if FEBioRunStruct.disp_on==1
-    startString=['---->  RUNNING/MONITORING FEBIO JOB  <---- ',datestr(now)];    
+    startString=['-------->    RUNNING/MONITORING FEBIO JOB    <-------- ',datestr(now)];    
     stringLength=numel(startString);
     lineSep=repmat('%',1,stringLength); %Stripe of % symbols
     disp(' '); %Empty line
@@ -173,7 +173,7 @@ if any(strcmp(FEBioRunStruct.runMode,{'external_old','external'}))
         if fileFound==0 %Check if it is taking too long
             t_fea=toc(tPre); %Current time since start
             
-            if t_fea>=FEBioRunStruct.maxLogCheckTime %&& logTimingError==1
+            if t_fea>=FEBioRunStruct.maxLogCheckTime 
                 runFlag=0;
                 FEBio_monitor=0;
                 if FEBioRunStruct.disp_on==1
@@ -185,6 +185,16 @@ if any(strcmp(FEBioRunStruct.runMode,{'external_old','external'}))
             end
             pause(FEBioRunStruct.t_check); %Wait a moment before checking again
         end
+    end
+else
+    if exist(FEBioRunStruct.run_logname,'file')
+        if FEBioRunStruct.disp_on==1
+            dispMessage(' * Log file found.',stringLength);
+        end
+    else
+        runFlag=0;
+        FEBio_monitor=0;
+        warning(['--- FAILED: Log file was not created in time. FEBio likely failed prior to logfile creation! --- ',datestr(now)]);
     end
 end
 
@@ -198,7 +208,6 @@ if FEBio_monitor==1
     
     %Scan log file for the following targets
     targetsConvergence={'number of iterations   :','number of reformations :','------- converged at time :',' Elapsed time'};
-    targetsInfo={'number of iterations   :','number of reformations :'};
     targetsEnd={' N O R M A L   T E R M I N A T I O N',' E R R O R   T E R M I N A T I O N'};
 
     numLinesPrevious=0;    
