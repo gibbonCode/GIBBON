@@ -19,7 +19,24 @@ function [varargout]=importFEBio_logfile(varargin)
 %   1, -5.01378, 0, 0
 %   2, -5.01378, 0, 1.24313
 %   3, -5.01378, 0, 2.48626
+% 
+% Or for FEBio3:
 %
+%   File = /path/to/file.txt
+%   *Step  = 1
+%   *Time  = 0.05
+%   *Data  = x;y;z
+%   1, -5.01378, 0, 0
+%   2, -5.01378, 0, 1.24313
+%   3, -5.01378, 0, 2.48626
+%   File = /path/to/file.txt
+%   *Step  = 2
+%   *Time  = 0.1
+%   *Data  = x;y;z
+%   1, -5.01378, 0, 0
+%   2, -5.01378, 0, 1.24313
+%   3, -5.01378, 0, 2.48626
+
 % ------------------------------------------------------------------------
 
 %% Parse input
@@ -43,7 +60,7 @@ end
 [T]=txtfile2cell(fileNameImport);
 
 %% Access data and label parts
-logicData=~gcontains(T,'*'); 
+logicData=~gcontains(T,{'='}); 
 T_data=T(logicData);
 T_labels=T(~logicData);
 
