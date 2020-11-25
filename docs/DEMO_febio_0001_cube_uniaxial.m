@@ -52,7 +52,7 @@ cubeSize=10;
 sampleWidth=cubeSize; %Width 
 sampleThickness=cubeSize; %Thickness 
 sampleHeight=cubeSize; %Height
-pointSpacings=2*ones(1,3); %Desired point spacing between nodes
+pointSpacings=1*ones(1,3); %Desired point spacing between nodes
 numElementsWidth=round(sampleWidth/pointSpacings(1)); %Number of elemens in dir 1
 numElementsThickness=round(sampleThickness/pointSpacings(2)); %Number of elemens in dir 2
 numElementsHeight=round(sampleHeight/pointSpacings(3)); %Number of elemens in dir 3
@@ -295,10 +295,7 @@ febioStruct2xml(febio_spec,febioFebFileName); %Exporting to file and domNode
 febioAnalysis.run_filename=febioFebFileName; %The input file name
 febioAnalysis.run_logname=febioLogFileName; %The name for the log file
 febioAnalysis.disp_on=1; %Display information on the command window
-febioAnalysis.disp_log_on=1; %Display convergence information in the command window
-febioAnalysis.runMode='internal';%'internal';
-febioAnalysis.t_check=0.25; %Time for checking log file (dont set too small)
-febioAnalysis.maxtpi=1e99; %Max analysis time
+febioAnalysis.runMode='external';%'internal';
 febioAnalysis.maxLogCheckTime=10; %Max log file checking time
 
 [runFlag]=runMonitorFEBio(febioAnalysis);%START FEBio NOW!!!!!!!!
@@ -308,6 +305,7 @@ febioAnalysis.maxLogCheckTime=10; %Max log file checking time
 if runFlag==1 %i.e. a succesful run
     
     %% 
+    
     % Importing nodal displacements from a log file
     dataStruct=importFEBio_logfile(fullfile(savePath,febioLogFileName_disp),1,1);
     

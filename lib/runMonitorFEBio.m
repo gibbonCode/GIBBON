@@ -6,29 +6,86 @@ function [runFlag]=runMonitorFEBio(FEBioRunStruct)
 %
 % Kevin Mattheus Moerman
 % gibbon.toolbox@gmail.com
-% 
+%
 % 2013/04/01 Updated for GIBBON
 % 2016/05/23 Fixed bug in relation to path names for FEBioRunStruct.cleanUpFileList
+% 2020/11/24 Cleaned up and simplified code.
+% 2020/11/24 Improved handling of internal/external mode
+% 2020/11/24 Uses febio.m code to trigger FEBio
+% 2020/11/25 Changed command window progress text
 %------------------------------------------------------------------------
 
-%% 
+%% Parse input
 
-lineSep=repmat('%',1,45);
-if FEBioRunStruct.disp_on==1
-    disp(' '); %Empty line
-    disp(lineSep); %Stripe
-    disp(['--- STARTING FEBIO JOB --- ',datestr(now)]);
+%Create default structure
+defaultFEBioRunStruct.FEBioPath=getFEBioPath; %Get FEBio path
+defaultFEBioRunStruct.run_filename=[];
+defaultFEBioRunStruct.run_logname=[];
+defaultFEBioRunStruct.runMode='external';
+defaultFEBioRunStruct.cleanUpFileList={};
+defaultFEBioRunStruct.disp_on=1; %Display information on the command window
+defaultFEBioRunStruct.t_check=0.5; %Time for checking log file (dont set too small)
+defaultFEBioRunStruct.maxtpi=inf; %Max analysis time
+defaultFEBioRunStruct.maxLogCheckTime=30; %Max log file checking time
+
+%Construct default task kill command
+[~,processName,exeExt]=fileparts(getFEBioPath);
+if ispc
+    defaultFEBioRunStruct.run_string_quit=['taskkill /F /IM ',processName,exeExt,' /T'];
+else
+    defaultFEBioRunStruct.run_string_quit=['killall ',processName];
 end
 
-%% Removing pre-existing files (e.g. from previsous FEBio job with same name) 
+%Complete struct if there are missing fields
+FEBioRunStruct=structComplete(FEBioRunStruct,defaultFEBioRunStruct,0);
+
+
+%Check if febio path is empty
+if isempty(FEBioRunStruct.FEBioPath)
+    FEBioRunStruct.FEBioPath='febio'; %Assume febio is known as an internal variable
+end
+
+%Check if logfile is empty and set it to default form if needed
+if ~isempty(FEBioRunStruct.run_filename) && isempty(FEBioRunStruct.run_logname)
+    [filePath,fileName,~]=fileparts(FEBioRunStruct.run_filename);
+    FEBioRunStruct.run_logname=fullfile(filePath,[fileName,'.txt']);
+end
+
+%Check if log file path is empty and replace with feb file path if needed
+[logFilePath,~,~]=fileparts(FEBioRunStruct.run_logname);
+if isempty(logFilePath)
+    [filePath,~,~]=fileparts(FEBioRunStruct.run_filename);
+    FEBioRunStruct.run_logname=fullfile(filePath,FEBioRunStruct.run_logname);
+end
+
+%% Display start message
+
+if FEBioRunStruct.disp_on==1
+    startString=['---->  RUNNING/MONITORING FEBIO JOB  <---- ',datestr(now)];    
+    stringLength=numel(startString);
+    lineSep=repmat('%',1,stringLength); %Stripe of % symbols
+    disp(' '); %Empty line
+    disp(lineSep);
+    disp(startString);
+    disp(['FEBio path: ',FEBioRunStruct.FEBioPath])
+end
+
+%% Removing pre-existing files (e.g. from previous FEBio job with same name)
 
 %Remove log file
 if exist(FEBioRunStruct.run_logname,'file')==2
+    if FEBioRunStruct.disp_on==1
+        dispMessage('# Attempt removal of existing log files',stringLength);        
+    end
     delete(FEBioRunStruct.run_logname);
     
     %Check if its gone
     if exist(FEBioRunStruct.run_logname,'file')==2
         error(['Deletion of ',FEBioRunStruct.run_logname,' not succesful, check user permissions']);
+    else
+        if FEBioRunStruct.disp_on==1
+            dispMessage(' * Removal succesful',stringLength);            
+        end
     end
 end
 
@@ -37,18 +94,21 @@ end
 
 fileName_plot=fullfile(filePath,[fileName,'.xplt']);
 if exist(fileName_plot,'file')==2
+    if FEBioRunStruct.disp_on==1
+        dispMessage('# Attempt removal of existing .xplt files',stringLength);
+    end
     delete(fileName_plot);
     %Check if its gone
     if exist(fileName_plot,'file')==2
         error(['Deletion of ',fileName_plot,' not succesful, check user permissions']);
+    else
+        if FEBioRunStruct.disp_on==1
+            dispMessage(' * Removal succesful',stringLength);             
+        end
     end
 end
 
 %Remove other requested files (e.g. output files)
-if ~isfield(FEBioRunStruct,'cleanUpFileList')
-    FEBioRunStruct.cleanUpFileList={}; 
-end
-
 if ~isempty(FEBioRunStruct.cleanUpFileList)
     for q=1:1:numel(FEBioRunStruct.cleanUpFileList)
         
@@ -62,247 +122,212 @@ if ~isempty(FEBioRunStruct.cleanUpFileList)
         
         %Remove file if it exists
         if exist(fileToRemove,'file')==2
+            if FEBioRunStruct.disp_on==1
+                dispMessage(['# Attempt removal of user defined files'],stringLength);                 
+            end
             delete(fileToRemove);
+            
             %Check if its gone
             if exist(fileToRemove,'file')==2
                 error(['Deletion of ',fileToRemove,' not succesful, check user permissions']);
-            end
-        end        
-    end
-end
-
-%%
-
-if ~isfield(FEBioRunStruct,'runMode')
-    FEBioRunStruct.runMode='external'; %Default behaviour runs FEBio "externally"
-end
-
-if ~isfield(FEBioRunStruct,'FEBioPath')
-    FEBioRunStruct.FEBioPath=getFEBioPath;
-end
-
-if isempty(FEBioRunStruct.FEBioPath)    
-    FEBioRunStruct.FEBioPath='febio'; %Assume febio is known as an internal variable
-end
-
-if ~isfield(FEBioRunStruct,'run_string')
-    switch FEBioRunStruct.runMode
-        case 'external_old'
-            FEBioRunStruct.run_string=['"',FEBioRunStruct.FEBioPath,'" -i "',FEBioRunStruct.run_filename,'" -o "',FEBioRunStruct.run_logname,'" &'];
-            runExternal=1;
-        case 'external'
-            if ismac % Code to run on Mac plaform
-                %TO DO IMPROVE THIS LINE FOR MAC
-                FEBioRunStruct.run_string=['nice "',FEBioRunStruct.FEBioPath,'"',' -i "',FEBioRunStruct.run_filename,'" -o "',FEBioRunStruct.run_logname,'" &'];
-            elseif isunix && ~ismac % Code to run on Linux plaform                               
-%                 FEBioRunStruct.run_string=['gnome-terminal -e ""',FEBioRunStruct.FEBioPath,'"',' -i "',FEBioRunStruct.run_filename,'" -o "',FEBioRunStruct.run_logname,'"" &'];                
-%                 FEBioRunStruct.run_string=['xterm -e ""',FEBioRunStruct.FEBioPath,'"',' -i "',FEBioRunStruct.run_filename,'" -o "',FEBioRunStruct.run_logname,'"" &'];                
-%                 FEBioRunStruct.run_string=['konsole -e ""',FEBioRunStruct.FEBioPath,'"',' -i "',FEBioRunStruct.run_filename,'" -o "',FEBioRunStruct.run_logname,'"" &'];                
-                FEBioRunStruct.run_string=['nice "',FEBioRunStruct.FEBioPath,'"',' -i "',FEBioRunStruct.run_filename,'" -o "',FEBioRunStruct.run_logname,'" &'];                
-            elseif ispc % Code to run on Windows platform
-                FEBioRunStruct.run_string=['start /min "GIBBON - FEBio" "',FEBioRunStruct.FEBioPath,'"',' -i "',FEBioRunStruct.run_filename,'" -o "',FEBioRunStruct.run_logname,'"'];
             else
-                warning('Unknown operational system, run command might be inappropriate');
-                FEBioRunStruct.run_string=['"',FEBioRunStruct.FEBioPath,'"',' -i "',FEBioRunStruct.run_filename,'" -o "',FEBioRunStruct.run_logname,'" &'];
+                if FEBioRunStruct.disp_on==1
+                    dispMessage(' * Removal succesful',stringLength); 
+                end
             end
-            
-             runExternal=1;
-        case 'internal'
-            if ispc
-                FEBioRunStruct.run_string=['"',FEBioRunStruct.FEBioPath,'" -i "',FEBioRunStruct.run_filename,'" -o "',FEBioRunStruct.run_logname,'"'];
-            elseif isunix
-                FEBioRunStruct.run_string=['nice "',FEBioRunStruct.FEBioPath,'" -i "',FEBioRunStruct.run_filename,'" -o "',FEBioRunStruct.run_logname,'"']; 
-            else
-                FEBioRunStruct.run_string=['"',FEBioRunStruct.FEBioPath,'" -i "',FEBioRunStruct.run_filename,'" -o "',FEBioRunStruct.run_logname,'"'];
-            end
-            runExternal=0;
+        end
     end
-end
-
-if ~isfield(FEBioRunStruct,'run_string_quit')
-    FEBioRunStruct.run_string_quit='taskkill /F /IM FEBio2.exe /T';
 end
 
 %% Starting FEBio job
 
-FEBio_go=0; %i.e. not stopped
-tPre=tic; 
-% FEBioRunStruct.run_string
-system(FEBioRunStruct.run_string); %START FEBio NOW!!!!!!!!
-tPost=tic;
+if FEBioRunStruct.disp_on==1
+    dispMessage('# Starting FEBio... ',stringLength);     
+    disp(['  Max. total analysis time is: ',num2str(FEBioRunStruct.maxtpi),' s']); 
+end
+
+FEBio_monitor=1; %i.e. currently monitoring
+tPre=tic; %Initiate pre-start timer
+febio(FEBioRunStruct); %Start FEBio
+%tPost=tic; %Initiate post-run timer
 
 %% Wait for log file
 
-if FEBioRunStruct.disp_on==1
-    disp('Waiting for log file...');
-end
-
-fileFound=0;
-while fileFound==0
-    pause(FEBioRunStruct.t_check); %Wait
-    if exist(FEBioRunStruct.run_logname,'file')
-        [T_log]=txtfile2cell(FEBioRunStruct.run_logname);
-        fileFound=1;
+if any(strcmp(FEBioRunStruct.runMode,{'external_old','external'}))
+    if FEBioRunStruct.disp_on==1
+        dispMessage(' * Waiting for log file creation',stringLength);   
+        disp(['   Max. wait time: ',num2str(FEBioRunStruct.maxLogCheckTime),' s']);
     end
-    t_fea=toc(tPre); %Current time since start
-
-    switch FEBioRunStruct.runMode
-        case 'internal'
+    
+    %Check for creation of log file
+    fileFound=0;
+    while fileFound==0
+        %Check for existance of log file
+        if exist(FEBioRunStruct.run_logname,'file')
+            fileFound=1;
+            if FEBioRunStruct.disp_on==1
+                dispMessage(' * Log file found.',stringLength);
+            end
+        end
+        
+        if fileFound==0 %Check if it is taking too long
+            t_fea=toc(tPre); %Current time since start
             
-        otherwise                        
             if t_fea>=FEBioRunStruct.maxLogCheckTime %&& logTimingError==1
                 runFlag=0;
-                FEBio_go=1;
+                FEBio_monitor=0;
                 if FEBioRunStruct.disp_on==1
                     warning(['--- FAILED: Log file was not created in time. FEBio likely failed prior to logfile creation! --- ',datestr(now)]);
-                    warning('Try increasing FEBioRunStruct.maxLogCheckTime in case FEBio is simply taking too long to start')
-                    if runExternal==1
-                        warning('Try setting FEBioRunStruct.runMode to "internal" to see potential errors prior to log file creation');
-                    end
+                    warning('Try increasing FEBioRunStruct.maxLogCheckTime in case FEBio is simply taking too long to start');
+                    warning('Try setting FEBioRunStruct.runMode to "internal" to see potential errors prior to log file creation');
                 end
                 break
             end
+            pause(FEBioRunStruct.t_check); %Wait a moment before checking again
+        end
     end
 end
 
 %% Check log file
 
-if FEBio_go==0
+if FEBio_monitor==1
     
     if FEBioRunStruct.disp_on==1
-        disp(['Proceeding to check log file...',datestr(now)]);
+        dispMessage('# Parsing log file...',stringLength);           
     end
     
     %Scan log file for the following targets
-    targets={'------- converged at time :',' N O R M A L   T E R M I N A T I O N',' E R R O R   T E R M I N A T I O N'};
-    line_count=1;
-    numLinesPrevious=-1;
-    
-    tStartCheck=datevec(now); 
-    while FEBio_go==0
+    targetsConvergence={'number of iterations   :','number of reformations :','------- converged at time :',' Elapsed time'};
+    targetsInfo={'number of iterations   :','number of reformations :'};
+    targetsEnd={' N O R M A L   T E R M I N A T I O N',' E R R O R   T E R M I N A T I O N'};
+
+    numLinesPrevious=0;    
+    tStartCheck=datevec(now);
+    while FEBio_monitor==1
         
         pause(FEBioRunStruct.t_check); %Wait
         
         %Import log file
         [T_log]=txtfile2cell(FEBioRunStruct.run_logname);
         
-        if ~isempty(T_log) && numel(T_log)~=numLinesPrevious %Change in number of lines 
+        %Check log file content
+        if ~isempty(T_log) && numel(T_log)>numLinesPrevious %Change in number of lines
             tStartCheck=datevec(now); %reset change checking clock
             
-            %Check log file content
-            while 1
-                if line_count>numel(T_log)
-                    break;
-                end
-                
-                %Get line
-                l=T_log{line_count};
-                
-                %Display line
-                if (strfind(l,targets{1}))
-                    if FEBioRunStruct.disp_on==1 && FEBioRunStruct.disp_log_on==1
-                        disp(l); %display line
+            % Show convergence/elapsed time data
+            T_check=T_log(numLinesPrevious+1:end);
+            logicConverged=gcontains(T_check,targetsConvergence);
+            if any(logicConverged)
+                T_show=T_check(logicConverged);
+                if FEBioRunStruct.disp_on==1
+                    for q=1:numel(T_show)
+                        dispMessage(T_show{q},stringLength);
                     end
                 end
-                
-                %Check for normal termination
-                if (strfind(l,targets{2})) % Found: N O R M A L  T E R M I N A T I O N
-                    runFlag=1;
-                    FEBio_go=1;
-                    break
-                end
-                
-                %Check for error termination
-                if (strfind(l,targets{3})) % Found: E R R O R   T E R M I N A T I O N
-                    if FEBioRunStruct.disp_on==1
-                        disp(l); %display line
+            end
+            
+            %Show termination data
+            logicTermination=gcontains(T_check,targetsEnd); 
+            if any(logicTermination)
+                T_show=T_check(logicTermination);
+                if FEBioRunStruct.disp_on==1
+                    for q=1:numel(T_show)
+                        disp(T_show{q});
                     end
-                    runFlag=0;
-                    FEBio_go=1;
-                    if FEBioRunStruct.disp_on==1
-                        disp(['--- FAILED: FEBio error! Check log-file --- ',datestr(now)]);
-                    end
-                    break
                 end
-                line_count=line_count+1;
+                FEBio_monitor=0; %Stop on normal or error termination
+                
+                if any(gcontains(T_show,targetsEnd{1}))
+                    runFlag=1; %Signal for normal termination
+                end
             end
         else
-            tNow=datevec(now); 
-            dt=etime(tNow,tStartCheck);            
+            tNow=datevec(now);
+            dt=etime(tNow,tStartCheck);
             if dt>FEBioRunStruct.maxLogCheckTime
                 runFlag=0;
-                FEBio_go=1;
+                FEBio_monitor=0;
                 if FEBioRunStruct.disp_on==1
                     warning(['--- FAILED: Log file was not changed within maxLogCheckTime. ',datestr(now)]);
-%                     try
-%                         system(FEBioRunStruct.run_string_quit);
-%                     end
+                    try
+                        system(FEBioRunStruct.run_string_quit);
+                    catch
+                    end
                 end
                 break
             end
         end
-        numLinesPrevious=numel(T_log);
-        
-        switch FEBioRunStruct.runMode
-            case 'internal'
+        numLinesPrevious=numel(T_log); %Update number of lines
                 
-            otherwise
-                if FEBio_go==0
-                    %Police timing
-                    t_fea=toc(tPre); %Current time since start
-                    [runFlag,FEBio_go]=policeFEBioJob(FEBioRunStruct,t_fea);
-                end
+        if any(strcmp(FEBioRunStruct.runMode,{'external_old','external'})) && FEBio_monitor==1
+            %Police timing
+            t_fea=toc(tPre); %Current time since start
+            [runFlag,FEBio_monitor]=policeFEBioJob(FEBioRunStruct,t_fea);
         end
-    end    
+    end
 end
 
 if FEBioRunStruct.disp_on==1
     if runFlag==1
-        disp(['--- Done --- ',datestr(now)]);
+        dispMessage('# Done ',stringLength);   
+        disp(lineSep);
     else
-        disp(['--- Failed or ended! --- ',datestr(now)]);
+        dispMessage('# Failed or terminated! ',stringLength);        
+        disp(lineSep);
     end
 end
 
 end
 
-function [runFlag,FEBio_go]=policeFEBioJob(FEBioRunStruct,t_fea)
 
-if t_fea>=FEBioRunStruct.maxtpi 
+function [runFlag,FEBio_monitor]=policeFEBioJob(FEBioRunStruct,t_fea)
+
+if t_fea>=FEBioRunStruct.maxtpi
     if FEBioRunStruct.disp_on==1
-        disp(['--- FAILED: Maximum analysis time exceeded, FEBio job will be terminated! --- ',datestr(now)]);
+        disp('* Maximum analysis time exceeded');
+        disp(['FEBio job will be terminated! ',datestr(now)]);
     end
     runFlag=0;
-    FEBio_go=1;
-    system(FEBioRunStruct.run_string_quit);        
+    FEBio_monitor=0;
+    system(FEBioRunStruct.run_string_quit);
 else
     runFlag=0;
-    FEBio_go=0;
+    FEBio_monitor=1;
 end
 
 end
 
- 
-%% 
-% _*GIBBON footer text*_ 
-% 
+function dispMessage(m,stringLength)
+d=datestr(now);
+nRep=stringLength-numel(d)-numel(m);
+if nRep>0
+    s=repmat(' ',1,nRep);
+else
+    s=' ';
+end
+disp([m,s,d]);
+end
+
+%%
+% _*GIBBON footer text*_
+%
 % License: <https://github.com/gibbonCode/GIBBON/blob/master/LICENSE>
-% 
+%
 % GIBBON: The Geometry and Image-based Bioengineering add-On. A toolbox for
 % image segmentation, image-based modeling, meshing, and finite element
 % analysis.
-% 
+%
 % Copyright (C) 2006-2020 Kevin Mattheus Moerman
-% 
+%
 % This program is free software: you can redistribute it and/or modify
 % it under the terms of the GNU General Public License as published by
 % the Free Software Foundation, either version 3 of the License, or
 % (at your option) any later version.
-% 
+%
 % This program is distributed in the hope that it will be useful,
 % but WITHOUT ANY WARRANTY; without even the implied warranty of
 % MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 % GNU General Public License for more details.
-% 
+%
 % You should have received a copy of the GNU General Public License
 % along with this program.  If not, see <http://www.gnu.org/licenses/>.
