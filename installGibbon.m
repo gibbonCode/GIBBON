@@ -4,6 +4,7 @@ function installGibbon
 %-------------------------------------------------------------------------
 % Change log: 
 % 2018/05/15 Added creation of temp folder if it does not exist
+% 2020/11/24 Minor fix to suggested path names for FEBio and export_fig
 %-------------------------------------------------------------------------
 
 %% Add GIBBON library path so functions are known to use here
@@ -118,21 +119,17 @@ drawnow;
 %% Add 3rd party paths
 hTextStatement.String='Please provide 3rd party package locations. Leave blank if associated features are not needed.';
 
-hTextInfoStringDefault='Full path to FEBio excutable, e.g. /home/febio-2.7.1/bin/febio2.lnx64 (or FEBio2.exe for windows):';
+if ispc
+    hTextInfoStringDefault='Full path to FEBio excutable including extension, e.g. C:\Program Files\FEBioStudio\bin\FEBio3.exe';
+else
+    hTextInfoStringDefault='Full path to FEBio excutable, e.g. /home/userName/febio-2.9.1/bin/febio2';
+end
 
 hTextInfo1 = uicontrol(hf,'Style','text','String',hTextInfoStringDefault,...
     'Position',[W hf.Position(4)-W*3 round(hf.Position(3))-W*2 round(W/1.5)],...
     'BackgroundColor',[1 1 1],'HorizontalAlignment','Left','FontSize',12,'FontWeight','normal');
 
 FEBioPath=getFEBioPath;
-
-if isempty(FEBioPath)
-    if ispc
-        FEBioPath='C:\Program Files\febio-2.8.3\bin\FEBio2.exe';
-    else
-        FEBioPath='/home/febio-2.8.3/bin/febio2.lnx64';
-    end
-end
 
 hTextInput1 = uicontrol(hf,'Style','edit','String',FEBioPath,...
     'Position',[W hf.Position(4)-W*3.5 round(hf.Position(3))-W*2 round(W/1.5)],...
@@ -142,7 +139,7 @@ hf.UserData.uihandles.hTextInfo1=hTextInfo1;
 hf.UserData.uihandles.hTextInput1=hTextInput1;
 
 %%
-hTextInfoStringDefault='Full path to export_fig:';
+hTextInfoStringDefault='Full path to folder containing export_fig';
 
 hTextInfo2 = uicontrol(hf,'Style','text','String',hTextInfoStringDefault,...
     'Position',[W hf.Position(4)-W*4.5 round(hf.Position(3))-W*2 round(W/1.5)],...
@@ -150,11 +147,11 @@ hTextInfo2 = uicontrol(hf,'Style','text','String',hTextInfoStringDefault,...
 
 exportFigPath=fileparts(which('export_fig'));
 
-if isempty(FEBioPath)
+if isempty(exportFigPath)
     if ispc
         exportFigPath='e.g. ...\MATLAB\export_fig';
     else
-        exportFigPath='e.g. ...C:\Program Files\febio-2.5.2\bin';
+        exportFigPath='e.g. .../MATLAB/export_fig';
     end
 end
 
