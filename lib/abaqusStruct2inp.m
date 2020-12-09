@@ -11,6 +11,8 @@ function [varargout]=abaqusStruct2inp(varargin)
 %
 % 2018/09/06 Created
 % 2018/12/04 Added field order entries
+% 2020/05/20 Improved performance to fix wrapping. Now uses reshape
+% 2020/05/20 Fixed bug in wrapping of non-numeric data
 %------------------------------------------------------------------------
 
 %% Parse input
@@ -18,10 +20,13 @@ function [varargout]=abaqusStruct2inp(varargin)
 defaultOptionStruct.attributeKeyword='ATTR';
 defaultOptionStruct.valueKeyword='VAL';
 defaultOptionStruct.commentKeyword='COMMENT';
-defaultOptionStruct.emptyKeyword='EMPTY';
-defaultOptionStruct.fieldOrder={'heading','preprint','part','node','element','surface','distribution','orientation','section',...
-    'assembly','distribution_table','material','Depvar','User_Material','contact_pair','surface_interaction','step','static','boundary',...
-    'controls','restart','output','element_output','node_output','contact_output'};
+defaultOptionStruct.customKeyword='CSTM';
+defaultOptionStruct.fieldOrder={'heading','preprint','part','node','element',...
+                                'surface','distribution','orientation','section',...
+                                'assembly','distribution_table','material','Depvar',...
+                                'User_Material','contact_pair','surface_interaction',...
+                                'step','static','boundary','controls','restart',...
+                                'output','element_output','node_output','contact_output'};
 defaultOptionStruct.addEnd={'part','assembly','instance','step'};
 defaultOptionStruct.addLines=1;
 
@@ -82,7 +87,7 @@ function [file_id]=abaqusStruct2inpStep(file_id,parseStruct,optionStruct)
 attributeKeyword=optionStruct.attributeKeyword;
 valueKeyword=optionStruct.valueKeyword;
 commentKeyword=optionStruct.commentKeyword;
-emptyKeyword=optionStruct.emptyKeyword;
+customKeyword=optionStruct.customKeyword;
 
 %Get field names occuring in the input structure
 fieldNameSet = fieldnames(parseStruct);
@@ -183,19 +188,19 @@ for q_field=1:1:numel(fieldNameSet) %Loop for all field names
             end
 
             %Add current empty
-            if isfield(currentFieldValue,emptyKeyword)
-                emptyData=currentFieldValue.(emptyKeyword);
+            if isfield(currentFieldValue,customKeyword)
+                emptyData=currentFieldValue.(customKeyword);
                 if iscell(emptyData)
                     %Write multiple empty lines
                     for q_empty=1:1:numel(emptyData)
-                        fprintf(file_id,'%s \n',[', ',emptyData{q_empty}]);
+                        fprintf(file_id,'%s \n',emptyData{q_empty});
                     end
                 else
                     %Write empty line
-                    fprintf(file_id,'%s \n',[', ',emptyData]);
+                    fprintf(file_id,'%s \n',emptyData);
                 end
                 %Remove empty field
-                currentFieldValue = rmfield(currentFieldValue,emptyKeyword);
+                currentFieldValue = rmfield(currentFieldValue,customKeyword);
             end
             
             %Add current values
@@ -292,22 +297,46 @@ if iscell(valueData)
             end
             
         else
-            t=vec2strIntDouble(valueData{q_value},'%6.7e');
-            if isrow(valueData{q_value})
-                t=strwrap(t,16,', '); %Wrap to max width of 16 entries
-            end
+            t=toTextCheckWrap(valueData{q_value},16); 
             fprintf(file_id,'%s \n',t);
         end
         
     end
 else
     %Write value entry
-    t=vec2strIntDouble(valueData,'%6.7e');
-    if isrow(valueData)
-        t=strwrap(t,16,', '); %Wrap to max width of 16 entries
-    end
+    t=toTextCheckWrap(valueData,16);
     fprintf(file_id,'%s \n',t);
 end
+end
+
+%%
+
+function [t]=toTextCheckWrap(valueData,wrapLength)
+
+if isnumeric(valueData)
+    if isrow(valueData) && numel(valueData)>wrapLength
+        %OLD and slow        
+        %t=vec2strIntDouble(valueData,'%6.7e');
+        %t=strwrap(t,wrapLength,', '); %Wrap to max width of wrapLength entries
+
+        if rem(numel(valueData),wrapLength)>0
+            valueDataTemp=nan(1,ceil(numel(valueData)/wrapLength)*wrapLength);
+            valueDataTemp(1:numel(valueData))=valueData;
+            valueDataTemp=reshape(valueDataTemp,wrapLength,numel(valueDataTemp)/wrapLength)';
+            t=vec2strIntDouble(valueDataTemp,'%6.7e');
+            t=regexprep(t,',(\s*)NaN',''); %remove nan
+        else
+            valueData=reshape(valueData,wrapLength,numel(valueData)/wrapLength)';
+            t=vec2strIntDouble(valueData,'%6.7e');
+        end                
+    else
+        t=vec2strIntDouble(valueData,'%6.7e');
+    end
+else
+    t=valueData;
+end
+
+
 end
 
 %%
