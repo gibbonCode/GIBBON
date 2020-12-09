@@ -9,7 +9,7 @@
 
 %% Keywords
 %
-% * febio_spec version 2.5
+% * febio_spec version 3.0
 % * febio, FEBio
 % * compression, tension, compressive, tensile
 % * displacement control, displacement boundary condition
@@ -26,7 +26,7 @@
 clear; close all; clc;
 
 %% Plot settings
-fontSize=20;
+fontSize=15;
 faceAlpha1=0.8;
 markerSize=40;
 lineWidth=3;
@@ -40,9 +40,8 @@ savePath=fullfile(defaultFolder,'data','temp');
 % Defining file names
 febioFebFileNamePart='tempModel';
 febioFebFileName=fullfile(savePath,[febioFebFileNamePart,'.feb']); %FEB file name
-febioLogFileName=fullfile(savePath,[febioFebFileNamePart,'.txt']); %FEBio log file name
+febioLogFileName=[febioFebFileNamePart,'.txt']; %FEBio log file name
 febioLogFileName_disp=[febioFebFileNamePart,'_disp_out.txt']; %Log file name for exporting force
-febioLogFileName_force=[febioFebFileNamePart,'_force_out.txt']; %Log file name for exporting force
 febioLogFileName_stress=[febioFebFileNamePart,'_stress_out.txt']; %Log file name for exporting force
 
 %Specifying dimensions and number of elements
@@ -68,11 +67,10 @@ displacementMagnitude=(stretchLoad*sampleHeight)-sampleHeight; %The displacement
 
 %Material parameter sets
 testOpt=2; %1=Linear gradient of material, or 2=gyroid based material distribution
-numMaterialLevels=numElementsWidth;
-c1_range=linspace(1e-6,1e-3,numMaterialLevels); %Shear-modulus-like parameter
-m1_range=2*ones(1,numMaterialLevels); %Material parameter setting degree of non-linearity
-k_factor=1e2; %Bulk modulus factor 
-k_range=c1_range*k_factor; %Bulk modulus
+numMaterialLevels=numElementsWidth; %Number of materials to use 
+E_youngs_min=1e-3; %Lowest Youngs modulus
+E_youngs_max=1; %Highest Youngs modulus
+nu=0.4; %Poissons ratio
 
 % FEA control settings
 numTimeSteps=10; %Number of time steps desired
@@ -101,49 +99,35 @@ V=meshStruct.nodes; %The nodes (vertices)
 Fb=meshStruct.facesBoundary; %The boundary faces
 Cb=meshStruct.boundaryMarker; %The "colors" or labels for the boundary faces
 
-%% Define spatially varying material
-
-X=V(:,1);
-Y=V(:,2);
-Z=V(:,3);
+%% Define spatially varying material distribution data
 
 switch testOpt
     case 1 %linear gradient in X direction
+        X=V(:,1);
         S=mean(X(E),2);
-        S=S-min(S(:));
-        S=S./max(S(:));                
-    case 2 %gyroid     
+    case 2 %gyroid          
+        %Create coordinate set for gyroid based on model
+        VE=patchCentre(E,V); %Element centres
         
-        XE=mean(X(E),2);        
-        YE=mean(Y(E),2);
-        ZE=mean(Z(E),2);
-        VE=[XE(:) YE(:) ZE(:)];        
-        VE=VE-min(VE(:));
+        %Scale coordinates for gyroid
+        VE=VE-min(VE(:)); 
         VE=VE./max(VE(:));
         VE=(VE.*4*pi)-2*pi;
         
-        S=triplyPeriodicMinimal(VE(:,1),VE(:,2),VE(:,3),'g');
-        S=reshape(S,[size(E,1),1]);
-        S=S-min(S(:));
-        S=S./max(S(:));
+        %Evaluate gyroid
+        S=triplyPeriodicMinimal(VE(:,1),VE(:,2),VE(:,3),'g'); 
 end
-elementMaterialID=ceil((S*(numMaterialLevels-1))+1); %Element material indices
 
-%Sorting elements according to material label
-[elementMaterialID,indSort]=sort(elementMaterialID); 
-E=E(indSort,:);
+%Normalize data 
+S=S-min(S(:)); %Subtract minimum -> range [0-...]
+S=S./max(S(:)); %Devide by max -> range [0-1]
 
-%Removing unused materials
-[indUsed,ind1,ind2]=unique(elementMaterialID(:));
-elementMaterialID=ind2;
-c1=c1_range(indUsed);
-m1=m1_range(indUsed);
-k=k_range(indUsed);
-numMaterials=numel(indUsed);
+%Use scaling data S to generate element Youngs moduli
+E_youngs_elem=S.*(E_youngs_max-E_youngs_min)+E_youngs_min; 
 
 %Fix mesh struct for plotting
 meshStruct.elements=E;
-meshStruct.elementMaterialID=elementMaterialID;
+meshStruct.elementData=E_youngs_elem;
 
 %% 
 % Plotting model boundary surfaces and a cut view
@@ -160,7 +144,7 @@ hs=subplot(1,2,2); hold on;
 title('Cut view of solid mesh and materials','FontSize',fontSize);
 optionStruct.hFig=[hFig hs];
 meshView(meshStruct,optionStruct);
-colormap(gca,gjet(numMaterials)); icolorbar;
+colormap(gca,gjet(250)); colorbar; caxis([E_youngs_min E_youngs_max]);
 axisGeom(gca,fontSize);
 
 drawnow;
@@ -207,88 +191,89 @@ drawnow;
 [febio_spec]=febioStructTemplate;
 
 %febio_spec version 
-febio_spec.ATTR.version='2.5'; 
+febio_spec.ATTR.version='3.0'; 
 
 %Module section
 febio_spec.Module.ATTR.type='solid'; 
 
 %Control section
-febio_spec.Control.analysis.ATTR.type='static';
-febio_spec.Control.title='Cube analysis';
+febio_spec.Control.analysis='STATIC';
 febio_spec.Control.time_steps=numTimeSteps;
 febio_spec.Control.step_size=1/numTimeSteps;
+febio_spec.Control.solver.max_refs=max_refs;
+febio_spec.Control.solver.max_ups=max_ups;
 febio_spec.Control.time_stepper.dtmin=dtmin;
 febio_spec.Control.time_stepper.dtmax=dtmax; 
 febio_spec.Control.time_stepper.max_retries=max_retries;
 febio_spec.Control.time_stepper.opt_iter=opt_iter;
-febio_spec.Control.max_refs=max_refs;
-febio_spec.Control.max_ups=max_ups;
 
 %Material section
-for q=1:1:numMaterials
-    febio_spec.Material.material{q}.ATTR.type='Ogden';
-    febio_spec.Material.material{q}.ATTR.id=q;
-    febio_spec.Material.material{q}.c1=c1(q);
-    febio_spec.Material.material{q}.m1=m1(q);
-    febio_spec.Material.material{q}.c2=c1(q);
-    febio_spec.Material.material{q}.m2=-m1(q);
-    febio_spec.Material.material{q}.k=k(q);
-end
+materialName1='Material1';
+dataMapName1='MaterialParameterMap1';
+febio_spec.Material.material{1}.ATTR.name=materialName1;
+febio_spec.Material.material{1}.ATTR.type='neo-Hookean';
+febio_spec.Material.material{1}.ATTR.id=1;
+febio_spec.Material.material{1}.E.ATTR.type='map'; %Calls for mapping of parameter
+febio_spec.Material.material{1}.E=dataMapName1; %Calls for mapping of parameter
+febio_spec.Material.material{1}.v=nu;
 
-%Geometry section
+% Mesh section
 % -> Nodes
-febio_spec.Geometry.Nodes{1}.ATTR.name='nodeSet_all'; %The node set name
-febio_spec.Geometry.Nodes{1}.node.ATTR.id=(1:size(V,1))'; %The node id's
-febio_spec.Geometry.Nodes{1}.node.VAL=V; %The nodel coordinates
+febio_spec.Mesh.Nodes{1}.ATTR.name='Object1'; %The node set name
+febio_spec.Mesh.Nodes{1}.node.ATTR.id=(1:size(V,1))'; %The node id's
+febio_spec.Mesh.Nodes{1}.node.VAL=V; %The nodel coordinates
 
 % -> Elements
-n=1;
-for q=1:1:numMaterials
-    logicMaterialNow=(elementMaterialID==q);
-    febio_spec.Geometry.Elements{q}.ATTR.type='hex8'; %Element type of this set
-    febio_spec.Geometry.Elements{q}.ATTR.mat=q; %material index for this set
-    febio_spec.Geometry.Elements{q}.ATTR.name=['Cube_mat',num2str(q)]; %Name of the element set
-    febio_spec.Geometry.Elements{q}.elem.ATTR.id=(n:1:(n-1+nnz(logicMaterialNow)))'; %Element id's
-    febio_spec.Geometry.Elements{q}.elem.VAL=E(logicMaterialNow,:);    
-    n=n+nnz(logicMaterialNow);
-end
-
+partName1='Part1';
+febio_spec.Mesh.Elements{1}.ATTR.name=partName1; %Name of this part
+febio_spec.Mesh.Elements{1}.ATTR.type='hex8'; %Element type
+febio_spec.Mesh.Elements{1}.elem.ATTR.id=(1:1:size(E,1))'; %Element id's
+febio_spec.Mesh.Elements{1}.elem.VAL=E; %The element matrix
+ 
 % -> NodeSets
-febio_spec.Geometry.NodeSet{1}.ATTR.name='bcSupportList';
-febio_spec.Geometry.NodeSet{1}.node.ATTR.id=bcSupportList(:);
-febio_spec.Geometry.NodeSet{2}.ATTR.name='bcPrescribeList';
-febio_spec.Geometry.NodeSet{2}.node.ATTR.id=bcPrescribeList(:);
+nodeSetName1='bcSupportList';
+nodeSetName2='bcPrescribeList';
+
+febio_spec.Mesh.NodeSet{1}.ATTR.name=nodeSetName1;
+febio_spec.Mesh.NodeSet{1}.node.ATTR.id=bcSupportList(:);
+
+febio_spec.Mesh.NodeSet{2}.ATTR.name=nodeSetName2;
+febio_spec.Mesh.NodeSet{2}.node.ATTR.id=bcPrescribeList(:);
+ 
+%MeshData secion
+%-> Element data       
+febio_spec.MeshData.ElementData.ATTR.name=dataMapName1;
+febio_spec.MeshData.ElementData.ATTR.elem_set=partName1;
+febio_spec.MeshData.ElementData.elem.ATTR.lid=(1:1:size(E,1))';
+febio_spec.MeshData.ElementData.elem.VAL=E_youngs_elem;
+
+%MeshDomains section
+febio_spec.MeshDomains.SolidDomain.ATTR.name=partName1;
+febio_spec.MeshDomains.SolidDomain.ATTR.mat=materialName1;
 
 %Boundary condition section 
 % -> Fix boundary conditions
-febio_spec.Boundary.fix{1}.ATTR.bc='x';
-febio_spec.Boundary.fix{1}.ATTR.node_set=febio_spec.Geometry.NodeSet{1}.ATTR.name;
-febio_spec.Boundary.fix{2}.ATTR.bc='y';
-febio_spec.Boundary.fix{2}.ATTR.node_set=febio_spec.Geometry.NodeSet{1}.ATTR.name;
-febio_spec.Boundary.fix{3}.ATTR.bc='z';
-febio_spec.Boundary.fix{3}.ATTR.node_set=febio_spec.Geometry.NodeSet{1}.ATTR.name;
+febio_spec.Boundary.bc{1}.ATTR.type='fix';
+febio_spec.Boundary.bc{1}.ATTR.node_set=nodeSetName1;
+febio_spec.Boundary.bc{1}.dofs='x,y,z';
 
-% -> Prescribe boundary conditions
-febio_spec.Boundary.prescribe{1}.ATTR.bc='x';
-febio_spec.Boundary.prescribe{1}.ATTR.node_set=febio_spec.Geometry.NodeSet{2}.ATTR.name;
-febio_spec.Boundary.prescribe{1}.scale.ATTR.lc=1;
-febio_spec.Boundary.prescribe{1}.scale.VAL=1;
-febio_spec.Boundary.prescribe{1}.relative=1;
-febio_spec.Boundary.prescribe{1}.value=0;
+febio_spec.Boundary.bc{2}.ATTR.type='fix';
+febio_spec.Boundary.bc{2}.ATTR.node_set=nodeSetName2;
+febio_spec.Boundary.bc{2}.dofs='x,y';
 
-febio_spec.Boundary.prescribe{2}.ATTR.bc='y';
-febio_spec.Boundary.prescribe{2}.ATTR.node_set=febio_spec.Geometry.NodeSet{2}.ATTR.name;
-febio_spec.Boundary.prescribe{2}.scale.ATTR.lc=1;
-febio_spec.Boundary.prescribe{2}.scale.VAL=1;
-febio_spec.Boundary.prescribe{2}.relative=1;
-febio_spec.Boundary.prescribe{2}.value=0;
+febio_spec.Boundary.bc{3}.ATTR.type='prescribe';
+febio_spec.Boundary.bc{3}.ATTR.node_set=nodeSetName2;
+febio_spec.Boundary.bc{3}.dof='z';
+febio_spec.Boundary.bc{3}.scale.ATTR.lc=1;
+febio_spec.Boundary.bc{3}.scale.VAL=displacementMagnitude;
+febio_spec.Boundary.bc{3}.relative=0;
 
-febio_spec.Boundary.prescribe{3}.ATTR.bc='z';
-febio_spec.Boundary.prescribe{3}.ATTR.node_set=febio_spec.Geometry.NodeSet{2}.ATTR.name;
-febio_spec.Boundary.prescribe{3}.scale.ATTR.lc=1;
-febio_spec.Boundary.prescribe{3}.scale.VAL=1;
-febio_spec.Boundary.prescribe{3}.relative=1;
-febio_spec.Boundary.prescribe{3}.value=displacementMagnitude;
+%LoadData section
+% -> load_controller
+febio_spec.LoadData.load_controller{1}.ATTR.id=1;
+febio_spec.LoadData.load_controller{1}.ATTR.type='loadcurve';
+febio_spec.LoadData.load_controller{1}.interpolate='LINEAR';
+febio_spec.LoadData.load_controller{1}.points.point.VAL=[0 0; 1 1];
 
 %Output section 
 % -> log file
@@ -297,11 +282,6 @@ febio_spec.Output.logfile.node_data{1}.ATTR.file=febioLogFileName_disp;
 febio_spec.Output.logfile.node_data{1}.ATTR.data='ux;uy;uz';
 febio_spec.Output.logfile.node_data{1}.ATTR.delim=',';
 febio_spec.Output.logfile.node_data{1}.VAL=1:size(V,1);
-
-febio_spec.Output.logfile.node_data{2}.ATTR.file=febioLogFileName_force;
-febio_spec.Output.logfile.node_data{2}.ATTR.data='Rx;Ry;Rz';
-febio_spec.Output.logfile.node_data{2}.ATTR.delim=',';
-febio_spec.Output.logfile.node_data{2}.VAL=1:size(V,1);
 
 febio_spec.Output.logfile.element_data{1}.ATTR.file=febioLogFileName_stress;
 febio_spec.Output.logfile.element_data{1}.ATTR.data='s1';

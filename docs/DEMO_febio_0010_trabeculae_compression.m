@@ -8,7 +8,7 @@
 % * Importing and visualizing the displacement and stress results
 
 %% Keywords:
-% * febio_spec version 2.5
+% * febio_spec version 3.0
 % * febio, FEBio
 % * compression, tension, compressive, tensile
 % * displacement control, displacement boundary condition
@@ -41,17 +41,22 @@ savePath=fullfile(defaultFolder,'data','temp');
 % Defining file names
 febioFebFileNamePart='tempModel';
 febioFebFileName=fullfile(savePath,[febioFebFileNamePart,'.feb']); %FEB file name
-febioLogFileName=fullfile(savePath,[febioFebFileNamePart,'.txt']); %FEBio log file name
+febioLogFileName=[febioFebFileNamePart,'.txt']; %FEBio log file name
 febioLogFileName_disp=[febioFebFileNamePart,'_disp_out.txt']; %Log file name for exporting displacement
 febioLogFileName_stress_prin=[febioFebFileNamePart,'_stress_prin_out.txt']; %Log file name for exporting stress
 febioLogFileName_stress_full=[febioFebFileNamePart,'_stress_full_out.txt']; %Log file name for exporting stress
 
 porousGeometryCase=1;
-ns=30; %Number of voxel steps across period for image data (roughly number of points on mesh period)
+
 sampleSize=10; %Heigh of the sample
+pointSpacing=sampleSize/25;
+tolDir=pointSpacing/5; %Tolerance for detecting sides after remeshing
+
+overSampleRatio=2;
+numStepsLevelset=ceil(overSampleRatio.*(sampleSize./pointSpacing)); %Number of voxel steps across period for image data (roughly number of points on mesh period)
 
 %Define applied displacement
-appliedStrain=0.2; %Linear strain (Only used to compute applied stretch)
+appliedStrain=0.05; %Linear strain (Only used to compute applied stretch)
 
 loadingOption='compression'; % or 'tension' or 'shear'
 switch loadingOption
@@ -72,7 +77,7 @@ nu=0.3; %Poisson's ratio
 % mu=E_youngs/3;
 
 %FEA control settings
-numTimeSteps=10; %Number of time steps desired
+numTimeSteps=6; %Number of time steps desired
 max_refs=15; %Max reforms
 max_ups=0; %Set to zero to use full-Newton iterations
 opt_iter=6; %Optimum number of iterations
@@ -86,7 +91,7 @@ dtmax=1/numTimeSteps; %Maximum time step size
 switch porousGeometryCase
     case 1 %Gyroid
         inputStruct.L=sampleSize; % characteristic length
-        inputStruct.Ns=ns; % number of sampling points
+        inputStruct.Ns=numStepsLevelset; % number of sampling points
         inputStruct.isocap=1; %Option to cap the isosurface
         inputStruct.surfaceCase='g'; %Surface type
         inputStruct.numPeriods=[2 2 2]; %Number of periods in each direction
@@ -95,7 +100,7 @@ switch porousGeometryCase
         [F,V,C,S]=triplyPeriodicMinimalSurface(inputStruct);
     case 2 %Stochastic structure
         inputStruct.L=1; % characteristic length
-        inputStruct.Ns=ns; % number of sampling points
+        inputStruct.Ns=numStepsLevelset; % number of sampling points
         inputStruct.Nw=60; % number of waves
         inputStruct.q0=25; % wave number
         inputStruct.relD=0.3; % relative density
@@ -107,10 +112,10 @@ switch porousGeometryCase
     case 3 %spinodoid
         inputStruct.isocap=true; % option to cap the isosurface
         inputStruct.domainSize=1; % domain size
-        inputStruct.resolution=ns; % resolution for sampling GRF
-        inputStruct.waveNumber=15*pi; % GRF wave number
-        inputStruct.numWaves=200; % number of waves in GRF
-        inputStruct.relativeDensity=0.62; % relative density: between [0.3,1]
+        inputStruct.resolution=numStepsLevelset; % resolution for sampling GRF
+        inputStruct.waveNumber=8*pi; % GRF wave number
+        inputStruct.numWaves=500; % number of waves in GRF
+        inputStruct.relativeDensity=0.5; % relative density: between [0.3,1]
         inputStruct.thetas=[90 0 0]; % conical half angles (in degrees) along xyz
         
         [F,V,C,S]=spinodoid(inputStruct);
@@ -128,28 +133,28 @@ F=F(G==indKeep,:); %Trim faces
 C=C(G==indKeep,:); %Trim color data
 [F,V]=patchCleanUnused(F,V); %Remove unused nodes
 
-%% Remove non-manifold faces
-D=patchConnectivity(F,V,'ff');
-logicManifold=sum(D.face.face>0,2)==3;
-F=F(logicManifold,:);
-C=C(logicManifold,:);
-[F,V]=patchCleanUnused(F,V);
+% %% Remove non-manifold faces
+% D=patchConnectivity(F,V,'ff');
+% logicManifold=sum(D.face.face>0,2)==3;
+% F=F(logicManifold,:);
+% C=C(logicManifold,:);
+% [F,V]=patchCleanUnused(F,V);
 
-%% Smoothen mesh
-
-%Smoothen surface mesh (isosurface does not yield high quality mesh)
-indKeep=F(C~=0,:);%F(size(Fi,1)+1:end,:);
-indKeep=unique(indKeep(:));
-cPar.n=75;
-cPar.RigidConstraints=indKeep; %Boundary nodes are held on to
-cPar.Method='HC';
-[V]=patchSmooth(F,V,[],cPar);
+% %% Smoothen mesh
+% 
+% %Smoothen surface mesh (isosurface does not yield high quality mesh)
+% indKeep=F(C~=0,:);%F(size(Fi,1)+1:end,:);
+% indKeep=unique(indKeep(:));
+% cPar.n=75;
+% cPar.RigidConstraints=indKeep; %Boundary nodes are held on to
+% cPar.Method='HC';
+% [V]=patchSmooth(F,V,[],cPar);
 
 %%
 % Visualizing geometry
 
 cFigure; hold on;
-title('Triply-periodic minimal surface derived model of trabecular structure','FontSize',fontSize);
+title('Raw iso-surface based','FontSize',fontSize);
 gpatch(F,V,C,'k',1);
 
 % plotV(V(indKeep,:),'k.','MarkerSize',markerSize1);
@@ -157,6 +162,30 @@ axisGeom(gca,fontSize);
 colormap gjet; icolorbar;
 camlight headlight;
 drawnow;
+
+%% Remesh using geomgram
+
+optionStruct.pointSpacing=pointSpacing;
+[F,V]=ggremesh(F,V,optionStruct);
+C=zeros(size(F,1),1);
+
+%%
+% Visualizing geometry
+
+cFigure; hold on;
+title('Geogram remeshed','FontSize',fontSize);
+
+gpatch(F,V,'w','k',1);
+
+axisGeom(gca,fontSize);
+camlight headlight;
+drawnow;
+
+%% Tetrahedral meshing using tetgen (see also |runTetGen|)
+
+% Create tetgen input structure
+inputStruct.stringOpt='-pq1.2AaY';
+inputStruct.Faces=F; 
 
 %% Tetrahedral meshing using tetgen (see also |runTetGen|)
 
@@ -184,21 +213,39 @@ E=meshOutput.elements;
 
 meshView(meshOutput);
 
-%% Defining the boundary conditions
-% The visualization of the model boundary shows colors for each side of the
-% cube. These labels can be used to define boundary conditions.
+%% Defining node labels
 
-%Define supported node sets
-logicFace=Cb==6; %Logic for current face set
-Fr=Fb(logicFace,:); %The current face set
-bcSupportList=unique(Fr(:)); %Node set part of selected face
+C_vertex=zeros(size(V,1),1);
+for q=1:3
+    logic1=V(:,q)>(sampleSize-tolDir);
+    logic2=V(:,q)<tolDir;
+    C_vertex(logic1)=max(C_vertex(:))+1;
+    C_vertex(logic2)=max(C_vertex(:))+1;
+end
 
-%Prescribed displacement nodes
-logicPrescribe=Cb==5; %Logic for current face set
-Fr=Fb(logicPrescribe,:); %The current face set
-bcPrescribeList=unique(Fr(:)); %Node set part of selected face
+%% 
+% Visualizing vertex/node labels
 
-%%
+hf=cFigure;
+title('Boundary conditions','FontSize',fontSize);
+xlabel('X','FontSize',fontSize); ylabel('Y','FontSize',fontSize); zlabel('Z','FontSize',fontSize);
+hold on;
+
+gpatch(Fb,V,'w','none',1);
+
+scatterV(V,50,C_vertex,'filled');
+
+axisGeom(gca,fontSize);
+colormap gjet; icolorbar;
+camlight headlight;
+drawnow;
+
+%% Define boundary conditions
+
+bcSupportList=find(C_vertex==6);
+bcPrescribeList=find(C_vertex==5);
+
+%% 
 % Visualizing boundary conditions. Markers plotted on the semi-transparent
 % model denote the nodes in the various boundary condition lists.
 
@@ -207,7 +254,7 @@ title('Boundary conditions','FontSize',fontSize);
 xlabel('X','FontSize',fontSize); ylabel('Y','FontSize',fontSize); zlabel('Z','FontSize',fontSize);
 hold on;
 
-gpatch(Fb,V,'kw','none',0.5);
+gpatch(Fb,V,'w','k',1);
 
 hl(1)=plotV(V(bcSupportList,:),'r.','MarkerSize',markerSize);
 hl(2)=plotV(V(bcPrescribeList,:),'k.','MarkerSize',markerSize);
@@ -222,108 +269,103 @@ drawnow;
 % See also |febioStructTemplate| and |febioStruct2xml| and the FEBio user
 % manual.
 
-%Get a template with default settings
+%Get a template with default settings 
 [febio_spec]=febioStructTemplate;
 
-%febio_spec version
-febio_spec.ATTR.version='2.5';
+%febio_spec version 
+febio_spec.ATTR.version='3.0'; 
 
 %Module section
-febio_spec.Module.ATTR.type='solid';
+febio_spec.Module.ATTR.type='solid'; 
 
 %Control section
-febio_spec.Control.analysis.ATTR.type='static';
-febio_spec.Control.title='Cube analysis';
+febio_spec.Control.analysis='STATIC';
 febio_spec.Control.time_steps=numTimeSteps;
 febio_spec.Control.step_size=1/numTimeSteps;
+febio_spec.Control.solver.max_refs=max_refs;
+febio_spec.Control.solver.max_ups=max_ups;
 febio_spec.Control.time_stepper.dtmin=dtmin;
-febio_spec.Control.time_stepper.dtmax=dtmax;
+febio_spec.Control.time_stepper.dtmax=dtmax; 
 febio_spec.Control.time_stepper.max_retries=max_retries;
 febio_spec.Control.time_stepper.opt_iter=opt_iter;
-febio_spec.Control.max_refs=max_refs;
-febio_spec.Control.max_ups=max_ups;
 
-% Material section
 %Material section
+materialName1='Material1';
+febio_spec.Material.material{1}.ATTR.name=materialName1;
 febio_spec.Material.material{1}.ATTR.type='neo-Hookean';
 febio_spec.Material.material{1}.ATTR.id=1;
 febio_spec.Material.material{1}.E=E_youngs;
 febio_spec.Material.material{1}.v=nu;
 
-%Geometry section
+% Mesh section
 % -> Nodes
-febio_spec.Geometry.Nodes{1}.ATTR.name='nodeSet_all'; %The node set name
-febio_spec.Geometry.Nodes{1}.node.ATTR.id=(1:size(V,1))'; %The node id's
-febio_spec.Geometry.Nodes{1}.node.VAL=V; %The nodel coordinates
+febio_spec.Mesh.Nodes{1}.ATTR.name='Object1'; %The node set name
+febio_spec.Mesh.Nodes{1}.node.ATTR.id=(1:size(V,1))'; %The node id's
+febio_spec.Mesh.Nodes{1}.node.VAL=V; %The nodel coordinates
 
 % -> Elements
-febio_spec.Geometry.Elements{1}.ATTR.type='tet4'; %Element type of this set
-febio_spec.Geometry.Elements{1}.ATTR.mat=1; %material index for this set
-febio_spec.Geometry.Elements{1}.ATTR.name='Bone sample'; %Name of the element set
-febio_spec.Geometry.Elements{1}.elem.ATTR.id=(1:1:size(E,1))'; %Element id's
-febio_spec.Geometry.Elements{1}.elem.VAL=E;
-
+partName1='Part1';
+febio_spec.Mesh.Elements{1}.ATTR.name=partName1; %Name of this part
+febio_spec.Mesh.Elements{1}.ATTR.type='tet4'; %Element type
+febio_spec.Mesh.Elements{1}.elem.ATTR.id=(1:1:size(E,1))'; %Element id's
+febio_spec.Mesh.Elements{1}.elem.VAL=E; %The element matrix
+ 
 % -> NodeSets
-febio_spec.Geometry.NodeSet{1}.ATTR.name='bcSupportList';
-febio_spec.Geometry.NodeSet{1}.node.ATTR.id=bcSupportList(:);
+nodeSetName1='bcSupportList';
+nodeSetName2='bcPrescribeList';
 
-febio_spec.Geometry.NodeSet{2}.ATTR.name='bcPrescribeList';
-febio_spec.Geometry.NodeSet{2}.node.ATTR.id=bcPrescribeList(:);
+febio_spec.Mesh.NodeSet{1}.ATTR.name=nodeSetName1;
+febio_spec.Mesh.NodeSet{1}.node.ATTR.id=bcSupportList(:);
 
-%Boundary condition section
+febio_spec.Mesh.NodeSet{2}.ATTR.name=nodeSetName2;
+febio_spec.Mesh.NodeSet{2}.node.ATTR.id=bcPrescribeList(:);
+ 
+%MeshDomains section
+febio_spec.MeshDomains.SolidDomain.ATTR.name=partName1;
+febio_spec.MeshDomains.SolidDomain.ATTR.mat=materialName1;
+
+%Boundary condition section 
 % -> Fix boundary conditions
-febio_spec.Boundary.fix{1}.ATTR.bc='x';
-febio_spec.Boundary.fix{1}.ATTR.node_set=febio_spec.Geometry.NodeSet{1}.ATTR.name;
-febio_spec.Boundary.fix{2}.ATTR.bc='y';
-febio_spec.Boundary.fix{2}.ATTR.node_set=febio_spec.Geometry.NodeSet{1}.ATTR.name;
-febio_spec.Boundary.fix{3}.ATTR.bc='z';
-febio_spec.Boundary.fix{3}.ATTR.node_set=febio_spec.Geometry.NodeSet{1}.ATTR.name;
-
-% -> Prescribe boundary conditions
 switch loadingOption
-    case 'shear'
-        febio_spec.Boundary.prescribe{1}.ATTR.bc='x';
-        febio_spec.Boundary.prescribe{1}.ATTR.node_set=febio_spec.Geometry.NodeSet{2}.ATTR.name;
-        febio_spec.Boundary.prescribe{1}.scale.ATTR.lc=1;
-        febio_spec.Boundary.prescribe{1}.scale.VAL=1;
-        febio_spec.Boundary.prescribe{1}.relative=1;
-        febio_spec.Boundary.prescribe{1}.value=displacementMagnitude;
+    case 'shear'       
+        febio_spec.Boundary.bc{1}.ATTR.type='fix';
+        febio_spec.Boundary.bc{1}.ATTR.node_set=nodeSetName1;
+        febio_spec.Boundary.bc{1}.dofs='x,y,z';
         
-        febio_spec.Boundary.prescribe{2}.ATTR.bc='z';
-        febio_spec.Boundary.prescribe{2}.ATTR.node_set=febio_spec.Geometry.NodeSet{2}.ATTR.name;
-        febio_spec.Boundary.prescribe{2}.scale.ATTR.lc=1;
-        febio_spec.Boundary.prescribe{2}.scale.VAL=1;
-        febio_spec.Boundary.prescribe{2}.relative=1;
-        febio_spec.Boundary.prescribe{2}.value=0;
+        febio_spec.Boundary.bc{2}.ATTR.type='fix';
+        febio_spec.Boundary.bc{2}.ATTR.node_set=nodeSetName2;
+        febio_spec.Boundary.bc{2}.dofs='y,z';
         
-        febio_spec.Boundary.prescribe{3}.ATTR.bc='y';
-        febio_spec.Boundary.prescribe{3}.ATTR.node_set=febio_spec.Geometry.NodeSet{2}.ATTR.name;
-        febio_spec.Boundary.prescribe{3}.scale.ATTR.lc=1;
-        febio_spec.Boundary.prescribe{3}.scale.VAL=1;
-        febio_spec.Boundary.prescribe{3}.relative=1;
-        febio_spec.Boundary.prescribe{3}.value=0;
+        febio_spec.Boundary.bc{3}.ATTR.type='prescribe';
+        febio_spec.Boundary.bc{3}.ATTR.node_set=nodeSetName2;
+        febio_spec.Boundary.bc{3}.dof='x';
+        febio_spec.Boundary.bc{3}.scale.ATTR.lc=1;
+        febio_spec.Boundary.bc{3}.scale.VAL=displacementMagnitude;
+        febio_spec.Boundary.bc{3}.relative=0;
     otherwise
-        febio_spec.Boundary.prescribe{1}.ATTR.bc='z';
-        febio_spec.Boundary.prescribe{1}.ATTR.node_set=febio_spec.Geometry.NodeSet{2}.ATTR.name;
-        febio_spec.Boundary.prescribe{1}.scale.ATTR.lc=1;
-        febio_spec.Boundary.prescribe{1}.scale.VAL=1;
-        febio_spec.Boundary.prescribe{1}.relative=1;
-        febio_spec.Boundary.prescribe{1}.value=displacementMagnitude;
+        febio_spec.Boundary.bc{1}.ATTR.type='fix';
+        febio_spec.Boundary.bc{1}.ATTR.node_set=nodeSetName1;
+        febio_spec.Boundary.bc{1}.dofs='x,y,z';
         
-        febio_spec.Boundary.prescribe{2}.ATTR.bc='x';
-        febio_spec.Boundary.prescribe{2}.ATTR.node_set=febio_spec.Geometry.NodeSet{2}.ATTR.name;
-        febio_spec.Boundary.prescribe{2}.scale.ATTR.lc=1;
-        febio_spec.Boundary.prescribe{2}.scale.VAL=1;
-        febio_spec.Boundary.prescribe{2}.relative=1;
-        febio_spec.Boundary.prescribe{2}.value=0;
+        febio_spec.Boundary.bc{2}.ATTR.type='fix';
+        febio_spec.Boundary.bc{2}.ATTR.node_set=nodeSetName2;
+        febio_spec.Boundary.bc{2}.dofs='x,y';
         
-        febio_spec.Boundary.prescribe{3}.ATTR.bc='y';
-        febio_spec.Boundary.prescribe{3}.ATTR.node_set=febio_spec.Geometry.NodeSet{2}.ATTR.name;
-        febio_spec.Boundary.prescribe{3}.scale.ATTR.lc=1;
-        febio_spec.Boundary.prescribe{3}.scale.VAL=1;
-        febio_spec.Boundary.prescribe{3}.relative=1;
-        febio_spec.Boundary.prescribe{3}.value=0;
+        febio_spec.Boundary.bc{3}.ATTR.type='prescribe';
+        febio_spec.Boundary.bc{3}.ATTR.node_set=nodeSetName2;
+        febio_spec.Boundary.bc{3}.dof='z';
+        febio_spec.Boundary.bc{3}.scale.ATTR.lc=1;
+        febio_spec.Boundary.bc{3}.scale.VAL=displacementMagnitude;
+        febio_spec.Boundary.bc{3}.relative=0;
 end
+
+%LoadData section
+% -> load_controller
+febio_spec.LoadData.load_controller{1}.ATTR.id=1;
+febio_spec.LoadData.load_controller{1}.ATTR.type='loadcurve';
+febio_spec.LoadData.load_controller{1}.interpolate='LINEAR';
+febio_spec.LoadData.load_controller{1}.points.point.VAL=[0 0; 1 1];
+
 %Output section
 % -> log file
 febio_spec.Output.logfile.ATTR.file=febioLogFileName;
@@ -365,11 +407,7 @@ febioStruct2xml(febio_spec,febioFebFileName); %Exporting to file and domNode
 febioAnalysis.run_filename=febioFebFileName; %The input file name
 febioAnalysis.run_logname=febioLogFileName; %The name for the log file
 febioAnalysis.disp_on=1; %Display information on the command window
-febioAnalysis.disp_log_on=1; %Display convergence information in the command window
 febioAnalysis.runMode='external';%'internal';
-febioAnalysis.t_check=0.25; %Time for checking log file (dont set too small)
-febioAnalysis.maxtpi=1e99; %Max analysis time
-febioAnalysis.maxLogCheckTime=60; %Max log file checking time
 
 [runFlag]=runMonitorFEBio(febioAnalysis);%START FEBio NOW!!!!!!!!
 

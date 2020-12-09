@@ -9,7 +9,7 @@
 
 %% Keywords
 %
-% * febio_spec version 2.5
+% * febio_spec version 3.0
 % * febio, FEBio
 % * uniaxial loading
 % * compression, tension, compressive, tensile
@@ -46,7 +46,7 @@ savePath=fullfile(defaultFolder,'data','temp');
 % Defining file names
 febioFebFileNamePart='tempModel';
 febioFebFileName=fullfile(savePath,[febioFebFileNamePart,'.feb']); %FEB file name
-febioLogFileName=fullfile(savePath,[febioFebFileNamePart,'.txt']); %FEBio log file name
+febioLogFileName=[febioFebFileNamePart,'.txt']; %FEBio log file name
 febioLogFileName_disp=[febioFebFileNamePart,'_disp_out.txt']; %Log file name for exporting displacement
 febioLogFileName_stress=[febioFebFileNamePart,'_stress_out.txt']; %Log file name for exporting stress
 
@@ -55,79 +55,52 @@ meshType='hex8'; %hex8 or tet4
 unitSystem=2; %1=m, 2=mm
 switch unitSystem
     case 1
-        min_residual=1e-40;
+        min_residual=1e-30;
         cubeSize=10e-3;
-        sampleWidth=cubeSize; %Width
-        sampleThickness=cubeSize; %Thickness
-        sampleHeight=cubeSize; %Height
         pointSpacings=2e-3*ones(1,3); %Desired point spacing between nodes
-        numElementsWidth=round(sampleWidth/pointSpacings(1)); %Number of elemens in dir 1
-        numElementsThickness=round(sampleThickness/pointSpacings(2)); %Number of elemens in dir 2
-        numElementsHeight=round(sampleHeight/pointSpacings(3)); %Number of elemens in dir 3
-        
-        %Define applied displacement
-        appliedStrain=0.3; %Linear strain (Only used to compute applied stretch)
-        loadingOption='compression'; % or 'tension'
-        switch loadingOption
-            case 'compression'
-                stretchLoad=1-appliedStrain; %The applied stretch for uniaxial loading
-            case 'tension'
-                stretchLoad=1+appliedStrain; %The applied stretch for uniaxial loading
-        end
-        displacementMagnitude=(stretchLoad*sampleHeight)-sampleHeight; %The displacement magnitude
-        
+
         %Material parameter set
-        
-        %Hyperelastic parameters
-        c1=1000; %ogden c1
-        m1=6; %ogden m1
-        k_factor=1; %Bulk like modulus factor
-        k=c1*k_factor; %The bulk like modulus
-        
+        E_youngs=1000; %Youngs modulus (Neo-Hookean)       
         d=1000; %Density
         
         %Constant Isotropic Permeability parameters
-        phi0=0.5; %Solid volume fraction in reference configuration
-        permHydro=7.41e-11; %hydraulic permeability
+        phi0=0.2; %Solid volume fraction in reference configuration
+        permHydro=7.41e-11*100; %hydraulic permeability
     case 2
-        min_residual=1e-40;
-        cubeSize=10;
-        sampleWidth=cubeSize; %Width
-        sampleThickness=cubeSize; %Thickness
-        sampleHeight=cubeSize; %Height
+        min_residual=1e-20;
+        cubeSize=10;        
         pointSpacings=2*ones(1,3); %Desired point spacing between nodes
-        numElementsWidth=round(sampleWidth/pointSpacings(1)); %Number of elemens in dir 1
-        numElementsThickness=round(sampleThickness/pointSpacings(2)); %Number of elemens in dir 2
-        numElementsHeight=round(sampleHeight/pointSpacings(3)); %Number of elemens in dir 3
-        
-        %Define applied displacement
-        appliedStrain=0.3; %Linear strain (Only used to compute applied stretch)
-        loadingOption='compression'; % or 'tension'
-        switch loadingOption
-            case 'compression'
-                stretchLoad=1-appliedStrain; %The applied stretch for uniaxial loading
-            case 'tension'
-                stretchLoad=1+appliedStrain; %The applied stretch for uniaxial loading
-        end
-        displacementMagnitude=(stretchLoad*sampleHeight)-sampleHeight; %The displacement magnitude
-        
+
         %Material parameter set
-        
-        %Hyperelastic parameters
-        c1=1e-3; %ogden c1
-        m1=6; %ogden m1
-        k_factor=1; %Bulk like modulus factor
-        k=c1*k_factor; %The bulk like modulus
-        
+        E_youngs=1e-3; %Youngs modulus (Neo-Hookean)
         d=1e-9; %Density
         
         %Constant Isotropic Permeability parameters
         phi0=0.5; %Solid volume fraction in reference configuration
-        permHydro=7.41e1; %hydraulic permeability
+        permHydro=7.41e1*100; %hydraulic permeability
 end
+nu=0.4; %Material Poisson's ratio
+
+sampleWidth=cubeSize; %Width
+sampleThickness=cubeSize; %Thickness
+sampleHeight=cubeSize; %Height
+numElementsWidth=round(sampleWidth/pointSpacings(1)); %Number of elemens in dir 1
+numElementsThickness=round(sampleThickness/pointSpacings(2)); %Number of elemens in dir 2
+numElementsHeight=round(sampleHeight/pointSpacings(3)); %Number of elemens in dir 3
+
+%Define applied displacement
+appliedStrain=0.4; %Linear strain (Only used to compute applied stretch)
+loadingOption='compression'; % or 'tension'
+switch loadingOption
+    case 'compression'
+        stretchLoad=1-appliedStrain; %The applied stretch for uniaxial loading
+    case 'tension'
+        stretchLoad=1+appliedStrain; %The applied stretch for uniaxial loading
+end
+displacementMagnitude=(stretchLoad*sampleHeight)-sampleHeight; %The displacement magnitude
 
 % FEA control settings
-analysisType='transient'; 
+analysisType='TRANSIENT';%'steady-state'; 
 febioModule='biphasic';
 
 t_load=0.1; %Time from start to max load
@@ -137,12 +110,12 @@ t_step1=t_load/numTimeSteps1; %Step size
 dtmin1=t_step1/100; %Smallest allowed step size
 dtmax1=t_step1; %Largest allowed step size
 
-t_hold=5;
-t_step_ini2=t_step_ini1; %Initial desired step size
+t_hold=1;
+t_step_ini2=t_hold/50; %Initial desired step size
 numTimeSteps2=round(t_hold/t_step_ini2); %Number of time steps desired
 t_step2=t_hold/numTimeSteps2; %Step size
 dtmin2=t_step2/100; %Smallest allowed step size
-dtmax2=0.25; %Largest allowed step size
+dtmax2=t_step2; %Largest allowed step size
 
 max_refs=25; %Max reforms
 max_ups=0; %Set to zero to use full-Newton iterations
@@ -244,119 +217,150 @@ drawnow;
 [febio_spec]=febioStructTemplate;
 
 %febio_spec version 
-febio_spec.ATTR.version='2.5'; 
+febio_spec.ATTR.version='3.0'; 
 
 %Module section
 febio_spec.Module.ATTR.type=febioModule; 
 
-%Get control section from template
-stepStruct.Control=febio_spec.Control;
-stepStruct.Control.symmetric_stiffness=0; %Recommended for biphasic analysis
+%Control sections for each step
+febio_spec.Step.step{1}.Control=febio_spec.Control; %Copy from template
+febio_spec.Step.step{1}.ATTR.id=1;
+febio_spec.Step.step{1}.Control.analysis=analysisType;
+febio_spec.Step.step{1}.Control.time_steps=numTimeSteps1;
+febio_spec.Step.step{1}.Control.step_size=t_step1;
+febio_spec.Step.step{1}.Control.solver.max_refs=max_refs;
+febio_spec.Step.step{1}.Control.solver.max_ups=max_ups;
+febio_spec.Step.step{1}.Control.solver.symmetric_stiffness=0;  %Recommended for biphasic analysis
+febio_spec.Step.step{1}.Control.solver.min_residual=min_residual;
+febio_spec.Step.step{1}.Control.time_stepper.dtmin=dtmin1;
+febio_spec.Step.step{1}.Control.time_stepper.dtmax=dtmax1; 
+febio_spec.Step.step{1}.Control.time_stepper.max_retries=max_retries;
+febio_spec.Step.step{1}.Control.time_stepper.opt_iter=opt_iter;
+
+febio_spec.Step.step{2}.Control=febio_spec.Control; %Copy from template
+febio_spec.Step.step{2}.ATTR.id=2;
+febio_spec.Step.step{2}.Control.analysis=analysisType;
+febio_spec.Step.step{2}.Control.time_steps=numTimeSteps2;
+febio_spec.Step.step{2}.Control.step_size=t_step2;
+febio_spec.Step.step{2}.Control.solver.max_refs=max_refs;
+febio_spec.Step.step{2}.Control.solver.max_ups=max_ups;
+febio_spec.Step.step{2}.Control.solver.symmetric_stiffness=0;  %Recommended for biphasic analysis
+febio_spec.Step.step{2}.Control.solver.min_residual=min_residual;
+febio_spec.Step.step{2}.Control.time_stepper.dtmin=dtmin2;
+febio_spec.Step.step{2}.Control.time_stepper.dtmax=dtmax2; 
+febio_spec.Step.step{2}.Control.time_stepper.max_retries=max_retries;
+febio_spec.Step.step{2}.Control.time_stepper.opt_iter=opt_iter;
 
 %Remove control field (part of template) since step specific control sections are used
 febio_spec=rmfield(febio_spec,'Control'); 
 
-%Control sections for each step
-febio_spec.Step{1}.ATTR.id=1;
-febio_spec.Step{1}.Control=stepStruct.Control;
-febio_spec.Step{1}.Control.analysis.ATTR.type=analysisType;
-febio_spec.Step{1}.Control.time_steps=numTimeSteps1;
-febio_spec.Step{1}.Control.step_size=t_step1;
-febio_spec.Step{1}.Control.time_stepper.dtmin=dtmin1;
-febio_spec.Step{1}.Control.time_stepper.dtmax=dtmax1; 
-febio_spec.Step{1}.Control.time_stepper.max_retries=max_retries;
-febio_spec.Step{1}.Control.time_stepper.opt_iter=opt_iter;
-febio_spec.Step{1}.Control.max_refs=max_refs;
-febio_spec.Step{1}.Control.max_ups=max_ups;
-febio_spec.Step{1}.Control.min_residual=min_residual;
-
-febio_spec.Step{2}.ATTR.id=2;
-febio_spec.Step{2}.Control=stepStruct.Control;
-febio_spec.Step{2}.Control.analysis.ATTR.type=analysisType;
-febio_spec.Step{2}.Control.time_steps=numTimeSteps2;
-febio_spec.Step{2}.Control.step_size=t_step2;
-febio_spec.Step{2}.Control.time_stepper.dtmin=dtmin2;
-febio_spec.Step{2}.Control.time_stepper.dtmax=dtmax2; 
-febio_spec.Step{2}.Control.time_stepper.max_retries=max_retries;
-febio_spec.Step{2}.Control.time_stepper.opt_iter=opt_iter;
-febio_spec.Step{2}.Control.max_refs=max_refs;
-febio_spec.Step{2}.Control.max_ups=max_ups;
-febio_spec.Step{2}.Control.min_residual=min_residual;
-
 %Material section
 
 %Viscous part
+materialName1='Material1';
+febio_spec.Material.material{1}.ATTR.name=materialName1;
 febio_spec.Material.material{1}.ATTR.type='biphasic';
-febio_spec.Material.material{1}.ATTR.name='Block_material';
 febio_spec.Material.material{1}.ATTR.id=1;
 febio_spec.Material.material{1}.phi0=phi0;
-febio_spec.Material.material{1}.permeability.ATTR.type='perm-const-iso';
-febio_spec.Material.material{1}.permeability.ATTR.name='permeability';
-febio_spec.Material.material{1}.permeability.perm=permHydro;
 febio_spec.Material.material{1}.fluid_density=d;
 
 %Solid part
-febio_spec.Material.material{1}.solid{1}.ATTR.type='Ogden unconstrained';
-febio_spec.Material.material{1}.solid{1}.c1=c1;
-febio_spec.Material.material{1}.solid{1}.m1=m1;
-% febio_spec.Material.material{1}.solid{1}.c2=c1;
-% febio_spec.Material.material{1}.solid{1}.m2=-m1;
-febio_spec.Material.material{1}.solid{1}.cp=k;
-febio_spec.Material.material{1}.solid{1}.density=d;
+febio_spec.Material.material{1}.solid.ATTR.type='neo-Hookean';
+febio_spec.Material.material{1}.solid.ATTR.id=1;
+febio_spec.Material.material{1}.solid.E=E_youngs;
+febio_spec.Material.material{1}.solid.v=nu;
 
-%Geometry section
+%Permeability part
+febio_spec.Material.material{1}.permeability.ATTR.type='perm-const-iso';
+febio_spec.Material.material{1}.permeability.ATTR.name='permeability';
+febio_spec.Material.material{1}.permeability.perm=permHydro;
+
+
+% Mesh section
 % -> Nodes
-febio_spec.Geometry.Nodes{1}.ATTR.name='nodeSet_all'; %The node set name
-febio_spec.Geometry.Nodes{1}.node.ATTR.id=(1:size(V,1))'; %The node id's
-febio_spec.Geometry.Nodes{1}.node.VAL=V; %The nodel coordinates
+febio_spec.Mesh.Nodes{1}.ATTR.name='Object1'; %The node set name
+febio_spec.Mesh.Nodes{1}.node.ATTR.id=(1:size(V,1))'; %The node id's
+febio_spec.Mesh.Nodes{1}.node.VAL=V; %The nodel coordinates
 
 % -> Elements
-febio_spec.Geometry.Elements{1}.ATTR.type=meshType; %Element type of this set
-febio_spec.Geometry.Elements{1}.ATTR.mat=1; %material index for this set 
-febio_spec.Geometry.Elements{1}.ATTR.name='Cube'; %Name of the element set
-febio_spec.Geometry.Elements{1}.elem.ATTR.id=(1:1:size(E,1))'; %Element id's
-febio_spec.Geometry.Elements{1}.elem.VAL=E;
-
+partName1='Part1';
+febio_spec.Mesh.Elements{1}.ATTR.name=partName1; %Name of this part
+febio_spec.Mesh.Elements{1}.ATTR.type=meshType; %Element type
+febio_spec.Mesh.Elements{1}.elem.ATTR.id=(1:1:size(E,1))'; %Element id's
+febio_spec.Mesh.Elements{1}.elem.VAL=E; %The element matrix
+ 
 % -> NodeSets
-febio_spec.Geometry.NodeSet{1}.ATTR.name='bcSupportList_X';
-febio_spec.Geometry.NodeSet{1}.node.ATTR.id=bcSupportList_X(:);
+nodeSetName1='bcSupportList_X';
+nodeSetName2='bcSupportList_Y';
+nodeSetName3='bcSupportList_Z';
+nodeSetName4='bcPrescribeList';
 
-febio_spec.Geometry.NodeSet{2}.ATTR.name='bcSupportList_Y';
-febio_spec.Geometry.NodeSet{2}.node.ATTR.id=bcSupportList_Y(:);
+febio_spec.Mesh.NodeSet{1}.ATTR.name=nodeSetName1;
+febio_spec.Mesh.NodeSet{1}.node.ATTR.id=bcSupportList_X(:);
 
-febio_spec.Geometry.NodeSet{3}.ATTR.name='bcSupportList_Z';
-febio_spec.Geometry.NodeSet{3}.node.ATTR.id=bcSupportList_Z(:);
+febio_spec.Mesh.NodeSet{2}.ATTR.name=nodeSetName2;
+febio_spec.Mesh.NodeSet{2}.node.ATTR.id=bcSupportList_Y(:);
 
-febio_spec.Geometry.NodeSet{4}.ATTR.name='bcPrescribeList';
-febio_spec.Geometry.NodeSet{4}.node.ATTR.id=bcPrescribeList(:);
+febio_spec.Mesh.NodeSet{3}.ATTR.name=nodeSetName3;
+febio_spec.Mesh.NodeSet{3}.node.ATTR.id=bcSupportList_Z(:);
+ 
+febio_spec.Mesh.NodeSet{4}.ATTR.name=nodeSetName4;
+febio_spec.Mesh.NodeSet{4}.node.ATTR.id=bcPrescribeList(:);
+ 
+%MeshDomains section
+febio_spec.MeshDomains.SolidDomain.ATTR.name=partName1;
+febio_spec.MeshDomains.SolidDomain.ATTR.mat=materialName1;
 
 %Boundary condition section 
 % -> Fix boundary conditions
-febio_spec.Boundary.fix{1}.ATTR.bc='x';
-febio_spec.Boundary.fix{1}.ATTR.node_set=febio_spec.Geometry.NodeSet{1}.ATTR.name;
-febio_spec.Boundary.fix{2}.ATTR.bc='y';
-febio_spec.Boundary.fix{2}.ATTR.node_set=febio_spec.Geometry.NodeSet{2}.ATTR.name;
-febio_spec.Boundary.fix{3}.ATTR.bc='z';
-febio_spec.Boundary.fix{3}.ATTR.node_set=febio_spec.Geometry.NodeSet{3}.ATTR.name;
+febio_spec.Boundary.bc{1}.ATTR.type='fix';
+febio_spec.Boundary.bc{1}.ATTR.node_set=nodeSetName1;
+febio_spec.Boundary.bc{1}.dofs='x';
 
-% -> Prescribe boundary conditions
-febio_spec.Boundary.prescribe{1}.ATTR.bc='z';
-febio_spec.Boundary.prescribe{1}.ATTR.node_set=febio_spec.Geometry.NodeSet{4}.ATTR.name;
-febio_spec.Boundary.prescribe{1}.scale.ATTR.lc=1;
-febio_spec.Boundary.prescribe{1}.scale.VAL=1;
-febio_spec.Boundary.prescribe{1}.relative=1;
-febio_spec.Boundary.prescribe{1}.value=displacementMagnitude;
+febio_spec.Boundary.bc{2}.ATTR.type='fix';
+febio_spec.Boundary.bc{2}.ATTR.node_set=nodeSetName2;
+febio_spec.Boundary.bc{2}.dofs='y';
 
-febio_spec.Boundary.prescribe{2}.ATTR.node_set=febio_spec.Geometry.NodeSet{4}.ATTR.name;
-febio_spec.Boundary.prescribe{2}.ATTR.bc='p';
-febio_spec.Boundary.prescribe{2}.scale.ATTR.lc=1;
-febio_spec.Boundary.prescribe{2}.scale.VAL=0;
+febio_spec.Boundary.bc{3}.ATTR.type='fix';
+febio_spec.Boundary.bc{3}.ATTR.node_set=nodeSetName3;
+febio_spec.Boundary.bc{3}.dofs='z';
 
-%LoadData section 
-% -> Load curves
-febio_spec.LoadData.loadcurve{1}.ATTR.id=1;
-febio_spec.LoadData.loadcurve{1}.ATTR.type='linear';
-febio_spec.LoadData.loadcurve{1}.point.VAL=[0 0;t_load 1;(t_load+t_hold) 1];
+febio_spec.Boundary.bc{4}.ATTR.type='fix';
+febio_spec.Boundary.bc{4}.ATTR.node_set=nodeSetName4;
+febio_spec.Boundary.bc{4}.dofs='p';
+
+febio_spec.Boundary.bc{5}.ATTR.type='prescribe';
+febio_spec.Boundary.bc{5}.ATTR.node_set=nodeSetName4;
+febio_spec.Boundary.bc{5}.dof='z';
+febio_spec.Boundary.bc{5}.scale.ATTR.lc=1;
+febio_spec.Boundary.bc{5}.scale.VAL=displacementMagnitude;
+febio_spec.Boundary.bc{5}.relative=0;
+
+% febio_spec.Boundary.bc{5}.ATTR.type='prescribe';
+% febio_spec.Boundary.bc{5}.ATTR.node_set=nodeSetName4;
+% febio_spec.Boundary.bc{5}.dof='p';
+% febio_spec.Boundary.bc{5}.scale.ATTR.lc=1;
+% febio_spec.Boundary.bc{5}.scale.VAL=0;
+% febio_spec.Boundary.bc{5}.relative=0;
+% 
+% febio_spec.Boundary.bc{6}.ATTR.type='prescribe';
+% febio_spec.Boundary.bc{6}.ATTR.node_set=nodeSetName3;
+% febio_spec.Boundary.bc{6}.dof='p';
+% febio_spec.Boundary.bc{6}.scale.ATTR.lc=1;
+% febio_spec.Boundary.bc{6}.scale.VAL=0;
+% febio_spec.Boundary.bc{6}.relative=0;
+
+% febio_spec.Boundary.prescribe{2}.ATTR.node_set=febio_spec.Geometry.NodeSet{4}.ATTR.name;
+% febio_spec.Boundary.prescribe{2}.ATTR.bc='p';
+% febio_spec.Boundary.prescribe{2}.scale.ATTR.lc=1;
+% febio_spec.Boundary.prescribe{2}.scale.VAL=0;
+
+%LoadData section
+% -> load_controller
+febio_spec.LoadData.load_controller{1}.ATTR.id=1;
+febio_spec.LoadData.load_controller{1}.ATTR.type='loadcurve';
+febio_spec.LoadData.load_controller{1}.interpolate='LINEAR';
+febio_spec.LoadData.load_controller{1}.points.point.VAL=[0 0;t_load 1;(t_load+t_hold) 1];
 
 %Output section 
 % -> log file
@@ -394,11 +398,7 @@ febioStruct2xml(febio_spec,febioFebFileName); %Exporting to file and domNode
 febioAnalysis.run_filename=febioFebFileName; %The input file name
 febioAnalysis.run_logname=febioLogFileName; %The name for the log file
 febioAnalysis.disp_on=1; %Display information on the command window
-febioAnalysis.disp_log_on=1; %Display convergence information in the command window
 febioAnalysis.runMode='external';%'internal';
-febioAnalysis.t_check=0.1; %Time for checking log file (dont set too small)
-febioAnalysis.maxtpi=1e99; %Max analysis time
-febioAnalysis.maxLogCheckTime=10; %Max log file checking time
 
 [runFlag]=runMonitorFEBio(febioAnalysis);%START FEBio NOW!!!!!!!!
 
@@ -507,9 +507,14 @@ if runFlag==1 %i.e. a succesful run
     cFigure; hold on;    
     title('Uniaxial stress-time curve','FontSize',fontSize);
     xlabel('Time [s]','FontSize',fontSize,'Interpreter','Latex'); 
-    ylabel('$\sigma_{zz}$ [MPa]','FontSize',fontSize,'Interpreter','Latex'); 
+    ylabel('$\sigma_{zz}$ [Pa]','FontSize',fontSize,'Interpreter','Latex');
+    if unitSystem==1
+        plot(timeVec(:),stress_cauchy_sim(:),'r-','lineWidth',lineWidth);
+    else %MPa -> Pa
+        plot(timeVec(:),stress_cauchy_sim(:)*1e6,'r-','lineWidth',lineWidth);
+    end
     
-    plot(timeVec(:),stress_cauchy_sim(:),'r-','lineWidth',lineWidth);
+    
     
     view(2); axis tight;  grid on; axis square; box on; 
     set(gca,'FontSize',fontSize);

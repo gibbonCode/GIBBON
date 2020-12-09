@@ -9,7 +9,7 @@
 
 %% Keywords
 %
-% * febio_spec version 2.5
+% * febio_spec version 3.0
 % * febio, FEBio
 % * uniaxial loading
 % * compression, tension, compressive, tensile
@@ -31,7 +31,7 @@ faceAlpha1=0.8;
 markerSize=40;
 markerSize2=35;
 lineWidth=3;
-cMap=viridis(20);
+cMap=viridis(20); %colormap 
 
 %% Control parameters
 
@@ -42,7 +42,7 @@ savePath=fullfile(defaultFolder,'data','temp');
 % Defining file names
 febioFebFileNamePart='tempModel';
 febioFebFileName=fullfile(savePath,[febioFebFileNamePart,'.feb']); %FEB file name
-febioLogFileName=fullfile(savePath,[febioFebFileNamePart,'.txt']); %FEBio log file name
+febioLogFileName=[febioFebFileNamePart,'.txt']; %FEBio log file name
 febioLogFileName_disp=[febioFebFileNamePart,'_disp_out.txt']; %Log file name for exporting displacement
 febioLogFileName_stress=[febioFebFileNamePart,'_stress_out.txt']; %Log file name for exporting stress
 febioLogFileName_stress_prin=[febioFebFileNamePart,'_stress_prin_out.txt']; %Log file name for exporting principal stress
@@ -52,7 +52,7 @@ cubeSize=10;
 sampleWidth=cubeSize; %Width 
 sampleThickness=cubeSize; %Thickness 
 sampleHeight=cubeSize; %Height
-pointSpacings=1*ones(1,3); %Desired point spacing between nodes
+pointSpacings=2*ones(1,3); %Desired point spacing between nodes
 numElementsWidth=round(sampleWidth/pointSpacings(1)); %Number of elemens in dir 1
 numElementsThickness=round(sampleThickness/pointSpacings(2)); %Number of elemens in dir 2
 numElementsHeight=round(sampleHeight/pointSpacings(3)); %Number of elemens in dir 3
@@ -69,11 +69,8 @@ end
 displacementMagnitude=(stretchLoad*sampleHeight)-sampleHeight; %The displacement magnitude
 
 %Material parameter set
-c1=0.7; %Shear-modulus-like parameter
-m1=2; %Material parameter setting degree of non-linearity
-k_factor=100; %Bulk modulus factor 
-k=c1*k_factor; %Bulk modulus
-formulationType='uncoupled'; %coupled
+E_youngs1=0.1; %Material Young's modulus
+nu1=0.4; %Material Poisson's ratio
 
 % FEA control settings
 numTimeSteps=10; %Number of time steps desired
@@ -174,85 +171,92 @@ drawnow;
 [febio_spec]=febioStructTemplate;
 
 %febio_spec version 
-febio_spec.ATTR.version='2.5'; 
+febio_spec.ATTR.version='3.0'; 
 
 %Module section
 febio_spec.Module.ATTR.type='solid'; 
 
 %Control section
-febio_spec.Control.analysis.ATTR.type='static';
-febio_spec.Control.title='Cube analysis';
+febio_spec.Control.analysis='STATIC';
 febio_spec.Control.time_steps=numTimeSteps;
 febio_spec.Control.step_size=1/numTimeSteps;
+febio_spec.Control.solver.max_refs=max_refs;
+febio_spec.Control.solver.max_ups=max_ups;
 febio_spec.Control.time_stepper.dtmin=dtmin;
 febio_spec.Control.time_stepper.dtmax=dtmax; 
 febio_spec.Control.time_stepper.max_retries=max_retries;
 febio_spec.Control.time_stepper.opt_iter=opt_iter;
-febio_spec.Control.max_refs=max_refs;
-febio_spec.Control.max_ups=max_ups;
 
 %Material section
-switch formulationType
-    case 'coupled'
-        febio_spec.Material.material{1}.ATTR.type='Ogden unconstrained';
-        febio_spec.Material.material{1}.ATTR.id=1;
-        febio_spec.Material.material{1}.c1=c1;
-        febio_spec.Material.material{1}.m1=m1;
-        febio_spec.Material.material{1}.c2=c1;
-        febio_spec.Material.material{1}.m2=-m1;
-        febio_spec.Material.material{1}.cp=k;
-    case 'uncoupled'
-        febio_spec.Material.material{1}.ATTR.type='Ogden';
-        febio_spec.Material.material{1}.ATTR.id=1;
-        febio_spec.Material.material{1}.c1=c1;
-        febio_spec.Material.material{1}.m1=m1;
-        febio_spec.Material.material{1}.c2=c1;
-        febio_spec.Material.material{1}.m2=-m1;
-        febio_spec.Material.material{1}.k=k;
-end
+materialName1='Material1';
+febio_spec.Material.material{1}.ATTR.name=materialName1;
+febio_spec.Material.material{1}.ATTR.type='neo-Hookean';
+febio_spec.Material.material{1}.ATTR.id=1;
+febio_spec.Material.material{1}.E=E_youngs1;
+febio_spec.Material.material{1}.v=nu1;
 
-%Geometry section
+% Mesh section
 % -> Nodes
-febio_spec.Geometry.Nodes{1}.ATTR.name='nodeSet_all'; %The node set name
-febio_spec.Geometry.Nodes{1}.node.ATTR.id=(1:size(V,1))'; %The node id's
-febio_spec.Geometry.Nodes{1}.node.VAL=V; %The nodel coordinates
+febio_spec.Mesh.Nodes{1}.ATTR.name='Object1'; %The node set name
+febio_spec.Mesh.Nodes{1}.node.ATTR.id=(1:size(V,1))'; %The node id's
+febio_spec.Mesh.Nodes{1}.node.VAL=V; %The nodel coordinates
 
 % -> Elements
-febio_spec.Geometry.Elements{1}.ATTR.type='hex8'; %Element type of this set
-febio_spec.Geometry.Elements{1}.ATTR.mat=1; %material index for this set 
-febio_spec.Geometry.Elements{1}.ATTR.name='Cube'; %Name of the element set
-febio_spec.Geometry.Elements{1}.elem.ATTR.id=(1:1:size(E,1))'; %Element id's
-febio_spec.Geometry.Elements{1}.elem.VAL=E;
-
+partName1='Part1';
+febio_spec.Mesh.Elements{1}.ATTR.name=partName1; %Name of this part
+febio_spec.Mesh.Elements{1}.ATTR.type='hex8'; %Element type
+febio_spec.Mesh.Elements{1}.elem.ATTR.id=(1:1:size(E,1))'; %Element id's
+febio_spec.Mesh.Elements{1}.elem.VAL=E; %The element matrix
+ 
 % -> NodeSets
-febio_spec.Geometry.NodeSet{1}.ATTR.name='bcSupportList_X';
-febio_spec.Geometry.NodeSet{1}.node.ATTR.id=bcSupportList_X(:);
+nodeSetName1='bcSupportList_X';
+nodeSetName2='bcSupportList_Y';
+nodeSetName3='bcSupportList_Z';
+nodeSetName4='bcPrescribeList';
 
-febio_spec.Geometry.NodeSet{2}.ATTR.name='bcSupportList_Y';
-febio_spec.Geometry.NodeSet{2}.node.ATTR.id=bcSupportList_Y(:);
+febio_spec.Mesh.NodeSet{1}.ATTR.name=nodeSetName1;
+febio_spec.Mesh.NodeSet{1}.node.ATTR.id=bcSupportList_X(:);
 
-febio_spec.Geometry.NodeSet{3}.ATTR.name='bcSupportList_Z';
-febio_spec.Geometry.NodeSet{3}.node.ATTR.id=bcSupportList_Z(:);
+febio_spec.Mesh.NodeSet{2}.ATTR.name=nodeSetName2;
+febio_spec.Mesh.NodeSet{2}.node.ATTR.id=bcSupportList_Y(:);
 
-febio_spec.Geometry.NodeSet{4}.ATTR.name='bcPrescribeList';
-febio_spec.Geometry.NodeSet{4}.node.ATTR.id=bcPrescribeList(:);
+febio_spec.Mesh.NodeSet{3}.ATTR.name=nodeSetName3;
+febio_spec.Mesh.NodeSet{3}.node.ATTR.id=bcSupportList_Z(:);
+ 
+febio_spec.Mesh.NodeSet{4}.ATTR.name=nodeSetName4;
+febio_spec.Mesh.NodeSet{4}.node.ATTR.id=bcPrescribeList(:);
+ 
+%MeshDomains section
+febio_spec.MeshDomains.SolidDomain.ATTR.name=partName1;
+febio_spec.MeshDomains.SolidDomain.ATTR.mat=materialName1;
 
 %Boundary condition section 
 % -> Fix boundary conditions
-febio_spec.Boundary.fix{1}.ATTR.bc='x';
-febio_spec.Boundary.fix{1}.ATTR.node_set=febio_spec.Geometry.NodeSet{1}.ATTR.name;
-febio_spec.Boundary.fix{2}.ATTR.bc='y';
-febio_spec.Boundary.fix{2}.ATTR.node_set=febio_spec.Geometry.NodeSet{2}.ATTR.name;
-febio_spec.Boundary.fix{3}.ATTR.bc='z';
-febio_spec.Boundary.fix{3}.ATTR.node_set=febio_spec.Geometry.NodeSet{3}.ATTR.name;
+febio_spec.Boundary.bc{1}.ATTR.type='fix';
+febio_spec.Boundary.bc{1}.ATTR.node_set=nodeSetName1;
+febio_spec.Boundary.bc{1}.dofs='x';
 
-% -> Prescribe boundary conditions
-febio_spec.Boundary.prescribe{1}.ATTR.bc='z';
-febio_spec.Boundary.prescribe{1}.ATTR.node_set=febio_spec.Geometry.NodeSet{4}.ATTR.name;
-febio_spec.Boundary.prescribe{1}.scale.ATTR.lc=1;
-febio_spec.Boundary.prescribe{1}.scale.VAL=1;
-febio_spec.Boundary.prescribe{1}.relative=1;
-febio_spec.Boundary.prescribe{1}.value=displacementMagnitude;
+febio_spec.Boundary.bc{2}.ATTR.type='fix';
+febio_spec.Boundary.bc{2}.ATTR.node_set=nodeSetName2;
+febio_spec.Boundary.bc{2}.dofs='y';
+
+febio_spec.Boundary.bc{3}.ATTR.type='fix';
+febio_spec.Boundary.bc{3}.ATTR.node_set=nodeSetName3;
+febio_spec.Boundary.bc{3}.dofs='z';
+
+febio_spec.Boundary.bc{4}.ATTR.type='prescribe';
+febio_spec.Boundary.bc{4}.ATTR.node_set=nodeSetName4;
+febio_spec.Boundary.bc{4}.dof='z';
+febio_spec.Boundary.bc{4}.scale.ATTR.lc=1;
+febio_spec.Boundary.bc{4}.scale.VAL=displacementMagnitude;
+febio_spec.Boundary.bc{4}.relative=0;
+
+%LoadData section
+% -> load_controller
+febio_spec.LoadData.load_controller{1}.ATTR.id=1;
+febio_spec.LoadData.load_controller{1}.ATTR.type='loadcurve';
+febio_spec.LoadData.load_controller{1}.interpolate='LINEAR';
+febio_spec.LoadData.load_controller{1}.points.point.VAL=[0 0; 1 1];
 
 %Output section 
 % -> log file
@@ -284,6 +288,7 @@ febio_spec.Output.logfile.element_data{2}.VAL=1:size(E,1);
 % the |febioStruct2xml| function. 
 
 febioStruct2xml(febio_spec,febioFebFileName); %Exporting to file and domNode
+%system(['gedit ',febioFebFileName,' &']);
 
 %% Running the FEBio analysis
 % To run the analysis defined by the created FEBio input file the

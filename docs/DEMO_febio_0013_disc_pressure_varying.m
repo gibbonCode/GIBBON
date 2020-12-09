@@ -9,7 +9,7 @@
 
 %% Keywords
 %
-% * febio_spec version 2.5
+% * febio_spec version 3.0
 % * febio, FEBio
 % * pressure loading, spatially varying pressure, non-constant pressure
 % * tetrahedral elements, hex4
@@ -27,7 +27,7 @@ clear; close all; clc;
 %% Plot settings
 fontSize=20;
 faceAlpha1=0.8;
-markerSize=40;
+markerSize=25;
 markerSize2=20;
 lineWidth=3;
 
@@ -40,14 +40,20 @@ savePath=fullfile(defaultFolder,'data','temp');
 % Defining file names
 febioFebFileNamePart='tempModel';
 febioFebFileName=fullfile(savePath,[febioFebFileNamePart,'.feb']); %FEB file name
-febioLogFileName=fullfile(savePath,[febioFebFileNamePart,'.txt']); %FEBio log file name
+febioLogFileName=[febioFebFileNamePart,'.txt']; %FEBio log file name
 febioLogFileName_disp=[febioFebFileNamePart,'_disp_out.txt']; %Log file name for exporting displacement
 febioLogFileName_stress=[febioFebFileNamePart,'_stress_out.txt']; %Log file name for exporting force
 
 %Load
-pressureValueMin=0.1e-3;  
-pressureValueMax=2.0e-3;  
-loadType='pressure';%'traction';
+pressureValueMin=0.1e-4;  
+pressureValueMax=2.0e-4;  
+loadCase=1;
+switch loadCase
+    case 1
+        loadType='pressure';
+    case 2
+        loadType='traction'; 
+end
 
 %Specifying dimensions and number of elements
 pointSpacing=1; 
@@ -63,7 +69,7 @@ inputStruct.closeOpt=1;
 
 %Material parameter set
 c1=1e-3; %Shear-modulus-like parameter
-m1=8; %Material parameter setting degree of non-linearity
+m1=2; %Material parameter setting degree of non-linearity
 k_factor=1e2; %Bulk modulus factor 
 k=c1*k_factor; %Bulk modulus
 
@@ -119,12 +125,10 @@ drawnow;
 % disc. These labels can be used to define boundary conditions. 
 
 %Define supported node sets
-logicFace=Cb==1; %Logic for current face set
-Fr=Fb(logicFace,:); %The current face set
-bcSupportList=unique(Fr(:)); %Node set part of selected face
+bcSupportList=unique(Fb(Cb==1,:)); %Node set part of selected face
 
-logicFace=Cb==2; %Logic for current face set
-F_pressure=fliplr(Fb(logicFace,:)); %The current face set
+%Define pressure surface
+F_pressure=fliplr(Fb(Cb==2,:)); %The top face set
 
 %Create spatially varying pressure
 X=V(:,1); 
@@ -162,24 +166,25 @@ drawnow;
 [febio_spec]=febioStructTemplate;
 
 %febio_spec version 
-febio_spec.ATTR.version='2.5'; 
+febio_spec.ATTR.version='3.0'; 
 
 %Module section
 febio_spec.Module.ATTR.type='solid'; 
 
 %Control section
-febio_spec.Control.analysis.ATTR.type='static';
-febio_spec.Control.title='Disc analysis';
+febio_spec.Control.analysis='STATIC';
 febio_spec.Control.time_steps=numTimeSteps;
 febio_spec.Control.step_size=1/numTimeSteps;
+febio_spec.Control.solver.max_refs=max_refs;
+febio_spec.Control.solver.max_ups=max_ups;
 febio_spec.Control.time_stepper.dtmin=dtmin;
 febio_spec.Control.time_stepper.dtmax=dtmax; 
 febio_spec.Control.time_stepper.max_retries=max_retries;
 febio_spec.Control.time_stepper.opt_iter=opt_iter;
-febio_spec.Control.max_refs=max_refs;
-febio_spec.Control.max_ups=max_ups;
 
 %Material section
+materialName1='Material1';
+febio_spec.Material.material{1}.ATTR.name=materialName1;
 febio_spec.Material.material{1}.ATTR.type='Ogden';
 febio_spec.Material.material{1}.ATTR.id=1;
 febio_spec.Material.material{1}.c1=c1;
@@ -188,68 +193,82 @@ febio_spec.Material.material{1}.c2=c1;
 febio_spec.Material.material{1}.m2=-m1;
 febio_spec.Material.material{1}.k=k;
 
-%Geometry section
+%Mesh section
 % -> Nodes
-febio_spec.Geometry.Nodes{1}.ATTR.name='nodeSet_all'; %The node set name
-febio_spec.Geometry.Nodes{1}.node.ATTR.id=(1:size(V,1))'; %The node id's
-febio_spec.Geometry.Nodes{1}.node.VAL=V; %The nodel coordinates
+febio_spec.Mesh.Nodes{1}.ATTR.name='nodeSet_all'; %The node set name
+febio_spec.Mesh.Nodes{1}.node.ATTR.id=(1:size(V,1))'; %The node id's
+febio_spec.Mesh.Nodes{1}.node.VAL=V; %The nodel coordinates
 
 % -> Elements
-febio_spec.Geometry.Elements{1}.ATTR.type='tet4'; %Element type of this set
-febio_spec.Geometry.Elements{1}.ATTR.mat=1; %material index for this set 
-febio_spec.Geometry.Elements{1}.ATTR.name='Disc'; %Name of the element set
-febio_spec.Geometry.Elements{1}.elem.ATTR.id=(1:1:size(E,1))'; %Element id's
-febio_spec.Geometry.Elements{1}.elem.VAL=E;
-
-% -> NodeSets
-febio_spec.Geometry.NodeSet{1}.ATTR.name='bcSupportList';
-febio_spec.Geometry.NodeSet{1}.node.ATTR.id=bcSupportList(:);
+partName1='Part1';
+febio_spec.Mesh.Elements{1}.ATTR.name=partName1; %Name of this part
+febio_spec.Mesh.Elements{1}.ATTR.type='tet4'; %Element type 
+febio_spec.Mesh.Elements{1}.elem.ATTR.id=(1:1:size(E,1))'; %Element id's
+febio_spec.Mesh.Elements{1}.elem.VAL=E; %The element matrix
 
 % -> Surfaces
-febio_spec.Geometry.Surface{1}.ATTR.name='Pressure_surface';
-febio_spec.Geometry.Surface{1}.tri3.ATTR.lid=(1:size(F_pressure,1))';
-febio_spec.Geometry.Surface{1}.tri3.VAL=F_pressure;
+surfaceName1='LoadedSurface';
+febio_spec.Mesh.Surface{1}.ATTR.name=surfaceName1;
+febio_spec.Mesh.Surface{1}.tri3.ATTR.id=(1:1:size(F_pressure,1))';
+febio_spec.Mesh.Surface{1}.tri3.VAL=F_pressure;
 
-%MeshData
-switch loadType
-    case 'pressure'
-        febio_spec.MeshData.SurfaceData{1}.ATTR.name='pressure_values';
-        febio_spec.MeshData.SurfaceData{1}.ATTR.data_type='scalar';
-        febio_spec.MeshData.SurfaceData{1}.ATTR.surface=febio_spec.Geometry.Surface{1}.ATTR.name;
-        febio_spec.MeshData.SurfaceData{1}.face.VAL=C_pressure;
-        febio_spec.MeshData.SurfaceData{1}.face.ATTR.lid=(1:1:numel(C_pressure))';
-    case 'traction'
-        febio_spec.MeshData.SurfaceData{1}.ATTR.name='traction_value';
-        febio_spec.MeshData.SurfaceData{1}.ATTR.data_type='vec3';
-        febio_spec.MeshData.SurfaceData{1}.ATTR.surface=febio_spec.Geometry.Surface{1}.ATTR.name;
-        febio_spec.MeshData.SurfaceData{1}.face.VAL=[zeros(size(C_pressure)) zeros(size(C_pressure)) -C_pressure];
-        febio_spec.MeshData.SurfaceData{1}.face.ATTR.lid=(1:1:numel(C_pressure))';
-end
+% -> NodeSets
+nodeSetName1='bcSupportList';
+febio_spec.Mesh.NodeSet{1}.ATTR.name=nodeSetName1;
+febio_spec.Mesh.NodeSet{1}.node.ATTR.id=bcSupportList(:);
+
+%MeshDomains section
+febio_spec.MeshDomains.SolidDomain.ATTR.name=partName1;
+febio_spec.MeshDomains.SolidDomain.ATTR.mat=materialName1;
 
 %Boundary condition section 
 % -> Fix boundary conditions
-febio_spec.Boundary.fix{1}.ATTR.bc='x';
-febio_spec.Boundary.fix{1}.ATTR.node_set=febio_spec.Geometry.NodeSet{1}.ATTR.name;
-febio_spec.Boundary.fix{2}.ATTR.bc='y';
-febio_spec.Boundary.fix{2}.ATTR.node_set=febio_spec.Geometry.NodeSet{1}.ATTR.name;
-febio_spec.Boundary.fix{3}.ATTR.bc='z';
-febio_spec.Boundary.fix{3}.ATTR.node_set=febio_spec.Geometry.NodeSet{1}.ATTR.name;
+febio_spec.Boundary.bc{1}.ATTR.type='fix';
+febio_spec.Boundary.bc{1}.ATTR.node_set=nodeSetName1;
+febio_spec.Boundary.bc{1}.dofs='x,y,z';
 
-%Loads
+%MeshData secion
+%-> Surface data
+loadDataName1='LoadData1';
 switch loadType
-    case 'pressure'
+    case 'pressure'            
+        febio_spec.MeshData.SurfaceData.ATTR.name=loadDataName1;
+        febio_spec.MeshData.SurfaceData.ATTR.surface=surfaceName1;
+        febio_spec.MeshData.SurfaceData.ATTR.data_type='scalar';
+        febio_spec.MeshData.SurfaceData.face.ATTR.lid=(1:1:numel(C_pressure))';
+        febio_spec.MeshData.SurfaceData.face.VAL=C_pressure;        
+    case 'traction'
+        febio_spec.MeshData.SurfaceData.ATTR.name=loadDataName1;
+        febio_spec.MeshData.SurfaceData.ATTR.surface=surfaceName1;
+        febio_spec.MeshData.SurfaceData.ATTR.datatype='vec3';
+        febio_spec.MeshData.SurfaceData.face.ATTR.lid=(1:1:numel(C_pressure))';
+        febio_spec.MeshData.SurfaceData.face.VAL=[zeros(size(C_pressure)) zeros(size(C_pressure)) -C_pressure];          
+end 
+
+%Loads section
+% -> Surface load
+switch loadType
+    case 'pressure'        
         febio_spec.Loads.surface_load{1}.ATTR.type='pressure';
-        febio_spec.Loads.surface_load{1}.ATTR.surface=febio_spec.Geometry.Surface{1}.ATTR.name;
-        febio_spec.Loads.surface_load{1}.pressure.VAL=1;
+        febio_spec.Loads.surface_load{1}.ATTR.surface=surfaceName1;        
         febio_spec.Loads.surface_load{1}.pressure.ATTR.lc=1;
-        febio_spec.Loads.surface_load{1}.value.ATTR.surface_data=febio_spec.MeshData.SurfaceData{1}.ATTR.name;
+        febio_spec.Loads.surface_load{1}.pressure.ATTR.type='map';
+        febio_spec.Loads.surface_load{1}.pressure.VAL=loadDataName1;
+        febio_spec.Loads.surface_load{1}.symmetric_stiffness=1;
     case 'traction'
         febio_spec.Loads.surface_load{1}.ATTR.type='traction';
-        febio_spec.Loads.surface_load{1}.ATTR.surface=febio_spec.Geometry.Surface{1}.ATTR.name;
-        febio_spec.Loads.surface_load{1}.scale.VAL=1;
-        febio_spec.Loads.surface_load{1}.scale.ATTR.lc=1;
-        febio_spec.Loads.surface_load{1}.traction.ATTR.surface_data=febio_spec.MeshData.SurfaceData{1}.ATTR.name;
+        febio_spec.Loads.surface_load{1}.ATTR.surface=surfaceName1;
+        febio_spec.Loads.surface_load{1}.traction.ATTR.lc=1;
+        febio_spec.Loads.surface_load{1}.traction.ATTR.type='map';
+        febio_spec.Loads.surface_load{1}.traction.VAL=loadDataName1;                                              
 end
+
+%LoadData section
+% -> load_controller
+febio_spec.LoadData.load_controller{1}.ATTR.id=1;
+febio_spec.LoadData.load_controller{1}.ATTR.type='loadcurve';
+febio_spec.LoadData.load_controller{1}.interpolate='LINEAR';
+febio_spec.LoadData.load_controller{1}.points.point.VAL=[0 0; 1 1];
 
 %Output section 
 % -> log file
@@ -288,11 +307,7 @@ febioStruct2xml(febio_spec,febioFebFileName); %Exporting to file and domNode
 febioAnalysis.run_filename=febioFebFileName; %The input file name
 febioAnalysis.run_logname=febioLogFileName; %The name for the log file
 febioAnalysis.disp_on=1; %Display information on the command window
-febioAnalysis.disp_log_on=1; %Display convergence information in the command window
-febioAnalysis.runMode='external';%'internal';
-febioAnalysis.t_check=0.25; %Time for checking log file (dont set too small)
-febioAnalysis.maxtpi=1e99; %Max analysis time
-febioAnalysis.maxLogCheckTime=10; %Max log file checking time
+febioAnalysis.runMode='internal';%'internal';
 
 [runFlag]=runMonitorFEBio(febioAnalysis);%START FEBio NOW!!!!!!!!
 

@@ -76,7 +76,6 @@ defaultFigStruct.Visible='on';
 defaultFigStruct.ColorDef='white';
 defaultFigStruct.Color='w';
 defaultFigStruct.ScreenScale=0.85; %Figure size is based on scaled screensize
-% defaultFigStruct.ScreenOffset=round(max(screenSizeGroot)*0.1); %i.e. figures are spaced around 10% of the sreensize from the edges        
 defaultFigStruct.Clipping='off';
 defaultFigStruct.efw=1;
 defaultFigStruct.vcw={'pan','rot','zoom','zoom'};

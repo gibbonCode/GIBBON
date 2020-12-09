@@ -57,7 +57,8 @@ switch viewerOpt
         set(browserContainer,'Units','normalized');
         drawnow;
     case 2 %Browser viewer
-        [~,hFig]=web(fileName);%,'-new');
+%         [~,hFig]=web(fileName);%,'-new');
+        hFig=web(fileName);%,'-new');
 end
 
 if nargout==1

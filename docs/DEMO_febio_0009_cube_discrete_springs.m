@@ -9,7 +9,7 @@
 % * Importing and visualizing the displacement and stress results
 
 %% Keywords: 
-% * febio_spec version 2.5
+% * febio_spec version 3.0
 % * febio, FEBio
 % * discrete elements
 % * springs
@@ -41,7 +41,7 @@ savePath=fullfile(defaultFolder,'data','temp');
 % Defining file names
 febioFebFileNamePart='tempModel';
 febioFebFileName=fullfile(savePath,[febioFebFileNamePart,'.feb']); %FEB file name
-febioLogFileName=fullfile(savePath,[febioFebFileNamePart,'.txt']); %FEBio log file name
+febioLogFileName=[febioFebFileNamePart,'.txt']; %FEBio log file name
 febioLogFileName_disp=[febioFebFileNamePart,'_disp_out.txt']; %Log file name for exporting displacement
 
 %Specifying dimensions and number of elements
@@ -162,28 +162,30 @@ drawnow;
 % See also |febioStructTemplate| and |febioStruct2xml| and the FEBio user
 % manual.
 
+
 %Get a template with default settings 
 [febio_spec]=febioStructTemplate;
 
 %febio_spec version 
-febio_spec.ATTR.version='2.5'; 
+febio_spec.ATTR.version='3.0'; 
 
 %Module section
 febio_spec.Module.ATTR.type='solid'; 
 
 %Control section
-febio_spec.Control.analysis.ATTR.type='static';
-febio_spec.Control.title='Cube analysis';
+febio_spec.Control.analysis='STATIC';
 febio_spec.Control.time_steps=numTimeSteps;
 febio_spec.Control.step_size=1/numTimeSteps;
+febio_spec.Control.solver.max_refs=max_refs;
+febio_spec.Control.solver.max_ups=max_ups;
 febio_spec.Control.time_stepper.dtmin=dtmin;
 febio_spec.Control.time_stepper.dtmax=dtmax; 
 febio_spec.Control.time_stepper.max_retries=max_retries;
 febio_spec.Control.time_stepper.opt_iter=opt_iter;
-febio_spec.Control.max_refs=max_refs;
-febio_spec.Control.max_ups=max_ups;
 
-% Material section
+%Material section
+materialName1='Material1';
+febio_spec.Material.material{1}.ATTR.name=materialName1;
 febio_spec.Material.material{1}.ATTR.type='Ogden unconstrained';
 febio_spec.Material.material{1}.ATTR.id=1;
 febio_spec.Material.material{1}.c1=c1;
@@ -206,60 +208,55 @@ febio_spec.Discrete.discrete{1}.ATTR.discrete_set='springs1';
 % febio_spec.Discrete.discrete{1}.ATTR.dmat=1; 
 % febio_spec.Discrete.discrete{1}.ATTR.discrete_set='springs1';
 
-%Geometry section
+% Mesh section
 % -> Nodes
-febio_spec.Geometry.Nodes{1}.ATTR.name='nodeSet_all'; %The node set name
-febio_spec.Geometry.Nodes{1}.node.ATTR.id=(1:size(V,1))'; %The node id's
-febio_spec.Geometry.Nodes{1}.node.VAL=V; %The nodel coordinates
+febio_spec.Mesh.Nodes{1}.ATTR.name='Object1'; %The node set name
+febio_spec.Mesh.Nodes{1}.node.ATTR.id=(1:size(V,1))'; %The node id's
+febio_spec.Mesh.Nodes{1}.node.VAL=V; %The nodel coordinates
 
 % -> Elements
-febio_spec.Geometry.Elements{1}.ATTR.type='hex8'; %Element type of this set
-febio_spec.Geometry.Elements{1}.ATTR.mat=1; %material index for this set 
-febio_spec.Geometry.Elements{1}.ATTR.name='Cube'; %Name of the element set
-febio_spec.Geometry.Elements{1}.elem.ATTR.id=(1:1:size(E,1))'; %Element id's
-febio_spec.Geometry.Elements{1}.elem.VAL=E;
-
-% -> NodeSets
-febio_spec.Geometry.NodeSet{1}.ATTR.name='bcSupportList';
-febio_spec.Geometry.NodeSet{1}.node.ATTR.id=bcSupportList(:);
-
-febio_spec.Geometry.NodeSet{2}.ATTR.name='bcPrescribeList';
-febio_spec.Geometry.NodeSet{2}.node.ATTR.id=bcPrescribeList(:);
+partName1='Part1';
+febio_spec.Mesh.Elements{1}.ATTR.name=partName1; %Name of this part
+febio_spec.Mesh.Elements{1}.ATTR.type='hex8'; %Element type 
+febio_spec.Mesh.Elements{1}.elem.ATTR.id=(1:1:size(E,1))'; %Element id's
+febio_spec.Mesh.Elements{1}.elem.VAL=E; %The element matrix
 
 % -> DiscreteSet
-febio_spec.Geometry.DiscreteSet{1}.ATTR.name='springs1';
-febio_spec.Geometry.DiscreteSet{1}.delem.VAL=edgeSet;
+febio_spec.Mesh.DiscreteSet{1}.ATTR.name='springs1';
+febio_spec.Mesh.DiscreteSet{1}.delem.VAL=edgeSet;
+
+% -> NodeSets
+nodeSetName1='bcSupportList';
+febio_spec.Mesh.NodeSet{1}.ATTR.name=nodeSetName1;
+febio_spec.Mesh.NodeSet{1}.node.ATTR.id=bcSupportList(:);
+
+nodeSetName2='bcPrescribeList';
+febio_spec.Mesh.NodeSet{2}.ATTR.name=nodeSetName2;
+febio_spec.Mesh.NodeSet{2}.node.ATTR.id=bcPrescribeList(:);
+
+%MeshDomains section
+febio_spec.MeshDomains.SolidDomain.ATTR.name=partName1;
+febio_spec.MeshDomains.SolidDomain.ATTR.mat=materialName1;
 
 %Boundary condition section 
 % -> Fix boundary conditions
-febio_spec.Boundary.fix{1}.ATTR.bc='x';
-febio_spec.Boundary.fix{1}.ATTR.node_set=febio_spec.Geometry.NodeSet{1}.ATTR.name;
-febio_spec.Boundary.fix{2}.ATTR.bc='y';
-febio_spec.Boundary.fix{2}.ATTR.node_set=febio_spec.Geometry.NodeSet{1}.ATTR.name;
-febio_spec.Boundary.fix{3}.ATTR.bc='z';
-febio_spec.Boundary.fix{3}.ATTR.node_set=febio_spec.Geometry.NodeSet{1}.ATTR.name;
+febio_spec.Boundary.bc{1}.ATTR.type='fix';
+febio_spec.Boundary.bc{1}.ATTR.node_set=nodeSetName1;
+febio_spec.Boundary.bc{1}.dofs='x,y,z';
 
-% -> Prescribe boundary conditions
-febio_spec.Boundary.prescribe{1}.ATTR.bc='z';
-febio_spec.Boundary.prescribe{1}.ATTR.node_set=febio_spec.Geometry.NodeSet{2}.ATTR.name;
-febio_spec.Boundary.prescribe{1}.scale.ATTR.lc=1;
-febio_spec.Boundary.prescribe{1}.scale.VAL=1;
-febio_spec.Boundary.prescribe{1}.relative=1;
-febio_spec.Boundary.prescribe{1}.value=displacementMagnitude;
+febio_spec.Boundary.bc{2}.ATTR.type='prescribe';
+febio_spec.Boundary.bc{2}.ATTR.node_set=nodeSetName2;
+febio_spec.Boundary.bc{2}.dof='z';
+febio_spec.Boundary.bc{2}.scale.ATTR.lc=1;
+febio_spec.Boundary.bc{2}.scale.VAL=displacementMagnitude;
+febio_spec.Boundary.bc{2}.relative=0;
 
-febio_spec.Boundary.prescribe{2}.ATTR.bc='x';
-febio_spec.Boundary.prescribe{2}.ATTR.node_set=febio_spec.Geometry.NodeSet{2}.ATTR.name;
-febio_spec.Boundary.prescribe{2}.scale.ATTR.lc=1;
-febio_spec.Boundary.prescribe{2}.scale.VAL=1;
-febio_spec.Boundary.prescribe{2}.relative=1;
-febio_spec.Boundary.prescribe{2}.value=0;
-
-febio_spec.Boundary.prescribe{3}.ATTR.bc='y';
-febio_spec.Boundary.prescribe{3}.ATTR.node_set=febio_spec.Geometry.NodeSet{2}.ATTR.name;
-febio_spec.Boundary.prescribe{3}.scale.ATTR.lc=1;
-febio_spec.Boundary.prescribe{3}.scale.VAL=1;
-febio_spec.Boundary.prescribe{3}.relative=1;
-febio_spec.Boundary.prescribe{3}.value=0;
+%LoadData section
+% -> load_controller
+febio_spec.LoadData.load_controller{1}.ATTR.id=1;
+febio_spec.LoadData.load_controller{1}.ATTR.type='loadcurve';
+febio_spec.LoadData.load_controller{1}.interpolate='LINEAR';
+febio_spec.LoadData.load_controller{1}.points.point.VAL=[0 0; 1 1];
 
 %Output section 
 % -> log file
@@ -292,11 +289,7 @@ febioStruct2xml(febio_spec,febioFebFileName); %Exporting to file and domNode
 febioAnalysis.run_filename=febioFebFileName; %The input file name
 febioAnalysis.run_logname=febioLogFileName; %The name for the log file
 febioAnalysis.disp_on=1; %Display information on the command window
-febioAnalysis.disp_log_on=1; %Display convergence information in the command window
 febioAnalysis.runMode='external';%'internal';
-febioAnalysis.t_check=0.25; %Time for checking log file (dont set too small)
-febioAnalysis.maxtpi=1e99; %Max analysis time
-febioAnalysis.maxLogCheckTime=10; %Max log file checking time
 
 [runFlag]=runMonitorFEBio(febioAnalysis);%START FEBio NOW!!!!!!!!
 

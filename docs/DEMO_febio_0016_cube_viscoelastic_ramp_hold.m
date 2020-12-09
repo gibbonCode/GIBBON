@@ -9,7 +9,7 @@
 
 %% Keywords
 %
-% * febio_spec version 2.5
+% * febio_spec version 3.0
 % * febio, FEBio
 % * uniaxial loading
 % * compression, tension, compressive, tensile
@@ -44,7 +44,7 @@ savePath=fullfile(defaultFolder,'data','temp');
 % Defining file names
 febioFebFileNamePart='tempModel';
 febioFebFileName=fullfile(savePath,[febioFebFileNamePart,'.feb']); %FEB file name
-febioLogFileName=fullfile(savePath,[febioFebFileNamePart,'.txt']); %FEBio log file name
+febioLogFileName=[febioFebFileNamePart,'.txt']; %FEBio log file name
 febioLogFileName_disp=[febioFebFileNamePart,'_disp_out.txt']; %Log file name for exporting displacement
 febioLogFileName_stress=[febioFebFileNamePart,'_stress_out.txt']; %Log file name for exporting stress
 
@@ -79,7 +79,7 @@ t1=12; %Viscoelastic QLV time coefficient
 d=1e-9; %Density (not required for static analysis)
 uncoupledLaw=1; %1=uncoupled, 2=coupled
 
-analysisType='static'; 
+analysisType='STATIC';
 
 % FEA control settings
 
@@ -193,48 +193,46 @@ drawnow;
 [febio_spec]=febioStructTemplate;
 
 %febio_spec version 
-febio_spec.ATTR.version='2.5'; 
+febio_spec.ATTR.version='3.0'; 
 
 %Module section
 febio_spec.Module.ATTR.type='solid'; 
 
-%Get control section from template
-stepStruct.Control=febio_spec.Control;
+%Control sections for each step
+febio_spec.Step.step{1}.Control=febio_spec.Control; %Copy from template
+febio_spec.Step.step{1}.ATTR.id=1;
+febio_spec.Step.step{1}.Control.analysis=analysisType;
+febio_spec.Step.step{1}.Control.time_steps=numTimeSteps1;
+febio_spec.Step.step{1}.Control.step_size=t_step1;
+febio_spec.Step.step{1}.Control.solver.max_refs=max_refs;
+febio_spec.Step.step{1}.Control.solver.max_ups=max_ups;
+febio_spec.Step.step{1}.Control.time_stepper.dtmin=dtmin1;
+febio_spec.Step.step{1}.Control.time_stepper.dtmax=dtmax1; 
+febio_spec.Step.step{1}.Control.time_stepper.max_retries=max_retries;
+febio_spec.Step.step{1}.Control.time_stepper.opt_iter=opt_iter;
+
+febio_spec.Step.step{2}.Control=febio_spec.Control; %Copy from template
+febio_spec.Step.step{2}.ATTR.id=2;
+febio_spec.Step.step{2}.Control.analysis=analysisType;
+febio_spec.Step.step{2}.Control.time_steps=numTimeSteps2;
+febio_spec.Step.step{2}.Control.step_size=t_step2;
+febio_spec.Step.step{2}.Control.solver.max_refs=max_refs;
+febio_spec.Step.step{2}.Control.solver.max_ups=max_ups;
+febio_spec.Step.step{2}.Control.time_stepper.dtmin=dtmin2;
+febio_spec.Step.step{2}.Control.time_stepper.dtmax=dtmax2; 
+febio_spec.Step.step{2}.Control.time_stepper.max_retries=max_retries;
+febio_spec.Step.step{2}.Control.time_stepper.opt_iter=opt_iter;
 
 %Remove control field (part of template) since step specific control sections are used
 febio_spec=rmfield(febio_spec,'Control'); 
 
-%Control sections for each step
-febio_spec.Step{1}.ATTR.id=1;
-febio_spec.Step{1}.Control=stepStruct.Control; 
-febio_spec.Step{1}.Control.analysis.ATTR.type=analysisType;
-febio_spec.Step{1}.Control.time_steps=numTimeSteps1;
-febio_spec.Step{1}.Control.step_size=t_step1;
-febio_spec.Step{1}.Control.time_stepper.dtmin=dtmin1;
-febio_spec.Step{1}.Control.time_stepper.dtmax=dtmax1; 
-febio_spec.Step{1}.Control.time_stepper.max_retries=max_retries;
-febio_spec.Step{1}.Control.time_stepper.opt_iter=opt_iter;
-febio_spec.Step{1}.Control.max_refs=max_refs;
-febio_spec.Step{1}.Control.max_ups=max_ups;
-
-febio_spec.Step{2}.ATTR.id=2;
-febio_spec.Step{2}.Control=stepStruct.Control; 
-febio_spec.Step{2}.Control.analysis.ATTR.type=analysisType;
-febio_spec.Step{2}.Control.time_steps=numTimeSteps2;
-febio_spec.Step{2}.Control.step_size=t_step2;
-febio_spec.Step{2}.Control.time_stepper.dtmin=dtmin2;
-febio_spec.Step{2}.Control.time_stepper.dtmax=dtmax2; 
-febio_spec.Step{2}.Control.time_stepper.max_retries=max_retries;
-febio_spec.Step{2}.Control.time_stepper.opt_iter=opt_iter;
-febio_spec.Step{2}.Control.max_refs=max_refs;
-febio_spec.Step{2}.Control.max_ups=max_ups;
-
 %Material section
+materialName1='Material1';
+febio_spec.Material.material{1}.ATTR.name=materialName1;
 switch uncoupledLaw
     case 1
         %Viscoelastic part
-        febio_spec.Material.material{1}.ATTR.type='uncoupled viscoelastic';
-        febio_spec.Material.material{1}.ATTR.Name='Block_material';
+        febio_spec.Material.material{1}.ATTR.type='uncoupled viscoelastic';        
         febio_spec.Material.material{1}.ATTR.id=1;
         febio_spec.Material.material{1}.g1=g1;
         febio_spec.Material.material{1}.t1=t1;
@@ -250,8 +248,7 @@ switch uncoupledLaw
         febio_spec.Material.material{1}.elastic{1}.density=d;        
     case 2        
         %Viscoelastic part
-        febio_spec.Material.material{1}.ATTR.type='viscoelastic';
-        febio_spec.Material.material{1}.ATTR.Name='Block_material';
+        febio_spec.Material.material{1}.ATTR.type='viscoelastic';        
         febio_spec.Material.material{1}.ATTR.id=1;
         febio_spec.Material.material{1}.g1=g1;
         febio_spec.Material.material{1}.t1=t1;
@@ -267,54 +264,68 @@ switch uncoupledLaw
         febio_spec.Material.material{1}.elastic{1}.density=d;        
 end
 
-%Geometry section
+% Mesh section
 % -> Nodes
-febio_spec.Geometry.Nodes{1}.ATTR.name='nodeSet_all'; %The node set name
-febio_spec.Geometry.Nodes{1}.node.ATTR.id=(1:size(V,1))'; %The node id's
-febio_spec.Geometry.Nodes{1}.node.VAL=V; %The nodel coordinates
+febio_spec.Mesh.Nodes{1}.ATTR.name='Object1'; %The node set name
+febio_spec.Mesh.Nodes{1}.node.ATTR.id=(1:size(V,1))'; %The node id's
+febio_spec.Mesh.Nodes{1}.node.VAL=V; %The nodel coordinates
 
 % -> Elements
-febio_spec.Geometry.Elements{1}.ATTR.type='hex8'; %Element type of this set
-febio_spec.Geometry.Elements{1}.ATTR.mat=1; %material index for this set 
-febio_spec.Geometry.Elements{1}.ATTR.name='Cube'; %Name of the element set
-febio_spec.Geometry.Elements{1}.elem.ATTR.id=(1:1:size(E,1))'; %Element id's
-febio_spec.Geometry.Elements{1}.elem.VAL=E;
-
+partName1='Part1';
+febio_spec.Mesh.Elements{1}.ATTR.name=partName1; %Name of this part
+febio_spec.Mesh.Elements{1}.ATTR.type='hex8'; %Element type
+febio_spec.Mesh.Elements{1}.elem.ATTR.id=(1:1:size(E,1))'; %Element id's
+febio_spec.Mesh.Elements{1}.elem.VAL=E; %The element matrix
+ 
 % -> NodeSets
-febio_spec.Geometry.NodeSet{1}.ATTR.name='bcSupportList_X';
-febio_spec.Geometry.NodeSet{1}.node.ATTR.id=bcSupportList_X(:);
+nodeSetName1='bcSupportList_X';
+nodeSetName2='bcSupportList_Y';
+nodeSetName3='bcSupportList_Z';
+nodeSetName4='bcPrescribeList';
 
-febio_spec.Geometry.NodeSet{2}.ATTR.name='bcSupportList_Y';
-febio_spec.Geometry.NodeSet{2}.node.ATTR.id=bcSupportList_Y(:);
+febio_spec.Mesh.NodeSet{1}.ATTR.name=nodeSetName1;
+febio_spec.Mesh.NodeSet{1}.node.ATTR.id=bcSupportList_X(:);
 
-febio_spec.Geometry.NodeSet{3}.ATTR.name='bcSupportList_Z';
-febio_spec.Geometry.NodeSet{3}.node.ATTR.id=bcSupportList_Z(:);
+febio_spec.Mesh.NodeSet{2}.ATTR.name=nodeSetName2;
+febio_spec.Mesh.NodeSet{2}.node.ATTR.id=bcSupportList_Y(:);
 
-febio_spec.Geometry.NodeSet{4}.ATTR.name='bcPrescribeList';
-febio_spec.Geometry.NodeSet{4}.node.ATTR.id=bcPrescribeList(:);
+febio_spec.Mesh.NodeSet{3}.ATTR.name=nodeSetName3;
+febio_spec.Mesh.NodeSet{3}.node.ATTR.id=bcSupportList_Z(:);
+ 
+febio_spec.Mesh.NodeSet{4}.ATTR.name=nodeSetName4;
+febio_spec.Mesh.NodeSet{4}.node.ATTR.id=bcPrescribeList(:);
+ 
+%MeshDomains section
+febio_spec.MeshDomains.SolidDomain.ATTR.name=partName1;
+febio_spec.MeshDomains.SolidDomain.ATTR.mat=materialName1;
 
 %Boundary condition section 
 % -> Fix boundary conditions
-febio_spec.Boundary.fix{1}.ATTR.bc='x';
-febio_spec.Boundary.fix{1}.ATTR.node_set=febio_spec.Geometry.NodeSet{1}.ATTR.name;
-febio_spec.Boundary.fix{2}.ATTR.bc='y';
-febio_spec.Boundary.fix{2}.ATTR.node_set=febio_spec.Geometry.NodeSet{2}.ATTR.name;
-febio_spec.Boundary.fix{3}.ATTR.bc='z';
-febio_spec.Boundary.fix{3}.ATTR.node_set=febio_spec.Geometry.NodeSet{3}.ATTR.name;
+febio_spec.Boundary.bc{1}.ATTR.type='fix';
+febio_spec.Boundary.bc{1}.ATTR.node_set=nodeSetName1;
+febio_spec.Boundary.bc{1}.dofs='x';
 
-% -> Prescribe boundary conditions
-febio_spec.Boundary.prescribe{1}.ATTR.bc='z';
-febio_spec.Boundary.prescribe{1}.ATTR.node_set=febio_spec.Geometry.NodeSet{4}.ATTR.name;
-febio_spec.Boundary.prescribe{1}.scale.ATTR.lc=1;
-febio_spec.Boundary.prescribe{1}.scale.VAL=1;
-febio_spec.Boundary.prescribe{1}.relative=1;
-febio_spec.Boundary.prescribe{1}.value=displacementMagnitude;
+febio_spec.Boundary.bc{2}.ATTR.type='fix';
+febio_spec.Boundary.bc{2}.ATTR.node_set=nodeSetName2;
+febio_spec.Boundary.bc{2}.dofs='y';
 
-%LoadData section 
-% -> Load curves
-febio_spec.LoadData.loadcurve{1}.ATTR.id=1;
-febio_spec.LoadData.loadcurve{1}.ATTR.type='linear';
-febio_spec.LoadData.loadcurve{1}.point.VAL=[0 0;t_load 1;(t_load+t_hold) 1];
+febio_spec.Boundary.bc{3}.ATTR.type='fix';
+febio_spec.Boundary.bc{3}.ATTR.node_set=nodeSetName3;
+febio_spec.Boundary.bc{3}.dofs='z';
+
+febio_spec.Boundary.bc{4}.ATTR.type='prescribe';
+febio_spec.Boundary.bc{4}.ATTR.node_set=nodeSetName4;
+febio_spec.Boundary.bc{4}.dof='z';
+febio_spec.Boundary.bc{4}.scale.ATTR.lc=1;
+febio_spec.Boundary.bc{4}.scale.VAL=displacementMagnitude;
+febio_spec.Boundary.bc{4}.relative=0;
+
+%LoadData section
+% -> load_controller
+febio_spec.LoadData.load_controller{1}.ATTR.id=1;
+febio_spec.LoadData.load_controller{1}.ATTR.type='loadcurve';
+febio_spec.LoadData.load_controller{1}.interpolate='LINEAR';
+febio_spec.LoadData.load_controller{1}.points.point.VAL=[0 0;t_load 1;(t_load+t_hold) 1];
 
 %Output section 
 % -> log file
@@ -352,11 +363,7 @@ febioStruct2xml(febio_spec,febioFebFileName); %Exporting to file and domNode
 febioAnalysis.run_filename=febioFebFileName; %The input file name
 febioAnalysis.run_logname=febioLogFileName; %The name for the log file
 febioAnalysis.disp_on=1; %Display information on the command window
-febioAnalysis.disp_log_on=1; %Display convergence information in the command window
 febioAnalysis.runMode='external';%'internal';
-febioAnalysis.t_check=0.1; %Time for checking log file (dont set too small)
-febioAnalysis.maxtpi=1e99; %Max analysis time
-febioAnalysis.maxLogCheckTime=10; %Max log file checking time
 
 [runFlag]=runMonitorFEBio(febioAnalysis);%START FEBio NOW!!!!!!!!
 

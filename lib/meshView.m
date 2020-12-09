@@ -79,19 +79,21 @@ else
     Cb=ones(size(Fb,1),1);
 end
 
-if isfield(meshStruct,'elementMaterialID')
+if isfield(meshStruct,'elementData')
+    CE=meshStruct.elementData;
+    numColormapLevels=250;
+elseif isfield(meshStruct,'elementMaterialID')
     CE=meshStruct.elementMaterialID;
+    numColormapLevels=numel(unique(CE(:)));
 else
     CE=ones(size(E,1),1);
+    numColormapLevels=250;
 end
 
-% F=meshStruct.faces;
-% CF=meshStruct.faceMaterialID;
-
-numMaterials=numel(unique(CE(:)));
 if isempty(cMap)
-   cMap=gjet(numMaterials); 
+    cMap=gjet(numColormapLevels);
 end
+
 %%
 % prepare figure
 if isempty(hFig)
@@ -113,14 +115,16 @@ hp=gpatch(Fb,V,Cb,'k',faceAlpha2); %Graphics object to vary property of during a
 
 camlight headlight;
 axisGeom(gca,fontSize); 
-if numMaterials>1
+
+if abs(max(CE(:))-min(CE(:)))>eps(1)
     caxis([min(CE(:)) max(CE(:))]);
-else
-%     caxis([0 1]);
 end
+
 colormap(gca,cMap); 
-if numMaterials>1
+if ~isfield(meshStruct,'elementData')
     icolorbar;
+else
+    colorbar;
 end
 
 %%

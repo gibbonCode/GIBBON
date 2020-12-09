@@ -36,7 +36,7 @@ if isempty(extCell) %Delete all files
     
     for q=1:1:numel(fileList) %For all files
         fileName=fullfile(pathName,fileList{q}); %Current file name
-        if ~isdir(fileName) %If it is not a directory
+        if ~isfolder(fileName) %If it is not a directory
             delete(fileName); %Delete the file
         end
     end

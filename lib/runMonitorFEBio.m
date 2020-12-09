@@ -58,6 +58,12 @@ if isempty(logFilePath)
     FEBioRunStruct.run_logname=fullfile(filePath,FEBioRunStruct.run_logname);
 end
 
+%% Check for old FEBio version
+
+if contains(lower(FEBioRunStruct.FEBioPath),'febio2')    
+    warning('FEBio2 detected. FEBio2 support is depricated. Please upgrade to FEBio3'); 
+end
+
 %% Display start message
 
 if FEBioRunStruct.disp_on==1
@@ -208,7 +214,9 @@ if FEBio_monitor==1
     
     %Scan log file for the following targets
     targetsConvergence={'number of iterations   :','number of reformations :','------- converged at time :',' Elapsed time'};
-    targetsEnd={' N O R M A L   T E R M I N A T I O N',' E R R O R   T E R M I N A T I O N'};
+    targetsEnd={' N O R M A L   T E R M I N A T I O N',....
+                ' E R R O R   T E R M I N A T I O N',...
+                '* Model initialization failed'};
 
     numLinesPrevious=0;    
     tStartCheck=datevec(now);
@@ -248,6 +256,9 @@ if FEBio_monitor==1
                 
                 if any(gcontains(T_show,targetsEnd{1}))
                     runFlag=1; %Signal for normal termination
+                end
+                if any(gcontains(T_show,targetsEnd(2:end)))
+                    runFlag=0; %Signal for error termination
                 end
             end
         else

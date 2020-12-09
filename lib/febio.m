@@ -52,33 +52,63 @@ end
 if isstruct(FEBioRunStruct) && ~isfield(FEBioRunStruct,'run_string')
     switch FEBioRunStruct.runMode
         case 'external_old'
-            FEBioRunStruct.run_string=['"',FEBioRunStruct.FEBioPath,'" -i "',FEBioRunStruct.run_filename,'" -o "',FEBioRunStruct.run_logname,'" &'];
+            FEBioRunStruct.run_string=['"',FEBioRunStruct.FEBioPath,'" "',FEBioRunStruct.run_filename,'" -o "',FEBioRunStruct.run_logname,'" &'];
         case 'external'
             if ismac % Code to run on Mac plaform
                 %TO DO IMPROVE THIS LINE FOR MAC
-                FEBioRunStruct.run_string=['nice "',FEBioRunStruct.FEBioPath,'"',' -i "',FEBioRunStruct.run_filename,'" -o "',FEBioRunStruct.run_logname,'" &'];
+                FEBioRunStruct.run_string=['nice "',FEBioRunStruct.FEBioPath,'" "',FEBioRunStruct.run_filename,'" &'];
             elseif isunix && ~ismac % Code to run on Linux plaform                               
-                FEBioRunStruct.run_string=['nice "',FEBioRunStruct.FEBioPath,'"',' -i "',FEBioRunStruct.run_filename,'" -o "',FEBioRunStruct.run_logname,'" &'];                
+                FEBioRunStruct.run_string=['nice "',FEBioRunStruct.FEBioPath,'" "',FEBioRunStruct.run_filename,'" &'];                
             elseif ispc % Code to run on Windows platform
-                FEBioRunStruct.run_string=['start /min "GIBBON - FEBio" "',FEBioRunStruct.FEBioPath,'"',' -i "',FEBioRunStruct.run_filename,'" -o "',FEBioRunStruct.run_logname,'"'];
+                FEBioRunStruct.run_string=['start /min "GIBBON - FEBio" "',FEBioRunStruct.FEBioPath,'" "',FEBioRunStruct.run_filename,'"'];
             else
                 warning('Unknown operational system, run command might be inappropriate');
-                FEBioRunStruct.run_string=['"',FEBioRunStruct.FEBioPath,'"',' -i "',FEBioRunStruct.run_filename,'" -o "',FEBioRunStruct.run_logname,'" &'];
+                FEBioRunStruct.run_string=['"',FEBioRunStruct.FEBioPath,'" "',FEBioRunStruct.run_filename,'" &'];
             end            
         case 'internal'
             if ispc
-                FEBioRunStruct.run_string=['"',FEBioRunStruct.FEBioPath,'" -i "',FEBioRunStruct.run_filename,'" -o "',FEBioRunStruct.run_logname,'"'];
+                FEBioRunStruct.run_string=['"',FEBioRunStruct.FEBioPath,'" "',FEBioRunStruct.run_filename,'"'];
             elseif isunix
-                FEBioRunStruct.run_string=['nice "',FEBioRunStruct.FEBioPath,'" -i "',FEBioRunStruct.run_filename,'" -o "',FEBioRunStruct.run_logname,'"']; 
+                FEBioRunStruct.run_string=['nice "',FEBioRunStruct.FEBioPath,'" "',FEBioRunStruct.run_filename,'"']; 
             else
-                FEBioRunStruct.run_string=['"',FEBioRunStruct.FEBioPath,'" -i "',FEBioRunStruct.run_filename,'" -o "',FEBioRunStruct.run_logname,'"'];
+                FEBioRunStruct.run_string=['"',FEBioRunStruct.FEBioPath,'" "',FEBioRunStruct.run_filename,'"'];
             end
     end
 elseif isempty(FEBioRunStruct)
     FEBioRunStruct.run_string=['"',defaultOptionStruct.FEBioPath,'"'];
 end
 
+% if isstruct(FEBioRunStruct) && ~isfield(FEBioRunStruct,'run_string')
+%     switch FEBioRunStruct.runMode
+%         case 'external_old'
+%             FEBioRunStruct.run_string=['"',FEBioRunStruct.FEBioPath,'" -i "',FEBioRunStruct.run_filename,'" -o "',FEBioRunStruct.run_logname,'" &'];
+%         case 'external'
+%             if ismac % Code to run on Mac plaform
+%                 %TO DO IMPROVE THIS LINE FOR MAC
+%                 FEBioRunStruct.run_string=['nice "',FEBioRunStruct.FEBioPath,'"',' -i "',FEBioRunStruct.run_filename,'" -o "',FEBioRunStruct.run_logname,'" &'];
+%             elseif isunix && ~ismac % Code to run on Linux plaform                               
+%                 FEBioRunStruct.run_string=['nice "',FEBioRunStruct.FEBioPath,'"',' -i "',FEBioRunStruct.run_filename,'" -o "',FEBioRunStruct.run_logname,'" &'];                
+%             elseif ispc % Code to run on Windows platform
+%                 FEBioRunStruct.run_string=['start /min "GIBBON - FEBio" "',FEBioRunStruct.FEBioPath,'"',' -i "',FEBioRunStruct.run_filename,'" -o "',FEBioRunStruct.run_logname,'"'];
+%             else
+%                 warning('Unknown operational system, run command might be inappropriate');
+%                 FEBioRunStruct.run_string=['"',FEBioRunStruct.FEBioPath,'"',' -i "',FEBioRunStruct.run_filename,'" -o "',FEBioRunStruct.run_logname,'" &'];
+%             end            
+%         case 'internal'
+%             if ispc
+%                 FEBioRunStruct.run_string=['"',FEBioRunStruct.FEBioPath,'" -i "',FEBioRunStruct.run_filename,'" -o "',FEBioRunStruct.run_logname,'"'];
+%             elseif isunix
+%                 FEBioRunStruct.run_string=['nice "',FEBioRunStruct.FEBioPath,'" -i "',FEBioRunStruct.run_filename,'" -o "',FEBioRunStruct.run_logname,'"']; 
+%             else
+%                 FEBioRunStruct.run_string=['"',FEBioRunStruct.FEBioPath,'" -i "',FEBioRunStruct.run_filename,'" -o "',FEBioRunStruct.run_logname,'"'];
+%             end
+%     end
+% elseif isempty(FEBioRunStruct)
+%     FEBioRunStruct.run_string=['"',defaultOptionStruct.FEBioPath,'"'];
+% end
+
 % FEBioRunStruct.run_string
+
 system(FEBioRunStruct.run_string); %START FEBio NOW!!!!!!!!
 
 end

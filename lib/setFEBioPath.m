@@ -40,6 +40,10 @@ end
 
 cell2txtfile(fileName,T,0,0); %Write cell to config file
 
+if contains(lower(FEBioPathSpec),'febio2')
+        warning('FEBio2 detected. FEBio2 support is depricated. Please upgrade to FEBio3'); 
+end
+
 end
 
 

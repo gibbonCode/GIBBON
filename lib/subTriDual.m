@@ -68,7 +68,6 @@ VF=patchCentre(F(logicFaces,:),V); %New face centre coordinates
 VT=[V;VF]; %The new vertex array
 
 % Compone new face matrix
-
 e=E(~logicBoundary,:); %Edge-vertex indices not part of boundary
 ef=EF(~logicBoundary,:); %Edge-face indices not part of boundary
 

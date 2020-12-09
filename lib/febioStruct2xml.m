@@ -17,6 +17,8 @@ function [varargout]=febioStruct2xml(varargin)
 % 2018/05/15 Create temp directory if it is does not exist
 % To do:
 % Gracefully handle empty fields e.g. 0x8 element array
+% 2020/11/26 Fixed bug in relation to undefined attributeStruct in
+% febioStruct2xmlStep 
 %------------------------------------------------------------------------
 
 %% Parse input
@@ -24,10 +26,20 @@ function [varargout]=febioStruct2xml(varargin)
 defaultOptionStruct.attributeKeyword='ATTR';
 defaultOptionStruct.valueKeyword='VAL';
 defaultOptionStruct.arrayLoopKeywords={'node','elem','face','delem','quad4','quad8','tri3','tri6','tri7','line2','line3','point'};
-defaultOptionStruct.fieldOrder={'Module','Control','Globals','Material',...
-    'Geometry','MeshData','Initial','Boundary',...
-    'Loads','Contact','Constraints','Rigid Connectors',...
-    'Discrete','LoadData','Output','Parameters'};
+
+if contains(lower(getFEBioPath),'febio2')
+    defaultOptionStruct.fieldOrder={'Module','Control','Globals','Material',...
+        'Geometry','MeshData','Initial','Boundary',...
+        'Loads','Contact','Constraints','Rigid Connectors',...
+        'Discrete','LoadData','Output','Parameters'};
+else
+    defaultOptionStruct.fieldOrder={...
+        'Module','Control','Globals','Material',...
+        'Mesh','MeshDomains','MeshData','Initial','Boundary',...
+        'Rigid','Loads','Contact','Constraints',...
+        'Discrete','LoadData','Step','Output'};
+end
+
 defaultOptionStruct.arrayParseMethod=1;
 
 switch nargin
@@ -62,7 +74,20 @@ if isempty(fileName)
     fileName=fullfile(savePath,'temp.xml');
 end
 
+%% Check febio_spec version
+if isfield(parseStruct,'ATTR')
+    if isfield(parseStruct.ATTR,'version')
+        if contains(parseStruct.ATTR.version,'2.5')
+            warning('Old febio_spec detected. febio_spec 2.5 is depricated. Please upgrade to febio_spec 3.0');
+            if contains(lower(getFEBioPath),'febio3')
+                warning('febio_spec 2.5 is likely not compatible with FEBio3');
+            end
+        end
+    end
+end
+
 %% Initialize XML object
+
 domNode = com.mathworks.xml.XMLUtils.createDocument('febio_spec'); %Create the overall febio_spec field
 
 %% Add comment
@@ -105,7 +130,7 @@ arrayLoopKeywords=optionStruct.arrayLoopKeywords;
 
 %Get field names occuring in the input structure
 fieldNameSet = fieldnames(parseStruct);
-
+attributeStruct=[]; %Initialize as empty
 for q_field=1:1:numel(fieldNameSet) %Loop for all field names
     
     %Get current field names and values

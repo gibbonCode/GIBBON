@@ -9,7 +9,7 @@
 
 %% Keywords
 %
-% * febio_spec version 2.5
+% * febio_spec version 3.0
 % * febio, FEBio
 % * beam torsion twist loading
 % * prescribed displacement boundary condition
@@ -40,7 +40,7 @@ savePath=fullfile(defaultFolder,'data','temp');
 % Defining file names
 febioFebFileNamePart='tempModel';
 febioFebFileName=fullfile(savePath,[febioFebFileNamePart,'.feb']); %FEB file name
-febioLogFileName=fullfile(savePath,[febioFebFileNamePart,'.txt']); %FEBio log file name
+febioLogFileName=[febioFebFileNamePart,'.txt']; %FEBio log file name
 febioLogFileName_disp=[febioFebFileNamePart,'_disp_out.txt']; %Log file name for exporting displacement
 
 %Specifying dimensions and number of elements
@@ -56,7 +56,7 @@ numElementsHeight=round(sampleHeight/pointSpacings(3)); %Number of elemens in di
 elementType='hex20'; %'hex8'
 
 %Define applied torsion angle
-alphaRotTotal=3*pi;%0.5*pi; %Total twist angle
+alphaRotTotal=2*pi;%0.5*pi; %Total twist angle
 numSteps=50; %Number of steps
 
 %Material parameter set
@@ -66,11 +66,11 @@ k_factor=1e2; %Bulk modulus factor
 k=c1*k_factor; %Bulk modulus
 
 % FEA control settings
-numTimeSteps=1; %Number of time steps desired
+numTimeSteps=30; %Number of time steps desired
 max_refs=25; %Max reforms
 max_ups=0; %Set to zero to use full-Newton iterations
-opt_iter=10; %Optimum number of iterations
-max_retries=10; %Maximum number of retires
+opt_iter=6; %Optimum number of iterations
+max_retries=5; %Maximum number of retires
 dtmin=(1/numTimeSteps)/100; %Minimum time step size
 dtmax=1/numTimeSteps; %Maximum time step size
 
@@ -98,6 +98,9 @@ if strcmp(elementType,'hex20')
     meshStruct.elements=E;
     meshStruct.nodes=V;
     meshStruct.Fb=Fb;
+    quadType='quad8';
+else
+    quadType='quad4';
 end
 
 %% 
@@ -122,24 +125,18 @@ axisGeom(gca,fontSize);
 
 drawnow;
 
+%% Create rigid body end plate for rotation constraint
+Fr=Fb(Cb==3,:); %The faces for the beam end
+
+%Nodes part of the rigid body
+indRigid=unique(Fr(:));
+
 %% Defining the boundary conditions
 % The visualization of the model boundary shows colors for each side of the
 % cube. These labels can be used to define boundary conditions. 
 
 %Define supported node set
-logicFace=Cb==4; %Logic for current face set
-Fr=Fb(logicFace,:); %The current face set
-bcSupportList=unique(Fr(:)); %Node set part of selected face
-
-%Prescribed force nodes
-logicPrescribe=Cb==3; %Logic for current face set
-Fr=Fb(logicPrescribe,:); %The current face set
-bcPrescribeList=unique(Fr(:)); %Node set part of selected face
-
-%Rotational settings
-alphaRotStep=alphaRotTotal/numSteps; %The angular increment for each step
-R=euler2DCM([0 alphaRotStep 0]); %The rotation tensor for each step
-V2=V*R; %Rotated 1 part for visualization of stepwise amount
+bcSupportList=unique(Fb(Cb==4,:)); %Node set part of selected face
 
 %% 
 % Visualizing boundary conditions. Markers plotted on the semi-transparent
@@ -150,13 +147,12 @@ title('Boundary conditions','FontSize',fontSize);
 xlabel('X','FontSize',fontSize); ylabel('Y','FontSize',fontSize); zlabel('Z','FontSize',fontSize);
 hold on;
 
-gpatch(Fb,V,'kw','k',0.5);
+gpatch(Fb,V,'w','k',0.5);
 
 hl(1)=plotV(V(bcSupportList,:),'k.','MarkerSize',markerSize);
-hl(2)=plotV(V(bcPrescribeList,:),'r.','MarkerSize',markerSize);
-hl(3)=plotV(V2(bcPrescribeList,:),'g.','MarkerSize',markerSize);
-
-legend(hl,{'BC support','BC prescribe','BC prescribe 1 step'});
+hl(2)=gpatch(Fr,V,'rw','k',1);
+plotV(V(indRigid,:),'r.','MarkerSize',markerSize);
+legend(hl,{'BC support','Rigid body'});
 
 axisGeom(gca,fontSize);
 camlight headlight; 
@@ -170,29 +166,25 @@ drawnow;
 [febio_spec]=febioStructTemplate;
 
 %febio_spec version 
-febio_spec.ATTR.version='2.5'; 
+febio_spec.ATTR.version='3.0'; 
 
 %Module section
 febio_spec.Module.ATTR.type='solid'; 
 
-%Create control structure for use by all steps
-stepStruct.Control.analysis.ATTR.type='static';
-stepStruct.Control.time_steps=numTimeSteps;
-stepStruct.Control.step_size=1/numTimeSteps;
-stepStruct.Control.time_stepper.dtmin=dtmin;
-stepStruct.Control.time_stepper.dtmax=dtmax; 
-stepStruct.Control.time_stepper.max_retries=max_retries;
-stepStruct.Control.time_stepper.opt_iter=opt_iter;
-stepStruct.Control.max_refs=max_refs;
-stepStruct.Control.max_ups=max_ups;
-
-%Add template based default settings to proposed control section
-[stepStruct.Control]=structComplete(stepStruct.Control,febio_spec.Control,1); %Complement provided with default if missing
-
-%Remove control field (part of template) since step specific control sections are used
-febio_spec=rmfield(febio_spec,'Control'); 
+%Control section
+febio_spec.Control.analysis='STATIC';
+febio_spec.Control.time_steps=numTimeSteps;
+febio_spec.Control.step_size=1/numTimeSteps;
+febio_spec.Control.solver.max_refs=max_refs;
+febio_spec.Control.solver.max_ups=max_ups;
+febio_spec.Control.time_stepper.dtmin=dtmin;
+febio_spec.Control.time_stepper.dtmax=dtmax; 
+febio_spec.Control.time_stepper.max_retries=max_retries;
+febio_spec.Control.time_stepper.opt_iter=opt_iter;
 
 %Material section
+materialName1='Material1';
+febio_spec.Material.material{1}.ATTR.name=materialName1;
 febio_spec.Material.material{1}.ATTR.type='Ogden';
 febio_spec.Material.material{1}.ATTR.id=1;
 febio_spec.Material.material{1}.c1=c1;
@@ -201,73 +193,70 @@ febio_spec.Material.material{1}.c2=c1;
 febio_spec.Material.material{1}.m2=-m1;
 febio_spec.Material.material{1}.k=k;
 
-%Geometry section
+materialName2='Material2';
+febio_spec.Material.material{2}.ATTR.name=materialName2;
+febio_spec.Material.material{2}.ATTR.type='rigid body';
+febio_spec.Material.material{2}.ATTR.id=2;
+febio_spec.Material.material{2}.density=1;
+febio_spec.Material.material{2}.center_of_mass=mean(V(indRigid,:),1);
+
+%Mesh section
 % -> Nodes
-febio_spec.Geometry.Nodes{1}.ATTR.name='nodeSet_all'; %The node set name
-febio_spec.Geometry.Nodes{1}.node.ATTR.id=(1:size(V,1))'; %The node id's
-febio_spec.Geometry.Nodes{1}.node.VAL=V; %The nodel coordinates
+febio_spec.Mesh.Nodes{1}.ATTR.name='nodeSet_all'; %The node set name
+febio_spec.Mesh.Nodes{1}.node.ATTR.id=(1:size(V,1))'; %The node id's
+febio_spec.Mesh.Nodes{1}.node.VAL=V; %The nodel coordinates
 
 % -> Elements
-febio_spec.Geometry.Elements{1}.ATTR.type=elementType; %Element type of this set
-febio_spec.Geometry.Elements{1}.ATTR.mat=1; %material index for this set 
-febio_spec.Geometry.Elements{1}.ATTR.name='Beam'; %Name of the element set
-febio_spec.Geometry.Elements{1}.elem.ATTR.id=(1:1:size(E,1))'; %Element id's
-febio_spec.Geometry.Elements{1}.elem.VAL=E;
+partName1='Part1';
+febio_spec.Mesh.Elements{1}.ATTR.name=partName1; %Name of this part
+febio_spec.Mesh.Elements{1}.ATTR.type=elementType; %Element type 
+febio_spec.Mesh.Elements{1}.elem.ATTR.id=(1:1:size(E,1))'; %Element id's
+febio_spec.Mesh.Elements{1}.elem.VAL=E; %The element matrix
+
+partName2='Part2';
+febio_spec.Mesh.Elements{2}.ATTR.name=partName2; %Name of this part
+febio_spec.Mesh.Elements{2}.ATTR.type=quadType; %Element type 
+febio_spec.Mesh.Elements{2}.elem.ATTR.id=size(E,1)+(1:1:size(Fr,1))'; %Element id's
+febio_spec.Mesh.Elements{2}.elem.VAL=Fr; %The element matrix
 
 % -> NodeSets
-febio_spec.Geometry.NodeSet{1}.ATTR.name='bcSupportList';
-febio_spec.Geometry.NodeSet{1}.node.ATTR.id=bcSupportList(:);
+nodeSetName1='bcSupportList';
+febio_spec.Mesh.NodeSet{1}.ATTR.name=nodeSetName1;
+febio_spec.Mesh.NodeSet{1}.node.ATTR.id=bcSupportList(:);
 
-febio_spec.Geometry.NodeSet{2}.ATTR.name='bcPrescribeList';
-febio_spec.Geometry.NodeSet{2}.node.ATTR.id=bcPrescribeList(:);
+%MeshDomains section
+febio_spec.MeshDomains.SolidDomain.ATTR.name=partName1;
+febio_spec.MeshDomains.SolidDomain.ATTR.mat=materialName1;
 
-
-%Create steps
-V2=V; %Coordinate set
-nodeSetName=febio_spec.Geometry.NodeSet{2}.ATTR.name;
-febio_spec.MeshData.NodeData=[];%Initialize so we can use end+1 indexing
-bcNames={'x','y','z'};
-for q=1:1:numSteps
-    %Step specific control section
-    febio_spec.Step{q}.ATTR.id=q; 
-    febio_spec.Step{q}.Control=stepStruct.Control; 
-    
-    %Rotate coordinates
-    V2n=V2; %The current set
-    V2=V2*R; %Rotated further
-    
-    %Define prescribed displacements
-    bcPrescribeMagnitudesStep=V2(bcPrescribeList,:)-V2n(bcPrescribeList,:);
-
-    %Define mesh data and prescribed displacements
-    for q_dir=1:1:3 %Loop over coordinates dimensions        
-        
-        %Define mesh data for displacement increments
-        c=numel(febio_spec.MeshData.NodeData)+1; %Current step index
-        febio_spec.MeshData.NodeData{c}.ATTR.name=['displacement_',bcNames{q_dir},'_step_',num2str(q)];
-        febio_spec.MeshData.NodeData{c}.ATTR.node_set=nodeSetName;
-        febio_spec.MeshData.NodeData{c}.node.ATTR.lid=(1:1:numel(bcPrescribeList))';
-        febio_spec.MeshData.NodeData{c}.node.VAL=bcPrescribeMagnitudesStep(:,q_dir);
-        
-        %Define prescribed displacements 
-        febio_spec.Step{q}.Boundary.prescribe{q_dir}.ATTR.bc=bcNames{q_dir};
-        febio_spec.Step{q}.Boundary.prescribe{q_dir}.ATTR.relative=1;
-        febio_spec.Step{q}.Boundary.prescribe{q_dir}.ATTR.node_set=nodeSetName;
-        febio_spec.Step{q}.Boundary.prescribe{q_dir}.scale.ATTR.lc=1;
-        febio_spec.Step{q}.Boundary.prescribe{q_dir}.scale.VAL=1;
-        febio_spec.Step{q}.Boundary.prescribe{q_dir}.relative=1;
-        febio_spec.Step{q}.Boundary.prescribe{q_dir}.value.ATTR.node_data=febio_spec.MeshData.NodeData{c}.ATTR.name;
-    end
-end
+febio_spec.MeshDomains.ShellDomain.ATTR.name=partName2;
+febio_spec.MeshDomains.ShellDomain.ATTR.mat=materialName2;
 
 %Boundary condition section 
 % -> Fix boundary conditions
-febio_spec.Boundary.fix{1}.ATTR.bc='x';
-febio_spec.Boundary.fix{1}.ATTR.node_set=febio_spec.Geometry.NodeSet{1}.ATTR.name;
-febio_spec.Boundary.fix{2}.ATTR.bc='y';
-febio_spec.Boundary.fix{2}.ATTR.node_set=febio_spec.Geometry.NodeSet{1}.ATTR.name;
-febio_spec.Boundary.fix{3}.ATTR.bc='z';
-febio_spec.Boundary.fix{3}.ATTR.node_set=febio_spec.Geometry.NodeSet{1}.ATTR.name;
+febio_spec.Boundary.bc{1}.ATTR.type='fix';
+febio_spec.Boundary.bc{1}.ATTR.node_set=nodeSetName1;
+febio_spec.Boundary.bc{1}.dofs='x,y,z';
+
+%Rigid section 
+% -> Prescribed rigid body boundary conditions
+febio_spec.Rigid.rigid_constraint{1}.ATTR.name='RotFix_1';
+febio_spec.Rigid.rigid_constraint{1}.ATTR.type='fix';
+febio_spec.Rigid.rigid_constraint{1}.rb=2;
+febio_spec.Rigid.rigid_constraint{1}.dofs='Ru,Rw';
+
+febio_spec.Rigid.rigid_constraint{2}.ATTR.name='RotPrescribe_1';
+febio_spec.Rigid.rigid_constraint{2}.ATTR.type='prescribe';
+febio_spec.Rigid.rigid_constraint{2}.rb=2;
+febio_spec.Rigid.rigid_constraint{2}.dof='Rv';
+febio_spec.Rigid.rigid_constraint{2}.value.ATTR.lc=1;
+febio_spec.Rigid.rigid_constraint{2}.value.VAL=alphaRotTotal;
+
+%LoadData section
+% -> load_controller
+febio_spec.LoadData.load_controller{1}.ATTR.id=1;
+febio_spec.LoadData.load_controller{1}.ATTR.type='loadcurve';
+febio_spec.LoadData.load_controller{1}.interpolate='LINEAR';
+febio_spec.LoadData.load_controller{1}.points.point.VAL=[0 0; 1 1];
 
 %Output section 
 % -> log file
@@ -300,11 +289,7 @@ febioStruct2xml(febio_spec,febioFebFileName); %Exporting to file and domNode
 febioAnalysis.run_filename=febioFebFileName; %The input file name
 febioAnalysis.run_logname=febioLogFileName; %The name for the log file
 febioAnalysis.disp_on=1; %Display information on the command window
-febioAnalysis.disp_log_on=1; %Display convergence information in the command window
-febioAnalysis.runMode='external';%'internal';
-febioAnalysis.t_check=0.25; %Time for checking log file (dont set too small)
-febioAnalysis.maxtpi=1e99; %Max analysis time
-febioAnalysis.maxLogCheckTime=10; %Max log file checking time
+febioAnalysis.runMode='internal';%'internal';
 
 [runFlag]=runMonitorFEBio(febioAnalysis);%START FEBio NOW!!!!!!!!
 
