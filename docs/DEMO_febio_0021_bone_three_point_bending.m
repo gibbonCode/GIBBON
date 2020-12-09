@@ -43,7 +43,7 @@ pathNameSTL=fullfile(defaultFolder,'data','STL');
 % Defining file names
 febioFebFileNamePart='tempModel';
 febioFebFileName=fullfile(savePath,[febioFebFileNamePart,'.feb']); %FEB file name
-febioLogFileName=fullfile(savePath,[febioFebFileNamePart,'.txt']); %FEBio log file name
+febioLogFileName=[febioFebFileNamePart,'.txt']; %FEBio log file name
 febioLogFileName_disp=[febioFebFileNamePart,'_disp_out.txt']; %Log file name for exporting displacement
 febioLogFileName_force=[febioFebFileNamePart,'_force_out.txt']; %Log file name for exporting force
 febioLogFileName_stress=[febioFebFileNamePart,'_stress_out.txt']; %Log file name for exporting stress
@@ -51,9 +51,11 @@ febioLogFileName_stress=[febioFebFileNamePart,'_stress_out.txt']; %Log file name
 %Geometric parameters
 corticalThickness=3; %Thickness used for cortical material definition
 volumeFactor=10; %Factor to scale desired volume for interior elements w.r.t. boundary elements
-pointSpacing=6;
+pointSpacing=5;
 
 %Material parameter set
+D_density=1e-9; %Density for all materials
+
 E_youngs1=17000; %Youngs modulus
 nu1=0.25; %Poissons ratio
 
@@ -62,26 +64,30 @@ E_youngs2=1500; %Youngs modulus
 nu2=0.25; %Poissons ratio
 
 % FEA control settings
-numTimeSteps=10; %Number of time steps desired
+analysisType='STATIC';
+numTimeSteps=20; %Number of time steps desired
 max_refs=25; %Max reforms
 max_ups=0; %Set to zero to use full-Newton iterations
 opt_iter=15; %Optimum number of iterations
 max_retries=6; %Maximum number of retires
 dtmin=(1/numTimeSteps)/100; %Minimum time step size
 dtmax=1/numTimeSteps; %Maximum time step size
-min_residual=1e-30;
+min_residual=1e-10;
 symmetric_stiffness=1;
-runMode='internal';
+runMode='external';
 
 %Contact parameters
 contactInitialOffset=0.1;
-contactPenalty=1;
+contactPenalty=1000;
 laugon=0;
 minaug=1;
 maxaug=10;
 
+%Boundary conditions specification
+bcFix=0;
+
 %Loading parameters
-zDisp=-3-contactInitialOffset; 
+zDisp=-20-2*contactInitialOffset; 
 
 %% Get bone geometry
 
@@ -215,32 +221,35 @@ V=[V;Vc1;Vc2;Vc3];
 
 %% Define boundary conditions
 
-%Supported nodes
-indb=unique(Fb(:));
-logicLeft=V(indb,1)<-200;
-bcSupportList=indb(logicLeft);
-
-%%
-% Visualize BC's
-hf=cFigure;
-title('Boundary conditions model','FontSize',fontSize);
-xlabel('X','FontSize',fontSize); ylabel('Y','FontSize',fontSize); zlabel('Z','FontSize',fontSize);
-hold on;
-
-gpatch(Fb,V,'kw','none',faceAlpha2); 
-hp1(1)=plotV(V(bcSupportList,:),'k.','MarkerSize',markerSize);
-
-legend(hp1,{'BC support'});
-
-axisGeom(gca,fontSize);
-camlight headlight;
-drawnow;
+if bcFix==1
+    %Supported nodes
+    indb=unique(Fb(:));
+    logicLeft=V(indb,1)<-200;
+    bcSupportList=indb(logicLeft);
+    
+    %%
+    % Visualize BC's
+    hf=cFigure;
+    title('Boundary conditions model','FontSize',fontSize);
+    xlabel('X','FontSize',fontSize); ylabel('Y','FontSize',fontSize); zlabel('Z','FontSize',fontSize);
+    hold on;
+    
+    gpatch(Fb,V,'kw','none',faceAlpha2);
+    hp1(1)=plotV(V(bcSupportList,:),'k.','MarkerSize',markerSize);
+    
+    legend(hp1,{'BC support'});
+    
+    axisGeom(gca,fontSize);
+    camlight headlight;
+    drawnow;
+    
+end
 
 %% Define bone contact surfaces
 
 N=patchNormal(fliplr(Fb),V);
 nz=[0 0 -1];
-d=dot(N,nz(ones(size(N,1),1),:),2)
+d=dot(N,nz(ones(size(N,1),1),:),2);
 
 contactAdd=pointSpacing;
 
@@ -298,7 +307,7 @@ febio_spec.ATTR.version='3.0';
 febio_spec.Module.ATTR.type='solid'; 
 
 %Control section
-febio_spec.Control.analysis='STATIC';
+febio_spec.Control.analysis=analysisType;
 febio_spec.Control.time_steps=numTimeSteps;
 febio_spec.Control.step_size=1/numTimeSteps;
 febio_spec.Control.solver.max_refs=max_refs;
@@ -317,6 +326,7 @@ febio_spec.Material.material{1}.ATTR.type='neo-Hookean';
 febio_spec.Material.material{1}.ATTR.id=1;
 febio_spec.Material.material{1}.E=E_youngs1;
 febio_spec.Material.material{1}.v=nu1;
+febio_spec.Material.material{1}.density=D_density;
 
 materialName2='Material2';
 febio_spec.Material.material{2}.ATTR.name=materialName2;
@@ -324,26 +334,27 @@ febio_spec.Material.material{2}.ATTR.type='neo-Hookean';
 febio_spec.Material.material{2}.ATTR.id=2;
 febio_spec.Material.material{2}.E=E_youngs2;
 febio_spec.Material.material{2}.v=nu2;
+febio_spec.Material.material{2}.density=D_density;
 
 materialName3='Material3';
 febio_spec.Material.material{3}.ATTR.name=materialName3;
 febio_spec.Material.material{3}.ATTR.type='rigid body';
 febio_spec.Material.material{3}.ATTR.id=3;
-febio_spec.Material.material{3}.density=1;
+febio_spec.Material.material{3}.density=D_density;
 febio_spec.Material.material{3}.center_of_mass=mean(Vc1,1);
 
 materialName4='Material4';
 febio_spec.Material.material{4}.ATTR.name=materialName4;
 febio_spec.Material.material{4}.ATTR.type='rigid body';
 febio_spec.Material.material{4}.ATTR.id=4;
-febio_spec.Material.material{4}.density=1;
+febio_spec.Material.material{4}.density=D_density;
 febio_spec.Material.material{4}.center_of_mass=mean(Vc2,1);
 
 materialName5='Material5';
 febio_spec.Material.material{5}.ATTR.name=materialName5;
 febio_spec.Material.material{5}.ATTR.type='rigid body';
 febio_spec.Material.material{5}.ATTR.id=5;
-febio_spec.Material.material{5}.density=1;
+febio_spec.Material.material{5}.density=D_density;
 febio_spec.Material.material{5}.center_of_mass=mean(Vc3,1);
 
 %Mesh section
@@ -405,9 +416,11 @@ febio_spec.MeshDomains.ShellDomain{3}.ATTR.name=partName5;
 febio_spec.MeshDomains.ShellDomain{3}.ATTR.mat=materialName5;
 
 % -> NodeSets
-nodeSetName1='bcSupportList';
-febio_spec.Mesh.NodeSet{1}.ATTR.name=nodeSetName1;
-febio_spec.Mesh.NodeSet{1}.node.ATTR.id=bcSupportList(:);
+if bcFix==1
+    nodeSetName1='bcSupportList';
+    febio_spec.Mesh.NodeSet{1}.ATTR.name=nodeSetName1;
+    febio_spec.Mesh.NodeSet{1}.node.ATTR.id=bcSupportList(:);
+end
 
 % -> Surfaces
 surfaceNamePrim1='contact_primary1';
@@ -427,18 +440,18 @@ febio_spec.Mesh.Surface{3}.quad4.VAL=Fc3;
 
 surfaceNameSec1='contact_secondary1';
 febio_spec.Mesh.Surface{4}.ATTR.name=surfaceNameSec1;
-febio_spec.Mesh.Surface{4}.quad4.ATTR.id=(1:1:size(F_sec1,1))';
-febio_spec.Mesh.Surface{4}.quad4.VAL=F_sec1;
+febio_spec.Mesh.Surface{4}.tri3.ATTR.id=(1:1:size(F_sec1,1))';
+febio_spec.Mesh.Surface{4}.tri3.VAL=F_sec1;
 
 surfaceNameSec2='contact_secondary2';
 febio_spec.Mesh.Surface{5}.ATTR.name=surfaceNameSec2;
-febio_spec.Mesh.Surface{5}.quad4.ATTR.id=(1:1:size(F_sec2,1))';
-febio_spec.Mesh.Surface{5}.quad4.VAL=F_sec2;
+febio_spec.Mesh.Surface{5}.tri3.ATTR.id=(1:1:size(F_sec2,1))';
+febio_spec.Mesh.Surface{5}.tri3.VAL=F_sec2;
 
 surfaceNameSec3='contact_secondary3';
 febio_spec.Mesh.Surface{6}.ATTR.name=surfaceNameSec3;
-febio_spec.Mesh.Surface{6}.quad4.ATTR.id=(1:1:size(F_sec3,1))';
-febio_spec.Mesh.Surface{6}.quad4.VAL=F_sec3;
+febio_spec.Mesh.Surface{6}.tri3.ATTR.id=(1:1:size(F_sec3,1))';
+febio_spec.Mesh.Surface{6}.tri3.VAL=F_sec3;
 
 % -> Surface pairs
 febio_spec.Mesh.SurfacePair{1}.ATTR.name='Contact1';
@@ -455,10 +468,11 @@ febio_spec.Mesh.SurfacePair{3}.secondary=surfaceNameSec3;
 
 %Boundary condition section 
 % -> Fix boundary conditions
-febio_spec.Boundary.bc{1}.ATTR.type='fix';
-febio_spec.Boundary.bc{1}.ATTR.node_set=nodeSetName1;
-febio_spec.Boundary.bc{1}.dofs='x,y,z';
-
+if bcFix==1
+    febio_spec.Boundary.bc{1}.ATTR.type='fix';
+    febio_spec.Boundary.bc{1}.ATTR.node_set=nodeSetName1;
+    febio_spec.Boundary.bc{1}.dofs='x,y,z';
+end
 %Rigid section 
 % -> Prescribed rigid body boundary conditions
 febio_spec.Rigid.rigid_constraint{1}.ATTR.name='RigidFix_1';
@@ -568,41 +582,7 @@ if runFlag==1 %i.e. a succesful run
     
     %Create deformed coordinate set
     V_DEF=N_disp_mat+repmat(V,[1 1 size(N_disp_mat,3)]);
-               
-    %% 
-    % Plotting the simulated results using |anim8| to visualize and animate
-    % deformations 
-    
-    DN_magnitude=sqrt(sum(N_disp_mat(:,:,end).^2,2)); %Current displacement magnitude
-        
-    % Create basic view and store graphics handle to initiate animation
-    hf=cFigure; %Open figure  
-    gtitle([febioFebFileNamePart,': Press play to animate']);
-    title('Displacement magnitude [mm]','Interpreter','Latex')
-    hp=gpatch(Fb,V_DEF(:,:,end),DN_magnitude,'k',1); %Add graphics object to animate
-    hp.FaceColor='interp';
-    
-    hp2=gpatch([Fc1;Fc2;Fc3],V,'w','k',1); 
-    
-    axisGeom(gca,fontSize); 
-    colormap(gjet(250)); colorbar;
-    caxis([0 max(DN_magnitude)]);    
-    axis(axisLim(V_DEF)); %Set axis limits statically    
-    camlight headlight;        
-        
-    % Set up animation features
-    animStruct.Time=timeVec; %The time vector    
-    for qt=1:1:size(N_disp_mat,3) %Loop over time increments        
-        DN_magnitude=sqrt(sum(N_disp_mat(:,:,qt).^2,2)); %Current displacement magnitude
-                
-        %Set entries in animation structure
-        animStruct.Handles{qt}=[hp hp hp2]; %Handles of objects to animate
-        animStruct.Props{qt}={'Vertices','CData','Vertices'}; %Properties of objects to animate
-        animStruct.Set{qt}={V_DEF(:,:,qt),DN_magnitude,V_DEF(:,:,qt)}; %Property values for to set in order to animate
-    end        
-    anim8(hf,animStruct); %Initiate animation feature    
-    drawnow;
-            
+
     %%
     % Importing element stress from a log file
     dataStruct=importFEBio_logfile(fullfile(savePath,febioLogFileName_stress),1,1);
