@@ -11,8 +11,6 @@ function [varargout]=abaqusStruct2inp(varargin)
 %
 % 2018/09/06 Created
 % 2018/12/04 Added field order entries
-% 2020/05/20 Improved performance to fix wrapping. Now uses reshape
-% 2020/05/20 Fixed bug in wrapping of non-numeric data
 %------------------------------------------------------------------------
 
 %% Parse input
@@ -20,8 +18,10 @@ function [varargout]=abaqusStruct2inp(varargin)
 defaultOptionStruct.attributeKeyword='ATTR';
 defaultOptionStruct.valueKeyword='VAL';
 defaultOptionStruct.commentKeyword='COMMENT';
+defaultOptionStruct.emptyKeyword='EMPTY';
 defaultOptionStruct.fieldOrder={'heading','preprint','part','node','element','surface','distribution','orientation','section',...
-    'assembly','distribution_table','material','Depvar','User_Material','step','boundary','restart','output'};
+    'assembly','distribution_table','material','Depvar','User_Material','contact_pair','surface_interaction','step','static','boundary',...
+    'controls','restart','output','element_output','node_output','contact_output'};
 defaultOptionStruct.addEnd={'part','assembly','instance','step'};
 defaultOptionStruct.addLines=1;
 
@@ -82,6 +82,7 @@ function [file_id]=abaqusStruct2inpStep(file_id,parseStruct,optionStruct)
 attributeKeyword=optionStruct.attributeKeyword;
 valueKeyword=optionStruct.valueKeyword;
 commentKeyword=optionStruct.commentKeyword;
+emptyKeyword=optionStruct.emptyKeyword;
 
 %Get field names occuring in the input structure
 fieldNameSet = fieldnames(parseStruct);
@@ -180,6 +181,22 @@ for q_field=1:1:numel(fieldNameSet) %Loop for all field names
                 %Remove comment field
                 currentFieldValue = rmfield(currentFieldValue,commentKeyword);
             end
+
+            %Add current empty
+            if isfield(currentFieldValue,emptyKeyword)
+                emptyData=currentFieldValue.(emptyKeyword);
+                if iscell(emptyData)
+                    %Write multiple empty lines
+                    for q_empty=1:1:numel(emptyData)
+                        fprintf(file_id,'%s \n',[', ',emptyData{q_empty}]);
+                    end
+                else
+                    %Write empty line
+                    fprintf(file_id,'%s \n',[', ',emptyData]);
+                end
+                %Remove empty field
+                currentFieldValue = rmfield(currentFieldValue,emptyKeyword);
+            end
             
             %Add current values
             if isfield(currentFieldValue,valueKeyword)
@@ -275,48 +292,47 @@ if iscell(valueData)
             end
             
         else
-            t=toTextCheckWrap(valueData{q_value},16);            
+            t=vec2strIntDouble(valueData{q_value},'%6.7e');
+            if isrow(valueData{q_value})
+                t=strwrap(t,16,', '); %Wrap to max width of 16 entries
+            end
             fprintf(file_id,'%s \n',t);
         end
         
     end
 else
     %Write value entry
-    t=toTextCheckWrap(valueData,16);    
+    t=vec2strIntDouble(valueData,'%6.7e');
+    if isrow(valueData)
+        t=strwrap(t,16,', '); %Wrap to max width of 16 entries
+    end
     fprintf(file_id,'%s \n',t);
 end
 end
 
 %%
-
-function [t]=toTextCheckWrap(valueData,wrapLength)
-
-if isnumeric(valueData)
-    if isrow(valueData) && numel(valueData)>wrapLength
-        %OLD and slow        
-        %t=vec2strIntDouble(valueData,'%6.7e');
-        %t=strwrap(t,wrapLength,', '); %Wrap to max width of wrapLength entries
-
-        if rem(numel(valueData),wrapLength)>0
-            valueDataTemp=nan(1,ceil(numel(valueData)/wrapLength)*wrapLength);
-            valueDataTemp(1:numel(valueData))=valueData;
-            valueDataTemp=reshape(valueDataTemp,wrapLength,numel(valueDataTemp)/wrapLength)';
-            t=vec2strIntDouble(valueDataTemp,'%6.7e');
-            t=regexprep(t,',(\s*)NaN',''); %remove nan
-        else
-            valueData=reshape(valueData,wrapLength,numel(valueData)/wrapLength)';
-            t=vec2strIntDouble(valueData,'%6.7e');
-        end                
-    else
-        t=vec2strIntDouble(valueData,'%6.7e');
-    end
-else
-    t=valueData;
-end
-
-
-end
-
+% _*GIBBON footer text*_
+%
+% License: <https://github.com/gibbonCode/GIBBON/blob/master/LICENSE>
+%
+% GIBBON: The Geometry and Image-based Bioengineering add-On. A toolbox for
+% image segmentation, image-based modeling, meshing, and finite element
+% analysis.
+%
+% Copyright (C) 2018  Kevin Mattheus Moerman
+%
+% This program is free software: you can redistribute it and/or modify
+% it under the terms of the GNU General Public License as published by
+% the Free Software Foundation, either version 3 of the License, or
+% (at your option) any later version.
+%
+% This program is distributed in the hope that it will be useful,
+% but WITHOUT ANY WARRANTY; without even the implied warranty of
+% MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+% GNU General Public License for more details.
+%
+% You should have received a copy of the GNU General Public License
+% along with this program.  If not, see <http://www.gnu.org/licenses/>.
 %% 
 % _*GIBBON footer text*_ 
 % 
@@ -326,7 +342,7 @@ end
 % image segmentation, image-based modeling, meshing, and finite element
 % analysis.
 % 
-% Copyright (C) 2006-2020 Kevin Mattheus Moerman
+% Copyright (C) 2019  Kevin Mattheus Moerman
 % 
 % This program is free software: you can redistribute it and/or modify
 % it under the terms of the GNU General Public License as published by
