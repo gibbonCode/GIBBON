@@ -6,8 +6,8 @@
    <!--
 This HTML was auto-generated from MATLAB code.
 To make changes, update the MATLAB code and republish this document.
-      --><title>abaqusStruct2inp</title><meta name="generator" content="MATLAB 9.6"><link rel="schema.DC" href="http://purl.org/dc/elements/1.1/"><meta name="DC.date" content="2019-06-20"><meta name="DC.source" content="HELP_abaqusStruct2inp.m"><style type="text/css">
-html,body,div,span,applet,object,iframe,h1,h2,h3,h4,h5,h6,p,blockquote,pre,a,abbr,acronym,address,big,cite,code,del,dfn,em,font,img,ins,kbd,q,s,samp,small,strike,strong,sub,sup,tt,var,b,u,i,center,dl,dt,dd,ol,ul,li,fieldset,form,label,legend,table,caption,tbody,tfoot,thead,tr,th,td{margin:0;padding:0;border:0;outline:0;font-size:100%;vertical-align:baseline;background:transparent}body{line-height:1}ol,ul{list-style:none}blockquote,q{quotes:none}blockquote:before,blockquote:after,q:before,q:after{content:'';content:none}:focus{outine:0}ins{text-decoration:none}del{text-decoration:line-through}table{border-collapse:collapse;border-spacing:0}
+      --><title>abaqusStruct2inp</title><meta name="generator" content="MATLAB 9.9"><link rel="schema.DC" href="http://purl.org/dc/elements/1.1/"><meta name="DC.date" content="2020-12-09"><meta name="DC.source" content="HELP_abaqusStruct2inp.m"><style type="text/css">
+html,body,div,span,applet,object,iframe,h1,h2,h3,h4,h5,h6,p,blockquote,pre,a,abbr,acronym,address,big,cite,code,del,dfn,em,font,img,ins,kbd,q,s,samp,small,strike,strong,tt,var,b,u,i,center,dl,dt,dd,ol,ul,li,fieldset,form,label,legend,table,caption,tbody,tfoot,thead,tr,th,td{margin:0;padding:0;border:0;outline:0;font-size:100%;vertical-align:baseline;background:transparent}body{line-height:1}ol,ul{list-style:none}blockquote,q{quotes:none}blockquote:before,blockquote:after,q:before,q:after{content:'';content:none}:focus{outine:0}ins{text-decoration:none}del{text-decoration:line-through}table{border-collapse:collapse;border-spacing:0}
 
 html { min-height:100%; margin-bottom:1px; }
 html body { height:100%; margin:0px; font-family:Arial, Helvetica, sans-serif; font-size:10px; color:#000; line-height:140%; background:#fff none; overflow-y:scroll; }
@@ -23,7 +23,7 @@ a:visited { color:#004aa0; text-decoration:none; }
 
 p { padding:0px; margin:0px 0px 20px; }
 img { padding:0px; margin:0px 0px 20px; border:none; }
-p img, pre img, tt img, li img, h1 img, h2 img { margin-bottom:0px; } 
+p img, pre img, tt img, li img, h1 img, h2 img { margin-bottom:0px; }
 
 ul { padding:0px; margin:0px 0px 20px 23px; list-style:square; }
 ul li { padding:0px; margin:0px 0px 7px 0px; }
@@ -52,6 +52,7 @@ span.comment { color:#228B22 }
 span.string { color:#A020F0 }
 span.untermstring { color:#B20000 }
 span.syscmd { color:#B28C00 }
+span.typesection { color:#A0522D }
 
 .footer { width:auto; padding:10px 0px; margin:25px 0px 0px; border-top:1px dotted #878787; font-size:0.8em; line-height:140%; font-style:italic; color:#878787; text-align:left; float:none; }
 .footer p { margin:0px; }
@@ -66,83 +67,141 @@ table td { padding:7px 5px; text-align:left; vertical-align:top; border:1px soli
 
 
 
-  </style></head><body><div class="content"><h1>abaqusStruct2inp</h1><!--introduction--><p>Below is a demonstration of the features of the <tt>abaqusStruct2inp</tt> function</p><!--/introduction--><h2>Contents</h2><div><ul><li><a href="#2">Syntax</a></li><li><a href="#3">Description</a></li><li><a href="#5">About Abaqus INP input files</a></li><li><a href="#6">Coding INP files in MATLAB</a></li><li><a href="#8">Specify file heading</a></li><li><a href="#9">The preprint section</a></li><li><a href="#10">The part section</a></li><li><a href="#11">The assembly section</a></li><li><a href="#12">The material section</a></li><li><a href="#13">Orientation</a></li><li><a href="#14">The step section</a></li><li><a href="#15">Creating the INP file</a></li><li><a href="#17">View the inp file</a></li></ul></div><pre class="codeinput">clear; close <span class="string">all</span>; clc;
-</pre><h2 id="2">Syntax</h2><p><tt>[T]=abaqusStruct2inp(abaqus_spec,fileName,optionStruct);</tt></p><h2 id="3">Description</h2><p>This function provides the basis for coding Abaqus .inp input files</p><p>See also: <tt>abaqusStructTemplate</tt></p><h2 id="5">About Abaqus INP input files</h2><p>Abaqus input files (.inp) are plain text files.</p><h2 id="6">Coding INP files in MATLAB</h2><h2 id="8">Specify file heading</h2><p>Users may provide a heading which can be used to give a description of the input file.</p><pre class="codeinput"><span class="comment">% *Heading</span>
+  </style></head><body><div class="content"><h1>abaqusStruct2inp</h1><!--introduction--><p>Below is a demonstration of the features of the <tt>abaqusStruct2inp</tt> function</p><!--/introduction--><h2>Contents</h2><div><ul><li><a href="#2">Syntax</a></li><li><a href="#3">Description</a></li><li><a href="#5">About Abaqus INP input files</a></li><li><a href="#6">Coding INP files in MATLAB</a></li><li><a href="#16">Creating the INP file</a></li><li><a href="#18">View the inp file</a></li></ul></div><pre class="codeinput">clear; close <span class="string">all</span>; clc;
+</pre><h2 id="2">Syntax</h2><p><tt>[T]=abaqusStruct2inp(abaqus_spec,fileName,optionStruct);</tt></p><h2 id="3">Description</h2><p>This function provides the basis for coding Abaqus .inp input files</p><p>See also: <tt>abaqusStructTemplate</tt></p><h2 id="5">About Abaqus INP input files</h2><p>Abaqus input files (.inp) are plain text files.</p><h2 id="6">Coding INP files in MATLAB</h2><p>Specify file heading Users may provide a heading which can be used to give a description of the input file.</p><pre class="codeinput"><span class="comment">% *Heading</span>
 <span class="comment">% ** Job name: ABAQUS inp file creation demo</span>
 <span class="comment">% ** Generated by: GIBBON</span>
 
 abaqus_spec.Heading.COMMENT{1}=<span class="string">'Job name: ABAQUS inp file creation demo'</span>;
 abaqus_spec.Heading.COMMENT{2}=<span class="string">'Generated by: GIBBON'</span>;
-</pre><h2 id="9">The preprint section</h2><pre class="codeinput"><span class="comment">% *Preprint, echo=NO, model=NO, history=NO, contact=NO</span>
+</pre><p>The preprint section</p><pre class="codeinput"><span class="comment">% *Preprint, echo=NO, model=NO, history=NO, contact=NO</span>
 abaqus_spec.Preprint.ATTR.echo=<span class="string">'NO'</span>;
 abaqus_spec.Preprint.ATTR.model=<span class="string">'NO'</span>;
 abaqus_spec.Preprint.ATTR.history=<span class="string">'NO'</span>;
 abaqus_spec.Preprint.ATTR.contact=<span class="string">'NO'</span>;
-</pre><h2 id="10">The part section</h2><pre class="codeinput">V=[ 1 1 1; 1 0 1;  1 1 0; 1 0 0; 0 1 1; 0 0 1; 0 1 0; 0 0 0];
-nodeIds=(1:1:size(V,1))';
+</pre><p>The part section</p><pre class="codeinput">V=[ 1 1 1; 1 0 1;  1 1 0; 1 0 0; 0 1 1; 0 0 1; 0 1 0; 0 0 0];
+
+nodeIds=(1:1:size(V,1));
 E=[5 6 8 7 1 2 4 3];
-elementIds=(1:1:size(E,1))';
+elementIds=(1:1:size(E,1));
 
 <span class="comment">% Node</span>
 abaqus_spec.Part{1}.COMMENT=<span class="string">'This section defines the part geometry in terms of nodes and elements'</span>;
 abaqus_spec.Part{1}.ATTR.name=<span class="string">'Cube'</span>;
-abaqus_spec.Part{1}.Node={nodeIds,V};
+abaqus_spec.Part{1}.Node={nodeIds(:),V};
 
 <span class="comment">% Element</span>
 abaqus_spec.Part{1}.Element{1}.ATTR.type=<span class="string">'C3D8R'</span>;
-abaqus_spec.Part{1}.Element{1}.VAL={elementIds,E};
+abaqus_spec.Part{1}.Element{1}.VAL={elementIds(:),E};
 
 <span class="comment">%Element sets</span>
 abaqus_spec.Part{1}.Elset{1}.ATTR.elset=<span class="string">'Set-1'</span>;
 abaqus_spec.Part{1}.Elset{1}.VAL=1;
 
+<span class="comment">%Node sets</span>
+abaqus_spec.Part{1}.Nset{2}.ATTR.nset=<span class="string">'Set-2'</span>;
+abaqus_spec.Part{1}.Nset{2}.VAL=1:1:size(V,1);
+
+<span class="comment">%Node sets using "generate"</span>
+abaqus_spec.Part{1}.Nset{1}.ATTR.nset=<span class="string">'Set-1'</span>;
+abaqus_spec.Part{1}.Nset{1}.ATTR.generate=<span class="string">''</span>;
+abaqus_spec.Part{1}.Nset{1}.VAL=[1 size(V,1) 1];
+
 <span class="comment">%Sections</span>
 abaqus_spec.Part{1}.Solid_section.ATTR.elset=<span class="string">'Set-1'</span>;
 abaqus_spec.Part{1}.Solid_section.ATTR.material=<span class="string">'Elastic'</span>;
-</pre><h2 id="11">The assembly section</h2><pre class="codeinput">abaqus_spec.Assembly.ATTR.name=<span class="string">'Assembly-1'</span>;
-abaqus_spec.Assembly.Instance.ATTR.name=<span class="string">'Cube-assembly'</span>;
-abaqus_spec.Assembly.Instance.ATTR.part=<span class="string">'Cube'</span>;
+
+<span class="comment">% abaqus_spec.Part{1}.Shell_section.ATTR.elset='Set-1';</span>
+<span class="comment">% abaqus_spec.Part{1}.Shell_section.ATTR.material='Material-1';</span>
+<span class="comment">% % abaqus_spec.Part{1}.Shell_section.VAL=[10 5]; %Use numerical data</span>
+<span class="comment">% abaqus_spec.Part{1}.Shell_section.VAL='10., 5'; %Use custom text data</span>
+</pre><p>The assembly section</p><pre class="codeinput">abaqus_spec.Assembly.ATTR.name=<span class="string">'Assembly-1'</span>;
+
+abaqus_spec.Assembly.Instance{1}.ATTR.name=<span class="string">'Cube-1'</span>;
+abaqus_spec.Assembly.Instance{1}.ATTR.part=<span class="string">'Cube'</span>;
+
+<span class="comment">% abaqus_spec.Assembly.Instance{2}.ATTR.name='Clot-1';</span>
+<span class="comment">% abaqus_spec.Assembly.Instance{2}.ATTR.part='Clot';</span>
+
 
 abaqus_spec.Assembly.Nset{1}.ATTR.nset=<span class="string">'Set-1'</span>;
-abaqus_spec.Assembly.Nset{1}.ATTR.instance=<span class="string">'Cube-assembly'</span>;
+abaqus_spec.Assembly.Nset{1}.ATTR.instance=<span class="string">'Cube-1'</span>;
 abaqus_spec.Assembly.Nset{1}.ATTR.generate=<span class="string">''</span>;
 abaqus_spec.Assembly.Nset{1}.VAL=[1 4 1];
 
 abaqus_spec.Assembly.Nset{2}.ATTR.nset=<span class="string">'Set-3'</span>;
-abaqus_spec.Assembly.Nset{2}.ATTR.instance=<span class="string">'Cube-assembly'</span>;
+abaqus_spec.Assembly.Nset{2}.ATTR.instance=<span class="string">'Cube-1'</span>;
 abaqus_spec.Assembly.Nset{2}.ATTR.generate=<span class="string">''</span>;
 abaqus_spec.Assembly.Nset{2}.VAL=[5 7 1];
 
 abaqus_spec.Assembly.Nset{3}.ATTR.nset=<span class="string">'Set-4'</span>;
-abaqus_spec.Assembly.Nset{3}.ATTR.instance=<span class="string">'Cube-assembly'</span>;
+abaqus_spec.Assembly.Nset{3}.ATTR.instance=<span class="string">'Cube-1'</span>;
 abaqus_spec.Assembly.Nset{3}.ATTR.generate=<span class="string">''</span>;
 abaqus_spec.Assembly.Nset{3}.VAL=[2 6 2];
 
 abaqus_spec.Assembly.Nset{4}.ATTR.nset=<span class="string">'Set-5'</span>;
-abaqus_spec.Assembly.Nset{4}.ATTR.instance=<span class="string">'Cube-assembly'</span>;
+abaqus_spec.Assembly.Nset{4}.ATTR.instance=<span class="string">'Cube-1'</span>;
 abaqus_spec.Assembly.Nset{4}.VAL=[3 4 7];
 
 abaqus_spec.Assembly.Nset{5}.ATTR.nset=<span class="string">'origin'</span>;
-abaqus_spec.Assembly.Nset{5}.ATTR.instance=<span class="string">'Cube-assembly'</span>;
+abaqus_spec.Assembly.Nset{5}.ATTR.instance=<span class="string">'Cube-1'</span>;
 abaqus_spec.Assembly.Nset{5}.VAL=8;
 
 abaqus_spec.Assembly.Nset{6}.ATTR.nset=<span class="string">'all'</span>;
-abaqus_spec.Assembly.Nset{6}.ATTR.instance=<span class="string">'Cube-assembly'</span>;
+abaqus_spec.Assembly.Nset{6}.ATTR.instance=<span class="string">'Cube-1'</span>;
 <span class="comment">% abaqus_spec.Assembly.Nset{6}.ATTR.generate='';</span>
-abaqus_spec.Assembly.Nset{6}.VAL=[1:1:8];
-</pre><h2 id="12">The material section</h2><p>*Material, name=Material-1 *Hyperelastic, neo hooke  0.03,1.</p><pre class="codeinput">abaqus_spec.Material.ATTR.name=<span class="string">'Neo-Hooke'</span>;
+abaqus_spec.Assembly.Nset{6}.VAL=1:size(V,1);
+
+abaqus_spec.Assembly.Surface{1}.ATTR.type=<span class="string">'ELEMENT'</span>;
+abaqus_spec.Assembly.Surface{1}.ATTR.name=<span class="string">'innerSurface'</span>;
+elemSetsInner={[1 2 3 4],[4 5 6 7]};
+elemSetSideInner=[1 2];
+valCell=cell(numel(elemSetsInner),1);
+<span class="keyword">for</span> qs=1:1:numel(elemSetsInner)
+    surfaceElementSetName=[<span class="string">'elementSetInnerSurface'</span>,num2str(qs)];
+    abaqus_spec.Assembly.Elset{qs}.ATTR.elset=surfaceElementSetName;
+    abaqus_spec.Assembly.Elset{qs}.ATTR.internal=<span class="string">''</span>; <span class="comment">%Remains hidden uppon import</span>
+    abaqus_spec.Assembly.Elset{qs}.ATTR.instance=<span class="string">'Cube-1'</span>;
+    abaqus_spec.Assembly.Elset{qs}.VAL=elemSetsInner{qs};
+
+    sidePick=elemSetSideInner(qs);
+    valCell{qs}={[surfaceElementSetName,<span class="string">', S'</span>,num2str(sidePick)]};
+<span class="keyword">end</span>
+abaqus_spec.Assembly.Surface{1}.VAL=valCell;
+</pre><p>The material section</p><pre class="codeinput"><span class="comment">% *Material, name=Material-1</span>
+<span class="comment">% *Hyperelastic, neo hooke</span>
+<span class="comment">%  0.03,1.</span>
+
+abaqus_spec.Material.ATTR.name=<span class="string">'Neo-Hooke'</span>;
 abaqus_spec.Material.Hyperelastic.VAL=[0.03 1];
 abaqus_spec.Material.Hyperelastic.ATTR.neo_hooke=<span class="string">''</span>;
-
-<span class="comment">% abaqus_spec.Material.ATTR.name='Elastic';</span>
-<span class="comment">% abaqus_spec.Material.Elastic=[0.5 0.49];</span>
-</pre><h2 id="13">Orientation</h2><pre class="codeinput"><span class="comment">% *Orientation, name=Ori-1, system=RECTANGULAR</span>
+abaqus_spec.Material.ATTR.name=<span class="string">'Elastic'</span>;
+abaqus_spec.Material.Elastic=[0.5 0.49];
+</pre><p>Orientation</p><pre class="codeinput"><span class="comment">% *Orientation, name=Ori-1, system=RECTANGULAR</span>
 <span class="comment">% Ori-1-DiscOrient</span>
 <span class="comment">% 2, 90.</span>
 abaqus_spec.Orientation.ATTR.name=<span class="string">'Ori-1'</span>;
 abaqus_spec.Orientation.ATTR.system=<span class="string">'RECTANGULAR'</span>;
 abaqus_spec.Orientation.VAL=[<span class="string">'Ori-1-DiscOrient'</span> newline vec2strIntDouble([2 90],<span class="string">'%i'</span>)];
-</pre><h2 id="14">The step section</h2><pre class="codeinput">abaqus_spec.Step.ATTR.name=<span class="string">'Step-1'</span>;
+</pre><p>Contact pair</p><pre class="codeinput"><span class="comment">%%--&gt; Contact pair</span>
+abaqus_spec.contact_pair{1}.ATTR.interaction=<span class="string">'user-1'</span>;
+abaqus_spec.contact_pair{1}.ATTR.type=<span class="string">'node to surface'</span>;
+abaqus_spec.contact_pair{1}.ATTR.adjust=<span class="string">'0.0'</span>;
+abaqus_spec.contact_pair{1}.VAL=<span class="string">'AORTA-ASSEMBLY.OUTER, AORTA1-ASSEMBLY.OUTERX'</span>;
+
+<span class="comment">% surface interaction</span>
+abaqus_spec.surface_interaction{1}.ATTR.name=<span class="string">'user-1'</span>;
+abaqus_spec.surface_interaction{1}.ATTR.user=<span class="string">''</span>;
+abaqus_spec.surface_interaction{1}.ATTR.properties=<span class="string">'7'</span>;
+abaqus_spec.surface_interaction{1}.ATTR.unsymm=<span class="string">''</span>;
+abaqus_spec.surface_interaction{1}.ATTR.DEPVAR=<span class="string">'13'</span>;
+abaqus_spec.surface_interaction{1}.CSTM=<span class="string">', '</span>; <span class="comment">%Line with just comma</span>
+
+<span class="comment">%Wrap to max width of 8 entries</span>
+t=vec2strIntDouble([0.2, 0.2, 0.05, 0.05,150,1000,0.0],<span class="string">'%6.7e'</span>);
+t=strwrap(t,8,<span class="string">', '</span>);
+abaqus_spec.surface_interaction{1}.VAL=t;
+</pre><p>The step section</p><pre class="codeinput">abaqus_spec.Step.ATTR.name=<span class="string">'Step-1'</span>;
 abaqus_spec.Step.ATTR.nlgeom=<span class="string">'YES'</span>;
 abaqus_spec.Step.Static=[0.1 1 1e-5 0.1];
 
@@ -174,16 +233,21 @@ abaqus_spec.Step.Node_print.ATTR.nset=<span class="string">'all'</span>;
 abaqus_spec.Step.Node_print.ATTR.frequency = 1;
 abaqus_spec.Step.Node_print.VAL=<span class="string">'COORD'</span>;
 abaqus_spec.Step.El_print.VAL=<span class="string">'S'</span>;
+
 <span class="comment">% * NODE SET, set=yoursetname, frequency = 1</span>
 <span class="comment">% U</span>
-</pre><h2 id="15">Creating the INP file</h2><p>You can use <tt>abaqusStruct2inp</tt> to write the structure data to a file.</p><pre class="codeinput"><span class="comment">%Create file name for INP file</span>
+</pre><h2 id="16">Creating the INP file</h2><p>You can use <tt>abaqusStruct2inp</tt> to write the structure data to a file.</p><pre class="codeinput"><span class="comment">%Create file name for INP file</span>
 defaultFolder = fileparts(fileparts(mfilename(<span class="string">'fullpath'</span>)));
 savePath=fullfile(defaultFolder,<span class="string">'data'</span>,<span class="string">'temp'</span>);
 fileName=fullfile(savePath,<span class="string">'tempModel.inp'</span>);
 [~,fileNamePart,~]=fileparts(fileName);
 </pre><pre class="codeinput">[T]=abaqusStruct2inp(abaqus_spec,fileName);
-</pre><h2 id="17">View the inp file</h2><pre class="codeinput">textView(fileName);
-</pre><img width="100%" height="auto" vspace="5" hspace="5" src="HELP_abaqusStruct2inp_01.jpg" alt=""> <p><img vspace="5" hspace="5" src="gibbVerySmall.gif" alt=""> </p><p><i><b>GIBBON</b></i> <a href="www.gibboncode.org">www.gibboncode.org</a></p><p><i>Kevin Mattheus Moerman</i>, <a href="gibbon.toolbox@gmail.com">gibbon.toolbox@gmail.com</a></p><p><i><b>GIBBON footer text</b></i></p><p>License: <a href="https://github.com/gibbonCode/GIBBON/blob/master/LICENSE">https://github.com/gibbonCode/GIBBON/blob/master/LICENSE</a></p><p>GIBBON: The Geometry and Image-based Bioengineering add-On. A toolbox for image segmentation, image-based modeling, meshing, and finite element analysis.</p><p>Copyright (C) 2019  Kevin Mattheus Moerman</p><p>This program is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.</p><p>This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for more details.</p><p>You should have received a copy of the GNU General Public License along with this program.  If not, see <a href="http://www.gnu.org/licenses/">http://www.gnu.org/licenses/</a>.</p><p class="footer"><br><a href="https://www.mathworks.com/products/matlab/">Published with MATLAB&reg; R2019a</a><br></p></div><!--
+</pre><h2 id="18">View the inp file</h2><pre class="codeinput">textView(fileName);
+</pre><pre class="codeoutput">Warning: The JavaFrame figure property will be removed in
+a future release. For more information see &lt;a
+href="https://www.mathworks.com/products/matlab/app-designer/java-swing-alternatives.html"&gt;UI
+Alternatives for MATLAB Apps&lt;/a&gt; on&nbsp;mathworks.com. 
+</pre><img width="100%" height="auto" vspace="5" hspace="5" src="HELP_abaqusStruct2inp_01.jpg" alt=""> <p><img vspace="5" hspace="5" src="gibbVerySmall.gif" alt=""> </p><p><i><b>GIBBON</b></i> <a href="www.gibboncode.org">www.gibboncode.org</a></p><p><i>Kevin Mattheus Moerman</i>, <a href="gibbon.toolbox@gmail.com">gibbon.toolbox@gmail.com</a></p><p><i><b>GIBBON footer text</b></i></p><p>License: <a href="https://github.com/gibbonCode/GIBBON/blob/master/LICENSE">https://github.com/gibbonCode/GIBBON/blob/master/LICENSE</a></p><p>GIBBON: The Geometry and Image-based Bioengineering add-On. A toolbox for image segmentation, image-based modeling, meshing, and finite element analysis.</p><p>Copyright (C) 2006-2020 Kevin Mattheus Moerman</p><p>This program is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.</p><p>This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for more details.</p><p>You should have received a copy of the GNU General Public License along with this program.  If not, see <a href="http://www.gnu.org/licenses/">http://www.gnu.org/licenses/</a>.</p><p class="footer"><br><a href="https://www.mathworks.com/products/matlab/">Published with MATLAB&reg; R2020b</a><br></p></div><!--
 ##### SOURCE BEGIN #####
 %% abaqusStruct2inp
 % Below is a demonstration of the features of the |abaqusStruct2inp| function
@@ -205,11 +269,8 @@ clear; close all; clc;
 
 %% Coding INP files in MATLAB
 
- 
-%%
-
-
-%% Specify file heading
+%% 
+% Specify file heading
 % Users may provide a heading which can be used to give a description of
 % the input file. 
 
@@ -220,7 +281,8 @@ clear; close all; clc;
 abaqus_spec.Heading.COMMENT{1}='Job name: ABAQUS inp file creation demo';
 abaqus_spec.Heading.COMMENT{2}='Generated by: GIBBON';
 
-%% The preprint section
+%% 
+% The preprint section
 % 
 
 % *Preprint, echo=NO, model=NO, history=NO, contact=NO
@@ -229,67 +291,106 @@ abaqus_spec.Preprint.ATTR.model='NO';
 abaqus_spec.Preprint.ATTR.history='NO';
 abaqus_spec.Preprint.ATTR.contact='NO';
 
-%% The part section
+%%
+% The part section
 
 V=[ 1 1 1; 1 0 1;  1 1 0; 1 0 0; 0 1 1; 0 0 1; 0 1 0; 0 0 0];
-nodeIds=(1:1:size(V,1))';
+
+nodeIds=(1:1:size(V,1));
 E=[5 6 8 7 1 2 4 3];
-elementIds=(1:1:size(E,1))';
+elementIds=(1:1:size(E,1));
 
 % Node
 abaqus_spec.Part{1}.COMMENT='This section defines the part geometry in terms of nodes and elements';
 abaqus_spec.Part{1}.ATTR.name='Cube';
-abaqus_spec.Part{1}.Node={nodeIds,V};
+abaqus_spec.Part{1}.Node={nodeIds(:),V};
 
 % Element
 abaqus_spec.Part{1}.Element{1}.ATTR.type='C3D8R';
-abaqus_spec.Part{1}.Element{1}.VAL={elementIds,E};
+abaqus_spec.Part{1}.Element{1}.VAL={elementIds(:),E};
 
 %Element sets
 abaqus_spec.Part{1}.Elset{1}.ATTR.elset='Set-1';
 abaqus_spec.Part{1}.Elset{1}.VAL=1;
 
+%Node sets
+abaqus_spec.Part{1}.Nset{2}.ATTR.nset='Set-2';
+abaqus_spec.Part{1}.Nset{2}.VAL=1:1:size(V,1);
+
+%Node sets using "generate"
+abaqus_spec.Part{1}.Nset{1}.ATTR.nset='Set-1';
+abaqus_spec.Part{1}.Nset{1}.ATTR.generate='';
+abaqus_spec.Part{1}.Nset{1}.VAL=[1 size(V,1) 1];
+
 %Sections
 abaqus_spec.Part{1}.Solid_section.ATTR.elset='Set-1';
 abaqus_spec.Part{1}.Solid_section.ATTR.material='Elastic';
 
-%% The assembly section
-%
+% abaqus_spec.Part{1}.Shell_section.ATTR.elset='Set-1';
+% abaqus_spec.Part{1}.Shell_section.ATTR.material='Material-1';
+% % abaqus_spec.Part{1}.Shell_section.VAL=[10 5]; %Use numerical data
+% abaqus_spec.Part{1}.Shell_section.VAL='10., 5'; %Use custom text data
+
+%%
+% The assembly section
 
 abaqus_spec.Assembly.ATTR.name='Assembly-1';
-abaqus_spec.Assembly.Instance.ATTR.name='Cube-assembly';
-abaqus_spec.Assembly.Instance.ATTR.part='Cube';
+ 
+abaqus_spec.Assembly.Instance{1}.ATTR.name='Cube-1';
+abaqus_spec.Assembly.Instance{1}.ATTR.part='Cube';
+ 
+% abaqus_spec.Assembly.Instance{2}.ATTR.name='Clot-1';
+% abaqus_spec.Assembly.Instance{2}.ATTR.part='Clot';
+
 
 abaqus_spec.Assembly.Nset{1}.ATTR.nset='Set-1';
-abaqus_spec.Assembly.Nset{1}.ATTR.instance='Cube-assembly';
+abaqus_spec.Assembly.Nset{1}.ATTR.instance='Cube-1';
 abaqus_spec.Assembly.Nset{1}.ATTR.generate='';
 abaqus_spec.Assembly.Nset{1}.VAL=[1 4 1];
 
 abaqus_spec.Assembly.Nset{2}.ATTR.nset='Set-3';
-abaqus_spec.Assembly.Nset{2}.ATTR.instance='Cube-assembly';
+abaqus_spec.Assembly.Nset{2}.ATTR.instance='Cube-1';
 abaqus_spec.Assembly.Nset{2}.ATTR.generate='';
 abaqus_spec.Assembly.Nset{2}.VAL=[5 7 1];
 
 abaqus_spec.Assembly.Nset{3}.ATTR.nset='Set-4';
-abaqus_spec.Assembly.Nset{3}.ATTR.instance='Cube-assembly';
+abaqus_spec.Assembly.Nset{3}.ATTR.instance='Cube-1';
 abaqus_spec.Assembly.Nset{3}.ATTR.generate='';
 abaqus_spec.Assembly.Nset{3}.VAL=[2 6 2];
 
 abaqus_spec.Assembly.Nset{4}.ATTR.nset='Set-5';
-abaqus_spec.Assembly.Nset{4}.ATTR.instance='Cube-assembly';
+abaqus_spec.Assembly.Nset{4}.ATTR.instance='Cube-1';
 abaqus_spec.Assembly.Nset{4}.VAL=[3 4 7];
 
 abaqus_spec.Assembly.Nset{5}.ATTR.nset='origin';
-abaqus_spec.Assembly.Nset{5}.ATTR.instance='Cube-assembly';
+abaqus_spec.Assembly.Nset{5}.ATTR.instance='Cube-1';
 abaqus_spec.Assembly.Nset{5}.VAL=8;
 
 abaqus_spec.Assembly.Nset{6}.ATTR.nset='all';
-abaqus_spec.Assembly.Nset{6}.ATTR.instance='Cube-assembly';
+abaqus_spec.Assembly.Nset{6}.ATTR.instance='Cube-1';
 % abaqus_spec.Assembly.Nset{6}.ATTR.generate='';
-abaqus_spec.Assembly.Nset{6}.VAL=[1:1:8];
+abaqus_spec.Assembly.Nset{6}.VAL=1:size(V,1);
 
-%% The material section
-%
+abaqus_spec.Assembly.Surface{1}.ATTR.type='ELEMENT';
+abaqus_spec.Assembly.Surface{1}.ATTR.name='innerSurface';
+elemSetsInner={[1 2 3 4],[4 5 6 7]};
+elemSetSideInner=[1 2];
+valCell=cell(numel(elemSetsInner),1);
+for qs=1:1:numel(elemSetsInner)
+    surfaceElementSetName=['elementSetInnerSurface',num2str(qs)];
+    abaqus_spec.Assembly.Elset{qs}.ATTR.elset=surfaceElementSetName;
+    abaqus_spec.Assembly.Elset{qs}.ATTR.internal=''; %Remains hidden uppon import
+    abaqus_spec.Assembly.Elset{qs}.ATTR.instance='Cube-1';
+    abaqus_spec.Assembly.Elset{qs}.VAL=elemSetsInner{qs};
+    
+    sidePick=elemSetSideInner(qs);
+    valCell{qs}={[surfaceElementSetName,', S',num2str(sidePick)]};
+end
+abaqus_spec.Assembly.Surface{1}.VAL=valCell;
+
+%% 
+% The material section
+
 % *Material, name=Material-1
 % *Hyperelastic, neo hooke
 %  0.03,1.
@@ -297,11 +398,11 @@ abaqus_spec.Assembly.Nset{6}.VAL=[1:1:8];
 abaqus_spec.Material.ATTR.name='Neo-Hooke';
 abaqus_spec.Material.Hyperelastic.VAL=[0.03 1];
 abaqus_spec.Material.Hyperelastic.ATTR.neo_hooke='';
+abaqus_spec.Material.ATTR.name='Elastic';
+abaqus_spec.Material.Elastic=[0.5 0.49];
 
-% abaqus_spec.Material.ATTR.name='Elastic';
-% abaqus_spec.Material.Elastic=[0.5 0.49];
-
-%% Orientation
+%%
+% Orientation
 
 % *Orientation, name=Ori-1, system=RECTANGULAR
 % Ori-1-DiscOrient
@@ -310,7 +411,30 @@ abaqus_spec.Orientation.ATTR.name='Ori-1';
 abaqus_spec.Orientation.ATTR.system='RECTANGULAR';
 abaqus_spec.Orientation.VAL=['Ori-1-DiscOrient' newline vec2strIntDouble([2 90],'%i')];
 
-%% The step section
+%%
+% Contact pair
+
+%%REPLACE_WITH_DASH_DASH> Contact pair
+abaqus_spec.contact_pair{1}.ATTR.interaction='user-1';
+abaqus_spec.contact_pair{1}.ATTR.type='node to surface';
+abaqus_spec.contact_pair{1}.ATTR.adjust='0.0';
+abaqus_spec.contact_pair{1}.VAL='AORTA-ASSEMBLY.OUTER, AORTA1-ASSEMBLY.OUTERX';
+
+% surface interaction
+abaqus_spec.surface_interaction{1}.ATTR.name='user-1';
+abaqus_spec.surface_interaction{1}.ATTR.user='';
+abaqus_spec.surface_interaction{1}.ATTR.properties='7';
+abaqus_spec.surface_interaction{1}.ATTR.unsymm='';
+abaqus_spec.surface_interaction{1}.ATTR.DEPVAR='13';
+abaqus_spec.surface_interaction{1}.CSTM=', '; %Line with just comma
+
+%Wrap to max width of 8 entries
+t=vec2strIntDouble([0.2, 0.2, 0.05, 0.05,150,1000,0.0],'%6.7e');
+t=strwrap(t,8,', '); 
+abaqus_spec.surface_interaction{1}.VAL=t;
+
+%%
+% The step section
 %
 
 abaqus_spec.Step.ATTR.name='Step-1';
@@ -345,8 +469,12 @@ abaqus_spec.Step.Node_print.ATTR.nset='all';
 abaqus_spec.Step.Node_print.ATTR.frequency = 1;
 abaqus_spec.Step.Node_print.VAL='COORD';
 abaqus_spec.Step.El_print.VAL='S';
+
 % * NODE SET, set=yoursetname, frequency = 1
 % U
+
+%% 
+
 
 %% Creating the INP file
 % You can use |abaqusStruct2inp| to write the structure data to a file. 
@@ -383,7 +511,7 @@ textView(fileName);
 % image segmentation, image-based modeling, meshing, and finite element
 % analysis.
 % 
-% Copyright (C) 2019  Kevin Mattheus Moerman
+% Copyright (C) 2006-2020 Kevin Mattheus Moerman
 % 
 % This program is free software: you can redistribute it and/or modify
 % it under the terms of the GNU General Public License as published by

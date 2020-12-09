@@ -144,11 +144,18 @@ abaqus_spec.Assembly.Surface{1}.VAL=valCell;
 % *Hyperelastic, neo hooke
 %  0.03,1.
 
+% abaqus_spec.Material.ATTR.name='Neo-Hooke';
+% abaqus_spec.Material.Hyperelastic.VAL=[0.03 1];
+% abaqus_spec.Material.Hyperelastic.ATTR.neo_hooke='';
+
 abaqus_spec.Material.ATTR.name='Neo-Hooke';
 abaqus_spec.Material.Hyperelastic.VAL=[0.03 1];
 abaqus_spec.Material.Hyperelastic.ATTR.neo_hooke='';
-abaqus_spec.Material.ATTR.name='Elastic';
-abaqus_spec.Material.Elastic=[0.5 0.49];
+% abaqus_spec.Material.Plastic.ATTR.neo_hooke='';
+abaqus_spec.Material.Plastic.VAL={pi '0'};
+
+% abaqus_spec.Material.ATTR.name='Elastic';
+% abaqus_spec.Material.Elastic=[0.5 0.49];
 
 %%
 % Orientation
@@ -159,28 +166,6 @@ abaqus_spec.Material.Elastic=[0.5 0.49];
 abaqus_spec.Orientation.ATTR.name='Ori-1';
 abaqus_spec.Orientation.ATTR.system='RECTANGULAR';
 abaqus_spec.Orientation.VAL=['Ori-1-DiscOrient' newline vec2strIntDouble([2 90],'%i')];
-
-%%
-% Contact pair
-
-%%--> Contact pair
-abaqus_spec.contact_pair{1}.ATTR.interaction='user-1';
-abaqus_spec.contact_pair{1}.ATTR.type='node to surface';
-abaqus_spec.contact_pair{1}.ATTR.adjust='0.0';
-abaqus_spec.contact_pair{1}.VAL='AORTA-ASSEMBLY.OUTER, AORTA1-ASSEMBLY.OUTERX';
-
-% surface interaction
-abaqus_spec.surface_interaction{1}.ATTR.name='user-1';
-abaqus_spec.surface_interaction{1}.ATTR.user='';
-abaqus_spec.surface_interaction{1}.ATTR.properties='7';
-abaqus_spec.surface_interaction{1}.ATTR.unsymm='';
-abaqus_spec.surface_interaction{1}.ATTR.DEPVAR='13';
-abaqus_spec.surface_interaction{1}.CSTM=', '; %Line with just comma
-
-%Wrap to max width of 8 entries
-t=vec2strIntDouble([0.2, 0.2, 0.05, 0.05,150,1000,0.0],'%6.7e');
-t=strwrap(t,8,', '); 
-abaqus_spec.surface_interaction{1}.VAL=t;
 
 %%
 % The step section
@@ -218,7 +203,6 @@ abaqus_spec.Step.Node_print.ATTR.nset='all';
 abaqus_spec.Step.Node_print.ATTR.frequency = 1;
 abaqus_spec.Step.Node_print.VAL='COORD';
 abaqus_spec.Step.El_print.VAL='S';
-
 % * NODE SET, set=yoursetname, frequency = 1
 % U
 
