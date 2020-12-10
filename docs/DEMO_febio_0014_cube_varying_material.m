@@ -67,7 +67,6 @@ displacementMagnitude=(stretchLoad*sampleHeight)-sampleHeight; %The displacement
 
 %Material parameter sets
 testOpt=2; %1=Linear gradient of material, or 2=gyroid based material distribution
-numMaterialLevels=numElementsWidth; %Number of materials to use 
 E_youngs_min=1e-3; %Lowest Youngs modulus
 E_youngs_max=1; %Highest Youngs modulus
 nu=0.4; %Poissons ratio
