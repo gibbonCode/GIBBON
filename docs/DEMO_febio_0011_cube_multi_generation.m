@@ -175,9 +175,6 @@ drawnow;
 %% Defining the FEBio input structure
 % See also |febioStructTemplate| and |febioStruct2xml| and the FEBio user
 % manual.
-%% Defining the FEBio input structure
-% See also |febioStructTemplate| and |febioStruct2xml| and the FEBio user
-% manual.
 
 %Get a template with default settings 
 [febio_spec]=febioStructTemplate;

@@ -9,7 +9,7 @@
 
 %% Keywords
 %
-% * febio_spec version 2.5
+% * febio_spec version 3.0
 % * febio, FEBio
 % * pressure loading
 % * hexahedral elements, hex8
@@ -26,7 +26,7 @@ clear; close all; clc;
 %%
 % Plot settings
 fontSize=15;
-markerSize=35;
+markerSize=25;
 markerSize2=20;
 plotColor='rw';
 vectorPlotSize=10;
@@ -40,18 +40,18 @@ savePath=fullfile(defaultFolder,'data','temp');
 % Defining file names
 febioFebFileNamePart='tempModel';
 febioFebFileName=fullfile(savePath,[febioFebFileNamePart,'.feb']); %FEB file name
-febioLogFileName=fullfile(savePath,[febioFebFileNamePart,'.txt']); %FEBio log file name
+febioLogFileName=[febioFebFileNamePart,'.txt']; %FEBio log file name
 febioLogFileName_disp=[febioFebFileNamePart,'_disp_out.txt']; %Log file name for exporting displacement
 
 %Material parameter set
 c1=1e-3; %Shear-modulus-like parameter
 m1=2; %Material parameter setting degree of non-linearity
 ksi=c1*100; %Fiber "modulus"
-beta=3; %Fiber "nonlinearity" parameter
+alphaPar=1e-20;
+beta=3;
 k_factor=1e2; %Bulk modulus factor 
 k=0.5.*(c1+ksi)*k_factor; %Bulk modulus
 T0=10e-3; %Active stress
-formulationType=1; %1=uncoupled, 2=coupled
 
 % FEA control settings
 numTimeSteps=10; %Number of time steps desired
@@ -100,10 +100,11 @@ X=V(:,1); Y=V(:,2); Z=V(:,3); % Nodal coordinate components
 [VE]=patchCentre(E,V);
 
 %Define fibers as going from one face center to the other
-V_fib_bottom=patchCentre(F_element_bottoms,V); %Middle of bottom faces
-V_fib_top=patchCentre(F_element_tops,V); %Middle of top faces
-V_fib=vecnormalize(V_fib_top-V_fib_bottom); %Normalized fiber vectors
-[a,d]=vectorOrthogonalPair(V_fib); %Get orthogonal vector pair
+e1_dir_bottom=patchCentre(F_element_bottoms,V); %Middle of bottom faces
+e1_dir_top=patchCentre(F_element_tops,V); %Middle of top faces
+e1_dir=vecnormalize(e1_dir_top-e1_dir_bottom); %Normalized fiber vectors
+
+[e2_dir,e3_dir]=vectorOrthogonalPair(e1_dir); %Get orthogonal vector pair
 
 %Get boundary directions faces to set-up support
 F_bottom=F_element_bottoms(all(ismember(F_element_bottoms,Fb),2),:); %The faces at the bottom
@@ -114,15 +115,14 @@ bcSupportList=unique(F_bottom(:)); %The node list for the bottom nodes
 
 cFigure; hold on;
 gtitle('Boundary conditions and fiber directions',fontSize);
-hl(1)=gpatch(Fb,V,plotColor,'none',0.25);
-hl(2)=quiverVec(VE,V_fib,vectorPlotSize,'k');
-quiverVec(VE,a,vectorPlotSize/2,'kw');
-quiverVec(VE,d,vectorPlotSize/2,'kw');
 
-hl(3)=gpatch(F_bottom,V,'rw','r',1);
-hl(4)=plotV(V(bcSupportList,:),'r.','MarkerSize',markerSize);
+gpatch(Fb,V,plotColor,'none',0.25);
+hf(1)=quiverVec(VE,e1_dir,10,'r');
+hf(2)=quiverVec(VE,e2_dir,5,'g');
+hf(3)=quiverVec(VE,e3_dir,5,'b');
+hf(4)=plotV(V(bcSupportList,:),'k.','MarkerSize',markerSize);
 
-legend(hl,{'Boundary faces','Fiber vectors','Bottom faces','Supported nodes'});
+legend(hf,{'e1-direction (fiber)','e2-direction','e3-direction','Bc fix nodes'});
 
 axisGeom(gca,fontSize);
 camlight headlight;
@@ -136,117 +136,93 @@ drawnow;
 [febio_spec]=febioStructTemplate;
 
 %febio_spec version 
-febio_spec.ATTR.version='2.5'; 
+febio_spec.ATTR.version='3.0'; 
 
 %Module section
 febio_spec.Module.ATTR.type='solid'; 
 
 %Control section
-febio_spec.Control.analysis.ATTR.type='static';
+febio_spec.Control.analysis='STATIC';
 febio_spec.Control.time_steps=numTimeSteps;
 febio_spec.Control.step_size=1/numTimeSteps;
+febio_spec.Control.solver.max_refs=max_refs;
+febio_spec.Control.solver.max_ups=max_ups;
 febio_spec.Control.time_stepper.dtmin=dtmin;
 febio_spec.Control.time_stepper.dtmax=dtmax; 
 febio_spec.Control.time_stepper.max_retries=max_retries;
 febio_spec.Control.time_stepper.opt_iter=opt_iter;
-febio_spec.Control.max_refs=max_refs;
-febio_spec.Control.max_ups=max_ups;
 
 %Material section
+materialName1='Material1';
+febio_spec.Material.material{1}.ATTR.name=materialName1;
 febio_spec.Material.material{1}.ATTR.type='solid mixture';
 febio_spec.Material.material{1}.ATTR.id=1;
 
-febio_spec.Material.material{1}.mat_axis.ATTR.type='user';
+%Solid component
+febio_spec.Material.material{1}.solid{1}.ATTR.type='Ogden unconstrained';
+febio_spec.Material.material{1}.solid{1}.c1=c1;
+febio_spec.Material.material{1}.solid{1}.m1=m1;
+febio_spec.Material.material{1}.solid{1}.c2=c1;
+febio_spec.Material.material{1}.solid{1}.m2=-m1;
+febio_spec.Material.material{1}.solid{1}.cp=k;
 
-switch formulationType
-    case 1
-        %The gound matrix
-        febio_spec.Material.material{1}.solid{1}.ATTR.type='Ogden';
-        febio_spec.Material.material{1}.solid{1}.c1=c1;
-        febio_spec.Material.material{1}.solid{1}.m1=m1;
-        febio_spec.Material.material{1}.solid{1}.c2=c1;
-        febio_spec.Material.material{1}.solid{1}.m2=-m1;
-        febio_spec.Material.material{1}.solid{1}.k=k;
-        
-        %The passive fiber component
-        febio_spec.Material.material{1}.solid{2}.ATTR.type='fiber-exp-pow-uncoupled';
-        febio_spec.Material.material{1}.solid{2}.ksi=ksi;
-        febio_spec.Material.material{1}.solid{2}.alpha=1e-20;
-        febio_spec.Material.material{1}.solid{2}.beta=beta;
-        febio_spec.Material.material{1}.solid{2}.theta=0;
-        febio_spec.Material.material{1}.solid{2}.phi=0;
-        febio_spec.Material.material{1}.solid{2}.k=k;
-        
-        %The active fiber component
-        febio_spec.Material.material{1}.solid{3}.ATTR.type='uncoupled prescribed uniaxial active contraction';
-        febio_spec.Material.material{1}.solid{3}.T0.VAL=T0;
-        febio_spec.Material.material{1}.solid{3}.T0.ATTR.lc=1;
-        febio_spec.Material.material{1}.solid{3}.theta=0;
-        febio_spec.Material.material{1}.solid{3}.phi=0;
-    case 2
-        %The gound matrix
-        febio_spec.Material.material{1}.solid{1}.ATTR.type='Ogden unconstrained';
-        febio_spec.Material.material{1}.solid{1}.c1=c1;
-        febio_spec.Material.material{1}.solid{1}.m1=m1;
-        febio_spec.Material.material{1}.solid{1}.c2=c1;
-        febio_spec.Material.material{1}.solid{1}.m2=-m1;
-        febio_spec.Material.material{1}.solid{1}.cp=k;
-        
-        %The passive fiber component
-        febio_spec.Material.material{1}.solid{2}.ATTR.type='fiber-exp-pow';
-        febio_spec.Material.material{1}.solid{2}.ksi=ksi;
-        febio_spec.Material.material{1}.solid{2}.alpha=1e-20;
-        febio_spec.Material.material{1}.solid{2}.beta=beta;
-        febio_spec.Material.material{1}.solid{2}.theta=0;
-        febio_spec.Material.material{1}.solid{2}.phi=0;
-        
-        %The active fiber component
-        febio_spec.Material.material{1}.solid{3}.ATTR.type='prescribed uniaxial active contraction';
-        febio_spec.Material.material{1}.solid{3}.T0.VAL=T0;
-        febio_spec.Material.material{1}.solid{3}.T0.ATTR.lc=1;
-        febio_spec.Material.material{1}.solid{3}.theta=0;
-        febio_spec.Material.material{1}.solid{3}.phi=0;
-end
-%Geometry section
+%The passive fiber component
+febio_spec.Material.material{1}.solid{2}.ATTR.type='fiber-exp-pow';
+febio_spec.Material.material{1}.solid{2}.ksi=ksi;
+febio_spec.Material.material{1}.solid{2}.alpha=alphaPar;
+febio_spec.Material.material{1}.solid{2}.beta=beta;
+% febio_spec.Material.material{1}.solid{2}.mat_axis.ATTR.type='user';    
+
+%The active fiber component
+febio_spec.Material.material{1}.solid{3}.ATTR.type='prescribed uniaxial active contraction';
+febio_spec.Material.material{1}.solid{3}.T0.VAL=T0;
+febio_spec.Material.material{1}.solid{3}.T0.ATTR.lc=1;
+
+% Mesh section
 % -> Nodes
-febio_spec.Geometry.Nodes{1}.ATTR.name='nodeSet_all'; %The node set name
-febio_spec.Geometry.Nodes{1}.node.ATTR.id=(1:size(V,1))'; %The node id's
-febio_spec.Geometry.Nodes{1}.node.VAL=V; %The nodel coordinates
+febio_spec.Mesh.Nodes{1}.ATTR.name='Object1'; %The node set name
+febio_spec.Mesh.Nodes{1}.node.ATTR.id=(1:size(V,1))'; %The node id's
+febio_spec.Mesh.Nodes{1}.node.VAL=V; %The nodel coordinates
 
 % -> Elements
-febio_spec.Geometry.Elements{1}.ATTR.type='hex8'; %Element type of this set
-febio_spec.Geometry.Elements{1}.ATTR.mat=1; %material index for this set 
-febio_spec.Geometry.Elements{1}.ATTR.name='Tongue'; %Name of the element set
-febio_spec.Geometry.Elements{1}.elem.ATTR.id=(1:1:size(E,1))'; %Element id's
-febio_spec.Geometry.Elements{1}.elem.VAL=E;
+partName1='Part1';
+febio_spec.Mesh.Elements{1}.ATTR.name=partName1; %Name of this part
+febio_spec.Mesh.Elements{1}.ATTR.type='hex8'; %Element type
+febio_spec.Mesh.Elements{1}.elem.ATTR.id=(1:1:size(E,1))'; %Element id's
+febio_spec.Mesh.Elements{1}.elem.VAL=E; %The element matrix
 
 % -> NodeSets
-febio_spec.Geometry.NodeSet{1}.ATTR.name='bcSupportList';
-febio_spec.Geometry.NodeSet{1}.node.ATTR.id=bcSupportList(:);
-
-% -> ElementSets
-febio_spec.Geometry.ElementSet{1}.ATTR.name='elementSetTransiso';
-febio_spec.Geometry.ElementSet{1}.elem.ATTR.id=(1:size(E,1))';
+nodeSetName1='bcSupportList';
+febio_spec.Mesh.NodeSet{1}.ATTR.name=nodeSetName1;
+febio_spec.Mesh.NodeSet{1}.node.ATTR.id=bcSupportList(:);
+ 
+%MeshDomains section
+febio_spec.MeshDomains.SolidDomain.ATTR.name=partName1;
+febio_spec.MeshDomains.SolidDomain.ATTR.mat=materialName1;
 
 %MeshData section
 % -> ElementData
-febio_spec.MeshData.ElementData{1}.ATTR.elem_set=febio_spec.Geometry.ElementSet{1}.ATTR.name;
+febio_spec.MeshData.ElementData{1}.ATTR.elem_set=partName1;
 febio_spec.MeshData.ElementData{1}.ATTR.var='mat_axis';
 
 for q=1:1:size(E,1)
     febio_spec.MeshData.ElementData{1}.elem{q}.ATTR.lid=q;
-    febio_spec.MeshData.ElementData{1}.elem{q}.a=a(q,:);
-    febio_spec.MeshData.ElementData{1}.elem{q}.d=d(q,:);
+    febio_spec.MeshData.ElementData{1}.elem{q}.a=e1_dir(q,:);
+    febio_spec.MeshData.ElementData{1}.elem{q}.d=e2_dir(q,:);
 end
 
 %Boundary condition section 
 % -> Fix boundary conditions
-febio_spec.Boundary.fix{1}.ATTR.bc='x';
-febio_spec.Boundary.fix{1}.ATTR.node_set=febio_spec.Geometry.NodeSet{1}.ATTR.name;
-febio_spec.Boundary.fix{2}.ATTR.bc='y';
-febio_spec.Boundary.fix{2}.ATTR.node_set=febio_spec.Geometry.NodeSet{1}.ATTR.name;
-febio_spec.Boundary.fix{3}.ATTR.bc='z';
-febio_spec.Boundary.fix{3}.ATTR.node_set=febio_spec.Geometry.NodeSet{1}.ATTR.name;
+febio_spec.Boundary.bc{1}.ATTR.type='fix';
+febio_spec.Boundary.bc{1}.ATTR.node_set=nodeSetName1;
+febio_spec.Boundary.bc{1}.dofs='x,y,z';
+
+%LoadData section
+% -> load_controller
+febio_spec.LoadData.load_controller{1}.ATTR.id=1;
+febio_spec.LoadData.load_controller{1}.ATTR.type='loadcurve';
+febio_spec.LoadData.load_controller{1}.interpolate='LINEAR';
+febio_spec.LoadData.load_controller{1}.points.point.VAL=[0 0; 1 1];
 
 %Output section 
 % -> log file
@@ -254,7 +230,6 @@ febio_spec.Output.logfile.ATTR.file=febioLogFileName;
 febio_spec.Output.logfile.node_data{1}.ATTR.file=febioLogFileName_disp;
 febio_spec.Output.logfile.node_data{1}.ATTR.data='ux;uy;uz';
 febio_spec.Output.logfile.node_data{1}.ATTR.delim=',';
-febio_spec.Output.logfile.node_data{1}.VAL=1:size(V,1);
 
 %% Quick viewing of the FEBio input file structure
 % The |febView| function can be used to view the xml structure in a MATLAB
@@ -279,11 +254,7 @@ febioStruct2xml(febio_spec,febioFebFileName); %Exporting to file and domNode
 febioAnalysis.run_filename=febioFebFileName; %The input file name
 febioAnalysis.run_logname=febioLogFileName; %The name for the log file
 febioAnalysis.disp_on=1; %Display information on the command window
-febioAnalysis.disp_log_on=1; %Display convergence information in the command window
 febioAnalysis.runMode='internal';%'internal';
-febioAnalysis.t_check=0.25; %Time for checking log file (dont set too small)
-febioAnalysis.maxtpi=1e99; %Max analysis time
-febioAnalysis.maxLogCheckTime=10; %Max log file checking time
 
 [runFlag]=runMonitorFEBio(febioAnalysis);%START FEBio NOW!!!!!!!!
 

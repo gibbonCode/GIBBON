@@ -50,13 +50,13 @@ cubeSize=10;
 sampleWidth=cubeSize; %Width 
 sampleThickness=cubeSize; %Thickness 
 sampleHeight=cubeSize; %Height
-pointSpacings=2*ones(1,3); %Desired point spacing between nodes
-numElementsWidth=round(sampleWidth/pointSpacings(1)); %Number of elemens in dir 1
-numElementsThickness=round(sampleThickness/pointSpacings(2)); %Number of elemens in dir 2
-numElementsHeight=round(sampleHeight/pointSpacings(3)); %Number of elemens in dir 3
+pointSpacing=2; %Desired point spacing between nodes
+numElementsWidth=round(sampleWidth/pointSpacing); %Number of elemens in dir 1
+numElementsThickness=round(sampleThickness/pointSpacing); %Number of elemens in dir 2
+numElementsHeight=round(sampleHeight/pointSpacing); %Number of elemens in dir 3
 
 %Define applied displacement 
-appliedStrain=0.3; %Linear strain (Only used to compute applied stretch)
+appliedStrain=0.5; %Linear strain (Only used to compute applied stretch)
 loadingOption='compression'; % or 'tension'
 switch loadingOption
     case 'compression'
@@ -72,11 +72,11 @@ k_factor=100; %Bulk modulus factor
 fiberType=2; 
 switch fiberType
     case 1
-        c1=0.2; %Shear-modulus-like parameter
+        c1=1e-3; %Shear-modulus-like parameter
         m1=2; %Material parameter setting degree of non-linearity of ground matrix
-        ksi=c1/8;
+        ksi=c1*1000;
         alphaPar=2;
-        beta=2;          
+        beta=3;          
         k=0.5.*(c1+ksi)*k_factor; %Bulk modulus
     case 2
         Q=0.5;
@@ -88,7 +88,7 @@ switch fiberType
         beta=3.294*ones(1,3);
         f_transiso=235.1;
         k=(2*c1+ksi_p)*k_factor;
-        ksi=[ksi_p ksi_p f_transiso*ksi_p];
+        ksi=[f_transiso*ksi_p ksi_p ksi_p];
 end
 alphaFib=(45/180)*pi;
 
@@ -181,10 +181,11 @@ drawnow;
 
 %% DEFINE FIBRE DIRECTIONS
 
-[R,~]=euler2DCM([0,alphaFib,0]);
-v_fib=(R*[0 0 1]')';
-V_fib=v_fib(ones(size(E,1),1),:);
-[a,d]=vectorOrthogonalPair(V_fib);
+% [R,~]=euler2DCM([0,-alphaFib,0]);
+R=euler2DCM([0,-alphaFib,0]);
+e1=(R*[1 0 0]')';
+e1_dir=e1(ones(size(E,1),1),:);
+[e2_dir,e3_dir]=vectorOrthogonalPair(e1_dir);
 
 [VE]=patchCentre(E,V);
 
@@ -196,11 +197,11 @@ title('Fiber directions','FontSize',fontSize);
 hold on;
 
 gpatch(Fb,V,'kw','none',0.25);
-[h]=quiverVec(VE,V_fib,1,'k');
-[h]=quiverVec(VE,a,0.5,'r');
-[h]=quiverVec(VE,d,0.5,'g');
+hf(1)=quiverVec(VE,e1_dir,pointSpacing,'r');
+hf(2)=quiverVec(VE,e2_dir,pointSpacing/2,'g');
+hf(3)=quiverVec(VE,e3_dir,pointSpacing/2,'b');
 
-legend(hl,{'BC x support','BC y support','BC z support','BC z prescribe'});
+legend(hf,{'e1-direction (fiber)','e2-direction','e3-direction'});
 
 axisGeom(gca,fontSize);
 camlight headlight; 
@@ -236,8 +237,6 @@ febio_spec.Material.material{1}.ATTR.name=materialName1;
 febio_spec.Material.material{1}.ATTR.type='solid mixture';
 febio_spec.Material.material{1}.ATTR.id=1;
 
-% febio_spec.Material.material{1}.mat_axis.ATTR.type='user';
-
 febio_spec.Material.material{1}.solid{1}.ATTR.type='Ogden unconstrained';
 febio_spec.Material.material{1}.solid{1}.c1=c1;
 febio_spec.Material.material{1}.solid{1}.m1=m1;
@@ -250,9 +249,8 @@ switch fiberType
         febio_spec.Material.material{1}.solid{2}.ATTR.type='fiber-exp-pow';
         febio_spec.Material.material{1}.solid{2}.ksi=ksi;
         febio_spec.Material.material{1}.solid{2}.alpha=alphaPar;
-        febio_spec.Material.material{1}.solid{2}.beta=beta;
-        febio_spec.Material.material{1}.solid{2}.theta=0;
-        febio_spec.Material.material{1}.solid{2}.phi=0;        
+        febio_spec.Material.material{1}.solid{2}.beta=beta;      
+        febio_spec.Material.material{1}.solid{2}.mat_axis.ATTR.type='user';
     case 2
         febio_spec.Material.material{1}.solid{2}.ATTR.type='ellipsoidal fiber distribution';
         febio_spec.Material.material{1}.solid{2}.ksi=ksi;
@@ -302,12 +300,10 @@ febio_spec.MeshData.ElementData{1}.ATTR.var='mat_axis';
 
 for q=1:1:size(E,1)
     febio_spec.MeshData.ElementData{1}.elem{q}.ATTR.lid=q;
-    febio_spec.MeshData.ElementData{1}.elem{q}.a=a(q,:);
-    febio_spec.MeshData.ElementData{1}.elem{q}.d=d(q,:);
+    febio_spec.MeshData.ElementData{1}.elem{q}.a=e1_dir(q,:);
+    febio_spec.MeshData.ElementData{1}.elem{q}.d=e2_dir(q,:);
 end
 
-%Boundary condition section 
-% -> Fix boundary conditions
 %Boundary condition section 
 % -> Fix boundary conditions
 febio_spec.Boundary.bc{1}.ATTR.type='fix';

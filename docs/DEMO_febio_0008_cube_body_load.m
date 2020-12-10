@@ -200,30 +200,6 @@ febio_spec.Boundary.bc{1}.ATTR.type='fix';
 febio_spec.Boundary.bc{1}.ATTR.node_set=nodeSetName1;
 febio_spec.Boundary.bc{1}.dofs='x,y,z';
 
-%Loads section
-% % -> Prescribed nodal forces
-% febio_spec.Loads.nodal_load{1}.ATTR.name='PrescribedForceX';
-% febio_spec.Loads.nodal_load{1}.ATTR.type='nodal_load';
-% febio_spec.Loads.nodal_load{1}.ATTR.node_set=nodeSetName2;
-% febio_spec.Loads.nodal_load{1}.dof='x';
-% febio_spec.Loads.nodal_load{1}.scale.ATTR.lc=1;
-% febio_spec.Loads.nodal_load{1}.scale.VAL=appliedForce(1)/numel(bcPrescribeList);
-% 
-% febio_spec.Loads.nodal_load{2}.ATTR.name='PrescribedForceY';
-% febio_spec.Loads.nodal_load{2}.ATTR.type='nodal_load';
-% febio_spec.Loads.nodal_load{2}.ATTR.node_set=nodeSetName2;
-% febio_spec.Loads.nodal_load{2}.dof='y';
-% febio_spec.Loads.nodal_load{2}.scale.ATTR.lc=1;
-% febio_spec.Loads.nodal_load{2}.scale.VAL=appliedForce(2)/numel(bcPrescribeList);
-% 
-% febio_spec.Loads.nodal_load{3}.ATTR.name='PrescribedForceZ';
-% febio_spec.Loads.nodal_load{3}.ATTR.type='nodal_load';
-% febio_spec.Loads.nodal_load{3}.ATTR.node_set=nodeSetName2;
-% febio_spec.Loads.nodal_load{3}.dof='z';
-% febio_spec.Loads.nodal_load{3}.scale.ATTR.lc=1;
-% febio_spec.Loads.nodal_load{3}.scale.VAL=appliedForce(3)/numel(bcPrescribeList);
-%  
-
 % -> Body load
 switch bodyLoadType
     case 'const'
