@@ -6,8 +6,8 @@
    <!--
 This HTML was auto-generated from MATLAB code.
 To make changes, update the MATLAB code and republish this document.
-      --><title>DEMO_febio_0021_bone_three_point_bending</title><meta name="generator" content="MATLAB 9.8"><link rel="schema.DC" href="http://purl.org/dc/elements/1.1/"><meta name="DC.date" content="2020-08-12"><meta name="DC.source" content="DEMO_febio_0021_bone_three_point_bending.m"><style type="text/css">
-html,body,div,span,applet,object,iframe,h1,h2,h3,h4,h5,h6,p,blockquote,pre,a,abbr,acronym,address,big,cite,code,del,dfn,em,font,img,ins,kbd,q,s,samp,small,strike,strong,sub,sup,tt,var,b,u,i,center,dl,dt,dd,ol,ul,li,fieldset,form,label,legend,table,caption,tbody,tfoot,thead,tr,th,td{margin:0;padding:0;border:0;outline:0;font-size:100%;vertical-align:baseline;background:transparent}body{line-height:1}ol,ul{list-style:none}blockquote,q{quotes:none}blockquote:before,blockquote:after,q:before,q:after{content:'';content:none}:focus{outine:0}ins{text-decoration:none}del{text-decoration:line-through}table{border-collapse:collapse;border-spacing:0}
+      --><title>DEMO_febio_0021_bone_three_point_bending</title><meta name="generator" content="MATLAB 9.9"><link rel="schema.DC" href="http://purl.org/dc/elements/1.1/"><meta name="DC.date" content="2020-12-11"><meta name="DC.source" content="DEMO_febio_0021_bone_three_point_bending.m"><style type="text/css">
+html,body,div,span,applet,object,iframe,h1,h2,h3,h4,h5,h6,p,blockquote,pre,a,abbr,acronym,address,big,cite,code,del,dfn,em,font,img,ins,kbd,q,s,samp,small,strike,strong,tt,var,b,u,i,center,dl,dt,dd,ol,ul,li,fieldset,form,label,legend,table,caption,tbody,tfoot,thead,tr,th,td{margin:0;padding:0;border:0;outline:0;font-size:100%;vertical-align:baseline;background:transparent}body{line-height:1}ol,ul{list-style:none}blockquote,q{quotes:none}blockquote:before,blockquote:after,q:before,q:after{content:'';content:none}:focus{outine:0}ins{text-decoration:none}del{text-decoration:line-through}table{border-collapse:collapse;border-spacing:0}
 
 html { min-height:100%; margin-bottom:1px; }
 html body { height:100%; margin:0px; font-family:Arial, Helvetica, sans-serif; font-size:10px; color:#000; line-height:140%; background:#fff none; overflow-y:scroll; }
@@ -67,7 +67,7 @@ table td { padding:7px 5px; text-align:left; vertical-align:top; border:1px soli
 
 
 
-  </style></head><body><div class="content"><h1>DEMO_febio_0021_bone_three_point_bending</h1><!--introduction--><p>Below is a demonstration for:</p><div><ul><li>Building geometry for a bone</li><li>Defining the boundary conditions</li><li>Coding the febio structure</li><li>Running the model</li><li>Importing and visualizing the displacement results</li></ul></div><!--/introduction--><h2>Contents</h2><div><ul><li><a href="#1">Keywords</a></li><li><a href="#3">Plot settings</a></li><li><a href="#4">Control parameters</a></li><li><a href="#5">Prepare bone geometry</a></li><li><a href="#6">Create and position cylinder geometry</a></li><li><a href="#8">Visualize bone surface</a></li><li><a href="#9">Mesh using tetgen</a></li><li><a href="#10">Visualize interior point</a></li><li><a href="#12">Define material regions in bone</a></li><li><a href="#13">Visualizing solid mesh</a></li><li><a href="#14">Joining node sets</a></li><li><a href="#15">Define bone contact surface</a></li><li><a href="#17">Defining the FEBio input structure</a></li><li><a href="#18">Quick viewing of the FEBio input file structure</a></li><li><a href="#20">Exporting the FEBio input file</a></li><li><a href="#21">Running the FEBio analysis</a></li><li><a href="#22">Import FEBio results</a></li></ul></div><h2 id="1">Keywords</h2><div><ul><li>febio_spec version 2.5</li><li>febio, FEBio</li><li>indentation</li><li>contact, sliding, sticky, friction</li><li>rigid body constraints</li><li>tetrahedral elements, tet4</li><li>triangular elements, tri3</li><li>three point bending</li><li>static, solid</li><li>hyperelastic, Ogden</li><li>displacement logfile</li><li>stress logfile</li></ul></div><pre class="codeinput">clear; close <span class="string">all</span>; clc;
+  </style></head><body><div class="content"><h1>DEMO_febio_0021_bone_three_point_bending</h1><!--introduction--><p>Below is a demonstration for:</p><div><ul><li>Building geometry for a bone</li><li>Defining the boundary conditions</li><li>Coding the febio structure</li><li>Running the model</li><li>Importing and visualizing the displacement results</li></ul></div><!--/introduction--><h2>Contents</h2><div><ul><li><a href="#1">Keywords</a></li><li><a href="#3">Plot settings</a></li><li><a href="#4">Control parameters</a></li><li><a href="#5">Get bone geometry</a></li><li><a href="#6">Remesh using geomgram</a></li><li><a href="#7">Create and position cylinder geometry</a></li><li><a href="#9">Mesh using tetgen</a></li><li><a href="#10">Visualize interior point</a></li><li><a href="#12">Define material regions in bone</a></li><li><a href="#13">Visualizing solid mesh</a></li><li><a href="#14">Joining node sets</a></li><li><a href="#15">Define boundary conditions</a></li><li><a href="#19">Define bone contact surfaces</a></li><li><a href="#21">Defining the FEBio input structure</a></li><li><a href="#22">Quick viewing of the FEBio input file structure</a></li><li><a href="#24">Exporting the FEBio input file</a></li><li><a href="#25">Running the FEBio analysis</a></li><li><a href="#26">Import FEBio results</a></li></ul></div><h2 id="1">Keywords</h2><div><ul><li>febio_spec version 3.0</li><li>febio, FEBio</li><li>indentation</li><li>contact, sliding, sticky, friction</li><li>rigid body constraints</li><li>tetrahedral elements, tet4</li><li>triangular elements, tri3</li><li>three point bending</li><li>static, solid</li><li>hyperelastic, Ogden</li><li>displacement logfile</li><li>stress logfile</li></ul></div><pre class="codeinput">clear; close <span class="string">all</span>; clc;
 </pre><h2 id="3">Plot settings</h2><pre class="codeinput">fontSize=15;
 faceAlpha1=0.8;
 faceAlpha2=0.3;
@@ -81,7 +81,7 @@ pathNameSTL=fullfile(defaultFolder,<span class="string">'data'</span>,<span clas
 <span class="comment">% Defining file names</span>
 febioFebFileNamePart=<span class="string">'tempModel'</span>;
 febioFebFileName=fullfile(savePath,[febioFebFileNamePart,<span class="string">'.feb'</span>]); <span class="comment">%FEB file name</span>
-febioLogFileName=fullfile(savePath,[febioFebFileNamePart,<span class="string">'.txt'</span>]); <span class="comment">%FEBio log file name</span>
+febioLogFileName=[febioFebFileNamePart,<span class="string">'.txt'</span>]; <span class="comment">%FEBio log file name</span>
 febioLogFileName_disp=[febioFebFileNamePart,<span class="string">'_disp_out.txt'</span>]; <span class="comment">%Log file name for exporting displacement</span>
 febioLogFileName_force=[febioFebFileNamePart,<span class="string">'_force_out.txt'</span>]; <span class="comment">%Log file name for exporting force</span>
 febioLogFileName_stress=[febioFebFileNamePart,<span class="string">'_stress_out.txt'</span>]; <span class="comment">%Log file name for exporting stress</span>
@@ -89,8 +89,11 @@ febioLogFileName_stress=[febioFebFileNamePart,<span class="string">'_stress_out.
 <span class="comment">%Geometric parameters</span>
 corticalThickness=3; <span class="comment">%Thickness used for cortical material definition</span>
 volumeFactor=10; <span class="comment">%Factor to scale desired volume for interior elements w.r.t. boundary elements</span>
+pointSpacing=5;
 
 <span class="comment">%Material parameter set</span>
+D_density=1e-9; <span class="comment">%Density for all materials</span>
+
 E_youngs1=17000; <span class="comment">%Youngs modulus</span>
 nu1=0.25; <span class="comment">%Poissons ratio</span>
 
@@ -99,57 +102,48 @@ E_youngs2=1500; <span class="comment">%Youngs modulus</span>
 nu2=0.25; <span class="comment">%Poissons ratio</span>
 
 <span class="comment">% FEA control settings</span>
-numTimeSteps=10; <span class="comment">%Number of time steps desired</span>
+analysisType=<span class="string">'STATIC'</span>;
+numTimeSteps=20; <span class="comment">%Number of time steps desired</span>
 max_refs=25; <span class="comment">%Max reforms</span>
 max_ups=0; <span class="comment">%Set to zero to use full-Newton iterations</span>
 opt_iter=15; <span class="comment">%Optimum number of iterations</span>
-max_retries=5; <span class="comment">%Maximum number of retires</span>
+max_retries=6; <span class="comment">%Maximum number of retires</span>
 dtmin=(1/numTimeSteps)/100; <span class="comment">%Minimum time step size</span>
 dtmax=1/numTimeSteps; <span class="comment">%Maximum time step size</span>
-min_residual=1e-20;
+min_residual=1e-10;
 symmetric_stiffness=1;
-runMode=<span class="string">'internal'</span>;
+runMode=<span class="string">'external'</span>;
 
 <span class="comment">%Contact parameters</span>
-contactInitialOffset=0.01;
-contactAlg=1;
+contactInitialOffset=0.1;
 contactPenalty=1000;
-<span class="keyword">switch</span> contactAlg
-    <span class="keyword">case</span> 1
-        contactType=<span class="string">'sticky'</span>;
-    <span class="keyword">case</span> 2
-        contactType=<span class="string">'facet-to-facet sliding'</span>;
-    <span class="keyword">case</span> 3
-        contactType=<span class="string">'sliding_with_gaps'</span>;
-    <span class="keyword">case</span> 4
-        contactType=<span class="string">'sliding2'</span>;
-    <span class="keyword">case</span> 5
-        contactType=<span class="string">'sliding-elastic'</span>;
-<span class="keyword">end</span>
+laugon=0;
+minaug=1;
+maxaug=10;
 
-zDisp=-6-2*contactInitialOffset;
-</pre><h2 id="5">Prepare bone geometry</h2><pre class="codeinput"><span class="comment">% Import bone surface model</span>
-[stlStruct] = import_STL(fullfile(pathNameSTL,<span class="string">'femur_iso.stl'</span>));
-F_bone=stlStruct.solidFaces{1}; <span class="comment">%Faces</span>
-V_bone=stlStruct.solidVertices{1}; <span class="comment">%Vertices</span>
+<span class="comment">%Boundary conditions specification</span>
+bcFix=0;
+
+<span class="comment">%Loading parameters</span>
+zDisp=-20-2*contactInitialOffset;
+</pre><h2 id="5">Get bone geometry</h2><pre class="codeinput"><span class="comment">%Load basic model</span>
+[F_bone,V_bone]=graphicsModels(5);
 V_bone=V_bone*1000; <span class="comment">%Scale to mm</span>
-[F_bone,V_bone]=mergeVertices(F_bone,V_bone); <span class="comment">% Merging nodes</span>
-F_bone=fliplr(F_bone);
 
 <span class="comment">%Reorient</span>
 V_mean=mean(V_bone,1);
 V_bone=V_bone-V_mean(ones(size(V_bone,1),1),:); <span class="comment">%Center around origin</span>
 [R]=pointSetPrincipalDir(V_bone); <span class="comment">%Get rotation matrix</span>
 V_bone=V_bone*R; <span class="comment">%Rotate</span>
-
-[D]=patchEdgeLengths(F_bone,V_bone);
-voxelSize=mean(D);
-</pre><h2 id="6">Create and position cylinder geometry</h2><pre class="codeinput">pointSpacing=mean(D)/2;
+</pre><h2 id="6">Remesh using geomgram</h2><pre class="codeinput">optionStruct.pointSpacing=pointSpacing;
+optionStruct.disp_on=0;
+[F_bone,V_bone]=ggremesh(F_bone,V_bone,optionStruct);
+</pre><h2 id="7">Create and position cylinder geometry</h2><pre class="codeinput">pointSpacingBeams=pointSpacing/2;
 
 inputStruct.cylRadius=10;
-inputStruct.numRadial=round((2*pi*inputStruct.cylRadius)./pointSpacing);
+inputStruct.numRadial=round((2*pi*inputStruct.cylRadius)./pointSpacingBeams);
 inputStruct.cylHeight=max(V_bone(:,2))-min(V_bone(:,2));
-nh=round(inputStruct.cylHeight./pointSpacing);
+nh=round(inputStruct.cylHeight./pointSpacingBeams);
 nh=nh+double(iseven(nh));
 inputStruct.numHeight=nh;
 inputStruct.meshType=<span class="string">'quad'</span>;
@@ -186,19 +180,14 @@ gpatch(Fc,Vc3,<span class="string">'bw'</span>,<span class="string">'b'</span>,1
 axisGeom;
 camlight <span class="string">headlight</span>;
 drawnow
-</pre><img width="100%" height="auto" vspace="5" hspace="5" src="DEMO_febio_0021_bone_three_point_bending_01.jpg" alt=""> <h2 id="8">Visualize bone surface</h2><pre class="codeinput">cFigure; hold <span class="string">on</span>;
-gpatch(F_bone,V_bone,<span class="string">'w'</span>,<span class="string">'k'</span>,1);
-patchNormPlot(F_bone,V_bone);
-axisGeom; camlight <span class="string">headlight</span>;
-drawnow;
-</pre><img width="100%" height="auto" vspace="5" hspace="5" src="DEMO_febio_0021_bone_three_point_bending_02.jpg" alt=""> <h2 id="9">Mesh using tetgen</h2><pre class="codeinput"><span class="comment">%Find interior point</span>
+</pre><img width="100%" height="auto" vspace="5" hspace="5" src="DEMO_febio_0021_bone_three_point_bending_01.jpg" alt=""> <h2 id="9">Mesh using tetgen</h2><pre class="codeinput"><span class="comment">%Find interior point</span>
 V_inner_bone=getInnerPoint(F_bone,V_bone);
 </pre><h2 id="10">Visualize interior point</h2><pre class="codeinput">cFigure; hold <span class="string">on</span>;
 gpatch(F_bone,V_bone,<span class="string">'w'</span>,<span class="string">'none'</span>,0.5);
 plotV(V_inner_bone,<span class="string">'r.'</span>,<span class="string">'MarkerSize'</span>,25)
 axisGeom; camlight <span class="string">headlight</span>;
 drawnow;
-</pre><img width="100%" height="auto" vspace="5" hspace="5" src="DEMO_febio_0021_bone_three_point_bending_03.jpg" alt=""> <p>Regional mesh volume parameter</p><pre class="codeinput">tetVolume=tetVolMeanEst(F_bone,V_bone); <span class="comment">%Volume for regular tets</span>
+</pre><img width="100%" height="auto" vspace="5" hspace="5" src="DEMO_febio_0021_bone_three_point_bending_02.jpg" alt=""> <p>Regional mesh volume parameter</p><pre class="codeinput">tetVolume=tetVolMeanEst(F_bone,V_bone); <span class="comment">%Volume for regular tets</span>
 
 tetGenStruct.stringOpt=<span class="string">'-pq1.2AaY'</span>;
 tetGenStruct.Faces=F_bone;
@@ -218,62 +207,62 @@ Cb=meshOutput.boundaryMarker;
 CE=meshOutput.elementMaterialID;
 </pre><pre class="codeoutput"> 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
---- TETGEN Tetrahedral meshing --- 12-Aug-2020 21:04:50
+--- TETGEN Tetrahedral meshing --- 11-Dec-2020 12:23:50
  
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
---- Writing SMESH file --- 12-Aug-2020 21:04:50
+--- Writing SMESH file --- 11-Dec-2020 12:23:50
 ----&gt; Adding node field
 ----&gt; Adding facet field
 ----&gt; Adding holes specification
 ----&gt; Adding region specification
---- Done --- 12-Aug-2020 21:04:50
---- Running TetGen to mesh input boundary--- 12-Aug-2020 21:04:50
+--- Done --- 11-Dec-2020 12:23:50
+--- Running TetGen to mesh input boundary--- 11-Dec-2020 12:23:50
 Opening /mnt/data/MATLAB/GIBBON/data/temp/temp.smesh.
 Delaunizing vertices...
-Delaunay seconds:  0.039922
+Delaunay seconds:  0.021244
 Creating surface mesh ...
-Surface mesh seconds:  0.010042
+Surface mesh seconds:  0.005698
 Recovering boundaries...
-Boundary recovery seconds:  0.022401
+Boundary recovery seconds:  0.009494
 Removing exterior tetrahedra ...
 Spreading region attributes.
-Exterior tets removal seconds:  0.018931
+Exterior tets removal seconds:  0.005688
 Recovering Delaunayness...
-Delaunay recovery seconds:  0.01668
+Delaunay recovery seconds:  0.005711
 Refining mesh...
-Refinement seconds:  0.108468
+Refinement seconds:  0.060124
 Optimizing mesh...
-Optimization seconds:  0.006381
+Optimization seconds:  0.003415
 
 Writing /mnt/data/MATLAB/GIBBON/data/temp/temp.1.node.
 Writing /mnt/data/MATLAB/GIBBON/data/temp/temp.1.ele.
 Writing /mnt/data/MATLAB/GIBBON/data/temp/temp.1.face.
 Writing /mnt/data/MATLAB/GIBBON/data/temp/temp.1.edge.
 
-Output seconds:  0.099137
-Total running seconds:  0.322377
+Output seconds:  0.057795
+Total running seconds:  0.169426
 
 Statistics:
 
-  Input points: 5000
-  Input facets: 9996
-  Input segments: 14994
+  Input points: 3386
+  Input facets: 6768
+  Input segments: 10152
   Input holes: 0
   Input regions: 1
 
-  Mesh points: 7657
-  Mesh tetrahedra: 31480
-  Mesh faces: 67958
-  Mesh faces on exterior boundary: 9996
-  Mesh faces on input facets: 9996
-  Mesh edges on input segments: 14994
-  Steiner points inside domain: 2657
+  Mesh points: 4749
+  Mesh tetrahedra: 18254
+  Mesh faces: 39892
+  Mesh faces on exterior boundary: 6768
+  Mesh faces on input facets: 6768
+  Mesh edges on input segments: 10152
+  Steiner points inside domain: 1363
 
---- Done --- 12-Aug-2020 21:04:51
+--- Done --- 11-Dec-2020 12:23:51
  
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
---- Importing TetGen files --- 12-Aug-2020 21:04:51
---- Done --- 12-Aug-2020 21:04:51
+--- Importing TetGen files --- 11-Dec-2020 12:23:51
+--- Done --- 11-Dec-2020 12:23:51
 </pre><h2 id="12">Define material regions in bone</h2><pre class="codeinput">indBoundary=unique(Fb(Cb==1,:));
 DE=minDist(V,V(indBoundary,:));
 logicCorticalNodes=DE&lt;=corticalThickness;
@@ -291,257 +280,291 @@ optionStruct.hFig=hFig;
 meshView(meshOutput,optionStruct);
 axisGeom;
 drawnow;
-</pre><img width="100%" height="auto" vspace="5" hspace="5" src="DEMO_febio_0021_bone_three_point_bending_04.jpg" alt=""> <h2 id="14">Joining node sets</h2><pre class="codeinput">Fc1=Fc+size(V,1);
+</pre><img width="100%" height="auto" vspace="5" hspace="5" src="DEMO_febio_0021_bone_three_point_bending_03.jpg" alt=""> <h2 id="14">Joining node sets</h2><pre class="codeinput">Fc1=Fc+size(V,1);
 Fc2=Fc+size(V,1)+size(Vc1,1);
 Fc3=Fc+size(V,1)+size(Vc1,1)+size(Vc2,1);
 V=[V;Vc1;Vc2;Vc3];
-</pre><h2 id="15">Define bone contact surface</h2><pre class="codeinput">Fb_slave=fliplr(Fb);
+</pre><h2 id="15">Define boundary conditions</h2><pre class="codeinput"><span class="keyword">if</span> bcFix==1
+</pre><pre class="codeinput">    <span class="comment">%Supported nodes</span>
+    indb=unique(Fb(:));
+    logicLeft=V(indb,1)&lt;-200;
+    bcSupportList=indb(logicLeft);
+</pre><p>Visualize BC's</p><pre class="codeinput">    hf=cFigure;
+    title(<span class="string">'Boundary conditions model'</span>,<span class="string">'FontSize'</span>,fontSize);
+    xlabel(<span class="string">'X'</span>,<span class="string">'FontSize'</span>,fontSize); ylabel(<span class="string">'Y'</span>,<span class="string">'FontSize'</span>,fontSize); zlabel(<span class="string">'Z'</span>,<span class="string">'FontSize'</span>,fontSize);
+    hold <span class="string">on</span>;
+
+    gpatch(Fb,V,<span class="string">'kw'</span>,<span class="string">'none'</span>,faceAlpha2);
+    hp1(1)=plotV(V(bcSupportList,:),<span class="string">'k.'</span>,<span class="string">'MarkerSize'</span>,markerSize);
+
+    legend(hp1,{<span class="string">'BC support'</span>});
+
+    axisGeom(gca,fontSize);
+    camlight <span class="string">headlight</span>;
+    drawnow;
+</pre><pre class="codeinput"><span class="keyword">end</span>
+</pre><h2 id="19">Define bone contact surfaces</h2><pre class="codeinput">N=patchNormal(fliplr(Fb),V);
+nz=[0 0 -1];
+d=dot(N,nz(ones(size(N,1),1),:),2);
+
+contactAdd=pointSpacing;
+
+VF=patchCentre(Fb,V);
+logicSecondary1=VF(:,1)&gt;(min(Vc1(:,1))-contactAdd) &amp; VF(:,1)&lt;(max(Vc1(:,1))+contactAdd) &amp; d&lt;0;
+logicSecondary2=VF(:,1)&gt;(min(Vc2(:,1))-contactAdd) &amp; VF(:,1)&lt;(max(Vc2(:,1))+contactAdd) &amp; d&gt;0;
+logicSecondary3=VF(:,1)&gt;(min(Vc3(:,1))-contactAdd) &amp; VF(:,1)&lt;(max(Vc3(:,1))+contactAdd) &amp; d&gt;0;
+
+F_sec1=fliplr(Fb(logicSecondary1,:));
+F_sec2=fliplr(Fb(logicSecondary2,:));
+F_sec3=fliplr(Fb(logicSecondary3,:));
 </pre><p>Visualize</p><pre class="codeinput">cFigure; hold <span class="string">on</span>;
 
-gpatch(Fb_slave,V,<span class="string">'w'</span>,<span class="string">'k'</span>,1);
-patchNormPlot(Fb_slave,V);
-gpatch(Fc1,V,<span class="string">'rw'</span>,<span class="string">'r'</span>,1);
+gpatch(Fb,V,<span class="string">'w'</span>,<span class="string">'none'</span>,0.5);
+
+hp2(1)=gpatch(F_sec1,V,<span class="string">'r'</span>,<span class="string">'k'</span>,1);
+patchNormPlot(F_sec1,V);
+
+hp2(2)=gpatch(F_sec2,V,<span class="string">'g'</span>,<span class="string">'k'</span>,1);
+patchNormPlot(F_sec2,V);
+
+hp2(3)=gpatch(F_sec3,V,<span class="string">'b'</span>,<span class="string">'k'</span>,1);
+patchNormPlot(F_sec3,V);
+
+hp2(4)=gpatch(Fc1,V,<span class="string">'c'</span>,<span class="string">'k'</span>,1);
 patchNormPlot(Fc1,V);
-gpatch(Fc2,V,<span class="string">'gw'</span>,<span class="string">'g'</span>,1);
+
+hp2(5)=gpatch(Fc2,V,<span class="string">'y'</span>,<span class="string">'k'</span>,1);
 patchNormPlot(Fc2,V);
-gpatch(Fc3,V,<span class="string">'bw'</span>,<span class="string">'b'</span>,1);
+
+hp2(6)=gpatch(Fc3,V,<span class="string">'m'</span>,<span class="string">'k'</span>,1);
 patchNormPlot(Fc3,V);
+
+legend(hp2,{<span class="string">'secondary 1'</span>,<span class="string">'secondary 2'</span>,<span class="string">'secondary 3'</span>,<span class="string">'primary 1'</span>,<span class="string">'primary 2'</span>,<span class="string">'primary 3'</span>});
+
 axisGeom;
 camlight <span class="string">headlight</span>;
 drawnow;
-</pre><img width="100%" height="auto" vspace="5" hspace="5" src="DEMO_febio_0021_bone_three_point_bending_05.jpg" alt=""> <h2 id="17">Defining the FEBio input structure</h2><p>See also <tt>febioStructTemplate</tt> and <tt>febioStruct2xml</tt> and the FEBio user manual.</p><pre class="codeinput"><span class="comment">%Get a template with default settings</span>
+</pre><img width="100%" height="auto" vspace="5" hspace="5" src="DEMO_febio_0021_bone_three_point_bending_04.jpg" alt=""> <h2 id="21">Defining the FEBio input structure</h2><p>See also <tt>febioStructTemplate</tt> and <tt>febioStruct2xml</tt> and the FEBio user manual.</p><pre class="codeinput"><span class="comment">%Get a template with default settings</span>
 [febio_spec]=febioStructTemplate;
 
 <span class="comment">%febio_spec version</span>
-febio_spec.ATTR.version=<span class="string">'2.5'</span>;
+febio_spec.ATTR.version=<span class="string">'3.0'</span>;
 
 <span class="comment">%Module section</span>
 febio_spec.Module.ATTR.type=<span class="string">'solid'</span>;
 
 <span class="comment">%Control section</span>
-febio_spec.Control.analysis.ATTR.type=<span class="string">'static'</span>;
+febio_spec.Control.analysis=analysisType;
 febio_spec.Control.time_steps=numTimeSteps;
 febio_spec.Control.step_size=1/numTimeSteps;
+febio_spec.Control.solver.max_refs=max_refs;
+febio_spec.Control.solver.max_ups=max_ups;
+febio_spec.Control.solver.symmetric_stiffness=symmetric_stiffness;
 febio_spec.Control.time_stepper.dtmin=dtmin;
 febio_spec.Control.time_stepper.dtmax=dtmax;
 febio_spec.Control.time_stepper.max_retries=max_retries;
 febio_spec.Control.time_stepper.opt_iter=opt_iter;
-febio_spec.Control.max_refs=max_refs;
-febio_spec.Control.max_ups=max_ups;
-febio_spec.Control.symmetric_stiffness=symmetric_stiffness;
-febio_spec.Control.min_residual=min_residual;
+febio_spec.Control.solver.min_residual=min_residual;
 
 <span class="comment">%Material section</span>
+materialName1=<span class="string">'Material1'</span>;
+febio_spec.Material.material{1}.ATTR.name=materialName1;
 febio_spec.Material.material{1}.ATTR.type=<span class="string">'neo-Hookean'</span>;
 febio_spec.Material.material{1}.ATTR.id=1;
 febio_spec.Material.material{1}.E=E_youngs1;
 febio_spec.Material.material{1}.v=nu1;
+febio_spec.Material.material{1}.density=D_density;
 
+materialName2=<span class="string">'Material2'</span>;
+febio_spec.Material.material{2}.ATTR.name=materialName2;
 febio_spec.Material.material{2}.ATTR.type=<span class="string">'neo-Hookean'</span>;
 febio_spec.Material.material{2}.ATTR.id=2;
 febio_spec.Material.material{2}.E=E_youngs2;
 febio_spec.Material.material{2}.v=nu2;
+febio_spec.Material.material{2}.density=D_density;
 
-<span class="comment">% febio_spec.Material.material{1}.ATTR.type='Ogden';</span>
-<span class="comment">% febio_spec.Material.material{1}.ATTR.id=1;</span>
-<span class="comment">% febio_spec.Material.material{1}.c1=1e-3;</span>
-<span class="comment">% febio_spec.Material.material{1}.m1=2;</span>
-<span class="comment">% febio_spec.Material.material{1}.c2=1e-3;</span>
-<span class="comment">% febio_spec.Material.material{1}.m2=2;</span>
-<span class="comment">% febio_spec.Material.material{1}.k=0.1;</span>
-<span class="comment">%</span>
-<span class="comment">% febio_spec.Material.material{2}.ATTR.type='Ogden';</span>
-<span class="comment">% febio_spec.Material.material{2}.ATTR.id=2;</span>
-<span class="comment">% febio_spec.Material.material{2}.c1=1e-3;</span>
-<span class="comment">% febio_spec.Material.material{2}.m1=2;</span>
-<span class="comment">% febio_spec.Material.material{2}.c2=1e-3;</span>
-<span class="comment">% febio_spec.Material.material{2}.m2=2;</span>
-<span class="comment">% febio_spec.Material.material{2}.k=0.1;</span>
-
+materialName3=<span class="string">'Material3'</span>;
+febio_spec.Material.material{3}.ATTR.name=materialName3;
 febio_spec.Material.material{3}.ATTR.type=<span class="string">'rigid body'</span>;
 febio_spec.Material.material{3}.ATTR.id=3;
-febio_spec.Material.material{3}.density=1;
+febio_spec.Material.material{3}.density=D_density;
 febio_spec.Material.material{3}.center_of_mass=mean(Vc1,1);
 
+materialName4=<span class="string">'Material4'</span>;
+febio_spec.Material.material{4}.ATTR.name=materialName4;
 febio_spec.Material.material{4}.ATTR.type=<span class="string">'rigid body'</span>;
 febio_spec.Material.material{4}.ATTR.id=4;
-febio_spec.Material.material{4}.density=1;
+febio_spec.Material.material{4}.density=D_density;
 febio_spec.Material.material{4}.center_of_mass=mean(Vc2,1);
 
+materialName5=<span class="string">'Material5'</span>;
+febio_spec.Material.material{5}.ATTR.name=materialName5;
 febio_spec.Material.material{5}.ATTR.type=<span class="string">'rigid body'</span>;
 febio_spec.Material.material{5}.ATTR.id=5;
-febio_spec.Material.material{5}.density=1;
+febio_spec.Material.material{5}.density=D_density;
 febio_spec.Material.material{5}.center_of_mass=mean(Vc3,1);
 
-<span class="comment">%Geometry section</span>
+<span class="comment">%Mesh section</span>
 <span class="comment">% -&gt; Nodes</span>
-febio_spec.Geometry.Nodes{1}.ATTR.name=<span class="string">'nodeSet_all'</span>; <span class="comment">%The node set name</span>
-febio_spec.Geometry.Nodes{1}.node.ATTR.id=(1:size(V,1))'; <span class="comment">%The node id's</span>
-febio_spec.Geometry.Nodes{1}.node.VAL=V; <span class="comment">%The nodel coordinates</span>
+febio_spec.Mesh.Nodes{1}.ATTR.name=<span class="string">'nodeSet_all'</span>; <span class="comment">%The node set name</span>
+febio_spec.Mesh.Nodes{1}.node.ATTR.id=(1:size(V,1))'; <span class="comment">%The node id's</span>
+febio_spec.Mesh.Nodes{1}.node.VAL=V; <span class="comment">%The nodel coordinates</span>
 
 <span class="comment">% -&gt; Elements</span>
-febio_spec.Geometry.Elements{1}.ATTR.type=<span class="string">'tet4'</span>; <span class="comment">%Element type of this set</span>
-febio_spec.Geometry.Elements{1}.ATTR.mat=1; <span class="comment">%material index for this set</span>
-febio_spec.Geometry.Elements{1}.ATTR.name=<span class="string">'CorticalBone'</span>; <span class="comment">%Name of the element set</span>
-febio_spec.Geometry.Elements{1}.elem.ATTR.id=(1:1:size(E1,1))'; <span class="comment">%Element id's</span>
-febio_spec.Geometry.Elements{1}.elem.VAL=E1;
+partName1=<span class="string">'CorticalBone'</span>;
+febio_spec.Mesh.Elements{1}.ATTR.name=partName1; <span class="comment">%Name of this part</span>
+febio_spec.Mesh.Elements{1}.ATTR.type=<span class="string">'tet4'</span>; <span class="comment">%Element type of this set</span>
+febio_spec.Mesh.Elements{1}.ATTR.mat=1; <span class="comment">%material index for this set</span>
+febio_spec.Mesh.Elements{1}.elem.ATTR.id=(1:1:size(E1,1))'; <span class="comment">%Element id's</span>
+febio_spec.Mesh.Elements{1}.elem.VAL=E1;
 
-febio_spec.Geometry.Elements{2}.ATTR.type=<span class="string">'tet4'</span>; <span class="comment">%Element type of this set</span>
-febio_spec.Geometry.Elements{2}.ATTR.mat=2; <span class="comment">%material index for this set</span>
-febio_spec.Geometry.Elements{2}.ATTR.name=<span class="string">'CancellousBone'</span>; <span class="comment">%Name of the element set</span>
-febio_spec.Geometry.Elements{2}.elem.ATTR.id=size(E1,1)+(1:1:size(E2,1))'; <span class="comment">%Element id's</span>
-febio_spec.Geometry.Elements{2}.elem.VAL=E2;
+partName2=<span class="string">'CancellousBone'</span>;
+febio_spec.Mesh.Elements{2}.ATTR.name=partName2; <span class="comment">%Name of this part</span>
+febio_spec.Mesh.Elements{2}.ATTR.type=<span class="string">'tet4'</span>; <span class="comment">%Element type of this set</span>
+febio_spec.Mesh.Elements{2}.ATTR.mat=2; <span class="comment">%material index for this set</span>
+febio_spec.Mesh.Elements{2}.elem.ATTR.id=size(E1,1)+(1:1:size(E2,1))'; <span class="comment">%Element id's</span>
+febio_spec.Mesh.Elements{2}.elem.VAL=E2;
 
-febio_spec.Geometry.Elements{3}.ATTR.type=<span class="string">'quad4'</span>; <span class="comment">%Element type of this set</span>
-febio_spec.Geometry.Elements{3}.ATTR.mat=3; <span class="comment">%material index for this set</span>
-febio_spec.Geometry.Elements{3}.ATTR.name=<span class="string">'bar1'</span>; <span class="comment">%Name of the element set</span>
-febio_spec.Geometry.Elements{3}.elem.ATTR.id=size(E1,1)+size(E2,1)+(1:1:size(Fc1,1))'; <span class="comment">%Element id's</span>
-febio_spec.Geometry.Elements{3}.elem.VAL=Fc1;
+partName3=<span class="string">'Part3'</span>;
+febio_spec.Mesh.Elements{3}.ATTR.name=partName3; <span class="comment">%Name of this part</span>
+febio_spec.Mesh.Elements{3}.ATTR.type=<span class="string">'quad4'</span>; <span class="comment">%Element type of this set</span>
+febio_spec.Mesh.Elements{3}.ATTR.mat=3; <span class="comment">%material index for this set</span>
+febio_spec.Mesh.Elements{3}.elem.ATTR.id=size(E1,1)+size(E2,1)+(1:1:size(Fc1,1))'; <span class="comment">%Element id's</span>
+febio_spec.Mesh.Elements{3}.elem.VAL=Fc1;
 
-febio_spec.Geometry.Elements{4}.ATTR.type=<span class="string">'quad4'</span>; <span class="comment">%Element type of this set</span>
-febio_spec.Geometry.Elements{4}.ATTR.mat=4; <span class="comment">%material index for this set</span>
-febio_spec.Geometry.Elements{4}.ATTR.name=<span class="string">'bar2'</span>; <span class="comment">%Name of the element set</span>
-febio_spec.Geometry.Elements{4}.elem.ATTR.id=size(E1,1)+size(E2,1)+size(Fc1,1)+(1:1:size(Fc2,1))'; <span class="comment">%Element id's</span>
-febio_spec.Geometry.Elements{4}.elem.VAL=Fc2;
+partName4=<span class="string">'Part4'</span>;
+febio_spec.Mesh.Elements{4}.ATTR.name=partName4; <span class="comment">%Name of this part</span>
+febio_spec.Mesh.Elements{4}.ATTR.type=<span class="string">'quad4'</span>; <span class="comment">%Element type of this set</span>
+febio_spec.Mesh.Elements{4}.ATTR.mat=4; <span class="comment">%material index for this set</span>
+febio_spec.Mesh.Elements{4}.elem.ATTR.id=size(E1,1)+size(E2,1)+size(Fc1,1)+(1:1:size(Fc2,1))'; <span class="comment">%Element id's</span>
+febio_spec.Mesh.Elements{4}.elem.VAL=Fc2;
 
-febio_spec.Geometry.Elements{5}.ATTR.type=<span class="string">'quad4'</span>; <span class="comment">%Element type of this set</span>
-febio_spec.Geometry.Elements{5}.ATTR.mat=5; <span class="comment">%material index for this set</span>
-febio_spec.Geometry.Elements{5}.ATTR.name=<span class="string">'bar3'</span>; <span class="comment">%Name of the element set</span>
-febio_spec.Geometry.Elements{5}.elem.ATTR.id=size(E1,1)+size(E2,1)+size(Fc1,1)+size(Fc2,1)+(1:1:size(Fc3,1))'; <span class="comment">%Element id's</span>
-febio_spec.Geometry.Elements{5}.elem.VAL=Fc3;
+partName5=<span class="string">'Part5'</span>;
+febio_spec.Mesh.Elements{5}.ATTR.name=partName5; <span class="comment">%Name of this part</span>
+febio_spec.Mesh.Elements{5}.ATTR.type=<span class="string">'quad4'</span>; <span class="comment">%Element type of this set</span>
+febio_spec.Mesh.Elements{5}.ATTR.mat=5; <span class="comment">%material index for this set</span>
+febio_spec.Mesh.Elements{5}.elem.ATTR.id=size(E1,1)+size(E2,1)+size(Fc1,1)+size(Fc2,1)+(1:1:size(Fc3,1))'; <span class="comment">%Element id's</span>
+febio_spec.Mesh.Elements{5}.elem.VAL=Fc3;
+
+<span class="comment">%MeshDomains section</span>
+febio_spec.MeshDomains.SolidDomain{1}.ATTR.name=partName1;
+febio_spec.MeshDomains.SolidDomain{1}.ATTR.mat=materialName1;
+
+febio_spec.MeshDomains.SolidDomain{2}.ATTR.name=partName2;
+febio_spec.MeshDomains.SolidDomain{2}.ATTR.mat=materialName2;
+
+febio_spec.MeshDomains.ShellDomain{1}.ATTR.name=partName3;
+febio_spec.MeshDomains.ShellDomain{1}.ATTR.mat=materialName3;
+
+febio_spec.MeshDomains.ShellDomain{2}.ATTR.name=partName4;
+febio_spec.MeshDomains.ShellDomain{2}.ATTR.mat=materialName4;
+
+febio_spec.MeshDomains.ShellDomain{3}.ATTR.name=partName5;
+febio_spec.MeshDomains.ShellDomain{3}.ATTR.mat=materialName5;
+
+<span class="comment">% -&gt; NodeSets</span>
+<span class="keyword">if</span> bcFix==1
+    nodeSetName1=<span class="string">'bcSupportList'</span>;
+    febio_spec.Mesh.NodeSet{1}.ATTR.name=nodeSetName1;
+    febio_spec.Mesh.NodeSet{1}.node.ATTR.id=bcSupportList(:);
+<span class="keyword">end</span>
 
 <span class="comment">% -&gt; Surfaces</span>
-febio_spec.Geometry.Surface{1}.ATTR.name=<span class="string">'contact_master1'</span>;
-febio_spec.Geometry.Surface{1}.quad4.ATTR.lid=(1:1:size(Fc1,1))';
-febio_spec.Geometry.Surface{1}.quad4.VAL=Fc1;
+surfaceNamePrim1=<span class="string">'contact_primary1'</span>;
+febio_spec.Mesh.Surface{1}.ATTR.name=surfaceNamePrim1;
+febio_spec.Mesh.Surface{1}.quad4.ATTR.id=(1:1:size(Fc1,1))';
+febio_spec.Mesh.Surface{1}.quad4.VAL=Fc1;
 
-febio_spec.Geometry.Surface{2}.ATTR.name=<span class="string">'contact_master2'</span>;
-febio_spec.Geometry.Surface{2}.quad4.ATTR.lid=(1:1:size(Fc2,1))';
-febio_spec.Geometry.Surface{2}.quad4.VAL=Fc2;
+surfaceNamePrim2=<span class="string">'contact_primary2'</span>;
+febio_spec.Mesh.Surface{2}.ATTR.name=surfaceNamePrim2;
+febio_spec.Mesh.Surface{2}.quad4.ATTR.id=(1:1:size(Fc2,1))';
+febio_spec.Mesh.Surface{2}.quad4.VAL=Fc2;
 
-febio_spec.Geometry.Surface{3}.ATTR.name=<span class="string">'contact_master3'</span>;
-febio_spec.Geometry.Surface{3}.quad4.ATTR.lid=(1:1:size(Fc3,1))';
-febio_spec.Geometry.Surface{3}.quad4.VAL=Fc3;
+surfaceNamePrim3=<span class="string">'contact_primary3'</span>;
+febio_spec.Mesh.Surface{3}.ATTR.name=surfaceNamePrim3;
+febio_spec.Mesh.Surface{3}.quad4.ATTR.id=(1:1:size(Fc3,1))';
+febio_spec.Mesh.Surface{3}.quad4.VAL=Fc3;
 
-febio_spec.Geometry.Surface{4}.ATTR.name=<span class="string">'contact_slave'</span>;
-febio_spec.Geometry.Surface{4}.quad4.ATTR.lid=(1:1:size(Fb_slave,1))';
-febio_spec.Geometry.Surface{4}.quad4.VAL=Fb_slave;
+surfaceNameSec1=<span class="string">'contact_secondary1'</span>;
+febio_spec.Mesh.Surface{4}.ATTR.name=surfaceNameSec1;
+febio_spec.Mesh.Surface{4}.tri3.ATTR.id=(1:1:size(F_sec1,1))';
+febio_spec.Mesh.Surface{4}.tri3.VAL=F_sec1;
+
+surfaceNameSec2=<span class="string">'contact_secondary2'</span>;
+febio_spec.Mesh.Surface{5}.ATTR.name=surfaceNameSec2;
+febio_spec.Mesh.Surface{5}.tri3.ATTR.id=(1:1:size(F_sec2,1))';
+febio_spec.Mesh.Surface{5}.tri3.VAL=F_sec2;
+
+surfaceNameSec3=<span class="string">'contact_secondary3'</span>;
+febio_spec.Mesh.Surface{6}.ATTR.name=surfaceNameSec3;
+febio_spec.Mesh.Surface{6}.tri3.ATTR.id=(1:1:size(F_sec3,1))';
+febio_spec.Mesh.Surface{6}.tri3.VAL=F_sec3;
 
 <span class="comment">% -&gt; Surface pairs</span>
-febio_spec.Geometry.SurfacePair{1}.ATTR.name=<span class="string">'Contact1'</span>;
-febio_spec.Geometry.SurfacePair{1}.master.ATTR.surface=febio_spec.Geometry.Surface{1}.ATTR.name;
-febio_spec.Geometry.SurfacePair{1}.slave.ATTR.surface=febio_spec.Geometry.Surface{4}.ATTR.name;
+febio_spec.Mesh.SurfacePair{1}.ATTR.name=<span class="string">'Contact1'</span>;
+febio_spec.Mesh.SurfacePair{1}.primary=surfaceNamePrim1;
+febio_spec.Mesh.SurfacePair{1}.secondary=surfaceNameSec1;
 
-febio_spec.Geometry.SurfacePair{2}.ATTR.name=<span class="string">'Contact2'</span>;
-febio_spec.Geometry.SurfacePair{2}.master.ATTR.surface=febio_spec.Geometry.Surface{2}.ATTR.name;
-febio_spec.Geometry.SurfacePair{2}.slave.ATTR.surface=febio_spec.Geometry.Surface{4}.ATTR.name;
+febio_spec.Mesh.SurfacePair{2}.ATTR.name=<span class="string">'Contact2'</span>;
+febio_spec.Mesh.SurfacePair{2}.primary=surfaceNamePrim2;
+febio_spec.Mesh.SurfacePair{2}.secondary=surfaceNameSec2;
 
-febio_spec.Geometry.SurfacePair{3}.ATTR.name=<span class="string">'Contact3'</span>;
-febio_spec.Geometry.SurfacePair{3}.master.ATTR.surface=febio_spec.Geometry.Surface{3}.ATTR.name;
-febio_spec.Geometry.SurfacePair{3}.slave.ATTR.surface=febio_spec.Geometry.Surface{4}.ATTR.name;
+febio_spec.Mesh.SurfacePair{3}.ATTR.name=<span class="string">'Contact3'</span>;
+febio_spec.Mesh.SurfacePair{3}.primary=surfaceNamePrim3;
+febio_spec.Mesh.SurfacePair{3}.secondary=surfaceNameSec3;
 
 <span class="comment">%Boundary condition section</span>
-
-<span class="comment">% -&gt; Prescribed boundary conditions on the rigid body</span>
-febio_spec.Boundary.rigid_body{1}.ATTR.mat=3;
-febio_spec.Boundary.rigid_body{1}.fixed{1}.ATTR.bc=<span class="string">'x'</span>;
-febio_spec.Boundary.rigid_body{1}.fixed{2}.ATTR.bc=<span class="string">'y'</span>;
-febio_spec.Boundary.rigid_body{1}.fixed{3}.ATTR.bc=<span class="string">'Rx'</span>;
-febio_spec.Boundary.rigid_body{1}.fixed{4}.ATTR.bc=<span class="string">'Ry'</span>;
-febio_spec.Boundary.rigid_body{1}.fixed{5}.ATTR.bc=<span class="string">'Rz'</span>;
-febio_spec.Boundary.rigid_body{1}.prescribed.ATTR.bc=<span class="string">'z'</span>;
-febio_spec.Boundary.rigid_body{1}.prescribed.ATTR.lc=1;
-febio_spec.Boundary.rigid_body{1}.prescribed.VAL=zDisp;
-
-febio_spec.Boundary.rigid_body{2}.ATTR.mat=4;
-febio_spec.Boundary.rigid_body{2}.fixed{1}.ATTR.bc=<span class="string">'x'</span>;
-febio_spec.Boundary.rigid_body{2}.fixed{2}.ATTR.bc=<span class="string">'y'</span>;
-febio_spec.Boundary.rigid_body{2}.fixed{3}.ATTR.bc=<span class="string">'z'</span>;
-febio_spec.Boundary.rigid_body{2}.fixed{4}.ATTR.bc=<span class="string">'Rx'</span>;
-febio_spec.Boundary.rigid_body{2}.fixed{5}.ATTR.bc=<span class="string">'Ry'</span>;
-febio_spec.Boundary.rigid_body{2}.fixed{6}.ATTR.bc=<span class="string">'Rz'</span>;
-
-febio_spec.Boundary.rigid_body{3}.ATTR.mat=5;
-febio_spec.Boundary.rigid_body{3}.fixed{1}.ATTR.bc=<span class="string">'x'</span>;
-febio_spec.Boundary.rigid_body{3}.fixed{2}.ATTR.bc=<span class="string">'y'</span>;
-febio_spec.Boundary.rigid_body{3}.fixed{3}.ATTR.bc=<span class="string">'z'</span>;
-febio_spec.Boundary.rigid_body{3}.fixed{4}.ATTR.bc=<span class="string">'Rx'</span>;
-febio_spec.Boundary.rigid_body{3}.fixed{5}.ATTR.bc=<span class="string">'Ry'</span>;
-febio_spec.Boundary.rigid_body{3}.fixed{6}.ATTR.bc=<span class="string">'Rz'</span>;
-
-<span class="keyword">for</span> qc=1:1:3
-
-    <span class="comment">%Contact section</span>
-    <span class="keyword">switch</span> contactType
-        <span class="keyword">case</span> <span class="string">'sticky'</span>
-            febio_spec.Contact.contact{qc}.ATTR.surface_pair=febio_spec.Geometry.SurfacePair{qc}.ATTR.name;
-            febio_spec.Contact.contact{qc}.ATTR.type=<span class="string">'sticky'</span>;
-            febio_spec.Contact.contact{qc}.penalty=contactPenalty;
-            febio_spec.Contact.contact{qc}.laugon=0;
-            febio_spec.Contact.contact{qc}.tolerance=0.2;
-            febio_spec.Contact.contact{qc}.minaug=1;
-            febio_spec.Contact.contact{qc}.maxaug=10;
-            febio_spec.Contact.contact{qc}.snap_tol=0;
-            febio_spec.Contact.contact{qc}.max_traction=0;
-            febio_spec.Contact.contact{qc}.search_tolerance=0.01;
-        <span class="keyword">case</span> <span class="string">'facet-to-facet sliding'</span>
-            febio_spec.Contact.contact{qc}.ATTR.surface_pair=febio_spec.Geometry.SurfacePair{qc}.ATTR.name;
-            febio_spec.Contact.contact{qc}.ATTR.type=<span class="string">'facet-to-facet sliding'</span>;
-            febio_spec.Contact.contact{qc}.penalty=contactPenalty;
-            febio_spec.Contact.contact{qc}.auto_penalty=1;
-            febio_spec.Contact.contact{qc}.two_pass=1;
-            febio_spec.Contact.contact{qc}.laugon=1;
-            febio_spec.Contact.contact{qc}.tolerance=0.1;
-            febio_spec.Contact.contact{qc}.gaptol=0;
-            febio_spec.Contact.contact{qc}.minaug=1;
-            febio_spec.Contact.contact{qc}.maxaug=10;
-            febio_spec.Contact.contact{qc}.search_tol=0.01;
-            febio_spec.Contact.contact{qc}.search_radius=mean(pointSpacing)/2;
-        <span class="keyword">case</span> <span class="string">'sliding_with_gaps'</span>
-            febio_spec.Contact.contact{qc}.ATTR.surface_pair=febio_spec.Geometry.SurfacePair{qc}.ATTR.name;
-            febio_spec.Contact.contact{qc}.ATTR.type=<span class="string">'sliding_with_gaps'</span>;
-            febio_spec.Contact.contact{qc}.penalty=contactPenalty;
-            febio_spec.Contact.contact{qc}.auto_penalty=1;
-            febio_spec.Contact.contact{qc}.two_pass=0;
-            febio_spec.Contact.contact{qc}.laugon=0;
-            febio_spec.Contact.contact{qc}.tolerance=0.1;
-            febio_spec.Contact.contact{qc}.gaptol=0;
-            febio_spec.Contact.contact{qc}.minaug=0;
-            febio_spec.Contact.contact{qc}.maxaug=10;
-            febio_spec.Contact.contact{qc}.fric_coeff=0;
-            febio_spec.Contact.contact{qc}.fric_penalty=0;
-            febio_spec.Contact.contact{qc}.ktmult=1;
-            febio_spec.Contact.contact{qc}.seg_up=0;
-            febio_spec.Contact.contact{qc}.search_tol=0.01;
-        <span class="keyword">case</span> <span class="string">'sliding2'</span>
-            febio_spec.Contact.contact{qc}.ATTR.surface_pair=febio_spec.Geometry.SurfacePair{qc}.ATTR.name;
-            febio_spec.Contact.contact{qc}.ATTR.type=<span class="string">'sliding2'</span>;
-            febio_spec.Contact.contact{qc}.penalty=contactPenalty;
-            febio_spec.Contact.contact{qc}.auto_penalty=1;
-            febio_spec.Contact.contact{qc}.two_pass=0;
-            febio_spec.Contact.contact{qc}.laugon=0;
-            febio_spec.Contact.contact{qc}.tolerance=0.1;
-            febio_spec.Contact.contact{qc}.gaptol=0;
-            febio_spec.Contact.contact{qc}.symmetric_stiffness=0;
-            febio_spec.Contact.contact{qc}.search_tol=0.01;
-            febio_spec.Contact.contact{qc}.search_radius=mean(pointSpacings)/2;
-        <span class="keyword">case</span> <span class="string">'sliding-elastic'</span>
-            febio_spec.Contact.contact{qc}.ATTR.surface_pair=febio_spec.Geometry.SurfacePair{qc}.ATTR.name;
-            febio_spec.Contact.contact{qc}.ATTR.type=<span class="string">'sliding-elastic'</span>;
-            febio_spec.Contact.contact{qc}.two_pass=1;
-            febio_spec.Contact.contact{qc}.laugon=1;
-            febio_spec.Contact.contact{qc}.tolerance=0.2;
-            febio_spec.Contact.contact{qc}.gaptol=0;
-            febio_spec.Contact.contact{qc}.minaug=1;
-            febio_spec.Contact.contact{qc}.maxaug=10;
-            febio_spec.Contact.contact{qc}.search_tol=0.01;
-            febio_spec.Contact.contact{qc}.search_radius=1;
-            febio_spec.Contact.contact{qc}.symmetric_stiffness=0;
-            febio_spec.Contact.contact{qc}.auto_penalty=1;
-            febio_spec.Contact.contact{qc}.penalty=contactPenalty;
-            febio_spec.Contact.contact{qc}.fric_coeff=0.5;
-    <span class="keyword">end</span>
+<span class="comment">% -&gt; Fix boundary conditions</span>
+<span class="keyword">if</span> bcFix==1
+    febio_spec.Boundary.bc{1}.ATTR.type=<span class="string">'fix'</span>;
+    febio_spec.Boundary.bc{1}.ATTR.node_set=nodeSetName1;
+    febio_spec.Boundary.bc{1}.dofs=<span class="string">'x,y,z'</span>;
 <span class="keyword">end</span>
+<span class="comment">%Rigid section</span>
+<span class="comment">% -&gt; Prescribed rigid body boundary conditions</span>
+febio_spec.Rigid.rigid_constraint{1}.ATTR.name=<span class="string">'RigidFix_1'</span>;
+febio_spec.Rigid.rigid_constraint{1}.ATTR.type=<span class="string">'fix'</span>;
+febio_spec.Rigid.rigid_constraint{1}.rb=3;
+febio_spec.Rigid.rigid_constraint{1}.dofs=<span class="string">'Rx,Ry,Ru,Rv,Rw'</span>;
+
+febio_spec.Rigid.rigid_constraint{2}.ATTR.name=<span class="string">'RigidFix_2'</span>;
+febio_spec.Rigid.rigid_constraint{2}.ATTR.type=<span class="string">'fix'</span>;
+febio_spec.Rigid.rigid_constraint{2}.rb=4;
+febio_spec.Rigid.rigid_constraint{2}.dofs=<span class="string">'Rx,Ry,Rz,Ru,Rv,Rw'</span>;
+
+febio_spec.Rigid.rigid_constraint{3}.ATTR.name=<span class="string">'RigidFix_3'</span>;
+febio_spec.Rigid.rigid_constraint{3}.ATTR.type=<span class="string">'fix'</span>;
+febio_spec.Rigid.rigid_constraint{3}.rb=5;
+febio_spec.Rigid.rigid_constraint{3}.dofs=<span class="string">'Rx,Ry,Rz,Ru,Rv,Rw'</span>;
+
+febio_spec.Rigid.rigid_constraint{4}.ATTR.name=<span class="string">'RigidPrescribe'</span>;
+febio_spec.Rigid.rigid_constraint{4}.ATTR.type=<span class="string">'prescribe'</span>;
+febio_spec.Rigid.rigid_constraint{4}.rb=3;
+febio_spec.Rigid.rigid_constraint{4}.dof=<span class="string">'Rz'</span>;
+febio_spec.Rigid.rigid_constraint{4}.value.ATTR.lc=1;
+febio_spec.Rigid.rigid_constraint{4}.value.VAL=zDisp;
+febio_spec.Rigid.rigid_constraint{4}.relative=0;
+
+<span class="comment">%Contact section</span>
+<span class="keyword">for</span> qc=1:1:3
+    febio_spec.Contact.contact{qc}.ATTR.surface_pair=febio_spec.Mesh.SurfacePair{qc}.ATTR.name;
+    febio_spec.Contact.contact{qc}.ATTR.type=<span class="string">'sticky'</span>;
+    febio_spec.Contact.contact{qc}.penalty=contactPenalty;
+    febio_spec.Contact.contact{qc}.laugon=laugon;
+    febio_spec.Contact.contact{qc}.tolerance=0.2;
+    febio_spec.Contact.contact{qc}.minaug=minaug;
+    febio_spec.Contact.contact{qc}.maxaug=maxaug;
+    febio_spec.Contact.contact{qc}.snap_tol=0.01;
+    febio_spec.Contact.contact{qc}.max_traction=0;
+    febio_spec.Contact.contact{qc}.search_tolerance=0.01;
+<span class="keyword">end</span>
+
+<span class="comment">%LoadData section</span>
+<span class="comment">% -&gt; load_controller</span>
+febio_spec.LoadData.load_controller{1}.ATTR.id=1;
+febio_spec.LoadData.load_controller{1}.ATTR.type=<span class="string">'loadcurve'</span>;
+febio_spec.LoadData.load_controller{1}.interpolate=<span class="string">'LINEAR'</span>;
+febio_spec.LoadData.load_controller{1}.points.point.VAL=[0 0; 1 1];
 
 <span class="comment">%Output section</span>
 <span class="comment">% -&gt; log file</span>
@@ -560,8 +583,8 @@ febio_spec.Output.logfile.element_data{1}.ATTR.file=febioLogFileName_stress;
 febio_spec.Output.logfile.element_data{1}.ATTR.data=<span class="string">'s1'</span>;
 febio_spec.Output.logfile.element_data{1}.ATTR.delim=<span class="string">','</span>;
 febio_spec.Output.logfile.element_data{1}.VAL=1:size(E,1);
-</pre><h2 id="18">Quick viewing of the FEBio input file structure</h2><p>The <tt>febView</tt> function can be used to view the xml structure in a MATLAB figure window.</p><p><tt>febView(febio_spec); %Viewing the febio file</tt></p><h2 id="20">Exporting the FEBio input file</h2><p>Exporting the febio_spec structure to an FEBio input file is done using the <tt>febioStruct2xml</tt> function.</p><pre class="codeinput">febioStruct2xml(febio_spec,febioFebFileName); <span class="comment">%Exporting to file and domNode</span>
-</pre><h2 id="21">Running the FEBio analysis</h2><p>To run the analysis defined by the created FEBio input file the <tt>runMonitorFEBio</tt> function is used. The input for this function is a structure defining job settings e.g. the FEBio input file name. The optional output runFlag informs the user if the analysis was run succesfully.</p><pre class="codeinput">febioAnalysis.run_filename=febioFebFileName; <span class="comment">%The input file name</span>
+</pre><h2 id="22">Quick viewing of the FEBio input file structure</h2><p>The <tt>febView</tt> function can be used to view the xml structure in a MATLAB figure window.</p><p><tt>febView(febio_spec); %Viewing the febio file</tt></p><h2 id="24">Exporting the FEBio input file</h2><p>Exporting the febio_spec structure to an FEBio input file is done using the <tt>febioStruct2xml</tt> function.</p><pre class="codeinput">febioStruct2xml(febio_spec,febioFebFileName); <span class="comment">%Exporting to file and domNode</span>
+</pre><h2 id="25">Running the FEBio analysis</h2><p>To run the analysis defined by the created FEBio input file the <tt>runMonitorFEBio</tt> function is used. The input for this function is a structure defining job settings e.g. the FEBio input file name. The optional output runFlag informs the user if the analysis was run succesfully.</p><pre class="codeinput">febioAnalysis.run_filename=febioFebFileName; <span class="comment">%The input file name</span>
 febioAnalysis.run_logname=febioLogFileName; <span class="comment">%The name for the log file</span>
 febioAnalysis.disp_on=1; <span class="comment">%Display information on the command window</span>
 febioAnalysis.disp_log_on=1; <span class="comment">%Display convergence information in the command window</span>
@@ -572,697 +595,84 @@ febioAnalysis.maxLogCheckTime=10; <span class="comment">%Max log file checking t
 
 [runFlag]=runMonitorFEBio(febioAnalysis);<span class="comment">%START FEBio NOW!!!!!!!!</span>
 </pre><pre class="codeoutput"> 
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
---- STARTING FEBIO JOB --- 12-Aug-2020 21:04:56
-===========================================================================
-         ________    _________   _________     __     _________            
-        |        |\ |        |\ |        |\   |  |\  /         \\          
-        |    ____|| |    ____|| |    __  ||   |__|| |    ___    ||         
-        |   |\___\| |   |\___\| |   |\_| ||    \_\| |   //  \   ||         
-        |   ||      |   ||      |   || | ||    __   |  ||    |  ||         
-        |   ||__    |   ||__    |   ||_| ||   |  |\ |  ||    |  ||         
-        |       |\  |       |\  |         \\  |  || |  ||    |  ||         
-        |    ___||  |    ___||  |    ___   || |  || |  ||    |  ||         
-        |   |\__\|  |   |\__\|  |   |\__|  || |  || |  ||    |  ||         
-        |   ||      |   ||      |   ||  |  || |  || |  ||    |  ||         
-        |   ||      |   ||___   |   ||__|  || |  || |   \\__/   ||         
-        |   ||      |        |\ |          || |  || |           ||         
-        |___||      |________|| |__________|| |__||  \_________//          
-                                                                           
-      F I N I T E   E L E M E N T S   F O R   B I O M E C H A N I C S      
-                                                                           
-                 --- v e r s i o n - 2 . 9 . 1 ---                 
-                                                                           
-                                                                           
-  http://febio.org                                                         
-  FEBio is a registered trademark.                                         
-  copyright (c) 2006-2019 - All rights reserved                            
-                                                                           
-===========================================================================
-
-
-Reading file /mnt/data/MATLAB/GIBBON/data/temp/tempModel.feb ...SUCCESS!
- ]0;(0%) tempModel.feb - FEBio 2.9.1.0  
-===== beginning time step 1 : 0.1 =====
-Reforming stiffness matrix: reformation #1
-
-===== reforming stiffness matrix:
-	Nr of equations ........................... : 22972
-	Nr of nonzeroes in stiffness matrix ....... : 443149
-
- 1
- Nonlinear solution status: time= 0.1
-	stiffness updates             = 0
-	right hand side evaluations   = 4
-	stiffness matrix reformations = 1
-	step from line search         = 0.500000
-	convergence norms :     INITIAL         CURRENT         REQUIRED
-	   residual            7.089776e-15    6.676928e+09    0.000000e+00 
-	   energy              3.106809e-20    6.130198e-09    3.106809e-22 
-	   displacement        2.264304e-20    5.660760e-21    5.660760e-27 
- *************************************************************************
- *                               WARNING                                 *
- *                                                                       *
- * Problem is diverging. Stiffness matrix will now be reformed           *
- *************************************************************************
-Reforming stiffness matrix: reformation #2
-
-===== reforming stiffness matrix:
-	Nr of equations ........................... : 22972
-	Nr of nonzeroes in stiffness matrix ....... : 443152
-
- 2
- Nonlinear solution status: time= 0.1
-	stiffness updates             = 0
-	right hand side evaluations   = 5
-	stiffness matrix reformations = 2
-	step from line search         = 1.000000
-	convergence norms :     INITIAL         CURRENT         REQUIRED
-	   residual            6.676928e+09    2.191275e+06    0.000000e+00 
-	   energy              6.130198e-09    5.823567e+01    6.130198e-11 
-	   displacement        2.264304e-20    4.434321e+03    4.434321e-03 
- *************************************************************************
- *                               WARNING                                 *
- *                                                                       *
- * Problem is diverging. Stiffness matrix will now be reformed           *
- *************************************************************************
-Reforming stiffness matrix: reformation #3
-
-===== reforming stiffness matrix:
-	Nr of equations ........................... : 22972
-	Nr of nonzeroes in stiffness matrix ....... : 443152
-
- 3
- Nonlinear solution status: time= 0.1
-	stiffness updates             = 0
-	right hand side evaluations   = 6
-	stiffness matrix reformations = 3
-	step from line search         = 1.000000
-	convergence norms :     INITIAL         CURRENT         REQUIRED
-	   residual            2.191275e+06    3.143831e-03    0.000000e+00 
-	   energy              5.823567e+01    1.131828e-03    5.823567e-01 
-	   displacement        2.264304e-20    7.490081e-02    4.431220e-03 
-Reforming stiffness matrix: reformation #4
-
-===== reforming stiffness matrix:
-	Nr of equations ........................... : 22972
-	Nr of nonzeroes in stiffness matrix ....... : 443152
-
- 4
- Nonlinear solution status: time= 0.1
-	stiffness updates             = 0
-	right hand side evaluations   = 7
-	stiffness matrix reformations = 4
-	step from line search         = 1.000000
-	convergence norms :     INITIAL         CURRENT         REQUIRED
-	   residual            2.191275e+06    4.505287e-14    0.000000e+00 
-	   energy              5.823567e+01    2.190462e-16    5.823567e-01 
-	   displacement        2.264304e-20    1.902082e-10    4.431221e-03 
-
-------- converged at time : 0.1
-
- ]0;(10%) tempModel.feb - FEBio 2.9.1.0  
-===== beginning time step 2 : 0.2 =====
-Reforming stiffness matrix: reformation #1
-
-===== reforming stiffness matrix:
-	Nr of equations ........................... : 22972
-	Nr of nonzeroes in stiffness matrix ....... : 443152
-
- 1
- Nonlinear solution status: time= 0.2
-	stiffness updates             = 0
-	right hand side evaluations   = 5
-	stiffness matrix reformations = 1
-	step from line search         = 0.500000
-	convergence norms :     INITIAL         CURRENT         REQUIRED
-	   residual            3.417112e+10    5.479972e+11    0.000000e+00 
-	   energy              1.112823e+05    4.059094e+06    1.112823e+03 
-	   displacement        2.956936e+05    7.392341e+04    7.392341e-02 
- *************************************************************************
- *                               WARNING                                 *
- *                                                                       *
- * Problem is diverging. Stiffness matrix will now be reformed           *
- *************************************************************************
-Reforming stiffness matrix: reformation #2
-
-===== reforming stiffness matrix:
-	Nr of equations ........................... : 22972
-	Nr of nonzeroes in stiffness matrix ....... : 443161
-
- 2
- Nonlinear solution status: time= 0.2
-	stiffness updates             = 0
-	right hand side evaluations   = 6
-	stiffness matrix reformations = 2
-	step from line search         = 1.000000
-	convergence norms :     INITIAL         CURRENT         REQUIRED
-	   residual            5.479972e+11    1.051065e+08    0.000000e+00 
-	   energy              4.059094e+06    6.913036e+02    4.059094e+04 
-	   displacement        2.956936e+05    6.795973e+04    2.628589e-01 
-Reforming stiffness matrix: reformation #3
-
-===== reforming stiffness matrix:
-	Nr of equations ........................... : 22972
-	Nr of nonzeroes in stiffness matrix ....... : 443161
-
- 3
- Nonlinear solution status: time= 0.2
-	stiffness updates             = 0
-	right hand side evaluations   = 7
-	stiffness matrix reformations = 3
-	step from line search         = 1.000000
-	convergence norms :     INITIAL         CURRENT         REQUIRED
-	   residual            5.479972e+11    2.310121e+06    0.000000e+00 
-	   energy              4.059094e+06    1.382036e+02    4.059094e+04 
-	   displacement        2.956936e+05    8.723684e+03    3.467167e-01 
-Reforming stiffness matrix: reformation #4
-
-===== reforming stiffness matrix:
-	Nr of equations ........................... : 22972
-	Nr of nonzeroes in stiffness matrix ....... : 443161
-
- 4
- Nonlinear solution status: time= 0.2
-	stiffness updates             = 0
-	right hand side evaluations   = 8
-	stiffness matrix reformations = 4
-	step from line search         = 1.000000
-	convergence norms :     INITIAL         CURRENT         REQUIRED
-	   residual            5.479972e+11    4.556240e+03    0.000000e+00 
-	   energy              4.059094e+06    4.296487e+00    4.059094e+04 
-	   displacement        2.956936e+05    3.878767e+02    3.660601e-01 
-Reforming stiffness matrix: reformation #5
-
-===== reforming stiffness matrix:
-	Nr of equations ........................... : 22972
-	Nr of nonzeroes in stiffness matrix ....... : 443161
-
- 5
- Nonlinear solution status: time= 0.2
-	stiffness updates             = 0
-	right hand side evaluations   = 9
-	stiffness matrix reformations = 5
-	step from line search         = 1.000000
-	convergence norms :     INITIAL         CURRENT         REQUIRED
-	   residual            5.479972e+11    6.394727e+00    0.000000e+00 
-	   energy              4.059094e+06    7.248403e-03    4.059094e+04 
-	   displacement        2.956936e+05    1.021933e+01    3.688320e-01 
-Reforming stiffness matrix: reformation #6
-
-===== reforming stiffness matrix:
-	Nr of equations ........................... : 22972
-	Nr of nonzeroes in stiffness matrix ....... : 443161
-
- 6
- Nonlinear solution status: time= 0.2
-	stiffness updates             = 0
-	right hand side evaluations   = 10
-	stiffness matrix reformations = 6
-	step from line search         = 1.000000
-	convergence norms :     INITIAL         CURRENT         REQUIRED
-	   residual            5.479972e+11    8.946186e-08    0.000000e+00 
-	   energy              4.059094e+06    3.257023e-08    4.059094e+04 
-	   displacement        2.956936e+05    9.110547e-04    3.688580e-01 
-
-------- converged at time : 0.2
-
- ]0;(20%) tempModel.feb - FEBio 2.9.1.0  
-===== beginning time step 3 : 0.3 =====
-Reforming stiffness matrix: reformation #1
-
-===== reforming stiffness matrix:
-	Nr of equations ........................... : 22972
-	Nr of nonzeroes in stiffness matrix ....... : 443161
-
- 1
- Nonlinear solution status: time= 0.3
-	stiffness updates             = 0
-	right hand side evaluations   = 2
-	stiffness matrix reformations = 1
-	step from line search         = 1.000000
-	convergence norms :     INITIAL         CURRENT         REQUIRED
-	   residual            1.339755e+11    2.501333e+05    0.000000e+00 
-	   energy              4.344461e+05    5.637514e+01    4.344461e+03 
-	   displacement        6.806491e+03    6.806491e+03    6.806491e-03 
-Reforming stiffness matrix: reformation #2
-
-===== reforming stiffness matrix:
-	Nr of equations ........................... : 22972
-	Nr of nonzeroes in stiffness matrix ....... : 443161
-
- 2
- Nonlinear solution status: time= 0.3
-	stiffness updates             = 0
-	right hand side evaluations   = 3
-	stiffness matrix reformations = 2
-	step from line search         = 1.000000
-	convergence norms :     INITIAL         CURRENT         REQUIRED
-	   residual            1.339755e+11    1.261500e-03    0.000000e+00 
-	   energy              4.344461e+05    4.746985e-04    4.344461e+03 
-	   displacement        6.806491e+03    3.285681e-01    6.892722e-03 
-Reforming stiffness matrix: reformation #3
-
-===== reforming stiffness matrix:
-	Nr of equations ........................... : 22972
-	Nr of nonzeroes in stiffness matrix ....... : 443161
-
- 3
- Nonlinear solution status: time= 0.3
-	stiffness updates             = 0
-	right hand side evaluations   = 4
-	stiffness matrix reformations = 3
-	step from line search         = 1.000000
-	convergence norms :     INITIAL         CURRENT         REQUIRED
-	   residual            1.339755e+11    1.922099e-10    0.000000e+00 
-	   energy              4.344461e+05    1.318839e-11    4.344461e+03 
-	   displacement        6.806491e+03    4.724046e-05    6.893770e-03 
-
-------- converged at time : 0.3
-
- ]0;(30%) tempModel.feb - FEBio 2.9.1.0  
-===== beginning time step 4 : 0.4 =====
-Reforming stiffness matrix: reformation #1
-
-===== reforming stiffness matrix:
-	Nr of equations ........................... : 22972
-	Nr of nonzeroes in stiffness matrix ....... : 443161
-
- 1
- Nonlinear solution status: time= 0.4
-	stiffness updates             = 0
-	right hand side evaluations   = 2
-	stiffness matrix reformations = 1
-	step from line search         = 1.000000
-	convergence norms :     INITIAL         CURRENT         REQUIRED
-	   residual            1.339755e+11    2.368467e+10    0.000000e+00 
-	   energy              4.345734e+05    1.792222e+05    4.345734e+03 
-	   displacement        6.981946e+03    6.981946e+03    6.981946e-03 
-Reforming stiffness matrix: reformation #2
-
-===== reforming stiffness matrix:
-	Nr of equations ........................... : 22972
-	Nr of nonzeroes in stiffness matrix ....... : 443161
-
- 2
- Nonlinear solution status: time= 0.4
-	stiffness updates             = 0
-	right hand side evaluations   = 3
-	stiffness matrix reformations = 2
-	step from line search         = 1.000000
-	convergence norms :     INITIAL         CURRENT         REQUIRED
-	   residual            1.339755e+11    1.603941e+05    0.000000e+00 
-	   energy              4.345734e+05    6.469641e+00    4.345734e+03 
-	   displacement        6.981946e+03    1.986287e+03    2.135083e-03 
-Reforming stiffness matrix: reformation #3
-
-===== reforming stiffness matrix:
-	Nr of equations ........................... : 22972
-	Nr of nonzeroes in stiffness matrix ....... : 443161
-
- 3
- Nonlinear solution status: time= 0.4
-	stiffness updates             = 0
-	right hand side evaluations   = 4
-	stiffness matrix reformations = 3
-	step from line search         = 1.000000
-	convergence norms :     INITIAL         CURRENT         REQUIRED
-	   residual            1.339755e+11    2.050778e-02    0.000000e+00 
-	   energy              4.345734e+05    1.855520e-03    4.345734e+03 
-	   displacement        6.981946e+03    2.586924e-01    2.109550e-03 
-Reforming stiffness matrix: reformation #4
-
-===== reforming stiffness matrix:
-	Nr of equations ........................... : 22972
-	Nr of nonzeroes in stiffness matrix ....... : 443161
-
- 4
- Nonlinear solution status: time= 0.4
-	stiffness updates             = 0
-	right hand side evaluations   = 5
-	stiffness matrix reformations = 4
-	step from line search         = 1.000000
-	convergence norms :     INITIAL         CURRENT         REQUIRED
-	   residual            1.339755e+11    7.951355e-09    0.000000e+00 
-	   energy              4.345734e+05    5.128981e-10    4.345734e+03 
-	   displacement        6.981946e+03    1.067889e-04    2.109147e-03 
-
-------- converged at time : 0.4
-
- ]0;(40%) tempModel.feb - FEBio 2.9.1.0  
-===== beginning time step 5 : 0.5 =====
-Reforming stiffness matrix: reformation #1
-
-===== reforming stiffness matrix:
-	Nr of equations ........................... : 22972
-	Nr of nonzeroes in stiffness matrix ....... : 443161
-
- 1
- Nonlinear solution status: time= 0.5
-	stiffness updates             = 0
-	right hand side evaluations   = 2
-	stiffness matrix reformations = 1
-	step from line search         = 1.000000
-	convergence norms :     INITIAL         CURRENT         REQUIRED
-	   residual            1.339755e+11    4.076067e+05    0.000000e+00 
-	   energy              4.307780e+05    6.655290e+01    4.307780e+03 
-	   displacement        1.840491e+03    1.840491e+03    1.840491e-03 
-Reforming stiffness matrix: reformation #2
-
-===== reforming stiffness matrix:
-	Nr of equations ........................... : 22972
-	Nr of nonzeroes in stiffness matrix ....... : 443161
-
- 2
- Nonlinear solution status: time= 0.5
-	stiffness updates             = 0
-	right hand side evaluations   = 3
-	stiffness matrix reformations = 2
-	step from line search         = 1.000000
-	convergence norms :     INITIAL         CURRENT         REQUIRED
-	   residual            1.339755e+11    2.638948e-03    0.000000e+00 
-	   energy              4.307780e+05    9.557855e-04    4.307780e+03 
-	   displacement        1.840491e+03    2.517547e-01    1.878471e-03 
-Reforming stiffness matrix: reformation #3
-
-===== reforming stiffness matrix:
-	Nr of equations ........................... : 22972
-	Nr of nonzeroes in stiffness matrix ....... : 443161
-
- 3
- Nonlinear solution status: time= 0.5
-	stiffness updates             = 0
-	right hand side evaluations   = 4
-	stiffness matrix reformations = 3
-	step from line search         = 1.000000
-	convergence norms :     INITIAL         CURRENT         REQUIRED
-	   residual            1.339755e+11    2.441955e-10    0.000000e+00 
-	   energy              4.307780e+05    2.433995e-11    4.307780e+03 
-	   displacement        1.840491e+03    2.786871e-05    1.878890e-03 
-
-------- converged at time : 0.5
-
- ]0;(50%) tempModel.feb - FEBio 2.9.1.0  
-===== beginning time step 6 : 0.6 =====
-Reforming stiffness matrix: reformation #1
-
-===== reforming stiffness matrix:
-	Nr of equations ........................... : 22972
-	Nr of nonzeroes in stiffness matrix ....... : 443161
-
- 1
- Nonlinear solution status: time= 0.6
-	stiffness updates             = 0
-	right hand side evaluations   = 2
-	stiffness matrix reformations = 1
-	step from line search         = 1.000000
-	convergence norms :     INITIAL         CURRENT         REQUIRED
-	   residual            1.339755e+11    4.308886e+05    0.000000e+00 
-	   energy              4.309338e+05    6.653917e+01    4.309338e+03 
-	   displacement        1.917926e+03    1.917926e+03    1.917926e-03 
-Reforming stiffness matrix: reformation #2
-
-===== reforming stiffness matrix:
-	Nr of equations ........................... : 22972
-	Nr of nonzeroes in stiffness matrix ....... : 443161
-
- 2
- Nonlinear solution status: time= 0.6
-	stiffness updates             = 0
-	right hand side evaluations   = 3
-	stiffness matrix reformations = 2
-	step from line search         = 1.000000
-	convergence norms :     INITIAL         CURRENT         REQUIRED
-	   residual            1.339755e+11    2.782752e-03    0.000000e+00 
-	   energy              4.309338e+05    1.015591e-03    4.309338e+03 
-	   displacement        1.917926e+03    2.581493e-01    1.957273e-03 
-Reforming stiffness matrix: reformation #3
-
-===== reforming stiffness matrix:
-	Nr of equations ........................... : 22972
-	Nr of nonzeroes in stiffness matrix ....... : 443161
-
- 3
- Nonlinear solution status: time= 0.6
-	stiffness updates             = 0
-	right hand side evaluations   = 4
-	stiffness matrix reformations = 3
-	step from line search         = 1.000000
-	convergence norms :     INITIAL         CURRENT         REQUIRED
-	   residual            1.339755e+11    3.059405e-10    0.000000e+00 
-	   energy              4.309338e+05    2.772372e-11    4.309338e+03 
-	   displacement        1.917926e+03    3.102962e-05    1.957725e-03 
-
-------- converged at time : 0.6
-
- ]0;(60%) tempModel.feb - FEBio 2.9.1.0  
-===== beginning time step 7 : 0.7 =====
-Reforming stiffness matrix: reformation #1
-
-===== reforming stiffness matrix:
-	Nr of equations ........................... : 22972
-	Nr of nonzeroes in stiffness matrix ....... : 443161
-
- 1
- Nonlinear solution status: time= 0.7
-	stiffness updates             = 0
-	right hand side evaluations   = 2
-	stiffness matrix reformations = 1
-	step from line search         = 1.000000
-	convergence norms :     INITIAL         CURRENT         REQUIRED
-	   residual            1.339755e+11    4.556529e+05    0.000000e+00 
-	   energy              4.310909e+05    6.643537e+01    4.310909e+03 
-	   displacement        1.998171e+03    1.998171e+03    1.998171e-03 
-Reforming stiffness matrix: reformation #2
-
-===== reforming stiffness matrix:
-	Nr of equations ........................... : 22972
-	Nr of nonzeroes in stiffness matrix ....... : 443161
-
- 2
- Nonlinear solution status: time= 0.7
-	stiffness updates             = 0
-	right hand side evaluations   = 3
-	stiffness matrix reformations = 2
-	step from line search         = 1.000000
-	convergence norms :     INITIAL         CURRENT         REQUIRED
-	   residual            1.339755e+11    2.930981e-03    0.000000e+00 
-	   energy              4.310909e+05    1.078167e-03    4.310909e+03 
-	   displacement        1.998171e+03    2.645166e-01    2.038903e-03 
-Reforming stiffness matrix: reformation #3
-
-===== reforming stiffness matrix:
-	Nr of equations ........................... : 22972
-	Nr of nonzeroes in stiffness matrix ....... : 443161
-
- 3
- Nonlinear solution status: time= 0.7
-	stiffness updates             = 0
-	right hand side evaluations   = 4
-	stiffness matrix reformations = 3
-	step from line search         = 1.000000
-	convergence norms :     INITIAL         CURRENT         REQUIRED
-	   residual            1.339755e+11    3.829334e-10    0.000000e+00 
-	   energy              4.310909e+05    3.151322e-11    4.310909e+03 
-	   displacement        1.998171e+03    3.450705e-05    2.039390e-03 
-
-------- converged at time : 0.7
-
- ]0;(70%) tempModel.feb - FEBio 2.9.1.0  
-===== beginning time step 8 : 0.8 =====
-Reforming stiffness matrix: reformation #1
-
-===== reforming stiffness matrix:
-	Nr of equations ........................... : 22972
-	Nr of nonzeroes in stiffness matrix ....... : 443161
-
- 1
- Nonlinear solution status: time= 0.8
-	stiffness updates             = 0
-	right hand side evaluations   = 2
-	stiffness matrix reformations = 1
-	step from line search         = 1.000000
-	convergence norms :     INITIAL         CURRENT         REQUIRED
-	   residual            1.339755e+11    4.819916e+05    0.000000e+00 
-	   energy              4.312492e+05    6.623538e+01    4.312492e+03 
-	   displacement        2.081268e+03    2.081268e+03    2.081268e-03 
-Reforming stiffness matrix: reformation #2
-
-===== reforming stiffness matrix:
-	Nr of equations ........................... : 22972
-	Nr of nonzeroes in stiffness matrix ....... : 443161
-
- 2
- Nonlinear solution status: time= 0.8
-	stiffness updates             = 0
-	right hand side evaluations   = 3
-	stiffness matrix reformations = 2
-	step from line search         = 1.000000
-	convergence norms :     INITIAL         CURRENT         REQUIRED
-	   residual            1.339755e+11    3.083613e-03    0.000000e+00 
-	   energy              4.312492e+05    1.143541e-03    4.312492e+03 
-	   displacement        2.081268e+03    2.708456e-01    2.123402e-03 
-Reforming stiffness matrix: reformation #3
-
-===== reforming stiffness matrix:
-	Nr of equations ........................... : 22972
-	Nr of nonzeroes in stiffness matrix ....... : 443161
-
- 3
- Nonlinear solution status: time= 0.8
-	stiffness updates             = 0
-	right hand side evaluations   = 4
-	stiffness matrix reformations = 3
-	step from line search         = 1.000000
-	convergence norms :     INITIAL         CURRENT         REQUIRED
-	   residual            1.339755e+11    4.785812e-10    0.000000e+00 
-	   energy              4.312492e+05    3.576016e-11    4.312492e+03 
-	   displacement        2.081268e+03    3.832601e-05    2.123926e-03 
-
-------- converged at time : 0.8
-
- ]0;(80%) tempModel.feb - FEBio 2.9.1.0  
-===== beginning time step 9 : 0.9 =====
-Reforming stiffness matrix: reformation #1
-
-===== reforming stiffness matrix:
-	Nr of equations ........................... : 22972
-	Nr of nonzeroes in stiffness matrix ....... : 443161
-
- 1
- Nonlinear solution status: time= 0.9
-	stiffness updates             = 0
-	right hand side evaluations   = 2
-	stiffness matrix reformations = 1
-	step from line search         = 1.000000
-	convergence norms :     INITIAL         CURRENT         REQUIRED
-	   residual            1.339755e+11    1.251777e+08    0.000000e+00 
-	   energy              4.314086e+05    5.994590e+03    4.314086e+03 
-	   displacement        2.167254e+03    2.167254e+03    2.167254e-03 
-Reforming stiffness matrix: reformation #2
-
-===== reforming stiffness matrix:
-	Nr of equations ........................... : 22972
-	Nr of nonzeroes in stiffness matrix ....... : 443164
-
- 2
- Nonlinear solution status: time= 0.9
-	stiffness updates             = 0
-	right hand side evaluations   = 3
-	stiffness matrix reformations = 2
-	step from line search         = 1.000000
-	convergence norms :     INITIAL         CURRENT         REQUIRED
-	   residual            1.339755e+11    1.216201e+01    0.000000e+00 
-	   energy              4.314086e+05    2.426449e-02    4.314086e+03 
-	   displacement        2.167254e+03    3.221466e+00    2.294629e-03 
-Reforming stiffness matrix: reformation #3
-
-===== reforming stiffness matrix:
-	Nr of equations ........................... : 22972
-	Nr of nonzeroes in stiffness matrix ....... : 443164
-
- 3
- Nonlinear solution status: time= 0.9
-	stiffness updates             = 0
-	right hand side evaluations   = 4
-	stiffness matrix reformations = 3
-	step from line search         = 1.000000
-	convergence norms :     INITIAL         CURRENT         REQUIRED
-	   residual            1.339755e+11    2.287284e-06    0.000000e+00 
-	   energy              4.314086e+05    8.437118e-08    4.314086e+03 
-	   displacement        2.167254e+03    2.127899e-03    2.296737e-03 
-
-------- converged at time : 0.9
-
- ]0;(90%) tempModel.feb - FEBio 2.9.1.0  
-===== beginning time step 10 : 1 =====
-Reforming stiffness matrix: reformation #1
-
-===== reforming stiffness matrix:
-	Nr of equations ........................... : 22972
-	Nr of nonzeroes in stiffness matrix ....... : 443164
-
- 1
- Nonlinear solution status: time= 1
-	stiffness updates             = 0
-	right hand side evaluations   = 2
-	stiffness matrix reformations = 1
-	step from line search         = 1.000000
-	convergence norms :     INITIAL         CURRENT         REQUIRED
-	   residual            1.710995e+11    6.234529e+05    0.000000e+00 
-	   energy              5.473591e+05    6.838850e+01    5.473591e+03 
-	   displacement        2.378609e+03    2.378609e+03    2.378609e-03 
-Reforming stiffness matrix: reformation #2
-
-===== reforming stiffness matrix:
-	Nr of equations ........................... : 22972
-	Nr of nonzeroes in stiffness matrix ....... : 443164
-
- 2
- Nonlinear solution status: time= 1
-	stiffness updates             = 0
-	right hand side evaluations   = 3
-	stiffness matrix reformations = 2
-	step from line search         = 1.000000
-	convergence norms :     INITIAL         CURRENT         REQUIRED
-	   residual            1.710995e+11    4.019783e-03    0.000000e+00 
-	   energy              5.473591e+05    1.480358e-03    5.473591e+03 
-	   displacement        2.378609e+03    2.916345e-01    2.425103e-03 
-Reforming stiffness matrix: reformation #3
-
-===== reforming stiffness matrix:
-	Nr of equations ........................... : 22972
-	Nr of nonzeroes in stiffness matrix ....... : 443164
-
- 3
- Nonlinear solution status: time= 1
-	stiffness updates             = 0
-	right hand side evaluations   = 4
-	stiffness matrix reformations = 3
-	step from line search         = 1.000000
-	convergence norms :     INITIAL         CURRENT         REQUIRED
-	   residual            1.710995e+11    1.333681e-09    0.000000e+00 
-	   energy              5.473591e+05    6.401446e-11    5.473591e+03 
-	   displacement        2.378609e+03    5.701826e-05    2.425786e-03 
-
-------- converged at time : 1
-
- ]0;(100%) tempModel.feb - FEBio 2.9.1.0  
-
-N O N L I N E A R   I T E R A T I O N   I N F O R M A T I O N
-
-	Number of time steps completed .................... : 10
-
-	Total number of equilibrium iterations ............ : 35
-
-	Average number of equilibrium iterations .......... : 3.5
-
-	Total number of right hand evaluations ............ : 50
-
-	Total number of stiffness reformations ............ : 35
-
-	Time in linear solver: 0:00:06
-
-
- Elapsed time : 0:00:25
-
-
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+--------&gt;    RUNNING/MONITORING FEBIO JOB    &lt;-------- 11-Dec-2020 12:23:56
+FEBio path: /home/kevin/FEBioStudio/bin/febio3
+# Attempt removal of existing log files                11-Dec-2020 12:23:56
+ * Removal succesful                                   11-Dec-2020 12:23:56
+# Attempt removal of existing .xplt files              11-Dec-2020 12:23:56
+ * Removal succesful                                   11-Dec-2020 12:23:56
+# Starting FEBio...                                    11-Dec-2020 12:23:56
+  Max. total analysis time is: 1e+99 s
+ * Waiting for log file creation                       11-Dec-2020 12:23:56
+   Max. wait time: 10 s
+ * Log file found.                                     11-Dec-2020 12:23:56
+# Parsing log file...                                  11-Dec-2020 12:23:56
+    number of iterations   : 13                        11-Dec-2020 12:23:59
+    number of reformations : 13                        11-Dec-2020 12:23:59
+------- converged at time : 0.05                       11-Dec-2020 12:23:59
+    number of iterations   : 3                         11-Dec-2020 12:24:00
+    number of reformations : 3                         11-Dec-2020 12:24:00
+------- converged at time : 0.1                        11-Dec-2020 12:24:00
+    number of iterations   : 4                         11-Dec-2020 12:24:01
+    number of reformations : 4                         11-Dec-2020 12:24:01
+------- converged at time : 0.15                       11-Dec-2020 12:24:01
+    number of iterations   : 4                         11-Dec-2020 12:24:01
+    number of reformations : 4                         11-Dec-2020 12:24:01
+------- converged at time : 0.2                        11-Dec-2020 12:24:01
+    number of iterations   : 3                         11-Dec-2020 12:24:02
+    number of reformations : 3                         11-Dec-2020 12:24:02
+------- converged at time : 0.25                       11-Dec-2020 12:24:02
+    number of iterations   : 3                         11-Dec-2020 12:24:03
+    number of reformations : 3                         11-Dec-2020 12:24:03
+------- converged at time : 0.3                        11-Dec-2020 12:24:03
+    number of iterations   : 4                         11-Dec-2020 12:24:04
+    number of reformations : 4                         11-Dec-2020 12:24:04
+------- converged at time : 0.35                       11-Dec-2020 12:24:04
+    number of iterations   : 3                         11-Dec-2020 12:24:05
+    number of reformations : 3                         11-Dec-2020 12:24:05
+------- converged at time : 0.4                        11-Dec-2020 12:24:05
+    number of iterations   : 4                         11-Dec-2020 12:24:05
+    number of reformations : 4                         11-Dec-2020 12:24:05
+------- converged at time : 0.45                       11-Dec-2020 12:24:05
+    number of iterations   : 4                         11-Dec-2020 12:24:06
+    number of reformations : 4                         11-Dec-2020 12:24:06
+------- converged at time : 0.5                        11-Dec-2020 12:24:06
+    number of iterations   : 4                         11-Dec-2020 12:24:07
+    number of reformations : 4                         11-Dec-2020 12:24:07
+------- converged at time : 0.55                       11-Dec-2020 12:24:07
+    number of iterations   : 4                         11-Dec-2020 12:24:08
+    number of reformations : 4                         11-Dec-2020 12:24:08
+------- converged at time : 0.6                        11-Dec-2020 12:24:08
+    number of iterations   : 3                         11-Dec-2020 12:24:09
+    number of reformations : 3                         11-Dec-2020 12:24:09
+------- converged at time : 0.65                       11-Dec-2020 12:24:09
+    number of iterations   : 4                         11-Dec-2020 12:24:09
+    number of reformations : 4                         11-Dec-2020 12:24:09
+------- converged at time : 0.7                        11-Dec-2020 12:24:09
+    number of iterations   : 4                         11-Dec-2020 12:24:10
+    number of reformations : 4                         11-Dec-2020 12:24:10
+------- converged at time : 0.75                       11-Dec-2020 12:24:10
+    number of iterations   : 4                         11-Dec-2020 12:24:11
+    number of reformations : 4                         11-Dec-2020 12:24:11
+------- converged at time : 0.8                        11-Dec-2020 12:24:11
+    number of iterations   : 4                         11-Dec-2020 12:24:12
+    number of reformations : 4                         11-Dec-2020 12:24:12
+------- converged at time : 0.85                       11-Dec-2020 12:24:12
+    number of iterations   : 4                         11-Dec-2020 12:24:13
+    number of reformations : 4                         11-Dec-2020 12:24:13
+------- converged at time : 0.9                        11-Dec-2020 12:24:13
+    number of iterations   : 4                         11-Dec-2020 12:24:14
+    number of reformations : 4                         11-Dec-2020 12:24:14
+------- converged at time : 0.95                       11-Dec-2020 12:24:14
+    number of iterations   : 4                         11-Dec-2020 12:24:15
+    number of reformations : 4                         11-Dec-2020 12:24:15
+------- converged at time : 1                          11-Dec-2020 12:24:15
+ Elapsed time : 0:00:19                                11-Dec-2020 12:24:15
  N O R M A L   T E R M I N A T I O N
-
-Waiting for log file...
-Proceeding to check log file...12-Aug-2020 21:05:21
-------- converged at time : 0.1
-------- converged at time : 0.2
-------- converged at time : 0.3
-------- converged at time : 0.4
-------- converged at time : 0.5
-------- converged at time : 0.6
-------- converged at time : 0.7
-------- converged at time : 0.8
-------- converged at time : 0.9
-------- converged at time : 1
---- Done --- 12-Aug-2020 21:05:21
-</pre><h2 id="22">Import FEBio results</h2><pre class="codeinput"><span class="keyword">if</span> runFlag==1 <span class="comment">%i.e. a succesful run</span>
+# Done                                                 11-Dec-2020 12:24:15
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+</pre><h2 id="26">Import FEBio results</h2><pre class="codeinput"><span class="keyword">if</span> runFlag==1 <span class="comment">%i.e. a succesful run</span>
 </pre><p>Importing nodal displacements from a log file</p><pre class="codeinput">    dataStruct=importFEBio_logfile(fullfile(savePath,febioLogFileName_disp),1,1);
 
     <span class="comment">%Access data</span>
@@ -1271,36 +681,7 @@ Proceeding to check log file...12-Aug-2020 21:05:21
 
     <span class="comment">%Create deformed coordinate set</span>
     V_DEF=N_disp_mat+repmat(V,[1 1 size(N_disp_mat,3)]);
-</pre><p>Plotting the simulated results using <tt>anim8</tt> to visualize and animate deformations</p><pre class="codeinput">    DN_magnitude=sqrt(sum(N_disp_mat(:,:,end).^2,2)); <span class="comment">%Current displacement magnitude</span>
-
-    <span class="comment">% Create basic view and store graphics handle to initiate animation</span>
-    hf=cFigure; <span class="comment">%Open figure</span>
-    gtitle([febioFebFileNamePart,<span class="string">': Press play to animate'</span>]);
-    title(<span class="string">'Displacement magnitude [mm]'</span>,<span class="string">'Interpreter'</span>,<span class="string">'Latex'</span>)
-    hp=gpatch(Fb,V_DEF(:,:,end),DN_magnitude,<span class="string">'k'</span>,1); <span class="comment">%Add graphics object to animate</span>
-    hp.FaceColor=<span class="string">'interp'</span>;
-
-    hp2=gpatch([Fc1;Fc2;Fc3],V,<span class="string">'w'</span>,<span class="string">'none'</span>,1);
-
-    axisGeom(gca,fontSize);
-    colormap(gjet(250)); colorbar;
-    caxis([0 max(DN_magnitude)]);
-    axis(axisLim(V_DEF)); <span class="comment">%Set axis limits statically</span>
-    camlight <span class="string">headlight</span>;
-
-    <span class="comment">% Set up animation features</span>
-    animStruct.Time=timeVec; <span class="comment">%The time vector</span>
-    <span class="keyword">for</span> qt=1:1:size(N_disp_mat,3) <span class="comment">%Loop over time increments</span>
-        DN_magnitude=sqrt(sum(N_disp_mat(:,:,qt).^2,2)); <span class="comment">%Current displacement magnitude</span>
-
-        <span class="comment">%Set entries in animation structure</span>
-        animStruct.Handles{qt}=[hp hp hp2]; <span class="comment">%Handles of objects to animate</span>
-        animStruct.Props{qt}={<span class="string">'Vertices'</span>,<span class="string">'CData'</span>,<span class="string">'Vertices'</span>}; <span class="comment">%Properties of objects to animate</span>
-        animStruct.Set{qt}={V_DEF(:,:,qt),DN_magnitude,V_DEF(:,:,qt)}; <span class="comment">%Property values for to set in order to animate</span>
-    <span class="keyword">end</span>
-    anim8(hf,animStruct); <span class="comment">%Initiate animation feature</span>
-    drawnow;
-</pre><img width="100%" height="auto" vspace="5" hspace="5" src="DEMO_febio_0021_bone_three_point_bending_06.jpg" alt=""> <p>Importing element stress from a log file</p><pre class="codeinput">    dataStruct=importFEBio_logfile(fullfile(savePath,febioLogFileName_stress),1,1);
+</pre><p>Importing element stress from a log file</p><pre class="codeinput">    dataStruct=importFEBio_logfile(fullfile(savePath,febioLogFileName_stress),1,1);
 
     <span class="comment">%Access data</span>
     E_stress_mat=dataStruct.data;
@@ -1313,7 +694,7 @@ Proceeding to check log file...12-Aug-2020 21:05:21
     title(<span class="string">'$\sigma_{1}$ [MPa]'</span>,<span class="string">'Interpreter'</span>,<span class="string">'Latex'</span>)
     hp=gpatch(Fb,V_DEF(:,:,end),CV,<span class="string">'k'</span>,1); <span class="comment">%Add graphics object to animate</span>
     hp.FaceColor=<span class="string">'interp'</span>;
-    hp2=gpatch([Fc1;Fc2;Fc3],V,<span class="string">'w'</span>,<span class="string">'none'</span>,0.5);
+    hp2=gpatch([Fc1;Fc2;Fc3],V,<span class="string">'w'</span>,<span class="string">'k'</span>,0.5);
 
     axisGeom(gca,fontSize);
     colormap(gjet(250)); colorbar;
@@ -1334,7 +715,7 @@ Proceeding to check log file...12-Aug-2020 21:05:21
     <span class="keyword">end</span>
     anim8(hf,animStruct); <span class="comment">%Initiate animation feature</span>
     drawnow;
-</pre><img width="100%" height="auto" vspace="5" hspace="5" src="DEMO_febio_0021_bone_three_point_bending_07.jpg" alt=""> <p>Importing rigidbody force data from a log file</p><pre class="codeinput">    dataStruct=importFEBio_logfile(fullfile(savePath,febioLogFileName_force),1,1);
+</pre><img width="100%" height="auto" vspace="5" hspace="5" src="DEMO_febio_0021_bone_three_point_bending_05.jpg" alt=""> <p>Importing rigidbody force data from a log file</p><pre class="codeinput">    dataStruct=importFEBio_logfile(fullfile(savePath,febioLogFileName_force),1,1);
 
     <span class="comment">%Access data</span>
     Force_mat=dataStruct.data;
@@ -1350,8 +731,8 @@ Proceeding to check log file...12-Aug-2020 21:05:21
     view(2); axis <span class="string">tight</span>;  grid <span class="string">on</span>; axis <span class="string">square</span>; box <span class="string">on</span>;
     set(gca,<span class="string">'FontSize'</span>,fontSize);
     drawnow;
-</pre><img width="100%" height="auto" vspace="5" hspace="5" src="DEMO_febio_0021_bone_three_point_bending_08.jpg" alt=""> <pre class="codeinput"><span class="keyword">end</span>
-</pre><p><img vspace="5" hspace="5" src="gibbVerySmall.gif" alt=""> </p><p><i><b>GIBBON</b></i> <a href="www.gibboncode.org">www.gibboncode.org</a></p><p><i>Kevin Mattheus Moerman</i>, <a href="gibbon.toolbox@gmail.com">gibbon.toolbox@gmail.com</a></p><p><i><b>GIBBON footer text</b></i></p><p>License: <a href="https://github.com/gibbonCode/GIBBON/blob/master/LICENSE">https://github.com/gibbonCode/GIBBON/blob/master/LICENSE</a></p><p>GIBBON: The Geometry and Image-based Bioengineering add-On. A toolbox for image segmentation, image-based modeling, meshing, and finite element analysis.</p><p>Copyright (C) 2006-2020 Kevin Mattheus Moerman</p><p>This program is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.</p><p>This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for more details.</p><p>You should have received a copy of the GNU General Public License along with this program.  If not, see <a href="http://www.gnu.org/licenses/">http://www.gnu.org/licenses/</a>.</p><p class="footer"><br><a href="https://www.mathworks.com/products/matlab/">Published with MATLAB&reg; R2020a</a><br></p></div><!--
+</pre><img width="100%" height="auto" vspace="5" hspace="5" src="DEMO_febio_0021_bone_three_point_bending_06.jpg" alt=""> <pre class="codeinput"><span class="keyword">end</span>
+</pre><p><img vspace="5" hspace="5" src="gibbVerySmall.gif" alt=""> </p><p><i><b>GIBBON</b></i> <a href="www.gibboncode.org">www.gibboncode.org</a></p><p><i>Kevin Mattheus Moerman</i>, <a href="gibbon.toolbox@gmail.com">gibbon.toolbox@gmail.com</a></p><p><i><b>GIBBON footer text</b></i></p><p>License: <a href="https://github.com/gibbonCode/GIBBON/blob/primary/LICENSE">https://github.com/gibbonCode/GIBBON/blob/primary/LICENSE</a></p><p>GIBBON: The Geometry and Image-based Bioengineering add-On. A toolbox for image segmentation, image-based modeling, meshing, and finite element analysis.</p><p>Copyright (C) 2006-2020 Kevin Mattheus Moerman</p><p>This program is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.</p><p>This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for more details.</p><p>You should have received a copy of the GNU General Public License along with this program.  If not, see <a href="http://www.gnu.org/licenses/">http://www.gnu.org/licenses/</a>.</p><p class="footer"><br><a href="https://www.mathworks.com/products/matlab/">Published with MATLAB&reg; R2020b</a><br></p></div><!--
 ##### SOURCE BEGIN #####
 %% DEMO_febio_0021_bone_three_point_bending
 % Below is a demonstration for:
@@ -1364,7 +745,7 @@ Proceeding to check log file...12-Aug-2020 21:05:21
 
 %% Keywords
 %
-% * febio_spec version 2.5
+% * febio_spec version 3.0
 % * febio, FEBio
 % * indentation
 % * contact, sliding, sticky, friction
@@ -1398,7 +779,7 @@ pathNameSTL=fullfile(defaultFolder,'data','STL');
 % Defining file names
 febioFebFileNamePart='tempModel';
 febioFebFileName=fullfile(savePath,[febioFebFileNamePart,'.feb']); %FEB file name
-febioLogFileName=fullfile(savePath,[febioFebFileNamePart,'.txt']); %FEBio log file name
+febioLogFileName=[febioFebFileNamePart,'.txt']; %FEBio log file name
 febioLogFileName_disp=[febioFebFileNamePart,'_disp_out.txt']; %Log file name for exporting displacement
 febioLogFileName_force=[febioFebFileNamePart,'_force_out.txt']; %Log file name for exporting force
 febioLogFileName_stress=[febioFebFileNamePart,'_stress_out.txt']; %Log file name for exporting stress
@@ -1406,8 +787,11 @@ febioLogFileName_stress=[febioFebFileNamePart,'_stress_out.txt']; %Log file name
 %Geometric parameters
 corticalThickness=3; %Thickness used for cortical material definition
 volumeFactor=10; %Factor to scale desired volume for interior elements w.r.t. boundary elements
+pointSpacing=5;
 
 %Material parameter set
+D_density=1e-9; %Density for all materials
+
 E_youngs1=17000; %Youngs modulus
 nu1=0.25; %Poissons ratio
 
@@ -1416,45 +800,36 @@ E_youngs2=1500; %Youngs modulus
 nu2=0.25; %Poissons ratio
 
 % FEA control settings
-numTimeSteps=10; %Number of time steps desired
+analysisType='STATIC';
+numTimeSteps=20; %Number of time steps desired
 max_refs=25; %Max reforms
 max_ups=0; %Set to zero to use full-Newton iterations
 opt_iter=15; %Optimum number of iterations
-max_retries=5; %Maximum number of retires
+max_retries=6; %Maximum number of retires
 dtmin=(1/numTimeSteps)/100; %Minimum time step size
 dtmax=1/numTimeSteps; %Maximum time step size
-min_residual=1e-20;
+min_residual=1e-10;
 symmetric_stiffness=1;
-runMode='internal';
+runMode='external';
 
 %Contact parameters
-contactInitialOffset=0.01;
-contactAlg=1;
+contactInitialOffset=0.1;
 contactPenalty=1000;
-switch contactAlg
-    case 1
-        contactType='sticky';
-    case 2
-        contactType='facet-to-facet sliding';
-    case 3
-        contactType='sliding_with_gaps';
-    case 4
-        contactType='sliding2';
-    case 5
-        contactType='sliding-elastic';
-end
+laugon=0;
+minaug=1;
+maxaug=10;
 
-zDisp=-6-2*contactInitialOffset;
+%Boundary conditions specification
+bcFix=0;
 
-%% Prepare bone geometry
+%Loading parameters
+zDisp=-20-2*contactInitialOffset; 
 
-% Import bone surface model
-[stlStruct] = import_STL(fullfile(pathNameSTL,'femur_iso.stl'));
-F_bone=stlStruct.solidFaces{1}; %Faces
-V_bone=stlStruct.solidVertices{1}; %Vertices
+%% Get bone geometry
+
+%Load basic model
+[F_bone,V_bone]=graphicsModels(5); 
 V_bone=V_bone*1000; %Scale to mm
-[F_bone,V_bone]=mergeVertices(F_bone,V_bone); % Merging nodes
-F_bone=fliplr(F_bone);
 
 %Reorient
 V_mean=mean(V_bone,1);
@@ -1462,17 +837,20 @@ V_bone=V_bone-V_mean(ones(size(V_bone,1),1),:); %Center around origin
 [R]=pointSetPrincipalDir(V_bone); %Get rotation matrix
 V_bone=V_bone*R; %Rotate
 
-[D]=patchEdgeLengths(F_bone,V_bone);
-voxelSize=mean(D);
+%% Remesh using geomgram
+
+optionStruct.pointSpacing=pointSpacing;
+optionStruct.disp_on=0;
+[F_bone,V_bone]=ggremesh(F_bone,V_bone,optionStruct);
 
 %% Create and position cylinder geometry
 
-pointSpacing=mean(D)/2;
+pointSpacingBeams=pointSpacing/2; 
 
 inputStruct.cylRadius=10;
-inputStruct.numRadial=round((2*pi*inputStruct.cylRadius)./pointSpacing);
+inputStruct.numRadial=round((2*pi*inputStruct.cylRadius)./pointSpacingBeams);
 inputStruct.cylHeight=max(V_bone(:,2))-min(V_bone(:,2));
-nh=round(inputStruct.cylHeight./pointSpacing);
+nh=round(inputStruct.cylHeight./pointSpacingBeams);
 nh=nh+double(iseven(nh));
 inputStruct.numHeight=nh;
 inputStruct.meshType='quad';
@@ -1513,14 +891,6 @@ gpatch(Fc,Vc3,'bw','b',1);
 axisGeom;
 camlight headlight;
 drawnow
-
-%% Visualize bone surface
-
-cFigure; hold on;
-gpatch(F_bone,V_bone,'w','k',1);
-patchNormPlot(F_bone,V_bone);
-axisGeom; camlight headlight;
-drawnow;
 
 %% Mesh using tetgen
 
@@ -1585,22 +955,76 @@ Fc2=Fc+size(V,1)+size(Vc1,1);
 Fc3=Fc+size(V,1)+size(Vc1,1)+size(Vc2,1);
 V=[V;Vc1;Vc2;Vc3];
 
-%% Define bone contact surface
-Fb_slave=fliplr(Fb);
+%% Define boundary conditions
+
+if bcFix==1
+    %Supported nodes
+    indb=unique(Fb(:));
+    logicLeft=V(indb,1)<-200;
+    bcSupportList=indb(logicLeft);
+    
+    %%
+    % Visualize BC's
+    hf=cFigure;
+    title('Boundary conditions model','FontSize',fontSize);
+    xlabel('X','FontSize',fontSize); ylabel('Y','FontSize',fontSize); zlabel('Z','FontSize',fontSize);
+    hold on;
+    
+    gpatch(Fb,V,'kw','none',faceAlpha2);
+    hp1(1)=plotV(V(bcSupportList,:),'k.','MarkerSize',markerSize);
+    
+    legend(hp1,{'BC support'});
+    
+    axisGeom(gca,fontSize);
+    camlight headlight;
+    drawnow;
+    
+end
+
+%% Define bone contact surfaces
+
+N=patchNormal(fliplr(Fb),V);
+nz=[0 0 -1];
+d=dot(N,nz(ones(size(N,1),1),:),2);
+
+contactAdd=pointSpacing;
+
+VF=patchCentre(Fb,V);
+logicSecondary1=VF(:,1)>(min(Vc1(:,1))-contactAdd) & VF(:,1)<(max(Vc1(:,1))+contactAdd) & d<0;
+logicSecondary2=VF(:,1)>(min(Vc2(:,1))-contactAdd) & VF(:,1)<(max(Vc2(:,1))+contactAdd) & d>0;
+logicSecondary3=VF(:,1)>(min(Vc3(:,1))-contactAdd) & VF(:,1)<(max(Vc3(:,1))+contactAdd) & d>0;
+
+F_sec1=fliplr(Fb(logicSecondary1,:));
+F_sec2=fliplr(Fb(logicSecondary2,:));
+F_sec3=fliplr(Fb(logicSecondary3,:));
 
 %%
 % Visualize
 
 cFigure; hold on;
 
-gpatch(Fb_slave,V,'w','k',1);
-patchNormPlot(Fb_slave,V);
-gpatch(Fc1,V,'rw','r',1);
+gpatch(Fb,V,'w','none',0.5);
+
+hp2(1)=gpatch(F_sec1,V,'r','k',1);
+patchNormPlot(F_sec1,V);
+
+hp2(2)=gpatch(F_sec2,V,'g','k',1);
+patchNormPlot(F_sec2,V);
+
+hp2(3)=gpatch(F_sec3,V,'b','k',1);
+patchNormPlot(F_sec3,V);
+
+hp2(4)=gpatch(Fc1,V,'c','k',1);
 patchNormPlot(Fc1,V);
-gpatch(Fc2,V,'gw','g',1);
+
+hp2(5)=gpatch(Fc2,V,'y','k',1);
 patchNormPlot(Fc2,V);
-gpatch(Fc3,V,'bw','b',1);
+
+hp2(6)=gpatch(Fc3,V,'m','k',1);
 patchNormPlot(Fc3,V);
+
+legend(hp2,{'secondary 1','secondary 2','secondary 3','primary 1','primary 2','primary 3'});
+
 axisGeom;
 camlight headlight;
 drawnow;
@@ -1609,239 +1033,227 @@ drawnow;
 % See also |febioStructTemplate| and |febioStruct2xml| and the FEBio user
 % manual.
 
-%Get a template with default settings
+%Get a template with default settings 
 [febio_spec]=febioStructTemplate;
 
-%febio_spec version
-febio_spec.ATTR.version='2.5';
+%febio_spec version 
+febio_spec.ATTR.version='3.0'; 
 
 %Module section
-febio_spec.Module.ATTR.type='solid';
+febio_spec.Module.ATTR.type='solid'; 
 
 %Control section
-febio_spec.Control.analysis.ATTR.type='static';
+febio_spec.Control.analysis=analysisType;
 febio_spec.Control.time_steps=numTimeSteps;
 febio_spec.Control.step_size=1/numTimeSteps;
+febio_spec.Control.solver.max_refs=max_refs;
+febio_spec.Control.solver.max_ups=max_ups;
+febio_spec.Control.solver.symmetric_stiffness=symmetric_stiffness;
 febio_spec.Control.time_stepper.dtmin=dtmin;
-febio_spec.Control.time_stepper.dtmax=dtmax;
+febio_spec.Control.time_stepper.dtmax=dtmax; 
 febio_spec.Control.time_stepper.max_retries=max_retries;
 febio_spec.Control.time_stepper.opt_iter=opt_iter;
-febio_spec.Control.max_refs=max_refs;
-febio_spec.Control.max_ups=max_ups;
-febio_spec.Control.symmetric_stiffness=symmetric_stiffness; 
-febio_spec.Control.min_residual=min_residual;
+febio_spec.Control.solver.min_residual=min_residual;
 
 %Material section
+materialName1='Material1';
+febio_spec.Material.material{1}.ATTR.name=materialName1;
 febio_spec.Material.material{1}.ATTR.type='neo-Hookean';
 febio_spec.Material.material{1}.ATTR.id=1;
 febio_spec.Material.material{1}.E=E_youngs1;
 febio_spec.Material.material{1}.v=nu1;
+febio_spec.Material.material{1}.density=D_density;
 
+materialName2='Material2';
+febio_spec.Material.material{2}.ATTR.name=materialName2;
 febio_spec.Material.material{2}.ATTR.type='neo-Hookean';
 febio_spec.Material.material{2}.ATTR.id=2;
 febio_spec.Material.material{2}.E=E_youngs2;
 febio_spec.Material.material{2}.v=nu2;
+febio_spec.Material.material{2}.density=D_density;
 
-% febio_spec.Material.material{1}.ATTR.type='Ogden';
-% febio_spec.Material.material{1}.ATTR.id=1;
-% febio_spec.Material.material{1}.c1=1e-3;
-% febio_spec.Material.material{1}.m1=2;
-% febio_spec.Material.material{1}.c2=1e-3;
-% febio_spec.Material.material{1}.m2=2;
-% febio_spec.Material.material{1}.k=0.1;
-% 
-% febio_spec.Material.material{2}.ATTR.type='Ogden';
-% febio_spec.Material.material{2}.ATTR.id=2;
-% febio_spec.Material.material{2}.c1=1e-3;
-% febio_spec.Material.material{2}.m1=2;
-% febio_spec.Material.material{2}.c2=1e-3;
-% febio_spec.Material.material{2}.m2=2;
-% febio_spec.Material.material{2}.k=0.1;
-
+materialName3='Material3';
+febio_spec.Material.material{3}.ATTR.name=materialName3;
 febio_spec.Material.material{3}.ATTR.type='rigid body';
 febio_spec.Material.material{3}.ATTR.id=3;
-febio_spec.Material.material{3}.density=1;
+febio_spec.Material.material{3}.density=D_density;
 febio_spec.Material.material{3}.center_of_mass=mean(Vc1,1);
 
+materialName4='Material4';
+febio_spec.Material.material{4}.ATTR.name=materialName4;
 febio_spec.Material.material{4}.ATTR.type='rigid body';
 febio_spec.Material.material{4}.ATTR.id=4;
-febio_spec.Material.material{4}.density=1;
+febio_spec.Material.material{4}.density=D_density;
 febio_spec.Material.material{4}.center_of_mass=mean(Vc2,1);
 
+materialName5='Material5';
+febio_spec.Material.material{5}.ATTR.name=materialName5;
 febio_spec.Material.material{5}.ATTR.type='rigid body';
 febio_spec.Material.material{5}.ATTR.id=5;
-febio_spec.Material.material{5}.density=1;
+febio_spec.Material.material{5}.density=D_density;
 febio_spec.Material.material{5}.center_of_mass=mean(Vc3,1);
 
-%Geometry section
+%Mesh section
 % -> Nodes
-febio_spec.Geometry.Nodes{1}.ATTR.name='nodeSet_all'; %The node set name
-febio_spec.Geometry.Nodes{1}.node.ATTR.id=(1:size(V,1))'; %The node id's
-febio_spec.Geometry.Nodes{1}.node.VAL=V; %The nodel coordinates
+febio_spec.Mesh.Nodes{1}.ATTR.name='nodeSet_all'; %The node set name
+febio_spec.Mesh.Nodes{1}.node.ATTR.id=(1:size(V,1))'; %The node id's
+febio_spec.Mesh.Nodes{1}.node.VAL=V; %The nodel coordinates
 
 % -> Elements
-febio_spec.Geometry.Elements{1}.ATTR.type='tet4'; %Element type of this set
-febio_spec.Geometry.Elements{1}.ATTR.mat=1; %material index for this set 
-febio_spec.Geometry.Elements{1}.ATTR.name='CorticalBone'; %Name of the element set
-febio_spec.Geometry.Elements{1}.elem.ATTR.id=(1:1:size(E1,1))'; %Element id's
-febio_spec.Geometry.Elements{1}.elem.VAL=E1;
+partName1='CorticalBone';
+febio_spec.Mesh.Elements{1}.ATTR.name=partName1; %Name of this part
+febio_spec.Mesh.Elements{1}.ATTR.type='tet4'; %Element type of this set
+febio_spec.Mesh.Elements{1}.ATTR.mat=1; %material index for this set 
+febio_spec.Mesh.Elements{1}.elem.ATTR.id=(1:1:size(E1,1))'; %Element id's
+febio_spec.Mesh.Elements{1}.elem.VAL=E1;
 
-febio_spec.Geometry.Elements{2}.ATTR.type='tet4'; %Element type of this set
-febio_spec.Geometry.Elements{2}.ATTR.mat=2; %material index for this set 
-febio_spec.Geometry.Elements{2}.ATTR.name='CancellousBone'; %Name of the element set
-febio_spec.Geometry.Elements{2}.elem.ATTR.id=size(E1,1)+(1:1:size(E2,1))'; %Element id's
-febio_spec.Geometry.Elements{2}.elem.VAL=E2;
+partName2='CancellousBone';
+febio_spec.Mesh.Elements{2}.ATTR.name=partName2; %Name of this part
+febio_spec.Mesh.Elements{2}.ATTR.type='tet4'; %Element type of this set
+febio_spec.Mesh.Elements{2}.ATTR.mat=2; %material index for this set 
+febio_spec.Mesh.Elements{2}.elem.ATTR.id=size(E1,1)+(1:1:size(E2,1))'; %Element id's
+febio_spec.Mesh.Elements{2}.elem.VAL=E2;
 
-febio_spec.Geometry.Elements{3}.ATTR.type='quad4'; %Element type of this set
-febio_spec.Geometry.Elements{3}.ATTR.mat=3; %material index for this set
-febio_spec.Geometry.Elements{3}.ATTR.name='bar1'; %Name of the element set
-febio_spec.Geometry.Elements{3}.elem.ATTR.id=size(E1,1)+size(E2,1)+(1:1:size(Fc1,1))'; %Element id's
-febio_spec.Geometry.Elements{3}.elem.VAL=Fc1;
+partName3='Part3';
+febio_spec.Mesh.Elements{3}.ATTR.name=partName3; %Name of this part
+febio_spec.Mesh.Elements{3}.ATTR.type='quad4'; %Element type of this set
+febio_spec.Mesh.Elements{3}.ATTR.mat=3; %material index for this set
+febio_spec.Mesh.Elements{3}.elem.ATTR.id=size(E1,1)+size(E2,1)+(1:1:size(Fc1,1))'; %Element id's
+febio_spec.Mesh.Elements{3}.elem.VAL=Fc1;
 
-febio_spec.Geometry.Elements{4}.ATTR.type='quad4'; %Element type of this set
-febio_spec.Geometry.Elements{4}.ATTR.mat=4; %material index for this set
-febio_spec.Geometry.Elements{4}.ATTR.name='bar2'; %Name of the element set
-febio_spec.Geometry.Elements{4}.elem.ATTR.id=size(E1,1)+size(E2,1)+size(Fc1,1)+(1:1:size(Fc2,1))'; %Element id's
-febio_spec.Geometry.Elements{4}.elem.VAL=Fc2;
+partName4='Part4';
+febio_spec.Mesh.Elements{4}.ATTR.name=partName4; %Name of this part
+febio_spec.Mesh.Elements{4}.ATTR.type='quad4'; %Element type of this set
+febio_spec.Mesh.Elements{4}.ATTR.mat=4; %material index for this set
+febio_spec.Mesh.Elements{4}.elem.ATTR.id=size(E1,1)+size(E2,1)+size(Fc1,1)+(1:1:size(Fc2,1))'; %Element id's
+febio_spec.Mesh.Elements{4}.elem.VAL=Fc2;
 
-febio_spec.Geometry.Elements{5}.ATTR.type='quad4'; %Element type of this set
-febio_spec.Geometry.Elements{5}.ATTR.mat=5; %material index for this set
-febio_spec.Geometry.Elements{5}.ATTR.name='bar3'; %Name of the element set
-febio_spec.Geometry.Elements{5}.elem.ATTR.id=size(E1,1)+size(E2,1)+size(Fc1,1)+size(Fc2,1)+(1:1:size(Fc3,1))'; %Element id's
-febio_spec.Geometry.Elements{5}.elem.VAL=Fc3;
+partName5='Part5';
+febio_spec.Mesh.Elements{5}.ATTR.name=partName5; %Name of this part
+febio_spec.Mesh.Elements{5}.ATTR.type='quad4'; %Element type of this set
+febio_spec.Mesh.Elements{5}.ATTR.mat=5; %material index for this set
+febio_spec.Mesh.Elements{5}.elem.ATTR.id=size(E1,1)+size(E2,1)+size(Fc1,1)+size(Fc2,1)+(1:1:size(Fc3,1))'; %Element id's
+febio_spec.Mesh.Elements{5}.elem.VAL=Fc3;
+
+%MeshDomains section
+febio_spec.MeshDomains.SolidDomain{1}.ATTR.name=partName1;
+febio_spec.MeshDomains.SolidDomain{1}.ATTR.mat=materialName1;
+
+febio_spec.MeshDomains.SolidDomain{2}.ATTR.name=partName2;
+febio_spec.MeshDomains.SolidDomain{2}.ATTR.mat=materialName2;
+
+febio_spec.MeshDomains.ShellDomain{1}.ATTR.name=partName3;
+febio_spec.MeshDomains.ShellDomain{1}.ATTR.mat=materialName3;
+
+febio_spec.MeshDomains.ShellDomain{2}.ATTR.name=partName4;
+febio_spec.MeshDomains.ShellDomain{2}.ATTR.mat=materialName4;
+
+febio_spec.MeshDomains.ShellDomain{3}.ATTR.name=partName5;
+febio_spec.MeshDomains.ShellDomain{3}.ATTR.mat=materialName5;
+
+% -> NodeSets
+if bcFix==1
+    nodeSetName1='bcSupportList';
+    febio_spec.Mesh.NodeSet{1}.ATTR.name=nodeSetName1;
+    febio_spec.Mesh.NodeSet{1}.node.ATTR.id=bcSupportList(:);
+end
 
 % -> Surfaces
-febio_spec.Geometry.Surface{1}.ATTR.name='contact_master1';
-febio_spec.Geometry.Surface{1}.quad4.ATTR.lid=(1:1:size(Fc1,1))';
-febio_spec.Geometry.Surface{1}.quad4.VAL=Fc1;
+surfaceNamePrim1='contact_primary1';
+febio_spec.Mesh.Surface{1}.ATTR.name=surfaceNamePrim1;
+febio_spec.Mesh.Surface{1}.quad4.ATTR.id=(1:1:size(Fc1,1))';
+febio_spec.Mesh.Surface{1}.quad4.VAL=Fc1;
 
-febio_spec.Geometry.Surface{2}.ATTR.name='contact_master2';
-febio_spec.Geometry.Surface{2}.quad4.ATTR.lid=(1:1:size(Fc2,1))';
-febio_spec.Geometry.Surface{2}.quad4.VAL=Fc2;
+surfaceNamePrim2='contact_primary2';
+febio_spec.Mesh.Surface{2}.ATTR.name=surfaceNamePrim2;
+febio_spec.Mesh.Surface{2}.quad4.ATTR.id=(1:1:size(Fc2,1))';
+febio_spec.Mesh.Surface{2}.quad4.VAL=Fc2;
 
-febio_spec.Geometry.Surface{3}.ATTR.name='contact_master3';
-febio_spec.Geometry.Surface{3}.quad4.ATTR.lid=(1:1:size(Fc3,1))';
-febio_spec.Geometry.Surface{3}.quad4.VAL=Fc3;
+surfaceNamePrim3='contact_primary3';
+febio_spec.Mesh.Surface{3}.ATTR.name=surfaceNamePrim3;
+febio_spec.Mesh.Surface{3}.quad4.ATTR.id=(1:1:size(Fc3,1))';
+febio_spec.Mesh.Surface{3}.quad4.VAL=Fc3;
 
-febio_spec.Geometry.Surface{4}.ATTR.name='contact_slave';
-febio_spec.Geometry.Surface{4}.quad4.ATTR.lid=(1:1:size(Fb_slave,1))';
-febio_spec.Geometry.Surface{4}.quad4.VAL=Fb_slave;
+surfaceNameSec1='contact_secondary1';
+febio_spec.Mesh.Surface{4}.ATTR.name=surfaceNameSec1;
+febio_spec.Mesh.Surface{4}.tri3.ATTR.id=(1:1:size(F_sec1,1))';
+febio_spec.Mesh.Surface{4}.tri3.VAL=F_sec1;
+
+surfaceNameSec2='contact_secondary2';
+febio_spec.Mesh.Surface{5}.ATTR.name=surfaceNameSec2;
+febio_spec.Mesh.Surface{5}.tri3.ATTR.id=(1:1:size(F_sec2,1))';
+febio_spec.Mesh.Surface{5}.tri3.VAL=F_sec2;
+
+surfaceNameSec3='contact_secondary3';
+febio_spec.Mesh.Surface{6}.ATTR.name=surfaceNameSec3;
+febio_spec.Mesh.Surface{6}.tri3.ATTR.id=(1:1:size(F_sec3,1))';
+febio_spec.Mesh.Surface{6}.tri3.VAL=F_sec3;
 
 % -> Surface pairs
-febio_spec.Geometry.SurfacePair{1}.ATTR.name='Contact1';
-febio_spec.Geometry.SurfacePair{1}.master.ATTR.surface=febio_spec.Geometry.Surface{1}.ATTR.name;
-febio_spec.Geometry.SurfacePair{1}.slave.ATTR.surface=febio_spec.Geometry.Surface{4}.ATTR.name;
+febio_spec.Mesh.SurfacePair{1}.ATTR.name='Contact1';
+febio_spec.Mesh.SurfacePair{1}.primary=surfaceNamePrim1;
+febio_spec.Mesh.SurfacePair{1}.secondary=surfaceNameSec1;
 
-febio_spec.Geometry.SurfacePair{2}.ATTR.name='Contact2';
-febio_spec.Geometry.SurfacePair{2}.master.ATTR.surface=febio_spec.Geometry.Surface{2}.ATTR.name;
-febio_spec.Geometry.SurfacePair{2}.slave.ATTR.surface=febio_spec.Geometry.Surface{4}.ATTR.name;
+febio_spec.Mesh.SurfacePair{2}.ATTR.name='Contact2';
+febio_spec.Mesh.SurfacePair{2}.primary=surfaceNamePrim2;
+febio_spec.Mesh.SurfacePair{2}.secondary=surfaceNameSec2;
 
-febio_spec.Geometry.SurfacePair{3}.ATTR.name='Contact3';
-febio_spec.Geometry.SurfacePair{3}.master.ATTR.surface=febio_spec.Geometry.Surface{3}.ATTR.name;
-febio_spec.Geometry.SurfacePair{3}.slave.ATTR.surface=febio_spec.Geometry.Surface{4}.ATTR.name;
+febio_spec.Mesh.SurfacePair{3}.ATTR.name='Contact3';
+febio_spec.Mesh.SurfacePair{3}.primary=surfaceNamePrim3;
+febio_spec.Mesh.SurfacePair{3}.secondary=surfaceNameSec3;
 
-%Boundary condition section
-
-% -> Prescribed boundary conditions on the rigid body
-febio_spec.Boundary.rigid_body{1}.ATTR.mat=3;
-febio_spec.Boundary.rigid_body{1}.fixed{1}.ATTR.bc='x';
-febio_spec.Boundary.rigid_body{1}.fixed{2}.ATTR.bc='y';
-febio_spec.Boundary.rigid_body{1}.fixed{3}.ATTR.bc='Rx';
-febio_spec.Boundary.rigid_body{1}.fixed{4}.ATTR.bc='Ry';
-febio_spec.Boundary.rigid_body{1}.fixed{5}.ATTR.bc='Rz';
-febio_spec.Boundary.rigid_body{1}.prescribed.ATTR.bc='z';
-febio_spec.Boundary.rigid_body{1}.prescribed.ATTR.lc=1;
-febio_spec.Boundary.rigid_body{1}.prescribed.VAL=zDisp;
-
-febio_spec.Boundary.rigid_body{2}.ATTR.mat=4;
-febio_spec.Boundary.rigid_body{2}.fixed{1}.ATTR.bc='x';
-febio_spec.Boundary.rigid_body{2}.fixed{2}.ATTR.bc='y';
-febio_spec.Boundary.rigid_body{2}.fixed{3}.ATTR.bc='z';
-febio_spec.Boundary.rigid_body{2}.fixed{4}.ATTR.bc='Rx';
-febio_spec.Boundary.rigid_body{2}.fixed{5}.ATTR.bc='Ry';
-febio_spec.Boundary.rigid_body{2}.fixed{6}.ATTR.bc='Rz';
-
-febio_spec.Boundary.rigid_body{3}.ATTR.mat=5;
-febio_spec.Boundary.rigid_body{3}.fixed{1}.ATTR.bc='x';
-febio_spec.Boundary.rigid_body{3}.fixed{2}.ATTR.bc='y';
-febio_spec.Boundary.rigid_body{3}.fixed{3}.ATTR.bc='z';
-febio_spec.Boundary.rigid_body{3}.fixed{4}.ATTR.bc='Rx';
-febio_spec.Boundary.rigid_body{3}.fixed{5}.ATTR.bc='Ry';
-febio_spec.Boundary.rigid_body{3}.fixed{6}.ATTR.bc='Rz';
-
-for qc=1:1:3
-    
-    %Contact section
-    switch contactType
-        case 'sticky'
-            febio_spec.Contact.contact{qc}.ATTR.surface_pair=febio_spec.Geometry.SurfacePair{qc}.ATTR.name;
-            febio_spec.Contact.contact{qc}.ATTR.type='sticky';
-            febio_spec.Contact.contact{qc}.penalty=contactPenalty;
-            febio_spec.Contact.contact{qc}.laugon=0;
-            febio_spec.Contact.contact{qc}.tolerance=0.2;
-            febio_spec.Contact.contact{qc}.minaug=1;
-            febio_spec.Contact.contact{qc}.maxaug=10;
-            febio_spec.Contact.contact{qc}.snap_tol=0;
-            febio_spec.Contact.contact{qc}.max_traction=0;
-            febio_spec.Contact.contact{qc}.search_tolerance=0.01;
-        case 'facet-to-facet sliding'
-            febio_spec.Contact.contact{qc}.ATTR.surface_pair=febio_spec.Geometry.SurfacePair{qc}.ATTR.name;
-            febio_spec.Contact.contact{qc}.ATTR.type='facet-to-facet sliding';
-            febio_spec.Contact.contact{qc}.penalty=contactPenalty;
-            febio_spec.Contact.contact{qc}.auto_penalty=1;
-            febio_spec.Contact.contact{qc}.two_pass=1;
-            febio_spec.Contact.contact{qc}.laugon=1;
-            febio_spec.Contact.contact{qc}.tolerance=0.1;
-            febio_spec.Contact.contact{qc}.gaptol=0;
-            febio_spec.Contact.contact{qc}.minaug=1;
-            febio_spec.Contact.contact{qc}.maxaug=10;
-            febio_spec.Contact.contact{qc}.search_tol=0.01;
-            febio_spec.Contact.contact{qc}.search_radius=mean(pointSpacing)/2;
-        case 'sliding_with_gaps'
-            febio_spec.Contact.contact{qc}.ATTR.surface_pair=febio_spec.Geometry.SurfacePair{qc}.ATTR.name;
-            febio_spec.Contact.contact{qc}.ATTR.type='sliding_with_gaps';
-            febio_spec.Contact.contact{qc}.penalty=contactPenalty;
-            febio_spec.Contact.contact{qc}.auto_penalty=1;
-            febio_spec.Contact.contact{qc}.two_pass=0;
-            febio_spec.Contact.contact{qc}.laugon=0;
-            febio_spec.Contact.contact{qc}.tolerance=0.1;
-            febio_spec.Contact.contact{qc}.gaptol=0;
-            febio_spec.Contact.contact{qc}.minaug=0;
-            febio_spec.Contact.contact{qc}.maxaug=10;
-            febio_spec.Contact.contact{qc}.fric_coeff=0;
-            febio_spec.Contact.contact{qc}.fric_penalty=0;
-            febio_spec.Contact.contact{qc}.ktmult=1;
-            febio_spec.Contact.contact{qc}.seg_up=0;
-            febio_spec.Contact.contact{qc}.search_tol=0.01;
-        case 'sliding2'
-            febio_spec.Contact.contact{qc}.ATTR.surface_pair=febio_spec.Geometry.SurfacePair{qc}.ATTR.name;
-            febio_spec.Contact.contact{qc}.ATTR.type='sliding2';
-            febio_spec.Contact.contact{qc}.penalty=contactPenalty;
-            febio_spec.Contact.contact{qc}.auto_penalty=1;
-            febio_spec.Contact.contact{qc}.two_pass=0;
-            febio_spec.Contact.contact{qc}.laugon=0;
-            febio_spec.Contact.contact{qc}.tolerance=0.1;
-            febio_spec.Contact.contact{qc}.gaptol=0;
-            febio_spec.Contact.contact{qc}.symmetric_stiffness=0;
-            febio_spec.Contact.contact{qc}.search_tol=0.01;
-            febio_spec.Contact.contact{qc}.search_radius=mean(pointSpacings)/2;
-        case 'sliding-elastic'
-            febio_spec.Contact.contact{qc}.ATTR.surface_pair=febio_spec.Geometry.SurfacePair{qc}.ATTR.name;
-            febio_spec.Contact.contact{qc}.ATTR.type='sliding-elastic';
-            febio_spec.Contact.contact{qc}.two_pass=1;
-            febio_spec.Contact.contact{qc}.laugon=1;
-            febio_spec.Contact.contact{qc}.tolerance=0.2;
-            febio_spec.Contact.contact{qc}.gaptol=0;
-            febio_spec.Contact.contact{qc}.minaug=1;
-            febio_spec.Contact.contact{qc}.maxaug=10;
-            febio_spec.Contact.contact{qc}.search_tol=0.01;
-            febio_spec.Contact.contact{qc}.search_radius=1;
-            febio_spec.Contact.contact{qc}.symmetric_stiffness=0;
-            febio_spec.Contact.contact{qc}.auto_penalty=1;
-            febio_spec.Contact.contact{qc}.penalty=contactPenalty;
-            febio_spec.Contact.contact{qc}.fric_coeff=0.5;
-    end
+%Boundary condition section 
+% -> Fix boundary conditions
+if bcFix==1
+    febio_spec.Boundary.bc{1}.ATTR.type='fix';
+    febio_spec.Boundary.bc{1}.ATTR.node_set=nodeSetName1;
+    febio_spec.Boundary.bc{1}.dofs='x,y,z';
 end
+%Rigid section 
+% -> Prescribed rigid body boundary conditions
+febio_spec.Rigid.rigid_constraint{1}.ATTR.name='RigidFix_1';
+febio_spec.Rigid.rigid_constraint{1}.ATTR.type='fix';
+febio_spec.Rigid.rigid_constraint{1}.rb=3;
+febio_spec.Rigid.rigid_constraint{1}.dofs='Rx,Ry,Ru,Rv,Rw';
+
+febio_spec.Rigid.rigid_constraint{2}.ATTR.name='RigidFix_2';
+febio_spec.Rigid.rigid_constraint{2}.ATTR.type='fix';
+febio_spec.Rigid.rigid_constraint{2}.rb=4;
+febio_spec.Rigid.rigid_constraint{2}.dofs='Rx,Ry,Rz,Ru,Rv,Rw';
+
+febio_spec.Rigid.rigid_constraint{3}.ATTR.name='RigidFix_3';
+febio_spec.Rigid.rigid_constraint{3}.ATTR.type='fix';
+febio_spec.Rigid.rigid_constraint{3}.rb=5;
+febio_spec.Rigid.rigid_constraint{3}.dofs='Rx,Ry,Rz,Ru,Rv,Rw';
+
+febio_spec.Rigid.rigid_constraint{4}.ATTR.name='RigidPrescribe';
+febio_spec.Rigid.rigid_constraint{4}.ATTR.type='prescribe';
+febio_spec.Rigid.rigid_constraint{4}.rb=3;
+febio_spec.Rigid.rigid_constraint{4}.dof='Rz';
+febio_spec.Rigid.rigid_constraint{4}.value.ATTR.lc=1;
+febio_spec.Rigid.rigid_constraint{4}.value.VAL=zDisp;
+febio_spec.Rigid.rigid_constraint{4}.relative=0;
+
+%Contact section
+for qc=1:1:3
+    febio_spec.Contact.contact{qc}.ATTR.surface_pair=febio_spec.Mesh.SurfacePair{qc}.ATTR.name;
+    febio_spec.Contact.contact{qc}.ATTR.type='sticky';
+    febio_spec.Contact.contact{qc}.penalty=contactPenalty;
+    febio_spec.Contact.contact{qc}.laugon=laugon;
+    febio_spec.Contact.contact{qc}.tolerance=0.2;
+    febio_spec.Contact.contact{qc}.minaug=minaug;
+    febio_spec.Contact.contact{qc}.maxaug=maxaug;
+    febio_spec.Contact.contact{qc}.snap_tol=0.01;
+    febio_spec.Contact.contact{qc}.max_traction=0;
+    febio_spec.Contact.contact{qc}.search_tolerance=0.01;
+end
+
+%LoadData section
+% -> load_controller
+febio_spec.LoadData.load_controller{1}.ATTR.id=1;
+febio_spec.LoadData.load_controller{1}.ATTR.type='loadcurve';
+febio_spec.LoadData.load_controller{1}.interpolate='LINEAR';
+febio_spec.LoadData.load_controller{1}.points.point.VAL=[0 0; 1 1];
 
 %Output section
 % -> log file
@@ -1906,41 +1318,7 @@ if runFlag==1 %i.e. a succesful run
     
     %Create deformed coordinate set
     V_DEF=N_disp_mat+repmat(V,[1 1 size(N_disp_mat,3)]);
-               
-    %% 
-    % Plotting the simulated results using |anim8| to visualize and animate
-    % deformations 
-    
-    DN_magnitude=sqrt(sum(N_disp_mat(:,:,end).^2,2)); %Current displacement magnitude
-        
-    % Create basic view and store graphics handle to initiate animation
-    hf=cFigure; %Open figure  
-    gtitle([febioFebFileNamePart,': Press play to animate']);
-    title('Displacement magnitude [mm]','Interpreter','Latex')
-    hp=gpatch(Fb,V_DEF(:,:,end),DN_magnitude,'k',1); %Add graphics object to animate
-    hp.FaceColor='interp';
-    
-    hp2=gpatch([Fc1;Fc2;Fc3],V,'w','none',1); 
-    
-    axisGeom(gca,fontSize); 
-    colormap(gjet(250)); colorbar;
-    caxis([0 max(DN_magnitude)]);    
-    axis(axisLim(V_DEF)); %Set axis limits statically    
-    camlight headlight;        
-        
-    % Set up animation features
-    animStruct.Time=timeVec; %The time vector    
-    for qt=1:1:size(N_disp_mat,3) %Loop over time increments        
-        DN_magnitude=sqrt(sum(N_disp_mat(:,:,qt).^2,2)); %Current displacement magnitude
-                
-        %Set entries in animation structure
-        animStruct.Handles{qt}=[hp hp hp2]; %Handles of objects to animate
-        animStruct.Props{qt}={'Vertices','CData','Vertices'}; %Properties of objects to animate
-        animStruct.Set{qt}={V_DEF(:,:,qt),DN_magnitude,V_DEF(:,:,qt)}; %Property values for to set in order to animate
-    end        
-    anim8(hf,animStruct); %Initiate animation feature    
-    drawnow;
-            
+
     %%
     % Importing element stress from a log file
     dataStruct=importFEBio_logfile(fullfile(savePath,febioLogFileName_stress),1,1);
@@ -1961,7 +1339,7 @@ if runFlag==1 %i.e. a succesful run
     title('$\sigma_{1}$ [MPa]','Interpreter','Latex')
     hp=gpatch(Fb,V_DEF(:,:,end),CV,'k',1); %Add graphics object to animate
     hp.FaceColor='interp';
-    hp2=gpatch([Fc1;Fc2;Fc3],V,'w','none',0.5); 
+    hp2=gpatch([Fc1;Fc2;Fc3],V,'w','k',0.5); 
     
     axisGeom(gca,fontSize); 
     colormap(gjet(250)); colorbar;
@@ -2020,7 +1398,7 @@ end
 %% 
 % _*GIBBON footer text*_ 
 % 
-% License: <https://github.com/gibbonCode/GIBBON/blob/master/LICENSE>
+% License: <https://github.com/gibbonCode/GIBBON/blob/primary/LICENSE>
 % 
 % GIBBON: The Geometry and Image-based Bioengineering add-On. A toolbox for
 % image segmentation, image-based modeling, meshing, and finite element

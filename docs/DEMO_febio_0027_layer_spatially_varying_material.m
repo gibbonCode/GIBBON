@@ -48,8 +48,14 @@ febioLogFileName=[febioFebFileNamePart,'.txt']; %FEBio log file name
 febioLogFileName_disp=[febioFebFileNamePart,'_disp_out.txt']; %Log file name for exporting displacement
 febioLogFileName_sed=[febioFebFileNamePart,'_sed_out.txt']; %Log file name for exporting strain energy density
 
+%Geometry parameters
+fontSizeImage=15;
+imagePadAmount=4;
+numElemLayers=5;
+displacementMagnitude=-0.2.*numElemLayers;
+
 % FEA control settings
-numTimeSteps=10; %Number of time steps desired
+numTimeSteps=5; %Number of time steps desired
 max_refs=25; %Max reforms
 max_ups=0; %Set to zero to use full-Newton iterations
 opt_iter=6; %Optimum number of iterations
@@ -57,22 +63,17 @@ max_retries=5; %Maximum number of retires
 dtmin=(1/numTimeSteps)/100; %Minimum time step size
 dtmax=1/numTimeSteps; %Maximum time step size
 
-E_youngs_min=1e-3; %Lowest Youngs modulus
-E_youngs_max=1; %Highest Youngs modulus
+E_youngs_min=1; %Lowest Youngs modulus
+E_youngs_max=100; %Highest Youngs modulus
 nu=0.4; %Poissons ratio
 
 %% DEFINING AND VISUALIZING THE PARAMETER MAP
 
-numElemIncLayer=3;
-numElemTopLayer=3;
-numElemLayers=numElemTopLayer+numElemIncLayer;
-displacementMagnitude=-0.3.*numElemLayers;
-
 %Create text image
-G=flipud(textImage('GIBBON','Arial',25,5));
+G=flipud(textImage('GIBBON','Arial',fontSizeImage,imagePadAmount));
 
 %Thicken image
-S=repmat(G,[1 1 numElemIncLayer]);
+S=repmat(G,[1 1 numElemLayers]);
 
 %Normalize data 
 S=S-min(S(:)); %Subtract minimum -> range [0-...]
@@ -88,57 +89,32 @@ E_youngs_elem=S(:).*(E_youngs_max-E_youngs_min)+E_youngs_min;
 
 F=element2patch(E); 
 
+[F]=element2patch(E);
+
+%Get boundary faces for light plotting
+[indBoundary]=tesBoundary(F,V);
+Fb=F(indBoundary,:);
+
+%% 
+% Plotting model boundary surfaces and a cut view
+
 %Create mesh struct for plotting
 meshStruct.elements=E;
 meshStruct.elementData=E_youngs_elem;
 meshStruct.nodes=V;
 meshStruct.faces=F;
 
-%% 
-% Plotting model boundary surfaces and a cut view
-
 hFig=cFigure; hold on; 
-title('Cut view of solid mesh and materials','FontSize',fontSize);
+title('Cut view of material parameter: Youngs modulus [MPa]','FontSize',fontSize);
 optionStruct.hFig=hFig;
 optionStruct.cutDir=3;
 optionStruct.cutSide=-1;
 meshView(meshStruct,optionStruct);
-colormap(gca,gjet(250)); colorbar; caxis([E_youngs_min E_youngs_max]);
+colormap(gca,gray(250)); 
+caxis([E_youngs_min E_youngs_max]);
 axisGeom(gca,fontSize);
 
 drawnow;
-
-
-fdsafa
-
-
-
-
-%Define element parameter mapping
-elementMaterialID=C;
-elementMaterialID=elementMaterialID-min(elementMaterialID(:));
-elementMaterialID=elementMaterialID./max(elementMaterialID(:)); %Normalized
-elementMaterialID=round(elementMaterialID.*(nBins-1))+1; %1-nPar
-
-indUni=unique(elementMaterialID(:)); %Unique indices of used materials
-c1=c1_range_ini(indUni); %Select relevant points
-numMaterials=numel(c1);
-
-%Fix indices 
-indFix1=1:numel(indUni);
-indFix2=zeros(nBins,1);
-indFix2(indUni)=indFix1;
-elementMaterialID=indFix2(elementMaterialID);
-
-%Reorder elementMaterialIndices and element matrix
-[elementMaterialID,indSort]=sort(elementMaterialID);
-E=E(indSort,:);
-
-[F,PF]=element2patch(E,elementMaterialID);
-
-%Get boundary faces for light plotting
-[indBoundary]=tesBoundary(F,V);
-Fb=F(indBoundary,:);
 
 %% SET UP BOUNDARY CONDITIONS
 
@@ -158,13 +134,11 @@ title('Boundary conditions','FontSize',fontSize);
 gpatch(Fb,V,'kw','none',0.4);
 hl(1)=plotV(V(bcSupportList,:),'k.','MarkerSize',markerSize1);
 hl(2)=plotV(V(bcPrescribeList,:),'r.','MarkerSize',markerSize1);
-legend(hl,{'BC full support','BC prescribed pressure'})
+legend(hl,{'BC full support','BC prescribed displacement'})
 axisGeom;
 camlight headlight;
 set(gca,'FontSize',fontSize);
 drawnow; 
-
-fdsfa
 
 %% Defining the FEBio input structure
 % See also |febioStructTemplate| and |febioStruct2xml| and the FEBio user
@@ -264,7 +238,6 @@ febio_spec.Output.logfile.ATTR.file=febioLogFileName;
 febio_spec.Output.logfile.node_data{1}.ATTR.file=febioLogFileName_disp;
 febio_spec.Output.logfile.node_data{1}.ATTR.data='ux;uy;uz';
 febio_spec.Output.logfile.node_data{1}.ATTR.delim=',';
-febio_spec.Output.logfile.node_data{1}.VAL=1:size(V,1);
 
 febio_spec.Output.logfile.element_data{1}.ATTR.file=febioLogFileName_sed;
 febio_spec.Output.logfile.element_data{1}.ATTR.data='sed';
@@ -351,28 +324,6 @@ if runFlag==1 %i.e. a succesful run
         animStruct.Set{qt}={V_DEF(:,:,qt),CV}; %Property values for to set in order to animate
     end        
     anim8(hf,animStruct); %Initiate animation feature    
-    drawnow;
-    
-    %% 
-    % Calculate metrics to visualize stretch-stress curve
-    
-    DZ_set=N_disp_mat(bcPrescribeList,end,:); %Z displacements of the prescribed set
-    DZ_set=mean(DZ_set,1); %Calculate mean Z displacements across nodes
-    stretch_sim=(DZ_set(:)+sampleHeight)./sampleHeight; %Derive stretch
-    stress_cauchy_sim=mean(squeeze(E_energy(:,end,:)),1)';
-    
-    %%    
-    % Visualize stress-stretch curve
-    
-    cFigure; hold on;    
-    title('Uniaxial stress-stretch curve','FontSize',fontSize);
-    xlabel('$\lambda$ [.]','FontSize',fontSize,'Interpreter','Latex'); 
-    ylabel('$\sigma_{zz}$ [MPa]','FontSize',fontSize,'Interpreter','Latex'); 
-    
-    plot(stretch_sim(:),stress_cauchy_sim(:),'r-','lineWidth',lineWidth);
-    
-    view(2); axis tight;  grid on; axis square; box on; 
-    set(gca,'FontSize',fontSize);
     drawnow;
     
 end

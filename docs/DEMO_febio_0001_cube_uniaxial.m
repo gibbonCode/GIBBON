@@ -225,7 +225,7 @@ febio_spec.Mesh.NodeSet{3}.node.ATTR.id=bcSupportList_Z(:);
  
 febio_spec.Mesh.NodeSet{4}.ATTR.name=nodeSetName4;
 febio_spec.Mesh.NodeSet{4}.node.ATTR.id=bcPrescribeList(:);
- 
+
 %MeshDomains section
 febio_spec.MeshDomains.SolidDomain.ATTR.name=partName1;
 febio_spec.MeshDomains.SolidDomain.ATTR.mat=materialName1;
