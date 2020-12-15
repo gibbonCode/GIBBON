@@ -293,7 +293,8 @@ febio_spec.Mesh.Surface{2}.quad4.ATTR.id=(1:1:size(F_contact_secondary,1))';
 febio_spec.Mesh.Surface{2}.quad4.VAL=F_contact_secondary;
 
 % -> Surface pairs
-febio_spec.Mesh.SurfacePair{1}.ATTR.name='Contact1';
+contactPairName='Contact1';
+febio_spec.Mesh.SurfacePair{1}.ATTR.name=contactPairName;
 febio_spec.Mesh.SurfacePair{1}.primary=surfaceName1;
 febio_spec.Mesh.SurfacePair{1}.secondary=surfaceName2;
 
@@ -320,7 +321,7 @@ febio_spec.Rigid.rigid_constraint{2}.relative=0;
 
 %Contact section
 febio_spec.Contact.contact{1}.ATTR.type='sliding-elastic';
-febio_spec.Contact.contact{1}.ATTR.surface_pair=febio_spec.Mesh.SurfacePair{1}.ATTR.name;
+febio_spec.Contact.contact{1}.ATTR.surface_pair=contactPairName;
 febio_spec.Contact.contact{1}.two_pass=1;
 febio_spec.Contact.contact{1}.laugon=laugon;
 febio_spec.Contact.contact{1}.tolerance=0.2;

@@ -6,7 +6,7 @@
    <!--
 This HTML was auto-generated from MATLAB code.
 To make changes, update the MATLAB code and republish this document.
-      --><title>DEMO_febio_0030_block_varying_nodal_forces</title><meta name="generator" content="MATLAB 9.9"><link rel="schema.DC" href="http://purl.org/dc/elements/1.1/"><meta name="DC.date" content="2020-12-11"><meta name="DC.source" content="DEMO_febio_0030_block_varying_nodal_forces.m"><style type="text/css">
+      --><title>DEMO_febio_0030_block_varying_nodal_forces</title><meta name="generator" content="MATLAB 9.9"><link rel="schema.DC" href="http://purl.org/dc/elements/1.1/"><meta name="DC.date" content="2020-12-15"><meta name="DC.source" content="DEMO_febio_0030_block_varying_nodal_forces.m"><style type="text/css">
 html,body,div,span,applet,object,iframe,h1,h2,h3,h4,h5,h6,p,blockquote,pre,a,abbr,acronym,address,big,cite,code,del,dfn,em,font,img,ins,kbd,q,s,samp,small,strike,strong,tt,var,b,u,i,center,dl,dt,dd,ol,ul,li,fieldset,form,label,legend,table,caption,tbody,tfoot,thead,tr,th,td{margin:0;padding:0;border:0;outline:0;font-size:100%;vertical-align:baseline;background:transparent}body{line-height:1}ol,ul{list-style:none}blockquote,q{quotes:none}blockquote:before,blockquote:after,q:before,q:after{content:'';content:none}:focus{outine:0}ins{text-decoration:none}del{text-decoration:line-through}table{border-collapse:collapse;border-spacing:0}
 
 html { min-height:100%; margin-bottom:1px; }
@@ -67,7 +67,7 @@ table td { padding:7px 5px; text-align:left; vertical-align:top; border:1px soli
 
 
 
-  </style></head><body><div class="content"><h1>DEMO_febio_0030_block_varying_nodal_forces</h1><!--introduction--><p>Below is a demonstration for:</p><div><ul><li>Building geometry for a block with hexahedral elements</li><li>Defining the boundary conditions</li><li>Coding the febio structure</li><li>Running the model</li><li>Importing and visualizing the displacement and stress results</li></ul></div><!--/introduction--><h2>Contents</h2><div><ul><li><a href="#1">Keywords</a></li><li><a href="#3">Plot settings</a></li><li><a href="#4">Control parameters</a></li><li><a href="#5">Creating model geometry and mesh</a></li><li><a href="#7">Defining the boundary conditions</a></li><li><a href="#9">Defining the FEBio input structure</a></li><li><a href="#10">Quick viewing of the FEBio input file structure</a></li><li><a href="#12">Exporting the FEBio input file</a></li><li><a href="#13">Running the FEBio analysis</a></li><li><a href="#14">Import FEBio results</a></li></ul></div><h2 id="1">Keywords</h2><div><ul><li>febio_spec version 2.5</li><li>febio, FEBio</li><li>nodal forces</li><li>spatially varying load</li><li>hexahedral elements, hex8</li><li>box, rectangular</li><li>static, solid</li><li>hyperelastic, Ogden</li><li>displacement logfile</li><li>stress logfile</li></ul></div><pre class="codeinput">clear; close <span class="string">all</span>; clc;
+  </style></head><body><div class="content"><h1>DEMO_febio_0030_block_varying_nodal_forces</h1><!--introduction--><p>Below is a demonstration for:</p><div><ul><li>Building geometry for a block with hexahedral elements</li><li>Defining the boundary conditions</li><li>Coding the febio structure</li><li>Running the model</li><li>Importing and visualizing the displacement and stress results</li></ul></div><!--/introduction--><h2>Contents</h2><div><ul><li><a href="#1">Keywords</a></li><li><a href="#3">Plot settings</a></li><li><a href="#4">Control parameters</a></li><li><a href="#5">Creating model geometry and mesh</a></li><li><a href="#7">Defining the boundary conditions</a></li><li><a href="#9">Defining the FEBio input structure</a></li><li><a href="#10">Quick viewing of the FEBio input file structure</a></li><li><a href="#12">Exporting the FEBio input file</a></li><li><a href="#13">Running the FEBio analysis</a></li><li><a href="#14">Import FEBio results</a></li></ul></div><h2 id="1">Keywords</h2><div><ul><li>febio_spec version 3.0</li><li>febio, FEBio</li><li>nodal forces</li><li>spatially varying load</li><li>hexahedral elements, hex8</li><li>box, rectangular</li><li>static, solid</li><li>hyperelastic, Ogden</li><li>displacement logfile</li><li>stress logfile</li></ul></div><pre class="codeinput">clear; close <span class="string">all</span>; clc;
 </pre><h2 id="3">Plot settings</h2><pre class="codeinput">fontSize=20;
 faceAlpha1=0.8;
 markerSize=40;
@@ -80,7 +80,7 @@ savePath=fullfile(defaultFolder,<span class="string">'data'</span>,<span class="
 <span class="comment">% Defining file names</span>
 febioFebFileNamePart=<span class="string">'tempModel'</span>;
 febioFebFileName=fullfile(savePath,[febioFebFileNamePart,<span class="string">'.feb'</span>]); <span class="comment">%FEB file name</span>
-febioLogFileName=fullfile(savePath,[febioFebFileNamePart,<span class="string">'.txt'</span>]); <span class="comment">%FEBio log file name</span>
+febioLogFileName=[febioFebFileNamePart,<span class="string">'.txt'</span>]; <span class="comment">%FEBio log file name</span>
 febioLogFileName_disp=[febioFebFileNamePart,<span class="string">'_disp_out.txt'</span>]; <span class="comment">%Log file name for exporting displacement</span>
 
 <span class="comment">%Specifying dimensions and number of elements</span>
@@ -100,7 +100,6 @@ c1=1e-3; <span class="comment">%Shear-modulus-like parameter</span>
 m1=6; <span class="comment">%Material parameter setting degree of non-linearity</span>
 k_factor=10; <span class="comment">%Bulk modulus factor</span>
 k=c1*k_factor; <span class="comment">%Bulk modulus</span>
-formulationType=<span class="string">'coupled'</span>; <span class="comment">%uncoupled</span>
 
 <span class="comment">% FEA control settings</span>
 numTimeSteps=10; <span class="comment">%Number of time steps desired</span>
@@ -138,19 +137,15 @@ axisGeom(gca,fontSize);
 
 drawnow;
 </pre><img width="100%" height="auto" vspace="5" hspace="5" src="DEMO_febio_0030_block_varying_nodal_forces_01.jpg" alt=""> <h2 id="7">Defining the boundary conditions</h2><p>The visualization of the model boundary shows colors for each side of the cube. These labels can be used to define boundary conditions.</p><pre class="codeinput"><span class="comment">%Define supported node sets</span>
-logicFace=Cb==5; <span class="comment">%Logic for current face set</span>
-Fr=Fb(logicFace,:); <span class="comment">%The current face set</span>
-bcSupportList=unique(Fr(:)); <span class="comment">%Node set part of selected face</span>
+bcSupportList=unique(Fb(Cb==5,:)); <span class="comment">%Node set part of selected face</span>
 
 <span class="comment">%Prescribed displacement nodes</span>
-logicPrescribe=Cb==6; <span class="comment">%Logic for current face set</span>
-Fr=Fb(logicPrescribe,:); <span class="comment">%The current face set</span>
-bcForcePrescribeList=unique(Fr(:)); <span class="comment">%Node set part of selected face</span>
+bcPrescribeList=unique(Fb(Cb==6,:)); <span class="comment">%Node set part of selected face</span>
 
 <span class="comment">%Create example spatially varying force</span>
 s=sampleWidth/4; <span class="comment">%"standard deviation"</span>
-forceData=forceMax*exp(-0.5.*((V(bcForcePrescribeList,1)./s).^2+(V(bcForcePrescribeList,2)./s).^2)); <span class="comment">%Gaussian variation</span>
-forceData=forceData.*sin(2*pi*(V(bcForcePrescribeList,2)/sampleWidth)); <span class="comment">%Sinusoidal modulation</span>
+forceData=forceMax*exp(-0.5.*((V(bcPrescribeList,1)./s).^2+(V(bcPrescribeList,2)./s).^2)); <span class="comment">%Gaussian variation</span>
+forceData=forceData.*sin(2*pi*(V(bcPrescribeList,2)/sampleWidth)); <span class="comment">%Sinusoidal modulation</span>
 </pre><p>Visualizing boundary conditions. Markers plotted on the semi-transparent model denote the nodes in the various boundary condition lists.</p><pre class="codeinput">hf=cFigure;
 title(<span class="string">'Boundary conditions'</span>,<span class="string">'FontSize'</span>,fontSize);
 xlabel(<span class="string">'X'</span>,<span class="string">'FontSize'</span>,fontSize); ylabel(<span class="string">'Y'</span>,<span class="string">'FontSize'</span>,fontSize); zlabel(<span class="string">'Z'</span>,<span class="string">'FontSize'</span>,fontSize);
@@ -159,7 +154,7 @@ hold <span class="string">on</span>;
 gpatch(Fb,V,<span class="string">'kw'</span>,<span class="string">'k'</span>,0.5);
 
 hl(1)=plotV(V(bcSupportList,:),<span class="string">'k.'</span>,<span class="string">'MarkerSize'</span>,markerSize);
-hl(2)=scatterV(V(bcForcePrescribeList,:),75,forceData,<span class="string">'filled'</span>);
+hl(2)=scatterV(V(bcPrescribeList,:),75,forceData,<span class="string">'filled'</span>);
 
 legend(hl,{<span class="string">'BC fix support'</span>,<span class="string">'BC prescribed force'</span>});
 
@@ -167,115 +162,98 @@ axisGeom(gca,fontSize);
 colorbar; colormap(warmcold(250)); caxis([-forceMax forceMax]);
 camlight <span class="string">headlight</span>;
 drawnow;
-</pre><pre class="codeoutput error">Error using matlab.graphics.axis.Axes/get
-Operation terminated by the user.
-
-Error in axis&gt;isnumericAxes (line 520)
-result = isnumeric(get(h,'XLim'));
-
-Error in axis (line 174)
-                if ~isnumericAxes(ax(j))
-
-Error in axisGeom (line 47)
-axis equal; axis vis3d; axis tight; %Set axis properties for geometry viewing
-
-Error in DEMO_febio_0030_block_varying_nodal_forces (line 147)
-axisGeom(gca,fontSize);
-</pre><h2 id="9">Defining the FEBio input structure</h2><p>See also <tt>febioStructTemplate</tt> and <tt>febioStruct2xml</tt> and the FEBio user manual.</p><pre class="codeinput"><span class="comment">%Get a template with default settings</span>
+</pre><img width="100%" height="auto" vspace="5" hspace="5" src="DEMO_febio_0030_block_varying_nodal_forces_02.jpg" alt=""> <h2 id="9">Defining the FEBio input structure</h2><p>See also <tt>febioStructTemplate</tt> and <tt>febioStruct2xml</tt> and the FEBio user manual.</p><pre class="codeinput"><span class="comment">%Get a template with default settings</span>
 [febio_spec]=febioStructTemplate;
 
 <span class="comment">%febio_spec version</span>
-febio_spec.ATTR.version=<span class="string">'2.5'</span>;
+febio_spec.ATTR.version=<span class="string">'3.0'</span>;
 
 <span class="comment">%Module section</span>
 febio_spec.Module.ATTR.type=<span class="string">'solid'</span>;
 
 <span class="comment">%Control section</span>
-febio_spec.Control.analysis.ATTR.type=<span class="string">'static'</span>;
-febio_spec.Control.title=<span class="string">'Cube analysis'</span>;
+febio_spec.Control.analysis=<span class="string">'STATIC'</span>;
 febio_spec.Control.time_steps=numTimeSteps;
 febio_spec.Control.step_size=1/numTimeSteps;
+febio_spec.Control.solver.max_refs=max_refs;
+febio_spec.Control.solver.max_ups=max_ups;
 febio_spec.Control.time_stepper.dtmin=dtmin;
 febio_spec.Control.time_stepper.dtmax=dtmax;
 febio_spec.Control.time_stepper.max_retries=max_retries;
 febio_spec.Control.time_stepper.opt_iter=opt_iter;
-febio_spec.Control.max_refs=max_refs;
-febio_spec.Control.max_ups=max_ups;
 
 <span class="comment">%Material section</span>
-<span class="keyword">switch</span> formulationType
-    <span class="keyword">case</span> <span class="string">'coupled'</span>
-        febio_spec.Material.material{1}.ATTR.type=<span class="string">'Ogden unconstrained'</span>;
-        febio_spec.Material.material{1}.ATTR.id=1;
-        febio_spec.Material.material{1}.c1=c1;
-        febio_spec.Material.material{1}.m1=m1;
-        febio_spec.Material.material{1}.c2=c1;
-        febio_spec.Material.material{1}.m2=-m1;
-        febio_spec.Material.material{1}.cp=k;
-    <span class="keyword">case</span> <span class="string">'uncoupled'</span>
-        febio_spec.Material.material{1}.ATTR.type=<span class="string">'Ogden'</span>;
-        febio_spec.Material.material{1}.ATTR.id=1;
-        febio_spec.Material.material{1}.c1=c1;
-        febio_spec.Material.material{1}.m1=m1;
-        febio_spec.Material.material{1}.c2=c1;
-        febio_spec.Material.material{1}.m2=-m1;
-        febio_spec.Material.material{1}.k=k;
-<span class="keyword">end</span>
+materialName1=<span class="string">'Material1'</span>;
+febio_spec.Material.material{1}.ATTR.name=materialName1;
+febio_spec.Material.material{1}.ATTR.type=<span class="string">'Ogden'</span>;
+febio_spec.Material.material{1}.ATTR.id=1;
+febio_spec.Material.material{1}.c1=c1;
+febio_spec.Material.material{1}.m1=m1;
+febio_spec.Material.material{1}.c2=c1;
+febio_spec.Material.material{1}.m2=-m1;
+febio_spec.Material.material{1}.k=k;
 
-<span class="comment">%Geometry section</span>
+<span class="comment">%Mesh section</span>
 <span class="comment">% -&gt; Nodes</span>
-febio_spec.Geometry.Nodes{1}.ATTR.name=<span class="string">'nodeSet_all'</span>; <span class="comment">%The node set name</span>
-febio_spec.Geometry.Nodes{1}.node.ATTR.id=(1:size(V,1))'; <span class="comment">%The node id's</span>
-febio_spec.Geometry.Nodes{1}.node.VAL=V; <span class="comment">%The nodel coordinates</span>
+febio_spec.Mesh.Nodes{1}.ATTR.name=<span class="string">'nodeSet_all'</span>; <span class="comment">%The node set name</span>
+febio_spec.Mesh.Nodes{1}.node.ATTR.id=(1:size(V,1))'; <span class="comment">%The node id's</span>
+febio_spec.Mesh.Nodes{1}.node.VAL=V; <span class="comment">%The nodel coordinates</span>
 
 <span class="comment">% -&gt; Elements</span>
-febio_spec.Geometry.Elements{1}.ATTR.type=<span class="string">'hex8'</span>; <span class="comment">%Element type of this set</span>
-febio_spec.Geometry.Elements{1}.ATTR.mat=1; <span class="comment">%material index for this set</span>
-febio_spec.Geometry.Elements{1}.ATTR.name=<span class="string">'Cube'</span>; <span class="comment">%Name of the element set</span>
-febio_spec.Geometry.Elements{1}.elem.ATTR.id=(1:1:size(E,1))'; <span class="comment">%Element id's</span>
-febio_spec.Geometry.Elements{1}.elem.VAL=E;
+partName1=<span class="string">'Part1'</span>;
+febio_spec.Mesh.Elements{1}.ATTR.name=partName1; <span class="comment">%Name of this part</span>
+febio_spec.Mesh.Elements{1}.ATTR.type=<span class="string">'hex8'</span>; <span class="comment">%Element type</span>
+febio_spec.Mesh.Elements{1}.elem.ATTR.id=(1:1:size(E,1))'; <span class="comment">%Element id's</span>
+febio_spec.Mesh.Elements{1}.elem.VAL=E; <span class="comment">%The element matrix</span>
 
 <span class="comment">% -&gt; NodeSets</span>
-febio_spec.Geometry.NodeSet{1}.ATTR.name=<span class="string">'bcSupportList'</span>;
-febio_spec.Geometry.NodeSet{1}.node.ATTR.id=bcSupportList(:);
+nodeSetName1=<span class="string">'bcSupportList'</span>;
+febio_spec.Mesh.NodeSet{1}.ATTR.name=nodeSetName1;
+febio_spec.Mesh.NodeSet{1}.node.ATTR.id=bcSupportList(:);
 
-febio_spec.Geometry.NodeSet{2}.ATTR.name=<span class="string">'bcForcePrescribeList'</span>;
-febio_spec.Geometry.NodeSet{2}.node.ATTR.id=bcForcePrescribeList(:);
+nodeSetName2=<span class="string">'bcPrescribeList'</span>;
+febio_spec.Mesh.NodeSet{2}.ATTR.name=nodeSetName2;
+febio_spec.Mesh.NodeSet{2}.node.ATTR.id=bcPrescribeList(:);
 
-<span class="comment">%MeshData</span>
-febio_spec.MeshData.NodeData{1}.ATTR.name=<span class="string">'nodal_loads'</span>;
-febio_spec.MeshData.NodeData{1}.ATTR.node_set=febio_spec.Geometry.NodeSet{2}.ATTR.name;
-febio_spec.MeshData.NodeData{1}.node.VAL=forceData(:);
-febio_spec.MeshData.NodeData{1}.node.ATTR.lid=(1:1:numel(bcForcePrescribeList))';
+<span class="comment">%MeshDomains section</span>
+febio_spec.MeshDomains.SolidDomain.ATTR.name=partName1;
+febio_spec.MeshDomains.SolidDomain.ATTR.mat=materialName1;
 
 <span class="comment">%Boundary condition section</span>
 <span class="comment">% -&gt; Fix boundary conditions</span>
-febio_spec.Boundary.fix{1}.ATTR.bc=<span class="string">'x'</span>;
-febio_spec.Boundary.fix{1}.ATTR.node_set=febio_spec.Geometry.NodeSet{1}.ATTR.name;
-febio_spec.Boundary.fix{2}.ATTR.bc=<span class="string">'y'</span>;
-febio_spec.Boundary.fix{2}.ATTR.node_set=febio_spec.Geometry.NodeSet{1}.ATTR.name;
-febio_spec.Boundary.fix{3}.ATTR.bc=<span class="string">'z'</span>;
-febio_spec.Boundary.fix{3}.ATTR.node_set=febio_spec.Geometry.NodeSet{1}.ATTR.name;
+febio_spec.Boundary.bc{1}.ATTR.type=<span class="string">'fix'</span>;
+febio_spec.Boundary.bc{1}.ATTR.node_set=nodeSetName1;
+febio_spec.Boundary.bc{1}.dofs=<span class="string">'x,y,z'</span>;
+
+<span class="comment">% febio_spec.Boundary.bc{2}.ATTR.type='fix';</span>
+<span class="comment">% febio_spec.Boundary.bc{2}.ATTR.node_set=nodeSetName2;</span>
+<span class="comment">% febio_spec.Boundary.bc{2}.dofs='x,y';</span>
+
+<span class="comment">%MeshData secion</span>
+<span class="comment">%-&gt; Node data</span>
+loadDataName1=<span class="string">'nodal_load_Z'</span>;
+febio_spec.MeshData.NodeData{1}.ATTR.name=loadDataName1;
+febio_spec.MeshData.NodeData{1}.ATTR.node_set=nodeSetName2;
+febio_spec.MeshData.NodeData{1}.ATTR.data_type=<span class="string">'scalar'</span>;
+febio_spec.MeshData.NodeData{1}.node.ATTR.lid=(1:1:numel(bcPrescribeList))';
+febio_spec.MeshData.NodeData{1}.node.VAL=forceData(:);
 
 <span class="comment">%Loads section</span>
 <span class="comment">% -&gt; Prescribed nodal forces</span>
-febio_spec.Loads.nodal_load{1}.ATTR.bc=<span class="string">'x'</span>;
-febio_spec.Loads.nodal_load{1}.ATTR.node_set=febio_spec.Geometry.NodeSet{2}.ATTR.name;
+febio_spec.Loads.nodal_load{1}.ATTR.name=<span class="string">'PrescribedForceZ'</span>;
+febio_spec.Loads.nodal_load{1}.ATTR.type=<span class="string">'nodal_load'</span>;
+febio_spec.Loads.nodal_load{1}.ATTR.node_set=nodeSetName2;
+febio_spec.Loads.nodal_load{1}.dof=<span class="string">'z'</span>;
 febio_spec.Loads.nodal_load{1}.scale.ATTR.lc=1;
-febio_spec.Loads.nodal_load{1}.scale.VAL=1;
-febio_spec.Loads.nodal_load{1}.value=zeros(numel(bcForcePrescribeList),1);
+febio_spec.Loads.nodal_load{1}.scale.ATTR.type=<span class="string">'map'</span>;
+febio_spec.Loads.nodal_load{1}.scale.VAL=loadDataName1;
 
-febio_spec.Loads.nodal_load{2}.ATTR.bc=<span class="string">'y'</span>;
-febio_spec.Loads.nodal_load{2}.ATTR.node_set=febio_spec.Geometry.NodeSet{2}.ATTR.name;
-febio_spec.Loads.nodal_load{2}.scale.ATTR.lc=1;
-febio_spec.Loads.nodal_load{2}.scale.VAL=1;
-febio_spec.Loads.nodal_load{2}.value=zeros(numel(bcForcePrescribeList),1);
-
-febio_spec.Loads.nodal_load{3}.ATTR.bc=<span class="string">'z'</span>;
-febio_spec.Loads.nodal_load{3}.ATTR.node_set=febio_spec.Geometry.NodeSet{2}.ATTR.name;
-febio_spec.Loads.nodal_load{3}.scale.ATTR.lc=1;
-febio_spec.Loads.nodal_load{3}.scale.VAL=1;
-febio_spec.Loads.nodal_load{3}.value.ATTR.node_data=<span class="string">'nodal_loads'</span>;
+<span class="comment">%LoadData section</span>
+<span class="comment">% -&gt; load_controller</span>
+febio_spec.LoadData.load_controller{1}.ATTR.id=1;
+febio_spec.LoadData.load_controller{1}.ATTR.type=<span class="string">'loadcurve'</span>;
+febio_spec.LoadData.load_controller{1}.interpolate=<span class="string">'LINEAR'</span>;
+febio_spec.LoadData.load_controller{1}.points.point.VAL=[0 0; 1 1];
 
 <span class="comment">%Output section</span>
 <span class="comment">% -&gt; log file</span>
@@ -283,18 +261,61 @@ febio_spec.Output.logfile.ATTR.file=febioLogFileName;
 febio_spec.Output.logfile.node_data{1}.ATTR.file=febioLogFileName_disp;
 febio_spec.Output.logfile.node_data{1}.ATTR.data=<span class="string">'ux;uy;uz'</span>;
 febio_spec.Output.logfile.node_data{1}.ATTR.delim=<span class="string">','</span>;
-febio_spec.Output.logfile.node_data{1}.VAL=1:size(V,1);
 </pre><h2 id="10">Quick viewing of the FEBio input file structure</h2><p>The <tt>febView</tt> function can be used to view the xml structure in a MATLAB figure window.</p><p><tt>febView(febio_spec); %Viewing the febio file</tt></p><h2 id="12">Exporting the FEBio input file</h2><p>Exporting the febio_spec structure to an FEBio input file is done using the <tt>febioStruct2xml</tt> function.</p><pre class="codeinput">febioStruct2xml(febio_spec,febioFebFileName); <span class="comment">%Exporting to file and domNode</span>
 </pre><h2 id="13">Running the FEBio analysis</h2><p>To run the analysis defined by the created FEBio input file the <tt>runMonitorFEBio</tt> function is used. The input for this function is a structure defining job settings e.g. the FEBio input file name. The optional output runFlag informs the user if the analysis was run succesfully.</p><pre class="codeinput">febioAnalysis.run_filename=febioFebFileName; <span class="comment">%The input file name</span>
 febioAnalysis.run_logname=febioLogFileName; <span class="comment">%The name for the log file</span>
 febioAnalysis.disp_on=1; <span class="comment">%Display information on the command window</span>
-febioAnalysis.disp_log_on=1; <span class="comment">%Display convergence information in the command window</span>
 febioAnalysis.runMode=<span class="string">'external'</span>;<span class="comment">%'internal';</span>
-febioAnalysis.t_check=0.25; <span class="comment">%Time for checking log file (dont set too small)</span>
-febioAnalysis.maxtpi=1e99; <span class="comment">%Max analysis time</span>
-febioAnalysis.maxLogCheckTime=10; <span class="comment">%Max log file checking time</span>
 
 [runFlag]=runMonitorFEBio(febioAnalysis);<span class="comment">%START FEBio NOW!!!!!!!!</span>
+</pre><pre class="codeoutput"> 
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+--------&gt;    RUNNING/MONITORING FEBIO JOB    &lt;-------- 15-Dec-2020 09:57:31
+FEBio path: /home/kevin/FEBioStudio/bin/febio3
+# Attempt removal of existing log files                15-Dec-2020 09:57:31
+ * Removal succesful                                   15-Dec-2020 09:57:31
+# Attempt removal of existing .xplt files              15-Dec-2020 09:57:31
+ * Removal succesful                                   15-Dec-2020 09:57:31
+# Starting FEBio...                                    15-Dec-2020 09:57:31
+  Max. total analysis time is: Inf s
+ * Waiting for log file creation                       15-Dec-2020 09:57:31
+   Max. wait time: 30 s
+ * Log file found.                                     15-Dec-2020 09:57:31
+# Parsing log file...                                  15-Dec-2020 09:57:31
+    number of iterations   : 3                         15-Dec-2020 09:57:32
+    number of reformations : 3                         15-Dec-2020 09:57:32
+------- converged at time : 0.1                        15-Dec-2020 09:57:32
+    number of iterations   : 3                         15-Dec-2020 09:57:32
+    number of reformations : 3                         15-Dec-2020 09:57:32
+------- converged at time : 0.2                        15-Dec-2020 09:57:32
+    number of iterations   : 3                         15-Dec-2020 09:57:32
+    number of reformations : 3                         15-Dec-2020 09:57:32
+------- converged at time : 0.3                        15-Dec-2020 09:57:32
+    number of iterations   : 3                         15-Dec-2020 09:57:32
+    number of reformations : 3                         15-Dec-2020 09:57:32
+------- converged at time : 0.4                        15-Dec-2020 09:57:32
+    number of iterations   : 3                         15-Dec-2020 09:57:32
+    number of reformations : 3                         15-Dec-2020 09:57:32
+------- converged at time : 0.5                        15-Dec-2020 09:57:32
+    number of iterations   : 3                         15-Dec-2020 09:57:32
+    number of reformations : 3                         15-Dec-2020 09:57:32
+------- converged at time : 0.6                        15-Dec-2020 09:57:32
+    number of iterations   : 3                         15-Dec-2020 09:57:32
+    number of reformations : 3                         15-Dec-2020 09:57:32
+------- converged at time : 0.7                        15-Dec-2020 09:57:32
+    number of iterations   : 3                         15-Dec-2020 09:57:32
+    number of reformations : 3                         15-Dec-2020 09:57:32
+------- converged at time : 0.8                        15-Dec-2020 09:57:32
+    number of iterations   : 3                         15-Dec-2020 09:57:32
+    number of reformations : 3                         15-Dec-2020 09:57:32
+------- converged at time : 0.9                        15-Dec-2020 09:57:32
+    number of iterations   : 3                         15-Dec-2020 09:57:32
+    number of reformations : 3                         15-Dec-2020 09:57:32
+------- converged at time : 1                          15-Dec-2020 09:57:32
+ Elapsed time : 0:00:01                                15-Dec-2020 09:57:32
+ N O R M A L   T E R M I N A T I O N
+# Done                                                 15-Dec-2020 09:57:32
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 </pre><h2 id="14">Import FEBio results</h2><pre class="codeinput"><span class="keyword">if</span> runFlag==1 <span class="comment">%i.e. a succesful run</span>
 </pre><p>Importing nodal displacements from a log file</p><pre class="codeinput">    dataStruct=importFEBio_logfile(fullfile(savePath,febioLogFileName_disp),1,1);
 
@@ -333,7 +354,7 @@ febioAnalysis.maxLogCheckTime=10; <span class="comment">%Max log file checking t
     <span class="keyword">end</span>
     anim8(hf,animStruct); <span class="comment">%Initiate animation feature</span>
     drawnow;
-</pre><pre class="codeinput"><span class="keyword">end</span>
+</pre><img width="100%" height="auto" vspace="5" hspace="5" src="DEMO_febio_0030_block_varying_nodal_forces_03.jpg" alt=""> <pre class="codeinput"><span class="keyword">end</span>
 </pre><p><img vspace="5" hspace="5" src="gibbVerySmall.gif" alt=""> </p><p><i><b>GIBBON</b></i> <a href="www.gibboncode.org">www.gibboncode.org</a></p><p><i>Kevin Mattheus Moerman</i>, <a href="gibbon.toolbox@gmail.com">gibbon.toolbox@gmail.com</a></p><p><i><b>GIBBON footer text</b></i></p><p>License: <a href="https://github.com/gibbonCode/GIBBON/blob/master/LICENSE">https://github.com/gibbonCode/GIBBON/blob/master/LICENSE</a></p><p>GIBBON: The Geometry and Image-based Bioengineering add-On. A toolbox for image segmentation, image-based modeling, meshing, and finite element analysis.</p><p>Copyright (C) 2006-2020 Kevin Mattheus Moerman</p><p>This program is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.</p><p>This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for more details.</p><p>You should have received a copy of the GNU General Public License along with this program.  If not, see <a href="http://www.gnu.org/licenses/">http://www.gnu.org/licenses/</a>.</p><p class="footer"><br><a href="https://www.mathworks.com/products/matlab/">Published with MATLAB&reg; R2020b</a><br></p></div><!--
 ##### SOURCE BEGIN #####
 %% DEMO_febio_0030_block_varying_nodal_forces
@@ -347,7 +368,7 @@ febioAnalysis.maxLogCheckTime=10; <span class="comment">%Max log file checking t
 
 %% Keywords
 %
-% * febio_spec version 2.5
+% * febio_spec version 3.0
 % * febio, FEBio
 % * nodal forces
 % * spatially varying load
@@ -378,7 +399,7 @@ savePath=fullfile(defaultFolder,'data','temp');
 % Defining file names
 febioFebFileNamePart='tempModel';
 febioFebFileName=fullfile(savePath,[febioFebFileNamePart,'.feb']); %FEB file name
-febioLogFileName=fullfile(savePath,[febioFebFileNamePart,'.txt']); %FEBio log file name
+febioLogFileName=[febioFebFileNamePart,'.txt']; %FEBio log file name
 febioLogFileName_disp=[febioFebFileNamePart,'_disp_out.txt']; %Log file name for exporting displacement
 
 %Specifying dimensions and number of elements
@@ -398,7 +419,6 @@ c1=1e-3; %Shear-modulus-like parameter
 m1=6; %Material parameter setting degree of non-linearity
 k_factor=10; %Bulk modulus factor 
 k=c1*k_factor; %Bulk modulus
-formulationType='coupled'; %uncoupled
 
 % FEA control settings
 numTimeSteps=10; %Number of time steps desired
@@ -452,19 +472,15 @@ drawnow;
 % cube. These labels can be used to define boundary conditions. 
 
 %Define supported node sets
-logicFace=Cb==5; %Logic for current face set
-Fr=Fb(logicFace,:); %The current face set
-bcSupportList=unique(Fr(:)); %Node set part of selected face
+bcSupportList=unique(Fb(Cb==5,:)); %Node set part of selected face
 
 %Prescribed displacement nodes
-logicPrescribe=Cb==6; %Logic for current face set
-Fr=Fb(logicPrescribe,:); %The current face set
-bcForcePrescribeList=unique(Fr(:)); %Node set part of selected face
+bcPrescribeList=unique(Fb(Cb==6,:)); %Node set part of selected face
 
 %Create example spatially varying force
 s=sampleWidth/4; %"standard deviation"
-forceData=forceMax*exp(-0.5.*((V(bcForcePrescribeList,1)./s).^2+(V(bcForcePrescribeList,2)./s).^2)); %Gaussian variation
-forceData=forceData.*sin(2*pi*(V(bcForcePrescribeList,2)/sampleWidth)); %Sinusoidal modulation
+forceData=forceMax*exp(-0.5.*((V(bcPrescribeList,1)./s).^2+(V(bcPrescribeList,2)./s).^2)); %Gaussian variation
+forceData=forceData.*sin(2*pi*(V(bcPrescribeList,2)/sampleWidth)); %Sinusoidal modulation
 
 %% 
 % Visualizing boundary conditions. Markers plotted on the semi-transparent
@@ -478,7 +494,7 @@ hold on;
 gpatch(Fb,V,'kw','k',0.5);
 
 hl(1)=plotV(V(bcSupportList,:),'k.','MarkerSize',markerSize);
-hl(2)=scatterV(V(bcForcePrescribeList,:),75,forceData,'filled');
+hl(2)=scatterV(V(bcPrescribeList,:),75,forceData,'filled');
 
 legend(hl,{'BC fix support','BC prescribed force'});
 
@@ -495,97 +511,94 @@ drawnow;
 [febio_spec]=febioStructTemplate;
 
 %febio_spec version 
-febio_spec.ATTR.version='2.5'; 
+febio_spec.ATTR.version='3.0'; 
 
 %Module section
 febio_spec.Module.ATTR.type='solid'; 
 
 %Control section
-febio_spec.Control.analysis.ATTR.type='static';
-febio_spec.Control.title='Cube analysis';
+febio_spec.Control.analysis='STATIC';
 febio_spec.Control.time_steps=numTimeSteps;
 febio_spec.Control.step_size=1/numTimeSteps;
+febio_spec.Control.solver.max_refs=max_refs;
+febio_spec.Control.solver.max_ups=max_ups;
 febio_spec.Control.time_stepper.dtmin=dtmin;
 febio_spec.Control.time_stepper.dtmax=dtmax; 
 febio_spec.Control.time_stepper.max_retries=max_retries;
 febio_spec.Control.time_stepper.opt_iter=opt_iter;
-febio_spec.Control.max_refs=max_refs;
-febio_spec.Control.max_ups=max_ups;
 
 %Material section
-switch formulationType
-    case 'coupled'
-        febio_spec.Material.material{1}.ATTR.type='Ogden unconstrained';
-        febio_spec.Material.material{1}.ATTR.id=1;
-        febio_spec.Material.material{1}.c1=c1;
-        febio_spec.Material.material{1}.m1=m1;
-        febio_spec.Material.material{1}.c2=c1;
-        febio_spec.Material.material{1}.m2=-m1;
-        febio_spec.Material.material{1}.cp=k;
-    case 'uncoupled'
-        febio_spec.Material.material{1}.ATTR.type='Ogden';
-        febio_spec.Material.material{1}.ATTR.id=1;
-        febio_spec.Material.material{1}.c1=c1;
-        febio_spec.Material.material{1}.m1=m1;
-        febio_spec.Material.material{1}.c2=c1;
-        febio_spec.Material.material{1}.m2=-m1;
-        febio_spec.Material.material{1}.k=k;
-end
+materialName1='Material1';
+febio_spec.Material.material{1}.ATTR.name=materialName1;
+febio_spec.Material.material{1}.ATTR.type='Ogden';
+febio_spec.Material.material{1}.ATTR.id=1;
+febio_spec.Material.material{1}.c1=c1;
+febio_spec.Material.material{1}.m1=m1;
+febio_spec.Material.material{1}.c2=c1;
+febio_spec.Material.material{1}.m2=-m1;
+febio_spec.Material.material{1}.k=k;
 
-%Geometry section
+%Mesh section
 % -> Nodes
-febio_spec.Geometry.Nodes{1}.ATTR.name='nodeSet_all'; %The node set name
-febio_spec.Geometry.Nodes{1}.node.ATTR.id=(1:size(V,1))'; %The node id's
-febio_spec.Geometry.Nodes{1}.node.VAL=V; %The nodel coordinates
+febio_spec.Mesh.Nodes{1}.ATTR.name='nodeSet_all'; %The node set name
+febio_spec.Mesh.Nodes{1}.node.ATTR.id=(1:size(V,1))'; %The node id's
+febio_spec.Mesh.Nodes{1}.node.VAL=V; %The nodel coordinates
 
 % -> Elements
-febio_spec.Geometry.Elements{1}.ATTR.type='hex8'; %Element type of this set
-febio_spec.Geometry.Elements{1}.ATTR.mat=1; %material index for this set 
-febio_spec.Geometry.Elements{1}.ATTR.name='Cube'; %Name of the element set
-febio_spec.Geometry.Elements{1}.elem.ATTR.id=(1:1:size(E,1))'; %Element id's
-febio_spec.Geometry.Elements{1}.elem.VAL=E;
+partName1='Part1';
+febio_spec.Mesh.Elements{1}.ATTR.name=partName1; %Name of this part
+febio_spec.Mesh.Elements{1}.ATTR.type='hex8'; %Element type 
+febio_spec.Mesh.Elements{1}.elem.ATTR.id=(1:1:size(E,1))'; %Element id's
+febio_spec.Mesh.Elements{1}.elem.VAL=E; %The element matrix
 
 % -> NodeSets
-febio_spec.Geometry.NodeSet{1}.ATTR.name='bcSupportList';
-febio_spec.Geometry.NodeSet{1}.node.ATTR.id=bcSupportList(:);
+nodeSetName1='bcSupportList';
+febio_spec.Mesh.NodeSet{1}.ATTR.name=nodeSetName1;
+febio_spec.Mesh.NodeSet{1}.node.ATTR.id=bcSupportList(:);
 
-febio_spec.Geometry.NodeSet{2}.ATTR.name='bcForcePrescribeList';
-febio_spec.Geometry.NodeSet{2}.node.ATTR.id=bcForcePrescribeList(:);
+nodeSetName2='bcPrescribeList';
+febio_spec.Mesh.NodeSet{2}.ATTR.name=nodeSetName2;
+febio_spec.Mesh.NodeSet{2}.node.ATTR.id=bcPrescribeList(:);
 
-%MeshData
-febio_spec.MeshData.NodeData{1}.ATTR.name='nodal_loads';
-febio_spec.MeshData.NodeData{1}.ATTR.node_set=febio_spec.Geometry.NodeSet{2}.ATTR.name;
-febio_spec.MeshData.NodeData{1}.node.VAL=forceData(:);
-febio_spec.MeshData.NodeData{1}.node.ATTR.lid=(1:1:numel(bcForcePrescribeList))';
+%MeshDomains section
+febio_spec.MeshDomains.SolidDomain.ATTR.name=partName1;
+febio_spec.MeshDomains.SolidDomain.ATTR.mat=materialName1;
         
 %Boundary condition section 
 % -> Fix boundary conditions
-febio_spec.Boundary.fix{1}.ATTR.bc='x';
-febio_spec.Boundary.fix{1}.ATTR.node_set=febio_spec.Geometry.NodeSet{1}.ATTR.name;
-febio_spec.Boundary.fix{2}.ATTR.bc='y';
-febio_spec.Boundary.fix{2}.ATTR.node_set=febio_spec.Geometry.NodeSet{1}.ATTR.name;
-febio_spec.Boundary.fix{3}.ATTR.bc='z';
-febio_spec.Boundary.fix{3}.ATTR.node_set=febio_spec.Geometry.NodeSet{1}.ATTR.name;
+febio_spec.Boundary.bc{1}.ATTR.type='fix';
+febio_spec.Boundary.bc{1}.ATTR.node_set=nodeSetName1;
+febio_spec.Boundary.bc{1}.dofs='x,y,z';
+
+% febio_spec.Boundary.bc{2}.ATTR.type='fix';
+% febio_spec.Boundary.bc{2}.ATTR.node_set=nodeSetName2;
+% febio_spec.Boundary.bc{2}.dofs='x,y';
+
+%MeshData secion
+%-> Node data
+loadDataName1='nodal_load_Z';
+febio_spec.MeshData.NodeData{1}.ATTR.name=loadDataName1;
+febio_spec.MeshData.NodeData{1}.ATTR.node_set=nodeSetName2;
+febio_spec.MeshData.NodeData{1}.ATTR.data_type='scalar';
+febio_spec.MeshData.NodeData{1}.node.ATTR.lid=(1:1:numel(bcPrescribeList))';
+febio_spec.MeshData.NodeData{1}.node.VAL=forceData(:);
 
 %Loads section
 % -> Prescribed nodal forces
-febio_spec.Loads.nodal_load{1}.ATTR.bc='x';
-febio_spec.Loads.nodal_load{1}.ATTR.node_set=febio_spec.Geometry.NodeSet{2}.ATTR.name;
+febio_spec.Loads.nodal_load{1}.ATTR.name='PrescribedForceZ';
+febio_spec.Loads.nodal_load{1}.ATTR.type='nodal_load';
+febio_spec.Loads.nodal_load{1}.ATTR.node_set=nodeSetName2;
+febio_spec.Loads.nodal_load{1}.dof='z';
 febio_spec.Loads.nodal_load{1}.scale.ATTR.lc=1;
-febio_spec.Loads.nodal_load{1}.scale.VAL=1;
-febio_spec.Loads.nodal_load{1}.value=zeros(numel(bcForcePrescribeList),1);
+febio_spec.Loads.nodal_load{1}.scale.ATTR.type='map';
+febio_spec.Loads.nodal_load{1}.scale.VAL=loadDataName1;
 
-febio_spec.Loads.nodal_load{2}.ATTR.bc='y';
-febio_spec.Loads.nodal_load{2}.ATTR.node_set=febio_spec.Geometry.NodeSet{2}.ATTR.name;
-febio_spec.Loads.nodal_load{2}.scale.ATTR.lc=1;
-febio_spec.Loads.nodal_load{2}.scale.VAL=1;
-febio_spec.Loads.nodal_load{2}.value=zeros(numel(bcForcePrescribeList),1);
-
-febio_spec.Loads.nodal_load{3}.ATTR.bc='z';
-febio_spec.Loads.nodal_load{3}.ATTR.node_set=febio_spec.Geometry.NodeSet{2}.ATTR.name;
-febio_spec.Loads.nodal_load{3}.scale.ATTR.lc=1;
-febio_spec.Loads.nodal_load{3}.scale.VAL=1;
-febio_spec.Loads.nodal_load{3}.value.ATTR.node_data='nodal_loads';
+%LoadData section
+% -> load_controller
+febio_spec.LoadData.load_controller{1}.ATTR.id=1;
+febio_spec.LoadData.load_controller{1}.ATTR.type='loadcurve';
+febio_spec.LoadData.load_controller{1}.interpolate='LINEAR';
+febio_spec.LoadData.load_controller{1}.points.point.VAL=[0 0; 1 1];
 
 %Output section 
 % -> log file
@@ -593,7 +606,6 @@ febio_spec.Output.logfile.ATTR.file=febioLogFileName;
 febio_spec.Output.logfile.node_data{1}.ATTR.file=febioLogFileName_disp;
 febio_spec.Output.logfile.node_data{1}.ATTR.data='ux;uy;uz';
 febio_spec.Output.logfile.node_data{1}.ATTR.delim=',';
-febio_spec.Output.logfile.node_data{1}.VAL=1:size(V,1);
 
 %% Quick viewing of the FEBio input file structure
 % The |febView| function can be used to view the xml structure in a MATLAB
@@ -618,11 +630,7 @@ febioStruct2xml(febio_spec,febioFebFileName); %Exporting to file and domNode
 febioAnalysis.run_filename=febioFebFileName; %The input file name
 febioAnalysis.run_logname=febioLogFileName; %The name for the log file
 febioAnalysis.disp_on=1; %Display information on the command window
-febioAnalysis.disp_log_on=1; %Display convergence information in the command window
 febioAnalysis.runMode='external';%'internal';
-febioAnalysis.t_check=0.25; %Time for checking log file (dont set too small)
-febioAnalysis.maxtpi=1e99; %Max analysis time
-febioAnalysis.maxLogCheckTime=10; %Max log file checking time
 
 [runFlag]=runMonitorFEBio(febioAnalysis);%START FEBio NOW!!!!!!!!
 

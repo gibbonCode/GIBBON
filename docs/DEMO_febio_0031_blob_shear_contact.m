@@ -11,7 +11,7 @@
 
 %% Keywords
 %
-% * febio_spec version 2.5
+% * febio_spec version 3.0
 % * febio, FEBio
 % * indentation
 % * contact, sliding, sticky, friction
@@ -299,7 +299,7 @@ hl(1)=gpatch(F_probe,V,'rw','k',1);
 patchNormPlot(F_probe,V);
 hl(2)=gpatch(Fb_blob,V,'gw','k',1);
 patchNormPlot(Fb_blob,V);
-legend(hl,{'Master','Slave'}); clear hl;
+legend(hl,{'primary','secondary'}); clear hl;
 axisGeom(gca,fontSize);
 camlight headlight; 
 
@@ -309,7 +309,7 @@ hl(1)=gpatch(F_plate,V,'rw','k',1);
 patchNormPlot(F_plate,V);
 hl(2)=gpatch(Fb_blob,V,'gw','k',1);
 patchNormPlot(Fb_blob,V);
-legend(hl,{'Master','Slave'}); clear hl;
+legend(hl,{'primary','secondary'}); clear hl;
 axisGeom(gca,fontSize);
 camlight headlight; 
 
@@ -323,25 +323,26 @@ drawnow;
 [febio_spec]=febioStructTemplate;
 
 %febio_spec version 
-febio_spec.ATTR.version='2.5'; 
+febio_spec.ATTR.version='3.0'; 
 
 %Module section
 febio_spec.Module.ATTR.type='solid'; 
 
 %Control section
-febio_spec.Control.analysis.ATTR.type='static';
+febio_spec.Control.analysis='STATIC';
 febio_spec.Control.time_steps=numTimeSteps;
-febio_spec.Control.step_size=step_size;
+febio_spec.Control.step_size=1/numTimeSteps;
+febio_spec.Control.solver.max_refs=max_refs;
+febio_spec.Control.solver.max_ups=max_ups;
+febio_spec.Control.solver.symmetric_stiffness=0;
 febio_spec.Control.time_stepper.dtmin=dtmin;
 febio_spec.Control.time_stepper.dtmax=dtmax; 
 febio_spec.Control.time_stepper.max_retries=max_retries;
 febio_spec.Control.time_stepper.opt_iter=opt_iter;
-febio_spec.Control.max_refs=max_refs;
-febio_spec.Control.max_ups=max_ups;
-febio_spec.Control.symmetric_stiffness=symmetric_stiffness; 
-febio_spec.Control.min_residual=min_residual;
 
 %Material section
+materialName1='Material1';
+febio_spec.Material.material{1}.ATTR.name=materialName1;
 febio_spec.Material.material{1}.ATTR.type='Ogden';
 febio_spec.Material.material{1}.ATTR.id=1;
 febio_spec.Material.material{1}.c1=c1;
@@ -350,96 +351,111 @@ febio_spec.Material.material{1}.c2=c1;
 febio_spec.Material.material{1}.m2=-m1;
 febio_spec.Material.material{1}.k=k;
 
+materialName2='Material2';
+febio_spec.Material.material{2}.ATTR.name=materialName2;
 febio_spec.Material.material{2}.ATTR.type='rigid body';
 febio_spec.Material.material{2}.ATTR.id=2;
 febio_spec.Material.material{2}.density=1;
 febio_spec.Material.material{2}.center_of_mass=center_of_mass_plate;
 
+materialName3='Material3';
+febio_spec.Material.material{3}.ATTR.name=materialName3;
 febio_spec.Material.material{3}.ATTR.type='rigid body';
 febio_spec.Material.material{3}.ATTR.id=3;
 febio_spec.Material.material{3}.density=1;
 febio_spec.Material.material{3}.center_of_mass=center_of_mass_probe;
 
-%Geometry section
+%Mesh section
 % -> Nodes
-febio_spec.Geometry.Nodes{1}.ATTR.name='nodeSet_all'; %The node set name
-febio_spec.Geometry.Nodes{1}.node.ATTR.id=(1:size(V,1))'; %The node id's
-febio_spec.Geometry.Nodes{1}.node.VAL=V; %The nodel coordinates
+febio_spec.Mesh.Nodes{1}.ATTR.name='nodeSet_all'; %The node set name
+febio_spec.Mesh.Nodes{1}.node.ATTR.id=(1:size(V,1))'; %The node id's
+febio_spec.Mesh.Nodes{1}.node.VAL=V; %The nodel coordinates
 
 % -> Elements
-febio_spec.Geometry.Elements{1}.ATTR.type='tet4'; %Element type of this set
-febio_spec.Geometry.Elements{1}.ATTR.mat=1; %material index for this set 
-febio_spec.Geometry.Elements{1}.ATTR.name='Blob'; %Name of the element set
-febio_spec.Geometry.Elements{1}.elem.ATTR.id=(1:1:size(E_blob,1))'; %Element id's
-febio_spec.Geometry.Elements{1}.elem.VAL=E_blob;
+partName1='Part1';
+febio_spec.Mesh.Elements{1}.ATTR.name=partName1; %Name of this part
+febio_spec.Mesh.Elements{1}.ATTR.type='tet4'; %Element type 
+febio_spec.Mesh.Elements{1}.elem.ATTR.id=(1:1:size(E_blob,1))'; %Element id's
+febio_spec.Mesh.Elements{1}.elem.VAL=E_blob; %The element matrix
 
-febio_spec.Geometry.Elements{2}.ATTR.type='tri3'; %Element type of this set
-febio_spec.Geometry.Elements{2}.ATTR.mat=2; %material index for this set 
-febio_spec.Geometry.Elements{2}.ATTR.name='Plate'; %Name of the element set
-febio_spec.Geometry.Elements{2}.elem.ATTR.id=size(E_blob,1)+(1:1:size(F_plate,1))'; %Element id's
-febio_spec.Geometry.Elements{2}.elem.VAL=F_plate;
+partName2='Part2';
+febio_spec.Mesh.Elements{2}.ATTR.name=partName2; %Name of this part
+febio_spec.Mesh.Elements{2}.ATTR.type='tri3'; %Element type 
+febio_spec.Mesh.Elements{2}.elem.ATTR.id=size(E_blob,1)+(1:1:size(F_plate,1))'; %Element id's
+febio_spec.Mesh.Elements{2}.elem.VAL=F_plate;
 
-febio_spec.Geometry.Elements{2}.ATTR.type='tri3'; %Element type of this set
-febio_spec.Geometry.Elements{2}.ATTR.mat=3; %material index for this set 
-febio_spec.Geometry.Elements{2}.ATTR.name='Probe'; %Name of the element set
-febio_spec.Geometry.Elements{2}.elem.ATTR.id=size(E_blob,1)+size(F_plate,1)+(1:1:size(F_probe,1))'; %Element id's
-febio_spec.Geometry.Elements{2}.elem.VAL=F_probe;
+partName3='Part3';
+febio_spec.Mesh.Elements{3}.ATTR.name=partName3; %Name of this part
+febio_spec.Mesh.Elements{3}.ATTR.type='tri3'; %Element type 
+febio_spec.Mesh.Elements{3}.elem.ATTR.id=size(E_blob,1)+size(F_plate,1)+(1:1:size(F_probe,1))'; %Element id's
+febio_spec.Mesh.Elements{3}.elem.VAL=F_probe;
 
-% -> NodeSets
+%MeshDomains section
+febio_spec.MeshDomains.SolidDomain{1}.ATTR.name=partName1;
+febio_spec.MeshDomains.SolidDomain{1}.ATTR.mat=materialName1;
 
+febio_spec.MeshDomains.ShellDomain{1}.ATTR.name=partName2;
+febio_spec.MeshDomains.ShellDomain{1}.ATTR.mat=materialName2;
+
+febio_spec.MeshDomains.ShellDomain{2}.ATTR.name=partName3;
+febio_spec.MeshDomains.ShellDomain{2}.ATTR.mat=materialName3;
 
 % % -> Surfaces
-febio_spec.Geometry.Surface{1}.ATTR.name='contact_master1';
-febio_spec.Geometry.Surface{1}.tri3.ATTR.lid=(1:1:size(F_plate,1))';
-febio_spec.Geometry.Surface{1}.tri3.VAL=F_plate;
+surfaceName1='contactSurface1';
+febio_spec.Mesh.Surface{1}.ATTR.name=surfaceName1;
+febio_spec.Mesh.Surface{1}.tri3.ATTR.id=(1:1:size(F_plate,1))';
+febio_spec.Mesh.Surface{1}.tri3.VAL=F_plate;
 
-febio_spec.Geometry.Surface{2}.ATTR.name='contact_slave1';
-febio_spec.Geometry.Surface{2}.tri3.ATTR.lid=(1:1:size(Fb_blob,1))';
-febio_spec.Geometry.Surface{2}.tri3.VAL=Fb_blob;
+surfaceName2='contactSurface2';
+febio_spec.Mesh.Surface{2}.ATTR.name=surfaceName2;
+febio_spec.Mesh.Surface{2}.tri3.ATTR.id=(1:1:size(Fb_blob,1))';
+febio_spec.Mesh.Surface{2}.tri3.VAL=Fb_blob;
 
-febio_spec.Geometry.Surface{3}.ATTR.name='contact_master2';
-febio_spec.Geometry.Surface{3}.tri3.ATTR.lid=(1:1:size(F_probe,1))';
-febio_spec.Geometry.Surface{3}.tri3.VAL=F_probe;
+surfaceName3='contactSurface3';
+febio_spec.Mesh.Surface{3}.ATTR.name=surfaceName3;
+febio_spec.Mesh.Surface{3}.tri3.ATTR.id=(1:1:size(F_probe,1))';
+febio_spec.Mesh.Surface{3}.tri3.VAL=F_probe;
 
-febio_spec.Geometry.Surface{4}.ATTR.name='contact_slave2';
-febio_spec.Geometry.Surface{4}.tri3.ATTR.lid=(1:1:size(Fb_blob(Cb_blob==1,:),1))';
-febio_spec.Geometry.Surface{4}.tri3.VAL=Fb_blob(Cb_blob==1,:);
+surfaceName4='contactSurface4';
+febio_spec.Mesh.Surface{4}.ATTR.name=surfaceName4;
+febio_spec.Mesh.Surface{4}.tri3.ATTR.id=(1:1:size(Fb_blob(Cb_blob==1,:),1))';
+febio_spec.Mesh.Surface{4}.tri3.VAL=Fb_blob(Cb_blob==1,:);
 
 % -> Surface pairs
-febio_spec.Geometry.SurfacePair{1}.ATTR.name='Contact1_plate_blob';
-febio_spec.Geometry.SurfacePair{1}.master.ATTR.surface=febio_spec.Geometry.Surface{1}.ATTR.name;
-febio_spec.Geometry.SurfacePair{1}.slave.ATTR.surface=febio_spec.Geometry.Surface{2}.ATTR.name;
+contactPairName1='Contact1';
+febio_spec.Mesh.SurfacePair{1}.ATTR.name=contactPairName1;
+febio_spec.Mesh.SurfacePair{1}.primary=surfaceName1;
+febio_spec.Mesh.SurfacePair{1}.secondary=surfaceName2;
 
-febio_spec.Geometry.SurfacePair{2}.ATTR.name='Contact2_probe_blob';
-febio_spec.Geometry.SurfacePair{2}.master.ATTR.surface=febio_spec.Geometry.Surface{3}.ATTR.name;
-febio_spec.Geometry.SurfacePair{2}.slave.ATTR.surface=febio_spec.Geometry.Surface{4}.ATTR.name;
+contactPairName2='Contact2';
+febio_spec.Mesh.SurfacePair{2}.ATTR.name=contactPairName2;
+febio_spec.Mesh.SurfacePair{2}.primary=surfaceName3;
+febio_spec.Mesh.SurfacePair{2}.secondary=surfaceName4;
 
-%Boundary condition section 
-% -> Fix boundary conditions
+%Rigid section 
+% -> Prescribed rigid body boundary conditions
+febio_spec.Rigid.rigid_constraint{1}.ATTR.name='RigidFix_1';
+febio_spec.Rigid.rigid_constraint{1}.ATTR.type='fix';
+febio_spec.Rigid.rigid_constraint{1}.rb=2;
+febio_spec.Rigid.rigid_constraint{1}.dofs='Rx,Ry,Rz,Ru,Rv,Rw';
 
-% -> Prescribed boundary conditions on the rigid body
-febio_spec.Boundary.rigid_body{1}.ATTR.mat=2;
-febio_spec.Boundary.rigid_body{1}.fixed{1}.ATTR.bc='x';
-febio_spec.Boundary.rigid_body{1}.fixed{2}.ATTR.bc='y';
-febio_spec.Boundary.rigid_body{1}.fixed{3}.ATTR.bc='z';
-febio_spec.Boundary.rigid_body{1}.fixed{4}.ATTR.bc='Rx';
-febio_spec.Boundary.rigid_body{1}.fixed{5}.ATTR.bc='Ry';
-febio_spec.Boundary.rigid_body{1}.fixed{6}.ATTR.bc='Rz';
+febio_spec.Rigid.rigid_constraint{2}.ATTR.name='RigidFix_2';
+febio_spec.Rigid.rigid_constraint{2}.ATTR.type='fix';
+febio_spec.Rigid.rigid_constraint{2}.rb=3;
+febio_spec.Rigid.rigid_constraint{2}.dofs='Ry,Rz,Ru,Rv,Rw';
 
-febio_spec.Boundary.rigid_body{2}.ATTR.mat=3;
-febio_spec.Boundary.rigid_body{2}.fixed{1}.ATTR.bc='y';
-febio_spec.Boundary.rigid_body{2}.fixed{2}.ATTR.bc='z';
-febio_spec.Boundary.rigid_body{2}.fixed{3}.ATTR.bc='Rx';
-febio_spec.Boundary.rigid_body{2}.fixed{4}.ATTR.bc='Ry';
-febio_spec.Boundary.rigid_body{2}.fixed{5}.ATTR.bc='Rz';
-febio_spec.Boundary.rigid_body{2}.prescribed.ATTR.bc='x';
-febio_spec.Boundary.rigid_body{2}.prescribed.ATTR.lc=1;
-febio_spec.Boundary.rigid_body{2}.prescribed.VAL=probeDisplacement;
+febio_spec.Rigid.rigid_constraint{3}.ATTR.name='RigidPrescribe';
+febio_spec.Rigid.rigid_constraint{3}.ATTR.type='prescribe';
+febio_spec.Rigid.rigid_constraint{3}.rb=3;
+febio_spec.Rigid.rigid_constraint{3}.dof='Rx';
+febio_spec.Rigid.rigid_constraint{3}.value.ATTR.lc=1;
+febio_spec.Rigid.rigid_constraint{3}.value.VAL=probeDisplacement;
+febio_spec.Rigid.rigid_constraint{3}.relative=0;
 
 %Contact section
 % -> Contact 1
-febio_spec.Contact.contact{1}.ATTR.surface_pair=febio_spec.Geometry.SurfacePair{1}.ATTR.name;
 febio_spec.Contact.contact{1}.ATTR.type='sticky';
+febio_spec.Contact.contact{1}.ATTR.surface_pair=contactPairName1;
 febio_spec.Contact.contact{1}.penalty=10;
 febio_spec.Contact.contact{1}.laugon=0;
 febio_spec.Contact.contact{1}.tolerance=0.1;
@@ -449,8 +465,8 @@ febio_spec.Contact.contact{1}.snap_tol=0;
 febio_spec.Contact.contact{1}.max_traction=max_traction;
 febio_spec.Contact.contact{1}.search_tolerance=0.1;
 
-febio_spec.Contact.contact{2}.ATTR.surface_pair=febio_spec.Geometry.SurfacePair{2}.ATTR.name;
 febio_spec.Contact.contact{2}.ATTR.type='sliding-elastic';
+febio_spec.Contact.contact{2}.ATTR.surface_pair=contactPairName2;
 febio_spec.Contact.contact{2}.two_pass=1;
 febio_spec.Contact.contact{2}.laugon=laugon;
 febio_spec.Contact.contact{2}.tolerance=0.2;
@@ -464,13 +480,19 @@ febio_spec.Contact.contact{2}.auto_penalty=1;
 febio_spec.Contact.contact{2}.penalty=contactPenalty;
 febio_spec.Contact.contact{2}.fric_coeff=fric_coeff;
 
+%LoadData section
+% -> load_controller
+febio_spec.LoadData.load_controller{1}.ATTR.id=1;
+febio_spec.LoadData.load_controller{1}.ATTR.type='loadcurve';
+febio_spec.LoadData.load_controller{1}.interpolate='LINEAR';
+febio_spec.LoadData.load_controller{1}.points.point.VAL=[0 0; 1 1];
+
 %Output section 
 % -> log file
 febio_spec.Output.logfile.ATTR.file=febioLogFileName;
 febio_spec.Output.logfile.node_data{1}.ATTR.file=febioLogFileName_disp;
 febio_spec.Output.logfile.node_data{1}.ATTR.data='ux;uy;uz';
 febio_spec.Output.logfile.node_data{1}.ATTR.delim=',';
-febio_spec.Output.logfile.node_data{1}.VAL=1:size(V,1);
 
 %% Quick viewing of the FEBio input file structure
 % The |febView| function can be used to view the xml structure in a MATLAB
@@ -495,17 +517,13 @@ febioStruct2xml(febio_spec,febioFebFileName); %Exporting to file and domNode
 febioAnalysis.run_filename=febioFebFileName; %The input file name
 febioAnalysis.run_logname=febioLogFileName; %The name for the log file
 febioAnalysis.disp_on=1; %Display information on the command window
-febioAnalysis.disp_log_on=1; %Display convergence information in the command window
-febioAnalysis.runMode='internal';%'internal';
-febioAnalysis.t_check=0.25; %Time for checking log file (dont set too small)
-febioAnalysis.maxtpi=1e99; %Max analysis time
-febioAnalysis.maxLogCheckTime=10; %Max log file checking time
+febioAnalysis.runMode='external';%'internal';
 
 [runFlag]=runMonitorFEBio(febioAnalysis);%START FEBio NOW!!!!!!!!
 
 %% Import FEBio results 
 
-if 1%runFlag==1 %i.e. a succesful run
+if runFlag==1 %i.e. a succesful run
     
     %% 
     % Importing nodal displacements from a log file
@@ -566,7 +584,7 @@ end
 %% 
 % _*GIBBON footer text*_ 
 % 
-% License: <https://github.com/gibbonCode/GIBBON/blob/master/LICENSE>
+% License: <https://github.com/gibbonCode/GIBBON/blob/primary/LICENSE>
 % 
 % GIBBON: The Geometry and Image-based Bioengineering add-On. A toolbox for
 % image segmentation, image-based modeling, meshing, and finite element

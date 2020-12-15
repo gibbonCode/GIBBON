@@ -10,10 +10,20 @@
 % the code "vorpalite" is used. An additional option structure may be
 % provided where users can set particular parameters for Geogram. 
 %
-% optionStruct.nb_pts -> Number of resample nodes
-% optionStruct.anisotropy -> "Degree of anisotropy" (lower e.g. 0 means
-% more equilateral triangles, higher means more sharper triangles are used
-% to help capture the shape). 
+% Below the options and defaults are provided: 
+% optionStruct.nb_pts=size(V,1); %number of points
+% optionStruct.anisotropy=0; %Use anisotropy (~=0) to capture geometry or favour isotropic triangles (=0)
+% optionStruct.pre.max_hole_area=100; %Max hole area for pre-processing step
+% optionStruct.pre.max_hole_edges=0; %Max number of hole edges for pre-processing step
+% optionStruct.post.max_hole_area=100; %Max hole area for post-processing step
+% optionStruct.post.max_hole_edges=0; %Max number of hole edges for post-processing step
+% optionStruct.disp_on=1; %Turn on/off displaying of Geogram text
+%
+% Instead of nb_pts users can also specify a pointSpacing to be used
+% instead of nb_pts. This is not a Geogram feature but a GIBBON option
+% which is translated to the number of points for Geogram remeshing. This
+% is and example for a desired point spacing of 4:  
+% optionStruct.pointSpacing=4
 %
 % Geogram website:
 % http://alice.loria.fr/index.php/software/4-library/75-geogram.html 
@@ -76,7 +86,6 @@ gdrawnow;
 
 %% Example 2: Remeshing a triangulated surface with desired number of points
 
-
 %% 
 % Get example geometry
 [F,V]=graphicsModels(1); % Get surface
@@ -130,6 +139,92 @@ camlight headlight;
 
 subplot(1,2,2); hold on;
 title('Geogram remeshed');
+gpatch(Fn,Vn,'gw','k',1,1);
+axisGeom;
+camlight headlight; 
+
+gdrawnow;
+
+%% Example 4: Setting pre- and prost-processing settings e.g. to close holes
+
+%% 
+% Get example geometry
+
+inputStruct.cylRadius=1;
+inputStruct.numRadial=15;
+inputStruct.cylHeight=3;
+inputStruct.numHeight=11;
+inputStruct.meshType='tri';
+
+% Derive patch data for a cylinder
+[F,V]=patchcylinder(inputStruct); 
+
+%% 
+% Remesh using ggremesh
+optionStruct3.nb_pts=size(V,1); %Set desired number of points
+optionStruct3.disp_on=1; % Turn off command window text display
+optionStruct3.pre.max_hole_area=10; %Max hole area for pre-processing step
+optionStruct3.pre.max_hole_edges=20; %Max number of hole edges for pre-processing step
+% optionStruct3.post.max_hole_area=10; %Max hole area for post-processing step
+% optionStruct3.post.max_hole_edges=20; %Max number of hole edges for post-processing step
+
+% runString=[runString,' pre:max_hole_area=100 pre:max_hole_edges=0 post:max_hole_area=100 post:max_hole_edges=0'];
+[Fn,Vn]=ggremesh(F,V,optionStruct3);
+
+% Visualiza patch data
+Eb=patchBoundary(F,V);
+cFigure; 
+subplot(1,2,1); hold on;
+title('Input mesh with holes');
+gpatch(F,V,'w','k');
+gpatch(Eb,V,'none','b',1,2);
+axisGeom;
+camlight headlight; 
+
+subplot(1,2,2); hold on;
+title('Geogram remeshed and closed');
+gpatch(Fn,Vn,'gw','k',1,1);
+axisGeom;
+camlight headlight; 
+
+gdrawnow;
+
+%% Example 5: Setting pre- and prost-processing settings e.g. to avoid closure of holes
+
+%% 
+% Get example geometry
+
+inputStruct.cylRadius=1;
+inputStruct.numRadial=15;
+inputStruct.cylHeight=3;
+inputStruct.numHeight=11;
+inputStruct.meshType='tri';
+
+% Derive patch data for a cylinder
+[F,V]=patchcylinder(inputStruct); 
+
+%% 
+% Remesh using ggremesh
+optionStruct3.nb_pts=size(V,1); %Set desired number of points
+optionStruct3.disp_on=1; % Turn off command window text display
+optionStruct3.pre.max_hole_area=100; %Max hole area for pre-processing step
+optionStruct3.pre.max_hole_edges=0; %Max number of hole edges for pre-processing step
+
+% runString=[runString,' pre:max_hole_area=100 pre:max_hole_edges=0 post:max_hole_area=100 post:max_hole_edges=0'];
+[Fn,Vn]=ggremesh(F,V,optionStruct3);
+
+% Visualiza patch data
+Eb=patchBoundary(F,V);
+cFigure; 
+subplot(1,2,1); hold on;
+title('Input mesh with holes');
+gpatch(F,V,'w','k');
+gpatch(Eb,V,'none','b',1,2);
+axisGeom;
+camlight headlight; 
+
+subplot(1,2,2); hold on;
+title('Geogram remeshed with holes');
 gpatch(Fn,Vn,'gw','k',1,1);
 axisGeom;
 camlight headlight; 

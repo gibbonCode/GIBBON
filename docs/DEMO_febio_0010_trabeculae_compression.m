@@ -166,6 +166,7 @@ drawnow;
 %% Remesh using geomgram
 
 optionStruct.pointSpacing=pointSpacing;
+% optionStruct.max_dist=0;
 [F,V]=ggremesh(F,V,optionStruct);
 C=zeros(size(F,1),1);
 
