@@ -292,7 +292,6 @@ febio_spec.Mesh.NodeSet{4}.node.ATTR.id=bcPrescribeList(:);
 febio_spec.MeshDomains.SolidDomain.ATTR.name=partName1;
 febio_spec.MeshDomains.SolidDomain.ATTR.mat=materialName1;
 
-
 %MeshData section
 % -> ElementData
 febio_spec.MeshData.ElementData{1}.ATTR.elem_set=partName1;

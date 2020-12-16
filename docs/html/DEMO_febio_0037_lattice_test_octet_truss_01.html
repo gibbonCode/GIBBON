@@ -6,8 +6,8 @@
    <!--
 This HTML was auto-generated from MATLAB code.
 To make changes, update the MATLAB code and republish this document.
-      --><title>DEMO_febio_0037_lattice_test_octet_truss_01</title><meta name="generator" content="MATLAB 9.6"><link rel="schema.DC" href="http://purl.org/dc/elements/1.1/"><meta name="DC.date" content="2019-06-04"><meta name="DC.source" content="DEMO_febio_0037_lattice_test_octet_truss_01.m"><style type="text/css">
-html,body,div,span,applet,object,iframe,h1,h2,h3,h4,h5,h6,p,blockquote,pre,a,abbr,acronym,address,big,cite,code,del,dfn,em,font,img,ins,kbd,q,s,samp,small,strike,strong,sub,sup,tt,var,b,u,i,center,dl,dt,dd,ol,ul,li,fieldset,form,label,legend,table,caption,tbody,tfoot,thead,tr,th,td{margin:0;padding:0;border:0;outline:0;font-size:100%;vertical-align:baseline;background:transparent}body{line-height:1}ol,ul{list-style:none}blockquote,q{quotes:none}blockquote:before,blockquote:after,q:before,q:after{content:'';content:none}:focus{outine:0}ins{text-decoration:none}del{text-decoration:line-through}table{border-collapse:collapse;border-spacing:0}
+      --><title>DEMO_febio_0037_lattice_test_octet_truss_01</title><meta name="generator" content="MATLAB 9.9"><link rel="schema.DC" href="http://purl.org/dc/elements/1.1/"><meta name="DC.date" content="2020-12-16"><meta name="DC.source" content="DEMO_febio_0037_lattice_test_octet_truss_01.m"><style type="text/css">
+html,body,div,span,applet,object,iframe,h1,h2,h3,h4,h5,h6,p,blockquote,pre,a,abbr,acronym,address,big,cite,code,del,dfn,em,font,img,ins,kbd,q,s,samp,small,strike,strong,tt,var,b,u,i,center,dl,dt,dd,ol,ul,li,fieldset,form,label,legend,table,caption,tbody,tfoot,thead,tr,th,td{margin:0;padding:0;border:0;outline:0;font-size:100%;vertical-align:baseline;background:transparent}body{line-height:1}ol,ul{list-style:none}blockquote,q{quotes:none}blockquote:before,blockquote:after,q:before,q:after{content:'';content:none}:focus{outine:0}ins{text-decoration:none}del{text-decoration:line-through}table{border-collapse:collapse;border-spacing:0}
 
 html { min-height:100%; margin-bottom:1px; }
 html body { height:100%; margin:0px; font-family:Arial, Helvetica, sans-serif; font-size:10px; color:#000; line-height:140%; background:#fff none; overflow-y:scroll; }
@@ -23,7 +23,7 @@ a:visited { color:#004aa0; text-decoration:none; }
 
 p { padding:0px; margin:0px 0px 20px; }
 img { padding:0px; margin:0px 0px 20px; border:none; }
-p img, pre img, tt img, li img, h1 img, h2 img { margin-bottom:0px; } 
+p img, pre img, tt img, li img, h1 img, h2 img { margin-bottom:0px; }
 
 ul { padding:0px; margin:0px 0px 20px 23px; list-style:square; }
 ul li { padding:0px; margin:0px 0px 7px 0px; }
@@ -52,6 +52,7 @@ span.comment { color:#228B22 }
 span.string { color:#A020F0 }
 span.untermstring { color:#B20000 }
 span.syscmd { color:#B28C00 }
+span.typesection { color:#A0522D }
 
 .footer { width:auto; padding:10px 0px; margin:25px 0px 0px; border-top:1px dotted #878787; font-size:0.8em; line-height:140%; font-style:italic; color:#878787; text-align:left; float:none; }
 .footer p { margin:0px; }
@@ -66,13 +67,14 @@ table td { padding:7px 5px; text-align:left; vertical-align:top; border:1px soli
 
 
 
-  </style></head><body><div class="content"><h1>DEMO_febio_0037_lattice_test_octet_truss_01</h1><!--introduction--><p>Below is a demonstration for:</p><div><ul><li>Building geometry for a cube with hexahedral elements</li><li>Converting the hexahedral elements to tetrahedral elements defining an octet truss pattern</li><li>Converting the tetrahedral elements to a lattice structure</li><li>Defining the boundary conditions</li><li>Coding the febio structure</li><li>Running the model</li><li>Importing and visualizing the displacement results</li></ul></div><!--/introduction--><h2>Contents</h2><div><ul><li><a href="#1">Keywords</a></li><li><a href="#3">Plot settings</a></li><li><a href="#4">Control parameters</a></li><li><a href="#5">Create hexahedral mesh geometry</a></li><li><a href="#6">Convert hexahedral elements to tetrahedral elements for a octet-truss pattern</a></li><li><a href="#8">Convert element set to a lattice structure</a></li><li><a href="#10">DEFINE BC's</a></li><li><a href="#12">Defining the FEBio input structure</a></li><li><a href="#13">Quick viewing of the FEBio input file structure</a></li><li><a href="#15">Exporting the FEBio input file</a></li><li><a href="#16">Running the FEBio analysis</a></li><li><a href="#17">Import FEBio results</a></li></ul></div><h2 id="1">Keywords</h2><div><ul><li>febio_spec version 2.5</li><li>febio, FEBio</li><li>compression, tension, compressive, tensile</li><li>displacement control, displacement boundary condition</li><li>hexahedral elements, hex8</li><li>cube, box, rectangular</li><li>Lattice structure</li><li>Octet-truss</li><li>static, solid</li><li>hyperelastic, Ogden</li><li>displacement logfile</li><li>stress logfile</li></ul></div><pre class="codeinput">clear; close <span class="string">all</span>; clc;
+  </style></head><body><div class="content"><h1>DEMO_febio_0037_lattice_test_octet_truss_01</h1><!--introduction--><p>Below is a demonstration for:</p><div><ul><li>Building the geometry for the octet truss lattive with hexahedral elements</li><li>Defining the boundary conditions</li><li>Coding the febio structure</li><li>Running the model</li><li>Importing and visualizing the displacement and stress results</li></ul></div><!--/introduction--><h2>Contents</h2><div><ul><li><a href="#1">Keywords</a></li><li><a href="#3">Plot settings</a></li><li><a href="#4">Control parameters</a></li><li><a href="#6">Create lattice</a></li><li><a href="#8">DEFINE BC's</a></li><li><a href="#9">Smoothing lattice</a></li><li><a href="#13">Defining the FEBio input structure</a></li><li><a href="#14">Quick viewing of the FEBio input file structure</a></li><li><a href="#16">Exporting the FEBio input file</a></li><li><a href="#17">Running the FEBio analysis</a></li><li><a href="#18">Import FEBio results</a></li></ul></div><h2 id="1">Keywords</h2><div><ul><li>febio_spec version 3.0</li><li>febio, FEBio</li><li>compression, tension, compressive, tensile</li><li>displacement control, displacement boundary condition</li><li>hexahedral elements, hex8</li><li>cube, box, rectangular</li><li>Lattice</li><li>static, solid</li><li>hyperelastic, Ogden</li><li>displacement logfile</li><li>stress logfile</li></ul></div><pre class="codeinput">clear; close <span class="string">all</span>; clc;
 </pre><h2 id="3">Plot settings</h2><p>Plot settings</p><pre class="codeinput">fontSize=15;
 faceAlpha1=0.8;
 faceAlpha2=1;
 edgeColor=0.25*ones(1,3);
 edgeWidth=1.5;
 markerSize=25;
+markerSize2=25;
 cMap=gjet(4);
 </pre><h2 id="4">Control parameters</h2><pre class="codeinput"><span class="comment">% Path names</span>
 defaultFolder = fileparts(fileparts(mfilename(<span class="string">'fullpath'</span>)));
@@ -89,19 +91,11 @@ febioLogFileName_stiffness=[febioFebFileNamePart,<span class="string">'_stiffnes
 
 <span class="comment">%Specifying dimensions and number of elements</span>
 sampleSize=10;
-sampleWidth=sampleSize; <span class="comment">%Width</span>
-sampleThickness=sampleSize; <span class="comment">%Thickness</span>
-sampleHeight=sampleSize; <span class="comment">%Height</span>
-
-pointSpacings=5*ones(1,3); <span class="comment">%Desired point spacing between nodes</span>
-numElementsWidth=round(sampleWidth/pointSpacings(1)); <span class="comment">%Number of elemens in dir 1</span>
-numElementsThickness=round(sampleThickness/pointSpacings(2)); <span class="comment">%Number of elemens in dir 2</span>
-numElementsHeight=round(sampleHeight/pointSpacings(3)); <span class="comment">%Number of elemens in dir 3</span>
-
-numSplitIterationsTruss=2;
+latticeType=1;
+elementType=<span class="string">'hex8'</span>; <span class="comment">%'hex8'</span>
 
 <span class="comment">%Define applied displacement</span>
-appliedStrain=0.3; <span class="comment">%Linear strain (Only used to compute applied stretch)</span>
+appliedStrain=0.2; <span class="comment">%Linear strain (Only used to compute applied stretch)</span>
 loadingOption=<span class="string">'tension'</span>; <span class="comment">% or 'tension'</span>
 <span class="keyword">switch</span> loadingOption
     <span class="keyword">case</span> <span class="string">'compression'</span>
@@ -112,55 +106,181 @@ loadingOption=<span class="string">'tension'</span>; <span class="comment">% or 
 displacementMagnitude=(stretchLoad*sampleSize)-sampleSize; <span class="comment">%The displacement magnitude</span>
 
 <span class="comment">%Material parameter set</span>
-c1=1e-3; <span class="comment">%Shear-modulus-like parameter</span>
-m1=6; <span class="comment">%Material parameter setting degree of non-linearity</span>
-k_factor=500; <span class="comment">%Bulk modulus factor</span>
-k=c1*k_factor; <span class="comment">%Bulk modulus</span>
-formulationType=<span class="string">'uncoupled'</span>; <span class="comment">%coupled</span>
+E_youngs1=0.1; <span class="comment">%Material Young's modulus</span>
+nu1=0.4; <span class="comment">%Material Poisson's ratio</span>
 
 <span class="comment">% FEA control settings</span>
-numTimeSteps=10; <span class="comment">%Number of time steps desired</span>
-max_refs=25; <span class="comment">%Max reforms</span>
+numTimeSteps=20; <span class="comment">%Number of time steps desired</span>
+max_refs=50; <span class="comment">%Max reforms</span>
 max_ups=0; <span class="comment">%Set to zero to use full-Newton iterations</span>
-opt_iter=6; <span class="comment">%Optimum number of iterations</span>
+opt_iter=15; <span class="comment">%Optimum number of iterations</span>
 max_retries=5; <span class="comment">%Maximum number of retires</span>
 dtmin=(1/numTimeSteps)/100; <span class="comment">%Minimum time step size</span>
-dtmax=1/numTimeSteps; <span class="comment">%Maximum time step size</span>
-</pre><h2 id="5">Create hexahedral mesh geometry</h2><p>Create a box with hexahedral elements</p><pre class="codeinput">cubeDimensions=[sampleWidth sampleThickness sampleHeight]; <span class="comment">%Dimensions</span>
-cubeElementNumbers=[numElementsWidth numElementsThickness numElementsHeight]; <span class="comment">%Number of elements</span>
-outputStructType=2; <span class="comment">%A structure compatible with mesh view</span>
-[meshStruct]=hexMeshBox(cubeDimensions,cubeElementNumbers,outputStructType);
+dtmax=(1/numTimeSteps); <span class="comment">%Maximum time step size</span>
+min_residual=1e-20;
+symmetric_stiffness=0;
+runMode=<span class="string">'external'</span>; <span class="comment">%'internal' or 'external'</span>
+</pre><pre class="codeinput"><span class="comment">%Specifying dimensions and number of elements</span>
+r=0.5; <span class="comment">%Radii, results in a width of 1</span>
+n=3;
+nCopies=n*ones(1,3); <span class="comment">%Number of offset copies</span>
+d=2*r; <span class="comment">%Diameter</span>
+w=(n-1)*d; <span class="comment">%sampleSize</span>
+</pre><h2 id="6">Create lattice</h2><pre class="codeinput"><span class="keyword">switch</span> latticeType
+    <span class="keyword">case</span> 1 <span class="comment">%Octet truss</span>
+        [E,V,C,F,CF]=rhombicDodecahedronMesh(r,nCopies);
+        V=V./(n-1);
+        V=V*sampleSize;
 
-<span class="comment">%Access elements, nodes, and faces from the structure</span>
-E=meshStruct.elements; <span class="comment">%The elements</span>
-V=meshStruct.nodes; <span class="comment">%The nodes (vertices)</span>
-C=zeros(size(E,1),1);
-</pre><h2 id="6">Convert hexahedral elements to tetrahedral elements for a octet-truss pattern</h2><pre class="codeinput">[E,V,C]=hex2tet(E,V,C,6); <span class="comment">%Convert to tetrahedral elements</span>
-[F,~]=element2patch(E,C); <span class="comment">%Patch data for plotting</span>
-</pre><p>Visualize mesh</p><pre class="codeinput">cFigure; hold <span class="string">on</span>;
+        [indBoundary]=tesBoundary(F,V);
+        cPar.shrinkFactor=0.15; <span class="comment">%Strut sides are formed by shrinking the input mesh faces by this factor</span>
+        cPar.meshType=<span class="string">'hex'</span>; <span class="comment">%desired output mesh type</span>
+        cPar.indBoundary=indBoundary; <span class="comment">%indices of the boundary faces</span>
+        cPar.hexSplit=1;
+        cPar.latticeSide=2; <span class="comment">%1=side 1 the edge lattice, 2=side 2 the dual lattice to the edge lattice</span>
+        [Es,Vs,Cs]=element2lattice(E,V,cPar); <span class="comment">%Get lattice structure</span>
+
+        logicKeep1=~(Vs(:,1)&lt;=-1e-3);
+        logicKeep2=~(Vs(:,2)&lt;=-1e-3);
+        logicKeep3=~(Vs(:,3)&lt;=-1e-3);
+        logicKeep4=~(Vs(:,1)&gt;=sampleSize+1e-3);
+        logicKeep5=~(Vs(:,2)&gt;=sampleSize+1e-3);
+        logicKeep6=~(Vs(:,3)&gt;=sampleSize+1e-3);
+
+        logicKeepEs=sum(logicKeep1(Es),2)&gt;=4 &amp;<span class="keyword">...</span>
+            sum(logicKeep2(Es),2)&gt;=4 &amp;<span class="keyword">...</span>
+            sum(logicKeep3(Es),2)&gt;=4 &amp;<span class="keyword">...</span>
+            sum(logicKeep4(Es),2)&gt;=4 &amp;<span class="keyword">...</span>
+            sum(logicKeep5(Es),2)&gt;=4 &amp;<span class="keyword">...</span>
+            sum(logicKeep6(Es),2)&gt;=4;
+
+        Es=Es(logicKeepEs,:);
+        Cs=Cs(logicKeepEs,:);
+        [Es,Vs,indFix]=patchCleanUnused(Es,Vs);
+
+        <span class="comment">% [Es,Vs,~,~]=subHex(Es,Vs,1,1);</span>
+        <span class="comment">% Cs=repmat(Cs,8,1);</span>
+
+        <span class="comment">% Create patch Data for visualization</span>
+        [Fs,CsF]=element2patch(Es,Cs); <span class="comment">%Patch data for plotting</span>
+
+        <span class="comment">%Get new boundary set</span>
+        indB=tesBoundary(Fs,Vs);
+        Fb=Fs(indB,:);
+    <span class="keyword">case</span> 2 <span class="comment">%Rhombic dodecahedron mesh ("dual" of octet truss lattice)</span>
+        [E,V,C,F,CF]=rhombicDodecahedronMesh(r,nCopies);
+        V=V./(n-1);
+        V=V*sampleSize;
+
+        [indBoundary]=tesBoundary(F,V);
+        cPar.shrinkFactor=0.15; <span class="comment">%Strut sides are formed by shrinking the input mesh faces by this factor</span>
+        cPar.meshType=<span class="string">'hex'</span>; <span class="comment">%desired output mesh type</span>
+        cPar.indBoundary=indBoundary; <span class="comment">%indices of the boundary faces</span>
+        cPar.hexSplit=0;
+        cPar.latticeSide=1; <span class="comment">%1=side 1 the edge lattice, 2=side 2 the dual lattice to the edge lattice</span>
+        [Es,Vs,Cs]=element2lattice(E,V,cPar); <span class="comment">%Get lattice structure</span>
+
+        logicKeep1=~(Vs(:,1)&lt;=-1e-3);
+        logicKeep2=~(Vs(:,2)&lt;=-1e-3);
+        logicKeep3=~(Vs(:,3)&lt;=-1e-3);
+        logicKeep4=~(Vs(:,1)&gt;=sampleSize+1e-3);
+        logicKeep5=~(Vs(:,2)&gt;=sampleSize+1e-3);
+        logicKeep6=~(Vs(:,3)&gt;=sampleSize+1e-3);
+
+        logicKeepEs=sum(logicKeep1(Es),2)&gt;=4 &amp;<span class="keyword">...</span>
+            sum(logicKeep2(Es),2)&gt;=4 &amp;<span class="keyword">...</span>
+            sum(logicKeep3(Es),2)&gt;=4 &amp;<span class="keyword">...</span>
+            sum(logicKeep4(Es),2)&gt;=4 &amp;<span class="keyword">...</span>
+            sum(logicKeep5(Es),2)&gt;=4 &amp;<span class="keyword">...</span>
+            sum(logicKeep6(Es),2)&gt;=4;
+
+        Es=Es(logicKeepEs,:);
+        Cs=Cs(logicKeepEs,:);
+        [Es,Vs,indFix]=patchCleanUnused(Es,Vs);
+
+        <span class="comment">% [Es,Vs,~,~]=subHex(Es,Vs,1,1);</span>
+        <span class="comment">% Cs=repmat(Cs,8,1);</span>
+
+        <span class="comment">% Create patch Data for visualization</span>
+        [Fs,CsF]=element2patch(Es,Cs); <span class="comment">%Patch data for plotting</span>
+
+        <span class="comment">%Get new boundary set</span>
+        indB=tesBoundary(Fs,Vs);
+        Fb=Fs(indB,:);
+<span class="keyword">end</span>
+
+<span class="keyword">if</span> strcmp(elementType,<span class="string">'hex20'</span>)
+    [Es,Vs,~,Fb]=hex8_hex20(Es,Vs,{},Fb);
+<span class="keyword">end</span>
+</pre><p>Visualizing input mesh and lattic structures</p><pre class="codeinput">cFigure;
+hs=subplot(1,2,1);
 title(<span class="string">'The input mesh'</span>,<span class="string">'fontSize'</span>,fontSize)
+hold <span class="string">on</span>;
 gpatch(F,V,0.5*ones(1,3),<span class="string">'k'</span>,0.5);
 axisGeom(gca,fontSize);
 camlight <span class="string">headlight</span>; lighting <span class="string">flat</span>;
+
+Fst=[Fs(:,[1 2 3]); Fs(:,[3 4 1]);];
+indB=tesBoundary(Fst,Vs);
+Fbt=Fst(indB,:);
+
+subplot(1,2,2);
+title(<span class="string">'Lattice side 1'</span>,<span class="string">'fontSize'</span>,fontSize)
+hold <span class="string">on</span>;
+gpatch(Fb,Vs,<span class="string">'bw'</span>,<span class="string">'none'</span>,0.5);
+<span class="comment">% plotV(Vs(Fb(:),:),'r.');</span>
+<span class="comment">% patchNormPlot(Fs,Vs);</span>
+axisGeom(gca,fontSize);
+camlight <span class="string">headlight</span>; lighting <span class="string">flat</span>;
+
 drawnow;
-</pre><img width="100%" height="auto" vspace="5" hspace="5" src="DEMO_febio_0037_lattice_test_octet_truss_01_01.jpg" alt=""> <h2 id="8">Convert element set to a lattice structure</h2><pre class="codeinput">[indBoundary]=tesBoundary(F,V); <span class="comment">%Get boundary indices</span>
-controlParameter.shrinkFactor=0.2; <span class="comment">%Strut sides are formed by shrinking the input mesh faces by this factor</span>
-controlParameter.numDigitKeep=5; <span class="comment">%used for merging nodes</span>
-controlParameter.meshType=<span class="string">'hex'</span>; <span class="comment">%desired output mesh type</span>
-controlParameter.indBoundary=indBoundary; <span class="comment">%indices of the boundary faces</span>
-controlParameter.latticeSide=1; <span class="comment">%1=side 1 the edge lattice, 2=side 2 the dual lattice to the edge lattice</span>
-[Es,Vs,Cs]=element2lattice(E,V,controlParameter); <span class="comment">%Get lattice structure</span>
+</pre><img width="100%" height="auto" vspace="5" hspace="5" src="DEMO_febio_0037_lattice_test_octet_truss_01_01.jpg" alt=""> <h2 id="8">DEFINE BC's</h2><pre class="codeinput"><span class="comment">% Define node set logics</span>
+indAll=(1:1:size(Vs,1))';
+logicBoundary=ismember(indAll,Fb);
 
-<span class="comment">%Refine mesh allong the truss</span>
-<span class="keyword">if</span> numSplitIterationsTruss&gt;0
-    [Es,Vs,Cs]=subHex(Es,Vs,numSplitIterationsTruss,3); <span class="comment">%Split each hex allong truss direction</span>
-<span class="keyword">end</span>
-[Fs,CsF]=element2patch(Es,Cs); <span class="comment">%Patch data for plotting</span>
+Z=Vs(:,3);
+logicTop=Z&gt;=(sampleSize-eps(sampleSize))&amp; logicBoundary;
+logicBottom=Z&lt;=eps(sampleSize) &amp; logicBoundary;
 
-<span class="comment">%Get new boundary set</span>
-indB=tesBoundary(Fs,Vs);
-Fb=Fs(indB,:);
-</pre><p>Visualizing input mesh and lattic structures</p><pre class="codeinput">cFigure;
+X=Vs(:,1);
+logicSide1=X&gt;=(sampleSize-eps(sampleSize))&amp; logicBoundary;
+logicSide2=X&lt;=eps(sampleSize)&amp; logicBoundary;
+
+Y=Vs(:,2);
+logicSide3=Y&gt;=(sampleSize-eps(sampleSize))&amp; logicBoundary;
+logicSide4=Y&lt;=eps(sampleSize)&amp; logicBoundary;
+
+bcPrescribeListCell{1}=find(logicSide1)';
+bcPrescribeListCell{2}=find(logicSide2)';
+bcPrescribeListCell{3}=find(logicSide3)';
+bcPrescribeListCell{4}=find(logicSide4)';
+bcPrescribeListCell{5}=find(logicTop)';
+bcPrescribeListCell{6}=find(logicBottom)';
+</pre><h2 id="9">Smoothing lattice</h2><pre class="codeinput"><span class="comment">% indKeep=unique([bcPrescribeListCell{:}]);</span>
+<span class="comment">% [Fb_clean,Vb_clean,indFix]=patchCleanUnused(Fb,Vs);</span>
+<span class="comment">%</span>
+<span class="comment">% cPar.Method='HC';</span>
+<span class="comment">% cPar.n=6;</span>
+<span class="comment">%</span>
+<span class="comment">% cPar.RigidConstraints=indFix(indKeep);</span>
+<span class="comment">% % cPar.RigidConstraints=cPar.RigidConstraints(cPar.RigidConstraints&gt;0);</span>
+<span class="comment">%</span>
+<span class="comment">% [Vb_clean]=tesSmooth(Fb_clean,Vb_clean,[],cPar);</span>
+<span class="comment">% ind=Fb(:);</span>
+<span class="comment">% ind=unique(ind(:));</span>
+<span class="comment">% Vs(ind,:)=Vb_clean;</span>
+
+<span class="comment">% cFigure; hold on;</span>
+<span class="comment">% gpatch(Fb,Vs,'bw','k',1);</span>
+<span class="comment">% % patchNormPlot(Fs,Vs);</span>
+<span class="comment">% % plotV(Vs(indKeep,:),'k.','MarkerSize',25)</span>
+<span class="comment">% axisGeom(gca,fontSize);</span>
+<span class="comment">% camlight headlight; lighting flat;</span>
+<span class="comment">% drawnow;</span>
+</pre><pre class="codeinput"><span class="comment">%Prescribed displacement nodes</span>
+bcPrescribeList=find(logicTop);
+bcSupportList=find(logicBottom);
+</pre><p>Visualizing input mesh and lattice structures</p><pre class="codeinput">cFigure;
 hs=subplot(1,2,1);
 title(<span class="string">'The input mesh'</span>,<span class="string">'fontSize'</span>,fontSize)
 hold <span class="string">on</span>;
@@ -171,124 +291,98 @@ camlight <span class="string">headlight</span>; lighting <span class="string">fl
 subplot(1,2,2);
 title(<span class="string">'Lattice side 1'</span>,<span class="string">'fontSize'</span>,fontSize)
 hold <span class="string">on</span>;
-gpatch(Fb,Vs,<span class="string">'bw'</span>,<span class="string">'k'</span>,1);
+gpatch(Fb,Vs,<span class="string">'bw'</span>);
 <span class="comment">% patchNormPlot(Fs,Vs);</span>
 axisGeom(gca,fontSize);
 camlight <span class="string">headlight</span>; lighting <span class="string">flat</span>;
 
 drawnow;
-</pre><img width="100%" height="auto" vspace="5" hspace="5" src="DEMO_febio_0037_lattice_test_octet_truss_01_02.jpg" alt=""> <h2 id="10">DEFINE BC's</h2><pre class="codeinput"><span class="comment">%Find top and bottom nodes</span>
-Z=Vs(:,3);
-logicTop=Z&gt;=(max(Z)-eps(sampleSize));
-logicBottom=Z&lt;=(min(Z)+eps(sampleSize));
-
-X=Vs(:,1);
-logicSide1=X&gt;=(max(X)-eps(sampleSize));
-logicSide2=X&lt;=(min(X)+eps(sampleSize));
-
-Y=Vs(:,2);
-logicSide3=Y&gt;=(max(Y)-eps(sampleSize));
-logicSide4=Y&lt;=(min(Y)+eps(sampleSize));
-
-logicSides=logicTop | logicBottom | logicSide1 | logicSide2 | logicSide3 | logicSide4;
-
-<span class="comment">%Supported nodes</span>
-bcRigidList=find(logicBottom);
-
-<span class="comment">%Prescribed force nodes</span>
-bcPrescribeList=find(logicTop);
-bcPrescribeMagnitudes=displacementMagnitude(ones(1,numel(bcPrescribeList)),:);
-</pre><p>Visualize BC's</p><pre class="codeinput">cFigure; hold <span class="string">on</span>;
-title(<span class="string">'Boundary conditions'</span>,<span class="string">'FontSize'</span>,fontSize);
-gpatch(Fb,Vs,0.5*ones(1,3),<span class="string">'none'</span>,0.4);
-hl(1)=plotV(Vs(bcRigidList,:),<span class="string">'k.'</span>,<span class="string">'MarkerSize'</span>,markerSize);
-hl(2)=plotV(Vs(bcPrescribeList,:),<span class="string">'r.'</span>,<span class="string">'MarkerSize'</span>,markerSize);
-legend(hl,{<span class="string">'BC full support'</span>,<span class="string">'BC prescribed Z displacement'</span>})
-axisGeom;
+</pre><img width="100%" height="auto" vspace="5" hspace="5" src="DEMO_febio_0037_lattice_test_octet_truss_01_02.jpg" alt=""> <p>Visualize BC's</p><pre class="codeinput">hf=cFigure; hold <span class="string">on</span>;
+title(<span class="string">'Boundary conditions model'</span>,<span class="string">'FontSize'</span>,fontSize);
+gpatch(Fb,Vs,<span class="string">'w'</span>,<span class="string">'none'</span>,0.5);
+hl2(1)=plotV(Vs(bcPrescribeList,:),<span class="string">'r.'</span>,<span class="string">'MarkerSize'</span>,markerSize2);
+hl2(2)=plotV(Vs(bcSupportList,:),<span class="string">'b.'</span>,<span class="string">'MarkerSize'</span>,markerSize2);
+legend(hl2,{<span class="string">'BC prescribe'</span>,<span class="string">'BC support'</span>});
+axisGeom(gca,fontSize);
 camlight <span class="string">headlight</span>;
-set(gca,<span class="string">'FontSize'</span>,fontSize);
 drawnow;
-</pre><img width="100%" height="auto" vspace="5" hspace="5" src="DEMO_febio_0037_lattice_test_octet_truss_01_03.jpg" alt=""> <h2 id="12">Defining the FEBio input structure</h2><p>See also <tt>febioStructTemplate</tt> and <tt>febioStruct2xml</tt> and the FEBio user manual.</p><pre class="codeinput"><span class="comment">%Get a template with default settings</span>
+</pre><img width="100%" height="auto" vspace="5" hspace="5" src="DEMO_febio_0037_lattice_test_octet_truss_01_03.jpg" alt=""> <h2 id="13">Defining the FEBio input structure</h2><p>See also <tt>febioStructTemplate</tt> and <tt>febioStruct2xml</tt> and the FEBio user manual.</p><pre class="codeinput"><span class="comment">%Get a template with default settings</span>
 [febio_spec]=febioStructTemplate;
 
 <span class="comment">%febio_spec version</span>
-febio_spec.ATTR.version=<span class="string">'2.5'</span>;
+febio_spec.ATTR.version=<span class="string">'3.0'</span>;
 
 <span class="comment">%Module section</span>
 febio_spec.Module.ATTR.type=<span class="string">'solid'</span>;
 
 <span class="comment">%Control section</span>
-febio_spec.Control.analysis.ATTR.type=<span class="string">'static'</span>;
-febio_spec.Control.title=<span class="string">'Lattice analysis'</span>;
+febio_spec.Control.analysis=<span class="string">'STATIC'</span>;
 febio_spec.Control.time_steps=numTimeSteps;
 febio_spec.Control.step_size=1/numTimeSteps;
+febio_spec.Control.solver.max_refs=max_refs;
+febio_spec.Control.solver.max_ups=max_ups;
 febio_spec.Control.time_stepper.dtmin=dtmin;
 febio_spec.Control.time_stepper.dtmax=dtmax;
 febio_spec.Control.time_stepper.max_retries=max_retries;
 febio_spec.Control.time_stepper.opt_iter=opt_iter;
-febio_spec.Control.max_refs=max_refs;
-febio_spec.Control.max_ups=max_ups;
 
 <span class="comment">%Material section</span>
-<span class="keyword">switch</span> formulationType
-    <span class="keyword">case</span> <span class="string">'coupled'</span>
-        febio_spec.Material.material{1}.ATTR.type=<span class="string">'Ogden unconstrained'</span>;
-        febio_spec.Material.material{1}.ATTR.id=1;
-        febio_spec.Material.material{1}.c1=c1;
-        febio_spec.Material.material{1}.m1=m1;
-        febio_spec.Material.material{1}.c2=c1;
-        febio_spec.Material.material{1}.m2=-m1;
-        febio_spec.Material.material{1}.cp=k;
-    <span class="keyword">case</span> <span class="string">'uncoupled'</span>
-        febio_spec.Material.material{1}.ATTR.type=<span class="string">'Ogden'</span>;
-        febio_spec.Material.material{1}.ATTR.id=1;
-        febio_spec.Material.material{1}.c1=c1;
-        febio_spec.Material.material{1}.m1=m1;
-        febio_spec.Material.material{1}.c2=c1;
-        febio_spec.Material.material{1}.m2=-m1;
-        febio_spec.Material.material{1}.k=k;
-<span class="keyword">end</span>
+materialName1=<span class="string">'Material1'</span>;
+febio_spec.Material.material{1}.ATTR.name=materialName1;
+febio_spec.Material.material{1}.ATTR.type=<span class="string">'neo-Hookean'</span>;
+febio_spec.Material.material{1}.ATTR.id=1;
+febio_spec.Material.material{1}.E=E_youngs1;
+febio_spec.Material.material{1}.v=nu1;
 
-<span class="comment">%Geometry section</span>
+<span class="comment">%Mesh section</span>
 <span class="comment">% -&gt; Nodes</span>
-febio_spec.Geometry.Nodes{1}.ATTR.name=<span class="string">'nodeSet_all'</span>; <span class="comment">%The node set name</span>
-febio_spec.Geometry.Nodes{1}.node.ATTR.id=(1:size(Vs,1))'; <span class="comment">%The node id's</span>
-febio_spec.Geometry.Nodes{1}.node.VAL=Vs; <span class="comment">%The nodel coordinates</span>
+febio_spec.Mesh.Nodes{1}.ATTR.name=<span class="string">'nodeSet_all'</span>; <span class="comment">%The node set name</span>
+febio_spec.Mesh.Nodes{1}.node.ATTR.id=(1:size(Vs,1))'; <span class="comment">%The node id's</span>
+febio_spec.Mesh.Nodes{1}.node.VAL=Vs; <span class="comment">%The nodel coordinates</span>
 
 <span class="comment">% -&gt; Elements</span>
-febio_spec.Geometry.Elements{1}.ATTR.type=<span class="string">'hex8'</span>; <span class="comment">%Element type of this set</span>
-febio_spec.Geometry.Elements{1}.ATTR.mat=1; <span class="comment">%material index for this set</span>
-febio_spec.Geometry.Elements{1}.ATTR.name=<span class="string">'Cube'</span>; <span class="comment">%Name of the element set</span>
-febio_spec.Geometry.Elements{1}.elem.ATTR.id=(1:1:size(Es,1))'; <span class="comment">%Element id's</span>
-febio_spec.Geometry.Elements{1}.elem.VAL=Es;
+partName1=<span class="string">'Part1'</span>;
+febio_spec.Mesh.Elements{1}.ATTR.name=partName1; <span class="comment">%Name of this part</span>
+febio_spec.Mesh.Elements{1}.ATTR.type=elementType; <span class="comment">%Element type</span>
+febio_spec.Mesh.Elements{1}.elem.ATTR.id=(1:1:size(Es,1))'; <span class="comment">%Element id's</span>
+febio_spec.Mesh.Elements{1}.elem.VAL=Es; <span class="comment">%The element matrix</span>
 
 <span class="comment">% -&gt; NodeSets</span>
-febio_spec.Geometry.NodeSet{1}.ATTR.name=<span class="string">'bcRigidList'</span>;
-febio_spec.Geometry.NodeSet{1}.node.ATTR.id=bcRigidList(:);
+nodeSetName1=<span class="string">'bcSupportList'</span>;
+febio_spec.Mesh.NodeSet{1}.ATTR.name=nodeSetName1;
+febio_spec.Mesh.NodeSet{1}.node.ATTR.id=bcSupportList(:);
 
-febio_spec.Geometry.NodeSet{2}.ATTR.name=<span class="string">'bcPrescribeList'</span>;
-febio_spec.Geometry.NodeSet{2}.node.ATTR.id=bcPrescribeList(:);
+nodeSetName2=<span class="string">'bcPrescribeList'</span>;
+febio_spec.Mesh.NodeSet{2}.ATTR.name=nodeSetName2;
+febio_spec.Mesh.NodeSet{2}.node.ATTR.id=bcPrescribeList(:);
+
+<span class="comment">%MeshDomains section</span>
+febio_spec.MeshDomains.SolidDomain.ATTR.name=partName1;
+febio_spec.MeshDomains.SolidDomain.ATTR.mat=materialName1;
 
 <span class="comment">%Boundary condition section</span>
 <span class="comment">% -&gt; Fix boundary conditions</span>
-febio_spec.Boundary.fix{1}.ATTR.bc=<span class="string">'x'</span>;
-febio_spec.Boundary.fix{1}.ATTR.node_set=febio_spec.Geometry.NodeSet{1}.ATTR.name;
-febio_spec.Boundary.fix{2}.ATTR.bc=<span class="string">'y'</span>;
-febio_spec.Boundary.fix{2}.ATTR.node_set=febio_spec.Geometry.NodeSet{1}.ATTR.name;
-febio_spec.Boundary.fix{3}.ATTR.bc=<span class="string">'z'</span>;
-febio_spec.Boundary.fix{3}.ATTR.node_set=febio_spec.Geometry.NodeSet{1}.ATTR.name;
-febio_spec.Boundary.fix{4}.ATTR.bc=<span class="string">'x'</span>;
-febio_spec.Boundary.fix{4}.ATTR.node_set=febio_spec.Geometry.NodeSet{2}.ATTR.name;
-febio_spec.Boundary.fix{5}.ATTR.bc=<span class="string">'y'</span>;
-febio_spec.Boundary.fix{5}.ATTR.node_set=febio_spec.Geometry.NodeSet{2}.ATTR.name;
+febio_spec.Boundary.bc{1}.ATTR.type=<span class="string">'fix'</span>;
+febio_spec.Boundary.bc{1}.ATTR.node_set=nodeSetName1;
+febio_spec.Boundary.bc{1}.dofs=<span class="string">'x,y,z'</span>;
 
-<span class="comment">% -&gt; Prescribe boundary conditions</span>
-febio_spec.Boundary.prescribe{1}.ATTR.bc=<span class="string">'z'</span>;
-febio_spec.Boundary.prescribe{1}.ATTR.node_set=febio_spec.Geometry.NodeSet{2}.ATTR.name;
-febio_spec.Boundary.prescribe{1}.scale.ATTR.lc=1;
-febio_spec.Boundary.prescribe{1}.scale.VAL=1;
-febio_spec.Boundary.prescribe{1}.relative=1;
-febio_spec.Boundary.prescribe{1}.value=displacementMagnitude;
+febio_spec.Boundary.bc{2}.ATTR.type=<span class="string">'fix'</span>;
+febio_spec.Boundary.bc{2}.ATTR.node_set=nodeSetName2;
+febio_spec.Boundary.bc{2}.dofs=<span class="string">'x,y'</span>;
+
+febio_spec.Boundary.bc{3}.ATTR.type=<span class="string">'prescribe'</span>;
+febio_spec.Boundary.bc{3}.ATTR.node_set=nodeSetName2;
+febio_spec.Boundary.bc{3}.dof=<span class="string">'z'</span>;
+febio_spec.Boundary.bc{3}.scale.ATTR.lc=1;
+febio_spec.Boundary.bc{3}.scale.VAL=displacementMagnitude;
+febio_spec.Boundary.bc{3}.relative=0;
+
+<span class="comment">%LoadData section</span>
+<span class="comment">% -&gt; load_controller</span>
+febio_spec.LoadData.load_controller{1}.ATTR.id=1;
+febio_spec.LoadData.load_controller{1}.ATTR.type=<span class="string">'loadcurve'</span>;
+febio_spec.LoadData.load_controller{1}.interpolate=<span class="string">'LINEAR'</span>;
+febio_spec.LoadData.load_controller{1}.points.point.VAL=[0 0; 1 1];
 
 <span class="comment">%Output section</span>
 <span class="comment">% -&gt; log file</span>
@@ -296,47 +390,104 @@ febio_spec.Output.logfile.ATTR.file=febioLogFileName;
 febio_spec.Output.logfile.node_data{1}.ATTR.file=febioLogFileName_disp;
 febio_spec.Output.logfile.node_data{1}.ATTR.data=<span class="string">'ux;uy;uz'</span>;
 febio_spec.Output.logfile.node_data{1}.ATTR.delim=<span class="string">','</span>;
-febio_spec.Output.logfile.node_data{1}.VAL=1:size(Vs,1);
 
 febio_spec.Output.logfile.node_data{2}.ATTR.file=febioLogFileName_force;
 febio_spec.Output.logfile.node_data{2}.ATTR.data=<span class="string">'Rx;Ry;Rz'</span>;
 febio_spec.Output.logfile.node_data{2}.ATTR.delim=<span class="string">','</span>;
-febio_spec.Output.logfile.node_data{2}.VAL=1:size(Vs,1);
 
-febio_spec.Output.logfile.element_data{1}.ATTR.file=febioLogFileName_stress;
-febio_spec.Output.logfile.element_data{1}.ATTR.data=<span class="string">'sz'</span>;
-febio_spec.Output.logfile.element_data{1}.ATTR.delim=<span class="string">','</span>;
-febio_spec.Output.logfile.element_data{1}.VAL=1:size(Es,1);
-</pre><h2 id="13">Quick viewing of the FEBio input file structure</h2><p>The <tt>febView</tt> function can be used to view the xml structure in a MATLAB figure window.</p><p><tt>febView(febio_spec); %Viewing the febio file</tt></p><h2 id="15">Exporting the FEBio input file</h2><p>Exporting the febio_spec structure to an FEBio input file is done using the <tt>febioStruct2xml</tt> function.</p><pre class="codeinput">febioStruct2xml(febio_spec,febioFebFileName); <span class="comment">%Exporting to file and domNode</span>
-</pre><h2 id="16">Running the FEBio analysis</h2><p>To run the analysis defined by the created FEBio input file the <tt>runMonitorFEBio</tt> function is used. The input for this function is a structure defining job settings e.g. the FEBio input file name. The optional output runFlag informs the user if the analysis was run succesfully.</p><pre class="codeinput">febioAnalysis.run_filename=febioFebFileName; <span class="comment">%The input file name</span>
+<span class="comment">% febio_spec.Output.logfile.element_data{1}.ATTR.file=febioLogFileName_stress;</span>
+<span class="comment">% febio_spec.Output.logfile.element_data{1}.ATTR.data='sz';</span>
+<span class="comment">% febio_spec.Output.logfile.element_data{1}.ATTR.delim=',';</span>
+<span class="comment">% febio_spec.Output.logfile.element_data{1}.VAL=1:size(Es,1);</span>
+</pre><h2 id="14">Quick viewing of the FEBio input file structure</h2><p>The <tt>febView</tt> function can be used to view the xml structure in a MATLAB figure window.</p><p><tt>febView(febio_spec); %Viewing the febio file</tt></p><h2 id="16">Exporting the FEBio input file</h2><p>Exporting the febio_spec structure to an FEBio input file is done using the <tt>febioStruct2xml</tt> function.</p><pre class="codeinput">febioStruct2xml(febio_spec,febioFebFileName); <span class="comment">%Exporting to file and domNode</span>
+</pre><img width="100%" height="auto" vspace="5" hspace="5" src="DEMO_febio_0037_lattice_test_octet_truss_01_04.jpg" alt=""> <h2 id="17">Running the FEBio analysis</h2><p>To run the analysis defined by the created FEBio input file the <tt>runMonitorFEBio</tt> function is used. The input for this function is a structure defining job settings e.g. the FEBio input file name. The optional output runFlag informs the user if the analysis was run succesfully.</p><pre class="codeinput">febioAnalysis.run_filename=febioFebFileName; <span class="comment">%The input file name</span>
 febioAnalysis.run_logname=febioLogFileName; <span class="comment">%The name for the log file</span>
 febioAnalysis.disp_on=1; <span class="comment">%Display information on the command window</span>
-febioAnalysis.disp_log_on=1; <span class="comment">%Display convergence information in the command window</span>
-febioAnalysis.runMode=<span class="string">'external'</span>;<span class="comment">%'internal';</span>
-febioAnalysis.t_check=0.25; <span class="comment">%Time for checking log file (dont set too small)</span>
-febioAnalysis.maxtpi=1e99; <span class="comment">%Max analysis time</span>
-febioAnalysis.maxLogCheckTime=3; <span class="comment">%Max log file checking time</span>
+febioAnalysis.runMode=runMode; <span class="comment">%Run in external or in matlab terminal</span>
 
 [runFlag]=runMonitorFEBio(febioAnalysis);<span class="comment">%START FEBio NOW!!!!!!!!</span>
 </pre><pre class="codeoutput"> 
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
---- STARTING FEBIO JOB --- 04-Jun-2019 13:11:34
-Waiting for log file...
-Proceeding to check log file...04-Jun-2019 13:11:35
-------- converged at time : 0.1
-------- converged at time : 0.2
-------- converged at time : 0.3
-------- converged at time : 0.4
-------- converged at time : 0.5
-------- converged at time : 0.6
-------- converged at time : 0.7
-------- converged at time : 0.8
-------- converged at time : 0.9
-------- converged at time : 1
---- Done --- 04-Jun-2019 13:11:39
-</pre><img width="100%" height="auto" vspace="5" hspace="5" src="DEMO_febio_0037_lattice_test_octet_truss_01_04.jpg" alt=""> <img width="100%" height="auto" vspace="5" hspace="5" src="DEMO_febio_0037_lattice_test_octet_truss_01_05.jpg" alt=""> <img width="100%" height="auto" vspace="5" hspace="5" src="DEMO_febio_0037_lattice_test_octet_truss_01_06.jpg" alt=""> <h2 id="17">Import FEBio results</h2><pre class="codeinput"><span class="keyword">if</span> runFlag==1 <span class="comment">%i.e. a succesful run</span>
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+--------&gt;    RUNNING/MONITORING FEBIO JOB    &lt;-------- 16-Dec-2020 14:15:02
+FEBio path: /home/kevin/FEBioStudio/bin/febio3
+# Attempt removal of existing log files                16-Dec-2020 14:15:02
+ * Removal succesful                                   16-Dec-2020 14:15:02
+# Attempt removal of existing .xplt files              16-Dec-2020 14:15:02
+ * Removal succesful                                   16-Dec-2020 14:15:02
+# Starting FEBio...                                    16-Dec-2020 14:15:02
+  Max. total analysis time is: Inf s
+ * Waiting for log file creation                       16-Dec-2020 14:15:03
+   Max. wait time: 30 s
+ * Log file found.                                     16-Dec-2020 14:15:03
+# Parsing log file...                                  16-Dec-2020 14:15:03
+    number of iterations   : 3                         16-Dec-2020 14:15:03
+    number of reformations : 3                         16-Dec-2020 14:15:03
+------- converged at time : 0.05                       16-Dec-2020 14:15:03
+    number of iterations   : 3                         16-Dec-2020 14:15:03
+    number of reformations : 3                         16-Dec-2020 14:15:03
+------- converged at time : 0.1                        16-Dec-2020 14:15:03
+    number of iterations   : 3                         16-Dec-2020 14:15:04
+    number of reformations : 3                         16-Dec-2020 14:15:04
+------- converged at time : 0.15                       16-Dec-2020 14:15:04
+    number of iterations   : 3                         16-Dec-2020 14:15:04
+    number of reformations : 3                         16-Dec-2020 14:15:04
+------- converged at time : 0.2                        16-Dec-2020 14:15:04
+    number of iterations   : 3                         16-Dec-2020 14:15:04
+    number of reformations : 3                         16-Dec-2020 14:15:04
+------- converged at time : 0.25                       16-Dec-2020 14:15:04
+    number of iterations   : 3                         16-Dec-2020 14:15:04
+    number of reformations : 3                         16-Dec-2020 14:15:04
+------- converged at time : 0.3                        16-Dec-2020 14:15:04
+    number of iterations   : 3                         16-Dec-2020 14:15:04
+    number of reformations : 3                         16-Dec-2020 14:15:04
+------- converged at time : 0.35                       16-Dec-2020 14:15:04
+    number of iterations   : 3                         16-Dec-2020 14:15:04
+    number of reformations : 3                         16-Dec-2020 14:15:04
+------- converged at time : 0.4                        16-Dec-2020 14:15:04
+    number of iterations   : 3                         16-Dec-2020 14:15:05
+    number of reformations : 3                         16-Dec-2020 14:15:05
+------- converged at time : 0.45                       16-Dec-2020 14:15:05
+    number of iterations   : 3                         16-Dec-2020 14:15:05
+    number of reformations : 3                         16-Dec-2020 14:15:05
+------- converged at time : 0.5                        16-Dec-2020 14:15:05
+    number of iterations   : 3                         16-Dec-2020 14:15:05
+    number of reformations : 3                         16-Dec-2020 14:15:05
+------- converged at time : 0.55                       16-Dec-2020 14:15:05
+    number of iterations   : 3                         16-Dec-2020 14:15:05
+    number of reformations : 3                         16-Dec-2020 14:15:05
+------- converged at time : 0.6                        16-Dec-2020 14:15:05
+    number of iterations   : 3                         16-Dec-2020 14:15:05
+    number of reformations : 3                         16-Dec-2020 14:15:05
+------- converged at time : 0.65                       16-Dec-2020 14:15:05
+    number of iterations   : 3                         16-Dec-2020 14:15:06
+    number of reformations : 3                         16-Dec-2020 14:15:06
+------- converged at time : 0.7                        16-Dec-2020 14:15:06
+    number of iterations   : 3                         16-Dec-2020 14:15:06
+    number of reformations : 3                         16-Dec-2020 14:15:06
+------- converged at time : 0.75                       16-Dec-2020 14:15:06
+    number of iterations   : 3                         16-Dec-2020 14:15:06
+    number of reformations : 3                         16-Dec-2020 14:15:06
+------- converged at time : 0.8                        16-Dec-2020 14:15:06
+    number of iterations   : 3                         16-Dec-2020 14:15:06
+    number of reformations : 3                         16-Dec-2020 14:15:06
+------- converged at time : 0.85                       16-Dec-2020 14:15:06
+    number of iterations   : 3                         16-Dec-2020 14:15:06
+    number of reformations : 3                         16-Dec-2020 14:15:06
+------- converged at time : 0.9                        16-Dec-2020 14:15:06
+    number of iterations   : 3                         16-Dec-2020 14:15:07
+    number of reformations : 3                         16-Dec-2020 14:15:07
+------- converged at time : 0.95                       16-Dec-2020 14:15:07
+    number of iterations   : 3                         16-Dec-2020 14:15:07
+    number of reformations : 3                         16-Dec-2020 14:15:07
+------- converged at time : 1                          16-Dec-2020 14:15:07
+ Elapsed time : 0:00:03                                16-Dec-2020 14:15:07
+ N O R M A L   T E R M I N A T I O N
+# Done                                                 16-Dec-2020 14:15:07
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+</pre><img width="100%" height="auto" vspace="5" hspace="5" src="DEMO_febio_0037_lattice_test_octet_truss_01_05.jpg" alt=""> <h2 id="18">Import FEBio results</h2><pre class="codeinput"><span class="keyword">if</span> runFlag==1 <span class="comment">%i.e. a succesful run</span>
 </pre><pre class="codeinput">    <span class="comment">% Importing nodal displacements from a log file</span>
-    [~, N_disp_mat,~]=importFEBio_logfile(fullfile(savePath,febioLogFileName_disp)); <span class="comment">%Nodal displacements</span>
+    [time_mat, N_disp_mat,~]=importFEBio_logfile(fullfile(savePath,febioLogFileName_disp)); <span class="comment">%Nodal displacements</span>
+    time_mat=[0; time_mat(:)]; <span class="comment">%Time</span>
 
     N_disp_mat=N_disp_mat(:,2:end,:);
     sizImport=size(N_disp_mat);
@@ -347,25 +498,45 @@ Proceeding to check log file...04-Jun-2019 13:11:35
     DN=N_disp_mat(:,:,end);
     DN_magnitude=sqrt(sum(DN(:,3).^2,2));
     Vs_def=Vs+DN;
-    [CF]=vertexToFaceMeasure(Fb,DN_magnitude);
 
-    <span class="comment">% Importing element stress from a log file</span>
-    [time_mat, E_stress_mat,~]=importFEBio_logfile(fullfile(savePath,febioLogFileName_stress)); <span class="comment">%Nodal forces</span>
-    time_mat=[0; time_mat(:)]; <span class="comment">%Time</span>
-    stress_cauchy_sim=[0; mean(squeeze(E_stress_mat(:,end,:)),1)'];
-</pre><p>Plotting the simulated results using <tt>anim8</tt> to visualize and animate deformations</p><pre class="codeinput">    <span class="comment">% Create basic view and store graphics handle to initiate animation</span>
+    <span class="comment">%     % Importing element stress from a log file</span>
+    <span class="comment">%     [time_mat, E_stress_mat,~]=importFEBio_logfile(fullfile(savePath,febioLogFileName_stress)); %Nodal forces</span>
+    <span class="comment">%     time_mat=[0; time_mat(:)]; %Time</span>
+    <span class="comment">%     stress_cauchy_sim=[0; mean(squeeze(E_stress_mat(:,end,:)),1)'];</span>
+</pre><p>Importing nodal forces from a log file</p><pre class="codeinput">    [~, N_force_mat,~]=importFEBio_logfile(fullfile(savePath,febioLogFileName_force)); <span class="comment">%Nodal forces</span>
+
+    N_force_mat=N_force_mat(:,2:end,:);
+    sizImport=size(N_force_mat);
+    sizImport(3)=sizImport(3)+1;
+    N_force_mat_n=zeros(sizImport);
+    N_force_mat_n(:,:,2:end)=N_force_mat;
+    N_force_mat=N_force_mat_n;
+
+    f_sum_z=squeeze(sum(N_force_mat(bcPrescribeList,3,:),1));
+</pre><p>Visualize force data</p><pre class="codeinput">    displacementApplied=time_mat.*displacementMagnitude;
+    lambdaApplied=(sampleSize+displacementApplied)./sampleSize;
+
+    cFigure; hold <span class="string">on</span>;
+    xlabel(<span class="string">'$\lambda$ [.]'</span>,<span class="string">'Interpreter'</span>,<span class="string">'Latex'</span>);
+    ylabel(<span class="string">'$F_z$'</span>,<span class="string">'Interpreter'</span>,<span class="string">'Latex'</span>);
+    hp=plot(lambdaApplied(:),f_sum_z(:),<span class="string">'b-'</span>,<span class="string">'LineWidth'</span>,3);
+    grid <span class="string">on</span>; box <span class="string">on</span>; axis <span class="string">square</span>; axis <span class="string">tight</span>;
+    set(gca,<span class="string">'FontSize'</span>,fontSize);
+    drawnow;
+</pre><img width="100%" height="auto" vspace="5" hspace="5" src="DEMO_febio_0037_lattice_test_octet_truss_01_06.jpg" alt=""> <p>Plotting the simulated results using <tt>anim8</tt> to visualize and animate deformations</p><pre class="codeinput">    <span class="comment">% Create basic view and store graphics handle to initiate animation</span>
     hf=cFigure; <span class="comment">%Open figure</span>
     gtitle([febioFebFileNamePart,<span class="string">': Press play to animate'</span>]);
-    hp=gpatch(Fb,Vs_def,CF,<span class="string">'k'</span>,1); <span class="comment">%Add graphics object to animate</span>
-    gpatch(Fb,Vs,0.5*ones(1,3),<span class="string">'none'</span>,0.25); <span class="comment">%A static graphics object</span>
+    hp=gpatch(Fb,Vs_def,DN_magnitude,<span class="string">'k'</span>,1); <span class="comment">%Add graphics object to animate</span>
+    <span class="comment">%     gpatch(Fb,Vs,'kw','none',0.25); %A static graphics object</span>
+    hp.FaceColor=<span class="string">'interp'</span>;
 
     axisGeom(gca,fontSize);
     colormap(gjet(250)); colorbar;
     caxis([0 max(DN_magnitude)]);
     axis([min([Vs_def(:,1);Vs(:,1)]) max([Vs_def(:,1);Vs(:,1)])<span class="keyword">...</span>
-          min([Vs_def(:,2);Vs(:,2)]) max([Vs_def(:,2);Vs(:,2)])<span class="keyword">...</span>
-          min([Vs_def(:,3);Vs(:,3)]) max([Vs_def(:,3);Vs(:,3)]) ]); <span class="comment">%Set axis limits statically</span>
-    view(130,25); <span class="comment">%Set view direction</span>
+        min([Vs_def(:,2);Vs(:,2)]) max([Vs_def(:,2);Vs(:,2)])<span class="keyword">...</span>
+        min([Vs_def(:,3);Vs(:,3)]) max([Vs_def(:,3);Vs(:,3)]) ]); <span class="comment">%Set axis limits statically</span>
+    <span class="comment">%     view(130,25); %Set view direction</span>
     camlight <span class="string">headlight</span>;
 
     <span class="comment">% Set up animation features</span>
@@ -374,40 +545,35 @@ Proceeding to check log file...04-Jun-2019 13:11:35
         DN=N_disp_mat(:,:,qt); <span class="comment">%Current displacement</span>
         DN_magnitude=sqrt(sum(DN.^2,2)); <span class="comment">%Current displacement magnitude</span>
         Vs_def=Vs+DN; <span class="comment">%Current nodal coordinates</span>
-        [CF]=vertexToFaceMeasure(Fb,DN_magnitude); <span class="comment">%Current color data to use</span>
 
         <span class="comment">%Set entries in animation structure</span>
         animStruct.Handles{qt}=[hp hp]; <span class="comment">%Handles of objects to animate</span>
         animStruct.Props{qt}={<span class="string">'Vertices'</span>,<span class="string">'CData'</span>}; <span class="comment">%Properties of objects to animate</span>
-        animStruct.Set{qt}={Vs_def,CF}; <span class="comment">%Property values for to set in order to animate</span>
+        animStruct.Set{qt}={Vs_def,DN_magnitude}; <span class="comment">%Property values for to set in order to animate</span>
     <span class="keyword">end</span>
     anim8(hf,animStruct); <span class="comment">%Initiate animation feature</span>
     drawnow;
 </pre><img width="100%" height="auto" vspace="5" hspace="5" src="DEMO_febio_0037_lattice_test_octet_truss_01_07.jpg" alt=""> <pre class="codeinput"><span class="keyword">end</span>
-</pre><p><img vspace="5" hspace="5" src="gibbVerySmall.gif" alt=""> </p><p><i><b>GIBBON</b></i> <a href="www.gibboncode.org">www.gibboncode.org</a></p><p><i>Kevin Mattheus Moerman</i>, <a href="gibbon.toolbox@gmail.com">gibbon.toolbox@gmail.com</a></p><p><i><b>GIBBON footer text</b></i></p><p>License: <a href="https://github.com/gibbonCode/GIBBON/blob/master/LICENSE">https://github.com/gibbonCode/GIBBON/blob/master/LICENSE</a></p><p>GIBBON: The Geometry and Image-based Bioengineering add-On. A toolbox for image segmentation, image-based modeling, meshing, and finite element analysis.</p><p>Copyright (C) 2019  Kevin Mattheus Moerman</p><p>This program is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.</p><p>This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for more details.</p><p>You should have received a copy of the GNU General Public License along with this program.  If not, see <a href="http://www.gnu.org/licenses/">http://www.gnu.org/licenses/</a>.</p><p class="footer"><br><a href="https://www.mathworks.com/products/matlab/">Published with MATLAB&reg; R2019a</a><br></p></div><!--
+</pre><p><img vspace="5" hspace="5" src="gibbVerySmall.gif" alt=""> </p><p><i><b>GIBBON</b></i> <a href="www.gibboncode.org">www.gibboncode.org</a></p><p><i>Kevin Mattheus Moerman</i>, <a href="gibbon.toolbox@gmail.com">gibbon.toolbox@gmail.com</a></p><p><i><b>GIBBON footer text</b></i></p><p>License: <a href="https://github.com/gibbonCode/GIBBON/blob/master/LICENSE">https://github.com/gibbonCode/GIBBON/blob/master/LICENSE</a></p><p>GIBBON: The Geometry and Image-based Bioengineering add-On. A toolbox for image segmentation, image-based modeling, meshing, and finite element analysis.</p><p>Copyright (C) 2006-2020 Kevin Mattheus Moerman</p><p>This program is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.</p><p>This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for more details.</p><p>You should have received a copy of the GNU General Public License along with this program.  If not, see <a href="http://www.gnu.org/licenses/">http://www.gnu.org/licenses/</a>.</p><p class="footer"><br><a href="https://www.mathworks.com/products/matlab/">Published with MATLAB&reg; R2020b</a><br></p></div><!--
 ##### SOURCE BEGIN #####
 %% DEMO_febio_0037_lattice_test_octet_truss_01
 % Below is a demonstration for:
-% 
-% * Building geometry for a cube with hexahedral elements
-% * Converting the hexahedral elements to tetrahedral elements defining an
-% octet truss pattern 
-% * Converting the tetrahedral elements to a lattice structure
-% * Defining the boundary conditions 
+%
+% * Building the geometry for the octet truss lattive with hexahedral elements
+% * Defining the boundary conditions
 % * Coding the febio structure
 % * Running the model
-% * Importing and visualizing the displacement results
+% * Importing and visualizing the displacement and stress results
 
 %% Keywords
 %
-% * febio_spec version 2.5
-% * febio, FEBio 
+% * febio_spec version 3.0
+% * febio, FEBio
 % * compression, tension, compressive, tensile
 % * displacement control, displacement boundary condition
 % * hexahedral elements, hex8
 % * cube, box, rectangular
-% * Lattice structure
-% * Octet-truss
+% * Lattice
 % * static, solid
 % * hyperelastic, Ogden
 % * displacement logfile
@@ -425,6 +591,7 @@ faceAlpha2=1;
 edgeColor=0.25*ones(1,3);
 edgeWidth=1.5;
 markerSize=25;
+markerSize2=25;
 cMap=gjet(4);
 
 %% Control parameters
@@ -443,20 +610,12 @@ febioLogFileName_stress=[febioFebFileNamePart,'_stress_out.txt']; %Log file name
 febioLogFileName_stiffness=[febioFebFileNamePart,'_stiffness_out.txt']; %Log file name for exporting stiffness
 
 %Specifying dimensions and number of elements
-sampleSize=10; 
-sampleWidth=sampleSize; %Width 
-sampleThickness=sampleSize; %Thickness 
-sampleHeight=sampleSize; %Height
+sampleSize=10;
+latticeType=1;
+elementType='hex8'; %'hex8'
 
-pointSpacings=5*ones(1,3); %Desired point spacing between nodes
-numElementsWidth=round(sampleWidth/pointSpacings(1)); %Number of elemens in dir 1
-numElementsThickness=round(sampleThickness/pointSpacings(2)); %Number of elemens in dir 2
-numElementsHeight=round(sampleHeight/pointSpacings(3)); %Number of elemens in dir 3
-
-numSplitIterationsTruss=2;
-
-%Define applied displacement 
-appliedStrain=0.3; %Linear strain (Only used to compute applied stretch)
+%Define applied displacement
+appliedStrain=0.2; %Linear strain (Only used to compute applied stretch)
 loadingOption='tension'; % or 'tension'
 switch loadingOption
     case 'compression'
@@ -467,126 +626,233 @@ end
 displacementMagnitude=(stretchLoad*sampleSize)-sampleSize; %The displacement magnitude
 
 %Material parameter set
-c1=1e-3; %Shear-modulus-like parameter
-m1=6; %Material parameter setting degree of non-linearity
-k_factor=500; %Bulk modulus factor 
-k=c1*k_factor; %Bulk modulus
-formulationType='uncoupled'; %coupled
+E_youngs1=0.1; %Material Young's modulus
+nu1=0.4; %Material Poisson's ratio
 
 % FEA control settings
-numTimeSteps=10; %Number of time steps desired
-max_refs=25; %Max reforms
+numTimeSteps=20; %Number of time steps desired
+max_refs=50; %Max reforms
 max_ups=0; %Set to zero to use full-Newton iterations
-opt_iter=6; %Optimum number of iterations
+opt_iter=15; %Optimum number of iterations
 max_retries=5; %Maximum number of retires
 dtmin=(1/numTimeSteps)/100; %Minimum time step size
-dtmax=1/numTimeSteps; %Maximum time step size
-
-%% Create hexahedral mesh geometry
-% Create a box with hexahedral elements
-cubeDimensions=[sampleWidth sampleThickness sampleHeight]; %Dimensions
-cubeElementNumbers=[numElementsWidth numElementsThickness numElementsHeight]; %Number of elements
-outputStructType=2; %A structure compatible with mesh view
-[meshStruct]=hexMeshBox(cubeDimensions,cubeElementNumbers,outputStructType);
-
-%Access elements, nodes, and faces from the structure
-E=meshStruct.elements; %The elements 
-V=meshStruct.nodes; %The nodes (vertices)
-C=zeros(size(E,1),1);
-
-%% Convert hexahedral elements to tetrahedral elements for a octet-truss pattern
-%
-
-[E,V,C]=hex2tet(E,V,C,6); %Convert to tetrahedral elements
-[F,~]=element2patch(E,C); %Patch data for plotting
+dtmax=(1/numTimeSteps); %Maximum time step size
+min_residual=1e-20;
+symmetric_stiffness=0;
+runMode='external'; %'internal' or 'external'
 
 %%
-% Visualize mesh
-cFigure; hold on;
-title('The input mesh','fontSize',fontSize)
-gpatch(F,V,0.5*ones(1,3),'k',0.5);
-axisGeom(gca,fontSize); 
-camlight headlight; lighting flat;
-drawnow; 
 
-%% Convert element set to a lattice structure
+%Specifying dimensions and number of elements
+r=0.5; %Radii, results in a width of 1
+n=3;
+nCopies=n*ones(1,3); %Number of offset copies
+d=2*r; %Diameter
+w=(n-1)*d; %sampleSize
 
-[indBoundary]=tesBoundary(F,V); %Get boundary indices
-controlParameter.shrinkFactor=0.2; %Strut sides are formed by shrinking the input mesh faces by this factor
-controlParameter.numDigitKeep=5; %used for merging nodes
-controlParameter.meshType='hex'; %desired output mesh type
-controlParameter.indBoundary=indBoundary; %indices of the boundary faces
-controlParameter.latticeSide=1; %1=side 1 the edge lattice, 2=side 2 the dual lattice to the edge lattice
-[Es,Vs,Cs]=element2lattice(E,V,controlParameter); %Get lattice structure
+%% Create lattice
 
-%Refine mesh allong the truss
-if numSplitIterationsTruss>0
-    [Es,Vs,Cs]=subHex(Es,Vs,numSplitIterationsTruss,3); %Split each hex allong truss direction
+switch latticeType
+    case 1 %Octet truss
+        [E,V,C,F,CF]=rhombicDodecahedronMesh(r,nCopies);
+        V=V./(n-1);
+        V=V*sampleSize;
+        
+        [indBoundary]=tesBoundary(F,V);
+        cPar.shrinkFactor=0.15; %Strut sides are formed by shrinking the input mesh faces by this factor
+        cPar.meshType='hex'; %desired output mesh type
+        cPar.indBoundary=indBoundary; %indices of the boundary faces
+        cPar.hexSplit=1;
+        cPar.latticeSide=2; %1=side 1 the edge lattice, 2=side 2 the dual lattice to the edge lattice
+        [Es,Vs,Cs]=element2lattice(E,V,cPar); %Get lattice structure
+        
+        logicKeep1=~(Vs(:,1)<=-1e-3);
+        logicKeep2=~(Vs(:,2)<=-1e-3);
+        logicKeep3=~(Vs(:,3)<=-1e-3);
+        logicKeep4=~(Vs(:,1)>=sampleSize+1e-3);
+        logicKeep5=~(Vs(:,2)>=sampleSize+1e-3);
+        logicKeep6=~(Vs(:,3)>=sampleSize+1e-3);
+        
+        logicKeepEs=sum(logicKeep1(Es),2)>=4 &...
+            sum(logicKeep2(Es),2)>=4 &...
+            sum(logicKeep3(Es),2)>=4 &...
+            sum(logicKeep4(Es),2)>=4 &...
+            sum(logicKeep5(Es),2)>=4 &...
+            sum(logicKeep6(Es),2)>=4;
+        
+        Es=Es(logicKeepEs,:);
+        Cs=Cs(logicKeepEs,:);
+        [Es,Vs,indFix]=patchCleanUnused(Es,Vs);
+        
+        % [Es,Vs,~,~]=subHex(Es,Vs,1,1);
+        % Cs=repmat(Cs,8,1);
+        
+        % Create patch Data for visualization
+        [Fs,CsF]=element2patch(Es,Cs); %Patch data for plotting
+        
+        %Get new boundary set
+        indB=tesBoundary(Fs,Vs);
+        Fb=Fs(indB,:);
+    case 2 %Rhombic dodecahedron mesh ("dual" of octet truss lattice)
+        [E,V,C,F,CF]=rhombicDodecahedronMesh(r,nCopies);
+        V=V./(n-1);
+        V=V*sampleSize;
+        
+        [indBoundary]=tesBoundary(F,V);
+        cPar.shrinkFactor=0.15; %Strut sides are formed by shrinking the input mesh faces by this factor
+        cPar.meshType='hex'; %desired output mesh type
+        cPar.indBoundary=indBoundary; %indices of the boundary faces
+        cPar.hexSplit=0;
+        cPar.latticeSide=1; %1=side 1 the edge lattice, 2=side 2 the dual lattice to the edge lattice
+        [Es,Vs,Cs]=element2lattice(E,V,cPar); %Get lattice structure
+        
+        logicKeep1=~(Vs(:,1)<=-1e-3);
+        logicKeep2=~(Vs(:,2)<=-1e-3);
+        logicKeep3=~(Vs(:,3)<=-1e-3);
+        logicKeep4=~(Vs(:,1)>=sampleSize+1e-3);
+        logicKeep5=~(Vs(:,2)>=sampleSize+1e-3);
+        logicKeep6=~(Vs(:,3)>=sampleSize+1e-3);
+        
+        logicKeepEs=sum(logicKeep1(Es),2)>=4 &...
+            sum(logicKeep2(Es),2)>=4 &...
+            sum(logicKeep3(Es),2)>=4 &...
+            sum(logicKeep4(Es),2)>=4 &...
+            sum(logicKeep5(Es),2)>=4 &...
+            sum(logicKeep6(Es),2)>=4;
+        
+        Es=Es(logicKeepEs,:);
+        Cs=Cs(logicKeepEs,:);
+        [Es,Vs,indFix]=patchCleanUnused(Es,Vs);
+        
+        % [Es,Vs,~,~]=subHex(Es,Vs,1,1);
+        % Cs=repmat(Cs,8,1);
+        
+        % Create patch Data for visualization
+        [Fs,CsF]=element2patch(Es,Cs); %Patch data for plotting
+        
+        %Get new boundary set
+        indB=tesBoundary(Fs,Vs);
+        Fb=Fs(indB,:);
 end
-[Fs,CsF]=element2patch(Es,Cs); %Patch data for plotting
 
-%Get new boundary set
-indB=tesBoundary(Fs,Vs);
-Fb=Fs(indB,:);
-
+if strcmp(elementType,'hex20')
+    [Es,Vs,~,Fb]=hex8_hex20(Es,Vs,{},Fb);
+end
 %%
 % Visualizing input mesh and lattic structures
 
 cFigure;
-hs=subplot(1,2,1); 
+hs=subplot(1,2,1);
 title('The input mesh','fontSize',fontSize)
 hold on;
 gpatch(F,V,0.5*ones(1,3),'k',0.5);
-axisGeom(gca,fontSize); 
+axisGeom(gca,fontSize);
 camlight headlight; lighting flat;
 
-subplot(1,2,2); 
+Fst=[Fs(:,[1 2 3]); Fs(:,[3 4 1]);];
+indB=tesBoundary(Fst,Vs);
+Fbt=Fst(indB,:);
+
+subplot(1,2,2);
 title('Lattice side 1','fontSize',fontSize)
 hold on;
-gpatch(Fb,Vs,'bw','k',1);
+gpatch(Fb,Vs,'bw','none',0.5);
+% plotV(Vs(Fb(:),:),'r.');
 % patchNormPlot(Fs,Vs);
-axisGeom(gca,fontSize); 
+axisGeom(gca,fontSize);
 camlight headlight; lighting flat;
 
 drawnow;
 
 %% DEFINE BC's
 
-%Find top and bottom nodes
+% Define node set logics
+indAll=(1:1:size(Vs,1))';
+logicBoundary=ismember(indAll,Fb);
+
 Z=Vs(:,3);
-logicTop=Z>=(max(Z)-eps(sampleSize));
-logicBottom=Z<=(min(Z)+eps(sampleSize));
+logicTop=Z>=(sampleSize-eps(sampleSize))& logicBoundary;
+logicBottom=Z<=eps(sampleSize) & logicBoundary;
 
 X=Vs(:,1);
-logicSide1=X>=(max(X)-eps(sampleSize));
-logicSide2=X<=(min(X)+eps(sampleSize));
+logicSide1=X>=(sampleSize-eps(sampleSize))& logicBoundary;
+logicSide2=X<=eps(sampleSize)& logicBoundary;
 
 Y=Vs(:,2);
-logicSide3=Y>=(max(Y)-eps(sampleSize));
-logicSide4=Y<=(min(Y)+eps(sampleSize));
+logicSide3=Y>=(sampleSize-eps(sampleSize))& logicBoundary;
+logicSide4=Y<=eps(sampleSize)& logicBoundary;
 
-logicSides=logicTop | logicBottom | logicSide1 | logicSide2 | logicSide3 | logicSide4;
+bcPrescribeListCell{1}=find(logicSide1)';
+bcPrescribeListCell{2}=find(logicSide2)';
+bcPrescribeListCell{3}=find(logicSide3)';
+bcPrescribeListCell{4}=find(logicSide4)';
+bcPrescribeListCell{5}=find(logicTop)';
+bcPrescribeListCell{6}=find(logicBottom)';
 
-%Supported nodes
-bcRigidList=find(logicBottom);
+%% Smoothing lattice
 
-%Prescribed force nodes
-bcPrescribeList=find(logicTop);
-bcPrescribeMagnitudes=displacementMagnitude(ones(1,numel(bcPrescribeList)),:);
+% indKeep=unique([bcPrescribeListCell{:}]);
+% [Fb_clean,Vb_clean,indFix]=patchCleanUnused(Fb,Vs);
+%
+% cPar.Method='HC';
+% cPar.n=6;
+%
+% cPar.RigidConstraints=indFix(indKeep);
+% % cPar.RigidConstraints=cPar.RigidConstraints(cPar.RigidConstraints>0);
+%
+% [Vb_clean]=tesSmooth(Fb_clean,Vb_clean,[],cPar);
+% ind=Fb(:);
+% ind=unique(ind(:));
+% Vs(ind,:)=Vb_clean;
+
+% cFigure; hold on;
+% gpatch(Fb,Vs,'bw','k',1);
+% % patchNormPlot(Fs,Vs);
+% % plotV(Vs(indKeep,:),'k.','MarkerSize',25)
+% axisGeom(gca,fontSize);
+% camlight headlight; lighting flat;
+% drawnow;
+
+%%
+
+%Prescribed displacement nodes
+bcPrescribeList=find(logicTop); 
+bcSupportList=find(logicBottom); 
+
+
+%%
+% Visualizing input mesh and lattice structures
+
+cFigure;
+hs=subplot(1,2,1);
+title('The input mesh','fontSize',fontSize)
+hold on;
+gpatch(F,V,0.5*ones(1,3),'k',0.5);
+axisGeom(gca,fontSize);
+camlight headlight; lighting flat;
+
+subplot(1,2,2);
+title('Lattice side 1','fontSize',fontSize)
+hold on;
+gpatch(Fb,Vs,'bw');
+% patchNormPlot(Fs,Vs);
+axisGeom(gca,fontSize);
+camlight headlight; lighting flat;
+
+drawnow;
 
 %%
 % Visualize BC's
 
-cFigure; hold on;
-title('Boundary conditions','FontSize',fontSize);
-gpatch(Fb,Vs,0.5*ones(1,3),'none',0.4);
-hl(1)=plotV(Vs(bcRigidList,:),'k.','MarkerSize',markerSize);
-hl(2)=plotV(Vs(bcPrescribeList,:),'r.','MarkerSize',markerSize);
-legend(hl,{'BC full support','BC prescribed Z displacement'})
-axisGeom;
+hf=cFigure; hold on;
+title('Boundary conditions model','FontSize',fontSize);
+gpatch(Fb,Vs,'w','none',0.5); 
+hl2(1)=plotV(Vs(bcPrescribeList,:),'r.','MarkerSize',markerSize2);
+hl2(2)=plotV(Vs(bcSupportList,:),'b.','MarkerSize',markerSize2);
+legend(hl2,{'BC prescribe','BC support'});
+axisGeom(gca,fontSize);
 camlight headlight;
-set(gca,'FontSize',fontSize);
-drawnow; 
+drawnow;
 
 %% Defining the FEBio input structure
 % See also |febioStructTemplate| and |febioStruct2xml| and the FEBio user
@@ -596,112 +862,106 @@ drawnow;
 [febio_spec]=febioStructTemplate;
 
 %febio_spec version 
-febio_spec.ATTR.version='2.5'; 
+febio_spec.ATTR.version='3.0'; 
 
 %Module section
 febio_spec.Module.ATTR.type='solid'; 
 
 %Control section
-febio_spec.Control.analysis.ATTR.type='static';
-febio_spec.Control.title='Lattice analysis';
+febio_spec.Control.analysis='STATIC';
 febio_spec.Control.time_steps=numTimeSteps;
 febio_spec.Control.step_size=1/numTimeSteps;
+febio_spec.Control.solver.max_refs=max_refs;
+febio_spec.Control.solver.max_ups=max_ups;
 febio_spec.Control.time_stepper.dtmin=dtmin;
 febio_spec.Control.time_stepper.dtmax=dtmax; 
 febio_spec.Control.time_stepper.max_retries=max_retries;
 febio_spec.Control.time_stepper.opt_iter=opt_iter;
-febio_spec.Control.max_refs=max_refs;
-febio_spec.Control.max_ups=max_ups;
 
 %Material section
-switch formulationType
-    case 'coupled'
-        febio_spec.Material.material{1}.ATTR.type='Ogden unconstrained';
-        febio_spec.Material.material{1}.ATTR.id=1;
-        febio_spec.Material.material{1}.c1=c1;
-        febio_spec.Material.material{1}.m1=m1;
-        febio_spec.Material.material{1}.c2=c1;
-        febio_spec.Material.material{1}.m2=-m1;
-        febio_spec.Material.material{1}.cp=k;
-    case 'uncoupled'
-        febio_spec.Material.material{1}.ATTR.type='Ogden';
-        febio_spec.Material.material{1}.ATTR.id=1;
-        febio_spec.Material.material{1}.c1=c1;
-        febio_spec.Material.material{1}.m1=m1;
-        febio_spec.Material.material{1}.c2=c1;
-        febio_spec.Material.material{1}.m2=-m1;
-        febio_spec.Material.material{1}.k=k;
-end
+materialName1='Material1';
+febio_spec.Material.material{1}.ATTR.name=materialName1;
+febio_spec.Material.material{1}.ATTR.type='neo-Hookean';
+febio_spec.Material.material{1}.ATTR.id=1;
+febio_spec.Material.material{1}.E=E_youngs1;
+febio_spec.Material.material{1}.v=nu1;
 
-%Geometry section
+%Mesh section
 % -> Nodes
-febio_spec.Geometry.Nodes{1}.ATTR.name='nodeSet_all'; %The node set name
-febio_spec.Geometry.Nodes{1}.node.ATTR.id=(1:size(Vs,1))'; %The node id's
-febio_spec.Geometry.Nodes{1}.node.VAL=Vs; %The nodel coordinates
+febio_spec.Mesh.Nodes{1}.ATTR.name='nodeSet_all'; %The node set name
+febio_spec.Mesh.Nodes{1}.node.ATTR.id=(1:size(Vs,1))'; %The node id's
+febio_spec.Mesh.Nodes{1}.node.VAL=Vs; %The nodel coordinates
 
 % -> Elements
-febio_spec.Geometry.Elements{1}.ATTR.type='hex8'; %Element type of this set
-febio_spec.Geometry.Elements{1}.ATTR.mat=1; %material index for this set 
-febio_spec.Geometry.Elements{1}.ATTR.name='Cube'; %Name of the element set
-febio_spec.Geometry.Elements{1}.elem.ATTR.id=(1:1:size(Es,1))'; %Element id's
-febio_spec.Geometry.Elements{1}.elem.VAL=Es;
+partName1='Part1';
+febio_spec.Mesh.Elements{1}.ATTR.name=partName1; %Name of this part
+febio_spec.Mesh.Elements{1}.ATTR.type=elementType; %Element type 
+febio_spec.Mesh.Elements{1}.elem.ATTR.id=(1:1:size(Es,1))'; %Element id's
+febio_spec.Mesh.Elements{1}.elem.VAL=Es; %The element matrix
 
 % -> NodeSets
-febio_spec.Geometry.NodeSet{1}.ATTR.name='bcRigidList';
-febio_spec.Geometry.NodeSet{1}.node.ATTR.id=bcRigidList(:);
+nodeSetName1='bcSupportList';
+febio_spec.Mesh.NodeSet{1}.ATTR.name=nodeSetName1;
+febio_spec.Mesh.NodeSet{1}.node.ATTR.id=bcSupportList(:);
 
-febio_spec.Geometry.NodeSet{2}.ATTR.name='bcPrescribeList';
-febio_spec.Geometry.NodeSet{2}.node.ATTR.id=bcPrescribeList(:);
+nodeSetName2='bcPrescribeList';
+febio_spec.Mesh.NodeSet{2}.ATTR.name=nodeSetName2;
+febio_spec.Mesh.NodeSet{2}.node.ATTR.id=bcPrescribeList(:);
+
+%MeshDomains section
+febio_spec.MeshDomains.SolidDomain.ATTR.name=partName1;
+febio_spec.MeshDomains.SolidDomain.ATTR.mat=materialName1;
 
 %Boundary condition section 
 % -> Fix boundary conditions
-febio_spec.Boundary.fix{1}.ATTR.bc='x';
-febio_spec.Boundary.fix{1}.ATTR.node_set=febio_spec.Geometry.NodeSet{1}.ATTR.name;
-febio_spec.Boundary.fix{2}.ATTR.bc='y';
-febio_spec.Boundary.fix{2}.ATTR.node_set=febio_spec.Geometry.NodeSet{1}.ATTR.name;
-febio_spec.Boundary.fix{3}.ATTR.bc='z';
-febio_spec.Boundary.fix{3}.ATTR.node_set=febio_spec.Geometry.NodeSet{1}.ATTR.name;
-febio_spec.Boundary.fix{4}.ATTR.bc='x';
-febio_spec.Boundary.fix{4}.ATTR.node_set=febio_spec.Geometry.NodeSet{2}.ATTR.name;
-febio_spec.Boundary.fix{5}.ATTR.bc='y';
-febio_spec.Boundary.fix{5}.ATTR.node_set=febio_spec.Geometry.NodeSet{2}.ATTR.name;
+febio_spec.Boundary.bc{1}.ATTR.type='fix';
+febio_spec.Boundary.bc{1}.ATTR.node_set=nodeSetName1;
+febio_spec.Boundary.bc{1}.dofs='x,y,z';
 
-% -> Prescribe boundary conditions
-febio_spec.Boundary.prescribe{1}.ATTR.bc='z';
-febio_spec.Boundary.prescribe{1}.ATTR.node_set=febio_spec.Geometry.NodeSet{2}.ATTR.name;
-febio_spec.Boundary.prescribe{1}.scale.ATTR.lc=1;
-febio_spec.Boundary.prescribe{1}.scale.VAL=1;
-febio_spec.Boundary.prescribe{1}.relative=1;
-febio_spec.Boundary.prescribe{1}.value=displacementMagnitude;
+febio_spec.Boundary.bc{2}.ATTR.type='fix';
+febio_spec.Boundary.bc{2}.ATTR.node_set=nodeSetName2;
+febio_spec.Boundary.bc{2}.dofs='x,y';
 
-%Output section 
+febio_spec.Boundary.bc{3}.ATTR.type='prescribe';
+febio_spec.Boundary.bc{3}.ATTR.node_set=nodeSetName2;
+febio_spec.Boundary.bc{3}.dof='z';
+febio_spec.Boundary.bc{3}.scale.ATTR.lc=1;
+febio_spec.Boundary.bc{3}.scale.VAL=displacementMagnitude;
+febio_spec.Boundary.bc{3}.relative=0;
+
+%LoadData section
+% -> load_controller
+febio_spec.LoadData.load_controller{1}.ATTR.id=1;
+febio_spec.LoadData.load_controller{1}.ATTR.type='loadcurve';
+febio_spec.LoadData.load_controller{1}.interpolate='LINEAR';
+febio_spec.LoadData.load_controller{1}.points.point.VAL=[0 0; 1 1];
+
+%Output section
 % -> log file
 febio_spec.Output.logfile.ATTR.file=febioLogFileName;
 febio_spec.Output.logfile.node_data{1}.ATTR.file=febioLogFileName_disp;
 febio_spec.Output.logfile.node_data{1}.ATTR.data='ux;uy;uz';
 febio_spec.Output.logfile.node_data{1}.ATTR.delim=',';
-febio_spec.Output.logfile.node_data{1}.VAL=1:size(Vs,1);
 
 febio_spec.Output.logfile.node_data{2}.ATTR.file=febioLogFileName_force;
 febio_spec.Output.logfile.node_data{2}.ATTR.data='Rx;Ry;Rz';
 febio_spec.Output.logfile.node_data{2}.ATTR.delim=',';
-febio_spec.Output.logfile.node_data{2}.VAL=1:size(Vs,1);
 
-febio_spec.Output.logfile.element_data{1}.ATTR.file=febioLogFileName_stress;
-febio_spec.Output.logfile.element_data{1}.ATTR.data='sz';
-febio_spec.Output.logfile.element_data{1}.ATTR.delim=',';
-febio_spec.Output.logfile.element_data{1}.VAL=1:size(Es,1);
+% febio_spec.Output.logfile.element_data{1}.ATTR.file=febioLogFileName_stress;
+% febio_spec.Output.logfile.element_data{1}.ATTR.data='sz';
+% febio_spec.Output.logfile.element_data{1}.ATTR.delim=',';
+% febio_spec.Output.logfile.element_data{1}.VAL=1:size(Es,1);
 
 %% Quick viewing of the FEBio input file structure
 % The |febView| function can be used to view the xml structure in a MATLAB
-% figure window. 
+% figure window.
 
 %%
 % |febView(febio_spec); %Viewing the febio file|
 
 %% Exporting the FEBio input file
 % Exporting the febio_spec structure to an FEBio input file is done using
-% the |febioStruct2xml| function. 
+% the |febioStruct2xml| function.
 
 febioStruct2xml(febio_spec,febioFebFileName); %Exporting to file and domNode
 
@@ -710,25 +970,22 @@ febioStruct2xml(febio_spec,febioFebFileName); %Exporting to file and domNode
 % |runMonitorFEBio| function is used. The input for this function is a
 % structure defining job settings e.g. the FEBio input file name. The
 % optional output runFlag informs the user if the analysis was run
-% succesfully. 
+% succesfully.
 
 febioAnalysis.run_filename=febioFebFileName; %The input file name
 febioAnalysis.run_logname=febioLogFileName; %The name for the log file
 febioAnalysis.disp_on=1; %Display information on the command window
-febioAnalysis.disp_log_on=1; %Display convergence information in the command window
-febioAnalysis.runMode='external';%'internal';
-febioAnalysis.t_check=0.25; %Time for checking log file (dont set too small)
-febioAnalysis.maxtpi=1e99; %Max analysis time
-febioAnalysis.maxLogCheckTime=3; %Max log file checking time
+febioAnalysis.runMode=runMode; %Run in external or in matlab terminal
 
 [runFlag]=runMonitorFEBio(febioAnalysis);%START FEBio NOW!!!!!!!!
 
-%% Import FEBio results 
+%% Import FEBio results
 
 if runFlag==1 %i.e. a succesful run
     
     % Importing nodal displacements from a log file
-    [~, N_disp_mat,~]=importFEBio_logfile(fullfile(savePath,febioLogFileName_disp)); %Nodal displacements    
+    [time_mat, N_disp_mat,~]=importFEBio_logfile(fullfile(savePath,febioLogFileName_disp)); %Nodal displacements
+    time_mat=[0; time_mat(:)]; %Time
     
     N_disp_mat=N_disp_mat(:,2:end,:);
     sizImport=size(N_disp_mat);
@@ -739,59 +996,85 @@ if runFlag==1 %i.e. a succesful run
     DN=N_disp_mat(:,:,end);
     DN_magnitude=sqrt(sum(DN(:,3).^2,2));
     Vs_def=Vs+DN;
-    [CF]=vertexToFaceMeasure(Fb,DN_magnitude);
     
-    % Importing element stress from a log file
-    [time_mat, E_stress_mat,~]=importFEBio_logfile(fullfile(savePath,febioLogFileName_stress)); %Nodal forces
-    time_mat=[0; time_mat(:)]; %Time
-    stress_cauchy_sim=[0; mean(squeeze(E_stress_mat(:,end,:)),1)'];
+    %     % Importing element stress from a log file
+    %     [time_mat, E_stress_mat,~]=importFEBio_logfile(fullfile(savePath,febioLogFileName_stress)); %Nodal forces
+    %     time_mat=[0; time_mat(:)]; %Time
+    %     stress_cauchy_sim=[0; mean(squeeze(E_stress_mat(:,end,:)),1)'];
+    %%    
+    % Importing nodal forces from a log file
     
+    [~, N_force_mat,~]=importFEBio_logfile(fullfile(savePath,febioLogFileName_force)); %Nodal forces
+    
+    N_force_mat=N_force_mat(:,2:end,:);
+    sizImport=size(N_force_mat);
+    sizImport(3)=sizImport(3)+1;
+    N_force_mat_n=zeros(sizImport);
+    N_force_mat_n(:,:,2:end)=N_force_mat;
+    N_force_mat=N_force_mat_n;
+    
+    f_sum_z=squeeze(sum(N_force_mat(bcPrescribeList,3,:),1)); 
+
     %% 
+    % Visualize force data
+    
+    displacementApplied=time_mat.*displacementMagnitude;
+    lambdaApplied=(sampleSize+displacementApplied)./sampleSize;
+    
+    cFigure; hold on; 
+    xlabel('$\lambda$ [.]','Interpreter','Latex');
+    ylabel('$F_z$','Interpreter','Latex');
+    hp=plot(lambdaApplied(:),f_sum_z(:),'b-','LineWidth',3);
+    grid on; box on; axis square; axis tight; 
+    set(gca,'FontSize',fontSize);
+    drawnow; 
+         
+    %%
     % Plotting the simulated results using |anim8| to visualize and animate
-    % deformations 
+    % deformations
     
     % Create basic view and store graphics handle to initiate animation
-    hf=cFigure; %Open figure  
+    hf=cFigure; %Open figure
     gtitle([febioFebFileNamePart,': Press play to animate']);
-    hp=gpatch(Fb,Vs_def,CF,'k',1); %Add graphics object to animate
-    gpatch(Fb,Vs,0.5*ones(1,3),'none',0.25); %A static graphics object
+    hp=gpatch(Fb,Vs_def,DN_magnitude,'k',1); %Add graphics object to animate
+    %     gpatch(Fb,Vs,'kw','none',0.25); %A static graphics object
+    hp.FaceColor='interp';
     
-    axisGeom(gca,fontSize); 
+    axisGeom(gca,fontSize);
     colormap(gjet(250)); colorbar;
-    caxis([0 max(DN_magnitude)]);    
+    caxis([0 max(DN_magnitude)]);
     axis([min([Vs_def(:,1);Vs(:,1)]) max([Vs_def(:,1);Vs(:,1)])...
-          min([Vs_def(:,2);Vs(:,2)]) max([Vs_def(:,2);Vs(:,2)])...
-          min([Vs_def(:,3);Vs(:,3)]) max([Vs_def(:,3);Vs(:,3)]) ]); %Set axis limits statically
-    view(130,25); %Set view direction
-    camlight headlight;        
-        
+        min([Vs_def(:,2);Vs(:,2)]) max([Vs_def(:,2);Vs(:,2)])...
+        min([Vs_def(:,3);Vs(:,3)]) max([Vs_def(:,3);Vs(:,3)]) ]); %Set axis limits statically
+    %     view(130,25); %Set view direction
+    camlight headlight;
+    
     % Set up animation features
-    animStruct.Time=time_mat; %The time vector    
-    for qt=1:1:size(N_disp_mat,3) %Loop over time increments        
+    animStruct.Time=time_mat; %The time vector
+    for qt=1:1:size(N_disp_mat,3) %Loop over time increments
         DN=N_disp_mat(:,:,qt); %Current displacement
         DN_magnitude=sqrt(sum(DN.^2,2)); %Current displacement magnitude
         Vs_def=Vs+DN; %Current nodal coordinates
-        [CF]=vertexToFaceMeasure(Fb,DN_magnitude); %Current color data to use
         
         %Set entries in animation structure
         animStruct.Handles{qt}=[hp hp]; %Handles of objects to animate
         animStruct.Props{qt}={'Vertices','CData'}; %Properties of objects to animate
-        animStruct.Set{qt}={Vs_def,CF}; %Property values for to set in order to animate
-    end        
-    anim8(hf,animStruct); %Initiate animation feature    
+        animStruct.Set{qt}={Vs_def,DN_magnitude}; %Property values for to set in order to animate
+    end
+    anim8(hf,animStruct); %Initiate animation feature
     drawnow;
 
 end
 
-%% 
+%%
 %
 % <<gibbVerySmall.gif>>
-% 
-% _*GIBBON*_ 
+%
+% _*GIBBON*_
 % <www.gibboncode.org>
-% 
+%
 % _Kevin Mattheus Moerman_, <gibbon.toolbox@gmail.com>
- 
+
 %% 
 % _*GIBBON footer text*_ 
 % 
@@ -801,7 +1084,7 @@ end
 % image segmentation, image-based modeling, meshing, and finite element
 % analysis.
 % 
-% Copyright (C) 2019  Kevin Mattheus Moerman
+% Copyright (C) 2006-2020 Kevin Mattheus Moerman
 % 
 % This program is free software: you can redistribute it and/or modify
 % it under the terms of the GNU General Public License as published by

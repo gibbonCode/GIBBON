@@ -9,7 +9,7 @@
 
 %% Keywords
 %
-% * febio_spec version 2.5
+% * febio_spec version 3.0
 % * febio, FEBio
 % * compression, tension, compressive, tensile
 % * displacement control, displacement boundary condition
@@ -33,7 +33,7 @@ faceAlpha2=1;
 edgeColor=0.25*ones(1,3);
 edgeWidth=1.5;
 markerSize=25;
-markerSize2=10;
+markerSize2=25;
 cMap=gjet(4);
 
 %% Control parameters
@@ -54,10 +54,11 @@ febioLogFileName_stiffness=[febioFebFileNamePart,'_stiffness_out.txt']; %Log fil
 %Specifying dimensions and number of elements
 sampleSize=10;
 latticeType=1;
+elementType='hex8'; %'hex8'
 
 %Define applied displacement
 appliedStrain=0.2; %Linear strain (Only used to compute applied stretch)
-loadingOption='compression'; % or 'tension'
+loadingOption='tension'; % or 'tension'
 switch loadingOption
     case 'compression'
         stretchLoad=1-appliedStrain; %The applied stretch for uniaxial loading
@@ -67,21 +68,20 @@ end
 displacementMagnitude=(stretchLoad*sampleSize)-sampleSize; %The displacement magnitude
 
 %Material parameter set
-c1=1; %Shear-modulus-like parameter
-m1=2;
-k=50*c1;
+E_youngs1=0.1; %Material Young's modulus
+nu1=0.4; %Material Poisson's ratio
 
 % FEA control settings
-numTimeSteps=10; %Number of time steps desired
+numTimeSteps=20; %Number of time steps desired
 max_refs=50; %Max reforms
 max_ups=0; %Set to zero to use full-Newton iterations
-opt_iter=10; %Optimum number of iterations
+opt_iter=15; %Optimum number of iterations
 max_retries=5; %Maximum number of retires
 dtmin=(1/numTimeSteps)/100; %Minimum time step size
 dtmax=(1/numTimeSteps); %Maximum time step size
 min_residual=1e-20;
 symmetric_stiffness=0;
-runMode='internal'; %'internal' or 'external'
+runMode='external'; %'internal' or 'external'
 
 %%
 
@@ -175,6 +175,10 @@ switch latticeType
         %Get new boundary set
         indB=tesBoundary(Fs,Vs);
         Fb=Fs(indB,:);
+end
+
+if strcmp(elementType,'hex20')
+    [Es,Vs,~,Fb]=hex8_hex20(Es,Vs,{},Fb);
 end
 %%
 % Visualizing input mesh and lattic structures
@@ -284,7 +288,7 @@ drawnow;
 
 hf=cFigure; hold on;
 title('Boundary conditions model','FontSize',fontSize);
-gpatch(Fb,Vs,'kw','k',1); 
+gpatch(Fb,Vs,'w','none',0.5); 
 hl2(1)=plotV(Vs(bcPrescribeList,:),'r.','MarkerSize',markerSize2);
 hl2(2)=plotV(Vs(bcSupportList,:),'b.','MarkerSize',markerSize2);
 legend(hl2,{'BC prescribe','BC support'});
@@ -296,79 +300,83 @@ drawnow;
 % See also |febioStructTemplate| and |febioStruct2xml| and the FEBio user
 % manual.
 
-%Get a template with default settings
+%Get a template with default settings 
 [febio_spec]=febioStructTemplate;
 
-%febio_spec version
-febio_spec.ATTR.version='2.5';
+%febio_spec version 
+febio_spec.ATTR.version='3.0'; 
 
 %Module section
-febio_spec.Module.ATTR.type='solid';
+febio_spec.Module.ATTR.type='solid'; 
 
 %Control section
-febio_spec.Control.analysis.ATTR.type='static';
-febio_spec.Control.title='Lattice analysis';
+febio_spec.Control.analysis='STATIC';
 febio_spec.Control.time_steps=numTimeSteps;
 febio_spec.Control.step_size=1/numTimeSteps;
+febio_spec.Control.solver.max_refs=max_refs;
+febio_spec.Control.solver.max_ups=max_ups;
 febio_spec.Control.time_stepper.dtmin=dtmin;
-febio_spec.Control.time_stepper.dtmax=dtmax;
+febio_spec.Control.time_stepper.dtmax=dtmax; 
 febio_spec.Control.time_stepper.max_retries=max_retries;
 febio_spec.Control.time_stepper.opt_iter=opt_iter;
-febio_spec.Control.max_refs=max_refs;
-febio_spec.Control.max_ups=max_ups;
-febio_spec.Control.symmetric_stiffness=symmetric_stiffness;
-febio_spec.Control.min_residual=min_residual;
 
 %Material section
-febio_spec.Material.material{1}.ATTR.type='Ogden';
+materialName1='Material1';
+febio_spec.Material.material{1}.ATTR.name=materialName1;
+febio_spec.Material.material{1}.ATTR.type='neo-Hookean';
 febio_spec.Material.material{1}.ATTR.id=1;
-febio_spec.Material.material{1}.c1=c1;
-febio_spec.Material.material{1}.m1=m1;
-febio_spec.Material.material{1}.c2=c1;
-febio_spec.Material.material{1}.m2=-m1;
-febio_spec.Material.material{1}.k=k;
+febio_spec.Material.material{1}.E=E_youngs1;
+febio_spec.Material.material{1}.v=nu1;
 
-%Geometry section
+%Mesh section
 % -> Nodes
-febio_spec.Geometry.Nodes{1}.ATTR.name='nodeSet_all'; %The node set name
-febio_spec.Geometry.Nodes{1}.node.ATTR.id=(1:size(Vs,1))'; %The node id's
-febio_spec.Geometry.Nodes{1}.node.VAL=Vs; %The nodel coordinates
+febio_spec.Mesh.Nodes{1}.ATTR.name='nodeSet_all'; %The node set name
+febio_spec.Mesh.Nodes{1}.node.ATTR.id=(1:size(Vs,1))'; %The node id's
+febio_spec.Mesh.Nodes{1}.node.VAL=Vs; %The nodel coordinates
 
 % -> Elements
-febio_spec.Geometry.Elements{1}.ATTR.type='hex8'; %Element type of this set
-febio_spec.Geometry.Elements{1}.ATTR.mat=1; %material index for this set
-febio_spec.Geometry.Elements{1}.ATTR.name='Cube'; %Name of the element set
-febio_spec.Geometry.Elements{1}.elem.ATTR.id=(1:1:size(Es,1))'; %Element id's
-febio_spec.Geometry.Elements{1}.elem.VAL=Es;
+partName1='Part1';
+febio_spec.Mesh.Elements{1}.ATTR.name=partName1; %Name of this part
+febio_spec.Mesh.Elements{1}.ATTR.type=elementType; %Element type 
+febio_spec.Mesh.Elements{1}.elem.ATTR.id=(1:1:size(Es,1))'; %Element id's
+febio_spec.Mesh.Elements{1}.elem.VAL=Es; %The element matrix
 
 % -> NodeSets
-febio_spec.Geometry.NodeSet{1}.ATTR.name='bcSupportList';
-febio_spec.Geometry.NodeSet{1}.node.ATTR.id=bcSupportList(:);
+nodeSetName1='bcSupportList';
+febio_spec.Mesh.NodeSet{1}.ATTR.name=nodeSetName1;
+febio_spec.Mesh.NodeSet{1}.node.ATTR.id=bcSupportList(:);
 
-febio_spec.Geometry.NodeSet{2}.ATTR.name='bcPrescribeList';
-febio_spec.Geometry.NodeSet{2}.node.ATTR.id=bcPrescribeList(:);
+nodeSetName2='bcPrescribeList';
+febio_spec.Mesh.NodeSet{2}.ATTR.name=nodeSetName2;
+febio_spec.Mesh.NodeSet{2}.node.ATTR.id=bcPrescribeList(:);
+
+%MeshDomains section
+febio_spec.MeshDomains.SolidDomain.ATTR.name=partName1;
+febio_spec.MeshDomains.SolidDomain.ATTR.mat=materialName1;
 
 %Boundary condition section 
 % -> Fix boundary conditions
-febio_spec.Boundary.fix{1}.ATTR.bc='x';
-febio_spec.Boundary.fix{1}.ATTR.node_set=febio_spec.Geometry.NodeSet{1}.ATTR.name;
-febio_spec.Boundary.fix{2}.ATTR.bc='y';
-febio_spec.Boundary.fix{2}.ATTR.node_set=febio_spec.Geometry.NodeSet{1}.ATTR.name;
-febio_spec.Boundary.fix{3}.ATTR.bc='z';
-febio_spec.Boundary.fix{3}.ATTR.node_set=febio_spec.Geometry.NodeSet{1}.ATTR.name;
+febio_spec.Boundary.bc{1}.ATTR.type='fix';
+febio_spec.Boundary.bc{1}.ATTR.node_set=nodeSetName1;
+febio_spec.Boundary.bc{1}.dofs='x,y,z';
 
-febio_spec.Boundary.fix{4}.ATTR.bc='x';
-febio_spec.Boundary.fix{4}.ATTR.node_set=febio_spec.Geometry.NodeSet{2}.ATTR.name;
-febio_spec.Boundary.fix{5}.ATTR.bc='y';
-febio_spec.Boundary.fix{5}.ATTR.node_set=febio_spec.Geometry.NodeSet{2}.ATTR.name;
+febio_spec.Boundary.bc{2}.ATTR.type='fix';
+febio_spec.Boundary.bc{2}.ATTR.node_set=nodeSetName2;
+febio_spec.Boundary.bc{2}.dofs='x,y';
 
-% -> Prescribed boundary conditions
-febio_spec.Boundary.prescribe{1}.ATTR.bc='z';
-febio_spec.Boundary.prescribe{1}.ATTR.node_set=febio_spec.Geometry.NodeSet{2}.ATTR.name;
-febio_spec.Boundary.prescribe{1}.scale.ATTR.lc=1;
-febio_spec.Boundary.prescribe{1}.scale.VAL=1;
-febio_spec.Boundary.prescribe{1}.relative=1;
-febio_spec.Boundary.prescribe{1}.value=displacementMagnitude;
+febio_spec.Boundary.bc{3}.ATTR.type='prescribe';
+febio_spec.Boundary.bc{3}.ATTR.node_set=nodeSetName2;
+febio_spec.Boundary.bc{3}.dof='z';
+febio_spec.Boundary.bc{3}.scale.ATTR.lc=1;
+febio_spec.Boundary.bc{3}.scale.VAL=displacementMagnitude;
+febio_spec.Boundary.bc{3}.relative=0;
+
+%LoadData section
+% -> load_controller
+febio_spec.LoadData.load_controller{1}.ATTR.id=1;
+febio_spec.LoadData.load_controller{1}.ATTR.type='loadcurve';
+febio_spec.LoadData.load_controller{1}.interpolate='LINEAR';
+febio_spec.LoadData.load_controller{1}.points.point.VAL=[0 0; 1 1];
 
 %Output section
 % -> log file
@@ -376,12 +384,10 @@ febio_spec.Output.logfile.ATTR.file=febioLogFileName;
 febio_spec.Output.logfile.node_data{1}.ATTR.file=febioLogFileName_disp;
 febio_spec.Output.logfile.node_data{1}.ATTR.data='ux;uy;uz';
 febio_spec.Output.logfile.node_data{1}.ATTR.delim=',';
-febio_spec.Output.logfile.node_data{1}.VAL=1:size(Vs,1);
 
 febio_spec.Output.logfile.node_data{2}.ATTR.file=febioLogFileName_force;
 febio_spec.Output.logfile.node_data{2}.ATTR.data='Rx;Ry;Rz';
 febio_spec.Output.logfile.node_data{2}.ATTR.delim=',';
-febio_spec.Output.logfile.node_data{2}.VAL=1:size(Vs,1);
 
 % febio_spec.Output.logfile.element_data{1}.ATTR.file=febioLogFileName_stress;
 % febio_spec.Output.logfile.element_data{1}.ATTR.data='sz';
@@ -411,11 +417,7 @@ febioStruct2xml(febio_spec,febioFebFileName); %Exporting to file and domNode
 febioAnalysis.run_filename=febioFebFileName; %The input file name
 febioAnalysis.run_logname=febioLogFileName; %The name for the log file
 febioAnalysis.disp_on=1; %Display information on the command window
-febioAnalysis.disp_log_on=1; %Display convergence information in the command window
 febioAnalysis.runMode=runMode; %Run in external or in matlab terminal
-febioAnalysis.t_check=0.25; %Time for checking log file (dont set too small)
-febioAnalysis.maxtpi=1e99; %Max analysis time
-febioAnalysis.maxLogCheckTime=10; %Max log file checking time
 
 [runFlag]=runMonitorFEBio(febioAnalysis);%START FEBio NOW!!!!!!!!
 
