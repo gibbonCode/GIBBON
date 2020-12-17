@@ -242,7 +242,7 @@ febio_spec.Boundary.bc{1}.dofs='x,y,z';
 febio_spec.Rigid.rigid_constraint{1}.ATTR.name='RotFix_1';
 febio_spec.Rigid.rigid_constraint{1}.ATTR.type='fix';
 febio_spec.Rigid.rigid_constraint{1}.rb=2;
-febio_spec.Rigid.rigid_constraint{1}.dofs='Ru,Rw';
+febio_spec.Rigid.rigid_constraint{1}.dofs='Ru,Rw,Rx,Ry,Rz';
 
 febio_spec.Rigid.rigid_constraint{2}.ATTR.name='RotPrescribe_1';
 febio_spec.Rigid.rigid_constraint{2}.ATTR.type='prescribe';

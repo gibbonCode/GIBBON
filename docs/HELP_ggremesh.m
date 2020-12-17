@@ -168,7 +168,6 @@ optionStruct3.pre.max_hole_edges=20; %Max number of hole edges for pre-processin
 % optionStruct3.post.max_hole_area=10; %Max hole area for post-processing step
 % optionStruct3.post.max_hole_edges=20; %Max number of hole edges for post-processing step
 
-% runString=[runString,' pre:max_hole_area=100 pre:max_hole_edges=0 post:max_hole_area=100 post:max_hole_edges=0'];
 [Fn,Vn]=ggremesh(F,V,optionStruct3);
 
 % Visualiza patch data
@@ -210,7 +209,6 @@ optionStruct3.disp_on=1; % Turn off command window text display
 optionStruct3.pre.max_hole_area=100; %Max hole area for pre-processing step
 optionStruct3.pre.max_hole_edges=0; %Max number of hole edges for pre-processing step
 
-% runString=[runString,' pre:max_hole_area=100 pre:max_hole_edges=0 post:max_hole_area=100 post:max_hole_edges=0'];
 [Fn,Vn]=ggremesh(F,V,optionStruct3);
 
 % Visualiza patch data
