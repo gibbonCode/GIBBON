@@ -6,7 +6,7 @@
    <!--
 This HTML was auto-generated from MATLAB code.
 To make changes, update the MATLAB code and republish this document.
-      --><title>DEMO_febio_0062_femur_load_01</title><meta name="generator" content="MATLAB 9.9"><link rel="schema.DC" href="http://purl.org/dc/elements/1.1/"><meta name="DC.date" content="2020-12-16"><meta name="DC.source" content="DEMO_febio_0062_femur_load_01.m"><style type="text/css">
+      --><title>DEMO_febio_0062_femur_load_01</title><meta name="generator" content="MATLAB 9.9"><link rel="schema.DC" href="http://purl.org/dc/elements/1.1/"><meta name="DC.date" content="2020-12-17"><meta name="DC.source" content="DEMO_febio_0062_femur_load_01.m"><style type="text/css">
 html,body,div,span,applet,object,iframe,h1,h2,h3,h4,h5,h6,p,blockquote,pre,a,abbr,acronym,address,big,cite,code,del,dfn,em,font,img,ins,kbd,q,s,samp,small,strike,strong,tt,var,b,u,i,center,dl,dt,dd,ol,ul,li,fieldset,form,label,legend,table,caption,tbody,tfoot,thead,tr,th,td{margin:0;padding:0;border:0;outline:0;font-size:100%;vertical-align:baseline;background:transparent}body{line-height:1}ol,ul{list-style:none}blockquote,q{quotes:none}blockquote:before,blockquote:after,q:before,q:after{content:'';content:none}:focus{outine:0}ins{text-decoration:none}del{text-decoration:line-through}table{border-collapse:collapse;border-spacing:0}
 
 html { min-height:100%; margin-bottom:1px; }
@@ -253,40 +253,40 @@ Cb=meshOutput.boundaryMarker;
 CE=meshOutput.elementMaterialID;
 </pre><pre class="codeoutput"> 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
---- TETGEN Tetrahedral meshing --- 16-Dec-2020 16:38:08
+--- TETGEN Tetrahedral meshing --- 17-Dec-2020 09:14:41
  
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
---- Writing SMESH file --- 16-Dec-2020 16:38:08
+--- Writing SMESH file --- 17-Dec-2020 09:14:41
 ----&gt; Adding node field
 ----&gt; Adding facet field
 ----&gt; Adding holes specification
 ----&gt; Adding region specification
---- Done --- 16-Dec-2020 16:38:08
---- Running TetGen to mesh input boundary--- 16-Dec-2020 16:38:08
+--- Done --- 17-Dec-2020 09:14:41
+--- Running TetGen to mesh input boundary--- 17-Dec-2020 09:14:41
 Opening /mnt/data/MATLAB/GIBBON/data/temp/temp.smesh.
 Delaunizing vertices...
-Delaunay seconds:  0.022818
+Delaunay seconds:  0.024821
 Creating surface mesh ...
-Surface mesh seconds:  0.004882
+Surface mesh seconds:  0.004471
 Recovering boundaries...
-Boundary recovery seconds:  0.008984
+Boundary recovery seconds:  0.007936
 Removing exterior tetrahedra ...
 Spreading region attributes.
-Exterior tets removal seconds:  0.005001
+Exterior tets removal seconds:  0.005418
 Recovering Delaunayness...
-Delaunay recovery seconds:  0.004902
+Delaunay recovery seconds:  0.004526
 Refining mesh...
-Refinement seconds:  0.105636
+Refinement seconds:  0.106627
 Optimizing mesh...
-Optimization seconds:  0.007584
+Optimization seconds:  0.00794
 
 Writing /mnt/data/MATLAB/GIBBON/data/temp/temp.1.node.
 Writing /mnt/data/MATLAB/GIBBON/data/temp/temp.1.ele.
 Writing /mnt/data/MATLAB/GIBBON/data/temp/temp.1.face.
 Writing /mnt/data/MATLAB/GIBBON/data/temp/temp.1.edge.
 
-Output seconds:  0.120159
-Total running seconds:  0.280241
+Output seconds:  0.11237
+Total running seconds:  0.274483
 
 Statistics:
 
@@ -304,11 +304,11 @@ Statistics:
   Mesh edges on input segments: 8865
   Steiner points inside domain: 5188
 
---- Done --- 16-Dec-2020 16:38:08
+--- Done --- 17-Dec-2020 09:14:42
  
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
---- Importing TetGen files --- 16-Dec-2020 16:38:08
---- Done --- 16-Dec-2020 16:38:08
+--- Importing TetGen files --- 17-Dec-2020 09:14:42
+--- Done --- 17-Dec-2020 09:14:42
 </pre><h2 id="15">Define material regions in bone</h2><pre class="codeinput">indBoundary=unique(Fb(Cb==1,:));
 DE=minDist(V,V(indBoundary,:));
 logicCorticalNodes=DE&lt;=corticalThickness;
@@ -372,6 +372,8 @@ force_Y=force_Y.*forceTotal(2); <span class="comment">%sum now equal to desired<
 
 force_Z=force_Z./sum(force_Z(:)); <span class="comment">%sum now equal to 1</span>
 force_Z=force_Z.*forceTotal(3); <span class="comment">%sum now equal to desired</span>
+
+force_ball=[force_X(:) force_Y(:) force_Z(:)];
 </pre><pre class="codeinput">cFigure;
 subplot(1,3,1);hold <span class="string">on</span>;
 title(<span class="string">'F_x'</span>);
@@ -528,188 +530,63 @@ febio_spec.Boundary.bc{1}.dofs=<span class="string">'x,y,z'</span>;
 
 <span class="comment">%MeshData secion</span>
 <span class="comment">%-&gt; Node data</span>
-loadDataName1=<span class="string">'force_X'</span>;
+loadDataName1=<span class="string">'force_ball'</span>;
 febio_spec.MeshData.NodeData{1}.ATTR.name=loadDataName1;
 febio_spec.MeshData.NodeData{1}.ATTR.node_set=nodeSetName2;
-febio_spec.MeshData.NodeData{1}.ATTR.data_type=<span class="string">'scalar'</span>;
+febio_spec.MeshData.NodeData{1}.ATTR.datatype=<span class="string">'vec3'</span>;
 febio_spec.MeshData.NodeData{1}.node.ATTR.lid=(1:1:numel(bcPrescribeList))';
-febio_spec.MeshData.NodeData{1}.node.VAL=force_X(:);
+febio_spec.MeshData.NodeData{1}.node.VAL=force_ball;
 
-loadDataName2=<span class="string">'force_Y'</span>;
+loadDataName2=<span class="string">'force_abductor'</span>;
 febio_spec.MeshData.NodeData{2}.ATTR.name=loadDataName2;
-febio_spec.MeshData.NodeData{2}.ATTR.node_set=nodeSetName2;
-febio_spec.MeshData.NodeData{2}.ATTR.data_type=<span class="string">'scalar'</span>;
-febio_spec.MeshData.NodeData{2}.node.ATTR.lid=(1:1:numel(bcPrescribeList))';
-febio_spec.MeshData.NodeData{2}.node.VAL=force_Y(:);
+febio_spec.MeshData.NodeData{2}.ATTR.node_set=nodeSetName3;
+febio_spec.MeshData.NodeData{2}.ATTR.datatype=<span class="string">'vec3'</span>;
+febio_spec.MeshData.NodeData{2}.node.ATTR.lid=(1:1:numel(bcPrescibeList_abductor))';
+febio_spec.MeshData.NodeData{2}.node.VAL=forceAbductor_distributed;
 
-loadDataName3=<span class="string">'force_Z'</span>;
+loadDataName3=<span class="string">'force_VL'</span>;
 febio_spec.MeshData.NodeData{3}.ATTR.name=loadDataName3;
-febio_spec.MeshData.NodeData{3}.ATTR.node_set=nodeSetName2;
-febio_spec.MeshData.NodeData{3}.ATTR.data_type=<span class="string">'scalar'</span>;
-febio_spec.MeshData.NodeData{3}.node.ATTR.lid=(1:1:numel(bcPrescribeList))';
-febio_spec.MeshData.NodeData{3}.node.VAL=force_Z(:);
+febio_spec.MeshData.NodeData{3}.ATTR.node_set=nodeSetName4;
+febio_spec.MeshData.NodeData{3}.ATTR.datatype=<span class="string">'vec3'</span>;
+febio_spec.MeshData.NodeData{3}.node.ATTR.lid=(1:1:numel(bcPrescibeList_VastusLateralis))';
+febio_spec.MeshData.NodeData{3}.node.VAL=forceVastusLateralis_distributed;
 
-loadDataName4=<span class="string">'forceAbductor_X'</span>;
+loadDataName4=<span class="string">'force_VM'</span>;
 febio_spec.MeshData.NodeData{4}.ATTR.name=loadDataName4;
-febio_spec.MeshData.NodeData{4}.ATTR.node_set=nodeSetName3;
-febio_spec.MeshData.NodeData{4}.ATTR.data_type=<span class="string">'scalar'</span>;
-febio_spec.MeshData.NodeData{4}.node.ATTR.lid=(1:1:numel(bcPrescibeList_abductor))';
-febio_spec.MeshData.NodeData{4}.node.VAL=forceAbductor_distributed(:,1);
-
-loadDataName5=<span class="string">'forceAbductor_Y'</span>;
-febio_spec.MeshData.NodeData{5}.ATTR.name=loadDataName5;
-febio_spec.MeshData.NodeData{5}.ATTR.node_set=nodeSetName3;
-febio_spec.MeshData.NodeData{5}.ATTR.data_type=<span class="string">'scalar'</span>;
-febio_spec.MeshData.NodeData{5}.node.ATTR.lid=(1:1:numel(bcPrescibeList_abductor))';
-febio_spec.MeshData.NodeData{5}.node.VAL=forceAbductor_distributed(:,2);
-
-loadDataName6=<span class="string">'forceAbductor_Z'</span>;
-febio_spec.MeshData.NodeData{6}.ATTR.name=loadDataName6;
-febio_spec.MeshData.NodeData{6}.ATTR.node_set=nodeSetName3;
-febio_spec.MeshData.NodeData{6}.ATTR.data_type=<span class="string">'scalar'</span>;
-febio_spec.MeshData.NodeData{6}.node.ATTR.lid=(1:1:numel(bcPrescibeList_abductor))';
-febio_spec.MeshData.NodeData{6}.node.VAL=forceAbductor_distributed(:,3);
-
-loadDataName7=<span class="string">'forceVL_X'</span>;
-febio_spec.MeshData.NodeData{7}.ATTR.name=loadDataName7;
-febio_spec.MeshData.NodeData{7}.ATTR.node_set=nodeSetName4;
-febio_spec.MeshData.NodeData{7}.ATTR.data_type=<span class="string">'scalar'</span>;
-febio_spec.MeshData.NodeData{7}.node.ATTR.lid=(1:1:numel(bcPrescibeList_VastusLateralis))';
-febio_spec.MeshData.NodeData{7}.node.VAL=forceVastusLateralis_distributed(:,1);
-
-loadDataName8=<span class="string">'forceVL_Y'</span>;
-febio_spec.MeshData.NodeData{8}.ATTR.name=loadDataName8;
-febio_spec.MeshData.NodeData{8}.ATTR.node_set=nodeSetName4;
-febio_spec.MeshData.NodeData{8}.ATTR.data_type=<span class="string">'scalar'</span>;
-febio_spec.MeshData.NodeData{8}.node.ATTR.lid=(1:1:numel(bcPrescibeList_VastusLateralis))';
-febio_spec.MeshData.NodeData{8}.node.VAL=forceVastusLateralis_distributed(:,2);
-
-loadDataName9=<span class="string">'forceVL_Z'</span>;
-febio_spec.MeshData.NodeData{9}.ATTR.name=loadDataName9;
-febio_spec.MeshData.NodeData{9}.ATTR.node_set=nodeSetName4;
-febio_spec.MeshData.NodeData{9}.ATTR.data_type=<span class="string">'scalar'</span>;
-febio_spec.MeshData.NodeData{9}.node.ATTR.lid=(1:1:numel(bcPrescibeList_VastusLateralis))';
-febio_spec.MeshData.NodeData{9}.node.VAL=forceVastusLateralis_distributed(:,3);
-
-loadDataName10=<span class="string">'forceVM_X'</span>;
-febio_spec.MeshData.NodeData{10}.ATTR.name=loadDataName10;
-febio_spec.MeshData.NodeData{10}.ATTR.node_set=nodeSetName5;
-febio_spec.MeshData.NodeData{10}.ATTR.data_type=<span class="string">'scalar'</span>;
-febio_spec.MeshData.NodeData{10}.node.ATTR.lid=(1:1:numel(bcPrescibeList_VastusMedialis))';
-febio_spec.MeshData.NodeData{10}.node.VAL=forceVastusMedialis_distributed(:,1);
-
-loadDataName11=<span class="string">'forceVM_Y'</span>;
-febio_spec.MeshData.NodeData{11}.ATTR.name=loadDataName11;
-febio_spec.MeshData.NodeData{11}.ATTR.node_set=nodeSetName5;
-febio_spec.MeshData.NodeData{11}.ATTR.data_type=<span class="string">'scalar'</span>;
-febio_spec.MeshData.NodeData{11}.node.ATTR.lid=(1:1:numel(bcPrescibeList_VastusMedialis))';
-febio_spec.MeshData.NodeData{11}.node.VAL=forceVastusMedialis_distributed(:,2);
-
-loadDataName12=<span class="string">'forceVM_Z'</span>;
-febio_spec.MeshData.NodeData{12}.ATTR.name=loadDataName12;
-febio_spec.MeshData.NodeData{12}.ATTR.node_set=nodeSetName5;
-febio_spec.MeshData.NodeData{12}.ATTR.data_type=<span class="string">'scalar'</span>;
-febio_spec.MeshData.NodeData{12}.node.ATTR.lid=(1:1:numel(bcPrescibeList_VastusMedialis))';
-febio_spec.MeshData.NodeData{12}.node.VAL=forceVastusMedialis_distributed(:,3);
-
+febio_spec.MeshData.NodeData{4}.ATTR.node_set=nodeSetName5;
+febio_spec.MeshData.NodeData{4}.ATTR.datatype=<span class="string">'vec3'</span>;
+febio_spec.MeshData.NodeData{4}.node.ATTR.lid=(1:1:numel(bcPrescibeList_VastusMedialis))';
+febio_spec.MeshData.NodeData{4}.node.VAL=forceVastusMedialis_distributed;
 
 <span class="comment">%Loads section</span>
 <span class="comment">% -&gt; Prescribed nodal forces</span>
-febio_spec.Loads.nodal_load{1}.ATTR.name=<span class="string">'PrescribedForce1X'</span>;
-febio_spec.Loads.nodal_load{1}.ATTR.type=<span class="string">'nodal_load'</span>;
+febio_spec.Loads.nodal_load{1}.ATTR.name=<span class="string">'PrescribedForce1'</span>;
+febio_spec.Loads.nodal_load{1}.ATTR.type=<span class="string">'nodal_force'</span>;
 febio_spec.Loads.nodal_load{1}.ATTR.node_set=nodeSetName2;
-febio_spec.Loads.nodal_load{1}.dof=<span class="string">'x'</span>;
-febio_spec.Loads.nodal_load{1}.scale.ATTR.lc=1;
-febio_spec.Loads.nodal_load{1}.scale.ATTR.type=<span class="string">'map'</span>;
-febio_spec.Loads.nodal_load{1}.scale.VAL=loadDataName1;
+febio_spec.Loads.nodal_load{1}.value.ATTR.lc=1;
+febio_spec.Loads.nodal_load{1}.value.ATTR.type=<span class="string">'map'</span>;
+febio_spec.Loads.nodal_load{1}.value.VAL=loadDataName1;
 
-febio_spec.Loads.nodal_load{2}.ATTR.name=<span class="string">'PrescribedForce1Y'</span>;
-febio_spec.Loads.nodal_load{2}.ATTR.type=<span class="string">'nodal_load'</span>;
-febio_spec.Loads.nodal_load{2}.ATTR.node_set=nodeSetName2;
-febio_spec.Loads.nodal_load{2}.dof=<span class="string">'y'</span>;
-febio_spec.Loads.nodal_load{2}.scale.ATTR.lc=1;
-febio_spec.Loads.nodal_load{2}.scale.ATTR.type=<span class="string">'map'</span>;
-febio_spec.Loads.nodal_load{2}.scale.VAL=loadDataName2;
+febio_spec.Loads.nodal_load{2}.ATTR.name=<span class="string">'PrescribedForce2'</span>;
+febio_spec.Loads.nodal_load{2}.ATTR.type=<span class="string">'nodal_force'</span>;
+febio_spec.Loads.nodal_load{2}.ATTR.node_set=nodeSetName3;
+febio_spec.Loads.nodal_load{2}.value.ATTR.lc=1;
+febio_spec.Loads.nodal_load{2}.value.ATTR.type=<span class="string">'map'</span>;
+febio_spec.Loads.nodal_load{2}.value.VAL=loadDataName2;
 
-febio_spec.Loads.nodal_load{3}.ATTR.name=<span class="string">'PrescribedForce1Z'</span>;
-febio_spec.Loads.nodal_load{3}.ATTR.type=<span class="string">'nodal_load'</span>;
-febio_spec.Loads.nodal_load{3}.ATTR.node_set=nodeSetName2;
-febio_spec.Loads.nodal_load{3}.dof=<span class="string">'z'</span>;
-febio_spec.Loads.nodal_load{3}.scale.ATTR.lc=1;
-febio_spec.Loads.nodal_load{3}.scale.ATTR.type=<span class="string">'map'</span>;
-febio_spec.Loads.nodal_load{3}.scale.VAL=loadDataName3;
+febio_spec.Loads.nodal_load{3}.ATTR.name=<span class="string">'PrescribedForce3'</span>;
+febio_spec.Loads.nodal_load{3}.ATTR.type=<span class="string">'nodal_force'</span>;
+febio_spec.Loads.nodal_load{3}.ATTR.node_set=nodeSetName4;
+febio_spec.Loads.nodal_load{3}.value.ATTR.lc=1;
+febio_spec.Loads.nodal_load{3}.value.ATTR.type=<span class="string">'map'</span>;
+febio_spec.Loads.nodal_load{3}.value.VAL=loadDataName3;
 
-febio_spec.Loads.nodal_load{4}.ATTR.name=<span class="string">'PrescribedForce2X'</span>;
-febio_spec.Loads.nodal_load{4}.ATTR.type=<span class="string">'nodal_load'</span>;
-febio_spec.Loads.nodal_load{4}.ATTR.node_set=nodeSetName3;
-febio_spec.Loads.nodal_load{4}.dof=<span class="string">'x'</span>;
-febio_spec.Loads.nodal_load{4}.scale.ATTR.lc=1;
-febio_spec.Loads.nodal_load{4}.scale.ATTR.type=<span class="string">'map'</span>;
-febio_spec.Loads.nodal_load{4}.scale.VAL=loadDataName4;
-
-febio_spec.Loads.nodal_load{5}.ATTR.name=<span class="string">'PrescribedForce2Y'</span>;
-febio_spec.Loads.nodal_load{5}.ATTR.type=<span class="string">'nodal_load'</span>;
-febio_spec.Loads.nodal_load{5}.ATTR.node_set=nodeSetName3;
-febio_spec.Loads.nodal_load{5}.dof=<span class="string">'y'</span>;
-febio_spec.Loads.nodal_load{5}.scale.ATTR.lc=1;
-febio_spec.Loads.nodal_load{5}.scale.ATTR.type=<span class="string">'map'</span>;
-febio_spec.Loads.nodal_load{5}.scale.VAL=loadDataName5;
-
-febio_spec.Loads.nodal_load{6}.ATTR.name=<span class="string">'PrescribedForce2Z'</span>;
-febio_spec.Loads.nodal_load{6}.ATTR.type=<span class="string">'nodal_load'</span>;
-febio_spec.Loads.nodal_load{6}.ATTR.node_set=nodeSetName3;
-febio_spec.Loads.nodal_load{6}.dof=<span class="string">'z'</span>;
-febio_spec.Loads.nodal_load{6}.scale.ATTR.lc=1;
-febio_spec.Loads.nodal_load{6}.scale.ATTR.type=<span class="string">'map'</span>;
-febio_spec.Loads.nodal_load{6}.scale.VAL=loadDataName6;
-
-febio_spec.Loads.nodal_load{7}.ATTR.name=<span class="string">'PrescribedForce3X'</span>;
-febio_spec.Loads.nodal_load{7}.ATTR.type=<span class="string">'nodal_load'</span>;
-febio_spec.Loads.nodal_load{7}.ATTR.node_set=nodeSetName4;
-febio_spec.Loads.nodal_load{7}.dof=<span class="string">'x'</span>;
-febio_spec.Loads.nodal_load{7}.scale.ATTR.lc=1;
-febio_spec.Loads.nodal_load{7}.scale.ATTR.type=<span class="string">'map'</span>;
-febio_spec.Loads.nodal_load{7}.scale.VAL=loadDataName7;
-
-febio_spec.Loads.nodal_load{8}.ATTR.name=<span class="string">'PrescribedForce3Y'</span>;
-febio_spec.Loads.nodal_load{8}.ATTR.type=<span class="string">'nodal_load'</span>;
-febio_spec.Loads.nodal_load{8}.ATTR.node_set=nodeSetName4;
-febio_spec.Loads.nodal_load{8}.dof=<span class="string">'y'</span>;
-febio_spec.Loads.nodal_load{8}.scale.ATTR.lc=1;
-febio_spec.Loads.nodal_load{8}.scale.ATTR.type=<span class="string">'map'</span>;
-febio_spec.Loads.nodal_load{8}.scale.VAL=loadDataName8;
-
-febio_spec.Loads.nodal_load{9}.ATTR.name=<span class="string">'PrescribedForce3Z'</span>;
-febio_spec.Loads.nodal_load{9}.ATTR.type=<span class="string">'nodal_load'</span>;
-febio_spec.Loads.nodal_load{9}.ATTR.node_set=nodeSetName4;
-febio_spec.Loads.nodal_load{9}.dof=<span class="string">'z'</span>;
-febio_spec.Loads.nodal_load{9}.scale.ATTR.lc=1;
-febio_spec.Loads.nodal_load{9}.scale.ATTR.type=<span class="string">'map'</span>;
-febio_spec.Loads.nodal_load{9}.scale.VAL=loadDataName9;
-
-febio_spec.Loads.nodal_load{10}.ATTR.name=<span class="string">'PrescribedForce4X'</span>;
-febio_spec.Loads.nodal_load{10}.ATTR.type=<span class="string">'nodal_load'</span>;
-febio_spec.Loads.nodal_load{10}.ATTR.node_set=nodeSetName5;
-febio_spec.Loads.nodal_load{10}.dof=<span class="string">'x'</span>;
-febio_spec.Loads.nodal_load{10}.scale.ATTR.lc=1;
-febio_spec.Loads.nodal_load{10}.scale.ATTR.type=<span class="string">'map'</span>;
-febio_spec.Loads.nodal_load{10}.scale.VAL=loadDataName10;
-
-febio_spec.Loads.nodal_load{11}.ATTR.name=<span class="string">'PrescribedForce4Y'</span>;
-febio_spec.Loads.nodal_load{11}.ATTR.type=<span class="string">'nodal_load'</span>;
-febio_spec.Loads.nodal_load{11}.ATTR.node_set=nodeSetName5;
-febio_spec.Loads.nodal_load{11}.dof=<span class="string">'y'</span>;
-febio_spec.Loads.nodal_load{11}.scale.ATTR.lc=1;
-febio_spec.Loads.nodal_load{11}.scale.ATTR.type=<span class="string">'map'</span>;
-febio_spec.Loads.nodal_load{11}.scale.VAL=loadDataName11;
-
-febio_spec.Loads.nodal_load{12}.ATTR.name=<span class="string">'PrescribedForce4Z'</span>;
-febio_spec.Loads.nodal_load{12}.ATTR.type=<span class="string">'nodal_load'</span>;
-febio_spec.Loads.nodal_load{12}.ATTR.node_set=nodeSetName5;
-febio_spec.Loads.nodal_load{12}.dof=<span class="string">'z'</span>;
-febio_spec.Loads.nodal_load{12}.scale.ATTR.lc=1;
-febio_spec.Loads.nodal_load{12}.scale.ATTR.type=<span class="string">'map'</span>;
-febio_spec.Loads.nodal_load{12}.scale.VAL=loadDataName12;
+febio_spec.Loads.nodal_load{4}.ATTR.name=<span class="string">'PrescribedForce4'</span>;
+febio_spec.Loads.nodal_load{4}.ATTR.type=<span class="string">'nodal_force'</span>;
+febio_spec.Loads.nodal_load{4}.ATTR.node_set=nodeSetName5;
+febio_spec.Loads.nodal_load{4}.value.ATTR.lc=1;
+febio_spec.Loads.nodal_load{4}.value.ATTR.type=<span class="string">'map'</span>;
+febio_spec.Loads.nodal_load{4}.value.VAL=loadDataName2;
 
 <span class="comment">%LoadData section</span>
 <span class="comment">% -&gt; load_controller</span>
@@ -741,9 +618,13 @@ febioAnalysis.runMode=runMode;<span class="comment">%'internal';</span>
 [runFlag]=runMonitorFEBio(febioAnalysis);<span class="comment">%START FEBio NOW!!!!!!!!</span>
 </pre><pre class="codeoutput"> 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
---------&gt;    RUNNING/MONITORING FEBIO JOB    &lt;-------- 16-Dec-2020 16:38:18
+--------&gt;    RUNNING/MONITORING FEBIO JOB    &lt;-------- 17-Dec-2020 09:14:52
 FEBio path: /home/kevin/FEBioStudio/bin/febio3
-# Starting FEBio...                                    16-Dec-2020 16:38:18
+# Attempt removal of existing log files                17-Dec-2020 09:14:52
+ * Removal succesful                                   17-Dec-2020 09:14:52
+# Attempt removal of existing .xplt files              17-Dec-2020 09:14:52
+ * Removal succesful                                   17-Dec-2020 09:14:52
+# Starting FEBio...                                    17-Dec-2020 09:14:52
   Max. total analysis time is: Inf s
 
 ===========================================================================
@@ -770,34 +651,10 @@ FEBio path: /home/kevin/FEBioStudio/bin/febio3
 Default linear solver: pardiso
 Reading file /mnt/data/MATLAB/GIBBON/data/temp/tempModel.feb ...SUCCESS!
 
-Setting parameter "scale" to : 0
-Setting parameter "scale" to : 0
-Setting parameter "scale" to : 0
-Setting parameter "scale" to : 0
-Setting parameter "scale" to : 0
-Setting parameter "scale" to : 0
-Setting parameter "scale" to : 0
-Setting parameter "scale" to : 0
-Setting parameter "scale" to : 0
-Setting parameter "scale" to : 0
-Setting parameter "scale" to : 0
-Setting parameter "scale" to : 0
 
  ]0;(0%) tempModel.feb - FEBio 3.1.0  
 ===== beginning time step 1 : 0.1 =====
 
-Setting parameter "scale" to : 0.1
-Setting parameter "scale" to : 0.1
-Setting parameter "scale" to : 0.1
-Setting parameter "scale" to : 0.1
-Setting parameter "scale" to : 0.1
-Setting parameter "scale" to : 0.1
-Setting parameter "scale" to : 0.1
-Setting parameter "scale" to : 0.1
-Setting parameter "scale" to : 0.1
-Setting parameter "scale" to : 0.1
-Setting parameter "scale" to : 0.1
-Setting parameter "scale" to : 0.1
 
 Reforming stiffness matrix: reformation #1
 
@@ -811,9 +668,9 @@ Reforming stiffness matrix: reformation #1
 	stiffness matrix reformations = 1
 	step from line search         = 1.000000
 	convergence norms :     INITIAL         CURRENT         REQUIRED
-	   residual            5.471727e+02    8.204541e+03    0.000000e+00 
-	   energy              3.338309e+01    2.518152e-01    3.338309e-01 
-	   displacement        1.263560e+03    1.263560e+03    1.263560e-03 
+	   residual            6.335556e+02    1.529604e+04    0.000000e+00 
+	   energy              4.753858e+01    5.359662e-01    4.753858e-01 
+	   displacement        1.826470e+03    1.826470e+03    1.826470e-03 
 Reforming stiffness matrix: reformation #2
 
  2
@@ -823,9 +680,9 @@ Reforming stiffness matrix: reformation #2
 	stiffness matrix reformations = 2
 	step from line search         = 1.000000
 	convergence norms :     INITIAL         CURRENT         REQUIRED
-	   residual            5.471727e+02    1.659368e-07    0.000000e+00 
-	   energy              3.338309e+01    2.928381e-07    3.338309e-01 
-	   displacement        1.263560e+03    3.194851e-03    1.265918e-03 
+	   residual            6.335556e+02    5.704865e-07    0.000000e+00 
+	   energy              4.753858e+01    1.672729e-06    4.753858e-01 
+	   displacement        1.826470e+03    4.328138e-03    1.827371e-03 
 Reforming stiffness matrix: reformation #3
 
  3
@@ -835,9 +692,9 @@ Reforming stiffness matrix: reformation #3
 	stiffness matrix reformations = 3
 	step from line search         = 1.000000
 	convergence norms :     INITIAL         CURRENT         REQUIRED
-	   residual            5.471727e+02    1.162953e-14    0.000000e+00 
-	   energy              3.338309e+01    7.681720e-17    3.338309e-01 
-	   displacement        1.263560e+03    8.700835e-08    1.265938e-03 
+	   residual            6.335556e+02    1.085011e-14    0.000000e+00 
+	   energy              4.753858e+01    1.202808e-16    4.753858e-01 
+	   displacement        1.826470e+03    2.517326e-08    1.827385e-03 
 
 convergence summary
     number of iterations   : 3
@@ -869,18 +726,6 @@ File = /mnt/data/MATLAB/GIBBON/data/temp/tempModel_energy_out.txt
  ]0;(10%) tempModel.feb - FEBio 3.1.0  
 ===== beginning time step 2 : 0.2 =====
 
-Setting parameter "scale" to : 0.2
-Setting parameter "scale" to : 0.2
-Setting parameter "scale" to : 0.2
-Setting parameter "scale" to : 0.2
-Setting parameter "scale" to : 0.2
-Setting parameter "scale" to : 0.2
-Setting parameter "scale" to : 0.2
-Setting parameter "scale" to : 0.2
-Setting parameter "scale" to : 0.2
-Setting parameter "scale" to : 0.2
-Setting parameter "scale" to : 0.2
-Setting parameter "scale" to : 0.2
 
 Reforming stiffness matrix: reformation #1
 
@@ -891,9 +736,9 @@ Reforming stiffness matrix: reformation #1
 	stiffness matrix reformations = 1
 	step from line search         = 1.000000
 	convergence norms :     INITIAL         CURRENT         REQUIRED
-	   residual            5.471727e+02    8.262885e+03    0.000000e+00 
-	   energy              3.347431e+01    2.542289e-01    3.347431e-01 
-	   displacement        1.268314e+03    1.268314e+03    1.268314e-03 
+	   residual            6.335556e+02    1.532977e+04    0.000000e+00 
+	   energy              4.757538e+01    5.380385e-01    4.757538e-01 
+	   displacement        1.828286e+03    1.828286e+03    1.828286e-03 
 Reforming stiffness matrix: reformation #2
 
  2
@@ -903,9 +748,9 @@ Reforming stiffness matrix: reformation #2
 	stiffness matrix reformations = 2
 	step from line search         = 1.000000
 	convergence norms :     INITIAL         CURRENT         REQUIRED
-	   residual            5.471727e+02    1.681023e-07    0.000000e+00 
-	   energy              3.347431e+01    3.044889e-07    3.347431e-01 
-	   displacement        1.268314e+03    3.192191e-03    1.270655e-03 
+	   residual            6.335556e+02    5.730330e-07    0.000000e+00 
+	   energy              4.757538e+01    1.684135e-06    4.757538e-01 
+	   displacement        1.828286e+03    4.324718e-03    1.829139e-03 
 Reforming stiffness matrix: reformation #3
 
  3
@@ -915,9 +760,9 @@ Reforming stiffness matrix: reformation #3
 	stiffness matrix reformations = 3
 	step from line search         = 1.000000
 	convergence norms :     INITIAL         CURRENT         REQUIRED
-	   residual            5.471727e+02    1.116045e-14    0.000000e+00 
-	   energy              3.347431e+01    2.310416e-16    3.347431e-01 
-	   displacement        1.268314e+03    8.637173e-08    1.270676e-03 
+	   residual            6.335556e+02    1.168520e-14    0.000000e+00 
+	   energy              4.757538e+01    8.877905e-17    4.757538e-01 
+	   displacement        1.828286e+03    2.317932e-08    1.829151e-03 
 
 convergence summary
     number of iterations   : 3
@@ -949,18 +794,6 @@ File = /mnt/data/MATLAB/GIBBON/data/temp/tempModel_energy_out.txt
  ]0;(20%) tempModel.feb - FEBio 3.1.0  
 ===== beginning time step 3 : 0.3 =====
 
-Setting parameter "scale" to : 0.3
-Setting parameter "scale" to : 0.3
-Setting parameter "scale" to : 0.3
-Setting parameter "scale" to : 0.3
-Setting parameter "scale" to : 0.3
-Setting parameter "scale" to : 0.3
-Setting parameter "scale" to : 0.3
-Setting parameter "scale" to : 0.3
-Setting parameter "scale" to : 0.3
-Setting parameter "scale" to : 0.3
-Setting parameter "scale" to : 0.3
-Setting parameter "scale" to : 0.3
 
 Reforming stiffness matrix: reformation #1
 
@@ -971,9 +804,9 @@ Reforming stiffness matrix: reformation #1
 	stiffness matrix reformations = 1
 	step from line search         = 1.000000
 	convergence norms :     INITIAL         CURRENT         REQUIRED
-	   residual            5.471727e+02    8.321001e+03    0.000000e+00 
-	   energy              3.356496e+01    2.566402e-01    3.356496e-01 
-	   displacement        1.273036e+03    1.273036e+03    1.273036e-03 
+	   residual            6.335556e+02    1.536183e+04    0.000000e+00 
+	   energy              4.761049e+01    5.400538e-01    4.761049e-01 
+	   displacement        1.830003e+03    1.830003e+03    1.830003e-03 
 Reforming stiffness matrix: reformation #2
 
  2
@@ -983,9 +816,9 @@ Reforming stiffness matrix: reformation #2
 	stiffness matrix reformations = 2
 	step from line search         = 1.000000
 	convergence norms :     INITIAL         CURRENT         REQUIRED
-	   residual            5.471727e+02    1.702769e-07    0.000000e+00 
-	   energy              3.356496e+01    3.162054e-07    3.356496e-01 
-	   displacement        1.273036e+03    3.189373e-03    1.275362e-03 
+	   residual            6.335556e+02    5.754575e-07    0.000000e+00 
+	   energy              4.761049e+01    1.694968e-06    4.761049e-01 
+	   displacement        1.830003e+03    4.321463e-03    1.830807e-03 
 Reforming stiffness matrix: reformation #3
 
  3
@@ -995,9 +828,9 @@ Reforming stiffness matrix: reformation #3
 	stiffness matrix reformations = 3
 	step from line search         = 1.000000
 	convergence norms :     INITIAL         CURRENT         REQUIRED
-	   residual            5.471727e+02    1.197975e-14    0.000000e+00 
-	   energy              3.356496e+01    2.587149e-16    3.356496e-01 
-	   displacement        1.273036e+03    8.570000e-08    1.275383e-03 
+	   residual            6.335556e+02    1.092817e-14    0.000000e+00 
+	   energy              4.761049e+01    7.388013e-17    4.761049e-01 
+	   displacement        1.830003e+03    2.126026e-08    1.830819e-03 
 
 convergence summary
     number of iterations   : 3
@@ -1029,18 +862,6 @@ File = /mnt/data/MATLAB/GIBBON/data/temp/tempModel_energy_out.txt
  ]0;(30%) tempModel.feb - FEBio 3.1.0  
 ===== beginning time step 4 : 0.4 =====
 
-Setting parameter "scale" to : 0.4
-Setting parameter "scale" to : 0.4
-Setting parameter "scale" to : 0.4
-Setting parameter "scale" to : 0.4
-Setting parameter "scale" to : 0.4
-Setting parameter "scale" to : 0.4
-Setting parameter "scale" to : 0.4
-Setting parameter "scale" to : 0.4
-Setting parameter "scale" to : 0.4
-Setting parameter "scale" to : 0.4
-Setting parameter "scale" to : 0.4
-Setting parameter "scale" to : 0.4
 
 Reforming stiffness matrix: reformation #1
 
@@ -1051,9 +872,9 @@ Reforming stiffness matrix: reformation #1
 	stiffness matrix reformations = 1
 	step from line search         = 1.000000
 	convergence norms :     INITIAL         CURRENT         REQUIRED
-	   residual            5.471727e+02    8.378876e+03    0.000000e+00 
-	   energy              3.365502e+01    2.590486e-01    3.365502e-01 
-	   displacement        1.277726e+03    1.277726e+03    1.277726e-03 
+	   residual            6.335556e+02    1.539222e+04    0.000000e+00 
+	   energy              4.764392e+01    5.420115e-01    4.764392e-01 
+	   displacement        1.831621e+03    1.831621e+03    1.831621e-03 
 Reforming stiffness matrix: reformation #2
 
  2
@@ -1063,9 +884,9 @@ Reforming stiffness matrix: reformation #2
 	stiffness matrix reformations = 2
 	step from line search         = 1.000000
 	convergence norms :     INITIAL         CURRENT         REQUIRED
-	   residual            5.471727e+02    1.724609e-07    0.000000e+00 
-	   energy              3.365502e+01    3.279831e-07    3.365502e-01 
-	   displacement        1.277726e+03    3.186400e-03    1.280036e-03 
+	   residual            6.335556e+02    5.777559e-07    0.000000e+00 
+	   energy              4.764392e+01    1.705218e-06    4.764392e-01 
+	   displacement        1.831621e+03    4.318377e-03    1.832375e-03 
 Reforming stiffness matrix: reformation #3
 
  3
@@ -1075,9 +896,9 @@ Reforming stiffness matrix: reformation #3
 	stiffness matrix reformations = 3
 	step from line search         = 1.000000
 	convergence norms :     INITIAL         CURRENT         REQUIRED
-	   residual            5.471727e+02    1.192694e-14    0.000000e+00 
-	   energy              3.365502e+01    3.180514e-16    3.365502e-01 
-	   displacement        1.277726e+03    8.499345e-08    1.280057e-03 
+	   residual            6.335556e+02    1.177036e-14    0.000000e+00 
+	   energy              4.764392e+01    8.637430e-17    4.764392e-01 
+	   displacement        1.831621e+03    1.941889e-08    1.832387e-03 
 
 convergence summary
     number of iterations   : 3
@@ -1109,18 +930,6 @@ File = /mnt/data/MATLAB/GIBBON/data/temp/tempModel_energy_out.txt
  ]0;(40%) tempModel.feb - FEBio 3.1.0  
 ===== beginning time step 5 : 0.5 =====
 
-Setting parameter "scale" to : 0.5
-Setting parameter "scale" to : 0.5
-Setting parameter "scale" to : 0.5
-Setting parameter "scale" to : 0.5
-Setting parameter "scale" to : 0.5
-Setting parameter "scale" to : 0.5
-Setting parameter "scale" to : 0.5
-Setting parameter "scale" to : 0.5
-Setting parameter "scale" to : 0.5
-Setting parameter "scale" to : 0.5
-Setting parameter "scale" to : 0.5
-Setting parameter "scale" to : 0.5
 
 Reforming stiffness matrix: reformation #1
 
@@ -1131,9 +940,9 @@ Reforming stiffness matrix: reformation #1
 	stiffness matrix reformations = 1
 	step from line search         = 1.000000
 	convergence norms :     INITIAL         CURRENT         REQUIRED
-	   residual            5.471727e+02    8.436495e+03    0.000000e+00 
-	   energy              3.374448e+01    2.614535e-01    3.374448e-01 
-	   displacement        1.282385e+03    1.282385e+03    1.282385e-03 
+	   residual            6.335556e+02    1.542091e+04    0.000000e+00 
+	   energy              4.767565e+01    5.439109e-01    4.767565e-01 
+	   displacement        1.833139e+03    1.833139e+03    1.833139e-03 
 Reforming stiffness matrix: reformation #2
 
  2
@@ -1143,9 +952,9 @@ Reforming stiffness matrix: reformation #2
 	stiffness matrix reformations = 2
 	step from line search         = 1.000000
 	convergence norms :     INITIAL         CURRENT         REQUIRED
-	   residual            5.471727e+02    1.746526e-07    0.000000e+00 
-	   energy              3.374448e+01    3.398162e-07    3.374448e-01 
-	   displacement        1.282385e+03    3.183278e-03    1.284678e-03 
+	   residual            6.335556e+02    5.799264e-07    0.000000e+00 
+	   energy              4.767565e+01    1.714877e-06    4.767565e-01 
+	   displacement        1.833139e+03    4.315466e-03    1.833844e-03 
 Reforming stiffness matrix: reformation #3
 
  3
@@ -1155,9 +964,9 @@ Reforming stiffness matrix: reformation #3
 	stiffness matrix reformations = 3
 	step from line search         = 1.000000
 	convergence norms :     INITIAL         CURRENT         REQUIRED
-	   residual            5.471727e+02    1.105974e-14    0.000000e+00 
-	   energy              3.374448e+01    1.721964e-16    3.374448e-01 
-	   displacement        1.282385e+03    8.425239e-08    1.284699e-03 
+	   residual            6.335556e+02    1.192229e-14    0.000000e+00 
+	   energy              4.767565e+01    1.247746e-16    4.767565e-01 
+	   displacement        1.833139e+03    1.765790e-08    1.833855e-03 
 
 convergence summary
     number of iterations   : 3
@@ -1189,18 +998,6 @@ File = /mnt/data/MATLAB/GIBBON/data/temp/tempModel_energy_out.txt
  ]0;(50%) tempModel.feb - FEBio 3.1.0  
 ===== beginning time step 6 : 0.6 =====
 
-Setting parameter "scale" to : 0.6
-Setting parameter "scale" to : 0.6
-Setting parameter "scale" to : 0.6
-Setting parameter "scale" to : 0.6
-Setting parameter "scale" to : 0.6
-Setting parameter "scale" to : 0.6
-Setting parameter "scale" to : 0.6
-Setting parameter "scale" to : 0.6
-Setting parameter "scale" to : 0.6
-Setting parameter "scale" to : 0.6
-Setting parameter "scale" to : 0.6
-Setting parameter "scale" to : 0.6
 
 Reforming stiffness matrix: reformation #1
 
@@ -1211,9 +1008,9 @@ Reforming stiffness matrix: reformation #1
 	stiffness matrix reformations = 1
 	step from line search         = 1.000000
 	convergence norms :     INITIAL         CURRENT         REQUIRED
-	   residual            5.471727e+02    8.493843e+03    0.000000e+00 
-	   energy              3.383332e+01    2.638544e-01    3.383332e-01 
-	   displacement        1.287010e+03    1.287010e+03    1.287010e-03 
+	   residual            6.335556e+02    1.544789e+04    0.000000e+00 
+	   energy              4.770568e+01    5.457513e-01    4.770568e-01 
+	   displacement        1.834557e+03    1.834557e+03    1.834557e-03 
 Reforming stiffness matrix: reformation #2
 
  2
@@ -1223,9 +1020,9 @@ Reforming stiffness matrix: reformation #2
 	stiffness matrix reformations = 2
 	step from line search         = 1.000000
 	convergence norms :     INITIAL         CURRENT         REQUIRED
-	   residual            5.471727e+02    1.768523e-07    0.000000e+00 
-	   energy              3.383332e+01    3.517003e-07    3.383332e-01 
-	   displacement        1.287010e+03    3.180011e-03    1.289287e-03 
+	   residual            6.335556e+02    5.819656e-07    0.000000e+00 
+	   energy              4.770568e+01    1.723934e-06    4.770568e-01 
+	   displacement        1.834557e+03    4.312733e-03    1.835212e-03 
 Reforming stiffness matrix: reformation #3
 
  3
@@ -1235,9 +1032,9 @@ Reforming stiffness matrix: reformation #3
 	stiffness matrix reformations = 3
 	step from line search         = 1.000000
 	convergence norms :     INITIAL         CURRENT         REQUIRED
-	   residual            5.471727e+02    1.118293e-14    0.000000e+00 
-	   energy              3.383332e+01    1.748595e-16    3.383332e-01 
-	   displacement        1.287010e+03    8.347722e-08    1.289307e-03 
+	   residual            6.335556e+02    1.091150e-14    0.000000e+00 
+	   energy              4.770568e+01    6.744753e-17    4.770568e-01 
+	   displacement        1.834557e+03    1.597984e-08    1.835222e-03 
 
 convergence summary
     number of iterations   : 3
@@ -1269,18 +1066,6 @@ File = /mnt/data/MATLAB/GIBBON/data/temp/tempModel_energy_out.txt
  ]0;(60%) tempModel.feb - FEBio 3.1.0  
 ===== beginning time step 7 : 0.7 =====
 
-Setting parameter "scale" to : 0.7
-Setting parameter "scale" to : 0.7
-Setting parameter "scale" to : 0.7
-Setting parameter "scale" to : 0.7
-Setting parameter "scale" to : 0.7
-Setting parameter "scale" to : 0.7
-Setting parameter "scale" to : 0.7
-Setting parameter "scale" to : 0.7
-Setting parameter "scale" to : 0.7
-Setting parameter "scale" to : 0.7
-Setting parameter "scale" to : 0.7
-Setting parameter "scale" to : 0.7
 
 Reforming stiffness matrix: reformation #1
 
@@ -1291,9 +1076,9 @@ Reforming stiffness matrix: reformation #1
 	stiffness matrix reformations = 1
 	step from line search         = 1.000000
 	convergence norms :     INITIAL         CURRENT         REQUIRED
-	   residual            5.471727e+02    8.550905e+03    0.000000e+00 
-	   energy              3.392155e+01    2.662507e-01    3.392155e-01 
-	   displacement        1.291601e+03    1.291601e+03    1.291601e-03 
+	   residual            6.335556e+02    1.547316e+04    0.000000e+00 
+	   energy              4.773400e+01    5.475322e-01    4.773400e-01 
+	   displacement        1.835874e+03    1.835874e+03    1.835874e-03 
 Reforming stiffness matrix: reformation #2
 
  2
@@ -1303,9 +1088,9 @@ Reforming stiffness matrix: reformation #2
 	stiffness matrix reformations = 2
 	step from line search         = 1.000000
 	convergence norms :     INITIAL         CURRENT         REQUIRED
-	   residual            5.471727e+02    1.790585e-07    0.000000e+00 
-	   energy              3.392155e+01    3.636293e-07    3.392155e-01 
-	   displacement        1.291601e+03    3.176601e-03    1.293860e-03 
+	   residual            6.335556e+02    5.838745e-07    0.000000e+00 
+	   energy              4.773400e+01    1.732386e-06    4.773400e-01 
+	   displacement        1.835874e+03    4.310182e-03    1.836480e-03 
 Reforming stiffness matrix: reformation #3
 
  3
@@ -1315,9 +1100,9 @@ Reforming stiffness matrix: reformation #3
 	stiffness matrix reformations = 3
 	step from line search         = 1.000000
 	convergence norms :     INITIAL         CURRENT         REQUIRED
-	   residual            5.471727e+02    1.079919e-14    0.000000e+00 
-	   energy              3.392155e+01    1.463469e-16    3.392155e-01 
-	   displacement        1.291601e+03    8.266837e-08    1.293881e-03 
+	   residual            6.335556e+02    1.212764e-14    0.000000e+00 
+	   energy              4.773400e+01    1.474827e-16    4.773400e-01 
+	   displacement        1.835874e+03    1.438713e-08    1.836489e-03 
 
 convergence summary
     number of iterations   : 3
@@ -1349,18 +1134,6 @@ File = /mnt/data/MATLAB/GIBBON/data/temp/tempModel_energy_out.txt
  ]0;(70%) tempModel.feb - FEBio 3.1.0  
 ===== beginning time step 8 : 0.8 =====
 
-Setting parameter "scale" to : 0.8
-Setting parameter "scale" to : 0.8
-Setting parameter "scale" to : 0.8
-Setting parameter "scale" to : 0.8
-Setting parameter "scale" to : 0.8
-Setting parameter "scale" to : 0.8
-Setting parameter "scale" to : 0.8
-Setting parameter "scale" to : 0.8
-Setting parameter "scale" to : 0.8
-Setting parameter "scale" to : 0.8
-Setting parameter "scale" to : 0.8
-Setting parameter "scale" to : 0.8
 
 Reforming stiffness matrix: reformation #1
 
@@ -1371,9 +1144,9 @@ Reforming stiffness matrix: reformation #1
 	stiffness matrix reformations = 1
 	step from line search         = 1.000000
 	convergence norms :     INITIAL         CURRENT         REQUIRED
-	   residual            5.471727e+02    8.607667e+03    0.000000e+00 
-	   energy              3.400914e+01    2.686419e-01    3.400914e-01 
-	   displacement        1.296157e+03    1.296157e+03    1.296157e-03 
+	   residual            6.335556e+02    1.549670e+04    0.000000e+00 
+	   energy              4.776060e+01    5.492530e-01    4.776060e-01 
+	   displacement        1.837091e+03    1.837091e+03    1.837091e-03 
 Reforming stiffness matrix: reformation #2
 
  2
@@ -1383,9 +1156,9 @@ Reforming stiffness matrix: reformation #2
 	stiffness matrix reformations = 2
 	step from line search         = 1.000000
 	convergence norms :     INITIAL         CURRENT         REQUIRED
-	   residual            5.471727e+02    1.812699e-07    0.000000e+00 
-	   energy              3.400914e+01    3.755982e-07    3.400914e-01 
-	   displacement        1.296157e+03    3.173054e-03    1.298399e-03 
+	   residual            6.335556e+02    5.856501e-07    0.000000e+00 
+	   energy              4.776060e+01    1.740223e-06    4.776060e-01 
+	   displacement        1.837091e+03    4.307818e-03    1.837646e-03 
 Reforming stiffness matrix: reformation #3
 
  3
@@ -1395,9 +1168,9 @@ Reforming stiffness matrix: reformation #3
 	stiffness matrix reformations = 3
 	step from line search         = 1.000000
 	convergence norms :     INITIAL         CURRENT         REQUIRED
-	   residual            5.471727e+02    1.152486e-14    0.000000e+00 
-	   energy              3.400914e+01    2.180865e-16    3.400914e-01 
-	   displacement        1.296157e+03    8.182628e-08    1.298420e-03 
+	   residual            6.335556e+02    1.171874e-14    0.000000e+00 
+	   energy              4.776060e+01    1.121913e-18    4.776060e-01 
+	   displacement        1.837091e+03    1.288205e-08    1.837655e-03 
 
 convergence summary
     number of iterations   : 3
@@ -1429,18 +1202,6 @@ File = /mnt/data/MATLAB/GIBBON/data/temp/tempModel_energy_out.txt
  ]0;(80%) tempModel.feb - FEBio 3.1.0  
 ===== beginning time step 9 : 0.9 =====
 
-Setting parameter "scale" to : 0.9
-Setting parameter "scale" to : 0.9
-Setting parameter "scale" to : 0.9
-Setting parameter "scale" to : 0.9
-Setting parameter "scale" to : 0.9
-Setting parameter "scale" to : 0.9
-Setting parameter "scale" to : 0.9
-Setting parameter "scale" to : 0.9
-Setting parameter "scale" to : 0.9
-Setting parameter "scale" to : 0.9
-Setting parameter "scale" to : 0.9
-Setting parameter "scale" to : 0.9
 
 Reforming stiffness matrix: reformation #1
 
@@ -1451,9 +1212,9 @@ Reforming stiffness matrix: reformation #1
 	stiffness matrix reformations = 1
 	step from line search         = 1.000000
 	convergence norms :     INITIAL         CURRENT         REQUIRED
-	   residual            5.471727e+02    8.664115e+03    0.000000e+00 
-	   energy              3.409609e+01    2.710275e-01    3.409609e-01 
-	   displacement        1.300678e+03    1.300678e+03    1.300678e-03 
+	   residual            6.335556e+02    1.551851e+04    0.000000e+00 
+	   energy              4.778550e+01    5.509132e-01    4.778550e-01 
+	   displacement        1.838206e+03    1.838206e+03    1.838206e-03 
 Reforming stiffness matrix: reformation #2
 
  2
@@ -1463,9 +1224,9 @@ Reforming stiffness matrix: reformation #2
 	stiffness matrix reformations = 2
 	step from line search         = 1.000000
 	convergence norms :     INITIAL         CURRENT         REQUIRED
-	   residual            5.471727e+02    1.834870e-07    0.000000e+00 
-	   energy              3.409609e+01    3.876012e-07    3.409609e-01 
-	   displacement        1.300678e+03    3.169374e-03    1.302902e-03 
+	   residual            6.335556e+02    5.872922e-07    0.000000e+00 
+	   energy              4.778550e+01    1.747440e-06    4.778550e-01 
+	   displacement        1.838206e+03    4.305642e-03    1.838711e-03 
 Reforming stiffness matrix: reformation #3
 
  3
@@ -1475,9 +1236,9 @@ Reforming stiffness matrix: reformation #3
 	stiffness matrix reformations = 3
 	step from line search         = 1.000000
 	convergence norms :     INITIAL         CURRENT         REQUIRED
-	   residual            5.471727e+02    1.139137e-14    0.000000e+00 
-	   energy              3.409609e+01    2.040967e-17    3.409609e-01 
-	   displacement        1.300678e+03    8.095148e-08    1.302922e-03 
+	   residual            6.335556e+02    1.120311e-14    0.000000e+00 
+	   energy              4.778550e+01    1.184558e-16    4.778550e-01 
+	   displacement        1.838206e+03    1.146672e-08    1.838720e-03 
 
 convergence summary
     number of iterations   : 3
@@ -1509,18 +1270,6 @@ File = /mnt/data/MATLAB/GIBBON/data/temp/tempModel_energy_out.txt
  ]0;(90%) tempModel.feb - FEBio 3.1.0  
 ===== beginning time step 10 : 1 =====
 
-Setting parameter "scale" to : 1
-Setting parameter "scale" to : 1
-Setting parameter "scale" to : 1
-Setting parameter "scale" to : 1
-Setting parameter "scale" to : 1
-Setting parameter "scale" to : 1
-Setting parameter "scale" to : 1
-Setting parameter "scale" to : 1
-Setting parameter "scale" to : 1
-Setting parameter "scale" to : 1
-Setting parameter "scale" to : 1
-Setting parameter "scale" to : 1
 
 Reforming stiffness matrix: reformation #1
 
@@ -1531,9 +1280,9 @@ Reforming stiffness matrix: reformation #1
 	stiffness matrix reformations = 1
 	step from line search         = 1.000000
 	convergence norms :     INITIAL         CURRENT         REQUIRED
-	   residual            5.471727e+02    8.720232e+03    0.000000e+00 
-	   energy              3.418238e+01    2.734068e-01    3.418238e-01 
-	   displacement        1.305163e+03    1.305163e+03    1.305163e-03 
+	   residual            6.335556e+02    1.553857e+04    0.000000e+00 
+	   energy              4.780866e+01    5.525122e-01    4.780866e-01 
+	   displacement        1.839220e+03    1.839220e+03    1.839220e-03 
 Reforming stiffness matrix: reformation #2
 
  2
@@ -1543,9 +1292,9 @@ Reforming stiffness matrix: reformation #2
 	stiffness matrix reformations = 2
 	step from line search         = 1.000000
 	convergence norms :     INITIAL         CURRENT         REQUIRED
-	   residual            5.471727e+02    1.857068e-07    0.000000e+00 
-	   energy              3.418238e+01    3.996325e-07    3.418238e-01 
-	   displacement        1.305163e+03    3.165566e-03    1.307368e-03 
+	   residual            6.335556e+02    5.887968e-07    0.000000e+00 
+	   energy              4.780866e+01    1.754032e-06    4.780866e-01 
+	   displacement        1.839220e+03    4.303659e-03    1.839675e-03 
 Reforming stiffness matrix: reformation #3
 
  3
@@ -1555,9 +1304,9 @@ Reforming stiffness matrix: reformation #3
 	stiffness matrix reformations = 3
 	step from line search         = 1.000000
 	convergence norms :     INITIAL         CURRENT         REQUIRED
-	   residual            5.471727e+02    1.138399e-14    0.000000e+00 
-	   energy              3.418238e+01    2.766516e-17    3.418238e-01 
-	   displacement        1.305163e+03    8.004457e-08    1.307388e-03 
+	   residual            6.335556e+02    1.062079e-14    0.000000e+00 
+	   energy              4.780866e+01    1.094239e-16    4.780866e-01 
+	   displacement        1.839220e+03    1.014313e-08    1.839683e-03 
 
 convergence summary
     number of iterations   : 3
@@ -1607,49 +1356,49 @@ File = /mnt/data/MATLAB/GIBBON/data/temp/tempModel_energy_out.txt
 
 	Avg iterations per solve ............ : 1
 
-	Time in linear solver: 0:00:05
+	Time in linear solver: 0:00:04
 
  ]0;(0%) tempModel.feb - FEBio 3.1.0  
- Elapsed time : 0:00:20
+ Elapsed time : 0:00:16
 
 
  N O R M A L   T E R M I N A T I O N
 
- * Log file found.                                     16-Dec-2020 16:38:38
-# Parsing log file...                                  16-Dec-2020 16:38:38
-    number of iterations   : 3                         16-Dec-2020 16:38:39
-    number of reformations : 3                         16-Dec-2020 16:38:39
-------- converged at time : 0.1                        16-Dec-2020 16:38:39
-    number of iterations   : 3                         16-Dec-2020 16:38:39
-    number of reformations : 3                         16-Dec-2020 16:38:39
-------- converged at time : 0.2                        16-Dec-2020 16:38:39
-    number of iterations   : 3                         16-Dec-2020 16:38:39
-    number of reformations : 3                         16-Dec-2020 16:38:39
-------- converged at time : 0.3                        16-Dec-2020 16:38:39
-    number of iterations   : 3                         16-Dec-2020 16:38:39
-    number of reformations : 3                         16-Dec-2020 16:38:39
-------- converged at time : 0.4                        16-Dec-2020 16:38:39
-    number of iterations   : 3                         16-Dec-2020 16:38:39
-    number of reformations : 3                         16-Dec-2020 16:38:39
-------- converged at time : 0.5                        16-Dec-2020 16:38:39
-    number of iterations   : 3                         16-Dec-2020 16:38:39
-    number of reformations : 3                         16-Dec-2020 16:38:39
-------- converged at time : 0.6                        16-Dec-2020 16:38:39
-    number of iterations   : 3                         16-Dec-2020 16:38:39
-    number of reformations : 3                         16-Dec-2020 16:38:39
-------- converged at time : 0.7                        16-Dec-2020 16:38:39
-    number of iterations   : 3                         16-Dec-2020 16:38:39
-    number of reformations : 3                         16-Dec-2020 16:38:39
-------- converged at time : 0.8                        16-Dec-2020 16:38:39
-    number of iterations   : 3                         16-Dec-2020 16:38:39
-    number of reformations : 3                         16-Dec-2020 16:38:39
-------- converged at time : 0.9                        16-Dec-2020 16:38:39
-    number of iterations   : 3                         16-Dec-2020 16:38:39
-    number of reformations : 3                         16-Dec-2020 16:38:39
-------- converged at time : 1                          16-Dec-2020 16:38:39
- Elapsed time : 0:00:20                                16-Dec-2020 16:38:39
+ * Log file found.                                     17-Dec-2020 09:15:08
+# Parsing log file...                                  17-Dec-2020 09:15:08
+    number of iterations   : 3                         17-Dec-2020 09:15:09
+    number of reformations : 3                         17-Dec-2020 09:15:09
+------- converged at time : 0.1                        17-Dec-2020 09:15:09
+    number of iterations   : 3                         17-Dec-2020 09:15:09
+    number of reformations : 3                         17-Dec-2020 09:15:09
+------- converged at time : 0.2                        17-Dec-2020 09:15:09
+    number of iterations   : 3                         17-Dec-2020 09:15:09
+    number of reformations : 3                         17-Dec-2020 09:15:09
+------- converged at time : 0.3                        17-Dec-2020 09:15:09
+    number of iterations   : 3                         17-Dec-2020 09:15:09
+    number of reformations : 3                         17-Dec-2020 09:15:09
+------- converged at time : 0.4                        17-Dec-2020 09:15:09
+    number of iterations   : 3                         17-Dec-2020 09:15:09
+    number of reformations : 3                         17-Dec-2020 09:15:09
+------- converged at time : 0.5                        17-Dec-2020 09:15:09
+    number of iterations   : 3                         17-Dec-2020 09:15:09
+    number of reformations : 3                         17-Dec-2020 09:15:09
+------- converged at time : 0.6                        17-Dec-2020 09:15:09
+    number of iterations   : 3                         17-Dec-2020 09:15:09
+    number of reformations : 3                         17-Dec-2020 09:15:09
+------- converged at time : 0.7                        17-Dec-2020 09:15:09
+    number of iterations   : 3                         17-Dec-2020 09:15:09
+    number of reformations : 3                         17-Dec-2020 09:15:09
+------- converged at time : 0.8                        17-Dec-2020 09:15:09
+    number of iterations   : 3                         17-Dec-2020 09:15:09
+    number of reformations : 3                         17-Dec-2020 09:15:09
+------- converged at time : 0.9                        17-Dec-2020 09:15:09
+    number of iterations   : 3                         17-Dec-2020 09:15:09
+    number of reformations : 3                         17-Dec-2020 09:15:09
+------- converged at time : 1                          17-Dec-2020 09:15:09
+ Elapsed time : 0:00:16                                17-Dec-2020 09:15:09
  N O R M A L   T E R M I N A T I O N
-# Done                                                 16-Dec-2020 16:38:39
+# Done                                                 17-Dec-2020 09:15:09
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 </pre><h2 id="29">Import FEBio results</h2><pre class="codeinput"><span class="keyword">if</span> runFlag==1 <span class="comment">%i.e. a succesful run</span>
 </pre><pre class="codeinput">    <span class="comment">% Importing nodal displacement from a log file</span>
@@ -2088,6 +1837,8 @@ force_Y=force_Y.*forceTotal(2); %sum now equal to desired
 force_Z=force_Z./sum(force_Z(:)); %sum now equal to 1
 force_Z=force_Z.*forceTotal(3); %sum now equal to desired
 
+force_ball=[force_X(:) force_Y(:) force_Z(:)];
+
 %%
 cFigure; 
 subplot(1,3,1);hold on;
@@ -2258,188 +2009,63 @@ febio_spec.Boundary.bc{1}.dofs='x,y,z';
 
 %MeshData secion
 %-> Node data
-loadDataName1='force_X';
+loadDataName1='force_ball';
 febio_spec.MeshData.NodeData{1}.ATTR.name=loadDataName1;
 febio_spec.MeshData.NodeData{1}.ATTR.node_set=nodeSetName2;
-febio_spec.MeshData.NodeData{1}.ATTR.data_type='scalar';
+febio_spec.MeshData.NodeData{1}.ATTR.datatype='vec3';
 febio_spec.MeshData.NodeData{1}.node.ATTR.lid=(1:1:numel(bcPrescribeList))';
-febio_spec.MeshData.NodeData{1}.node.VAL=force_X(:);
+febio_spec.MeshData.NodeData{1}.node.VAL=force_ball;
 
-loadDataName2='force_Y';
+loadDataName2='force_abductor';
 febio_spec.MeshData.NodeData{2}.ATTR.name=loadDataName2;
-febio_spec.MeshData.NodeData{2}.ATTR.node_set=nodeSetName2;
-febio_spec.MeshData.NodeData{2}.ATTR.data_type='scalar';
-febio_spec.MeshData.NodeData{2}.node.ATTR.lid=(1:1:numel(bcPrescribeList))';
-febio_spec.MeshData.NodeData{2}.node.VAL=force_Y(:);
+febio_spec.MeshData.NodeData{2}.ATTR.node_set=nodeSetName3;
+febio_spec.MeshData.NodeData{2}.ATTR.datatype='vec3';
+febio_spec.MeshData.NodeData{2}.node.ATTR.lid=(1:1:numel(bcPrescibeList_abductor))';
+febio_spec.MeshData.NodeData{2}.node.VAL=forceAbductor_distributed;
 
-loadDataName3='force_Z';
+loadDataName3='force_VL';
 febio_spec.MeshData.NodeData{3}.ATTR.name=loadDataName3;
-febio_spec.MeshData.NodeData{3}.ATTR.node_set=nodeSetName2;
-febio_spec.MeshData.NodeData{3}.ATTR.data_type='scalar';
-febio_spec.MeshData.NodeData{3}.node.ATTR.lid=(1:1:numel(bcPrescribeList))';
-febio_spec.MeshData.NodeData{3}.node.VAL=force_Z(:);
+febio_spec.MeshData.NodeData{3}.ATTR.node_set=nodeSetName4;
+febio_spec.MeshData.NodeData{3}.ATTR.datatype='vec3';
+febio_spec.MeshData.NodeData{3}.node.ATTR.lid=(1:1:numel(bcPrescibeList_VastusLateralis))';
+febio_spec.MeshData.NodeData{3}.node.VAL=forceVastusLateralis_distributed;
 
-loadDataName4='forceAbductor_X';
+loadDataName4='force_VM';
 febio_spec.MeshData.NodeData{4}.ATTR.name=loadDataName4;
-febio_spec.MeshData.NodeData{4}.ATTR.node_set=nodeSetName3;
-febio_spec.MeshData.NodeData{4}.ATTR.data_type='scalar';
-febio_spec.MeshData.NodeData{4}.node.ATTR.lid=(1:1:numel(bcPrescibeList_abductor))';
-febio_spec.MeshData.NodeData{4}.node.VAL=forceAbductor_distributed(:,1);
-
-loadDataName5='forceAbductor_Y';
-febio_spec.MeshData.NodeData{5}.ATTR.name=loadDataName5;
-febio_spec.MeshData.NodeData{5}.ATTR.node_set=nodeSetName3;
-febio_spec.MeshData.NodeData{5}.ATTR.data_type='scalar';
-febio_spec.MeshData.NodeData{5}.node.ATTR.lid=(1:1:numel(bcPrescibeList_abductor))';
-febio_spec.MeshData.NodeData{5}.node.VAL=forceAbductor_distributed(:,2);
-
-loadDataName6='forceAbductor_Z';
-febio_spec.MeshData.NodeData{6}.ATTR.name=loadDataName6;
-febio_spec.MeshData.NodeData{6}.ATTR.node_set=nodeSetName3;
-febio_spec.MeshData.NodeData{6}.ATTR.data_type='scalar';
-febio_spec.MeshData.NodeData{6}.node.ATTR.lid=(1:1:numel(bcPrescibeList_abductor))';
-febio_spec.MeshData.NodeData{6}.node.VAL=forceAbductor_distributed(:,3);
-
-loadDataName7='forceVL_X';
-febio_spec.MeshData.NodeData{7}.ATTR.name=loadDataName7;
-febio_spec.MeshData.NodeData{7}.ATTR.node_set=nodeSetName4;
-febio_spec.MeshData.NodeData{7}.ATTR.data_type='scalar';
-febio_spec.MeshData.NodeData{7}.node.ATTR.lid=(1:1:numel(bcPrescibeList_VastusLateralis))';
-febio_spec.MeshData.NodeData{7}.node.VAL=forceVastusLateralis_distributed(:,1);
-
-loadDataName8='forceVL_Y';
-febio_spec.MeshData.NodeData{8}.ATTR.name=loadDataName8;
-febio_spec.MeshData.NodeData{8}.ATTR.node_set=nodeSetName4;
-febio_spec.MeshData.NodeData{8}.ATTR.data_type='scalar';
-febio_spec.MeshData.NodeData{8}.node.ATTR.lid=(1:1:numel(bcPrescibeList_VastusLateralis))';
-febio_spec.MeshData.NodeData{8}.node.VAL=forceVastusLateralis_distributed(:,2);
-
-loadDataName9='forceVL_Z';
-febio_spec.MeshData.NodeData{9}.ATTR.name=loadDataName9;
-febio_spec.MeshData.NodeData{9}.ATTR.node_set=nodeSetName4;
-febio_spec.MeshData.NodeData{9}.ATTR.data_type='scalar';
-febio_spec.MeshData.NodeData{9}.node.ATTR.lid=(1:1:numel(bcPrescibeList_VastusLateralis))';
-febio_spec.MeshData.NodeData{9}.node.VAL=forceVastusLateralis_distributed(:,3);
-
-loadDataName10='forceVM_X';
-febio_spec.MeshData.NodeData{10}.ATTR.name=loadDataName10;
-febio_spec.MeshData.NodeData{10}.ATTR.node_set=nodeSetName5;
-febio_spec.MeshData.NodeData{10}.ATTR.data_type='scalar';
-febio_spec.MeshData.NodeData{10}.node.ATTR.lid=(1:1:numel(bcPrescibeList_VastusMedialis))';
-febio_spec.MeshData.NodeData{10}.node.VAL=forceVastusMedialis_distributed(:,1);
-
-loadDataName11='forceVM_Y';
-febio_spec.MeshData.NodeData{11}.ATTR.name=loadDataName11;
-febio_spec.MeshData.NodeData{11}.ATTR.node_set=nodeSetName5;
-febio_spec.MeshData.NodeData{11}.ATTR.data_type='scalar';
-febio_spec.MeshData.NodeData{11}.node.ATTR.lid=(1:1:numel(bcPrescibeList_VastusMedialis))';
-febio_spec.MeshData.NodeData{11}.node.VAL=forceVastusMedialis_distributed(:,2);
-
-loadDataName12='forceVM_Z';
-febio_spec.MeshData.NodeData{12}.ATTR.name=loadDataName12;
-febio_spec.MeshData.NodeData{12}.ATTR.node_set=nodeSetName5;
-febio_spec.MeshData.NodeData{12}.ATTR.data_type='scalar';
-febio_spec.MeshData.NodeData{12}.node.ATTR.lid=(1:1:numel(bcPrescibeList_VastusMedialis))';
-febio_spec.MeshData.NodeData{12}.node.VAL=forceVastusMedialis_distributed(:,3);
-
+febio_spec.MeshData.NodeData{4}.ATTR.node_set=nodeSetName5;
+febio_spec.MeshData.NodeData{4}.ATTR.datatype='vec3';
+febio_spec.MeshData.NodeData{4}.node.ATTR.lid=(1:1:numel(bcPrescibeList_VastusMedialis))';
+febio_spec.MeshData.NodeData{4}.node.VAL=forceVastusMedialis_distributed;
 
 %Loads section
 % -> Prescribed nodal forces
-febio_spec.Loads.nodal_load{1}.ATTR.name='PrescribedForce1X';
-febio_spec.Loads.nodal_load{1}.ATTR.type='nodal_load';
+febio_spec.Loads.nodal_load{1}.ATTR.name='PrescribedForce1';
+febio_spec.Loads.nodal_load{1}.ATTR.type='nodal_force';
 febio_spec.Loads.nodal_load{1}.ATTR.node_set=nodeSetName2;
-febio_spec.Loads.nodal_load{1}.dof='x';
-febio_spec.Loads.nodal_load{1}.scale.ATTR.lc=1;
-febio_spec.Loads.nodal_load{1}.scale.ATTR.type='map';
-febio_spec.Loads.nodal_load{1}.scale.VAL=loadDataName1;
+febio_spec.Loads.nodal_load{1}.value.ATTR.lc=1;
+febio_spec.Loads.nodal_load{1}.value.ATTR.type='map';
+febio_spec.Loads.nodal_load{1}.value.VAL=loadDataName1;
 
-febio_spec.Loads.nodal_load{2}.ATTR.name='PrescribedForce1Y';
-febio_spec.Loads.nodal_load{2}.ATTR.type='nodal_load';
-febio_spec.Loads.nodal_load{2}.ATTR.node_set=nodeSetName2;
-febio_spec.Loads.nodal_load{2}.dof='y';
-febio_spec.Loads.nodal_load{2}.scale.ATTR.lc=1;
-febio_spec.Loads.nodal_load{2}.scale.ATTR.type='map';
-febio_spec.Loads.nodal_load{2}.scale.VAL=loadDataName2;
+febio_spec.Loads.nodal_load{2}.ATTR.name='PrescribedForce2';
+febio_spec.Loads.nodal_load{2}.ATTR.type='nodal_force';
+febio_spec.Loads.nodal_load{2}.ATTR.node_set=nodeSetName3;
+febio_spec.Loads.nodal_load{2}.value.ATTR.lc=1;
+febio_spec.Loads.nodal_load{2}.value.ATTR.type='map';
+febio_spec.Loads.nodal_load{2}.value.VAL=loadDataName2;
 
-febio_spec.Loads.nodal_load{3}.ATTR.name='PrescribedForce1Z';
-febio_spec.Loads.nodal_load{3}.ATTR.type='nodal_load';
-febio_spec.Loads.nodal_load{3}.ATTR.node_set=nodeSetName2;
-febio_spec.Loads.nodal_load{3}.dof='z';
-febio_spec.Loads.nodal_load{3}.scale.ATTR.lc=1;
-febio_spec.Loads.nodal_load{3}.scale.ATTR.type='map';
-febio_spec.Loads.nodal_load{3}.scale.VAL=loadDataName3;
+febio_spec.Loads.nodal_load{3}.ATTR.name='PrescribedForce3';
+febio_spec.Loads.nodal_load{3}.ATTR.type='nodal_force';
+febio_spec.Loads.nodal_load{3}.ATTR.node_set=nodeSetName4;
+febio_spec.Loads.nodal_load{3}.value.ATTR.lc=1;
+febio_spec.Loads.nodal_load{3}.value.ATTR.type='map';
+febio_spec.Loads.nodal_load{3}.value.VAL=loadDataName3;
 
-febio_spec.Loads.nodal_load{4}.ATTR.name='PrescribedForce2X';
-febio_spec.Loads.nodal_load{4}.ATTR.type='nodal_load';
-febio_spec.Loads.nodal_load{4}.ATTR.node_set=nodeSetName3;
-febio_spec.Loads.nodal_load{4}.dof='x';
-febio_spec.Loads.nodal_load{4}.scale.ATTR.lc=1;
-febio_spec.Loads.nodal_load{4}.scale.ATTR.type='map';
-febio_spec.Loads.nodal_load{4}.scale.VAL=loadDataName4;
-
-febio_spec.Loads.nodal_load{5}.ATTR.name='PrescribedForce2Y';
-febio_spec.Loads.nodal_load{5}.ATTR.type='nodal_load';
-febio_spec.Loads.nodal_load{5}.ATTR.node_set=nodeSetName3;
-febio_spec.Loads.nodal_load{5}.dof='y';
-febio_spec.Loads.nodal_load{5}.scale.ATTR.lc=1;
-febio_spec.Loads.nodal_load{5}.scale.ATTR.type='map';
-febio_spec.Loads.nodal_load{5}.scale.VAL=loadDataName5;
-
-febio_spec.Loads.nodal_load{6}.ATTR.name='PrescribedForce2Z';
-febio_spec.Loads.nodal_load{6}.ATTR.type='nodal_load';
-febio_spec.Loads.nodal_load{6}.ATTR.node_set=nodeSetName3;
-febio_spec.Loads.nodal_load{6}.dof='z';
-febio_spec.Loads.nodal_load{6}.scale.ATTR.lc=1;
-febio_spec.Loads.nodal_load{6}.scale.ATTR.type='map';
-febio_spec.Loads.nodal_load{6}.scale.VAL=loadDataName6;
-
-febio_spec.Loads.nodal_load{7}.ATTR.name='PrescribedForce3X';
-febio_spec.Loads.nodal_load{7}.ATTR.type='nodal_load';
-febio_spec.Loads.nodal_load{7}.ATTR.node_set=nodeSetName4;
-febio_spec.Loads.nodal_load{7}.dof='x';
-febio_spec.Loads.nodal_load{7}.scale.ATTR.lc=1;
-febio_spec.Loads.nodal_load{7}.scale.ATTR.type='map';
-febio_spec.Loads.nodal_load{7}.scale.VAL=loadDataName7;
-
-febio_spec.Loads.nodal_load{8}.ATTR.name='PrescribedForce3Y';
-febio_spec.Loads.nodal_load{8}.ATTR.type='nodal_load';
-febio_spec.Loads.nodal_load{8}.ATTR.node_set=nodeSetName4;
-febio_spec.Loads.nodal_load{8}.dof='y';
-febio_spec.Loads.nodal_load{8}.scale.ATTR.lc=1;
-febio_spec.Loads.nodal_load{8}.scale.ATTR.type='map';
-febio_spec.Loads.nodal_load{8}.scale.VAL=loadDataName8;
-
-febio_spec.Loads.nodal_load{9}.ATTR.name='PrescribedForce3Z';
-febio_spec.Loads.nodal_load{9}.ATTR.type='nodal_load';
-febio_spec.Loads.nodal_load{9}.ATTR.node_set=nodeSetName4;
-febio_spec.Loads.nodal_load{9}.dof='z';
-febio_spec.Loads.nodal_load{9}.scale.ATTR.lc=1;
-febio_spec.Loads.nodal_load{9}.scale.ATTR.type='map';
-febio_spec.Loads.nodal_load{9}.scale.VAL=loadDataName9;
-
-febio_spec.Loads.nodal_load{10}.ATTR.name='PrescribedForce4X';
-febio_spec.Loads.nodal_load{10}.ATTR.type='nodal_load';
-febio_spec.Loads.nodal_load{10}.ATTR.node_set=nodeSetName5;
-febio_spec.Loads.nodal_load{10}.dof='x';
-febio_spec.Loads.nodal_load{10}.scale.ATTR.lc=1;
-febio_spec.Loads.nodal_load{10}.scale.ATTR.type='map';
-febio_spec.Loads.nodal_load{10}.scale.VAL=loadDataName10;
-
-febio_spec.Loads.nodal_load{11}.ATTR.name='PrescribedForce4Y';
-febio_spec.Loads.nodal_load{11}.ATTR.type='nodal_load';
-febio_spec.Loads.nodal_load{11}.ATTR.node_set=nodeSetName5;
-febio_spec.Loads.nodal_load{11}.dof='y';
-febio_spec.Loads.nodal_load{11}.scale.ATTR.lc=1;
-febio_spec.Loads.nodal_load{11}.scale.ATTR.type='map';
-febio_spec.Loads.nodal_load{11}.scale.VAL=loadDataName11;
-
-febio_spec.Loads.nodal_load{12}.ATTR.name='PrescribedForce4Z';
-febio_spec.Loads.nodal_load{12}.ATTR.type='nodal_load';
-febio_spec.Loads.nodal_load{12}.ATTR.node_set=nodeSetName5;
-febio_spec.Loads.nodal_load{12}.dof='z';
-febio_spec.Loads.nodal_load{12}.scale.ATTR.lc=1;
-febio_spec.Loads.nodal_load{12}.scale.ATTR.type='map';
-febio_spec.Loads.nodal_load{12}.scale.VAL=loadDataName12;
+febio_spec.Loads.nodal_load{4}.ATTR.name='PrescribedForce4';
+febio_spec.Loads.nodal_load{4}.ATTR.type='nodal_force';
+febio_spec.Loads.nodal_load{4}.ATTR.node_set=nodeSetName5;
+febio_spec.Loads.nodal_load{4}.value.ATTR.lc=1;
+febio_spec.Loads.nodal_load{4}.value.ATTR.type='map';
+febio_spec.Loads.nodal_load{4}.value.VAL=loadDataName2;
 
 %LoadData section
 % -> load_controller

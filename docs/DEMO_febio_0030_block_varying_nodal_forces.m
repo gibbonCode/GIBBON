@@ -220,7 +220,7 @@ febio_spec.Boundary.bc{1}.dofs='x,y,z';
 loadDataName1='nodal_load_Z';
 febio_spec.MeshData.NodeData{1}.ATTR.name=loadDataName1;
 febio_spec.MeshData.NodeData{1}.ATTR.node_set=nodeSetName2;
-febio_spec.MeshData.NodeData{1}.ATTR.data_type='scalar';
+febio_spec.MeshData.NodeData{1}.ATTR.datatype='scalar';
 febio_spec.MeshData.NodeData{1}.node.ATTR.lid=(1:1:numel(bcPrescribeList))';
 febio_spec.MeshData.NodeData{1}.node.VAL=forceData(:);
 

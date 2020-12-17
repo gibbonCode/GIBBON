@@ -6,7 +6,7 @@
    <!--
 This HTML was auto-generated from MATLAB code.
 To make changes, update the MATLAB code and republish this document.
-      --><title>DEMO_febio_0013_disc_pressure_varying</title><meta name="generator" content="MATLAB 9.9"><link rel="schema.DC" href="http://purl.org/dc/elements/1.1/"><meta name="DC.date" content="2020-12-11"><meta name="DC.source" content="DEMO_febio_0013_disc_pressure_varying.m"><style type="text/css">
+      --><title>DEMO_febio_0013_disc_pressure_varying</title><meta name="generator" content="MATLAB 9.9"><link rel="schema.DC" href="http://purl.org/dc/elements/1.1/"><meta name="DC.date" content="2020-12-17"><meta name="DC.source" content="DEMO_febio_0013_disc_pressure_varying.m"><style type="text/css">
 html,body,div,span,applet,object,iframe,h1,h2,h3,h4,h5,h6,p,blockquote,pre,a,abbr,acronym,address,big,cite,code,del,dfn,em,font,img,ins,kbd,q,s,samp,small,strike,strong,tt,var,b,u,i,center,dl,dt,dd,ol,ul,li,fieldset,form,label,legend,table,caption,tbody,tfoot,thead,tr,th,td{margin:0;padding:0;border:0;outline:0;font-size:100%;vertical-align:baseline;background:transparent}body{line-height:1}ol,ul{list-style:none}blockquote,q{quotes:none}blockquote:before,blockquote:after,q:before,q:after{content:'';content:none}:focus{outine:0}ins{text-decoration:none}del{text-decoration:line-through}table{border-collapse:collapse;border-spacing:0}
 
 html { min-height:100%; margin-bottom:1px; }
@@ -132,40 +132,40 @@ inputStruct.minRegionMarker=2; <span class="comment">%Minimum region marker</spa
 [meshStruct]=runTetGen(inputStruct); <span class="comment">% Mesh model using tetrahedral elements using tetGen</span>
 </pre><pre class="codeoutput"> 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
---- TETGEN Tetrahedral meshing --- 11-Dec-2020 12:20:56
+--- TETGEN Tetrahedral meshing --- 17-Dec-2020 09:18:23
  
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
---- Writing SMESH file --- 11-Dec-2020 12:20:56
+--- Writing SMESH file --- 17-Dec-2020 09:18:23
 ----&gt; Adding node field
 ----&gt; Adding facet field
 ----&gt; Adding holes specification
 ----&gt; Adding region specification
---- Done --- 11-Dec-2020 12:20:56
---- Running TetGen to mesh input boundary--- 11-Dec-2020 12:20:56
+--- Done --- 17-Dec-2020 09:18:24
+--- Running TetGen to mesh input boundary--- 17-Dec-2020 09:18:24
 Opening /mnt/data/MATLAB/GIBBON/data/temp/temp.smesh.
 Delaunizing vertices...
-Delaunay seconds:  0.039383
+Delaunay seconds:  0.036107
 Creating surface mesh ...
-Surface mesh seconds:  0.004701
+Surface mesh seconds:  0.005518
 Recovering boundaries...
-Boundary recovery seconds:  0.006477
+Boundary recovery seconds:  0.006707
 Removing exterior tetrahedra ...
 Spreading region attributes.
-Exterior tets removal seconds:  0.001048
+Exterior tets removal seconds:  0.000927
 Recovering Delaunayness...
-Delaunay recovery seconds:  0.016313
+Delaunay recovery seconds:  0.015794
 Refining mesh...
-Refinement seconds:  0.03264
+Refinement seconds:  0.030617
 Optimizing mesh...
-Optimization seconds:  0.002044
+Optimization seconds:  0.002009
 
 Writing /mnt/data/MATLAB/GIBBON/data/temp/temp.1.node.
 Writing /mnt/data/MATLAB/GIBBON/data/temp/temp.1.ele.
 Writing /mnt/data/MATLAB/GIBBON/data/temp/temp.1.face.
 Writing /mnt/data/MATLAB/GIBBON/data/temp/temp.1.edge.
 
-Output seconds:  0.037488
-Total running seconds:  0.140302
+Output seconds:  0.034257
+Total running seconds:  0.132102
 
 Statistics:
 
@@ -183,11 +183,11 @@ Statistics:
   Mesh edges on input segments: 5484
   Steiner points inside domain: 1050
 
---- Done --- 11-Dec-2020 12:20:57
+--- Done --- 17-Dec-2020 09:18:24
  
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
---- Importing TetGen files --- 11-Dec-2020 12:20:57
---- Done --- 11-Dec-2020 12:20:57
+--- Importing TetGen files --- 17-Dec-2020 09:18:24
+--- Done --- 17-Dec-2020 09:18:24
 </pre><p>Access model element and patch data</p><pre class="codeinput">Fb=meshStruct.facesBoundary;
 Cb=meshStruct.boundaryMarker;
 V=meshStruct.nodes;
@@ -306,7 +306,7 @@ loadDataName1=<span class="string">'LoadData1'</span>;
     <span class="keyword">case</span> <span class="string">'pressure'</span>
         febio_spec.MeshData.SurfaceData.ATTR.name=loadDataName1;
         febio_spec.MeshData.SurfaceData.ATTR.surface=surfaceName1;
-        febio_spec.MeshData.SurfaceData.ATTR.data_type=<span class="string">'scalar'</span>;
+        febio_spec.MeshData.SurfaceData.ATTR.datatype=<span class="string">'scalar'</span>;
         febio_spec.MeshData.SurfaceData.face.ATTR.lid=(1:1:numel(C_pressure))';
         febio_spec.MeshData.SurfaceData.face.VAL=C_pressure;
     <span class="keyword">case</span> <span class="string">'traction'</span>
@@ -364,13 +364,13 @@ febioAnalysis.runMode=<span class="string">'internal'</span>;<span class="commen
 [runFlag]=runMonitorFEBio(febioAnalysis);<span class="comment">%START FEBio NOW!!!!!!!!</span>
 </pre><pre class="codeoutput"> 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
---------&gt;    RUNNING/MONITORING FEBIO JOB    &lt;-------- 11-Dec-2020 12:21:01
+--------&gt;    RUNNING/MONITORING FEBIO JOB    &lt;-------- 17-Dec-2020 09:18:29
 FEBio path: /home/kevin/FEBioStudio/bin/febio3
-# Attempt removal of existing log files                11-Dec-2020 12:21:01
- * Removal succesful                                   11-Dec-2020 12:21:01
-# Attempt removal of existing .xplt files              11-Dec-2020 12:21:01
- * Removal succesful                                   11-Dec-2020 12:21:01
-# Starting FEBio...                                    11-Dec-2020 12:21:01
+# Attempt removal of existing log files                17-Dec-2020 09:18:29
+ * Removal succesful                                   17-Dec-2020 09:18:29
+# Attempt removal of existing .xplt files              17-Dec-2020 09:18:29
+ * Removal succesful                                   17-Dec-2020 09:18:29
+# Starting FEBio...                                    17-Dec-2020 09:18:29
   Max. total analysis time is: Inf s
 
 ===========================================================================
@@ -476,8 +476,8 @@ Reforming stiffness matrix: reformation #6
 	stiffness matrix reformations = 6
 	step from line search         = 1.000000
 	convergence norms :     INITIAL         CURRENT         REQUIRED
-	   residual            6.560848e-07    3.884649e-21    0.000000e+00 
-	   energy              1.230880e-02    1.389005e-19    1.230880e-04 
+	   residual            6.560848e-07    3.884655e-21    0.000000e+00 
+	   energy              1.230880e-02    1.387350e-19    1.230880e-04 
 	   displacement        1.631704e+03    3.192749e-08    1.653770e-03 
 
 convergence summary
@@ -648,8 +648,8 @@ Reforming stiffness matrix: reformation #5
 	stiffness matrix reformations = 5
 	step from line search         = 1.000000
 	convergence norms :     INITIAL         CURRENT         REQUIRED
-	   residual            6.756341e-07    8.716458e-18    0.000000e+00 
-	   energy              1.140565e-02    1.106686e-14    1.140565e-04 
+	   residual            6.756341e-07    8.716456e-18    0.000000e+00 
+	   energy              1.140565e-02    1.106687e-14    1.140565e-04 
 	   displacement        1.342761e+03    7.367364e-06    1.247405e-03 
 
 convergence summary
@@ -723,7 +723,7 @@ Reforming stiffness matrix: reformation #4
 	step from line search         = 1.000000
 	convergence norms :     INITIAL         CURRENT         REQUIRED
 	   residual            6.935111e-07    1.757025e-16    0.000000e+00 
-	   energy              1.062778e-02    5.516321e-14    1.062778e-04 
+	   energy              1.062778e-02    5.516322e-14    1.062778e-04 
 	   displacement        1.117155e+03    9.497625e-05    1.027588e-03 
 
 convergence summary
@@ -797,7 +797,7 @@ Reforming stiffness matrix: reformation #4
 	step from line search         = 1.000000
 	convergence norms :     INITIAL         CURRENT         REQUIRED
 	   residual            7.150052e-07    2.560380e-16    0.000000e+00 
-	   energy              9.909670e-03    4.427033e-14    9.909670e-05 
+	   energy              9.909670e-03    4.427032e-14    9.909670e-05 
 	   displacement        9.277275e+02    9.087444e-05    8.547185e-04 
 
 convergence summary
@@ -871,7 +871,7 @@ Reforming stiffness matrix: reformation #4
 	step from line search         = 1.000000
 	convergence norms :     INITIAL         CURRENT         REQUIRED
 	   residual            7.391810e-07    3.115929e-16    0.000000e+00 
-	   energy              9.309286e-03    4.391843e-14    9.309286e-05 
+	   energy              9.309286e-03    4.391844e-14    9.309286e-05 
 	   displacement        7.829883e+02    7.795754e-05    7.255449e-04 
 
 convergence summary
@@ -1019,7 +1019,7 @@ Reforming stiffness matrix: reformation #4
 	step from line search         = 1.000000
 	convergence norms :     INITIAL         CURRENT         REQUIRED
 	   residual            7.937196e-07    4.750112e-16    0.000000e+00 
-	   energy              8.438632e-03    3.039494e-14    8.438632e-05 
+	   energy              8.438632e-03    3.039492e-14    8.438632e-05 
 	   displacement        5.938915e+02    6.514542e-05    5.570299e-04 
 
 convergence summary
@@ -1167,7 +1167,7 @@ Reforming stiffness matrix: reformation #4
 	step from line search         = 1.000000
 	convergence norms :     INITIAL         CURRENT         REQUIRED
 	   residual            8.550345e-07    9.053577e-16    0.000000e+00 
-	   energy              7.877729e-03    3.070356e-14    7.877729e-05 
+	   energy              7.877729e-03    3.070357e-14    7.877729e-05 
 	   displacement        4.835651e+02    7.618258e-05    4.573198e-04 
 
 convergence summary
@@ -1211,7 +1211,7 @@ File = /mnt/data/MATLAB/GIBBON/data/temp/tempModel_stress_out.txt
 
 	Avg iterations per solve ............ : 1
 
-	Time in linear solver: 0:00:01
+	Time in linear solver: 0:00:02
 
  ]0;(0%) tempModel.feb - FEBio 3.1.0  
  Elapsed time : 0:00:04
@@ -1219,41 +1219,41 @@ File = /mnt/data/MATLAB/GIBBON/data/temp/tempModel_stress_out.txt
 
  N O R M A L   T E R M I N A T I O N
 
- * Log file found.                                     11-Dec-2020 12:21:06
-# Parsing log file...                                  11-Dec-2020 12:21:06
-    number of iterations   : 6                         11-Dec-2020 12:21:07
-    number of reformations : 6                         11-Dec-2020 12:21:07
-------- converged at time : 0.1                        11-Dec-2020 12:21:07
-    number of iterations   : 5                         11-Dec-2020 12:21:07
-    number of reformations : 5                         11-Dec-2020 12:21:07
-------- converged at time : 0.2                        11-Dec-2020 12:21:07
-    number of iterations   : 5                         11-Dec-2020 12:21:07
-    number of reformations : 5                         11-Dec-2020 12:21:07
-------- converged at time : 0.3                        11-Dec-2020 12:21:07
-    number of iterations   : 4                         11-Dec-2020 12:21:07
-    number of reformations : 4                         11-Dec-2020 12:21:07
-------- converged at time : 0.4                        11-Dec-2020 12:21:07
-    number of iterations   : 4                         11-Dec-2020 12:21:07
-    number of reformations : 4                         11-Dec-2020 12:21:07
-------- converged at time : 0.5                        11-Dec-2020 12:21:07
-    number of iterations   : 4                         11-Dec-2020 12:21:07
-    number of reformations : 4                         11-Dec-2020 12:21:07
-------- converged at time : 0.6                        11-Dec-2020 12:21:07
-    number of iterations   : 4                         11-Dec-2020 12:21:07
-    number of reformations : 4                         11-Dec-2020 12:21:07
-------- converged at time : 0.7                        11-Dec-2020 12:21:07
-    number of iterations   : 4                         11-Dec-2020 12:21:07
-    number of reformations : 4                         11-Dec-2020 12:21:07
-------- converged at time : 0.8                        11-Dec-2020 12:21:07
-    number of iterations   : 4                         11-Dec-2020 12:21:07
-    number of reformations : 4                         11-Dec-2020 12:21:07
-------- converged at time : 0.9                        11-Dec-2020 12:21:07
-    number of iterations   : 4                         11-Dec-2020 12:21:07
-    number of reformations : 4                         11-Dec-2020 12:21:07
-------- converged at time : 1                          11-Dec-2020 12:21:07
- Elapsed time : 0:00:04                                11-Dec-2020 12:21:07
+ * Log file found.                                     17-Dec-2020 09:18:33
+# Parsing log file...                                  17-Dec-2020 09:18:33
+    number of iterations   : 6                         17-Dec-2020 09:18:34
+    number of reformations : 6                         17-Dec-2020 09:18:34
+------- converged at time : 0.1                        17-Dec-2020 09:18:34
+    number of iterations   : 5                         17-Dec-2020 09:18:34
+    number of reformations : 5                         17-Dec-2020 09:18:34
+------- converged at time : 0.2                        17-Dec-2020 09:18:34
+    number of iterations   : 5                         17-Dec-2020 09:18:34
+    number of reformations : 5                         17-Dec-2020 09:18:34
+------- converged at time : 0.3                        17-Dec-2020 09:18:34
+    number of iterations   : 4                         17-Dec-2020 09:18:34
+    number of reformations : 4                         17-Dec-2020 09:18:34
+------- converged at time : 0.4                        17-Dec-2020 09:18:34
+    number of iterations   : 4                         17-Dec-2020 09:18:34
+    number of reformations : 4                         17-Dec-2020 09:18:34
+------- converged at time : 0.5                        17-Dec-2020 09:18:34
+    number of iterations   : 4                         17-Dec-2020 09:18:34
+    number of reformations : 4                         17-Dec-2020 09:18:34
+------- converged at time : 0.6                        17-Dec-2020 09:18:34
+    number of iterations   : 4                         17-Dec-2020 09:18:34
+    number of reformations : 4                         17-Dec-2020 09:18:34
+------- converged at time : 0.7                        17-Dec-2020 09:18:34
+    number of iterations   : 4                         17-Dec-2020 09:18:34
+    number of reformations : 4                         17-Dec-2020 09:18:34
+------- converged at time : 0.8                        17-Dec-2020 09:18:34
+    number of iterations   : 4                         17-Dec-2020 09:18:34
+    number of reformations : 4                         17-Dec-2020 09:18:34
+------- converged at time : 0.9                        17-Dec-2020 09:18:34
+    number of iterations   : 4                         17-Dec-2020 09:18:34
+    number of reformations : 4                         17-Dec-2020 09:18:34
+------- converged at time : 1                          17-Dec-2020 09:18:34
+ Elapsed time : 0:00:04                                17-Dec-2020 09:18:34
  N O R M A L   T E R M I N A T I O N
-# Done                                                 11-Dec-2020 12:21:07
+# Done                                                 17-Dec-2020 09:18:34
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 </pre><h2 id="15">Import FEBio results</h2><pre class="codeinput"><span class="keyword">if</span> runFlag==1 <span class="comment">%i.e. a succesful run</span>
 </pre><p>Importing nodal displacements from a log file</p><pre class="codeinput">    dataStruct=importFEBio_logfile(fullfile(savePath,febioLogFileName_disp),1,1);
@@ -1568,7 +1568,7 @@ switch loadType
     case 'pressure'            
         febio_spec.MeshData.SurfaceData.ATTR.name=loadDataName1;
         febio_spec.MeshData.SurfaceData.ATTR.surface=surfaceName1;
-        febio_spec.MeshData.SurfaceData.ATTR.data_type='scalar';
+        febio_spec.MeshData.SurfaceData.ATTR.datatype='scalar';
         febio_spec.MeshData.SurfaceData.face.ATTR.lid=(1:1:numel(C_pressure))';
         febio_spec.MeshData.SurfaceData.face.VAL=C_pressure;        
     case 'traction'

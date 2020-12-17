@@ -234,7 +234,7 @@ switch loadType
     case 'pressure'            
         febio_spec.MeshData.SurfaceData.ATTR.name=loadDataName1;
         febio_spec.MeshData.SurfaceData.ATTR.surface=surfaceName1;
-        febio_spec.MeshData.SurfaceData.ATTR.data_type='scalar';
+        febio_spec.MeshData.SurfaceData.ATTR.datatype='scalar';
         febio_spec.MeshData.SurfaceData.face.ATTR.lid=(1:1:numel(C_pressure))';
         febio_spec.MeshData.SurfaceData.face.VAL=C_pressure;        
     case 'traction'
