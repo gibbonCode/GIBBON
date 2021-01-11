@@ -65,7 +65,7 @@ R = inputStruct.R; % Rotate the GRF, R must be SO(3)
 if((relativeDensity<0.3) || (relativeDensity>1.0))
     error('relativeDensity must be between [0.3,1]')
 end
-if((any(thetas)<0) || (any(thetas)>90))
+if((any(thetas<0)) || (any(thetas>90)))
     error('thetas must be either 0 or between [15,90] degrees')
 end
 for i=1:3
