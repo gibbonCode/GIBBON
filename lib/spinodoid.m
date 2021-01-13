@@ -47,6 +47,7 @@ defaultInputStruct.thetas=[15 15 0]; % conical half angles (in degrees)
 %                                     anisotropy. Note: each entry must be 
 %                                     either 0 or between [15,90] degrees.
 defaultInputStruct.R = eye(3); % Rotate the GRF, R must be SO(3)
+defaultInputStruct.ignoreChecks = false; %Ignore checks on parameter values
 
 %Complete input with default if incomplete
 [inputStruct]=structComplete(inputStruct,defaultInputStruct,1); %Complement provided with default if missing or empty
@@ -60,33 +61,38 @@ numWaves = inputStruct.numWaves; % number of waves in GRF
 relativeDensity = inputStruct.relativeDensity; % relative density: [0.3,1]
 thetas= inputStruct.thetas; % conical half angles (in degrees)
 R = inputStruct.R; % Rotate the GRF, R must be SO(3)
+ignoreChecks = inputStruct.ignoreChecks; %Ignore checks on parameter values
 
 %% Input checks
-if((relativeDensity<0.3) || (relativeDensity>1.0))
-    error('relativeDensity must be between [0.3,1]')
-end
-if((any(thetas)<0) || (any(thetas)>90))
-    error('thetas must be either 0 or between [15,90] degrees')
-end
-for i=1:3
-    if((thetas(i)>0) && (thetas(i)<15))
+if(ignoreChecks)
+    warning(['Ignoring all checks on parameter values. ',...
+        'Unreasonable parameters may give wrong topologies.']);
+else
+    if((relativeDensity<0.3) || (relativeDensity>1.0))
+        error('relativeDensity must be between [0.3,1]')
+    end
+    if((any(thetas<0)) || (any(thetas>90)))
         error('thetas must be either 0 or between [15,90] degrees')
     end
-end
+    for i=1:3
+        if((thetas(i)>0) && (thetas(i)<15))
+            error('thetas must be either 0 or between [15,90] degrees')
+        end
+    end
 
-if(size(R,1)~=size(R,2))
-    error('Rotation matrix is not square')
+    if(size(R,1)~=size(R,2))
+        error('Rotation matrix is not square')
+    end
+    if(size(R,1)~=3)
+        error('Rotation matrix must be 3x3 in size')
+    end
+    if(abs(det(R)-1)>1e-8)
+        error('Rotation matrix: det(R)~=1')
+    end
+    if(norm(R'*R-eye(3))>1e-8)
+        error('Rotation matrix is not orthogonal')
+    end
 end
-if(size(R,1)~=3)
-    error('Rotation matrix must be 3x3 in size')
-end
-if(abs(det(R)-1)>1e-8)
-    error('Rotation matrix: det(R)~=1')
-end
-if(norm(R'*R-eye(3))>1e-8)
-    error('Rotation matrix is not orthogonal')
-end
-
 
 %% Define rotated axes
 axes1 = [1,0,0];
