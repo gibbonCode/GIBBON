@@ -1,11 +1,10 @@
 ---
- title: Nataliya Perevoshchikova    
- name: Nataliya Perevoshchikova 
- role: Core contributor
- name: Dr Nataliya Perevoshchikova
- role: Contributor
- location: Australia
- img: nataliya_perevoshchikova.jpg
+title: Nataliya Perevoshchikova    
+name: Nataliya Perevoshchikova
+name: Dr Nataliya Perevoshchikova
+role: Contributor
+location: Australia
+img: nataliya_perevoshchikova.jpg
 github_username: NataCalc
 linkedin_username: nataliya-perevoshchikova-553a7660
 email_address: n.perevoshchikova@griffith.edu.au
