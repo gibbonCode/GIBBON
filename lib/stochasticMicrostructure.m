@@ -55,7 +55,6 @@ isocap= inputStruct.isocap;
 
 %% Generation of points
 [U,V,W] = meshgrid(linspace(0,L,Ns),linspace(0,L,Ns),linspace(0,L,Ns));
-x = [reshape(U,[],1),reshape(V,[],1),reshape(W,[],1)];
 
 %% Generation of random directions and phases
 % Set anisotropy in x,y,z direction. If value=1: the entire range is
@@ -70,19 +69,13 @@ phii = 2*pi*randn(Nw,1);
 
 %% Generation of function value at points
 
-try
-    funx=sqrt(2/Nw)*sum(cos(qi*x'+phii),1);
-catch
-    funx=sqrt(2/Nw)*sum(cos(qi*x'+phii(:,ones(size(x,1),1))),1);
+G = zeros(size(U));
+for i=1:Nw
+    dotProduct = qi(i,1)*U ...
+               + qi(i,2)*V ...
+               + qi(i,3)*W;             
+    G = G+sqrt(2/Nw)*cos(dotProduct+phii(i));
 end
-
-% Old for-loop approach
-% funx=zeros(1,size(x,1));
-% for i = 1:size(x,1)
-%     funx(i) = sqrt(2/Nw)*sum(cos(qi*x(i,:)'+phii));
-% end
-
-funx_grid = reshape(funx,size(U));
 
 %% Controlling relative density
 ksi = -sqrt(2)*erfinv(2*relD-1);
@@ -90,13 +83,13 @@ ksi = -sqrt(2)*erfinv(2*relD-1);
 %% Generation of level sets and exporting
 
 %Iso-surface
-[f,v] = isosurface(U,V,W,funx_grid,ksi);
+[f,v] = isosurface(U,V,W,G,ksi);
 c=zeros(size(f,1),1);
 
 %Isocaps
 if isocap==1
     %Compute isocaps
-    [fc,vc] = isocaps(U,V,W,funx_grid,ksi);
+    [fc,vc] = isocaps(U,V,W,G,ksi);
 
     nc=patchNormal(fc,vc);
     cc=zeros(size(fc,1),1);
@@ -136,7 +129,45 @@ f=fliplr(f);
 varargout{1}=f;
 varargout{2}=v;
 varargout{3}=c;
-varargout{4}=funx_grid;
+varargout{4}=G;
+
+end
+
+%%
+
+% function [G]=wave_eval(numWaves,waveDirections,X,wavePhases,siz)
+% 
+% %Get free memory
+% [numFreeBytes]=freeMemory; %Get free memory to cope with large array
+% numFreeBytes=0.8*numFreeBytes; %max use of 80% of free memory
+%    
+% %Compute number of steps required based on available memory
+% bytesPerUnit=8; %8 bytes per double type entry
+% maxNumel=floor((numFreeBytes./bytesPerUnit)/2); %Maximum number of elements in an array at the moment
+% numPoints=size(X,1); %Number of points to parse
+% maxNumWaves=floor(maxNumel./numPoints); %maximum number of waves to parse in one step
+% numSteps=ceil(numWaves./maxNumWaves); %Number of processing steps
+% 
+% %Get step indices
+% indSteps=round(linspace(0,numWaves,numSteps+1));
+% indSteps=sort(unique(indSteps));
+% 
+% %Loop over steps
+% g=zeros(1,size(X,1)); %Allocate 
+% Xt=X'; %Transpose of X is precomputed outside of loop
+% for q=1:1:numel(indSteps)-1
+%     ind=indSteps(q)+1:indSteps(q+1); %Waves to process in the current step
+%     try
+%         g=g+sqrt(2/numWaves)*sum(cos(waveDirections(ind,:)*Xt+wavePhases(ind)),1);
+%     catch
+%         g=g+sqrt(2/numWaves)*sum(cos(waveDirections(ind,:)*Xt+wavePhases(ind,ones(numPoints,1))),1);
+%     end
+% end
+% 
+% %Reshape output to siz
+% G = reshape(g,siz);
+% 
+% end
 
 %% 
 %
