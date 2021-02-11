@@ -147,10 +147,12 @@ end
 
 switch patchType
     case {'vb'} %Get only boundary faces
-        [indBounary]=tesBoundary(F,max(F(:)));
-        F=F(indBounary,:);
-        C=C(indBounary,:);
-        C_ind=C_ind(indBounary,:);
+        if ~isempty(F)
+            [indBounary]=tesBoundary(F,max(F(:)));
+            F=F(indBounary,:);
+            C=C(indBounary,:);
+            C_ind=C_ind(indBounary,:);
+        end
     case {'vu'} %Removing double FACES
         Fs=sort(F,2); %Sort so faces with same nodes have the same rows
         [~,IND_F,IND_F_2,F_count]=cunique(Fs,'rows'); %get indices for unique faces   

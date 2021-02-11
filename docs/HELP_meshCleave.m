@@ -14,7 +14,7 @@ clear; close all; clc;
 % This function creates logic arrays for the mesh components (e.g. elements
 % or faces) which are at, above, or below a plane defined by the point P,
 % and the normal direction n. 
-% The optional incluseSwitch is a 2-component vector (default [0 0]) and
+% The optional inclusiveSwitch is a 2-component vector (default [0 0]) and
 % sets how "inclusive", the below/above logic is, i.e. they set wether <
 % and > is used ([0 0]), or <= and >= are used ([1 1]). A combination may
 % also be used e.g. [1 0] results in below checks which features <= and

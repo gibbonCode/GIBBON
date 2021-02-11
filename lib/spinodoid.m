@@ -103,9 +103,9 @@ axes1 = (R*axes1')';
 axes2 = (R*axes2')';
 axes3 = (R*axes3')';
 
-
 %% Generate wave directions for GRF
 %array of all wave directions
+
 waveDirections = zeros(numWaves,3);
 for i=1:numWaves
     flag = true; %keep trying until candidate wave vector is found
@@ -136,19 +136,21 @@ for i=1:numWaves
 end
 
 %% Generate wave phase angles for GRF
-wavePhases = 2*pi*rand(numWaves,1);
+wavePhases = rand_angle([numWaves,1]); %2*pi*rand(numWaves,1);
 
 %% Discretize the domain
 discretization = linspace(0,domainSize,resolution);
 [X,Y,Z] = meshgrid(discretization,discretization,discretization);
 
 %% Evaluate GRF on sampling points
+
 GRF = zeros(size(X));
 for i=1:numWaves
     dotProduct = waveDirections(i,1)*X ...
                + waveDirections(i,2)*Y ...
                + waveDirections(i,3)*Z;
-    GRF = GRF+sqrt(2/numWaves)*cos(waveNumber*dotProduct+wavePhases(i));
+             
+    GRF = GRF+sqrt(2/numWaves)*cos(dotProduct*waveNumber+wavePhases(i));
 end
 
 %% Apply levelset

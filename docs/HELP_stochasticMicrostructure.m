@@ -40,7 +40,7 @@ fontSize=15;
 %% Example 1
 inputStruct.L=1; % characteristic length
 inputStruct.Ns=75; % number of sampling points
-inputStruct.Nw=120; % number of waves
+inputStruct.Nw=500; % number of waves
 inputStruct.q0=55; % wave number
 inputStruct.relD=0.55; % relative density
 inputStruct.anisotropyFactors=[1 1 1]; %Anisotropy factors

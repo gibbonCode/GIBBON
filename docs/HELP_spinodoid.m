@@ -52,7 +52,7 @@ fontSize=15;
 %% Example 1: Isotropic spinodoid
 inputStruct.isocap=true; % option to cap the isosurface
 inputStruct.domainSize=1; % domain size
-inputStruct.resolution=100; % resolution for sampling GRF
+inputStruct.resolution=75; % resolution for sampling GRF
 inputStruct.waveNumber=15*pi; % GRF wave number
 inputStruct.numWaves=1000; % number of waves in GRF
 inputStruct.relativeDensity=0.5; % relative density: between [0.3,1]
@@ -78,7 +78,6 @@ gpatch(F,V,C,'none');
 axisGeom; camlight headlight; 
 colormap gjet; icolorbar;
 gdrawnow;
-
 
 %% Example 2: Lamellar spinodoid
 inputStruct.isocap=true; % option to cap the isosurface
@@ -170,6 +169,7 @@ gpatch(F,V,C,'none');
 axisGeom; camlight headlight; 
 colormap gjet; icolorbar;
 gdrawnow;
+
 %% 
 %
 % <<gibbVerySmall.gif>>

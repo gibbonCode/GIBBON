@@ -80,7 +80,7 @@ drawnow;
 %% EXAMPLE 2: CONVERTING PATCH DATA WITH A SINGLE BOUNDARY TO AN IMAGE
 % Defining an example surface model
 
-[F,V]=graphicsModels(3);
+[F,V]=stanford_bunny; %graphicsModels(3);
 
 %%
 
