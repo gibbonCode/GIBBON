@@ -39,6 +39,8 @@ defaultOptionStruct.toleranceLevel=0;
 defaultOptionStruct.waitBarOn=false(1,1);
 defaultOptionStruct.unitEdgeOn=false(1,1);
 defaultOptionStruct.W=[];
+defaultOptionStruct.Wd=[];
+
 switch nargin
     case 2
         F=varargin{1};
@@ -71,9 +73,15 @@ toleranceLevel=optionStruct.toleranceLevel;
 numSeeds=optionStruct.numSeeds;
 waitBarOn=optionStruct.waitBarOn;
 unitEdgeOn=optionStruct.unitEdgeOn;
+
 W=optionStruct.W;
 if isempty(W)
     W=ones(size(V,1),1);
+end
+
+Wd=optionStruct.Wd;
+if ~isempty(Wd)
+    V(:,end+1)=Wd; %Add additional dimension to function as distance weight
 end
 
 numStart=numel(indStart);
@@ -169,9 +177,9 @@ for q=1:1:numLoopSteps
             d=min(D_check,[],2,'omitnan'); %Assign minimum distance
         end
         d(indStart)=0; %Override starts to be zero
-        
+
         %Check convergence
-        if all(isnan(d)==isnan(d_previous)) %Check if number of NaN's changed
+        if nnz(isnan(d))==nnz(isnan(d_previous))  %Check if number of NaN's changed
             if sum((d_previous-d).^2,'omitnan')<=toleranceLevel %Check if converged to within tolerance
                 break %Stop while loop
             end

@@ -93,6 +93,9 @@ if spacingFlag==1
         d=max(pathLength(V));
     end
     n=ceil(d./pointSpacing); %Determine samling point density from point spacing   
+    if n<2
+        n=2;
+    end
     [Vg] = evenlySampleCurve(V,n,interpPar,closeLoopOpt,0);    
 else    
     if n<2

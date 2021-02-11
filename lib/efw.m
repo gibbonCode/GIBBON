@@ -80,7 +80,7 @@ if isempty(hp) %If efw button is not present create one
         hf.UserData.efw.defaultPath=fullfile(cd,'efw');
         hf.UserData.efw.imName=['figure',num2str(get(hf,'Number'))];
         hf.UserData.efw.imExt='png';
-        hf.UserData.efw.imRes='100';
+        hf.UserData.efw.imRes='200';
         hf.UserData.efw.exportFigOpt='-transparent';
     else                
         if ~isfield(hf.UserData.efw,'defaultPath')
@@ -96,7 +96,7 @@ if isempty(hp) %If efw button is not present create one
         end
         
         if ~isfield(hf.UserData.efw,'imRes')
-            hf.UserData.efw.imRes='100';
+            hf.UserData.efw.imRes='200';
         end
         
         if ~isfield(hf.UserData.efw,'exportFigOpt')

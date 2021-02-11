@@ -1,6 +1,6 @@
 function [varargout]=tri2quadGroupSplit(varargin)
 
-% function [F_quad,V_quad]=tri2quadGroupSplit(F_tri,V_tri,optionStruct)
+% function [F_quad,V_quad,indIni]=tri2quadGroupSplit(F_tri,V_tri,optionStruct)
 % ------------------------------------------------------------------------
 %
 %

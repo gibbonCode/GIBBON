@@ -195,7 +195,7 @@ end
 
 function [runString]=appendOption(runString,preFix,varName,varValue)
 
-if isnumeric(varValue)
+if isnumeric(varValue) || islogical(varValue)
     varValue=sprintf('%.16g',varValue);
 end
 

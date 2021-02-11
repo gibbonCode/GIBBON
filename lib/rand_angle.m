@@ -26,11 +26,11 @@ nX=cos(a_temp); %X components of the random unit vectors
 
 %Flip vectors by randomly negating components
 logicFlip_X=randi([0 1],siz)==1; %Logic for flipping X
-logicFlip_Y=randi([0 1],siz)==1; %Logic for flipping Y
 nX(logicFlip_X)=-nX(logicFlip_X); %Negate X components
 
 %Derive angles for all vectors (now in range -pi pi degrees)
 a=acos(nX); %Derive angles in range [0 pi]
+logicFlip_Y=randi([0 1],siz)==1; %Logic for flipping Y
 a(logicFlip_Y)=-a(logicFlip_Y); %Negate angles to achieve Y component flipping
 
 %Offset so all angles are positive in range 0 2*pi degrees

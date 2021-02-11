@@ -14,8 +14,8 @@ function [varargout]=sv3(varargin)
 % optionStructDefault.fontSize=20; %font size
 % optionStructDefault.figStruct=figStruct; %figure options (see cFigure)
 % optionStructDefault.sliceIndices=round(size(M)/2); %Default mid-slices
-% optionStructDefault.updateFrequency=100; %Max update frequency during slider
-% drag
+% optionStructDefault.updateFrequency=100; %Max update frequency during
+% slider drag
 %
 % See also: sliceViewer, sv2, imx
 %
@@ -58,6 +58,7 @@ optionStructDefault.colormap=gray(250); %colormap
 optionStructDefault.clim=[min(M(~isnan(M))) max(M(~isnan(M)))]; %color limits
 optionStructDefault.fontColor='w'; %font color
 optionStructDefault.fontSize=20; %font size
+optionStructDefault.edgeColor='none';
 optionStructDefault.figStruct=figStruct; %figure options (see cFigure)
 optionStructDefault.sliceIndices=round(size(M)/2); %Default mid-slices
 optionStructDefault.alphaLevel=1;
@@ -79,6 +80,10 @@ figStruct=optionStruct.figStruct;
 alphaLevel=optionStruct.alphaLevel;
 originLoc=optionStruct.origin;
 updateFrequency=optionStruct.updateFrequency; 
+
+if all(isnan(cLim)) | all(isinf(cLim))
+    cLim=[-1 1];
+end
 
 if diff(cLim)<eps
    cLim=cLim+[-1 1];
@@ -126,23 +131,6 @@ hSlider_K.Callback={@plotSlice,{hf,hSlider_K,3}};
 addlistener(hSlider_K,'ContinuousValueChange',@(hObject, event) plotSlice(hObject,event,{hf,hSlider_K,3}));
 addlistener(hSlider_K,'Value','PostSet',@(hObject, event) plotSlice(hObject,event,{hf,hSlider_K,3}));
 
-%%
- 
-% hSlider_I = javax.swing.JSlider(1,size(M,1));
-% javacomponent(hSlider_I,[0,0,scrollBarWidth,round(hf.Position(4))]);
-% set(hSlider_I, 'MajorTickSpacing',tickSizeMajor_I, 'MinorTickSpacing',1, 'PaintTicks',true, 'PaintLabels',true,...
-%     'Background',java.awt.Color.white, 'snapToTicks',true, 'StateChangedCallback',{@plotSlice,{hf,hSlider_I,1}},'Orientation',hSlider_I.VERTICAL);
-% 
-% hSlider_J = javax.swing.JSlider(1,size(M,2));
-% javacomponent(hSlider_J,[1*scrollBarWidth,0,scrollBarWidth,round(hf.Position(4))]);
-% set(hSlider_J, 'MajorTickSpacing',tickSizeMajor_J, 'MinorTickSpacing',1, 'PaintTicks',true, 'PaintLabels',true,...
-%     'Background',java.awt.Color.white, 'snapToTicks',true, 'StateChangedCallback',{@plotSlice,{hf,hSlider_J,2}},'Orientation',hSlider_J.VERTICAL);
-% 
-% hSlider_K = javax.swing.JSlider(1,size(M,3));
-% javacomponent(hSlider_K,[2*scrollBarWidth,0,scrollBarWidth,round(hf.Position(4))]);
-% set(hSlider_K, 'MajorTickSpacing',tickSizeMajor_K, 'MinorTickSpacing',1, 'PaintTicks',true, 'PaintLabels',true,...
-%     'Background',java.awt.Color.white, 'snapToTicks',true, 'StateChangedCallback',{@plotSlice,{hf,hSlider_K,3}},'Orientation',hSlider_K.VERTICAL);
-
 %% Set resize function 
 
 set(hf,'ResizeFcn',{@setScrollSizeFunc,{hf,scrollBarWidth,hSlider_I,hSlider_J,hSlider_K}});
@@ -158,6 +146,7 @@ hf.UserData.sv3.patchTypes={'si','sj','sk'};
 hf.UserData.sv3.sliceIndices=[sliceIndexI sliceIndexJ sliceIndexK];
 hf.UserData.sv3.fontColor=fontColor;
 hf.UserData.sv3.fontSize=fontSize;
+hf.UserData.sv3.edgeColor=optionStruct.edgeColor;
 hf.UserData.sv3.hp=nan(3,1);
 hf.UserData.sv3.ht=ht;
 hf.UserData.sv3.M_plot=M;
@@ -224,7 +213,7 @@ if dtt>dt %If ready to update
         [F,V,C]=im2patch(M,logicPatch,patchType);
         [V(:,1),V(:,2),V(:,3)]=im2cart(V(:,2),V(:,1),V(:,3),v);
         V=V+hf.UserData.sv3.origin(ones(size(V,1),1),:);
-        hf.UserData.sv3.hp(dirOpt)= gpatch(F,V,C,'none',hf.UserData.sv3.alphaLevel);
+        hf.UserData.sv3.hp(dirOpt)= gpatch(F,V,C,hf.UserData.sv3.edgeColor,hf.UserData.sv3.alphaLevel);
     else
         V=get(hf.UserData.sv3.hp(dirOpt),'Vertices');
         switch dirOpt

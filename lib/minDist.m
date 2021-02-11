@@ -5,6 +5,10 @@ function varargout=minDist(varargin)
 %
 %
 %
+% Change log: 
+% ~2014 Created
+% 2021/01/13 Moved evaluation of freeMemory into if statement so it is
+% skipped if maxVarSize is provided as NaN. 
 % -----------------------------------------------------------------------
 
 %% Parse input
@@ -46,19 +50,19 @@ switch nargin
         numFreeBytes=varargin{5};                    
 end
 
-%Get free memory
-if isempty(numFreeBytes)
-    [numFreeBytes]=freeMemory;
-end
-
-%Get max variable size available        
-if isempty(maxVarSize)    
-    maxVarSize=numFreeBytes/2;
-end
-
 if isnan(maxVarSize)
     numSteps=1;
-else
+else    
+    %Get free memory
+    if isempty(numFreeBytes)
+        [numFreeBytes]=freeMemory;
+    end
+    
+    %Get max variable size available
+    if isempty(maxVarSize)
+        maxVarSize=numFreeBytes/2;
+    end
+    
     %Derive class dependent variable size
     [~,b1]=maxnumel(V1(1),numFreeBytes);
     [~,b2]=maxnumel(V2(1),numFreeBytes);

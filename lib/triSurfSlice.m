@@ -20,6 +20,7 @@ switch nargin
         P=mean(V,1);
         n=[0 0 1];
         snapTolerance=[];
+        logicExclude=[];
     case 3
         F=varargin{1};
         V=varargin{2};
@@ -27,6 +28,7 @@ switch nargin
         P=mean(V,1);
         n=[0 0 1];
         snapTolerance=[];
+        logicExclude=[];
     case 4
         F=varargin{1};
         V=varargin{2};
@@ -34,6 +36,7 @@ switch nargin
         P=varargin{4};
         n=[0 0 1];
         snapTolerance=[];
+        logicExclude=[];
     case 5
         F=varargin{1};
         V=varargin{2};
@@ -41,13 +44,22 @@ switch nargin
         P=varargin{4};
         n=varargin{5};
         snapTolerance=[];
+        logicExclude=[];
     case 6
         F=varargin{1};
         V=varargin{2};
         C=varargin{3};
         P=varargin{4};
         n=varargin{5};
+        snapTolerance=[];
+    case 7
+        F=varargin{1};
+        V=varargin{2};
+        C=varargin{3};
+        P=varargin{4};
+        n=varargin{5};
         snapTolerance=varargin{6};
+        logicExclude=varargin{7};
 end
 
 %Check color
@@ -70,6 +82,12 @@ n=vecnormalize(n); %Normalize n vector
 if isempty(snapTolerance)
     %Default 1/100 of mean edge length
     snapTolerance=mean(patchEdgeLengths(F,V))/100; 
+end
+
+if ~isempty(logicExclude)
+    indExclude=unique(F(logicExclude,:));
+else
+    indExclude=[];
 end
 
 %% Construct rotation matrix
@@ -119,6 +137,10 @@ logicSnapEdge=any(logicSnap(E),2);
 %Find edges that cross plane
 logicCrossing=sum(logicAboveEdge,2)==1;
 logicCrossing(logicSnapEdge)=0;
+
+if ~isempty(indExclude)
+    logicCrossing=logicCrossing & ~any(ismember(E,indExclude),2);    
+end
 
 indCrossing=find(logicCrossing);
 E_cross=E(logicCrossing,:); %Keep only relevant edges
@@ -183,8 +205,14 @@ Fn=[Fn_tri;Fn_tri_quad];
 Cn=[Cn_tri;Cn_tri_quad];
 F=[F(logicKeep,:);Fn];
 C=[C(logicKeep,:);Cn];
+
 VF=patchCentre(F,V);
 logicSide=VF(:,3)<0;
+
+if ~isempty(logicExclude)
+    logicExclude=[logicExclude(logicKeep,:); false(size(Fn,1),1)];
+    logicSide(logicExclude)=0;
+end
 
 V=V*R; %Rotate back
 V=V+P(ones(size(V,1),1),:); %Shift back
