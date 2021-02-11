@@ -168,23 +168,23 @@ drawnow;
 %% Define contact surfaces
 
 % The rigid master surface of the sphere
-F_contact_primary=E2;
+F_contact_sphere=E2;
 
 % The deformable slave surface of the slab
 logicContactSurf1=Cb1==6;
-F_contact_secondary=Fb1(logicContactSurf1,:);
+F_contact_slab=Fb1(logicContactSurf1,:);
 
 % Plotting surface models
 cFigure; hold on;
 title('Contact sets and normal directions','FontSize',fontSize);
 
 gpatch(Fb1,V,'kw','none',faceAlpha2); 
-hl(1)=gpatch(F_contact_primary,V,'g','k',1); 
-patchNormPlot(F_contact_primary,V);
-hl(2)=gpatch(F_contact_secondary,V,'b','k',1);
-patchNormPlot(F_contact_secondary,V);
+hl(1)=gpatch(F_contact_sphere,V,'g','k',1); 
+patchNormPlot(F_contact_sphere,V);
+hl(2)=gpatch(F_contact_slab,V,'b','k',1);
+patchNormPlot(F_contact_slab,V);
 
-legend(hl,{'Master','Slave'});
+legend(hl,{'Secondary','Primary'});
 
 axisGeom(gca,fontSize);
 camlight headlight;
@@ -316,18 +316,18 @@ febio_spec.MeshDomains.ShellDomain.ATTR.mat=materialName2;
 % -> Surfaces
 surfaceName1='contactSurface1';
 febio_spec.Mesh.Surface{1}.ATTR.name=surfaceName1;
-febio_spec.Mesh.Surface{1}.quad4.ATTR.id=(1:1:size(F_contact_primary,1))';
-febio_spec.Mesh.Surface{1}.quad4.VAL=F_contact_primary;
+febio_spec.Mesh.Surface{1}.quad4.ATTR.id=(1:1:size(F_contact_sphere,1))';
+febio_spec.Mesh.Surface{1}.quad4.VAL=F_contact_sphere;
 
 surfaceName2='contactSurface2';
 febio_spec.Mesh.Surface{2}.ATTR.name=surfaceName2;
-febio_spec.Mesh.Surface{2}.quad4.ATTR.id=(1:1:size(F_contact_secondary,1))';
-febio_spec.Mesh.Surface{2}.quad4.VAL=F_contact_secondary;
+febio_spec.Mesh.Surface{2}.quad4.ATTR.id=(1:1:size(F_contact_slab,1))';
+febio_spec.Mesh.Surface{2}.quad4.VAL=F_contact_slab;
 
 % -> Surface pairs
 febio_spec.Mesh.SurfacePair{1}.ATTR.name='Contact1';
-febio_spec.Mesh.SurfacePair{1}.primary=surfaceName1;
-febio_spec.Mesh.SurfacePair{1}.secondary=surfaceName2;
+febio_spec.Mesh.SurfacePair{1}.primary=surfaceName2;
+febio_spec.Mesh.SurfacePair{1}.secondary=surfaceName1;
 
 %Boundary condition section 
 % -> Fix boundary conditions
@@ -361,7 +361,7 @@ febio_spec.Rigid.rigid_constraint{3}.relative=0;
 %Contact section
 febio_spec.Contact.contact{1}.ATTR.type='sliding-elastic';
 febio_spec.Contact.contact{1}.ATTR.surface_pair=febio_spec.Mesh.SurfacePair{1}.ATTR.name;
-febio_spec.Contact.contact{1}.two_pass=1;
+febio_spec.Contact.contact{1}.two_pass=0;
 febio_spec.Contact.contact{1}.laugon=laugon;
 febio_spec.Contact.contact{1}.tolerance=0.2;
 febio_spec.Contact.contact{1}.gaptol=0;

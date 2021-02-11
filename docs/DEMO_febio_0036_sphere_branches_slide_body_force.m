@@ -85,7 +85,6 @@ min_residual=1e-20;
 analysisType='DYNAMIC';
 
 %Contact parameters
-two_pass=1;
 contactPenalty=25;
 fric_coeff=0.25; 
 laugon=0;
@@ -439,7 +438,7 @@ drawnow;
 %% Get contact surfaces
 %
 
-F_contact_secondary=Fb_blob;
+F_contact_blob=Fb_blob;
 
 %%
 % Visualize contact surfaces
@@ -448,9 +447,9 @@ cFigure; hold on;
 title('Tube blob contact pair','fontsize',fontSize);
 hl(1)=gpatch(F_tube,V,'rw','k',1);
 patchNormPlot(F_tube,V);
-hl(2)=gpatch(F_contact_secondary,V,'gw','k',1);
-patchNormPlot(F_contact_secondary,V);
-legend(hl,{'Master','Slave'}); clear hl;
+hl(2)=gpatch(F_contact_blob,V,'gw','k',1);
+patchNormPlot(F_contact_blob,V);
+legend(hl,{'Secondary','Primary'}); clear hl;
 axisGeom(gca,fontSize);
 camlight headlight; 
 drawnow; 
@@ -546,14 +545,14 @@ febio_spec.Mesh.Surface{1}.quad4.VAL=F_tube;
 
 surfaceName2='contactSurface2';
 febio_spec.Mesh.Surface{2}.ATTR.name=surfaceName2;
-febio_spec.Mesh.Surface{2}.quad4.ATTR.id=(1:1:size(F_contact_secondary,1))';
-febio_spec.Mesh.Surface{2}.quad4.VAL=F_contact_secondary;
+febio_spec.Mesh.Surface{2}.quad4.ATTR.id=(1:1:size(F_contact_blob,1))';
+febio_spec.Mesh.Surface{2}.quad4.VAL=F_contact_blob;
 
 % -> Surface pairs
 contactPairName='Contact1';
 febio_spec.Mesh.SurfacePair{1}.ATTR.name=contactPairName;
-febio_spec.Mesh.SurfacePair{1}.primary=surfaceName1;
-febio_spec.Mesh.SurfacePair{1}.secondary=surfaceName2;
+febio_spec.Mesh.SurfacePair{1}.primary=surfaceName2;
+febio_spec.Mesh.SurfacePair{1}.secondary=surfaceName1;
 
 %MeshDomains section
 febio_spec.MeshDomains.SolidDomain.ATTR.name=partName1;
@@ -579,7 +578,7 @@ febio_spec.Rigid.rigid_constraint{1}.dofs='Rx,Ry,Rz,Ru,Rv,Rw';
 %Contact section
 febio_spec.Contact.contact{1}.ATTR.type='sliding-elastic';
 febio_spec.Contact.contact{1}.ATTR.surface_pair=contactPairName;
-febio_spec.Contact.contact{1}.two_pass=two_pass;
+febio_spec.Contact.contact{1}.two_pass=0;
 febio_spec.Contact.contact{1}.laugon=laugon;
 febio_spec.Contact.contact{1}.tolerance=0.2;
 febio_spec.Contact.contact{1}.gaptol=0;

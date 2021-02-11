@@ -299,7 +299,7 @@ hl(1)=gpatch(F_probe,V,'rw','k',1);
 patchNormPlot(F_probe,V);
 hl(2)=gpatch(Fb_blob,V,'gw','k',1);
 patchNormPlot(Fb_blob,V);
-legend(hl,{'primary','secondary'}); clear hl;
+legend(hl,{'secondary','primary'}); clear hl;
 axisGeom(gca,fontSize);
 camlight headlight; 
 
@@ -309,7 +309,7 @@ hl(1)=gpatch(F_plate,V,'rw','k',1);
 patchNormPlot(F_plate,V);
 hl(2)=gpatch(Fb_blob,V,'gw','k',1);
 patchNormPlot(Fb_blob,V);
-legend(hl,{'primary','secondary'}); clear hl;
+legend(hl,{'secondary','primary'}); clear hl;
 axisGeom(gca,fontSize);
 camlight headlight; 
 
@@ -424,13 +424,13 @@ febio_spec.Mesh.Surface{4}.tri3.VAL=Fb_blob(Cb_blob==1,:);
 % -> Surface pairs
 contactPairName1='Contact1';
 febio_spec.Mesh.SurfacePair{1}.ATTR.name=contactPairName1;
-febio_spec.Mesh.SurfacePair{1}.primary=surfaceName1;
-febio_spec.Mesh.SurfacePair{1}.secondary=surfaceName2;
+febio_spec.Mesh.SurfacePair{1}.primary=surfaceName2;
+febio_spec.Mesh.SurfacePair{1}.secondary=surfaceName1;
 
 contactPairName2='Contact2';
 febio_spec.Mesh.SurfacePair{2}.ATTR.name=contactPairName2;
-febio_spec.Mesh.SurfacePair{2}.primary=surfaceName3;
-febio_spec.Mesh.SurfacePair{2}.secondary=surfaceName4;
+febio_spec.Mesh.SurfacePair{2}.primary=surfaceName4;
+febio_spec.Mesh.SurfacePair{2}.secondary=surfaceName3;
 
 %Rigid section 
 % -> Prescribed rigid body boundary conditions
@@ -467,7 +467,7 @@ febio_spec.Contact.contact{1}.search_tolerance=0.1;
 
 febio_spec.Contact.contact{2}.ATTR.type='sliding-elastic';
 febio_spec.Contact.contact{2}.ATTR.surface_pair=contactPairName2;
-febio_spec.Contact.contact{2}.two_pass=1;
+febio_spec.Contact.contact{2}.two_pass=0;
 febio_spec.Contact.contact{2}.laugon=laugon;
 febio_spec.Contact.contact{2}.tolerance=0.2;
 febio_spec.Contact.contact{2}.gaptol=0;

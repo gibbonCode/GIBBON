@@ -299,11 +299,7 @@ axisGeom(gca,fontSize);
 camlight headlight; 
 drawnow; 
 
-%% Get contact surfaces
-%
-
-%%
-% Visualize contact surfaces
+%% Visualize contact surfaces
 
 cFigure; 
 title('Probe blob contact pair','fontsize',fontSize);
@@ -311,7 +307,7 @@ hl(1)=gpatch(F_probe_plot,V,'rw','k',1);
 patchNormPlot(F_probe_plot,V);
 hl(2)=gpatch(Fb_blob_plot,V,'gw','k',1);
 patchNormPlot(Fb_blob_plot,V);
-legend(hl,{'Master','Slave'}); clear hl;
+legend(hl,{'Secondary','Primary'}); clear hl;
 axisGeom(gca,fontSize);
 camlight headlight; 
 
@@ -450,8 +446,8 @@ febio_spec.Mesh.Surface{2}.(shellElementType).VAL=Fb_blob(Cb_blob==1,:);
 % -> Surface pairs
 contactPairName1='Contact1';
 febio_spec.Mesh.SurfacePair{1}.ATTR.name=contactPairName1;
-febio_spec.Mesh.SurfacePair{1}.primary=surfaceName1;
-febio_spec.Mesh.SurfacePair{1}.secondary=surfaceName2;
+febio_spec.Mesh.SurfacePair{1}.primary=surfaceName2;
+febio_spec.Mesh.SurfacePair{1}.secondary=surfaceName1;
 
 %MeshData section
 % -> ElementData
@@ -495,7 +491,7 @@ febio_spec.Rigid.rigid_constraint{2}.relative=0;
 %Contact section
 febio_spec.Contact.contact{1}.ATTR.surface_pair=contactPairName1;
 febio_spec.Contact.contact{1}.ATTR.type='sliding-elastic';
-febio_spec.Contact.contact{1}.two_pass=1;
+febio_spec.Contact.contact{1}.two_pass=0;
 febio_spec.Contact.contact{1}.laugon=laugon;
 febio_spec.Contact.contact{1}.tolerance=0.2;
 febio_spec.Contact.contact{1}.gaptol=0;

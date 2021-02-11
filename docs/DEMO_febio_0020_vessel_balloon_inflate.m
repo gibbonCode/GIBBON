@@ -248,7 +248,7 @@ patchNormPlot(F_contact_primary,V);
 h1(2)=gpatch(F_contact_secondary,V,'rw','r',0.5);
 patchNormPlot(F_contact_secondary,V);
 
-legend(hl,{'Master surface','Slave surface'});
+legend(hl,{'Primary surface','Secondary surface'});
 
 axisGeom(gca,fontSize);
 camlight headlight;

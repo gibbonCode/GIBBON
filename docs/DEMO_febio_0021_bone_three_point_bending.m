@@ -258,9 +258,9 @@ logicSecondary1=VF(:,1)>(min(Vc1(:,1))-contactAdd) & VF(:,1)<(max(Vc1(:,1))+cont
 logicSecondary2=VF(:,1)>(min(Vc2(:,1))-contactAdd) & VF(:,1)<(max(Vc2(:,1))+contactAdd) & d>0;
 logicSecondary3=VF(:,1)>(min(Vc3(:,1))-contactAdd) & VF(:,1)<(max(Vc3(:,1))+contactAdd) & d>0;
 
-F_sec1=fliplr(Fb(logicSecondary1,:));
-F_sec2=fliplr(Fb(logicSecondary2,:));
-F_sec3=fliplr(Fb(logicSecondary3,:));
+F_prim1=fliplr(Fb(logicSecondary1,:));
+F_prim2=fliplr(Fb(logicSecondary2,:));
+F_prim3=fliplr(Fb(logicSecondary3,:));
 
 %%
 % Visualize
@@ -269,14 +269,14 @@ cFigure; hold on;
 
 gpatch(Fb,V,'w','none',0.5);
 
-hp2(1)=gpatch(F_sec1,V,'r','k',1);
-patchNormPlot(F_sec1,V);
+hp2(1)=gpatch(F_prim1,V,'r','k',1);
+patchNormPlot(F_prim1,V);
 
-hp2(2)=gpatch(F_sec2,V,'g','k',1);
-patchNormPlot(F_sec2,V);
+hp2(2)=gpatch(F_prim2,V,'g','k',1);
+patchNormPlot(F_prim2,V);
 
-hp2(3)=gpatch(F_sec3,V,'b','k',1);
-patchNormPlot(F_sec3,V);
+hp2(3)=gpatch(F_prim3,V,'b','k',1);
+patchNormPlot(F_prim3,V);
 
 hp2(4)=gpatch(Fc1,V,'c','k',1);
 patchNormPlot(Fc1,V);
@@ -287,7 +287,7 @@ patchNormPlot(Fc2,V);
 hp2(6)=gpatch(Fc3,V,'m','k',1);
 patchNormPlot(Fc3,V);
 
-legend(hp2,{'secondary 1','secondary 2','secondary 3','primary 1','primary 2','primary 3'});
+legend(hp2,{'primary 1','primary 2','primary 3','secondary 1','secondary 2','secondary 3'});
 
 axisGeom;
 camlight headlight;
@@ -423,35 +423,35 @@ if bcFix==1
 end
 
 % -> Surfaces
-surfaceNamePrim1='contact_primary1';
-febio_spec.Mesh.Surface{1}.ATTR.name=surfaceNamePrim1;
+surfaceNameSec1='contact_secondary1';
+febio_spec.Mesh.Surface{1}.ATTR.name=surfaceNameSec1;
 febio_spec.Mesh.Surface{1}.quad4.ATTR.id=(1:1:size(Fc1,1))';
 febio_spec.Mesh.Surface{1}.quad4.VAL=Fc1;
 
-surfaceNamePrim2='contact_primary2';
-febio_spec.Mesh.Surface{2}.ATTR.name=surfaceNamePrim2;
+surfaceNameSec2='contact_secondary2';
+febio_spec.Mesh.Surface{2}.ATTR.name=surfaceNameSec2;
 febio_spec.Mesh.Surface{2}.quad4.ATTR.id=(1:1:size(Fc2,1))';
 febio_spec.Mesh.Surface{2}.quad4.VAL=Fc2;
 
-surfaceNamePrim3='contact_primary3';
-febio_spec.Mesh.Surface{3}.ATTR.name=surfaceNamePrim3;
+surfaceNameSec3='contact_secondary3';
+febio_spec.Mesh.Surface{3}.ATTR.name=surfaceNameSec3;
 febio_spec.Mesh.Surface{3}.quad4.ATTR.id=(1:1:size(Fc3,1))';
 febio_spec.Mesh.Surface{3}.quad4.VAL=Fc3;
 
-surfaceNameSec1='contact_secondary1';
-febio_spec.Mesh.Surface{4}.ATTR.name=surfaceNameSec1;
-febio_spec.Mesh.Surface{4}.tri3.ATTR.id=(1:1:size(F_sec1,1))';
-febio_spec.Mesh.Surface{4}.tri3.VAL=F_sec1;
+surfaceNamePrim1='contact_primary1';
+febio_spec.Mesh.Surface{4}.ATTR.name=surfaceNamePrim1;
+febio_spec.Mesh.Surface{4}.tri3.ATTR.id=(1:1:size(F_prim1,1))';
+febio_spec.Mesh.Surface{4}.tri3.VAL=F_prim1;
 
-surfaceNameSec2='contact_secondary2';
-febio_spec.Mesh.Surface{5}.ATTR.name=surfaceNameSec2;
-febio_spec.Mesh.Surface{5}.tri3.ATTR.id=(1:1:size(F_sec2,1))';
-febio_spec.Mesh.Surface{5}.tri3.VAL=F_sec2;
+surfaceNamePrim2='contact_primary2';
+febio_spec.Mesh.Surface{5}.ATTR.name=surfaceNamePrim2;
+febio_spec.Mesh.Surface{5}.tri3.ATTR.id=(1:1:size(F_prim2,1))';
+febio_spec.Mesh.Surface{5}.tri3.VAL=F_prim2;
 
-surfaceNameSec3='contact_secondary3';
-febio_spec.Mesh.Surface{6}.ATTR.name=surfaceNameSec3;
-febio_spec.Mesh.Surface{6}.tri3.ATTR.id=(1:1:size(F_sec3,1))';
-febio_spec.Mesh.Surface{6}.tri3.VAL=F_sec3;
+surfaceNamePrim3='contact_primary3';
+febio_spec.Mesh.Surface{6}.ATTR.name=surfaceNamePrim3;
+febio_spec.Mesh.Surface{6}.tri3.ATTR.id=(1:1:size(F_prim3,1))';
+febio_spec.Mesh.Surface{6}.tri3.VAL=F_prim3;
 
 % -> Surface pairs
 febio_spec.Mesh.SurfacePair{1}.ATTR.name='Contact1';
@@ -473,6 +473,7 @@ if bcFix==1
     febio_spec.Boundary.bc{1}.ATTR.node_set=nodeSetName1;
     febio_spec.Boundary.bc{1}.dofs='x,y,z';
 end
+
 %Rigid section 
 % -> Prescribed rigid body boundary conditions
 febio_spec.Rigid.rigid_constraint{1}.ATTR.name='RigidFix_1';

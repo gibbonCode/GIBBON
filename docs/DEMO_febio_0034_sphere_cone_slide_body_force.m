@@ -187,7 +187,7 @@ hl(1)=gpatch(F_tube,V,'rw','k',0.8);
 patchNormPlot(F_tube,V);
 hl(2)=gpatch(F_contact_secondary,V,'kw','k',0.5);
 patchNormPlot(F_contact_secondary,V);
-legend(hl,{'Master','Slave'}); clear hl;
+legend(hl,{'Secondary','Primary'}); clear hl;
 axisGeom(gca,fontSize);
 camlight headlight; 
 drawnow; 
@@ -270,8 +270,8 @@ febio_spec.Mesh.Surface{2}.quad4.VAL=F_contact_secondary;
 % -> Surface pairs
 contactPairName='Contact1';
 febio_spec.Mesh.SurfacePair{1}.ATTR.name=contactPairName;
-febio_spec.Mesh.SurfacePair{1}.primary=surfaceName1;
-febio_spec.Mesh.SurfacePair{1}.secondary=surfaceName2;
+febio_spec.Mesh.SurfacePair{1}.primary=surfaceName2;
+febio_spec.Mesh.SurfacePair{1}.secondary=surfaceName1;
 
 %MeshDomains section
 febio_spec.MeshDomains.SolidDomain.ATTR.name=partName1;
@@ -297,7 +297,7 @@ febio_spec.Rigid.rigid_constraint{1}.dofs='Rx,Ry,Rz,Ru,Rv,Rw';
 %Contact section
 febio_spec.Contact.contact{1}.ATTR.type='sliding-elastic';
 febio_spec.Contact.contact{1}.ATTR.surface_pair=contactPairName;
-febio_spec.Contact.contact{1}.two_pass=1;
+febio_spec.Contact.contact{1}.two_pass=0;
 febio_spec.Contact.contact{1}.laugon=laugon;
 febio_spec.Contact.contact{1}.tolerance=0.2;
 febio_spec.Contact.contact{1}.gaptol=0;

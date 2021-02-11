@@ -17,23 +17,22 @@ clear; close all; clc;
 
 %%
 % Create example patch data 
-[F,V]=geoSphere(3,1); %Create patch data for a sphere
+[F,V]=geoSphere(3,0.5); %Create patch data for a sphere
 
-%Create color data 
+%Simulate integer color data 
+numLevels=5; 
 X=patchCentre(F,V);
-C=ones(size(F,1),1); %1 for the bottom
-C(X(:,3)>-0.5)=2; %2 for the next level
-C(X(:,3)>0)=3; %3 for the next level
-C(X(:,3)>0.5)=4; %4 for the next level
+C=1+round((numLevels-1)*(X(:,3)+0.5)); %Z-coordinate based
+
 
 %%
 % Visualize patch data with integer color data
 
 cFigure;
-title('Integer colorbar, example with 4 colors')
+title(['Integer colorbar, example with ',num2str(numLevels),' colors'])
 gpatch(F,V,C);
 axisGeom; 
-colormap(gjet(4)); 
+colormap(gjet(6)); 
 view([0,0]); 
 camlight headlight; 
 icolorbar;
