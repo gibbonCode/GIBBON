@@ -120,9 +120,11 @@ drawnow;
 hTextStatement.String='Please provide 3rd party package locations. Leave blank if associated features are not needed.';
 
 if ispc
-    hTextInfoStringDefault='Full path to FEBio excutable including extension, e.g. C:\Program Files\FEBioStudio\bin\FEBio3.exe';
+    hTextInfoStringDefault='Full path to FEBio excutable including extension, e.g. C:\Program Files\FEBioStudio\febio\FEBio3.exe';
+elseif ismac
+    hTextInfoStringDefault='Full path to FEBio excutable including extension, e.g. /users/kevin/Applications/FEBioStudio/FEBioStudio/Contents/MacOS/febio3';
 else
-    hTextInfoStringDefault='Full path to FEBio excutable, e.g. /home/userName/febio-2.9.1/bin/febio2';
+    hTextInfoStringDefault='Full path to FEBio excutable, e.g. /home/kevin/FEBioStudio/bin/febio3';
 end
 
 hTextInfo1 = uicontrol(hf,'Style','text','String',hTextInfoStringDefault,...
