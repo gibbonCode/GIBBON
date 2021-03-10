@@ -56,6 +56,11 @@ else
     Nv=Nv.*dirSet;
 end
 
+%Force 3D if 2D
+if size(Vp1,2)==2
+   Vp1(:,3)=0;  
+end
+
 %% Compute coordinates
 
 %Thicken inwards
