@@ -54,7 +54,7 @@ while 1
         warning('Invalid new triangle proposed');
         break
     end
-    
+
     F1=[F1;f];    
     
     ind1=ind1(ind1~=indVertexNow);
