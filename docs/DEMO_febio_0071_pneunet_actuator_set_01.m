@@ -1,4 +1,4 @@
-%% DEMO_febio_0070_pneunet_actuator_simple_01
+%% DEMO_febio_0071_pneunet_actuator_set_01
 % Below is a demonstration for:
 % 
 % * Building geometry for a simple pneunet actuator
@@ -45,37 +45,38 @@ febioLogFileName_disp=[febioFebFileNamePart,'_disp_out.txt']; %Log file name for
 febioLogFileName_stress=[febioFebFileNamePart,'_stress_out.txt']; %Log file name for exporting force
 
 %Load
-appliedPressure=0.5; 
+appliedPressure1=0.02; 
+appliedPressure2=appliedPressure1/10; 
+
+%Define applied force 
+appliedForce=[1e-12 0 0]; 
 
 %Material parameter set
-k_factor=50; %Bulk modulus factor 
-
 c1=1; %Shear-modulus-like parameter
 m1=2; %Material parameter setting degree of non-linearity
-k1=c1*k_factor; %Bulk modulus
-
-c2=50*c1; %Shear-modulus-like parameter
-m2=2; %Material parameter setting degree of non-linearity
-k2=c2*k_factor; %Bulk modulus
+k_factor=50; %Bulk modulus factor 
+k=c1*k_factor; %Bulk modulus
 
 % FEA control settings
-numTimeSteps=40; %Number of time steps desired
-opt_iter=35; %Optimum number of iterations
+numTimeSteps=10; %Number of time steps desired
+opt_iter=25; %Optimum number of iterations
 max_refs=opt_iter*2; %Max reforms
 max_ups=0; %Set to zero to use full-Newton iterations
 max_retries=5; %Maximum number of retires
 dtmin=(1/numTimeSteps)/100; %Minimum time step size
-dtmax=(1/numTimeSteps)*2; %Maximum time step size
+dtmax=(1/numTimeSteps); %Maximum time step size
 
-runMode='external';%'internal';
+runMode='internal';%'internal';
 
 %%
 
-pointSpacing=1;
+actuatorLengthDesired=100;
 
-periodSize=6; 
-numPeriods=8; 
-heightFactor=1.5; %To scale height wrt period size
+pointSpacing=2;
+periodSize=10; 
+numPeriods=ceil(actuatorLengthDesired/periodSize); 
+
+heightFactor=1.4; %To scale height wrt period size
 widthFactor=1; %To scale width wrt period size
 
 numElementsPeriod=ceil(periodSize./pointSpacing);
@@ -143,30 +144,86 @@ for q=1:1:6
 end
 Cb(~any(ismember(Fb,F1(indBoundary1,:)),2))=0;
 
-% Remove unused nodes and clean up index matrices
+%% Removed unused nodes and clean up index matrices
  
 [E,V,indFix2]=patchCleanUnused(E1(logicKeep2,:),V_bar);
+V(:,1)=V(:,1)-min(V(:,1));
 Fb=indFix2(Fb);
 F=indFix2(F2);
 
-%%
+V2=V;
+V2(:,1)=-V2(:,1);
+V=[V;V2];
 
-cFigure; 
-gpatch(Fb,V,Cb,'k',0.5);
-axisGeom; 
-colormap(turbo(250)); icolorbar; 
-camlight headlight; 
-gdrawnow; 
+Fb=[Fb;fliplr(Fb)+size(V2,1)];
+F=[F;fliplr(F)+size(V2,1)];
+cShift=max(Cb(:))+1; 
+Cb=[Cb;Cb+cShift];
+
+indicesInnerSurface=unique(Fb(Cb==1,:));
+logicElementsInner=any(ismember(E,indicesInnerSurface),2);
+
+E1=E;
+E2=E(:,[5 6 7 8 1 2 3 4]);
+E2=E2(~logicElementsInner,:);
+
+E=[E1;E2+size(V2,1)];
+C=[ones(size(E1,1),1); 2*ones(size(E2,1),1);];
+[F,V,~,ind2]=mergeVertices(F,V);
+Fb=ind2(Fb);
+E=ind2(E);
+indicesInnerSurface=ind2(indicesInnerSurface);
+
+actuatorLength=max(V(:,3))-min(V(:,3));
 
 %% Defining the boundary conditions
 % The visualization of the model boundary shows colors for each side of the
 % disc. These labels can be used to define boundary conditions. 
 
 %Define supported node sets
-bcSupportList=unique(Fb(Cb==5,:)); %Node set part of selected face
+bcSupportList=unique(Fb(ismember(Cb,[5 5+cShift]),:)); %Node set part of selected face
+
+bcPrescribeList=unique(Fb(ismember(Cb,[6 6+cShift]),:)); %Node set part of selected face
 
 %Get pressure faces
-F_pressure=Fb(Cb==0,:); 
+F_pressure1=Fb(Cb==0,:); 
+F_pressure2=Fb(Cb==cShift,:); 
+
+%%
+
+
+ind2=unique(E(C==2,:));
+d=max(V(ind2,1));
+V(ind2,1)=V(ind2,1)-d;
+V(:,1)=V(:,1)+d/2;
+
+% [E,V,indFix]=patchCleanUnused(E,V);
+% bcSupportList=indFix(bcSupportList);
+% bcPrescribeList=indFix(bcPrescribeList);
+% F_pressure1=indFix(F_pressure1);
+% F_pressure2=indFix(F_pressure2);
+
+[F,CF]=element2patch(E,C,'hex8');
+
+[F,V,~,indFix]=mergeVertices(F,V);
+E=indFix(E);
+bcSupportList=indFix(bcSupportList);
+bcPrescribeList=indFix(bcPrescribeList);
+F_pressure1=indFix(F_pressure1);
+F_pressure2=indFix(F_pressure2);
+
+indb=tesBoundary(F,V);
+Fb=F(indb,:);
+
+%%
+
+cFigure; hold on;
+gpatch(F,V,CF,'k',0.5);
+% plotV(V(indicesInnerSurface,:),'k.','MarkerSize',markerSize);
+axisGeom; 
+colormap(turbo(250)); icolorbar; 
+camlight headlight; 
+gdrawnow; 
 
 %% 
 % Visualizing boundary conditions. Markers plotted on the semi-transparent
@@ -180,35 +237,14 @@ hold on;
 gpatch(Fb,V,'w','none',0.5);
 
 hl(1)=plotV(V(bcSupportList,:),'k.','MarkerSize',markerSize);
-hl(2)=gpatch(F_pressure,V,'r','k',1);
+hl(2)=gpatch(F_pressure1,V,'r','k',1);
+hl(3)=gpatch(F_pressure2,V,'b','k',1);
+hl(4)=plotV(V(bcPrescribeList,:),'g.','MarkerSize',markerSize);
 
-patchNormPlot(F_pressure,V);
-legend(hl,{'BC full support','Pressure surface'});
+patchNormPlot(F_pressure1,V);
+legend(hl,{'BC full support','Pressure surface 1','Pressure surface 2','BC force'});
 
 axisGeom(gca,fontSize);
-camlight headlight; 
-gdrawnow; 
-
-%%
-
-indicesInnerSurface=unique(Fb(Cb==1,:));
-logicElementsInner=any(ismember(E,indicesInnerSurface),2);
-
-E1=E(~logicElementsInner,:); %Other elements
-E2=E(logicElementsInner,:); %Inner element layer
-E=[E1;E2];
-
-[F1]=element2patch(E1);
-[F2]=element2patch(E2);
-
-%%
-
-cFigure; hold on; 
-gpatch(F1,V,'bw','k',0.5);
-gpatch(F2,V,'rw','k',0.5);
-plotV(V(indicesInnerSurface,:),'k.','MarkerSize',markerSize);
-axisGeom; 
-colormap(turbo(250)); icolorbar; 
 camlight headlight; 
 gdrawnow; 
 
@@ -245,17 +281,7 @@ febio_spec.Material.material{1}.c1=c1;
 febio_spec.Material.material{1}.m1=m1;
 febio_spec.Material.material{1}.c2=c1;
 febio_spec.Material.material{1}.m2=-m1;
-febio_spec.Material.material{1}.k=k1;
-
-materialName2='Material2';
-febio_spec.Material.material{2}.ATTR.name=materialName2;
-febio_spec.Material.material{2}.ATTR.type='Ogden';
-febio_spec.Material.material{2}.ATTR.id=2;
-febio_spec.Material.material{2}.c1=c2;
-febio_spec.Material.material{2}.m1=m2;
-febio_spec.Material.material{2}.c2=c2;
-febio_spec.Material.material{2}.m2=-m2;
-febio_spec.Material.material{2}.k=k2;
+febio_spec.Material.material{1}.k=k;
 
 %Mesh section
 % -> Nodes
@@ -267,20 +293,19 @@ febio_spec.Mesh.Nodes{1}.node.VAL=V; %The nodel coordinates
 partName1='Part1';
 febio_spec.Mesh.Elements{1}.ATTR.name=partName1; %Name of this part
 febio_spec.Mesh.Elements{1}.ATTR.type='hex8'; %Element type 
-febio_spec.Mesh.Elements{1}.elem.ATTR.id=(1:1:size(E1,1))'; %Element id's
-febio_spec.Mesh.Elements{1}.elem.VAL=E1; %The element matrix
-
-partName2='Part2';
-febio_spec.Mesh.Elements{2}.ATTR.name=partName2; %Name of this part
-febio_spec.Mesh.Elements{2}.ATTR.type='hex8'; %Element type 
-febio_spec.Mesh.Elements{2}.elem.ATTR.id=size(E1,1)+(1:1:size(E2,1))'; %Element id's
-febio_spec.Mesh.Elements{2}.elem.VAL=E2; %The element matrix
+febio_spec.Mesh.Elements{1}.elem.ATTR.id=(1:1:size(E,1))'; %Element id's
+febio_spec.Mesh.Elements{1}.elem.VAL=E; %The element matrix
 
 % -> Surfaces
-surfaceName1='LoadedSurface';
+surfaceName1='LoadedSurface1';
 febio_spec.Mesh.Surface{1}.ATTR.name=surfaceName1;
-febio_spec.Mesh.Surface{1}.quad4.ATTR.id=(1:1:size(F_pressure,1))';
-febio_spec.Mesh.Surface{1}.quad4.VAL=F_pressure;
+febio_spec.Mesh.Surface{1}.quad4.ATTR.id=(1:1:size(F_pressure1,1))';
+febio_spec.Mesh.Surface{1}.quad4.VAL=F_pressure1;
+
+surfaceName2='LoadedSurface2';
+febio_spec.Mesh.Surface{2}.ATTR.name=surfaceName2;
+febio_spec.Mesh.Surface{2}.quad4.ATTR.id=(1:1:size(F_pressure2,1))';
+febio_spec.Mesh.Surface{2}.quad4.VAL=F_pressure2;
 
 % -> NodeSets
 nodeSetName1='bcSupportList';
@@ -288,10 +313,8 @@ febio_spec.Mesh.NodeSet{1}.ATTR.name=nodeSetName1;
 febio_spec.Mesh.NodeSet{1}.node.ATTR.id=bcSupportList(:);
 
 %MeshDomains section
-febio_spec.MeshDomains.SolidDomain{1}.ATTR.name=partName1;
-febio_spec.MeshDomains.SolidDomain{1}.ATTR.mat=materialName1;
-febio_spec.MeshDomains.SolidDomain{2}.ATTR.name=partName2;
-febio_spec.MeshDomains.SolidDomain{2}.ATTR.mat=materialName2;
+febio_spec.MeshDomains.SolidDomain.ATTR.name=partName1;
+febio_spec.MeshDomains.SolidDomain.ATTR.mat=materialName1;
 
 %Boundary condition section 
 % -> Fix boundary conditions
@@ -304,8 +327,14 @@ febio_spec.Boundary.bc{1}.dofs='x,y,z';
 febio_spec.Loads.surface_load{1}.ATTR.type='pressure';
 febio_spec.Loads.surface_load{1}.ATTR.surface=surfaceName1;
 febio_spec.Loads.surface_load{1}.pressure.ATTR.lc=1;
-febio_spec.Loads.surface_load{1}.pressure.VAL=appliedPressure;
+febio_spec.Loads.surface_load{1}.pressure.VAL=appliedPressure1;
 febio_spec.Loads.surface_load{1}.symmetric_stiffness=1;
+
+febio_spec.Loads.surface_load{2}.ATTR.type='pressure';
+febio_spec.Loads.surface_load{2}.ATTR.surface=surfaceName2;
+febio_spec.Loads.surface_load{2}.pressure.ATTR.lc=1;
+febio_spec.Loads.surface_load{2}.pressure.VAL=appliedPressure2;
+febio_spec.Loads.surface_load{2}.symmetric_stiffness=1;
 
 %LoadData section
 % -> load_controller
