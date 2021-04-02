@@ -30,7 +30,8 @@ clear; close all; clc;
 fontSize=15;
 faceAlpha1=0.8;
 faceAlpha2=0.3;
-markerSize=40;
+markerSize1=40;
+markerSize2=25;
 lineWidth=3;
 
 %% Control parameters
@@ -81,6 +82,9 @@ dtmax=1/numTimeSteps; %Maximum time step size
 symmetric_stiffness=0;
 min_residual=1e-20;
 
+%Set run mode
+runMode='internal'; %'internal'
+
 %Contact parameters
 contactInitialOffset=0.1;
 contactPenalty=10;
@@ -91,16 +95,6 @@ fric_coeff=0.1;
 
 %% Create hemi-sphere
 [F,V,C_hemiSphereLabel]=hemiSphereMesh(nRefine,r,1); %Construct hemi-shere mesh
-pointSpacing=mean(patchEdgeLengths(F,V)); % Get point spacing from mesh
-
-% %%
-% % Visualize hemi-sphere
-% cFigure; hold on;
-% gpatch(F,V,C_hemiSphereLabel);
-% axisGeom;
-% camlight headlight;
-% icolorbar;
-% gdrawnow;
 
 %% Change shape of hemi-sphere to create basic breast model
 
@@ -234,8 +228,10 @@ np=25; %Number of points used to construct each fillet edge
 closedLoopOption=0; %Use 1 if curve represents a closed loop but containes unique points
 [Vc]=filletCurve(Vt,rFillet,np,closedLoopOption);
 
+pointSpacingPlate=mean(patchEdgeLengths(Fb,V))/2; % Get point spacing from mesh
+
 %Extrude to form plate
-cPar.pointSpacing=pointSpacing/2;
+cPar.pointSpacing=pointSpacingPlate;
 cPar.depth=3*r;
 cPar.patchType='quad';
 cPar.dir=0;
@@ -325,9 +321,7 @@ xlabel('X','FontSize',fontSize); ylabel('Y','FontSize',fontSize); zlabel('Z','Fo
 hold on;
 
 gpatch(Fb,V,'kw','none',faceAlpha2);
-
-hl2(1)=plotV(V(bcSupportList,:),'k.','MarkerSize',markerSize);
-
+hl2(1)=plotV(V(bcSupportList,:),'k.','MarkerSize',markerSize1);
 legend(hl2,{'BC support'});
 
 axisGeom(gca,fontSize);
@@ -559,9 +553,10 @@ febio_spec.Output.logfile.node_data{1}.ATTR.file=febioLogFileName_disp;
 febio_spec.Output.logfile.node_data{1}.ATTR.data='ux;uy;uz';
 febio_spec.Output.logfile.node_data{1}.ATTR.delim=',';
 
-febio_spec.Output.logfile.node_data{2}.ATTR.file=febioLogFileName_force;
-febio_spec.Output.logfile.node_data{2}.ATTR.data='Rx;Ry;Rz';
-febio_spec.Output.logfile.node_data{2}.ATTR.delim=',';
+febio_spec.Output.logfile.rigid_body_data{1}.ATTR.file=febioLogFileName_force;
+febio_spec.Output.logfile.rigid_body_data{1}.ATTR.data='Fx;Fy;Fz';
+febio_spec.Output.logfile.rigid_body_data{1}.ATTR.delim=',';
+febio_spec.Output.logfile.rigid_body_data{1}.VAL=[3 4]; 
 
 %% Quick viewing of the FEBio input file structure
 % The |febView| function can be used to view the xml structure in a MATLAB
@@ -586,7 +581,7 @@ febioStruct2xml(febio_spec,febioFebFileName); %Exporting to file and domNode
 febioAnalysis.run_filename=febioFebFileName; %The input file name
 febioAnalysis.run_logname=febioLogFileName; %The name for the log file
 febioAnalysis.disp_on=1; %Display information on the command window
-febioAnalysis.runMode='external';%'internal';
+febioAnalysis.runMode=runMode;
 
 [runFlag]=runMonitorFEBio(febioAnalysis);%START FEBio NOW!!!!!!!!
 
@@ -595,58 +590,93 @@ febioAnalysis.runMode='external';%'internal';
 if runFlag==1 %i.e. a succesful run
     
     % Importing nodal displacements from a log file
-    [time_mat, N_disp_mat,~]=importFEBio_logfile(fullfile(savePath,febioLogFileName_disp)); %Nodal displacements
-    time_mat=[0; time_mat(:)]; %Time
+    dataStructDisp=importFEBio_logfile(fullfile(savePath,febioLogFileName_disp),1,1);
     
-    N_disp_mat=N_disp_mat(:,2:end,:);
-    sizImport=size(N_disp_mat);
-    sizImport(3)=sizImport(3)+1;
-    N_disp_mat_n=zeros(sizImport);
-    N_disp_mat_n(:,:,2:end)=N_disp_mat;
-    N_disp_mat=N_disp_mat_n;
-    DN=N_disp_mat(:,:,end);
-    DN_magnitude=sqrt(sum(DN(:,3).^2,2));
-    V_def=V+DN;
+    %Access data
+    N_disp_mat=dataStructDisp.data; %Displacement
+    timeVec=dataStructDisp.time; %Time
+    
+    %Create deformed coordinate set
     V_DEF=N_disp_mat+repmat(V,[1 1 size(N_disp_mat,3)]);
-    X_DEF=V_DEF(:,1,:);
-    Y_DEF=V_DEF(:,2,:);
-    Z_DEF=V_DEF(:,3,:);
-        
+    
+    %% Import rigid body reaction forces
+    
+    dataStructForce=importFEBio_logfile(fullfile(savePath,febioLogFileName_force),1,1);    
+    forcePlate1=squeeze(dataStructForce.data(1,:,:))';
+    forcePlate2=squeeze(dataStructForce.data(2,:,:))';
+    
+    %% 
+    % Visualize reaction forces
+    cFigure; 
+    subplot(1,2,1); hold on; 
+    title('Bottom plate');
+    xlabel('Time [s]'); ylabel('Force [N]');
+    hp1=plot(timeVec,forcePlate1(:,1),'r.-','LineWidth',lineWidth,'MarkerSize',markerSize2);
+    hp2=plot(timeVec,forcePlate1(:,2),'g.-','LineWidth',lineWidth,'MarkerSize',markerSize2);
+    hp3=plot(timeVec,forcePlate1(:,3),'b.-','LineWidth',lineWidth,'MarkerSize',markerSize2);
+    hl=legend([hp1 hp2 hp3],{'F_x','F_y','F_z'},'Location','NorthWest');
+    axis tight; axis square; grid on; box on; 
+    set(gca,'FontSize',fontSize);
+    
+    subplot(1,2,2); hold on; 
+    title('Top plate');
+    xlabel('Time [s]'); ylabel('Force [N]');
+    hp1=plot(timeVec,forcePlate2(:,1),'r.-','LineWidth',lineWidth,'MarkerSize',markerSize2);
+    hp2=plot(timeVec,forcePlate2(:,2),'g.-','LineWidth',lineWidth,'MarkerSize',markerSize2);
+    hp3=plot(timeVec,forcePlate2(:,3),'b.-','LineWidth',lineWidth,'MarkerSize',markerSize2);
+    hl=legend([hp1 hp2 hp3],{'F_x','F_y','F_z'},'Location','NorthWest');
+    axis tight; axis square; grid on; box on; 
+    set(gca,'FontSize',fontSize);
+    drawnow; 
+    
+    %%
+    % Visualize Z-force of top plate
+    
+    forceTop_Z=forcePlate2(:,3); 
+    
+    cFigure; hold on; 
+    title('Top plate');
+    xlabel('Time [s]'); ylabel('Force [N]');
+    hp1=plot(timeVec,forceTop_Z,'b.-','LineWidth',lineWidth,'MarkerSize',markerSize2);    
+    hl=legend([hp1],{'F_z'},'Location','NorthWest');
+    axis tight; axis square; grid on; box on; 
+    set(gca,'FontSize',fontSize);
+    drawnow; 
+    
     %%
     % Plotting the simulated results using |anim8| to visualize and animate
     % deformations
     
+    DN_magnitude=sqrt(sum(N_disp_mat(:,:,end).^2,2)); %Current displacement magnitude
+    
     % Create basic view and store graphics handle to initiate animation
     hf=cFigure; %Open figure
     gtitle([febioFebFileNamePart,': Press play to animate']);
-    hp1=gpatch(Fb,V_def,DN_magnitude,'k',1); %Add graphics object to animate
+    hp1=gpatch(Fb,V_DEF(:,:,end),DN_magnitude,'k',1); %Add graphics object to animate
     hp1.FaceColor='Interp';
-    hp2=gpatch(Fp1,V_def,'kw','none',0.5); %Add graphics object to animate
-    hp3=gpatch(Fp2,V_def,'kw','none',0.5); %Add graphics object to animate
+    hp2=gpatch(Fp1,V_DEF(:,:,end),'kw','none',0.5); %Add graphics object to animate
+    hp3=gpatch(Fp2,V_DEF(:,:,end),'kw','none',0.5); %Add graphics object to animate
     %     gpatch(Fb,V,0.5*ones(1,3),'none',0.25); %A static graphics object
     
     axisGeom(gca,fontSize);
     colormap(gjet(250)); colorbar;
     caxis([0 max(DN_magnitude)]);
-    axis([min(X_DEF(:)) max(X_DEF(:)) min(Y_DEF(:)) max(Y_DEF(:)) min(Z_DEF(:)) max(Z_DEF(:))]);
+    axis(axisLim(V_DEF)); %Set axis limits statically    
     camlight headlight;
     
     % Set up animation features
-    animStruct.Time=time_mat; %The time vector
-    for qt=1:1:size(N_disp_mat,3) %Loop over time increments
-        DN=N_disp_mat(:,:,qt); %Current displacement
-        DN_magnitude=sqrt(sum(DN.^2,2)); %Current displacement magnitude
-        V_def=V+DN; %Current nodal coordinates
+    animStruct.Time=timeVec; %The time vector
+    for qt=1:1:size(N_disp_mat,3) %Loop over time increments        
+        DN_magnitude=sqrt(sum(N_disp_mat(:,:,qt).^2,2)); %Current displacement magnitude        
                 
         %Set entries in animation structure
         animStruct.Handles{qt}=[hp1 hp1 hp2 hp3]; %Handles of objects to animate
         animStruct.Props{qt}={'Vertices','CData','Vertices','Vertices'}; %Properties of objects to animate
-        animStruct.Set{qt}={V_def,DN_magnitude,V_def,V_def}; %Property values for to set in order to animate
+        animStruct.Set{qt}={V_DEF(:,:,qt),DN_magnitude,V_DEF(:,:,qt),V_DEF(:,:,qt)}; %Property values for to set in order to animate
     end
     anim8(hf,animStruct); %Initiate animation feature
     gdrawnow;
-    
-    
+        
 end
     
 %%
