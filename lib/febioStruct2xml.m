@@ -128,6 +128,11 @@ attributeKeyword=optionStruct.attributeKeyword;
 valueKeyword=optionStruct.valueKeyword;
 arrayLoopKeywords=optionStruct.arrayLoopKeywords;
 
+%Check if parseStruct if empty
+if isempty(parseStruct) %throw error
+    error('Empty structure component encountered. Note this may occur when index is skipped in febio structure')
+end
+
 %Get field names occuring in the input structure
 fieldNameSet = fieldnames(parseStruct);
 attributeStruct=[]; %Initialize as empty
