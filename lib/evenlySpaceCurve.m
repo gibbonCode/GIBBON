@@ -10,6 +10,9 @@ function [Vg]=evenlySpaceCurve(varargin)
 % Kevin Mattheus Moerman
 % 
 % 2020/05/06: Created
+% 2021/04/12: Fixed bug for resampling of non-closed curve with must-points
+% (end point removed from must points as it is already a must point for
+% non-closed curves). 
 %
 % ------------------------------------------------------------------------
 
@@ -61,6 +64,11 @@ end
 %Remove first, if present, since it is already a must point
 if ~isempty(indMust)
     indMust=indMust(indMust~=1); %Remove first if member
+end
+
+%Remove last for a non-closed curve since it is already a must point
+if ~isempty(indMust) && closeLoopOpt==0
+    indMust=indMust(indMust~=size(V,1));
 end
 
 if isempty(indMust) %Normal resample

@@ -41,6 +41,7 @@ defaultInputStructure.mustPointsBoundary=[];
 defaultInputStructure.smoothIterations=250;
 defaultInputStructure.removeDistInterior=[];
 defaultInputStructure.removeDistBoundary=[];
+defaultInputStructure.SD=[];
 
 switch nargin
     case 1
@@ -110,6 +111,7 @@ V_must_boundary=inputStructure.mustPointsBoundary;
 smoothIterations=inputStructure.smoothIterations;
 removeDistInterior=inputStructure.removeDistInterior;
 removeDistBoundary=inputStructure.removeDistBoundary; 
+SD=inputStructure.SD(:)'; 
 
 if isempty(regionCell)
     error('Empty regionCell provided');
@@ -199,8 +201,13 @@ end
 %% DEFINE INTERNAL MESH SEED POINTS
 
 %region extrema
-maxVi=max(V(:,[1 2]),[],1);
-minVi=min(V(:,[1 2]),[],1);
+if isempty(SD)
+    maxVi=max(V(:,[1 2]),[],1);
+    minVi=min(V(:,[1 2]),[],1);
+else
+    maxVi=max(V(:,[1 2]),[],1)+(4*SD);
+    minVi=min(V(:,[1 2]),[],1)-(4*SD);
+end
 
 switch gridType
     case 'tri'
@@ -211,6 +218,12 @@ switch gridType
         n=round(w./pointSpacing);
         [X,Y]=meshgrid(linspace(minVi(1),maxVi(1),n(1)),linspace(minVi(2),maxVi(2),n(2)));
         X=X(:); Y=Y(:);
+end
+
+%Random offset
+if ~isempty(SD)
+    X=X+SD(1)*randn(size(X));
+    Y=Y+SD(2)*randn(size(Y));
 end
 
 %% Remove edge points
@@ -336,8 +349,12 @@ if nargout>3
     varargout{4}=indMustPointsInner;
 end
 if nargout>4
-    [~,indMin]=minDist(V_must_boundary,V(boundaryInd,:));
-    varargout{5}=boundaryInd(indMin);
+    if ~isempty(V_must_boundary)        
+        [~,indMin]=minDist(V_must_boundary,V(boundaryInd,:));
+        varargout{5}=boundaryInd(indMin);
+    else
+        varargout{5}=[];
+    end
 end
 
 %% 

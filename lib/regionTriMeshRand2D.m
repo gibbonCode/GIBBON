@@ -28,13 +28,16 @@ closeLoopOpt=1;
 minConnectivity=3; 
 
 %% PLOT SETTINGS
-if plotOn==1
-    figColor='w'; figColorDef='white';
+if plotOn==1    
     fontSize=20;
     fAlpha=1;
     markerSize=20;
     faceColor='r';
 end
+
+%%
+
+SD=SD(:)'; %Force as row
 
 %% Get region curves and define constraints for Delaunay tesselation
 
