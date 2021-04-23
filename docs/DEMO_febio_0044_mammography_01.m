@@ -48,34 +48,44 @@ febioLogFileName_disp=[febioFebFileNamePart,'_disp_out.txt']; %Log file name for
 febioLogFileName_force=[febioFebFileNamePart,'_force_out.txt']; %Log file name for exporting force
 
 %Breast geometry
-r=40; %Breast radius
-r1=r/2.5;
-r2=r/7;
-rm=mean([r1 r2]);
-w=(r1-r2)/20;
-h=r2;
-dx=r/2; %Gravity direction shape alteration factor
-nRefine=3; %Number of refine steps for hemi-sphere
-plateDisplacement=25;
-volumeFactor=3;
+r_breastNominal=40; %Breast radius
+sy=1; %Y-direction radial scaling to force deviation from hemi-sphere
+r1=r_breastNominal/2.5; %Radius alveola
+r2=r_breastNominal/7; %Radius nipple
+rm=mean([r1 r2]); %radius between outer alveola radius and outer nipple radius
+w=(r1-r2)/20; %Height of alveola
+h=r2; %Height of alveola
+gravityShiftPercentage=0.5; %Percentage shift due to gravity
+dx=r_breastNominal.*gravityShiftPercentage; %X-shift due to gravity
+
+%Loading
+quasiCompressionLevel=0.3; %Sets displacement as function of nominal breast radius
 loadAngle=(0/180)*pi;
+distanceChestPlate=12; %r_breastNominal/7
+
+%Meshing parameters
+nRefine=3; %Number of refine steps for hemi-sphere
+volumeFactor=3;
+plateHeight=r_breastNominal/2;
 
 %Material parameter set
+k_factor=50; %Bulk modulus factor
+
 c1_1=1e-3; %Shear-modulus-like parameter
-m1_1=6; %Material parameter setting degree of non-linearity
-k_factor=1e2; %Bulk modulus factor
+m1_1=2; %Material parameter setting degree of non-linearity
 k_1=c1_1*k_factor; %Bulk modulus
 
-c1_2=5e-3; %Shear-modulus-like parameter
-m1_2=2; %Material parameter setting degree of non-linearity
-k_factor=1e2; %Bulk modulus factor
+c1_2=c1_1*5; %Shear-modulus-like parameter
+m1_2=m1_1; %Material parameter setting degree of non-linearity
 k_2=c1_2*k_factor; %Bulk modulus
 
 % FEA control settings
 numTimeSteps=10; %Number of time steps desired
-max_refs=25; %Max reforms
+
+max_refs=50; %Max reforms
 max_ups=0; %Set to zero to use full-Newton iterations
-opt_iter=10; %Optimum number of iterations
+opt_iter=15; %Optimum number of iterations
+
 max_retries=5; %Maximum number of retires
 dtmin=(1/numTimeSteps)/100; %Minimum time step size
 dtmax=1/numTimeSteps; %Maximum time step size
@@ -86,17 +96,19 @@ min_residual=1e-20;
 runMode='internal'; %'internal'
 
 %Contact parameters
-contactInitialOffset=0.1;
-contactPenalty=10;
+contactPenalty=15;
 laugon=0;
 minaug=1;
 maxaug=10;
 fric_coeff=0.1;
 
 %% Create hemi-sphere
-[F,V,C_hemiSphereLabel]=hemiSphereMesh(nRefine,r,1); %Construct hemi-shere mesh
+[F,V,C_hemiSphereLabel]=hemiSphereMesh(nRefine,r_breastNominal,1); %Construct hemi-shere mesh
 
 %% Change shape of hemi-sphere to create basic breast model
+
+%scale Y direction to deviate from hemi-sphere. 
+V(:,2)=V(:,2)*sy;
 
 indExclude=unique(F(C_hemiSphereLabel==2,:));
 logicExclude=false(size(V,1),1);
@@ -121,9 +133,9 @@ dtt=dtt./max(dtt);
 dtt=abs(dtt-1)*w;
 V(C_skin==1,3)=V(C_skin==1,3)+dtt;
 
-f=V(:,3);
-f=f-min(f(:));
-f=f./max(f(:));
+f=V(:,3); %Z-coordinates [min(Z) max(Z)]
+f=f-min(f(:)); %Z-coordinates [0 max(Z)-min(Z)]
+f=f./max(f(:)); % [0 1] %Normalized Z-coordinate parameter
 V(:,1)=V(:,1)+dx.*f;
 
 dtt=dt(C_skin==2).^3;
@@ -132,16 +144,39 @@ dtt=dtt./max(dtt);
 dtt=abs(dtt-1)*h;
 V(C_skin==2,3)=V(C_skin==2,3)+dtt;
 
+%%
+
+% cFigure; hold on;
+% gpatch(F,V,C_skin,'none',1);
+% axisGeom;
+% camlight headlight;
+% icolorbar;
+% colorbar;
+% gdrawnow;
+
+%%
+
+breastVolume=triSurfVolume(F,V)'
+
 %% Rotate model
 R=euler2DCM([pi -0.5*pi 0]);
 V=V*R;
 
 %%
 
-[Fs,Vs]=geoSphere(2,r/6);
-Vs(:,1)=Vs(:,1)-r/2;
-Vs(:,2)=Vs(:,2)-r/4;
-Vs(:,3)=Vs(:,3)-r/2;
+[Fs,Vs]=geoSphere(2,r_breastNominal/6);
+Vs(:,1)=Vs(:,1)-r_breastNominal/2;
+Vs(:,2)=Vs(:,2)-r_breastNominal/4;
+Vs(:,3)=Vs(:,3)-r_breastNominal/2;
+
+%%
+
+% cFigure; hold on;
+% gpatch(F,V,C_skin,'none',1);
+% axisGeom;
+% camlight headlight;
+% icolorbar;
+% gdrawnow;
 
 %%
 
@@ -149,8 +184,10 @@ C=[C_hemiSphereLabel;(max(C_hemiSphereLabel(:))+1)*ones(size(Fs,1),1)];
 F=[F;Fs+size(V,1)];
 V=[V;Vs];
 
+%%
+
 cFigure; hold on;
-gpatch(F,V,C,'none',0.5);
+gpatch(F,V,C,'none',1);
 axisGeom;
 camlight headlight;
 icolorbar;
@@ -220,7 +257,7 @@ E2=E(meshOutput.elementMaterialID==-3,:);
 %% Building plate models
 
 %Basic side curve of plate
-Vt=[0 0 0; 0 0 15; 1.5*r 0 15; 1.5*r 0 0; ];
+Vt=[0 0 0; 0 0 plateHeight; 1.5*r_breastNominal 0 plateHeight; 1.5*r_breastNominal 0 0; ];
 
 %Fillet side curve of plate
 rFillet=6; %Fillet radius
@@ -232,25 +269,36 @@ pointSpacingPlate=mean(patchEdgeLengths(Fb,V))/2; % Get point spacing from mesh
 
 %Extrude to form plate
 cPar.pointSpacing=pointSpacingPlate;
-cPar.depth=3*r;
+cPar.depth=3*(r_breastNominal*sy);
 cPar.patchType='quad';
 cPar.dir=0;
 cPar.closeLoopOpt=0;
 [Fp1,Vp1]=polyExtrude(Vc,cPar);
-Fp1=fliplr(Fp1);
+Np1=mean(patchNormal(Fp1,Vp1),1);
+if Np1(3)<0
+    Fp1=fliplr(Fp1);
+end
+
 Vp1(:,3)=Vp1(:,3)-max(Vp1(:,3))+min(V(:,3));
-Vp1(:,1)=Vp1(:,1)-max(Vp1(:,1))-r/7;
+Vp1(:,1)=Vp1(:,1)-max(Vp1(:,1))-distanceChestPlate;
 
 %Copy to create second plate
 Fp2=fliplr(Fp1);
 Vp2=Vp1;
 Vp2(:,3)=-Vp2(:,3);
-Vp2(:,3)=Vp2(:,3)-min(Vp2(:,3))+max(V(:,3));
+logicNodesSetLocation=V(:,1)<=-distanceChestPlate;
+
+max_z=max(V(logicNodesSetLocation,3));
+Vp2(:,3)=Vp2(:,3)-min(Vp2(:,3))+max_z;
+
+plateSeparation=max_z-min(V(:,3));
 
 cFigure; hold on;
 gpatch(Fb,V,'gw','k',1);
 gpatch(Fp1,Vp1,'kw','bw',1);
+%patchNormPlot(Fp1,Vp1);
 gpatch(Fp2,Vp2,'kw','rw',1);
+%patchNormPlot(Fp2,Vp2);
 axisGeom;
 camlight headlight;
 gdrawnow;
@@ -262,8 +310,20 @@ Fp2=Fp2+size(V,1)+size(Vp1,1); %Fixed element indices
 V=[V;Vp1;Vp2;]; %Combined node sets
 
 V=V*Q';
+
+%%
+
+plateDisplacement=(plateSeparation-(r_breastNominal.*(1-quasiCompressionLevel)))/2;
+
 loadDir=[0 0 1]*Q';
 plateDisplacement_XYZ=plateDisplacement.*loadDir;
+
+%%
+
+V2_plate1=V;
+V2_plate2=V;
+V2_plate1(:,3)=V2_plate1(:,3)+plateDisplacement;
+V2_plate2(:,3)=V2_plate2(:,3)-plateDisplacement;
 
 %%
 % Plotting joined geometry
@@ -274,6 +334,10 @@ hold on;
 gpatch(Fb,V,'gw','k',1);
 gpatch(Fp1,V,'kw','bw',1);
 gpatch(Fp2,V,'kw','rw',1);
+
+gpatch(Fp1,V2_plate1,'kw','bw',0.5);
+gpatch(Fp2,V2_plate2,'kw','rw',0.5);
+
 axisGeom;
 camlight headlight;
 gdrawnow;

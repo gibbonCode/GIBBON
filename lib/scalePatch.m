@@ -18,11 +18,18 @@ switch nargin
     case 2
         F=varargin{1};
         V=varargin{2};
-        scaleFactor=1;        
+        scaleFactor=1;
+        V_scale=[];
     case 3
         F=varargin{1};
         V=varargin{2};
         scaleFactor=varargin{3};
+        V_scale=[];
+    case 4
+        F=varargin{1};
+        V=varargin{2};
+        scaleFactor=varargin{3};
+        V_scale=varargin{4};
 end
 
 if numel(scaleFactor)==size(V,1) %If specified on the nodes
@@ -38,8 +45,10 @@ Vc=zeros(size(F,1)*size(F,2),size(V,2));
 if nargout==3
     Vcc=Vc;
 end
+
 for q=1:1:size(V,2)
     X=V(:,q);
+    
     if size(F,1)==1
         FX=X(F)';
     else
@@ -51,7 +60,11 @@ for q=1:1:size(V,2)
     end
     
     if any(scaleFactor~=1)
-        FX_mean=mean(FX,2);        
+        if isempty(V_scale)
+            FX_mean=mean(FX,2);
+        else
+            FX_mean=V_scale(:,q);
+        end
         FX=((FX-FX_mean(:,ones(size(FX,2),1))).*scaleFactor)+FX_mean(:,ones(size(FX,2),1));
     end
     Vc(:,q)=FX(:);
@@ -65,6 +78,7 @@ varargout{2}=Vc;
 if nargout==3
     varargout{3}=Vcc;
 end
+
 %% 
 % _*GIBBON footer text*_ 
 % 

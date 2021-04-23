@@ -1,4 +1,4 @@
-%% DEMO_febio_0072_deformable_cylinders_01
+%% DEMO_febio_0073_deformable_cylinders_contact_01
 % Below is a demonstration for:
 % 
 % * Building geometry for a slab with hexahedral elements, and a
@@ -178,8 +178,8 @@ VFb1=patchCentre(Fb1,V);
 VFb2=patchCentre(Fb2,V);
 
 %Supported nodes
-logicPrescribe1=VFb1(:,3)>2*cylRadius1-2*max(pointSpacing1) & Cb1==0;
-logicSupport2=VFb2(:,3)<-2*cylRadius2+2*max(pointSpacing2) & Cb2==0;
+logicPrescribe1=VFb1(:,3)>=cylRadius1 & Cb1==0;
+logicSupport2=VFb2(:,3)<=-cylRadius2 & Cb2==0;
 
 bcPrescribeList=unique(Fb1(logicPrescribe1,:));
 bcSupportList=unique(Fb2(logicSupport2,:));
@@ -429,7 +429,7 @@ if runFlag==1 %i.e. a succesful run
     hp.FaceColor='interp';
     
     axisGeom(gca,fontSize); 
-    colormap(flipud(gjet(250))); colorbar;
+    colormap(flipud(turbo(250))); colorbar;
     caxis([min(E_stress_mat(:)) max(E_stress_mat(:))]);    
     axis(axisLim(V_DEF)); %Set axis limits statically    
     camlight headlight;        

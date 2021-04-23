@@ -306,12 +306,13 @@ febio_spec.Boundary.bc{1}.ATTR.node_set=nodeSetName1;
 febio_spec.Boundary.bc{1}.dofs='x,y,z';
 
 %Rigid section 
-% -> Prescribed rigid body boundary conditions
+% ->Rigid body fix boundary conditions
 febio_spec.Rigid.rigid_constraint{1}.ATTR.name='RigidFix_1';
 febio_spec.Rigid.rigid_constraint{1}.ATTR.type='fix';
 febio_spec.Rigid.rigid_constraint{1}.rb=2;
 febio_spec.Rigid.rigid_constraint{1}.dofs='Rx,Ry';
 
+% ->Rigid body prescribe boundary conditions
 febio_spec.Rigid.rigid_constraint{2}.ATTR.name='RigidPrescribe';
 febio_spec.Rigid.rigid_constraint{2}.ATTR.type='prescribe';
 febio_spec.Rigid.rigid_constraint{2}.rb=2;

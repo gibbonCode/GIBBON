@@ -1,4 +1,4 @@
-%% DEMO_febio_0071_pneunet_actuator_set_01
+%% DEMO_febio_0072_pneunet_actuator_set_disp_01
 % Below is a demonstration for:
 % 
 % * Building geometry for a simple pneunet actuator
@@ -42,33 +42,34 @@ febioFebFileNamePart='tempModel';
 febioFebFileName=fullfile(savePath,[febioFebFileNamePart,'.feb']); %FEB file name
 febioLogFileName=fullfile(savePath,[febioFebFileNamePart,'.txt']); %FEBio log file name
 febioLogFileName_disp=[febioFebFileNamePart,'_disp_out.txt']; %Log file name for exporting displacement
-febioLogFileName_stress=[febioFebFileNamePart,'_stress_out.txt']; %Log file name for exporting force
+febioLogFileName_stress=[febioFebFileNamePart,'_stress_out.txt']; %Log file name for exporting stress
+febioLogFileName_force=[febioFebFileNamePart,'_force_out.txt']; %Log file name for exporting force
 
 %Load
-appliedPressure1=0.05; 
-appliedPressure2=appliedPressure1/10; 
+appliedPressure1=0.15; 
+appliedPressure2=appliedPressure1/30; 
 
-%Define applied force 
-appliedForce=[1e-12 0 0]; 
+%Define applied displacement perturbation
+prescribedDisplacement_X=2;
 
 %Material parameter set
 c1=1; %Shear-modulus-like parameter
 m1=2; %Material parameter setting degree of non-linearity
-k_factor=50; %Bulk modulus factor 
+k_factor=100; %Bulk modulus factor 
 k=c1*k_factor; %Bulk modulus
 
-c2=50*c1; %Shear-modulus-like parameter
+c2=c1*2; %Shear-modulus-like parameter
 m2=2; %Material parameter setting degree of non-linearity
 k2=c2*k_factor; %Bulk modulus
 
 % FEA control settings
-numTimeSteps=10; %Number of time steps desired
+numTimeSteps=25; %Number of time steps desired
 opt_iter=25; %Optimum number of iterations
 max_refs=opt_iter*2; %Max reforms
 max_ups=0; %Set to zero to use full-Newton iterations
 max_retries=5; %Maximum number of retires
 dtmin=(1/numTimeSteps)/100; %Minimum time step size
-dtmax=(1/numTimeSteps); %Maximum time step size
+dtmax=(1/numTimeSteps)*4; %Maximum time step size
 
 runMode='internal';%'internal';
 
@@ -80,7 +81,7 @@ pointSpacing=2;
 periodSize=10; 
 numPeriods=ceil(actuatorLengthDesired/periodSize); 
 
-heightFactor=1.4; %To scale height wrt period size
+heightFactor=1; %To scale height wrt period size
 widthFactor=1; %To scale width wrt period size
 
 numElementsPeriod=ceil(periodSize./pointSpacing);
@@ -229,6 +230,12 @@ colormap(turbo(250)); icolorbar;
 camlight headlight; 
 gdrawnow; 
 
+%% Find top surface elements
+
+logicTopSurface=all(ismember(Fb,bcPrescribeList),2);
+F_top=Fb(logicTopSurface,:);
+center_of_mass=mean(V(unique(F_top(:)),:),1);
+
 %% 
 % Visualizing boundary conditions. Markers plotted on the semi-transparent
 % model denote the nodes in the various boundary condition lists. 
@@ -243,7 +250,7 @@ gpatch(Fb,V,'w','none',0.5);
 hl(1)=plotV(V(bcSupportList,:),'k.','MarkerSize',markerSize);
 hl(2)=gpatch(F_pressure1,V,'r','k',1);
 hl(3)=gpatch(F_pressure2,V,'b','k',1);
-hl(4)=plotV(V(bcPrescribeList,:),'g.','MarkerSize',markerSize);
+hl(4)=gpatch(F_top,V,'g','k',1);
 
 patchNormPlot(F_pressure1,V);
 legend(hl,{'BC full support','Pressure surface 1','Pressure surface 2','BC force'});
@@ -264,7 +271,6 @@ E=[E1;E2];
 
 [F1]=element2patch(E1);
 [F2]=element2patch(E2);
-
 
 %%
 
@@ -289,16 +295,31 @@ febio_spec.ATTR.version='3.0';
 %Module section
 febio_spec.Module.ATTR.type='solid'; 
 
-%Control section
-febio_spec.Control.analysis='STATIC';
-febio_spec.Control.time_steps=numTimeSteps;
-febio_spec.Control.step_size=1/numTimeSteps;
-febio_spec.Control.solver.max_refs=max_refs;
-febio_spec.Control.solver.max_ups=max_ups;
-febio_spec.Control.time_stepper.dtmin=dtmin;
-febio_spec.Control.time_stepper.dtmax=dtmax; 
-febio_spec.Control.time_stepper.max_retries=max_retries;
-febio_spec.Control.time_stepper.opt_iter=opt_iter;
+%Create control structure for use by all steps
+stepStruct.Control.analysis='STATIC';
+stepStruct.Control.time_steps=numTimeSteps;
+stepStruct.Control.step_size=1/numTimeSteps;
+stepStruct.Control.solver.max_refs=max_refs;
+stepStruct.Control.solver.max_ups=max_ups;
+stepStruct.Control.time_stepper.dtmin=dtmin;
+stepStruct.Control.time_stepper.dtmax=dtmax; 
+stepStruct.Control.time_stepper.max_retries=max_retries;
+stepStruct.Control.time_stepper.opt_iter=opt_iter;
+
+%Add template based default settings to proposed control section
+[stepStruct.Control]=structComplete(stepStruct.Control,febio_spec.Control,1); %Complement provided with default if missing
+
+%Remove control field (part of template) since step specific control sections are used
+febio_spec=rmfield(febio_spec,'Control'); 
+
+febio_spec.Step.step{1}.Control=stepStruct.Control;
+febio_spec.Step.step{1}.ATTR.id=1;
+febio_spec.Step.step{2}.Control=stepStruct.Control;
+febio_spec.Step.step{2}.ATTR.id=2;
+febio_spec.Step.step{3}.Control=stepStruct.Control;
+febio_spec.Step.step{3}.ATTR.id=3;
+febio_spec.Step.step{4}.Control=stepStruct.Control;
+febio_spec.Step.step{4}.ATTR.id=4;
 
 %Material section
 materialName1='Material1';
@@ -321,6 +342,13 @@ febio_spec.Material.material{2}.c2=c2;
 febio_spec.Material.material{2}.m2=-m2;
 febio_spec.Material.material{2}.k=k2;
 
+materialName3='Material3';
+febio_spec.Material.material{3}.ATTR.name=materialName3;
+febio_spec.Material.material{3}.ATTR.type='rigid body';
+febio_spec.Material.material{3}.ATTR.id=3;
+febio_spec.Material.material{3}.density=1;
+febio_spec.Material.material{3}.center_of_mass=center_of_mass;
+
 %Mesh section
 % -> Nodes
 febio_spec.Mesh.Nodes{1}.ATTR.name='nodeSet_all'; %The node set name
@@ -339,6 +367,12 @@ febio_spec.Mesh.Elements{2}.ATTR.name=partName2; %Name of this part
 febio_spec.Mesh.Elements{2}.ATTR.type='hex8'; %Element type 
 febio_spec.Mesh.Elements{2}.elem.ATTR.id=size(E1,1)+(1:1:size(E2,1))'; %Element id's
 febio_spec.Mesh.Elements{2}.elem.VAL=E2; %The element matrix
+
+partName3='Part3';
+febio_spec.Mesh.Elements{3}.ATTR.name=partName3; %Name of this part
+febio_spec.Mesh.Elements{3}.ATTR.type='quad4'; %Element type 
+febio_spec.Mesh.Elements{3}.elem.ATTR.id=size(E1,1)+size(E2,1)+(1:1:size(F_top,1))'; %Element id's
+febio_spec.Mesh.Elements{3}.elem.VAL=F_top; %The element matrix
 
 % -> Surfaces
 surfaceName1='LoadedSurface1';
@@ -361,6 +395,8 @@ febio_spec.MeshDomains.SolidDomain{1}.ATTR.name=partName1;
 febio_spec.MeshDomains.SolidDomain{1}.ATTR.mat=materialName1;
 febio_spec.MeshDomains.SolidDomain{2}.ATTR.name=partName2;
 febio_spec.MeshDomains.SolidDomain{2}.ATTR.mat=materialName2;
+febio_spec.MeshDomains.ShellDomain.ATTR.name=partName3;
+febio_spec.MeshDomains.ShellDomain.ATTR.mat=materialName3;
 
 %Boundary condition section 
 % -> Fix boundary conditions
@@ -382,12 +418,59 @@ febio_spec.Loads.surface_load{2}.pressure.ATTR.lc=1;
 febio_spec.Loads.surface_load{2}.pressure.VAL=appliedPressure2;
 febio_spec.Loads.surface_load{2}.symmetric_stiffness=1;
 
+%Rigid section 
+% ->Rigid body fix boundary conditions
+febio_spec.Rigid.rigid_constraint{1}.ATTR.name='RigidFix_1';
+febio_spec.Rigid.rigid_constraint{1}.ATTR.type='fix';
+febio_spec.Rigid.rigid_constraint{1}.rb=3;
+febio_spec.Rigid.rigid_constraint{1}.dofs='Ry';
+
+% ->Rigid body prescribe boundary conditions
+febio_spec.Step.step{2}.Rigid.rigid_constraint{1}.ATTR.name='RigidPrescribe';
+febio_spec.Step.step{2}.Rigid.rigid_constraint{1}.ATTR.type='prescribe';
+febio_spec.Step.step{2}.Rigid.rigid_constraint{1}.rb=3;
+febio_spec.Step.step{2}.Rigid.rigid_constraint{1}.dof='Rx';
+febio_spec.Step.step{2}.Rigid.rigid_constraint{1}.value.ATTR.lc=2;
+febio_spec.Step.step{2}.Rigid.rigid_constraint{1}.value.VAL=prescribedDisplacement_X;
+febio_spec.Step.step{2}.Rigid.rigid_constraint{1}.relative=1;
+
+febio_spec.Step.step{3}.Rigid.rigid_constraint{1}.ATTR.name='RigidPrescribe';
+febio_spec.Step.step{3}.Rigid.rigid_constraint{1}.ATTR.type='prescribe';
+febio_spec.Step.step{3}.Rigid.rigid_constraint{1}.rb=3;
+febio_spec.Step.step{3}.Rigid.rigid_constraint{1}.dof='Rx';
+febio_spec.Step.step{3}.Rigid.rigid_constraint{1}.value.ATTR.lc=3;
+febio_spec.Step.step{3}.Rigid.rigid_constraint{1}.value.VAL=-prescribedDisplacement_X;
+febio_spec.Step.step{3}.Rigid.rigid_constraint{1}.relative=1;
+
+febio_spec.Step.step{4}.Rigid.rigid_constraint{1}.ATTR.name='RigidPrescribe';
+febio_spec.Step.step{4}.Rigid.rigid_constraint{1}.ATTR.type='prescribe';
+febio_spec.Step.step{4}.Rigid.rigid_constraint{1}.rb=3;
+febio_spec.Step.step{4}.Rigid.rigid_constraint{1}.dof='Rx';
+febio_spec.Step.step{4}.Rigid.rigid_constraint{1}.value.ATTR.lc=4;
+febio_spec.Step.step{4}.Rigid.rigid_constraint{1}.value.VAL=-prescribedDisplacement_X;
+febio_spec.Step.step{4}.Rigid.rigid_constraint{1}.relative=1;
+
 %LoadData section
 % -> load_controller
 febio_spec.LoadData.load_controller{1}.ATTR.id=1;
 febio_spec.LoadData.load_controller{1}.ATTR.type='loadcurve';
 febio_spec.LoadData.load_controller{1}.interpolate='LINEAR';
-febio_spec.LoadData.load_controller{1}.points.point.VAL=[0 0; 1 1];
+febio_spec.LoadData.load_controller{1}.points.point.VAL=[0 0; 1 1; 2 1; 3 1; 4 1];
+
+febio_spec.LoadData.load_controller{2}.ATTR.id=2;
+febio_spec.LoadData.load_controller{2}.ATTR.type='loadcurve';
+febio_spec.LoadData.load_controller{2}.interpolate='LINEAR';
+febio_spec.LoadData.load_controller{2}.points.point.VAL=[0 0; 1 0; 2 1;];
+
+febio_spec.LoadData.load_controller{3}.ATTR.id=3;
+febio_spec.LoadData.load_controller{3}.ATTR.type='loadcurve';
+febio_spec.LoadData.load_controller{3}.interpolate='LINEAR';
+febio_spec.LoadData.load_controller{3}.points.point.VAL=[0 0; 1 0; 2 0; 3 1];
+
+febio_spec.LoadData.load_controller{4}.ATTR.id=4;
+febio_spec.LoadData.load_controller{4}.ATTR.type='loadcurve';
+febio_spec.LoadData.load_controller{4}.interpolate='LINEAR';
+febio_spec.LoadData.load_controller{4}.points.point.VAL=[0 0; 1 0; 2 0; 3 0; 4 1];
 
 %Output section 
 % -> log file
@@ -401,6 +484,10 @@ febio_spec.Output.logfile.element_data{1}.ATTR.file=febioLogFileName_stress;
 febio_spec.Output.logfile.element_data{1}.ATTR.data='s1';
 febio_spec.Output.logfile.element_data{1}.ATTR.delim=',';
 febio_spec.Output.logfile.element_data{1}.VAL=1:size(E,1);
+
+febio_spec.Output.logfile.rigid_body_data{1}.ATTR.file=febioLogFileName_force;
+febio_spec.Output.logfile.rigid_body_data{1}.ATTR.data='Fx';
+febio_spec.Output.logfile.rigid_body_data{1}.ATTR.delim=',';
 
 %% Quick viewing of the FEBio input file structure
 % The |febView| function can be used to view the xml structure in a MATLAB
@@ -444,7 +531,58 @@ if runFlag==1 %i.e. a succesful run
     
     %Create deformed coordinate set
     V_DEF=N_disp_mat+repmat(V,[1 1 size(N_disp_mat,3)]);
-               
+           
+    %% 
+    % Importing nodal displacements from a log file
+    dataStructForce=importFEBio_logfile(fullfile(savePath,febioLogFileName_force),1,1);
+    timeData=dataStructForce.time(:);
+    forceData=dataStructForce.data(:);
+    
+    logicPush=timeData>=1 & timeData<=2;
+    timePush=timeData(logicPush);
+    timePush=timePush-1;
+    forcePush=forceData(logicPush);
+    dispPush=timePush.*prescribedDisplacement_X;
+    
+    logicPull=timeData>=3 & timeData<=4;
+    timePull=timeData(logicPull);
+    timePull=timePull-3;
+    forcePull=forceData(logicPull);
+    dispPull=timePull.*-prescribedDisplacement_X;
+    
+    Ux=[flipud(dispPull(2:end)); dispPush(2:end)];
+    Fx=[flipud(forcePull(2:end)); forcePush(2:end)];
+    
+    dF=diff(Fx);
+    du=diff(Ux);
+    S_diff=dF./du;
+    u_diff=Ux(1:end-1)+du/2;
+            
+    ui=linspace(-prescribedDisplacement_X,prescribedDisplacement_X,100);
+    S=interp1(u_diff,S_diff,ui,'linear','extrap');
+
+    %%
+    
+    cFigure; hold on; 
+    xlabel('U_x [mm]'); ylabel('F_x [N]');
+    hp1=plot(dispPull,forcePull,'b.-','LineWidth',3,'MarkerSize',25);
+    hp2=plot(dispPush,forcePush,'r.-','LineWidth',3,'MarkerSize',25);
+    legend([hp1 hp2],{'Pull','Push'},'Location','NorthEastOutside')
+    set(gca,'FontSize',fontSize);
+    axis tight; axis square; grid on; box on;
+    drawnow
+    
+    %%
+    
+    cFigure; hold on; 
+    xlabel('U_x [mm]'); ylabel('S_x [N/mm]');
+    hp1=plot(u_diff,S_diff,'k.','MarkerSize',50);
+    hp2=plot(ui,S,'k-','LineWidth',3);
+    legend([hp1 hp2],{'FEA','Interpolated'},'Location','NorthEastOutside')
+    set(gca,'FontSize',fontSize);
+    axis tight; axis square; grid on; box on;
+    drawnow
+    
     %% 
     % Plotting the simulated results using |anim8| to visualize and animate
     % deformations 

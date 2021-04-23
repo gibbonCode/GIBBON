@@ -38,6 +38,7 @@ vecPlotSize=mean(patchEdgeLengths(F,V)); %Vector plotting size
 % Visualize
 cFigure; 
 subplot(1,2,1); hold on;
+title('C_{min}');
 hp=gpatch(F,V,C_min_V,'none',0.9);
 hp.FaceColor='interp';
 colormap(gca,cMap); colorbar;
@@ -48,6 +49,7 @@ caxis(0.25*[-c c]);
 camlight headlight;
   
 subplot(1,2,2); hold on;
+title('C_{max}');
 hp=gpatch(F,V,C_max_V,'none',0.9);
 hp.FaceColor='interp';
 quiverVec(VN,U_max,vecPlotSize,'k');
