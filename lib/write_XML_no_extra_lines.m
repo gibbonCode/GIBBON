@@ -37,7 +37,7 @@ cell2txtfile(fileName,T,1);
 % image segmentation, image-based modeling, meshing, and finite element
 % analysis.
 % 
-% Copyright (C) 2006-2020 Kevin Mattheus Moerman
+% Copyright (C) 2006-2021 Kevin Mattheus Moerman and the GIBBON contributors
 % 
 % This program is free software: you can redistribute it and/or modify
 % it under the terms of the GNU General Public License as published by

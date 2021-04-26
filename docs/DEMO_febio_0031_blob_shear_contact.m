@@ -584,13 +584,13 @@ end
 %% 
 % _*GIBBON footer text*_ 
 % 
-% License: <https://github.com/gibbonCode/GIBBON/blob/primary/LICENSE>
+% License: <https://github.com/gibbonCode/GIBBON/blob/master/LICENSE>
 % 
 % GIBBON: The Geometry and Image-based Bioengineering add-On. A toolbox for
 % image segmentation, image-based modeling, meshing, and finite element
 % analysis.
 % 
-% Copyright (C) 2006-2020 Kevin Mattheus Moerman
+% Copyright (C) 2006-2021 Kevin Mattheus Moerman and the GIBBON contributors
 % 
 % This program is free software: you can redistribute it and/or modify
 % it under the terms of the GNU General Public License as published by
