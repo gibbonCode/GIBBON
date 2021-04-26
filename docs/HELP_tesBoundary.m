@@ -11,6 +11,7 @@ clear; close all; clc;
 % UNDOCUMENTED 
 %% Examples 
 % 
+
 %%
 % 
 % <<gibbVerySmall.gif>>

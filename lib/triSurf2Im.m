@@ -83,7 +83,7 @@ if isempty(imOrigin)
     minV=min(V,[],1);
     
     %Determine shift so all coordinates are positive
-    imOrigin=(minV-voxelSize([2 1 3]));
+    imOrigin=(minV-2*voxelSize([2 1 3]));
 end
     
 %%
@@ -107,7 +107,7 @@ V_IJK=round(V_IJK);
 
 %Determine image size if not provided
 if isempty(siz)    
-    siz=max(V_IJK,[],1)+1;
+    siz=max(V_IJK,[],1)+2;
 else
     %Remove invalid indices
     V_IJK=V_IJK(V_IJK(:,1)<=siz(1) & V_IJK(:,1)>=1,:);
