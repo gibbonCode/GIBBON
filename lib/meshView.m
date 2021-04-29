@@ -29,6 +29,8 @@ defaultOptionStruct.cutSide=1;
 defaultOptionStruct.faceAlpha1=0.2;
 defaultOptionStruct.faceAlpha2=1;
 defaultOptionStruct.lightWeightPlot=1;
+defaultOptionStruct.edgeWidth=1;
+defaultOptionStruct.edgeColor='k';
 [optionStruct]=structComplete(optionStruct,defaultOptionStruct,0);
 
 %% Get control parameters
@@ -53,6 +55,8 @@ cutSide=optionStruct.cutSide;
 faceAlpha1=optionStruct.faceAlpha1;
 faceAlpha2=optionStruct.faceAlpha2;
 lightWeightPlot=optionStruct.lightWeightPlot;
+edgeWidth=optionStruct.edgeWidth;
+edgeColor=optionStruct.edgeColor;
 fontSize=15;
 
 %% Access mesh data
@@ -111,7 +115,7 @@ if ~isempty(Fb)
     gpatch(Fb,V,0.5*ones(1,3),'none',faceAlpha1);
 end
 
-hp=gpatch(Fb,V,Cb,'k',faceAlpha2); %Graphics object to vary property of during animation
+hp=gpatch(Fb,V,Cb,edgeColor,faceAlpha2,edgeWidth); %Graphics object to vary property of during animation
 
 camlight headlight;
 axisGeom(gca,fontSize); 
