@@ -44,11 +44,11 @@ rayTraceOptionStruct.border   = 'normal';
 
 nErode=2; %Number of erosion steps
 
-numSmoothQuad=50; %Number of smoothing steps of interior boundary surface
+numSmoothQuad=500; %Number of smoothing steps of interior boundary surface
 numSmoothQuadNormals=25; %Number of normal smoothing steps prior to ray tracing 
 numSmoothHex=25; %Number of smoothing steps for hexahedral mesh (while boundary is held fixed). 
 
-numStepsRayUpdate=4; %Number of ray-tracing repetitions
+numStepsRayUpdate=6; %Number of ray-tracing repetitions
 numPillowSteps=nErode; %Number of elements in pillowed mesh
 
 %% Create test geometry 
@@ -62,7 +62,7 @@ switch testCase
         [Fs,Vs]=graphicsModels(5);
         Vs=Vs*1000;
         [Fs,Vs]=triSurfRemoveThreeConnect(Fs,Vs);
-        voxelSize=2; % The output image voxel size.
+        voxelSize=3; % The output image voxel size.
     case 3
         [Fs,Vs]=stanford_bunny;
         voxelSize=2;
@@ -150,12 +150,13 @@ cFigure;
 title('Visualizing pillowing process','FontSize',fontSize);
 hold on;
 
-gpatch(Fb,V_hex,'kw','k',1);
-hp=gpatch(Fq,Vq,'gw','g',0.5,2);
-gpatch(Fs,Vs,'w','none',faceAlpha2);
+gpatch(Fb,V_hex,'rw','k',1,2);
+hp=gpatch(Fq,Vq,'gw','k',1,2);
+gpatch(Fs,Vs,'w','none',0.25);
 
 axisGeom(gca,fontSize); camlight headlight
 gdrawnow;
+
 
 %% Use ray-tracing and mesh pillowing to form outer mesh layer
 
@@ -216,6 +217,7 @@ meshStruct.faces=F;
 meshStruct.elementMaterialID=C;
 meshViewOptionStruct.cutDir=2;
 meshViewOptionStruct.numSliceSteps=50;
+meshViewOptionStruct.edgeColor='w';
 meshView(meshStruct,meshViewOptionStruct);
 
 %%
