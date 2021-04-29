@@ -9,6 +9,8 @@ function [outputStruct]=febioStructTemplate(varargin)
 %
 % Change log: 
 % 2020/12/01: KMM Changed to use febio_spec 3.0 by default
+% 2021/04/29: KMM Removed strain energy output as this is not available for
+% all materials (e.g. viscoelastic materials). 
 % ------------------------------------------------------------------------
 
 %%
@@ -97,10 +99,9 @@ febio_spec.Globals.Constants.Fc=96485e-9;
 febio_spec.Output.plotfile.ATTR.type='febio';
 febio_spec.Output.plotfile.var{1}.ATTR.type='displacement';
 febio_spec.Output.plotfile.var{2}.ATTR.type='stress';
-febio_spec.Output.plotfile.var{3}.ATTR.type='strain energy density';
-febio_spec.Output.plotfile.var{4}.ATTR.type='relative volume';
-febio_spec.Output.plotfile.var{5}.ATTR.type='reaction forces';
-febio_spec.Output.plotfile.var{6}.ATTR.type='contact pressure';
+febio_spec.Output.plotfile.var{3}.ATTR.type='relative volume';
+febio_spec.Output.plotfile.var{4}.ATTR.type='reaction forces';
+febio_spec.Output.plotfile.var{5}.ATTR.type='contact pressure';
 
 %% Fill in missing if input structure is provided
 
