@@ -73,7 +73,7 @@ controlParSmooth.n=25;
 controlParSmooth.Method='LAP';
 controlParSmooth.RigidConstraints=unique(Eb(:));
 [Vs]=patchSmooth(Fs,Vs,[],controlParSmooth);
-
+Vs(:,3)=zeros(size(Vs,1),1);
 %% Thicken to elements
 
 %Thicken
@@ -102,6 +102,7 @@ meshStruct.elements=E;
 meshStruct.elementMaterialID=ones(size(E,1),1);
 meshStruct.faceMaterialID=ones(size(F,1),1);
 
+end
 %% 
 % _*GIBBON footer text*_ 
 % 
