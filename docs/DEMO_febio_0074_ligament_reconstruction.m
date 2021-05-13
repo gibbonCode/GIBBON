@@ -1,4 +1,4 @@
-%% DEMO_febio_00571_ligament_reconstruction
+%% DEMO_febio_0074_ligament_reconstruction
 % Below is a demonstration for:
 %
 % * Reconstruction of scapholunate dorsal ligament in the wrist from
