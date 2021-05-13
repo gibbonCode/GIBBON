@@ -30,7 +30,7 @@ faceAlpha1=1;
 
 r=sqrt(5)/4; %Radii, results in a width of 1
 
-n=5; %Desired number of copies in each direction 
+n=3; %Desired number of copies in each direction 
 
 %The actual input 
 nCopies=[n n n+ceil((n+1)/2)+1]; %Number of offset copies
@@ -42,9 +42,20 @@ nCopies=[n n n+ceil((n+1)/2)+1]; %Number of offset copies
 %%
 % Plotting results
 cFigure; hold on;
-suptitle('A mesh of truncated octahedra');
+gtitle('A mesh of truncated octahedra');
 gpatch(F1,VT,C1,'k',faceAlpha1);
 gpatch(F2,VT,C2,'k',faceAlpha1);
+colormap(gjet);
+axisGeom(gca,fontSize);
+camlight('headlight'); 
+drawnow; 
+
+%%
+% Plotting results
+cFigure; hold on;
+gtitle('A mesh of truncated octahedra');
+gpatch(F1,VT,'none','k',faceAlpha1,3);
+gpatch(F2,VT,'none','k',faceAlpha1,3);
 colormap(gjet);
 axisGeom(gca,fontSize);
 camlight('headlight'); 

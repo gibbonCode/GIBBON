@@ -29,6 +29,10 @@ r=sqrt(2)/2; %Radii, results in a width of 1
 
 [F,V]=rhombicDodecahedron(r);
 
+R=euler2DCM([0 0 0.25*pi]);
+V=V*R;
+
+
 %%
 % Plotting results
 cFigure;

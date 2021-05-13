@@ -1,8 +1,76 @@
 function [F,V]=import_obj_geom(fileName)
 
+% function [F,V]=import_obj_geom(fileName)
+% -----------------------------------------------------------------------
+% This function imports only the geometry data from the obj file defined by
+% fileName. 
+%
+% Change log: 
+% 2021/04/30 KMM: Fixed bug relating to / symbols for faces 
+% 2021/04/30 KMM: Speeded up by using single cellfun based loop
+% -----------------------------------------------------------------------
+
+%% Import file to a cell array
 T=txtfile2cell(fileName);
-V=cell2mat(cellfun(@(x) (sscanf(x,'v %f %f %f')'),T,'UniformOutput',0));
-F=cell2mat(cellfun(@(x) (sscanf(x,'f %d %d %d')'),T,'UniformOutput',0));
+
+%% Parse cell array for face entries to keep only vertex index 
+% i.e. each of these: 
+% f v1/vt1 v2/vt2 v3/vt3 ...
+% f v1/vt1/vn1 v2/vt2/vn2 v3/vt3/vn3 ...
+% f v1//vn1 v2//vn2 v3//vn3 ...
+% Becomes: 
+% v1 v2 v3 ...
+
+T=regexprep(T,'/+[0-9]+|f.', ''); %Remove / signs and anything after up to next space
+
+%% Get faces and vertices
+
+[FC,VC]=cellfun(@(t) parseLineFun(t),T,'UniformOutput',0);
+F=cell2mat(FC); %Faces
+V=cell2mat(VC); %Vertices
+
+end
+
+%%
+
+function [f,v]=parseLineFun(t)
+
+switch t(1:2)
+    case 'v '
+        f=[];
+        v=sscanf(t,'v %f %f %f')';     
+    otherwise
+        f=sscanf(t,'%d')'; 
+        v=[];
+end
+
+end
+
+%% Slower alternative
+% 
+% T=txtfile2cell(fileName);
+% 
+% n=numel(T);
+% V=nan(n,3);
+% c=true(1,1);
+% for q=1:1:n
+% %     t=strtrim(T{q}); %Text without preceeding/trailing spaces    
+% t=T{q};
+%     if strcmp(t(1:2),'v ')
+%         V(q,:)=sscanf(t,'v %f %f %f');
+%     elseif strcmp(t(1:2),'f ')
+%         t=regexprep(t,'/+[0-9]+|f.', '');
+%         f=sscanf(t,'%d');
+%         if c==1
+%             F=nan(n,numel(f));
+%         end
+%         F(q,:)=f;
+%     end    
+% end
+% F=F(~isnan(F(:,1)),:);
+% V=V(~isnan(V(:,1)),:);
+%%
+
 %% 
 % _*GIBBON footer text*_ 
 % 

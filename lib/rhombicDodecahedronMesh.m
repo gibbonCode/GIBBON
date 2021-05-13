@@ -1,6 +1,6 @@
 function [varargout]=rhombicDodecahedronMesh(varargin)
 
-% function [E,V,C,F,FC]=rhombicDodecahedronMesh(r,nCopies)
+% function [E,V,C,F,CF,CFF]=rhombicDodecahedronMesh(r,nCopies)
 % ------------------------------------------------------------------------
 % Creates a rhombic dodecahedron mesh where r sets the radias and nCopies
 % (a 1x3 vector) sets the number of copies in the x, y, and z direction.
@@ -80,7 +80,7 @@ V=[Vg1;Vg2;Vg3;Vg4];
 %% Create element and face arrays
 E=reshape((1:1:size(V,1)),14,size(V,1)/14)';
 C=(1:1:size(E,1))'; %Element colors
-[F,CF]=element2patch(E,C);
+[F,CF,CFF]=element2patch(E,C);
 
 %% Merging point and fix element and face indices
 [F,V,~,indFix]=mergeVertices(F,V);
@@ -92,6 +92,7 @@ varargout{2}=V;
 varargout{3}=C;
 varargout{4}=F;
 varargout{5}=CF;
+varargout{6}=CFF;
 
 end
 

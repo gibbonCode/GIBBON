@@ -10,7 +10,7 @@
 
 %% Keywords
 %
-% * febio_spec version 2.5
+% * febio_spec version 3.0
 % * febio, FEBio
 % * compression, tension, compressive, tensile
 % * displacement control, displacement boundary condition
@@ -56,7 +56,7 @@ febioLogFileName_stiffness=[febioFebFileNamePart,'_stiffness_out.txt']; %Log fil
 nRepeat=3; %Number of repetitions of the lattice pattern
 sampleSize=30;
 nSubPenta=2;
-strutThickness=2; %Set the strut thickness
+strutThickness=1; %Set the strut thickness
 
 %Define applied displacement
 appliedStrain=0.3; %Linear strain (Only used to compute applied stretch)
@@ -70,9 +70,8 @@ end
 displacementMagnitude=(stretchLoad*sampleSize)-sampleSize; %The displacement magnitude
 
 %Material parameter set
-c1=1; %Shear-modulus-like parameter
-m1=2; %m=2 -> Neo-Hookean
-k=50*c1;
+E_youngs1=0.1; %Material Young's modulus
+nu1=0.4; %Material Poisson's ratio
 
 % FEA control settings
 numTimeSteps=10; %Number of time steps desired
@@ -88,8 +87,8 @@ runMode='internal'; %'internal' or 'external'
 
 %% Create diamond lattice
 
-[Ep,Et,VT,Ct]=diamondLattice(sampleSize,nRepeat,strutThickness,0);
-[Ep,VT]=subPenta(Ep,VT,nSubPenta,3); %Sub-divide pentahedra
+[Ep,Et,V,Ct]=diamondLattice(sampleSize,nRepeat,strutThickness,0);
+[Ep,V]=subPenta(Ep,V,nSubPenta,3); %Sub-divide pentahedra
 % strutThicknessCheck=mean(patchEdgeLengths(Fp{1},VT));
 
 %Get element faces for visualization
@@ -99,8 +98,8 @@ Ft=element2patch(Et,[],'tet4');
 %%
 
 cFigure; hold on; 
-hpl=gpatch(Fp,VT,'rw','r',0.5);
-hpl(end+1)=gpatch(Ft,VT,'gw','g',0.5);
+hpl=gpatch(Fp,V,'rw','r',0.5);
+hpl(end+1)=gpatch(Ft,V,'gw','g',0.5);
 legend(hpl,{'Pentahedral triangles','Pentahedra quads','Tetrahedral triangles'});
 axisGeom; 
 camlight headlight; 
@@ -108,7 +107,7 @@ drawnow;
 
 %% DEFINE BC's
 
-Z=VT(:,3);
+Z=V(:,3);
 logicTop=Z>=(max(Z(:))-eps(max(Z(:))));
 logicBottom=Z<min(Z(:))+eps(min(Z(:)));
 
@@ -118,10 +117,10 @@ bcSupportList=find(logicBottom);
 %%
 
 cFigure; hold on; 
-gpatch(Fp,VT,'w','none',0.25);
-gpatch(Ft,VT,'w','none',0.25);
-hl2(1)=plotV(VT(bcPrescribeList,:),'r.','MarkerSize',markerSize);
-hl2(2)=plotV(VT(bcSupportList,:),'k.','MarkerSize',markerSize);
+gpatch(Fp,V,'w','none',0.25);
+gpatch(Ft,V,'w','none',0.25);
+hl2(1)=plotV(V(bcPrescribeList,:),'r.','MarkerSize',markerSize);
+hl2(2)=plotV(V(bcSupportList,:),'k.','MarkerSize',markerSize);
 legend(hl2,{'BC prescribe','BC support'});
 axisGeom; 
 camlight headlight; 
@@ -131,83 +130,92 @@ drawnow;
 % See also |febioStructTemplate| and |febioStruct2xml| and the FEBio user
 % manual.
 
-%Get a template with default settings
+%Get a template with default settings 
 [febio_spec]=febioStructTemplate;
 
-%febio_spec version
-febio_spec.ATTR.version='2.5';
+%febio_spec version 
+febio_spec.ATTR.version='3.0'; 
 
 %Module section
-febio_spec.Module.ATTR.type='solid';
+febio_spec.Module.ATTR.type='solid'; 
 
 %Control section
-febio_spec.Control.analysis.ATTR.type='static';
-febio_spec.Control.title='Lattice analysis';
+febio_spec.Control.analysis='STATIC';
 febio_spec.Control.time_steps=numTimeSteps;
 febio_spec.Control.step_size=1/numTimeSteps;
+febio_spec.Control.solver.max_refs=max_refs;
+febio_spec.Control.solver.max_ups=max_ups;
 febio_spec.Control.time_stepper.dtmin=dtmin;
-febio_spec.Control.time_stepper.dtmax=dtmax;
+febio_spec.Control.time_stepper.dtmax=dtmax; 
 febio_spec.Control.time_stepper.max_retries=max_retries;
 febio_spec.Control.time_stepper.opt_iter=opt_iter;
-febio_spec.Control.max_refs=max_refs;
-febio_spec.Control.max_ups=max_ups;
-febio_spec.Control.symmetric_stiffness=symmetric_stiffness;
-febio_spec.Control.min_residual=min_residual;
 
 %Material section
-febio_spec.Material.material{1}.ATTR.type='Ogden';
+materialName1='Material1';
+febio_spec.Material.material{1}.ATTR.name=materialName1;
+febio_spec.Material.material{1}.ATTR.type='neo-Hookean';
 febio_spec.Material.material{1}.ATTR.id=1;
-febio_spec.Material.material{1}.c1=c1;
-febio_spec.Material.material{1}.m1=m1;
-febio_spec.Material.material{1}.k=k;
+febio_spec.Material.material{1}.E=E_youngs1;
+febio_spec.Material.material{1}.v=nu1;
 
-%Geometry section
+% Mesh section
 % -> Nodes
-febio_spec.Geometry.Nodes{1}.ATTR.name='nodeSet_all'; %The node set name
-febio_spec.Geometry.Nodes{1}.node.ATTR.id=(1:size(VT,1))'; %The node id's
-febio_spec.Geometry.Nodes{1}.node.VAL=VT; %The nodel coordinates
+febio_spec.Mesh.Nodes{1}.ATTR.name='Object1'; %The node set name
+febio_spec.Mesh.Nodes{1}.node.ATTR.id=(1:size(V,1))'; %The node id's
+febio_spec.Mesh.Nodes{1}.node.VAL=V; %The nodel coordinates
 
 % -> Elements
-febio_spec.Geometry.Elements{1}.ATTR.type='penta6'; %Element type of this set
-febio_spec.Geometry.Elements{1}.ATTR.mat=1; %material index for this set
-febio_spec.Geometry.Elements{1}.ATTR.name='Pentahedra'; %Name of the element set
-febio_spec.Geometry.Elements{1}.elem.ATTR.id=(1:1:size(Ep,1))'; %Element id's
-febio_spec.Geometry.Elements{1}.elem.VAL=Ep;
+partName1='Part1';
+febio_spec.Mesh.Elements{1}.ATTR.name=partName1; %Name of this part
+febio_spec.Mesh.Elements{1}.ATTR.type='penta6'; %Element type
+febio_spec.Mesh.Elements{1}.elem.ATTR.id=(1:1:size(Ep,1))'; %Element id's
+febio_spec.Mesh.Elements{1}.elem.VAL=Ep; %The element matrix
 
-febio_spec.Geometry.Elements{2}.ATTR.type='tet4'; %Element type of this set
-febio_spec.Geometry.Elements{2}.ATTR.mat=1; %material index for this set
-febio_spec.Geometry.Elements{2}.ATTR.name='Tetrahedra'; %Name of the element set
-febio_spec.Geometry.Elements{2}.elem.ATTR.id=size(Ep,1)+(1:1:size(Et,1))'; %Element id's
-febio_spec.Geometry.Elements{2}.elem.VAL=Et;
+partName2='Part2';
+febio_spec.Mesh.Elements{2}.ATTR.name=partName2; %Name of this part
+febio_spec.Mesh.Elements{2}.ATTR.type='tet4'; %Element type
+febio_spec.Mesh.Elements{2}.elem.ATTR.id=size(Ep,1)+(1:1:size(Et,1))'; %Element id's
+febio_spec.Mesh.Elements{2}.elem.VAL=Et; %The element matrix
 
 % -> NodeSets
-febio_spec.Geometry.NodeSet{1}.ATTR.name='bcSupportList';
-febio_spec.Geometry.NodeSet{1}.node.ATTR.id=bcSupportList(:);
+nodeSetName1='bcSupportList';
+febio_spec.Mesh.NodeSet{1}.ATTR.name=nodeSetName1;
+febio_spec.Mesh.NodeSet{1}.node.ATTR.id=bcSupportList(:);
 
-febio_spec.Geometry.NodeSet{2}.ATTR.name='bcPrescribeList';
-febio_spec.Geometry.NodeSet{2}.node.ATTR.id=bcPrescribeList(:);
+nodeSetName2='bcPrescribeList';
+febio_spec.Mesh.NodeSet{2}.ATTR.name=nodeSetName2;
+febio_spec.Mesh.NodeSet{2}.node.ATTR.id=bcPrescribeList(:);
+
+%MeshDomains section
+febio_spec.MeshDomains.SolidDomain{1}.ATTR.name=partName1;
+febio_spec.MeshDomains.SolidDomain{1}.ATTR.mat=materialName1;
+
+febio_spec.MeshDomains.SolidDomain{2}.ATTR.name=partName2;
+febio_spec.MeshDomains.SolidDomain{2}.ATTR.mat=materialName1;
 
 %Boundary condition section 
 % -> Fix boundary conditions
-febio_spec.Boundary.fix{1}.ATTR.bc='x';
-febio_spec.Boundary.fix{1}.ATTR.node_set=febio_spec.Geometry.NodeSet{1}.ATTR.name;
-febio_spec.Boundary.fix{2}.ATTR.bc='y';
-febio_spec.Boundary.fix{2}.ATTR.node_set=febio_spec.Geometry.NodeSet{1}.ATTR.name;
-febio_spec.Boundary.fix{3}.ATTR.bc='z';
-febio_spec.Boundary.fix{3}.ATTR.node_set=febio_spec.Geometry.NodeSet{1}.ATTR.name;
+febio_spec.Boundary.bc{1}.ATTR.type='fix';
+febio_spec.Boundary.bc{1}.ATTR.node_set=nodeSetName1;
+febio_spec.Boundary.bc{1}.dofs='x,y,z';
 
-febio_spec.Boundary.fix{4}.ATTR.bc='x';
-febio_spec.Boundary.fix{4}.ATTR.node_set=febio_spec.Geometry.NodeSet{2}.ATTR.name;
-febio_spec.Boundary.fix{5}.ATTR.bc='y';
-febio_spec.Boundary.fix{5}.ATTR.node_set=febio_spec.Geometry.NodeSet{2}.ATTR.name;
+febio_spec.Boundary.bc{2}.ATTR.type='fix';
+febio_spec.Boundary.bc{2}.ATTR.node_set=nodeSetName2;
+febio_spec.Boundary.bc{2}.dofs='x,y';
 
-% -> Prescribed boundary conditions
-febio_spec.Boundary.prescribe{1}.ATTR.bc='z';
-febio_spec.Boundary.prescribe{1}.ATTR.node_set=febio_spec.Geometry.NodeSet{2}.ATTR.name;
-febio_spec.Boundary.prescribe{1}.scale.ATTR.lc=1;
-febio_spec.Boundary.prescribe{1}.scale.VAL=1;
-febio_spec.Boundary.prescribe{1}.relative=1;
-febio_spec.Boundary.prescribe{1}.value=displacementMagnitude;
+febio_spec.Boundary.bc{3}.ATTR.type='prescribe';
+febio_spec.Boundary.bc{3}.ATTR.node_set=nodeSetName2;
+febio_spec.Boundary.bc{3}.dof='z';
+febio_spec.Boundary.bc{3}.scale.ATTR.lc=1;
+febio_spec.Boundary.bc{3}.scale.VAL=displacementMagnitude;
+febio_spec.Boundary.bc{3}.relative=0;
+
+%LoadData section
+% -> load_controller
+febio_spec.LoadData.load_controller{1}.ATTR.id=1;
+febio_spec.LoadData.load_controller{1}.ATTR.type='loadcurve';
+febio_spec.LoadData.load_controller{1}.interpolate='LINEAR';
+febio_spec.LoadData.load_controller{1}.points.point.VAL=[0 0; 1 1];
 
 %Output section
 % -> log file
@@ -215,12 +223,12 @@ febio_spec.Output.logfile.ATTR.file=febioLogFileName;
 febio_spec.Output.logfile.node_data{1}.ATTR.file=febioLogFileName_disp;
 febio_spec.Output.logfile.node_data{1}.ATTR.data='ux;uy;uz';
 febio_spec.Output.logfile.node_data{1}.ATTR.delim=',';
-febio_spec.Output.logfile.node_data{1}.VAL=1:size(VT,1);
+febio_spec.Output.logfile.node_data{1}.VAL=1:size(V,1);
 
 febio_spec.Output.logfile.node_data{2}.ATTR.file=febioLogFileName_force;
 febio_spec.Output.logfile.node_data{2}.ATTR.data='Rx;Ry;Rz';
 febio_spec.Output.logfile.node_data{2}.ATTR.delim=',';
-febio_spec.Output.logfile.node_data{2}.VAL=1:size(VT,1);
+febio_spec.Output.logfile.node_data{2}.VAL=1:size(V,1);
 
 %% Quick viewing of the FEBio input file structure
 % The |febView| function can be used to view the xml structure in a MATLAB
@@ -257,59 +265,32 @@ febioAnalysis.maxLogCheckTime=10; %Max log file checking time
 
 if runFlag==1 %i.e. a succesful run
     
+    %% 
+    
     % Importing nodal displacements from a log file
-    [time_mat, N_disp_mat,~]=importFEBio_logfile(fullfile(savePath,febioLogFileName_disp)); %Nodal displacements
-    time_mat=[0; time_mat(:)]; %Time
+    dataStruct=importFEBio_logfile(fullfile(savePath,febioLogFileName_disp),1,1);
     
-    N_disp_mat=N_disp_mat(:,2:end,:);
-    sizImport=size(N_disp_mat);
-    sizImport(3)=sizImport(3)+1;
-    N_disp_mat_n=zeros(sizImport);
-    N_disp_mat_n(:,:,2:end)=N_disp_mat;
-    N_disp_mat=N_disp_mat_n;
-    DN=N_disp_mat(:,:,end);
-    DN_magnitude=sqrt(sum(DN(:,3).^2,2));
-    VT_def=VT+DN;
+    %Access data
+    N_disp_mat=dataStruct.data; %Displacement
+    timeVec=dataStruct.time; %Time
     
+    %Create deformed coordinate set
+    V_DEF=N_disp_mat+repmat(V,[1 1 size(N_disp_mat,3)]);
+        
     %%    
     % Importing nodal forces from a log file
-    
-    [~, N_force_mat,~]=importFEBio_logfile(fullfile(savePath,febioLogFileName_force)); %Nodal forces
-    
-    N_force_mat=N_force_mat(:,2:end,:);
-    sizImport=size(N_force_mat);
-    sizImport(3)=sizImport(3)+1;
-    N_force_mat_n=zeros(sizImport);
-    N_force_mat_n(:,:,2:end)=N_force_mat;
-    N_force_mat=N_force_mat_n;
-    
-    f_sum_z=squeeze(sum(N_force_mat(bcPrescribeList,3,:),1)); 
-
-    displacementApplied=time_mat.*displacementMagnitude;
-    lambdaApplied=(sampleSize+displacementApplied)./sampleSize;
-    
+    dataStructForce=importFEBio_logfile(fullfile(savePath,febioLogFileName_force),1,1);     
+    F_applied=squeeze(sum(dataStructForce.data(bcPrescribeList,:,:),1))';
+        
     %% 
     % Visualize force data
     
     cFigure; hold on; 
-    xlabel('$u$ [mm]','Interpreter','Latex');
-    ylabel('$F_z$','Interpreter','Latex');
-    hp=plot(displacementApplied(:),f_sum_z(:),'b-','LineWidth',3);
-    grid on; box on; axis square; axis tight; 
-    set(gca,'FontSize',fontSize);
-    drawnow; 
-    
-    %%
-    % Visualize force data
-    
-    A0=sampleSize^2; %Initial area
-    S=f_sum_z./A0; 
-    E=(lambdaApplied-1)*100;
-    
-    cFigure; hold on; 
-    xlabel('$\epsilon$ [\%]','Interpreter','Latex');
-    ylabel('$S_z$ [MPa]','Interpreter','Latex');
-    hp=plot(E(:),S(:),'b-','LineWidth',3);
+    xlabel('Time [s]'); ylabel('Force [N]');
+    hp1=plot(timeVec,F_applied(:,1),'r-','LineWidth',3);
+    hp2=plot(timeVec,F_applied(:,2),'g-','LineWidth',3);
+    hp3=plot(timeVec,F_applied(:,3),'b-','LineWidth',3);
+    legend([hp1 hp2 hp3],{'F_x','F_y','F_z'});
     grid on; box on; axis square; axis tight; 
     set(gca,'FontSize',fontSize);
     drawnow; 
@@ -318,36 +299,33 @@ if runFlag==1 %i.e. a succesful run
     % Plotting the simulated results using |anim8| to visualize and animate
     % deformations
     
+    DN_magnitude=sqrt(sum(N_disp_mat(:,:,end).^2,2)); %Current displacement magnitude
+    
     % Create basic view and store graphics handle to initiate animation
     hf=cFigure; %Open figure
     gtitle([febioFebFileNamePart,': Press play to animate']);
-    hp1=gpatch(Ft,VT_def,DN_magnitude,'k',1);
+    hp1=gpatch(Ft,V_DEF(:,:,end),DN_magnitude,'k',1);
     hp1.FaceColor='interp';
-    hp2=gpatch(Fp{1},VT_def,DN_magnitude,'k',1);
+    hp2=gpatch(Fp{1},V_DEF(:,:,end),DN_magnitude,'k',1);
     hp2.FaceColor='interp';
-    hp3=gpatch(Fp{2},VT_def,DN_magnitude,'k',1);
+    hp3=gpatch(Fp{2},V_DEF(:,:,end),DN_magnitude,'k',1);
     hp3.FaceColor='interp';
     
     axisGeom(gca,fontSize);
     colormap(gjet(250)); colorbar;
     caxis([0 max(DN_magnitude)]);
-    axis([min([VT_def(:,1);VT(:,1)]) max([VT_def(:,1);VT(:,1)])...
-        min([VT_def(:,2);VT(:,2)]) max([VT_def(:,2);VT(:,2)])...
-        min([VT_def(:,3);VT(:,3)]) max([VT_def(:,3);VT(:,3)]) ]); %Set axis limits statically
-    %     view(130,25); %Set view direction
+    axis(axisLim(V_DEF)); %Set axis limits statically 
     camlight headlight;
     
     % Set up animation features
-    animStruct.Time=time_mat; %The time vector
+    animStruct.Time=timeVec; %The time vector
     for qt=1:1:size(N_disp_mat,3) %Loop over time increments
-        DN=N_disp_mat(:,:,qt); %Current displacement
-        DN_magnitude=sqrt(sum(DN.^2,2)); %Current displacement magnitude
-        VT_def=VT+DN; %Current nodal coordinates
+        DN_magnitude=sqrt(sum(N_disp_mat(:,:,qt).^2,2)); %Current displacement magnitude
         
         %Set entries in animation structure
         animStruct.Handles{qt}=[hp1 hp1 hp2 hp2 hp3 hp3]; %Handles of objects to animate
         animStruct.Props{qt}={'Vertices','CData','Vertices','CData','Vertices','CData'}; %Properties of objects to animate
-        animStruct.Set{qt}={VT_def,DN_magnitude,VT_def,DN_magnitude,VT_def,DN_magnitude}; %Property values for to set in order to animate
+        animStruct.Set{qt}={V_DEF(:,:,qt),DN_magnitude,V_DEF(:,:,qt),DN_magnitude,V_DEF(:,:,qt),DN_magnitude}; %Property values for to set in order to animate
     end
     anim8(hf,animStruct); %Initiate animation feature
     drawnow;

@@ -21,6 +21,8 @@ function [varargout]=gpatch(varargin)
 % 2017 
 % 2018/02/07 Added support for colormapped edges
 % 2019/07/03 Added handling of empty alpha data
+% 2021/05/12 Added "material dull" style lighting settings by default to
+% avoid white color reflectance distorting colormapped visualizations. 
 %------------------------------------------------------------------------
 
 switch nargin
@@ -119,15 +121,16 @@ end
 %%
 function hp=plotPatch(F,V,C,CE,A,L)
 
-% hf=gcf;
-% if isempty(hf.Children)
-%     gca;
-%     view(3);
-% end
-
 argInPatch.Faces=F;
 argInPatch.Vertices=V;
 argInPatch.EdgeColor=CE;
+
+%Avoid reflectance (similar to material dull)
+argInPatch.DiffuseStrength=0.6;
+argInPatch.AmbientStrength=0.4;
+argInPatch.SpecularExponent=10;
+argInPatch.SpecularStrength=0;
+argInPatch.SpecularColorReflectance=0;
 
 if ischar(C) %Plain single color
     argInPatch.FaceColor=C;
