@@ -1,27 +1,47 @@
 function M=sphereIm(varargin)
 
-% function M=sphereIm(n,logicFlag)
+% function M=sphereIm(n,logicFlag,nd)
 %-------------------------------------------------------------------------
+% This function computes a so called "sphere image" where the radius n is
+% given 
 %
-%
-%
+% 
 %-------------------------------------------------------------------------
 
-%%
+%% Parse input
 switch nargin
     case 1
         n=varargin{1};
         logicFlag=1;
+        nd=3;
     case 2
         n=varargin{1};
         logicFlag=varargin{2};
+        nd=3;
+    case 3
+        n=varargin{1};
+        logicFlag=varargin{2};
+        nd=varargin{3};
 end
 
-%%
+%% Compute image coordinates
+nf=floor(n); 
 
-[I,J,K]=ndgrid(-n:n,-n:n,-n:n);
-M=sqrt(I.^2+J.^2+K.^2);
+%Set ouput image size
+if nd>1 %2D or larger
+    siz=((2*nf)+1)*ones(1,nd);
+else %1D
+    siz=[((2*nf)+1) 1]; %Add singular 2nd dimension
+end
 
+%Subscript index array for all voxels
+P=ind2subn(siz,1:1:prod(siz));
+
+%% Compute distance image
+
+M=reshape(sqrt(sum((P-nf-1).^2,2)),siz);
+
+%Convert to logic if needed
 if logicFlag==1
     M=M<=n;
 end
