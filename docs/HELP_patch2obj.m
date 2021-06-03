@@ -60,22 +60,32 @@ clear; close all; clc;
 %% Example 1: Export colored patch data to the OBJ format
 
 %Define patch data 
-testCase=1;
+testCase=1
 switch testCase
-    case 1
-        [F,V]=graphicsModels(9);
+    case 1 %David
+        [F,V]=graphicsModels(9);       
         t=V(:,1)-min(V(:,1));
         t=t./max(t(:));               
         C=sin(2*t*2*pi);
         C=abs(C);
+        cMap=gjet(250); %Define colormap
     case 2
         [X,Y,Z]=peaks(25);
         [F,V,~]=grid2patch(X,Y,Z,Z);
         C=V(:,3);
+        cMap=turbo(250); %Define colormap
+    case 3 %Femur
+        [F,V]=graphicsModels(5);        
+        C=V(:,1); 
+        cMap=turbo(250); %Define colormap
+    case 4
+        [F,V]=stanford_bunny; 
+        C=V(:,1); 
+        cMap=viridis(250); %Define colormap
 end
 
-%Define colormap
-cMap=gjet(250);
+
+
 
 %Define file name
 gibbonFolder = fileparts(fileparts(mfilename('fullpath')));

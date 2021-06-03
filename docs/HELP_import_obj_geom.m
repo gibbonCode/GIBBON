@@ -11,6 +11,21 @@ clear; close all; clc;
 % UNDOCUMENTED 
 %% Examples 
 % 
+
+fileName='/home/kevin/Desktop/11535_arm_V3_.obj'
+
+[F,V]=import_obj_geom(fileName); 
+C=zeros(size(F,1),1); 
+
+%%
+
+cFigure; 
+gpatch(F,V,C,'none');
+axisGeom; camlight headlight; 
+colormap gjet; icolorbar;
+gdrawnow;
+
+
 %%
 % 
 % <<gibbVerySmall.gif>>

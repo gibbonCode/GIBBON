@@ -35,13 +35,18 @@ end
 
 function [f,v]=parseLineFun(t)
 
-switch t(1:2)
-    case 'v '
-        f=[];
-        v=sscanf(t,'v %f %f %f')';     
-    otherwise
-        f=sscanf(t,'%d')'; 
-        v=[];
+if numel(t)>2
+    switch t(1:2)
+        case 'v '
+            f=[];
+            v=sscanf(t,'v %f %f %f')';
+        otherwise
+            f=sscanf(t,'%d')';
+            v=[];
+    end
+else
+    f=[];
+    v=[];
 end
 
 end
