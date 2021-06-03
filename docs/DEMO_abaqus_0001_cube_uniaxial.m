@@ -260,7 +260,7 @@ oldPath=pwd; %Get current working directory
 cd(savePath); %Set new working directory to match save patch
 
 abaqusPath='abaqus';%'/usr/bin/abaqus'; %Abaqus excute command or path
-runFlag=system([abaqusPath,' inp=',abaqusInpFileName,' job=',abaqusInpFileNamePart,' interactive ask_delete=OFF']);
+runFlag=system([abaqusPath,' inp="',abaqusInpFileName,'" job=',abaqusInpFileNamePart,' interactive ask_delete=OFF']);
 
 cd(oldPath); %Restore working directory
 
