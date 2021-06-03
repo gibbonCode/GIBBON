@@ -12,6 +12,7 @@ function [varargout]=triSurfSlice(varargin)
 %-------------------------------------------------------------------------
 
 %% Parse input
+
 switch nargin
     case 2
         F=varargin{1};
@@ -52,6 +53,7 @@ switch nargin
         P=varargin{4};
         n=varargin{5};
         snapTolerance=[];
+        logicExclude=[];
     case 7
         F=varargin{1};
         V=varargin{2};

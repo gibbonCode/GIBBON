@@ -1,4 +1,4 @@
-function [L_fixed]=triSurfLogicSharpFix(F,L,dirOpt)
+function [L_fixed]=triSurfLogicSharpFix(varargin)
 
 % function [L_fixed]=triSurfLogicSharpFix(F,L,dirOpt)
 %-------------------------------------------------------------------------
@@ -8,6 +8,18 @@ function [L_fixed]=triSurfLogicSharpFix(F,L,dirOpt)
 
 %%
 
+switch nargin
+    case 2
+        F=varargin{1};
+        L=varargin{2};
+        dirOpt=3;
+    case 3
+        F=varargin{1};
+        L=varargin{2};
+        dirOpt=varargin{3};        
+end
+
+%%
 if size(F,1)~=size(L,1)
     error('size(F,1)~=size(L,1)');
 end
