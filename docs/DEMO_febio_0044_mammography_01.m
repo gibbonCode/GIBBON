@@ -81,11 +81,9 @@ k_2=c1_2*k_factor; %Bulk modulus
 
 % FEA control settings
 numTimeSteps=10; %Number of time steps desired
-
 max_refs=50; %Max reforms
 max_ups=0; %Set to zero to use full-Newton iterations
 opt_iter=15; %Optimum number of iterations
-
 max_retries=5; %Maximum number of retires
 dtmin=(1/numTimeSteps)/100; %Minimum time step size
 dtmax=1/numTimeSteps; %Maximum time step size
@@ -93,7 +91,7 @@ symmetric_stiffness=0;
 min_residual=1e-20;
 
 %Set run mode
-runMode='internal'; %'internal'
+runMode='external'; %'internal'
 
 %Contact parameters
 contactPenalty=15;
@@ -411,6 +409,7 @@ febio_spec.Control.time_steps=numTimeSteps;
 febio_spec.Control.step_size=1/numTimeSteps;
 febio_spec.Control.solver.max_refs=max_refs;
 febio_spec.Control.solver.max_ups=max_ups;
+febio_spec.Control.solver.symmetric_stiffness=symmetric_stiffness;
 febio_spec.Control.time_stepper.dtmin=dtmin;
 febio_spec.Control.time_stepper.dtmax=dtmax; 
 febio_spec.Control.time_stepper.max_retries=max_retries;

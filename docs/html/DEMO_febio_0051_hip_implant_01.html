@@ -6,8 +6,8 @@
    <!--
 This HTML was auto-generated from MATLAB code.
 To make changes, update the MATLAB code and republish this document.
-      --><title>DEMO_febio_0051_hip_implant_01</title><meta name="generator" content="MATLAB 9.8"><link rel="schema.DC" href="http://purl.org/dc/elements/1.1/"><meta name="DC.date" content="2020-05-05"><meta name="DC.source" content="DEMO_febio_0051_hip_implant_01.m"><style type="text/css">
-html,body,div,span,applet,object,iframe,h1,h2,h3,h4,h5,h6,p,blockquote,pre,a,abbr,acronym,address,big,cite,code,del,dfn,em,font,img,ins,kbd,q,s,samp,small,strike,strong,sub,sup,tt,var,b,u,i,center,dl,dt,dd,ol,ul,li,fieldset,form,label,legend,table,caption,tbody,tfoot,thead,tr,th,td{margin:0;padding:0;border:0;outline:0;font-size:100%;vertical-align:baseline;background:transparent}body{line-height:1}ol,ul{list-style:none}blockquote,q{quotes:none}blockquote:before,blockquote:after,q:before,q:after{content:'';content:none}:focus{outine:0}ins{text-decoration:none}del{text-decoration:line-through}table{border-collapse:collapse;border-spacing:0}
+      --><title>DEMO_febio_0051_hip_implant_01</title><meta name="generator" content="MATLAB 9.10"><link rel="schema.DC" href="http://purl.org/dc/elements/1.1/"><meta name="DC.date" content="2021-06-04"><meta name="DC.source" content="DEMO_febio_0051_hip_implant_01.m"><style type="text/css">
+html,body,div,span,applet,object,iframe,h1,h2,h3,h4,h5,h6,p,blockquote,pre,a,abbr,acronym,address,big,cite,code,del,dfn,em,font,img,ins,kbd,q,s,samp,small,strike,strong,tt,var,b,u,i,center,dl,dt,dd,ol,ul,li,fieldset,form,label,legend,table,caption,tbody,tfoot,thead,tr,th,td{margin:0;padding:0;border:0;outline:0;font-size:100%;vertical-align:baseline;background:transparent}body{line-height:1}ol,ul{list-style:none}blockquote,q{quotes:none}blockquote:before,blockquote:after,q:before,q:after{content:'';content:none}:focus{outine:0}ins{text-decoration:none}del{text-decoration:line-through}table{border-collapse:collapse;border-spacing:0}
 
 html { min-height:100%; margin-bottom:1px; }
 html body { height:100%; margin:0px; font-family:Arial, Helvetica, sans-serif; font-size:10px; color:#000; line-height:140%; background:#fff none; overflow-y:scroll; }
@@ -67,7 +67,7 @@ table td { padding:7px 5px; text-align:left; vertical-align:top; border:1px soli
 
 
 
-  </style></head><body><div class="content"><h1>DEMO_febio_0051_hip_implant_01</h1><!--introduction--><p>Below is a demonstration for:</p><div><ul><li>Building geometry for a a hip implant and bone</li></ul></div><!--/introduction--><h2>Contents</h2><div><ul><li><a href="#1">Keywords</a></li><li><a href="#3">Plot settings</a></li><li><a href="#4">Control parameters</a></li><li><a href="#24">Visualizing solid mesh</a></li><li><a href="#25">Visualizing boundary conditions</a></li><li><a href="#26">Defining the FEBio input structure</a></li><li><a href="#27">Quick viewing of the FEBio input file structure</a></li><li><a href="#29">Exporting the FEBio input file</a></li><li><a href="#30">Running the FEBio analysis</a></li><li><a href="#31">Import FEBio results</a></li></ul></div><h2 id="1">Keywords</h2><div><ul><li>febio_spec version 2.5</li><li>febio, FEBio</li><li>beam force loading</li><li>force control boundary condition</li><li>hexahedral elements, hex8, hex20</li><li>beam, rectangular</li><li>static, solid</li><li>hyperelastic, Ogden</li><li>displacement logfile</li><li>stress logfile</li></ul></div><pre class="codeinput">clear; close <span class="string">all</span>; clc;
+  </style></head><body><div class="content"><h1>DEMO_febio_0051_hip_implant_01</h1><!--introduction--><p>Below is a demonstration for:</p><div><ul><li>Building geometry for a a hip implant and bone</li></ul></div><!--/introduction--><h2>Contents</h2><div><ul><li><a href="#1">Keywords</a></li><li><a href="#3">Plot settings</a></li><li><a href="#4">Control parameters</a></li><li><a href="#25">Visualizing solid mesh</a></li><li><a href="#26">Visualizing boundary conditions</a></li><li><a href="#27">Defining the FEBio input structure</a></li><li><a href="#28">Quick viewing of the FEBio input file structure</a></li><li><a href="#30">Exporting the FEBio input file</a></li><li><a href="#31">Running the FEBio analysis</a></li><li><a href="#32">Import FEBio results</a></li></ul></div><h2 id="1">Keywords</h2><div><ul><li>febio_spec version 3.0</li><li>febio, FEBio</li><li>parameterised hip creation</li><li>Tetrahedral meshing, tet4</li><li>force control boundary condition</li><li>static, solid</li><li>displacement logfile</li><li>stress logfile</li></ul></div><pre class="codeinput">clear; close <span class="string">all</span>; clc;
 </pre><h2 id="3">Plot settings</h2><pre class="codeinput">fontSize=20;
 faceAlpha1=0.8;
 markerSize=40;
@@ -88,30 +88,26 @@ febioLogFileName_strainEnergy=[febioFebFileNamePart,<span class="string">'_energ
 
 <span class="comment">%Define applied force</span>
 forceBody=(80*9.81)/2;
-displacementMagnitude=-1;
 
-<span class="comment">%Material parameter set</span>
-<span class="comment">% Bone</span>
-c1=500; <span class="comment">%Shear-modulus-like parameter</span>
-m1=2; <span class="comment">%Material parameter setting degree of non-linearity</span>
-k_factor=50; <span class="comment">%Bulk modulus factor</span>
-k1=c1*k_factor; <span class="comment">%Bulk modulus</span>
+<span class="comment">%Material parameters (MPa if spatial units are mm)</span>
+<span class="comment">% Cortical bone</span>
+E_youngs1=17000; <span class="comment">%Youngs modulus</span>
+nu1=0.25; <span class="comment">%Poissons ratio</span>
 
 <span class="comment">% Cement</span>
-c2=500; <span class="comment">%Shear-modulus-like parameter</span>
-m2=2; <span class="comment">%Material parameter setting degree of non-linearity</span>
-k_factor=50; <span class="comment">%Bulk modulus factor</span>
-k2=c1*k_factor; <span class="comment">%Bulk modulus</span>
+E_youngs2=1500; <span class="comment">%Youngs modulus</span>
+nu2=0.25; <span class="comment">%Poissons ratio</span>
 
 <span class="comment">% FEA control settings</span>
 numTimeSteps=10; <span class="comment">%Number of time steps desired</span>
 max_refs=25; <span class="comment">%Max reforms</span>
 max_ups=0; <span class="comment">%Set to zero to use full-Newton iterations</span>
-opt_iter=6; <span class="comment">%Optimum number of iterations</span>
+opt_iter=10; <span class="comment">%Optimum number of iterations</span>
 max_retries=5; <span class="comment">%Maximum number of retires</span>
 dtmin=(1/numTimeSteps)/100; <span class="comment">%Minimum time step size</span>
 dtmax=1/numTimeSteps; <span class="comment">%Maximum time step size</span>
-runMode=<span class="string">'external'</span>; <span class="comment">%'external' or 'internal'</span>
+symmetric_stiffness=1;
+runMode=<span class="string">'internal'</span>; <span class="comment">%'external' or 'internal'</span>
 </pre><pre class="codeinput">n1=[1 0 0];
 n2=vecnormalize([1 1 0]);
 boneExtension=40;
@@ -295,8 +291,7 @@ drawnow;
 </pre><img width="100%" height="auto" vspace="5" hspace="5" src="DEMO_febio_0051_hip_implant_01_05.jpg" alt=""> <pre class="codeinput">logicCement=ismember(CT,[4 5 7 8 9 10 11]);
 
 V_inner_cement=getInnerPoint(FT(logicCement,:),VT);
-
-cFigure; hold <span class="string">on</span>;
+</pre><pre class="codeinput">cFigure; hold <span class="string">on</span>;
 gpatch(FT(logicCement,:),VT,<span class="string">'w'</span>,<span class="string">'none'</span>,0.5);
 plotV(V_inner_cement,<span class="string">'k.'</span>,<span class="string">'MarkerSize'</span>,25)
 axisGeom; camlight <span class="string">headlight</span>;
@@ -330,62 +325,64 @@ Cb_solid=meshOutput.boundaryMarker;
 CE_solid=meshOutput.elementMaterialID;
 </pre><pre class="codeoutput"> 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
---- TETGEN Tetrahedral meshing --- 05-May-2020 18:45:54
+--- TETGEN Tetrahedral meshing --- 04-Jun-2021 13:06:41
  
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
---- Writing SMESH file --- 05-May-2020 18:45:54
+--- Writing SMESH file --- 04-Jun-2021 13:06:41
 ----&gt; Adding node field
 ----&gt; Adding facet field
 ----&gt; Adding holes specification
 ----&gt; Adding region specification
---- Done --- 05-May-2020 18:45:55
---- Running TetGen to mesh input boundary--- 05-May-2020 18:45:55
+--- Done --- 04-Jun-2021 13:06:41
+--- Running TetGen to mesh input boundary--- 04-Jun-2021 13:06:41
 Opening /mnt/data/MATLAB/GIBBON/data/temp/temp.smesh.
 Delaunizing vertices...
-Delaunay seconds:  0.407561
+Delaunay seconds:  0.347679
 Creating surface mesh ...
-Surface mesh seconds:  0.028586
+Surface mesh seconds:  0.031558
 Recovering boundaries...
-Boundary recovery seconds:  0.078935
+Boundary recovery seconds:  0.09005
 Removing exterior tetrahedra ...
 Spreading region attributes.
-Exterior tets removal seconds:  0.02736
+Exterior tets removal seconds:  0.025638
 Recovering Delaunayness...
-Delaunay recovery seconds:  0.07501
+Delaunay recovery seconds:  0.085288
 Refining mesh...
-Refinement seconds:  0.28182
-Optimizing mesh...
-Optimization seconds:  0.02356
+Refinement seconds:  0.319808
+Smoothing vertices...
+Mesh smoothing seconds:  0.553583
+Improving mesh...
+Mesh improvement seconds:  0.023485
 
 Writing /mnt/data/MATLAB/GIBBON/data/temp/temp.1.node.
 Writing /mnt/data/MATLAB/GIBBON/data/temp/temp.1.ele.
 Writing /mnt/data/MATLAB/GIBBON/data/temp/temp.1.face.
 Writing /mnt/data/MATLAB/GIBBON/data/temp/temp.1.edge.
 
-Output seconds:  0.267478
-Total running seconds:  1.19129
+Output seconds:  0.248241
+Total running seconds:  1.72651
 
 Statistics:
 
-  Input points: 11944
-  Input facets: 23968
-  Input segments: 35912
+  Input points: 11941
+  Input facets: 23962
+  Input segments: 35903
   Input holes: 0
   Input regions: 2
 
-  Mesh points: 18063
-  Mesh tetrahedra: 87689
-  Mesh faces: 183362
-  Mesh faces on exterior boundary: 15968
-  Mesh faces on input facets: 23968
-  Mesh edges on input segments: 35912
-  Steiner points inside domain: 6119
+  Mesh points: 18120
+  Mesh tetrahedra: 87569
+  Mesh faces: 183119
+  Mesh faces on exterior boundary: 15962
+  Mesh faces on input facets: 23962
+  Mesh edges on input segments: 35903
+  Steiner points inside domain: 6179
 
---- Done --- 05-May-2020 18:45:56
+--- Done --- 04-Jun-2021 13:06:44
  
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
---- Importing TetGen files --- 05-May-2020 18:45:56
---- Done --- 05-May-2020 18:45:56
+--- Importing TetGen files --- 04-Jun-2021 13:06:44
+--- Done --- 04-Jun-2021 13:06:44
 </pre><pre class="codeinput">V=[V_solid;V_implant];
 F_implant=F_implant+size(V_solid,1);
 
@@ -399,13 +396,13 @@ Fb_solid=indFix(Fb_solid);
 E_cement=E_solid(CE_solid==-3,:);
 E_bone=E_solid(CE_solid==-2,:);
 E_solid=[E_bone;E_cement];
-</pre><h2 id="24">Visualizing solid mesh</h2><pre class="codeinput">hFig=cFigure; hold <span class="string">on</span>;
+</pre><h2 id="25">Visualizing solid mesh</h2><pre class="codeinput">hFig=cFigure; hold <span class="string">on</span>;
 gpatch(F_implant,V,<span class="string">'w'</span>,<span class="string">'none'</span>,0.5);
 optionStruct.hFig=hFig;
 meshView(meshOutput,optionStruct);
 axisGeom;
 drawnow;
-</pre><img width="100%" height="auto" vspace="5" hspace="5" src="DEMO_febio_0051_hip_implant_01_07.jpg" alt=""> <h2 id="25">Visualizing boundary conditions</h2><pre class="codeinput">F_bottomSupport=Fb_solid(ismember(Cb_solid,[9 14]),:);
+</pre><img width="100%" height="auto" vspace="5" hspace="5" src="DEMO_febio_0051_hip_implant_01_07.jpg" alt=""> <h2 id="26">Visualizing boundary conditions</h2><pre class="codeinput">F_bottomSupport=Fb_solid(ismember(Cb_solid,[9 14]),:);
 bcSupportList=unique(F_bottomSupport(:));
 
 hFig=cFigure; hold <span class="string">on</span>;
@@ -416,98 +413,117 @@ legend(hl,{<span class="string">'BC support'</span>,<span class="string">'BC pre
 axisGeom;
 camlight <span class="string">headlight</span>;
 drawnow;
-</pre><img width="100%" height="auto" vspace="5" hspace="5" src="DEMO_febio_0051_hip_implant_01_08.jpg" alt=""> <h2 id="26">Defining the FEBio input structure</h2><p>See also <tt>febioStructTemplate</tt> and <tt>febioStruct2xml</tt> and the FEBio user manual.</p><pre class="codeinput"><span class="comment">%Get a template with default settings</span>
+</pre><img width="100%" height="auto" vspace="5" hspace="5" src="DEMO_febio_0051_hip_implant_01_08.jpg" alt=""> <h2 id="27">Defining the FEBio input structure</h2><p>See also <tt>febioStructTemplate</tt> and <tt>febioStruct2xml</tt> and the FEBio user manual.</p><pre class="codeinput"><span class="comment">%Get a template with default settings</span>
 [febio_spec]=febioStructTemplate;
 
 <span class="comment">%febio_spec version</span>
-febio_spec.ATTR.version=<span class="string">'2.5'</span>;
+febio_spec.ATTR.version=<span class="string">'3.0'</span>;
 
 <span class="comment">%Module section</span>
 febio_spec.Module.ATTR.type=<span class="string">'solid'</span>;
 
 <span class="comment">%Control section</span>
-febio_spec.Control.analysis.ATTR.type=<span class="string">'static'</span>;
+febio_spec.Control.analysis=<span class="string">'STATIC'</span>;
 febio_spec.Control.time_steps=numTimeSteps;
 febio_spec.Control.step_size=1/numTimeSteps;
+febio_spec.Control.solver.max_refs=max_refs;
+febio_spec.Control.solver.max_ups=max_ups;
+febio_spec.Control.solver.symmetric_stiffness=symmetric_stiffness;
 febio_spec.Control.time_stepper.dtmin=dtmin;
 febio_spec.Control.time_stepper.dtmax=dtmax;
 febio_spec.Control.time_stepper.max_retries=max_retries;
 febio_spec.Control.time_stepper.opt_iter=opt_iter;
-febio_spec.Control.max_refs=max_refs;
-febio_spec.Control.max_ups=max_ups;
+
 
 <span class="comment">%Material section</span>
-febio_spec.Material.material{1}.ATTR.type=<span class="string">'Ogden'</span>;
+materialName1=<span class="string">'Material1'</span>;
+febio_spec.Material.material{1}.ATTR.name=materialName1;
+febio_spec.Material.material{1}.ATTR.type=<span class="string">'neo-Hookean'</span>;
 febio_spec.Material.material{1}.ATTR.id=1;
-febio_spec.Material.material{1}.c1=c1;
-febio_spec.Material.material{1}.m1=m1;
-febio_spec.Material.material{1}.k=k1;
+febio_spec.Material.material{1}.E=E_youngs1;
+febio_spec.Material.material{1}.v=nu1;
 
-febio_spec.Material.material{2}.ATTR.type=<span class="string">'Ogden'</span>;
+materialName2=<span class="string">'Material2'</span>;
+febio_spec.Material.material{2}.ATTR.name=materialName2;
+febio_spec.Material.material{2}.ATTR.type=<span class="string">'neo-Hookean'</span>;
 febio_spec.Material.material{2}.ATTR.id=2;
-febio_spec.Material.material{2}.c1=c2;
-febio_spec.Material.material{2}.m1=m2;
-febio_spec.Material.material{2}.k=k2;
+febio_spec.Material.material{2}.E=E_youngs2;
+febio_spec.Material.material{2}.v=nu2;
 
+materialName3=<span class="string">'Material3'</span>;
+febio_spec.Material.material{3}.ATTR.name=materialName3;
 febio_spec.Material.material{3}.ATTR.type=<span class="string">'rigid body'</span>;
 febio_spec.Material.material{3}.ATTR.id=3;
 febio_spec.Material.material{3}.density=1;
 febio_spec.Material.material{3}.center_of_mass=mean(V_implant,1);
 
-<span class="comment">%Geometry section</span>
+<span class="comment">%Mesh section</span>
 <span class="comment">% -&gt; Nodes</span>
-febio_spec.Geometry.Nodes{1}.ATTR.name=<span class="string">'nodeSet_all'</span>; <span class="comment">%The node set name</span>
-febio_spec.Geometry.Nodes{1}.node.ATTR.id=(1:size(V,1))'; <span class="comment">%The node id's</span>
-febio_spec.Geometry.Nodes{1}.node.VAL=V; <span class="comment">%The nodel coordinates</span>
+febio_spec.Mesh.Nodes{1}.ATTR.name=<span class="string">'nodeSet_all'</span>; <span class="comment">%The node set name</span>
+febio_spec.Mesh.Nodes{1}.node.ATTR.id=(1:size(V,1))'; <span class="comment">%The node id's</span>
+febio_spec.Mesh.Nodes{1}.node.VAL=V; <span class="comment">%The nodel coordinates</span>
 
 <span class="comment">% -&gt; Elements</span>
-febio_spec.Geometry.Elements{1}.ATTR.type=<span class="string">'tet4'</span>; <span class="comment">%Element type of this set</span>
-febio_spec.Geometry.Elements{1}.ATTR.mat=1; <span class="comment">%material index for this set</span>
-febio_spec.Geometry.Elements{1}.ATTR.name=<span class="string">'Bone'</span>; <span class="comment">%Name of the element set</span>
-febio_spec.Geometry.Elements{1}.elem.ATTR.id=(1:1:size(E_bone,1))'; <span class="comment">%Element id's</span>
-febio_spec.Geometry.Elements{1}.elem.VAL=E_bone;
+partName1=<span class="string">'Part1'</span>;
+febio_spec.Mesh.Elements{1}.ATTR.name=partName1; <span class="comment">%Name of this part</span>
+febio_spec.Mesh.Elements{1}.ATTR.type=<span class="string">'tet4'</span>; <span class="comment">%Element type</span>
+febio_spec.Mesh.Elements{1}.elem.ATTR.id=(1:1:size(E_bone,1))'; <span class="comment">%Element id's</span>
+febio_spec.Mesh.Elements{1}.elem.VAL=E_bone; <span class="comment">%The element matrix</span>
 
-febio_spec.Geometry.Elements{2}.ATTR.type=<span class="string">'tet4'</span>; <span class="comment">%Element type of this set</span>
-febio_spec.Geometry.Elements{2}.ATTR.mat=2; <span class="comment">%material index for this set</span>
-febio_spec.Geometry.Elements{2}.ATTR.name=<span class="string">'Cement'</span>; <span class="comment">%Name of the element set</span>
-febio_spec.Geometry.Elements{2}.elem.ATTR.id=size(E_bone,1)+(1:1:size(E_cement,1))'; <span class="comment">%Element id's</span>
-febio_spec.Geometry.Elements{2}.elem.VAL=E_cement;
+partName2=<span class="string">'Part2'</span>;
+febio_spec.Mesh.Elements{2}.ATTR.name=partName2; <span class="comment">%Name of this part</span>
+febio_spec.Mesh.Elements{2}.ATTR.type=<span class="string">'tet4'</span>; <span class="comment">%Element type</span>
+febio_spec.Mesh.Elements{2}.elem.ATTR.id=size(E_bone,1)+(1:1:size(E_cement,1))'; <span class="comment">%Element id's</span>
+febio_spec.Mesh.Elements{2}.elem.VAL=E_cement; <span class="comment">%The element matrix</span>
 
-febio_spec.Geometry.Elements{3}.ATTR.type=<span class="string">'tri3'</span>; <span class="comment">%Element type of this set</span>
-febio_spec.Geometry.Elements{3}.ATTR.mat=3; <span class="comment">%material index for this set</span>
-febio_spec.Geometry.Elements{3}.ATTR.name=<span class="string">'Bone'</span>; <span class="comment">%Name of the element set</span>
-febio_spec.Geometry.Elements{3}.elem.ATTR.id=size(E_bone,1)+size(E_cement,1)+(1:1:size(F_implant,1))'; <span class="comment">%Element id's</span>
-febio_spec.Geometry.Elements{3}.elem.VAL=F_implant;
+partName3=<span class="string">'Part3'</span>;
+febio_spec.Mesh.Elements{3}.ATTR.name=partName3; <span class="comment">%Name of this part</span>
+febio_spec.Mesh.Elements{3}.ATTR.type=<span class="string">'tri3'</span>; <span class="comment">%Element type</span>
+febio_spec.Mesh.Elements{3}.elem.ATTR.id=size(E_bone,1)+size(E_cement,1)+(1:1:size(F_implant,1))'; <span class="comment">%Element id's</span>
+febio_spec.Mesh.Elements{3}.elem.VAL=F_implant; <span class="comment">%The element matrix</span>
 
 <span class="comment">% -&gt; NodeSets</span>
-febio_spec.Geometry.NodeSet{1}.ATTR.name=<span class="string">'bcSupportList'</span>;
-febio_spec.Geometry.NodeSet{1}.node.ATTR.id=bcSupportList(:);
+nodeSetName1=<span class="string">'bcSupportList'</span>;
+febio_spec.Mesh.NodeSet{1}.ATTR.name=nodeSetName1;
+febio_spec.Mesh.NodeSet{1}.node.ATTR.id=bcSupportList(:);
+
+<span class="comment">%MeshDomains section</span>
+febio_spec.MeshDomains.SolidDomain{1}.ATTR.name=partName1;
+febio_spec.MeshDomains.SolidDomain{1}.ATTR.mat=materialName1;
+
+febio_spec.MeshDomains.SolidDomain{2}.ATTR.name=partName2;
+febio_spec.MeshDomains.SolidDomain{2}.ATTR.mat=materialName2;
+
+febio_spec.MeshDomains.ShellDomain{1}.ATTR.name=partName3;
+febio_spec.MeshDomains.ShellDomain{1}.ATTR.mat=materialName3;
 
 <span class="comment">%Boundary condition section</span>
 <span class="comment">% -&gt; Fix boundary conditions</span>
-febio_spec.Boundary.fix{1}.ATTR.bc=<span class="string">'x'</span>;
-febio_spec.Boundary.fix{1}.ATTR.node_set=febio_spec.Geometry.NodeSet{1}.ATTR.name;
-febio_spec.Boundary.fix{2}.ATTR.bc=<span class="string">'y'</span>;
-febio_spec.Boundary.fix{2}.ATTR.node_set=febio_spec.Geometry.NodeSet{1}.ATTR.name;
-febio_spec.Boundary.fix{3}.ATTR.bc=<span class="string">'z'</span>;
-febio_spec.Boundary.fix{3}.ATTR.node_set=febio_spec.Geometry.NodeSet{1}.ATTR.name;
+febio_spec.Boundary.bc{1}.ATTR.type=<span class="string">'fix'</span>;
+febio_spec.Boundary.bc{1}.ATTR.node_set=nodeSetName1;
+febio_spec.Boundary.bc{1}.dofs=<span class="string">'x,y,z'</span>;
 
-<span class="comment">% -&gt; Prescribed boundary conditions on the rigid body</span>
-febio_spec.Boundary.rigid_body{1}.ATTR.mat=3;
-febio_spec.Boundary.rigid_body{1}.fixed{1}.ATTR.bc=<span class="string">'x'</span>;
-febio_spec.Boundary.rigid_body{1}.fixed{2}.ATTR.bc=<span class="string">'y'</span>;
-febio_spec.Boundary.rigid_body{1}.fixed{3}.ATTR.bc=<span class="string">'Rx'</span>;
-febio_spec.Boundary.rigid_body{1}.fixed{4}.ATTR.bc=<span class="string">'Ry'</span>;
-febio_spec.Boundary.rigid_body{1}.fixed{5}.ATTR.bc=<span class="string">'Rz'</span>;
-<span class="comment">% febio_spec.Boundary.rigid_body{1}.fixed{6}.ATTR.bc='z';</span>
+<span class="comment">%Rigid section</span>
+<span class="comment">% -&gt;Rigid body fix boundary conditions</span>
+febio_spec.Rigid.rigid_constraint{1}.ATTR.name=<span class="string">'RigidFix_1'</span>;
+febio_spec.Rigid.rigid_constraint{1}.ATTR.type=<span class="string">'fix'</span>;
+febio_spec.Rigid.rigid_constraint{1}.rb=3;
+febio_spec.Rigid.rigid_constraint{1}.dofs=<span class="string">'Rx,Ry'</span>;
 
-<span class="comment">% febio_spec.Boundary.rigid_body{1}.prescribed.ATTR.bc='z';</span>
-<span class="comment">% febio_spec.Boundary.rigid_body{1}.prescribed.ATTR.lc=1;</span>
-<span class="comment">% febio_spec.Boundary.rigid_body{1}.prescribed.VAL=displacementMagnitude;</span>
+<span class="comment">% -&gt;Rigid body prescribe boundary conditions</span>
+febio_spec.Rigid.rigid_constraint{2}.ATTR.name=<span class="string">'RigidPrescribe'</span>;
+febio_spec.Rigid.rigid_constraint{2}.ATTR.type=<span class="string">'force'</span>;
+febio_spec.Rigid.rigid_constraint{2}.rb=3;
+febio_spec.Rigid.rigid_constraint{2}.dof=<span class="string">'Rz'</span>;
+febio_spec.Rigid.rigid_constraint{2}.value.ATTR.lc=1;
+febio_spec.Rigid.rigid_constraint{2}.value.VAL=forceBody;
 
-febio_spec.Boundary.rigid_body{1}.force.ATTR.bc=<span class="string">'z'</span>;
-febio_spec.Boundary.rigid_body{1}.force.ATTR.lc=1;
-febio_spec.Boundary.rigid_body{1}.force.VAL=forceBody;
+<span class="comment">%LoadData section</span>
+<span class="comment">% -&gt; load_controller</span>
+febio_spec.LoadData.load_controller{1}.ATTR.id=1;
+febio_spec.LoadData.load_controller{1}.ATTR.type=<span class="string">'loadcurve'</span>;
+febio_spec.LoadData.load_controller{1}.interpolate=<span class="string">'LINEAR'</span>;
+febio_spec.LoadData.load_controller{1}.points.point.VAL=[0 0; 1 1];
 
 <span class="comment">%Output section</span>
 <span class="comment">% -&gt; log file</span>
@@ -531,8 +547,8 @@ febio_spec.Output.logfile.element_data{2}.ATTR.file=febioLogFileName_strainEnerg
 febio_spec.Output.logfile.element_data{2}.ATTR.data=<span class="string">'sed'</span>;
 febio_spec.Output.logfile.element_data{2}.ATTR.delim=<span class="string">','</span>;
 febio_spec.Output.logfile.element_data{2}.VAL=1:1:size(E_solid,1);
-</pre><h2 id="27">Quick viewing of the FEBio input file structure</h2><p>The <tt>febView</tt> function can be used to view the xml structure in a MATLAB figure window.</p><p><tt>febView(febio_spec); %Viewing the febio file</tt></p><h2 id="29">Exporting the FEBio input file</h2><p>Exporting the febio_spec structure to an FEBio input file is done using the <tt>febioStruct2xml</tt> function.</p><pre class="codeinput">febioStruct2xml(febio_spec,febioFebFileName); <span class="comment">%Exporting to file and domNode</span>
-</pre><h2 id="30">Running the FEBio analysis</h2><p>To run the analysis defined by the created FEBio input file the <tt>runMonitorFEBio</tt> function is used. The input for this function is a structure defining job settings e.g. the FEBio input file name. The optional output runFlag informs the user if the analysis was run succesfully.</p><pre class="codeinput">febioAnalysis.run_filename=febioFebFileName; <span class="comment">%The input file name</span>
+</pre><h2 id="28">Quick viewing of the FEBio input file structure</h2><p>The <tt>febView</tt> function can be used to view the xml structure in a MATLAB figure window.</p><p><tt>febView(febio_spec); %Viewing the febio file</tt></p><h2 id="30">Exporting the FEBio input file</h2><p>Exporting the febio_spec structure to an FEBio input file is done using the <tt>febioStruct2xml</tt> function.</p><pre class="codeinput">febioStruct2xml(febio_spec,febioFebFileName); <span class="comment">%Exporting to file and domNode</span>
+</pre><h2 id="31">Running the FEBio analysis</h2><p>To run the analysis defined by the created FEBio input file the <tt>runMonitorFEBio</tt> function is used. The input for this function is a structure defining job settings e.g. the FEBio input file name. The optional output runFlag informs the user if the analysis was run succesfully.</p><pre class="codeinput">febioAnalysis.run_filename=febioFebFileName; <span class="comment">%The input file name</span>
 febioAnalysis.run_logname=febioLogFileName; <span class="comment">%The name for the log file</span>
 febioAnalysis.disp_on=1; <span class="comment">%Display information on the command window</span>
 febioAnalysis.disp_log_on=1; <span class="comment">%Display convergence information in the command window</span>
@@ -543,22 +559,752 @@ febioAnalysis.maxLogCheckTime=10; <span class="comment">%Max log file checking t
 
 [runFlag]=runMonitorFEBio(febioAnalysis);<span class="comment">%START FEBio NOW!!!!!!!!</span>
 </pre><pre class="codeoutput"> 
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
---- STARTING FEBIO JOB --- 05-May-2020 18:46:03
-Waiting for log file...
-Proceeding to check log file...05-May-2020 18:46:03
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+--------&gt;    RUNNING/MONITORING FEBIO JOB    &lt;-------- 04-Jun-2021 13:06:51
+FEBio path: /home/kevin/FEBioStudio/bin/febio3
+# Attempt removal of existing log files                04-Jun-2021 13:06:51
+ * Removal succesful                                   04-Jun-2021 13:06:51
+# Attempt removal of existing .xplt files              04-Jun-2021 13:06:51
+ * Removal succesful                                   04-Jun-2021 13:06:51
+# Starting FEBio...                                    04-Jun-2021 13:06:51
+  Max. total analysis time is: 1e+99 s
+===========================================================================
+         ________    _________   _______       __     _________            
+        |        |\ |        |\ |       \\    |  |\  /         \\          
+        |    ____|| |    ____|| |    __  ||   |__|| |    ___    ||         
+        |   |\___\| |   |\___\| |   |\_| ||    \_\| |   //  \   ||         
+        |   ||__    |   ||__    |   ||_| ||   |  |\ |  ||    |  ||         
+        |       |\  |       |\  |         \\  |  || |  ||    |  ||         
+        |    ___||  |    ___||  |    ___   || |  || |  ||    |  ||         
+        |   |\__\|  |   |\__\|  |   |\__|  || |  || |  ||    |  ||         
+        |   ||      |   ||___   |   ||__|  || |  || |   \\__/   ||         
+        |   ||      |        |\ |          || |  || |           ||         
+        |___||      |________|| |_________//  |__||  \_________//          
+                                                                           
+      F I N I T E   E L E M E N T S   F O R   B I O M E C H A N I C S      
+                                                                           
+  version 3.3.3
+  FEBio is a registered trademark.                                         
+  copyright (c) 2006-2020 - All rights reserved                            
+                                                                           
+===========================================================================
+
+Default linear solver: pardiso
+Success loading plugin libFEBioChem.so (version 1.0.0)
+Success loading plugin libFEBioHeat.so (version 1.0.0)
+Reading file /mnt/data/MATLAB/GIBBON/data/temp/tempModel.feb ...SUCCESS!
+
+Setting parameter "value" to : 0
+
+ ]0;(0%) tempModel.feb - FEBio 3.3.3  
+===== beginning time step 1 : 0.1 =====
+
+Setting parameter "value" to : 39.24
+
+Reforming stiffness matrix: reformation #1
+
+===== reforming stiffness matrix:
+	Nr of equations ........................... : 44464
+	Nr of nonzeroes in stiffness matrix ....... : 940414
+ 1
+ Nonlinear solution status: time= 0.1
+	stiffness updates             = 0
+	right hand side evaluations   = 2
+	stiffness matrix reformations = 1
+	step from line search         = 1.000000
+	convergence norms :     INITIAL         CURRENT         REQUIRED
+	   residual            1.539778e+03    2.600416e-04    0.000000e+00 
+	   energy              1.153167e-02    4.823996e-08    1.153167e-04 
+	   displacement        7.224653e-04    7.224653e-04    7.224653e-10 
+Reforming stiffness matrix: reformation #2
+
+ 2
+ Nonlinear solution status: time= 0.1
+	stiffness updates             = 0
+	right hand side evaluations   = 3
+	stiffness matrix reformations = 2
+	step from line search         = 1.000000
+	convergence norms :     INITIAL         CURRENT         REQUIRED
+	   residual            1.539778e+03    7.588805e-14    0.000000e+00 
+	   energy              1.153167e-02    2.754037e-18    1.153167e-04 
+	   displacement        7.224653e-04    4.336754e-14    7.224576e-10 
+
+convergence summary
+    number of iterations   : 2
+    number of reformations : 2
+
 ------- converged at time : 0.1
+
+
+Data Record #1
+===========================================================================
+Step = 1
+Time = 0.1
+Data = ux;uy;uz
+File = /mnt/data/MATLAB/GIBBON/data/temp/tempModel_disp_out.txt
+
+Data Record #2
+===========================================================================
+Step = 1
+Time = 0.1
+Data = Fx;Fy;Fz
+File = /mnt/data/MATLAB/GIBBON/data/temp/tempModel_force_out.txt
+
+Data Record #3
+===========================================================================
+Step = 1
+Time = 0.1
+Data = s1;s2;s3
+File = /mnt/data/MATLAB/GIBBON/data/temp/tempModel_stress_out.txt
+
+Data Record #4
+===========================================================================
+Step = 1
+Time = 0.1
+Data = sed
+File = /mnt/data/MATLAB/GIBBON/data/temp/tempModel_energy_out.txt
+ ]0;(10%) tempModel.feb - FEBio 3.3.3  
+===== beginning time step 2 : 0.2 =====
+
+Setting parameter "value" to : 78.48
+
+Reforming stiffness matrix: reformation #1
+
+ 1
+ Nonlinear solution status: time= 0.2
+	stiffness updates             = 0
+	right hand side evaluations   = 2
+	stiffness matrix reformations = 1
+	step from line search         = 1.000000
+	convergence norms :     INITIAL         CURRENT         REQUIRED
+	   residual            1.539778e+03    5.139769e-04    0.000000e+00 
+	   energy              1.153159e-02    6.660363e-08    1.153159e-04 
+	   displacement        7.224533e-04    7.224533e-04    7.224533e-10 
+Reforming stiffness matrix: reformation #2
+
+ 2
+ Nonlinear solution status: time= 0.2
+	stiffness updates             = 0
+	right hand side evaluations   = 3
+	stiffness matrix reformations = 2
+	step from line search         = 1.000000
+	convergence norms :     INITIAL         CURRENT         REQUIRED
+	   residual            1.539778e+03    3.392551e-14    0.000000e+00 
+	   energy              1.153159e-02    6.271861e-18    1.153159e-04 
+	   displacement        7.224533e-04    8.973940e-14    7.224423e-10 
+
+convergence summary
+    number of iterations   : 2
+    number of reformations : 2
+
 ------- converged at time : 0.2
+
+
+Data Record #1
+===========================================================================
+Step = 2
+Time = 0.2
+Data = ux;uy;uz
+File = /mnt/data/MATLAB/GIBBON/data/temp/tempModel_disp_out.txt
+
+Data Record #2
+===========================================================================
+Step = 2
+Time = 0.2
+Data = Fx;Fy;Fz
+File = /mnt/data/MATLAB/GIBBON/data/temp/tempModel_force_out.txt
+
+Data Record #3
+===========================================================================
+Step = 2
+Time = 0.2
+Data = s1;s2;s3
+File = /mnt/data/MATLAB/GIBBON/data/temp/tempModel_stress_out.txt
+
+Data Record #4
+===========================================================================
+Step = 2
+Time = 0.2
+Data = sed
+File = /mnt/data/MATLAB/GIBBON/data/temp/tempModel_energy_out.txt
+ ]0;(20%) tempModel.feb - FEBio 3.3.3  
+===== beginning time step 3 : 0.3 =====
+
+Setting parameter "value" to : 117.72
+
+Reforming stiffness matrix: reformation #1
+
+ 1
+ Nonlinear solution status: time= 0.3
+	stiffness updates             = 0
+	right hand side evaluations   = 2
+	stiffness matrix reformations = 1
+	step from line search         = 1.000000
+	convergence norms :     INITIAL         CURRENT         REQUIRED
+	   residual            1.539778e+03    8.535919e-04    0.000000e+00 
+	   energy              1.153151e-02    8.496710e-08    1.153151e-04 
+	   displacement        7.224412e-04    7.224412e-04    7.224412e-10 
+Reforming stiffness matrix: reformation #2
+
+ 2
+ Nonlinear solution status: time= 0.3
+	stiffness updates             = 0
+	right hand side evaluations   = 3
+	stiffness matrix reformations = 2
+	step from line search         = 1.000000
+	convergence norms :     INITIAL         CURRENT         REQUIRED
+	   residual            1.539778e+03    3.624876e-13    0.000000e+00 
+	   energy              1.153151e-02    4.196193e-17    1.153151e-04 
+	   displacement        7.224412e-04    1.528939e-13    7.224269e-10 
+
+convergence summary
+    number of iterations   : 2
+    number of reformations : 2
+
 ------- converged at time : 0.3
+
+
+Data Record #1
+===========================================================================
+Step = 3
+Time = 0.3
+Data = ux;uy;uz
+File = /mnt/data/MATLAB/GIBBON/data/temp/tempModel_disp_out.txt
+
+Data Record #2
+===========================================================================
+Step = 3
+Time = 0.3
+Data = Fx;Fy;Fz
+File = /mnt/data/MATLAB/GIBBON/data/temp/tempModel_force_out.txt
+
+Data Record #3
+===========================================================================
+Step = 3
+Time = 0.3
+Data = s1;s2;s3
+File = /mnt/data/MATLAB/GIBBON/data/temp/tempModel_stress_out.txt
+
+Data Record #4
+===========================================================================
+Step = 3
+Time = 0.3
+Data = sed
+File = /mnt/data/MATLAB/GIBBON/data/temp/tempModel_energy_out.txt
+ ]0;(30%) tempModel.feb - FEBio 3.3.3  
+===== beginning time step 4 : 0.4 =====
+
+Setting parameter "value" to : 156.96
+
+Reforming stiffness matrix: reformation #1
+
+ 1
+ Nonlinear solution status: time= 0.4
+	stiffness updates             = 0
+	right hand side evaluations   = 2
+	stiffness matrix reformations = 1
+	step from line search         = 1.000000
+	convergence norms :     INITIAL         CURRENT         REQUIRED
+	   residual            1.539778e+03    1.278863e-03    0.000000e+00 
+	   energy              1.153143e-02    1.033272e-07    1.153143e-04 
+	   displacement        7.224291e-04    7.224291e-04    7.224291e-10 
+Reforming stiffness matrix: reformation #2
+
+ 2
+ Nonlinear solution status: time= 0.4
+	stiffness updates             = 0
+	right hand side evaluations   = 3
+	stiffness matrix reformations = 2
+	step from line search         = 1.000000
+	convergence norms :     INITIAL         CURRENT         REQUIRED
+	   residual            1.539778e+03    2.439992e-13    0.000000e+00 
+	   energy              1.153143e-02    6.925788e-17    1.153143e-04 
+	   displacement        7.224291e-04    2.328266e-13    7.224116e-10 
+
+convergence summary
+    number of iterations   : 2
+    number of reformations : 2
+
 ------- converged at time : 0.4
+
+
+Data Record #1
+===========================================================================
+Step = 4
+Time = 0.4
+Data = ux;uy;uz
+File = /mnt/data/MATLAB/GIBBON/data/temp/tempModel_disp_out.txt
+
+Data Record #2
+===========================================================================
+Step = 4
+Time = 0.4
+Data = Fx;Fy;Fz
+File = /mnt/data/MATLAB/GIBBON/data/temp/tempModel_force_out.txt
+
+Data Record #3
+===========================================================================
+Step = 4
+Time = 0.4
+Data = s1;s2;s3
+File = /mnt/data/MATLAB/GIBBON/data/temp/tempModel_stress_out.txt
+
+Data Record #4
+===========================================================================
+Step = 4
+Time = 0.4
+Data = sed
+File = /mnt/data/MATLAB/GIBBON/data/temp/tempModel_energy_out.txt
+ ]0;(40%) tempModel.feb - FEBio 3.3.3  
+===== beginning time step 5 : 0.5 =====
+
+Setting parameter "value" to : 196.2
+
+Reforming stiffness matrix: reformation #1
+
+ 1
+ Nonlinear solution status: time= 0.5
+	stiffness updates             = 0
+	right hand side evaluations   = 2
+	stiffness matrix reformations = 1
+	step from line search         = 1.000000
+	convergence norms :     INITIAL         CURRENT         REQUIRED
+	   residual            1.539778e+03    1.789916e-03    0.000000e+00 
+	   energy              1.153136e-02    1.216878e-07    1.153136e-04 
+	   displacement        7.224171e-04    7.224171e-04    7.224171e-10 
+Reforming stiffness matrix: reformation #2
+
+ 2
+ Nonlinear solution status: time= 0.5
+	stiffness updates             = 0
+	right hand side evaluations   = 3
+	stiffness matrix reformations = 2
+	step from line search         = 1.000000
+	convergence norms :     INITIAL         CURRENT         REQUIRED
+	   residual            1.539778e+03    2.205398e-12    0.000000e+00 
+	   energy              1.153136e-02    1.261282e-16    1.153136e-04 
+	   displacement        7.224171e-04    3.295368e-13    7.223962e-10 
+
+convergence summary
+    number of iterations   : 2
+    number of reformations : 2
+
 ------- converged at time : 0.5
+
+
+Data Record #1
+===========================================================================
+Step = 5
+Time = 0.5
+Data = ux;uy;uz
+File = /mnt/data/MATLAB/GIBBON/data/temp/tempModel_disp_out.txt
+
+Data Record #2
+===========================================================================
+Step = 5
+Time = 0.5
+Data = Fx;Fy;Fz
+File = /mnt/data/MATLAB/GIBBON/data/temp/tempModel_force_out.txt
+
+Data Record #3
+===========================================================================
+Step = 5
+Time = 0.5
+Data = s1;s2;s3
+File = /mnt/data/MATLAB/GIBBON/data/temp/tempModel_stress_out.txt
+
+Data Record #4
+===========================================================================
+Step = 5
+Time = 0.5
+Data = sed
+File = /mnt/data/MATLAB/GIBBON/data/temp/tempModel_energy_out.txt
+ ]0;(50%) tempModel.feb - FEBio 3.3.3  
+===== beginning time step 6 : 0.6 =====
+
+Setting parameter "value" to : 235.44
+
+Reforming stiffness matrix: reformation #1
+
+ 1
+ Nonlinear solution status: time= 0.6
+	stiffness updates             = 0
+	right hand side evaluations   = 2
+	stiffness matrix reformations = 1
+	step from line search         = 1.000000
+	convergence norms :     INITIAL         CURRENT         REQUIRED
+	   residual            1.539778e+03    2.386492e-03    0.000000e+00 
+	   energy              1.153128e-02    1.400444e-07    1.153128e-04 
+	   displacement        7.224050e-04    7.224050e-04    7.224050e-10 
+Reforming stiffness matrix: reformation #2
+
+ 2
+ Nonlinear solution status: time= 0.6
+	stiffness updates             = 0
+	right hand side evaluations   = 3
+	stiffness matrix reformations = 2
+	step from line search         = 1.000000
+	convergence norms :     INITIAL         CURRENT         REQUIRED
+	   residual            1.539778e+03    2.303268e-12    0.000000e+00 
+	   energy              1.153128e-02    1.909982e-16    1.153128e-04 
+	   displacement        7.224050e-04    4.430186e-13    7.223809e-10 
+
+convergence summary
+    number of iterations   : 2
+    number of reformations : 2
+
 ------- converged at time : 0.6
+
+
+Data Record #1
+===========================================================================
+Step = 6
+Time = 0.6
+Data = ux;uy;uz
+File = /mnt/data/MATLAB/GIBBON/data/temp/tempModel_disp_out.txt
+
+Data Record #2
+===========================================================================
+Step = 6
+Time = 0.6
+Data = Fx;Fy;Fz
+File = /mnt/data/MATLAB/GIBBON/data/temp/tempModel_force_out.txt
+
+Data Record #3
+===========================================================================
+Step = 6
+Time = 0.6
+Data = s1;s2;s3
+File = /mnt/data/MATLAB/GIBBON/data/temp/tempModel_stress_out.txt
+
+Data Record #4
+===========================================================================
+Step = 6
+Time = 0.6
+Data = sed
+File = /mnt/data/MATLAB/GIBBON/data/temp/tempModel_energy_out.txt
+ ]0;(60%) tempModel.feb - FEBio 3.3.3  
+===== beginning time step 7 : 0.7 =====
+
+Setting parameter "value" to : 274.68
+
+Reforming stiffness matrix: reformation #1
+
+ 1
+ Nonlinear solution status: time= 0.7
+	stiffness updates             = 0
+	right hand side evaluations   = 2
+	stiffness matrix reformations = 1
+	step from line search         = 1.000000
+	convergence norms :     INITIAL         CURRENT         REQUIRED
+	   residual            1.539778e+03    3.068742e-03    0.000000e+00 
+	   energy              1.153120e-02    1.584007e-07    1.153120e-04 
+	   displacement        7.223930e-04    7.223930e-04    7.223930e-10 
+Reforming stiffness matrix: reformation #2
+
+ 2
+ Nonlinear solution status: time= 0.7
+	stiffness updates             = 0
+	right hand side evaluations   = 3
+	stiffness matrix reformations = 2
+	step from line search         = 1.000000
+	convergence norms :     INITIAL         CURRENT         REQUIRED
+	   residual            1.539778e+03    4.878682e-12    0.000000e+00 
+	   energy              1.153120e-02    3.043022e-16    1.153120e-04 
+	   displacement        7.223930e-04    5.732699e-13    7.223655e-10 
+
+convergence summary
+    number of iterations   : 2
+    number of reformations : 2
+
 ------- converged at time : 0.7
+
+
+Data Record #1
+===========================================================================
+Step = 7
+Time = 0.7
+Data = ux;uy;uz
+File = /mnt/data/MATLAB/GIBBON/data/temp/tempModel_disp_out.txt
+
+Data Record #2
+===========================================================================
+Step = 7
+Time = 0.7
+Data = Fx;Fy;Fz
+File = /mnt/data/MATLAB/GIBBON/data/temp/tempModel_force_out.txt
+
+Data Record #3
+===========================================================================
+Step = 7
+Time = 0.7
+Data = s1;s2;s3
+File = /mnt/data/MATLAB/GIBBON/data/temp/tempModel_stress_out.txt
+
+Data Record #4
+===========================================================================
+Step = 7
+Time = 0.7
+Data = sed
+File = /mnt/data/MATLAB/GIBBON/data/temp/tempModel_energy_out.txt
+ ]0;(70%) tempModel.feb - FEBio 3.3.3  
+===== beginning time step 8 : 0.8 =====
+
+Setting parameter "value" to : 313.92
+
+Reforming stiffness matrix: reformation #1
+
+ 1
+ Nonlinear solution status: time= 0.8
+	stiffness updates             = 0
+	right hand side evaluations   = 2
+	stiffness matrix reformations = 1
+	step from line search         = 1.000000
+	convergence norms :     INITIAL         CURRENT         REQUIRED
+	   residual            1.539778e+03    3.836697e-03    0.000000e+00 
+	   energy              1.153112e-02    1.767560e-07    1.153112e-04 
+	   displacement        7.223809e-04    7.223809e-04    7.223809e-10 
+Reforming stiffness matrix: reformation #2
+
+ 2
+ Nonlinear solution status: time= 0.8
+	stiffness updates             = 0
+	right hand side evaluations   = 3
+	stiffness matrix reformations = 2
+	step from line search         = 1.000000
+	convergence norms :     INITIAL         CURRENT         REQUIRED
+	   residual            1.539778e+03    5.900405e-12    0.000000e+00 
+	   energy              1.153112e-02    4.306212e-16    1.153112e-04 
+	   displacement        7.223809e-04    7.202892e-13    7.223502e-10 
+
+convergence summary
+    number of iterations   : 2
+    number of reformations : 2
+
 ------- converged at time : 0.8
+
+
+Data Record #1
+===========================================================================
+Step = 8
+Time = 0.8
+Data = ux;uy;uz
+File = /mnt/data/MATLAB/GIBBON/data/temp/tempModel_disp_out.txt
+
+Data Record #2
+===========================================================================
+Step = 8
+Time = 0.8
+Data = Fx;Fy;Fz
+File = /mnt/data/MATLAB/GIBBON/data/temp/tempModel_force_out.txt
+
+Data Record #3
+===========================================================================
+Step = 8
+Time = 0.8
+Data = s1;s2;s3
+File = /mnt/data/MATLAB/GIBBON/data/temp/tempModel_stress_out.txt
+
+Data Record #4
+===========================================================================
+Step = 8
+Time = 0.8
+Data = sed
+File = /mnt/data/MATLAB/GIBBON/data/temp/tempModel_energy_out.txt
+ ]0;(80%) tempModel.feb - FEBio 3.3.3  
+===== beginning time step 9 : 0.9 =====
+
+Setting parameter "value" to : 353.16
+
+Reforming stiffness matrix: reformation #1
+
+ 1
+ Nonlinear solution status: time= 0.9
+	stiffness updates             = 0
+	right hand side evaluations   = 2
+	stiffness matrix reformations = 1
+	step from line search         = 1.000000
+	convergence norms :     INITIAL         CURRENT         REQUIRED
+	   residual            1.539778e+03    4.690245e-03    0.000000e+00 
+	   energy              1.153104e-02    1.951088e-07    1.153104e-04 
+	   displacement        7.223689e-04    7.223689e-04    7.223689e-10 
+Reforming stiffness matrix: reformation #2
+
+ 2
+ Nonlinear solution status: time= 0.9
+	stiffness updates             = 0
+	right hand side evaluations   = 3
+	stiffness matrix reformations = 2
+	step from line search         = 1.000000
+	convergence norms :     INITIAL         CURRENT         REQUIRED
+	   residual            1.539778e+03    1.078551e-11    0.000000e+00 
+	   energy              1.153104e-02    6.008168e-16    1.153104e-04 
+	   displacement        7.223689e-04    8.840727e-13    7.223348e-10 
+
+convergence summary
+    number of iterations   : 2
+    number of reformations : 2
+
 ------- converged at time : 0.9
+
+
+Data Record #1
+===========================================================================
+Step = 9
+Time = 0.9
+Data = ux;uy;uz
+File = /mnt/data/MATLAB/GIBBON/data/temp/tempModel_disp_out.txt
+
+Data Record #2
+===========================================================================
+Step = 9
+Time = 0.9
+Data = Fx;Fy;Fz
+File = /mnt/data/MATLAB/GIBBON/data/temp/tempModel_force_out.txt
+
+Data Record #3
+===========================================================================
+Step = 9
+Time = 0.9
+Data = s1;s2;s3
+File = /mnt/data/MATLAB/GIBBON/data/temp/tempModel_stress_out.txt
+
+Data Record #4
+===========================================================================
+Step = 9
+Time = 0.9
+Data = sed
+File = /mnt/data/MATLAB/GIBBON/data/temp/tempModel_energy_out.txt
+ ]0;(90%) tempModel.feb - FEBio 3.3.3  
+===== beginning time step 10 : 1 =====
+
+Setting parameter "value" to : 392.4
+
+Reforming stiffness matrix: reformation #1
+
+ 1
+ Nonlinear solution status: time= 1
+	stiffness updates             = 0
+	right hand side evaluations   = 2
+	stiffness matrix reformations = 1
+	step from line search         = 1.000000
+	convergence norms :     INITIAL         CURRENT         REQUIRED
+	   residual            1.539778e+03    5.629395e-03    0.000000e+00 
+	   energy              1.153097e-02    2.134608e-07    1.153097e-04 
+	   displacement        7.223568e-04    7.223568e-04    7.223568e-10 
+Reforming stiffness matrix: reformation #2
+
+ 2
+ Nonlinear solution status: time= 1
+	stiffness updates             = 0
+	right hand side evaluations   = 3
+	stiffness matrix reformations = 2
+	step from line search         = 1.000000
+	convergence norms :     INITIAL         CURRENT         REQUIRED
+	   residual            1.539778e+03    1.643164e-11    0.000000e+00 
+	   energy              1.153097e-02    8.206581e-16    1.153097e-04 
+	   displacement        7.223568e-04    1.064616e-12    7.223195e-10 
+
+convergence summary
+    number of iterations   : 2
+    number of reformations : 2
+
 ------- converged at time : 1
---- Done --- 05-May-2020 18:46:45
-</pre><img width="100%" height="auto" vspace="5" hspace="5" src="DEMO_febio_0051_hip_implant_01_09.jpg" alt=""> <h2 id="31">Import FEBio results</h2><pre class="codeinput"><span class="keyword">if</span> runFlag==1 <span class="comment">%i.e. a succesful run</span>
+
+
+Data Record #1
+===========================================================================
+Step = 10
+Time = 1
+Data = ux;uy;uz
+File = /mnt/data/MATLAB/GIBBON/data/temp/tempModel_disp_out.txt
+
+Data Record #2
+===========================================================================
+Step = 10
+Time = 1
+Data = Fx;Fy;Fz
+File = /mnt/data/MATLAB/GIBBON/data/temp/tempModel_force_out.txt
+
+Data Record #3
+===========================================================================
+Step = 10
+Time = 1
+Data = s1;s2;s3
+File = /mnt/data/MATLAB/GIBBON/data/temp/tempModel_stress_out.txt
+
+Data Record #4
+===========================================================================
+Step = 10
+Time = 1
+Data = sed
+File = /mnt/data/MATLAB/GIBBON/data/temp/tempModel_energy_out.txt
+ ]0;(100%) tempModel.feb - FEBio 3.3.3  
+
+ N O N L I N E A R   I T E R A T I O N   I N F O R M A T I O N
+
+	Number of time steps completed .................... : 10
+
+	Total number of equilibrium iterations ............ : 20
+
+	Average number of equilibrium iterations .......... : 2
+
+	Total number of right hand evaluations ............ : 30
+
+	Total number of stiffness reformations ............ : 20
+
+
+ L I N E A R   S O L V E R   S T A T S
+
+	Total calls to linear solver ........ : 20
+
+	Avg iterations per solve ............ : 1
+
+	Time in linear solver: 0:00:16
+
+ ]0;(0%) tempModel.feb - FEBio 3.3.3  
+ Elapsed time : 0:00:37
+
+
+ N O R M A L   T E R M I N A T I O N
+
+ * Log file found.                                     04-Jun-2021 13:07:29
+# Parsing log file...                                  04-Jun-2021 13:07:29
+    number of iterations   : 2                         04-Jun-2021 13:07:29
+    number of reformations : 2                         04-Jun-2021 13:07:29
+------- converged at time : 0.1                        04-Jun-2021 13:07:29
+    number of iterations   : 2                         04-Jun-2021 13:07:29
+    number of reformations : 2                         04-Jun-2021 13:07:29
+------- converged at time : 0.2                        04-Jun-2021 13:07:29
+    number of iterations   : 2                         04-Jun-2021 13:07:29
+    number of reformations : 2                         04-Jun-2021 13:07:29
+------- converged at time : 0.3                        04-Jun-2021 13:07:29
+    number of iterations   : 2                         04-Jun-2021 13:07:29
+    number of reformations : 2                         04-Jun-2021 13:07:29
+------- converged at time : 0.4                        04-Jun-2021 13:07:29
+    number of iterations   : 2                         04-Jun-2021 13:07:29
+    number of reformations : 2                         04-Jun-2021 13:07:29
+------- converged at time : 0.5                        04-Jun-2021 13:07:29
+    number of iterations   : 2                         04-Jun-2021 13:07:29
+    number of reformations : 2                         04-Jun-2021 13:07:29
+------- converged at time : 0.6                        04-Jun-2021 13:07:29
+    number of iterations   : 2                         04-Jun-2021 13:07:29
+    number of reformations : 2                         04-Jun-2021 13:07:29
+------- converged at time : 0.7                        04-Jun-2021 13:07:29
+    number of iterations   : 2                         04-Jun-2021 13:07:29
+    number of reformations : 2                         04-Jun-2021 13:07:29
+------- converged at time : 0.8                        04-Jun-2021 13:07:29
+    number of iterations   : 2                         04-Jun-2021 13:07:29
+    number of reformations : 2                         04-Jun-2021 13:07:29
+------- converged at time : 0.9                        04-Jun-2021 13:07:29
+    number of iterations   : 2                         04-Jun-2021 13:07:29
+    number of reformations : 2                         04-Jun-2021 13:07:29
+------- converged at time : 1                          04-Jun-2021 13:07:29
+ Elapsed time : 0:00:37                                04-Jun-2021 13:07:29
+ N O R M A L   T E R M I N A T I O N
+# Done                                                 04-Jun-2021 13:07:29
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+</pre><h2 id="32">Import FEBio results</h2><pre class="codeinput"><span class="keyword">if</span> runFlag==1 <span class="comment">%i.e. a succesful run</span>
 </pre><pre class="codeinput">    <span class="comment">% Importing nodal displacements from a log file</span>
     [time_mat, N_disp_mat,~]=importFEBio_logfile(fullfile(savePath,febioLogFileName_disp)); <span class="comment">%Nodal displacements</span>
     time_mat=[0; time_mat(:)]; <span class="comment">%Time</span>
@@ -589,6 +1335,7 @@ Proceeding to check log file...05-May-2020 18:46:03
     Fb_solid=FE_face(indBoundary,:);
 </pre><p>Plotting the simulated results using <tt>anim8</tt> to visualize and animate deformations</p><pre class="codeinput">    <span class="comment">% Create basic view and store graphics handle to initiate animation</span>
     hf=cFigure; <span class="comment">%Open figure</span>
+    title(<span class="string">'Strain energy density'</span>)
     gtitle([febioFebFileNamePart,<span class="string">': Press play to animate'</span>]);
     hp1=gpatch(Fb_solid,V_def,CV,<span class="string">'k'</span>,1); <span class="comment">%Add graphics object to animate</span>
     hp1.FaceColor=<span class="string">'Interp'</span>;
@@ -597,7 +1344,7 @@ Proceeding to check log file...05-May-2020 18:46:03
 
     axisGeom(gca,fontSize);
     colormap(gjet(250)); colorbar;
-    caxis([0 max(E_energy(:))/10]);
+    caxis([0 max(E_energy(:))/25]);
     axis([min(V_def(:,1)) max(V_def(:,1)) min(V_def(:,2)) max(V_def(:,2)) min(V_def(:,3)) max(V_def(:,3))]); <span class="comment">%Set axis limits statically</span>
     camlight <span class="string">headlight</span>;
 
@@ -619,8 +1366,8 @@ Proceeding to check log file...05-May-2020 18:46:03
     <span class="keyword">end</span>
     anim8(hf,animStruct); <span class="comment">%Initiate animation feature</span>
     drawnow;
-</pre><img width="100%" height="auto" vspace="5" hspace="5" src="DEMO_febio_0051_hip_implant_01_10.jpg" alt=""> <pre class="codeinput"><span class="keyword">end</span>
-</pre><p><i><b>GIBBON footer text</b></i></p><p>License: <a href="https://github.com/gibbonCode/GIBBON/blob/master/LICENSE">https://github.com/gibbonCode/GIBBON/blob/master/LICENSE</a></p><p>GIBBON: The Geometry and Image-based Bioengineering add-On. A toolbox for image segmentation, image-based modeling, meshing, and finite element analysis.</p><p>Copyright (C) 2019  Kevin Mattheus Moerman</p><p>This program is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.</p><p>This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for more details.</p><p>You should have received a copy of the GNU General Public License along with this program.  If not, see <a href="http://www.gnu.org/licenses/">http://www.gnu.org/licenses/</a>.</p><p class="footer"><br><a href="https://www.mathworks.com/products/matlab/">Published with MATLAB&reg; R2020a</a><br></p></div><!--
+</pre><img width="100%" height="auto" vspace="5" hspace="5" src="DEMO_febio_0051_hip_implant_01_09.jpg" alt=""> <pre class="codeinput"><span class="keyword">end</span>
+</pre><p><i><b>GIBBON footer text</b></i></p><p>License: <a href="https://github.com/gibbonCode/GIBBON/blob/master/LICENSE">https://github.com/gibbonCode/GIBBON/blob/master/LICENSE</a></p><p>GIBBON: The Geometry and Image-based Bioengineering add-On. A toolbox for image segmentation, image-based modeling, meshing, and finite element analysis.</p><p>Copyright (C) 2006-2021 Kevin Mattheus Moerman and the GIBBON contributors</p><p>This program is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.</p><p>This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for more details.</p><p>You should have received a copy of the GNU General Public License along with this program.  If not, see <a href="http://www.gnu.org/licenses/">http://www.gnu.org/licenses/</a>.</p><p class="footer"><br><a href="https://www.mathworks.com/products/matlab/">Published with MATLAB&reg; R2021a</a><br></p></div><!--
 ##### SOURCE BEGIN #####
 %% DEMO_febio_0051_hip_implant_01
 % Below is a demonstration for:
@@ -629,14 +1376,12 @@ Proceeding to check log file...05-May-2020 18:46:03
 
 %% Keywords
 %
-% * febio_spec version 2.5
+% * febio_spec version 3.0
 % * febio, FEBio
-% * beam force loading
+% * parameterised hip creation 
+% * Tetrahedral meshing, tet4
 % * force control boundary condition
-% * hexahedral elements, hex8, hex20
-% * beam, rectangular
 % * static, solid
-% * hyperelastic, Ogden
 % * displacement logfile
 % * stress logfile
 
@@ -668,30 +1413,26 @@ febioLogFileName_strainEnergy=[febioFebFileNamePart,'_energy_out.txt']; %Log fil
 
 %Define applied force 
 forceBody=(80*9.81)/2;
-displacementMagnitude=-1;
 
-%Material parameter set
-% Bone
-c1=500; %Shear-modulus-like parameter
-m1=2; %Material parameter setting degree of non-linearity
-k_factor=50; %Bulk modulus factor 
-k1=c1*k_factor; %Bulk modulus
+%Material parameters (MPa if spatial units are mm)
+% Cortical bone
+E_youngs1=17000; %Youngs modulus
+nu1=0.25; %Poissons ratio
 
 % Cement
-c2=500; %Shear-modulus-like parameter
-m2=2; %Material parameter setting degree of non-linearity
-k_factor=50; %Bulk modulus factor 
-k2=c1*k_factor; %Bulk modulus
+E_youngs2=1500; %Youngs modulus
+nu2=0.25; %Poissons ratio
 
 % FEA control settings
 numTimeSteps=10; %Number of time steps desired
 max_refs=25; %Max reforms
 max_ups=0; %Set to zero to use full-Newton iterations
-opt_iter=6; %Optimum number of iterations
+opt_iter=10; %Optimum number of iterations
 max_retries=5; %Maximum number of retires
 dtmin=(1/numTimeSteps)/100; %Minimum time step size
 dtmax=1/numTimeSteps; %Maximum time step size
-runMode='external'; %'external' or 'internal'
+symmetric_stiffness=1;
+runMode='internal'; %'external' or 'internal'
 
 %%
 n1=[1 0 0];
@@ -916,6 +1657,7 @@ logicCement=ismember(CT,[4 5 7 8 9 10 11]);
 
 V_inner_cement=getInnerPoint(FT(logicCement,:),VT);
 
+%%
 cFigure; hold on;
 gpatch(FT(logicCement,:),VT,'w','none',0.5);
 plotV(V_inner_cement,'k.','MarkerSize',25)
@@ -1000,94 +1742,113 @@ drawnow;
 [febio_spec]=febioStructTemplate;
 
 %febio_spec version 
-febio_spec.ATTR.version='2.5'; 
+febio_spec.ATTR.version='3.0'; 
 
 %Module section
 febio_spec.Module.ATTR.type='solid'; 
 
 %Control section
-febio_spec.Control.analysis.ATTR.type='static';
+febio_spec.Control.analysis='STATIC';
 febio_spec.Control.time_steps=numTimeSteps;
 febio_spec.Control.step_size=1/numTimeSteps;
+febio_spec.Control.solver.max_refs=max_refs;
+febio_spec.Control.solver.max_ups=max_ups;
+febio_spec.Control.solver.symmetric_stiffness=symmetric_stiffness;
 febio_spec.Control.time_stepper.dtmin=dtmin;
 febio_spec.Control.time_stepper.dtmax=dtmax; 
 febio_spec.Control.time_stepper.max_retries=max_retries;
 febio_spec.Control.time_stepper.opt_iter=opt_iter;
-febio_spec.Control.max_refs=max_refs;
-febio_spec.Control.max_ups=max_ups;
+
 
 %Material section
-febio_spec.Material.material{1}.ATTR.type='Ogden';
+materialName1='Material1';
+febio_spec.Material.material{1}.ATTR.name=materialName1;
+febio_spec.Material.material{1}.ATTR.type='neo-Hookean';
 febio_spec.Material.material{1}.ATTR.id=1;
-febio_spec.Material.material{1}.c1=c1;
-febio_spec.Material.material{1}.m1=m1;
-febio_spec.Material.material{1}.k=k1;
+febio_spec.Material.material{1}.E=E_youngs1;
+febio_spec.Material.material{1}.v=nu1;
 
-febio_spec.Material.material{2}.ATTR.type='Ogden';
+materialName2='Material2';
+febio_spec.Material.material{2}.ATTR.name=materialName2;
+febio_spec.Material.material{2}.ATTR.type='neo-Hookean';
 febio_spec.Material.material{2}.ATTR.id=2;
-febio_spec.Material.material{2}.c1=c2;
-febio_spec.Material.material{2}.m1=m2;
-febio_spec.Material.material{2}.k=k2;
+febio_spec.Material.material{2}.E=E_youngs2;
+febio_spec.Material.material{2}.v=nu2;
 
+materialName3='Material3';
+febio_spec.Material.material{3}.ATTR.name=materialName3;
 febio_spec.Material.material{3}.ATTR.type='rigid body';
 febio_spec.Material.material{3}.ATTR.id=3;
 febio_spec.Material.material{3}.density=1;
 febio_spec.Material.material{3}.center_of_mass=mean(V_implant,1);
 
-%Geometry section
+%Mesh section
 % -> Nodes
-febio_spec.Geometry.Nodes{1}.ATTR.name='nodeSet_all'; %The node set name
-febio_spec.Geometry.Nodes{1}.node.ATTR.id=(1:size(V,1))'; %The node id's
-febio_spec.Geometry.Nodes{1}.node.VAL=V; %The nodel coordinates
+febio_spec.Mesh.Nodes{1}.ATTR.name='nodeSet_all'; %The node set name
+febio_spec.Mesh.Nodes{1}.node.ATTR.id=(1:size(V,1))'; %The node id's
+febio_spec.Mesh.Nodes{1}.node.VAL=V; %The nodel coordinates
 
 % -> Elements
-febio_spec.Geometry.Elements{1}.ATTR.type='tet4'; %Element type of this set
-febio_spec.Geometry.Elements{1}.ATTR.mat=1; %material index for this set 
-febio_spec.Geometry.Elements{1}.ATTR.name='Bone'; %Name of the element set
-febio_spec.Geometry.Elements{1}.elem.ATTR.id=(1:1:size(E_bone,1))'; %Element id's
-febio_spec.Geometry.Elements{1}.elem.VAL=E_bone;
+partName1='Part1';
+febio_spec.Mesh.Elements{1}.ATTR.name=partName1; %Name of this part
+febio_spec.Mesh.Elements{1}.ATTR.type='tet4'; %Element type 
+febio_spec.Mesh.Elements{1}.elem.ATTR.id=(1:1:size(E_bone,1))'; %Element id's
+febio_spec.Mesh.Elements{1}.elem.VAL=E_bone; %The element matrix
 
-febio_spec.Geometry.Elements{2}.ATTR.type='tet4'; %Element type of this set
-febio_spec.Geometry.Elements{2}.ATTR.mat=2; %material index for this set 
-febio_spec.Geometry.Elements{2}.ATTR.name='Cement'; %Name of the element set
-febio_spec.Geometry.Elements{2}.elem.ATTR.id=size(E_bone,1)+(1:1:size(E_cement,1))'; %Element id's
-febio_spec.Geometry.Elements{2}.elem.VAL=E_cement;
+partName2='Part2';
+febio_spec.Mesh.Elements{2}.ATTR.name=partName2; %Name of this part
+febio_spec.Mesh.Elements{2}.ATTR.type='tet4'; %Element type 
+febio_spec.Mesh.Elements{2}.elem.ATTR.id=size(E_bone,1)+(1:1:size(E_cement,1))'; %Element id's
+febio_spec.Mesh.Elements{2}.elem.VAL=E_cement; %The element matrix
 
-febio_spec.Geometry.Elements{3}.ATTR.type='tri3'; %Element type of this set
-febio_spec.Geometry.Elements{3}.ATTR.mat=3; %material index for this set
-febio_spec.Geometry.Elements{3}.ATTR.name='Bone'; %Name of the element set
-febio_spec.Geometry.Elements{3}.elem.ATTR.id=size(E_bone,1)+size(E_cement,1)+(1:1:size(F_implant,1))'; %Element id's
-febio_spec.Geometry.Elements{3}.elem.VAL=F_implant;
+partName3='Part3';
+febio_spec.Mesh.Elements{3}.ATTR.name=partName3; %Name of this part
+febio_spec.Mesh.Elements{3}.ATTR.type='tri3'; %Element type 
+febio_spec.Mesh.Elements{3}.elem.ATTR.id=size(E_bone,1)+size(E_cement,1)+(1:1:size(F_implant,1))'; %Element id's
+febio_spec.Mesh.Elements{3}.elem.VAL=F_implant; %The element matrix
 
 % -> NodeSets
-febio_spec.Geometry.NodeSet{1}.ATTR.name='bcSupportList';
-febio_spec.Geometry.NodeSet{1}.node.ATTR.id=bcSupportList(:);
+nodeSetName1='bcSupportList';
+febio_spec.Mesh.NodeSet{1}.ATTR.name=nodeSetName1;
+febio_spec.Mesh.NodeSet{1}.node.ATTR.id=bcSupportList(:);
 
-%Boundary condition section
+%MeshDomains section
+febio_spec.MeshDomains.SolidDomain{1}.ATTR.name=partName1;
+febio_spec.MeshDomains.SolidDomain{1}.ATTR.mat=materialName1;
+
+febio_spec.MeshDomains.SolidDomain{2}.ATTR.name=partName2;
+febio_spec.MeshDomains.SolidDomain{2}.ATTR.mat=materialName2;
+
+febio_spec.MeshDomains.ShellDomain{1}.ATTR.name=partName3;
+febio_spec.MeshDomains.ShellDomain{1}.ATTR.mat=materialName3;
+
+%Boundary condition section 
 % -> Fix boundary conditions
-febio_spec.Boundary.fix{1}.ATTR.bc='x';
-febio_spec.Boundary.fix{1}.ATTR.node_set=febio_spec.Geometry.NodeSet{1}.ATTR.name;
-febio_spec.Boundary.fix{2}.ATTR.bc='y';
-febio_spec.Boundary.fix{2}.ATTR.node_set=febio_spec.Geometry.NodeSet{1}.ATTR.name;
-febio_spec.Boundary.fix{3}.ATTR.bc='z';
-febio_spec.Boundary.fix{3}.ATTR.node_set=febio_spec.Geometry.NodeSet{1}.ATTR.name;
+febio_spec.Boundary.bc{1}.ATTR.type='fix';
+febio_spec.Boundary.bc{1}.ATTR.node_set=nodeSetName1;
+febio_spec.Boundary.bc{1}.dofs='x,y,z';
 
-% -> Prescribed boundary conditions on the rigid body
-febio_spec.Boundary.rigid_body{1}.ATTR.mat=3;
-febio_spec.Boundary.rigid_body{1}.fixed{1}.ATTR.bc='x';
-febio_spec.Boundary.rigid_body{1}.fixed{2}.ATTR.bc='y';
-febio_spec.Boundary.rigid_body{1}.fixed{3}.ATTR.bc='Rx';
-febio_spec.Boundary.rigid_body{1}.fixed{4}.ATTR.bc='Ry';
-febio_spec.Boundary.rigid_body{1}.fixed{5}.ATTR.bc='Rz';
-% febio_spec.Boundary.rigid_body{1}.fixed{6}.ATTR.bc='z';
+%Rigid section 
+% ->Rigid body fix boundary conditions
+febio_spec.Rigid.rigid_constraint{1}.ATTR.name='RigidFix_1';
+febio_spec.Rigid.rigid_constraint{1}.ATTR.type='fix';
+febio_spec.Rigid.rigid_constraint{1}.rb=3;
+febio_spec.Rigid.rigid_constraint{1}.dofs='Rx,Ry';
 
-% febio_spec.Boundary.rigid_body{1}.prescribed.ATTR.bc='z';
-% febio_spec.Boundary.rigid_body{1}.prescribed.ATTR.lc=1;
-% febio_spec.Boundary.rigid_body{1}.prescribed.VAL=displacementMagnitude;
+% ->Rigid body prescribe boundary conditions
+febio_spec.Rigid.rigid_constraint{2}.ATTR.name='RigidPrescribe';
+febio_spec.Rigid.rigid_constraint{2}.ATTR.type='force';
+febio_spec.Rigid.rigid_constraint{2}.rb=3;
+febio_spec.Rigid.rigid_constraint{2}.dof='Rz';
+febio_spec.Rigid.rigid_constraint{2}.value.ATTR.lc=1;
+febio_spec.Rigid.rigid_constraint{2}.value.VAL=forceBody;
 
-febio_spec.Boundary.rigid_body{1}.force.ATTR.bc='z';
-febio_spec.Boundary.rigid_body{1}.force.ATTR.lc=1;
-febio_spec.Boundary.rigid_body{1}.force.VAL=forceBody;
+%LoadData section
+% -> load_controller
+febio_spec.LoadData.load_controller{1}.ATTR.id=1;
+febio_spec.LoadData.load_controller{1}.ATTR.type='loadcurve';
+febio_spec.LoadData.load_controller{1}.interpolate='LINEAR';
+febio_spec.LoadData.load_controller{1}.points.point.VAL=[0 0; 1 1];
 
 %Output section 
 % -> log file
@@ -1187,6 +1948,7 @@ if runFlag==1 %i.e. a succesful run
     
     % Create basic view and store graphics handle to initiate animation
     hf=cFigure; %Open figure  
+    title('Strain energy density')
     gtitle([febioFebFileNamePart,': Press play to animate']);
     hp1=gpatch(Fb_solid,V_def,CV,'k',1); %Add graphics object to animate
     hp1.FaceColor='Interp';
@@ -1195,7 +1957,7 @@ if runFlag==1 %i.e. a succesful run
     
     axisGeom(gca,fontSize); 
     colormap(gjet(250)); colorbar;
-    caxis([0 max(E_energy(:))/10]);    
+    caxis([0 max(E_energy(:))/25]);    
     axis([min(V_def(:,1)) max(V_def(:,1)) min(V_def(:,2)) max(V_def(:,2)) min(V_def(:,3)) max(V_def(:,3))]); %Set axis limits statically
     camlight headlight;        
         
@@ -1229,7 +1991,7 @@ end
 % image segmentation, image-based modeling, meshing, and finite element
 % analysis.
 % 
-% Copyright (C) 2019  Kevin Mattheus Moerman
+% Copyright (C) 2006-2021 Kevin Mattheus Moerman and the GIBBON contributors
 % 
 % This program is free software: you can redistribute it and/or modify
 % it under the terms of the GNU General Public License as published by

@@ -94,7 +94,7 @@ opt_iter=6; %Optimum number of iterations
 max_retries=5; %Maximum number of retires
 dtmin=(1/numTimeSteps)/100; %Minimum time step size
 dtmax=1/numTimeSteps; %Maximum time step size
-runMode='internal'; %'external' or 'internal'
+runMode='external'; %'external' or 'internal'
 
 %% Import bone surface model
 [stlStruct] = import_STL(fullfile(pathNameSTL,'femur_iso.stl'));

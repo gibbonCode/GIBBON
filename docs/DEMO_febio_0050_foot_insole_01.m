@@ -92,7 +92,7 @@ dtmin=(1/numTimeSteps)/100; %Minimum time step size
 dtmax=1/numTimeSteps; %Maximum time step size
 symmetric_stiffness=0;
 min_residual=1e-20;
-runMode='internal';
+runMode='external'; %'internal';
 
 initialSoleSpacing=0.1;
 
@@ -763,12 +763,6 @@ febio_spec.Output.logfile.element_data{1}.VAL=1:size(E_foot,1);
 %%
 % |febView(febio_spec); %Viewing the febio file|
 
-%% Exporting the FEBio input file
-% Exporting the febio_spec structure to an FEBio input file is done using
-% the |febioStruct2xml| function.
-
-febioStruct2xml(febio_spec,febioFebFileName); %Exporting to file and domNode
-
 %% Running the FEBio analysis
 % To run the analysis defined by the created FEBio input file the
 % |runMonitorFEBio| function is used. The input for this function is a
@@ -779,25 +773,25 @@ febioStruct2xml(febio_spec,febioFebFileName); %Exporting to file and domNode
 febioAnalysis.run_filename=febioFebFileName; %The input file name
 febioAnalysis.run_logname=febioLogFileName; %The name for the log file
 febioAnalysis.disp_on=1; %Display information on the command window
-febioAnalysis.runMode='internal';%'internal';
-
-[runFlag]=runMonitorFEBio(febioAnalysis);%START FEBio NOW!!!!!!!!
+febioAnalysis.runMode=runMode;
 
 %%
 
 if optimizeForceOption==0
-    %% Export input file
-    % Exporting the febio_spec structure to an FEBio input file is done
-    % using the |febioStruct2xml| function.
+        
+    %% Exporting the FEBio input file
+    % Exporting the febio_spec structure to an FEBio input file is done using
+    % the |febioStruct2xml| function.
+    
     febioStruct2xml(febio_spec,febioFebFileName); %Exporting to file and domNode
-    
+
     %% Run febio
+
     [runFlag]=runMonitorFEBio(febioAnalysis);%START FEBio NOW!!!!!!!!
-    
-    
     if runFlag~=1
         error('FEBio error');
     end
+    
 elseif optimizeForceOption==1
     
     while 1

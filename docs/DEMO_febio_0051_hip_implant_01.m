@@ -5,14 +5,12 @@
 
 %% Keywords
 %
-% * febio_spec version 2.5
+% * febio_spec version 3.0
 % * febio, FEBio
-% * beam force loading
+% * parameterised hip creation 
+% * Tetrahedral meshing, tet4
 % * force control boundary condition
-% * hexahedral elements, hex8, hex20
-% * beam, rectangular
 % * static, solid
-% * hyperelastic, Ogden
 % * displacement logfile
 % * stress logfile
 
@@ -45,28 +43,25 @@ febioLogFileName_strainEnergy=[febioFebFileNamePart,'_energy_out.txt']; %Log fil
 %Define applied force 
 forceBody=(80*9.81)/2;
 
-%Material parameter set
-% Bone
-c1=500; %Shear-modulus-like parameter
-m1=2; %Material parameter setting degree of non-linearity
-k_factor=50; %Bulk modulus factor 
-k1=c1*k_factor; %Bulk modulus
+%Material parameters (MPa if spatial units are mm)
+% Cortical bone
+E_youngs1=17000; %Youngs modulus
+nu1=0.25; %Poissons ratio
 
 % Cement
-c2=500; %Shear-modulus-like parameter
-m2=2; %Material parameter setting degree of non-linearity
-k_factor=50; %Bulk modulus factor 
-k2=c1*k_factor; %Bulk modulus
+E_youngs2=1500; %Youngs modulus
+nu2=0.25; %Poissons ratio
 
 % FEA control settings
 numTimeSteps=10; %Number of time steps desired
 max_refs=25; %Max reforms
 max_ups=0; %Set to zero to use full-Newton iterations
-opt_iter=6; %Optimum number of iterations
+opt_iter=10; %Optimum number of iterations
 max_retries=5; %Maximum number of retires
 dtmin=(1/numTimeSteps)/100; %Minimum time step size
 dtmax=1/numTimeSteps; %Maximum time step size
-runMode='external'; %'external' or 'internal'
+symmetric_stiffness=1;
+runMode='internal'; %'external' or 'internal'
 
 %%
 n1=[1 0 0];
@@ -291,6 +286,7 @@ logicCement=ismember(CT,[4 5 7 8 9 10 11]);
 
 V_inner_cement=getInnerPoint(FT(logicCement,:),VT);
 
+%%
 cFigure; hold on;
 gpatch(FT(logicCement,:),VT,'w','none',0.5);
 plotV(V_inner_cement,'k.','MarkerSize',25)
@@ -375,94 +371,113 @@ drawnow;
 [febio_spec]=febioStructTemplate;
 
 %febio_spec version 
-febio_spec.ATTR.version='2.5'; 
+febio_spec.ATTR.version='3.0'; 
 
 %Module section
 febio_spec.Module.ATTR.type='solid'; 
 
 %Control section
-febio_spec.Control.analysis.ATTR.type='static';
+febio_spec.Control.analysis='STATIC';
 febio_spec.Control.time_steps=numTimeSteps;
 febio_spec.Control.step_size=1/numTimeSteps;
+febio_spec.Control.solver.max_refs=max_refs;
+febio_spec.Control.solver.max_ups=max_ups;
+febio_spec.Control.solver.symmetric_stiffness=symmetric_stiffness;
 febio_spec.Control.time_stepper.dtmin=dtmin;
 febio_spec.Control.time_stepper.dtmax=dtmax; 
 febio_spec.Control.time_stepper.max_retries=max_retries;
 febio_spec.Control.time_stepper.opt_iter=opt_iter;
-febio_spec.Control.max_refs=max_refs;
-febio_spec.Control.max_ups=max_ups;
+
 
 %Material section
-febio_spec.Material.material{1}.ATTR.type='Ogden';
+materialName1='Material1';
+febio_spec.Material.material{1}.ATTR.name=materialName1;
+febio_spec.Material.material{1}.ATTR.type='neo-Hookean';
 febio_spec.Material.material{1}.ATTR.id=1;
-febio_spec.Material.material{1}.c1=c1;
-febio_spec.Material.material{1}.m1=m1;
-febio_spec.Material.material{1}.k=k1;
+febio_spec.Material.material{1}.E=E_youngs1;
+febio_spec.Material.material{1}.v=nu1;
 
-febio_spec.Material.material{2}.ATTR.type='Ogden';
+materialName2='Material2';
+febio_spec.Material.material{2}.ATTR.name=materialName2;
+febio_spec.Material.material{2}.ATTR.type='neo-Hookean';
 febio_spec.Material.material{2}.ATTR.id=2;
-febio_spec.Material.material{2}.c1=c2;
-febio_spec.Material.material{2}.m1=m2;
-febio_spec.Material.material{2}.k=k2;
+febio_spec.Material.material{2}.E=E_youngs2;
+febio_spec.Material.material{2}.v=nu2;
 
+materialName3='Material3';
+febio_spec.Material.material{3}.ATTR.name=materialName3;
 febio_spec.Material.material{3}.ATTR.type='rigid body';
 febio_spec.Material.material{3}.ATTR.id=3;
 febio_spec.Material.material{3}.density=1;
 febio_spec.Material.material{3}.center_of_mass=mean(V_implant,1);
 
-%Geometry section
+%Mesh section
 % -> Nodes
-febio_spec.Geometry.Nodes{1}.ATTR.name='nodeSet_all'; %The node set name
-febio_spec.Geometry.Nodes{1}.node.ATTR.id=(1:size(V,1))'; %The node id's
-febio_spec.Geometry.Nodes{1}.node.VAL=V; %The nodel coordinates
+febio_spec.Mesh.Nodes{1}.ATTR.name='nodeSet_all'; %The node set name
+febio_spec.Mesh.Nodes{1}.node.ATTR.id=(1:size(V,1))'; %The node id's
+febio_spec.Mesh.Nodes{1}.node.VAL=V; %The nodel coordinates
 
 % -> Elements
-febio_spec.Geometry.Elements{1}.ATTR.type='tet4'; %Element type of this set
-febio_spec.Geometry.Elements{1}.ATTR.mat=1; %material index for this set 
-febio_spec.Geometry.Elements{1}.ATTR.name='Bone'; %Name of the element set
-febio_spec.Geometry.Elements{1}.elem.ATTR.id=(1:1:size(E_bone,1))'; %Element id's
-febio_spec.Geometry.Elements{1}.elem.VAL=E_bone;
+partName1='Part1';
+febio_spec.Mesh.Elements{1}.ATTR.name=partName1; %Name of this part
+febio_spec.Mesh.Elements{1}.ATTR.type='tet4'; %Element type 
+febio_spec.Mesh.Elements{1}.elem.ATTR.id=(1:1:size(E_bone,1))'; %Element id's
+febio_spec.Mesh.Elements{1}.elem.VAL=E_bone; %The element matrix
 
-febio_spec.Geometry.Elements{2}.ATTR.type='tet4'; %Element type of this set
-febio_spec.Geometry.Elements{2}.ATTR.mat=2; %material index for this set 
-febio_spec.Geometry.Elements{2}.ATTR.name='Cement'; %Name of the element set
-febio_spec.Geometry.Elements{2}.elem.ATTR.id=size(E_bone,1)+(1:1:size(E_cement,1))'; %Element id's
-febio_spec.Geometry.Elements{2}.elem.VAL=E_cement;
+partName2='Part2';
+febio_spec.Mesh.Elements{2}.ATTR.name=partName2; %Name of this part
+febio_spec.Mesh.Elements{2}.ATTR.type='tet4'; %Element type 
+febio_spec.Mesh.Elements{2}.elem.ATTR.id=size(E_bone,1)+(1:1:size(E_cement,1))'; %Element id's
+febio_spec.Mesh.Elements{2}.elem.VAL=E_cement; %The element matrix
 
-febio_spec.Geometry.Elements{3}.ATTR.type='tri3'; %Element type of this set
-febio_spec.Geometry.Elements{3}.ATTR.mat=3; %material index for this set
-febio_spec.Geometry.Elements{3}.ATTR.name='Bone'; %Name of the element set
-febio_spec.Geometry.Elements{3}.elem.ATTR.id=size(E_bone,1)+size(E_cement,1)+(1:1:size(F_implant,1))'; %Element id's
-febio_spec.Geometry.Elements{3}.elem.VAL=F_implant;
+partName3='Part3';
+febio_spec.Mesh.Elements{3}.ATTR.name=partName3; %Name of this part
+febio_spec.Mesh.Elements{3}.ATTR.type='tri3'; %Element type 
+febio_spec.Mesh.Elements{3}.elem.ATTR.id=size(E_bone,1)+size(E_cement,1)+(1:1:size(F_implant,1))'; %Element id's
+febio_spec.Mesh.Elements{3}.elem.VAL=F_implant; %The element matrix
 
 % -> NodeSets
-febio_spec.Geometry.NodeSet{1}.ATTR.name='bcSupportList';
-febio_spec.Geometry.NodeSet{1}.node.ATTR.id=bcSupportList(:);
+nodeSetName1='bcSupportList';
+febio_spec.Mesh.NodeSet{1}.ATTR.name=nodeSetName1;
+febio_spec.Mesh.NodeSet{1}.node.ATTR.id=bcSupportList(:);
 
-%Boundary condition section
+%MeshDomains section
+febio_spec.MeshDomains.SolidDomain{1}.ATTR.name=partName1;
+febio_spec.MeshDomains.SolidDomain{1}.ATTR.mat=materialName1;
+
+febio_spec.MeshDomains.SolidDomain{2}.ATTR.name=partName2;
+febio_spec.MeshDomains.SolidDomain{2}.ATTR.mat=materialName2;
+
+febio_spec.MeshDomains.ShellDomain{1}.ATTR.name=partName3;
+febio_spec.MeshDomains.ShellDomain{1}.ATTR.mat=materialName3;
+
+%Boundary condition section 
 % -> Fix boundary conditions
-febio_spec.Boundary.fix{1}.ATTR.bc='x';
-febio_spec.Boundary.fix{1}.ATTR.node_set=febio_spec.Geometry.NodeSet{1}.ATTR.name;
-febio_spec.Boundary.fix{2}.ATTR.bc='y';
-febio_spec.Boundary.fix{2}.ATTR.node_set=febio_spec.Geometry.NodeSet{1}.ATTR.name;
-febio_spec.Boundary.fix{3}.ATTR.bc='z';
-febio_spec.Boundary.fix{3}.ATTR.node_set=febio_spec.Geometry.NodeSet{1}.ATTR.name;
+febio_spec.Boundary.bc{1}.ATTR.type='fix';
+febio_spec.Boundary.bc{1}.ATTR.node_set=nodeSetName1;
+febio_spec.Boundary.bc{1}.dofs='x,y,z';
 
-% -> Prescribed boundary conditions on the rigid body
-febio_spec.Boundary.rigid_body{1}.ATTR.mat=3;
-febio_spec.Boundary.rigid_body{1}.fixed{1}.ATTR.bc='x';
-febio_spec.Boundary.rigid_body{1}.fixed{2}.ATTR.bc='y';
-febio_spec.Boundary.rigid_body{1}.fixed{3}.ATTR.bc='Rx';
-febio_spec.Boundary.rigid_body{1}.fixed{4}.ATTR.bc='Ry';
-febio_spec.Boundary.rigid_body{1}.fixed{5}.ATTR.bc='Rz';
-% febio_spec.Boundary.rigid_body{1}.fixed{6}.ATTR.bc='z';
+%Rigid section 
+% ->Rigid body fix boundary conditions
+febio_spec.Rigid.rigid_constraint{1}.ATTR.name='RigidFix_1';
+febio_spec.Rigid.rigid_constraint{1}.ATTR.type='fix';
+febio_spec.Rigid.rigid_constraint{1}.rb=3;
+febio_spec.Rigid.rigid_constraint{1}.dofs='Rx,Ry';
 
-% febio_spec.Boundary.rigid_body{1}.prescribed.ATTR.bc='z';
-% febio_spec.Boundary.rigid_body{1}.prescribed.ATTR.lc=1;
-% febio_spec.Boundary.rigid_body{1}.prescribed.VAL=displacementMagnitude;
+% ->Rigid body prescribe boundary conditions
+febio_spec.Rigid.rigid_constraint{2}.ATTR.name='RigidPrescribe';
+febio_spec.Rigid.rigid_constraint{2}.ATTR.type='force';
+febio_spec.Rigid.rigid_constraint{2}.rb=3;
+febio_spec.Rigid.rigid_constraint{2}.dof='Rz';
+febio_spec.Rigid.rigid_constraint{2}.value.ATTR.lc=1;
+febio_spec.Rigid.rigid_constraint{2}.value.VAL=forceBody;
 
-febio_spec.Boundary.rigid_body{1}.force.ATTR.bc='z';
-febio_spec.Boundary.rigid_body{1}.force.ATTR.lc=1;
-febio_spec.Boundary.rigid_body{1}.force.VAL=forceBody;
+%LoadData section
+% -> load_controller
+febio_spec.LoadData.load_controller{1}.ATTR.id=1;
+febio_spec.LoadData.load_controller{1}.ATTR.type='loadcurve';
+febio_spec.LoadData.load_controller{1}.interpolate='LINEAR';
+febio_spec.LoadData.load_controller{1}.points.point.VAL=[0 0; 1 1];
 
 %Output section 
 % -> log file
