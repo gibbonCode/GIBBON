@@ -4,7 +4,7 @@ function hf=imx(varargin)
 % The imx (image explorer) function is a GUI to navigate and segment 3D
 % image data. 
 % 
-% Change log: 
+% Change log: g
 % 2019/08/09 Update to not depend on javax jSliders but to use MATLAB
 % uicontrol sliders instead. Also added update frequency such that sliding
 % does not create an excessive amount of plot updates. 

@@ -21,9 +21,9 @@ pathName=fullfile(defaultFolder,'data','FEB');
 testCase=2; 
 switch testCase
     case 1
-        febFileNamePart='tetGenModel.feb'; %febio_spec 1.2
+        febFileNamePart='tempModel_2p0.feb'; %febio_spec 2.0
     case 2
-        febFileNamePart='tempModel.feb'; %febio_spec 2.0
+        febFileNamePart='tempModel_3p0.feb'; %febio_spec 3.0
 end
 febFileName=fullfile(pathName,febFileNamePart);
 
@@ -62,22 +62,18 @@ title('The imported model','FontSize',fontSize);
 
 for q=1:1:numel(elementCell)
 
-    E=elementCell{q}.E;
-    C=elementCell{q}.E_mat;
+    E=elementCell{q}.E;    
     elementType=elementCell{q}.E_type;
-    
-    if numel(C)==1
-        C=C.*ones(size(E,1),1);
-    end
+    C=q.*ones(size(E,1),1);
         
-    [F,C]=element2patch(E,C,elementType); 
+    [F,CF]=element2patch(E,C,elementType); 
 
-    gpatch(F,V,C);
-    axisGeom(gca,fontSize);
-    colormap(cMap);           
+    gpatch(F,V,CF);
     
 end
-camlight;
+axisGeom(gca,fontSize);
+colormap(cMap);
+camlight headlight;
 drawnow;
 
 %%

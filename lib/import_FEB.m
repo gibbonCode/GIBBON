@@ -38,19 +38,11 @@ febXML = xmlread(febFileName);
 [febio_spec]=getFebioSpecVersion(febXML);
 
 %% RETRIEVING NODAL DATA
-
-[nodeStruct]=get_FEB_nodes(febXML);
+[nodeStruct]=get_FEB_nodes(febXML,febio_spec);
 
 %% RETRIEVING ELEMENT DATA
 
-switch febio_spec
-    case '2.0'
-        [elementCell]=get_FEB_elements(febXML);
-    case '2.5'
-        [elementCell]=get_FEB_elements(febXML);
-    otherwise % assume compatible with 1.2
-        [elementCell]=get_FEB_elements_v1p2(febXML);
-end
+[elementCell]=get_FEB_elements(febXML,febio_spec);
 
 %%
 
@@ -59,12 +51,22 @@ disp('DONE!');
 end
 
 %%
-function [nodeStruct]=get_FEB_nodes(febXML)
+
+function [nodeStruct]=get_FEB_nodes(febXML,febio_spec)
 
 disp('---> Getting nodes');
+switch febio_spec
+    case '2.0'
+        MESH_FEB_XML = febXML.getElementsByTagName('Geometry');
+    case '2.5'
+        MESH_FEB_XML = febXML.getElementsByTagName('Geometry');
+    case '3.0'
+        MESH_FEB_XML = febXML.getElementsByTagName('Mesh');
+    otherwise %Assume 3.0
+        MESH_FEB_XML = febXML.getElementsByTagName('Mesh');
+end
 
-GEO_FEB_XML = febXML.getElementsByTagName('Geometry');
-NODES_FEB_XML = GEO_FEB_XML.item(0).getElementsByTagName('Nodes');
+NODES_FEB_XML = MESH_FEB_XML.item(0).getElementsByTagName('Nodes');
 node_FEB_XML = NODES_FEB_XML.item(0).getElementsByTagName('node');
 no_nodes=node_FEB_XML.getLength;
 
@@ -75,89 +77,74 @@ for q=0:1:no_nodes-1
     nodeStruct.N_ind(q+1,:)=str2double(node_FEB_XML.item(q).getAttribute('id').toCharArray()');
     nodeStruct.N(q+1,:)=sscanf(node_FEB_XML.item(q).getFirstChild.getData.toCharArray()','%f,%f,%f');
 end
-disp(['---> Imported ',num2str(no_nodes),' nodes']);
+disp(['-----> Imported ',num2str(no_nodes),' nodes']);
 
 end
 
 %%
 
-function [elementCell]=get_FEB_elements_v1p2(febXML)
+function [elementCell]=get_FEB_elements(febXML,febio_spec)
 
 disp('---> Getting elements');
-
-GEO_FEB_XML = febXML.getElementsByTagName('Geometry');
-NODES_FEB_XML = GEO_FEB_XML.item(0).getElementsByTagName('Nodes');
-node_FEB_XML = NODES_FEB_XML.item(0).getElementsByTagName('node');
-no_nodes=node_FEB_XML.getLength;
-
-ELEMENTS_FEB_XML = GEO_FEB_XML.item(0).getElementsByTagName('Elements');
-elementTypes={'tri3','quad4','tet4','tet10','penta6','hex8'}; %Element type strings, these need to match targets in FEB file, adjust for other types
-numberElementNodes=[3,4,4,10,6,8]; %Number of nodes for each element type
-
-%Getting the number of elements for each type
-numberElementEntries=zeros(1,numel(elementTypes));
-for q=1:1:numel(elementTypes)
-    numberElementEntries(q)=ELEMENTS_FEB_XML.item(0).getElementsByTagName(elementTypes{q}).getLength;
+switch febio_spec
+    case {'2.0','2.5'}
+        MESH_FEB_XML = febXML.getElementsByTagName('Geometry');
+    case '3.0'
+        MESH_FEB_XML = febXML.getElementsByTagName('Mesh');
+    otherwise %Assume 3.0
+        MESH_FEB_XML = febXML.getElementsByTagName('Mesh');
 end
-indexElementTypes=find(numberElementEntries>0);
+Elements_FEB_XML = MESH_FEB_XML.item(0).getElementsByTagName('Elements');
 
-%Getting element data
-elementType=1;
-elementCell=cell(1,numel(indexElementTypes));
-for q=indexElementTypes  
-   
-    textScanFormat=repmat('%d,',1,numberElementNodes(q)); textScanFormat=textScanFormat(1:end-1); %Create text scan format    
-    
-    element_FEB_XML=ELEMENTS_FEB_XML.item(0).getElementsByTagName(elementTypes{q});
-    
-    %Allocating memory for element structure array
-    elementStruct.E_type=elementTypes{q}; %Element type
-    elementStruct.E=zeros(numberElementEntries(q),str2double(elementTypes{q}(end))); %Element connectivity
-    elementStruct.E_ind=zeros(numberElementEntries(q),1); %Element indices
-    elementStruct.E_mat=zeros(numberElementEntries(q),1); %Element material indices
-    for q2=0:1:numberElementEntries(q)-1 %for each element type
-        elementStruct.E(q2+1,:)=sscanf(element_FEB_XML.item(q2).getFirstChild.getData.toCharArray()',textScanFormat); %Element connectivity
-        elementStruct.E_ind(q2+1)=str2double(element_FEB_XML.item(q2).getAttribute('id').toCharArray()'); %Element indices
-        elementStruct.E_mat(q2+1)=str2double(element_FEB_XML.item(q2).getAttribute('mat').toCharArray()'); %Element material indices
-    end    
-    elementCell{elementType}=elementStruct; %Add structure to cell array
-    elementType=elementType+1; %increase elementTypeIndex
-    disp(['---> Imported ',num2str(numberElementEntries(q)),' ',elementTypes{q},' elements']);
+
+switch febio_spec
+    case {'2.0','2.5'}
+        numElementsSets=Elements_FEB_XML.getLength; %Number of Elements sets
+        elementCell=cell(numElementsSets,1);
+        for q=1:1:numElementsSets
+            Elements_Set_FEB_XML = Elements_FEB_XML.item(q-1); %The current Elements set
+            
+            elementStruct.E_type=Elements_Set_FEB_XML.getAttribute('type').toCharArray()';
+            elementStruct.E_mat=str2double(Elements_Set_FEB_XML.getAttribute('mat'));
+            
+            elem_FEB_XML = Elements_Set_FEB_XML.getElementsByTagName('elem'); %The current elem set
+            numElem=elem_FEB_XML.getLength; %Number of elem entries in the current Elements set
+            numNodesElement=numel(sscanf(elem_FEB_XML.item(0).getFirstChild.getData.toCharArray()','%d,')); %Get num. nodes per element using first
+            
+            elementStruct.E=zeros(numElem,numNodesElement);
+            elementStruct.E_ind=zeros(numElem,1);
+            for qe=1:1:numElem
+                elementStruct.E(qe,:)=sscanf(elem_FEB_XML.item(qe-1).getFirstChild.getData.toCharArray()','%d,'); %Element nodes
+                elementStruct.E_ind(qe)=sscanf(elem_FEB_XML.item(qe-1).getAttribute('id').toCharArray()','%d'); %Element nodes
+            end
+            elementCell{q}=elementStruct;
+            disp(['-----> Imported ',num2str(numElem),' ',elementStruct.E_type,' elements']);
+        end
+    otherwise %Assume 3.0 
+        numElementsSets=Elements_FEB_XML.getLength; %Number of Elements sets
+        
+        elementCell=cell(numElementsSets,1);
+        for q=1:1:numElementsSets
+            Elements_Set_FEB_XML = Elements_FEB_XML.item(q-1); %The current Elements set
+            
+            elementStruct.E_type=Elements_Set_FEB_XML.getAttribute('type').toCharArray()';            
+            elementStruct.E_part=Elements_Set_FEB_XML.getAttribute('name').toCharArray()';
+            
+            elem_FEB_XML = Elements_Set_FEB_XML.getElementsByTagName('elem'); %The current elem set
+            numElem=elem_FEB_XML.getLength; %Number of elem entries in the current Elements set
+            numNodesElement=numel(sscanf(elem_FEB_XML.item(0).getFirstChild.getData.toCharArray()','%d,')); %Get num. nodes per element using first
+            
+            elementStruct.E=zeros(numElem,numNodesElement);
+            elementStruct.E_ind=zeros(numElem,1);
+            for qe=1:1:numElem
+                elementStruct.E(qe,:)=sscanf(elem_FEB_XML.item(qe-1).getFirstChild.getData.toCharArray()','%d,'); %Element nodes
+                elementStruct.E_ind(qe)=sscanf(elem_FEB_XML.item(qe-1).getAttribute('id').toCharArray()','%d'); %Element nodes
+            end            
+            elementCell{q}=elementStruct;
+            disp(['-----> Imported ',num2str(numElem),' ',elementStruct.E_type,' elements']);
+        end    
+        
 end
-
-end
-%%
-
-function [elementCell]=get_FEB_elements(febXML)
-
-disp('---> Getting elements');
-
-GEO_FEB_XML = febXML.getElementsByTagName('Geometry');
-Elements_FEB_XML = GEO_FEB_XML.item(0).getElementsByTagName('Elements');
-
-numElementsSets=Elements_FEB_XML.getLength; %Number of Elements sets
-
-elementCell=cell(numElementsSets,1);
-for q=1:1:numElementsSets    
-    Elements_Set_FEB_XML = Elements_FEB_XML.item(q-1); %The current Elements set    
-    
-    elementStruct.E_type=Elements_Set_FEB_XML.getAttribute('type').toCharArray()';
-    elementStruct.E_mat=str2double(Elements_Set_FEB_XML.getAttribute('mat'));
-    
-    elem_FEB_XML = Elements_Set_FEB_XML.getElementsByTagName('elem'); %The current elem set
-    numElem=elem_FEB_XML.getLength; %Number of elem entries in the current Elements set
-    numNodesElement=numel(sscanf(elem_FEB_XML.item(0).getFirstChild.getData.toCharArray()','%d,')); %Get num. nodes per element using first
-    
-    elementStruct.E=zeros(numElem,numNodesElement);
-    elementStruct.E_ind=zeros(numElem,1);
-    for qe=1:1:numElem        
-        elementStruct.E(qe,:)=sscanf(elem_FEB_XML.item(qe-1).getFirstChild.getData.toCharArray()','%d,'); %Element nodes
-        elementStruct.E_ind(qe)=sscanf(elem_FEB_XML.item(qe-1).getAttribute('id').toCharArray()','%d'); %Element nodes
-    end
-    elementCell{q}=elementStruct;
-    disp(['---> Imported ',num2str(numElem),' ',elementStruct.E_type,' elements']);
-end
-
 
 end
 
