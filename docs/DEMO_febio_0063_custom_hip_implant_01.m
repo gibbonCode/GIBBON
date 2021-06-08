@@ -622,7 +622,11 @@ drawnow;
 
 %% Load SED data from non-implant model and access SED interpolation function
 
-outputStruct=load(loadName_SED);
+if exist(loadName_SED,'file')
+    outputStruct=load(loadName_SED);
+else 
+    error('To run this demo run DEMO_febio_0062_femur_load_01 first')
+end
 
 %Data without implant
 Fb_no_implant = outputStruct.boundaryFaces;
