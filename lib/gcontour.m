@@ -105,8 +105,7 @@ if ~isempty(Q)
             end
             
             %Upsample if desired
-            if ~isempty(pointSpacing)
-                D=pathLength(Vg);
+            if ~isempty(pointSpacing)                
                 [Vg] = evenlySampleCurve(Vg,n,resampleMethod,closeLoopOpt);
             end
         end

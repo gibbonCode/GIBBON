@@ -587,7 +587,7 @@ hf.UserData.WindowScrollWheelFcn=hf.WindowScrollWheelFcn;
 hf.UserData.BusyAction=hf.BusyAction;
 
 hf.UserData.csapsSmoothPar=0.5; 
-hf.UserData.growShrinkStepSize=1/4; 
+hf.UserData.growShrinkStepSize=1; 
 hf.UserData.adjustContourParSet={4,1,0.5}; 
 hf.UserData.MoveStepSize=mean(v(1:2));
 hf.UserData.showAll=-1; 
@@ -2280,14 +2280,6 @@ Z=hf.UserData.Z;
 zs=(qSlice-0.5).*v(3); %z-level for contourslice
 Vcs=hf.UserData.ContourSet;
 
-
-mask_height=1;
-mask_shape=[mask_height:-1:1 -1:-1:-mask_height]';
-MASK_I=[mask_shape; zeros(size(mask_shape));]';
-MASK_J=[zeros(size(mask_shape)); mask_shape;]';
-MASK_K=[zeros(size(mask_shape)); zeros(size(mask_shape));]';
-
-
 if ~isempty(Vcs{qSlice}{1})
     [mousePointerType]=specialPointerShape('smallHand');
     while 1        
@@ -2299,22 +2291,41 @@ if ~isempty(Vcs{qSlice}{1})
                     [indMin_Vcs]=findNearestContour(Vcs{qSlice},vClick);
                     
                     Vd=Vcs{qSlice}{indMin_Vcs}; %Get closest contour
-                     
-                    L = inpolygon(X(:,:,qSlice),Y(:,:,qSlice),Vd(:,1),Vd(:,2));                    
+                    
+                    %Compute logic of pixels inside contour                    
+                    L_on=false(size(X,1),size(X,2));
+                    [i,j,~]=cart2im(Vd(:,1),Vd(:,2),zeros(size(Vd,1),1),v);
+                    ind=sub2ind(size(L_on),round(i),round(j));
+                    L_on(ind)=1;
+                    k=sphereIm(2+ceil(hf.UserData.growShrinkStepSize),1,2);
+                    L_near=convn(double(L_on),k,'same')>0;
+                    try %Fast approach but needs image processing toolbox (imfill,bwperim)
+                        L_in = imfill(L_on,'holes');
+                        L_on = bwperim(L_in,4);
+                        L_in=L_in & ~L_on;                         
+                    catch %Slower approach using inpolygon                       
+                        L_in = inpolygon(X(:,:,qSlice),Y(:,:,qSlice),Vd(:,1),Vd(:,2)); 
+                        L_in=L_in & ~L_on;                                                 
+                    end
+                    
                     x=X(:,:,qSlice);
                     y=Y(:,:,qSlice);
-                    [D,~]=minDist([x(:) y(:)],Vd(:,[1 2]));                    
-                    D(L)=-D(L);
-                    m=reshape(D,[size(M,1) size(M,2)]);
                     
-                    if growDir==1
+                    d=minDist([x(L_near) y(L_near)],Vd(:,[1 2]));
+                    D=zeros(size(X,1),size(X,2));
+                    D(L_near)=d;
+                    D(L_in)=-D(L_in); %Flip inner to negative
+                    D(L_in & D==0)=min(D(L_in)); %Change zeros to lowest value
+                    D(~L_in & ~L_on & ~L_near)=max(D(:));                    
+                    
+                    if growDir==1                        
                         Tc=min(v(1:2))*hf.UserData.growShrinkStepSize;
-                    elseif growDir==-1
+                    elseif growDir==-1                        
                         Tc=-min(v(1:2))*hf.UserData.growShrinkStepSize;
                     end
                     
                     %Compute contour
-                    [c,group_sizes]=gcontour(X(:,:,qSlice),Y(:,:,qSlice),m,Tc,min(v)/4,'pchip');
+                    [c,group_sizes]=gcontour(X(:,:,qSlice),Y(:,:,qSlice),D,Tc,min(v)/4,'pchip');
                     
                     [~,maxInd]=max(group_sizes);
                     Vd=c{maxInd};

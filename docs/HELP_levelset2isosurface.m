@@ -34,10 +34,12 @@ G = IMDAT_struct.G; %Geometric/spatial information
 v=G.v; %The voxel size
 M= IMDAT_struct.type_1; %The image data
 
-%%
-
-contourName='imseg_calf_tibia';
 pathName=fullfile(defaultFolder,'data','imseg'); %Folder name for contours
+contourName='imseg_calf_tibia';
+
+%% Control parameters
+pointSpacing=2; 
+numSmoothSteps=10;
 
 %% Compute levelset
 
@@ -66,26 +68,25 @@ drawnow;
 
 %% Compute surface
 
-pointSpacing=2; 
-
 controlPar.contourLevel=0;
 controlPar.voxelSize=v;
 controlPar.capOpt=1;
-controlPar.nSub=ceil(pointSpacing./v);
+controlPar.nSub=[1 1 1]; %ceil(pointSpacing./v);
 [Fi,Vi]=levelset2isosurface(K,controlPar);
 
-%Smoothen 
-numSmoothSteps=10;
+%% Smoothen 
 
-Eb=patchBoundary(Fi,Vi);
 controlPar_smooth.Method='HC';
-controlPar_smooth.Alpha=0.1;
-controlPar_smooth.Beta=0.5;
 controlPar_smooth.n=numSmoothSteps;
-controlPar_smooth.RigidConstraints=unique(Eb(:));
 [Vi]=patchSmooth(Fi,Vi,[],controlPar_smooth);
 
-%%
+%% Remesh evenly 
+
+controlPar_remesh.pointSpacing=pointSpacing; %Set desired point spacing
+controlPar_remesh.disp_on=1; % Turn off command window text display
+[Fi,Vi]=ggremesh(Fi,Vi,controlPar_remesh);
+
+%% Visualise surface and contours on image 
 
 sv3(M,v);
 gpatch(Fi,Vi,'bw','none',0.5);
@@ -95,7 +96,6 @@ plotContours(contourName,optionStruct);  %Plot contours
 axisGeom;
 % camlight headlight; 
 drawnow;
-
 
 %%
 cFigure; 
