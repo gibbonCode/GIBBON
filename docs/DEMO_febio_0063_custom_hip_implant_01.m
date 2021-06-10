@@ -36,6 +36,13 @@ savePath=fullfile(defaultFolder,'data','temp');
 pathNameSTL=fullfile(defaultFolder,'data','STL');
 loadName_SED=fullfile(savePath,'SED_no_implant.mat');
 
+if ~exist(loadName_SED,'file')
+    skipCompare=1; 
+    warning('This demo requires: DEMO_febio_0062_femur_load_01.m, to be completed first. Demo will continue but comparison to hip without femur will be skipped.');       
+else
+    skipCompare=0;
+end
+
 % Defining file names
 febioFebFileNamePart='tempModel';
 febioFebFileName=fullfile(savePath,[febioFebFileNamePart,'.feb']); %FEB file name
@@ -622,17 +629,12 @@ drawnow;
 
 %% Load SED data from non-implant model and access SED interpolation function
 
-if exist(loadName_SED,'file')
+if skipCompare==0 %Load data without implant
     outputStruct=load(loadName_SED);
-else 
-    error('To run this demo run DEMO_febio_0062_femur_load_01 first')
+    Fb_no_implant = outputStruct.boundaryFaces;
+    V_no_implant = outputStruct.nodes;
+    interpFuncEnergy=outputStruct.interpFuncEnergy; % Interpolation function
 end
-
-%Data without implant
-Fb_no_implant = outputStruct.boundaryFaces;
-V_no_implant = outputStruct.nodes;
-interpFuncEnergy=outputStruct.interpFuncEnergy; % Interpolation function
-
 %%
 % Visualize solid mesh
 
@@ -759,6 +761,7 @@ forceAbductor_distributed=forceAbductor.*ones(numel(bcPrescibeList_abductor),1).
 forceVastusLateralis_distributed=forceVastusLateralis.*ones(numel(bcPrescibeList_VastusLateralis),1)./numel(bcPrescibeList_VastusLateralis);
 
 forceVastusMedialis_distributed=forceVastusMedialis.*ones(numel(bcPrescibeList_VastusMedialis),1)./numel(bcPrescibeList_VastusMedialis);
+
 %% Visualizing boundary conditions
 
 F_bottomSupport=Fb(Cb==2,:);
@@ -1047,181 +1050,93 @@ if runFlag==1 %i.e. a succesful run
     E_stress_mat_n(:,:,2:end)=E_stress_mat;
     E_stress_mat=E_stress_mat_n;
     
-    %% Interpolate
+    %% Compare to non-implant case
     
-    % Interpolate at coordinates with implant
-    W_p_at_VE_12=interpFuncEnergy(VE_12);
-    
-    %% Compare
-    
-    W_12=E_energy(logicBoneElements,:,end); %SED for all elements
-    
-    delta_W=W_12-W_p_at_VE_12; %Energy difference between cases
-    
-    %Sum of squared delta_W
-    delta_W_ssqd=sum(delta_W.^2);
-    
-    %%
-    
-    cFigure;
-    
-    subplot(1,3,1); hold on;
-    title('Full bone case SED data');
-    gpatch(Fb_no_implant,V_no_implant,'w','none',0.5); %Add graphics object to animate
-    scatterV(VE_12,50,W_p_at_VE_12,'filled');
-    axisGeom(gca,fontSize); colormap(gjet(250)); colorbar;
-    camlight headlight;
-    
-    subplot(1,3,2); hold on;
-    title('Implant case SED');
-    gpatch(Fb,V,'w','none',0.5); %Add graphics object to animate
-    scatterV(VE_12,25,W_12,'filled');
-    axisGeom(gca,fontSize); colormap(gjet(250)); colorbar;
-    camlight headlight;
-    
-    subplot(1,3,3); hold on;
-    title('SED difference');
-    gpatch(Fb,V,'w','none',0.5); %Add graphics object to animate
-    %     gpatch(Fb_p,V_p,'w','none',0.5); %Add graphics object to animate
-    
-    scatterV(VE_12,25,delta_W,'filled');
-    
-    axisGeom(gca,fontSize); colormap(gjet(250)); colorbar;
-    camlight headlight;
-    drawnow;
-    
-    %%
-    
-    C_data=delta_W;
-    
-    n=[0 1 0]; %Normal direction to plane
-    P=mean(V,1); %Point on plane
-    [logicAt]=meshCleave(E_12,V,P,n);
-    
-    % Get faces and matching color data for visualization
-    [F_cleave,CF_cleave]=element2patch(E_12(logicAt,:),C_data(logicAt));
-    
-    hf=cFigure; hold on;
-    title('SED difference');
-    gpatch(Fb,V,'w','none',0.1); %Add graphics object to animate
-    
-    hp1=gpatch(F_cleave,V,CF_cleave,'k',1);
-    axisGeom(gca,fontSize);
-    colormap(warmcold(250));
-    caxis([-(max(abs(C_data))) (max(abs(C_data)))]/2);
-    colorbar; axis manual;
-    camlight headligth;
-    gdrawnow;
-    
-    nSteps=25; %Number of animation steps
-    
-    %Create the time vector
-    animStruct.Time=linspace(0,1,nSteps);
-    
-    %The vector lengths
-    y=linspace(min(V(:,2)),max(V(:,2)),nSteps);
-    for q=1:1:nSteps
+    if skipCompare==0
         
-        logicAt=meshCleave(E_12,V,[0 y(q) 0],n,[1 0]);
+        % Interpolate at coordinates with implant
+        W_p_at_VE_12=interpFuncEnergy(VE_12);
         
-        % Get faces and matching color data for cleaves elements
+        W_12=E_energy(logicBoneElements,:,end); %SED for all elements
+        
+        delta_W=W_12-W_p_at_VE_12; %Energy difference between cases
+        
+        %Sum of squared delta_W
+        delta_W_ssqd=sum(delta_W.^2);
+        
+        %%
+        
+        cFigure;
+        
+        subplot(1,3,1); hold on;
+        title('Full bone case SED data');
+        gpatch(Fb_no_implant,V_no_implant,'w','none',0.5); %Add graphics object to animate
+        scatterV(VE_12,50,W_p_at_VE_12,'filled');
+        axisGeom(gca,fontSize); colormap(gjet(250)); colorbar;
+        camlight headlight;
+        
+        subplot(1,3,2); hold on;
+        title('Implant case SED');
+        gpatch(Fb,V,'w','none',0.5); %Add graphics object to animate
+        scatterV(VE_12,25,W_12,'filled');
+        axisGeom(gca,fontSize); colormap(gjet(250)); colorbar;
+        camlight headlight;
+        
+        subplot(1,3,3); hold on;
+        title('SED difference');
+        gpatch(Fb,V,'w','none',0.5); %Add graphics object to animate
+        %     gpatch(Fb_p,V_p,'w','none',0.5); %Add graphics object to animate
+        
+        scatterV(VE_12,25,delta_W,'filled');
+        
+        axisGeom(gca,fontSize); colormap(gjet(250)); colorbar;
+        camlight headlight;
+        drawnow;
+        
+        %%
+        
+        C_data=delta_W;
+        
+        n=[0 1 0]; %Normal direction to plane
+        P=mean(V,1); %Point on plane
+        [logicAt]=meshCleave(E_12,V,P,n);
+        
+        % Get faces and matching color data for visualization
         [F_cleave,CF_cleave]=element2patch(E_12(logicAt,:),C_data(logicAt));
         
-        %Set entries in animation structure
-        animStruct.Handles{q}=[hp1 hp1]; %Handles of objects to animate
-        animStruct.Props{q}={'Faces','CData'}; %Properties of objects to animate
-        animStruct.Set{q}={F_cleave,CF_cleave}; %Property values for to set in order to animate
+        hf=cFigure; hold on;
+        title('SED difference');
+        gpatch(Fb,V,'w','none',0.1); %Add graphics object to animate
+        
+        hp1=gpatch(F_cleave,V,CF_cleave,'k',1);
+        axisGeom(gca,fontSize);
+        colormap(warmcold(250));
+        caxis([-(max(abs(C_data))) (max(abs(C_data)))]/2);
+        colorbar; axis manual;
+        camlight headligth;
+        gdrawnow;
+        
+        nSteps=25; %Number of animation steps
+        
+        %Create the time vector
+        animStruct.Time=linspace(0,1,nSteps);
+        
+        %The vector lengths
+        y=linspace(min(V(:,2)),max(V(:,2)),nSteps);
+        for q=1:1:nSteps
+            
+            logicAt=meshCleave(E_12,V,[0 y(q) 0],n,[1 0]);
+            
+            % Get faces and matching color data for cleaves elements
+            [F_cleave,CF_cleave]=element2patch(E_12(logicAt,:),C_data(logicAt));
+            
+            %Set entries in animation structure
+            animStruct.Handles{q}=[hp1 hp1]; %Handles of objects to animate
+            animStruct.Props{q}={'Faces','CData'}; %Properties of objects to animate
+            animStruct.Set{q}={F_cleave,CF_cleave}; %Property values for to set in order to animate
+        end
+        anim8(hf,animStruct);
     end
-    anim8(hf,animStruct);
-    
-    
-    %%
-    
-    C_data=E_stress_mat(logicBoneElements,1,end);
-    
-    n=[0 1 0]; %Normal direction to plane
-    P=mean(V,1); %Point on plane
-    [logicAt]=meshCleave(E_12,V,P,n);
-    
-    % Get faces and matching color data for visualization
-    [F_cleave,CF_cleave]=element2patch(E_12(logicAt,:),C_data(logicAt));
-    
-    hf=cFigure; hold on;
-    title('1st Principal Cauchy Stress (MPa)');
-    gpatch(Fb,V,'w','none',0.1); %Add graphics object to animate
-    
-    hp1=gpatch(F_cleave,V,CF_cleave,'k',1);
-    axisGeom(gca,fontSize);
-    colormap(gjet(250));
-    caxis([min(C_data) max(C_data)]);
-    colorbar; axis manual;
-    camlight headligth;
-    gdrawnow;
-    
-    nSteps=25; %Number of animation steps
-    
-    %Create the time vector
-    animStruct.Time=linspace(0,1,nSteps);
-    
-    %The vector lengths
-    y=linspace(min(V(:,2)),max(V(:,2)),nSteps);
-    for q=1:1:nSteps        
-        %Get logic for slice of elements
-        logicAt=meshCleave(E_12,V,[0 y(q) 0],n,[1 0]);
-        
-        % Get faces and matching color data for cleaves elements
-        [F_cleave,CF_cleave]=element2patch(E_12(logicAt,:),C_data(logicAt));
-        
-        %Set entries in animation structure
-        animStruct.Handles{q}=[hp1 hp1]; %Handles of objects to animate
-        animStruct.Props{q}={'Faces','CData'}; %Properties of objects to animate
-        animStruct.Set{q}={F_cleave,CF_cleave}; %Property values for to set in order to animate
-    end
-    anim8(hf,animStruct);
-    
-    %%
-    
-    C_data=E_stress_mat(logicBoneElements,3,end);
-    
-    n=[0 1 0]; %Normal direction to plane
-    P=mean(V,1); %Point on plane
-    [logicAt,logicAbove,logicBelow]=meshCleave(E_12,V,P,n);
-    
-    % Get faces and matching color data for visualization
-    [F_cleave,CF_cleave]=element2patch(E_12(logicAt,:),C_data(logicAt));
-    
-    hf=cFigure; hold on;
-    title('3rd Principal Cauchy Stress');
-    gpatch(Fb,V,'w','none',0.1); %Add graphics object to animate
-    
-    hp1=gpatch(F_cleave,V,CF_cleave,'k',1);
-    axisGeom(gca,fontSize);
-    colormap(gjet(250));
-    caxis([min(C_data) max(C_data)]);
-    colorbar; axis manual;
-    camlight headligth;
-    gdrawnow;
-    
-    nSteps=25; %Number of animation steps
-    
-    %Create the time vector
-    animStruct.Time=linspace(0,1,nSteps);
-    
-    %The vector lengths
-    y=linspace(min(V(:,2)),max(V(:,2)),nSteps);
-    for q=1:1:nSteps
-        
-        logicAt=meshCleave(E_12,V,[0 y(q) 0],n,[1 0]);
-        
-        % Get faces and matching color data for cleaves elements
-        [F_cleave,CF_cleave]=element2patch(E_12(logicAt,:),C_data(logicAt));
-        
-        %Set entries in animation structure
-        animStruct.Handles{q}=[hp1 hp1]; %Handles of objects to animate
-        animStruct.Props{q}={'Faces','CData'}; %Properties of objects to animate
-        animStruct.Set{q}={F_cleave,CF_cleave}; %Property values for to set in order to animate
-    end
-    anim8(hf,animStruct);
     
     %% simulated results using |anim8| to visualize and animate
     % deformations
@@ -1266,29 +1181,7 @@ if runFlag==1 %i.e. a succesful run
 
 end
 
-%%
-% _*GIBBON footer text*_
-%
-% License: <https://github.com/gibbonCode/GIBBON/blob/master/LICENSE>
-%
-% GIBBON: The Geometry and Image-based Bioengineering add-On. A toolbox for
-% image segmentation, image-based modeling, meshing, and finite element
-% analysis.
-%
-% Copyright (C) 2006-2020 Kevin Mattheus Moerman
-%
-% This program is free software: you can redistribute it and/or modify
-% it under the terms of the GNU General Public License as published by
-% the Free Software Foundation, either version 3 of the License, or
-% (at your option) any later version.
-%
-% This program is distributed in the hope that it will be useful,
-% but WITHOUT ANY WARRANTY; without even the implied warranty of
-% MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-% GNU General Public License for more details.
-%
-% You should have received a copy of the GNU General Public License
-% along with this program.  If not, see <http://www.gnu.org/licenses/>.
+
 %% 
 % _*GIBBON footer text*_ 
 % 
