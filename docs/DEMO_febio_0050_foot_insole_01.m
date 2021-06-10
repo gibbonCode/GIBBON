@@ -57,7 +57,8 @@ fileNameSkin=fullfile(loadPathSurfaces,'Skin_coarse.stl');
 %Geometric parameters
 soleOffsetOutward=3; %How much the insole protrudes outward from the foot
 numSmoothIterations_sole_Z=15; %Number of smoothing iterations for the sole Z value
-soleMinThickness=6; %Sole thickness
+soleMinThickness=5; %Sole thickness
+soleMaxThickness=10; %Sole thickness
 volumeFactor=1; %Volume factor used in tetgen, larger means larger internal elements
 footSize=251; %Foot size in mm size 6=241 mm, size 7=251 mm
 
@@ -79,7 +80,7 @@ initialMaterialLevel=numMaterialLevels;
 E_youngs_range=linspace(E_youngs_min,E_youngs_max,numMaterialLevels); %Shear-modulus-like parameter
 nu=0.4;
 
-testCase=0; % Change to test different sole cases, e.g. stiff, soft, spatially varying.
+testCase=1; % Change to test different sole cases, e.g. stiff, soft, spatially varying.
 maxLevelColorbar_SED=0.0005;
 
 % FEA control settings
@@ -392,11 +393,31 @@ colormap gjet; icolorbar;
 drawnow;
 
 %%
+
+indBone=unique(Fb_foot(Cb_foot==1,:)); %Node numbers foot
+D=minDist(V_sole_top,V_foot(indBone,:));
+D=D-min(D(:)); 
+D=D./max(D(:)); 
+D=1-D; 
+spatVarThickness=(D*(soleMaxThickness-soleMinThickness))+soleMinThickness;
+
+%%
+
+cFigure; hold on;
+gpatch(FT,VT,'kw','none',0.25);
+gpatch(F_sole_top,V_sole_top,spatVarThickness,'k',1);
+
+camlight('headlight');
+axisGeom(gca,fontSize);
+colormap gjet; colorbar;
+drawnow;
+
+%%
 % Create bottom surface of sole
 
 dirSet=[0 0 -1];
-numElementsSoleThickness=ceil(soleMinThickness./pointSpacingSole);
-[E_sole,V_sole,F_sole_top,F_sole_bottom]=patchThick(fliplr(F_sole_top),V_sole_top,dirSet,soleMinThickness,numElementsSoleThickness);
+numElementsSoleThickness=ceil(soleMaxThickness./pointSpacingSole);
+[E_sole,V_sole,F_sole_top,F_sole_bottom]=patchThick(fliplr(F_sole_top),V_sole_top,dirSet,spatVarThickness,numElementsSoleThickness);
 F_sole_top=fliplr(F_sole_top);
 
 % Use element2patch to get patch data
