@@ -22,6 +22,10 @@ function [F,V,C,DT]=regionTriMeshRand2D(regionCell,pointSpacing,SD,resampleCurve
 % 2013/14/08
 %------------------------------------------------------------------------
 
+%%
+
+
+
 %% CONTROL PARAMETERS
 interpMethod='pchip';
 closeLoopOpt=1;

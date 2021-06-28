@@ -20,9 +20,9 @@ layerThickness=pointSpacing*10; %Layer thickness for the mesh
 
 smoothWeight=0.5; %0 =linear, 1=fully smoothed
 groupingOptionStruct.outputType='label';
-scaleFactor=0.85;
+scaleFactor=0.95;
 
-shearAngle=(45./180)*pi;
+shearAngle=(0./180)*pi;
 a=1./cos(shearAngle); %Scale x, e.g. to compensate for shear induces thickness reduction
 b=1; %Scale y
 S=[a 0 0; ...
@@ -83,7 +83,7 @@ axisGeom; view(2);
 
 subplot(1,2,2); hold on;
 gpatch(Fs,Vs,'b','k',0.5,2);
-% gpatch(Fds,Vds,'g','k',0.5,2);
+gpatch(Fds,Vds,'g','k',0.5,2);
 
 axisGeom; view(2);
 drawnow;
