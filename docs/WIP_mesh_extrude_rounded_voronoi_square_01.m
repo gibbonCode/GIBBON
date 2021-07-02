@@ -2,32 +2,32 @@ clear; close all; clc;
 
 %%
 % Plot Settings
-fontSize=15;
-faceAlpha=1;
-edgeColor=0.2*ones(1,3);
-edgeWidth=1.5;
+fontSize=25;
+edgeWidth=3;
 markerSize=35;
-markerSize2=20;
 
 %% Control parameters
 
 w=1;
-cellSpacing=0.25;
+cellSpacing=0.2;
 pointSpacing=cellSpacing/15;
 layerThickness=pointSpacing*10; %Layer thickness for the mesh
 
-% randSTD=cellSpacing/5*ones(1,2);
-
 smoothWeight=0.5; %0 =linear, 1=fully smoothed
 groupingOptionStruct.outputType='label';
-scaleFactor=0.95;
+scaleFactor=0.85;
 
-shearAngle=(0./180)*pi;
+shearAngle=(45./180)*pi;
 a=1./cos(shearAngle); %Scale x, e.g. to compensate for shear induces thickness reduction
 b=1; %Scale y
 S=[a 0 0; ...
    tan(-shearAngle) b      0;...
    0 0      1];
+
+randomOpt=1;
+
+uniNoiseWidth=cellSpacing/3; 
+stdNoise=cellSpacing/3; 
 
 %% Derived parameters
 numThickness=ceil((layerThickness/pointSpacing)/3);
@@ -36,21 +36,75 @@ Si=inv(S);
 
 %% Create
 
-V_square=w*[0 0 0; 1 0 0; 1 1 0; 0 1 0];
+V_square=w*[0 0 0; 1 0 0; 1 1 0; 0 1 0]; %Square; 
 V_square=V_square*S;
 
 [V]=evenlySpaceCurve(V_square,cellSpacing,'linear',1,1:1:size(V_square,1));
 
+[~,indCorners_V]=minDist(V_square,V);
+
+if randomOpt==1
+    %Top
+    indSelect=find(V(:,2)>max(V(:,2)-eps(1)));
+    indSelect=indSelect(~ismember(indSelect,indCorners_V));
+    V(indSelect,1)=V(indSelect,1)+uniNoiseWidth*(rand(numel(indSelect),1)-0.5);
+    
+    %Bottom
+    indSelect=find(V(:,2)<min(V(:,2)+eps(1)));
+    indSelect=indSelect(~ismember(indSelect,indCorners_V));
+    V(indSelect,1)=V(indSelect,1)+uniNoiseWidth*(rand(numel(indSelect),1)-0.5);
+    
+    %Right
+    indSelect=find(V(:,1)>max(V(:,1)-eps(1)));
+    indSelect=indSelect(~ismember(indSelect,indCorners_V));
+    V(indSelect,2)=V(indSelect,2)+uniNoiseWidth*(rand(numel(indSelect),1)-0.5);
+    
+    %Left
+    indSelect=find(V(:,1)<min(V(:,1)+eps(1)));
+    indSelect=indSelect(~ismember(indSelect,indCorners_V));
+    V(indSelect,2)=V(indSelect,2)+uniNoiseWidth*(rand(numel(indSelect),1)-0.5);
+    
+    %%
+    
+%     cFigure; hold on;
+%     title('Edge points'); 
+%     plotV(V,'k.','markerSize',50,'LineWidth',3);
+%     plotV(V(indCorners_V,:),'r.','markerSize',60,'LineWidth',3);
+%     plotV(V(indSelect,:),'g.','markerSize',75,'LineWidth',3);
+%     
+%     axisGeom; view(2);
+%     drawnow;
+    
+end
 %%
 
 %Create Delaunay derived mesh
 regionCell={V(:,[1 2])};
 
-% [Fs,Vs]=regionTriMeshRand2D(regionCell,cellSpacing,randSTD,0,0);
-[Fs,Vs]=regionTriMesh2D(regionCell,cellSpacing,0,0);
+if randomOpt==1
+    [Fs,Vs]=regionTriMeshRand2D(regionCell,cellSpacing,stdNoise*ones(1,2),0,0);
+else
+    [Fs,Vs]=regionTriMesh2D(regionCell,cellSpacing,0,0);
+end
+
+Es=patchBoundary(Fs,Vs);
+indBoundary_s=unique(Es(:));
+
+[Vd,Fd,~,Cd]=patch_dual(Vs,Fs,1);            
+
+Vd(:,3)=0;
 Vs(:,3)=0;
 
-[Vd,Fd,~,Cd]=patch_dual(Vs,Fs,1);
+%%
+
+cFigure; hold on;
+title('Deformed triangulation and cell mesh');
+hp1=gpatch(Fs,Vs,'w','k',1,edgeWidth);
+hp2=gpatch(Fd,Vd,'bw','b',0.25,edgeWidth);
+legend([hp1 hp2],{'Input triangulation','Cell mesh'},'Location','NorthOutside');
+axis equal tight;
+set(gca,'FontSize',fontSize)
+drawnow;
 
 %%
 
@@ -58,6 +112,7 @@ Vd_def=Vd;
 Vs_def=Vs;
 Vs=Vs*Si;
 Vd=Vd*Si;
+V_square=V_square*Si; 
 
 %%
 
@@ -76,16 +131,13 @@ end
 
 %%
 
-cFigure;
-subplot(1,2,1); hold on;
-gpatch(Fs,Vs_def,'b','k',0.5,2);
-axisGeom; view(2);
-
-subplot(1,2,2); hold on;
-gpatch(Fs,Vs,'b','k',0.5,2);
-gpatch(Fds,Vds,'g','k',0.5,2);
-
-axisGeom; view(2);
+cFigure; hold on;
+title('Undeformed geometry'); 
+hp1=gpatch(Fs,Vs,'w','k',1,edgeWidth);
+hp2=gpatch(Fds,Vds,'bw','b',0.5,edgeWidth);
+legend([hp1 hp2],{'Triangulation','Shrunk cell mesh'},'Location','NorthOutside');
+axis equal tight;
+set(gca,'FontSize',fontSize)
 drawnow;
 
 %%
@@ -94,42 +146,42 @@ drawnow;
 [Fbt,Vbt,Cbt]=joinElementSets({[Fq(:,[1 2 3]);Fq(:,[3 4 1])],Fc},{Vq,Vc});
 [Fbt,Vbt]=mergeVertices(Fbt,Vbt);
 
-VC=[Vds;Vbt];
+V_total=[Vds;Vbt];
 Fbt=Fbt+size(Vds,1);
 
 %%
 Fdt=[];
 for q=1:1:numel(Fds)
     f=Fds{q};
-    v=patchCentre(f,VC);
+    v=patchCentre(f,V_total);
     e=patchEdges(f,0);
     ind=repmat(1:1:size(f,1),size(f,2),1);
-    f=[e size(VC,1)+ind(:)];
+    f=[e size(V_total,1)+ind(:)];
     Fdt=[Fdt;f];
-    VC=[VC;v];
+    V_total=[V_total;v];
 end
 
 F_total=[Fbt;Fdt;];
 C_total=[ones(size(Fbt,1),1); 2*ones(size(Fdt,1),1);];
 
-[F_total,VC]=mergeVertices(F_total,VC);
+[F_total,V_total]=mergeVertices(F_total,V_total);
 
 %%
 
-E_branches=patchBoundary(F_total(C_total==1,:),VC);
+E_branches=patchBoundary(F_total(C_total==1,:),V_total);
 [G_branches,~,groupSize]=tesgroup(E_branches,groupingOptionStruct);
 [~,indMax]=max(groupSize);
 
 E_branchBoundary=E_branches(G_branches==indMax,:);
-[~,indCorners]=minDist(V_square,VC);
+[~,indCorners]=minDist(V_square,V_total);
 
 
-E_cells=patchBoundary(F_total(C_total==2,:),VC);
+E_cells=patchBoundary(F_total(C_total==2,:),V_total);
 [G2]=tesgroup(E_cells,groupingOptionStruct);
 
 %%
 
-Eb=patchBoundary(F_total,VC);
+Eb=patchBoundary(F_total,V_total);
 logicMember=ismember(E_branchBoundary,Eb(:));
 logicSideEdges=all(logicMember,2);
 E_branchBoundary_sides=E_branchBoundary(logicSideEdges,:);
@@ -165,30 +217,29 @@ G_total=[G1;G2;G3;G4];
 
 %%
 
-cFigure; hold on;
+cFigure; 
+subplot(1,2,1); hold on;
+title('Coarse cell and ECM triangulation');
+gpatch(F_total(C_total==1,:),V_total,'rw','k',1,1);
+gpatch(F_total(C_total==2,:),V_total,'bw','k',1,1);
+axis equal tight;
+set(gca,'FontSize',fontSize)
 
-gpatch(F_total(C_total==1,:),VC,'kw','k',0.5,1);
-gpatch(F_total(C_total==2,:),VC,'k','k',0.5,1);
+subplot(1,2,2); hold on;
+title('Boundary edge sets');
+GV=faceToVertexMeasure(E_total,V_total,G_total);
+gpatch(E_total,V_total,GV,'interp',1,3);
+% plotV(VC(indCorners,:),'k.','MarkerSize',markerSize);
+colormap(gjet); %icolorbar;
+axis equal tight;
+set(gca,'FontSize',fontSize)
 
-% gpatch(Eb,VC,'none','k',1,8);
-% gpatch(E_branchBoundary_sides,VC,'none','y',1,8);
-% gpatch(E_branchBoundary_inner,VC,'none','b',1,6);
-% gpatch(E_cell_boundary,VC,'none','r',1,4);
-% gpatch(E_cell_inner,VC,'none','g',1,2);
-
-GV=faceToVertexMeasure(E_total,VC,G_total);
-gpatch(E_total,VC,GV,'interp',1,3);
-
-plotV(VC(indCorners,:),'y.','MarkerSize',25);
-
-colormap turbo; icolorbar;
-axisGeom; view(2);
 drawnow;
 
 %%
 
 E_raw=E_total;
-V_raw=VC;
+V_raw=V_total;
 
 %% Process resampling
 for q=1:1:max(G_total(:))
@@ -199,9 +250,9 @@ for q=1:1:max(G_total(:))
     E_total=E_total(~logicNow,:); %Remove edges from set
     G_total=G_total(~logicNow); %Remove group from set
     
-    [E_new,V_new]=resampleEdgeSet(E_now,VC,pointSpacing,smoothWeight);
+    [E_new,V_new]=resampleEdgeSet(E_now,V_total,pointSpacing,smoothWeight);
     
-    VC=[VC; V_new]; %Add new points
+    V_total=[V_total; V_new]; %Add new points
     E_total=[E_total; E_new];
     G_total=[G_total; q*ones(size(E_new,1),1)];
     
@@ -209,23 +260,22 @@ end
 
 %% Remove unused points and force merging of resampled contours
 
-[E_total,VC]=patchCleanUnused(E_total,VC);
+[E_total,V_total]=patchCleanUnused(E_total,V_total);
 
 
 %% Remove unused points and force merging of resampled contours
 
-[E_total,VC]=patchCleanUnused(E_total,VC);
-[E_total,VC]=mergeVertices(E_total,VC);
+[E_total,V_total]=patchCleanUnused(E_total,V_total);
+[E_total,V_total]=mergeVertices(E_total,V_total);
 
 %%
 
 cFigure; hold on;
-
-GV=faceToVertexMeasure(E_total,VC,G_total);
-
-gpatch(E_raw,V_raw,'none','k',1,4);
-gpatch(E_total,VC,GV,'interp',1,4);
-% plotV(VC,'k.','MarkerSize',25)
+title('Smoothed boundary sets');
+GV=faceToVertexMeasure(E_total,V_total,G_total);
+gpatch(E_raw,V_raw,'none','k',1,1);
+gpatch(E_total,V_total,GV,'interp',1,edgeWidth);
+% plotV(VC,'k.','MarkerSize',markerSize)
 
 axis tight; axis equal; colormap(gjet); %icolorbar;
 set(gca,'FontSize',fontSize);
@@ -242,9 +292,9 @@ logicInnerCells=G_total>maxIndexCellBoundary;
 
 cFigure; hold on;
 
-hp1=gpatch(E_total(logicBranches,:),VC,'none','b',1,4);
-hp2=gpatch(E_total(logicBoundaryCells,:),VC,'none','r',1,3);
-hp3=gpatch(E_total(logicInnerCells,:),VC,'none','g',1,2);
+hp1=gpatch(E_total(logicBranches,:),V_total,'none','b',1,4);
+hp2=gpatch(E_total(logicBoundaryCells,:),V_total,'none','r',1,3);
+hp3=gpatch(E_total(logicInnerCells,:),V_total,'none','g',1,2);
 legend([hp1 hp2 hp3],{'Branch boundary','Boundary cells','Interior cells'});
 axis tight; axis equal;
 set(gca,'FontSize',fontSize);
@@ -261,14 +311,14 @@ indNow=indNow(1:end-1);
 Es=E_total(logicInnerCells,:);
 Gs=tesgroup(Es,groupingOptionStruct);
 R=cell(1,max(Gs)+1);
-R{1,1}=VC(indNow,1:2);
+R{1,1}=V_total(indNow,1:2);
 regionSpec={};
 for q=1:1:max(Gs)
     E_now=Es(Gs==q,:);
     indNow=edgeListToCurve(E_now);
     indNow=indNow(1:end-1);
-    R{1,q+1}=VC(indNow,1:2);
-    regionSpec{q+1}={VC(indNow,1:2);};
+    R{1,q+1}=V_total(indNow,1:2);
+    regionSpec{q+1}={V_total(indNow,1:2);};
 end
 regionSpec{1}=R;
 
@@ -278,7 +328,7 @@ for q=1:1:max(Gs)
     E_now=Es(Gs==q,:);
     indNow=edgeListToCurve(E_now);
     indNow=indNow(1:end-1);
-    regionSpec{end+1}={VC(indNow,1:2);};
+    regionSpec{end+1}={V_total(indNow,1:2);};
 end
 
 %% Using multiRegionTriMesh2D to create the triangulated mesh

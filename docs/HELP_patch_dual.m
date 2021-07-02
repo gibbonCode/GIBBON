@@ -23,7 +23,7 @@ markerSize=25;
 cmap1=gjet(250);
 cmap2=autumn(250);
 
-%% Example: Computing the dual of a surface triangulation
+%% Example 1: Computing the dual of a surface triangulation
 
 %%
 % Creating example triangulation (circle filled triangle)
@@ -52,18 +52,15 @@ V(:,3)=(sin(3*V(:,1))+sin(3*V(:,2)))/2;
 %%
 %Plotting results
 
-cFigure;
-hold on;
-
+cFigure; hold on;
 gpatch(F,V,V(:,3),plotColor1,0.9,edgeWidth);
 gpatch(Fd,Vd,'none',plotColor2,1,edgeWidth);
-
 axisGeom(gca,fontSize);
 camlight headlight;
 colormap(cmap1);
 drawnow;
 
-%%
+%% Example 2: Methods for handling the boundary 
 
 %Boundary 1
 ns=150;
@@ -85,10 +82,18 @@ V3=[x(:) y(:)-0.5];
 pointSpacing=0.75; %Desired point spacing
 [F,V]=regionTriMesh2D({V1,V2,V3},pointSpacing,1,0);
 
-%Deriving the dual of the patch
-[Vd0,Fd0]=patch_dual(V,F,0);
-[Vd1,Fd1]=patch_dual(V,F,1);
-[Vd2,Fd2]=patch_dual(V,F,2);
+%% 
+% Deriving the dual of the patch while treating boundary using three
+% different methods. 
+
+fixBoundaryOption=0;
+[Vd0,Fd0]=patch_dual(V,F,fixBoundaryOption);
+
+fixBoundaryOption=1;
+[Vd1,Fd1]=patch_dual(V,F,fixBoundaryOption);
+
+fixBoundaryOption=2;
+[Vd2,Fd2]=patch_dual(V,F,fixBoundaryOption);
 
 %%
 %Plotting results
@@ -120,7 +125,7 @@ view(2);
 
 drawnow;
 
-%% Example: The "Buckminster Fuller" dome triangulation and its dual
+%% Example 3: The "Buckminster Fuller" dome triangulation and its dual
 % The patch_dual function assumes that a valid and appropriate dual exists
 % for the input patch data specified by F and V (faces and vertices). If
 % they are not appropriate the output may for instance not form an
@@ -137,13 +142,32 @@ n=2; %Refinements
 %%
 %Plotting results
 
-cFigure;
-hold on;
-
+cFigure; hold on;
 gpatch(F,V,'none','r',1,edgeWidth);
 plotV(V,'r.','MarkerSize',markerSize);
 gpatch(Fd,Vd,'bw','b',0.9,edgeWidth);
 plotV(Vd,'b.','MarkerSize',markerSize);
+axisGeom(gca,fontSize);
+camlight headlight;
+colormap(cmap2);
+drawnow;
+
+
+%% Example 4: Bunny
+
+%Defining geodesic dome triangulation
+[F,V]=stanford_bunny;
+
+%Deriving the dual of the patch
+[Vd,Fd]=patch_dual(V,F);
+
+%%
+%Plotting results
+
+cFigure; hold on;
+gpatch(F,V,'none','r',1,edgeWidth);
+gpatch(Fd,Vd,'w','b',0.9,edgeWidth);
+% patchNormPlot(Fd,Vd);
 axisGeom(gca,fontSize);
 camlight headlight;
 colormap(cmap2);
