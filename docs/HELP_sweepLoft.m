@@ -33,7 +33,7 @@ lineWidth=3;
 ns=50;
 t=linspace(0,2*pi,ns);
 t=t(1:end-1);
-r=3+2.*sin(4*t);
+r=3+2.*sin(2*t);
 [x,y] = pol2cart(t,r);
 V1=[x(:) y(:) zeros(size(x(:)))];
 V1=evenlySampleCurve(V1,size(V1,1),'pchip',1);
@@ -71,7 +71,7 @@ f=0.05; %Extent of tangential nature to boundary curves, surface will remain app
 %%
 % Create a basic loft feature using default settings (no twist, same number
 % of steps as number of points as in guide curve, plotting off) 
-
+    
 [F,V,C]=sweepLoft(V1,V2,n1,n2,Vg);
 
 %%
@@ -235,7 +235,6 @@ axisGeom;
 colormap(gjet(250));
 camlight headlight
 drawnow;
-
 
 %%
 % 

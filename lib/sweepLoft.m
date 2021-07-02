@@ -88,6 +88,8 @@ if isempty(numSteps)
     numSteps=size(Vg,1);
 end
 
+animTime=2;
+
 p1=Vg(1,:);
 p2=Vg(end,:);
 
@@ -175,6 +177,7 @@ for q=2:size(Vg,1)
             delete(hTriad);
             hTriad=quiverTriad(Vg(q,:),R',triadSize);
             drawnow;
+            pause(animTime/size(Vg,1));
         end
     end
     R_curve(:,:,q)=R;
@@ -219,6 +222,7 @@ for q=1:1:numSteps
             h1(q-1).LineWidth=lineWidth3;
         end
         drawnow;
+        pause(animTime/numSteps);
     end
     X(q,:)=V2p(:,1);
     Y(q,:)=V2p(:,2);
@@ -256,7 +260,9 @@ for q=numSteps-1:-1:1
         delete(h1(q));
         ht.String='Back tracking and fixing initial orientation mismatch';
         delete(hVec);
-        hVec=quiverVec(mean_V_now,wt',triadSize,'k'); drawnow;
+        hVec=quiverVec(mean_V_now,wt',triadSize,'k'); 
+        drawnow;
+        pause(animTime/numSteps);
     end
     W(q,:)=wt(:)';
 end
@@ -315,6 +321,7 @@ for q=1:1:size(Vg,1)
         delete(hTriad2);
         hTriad2=quiverTriad(Vg(q,:),(R_curve(:,:,q)*Rc)',triadSize);
         drawnow;
+        pause(animTime/size(Vg,1));
     end
     
     X(q,:)=Vn(:,1);
