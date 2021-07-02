@@ -1,57 +1,43 @@
-%% rand_angle
-% Below is a demonstration of the features of the |rand_angle| function
+%% randInCircle
+% Below is a demonstration of the features of the |randInCircle| function
 
 %%
 clear; close all; clc;
 
 %% Syntax
-% |a=rand_angle(siz);|
+% |a=randInCircle(siz);|
 
 %% Description 
 % This function generates a matrix or array of uniformly distributed random
-% angles (of the size siz) in the range [0 2*pi]. The function operates by
-% first creating angles in the range 0-pi/2. The angles are next converted
-% to unit vectors in the unit circle. The X and Y components of these
-% vectors are next independantly and randomly negated. This negating or
-% flipping operation causes the vectors to uniformly but randomly span the
-% entire cirle. Nexts the vectors are converted to an angle in the range [0
-% 2*pi].  
+% points inside a circle with radius R. 
 
 %%
 % Plot settings for examples
-markerSize=25; 
+markerSize=35; 
 lineWidth=3; 
 fontSize=35;
 
-%% Examples 
+%% Example
 % 
 
-siz=[500,1]; %Size of desired output
-a=rand_angle(siz); % The random angles
-
-%%
-
-cFigure; hold on; 
-xlabel('Angles'); ylabel('Count');
-histogram(a,linspace(0,2*pi,6));
-set(gca,'FontSize',fontSize);
-drawnow; 
+n=1000; %Number of points
+R=2; %Radius of the circle
+V=randInCircle(n,R); %Uniformly sampled points inside the circle
 
 %% 
 % Visualization
 
 %Create circle coordinates to visualize circle curve
 t=linspace(0,2*pi,100)';
-vc=[cos(t) sin(t)];
-N=[cos(a) sin(a)];
+vc=R.*[cos(t) sin(t)];
 
 cFigure; hold on; 
-hp1=plotV(vc,'b-','LineWidth',lineWidth);
-hp2=plotV(N,'k.','MarkerSize',markerSize);
+hp1=plotV(V,'k.','MarkerSize',markerSize);
+hp2=plotV(vc,'b-','LineWidth',lineWidth);
 axis tight; axis equal; box on; grid on; 
 view(2);
 set(gca,'FontSize',fontSize);
-legend([hp1 hp2],{'Circle boundary','Uniformly distributed points on circle'},'Location','NorthOutside');
+legend([hp1 hp2],{'Uniformly distributed circle interior points','Circle boundary'},'Location','NorthOutside');
 drawnow; 
 
 %%

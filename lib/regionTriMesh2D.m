@@ -55,7 +55,7 @@ switch nargin
         end
     case 2
         inputStructure.regionCell=varargin{1};
-        inputStructure.pointSpacing=varargin{2};        
+        inputStructure.pointSpacing=varargin{2};
     case 3
         inputStructure.regionCell=varargin{1};
         inputStructure.pointSpacing=varargin{2};
@@ -64,7 +64,7 @@ switch nargin
         inputStructure.regionCell=varargin{1};
         inputStructure.pointSpacing=varargin{2};
         inputStructure.resampleCurveOpt=varargin{3};
-        inputStructure.plotOn=varargin{4};        
+        inputStructure.plotOn=varargin{4};
     case 5
         inputStructure.regionCell=varargin{1};
         inputStructure.pointSpacing=varargin{2};
@@ -77,14 +77,14 @@ switch nargin
         inputStructure.resampleCurveOpt=varargin{3};
         inputStructure.plotOn=varargin{4};
         inputStructure.gridType=varargin{5};
-        inputStructure.mustPointsInner=varargin{6};        
+        inputStructure.mustPointsInner=varargin{6};
     case 7
         inputStructure.regionCell=varargin{1};
         inputStructure.pointSpacing=varargin{2};
         inputStructure.resampleCurveOpt=varargin{3};
         inputStructure.plotOn=varargin{4};
         inputStructure.gridType=varargin{5};
-        inputStructure.mustPointsInner=varargin{6};                
+        inputStructure.mustPointsInner=varargin{6};
         inputStructure.mustPointsBoundary=varargin{7};
     case 8
         inputStructure.regionCell=varargin{1};
@@ -101,8 +101,8 @@ end
 [inputStructure]=structComplete(inputStructure,defaultInputStructure,1); %Complement provided with default if missing or empty
 
 %Access structure components
-regionCell=inputStructure.regionCell; 
-pointSpacing=inputStructure.pointSpacing; 
+regionCell=inputStructure.regionCell;
+pointSpacing=inputStructure.pointSpacing;
 resampleCurveOpt=inputStructure.resampleCurveOpt;
 plotOn=inputStructure.plotOn;
 gridType=inputStructure.gridType;
@@ -110,8 +110,8 @@ V_must_inner=inputStructure.mustPointsInner;
 V_must_boundary=inputStructure.mustPointsBoundary;
 smoothIterations=inputStructure.smoothIterations;
 removeDistInterior=inputStructure.removeDistInterior;
-removeDistBoundary=inputStructure.removeDistBoundary; 
-SD=inputStructure.SD(:)'; 
+removeDistBoundary=inputStructure.removeDistBoundary;
+SD=inputStructure.SD(:)';
 
 if isempty(regionCell)
     error('Empty regionCell provided');
@@ -123,8 +123,8 @@ if isempty(pointSpacing)
     pointSpacingCurves=zeros(1,numel(regionCell));
     for q=1:1:numel(regionCell)
         V_now=regionCell{q};
-        pointSpacingCurves(q)=mean(sqrt(sum(diff(V_now,1,1).^2,2)));        
-    end    
+        pointSpacingCurves(q)=mean(sqrt(sum(diff(V_now,1,1).^2,2)));
+    end
     pointSpacing=mean(pointSpacingCurves);
 end
 
@@ -175,11 +175,11 @@ for qCurve=1:1:numel(regionCell)
     else
         indMust=[];
     end
-        
+    
     [Vss]=evenlySpaceCurve(Vs,pointSpacing,interpMethod,closeLoopOpt,indMust);
-
+    
     %Create refined set for distance based edge point removal
-    [Vss_split]=subCurve(Vss,1,1);    
+    [Vss_split]=subCurve(Vss,1,1);
     
     %Resample curve
     if resampleCurveOpt==1
@@ -240,7 +240,7 @@ if ~isempty(V_must_inner)
     Y=Y(L);
 end
 
-%% Define additional point set 
+%% Define additional point set
 
 V_add=[X(:) Y(:)];
 
@@ -258,7 +258,7 @@ V=DT.Points;
 F=DT.ConnectivityList;
 
 %% PLOTTING
-    
+
 %Remove poorly connected points associated with poor triangles
 [~,IND_V]=tesIND(F,V,0); % [~,IND_V]=patchIND(F,V);
 
@@ -282,7 +282,7 @@ C=indFix(C);
 if ~isempty(V_must_inner)
     V=[V;V_must_inner];
     [V,~,ind2]=unique(V,'rows');
-    C=ind2(C);    
+    C=ind2(C);
 end
 
 DT = delaunayTriangulation(V(:,1),V(:,2),C);
@@ -306,20 +306,19 @@ boundEdges = patchBoundary(F,V);
 boundaryInd=unique(boundEdges(:));
 
 indMustPointsInner=[];
-indMustPointsBoundary=[];
 if numPoints==numPointsPost
-    warning('No points removed in contrained Delaunay triangulation. Possibly due to large pointSpacing with respect to curve size. Meshing skipped!');
-%     F=[];
-%     V=[];
+    warning('No points removed in contrained Delaunay triangulation. Possibly due to large pointSpacing with respect to curve size.');
+    %     F=[];
+    %     V=[];
 else
     
     %% CONSTRAINED SMOOTHENING OF THE MESH
     
     if ~isempty(V_must_inner)
-        [~,indMustPointsInner]=minDist(V_must_inner,V);    
+        [~,indMustPointsInner]=minDist(V_must_inner,V);
     end
     
-    if smoothIterations>0        
+    if smoothIterations>0
         smoothPar.Method='LAP';
         smoothPar.n=smoothIterations;
         smoothPar.Tolerance=0.01;
@@ -334,13 +333,13 @@ else
         xlabel('X','FontSize',fontSize);ylabel('Y','FontSize',fontSize);zlabel('Z','FontSize',fontSize);
         hold on;
         gpatch(F,V,faceColor,'k',faceAlpha);
-        plotV(V(boundaryInd',:),'b.','MarkerSize',markerSize);        
+        plotV(V(boundaryInd',:),'b.','MarkerSize',markerSize);
         axis equal; view(2); axis tight;  set(gca,'FontSize',fontSize); grid on;
         drawnow;
     end
     
 end
- 
+
 %% Collect ouput
 varargout{1}=F;
 varargout{2}=V;
@@ -349,7 +348,7 @@ if nargout>3
     varargout{4}=indMustPointsInner;
 end
 if nargout>4
-    if ~isempty(V_must_boundary)        
+    if ~isempty(V_must_boundary)
         [~,indMin]=minDist(V_must_boundary,V(boundaryInd,:));
         varargout{5}=boundaryInd(indMin);
     else
@@ -357,26 +356,26 @@ if nargout>4
     end
 end
 
-%% 
-% _*GIBBON footer text*_ 
-% 
+%%
+% _*GIBBON footer text*_
+%
 % License: <https://github.com/gibbonCode/GIBBON/blob/master/LICENSE>
-% 
+%
 % GIBBON: The Geometry and Image-based Bioengineering add-On. A toolbox for
 % image segmentation, image-based modeling, meshing, and finite element
 % analysis.
-% 
+%
 % Copyright (C) 2006-2021 Kevin Mattheus Moerman and the GIBBON contributors
-% 
+%
 % This program is free software: you can redistribute it and/or modify
 % it under the terms of the GNU General Public License as published by
 % the Free Software Foundation, either version 3 of the License, or
 % (at your option) any later version.
-% 
+%
 % This program is distributed in the hope that it will be useful,
 % but WITHOUT ANY WARRANTY; without even the implied warranty of
 % MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 % GNU General Public License for more details.
-% 
+%
 % You should have received a copy of the GNU General Public License
 % along with this program.  If not, see <http://www.gnu.org/licenses/>.
