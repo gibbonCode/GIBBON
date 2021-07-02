@@ -64,6 +64,10 @@ switch nargin
         animStruct=varargin{2}; %The anim8 structure
 end
 
+if ~isfield(animStruct,'Time')
+    animStruct.Time=linspace(0,numel(animStruct.Handles),numel(animStruct.Handles));
+end
+
 %% Visualisation settings
 
 % fontColor='w';

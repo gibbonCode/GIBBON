@@ -151,6 +151,10 @@ drawnow;
 % Building example geometry
 [F,V]=graphicsModels(9);
 
+% optionStruct2.pointSpacing=mean(patchEdgeLengths(F,V)); %Set desired point spacing
+% optionStruct2.disp_on=0; % Turn off command window text display
+% [F,V]=ggremesh(F,V,optionStruct2);
+
 %%
 % Refine surface using subTriDual
 D=sqrt(sum((V-[32 24 107]).^2,2));
