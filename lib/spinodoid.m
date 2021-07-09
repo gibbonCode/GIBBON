@@ -7,11 +7,20 @@ function [varargout]=spinodoid(inputStruct)
 % generated using a Gaussian random field (GRF) and can be made anisotropic
 % by tuning the anisotropy of the GRF.
 %
-% Based on / how to cite: 
-% Kumar, S., Tan, S., Zheng, L., Kochmann, D.M. Inverse-designed spinodoid 
-% metamaterials. npj Comput Mater 6, 73 (2020). 
-% https://doi.org/10.1038/s41524-020-0341-6
+% Based on / how to cite:
+% -----------------------------------------------------------------------
+% (1) S. Kumar, S. Tan, L. Zheng, D.M. Kochmann.
+%     Inverse-designed spinodoid metamaterials. 
+%     npj Computational Materials, 6 (2020), 73. 
+%     https://doi.org/10.1038/s41524-020-0341-6
 %
+% (2) L. Zheng, S. Kumar, D.M. Kochmann.
+%     Data-driven topology optimization of spinodoid metamaterials with 
+%     seamlessly tunable anisotropy. 
+%     Computer Methods in Applied Mechanics and Engineering, 383 (2021), 113894.
+%     https://doi.org/10.1016/j.cma.2021.113894
+%
+% -----------------------------------------------------------------------
 % Input structure and default values:
 % inputStruct.isocap=true; % option to cap the isosurface
 % inputStruct.domainSize=1; % domain size: scalar for cube, 
