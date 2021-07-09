@@ -32,7 +32,7 @@ clear; close all; clc;
 
 %%
 % Plot settings
-fontSize=25;
+fontSize=15;
 cMap=gjet(4);
 faceAlpha=0.5;
 plotColor1=cMap(1,:);
@@ -387,7 +387,7 @@ x=r*sin(t);
 y=r*cos(t);
 V1=[x(:) y(:)];
 regionCell={V1};
-pointSpacing=2; %Desired point spacing
+pointSpacing=1; %Desired point spacing
 resampleCurveOpt=1;
 interpMethod='linear'; %or 'natural'
 [F,V]=regionTriMesh2D(regionCell,pointSpacing,resampleCurveOpt,interpMethod);
@@ -397,16 +397,16 @@ V(:,3)=0;
 
 distanceSplitSteps=[9 6 3];
 
-Ft=F; Vt=V;
+Ft=F; Vt=V; Ct=zeros(size(Ft,1),1);
 for q=1:numel(distanceSplitSteps)
     D=sqrt(sum(Vt.^2,2));
     [DF]=vertexToFaceMeasure(Ft,D);
     
     logicFaces=DF<(distanceSplitSteps(q));
-    indNodesFaces=Ft(logicFaces,:);
-    indNodesFaces=unique(indNodesFaces(:))+size(Ft,1);
+    logicFaces=triSurfLogicSharpFix(Ft,logicFaces);
     
-    [Ft,Vt,C_type,indIni]=subTriDual(Ft,Vt,logicFaces);
+    Ct(logicFaces)=Ct(logicFaces)+1;
+    [Ft,Vt,C_type,indIni,Ct]=subTriDual(Ft,Vt,logicFaces,Ct);     
     
     %Smoothen newly introduced nodes
     cPar.Method='HC';
@@ -435,15 +435,18 @@ end
 %%
 % Plotting surface models
 cFigure;
+gtitle('Input (left), output (right)')
 subplot(1,2,1); hold on;
-title('Input surface','FontSize',fontSize);
-gpatch(F,V,'gw','k',1,2);
-axisGeom(gca,fontSize); view(2); axis off; zoom(1.3);
+gpatch(F,V,'w','k',1,1);
+axisGeom(gca,fontSize); 
+view(2); axis off; zoom(1.1);
+h=colorbar; h.Visible=0;
 
 subplot(1,2,2); hold on;
-title('Output surface','FontSize',fontSize);
-gpatch(Ft,Vt,'rw','k',1,2); 
-axisGeom(gca,fontSize); view(2); axis off; zoom(1.3);
+gpatch(Ft,Vt,Ct,'k',1,1); 
+axisGeom(gca,fontSize); view(2); 
+axis off; zoom(1.1);
+colormap gjet; icolorbar;
 drawnow;
 
 %%
