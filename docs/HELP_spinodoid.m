@@ -271,7 +271,7 @@ c=zeros(size(f,1),1);
 % Compute isocaps
 [fc,vc] = isocaps(X,Y,Z,graded_GRF,graded_levelset,'enclose','below');
 
-% Broilerplate code for preparing output for exporting/visualization
+% Boilerplate code for preparing output for exporting/visualization
 nc=patchNormal(fc,vc);
 cc=zeros(size(fc,1),1);
 cc(nc(:,1)<-0.5)=1;
