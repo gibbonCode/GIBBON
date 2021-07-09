@@ -3,11 +3,12 @@ function [varargout]=patchcylinder(varargin)
 %------------------------------------------------------------------------
 % function [F,V,C]=patchcylinder(optionStruct)
 
-% 2017/04/18
-% 2017/04/18 Added varargin style with defaults for missing parameters
-% 2018/03/15 Updated input parsing based on default structure 
-% 2018/03/15 Added option to output a closed cylinder
-% 2018/03/15 Added varargout and color output
+% 2017/04/18 KMM: Added varargin style with defaults for missing parameters
+% 2018/03/15 KMM: Updated input parsing based on default structure 
+% 2018/03/15 KMM: Added option to output a closed cylinder
+% 2018/03/15 KMM: Added varargout and color output
+% 2021/07/09 KMM: Added default uneven number of points allong height if
+% mesh type is tri
 %------------------------------------------------------------------------
 
 %% Parse input
@@ -36,7 +37,11 @@ end
 [optionStruct]=structComplete(optionStruct,defaultOptionStruct,1); %Complement provided with default if missing or empty
 
 if isempty(optionStruct.numHeight)
-    optionStruct.numHeight=round(optionStruct.cylHeight/((2*pi*optionStruct.cylRadius)/optionStruct.numRadial));
+    nh=ceil(optionStruct.cylHeight/((2*pi*optionStruct.cylRadius)/optionStruct.numRadial));    
+    if strcmp(optionStruct.meshType,'tri') %Force uneven for tri type
+        nh=nh+iseven(nh);
+    end
+    optionStruct.numHeight=nh;
 end
 
 %Access parameters

@@ -78,7 +78,7 @@ drawnow;
 inputStruct.cylRadius=1;
 inputStruct.numRadial=15;
 inputStruct.cylHeight=3;
-inputStruct.numHeight=11;
+inputStruct.numHeight=[]; %if empty infer from point spacing of circle
 inputStruct.meshType='tri';
 inputStruct.closeOpt=1;
 
