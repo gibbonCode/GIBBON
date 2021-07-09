@@ -5,7 +5,7 @@
 clear; close all; clc;
 
 %% Syntax
-% |[F,V,C]=spinodoid(M,IND,ptype);|
+% |[F,V,C,GRF,X,Y,Z,levelset]=spinodoid(M,IND,ptype);|
 
 %% Description
 % -----------------------------------------------------------------------
@@ -32,10 +32,20 @@ clear; close all; clc;
 %                                Note: each entry must be either 0 or
 %                                between [15,90] degrees.
 % inputStruct.R = eye(3); % Rotate the GRF, R must be SO(3)
+% inputStruct.ignoreChecks = false; % Ignore checks on parameters if true (not advised)
 %
+% The function returns the following:
+% F: faces of the surface mesh
+% V: vertices of the surfae mesh
+% C: color data for the surface mesh
+% GRF (3d matrix): Underlying Gaussian random field (GRF) before levelset is applied
+% X (3d matrix): X coordinates where GRF is evaluated
+% Y (3d matrix): Y coordinates where GRF is evaluated
+% Z (3d matrix): Z coordinates where GRF is evaluated
+% leveset (scalar): Levelset applied on GRF to compute the isosurfaces
 %
 % Original author: Siddhant Kumar, September 2020
-% (contact: siddhantk41@gmail.com)
+% (contact: Sid.Kumar@tudelft.nl)
 % -----------------------------------------------------------------------
 
 %% Examples

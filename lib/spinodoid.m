@@ -14,8 +14,10 @@ function [varargout]=spinodoid(inputStruct)
 %
 % Input structure and default values:
 % inputStruct.isocap=true; % option to cap the isosurface
-% inputStruct.domainSize=1; % domain size
-% inputStruct.resolution=100; % resolution for sampling GRF
+% inputStruct.domainSize=1; % domain size: scalar for cube, 
+%                             or [a,b,c] for cuboid of size [a,b,c]
+% inputStruct.resolution=100; % resolution for sampling GRF scalar for cube
+%                               or [ra,rb,rc] for cuboid with ra*rb*rc points         
 % inputStruct.waveNumber=15*pi; % GRF wave number
 % inputStruct.numWaves=1000; % number of waves in GRF
 % inputStruct.relativeDensity=0.5; % relative density: between [0.3,1]
@@ -24,10 +26,11 @@ function [varargout]=spinodoid(inputStruct)
 %                                Note: each entry must be either 0 or
 %                                between [15,90] degrees.
 % inputStruct.R = eye(3); % Rotate the GRF, R must be SO(3)
+% inputStruct.ignoreChecks = false; % Ignore checks on parameters if true (not advised)
 %
 %
 % Original author: Siddhant Kumar, September 2020
-% (contact: siddhantk41@gmail.com)
+% (contact: Sid.Kumar@tudelft.nl)
 %
 % Change log: 
 % 2020/09/19 Siddhant Kumar: Created original code
@@ -37,8 +40,10 @@ function [varargout]=spinodoid(inputStruct)
 
 %Create default structure
 defaultInputStruct.isocap=true; % option to cap the isosurface
-defaultInputStruct.domainSize=1; % domain size
-defaultInputStruct.resolution=100; % resolution for sampling GRF
+defaultInputStruct.domainSize=1; % domain size: scalar for cube, 
+                                 % or [a,b,c] for cuboid of size [a,b,c]
+defaultInputStruct.resolution=100; % resolution for sampling GRF scalar for cube
+                                   % or [ra,rb,rc] for cuboid with ra*rb*rc points
 defaultInputStruct.waveNumber=15*pi; % GRF wave number
 defaultInputStruct.numWaves=1000; % number of waves in GRF
 defaultInputStruct.relativeDensity=0.5; % relative density: between [0.3,1]
@@ -47,7 +52,7 @@ defaultInputStruct.thetas=[15 15 0]; % conical half angles (in degrees)
 %                                     anisotropy. Note: each entry must be 
 %                                     either 0 or between [15,90] degrees.
 defaultInputStruct.R = eye(3); % Rotate the GRF, R must be SO(3)
-defaultInputStruct.ignoreChecks = false; %Ignore checks on parameter values
+defaultInputStruct.ignoreChecks = false; % Ignore checks on parameters if true (not advised)
 
 %Complete input with default if incomplete
 [inputStruct]=structComplete(inputStruct,defaultInputStruct,1); %Complement provided with default if missing or empty
@@ -91,6 +96,15 @@ else
     end
     if(norm(R'*R-eye(3))>1e-8)
         error('Rotation matrix is not orthogonal')
+    end
+    
+    if(any(size(resolution) ~= size(domainSize)))
+        error('domainSize and resolution must be of same size')
+    end
+    
+    if((length(domainSize) == 1) || (length(domainSize) == 3))
+    else
+        error('domainSize must be scalar or 1x3 vector')
     end
 end
 
@@ -139,8 +153,16 @@ end
 wavePhases = rand_angle([numWaves,1]); %2*pi*rand(numWaves,1);
 
 %% Discretize the domain
-discretization = linspace(0,domainSize,resolution);
-[X,Y,Z] = meshgrid(discretization,discretization,discretization);
+if (length(domainSize) == 1)
+    discretization = linspace(0,domainSize,resolution);
+    [X,Y,Z] = ndgrid(discretization,discretization,discretization);
+else
+    discretizationX = linspace(0,domainSize(1),resolution(1));
+    discretizationY = linspace(0,domainSize(2),resolution(2));
+    discretizationZ = linspace(0,domainSize(3),resolution(3));
+    [X,Y,Z] = ndgrid(discretizationX,discretizationY,discretizationZ);
+end
+
 
 %% Evaluate GRF on sampling points
 
@@ -159,13 +181,13 @@ levelset = sqrt(2)*erfinv(2*relativeDensity-1);
 %% Compute isosurface and isocaps
 
 %Compute isosurface
-[f,v] = isosurface(X,Y,Z,GRF,-levelset);
+[f,v] = isosurface(X,Y,Z,GRF,levelset);
 c=zeros(size(f,1),1);
 
 %Isocaps
 if isocap==1
     %Compute isocaps
-    [fc,vc] = isocaps(X,Y,Z,GRF,-levelset);
+    [fc,vc] = isocaps(X,Y,Z,GRF,levelset,'enclose','below');
 
     nc=patchNormal(fc,vc);
     cc=zeros(size(fc,1),1);
@@ -206,7 +228,10 @@ varargout{1}=f;
 varargout{2}=v;
 varargout{3}=c;
 varargout{4}=GRF;
-
+varargout{5}=X;
+varargout{6}=Y;
+varargout{7}=Z;
+varargout{8}=levelset;
 end
 
 %% 
