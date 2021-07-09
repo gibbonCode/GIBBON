@@ -555,7 +555,7 @@ edgeSizeField=(edgeSizeField*minEdgeSize);
 
 regionTetVolumes=tetVolMeanEst(F,V);
 V_regions=mean(V,1); 
-stringOpt='-pq1.2AaY'; %Tetgen options
+stringOpt='-pq1.2Aa'; %Tetgen options
 V_holes=[];
 
 %%
@@ -607,7 +607,99 @@ gdrawnow;
 
 clear hp; 
 
-%% Example 8: Meshing 10-node (i.e. quadratic) tetrahedral elements
+%% Example 8: Meshing of topology with holes and complex regions 
+% Simulating nested spheres with a hollow core and "tunnel" to outside
+
+w=0.25;
+r=0.1; 
+
+[Fs1,Vs1]=geoSphere(4,1);
+[Fs2,Vs2]=geoSphere(4,1-w);
+[Fs3,Vs3]=geoSphere(4,1-2*w);
+
+R=sqrt(sum(Vs1(:,[1 2]).^2,2));
+logicCropVertices=R<=(r+mean(patchEdgeLengths(Fs1,Vs1))) & Vs1(:,3)>0;
+logicCropFaces=any(logicCropVertices(Fs1),2);
+logicCropFaces=triSurfLogicSharpFix(Fs1,logicCropFaces); 
+
+Fs1=Fs1(~logicCropFaces,:);
+Fs2=Fs2(~logicCropFaces,:); 
+Fs3=Fs3(~logicCropFaces,:);
+
+Eb=patchBoundary(Fs1,Vs1);
+indB=edgeListToCurve(Eb);
+indB=indB(1:end-1);
+
+
+cPar.closeLoopOpt=1; 
+cPar.patchType='tri_slash';
+[Fs4,Vs4]=polyLoftLinear(Vs3(indB,:),Vs2(indB,:),cPar);
+[Fs5,Vs5]=polyLoftLinear(Vs2(indB,:),Vs1(indB,:),cPar);
+
+[F,V,C]=joinElementSets({Fs1,Fs2,Fs3,Fs4,Fs5},{Vs1,Vs2,Vs3,Vs4,Vs5});
+[F,V]=mergeVertices(F,V);
+[F,V]=patchCleanUnused(F,V);
+
+logicRegion1=ismember(C,[1 2 max(C(:))]);
+logicRegion2=ismember(C,[2 3 4]);
+
+V_inner1=getInnerPoint(F(logicRegion1,:),V);
+V_inner2=getInnerPoint(F(logicRegion2,:),V);
+
+V_regions=[V_inner1; V_inner2];
+
+regionTetVolumes=tetVolMeanEst(F,V);
+stringOpt='-pq1.2AaY'; %Tetgen options
+V_holes=[];
+
+%%
+% Mesh using TetGen
+
+%Create tetgen input structure
+inputStruct.stringOpt=stringOpt; %Tetgen options
+inputStruct.Faces=F; %Boundary faces
+inputStruct.Nodes=V; %Nodes of boundary
+inputStruct.faceBoundaryMarker=C; 
+inputStruct.regionPoints=V_regions; %Interior points for regions
+inputStruct.holePoints=V_holes; %Interior points for holes
+inputStruct.regionA=regionTetVolumes*ones(size(V_regions,1),1); %Desired tetrahedral volume for each region
+
+% Mesh model using tetrahedral elements using tetGen 
+[meshOutput]=runTetGen(inputStruct); %Run tetGen 
+
+%% 
+% Access mesh output structure
+
+E=meshOutput.elements; %The elements
+V=meshOutput.nodes; %The vertices or nodes
+CE=meshOutput.elementMaterialID; %Element material or region id
+Fb=meshOutput.facesBoundary; %The boundary faces
+Cb=meshOutput.boundaryMarker; %The boundary markers
+
+%%
+% Visualization
+
+hf=cFigure; 
+subplot(1,2,1); hold on;
+title('Input boundaries','FontSize',fontSize);
+hp(1)=gpatch(F,V,'kw','none',faceAlpha1);
+hp(2)=plotV(V_regions,'r.','MarkerSize',markerSize);
+legend(hp,{'Input mesh','Interior point(s)'},'Location','NorthWestOutside');
+axisGeom(gca,fontSize); camlight headlight;
+colormap(cMap); colorbar;
+hs=subplot(1,2,2); hold on;
+title('Tetrahedral mesh','FontSize',fontSize);
+
+% Visualizing using |meshView|
+optionStruct.hFig=[hf,hs];
+meshView(meshOutput,optionStruct);
+
+axisGeom(gca,fontSize); 
+gdrawnow;
+
+clear hp; 
+
+%% Example 9: Meshing 10-node (i.e. quadratic) tetrahedral elements
 
 % Building spherical surface models
 [F,V,~]=geoSphere(2,1);

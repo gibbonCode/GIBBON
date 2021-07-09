@@ -6,8 +6,8 @@
    <!--
 This HTML was auto-generated from MATLAB code.
 To make changes, update the MATLAB code and republish this document.
-      --><title>runTetGen</title><meta name="generator" content="MATLAB 9.8"><link rel="schema.DC" href="http://purl.org/dc/elements/1.1/"><meta name="DC.date" content="2020-05-13"><meta name="DC.source" content="HELP_runTetGen.m"><style type="text/css">
-html,body,div,span,applet,object,iframe,h1,h2,h3,h4,h5,h6,p,blockquote,pre,a,abbr,acronym,address,big,cite,code,del,dfn,em,font,img,ins,kbd,q,s,samp,small,strike,strong,sub,sup,tt,var,b,u,i,center,dl,dt,dd,ol,ul,li,fieldset,form,label,legend,table,caption,tbody,tfoot,thead,tr,th,td{margin:0;padding:0;border:0;outline:0;font-size:100%;vertical-align:baseline;background:transparent}body{line-height:1}ol,ul{list-style:none}blockquote,q{quotes:none}blockquote:before,blockquote:after,q:before,q:after{content:'';content:none}:focus{outine:0}ins{text-decoration:none}del{text-decoration:line-through}table{border-collapse:collapse;border-spacing:0}
+      --><title>runTetGen</title><meta name="generator" content="MATLAB 9.10"><link rel="schema.DC" href="http://purl.org/dc/elements/1.1/"><meta name="DC.date" content="2021-07-09"><meta name="DC.source" content="HELP_runTetGen.m"><style type="text/css">
+html,body,div,span,applet,object,iframe,h1,h2,h3,h4,h5,h6,p,blockquote,pre,a,abbr,acronym,address,big,cite,code,del,dfn,em,font,img,ins,kbd,q,s,samp,small,strike,strong,tt,var,b,u,i,center,dl,dt,dd,ol,ul,li,fieldset,form,label,legend,table,caption,tbody,tfoot,thead,tr,th,td{margin:0;padding:0;border:0;outline:0;font-size:100%;vertical-align:baseline;background:transparent}body{line-height:1}ol,ul{list-style:none}blockquote,q{quotes:none}blockquote:before,blockquote:after,q:before,q:after{content:'';content:none}:focus{outine:0}ins{text-decoration:none}del{text-decoration:line-through}table{border-collapse:collapse;border-spacing:0}
 
 html { min-height:100%; margin-bottom:1px; }
 html body { height:100%; margin:0px; font-family:Arial, Helvetica, sans-serif; font-size:10px; color:#000; line-height:140%; background:#fff none; overflow-y:scroll; }
@@ -67,7 +67,7 @@ table td { padding:7px 5px; text-align:left; vertical-align:top; border:1px soli
 
 
 
-  </style></head><body><div class="content"><h1>runTetGen</h1><!--introduction--><p>Below is a demonstration of the features of the <tt>runTetGen</tt> function</p><!--/introduction--><h2>Contents</h2><div><ul><li><a href="#1">Syntax</a></li><li><a href="#2">Description</a></li><li><a href="#3">Examples</a></li><li><a href="#6">Example 1: Meshing a model with a single region</a></li><li><a href="#11">Example 2: Meshing imported geometry</a></li><li><a href="#16">Example 3: Meshing a two-region model</a></li><li><a href="#21">Example 4: Meshing a multi-region model</a></li><li><a href="#27">Example 5: Meshing regions with holes</a></li><li><a href="#33">Example 6: Meshing from a quadrilateral input surface</a></li><li><a href="#37">Example 7: Specifying a sizing function to control local mesh density</a></li><li><a href="#43">Example 8: Meshing 10-node (i.e. quadratic) tetrahedral elements</a></li></ul></div><h2 id="1">Syntax</h2><p><tt>[meshOutput]=runTetGen(inputStruct);</tt></p><h2 id="2">Description</h2><p>This function creates a temporary .smesh file which it passes to TETGEN (<a href="http://wias-berlin.de/software/tetgen/">http://wias-berlin.de/software/tetgen/</a>) for tetrahedral meshing. The input structure should contain the following fields:</p><p>smeshStruct.stringOpt=stringOpt; Where stringOpt should contain a strin composed of valid TETGEN command line switches (e.g. '-pq1.2VAaY'). See info below and the TETGEN manual.</p><p>smeshStruct.Faces=F; Where F is an array for all the model (triangular) faces</p><p>smeshStruct.Nodes=V; Where V is the array containing the nodal coordinates</p><p>smeshStruct.holePoints=V_holes; Where V_holes describes a point (not part of V) that lies inside a prescribed hole inside the mesh. If V_holes=[] no holes are defined.</p><p>smeshStruct.faceBoundaryMarker=faceBoundaryMarker; Where faceBoundaryMarker defines a label for each face denoting its membership to a particular boundary (e.g. all outer faces could have the same boundary label while an internal set of faces defining a hole has a different label).</p><p>smeshStruct.regionPoints=V_regions; Where similarly to V_holes the array V_regions defines points (not part of V) that lie inside a specific region (e.g. a material can be contained within another material and this allows you to specify multiple materials with different mesh densities and output labels).</p><p>smeshStruct.regionA=regionA; Where regionA is a vector defining the A specification (volume) for the corrensponding regions (as defined in V_regions)</p><p>Optional parameters:</p><p>smeshStruct.minRegionMarker=2; %Minimum region marker Arbitrary region marker label. Regions are labeled minRegionMarker:1:... for all regions.</p><p>smeshStruct.smeshName=smeshName; Where smeshName is the file name for the input .smesh file. Only .smesh files are currently supported as input files. This function generates the .smesh file using the <tt>writeBasicSmesh</tt> function</p><p>Below is a list of command line switches from the user manual:</p><p>-p Tetrahedralizes a piecewise linear complex (PLC). -Y Preserves the input surface mesh (does not modify it). -r Reconstructs a previously generated mesh. -q Refines mesh (to improve mesh quality). -R Mesh coarsening (to reduce the mesh elements). -A Assigns attributes to tetrahedra in different regions. -a Applies a maximum tetrahedron volume constraint. -m Applies a mesh sizing function. -i Inserts a list of additional points. -O Specifies the level of mesh optimization. -S Specifies maximum number of added points. -T Sets a tolerance for coplanar test (default 10?8). -X Suppresses use of exact arithmetic. -M No merge of coplanar facets or very close vertices. -w Generates weighted Delaunay (regular) triangulation. -c Retains the convex hull of the PLC. -d Detects self-intersections of facets of the PLC. -z Numbers all output items starting from zero. -f Outputs all faces to .face file. -e Outputs all edges to .edge file. -n Outputs tetrahedra neighbors to .neigh file. -v Outputs Voronoi diagram to files. -g Outputs mesh to .mesh file for viewing by Medit. -k Outputs mesh to .vtk file for viewing by Paraview. -J No jettison of unused vertices from output .node file. -B Suppresses output of boundary information. -N Suppresses output of .node file. -E Suppresses output of .ele file. -F Suppresses output of .face and .edge file. -I Suppresses mesh iteration numbers. -C Checks the consistency of the final mesh. -Q Quiet: No terminal output except errors. -V Verbose: Detailed information, more terminal output. -h Help: A brief instruction for using TetGen.</p><p>See the TETGEN manual for more information.</p><h2 id="3">Examples</h2><pre class="codeinput">clear; close <span class="string">all</span>; clc;
+  </style></head><body><div class="content"><h1>runTetGen</h1><!--introduction--><p>Below is a demonstration of the features of the <tt>runTetGen</tt> function</p><!--/introduction--><h2>Contents</h2><div><ul><li><a href="#1">Syntax</a></li><li><a href="#2">Description</a></li><li><a href="#3">Examples</a></li><li><a href="#6">Example 1: Meshing a model with a single region</a></li><li><a href="#11">Example 2: Meshing imported geometry</a></li><li><a href="#16">Example 3: Meshing a two-region model</a></li><li><a href="#21">Example 4: Meshing a multi-region model</a></li><li><a href="#27">Example 5: Meshing regions with holes</a></li><li><a href="#33">Example 6: Meshing from a quadrilateral input surface</a></li><li><a href="#37">Example 7: Specifying a sizing function to control local mesh density</a></li><li><a href="#43">Example 8: Meshing of topology with holes and complex regions</a></li><li><a href="#47">Example 9: Meshing 10-node (i.e. quadratic) tetrahedral elements</a></li></ul></div><h2 id="1">Syntax</h2><p><tt>[meshOutput]=runTetGen(inputStruct);</tt></p><h2 id="2">Description</h2><p>This function creates a temporary .smesh file which it passes to TETGEN (<a href="http://wias-berlin.de/software/tetgen/">http://wias-berlin.de/software/tetgen/</a>) for tetrahedral meshing. The input structure should contain the following fields:</p><p>smeshStruct.stringOpt=stringOpt; Where stringOpt should contain a strin composed of valid TETGEN command line switches (e.g. '-pq1.2VAaY'). See info below and the TETGEN manual.</p><p>smeshStruct.Faces=F; Where F is an array for all the model (triangular) faces</p><p>smeshStruct.Nodes=V; Where V is the array containing the nodal coordinates</p><p>smeshStruct.holePoints=V_holes; Where V_holes describes a point (not part of V) that lies inside a prescribed hole inside the mesh. If V_holes=[] no holes are defined.</p><p>smeshStruct.faceBoundaryMarker=faceBoundaryMarker; Where faceBoundaryMarker defines a label for each face denoting its membership to a particular boundary (e.g. all outer faces could have the same boundary label while an internal set of faces defining a hole has a different label).</p><p>smeshStruct.regionPoints=V_regions; Where similarly to V_holes the array V_regions defines points (not part of V) that lie inside a specific region (e.g. a material can be contained within another material and this allows you to specify multiple materials with different mesh densities and output labels).</p><p>smeshStruct.regionA=regionA; Where regionA is a vector defining the A specification (volume) for the corrensponding regions (as defined in V_regions)</p><p>Optional parameters:</p><p>smeshStruct.minRegionMarker=2; %Minimum region marker Arbitrary region marker label. Regions are labeled minRegionMarker:1:... for all regions.</p><p>smeshStruct.smeshName=smeshName; Where smeshName is the file name for the input .smesh file. Only .smesh files are currently supported as input files. This function generates the .smesh file using the <tt>writeBasicSmesh</tt> function</p><p>Below is a list of command line switches from the user manual:</p><p>-p Tetrahedralizes a piecewise linear complex (PLC). -Y Preserves the input surface mesh (does not modify it). -r Reconstructs a previously generated mesh. -q Refines mesh (to improve mesh quality). -R Mesh coarsening (to reduce the mesh elements). -A Assigns attributes to tetrahedra in different regions. -a Applies a maximum tetrahedron volume constraint. -m Applies a mesh sizing function. -i Inserts a list of additional points. -O Specifies the level of mesh optimization. -S Specifies maximum number of added points. -T Sets a tolerance for coplanar test (default 10?8). -X Suppresses use of exact arithmetic. -M No merge of coplanar facets or very close vertices. -w Generates weighted Delaunay (regular) triangulation. -c Retains the convex hull of the PLC. -d Detects self-intersections of facets of the PLC. -z Numbers all output items starting from zero. -f Outputs all faces to .face file. -e Outputs all edges to .edge file. -n Outputs tetrahedra neighbors to .neigh file. -v Outputs Voronoi diagram to files. -g Outputs mesh to .mesh file for viewing by Medit. -k Outputs mesh to .vtk file for viewing by Paraview. -J No jettison of unused vertices from output .node file. -B Suppresses output of boundary information. -N Suppresses output of .node file. -E Suppresses output of .ele file. -F Suppresses output of .face and .edge file. -I Suppresses mesh iteration numbers. -C Checks the consistency of the final mesh. -Q Quiet: No terminal output except errors. -V Verbose: Detailed information, more terminal output. -h Help: A brief instruction for using TetGen.</p><p>See the TETGEN manual for more information.</p><h2 id="3">Examples</h2><pre class="codeinput">clear; close <span class="string">all</span>; clc;
 </pre><p>Plot settings</p><pre class="codeinput">fontSize=15;
 faceAlpha1=0.3;
 faceAlpha2=1;
@@ -94,40 +94,48 @@ inputStruct.regionA=regionTetVolumes; <span class="comment">%Desired tetrahedral
 [meshOutput]=runTetGen(inputStruct); <span class="comment">%Run tetGen</span>
 </pre><pre class="codeoutput"> 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
---- TETGEN Tetrahedral meshing --- 13-May-2020 14:09:04
+--- TETGEN Tetrahedral meshing --- 09-Jul-2021 15:16:54
  
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
---- Writing SMESH file --- 13-May-2020 14:09:04
+--- Writing SMESH file --- 09-Jul-2021 15:16:54
 ----&gt; Adding node field
 ----&gt; Adding facet field
 ----&gt; Adding holes specification
 ----&gt; Adding region specification
---- Done --- 13-May-2020 14:09:04
---- Running TetGen to mesh input boundary--- 13-May-2020 14:09:04
+--- Done --- 09-Jul-2021 15:16:54
+--- Running TetGen to mesh input boundary--- 09-Jul-2021 15:16:54
 Opening /mnt/data/MATLAB/GIBBON/data/temp/temp.smesh.
 Delaunizing vertices...
-Delaunay seconds:  0.012374
+Delaunay seconds:  0.012004
 Creating surface mesh ...
-Surface mesh seconds:  0.002301
+Surface mesh seconds:  0.00362
 Recovering boundaries...
-Boundary recovery seconds:  0.00508
+Boundary recovery seconds:  0.003653
 Removing exterior tetrahedra ...
 Spreading region attributes.
-Exterior tets removal seconds:  0.00251
+Exterior tets removal seconds:  0.002263
 Recovering Delaunayness...
-Delaunay recovery seconds:  0.002047
+Delaunay recovery seconds:  0.002076
 Refining mesh...
-Refinement seconds:  0.098878
-Optimizing mesh...
-Optimization seconds:  0.0066
+  2026 insertions, added 1596 points, 52838 tetrahedra in queue.
+  674 insertions, added 520 points, 63961 tetrahedra in queue.
+  899 insertions, added 644 points, 76346 tetrahedra in queue.
+  1198 insertions, added 716 points, 85093 tetrahedra in queue.
+  1597 insertions, added 594 points, 66637 tetrahedra in queue.
+  2129 insertions, added 315 points, 1474 tetrahedra in queue.
+Refinement seconds:  0.110088
+Smoothing vertices...
+Mesh smoothing seconds:  0.208863
+Improving mesh...
+Mesh improvement seconds:  0.006997
 
 Writing /mnt/data/MATLAB/GIBBON/data/temp/temp.1.node.
 Writing /mnt/data/MATLAB/GIBBON/data/temp/temp.1.ele.
 Writing /mnt/data/MATLAB/GIBBON/data/temp/temp.1.face.
 Writing /mnt/data/MATLAB/GIBBON/data/temp/temp.1.edge.
 
-Output seconds:  0.083042
-Total running seconds:  0.213086
+Output seconds:  0.084647
+Total running seconds:  0.434448
 
 Statistics:
 
@@ -137,19 +145,19 @@ Statistics:
   Input holes: 0
   Input regions: 1
 
-  Mesh points: 5904
-  Mesh tetrahedra: 32785
-  Mesh faces: 67088
+  Mesh points: 6065
+  Mesh tetrahedra: 32735
+  Mesh faces: 66988
   Mesh faces on exterior boundary: 3036
   Mesh faces on input facets: 3036
   Mesh edges on input segments: 4554
-  Steiner points inside domain: 4384
+  Steiner points inside domain: 4545
 
---- Done --- 13-May-2020 14:09:04
+--- Done --- 09-Jul-2021 15:16:54
  
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
---- Importing TetGen files --- 13-May-2020 14:09:04
---- Done --- 13-May-2020 14:09:04
+--- Importing TetGen files --- 09-Jul-2021 15:16:54
+--- Done --- 09-Jul-2021 15:16:54
 </pre><p>Access mesh output structure</p><pre class="codeinput">E=meshOutput.elements; <span class="comment">%The elements</span>
 V=meshOutput.nodes; <span class="comment">%The vertices or nodes</span>
 CE=meshOutput.elementMaterialID; <span class="comment">%Element material or region id</span>
@@ -202,40 +210,48 @@ inputStruct.regionA=regionTetVolumes; <span class="comment">%Desired tetrahedral
 [meshOutput]=runTetGen(inputStruct); <span class="comment">%Run tetGen</span>
 </pre><pre class="codeoutput"> 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
---- TETGEN Tetrahedral meshing --- 13-May-2020 14:09:08
+--- TETGEN Tetrahedral meshing --- 09-Jul-2021 15:16:58
  
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
---- Writing SMESH file --- 13-May-2020 14:09:08
+--- Writing SMESH file --- 09-Jul-2021 15:16:58
 ----&gt; Adding node field
 ----&gt; Adding facet field
 ----&gt; Adding holes specification
 ----&gt; Adding region specification
---- Done --- 13-May-2020 14:09:08
---- Running TetGen to mesh input boundary--- 13-May-2020 14:09:08
+--- Done --- 09-Jul-2021 15:16:58
+--- Running TetGen to mesh input boundary--- 09-Jul-2021 15:16:58
 Opening /mnt/data/MATLAB/GIBBON/data/temp/temp.smesh.
 Delaunizing vertices...
-Delaunay seconds:  0.020287
+Delaunay seconds:  0.014145
 Creating surface mesh ...
-Surface mesh seconds:  0.005002
+Surface mesh seconds:  0.004451
 Recovering boundaries...
-Boundary recovery seconds:  0.009492
+Boundary recovery seconds:  0.009701
 Removing exterior tetrahedra ...
 Spreading region attributes.
-Exterior tets removal seconds:  0.004702
+Exterior tets removal seconds:  0.004816
 Recovering Delaunayness...
-Delaunay recovery seconds:  0.005528
+Delaunay recovery seconds:  0.005499
 Refining mesh...
-Refinement seconds:  0.167827
-Optimizing mesh...
-Optimization seconds:  0.011038
+  3951 insertions, added 2867 points, 96839 tetrahedra in queue.
+  1315 insertions, added 812 points, 113061 tetrahedra in queue.
+  1753 insertions, added 908 points, 127021 tetrahedra in queue.
+  2337 insertions, added 881 points, 127570 tetrahedra in queue.
+  3115 insertions, added 603 points, 79813 tetrahedra in queue.
+  4152 insertions, added 443 points, 4844 tetrahedra in queue.
+Refinement seconds:  0.242635
+Smoothing vertices...
+Mesh smoothing seconds:  0.399694
+Improving mesh...
+Mesh improvement seconds:  0.013018
 
 Writing /mnt/data/MATLAB/GIBBON/data/temp/temp.1.node.
 Writing /mnt/data/MATLAB/GIBBON/data/temp/temp.1.ele.
 Writing /mnt/data/MATLAB/GIBBON/data/temp/temp.1.face.
 Writing /mnt/data/MATLAB/GIBBON/data/temp/temp.1.edge.
 
-Output seconds:  0.115716
-Total running seconds:  0.339896
+Output seconds:  0.119608
+Total running seconds:  0.813822
 
 Statistics:
 
@@ -245,19 +261,19 @@ Statistics:
   Input holes: 0
   Input regions: 1
 
-  Mesh points: 9301
-  Mesh tetrahedra: 49855
-  Mesh faces: 102672
+  Mesh points: 9835
+  Mesh tetrahedra: 51987
+  Mesh faces: 106936
   Mesh faces on exterior boundary: 5924
   Mesh faces on input facets: 5924
   Mesh edges on input segments: 8886
-  Steiner points inside domain: 6337
+  Steiner points inside domain: 6871
 
---- Done --- 13-May-2020 14:09:09
+--- Done --- 09-Jul-2021 15:17:00
  
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
---- Importing TetGen files --- 13-May-2020 14:09:09
---- Done --- 13-May-2020 14:09:09
+--- Importing TetGen files --- 09-Jul-2021 15:17:00
+--- Done --- 09-Jul-2021 15:17:00
 </pre><p>Access mesh output structure</p><pre class="codeinput">E=meshOutput.elements; <span class="comment">%The elements</span>
 V=meshOutput.nodes; <span class="comment">%The vertices or nodes</span>
 CE=meshOutput.elementMaterialID; <span class="comment">%Element material or region id</span>
@@ -319,40 +335,48 @@ inputStruct.regionA=regionTetVolumes; <span class="comment">%Desired tetrahedral
 [meshOutput]=runTetGen(inputStruct); <span class="comment">%Run tetGen</span>
 </pre><pre class="codeoutput"> 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
---- TETGEN Tetrahedral meshing --- 13-May-2020 14:09:13
+--- TETGEN Tetrahedral meshing --- 09-Jul-2021 15:17:03
  
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
---- Writing SMESH file --- 13-May-2020 14:09:13
+--- Writing SMESH file --- 09-Jul-2021 15:17:03
 ----&gt; Adding node field
 ----&gt; Adding facet field
 ----&gt; Adding holes specification
 ----&gt; Adding region specification
---- Done --- 13-May-2020 14:09:13
---- Running TetGen to mesh input boundary--- 13-May-2020 14:09:13
+--- Done --- 09-Jul-2021 15:17:03
+--- Running TetGen to mesh input boundary--- 09-Jul-2021 15:17:03
 Opening /mnt/data/MATLAB/GIBBON/data/temp/temp.smesh.
 Delaunizing vertices...
-Delaunay seconds:  0.05929
+Delaunay seconds:  0.060803
 Creating surface mesh ...
-Surface mesh seconds:  0.001552
+Surface mesh seconds:  0.001265
 Recovering boundaries...
-Boundary recovery seconds:  0.002078
+Boundary recovery seconds:  0.002395
 Removing exterior tetrahedra ...
 Spreading region attributes.
-Exterior tets removal seconds:  0.000684
+Exterior tets removal seconds:  0.000669
 Recovering Delaunayness...
-Delaunay recovery seconds:  0.015775
+Delaunay recovery seconds:  0.015408
 Refining mesh...
-Refinement seconds:  0.039946
-Optimizing mesh...
-Optimization seconds:  0.001869
+  1299 insertions, added 620 points, 18852 tetrahedra in queue.
+  432 insertions, added 85 points, 18840 tetrahedra in queue.
+  576 insertions, added 76 points, 17042 tetrahedra in queue.
+  768 insertions, added 93 points, 13066 tetrahedra in queue.
+  1023 insertions, added 82 points, 4833 tetrahedra in queue.
+  1364 insertions, added 66 points, 1024 tetrahedra in queue.
+Refinement seconds:  0.048568
+Smoothing vertices...
+Mesh smoothing seconds:  0.041828
+Improving mesh...
+Mesh improvement seconds:  0.002435
 
 Writing /mnt/data/MATLAB/GIBBON/data/temp/temp.1.node.
 Writing /mnt/data/MATLAB/GIBBON/data/temp/temp.1.ele.
 Writing /mnt/data/MATLAB/GIBBON/data/temp/temp.1.face.
 Writing /mnt/data/MATLAB/GIBBON/data/temp/temp.1.edge.
 
-Output seconds:  0.025144
-Total running seconds:  0.146484
+Output seconds:  0.024134
+Total running seconds:  0.197641
 
 Statistics:
 
@@ -362,19 +386,19 @@ Statistics:
   Input holes: 0
   Input regions: 2
 
-  Mesh points: 1995
-  Mesh tetrahedra: 10714
-  Mesh faces: 22028
+  Mesh points: 2049
+  Mesh tetrahedra: 10808
+  Mesh faces: 22216
   Mesh faces on exterior boundary: 1200
   Mesh faces on input facets: 1950
   Mesh edges on input segments: 2925
-  Steiner points inside domain: 1020
+  Steiner points inside domain: 1074
 
---- Done --- 13-May-2020 14:09:13
+--- Done --- 09-Jul-2021 15:17:04
  
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
---- Importing TetGen files --- 13-May-2020 14:09:13
---- Done --- 13-May-2020 14:09:13
+--- Importing TetGen files --- 09-Jul-2021 15:17:04
+--- Done --- 09-Jul-2021 15:17:04
 </pre><p>Access mesh output structure</p><pre class="codeinput">E=meshOutput.elements; <span class="comment">%The elements</span>
 V=meshOutput.nodes; <span class="comment">%The vertices or nodes</span>
 CE=meshOutput.elementMaterialID; <span class="comment">%Element material or region id</span>
@@ -442,40 +466,49 @@ inputStruct.regionA=regionTetVolumes; <span class="comment">%Desired tetrahedral
 [meshOutput]=runTetGen(inputStruct); <span class="comment">%Run tetGen</span>
 </pre><pre class="codeoutput"> 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
---- TETGEN Tetrahedral meshing --- 13-May-2020 14:09:18
+--- TETGEN Tetrahedral meshing --- 09-Jul-2021 15:17:09
  
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
---- Writing SMESH file --- 13-May-2020 14:09:18
+--- Writing SMESH file --- 09-Jul-2021 15:17:09
 ----&gt; Adding node field
 ----&gt; Adding facet field
 ----&gt; Adding holes specification
 ----&gt; Adding region specification
---- Done --- 13-May-2020 14:09:18
---- Running TetGen to mesh input boundary--- 13-May-2020 14:09:18
+--- Done --- 09-Jul-2021 15:17:09
+--- Running TetGen to mesh input boundary--- 09-Jul-2021 15:17:09
 Opening /mnt/data/MATLAB/GIBBON/data/temp/temp.smesh.
 Delaunizing vertices...
-Delaunay seconds:  0.02949
+Delaunay seconds:  0.025095
 Creating surface mesh ...
-Surface mesh seconds:  0.008632
+Surface mesh seconds:  0.008084
 Recovering boundaries...
-Boundary recovery seconds:  0.027888
+Boundary recovery seconds:  0.016861
 Removing exterior tetrahedra ...
 Spreading region attributes.
-Exterior tets removal seconds:  0.006223
+Exterior tets removal seconds:  0.00463
 Recovering Delaunayness...
-Delaunay recovery seconds:  0.015805
+Delaunay recovery seconds:  0.014409
 Refining mesh...
-Refinement seconds:  0.528796
-Optimizing mesh...
-Optimization seconds:  0.029224
+  6078 insertions, added 4879 points, 201347 tetrahedra in queue.
+  2023 insertions, added 1455 points, 233749 tetrahedra in queue.
+  2697 insertions, added 1889 points, 273453 tetrahedra in queue.
+  3595 insertions, added 2282 points, 315106 tetrahedra in queue.
+  4792 insertions, added 2396 points, 336371 tetrahedra in queue.
+  6388 insertions, added 1906 points, 268161 tetrahedra in queue.
+  8515 insertions, added 1250 points, 1796 tetrahedra in queue.
+Refinement seconds:  0.589298
+Smoothing vertices...
+Mesh smoothing seconds:  1.2179
+Improving mesh...
+Mesh improvement seconds:  0.029469
 
 Writing /mnt/data/MATLAB/GIBBON/data/temp/temp.1.node.
 Writing /mnt/data/MATLAB/GIBBON/data/temp/temp.1.ele.
 Writing /mnt/data/MATLAB/GIBBON/data/temp/temp.1.face.
 Writing /mnt/data/MATLAB/GIBBON/data/temp/temp.1.edge.
 
-Output seconds:  0.312611
-Total running seconds:  0.959063
+Output seconds:  0.300889
+Total running seconds:  2.20712
 
 Statistics:
 
@@ -485,19 +518,19 @@ Statistics:
   Input holes: 0
   Input regions: 3
 
-  Mesh points: 22050
-  Mesh tetrahedra: 135589
-  Mesh faces: 272696
+  Mesh points: 21224
+  Mesh tetrahedra: 126673
+  Mesh faces: 254864
   Mesh faces on exterior boundary: 3036
   Mesh faces on input facets: 9108
   Mesh edges on input segments: 13662
-  Steiner points inside domain: 17490
+  Steiner points inside domain: 16664
 
---- Done --- 13-May-2020 14:09:19
+--- Done --- 09-Jul-2021 15:17:11
  
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
---- Importing TetGen files --- 13-May-2020 14:09:19
---- Done --- 13-May-2020 14:09:20
+--- Importing TetGen files --- 09-Jul-2021 15:17:11
+--- Done --- 09-Jul-2021 15:17:11
 </pre><p>Access mesh output structure</p><pre class="codeinput">E=meshOutput.elements; <span class="comment">%The elements</span>
 V=meshOutput.nodes; <span class="comment">%The vertices or nodes</span>
 CE=meshOutput.elementMaterialID; <span class="comment">%Element material or region id</span>
@@ -560,40 +593,49 @@ inputStruct.regionA=regionTetVolumes; <span class="comment">%Desired tetrahedral
 [meshOutput]=runTetGen(inputStruct); <span class="comment">%Run tetGen</span>
 </pre><pre class="codeoutput"> 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
---- TETGEN Tetrahedral meshing --- 13-May-2020 14:09:25
+--- TETGEN Tetrahedral meshing --- 09-Jul-2021 15:17:16
  
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
---- Writing SMESH file --- 13-May-2020 14:09:25
+--- Writing SMESH file --- 09-Jul-2021 15:17:16
 ----&gt; Adding node field
 ----&gt; Adding facet field
 ----&gt; Adding holes specification
 ----&gt; Adding region specification
---- Done --- 13-May-2020 14:09:25
---- Running TetGen to mesh input boundary--- 13-May-2020 14:09:25
+--- Done --- 09-Jul-2021 15:17:16
+--- Running TetGen to mesh input boundary--- 09-Jul-2021 15:17:16
 Opening /mnt/data/MATLAB/GIBBON/data/temp/temp.smesh.
 Delaunizing vertices...
-Delaunay seconds:  0.040815
+Delaunay seconds:  0.036408
 Creating surface mesh ...
-Surface mesh seconds:  0.004062
+Surface mesh seconds:  0.003949
 Recovering boundaries...
-Boundary recovery seconds:  0.009421
+Boundary recovery seconds:  0.008611
 Removing exterior tetrahedra ...
 Spreading region attributes.
-Exterior tets removal seconds:  0.003221
+Exterior tets removal seconds:  0.003755
 Recovering Delaunayness...
-Delaunay recovery seconds:  0.008237
+Delaunay recovery seconds:  0.00779
 Refining mesh...
-Refinement seconds:  0.138635
-Optimizing mesh...
-Optimization seconds:  0.008527
+  3452 insertions, added 2075 points, 68090 tetrahedra in queue.
+  1149 insertions, added 447 points, 75231 tetrahedra in queue.
+  1532 insertions, added 441 points, 78109 tetrahedra in queue.
+  2042 insertions, added 384 points, 71670 tetrahedra in queue.
+  2722 insertions, added 263 points, 45257 tetrahedra in queue.
+  3628 insertions, added 247 points, 2820 tetrahedra in queue.
+  4836 insertions, added 313 points, 598 tetrahedra in queue.
+Refinement seconds:  0.184304
+Smoothing vertices...
+Mesh smoothing seconds:  0.196975
+Improving mesh...
+Mesh improvement seconds:  0.008126
 
 Writing /mnt/data/MATLAB/GIBBON/data/temp/temp.1.node.
 Writing /mnt/data/MATLAB/GIBBON/data/temp/temp.1.ele.
 Writing /mnt/data/MATLAB/GIBBON/data/temp/temp.1.face.
 Writing /mnt/data/MATLAB/GIBBON/data/temp/temp.1.edge.
 
-Output seconds:  0.079554
-Total running seconds:  0.292748
+Output seconds:  0.077197
+Total running seconds:  0.527413
 
 Statistics:
 
@@ -603,19 +645,19 @@ Statistics:
   Input holes: 1
   Input regions: 2
 
-  Mesh points: 6406
-  Mesh tetrahedra: 34323
-  Mesh faces: 70590
+  Mesh points: 6887
+  Mesh tetrahedra: 36644
+  Mesh faces: 75232
   Mesh faces on exterior boundary: 3888
   Mesh faces on input facets: 5168
   Mesh edges on input segments: 7752
-  Steiner points inside domain: 3816
+  Steiner points inside domain: 4297
 
---- Done --- 13-May-2020 14:09:25
+--- Done --- 09-Jul-2021 15:17:17
  
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
---- Importing TetGen files --- 13-May-2020 14:09:25
---- Done --- 13-May-2020 14:09:25
+--- Importing TetGen files --- 09-Jul-2021 15:17:17
+--- Done --- 09-Jul-2021 15:17:17
 </pre><p>Access mesh output structure</p><pre class="codeinput">E=meshOutput.elements; <span class="comment">%The elements</span>
 V=meshOutput.nodes; <span class="comment">%The vertices or nodes</span>
 CE=meshOutput.elementMaterialID; <span class="comment">%Element material or region id</span>
@@ -660,40 +702,47 @@ inputStruct.regionA=regionTetVolumes; <span class="comment">%Desired tetrahedral
 [meshOutput]=runTetGen(inputStruct); <span class="comment">%Run tetGen</span>
 </pre><pre class="codeoutput"> 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
---- TETGEN Tetrahedral meshing --- 13-May-2020 14:09:29
+--- TETGEN Tetrahedral meshing --- 09-Jul-2021 15:17:20
  
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
---- Writing SMESH file --- 13-May-2020 14:09:29
+--- Writing SMESH file --- 09-Jul-2021 15:17:20
 ----&gt; Adding node field
 ----&gt; Adding facet field
 ----&gt; Adding holes specification
 ----&gt; Adding region specification
---- Done --- 13-May-2020 14:09:29
---- Running TetGen to mesh input boundary--- 13-May-2020 14:09:29
+--- Done --- 09-Jul-2021 15:17:20
+--- Running TetGen to mesh input boundary--- 09-Jul-2021 15:17:20
 Opening /mnt/data/MATLAB/GIBBON/data/temp/temp.smesh.
 Delaunizing vertices...
-Delaunay seconds:  0.002529
+Delaunay seconds:  0.002721
 Creating surface mesh ...
-Surface mesh seconds:  0.000486
+Surface mesh seconds:  0.000593
 Recovering boundaries...
-Boundary recovery seconds:  0.001502
+Boundary recovery seconds:  0.002528
 Removing exterior tetrahedra ...
 Spreading region attributes.
-Exterior tets removal seconds:  7.4e-05
+Exterior tets removal seconds:  9.6e-05
 Recovering Delaunayness...
-Delaunay recovery seconds:  0.001885
+Delaunay recovery seconds:  0.002407
 Refining mesh...
-Refinement seconds:  0.003383
-Optimizing mesh...
-Optimization seconds:  0.000199
+  178 insertions, added 49 points, 1216 tetrahedra in queue.
+  59 insertions, added 7 points, 999 tetrahedra in queue.
+  78 insertions, added 2 points, 424 tetrahedra in queue.
+  104 insertions, added 8 points, 168 tetrahedra in queue.
+  139 insertions, added 9 points, 84 tetrahedra in queue.
+Refinement seconds:  0.005852
+Smoothing vertices...
+Mesh smoothing seconds:  0.007428
+Improving mesh...
+Mesh improvement seconds:  0.0002
 
 Writing /mnt/data/MATLAB/GIBBON/data/temp/temp.1.node.
 Writing /mnt/data/MATLAB/GIBBON/data/temp/temp.1.ele.
 Writing /mnt/data/MATLAB/GIBBON/data/temp/temp.1.face.
 Writing /mnt/data/MATLAB/GIBBON/data/temp/temp.1.edge.
 
-Output seconds:  0.001657
-Total running seconds:  0.011811
+Output seconds:  0.001947
+Total running seconds:  0.023854
 
 Statistics:
 
@@ -703,19 +752,19 @@ Statistics:
   Input holes: 0
   Input regions: 1
 
-  Mesh points: 199
-  Mesh tetrahedra: 745
-  Mesh faces: 1622
+  Mesh points: 217
+  Mesh tetrahedra: 836
+  Mesh faces: 1804
   Mesh faces on exterior boundary: 264
   Mesh faces on input facets: 264
   Mesh edges on input segments: 264
-  Steiner points inside domain: 65
+  Steiner points inside domain: 83
 
---- Done --- 13-May-2020 14:09:29
+--- Done --- 09-Jul-2021 15:17:20
  
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
---- Importing TetGen files --- 13-May-2020 14:09:29
---- Done --- 13-May-2020 14:09:29
+--- Importing TetGen files --- 09-Jul-2021 15:17:20
+--- Done --- 09-Jul-2021 15:17:20
 </pre><p>Access mesh output structure</p><pre class="codeinput">E=meshOutput.elements; <span class="comment">%The elements</span>
 V=meshOutput.nodes; <span class="comment">%The vertices or nodes</span>
 CE=meshOutput.elementMaterialID; <span class="comment">%Element material or region id</span>
@@ -756,7 +805,7 @@ edgeSizeField=(edgeSizeField*minEdgeSize);
 
 regionTetVolumes=tetVolMeanEst(F,V);
 V_regions=mean(V,1);
-stringOpt=<span class="string">'-pq1.2AaY'</span>; <span class="comment">%Tetgen options</span>
+stringOpt=<span class="string">'-pq1.2Aa'</span>; <span class="comment">%Tetgen options</span>
 V_holes=[];
 </pre><p>Mesh using TetGen</p><pre class="codeinput"><span class="comment">%Create tetgen input structure</span>
 inputStruct.stringOpt=stringOpt; <span class="comment">%Tetgen options</span>
@@ -772,35 +821,48 @@ inputStruct.sizeData=edgeSizeField; <span class="comment">%The size data</span>
 [meshOutput]=runTetGen(inputStruct); <span class="comment">%Run tetGen</span>
 </pre><pre class="codeoutput"> 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
---- TETGEN Tetrahedral meshing --- 13-May-2020 14:09:32
+--- TETGEN Tetrahedral meshing --- 09-Jul-2021 15:17:23
  
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
---- Writing SMESH file --- 13-May-2020 14:09:32
+--- Writing SMESH file --- 09-Jul-2021 15:17:23
 ----&gt; Adding node field
 ----&gt; Adding facet field
 ----&gt; Adding holes specification
 ----&gt; Adding region specification
---- Done --- 13-May-2020 14:09:32
---- Writing MTR file --- 13-May-2020 14:09:32
---- Running TetGen to mesh initial Delaunay tesselation using sizing function--- 13-May-2020 14:09:32
+--- Done --- 09-Jul-2021 15:17:23
+--- Writing MTR file --- 09-Jul-2021 15:17:23
+--- Running TetGen to mesh initial Delaunay tesselation using sizing function--- 09-Jul-2021 15:17:23
 Opening /mnt/data/MATLAB/GIBBON/data/temp/temp.smesh.
 Opening /mnt/data/MATLAB/GIBBON/data/temp/temp.mtr.
   Cannot access file /mnt/data/MATLAB/GIBBON/data/temp/temp.b.node.
 Delaunizing vertices...
-Delaunay seconds:  0.002827
+Delaunay seconds:  0.003064
 Creating surface mesh ...
-Surface mesh seconds:  0.000516
+Surface mesh seconds:  0.000522
 Recovering boundaries...
-Boundary recovery seconds:  0.001669
+Boundary recovery seconds:  0.002096
 Removing exterior tetrahedra ...
 Spreading region attributes.
-Exterior tets removal seconds:  8.9e-05
+Exterior tets removal seconds:  6.5e-05
+Mesh coarsening ...
+Mesh coarsening seconds:  3e-06
 Recovering Delaunayness...
-Delaunay recovery seconds:  0.002432
+Delaunay recovery seconds:  0.002292
 Refining mesh...
-Refinement seconds:  0.013006
-Optimizing mesh...
-Optimization seconds:  0.000594
+  178 insertions, added 111 points, 2184 tetrahedra in queue.
+  59 insertions, added 38 points, 2770 tetrahedra in queue.
+  78 insertions, added 49 points, 3452 tetrahedra in queue.
+  104 insertions, added 73 points, 4701 tetrahedra in queue.
+  139 insertions, added 92 points, 6154 tetrahedra in queue.
+  185 insertions, added 124 points, 8181 tetrahedra in queue.
+  247 insertions, added 178 points, 11206 tetrahedra in queue.
+  329 insertions, added 228 points, 14867 tetrahedra in queue.
+  439 insertions, added 294 points, 16828 tetrahedra in queue.
+Refinement seconds:  0.026821
+Smoothing vertices...
+Mesh smoothing seconds:  0.040161
+Improving mesh...
+Mesh improvement seconds:  0.001258
 
 Writing /mnt/data/MATLAB/GIBBON/data/temp/temp.1.node.
 Writing /mnt/data/MATLAB/GIBBON/data/temp/temp.1.ele.
@@ -809,30 +871,32 @@ Writing /mnt/data/MATLAB/GIBBON/data/temp/temp.1.edge.
 Writing /mnt/data/MATLAB/GIBBON/data/temp/temp.1.mtr.
 Writing /mnt/data/MATLAB/GIBBON/data/temp/temp.1.p2t.
 
-Output seconds:  0.007226
-Total running seconds:  0.028449
+Output seconds:  0.015564
+Total running seconds:  0.091924
 
 Statistics:
 
   Input points: 134
   Input facets: 132
-  Input segments: 264
+  Input segments: 68
   Input holes: 0
   Input regions: 1
 
-  Mesh points: 622
-  Mesh tetrahedra: 3328
-  Mesh faces: 6788
-  Mesh faces on exterior boundary: 264
-  Mesh faces on input facets: 264
-  Mesh edges on input segments: 264
-  Steiner points inside domain: 488
+  Mesh points: 1406
+  Mesh tetrahedra: 6194
+  Mesh faces: 13133
+  Mesh faces on exterior boundary: 1490
+  Mesh faces on input facets: 1490
+  Mesh edges on input segments: 131
+  Steiner points on input facets:  550
+  Steiner points on input segments:  63
+  Steiner points inside domain: 659
 
---- Done --- 13-May-2020 14:09:32
+--- Done --- 09-Jul-2021 15:17:23
  
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
---- Importing TetGen files --- 13-May-2020 14:09:32
---- Done --- 13-May-2020 14:09:32
+--- Importing TetGen files --- 09-Jul-2021 15:17:23
+--- Done --- 09-Jul-2021 15:17:23
 </pre><p>Access mesh output structure</p><pre class="codeinput">E=meshOutput.elements; <span class="comment">%The elements</span>
 V=meshOutput.nodes; <span class="comment">%The vertices or nodes</span>
 CE=meshOutput.elementMaterialID; <span class="comment">%Element material or region id</span>
@@ -858,7 +922,159 @@ axisGeom(gca,fontSize);
 gdrawnow;
 
 clear <span class="string">hp</span>;
-</pre><img width="100%" height="auto" vspace="5" hspace="5" src="HELP_runTetGen_07.jpg" alt=""> <h2 id="43">Example 8: Meshing 10-node (i.e. quadratic) tetrahedral elements</h2><pre class="codeinput"><span class="comment">% Building spherical surface models</span>
+</pre><img width="100%" height="auto" vspace="5" hspace="5" src="HELP_runTetGen_07.jpg" alt=""> <h2 id="43">Example 8: Meshing of topology with holes and complex regions</h2><p>Simulating nested spheres with a hollow core and "tunnel" to outside</p><pre class="codeinput">w=0.25;
+r=0.1;
+
+[Fs1,Vs1]=geoSphere(4,1);
+[Fs2,Vs2]=geoSphere(4,1-w);
+[Fs3,Vs3]=geoSphere(4,1-2*w);
+
+R=sqrt(sum(Vs1(:,[1 2]).^2,2));
+logicCropVertices=R&lt;=(r+mean(patchEdgeLengths(Fs1,Vs1))) &amp; Vs1(:,3)&gt;0;
+logicCropFaces=any(logicCropVertices(Fs1),2);
+logicCropFaces=triSurfLogicSharpFix(Fs1,logicCropFaces);
+
+Fs1=Fs1(~logicCropFaces,:);
+Fs2=Fs2(~logicCropFaces,:);
+Fs3=Fs3(~logicCropFaces,:);
+
+Eb=patchBoundary(Fs1,Vs1);
+indB=edgeListToCurve(Eb);
+indB=indB(1:end-1);
+
+
+cPar.closeLoopOpt=1;
+cPar.patchType=<span class="string">'tri_slash'</span>;
+[Fs4,Vs4]=polyLoftLinear(Vs3(indB,:),Vs2(indB,:),cPar);
+[Fs5,Vs5]=polyLoftLinear(Vs2(indB,:),Vs1(indB,:),cPar);
+
+[F,V,C]=joinElementSets({Fs1,Fs2,Fs3,Fs4,Fs5},{Vs1,Vs2,Vs3,Vs4,Vs5});
+[F,V]=mergeVertices(F,V);
+[F,V]=patchCleanUnused(F,V);
+
+logicRegion1=ismember(C,[1 2 max(C(:))]);
+logicRegion2=ismember(C,[2 3 4]);
+
+V_inner1=getInnerPoint(F(logicRegion1,:),V);
+V_inner2=getInnerPoint(F(logicRegion2,:),V);
+
+V_regions=[V_inner1; V_inner2];
+
+regionTetVolumes=tetVolMeanEst(F,V);
+stringOpt=<span class="string">'-pq1.2AaY'</span>; <span class="comment">%Tetgen options</span>
+V_holes=[];
+</pre><p>Mesh using TetGen</p><pre class="codeinput"><span class="comment">%Create tetgen input structure</span>
+inputStruct.stringOpt=stringOpt; <span class="comment">%Tetgen options</span>
+inputStruct.Faces=F; <span class="comment">%Boundary faces</span>
+inputStruct.Nodes=V; <span class="comment">%Nodes of boundary</span>
+inputStruct.faceBoundaryMarker=C;
+inputStruct.regionPoints=V_regions; <span class="comment">%Interior points for regions</span>
+inputStruct.holePoints=V_holes; <span class="comment">%Interior points for holes</span>
+inputStruct.regionA=regionTetVolumes*ones(size(V_regions,1),1); <span class="comment">%Desired tetrahedral volume for each region</span>
+
+<span class="comment">% Mesh model using tetrahedral elements using tetGen</span>
+[meshOutput]=runTetGen(inputStruct); <span class="comment">%Run tetGen</span>
+</pre><pre class="codeoutput"> 
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+--- TETGEN Tetrahedral meshing --- 09-Jul-2021 15:17:27
+ 
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+--- Writing SMESH file --- 09-Jul-2021 15:17:27
+----&gt; Adding node field
+----&gt; Adding facet field
+----&gt; Adding holes specification
+----&gt; Adding region specification
+--- Done --- 09-Jul-2021 15:17:27
+--- Writing MTR file --- 09-Jul-2021 15:17:27
+--- Running TetGen to mesh initial Delaunay tesselation using sizing function--- 09-Jul-2021 15:17:27
+Opening /mnt/data/MATLAB/GIBBON/data/temp/temp.smesh.
+Opening /mnt/data/MATLAB/GIBBON/data/temp/temp.mtr.
+  !! Point numbers are not equal. Ignored.
+  Cannot access file /mnt/data/MATLAB/GIBBON/data/temp/temp.b.node.
+Delaunizing vertices...
+Delaunay seconds:  0.636653
+Creating surface mesh ...
+Surface mesh seconds:  0.016217
+Recovering boundaries...
+Boundary recovery seconds:  0.042972
+Removing exterior tetrahedra ...
+Spreading region attributes.
+Exterior tets removal seconds:  0.009288
+Mesh coarsening ...
+Mesh coarsening seconds:  0.00011
+Recovering Delaunayness...
+Delaunay recovery seconds:  0.215868
+Refining mesh...
+  10361 insertions, added 9301 points, 334201 tetrahedra in queue.
+  3450 insertions, added 2890 points, 399552 tetrahedra in queue.
+  4599 insertions, added 3698 points, 479251 tetrahedra in queue.
+  6130 insertions, added 4662 points, 574559 tetrahedra in queue.
+  8171 insertions, added 5746 points, 677577 tetrahedra in queue.
+  10892 insertions, added 5892 points, 715672 tetrahedra in queue.
+  14519 insertions, added 4593 points, 345657 tetrahedra in queue.
+  19354 insertions, added 2235 points, 21330 tetrahedra in queue.
+Refinement seconds:  1.421
+Smoothing vertices...
+Mesh smoothing seconds:  3.3753
+Improving mesh...
+Mesh improvement seconds:  0.081561
+
+Writing /mnt/data/MATLAB/GIBBON/data/temp/temp.1.node.
+Writing /mnt/data/MATLAB/GIBBON/data/temp/temp.1.ele.
+Writing /mnt/data/MATLAB/GIBBON/data/temp/temp.1.face.
+Writing /mnt/data/MATLAB/GIBBON/data/temp/temp.1.edge.
+Writing /mnt/data/MATLAB/GIBBON/data/temp/temp.1.mtr.
+Writing /mnt/data/MATLAB/GIBBON/data/temp/temp.1.p2t.
+
+Output seconds:  0.643161
+Total running seconds:  6.4429
+
+Statistics:
+
+  Input points: 7773
+  Input facets: 15558
+  Input segments: 23328
+  Input holes: 0
+  Input regions: 2
+
+  Mesh points: 47268
+  Mesh tetrahedra: 275809
+  Mesh faces: 556864
+  Mesh faces on exterior boundary: 10492
+  Mesh faces on input facets: 15558
+  Mesh edges on input segments: 23328
+  Steiner points inside domain: 39495
+
+--- Done --- 09-Jul-2021 15:17:34
+ 
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+--- Importing TetGen files --- 09-Jul-2021 15:17:34
+--- Done --- 09-Jul-2021 15:17:34
+</pre><p>Access mesh output structure</p><pre class="codeinput">E=meshOutput.elements; <span class="comment">%The elements</span>
+V=meshOutput.nodes; <span class="comment">%The vertices or nodes</span>
+CE=meshOutput.elementMaterialID; <span class="comment">%Element material or region id</span>
+Fb=meshOutput.facesBoundary; <span class="comment">%The boundary faces</span>
+Cb=meshOutput.boundaryMarker; <span class="comment">%The boundary markers</span>
+</pre><p>Visualization</p><pre class="codeinput">hf=cFigure;
+subplot(1,2,1); hold <span class="string">on</span>;
+title(<span class="string">'Input boundaries'</span>,<span class="string">'FontSize'</span>,fontSize);
+hp(1)=gpatch(F,V,<span class="string">'kw'</span>,<span class="string">'none'</span>,faceAlpha1);
+hp(2)=plotV(V_regions,<span class="string">'r.'</span>,<span class="string">'MarkerSize'</span>,markerSize);
+legend(hp,{<span class="string">'Input mesh'</span>,<span class="string">'Interior point(s)'</span>},<span class="string">'Location'</span>,<span class="string">'NorthWestOutside'</span>);
+axisGeom(gca,fontSize); camlight <span class="string">headlight</span>;
+colormap(cMap); colorbar;
+hs=subplot(1,2,2); hold <span class="string">on</span>;
+title(<span class="string">'Tetrahedral mesh'</span>,<span class="string">'FontSize'</span>,fontSize);
+
+<span class="comment">% Visualizing using |meshView|</span>
+optionStruct.hFig=[hf,hs];
+meshView(meshOutput,optionStruct);
+
+axisGeom(gca,fontSize);
+gdrawnow;
+
+clear <span class="string">hp</span>;
+</pre><img width="100%" height="auto" vspace="5" hspace="5" src="HELP_runTetGen_08.jpg" alt=""> <h2 id="47">Example 9: Meshing 10-node (i.e. quadratic) tetrahedral elements</h2><pre class="codeinput"><span class="comment">% Building spherical surface models</span>
 [F,V,~]=geoSphere(2,1);
 C=ones(size(F,1),1);
 V_regions=[0 0 0];
@@ -879,26 +1095,26 @@ inputStruct.tetType=<span class="string">'tet10'</span>; <span class="comment">%
 [meshOutput]=runTetGen(inputStruct); <span class="comment">%Run tetGen</span>
 </pre><pre class="codeoutput"> 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
---- TETGEN Tetrahedral meshing --- 13-May-2020 14:09:35
+--- TETGEN Tetrahedral meshing --- 09-Jul-2021 15:17:41
  
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
---- Writing SMESH file --- 13-May-2020 14:09:35
+--- Writing SMESH file --- 09-Jul-2021 15:17:41
 ----&gt; Adding node field
 ----&gt; Adding facet field
 ----&gt; Adding holes specification
 ----&gt; Adding region specification
---- Done --- 13-May-2020 14:09:35
---- Writing MTR file --- 13-May-2020 14:09:35
---- Running TetGen to mesh initial Delaunay tesselation using sizing function--- 13-May-2020 14:09:35
+--- Done --- 09-Jul-2021 15:17:41
+--- Writing MTR file --- 09-Jul-2021 15:17:41
+--- Running TetGen to mesh initial Delaunay tesselation using sizing function--- 09-Jul-2021 15:17:41
 Opening /mnt/data/MATLAB/GIBBON/data/temp/temp.smesh.
 Opening /mnt/data/MATLAB/GIBBON/data/temp/temp.mtr.
   !! Point numbers are not equal. Ignored.
   Cannot access file /mnt/data/MATLAB/GIBBON/data/temp/temp.b.node.
---- Done --- 13-May-2020 14:09:35
+--- Done --- 09-Jul-2021 15:17:41
  
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
---- Importing TetGen files --- 13-May-2020 14:09:35
---- Done --- 13-May-2020 14:09:35
+--- Importing TetGen files --- 09-Jul-2021 15:17:41
+--- Done --- 09-Jul-2021 15:17:41
 </pre><p>Access mesh output structure</p><pre class="codeinput">E=meshOutput.elements; <span class="comment">%The elements</span>
 V=meshOutput.nodes; <span class="comment">%The vertices or nodes</span>
 CE=meshOutput.elementMaterialID; <span class="comment">%Element material or region id</span>
@@ -931,7 +1147,7 @@ camlight <span class="string">headlight</span>;
 axisGeom(gca,fontSize);
 colormap(cMap);
 gdrawnow;
-</pre><img width="100%" height="auto" vspace="5" hspace="5" src="HELP_runTetGen_08.jpg" alt=""> <p><img vspace="5" hspace="5" src="gibbVerySmall.gif" alt=""> </p><p><i><b>GIBBON</b></i> <a href="www.gibboncode.org">www.gibboncode.org</a></p><p><i>Kevin Mattheus Moerman</i>, <a href="gibbon.toolbox@gmail.com">gibbon.toolbox@gmail.com</a></p><p><i><b>GIBBON footer text</b></i></p><p>License: <a href="https://github.com/gibbonCode/GIBBON/blob/master/LICENSE">https://github.com/gibbonCode/GIBBON/blob/master/LICENSE</a></p><p>GIBBON: The Geometry and Image-based Bioengineering add-On. A toolbox for image segmentation, image-based modeling, meshing, and finite element analysis.</p><p>Copyright (C) 2006-2020 Kevin Mattheus Moerman</p><p>This program is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.</p><p>This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for more details.</p><p>You should have received a copy of the GNU General Public License along with this program.  If not, see <a href="http://www.gnu.org/licenses/">http://www.gnu.org/licenses/</a>.</p><p class="footer"><br><a href="https://www.mathworks.com/products/matlab/">Published with MATLAB&reg; R2020a</a><br></p></div><!--
+</pre><img width="100%" height="auto" vspace="5" hspace="5" src="HELP_runTetGen_09.jpg" alt=""> <p><img vspace="5" hspace="5" src="gibbVerySmall.gif" alt=""> </p><p><i><b>GIBBON</b></i> <a href="www.gibboncode.org">www.gibboncode.org</a></p><p><i>Kevin Mattheus Moerman</i>, <a href="gibbon.toolbox@gmail.com">gibbon.toolbox@gmail.com</a></p><p><i><b>GIBBON footer text</b></i></p><p>License: <a href="https://github.com/gibbonCode/GIBBON/blob/master/LICENSE">https://github.com/gibbonCode/GIBBON/blob/master/LICENSE</a></p><p>GIBBON: The Geometry and Image-based Bioengineering add-On. A toolbox for image segmentation, image-based modeling, meshing, and finite element analysis.</p><p>Copyright (C) 2006-2021 Kevin Mattheus Moerman and the GIBBON contributors</p><p>This program is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.</p><p>This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for more details.</p><p>You should have received a copy of the GNU General Public License along with this program.  If not, see <a href="http://www.gnu.org/licenses/">http://www.gnu.org/licenses/</a>.</p><p class="footer"><br><a href="https://www.mathworks.com/products/matlab/">Published with MATLAB&reg; R2021a</a><br></p></div><!--
 ##### SOURCE BEGIN #####
 %% runTetGen
 % Below is a demonstration of the features of the |runTetGen| function
@@ -1490,7 +1706,7 @@ edgeSizeField=(edgeSizeField*minEdgeSize);
 
 regionTetVolumes=tetVolMeanEst(F,V);
 V_regions=mean(V,1); 
-stringOpt='-pq1.2AaY'; %Tetgen options
+stringOpt='-pq1.2Aa'; %Tetgen options
 V_holes=[];
 
 %%
@@ -1542,7 +1758,99 @@ gdrawnow;
 
 clear hp; 
 
-%% Example 8: Meshing 10-node (i.e. quadratic) tetrahedral elements
+%% Example 8: Meshing of topology with holes and complex regions 
+% Simulating nested spheres with a hollow core and "tunnel" to outside
+
+w=0.25;
+r=0.1; 
+
+[Fs1,Vs1]=geoSphere(4,1);
+[Fs2,Vs2]=geoSphere(4,1-w);
+[Fs3,Vs3]=geoSphere(4,1-2*w);
+
+R=sqrt(sum(Vs1(:,[1 2]).^2,2));
+logicCropVertices=R<=(r+mean(patchEdgeLengths(Fs1,Vs1))) & Vs1(:,3)>0;
+logicCropFaces=any(logicCropVertices(Fs1),2);
+logicCropFaces=triSurfLogicSharpFix(Fs1,logicCropFaces); 
+
+Fs1=Fs1(~logicCropFaces,:);
+Fs2=Fs2(~logicCropFaces,:); 
+Fs3=Fs3(~logicCropFaces,:);
+
+Eb=patchBoundary(Fs1,Vs1);
+indB=edgeListToCurve(Eb);
+indB=indB(1:end-1);
+
+
+cPar.closeLoopOpt=1; 
+cPar.patchType='tri_slash';
+[Fs4,Vs4]=polyLoftLinear(Vs3(indB,:),Vs2(indB,:),cPar);
+[Fs5,Vs5]=polyLoftLinear(Vs2(indB,:),Vs1(indB,:),cPar);
+
+[F,V,C]=joinElementSets({Fs1,Fs2,Fs3,Fs4,Fs5},{Vs1,Vs2,Vs3,Vs4,Vs5});
+[F,V]=mergeVertices(F,V);
+[F,V]=patchCleanUnused(F,V);
+
+logicRegion1=ismember(C,[1 2 max(C(:))]);
+logicRegion2=ismember(C,[2 3 4]);
+
+V_inner1=getInnerPoint(F(logicRegion1,:),V);
+V_inner2=getInnerPoint(F(logicRegion2,:),V);
+
+V_regions=[V_inner1; V_inner2];
+
+regionTetVolumes=tetVolMeanEst(F,V);
+stringOpt='-pq1.2AaY'; %Tetgen options
+V_holes=[];
+
+%%
+% Mesh using TetGen
+
+%Create tetgen input structure
+inputStruct.stringOpt=stringOpt; %Tetgen options
+inputStruct.Faces=F; %Boundary faces
+inputStruct.Nodes=V; %Nodes of boundary
+inputStruct.faceBoundaryMarker=C; 
+inputStruct.regionPoints=V_regions; %Interior points for regions
+inputStruct.holePoints=V_holes; %Interior points for holes
+inputStruct.regionA=regionTetVolumes*ones(size(V_regions,1),1); %Desired tetrahedral volume for each region
+
+% Mesh model using tetrahedral elements using tetGen 
+[meshOutput]=runTetGen(inputStruct); %Run tetGen 
+
+%% 
+% Access mesh output structure
+
+E=meshOutput.elements; %The elements
+V=meshOutput.nodes; %The vertices or nodes
+CE=meshOutput.elementMaterialID; %Element material or region id
+Fb=meshOutput.facesBoundary; %The boundary faces
+Cb=meshOutput.boundaryMarker; %The boundary markers
+
+%%
+% Visualization
+
+hf=cFigure; 
+subplot(1,2,1); hold on;
+title('Input boundaries','FontSize',fontSize);
+hp(1)=gpatch(F,V,'kw','none',faceAlpha1);
+hp(2)=plotV(V_regions,'r.','MarkerSize',markerSize);
+legend(hp,{'Input mesh','Interior point(s)'},'Location','NorthWestOutside');
+axisGeom(gca,fontSize); camlight headlight;
+colormap(cMap); colorbar;
+hs=subplot(1,2,2); hold on;
+title('Tetrahedral mesh','FontSize',fontSize);
+
+% Visualizing using |meshView|
+optionStruct.hFig=[hf,hs];
+meshView(meshOutput,optionStruct);
+
+axisGeom(gca,fontSize); 
+gdrawnow;
+
+clear hp; 
+
+%% Example 9: Meshing 10-node (i.e. quadratic) tetrahedral elements
 
 % Building spherical surface models
 [F,V,~]=geoSphere(2,1);
@@ -1626,7 +1934,7 @@ gdrawnow;
 % image segmentation, image-based modeling, meshing, and finite element
 % analysis.
 % 
-% Copyright (C) 2006-2020 Kevin Mattheus Moerman
+% Copyright (C) 2006-2021 Kevin Mattheus Moerman and the GIBBON contributors
 % 
 % This program is free software: you can redistribute it and/or modify
 % it under the terms of the GNU General Public License as published by
