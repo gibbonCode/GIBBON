@@ -7,6 +7,9 @@ function [varargout]=spinodoid(inputStruct)
 % generated using a Gaussian random field (GRF) and can be made anisotropic
 % by tuning the anisotropy of the GRF.
 %
+% To generate spatially-graded spinodoids, check the spatially-graded 
+% example in HELP_spinodoid: example 5
+%
 % Based on / how to cite:
 % -----------------------------------------------------------------------
 % (1) S. Kumar, S. Tan, L. Zheng, D.M. Kochmann.
