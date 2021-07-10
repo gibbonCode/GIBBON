@@ -85,15 +85,18 @@ if(ignoreChecks)
     warning(['Ignoring all checks on parameter values. ',...
         'Unreasonable parameters may give wrong topologies.']);
 else
-    if((relativeDensity<0.3) || (relativeDensity>1.0))
+    if((relativeDensity<0.0) || (relativeDensity>1.0))
         error('relativeDensity must be between [0.3,1]')
+    end
+    if((relativeDensity<0.3))
+        warning('Relative density too low, it may produce discontinuous domains')
     end
     if((any(thetas<0)) || (any(thetas>90)))
         error('thetas must be either 0 or between [15,90] degrees')
     end
     for i=1:3
         if((thetas(i)>0) && (thetas(i)<15))
-            error('thetas must be either 0 or between [15,90] degrees')
+            warning('thetas must be either 0 or between [15,90] degrees to ensure continuous domains')
         end
     end
 
