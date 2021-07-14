@@ -1,5 +1,14 @@
 function [Vg]=sweepCurveSmooth(varargin)
 
+% function [Vg]=sweepCurveSmooth(V1,V2,n1,n2,numSteps,p,f)
+% ------------------------------------------------------------------------
+%
+%
+%
+% ------------------------------------------------------------------------
+
+%% Parse input
+
 switch nargin
     case 5
         V1=varargin{1};
@@ -7,7 +16,7 @@ switch nargin
         n1=varargin{3};
         n2=varargin{4};
         numSteps=varargin{5};
-        p=[];
+        p=0.5;
         f=0.1;        
     case 6    
         V1=varargin{1};

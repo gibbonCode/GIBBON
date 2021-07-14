@@ -2,9 +2,14 @@ function [R]=vecAngle2Rot(theta,w)
 
 % function [R]=vecAngle2Rot(theta,w)
 % ------------------------------------------------------------------
+% 
 %
-%
-%
+% See also: 
+% * https://en.wikipedia.org/wiki/Euler%E2%80%93Rodrigues_formula
+% * Page 15, Eq. 1.76 in: Mikhail Itskov, "Tensor Algebra and Tensor
+% Analysis for Engineers", 3rd edition, 
+% 
+% 2021/07/14 KMM Added comments
 % ------------------------------------------------------------------
 
 %%

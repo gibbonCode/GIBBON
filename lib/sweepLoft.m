@@ -18,11 +18,16 @@ function [varargout]=sweepLoft(varargin)
 % Kevin Mattheus Moerman
 % gibbon.toolbox@gmail.com
 %
-% 2016/08/01 Created
-% 2017/06/27 Fixed bug in relation to compensatory/corrective rotation
-% 2018/11/07 Updated so users have the option of using an input structure instead
-% 2018/11/07 Added close section option, enabling open or closed sections
+% Change log:
+% 2016/08/01 KMM Created
+% 2017/06/27 KMM Fixed bug in relation to compensatory/corrective rotation
+% 2018/11/07 KMM Updated so users have the option of using an input structure instead
+% 2018/11/07 KMM Added close section option, enabling open or closed sections
 % sweeps
+% 2021/07/14 KMM Updated comments
+% 2021/07/14 KMM Improved efficiency and precission (avoid iterative
+% definition KMM related precission issues). 
+% 2021/07/14 KMM Consistently use post rotation
 %------------------------------------------------------------------------
 
 %% Parse input
@@ -90,22 +95,22 @@ end
 
 animTime=2;
 
-p1=Vg(1,:);
-p2=Vg(end,:);
+p1=Vg(1,:); %Start point
+p2=Vg(end,:); %End point
 
 %%
 %Resample guide curve evenly using numSteps
 [Vg] = evenlySampleCurve(Vg,numSteps,'linear',0);
 
-stepSize=sqrt(sum((Vg(1,:)-Vg(2,:)).^2,2));
 %%
 
+%Initialize visualization
 if plotOn
+    d=mean(sqrt(sum(diff(Vg,[],1).^2,2)),1); %Average point spacing
     lineWidth1=6;
     lineWidth2=2;    
     lineWidth3=1; 
-    markerSize=25;
-    triadSize=stepSize*7; 
+    triadSize=d*7; 
     fontSize=20;
     if isempty(hf)
         hf=cFigure; hold on;
@@ -130,13 +135,20 @@ end
 
 %% Define allong curve coordinate systems
 
-Uf=[diff(Vg,1,1); nan(1,size(Vg,2))];
-Ub=-[nan(1,size(Vg,2)); flipud(diff(flipud(Vg),1,1))];
-U=Uf;
-U(:,:,2)=Ub;
-U=gnanmean(U,3);
-U=vecnormalize(U);
+%Compute "central difference" to get per vertex curve direction vector
+Uf=[diff(Vg,1,1); nan(1,size(Vg,2))]; %Forward
+Ub=-[nan(1,size(Vg,2)); flipud(diff(flipud(Vg),1,1))]; %Backward
+U=Uf; %First layer is forward
+U(:,:,2)=Ub; %Second layer is backward
+%Replace by mean in 3rd direction
+try
+    U=mean(U,3,'omitnan');
+catch
+    U=gnanmean(U,3);
+end
+U=vecnormalize(U); %Normalize direction vectors
 
+%Compute start coordinate system
 mean_V1=mean(V1,1);
 V1m=vecnormalize(V1-mean_V1(ones(size(V1,1),1),:));
 e3=n1;
@@ -145,6 +157,7 @@ e2=vecnormalize(cross(e3,e1));
 e1=vecnormalize(cross(e2,e3));
 R1=[e1;e2;e3];
 
+%Compute end coordinate system
 mean_V2=mean(V2,1);
 V2m=vecnormalize(V2-mean_V2(ones(size(V2,1),1),:));
 e3=n2;
@@ -153,37 +166,47 @@ e2=vecnormalize(cross(e3,e1));
 e1=vecnormalize(cross(e2,e3));
 R2=[e1;e2;e3];
 
+%Create coorindate systems allong curve
 R_curve=repmat(eye(3,3),[1,1,size(Vg,1)]);
 R_curve(:,:,1)=R1;
-
 R=R1;
-
 if plotOn==1
     hTriad=gobjects(1,1);
 end
 
+a=U(1,:); %The first direction vector
 for q=2:size(Vg,1)
-    a=U(q-1,:);
-    b=U(q,:);
+    % a=U(q-1,:); %Previous direction vector
+    b=U(q,:); %Current direction vector
     
-    theta=real(acos(dot(a,b))); %Complex if dot product is out of range [-1.1] due to precission issues
-    w=vecnormalize(cross(b,a));
+    %Compute angle between vectors
+    theta=real(acos(dot(a,b))); %Complex if dot product is out of range [-1,1] due to precission issues
     
-    if norm(w)>0.5
+    %Compute axis for rotation using cross product
+    w=vecnormalize(cross(b,a)); %Zero magnitude if colinear
+    
+    if norm(w)>0.5 % i.e. if vectors were not co-linear so rotation is needed
         [Rn]=vecAngle2Rot(theta,w);
-        R=R*Rn;
-        if plotOn
-            figure(hf);
-            delete(hTriad);
-            hTriad=quiverTriad(Vg(q,:),R',triadSize);
-            drawnow;
-            pause(animTime/size(Vg,1));
-        end
+        R=R1*Rn; %New rotation tensor        
+    else
+        R=R1; %Stick with original (no rotation was needed
     end
-    R_curve(:,:,q)=R;
+    R_curve(:,:,q)=R; %Store rotation tensor
+    
+    %Visualization
+    if plotOn
+        figure(hf);
+        delete(hTriad);
+        hTriad=quiverTriad(Vg(q,:),R',triadSize);
+        drawnow;
+        pause(animTime/size(Vg,1));
+    end
 end
 
 %% Create coordinate matrices
+% The start and end curves are rotated so that they are parallel to allow
+% use of linspacen to initialize coordinates for morphing from the start
+% curve to the end curve. 
 
 V1s=V1-p1(ones(size(V1,1),1),:);
 V1s=V1s*R1';
@@ -191,29 +214,29 @@ V1s=V1s*R1';
 V2s=V2-p2(ones(size(V2,1),1),:);
 V2s=V2s*R2';
 
-% Create coordinate matrices
+% Create coordinate matrices to morph between shapes
 X=linspacen(V1s(:,1),V2s(:,1),numSteps)';
 Y=linspacen(V1s(:,2),V2s(:,2),numSteps)';
 Z=linspacen(V1s(:,3),V2s(:,3),numSteps)';
 
-Vs=[X(:) Y(:) Z(:)];
-
-X=reshape(Vs(:,1),size(X));
-Y=reshape(Vs(:,2),size(Y));
-Z=reshape(Vs(:,3),size(Z));
-
-%%
+%% Rotate and position coordinates for curves along guide curve
 
 if plotOn==1
     h1=gobjects(1,numSteps);
 end
 
-for q=1:1:numSteps
+for q=1:1:numSteps    
+    %Get curve and rotate/translate
+    V2p=[X(q,:)' Y(q,:)' Z(q,:)']; %The current curve
+    V2p=V2p*R_curve(:,:,q); %Rotation
+    V2p=V2p+Vg(q*ones(size(V2p,1),1),:); %Shift/translation to place at guide curve point
     
-    V2p=[X(q,:)' Y(q,:)' Z(q,:)'];
-    V2p=(R_curve(:,:,q)'*V2p')';
-    V2p=V2p+Vg(q*ones(size(V2p,1),1),:);
+    %Update coordinates in matrices
+    X(q,:)=V2p(:,1);
+    Y(q,:)=V2p(:,2);
+    Z(q,:)=V2p(:,3);
     
+    %Visualization
     if plotOn==1
         figure(hf);
         ht.String='Initial morphing and sweeping of sections along guide curve';
@@ -223,17 +246,14 @@ for q=1:1:numSteps
         end
         drawnow;
         pause(animTime/numSteps);
-    end
-    X(q,:)=V2p(:,1);
-    Y(q,:)=V2p(:,2);
-    Z(q,:)=V2p(:,3);
+    end    
 end
 
-%%
+%% Determine mismatch between morphed end curve and desired end curve
 
-V2p=[X(end,:)' Y(end,:)' Z(end,:)'];
-
-if size(V2,1)==3
+%Compute rotation matrix to correct for mismatch
+V2p=[X(end,:)' Y(end,:)' Z(end,:)']; %The current end curve
+if size(V2,1)==3 %Upsample if only 3 points are used
     [V2_temp] = evenlySampleCurve(V2,size(V2,1)*3,'linear',0);
     [V2p_temp] = evenlySampleCurve(V2p,size(V2,1)*3,'linear',0);
     [~,Rc]=rigidTransformationMatrixDirect(V2_temp,V2p_temp);
@@ -241,22 +261,29 @@ else
     [~,Rc]=rigidTransformationMatrixDirect(V2,V2p);
 end
 
+%Convert rotation matrix to angle and axis (vector) of rotation
 [theta,w]=rot2VecAngle(Rc);
-% theta=0; w=n2';
 
-%%
-W=repmat(w(:)',[numSteps,1]);
-wt=w;
+%% Determine rotation axes to use to distribute rotation for mismatch correction
+
+W=repmat(w(:)',[numSteps,1]); %Allocate axes
+wt=w; %The initial rotation axis
+
+%Visualization
 if plotOn==1
     hVec=gobjects(1,1);
     delete(hTriad);
 end
-for q=numSteps-1:-1:1
-    mean_V_now=mean([X(q,:)' Y(q,:)' Z(q,:)'],1);
-    wt=(wt'*R_curve(:,:,q+1)'*R_curve(:,:,q))';
+
+for q=numSteps-1:-1:1    
+    wt=(wt'*R_curve(:,:,q+1)'*R_curve(:,:,q))'; %Rotate axis
+    W(q,:)=wt(:)'; %Store rotated axis
+
+    %Visualization
     if plotOn==1
-        figure(hf);        
+        mean_V_now=mean([X(q,:)' Y(q,:)' Z(q,:)'],1);
         
+        figure(hf);            
         delete(h1(q));
         ht.String='Back tracking and fixing initial orientation mismatch';
         delete(hVec);
@@ -264,17 +291,18 @@ for q=numSteps-1:-1:1
         drawnow;
         pause(animTime/numSteps);
     end
-    W(q,:)=wt(:)';
 end
 
 %%
 
-V2p_c=mean(V2p,1);
-V2p=V2p-V2p_c(ones(size(V2p,1),1),:);
-V2p=(Rc'*V2p')';
-V2p=V2p+V2p_c(ones(size(V2p,1),1),:);
-
+%Visualization
 if plotOn==1
+    
+    V2p_c=mean(V2p,1);
+    V2p=V2p-V2p_c(ones(size(V2p,1),1),:);
+    V2p=(Rc'*V2p')';
+    V2p=V2p+V2p_c(ones(size(V2p,1),1),:);
+    
     figure(hf);
     delete(hVec);
     delete(h1(end));
@@ -282,35 +310,45 @@ if plotOn==1
     drawnow;
 end
 
-%%
+%% Determine rotation angles to use to distribute rotation for mismatch correction
 
-theta_w=linspace(0,1,size(Vg,1));
-theta_step=theta*theta_w;
+theta_step=linspace(0,theta,size(Vg,1)); %angles from 0 to theta
 
+%Define additional twist angles if needed
 if numTwist>0
     theta_step_twist=linspace(0,2*pi*numTwist,size(Vg,1));
 end
 
+%% Process distributed rotation to correct mismatch
+
+%Visualization
 if plotOn==1
     h2=gobjects(1,size(Vg,1));   
     hTriad2=gobjects(1,1);
 end
 
 for q=1:1:size(Vg,1)
-    Vn=[X(q,:)' Y(q,:)' Z(q,:)'];
-    Vn_mean=mean(Vn,1);
-    Vn=Vn-Vn_mean(ones(size(Vn,1),1),:);
+    Vn=[X(q,:)' Y(q,:)' Z(q,:)']; %The current curve
+    Vn_mean=mean(Vn,1); %Mean of current curve
+    Vn=Vn-Vn_mean(ones(size(Vn,1),1),:); %Subtract mean to place at origin
     
-    [Rc]=vecAngle2Rot(theta_step(q),W(q,:));
-    Vn=(Rc'*Vn')';
+    [Rc]=vecAngle2Rot(theta_step(q),W(q,:)); %Rotation matrix based on angle/axis
+    Vn=Vn*Rc; %Rotate 
     
+    %Rotate more for added twist
     if numTwist>0
-        [Rc]=vecAngle2Rot(theta_step_twist(q),U(q,:));
-        Vn=(Rc'*Vn')';
+        [Rc]=vecAngle2Rot(theta_step_twist(q),U(q,:)); %Rotate around currect guide curve dir.
+        Vn=Vn*Rc; %Rotate
     end
     
-    Vn=Vn+Vn_mean(ones(size(Vn,1),1),:);
+    Vn=Vn+Vn_mean(ones(size(Vn,1),1),:); %Shift back to mean
     
+    %Update coordinates in matrices
+    X(q,:)=Vn(:,1);
+    Y(q,:)=Vn(:,2);
+    Z(q,:)=Vn(:,3);
+    
+    %Visualization
     if plotOn==1        
         figure(hf);
         ht.String='Correct orientations and add potential twist';
@@ -322,11 +360,7 @@ for q=1:1:size(Vg,1)
         hTriad2=quiverTriad(Vg(q,:),(R_curve(:,:,q)*Rc)',triadSize);
         drawnow;
         pause(animTime/size(Vg,1));
-    end
-    
-    X(q,:)=Vn(:,1);
-    Y(q,:)=Vn(:,2);
-    Z(q,:)=Vn(:,3);
+    end   
 end
 
 if plotOn==1
@@ -343,7 +377,7 @@ X(end,:)=V2(:,1);
 Y(end,:)=V2(:,2);
 Z(end,:)=V2(:,3);
 
-%% Create patch data
+%% Create patch data from "meshgrid" formatted coordinate matrices
 
 %Color data
 c=(1:1:size(Z,1))';
@@ -363,6 +397,7 @@ end
 [C]=vertexToFaceMeasure(F,C); %Convert vertex colors to face colors
 C=round(C)-1;
 
+%Visualization
 if plotOn==1    
     figure(hf);
     delete(h2);
@@ -371,7 +406,7 @@ if plotOn==1
     drawnow;
 end
 
-%%
+%% Collect output
 
 varargout{1}=F;
 varargout{2}=V;
