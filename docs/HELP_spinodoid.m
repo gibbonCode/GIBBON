@@ -5,7 +5,7 @@
 clear; close all; clc;
 
 %% Syntax
-% |[F,V,C]=spinodoid(M,IND,ptype);|
+% |[F,V,C,GRF,X,Y,Z,levelset]=spinodoid(M,IND,ptype);|
 
 %% Description
 % -----------------------------------------------------------------------
@@ -15,11 +15,23 @@ clear; close all; clc;
 % generated using a Gaussian random field (GRF) and can be made anisotropic
 % by tuning the anisotropy of the GRF.
 %
-% Based on / how to cite: 
-% Kumar, S., Tan, S., Zheng, L., Kochmann, D.M. Inverse-designed spinodoid 
-% metamaterials. npj Comput Mater 6, 73 (2020). 
-% https://doi.org/10.1038/s41524-020-0341-6
+% To generate spatially-graded spinodoids, check the spatially-graded 
+% example below (HELP_spinodoid: example 5)
 %
+% Based on / how to cite:
+% -----------------------------------------------------------------------
+% (1) S. Kumar, S. Tan, L. Zheng, D.M. Kochmann.
+%     Inverse-designed spinodoid metamaterials. 
+%     npj Computational Materials, 6 (2020), 73. 
+%     https://doi.org/10.1038/s41524-020-0341-6
+%
+% (2) L. Zheng, S. Kumar, D.M. Kochmann.
+%     Data-driven topology optimization of spinodoid metamaterials with 
+%     seamlessly tunable anisotropy. 
+%     Computer Methods in Applied Mechanics and Engineering, 383 (2021), 113894.
+%     https://doi.org/10.1016/j.cma.2021.113894
+%
+% -----------------------------------------------------------------------
 % Input structure and default values:
 % inputStruct.isocap=true; % option to cap the isosurface
 % inputStruct.domainSize=1; % domain size
@@ -32,10 +44,20 @@ clear; close all; clc;
 %                                Note: each entry must be either 0 or
 %                                between [15,90] degrees.
 % inputStruct.R = eye(3); % Rotate the GRF, R must be SO(3)
+% inputStruct.ignoreChecks = false; % Ignore checks on parameters if true (not advised)
 %
+% The function returns the following:
+% F: faces of the surface mesh
+% V: vertices of the surfae mesh
+% C: color data for the surface mesh
+% GRF (3d matrix): Underlying Gaussian random field (GRF) before levelset is applied
+% X (3d matrix): X coordinates where GRF is evaluated
+% Y (3d matrix): Y coordinates where GRF is evaluated
+% Z (3d matrix): Z coordinates where GRF is evaluated
+% leveset (scalar): Levelset applied on GRF to compute the isosurfaces
 %
 % Original author: Siddhant Kumar, September 2020
-% (contact: siddhantk41@gmail.com)
+% (contact: Sid.Kumar@tudelft.nl)
 % -----------------------------------------------------------------------
 
 %% Examples
@@ -169,6 +191,147 @@ gpatch(F,V,C,'none');
 axisGeom; camlight headlight; 
 colormap gjet; icolorbar;
 gdrawnow;
+
+
+%% Example 5: Spatially-graded spinodoids
+
+% -----------------------------------------------------------------------
+% For reference, see Appendix A of the following paper:
+%  L. Zheng, S. Kumar, D.M. Kochmann.
+%  Data-driven topology optimization of spinodoid metamaterials with 
+%  seamlessly tunable anisotropy. 
+%  Computer Methods in Applied Mechanics and Engineering, 383 (2021), 113894.
+%  https://doi.org/10.1016/j.cma.2021.113894
+% -----------------------------------------------------------------------
+
+% Example: how to grade 3 spinodoids: A, B, and C
+
+% Set common parameters for 3 different spinodoids
+input_A.isocap=true; % option to cap the isosurface
+input_A.domainSize=[5,1,1]; % domain size
+input_A.resolution=60*input_A.domainSize; % resolution for sampling GRF
+input_A.waveNumber=12*pi; % GRF wave number
+input_A.numWaves=500; % number of waves in GRF
+input_B = input_A;
+input_C = input_B;
+
+% Set parameters for individual spinodoids
+input_A.relativeDensity=0.3; % relative density: between [0.3,1]
+input_A.thetas=[30 0 0]; % conical half angles (in degrees) along 
+
+input_B.relativeDensity = 0.65;
+input_B.thetas=[30 30 0];
+
+input_C.relativeDensity = 0.3;
+input_C.thetas=[0 0 30];
+
+% Compute individual spinodoids
+% No need to store faces and vertices, only require underlying GRF,
+% grid coordinates, and levelset values
+[~,~,~,GRF_A,X,Y,Z,levelset_A]=spinodoid(input_A);
+[~,~,~,GRF_B,~,~,~,levelset_B]=spinodoid(input_B);
+[~,~,~,GRF_C,~,~,~,levelset_C]=spinodoid(input_C);
+
+% Define the central location of each individual spinodoid in space
+% E.g., At center_A, the spinodoid will definitely correspond to input_A.
+% As we move away from center_A, it will slowly transition into other
+% spinodoids with input_B and input_C. 
+center_A = [0.0, 0.5, 0.0];
+center_B = [2.5, 0.5, 0.5];
+center_C = [5.0, 0.5, 1.0];
+
+% kappa controls the lengthscale of transition between spinodoids
+% Higher kappa => faster transition
+% Lower kappa => slower transition
+kappa = 10;
+
+% Using Gaussian (a.k.a. radial basis functions) interpolation.
+% One can use any interpolation scheme of choice as long as weights at
+% every grid point sum up to 1.
+% Computing the weights for each spinodoid evaluated on all grid points.
+weights_A = exp(-kappa * squared_distance_from_point(X,Y,Z,center_A));
+weights_B = exp(-kappa * squared_distance_from_point(X,Y,Z,center_B));
+weights_C = exp(-kappa * squared_distance_from_point(X,Y,Z,center_C));
+% Weights must sum up to 1.
+sum_weights = weights_A + weights_B + weights_C;
+weights_A = weights_A ./ sum_weights;
+weights_B = weights_B ./ sum_weights;
+weights_C = weights_C ./ sum_weights;
+
+% Interpolating using the above weights
+graded_GRF =  weights_A .* (GRF_A - levelset_A) ...
+            + weights_B .* (GRF_B - levelset_B) ...
+            + weights_C .* (GRF_C - levelset_C);
+
+% Compue isosurface
+graded_levelset = 0;
+[f,v] = isosurface(X,Y,Z,graded_GRF,graded_levelset);
+c=zeros(size(f,1),1);
+
+% Compute isocaps
+[fc,vc] = isocaps(X,Y,Z,graded_GRF,graded_levelset,'enclose','below');
+
+% Boilerplate code for preparing output for exporting/visualization
+nc=patchNormal(fc,vc);
+cc=zeros(size(fc,1),1);
+cc(nc(:,1)<-0.5)=1;
+cc(nc(:,1)>0.5)=2;
+cc(nc(:,2)<-0.5)=3;
+cc(nc(:,2)>0.5)=4;
+cc(nc(:,3)<-0.5)=5;
+cc(nc(:,3)>0.5)=6;    
+
+% Join sets
+[f,v,c]=joinElementSets({f,fc},{v,vc},{c,cc});
+    
+% Merge nodes
+[f,v]=mergeVertices(f,v); 
+
+% Check for unique faces
+[~,indUni,~]=unique(sort(f,2),'rows');
+f=f(indUni,:); %Keep unique faces
+c=c(indUni);
+
+% Remove collapsed faces
+[f,logicKeep]=patchRemoveCollapsed(f); 
+c=c(logicKeep);
+
+% Remove unused points
+[f,v]=patchCleanUnused(f,v); 
+
+% Invert faces
+f=fliplr(f); 
+
+%Visualize
+vizualize_graded_spinodoid(f,v,c)
+
+% Compute squared distance from a point
+function [sq_dist] = squared_distance_from_point(X,Y,Z,point)
+% X, Y, Z are 3D matrices
+% point is a 1x3 vector
+sq_dist = (X-point(1)).^2 + (Y-point(2)).^2 + (Z-point(3)).^2;
+end
+
+function [] = vizualize_graded_spinodoid(F,V,C)
+
+% Using grouping to keep only largest group
+groupOptStruct.outputType='label';
+[G,~,groupSize]=tesgroup(F,groupOptStruct); %Group connected faces
+[~,indKeep]=max(groupSize); %Index of largest group
+
+%Keep only largest group
+F=F(G==indKeep,:); %Trim faces
+C=C(G==indKeep,:); %Trim color data 
+[F,V]=patchCleanUnused(F,V); %Remove unused nodes
+
+% Visualize surface
+cFigure; 
+gpatch(F,V,C,'none');
+axisGeom; camlight headlight; 
+colormap gjet; icolorbar;
+gdrawnow;
+
+end
 
 %% 
 %
