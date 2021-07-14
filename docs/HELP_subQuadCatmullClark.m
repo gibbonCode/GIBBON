@@ -1,11 +1,11 @@
-%% subQuad
-% Below is a demonstration of the features of the |subQuad| function
+%% subQuadCatmullClark
+% Below is a demonstration of the features of the |subQuadCatmullClark| function
 
 %% Syntax
-% |[Fs,Vs]=subQuad(F,V,n,splitMethod);|
+% |[Fs,Vs]=subQuadCatmullClark(F,V,n);|
 
 %% Description
-% The |subQuad| function enables refinement of quadrangulated data. The
+% The |subQuadCatmullClark| function enables refinement of quadrangulated data. The
 % quadrilateral faces defined by the patch format data F (faces) and V
 % (vertices). Each face is split n times using the specified split method
 % (splitMethod). The user may request the following outputs:  
@@ -18,6 +18,7 @@
 % 1: General linear resampling
 % 2: Linear resampling only in the first direction
 % 3: Linear resampling only in the second direction
+% 4: Catmull-Clarke subdivision
 
 %% Examples
 
@@ -32,45 +33,23 @@ edgeWidth=1.5;
 markerSize=35; 
 markerSize2=20; 
 
-%% Refining a 2D quadrilateral with boundary edges
-
-V=[0 0; 1 0; 1 1; 0 1];
-F=[1 2 3 4];
-
-n=0:1:3; %Number subdivision iterations
-pColors=gjet(numel(n));
-
-cFigure; 
-for q=1:1:numel(n)
-    [Fs,Vs]=subQuad(F,V,n(q)); 
-    subplot(2,2,q); hold on;
-    title([num2str(n(q)),' split iterations'],'FontSize',fontSize);
-    gpatch(Fs,Vs,pColors(q,:),'k');
-    plotV(Vs,'k.','markerSize',markerSize2); 
-    plotV(V,'k.','markerSize',markerSize);
-    
-    axis equal; axis tight; view(2);    
-end
-drawnow; 
-
-%% Refining a cube (3D closed mesh)
+%% Refining a cube using Catmull-Clark subdivision
 
 [V,F]=platonic_solid(2,1);
 
-n=0:1:3; %Number subdivision iterations
-pColors=gjet(numel(n));
+n=0:1:3; %Number of refinement steps
 
 cFigure; 
-for q=1:1:numel(n)
-    [Fs,Vs]=subQuad(F,V,n(q)); 
+gtitle('Catmull-Clark subdivision')
+for q=1:1:numel(n)    
+    [Fs,Vs,Cs]=subQuadCatmullClark(F,V,n(q)); 
     subplot(2,2,q); hold on;
     title([num2str(n(q)),' split iterations'],'FontSize',fontSize);
-    gpatch(Fs,Vs,pColors(q,:),'k');
-%     patchNormPlot(Fs,Vs);
-    plotV(Vs,'k.','markerSize',markerSize2); 
-    plotV(V,'k.','markerSize',markerSize);    
-    axisGeom(gca,fontSize);
-    camlight headlight;    
+    hp1=gpatch(F,V,'none','k',1,2);
+    hp2=gpatch(Fs,Vs,Cs,'k',1,2);
+    colormap(gjet(6));
+    axisGeom(gca,fontSize); camlight headlight;    
+    legend([hp1 hp2],{'Original','Refined'})
 end
 drawnow; 
 
@@ -82,11 +61,13 @@ Z=Z/5;
 
 n=[0 1 2 3]; %Number of refinement steps
 
+fixBoundaryOpt=1;
+
 pColors=gjet(numel(n));
 
 cFigure; 
 for q=1:1:numel(n)
-    [Fs,Vs]=subQuad(F,V,n(q)); 
+    [Fs,Vs]=subQuadCatmullClark(F,V,n(q),fixBoundaryOpt); 
     subplot(2,2,q); hold on;
     title([num2str(n(q)),' split iterations'],'FontSize',fontSize);
     gpatch(Fs,Vs,pColors(q,:),'k');    
@@ -96,35 +77,48 @@ for q=1:1:numel(n)
 end
 drawnow; 
 
-%% Example: Subdividing in 1 direction by specifying splitMethod
+%% Refining 3D quadrilateral meshes using Catmull-Clark method
 
-V=[0 0 0; 1 0 0; 1 1 0; 0 1 0];
-F=[1 2 3 4];
+%Create example data with boundary edges (half-sphere)
+[F,V]=quadSphere(1,1);
+VF=patchCentre(F,V);
+logicKeep=VF(:,3)>0;
+F=F(logicKeep,:);
+[F,V]=patchCleanUnused(F,V);
 
-pColors=gjet(4);
+n=2; %Number of refinement steps
+fixBoundaryOpt=0;
+[Fs,Vs]=subQuadCatmullClark(F,V,n,fixBoundaryOpt); 
 
-n=2; 
+fixBoundaryOpt=1; %Option to constrain boundary to be linearly sampled
+[Fs2,Vs2]=subQuadCatmullClark(F,V,n,fixBoundaryOpt); 
 
-cFigure; 
-subplot(2,2,1); hold on;
+%%
+
+cFigure;
+gtitle('Loop subdivision')
+subplot(1,3,1); hold on;
 title('Original','FontSize',fontSize);
-gpatch(F,V,pColors(1,:),'k',1,3);
-patchNormPlot(F,V);
-axisGeom(gca,fontSize);
-camlight headlight;
+hp1=gpatch(F,V,'w','k',1,1);
+hp2=gpatch(patchBoundary(F,V),V,'none','b',1,3);
+axisGeom(gca,fontSize); camlight headlight;
+legend([hp1 hp2],{'Surface','Boundary'},'Location','SouthOutside');
 
-for q=1:1:3
-    splitMethod=q;
-    [Fs,Vs]=subQuad(F,V,n,splitMethod); 
-    subplot(2,2,q+1); hold on;
-    title(['Refinement method: ',num2str(q)],'FontSize',fontSize);
-    gpatch(Fs,Vs,pColors(q+1,:),'k',1,3);    
-    patchNormPlot(Fs,Vs);
-    axisGeom(gca,fontSize);    
-    camlight headlight;    
-%     view(2);
-end
-drawnow; 
+subplot(1,3,2); hold on;
+title('Resampled with default smooth boundary','FontSize',fontSize);
+hp1=gpatch(Fs,Vs,'w','k',1,1);
+hp2=gpatch(patchBoundary(Fs,Vs),Vs,'none','b',1,3); hp2.EdgeAlpha=0.9;
+axisGeom(gca,fontSize); camlight headlight;
+legend([hp1 hp2],{'Surface','Boundary'},'Location','SouthOutside');
+
+subplot(1,3,3); hold on;
+title('Resampled with linearly constrained boundary','FontSize',fontSize);
+hp1=gpatch(Fs2,Vs2,'w','k',1,1);
+hp2=gpatch(patchBoundary(Fs2,Vs2),Vs2,'none','b',1,3); hp2.EdgeAlpha=0.9;
+axisGeom(gca,fontSize); camlight headlight;
+legend([hp1 hp2],{'Surface','Boundary'},'Location','SouthOutside');
+
+drawnow;
 
 %% Example: Maintaining/resampling face data (e.g. face color)
 
@@ -134,7 +128,7 @@ C=vertexToFaceMeasure(F,CV);
 
 %%
 % Requesting additional output to allow for "book keeping" of face data
-[Fs,Vs,Css]=subQuad(F,V,2,1); 
+[Fs,Vs,Css]=subQuadCatmullClark(F,V,2,1); 
 
 %%
 % The additional output Css contains face indices, i.e. each refined face
@@ -166,7 +160,7 @@ drawnow;
 %%
 % Requesting additional output to allow for "book keeping" of face data
 VI=[V CV]; %Append color as artificial additional coordinate
-[Fs,VsI]=subQuad(F,VI,2,1); %Refinement
+[Fs,VsI]=subQuadCatmullClark(F,VI,2,1); %Refinement
 Vs=VsI(:,1:3); %Pick out coordinates from first 3 columns
 CVs=VsI(:,4); %Pick out resampled vertex data from 4th column
 
@@ -188,13 +182,33 @@ camlight headlight;
 
 drawnow;
 
+%% Refining a cube using Catmull-Clark subdivision
+
+[V,F]=platonic_solid(2,1);
+
+n=0:1:3; %Number of refinement steps
+
+cFigure; 
+gtitle('Catmull-Clark subdivision')
+for q=1:1:numel(n)
+    [Fs,Vs,Cs]=subQuadCatmullClark(F,V,n(q)); 
+    subplot(2,2,q); hold on;
+    title([num2str(n(q)),' split iterations'],'FontSize',fontSize);
+    hp1=gpatch(F,V,'none','k',1,2);
+    hp2=gpatch(Fs,Vs,Cs,'k',1,2);
+    colormap(gjet(6));
+    axisGeom(gca,fontSize); camlight headlight;    
+    legend([hp1 hp2],{'Original','Refined'})
+end
+drawnow; 
+
 %% Example: Study vertex type
 % An optional 4th output can provide "vertex labels", these define the
 % vertex origins, i.e. whether they stem from the initial coordinates
 % (iteration 0), or from iteration n. 
 
 n=2; %Number of refinement steps
-[Fs,Vs,~,CV]=subQuad(F,V,n,1); 
+[Fs,Vs,~,CV]=subQuadCatmullClark(F,V,n); 
 
 %%
 
