@@ -31,7 +31,7 @@ switch nargin
     case 2
         F=varargin{1};
         V=varargin{2};
-        C='g';
+        C='gw';
         CE='k';
         A=1;
         L=[];

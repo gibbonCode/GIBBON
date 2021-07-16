@@ -61,6 +61,9 @@ switch modelID
     case {11,'vertebra'}
         fileName=fullfile(pathName,'vertebra.mat');
         meshData=load(fileName);
+    case {12,'suzanne'}
+        fileName=fullfile(pathName,'suzanne.mat');
+        meshData=load(fileName);
 end
 
 F=meshData.F;
@@ -78,6 +81,16 @@ switch nargout
     case 2
         varargout{1}=F;
         varargout{2}=V;
+    case 3
+        varargout{1}=F;
+        varargout{2}=V;
+        %Get color data
+        if isfield(meshData,'C')
+            C=meshData.C;
+        else
+            C=ones(size(F,1),1);
+        end
+        varargout{3}=C;
 end
 
 %% 

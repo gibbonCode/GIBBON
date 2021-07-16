@@ -163,7 +163,7 @@ inputStruct.meshType='tri';
 %% 
 % Remesh using ggremesh
 optionStruct3.nb_pts=size(V,1); %Set desired number of points
-optionStruct3.disp_on=1; % Turn off command window text display
+optionStruct3.disp_on=0; % Turn off command window text display
 optionStruct3.pre.max_hole_area=10; %Max hole area for pre-processing step
 optionStruct3.pre.max_hole_edges=20; %Max number of hole edges for pre-processing step
 % optionStruct3.post.max_hole_area=10; %Max hole area for post-processing step

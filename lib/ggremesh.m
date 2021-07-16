@@ -39,7 +39,8 @@ function [Fn,Vn]=ggremesh(varargin)
 % https://www.ljll.math.upmc.fr/hecht/ftp/ff++days/2013/BrunoLevy.pdf
 %
 %
-% 2020/12/04 Created Kevin Mattheus Moerman
+% 2020/12/04 KMM Created
+% 2021/07/16 KMM Switched default to disp_on=0
 %-------------------------------------------------------------------------
 
 
@@ -63,7 +64,7 @@ defaultOptionStruct.pre.max_hole_area=100; %Max hole area for pre-processing ste
 defaultOptionStruct.pre.max_hole_edges=0; %Max number of hole edges for pre-processing step
 defaultOptionStruct.post.max_hole_area=100; %Max hole area for post-processing step
 defaultOptionStruct.post.max_hole_edges=0; %Max number of hole edges for post-processing step
-defaultOptionStruct.disp_on=1; %Turn on/off displaying of Geogram text
+defaultOptionStruct.disp_on=0; %Turn on/off displaying of Geogram text
 
 %Complement input with default if missing
 [optionStruct]=structComplete(optionStruct,defaultOptionStruct,1);
@@ -163,7 +164,12 @@ if disp_on==1
     dispMessage('# Importing remeshed geometry.',stringLength);
 end
 
-[Fn,Vn]=import_obj_geom(outputFileName); 
+try
+    [Fn,Vn]=import_obj_geom(outputFileName);
+catch ME
+    warning('import of OBJ file not successful. Set disp_on=1 to see any Geogram error messages.');    
+    rethrow(ME);
+end
 
 %%
 

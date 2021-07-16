@@ -44,6 +44,8 @@ switch nargin
         F=varargin{1};
         V=varargin{2};
         conTypes=varargin{3};
+    otherwise
+        error('Wrong number of input arguments')
 end
 
 if isempty(V) %No vertices provided, assuming all points are used
