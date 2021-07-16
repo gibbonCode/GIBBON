@@ -16,8 +16,15 @@ Not all current code follows the conventions below but these will be followed fo
 - `UpperCamelCase` Functions
 - Maximize the use  of semantic and descriptive variables names (e.g. `faceIndices` not `fcInd` or `fi`). Avoid abbreviations except in cases of industry wide usage. In some cases non-descriptive and short variable names are exceptable for instance vertices (points), faces, edges, colors and logic arrays may be denoted `V`, `F`, `E`, `C`, `L`. Furthermore, if a mathematrical symbol or letter is commonly used for some entity it may be acceptable to use short names e.g. coordinates may be referred to as `X`, `Y` and `Z` and image coordinates of indices may be referred to as `I`, `J` and `K`. In some cases the use of capital or non-capital letters refers to tensors/matrices/arrays/sets and scalars/components/subsets respectively, e.g. a multitude of scalars `c` may be contained within an array or matrix `C`, or a cell array `D` may contain individual entries referred to as `d`. 
 
+## Documentation
+The documentation is found in the `GIBBON/docs` folder in the form of `HELP_functionName.m` files and `DEMO_demoName.m` files. To create documentation for a particular function e.g. named `functionName.m` one can therefore add a `HELP_functionName.m` file containing the documentation. Please use the HTML markup style used in the existing help/demo files. Once documentation is ready to be added to the website https://www.gibboncode.org/Documentation/ you can run:
+```matlab
+gpublish HELP_functionName
+```
+This will "publish" the documentation in the form of HTML files in the `GIBBON/docs/html` folder. The content there will then be automatically added to, and rendered on, the website when the website is updated. 
+
 ## Testing
-For the moment the DEMO_ and HELP_ files may serves as a test suite. 
+For the moment the DEMO_ and HELP_ files may serves as a test suite. The `testGibbon` function can be used to run these test automatically. 
 
 ## Pull requests
 - Try not to pollute your pull request with unintended changes – keep them simple and small. If possible, squash your commits.
