@@ -263,6 +263,10 @@ loadPath=fullfile(fileparts(fileparts(mfilename('fullpath'))),'data','fig');
 loadName=fullfile(loadPath,'exampleSavedAnim8Figure.fig');
 anim8(loadName);
 
+%% Demo of the GUI
+% 
+% <<HELP_anim8_gui_demo.gif>>
+
 %%
 % 
 % <<gibbVerySmall.gif>>

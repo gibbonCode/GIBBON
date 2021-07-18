@@ -1,5 +1,12 @@
 function exportGifAnim8(varargin)
 
+% function exportGifAnim8(hf,defStruct,1);
+% ------------------------------------------------------------------------
+% Activate gif export for an anim8 figure window. 
+%
+%
+%
+% ------------------------------------------------------------------------
 
 %%
 
