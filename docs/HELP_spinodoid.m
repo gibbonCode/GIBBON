@@ -5,10 +5,12 @@
 clear; close all; clc;
 
 %% Syntax
-% |[F,V,C,GRF,X,Y,Z,levelset]=spinodoid(M,IND,ptype);|
+% |[F,V,C,GRF,X,Y,Z,levelset]=spinodoid(inputStruct);|
 
 %% Description
+%
 % -----------------------------------------------------------------------
+%
 % This function generates Spinodoid microstructures which are non-periodic
 % and stochastic bi-continous microstructures that approximate the
 % topology observed in spinodal decomposition. The microstructures are
@@ -19,7 +21,9 @@ clear; close all; clc;
 % example below (HELP_spinodoid: example 5)
 %
 % Based on / how to cite:
+%
 % -----------------------------------------------------------------------
+% 
 % (1) S. Kumar, S. Tan, L. Zheng, D.M. Kochmann.
 %     Inverse-designed spinodoid metamaterials. 
 %     npj Computational Materials, 6 (2020), 73. 
@@ -32,44 +36,69 @@ clear; close all; clc;
 %     https://doi.org/10.1016/j.cma.2021.113894
 %
 % -----------------------------------------------------------------------
+% 
 % Input structure and default values:
+%
 % inputStruct.isocap=true; % option to cap the isosurface
+%
 % inputStruct.domainSize=1; % domain size
+%
 % inputStruct.resolution=60; % resolution for sampling GRF
+% 
 % inputStruct.waveNumber=10*pi; % GRF wave number
+% 
 % inputStruct.numWaves=1000; % number of waves in GRF
+% 
 % inputStruct.relativeDensity=0.5; % relative density: between [0.3,1]
+% 
 % inputStruct.thetas=[15 15 15]; % conical half angles (in degrees) along 
 %                                xyz axes for controlling the anisotropy. 
 %                                Note: each entry must be either 0 or
 %                                between [15,90] degrees.
+% 
 % inputStruct.R = eye(3); % Rotate the GRF, R must be SO(3)
+% 
 % inputStruct.ignoreChecks = false; % Ignore checks on parameters if true (not advised)
 %
 % The function returns the following:
+% 
 % F: faces of the surface mesh
+% 
 % V: vertices of the surfae mesh
+% 
 % C: color data for the surface mesh
+% 
 % GRF (3d matrix): Underlying Gaussian random field (GRF) before levelset is applied
+% 
 % X (3d matrix): X coordinates where GRF is evaluated
+% 
 % Y (3d matrix): Y coordinates where GRF is evaluated
+% 
 % Z (3d matrix): Z coordinates where GRF is evaluated
 % leveset (scalar): Levelset applied on GRF to compute the isosurfaces
 %
+% -----------------------------------------------------------------------
+%
 % Original author: Siddhant Kumar, September 2020
+% 
 % (contact: Sid.Kumar@tudelft.nl)
+% 
 % -----------------------------------------------------------------------
 
 %% Examples
 
-%%
+%% Basic settings
+
+% Random seed
+rng(1)
+
 % Plot settings
 cMap=parula(250);
 faceAlpha1=1;
 faceAlpha2=0.5;
 edgeColor1='none';
 edgeColor2='none';
-fontSize=15; 
+fontSize=15;
 
 %% Example 1: Isotropic spinodoid
 inputStruct.isocap=true; % option to cap the isosurface
@@ -219,10 +248,10 @@ input_C = input_B;
 input_A.relativeDensity=0.3; % relative density: between [0.3,1]
 input_A.thetas=[30 0 0]; % conical half angles (in degrees) along 
 
-input_B.relativeDensity = 0.65;
+input_B.relativeDensity = 0.5;
 input_B.thetas=[30 30 0];
 
-input_C.relativeDensity = 0.3;
+input_C.relativeDensity = 0.8;
 input_C.thetas=[0 0 30];
 
 % Compute individual spinodoids
