@@ -2,8 +2,15 @@
 % Below is a demonstration of the features of the |hexMeshSphere| function
 
 %%
-
 clear; close all; clc;
+%% Syntax
+% |[meshStruct]=hexMeshSphere(optionStruct);|
+
+%% Description
+% This function creates a hexahedral mesh for a sphere based on the input
+% struction optionStruct. 
+
+%% Examples
 
 %%
 % Plot settings

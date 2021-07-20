@@ -1,5 +1,16 @@
 function [meshStruct]=hexMeshSphere(optionStruct)
 
+% function [meshStruct]=hexMeshSphere(optionStruct)
+% ------------------------------------------------------------------------
+% This function creates a hexahedral mesh for a sphere based on the input
+% struction optionStruct. 
+%
+%
+% Change log: 
+% ~ Created Kevin M. Moerman
+% 2021/07/20 Kevin M. Moerman Added comments
+% ------------------------------------------------------------------------
+
 %% Parse input
 
 %Compare to default structure
