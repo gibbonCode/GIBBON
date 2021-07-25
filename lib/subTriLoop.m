@@ -16,20 +16,30 @@ switch nargin
         V=varargin{2};
         n=1;
         fixBoundaryOpt=0;
+        logicFixedFaces=[];
     case 3
         F=varargin{1};
         V=varargin{2};
         n=varargin{3};
         fixBoundaryOpt=0;
+        logicFixedFaces=[];
     case 4
         F=varargin{1};
         V=varargin{2};
         n=varargin{3};
         fixBoundaryOpt=varargin{4};
+        logicFixedFaces=[];
+    case 5
+        F=varargin{1};
+        V=varargin{2};
+        n=varargin{3};
+        fixBoundaryOpt=varargin{4};
+        logicFixedFaces=varargin{5};
 end
+
 %%
 
-if nargout>2
+if nargout>2 || ~isempty(logicFixedFaces)
     C=(1:1:size(F,1))'; %Face colors or indices
     if nargout==4
         CV=zeros(size(V,1),1); %Vertex labels/colors
@@ -44,6 +54,13 @@ if n>0
         edgeVertexMat=M.edge.vertex;
         edgeFaceMat=M.edge.face;
         vertexVertexMat=M.vertex.vertex;
+        
+        if ~isempty(logicFixedFaces)
+            indFixFaces=find(logicFixedFaces);            
+            indFixEdges=find(any(ismember(edgeFaceMat,indFixFaces),2));            
+        else
+            indFixEdges=[];
+        end
         
         numPoints = size(V,1);
         numEdges = size(edgeVertexMat,1);
@@ -125,11 +142,20 @@ if n>0
         end
         Vn(~logicBoundaryEdges,:)=3/8*V(edgeVertexMat(~logicBoundaryEdges,1),:) + 3/8*V(edgeVertexMat(~logicBoundaryEdges,2),:) + 1/8*(V(indF(~logicBoundaryEdges,1),:)+V(indF(~logicBoundaryEdges,2),:));
         
+        if ~isempty(indFixEdges)
+            %Use normal mid-edge nodes for constrained edges
+            Vn(indFixEdges,:)=1/2*(V(edgeVertexMat(indFixEdges,1),:) + V(edgeVertexMat(indFixEdges,2),:));
+            
+            %Replace constrained nodes with original
+            indConstrainedVertices=unique(edgeVertexMat(indFixEdges,:));
+            Vv(indConstrainedVertices,:)=V(indConstrainedVertices,:);
+        end
+        
         %Join point sets
         Vs = [Vv; Vn];
         
         %Color handling
-        if nargout>2
+        if nargout>2 || ~isempty(logicFixedFaces)
             %Override face color data
             C=repmat(C,[size(Fs,1)/size(F,1),1]);
             
@@ -145,7 +171,10 @@ if n>0
         
         %Override face/vertices
         F=Fs;
-        V=Vs;        
+        V=Vs;  
+        if ~isempty(logicFixedFaces)
+            logicFixedFaces=logicFixedFaces(C);
+        end
     end
 end
 

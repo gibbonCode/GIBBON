@@ -156,6 +156,33 @@ colormap gjet; [~,hc]=icolorbar;
 hc.TickLabels={'Iter. 0';'Iter. 1';'Iter. 2'};
 drawnow;
 
+%% Example: Constraining faces to subdivide "linearly" (shape maintaining) 
+
+% Using |triBox| to build the patch model
+[F,V,faceBoundaryMarker]=triBox([2 2 2],1);
+
+%%
+
+n=2; %Number of refinement steps
+logicConstrain=(faceBoundaryMarker==5); %Logic for faces to subdivide linearly
+[Fs,Vs,Cs,CV]=subTriLoop(F,V,n,0,logicConstrain);
+
+faceBoundaryMarker_sub=faceBoundaryMarker(Cs); %Get boundary markers for refined mesh
+
+%%
+
+cFigure; 
+subplot(1,2,1); hold on;
+gpatch(F,V,faceBoundaryMarker,'k',1,1);
+axisGeom(gca,fontSize); camlight headlight;
+colormap(gca,gjet(6)); icolorbar; 
+
+subplot(1,2,2); hold on;
+gpatch(Fs,Vs,faceBoundaryMarker_sub,'k',1,1);
+axisGeom(gca,fontSize); camlight headlight;
+colormap(gca,gjet(6)); icolorbar;
+drawnow;
+
 %% 
 %
 % <<gibbVerySmall.gif>>
