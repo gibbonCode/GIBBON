@@ -238,7 +238,8 @@ switch uncoupledLaw
         febio_spec.Material.material{1}.ATTR.id=1;
         febio_spec.Material.material{1}.g1=g1;
         febio_spec.Material.material{1}.t1=t1;
-        febio_spec.Material.material{1}.density=d;
+        febio_spec.Material.material{1}.k=k;
+        febio_spec.Material.material{1}.density=d;        
         
         %Elastic part
         febio_spec.Material.material{1}.elastic{1}.ATTR.type='Ogden';
@@ -246,14 +247,14 @@ switch uncoupledLaw
         febio_spec.Material.material{1}.elastic{1}.m1=m1;
         febio_spec.Material.material{1}.elastic{1}.c2=c1;
         febio_spec.Material.material{1}.elastic{1}.m2=-m1;
-        febio_spec.Material.material{1}.elastic{1}.k=k;
+        
         febio_spec.Material.material{1}.elastic{1}.density=d;        
     case 2        
         %Viscoelastic part
         febio_spec.Material.material{1}.ATTR.type='viscoelastic';        
         febio_spec.Material.material{1}.ATTR.id=1;
         febio_spec.Material.material{1}.g1=g1;
-        febio_spec.Material.material{1}.t1=t1;
+        febio_spec.Material.material{1}.t1=t1;        
         febio_spec.Material.material{1}.density=d;
         
         %Elastic part
@@ -365,7 +366,7 @@ febioStruct2xml(febio_spec,febioFebFileName); %Exporting to file and domNode
 febioAnalysis.run_filename=febioFebFileName; %The input file name
 febioAnalysis.run_logname=febioLogFileName; %The name for the log file
 febioAnalysis.disp_on=1; %Display information on the command window
-febioAnalysis.runMode=runMode;%'internal';
+febioAnalysis.runMode=runMode;
 
 [runFlag]=runMonitorFEBio(febioAnalysis);%START FEBio NOW!!!!!!!!
 

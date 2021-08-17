@@ -102,7 +102,7 @@ max_ups=0; %Set to zero to use full-Newton iterations
 opt_iter=6; %Optimum number of iterations
 max_retries=5; %Maximum number of retires
 
-runMode='external';%'internal';
+runMode='internal';%'internal';
 
 %% Creating model geometry and mesh
 % A box is created with tri-linear hexahedral (hex8) elements using the
@@ -237,6 +237,7 @@ switch uncoupledLaw
         febio_spec.Material.material{1}.ATTR.id=1;
         febio_spec.Material.material{1}.g1=g1;
         febio_spec.Material.material{1}.t1=t1;
+        febio_spec.Material.material{1}.k=k;
         febio_spec.Material.material{1}.density=d;
         
         %Elastic part
@@ -244,15 +245,14 @@ switch uncoupledLaw
         febio_spec.Material.material{1}.elastic{1}.c1=c1;
         febio_spec.Material.material{1}.elastic{1}.m1=m1;
         febio_spec.Material.material{1}.elastic{1}.c2=c1;
-        febio_spec.Material.material{1}.elastic{1}.m2=-m1;
-        febio_spec.Material.material{1}.elastic{1}.k=k;
+        febio_spec.Material.material{1}.elastic{1}.m2=-m1;        
         febio_spec.Material.material{1}.elastic{1}.density=d;        
     case 2        
         %Viscoelastic part
         febio_spec.Material.material{1}.ATTR.type='viscoelastic';        
         febio_spec.Material.material{1}.ATTR.id=1;
         febio_spec.Material.material{1}.g1=g1;
-        febio_spec.Material.material{1}.t1=t1;
+        febio_spec.Material.material{1}.t1=t1;        
         febio_spec.Material.material{1}.density=d;
         
         %Elastic part
