@@ -92,10 +92,14 @@ if n>0
             [indV_12 indV_23 indV_31]];
         
         indF1=F(edgeFaceMat(:,1),:);
-        
-        logicValid=edgeFaceMat(:,2)>0;
-        indF2=zeros(numEdges,3);
-        indF2(logicValid,:)=F(edgeFaceMat(logicValid,2),:);
+        if size(edgeFaceMat,2)==2
+            logicValid=edgeFaceMat(:,2)>0;
+            indF2=zeros(numEdges,3);
+            indF2(logicValid,:)=F(edgeFaceMat(logicValid,2),:);
+        else
+            indF2=zeros(numEdges,3);
+        end
+
         
         indF=[indF1 indF2];
         
