@@ -6,7 +6,7 @@
    <!--
 This HTML was auto-generated from MATLAB code.
 To make changes, update the MATLAB code and republish this document.
-      --><title>subTriLoop</title><meta name="generator" content="MATLAB 9.10"><link rel="schema.DC" href="http://purl.org/dc/elements/1.1/"><meta name="DC.date" content="2021-07-25"><meta name="DC.source" content="HELP_subTriLoop.m"><style type="text/css">
+      --><title>subTriLoop</title><meta name="generator" content="MATLAB 9.10"><link rel="schema.DC" href="http://purl.org/dc/elements/1.1/"><meta name="DC.date" content="2021-08-17"><meta name="DC.source" content="HELP_subTriLoop.m"><style type="text/css">
 html,body,div,span,applet,object,iframe,h1,h2,h3,h4,h5,h6,p,blockquote,pre,a,abbr,acronym,address,big,cite,code,del,dfn,em,font,img,ins,kbd,q,s,samp,small,strike,strong,tt,var,b,u,i,center,dl,dt,dd,ol,ul,li,fieldset,form,label,legend,table,caption,tbody,tfoot,thead,tr,th,td{margin:0;padding:0;border:0;outline:0;font-size:100%;vertical-align:baseline;background:transparent}body{line-height:1}ol,ul{list-style:none}blockquote,q{quotes:none}blockquote:before,blockquote:after,q:before,q:after{content:'';content:none}:focus{outine:0}ins{text-decoration:none}del{text-decoration:line-through}table{border-collapse:collapse;border-spacing:0}
 
 html { min-height:100%; margin-bottom:1px; }
@@ -67,7 +67,7 @@ table td { padding:7px 5px; text-align:left; vertical-align:top; border:1px soli
 
 
 
-  </style></head><body><div class="content"><h1>subTriLoop</h1><!--introduction--><p>Below is a demonstration of the features of the <tt>subTriLoop</tt> function</p><!--/introduction--><h2>Contents</h2><div><ul><li><a href="#1">Syntax</a></li><li><a href="#2">Description</a></li><li><a href="#3">Examples</a></li><li><a href="#5">Example: Refining an icosahedron to illustrate smoothing effect</a></li><li><a href="#6">Example: Refinement and maintenance of face color data</a></li><li><a href="#7">Example: Refinement and resampling of vertex data</a></li><li><a href="#8">Example: Forcing maintenance of boundary</a></li><li><a href="#10">Example: Study vertex type</a></li><li><a href="#12">Example: Constraining faces to subdivide "linearly" (shape maintaining)</a></li></ul></div><h2 id="1">Syntax</h2><p><tt>[Fs,Vs,Cs]=subTriLoop(F,V,n,fixBoundaryOpt);</tt></p><h2 id="2">Description</h2><p>The <tt>subTriLoop</tt> function enables refinement of triangulated data using the smooth refinement method by Loop et al.  1987 <a href="https://www.microsoft.com/en-us/research/wp-content/uploads/2016/02/thesis-10.pdf">https://www.microsoft.com/en-us/research/wp-content/uploads/2016/02/thesis-10.pdf</a></p><p>The input faces and vertices are defined by F and V respectively. Each triangle is split into 4 sub-triangles.</p><h2 id="3">Examples</h2><pre class="codeinput">clear; close <span class="string">all</span>; clc;
+  </style></head><body><div class="content"><h1>subTriLoop</h1><!--introduction--><p>Below is a demonstration of the features of the <tt>subTriLoop</tt> function</p><!--/introduction--><h2>Contents</h2><div><ul><li><a href="#1">Syntax</a></li><li><a href="#2">Description</a></li><li><a href="#3">Examples</a></li><li><a href="#5">Example: Refining an icosahedron to illustrate smoothing effect</a></li><li><a href="#6">Example: Refinement and maintenance of face color data</a></li><li><a href="#7">Example: Refinement and resampling of vertex data</a></li><li><a href="#8">Example: Forcing maintenance of boundary</a></li><li><a href="#10">Example: Study vertex type</a></li><li><a href="#12">Example: Constraining faces to subdivide "linearly" (shape maintaining)</a></li><li><a href="#15">Example: Constraining faces but alter boundary of constrained</a></li></ul></div><h2 id="1">Syntax</h2><p><tt>[Fs,Vs,Cs]=subTriLoop(F,V,n,fixBoundaryOpt);</tt></p><h2 id="2">Description</h2><p>The <tt>subTriLoop</tt> function enables refinement of triangulated data using the smooth refinement method by Loop et al.  1987 <a href="https://www.microsoft.com/en-us/research/wp-content/uploads/2016/02/thesis-10.pdf">https://www.microsoft.com/en-us/research/wp-content/uploads/2016/02/thesis-10.pdf</a></p><p>The input faces and vertices are defined by F and V respectively. Each triangle is split into 4 sub-triangles.</p><h2 id="3">Examples</h2><pre class="codeinput">clear; close <span class="string">all</span>; clc;
 </pre><p>Plot Settings</p><pre class="codeinput">fontSize=10;
 </pre><h2 id="5">Example: Refining an icosahedron to illustrate smoothing effect</h2><pre class="codeinput">[V,F]=platonic_solid(4,1);
 
@@ -183,12 +183,12 @@ hc.TickLabels={<span class="string">'Iter. 0'</span>;<span class="string">'Iter.
 drawnow;
 </pre><img width="100%" height="auto" vspace="5" hspace="5" src="HELP_subTriLoop_05.jpg" alt=""> <h2 id="12">Example: Constraining faces to subdivide "linearly" (shape maintaining)</h2><pre class="codeinput"><span class="comment">% Using |triBox| to build the patch model</span>
 [F,V,faceBoundaryMarker]=triBox([2 2 2],1);
-</pre><img width="100%" height="auto" vspace="5" hspace="5" src="HELP_subTriLoop_06.jpg" alt=""> <pre class="codeinput">n=2; <span class="comment">%Number of refinement steps</span>
+</pre><pre class="codeinput">n=2; <span class="comment">%Number of refinement steps</span>
 logicConstrain=(faceBoundaryMarker==5); <span class="comment">%Logic for faces to subdivide linearly</span>
 [Fs,Vs,Cs,CV]=subTriLoop(F,V,n,0,logicConstrain);
 
 faceBoundaryMarker_sub=faceBoundaryMarker(Cs); <span class="comment">%Get boundary markers for refined mesh</span>
-</pre><img width="100%" height="auto" vspace="5" hspace="5" src="HELP_subTriLoop_07.jpg" alt=""> <pre class="codeinput">cFigure;
+</pre><pre class="codeinput">cFigure;
 subplot(1,2,1); hold <span class="string">on</span>;
 gpatch(F,V,faceBoundaryMarker,<span class="string">'k'</span>,1,1);
 axisGeom(gca,fontSize); camlight <span class="string">headlight</span>;
@@ -199,7 +199,37 @@ gpatch(Fs,Vs,faceBoundaryMarker_sub,<span class="string">'k'</span>,1,1);
 axisGeom(gca,fontSize); camlight <span class="string">headlight</span>;
 colormap(gca,gjet(6)); icolorbar;
 drawnow;
-</pre><img width="100%" height="auto" vspace="5" hspace="5" src="HELP_subTriLoop_08.jpg" alt=""> <img width="100%" height="auto" vspace="5" hspace="5" src="HELP_subTriLoop_09.jpg" alt=""> <p><img vspace="5" hspace="5" src="gibbVerySmall.gif" alt=""> </p><p><i><b>GIBBON</b></i> <a href="www.gibboncode.org">www.gibboncode.org</a></p><p><i>Kevin Mattheus Moerman</i>, <a href="gibbon.toolbox@gmail.com">gibbon.toolbox@gmail.com</a></p><p><i><b>GIBBON footer text</b></i></p><p>License: <a href="https://github.com/gibbonCode/GIBBON/blob/master/LICENSE">https://github.com/gibbonCode/GIBBON/blob/master/LICENSE</a></p><p>GIBBON: The Geometry and Image-based Bioengineering add-On. A toolbox for image segmentation, image-based modeling, meshing, and finite element analysis.</p><p>Copyright (C) 2006-2021 Kevin Mattheus Moerman and the GIBBON contributors</p><p>This program is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.</p><p>This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for more details.</p><p>You should have received a copy of the GNU General Public License along with this program.  If not, see <a href="http://www.gnu.org/licenses/">http://www.gnu.org/licenses/</a>.</p><p class="footer"><br><a href="https://www.mathworks.com/products/matlab/">Published with MATLAB&reg; R2021a</a><br></p></div><!--
+</pre><img width="100%" height="auto" vspace="5" hspace="5" src="HELP_subTriLoop_06.jpg" alt=""> <h2 id="15">Example: Constraining faces but alter boundary of constrained</h2><pre class="codeinput"><span class="comment">% Using |triBox| to build the patch model</span>
+[Fq,V,faceBoundaryMarker_q]=quadBox([1 1 2],[1 1 2]);
+F=[Fq(:,[1 2 3]);Fq(:,[3 4 1]);];
+faceBoundaryMarker=repmat(faceBoundaryMarker_q,2,1);
+</pre><pre class="codeinput">n=3; <span class="comment">%Number of refinement steps</span>
+logicConstrain=ismember(faceBoundaryMarker,[5,6]); <span class="comment">%Logic for faces to subdivide linearly</span>
+indConstrain=find(logicConstrain);
+indNotConstrain=find(~logicConstrain);
+
+[Fs1,Vs1,Cs1]=subTriLoop(F(logicConstrain,:),V,n);
+faceBoundaryMarker_sub1=faceBoundaryMarker(indConstrain(Cs1)); <span class="comment">%Get boundary markers for refined mesh</span>
+
+[Fs2,Vs2,Cs2]=subTriLoop(F(~logicConstrain,:),V,n);
+faceBoundaryMarker_sub2=faceBoundaryMarker(indNotConstrain(Cs2)); <span class="comment">%Get boundary markers for refined mesh</span>
+
+[Fs,Vs,faceBoundaryMarker_sub]=joinElementSets({Fs1,Fs2},{Vs1,Vs2},{faceBoundaryMarker_sub1,faceBoundaryMarker_sub2});
+
+[Fs,Vs]=patchCleanUnused(Fs,Vs);
+[Fs,Vs]=mergeVertices(Fs,Vs);
+</pre><pre class="codeinput">cFigure;
+subplot(1,2,1); hold <span class="string">on</span>;
+gpatch(F,V,faceBoundaryMarker,<span class="string">'k'</span>,1,1);
+axisGeom(gca,fontSize); camlight <span class="string">headlight</span>;
+colormap(gca,gjet(6)); icolorbar;
+
+subplot(1,2,2); hold <span class="string">on</span>;
+gpatch(Fs,Vs,faceBoundaryMarker_sub,<span class="string">'k'</span>,1,1);
+axisGeom(gca,fontSize); camlight <span class="string">headlight</span>;
+colormap(gca,gjet(6)); icolorbar;
+drawnow;
+</pre><img width="100%" height="auto" vspace="5" hspace="5" src="HELP_subTriLoop_07.jpg" alt=""> <p><img vspace="5" hspace="5" src="gibbVerySmall.gif" alt=""> </p><p><i><b>GIBBON</b></i> <a href="www.gibboncode.org">www.gibboncode.org</a></p><p><i>Kevin Mattheus Moerman</i>, <a href="gibbon.toolbox@gmail.com">gibbon.toolbox@gmail.com</a></p><p><i><b>GIBBON footer text</b></i></p><p>License: <a href="https://github.com/gibbonCode/GIBBON/blob/master/LICENSE">https://github.com/gibbonCode/GIBBON/blob/master/LICENSE</a></p><p>GIBBON: The Geometry and Image-based Bioengineering add-On. A toolbox for image segmentation, image-based modeling, meshing, and finite element analysis.</p><p>Copyright (C) 2006-2021 Kevin Mattheus Moerman and the GIBBON contributors</p><p>This program is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.</p><p>This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for more details.</p><p>You should have received a copy of the GNU General Public License along with this program.  If not, see <a href="http://www.gnu.org/licenses/">http://www.gnu.org/licenses/</a>.</p><p class="footer"><br><a href="https://www.mathworks.com/products/matlab/">Published with MATLAB&reg; R2021a</a><br></p></div><!--
 ##### SOURCE BEGIN #####
 %% subTriLoop
 % Below is a demonstration of the features of the |subTriLoop| function
@@ -371,6 +401,45 @@ logicConstrain=(faceBoundaryMarker==5); %Logic for faces to subdivide linearly
 [Fs,Vs,Cs,CV]=subTriLoop(F,V,n,0,logicConstrain);
 
 faceBoundaryMarker_sub=faceBoundaryMarker(Cs); %Get boundary markers for refined mesh
+
+%%
+
+cFigure; 
+subplot(1,2,1); hold on;
+gpatch(F,V,faceBoundaryMarker,'k',1,1);
+axisGeom(gca,fontSize); camlight headlight;
+colormap(gca,gjet(6)); icolorbar; 
+
+subplot(1,2,2); hold on;
+gpatch(Fs,Vs,faceBoundaryMarker_sub,'k',1,1);
+axisGeom(gca,fontSize); camlight headlight;
+colormap(gca,gjet(6)); icolorbar;
+drawnow;
+
+%% Example: Constraining faces but alter boundary of constrained
+
+% Using |triBox| to build the patch model
+[Fq,V,faceBoundaryMarker_q]=quadBox([1 1 2],[1 1 2]);
+F=[Fq(:,[1 2 3]);Fq(:,[3 4 1]);];
+faceBoundaryMarker=repmat(faceBoundaryMarker_q,2,1);
+
+%%
+
+n=3; %Number of refinement steps
+logicConstrain=ismember(faceBoundaryMarker,[5,6]); %Logic for faces to subdivide linearly
+indConstrain=find(logicConstrain);
+indNotConstrain=find(~logicConstrain);
+
+[Fs1,Vs1,Cs1]=subTriLoop(F(logicConstrain,:),V,n);
+faceBoundaryMarker_sub1=faceBoundaryMarker(indConstrain(Cs1)); %Get boundary markers for refined mesh
+
+[Fs2,Vs2,Cs2]=subTriLoop(F(~logicConstrain,:),V,n);
+faceBoundaryMarker_sub2=faceBoundaryMarker(indNotConstrain(Cs2)); %Get boundary markers for refined mesh
+
+[Fs,Vs,faceBoundaryMarker_sub]=joinElementSets({Fs1,Fs2},{Vs1,Vs2},{faceBoundaryMarker_sub1,faceBoundaryMarker_sub2});
+
+[Fs,Vs]=patchCleanUnused(Fs,Vs); 
+[Fs,Vs]=mergeVertices(Fs,Vs);
 
 %%
 

@@ -35,6 +35,12 @@ switch nargin
         n=varargin{3};
         fixBoundaryOpt=varargin{4};
         logicFixedFaces=varargin{5};
+    case 6
+        F=varargin{1};
+        V=varargin{2};
+        n=varargin{3};
+        fixBoundaryOpt=varargin{4};
+        logicFixedFaces=varargin{5};
 end
 
 %%
@@ -117,15 +123,15 @@ if n>0
         
         if any(logicBoundaryEdges)
             eb=edgeVertexMat(logicBoundaryEdges,:);
-            indBoundaryVertices=unique(eb(:));
+            indBoundaryVertices=unique(eb(:));           
+             
+            EV=[eb;fliplr(eb)]; %Non-unique edges
+            vertexVertexConnectivityBoundary=sparse(EV(:,1),EV(:,2),EV(:,2),size(V,1),size(V,1));
+            vertexVertexConnectivityBoundary=sort(vertexVertexConnectivityBoundary,2,'descend');
+            [~,J,~] = find(vertexVertexConnectivityBoundary);
+            vertexVertexConnectivityBoundary=full(vertexVertexConnectivityBoundary(:,1:max(J)));
             
-            vvm=vertexVertexMat(indBoundaryVertices,:);
-            logicCheck=~ismember(vvm,indBoundaryVertices);
-            vvm(logicCheck)=0;
-            vvm=sort(vvm,2,'descend');
-            vvm=vvm(:,[1 2]);
-            
-            Vv(indBoundaryVertices,:)= 6/8*V(indBoundaryVertices,:) + 1/8*(V(vvm(:,1),:)+V(vvm(:,2),:));
+            Vv(indBoundaryVertices,:)= 6/8*V(indBoundaryVertices,:) + 1/8*(V(vertexVertexConnectivityBoundary(indBoundaryVertices,1),:)+V(vertexVertexConnectivityBoundary(indBoundaryVertices,2),:));
         end
         
         %Compute the new edge vertices

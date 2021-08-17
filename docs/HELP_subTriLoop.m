@@ -183,6 +183,45 @@ axisGeom(gca,fontSize); camlight headlight;
 colormap(gca,gjet(6)); icolorbar;
 drawnow;
 
+%% Example: Constraining faces but alter boundary of constrained
+
+% Using |triBox| to build the patch model
+[Fq,V,faceBoundaryMarker_q]=quadBox([1 1 2],[1 1 2]);
+F=[Fq(:,[1 2 3]);Fq(:,[3 4 1]);];
+faceBoundaryMarker=repmat(faceBoundaryMarker_q,2,1);
+
+%%
+
+n=3; %Number of refinement steps
+logicConstrain=ismember(faceBoundaryMarker,[5,6]); %Logic for faces to subdivide linearly
+indConstrain=find(logicConstrain);
+indNotConstrain=find(~logicConstrain);
+
+[Fs1,Vs1,Cs1]=subTriLoop(F(logicConstrain,:),V,n);
+faceBoundaryMarker_sub1=faceBoundaryMarker(indConstrain(Cs1)); %Get boundary markers for refined mesh
+
+[Fs2,Vs2,Cs2]=subTriLoop(F(~logicConstrain,:),V,n);
+faceBoundaryMarker_sub2=faceBoundaryMarker(indNotConstrain(Cs2)); %Get boundary markers for refined mesh
+
+[Fs,Vs,faceBoundaryMarker_sub]=joinElementSets({Fs1,Fs2},{Vs1,Vs2},{faceBoundaryMarker_sub1,faceBoundaryMarker_sub2});
+
+[Fs,Vs]=patchCleanUnused(Fs,Vs); 
+[Fs,Vs]=mergeVertices(Fs,Vs);
+
+%%
+
+cFigure; 
+subplot(1,2,1); hold on;
+gpatch(F,V,faceBoundaryMarker,'k',1,1);
+axisGeom(gca,fontSize); camlight headlight;
+colormap(gca,gjet(6)); icolorbar; 
+
+subplot(1,2,2); hold on;
+gpatch(Fs,Vs,faceBoundaryMarker_sub,'k',1,1);
+axisGeom(gca,fontSize); camlight headlight;
+colormap(gca,gjet(6)); icolorbar;
+drawnow;
+
 %% 
 %
 % <<gibbVerySmall.gif>>
