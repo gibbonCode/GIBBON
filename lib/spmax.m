@@ -1,6 +1,6 @@
 function [varargout]=spmax(varargin)
 
-% function [maxVal,maxInd]=spmax(varargin)
+% function [maxVal,maxInd]=spmax(A,B,vecdim,nanflag,logicRelevant,nanOut)
 % ------------------------------------------------------------------------
 %
 %
@@ -11,25 +11,49 @@ function [varargout]=spmax(varargin)
 
 A=varargin{1};
 
+if nargin>=3
+    dimDir=varargin{3};
+else
+    dimDir=1;
+end
+
 switch nargin
-    case 5
+    case 5        
         logicRelevant=varargin{5};
+        varargin=varargin(1:4);
+        nanOut=0;
+        if isempty(varargin{4})
+            varargin=varargin(1:3);
+        end
+    case 6
+        logicRelevant=varargin{5};
+        nanOut=varargin{6};
         varargin=varargin(1:4);
         if isempty(varargin{4})
             varargin=varargin(1:3);
         end
     otherwise
-        logicRelevant=A~=0;
+        logicRelevant=[];
+        nanOut=0;
 end
+
+if isempty(logicRelevant)
+    logicRelevant=A~=0;
+end
+
+logicRelevantRow=full(any(logicRelevant,dimDir));
 
 %%
 
 minOffset=min(A(logicRelevant));
 
-A(logicRelevant)=A(logicRelevant)-minOffset;
+A(logicRelevant)=A(logicRelevant)-minOffset; %Shift to negative to zeros loose
 varargin{1}=A;
 [maxVal,maxInd]=max(varargin{:});
-maxVal=maxVal+minOffset;
+maxVal(logicRelevantRow)=maxVal(logicRelevantRow)+minOffset; %Shift back
+if nanOut==1
+    maxVal(~logicRelevantRow)=NaN;
+end
 
 %% Collect output
 varargout{1}=maxVal;

@@ -5,12 +5,70 @@
 clear; close all; clc;
 
 %% Syntax
-% |[varargout]=spmax(varargin);|
+% |[maxVal,maxInd]=spmax(A,B,dim,nanflag,logicRelevant,nanOut);|
 
 %% Description 
-% UNDOCUMENTED 
+% This function is like the max function but is designed for sparse arrays.
+% In particular it allows one to "ignore zeros" in the determination of the
+% maxima. 
+
 %% Examples 
-% 
+%
+
+%%
+% Create example matrix
+i=[2 1 1 2  2 3  3 4 4 5  5 5 6 6 7 8];
+j=[1 1 2 3  4 5  6 7 8 9 10 11 12 13 13 13];
+s=[-1 3 1 2 -1 1 -2 5 5 -1 0 2 3 10 11 NaN];
+siz=max([i(:);j(:)]+1)*ones(1,2);
+A=sparse(i,j,s,siz(1),siz(2),numel(s));
+A=A+A';
+
+full(A) % View matrix
+
+L=sparse(i,j,1,siz(1),siz(2),numel(s));
+logicRelevant=(L+L')>0;
+
+%%
+% Compute maxima allong a certain direction (while omit nan is default)
+
+amaxRows=spmax(A,[],1);
+full(amaxRows)
+
+amaxColumns=spmax(A,[],2);
+full(amaxColumns)
+
+%%
+% Including nans
+
+amaxRows=spmax(A,[],1,'includenan');
+full(amaxRows)
+
+amaxColumns=spmax(A,[],2,'includenan');
+full(amaxColumns)
+
+%%
+% Computing maxima across all desired relevant entries (including
+% "relevant/real zeros") 
+
+amaxRows=spmax(A,[],1,'omitnan',logicRelevant);
+full(amaxRows)
+
+amaxColumns=spmax(A,[],2,'omitnan',logicRelevant);
+full(amaxColumns)
+
+%%
+% Computin maxima across all desired relevant entries and output NaN where
+% the sparse array only contains "non-relevant or non-real" zeros. 
+
+nanOut=1;
+
+amaxRows=spmax(A,[],1,'omitnan',logicRelevant,nanOut);
+full(amaxRows)
+
+amaxColumns=spmax(A,[],2,'omitnan',logicRelevant,nanOut);
+full(amaxColumns)
+
 %%
 % 
 % <<gibbVerySmall.gif>>

@@ -5,12 +5,70 @@
 clear; close all; clc;
 
 %% Syntax
-% |[varargout]=spmin(varargin);|
+% |[minVal,minInd]=spmin(A,B,dim,nanflag,logicRelevant,nanOut);|
 
 %% Description 
-% UNDOCUMENTED 
+% This function is like the min function but is designed for sparse arrays.
+% In particular it allows one to "ignore zeros" in the determination of the
+% minima. 
+
 %% Examples 
-% 
+%
+
+%%
+% Create example matrix
+i=[2 1 1 2  2 3  3 4 4 5  5 5 6 6 7 8];
+j=[1 1 2 3  4 5  6 7 8 9 10 11 12 13 13 13];
+s=[-1 3 1 2 -1 1 -2 5 5 -1 0 2 3 10 11 NaN];
+siz=max([i(:);j(:)]+1)*ones(1,2);
+A=sparse(i,j,s,siz(1),siz(2),numel(s));
+A=A+A';
+
+full(A) % View matrix
+
+L=sparse(i,j,1,siz(1),siz(2),numel(s));
+logicRelevant=(L+L')>0;
+
+%%
+% Compute minima allong a certain direction (while omit nan is default)
+
+aMinRows=spmin(A,[],1);
+full(aMinRows)
+
+aMinColumns=spmin(A,[],2);
+full(aMinColumns)
+
+%%
+% Including nans
+
+aMinRows=spmin(A,[],1,'includenan');
+full(aMinRows)
+
+aMinColumns=spmin(A,[],2,'includenan');
+full(aMinColumns)
+
+%%
+% Computing minima across all desired relevant entries (including
+% "relevant/real zeros") 
+
+aMinRows=spmin(A,[],1,'omitnan',logicRelevant);
+full(aMinRows)
+
+aMinColumns=spmin(A,[],2,'omitnan',logicRelevant);
+full(aMinColumns)
+
+%%
+% Computin minima across all desired relevant entries and output NaN where
+% the sparse array only contains "non-relevant or non-real" zeros. 
+
+nanOut=1;
+
+aMinRows=spmin(A,[],1,'omitnan',logicRelevant,nanOut);
+full(aMinRows)
+
+aMinColumns=spmin(A,[],2,'omitnan',logicRelevant,nanOut);
+full(aMinColumns)
+
 %%
 % 
 % <<gibbVerySmall.gif>>
