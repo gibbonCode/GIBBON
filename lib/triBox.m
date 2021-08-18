@@ -30,6 +30,7 @@ end
 %% Create quadrilateral box
 
 boxEl=round(boxDim./pointSpacing); %Number of elements per direction 
+boxEl(boxEl<1)=1; %Cope with large points spacing
 [Fq,Vq,Cq]=quadBox(boxDim,boxEl); %Create quadrilateral box
 
 %% Remesh 3 side face groups with triangles

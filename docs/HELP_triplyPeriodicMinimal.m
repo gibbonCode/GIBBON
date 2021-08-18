@@ -175,7 +175,9 @@ switch typeStr
     case 'g'
         [X,Y,Z]=meshgrid(linspace(-1.9*pi,1.9*pi,n));
         S=triplyPeriodicMinimal(X,Y,Z,'g');
-        [F,V] = isosurface(X,Y,Z,S,0.6);
+        [F,V] = isosurface(X,Y,Z,S,0);
+        V=V./max(V(:)); %Normalize coordinates
+        V=V*45/2;
 end
 F1=F; V1=V; %Store originals
 
@@ -191,12 +193,15 @@ Eb=patchBoundary(F,V);
 %%
 % Thicken surface in ward
 
-thicknessOffset=0.25; %The desired thickness
+thicknessOffset=1; %The desired thickness
 [~,~,N]=patchNormal(F,V); %Vertex normal vectors
-V2=V+N*thicknessOffset; %The offset coordinates
+V1=V-N*thicknessOffset/2; %The offset coordinates
+V2=V+N*thicknessOffset/2; %The offset coordinates
 numVertices=size(V,1);
-V=[V;V2]; %Append new coordinates
+V=[V1;V2]; %Append new coordinates
 F=[F;fliplr(F)+numVertices]; %Append new faces (note offset in indices)
+Ebb=[Eb;Eb+numVertices];
+
 %%
 % Close boundary features
 optionStruct.outputType='label';
@@ -210,22 +215,20 @@ for q=1:1:max(G(:))
     F=[F;fliplr(f)]; %Append new faces
 end
 
+[F,V,~,ind2]=mergeVertices(F,V);
+Ebb=ind2(Ebb);
+
+logic1=V(:,3)<(-45/2+0.1);
+V(logic1,3)=-45/2;
+
 %%
 % Visualize thickened surface
 
 cFigure;
-% subplot(1,2,1); 
-% hold on;
-% title('Vertex normals','FontSize',fontSize);
-% gpatch(F1,V1,'rw','r',1);
-% patchNormPlot(F1,V1,[],'v'); %Visualize vertex normal directions
-% axisGeom; 
-% camlight headlight;
-% 
-% subplot(1,2,2); 
-hold on;
+hold on; hold on; 
 title('Thickened  surface','FontSize',fontSize);
 gpatch(F,V,'bw','none',1);
+gpatch(Ebb,V,'none','b',0,2);
 % patchNormPlot(F,V); %Visualize face normal directions
 axisGeom; 
 camlight headlight;

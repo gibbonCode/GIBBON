@@ -14,9 +14,9 @@ function [varargout]=icolorbar(varargin)
 %% parse input
 
 switch nargin
-    case 0 
-        h=[]; 
+    case 0         
         cLim=caxis;
+        h=[]; 
     case 1
         cLim=varargin{1};
         h=[];

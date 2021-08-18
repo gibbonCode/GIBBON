@@ -6,8 +6,8 @@
    <!--
 This HTML was auto-generated from MATLAB code.
 To make changes, update the MATLAB code and republish this document.
-      --><title>triplyPeriodicMinimal</title><meta name="generator" content="MATLAB 9.6"><link rel="schema.DC" href="http://purl.org/dc/elements/1.1/"><meta name="DC.date" content="2019-06-20"><meta name="DC.source" content="HELP_triplyPeriodicMinimal.m"><style type="text/css">
-html,body,div,span,applet,object,iframe,h1,h2,h3,h4,h5,h6,p,blockquote,pre,a,abbr,acronym,address,big,cite,code,del,dfn,em,font,img,ins,kbd,q,s,samp,small,strike,strong,sub,sup,tt,var,b,u,i,center,dl,dt,dd,ol,ul,li,fieldset,form,label,legend,table,caption,tbody,tfoot,thead,tr,th,td{margin:0;padding:0;border:0;outline:0;font-size:100%;vertical-align:baseline;background:transparent}body{line-height:1}ol,ul{list-style:none}blockquote,q{quotes:none}blockquote:before,blockquote:after,q:before,q:after{content:'';content:none}:focus{outine:0}ins{text-decoration:none}del{text-decoration:line-through}table{border-collapse:collapse;border-spacing:0}
+      --><title>triplyPeriodicMinimal</title><meta name="generator" content="MATLAB 9.10"><link rel="schema.DC" href="http://purl.org/dc/elements/1.1/"><meta name="DC.date" content="2021-08-18"><meta name="DC.source" content="HELP_triplyPeriodicMinimal.m"><style type="text/css">
+html,body,div,span,applet,object,iframe,h1,h2,h3,h4,h5,h6,p,blockquote,pre,a,abbr,acronym,address,big,cite,code,del,dfn,em,font,img,ins,kbd,q,s,samp,small,strike,strong,tt,var,b,u,i,center,dl,dt,dd,ol,ul,li,fieldset,form,label,legend,table,caption,tbody,tfoot,thead,tr,th,td{margin:0;padding:0;border:0;outline:0;font-size:100%;vertical-align:baseline;background:transparent}body{line-height:1}ol,ul{list-style:none}blockquote,q{quotes:none}blockquote:before,blockquote:after,q:before,q:after{content:'';content:none}:focus{outine:0}ins{text-decoration:none}del{text-decoration:line-through}table{border-collapse:collapse;border-spacing:0}
 
 html { min-height:100%; margin-bottom:1px; }
 html body { height:100%; margin:0px; font-family:Arial, Helvetica, sans-serif; font-size:10px; color:#000; line-height:140%; background:#fff none; overflow-y:scroll; }
@@ -23,7 +23,7 @@ a:visited { color:#004aa0; text-decoration:none; }
 
 p { padding:0px; margin:0px 0px 20px; }
 img { padding:0px; margin:0px 0px 20px; border:none; }
-p img, pre img, tt img, li img, h1 img, h2 img { margin-bottom:0px; } 
+p img, pre img, tt img, li img, h1 img, h2 img { margin-bottom:0px; }
 
 ul { padding:0px; margin:0px 0px 20px 23px; list-style:square; }
 ul li { padding:0px; margin:0px 0px 7px 0px; }
@@ -52,6 +52,7 @@ span.comment { color:#228B22 }
 span.string { color:#A020F0 }
 span.untermstring { color:#B20000 }
 span.syscmd { color:#B28C00 }
+span.typesection { color:#A0522D }
 
 .footer { width:auto; padding:10px 0px; margin:25px 0px 0px; border-top:1px dotted #878787; font-size:0.8em; line-height:140%; font-style:italic; color:#878787; text-align:left; float:none; }
 .footer p { margin:0px; }
@@ -203,7 +204,9 @@ typeStr=<span class="string">'g'</span>;
     <span class="keyword">case</span> <span class="string">'g'</span>
         [X,Y,Z]=meshgrid(linspace(-1.9*pi,1.9*pi,n));
         S=triplyPeriodicMinimal(X,Y,Z,<span class="string">'g'</span>);
-        [F,V] = isosurface(X,Y,Z,S,0.6);
+        [F,V] = isosurface(X,Y,Z,S,0);
+        V=V./max(V(:)); <span class="comment">%Normalize coordinates</span>
+        V=V*45/2;
 <span class="keyword">end</span>
 F1=F; V1=V; <span class="comment">%Store originals</span>
 
@@ -215,12 +218,14 @@ Eb=patchBoundary(F,V);
 <span class="comment">% controlPar.n=5;</span>
 <span class="comment">% controlPar.RigidConstraints=unique(Eb(:));</span>
 <span class="comment">% V=patchSmooth(F,V,[],controlPar);</span>
-</pre><p>Thicken surface in ward</p><pre class="codeinput">thicknessOffset=0.25; <span class="comment">%The desired thickness</span>
+</pre><img width="100%" height="auto" vspace="5" hspace="5" src="HELP_triplyPeriodicMinimal_04.jpg" alt=""> <p>Thicken surface in ward</p><pre class="codeinput">thicknessOffset=1; <span class="comment">%The desired thickness</span>
 [~,~,N]=patchNormal(F,V); <span class="comment">%Vertex normal vectors</span>
-V2=V+N*thicknessOffset; <span class="comment">%The offset coordinates</span>
+V1=V-N*thicknessOffset/2; <span class="comment">%The offset coordinates</span>
+V2=V+N*thicknessOffset/2; <span class="comment">%The offset coordinates</span>
 numVertices=size(V,1);
-V=[V;V2]; <span class="comment">%Append new coordinates</span>
+V=[V1;V2]; <span class="comment">%Append new coordinates</span>
 F=[F;fliplr(F)+numVertices]; <span class="comment">%Append new faces (note offset in indices)</span>
+Ebb=[Eb;Eb+numVertices];
 </pre><p>Close boundary features</p><pre class="codeinput">optionStruct.outputType=<span class="string">'label'</span>;
 G=tesgroup(Eb,optionStruct); <span class="comment">%grouping of boundary edges</span>
 
@@ -231,24 +236,22 @@ G=tesgroup(Eb,optionStruct); <span class="comment">%grouping of boundary edges</
     f=[fq(:,[1 2 3]); fq(:,[3 4 1]);]; <span class="comment">%New triangular faces</span>
     F=[F;fliplr(f)]; <span class="comment">%Append new faces</span>
 <span class="keyword">end</span>
+
+[F,V,~,ind2]=mergeVertices(F,V);
+Ebb=ind2(Ebb);
+
+logic1=V(:,3)&lt;(-45/2+0.1);
+V(logic1,3)=-45/2;
 </pre><p>Visualize thickened surface</p><pre class="codeinput">cFigure;
-<span class="comment">% subplot(1,2,1);</span>
-<span class="comment">% hold on;</span>
-<span class="comment">% title('Vertex normals','FontSize',fontSize);</span>
-<span class="comment">% gpatch(F1,V1,'rw','r',1);</span>
-<span class="comment">% patchNormPlot(F1,V1,[],'v'); %Visualize vertex normal directions</span>
-<span class="comment">% axisGeom;</span>
-<span class="comment">% camlight headlight;</span>
-<span class="comment">%</span>
-<span class="comment">% subplot(1,2,2);</span>
-hold <span class="string">on</span>;
+hold <span class="string">on</span>; hold <span class="string">on</span>;
 title(<span class="string">'Thickened  surface'</span>,<span class="string">'FontSize'</span>,fontSize);
 gpatch(F,V,<span class="string">'bw'</span>,<span class="string">'none'</span>,1);
+gpatch(Ebb,V,<span class="string">'none'</span>,<span class="string">'b'</span>,0,2);
 <span class="comment">% patchNormPlot(F,V); %Visualize face normal directions</span>
 axisGeom;
 camlight <span class="string">headlight</span>;
 drawnow;
-</pre><img width="100%" height="auto" vspace="5" hspace="5" src="HELP_triplyPeriodicMinimal_04.jpg" alt=""> <p>The model can be exported to an STL file using export_STL_txt, see <tt>HELP_export_STL_txt</tt>.</p><p><img vspace="5" hspace="5" src="gibbVerySmall.gif" alt=""> </p><p><i><b>GIBBON</b></i> <a href="www.gibboncode.org">www.gibboncode.org</a></p><p><i>Kevin Mattheus Moerman</i>, <a href="gibbon.toolbox@gmail.com">gibbon.toolbox@gmail.com</a></p><p><i><b>GIBBON footer text</b></i></p><p>License: <a href="https://github.com/gibbonCode/GIBBON/blob/master/LICENSE">https://github.com/gibbonCode/GIBBON/blob/master/LICENSE</a></p><p>GIBBON: The Geometry and Image-based Bioengineering add-On. A toolbox for image segmentation, image-based modeling, meshing, and finite element analysis.</p><p>Copyright (C) 2019  Kevin Mattheus Moerman</p><p>This program is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.</p><p>This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for more details.</p><p>You should have received a copy of the GNU General Public License along with this program.  If not, see <a href="http://www.gnu.org/licenses/">http://www.gnu.org/licenses/</a>.</p><p class="footer"><br><a href="https://www.mathworks.com/products/matlab/">Published with MATLAB&reg; R2019a</a><br></p></div><!--
+</pre><img width="100%" height="auto" vspace="5" hspace="5" src="HELP_triplyPeriodicMinimal_05.jpg" alt=""> <p>The model can be exported to an STL file using export_STL_txt, see <tt>HELP_export_STL_txt</tt>.</p><p><img vspace="5" hspace="5" src="gibbVerySmall.gif" alt=""> </p><p><i><b>GIBBON</b></i> <a href="www.gibboncode.org">www.gibboncode.org</a></p><p><i>Kevin Mattheus Moerman</i>, <a href="gibbon.toolbox@gmail.com">gibbon.toolbox@gmail.com</a></p><p><i><b>GIBBON footer text</b></i></p><p>License: <a href="https://github.com/gibbonCode/GIBBON/blob/master/LICENSE">https://github.com/gibbonCode/GIBBON/blob/master/LICENSE</a></p><p>GIBBON: The Geometry and Image-based Bioengineering add-On. A toolbox for image segmentation, image-based modeling, meshing, and finite element analysis.</p><p>Copyright (C) 2006-2021 Kevin Mattheus Moerman and the GIBBON contributors</p><p>This program is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.</p><p>This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for more details.</p><p>You should have received a copy of the GNU General Public License along with this program.  If not, see <a href="http://www.gnu.org/licenses/">http://www.gnu.org/licenses/</a>.</p><p class="footer"><br><a href="https://www.mathworks.com/products/matlab/">Published with MATLAB&reg; R2021a</a><br></p></div><!--
 ##### SOURCE BEGIN #####
 %% triplyPeriodicMinimal
 % Below is a demonstration of the features of the |triplyPeriodicMinimal| function
@@ -427,7 +430,9 @@ switch typeStr
     case 'g'
         [X,Y,Z]=meshgrid(linspace(-1.9*pi,1.9*pi,n));
         S=triplyPeriodicMinimal(X,Y,Z,'g');
-        [F,V] = isosurface(X,Y,Z,S,0.6);
+        [F,V] = isosurface(X,Y,Z,S,0);
+        V=V./max(V(:)); %Normalize coordinates
+        V=V*45/2;
 end
 F1=F; V1=V; %Store originals
 
@@ -443,12 +448,15 @@ Eb=patchBoundary(F,V);
 %%
 % Thicken surface in ward
 
-thicknessOffset=0.25; %The desired thickness
+thicknessOffset=1; %The desired thickness
 [~,~,N]=patchNormal(F,V); %Vertex normal vectors
-V2=V+N*thicknessOffset; %The offset coordinates
+V1=V-N*thicknessOffset/2; %The offset coordinates
+V2=V+N*thicknessOffset/2; %The offset coordinates
 numVertices=size(V,1);
-V=[V;V2]; %Append new coordinates
+V=[V1;V2]; %Append new coordinates
 F=[F;fliplr(F)+numVertices]; %Append new faces (note offset in indices)
+Ebb=[Eb;Eb+numVertices];
+
 %%
 % Close boundary features
 optionStruct.outputType='label';
@@ -462,22 +470,20 @@ for q=1:1:max(G(:))
     F=[F;fliplr(f)]; %Append new faces
 end
 
+[F,V,~,ind2]=mergeVertices(F,V);
+Ebb=ind2(Ebb);
+
+logic1=V(:,3)<(-45/2+0.1);
+V(logic1,3)=-45/2;
+
 %%
 % Visualize thickened surface
 
 cFigure;
-% subplot(1,2,1); 
-% hold on;
-% title('Vertex normals','FontSize',fontSize);
-% gpatch(F1,V1,'rw','r',1);
-% patchNormPlot(F1,V1,[],'v'); %Visualize vertex normal directions
-% axisGeom; 
-% camlight headlight;
-% 
-% subplot(1,2,2); 
-hold on;
+hold on; hold on; 
 title('Thickened  surface','FontSize',fontSize);
 gpatch(F,V,'bw','none',1);
+gpatch(Ebb,V,'none','b',0,2);
 % patchNormPlot(F,V); %Visualize face normal directions
 axisGeom; 
 camlight headlight;
@@ -505,7 +511,7 @@ drawnow;
 % image segmentation, image-based modeling, meshing, and finite element
 % analysis.
 % 
-% Copyright (C) 2019  Kevin Mattheus Moerman
+% Copyright (C) 2006-2021 Kevin Mattheus Moerman and the GIBBON contributors
 % 
 % This program is free software: you can redistribute it and/or modify
 % it under the terms of the GNU General Public License as published by

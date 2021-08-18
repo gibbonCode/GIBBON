@@ -60,7 +60,7 @@ clear; close all; clc;
 %% Example 1: Export colored patch data to the OBJ format
 
 %Define patch data 
-testCase=1
+testCase=1;
 switch testCase
     case 1 %David
         [F,V]=graphicsModels(9);       

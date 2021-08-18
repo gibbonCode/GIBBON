@@ -82,18 +82,15 @@ switch inputStruct.surfaceSide
         [f,v,c]=getSurface(X,Y,Z,S,levelset);        
         if isocap==1
             [fc,vc,cc]=getCaps(X,Y,Z,S,levelset);
+            [f,v,c]=joinElementSets({f,fc},{v,vc},{c,cc}); %Join sets
         end
-        %Join sets
-        [f,v,c]=joinElementSets({f,fc},{v,vc},{c,cc});
     case -1
         [f,v,c]=getSurface(X,Y,Z,-S,-levelset);        
         if isocap==1 
             [fc,vc,cc]=getCaps(X,Y,Z,-S,-levelset);
-        end
-        %Join sets
-        [f,v,c]=joinElementSets({f,fc},{v,vc},{c,cc});
+            [f,v,c]=joinElementSets({f,fc},{v,vc},{c,cc}); %Join sets
+        end        
 end
-
 
 %% Merge nodes and clean-up mesh 
 

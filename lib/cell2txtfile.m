@@ -12,10 +12,15 @@ function cell2txtfile(varargin)
 % Kevin Mattheus Moerman
 % gibbon.toolbox@gmail.com
 %
+% Change log: 
 % 2016/09/09: Updated for GIBBON
 % 2016/09/09: Added conversion to char and associated warning for non-character content. 
 % 2018/02/14: Added whole cell conversion when skipOp==0
 % 2018/02/14: Added varargin and defaults
+%
+% To do: 
+% * Proper handling of conversion of non-character entries (e.g. have user
+% specify conversion format to use for numerical data). 
 %------------------------------------------------------------------------
 
 %% parse input

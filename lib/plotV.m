@@ -1,23 +1,38 @@
 function varargout=plotV(V,varargin)
 
-if ~isempty(V)
-    nDims=size(V,2);
-    
-    %Add zeros if input is 2D
-    if nDims==2
-        V(:,3)=0;
+% function varargout=plotV(V,varargin)
+% ------------------------------------------------------------------------
+% This function is just like plot3 except instead of having to specify the
+% X, Y, and Z coordinates the user can provide a single Nx3 array V for the
+% coordinates. The optional input varargin may contain additional inputs as
+% possible for plot3. 
+% 
+% See also: plot3
+%
+% Change log: 
+% 2021/07/22 KMM Change empty output to be empty graphics object rather
+% than []. Switched to more compact/efficient code. Added comments. 
+% 
+% ------------------------------------------------------------------------
+
+%%
+
+if ~isempty(V)        
+    if size(V,2)==2 %Force 3D
+        V(:,3)=0; %Add zeros for Z if input is 2D
+    end        
+    if nargout==1
+       varargout{1}=plot3(V(:,1),V(:,2),V(:,3),varargin{:}); %Add handle to output        
+    else
+        plot3(V(:,1),V(:,2),V(:,3),varargin{:}); %Just plot        
     end
-    
-    hp=plot3(V(:,1),V(:,2),V(:,3),varargin{:});
-    
-else
-    hp=[];
+else %Nothing to plot so return empty handle
+    if nargout==1    
+        varargout{1}=plot3([],[],[]); %Empty "line array" graphics handle
+    end
 end
 
-switch nargout
-    case 1
-        varargout{1}=hp;
-end
+%% Collect output
 
 %% 
 % _*GIBBON footer text*_ 

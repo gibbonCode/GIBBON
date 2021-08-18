@@ -1,8 +1,20 @@
 function TF=gcontains(varargin)
 
-try    
+% function TF=gcontains(varargin)
+% ------------------------------------------------------------------------
+% This function either uses the built-in MATLAB function contains or, if it
+% is not available (for versions < R2018a) uses a custom implementations. 
+%
+% Change log: 
+% 2021/08/05 Added comments and function description. Switched to use if
+% statement rather than try and catch
+% ------------------------------------------------------------------------
+
+%%
+
+if exist('contains','builtin')==5   
     TF=contains(varargin{:}); %Added in R2018a
-catch ME
+else
     %Use alternative
     switch nargin
         case 2

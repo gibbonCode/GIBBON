@@ -22,15 +22,15 @@ pointSpacing=1; %Desired point spacing
 [F,V,faceBoundaryMarker]=triBox(boxDim,pointSpacing);
 
 %%
-% Plotting model
+% Visualisation
 cFigure; hold on;
 title('Box triangular faces and normals','FontSize',fontSize);
 
 gpatch(F,V,faceBoundaryMarker,'k',1);
 patchNormPlot(F,V);
 
-colormap(gjet(6)); icolorbar; 
 axisGeom(gca,fontSize);
+colormap(gjet(6)); icolorbar; 
 drawnow;
 
 %% 

@@ -7,6 +7,7 @@ function axLim=axisLim(V_DEF)
 % coordinates as a function of time for instance. 
 % 
 % ------------------------------------------------------------------------
+%%
 
 try
     axLim=[min(V_DEF,[],[1 3]); max(V_DEF,[],[1 3])];
@@ -14,6 +15,7 @@ catch
     axLim=[min(min(V_DEF,[],1),[],3); max(max(V_DEF,[],1),[],3)];
 end
 axLim=axLim(:)';
+
 %% 
 % _*GIBBON footer text*_ 
 % 

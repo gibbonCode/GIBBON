@@ -26,8 +26,8 @@ fontSize=20;
 faceAlpha1=0.8;
 
 %% CREATING A MESHED BOX
-boxDim=[5 6 7];
-boxEl=[4 5 6];
+boxDim=[6 4 4];
+boxEl=[5 3 3];
 
 [meshStruct]=hexMeshBox(boxDim,boxEl);
 

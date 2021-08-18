@@ -8,23 +8,25 @@ clear; close all; clc;
 % |[F,V]=import_obj_geom(fileName);|
 
 %% Description 
-% UNDOCUMENTED 
+% This function imports the geometry (faces and nodes0 contained in an OBJ
+% file. All texture/material data is ignored. 
+
 %% Examples 
 % 
 
-fileName='/home/kevin/Desktop/11535_arm_V3_.obj'
+defaultFolder = fileparts(fileparts(mfilename('fullpath')));
+loadPath=fullfile(defaultFolder,'data','OBJ');
+fileName='test.obj';
 
 [F,V]=import_obj_geom(fileName); 
-C=zeros(size(F,1),1); 
 
 %%
+% Visualize
 
 cFigure; 
-gpatch(F,V,C,'none');
+gpatch(F,V,'w','k');
 axisGeom; camlight headlight; 
-colormap gjet; icolorbar;
 gdrawnow;
-
 
 %%
 % 
