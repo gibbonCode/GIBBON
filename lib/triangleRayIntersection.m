@@ -67,7 +67,7 @@ function [varargout] = triangleRayIntersection (V_ori,R,V,F,optStruct)
 
 %%
 
-warning('This function is depricated, it recommended to update your code to use triSurfRayTrace instead');
+warning('This function is depricated, it is recommended to update your code to use triSurfRayTrace instead');
 
 %%
 
