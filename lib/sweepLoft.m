@@ -25,9 +25,12 @@ function [varargout]=sweepLoft(varargin)
 % 2018/11/07 KMM Added close section option, enabling open or closed sections
 % sweeps
 % 2021/07/14 KMM Updated comments
-% 2021/07/14 KMM Improved efficiency and precission (avoid iterative
-% definition KMM related precission issues). 
+% 2021/07/14 KMM Improved efficiency and precission (avoid iterative definition related precission issues). 
 % 2021/07/14 KMM Consistently use post rotation
+% 2021/08/18 KMM Bug fix, switched back to iterative definition of rotation. 
+%
+% To do: 
+% Fix bug in non-iterative method (not currently used) in relation to angle wrap
 %------------------------------------------------------------------------
 
 %% Parse input
@@ -141,11 +144,7 @@ Ub=-[nan(1,size(Vg,2)); flipud(diff(flipud(Vg),1,1))]; %Backward
 U=Uf; %First layer is forward
 U(:,:,2)=Ub; %Second layer is backward
 %Replace by mean in 3rd direction
-try
-    U=mean(U,3,'omitnan');
-catch
-    U=gnanmean(U,3);
-end
+U=gnanmean(U,3);
 U=vecnormalize(U); %Normalize direction vectors
 
 %Compute start coordinate system
@@ -174,9 +173,10 @@ if plotOn==1
     hTriad=gobjects(1,1);
 end
 
-a=U(1,:); %The first direction vector
+%%
+
 for q=2:size(Vg,1)
-    % a=U(q-1,:); %Previous direction vector
+    a=U(q-1,:); %Previous direction vector
     b=U(q,:); %Current direction vector
     
     %Compute angle between vectors
@@ -184,12 +184,12 @@ for q=2:size(Vg,1)
     
     %Compute axis for rotation using cross product
     w=vecnormalize(cross(b,a)); %Zero magnitude if colinear
-    
+
     if norm(w)>0.5 % i.e. if vectors were not co-linear so rotation is needed
         [Rn]=vecAngle2Rot(theta,w);
-        R=R1*Rn; %New rotation tensor        
+        R=R*Rn; %New rotation tensor        
     else
-        R=R1; %Stick with original (no rotation was needed
+        R=R; %Stick with original (no rotation was needed)
     end
     R_curve(:,:,q)=R; %Store rotation tensor
     
@@ -202,6 +202,38 @@ for q=2:size(Vg,1)
         pause(animTime/size(Vg,1));
     end
 end
+
+%% Attempt to rotate from initial rather than iteratively
+% Contains "angle wrap bug" 
+
+% a=U(1,:); %The first direction vector
+% for q=2:size(Vg,1)
+%     % a=U(q-1,:); %Previous direction vector
+%     b=U(q,:); %Current direction vector
+%     
+%     %Compute angle between vectors
+%     theta=real(acos(dot(a,b))); %Complex if dot product is out of range [-1,1] due to precission issues
+%     
+%     %Compute axis for rotation using cross product
+%     w=vecnormalize(cross(b,a)); %Zero magnitude if colinear
+% 
+%     if norm(w)>0.5 % i.e. if vectors were not co-linear so rotation is needed
+%         [Rn]=vecAngle2Rot(theta,w);
+%         R=R1*Rn; %New rotation tensor        
+%     else
+%         R=R1; %Stick with original (no rotation was needed)
+%     end
+%     R_curve(:,:,q)=R; %Store rotation tensor
+%     
+%     %Visualization
+%     if plotOn
+%         figure(hf);
+%         delete(hTriad);
+%         hTriad=quiverTriad(Vg(q,:),R',triadSize);
+%         drawnow;
+%         pause(animTime/size(Vg,1));
+%     end
+% end
 
 %% Create coordinate matrices
 % The start and end curves are rotated so that they are parallel to allow
