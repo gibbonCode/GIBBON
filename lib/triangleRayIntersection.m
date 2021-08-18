@@ -62,7 +62,12 @@ function [varargout] = triangleRayIntersection (V_ori,R,V,F,optStruct)
 % Change log:
 % 2013/12/18 Changed for patch type input and Cartesian coordinate output
 % 2019/07/03 Added varargout type output
+% 2021/08/18 Listed as depricated in favour of triSurfRayTrace
 % ------------------------------------------------------------------------
+
+%%
+
+warning('This function is depricated, it recommended to update your code to use triSurfRayTrace instead');
 
 %%
 

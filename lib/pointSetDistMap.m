@@ -21,17 +21,20 @@ function [P2i]=pointSetDistMap(P1,P1i,P2,Fw)
 % results in a squared distances based mapping. 
 %
 %
-% Kevin Mattheus Moerman
-% kevinmoerman@hotmail.com
-% 12/08/2013
+% 
+% 2013/08/12 Created Kevin Mattheus Moerman
+% 2021/08/05 KMM 
 %------------------------------------------------------------------------
 
 %% Derive distance based weights matrix 
 
 %Calulate displacement
 pointDisp=P2-P1;
-
-DW=dist(P1,P1i'); %Distances
+try
+    DW=dist(P1,P1i'); %Distances
+catch
+    DW=distND(P1,P1i);
+end
 
 %Express distance in termps of the average point spacing
 DP=pathLength(P1);

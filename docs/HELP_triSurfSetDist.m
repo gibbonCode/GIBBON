@@ -28,15 +28,11 @@ n1=Vs(:,3)+(ampDef-ampDefDiff)+ampDef*sin(freqDef*Vs(:,1));
 %%
 % Plotting surfaces
 
-hf1=cFigure;
+cFigure; hold on; 
 title('The two surfaces','FontSize',font_size);
-xlabel('X','FontSize',font_size);ylabel('Y','FontSize',font_size);zlabel('Z','FontSize',font_size); 
-hold on; 
-patch('faces',F1,'vertices',V1,'FaceColor','g','FaceAlpha',faceAlpha1);
-patch('faces',F2,'vertices',V2,'FaceColor','b','FaceAlpha',faceAlpha1);
-
-axis equal; view(3); axis tight; grid on;
-set(gca,'FontSize',font_size); 
+gpatch(F1,V1,'g','k',faceAlpha1);
+gpatch(F2,V2,'b','k',faceAlpha1);
+axisGeom(gca,font_size); 
 camlight headlight; 
 drawnow;
 
@@ -46,23 +42,17 @@ drawnow;
 
 %%
 % The above is equivalent to: 
-D2=minDist(V2,V1);
+% |D2=minDist(V2,V1);|
 
 %%
 % Plotting results
 
-[CF]=vertexToFaceMeasure(F2,D2);
-
-hf2=cFigure;
+cFigure; hold on;
 title('Closest point distance metric on surface 2','FontSize',font_size);
-xlabel('X','FontSize',font_size);ylabel('Y','FontSize',font_size);zlabel('Z','FontSize',font_size); 
-hold on; 
-patch('faces',F2,'vertices',V2,'FaceColor','flat','CData',CF);
-patch('faces',F1,'vertices',V1,'FaceColor',0.5.*ones(1,3),'FaceAlpha',faceAlpha1,'EdgeColor','None');
-
-colormap jet; colorbar;
-axis equal; view(3); axis tight; axis off; 
-set(gca,'FontSize',font_size); 
+gpatch(F1,V1,'w','none',faceAlpha1);
+hp=gpatch(F2,V2,D2,'k'); hp.FaceColor='Interp';
+colormap gjet; colorbar;
+axisGeom(gca,font_size); 
 camlight headlight; 
 drawnow;
 
@@ -73,19 +63,12 @@ drawnow;
 %%
 % Plotting results
 
-[CF]=vertexToFaceMeasure(F2,D2);
-L=~isnan(CF); %Check for NaN's
-
-hf3=cFigure;
-title('Ray-traced distance metric on surface 2','FontSize',font_size);
-xlabel('X','FontSize',font_size);ylabel('Y','FontSize',font_size);zlabel('Z','FontSize',font_size); 
-hold on; 
-patch('faces',F2(L,:),'vertices',V2,'FaceColor','flat','CData',CF(L));
-patch('faces',F1,'vertices',V1,'FaceColor',0.5.*ones(1,3),'FaceAlpha',faceAlpha1,'EdgeColor','None');
-
-colormap jet; colorbar;
-axis equal; view(3); axis tight; axis off; 
-set(gca,'FontSize',font_size); 
+cFigure; hold on;
+title('Closest point distance metric on surface 2','FontSize',font_size);
+gpatch(F1,V1,'w','none',faceAlpha1);
+hp=gpatch(F2,V2,D2,'k'); hp.FaceColor='Interp';
+colormap gjet; colorbar;
+axisGeom(gca,font_size); 
 camlight headlight; 
 drawnow;
 
@@ -105,19 +88,12 @@ V2(:,3)=V2(:,3)*2;
 %%
 % Plotting results
 
-[CF]=vertexToFaceMeasure(F2,D2);
-L=~isnan(CF); %Check for NaN's
-
-hf3=cFigure;
-title('Ray-traced distance metric on surface 2','FontSize',font_size);
-xlabel('X','FontSize',font_size);ylabel('Y','FontSize',font_size);zlabel('Z','FontSize',font_size); 
-hold on; 
-patch('faces',F2(L,:),'vertices',V2,'FaceColor','flat','CData',CF(L));
-patch('faces',F1,'vertices',V1,'FaceColor',0.5.*ones(1,3),'FaceAlpha',faceAlpha1,'EdgeColor','None');
-
-colormap jet; colorbar;
-axis equal; view(3); axis tight; axis off; 
-set(gca,'FontSize',font_size); 
+cFigure; hold on;
+title('Closest point distance metric on surface 2','FontSize',font_size);
+gpatch(F1,V1,'w','none',faceAlpha1);
+hp=gpatch(F2,V2,D2,'k'); hp.FaceColor='Interp';
+colormap gjet; colorbar;
+axisGeom(gca,font_size); 
 camlight headlight; 
 drawnow;
 
@@ -133,18 +109,12 @@ D2(L)=D2_nan;
 %%
 % Plotting results
 
-[CF]=vertexToFaceMeasure(F2,D2);
-
-hf3=cFigure;
-title('Combined distance metric on surface 2','FontSize',font_size);
-xlabel('X','FontSize',font_size);ylabel('Y','FontSize',font_size);zlabel('Z','FontSize',font_size); 
-hold on; 
-patch('faces',F2,'vertices',V2,'FaceColor','flat','CData',CF);
-patch('faces',F1,'vertices',V1,'FaceColor',0.5.*ones(1,3),'FaceAlpha',faceAlpha1,'EdgeColor','None');
-
-colormap jet; colorbar;
-axis equal; view(3); axis tight; axis off; 
-set(gca,'FontSize',font_size); 
+cFigure; hold on;
+title('Closest point distance metric on surface 2','FontSize',font_size);
+gpatch(F1,V1,'w','none',faceAlpha1);
+hp=gpatch(F2,V2,D2,'k'); hp.FaceColor='Interp';
+colormap gjet; colorbar;
+axisGeom(gca,font_size); 
 camlight headlight; 
 drawnow;
 
@@ -157,18 +127,13 @@ drawnow;
 
 %%
 % Plotting results
-[CF]=vertexToFaceMeasure(F2,D2);
 
-hf3=cFigure;
-title('Minimum metric between "closest point" and "ray-traced distance" on surface 2','FontSize',font_size);
-xlabel('X','FontSize',font_size);ylabel('Y','FontSize',font_size);zlabel('Z','FontSize',font_size); 
-hold on; 
-patch('faces',F2,'vertices',V2,'FaceColor','flat','CData',CF);
-patch('faces',F1,'vertices',V1,'FaceColor',0.5.*ones(1,3),'FaceAlpha',faceAlpha1,'EdgeColor','None');
-
-colormap jet; colorbar;
-axis equal; view(3); axis tight; axis off; 
-set(gca,'FontSize',font_size); 
+cFigure; hold on;
+title('Closest point distance metric on surface 2','FontSize',font_size);
+gpatch(F1,V1,'w','none',faceAlpha1);
+hp=gpatch(F2,V2,D2,'k'); hp.FaceColor='Interp';
+colormap gjet; colorbar;
+axisGeom(gca,font_size); 
 camlight headlight; 
 drawnow;
 

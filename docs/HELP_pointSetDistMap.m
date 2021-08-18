@@ -56,22 +56,20 @@ Fw=5;
 % exactly. Blue points are the initial and mapped points. Tesselation shows
 % connectivity (which may become distorted)
 
-hf1=cFigure;;
+hf1=cFigure;
 subplot(1,2,1); hold on; 
 title('Initial','FontSize',fontSize);
-patch('faces',DT.ConnectivityList,'Vertices',P1i,'FaceColor','g','FaceAlpha',faceAlpha);
+gpatch(DT.ConnectivityList,P1i,'g','k',faceAlpha);
 plot(P1(:,1),P1(:,2),'ko-','MarkerSize',markerSize1);
 plot(P1i(:,1),P1i(:,2),'b.','MarkerSize',markerSize2);
-set(gca,'FontSize',fontSize);
-view(2); grid on; axis equal; axis tight; 
+axisGeom(gca,fontSize); view(2);
 
 subplot(1,2,2); hold on; 
 title('Deformed','FontSize',fontSize);
-patch('faces',DT.ConnectivityList,'Vertices',P2i,'FaceColor','r','FaceAlpha',faceAlpha);
+gpatch(DT.ConnectivityList,P2i,'r','k',faceAlpha);
 plot(P2(:,1),P2(:,2),'ko-','MarkerSize',markerSize1);
 plot(P2i(:,1),P2i(:,2),'b.','MarkerSize',markerSize2);
-set(gca,'FontSize',fontSize);
-view(2); grid on; axis equal; axis tight; 
+axisGeom(gca,fontSize); view(2);
 drawnow;
 
 %% DEFORMING A 3D MESH
@@ -91,7 +89,7 @@ P1i=unique(P1i,'rows');
 DT = delaunayTriangulation(P1i(:,[1 2]));
 
 %P2
-[PHI,THETA,R] = cart2sph(P1(:,1),P1(:,2),P1(:,3));
+[PHI,THETA,~] = cart2sph(P1(:,1),P1(:,2),P1(:,3));
 R=1+0.3*sin(3*PHI);
 P2=P1;
 [P2(:,1),P2(:,2),~]=sph2cart(PHI,THETA,R);
@@ -105,26 +103,24 @@ Fw=5;
 % exactly. Blue points are the initial and mapped points. Tesselation shows
 % connectivity (which may become distorted)
 
-hf2=cFigure;;
+hf2=cFigure;
 subplot(1,2,1); hold on; 
 title('Initial','FontSize',fontSize);
-patch('faces',F,'Vertices',P1,'FaceColor','g','FaceAlpha',faceAlpha);
+gpatch(F,P1,'g','k',faceAlpha);
 plot3(P1(:,1),P1(:,2),P1(:,3),'ko','MarkerSize',markerSize1);
 plot3(P1i(:,1),P1i(:,2),P1i(:,3),'b.','MarkerSize',markerSize2);
-set(gca,'FontSize',fontSize);
-camlight('headlight');
-view(3); grid on; axis equal; axis tight; 
+axisGeom(gca,fontSize); camlight('headlight');
 
 subplot(1,2,2); hold on; 
 title('Deformed','FontSize',fontSize);
-patch('faces',F,'Vertices',P2,'FaceColor','r','FaceAlpha',faceAlpha);
+gpatch(F,P2,'r','k',faceAlpha);
 plot3(P2(:,1),P2(:,2),P2(:,3),'ko','MarkerSize',markerSize1);
 plot3(P2i(:,1),P2i(:,2),P2i(:,3),'b.','MarkerSize',markerSize2);
 set(gca,'FontSize',fontSize);
-camlight('headlight');
-view(3); grid on; axis equal; axis tight; 
+axisGeom(gca,fontSize); camlight('headlight');
 drawnow; 
 
+%%
 %Create tesselations for vizualisation
 V1=[P1; P1i]; V2=[P2; P2i];
 [~,ind1,ind2]=unique(V1,'rows'); %remove double points
@@ -153,20 +149,19 @@ logicColourMatrixEntry=sparse(IND_F_2,1:numF,1,numFuni,numF,numF);
 F_count=full(sum(logicColourMatrixEntry,2));
 Ftu=F_uni(F_count==1,:); %Get outer surfaces
 
-hf3=cFigure;;
+hf3=cFigure;
 subplot(1,2,1); hold on; 
 title('Initial','FontSize',fontSize);
-patch('faces',Ftu,'Vertices',V1,'FaceColor','g');
+gpatch(Ftu,V1,'g');
 set(gca,'FontSize',fontSize);
-camlight('headlight');
-view(3); grid on; axis equal; axis tight; 
+axisGeom(gca,fontSize); camlight('headlight');
 
 subplot(1,2,2); hold on; 
 title('Deformed','FontSize',fontSize);
-patch('faces',Ftu,'Vertices',V2,'FaceColor','r');
+gpatch(Ftu,V2,'r');
 set(gca,'FontSize',fontSize);
-camlight('headlight');
-view(3); grid on; axis equal; axis tight; 
+axisGeom(gca,fontSize); camlight('headlight');
+
 drawnow;
 
 %% 
