@@ -213,7 +213,7 @@ febio_spec.Material.material{1}.ATTR.name=materialName1;
 febio_spec.Material.material{1}.ATTR.type='neo-Hookean';
 febio_spec.Material.material{1}.ATTR.id=1;
 febio_spec.Material.material{1}.E.ATTR.type='map'; %Calls for mapping of parameter
-febio_spec.Material.material{1}.E=dataMapName1; %Calls for mapping of parameter
+febio_spec.Material.material{1}.E.VAL=dataMapName1; %Calls for mapping of parameter
 febio_spec.Material.material{1}.v=nu;
 
 % Mesh section

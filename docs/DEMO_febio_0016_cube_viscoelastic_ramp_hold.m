@@ -102,7 +102,7 @@ max_ups=0; %Set to zero to use full-Newton iterations
 opt_iter=6; %Optimum number of iterations
 max_retries=5; %Maximum number of retires
 
-runMode='internal';%'internal';
+runMode='external';%'internal';
 
 %% Creating model geometry and mesh
 % A box is created with tri-linear hexahedral (hex8) elements using the
