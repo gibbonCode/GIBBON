@@ -6,7 +6,7 @@
    <!--
 This HTML was auto-generated from MATLAB code.
 To make changes, update the MATLAB code and republish this document.
-      --><title>diamondLattice</title><meta name="generator" content="MATLAB 9.10"><link rel="schema.DC" href="http://purl.org/dc/elements/1.1/"><meta name="DC.date" content="2021-05-11"><meta name="DC.source" content="HELP_diamondLattice.m"><style type="text/css">
+      --><title>diamondLattice</title><meta name="generator" content="MATLAB 9.10"><link rel="schema.DC" href="http://purl.org/dc/elements/1.1/"><meta name="DC.date" content="2021-08-18"><meta name="DC.source" content="HELP_diamondLattice.m"><style type="text/css">
 html,body,div,span,applet,object,iframe,h1,h2,h3,h4,h5,h6,p,blockquote,pre,a,abbr,acronym,address,big,cite,code,del,dfn,em,font,img,ins,kbd,q,s,samp,small,strike,strong,tt,var,b,u,i,center,dl,dt,dd,ol,ul,li,fieldset,form,label,legend,table,caption,tbody,tfoot,thead,tr,th,td{margin:0;padding:0;border:0;outline:0;font-size:100%;vertical-align:baseline;background:transparent}body{line-height:1}ol,ul{list-style:none}blockquote,q{quotes:none}blockquote:before,blockquote:after,q:before,q:after{content:'';content:none}:focus{outine:0}ins{text-decoration:none}del{text-decoration:line-through}table{border-collapse:collapse;border-spacing:0}
 
 html { min-height:100%; margin-bottom:1px; }
@@ -67,7 +67,7 @@ table td { padding:7px 5px; text-align:left; vertical-align:top; border:1px soli
 
 
 
-  </style></head><body><div class="content"><h1>diamondLattice</h1><!--introduction--><p>Below is a demonstration of the features of the <tt>diamondLattice</tt> function</p><!--/introduction--><h2>Contents</h2><div><ul><li><a href="#2">Syntax</a></li><li><a href="#3">Description</a></li><li><a href="#5">Examples</a></li><li><a href="#6">Create diamond lattice</a></li><li><a href="#7">Visualization</a></li></ul></div><pre class="codeinput">clear; close <span class="string">all</span>; clc;
+  </style></head><body><div class="content"><h1>diamondLattice</h1><!--introduction--><p>Below is a demonstration of the features of the <tt>diamondLattice</tt> function</p><!--/introduction--><h2>Contents</h2><div><ul><li><a href="#2">Syntax</a></li><li><a href="#3">Description</a></li><li><a href="#5">Examples</a></li><li><a href="#6">Create diamond lattice</a></li><li><a href="#8">Build refined and smooth triangulated surface mesh</a></li></ul></div><pre class="codeinput">clear; close <span class="string">all</span>; clc;
 </pre><h2 id="2">Syntax</h2><p><tt>[Ep,Et,VT,Ct]=diamondLattice(sampleSize,nRepeat,strutThickness,plotOn);</tt></p><h2 id="3">Description</h2><p>UNDOCUMENTED</p><p>Plotting settings</p><pre class="codeinput">fontSize=15;
 faceAlpha1=0.8;
 faceAlpha2=1;
@@ -79,8 +79,8 @@ cMap=gjet(4);
 </pre><h2 id="5">Examples</h2><pre class="codeinput"><span class="comment">%Latticeparameters</span>
 nRepeat=3; <span class="comment">%Number of repetitions of the lattice pattern</span>
 sampleSize=30;
-nSubPenta=2;
-strutThickness=1; <span class="comment">%Set the strut thickness</span>
+nSubPenta=1;
+strutThickness=2; <span class="comment">%Set the strut thickness</span>
 </pre><h2 id="6">Create diamond lattice</h2><pre class="codeinput">[Ep,Et,VT,Ct]=diamondLattice(sampleSize,nRepeat,strutThickness,0);
 [Ep,VT]=subPenta(Ep,VT,nSubPenta,3); <span class="comment">%Sub-divide pentahedra</span>
 <span class="comment">% strutThicknessCheck=mean(patchEdgeLengths(Fp{1},VT));</span>
@@ -88,7 +88,7 @@ strutThickness=1; <span class="comment">%Set the strut thickness</span>
 <span class="comment">%Get element faces for visualization</span>
 Fp=element2patch(Ep,[],<span class="string">'penta6'</span>);
 Ft=element2patch(Et,[],<span class="string">'tet4'</span>);
-</pre><h2 id="7">Visualization</h2><pre class="codeinput">cFigure;
+</pre><p>Visualization</p><pre class="codeinput">cFigure;
 subplot(1,2,1); hold <span class="string">on</span>;
 gpatch(Fp,VT,<span class="string">'bw'</span>,<span class="string">'none'</span>,1);
 gpatch(Ft,VT,<span class="string">'bw'</span>,<span class="string">'none'</span>,1);
@@ -101,7 +101,52 @@ legend(hpl,{<span class="string">'Pentahedral triangles'</span>,<span class="str
 axisGeom; camlight <span class="string">headlight</span>;
 
 drawnow;
-</pre><img width="100%" height="auto" vspace="5" hspace="5" src="HELP_diamondLattice_01.jpg" alt=""> <p><img vspace="5" hspace="5" src="gibbVerySmall.gif" alt=""> </p><p><i><b>GIBBON</b></i> <a href="www.gibboncode.org">www.gibboncode.org</a></p><p><i>Kevin Mattheus Moerman</i>, <a href="gibbon.toolbox@gmail.com">gibbon.toolbox@gmail.com</a></p><p><i><b>GIBBON footer text</b></i></p><p>License: <a href="https://github.com/gibbonCode/GIBBON/blob/master/LICENSE">https://github.com/gibbonCode/GIBBON/blob/master/LICENSE</a></p><p>GIBBON: The Geometry and Image-based Bioengineering add-On. A toolbox for image segmentation, image-based modeling, meshing, and finite element analysis.</p><p>Copyright (C) 2006-2021 Kevin Mattheus Moerman and the GIBBON contributors</p><p>This program is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.</p><p>This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for more details.</p><p>You should have received a copy of the GNU General Public License along with this program.  If not, see <a href="http://www.gnu.org/licenses/">http://www.gnu.org/licenses/</a>.</p><p class="footer"><br><a href="https://www.mathworks.com/products/matlab/">Published with MATLAB&reg; R2021a</a><br></p></div><!--
+</pre><img width="100%" height="auto" vspace="5" hspace="5" src="HELP_diamondLattice_01.jpg" alt=""> <h2 id="8">Build refined and smooth triangulated surface mesh</h2><pre class="codeinput">Fpt=[Fp{2}(:,[1 2 3]);Fp{2}(:,[3 4 1])];
+FT=[Fpt;Ft];
+[FT,VT]=patchCleanUnused(FT,VT);
+indB=tesBoundary(FT,VT);
+
+[FT,VT]=patchCleanUnused(FT(indB,:),VT);
+
+[C]=patchConnectivity(FT,VT,{<span class="string">'ev'</span>,<span class="string">'ef'</span>,<span class="string">'fe'</span>});
+conEdgeFace=C.edge.face;
+logicInvalid=sum(conEdgeFace&gt;0,2)&gt;2;
+E=C.edge.vertex;
+
+logicKeep=~all(ismember(C.face.edge,find(logicInvalid)),2);
+
+[FT,VT]=patchCleanUnused(FT(logicKeep,:),VT);
+
+CT=zeros(size(FT,1),1);
+<span class="keyword">for</span> q=1:1:3
+    X=VT(:,q);
+    XF=X(FT);
+    CT(all(XF&gt;=(max(X(:))-eps(max(X(:)))),2))=max(CT(:))+1;
+    CT(all(XF &lt;(min(X(:))+eps(min(X(:)))),2))=max(CT(:))+1;
+<span class="keyword">end</span>
+
+<span class="comment">% Refine using Loop-subdivision</span>
+n=2;
+logicConstrain=(CT&gt;0); <span class="comment">%Logic for faces to subdivide linearly</span>
+indConstrain=find(logicConstrain);
+indNotConstrain=find(~logicConstrain);
+
+[Fs1,Vs1,Cs1]=subTriLoop(FT(logicConstrain,:),VT,n);
+faceBoundaryMarker_sub1=CT(indConstrain(Cs1)); <span class="comment">%Get boundary markers for refined mesh</span>
+
+[Fs2,Vs2,Cs2]=subTriLoop(FT(~logicConstrain,:),VT,n);
+faceBoundaryMarker_sub2=CT(indNotConstrain(Cs2)); <span class="comment">%Get boundary markers for refined mesh</span>
+
+[Fs,Vs,Cs]=joinElementSets({Fs1,Fs2},{Vs1,Vs2},{faceBoundaryMarker_sub1,faceBoundaryMarker_sub2});
+
+[Fs,Vs]=patchCleanUnused(Fs,Vs);
+[Fs,Vs]=mergeVertices(Fs,Vs);
+</pre><p>Visualisation</p><pre class="codeinput">cFigure; hold <span class="string">on</span>;
+gpatch(Fs,Vs,Cs,<span class="string">'k'</span>,1);
+axisGeom; camlight <span class="string">headlight</span>;
+colormap <span class="string">gjet</span>; icolorbar;
+drawnow;
+</pre><img width="100%" height="auto" vspace="5" hspace="5" src="HELP_diamondLattice_02.jpg" alt=""> <p><img vspace="5" hspace="5" src="gibbVerySmall.gif" alt=""> </p><p><i><b>GIBBON</b></i> <a href="www.gibboncode.org">www.gibboncode.org</a></p><p><i>Kevin Mattheus Moerman</i>, <a href="gibbon.toolbox@gmail.com">gibbon.toolbox@gmail.com</a></p><p><i><b>GIBBON footer text</b></i></p><p>License: <a href="https://github.com/gibbonCode/GIBBON/blob/master/LICENSE">https://github.com/gibbonCode/GIBBON/blob/master/LICENSE</a></p><p>GIBBON: The Geometry and Image-based Bioengineering add-On. A toolbox for image segmentation, image-based modeling, meshing, and finite element analysis.</p><p>Copyright (C) 2006-2021 Kevin Mattheus Moerman and the GIBBON contributors</p><p>This program is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.</p><p>This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for more details.</p><p>You should have received a copy of the GNU General Public License along with this program.  If not, see <a href="http://www.gnu.org/licenses/">http://www.gnu.org/licenses/</a>.</p><p class="footer"><br><a href="https://www.mathworks.com/products/matlab/">Published with MATLAB&reg; R2021a</a><br></p></div><!--
 ##### SOURCE BEGIN #####
 %% diamondLattice
 % Below is a demonstration of the features of the |diamondLattice| function
@@ -132,8 +177,8 @@ cMap=gjet(4);
 %Latticeparameters
 nRepeat=3; %Number of repetitions of the lattice pattern
 sampleSize=30;
-nSubPenta=2;
-strutThickness=1; %Set the strut thickness
+nSubPenta=1;
+strutThickness=2; %Set the strut thickness
 
 %% Create diamond lattice
 
@@ -145,7 +190,8 @@ strutThickness=1; %Set the strut thickness
 Fp=element2patch(Ep,[],'penta6');
 Ft=element2patch(Et,[],'tet4');
 
-%% Visualization
+%% 
+% Visualization
 
 cFigure; 
 subplot(1,2,1); hold on; 
@@ -159,6 +205,58 @@ hpl(end+1)=gpatch(Ft,VT,'gw','g',0.5);
 legend(hpl,{'Pentahedral triangles','Pentahedra quads','Tetrahedral triangles'});
 axisGeom; camlight headlight; 
 
+drawnow;
+
+%% Build refined and smooth triangulated surface mesh
+
+Fpt=[Fp{2}(:,[1 2 3]);Fp{2}(:,[3 4 1])];
+FT=[Fpt;Ft];
+[FT,VT]=patchCleanUnused(FT,VT);
+indB=tesBoundary(FT,VT);
+
+[FT,VT]=patchCleanUnused(FT(indB,:),VT);
+
+[C]=patchConnectivity(FT,VT,{'ev','ef','fe'});
+conEdgeFace=C.edge.face;
+logicInvalid=sum(conEdgeFace>0,2)>2;
+E=C.edge.vertex; 
+
+logicKeep=~all(ismember(C.face.edge,find(logicInvalid)),2);
+
+[FT,VT]=patchCleanUnused(FT(logicKeep,:),VT);
+
+CT=zeros(size(FT,1),1);
+for q=1:1:3
+    X=VT(:,q);
+    XF=X(FT);
+    CT(all(XF>=(max(X(:))-eps(max(X(:)))),2))=max(CT(:))+1;
+    CT(all(XF <(min(X(:))+eps(min(X(:)))),2))=max(CT(:))+1;
+end
+
+% Refine using Loop-subdivision
+n=2;
+logicConstrain=(CT>0); %Logic for faces to subdivide linearly
+indConstrain=find(logicConstrain);
+indNotConstrain=find(~logicConstrain);
+
+[Fs1,Vs1,Cs1]=subTriLoop(FT(logicConstrain,:),VT,n);
+faceBoundaryMarker_sub1=CT(indConstrain(Cs1)); %Get boundary markers for refined mesh
+
+[Fs2,Vs2,Cs2]=subTriLoop(FT(~logicConstrain,:),VT,n);
+faceBoundaryMarker_sub2=CT(indNotConstrain(Cs2)); %Get boundary markers for refined mesh
+
+[Fs,Vs,Cs]=joinElementSets({Fs1,Fs2},{Vs1,Vs2},{faceBoundaryMarker_sub1,faceBoundaryMarker_sub2});
+
+[Fs,Vs]=patchCleanUnused(Fs,Vs); 
+[Fs,Vs]=mergeVertices(Fs,Vs);
+
+%%
+% Visualisation
+
+cFigure; hold on; 
+gpatch(Fs,Vs,Cs,'k',1);
+axisGeom; camlight headlight; 
+colormap gjet; icolorbar;
 drawnow;
 
 %%

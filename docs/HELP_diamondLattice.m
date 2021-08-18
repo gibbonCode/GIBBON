@@ -27,8 +27,8 @@ cMap=gjet(4);
 %Latticeparameters
 nRepeat=3; %Number of repetitions of the lattice pattern
 sampleSize=30;
-nSubPenta=2;
-strutThickness=1; %Set the strut thickness
+nSubPenta=1;
+strutThickness=2; %Set the strut thickness
 
 %% Create diamond lattice
 
@@ -40,7 +40,8 @@ strutThickness=1; %Set the strut thickness
 Fp=element2patch(Ep,[],'penta6');
 Ft=element2patch(Et,[],'tet4');
 
-%% Visualization
+%% 
+% Visualization
 
 cFigure; 
 subplot(1,2,1); hold on; 
@@ -54,6 +55,58 @@ hpl(end+1)=gpatch(Ft,VT,'gw','g',0.5);
 legend(hpl,{'Pentahedral triangles','Pentahedra quads','Tetrahedral triangles'});
 axisGeom; camlight headlight; 
 
+drawnow;
+
+%% Build refined and smooth triangulated surface mesh
+
+Fpt=[Fp{2}(:,[1 2 3]);Fp{2}(:,[3 4 1])];
+FT=[Fpt;Ft];
+[FT,VT]=patchCleanUnused(FT,VT);
+indB=tesBoundary(FT,VT);
+
+[FT,VT]=patchCleanUnused(FT(indB,:),VT);
+
+[C]=patchConnectivity(FT,VT,{'ev','ef','fe'});
+conEdgeFace=C.edge.face;
+logicInvalid=sum(conEdgeFace>0,2)>2;
+E=C.edge.vertex; 
+
+logicKeep=~all(ismember(C.face.edge,find(logicInvalid)),2);
+
+[FT,VT]=patchCleanUnused(FT(logicKeep,:),VT);
+
+CT=zeros(size(FT,1),1);
+for q=1:1:3
+    X=VT(:,q);
+    XF=X(FT);
+    CT(all(XF>=(max(X(:))-eps(max(X(:)))),2))=max(CT(:))+1;
+    CT(all(XF <(min(X(:))+eps(min(X(:)))),2))=max(CT(:))+1;
+end
+
+% Refine using Loop-subdivision
+n=2;
+logicConstrain=(CT>0); %Logic for faces to subdivide linearly
+indConstrain=find(logicConstrain);
+indNotConstrain=find(~logicConstrain);
+
+[Fs1,Vs1,Cs1]=subTriLoop(FT(logicConstrain,:),VT,n);
+faceBoundaryMarker_sub1=CT(indConstrain(Cs1)); %Get boundary markers for refined mesh
+
+[Fs2,Vs2,Cs2]=subTriLoop(FT(~logicConstrain,:),VT,n);
+faceBoundaryMarker_sub2=CT(indNotConstrain(Cs2)); %Get boundary markers for refined mesh
+
+[Fs,Vs,Cs]=joinElementSets({Fs1,Fs2},{Vs1,Vs2},{faceBoundaryMarker_sub1,faceBoundaryMarker_sub2});
+
+[Fs,Vs]=patchCleanUnused(Fs,Vs); 
+[Fs,Vs]=mergeVertices(Fs,Vs);
+
+%%
+% Visualisation
+
+cFigure; hold on; 
+gpatch(Fs,Vs,Cs,'k',1);
+axisGeom; camlight headlight; 
+colormap gjet; icolorbar;
 drawnow;
 
 %%
