@@ -18,21 +18,25 @@ switch nargin
     case 1
         topic=varargin{1};        
     case 0
-        topic='GIBBON';
+        topic='';
 end
 
-documentationPath=fullfile(fileparts(fileparts(mfilename('fullpath'))),'docs','html');
-
-helpCheckName=fullfile(documentationPath,['HELP_',topic,'.html']);
-demoCheckName=fullfile(documentationPath,['DEMO_',topic,'.html']);
-
-if exist(helpCheckName,'file')
-    web(helpCheckName, '-helpbrowser');
-elseif exist(demoCheckName,'file')
-    web(demoCheckName, '-helpbrowser');
+if isempty(topic) 
+   web('GIBBON_product_page.html', '-helpbrowser'); %Display main GIBBON page
 else
-    disp('No matching HELP or DEMO files found. Searching all documentation instead');
-    docsearch(topic);
+    documentationPath=fullfile(fileparts(fileparts(mfilename('fullpath'))),'docs','html');
+    
+    helpCheckName=fullfile(documentationPath,['HELP_',topic,'.html']);
+    demoCheckName=fullfile(documentationPath,['DEMO_',topic,'.html']);
+    
+    if exist(helpCheckName,'file')
+        web(helpCheckName, '-helpbrowser');
+    elseif exist(demoCheckName,'file')
+        web(demoCheckName, '-helpbrowser');
+    else
+        disp('No matching HELP or DEMO files found. Searching all documentation instead');
+        docsearch(topic);
+    end    
 end
 
 %% 

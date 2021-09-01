@@ -74,7 +74,9 @@ cell2txtfile(saveName,T,0,0);
 %% Add searchable help
 addHelpSearch;
 
-disp('Restart MATLAB to allow for the help and documentation integration changes to take effect');
+disp('You may need to restart MATLAB to allow for the help and documentation integration changes to take effect');
+
+disp('Use gdoc command to open GIBBON documentation page in MATLAB, or use https://www.gibboncode.org/Documentation/');
 
  
 %% 

@@ -89,22 +89,28 @@ The interface for ABAQUS is a recent development. Users can look at `HELP_abaqus
 GIBBON expands the standard MATLAB® visualization capabilities by adding 3D image and voxel visualization (`HELP_im2patch` and `HELP_sliceViewer`), meshed geometries (`HELP_gpatch` and `HELP_meshView`), finite element models (`HELP_element2patch`), and colormapped vector data (`HELP_quiverVec`), and all visualization methods enable multiple colormaps to be used in each figure or axis window. Furthermore GIBBON offers a custom figure window `cFigure` containing 3D rotation options (`HELP_vcw`) that mimic CAD behavior of 3D scene rendering, and high quality figure exporting options (`HELP_efw`). Advanced graphics animation creation and exporting capabilities through a figure window based GUI are also enabled (`HELP_anim8`).
 
 # Installation <a name="Installation"></a>  
+
+## Summary
+1. Download GIBBON
+2. Just run: `installGibbon.m` (found in GIBBON's main folder) and provide a link to where FEBio is installed during installation
+
+## More detailed installation instructions
 The steps below guide you through a streamlined installation procedure using the `installGibbon.m` function<sup>\*</sup>.   
 
-\*<sub>If you prefer manual installation do the following: 1) Add the GIBBON folder (with subfolders) to the path and save the path definitions, 2) Run `createHelpDemoDocumentation.m` to integrate the help and documentation, 3) For the 3rd party packages: 3a) Add the `export_fig` folder to the path and save the path definitions, 3b) Go to the config folder in _../GIBBON/config_ and edit the _FEBioPath.txt_ file to contain the full path to the FEBio executable </sub>
+\*<sub>If you prefer manual installation do the following: 1) Add the GIBBON folder (with subfolders) to the path and save the path definitions, 2) Run `createHelpDemoDocumentation.m` to integrate the help and documentation, 3) For the 3rd party packages: Go to the config folder in _../GIBBON/config_ and edit the _FEBioPath.txt_ file to contain the full path to the FEBio executable </sub>
 
 ### 1. Get a copy of GIBBON
 To use GIBBON you need to create a copy on a local directory on your machine. Obtain a copy by downloading and unzipping the latest [zip file](https://github.com/gibbonCode/GIBBON/archive/master.zip) or clone GIBBON instead e.g. using: `git clone https://github.com/gibbonCode/GIBBON.git`. You can place the GIBBON folder anywhere on your machine, however, MATLAB (and the 3rd party packages listed below) may have file permission limitations for some locations which you may need to address<sup>\*</sup>.   
 
 <sup>\* For instance, some of GIBBON's features, such as those associated with TetGen and FEBio, regularly create and delete temporary files. As such MATLAB (and the 3rd party packes) should have full permissions for these folders. First of all users should make sure MATLAB has full (e.g. read/write/delete) permissions for the entire GIBBON folder (and its sub-folders). On some platforms the 3rd party packages require special treatment. For instance some OSX users have found it necessary to give tetGen or FEBio particular file permissions. For instance in the case of TetGen related features using `git update-index --chmod=+x path/to/tetgen`. </sup>
 
-### 2. Installing and setting up 3rd party packages
-Below is a list of 3rd party packages that are required for full functionality. Download and install them if needed (some are already included with GIBBON). Skip this step if finite element analysis (with FEBio) and figure exporting (with export_fig) are not desired.
+### 2. Setting up 3rd party packages
+Below is a list of 3rd party packages that are required for full functionality. All all included with GIBBON **except for FEBio** which users need to download and install. You may skip FEBio installation if finite element analysis (with FEBio) is not desired.
 
 | Package | Description | Included? | Download |
 |:--|:--|:--:|--:|
 |[__FEBio__](https://febio.org) <br/> <img src="docs/img/logos/febioLogo.png" href="https://febio.org" alt="FEBIO" width="100%">|FEBio is a finite element solver and is used in GIBBON for all finite element analysis. Use of FEBio is featured in the many `DEMO_FEBio...` files. FEBio version 2.5.0 or newer is recommended. |__No__|[__FEBio website__](https://febio.org) |
-|[__export_fig__](https://github.com/altmany/export_fig) <br/> <img src="docs/img/logos/export_fig_logo.jpg" href="https://github.com/altmany/export_fig" alt="export_fig" width="100%">| `export_fig` helps to export publication quality images (e.g. .png, .jpg, .pdf, .eps), in GIBBON it is integrated in the export figure widget `efw` to export such images from the `cFigure` window directly. `export_fig` is also used for exporting images for creation of .gif animations with the GIBBON `anim8` function. |__No__|[__Get via GitHub__](https://github.com/altmany/export_fig)  / [__Download zip__](https://github.com/altmany/export_fig/archive/master.zip)|
+|[__export_fig__](https://github.com/altmany/export_fig) <br/> <img src="docs/img/logos/export_fig_logo.jpg" href="https://github.com/altmany/export_fig" alt="export_fig" width="100%">| `export_fig` helps to export publication quality images (e.g. .png, .jpg, .pdf, .eps), in GIBBON it is integrated in the export figure widget `efw` to export such images from the `cFigure` window directly. `export_fig` is also used for exporting images for creation of .gif animations with the GIBBON `anim8` function. |__Yes__|[__export_fig page on GitHub__](https://github.com/altmany/export_fig) |
 |[__TetGen__](http://wias-berlin.de/software/tetgen/) <br/> <img src="docs/img/logos/tetgenLogo.gif" href="http://wias-berlin.de/software/tetgen/" alt="TetGen" width="100px">| Is used for tetrahedral meshing (and possibly constrained 3D Delaunay tessellation). See for instance `HELP_runTetGen.m`. |__Yes__| For other versions: [__TetGen website__](http://wias-berlin.de/software/tetgen/)|
 
 ### 2. Install GIBBON
@@ -113,31 +119,29 @@ By running `installGibbon.m` the GIBBON, FEBio, and export_fig path definitions 
 # Getting started <a name="Start"></a>
 
 ### Access the integrated help
-* To access the help documentation from MATLAB click on the HELP browser then click o `GIBBON toolbox` under `Supplemental Software` as shown below. This will open the toolbox help and documentation which is now searchable and integrated just like the rest of MATLAB's help and documentation.  
-* You may also use `gdoc` (similar to MATLAB's doc) to access GIBBON documentation. For instance for help on `im2patch` use `gdoc im2patch`. This will search the integrated help for im2patch and display the results.
+* To access the help documentation from MATLAB simply type: `gdoc` which will open the GIBBON documentation page in MATLAB's help brower. The documentation which is searchable and integrated just like the rest of MATLAB's help and documentation. You can also find this page manually under `Supplemental Software` as shown below.
+* To open GIBBON documentation for a particular function can use `gdoc <functionName>` (similar to MATLAB's `doc` function). For instance for help on `im2patch` use `gdoc im2patch`. This will search the integrated help for im2patch and display the results.
 
 <img src="docs/gif_helpSearch.gif" alt="Help integration" width="100%">
 
 ### Where to find functions and the executable help and demo files
-* The `lib` folder contains all GIBBON's functions and the `lib_ext` contains "external functions" i.e. functions developed by others included with GIBBON. The `docs` folder contains the help&documentation, and demo files which when "published" (using MATLAB's publish functionality) create the .html documentation files (found in `docs/html`) which are integrated in MATLAB.  
+* The `lib` folder contains all GIBBON's functions.
+* The `lib_ext` folder contains external functions and libraries developed by others.
+* The `docs` folder contains the help & documentation files, and demo files which when "published" (using MATLAB's publish functionality) create the .html documentation files (found in `docs/html`) which are integrated in MATLAB.  
 
-* The source for the help information for any function `functionName` is named `HELP_functionName`, and  the source for demos have `DEMO_` as part of the name. Therefore if one is interested in reproducing or starting off from codes in the help and documentation simply start typing code names starting in `HELP_` or `DEMO_` in the MATLAB command window, e.g. `HELP_ind2patch` can be used to generate the help information for the `ind2patch` function. Users can start editing the file by typing `open HELP_ind2patch` in the command window. By publishing (MATLAB publish functionality) the HELP_ or DEMO_ files .html files are created in the `docs\html` folder. As such if users alter/contribute code in the `lib` folder and generate associated `HELP_` or `DEMO_` files, new help and documentation is added. For new help and documentation to become known and visible to MATLAB run the `createHelpDemoDocumentation` function and restart MATLAB.  
+* The source for the help information for any function `functionName` is named `HELP_functionName`, and  the source for demos have `DEMO_` as part of the name. Therefore if one is interested in reproducing or starting off from codes in the help and documentation simply start typing code names starting in `HELP_` or `DEMO_` in the MATLAB command window, e.g. `HELP_ind2patch` can be used to generate the help information for the `ind2patch` function. Users can start editing the file by typing `open HELP_ind2patch` in the command window. By publishing (use `gpublish <HELP_functionName>`) the HELP_ or DEMO_ files .html files are created in the `docs\html` folder. As such if users alter or contribute code in the `lib` folder and generate associated `HELP_` or `DEMO_` files, new help and documentation is then added and rendered on the website. For new help and documentation to become integrated in MATLAB run the `createHelpDemoDocumentation` function and restart MATLAB.  
 
-* Many of the `DEMO_` files focus on the use of FEBio. The demo `DEMO_FEBio_block_uniaxial_compression` for instance features a simple cube that undergoes a 30% compression. Other demos focus on different load types, single versus multi-step analysis, different materials and inverse analysis (e.g. `DEMO_FEBio_iFEA_uniaxial_01`). Demos with `DEMO_FEBio_...` are for the old febio_spec 2.0 format. The newer demos with `DEMO_febio_...` are for the latest febio_spec 2.5.
+* Many of the `DEMO_` files focus on the use of FEBio. The demo `DEMO_febio_0001_cube_uniaxial` for instance features a simple cube subjected to a uniaxial load. Other demos focus on different load types, single versus multi-step analysis, different materials and inverse analysis (e.g. `DEMO_febio_0042_inverse_FEA_cube_uniaxial`).
 
 # Testing <a name="Test"></a>
 GIBBON's core functionality can be tested by running `testGibbon('all','test');`. Use `testGibbon('demo','test');` or `testGibbon('help','test');` for running the demo or help files only.     
-GIBBON is currently developed and tested using the most recent version of MATLAB (or the latest pre-release) and has been tested on Windows 10, Ubuntu (14.10 up to 18.10), and Mac OS. Most of GIBBON's functionality is compatible with older MATLAB versions, especially MATLAB R2014a and newer (Delaunay tessellation and toolbox help integration are amongst things that have undergone large changes). Please inform the developers (or open an issue) if a particular function does not work for your MATLAB environment. It is likely that codes can be easily altered to work for your version.    
+GIBBON is currently developed and tested using the most recent version of MATLAB (or the latest pre-release) and has been tested on Windows 10, Ubuntu 20.04, and Mac OS. Most of GIBBON's functionality is compatible with older MATLAB versions, especially MATLAB R2014a and newer (Delaunay tessellation and toolbox help integration are among things that have undergone large changes). Please inform the developers (or open an issue) if a particular function does not work for your MATLAB environment. It is likely that codes can be easily altered to work for your version.    
 A large portion of GIBBON's functionality does not rely on special MATLAB toolboxes. However some functions do. Here is a list of toolboxes which appear to be used in GIBBON:
 * Image Processing Toolbox
-* Bioinformatics Toolbox
 * Statistics and Machine Learning Toolbox
-* Computer Vision System Toolbox
-* Neural Network Toolbox
 * Symbolic Math Toolbox
 * Curve Fitting Toolbox
 * Parallel Computing Toolbox
-* Mapping Toolbox    
 
 # License <a name="License"></a>
 GIBBON is provided under: [![the GNU_GPLv3 License](https://img.shields.io/badge/License-GNU_GPLv3-orange.svg)](https://opensource.org/licenses/GPL-3.0). The [license file](https://github.com/gibbonCode/GIBBON/blob/master/LICENSE) is found on the GitHub repository.

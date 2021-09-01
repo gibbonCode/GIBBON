@@ -14,6 +14,7 @@ addpath(fullfile(gibbonPath,'lib')); %Add gibbon lib path so gibbon functions us
 %% Settings
 
 W=60; %Scrollbar width
+squareSizeMax=1200;
 
 %% Open figure
 
@@ -31,10 +32,14 @@ figStruct.Name='Installing GIBBON';
 hf = cFigure(figStruct);
 hf.NumberTitle='off';
 
-figSize=round([min(screenSizeGroot(3:4)) min(screenSizeGroot(3:4))*0.9]); % width, height
+
+squareSize=round([min(screenSizeGroot(3:4)) min(screenSizeGroot(3:4))]); % width, height
+squareSize(squareSize>squareSizeMax)=squareSizeMax;
 
 hf.Units='pixels';
-hf.Position=[(screenSizeGroot(3)-figSize(1))/2 (screenSizeGroot(4)-figSize(2))/2  figSize(1) figSize(2)]; % left bottom width height
+windowSize=[2*W (screenSizeGroot(4)-squareSize(2))-2*W squareSize(1) squareSize(2)]; % left bottom width height
+
+hf.Position=windowSize; % left bottom width height
 
 %Remove tool and menu bars
 ht = findobj(allchild(hf),'flat','Type','uitoolbar');
@@ -54,16 +59,21 @@ end
 
 %% Initilize text fields
 
+textPositionInstall=[W hf.Position(4)-W hf.Position(3)-W*2 round(W/1.5)];
+
 top_title='Installing GIBBON';
 hTextTitle = uicontrol(hf,'Style','text','String',top_title,...
-    'Position',[W hf.Position(4)-W hf.Position(3)-W*2 round(W/1.5)],...
+    'Position',textPositionInstall,...
     'BackgroundColor',[1 1 1],'HorizontalAlignment','Left','FontSize',18,'FontWeight','normal');
 
 hf.UserData.uihandles.hTextTitle=hTextTitle;
 
 top_statement='Adding gibbon paths. Please wait...';
+textPositionStatement=textPositionInstall;
+textPositionStatement(2)=textPositionInstall(2)-W;
+
 hTextStatement = uicontrol(hf,'Style','text','String',top_statement,...
-    'Position',[W hf.Position(4)-2*W hf.Position(3)-W*2 round(W/1.5)],...
+    'Position',textPositionStatement,...
     'BackgroundColor',[1 1 1],'HorizontalAlignment','Left','FontSize',12,'FontWeight','bold');
 
 hf.UserData.uihandles.hTextStatement=hTextStatement;
@@ -105,26 +115,27 @@ end
 logicKeep=~gcontains(pathNames,'.');
 pathNames=pathNames(logicKeep);
 
-hw = waitbar(0,'Adding toolbox paths');
 for q=1:1:numel(pathNames)
      pathNameNow=pathNames{q};     
      addpath(pathNameNow); %Add path     
-     waitbar(q/numel(pathNames),hw);
+     hTextStatement.String=[top_statement,' ',num2str(round(100*q/numel(pathNames))),'% complete'];
+     drawnow;
 end
-close(hw)
 
 hTextStatement.String='Done adding toolbox paths';
 drawnow;
+pause(0.5);
 
-%% Add 3rd party paths
-hTextStatement.String='Please provide 3rd party package locations. Leave blank if associated features are not needed.';
+%% Add FEBio path
+
+hTextStatement.String='Please provide the full path to the FEBio executable. Leave blank if FEBio is not needed.';
 
 if ispc
-    hTextInfoStringDefault='Full path to FEBio excutable including extension, e.g. C:\Program Files\FEBioStudio\febio\FEBio3.exe';
+    hTextInfoStringDefault='On Windows likely similar to: C:\Program Files\FEBioStudio\febio\FEBio3.exe';
 elseif ismac
-    hTextInfoStringDefault='Full path to FEBio excutable including extension, e.g. /users/kevin/Applications/FEBioStudio/FEBioStudio/Contents/MacOS/febio3';
+    hTextInfoStringDefault='On MacOS likely similar to: /users/userName/Applications/FEBioStudio/FEBioStudio/Contents/MacOS/febio3';
 else
-    hTextInfoStringDefault='Full path to FEBio excutable, e.g. /home/kevin/FEBioStudio/bin/febio3';
+    hTextInfoStringDefault='On Linux likely similar to: /home/userName/FEBioStudio/bin/febio3';
 end
 
 hTextInfo1 = uicontrol(hf,'Style','text','String',hTextInfoStringDefault,...
@@ -140,38 +151,13 @@ hTextInput1 = uicontrol(hf,'Style','edit','String',FEBioPath,...
 hf.UserData.uihandles.hTextInfo1=hTextInfo1;
 hf.UserData.uihandles.hTextInput1=hTextInput1;
 
-%%
-hTextInfoStringDefault='Full path to folder containing export_fig';
-
-hTextInfo2 = uicontrol(hf,'Style','text','String',hTextInfoStringDefault,...
-    'Position',[W hf.Position(4)-W*4.5 round(hf.Position(3))-W*2 round(W/1.5)],...
-    'BackgroundColor',[1 1 1],'HorizontalAlignment','Left','FontSize',12,'FontWeight','normal');
-
-exportFigPath=fileparts(which('export_fig'));
-
-if isempty(exportFigPath)
-    if ispc
-        exportFigPath='e.g. ...\MATLAB\export_fig';
-    else
-        exportFigPath='e.g. .../MATLAB/export_fig';
-    end
-end
-
-hTextInput2 = uicontrol(hf,'Style','edit','String',exportFigPath,...
-    'Position',[W hf.Position(4)-W*5 round(hf.Position(3))-W*2 round(W/1.5)],...
-    'BackgroundColor',[1 1 1],'HorizontalAlignment','Left','FontSize',12);
-
-hf.UserData.uihandles.hTextInfo2=hTextInfo2;
-hf.UserData.uihandles.hTextInput2=hTextInput2;
-
-%% 
-
-hTextStatement.String='Please provide 3rd party package locations.';
-
 %% Create push button
 hf.UserData.pathDefinitionsDone=0;
 
-hconfirmButton = uicontrol('Style', 'pushbutton', 'String', 'Set paths','Position',[W hf.Position(4)-W*6 5*W round(W/1.5)],'Callback',{@setThirdpartyPaths,{hf}},'FontSize',12);
+hBrowseButton = uicontrol('Style', 'pushbutton', 'String', 'Browse','Position',[W hf.Position(4)-W*4.5   5*W round(W/1.5)],'Callback',{@getDir,{hf}},'FontSize',12);
+hf.UserData.uihandles.hBrowseButton=hBrowseButton;
+
+hconfirmButton = uicontrol('Style', 'pushbutton', 'String', 'Confirm path','Position',[W hf.Position(4)-W*5.5   5*W round(W/1.5)],'Callback',{@setThirdpartyPaths,{hf}},'FontSize',12);
 hf.UserData.uihandles.hconfirmButton=hconfirmButton;
 
 %% Wait for path definitions to be set
@@ -196,24 +182,14 @@ createHelpDemoDocumentation;
 hf.UserData.uihandles.hTextStatement.String='Done integrating help'; drawnow;
 pause(0.5); 
 
-%% Compiling MEX files
-% hf.UserData.uihandles.hTextStatement.String='Compiling mex files (required for faster geodesic remeshing)'; drawnow;
-% 
-% answer = questdlg('Would you like to try compile mex files now?','Compiling mex files','Yes','No','Yes');
-% 
-% switch answer
-%     case 'Yes'
-%         compile_mex;
-%         hf.UserData.uihandles.hTextStatement.String='Done compiling mex files'; drawnow;
-%     otherwise
-%         hf.UserData.uihandles.hTextStatement.String='Skipped compiling mex files'; drawnow;     
-% end
-% pause(0.5); 
-
 %%
 
-hf.UserData.uihandles.hTextStatement.String='Restart MATLAB to allow for the help and documentation integration changes to take effect';
-hf.UserData.uihandles.hTextTitle.String='Finished! GIBBON is installed. Feel free to close this window';
+hf.UserData.uihandles.hTextTitle.String='Finished! GIBBON is installed.';
+
+hf.UserData.uihandles.hTextStatement.String='Use gdoc to open the GIBBON help from the command window, or visit https://www.gibboncode.org/Documentation/';
+
+hDoneButton = uicontrol('Style', 'pushbutton', 'String', 'Done!','Position',[W hf.Position(4)-W*3.5   5*W round(W/1.5)],'Callback',{@closeDone,{hf}},'FontSize',12);
+hf.UserData.uihandles.hBrowseButton=hDoneButton;
 
 end
 
@@ -245,18 +221,17 @@ if isfield(hf.UserData.uihandles,'hTextInput1')
     hf.UserData.uihandles.hTextInput1.Position=     [W hf.Position(4)-3.5*W   hf.Position(3)-W*2 round(W/1.5)];
 end
 
-if isfield(hf.UserData.uihandles,'hTextInfo2')
-    hf.UserData.uihandles.hTextInfo2.Position=      [W hf.Position(4)-4.5*W hf.Position(3)-W*2 round(W/1.5)];
-end
-
-if isfield(hf.UserData.uihandles,'hTextInput2')
-    hf.UserData.uihandles.hTextInput2.Position=     [W hf.Position(4)-5*W   hf.Position(3)-W*2 round(W/1.5)];
+if isfield(hf.UserData.uihandles,'hBrowseButton')
+    hf.UserData.uihandles.hBrowseButton.Position=     [W hf.Position(4)-W*4.5   5*W                round(W/1.5)];
 end
 
 if isfield(hf.UserData.uihandles,'hconfirmButton')
-    hf.UserData.uihandles.hconfirmButton.Position=     [W hf.Position(4)-W*6   5*W                round(W/1.5)];
+    hf.UserData.uihandles.hconfirmButton.Position=     [W hf.Position(4)-W*5.5   5*W                round(W/1.5)];
 end
 
+if isfield(hf.UserData.uihandles,'hDoneButton')
+    hf.UserData.uihandles.hDoneButton.Position=     [W hf.Position(4)-W*3.5   5*W                round(W/1.5)];
+end
 
 end
 
@@ -270,20 +245,14 @@ if ~isempty(t)
     setFEBioPath(t); %Set FEBio path in config file
 end
 
-t=hf.UserData.uihandles.hTextInput2.String;
-if ~isempty(t)
-    addpath(t); %Add export_fig to the path
-end
-
+%Clean-up guid components
 delete(hf.UserData.uihandles.hTextInfo1)
 hf.UserData.uihandles=rmfield(hf.UserData.uihandles,'hTextInfo1');
 delete(hf.UserData.uihandles.hTextInput1)
 hf.UserData.uihandles=rmfield(hf.UserData.uihandles,'hTextInput1');
 
-delete(hf.UserData.uihandles.hTextInfo2)
-hf.UserData.uihandles=rmfield(hf.UserData.uihandles,'hTextInfo2');
-delete(hf.UserData.uihandles.hTextInput2)
-hf.UserData.uihandles=rmfield(hf.UserData.uihandles,'hTextInput2');
+delete(hf.UserData.uihandles.hBrowseButton)
+hf.UserData.uihandles=rmfield(hf.UserData.uihandles,'hBrowseButton');
 
 delete(hf.UserData.uihandles.hconfirmButton)
 hf.UserData.uihandles=rmfield(hf.UserData.uihandles,'hconfirmButton');
@@ -291,7 +260,7 @@ hf.UserData.uihandles=rmfield(hf.UserData.uihandles,'hconfirmButton');
 hf.UserData.uihandles.hTextStatement.String='Done, adding third party paths';
 drawnow;
 
-%% Saving path definitions
+% Saving path definitions
 hf.UserData.uihandles.hTextStatement.String='Saving path definitions';
 drawnow;
 
@@ -303,7 +272,36 @@ drawnow;
 hf.UserData.pathDefinitionsDone=1;
 
 end
- 
+
+%% Browse to path
+
+function getDir(~,~,inputCell)
+
+hf=inputCell{1};
+selPath=uigetdir;
+if selPath==0 %Selection was cancelled
+    hf.UserData.uihandles.hTextInput1.String='';
+else %Selection was made
+    hf.UserData.uihandles.hTextInput1.String=selPath;
+end
+drawnow; 
+
+end
+
+%% Close/done
+
+function closeDone(~,~,inputCell)
+
+hf=inputCell{1};
+close(hf);
+
+try
+    gdoc
+catch 
+    
+end
+
+end
 %% 
 % _*GIBBON footer text*_ 
 % 
