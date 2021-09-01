@@ -122,7 +122,7 @@ By running `installGibbon.m` the GIBBON, FEBio, and export_fig path definitions 
 * To access the help documentation from MATLAB simply type: `gdoc` which will open the GIBBON documentation page in MATLAB's help brower. The documentation which is searchable and integrated just like the rest of MATLAB's help and documentation. You can also find this page manually under `Supplemental Software` as shown below.
 * To open GIBBON documentation for a particular function can use `gdoc <functionName>` (similar to MATLAB's `doc` function). For instance for help on `im2patch` use `gdoc im2patch`. This will search the integrated help for im2patch and display the results.
 
-<img src="docs/gif_helpSearch.gif" alt="Help integration" width="100%">
+<img src="docs/img/gif_helpSearch.gif" alt="Help integration" width="100%">
 
 ### Where to find functions and the executable help and demo files
 * The `lib` folder contains all GIBBON's functions.
