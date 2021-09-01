@@ -125,7 +125,7 @@ gdrawnow;
 % Remesh using ggremesh
 
 optionStruct2.pointSpacing=4; %Set desired point spacing
-optionStruct2.disp_on=0; % Turn off command window text display
+optionStruct2.disp_on=1; % Turn off command window text display
 [Fn,Vn]=ggremesh(F,V,optionStruct2);
 
 %%

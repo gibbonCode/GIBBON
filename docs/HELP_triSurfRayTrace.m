@@ -76,12 +76,16 @@ drawnow;
 
 %% Example use for ray tracing of multiple rays or lines to multiple faces
 
-p_origin1=[-0.3 0 2];
-p_origin2=[0.3 0 2];
+p_origin1=[-0.4 0 2];
+p_origin2=[0.4 0 2];
+p_origin3=[-1.2 0 2];
+
 nr1=[0 0 -1];
 nr2=[0 0 -1];
-P_origin= [p_origin1; p_origin2]; %Ray line origins
-Nr=[nr1; nr2]; %Ray/line vectors
+nr3=[0 0 -1];
+nr4=[0 0 -1];
+P_origin= [p_origin1; p_origin2; p_origin3]; %Ray line origins
+Nr=[nr1; nr2; nr3]; %Ray/line vectors
 
 optionStruct.tolEps        = 1e-6;
 optionStruct.triSide       = 0;

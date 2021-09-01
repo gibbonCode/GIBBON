@@ -122,8 +122,12 @@ varargout{1}=P; %The intersection points
 varargout{2}=[indRay indFace]; %Ray and face indices
 
 if nargout>2 %Also output distances to ray/line origins    
-    m=sqrt(sum(Lab(indRay,:).^2,2)); %Line lengths/magnitudes
-    d=TUV(:,1).*m; %Compute distances        
+    if ~isempty(P)
+        m=sqrt(sum(Lab(indRay,:).^2,2)); %Line lengths/magnitudes
+        d=TUV(:,1).*m; %Compute distances        
+    else
+        d=[];
+    end
     varargout{3}=d; %Add distances to output
 end
 

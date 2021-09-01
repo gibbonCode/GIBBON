@@ -17,11 +17,11 @@ smoothWeight=0.5; %0 =linear, 1=fully smoothed
 groupingOptionStruct.outputType='label';
 scaleFactor=0.85;
 
-shearAngle=(45./180)*pi;
-a=1./cos(shearAngle); %Scale x, e.g. to compensate for shear induces thickness reduction
+shearAngle=0;
+a=1./cosd(shearAngle); %Scale x, e.g. to compensate for shear induced thickness reduction
 b=1; %Scale y
 S=[a 0 0; ...
-   tan(-shearAngle) b      0;...
+   tand(-shearAngle) b      0;...
    0 0      1];
 
 randomOpt=1;
