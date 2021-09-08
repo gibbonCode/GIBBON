@@ -73,7 +73,7 @@ dtmin=(1/numTimeSteps)/100; %Minimum time step size
 dtmax=(1/numTimeSteps); %Maximum time step size
 symmetric_stiffness=0;
 min_residual=1e-20;
-runMode='internal'; %'external';%
+runMode='external'; %'external';%
 
 %Contact parameters
 contactPenalty=1;
@@ -372,7 +372,7 @@ febio_spec.Contact.contact{1}.gaptol=0;
 febio_spec.Contact.contact{1}.minaug=minaug;
 febio_spec.Contact.contact{1}.maxaug=maxaug;
 febio_spec.Contact.contact{1}.search_tol=0.01;
-febio_spec.Contact.contact{1}.search_radius=0.1;
+febio_spec.Contact.contact{1}.search_radius=0.1*sqrt(sum((max(V,[],1)-min(V,[],1)).^2,2)); 
 febio_spec.Contact.contact{1}.symmetric_stiffness=0;
 febio_spec.Contact.contact{1}.auto_penalty=1;
 febio_spec.Contact.contact{1}.penalty=contactPenalty;
@@ -463,7 +463,7 @@ if runFlag==1 %i.e. a succesful run
     
     axisGeom(gca,fontSize); 
     colormap(gjet(250)); colorbar;
-    caxis([0 max(E_energy(:))/10]);    
+    caxis([0 max(E_energy(:))/20]);    
     axis(axisLim(V_DEF)); %Set axis limits statically    
     camlight headlight;    
     

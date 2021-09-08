@@ -74,18 +74,19 @@ k_factor=100; %Bulk modulus factor
 k=c1*k_factor; %Bulk modulus
 
 % FEA control settings
-numTimeSteps=20; %Number of time steps desired
-max_refs=30; %Max reforms
+numTimeSteps=10; %Number of time steps desired
+max_refs=40; %Max reforms
 max_ups=0; %Set to zero to use full-Newton iterations
-opt_iter=20; %Optimum number of iterations
+opt_iter=25; %Optimum number of iterations
 max_retries=5; %Maximum number of retires
 dtmin=(1/numTimeSteps)/100; %Minimum time step size
 dtmax=1/numTimeSteps; %Maximum time step size
 runMode='external';%'internal';
+min_residual=1e-20;
 
 %Contact parameters
 contactInitialOffset=0.1;
-contactPenalty=10;
+contactPenalty=5;
 laugon=0;
 minaug=1;
 maxaug=10;
@@ -231,6 +232,7 @@ stepStruct.Control.step_size=1/numTimeSteps;
 stepStruct.Control.solver.max_refs=max_refs;
 stepStruct.Control.solver.max_ups=max_ups;
 stepStruct.Control.solver.symmetric_stiffness=0;
+febio_spec.Control.solver.min_residual=min_residual;
 stepStruct.Control.time_stepper.dtmin=dtmin;
 stepStruct.Control.time_stepper.dtmax=dtmax; 
 stepStruct.Control.time_stepper.max_retries=max_retries;
@@ -356,7 +358,7 @@ febio_spec.Contact.contact{1}.gaptol=0;
 febio_spec.Contact.contact{1}.minaug=minaug;
 febio_spec.Contact.contact{1}.maxaug=maxaug;
 febio_spec.Contact.contact{1}.search_tol=0.01;
-febio_spec.Contact.contact{1}.search_radius=0.1;
+febio_spec.Contact.contact{1}.search_radius=0.1*sqrt(sum((max(V,[],1)-min(V,[],1)).^2,2));
 febio_spec.Contact.contact{1}.symmetric_stiffness=0;
 febio_spec.Contact.contact{1}.auto_penalty=1;
 febio_spec.Contact.contact{1}.penalty=contactPenalty;

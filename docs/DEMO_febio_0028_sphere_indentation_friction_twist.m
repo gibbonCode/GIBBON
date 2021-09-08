@@ -360,14 +360,14 @@ febio_spec.Rigid.rigid_constraint{3}.relative=0;
 %Contact section
 febio_spec.Contact.contact{1}.ATTR.type='sliding-elastic';
 febio_spec.Contact.contact{1}.ATTR.surface_pair=febio_spec.Mesh.SurfacePair{1}.ATTR.name;
-febio_spec.Contact.contact{1}.two_pass=0;
+febio_spec.Contact.contact{1}.two_pass=1;
 febio_spec.Contact.contact{1}.laugon=laugon;
 febio_spec.Contact.contact{1}.tolerance=0.2;
 febio_spec.Contact.contact{1}.gaptol=0;
 febio_spec.Contact.contact{1}.minaug=minaug;
 febio_spec.Contact.contact{1}.maxaug=maxaug;
 febio_spec.Contact.contact{1}.search_tol=0.01;
-febio_spec.Contact.contact{1}.search_radius=0.1;
+febio_spec.Contact.contact{1}.search_radius=0.1*sqrt(sum((max(V,[],1)-min(V,[],1)).^2,2));
 febio_spec.Contact.contact{1}.symmetric_stiffness=0;
 febio_spec.Contact.contact{1}.auto_penalty=1;
 febio_spec.Contact.contact{1}.penalty=contactPenalty;
@@ -464,7 +464,7 @@ if runFlag==1 %i.e. a succesful run
     hf=cFigure; %Open figure  
     gtitle([febioFebFileNamePart,': Press play to animate']);
     title('$\Psi$ strain energy density','Interpreter','Latex')
-    hp1=gpatch(Fb1,V_DEF(:,:,end),CV,'k',1); %Add graphics object to animate
+    hp1=gpatch(Fb1,V_DEF(:,:,end),CV,'k',1,2); %Add graphics object to animate
     hp1.FaceColor='interp';
     
     hp2=gpatch(E2,V_DEF(:,:,end),ballColor,'none',0.5); %Add graphics object to animate

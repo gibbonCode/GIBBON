@@ -344,7 +344,7 @@ for q=1:1:numel(youngsModuli)-1
     febio_spec.Contact.contact{q}.minaug=1;
     febio_spec.Contact.contact{q}.maxaug=10;
     febio_spec.Contact.contact{q}.search_tol=0.01;
-    febio_spec.Contact.contact{q}.search_radius=1;    
+    febio_spec.Contact.contact{q}.search_radius=0.1*sqrt(sum((max(V,[],1)-min(V,[],1)).^2,2));  
     febio_spec.Contact.contact{q}.symmetric_stiffness=0;
     switch q
         case 1
@@ -403,7 +403,7 @@ febioStruct2xml(febio_spec,febioFebFileName); %Exporting to file and domNode
 febioAnalysis.run_filename=febioFebFileName; %The input file name
 febioAnalysis.run_logname=febioLogFileName; %The name for the log file
 febioAnalysis.disp_on=1; %Display information on the command window
-febioAnalysis.runMode='internal';%'internal';
+febioAnalysis.runMode='external';%'internal';
 
 [runFlag]=runMonitorFEBio(febioAnalysis);%START FEBio NOW!!!!!!!!
 

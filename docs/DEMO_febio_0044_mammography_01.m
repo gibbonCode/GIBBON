@@ -88,10 +88,10 @@ max_retries=5; %Maximum number of retires
 dtmin=(1/numTimeSteps)/100; %Minimum time step size
 dtmax=1/numTimeSteps; %Maximum time step size
 symmetric_stiffness=0;
-min_residual=1e-20;
+min_residual=1e-18;
 
 %Set run mode
-runMode='external'; %'internal'
+runMode='internal'; %'internal'
 
 %Contact parameters
 contactPenalty=15;
@@ -154,7 +154,7 @@ V(C_skin==2,3)=V(C_skin==2,3)+dtt;
 
 %%
 
-breastVolume=triSurfVolume(F,V)'
+breastVolume=triSurfVolume(F,V)';
 
 %% Rotate model
 R=euler2DCM([pi -0.5*pi 0]);
@@ -410,6 +410,7 @@ febio_spec.Control.step_size=1/numTimeSteps;
 febio_spec.Control.solver.max_refs=max_refs;
 febio_spec.Control.solver.max_ups=max_ups;
 febio_spec.Control.solver.symmetric_stiffness=symmetric_stiffness;
+febio_spec.Control.solver.min_residual=min_residual;
 febio_spec.Control.time_stepper.dtmin=dtmin;
 febio_spec.Control.time_stepper.dtmax=dtmax; 
 febio_spec.Control.time_stepper.max_retries=max_retries;
@@ -595,7 +596,7 @@ for q=1:1:2
     febio_spec.Contact.contact{q}.minaug=minaug;
     febio_spec.Contact.contact{q}.maxaug=maxaug;
     febio_spec.Contact.contact{q}.search_tol=0.01;
-    febio_spec.Contact.contact{q}.search_radius=0.1;
+    febio_spec.Contact.contact{q}.search_radius=0.1*sqrt(sum((max(V,[],1)-min(V,[],1)).^2,2)); 
     febio_spec.Contact.contact{q}.symmetric_stiffness=0;
     febio_spec.Contact.contact{q}.auto_penalty=1;
     febio_spec.Contact.contact{q}.penalty=contactPenalty;

@@ -13,7 +13,7 @@ clear; close all; clc;
 %%
 % Example geometry
 
-testCase=6;
+testCase=3;
 
 switch testCase
     case 1 %Box

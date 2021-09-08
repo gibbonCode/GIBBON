@@ -43,7 +43,6 @@ inputStruct.regionA=regionA*5;
 
 %%
 
-
 E=meshStruct.elements;
 Fb=meshStruct.facesBoundary;
 V=meshStruct.nodes;
@@ -80,6 +79,21 @@ camlight headlight;
 axis off;
 colormap(viridis(4)); icolorbar;
 drawnow;
+
+%%
+% Visualize results
+
+cFigure; hold on;
+gpatch(FT_other,V,'w','none',1);
+gpatch(FT,VT,'w','none',1);
+% patchNormPlot(FT,VT);
+axisGeom; camlight headlight; view(2);
+axis off;
+drawnow;
+
+%%
+
+warning('This demo is under construction, no FEBio simulation yet.');
 
 %%
 % _*GIBBON footer text*_
