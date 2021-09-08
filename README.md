@@ -3,7 +3,7 @@
 
 **Cite GIBBON:** [![DOI](http://joss.theoj.org/papers/10.21105/joss.00506/status.svg)](https://doi.org/10.21105/joss.00506)
 
-**License:** [![License](https://img.shields.io/badge/License-GNU_GPLv3-orange.svg)](https://github.com/gibbonCode/GIBBON/blob/master/LICENSE)
+**License:** [![License](https://img.shields.io/badge/License-GNU_AGPLv3-orange.svg)](https://github.com/gibbonCode/GIBBON/blob/master/LICENSE)
 
 **Join chat:** [![Join the chat at https://gitter.im/GIBBONchat/Lobby](https://badges.gitter.im/GIBBONchat/Lobby.svg)](https://gitter.im/GIBBONchat/Lobby?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
 
@@ -144,7 +144,8 @@ A large portion of GIBBON's functionality does not rely on special MATLAB toolbo
 * Parallel Computing Toolbox
 
 # License <a name="License"></a>
-GIBBON is provided under: [![the GNU_GPLv3 License](https://img.shields.io/badge/License-GNU_GPLv3-orange.svg)](https://opensource.org/licenses/GPL-3.0). The [license file](https://github.com/gibbonCode/GIBBON/blob/master/LICENSE) is found on the GitHub repository.
+GIBBON is provided under:
+[![License](https://img.shields.io/badge/License-GNU_AGPLv3-orange.svg)](https://opensource.org/licenses/AGPL-3.0). The [license file](https://github.com/gibbonCode/GIBBON/blob/master/LICENSE) is found on the GitHub repository.
 
 # Citing GIBBON <a name="Cite"></a>
 If you use GIBBON in your work you should cite the following paper:  
