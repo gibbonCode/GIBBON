@@ -1,7 +1,11 @@
 %% DEMO_febio_0042_inverse_FEA_cube_uniaxial
 % Below is a demonstration for:
 % 
-% * Inverse FEA based material parameter optimisation 
+% * Inverse FEA based material parameter optimisation for uniaxial
+% compression
+
+%% Keywords
+%
 % * febio_spec version 3.0
 % * febio, FEBio
 % * hexahedral elements, hex8
