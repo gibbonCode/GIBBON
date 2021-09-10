@@ -13,14 +13,13 @@
 %
 % * febio_spec version 3.0
 % * febio, FEBio
-% * indentation
+% * blood clot
 % * contact, sliding, friction
 % * rigid body constraints
-% * tetrahedral elements, tet4
-% * triangular elements, tri3
+% * hexahedral elements, hex8
+% * quadrilaterl elements, quad4
 % * shell elements
 % * sphere
-% * static, solid
 % * hyperelastic, Ogden
 % * displacement logfile
 % * stress logfile
@@ -597,7 +596,6 @@ febio_spec.LoadData.load_controller{1}.ATTR.id=1;
 febio_spec.LoadData.load_controller{1}.ATTR.type='loadcurve';
 febio_spec.LoadData.load_controller{1}.interpolate='LINEAR';
 febio_spec.LoadData.load_controller{1}.points.point.VAL=[0 0; 1 1];
-
 
 %Output section 
 % -> log file

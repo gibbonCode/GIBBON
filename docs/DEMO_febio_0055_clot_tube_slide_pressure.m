@@ -11,16 +11,15 @@
 
 %% Keywords
 %
-% * febio_spec version 2.5
+% * febio_spec version 3.0
 % * febio, FEBio
-% * indentation
+% * blood clot
 % * contact, sliding, friction
 % * rigid body constraints
-% * tetrahedral elements, tet4
-% * triangular elements, tri3
+% * hexahedral elements, hex8
+% * quadrilaterl elements, quad4
 % * shell elements
 % * sphere
-% * static, solid
 % * hyperelastic, Ogden
 % * displacement logfile
 % * stress logfile
@@ -61,7 +60,7 @@ tubeAngle=3*(pi/180);
 tubeLength=abs(diff(tubeRadius))/tan(tubeAngle);
 
 % Material parameter set
-c1=1e-3; %Shear-modulus-like parameter MPa
+c1=1e-4; %Shear-modulus-like parameter MPa
 m1=2; %Material parameter setting degree of non-linearity
 k_factor=10; %Bulk modulus factor 
 k=c1*k_factor; %Bulk modulus
@@ -75,11 +74,12 @@ max_retries=25; %Maximum number of retires
 symmetric_stiffness=0;
 min_residual=1e-20;
 
-timeTotal=3; %Analysis time
-numTimeSteps=500; %Number of time steps desired
+timeTotal=1; %Analysis time
+numTimeSteps=100; %Number of time steps desired
 step_size=timeTotal/numTimeSteps;
 dtmin=(timeTotal/numTimeSteps)/100; %Minimum time step size
-dtmax=(timeTotal/numTimeSteps)*3; %Maximum time step size
+dtmax=(timeTotal/numTimeSteps)*10; %Maximum time step size
+analysisType='DYNAMIC';
 
 %Contact parameters
 contactPenalty=10;
@@ -89,7 +89,7 @@ maxaug=10;
 fric_coeff=0.1; 
 
 %Specifying load
-pressureValue=1e-6;
+pressureValue=7.5e-5;
 
 %% Creating model geometry and mesh
 % 
@@ -135,7 +135,7 @@ drawnow;
 % 
 
 pointSpacingBlob=mean(patchEdgeLengths(Fb_blob,V_blob));
-pointSpacingTube=pointSpacingBlob/2;
+pointSpacingTube=pointSpacingBlob;
 
 rEnd=sphereRadius+(sphereRadius.*((sphereRadius-tubeRadius(2))/tubeLength));    
 V_curve_tube=[sphereRadius rEnd 0; -tubeLength tubeRadius(2) 0;];
@@ -218,23 +218,26 @@ drawnow;
 [febio_spec]=febioStructTemplate;
 
 %febio_spec version 
-febio_spec.ATTR.version='2.5'; 
+febio_spec.ATTR.version='3.0'; 
 
 %Module section
 febio_spec.Module.ATTR.type='solid'; 
 
 %Control section
-febio_spec.Control.analysis.ATTR.type='dynamic';
+febio_spec.Control.analysis=analysisType;
 febio_spec.Control.time_steps=numTimeSteps;
-febio_spec.Control.step_size=1/numTimeSteps;
+febio_spec.Control.step_size=timeTotal/numTimeSteps;
+febio_spec.Control.solver.max_refs=max_refs;
+febio_spec.Control.solver.max_ups=max_ups;
+febio_spec.Control.solver.symmetric_stiffness=symmetric_stiffness;
 febio_spec.Control.time_stepper.dtmin=dtmin;
 febio_spec.Control.time_stepper.dtmax=dtmax; 
 febio_spec.Control.time_stepper.max_retries=max_retries;
 febio_spec.Control.time_stepper.opt_iter=opt_iter;
-febio_spec.Control.max_refs=max_refs;
-febio_spec.Control.max_ups=max_ups;
 
 %Material section
+materialName1='Material1';
+febio_spec.Material.material{1}.ATTR.name=materialName1;
 febio_spec.Material.material{1}.ATTR.type='Ogden unconstrained';
 febio_spec.Material.material{1}.ATTR.id=1;
 febio_spec.Material.material{1}.c1=c1;
@@ -244,83 +247,98 @@ febio_spec.Material.material{1}.m2=-m1;
 febio_spec.Material.material{1}.cp=k;
 febio_spec.Material.material{1}.density=d;
 
+materialName2='Material2';
+febio_spec.Material.material{2}.ATTR.name=materialName2;
 febio_spec.Material.material{2}.ATTR.type='rigid body';
 febio_spec.Material.material{2}.ATTR.id=2;
 febio_spec.Material.material{2}.density=1;
 febio_spec.Material.material{2}.center_of_mass=center_of_mass_tube;
 
-%Geometry section
+%Mesh section
 % -> Nodes
-febio_spec.Geometry.Nodes{1}.ATTR.name='nodeSet_all'; %The node set name
-febio_spec.Geometry.Nodes{1}.node.ATTR.id=(1:size(V,1))'; %The node id's
-febio_spec.Geometry.Nodes{1}.node.VAL=V; %The nodel coordinates
+febio_spec.Mesh.Nodes{1}.ATTR.name='nodeSet_all'; %The node set name
+febio_spec.Mesh.Nodes{1}.node.ATTR.id=(1:size(V,1))'; %The node id's
+febio_spec.Mesh.Nodes{1}.node.VAL=V; %The nodel coordinates
 
 % -> Elements
-febio_spec.Geometry.Elements{1}.ATTR.type='hex8'; %Element type of this set
-febio_spec.Geometry.Elements{1}.ATTR.mat=1; %material index for this set 
-febio_spec.Geometry.Elements{1}.ATTR.name='Blob'; %Name of the element set
-febio_spec.Geometry.Elements{1}.elem.ATTR.id=(1:1:size(E_blob,1))'; %Element id's
-febio_spec.Geometry.Elements{1}.elem.VAL=E_blob;
+partName1='Part1';
+febio_spec.Mesh.Elements{1}.ATTR.name=partName1; %Name of this part
+febio_spec.Mesh.Elements{1}.ATTR.type='hex8'; %Element type 
+febio_spec.Mesh.Elements{1}.elem.ATTR.id=(1:1:size(E_blob,1))'; %Element id's
+febio_spec.Mesh.Elements{1}.elem.VAL=E_blob; %The element matrix
 
-febio_spec.Geometry.Elements{2}.ATTR.type='quad4'; %Element type of this set
-febio_spec.Geometry.Elements{2}.ATTR.mat=2; %material index for this set 
-febio_spec.Geometry.Elements{2}.ATTR.name='Tube'; %Name of the element set
-febio_spec.Geometry.Elements{2}.elem.ATTR.id=size(E_blob,1)+(1:1:size(F_tube,1))'; %Element id's
-febio_spec.Geometry.Elements{2}.elem.VAL=F_tube;
+partName2='Part2';
+febio_spec.Mesh.Elements{2}.ATTR.name=partName2; %Name of this part
+febio_spec.Mesh.Elements{2}.ATTR.type='quad4'; %Element type 
+febio_spec.Mesh.Elements{2}.elem.ATTR.id=size(E_blob,1)+(1:1:size(F_tube,1))'; %Element id's
+febio_spec.Mesh.Elements{2}.elem.VAL=F_tube; %The element matrix
 
-% % -> Surfaces
-febio_spec.Geometry.Surface{1}.ATTR.name='contact_master1';
-febio_spec.Geometry.Surface{1}.quad4.ATTR.lid=(1:1:size(F_tube,1))';
-febio_spec.Geometry.Surface{1}.quad4.VAL=F_tube;
+% -> Surfaces
+surfaceName1='Surface1_contact';
+febio_spec.Mesh.Surface{1}.ATTR.name=surfaceName1;
+febio_spec.Mesh.Surface{1}.quad4.ATTR.id=(1:1:size(F_tube,1))';
+febio_spec.Mesh.Surface{1}.quad4.VAL=F_tube;
 
-febio_spec.Geometry.Surface{2}.ATTR.name='contact_slave1';
-febio_spec.Geometry.Surface{2}.quad4.ATTR.lid=(1:1:size(F_contact_blob,1))';
-febio_spec.Geometry.Surface{2}.quad4.VAL=F_contact_blob;
+surfaceName2='Surface2_contact';
+febio_spec.Mesh.Surface{2}.ATTR.name=surfaceName2;
+febio_spec.Mesh.Surface{2}.quad4.ATTR.id=(1:1:size(F_contact_blob,1))';
+febio_spec.Mesh.Surface{2}.quad4.VAL=F_contact_blob;
 
-febio_spec.Geometry.Surface{3}.ATTR.name='Pressure_surface';
-febio_spec.Geometry.Surface{3}.quad4.ATTR.lid=(1:size(F_pressure,1))';
-febio_spec.Geometry.Surface{3}.quad4.VAL=F_pressure;
+surfaceName3='Surface3_pressure';
+febio_spec.Mesh.Surface{3}.ATTR.name=surfaceName3;
+febio_spec.Mesh.Surface{3}.quad4.ATTR.id=(1:1:size(F_pressure,1))';
+febio_spec.Mesh.Surface{3}.quad4.VAL=F_pressure;
 
 % -> Surface pairs
-febio_spec.Geometry.SurfacePair{1}.ATTR.name='Contact1_tube_blob';
-febio_spec.Geometry.SurfacePair{1}.master.ATTR.surface=febio_spec.Geometry.Surface{1}.ATTR.name;
-febio_spec.Geometry.SurfacePair{1}.slave.ATTR.surface=febio_spec.Geometry.Surface{2}.ATTR.name;
+contactPairName='Contact1';
+febio_spec.Mesh.SurfacePair{1}.ATTR.name=contactPairName;
+febio_spec.Mesh.SurfacePair{1}.primary=surfaceName2;
+febio_spec.Mesh.SurfacePair{1}.secondary=surfaceName1;
+
+%MeshDomains section
+febio_spec.MeshDomains.SolidDomain.ATTR.name=partName1;
+febio_spec.MeshDomains.SolidDomain.ATTR.mat=materialName1;
+
+febio_spec.MeshDomains.ShellDomain.ATTR.name=partName2;
+febio_spec.MeshDomains.ShellDomain.ATTR.mat=materialName2;
 
 %Loads
 febio_spec.Loads.surface_load{1}.ATTR.type='pressure';
-febio_spec.Loads.surface_load{1}.ATTR.surface=febio_spec.Geometry.Surface{3}.ATTR.name;
-febio_spec.Loads.surface_load{1}.pressure.VAL=pressureValue;
+febio_spec.Loads.surface_load{1}.ATTR.surface=surfaceName3;
 febio_spec.Loads.surface_load{1}.pressure.ATTR.lc=1;
+febio_spec.Loads.surface_load{1}.pressure.VAL=pressureValue;
+febio_spec.Loads.surface_load{1}.symmetric_stiffness=1;
 
-% -> Prescribed boundary conditions on the rigid body
-febio_spec.Boundary.rigid_body{1}.ATTR.mat=2;
-febio_spec.Boundary.rigid_body{1}.fixed{1}.ATTR.bc='x';
-febio_spec.Boundary.rigid_body{1}.fixed{2}.ATTR.bc='y';
-febio_spec.Boundary.rigid_body{1}.fixed{3}.ATTR.bc='z';
-febio_spec.Boundary.rigid_body{1}.fixed{4}.ATTR.bc='Rx';
-febio_spec.Boundary.rigid_body{1}.fixed{5}.ATTR.bc='Ry';
-febio_spec.Boundary.rigid_body{1}.fixed{6}.ATTR.bc='Rz';
+
+%Rigid section 
+% -> Prescribed rigid body boundary conditions
+febio_spec.Rigid.rigid_constraint{1}.ATTR.name='RigidFix_1';
+febio_spec.Rigid.rigid_constraint{1}.ATTR.type='fix';
+febio_spec.Rigid.rigid_constraint{1}.rb=2;
+febio_spec.Rigid.rigid_constraint{1}.dofs='Rx,Ry,Rz,Ru,Rv,Rw';
 
 %Contact section
-febio_spec.Contact.contact{1}.ATTR.surface_pair=febio_spec.Geometry.SurfacePair{1}.ATTR.name;
 febio_spec.Contact.contact{1}.ATTR.type='sliding-elastic';
-febio_spec.Contact.contact{1}.two_pass=1;
+febio_spec.Contact.contact{1}.ATTR.surface_pair=contactPairName;
+febio_spec.Contact.contact{1}.two_pass=0;
 febio_spec.Contact.contact{1}.laugon=laugon;
 febio_spec.Contact.contact{1}.tolerance=0.2;
 febio_spec.Contact.contact{1}.gaptol=0;
 febio_spec.Contact.contact{1}.minaug=minaug;
 febio_spec.Contact.contact{1}.maxaug=maxaug;
 febio_spec.Contact.contact{1}.search_tol=0.01;
-febio_spec.Contact.contact{1}.search_radius=0.1*sqrt(sum((max(V,[],1)-min(V,[],1)).^2,2)); 
+febio_spec.Contact.contact{1}.search_radius=0.01*sqrt(sum((max(V,[],1)-min(V,[],1)).^2,2)); 
 febio_spec.Contact.contact{1}.symmetric_stiffness=0;
 febio_spec.Contact.contact{1}.auto_penalty=1;
 febio_spec.Contact.contact{1}.penalty=contactPenalty;
 febio_spec.Contact.contact{1}.fric_coeff=fric_coeff;
 
-%LoadData
-febio_spec.LoadData.loadcurve{1}.ATTR.id=1;
-febio_spec.LoadData.loadcurve{1}.ATTR.type='linear';
-febio_spec.LoadData.loadcurve{1}.point.VAL=[0 0; timeTotal 1; timeTotal 1];
+%LoadData section
+% -> load_controller
+febio_spec.LoadData.load_controller{1}.ATTR.id=1;
+febio_spec.LoadData.load_controller{1}.ATTR.type='loadcurve';
+febio_spec.LoadData.load_controller{1}.interpolate='LINEAR';
+febio_spec.LoadData.load_controller{1}.points.point.VAL=[0 0; 1 1];
 
 %Output section 
 % -> log file
@@ -328,7 +346,6 @@ febio_spec.Output.logfile.ATTR.file=febioLogFileName;
 febio_spec.Output.logfile.node_data{1}.ATTR.file=febioLogFileName_disp;
 febio_spec.Output.logfile.node_data{1}.ATTR.data='ux;uy;uz';
 febio_spec.Output.logfile.node_data{1}.ATTR.delim=',';
-febio_spec.Output.logfile.node_data{1}.VAL=1:size(V,1);
 
 febio_spec.Output.logfile.element_data{1}.ATTR.file=febioLogFileName_strainEnergy;
 febio_spec.Output.logfile.element_data{1}.ATTR.data='sed';
@@ -359,11 +376,7 @@ febioStruct2xml(febio_spec,febioFebFileName); %Exporting to file and domNode
 febioAnalysis.run_filename=febioFebFileName; %The input file name
 febioAnalysis.run_logname=febioLogFileName; %The name for the log file
 febioAnalysis.disp_on=1; %Display information on the command window
-febioAnalysis.disp_log_on=1; %Display convergence information in the command window
-febioAnalysis.runMode='internal';%'internal';
-febioAnalysis.t_check=0.25; %Time for checking log file (dont set too small)
-febioAnalysis.maxtpi=1e99; %Max analysis time
-febioAnalysis.maxLogCheckTime=10; %Max log file checking time
+febioAnalysis.runMode='external';%'internal';
 
 [runFlag]=runMonitorFEBio(febioAnalysis);%START FEBio NOW!!!!!!!!
 
