@@ -24,7 +24,7 @@ function [surfaceVolume]=triSurfVolume(F,V)
 %------------------------------------------------------------------------
 %%
 
-[N,~]=trinorm(F,V); %Face normals
+N=patchNormal(F,V);%Face normals
 surfaceAreas=tri_area(F,V); %Face areas
 Z=V(:,3); %Z-coordinates 
 Zm=mean(Z(F),2); %Mean Z-coordinates for faces

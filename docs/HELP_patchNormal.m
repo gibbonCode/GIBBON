@@ -5,12 +5,52 @@
 clear; close all; clc;
 
 %% Syntax
-% |[varargout]=patchNormal(F,V);|
+% |[N,Vn,Nv]=patchNormal(F,V);|
 
 %% Description 
-% UNDOCUMENTED 
-%% Examples 
-% 
+% Compute the surface normals N for the input path data defined by the
+% faces F and vertices V. Optional additional outputs include the face
+% centres Vn or the vertex normals Nv. 
+
+%% Examples
+%
+
+testCase=2;
+switch testCase
+    case 1 %Single element square 1x1
+        z=2;
+        V=[0 0 0; 1 0 0; 0 1 z; 1 1 0];
+        F=[1 2 4 3];            
+    case 2 %Sphere triangles
+        r=1;
+        n=2;
+        [F,V]=geoSphere(n,r);        
+end
+
+%%
+
+[N,P,NV]=patchNormal(F,V);
+
+%%
+% Visualization
+
+s=mean(patchEdgeLengths(F,V));
+
+cFigure;
+subplot(1,2,1);
+title('Face normals')
+gpatch(F,V,'bw');
+quiverVec(P,N,s,'k')
+axisGeom; camlight headlight;
+
+subplot(1,2,2);
+title('Vertex normals')
+gpatch(F,V,'bw');
+quiverVec(V,NV,s,'k')
+axisGeom; camlight headlight;
+
+drawnow;
+
 %%
 % 
 % <<gibbVerySmall.gif>>

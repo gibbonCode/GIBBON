@@ -16,6 +16,7 @@ function [varargout]=patchNormal(F,V)
 % 2016/11/15 Added handling of non-triangular faces
 % 2019/04/22 Change to use cross product of edges closest to orthogonal
 % 2019/04/23 Added handling of cell input
+% 2021/09/13 Updated to use more accurate (for non-planar patches) and efficient patchEdgeCrossProduct method
 %------------------------------------------------------------------------
 
 %%
@@ -36,31 +37,17 @@ else
     if size(V,2)==2
         V(:,3)=0;
     end
+
+    %% 
+    %Compute patch face normal direction    
+    
+    %Compute edge vector cross products
+    C=patchEdgeCrossProduct(F,V); %0.5 sum of edge cross products
+    
+    %Get normal vectors through normalization
+    N=vecnormalize(C); %Normalization
     
     %%
-    % The patch normals are derived by taking the cross product of two edge
-    % vectors. Some edge vectors may be (nearly or exactly) co-linear. Hence to
-    % select the most suitable edge pair for each face, the edge set with the
-    % angle closest to pi/2 is chosen.
-    
-    %Get indices for most suitable origin and vector pair
-    A=abs(patchEdgeAngles(F,V)); %Get edge angles
-    A_diff=abs(A-pi/2);%Deviation from 90 degrees
-    [~,j]=min(A_diff,[],2); %Get column indices for most oppropriate origin
-    JJ=[j(:) j(:)-1 j(:)+1]; %Create previous and next point column indices
-    JJ(JJ<1)=size(F,2); %Wrap indices that are too small to end
-    JJ(JJ>size(F,2))=1; %Wrap indices that are too large to start
-    i=(1:1:size(F,1))'; %Create row index set
-    I=i(:,ones(1,size(JJ,2))); %Expand to match the size of the column index set
-    indF=sub2ind(size(F),I,JJ); %Convert subscript indices to linear indices in face array
-    indSet=F(indF); %Get vertex indices out of face array
-    indOrigin=indSet(:,1); %Vertex indices for most suitable origins
-    ind1=indSet(:,2); %Vertex indices for first edge point
-    ind2=indSet(:,3); %Vertex indices for second edge point
-    
-    %Compute cross product to get outward normal
-    N=cross(V(ind2,:)-V(indOrigin,:),V(ind1,:)-V(indOrigin,:),2);
-    N=vecnormalize(N); %Normalize
     
     %Calculate face centres if requested
     if nargout>1
@@ -73,8 +60,9 @@ else
         [Nv]=faceToVertexMeasure(F,V,N); %Convert face data to vertex data
         Nv=vecnormalize(Nv); %Normalize vectors
     end
-    
+        
 end
+
 %% Collect output
 
 switch nargout

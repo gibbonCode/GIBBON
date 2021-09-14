@@ -5,12 +5,38 @@
 clear; close all; clc;
 
 %% Syntax
-% |varargout=patchNormPlot(varargin);|
+% |[hp]=patchNormPlot(F,V,a,pathType);|
 
 %% Description 
-% UNDOCUMENTED 
+% Visualizes surface normals for all faces F with vertices V.
+
 %% Examples 
 % 
+
+testCase=2;
+switch testCase
+    case 1 %Single element square 1x1
+        z=2;
+        V=[0 0 0; 1 0 0; 0 1 z; 1 1 0];
+        F=[1 2 4 3];            
+    case 2 %Sphere triangles
+        r=1;
+        n=2;
+        [F,V]=geoSphere(n,r);        
+end
+
+%%
+% Visualization of face normals
+
+
+cFigure;
+gpatch(F,V,'w');
+
+hp=patchNormPlot(F,V); %Visualize face normals
+
+axisGeom; camlight headlight;
+drawnow;
+
 %%
 % 
 % <<gibbVerySmall.gif>>
