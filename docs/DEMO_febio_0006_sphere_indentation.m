@@ -48,6 +48,7 @@ febioFebFileName=fullfile(savePath,[febioFebFileNamePart,'.feb']); %FEB file nam
 febioLogFileName=[febioFebFileNamePart,'.txt']; %FEBio log file name
 febioLogFileName_disp=[febioFebFileNamePart,'_disp_out.txt']; %Log file name for exporting displacement
 febioLogFileName_stress=[febioFebFileNamePart,'_stress_out.txt']; %Log file name for exporting stress
+febioLogFileName_contactPressure=[febioFebFileNamePart,'_contactPressure_out.txt']; %Log file name for exporting contact pressure
 
 %Specifying dimensions and number of elements for slab
 sampleHeight=4; %Height
@@ -354,6 +355,11 @@ febio_spec.Output.logfile.element_data{1}.ATTR.file=febioLogFileName_stress;
 febio_spec.Output.logfile.element_data{1}.ATTR.data='s3';
 febio_spec.Output.logfile.element_data{1}.ATTR.delim=',';
 
+febio_spec.Output.logfile.face_data{1}.ATTR.file=febioLogFileName_contactPressure;
+febio_spec.Output.logfile.face_data{1}.ATTR.data='contact pressure';
+febio_spec.Output.logfile.face_data{1}.ATTR.surface=surfaceName2;
+febio_spec.Output.logfile.face_data{1}.ATTR.delim=',';
+
 %% Quick viewing of the FEBio input file structure
 % The |febView| function can be used to view the xml structure in a MATLAB
 % figure window. 
@@ -403,32 +409,40 @@ if runFlag==1 %i.e. a succesful run
     %Access data
     E_stress_mat=dataStruct.data;
     
-        %% 
+                
+    %%
+    % Importing contact pressure from a log file
+    dataStruct=importFEBio_logfile(fullfile(savePath,febioLogFileName_contactPressure),1,1);     
+    
+    %Access data
+    F_primary_contact_pressure_mat=dataStruct.data;
+    
+    %%
     % Plotting the simulated results using |anim8| to visualize and animate
-    % deformations 
+    % deformations
     
     [CV]=faceToVertexMeasure(E1,V,E_stress_mat(:,:,end));
     
     % Create basic view and store graphics handle to initiate animation
-    hf=cFigure; %Open figure  
+    hf=cFigure; %Open figure
     gtitle([febioFebFileNamePart,': Press play to animate']);
     title('$\sigma_{3}$ [MPa]','Interpreter','Latex')
     hp=gpatch(Fb1,V_DEF(:,:,end),CV,'k',1); %Add graphics object to animate
     hp.Marker='.';
     hp.MarkerSize=markerSize2;
     hp.FaceColor='interp';
-        
+    
     hp2=gpatch(E2,V_DEF(:,:,end),'w','none',0.5); %Add graphics object to animate
     
-    axisGeom(gca,fontSize); 
+    axisGeom(gca,fontSize);
     colormap(flipud(gjet(250))); colorbar;
-    caxis([min(E_stress_mat(:)) max(E_stress_mat(:))]);    
-    axis(axisLim(V_DEF)); %Set axis limits statically    
-    camlight headlight;        
-        
+    caxis([min(E_stress_mat(:)) max(E_stress_mat(:))]);
+    axis(axisLim(V_DEF)); %Set axis limits statically
+    camlight headlight;
+    
     % Set up animation features
-    animStruct.Time=timeVec; %The time vector    
-    for qt=1:1:size(N_disp_mat,3) %Loop over time increments        
+    animStruct.Time=timeVec; %The time vector
+    for qt=1:1:size(N_disp_mat,3) %Loop over time increments
         
         [CV]=faceToVertexMeasure(E1,V,E_stress_mat(:,:,qt));
         
@@ -436,9 +450,41 @@ if runFlag==1 %i.e. a succesful run
         animStruct.Handles{qt}=[hp hp hp2]; %Handles of objects to animate
         animStruct.Props{qt}={'Vertices','CData','Vertices'}; %Properties of objects to animate
         animStruct.Set{qt}={V_DEF(:,:,qt),CV,V_DEF(:,:,qt)}; %Property values for to set in order to animate
-    end        
-    anim8(hf,animStruct); %Initiate animation feature    
+    end
+    anim8(hf,animStruct); %Initiate animation feature
     drawnow;
+    
+        %%
+    % Plotting the simulated results using |anim8| to visualize and animate
+    % deformations
+
+    % Create basic view and store graphics handle to initiate animation
+    hf=cFigure; %Open figure
+    gtitle([febioFebFileNamePart,': Press play to animate']);
+    title('$\sigma_{3}$ [MPa]','Interpreter','Latex')
+    gpatch(Fb1,V_DEF(:,:,end),'w','none',0.1);
+    hp=gpatch(F_contact_primary,V_DEF(:,:,end),F_primary_contact_pressure_mat(:,:,1),'k',1); %Add graphics object to animate        
+        
+    hp2=gpatch(E2,V_DEF(:,:,end),'w','none',0.25); %Add graphics object to animate
+    
+    axisGeom(gca,fontSize);
+    colormap(gjet(250)); colorbar;
+    caxis([min(F_primary_contact_pressure_mat(:)) max(F_primary_contact_pressure_mat(:))]);
+    axis(axisLim(V_DEF)); %Set axis limits statically
+    camlight headlight;
+    
+    % Set up animation features
+    animStruct.Time=timeVec; %The time vector
+    for qt=1:1:size(N_disp_mat,3) %Loop over time increments
+        
+        %Set entries in animation structure
+        animStruct.Handles{qt}=[hp hp hp2]; %Handles of objects to animate
+        animStruct.Props{qt}={'Vertices','CData','Vertices'}; %Properties of objects to animate
+        animStruct.Set{qt}={V_DEF(:,:,qt),F_primary_contact_pressure_mat(:,:,qt),V_DEF(:,:,qt)}; %Property values for to set in order to animate
+    end
+    anim8(hf,animStruct); %Initiate animation feature
+    drawnow;
+    
     
 end
 

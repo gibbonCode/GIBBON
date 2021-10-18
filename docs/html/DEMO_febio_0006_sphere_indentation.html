@@ -6,7 +6,7 @@
    <!--
 This HTML was auto-generated from MATLAB code.
 To make changes, update the MATLAB code and republish this document.
-      --><title>DEMO_febio_0006_sphere_indentation</title><meta name="generator" content="MATLAB 9.10"><link rel="schema.DC" href="http://purl.org/dc/elements/1.1/"><meta name="DC.date" content="2021-07-02"><meta name="DC.source" content="DEMO_febio_0006_sphere_indentation.m"><style type="text/css">
+      --><title>DEMO_febio_0006_sphere_indentation</title><meta name="generator" content="MATLAB 9.10"><link rel="schema.DC" href="http://purl.org/dc/elements/1.1/"><meta name="DC.date" content="2021-10-18"><meta name="DC.source" content="DEMO_febio_0006_sphere_indentation.m"><style type="text/css">
 html,body,div,span,applet,object,iframe,h1,h2,h3,h4,h5,h6,p,blockquote,pre,a,abbr,acronym,address,big,cite,code,del,dfn,em,font,img,ins,kbd,q,s,samp,small,strike,strong,tt,var,b,u,i,center,dl,dt,dd,ol,ul,li,fieldset,form,label,legend,table,caption,tbody,tfoot,thead,tr,th,td{margin:0;padding:0;border:0;outline:0;font-size:100%;vertical-align:baseline;background:transparent}body{line-height:1}ol,ul{list-style:none}blockquote,q{quotes:none}blockquote:before,blockquote:after,q:before,q:after{content:'';content:none}:focus{outine:0}ins{text-decoration:none}del{text-decoration:line-through}table{border-collapse:collapse;border-spacing:0}
 
 html { min-height:100%; margin-bottom:1px; }
@@ -84,6 +84,7 @@ febioFebFileName=fullfile(savePath,[febioFebFileNamePart,<span class="string">'.
 febioLogFileName=[febioFebFileNamePart,<span class="string">'.txt'</span>]; <span class="comment">%FEBio log file name</span>
 febioLogFileName_disp=[febioFebFileNamePart,<span class="string">'_disp_out.txt'</span>]; <span class="comment">%Log file name for exporting displacement</span>
 febioLogFileName_stress=[febioFebFileNamePart,<span class="string">'_stress_out.txt'</span>]; <span class="comment">%Log file name for exporting stress</span>
+febioLogFileName_contactPressure=[febioFebFileNamePart,<span class="string">'_contactPressure_out.txt'</span>]; <span class="comment">%Log file name for exporting contact pressure</span>
 
 <span class="comment">%Specifying dimensions and number of elements for slab</span>
 sampleHeight=4; <span class="comment">%Height</span>
@@ -333,7 +334,7 @@ febio_spec.Contact.contact{1}.gaptol=0;
 febio_spec.Contact.contact{1}.minaug=minaug;
 febio_spec.Contact.contact{1}.maxaug=maxaug;
 febio_spec.Contact.contact{1}.search_tol=0.01;
-febio_spec.Contact.contact{1}.search_radius=0.1;
+febio_spec.Contact.contact{1}.search_radius=0.1*sqrt(sum((max(V,[],1)-min(V,[],1)).^2,2));
 febio_spec.Contact.contact{1}.symmetric_stiffness=0;
 febio_spec.Contact.contact{1}.auto_penalty=1;
 febio_spec.Contact.contact{1}.penalty=contactPenalty;
@@ -356,6 +357,11 @@ febio_spec.Output.logfile.node_data{1}.ATTR.delim=<span class="string">','</span
 febio_spec.Output.logfile.element_data{1}.ATTR.file=febioLogFileName_stress;
 febio_spec.Output.logfile.element_data{1}.ATTR.data=<span class="string">'s3'</span>;
 febio_spec.Output.logfile.element_data{1}.ATTR.delim=<span class="string">','</span>;
+
+febio_spec.Output.logfile.face_data{1}.ATTR.file=febioLogFileName_contactPressure;
+febio_spec.Output.logfile.face_data{1}.ATTR.data=<span class="string">'contact pressure'</span>;
+febio_spec.Output.logfile.face_data{1}.ATTR.surface=surfaceName2;
+febio_spec.Output.logfile.face_data{1}.ATTR.delim=<span class="string">','</span>;
 </pre><h2 id="14">Quick viewing of the FEBio input file structure</h2><p>The <tt>febView</tt> function can be used to view the xml structure in a MATLAB figure window.</p><p><tt>febView(febio_spec); %Viewing the febio file</tt></p><h2 id="16">Exporting the FEBio input file</h2><p>Exporting the febio_spec structure to an FEBio input file is done using the <tt>febioStruct2xml</tt> function.</p><pre class="codeinput">febioStruct2xml(febio_spec,febioFebFileName); <span class="comment">%Exporting to file and domNode</span>
 </pre><h2 id="17">Running the FEBio analysis</h2><p>To run the analysis defined by the created FEBio input file the <tt>runMonitorFEBio</tt> function is used. The input for this function is a structure defining job settings e.g. the FEBio input file name. The optional output runFlag informs the user if the analysis was run succesfully.</p><pre class="codeinput">febioAnalysis.run_filename=febioFebFileName; <span class="comment">%The input file name</span>
 febioAnalysis.run_logname=febioLogFileName; <span class="comment">%The name for the log file</span>
@@ -365,51 +371,51 @@ febioAnalysis.runMode=<span class="string">'external'</span>;<span class="commen
 [runFlag]=runMonitorFEBio(febioAnalysis);<span class="comment">%START FEBio NOW!!!!!!!!</span>
 </pre><pre class="codeoutput"> 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
---------&gt;    RUNNING/MONITORING FEBIO JOB    &lt;-------- 02-Jul-2021 14:31:23
+--------&gt;    RUNNING/MONITORING FEBIO JOB    &lt;-------- 18-Oct-2021 12:49:51
 FEBio path: /home/kevin/FEBioStudio/bin/febio3
-# Attempt removal of existing log files                02-Jul-2021 14:31:23
- * Removal succesful                                   02-Jul-2021 14:31:23
-# Attempt removal of existing .xplt files              02-Jul-2021 14:31:23
- * Removal succesful                                   02-Jul-2021 14:31:23
-# Starting FEBio...                                    02-Jul-2021 14:31:23
+# Attempt removal of existing log files                18-Oct-2021 12:49:52
+ * Removal succesful                                   18-Oct-2021 12:49:52
+# Attempt removal of existing .xplt files              18-Oct-2021 12:49:52
+ * Removal succesful                                   18-Oct-2021 12:49:52
+# Starting FEBio...                                    18-Oct-2021 12:49:52
   Max. total analysis time is: Inf s
- * Waiting for log file creation                       02-Jul-2021 14:31:23
+ * Waiting for log file creation                       18-Oct-2021 12:49:52
    Max. wait time: 30 s
- * Log file found.                                     02-Jul-2021 14:31:23
-# Parsing log file...                                  02-Jul-2021 14:31:23
-    number of iterations   : 5                         02-Jul-2021 14:31:24
-    number of reformations : 5                         02-Jul-2021 14:31:24
-------- converged at time : 0.1                        02-Jul-2021 14:31:24
-    number of iterations   : 5                         02-Jul-2021 14:31:25
-    number of reformations : 5                         02-Jul-2021 14:31:25
-------- converged at time : 0.2                        02-Jul-2021 14:31:25
-    number of iterations   : 5                         02-Jul-2021 14:31:26
-    number of reformations : 5                         02-Jul-2021 14:31:26
-------- converged at time : 0.3                        02-Jul-2021 14:31:26
-    number of iterations   : 5                         02-Jul-2021 14:31:26
-    number of reformations : 5                         02-Jul-2021 14:31:26
-------- converged at time : 0.4                        02-Jul-2021 14:31:26
-    number of iterations   : 5                         02-Jul-2021 14:31:27
-    number of reformations : 5                         02-Jul-2021 14:31:27
-------- converged at time : 0.5                        02-Jul-2021 14:31:27
-    number of iterations   : 6                         02-Jul-2021 14:31:28
-    number of reformations : 6                         02-Jul-2021 14:31:28
-------- converged at time : 0.6                        02-Jul-2021 14:31:28
-    number of iterations   : 6                         02-Jul-2021 14:31:28
-    number of reformations : 6                         02-Jul-2021 14:31:28
-------- converged at time : 0.7                        02-Jul-2021 14:31:28
-    number of iterations   : 6                         02-Jul-2021 14:31:29
-    number of reformations : 6                         02-Jul-2021 14:31:29
-------- converged at time : 0.8                        02-Jul-2021 14:31:29
-    number of iterations   : 6                         02-Jul-2021 14:31:30
-    number of reformations : 6                         02-Jul-2021 14:31:30
-------- converged at time : 0.9                        02-Jul-2021 14:31:30
-    number of iterations   : 6                         02-Jul-2021 14:31:31
-    number of reformations : 6                         02-Jul-2021 14:31:31
-------- converged at time : 1                          02-Jul-2021 14:31:31
- Elapsed time : 0:00:08                                02-Jul-2021 14:31:31
+ * Log file found.                                     18-Oct-2021 12:49:52
+# Parsing log file...                                  18-Oct-2021 12:49:52
+    number of iterations   : 5                         18-Oct-2021 12:49:53
+    number of reformations : 5                         18-Oct-2021 12:49:53
+------- converged at time : 0.1                        18-Oct-2021 12:49:53
+    number of iterations   : 5                         18-Oct-2021 12:49:54
+    number of reformations : 5                         18-Oct-2021 12:49:54
+------- converged at time : 0.2                        18-Oct-2021 12:49:54
+    number of iterations   : 5                         18-Oct-2021 12:49:54
+    number of reformations : 5                         18-Oct-2021 12:49:54
+------- converged at time : 0.3                        18-Oct-2021 12:49:54
+    number of iterations   : 5                         18-Oct-2021 12:49:55
+    number of reformations : 5                         18-Oct-2021 12:49:55
+------- converged at time : 0.4                        18-Oct-2021 12:49:55
+    number of iterations   : 5                         18-Oct-2021 12:49:56
+    number of reformations : 5                         18-Oct-2021 12:49:56
+------- converged at time : 0.5                        18-Oct-2021 12:49:56
+    number of iterations   : 6                         18-Oct-2021 12:49:57
+    number of reformations : 6                         18-Oct-2021 12:49:57
+------- converged at time : 0.6                        18-Oct-2021 12:49:57
+    number of iterations   : 6                         18-Oct-2021 12:49:58
+    number of reformations : 6                         18-Oct-2021 12:49:58
+------- converged at time : 0.7                        18-Oct-2021 12:49:58
+    number of iterations   : 6                         18-Oct-2021 12:49:59
+    number of reformations : 6                         18-Oct-2021 12:49:59
+------- converged at time : 0.8                        18-Oct-2021 12:49:59
+    number of iterations   : 6                         18-Oct-2021 12:50:00
+    number of reformations : 6                         18-Oct-2021 12:50:00
+------- converged at time : 0.9                        18-Oct-2021 12:50:00
+    number of iterations   : 6                         18-Oct-2021 12:50:01
+    number of reformations : 6                         18-Oct-2021 12:50:01
+------- converged at time : 1                          18-Oct-2021 12:50:01
+ Elapsed time : 0:00:09                                18-Oct-2021 12:50:01
  N O R M A L   T E R M I N A T I O N
-# Done                                                 02-Jul-2021 14:31:31
+# Done                                                 18-Oct-2021 12:50:01
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 </pre><h2 id="18">Import FEBio results</h2><pre class="codeinput"><span class="keyword">if</span> runFlag==1 <span class="comment">%i.e. a succesful run</span>
 </pre><p>Importing nodal displacements from a log file</p><pre class="codeinput">    dataStruct=importFEBio_logfile(fullfile(savePath,febioLogFileName_disp),1,1);
@@ -424,6 +430,10 @@ FEBio path: /home/kevin/FEBioStudio/bin/febio3
 
     <span class="comment">%Access data</span>
     E_stress_mat=dataStruct.data;
+</pre><p>Importing contact pressure from a log file</p><pre class="codeinput">    dataStruct=importFEBio_logfile(fullfile(savePath,febioLogFileName_contactPressure),1,1);
+
+    <span class="comment">%Access data</span>
+    F_primary_contact_pressure_mat=dataStruct.data;
 </pre><p>Plotting the simulated results using <tt>anim8</tt> to visualize and animate deformations</p><pre class="codeinput">    [CV]=faceToVertexMeasure(E1,V,E_stress_mat(:,:,end));
 
     <span class="comment">% Create basic view and store graphics handle to initiate animation</span>
@@ -456,7 +466,33 @@ FEBio path: /home/kevin/FEBioStudio/bin/febio3
     <span class="keyword">end</span>
     anim8(hf,animStruct); <span class="comment">%Initiate animation feature</span>
     drawnow;
-</pre><img width="100%" height="auto" vspace="5" hspace="5" src="DEMO_febio_0006_sphere_indentation_05.jpg" alt=""> <pre class="codeinput"><span class="keyword">end</span>
+</pre><img width="100%" height="auto" vspace="5" hspace="5" src="DEMO_febio_0006_sphere_indentation_05.jpg" alt=""> <p>Plotting the simulated results using <tt>anim8</tt> to visualize and animate deformations</p><pre class="codeinput">    <span class="comment">% Create basic view and store graphics handle to initiate animation</span>
+    hf=cFigure; <span class="comment">%Open figure</span>
+    gtitle([febioFebFileNamePart,<span class="string">': Press play to animate'</span>]);
+    title(<span class="string">'$\sigma_{3}$ [MPa]'</span>,<span class="string">'Interpreter'</span>,<span class="string">'Latex'</span>)
+    gpatch(Fb1,V_DEF(:,:,end),<span class="string">'w'</span>,<span class="string">'none'</span>,0.1);
+    hp=gpatch(F_contact_primary,V_DEF(:,:,end),F_primary_contact_pressure_mat(:,:,1),<span class="string">'k'</span>,1); <span class="comment">%Add graphics object to animate</span>
+
+    hp2=gpatch(E2,V_DEF(:,:,end),<span class="string">'w'</span>,<span class="string">'none'</span>,0.25); <span class="comment">%Add graphics object to animate</span>
+
+    axisGeom(gca,fontSize);
+    colormap(gjet(250)); colorbar;
+    caxis([min(F_primary_contact_pressure_mat(:)) max(F_primary_contact_pressure_mat(:))]);
+    axis(axisLim(V_DEF)); <span class="comment">%Set axis limits statically</span>
+    camlight <span class="string">headlight</span>;
+
+    <span class="comment">% Set up animation features</span>
+    animStruct.Time=timeVec; <span class="comment">%The time vector</span>
+    <span class="keyword">for</span> qt=1:1:size(N_disp_mat,3) <span class="comment">%Loop over time increments</span>
+
+        <span class="comment">%Set entries in animation structure</span>
+        animStruct.Handles{qt}=[hp hp hp2]; <span class="comment">%Handles of objects to animate</span>
+        animStruct.Props{qt}={<span class="string">'Vertices'</span>,<span class="string">'CData'</span>,<span class="string">'Vertices'</span>}; <span class="comment">%Properties of objects to animate</span>
+        animStruct.Set{qt}={V_DEF(:,:,qt),F_primary_contact_pressure_mat(:,:,qt),V_DEF(:,:,qt)}; <span class="comment">%Property values for to set in order to animate</span>
+    <span class="keyword">end</span>
+    anim8(hf,animStruct); <span class="comment">%Initiate animation feature</span>
+    drawnow;
+</pre><img width="100%" height="auto" vspace="5" hspace="5" src="DEMO_febio_0006_sphere_indentation_06.jpg" alt=""> <pre class="codeinput"><span class="keyword">end</span>
 </pre><p><img vspace="5" hspace="5" src="gibbVerySmall.gif" alt=""> </p><p><i><b>GIBBON</b></i> <a href="www.gibboncode.org">www.gibboncode.org</a></p><p><i>Kevin Mattheus Moerman</i>, <a href="gibbon.toolbox@gmail.com">gibbon.toolbox@gmail.com</a></p><p><i><b>GIBBON footer text</b></i></p><p>License: <a href="https://github.com/gibbonCode/GIBBON/blob/master/LICENSE">https://github.com/gibbonCode/GIBBON/blob/master/LICENSE</a></p><p>GIBBON: The Geometry and Image-based Bioengineering add-On. A toolbox for image segmentation, image-based modeling, meshing, and finite element analysis.</p><p>Copyright (C) 2006-2021 Kevin Mattheus Moerman and the GIBBON contributors</p><p>This program is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.</p><p>This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for more details.</p><p>You should have received a copy of the GNU General Public License along with this program.  If not, see <a href="http://www.gnu.org/licenses/">http://www.gnu.org/licenses/</a>.</p><p class="footer"><br><a href="https://www.mathworks.com/products/matlab/">Published with MATLAB&reg; R2021a</a><br></p></div><!--
 ##### SOURCE BEGIN #####
 %% DEMO_febio_0006_sphere_indentation
@@ -509,6 +545,7 @@ febioFebFileName=fullfile(savePath,[febioFebFileNamePart,'.feb']); %FEB file nam
 febioLogFileName=[febioFebFileNamePart,'.txt']; %FEBio log file name
 febioLogFileName_disp=[febioFebFileNamePart,'_disp_out.txt']; %Log file name for exporting displacement
 febioLogFileName_stress=[febioFebFileNamePart,'_stress_out.txt']; %Log file name for exporting stress
+febioLogFileName_contactPressure=[febioFebFileNamePart,'_contactPressure_out.txt']; %Log file name for exporting contact pressure
 
 %Specifying dimensions and number of elements for slab
 sampleHeight=4; %Height
@@ -791,7 +828,7 @@ febio_spec.Contact.contact{1}.gaptol=0;
 febio_spec.Contact.contact{1}.minaug=minaug;
 febio_spec.Contact.contact{1}.maxaug=maxaug;
 febio_spec.Contact.contact{1}.search_tol=0.01;
-febio_spec.Contact.contact{1}.search_radius=0.1;
+febio_spec.Contact.contact{1}.search_radius=0.1*sqrt(sum((max(V,[],1)-min(V,[],1)).^2,2));
 febio_spec.Contact.contact{1}.symmetric_stiffness=0;
 febio_spec.Contact.contact{1}.auto_penalty=1;
 febio_spec.Contact.contact{1}.penalty=contactPenalty;
@@ -814,6 +851,11 @@ febio_spec.Output.logfile.node_data{1}.ATTR.delim=',';
 febio_spec.Output.logfile.element_data{1}.ATTR.file=febioLogFileName_stress;
 febio_spec.Output.logfile.element_data{1}.ATTR.data='s3';
 febio_spec.Output.logfile.element_data{1}.ATTR.delim=',';
+
+febio_spec.Output.logfile.face_data{1}.ATTR.file=febioLogFileName_contactPressure;
+febio_spec.Output.logfile.face_data{1}.ATTR.data='contact pressure';
+febio_spec.Output.logfile.face_data{1}.ATTR.surface=surfaceName2;
+febio_spec.Output.logfile.face_data{1}.ATTR.delim=',';
 
 %% Quick viewing of the FEBio input file structure
 % The |febView| function can be used to view the xml structure in a MATLAB
@@ -864,32 +906,40 @@ if runFlag==1 %i.e. a succesful run
     %Access data
     E_stress_mat=dataStruct.data;
     
-        %% 
+                
+    %%
+    % Importing contact pressure from a log file
+    dataStruct=importFEBio_logfile(fullfile(savePath,febioLogFileName_contactPressure),1,1);     
+    
+    %Access data
+    F_primary_contact_pressure_mat=dataStruct.data;
+    
+    %%
     % Plotting the simulated results using |anim8| to visualize and animate
-    % deformations 
+    % deformations
     
     [CV]=faceToVertexMeasure(E1,V,E_stress_mat(:,:,end));
     
     % Create basic view and store graphics handle to initiate animation
-    hf=cFigure; %Open figure  
+    hf=cFigure; %Open figure
     gtitle([febioFebFileNamePart,': Press play to animate']);
     title('$\sigma_{3}$ [MPa]','Interpreter','Latex')
     hp=gpatch(Fb1,V_DEF(:,:,end),CV,'k',1); %Add graphics object to animate
     hp.Marker='.';
     hp.MarkerSize=markerSize2;
     hp.FaceColor='interp';
-        
+    
     hp2=gpatch(E2,V_DEF(:,:,end),'w','none',0.5); %Add graphics object to animate
     
-    axisGeom(gca,fontSize); 
+    axisGeom(gca,fontSize);
     colormap(flipud(gjet(250))); colorbar;
-    caxis([min(E_stress_mat(:)) max(E_stress_mat(:))]);    
-    axis(axisLim(V_DEF)); %Set axis limits statically    
-    camlight headlight;        
-        
+    caxis([min(E_stress_mat(:)) max(E_stress_mat(:))]);
+    axis(axisLim(V_DEF)); %Set axis limits statically
+    camlight headlight;
+    
     % Set up animation features
-    animStruct.Time=timeVec; %The time vector    
-    for qt=1:1:size(N_disp_mat,3) %Loop over time increments        
+    animStruct.Time=timeVec; %The time vector
+    for qt=1:1:size(N_disp_mat,3) %Loop over time increments
         
         [CV]=faceToVertexMeasure(E1,V,E_stress_mat(:,:,qt));
         
@@ -897,9 +947,41 @@ if runFlag==1 %i.e. a succesful run
         animStruct.Handles{qt}=[hp hp hp2]; %Handles of objects to animate
         animStruct.Props{qt}={'Vertices','CData','Vertices'}; %Properties of objects to animate
         animStruct.Set{qt}={V_DEF(:,:,qt),CV,V_DEF(:,:,qt)}; %Property values for to set in order to animate
-    end        
-    anim8(hf,animStruct); %Initiate animation feature    
+    end
+    anim8(hf,animStruct); %Initiate animation feature
     drawnow;
+    
+        %%
+    % Plotting the simulated results using |anim8| to visualize and animate
+    % deformations
+
+    % Create basic view and store graphics handle to initiate animation
+    hf=cFigure; %Open figure
+    gtitle([febioFebFileNamePart,': Press play to animate']);
+    title('$\sigma_{3}$ [MPa]','Interpreter','Latex')
+    gpatch(Fb1,V_DEF(:,:,end),'w','none',0.1);
+    hp=gpatch(F_contact_primary,V_DEF(:,:,end),F_primary_contact_pressure_mat(:,:,1),'k',1); %Add graphics object to animate        
+        
+    hp2=gpatch(E2,V_DEF(:,:,end),'w','none',0.25); %Add graphics object to animate
+    
+    axisGeom(gca,fontSize);
+    colormap(gjet(250)); colorbar;
+    caxis([min(F_primary_contact_pressure_mat(:)) max(F_primary_contact_pressure_mat(:))]);
+    axis(axisLim(V_DEF)); %Set axis limits statically
+    camlight headlight;
+    
+    % Set up animation features
+    animStruct.Time=timeVec; %The time vector
+    for qt=1:1:size(N_disp_mat,3) %Loop over time increments
+        
+        %Set entries in animation structure
+        animStruct.Handles{qt}=[hp hp hp2]; %Handles of objects to animate
+        animStruct.Props{qt}={'Vertices','CData','Vertices'}; %Properties of objects to animate
+        animStruct.Set{qt}={V_DEF(:,:,qt),F_primary_contact_pressure_mat(:,:,qt),V_DEF(:,:,qt)}; %Property values for to set in order to animate
+    end
+    anim8(hf,animStruct); %Initiate animation feature
+    drawnow;
+    
     
 end
 
