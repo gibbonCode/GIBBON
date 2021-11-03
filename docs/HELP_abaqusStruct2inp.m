@@ -138,6 +138,18 @@ end
 abaqus_spec.Assembly.Surface{1}.VAL=valCell;
 
 %% 
+% Equation constraint
+
+% *Equation
+% 2
+% X(n-1), 1, 1.
+% XControlN, 1, -1.
+
+%%--> Constraints
+abaqus_spec.Assembly.COMMENT='Constraint 1';
+abaqus_spec.Assembly.Equation.VAL=['2' newline 'X(n-1), ',  '1, 1.' newline 'XContN, ' '1, -1.'];
+
+%% 
 % The material section
 
 % *Material, name=Material-1

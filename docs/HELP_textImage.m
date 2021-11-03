@@ -24,6 +24,26 @@ cMap=gray(250); %Colormap
 %%
 % Settings
 textString={'Text'}; %String to be rendered in image
+
+%%
+% Creating the text image
+[M]=textImage(textString);
+
+%%
+% Visualizing the text image
+cFigure;
+imagesc(M);
+axis equal; axis tight; grid off;  
+colormap(cMap); caxis([min(M(:)) max(M(:))]); colorbar;
+drawnow;
+
+%% Example: Using full set of inputs
+% You can use |listTrueTypeFonts| to check what fonts are available on your
+% machine
+
+%%
+% Settings
+textString={'Text'}; %String to be rendered in image
 FontName='Arial'; %Font name 
 FontSize=25; %Font height in pixels
 padAmount=20; %Pixels padded around string
