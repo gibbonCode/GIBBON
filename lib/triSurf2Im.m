@@ -105,18 +105,45 @@ V_IJK=V;
 %Rounding image coordinates to snap to voxel
 V_IJK=round(V_IJK);
 
+%Code to deal with "just in - just out" issue
+% tolLevel=voxelSize/100;
+% V_IJK_round=round(V_IJK);
+% d=(V_IJK-V_IJK_round);
+% % logicNegative=d<0;
+% logicFix=abs(d)>(0.5-tolLevel);
+% % 
+% % nnz(logicNegative & logicFix)
+% % nnz(~logicNegative & logicFix)
+% % 
+% % V_IJK_round( logicNegative & logicFix)= floor(V_IJK( logicNegative&logicFix));
+% % V_IJK_round(~logicNegative & logicFix)=  ceil(V_IJK(~logicNegative&logicFix));
+% 
+% V_IJK_floor=floor(V_IJK);
+% V_IJK_ceil=ceil(V_IJK);
+% V_IJK_round=[V_IJK_round; V_IJK_ceil(any(logicFix,2),:); V_IJK_floor(any(logicFix,2),:);];
+% V_IJK=V_IJK_round;
+
 %Determine image size if not provided
 if isempty(siz)    
     siz=max(V_IJK,[],1)+2;
 else
     %Remove invalid indices
-    V_IJK=V_IJK(V_IJK(:,1)<=siz(1) & V_IJK(:,1)>=1,:);
-    V_IJK=V_IJK(V_IJK(:,2)<=siz(2) & V_IJK(:,2)>=1,:);
-    V_IJK=V_IJK(V_IJK(:,3)<=siz(3) & V_IJK(:,3)>=1,:);       
+    V_IJK(V_IJK(:,1)<=1,1)=1;
+    V_IJK(V_IJK(:,2)<=1,2)=1;
+    V_IJK(V_IJK(:,3)<=1,3)=1;
+    
+    V_IJK(V_IJK(:,1)>=siz(1),1)=siz(1);
+    V_IJK(V_IJK(:,2)>=siz(2),2)=siz(2);
+    V_IJK(V_IJK(:,3)>=siz(3),3)=siz(3);
+    
+%     V_IJK=V_IJK(V_IJK(:,1)<=siz(1) & V_IJK(:,1)>=1,:);
+%     V_IJK=V_IJK(V_IJK(:,2)<=siz(2) & V_IJK(:,2)>=1,:);
+%     V_IJK=V_IJK(V_IJK(:,3)<=siz(3) & V_IJK(:,3)>=1,:);       
 end
 
 %Get linear indices of points
 indVertices=sub2ind(siz,V_IJK(:,1),V_IJK(:,2),V_IJK(:,3));
+indVertices=unique(indVertices); 
 
 %Create surface boundary image
 logicVertices=false(siz);
@@ -128,8 +155,8 @@ uniqueLabels=unique(labeledImage(:));
 
 labelsBoundary=labeledImage(logicVertices); %The label numbers for the boundary
 
-indExteriorVoxel=1; %First is outside since image is at least a voxel too big on all sides
-labelExterior=labeledImage(indExteriorVoxel); %The label number for the exterior
+% indExteriorVoxel=1; %First is outside since image is at least a voxel too big on all sides
+labelExterior=1;%max(labeledImage(:));%labeledImage(indExteriorVoxel); %The label number for the exterior
 
 labelsInterior=uniqueLabels(~ismember(uniqueLabels,[labelsBoundary(:); labelExterior])); %Labels for the interior (possibly multiple)
 

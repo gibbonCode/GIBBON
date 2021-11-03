@@ -115,7 +115,7 @@ end
 f=f(indUni,:); %Keep unique faces
 c=c(indUni);
 
-%Remove collapsed faces
+%Remove collapsed facesverte
 [f,logicKeep]=patchRemoveCollapsed(f); 
 c=c(logicKeep);
 

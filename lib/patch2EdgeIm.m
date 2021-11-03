@@ -32,11 +32,15 @@ V=varargin{2};
 %Removing unused points
 [F,V]=removeNotIndexed(F,V);
 
-%Get edges
-E=patchEdges(F,1);
+if size(F,2)==2
+    E=F;
+else
+    %Get edges
+    E=patchEdges(F,1);
+end
 
 %Checking edge lenghts of surface
-[edgeLengths]=patchEdgeLengths(F,V);
+[edgeLengths]=patchEdgeLengths(E,V);
 
 maxEdgeLength=max(edgeLengths(:));
 meanEdgeLength=mean(edgeLengths(:));
@@ -60,9 +64,8 @@ end
 %Get edge subdevision metric
 if nargin >5
     n=varargin{6};
-else
-    subFactor=5;
-    n=maxEdgeLength/(voxelSize/subFactor);
+else    
+    n=3*(maxEdgeLength/voxelSize);
 end
 
 %%

@@ -12,10 +12,12 @@ function [varargout]=sv3(varargin)
 % optionStructDefault.clim=[min(M(~isnan(M))) max(M(~isnan(M)))]; %color limits
 % optionStructDefault.fontColor='w'; %font color
 % optionStructDefault.fontSize=20; %font size
+% optionStructDefault.edgeColor='none';
 % optionStructDefault.figStruct=figStruct; %figure options (see cFigure)
 % optionStructDefault.sliceIndices=round(size(M)/2); %Default mid-slices
-% optionStructDefault.updateFrequency=100; %Max update frequency during
-% slider drag
+% optionStructDefault.alphaLevel=1;
+% optionStructDefault.origin=[0 0 0];
+% optionStructDefault.updateFrequency=10;
 %
 % See also: sliceViewer, sv2, imx
 %
@@ -24,6 +26,8 @@ function [varargout]=sv3(varargin)
 % 2018/06/06 Added basic description at the top of this function
 % 2019/08/09 Changed to use uicontrol slider rather than java slider due
 % to future removal of javacomponent
+% 2021/11/03 Fixed issue with specification of image origin and shifting
+% slider
 % ------------------------------------------------------------------------
 
 %% Parse input
@@ -81,7 +85,7 @@ alphaLevel=optionStruct.alphaLevel;
 originLoc=optionStruct.origin;
 updateFrequency=optionStruct.updateFrequency; 
 
-if all(isnan(cLim)) | all(isinf(cLim))
+if all(isnan(cLim)) || all(isinf(cLim))
     cLim=[-1 1];
 end
 
@@ -218,11 +222,11 @@ if dtt>dt %If ready to update
         V=get(hf.UserData.sv3.hp(dirOpt),'Vertices');
         switch dirOpt
             case 1
-                V(:,2)=(sliceIndex-0.5).*v(1);
+                V(:,2)=(sliceIndex-0.5).*v(1)+hf.UserData.sv3.origin(2);
             case 2
-                V(:,1)=(sliceIndex-0.5).*v(2);
+                V(:,1)=(sliceIndex-0.5).*v(2)+hf.UserData.sv3.origin(1);
             case 3
-                V(:,3)=(sliceIndex-0.5).*v(3);
+                V(:,3)=(sliceIndex-0.5).*v(3)+hf.UserData.sv3.origin(3);
         end
         set(hf.UserData.sv3.hp(dirOpt),'CData',M(logicPatch)); %Set color data
         set(hf.UserData.sv3.hp(dirOpt),'Vertices',V); %Set vertices

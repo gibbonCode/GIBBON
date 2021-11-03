@@ -77,7 +77,7 @@ axisGeom(gca,fontSize);
 
 drawnow;
 
-%% EXAMPLE 2: CONVERTING PATCH DATA WITH A SINGLE BOUNDARY TO AN IMAGE
+%% EXAMPLE 2: SPECIFYING IMAGE PARAMETERS
 % Defining an example surface model
 
 [F,V]=stanford_bunny; %graphicsModels(3);
@@ -127,7 +127,54 @@ axisGeom(gca,fontSize);
 
 drawnow;
 
-%% EXAMPLE 3: CONVERTING PATCH DATA WITH A MULTIPLE BOUNDARIES AND PATCH TYPES TO AN IMAGE
+%% EXAMPLE 3: Behaviour when patch data extends out of image boundaries
+% Defining an example surface model
+
+[F,V]=geoSphere(2,1); %graphicsModels(3);
+
+%%
+
+% Defining the full set of possible control parameters
+voxelSize=(max(V(:,1))-min(V(:,1)))/50; % The output image voxel size.
+imOrigin=mean(V,1);
+imMax=max(V,[],1)+5*voxelSize;
+imSiz=round((imMax-imOrigin)/voxelSize);
+imSiz=imSiz([2 1 3]); %Image size (x, y corresponds to j,i in image coordinates, hence the permutation)
+
+% Using |patch2Im| function to convert patch data to image data
+[M,G,bwLabels]=patch2Im(F,V,ones(size(F,1),1),voxelSize,imOrigin,imSiz);
+
+%%
+% Plotting the results
+
+L_plot=false(size(M));
+L_plot(:,:,round(size(M,3)/2))=1;
+L_plot(round(size(M,1)/2),:,:)=1;
+L_plot(:,round(size(M,2)/2),:)=1;
+L_plot=L_plot & ~isnan(M);
+[Fm,Vm,Cm]=im2patch(M,L_plot,'v');
+[Vm(:,1),Vm(:,2),Vm(:,3)]=im2cart(Vm(:,2),Vm(:,1),Vm(:,3),voxelSize*ones(1,3));
+Vm=Vm+imOrigin(ones(size(Vm,1),1),:);
+
+cFigure;
+subplot(1,2,1); hold on;
+title('Closed patch surface','FontSize',fontSize);
+gpatch(F,V,'kw','k',faceAlpha1);
+camlight('headlight'); 
+axisGeom(gca,fontSize);
+
+subplot(1,2,2); hold on;
+title('Patch data derived image data (3 slices)','FontSize',fontSize);
+gpatch(F,V,'kw','none',faceAlpha2);
+gpatch(Fm,Vm,Cm,'k',faceAlpha1);
+colormap(cMap); icolorbar;
+camlight('headlight'); 
+axisGeom(gca,fontSize);
+
+drawnow;
+
+
+%% EXAMPLE 4: CONVERTING PATCH DATA WITH A MULTIPLE BOUNDARIES AND PATCH TYPES TO AN IMAGE
 
 % Defining a multi boundary set
 
@@ -192,7 +239,31 @@ axisGeom(gca,fontSize);
 colormap(gca,cMap); icolorbar([0 4]);
 drawnow;
 
-%% EXAMPLE 4: Special treatment of boundary voxels
+%% EXAMPLE 5:
+%
+
+% Defining the full set of possible control parameters
+voxelSize=r/8; % The output image voxel size.
+imOrigin=[0 -5 0];
+imMax=max(V,[],1)+voxelSize;
+imSiz=round((imMax-imOrigin)/voxelSize);
+imSiz=imSiz([2 1 3]); %Image size (x, y corresponds to j,i in image coordinates, hence the permutation)
+
+% Using |patch2Im| function to convert patch data to image data
+[M]=patch2Im(F,V,C,voxelSize,imOrigin,imSiz);
+
+%%
+% Plotting the results
+
+sv3(M,voxelSize);
+gpatch(F,V-imOrigin,C,'none',faceAlpha2);
+
+camlight('headlight'); 
+colormap(gca,cMap); icolorbar([0 4]);
+axis tight; 
+drawnow;
+
+%% EXAMPLE 6: Special treatment of boundary voxels
 
 % Defining a multi boundary set
 
