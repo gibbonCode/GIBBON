@@ -15,16 +15,20 @@ clear; close all; clc;
 % 
 
 p1=[0 0 0]; %Start point
-p2=[-1 3 3]; %End point 
+p2=[0 2 2]; %End point 
 n1=[0 0 1]; %Start vector
 n2=[-1 0 0]; %End vector
-numPoints=100; %Number of points
-f=1/3; %Tangency metric
+numPoints=25; %Number of points
+f=1/2; %Tangency metric
 
 [Vc]=sweepCurveBezier(p1,p2,n1,n2,numPoints,f); %Compute curve
 
 %%
 % Visualize curve
+
+d=sqrt(sum(p1-p2).^2); %Distance between input points
+w=d*f; %"tangency" weights
+Pb=[p1; p1+w*n1;  p2-w*n2; p2]; %Bezier points
 
 cFigure; hold on; 
 hp(1)=plotV(p1,'r.','MarkerSize',50);
@@ -32,6 +36,7 @@ hp(2)=quiverVec(p1,n1,1,'r');
 hp(3)=plotV(p2,'b.','MarkerSize',50);
 hp(4)=quiverVec(p2,n2,1,'b');
 hp(5)=plotV(Vc,'k.-','LineWidth',3,'MarkerSize',25);
+plotV(Pb,'g.','MarkerSize',25);
 legend(hp,{'Start point','Start direction','End point','End direction','Curve'})
 axisGeom; 
 drawnow; 
@@ -46,7 +51,7 @@ hp(2)=quiverVec(p1,n1,1,'r');
 hp(3)=plotV(p2,'b.','MarkerSize',50);
 hp(4)=quiverVec(p2,n2,1,'b');
 
-f=linspace(-1,1,25);
+f=linspace(0,1,25);
 c=viridis(numel(f));
 for q=1:1:numel(f)
     [Vc]=sweepCurveBezier(p1,p2,n1,n2,numPoints,f(q));   

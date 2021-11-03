@@ -5,12 +5,97 @@
 clear; close all; clc;
 
 %% Syntax
-% |[indBoundary]=tesBoundary(varargin);|
+% |[indBoundary]=tesBoundary(F);|
 
 %% Description 
-% UNDOCUMENTED 
+% This function obtains the indices of the boundary faces based on the
+% input faces F. Boundary faces are those that occur only once (in terms of
+% nodes involved, e.g. [1 2 3 4] is deemed the same face as [2 3 4 1]. 
+
 %% Examples 
 % 
+
+%%
+% Plot settings
+
+fontSize=20;
+faceAlpha1=0.5;
+
+%% Example 1: Get hex mesh boundary faces
+
+%% 
+% Example geometry
+
+boxDim=[6 4 4];
+boxEl=[5 3 3];
+
+[meshStruct]=hexMeshBox(boxDim,boxEl,2);
+
+E=meshStruct.elements; %Elements
+V=meshStruct.nodes; %Nodes
+F=meshStruct.faces; %Mesh faces
+%The hexMeshBox function provides boundary faces already but tesboundary is used in this example
+% Fb=meshStruct.facesBoundary; %Boundary faces
+
+%% 
+% Get boundary faces
+
+indBoundary=tesBoundary(F);
+
+Fb=F(indBoundary,:);
+
+%%
+% Plotting model
+cFigure;
+subplot(1,2,1); hold on;
+title('All faces','FontSize',fontSize);
+gpatch(F,V,'w','k',faceAlpha1,3);
+axisGeom(gca,fontSize); camlight headlight; 
+
+subplot(1,2,2); hold on;
+title('Boundaries faces','FontSize',fontSize);
+gpatch(Fb,V,'w','k',faceAlpha1,3);
+axisGeom(gca,fontSize); camlight headlight; 
+
+drawnow; 
+
+%% Example 1: Get tet mesh boundary faces
+
+%% 
+% Example geometry
+
+boxDim=[6 4 4];
+pointSpacing=2;
+
+[meshStruct]=tetMeshBox(boxDim,pointSpacing);
+
+E=meshStruct.elements; %Elements
+V=meshStruct.nodes; %Nodes
+F=meshStruct.faces; %Mesh faces
+%The tetMeshBox function provides boundary faces already but tesboundary is used in this example
+% Fb=meshStruct.facesBoundary; %Boundary faces
+
+%% 
+% Get boundary faces
+
+indBoundary=tesBoundary(F);
+
+Fb=F(indBoundary,:);
+
+%%
+% Plotting model
+cFigure;
+subplot(1,2,1); hold on;
+title('All faces','FontSize',fontSize);
+gpatch(F,V,'w','k',faceAlpha1,3);
+axisGeom(gca,fontSize); camlight headlight; 
+
+subplot(1,2,2); hold on;
+title('Boundaries faces','FontSize',fontSize);
+gpatch(Fb,V,'w','k',faceAlpha1,3);
+axisGeom(gca,fontSize); camlight headlight; 
+
+drawnow; 
 
 %%
 % 

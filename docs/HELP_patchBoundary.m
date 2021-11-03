@@ -5,12 +5,77 @@
 clear; close all; clc;
 
 %% Syntax
-% |[varargout]=patchBoundary(F,V);|
+% |[Eb,E,indBoundary]=patchBoundary(F);|
 
 %% Description 
-% UNDOCUMENTED 
+% This function provides the boundary edges for the input 
+
 %% Examples 
 % 
+
+%% Example 1: Get the boundary edges for a mesh
+
+%%
+% Creating Example geometry
+
+%Boundary 1
+ns=150;
+t=linspace(0,2*pi,ns+1);
+t=t(1:end-1);
+r=6+2.*sin(5*t);
+[x,y] = pol2cart(t,r);
+V1=[x(:) y(:)];
+
+%Boundary 2
+[x,y] = pol2cart(t,ones(size(t)));
+V2=[x(:) y(:)+4];
+
+%Boundary 3
+[x,y] = pol2cart(t,2*ones(size(t)));
+V3=[x(:) y(:)-0.5];
+
+%Defining a region
+regionCell={V1,V2,V3}; %A region between V1 and V2 (V2 forms a hole inside V1)
+pointSpacing=1; %Desired point spacing
+resampleCurveOpt=1; %Option to turn on/off resampling of input boundary curves
+
+[F,V]=regionTriMesh2D(regionCell,pointSpacing,resampleCurveOpt,0);
+
+%%
+% Get boundary edges 
+
+Eb=patchBoundary(F);
+
+%%
+% Visualize edges
+
+cFigure; 
+hp1=gpatch(F,V,'kw','k',1,2);
+hp2=gpatch(Eb,V,'none','r',1,3);
+legend([hp1 hp2],{'Mesh','Boundary edges'})
+axisGeom; view(2);
+drawnow;
+
+%% Example 2: Get the boundary edges for a multi mesh type cell
+%
+
+[V,F]=patch_dual(V,F);
+
+%%
+% Get boundary edges 
+
+Eb=patchBoundary(F);
+
+%%
+% Visualize edges
+
+cFigure; 
+hp1=gpatch(F,V,'kw','k',1,2);
+hp2=gpatch(Eb,V,'none','r',1,3);
+legend([hp1(1) hp2],{'Mesh','Boundary edges'})
+axisGeom; view(2);
+drawnow;
+
 %%
 % 
 % <<gibbVerySmall.gif>>

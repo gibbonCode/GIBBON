@@ -110,7 +110,7 @@ gtitle('Loop subdivision')
 subplot(1,3,1); hold on;
 title('Original with face colors','FontSize',fontSize);
 hp1=gpatch(F,V,'w','k',1,1);
-hp2=gpatch(patchBoundary(F,V),V,'none','b',1,3);
+hp2=gpatch(patchBoundary(F),V,'none','b',1,3);
 axisGeom(gca,fontSize); camlight headlight;
 legend([hp1 hp2],{'Surface','Boundary'},'Location','SouthOutside');
 view([-40 55]); zoom(1.1);
@@ -118,7 +118,7 @@ view([-40 55]); zoom(1.1);
 subplot(1,3,2); hold on;
 title('Resampled with default smooth boundary','FontSize',fontSize);
 hp1=gpatch(Fs,Vs,'w','k',1,1);
-hp2=gpatch(patchBoundary(Fs,Vs),Vs,'none','b',1,3); hp2.EdgeAlpha=0.9;
+hp2=gpatch(patchBoundary(Fs),Vs,'none','b',1,3); hp2.EdgeAlpha=0.9;
 axisGeom(gca,fontSize); camlight headlight;
 legend([hp1 hp2],{'Surface','Boundary'},'Location','SouthOutside');
 view([-40 55]); zoom(1.1);
@@ -126,7 +126,7 @@ view([-40 55]); zoom(1.1);
 subplot(1,3,3); hold on;
 title('Resampled with linearly constrained boundary','FontSize',fontSize);
 hp1=gpatch(Fs2,Vs2,'w','k',1,1);
-hp2=gpatch(patchBoundary(Fs2,Vs2),Vs2,'none','b',1,3); hp2.EdgeAlpha=0.9;
+hp2=gpatch(patchBoundary(Fs2),Vs2,'none','b',1,3); hp2.EdgeAlpha=0.9;
 axisGeom(gca,fontSize); camlight headlight;
 legend([hp1 hp2],{'Surface','Boundary'},'Location','SouthOutside');
 view([-40 55]); zoom(1.1);
@@ -183,7 +183,7 @@ axisGeom(gca,fontSize); camlight headlight;
 colormap(gca,gjet(6)); icolorbar;
 drawnow;
 
-%% Example: Constraining faces but alter boundary of constrained
+%% Example: Constraining faces but alter boundary of constrained 1
 
 % Using |triBox| to build the patch model
 [Fq,V,faceBoundaryMarker_q]=quadBox([1 1 2],[1 1 2]);
@@ -218,6 +218,45 @@ colormap(gca,gjet(6)); icolorbar;
 
 subplot(1,2,2); hold on;
 gpatch(Fs,Vs,faceBoundaryMarker_sub,'k',1,1);
+axisGeom(gca,fontSize); camlight headlight;
+colormap(gca,gjet(6)); icolorbar;
+drawnow;
+
+%% Example: Constraining faces but alter boundary of constrained 2
+
+% Using |triBox| to build the patch model
+V=[0 0 0; 1 0 0; 0.5 sqrt(3)/2 0; 0 0 1; 1 0 1; 0.5 sqrt(3)/2 1;];
+F=[3 2 1; 4 5 6; 1 2 4; 2 5 4; 2 3 6; 2 6 5; 3 1 4; 3 4 6];
+faceBoundaryMarker=(1:size(F,1))';
+
+%%
+
+n=6; %Number of refinement steps
+logicConstrain=ismember(faceBoundaryMarker,[1,2]); %Logic for faces to subdivide linearly
+indConstrain=find(logicConstrain);
+indNotConstrain=find(~logicConstrain);
+
+[Fs1,Vs1,Cs1]=subTriLoop(F(logicConstrain,:),V,n);
+faceBoundaryMarker_sub1=faceBoundaryMarker(indConstrain(Cs1)); %Get boundary markers for refined mesh
+
+[Fs2,Vs2,Cs2]=subTriLoop(F(~logicConstrain,:),V,n);
+faceBoundaryMarker_sub2=faceBoundaryMarker(indNotConstrain(Cs2)); %Get boundary markers for refined mesh
+
+[Fs,Vs,faceBoundaryMarker_sub]=joinElementSets({Fs1,Fs2},{Vs1,Vs2},{faceBoundaryMarker_sub1,faceBoundaryMarker_sub2});
+
+[Fs,Vs]=patchCleanUnused(Fs,Vs); 
+[Fs,Vs]=mergeVertices(Fs,Vs);
+
+%%
+
+cFigure; 
+subplot(1,2,1); hold on;
+gpatch(F,V,faceBoundaryMarker,'k',1,1);
+axisGeom(gca,fontSize); camlight headlight;
+colormap(gca,gjet(6)); icolorbar; 
+
+subplot(1,2,2); hold on;
+gpatch(Fs,Vs,faceBoundaryMarker_sub,'none',1,1);
 axisGeom(gca,fontSize); camlight headlight;
 colormap(gca,gjet(6)); icolorbar;
 drawnow;
