@@ -24,24 +24,35 @@ switch nargin
         P=mean(V,1);
         n=[0 0 1]; 
         inclusiveSwitch=[0 0];
+        toleranceLevel=max(eps(V(:)));
     case 3
         E=varargin{1};
         V=varargin{2};        
         P=varargin{3};
         n=[0 0 1];        
         inclusiveSwitch=[0 0];
+        toleranceLevel=max(eps(V(:)));
     case 4
         E=varargin{1};
         V=varargin{2};
         P=varargin{3};
         n=varargin{4};        
         inclusiveSwitch=[0 0];
+        toleranceLevel=max(eps(V(:)));
     case 5
         E=varargin{1};
         V=varargin{2};
         P=varargin{3};
         n=varargin{4};
         inclusiveSwitch=varargin{5};
+        toleranceLevel=max(eps(V(:)));
+    case 6
+        E=varargin{1};
+        V=varargin{2};
+        P=varargin{3};
+        n=varargin{4};
+        inclusiveSwitch=varargin{5};
+        toleranceLevel=varargin{6};
 end
 
 %Check P
@@ -71,13 +82,13 @@ Z=Vr(:,3);
 if inclusiveSwitch(1)==1
     logicVerticesBelow=Z<=0; %Logic for nodes below slice
 else
-    logicVerticesBelow=Z<0; %Logic for nodes below slice
+    logicVerticesBelow=Z<-toleranceLevel; %Logic for nodes below slice
 end
 
 if inclusiveSwitch(2)==1
     logicVerticesAbove=Z>=0; %Logic for nodes above slice
 else
-    logicVerticesAbove=Z>0; %Logic for nodes above slice
+    logicVerticesAbove=Z>toleranceLevel; %Logic for nodes above slice
 end
 
 logicAt=any(logicVerticesBelow(E),2) & any(logicVerticesAbove(E),2); %Logic for slice elements

@@ -302,7 +302,7 @@ V=V(indUni,:);
 
 numPointsPost=size(V,1);
 
-boundEdges = patchBoundary(F,V);
+boundEdges = patchBoundary(F);
 boundaryInd=unique(boundEdges(:));
 
 indMustPointsInner=[];

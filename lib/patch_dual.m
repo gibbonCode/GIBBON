@@ -94,7 +94,7 @@ end
 
 if fixBoundaryOption>0
     
-    [Eb]=patchBoundary(F,V);
+    [Eb]=patchBoundary(F);
     if ~isempty(Eb)
         switch fixBoundaryOption
             case 1 %Include original boundary vertices

@@ -64,7 +64,7 @@ end
 
 %% Get face normals
 if isempty(N) %if face normals are missing
-    [N,~]=trinorm(F(:,[1 2 3]),V);
+    [N,~]=patchNormal(F,V);
 end
 
 %% Write STL file in ASCII format

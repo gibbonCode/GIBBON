@@ -21,7 +21,6 @@ inputStruct.regionPoints=mean(V,1); %region points
 inputStruct.regionA=regionA;
 inputStruct.minRegionMarker=2; %Minimum region marker
 
-
 [meshStruct]=runTetGen(inputStruct); %Run tetGen 
 
 

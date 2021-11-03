@@ -15,9 +15,11 @@ function varargout=patchEdges(varargin)
 % 
 % 2014/03/17
 % 2016/01/19 Added additional output in relation to unique operation
+% 2021/10/08 Updated for cell array handling
 %------------------------------------------------------------------------
 
-%% PARSE INPUT
+%% Parse input
+
 F=varargin{1};
 switch nargin
     case 1
@@ -27,12 +29,22 @@ switch nargin
     otherwise
         error('Wrong number of input arguments');
 end
-%% DERIVE NON-UNIQUE EDGES MATRIX
-E1=F';
-E2=F(:,[2:end 1])';
-E=[E1(:) E2(:)];
 
-%% REMOVE DOUBLE ENTRIES IF DESIRED
+%% Derive non-unique edge matrix
+
+if iscell(F) %Cell input
+    %Gather edges for all cell entries
+    E=[];
+    for q=1:1:numel(F)
+        E=[E; patchEdges(F{q},0)];
+    end
+else %Non-cell input
+    E1=F';
+    E2=F(:,[2:end 1])';
+    E=[E1(:) E2(:)];
+end
+
+%% Remove doulble entire if requested
 
 if uniOpt==1
     [Es,indSort]=sort(E,2); %Sorted so [1 4] and [4 1] are seen as the same edge

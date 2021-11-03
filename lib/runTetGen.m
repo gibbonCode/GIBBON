@@ -260,6 +260,14 @@ switch useDelaunayConstraints
         runModelName=[modelNameTemp,'.smesh'];
 end
 
+%% Handle added interior points
+% Does not work yet, points seem ignored
+% if gcontains(inputStruct.stringOpt,'i')
+%     inputStructAdd.Nodes=inputStruct.AddedNodes;
+%     inputStructAdd.modelName=[modelNameTemp,'.a.node'];
+%     writeNodeFile_tetGen(inputStructAdd);
+% end
+
 %% RUN TETGEN
 bOpt=0;
 if sizingOn    
@@ -332,6 +340,7 @@ if sizingOn
     [runStatus,runOut]=system(runString,'-echo');
     dispDoneGibbonCode;
 else
+    
     %Compute Delauney tesselation / Mesh using tetgen
     runString=['"',runNameTetGen,'" ',inputStruct.stringOpt,' "',runModelName,'"']; 
     disp(['--- Running TetGen to mesh input boundary--- ',datestr(now)]);

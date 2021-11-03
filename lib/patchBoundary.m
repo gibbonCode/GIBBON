@@ -1,6 +1,6 @@
-function [varargout]=patchBoundary(F,V)
+function [varargout]=patchBoundary(varargin)
 
-%function [Eb,E,indBoundary]=patchBoundary(F,V)
+%function [Eb,E,indBoundary]=patchBoundary(F)
 %-------------------------------------------------------------------------
 %
 % 
@@ -8,61 +8,39 @@ function [varargout]=patchBoundary(F,V)
 % Change log: 
 % 2018/10/08 Expanded to handle cell input for F
 % 2021/07/30
+% 2021/10/08 Simplified, especially cell handling
+% 2021/10/08 No longer needs vertices as input
 %-------------------------------------------------------------------------
 
-%%
+%% Parse input
 
-% Get non-unique edges
-if iscell(F)
-    EB=cell(size(F));
-    E=[];    
-    for q=1:1:numel(F)        
-        [EB{q},e,~]=patchBoundary(F{q},V);
-        E=[E;e]; %Collect edges
-    end
-    Eb=[];
-    
-    for q=1:1:numel(F)                
-    
-        eb=EB{q};
-        eb_sort=sort(eb,2);
-        indVirt_eb=sub2indn(size(V,1)*ones(1,2),eb_sort);
-        
-        Eb_sort=sort(Eb,2);        
-        indVirt_Eb=sub2indn(size(V,1)*ones(1,2),Eb_sort);
-        
-        eb=EB{q};        
-        Eb=Eb(~all(ismember(indVirt_Eb,indVirt_eb),2),:);        
-        eb=eb(~all(ismember(indVirt_eb,indVirt_Eb),2),:);               
-        
-        Eb=[Eb; eb];
-    end
-        
-    E_sort=sort(E,2);
-    indVirt=sub2indn(size(V,1)*ones(1,2),E_sort);
-    
-    Eb_sort=sort(Eb,2);
-    indVirt_b=sub2indn(size(V,1)*ones(1,2),Eb_sort);
-    
-    indBoundary=find(ismember(indVirt,indVirt_b));
-    
-else
-    E1=F';
-    E2=F(:,[2:end 1])';
-    E=[E1(:) E2(:)];
-    
-    % Get boundary indices
-    [indBoundary]=tesBoundary(E,V);
-    
-    % Boundary edges
-    Eb=E(indBoundary,:);    
+switch nargin
+    case 1
+        F=varargin{1};
+    case 2
+        F=varargin{1};
+        warning('Second input (vertices) no longer required. Update code to avoid future error.');
 end
 
-% Output
+%% Get boundary edges
+
+% Get non-unique edges
+E=patchEdges(F,0);
+   
+% Get boundary edge indices
+Es=sort(E,2); %Sort so edges with same nodes have the same rows
+[~,~,~,countUse]=cunique(Es,'rows'); %Count occurances
+logicBoundary=countUse==1;
+
+% Boundary edges
+Eb=E(logicBoundary,:);
+
+%% Gather output
 varargout{1}=Eb; %Boundary edges
 varargout{2}=E; %All edges
-varargout{3}=indBoundary; %Indices for boundary edges
- 
+if nargout==3
+    varargout{3}=find(logicBoundary); %Indices for boundary edges
+end
 %% 
 % _*GIBBON footer text*_ 
 % 

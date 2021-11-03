@@ -2,7 +2,7 @@ function [varargout]=edgeVec(E,V)
 
 % function [N,Vp,Nv]=edgeVec(E,V)
 % ------------------------------------------------------------------------
-
+%
 % ------------------------------------------------------------------------
 
 %% Compute edge vectors
@@ -14,7 +14,7 @@ varargout{1}=N;
 varargout{2}=Vp;
 
 if nargout==3
-    Nv=faceToVertexMeasure(E,V,N); %Normal vectors at vertices
+    Nv=faceToVertexMeasure(E,V,N); %Edge vectors at vertices
     varargout{3}=Nv;
 end
 

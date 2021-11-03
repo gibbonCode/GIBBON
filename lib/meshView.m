@@ -151,7 +151,7 @@ for q=1:1:numSliceSteps %Step through time
     [Fs,Cs]=element2patch(E(logicCutView,:),CE(logicCutView));
     
     if lightWeightPlot==1
-        [indBoundary]=tesBoundary(Fs,V);
+        [indBoundary]=tesBoundary(Fs);
         Fs=Fs(indBoundary,:);
         Cs=Cs(indBoundary,:);
     end

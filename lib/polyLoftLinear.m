@@ -78,7 +78,7 @@ indStart=1:numSteps:size(V,1);
 indEnd=numSteps:numSteps:size(V,1);
 
 %Check if indices are consistent with edges
-Eb=patchBoundary(F,V); %Patch edges
+Eb=patchBoundary(F); %Patch edges
 e=indStart(1:2);
 logicFlip= ~any((Eb(:,1)==e(1)) & (Eb(:,2)==e(2)));
 if logicFlip

@@ -36,11 +36,9 @@ end
 n1=vecnormalize(n1);
 n2=vecnormalize(n2);
 
-d=sqrt(sum(p1-p2).^2);
-
-w=d*f; %"tangency"
-
-Pb=[p1; p1+w*n1;  p2-w*n2; p2];
+d=sqrt(sum(p1-p2).^2); %Distance between input points
+w=d*f; %"tangency" weights
+Pb=[p1; p1+w*n1;  p2-w*n2; p2]; %Bezier points
 
 Vg=bezierCurve(Pb,numPoints);
 

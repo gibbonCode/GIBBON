@@ -1,6 +1,6 @@
 function nP=spacing2numVertices(F,V,pointSpacing)
 
-A=sum(patch_area(F,V)); %Total area
+A=sum(patchArea(F,V)); %Total area
 At=(pointSpacing.^2*sqrt(3))/4; %Theoretical area of equilateral triangle
 NF=(A/At);
 

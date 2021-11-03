@@ -37,7 +37,7 @@ boxEl(boxEl<1)=1; %Cope with large points spacing
 
 %Mesh 3 side faces
 for q=[1 3 5]        
-    [Eb]=patchBoundary(Fq(Cq==q,:),Vq); %Get boundary of side face set
+    [Eb]=patchBoundary(Fq(Cq==q,:)); %Get boundary of side face set
     [indList]=edgeListToCurve(Eb); %Indiced defining closed curve       
     Vc=Vq(indList(1:end-1),:); %Points defining closed curve
     

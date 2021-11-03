@@ -49,7 +49,7 @@ D=pathLength(V);
 Dg=linspace(D(2),D(end-1),numSteps)';
 
 p=csapsPar(V,p); %Scale invariant version of smoothening parameter
-W=[1 1e9 1 1 1e9 1]; %Weights vector
+W=[1e9 1e9 1 1 1e9 1e9]; %Weights vector
 Vg=zeros(numSteps,size(V,2)); %Initialize curve
 for q=1:1:size(V,2) %Loop across dimensions
     v=V(:,q);

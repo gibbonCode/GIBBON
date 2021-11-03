@@ -1,6 +1,6 @@
 function [indBoundary]=tesBoundary(varargin)
 
-% function [indBoundary]=tesBoundary(F,V)
+% function [indBoundary]=tesBoundary(F)
 % ------------------------------------------------------------------------
 %
 % Change log: 
@@ -10,6 +10,8 @@ function [indBoundary]=tesBoundary(varargin)
 % completed yet 
 % 2020/07/09 Added mixed mesh support, works for pentahedra, needs work for
 % general case
+% 2021/10/08 Simplified
+% 2021/10/08 No longer needs vertices as input
 % ------------------------------------------------------------------------
 
 %% Parse input
@@ -17,22 +19,9 @@ function [indBoundary]=tesBoundary(varargin)
 switch nargin
     case 1
         F=varargin{1};
-        V=[]; 
     case 2
         F=varargin{1};
-        V=varargin{2};
-end
-
-if isempty(V)
-    if isa(F,'cell')
-        numPoints=max(cellfun(@(x) max(x(:)),FE));
-    else
-        numPoints=max(F(:));
-    end
-elseif size(V,2)==1 %Assume number of points provided
-    numPoints=V;
-else %Get number of points from data
-    numPoints=size(V,1);
+        warning('Second input (vertices) no longer required. Update code to avoid future error.');
 end
 
 %%
@@ -40,25 +29,33 @@ end
 if isa(F,'cell')
     indBoundary=cell(size(F));
     for q=1:1:numel(F)
-        indBoundary{q}=getBoundary(F{q},numPoints);
+        indBoundary{q}=getBoundary(F{q});
     end
 else
-    [indBoundary]=getBoundary(F,numPoints);
+    [indBoundary]=getBoundary(F);
 end
 
 end
 
-function [indBoundary]=getBoundary(F,numPoints)
-    Fbs=sort(F,2);
-    sizVirt=numPoints*ones(1,size(Fbs,2));
-    ind_F = sub2indn(sizVirt,Fbs);
-    [~,indUni1,~]=unique(Fbs,'rows'); %Get indices for unique faces
-    ind_F_uni=ind_F(indUni1,:);
-    ind=1:1:size(Fbs,1);
-    ind=ind(~ismember(ind,indUni1));
-    ind_Fb_cut=ind_F(ind,:);
-    L_uni=~ismember(ind_F_uni,ind_Fb_cut);
-    indBoundary=indUni1(L_uni,:);
+%%
+
+function [indBoundary]=getBoundary(F)
+
+Fs=sort(F,2); %Sort so faces with same nodes have the same rows
+[~,~,~,F_count]=cunique(Fs,'rows'); %get indices for unique faces
+indBoundary=find(F_count==1);
+
+% Old method
+%     Fbs=sort(F,2);
+%     sizVirt=numPoints*ones(1,size(Fbs,2));
+%     ind_F = sub2indn(sizVirt,Fbs);
+%     [~,indUni1,~]=unique(Fbs,'rows'); %Get indices for unique faces
+%     ind_F_uni=ind_F(indUni1,:);
+%     ind=1:1:size(Fbs,1);
+%     ind=ind(~ismember(ind,indUni1));
+%     ind_Fb_cut=ind_F(ind,:);
+%     L_uni=~ismember(ind_F_uni,ind_Fb_cut);
+%     indBoundary=indUni1(L_uni,:);
 end
 
 %% 

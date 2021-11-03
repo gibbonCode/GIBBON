@@ -106,7 +106,7 @@ addlistener(hSlider,'Value','PostSet',@(hObject, event) updateViewFunc(hObject, 
 hFunc=get(hf,'ResizeFcn');
 
 if iscell(hFunc)
-    warning('anim8 replaced the ResizeFcn function. Specify your ResizeFcn in the form @(h,e)figResize(h,e,c) to avoid this behavior');    
+    warning('anim8 changed the ResizeFcn function for this figure. Specify your ResizeFcn in the form @(h,e)figResize(h,e,c) to avoid this behavior.');    
     set(hf,'ResizeFcn',@(a,b)figResize(a,b,{hf,scrollBarWidth,hSlider}));
 else
     if isempty(hFunc)
