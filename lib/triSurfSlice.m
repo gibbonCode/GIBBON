@@ -219,8 +219,8 @@ end
 V=V*R; %Rotate back
 V=V+P(ones(size(V,1),1),:); %Shift back
 
-EB=patchBoundary(F,V); %The full set of boundary edges
-Eb_cut=patchBoundary(F(logicSide,:),V); %Set containing old+new boundary edges
+EB=patchBoundary(F); %The full set of boundary edges
+Eb_cut=patchBoundary(F(logicSide,:)); %Set containing old+new boundary edges
 Eb=Eb_cut(~all(ismember(Eb_cut,EB),2),:);
 
 %% Gather output

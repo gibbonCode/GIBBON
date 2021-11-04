@@ -157,7 +157,7 @@ faceMarker=[2*ones(size(F1s,1),1); 3*ones(size(F2s,1),1);];
 %% FIND BOUNDARIES
 
 
-boundEdges = patchBoundary(F,V);
+boundEdges = patchBoundary(F);
 
 epsMax=pointSpacing/2;%max(eps(V(:)))*10;
 edgeGroups=tesgroup(boundEdges);

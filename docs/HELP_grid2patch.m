@@ -69,13 +69,13 @@ cFigure;
 subplot(1,2,1); hold on;
 title('Not periodic')
 gpatch(F1,V1,'bw','k');
-gpatch(patchBoundary(F1,V1),V1,'none','r',1,3);
+gpatch(patchBoundary(F1),V1,'none','r',1,3);
 axisGeom(gca,fontSize); camlight headlight; 
 
 subplot(1,2,2); hold on;
 title('Periodic in 1st direction')
 gpatch(F2,V2,'bw','k');
-gpatch(patchBoundary(F2,V2),V2,'none','r',1,3);
+gpatch(patchBoundary(F2),V2,'none','r',1,3);
 axisGeom(gca,fontSize); camlight headlight; 
 drawnow;
 
@@ -101,13 +101,13 @@ cFigure;
 subplot(1,2,1); hold on;
 title('Not periodic')
 gpatch(F1,V1,C1,'k');
-gpatch(patchBoundary(F1,V1),V1,'none','r',1,3);
+gpatch(patchBoundary(F1),V1,'none','r',1,3);
 axisGeom(gca,fontSize); camlight headlight; 
 
 subplot(1,2,2); hold on;
 title('Periodic in 2nd direction')
 gpatch(F2,V2,C2,'k');
-gpatch(patchBoundary(F2,V2),V2,'none','r',1,3);
+gpatch(patchBoundary(F2),V2,'none','r',1,3);
 axisGeom(gca,fontSize); camlight headlight; 
 drawnow;
 
@@ -148,25 +148,25 @@ cFigure;
 subplot(2,2,1); hold on;
 title('Not periodic')
 gpatch(F1,V1,C1,'k');
-gpatch(patchBoundary(F1,V1),V1,'none','r',1,3);
+gpatch(patchBoundary(F1),V1,'none','r',1,3);
 axisGeom(gca,fontSize); camlight headlight; 
 
 subplot(2,2,2); hold on;
 title('Periodic in 1st direction')
 gpatch(F2,V2,C2,'k');
-gpatch(patchBoundary(F2,V2),V2,'none','r',1,3);
+gpatch(patchBoundary(F2),V2,'none','r',1,3);
 axisGeom(gca,fontSize); camlight headlight; 
 
 subplot(2,2,3); hold on;
 title('Periodic in 2nd direction')
 gpatch(F3,V3,C3,'k');
-gpatch(patchBoundary(F3,V3),V3,'none','r',1,3);
+gpatch(patchBoundary(F3),V3,'none','r',1,3);
 axisGeom(gca,fontSize); camlight headlight; 
 
 subplot(2,2,4); hold on;
 title('Periodic in 1st and 2nd direction')
 gpatch(F4,V4,C4,'k');
-gpatch(patchBoundary(F4,V4),V4,'none','r',1,3);
+gpatch(patchBoundary(F4),V4,'none','r',1,3);
 axisGeom(gca,fontSize); camlight headlight; 
 
 drawnow;

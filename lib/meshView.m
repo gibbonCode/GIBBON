@@ -78,7 +78,7 @@ if isfield(meshStruct,'facesBoundary')
     Cb=meshStruct.boundaryMarker;
 else
     F=meshStruct.faces;
-    indBoundary=tesBoundary(F,V);
+    indBoundary=tesBoundary(F);
     Fb=F(indBoundary,:);
     Cb=ones(size(Fb,1),1);
 end

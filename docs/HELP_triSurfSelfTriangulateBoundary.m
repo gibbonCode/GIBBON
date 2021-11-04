@@ -32,7 +32,7 @@ F=[F(:,[1 2 3]);F(:,[3 4 1])]; %Triangles
 %%
 % Get boundary curve 
 
-Eb=patchBoundary(F,V);
+Eb=patchBoundary(F);
 indBoundaryCurve=edgeListToCurve(Eb);
 indBoundaryCurve=indBoundaryCurve(1:end-1)'; %Start=End for closed curve so remove double entry
 

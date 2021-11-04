@@ -100,21 +100,21 @@ gtitle('Loop subdivision')
 subplot(1,3,1); hold on;
 title('Original','FontSize',fontSize);
 hp1=gpatch(F,V,'w','k',1,1);
-hp2=gpatch(patchBoundary(F,V),V,'none','b',1,3);
+hp2=gpatch(patchBoundary(F),V,'none','b',1,3);
 axisGeom(gca,fontSize); camlight headlight;
 legend([hp1 hp2],{'Surface','Boundary'},'Location','SouthOutside');
 
 subplot(1,3,2); hold on;
 title('Resampled with default smooth boundary','FontSize',fontSize);
 hp1=gpatch(Fs,Vs,'w','k',1,1);
-hp2=gpatch(patchBoundary(Fs,Vs),Vs,'none','b',1,3); hp2.EdgeAlpha=0.9;
+hp2=gpatch(patchBoundary(Fs),Vs,'none','b',1,3); hp2.EdgeAlpha=0.9;
 axisGeom(gca,fontSize); camlight headlight;
 legend([hp1 hp2],{'Surface','Boundary'},'Location','SouthOutside');
 
 subplot(1,3,3); hold on;
 title('Resampled with linearly constrained boundary','FontSize',fontSize);
 hp1=gpatch(Fs2,Vs2,'w','k',1,1);
-hp2=gpatch(patchBoundary(Fs2,Vs2),Vs2,'none','b',1,3); hp2.EdgeAlpha=0.9;
+hp2=gpatch(patchBoundary(Fs2),Vs2,'none','b',1,3); hp2.EdgeAlpha=0.9;
 axisGeom(gca,fontSize); camlight headlight;
 legend([hp1 hp2],{'Surface','Boundary'},'Location','SouthOutside');
 

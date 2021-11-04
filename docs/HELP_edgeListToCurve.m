@@ -36,7 +36,7 @@ pointSpacing=0.5;
 
 %%
 % Get boundary edges
-Eb=patchBoundary(F,V);
+Eb=patchBoundary(F);
 
 %%
 % Use |edgeListToCurve| to get curve indices
@@ -95,7 +95,7 @@ pointSpacing=0.5;
 
 %%
 % Get boundary edges
-Eb=patchBoundary(F,V);
+Eb=patchBoundary(F);
 
 %%
 % Use grouping to "seperate" boundary sets

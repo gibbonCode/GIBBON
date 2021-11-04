@@ -17,7 +17,7 @@ Es=sort(E,2); % Edges sorted in  column dir so 1 3 2 is the same as 1 2 3
 c=unique(C); %Get color labels
 logicBoundaryEdges=false(size(E,1),1);
 for q=1:1:numel(c)
-    Eb_now=sort(patchBoundary(F(C==c(q),:),V),2); %Current sorted boundary edge set    
+    Eb_now=sort(patchBoundary(F(C==c(q),:)),2); %Current sorted boundary edge set    
     logicBoundaryEdges=logicBoundaryEdges | ismember(Es,Eb_now,'rows');
 end
 Eb=E(logicBoundaryEdges,:);

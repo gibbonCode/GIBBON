@@ -148,7 +148,7 @@ drawnow;
 %% CONVERSION FROM TET4 TO TET10, EXAMPLE FOR KEEPING TRACK OF BOUNDARY FACES
 
 [F4,~]=element2patch(TET4,[],'tet4');
-[indBoundary]=tesBoundary(F4,V4);
+[indBoundary]=tesBoundary(F4);
 Fb4=F4(indBoundary,:);
 
 [TET10,V10,tet10_cell,Fb10]=tet4_tet10(TET4,V4,{},Fb4);

@@ -62,7 +62,7 @@ drawnow;
 Fpt=[Fp{2}(:,[1 2 3]);Fp{2}(:,[3 4 1])];
 FT=[Fpt;Ft];
 [FT,VT]=patchCleanUnused(FT,VT);
-indB=tesBoundary(FT,VT);
+indB=tesBoundary(FT);
 
 [FT,VT]=patchCleanUnused(FT(indB,:),VT);
 

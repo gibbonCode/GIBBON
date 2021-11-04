@@ -78,7 +78,7 @@ V(:,3)=V(:,3)+0.6*sin(w); %Warp in Z-direction
 
 %%
 % Getting surface top boundary edges 
-Eb=patchBoundary(F,V); %All boundary edges (including bottom)
+Eb=patchBoundary(F); %All boundary edges (including bottom)
 VE=patchCentre(Eb,V); %Edge centre coordinates
 logicTop=VE(:,3)>0; %Logic for top edges (Z-coordinate above 0)
 Eb=Eb(logicTop,:); %Set of edges at the top

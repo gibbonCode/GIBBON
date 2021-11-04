@@ -68,7 +68,7 @@ logicCut=any(logicRight(F_ball),2);
 logicCut=triSurfLogicSharpFix(F_ball,logicCut,3);
 F_ball=F_ball(~logicCut,:);
 [F_ball,V_ball]=patchCleanUnused(F_ball,V_ball);
-Eb_ball=patchBoundary(F_ball,V_ball); 
+Eb_ball=patchBoundary(F_ball); 
 indB=unique(Eb_ball(:));
 [T,P,R] = cart2sph(V_ball(:,2),V_ball(:,3),V_ball(:,1));
 P(indB)=atan2(xc,ballRadius*sin(acos(xc./ballRadius)));
@@ -140,7 +140,7 @@ Z=Z+collarThickness/2.*sin(a).*repmat(vd(:,3),1,nc);
 
 [F_head,V_head,C_head]=joinElementSets({F_ball,F_stick,F_collar},{V_ball,V_stick,V_collar});
 [F_head,V_head,~,indFix]=mergeVertices(F_head,V_head);
-Eb_head=patchBoundary(F_head,V_head);
+Eb_head=patchBoundary(F_head);
 indBallHole=indFix(indBallHole);
 
 %%
@@ -160,7 +160,7 @@ Qy=euler2DCM([0 -0.5*pi 0]);
 V_tip=V_tip*Qy;
 V_tip=V_tip*Qz;
 V_tip=V_tip+pTip(ones(size(V_tip,1),1),:);
-Eb_tip=patchBoundary(F_tip,V_tip);
+Eb_tip=patchBoundary(F_tip);
 indBoundaryCurveTip=edgeListToCurve(Eb_tip);
 indBoundaryCurveTip=indBoundaryCurveTip(1:end-1);
 pointSpacingTip=mean(patchEdgeLengths(F_tip,V_tip));
@@ -179,7 +179,7 @@ cParExtrude.numSteps=numStepsExtrude;
 F_stem_straight=fliplr(F_stem_straight);
 [F_stem,V_stem,C_stem]=joinElementSets({F_stem_straight,F_tip},{V_stem_straight,V_tip});
 [F_stem,V_stem,~,indFix]=mergeVertices(F_stem,V_stem);
-Eb_stem=patchBoundary(F_stem,V_stem);
+Eb_stem=patchBoundary(F_stem);
 indBoundaryCurveTip=indFix(indBoundaryCurveTip+size(V_stem_straight,1));
 
 %%

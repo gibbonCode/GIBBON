@@ -47,7 +47,7 @@ if fourConnectConvert
     EF=C.edge.face;
 
     %Get logic for boundary membership
-    Eb=patchBoundary(F_tri,V_tri);
+    Eb=patchBoundary(F_tri);
     ind_V_all=(1:1:size(V_tri,1))';
     logicBoundary=ismember(ind_V_all,Eb);
     

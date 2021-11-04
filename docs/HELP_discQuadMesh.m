@@ -53,7 +53,7 @@ drawnow;
 
 %% Constrained smoothing of mesh
 
-Eb=patchBoundary(Fc,Vc);
+Eb=patchBoundary(Fc);
 
 cPar.n=100;
 cPar.Method='LAP';

@@ -177,7 +177,7 @@ n=vecnormalize([0 0 1]); %Plane normal vector
 P=mean(V,1); %Point on plane
 
 [Fc,Vc,Cc,logicSide]=triSurfSlice(F,V,C,P,n,snapTolerance);
-Eb=patchBoundary(Fc(logicSide,:),Vc);
+Eb=patchBoundary(Fc(logicSide,:));
 
 %%
 % Visualizing slicing operation and sharp triangles. Animate this figure to

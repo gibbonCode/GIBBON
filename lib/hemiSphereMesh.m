@@ -57,7 +57,7 @@ C=(1:1:size(F,1))'; %Color data initialized as face indices
 
 %% Close bottom if needed
 if closeOpt==1
-   [Eb]=patchBoundary(F,V);
+   [Eb]=patchBoundary(F);
    indCurve=edgeListToCurve(Eb); 
    indCurve=indCurve(1:end-1);
    [Fb,Vb]=regionTriMesh2D({V(indCurve,[1 2])},[],0,0); %2D meshing of disc

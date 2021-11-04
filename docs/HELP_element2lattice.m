@@ -30,7 +30,7 @@ boxEl=[1 1 1];
 E=meshStruct.E;
 V=meshStruct.V;
 F=meshStruct.F;
-[indBoundary]=tesBoundary(F,V);
+[indBoundary]=tesBoundary(F);
 
 %%
 % Create lattice structure
@@ -68,7 +68,7 @@ boxEl=[1 1 1];
 E=meshStruct.E;
 V=meshStruct.V;
 F=meshStruct.F;
-[indBoundary]=tesBoundary(F,V);
+[indBoundary]=tesBoundary(F);
 
 %%
 % Compute other "lattice side"
@@ -139,7 +139,7 @@ for q=1:4
     if q>1
         [E,V]=subHex(E,V,1); %Refine input mesh
         [F]=element2patch(E); %Patch data for plotting
-        [indBoundary]=tesBoundary(F,V);
+        [indBoundary]=tesBoundary(F);
         controlParameter.indBoundary=indBoundary; %indices of the boundary faces
     end
     
@@ -166,7 +166,7 @@ drawnow;
 E=[2 3 4 1]; %The element description
 [E,V]=subTet(E,V,1); %Refine the tetrahedron once
 [F]=element2patch(E); %Patch data for plotting
-[indBoundary]=tesBoundary(F,V); %Get boundary face indices
+[indBoundary]=tesBoundary(F); %Get boundary face indices
 
 %%
 % Create lattice structure
@@ -297,7 +297,7 @@ boxEl=[1 1 1];
 E=meshStruct.E;
 V=meshStruct.V;
 F=meshStruct.F;
-[indBoundary]=tesBoundary(F,V);
+[indBoundary]=tesBoundary(F);
 
 clear controlParameter
 
@@ -341,7 +341,7 @@ boxEl=[1 1 1];
 E=meshStruct.E;
 V=meshStruct.V;
 F=meshStruct.F;
-[indBoundary]=tesBoundary(F,V);
+[indBoundary]=tesBoundary(F);
 
 clear controlParameter
 
@@ -391,7 +391,7 @@ E=[1 2 4 3];
 % E=meshStruct.E;
 % V=meshStruct.V;
 % F=meshStruct.F;
-[indBoundary]=tesBoundary(F,V);
+[indBoundary]=tesBoundary(F);
 
 clear controlParameter
 
@@ -476,7 +476,7 @@ for latticeSide=1:2
         
         %Get boundary indices
         [F]=element2patch(E); %Patch data for plotting
-        [indBoundary]=tesBoundary(F,V); %Boundary indices
+        [indBoundary]=tesBoundary(F); %Boundary indices
         
         %Compute lattice
         cPar.latticeSide=latticeSide;
@@ -546,7 +546,7 @@ V=meshOutput.nodes;
 CE=meshOutput.elementMaterialID;
 E=meshOutput.elements;
 F=meshOutput.faces;
-[indBoundary]=tesBoundary(F,V); %Boundary indices
+[indBoundary]=tesBoundary(F); %Boundary indices
 
 %%
 % Create lattice structure

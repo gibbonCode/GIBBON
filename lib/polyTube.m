@@ -231,7 +231,7 @@ switch patchType
             %Fix normal directions for caps if needed
             E1=patchEdges(Fs(Cs==1,:),0);
             for q=2:1:3
-                Eb=patchBoundary(Fs(Cs==q,:),Vs);
+                Eb=patchBoundary(Fs(Cs==q,:));
                 %If cap boundary edges are a member of the tube mesh edges the cap
                 %faces are pointing the wrong way
                 if any(isrowmember(Eb,E1,0))

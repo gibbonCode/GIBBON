@@ -40,11 +40,11 @@ V2=V;
 [F2,V2]=patchCleanUnused(F2,V2);
 [F2,V2]=subtri(F2,V2,1);
 
-[Eb1,E1,indBoundary1]=patchBoundary(F1,V1);
+[Eb1,E1,indBoundary1]=patchBoundary(F1);
 [ind1]=edgeListToCurve(Eb1);
 ind1=ind1(1:end)';
 
-[Eb2,E2,indBoundary2]=patchBoundary(F2,V2);
+[Eb2,E2,indBoundary2]=patchBoundary(F2);
 [ind2]=edgeListToCurve(Eb2);
 ind2=ind2(1:end)';
 ind2=flipud(ind2);
@@ -76,7 +76,7 @@ drawnow;
 
 %Create input structure
 inputStruct.plotOn=1;
-inputStruct.distLocal=2*max(patchEdgeLengths(F,V));
+inputStruct.distLocal=1.5*max(patchEdgeLengths(F,V));
 inputStruct.startInd=startInd;
 inputStruct.ind1=ind1;
 inputStruct.ind2=ind2;
@@ -124,11 +124,11 @@ V2(:,1)=V2(:,1)+40;
 V2(:,2)=V2(:,2)-5;
 V2(:,3)=V2(:,3)-32;
 
-[Eb1,E1,indBoundary1]=patchBoundary(F1,V1);
+[Eb1,E1,indBoundary1]=patchBoundary(F1);
 [ind1]=edgeListToCurve(Eb1);
 ind1=ind1(1:end)';
 
-[Eb2,E2,indBoundary2]=patchBoundary(F2,V2);
+[Eb2,E2,indBoundary2]=patchBoundary(F2);
 [ind2]=edgeListToCurve(Eb2);
 ind2=ind2(1:end)';
 

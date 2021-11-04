@@ -67,7 +67,7 @@ if makeHollow==1
     ET=E_mantel; 
     VT=V_mantel; 
     [FT,~]=element2patch(ET,[],'hex8');
-    [indBoundary]=tesBoundary(FT,VT);
+    [indBoundary]=tesBoundary(FT);
     FTb=FT(indBoundary,:);
     logicTopFaces=all(ismember(FTb,F_mantel_outer),2);
     logicInnerFaces=all(ismember(FTb,F_mantel_inner),2);
@@ -83,7 +83,7 @@ elseif makeHollow==0
     [FT,VT,~,ind2]=mergeVertices(FT,VT);    
     ET=ind2(ET);
     F_mantel_outer=ind2(F_mantel_outer+size(V_core,1));
-    [indBoundary]=tesBoundary(FT,VT);
+    [indBoundary]=tesBoundary(FT);
     FTb=FT(indBoundary,:);
     logicTopFaces=all(ismember(FTb,F_mantel_outer),2);
     faceBoundaryMarker=ones(size(FTb,1),1);

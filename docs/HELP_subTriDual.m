@@ -226,7 +226,7 @@ cPar.RigidConstraints=indIni; %Constrained points
 [Vt]=tesSmooth(Ft,Vt,[],cPar);
 
 %Smoothen boundary nodes on original mesh nodes
-E=patchBoundary(Ft(C_type==1,:),Vt);
+E=patchBoundary(Ft(C_type==1,:));
 indEdge=unique(E(:));
 logicEdge=false(size(Vt,1),1);
 logicEdge(indEdge)=1;
@@ -415,7 +415,7 @@ for q=1:numel(distanceSplitSteps)
     [Vt]=tesSmooth(Ft,Vt,[],cPar);
     
     %Smoothen boundary nodes on original mesh nodes
-    E=patchBoundary(Ft(C_type==1,:),Vt);
+    E=patchBoundary(Ft(C_type==1,:));
     indEdge=unique(E(:));
     
     indNodesFaces=Ft(C_type~=1,:);

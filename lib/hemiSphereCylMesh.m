@@ -58,7 +58,7 @@ cylinderHeight=inputStruct.cylinderHeight; %Cylinder height
 cylinderStepSize=inputStruct.cylinderStepSize; %Edge length in Z direction for cylinder
 
 % Find hemi-sphere edge
-[Eb]=patchBoundary(Ft,Vs);
+[Eb]=patchBoundary(Ft);
 indCurve=edgeListToCurve(Eb);
 indCurve=indCurve(1:end-1);
 V_edge=Vs(indCurve,:);

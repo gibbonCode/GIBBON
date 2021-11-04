@@ -30,7 +30,7 @@ C=C(logicKeep,:);
 %%
 % Get boundary curve 
 
-Eb=patchBoundary(F,V);
+Eb=patchBoundary(F);
 indBoundaryCurve=edgeListToCurve(Eb);
 indBoundaryCurve=indBoundaryCurve(1:end-1)'; %Start=End for closed curve so remove double entry
 

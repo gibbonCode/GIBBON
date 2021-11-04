@@ -70,7 +70,7 @@ F=[F; F+size(V2,1)];
 % Sub-triangulate to test different densities
 % [F,V]=subtri(F,V,3);
 
-Eb=patchBoundary(F,V);
+Eb=patchBoundary(F);
 
 %%
 

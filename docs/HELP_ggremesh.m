@@ -172,7 +172,7 @@ optionStruct3.pre.max_hole_edges=20; %Max number of hole edges for pre-processin
 [Fn,Vn]=ggremesh(F,V,optionStruct3);
 
 % Visualiza patch data
-Eb=patchBoundary(F,V);
+Eb=patchBoundary(F);
 cFigure; 
 subplot(1,2,1); hold on;
 title('Input mesh with holes');
@@ -213,7 +213,7 @@ optionStruct3.pre.max_hole_edges=0; %Max number of hole edges for pre-processing
 [Fn,Vn]=ggremesh(F,V,optionStruct3);
 
 % Visualiza patch data
-Eb=patchBoundary(F,V);
+Eb=patchBoundary(F);
 cFigure; 
 subplot(1,2,1); hold on;
 title('Input mesh with holes');

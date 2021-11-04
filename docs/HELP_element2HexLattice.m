@@ -336,10 +336,10 @@ controlParameter.latticeSide=1; %Empty outputs both, 1=side 1 the edge lattice, 
 [Fs1,CsF1]=element2patch(Es1,Cs1); %Patch data for plotting
 [Fs2,CsF2]=element2patch(Es2,Cs2); %Patch data for plotting
 
-[indBounary]=tesBoundary(Fs2,Vs2);
+[indBounary]=tesBoundary(Fs2);
 Fs2_b=Fs2(indBounary,:);
 
-[indBounary]=tesBoundary(Fs1,Vs1);
+[indBounary]=tesBoundary(Fs1);
 Fs1_b=Fs1(indBounary,:);
 
 %%

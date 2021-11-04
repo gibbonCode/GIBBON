@@ -182,7 +182,7 @@ end
 F1=F; V1=V; %Store originals
 
 %Get boundary edges
-Eb=patchBoundary(F,V);
+Eb=patchBoundary(F);
 
 % %Smoothen surface
 % controlPar.Method='HC';

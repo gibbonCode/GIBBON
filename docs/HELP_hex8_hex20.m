@@ -148,7 +148,7 @@ drawnow;
 %% CONVERSION FROM HEX8 TO HEX20, EXAMPLE FOR KEEPING TRACK OF BOUNDARY FACES
 
 [F8,~]=element2patch(HEX8,[],'hex8');
-[indBoundary]=tesBoundary(F8,V8);
+[indBoundary]=tesBoundary(F8);
 Fb4=F8(indBoundary,:);
 
 [HEX20,V20,HEX20_cell,Fb10]=hex8_hex20(HEX8,V8,{},Fb4);

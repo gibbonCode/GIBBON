@@ -4,7 +4,7 @@ clear; close all; clc;
 
 r=1;
 [F,V]=hemiSphereMesh(2,r,0);
-Eb=patchBoundary(F,V);
+Eb=patchBoundary(F);
 VF=patchCentre(F,V);
 logicKeep=VF(:,3)<r/2;
 F=F(logicKeep,:);

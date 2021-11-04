@@ -74,7 +74,7 @@ drawnow;
 
 %% 
 % Split large triangles according to area threshold
-[A]=patch_area(F,V); % Calculate triangle surface areas
+[A]=patchArea(F,V); % Calculate triangle surface areas
 max_A=mean(A(:))+2*std(A(:)); %Set a max treshold
 
 %Loop until all are within treshold
@@ -87,7 +87,7 @@ while 1
     Ln(L)=1; 
     if nnz(L)>0
         [Fn,Vn]=subTriCentre(Fn,Vn,L);
-        [An]=patch_area(Fn,Vn);
+        [An]=patchArea(Fn,Vn);
     else
         break
     end
@@ -128,7 +128,7 @@ drawnow;
 
 %%
 % Calculate new surface areas
-[An]=patch_area(Fn,Vn);
+[An]=patchArea(Fn,Vn);
 
 %%
 % Plotting model

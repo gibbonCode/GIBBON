@@ -69,7 +69,7 @@ end
 [Fs,Vs]=discQuadMesh(numElementsCore,cylRadius,0.6);
 
 %Smoothen
-Eb=patchBoundary(Fs,Vs);
+Eb=patchBoundary(Fs);
 controlParSmooth.n=25;
 controlParSmooth.Method='LAP';
 controlParSmooth.RigidConstraints=unique(Eb(:));

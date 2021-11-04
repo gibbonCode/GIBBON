@@ -92,7 +92,7 @@ C=C(G==indKeep,:); %Trim color data
 
 %%
 % Get boundary edges 
-Eb=patchBoundary(F,V);
+Eb=patchBoundary(F);
 
 %%
 % Visualize surface

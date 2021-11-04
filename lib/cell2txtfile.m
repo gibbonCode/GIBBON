@@ -52,7 +52,7 @@ end
 if checkChar==1
     indNotChar=find(~cellfun(@(x) ischar(x),T,'UniformOutput',1));
     if ~isempty(indNotChar)
-        warning('Non character entries detected');
+        %warning('Non character entries detected');
         for q=indNotChar            
             T{q}=vec2strIntDouble(T{q},'%6.7e');
         end

@@ -27,7 +27,7 @@ E=modelTemp.Mesh.Elements';
 F=element2patch(E,[],'tet4');
 
 % Get boundary faces
-indBoundary=tesBoundary(F,V);
+indBoundary=tesBoundary(F);
 Fb=F(indBoundary,:);
 Vb=V;
 
