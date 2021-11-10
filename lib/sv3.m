@@ -85,7 +85,7 @@ alphaLevel=optionStruct.alphaLevel;
 originLoc=optionStruct.origin;
 updateFrequency=optionStruct.updateFrequency; 
 
-if all(isnan(cLim)) || all(isinf(cLim))
+if all(isnan(cLim)) | all(isinf(cLim))
     cLim=[-1 1];
 end
 

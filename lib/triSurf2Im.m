@@ -126,20 +126,16 @@ V_IJK=round(V_IJK);
 %Determine image size if not provided
 if isempty(siz)    
     siz=max(V_IJK,[],1)+2;
-else
-    %Remove invalid indices
-    V_IJK(V_IJK(:,1)<=1,1)=1;
-    V_IJK(V_IJK(:,2)<=1,2)=1;
-    V_IJK(V_IJK(:,3)<=1,3)=1;
-    
-    V_IJK(V_IJK(:,1)>=siz(1),1)=siz(1);
-    V_IJK(V_IJK(:,2)>=siz(2),2)=siz(2);
-    V_IJK(V_IJK(:,3)>=siz(3),3)=siz(3);
-    
-%     V_IJK=V_IJK(V_IJK(:,1)<=siz(1) & V_IJK(:,1)>=1,:);
-%     V_IJK=V_IJK(V_IJK(:,2)<=siz(2) & V_IJK(:,2)>=1,:);
-%     V_IJK=V_IJK(V_IJK(:,3)<=siz(3) & V_IJK(:,3)>=1,:);       
 end
+
+%Remove invalid indices
+V_IJK(V_IJK(:,1)<=1,1)=1;
+V_IJK(V_IJK(:,2)<=1,2)=1;
+V_IJK(V_IJK(:,3)<=1,3)=1;
+
+V_IJK(V_IJK(:,1)>=siz(1),1)=siz(1);
+V_IJK(V_IJK(:,2)>=siz(2),2)=siz(2);
+V_IJK(V_IJK(:,3)>=siz(3),3)=siz(3);
 
 %Get linear indices of points
 indVertices=sub2ind(siz,V_IJK(:,1),V_IJK(:,2),V_IJK(:,3));
