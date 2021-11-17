@@ -13,20 +13,29 @@ markerSize1=25;
 
 %% Control parameters
 
-r1=3;
-r=(0.5*r1^3)^(1/3);
-r2=r*0.9;
-r3=r*0.75;
+r1_inner=3;
+r=(0.5*r1_inner^3)^(1/3);
+r2_inner=r*0.9;
+r3_inner=r*0.75;
 pointSpacingMain=0.5;
 V1_origin=[0 0 0]; %Origin of first circle
 bifurcationAngleDeg2=35;
 bifurcationAngleDeg3=-45;
-bifurcationDistance2=3;
-bifurcationDistance3=3;
+bifurcationDistance2=4;
+bifurcationDistance3=4;
 
-nSmooth=25; %Number of Laplacian/HC smoothing steps
+height1=5;
+height2=3;
+height3=2;
+
+nSmoothBifurcation=50; %Number of Laplacian/HC smoothing steps
 splitMethod='ortho'; %'nearMid'; %Saddle placement 
-w=1; %1=saddle arcs upward to max height, 0 means saddle is in plane of first circle
+saddleArcHeightFactor=1; %1=saddle arcs upward to max height, 0 means saddle is in plane of first circle
+
+nSmoothFinal=50; %Number of Laplacian/HC smoothing steps
+
+wallThickness=0.5;
+numElementsWall=2;
 
 %% Derived metrics
 
@@ -41,52 +50,56 @@ V2_origin=n2.*bifurcationDistance2; %Origin of second circle
 V3_origin=n3.*bifurcationDistance3; %Origin of third circle
 
 %Number of points to use allong circle 1
-np=ceil((2*pi*r1)./pointSpacingMain);
+np=ceil((2*pi*r1_inner)./pointSpacingMain);
 np=np+~iseven(np); %Forcing this even creates symmetric saddle position
 
+%Number of steps from first circle to set of branch circles
+numStepsBranch=ceil((bifurcationDistance2+bifurcationDistance3)/2./pointSpacingMain); 
+
 %% Create curves
+% Building outer radius here as thickening direciton is inwards. 
 
 % Circle 1
-t=linspace(0,2*pi,np+1)'; t=t(1:end-1);
-x=r1.*sin(t(:));
-y=r1.*cos(t(:));
+t=linspace(2*pi,0,np+1)'; t=t(1:end-1);
+x=(r1_inner+wallThickness).*sin(t(:));
+y=(r1_inner+wallThickness).*cos(t(:));
 z=zeros(size(t));
 V1=[x y z];
 V1=V1+V1_origin;
 
 % Circle 2
-x=r2.*sin(t);
-y=r2.*cos(t);
+x=(r2_inner+wallThickness).*sin(t);
+y=(r2_inner+wallThickness).*cos(t);
 z=zeros(size(x));
 V2=[x y z]*R2;
 V2=V2+V2_origin+V1_origin;
 
 % Circle 3
-x=r3.*sin(t);
-y=r3.*cos(t);
+x=(r3_inner+wallThickness).*sin(t);
+y=(r3_inner+wallThickness).*cos(t);
 z=zeros(size(t));
 V3=[x y z]*R3;
 V3=V3+V3_origin+V1_origin;
 
 %% Meshing bifurcation
 
-numStepsBranch=ceil((bifurcationDistance2+bifurcationDistance3)/2./pointSpacingMain); 
 V_cell={V1,V2,V3};
 patchType='quad';
 smoothPar.Method='HC';
-smoothPar.n=nSmooth;
+smoothPar.n=nSmoothBifurcation;
 
-[F,V,curveIndices,faceMarker]=splitCurveSetMesh(V_cell,numStepsBranch,patchType,smoothPar,splitMethod,w);
+[Fb,Vb,curveIndices,Cb]=splitCurveSetMesh(V_cell,numStepsBranch,patchType,smoothPar,splitMethod,saddleArcHeightFactor);
 
-%% Visualization
+%% 
+% Visualization
 
 cFigure; 
 subplot(1,2,1); hold on;
 title('Input contours and output mesh','FontSize',fontSize);
-gpatch(F,V,faceMarker);
-plotV(V(curveIndices{1},:),'r.-','MarkerSize',markerSize1,'LineWidth',lineWidth);
-plotV(V(curveIndices{2},:),'b.-','MarkerSize',markerSize1,'LineWidth',lineWidth);
-plotV(V(curveIndices{3},:),'y.-','MarkerSize',markerSize1,'LineWidth',lineWidth);
+gpatch(Fb,Vb,Cb);
+plotV(Vb(curveIndices{1},:),'r.-','MarkerSize',markerSize1,'LineWidth',lineWidth);
+plotV(Vb(curveIndices{2},:),'b.-','MarkerSize',markerSize1,'LineWidth',lineWidth);
+plotV(Vb(curveIndices{3},:),'y.-','MarkerSize',markerSize1,'LineWidth',lineWidth);
 quiverVec(V1_origin,n2,bifurcationDistance2,'b')
 quiverVec(V1_origin,n3,bifurcationDistance3,'y')
 axisGeom(gca,fontSize);
@@ -95,25 +108,91 @@ camlight headlight;
 
 subplot(1,2,2); hold on;
 title('Output mesh','FontSize',fontSize);
-gpatch(F,V,'w','k');
+gpatch(Fb,Vb,'w','k');
 axisGeom(gca,fontSize);
 camlight headlight; 
 
 drawnow;
 
-% %% Smooth Catmull-Clark subdevision 
-% 
-% fixBoundaryOpt=1;
-% nIter=2;
-% 
-% [Fs,Vs]=subQuadCatmullClark(F,V,nIter,fixBoundaryOpt);
-% 
-% cFigure; hold on;
-% title('Input contours and connected mesh','FontSize',fontSize);
-% gpatch(Fs,Vs,'w','k');
-% axisGeom(gca,fontSize);
-% camlight headlight; 
-% drawnow;
+%% Extrude ends
+
+cPar.numSteps=ceil(height1./pointSpacingMain);
+cPar.depth=height1; 
+cPar.patchType='quad'; 
+cPar.dir=1;
+cPar.n=[0 0 -1];
+cPar.closeLoopOpt=1; 
+[Fm,Vm]=polyExtrude(Vb(curveIndices{1},:),cPar);
+Fm=fliplr(Fm);
+
+pointSpacing2=mean(diff(pathLength(Vb(curveIndices{2},:))));
+cPar.numSteps=ceil(height2./pointSpacing2);
+cPar.depth=height2; 
+cPar.patchType='quad'; 
+cPar.dir=1;
+cPar.n=n2;
+cPar.closeLoopOpt=1; 
+[Fb1,Vb1]=polyExtrude(Vb(curveIndices{2},:),cPar);
+Fb1=fliplr(Fb1);
+
+pointSpacing3=mean(diff(pathLength(Vb(curveIndices{3},:))));
+cPar.numSteps=ceil(height3./pointSpacing3);
+cPar.depth=height3; 
+cPar.patchType='quad'; 
+cPar.dir=1;
+cPar.n=n3;
+cPar.closeLoopOpt=1; 
+[Fb2,Vb2]=polyExtrude(Vb(curveIndices{3},:),cPar);
+Fb2=fliplr(Fb2);
+
+%% Join and merg
+
+[F,V,C]=joinElementSets({Fm,Fb,Fb1,Fb2},{Vm,Vb,Vb1,Vb2},{ones(size(Fm,1),1),Cb,2*ones(size(Fb1,1),1),3*ones(size(Fb2,1),1)});
+[F,V]=mergeVertices(F,V);
+
+%% Smoothen 
+
+smoothPar2.Method='HC';
+smoothPar2.n=nSmoothFinal;
+smoothPar2.RigidConstraints=unique(patchBoundary(F));
+V=patchSmooth(F,V,[],smoothPar2);
+
+%% 
+% Visualization
+
+cFigure; hold on; 
+gpatch(F,V,C,'k');
+patchNormPlot(F,V);
+
+% gpatch(Fb,Vb,'w','k');
+% patchNormPlot(Fb,Vb);
+% gpatch(Fm,Vm,'w','k');
+% patchNormPlot(Fm,Vm);
+% gpatch(Fb1,Vb1,'w','k');
+% patchNormPlot(Fb1,Vb1);
+% gpatch(Fb2,Vb2,'w','k');
+% patchNormPlot(Fb2,Vb2);
+axisGeom(gca,fontSize);
+camlight headlight; 
+
+drawnow;
+
+%%
+
+[E,V]=patchThick(F,V,-1,wallThickness,numElementsWall);
+
+FE=element2patch(E);
+
+%% 
+% Visualization
+
+cFigure; hold on; 
+gpatch(FE,V,'w','k');
+axisGeom(gca,fontSize);
+camlight headlight; 
+
+drawnow;
+
 
 %% 
 %
