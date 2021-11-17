@@ -27,6 +27,10 @@ switch nargin
         w=varargin{6};
 end
 
+if numSteps<2
+    warning('numSteps should be at least 2, using 2 instead');
+    numSteps=2;    
+end
 %%
 
 V1=V_cell{1};
@@ -129,7 +133,6 @@ else
     switchDone=0;
 end
 
-
 %Derive "grid"
 [V2s]=evenlySampleCurve(V2,size(V1s1,1),'pchip',1); %Resampling curve
 [V2f]=minPolyTwist(V1s1,V2s); %Fix curve order
@@ -191,8 +194,13 @@ end
 
 switch patchType
     case 'tri'
-        F=Ft;
-        faceMarker=faceMarker_t;
+        [F2,V2,C2]=quad2tri(F(faceMarker==2,:),V,'a',faceMarker(faceMarker==2,:));
+        [F3,V3,C3]=quad2tri(F(faceMarker==3,:),V,'a',faceMarker(faceMarker==3,:));
+        F=[F2;F3];
+        V=[V2;V3];
+        faceMarker=[C2;C3];
+        [F,V]=mergeVertices(F,V);
+        [F,V]=patchCleanUnused(F,V);
     case 'quad'
         
 end

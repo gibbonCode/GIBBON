@@ -1,0 +1,316 @@
+
+<!DOCTYPE html
+  PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html><head>
+      <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+   <!--
+This HTML was auto-generated from MATLAB code.
+To make changes, update the MATLAB code and republish this document.
+      --><title>DEMO_mesh_bifurcation_angle_control</title><meta name="generator" content="MATLAB 9.10"><link rel="schema.DC" href="http://purl.org/dc/elements/1.1/"><meta name="DC.date" content="2021-11-17"><meta name="DC.source" content="DEMO_mesh_bifurcation_angle_control.m"><style type="text/css">
+html,body,div,span,applet,object,iframe,h1,h2,h3,h4,h5,h6,p,blockquote,pre,a,abbr,acronym,address,big,cite,code,del,dfn,em,font,img,ins,kbd,q,s,samp,small,strike,strong,tt,var,b,u,i,center,dl,dt,dd,ol,ul,li,fieldset,form,label,legend,table,caption,tbody,tfoot,thead,tr,th,td{margin:0;padding:0;border:0;outline:0;font-size:100%;vertical-align:baseline;background:transparent}body{line-height:1}ol,ul{list-style:none}blockquote,q{quotes:none}blockquote:before,blockquote:after,q:before,q:after{content:'';content:none}:focus{outine:0}ins{text-decoration:none}del{text-decoration:line-through}table{border-collapse:collapse;border-spacing:0}
+
+html { min-height:100%; margin-bottom:1px; }
+html body { height:100%; margin:0px; font-family:Arial, Helvetica, sans-serif; font-size:10px; color:#000; line-height:140%; background:#fff none; overflow-y:scroll; }
+html body td { vertical-align:top; text-align:left; }
+
+h1 { padding:0px; margin:0px 0px 25px; font-family:Arial, Helvetica, sans-serif; font-size:1.5em; color:#d55000; line-height:100%; font-weight:normal; }
+h2 { padding:0px; margin:0px 0px 8px; font-family:Arial, Helvetica, sans-serif; font-size:1.2em; color:#000; font-weight:bold; line-height:140%; border-bottom:1px solid #d6d4d4; display:block; }
+h3 { padding:0px; margin:0px 0px 5px; font-family:Arial, Helvetica, sans-serif; font-size:1.1em; color:#000; font-weight:bold; line-height:140%; }
+
+a { color:#005fce; text-decoration:none; }
+a:hover { color:#005fce; text-decoration:underline; }
+a:visited { color:#004aa0; text-decoration:none; }
+
+p { padding:0px; margin:0px 0px 20px; }
+img { padding:0px; margin:0px 0px 20px; border:none; }
+p img, pre img, tt img, li img, h1 img, h2 img { margin-bottom:0px; }
+
+ul { padding:0px; margin:0px 0px 20px 23px; list-style:square; }
+ul li { padding:0px; margin:0px 0px 7px 0px; }
+ul li ul { padding:5px 0px 0px; margin:0px 0px 7px 23px; }
+ul li ol li { list-style:decimal; }
+ol { padding:0px; margin:0px 0px 20px 0px; list-style:decimal; }
+ol li { padding:0px; margin:0px 0px 7px 23px; list-style-type:decimal; }
+ol li ol { padding:5px 0px 0px; margin:0px 0px 7px 0px; }
+ol li ol li { list-style-type:lower-alpha; }
+ol li ul { padding-top:7px; }
+ol li ul li { list-style:square; }
+
+.content { font-size:1.2em; line-height:140%; padding: 20px; }
+
+pre, code { font-size:12px; }
+tt { font-size: 1.2em; }
+pre { margin:0px 0px 20px; }
+pre.codeinput { padding:10px; border:1px solid #d3d3d3; background:#f7f7f7; }
+pre.codeoutput { padding:10px 11px; margin:0px 0px 20px; color:#4c4c4c; }
+pre.error { color:red; }
+
+@media print { pre.codeinput, pre.codeoutput { word-wrap:break-word; width:100%; } }
+
+span.keyword { color:#0000FF }
+span.comment { color:#228B22 }
+span.string { color:#A020F0 }
+span.untermstring { color:#B20000 }
+span.syscmd { color:#B28C00 }
+span.typesection { color:#A0522D }
+
+.footer { width:auto; padding:10px 0px; margin:25px 0px 0px; border-top:1px dotted #878787; font-size:0.8em; line-height:140%; font-style:italic; color:#878787; text-align:left; float:none; }
+.footer p { margin:0px; }
+.footer a { color:#878787; }
+.footer a:hover { color:#878787; text-decoration:underline; }
+.footer a:visited { color:#878787; }
+
+table th { padding:7px 5px; text-align:left; vertical-align:middle; border: 1px solid #d6d4d4; font-weight:bold; }
+table td { padding:7px 5px; text-align:left; vertical-align:top; border:1px solid #d6d4d4; }
+
+
+
+
+
+  </style></head><body><div class="content"><h1>DEMO_mesh_bifurcation_angle_control</h1><!--introduction--><p>This demo shows the use of the <tt>splitCurveSetMesh</tt> function to parameterise a bifurcation in terms of vessel directions and diameters.</p><!--/introduction--><h2>Contents</h2><div><ul><li><a href="#3">Control parameters</a></li><li><a href="#4">Derived metrics</a></li><li><a href="#5">Create curves</a></li><li><a href="#6">Meshing bifurcation</a></li><li><a href="#7">Visualization</a></li></ul></div><pre class="codeinput">clear; close <span class="string">all</span>; clc;
+</pre><p>PLOT SETTINGS</p><pre class="codeinput">fontSize=15;
+lineWidth=3;
+markerSize1=25;
+</pre><h2 id="3">Control parameters</h2><pre class="codeinput">r1=3;
+r=(0.5*r1^3)^(1/3);
+r2=r*0.9;
+r3=r*0.75;
+pointSpacingMain=0.5;
+V1_origin=[0 0 0]; <span class="comment">%Origin of first circle</span>
+bifurcationAngleDeg2=35;
+bifurcationAngleDeg3=-45;
+bifurcationDistance2=3;
+bifurcationDistance3=3;
+
+nSmooth=25; <span class="comment">%Number of Laplacian/HC smoothing steps</span>
+splitMethod=<span class="string">'ortho'</span>; <span class="comment">%'nearMid'; %Saddle placement</span>
+w=1; <span class="comment">%1=saddle arcs upward to max height, 0 means saddle is in plane of first circle</span>
+</pre><h2 id="4">Derived metrics</h2><pre class="codeinput">nz=[0 0 1]; <span class="comment">%Normal direction for z-axis</span>
+R2=euler2DCM([0 (bifurcationAngleDeg2/180)*pi 0]); <span class="comment">%Rotation matrix for first direction</span>
+R3=euler2DCM([0 (bifurcationAngleDeg3/180)*pi 0]); <span class="comment">%Rotation matrix for second direction</span>
+
+n2=nz*R2; <span class="comment">%Direction vector for first branch</span>
+n3=nz*R3; <span class="comment">%Direction vector for second branch</span>
+
+V2_origin=n2.*bifurcationDistance2; <span class="comment">%Origin of second circle</span>
+V3_origin=n3.*bifurcationDistance3; <span class="comment">%Origin of third circle</span>
+
+<span class="comment">%Number of points to use allong circle 1</span>
+np=ceil((2*pi*r1)./pointSpacingMain);
+np=np+~iseven(np); <span class="comment">%Forcing this even creates symmetric saddle position</span>
+</pre><h2 id="5">Create curves</h2><pre class="codeinput"><span class="comment">% Circle 1</span>
+t=linspace(0,2*pi,np+1)'; t=t(1:end-1);
+x=r1.*sin(t(:));
+y=r1.*cos(t(:));
+z=zeros(size(t));
+V1=[x y z];
+V1=V1+V1_origin;
+
+<span class="comment">% Circle 2</span>
+x=r2.*sin(t);
+y=r2.*cos(t);
+z=zeros(size(x));
+V2=[x y z]*R2;
+V2=V2+V2_origin+V1_origin;
+
+<span class="comment">% Circle 3</span>
+x=r3.*sin(t);
+y=r3.*cos(t);
+z=zeros(size(t));
+V3=[x y z]*R3;
+V3=V3+V3_origin+V1_origin;
+</pre><h2 id="6">Meshing bifurcation</h2><pre class="codeinput">numStepsBranch=ceil((bifurcationDistance2+bifurcationDistance3)/2./pointSpacingMain);
+V_cell={V1,V2,V3};
+patchType=<span class="string">'quad'</span>;
+smoothPar.Method=<span class="string">'HC'</span>;
+smoothPar.n=nSmooth;
+
+[F,V,curveIndices,faceMarker]=splitCurveSetMesh(V_cell,numStepsBranch,patchType,smoothPar,splitMethod,w);
+</pre><h2 id="7">Visualization</h2><pre class="codeinput">cFigure;
+subplot(1,2,1); hold <span class="string">on</span>;
+title(<span class="string">'Input contours and output mesh'</span>,<span class="string">'FontSize'</span>,fontSize);
+gpatch(F,V,faceMarker);
+plotV(V(curveIndices{1},:),<span class="string">'r.-'</span>,<span class="string">'MarkerSize'</span>,markerSize1,<span class="string">'LineWidth'</span>,lineWidth);
+plotV(V(curveIndices{2},:),<span class="string">'b.-'</span>,<span class="string">'MarkerSize'</span>,markerSize1,<span class="string">'LineWidth'</span>,lineWidth);
+plotV(V(curveIndices{3},:),<span class="string">'y.-'</span>,<span class="string">'MarkerSize'</span>,markerSize1,<span class="string">'LineWidth'</span>,lineWidth);
+quiverVec(V1_origin,n2,bifurcationDistance2,<span class="string">'b'</span>)
+quiverVec(V1_origin,n3,bifurcationDistance3,<span class="string">'y'</span>)
+axisGeom(gca,fontSize);
+colormap <span class="string">parula</span>; icolorbar;
+camlight <span class="string">headlight</span>;
+
+subplot(1,2,2); hold <span class="string">on</span>;
+title(<span class="string">'Output mesh'</span>,<span class="string">'FontSize'</span>,fontSize);
+gpatch(F,V,<span class="string">'w'</span>,<span class="string">'k'</span>);
+axisGeom(gca,fontSize);
+camlight <span class="string">headlight</span>;
+
+drawnow;
+
+<span class="comment">% %% Smooth Catmull-Clark subdevision</span>
+<span class="comment">%</span>
+<span class="comment">% fixBoundaryOpt=1;</span>
+<span class="comment">% nIter=2;</span>
+<span class="comment">%</span>
+<span class="comment">% [Fs,Vs]=subQuadCatmullClark(F,V,nIter,fixBoundaryOpt);</span>
+<span class="comment">%</span>
+<span class="comment">% cFigure; hold on;</span>
+<span class="comment">% title('Input contours and connected mesh','FontSize',fontSize);</span>
+<span class="comment">% gpatch(Fs,Vs,'w','k');</span>
+<span class="comment">% axisGeom(gca,fontSize);</span>
+<span class="comment">% camlight headlight;</span>
+<span class="comment">% drawnow;</span>
+</pre><img width="100%" height="auto" vspace="5" hspace="5" src="DEMO_mesh_bifurcation_angle_control_01.jpg" alt=""> <p><img vspace="5" hspace="5" src="gibbVerySmall.gif" alt=""> </p><p><i><b>GIBBON</b></i> <a href="www.gibboncode.org">www.gibboncode.org</a></p><p><i>Kevin Mattheus Moerman</i>, <a href="gibbon.toolbox@gmail.com">gibbon.toolbox@gmail.com</a></p><p><i><b>GIBBON footer text</b></i></p><p>License: <a href="https://github.com/gibbonCode/GIBBON/blob/master/LICENSE">https://github.com/gibbonCode/GIBBON/blob/master/LICENSE</a></p><p>GIBBON: The Geometry and Image-based Bioengineering add-On. A toolbox for image segmentation, image-based modeling, meshing, and finite element analysis.</p><p>Copyright (C) 2006-2021 Kevin Mattheus Moerman and the GIBBON contributors</p><p>This program is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.</p><p>This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for more details.</p><p>You should have received a copy of the GNU General Public License along with this program.  If not, see <a href="http://www.gnu.org/licenses/">http://www.gnu.org/licenses/</a>.</p><p class="footer"><br><a href="https://www.mathworks.com/products/matlab/">Published with MATLAB&reg; R2021a</a><br></p></div><!--
+##### SOURCE BEGIN #####
+%% DEMO_mesh_bifurcation_angle_control
+% This demo shows the use of the |splitCurveSetMesh| function to
+% parameterise a bifurcation in terms of vessel directions and diameters.
+
+%%
+clear; close all; clc;
+
+%%
+% PLOT SETTINGS
+fontSize=15;
+lineWidth=3;
+markerSize1=25;
+
+%% Control parameters
+
+r1=3;
+r=(0.5*r1^3)^(1/3);
+r2=r*0.9;
+r3=r*0.75;
+pointSpacingMain=0.5;
+V1_origin=[0 0 0]; %Origin of first circle
+bifurcationAngleDeg2=35;
+bifurcationAngleDeg3=-45;
+bifurcationDistance2=3;
+bifurcationDistance3=3;
+
+nSmooth=25; %Number of Laplacian/HC smoothing steps
+splitMethod='ortho'; %'nearMid'; %Saddle placement 
+w=1; %1=saddle arcs upward to max height, 0 means saddle is in plane of first circle
+
+%% Derived metrics
+
+nz=[0 0 1]; %Normal direction for z-axis
+R2=euler2DCM([0 (bifurcationAngleDeg2/180)*pi 0]); %Rotation matrix for first direction
+R3=euler2DCM([0 (bifurcationAngleDeg3/180)*pi 0]); %Rotation matrix for second direction
+
+n2=nz*R2; %Direction vector for first branch
+n3=nz*R3; %Direction vector for second branch
+
+V2_origin=n2.*bifurcationDistance2; %Origin of second circle
+V3_origin=n3.*bifurcationDistance3; %Origin of third circle
+
+%Number of points to use allong circle 1
+np=ceil((2*pi*r1)./pointSpacingMain);
+np=np+~iseven(np); %Forcing this even creates symmetric saddle position
+
+%% Create curves
+
+% Circle 1
+t=linspace(0,2*pi,np+1)'; t=t(1:end-1);
+x=r1.*sin(t(:));
+y=r1.*cos(t(:));
+z=zeros(size(t));
+V1=[x y z];
+V1=V1+V1_origin;
+
+% Circle 2
+x=r2.*sin(t);
+y=r2.*cos(t);
+z=zeros(size(x));
+V2=[x y z]*R2;
+V2=V2+V2_origin+V1_origin;
+
+% Circle 3
+x=r3.*sin(t);
+y=r3.*cos(t);
+z=zeros(size(t));
+V3=[x y z]*R3;
+V3=V3+V3_origin+V1_origin;
+
+%% Meshing bifurcation
+
+numStepsBranch=ceil((bifurcationDistance2+bifurcationDistance3)/2./pointSpacingMain); 
+V_cell={V1,V2,V3};
+patchType='quad';
+smoothPar.Method='HC';
+smoothPar.n=nSmooth;
+
+[F,V,curveIndices,faceMarker]=splitCurveSetMesh(V_cell,numStepsBranch,patchType,smoothPar,splitMethod,w);
+
+%% Visualization
+
+cFigure; 
+subplot(1,2,1); hold on;
+title('Input contours and output mesh','FontSize',fontSize);
+gpatch(F,V,faceMarker);
+plotV(V(curveIndices{1},:),'r.-','MarkerSize',markerSize1,'LineWidth',lineWidth);
+plotV(V(curveIndices{2},:),'b.-','MarkerSize',markerSize1,'LineWidth',lineWidth);
+plotV(V(curveIndices{3},:),'y.-','MarkerSize',markerSize1,'LineWidth',lineWidth);
+quiverVec(V1_origin,n2,bifurcationDistance2,'b')
+quiverVec(V1_origin,n3,bifurcationDistance3,'y')
+axisGeom(gca,fontSize);
+colormap parula; icolorbar;
+camlight headlight; 
+
+subplot(1,2,2); hold on;
+title('Output mesh','FontSize',fontSize);
+gpatch(F,V,'w','k');
+axisGeom(gca,fontSize);
+camlight headlight; 
+
+drawnow;
+
+% %% Smooth Catmull-Clark subdevision 
+% 
+% fixBoundaryOpt=1;
+% nIter=2;
+% 
+% [Fs,Vs]=subQuadCatmullClark(F,V,nIter,fixBoundaryOpt);
+% 
+% cFigure; hold on;
+% title('Input contours and connected mesh','FontSize',fontSize);
+% gpatch(Fs,Vs,'w','k');
+% axisGeom(gca,fontSize);
+% camlight headlight; 
+% drawnow;
+
+%% 
+%
+% <<gibbVerySmall.gif>>
+% 
+% _*GIBBON*_ 
+% <www.gibboncode.org>
+% 
+% _Kevin Mattheus Moerman_, <gibbon.toolbox@gmail.com>
+ 
+%% 
+% _*GIBBON footer text*_ 
+% 
+% License: <https://github.com/gibbonCode/GIBBON/blob/master/LICENSE>
+% 
+% GIBBON: The Geometry and Image-based Bioengineering add-On. A toolbox for
+% image segmentation, image-based modeling, meshing, and finite element
+% analysis.
+% 
+% Copyright (C) 2006-2021 Kevin Mattheus Moerman and the GIBBON contributors
+% 
+% This program is free software: you can redistribute it and/or modify
+% it under the terms of the GNU General Public License as published by
+% the Free Software Foundation, either version 3 of the License, or
+% (at your option) any later version.
+% 
+% This program is distributed in the hope that it will be useful,
+% but WITHOUT ANY WARRANTY; without even the implied warranty of
+% MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+% GNU General Public License for more details.
+% 
+% You should have received a copy of the GNU General Public License
+% along with this program.  If not, see <http://www.gnu.org/licenses/>.
+
+##### SOURCE END #####
+--></body></html>
