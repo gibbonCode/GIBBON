@@ -1,0 +1,482 @@
+
+<!DOCTYPE html
+  PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html><head>
+      <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+   <!--
+This HTML was auto-generated from MATLAB code.
+To make changes, update the MATLAB code and republish this document.
+      --><title>DEMO_mesh_bifurcation_cut_loft_branch</title><meta name="generator" content="MATLAB 9.10"><link rel="schema.DC" href="http://purl.org/dc/elements/1.1/"><meta name="DC.date" content="2021-11-18"><meta name="DC.source" content="DEMO_mesh_bifurcation_cut_loft_branch.m"><style type="text/css">
+html,body,div,span,applet,object,iframe,h1,h2,h3,h4,h5,h6,p,blockquote,pre,a,abbr,acronym,address,big,cite,code,del,dfn,em,font,img,ins,kbd,q,s,samp,small,strike,strong,tt,var,b,u,i,center,dl,dt,dd,ol,ul,li,fieldset,form,label,legend,table,caption,tbody,tfoot,thead,tr,th,td{margin:0;padding:0;border:0;outline:0;font-size:100%;vertical-align:baseline;background:transparent}body{line-height:1}ol,ul{list-style:none}blockquote,q{quotes:none}blockquote:before,blockquote:after,q:before,q:after{content:'';content:none}:focus{outine:0}ins{text-decoration:none}del{text-decoration:line-through}table{border-collapse:collapse;border-spacing:0}
+
+html { min-height:100%; margin-bottom:1px; }
+html body { height:100%; margin:0px; font-family:Arial, Helvetica, sans-serif; font-size:10px; color:#000; line-height:140%; background:#fff none; overflow-y:scroll; }
+html body td { vertical-align:top; text-align:left; }
+
+h1 { padding:0px; margin:0px 0px 25px; font-family:Arial, Helvetica, sans-serif; font-size:1.5em; color:#d55000; line-height:100%; font-weight:normal; }
+h2 { padding:0px; margin:0px 0px 8px; font-family:Arial, Helvetica, sans-serif; font-size:1.2em; color:#000; font-weight:bold; line-height:140%; border-bottom:1px solid #d6d4d4; display:block; }
+h3 { padding:0px; margin:0px 0px 5px; font-family:Arial, Helvetica, sans-serif; font-size:1.1em; color:#000; font-weight:bold; line-height:140%; }
+
+a { color:#005fce; text-decoration:none; }
+a:hover { color:#005fce; text-decoration:underline; }
+a:visited { color:#004aa0; text-decoration:none; }
+
+p { padding:0px; margin:0px 0px 20px; }
+img { padding:0px; margin:0px 0px 20px; border:none; }
+p img, pre img, tt img, li img, h1 img, h2 img { margin-bottom:0px; }
+
+ul { padding:0px; margin:0px 0px 20px 23px; list-style:square; }
+ul li { padding:0px; margin:0px 0px 7px 0px; }
+ul li ul { padding:5px 0px 0px; margin:0px 0px 7px 23px; }
+ul li ol li { list-style:decimal; }
+ol { padding:0px; margin:0px 0px 20px 0px; list-style:decimal; }
+ol li { padding:0px; margin:0px 0px 7px 23px; list-style-type:decimal; }
+ol li ol { padding:5px 0px 0px; margin:0px 0px 7px 0px; }
+ol li ol li { list-style-type:lower-alpha; }
+ol li ul { padding-top:7px; }
+ol li ul li { list-style:square; }
+
+.content { font-size:1.2em; line-height:140%; padding: 20px; }
+
+pre, code { font-size:12px; }
+tt { font-size: 1.2em; }
+pre { margin:0px 0px 20px; }
+pre.codeinput { padding:10px; border:1px solid #d3d3d3; background:#f7f7f7; }
+pre.codeoutput { padding:10px 11px; margin:0px 0px 20px; color:#4c4c4c; }
+pre.error { color:red; }
+
+@media print { pre.codeinput, pre.codeoutput { word-wrap:break-word; width:100%; } }
+
+span.keyword { color:#0000FF }
+span.comment { color:#228B22 }
+span.string { color:#A020F0 }
+span.untermstring { color:#B20000 }
+span.syscmd { color:#B28C00 }
+span.typesection { color:#A0522D }
+
+.footer { width:auto; padding:10px 0px; margin:25px 0px 0px; border-top:1px dotted #878787; font-size:0.8em; line-height:140%; font-style:italic; color:#878787; text-align:left; float:none; }
+.footer p { margin:0px; }
+.footer a { color:#878787; }
+.footer a:hover { color:#878787; text-decoration:underline; }
+.footer a:visited { color:#878787; }
+
+table th { padding:7px 5px; text-align:left; vertical-align:middle; border: 1px solid #d6d4d4; font-weight:bold; }
+table td { padding:7px 5px; text-align:left; vertical-align:top; border:1px solid #d6d4d4; }
+
+
+
+
+
+  </style></head><body><div class="content"><h1>DEMO_mesh_bifurcation_cut_loft_branch</h1><!--introduction--><p>This demo shows how one can use logic operations to cut meshes and to extrude features from meshes. Here a bifurcated vessel is created by cutting a hole in a particular direction and by extruding the side-branch from this hole. The initial surface mesh is then thickened to produce a hexahedral mesh.</p><!--/introduction--><h2>Contents</h2><div><ul><li><a href="#3">Control parameters</a></li><li><a href="#4">Derived parameters</a></li><li><a href="#5">Create example geometry</a></li><li><a href="#7">Ray trace branch direction onto trunk to get branch centre point</a></li><li><a href="#9">Cut main trunk using side branch ellipse</a></li><li><a href="#11">Create branch base mesh</a></li><li><a href="#13">Loft and merge side branch</a></li><li><a href="#15">Thicken surface mesh to hexahedra</a></li></ul></div><pre class="codeinput">clear; close <span class="string">all</span>; clc;
+</pre><p>Plot Settings</p><pre class="codeinput">fontSize=15;
+faceAlpha=0.8;
+edgeColor=0.*ones(1,3);
+lineWidth1=2;
+markerSize1=50;
+markerSize2=25;
+</pre><h2 id="3">Control parameters</h2><pre class="codeinput">pointSpacing=0.5;
+trunkRadiusInner=3; <span class="comment">%Radius</span>
+trunkLength=15; <span class="comment">%Length</span>
+branchRadiusInner=2;
+branchLength=6;
+branchAngle=50;
+branchBaseOffset=pointSpacing;
+
+wallThickness=0.5;
+numElementsWall=2;
+
+numSmootIterations=50;
+smoothMethod=<span class="string">'HC'</span>;
+smoothIncludeSteps=2;
+</pre><h2 id="4">Derived parameters</h2><pre class="codeinput"><span class="comment">%Get outer radii</span>
+trunkRadiusOuter=trunkRadiusInner+wallThickness;
+branchRadiusOuter=branchRadiusInner+wallThickness;
+
+<span class="comment">%Have branch exit in middle</span>
+V_branch_origin=[0 0 -trunkRadiusOuter*tand(90-branchAngle)];
+</pre><h2 id="5">Create example geometry</h2><pre class="codeinput"><span class="comment">%Guide curves and branches</span>
+R=euler2DCM([0 (branchAngle/180)*pi 0]);
+R_90=euler2DCM([0 (90/180)*pi 0]);
+
+<span class="comment">%Main trunk</span>
+Vm=evenlySpaceCurve([0 0 -trunkLength/2; 0 0 trunkLength/2],pointSpacing);
+
+N_branch_dir=[0 0 1]*R;
+t=linspace(0,2*pi,ceil((2*pi*trunkRadiusOuter)./pointSpacing)+1)'; t=t(1:end-1);
+Vc1=trunkRadiusOuter.*[cos(t) sin(t) zeros(size(t))];
+
+Vc2_trunk=Vc1+Vm(end,:);
+Vc1_trunk=Vc1+Vm(1,:);
+</pre><pre class="codeinput">n1=vecnormalize(Vm(2,:)-Vm(1,:));
+n2=vecnormalize(Vm(end,:)-Vm(end-1,:));
+[Ft,Vt,Ct]=sweepLoft(Vc1_trunk,Vc2_trunk,n1,n2,Vm,[],0,0);
+</pre><h2 id="7">Ray trace branch direction onto trunk to get branch centre point</h2><pre class="codeinput">optionStruct.tolEps        = 1e-6;
+optionStruct.triSide       = -1;
+optionStruct.rayType       = <span class="string">'ray'</span>;
+optionStruct.exclusionType = <span class="string">'inclusive'</span>;
+optionStruct.paired        = 0;
+P=triSurfRayTrace(V_branch_origin,N_branch_dir,Ft,Vt,optionStruct);
+</pre><p>Visualization250</p><pre class="codeinput">cFigure; hold <span class="string">on</span>;
+title(<span class="string">'Main trunk'</span>);
+hp1=gpatch(Ft,Vt,<span class="string">'w'</span>,<span class="string">'k'</span>,faceAlpha);
+hp2=quiverVec(V_branch_origin,N_branch_dir,branchLength*2,<span class="string">'r'</span>);
+hp3=plotV(P,<span class="string">'b.'</span>,<span class="string">'markerSize'</span>,markerSize1);
+legend([hp1 hp2 hp3],{<span class="string">'Main trunk'</span>,<span class="string">'Branch direction vector'</span>,<span class="string">'Intersection point'</span>})
+axisGeom(gca,fontSize); camlight <span class="string">headlight</span>;
+gdrawnow;
+</pre><img width="100%" height="auto" vspace="5" hspace="5" src="DEMO_mesh_bifurcation_cut_loft_branch_01.jpg" alt=""> <h2 id="9">Cut main trunk using side branch ellipse</h2><pre class="codeinput">t=linspace(0,2*pi,2*ceil((2*pi*branchRadiusOuter)./pointSpacing)+1)'; t=t(1:end-1);
+b=branchRadiusOuter./cosd(90-branchAngle);
+V_cut_ellipse=[b*cos(t) branchRadiusOuter.*sin(t) zeros(size(t))];
+V_cut_ellipse=V_cut_ellipse*R_90+P;
+[~,indRemove]=minDist(V_cut_ellipse,Vt);
+indRemove=unique(indRemove);
+logiceFacesCut=any(ismember(Ft,indRemove),2);
+
+Ft_precut=Ft(~logiceFacesCut,:);
+
+clear <span class="string">optionStruct</span>
+optionStruct.outputType=<span class="string">'label'</span>;
+[G,~,groupSize]=tesgroup(Ft_precut,optionStruct);
+[~,indLargestGroup]=max(groupSize);
+Ft_cut=Ft_precut(G==indLargestGroup,:);
+
+Et_boundary_cut=patchBoundary(Ft_cut);
+Et_boundary=patchBoundary(Ft);
+Et_cut_boundary=Et_boundary_cut(~any(ismember(Et_boundary_cut,Et_boundary),2),:);
+indCutCurve=edgeListToCurve(Et_cut_boundary);
+
+V_branch_curve_trunk=Vt(indCutCurve(1:end-1),:);
+</pre><p>Visualization</p><pre class="codeinput">cFigure; hold <span class="string">on</span>;
+title(<span class="string">'Cut main trunk'</span>);
+hp1=gpatch(Ft_cut,Vt,<span class="string">'w'</span>,<span class="string">'k'</span>,faceAlpha);
+hp2=quiverVec(V_branch_origin,N_branch_dir,branchLength*2,<span class="string">'r'</span>);
+hp3=plotV(V_cut_ellipse,<span class="string">'g.-'</span>,<span class="string">'markerSize'</span>,markerSize2,<span class="string">'LineWidth'</span>,lineWidth1);
+hp4=plotV(V_branch_curve_trunk,<span class="string">'b.-'</span>,<span class="string">'markerSize'</span>,markerSize2,<span class="string">'LineWidth'</span>,lineWidth1);
+legend([hp1 hp2 hp3 hp4],{<span class="string">'Cut main trunk'</span>,<span class="string">'Branch direction vector'</span>,<span class="string">'Branch base ellipse'</span>,<span class="string">'Cut boundary'</span>})
+axisGeom(gca,fontSize); camlight <span class="string">headlight</span>;
+gdrawnow;
+</pre><img width="100%" height="auto" vspace="5" hspace="5" src="DEMO_mesh_bifurcation_cut_loft_branch_02.jpg" alt=""> <h2 id="11">Create branch base mesh</h2><pre class="codeinput">[~,indNearest]=minDist(V_branch_curve_trunk(1,:),V_cut_ellipse);
+dt=linspace(2*pi,0,size(V_branch_curve_trunk,1)+1)'; dt=dt(1:end-1);
+dt=dt+t(indNearest);
+V_cut_ellipse=[b*cos(dt) branchRadiusOuter.*sin(dt) zeros(size(dt))];
+V_branch_curve_ellipse1=V_cut_ellipse*R_90+P+N_branch_dir.*(branchBaseOffset/cosd(90-branchAngle));
+
+d1=sum(sqrt(sum((V_branch_curve_ellipse1-V_branch_curve_trunk).^2,2)));
+d2=sum(sqrt(sum((flipud(V_branch_curve_ellipse1)-V_branch_curve_trunk).^2,2)));
+<span class="keyword">if</span> d2&lt;d1
+    V_branch_curve_ellipse1=flipud(V_branch_curve_ellipse1);
+    dt=flipud(dt);
+<span class="keyword">end</span>
+
+Vb1=[V_branch_curve_trunk; V_branch_curve_ellipse1];
+ind1=[(1:1:size(V_branch_curve_trunk,1)-1)' (2:1:size(V_branch_curve_trunk,1))'; size(V_branch_curve_trunk,1) 1];
+Fb1=[fliplr(ind1) ind1+size(V_branch_curve_trunk,1)];
+</pre><p>Visualization</p><pre class="codeinput">cFigure; hold <span class="string">on</span>;
+title(<span class="string">'Cut main trunk'</span>);
+hp1=gpatch(Ft_cut,Vt,<span class="string">'w'</span>,<span class="string">'k'</span>,1);
+hp2=plotV(V_branch_curve_trunk,<span class="string">'r.-'</span>,<span class="string">'markerSize'</span>,markerSize2,<span class="string">'LineWidth'</span>,lineWidth1);
+hp3=plotV(V_branch_curve_ellipse1,<span class="string">'g.-'</span>,<span class="string">'markerSize'</span>,markerSize2,<span class="string">'LineWidth'</span>,lineWidth1);
+hp4=gpatch(Fb1,Vb1,<span class="string">'bw'</span>,<span class="string">'k'</span>,1);
+hp5=patchNormPlot(Fb1,Vb1);
+legend([hp1 hp2 hp3 hp4 hp5],{<span class="string">'Cut main trunk'</span>,<span class="string">'Cut boundary'</span>,<span class="string">'Branch base ellipse'</span>,<span class="string">'Branch base mesh'</span>,<span class="string">'Normal vectors of base'</span>})
+axisGeom(gca,fontSize); camlight <span class="string">headlight</span>;
+gdrawnow;
+</pre><img width="100%" height="auto" vspace="5" hspace="5" src="DEMO_mesh_bifurcation_cut_loft_branch_03.jpg" alt=""> <h2 id="13">Loft and merge side branch</h2><pre class="codeinput">endType=1;
+<span class="keyword">switch</span> endType
+    <span class="keyword">case</span> 1 <span class="comment">%Circle</span>
+        V_branch_curve_ellipse2=branchRadiusOuter.*[cos(dt) sin(dt) zeros(size(dt))];
+        V_branch_curve_ellipse2=V_branch_curve_ellipse2*R+P+N_branch_dir.*branchLength;
+    <span class="keyword">case</span> 2 <span class="comment">%Ellipse</span>
+        V_branch_curve_ellipse2=V_branch_curve_ellipse1+N_branch_dir.*(branchLength-pointSpacing);
+<span class="keyword">end</span>
+
+clear <span class="string">optionStruct</span>
+optionStruct.closeLoopOpt=1;
+optionStruct.patchType=<span class="string">'quad'</span>;
+[Fb2,Vb2]=polyLoftLinear(V_branch_curve_ellipse1,V_branch_curve_ellipse2,optionStruct);
+Fb2=fliplr(Fb2);
+
+[F,V,C]=joinElementSets({Ft_cut,Fb1,Fb2},{Vt,Vb1,Vb2});
+[F,V]=mergeVertices(F,V);
+[F,V]=patchCleanUnused(F,V);
+
+indSmoothRegion=F(C==2,:);
+<span class="keyword">for</span> q=1:1:smoothIncludeSteps
+    indSmooth=F(any(ismember(F,indSmoothRegion),2),:);
+    indSmoothRegion=indSmooth;
+<span class="keyword">end</span>
+indRigid=F(~ismember(F,indSmooth));
+
+clear <span class="string">optionStruct</span>
+optionStruct.Method=smoothMethod;
+optionStruct.n=numSmootIterations;
+optionStruct.RigidConstraints=indRigid;
+V=patchSmooth(F,V,[],optionStruct);
+</pre><pre class="codeinput">cFigure; hold <span class="string">on</span>;
+hp1=gpatch(F,V,C,<span class="string">'k'</span>,1,1);
+hp2=patchNormPlot(F,V);
+axisGeom(gca,fontSize); camlight <span class="string">headlight</span>;
+colormap(gjet); icolorbar;
+legend([hp1 hp2],{<span class="string">'Bifurcation mesh'</span>,<span class="string">'Normal directions'</span>})
+gdrawnow;
+</pre><img width="100%" height="auto" vspace="5" hspace="5" src="DEMO_mesh_bifurcation_cut_loft_branch_04.jpg" alt=""> <h2 id="15">Thicken surface mesh to hexahedra</h2><pre class="codeinput">[E,V]=patchThick(F,V,-1,wallThickness,numElementsWall);
+FE=element2patch(E);
+</pre><p>Visualization</p><pre class="codeinput">cFigure; hold <span class="string">on</span>;
+title(<span class="string">'Hexahedral mesh'</span>)
+gpatch(FE,V,<span class="string">'w'</span>,<span class="string">'k'</span>);
+axisGeom(gca,fontSize); camlight <span class="string">headlight</span>;
+gdrawnow;
+</pre><img width="100%" height="auto" vspace="5" hspace="5" src="DEMO_mesh_bifurcation_cut_loft_branch_05.jpg" alt=""> <p><img vspace="5" hspace="5" src="gibbVerySmall.gif" alt=""> </p><p><i><b>GIBBON</b></i> <a href="www.gibboncode.org">www.gibboncode.org</a></p><p><i>Kevin Mattheus Moerman</i>, <a href="gibbon.toolbox@gmail.com">gibbon.toolbox@gmail.com</a></p><p><i><b>GIBBON footer text</b></i></p><p>License: <a href="https://github.com/gibbonCode/GIBBON/blob/master/LICENSE">https://github.com/gibbonCode/GIBBON/blob/master/LICENSE</a></p><p>GIBBON: The Geometry and Image-based Bioengineering add-On. A toolbox for image segmentation, image-based modeling, meshing, and finite element analysis.</p><p>Copyright (C) 2006-2021 Kevin Mattheus Moerman and the GIBBON contributors</p><p>This program is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.</p><p>This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for more details.</p><p>You should have received a copy of the GNU General Public License along with this program.  If not, see <a href="http://www.gnu.org/licenses/">http://www.gnu.org/licenses/</a>.</p><p class="footer"><br><a href="https://www.mathworks.com/products/matlab/">Published with MATLAB&reg; R2021a</a><br></p></div><!--
+##### SOURCE BEGIN #####
+%% DEMO_mesh_bifurcation_cut_loft_branch
+% This demo shows how one can use logic operations to cut meshes and to
+% extrude features from meshes. Here a bifurcated vessel is created by
+% cutting a hole in a particular direction and by extruding the side-branch
+% from this hole. The initial surface mesh is then thickened to produce a
+% hexahedral mesh.
+
+%%
+
+clear; close all; clc;
+
+%% 
+% Plot Settings
+fontSize=15;
+faceAlpha=0.8;
+edgeColor=0.*ones(1,3);
+lineWidth1=2;
+markerSize1=50; 
+markerSize2=25; 
+
+%% Control parameters
+pointSpacing=0.5; 
+trunkRadiusInner=3; %Radius
+trunkLength=15; %Length
+branchRadiusInner=2;
+branchLength=6;
+branchAngle=50;
+branchBaseOffset=pointSpacing;
+
+wallThickness=0.5; 
+numElementsWall=2; 
+
+numSmootIterations=50;
+smoothMethod='HC'; 
+smoothIncludeSteps=2; 
+
+%% Derived parameters
+
+%Get outer radii 
+trunkRadiusOuter=trunkRadiusInner+wallThickness; 
+branchRadiusOuter=branchRadiusInner+wallThickness; 
+
+%Have branch exit in middle
+V_branch_origin=[0 0 -trunkRadiusOuter*tand(90-branchAngle)];
+
+%% Create example geometry
+
+%Guide curves and branches
+R=euler2DCM([0 (branchAngle/180)*pi 0]);
+R_90=euler2DCM([0 (90/180)*pi 0]);
+
+%Main trunk
+Vm=evenlySpaceCurve([0 0 -trunkLength/2; 0 0 trunkLength/2],pointSpacing);
+
+N_branch_dir=[0 0 1]*R;
+t=linspace(0,2*pi,ceil((2*pi*trunkRadiusOuter)./pointSpacing)+1)'; t=t(1:end-1);
+Vc1=trunkRadiusOuter.*[cos(t) sin(t) zeros(size(t))];
+
+Vc2_trunk=Vc1+Vm(end,:);
+Vc1_trunk=Vc1+Vm(1,:);
+
+%%
+
+n1=vecnormalize(Vm(2,:)-Vm(1,:));
+n2=vecnormalize(Vm(end,:)-Vm(end-1,:));
+[Ft,Vt,Ct]=sweepLoft(Vc1_trunk,Vc2_trunk,n1,n2,Vm,[],0,0);
+
+%% Ray trace branch direction onto trunk to get branch centre point
+
+optionStruct.tolEps        = 1e-6;
+optionStruct.triSide       = -1;
+optionStruct.rayType       = 'ray';
+optionStruct.exclusionType = 'inclusive';
+optionStruct.paired        = 0; 
+P=triSurfRayTrace(V_branch_origin,N_branch_dir,Ft,Vt,optionStruct);
+
+%%
+% Visualization250
+
+cFigure; hold on; 
+title('Main trunk');
+hp1=gpatch(Ft,Vt,'w','k',faceAlpha);
+hp2=quiverVec(V_branch_origin,N_branch_dir,branchLength*2,'r');
+hp3=plotV(P,'b.','markerSize',markerSize1);
+legend([hp1 hp2 hp3],{'Main trunk','Branch direction vector','Intersection point'})
+axisGeom(gca,fontSize); camlight headlight; 
+gdrawnow; 
+
+%% Cut main trunk using side branch ellipse
+
+t=linspace(0,2*pi,2*ceil((2*pi*branchRadiusOuter)./pointSpacing)+1)'; t=t(1:end-1);
+b=branchRadiusOuter./cosd(90-branchAngle);
+V_cut_ellipse=[b*cos(t) branchRadiusOuter.*sin(t) zeros(size(t))];
+V_cut_ellipse=V_cut_ellipse*R_90+P;
+[~,indRemove]=minDist(V_cut_ellipse,Vt);
+indRemove=unique(indRemove); 
+logiceFacesCut=any(ismember(Ft,indRemove),2);
+
+Ft_precut=Ft(~logiceFacesCut,:);
+
+clear optionStruct
+optionStruct.outputType='label';
+[G,~,groupSize]=tesgroup(Ft_precut,optionStruct);
+[~,indLargestGroup]=max(groupSize);
+Ft_cut=Ft_precut(G==indLargestGroup,:);
+
+Et_boundary_cut=patchBoundary(Ft_cut);
+Et_boundary=patchBoundary(Ft);
+Et_cut_boundary=Et_boundary_cut(~any(ismember(Et_boundary_cut,Et_boundary),2),:);
+indCutCurve=edgeListToCurve(Et_cut_boundary);
+
+V_branch_curve_trunk=Vt(indCutCurve(1:end-1),:);
+
+%%
+% Visualization
+
+cFigure; hold on; 
+title('Cut main trunk');
+hp1=gpatch(Ft_cut,Vt,'w','k',faceAlpha);
+hp2=quiverVec(V_branch_origin,N_branch_dir,branchLength*2,'r');
+hp3=plotV(V_cut_ellipse,'g.-','markerSize',markerSize2,'LineWidth',lineWidth1);
+hp4=plotV(V_branch_curve_trunk,'b.-','markerSize',markerSize2,'LineWidth',lineWidth1);
+legend([hp1 hp2 hp3 hp4],{'Cut main trunk','Branch direction vector','Branch base ellipse','Cut boundary'})
+axisGeom(gca,fontSize); camlight headlight; 
+gdrawnow; 
+
+%% Create branch base mesh 
+
+[~,indNearest]=minDist(V_branch_curve_trunk(1,:),V_cut_ellipse);
+dt=linspace(2*pi,0,size(V_branch_curve_trunk,1)+1)'; dt=dt(1:end-1);
+dt=dt+t(indNearest);
+V_cut_ellipse=[b*cos(dt) branchRadiusOuter.*sin(dt) zeros(size(dt))];
+V_branch_curve_ellipse1=V_cut_ellipse*R_90+P+N_branch_dir.*(branchBaseOffset/cosd(90-branchAngle));
+
+d1=sum(sqrt(sum((V_branch_curve_ellipse1-V_branch_curve_trunk).^2,2)));
+d2=sum(sqrt(sum((flipud(V_branch_curve_ellipse1)-V_branch_curve_trunk).^2,2)));
+if d2<d1
+    V_branch_curve_ellipse1=flipud(V_branch_curve_ellipse1);
+    dt=flipud(dt);
+end
+
+Vb1=[V_branch_curve_trunk; V_branch_curve_ellipse1];
+ind1=[(1:1:size(V_branch_curve_trunk,1)-1)' (2:1:size(V_branch_curve_trunk,1))'; size(V_branch_curve_trunk,1) 1];
+Fb1=[fliplr(ind1) ind1+size(V_branch_curve_trunk,1)];
+
+%%
+% Visualization
+
+cFigure; hold on; 
+title('Cut main trunk');
+hp1=gpatch(Ft_cut,Vt,'w','k',1);
+hp2=plotV(V_branch_curve_trunk,'r.-','markerSize',markerSize2,'LineWidth',lineWidth1);
+hp3=plotV(V_branch_curve_ellipse1,'g.-','markerSize',markerSize2,'LineWidth',lineWidth1);
+hp4=gpatch(Fb1,Vb1,'bw','k',1);
+hp5=patchNormPlot(Fb1,Vb1);
+legend([hp1 hp2 hp3 hp4 hp5],{'Cut main trunk','Cut boundary','Branch base ellipse','Branch base mesh','Normal vectors of base'})
+axisGeom(gca,fontSize); camlight headlight; 
+gdrawnow; 
+
+%% Loft and merge side branch
+
+endType=1;
+switch endType
+    case 1 %Circle
+        V_branch_curve_ellipse2=branchRadiusOuter.*[cos(dt) sin(dt) zeros(size(dt))];
+        V_branch_curve_ellipse2=V_branch_curve_ellipse2*R+P+N_branch_dir.*branchLength;
+    case 2 %Ellipse
+        V_branch_curve_ellipse2=V_branch_curve_ellipse1+N_branch_dir.*(branchLength-pointSpacing);
+end
+
+clear optionStruct
+optionStruct.closeLoopOpt=1; 
+optionStruct.patchType='quad';
+[Fb2,Vb2]=polyLoftLinear(V_branch_curve_ellipse1,V_branch_curve_ellipse2,optionStruct);
+Fb2=fliplr(Fb2); 
+
+[F,V,C]=joinElementSets({Ft_cut,Fb1,Fb2},{Vt,Vb1,Vb2});
+[F,V]=mergeVertices(F,V);
+[F,V]=patchCleanUnused(F,V); 
+
+indSmoothRegion=F(C==2,:);
+for q=1:1:smoothIncludeSteps
+    indSmooth=F(any(ismember(F,indSmoothRegion),2),:);
+    indSmoothRegion=indSmooth;
+end
+indRigid=F(~ismember(F,indSmooth));
+ 
+clear optionStruct
+optionStruct.Method=smoothMethod;
+optionStruct.n=numSmootIterations;
+optionStruct.RigidConstraints=indRigid;
+V=patchSmooth(F,V,[],optionStruct);
+
+%%
+
+cFigure; hold on;
+hp1=gpatch(F,V,C,'k',1,1);
+hp2=patchNormPlot(F,V);
+axisGeom(gca,fontSize); camlight headlight; 
+colormap(gjet); icolorbar; 
+legend([hp1 hp2],{'Bifurcation mesh','Normal directions'})
+gdrawnow;
+
+%% Thicken surface mesh to hexahedra
+
+[E,V]=patchThick(F,V,-1,wallThickness,numElementsWall);
+FE=element2patch(E);
+
+%% 
+% Visualization
+
+cFigure; hold on; 
+title('Hexahedral mesh')
+gpatch(FE,V,'w','k');
+axisGeom(gca,fontSize); camlight headlight; 
+gdrawnow; 
+
+%% 
+%
+% <<gibbVerySmall.gif>>
+% 
+% _*GIBBON*_ 
+% <www.gibboncode.org>
+% 
+% _Kevin Mattheus Moerman_, <gibbon.toolbox@gmail.com>
+ 
+%% 
+% _*GIBBON footer text*_ 
+% 
+% License: <https://github.com/gibbonCode/GIBBON/blob/master/LICENSE>
+% 
+% GIBBON: The Geometry and Image-based Bioengineering add-On. A toolbox for
+% image segmentation, image-based modeling, meshing, and finite element
+% analysis.
+% 
+% Copyright (C) 2006-2021 Kevin Mattheus Moerman and the GIBBON contributors
+% 
+% This program is free software: you can redistribute it and/or modify
+% it under the terms of the GNU General Public License as published by
+% the Free Software Foundation, either version 3 of the License, or
+% (at your option) any later version.
+% 
+% This program is distributed in the hope that it will be useful,
+% but WITHOUT ANY WARRANTY; without even the implied warranty of
+% MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+% GNU General Public License for more details.
+% 
+% You should have received a copy of the GNU General Public License
+% along with this program.  If not, see <http://www.gnu.org/licenses/>.
+
+##### SOURCE END #####
+--></body></html>

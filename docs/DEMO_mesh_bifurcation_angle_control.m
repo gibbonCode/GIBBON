@@ -112,7 +112,7 @@ gpatch(Fb,Vb,'w','k');
 axisGeom(gca,fontSize);
 camlight headlight; 
 
-drawnow;
+gdrawnow;
 
 %% Extrude ends
 
