@@ -6,7 +6,7 @@
    <!--
 This HTML was auto-generated from MATLAB code.
 To make changes, update the MATLAB code and republish this document.
-      --><title>DEMO_mesh_bifurcation_cut_loft_branch</title><meta name="generator" content="MATLAB 9.10"><link rel="schema.DC" href="http://purl.org/dc/elements/1.1/"><meta name="DC.date" content="2021-11-18"><meta name="DC.source" content="DEMO_mesh_bifurcation_cut_loft_branch.m"><style type="text/css">
+      --><title>DEMO_mesh_bifurcation_cut_loft_branch</title><meta name="generator" content="MATLAB 9.10"><link rel="schema.DC" href="http://purl.org/dc/elements/1.1/"><meta name="DC.date" content="2021-11-19"><meta name="DC.source" content="DEMO_mesh_bifurcation_cut_loft_branch.m"><style type="text/css">
 html,body,div,span,applet,object,iframe,h1,h2,h3,h4,h5,h6,p,blockquote,pre,a,abbr,acronym,address,big,cite,code,del,dfn,em,font,img,ins,kbd,q,s,samp,small,strike,strong,tt,var,b,u,i,center,dl,dt,dd,ol,ul,li,fieldset,form,label,legend,table,caption,tbody,tfoot,thead,tr,th,td{margin:0;padding:0;border:0;outline:0;font-size:100%;vertical-align:baseline;background:transparent}body{line-height:1}ol,ul{list-style:none}blockquote,q{quotes:none}blockquote:before,blockquote:after,q:before,q:after{content:'';content:none}:focus{outine:0}ins{text-decoration:none}del{text-decoration:line-through}table{border-collapse:collapse;border-spacing:0}
 
 html { min-height:100%; margin-bottom:1px; }
@@ -67,7 +67,7 @@ table td { padding:7px 5px; text-align:left; vertical-align:top; border:1px soli
 
 
 
-  </style></head><body><div class="content"><h1>DEMO_mesh_bifurcation_cut_loft_branch</h1><!--introduction--><p>This demo shows how one can use logic operations to cut meshes and to extrude features from meshes. Here a bifurcated vessel is created by cutting a hole in a particular direction and by extruding the side-branch from this hole. The initial surface mesh is then thickened to produce a hexahedral mesh.</p><!--/introduction--><h2>Contents</h2><div><ul><li><a href="#3">Control parameters</a></li><li><a href="#4">Derived parameters</a></li><li><a href="#5">Create example geometry</a></li><li><a href="#7">Ray trace branch direction onto trunk to get branch centre point</a></li><li><a href="#9">Cut main trunk using side branch ellipse</a></li><li><a href="#11">Create branch base mesh</a></li><li><a href="#13">Loft and merge side branch</a></li><li><a href="#15">Thicken surface mesh to hexahedra</a></li></ul></div><pre class="codeinput">clear; close <span class="string">all</span>; clc;
+  </style></head><body><div class="content"><h1>DEMO_mesh_bifurcation_cut_loft_branch</h1><!--introduction--><p>This demo shows how one can use logic operations to cut meshes and to extrude features from meshes. Here a bifurcated vessel is created by cutting a hole in a particular direction and by extruding the side-branch from this hole. The initial surface mesh is then thickened to produce a hexahedral mesh.</p><!--/introduction--><h2>Contents</h2><div><ul><li><a href="#3">Control parameters</a></li><li><a href="#4">Derived parameters</a></li><li><a href="#5">Create example geometry</a></li><li><a href="#7">Ray trace branch direction onto trunk to get branch centre point</a></li><li><a href="#9">Cut main trunk using side branch ellipse</a></li><li><a href="#11">Define bezier start and end vector directions</a></li><li><a href="#13">Create raw bezier surface</a></li><li><a href="#15">Loft and merge side branch</a></li><li><a href="#16">Constrained smoothing of branch base region</a></li><li><a href="#18">Thicken surface mesh to hexahedra</a></li></ul></div><pre class="codeinput">clear; close <span class="string">all</span>; clc;
 </pre><p>Plot Settings</p><pre class="codeinput">fontSize=15;
 faceAlpha=0.8;
 edgeColor=0.*ones(1,3);
@@ -80,12 +80,15 @@ trunkLength=15; <span class="comment">%Length</span>
 branchRadiusInner=2;
 branchLength=6;
 branchAngle=50;
-branchBaseOffset=pointSpacing;
+cutDist=0.5;
+branchBaseOffset=cutDist+pointSpacing;
 
 wallThickness=0.5;
 numElementsWall=2;
 
-numSmootIterations=50;
+bezierTangency=0.5;
+
+numSmootIterations=25;
 smoothMethod=<span class="string">'HC'</span>;
 smoothIncludeSteps=2;
 </pre><h2 id="4">Derived parameters</h2><pre class="codeinput"><span class="comment">%Get outer radii</span>
@@ -130,9 +133,9 @@ V_cut_ellipse=[b*cos(t) branchRadiusOuter.*sin(t) zeros(size(t))];
 V_cut_ellipse=V_cut_ellipse*R_90+P;
 [~,indRemove]=minDist(V_cut_ellipse,Vt);
 indRemove=unique(indRemove);
-logiceFacesCut=any(ismember(Ft,indRemove),2);
+logicFacesSelect=~any(ismember(Ft,indRemove),2);
 
-Ft_precut=Ft(~logiceFacesCut,:);
+Ft_precut=Ft(logicFacesSelect,:);
 
 clear <span class="string">optionStruct</span>
 optionStruct.outputType=<span class="string">'label'</span>;
@@ -140,22 +143,39 @@ optionStruct.outputType=<span class="string">'label'</span>;
 [~,indLargestGroup]=max(groupSize);
 Ft_cut=Ft_precut(G==indLargestGroup,:);
 
+
+Et_boundary_cut=patchBoundary(Ft_cut);
+Et_boundary=patchBoundary(Ft);
+Et_cut_boundary=Et_boundary_cut(~any(ismember(Et_boundary_cut,Et_boundary),2),:);
+indCutCurve=edgeListToCurve(Et_cut_boundary);
+
+clear <span class="string">optionStruct</span>
+optionStruct.numSeeds=numel(indCutCurve); <span class="comment">%Number of seeds</span>
+optionStruct.waitBarOn=0; <span class="comment">%Turn on/off waitbar</span>
+Dt_cut=meshDistMarch(Ft_cut,Vt,indCutCurve,optionStruct);
+logicVerticesFar=Dt_cut&gt;cutDist;
+logicKeep=all(logicVerticesFar(Ft_cut),2);
+Ft_cut=Ft_cut(logicKeep,:);
+
 Et_boundary_cut=patchBoundary(Ft_cut);
 Et_boundary=patchBoundary(Ft);
 Et_cut_boundary=Et_boundary_cut(~any(ismember(Et_boundary_cut,Et_boundary),2),:);
 indCutCurve=edgeListToCurve(Et_cut_boundary);
 
 V_branch_curve_trunk=Vt(indCutCurve(1:end-1),:);
+[~,~,Nt]=patchNormal(Ft_cut,Vt);
+
+N_branch_curve_trunk=Nt(indCutCurve(1:end-1),:);
 </pre><p>Visualization</p><pre class="codeinput">cFigure; hold <span class="string">on</span>;
 title(<span class="string">'Cut main trunk'</span>);
-hp1=gpatch(Ft_cut,Vt,<span class="string">'w'</span>,<span class="string">'k'</span>,faceAlpha);
+hp1=gpatch(Ft_cut,Vt,Dt_cut,<span class="string">'k'</span>,faceAlpha);
 hp2=quiverVec(V_branch_origin,N_branch_dir,branchLength*2,<span class="string">'r'</span>);
 hp3=plotV(V_cut_ellipse,<span class="string">'g.-'</span>,<span class="string">'markerSize'</span>,markerSize2,<span class="string">'LineWidth'</span>,lineWidth1);
 hp4=plotV(V_branch_curve_trunk,<span class="string">'b.-'</span>,<span class="string">'markerSize'</span>,markerSize2,<span class="string">'LineWidth'</span>,lineWidth1);
 legend([hp1 hp2 hp3 hp4],{<span class="string">'Cut main trunk'</span>,<span class="string">'Branch direction vector'</span>,<span class="string">'Branch base ellipse'</span>,<span class="string">'Cut boundary'</span>})
 axisGeom(gca,fontSize); camlight <span class="string">headlight</span>;
 gdrawnow;
-</pre><img width="100%" height="auto" vspace="5" hspace="5" src="DEMO_mesh_bifurcation_cut_loft_branch_02.jpg" alt=""> <h2 id="11">Create branch base mesh</h2><pre class="codeinput">[~,indNearest]=minDist(V_branch_curve_trunk(1,:),V_cut_ellipse);
+</pre><img width="100%" height="auto" vspace="5" hspace="5" src="DEMO_mesh_bifurcation_cut_loft_branch_02.jpg" alt=""> <h2 id="11">Define bezier start and end vector directions</h2><pre class="codeinput">[~,indNearest]=minDist(V_branch_curve_trunk(1,:),V_cut_ellipse);
 dt=linspace(2*pi,0,size(V_branch_curve_trunk,1)+1)'; dt=dt(1:end-1);
 dt=dt+t(indNearest);
 V_cut_ellipse=[b*cos(dt) branchRadiusOuter.*sin(dt) zeros(size(dt))];
@@ -168,20 +188,37 @@ d2=sum(sqrt(sum((flipud(V_branch_curve_ellipse1)-V_branch_curve_trunk).^2,2)));
     dt=flipud(dt);
 <span class="keyword">end</span>
 
-Vb1=[V_branch_curve_trunk; V_branch_curve_ellipse1];
-ind1=[(1:1:size(V_branch_curve_trunk,1)-1)' (2:1:size(V_branch_curve_trunk,1))'; size(V_branch_curve_trunk,1) 1];
-Fb1=[fliplr(ind1) ind1+size(V_branch_curve_trunk,1)];
+C1=vecnormalize(V_branch_curve_trunk-V_branch_curve_ellipse1);
+D1=vecnormalize(cross(C1,N_branch_curve_trunk));
+M1=vecnormalize(cross(D1,N_branch_curve_trunk));
+
+M2=N_branch_dir(ones(size(M1,1),1),:);
 </pre><p>Visualization</p><pre class="codeinput">cFigure; hold <span class="string">on</span>;
 title(<span class="string">'Cut main trunk'</span>);
 hp1=gpatch(Ft_cut,Vt,<span class="string">'w'</span>,<span class="string">'k'</span>,1);
 hp2=plotV(V_branch_curve_trunk,<span class="string">'r.-'</span>,<span class="string">'markerSize'</span>,markerSize2,<span class="string">'LineWidth'</span>,lineWidth1);
 hp3=plotV(V_branch_curve_ellipse1,<span class="string">'g.-'</span>,<span class="string">'markerSize'</span>,markerSize2,<span class="string">'LineWidth'</span>,lineWidth1);
-hp4=gpatch(Fb1,Vb1,<span class="string">'bw'</span>,<span class="string">'k'</span>,1);
-hp5=patchNormPlot(Fb1,Vb1);
-legend([hp1 hp2 hp3 hp4 hp5],{<span class="string">'Cut main trunk'</span>,<span class="string">'Cut boundary'</span>,<span class="string">'Branch base ellipse'</span>,<span class="string">'Branch base mesh'</span>,<span class="string">'Normal vectors of base'</span>})
+hp4=quiverVec(V_branch_curve_trunk,M1,branchRadiusOuter/2,<span class="string">'r'</span>);
+hp5=quiverVec(V_branch_curve_ellipse1,M2,branchRadiusOuter/2,<span class="string">'g'</span>);
+legend([hp1 hp2 hp3 hp4 hp5],{<span class="string">'Cut main trunk'</span>,<span class="string">'Cut boundary'</span>,<span class="string">'Branch base ellipse'</span>,<span class="string">'Branch base dir.'</span>,<span class="string">'Branch vessel dir.'</span>})
 axisGeom(gca,fontSize); camlight <span class="string">headlight</span>;
 gdrawnow;
-</pre><img width="100%" height="auto" vspace="5" hspace="5" src="DEMO_mesh_bifurcation_cut_loft_branch_03.jpg" alt=""> <h2 id="13">Loft and merge side branch</h2><pre class="codeinput">endType=1;
+</pre><img width="100%" height="auto" vspace="5" hspace="5" src="DEMO_mesh_bifurcation_cut_loft_branch_03.jpg" alt=""> <h2 id="13">Create raw bezier surface</h2><pre class="codeinput">[Fb1,Vb1,X,Y,Z]=bezierLoft(V_branch_curve_trunk,V_branch_curve_ellipse1,M1,M2,pointSpacing,bezierTangency);
+</pre><p>Visualization</p><pre class="codeinput">cFigure; hold <span class="string">on</span>;
+title(<span class="string">'Cut main trunk'</span>);
+hp1=gpatch(Ft_cut,Vt,<span class="string">'w'</span>,<span class="string">'k'</span>,1);
+hp2=plotV(V_branch_curve_trunk,<span class="string">'r.-'</span>,<span class="string">'markerSize'</span>,markerSize2,<span class="string">'LineWidth'</span>,lineWidth1);
+hp3=plotV(V_branch_curve_ellipse1,<span class="string">'g.-'</span>,<span class="string">'markerSize'</span>,markerSize2,<span class="string">'LineWidth'</span>,lineWidth1);
+hp4=gpatch(Fb1,Vb1,<span class="string">'bw'</span>,<span class="string">'k'</span>,1,0.5);
+
+<span class="keyword">for</span> q=1:size(X,2)
+    hp5=plotV([X(:,q) Y(:,q) Z(:,q)],<span class="string">'k-'</span>,<span class="string">'LineWidth'</span>,4);
+<span class="keyword">end</span>
+
+legend([hp1 hp2 hp3 hp4 hp5],{<span class="string">'Cut main trunk'</span>,<span class="string">'Cut boundary'</span>,<span class="string">'Branch base ellipse'</span>,<span class="string">'Branch base mesh'</span>,<span class="string">'Bezier curves'</span>})
+axisGeom(gca,fontSize); camlight <span class="string">headlight</span>;
+gdrawnow;
+</pre><img width="100%" height="auto" vspace="5" hspace="5" src="DEMO_mesh_bifurcation_cut_loft_branch_04.jpg" alt=""> <h2 id="15">Loft and merge side branch</h2><pre class="codeinput">endType=1;
 <span class="keyword">switch</span> endType
     <span class="keyword">case</span> 1 <span class="comment">%Circle</span>
         V_branch_curve_ellipse2=branchRadiusOuter.*[cos(dt) sin(dt) zeros(size(dt))];
@@ -199,8 +236,7 @@ Fb2=fliplr(Fb2);
 [F,V,C]=joinElementSets({Ft_cut,Fb1,Fb2},{Vt,Vb1,Vb2});
 [F,V]=mergeVertices(F,V);
 [F,V]=patchCleanUnused(F,V);
-
-indSmoothRegion=F(C==2,:);
+</pre><h2 id="16">Constrained smoothing of branch base region</h2><pre class="codeinput">indSmoothRegion=F(C==2,:);
 <span class="keyword">for</span> q=1:1:smoothIncludeSteps
     indSmooth=F(any(ismember(F,indSmoothRegion),2),:);
     indSmoothRegion=indSmooth;
@@ -212,21 +248,55 @@ optionStruct.Method=smoothMethod;
 optionStruct.n=numSmootIterations;
 optionStruct.RigidConstraints=indRigid;
 V=patchSmooth(F,V,[],optionStruct);
-</pre><pre class="codeinput">cFigure; hold <span class="string">on</span>;
+</pre><p>Visualization</p><pre class="codeinput">cFigure; hold <span class="string">on</span>;
+title(<span class="string">'Merged surface mesh'</span>)
 hp1=gpatch(F,V,C,<span class="string">'k'</span>,1,1);
 hp2=patchNormPlot(F,V);
 axisGeom(gca,fontSize); camlight <span class="string">headlight</span>;
 colormap(gjet); icolorbar;
 legend([hp1 hp2],{<span class="string">'Bifurcation mesh'</span>,<span class="string">'Normal directions'</span>})
 gdrawnow;
-</pre><img width="100%" height="auto" vspace="5" hspace="5" src="DEMO_mesh_bifurcation_cut_loft_branch_04.jpg" alt=""> <h2 id="15">Thicken surface mesh to hexahedra</h2><pre class="codeinput">[E,V]=patchThick(F,V,-1,wallThickness,numElementsWall);
-FE=element2patch(E);
+</pre><img width="100%" height="auto" vspace="5" hspace="5" src="DEMO_mesh_bifurcation_cut_loft_branch_05.jpg" alt=""> <h2 id="18">Thicken surface mesh to hexahedra</h2><pre class="codeinput">[E,V]=patchThick(F,V,-1,wallThickness,numElementsWall);
+CE=repmat(C,numElementsWall,1);
+[FE,CF_E,CF_type]=element2patch(E,CE);
 </pre><p>Visualization</p><pre class="codeinput">cFigure; hold <span class="string">on</span>;
 title(<span class="string">'Hexahedral mesh'</span>)
 gpatch(FE,V,<span class="string">'w'</span>,<span class="string">'k'</span>);
 axisGeom(gca,fontSize); camlight <span class="string">headlight</span>;
 gdrawnow;
-</pre><img width="100%" height="auto" vspace="5" hspace="5" src="DEMO_mesh_bifurcation_cut_loft_branch_05.jpg" alt=""> <p><img vspace="5" hspace="5" src="gibbVerySmall.gif" alt=""> </p><p><i><b>GIBBON</b></i> <a href="www.gibboncode.org">www.gibboncode.org</a></p><p><i>Kevin Mattheus Moerman</i>, <a href="gibbon.toolbox@gmail.com">gibbon.toolbox@gmail.com</a></p><p><i><b>GIBBON footer text</b></i></p><p>License: <a href="https://github.com/gibbonCode/GIBBON/blob/master/LICENSE">https://github.com/gibbonCode/GIBBON/blob/master/LICENSE</a></p><p>GIBBON: The Geometry and Image-based Bioengineering add-On. A toolbox for image segmentation, image-based modeling, meshing, and finite element analysis.</p><p>Copyright (C) 2006-2021 Kevin Mattheus Moerman and the GIBBON contributors</p><p>This program is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.</p><p>This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for more details.</p><p>You should have received a copy of the GNU General Public License along with this program.  If not, see <a href="http://www.gnu.org/licenses/">http://www.gnu.org/licenses/</a>.</p><p class="footer"><br><a href="https://www.mathworks.com/products/matlab/">Published with MATLAB&reg; R2021a</a><br></p></div><!--
+</pre><img width="100%" height="auto" vspace="5" hspace="5" src="DEMO_mesh_bifurcation_cut_loft_branch_06.jpg" alt=""> <pre class="codeinput"><span class="keyword">function</span> [F,V,X,Y,Z]=bezierLoft(P1,P4,N1,N4,pointSpacing,f)
+
+D12=sqrt(sum((P1-P4).^2,2));
+numPoints=ceil(max(D12)./pointSpacing);
+<span class="keyword">if</span> numPoints&lt;2
+    numPoints=2;
+<span class="keyword">end</span>
+
+P2=P1+D12.*f.*N1;
+P3=P4-D12.*f.*N4;
+
+X=zeros(numPoints,size(P1,1));
+Y=zeros(numPoints,size(P1,1));
+Z=zeros(numPoints,size(P1,1));
+<span class="keyword">for</span> q=1:1:size(P1,1)
+    p=[P1(q,:); P2(q,:); P3(q,:); P4(q,:)]; <span class="comment">%Control points</span>
+    V_bezier=bezierCurve(p,numPoints*2); <span class="comment">%Compute bezier curve</span>
+    V_bezier=evenlySampleCurve(V_bezier,numPoints,<span class="string">'pchip'</span>); <span class="comment">%resample evenly</span>
+    X(:,q)=V_bezier(:,1);
+    Y(:,q)=V_bezier(:,2);
+    Z(:,q)=V_bezier(:,3);
+<span class="keyword">end</span>
+
+<span class="comment">%Create quad patch data</span>
+[F,V] = surf2patch(X,Y,Z);
+I=[(1:size(Z,1)-1)' (1:size(Z,1)-1)' (2:size(Z,1))' (2:size(Z,1))' ];
+J=[size(Z,2).*ones(size(Z,1)-1,1) ones(size(Z,1)-1,1) ones(size(Z,1)-1,1) size(Z,2).*ones(size(Z,1)-1,1)];
+F_sub=sub2ind(size(Z),I,J);
+F=[F;F_sub];
+F=fliplr(F);
+
+<span class="keyword">end</span>
+</pre><p><img vspace="5" hspace="5" src="gibbVerySmall.gif" alt=""> </p><p><i><b>GIBBON</b></i> <a href="www.gibboncode.org">www.gibboncode.org</a></p><p><i>Kevin Mattheus Moerman</i>, <a href="gibbon.toolbox@gmail.com">gibbon.toolbox@gmail.com</a></p><p><i><b>GIBBON footer text</b></i></p><p>License: <a href="https://github.com/gibbonCode/GIBBON/blob/master/LICENSE">https://github.com/gibbonCode/GIBBON/blob/master/LICENSE</a></p><p>GIBBON: The Geometry and Image-based Bioengineering add-On. A toolbox for image segmentation, image-based modeling, meshing, and finite element analysis.</p><p>Copyright (C) 2006-2021 Kevin Mattheus Moerman and the GIBBON contributors</p><p>This program is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.</p><p>This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for more details.</p><p>You should have received a copy of the GNU General Public License along with this program.  If not, see <a href="http://www.gnu.org/licenses/">http://www.gnu.org/licenses/</a>.</p><p class="footer"><br><a href="https://www.mathworks.com/products/matlab/">Published with MATLAB&reg; R2021a</a><br></p></div><!--
 ##### SOURCE BEGIN #####
 %% DEMO_mesh_bifurcation_cut_loft_branch
 % This demo shows how one can use logic operations to cut meshes and to
@@ -255,12 +325,15 @@ trunkLength=15; %Length
 branchRadiusInner=2;
 branchLength=6;
 branchAngle=50;
-branchBaseOffset=pointSpacing;
+cutDist=0.5; 
+branchBaseOffset=cutDist+pointSpacing;
 
 wallThickness=0.5; 
 numElementsWall=2; 
 
-numSmootIterations=50;
+bezierTangency=0.5;
+
+numSmootIterations=25;
 smoothMethod='HC'; 
 smoothIncludeSteps=2; 
 
@@ -324,9 +397,9 @@ V_cut_ellipse=[b*cos(t) branchRadiusOuter.*sin(t) zeros(size(t))];
 V_cut_ellipse=V_cut_ellipse*R_90+P;
 [~,indRemove]=minDist(V_cut_ellipse,Vt);
 indRemove=unique(indRemove); 
-logiceFacesCut=any(ismember(Ft,indRemove),2);
+logicFacesSelect=~any(ismember(Ft,indRemove),2);
 
-Ft_precut=Ft(~logiceFacesCut,:);
+Ft_precut=Ft(logicFacesSelect,:);
 
 clear optionStruct
 optionStruct.outputType='label';
@@ -334,19 +407,36 @@ optionStruct.outputType='label';
 [~,indLargestGroup]=max(groupSize);
 Ft_cut=Ft_precut(G==indLargestGroup,:);
 
+
+Et_boundary_cut=patchBoundary(Ft_cut);
+Et_boundary=patchBoundary(Ft);
+Et_cut_boundary=Et_boundary_cut(~any(ismember(Et_boundary_cut,Et_boundary),2),:);
+indCutCurve=edgeListToCurve(Et_cut_boundary);
+
+clear optionStruct
+optionStruct.numSeeds=numel(indCutCurve); %Number of seeds
+optionStruct.waitBarOn=0; %Turn on/off waitbar
+Dt_cut=meshDistMarch(Ft_cut,Vt,indCutCurve,optionStruct);
+logicVerticesFar=Dt_cut>cutDist;
+logicKeep=all(logicVerticesFar(Ft_cut),2);
+Ft_cut=Ft_cut(logicKeep,:);
+
 Et_boundary_cut=patchBoundary(Ft_cut);
 Et_boundary=patchBoundary(Ft);
 Et_cut_boundary=Et_boundary_cut(~any(ismember(Et_boundary_cut,Et_boundary),2),:);
 indCutCurve=edgeListToCurve(Et_cut_boundary);
 
 V_branch_curve_trunk=Vt(indCutCurve(1:end-1),:);
+[~,~,Nt]=patchNormal(Ft_cut,Vt);
+
+N_branch_curve_trunk=Nt(indCutCurve(1:end-1),:);
 
 %%
 % Visualization
 
 cFigure; hold on; 
 title('Cut main trunk');
-hp1=gpatch(Ft_cut,Vt,'w','k',faceAlpha);
+hp1=gpatch(Ft_cut,Vt,Dt_cut,'k',faceAlpha);
 hp2=quiverVec(V_branch_origin,N_branch_dir,branchLength*2,'r');
 hp3=plotV(V_cut_ellipse,'g.-','markerSize',markerSize2,'LineWidth',lineWidth1);
 hp4=plotV(V_branch_curve_trunk,'b.-','markerSize',markerSize2,'LineWidth',lineWidth1);
@@ -354,7 +444,7 @@ legend([hp1 hp2 hp3 hp4],{'Cut main trunk','Branch direction vector','Branch bas
 axisGeom(gca,fontSize); camlight headlight; 
 gdrawnow; 
 
-%% Create branch base mesh 
+%% Define bezier start and end vector directions
 
 [~,indNearest]=minDist(V_branch_curve_trunk(1,:),V_cut_ellipse);
 dt=linspace(2*pi,0,size(V_branch_curve_trunk,1)+1)'; dt=dt(1:end-1);
@@ -369,9 +459,11 @@ if d2<d1
     dt=flipud(dt);
 end
 
-Vb1=[V_branch_curve_trunk; V_branch_curve_ellipse1];
-ind1=[(1:1:size(V_branch_curve_trunk,1)-1)' (2:1:size(V_branch_curve_trunk,1))'; size(V_branch_curve_trunk,1) 1];
-Fb1=[fliplr(ind1) ind1+size(V_branch_curve_trunk,1)];
+C1=vecnormalize(V_branch_curve_trunk-V_branch_curve_ellipse1);
+D1=vecnormalize(cross(C1,N_branch_curve_trunk));
+M1=vecnormalize(cross(D1,N_branch_curve_trunk));
+
+M2=N_branch_dir(ones(size(M1,1),1),:);
 
 %%
 % Visualization
@@ -381,9 +473,31 @@ title('Cut main trunk');
 hp1=gpatch(Ft_cut,Vt,'w','k',1);
 hp2=plotV(V_branch_curve_trunk,'r.-','markerSize',markerSize2,'LineWidth',lineWidth1);
 hp3=plotV(V_branch_curve_ellipse1,'g.-','markerSize',markerSize2,'LineWidth',lineWidth1);
-hp4=gpatch(Fb1,Vb1,'bw','k',1);
-hp5=patchNormPlot(Fb1,Vb1);
-legend([hp1 hp2 hp3 hp4 hp5],{'Cut main trunk','Cut boundary','Branch base ellipse','Branch base mesh','Normal vectors of base'})
+hp4=quiverVec(V_branch_curve_trunk,M1,branchRadiusOuter/2,'r');
+hp5=quiverVec(V_branch_curve_ellipse1,M2,branchRadiusOuter/2,'g');
+legend([hp1 hp2 hp3 hp4 hp5],{'Cut main trunk','Cut boundary','Branch base ellipse','Branch base dir.','Branch vessel dir.'})
+axisGeom(gca,fontSize); camlight headlight; 
+gdrawnow; 
+
+%% Create raw bezier surface
+
+[Fb1,Vb1,X,Y,Z]=bezierLoft(V_branch_curve_trunk,V_branch_curve_ellipse1,M1,M2,pointSpacing,bezierTangency);
+
+%%
+% Visualization 
+
+cFigure; hold on; 
+title('Cut main trunk');
+hp1=gpatch(Ft_cut,Vt,'w','k',1);
+hp2=plotV(V_branch_curve_trunk,'r.-','markerSize',markerSize2,'LineWidth',lineWidth1);
+hp3=plotV(V_branch_curve_ellipse1,'g.-','markerSize',markerSize2,'LineWidth',lineWidth1);
+hp4=gpatch(Fb1,Vb1,'bw','k',1,0.5);
+
+for q=1:size(X,2)
+    hp5=plotV([X(:,q) Y(:,q) Z(:,q)],'k-','LineWidth',4);
+end
+
+legend([hp1 hp2 hp3 hp4 hp5],{'Cut main trunk','Cut boundary','Branch base ellipse','Branch base mesh','Bezier curves'})
 axisGeom(gca,fontSize); camlight headlight; 
 gdrawnow; 
 
@@ -408,6 +522,8 @@ Fb2=fliplr(Fb2);
 [F,V]=mergeVertices(F,V);
 [F,V]=patchCleanUnused(F,V); 
 
+%% Constrained smoothing of branch base region
+
 indSmoothRegion=F(C==2,:);
 for q=1:1:smoothIncludeSteps
     indSmooth=F(any(ismember(F,indSmoothRegion),2),:);
@@ -422,8 +538,10 @@ optionStruct.RigidConstraints=indRigid;
 V=patchSmooth(F,V,[],optionStruct);
 
 %%
+% Visualization 
 
 cFigure; hold on;
+title('Merged surface mesh')
 hp1=gpatch(F,V,C,'k',1,1);
 hp2=patchNormPlot(F,V);
 axisGeom(gca,fontSize); camlight headlight; 
@@ -434,7 +552,8 @@ gdrawnow;
 %% Thicken surface mesh to hexahedra
 
 [E,V]=patchThick(F,V,-1,wallThickness,numElementsWall);
-FE=element2patch(E);
+CE=repmat(C,numElementsWall,1); 
+[FE,CF_E,CF_type]=element2patch(E,CE);
 
 %% 
 % Visualization
@@ -444,6 +563,41 @@ title('Hexahedral mesh')
 gpatch(FE,V,'w','k');
 axisGeom(gca,fontSize); camlight headlight; 
 gdrawnow; 
+
+%%
+
+function [F,V,X,Y,Z]=bezierLoft(P1,P4,N1,N4,pointSpacing,f)
+
+D12=sqrt(sum((P1-P4).^2,2));
+numPoints=ceil(max(D12)./pointSpacing);
+if numPoints<2
+    numPoints=2;
+end
+
+P2=P1+D12.*f.*N1;
+P3=P4-D12.*f.*N4;
+
+X=zeros(numPoints,size(P1,1));
+Y=zeros(numPoints,size(P1,1));
+Z=zeros(numPoints,size(P1,1));
+for q=1:1:size(P1,1)
+    p=[P1(q,:); P2(q,:); P3(q,:); P4(q,:)]; %Control points    
+    V_bezier=bezierCurve(p,numPoints*2); %Compute bezier curve
+    V_bezier=evenlySampleCurve(V_bezier,numPoints,'pchip'); %resample evenly
+    X(:,q)=V_bezier(:,1);
+    Y(:,q)=V_bezier(:,2);
+    Z(:,q)=V_bezier(:,3);
+end
+
+%Create quad patch data
+[F,V] = surf2patch(X,Y,Z);
+I=[(1:size(Z,1)-1)' (1:size(Z,1)-1)' (2:size(Z,1))' (2:size(Z,1))' ];
+J=[size(Z,2).*ones(size(Z,1)-1,1) ones(size(Z,1)-1,1) ones(size(Z,1)-1,1) size(Z,2).*ones(size(Z,1)-1,1)];
+F_sub=sub2ind(size(Z),I,J);
+F=[F;F_sub];
+F=fliplr(F);
+
+end
 
 %% 
 %
