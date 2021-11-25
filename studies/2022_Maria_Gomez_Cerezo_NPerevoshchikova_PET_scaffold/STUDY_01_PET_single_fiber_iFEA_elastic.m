@@ -335,7 +335,7 @@ febioStruct2xml(febio_spec,febioFebFileName); %Exporting to file and domNode
 febioAnalysis.run_filename=febioFebFileName; %The input file name
 febioAnalysis.run_logname=febioLogFileName; %The name for the log file
 febioAnalysis.disp_on=1; %Display information on the command window
-febioAnalysis.runMode='internal';%external';
+febioAnalysis.runMode='external';%'internal'
 
 [runFlag]=runMonitorFEBio(febioAnalysis);%START FEBio NOW!!!!!!!!
 
@@ -439,9 +439,6 @@ if runFlag==1 %i.e. a succesful run
     view(2); axis tight;  grid on; axis square; box on; 
     set(gca,'FontSize',fontSize);
     drawnow;
-    
-    
-
 end
 
 %% Create structures for optimization 
@@ -453,7 +450,8 @@ mat_struct.par_values={c1_ini m1_ini c2_ini m2_ini k_ini}; %Parameter values
 
 objectiveStruct.parNormFactors=abs(P); %This will normalize the parameters to ones(size(P))
 objectiveStruct.Pb_struct.xx_c=P; %Parameter constraining centre
-objectiveStruct.Pb_struct.xxlim=[[P(1)/100 -10 P(3)*100 -10]' [P(1)*100 10 P(3)/100 10]']; %Parameter bounds
+objectiveStruct.Pb_struct.xxlim=[[P(1)/100 -3 P(3)*100 0]'...
+                                 [P(1)*100 30 P(3)/100 30]']; %Parameter bounds
 
 febioAnalysis.disp_on=0; 
 febioAnalysis.disp_log_on=0; 
@@ -711,7 +709,8 @@ if runFlag==1
         case 1
             Fopt=sum((loadDev).^2); %Sum of squared differences
         case 2
-            Fopt=sum((loadDev).^2)/length(loadDev);%loadDev(:); %Squared differences
+            %Fopt=sum((loadDev).^2)/length(loadDev);%loadDev(:); %Squared differences
+            Fopt=loadDev(:);
     end
 
     OPT_stats_out.load_sim=load_sim;
