@@ -24,7 +24,7 @@ edgeWidth=2;
 %% Building a patched cylinder model
 % Defining patched cylinders with different mesh types
 
-cylRaduis=1; %Cylinder radius
+cylRadius=1; %Cylinder radius
 numRadial=12; %Number of elements in the circumferential direction
 cylHeight=3; %height
 numSteps=7; %Number of elements in the height direction
@@ -37,7 +37,7 @@ pColors=gjet(numel(meshTypes));
 
 cFigure; 
 for q=1:1:numel(meshTypes)
-    [F,V]=patchcylinder(cylRaduis,numRadial,cylHeight,numSteps,meshTypes{q}); 
+    [F,V]=patchcylinder(cylRadius,numRadial,cylHeight,numSteps,meshTypes{q}); 
     subplot(1,3,q); hold on;
     title([meshTypes{q},' type cylinder'],'FontSize',fontSize,'Interpreter','none');
     axisGeom(gca,fontSize);
