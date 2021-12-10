@@ -5,7 +5,7 @@
 clear; close all; clc;
 
 %% Syntax
-% |[VE,L]=hexVol(E,V);|
+% |[VE,L]=hexVol(E,V,absOpt);|
 
 %% Description
 % This function computes hexahedral element volumes. The input is the
@@ -16,7 +16,8 @@ clear; close all; clc;
 %% Example: Computing the volume of hexahedral elements
 
 %%
-% Create example geometry
+% Create example geometry for a set of 8 hexahedral elements, each with a
+% volume of 1, the summed volume should therefore be 8. 
 
 %Creating a single hexahedron
 X=[-1;  1; 1; -1; -1;  1; 1; -1;];
@@ -28,34 +29,92 @@ Eh=1:8; %The hexahedral element
 %Subdevided into 8 smaller elements
 [E,V]=subHex(Eh,Vh,1);
 
-%Create faces data for plotting
-[F,C]=element2patch(E);
-
 %%
 % Computing the volume 
-[VE,logicValid]=hexVol(E,V)
+[VE]=hexVol(E,V)
 
 %%
 % The summed volume should be 8 for this cube
 sum(VE)
 
-%% Visualize mesh and face normals
+%% 
+% Visualize mesh and face normals
+
+%Create patch data for plotting
+[F,C]=element2patch(E,VE);
 
 cFigure; hold on; 
-gpatch(F,V,'kw','k',0.5);
+title('The elements colored based on volume, with face normals shown')
+gpatch(F,V,C,'k',1);
 patchNormPlot(F,V);
-axisGeom;
-camlight headlight; 
+axisGeom; camlight headlight; 
+colormap spectral; colorbar; 
 drawnow; 
 
-%%
-% Volumes are always positive but inverted elements have a 0 in the
-% inverted logic. In the example below the first element is inverted which
-% changes the logic to return a 0 for this element. 
+%% Example: Handling negative volumes
+% Volumes are made absolute by default. To help detect inverted elements
+% the optional input absOpt can be set to 0 to allow for negative volume
+% output. In addition an output logicPositive can be requested which is
+% true for postive volumes and false for negative volumes. 
 
-E_inverted=E; 
-E_inverted(1,:)=E_inverted(1,[5:8 1:4]);
-[VE,logicValid]=hexVol(E_inverted,V)
+E_inverted=E; %Copy element set 
+E_inverted(1,:)=E_inverted(1,[5:8 1:4]); %Invert first element
+
+%Inspect element volumes and logic
+absOpt=1 %Output absolute volumes
+[VE,logicPositive]=hexVol(E_inverted,V,absOpt)
+
+absOpt=0 %Output may include negative volumes
+[VE,logicPositive]=hexVol(E_inverted,V,absOpt)
+
+%% 
+% Visualize mesh and face normals
+
+%Create patch data for plotting
+[F,C]=element2patch(E_inverted,VE);
+
+cFigure; hold on; 
+title('The elements colored based on volume, with face normals shown')
+gpatch(F,V,C,'k',0.5);
+patchNormPlot(F,V);
+axisGeom; camlight headlight; 
+colormap spectral; colorbar;
+drawnow; 
+
+%% Example: A more complex hex mesh
+
+%Control settings
+optionStruct.sphereRadius=10;
+optionStruct.coreRadius=5;
+optionStruct.numElementsMantel=5; 
+optionStruct.numElementsCore=8; 
+optionStruct.makeHollow=0;
+optionStruct.outputStructType=2;
+
+%Creating sphere
+[meshStruct]=hexMeshSphere(optionStruct);
+
+% Access model element and patch data
+Fb=meshStruct.facesBoundary;
+Cb=meshStruct.boundaryMarker;
+V=meshStruct.nodes;
+E=meshStruct.elements;
+
+absOpt=0; %Output may include negative volumes
+VE=hexVol(E,V,absOpt);
+
+%% 
+% Visualize mesh and face normals
+
+%Create patch data for plotting
+[F,C]=element2patch(E,VE);
+
+cFigure; hold on; 
+title('The elements colored based on volume')
+gpatch(F,V,C,'k',1);
+axisGeom; camlight headlight; 
+colormap spectral; colorbar;
+drawnow; 
 
 %% 
 %

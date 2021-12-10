@@ -65,6 +65,11 @@ switch modelID
         fileName=fullfile(pathName,'suzanne.mat');
         meshData=load(fileName);
     case {13,'nefertiti_high'}
+        % Resampled version of nefertiti model available from:
+        % https://www.cs.cmu.edu/~kmcrane/Projects/ModelRepository/
+        % The original mesh was scanned by Nora Al-Badri and Jan Nikolai
+        % Nelles from the Nefertiti bust, which was created in 1345 BC by
+        % Thutmose. Released under creative commons license. 
         fileName=fullfile(pathName,'nefertiti_high.mat');
         meshData=load(fileName);
 end
