@@ -9,7 +9,7 @@
 
 %% Keywords
 %
-% * febio_spec version 2.5
+% * febio_spec version 3.0
 % * febio, FEBio
 % * spine, vertebra, disc
 % * contact, sliding, friction
@@ -52,9 +52,11 @@ febioLogFileName_strainEnergy=[febioFebFileNamePart,'_energy_out.txt']; %Log fil
 vertebraOffset=[0 0 30];
 discHeight=12;
 rotAngleVert2=0;
-volumeFactorDisc=1;
+volumeFactorDisc=2;
+pointSpacing=3; %Approximate/desired node spacing
 annulusFibrosusFraction=0.5; 
 numLayers=3; 
+
 % Material parameters
 % Disc
 c1_1=1; %Shear-modulus-like parameter in MPa
@@ -83,9 +85,23 @@ displacementMagnitude=-1;
 rotAngle=-6;
 R=euler2DCM([0 (rotAngle./180)*pi 0]);
 V1=V1*R;
-pointSpacing=mean(patchEdgeLengths(F1,V1));
 
-%%
+%% Remeshing 
+
+optionStructRemesh.pointSpacing=pointSpacing; %Set desired point spacing
+optionStructRemesh.disp_on=1; % Turn off command window text display
+[F1,V1]=ggremesh(F1,V1,optionStructRemesh);
+
+%% Find top and bottom surface
+% The below is a very basic hardcoded approach to finding (approximately)
+% the top and bottom surfaces where the intevertebral discs would attached
+% to the vertebra. The "detection" is based on the angle elements face with
+% respect to the z-axis, and the distance from the origin (which lies in
+% the middle in terms of the z-direction and in the centre of the disc
+% attachement area in terms of the xy-direction). 
+
+angularThreshold=(25/180)*pi;
+distanceThreshold=26;
 
 V1F=patchCentre(F1,V1);
 
@@ -93,19 +109,17 @@ N=patchNormal(F1,V1);
 nz=[0 0 1];
 a=acos(dot(N,nz(ones(size(N,1),1),:),2));
 
-D=sqrt(sum(V1F(:,[1 2]).^2,2));
-logicTop=D<24 & a<0.27;
-indNotInLogic=unique(F1(~logicTop,:));
-logicTop=logicTop & ~any(ismember(F1,indNotInLogic),2);
-logicTop=triSurfLogicSharpFix(F1,logicTop,3);
+D             = sqrt(sum(V1F(:,[1 2]).^2,2));
+logicTop      = D<distanceThreshold & a<angularThreshold;
+indNotInLogic = unique(F1(~logicTop,:));
+logicTop      = logicTop & ~any(ismember(F1,indNotInLogic),2);
+logicTop      = triSurfLogicSharpFix(F1,logicTop,3);
 
-D=minDist(V1F(:,[1 2]),V1F(logicTop,[1 2]));
-logicBottom=D<3 & a>pi-0.4;
-logicBottom=triSurfLogicSharpFix(F1,logicBottom,3);
-
-indNotInLogic=unique(F1(~logicBottom,:));
-logicBottom=logicBottom & ~any(ismember(F1,indNotInLogic),2);
-logicBottom=triSurfLogicSharpFix(F1,logicBottom,3);
+D             = sqrt(sum(V1F(:,[1 2]).^2,2));
+logicBottom   = D<distanceThreshold & a>(pi-angularThreshold);
+indNotInLogic = unique(F1(~logicBottom,:));
+logicBottom   = logicBottom & ~any(ismember(F1,indNotInLogic),2);
+logicBottom   = triSurfLogicSharpFix(F1,logicBottom,3);
 
 C1=zeros(size(F1,1),1);
 C1(logicTop)=1;
@@ -113,15 +127,25 @@ C1(logicBottom)=2;
 
 %%
 
-Eb1=patchBoundary(F1(C1==1,:),V1);
+cFigure; hold on;
+gpatch(F1,V1,C1,'k',1);
+
+axisGeom(gca,fontSize);
+colormap gjet; icolorbar; 
+camlight('headlight');
+gdrawnow;
+
+%% Get top and bottom boundary curves
+
+Eb1=patchBoundary(F1(C1==1,:));
 indList1=edgeListToCurve(Eb1);
 indList1=indList1(1:end-1);
 
-Eb2=patchBoundary(F1(C1==2,:),V1);
+Eb2=patchBoundary(F1(C1==2,:));
 indList2=edgeListToCurve(Eb2);
 indList2=indList2(1:end-1);
 
-%%
+%% Resample meshes so curves end up with the same number of points
 
 n=[numel(indList1) numel(indList2)];
 [nMax,indMax]=max(n);
@@ -137,7 +161,12 @@ switch indMax
         indList1=indList1(1:end-1);
 end
 
-indList2=fliplr(indList2);
+%% Fix curve order 
+
+[~,indMin]=minDist(V1(indList1(1),:),V1(indList2,:));
+if indMin>1
+    indList2=[indList2(indMin:end) indList2(1:indMin-1)];
+end
 
 %%
 
@@ -155,8 +184,13 @@ N12=-mean(patchNormal(F1(C1==2,:),V1),1);
 %%
 cFigure; hold on;
 gpatch(F1,V1,C1,'k',1);
+% patchNormPlot(F1,V1)
 plotV(V1(indList1,:),'r.-','MarkerSize',25,'LineWidth',3);
 plotV(V1(indList2,:),'r.-','MarkerSize',25,'LineWidth',3);
+
+plotV(V1(indList1(1:2),:),'y.','MarkerSize',35);
+plotV(V1(indList2(1:2),:),'y.','MarkerSize',35);
+
 % plotV(V1(indRigid,:),'c.','MarkerSize',15);
 quiverVec(P11,N11,5,'r');
 quiverVec(P12,N12,5,'r');
@@ -208,7 +242,7 @@ Vds=Vds+discHeight/10*Nd.*CVds;
 clear cPar;
 cPar.n=5;
 cPar.Method='HC';
-cPar.RigidConstraints=unique(patchBoundary(Fds,Vds)); 
+cPar.RigidConstraints=unique(patchBoundary(Fds)); 
 [Vds]=patchSmooth(Fds,Vds,[],cPar);
 
 [Fd,Vd,Cd]=joinElementSets({Fds,fliplr(F2(C2==2,:)),fliplr(F1(C1==1,:))},{Vds,V2,V1});
@@ -280,7 +314,7 @@ meshView(meshOutput);
 %%
 
 VE_disc=patchCentre(E_disc,V_disc);
-Eb=patchBoundary(Fb_disc(ismember(Cb_disc,[2,3]),:),V_disc);
+Eb=patchBoundary(Fb_disc(ismember(Cb_disc,[2,3]),:));
 indB=unique(Fb_disc(ismember(Cb_disc,1),:));
 [D,~]=minDist(VE_disc(:,[1 2]),V_disc(indB,[1 2]));
 D=D./max(D(:));
@@ -374,29 +408,29 @@ gdrawnow;
 % See also |febioStructTemplate| and |febioStruct2xml| and the FEBio user
 % manual.
 
-%Get a template with default settings
+%Get a template with default settings 
 [febio_spec]=febioStructTemplate;
 
-%febio_spec version
-febio_spec.ATTR.version='2.5';
+%febio_spec version 
+febio_spec.ATTR.version='3.0'; 
 
 %Module section
-febio_spec.Module.ATTR.type='solid';
+febio_spec.Module.ATTR.type='solid'; 
 
 %Control section
-febio_spec.Control.analysis.ATTR.type='static';
+febio_spec.Control.analysis='STATIC';
 febio_spec.Control.time_steps=numTimeSteps;
 febio_spec.Control.step_size=1/numTimeSteps;
+febio_spec.Control.solver.max_refs=max_refs;
+febio_spec.Control.solver.max_ups=max_ups;
 febio_spec.Control.time_stepper.dtmin=dtmin;
-febio_spec.Control.time_stepper.dtmax=dtmax;
+febio_spec.Control.time_stepper.dtmax=dtmax; 
 febio_spec.Control.time_stepper.max_retries=max_retries;
 febio_spec.Control.time_stepper.opt_iter=opt_iter;
-febio_spec.Control.max_refs=max_refs;
-febio_spec.Control.max_ups=max_ups;
-febio_spec.Control.symmetric_stiffness=symmetric_stiffness;
-febio_spec.Control.min_residual=min_residual;
 
 %Material section
+materialName1='Material1';
+febio_spec.Material.material{1}.ATTR.name=materialName1;
 febio_spec.Material.material{1}.ATTR.type='Ogden';
 febio_spec.Material.material{1}.ATTR.id=1;
 febio_spec.Material.material{1}.c1=c1_1;
@@ -405,69 +439,82 @@ febio_spec.Material.material{1}.c2=c1_1;
 febio_spec.Material.material{1}.m2=-m1_1;
 febio_spec.Material.material{1}.k=k_1;
 
+materialName2='Material2';
+febio_spec.Material.material{2}.ATTR.name=materialName2;
 febio_spec.Material.material{2}.ATTR.type='rigid body';
 febio_spec.Material.material{2}.ATTR.id=2;
 febio_spec.Material.material{2}.density=1;
-febio_spec.Material.material{2}.center_of_mass=mean(V1);
+febio_spec.Material.material{2}.center_of_mass=mean(V(unique(E1),:),1);
 
+materialName3='Material3';
+febio_spec.Material.material{3}.ATTR.name=materialName3;
 febio_spec.Material.material{3}.ATTR.type='rigid body';
 febio_spec.Material.material{3}.ATTR.id=3;
 febio_spec.Material.material{3}.density=1;
-febio_spec.Material.material{3}.center_of_mass=mean(V2);
+febio_spec.Material.material{3}.center_of_mass=mean(V(unique(E2),:),1);
 
-%Geometry section
+% Mesh section
 % -> Nodes
-febio_spec.Geometry.Nodes{1}.ATTR.name='nodeSet_all'; %The node set name
-febio_spec.Geometry.Nodes{1}.node.ATTR.id=(1:size(V,1))'; %The node id's
-febio_spec.Geometry.Nodes{1}.node.VAL=V; %The nodel coordinates
+febio_spec.Mesh.Nodes{1}.ATTR.name='Object1'; %The node set name
+febio_spec.Mesh.Nodes{1}.node.ATTR.id=(1:size(V,1))'; %The node id's
+febio_spec.Mesh.Nodes{1}.node.VAL=V; %The nodel coordinates
 
 % -> Elements
-febio_spec.Geometry.Elements{1}.ATTR.type='tet4'; %Element type of this set
-febio_spec.Geometry.Elements{1}.ATTR.mat=1; %material index for this set
-febio_spec.Geometry.Elements{1}.ATTR.name='disc'; %Name of the element set
-febio_spec.Geometry.Elements{1}.elem.ATTR.id=(1:1:size(E_disc,1))'; %Element id's
-febio_spec.Geometry.Elements{1}.elem.VAL=E_disc;
+partName1='Part1';
+febio_spec.Mesh.Elements{1}.ATTR.name=partName1; %Name of this part
+febio_spec.Mesh.Elements{1}.ATTR.type='tet4'; %Element type
+febio_spec.Mesh.Elements{1}.elem.ATTR.id=(1:1:size(E_disc,1))'; %Element id's
+febio_spec.Mesh.Elements{1}.elem.VAL=E_disc; %The element matrix
 
-febio_spec.Geometry.Elements{2}.ATTR.type='tri3'; %Element type of this set
-febio_spec.Geometry.Elements{2}.ATTR.mat=2; %material index for this set
-febio_spec.Geometry.Elements{2}.ATTR.name='Bone1'; %Name of the element set
-febio_spec.Geometry.Elements{2}.elem.ATTR.id=size(E_disc,1)+(1:1:size(E1,1))'; %Element id's
-febio_spec.Geometry.Elements{2}.elem.VAL=E1;
+partName2='Part2';
+febio_spec.Mesh.Elements{2}.ATTR.name=partName2; %Name of this part
+febio_spec.Mesh.Elements{2}.ATTR.type='tri3'; %Element type
+febio_spec.Mesh.Elements{2}.elem.ATTR.id=size(E_disc,1)+(1:1:size(E1,1))'; %Element id's
+febio_spec.Mesh.Elements{2}.elem.VAL=E1; %The element matrix
 
-febio_spec.Geometry.Elements{3}.ATTR.type='tri3'; %Element type of this set
-febio_spec.Geometry.Elements{3}.ATTR.mat=3; %material index for this set
-febio_spec.Geometry.Elements{3}.ATTR.name='Bone2'; %Name of the element set
-febio_spec.Geometry.Elements{3}.elem.ATTR.id=size(E_disc,1)+size(E1,1)+(1:1:size(E2,1))'; %Element id's
-febio_spec.Geometry.Elements{3}.elem.VAL=E2;
+partName3='Part3';
+febio_spec.Mesh.Elements{3}.ATTR.name=partName3; %Name of this part
+febio_spec.Mesh.Elements{3}.ATTR.type='tri3'; %Element type
+febio_spec.Mesh.Elements{3}.elem.ATTR.id=size(E_disc,1)+size(E1,1)+(1:1:size(E2,1))'; %Element id's
+febio_spec.Mesh.Elements{3}.elem.VAL=E2; %The element matrix
 
-% -> NodeSets
-febio_spec.Geometry.NodeSet{1}.ATTR.name='All';
-febio_spec.Geometry.NodeSet{1}.node.ATTR.id=(1:1:size(V,1))';
+%MeshDomains section
+febio_spec.MeshDomains.SolidDomain{1}.ATTR.name=partName1;
+febio_spec.MeshDomains.SolidDomain{1}.ATTR.mat=materialName1;
 
-%Boundary condition section
-% -> Prescribed boundary conditions on the rigid body
-febio_spec.Boundary.rigid_body{1}.ATTR.mat=2;
-febio_spec.Boundary.rigid_body{1}.fixed{1}.ATTR.bc='x';
-febio_spec.Boundary.rigid_body{1}.fixed{2}.ATTR.bc='y';
-febio_spec.Boundary.rigid_body{1}.fixed{3}.ATTR.bc='z';
-febio_spec.Boundary.rigid_body{1}.fixed{4}.ATTR.bc='Rx';
-febio_spec.Boundary.rigid_body{1}.fixed{5}.ATTR.bc='Ry';
-febio_spec.Boundary.rigid_body{1}.fixed{6}.ATTR.bc='Rz';
+febio_spec.MeshDomains.ShellDomain{1}.ATTR.name=partName2;
+febio_spec.MeshDomains.ShellDomain{1}.ATTR.mat=materialName2;
 
-febio_spec.Boundary.rigid_body{2}.ATTR.mat=3;
-febio_spec.Boundary.rigid_body{2}.fixed{1}.ATTR.bc='x';
-febio_spec.Boundary.rigid_body{2}.fixed{2}.ATTR.bc='y';
-febio_spec.Boundary.rigid_body{2}.fixed{3}.ATTR.bc='Rx';
-febio_spec.Boundary.rigid_body{2}.fixed{4}.ATTR.bc='Ry';
-febio_spec.Boundary.rigid_body{2}.fixed{5}.ATTR.bc='Rz';
+febio_spec.MeshDomains.ShellDomain{2}.ATTR.name=partName3;
+febio_spec.MeshDomains.ShellDomain{2}.ATTR.mat=materialName3;
 
-febio_spec.Boundary.rigid_body{2}.prescribed.ATTR.bc='z';
-febio_spec.Boundary.rigid_body{2}.prescribed.ATTR.lc=1;
-febio_spec.Boundary.rigid_body{2}.prescribed.VAL=displacementMagnitude;
+%Rigid section 
+% ->Rigid body fix boundary conditions
+febio_spec.Rigid.rigid_constraint{1}.ATTR.name='RigidFix_1';
+febio_spec.Rigid.rigid_constraint{1}.ATTR.type='fix';
+febio_spec.Rigid.rigid_constraint{1}.rb=2;
+febio_spec.Rigid.rigid_constraint{1}.dofs='Rx,Ry,Rz,Ru,Rv,Rw';
 
-% febio_spec.Boundary.rigid_body{2}.force.ATTR.bc='z';
-% febio_spec.Boundary.rigid_body{2}.force.ATTR.lc=1;
-% febio_spec.Boundary.rigid_body{2}.force.VAL=forceBody;
+febio_spec.Rigid.rigid_constraint{2}.ATTR.name='RigidFix_1';
+febio_spec.Rigid.rigid_constraint{2}.ATTR.type='fix';
+febio_spec.Rigid.rigid_constraint{2}.rb=3;
+febio_spec.Rigid.rigid_constraint{2}.dofs='Rx,Ry,Ru,Rv,Rw';
+
+% ->Rigid body prescribe boundary conditions
+febio_spec.Rigid.rigid_constraint{3}.ATTR.name='RigidPrescribe';
+febio_spec.Rigid.rigid_constraint{3}.ATTR.type='prescribe';
+febio_spec.Rigid.rigid_constraint{3}.rb=3;
+febio_spec.Rigid.rigid_constraint{3}.dof='Rz';
+febio_spec.Rigid.rigid_constraint{3}.value.ATTR.lc=1;
+febio_spec.Rigid.rigid_constraint{3}.value.VAL=displacementMagnitude;
+febio_spec.Rigid.rigid_constraint{3}.relative=0;
+
+%LoadData section
+% -> load_controller
+febio_spec.LoadData.load_controller{1}.ATTR.id=1;
+febio_spec.LoadData.load_controller{1}.ATTR.type='loadcurve';
+febio_spec.LoadData.load_controller{1}.interpolate='LINEAR';
+febio_spec.LoadData.load_controller{1}.points.point.VAL=[0 0; 1 1];
 
 %Output section
 % -> log file
@@ -487,113 +534,93 @@ febio_spec.Output.logfile.element_data{1}.ATTR.data='sed';
 febio_spec.Output.logfile.element_data{1}.ATTR.delim=',';
 febio_spec.Output.logfile.element_data{1}.VAL=1:size(E_disc,1);
 
+%% Quick viewing of the FEBio input file structure
+% The |febView| function can be used to view the xml structure in a MATLAB
+% figure window. 
+
+%%
+% |febView(febio_spec); %Viewing the febio file|
+
+%% Exporting the FEBio input file
+% Exporting the febio_spec structure to an FEBio input file is done using
+% the |febioStruct2xml| function. 
+
+febioStruct2xml(febio_spec,febioFebFileName); %Exporting to file and domNode
+
 %% Running the FEBio analysis
 % To run the analysis defined by the created FEBio input file the
 % |runMonitorFEBio| function is used. The input for this function is a
 % structure defining job settings e.g. the FEBio input file name. The
 % optional output runFlag informs the user if the analysis was run
-% succesfully.
+% succesfully. 
 
 febioAnalysis.run_filename=febioFebFileName; %The input file name
 febioAnalysis.run_logname=febioLogFileName; %The name for the log file
 febioAnalysis.disp_on=1; %Display information on the command window
-febioAnalysis.disp_log_on=1; %Display convergence information in the command window
 febioAnalysis.runMode=runMode;%'internal';
-febioAnalysis.t_check=0.25; %Time for checking log file (dont set too small)
-febioAnalysis.maxtpi=1e99; %Max analysis time
-febioAnalysis.maxLogCheckTime=10; %Max log file checking time
 
-    %% Export input file
-    % Exporting the febio_spec structure to an FEBio input file is done
-    % using the |febioStruct2xml| function.
-    febioStruct2xml(febio_spec,febioFebFileName); %Exporting to file and domNode
+[runFlag]=runMonitorFEBio(febioAnalysis);%START FEBio NOW!!!!!!!!
+
+%% Import FEBio results 
+
+if runFlag==1 %i.e. a succesful run
     
-    %% Run febio
-    [runFlag]=runMonitorFEBio(febioAnalysis);%START FEBio NOW!!!!!!!!
+    %% 
+    % Importing nodal displacements from a log file
+    dataStruct=importFEBio_logfile(fullfile(savePath,febioLogFileName_disp),1,1);
+    
+    %Access data
+    N_disp_mat=dataStruct.data; %Displacement
+    timeVec=dataStruct.time; %Time
+    
+    %Create deformed coordinate set
+    V_DEF=N_disp_mat+repmat(V,[1 1 size(N_disp_mat,3)]);
             
-        %% Importing rigid body reaction forces from a log file
-        [time_mat, R_force_mat,~]=importFEBio_logfile(fullfile(savePath,febioLogFileName_force)); %Nodal forces
-        time_mat=[0; time_mat(:)]; %Time
-        
-        F_reaction=[0 0 0; R_force_mat(:,2:end)]; %Get force, add zeros, remove rigidbody id column
-        
-        Fz_final=F_reaction(end,3);
-        
-
-%%
-% Importing nodal displacements from a log file
-[time_mat, N_disp_mat,~]=importFEBio_logfile(fullfile(savePath,febioLogFileName_disp)); %Nodal displacements
-time_mat=[0; time_mat(:)]; %Time
-
-N_disp_mat=N_disp_mat(:,2:end,:);
-sizImport=size(N_disp_mat);
-sizImport(3)=sizImport(3)+1;
-N_disp_mat_n=zeros(sizImport);
-N_disp_mat_n(:,:,2:end)=N_disp_mat;
-N_disp_mat=N_disp_mat_n;
-DN=N_disp_mat(:,:,end);
-
-V_def=V+DN;
-V_DEF=N_disp_mat+repmat(V,[1 1 size(N_disp_mat,3)]);
-X_DEF=V_DEF(:,1,:);
-Y_DEF=V_DEF(:,2,:);
-Z_DEF=V_DEF(:,3,:);
-
-C=sqrt(sum(DN(:,3).^2,2));
-[CF]=vertexToFaceMeasure(Fb_disc,C);
-
-%%
-% Importing element strain energies from a log file
-[~,E_energy,~]=importFEBio_logfile(fullfile(savePath,febioLogFileName_strainEnergy)); %Element strain energy
-
-%Remove nodal index column
-E_energy=E_energy(:,2:end,:);
-
-%Add initial state i.e. zero energy
-sizImport=size(E_energy);
-sizImport(3)=sizImport(3)+1;
-E_energy_mat_n=zeros(sizImport);
-E_energy_mat_n(:,:,2:end)=E_energy;
-E_energy=E_energy_mat_n;
-
-[FE_disc,C_energy_disc]=element2patch(E_disc,E_energy(:,:,end));
-%     [FE_disc,C_energy_disc]=element2patch(E_disc,E_energy(1:size(E_disc,1),:,1));
-indBoundaryFacesdisc=tesBoundary(FE_disc,V);
-
-%%  Plot animation
-% Plotting the simulated results using |anim8| to visualize and animate
-% deformations
-
-% Create basic view and store graphics handle to initiate animation
-hf=cFigure; hold on; %Open figure
-gtitle([febioFebFileNamePart,': Press play to animate']);
-CV=faceToVertexMeasure(FE_disc(indBoundaryFacesdisc,:),V_def,C_energy_disc(indBoundaryFacesdisc));
-hp1=gpatch(Fb_disc,V_def,CV,'none',1); %Add graphics object to animate
-hp1.FaceColor='Interp';
-hp2=gpatch([E1;E2],V_def,'w','none',0.5); %Add graphics object to animate
-
-axisGeom(gca,fontSize);
-colormap(gjet(250)); colorbar;
-caxis([0 max(C_energy_disc)/25]);
-axis([min(X_DEF(:)) max(X_DEF(:)) min(Y_DEF(:)) max(Y_DEF(:)) min(Z_DEF(:)) max(Z_DEF(:))]);
-camlight headlight;
-
-% Set up animation features
-animStruct.Time=time_mat; %The time vector
-for qt=1:1:size(N_disp_mat,3) %Loop over time increments
-    DN=N_disp_mat(:,:,qt); %Current displacement
-    V_def=V+DN; %Current nodal coordinates
+    %%
+    % Importing element stress from a log file
+    dataStruct=importFEBio_logfile(fullfile(savePath,febioLogFileName_strainEnergy),1,1);     
     
-    [FE_disc,C_energy_disc]=element2patch(E_disc,E_energy(:,:,qt));
-    CV=faceToVertexMeasure(FE_disc(indBoundaryFacesdisc,:),V_def,C_energy_disc(indBoundaryFacesdisc));
+    %Access data
+    E_sed_mat=dataStruct.data;
+        
+    %%
+    % Plotting the simulated results using |anim8| to visualize and animate
+    % deformations
     
-    %Set entries in animation structure
-    animStruct.Handles{qt}=[hp1 hp1 hp2]; %Handles of objects to animate
-    animStruct.Props{qt}={'Vertices','CData','Vertices'}; %Properties of objects to animate
-    animStruct.Set{qt}={V_def,CV,V_def}; %Property values for to set in order to animate
+    [CV]=faceToVertexMeasure(E_disc,V,E_sed_mat(:,:,end));
+    
+    % Create basic view and store graphics handle to initiate animation
+    hf=cFigure; %Open figure
+    gtitle([febioFebFileNamePart,': Press play to animate']);
+    title('$\sigma_{3}$ [MPa]','Interpreter','Latex')
+    hp=gpatch(Fb_disc,V_DEF(:,:,end),CV,'k',1); %Add graphics object to animate
+    hp.Marker='.';
+    hp.MarkerSize=markerSize2;
+    hp.FaceColor='interp';
+    
+    hp2=gpatch([E1;E2],V_DEF(:,:,end),'w','none',0.5); %Add graphics object to animate    
+    
+    axisGeom(gca,fontSize);
+    colormap(flipud(gjet(250))); colorbar;
+    caxis([min(E_sed_mat(:)) max(E_sed_mat(:))]);
+    axis(axisLim(V_DEF)); %Set axis limits statically
+    camlight headlight;
+    
+    % Set up animation features
+    animStruct.Time=timeVec; %The time vector
+    for qt=1:1:size(N_disp_mat,3) %Loop over time increments
+        
+        [CV]=faceToVertexMeasure(E_disc,V,E_sed_mat(:,:,qt));
+        
+        %Set entries in animation structure
+        animStruct.Handles{qt}=[hp hp hp2]; %Handles of objects to animate
+        animStruct.Props{qt}={'Vertices','CData','Vertices'}; %Properties of objects to animate
+        animStruct.Set{qt}={V_DEF(:,:,qt),CV,V_DEF(:,:,qt)}; %Property values for to set in order to animate
+    end
+    anim8(hf,animStruct); %Initiate animation feature
+    drawnow;
+    
 end
-anim8(hf,animStruct); %Initiate animation feature
-gdrawnow;
 
 %%
 function [V1]=smoothCurve(F1,V1,nc,ns,indList1)
@@ -618,7 +645,6 @@ cPar.RigidConstraints=indRigid;
 [V1]=patchSmooth(F1,V1,[],cPar);
 end
 
-
 %%
 %
 % <<gibbVerySmall.gif>>
@@ -628,52 +654,6 @@ end
 %
 % _Kevin Mattheus Moerman_, <gibbon.toolbox@gmail.com>
 
-%%
-% _*GIBBON discer text*_
-%
-% License: <https://github.com/gibbonCode/GIBBON/blob/master/LICENSE>
-%
-% GIBBON: The Geometry and Image-based Bioengineering add-On. A toolbox for
-% image segmentation, image-based modeling, meshing, and finite element
-% analysis.
-%
-% Copyright (C) 2019  Kevin Mattheus Moerman
-%
-% This program is free software: you can redistribute it and/or modify
-% it under the terms of the GNU General Public License as published by
-% the Free Software Foundation, either version 3 of the License, or
-% (at your option) any later version.
-%
-% This program is distributed in the hope that it will be useful,
-% but WITHOUT ANY WARRANTY; without even the implied warranty of
-% MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-% GNU General Public License for more details.
-%
-% You should have received a copy of the GNU General Public License
-% along with this program.  If not, see <http://www.gnu.org/licenses/>.
-%% 
-% _*GIBBON discer text*_ 
-% 
-% License: <https://github.com/gibbonCode/GIBBON/blob/master/LICENSE>
-% 
-% GIBBON: The Geometry and Image-based Bioengineering add-On. A toolbox for
-% image segmentation, image-based modeling, meshing, and finite element
-% analysis.
-% 
-% Copyright (C) 2006-2020 Kevin Mattheus Moerman
-% 
-% This program is free software: you can redistribute it and/or modify
-% it under the terms of the GNU General Public License as published by
-% the Free Software Foundation, either version 3 of the License, or
-% (at your option) any later version.
-% 
-% This program is distributed in the hope that it will be useful,
-% but WITHOUT ANY WARRANTY; without even the implied warranty of
-% MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-% GNU General Public License for more details.
-% 
-% You should have received a copy of the GNU General Public License
-% along with this program.  If not, see <http://www.gnu.org/licenses/>.
 %% 
 % _*GIBBON footer text*_ 
 % 
