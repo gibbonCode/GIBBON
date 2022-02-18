@@ -79,8 +79,8 @@ febio_spec.Control.output_level='OUTPUT_MAJOR_ITRS';
 
 %% Globals section
 
-febio_spec.Globals.Constants.T=8.314e-6; 
-febio_spec.Globals.Constants.R=298;
+febio_spec.Globals.Constants.R=8.314e-6; 
+febio_spec.Globals.Constants.T=298;
 febio_spec.Globals.Constants.Fc=96485e-9; 
 
 %% Material section
