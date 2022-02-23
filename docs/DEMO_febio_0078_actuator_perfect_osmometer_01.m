@@ -1,4 +1,4 @@
-%% DEMO_febio_0075_cube_donnan_equilibrium_swelling_01
+%% DEMO_febio_0078_actuator_perfect_osmometer_01
 % Below is a demonstration for:
 % 
 % * Building geometry for a cube with hexahedral elements
@@ -11,7 +11,7 @@
 %
 % * febio_spec version 3.0
 % * febio, FEBio
-% * donnan equilibrium swelling
+% * perfect osmometer
 % * hexahedral elements, hex8
 % * cube, box, rectangular
 % * static, solid
@@ -26,9 +26,9 @@ clear; close all; clc;
 fontSize=20;
 faceAlpha1=0.8;
 markerSize=40;
-markerSize2=35;
+markerSize2=25;
 lineWidth=3;
-cMap=viridis(250); %colormap 
+cMap=spectral(250); %colormap 
 
 %% Control parameters
 
@@ -45,11 +45,10 @@ febioLogFileName_vol=[febioFebFileNamePart,'_vol_out.txt']; %Log file name for e
 febioLogFileName_stress_prin=[febioFebFileNamePart,'_stress_prin_out.txt']; %Log file name for exporting principal stress
 
 %Specifying dimensions and number of elements
-cubeSize=1; 
-sampleWidth=cubeSize; %Width 
-sampleThickness=cubeSize; %Thickness 
-sampleHeight=cubeSize; %Height
-pointSpacings=0.3*ones(1,3); %Desired point spacing between nodes
+sampleWidth=0.5; %Width 
+sampleThickness=1.5; %Thickness 
+sampleHeight=7; %Height
+pointSpacings=0.25*ones(1,3); %Desired point spacing between nodes
 numElementsWidth=round(sampleWidth/pointSpacings(1)); %Number of elemens in dir 1
 numElementsThickness=round(sampleThickness/pointSpacings(2)); %Number of elemens in dir 2
 numElementsHeight=round(sampleHeight/pointSpacings(3)); %Number of elemens in dir 3
@@ -64,15 +63,15 @@ if anisotropicOption==1
     beta=[3 3 3];
 end
 
-bosm_ini=300;
+iosm=300;
+bosm_ini=iosm;
 bosm_diff_amp=200;
-cF0=bosm_ini;
 
 % FEA control settings
-numTimeSteps=50; %Number of time steps desired
+numTimeSteps=25; %Number of time steps desired
 max_refs=25; %Max reforms
 max_ups=0; %Set to zero to use full-Newton iterations
-opt_iter=12; %Optimum number of iterations
+opt_iter=25; %Optimum number of iterations
 max_retries=5; %Maximum number of retires
 dtmin=(1/numTimeSteps)/100; %Minimum time step size
 dtmax=1/numTimeSteps; %Maximum time step size
@@ -97,6 +96,14 @@ Fb=meshStruct.facesBoundary; %The boundary faces
 Cb=meshStruct.boundaryMarker; %The "colors" or labels for the boundary faces
 elementMaterialIndices=ones(size(E,1),1); %Element material indices
 
+%%
+
+VE=patchCentre(E,V);
+logicSide=VE(:,1)<0;
+E1=E(logicSide,:); %First set
+E2=E(~logicSide,:); %Second set
+E=[E1;E2]; %Reorder full set
+
 %% 
 % Plotting model boundary surfaces and a cut view
 
@@ -120,23 +127,8 @@ drawnow;
 % The visualization of the model boundary shows colors for each side of the
 % cube. These labels can be used to define boundary conditions. 
 
-%Define supported node sets
-logicFace=Cb==1; %Logic for current face set
-Fr=Fb(logicFace,:); %The current face set
-bcSupportList_X=unique(Fr(:)); %Node set part of selected face
-
-logicFace=Cb==3; %Logic for current face set
-Fr=Fb(logicFace,:); %The current face set
-bcSupportList_Y=unique(Fr(:)); %Node set part of selected face
-
-logicFace=Cb==5; %Logic for current face set
-Fr=Fb(logicFace,:); %The current face set
-bcSupportList_Z=unique(Fr(:)); %Node set part of selected face
-
 %Prescribed displacement nodes
-logicPrescribe=Cb==6; %Logic for current face set
-Fr=Fb(logicPrescribe,:); %The current face set
-bcPrescribeList=unique(Fr(:)); %Node set part of selected face
+bcSupportList=unique(Fb(Cb==5,:)); %Node set for selected face
 
 %% 
 % Visualizing boundary conditions. Markers plotted on the semi-transparent
@@ -149,12 +141,9 @@ hold on;
 
 gpatch(Fb,V,'kw','k',0.5);
 
-hl(1)=plotV(V(bcSupportList_X,:),'r.','MarkerSize',markerSize);
-hl(2)=plotV(V(bcSupportList_Y,:),'g.','MarkerSize',markerSize);
-hl(3)=plotV(V(bcSupportList_Z,:),'b.','MarkerSize',markerSize);
-hl(4)=plotV(V(bcPrescribeList,:),'k.','MarkerSize',markerSize);
+hl(1)=plotV(V(bcSupportList,:),'k.','MarkerSize',markerSize);
 
-legend(hl,{'BC x support','BC y support','BC z support','BC z prescribe'});
+legend(hl,{'BC support'});
 
 axisGeom(gca,fontSize);
 camlight headlight; 
@@ -176,9 +165,6 @@ febio_spec.ATTR.version='3.0';
 
 %Module section
 febio_spec.Module.ATTR.type='biphasic'; 
-
-febio_spec.Output.plotfile.var{end+1}.ATTR.type='fluid pressure';
-febio_spec.Output.plotfile.var{end+1}.ATTR.type='effective fluid pressure';
 
 %Control section
 febio_spec.Control.analysis='STATIC';
@@ -204,21 +190,44 @@ febio_spec.Material.material{1}.mat_axis.ATTR.type='vector';
 febio_spec.Material.material{1}.mat_axis.a=[1 0 0];
 febio_spec.Material.material{1}.mat_axis.d=[0 1 0];
 
-febio_spec.Material.material{1}.solid{1}.ATTR.type='Donnan equilibrium';
+febio_spec.Material.material{1}.solid{1}.ATTR.type='perfect osmometer';
 febio_spec.Material.material{1}.solid{1}.phiw0=0.8;
-febio_spec.Material.material{1}.solid{1}.cF0.ATTR.lc=2;
-febio_spec.Material.material{1}.solid{1}.cF0.VAL=1;
-febio_spec.Material.material{1}.solid{1}.bosm.ATTR.lc=3;
+febio_spec.Material.material{1}.solid{1}.iosm=iosm;
+febio_spec.Material.material{1}.solid{1}.bosm.ATTR.lc=2;
 febio_spec.Material.material{1}.solid{1}.bosm.VAL=1;
 
 febio_spec.Material.material{1}.solid{2}.ATTR.type='neo-Hookean';
-febio_spec.Material.material{1}.solid{2}.E=E_youngs;
-febio_spec.Material.material{1}.solid{2}.v=v_pois;
+febio_spec.Material.material{1}.solid{2}.E=1;
+febio_spec.Material.material{1}.solid{2}.v=0.3;
 
 if anisotropicOption==1
     febio_spec.Material.material{1}.solid{3}.ATTR.type='ellipsoidal fiber distribution';
     febio_spec.Material.material{1}.solid{3}.ksi=ksi;
     febio_spec.Material.material{1}.solid{3}.beta=beta;
+end
+
+materialName2='Material2';
+febio_spec.Material.material{2}.ATTR.name=materialName2;
+febio_spec.Material.material{2}.ATTR.type='solid mixture';
+febio_spec.Material.material{2}.ATTR.id=2;
+febio_spec.Material.material{1}.mat_axis.ATTR.type='vector';
+febio_spec.Material.material{1}.mat_axis.a=[1 0 0];
+febio_spec.Material.material{1}.mat_axis.d=[0 1 0];
+
+febio_spec.Material.material{2}.solid{1}.ATTR.type='perfect osmometer';
+febio_spec.Material.material{2}.solid{1}.phiw0=0.8;
+febio_spec.Material.material{2}.solid{1}.iosm=iosm;
+febio_spec.Material.material{2}.solid{1}.bosm.ATTR.lc=3;
+febio_spec.Material.material{2}.solid{1}.bosm.VAL=1;
+
+febio_spec.Material.material{2}.solid{2}.ATTR.type='neo-Hookean';
+febio_spec.Material.material{2}.solid{2}.E=E_youngs;
+febio_spec.Material.material{2}.solid{2}.v=v_pois;
+
+if anisotropicOption==1
+    febio_spec.Material.material{2}.solid{3}.ATTR.type='ellipsoidal fiber distribution';
+    febio_spec.Material.material{2}.solid{3}.ksi=ksi;
+    febio_spec.Material.material{2}.solid{3}.beta=beta;
 end
 
 % Mesh section
@@ -231,58 +240,50 @@ febio_spec.Mesh.Nodes{1}.node.VAL=V; %The nodel coordinates
 partName1='Part1';
 febio_spec.Mesh.Elements{1}.ATTR.name=partName1; %Name of this part
 febio_spec.Mesh.Elements{1}.ATTR.type='hex8'; %Element type
-febio_spec.Mesh.Elements{1}.elem.ATTR.id=(1:1:size(E,1))'; %Element id's
-febio_spec.Mesh.Elements{1}.elem.VAL=E; %The element matrix
- 
+febio_spec.Mesh.Elements{1}.elem.ATTR.id=(1:1:size(E1,1))'; %Element id's
+febio_spec.Mesh.Elements{1}.elem.VAL=E1; %The element matrix
+
+partName2='Part2';
+febio_spec.Mesh.Elements{2}.ATTR.name=partName2; %Name of this part
+febio_spec.Mesh.Elements{2}.ATTR.type='hex8'; %Element type
+febio_spec.Mesh.Elements{2}.elem.ATTR.id=size(E1,1)+(1:1:size(E2,1))'; %Element id's
+febio_spec.Mesh.Elements{2}.elem.VAL=E2; %The element matrix
+
 % -> NodeSets
-nodeSetName1='bcSupportList_X';
-nodeSetName2='bcSupportList_Y';
-nodeSetName3='bcSupportList_Z';
-nodeSetName4='bcPrescribeList';
+nodeSetName1='bcSupportList';
 
 febio_spec.Mesh.NodeSet{1}.ATTR.name=nodeSetName1;
-febio_spec.Mesh.NodeSet{1}.node.ATTR.id=bcSupportList_X(:);
-
-febio_spec.Mesh.NodeSet{2}.ATTR.name=nodeSetName2;
-febio_spec.Mesh.NodeSet{2}.node.ATTR.id=bcSupportList_Y(:);
-
-febio_spec.Mesh.NodeSet{3}.ATTR.name=nodeSetName3;
-febio_spec.Mesh.NodeSet{3}.node.ATTR.id=bcSupportList_Z(:);
+febio_spec.Mesh.NodeSet{1}.node.ATTR.id=bcSupportList(:);
 
 %MeshDomains section
-febio_spec.MeshDomains.SolidDomain.ATTR.name=partName1;
-febio_spec.MeshDomains.SolidDomain.ATTR.mat=materialName1;
+febio_spec.MeshDomains.SolidDomain{1}.ATTR.name=partName1;
+febio_spec.MeshDomains.SolidDomain{1}.ATTR.mat=materialName1;
+
+febio_spec.MeshDomains.SolidDomain{2}.ATTR.name=partName2;
+febio_spec.MeshDomains.SolidDomain{2}.ATTR.mat=materialName2;
 
 %Boundary condition section 
 % -> Fix boundary conditions
 febio_spec.Boundary.bc{1}.ATTR.type='fix';
 febio_spec.Boundary.bc{1}.ATTR.node_set=nodeSetName1;
-febio_spec.Boundary.bc{1}.dofs='x';
-
-febio_spec.Boundary.bc{2}.ATTR.type='fix';
-febio_spec.Boundary.bc{2}.ATTR.node_set=nodeSetName2;
-febio_spec.Boundary.bc{2}.dofs='y';
-
-febio_spec.Boundary.bc{3}.ATTR.type='fix';
-febio_spec.Boundary.bc{3}.ATTR.node_set=nodeSetName3;
-febio_spec.Boundary.bc{3}.dofs='z';
+febio_spec.Boundary.bc{1}.dofs='x,y,z';
 
 %LoadData section
 % -> load_controller
 febio_spec.LoadData.load_controller{1}.ATTR.id=1;
 febio_spec.LoadData.load_controller{1}.ATTR.type='loadcurve';
 febio_spec.LoadData.load_controller{1}.interpolate='STEP';
-febio_spec.LoadData.load_controller{1}.points.point.VAL=[0 dtmax; 0.2 dtmax; 0.4 dtmax; 0.6 dtmax; 0.8 dtmax; 1 dtmax];
+febio_spec.LoadData.load_controller{1}.points.point.VAL=[0 dtmax; 0.25 dtmax; 0.5 dtmax; 0.75 dtmax; 1 dtmax];
 
 febio_spec.LoadData.load_controller{2}.ATTR.id=2;
 febio_spec.LoadData.load_controller{2}.ATTR.type='loadcurve';
 febio_spec.LoadData.load_controller{2}.interpolate='LINEAR';
-febio_spec.LoadData.load_controller{2}.points.point.VAL=[0 0; 0.2 cF0; 1 cF0]; 
+febio_spec.LoadData.load_controller{2}.points.point.VAL=[0 bosm_ini; 0.25 bosm_ini+bosm_diff_amp; 0.5 bosm_ini; 0.75 bosm_ini-bosm_diff_amp; 1 bosm_ini];
 
 febio_spec.LoadData.load_controller{3}.ATTR.id=3;
 febio_spec.LoadData.load_controller{3}.ATTR.type='loadcurve';
 febio_spec.LoadData.load_controller{3}.interpolate='LINEAR';
-febio_spec.LoadData.load_controller{3}.points.point.VAL=[0 bosm_ini; 0.2 bosm_ini; 0.4 bosm_ini+bosm_diff_amp; 0.6 bosm_ini; 0.8 bosm_ini-bosm_diff_amp; 1 bosm_ini];
+febio_spec.LoadData.load_controller{3}.points.point.VAL=[0 bosm_ini; 0.25 bosm_ini-bosm_diff_amp; 0.5 bosm_ini; 0.75 bosm_ini+bosm_diff_amp; 1 bosm_ini];
 
 %Output section 
 % -> log file
@@ -362,7 +363,7 @@ if runFlag==1 %i.e. a succesful run
     
     axisGeom(gca,fontSize); 
     colormap(cMap); colorbar;
-    caxis([0 max(DN_magnitude)]); caxis manual;   
+    caxis([0 max(max(sqrt(sum(N_disp_mat(:,:,:).^2,2))))]); caxis manual;   
     axis(axisLim(V_DEF)); %Set axis limits statically    
     view(140,30);
     camlight headlight;        
@@ -386,6 +387,7 @@ if runFlag==1 %i.e. a succesful run
     
     %Access data
     E_J_mat=dataStruct.data;
+    E_J_mat(:,:,1)=1;
     
     %% 
     % Plotting the simulated results using |anim8| to visualize and animate
@@ -398,7 +400,7 @@ if runFlag==1 %i.e. a succesful run
 
     gtitle([febioFebFileNamePart,': Press play to animate']);
     title('$J$ [.]','Interpreter','Latex')
-    hp=gpatch(Fb,V_DEF(:,:,end),CV,'k',0.5,2); %Add graphics object to animate
+    hp=gpatch(Fb,V_DEF(:,:,end),CV,'k',1,2); %Add graphics object to animate
     hp.Marker='.';
     hp.MarkerSize=markerSize2;
     hp.FaceColor='interp';
@@ -424,30 +426,6 @@ if runFlag==1 %i.e. a succesful run
     end        
     anim8(hf,animStruct); %Initiate animation feature    
     drawnow;
-    
-    %%
-%     % Importing element stresses from a log file
-%     dataStruct=importFEBio_logfile(fullfile(savePath,febioLogFileName_stress_prin),1,1);
-%     
-%     %Access data
-%     E_stress_prin_mat=dataStruct.data;
-%     
-%     %Compute pressure
-%     P = squeeze(sum(sum(E_stress_prin_mat,1),2));%squeeze(-1/3*mean(sum(E_stress_prin_mat,2),1));
-%     
-%     %%
-%     % Visualize pressure-stretch curve
-%     
-%     cFigure; hold on;
-%     title('Pressure-time curve','FontSize',fontSize);
-%     xlabel('$t$ [s]','FontSize',fontSize,'Interpreter','Latex');
-%     ylabel('$p$ [MPa]','FontSize',fontSize,'Interpreter','Latex');
-%     
-%     plot(timeVec(:),P(:),'r-','lineWidth',lineWidth);
-%     
-%     view(2); axis tight;  grid on; axis square; box on;
-%     set(gca,'FontSize',fontSize);
-%     drawnow;
     
 end
 

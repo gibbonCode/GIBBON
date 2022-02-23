@@ -6,7 +6,7 @@
    <!--
 This HTML was auto-generated from MATLAB code.
 To make changes, update the MATLAB code and republish this document.
-      --><title>DEMO_febio_0076_actuator_donnan_equilibrium_swelling_01</title><meta name="generator" content="MATLAB 9.10"><link rel="schema.DC" href="http://purl.org/dc/elements/1.1/"><meta name="DC.date" content="2022-02-22"><meta name="DC.source" content="DEMO_febio_0076_actuator_donnan_equilibrium_swelling_01.m"><style type="text/css">
+      --><title>DEMO_febio_0076_actuator_donnan_equilibrium_swelling_01</title><meta name="generator" content="MATLAB 9.10"><link rel="schema.DC" href="http://purl.org/dc/elements/1.1/"><meta name="DC.date" content="2022-02-23"><meta name="DC.source" content="DEMO_febio_0076_actuator_donnan_equilibrium_swelling_01.m"><style type="text/css">
 html,body,div,span,applet,object,iframe,h1,h2,h3,h4,h5,h6,p,blockquote,pre,a,abbr,acronym,address,big,cite,code,del,dfn,em,font,img,ins,kbd,q,s,samp,small,strike,strong,tt,var,b,u,i,center,dl,dt,dd,ol,ul,li,fieldset,form,label,legend,table,caption,tbody,tfoot,thead,tr,th,td{margin:0;padding:0;border:0;outline:0;font-size:100%;vertical-align:baseline;background:transparent}body{line-height:1}ol,ul{list-style:none}blockquote,q{quotes:none}blockquote:before,blockquote:after,q:before,q:after{content:'';content:none}:focus{outine:0}ins{text-decoration:none}del{text-decoration:line-through}table{border-collapse:collapse;border-spacing:0}
 
 html { min-height:100%; margin-bottom:1px; }
@@ -105,6 +105,10 @@ anisotropicOption=0;
     beta=[3 3 3];
 <span class="keyword">end</span>
 
+bosm_ini=300;
+bosm_diff_amp=200;
+cF0=bosm_ini;
+
 <span class="comment">% FEA control settings</span>
 numTimeSteps=50; <span class="comment">%Number of time steps desired</span>
 max_refs=25; <span class="comment">%Max reforms</span>
@@ -182,9 +186,13 @@ febio_spec.Control.step_size=1/numTimeSteps;
 febio_spec.Control.solver.max_refs=max_refs;
 febio_spec.Control.solver.max_ups=max_ups;
 febio_spec.Control.time_stepper.dtmin=dtmin;
-febio_spec.Control.time_stepper.dtmax=dtmax;
 febio_spec.Control.time_stepper.max_retries=max_retries;
 febio_spec.Control.time_stepper.opt_iter=opt_iter;
+
+<span class="comment">%Use must-points by specifying</span>
+febio_spec.Control.time_stepper=rmfield(febio_spec.Control.time_stepper,<span class="string">'dtmax'</span>); <span class="comment">%Remove existing template dtmax definition</span>
+febio_spec.Control.time_stepper.dtmax.ATTR.lc=1; <span class="comment">%Set load curve id for dtmax</span>
+febio_spec.Control.time_stepper.dtmax.VAL=1; <span class="comment">%Set value</span>
 
 <span class="comment">%Material section</span>
 materialName1=<span class="string">'Material1'</span>;
@@ -197,9 +205,10 @@ febio_spec.Material.material{1}.mat_axis.d=[0 1 0];
 
 febio_spec.Material.material{1}.solid{1}.ATTR.type=<span class="string">'Donnan equilibrium'</span>;
 febio_spec.Material.material{1}.solid{1}.phiw0=0.8;
-febio_spec.Material.material{1}.solid{1}.cF0.ATTR.lc=1;
-febio_spec.Material.material{1}.solid{1}.cF0.VAL=550;
-febio_spec.Material.material{1}.solid{1}.bosm=300;
+febio_spec.Material.material{1}.solid{1}.cF0.ATTR.lc=2;
+febio_spec.Material.material{1}.solid{1}.cF0.VAL=1;
+febio_spec.Material.material{1}.solid{1}.bosm.ATTR.lc=3;
+febio_spec.Material.material{1}.solid{1}.bosm.VAL=1;
 
 febio_spec.Material.material{1}.solid{2}.ATTR.type=<span class="string">'neo-Hookean'</span>;
 febio_spec.Material.material{1}.solid{2}.E=1;
@@ -222,12 +231,19 @@ febio_spec.Material.material{1}.mat_axis.d=[0 1 0];
 febio_spec.Material.material{2}.solid{1}.ATTR.type=<span class="string">'Donnan equilibrium'</span>;
 febio_spec.Material.material{2}.solid{1}.phiw0=0.8;
 febio_spec.Material.material{2}.solid{1}.cF0.ATTR.lc=2;
-febio_spec.Material.material{2}.solid{1}.cF0.VAL=550;
-febio_spec.Material.material{2}.solid{1}.bosm=300;
+febio_spec.Material.material{2}.solid{1}.cF0.VAL=1;
+febio_spec.Material.material{2}.solid{1}.bosm.ATTR.lc=4;
+febio_spec.Material.material{2}.solid{1}.bosm.VAL=1;
 
 febio_spec.Material.material{2}.solid{2}.ATTR.type=<span class="string">'neo-Hookean'</span>;
 febio_spec.Material.material{2}.solid{2}.E=E_youngs;
 febio_spec.Material.material{2}.solid{2}.v=v_pois;
+
+<span class="keyword">if</span> anisotropicOption==1
+    febio_spec.Material.material{2}.solid{3}.ATTR.type=<span class="string">'ellipsoidal fiber distribution'</span>;
+    febio_spec.Material.material{2}.solid{3}.ksi=ksi;
+    febio_spec.Material.material{2}.solid{3}.beta=beta;
+<span class="keyword">end</span>
 
 <span class="comment">% Mesh section</span>
 <span class="comment">% -&gt; Nodes</span>
@@ -271,13 +287,23 @@ febio_spec.Boundary.bc{1}.dofs=<span class="string">'x,y,z'</span>;
 <span class="comment">% -&gt; load_controller</span>
 febio_spec.LoadData.load_controller{1}.ATTR.id=1;
 febio_spec.LoadData.load_controller{1}.ATTR.type=<span class="string">'loadcurve'</span>;
-febio_spec.LoadData.load_controller{1}.interpolate=<span class="string">'LINEAR'</span>;
-febio_spec.LoadData.load_controller{1}.points.point.VAL=[0 0; 0.25 1; 0.5 0; 0.75 0; 1 0];
+febio_spec.LoadData.load_controller{1}.interpolate=<span class="string">'STEP'</span>;
+febio_spec.LoadData.load_controller{1}.points.point.VAL=[0 dtmax; 0.2 dtmax; 0.4 dtmax; 0.6 dtmax; 0.8 dtmax; 1 dtmax];
 
 febio_spec.LoadData.load_controller{2}.ATTR.id=2;
 febio_spec.LoadData.load_controller{2}.ATTR.type=<span class="string">'loadcurve'</span>;
 febio_spec.LoadData.load_controller{2}.interpolate=<span class="string">'LINEAR'</span>;
-febio_spec.LoadData.load_controller{2}.points.point.VAL=[0 0; 0.25 0; 0.5 0; 0.75 1; 1 0];
+febio_spec.LoadData.load_controller{2}.points.point.VAL=[0 0; 0.2 cF0; 1 cF0];
+
+febio_spec.LoadData.load_controller{3}.ATTR.id=3;
+febio_spec.LoadData.load_controller{3}.ATTR.type=<span class="string">'loadcurve'</span>;
+febio_spec.LoadData.load_controller{3}.interpolate=<span class="string">'LINEAR'</span>;
+febio_spec.LoadData.load_controller{3}.points.point.VAL=[0 bosm_ini; 0.2 bosm_ini; 0.4 bosm_ini+bosm_diff_amp; 0.6 bosm_ini; 0.8 bosm_ini-bosm_diff_amp; 1 bosm_ini];
+
+febio_spec.LoadData.load_controller{4}.ATTR.id=4;
+febio_spec.LoadData.load_controller{4}.ATTR.type=<span class="string">'loadcurve'</span>;
+febio_spec.LoadData.load_controller{4}.interpolate=<span class="string">'LINEAR'</span>;
+febio_spec.LoadData.load_controller{4}.points.point.VAL=[0 bosm_ini; 0.2 bosm_ini; 0.4 bosm_ini-bosm_diff_amp; 0.6 bosm_ini; 0.8 bosm_ini+bosm_diff_amp; 1 bosm_ini];
 
 <span class="comment">%Output section</span>
 <span class="comment">% -&gt; log file</span>
@@ -304,171 +330,183 @@ febioAnalysis.maxLogCheckTime=10; <span class="comment">%Max log file checking t
 [runFlag]=runMonitorFEBio(febioAnalysis);<span class="comment">%START FEBio NOW!!!!!!!!</span>
 </pre><pre class="codeoutput"> 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
---------&gt;    RUNNING/MONITORING FEBIO JOB    &lt;-------- 22-Feb-2022 14:23:07
+--------&gt;    RUNNING/MONITORING FEBIO JOB    &lt;-------- 23-Feb-2022 13:22:03
 FEBio path: /home/kevin/FEBioStudio/bin/febio3
-# Attempt removal of existing log files                22-Feb-2022 14:23:08
- * Removal succesful                                   22-Feb-2022 14:23:08
-# Attempt removal of existing .xplt files              22-Feb-2022 14:23:08
- * Removal succesful                                   22-Feb-2022 14:23:08
-# Starting FEBio...                                    22-Feb-2022 14:23:08
+# Attempt removal of existing log files                23-Feb-2022 13:22:03
+ * Removal succesful                                   23-Feb-2022 13:22:03
+# Attempt removal of existing .xplt files              23-Feb-2022 13:22:03
+ * Removal succesful                                   23-Feb-2022 13:22:03
+# Starting FEBio...                                    23-Feb-2022 13:22:03
   Max. total analysis time is: Inf s
- * Waiting for log file creation                       22-Feb-2022 14:23:08
+ * Waiting for log file creation                       23-Feb-2022 13:22:03
    Max. wait time: 10 s
- * Log file found.                                     22-Feb-2022 14:23:08
-# Parsing log file...                                  22-Feb-2022 14:23:08
-    number of iterations   : 6                         22-Feb-2022 14:23:08
-    number of reformations : 6                         22-Feb-2022 14:23:08
-------- converged at time : 0.02                       22-Feb-2022 14:23:08
-    number of iterations   : 9                         22-Feb-2022 14:23:08
-    number of reformations : 9                         22-Feb-2022 14:23:08
-------- converged at time : 0.04                       22-Feb-2022 14:23:08
-    number of iterations   : 10                        22-Feb-2022 14:23:08
-    number of reformations : 10                        22-Feb-2022 14:23:08
-------- converged at time : 0.06                       22-Feb-2022 14:23:08
-    number of iterations   : 12                        22-Feb-2022 14:23:09
-    number of reformations : 12                        22-Feb-2022 14:23:09
-------- converged at time : 0.08                       22-Feb-2022 14:23:09
-    number of iterations   : 12                        22-Feb-2022 14:23:09
-    number of reformations : 12                        22-Feb-2022 14:23:09
-------- converged at time : 0.1                        22-Feb-2022 14:23:09
-    number of iterations   : 12                        22-Feb-2022 14:23:09
-    number of reformations : 12                        22-Feb-2022 14:23:09
-------- converged at time : 0.12                       22-Feb-2022 14:23:09
-    number of iterations   : 12                        22-Feb-2022 14:23:09
-    number of reformations : 12                        22-Feb-2022 14:23:09
-------- converged at time : 0.14                       22-Feb-2022 14:23:09
-    number of iterations   : 12                        22-Feb-2022 14:23:09
-    number of reformations : 12                        22-Feb-2022 14:23:09
-------- converged at time : 0.16                       22-Feb-2022 14:23:09
-    number of iterations   : 12                        22-Feb-2022 14:23:10
-    number of reformations : 12                        22-Feb-2022 14:23:10
-------- converged at time : 0.18                       22-Feb-2022 14:23:10
-    number of iterations   : 12                        22-Feb-2022 14:23:10
-    number of reformations : 12                        22-Feb-2022 14:23:10
-------- converged at time : 0.2                        22-Feb-2022 14:23:10
-    number of iterations   : 12                        22-Feb-2022 14:23:10
-    number of reformations : 12                        22-Feb-2022 14:23:10
-------- converged at time : 0.22                       22-Feb-2022 14:23:10
-    number of iterations   : 12                        22-Feb-2022 14:23:10
-    number of reformations : 12                        22-Feb-2022 14:23:10
-------- converged at time : 0.24                       22-Feb-2022 14:23:10
-    number of iterations   : 1                         22-Feb-2022 14:23:10
-    number of reformations : 1                         22-Feb-2022 14:23:10
-------- converged at time : 0.26                       22-Feb-2022 14:23:10
-    number of iterations   : 11                        22-Feb-2022 14:23:10
-    number of reformations : 11                        22-Feb-2022 14:23:10
-------- converged at time : 0.28                       22-Feb-2022 14:23:10
-    number of iterations   : 11                        22-Feb-2022 14:23:11
-    number of reformations : 11                        22-Feb-2022 14:23:11
-------- converged at time : 0.3                        22-Feb-2022 14:23:11
-    number of iterations   : 11                        22-Feb-2022 14:23:11
-    number of reformations : 11                        22-Feb-2022 14:23:11
-------- converged at time : 0.32                       22-Feb-2022 14:23:11
-    number of iterations   : 11                        22-Feb-2022 14:23:11
-    number of reformations : 11                        22-Feb-2022 14:23:11
-------- converged at time : 0.34                       22-Feb-2022 14:23:11
-    number of iterations   : 12                        22-Feb-2022 14:23:11
-    number of reformations : 12                        22-Feb-2022 14:23:11
-------- converged at time : 0.36                       22-Feb-2022 14:23:11
-    number of iterations   : 12                        22-Feb-2022 14:23:11
-    number of reformations : 12                        22-Feb-2022 14:23:11
-------- converged at time : 0.38                       22-Feb-2022 14:23:11
-    number of iterations   : 12                        22-Feb-2022 14:23:12
-    number of reformations : 12                        22-Feb-2022 14:23:12
-------- converged at time : 0.4                        22-Feb-2022 14:23:12
-    number of iterations   : 12                        22-Feb-2022 14:23:12
-    number of reformations : 12                        22-Feb-2022 14:23:12
-------- converged at time : 0.42                       22-Feb-2022 14:23:12
-    number of iterations   : 12                        22-Feb-2022 14:23:12
-    number of reformations : 12                        22-Feb-2022 14:23:12
-------- converged at time : 0.44                       22-Feb-2022 14:23:12
-    number of iterations   : 11                        22-Feb-2022 14:23:12
-    number of reformations : 11                        22-Feb-2022 14:23:12
-------- converged at time : 0.46                       22-Feb-2022 14:23:12
-    number of iterations   : 9                         22-Feb-2022 14:23:12
-    number of reformations : 9                         22-Feb-2022 14:23:12
-------- converged at time : 0.48                       22-Feb-2022 14:23:12
-    number of iterations   : 7                         22-Feb-2022 14:23:12
-    number of reformations : 7                         22-Feb-2022 14:23:12
-------- converged at time : 0.5                        22-Feb-2022 14:23:12
-    number of iterations   : 6                         22-Feb-2022 14:23:13
-    number of reformations : 6                         22-Feb-2022 14:23:13
-------- converged at time : 0.52                       22-Feb-2022 14:23:13
-    number of iterations   : 9                         22-Feb-2022 14:23:13
-    number of reformations : 9                         22-Feb-2022 14:23:13
-------- converged at time : 0.54                       22-Feb-2022 14:23:13
-    number of iterations   : 10                        22-Feb-2022 14:23:13
-    number of reformations : 10                        22-Feb-2022 14:23:13
-------- converged at time : 0.56                       22-Feb-2022 14:23:13
-    number of iterations   : 12                        22-Feb-2022 14:23:13
-    number of reformations : 12                        22-Feb-2022 14:23:13
-------- converged at time : 0.58                       22-Feb-2022 14:23:13
-    number of iterations   : 12                        22-Feb-2022 14:23:13
-    number of reformations : 12                        22-Feb-2022 14:23:13
-------- converged at time : 0.6                        22-Feb-2022 14:23:13
-    number of iterations   : 12                        22-Feb-2022 14:23:13
-    number of reformations : 12                        22-Feb-2022 14:23:13
-------- converged at time : 0.62                       22-Feb-2022 14:23:13
-    number of iterations   : 12                        22-Feb-2022 14:23:14
-    number of reformations : 12                        22-Feb-2022 14:23:14
-------- converged at time : 0.64                       22-Feb-2022 14:23:14
-    number of iterations   : 12                        22-Feb-2022 14:23:14
-    number of reformations : 12                        22-Feb-2022 14:23:14
-------- converged at time : 0.66                       22-Feb-2022 14:23:14
-    number of iterations   : 12                        22-Feb-2022 14:23:14
-    number of reformations : 12                        22-Feb-2022 14:23:14
-------- converged at time : 0.68                       22-Feb-2022 14:23:14
-    number of iterations   : 12                        22-Feb-2022 14:23:14
-    number of reformations : 12                        22-Feb-2022 14:23:14
-------- converged at time : 0.7                        22-Feb-2022 14:23:14
-    number of iterations   : 12                        22-Feb-2022 14:23:15
-    number of reformations : 12                        22-Feb-2022 14:23:15
-------- converged at time : 0.72                       22-Feb-2022 14:23:15
-    number of iterations   : 12                        22-Feb-2022 14:23:15
-    number of reformations : 12                        22-Feb-2022 14:23:15
-------- converged at time : 0.74                       22-Feb-2022 14:23:15
-    number of iterations   : 1                         22-Feb-2022 14:23:15
-    number of reformations : 1                         22-Feb-2022 14:23:15
-------- converged at time : 0.76                       22-Feb-2022 14:23:15
-    number of iterations   : 11                        22-Feb-2022 14:23:15
-    number of reformations : 11                        22-Feb-2022 14:23:15
-------- converged at time : 0.78                       22-Feb-2022 14:23:15
-    number of iterations   : 11                        22-Feb-2022 14:23:15
-    number of reformations : 11                        22-Feb-2022 14:23:15
-------- converged at time : 0.8                        22-Feb-2022 14:23:15
-    number of iterations   : 11                        22-Feb-2022 14:23:15
-    number of reformations : 11                        22-Feb-2022 14:23:15
-------- converged at time : 0.82                       22-Feb-2022 14:23:15
-    number of iterations   : 11                        22-Feb-2022 14:23:15
-    number of reformations : 11                        22-Feb-2022 14:23:15
-------- converged at time : 0.84                       22-Feb-2022 14:23:15
-    number of iterations   : 12                        22-Feb-2022 14:23:16
-    number of reformations : 12                        22-Feb-2022 14:23:16
-------- converged at time : 0.86                       22-Feb-2022 14:23:16
-    number of iterations   : 12                        22-Feb-2022 14:23:16
-    number of reformations : 12                        22-Feb-2022 14:23:16
-------- converged at time : 0.88                       22-Feb-2022 14:23:16
-    number of iterations   : 12                        22-Feb-2022 14:23:16
-    number of reformations : 12                        22-Feb-2022 14:23:16
-------- converged at time : 0.9                        22-Feb-2022 14:23:16
-    number of iterations   : 12                        22-Feb-2022 14:23:16
-    number of reformations : 12                        22-Feb-2022 14:23:16
-------- converged at time : 0.92                       22-Feb-2022 14:23:16
-    number of iterations   : 12                        22-Feb-2022 14:23:16
-    number of reformations : 12                        22-Feb-2022 14:23:16
-------- converged at time : 0.94                       22-Feb-2022 14:23:16
-    number of iterations   : 11                        22-Feb-2022 14:23:17
-    number of reformations : 11                        22-Feb-2022 14:23:17
-------- converged at time : 0.96                       22-Feb-2022 14:23:17
-    number of iterations   : 9                         22-Feb-2022 14:23:17
-    number of reformations : 9                         22-Feb-2022 14:23:17
-------- converged at time : 0.98                       22-Feb-2022 14:23:17
-    number of iterations   : 7                         22-Feb-2022 14:23:17
-    number of reformations : 7                         22-Feb-2022 14:23:17
-------- converged at time : 1                          22-Feb-2022 14:23:17
- Elapsed time : 0:00:09                                22-Feb-2022 14:23:17
+ * Log file found.                                     23-Feb-2022 13:22:04
+# Parsing log file...                                  23-Feb-2022 13:22:04
+    number of iterations   : 2                         23-Feb-2022 13:22:04
+    number of reformations : 2                         23-Feb-2022 13:22:04
+------- converged at time : 0.02                       23-Feb-2022 13:22:04
+    number of iterations   : 3                         23-Feb-2022 13:22:04
+    number of reformations : 3                         23-Feb-2022 13:22:04
+------- converged at time : 0.04                       23-Feb-2022 13:22:04
+    number of iterations   : 3                         23-Feb-2022 13:22:04
+    number of reformations : 3                         23-Feb-2022 13:22:04
+------- converged at time : 0.06                       23-Feb-2022 13:22:04
+    number of iterations   : 3                         23-Feb-2022 13:22:04
+    number of reformations : 3                         23-Feb-2022 13:22:04
+------- converged at time : 0.08                       23-Feb-2022 13:22:04
+    number of iterations   : 3                         23-Feb-2022 13:22:04
+    number of reformations : 3                         23-Feb-2022 13:22:04
+------- converged at time : 0.1                        23-Feb-2022 13:22:04
+    number of iterations   : 3                         23-Feb-2022 13:22:04
+    number of reformations : 3                         23-Feb-2022 13:22:04
+------- converged at time : 0.12                       23-Feb-2022 13:22:04
+    number of iterations   : 3                         23-Feb-2022 13:22:04
+    number of reformations : 3                         23-Feb-2022 13:22:04
+------- converged at time : 0.14                       23-Feb-2022 13:22:04
+    number of iterations   : 3                         23-Feb-2022 13:22:04
+    number of reformations : 3                         23-Feb-2022 13:22:04
+------- converged at time : 0.16                       23-Feb-2022 13:22:04
+    number of iterations   : 3                         23-Feb-2022 13:22:05
+    number of reformations : 3                         23-Feb-2022 13:22:05
+------- converged at time : 0.18                       23-Feb-2022 13:22:05
+    number of iterations   : 3                         23-Feb-2022 13:22:05
+    number of reformations : 3                         23-Feb-2022 13:22:05
+------- converged at time : 0.2                        23-Feb-2022 13:22:05
+    number of iterations   : 7                         23-Feb-2022 13:22:05
+    number of reformations : 7                         23-Feb-2022 13:22:05
+------- converged at time : 0.216667                   23-Feb-2022 13:22:05
+    number of iterations   : 10                        23-Feb-2022 13:22:05
+    number of reformations : 10                        23-Feb-2022 13:22:05
+------- converged at time : 0.234                      23-Feb-2022 13:22:05
+    number of iterations   : 9                         23-Feb-2022 13:22:05
+    number of reformations : 9                         23-Feb-2022 13:22:05
+------- converged at time : 0.251867                   23-Feb-2022 13:22:05
+    number of iterations   : 9                         23-Feb-2022 13:22:05
+    number of reformations : 9                         23-Feb-2022 13:22:05
+------- converged at time : 0.27016                    23-Feb-2022 13:22:05
+    number of iterations   : 9                         23-Feb-2022 13:22:05
+    number of reformations : 9                         23-Feb-2022 13:22:05
+------- converged at time : 0.288795                   23-Feb-2022 13:22:05
+    number of iterations   : 10                        23-Feb-2022 13:22:06
+    number of reformations : 10                        23-Feb-2022 13:22:06
+------- converged at time : 0.307702                   23-Feb-2022 13:22:06
+    number of iterations   : 10                        23-Feb-2022 13:22:06
+    number of reformations : 10                        23-Feb-2022 13:22:06
+------- converged at time : 0.326829                   23-Feb-2022 13:22:06
+    number of iterations   : 10                        23-Feb-2022 13:22:06
+    number of reformations : 10                        23-Feb-2022 13:22:06
+------- converged at time : 0.34613                    23-Feb-2022 13:22:06
+    number of iterations   : 10                        23-Feb-2022 13:22:06
+    number of reformations : 10                        23-Feb-2022 13:22:06
+------- converged at time : 0.36557                    23-Feb-2022 13:22:06
+    number of iterations   : 10                        23-Feb-2022 13:22:06
+    number of reformations : 10                        23-Feb-2022 13:22:06
+------- converged at time : 0.385123                   23-Feb-2022 13:22:06
+    number of iterations   : 10                        23-Feb-2022 13:22:07
+    number of reformations : 10                        23-Feb-2022 13:22:07
+------- converged at time : 0.4                        23-Feb-2022 13:22:07
+    number of iterations   : 10                        23-Feb-2022 13:22:07
+    number of reformations : 10                        23-Feb-2022 13:22:07
+------- converged at time : 0.419714                   23-Feb-2022 13:22:07
+    number of iterations   : 10                        23-Feb-2022 13:22:07
+    number of reformations : 10                        23-Feb-2022 13:22:07
+------- converged at time : 0.439485                   23-Feb-2022 13:22:07
+    number of iterations   : 10                        23-Feb-2022 13:22:07
+    number of reformations : 10                        23-Feb-2022 13:22:07
+------- converged at time : 0.459301                   23-Feb-2022 13:22:07
+    number of iterations   : 9                         23-Feb-2022 13:22:07
+    number of reformations : 9                         23-Feb-2022 13:22:07
+------- converged at time : 0.479155                   23-Feb-2022 13:22:07
+    number of iterations   : 9                         23-Feb-2022 13:22:07
+    number of reformations : 9                         23-Feb-2022 13:22:07
+------- converged at time : 0.499037                   23-Feb-2022 13:22:07
+    number of iterations   : 9                         23-Feb-2022 13:22:08
+    number of reformations : 9                         23-Feb-2022 13:22:08
+------- converged at time : 0.518944                   23-Feb-2022 13:22:08
+    number of iterations   : 8                         23-Feb-2022 13:22:08
+    number of reformations : 8                         23-Feb-2022 13:22:08
+------- converged at time : 0.538869                   23-Feb-2022 13:22:08
+    number of iterations   : 7                         23-Feb-2022 13:22:08
+    number of reformations : 7                         23-Feb-2022 13:22:08
+------- converged at time : 0.558809                   23-Feb-2022 13:22:08
+    number of iterations   : 8                         23-Feb-2022 13:22:08
+    number of reformations : 8                         23-Feb-2022 13:22:08
+------- converged at time : 0.57876                    23-Feb-2022 13:22:08
+    number of iterations   : 7                         23-Feb-2022 13:22:08
+    number of reformations : 7                         23-Feb-2022 13:22:08
+------- converged at time : 0.598722                   23-Feb-2022 13:22:08
+    number of iterations   : 3                         23-Feb-2022 13:22:08
+    number of reformations : 3                         23-Feb-2022 13:22:08
+------- converged at time : 0.6                        23-Feb-2022 13:22:08
+    number of iterations   : 25                        23-Feb-2022 13:22:09
+    number of reformations : 25                        23-Feb-2022 13:22:09
+------- converged at time : 0.619975                   23-Feb-2022 13:22:09
+    number of iterations   : 11                        23-Feb-2022 13:22:09
+    number of reformations : 11                        23-Feb-2022 13:22:09
+------- converged at time : 0.639951                   23-Feb-2022 13:22:09
+    number of iterations   : 10                        23-Feb-2022 13:22:09
+    number of reformations : 10                        23-Feb-2022 13:22:09
+------- converged at time : 0.659931                   23-Feb-2022 13:22:09
+    number of iterations   : 9                         23-Feb-2022 13:22:09
+    number of reformations : 9                         23-Feb-2022 13:22:09
+------- converged at time : 0.679915                   23-Feb-2022 13:22:09
+    number of iterations   : 10                        23-Feb-2022 13:22:09
+    number of reformations : 10                        23-Feb-2022 13:22:09
+------- converged at time : 0.699903                   23-Feb-2022 13:22:09
+    number of iterations   : 11                        23-Feb-2022 13:22:10
+    number of reformations : 11                        23-Feb-2022 13:22:10
+------- converged at time : 0.719893                   23-Feb-2022 13:22:10
+    number of iterations   : 10                        23-Feb-2022 13:22:10
+    number of reformations : 10                        23-Feb-2022 13:22:10
+------- converged at time : 0.739885                   23-Feb-2022 13:22:10
+    number of iterations   : 10                        23-Feb-2022 13:22:10
+    number of reformations : 10                        23-Feb-2022 13:22:10
+------- converged at time : 0.759878                   23-Feb-2022 13:22:10
+    number of iterations   : 10                        23-Feb-2022 13:22:10
+    number of reformations : 10                        23-Feb-2022 13:22:10
+------- converged at time : 0.779873                   23-Feb-2022 13:22:10
+    number of iterations   : 11                        23-Feb-2022 13:22:10
+    number of reformations : 11                        23-Feb-2022 13:22:10
+------- converged at time : 0.799869                   23-Feb-2022 13:22:10
+    number of iterations   : 3                         23-Feb-2022 13:22:10
+    number of reformations : 3                         23-Feb-2022 13:22:10
+------- converged at time : 0.8                        23-Feb-2022 13:22:10
+    number of iterations   : 11                        23-Feb-2022 13:22:10
+    number of reformations : 11                        23-Feb-2022 13:22:10
+------- converged at time : 0.819997                   23-Feb-2022 13:22:10
+    number of iterations   : 10                        23-Feb-2022 13:22:11
+    number of reformations : 10                        23-Feb-2022 13:22:11
+------- converged at time : 0.839995                   23-Feb-2022 13:22:11
+    number of iterations   : 10                        23-Feb-2022 13:22:11
+    number of reformations : 10                        23-Feb-2022 13:22:11
+------- converged at time : 0.859994                   23-Feb-2022 13:22:11
+    number of iterations   : 9                         23-Feb-2022 13:22:11
+    number of reformations : 9                         23-Feb-2022 13:22:11
+------- converged at time :                            23-Feb-2022 13:22:11
+    number of iterations   : 9                         23-Feb-2022 13:22:11
+    number of reformations : 9                         23-Feb-2022 13:22:11
+------- converged at time : 0.899991                   23-Feb-2022 13:22:11
+    number of iterations   : 9                         23-Feb-2022 13:22:11
+    number of reformations : 9                         23-Feb-2022 13:22:11
+------- converged at time : 0.91999                    23-Feb-2022 13:22:11
+    number of iterations   : 8                         23-Feb-2022 13:22:11
+    number of reformations : 8                         23-Feb-2022 13:22:11
+------- converged at time : 0.93999                    23-Feb-2022 13:22:11
+    number of iterations   : 7                         23-Feb-2022 13:22:12
+    number of reformations : 7                         23-Feb-2022 13:22:12
+------- converged at time : 0.959989                   23-Feb-2022 13:22:12
+    number of iterations   : 8                         23-Feb-2022 13:22:12
+    number of reformations : 8                         23-Feb-2022 13:22:12
+------- converged at time : 0.979989                   23-Feb-2022 13:22:12
+    number of iterations   : 7                         23-Feb-2022 13:22:12
+    number of reformations : 7                         23-Feb-2022 13:22:12
+------- converged at time : 0.999988                   23-Feb-2022 13:22:12
+    number of iterations   : 2                         23-Feb-2022 13:22:12
+    number of reformations : 2                         23-Feb-2022 13:22:12
+------- converged at time : 1                          23-Feb-2022 13:22:12
+ Elapsed time : 0:00:09                                23-Feb-2022 13:22:12
  N O R M A L   T E R M I N A T I O N
-# Done                                                 22-Feb-2022 14:23:17
+# Done                                                 23-Feb-2022 13:22:12
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 </pre><h2 id="15">Import FEBio results</h2><pre class="codeinput"><span class="keyword">if</span> runFlag==1 <span class="comment">%i.e. a succesful run</span>
 </pre><pre class="codeinput">    <span class="comment">% Importing nodal displacements from a log file</span>
@@ -494,7 +532,7 @@ FEBio path: /home/kevin/FEBioStudio/bin/febio3
 
     axisGeom(gca,fontSize);
     colormap(cMap); colorbar;
-    caxis([0 max(DN_magnitude)]); caxis <span class="string">manual</span>;
+    caxis([0 max(max(sqrt(sum(N_disp_mat(:,:,:).^2,2))))]); caxis <span class="string">manual</span>;
     axis(axisLim(V_DEF)); <span class="comment">%Set axis limits statically</span>
     view(140,30);
     camlight <span class="string">headlight</span>;
@@ -617,6 +655,10 @@ if anisotropicOption==1
     beta=[3 3 3];
 end
 
+bosm_ini=300;
+bosm_diff_amp=200;
+cF0=bosm_ini;
+
 % FEA control settings
 numTimeSteps=50; %Number of time steps desired
 max_refs=25; %Max reforms
@@ -723,9 +765,13 @@ febio_spec.Control.step_size=1/numTimeSteps;
 febio_spec.Control.solver.max_refs=max_refs;
 febio_spec.Control.solver.max_ups=max_ups;
 febio_spec.Control.time_stepper.dtmin=dtmin;
-febio_spec.Control.time_stepper.dtmax=dtmax; 
 febio_spec.Control.time_stepper.max_retries=max_retries;
 febio_spec.Control.time_stepper.opt_iter=opt_iter;
+
+%Use must-points by specifying 
+febio_spec.Control.time_stepper=rmfield(febio_spec.Control.time_stepper,'dtmax'); %Remove existing template dtmax definition
+febio_spec.Control.time_stepper.dtmax.ATTR.lc=1; %Set load curve id for dtmax
+febio_spec.Control.time_stepper.dtmax.VAL=1; %Set value
 
 %Material section
 materialName1='Material1';
@@ -738,9 +784,10 @@ febio_spec.Material.material{1}.mat_axis.d=[0 1 0];
 
 febio_spec.Material.material{1}.solid{1}.ATTR.type='Donnan equilibrium';
 febio_spec.Material.material{1}.solid{1}.phiw0=0.8;
-febio_spec.Material.material{1}.solid{1}.cF0.ATTR.lc=1;
-febio_spec.Material.material{1}.solid{1}.cF0.VAL=550;
-febio_spec.Material.material{1}.solid{1}.bosm=300;
+febio_spec.Material.material{1}.solid{1}.cF0.ATTR.lc=2;
+febio_spec.Material.material{1}.solid{1}.cF0.VAL=1;
+febio_spec.Material.material{1}.solid{1}.bosm.ATTR.lc=3;
+febio_spec.Material.material{1}.solid{1}.bosm.VAL=1;
 
 febio_spec.Material.material{1}.solid{2}.ATTR.type='neo-Hookean';
 febio_spec.Material.material{1}.solid{2}.E=1;
@@ -763,12 +810,19 @@ febio_spec.Material.material{1}.mat_axis.d=[0 1 0];
 febio_spec.Material.material{2}.solid{1}.ATTR.type='Donnan equilibrium';
 febio_spec.Material.material{2}.solid{1}.phiw0=0.8;
 febio_spec.Material.material{2}.solid{1}.cF0.ATTR.lc=2;
-febio_spec.Material.material{2}.solid{1}.cF0.VAL=550;
-febio_spec.Material.material{2}.solid{1}.bosm=300;
+febio_spec.Material.material{2}.solid{1}.cF0.VAL=1;
+febio_spec.Material.material{2}.solid{1}.bosm.ATTR.lc=4;
+febio_spec.Material.material{2}.solid{1}.bosm.VAL=1;
 
 febio_spec.Material.material{2}.solid{2}.ATTR.type='neo-Hookean';
 febio_spec.Material.material{2}.solid{2}.E=E_youngs;
 febio_spec.Material.material{2}.solid{2}.v=v_pois;
+
+if anisotropicOption==1
+    febio_spec.Material.material{2}.solid{3}.ATTR.type='ellipsoidal fiber distribution';
+    febio_spec.Material.material{2}.solid{3}.ksi=ksi;
+    febio_spec.Material.material{2}.solid{3}.beta=beta;
+end
 
 % Mesh section
 % -> Nodes
@@ -812,13 +866,23 @@ febio_spec.Boundary.bc{1}.dofs='x,y,z';
 % -> load_controller
 febio_spec.LoadData.load_controller{1}.ATTR.id=1;
 febio_spec.LoadData.load_controller{1}.ATTR.type='loadcurve';
-febio_spec.LoadData.load_controller{1}.interpolate='LINEAR';
-febio_spec.LoadData.load_controller{1}.points.point.VAL=[0 0; 0.25 1; 0.5 0; 0.75 0; 1 0];
+febio_spec.LoadData.load_controller{1}.interpolate='STEP';
+febio_spec.LoadData.load_controller{1}.points.point.VAL=[0 dtmax; 0.2 dtmax; 0.4 dtmax; 0.6 dtmax; 0.8 dtmax; 1 dtmax];
 
 febio_spec.LoadData.load_controller{2}.ATTR.id=2;
 febio_spec.LoadData.load_controller{2}.ATTR.type='loadcurve';
 febio_spec.LoadData.load_controller{2}.interpolate='LINEAR';
-febio_spec.LoadData.load_controller{2}.points.point.VAL=[0 0; 0.25 0; 0.5 0; 0.75 1; 1 0];
+febio_spec.LoadData.load_controller{2}.points.point.VAL=[0 0; 0.2 cF0; 1 cF0]; 
+
+febio_spec.LoadData.load_controller{3}.ATTR.id=3;
+febio_spec.LoadData.load_controller{3}.ATTR.type='loadcurve';
+febio_spec.LoadData.load_controller{3}.interpolate='LINEAR';
+febio_spec.LoadData.load_controller{3}.points.point.VAL=[0 bosm_ini; 0.2 bosm_ini; 0.4 bosm_ini+bosm_diff_amp; 0.6 bosm_ini; 0.8 bosm_ini-bosm_diff_amp; 1 bosm_ini];
+
+febio_spec.LoadData.load_controller{4}.ATTR.id=4;
+febio_spec.LoadData.load_controller{4}.ATTR.type='loadcurve';
+febio_spec.LoadData.load_controller{4}.interpolate='LINEAR';
+febio_spec.LoadData.load_controller{4}.points.point.VAL=[0 bosm_ini; 0.2 bosm_ini; 0.4 bosm_ini-bosm_diff_amp; 0.6 bosm_ini; 0.8 bosm_ini+bosm_diff_amp; 1 bosm_ini];
 
 %Output section 
 % -> log file
@@ -898,7 +962,7 @@ if runFlag==1 %i.e. a succesful run
     
     axisGeom(gca,fontSize); 
     colormap(cMap); colorbar;
-    caxis([0 max(DN_magnitude)]); caxis manual;   
+    caxis([0 max(max(sqrt(sum(N_disp_mat(:,:,:).^2,2))))]); caxis manual;   
     axis(axisLim(V_DEF)); %Set axis limits statically    
     view(140,30);
     camlight headlight;        

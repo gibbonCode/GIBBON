@@ -63,6 +63,10 @@ if anisotropicOption==1
     beta=[3 3 3];
 end
 
+bosm_ini=300;
+bosm_diff_amp=200;
+cF0=bosm_ini;
+
 % FEA control settings
 numTimeSteps=50; %Number of time steps desired
 max_refs=25; %Max reforms
@@ -169,9 +173,13 @@ febio_spec.Control.step_size=1/numTimeSteps;
 febio_spec.Control.solver.max_refs=max_refs;
 febio_spec.Control.solver.max_ups=max_ups;
 febio_spec.Control.time_stepper.dtmin=dtmin;
-febio_spec.Control.time_stepper.dtmax=dtmax; 
 febio_spec.Control.time_stepper.max_retries=max_retries;
 febio_spec.Control.time_stepper.opt_iter=opt_iter;
+
+%Use must-points by specifying 
+febio_spec.Control.time_stepper=rmfield(febio_spec.Control.time_stepper,'dtmax'); %Remove existing template dtmax definition
+febio_spec.Control.time_stepper.dtmax.ATTR.lc=1; %Set load curve id for dtmax
+febio_spec.Control.time_stepper.dtmax.VAL=1; %Set value
 
 %Material section
 materialName1='Material1';
@@ -184,9 +192,10 @@ febio_spec.Material.material{1}.mat_axis.d=[0 1 0];
 
 febio_spec.Material.material{1}.solid{1}.ATTR.type='Donnan equilibrium';
 febio_spec.Material.material{1}.solid{1}.phiw0=0.8;
-febio_spec.Material.material{1}.solid{1}.cF0.ATTR.lc=1;
-febio_spec.Material.material{1}.solid{1}.cF0.VAL=550;
-febio_spec.Material.material{1}.solid{1}.bosm=300;
+febio_spec.Material.material{1}.solid{1}.cF0.ATTR.lc=2;
+febio_spec.Material.material{1}.solid{1}.cF0.VAL=1;
+febio_spec.Material.material{1}.solid{1}.bosm.ATTR.lc=3;
+febio_spec.Material.material{1}.solid{1}.bosm.VAL=1;
 
 febio_spec.Material.material{1}.solid{2}.ATTR.type='neo-Hookean';
 febio_spec.Material.material{1}.solid{2}.E=1;
@@ -209,12 +218,19 @@ febio_spec.Material.material{1}.mat_axis.d=[0 1 0];
 febio_spec.Material.material{2}.solid{1}.ATTR.type='Donnan equilibrium';
 febio_spec.Material.material{2}.solid{1}.phiw0=0.8;
 febio_spec.Material.material{2}.solid{1}.cF0.ATTR.lc=2;
-febio_spec.Material.material{2}.solid{1}.cF0.VAL=550;
-febio_spec.Material.material{2}.solid{1}.bosm=300;
+febio_spec.Material.material{2}.solid{1}.cF0.VAL=1;
+febio_spec.Material.material{2}.solid{1}.bosm.ATTR.lc=4;
+febio_spec.Material.material{2}.solid{1}.bosm.VAL=1;
 
 febio_spec.Material.material{2}.solid{2}.ATTR.type='neo-Hookean';
 febio_spec.Material.material{2}.solid{2}.E=E_youngs;
 febio_spec.Material.material{2}.solid{2}.v=v_pois;
+
+if anisotropicOption==1
+    febio_spec.Material.material{2}.solid{3}.ATTR.type='ellipsoidal fiber distribution';
+    febio_spec.Material.material{2}.solid{3}.ksi=ksi;
+    febio_spec.Material.material{2}.solid{3}.beta=beta;
+end
 
 % Mesh section
 % -> Nodes
@@ -258,13 +274,23 @@ febio_spec.Boundary.bc{1}.dofs='x,y,z';
 % -> load_controller
 febio_spec.LoadData.load_controller{1}.ATTR.id=1;
 febio_spec.LoadData.load_controller{1}.ATTR.type='loadcurve';
-febio_spec.LoadData.load_controller{1}.interpolate='LINEAR';
-febio_spec.LoadData.load_controller{1}.points.point.VAL=[0 0; 0.25 1; 0.5 0; 0.75 0; 1 0];
+febio_spec.LoadData.load_controller{1}.interpolate='STEP';
+febio_spec.LoadData.load_controller{1}.points.point.VAL=[0 dtmax; 0.2 dtmax; 0.4 dtmax; 0.6 dtmax; 0.8 dtmax; 1 dtmax];
 
 febio_spec.LoadData.load_controller{2}.ATTR.id=2;
 febio_spec.LoadData.load_controller{2}.ATTR.type='loadcurve';
 febio_spec.LoadData.load_controller{2}.interpolate='LINEAR';
-febio_spec.LoadData.load_controller{2}.points.point.VAL=[0 0; 0.25 0; 0.5 0; 0.75 1; 1 0];
+febio_spec.LoadData.load_controller{2}.points.point.VAL=[0 0; 0.2 cF0; 1 cF0]; 
+
+febio_spec.LoadData.load_controller{3}.ATTR.id=3;
+febio_spec.LoadData.load_controller{3}.ATTR.type='loadcurve';
+febio_spec.LoadData.load_controller{3}.interpolate='LINEAR';
+febio_spec.LoadData.load_controller{3}.points.point.VAL=[0 bosm_ini; 0.2 bosm_ini; 0.4 bosm_ini+bosm_diff_amp; 0.6 bosm_ini; 0.8 bosm_ini-bosm_diff_amp; 1 bosm_ini];
+
+febio_spec.LoadData.load_controller{4}.ATTR.id=4;
+febio_spec.LoadData.load_controller{4}.ATTR.type='loadcurve';
+febio_spec.LoadData.load_controller{4}.interpolate='LINEAR';
+febio_spec.LoadData.load_controller{4}.points.point.VAL=[0 bosm_ini; 0.2 bosm_ini; 0.4 bosm_ini-bosm_diff_amp; 0.6 bosm_ini; 0.8 bosm_ini+bosm_diff_amp; 1 bosm_ini];
 
 %Output section 
 % -> log file

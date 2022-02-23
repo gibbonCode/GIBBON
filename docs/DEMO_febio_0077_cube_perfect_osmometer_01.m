@@ -1,4 +1,4 @@
-%% DEMO_febio_0075_cube_donnan_equilibrium_swelling_01
+%% DEMO_febio_0077_cube_perfect_osmometer_01.m
 % Below is a demonstration for:
 % 
 % * Building geometry for a cube with hexahedral elements
@@ -11,7 +11,7 @@
 %
 % * febio_spec version 3.0
 % * febio, FEBio
-% * donnan equilibrium swelling
+% * perfect osmometer
 % * hexahedral elements, hex8
 % * cube, box, rectangular
 % * static, solid
@@ -58,15 +58,9 @@ numElementsHeight=round(sampleHeight/pointSpacings(3)); %Number of elemens in di
 E_youngs=1; 
 v_pois=0.3;
 
-anisotropicOption=0;
-if anisotropicOption==1
-    ksi=[500 500 0.01];
-    beta=[3 3 3];
-end
-
+iosm=300;
 bosm_ini=300;
 bosm_diff_amp=200;
-cF0=bosm_ini;
 
 % FEA control settings
 numTimeSteps=50; %Number of time steps desired
@@ -76,7 +70,7 @@ opt_iter=12; %Optimum number of iterations
 max_retries=5; %Maximum number of retires
 dtmin=(1/numTimeSteps)/100; %Minimum time step size
 dtmax=1/numTimeSteps; %Maximum time step size
-runMode='external';
+runMode='internal';
 
 %% Creating model geometry and mesh
 % A box is created with tri-linear hexahedral (hex8) elements using the
@@ -204,22 +198,15 @@ febio_spec.Material.material{1}.mat_axis.ATTR.type='vector';
 febio_spec.Material.material{1}.mat_axis.a=[1 0 0];
 febio_spec.Material.material{1}.mat_axis.d=[0 1 0];
 
-febio_spec.Material.material{1}.solid{1}.ATTR.type='Donnan equilibrium';
+febio_spec.Material.material{1}.solid{1}.ATTR.type='perfect osmometer';
 febio_spec.Material.material{1}.solid{1}.phiw0=0.8;
-febio_spec.Material.material{1}.solid{1}.cF0.ATTR.lc=2;
-febio_spec.Material.material{1}.solid{1}.cF0.VAL=1;
-febio_spec.Material.material{1}.solid{1}.bosm.ATTR.lc=3;
+febio_spec.Material.material{1}.solid{1}.iosm=iosm;
+febio_spec.Material.material{1}.solid{1}.bosm.ATTR.lc=2;
 febio_spec.Material.material{1}.solid{1}.bosm.VAL=1;
 
-febio_spec.Material.material{1}.solid{2}.ATTR.type='neo-Hookean';
+febio_spec.Material.material{1}.solid{2}.ATTR.type='natural neo-Hookean';
 febio_spec.Material.material{1}.solid{2}.E=E_youngs;
 febio_spec.Material.material{1}.solid{2}.v=v_pois;
-
-if anisotropicOption==1
-    febio_spec.Material.material{1}.solid{3}.ATTR.type='ellipsoidal fiber distribution';
-    febio_spec.Material.material{1}.solid{3}.ksi=ksi;
-    febio_spec.Material.material{1}.solid{3}.beta=beta;
-end
 
 % Mesh section
 % -> Nodes
@@ -272,17 +259,12 @@ febio_spec.Boundary.bc{3}.dofs='z';
 febio_spec.LoadData.load_controller{1}.ATTR.id=1;
 febio_spec.LoadData.load_controller{1}.ATTR.type='loadcurve';
 febio_spec.LoadData.load_controller{1}.interpolate='STEP';
-febio_spec.LoadData.load_controller{1}.points.point.VAL=[0 dtmax; 0.2 dtmax; 0.4 dtmax; 0.6 dtmax; 0.8 dtmax; 1 dtmax];
+febio_spec.LoadData.load_controller{1}.points.point.VAL=[0 dtmax; 0.25 dtmax; 0.5 dtmax; 0.75 dtmax; 1 dtmax;]; %Defines must-points
 
 febio_spec.LoadData.load_controller{2}.ATTR.id=2;
 febio_spec.LoadData.load_controller{2}.ATTR.type='loadcurve';
 febio_spec.LoadData.load_controller{2}.interpolate='LINEAR';
-febio_spec.LoadData.load_controller{2}.points.point.VAL=[0 0; 0.2 cF0; 1 cF0]; 
-
-febio_spec.LoadData.load_controller{3}.ATTR.id=3;
-febio_spec.LoadData.load_controller{3}.ATTR.type='loadcurve';
-febio_spec.LoadData.load_controller{3}.interpolate='LINEAR';
-febio_spec.LoadData.load_controller{3}.points.point.VAL=[0 bosm_ini; 0.2 bosm_ini; 0.4 bosm_ini+bosm_diff_amp; 0.6 bosm_ini; 0.8 bosm_ini-bosm_diff_amp; 1 bosm_ini];
+febio_spec.LoadData.load_controller{2}.points.point.VAL=[0 bosm_ini; 0.25 bosm_ini+bosm_diff_amp; 0.5 bosm_ini; 0.75 bosm_ini-bosm_diff_amp; 1 bosm_ini;];
 
 %Output section 
 % -> log file
@@ -398,7 +380,7 @@ if runFlag==1 %i.e. a succesful run
 
     gtitle([febioFebFileNamePart,': Press play to animate']);
     title('$J$ [.]','Interpreter','Latex')
-    hp=gpatch(Fb,V_DEF(:,:,end),CV,'k',0.5,2); %Add graphics object to animate
+    hp=gpatch(Fb,V_DEF(:,:,end),CV,'k',1,2); %Add graphics object to animate
     hp.Marker='.';
     hp.MarkerSize=markerSize2;
     hp.FaceColor='interp';
