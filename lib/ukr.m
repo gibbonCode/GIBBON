@@ -22,7 +22,7 @@ end
 
 %%
 
-cMap=resampleColormap([0 87 183; 255, 215, 0]./255,n);
+cMap=resampleColormap([255 215 0; 0 87 183; ]./255,n);
 
 %% 
 % _*GIBBON footer text*_ 
