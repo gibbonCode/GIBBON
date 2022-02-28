@@ -6,7 +6,7 @@
    <!--
 This HTML was auto-generated from MATLAB code.
 To make changes, update the MATLAB code and republish this document.
-      --><title>DEMO_febio_0047_cylinder_embedded_probe_01</title><meta name="generator" content="MATLAB 9.9"><link rel="schema.DC" href="http://purl.org/dc/elements/1.1/"><meta name="DC.date" content="2020-12-18"><meta name="DC.source" content="DEMO_febio_0047_cylinder_embedded_probe_01.m"><style type="text/css">
+      --><title>DEMO_febio_0047_cylinder_embedded_probe_01</title><meta name="generator" content="MATLAB 9.10"><link rel="schema.DC" href="http://purl.org/dc/elements/1.1/"><meta name="DC.date" content="2022-02-25"><meta name="DC.source" content="DEMO_febio_0047_cylinder_embedded_probe_01.m"><style type="text/css">
 html,body,div,span,applet,object,iframe,h1,h2,h3,h4,h5,h6,p,blockquote,pre,a,abbr,acronym,address,big,cite,code,del,dfn,em,font,img,ins,kbd,q,s,samp,small,strike,strong,tt,var,b,u,i,center,dl,dt,dd,ol,ul,li,fieldset,form,label,legend,table,caption,tbody,tfoot,thead,tr,th,td{margin:0;padding:0;border:0;outline:0;font-size:100%;vertical-align:baseline;background:transparent}body{line-height:1}ol,ul{list-style:none}blockquote,q{quotes:none}blockquote:before,blockquote:after,q:before,q:after{content:'';content:none}:focus{outine:0}ins{text-decoration:none}del{text-decoration:line-through}table{border-collapse:collapse;border-spacing:0}
 
 html { min-height:100%; margin-bottom:1px; }
@@ -67,7 +67,7 @@ table td { padding:7px 5px; text-align:left; vertical-align:top; border:1px soli
 
 
 
-  </style></head><body><div class="content"><h1>DEMO_febio_0047_cylinder_embedded_probe_01</h1><!--introduction--><p>Below is a demonstration for:</p><div><ul><li>Building geometry for a tissue segment with an embedded probe</li><li>Defining the boundary conditions</li><li>Coding the febio structure</li><li>Running the model</li><li>Importing and visualizing the displacement results</li></ul></div><!--/introduction--><h2>Contents</h2><div><ul><li><a href="#1">Keywords</a></li><li><a href="#4">Control parameters</a></li><li><a href="#5">Build probe</a></li><li><a href="#7">Build tissue</a></li><li><a href="#8">Cap ends</a></li><li><a href="#10">Merge model components</a></li><li><a href="#12">Mesh solid using tetgen</a></li><li><a href="#17">Define boundary condition node sets</a></li><li><a href="#19">Defining the FEBio input structure</a></li><li><a href="#20">Quick viewing of the FEBio input file structure</a></li><li><a href="#22">Exporting the FEBio input file</a></li><li><a href="#23">Running the FEBio analysis</a></li><li><a href="#24">Import FEBio results</a></li></ul></div><h2 id="1">Keywords</h2><div><ul><li>febio_spec version 3.0</li><li>febio, FEBio</li><li>probe</li><li>contact, sliding, sticky, friction</li><li>rigid body constraints</li><li>hexahedral elements, hex8</li><li>triangular elements, tri3</li><li>slab, block, rectangular</li><li>sphere</li><li>static, solid</li><li>hyperelastic, Ogden</li><li>displacement logfile</li><li>stress logfile</li></ul></div><pre class="codeinput">clear; close <span class="string">all</span>; clc;
+  </style></head><body><div class="content"><h1>DEMO_febio_0047_cylinder_embedded_probe_01</h1><!--introduction--><p>Below is a demonstration for:</p><div><ul><li>Building geometry for a tissue segment with an embedded probe</li><li>Defining the boundary conditions</li><li>Coding the febio structure</li><li>Running the model</li><li>Importing and visualizing the displacement results</li></ul></div><!--/introduction--><h2>Contents</h2><div><ul><li><a href="#1">Keywords</a></li><li><a href="#4">Control parameters</a></li><li><a href="#5">Build probe</a></li><li><a href="#7">Build tissue</a></li><li><a href="#8">Cap ends</a></li><li><a href="#10">Merge model components</a></li><li><a href="#12">Mesh solid using tetgen</a></li><li><a href="#17">Define boundary condition node sets</a></li><li><a href="#19">Defining the FEBio input structure</a></li><li><a href="#20">Quick viewing of the FEBio input file structure</a></li><li><a href="#22">Exporting the FEBio input file</a></li><li><a href="#23">Running the FEBio analysis</a></li><li><a href="#24">Import FEBio results</a></li></ul></div><h2 id="1">Keywords</h2><div><ul><li>febio_spec version 3.0</li><li>febio, FEBio</li><li>probe</li><li>rigid body constraints</li><li>tetrahedral elements, tet4</li><li>triangular elements, tri3</li><li>slab, block, rectangular</li><li>sphere</li><li>static, solid</li><li>hyperelastic, Ogden</li><li>displacement logfile</li><li>stress logfile</li></ul></div><pre class="codeinput">clear; close <span class="string">all</span>; clc;
 </pre><p>Plot settings</p><pre class="codeinput">fontSize=15;
 faceAlpha=1;
 lineWidth1=1.5;
@@ -129,7 +129,7 @@ Fp=fliplr(Fp); <span class="comment">%Invert face orientation</span>
 Vp(:,3)=Vp(:,3)-max(Vp(:,3));
 
 <span class="comment">%Get top curve</span>
-Eb=patchBoundary(Fp,Vp);
+Eb=patchBoundary(Fp);
 indProbeTop=edgeListToCurve(Eb);
 indProbeTop=indProbeTop(1:end-1);
 Vst=Vp(indProbeTop,:);
@@ -214,40 +214,42 @@ inputStruct.minRegionMarker=2; <span class="comment">%Minimum region marker</spa
 </pre><p>Mesh model using tetrahedral elements using tetGen</p><pre class="codeinput">[meshOutput]=runTetGen(inputStruct); <span class="comment">%Run tetGen</span>
 </pre><pre class="codeoutput"> 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
---- TETGEN Tetrahedral meshing --- 18-Dec-2020 14:29:09
+--- TETGEN Tetrahedral meshing --- 25-Feb-2022 15:44:52
  
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
---- Writing SMESH file --- 18-Dec-2020 14:29:09
+--- Writing SMESH file --- 25-Feb-2022 15:44:52
 ----&gt; Adding node field
 ----&gt; Adding facet field
 ----&gt; Adding holes specification
 ----&gt; Adding region specification
---- Done --- 18-Dec-2020 14:29:09
---- Running TetGen to mesh input boundary--- 18-Dec-2020 14:29:09
+--- Done --- 25-Feb-2022 15:44:52
+--- Running TetGen to mesh input boundary--- 25-Feb-2022 15:44:52
 Opening /mnt/data/MATLAB/GIBBON/data/temp/temp.smesh.
 Delaunizing vertices...
-Delaunay seconds:  0.06748
+Delaunay seconds:  0.067594
 Creating surface mesh ...
-Surface mesh seconds:  0.002073
+Surface mesh seconds:  0.002337
 Recovering boundaries...
-Boundary recovery seconds:  0.004778
+Boundary recovery seconds:  0.005187
 Removing exterior tetrahedra ...
 Spreading region attributes.
-Exterior tets removal seconds:  0.00175
+Exterior tets removal seconds:  0.001597
 Recovering Delaunayness...
-Delaunay recovery seconds:  0.004578
+Delaunay recovery seconds:  0.002223
 Refining mesh...
-Refinement seconds:  0.022011
-Optimizing mesh...
-Optimization seconds:  0.001842
+Refinement seconds:  0.034687
+Smoothing vertices...
+Mesh smoothing seconds:  0.068068
+Improving mesh...
+Mesh improvement seconds:  0.002167
 
 Writing /mnt/data/MATLAB/GIBBON/data/temp/temp.1.node.
 Writing /mnt/data/MATLAB/GIBBON/data/temp/temp.1.ele.
 Writing /mnt/data/MATLAB/GIBBON/data/temp/temp.1.face.
 Writing /mnt/data/MATLAB/GIBBON/data/temp/temp.1.edge.
 
-Output seconds:  0.028042
-Total running seconds:  0.132692
+Output seconds:  0.033442
+Total running seconds:  0.217468
 
 Statistics:
 
@@ -257,19 +259,19 @@ Statistics:
   Input holes: 0
   Input regions: 1
 
-  Mesh points: 2231
-  Mesh tetrahedra: 10409
-  Mesh faces: 21980
+  Mesh points: 2181
+  Mesh tetrahedra: 9862
+  Mesh faces: 20886
   Mesh faces on exterior boundary: 2324
   Mesh faces on input facets: 2324
   Mesh edges on input segments: 3486
-  Steiner points inside domain: 1067
+  Steiner points inside domain: 1017
 
---- Done --- 18-Dec-2020 14:29:09
+--- Done --- 25-Feb-2022 15:44:52
  
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
---- Importing TetGen files --- 18-Dec-2020 14:29:09
---- Done --- 18-Dec-2020 14:29:09
+--- Importing TetGen files --- 25-Feb-2022 15:44:52
+--- Done --- 25-Feb-2022 15:44:53
 </pre><p>Visualize mesh</p><pre class="codeinput">meshView(meshOutput);
 </pre><img width="100%" height="auto" vspace="5" hspace="5" src="DEMO_febio_0047_cylinder_embedded_probe_01_04.jpg" alt=""> <p>Access model element and patch data</p><pre class="codeinput">F=meshOutput.faces;
 V=meshOutput.nodes;
@@ -426,81 +428,81 @@ febioAnalysis.runMode=<span class="string">'external'</span>;<span class="commen
 [runFlag]=runMonitorFEBio(febioAnalysis);<span class="comment">%START FEBio NOW!!!!!!!!</span>
 </pre><pre class="codeoutput"> 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
---------&gt;    RUNNING/MONITORING FEBIO JOB    &lt;-------- 18-Dec-2020 14:29:13
+--------&gt;    RUNNING/MONITORING FEBIO JOB    &lt;-------- 25-Feb-2022 15:44:58
 FEBio path: /home/kevin/FEBioStudio/bin/febio3
-# Attempt removal of existing log files                18-Dec-2020 14:29:13
- * Removal succesful                                   18-Dec-2020 14:29:13
-# Attempt removal of existing .xplt files              18-Dec-2020 14:29:13
- * Removal succesful                                   18-Dec-2020 14:29:13
-# Starting FEBio...                                    18-Dec-2020 14:29:13
+# Attempt removal of existing log files                25-Feb-2022 15:44:58
+ * Removal succesful                                   25-Feb-2022 15:44:58
+# Attempt removal of existing .xplt files              25-Feb-2022 15:44:58
+ * Removal succesful                                   25-Feb-2022 15:44:58
+# Starting FEBio...                                    25-Feb-2022 15:44:58
   Max. total analysis time is: Inf s
- * Waiting for log file creation                       18-Dec-2020 14:29:13
+ * Waiting for log file creation                       25-Feb-2022 15:44:58
    Max. wait time: 30 s
- * Log file found.                                     18-Dec-2020 14:29:14
-# Parsing log file...                                  18-Dec-2020 14:29:14
-    number of iterations   : 3                         18-Dec-2020 14:29:14
-    number of reformations : 3                         18-Dec-2020 14:29:14
-------- converged at time : 0.1                        18-Dec-2020 14:29:14
-    number of iterations   : 3                         18-Dec-2020 14:29:14
-    number of reformations : 3                         18-Dec-2020 14:29:14
-------- converged at time : 0.2                        18-Dec-2020 14:29:14
-    number of iterations   : 1                         18-Dec-2020 14:29:15
-    number of reformations : 1                         18-Dec-2020 14:29:15
-------- converged at time : 0.3                        18-Dec-2020 14:29:15
-    number of iterations   : 3                         18-Dec-2020 14:29:15
-    number of reformations : 3                         18-Dec-2020 14:29:15
-------- converged at time : 0.4                        18-Dec-2020 14:29:15
-    number of iterations   : 3                         18-Dec-2020 14:29:15
-    number of reformations : 3                         18-Dec-2020 14:29:15
-------- converged at time : 0.5                        18-Dec-2020 14:29:15
-    number of iterations   : 3                         18-Dec-2020 14:29:15
-    number of reformations : 3                         18-Dec-2020 14:29:15
-------- converged at time : 0.6                        18-Dec-2020 14:29:15
-    number of iterations   : 3                         18-Dec-2020 14:29:16
-    number of reformations : 3                         18-Dec-2020 14:29:16
-------- converged at time : 0.7                        18-Dec-2020 14:29:16
-    number of iterations   : 1                         18-Dec-2020 14:29:16
-    number of reformations : 1                         18-Dec-2020 14:29:16
-------- converged at time : 0.8                        18-Dec-2020 14:29:16
-    number of iterations   : 3                         18-Dec-2020 14:29:16
-    number of reformations : 3                         18-Dec-2020 14:29:16
-------- converged at time : 0.9                        18-Dec-2020 14:29:16
-    number of iterations   : 3                         18-Dec-2020 14:29:16
-    number of reformations : 3                         18-Dec-2020 14:29:16
-------- converged at time : 1                          18-Dec-2020 14:29:16
-    number of iterations   : 3                         18-Dec-2020 14:29:17
-    number of reformations : 3                         18-Dec-2020 14:29:17
-------- converged at time : 1.1                        18-Dec-2020 14:29:17
-    number of iterations   : 3                         18-Dec-2020 14:29:17
-    number of reformations : 3                         18-Dec-2020 14:29:17
-------- converged at time : 1.2                        18-Dec-2020 14:29:17
-    number of iterations   : 1                         18-Dec-2020 14:29:17
-    number of reformations : 1                         18-Dec-2020 14:29:17
-------- converged at time : 1.3                        18-Dec-2020 14:29:17
-    number of iterations   : 3                         18-Dec-2020 14:29:17
-    number of reformations : 3                         18-Dec-2020 14:29:17
-------- converged at time : 1.4                        18-Dec-2020 14:29:17
-    number of iterations   : 3                         18-Dec-2020 14:29:18
-    number of reformations : 3                         18-Dec-2020 14:29:18
-------- converged at time : 1.5                        18-Dec-2020 14:29:18
-    number of iterations   : 3                         18-Dec-2020 14:29:18
-    number of reformations : 3                         18-Dec-2020 14:29:18
-------- converged at time : 1.6                        18-Dec-2020 14:29:18
-    number of iterations   : 3                         18-Dec-2020 14:29:18
-    number of reformations : 3                         18-Dec-2020 14:29:18
-------- converged at time : 1.7                        18-Dec-2020 14:29:18
-    number of iterations   : 1                         18-Dec-2020 14:29:18
-    number of reformations : 1                         18-Dec-2020 14:29:18
-------- converged at time : 1.8                        18-Dec-2020 14:29:18
-    number of iterations   : 3                         18-Dec-2020 14:29:19
-    number of reformations : 3                         18-Dec-2020 14:29:19
-------- converged at time : 1.9                        18-Dec-2020 14:29:19
-    number of iterations   : 3                         18-Dec-2020 14:29:19
-    number of reformations : 3                         18-Dec-2020 14:29:19
-------- converged at time : 2                          18-Dec-2020 14:29:19
- Elapsed time : 0:00:05                                18-Dec-2020 14:29:19
+ * Log file found.                                     25-Feb-2022 15:44:58
+# Parsing log file...                                  25-Feb-2022 15:44:58
+    number of iterations   : 3                         25-Feb-2022 15:44:58
+    number of reformations : 3                         25-Feb-2022 15:44:58
+------- converged at time : 0.1                        25-Feb-2022 15:44:58
+    number of iterations   : 3                         25-Feb-2022 15:44:59
+    number of reformations : 3                         25-Feb-2022 15:44:59
+------- converged at time : 0.2                        25-Feb-2022 15:44:59
+    number of iterations   : 1                         25-Feb-2022 15:44:59
+    number of reformations : 1                         25-Feb-2022 15:44:59
+------- converged at time : 0.3                        25-Feb-2022 15:44:59
+    number of iterations   : 3                         25-Feb-2022 15:44:59
+    number of reformations : 3                         25-Feb-2022 15:44:59
+------- converged at time : 0.4                        25-Feb-2022 15:44:59
+    number of iterations   : 3                         25-Feb-2022 15:44:59
+    number of reformations : 3                         25-Feb-2022 15:44:59
+------- converged at time : 0.5                        25-Feb-2022 15:44:59
+    number of iterations   : 3                         25-Feb-2022 15:45:00
+    number of reformations : 3                         25-Feb-2022 15:45:00
+------- converged at time : 0.6                        25-Feb-2022 15:45:00
+    number of iterations   : 3                         25-Feb-2022 15:45:00
+    number of reformations : 3                         25-Feb-2022 15:45:00
+------- converged at time : 0.7                        25-Feb-2022 15:45:00
+    number of iterations   : 1                         25-Feb-2022 15:45:00
+    number of reformations : 1                         25-Feb-2022 15:45:00
+------- converged at time : 0.8                        25-Feb-2022 15:45:00
+    number of iterations   : 3                         25-Feb-2022 15:45:00
+    number of reformations : 3                         25-Feb-2022 15:45:00
+------- converged at time : 0.9                        25-Feb-2022 15:45:00
+    number of iterations   : 3                         25-Feb-2022 15:45:01
+    number of reformations : 3                         25-Feb-2022 15:45:01
+------- converged at time : 1                          25-Feb-2022 15:45:01
+    number of iterations   : 3                         25-Feb-2022 15:45:01
+    number of reformations : 3                         25-Feb-2022 15:45:01
+------- converged at time : 1.1                        25-Feb-2022 15:45:01
+    number of iterations   : 3                         25-Feb-2022 15:45:01
+    number of reformations : 3                         25-Feb-2022 15:45:01
+------- converged at time : 1.2                        25-Feb-2022 15:45:01
+    number of iterations   : 1                         25-Feb-2022 15:45:01
+    number of reformations : 1                         25-Feb-2022 15:45:01
+------- converged at time : 1.3                        25-Feb-2022 15:45:01
+    number of iterations   : 3                         25-Feb-2022 15:45:02
+    number of reformations : 3                         25-Feb-2022 15:45:02
+------- converged at time : 1.4                        25-Feb-2022 15:45:02
+    number of iterations   : 3                         25-Feb-2022 15:45:02
+    number of reformations : 3                         25-Feb-2022 15:45:02
+------- converged at time : 1.5                        25-Feb-2022 15:45:02
+    number of iterations   : 3                         25-Feb-2022 15:45:02
+    number of reformations : 3                         25-Feb-2022 15:45:02
+------- converged at time : 1.6                        25-Feb-2022 15:45:02
+    number of iterations   : 3                         25-Feb-2022 15:45:03
+    number of reformations : 3                         25-Feb-2022 15:45:03
+------- converged at time : 1.7                        25-Feb-2022 15:45:03
+    number of iterations   : 1                         25-Feb-2022 15:45:03
+    number of reformations : 1                         25-Feb-2022 15:45:03
+------- converged at time : 1.8                        25-Feb-2022 15:45:03
+    number of iterations   : 3                         25-Feb-2022 15:45:03
+    number of reformations : 3                         25-Feb-2022 15:45:03
+------- converged at time : 1.9                        25-Feb-2022 15:45:03
+    number of iterations   : 3                         25-Feb-2022 15:45:04
+    number of reformations : 3                         25-Feb-2022 15:45:04
+------- converged at time : 2                          25-Feb-2022 15:45:04
+ Elapsed time : 0:00:06                                25-Feb-2022 15:45:04
  N O R M A L   T E R M I N A T I O N
-# Done                                                 18-Dec-2020 14:29:19
+# Done                                                 25-Feb-2022 15:45:04
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 </pre><h2 id="24">Import FEBio results</h2><pre class="codeinput"><span class="keyword">if</span> runFlag==1 <span class="comment">%i.e. a succesful run</span>
 </pre><pre class="codeinput">    <span class="comment">% Importing nodal displacements from a log file</span>
@@ -541,7 +543,7 @@ FEBio path: /home/kevin/FEBioStudio/bin/febio3
     logicCutElements=VE(:,2)&gt;=0;
 
     [F_cut,CF_cut_data]=element2patch(E(logicCutElements,:),E_data(logicCutElements,:,1));
-    [indBoundary]=tesBoundary(F_cut,V);
+    [indBoundary]=tesBoundary(F_cut);
 
     CV=faceToVertexMeasure(F_cut(indBoundary,:),V,CF_cut_data(indBoundary,:));
 </pre><p>Plotting the simulated results using <tt>anim8</tt> to visualize and animate deformations</p><pre class="codeinput">    <span class="comment">% Create basic view and store graphics handle to initiate animation</span>
@@ -580,7 +582,7 @@ FEBio path: /home/kevin/FEBioStudio/bin/febio3
     anim8(hf,animStruct); <span class="comment">%Initiate animation feature</span>
     drawnow;
 </pre><img width="100%" height="auto" vspace="5" hspace="5" src="DEMO_febio_0047_cylinder_embedded_probe_01_06.jpg" alt=""> <pre class="codeinput"><span class="keyword">end</span>
-</pre><p><img vspace="5" hspace="5" src="gibbVerySmall.gif" alt=""> </p><p><i><b>GIBBON</b></i> <a href="www.gibboncode.org">www.gibboncode.org</a></p><p><i>Kevin Mattheus Moerman</i>, <a href="gibbon.toolbox@gmail.com">gibbon.toolbox@gmail.com</a></p><p><i><b>GIBBON footer text</b></i></p><p>License: <a href="https://github.com/gibbonCode/GIBBON/blob/master/LICENSE">https://github.com/gibbonCode/GIBBON/blob/master/LICENSE</a></p><p>GIBBON: The Geometry and Image-based Bioengineering add-On. A toolbox for image segmentation, image-based modeling, meshing, and finite element analysis.</p><p>Copyright (C) 2006-2020 Kevin Mattheus Moerman</p><p>This program is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.</p><p>This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for more details.</p><p>You should have received a copy of the GNU General Public License along with this program.  If not, see <a href="http://www.gnu.org/licenses/">http://www.gnu.org/licenses/</a>.</p><p class="footer"><br><a href="https://www.mathworks.com/products/matlab/">Published with MATLAB&reg; R2020b</a><br></p></div><!--
+</pre><p><img vspace="5" hspace="5" src="gibbVerySmall.gif" alt=""> </p><p><i><b>GIBBON</b></i> <a href="www.gibboncode.org">www.gibboncode.org</a></p><p><i>Kevin Mattheus Moerman</i>, <a href="gibbon.toolbox@gmail.com">gibbon.toolbox@gmail.com</a></p><p><i><b>GIBBON footer text</b></i></p><p>License: <a href="https://github.com/gibbonCode/GIBBON/blob/master/LICENSE">https://github.com/gibbonCode/GIBBON/blob/master/LICENSE</a></p><p>GIBBON: The Geometry and Image-based Bioengineering add-On. A toolbox for image segmentation, image-based modeling, meshing, and finite element analysis.</p><p>Copyright (C) 2006-2022 Kevin Mattheus Moerman and the GIBBON contributors</p><p>This program is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.</p><p>This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for more details.</p><p>You should have received a copy of the GNU General Public License along with this program.  If not, see <a href="http://www.gnu.org/licenses/">http://www.gnu.org/licenses/</a>.</p><p class="footer"><br><a href="https://www.mathworks.com/products/matlab/">Published with MATLAB&reg; R2021a</a><br></p></div><!--
 ##### SOURCE BEGIN #####
 %% DEMO_febio_0047_cylinder_embedded_probe_01
 % Below is a demonstration for:
@@ -596,9 +598,8 @@ FEBio path: /home/kevin/FEBioStudio/bin/febio3
 % * febio_spec version 3.0
 % * febio, FEBio
 % * probe
-% * contact, sliding, sticky, friction
 % * rigid body constraints
-% * hexahedral elements, hex8
+% * tetrahedral elements, tet4
 % * triangular elements, tri3
 % * slab, block, rectangular
 % * sphere
@@ -679,7 +680,7 @@ Fp=fliplr(Fp); %Invert face orientation
 Vp(:,3)=Vp(:,3)-max(Vp(:,3));
 
 %Get top curve
-Eb=patchBoundary(Fp,Vp);
+Eb=patchBoundary(Fp);
 indProbeTop=edgeListToCurve(Eb);
 indProbeTop=indProbeTop(1:end-1);
 Vst=Vp(indProbeTop,:);
@@ -1029,7 +1030,7 @@ if runFlag==1 %i.e. a succesful run
     logicCutElements=VE(:,2)>=0;
     
     [F_cut,CF_cut_data]=element2patch(E(logicCutElements,:),E_data(logicCutElements,:,1));
-    [indBoundary]=tesBoundary(F_cut,V);
+    [indBoundary]=tesBoundary(F_cut);
     
     CV=faceToVertexMeasure(F_cut(indBoundary,:),V,CF_cut_data(indBoundary,:));
     
@@ -1093,7 +1094,7 @@ end
 % image segmentation, image-based modeling, meshing, and finite element
 % analysis.
 % 
-% Copyright (C) 2006-2020 Kevin Mattheus Moerman
+% Copyright (C) 2006-2022 Kevin Mattheus Moerman and the GIBBON contributors
 % 
 % This program is free software: you can redistribute it and/or modify
 % it under the terms of the GNU General Public License as published by

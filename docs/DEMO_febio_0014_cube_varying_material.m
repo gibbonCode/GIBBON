@@ -30,6 +30,7 @@ fontSize=15;
 faceAlpha1=0.8;
 markerSize=40;
 lineWidth=3;
+cMap=spectral(250);
 
 %% Control parameters
 
@@ -42,10 +43,10 @@ febioFebFileNamePart='tempModel';
 febioFebFileName=fullfile(savePath,[febioFebFileNamePart,'.feb']); %FEB file name
 febioLogFileName=[febioFebFileNamePart,'.txt']; %FEBio log file name
 febioLogFileName_disp=[febioFebFileNamePart,'_disp_out.txt']; %Log file name for exporting force
-febioLogFileName_stress=[febioFebFileNamePart,'_stress_out.txt']; %Log file name for exporting force
+febioLogFileName_sed=[febioFebFileNamePart,'_sed_out.txt']; %Log file name for exporting strain energy density
 
 %Specifying dimensions and number of elements
-pointSpacings=0.5*ones(1,3); %Desired point spacing between nodes
+pointSpacings=1*ones(1,3); %Desired point spacing between nodes
 cubeSize=10; 
 sampleWidth=cubeSize; %Width 
 sampleThickness=cubeSize; %Thickness 
@@ -55,7 +56,7 @@ numElementsThickness=round(sampleThickness/pointSpacings(2)); %Number of elemens
 numElementsHeight=round(sampleHeight/pointSpacings(3)); %Number of elemens in dir 3
 
 %Define applied displacement 
-appliedStrain=0.1; %Linear strain (Only used to compute applied stretch)
+appliedStrain=0.3; %Linear strain (Only used to compute applied stretch)
 loadingOption='tension'; % or 'compression'
 switch loadingOption
     case 'compression'
@@ -69,7 +70,8 @@ displacementMagnitude=(stretchLoad*sampleHeight)-sampleHeight; %The displacement
 testOpt=2; %1=Linear gradient of material, or 2=gyroid based material distribution
 E_youngs_min=1e-3; %Lowest Youngs modulus
 E_youngs_max=1; %Highest Youngs modulus
-nu=0.4; %Poissons ratio
+nu_min=0.3; %Lowest Poissons ratio
+nu_max=0.45; %Lowest Poissons ratio
 
 % FEA control settings
 numTimeSteps=10; %Number of time steps desired
@@ -79,6 +81,7 @@ opt_iter=6; %Optimum number of iterations
 max_retries=5; %Maximum number of retires
 dtmin=(1/numTimeSteps)/100; %Minimum time step size
 dtmax=1/numTimeSteps; %Maximum time step size
+runMode='internal';
 
 %% Creating model geometry and mesh
 % A box is created with tri-linear hexahedral (hex8) elements using the
@@ -99,19 +102,18 @@ Fb=meshStruct.facesBoundary; %The boundary faces
 Cb=meshStruct.boundaryMarker; %The "colors" or labels for the boundary faces
 
 %% Define spatially varying material distribution data
+% Here the element centre coordinates are used assign the material
+% stiffness based on a particular function on these coordinates. 
 
+VE=patchCentre(E,V); %Element centres
 switch testOpt
     case 1 %linear gradient in X direction
-        X=V(:,1);
-        S=mean(X(E),2);
-    case 2 %gyroid          
-        %Create coordinate set for gyroid based on model
-        VE=patchCentre(E,V); %Element centres
-        
+        S=VE(:,1);
+    case 2 %gyroid                  
         %Scale coordinates for gyroid
         VE=VE-min(VE(:)); 
         VE=VE./max(VE(:));
-        VE=(VE.*4*pi)-2*pi;
+        VE=(VE.*2*pi)-pi;
         
         %Evaluate gyroid
         S=triplyPeriodicMinimal(VE(:,1),VE(:,2),VE(:,3),'g'); 
@@ -123,6 +125,7 @@ S=S./max(S(:)); %Devide by max -> range [0-1]
 
 %Use scaling data S to generate element Youngs moduli
 E_youngs_elem=S.*(E_youngs_max-E_youngs_min)+E_youngs_min; 
+nu_elem=S.*(nu_max-nu_min)+nu_min; 
 
 %Fix mesh struct for plotting
 meshStruct.elements=E;
@@ -143,7 +146,7 @@ hs=subplot(1,2,2); hold on;
 title('Cut view of solid mesh and materials','FontSize',fontSize);
 optionStruct.hFig=[hFig hs];
 meshView(meshStruct,optionStruct);
-colormap(gca,gjet(250)); colorbar; caxis([E_youngs_min E_youngs_max]);
+colormap(gca,cMap); colorbar; caxis([E_youngs_min E_youngs_max]);
 axisGeom(gca,fontSize);
 
 drawnow;
@@ -153,14 +156,10 @@ drawnow;
 % cube. These labels can be used to define boundary conditions. 
 
 %Define supported node sets
-logicFace=Cb==5; %Logic for current face set
-Fr=Fb(logicFace,:); %The current face set
-bcSupportList=unique(Fr(:)); %Node set part of selected face
+bcSupportList=unique(Fb(Cb==5,:)); %Node set part of selected face
 
 %Prescribed displacement nodes
-logicPrescribe=Cb==6; %Logic for current face set
-Fr=Fb(logicPrescribe,:); %The current face set
-bcPrescribeList=unique(Fr(:)); %Node set part of selected face
+bcPrescribeList=unique(Fb(Cb==6,:)); %Node set part of selected face
 
 %% 
 % Visualizing boundary conditions. Markers plotted on the semi-transparent
@@ -209,12 +208,14 @@ febio_spec.Control.time_stepper.opt_iter=opt_iter;
 %Material section
 materialName1='Material1';
 dataMapName1='MaterialParameterMap1';
+dataMapName2='MaterialParameterMap2';
 febio_spec.Material.material{1}.ATTR.name=materialName1;
 febio_spec.Material.material{1}.ATTR.type='neo-Hookean';
 febio_spec.Material.material{1}.ATTR.id=1;
 febio_spec.Material.material{1}.E.ATTR.type='map'; %Calls for mapping of parameter
 febio_spec.Material.material{1}.E.VAL=dataMapName1; %Calls for mapping of parameter
-febio_spec.Material.material{1}.v=nu;
+febio_spec.Material.material{1}.v.ATTR.type='map'; %Calls for mapping of parameter
+febio_spec.Material.material{1}.v.VAL=dataMapName2; %Calls for mapping of parameter
 
 % Mesh section
 % -> Nodes
@@ -241,10 +242,15 @@ febio_spec.Mesh.NodeSet{2}.node.ATTR.id=bcPrescribeList(:);
  
 %MeshData secion
 %-> Element data       
-febio_spec.MeshData.ElementData.ATTR.name=dataMapName1;
-febio_spec.MeshData.ElementData.ATTR.elem_set=partName1;
-febio_spec.MeshData.ElementData.elem.ATTR.lid=(1:1:size(E,1))';
-febio_spec.MeshData.ElementData.elem.VAL=E_youngs_elem;
+febio_spec.MeshData.ElementData{1}.ATTR.name=dataMapName1;
+febio_spec.MeshData.ElementData{1}.ATTR.elem_set=partName1;
+febio_spec.MeshData.ElementData{1}.elem.ATTR.lid=(1:1:size(E,1))';
+febio_spec.MeshData.ElementData{1}.elem.VAL=E_youngs_elem;
+
+febio_spec.MeshData.ElementData{2}.ATTR.name=dataMapName2;
+febio_spec.MeshData.ElementData{2}.ATTR.elem_set=partName1;
+febio_spec.MeshData.ElementData{2}.elem.ATTR.lid=(1:1:size(E,1))';
+febio_spec.MeshData.ElementData{2}.elem.VAL=nu_elem;
 
 %MeshDomains section
 febio_spec.MeshDomains.SolidDomain.ATTR.name=partName1;
@@ -282,8 +288,8 @@ febio_spec.Output.logfile.node_data{1}.ATTR.data='ux;uy;uz';
 febio_spec.Output.logfile.node_data{1}.ATTR.delim=',';
 febio_spec.Output.logfile.node_data{1}.VAL=1:size(V,1);
 
-febio_spec.Output.logfile.element_data{1}.ATTR.file=febioLogFileName_stress;
-febio_spec.Output.logfile.element_data{1}.ATTR.data='s1';
+febio_spec.Output.logfile.element_data{1}.ATTR.file=febioLogFileName_sed;
+febio_spec.Output.logfile.element_data{1}.ATTR.data='sed';
 febio_spec.Output.logfile.element_data{1}.ATTR.delim=',';
 febio_spec.Output.logfile.element_data{1}.VAL=1:size(E,1);
 
@@ -311,7 +317,7 @@ febioStruct2xml(febio_spec,febioFebFileName); %Exporting to file and domNode
 febioAnalysis.run_filename=febioFebFileName; %The input file name
 febioAnalysis.run_logname=febioLogFileName; %The name for the log file
 febioAnalysis.disp_on=1; %Display information on the command window
-febioAnalysis.runMode='external';%'internal';
+febioAnalysis.runMode=runMode;
 
 [runFlag]=runMonitorFEBio(febioAnalysis);%START FEBio NOW!!!!!!!!
 
@@ -329,64 +335,31 @@ if runFlag==1 %i.e. a succesful run
     
     %Create deformed coordinate set
     V_DEF=N_disp_mat+repmat(V,[1 1 size(N_disp_mat,3)]);
-               
-    %% 
-    % Plotting the simulated results using |anim8| to visualize and animate
-    % deformations 
-    
-    DN_magnitude=sqrt(sum(N_disp_mat(:,:,end).^2,2)); %Current displacement magnitude
-        
-    % Create basic view and store graphics handle to initiate animation
-    hf=cFigure; %Open figure  
-    gtitle([febioFebFileNamePart,': Press play to animate']);
-    title('Displacement magnitude [mm]','Interpreter','Latex')
-    hp=gpatch(Fb,V_DEF(:,:,end),DN_magnitude,'k',1); %Add graphics object to animate
-    hp.FaceColor='interp';
-    
-    axisGeom(gca,fontSize); 
-    colormap(gjet(250)); colorbar;
-    caxis([0 max(DN_magnitude)]);    
-    axis(axisLim(V_DEF)); %Set axis limits statically    
-    camlight headlight;        
-        
-    % Set up animation features
-    animStruct.Time=timeVec; %The time vector    
-    for qt=1:1:size(N_disp_mat,3) %Loop over time increments        
-        DN_magnitude=sqrt(sum(N_disp_mat(:,:,qt).^2,2)); %Current displacement magnitude
-                
-        %Set entries in animation structure
-        animStruct.Handles{qt}=[hp hp]; %Handles of objects to animate
-        animStruct.Props{qt}={'Vertices','CData'}; %Properties of objects to animate
-        animStruct.Set{qt}={V_DEF(:,:,qt),DN_magnitude}; %Property values for to set in order to animate
-    end        
-    anim8(hf,animStruct); %Initiate animation feature    
-    drawnow;
             
     %%
     % Importing element stress from a log file
-    dataStruct=importFEBio_logfile(fullfile(savePath,febioLogFileName_stress),1,1);
+    dataStruct=importFEBio_logfile(fullfile(savePath,febioLogFileName_sed),1,1);
     
     %Access data
-    E_stress_mat=dataStruct.data;
-    
-    E_stress_mat(isnan(E_stress_mat))=0;
+    E_sed_mat=dataStruct.data;
     
     %% 
     % Plotting the simulated results using |anim8| to visualize and animate
     % deformations 
     
-    [CV]=faceToVertexMeasure(E,V,E_stress_mat(:,:,end));
+    [CV]=faceToVertexMeasure(E,V,E_sed_mat(:,:,end));
     
     % Create basic view and store graphics handle to initiate animation
     hf=cFigure; %Open figure  
     gtitle([febioFebFileNamePart,': Press play to animate']);
-    title('$\sigma_{1}$ [MPa]','Interpreter','Latex')
+    title('$\Psi$ $[J/m^3]$','Interpreter','Latex')
+    
     hp=gpatch(Fb,V_DEF(:,:,end),CV,'k',1); %Add graphics object to animate
     hp.FaceColor='interp';
     
     axisGeom(gca,fontSize); 
-    colormap(gjet(250)); colorbar;
-    caxis([min(E_stress_mat(:)) max(E_stress_mat(:))]/3);    
+    colormap(cMap); colorbar;
+    caxis([min(E_sed_mat(:)) max(E_sed_mat(:))]/3);    
     axis(axisLim(V_DEF)); %Set axis limits statically    
     camlight headlight;        
         
@@ -394,7 +367,7 @@ if runFlag==1 %i.e. a succesful run
     animStruct.Time=timeVec; %The time vector    
     for qt=1:1:size(N_disp_mat,3) %Loop over time increments        
         
-        [CV]=faceToVertexMeasure(E,V,E_stress_mat(:,:,qt));
+        [CV]=faceToVertexMeasure(E,V,E_sed_mat(:,:,qt));
         
         %Set entries in animation structure
         animStruct.Handles{qt}=[hp hp]; %Handles of objects to animate
@@ -424,7 +397,7 @@ end
 % image segmentation, image-based modeling, meshing, and finite element
 % analysis.
 % 
-% Copyright (C) 2006-2021 Kevin Mattheus Moerman and the GIBBON contributors
+% Copyright (C) 2006-2022 Kevin Mattheus Moerman and the GIBBON contributors
 % 
 % This program is free software: you can redistribute it and/or modify
 % it under the terms of the GNU General Public License as published by

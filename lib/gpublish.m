@@ -18,7 +18,7 @@ if isempty(docName)
     error('File name is empty');
 end
 
-%% Publish m-file
+%% Set-up file/folder
 
 [pathName,docName,~]=fileparts(docName);
 
@@ -32,6 +32,28 @@ if isempty(pathName)
 else
     docNameFull=fullfile(pathName,docName);    
 end
+
+%% Cleanup existing published files (html, png, jpg etc). 
+
+%Get file names in html folder
+dirInfo = dir(htmlPath);
+fileNames={dirInfo(1:end).name};
+
+%Find files relating to the current file to publish
+logicRemove=contains(fileNames,docName); %Logic for relevant files
+fileNamesRemove=fileNames(logicRemove);
+
+%Cleanup/remove files
+for q=1:1:numel(fileNamesRemove)
+    fileNameNow=fileNamesRemove{q};
+    try
+        delete(fullfile(htmlPath,fileNameNow))
+    catch
+        warning(['Could not delete ',fileNameNow])
+    end
+end
+
+%% Publish 
 
 publish(docNameFull,...
     'catchError',true(1,1),...
@@ -80,7 +102,7 @@ cell2txtfile(htmlName,T,0,0);
 % image segmentation, image-based modeling, meshing, and finite element
 % analysis.
 % 
-% Copyright (C) 2006-2021 Kevin Mattheus Moerman and the GIBBON contributors
+% Copyright (C) 2006-2022 Kevin Mattheus Moerman and the GIBBON contributors
 % 
 % This program is free software: you can redistribute it and/or modify
 % it under the terms of the GNU General Public License as published by

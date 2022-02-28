@@ -15,7 +15,7 @@
 % * indentation
 % * contact, sliding, sticky, friction
 % * rigid body constraints
-% * tetrahedral elements, tet8
+% * tetrahedral elements, tet4
 % * triangular elements, tri3
 % * static, solid
 % * hyperelastic, Ogden
@@ -66,7 +66,7 @@ distanceChestPlate=12; %r_breastNominal/7
 %Meshing parameters
 nRefine=3; %Number of refine steps for hemi-sphere
 volumeFactor=3;
-plateHeight=r_breastNominal/2;
+plateHeight=r_breastNominal;
 
 %Material parameter set
 k_factor=50; %Bulk modulus factor
@@ -91,7 +91,7 @@ symmetric_stiffness=0;
 min_residual=1e-18;
 
 %Set run mode
-runMode='internal'; %'internal'
+runMode='external'; %'internal'
 
 %Contact parameters
 contactPenalty=15;
@@ -144,13 +144,11 @@ V(C_skin==2,3)=V(C_skin==2,3)+dtt;
 
 %%
 
-% cFigure; hold on;
-% gpatch(F,V,C_skin,'none',1);
-% axisGeom;
-% camlight headlight;
-% icolorbar;
-% colorbar;
-% gdrawnow;
+cFigure; hold on;
+gpatch(F,V,'w','none',1);
+axisGeom;
+camlight headlight;
+gdrawnow;
 
 %%
 
@@ -716,11 +714,10 @@ if runFlag==1 %i.e. a succesful run
     % Create basic view and store graphics handle to initiate animation
     hf=cFigure; %Open figure
     gtitle([febioFebFileNamePart,': Press play to animate']);
-    hp1=gpatch(Fb,V_DEF(:,:,end),DN_magnitude,'k',1); %Add graphics object to animate
+    hp1=gpatch(Fb,V_DEF(:,:,end),DN_magnitude,'none',0.7); %Add graphics object to animate    
     hp1.FaceColor='Interp';
-    hp2=gpatch(Fp1,V_DEF(:,:,end),'kw','none',0.5); %Add graphics object to animate
-    hp3=gpatch(Fp2,V_DEF(:,:,end),'kw','none',0.5); %Add graphics object to animate
-    %     gpatch(Fb,V,0.5*ones(1,3),'none',0.25); %A static graphics object
+    hp2=gpatch(Fp1,V_DEF(:,:,end),'w','none',0.5); %Add graphics object to animate
+    hp3=gpatch(Fp2,V_DEF(:,:,end),'w','none',0.5); %Add graphics object to animate   
     
     axisGeom(gca,fontSize);
     colormap(gjet(250)); colorbar;
@@ -761,7 +758,7 @@ end
 % image segmentation, image-based modeling, meshing, and finite element
 % analysis.
 % 
-% Copyright (C) 2006-2021 Kevin Mattheus Moerman and the GIBBON contributors
+% Copyright (C) 2006-2022 Kevin Mattheus Moerman and the GIBBON contributors
 % 
 % This program is free software: you can redistribute it and/or modify
 % it under the terms of the GNU General Public License as published by

@@ -6,8 +6,8 @@
    <!--
 This HTML was auto-generated from MATLAB code.
 To make changes, update the MATLAB code and republish this document.
-      --><title>DEMO_febio_0044_mammography_01.m</title><meta name="generator" content="MATLAB 9.8"><link rel="schema.DC" href="http://purl.org/dc/elements/1.1/"><meta name="DC.date" content="2020-07-07"><meta name="DC.source" content="DEMO_febio_0061_breast_gravity_01.m"><style type="text/css">
-html,body,div,span,applet,object,iframe,h1,h2,h3,h4,h5,h6,p,blockquote,pre,a,abbr,acronym,address,big,cite,code,del,dfn,em,font,img,ins,kbd,q,s,samp,small,strike,strong,sub,sup,tt,var,b,u,i,center,dl,dt,dd,ol,ul,li,fieldset,form,label,legend,table,caption,tbody,tfoot,thead,tr,th,td{margin:0;padding:0;border:0;outline:0;font-size:100%;vertical-align:baseline;background:transparent}body{line-height:1}ol,ul{list-style:none}blockquote,q{quotes:none}blockquote:before,blockquote:after,q:before,q:after{content:'';content:none}:focus{outine:0}ins{text-decoration:none}del{text-decoration:line-through}table{border-collapse:collapse;border-spacing:0}
+      --><title>DEMO_febio_0061_breast_gravity.m</title><meta name="generator" content="MATLAB 9.10"><link rel="schema.DC" href="http://purl.org/dc/elements/1.1/"><meta name="DC.date" content="2022-02-25"><meta name="DC.source" content="DEMO_febio_0061_breast_gravity_01.m"><style type="text/css">
+html,body,div,span,applet,object,iframe,h1,h2,h3,h4,h5,h6,p,blockquote,pre,a,abbr,acronym,address,big,cite,code,del,dfn,em,font,img,ins,kbd,q,s,samp,small,strike,strong,tt,var,b,u,i,center,dl,dt,dd,ol,ul,li,fieldset,form,label,legend,table,caption,tbody,tfoot,thead,tr,th,td{margin:0;padding:0;border:0;outline:0;font-size:100%;vertical-align:baseline;background:transparent}body{line-height:1}ol,ul{list-style:none}blockquote,q{quotes:none}blockquote:before,blockquote:after,q:before,q:after{content:'';content:none}:focus{outine:0}ins{text-decoration:none}del{text-decoration:line-through}table{border-collapse:collapse;border-spacing:0}
 
 html { min-height:100%; margin-bottom:1px; }
 html body { height:100%; margin:0px; font-family:Arial, Helvetica, sans-serif; font-size:10px; color:#000; line-height:140%; background:#fff none; overflow-y:scroll; }
@@ -67,7 +67,7 @@ table td { padding:7px 5px; text-align:left; vertical-align:top; border:1px soli
 
 
 
-  </style></head><body><div class="content"><h1>DEMO_febio_0044_mammography_01.m</h1><!--introduction--><p>Below is a demonstration for:</p><div><ul><li>Building geometry for a slab with hexahedral elements, and a triangulated sphere.</li><li>Defining the boundary conditions</li><li>Coding the febio structure</li><li>Running the model</li><li>Importing and visualizing the displacement results</li></ul></div><!--/introduction--><h2>Contents</h2><div><ul><li><a href="#1">Keywords</a></li><li><a href="#3">Plot settings</a></li><li><a href="#5">Control parameters</a></li><li><a href="#6">Create hemi-sphere</a></li><li><a href="#7">Change shape of hemi-sphere to create basic breast model</a></li><li><a href="#8">Create inclusion</a></li><li><a href="#9">Rotate model</a></li><li><a href="#17">Visualizing mesh using <tt>meshView</tt>, see also <tt>anim8</tt></a></li><li><a href="#18">Split element sets</a></li><li><a href="#19">Define boundary conditions</a></li><li><a href="#22">Defining the FEBio input structure</a></li><li><a href="#23">Quick viewing of the FEBio input file structure</a></li><li><a href="#25">Exporting the FEBio input file</a></li><li><a href="#26">Running the FEBio analysis</a></li><li><a href="#27">Import FEBio results</a></li></ul></div><h2 id="1">Keywords</h2><div><ul><li>febio_spec version 2.5</li><li>febio, FEBio</li><li>indentation</li><li>contact, sliding, sticky, friction</li><li>rigid body constraints</li><li>hexahedral elements, hex8</li><li>triangular elements, tri3</li><li>slab, block, rectangular</li><li>sphere</li><li>static, solid</li><li>hyperelastic, Ogden</li><li>displacement logfile</li><li>stress logfile</li></ul></div><pre class="codeinput">clear; close <span class="string">all</span>; clc;
+  </style></head><body><div class="content"><h1>DEMO_febio_0061_breast_gravity.m</h1><!--introduction--><p>Below is a demonstration for:</p><div><ul><li>Building geometry for a slab with hexahedral elements, and a triangulated sphere.</li><li>Defining the boundary conditions</li><li>Coding the febio structure</li><li>Running the model</li><li>Importing and visualizing the displacement results</li></ul></div><!--/introduction--><h2>Contents</h2><div><ul><li><a href="#1">Keywords</a></li><li><a href="#3">Plot settings</a></li><li><a href="#5">Control parameters</a></li><li><a href="#6">Create hemi-sphere</a></li><li><a href="#7">Change shape of hemi-sphere to create basic breast model</a></li><li><a href="#8">Create inclusion</a></li><li><a href="#9">Rotate model</a></li><li><a href="#17">Visualizing mesh using <tt>meshView</tt>, see also <tt>anim8</tt></a></li><li><a href="#18">Split element sets</a></li><li><a href="#19">Define boundary conditions</a></li><li><a href="#22">Defining the FEBio input structure</a></li><li><a href="#23">Quick viewing of the FEBio input file structure</a></li><li><a href="#25">Exporting the FEBio input file</a></li><li><a href="#26">Running the FEBio analysis</a></li><li><a href="#27">Import FEBio results</a></li></ul></div><h2 id="1">Keywords</h2><div><ul><li>febio_spec version 3.0</li><li>febio, FEBio</li><li>indentation</li><li>contact, sliding, sticky, friction</li><li>rigid body constraints</li><li>tetrahedral elements, tet4</li><li>triangular elements, tri3</li><li>slab, block, rectangular</li><li>sphere</li><li>static, solid</li><li>hyperelastic, Ogden</li><li>displacement logfile</li><li>stress logfile</li></ul></div><pre class="codeinput">clear; close <span class="string">all</span>; clc;
 </pre><h2 id="3">Plot settings</h2><pre class="codeinput">fontSize=15;
 faceAlpha1=0.8;
 faceAlpha2=0.3;
@@ -95,7 +95,7 @@ febioLogFileName_force=[febioFebFileNamePart,<span class="string">'_force_out.tx
 febioLogFileName_strainEnergy=[febioFebFileNamePart,<span class="string">'_energy_out.txt'</span>]; <span class="comment">%Log file name for exporting strain energy density</span>
 
 <span class="comment">%Material parameter set</span>
-c1_1=0.25*1e-3; <span class="comment">%Shear-modulus-like parameter</span>
+c1_1=0.2*1e-3; <span class="comment">%Shear-modulus-like parameter</span>
 m1_1=2; <span class="comment">%Material parameter setting degree of non-linearity</span>
 k_factor=1e2; <span class="comment">%Bulk modulus factor</span>
 k_1=c1_1*k_factor; <span class="comment">%Bulk modulus</span>
@@ -161,22 +161,21 @@ Vs(:,1)=Vs(:,1)+r/2;
 </pre><h2 id="9">Rotate model</h2><pre class="codeinput">rotCase=2;
 <span class="keyword">switch</span> rotCase
     <span class="keyword">case</span> 1 <span class="comment">%Supine</span>
-        R=eye(3,3);
+        R=euler2DCM([0 0 pi]);
     <span class="keyword">case</span> 2 <span class="comment">%Standing</span>
         R=euler2DCM([pi -0.5*pi 0]);
-    <span class="keyword">case</span> 3 <span class="comment">%Side-45</span>
-        R=euler2DCM([-0.25*pi 0 0]);
+    <span class="keyword">case</span> 3 <span class="comment">%Prone</span>
+        R=euler2DCM([pi 0 pi]);
+    <span class="keyword">case</span> 4 <span class="comment">%Side-45</span>
+        R=euler2DCM([0.25*pi 0 pi]);
 <span class="keyword">end</span>
 
 V=V*R;
 Vs=Vs*R;
 </pre><p>Visualize breast model</p><pre class="codeinput">cFigure; hold <span class="string">on</span>;
-hp=gpatch(F,V,C_skin,<span class="string">'none'</span>,0.5);
-hp.FaceColor=<span class="string">'Interp'</span>;
-gpatch(Fs,Vs,<span class="string">'kw'</span>,<span class="string">'none'</span>,1);
-axisGeom;
-camlight <span class="string">headlight</span>;
-colormap <span class="string">parula</span>;
+gpatch(F,V,<span class="string">'w'</span>,<span class="string">'none'</span>,0.5);
+gpatch(Fs,Vs,<span class="string">'rw'</span>,<span class="string">'none'</span>,1);
+axisGeom; camlight <span class="string">headlight</span>;
 gdrawnow;
 </pre><img width="100%" height="auto" vspace="5" hspace="5" src="DEMO_febio_0061_breast_gravity_01_01.jpg" alt=""> <pre class="codeinput">[surfaceVolume]=triSurfVolume(F,V);
 
@@ -227,62 +226,65 @@ CE=meshOutput.elementMaterialID;
 E=meshOutput.elements;
 </pre><pre class="codeoutput"> 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
---- TETGEN Tetrahedral meshing --- 07-Jul-2020 10:12:12
+--- TETGEN Tetrahedral meshing --- 25-Feb-2022 15:42:29
  
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
---- Writing SMESH file --- 07-Jul-2020 10:12:12
+--- Writing SMESH file --- 25-Feb-2022 15:42:29
 ----&gt; Adding node field
 ----&gt; Adding facet field
 ----&gt; Adding holes specification
 ----&gt; Adding region specification
---- Done --- 07-Jul-2020 10:12:12
---- Running TetGen to mesh input boundary--- 07-Jul-2020 10:12:12
+--- Done --- 25-Feb-2022 15:42:29
+--- Running TetGen to mesh input boundary--- 25-Feb-2022 15:42:29
 Opening /mnt/data/MATLAB/GIBBON/data/temp/temp.smesh.
 Delaunizing vertices...
-Delaunay seconds:  0.032895
+Delaunay seconds:  0.031094
 Creating surface mesh ...
-Surface mesh seconds:  0.005121
+Surface mesh seconds:  0.004145
 Recovering boundaries...
-Boundary recovery seconds:  0.006927
+Boundary recovery seconds:  0.00832
 Removing exterior tetrahedra ...
 Spreading region attributes.
-Exterior tets removal seconds:  0.002007
+Exterior tets removal seconds:  0.001795
 Recovering Delaunayness...
-Delaunay recovery seconds:  0.010339
+Delaunay recovery seconds:  0.008417
 Refining mesh...
-Refinement seconds:  0.063573
-Optimizing mesh...
-Optimization seconds:  0.004852
+  2731 insertions, added 2718 points, 82554 tetrahedra in queue.
+Refinement seconds:  0.093463
+Smoothing vertices...
+Mesh smoothing seconds:  0.18905
+Improving mesh...
+Mesh improvement seconds:  0.006706
 
 Writing /mnt/data/MATLAB/GIBBON/data/temp/temp.1.node.
 Writing /mnt/data/MATLAB/GIBBON/data/temp/temp.1.ele.
 Writing /mnt/data/MATLAB/GIBBON/data/temp/temp.1.face.
 Writing /mnt/data/MATLAB/GIBBON/data/temp/temp.1.edge.
 
-Output seconds:  0.06637
-Total running seconds:  0.192312
+Output seconds:  0.079761
+Total running seconds:  0.422998
 
 Statistics:
 
-  Input points: 2047
-  Input facets: 4086
-  Input segments: 6129
+  Input points: 2049
+  Input facets: 4090
+  Input segments: 6135
   Input holes: 0
   Input regions: 2
 
-  Mesh points: 5429
-  Mesh tetrahedra: 28273
-  Mesh faces: 58429
-  Mesh faces on exterior boundary: 3766
-  Mesh faces on input facets: 4086
-  Mesh edges on input segments: 6129
-  Steiner points inside domain: 3382
+  Mesh points: 5450
+  Mesh tetrahedra: 27625
+  Mesh faces: 57135
+  Mesh faces on exterior boundary: 3770
+  Mesh faces on input facets: 4090
+  Mesh edges on input segments: 6135
+  Steiner points inside domain: 3401
 
---- Done --- 07-Jul-2020 10:12:12
+--- Done --- 25-Feb-2022 15:42:30
  
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
---- Importing TetGen files --- 07-Jul-2020 10:12:12
---- Done --- 07-Jul-2020 10:12:12
+--- Importing TetGen files --- 25-Feb-2022 15:42:30
+--- Done --- 25-Feb-2022 15:42:30
 </pre><pre class="codeinput">cFigure; hold <span class="string">on</span>;
 hp=gpatch(Fb,V,Cb,<span class="string">'none'</span>,0.5);
 axisGeom;
@@ -316,25 +318,27 @@ gdrawnow;
 [febio_spec]=febioStructTemplate;
 
 <span class="comment">%febio_spec version</span>
-febio_spec.ATTR.version=<span class="string">'2.5'</span>;
+febio_spec.ATTR.version=<span class="string">'3.0'</span>;
 
 <span class="comment">%Module section</span>
 febio_spec.Module.ATTR.type=<span class="string">'solid'</span>;
 
 <span class="comment">%Control section</span>
-febio_spec.Control.analysis.ATTR.type=<span class="string">'static'</span>;
+febio_spec.Control.analysis=<span class="string">'STATIC'</span>;
 febio_spec.Control.time_steps=numTimeSteps;
 febio_spec.Control.step_size=1/numTimeSteps;
+febio_spec.Control.solver.max_refs=max_refs;
+febio_spec.Control.solver.max_ups=max_ups;
+febio_spec.Control.solver.symmetric_stiffness=symmetric_stiffness;
+febio_spec.Control.solver.min_residual=min_residual;
 febio_spec.Control.time_stepper.dtmin=dtmin;
 febio_spec.Control.time_stepper.dtmax=dtmax;
 febio_spec.Control.time_stepper.max_retries=max_retries;
 febio_spec.Control.time_stepper.opt_iter=opt_iter;
-febio_spec.Control.max_refs=max_refs;
-febio_spec.Control.max_ups=max_ups;
-febio_spec.Control.symmetric_stiffness=symmetric_stiffness;
-febio_spec.Control.min_residual=min_residual;
 
 <span class="comment">%Material section</span>
+materialName1=<span class="string">'Material1'</span>;
+febio_spec.Material.material{1}.ATTR.name=materialName1;
 febio_spec.Material.material{1}.ATTR.type=<span class="string">'Ogden'</span>;
 febio_spec.Material.material{1}.ATTR.id=1;
 febio_spec.Material.material{1}.c1=c1_1;
@@ -343,6 +347,8 @@ febio_spec.Material.material{1}.c2=c1_1;
 febio_spec.Material.material{1}.m2=-m1_1;
 febio_spec.Material.material{1}.k=k_1;
 
+materialName2=<span class="string">'Material2'</span>;
+febio_spec.Material.material{2}.ATTR.name=materialName2;
 febio_spec.Material.material{2}.ATTR.type=<span class="string">'Ogden'</span>;
 febio_spec.Material.material{2}.ATTR.id=2;
 febio_spec.Material.material{2}.c1=c1_2;
@@ -351,54 +357,54 @@ febio_spec.Material.material{2}.c2=c1_2;
 febio_spec.Material.material{2}.m2=-m1_2;
 febio_spec.Material.material{2}.k=k_2;
 
-febio_spec.Material.material{3}.ATTR.type=<span class="string">'rigid body'</span>;
-febio_spec.Material.material{3}.ATTR.id=3;
-febio_spec.Material.material{3}.density=1e-9;
-febio_spec.Material.material{3}.center_of_mass=mean(V(unique(E_rigid(:)),:),1);
-
-<span class="comment">%Geometry section</span>
+<span class="comment">% Mesh section</span>
 <span class="comment">% -&gt; Nodes</span>
-febio_spec.Geometry.Nodes{1}.ATTR.name=<span class="string">'nodeSet_all'</span>; <span class="comment">%The node set name</span>
-febio_spec.Geometry.Nodes{1}.node.ATTR.id=(1:size(V,1))'; <span class="comment">%The node id's</span>
-febio_spec.Geometry.Nodes{1}.node.VAL=V; <span class="comment">%The nodel coordinates</span>
+febio_spec.Mesh.Nodes{1}.ATTR.name=<span class="string">'All'</span>; <span class="comment">%The node set name</span>
+febio_spec.Mesh.Nodes{1}.node.ATTR.id=(1:size(V,1))'; <span class="comment">%The node id's</span>
+febio_spec.Mesh.Nodes{1}.node.VAL=V; <span class="comment">%The nodel coordinates</span>
 
 <span class="comment">% -&gt; Elements</span>
-febio_spec.Geometry.Elements{1}.ATTR.type=<span class="string">'tet4'</span>; <span class="comment">%Element type of this set</span>
-febio_spec.Geometry.Elements{1}.ATTR.mat=1; <span class="comment">%material index for this set</span>
-febio_spec.Geometry.Elements{1}.ATTR.name=<span class="string">'breastNormal'</span>; <span class="comment">%Name of the element set</span>
-febio_spec.Geometry.Elements{1}.elem.ATTR.id=(1:1:size(E1,1))'; <span class="comment">%Element id's</span>
-febio_spec.Geometry.Elements{1}.elem.VAL=E1;
+partName1=<span class="string">'Part1_breast_normal'</span>;
+febio_spec.Mesh.Elements{1}.ATTR.name=partName1; <span class="comment">%Name of this part</span>
+febio_spec.Mesh.Elements{1}.ATTR.type=<span class="string">'tet4'</span>; <span class="comment">%Element type</span>
+febio_spec.Mesh.Elements{1}.elem.ATTR.id=(1:1:size(E1,1))'; <span class="comment">%Element id's</span>
+febio_spec.Mesh.Elements{1}.elem.VAL=E1; <span class="comment">%The element matrix</span>
 
-febio_spec.Geometry.Elements{2}.ATTR.type=<span class="string">'tet4'</span>; <span class="comment">%Element type of this set</span>
-febio_spec.Geometry.Elements{2}.ATTR.mat=2; <span class="comment">%material index for this set</span>
-febio_spec.Geometry.Elements{2}.ATTR.name=<span class="string">'breastInclusion'</span>; <span class="comment">%Name of the element set</span>
-febio_spec.Geometry.Elements{2}.elem.ATTR.id=size(E1,1)+(1:1:size(E2,1))'; <span class="comment">%Element id's</span>
-febio_spec.Geometry.Elements{2}.elem.VAL=E2;
+partName2=<span class="string">'Part2_tumor'</span>;
+febio_spec.Mesh.Elements{2}.ATTR.name=partName2; <span class="comment">%Name of this part</span>
+febio_spec.Mesh.Elements{2}.ATTR.type=<span class="string">'tet4'</span>; <span class="comment">%Element type</span>
+febio_spec.Mesh.Elements{2}.elem.ATTR.id=size(E1,1)+(1:1:size(E2,1))'; <span class="comment">%Element id's</span>
+febio_spec.Mesh.Elements{2}.elem.VAL=E2; <span class="comment">%The element matrix</span>
 
-febio_spec.Geometry.Elements{3}.ATTR.type=<span class="string">'tri3'</span>; <span class="comment">%Element type of this set</span>
-febio_spec.Geometry.Elements{3}.ATTR.mat=3; <span class="comment">%material index for this set</span>
-febio_spec.Geometry.Elements{3}.ATTR.name=<span class="string">'PlateBottom'</span>; <span class="comment">%Name of the element set</span>
-febio_spec.Geometry.Elements{3}.elem.ATTR.id=size(E1,1)+size(E2,1)+(1:1:size(E_rigid,1))'; <span class="comment">%Element id's</span>
-febio_spec.Geometry.Elements{3}.elem.VAL=E_rigid;
+<span class="comment">%MeshDomains section</span>
+febio_spec.MeshDomains.SolidDomain{1}.ATTR.name=partName1;
+febio_spec.MeshDomains.SolidDomain{1}.ATTR.mat=materialName1;
 
-<span class="comment">% -&gt; Prescribed boundary conditions on the rigid body</span>
-febio_spec.Boundary.rigid_body{1}.ATTR.mat=3;
-febio_spec.Boundary.rigid_body{1}.fixed{1}.ATTR.bc=<span class="string">'x'</span>;
-febio_spec.Boundary.rigid_body{1}.fixed{2}.ATTR.bc=<span class="string">'y'</span>;
-febio_spec.Boundary.rigid_body{1}.fixed{3}.ATTR.bc=<span class="string">'z'</span>;
-febio_spec.Boundary.rigid_body{1}.fixed{4}.ATTR.bc=<span class="string">'Rx'</span>;
-febio_spec.Boundary.rigid_body{1}.fixed{5}.ATTR.bc=<span class="string">'Ry'</span>;
-febio_spec.Boundary.rigid_body{1}.fixed{6}.ATTR.bc=<span class="string">'Rz'</span>;
+febio_spec.MeshDomains.SolidDomain{2}.ATTR.name=partName2;
+febio_spec.MeshDomains.SolidDomain{2}.ATTR.mat=materialName2;
+
+<span class="comment">% -&gt; NodeSets</span>
+nodeSetName1=<span class="string">'bcSupportList'</span>;
+febio_spec.Mesh.NodeSet{1}.ATTR.name=nodeSetName1;
+febio_spec.Mesh.NodeSet{1}.node.ATTR.id=bcSupportList(:);
 
 <span class="comment">%Define loads</span>
 febio_spec.Loads.body_load.ATTR.type=<span class="string">'const'</span>;
 febio_spec.Loads.body_load.z.ATTR.lc=1;
 febio_spec.Loads.body_load.z.VAL=bodyForceMagnitude;
 
+<span class="comment">%Boundary condition section</span>
+<span class="comment">% -&gt; Fix boundary conditions</span>
+febio_spec.Boundary.bc{1}.ATTR.type=<span class="string">'fix'</span>;
+febio_spec.Boundary.bc{1}.ATTR.node_set=nodeSetName1;
+febio_spec.Boundary.bc{1}.dofs=<span class="string">'x,y,z'</span>;
+
 <span class="comment">%LoadData section</span>
-febio_spec.LoadData.loadcurve{1}.ATTR.id=1;
-febio_spec.LoadData.loadcurve{1}.ATTR.type=<span class="string">'linear'</span>;
-febio_spec.LoadData.loadcurve{1}.point.VAL=[0 0; 1 1;];
+<span class="comment">% -&gt; load_controller</span>
+febio_spec.LoadData.load_controller{1}.ATTR.id=1;
+febio_spec.LoadData.load_controller{1}.ATTR.type=<span class="string">'loadcurve'</span>;
+febio_spec.LoadData.load_controller{1}.interpolate=<span class="string">'LINEAR'</span>;
+febio_spec.LoadData.load_controller{1}.points.point.VAL=[0 0; 1 1];
 
 <span class="comment">%Output section</span>
 <span class="comment">% -&gt; log file</span>
@@ -407,11 +413,6 @@ febio_spec.Output.logfile.node_data{1}.ATTR.file=febioLogFileName_disp;
 febio_spec.Output.logfile.node_data{1}.ATTR.data=<span class="string">'ux;uy;uz'</span>;
 febio_spec.Output.logfile.node_data{1}.ATTR.delim=<span class="string">','</span>;
 febio_spec.Output.logfile.node_data{1}.VAL=1:size(V,1);
-
-febio_spec.Output.logfile.node_data{2}.ATTR.file=febioLogFileName_force;
-febio_spec.Output.logfile.node_data{2}.ATTR.data=<span class="string">'Rx;Ry;Rz'</span>;
-febio_spec.Output.logfile.node_data{2}.ATTR.delim=<span class="string">','</span>;
-febio_spec.Output.logfile.node_data{2}.VAL=1:size(V,1);
 
 febio_spec.Output.logfile.element_data{1}.ATTR.file=febioLogFileName_strainEnergy;
 febio_spec.Output.logfile.element_data{1}.ATTR.data=<span class="string">'sed'</span>;
@@ -429,21 +430,53 @@ febioAnalysis.maxLogCheckTime=10; <span class="comment">%Max log file checking t
 
 [runFlag]=runMonitorFEBio(febioAnalysis);<span class="comment">%START FEBio NOW!!!!!!!!</span>
 </pre><pre class="codeoutput"> 
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
---- STARTING FEBIO JOB --- 07-Jul-2020 10:12:18
-Waiting for log file...
-Proceeding to check log file...07-Jul-2020 10:12:19
-------- converged at time : 0.1
-------- converged at time : 0.2
-------- converged at time : 0.3
-------- converged at time : 0.4
-------- converged at time : 0.5
-------- converged at time : 0.6
-------- converged at time : 0.7
-------- converged at time : 0.8
-------- converged at time : 0.9
-------- converged at time : 1
---- Done --- 07-Jul-2020 10:12:30
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+--------&gt;    RUNNING/MONITORING FEBIO JOB    &lt;-------- 25-Feb-2022 15:42:37
+FEBio path: /home/kevin/FEBioStudio/bin/febio3
+# Attempt removal of existing log files                25-Feb-2022 15:42:37
+ * Removal succesful                                   25-Feb-2022 15:42:37
+# Attempt removal of existing .xplt files              25-Feb-2022 15:42:37
+ * Removal succesful                                   25-Feb-2022 15:42:37
+# Starting FEBio...                                    25-Feb-2022 15:42:37
+  Max. total analysis time is: 1e+99 s
+ * Waiting for log file creation                       25-Feb-2022 15:42:37
+   Max. wait time: 10 s
+ * Log file found.                                     25-Feb-2022 15:42:37
+# Parsing log file...                                  25-Feb-2022 15:42:37
+    number of iterations   : 3                         25-Feb-2022 15:42:39
+    number of reformations : 3                         25-Feb-2022 15:42:39
+------- converged at time : 0.1                        25-Feb-2022 15:42:39
+    number of iterations   : 3                         25-Feb-2022 15:42:40
+    number of reformations : 3                         25-Feb-2022 15:42:40
+------- converged at time : 0.2                        25-Feb-2022 15:42:40
+    number of iterations   : 3                         25-Feb-2022 15:42:42
+    number of reformations : 3                         25-Feb-2022 15:42:42
+------- converged at time : 0.                         25-Feb-2022 15:42:42
+    number of iterations   : 3                         25-Feb-2022 15:42:43
+    number of reformations : 3                         25-Feb-2022 15:42:43
+------- converged at time : 0.4                        25-Feb-2022 15:42:43
+    number of iterations   : 3                         25-Feb-2022 15:42:45
+    number of reformations : 3                         25-Feb-2022 15:42:45
+------- converged at time : 0.5                        25-Feb-2022 15:42:45
+    number of iterations   : 3                         25-Feb-2022 15:42:46
+    number of reformations : 3                         25-Feb-2022 15:42:46
+------- converged at time : 0.6                        25-Feb-2022 15:42:46
+    number of iterations   : 3                         25-Feb-2022 15:42:47
+    number of reformations : 3                         25-Feb-2022 15:42:47
+------- converged at time : 0.7                        25-Feb-2022 15:42:47
+    number of iterations   : 3                         25-Feb-2022 15:42:48
+    number of reformations : 3                         25-Feb-2022 15:42:48
+------- converged at time : 0.8                        25-Feb-2022 15:42:48
+    number of iterations   : 4                         25-Feb-2022 15:42:50
+    number of reformations : 4                         25-Feb-2022 15:42:50
+------- converged at time : 0.9                        25-Feb-2022 15:42:50
+    number of iterations   : 4                         25-Feb-2022 15:42:52
+    number of reformations : 4                         25-Feb-2022 15:42:52
+------- converged at time : 1                          25-Feb-2022 15:42:52
+ Elapsed time : 0:00:15                                25-Feb-2022 15:42:52
+ N O R M A L   T E R M I N A T I O N
+# Done                                                 25-Feb-2022 15:42:52
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 </pre><h2 id="27">Import FEBio results</h2><pre class="codeinput"><span class="keyword">if</span> runFlag==1 <span class="comment">%i.e. a succesful run</span>
 </pre><pre class="codeinput">    <span class="comment">% Importing nodal displacements from a log file</span>
     [time_mat, N_disp_mat,~]=importFEBio_logfile(fullfile(savePath,febioLogFileName_disp)); <span class="comment">%Nodal displacements</span>
@@ -465,9 +498,9 @@ Proceeding to check log file...07-Jul-2020 10:12:19
 </pre><p>Plotting the simulated results using <tt>anim8</tt> to visualize and animate deformations</p><pre class="codeinput">    <span class="comment">% Create basic view and store graphics handle to initiate animation</span>
     hf=cFigure; <span class="comment">%Open figure</span>
     gtitle([febioFebFileNamePart,<span class="string">': Press play to animate'</span>]);
-    hp1=gpatch(Fb,V_def,DN_magnitude,<span class="string">'none'</span>,0.7); <span class="comment">%Add graphics object to animate</span>
+    hp1=gpatch(Fb,V_def,DN_magnitude,<span class="string">'none'</span>,0.5); <span class="comment">%Add graphics object to animate</span>
     hp1.FaceColor=<span class="string">'Interp'</span>;
-    hp2=gpatch(Fb(Cb==3,:),V_def,<span class="string">'kw'</span>,<span class="string">'k'</span>,1); <span class="comment">%Add graphics object to animate</span>
+    hp2=gpatch(Fb(Cb==3,:),V_def,<span class="string">'kw'</span>,<span class="string">'none'</span>,1); <span class="comment">%Add graphics object to animate</span>
 
     axisGeom(gca,fontSize);
     colormap(gjet(250)); colorbar;
@@ -488,73 +521,55 @@ Proceeding to check log file...07-Jul-2020 10:12:19
     <span class="keyword">end</span>
     anim8(hf,animStruct); <span class="comment">%Initiate animation feature</span>
     gdrawnow;
-</pre><img width="100%" height="auto" vspace="5" hspace="5" src="DEMO_febio_0061_breast_gravity_01_07.jpg" alt=""> <pre class="codeinput">    [M,G,bwLabels]=patch2Im(Fb,V_def,Cb,1);
-    M(M==1)=0.25;
-    M(M==3)=1;
-    M(M==0)=0.1;
-    M=M+0.25*rand(size(M));
-    voxelSize=G.voxelSize;
-    imOrigin=G.origin;
-    Vp=mean(V_def(Fb(Cb==3,:),:),1)-imOrigin;
-    [i,j,k]=cart2im(Vp(:,1),Vp(:,2),Vp(:,3),voxelSize*ones(1,3));
-    L_plot=false(size(M));
-    L_plot(round(i),:,:)=1;
-    L_plot(:,round(j),:)=1;
-    L_plot(:,:,round(k))=1;
-    L_plot=L_plot &amp; ~isnan(M);
-    [Fm,Vm,Cm]=ind2patch(L_plot,double(M),<span class="string">'v'</span>);
-    [Vm(:,1),Vm(:,2),Vm(:,3)]=im2cart(Vm(:,2),Vm(:,1),Vm(:,3),voxelSize*ones(1,3));
-    Vm=Vm+imOrigin(ones(size(Vm,1),1),:);
-
-    hf=cFigure;
-
-    hp1=gpatch(Fb,V_def,<span class="string">'bw'</span>,<span class="string">'none'</span>,0.35);
-    hp2=gpatch(Fm,Vm,Cm,<span class="string">'none'</span>,1);
-
-    colormap(gca,gray(250)); colorbar; caxis([0 1]);
-    axisGeom(gca,fontSize);
-    axis([min(X_DEF(:)) max(X_DEF(:)) min(Y_DEF(:)) max(Y_DEF(:)) min(Z_DEF(:)) max(Z_DEF(:))]);
-    camlight(<span class="string">'headlight'</span>);
-    gdrawnow;
-
-
-    <span class="comment">% Set up animation features</span>
-    animStruct.Time=time_mat; <span class="comment">%The time vector</span>
-    <span class="keyword">for</span> qt=1:1:size(N_disp_mat,3) <span class="comment">%Loop over time increments</span>
-
-        V_def=V+N_disp_mat(:,:,qt); <span class="comment">%Current nodal coordinates</span>
-
-        [M,G,bwLabels]=patch2Im(Fb,V_def,Cb,1);
-        M(M==1)=0.25;
-        M(M==3)=1;
-        M(M==0)=0.1;
-<span class="comment">%         M(isnan(M))=0;</span>
-        M=M+0.1*rand(size(M));
-
-        voxelSize=G.voxelSize;
-        imOrigin=G.origin;
-        Vp=mean(V_def(Fb(Cb==3,:),:),1)-imOrigin;
-        [i,j,k]=cart2im(Vp(:,1),Vp(:,2),Vp(:,3),voxelSize*ones(1,3));
-        L_plot=false(size(M));
-        L_plot(round(i),:,:)=1;
-        L_plot(:,round(j),:)=1;
-        L_plot(:,:,round(k))=1;
-        L_plot=L_plot &amp; ~isnan(M);
-        [Fm,Vm,Cm]=ind2patch(L_plot,double(M),<span class="string">'v'</span>);
-        [Vm(:,1),Vm(:,2),Vm(:,3)]=im2cart(Vm(:,2),Vm(:,1),Vm(:,3),voxelSize*ones(1,3));
-        Vm=Vm+imOrigin(ones(size(Vm,1),1),:);
-
-        <span class="comment">%Set entries in animation structure</span>
-        animStruct.Handles{qt}=[hp1 hp2 hp2 hp2]; <span class="comment">%Handles of objects to animate</span>
-        animStruct.Props{qt}={<span class="string">'Vertices'</span>,<span class="string">'Faces'</span>,<span class="string">'Vertices'</span>,<span class="string">'CData'</span>}; <span class="comment">%Properties of objects to animate</span>
-        animStruct.Set{qt}={V_def,Fm,Vm,Cm}; <span class="comment">%Property values for to set in order to animate</span>
-    <span class="keyword">end</span>
-    anim8(hf,animStruct); <span class="comment">%Initiate animation feature</span>
-    gdrawnow;
-</pre><img width="100%" height="auto" vspace="5" hspace="5" src="DEMO_febio_0061_breast_gravity_01_08.jpg" alt=""> <pre class="codeinput"><span class="keyword">end</span>
-</pre><p><img vspace="5" hspace="5" src="gibbVerySmall.gif" alt=""> </p><p><i><b>GIBBON</b></i> <a href="www.gibboncode.org">www.gibboncode.org</a></p><p><i>Kevin Mattheus Moerman</i>, <a href="gibbon.toolbox@gmail.com">gibbon.toolbox@gmail.com</a></p><p><i><b>GIBBON footer text</b></i></p><p>License: <a href="https://github.com/gibbonCode/GIBBON/blob/master/LICENSE">https://github.com/gibbonCode/GIBBON/blob/master/LICENSE</a></p><p>GIBBON: The Geometry and Image-based Bioengineering add-On. A toolbox for image segmentation, image-based modeling, meshing, and finite element analysis.</p><p>Copyright (C) 2006-2020 Kevin Mattheus Moerman</p><p>This program is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.</p><p>This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for more details.</p><p>You should have received a copy of the GNU General Public License along with this program.  If not, see <a href="http://www.gnu.org/licenses/">http://www.gnu.org/licenses/</a>.</p><p class="footer"><br><a href="https://www.mathworks.com/products/matlab/">Published with MATLAB&reg; R2020a</a><br></p></div><!--
+</pre><img width="100%" height="auto" vspace="5" hspace="5" src="DEMO_febio_0061_breast_gravity_01_07.jpg" alt=""> <pre>   [M,G,bwLabels]=patch2Im(Fb,V_def,Cb,1);
+   M(M==1)=0.25;
+   M(M==3)=1;
+   M(M==0)=0.1;
+   M=M+0.25*rand(size(M));
+   voxelSize=G.voxelSize;
+   imOrigin=G.origin;
+   Vp=mean(V_def(Fb(Cb==3,:),:),1)-imOrigin;
+   [i,j,k]=cart2im(Vp(:,1),Vp(:,2),Vp(:,3),voxelSize*ones(1,3));
+   L_plot=false(size(M));
+   L_plot(round(i),:,:)=1;
+   L_plot(:,round(j),:)=1;
+   L_plot(:,:,round(k))=1;
+   L_plot=L_plot &amp; ~isnan(M);
+   [Fm,Vm,Cm]=ind2patch(L_plot,double(M),'v');
+   [Vm(:,1),Vm(:,2),Vm(:,3)]=im2cart(Vm(:,2),Vm(:,1),Vm(:,3),voxelSize*ones(1,3));
+   Vm=Vm+imOrigin(ones(size(Vm,1),1),:);</pre><pre>   hf=cFigure;</pre><pre>   hp1=gpatch(Fb,V_def,'bw','none',0.35);
+   hp2=gpatch(Fm,Vm,Cm,'none',1);</pre><pre>   colormap(gca,gray(250)); colorbar; caxis([0 1]);
+   axisGeom(gca,fontSize);
+   axis([min(X_DEF(:)) max(X_DEF(:)) min(Y_DEF(:)) max(Y_DEF(:)) min(Z_DEF(:)) max(Z_DEF(:))]);
+   camlight('headlight');
+   gdrawnow;</pre><pre>   % Set up animation features
+   animStruct.Time=time_mat; %The time vector
+   for qt=1:1:size(N_disp_mat,3) %Loop over time increments</pre><pre>       V_def=V+N_disp_mat(:,:,qt); %Current nodal coordinates</pre><pre>       [M,G,bwLabels]=patch2Im(Fb,V_def,Cb,1);
+       M(M==1)=0.25;
+       M(M==3)=1;
+       M(M==0)=0.1;
+%         M(isnan(M))=0;
+       M=M+0.1*rand(size(M));</pre><pre>       voxelSize=G.voxelSize;
+       imOrigin=G.origin;
+       Vp=mean(V_def(Fb(Cb==3,:),:),1)-imOrigin;
+       [i,j,k]=cart2im(Vp(:,1),Vp(:,2),Vp(:,3),voxelSize*ones(1,3));
+       L_plot=false(size(M));
+       L_plot(round(i),:,:)=1;
+       L_plot(:,round(j),:)=1;
+       L_plot(:,:,round(k))=1;
+       L_plot=L_plot &amp; ~isnan(M);
+       [Fm,Vm,Cm]=ind2patch(L_plot,double(M),'v');
+       [Vm(:,1),Vm(:,2),Vm(:,3)]=im2cart(Vm(:,2),Vm(:,1),Vm(:,3),voxelSize*ones(1,3));
+       Vm=Vm+imOrigin(ones(size(Vm,1),1),:);</pre><pre>       %Set entries in animation structure
+       animStruct.Handles{qt}=[hp1 hp2 hp2 hp2]; %Handles of objects to animate
+       animStruct.Props{qt}={'Vertices','Faces','Vertices','CData'}; %Properties of objects to animate
+       animStruct.Set{qt}={V_def,Fm,Vm,Cm}; %Property values for to set in order to animate
+   end
+   anim8(hf,animStruct); %Initiate animation feature
+   gdrawnow;</pre><pre class="codeinput"><span class="keyword">end</span>
+</pre><p><img vspace="5" hspace="5" src="gibbVerySmall.gif" alt=""> </p><p><i><b>GIBBON</b></i> <a href="www.gibboncode.org">www.gibboncode.org</a></p><p><i>Kevin Mattheus Moerman</i>, <a href="gibbon.toolbox@gmail.com">gibbon.toolbox@gmail.com</a></p><p><i><b>GIBBON footer text</b></i></p><p>License: <a href="https://github.com/gibbonCode/GIBBON/blob/master/LICENSE">https://github.com/gibbonCode/GIBBON/blob/master/LICENSE</a></p><p>GIBBON: The Geometry and Image-based Bioengineering add-On. A toolbox for image segmentation, image-based modeling, meshing, and finite element analysis.</p><p>Copyright (C) 2006-2022 Kevin Mattheus Moerman and the GIBBON contributors</p><p>This program is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.</p><p>This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for more details.</p><p>You should have received a copy of the GNU General Public License along with this program.  If not, see <a href="http://www.gnu.org/licenses/">http://www.gnu.org/licenses/</a>.</p><p class="footer"><br><a href="https://www.mathworks.com/products/matlab/">Published with MATLAB&reg; R2021a</a><br></p></div><!--
 ##### SOURCE BEGIN #####
-%% DEMO_febio_0044_mammography_01.m
+%% DEMO_febio_0061_breast_gravity.m
 % Below is a demonstration for:
 %
 % * Building geometry for a slab with hexahedral elements, and a
@@ -566,12 +581,12 @@ Proceeding to check log file...07-Jul-2020 10:12:19
 
 %% Keywords
 %
-% * febio_spec version 2.5
+% * febio_spec version 3.0
 % * febio, FEBio
 % * indentation
 % * contact, sliding, sticky, friction
 % * rigid body constraints
-% * hexahedral elements, hex8
+% * tetrahedral elements, tet4
 % * triangular elements, tri3
 % * slab, block, rectangular
 % * sphere
@@ -618,7 +633,7 @@ febioLogFileName_force=[febioFebFileNamePart,'_force_out.txt']; %Log file name f
 febioLogFileName_strainEnergy=[febioFebFileNamePart,'_energy_out.txt']; %Log file name for exporting strain energy density
 
 %Material parameter set
-c1_1=0.25*1e-3; %Shear-modulus-like parameter
+c1_1=0.2*1e-3; %Shear-modulus-like parameter
 m1_1=2; %Material parameter setting degree of non-linearity
 k_factor=1e2; %Bulk modulus factor
 k_1=c1_1*k_factor; %Bulk modulus
@@ -695,11 +710,13 @@ Vs(:,1)=Vs(:,1)+r/2;
 rotCase=2;
 switch rotCase
     case 1 %Supine
-        R=eye(3,3);
+        R=euler2DCM([0 0 pi]);
     case 2 %Standing
         R=euler2DCM([pi -0.5*pi 0]);
-    case 3 %Side-45
-        R=euler2DCM([-0.25*pi 0 0]);
+    case 3 %Prone
+        R=euler2DCM([pi 0 pi]);
+    case 4 %Side-45
+        R=euler2DCM([0.25*pi 0 pi]);
 end
 
 V=V*R;
@@ -709,12 +726,9 @@ Vs=Vs*R;
 % Visualize breast model
 
 cFigure; hold on;
-hp=gpatch(F,V,C_skin,'none',0.5);
-hp.FaceColor='Interp';
-gpatch(Fs,Vs,'kw','none',1);
-axisGeom;
-camlight headlight;
-colormap parula; 
+gpatch(F,V,'w','none',0.5);
+gpatch(Fs,Vs,'rw','none',1);
+axisGeom; camlight headlight;
 gdrawnow;
 
 %%
@@ -829,29 +843,31 @@ gdrawnow;
 % See also |febioStructTemplate| and |febioStruct2xml| and the FEBio user
 % manual.
 
-%Get a template with default settings
+%Get a template with default settings 
 [febio_spec]=febioStructTemplate;
 
-%febio_spec version
-febio_spec.ATTR.version='2.5';
+%febio_spec version 
+febio_spec.ATTR.version='3.0'; 
 
 %Module section
-febio_spec.Module.ATTR.type='solid';
+febio_spec.Module.ATTR.type='solid'; 
 
 %Control section
-febio_spec.Control.analysis.ATTR.type='static';
+febio_spec.Control.analysis='STATIC';
 febio_spec.Control.time_steps=numTimeSteps;
 febio_spec.Control.step_size=1/numTimeSteps;
+febio_spec.Control.solver.max_refs=max_refs;
+febio_spec.Control.solver.max_ups=max_ups;
+febio_spec.Control.solver.symmetric_stiffness=symmetric_stiffness;
+febio_spec.Control.solver.min_residual=min_residual;
 febio_spec.Control.time_stepper.dtmin=dtmin;
-febio_spec.Control.time_stepper.dtmax=dtmax;
+febio_spec.Control.time_stepper.dtmax=dtmax; 
 febio_spec.Control.time_stepper.max_retries=max_retries;
 febio_spec.Control.time_stepper.opt_iter=opt_iter;
-febio_spec.Control.max_refs=max_refs;
-febio_spec.Control.max_ups=max_ups;
-febio_spec.Control.symmetric_stiffness=symmetric_stiffness;
-febio_spec.Control.min_residual=min_residual;
 
 %Material section
+materialName1='Material1';
+febio_spec.Material.material{1}.ATTR.name=materialName1;
 febio_spec.Material.material{1}.ATTR.type='Ogden';
 febio_spec.Material.material{1}.ATTR.id=1;
 febio_spec.Material.material{1}.c1=c1_1;
@@ -860,6 +876,8 @@ febio_spec.Material.material{1}.c2=c1_1;
 febio_spec.Material.material{1}.m2=-m1_1;
 febio_spec.Material.material{1}.k=k_1;
 
+materialName2='Material2';
+febio_spec.Material.material{2}.ATTR.name=materialName2;
 febio_spec.Material.material{2}.ATTR.type='Ogden';
 febio_spec.Material.material{2}.ATTR.id=2;
 febio_spec.Material.material{2}.c1=c1_2;
@@ -868,54 +886,54 @@ febio_spec.Material.material{2}.c2=c1_2;
 febio_spec.Material.material{2}.m2=-m1_2;
 febio_spec.Material.material{2}.k=k_2;
 
-febio_spec.Material.material{3}.ATTR.type='rigid body';
-febio_spec.Material.material{3}.ATTR.id=3;
-febio_spec.Material.material{3}.density=1e-9;
-febio_spec.Material.material{3}.center_of_mass=mean(V(unique(E_rigid(:)),:),1);
-
-%Geometry section
+% Mesh section
 % -> Nodes
-febio_spec.Geometry.Nodes{1}.ATTR.name='nodeSet_all'; %The node set name
-febio_spec.Geometry.Nodes{1}.node.ATTR.id=(1:size(V,1))'; %The node id's
-febio_spec.Geometry.Nodes{1}.node.VAL=V; %The nodel coordinates
+febio_spec.Mesh.Nodes{1}.ATTR.name='All'; %The node set name
+febio_spec.Mesh.Nodes{1}.node.ATTR.id=(1:size(V,1))'; %The node id's
+febio_spec.Mesh.Nodes{1}.node.VAL=V; %The nodel coordinates
 
 % -> Elements
-febio_spec.Geometry.Elements{1}.ATTR.type='tet4'; %Element type of this set
-febio_spec.Geometry.Elements{1}.ATTR.mat=1; %material index for this set
-febio_spec.Geometry.Elements{1}.ATTR.name='breastNormal'; %Name of the element set
-febio_spec.Geometry.Elements{1}.elem.ATTR.id=(1:1:size(E1,1))'; %Element id's
-febio_spec.Geometry.Elements{1}.elem.VAL=E1;
+partName1='Part1_breast_normal';
+febio_spec.Mesh.Elements{1}.ATTR.name=partName1; %Name of this part
+febio_spec.Mesh.Elements{1}.ATTR.type='tet4'; %Element type
+febio_spec.Mesh.Elements{1}.elem.ATTR.id=(1:1:size(E1,1))'; %Element id's
+febio_spec.Mesh.Elements{1}.elem.VAL=E1; %The element matrix
+ 
+partName2='Part2_tumor';
+febio_spec.Mesh.Elements{2}.ATTR.name=partName2; %Name of this part
+febio_spec.Mesh.Elements{2}.ATTR.type='tet4'; %Element type
+febio_spec.Mesh.Elements{2}.elem.ATTR.id=size(E1,1)+(1:1:size(E2,1))'; %Element id's
+febio_spec.Mesh.Elements{2}.elem.VAL=E2; %The element matrix
 
-febio_spec.Geometry.Elements{2}.ATTR.type='tet4'; %Element type of this set
-febio_spec.Geometry.Elements{2}.ATTR.mat=2; %material index for this set
-febio_spec.Geometry.Elements{2}.ATTR.name='breastInclusion'; %Name of the element set
-febio_spec.Geometry.Elements{2}.elem.ATTR.id=size(E1,1)+(1:1:size(E2,1))'; %Element id's
-febio_spec.Geometry.Elements{2}.elem.VAL=E2;
+%MeshDomains section
+febio_spec.MeshDomains.SolidDomain{1}.ATTR.name=partName1;
+febio_spec.MeshDomains.SolidDomain{1}.ATTR.mat=materialName1;
 
-febio_spec.Geometry.Elements{3}.ATTR.type='tri3'; %Element type of this set
-febio_spec.Geometry.Elements{3}.ATTR.mat=3; %material index for this set
-febio_spec.Geometry.Elements{3}.ATTR.name='PlateBottom'; %Name of the element set
-febio_spec.Geometry.Elements{3}.elem.ATTR.id=size(E1,1)+size(E2,1)+(1:1:size(E_rigid,1))'; %Element id's
-febio_spec.Geometry.Elements{3}.elem.VAL=E_rigid;
+febio_spec.MeshDomains.SolidDomain{2}.ATTR.name=partName2;
+febio_spec.MeshDomains.SolidDomain{2}.ATTR.mat=materialName2;
 
-% -> Prescribed boundary conditions on the rigid body
-febio_spec.Boundary.rigid_body{1}.ATTR.mat=3;
-febio_spec.Boundary.rigid_body{1}.fixed{1}.ATTR.bc='x';
-febio_spec.Boundary.rigid_body{1}.fixed{2}.ATTR.bc='y';
-febio_spec.Boundary.rigid_body{1}.fixed{3}.ATTR.bc='z';
-febio_spec.Boundary.rigid_body{1}.fixed{4}.ATTR.bc='Rx';
-febio_spec.Boundary.rigid_body{1}.fixed{5}.ATTR.bc='Ry';
-febio_spec.Boundary.rigid_body{1}.fixed{6}.ATTR.bc='Rz';
+% -> NodeSets
+nodeSetName1='bcSupportList';
+febio_spec.Mesh.NodeSet{1}.ATTR.name=nodeSetName1;
+febio_spec.Mesh.NodeSet{1}.node.ATTR.id=bcSupportList(:);
 
 %Define loads        
 febio_spec.Loads.body_load.ATTR.type='const';
 febio_spec.Loads.body_load.z.ATTR.lc=1;
 febio_spec.Loads.body_load.z.VAL=bodyForceMagnitude;
 
+%Boundary condition section 
+% -> Fix boundary conditions
+febio_spec.Boundary.bc{1}.ATTR.type='fix';
+febio_spec.Boundary.bc{1}.ATTR.node_set=nodeSetName1;
+febio_spec.Boundary.bc{1}.dofs='x,y,z';
+
 %LoadData section
-febio_spec.LoadData.loadcurve{1}.ATTR.id=1;
-febio_spec.LoadData.loadcurve{1}.ATTR.type='linear';
-febio_spec.LoadData.loadcurve{1}.point.VAL=[0 0; 1 1;];
+% -> load_controller
+febio_spec.LoadData.load_controller{1}.ATTR.id=1;
+febio_spec.LoadData.load_controller{1}.ATTR.type='loadcurve';
+febio_spec.LoadData.load_controller{1}.interpolate='LINEAR';
+febio_spec.LoadData.load_controller{1}.points.point.VAL=[0 0; 1 1];
 
 %Output section
 % -> log file
@@ -924,11 +942,6 @@ febio_spec.Output.logfile.node_data{1}.ATTR.file=febioLogFileName_disp;
 febio_spec.Output.logfile.node_data{1}.ATTR.data='ux;uy;uz';
 febio_spec.Output.logfile.node_data{1}.ATTR.delim=',';
 febio_spec.Output.logfile.node_data{1}.VAL=1:size(V,1);
-
-febio_spec.Output.logfile.node_data{2}.ATTR.file=febioLogFileName_force;
-febio_spec.Output.logfile.node_data{2}.ATTR.data='Rx;Ry;Rz';
-febio_spec.Output.logfile.node_data{2}.ATTR.delim=',';
-febio_spec.Output.logfile.node_data{2}.VAL=1:size(V,1);
 
 febio_spec.Output.logfile.element_data{1}.ATTR.file=febioLogFileName_strainEnergy;
 febio_spec.Output.logfile.element_data{1}.ATTR.data='sed';
@@ -995,9 +1008,9 @@ if runFlag==1 %i.e. a succesful run
     % Create basic view and store graphics handle to initiate animation
     hf=cFigure; %Open figure
     gtitle([febioFebFileNamePart,': Press play to animate']);
-    hp1=gpatch(Fb,V_def,DN_magnitude,'none',0.7); %Add graphics object to animate
+    hp1=gpatch(Fb,V_def,DN_magnitude,'none',0.5); %Add graphics object to animate
     hp1.FaceColor='Interp';
-    hp2=gpatch(Fb(Cb==3,:),V_def,'kw','k',1); %Add graphics object to animate
+    hp2=gpatch(Fb(Cb==3,:),V_def,'kw','none',1); %Add graphics object to animate
     
     axisGeom(gca,fontSize);
     colormap(gjet(250)); colorbar;
@@ -1018,73 +1031,73 @@ if runFlag==1 %i.e. a succesful run
     end
     anim8(hf,animStruct); %Initiate animation feature
     gdrawnow;
-    
+       
     %%
-    
-    [M,G,bwLabels]=patch2Im(Fb,V_def,Cb,1);
-    M(M==1)=0.25;
-    M(M==3)=1;
-    M(M==0)=0.1;
-    M=M+0.25*rand(size(M));
-    voxelSize=G.voxelSize;
-    imOrigin=G.origin;
-    Vp=mean(V_def(Fb(Cb==3,:),:),1)-imOrigin;
-    [i,j,k]=cart2im(Vp(:,1),Vp(:,2),Vp(:,3),voxelSize*ones(1,3));
-    L_plot=false(size(M));
-    L_plot(round(i),:,:)=1;
-    L_plot(:,round(j),:)=1;
-    L_plot(:,:,round(k))=1;
-    L_plot=L_plot & ~isnan(M);
-    [Fm,Vm,Cm]=ind2patch(L_plot,double(M),'v');
-    [Vm(:,1),Vm(:,2),Vm(:,3)]=im2cart(Vm(:,2),Vm(:,1),Vm(:,3),voxelSize*ones(1,3));
-    Vm=Vm+imOrigin(ones(size(Vm,1),1),:);
- 
-    hf=cFigure;
-
-    hp1=gpatch(Fb,V_def,'bw','none',0.35);
-    hp2=gpatch(Fm,Vm,Cm,'none',1);
-    
-    colormap(gca,gray(250)); colorbar; caxis([0 1]);    
-    axisGeom(gca,fontSize);
-    axis([min(X_DEF(:)) max(X_DEF(:)) min(Y_DEF(:)) max(Y_DEF(:)) min(Z_DEF(:)) max(Z_DEF(:))]);
-    camlight('headlight');
-    gdrawnow;
-    
-        
-    % Set up animation features
-    animStruct.Time=time_mat; %The time vector
-    for qt=1:1:size(N_disp_mat,3) %Loop over time increments
-
-        V_def=V+N_disp_mat(:,:,qt); %Current nodal coordinates
-        
-        [M,G,bwLabels]=patch2Im(Fb,V_def,Cb,1);
-        M(M==1)=0.25;
-        M(M==3)=1;
-        M(M==0)=0.1;
-%         M(isnan(M))=0;
-        M=M+0.1*rand(size(M));
-        
-        voxelSize=G.voxelSize;
-        imOrigin=G.origin;
-        Vp=mean(V_def(Fb(Cb==3,:),:),1)-imOrigin;
-        [i,j,k]=cart2im(Vp(:,1),Vp(:,2),Vp(:,3),voxelSize*ones(1,3));
-        L_plot=false(size(M));
-        L_plot(round(i),:,:)=1;
-        L_plot(:,round(j),:)=1;
-        L_plot(:,:,round(k))=1;
-        L_plot=L_plot & ~isnan(M);
-        [Fm,Vm,Cm]=ind2patch(L_plot,double(M),'v');
-        [Vm(:,1),Vm(:,2),Vm(:,3)]=im2cart(Vm(:,2),Vm(:,1),Vm(:,3),voxelSize*ones(1,3));
-        Vm=Vm+imOrigin(ones(size(Vm,1),1),:);
-        
-        %Set entries in animation structure
-        animStruct.Handles{qt}=[hp1 hp2 hp2 hp2]; %Handles of objects to animate
-        animStruct.Props{qt}={'Vertices','Faces','Vertices','CData'}; %Properties of objects to animate
-        animStruct.Set{qt}={V_def,Fm,Vm,Cm}; %Property values for to set in order to animate
-    end
-    anim8(hf,animStruct); %Initiate animation feature
-    gdrawnow;
-    
+%     
+%     [M,G,bwLabels]=patch2Im(Fb,V_def,Cb,1);
+%     M(M==1)=0.25;
+%     M(M==3)=1;
+%     M(M==0)=0.1;
+%     M=M+0.25*rand(size(M));
+%     voxelSize=G.voxelSize;
+%     imOrigin=G.origin;
+%     Vp=mean(V_def(Fb(Cb==3,:),:),1)-imOrigin;
+%     [i,j,k]=cart2im(Vp(:,1),Vp(:,2),Vp(:,3),voxelSize*ones(1,3));
+%     L_plot=false(size(M));
+%     L_plot(round(i),:,:)=1;
+%     L_plot(:,round(j),:)=1;
+%     L_plot(:,:,round(k))=1;
+%     L_plot=L_plot & ~isnan(M);
+%     [Fm,Vm,Cm]=ind2patch(L_plot,double(M),'v');
+%     [Vm(:,1),Vm(:,2),Vm(:,3)]=im2cart(Vm(:,2),Vm(:,1),Vm(:,3),voxelSize*ones(1,3));
+%     Vm=Vm+imOrigin(ones(size(Vm,1),1),:);
+%  
+%     hf=cFigure;
+% 
+%     hp1=gpatch(Fb,V_def,'bw','none',0.35);
+%     hp2=gpatch(Fm,Vm,Cm,'none',1);
+%     
+%     colormap(gca,gray(250)); colorbar; caxis([0 1]);    
+%     axisGeom(gca,fontSize);
+%     axis([min(X_DEF(:)) max(X_DEF(:)) min(Y_DEF(:)) max(Y_DEF(:)) min(Z_DEF(:)) max(Z_DEF(:))]);
+%     camlight('headlight');
+%     gdrawnow;
+%     
+%         
+%     % Set up animation features
+%     animStruct.Time=time_mat; %The time vector
+%     for qt=1:1:size(N_disp_mat,3) %Loop over time increments
+% 
+%         V_def=V+N_disp_mat(:,:,qt); %Current nodal coordinates
+%         
+%         [M,G,bwLabels]=patch2Im(Fb,V_def,Cb,1);
+%         M(M==1)=0.25;
+%         M(M==3)=1;
+%         M(M==0)=0.1;
+% %         M(isnan(M))=0;
+%         M=M+0.1*rand(size(M));
+%         
+%         voxelSize=G.voxelSize;
+%         imOrigin=G.origin;
+%         Vp=mean(V_def(Fb(Cb==3,:),:),1)-imOrigin;
+%         [i,j,k]=cart2im(Vp(:,1),Vp(:,2),Vp(:,3),voxelSize*ones(1,3));
+%         L_plot=false(size(M));
+%         L_plot(round(i),:,:)=1;
+%         L_plot(:,round(j),:)=1;
+%         L_plot(:,:,round(k))=1;
+%         L_plot=L_plot & ~isnan(M);
+%         [Fm,Vm,Cm]=ind2patch(L_plot,double(M),'v');
+%         [Vm(:,1),Vm(:,2),Vm(:,3)]=im2cart(Vm(:,2),Vm(:,1),Vm(:,3),voxelSize*ones(1,3));
+%         Vm=Vm+imOrigin(ones(size(Vm,1),1),:);
+%         
+%         %Set entries in animation structure
+%         animStruct.Handles{qt}=[hp1 hp2 hp2 hp2]; %Handles of objects to animate
+%         animStruct.Props{qt}={'Vertices','Faces','Vertices','CData'}; %Properties of objects to animate
+%         animStruct.Set{qt}={V_def,Fm,Vm,Cm}; %Property values for to set in order to animate
+%     end
+%     anim8(hf,animStruct); %Initiate animation feature
+%     gdrawnow;
+%     
     
 end
 
@@ -1106,7 +1119,7 @@ end
 % image segmentation, image-based modeling, meshing, and finite element
 % analysis.
 % 
-% Copyright (C) 2006-2020 Kevin Mattheus Moerman
+% Copyright (C) 2006-2022 Kevin Mattheus Moerman and the GIBBON contributors
 % 
 % This program is free software: you can redistribute it and/or modify
 % it under the terms of the GNU General Public License as published by

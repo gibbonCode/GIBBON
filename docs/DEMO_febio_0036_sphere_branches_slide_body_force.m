@@ -83,6 +83,8 @@ symmetric_stiffness=0;
 min_residual=1e-20;
 analysisType='DYNAMIC';
 
+runMode='external';%'internal';
+
 %Contact parameters
 contactPenalty=25;
 fric_coeff=0.25; 
@@ -266,54 +268,13 @@ Vi=Vi+imOrigin;
 %%
 % Remesh using geomgram
 optionStructGG.pointSpacing=pointSpacing*2;
-% optionStruct.max_dist=0;
 [Fi,Vi]=ggremesh(Fi,Vi,optionStructGG);
 
-% [Fi,Vi]=subtri(Fi,Vi,1);
-
-% %Smoothen angle of boundaries while holding radii constant
-% 
-% Eb=patchBoundary(Fi,Vi);
-% G=tesgroup(Eb); %group boundary sets
-% 
-% for q=1:1:size(G,2)
-%     logicGroupNow=G(:,q);
-%     
-%     indBoundaryNow=unique(Eb(logicGroupNow,:));
-%     logicBoundary=false(size(Vi,1),1);
-%     logicBoundary(indBoundaryNow)=1;
-% 
-%     Vi_centre=mean(Vi(indBoundaryNow,:),1);
-%     Vi=Vi-Vi_centre;
-%         
-%     [~,~,r] = cart2sph(Vi(:,1),Vi(:,2),Vi(:,3));        
-%     
-%     controlPar_smooth.Method='HC';
-%     controlPar_smooth.Alpha=0.1;
-%     controlPar_smooth.Beta=0.5;
-%     controlPar_smooth.n=25;
-%     controlPar_smooth.RigidConstraints=find(~logicBoundary);
-%     [Vi(:,[2 3])]=patchSmooth(Fi,Vi(:,[2 3]),[],controlPar_smooth);
-%     [az,elev,~] = cart2sph(Vi(:,1),Vi(:,2),Vi(:,3));
-%    
-%     [Vi(:,1),Vi(:,2),Vi(:,3)] = sph2cart(az,elev,r);
-%     Vi=Vi+Vi_centre;
-% end
-% 
-% %Smoothen surface while holding on to boundary   
-% Eb=patchBoundary(Fi,Vi);
-% controlPar_smooth.Method='HC';
-% controlPar_smooth.Alpha=0.1;
-% controlPar_smooth.Beta=0.5;
-% controlPar_smooth.n=150;
-% controlPar_smooth.RigidConstraints=unique(Eb(:));
-% [Vi]=patchSmooth(Fi,Vi,[],controlPar_smooth);
-% 
 optionStruct.maxAngleDeviation=10;
 optionStruct.triangleConvert=1;
 [Fi,Vi]=tri2quadGroupSplit(Fi,Vi,optionStruct);
 
-Eb=patchBoundary(Fi,Vi);
+Eb=patchBoundary(Fi);
 controlPar_smooth.Method='HC';
 controlPar_smooth.Alpha=0.1;
 controlPar_smooth.Beta=0.5;
@@ -325,7 +286,7 @@ controlPar_smooth.RigidConstraints=unique(Eb(:));
 
 Vi=Vi-imOrigin; 
 Vi=Vi(:,[2 1 3]);
-Eb=patchBoundary(Fi,Vi);
+Eb=patchBoundary(Fi);
 
 gpatch(Fi,Vi,'w','k',1,2);
 
@@ -342,13 +303,6 @@ drawnow;
 %%
 
 %Control settings
-% cPar.sphereRadius=sphereRadius;
-% cPar.coreRadius=cPar.sphereRadius/2;
-% cPar.numElementsMantel=numElementsMantel; 
-% cPar.numElementsCore=round(numElementsMantel*1.5); 
-% cPar.makeHollow=0;
-% cPar.cParSmooth.n=25;
-
 cPar.sphereRadius=sphereRadius;
 cPar.coreRadius=sphereRadius.*0.75;
 cPar.numElementsCore=ceil(sphereRadius/pointSpacing); 
@@ -388,30 +342,6 @@ drawnow;
 
 Vi=Vi(:,[2 1 3]);
 Vi=Vi+imOrigin;
-
-% Eb=patchBoundary(Fi,Vi);
-% G=tesgroup(Eb); %group boundary sets
-% [~,indGet]=max(sum(G,1));
-% logicGet=G(:,indGet);
-% 
-% [indGet]=edgeListToCurve(Eb(logicGet,:));
-% indGet=indGet(1:end-1);
-% 
-% xc=mean(Vi(indGet,1));
-% [yc,zc]=polycentroid(Vi(indGet,2)',Vi(indGet,3)');
-%  
-% Vc=[xc yc zc];
-% % Vi=Vi-Vc; 
-% 
-% % Vi=Vi-mean(Vi(indGet,:));
-% 
-% cFigure; hold on; 
-% gpatch(Fi,Vi,'w','k',1,3);
-% plotV(Vi(indGet,:),'b-','LineWidth',3);
-% axisGeom;
-% camlight headlight;
-% drawnow; 
-
 
 %% Join model node sets
 
@@ -627,7 +557,7 @@ febioStruct2xml(febio_spec,febioFebFileName); %Exporting to file and domNode
 febioAnalysis.run_filename=febioFebFileName; %The input file name
 febioAnalysis.run_logname=febioLogFileName; %The name for the log file
 febioAnalysis.disp_on=1; %Display information on the command window
-febioAnalysis.runMode='internal';%'internal';
+febioAnalysis.runMode=runMode; 
 
 [runFlag]=runMonitorFEBio(febioAnalysis);%START FEBio NOW!!!!!!!!
 
@@ -700,7 +630,7 @@ end
 % image segmentation, image-based modeling, meshing, and finite element
 % analysis.
 % 
-% Copyright (C) 2006-2021 Kevin Mattheus Moerman and the GIBBON contributors
+% Copyright (C) 2006-2022 Kevin Mattheus Moerman and the GIBBON contributors
 % 
 % This program is free software: you can redistribute it and/or modify
 % it under the terms of the GNU General Public License as published by

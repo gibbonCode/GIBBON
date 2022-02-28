@@ -21,7 +21,7 @@ clim=[-1 1];
 colormapset={'gjet','wjet','graygjet','grayjet',...
     'fire','ice','fireice','warmcold','iwarmcold','blood','bloodbone',...
     'che','wcbp','viridis','magma','inferno','turbo',...
-    'plasma','gviridis','igviridis','kvw','cividis','spectral'};
+    'plasma','gviridis','igviridis','kvw','cividis','spectral','ukr'};
 
 %% The gibbon color maps
 
@@ -64,7 +64,7 @@ drawnow;
 % image segmentation, image-based modeling, meshing, and finite element
 % analysis.
 % 
-% Copyright (C) 2006-2021 Kevin Mattheus Moerman and the GIBBON contributors
+% Copyright (C) 2006-2022 Kevin Mattheus Moerman and the GIBBON contributors
 % 
 % This program is free software: you can redistribute it and/or modify
 % it under the terms of the GNU General Public License as published by

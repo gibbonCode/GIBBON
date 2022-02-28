@@ -168,7 +168,7 @@ nz=[0 0 1];%nz*Q;
 cFigure; hold on;
 gpatch(Ff,Vf,'w','none',0.5);
 plotV(V_markers,'r.','MarkerSize',35);
-text(V_markers(:,1)+4,V_markers(:,2),V_markers(:,3),{'1','2','3','4','5','6'},'FontSize',25);
+text(V_markers(:,1)+6,V_markers(:,2),V_markers(:,3)+15,{'1','2','3','4','5','6'},'FontSize',25);
 axisGeom; camlight headlight;
 colormap(spectral(250))
 gdrawnow;
@@ -424,12 +424,12 @@ Vcd2(:,3)=maskDiscOffset;
 cFigure; hold on;
 gpatch(Fb,V,'w','none',0.5);
 plotV(V_markers,'r.','MarkerSize',50);
-text(V_markers(:,1)+4,V_markers(:,2),V_markers(:,3),{'1','2','3','4','5','6'},'FontSize',25);
+text(V_markers(:,1)+4,V_markers(:,2),V_markers(:,3)+50,{'1','2','3','4','5','6'},'FontSize',65);
 
-plotV(V_rim_points,'k.','MarkerSize',35,'LineWidth',3);
-plotV(V_rim_curve,'k-','LineWidth',2);
-plotV(Vcd1,'b-','LineWidth',2);
-plotV(Vcd2,'b-','LineWidth',2);
+plotV(V_rim_points,'k.','MarkerSize',35);
+plotV(V_rim_curve,'k-','LineWidth',6);
+plotV(Vcd1,'b-','LineWidth',6);
+plotV(Vcd2,'b-','LineWidth',6);
 axisGeom;
 camlight headlight;
 view(2);
@@ -573,9 +573,9 @@ drawnow;
 %%
 
 cFigure; hold on;
-gpatch(Fb(Cb==1,:),V,'w','none',0.5);
+gpatch(Fb(Cb==1,:),V,'w','none',1);
 gpatch(F_rim,V_rim,C_rim,'none',1);
-patchNormPlot(F_rim,V_rim);
+% patchNormPlot(F_rim,V_rim);
 axisGeom; camlight headlight;
 colormap spectral; icolorbar; 
 drawnow;
@@ -664,11 +664,11 @@ drawnow;
 cFigure; hold on;
 gpatch(Ff,Vf,'w','none',1);
 % gpatch(Fb,V,'w','none',1);
-gpatch(F_mask,V_mask,C_mask,'k',1);
+gpatch(F_mask,V_mask,'bw','none',1);
 gpatch(F_rim,V_rim,'kw','none',1);
 axisGeom; camlight headlight;
 view(2);
-colormap spectral; icolorbar; 
+% colormap spectral; icolorbar; 
 drawnow;
 
 %%
@@ -1192,13 +1192,13 @@ end
 %% 
 % _*GIBBON footer text*_ 
 % 
-% License: <https://github.com/gibbonCode/GIBBON/blob/primary/LICENSE>
+% License: <https://github.com/gibbonCode/GIBBON/blob/master/LICENSE>
 % 
 % GIBBON: The Geometry and Image-based Bioengineering add-On. A toolbox for
 % image segmentation, image-based modeling, meshing, and finite element
 % analysis.
 % 
-% Copyright (C) 2006-2021 Kevin Mattheus Moerman and the GIBBON contributors
+% Copyright (C) 2006-2022 Kevin Mattheus Moerman and the GIBBON contributors
 % 
 % This program is free software: you can redistribute it and/or modify
 % it under the terms of the GNU General Public License as published by

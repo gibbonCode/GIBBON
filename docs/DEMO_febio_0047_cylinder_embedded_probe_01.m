@@ -12,9 +12,8 @@
 % * febio_spec version 3.0
 % * febio, FEBio
 % * probe
-% * contact, sliding, sticky, friction
 % * rigid body constraints
-% * hexahedral elements, hex8
+% * tetrahedral elements, tet4
 % * triangular elements, tri3
 % * slab, block, rectangular
 % * sphere
@@ -95,7 +94,7 @@ Fp=fliplr(Fp); %Invert face orientation
 Vp(:,3)=Vp(:,3)-max(Vp(:,3));
 
 %Get top curve
-Eb=patchBoundary(Fp,Vp);
+Eb=patchBoundary(Fp);
 indProbeTop=edgeListToCurve(Eb);
 indProbeTop=indProbeTop(1:end-1);
 Vst=Vp(indProbeTop,:);
@@ -445,7 +444,7 @@ if runFlag==1 %i.e. a succesful run
     logicCutElements=VE(:,2)>=0;
     
     [F_cut,CF_cut_data]=element2patch(E(logicCutElements,:),E_data(logicCutElements,:,1));
-    [indBoundary]=tesBoundary(F_cut,V);
+    [indBoundary]=tesBoundary(F_cut);
     
     CV=faceToVertexMeasure(F_cut(indBoundary,:),V,CF_cut_data(indBoundary,:));
     
@@ -509,7 +508,7 @@ end
 % image segmentation, image-based modeling, meshing, and finite element
 % analysis.
 % 
-% Copyright (C) 2006-2021 Kevin Mattheus Moerman and the GIBBON contributors
+% Copyright (C) 2006-2022 Kevin Mattheus Moerman and the GIBBON contributors
 % 
 % This program is free software: you can redistribute it and/or modify
 % it under the terms of the GNU General Public License as published by

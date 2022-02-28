@@ -205,15 +205,15 @@ drawnow;
 
 %% Define contact surfaces
 
-% The rigid master surface of the sphere
-F_contact_master=fliplr(Fb_c(Cb_c==1,:));
+% The secondary surface
+F_contact_secondary=fliplr(Fb_c(Cb_c==1,:));
 
-% The deformable slave surface of the slab
-Vc_master=patchCentre(F_contact_master,V);
+Vc_secondary=patchCentre(F_contact_secondary,V);
 Vc_Fp2=patchCentre(Fp1,V);
-D=minDist(Vc_Fp2(:,[1 2]),Vc_master(:,[1 2]));
+D=minDist(Vc_Fp2(:,[1 2]),Vc_secondary(:,[1 2]));
 
-F_contact_slave=Fp1(D<=3,:);
+% The primary surface
+F_contact_primary=Fp1(D<=3,:);
 
 %%
 % Visualize contact surfaces
@@ -223,17 +223,19 @@ title('Contact sets and normal directions','FontSize',fontSize);
 
 gpatch(F,V,'kw','none',faceAlpha2); 
 
-hl(1)=gpatch(F_contact_master,V,'gw','k',1); 
-patchNormPlot(F_contact_master,V);
-hl(2)=gpatch(F_contact_slave,V,'rw','k',1);
-patchNormPlot(F_contact_slave,V);
+hl(1)=gpatch(F_contact_primary,V,'rw','k',1);
+patchNormPlot(F_contact_primary,V);
 
-legend(hl,{'Master','Slave'});
+hl(2)=gpatch(F_contact_secondary,V,'gw','k',1); 
+patchNormPlot(F_contact_secondary,V);
+
+legend(hl,{'Primary','Secondary'});
 
 axisGeom(gca,fontSize);
 camlight headlight;
 drawnow;
 
+fdsafdsa
 %% Define boundary conditions
 
 %Supported nodes
@@ -327,12 +329,12 @@ febio_spec.Geometry.NodeSet{2}.node.ATTR.id=bcPrescribeList(:);
 
 % -> Surfaces
 febio_spec.Geometry.Surface{1}.ATTR.name='contact_master';
-febio_spec.Geometry.Surface{1}.tri3.ATTR.lid=(1:1:size(F_contact_master,1))';
-febio_spec.Geometry.Surface{1}.tri3.VAL=F_contact_master;
+febio_spec.Geometry.Surface{1}.tri3.ATTR.lid=(1:1:size(F_contact_secondary,1))';
+febio_spec.Geometry.Surface{1}.tri3.VAL=F_contact_secondary;
 
 febio_spec.Geometry.Surface{2}.ATTR.name='contact_slave';
-febio_spec.Geometry.Surface{2}.tri3.ATTR.lid=(1:1:size(F_contact_slave,1))';
-febio_spec.Geometry.Surface{2}.tri3.VAL=F_contact_slave;
+febio_spec.Geometry.Surface{2}.tri3.ATTR.lid=(1:1:size(F_contact_primary,1))';
+febio_spec.Geometry.Surface{2}.tri3.VAL=F_contact_primary;
 
 % -> Surface pairs
 febio_spec.Geometry.SurfacePair{1}.ATTR.name='Contact1';
@@ -530,7 +532,7 @@ end
 % image segmentation, image-based modeling, meshing, and finite element
 % analysis.
 % 
-% Copyright (C) 2006-2021 Kevin Mattheus Moerman and the GIBBON contributors
+% Copyright (C) 2006-2022 Kevin Mattheus Moerman and the GIBBON contributors
 % 
 % This program is free software: you can redistribute it and/or modify
 % it under the terms of the GNU General Public License as published by

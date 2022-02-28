@@ -25,10 +25,10 @@ edgeWidth=0.5;
 
 hf=cFigure; 
 
-surfaceNames={'stanford_bunny','utah_teapot','cow','parasaurolophus','femur','hip_implant','elephant','dolphin','david','nefertiti','vertebra','suzanne'};
-plotColors=gjet(numel(surfaceNames));
+surfaceNames={'stanford_bunny','utah_teapot','cow','parasaurolophus','femur','hip_implant','elephant','dolphin','david','nefertiti','vertebra','suzanne','nefertiti_high'};
+plotColors=spectral(numel(surfaceNames));
 for q=1:1:numel(surfaceNames)
-   subplot(3,4,q); 
+   subplot(4,4,q); 
    
     [F,V]=graphicsModels(surfaceNames{q}); % Get surface
         
@@ -58,7 +58,7 @@ gdrawnow;
 % image segmentation, image-based modeling, meshing, and finite element
 % analysis.
 % 
-% Copyright (C) 2006-2021 Kevin Mattheus Moerman and the GIBBON contributors
+% Copyright (C) 2006-2022 Kevin Mattheus Moerman and the GIBBON contributors
 % 
 % This program is free software: you can redistribute it and/or modify
 % it under the terms of the GNU General Public License as published by
