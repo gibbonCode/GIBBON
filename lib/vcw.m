@@ -439,7 +439,15 @@ switch eventData.Key
         else
             view(-180,0);
         end
-    case '3' % 3D isometric view
+    case '3' % 3D isometric view 1
+        if linkedOn==1
+            for h = findobj(hf, 'Type', 'axes', '-depth', 1)'
+                axes(h);view(-45,asind(1/sqrt(3)));
+            end
+        else
+            view(-45,asind(1/sqrt(3)));
+        end
+    case '4' % 3D isometric view 2
         if linkedOn==1
             for h = findobj(hf, 'Type', 'axes', '-depth', 1)'
                 axes(h);view(135,asind(1/sqrt(3)));
