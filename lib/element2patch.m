@@ -14,6 +14,7 @@ function [varargout]=element2patch(varargin)
 % gibbon.toolbox@gmail.com
 % 
 % 2014/10/22
+% 2022/03/16 Fixed penta6 face color handling
 %------------------------------------------------------------------------
 
 %% PARSE INPUT
@@ -21,7 +22,7 @@ function [varargout]=element2patch(varargin)
 switch nargin
     case 1
         E=varargin{1};
-        C=[1:1:size(E,1)]'; %Element based colors
+        C=(1:1:size(E,1))'; %Element based colors
         elementType=[];
     case 2
         E=varargin{1};
@@ -127,20 +128,21 @@ switch elementType
         C_tri=repmat(C,2,1);
         C_quad=repmat(C,3,1);
         C={C_tri,C_quad};
-        
-        CF=C;
+        CF_tri  = [1*ones(size(E,1),1);2*ones(size(E,1),1);];
+        CF_quad = [3*ones(size(E,1),1);4*ones(size(E,1),1);5*ones(size(E,1),1);];
+        CF={CF_tri,CF_quad};
     case 'tri3' %Linear triangles
         F=E;
-        CF=C;
+        CF=ones(size(F,1),1);
     case 'tri6' %Quadratic triangles
         F=E(:,[1 4 2 5 3 6]);            
-        CF=C;
+        CF=ones(size(F,1),1);
     case 'quad4' %Linear quadrangles
         F=E;
-        CF=C;
+        CF=ones(size(F,1),1);
     case 'quad8' %Quadratic quadrangles        
          F=E(:,[1 5 2 6 3 7 4 8]); 
-         CF=C;
+         CF=ones(size(F,1),1);
     case 'tet4' %Linear tets
         F=[E(:,[2 1 3]);... %face 1 2 3
             E(:,[1 2 4]);... %face 1 2 4
@@ -180,7 +182,7 @@ switch elementType
         CF=CF(:);
     case 'unknown'
         F=E;
-        C=C;
+        %C=C;
         CF=C;
     otherwise
         error([elementType,' is not a known element type']);

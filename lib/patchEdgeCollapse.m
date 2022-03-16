@@ -1,4 +1,4 @@
-function [F,V,logicValid,indFix2]=patchEdgeCollapse(varargin)
+function [varargout]=patchEdgeCollapse(varargin)
 
 % function [F,V,logicValid,indFix2]=patchEdgeCollapse(F,V,E,logicKeep,meanOption)
 %-------------------------------------------------------------------------
@@ -40,7 +40,7 @@ for q=1:1:numEdges
     edgeCollapseNow=E(q,:); %Current edge to collaps
     logicKeepNow=logicKeep(q,:);
     if all(logicKeepNow==0) || all(logicKeepNow==1)
-        error('Invalid logic for keeping edge points provide, cannot remove or keep both points');
+        error('Invalid logic for keeping edge points provided, cannot remove or keep both points');
     end
     if nnz(ismember(edgeCollapseNow,F))==2 && (edgeCollapseNow(1)~=edgeCollapseNow(2))
         
@@ -60,6 +60,10 @@ F=F(logicValid,:); %Keep only valid faces
 [F,V,indFix2]=patchCleanUnused(F,V);
 
 %% Collect output
+varargout{1}=F;
+varargout{2}=V;
+varargout{3}=logicValid;
+varargout{4}=indFix2;
 
 %% 
 % _*GIBBON footer text*_ 
