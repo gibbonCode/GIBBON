@@ -8,9 +8,19 @@ clear; close all; clc;
 % |[B]=cellTrace(A);|
 
 %% Description 
-% UNDOCUMENTED 
+% Computes the trace for all matrices in the input cell array A and stores
+% them in the output cell B. 
+
 %% Examples 
 % 
+
+A={eye(3,3),2*eye(3,3); 3*eye(3,3),1/3*eye(3,3);} %Example cell array 
+
+%%
+% Compute the trace for all entries in the cell array
+
+B=cellTrace(A)
+
 %%
 % 
 % <<gibbVerySmall.gif>>

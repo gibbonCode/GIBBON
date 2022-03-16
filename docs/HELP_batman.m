@@ -31,10 +31,10 @@ n=250; %Number of points on curve
 cFigure; hold on;
 xlabel('x'); ylabel('y'); 
 plot([x;x(1)],[y;y(1)],'k.-','LineWidth',3,'MarkerSize',25);
-axis tight; 
+axis tight; axis equal; 
 set(gca,'FontSize',25);
 grid on; box on; 
-drawnow; 
+gdrawnow; 
 
 %% 
 %

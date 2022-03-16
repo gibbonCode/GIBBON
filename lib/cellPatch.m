@@ -1,5 +1,7 @@
 function HP=cellPatch(varargin)
 
+warning('This function is depricated and will be deleted in future releases')
+
 % % Vv(isinf(Vv))=NaN;
 % 
 % % L_plot=cellfun(@(X) ~any(isnan(Vv(X(:)))),Fv_cell);

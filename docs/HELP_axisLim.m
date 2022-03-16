@@ -5,10 +5,37 @@
 clear; close all; clc;
 
 %% Syntax
-% |axLim=axisLim(V_DEF);|
+% |axLim=axisLim(V);|
 
 %% Description 
-% UNDOCUMENTED 
+% This function computes appropiate axis limits for the input vertices V.
+% The vertices may be an k x l x m array, where by by k is the number of
+% vertices, l is the number of dimensions (e.g. 2 or 3), and m is for
+% instance a time (or other) dimension. The function returs axLim which are
+% appropriate axis limits such that the coordinates in V can be displayed
+% appropriately (and in a tight fashion). 
+
+%% Examples
+
+%%
+% Create example data
+
+[X,Y,Z]=peaks(25);
+[F,V]=surf2patch(X,Y,Z); %Get faces and vertices
+
+%%
+% Compute appropriate limits
+axLim=axisLim(V) %Axis limits for vertices in V
+
+%%
+% Assign axis limits directly
+
+cFigure; 
+surf(X,Y,Z);
+axisGeom; camlight headlight; 
+axis(axisLim(V));
+gdrawnow; 
+
 %% Examples 
 % 
 %%

@@ -5,12 +5,17 @@
 clear; close all; clc;
 
 %% Syntax
-% |[cMap]=bloodbone(varargin);|
+% |cMap=bloodbone(n);|
 
 %% Description 
-% UNDOCUMENTED 
+% This function creates the colormap data |cMap| for the bloodbone colormap
+% using |n| levels. If |n| is not provided the default used is 250. 
+%
+% See also: DEMO_additional_colormaps
+
 %% Examples 
-% 
+% |cMap=bloodbone(n);|
+
 %%
 % 
 % <<gibbVerySmall.gif>>

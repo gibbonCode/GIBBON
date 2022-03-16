@@ -33,7 +33,7 @@ gpatch(F,V,'w','k');
 axisGeom; %Set axis properties
 
 camlight headlight;
-drawnow; 
+gdrawnow; 
 
 %%
 % 

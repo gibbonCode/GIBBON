@@ -1,4 +1,4 @@
-function axLim=axisLim(V_DEF)
+function axLim=axisLim(V)
 
 % function axLim=axisLim(V_DEF)
 % ------------------------------------------------------------------------
@@ -10,9 +10,9 @@ function axLim=axisLim(V_DEF)
 %%
 
 try
-    axLim=[min(V_DEF,[],[1 3]); max(V_DEF,[],[1 3])];
+    axLim=[min(V,[],[1 3]); max(V,[],[1 3])];
 catch 
-    axLim=[min(min(V_DEF,[],1),[],3); max(max(V_DEF,[],1),[],3)];
+    axLim=[min(min(V,[],1),[],3); max(max(V,[],1),[],3)];
 end
 axLim=axLim(:)';
 
