@@ -122,7 +122,7 @@ for q=1:1:numel(pathNames)
 end
 rmpath(fullfile(gibbonPath,'lib'));
 
-hTextStatement.String='Done adding toolbox paths';
+hTextStatement.String='Done removing toolbox paths';
 drawnow;
 pause(0.5);
 
