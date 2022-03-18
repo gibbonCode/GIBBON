@@ -6,7 +6,7 @@
    <!--
 This HTML was auto-generated from MATLAB code.
 To make changes, update the MATLAB code and republish this document.
-      --><title>che</title><meta name="generator" content="MATLAB 9.12"><link rel="schema.DC" href="http://purl.org/dc/elements/1.1/"><meta name="DC.date" content="2022-03-18"><meta name="DC.source" content="HELP_che.m"><style type="text/css">
+      --><title>circlefit</title><meta name="generator" content="MATLAB 9.12"><link rel="schema.DC" href="http://purl.org/dc/elements/1.1/"><meta name="DC.date" content="2022-03-18"><meta name="DC.source" content="HELP_circlefit.m"><style type="text/css">
 html,body,div,span,applet,object,iframe,h1,h2,h3,h4,h5,h6,p,blockquote,pre,a,abbr,acronym,address,big,cite,code,del,dfn,em,font,img,ins,kbd,q,s,samp,small,strike,strong,tt,var,b,u,i,center,dl,dt,dd,ol,ul,li,fieldset,form,label,legend,table,caption,tbody,tfoot,thead,tr,th,td{margin:0;padding:0;border:0;outline:0;font-size:100%;vertical-align:baseline;background:transparent}body{line-height:1}ol,ul{list-style:none}blockquote,q{quotes:none}blockquote:before,blockquote:after,q:before,q:after{content:'';content:none}:focus{outine:0}ins{text-decoration:none}del{text-decoration:line-through}table{border-collapse:collapse;border-spacing:0}
 
 html { min-height:100%; margin-bottom:1px; }
@@ -67,26 +67,80 @@ table td { padding:7px 5px; text-align:left; vertical-align:top; border:1px soli
 
 
 
-  </style></head><body><div class="content"><h1>che</h1><!--introduction--><p>Below is a demonstration of the features of the <tt>che</tt> function</p><!--/introduction--><h2>Contents</h2><div><ul><li><a href="#2">Syntax</a></li><li><a href="#3">Description</a></li><li><a href="#4">Examples</a></li></ul></div><pre class="codeinput">clear; close <span class="string">all</span>; clc;
-</pre><h2 id="2">Syntax</h2><p><tt>cMap=che(n);</tt></p><h2 id="3">Description</h2><p>This function creates the colormap data <tt>cMap</tt> for the che colormap using <tt>n</tt> levels. If <tt>n</tt> is not provided the default used is 250.</p><p>See also: DEMO_additional_colormaps</p><h2 id="4">Examples</h2><p><tt>cMap=che(n);</tt></p><p><img vspace="5" hspace="5" src="gibbVerySmall.gif" alt=""> </p><p><i><b>GIBBON</b></i> <a href="www.gibboncode.org">www.gibboncode.org</a></p><p><i>Kevin Mattheus Moerman</i>, <a href="gibbon.toolbox@gmail.com">gibbon.toolbox@gmail.com</a></p><p><i><b>GIBBON footer text</b></i></p><p>License: <a href="https://github.com/gibbonCode/GIBBON/blob/master/LICENSE">https://github.com/gibbonCode/GIBBON/blob/master/LICENSE</a></p><p>GIBBON: The Geometry and Image-based Bioengineering add-On. A toolbox for image segmentation, image-based modeling, meshing, and finite element analysis.</p><p>Copyright (C) 2006-2022 Kevin Mattheus Moerman and the GIBBON contributors</p><p>This program is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.</p><p>This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for more details.</p><p>You should have received a copy of the GNU General Public License along with this program.  If not, see <a href="http://www.gnu.org/licenses/">http://www.gnu.org/licenses/</a>.</p><p class="footer"><br><a href="https://www.mathworks.com/products/matlab/">Published with MATLAB&reg; R2022a</a><br></p></div><!--
+  </style></head><body><div class="content"><h1>circlefit</h1><!--introduction--><p>Below is a demonstration of the features of the <tt>circlefit</tt> function</p><!--/introduction--><h2>Contents</h2><div><ul><li><a href="#2">Syntax</a></li><li><a href="#3">Description</a></li><li><a href="#4">Examples</a></li></ul></div><pre class="codeinput">clear; close <span class="string">all</span>; clc;
+</pre><h2 id="2">Syntax</h2><p><tt>[Vc,R]=circlefit(V);</tt></p><h2 id="3">Description</h2><p>This function returns the centre Vc and radius R for a circle fitted to the input point set V. The input can be 2D or 3D but the output centre is always a point in 3D space.</p><h2 id="4">Examples</h2><p>Plot settings</p><pre class="codeinput">markerSize=30;
+lineWidth=3;
+</pre><p>Create input circle</p><pre class="codeinput">n=50; <span class="comment">% Number of points on the circle</span>
+r=2; <span class="comment">% True radius</span>
+t=linspace(0,2*pi,n+1)'; t=t(1:end-1); <span class="comment">% Angles</span>
+V_true=r.*[cos(t) sin(t) zeros(size(t))]; <span class="comment">%Circle true coordinates</span>
+V=V_true+r/20*randn(size(V_true));
+</pre><p>Fit a circle</p><pre class="codeinput">[Vc,R]=circlefit(V);
+
+nf=250;
+r=2;
+t=linspace(0,2*pi,nf+1)'; t=t(1:end-1);
+Vf=Vc+R.*[cos(t) sin(t) zeros(size(t))];
+</pre><p>Visualize result</p><pre class="codeinput">cFigure; hold <span class="string">on</span>;
+hp1=plotV(V,<span class="string">'k.'</span>,<span class="string">'MarkerSize'</span>,markerSize);
+hp2=plotV(V_true,<span class="string">'g.-'</span>,<span class="string">'MarkerSize'</span>,markerSize,<span class="string">'LineWidth'</span>,lineWidth);
+hp3=plotV(Vf,<span class="string">'r-'</span>,<span class="string">'LineWidth'</span>,lineWidth);
+legend([hp1 hp2 hp3],{<span class="string">'Noisy input data'</span>,<span class="string">'True circle'</span>,<span class="string">'Fitted circle'</span>},<span class="string">'Location'</span>,<span class="string">'NorthEastOutside'</span>)
+axisGeom; view(2);
+drawnow;
+</pre><img width="100%" height="auto" vspace="5" hspace="5" src="HELP_circlefit_01.jpg" alt=""> <p><img vspace="5" hspace="5" src="gibbVerySmall.gif" alt=""> </p><p><i><b>GIBBON</b></i> <a href="www.gibboncode.org">www.gibboncode.org</a></p><p><i>Kevin Mattheus Moerman</i>, <a href="gibbon.toolbox@gmail.com">gibbon.toolbox@gmail.com</a></p><p><i><b>GIBBON footer text</b></i></p><p>License: <a href="https://github.com/gibbonCode/GIBBON/blob/master/LICENSE">https://github.com/gibbonCode/GIBBON/blob/master/LICENSE</a></p><p>GIBBON: The Geometry and Image-based Bioengineering add-On. A toolbox for image segmentation, image-based modeling, meshing, and finite element analysis.</p><p>Copyright (C) 2006-2022 Kevin Mattheus Moerman and the GIBBON contributors</p><p>This program is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.</p><p>This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for more details.</p><p>You should have received a copy of the GNU General Public License along with this program.  If not, see <a href="http://www.gnu.org/licenses/">http://www.gnu.org/licenses/</a>.</p><p class="footer"><br><a href="https://www.mathworks.com/products/matlab/">Published with MATLAB&reg; R2022a</a><br></p></div><!--
 ##### SOURCE BEGIN #####
-%% che
-% Below is a demonstration of the features of the |che| function
+%% circlefit
+% Below is a demonstration of the features of the |circlefit| function
 
 %%
 clear; close all; clc;
 
 %% Syntax
-% |cMap=che(n);|
+% |[Vc,R]=circlefit(V);|
 
 %% Description 
-% This function creates the colormap data |cMap| for the che colormap
-% using |n| levels. If |n| is not provided the default used is 250. 
-%
-% See also: DEMO_additional_colormaps
+% This function returns the centre Vc and radius R for a circle fitted to
+% the input point set V. The input can be 2D or 3D but the output centre is
+% always a point in 3D space. 
 
 %% Examples 
-% |cMap=che(n);|
+% 
+
+%%
+% Plot settings
+markerSize=30; 
+lineWidth=3; 
+
+%%
+% Create input circle 
+
+n=50; % Number of points on the circle
+r=2; % True radius
+t=linspace(0,2*pi,n+1)'; t=t(1:end-1); % Angles
+V_true=r.*[cos(t) sin(t) zeros(size(t))]; %Circle true coordinates
+V=V_true+r/20*randn(size(V_true));
+
+%%
+% Fit a circle
+
+[Vc,R]=circlefit(V);
+
+nf=250;
+r=2;
+t=linspace(0,2*pi,nf+1)'; t=t(1:end-1);
+Vf=Vc+R.*[cos(t) sin(t) zeros(size(t))];
+
+%%
+% Visualize result
+
+cFigure; hold on; 
+hp1=plotV(V,'k.','MarkerSize',markerSize);
+hp2=plotV(V_true,'g.-','MarkerSize',markerSize,'LineWidth',lineWidth);
+hp3=plotV(Vf,'r-','LineWidth',lineWidth);
+legend([hp1 hp2 hp3],{'Noisy input data','True circle','Fitted circle'},'Location','NorthEastOutside')
+axisGeom; view(2);
+drawnow; 
 
 %%
 % 

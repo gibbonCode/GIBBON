@@ -8,9 +8,48 @@ clear; close all; clc;
 % |[Vc,R]=circlefit(V);|
 
 %% Description 
-% UNDOCUMENTED 
+% This function returns the centre Vc and radius R for a circle fitted to
+% the input point set V. The input can be 2D or 3D but the output centre is
+% always a point in 3D space. 
+
 %% Examples 
 % 
+
+%%
+% Plot settings
+markerSize=30; 
+lineWidth=3; 
+
+%%
+% Create input circle 
+
+n=50; % Number of points on the circle
+r=2; % True radius
+t=linspace(0,2*pi,n+1)'; t=t(1:end-1); % Angles
+V_true=r.*[cos(t) sin(t) zeros(size(t))]; %Circle true coordinates
+V=V_true+r/20*randn(size(V_true));
+
+%%
+% Fit a circle
+
+[Vc,R]=circlefit(V);
+
+nf=250;
+r=2;
+t=linspace(0,2*pi,nf+1)'; t=t(1:end-1);
+Vf=Vc+R.*[cos(t) sin(t) zeros(size(t))];
+
+%%
+% Visualize result
+
+cFigure; hold on; 
+hp1=plotV(V,'k.','MarkerSize',markerSize);
+hp2=plotV(V_true,'g.-','MarkerSize',markerSize,'LineWidth',lineWidth);
+hp3=plotV(Vf,'r-','LineWidth',lineWidth);
+legend([hp1 hp2 hp3],{'Noisy input data','True circle','Fitted circle'},'Location','NorthEastOutside')
+axisGeom; view(2);
+drawnow; 
+
 %%
 % 
 % <<gibbVerySmall.gif>>

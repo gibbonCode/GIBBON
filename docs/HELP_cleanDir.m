@@ -5,7 +5,7 @@
 clear; close all; clc;
 
 %% Syntax
-% |cleanDir(varargin);|
+% |cleanDir(pathName,extCell);|
 
 %% Description 
 % This function can clean a folder by removing either all files in a folder
@@ -19,6 +19,57 @@ clear; close all; clc;
 
 %% Examples 
 % 
+
+%%
+% Create an example folder containing files with 3 different extensions,
+% i.e. txt, csv and doc. 
+
+% Create temporary example folder
+defaultFolder = fileparts(fileparts(mfilename('fullpath')));
+pathName=fullfile(defaultFolder,'data','temp','cleanCheck');
+mkdir(pathName)
+
+% Create files
+n=3; %Number of files for each type
+for q=1:1:n %Create n files
+    fileID=fopen(fullfile(pathName,['temp',num2str(q),'.txt']),'w');
+    fprintf(fileID,'%d\n',pi);
+    fclose(fileID);
+end
+
+for q=1:1:n %Create n files
+    fileID=fopen(fullfile(pathName,['temp',num2str(q),'.csv']),'w');
+    fprintf(fileID,'%d\n',pi);
+    fclose(fileID);
+end
+
+for q=1:1:n %Create n files
+    fileID=fopen(fullfile(pathName,['temp',num2str(q),'.xml']),'w');
+    fprintf(fileID,'%d\n',pi);
+    fclose(fileID);
+end
+
+%%
+% Show current folder content
+disp('Old folder content:')
+ls(pathName)
+
+%%
+% Clean up directory by removing all files whose extensions are a member of
+% the extension set provided. 
+
+extCell={'csv','txt'}; %File extensions for files to remove
+cleanDir(pathName,extCell)
+
+%%
+% Show current folder content
+disp('New folder content:')
+ls(pathName)
+
+%%
+% remove the temporary folder created for this example
+rmdir(pathName,'s')
+
 %%
 % 
 % <<gibbVerySmall.gif>>

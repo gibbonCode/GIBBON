@@ -5,12 +5,17 @@
 clear; close all; clc;
 
 %% Syntax
-% |[cMap]=che(varargin);|
+% |cMap=che(n);|
 
 %% Description 
-% UNDOCUMENTED 
+% This function creates the colormap data |cMap| for the che colormap
+% using |n| levels. If |n| is not provided the default used is 250. 
+%
+% See also: DEMO_additional_colormaps
+
 %% Examples 
-% 
+% |cMap=che(n);|
+
 %%
 % 
 % <<gibbVerySmall.gif>>

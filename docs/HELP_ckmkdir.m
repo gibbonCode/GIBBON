@@ -5,15 +5,51 @@
 clear; close all; clc;
 
 %% Syntax
-% |[varargout]=ckmkdir(dirName);|
+% |[existFlag]=ckmkdir(dirName);|
 
 %% Description 
 % Check for the existance of the directory dirName and make the directory
 % if it does not. The optional output is the exitFlag which is 0 if it did
 % not exist and 1 if it did. 
 %
+% See also |mkdir|
+
 %% Examples 
 % 
+
+%% Make a directory which does not exist yet
+
+defaultFolder = fileparts(fileparts(mfilename('fullpath')));
+pathName=fullfile(defaultFolder,'data','temp');
+
+% % Make new directory first
+% mkdir(fullfile(pathName,'newDir'))
+
+disp('Old folder content: ')
+ls(pathName)
+
+%%
+% Create directory if not present
+
+% File name 
+dirName=fullfile(pathName,'new_folder');
+
+[existFlag]=ckmkdir(dirName)
+
+disp('New folder content: ')
+ls(pathName)
+
+%%
+% If the directory is already there the folder is ignored and existFlag is
+% true 
+
+[existFlag]=ckmkdir(dirName)
+
+%%
+% remove the temporary folder created for this example
+rmdir(dirName,'s')
+
+
 %%
 % 
 % <<gibbVerySmall.gif>>

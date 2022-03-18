@@ -20,16 +20,16 @@ clear; close all; clc;
 clim=[min(C(:)) max(C(:))];
 
 %RGB color set with map 1
-cmap=viridis(250);
-C_rgb_1=cmaperise(C,cmap,clim);
+cmap1=viridis(25);
+C_rgb_1=cmaperise(C,cmap1,clim);
 
 %RGB color set with map 2
-cmap=gray(250);
-C_rgb_2=cmaperise(C,cmap,clim);
+cmap2=gray(25);
+C_rgb_2=cmaperise(C,cmap2,clim);
 
 %RGB color set with map 3
-cmap=gjet(250);
-C_rgb_3=cmaperise(C,cmap,clim);
+cmap3=gjet(25);
+C_rgb_3=cmaperise(C,cmap3,clim);
 
 
 %% Visualize
@@ -44,16 +44,16 @@ cFigure;
 
 subplot(1,2,1);
 title('Colormapped')
-hp=gpatch(F,V,C);
+hp=gpatch(F,V,C,'none');
 legend(hp,'Colormapped data');
 axisGeom;
-camlight headlight; colormap viridis; colorbar;
+camlight headlight; colormap(gca,cmap1); colorbar;
 
 subplot(1,2,2);
 title('RGB (red-green-blue) painted')
-hp1=gpatch(F,V,C_rgb_1);
-hp2=gpatch(F,V2,C_rgb_2);
-hp3=gpatch(F,V3,C_rgb_3);
+hp1=gpatch(F,V,C_rgb_1,'none');
+hp2=gpatch(F,V2,C_rgb_2,'none');
+hp3=gpatch(F,V3,C_rgb_3,'none');
 legend([hp1 hp2 hp3],{'RGB colored with map 1','RGB colored with map 2','RGB colored with map 3'});
 axisGeom;
 camlight headlight; 

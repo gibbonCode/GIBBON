@@ -8,9 +8,29 @@ clear; close all; clc;
 % |[F,V]=cow;|
 
 %% Description 
-% UNDOCUMENTED 
+% This function generates patch data (faces F, and vertices V) for a cow
+% mesh. 
+
 %% Examples 
 % 
+
+%%
+% Plot Settings
+fontSize=15; 
+
+%% Obtaining the cow patch data (default)
+[F,V]=cow;
+
+%%
+% Visualisation
+
+cFigure;
+title('Cow','FontSize',fontSize);
+gpatch(F,V,'gw');
+axisGeom(gca,fontSize);
+camlight('headlight');
+drawnow; 
+
 %%
 % 
 % <<gibbVerySmall.gif>>

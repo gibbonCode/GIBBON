@@ -68,6 +68,12 @@ else %Fit circle to more than 2 points
     R=Q(3); %Radius
 end
 
+if sizV(2)==2
+    Vc=Vc(:,[1 2]);
+end
+
+end
+
 %% 
 % _*GIBBON footer text*_ 
 % 

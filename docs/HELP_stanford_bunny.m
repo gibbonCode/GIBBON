@@ -1,18 +1,13 @@
 %% stanford_bunny
-% Below is a demonstration of the |stanford_bunny| function
+% Below is a demonstration of the features of the |stanford_bunny| function
 
 %%
 clear; close all; clc;
 
-% Plot settings
-fig_color='w'; fig_colordef='white';
-fontSize=15;
-faceColor='b';
-faceAlpha=1;
-edgeColor='k';
-edgeWidth=1;
+%% Syntax
+% |[F,V]=stanford_bunny(modelID)|
 
-%% THE STANFORD BUNNY
+%% Description 
 % The stanford_bunny function generates patch data (faces and vertices)
 % defining a relatively coarse representation of the "Stanford bunny" which
 % is a commonly used test model in computer graphics. 
@@ -33,7 +28,19 @@ edgeWidth=1;
 % USA: ACM Press; 1994;311-8. Available from:
 % http://portal.acm.org/citation.cfm?doid=192161.192241
 
-%Obtaining patch data
+%% Examples 
+% 
+
+%%
+% Plot settings
+fig_color='w'; fig_colordef='white';
+fontSize=15;
+faceColor='b';
+faceAlpha=1;
+edgeColor='k';
+edgeWidth=1;
+
+%% Obtaining the Stanford bunny patch data (default)
 [F,V]=stanford_bunny;
 
 %%
@@ -41,10 +48,27 @@ edgeWidth=1;
 
 cFigure;
 title('The Stanford bunny','FontSize',fontSize);
-gpatch(F,V,'g');
+gpatch(F,V,'gw');
 axisGeom(gca,fontSize);
 camlight('headlight');
-gdrawnow; 
+drawnow; 
+
+%% Obtaining the Stanford bunny patch data (other)
+
+hf=cFigure;
+gtitle('The Stanford bunny');
+drawnow; 
+c=gjet(6);
+for q=0:5
+    [F,V]=stanford_bunny(q);
+
+    subplot(2,3,q+1);
+    title(['Model ID ',num2str(q)]);
+    gpatch(F,V,c(q+1,:));
+    axisGeom(gca,fontSize);
+    camlight('headlight');
+end
+drawnow; 
 
 %% 
 %
