@@ -1,0 +1,325 @@
+
+<!DOCTYPE html
+  PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html><head>
+      <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+   <!--
+This HTML was auto-generated from MATLAB code.
+To make changes, update the MATLAB code and republish this document.
+      --><title>DEMO_visualization_von_mises_plasticity_01</title><meta name="generator" content="MATLAB 9.12"><link rel="schema.DC" href="http://purl.org/dc/elements/1.1/"><meta name="DC.date" content="2022-03-21"><meta name="DC.source" content="DEMO_visualization_von_mises_plasticity_01.m"><style type="text/css">
+html,body,div,span,applet,object,iframe,h1,h2,h3,h4,h5,h6,p,blockquote,pre,a,abbr,acronym,address,big,cite,code,del,dfn,em,font,img,ins,kbd,q,s,samp,small,strike,strong,tt,var,b,u,i,center,dl,dt,dd,ol,ul,li,fieldset,form,label,legend,table,caption,tbody,tfoot,thead,tr,th,td{margin:0;padding:0;border:0;outline:0;font-size:100%;vertical-align:baseline;background:transparent}body{line-height:1}ol,ul{list-style:none}blockquote,q{quotes:none}blockquote:before,blockquote:after,q:before,q:after{content:'';content:none}:focus{outine:0}ins{text-decoration:none}del{text-decoration:line-through}table{border-collapse:collapse;border-spacing:0}
+
+html { min-height:100%; margin-bottom:1px; }
+html body { height:100%; margin:0px; font-family:Arial, Helvetica, sans-serif; font-size:10px; color:#000; line-height:140%; background:#fff none; overflow-y:scroll; }
+html body td { vertical-align:top; text-align:left; }
+
+h1 { padding:0px; margin:0px 0px 25px; font-family:Arial, Helvetica, sans-serif; font-size:1.5em; color:#d55000; line-height:100%; font-weight:normal; }
+h2 { padding:0px; margin:0px 0px 8px; font-family:Arial, Helvetica, sans-serif; font-size:1.2em; color:#000; font-weight:bold; line-height:140%; border-bottom:1px solid #d6d4d4; display:block; }
+h3 { padding:0px; margin:0px 0px 5px; font-family:Arial, Helvetica, sans-serif; font-size:1.1em; color:#000; font-weight:bold; line-height:140%; }
+
+a { color:#005fce; text-decoration:none; }
+a:hover { color:#005fce; text-decoration:underline; }
+a:visited { color:#004aa0; text-decoration:none; }
+
+p { padding:0px; margin:0px 0px 20px; }
+img { padding:0px; margin:0px 0px 20px; border:none; }
+p img, pre img, tt img, li img, h1 img, h2 img { margin-bottom:0px; }
+
+ul { padding:0px; margin:0px 0px 20px 23px; list-style:square; }
+ul li { padding:0px; margin:0px 0px 7px 0px; }
+ul li ul { padding:5px 0px 0px; margin:0px 0px 7px 23px; }
+ul li ol li { list-style:decimal; }
+ol { padding:0px; margin:0px 0px 20px 0px; list-style:decimal; }
+ol li { padding:0px; margin:0px 0px 7px 23px; list-style-type:decimal; }
+ol li ol { padding:5px 0px 0px; margin:0px 0px 7px 0px; }
+ol li ol li { list-style-type:lower-alpha; }
+ol li ul { padding-top:7px; }
+ol li ul li { list-style:square; }
+
+.content { font-size:1.2em; line-height:140%; padding: 20px; }
+
+pre, code { font-size:12px; }
+tt { font-size: 1.2em; }
+pre { margin:0px 0px 20px; }
+pre.codeinput { padding:10px; border:1px solid #d3d3d3; background:#f7f7f7; }
+pre.codeoutput { padding:10px 11px; margin:0px 0px 20px; color:#4c4c4c; }
+pre.error { color:red; }
+
+@media print { pre.codeinput, pre.codeoutput { word-wrap:break-word; width:100%; } }
+
+span.keyword { color:#0000FF }
+span.comment { color:#228B22 }
+span.string { color:#A020F0 }
+span.untermstring { color:#B20000 }
+span.syscmd { color:#B28C00 }
+span.typesection { color:#A0522D }
+
+.footer { width:auto; padding:10px 0px; margin:25px 0px 0px; border-top:1px dotted #878787; font-size:0.8em; line-height:140%; font-style:italic; color:#878787; text-align:left; float:none; }
+.footer p { margin:0px; }
+.footer a { color:#878787; }
+.footer a:hover { color:#878787; text-decoration:underline; }
+.footer a:visited { color:#878787; }
+
+table th { padding:7px 5px; text-align:left; vertical-align:middle; border: 1px solid #d6d4d4; font-weight:bold; }
+table td { padding:7px 5px; text-align:left; vertical-align:top; border:1px solid #d6d4d4; }
+
+
+
+
+
+  </style></head><body><div class="content"><h1>DEMO_visualization_von_mises_plasticity_01</h1><!--introduction--><p>Below is a demonstration for:</p><div><ul><li>Visualization of a Von Mises yield surface in 3D</li></ul></div><!--/introduction--><h2>Contents</h2><div><ul><li><a href="#2">Plot settings.</a></li><li><a href="#3">Control parameters</a></li></ul></div><pre class="codeinput">clear; close <span class="string">all</span>; clc
+</pre><h2 id="2">Plot settings.</h2><pre class="codeinput">fontSizeAxis=25;
+fontSizeText=35;
+colorSet=viridis(3);
+lineWidth1=1;
+lineWidth2=3;
+lineWidthAxis=3;
+f=3;
+</pre><h2 id="3">Control parameters</h2><pre class="codeinput">s=1; <span class="comment">%Yield stress</span>
+</pre><p>Create ellipsoids</p><pre class="codeinput">t=linspace(0,2*pi,1000); <span class="comment">%Angular coordinates</span>
+x=s*cos(t);
+y=s*sqrt(3).*sin(t);
+z=zeros(size(x));
+v=[x(:) y(:) z(:)]; <span class="comment">%Ellipse coordinates</span>
+
+<span class="comment">%Make cylinder "slices" ellipses by rotating above ellipse</span>
+R12=euler2DCM([0 0 (45/180)*pi]);
+v12=v*R12;
+
+R13_1=euler2DCM([0 (90/180)*pi 0]);
+R13_2=euler2DCM([(135/180)*pi 0 0]);
+v13=v*R13_1*R13_2;
+
+R23_1=euler2DCM([(90/180)*pi 0 0]);
+R23_2=euler2DCM([0 (-45/180)*pi 0 ]);
+v23=v*R23_1*R23_2;
+</pre><p>Creating cylinder data</p><pre class="codeinput"><span class="comment">% Creating input structure</span>
+inputStruct.cylRadius=s;
+inputStruct.numRadial=250;
+inputStruct.cylHeight=2*sqrt(2)*s;
+inputStruct.numHeight=10;
+inputStruct.meshType=<span class="string">'quad'</span>;
+[F,V,C]=patchcylinder(inputStruct);
+Q=euler2DCM([0 pi/2 0]);
+V=V*Q;
+
+R1=euler2DCM([0 asin(1/sqrt(3)) 0]);
+R2=euler2DCM([0 0 -(45/180)*pi]);
+V=V*R1*R2;
+
+[x1,y1]=meshgrid(-f*s:1:f*s);
+z1=zeros(size(x1));
+
+[x2,z2]=meshgrid(-f*s:1:f*s);
+y2=zeros(size(x2));
+
+[y3,z3]=meshgrid(-f*s:1:f*s);
+x3=zeros(size(y3));
+</pre><pre class="codeinput"><span class="comment">%Visualize</span>
+hf=cFigure; hold <span class="string">on</span>;
+
+h4=gpatch(F,V,<span class="string">'rw'</span>,<span class="string">'none'</span>,0.5);
+surf(x1,y1,z1,<span class="string">'EdgeColor'</span>,<span class="string">'k'</span>,<span class="string">'faceColor'</span>,1*ones(1,3),<span class="string">'EdgeAlpha'</span>,0.5,<span class="string">'FaceAlpha'</span>,0.1,<span class="string">'LineWidth'</span>,lineWidth1);
+surf(x2,y2,z2,<span class="string">'EdgeColor'</span>,<span class="string">'k'</span>,<span class="string">'faceColor'</span>,1*ones(1,3),<span class="string">'EdgeAlpha'</span>,0.5,<span class="string">'FaceAlpha'</span>,0.1,<span class="string">'LineWidth'</span>,lineWidth1);
+surf(x3,y3,z3,<span class="string">'EdgeColor'</span>,<span class="string">'k'</span>,<span class="string">'faceColor'</span>,1*ones(1,3),<span class="string">'EdgeAlpha'</span>,0.5,<span class="string">'FaceAlpha'</span>,0.1,<span class="string">'LineWidth'</span>,lineWidth1);
+
+h1=quiverVec([0 0 0],[1 0 0],f*s,colorSet(1,:));
+h2=quiverVec([0 0 0],[0 1 0],f*s,colorSet(2,:));
+h3=quiverVec([0 0 0],[0 0 1],f*s,colorSet(3,:));
+
+h5=plotV([-1 -1 -1; 1 1 1],<span class="string">'k--'</span>,<span class="string">'LineWidth'</span>,lineWidth2); <span class="comment">%Hydrostatic axis</span>
+
+h6=plotV(v12,<span class="string">'r-'</span>,<span class="string">'LineWidth'</span>,lineWidth2);
+h6.Color=(colorSet(1,:)+colorSet(2,:))/2;
+
+h7=plotV(v13,<span class="string">'r-'</span>,<span class="string">'LineWidth'</span>,lineWidth2);
+h7.Color=(colorSet(1,:)+colorSet(3,:))/2;
+
+h8=plotV(v23,<span class="string">'r-'</span>,<span class="string">'LineWidth'</span>,lineWidth2);
+h8.Color=(colorSet(2,:)+colorSet(3,:))/2;
+
+hAxis=gca;
+hAxis.XRuler.FirstCrossoverValue  = 0; <span class="comment">% X crossover with Y axis</span>
+hAxis.YRuler.FirstCrossoverValue  = 0; <span class="comment">% Y crossover with X axis</span>
+hAxis.ZRuler.FirstCrossoverValue  = 0; <span class="comment">% Z crossover with X axis</span>
+hAxis.XRuler.SecondCrossoverValue = 0; <span class="comment">% X crossover with Z axis</span>
+hAxis.YRuler.SecondCrossoverValue = 0; <span class="comment">% Y crossover with Z axis</span>
+hAxis.ZRuler.SecondCrossoverValue = 0; <span class="comment">% Z crossover with Y axis</span>
+
+text(0.5+f*s,0,0,<span class="string">'$\sigma_1$'</span>,<span class="string">'Interpreter'</span>,<span class="string">'Latex'</span>,<span class="string">'FontSize'</span>,fontSizeText);
+text(0,0.5+f*s,0,<span class="string">'$\sigma_2$'</span>,<span class="string">'Interpreter'</span>,<span class="string">'Latex'</span>,<span class="string">'FontSize'</span>,fontSizeText);
+text(0,0,0.5+f*s,<span class="string">'$\sigma_3$'</span>,<span class="string">'Interpreter'</span>,<span class="string">'Latex'</span>,<span class="string">'FontSize'</span>,fontSizeText);
+
+xticks(-f*s:1:f*s);
+yticks(-f*s:1:f*s);
+zticks(-f*s:1:f*s);
+
+legend([h1 h2 h3 h4 h5 h6 h7 h8],{<span class="string">'$\sigma_1$ axis'</span>,<span class="string">'$\sigma_2$ axis'</span>,<span class="string">'$\sigma_3$ axis'</span>,<span class="keyword">...</span>
+                           <span class="string">'Von Mises yield surface'</span>,<span class="keyword">...</span>
+                           <span class="string">'Hydrostatic line'</span>,<span class="keyword">...</span>
+                           <span class="string">'yield ellipse $\sigma_3=0$'</span>,<span class="string">'yield ellipse $\sigma_2=0$'</span>,<span class="string">'yield ellipse $\sigma_1=0$'</span><span class="keyword">...</span>
+                           },<span class="string">'Interpreter'</span>,<span class="string">'Latex'</span>);
+
+axis <span class="string">tight</span>; axis <span class="string">equal</span>; axis <span class="string">vis3d</span>; view(3); <span class="comment">%box on;</span>
+camlight <span class="string">headlight</span>;
+axis(f*s*[-1 1 -1 1 -1 1])
+set(gca,<span class="string">'FontSize'</span>,fontSizeAxis,<span class="string">'LineWidth'</span>,lineWidthAxis);
+gdrawnow;
+</pre><img width="100%" height="auto" vspace="5" hspace="5" src="DEMO_visualization_von_mises_plasticity_01_01.jpg" alt=""> <p><img vspace="5" hspace="5" src="gibbVerySmall.gif" alt=""> </p><p><i><b>GIBBON</b></i> <a href="www.gibboncode.org">www.gibboncode.org</a></p><p><i>Kevin Mattheus Moerman</i>, <a href="gibbon.toolbox@gmail.com">gibbon.toolbox@gmail.com</a></p><p><i><b>GIBBON footer text</b></i></p><p>License: <a href="https://github.com/gibbonCode/GIBBON/blob/master/LICENSE">https://github.com/gibbonCode/GIBBON/blob/master/LICENSE</a></p><p>GIBBON: The Geometry and Image-based Bioengineering add-On. A toolbox for image segmentation, image-based modeling, meshing, and finite element analysis.</p><p>Copyright (C) 2006-2022 Kevin Mattheus Moerman and the GIBBON contributors</p><p>This program is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.</p><p>This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for more details.</p><p>You should have received a copy of the GNU General Public License along with this program.  If not, see <a href="http://www.gnu.org/licenses/">http://www.gnu.org/licenses/</a>.</p><p class="footer"><br><a href="https://www.mathworks.com/products/matlab/">Published with MATLAB&reg; R2022a</a><br></p></div><!--
+##### SOURCE BEGIN #####
+%% DEMO_visualization_von_mises_plasticity_01
+% Below is a demonstration for:
+%
+% * Visualization of a Von Mises yield surface in 3D
+
+%%
+
+clear; close all; clc
+
+%% Plot settings. 
+
+fontSizeAxis=25;
+fontSizeText=35;
+colorSet=viridis(3);
+lineWidth1=1;
+lineWidth2=3;
+lineWidthAxis=3;
+f=3;
+
+%% Control parameters
+
+s=1; %Yield stress 
+
+%% 
+% Create ellipsoids
+t=linspace(0,2*pi,1000); %Angular coordinates
+x=s*cos(t); 
+y=s*sqrt(3).*sin(t);
+z=zeros(size(x));
+v=[x(:) y(:) z(:)]; %Ellipse coordinates
+
+%Make cylinder "slices" ellipses by rotating above ellipse
+R12=euler2DCM([0 0 (45/180)*pi]);
+v12=v*R12; 
+
+R13_1=euler2DCM([0 (90/180)*pi 0]);
+R13_2=euler2DCM([(135/180)*pi 0 0]);
+v13=v*R13_1*R13_2; 
+
+R23_1=euler2DCM([(90/180)*pi 0 0]);
+R23_2=euler2DCM([0 (-45/180)*pi 0 ]);
+v23=v*R23_1*R23_2; 
+
+%%
+% Creating cylinder data
+
+% Creating input structure
+inputStruct.cylRadius=s;
+inputStruct.numRadial=250;
+inputStruct.cylHeight=2*sqrt(2)*s;
+inputStruct.numHeight=10;
+inputStruct.meshType='quad';
+[F,V,C]=patchcylinder(inputStruct);
+Q=euler2DCM([0 pi/2 0]);
+V=V*Q;
+
+R1=euler2DCM([0 asin(1/sqrt(3)) 0]);
+R2=euler2DCM([0 0 -(45/180)*pi]);
+V=V*R1*R2;
+
+[x1,y1]=meshgrid(-f*s:1:f*s);
+z1=zeros(size(x1));
+
+[x2,z2]=meshgrid(-f*s:1:f*s);
+y2=zeros(size(x2));
+
+[y3,z3]=meshgrid(-f*s:1:f*s);
+x3=zeros(size(y3));
+
+%%
+%Visualize
+hf=cFigure; hold on;
+
+h4=gpatch(F,V,'rw','none',0.5);
+surf(x1,y1,z1,'EdgeColor','k','faceColor',1*ones(1,3),'EdgeAlpha',0.5,'FaceAlpha',0.1,'LineWidth',lineWidth1);
+surf(x2,y2,z2,'EdgeColor','k','faceColor',1*ones(1,3),'EdgeAlpha',0.5,'FaceAlpha',0.1,'LineWidth',lineWidth1);
+surf(x3,y3,z3,'EdgeColor','k','faceColor',1*ones(1,3),'EdgeAlpha',0.5,'FaceAlpha',0.1,'LineWidth',lineWidth1);
+
+h1=quiverVec([0 0 0],[1 0 0],f*s,colorSet(1,:));
+h2=quiverVec([0 0 0],[0 1 0],f*s,colorSet(2,:));
+h3=quiverVec([0 0 0],[0 0 1],f*s,colorSet(3,:));
+
+h5=plotV([-1 -1 -1; 1 1 1],'kREPLACE_WITH_DASH_DASH','LineWidth',lineWidth2); %Hydrostatic axis
+
+h6=plotV(v12,'r-','LineWidth',lineWidth2);
+h6.Color=(colorSet(1,:)+colorSet(2,:))/2;
+
+h7=plotV(v13,'r-','LineWidth',lineWidth2);
+h7.Color=(colorSet(1,:)+colorSet(3,:))/2;
+
+h8=plotV(v23,'r-','LineWidth',lineWidth2);
+h8.Color=(colorSet(2,:)+colorSet(3,:))/2;
+
+hAxis=gca;
+hAxis.XRuler.FirstCrossoverValue  = 0; % X crossover with Y axis
+hAxis.YRuler.FirstCrossoverValue  = 0; % Y crossover with X axis
+hAxis.ZRuler.FirstCrossoverValue  = 0; % Z crossover with X axis
+hAxis.XRuler.SecondCrossoverValue = 0; % X crossover with Z axis
+hAxis.YRuler.SecondCrossoverValue = 0; % Y crossover with Z axis
+hAxis.ZRuler.SecondCrossoverValue = 0; % Z crossover with Y axis
+
+text(0.5+f*s,0,0,'$\sigma_1$','Interpreter','Latex','FontSize',fontSizeText);
+text(0,0.5+f*s,0,'$\sigma_2$','Interpreter','Latex','FontSize',fontSizeText);
+text(0,0,0.5+f*s,'$\sigma_3$','Interpreter','Latex','FontSize',fontSizeText);
+
+xticks(-f*s:1:f*s);
+yticks(-f*s:1:f*s);
+zticks(-f*s:1:f*s);
+
+legend([h1 h2 h3 h4 h5 h6 h7 h8],{'$\sigma_1$ axis','$\sigma_2$ axis','$\sigma_3$ axis',...
+                           'Von Mises yield surface',...
+                           'Hydrostatic line',...
+                           'yield ellipse $\sigma_3=0$','yield ellipse $\sigma_2=0$','yield ellipse $\sigma_1=0$'...
+                           },'Interpreter','Latex');
+
+axis tight; axis equal; axis vis3d; view(3); %box on; 
+camlight headlight; 
+axis(f*s*[-1 1 -1 1 -1 1])
+set(gca,'FontSize',fontSizeAxis,'LineWidth',lineWidthAxis);
+gdrawnow;
+
+%%
+%
+% <<gibbVerySmall.gif>>
+%
+% _*GIBBON*_
+% <www.gibboncode.org>
+%
+% _Kevin Mattheus Moerman_, <gibbon.toolbox@gmail.com>
+
+%% 
+% _*GIBBON footer text*_ 
+% 
+% License: <https://github.com/gibbonCode/GIBBON/blob/master/LICENSE>
+% 
+% GIBBON: The Geometry and Image-based Bioengineering add-On. A toolbox for
+% image segmentation, image-based modeling, meshing, and finite element
+% analysis.
+% 
+% Copyright (C) 2006-2022 Kevin Mattheus Moerman and the GIBBON contributors
+% 
+% This program is free software: you can redistribute it and/or modify
+% it under the terms of the GNU General Public License as published by
+% the Free Software Foundation, either version 3 of the License, or
+% (at your option) any later version.
+% 
+% This program is distributed in the hope that it will be useful,
+% but WITHOUT ANY WARRANTY; without even the implied warranty of
+% MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+% GNU General Public License for more details.
+% 
+% You should have received a copy of the GNU General Public License
+% along with this program.  If not, see <http://www.gnu.org/licenses/>.
+
+##### SOURCE END #####
+--></body></html>
