@@ -11,6 +11,34 @@ clear; close all; clc;
 % UNDOCUMENTED 
 %% Examples 
 % 
+
+%%
+% Create example curve
+t=linspace(0,2*pi,10)';
+t=t(1:end-1);
+
+V=[cos(t) sin(t) zeros(size(t))];
+
+%%
+% Get curve edges
+
+[E]=curveToEdgeList(V)
+
+%%
+% Visualization
+
+cFigure; 
+subplot(1,2,1); hold on;
+title('Curved plotted using plot command');
+plotV(V,'r-','LineWidth',2,'MarkerSize',25);
+axis tight; axis equal; grid on; box on; view(2); 
+
+subplot(1,2,2); hold on;
+title('Curved plotted as edges using patch command');
+gpatch(E,V,'none','g',1,2);
+axis tight; axis equal; grid on; box on; view(2); 
+drawnow; 
+
 %%
 % 
 % <<gibbVerySmall.gif>>

@@ -8,9 +8,37 @@ clear; close all; clc;
 % |[Vf,indFix]=curvePathOrderFix(V);|
 
 %% Description 
-% UNDOCUMENTED 
+% This function unscrambles a scrambles curve using distances. The function
+% assumes that the proper point order can be resolved by choosing the next
+% nearest point. 
+
 %% Examples 
 % 
+
+t=linspace(0,2*pi,25)';
+V=[cos(t) sin(t) zeros(size(t))];
+V=V(randperm(size(V,1)),:); %Scramble point set
+
+%% 
+% Undo scrambling using |curvePathOrderFix|
+
+[Vf,indFix]=curvePathOrderFix(V);
+
+%%
+% Visualization
+
+cFigure; 
+subplot(1,2,1); hold on;
+title('Scrambled curve');
+plotV(V,'r.-','LineWidth',2,'MarkerSize',25);
+axis tight; axis equal; grid on; box on; view(2); 
+
+subplot(1,2,2); hold on;
+title('Unscrambled curve');
+plotV(Vf,'g.-','LineWidth',2,'MarkerSize',25);
+axis tight; axis equal; grid on; box on; view(2); 
+drawnow; 
+
 %%
 % 
 % <<gibbVerySmall.gif>>

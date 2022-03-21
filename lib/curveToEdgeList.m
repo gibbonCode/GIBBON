@@ -1,4 +1,5 @@
 function [E]=curveToEdgeList(N)
+
 % function [E]=curveToEdgeList(N)
 % ------------------------------------------------------------------------
 %

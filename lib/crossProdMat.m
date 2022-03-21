@@ -1,8 +1,25 @@
-function A=crossProdMat(a)
+function [A]=crossProdMat(a)
 
+% function [A]=crossProdMat(a)
+% ------------------------------------------------------------------------
+% This function computes the so-called "cross product matrix". The output
+% is a matrix A which is a skew-symmetric tensor, which allows for the
+% computation of the cross product with the input vector a. In other words
+% the matrix A can be used to compute c=A*b which is equivalent to
+% c=cross(a,b).
+%
+% Change log: 
+% -
+% 2022/03/18 Updated documentation and code header/description
+% ------------------------------------------------------------------------
+
+%%
+
+%Create the "cross product matrix" 
 A=[ 0    -a(3)  a(2);...
-    a(3)  0    -a(1);...
-   -a(2)  a(1) 0];
+    a(3)   0   -a(1);...
+   -a(2)  a(1)   0  ];
+
 
  
 %% 

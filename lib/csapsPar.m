@@ -1,4 +1,30 @@
-function p=csapsPar(varargin)
+function [p]=csapsPar(varargin)
+
+% function [p]=csapsPar(V,pw)
+% ------------------------------------------------------------------------
+% This function aims to compute the cubic smoothing spline parameter p for
+% the MATLAB csaps function. The input features the curve vertices V and
+% the parameter pw. The smoothing parameter p is derived using:
+% 
+% p=1./(1+(((h.^3)/6)*f));
+%
+% Where h is the point spacing (derived from V) and f is defined as: 
+%
+% f=(1/pw)-1; 
+% 
+% See also MATLAB's csaps documentation: 
+% 
+% The interesting range for p is close to 1./(1+((h.^3)/6)). The following
+% form is used introducing the factor f: p=1./(1+(((h.^3)/6)*f)). By using
+% f=10 we obtain p=1./(1+((h.^3)/60)) which should result in a close
+% following of the data. If instead f=0.1 is used, leading to
+% p=1./(1+((h.^3)/0.6)), a smoother result is obtained.
+%
+% Change log; 
+% 2022/03/21 Updated documentation and description
+% ------------------------------------------------------------------------
+
+%%
 
 switch nargin
     case 1
@@ -9,15 +35,9 @@ switch nargin
         pw=varargin{2};
 end
 
-%%
 
-% The interesting range for p is close to 1./(1+((h.^3)/6)). The following
-% form is used introducing the factor f: p=1./(1+(((h.^3)/6)*f)). By using
-% f=10 we obtain p=1./(1+((h.^3)/60)) which should result in a close
-% following of the data. If instead f=0.1 is used, leading to
-% p=1./(1+((h.^3)/0.6)), a smoother result is obtained.
+%% Cap pw
 
-%%
 if pw<0
     pw=0;
 end
@@ -35,6 +55,7 @@ h=mean(hVec(:)); %Average point spacing
 
 %Estimate smoothening parameter based on f and point spacing
 p=1./(1+(((h.^3)/6)*f));
+
 
  
 %% 

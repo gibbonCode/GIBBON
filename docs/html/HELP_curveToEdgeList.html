@@ -6,7 +6,7 @@
    <!--
 This HTML was auto-generated from MATLAB code.
 To make changes, update the MATLAB code and republish this document.
-      --><title>curvePathOrderFix</title><meta name="generator" content="MATLAB 9.12"><link rel="schema.DC" href="http://purl.org/dc/elements/1.1/"><meta name="DC.date" content="2022-03-21"><meta name="DC.source" content="HELP_curvePathOrderFix.m"><style type="text/css">
+      --><title>curveToEdgeList</title><meta name="generator" content="MATLAB 9.12"><link rel="schema.DC" href="http://purl.org/dc/elements/1.1/"><meta name="DC.date" content="2022-03-21"><meta name="DC.source" content="HELP_curveToEdgeList.m"><style type="text/css">
 html,body,div,span,applet,object,iframe,h1,h2,h3,h4,h5,h6,p,blockquote,pre,a,abbr,acronym,address,big,cite,code,del,dfn,em,font,img,ins,kbd,q,s,samp,small,strike,strong,tt,var,b,u,i,center,dl,dt,dd,ol,ul,li,fieldset,form,label,legend,table,caption,tbody,tfoot,thead,tr,th,td{margin:0;padding:0;border:0;outline:0;font-size:100%;vertical-align:baseline;background:transparent}body{line-height:1}ol,ul{list-style:none}blockquote,q{quotes:none}blockquote:before,blockquote:after,q:before,q:after{content:'';content:none}:focus{outine:0}ins{text-decoration:none}del{text-decoration:line-through}table{border-collapse:collapse;border-spacing:0}
 
 html { min-height:100%; margin-bottom:1px; }
@@ -67,62 +67,75 @@ table td { padding:7px 5px; text-align:left; vertical-align:top; border:1px soli
 
 
 
-  </style></head><body><div class="content"><h1>curvePathOrderFix</h1><!--introduction--><p>Below is a demonstration of the features of the <tt>curvePathOrderFix</tt> function</p><!--/introduction--><h2>Contents</h2><div><ul><li><a href="#2">Syntax</a></li><li><a href="#3">Description</a></li><li><a href="#4">Examples</a></li></ul></div><pre class="codeinput">clear; close <span class="string">all</span>; clc;
-</pre><h2 id="2">Syntax</h2><p><tt>[Vf,indFix]=curvePathOrderFix(V);</tt></p><h2 id="3">Description</h2><p>This function unscrambles a scrambles curve using distances. The function assumes that the proper point order can be resolved by choosing the next nearest point.</p><h2 id="4">Examples</h2><pre class="codeinput">t=linspace(0,2*pi,25)';
+  </style></head><body><div class="content"><h1>curveToEdgeList</h1><!--introduction--><p>Below is a demonstration of the features of the <tt>curveToEdgeList</tt> function</p><!--/introduction--><h2>Contents</h2><div><ul><li><a href="#2">Syntax</a></li><li><a href="#3">Description</a></li><li><a href="#4">Examples</a></li></ul></div><pre class="codeinput">clear; close <span class="string">all</span>; clc;
+</pre><h2 id="2">Syntax</h2><p><tt>[E]=curveToEdgeList(N);</tt></p><h2 id="3">Description</h2><p>UNDOCUMENTED</p><h2 id="4">Examples</h2><p>Create example curve</p><pre class="codeinput">t=linspace(0,2*pi,10)';
+t=t(1:end-1);
+
 V=[cos(t) sin(t) zeros(size(t))];
-V=V(randperm(size(V,1)),:); <span class="comment">%Scramble point set</span>
-</pre><p>Undo scrambling using <tt>curvePathOrderFix</tt></p><pre class="codeinput">[Vf,indFix]=curvePathOrderFix(V);
+</pre><p>Get curve edges</p><pre class="codeinput">[E]=curveToEdgeList(V)
+</pre><pre class="codeoutput">
+E =
+
+     1     2
+     2     3
+     3     4
+     4     5
+     5     6
+     6     7
+     7     8
+     8     9
+
 </pre><p>Visualization</p><pre class="codeinput">cFigure;
 subplot(1,2,1); hold <span class="string">on</span>;
-title(<span class="string">'Scrambled curve'</span>);
-plotV(V,<span class="string">'r.-'</span>,<span class="string">'LineWidth'</span>,2,<span class="string">'MarkerSize'</span>,25);
+title(<span class="string">'Curved plotted using plot command'</span>);
+plotV(V,<span class="string">'r-'</span>,<span class="string">'LineWidth'</span>,2,<span class="string">'MarkerSize'</span>,25);
 axis <span class="string">tight</span>; axis <span class="string">equal</span>; grid <span class="string">on</span>; box <span class="string">on</span>; view(2);
 
 subplot(1,2,2); hold <span class="string">on</span>;
-title(<span class="string">'Unscrambled curve'</span>);
-plotV(Vf,<span class="string">'g.-'</span>,<span class="string">'LineWidth'</span>,2,<span class="string">'MarkerSize'</span>,25);
+title(<span class="string">'Curved plotted as edges using patch command'</span>);
+gpatch(E,V,<span class="string">'none'</span>,<span class="string">'g'</span>,1,2);
 axis <span class="string">tight</span>; axis <span class="string">equal</span>; grid <span class="string">on</span>; box <span class="string">on</span>; view(2);
 drawnow;
-</pre><img width="100%" height="auto" vspace="5" hspace="5" src="HELP_curvePathOrderFix_01.jpg" alt=""> <p><img vspace="5" hspace="5" src="gibbVerySmall.gif" alt=""> </p><p><i><b>GIBBON</b></i> <a href="www.gibboncode.org">www.gibboncode.org</a></p><p><i>Kevin Mattheus Moerman</i>, <a href="gibbon.toolbox@gmail.com">gibbon.toolbox@gmail.com</a></p><p><i><b>GIBBON footer text</b></i></p><p>License: <a href="https://github.com/gibbonCode/GIBBON/blob/master/LICENSE">https://github.com/gibbonCode/GIBBON/blob/master/LICENSE</a></p><p>GIBBON: The Geometry and Image-based Bioengineering add-On. A toolbox for image segmentation, image-based modeling, meshing, and finite element analysis.</p><p>Copyright (C) 2006-2022 Kevin Mattheus Moerman and the GIBBON contributors</p><p>This program is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.</p><p>This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for more details.</p><p>You should have received a copy of the GNU General Public License along with this program.  If not, see <a href="http://www.gnu.org/licenses/">http://www.gnu.org/licenses/</a>.</p><p class="footer"><br><a href="https://www.mathworks.com/products/matlab/">Published with MATLAB&reg; R2022a</a><br></p></div><!--
+</pre><img width="100%" height="auto" vspace="5" hspace="5" src="HELP_curveToEdgeList_01.jpg" alt=""> <p><img vspace="5" hspace="5" src="gibbVerySmall.gif" alt=""> </p><p><i><b>GIBBON</b></i> <a href="www.gibboncode.org">www.gibboncode.org</a></p><p><i>Kevin Mattheus Moerman</i>, <a href="gibbon.toolbox@gmail.com">gibbon.toolbox@gmail.com</a></p><p><i><b>GIBBON footer text</b></i></p><p>License: <a href="https://github.com/gibbonCode/GIBBON/blob/master/LICENSE">https://github.com/gibbonCode/GIBBON/blob/master/LICENSE</a></p><p>GIBBON: The Geometry and Image-based Bioengineering add-On. A toolbox for image segmentation, image-based modeling, meshing, and finite element analysis.</p><p>Copyright (C) 2006-2022 Kevin Mattheus Moerman and the GIBBON contributors</p><p>This program is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.</p><p>This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for more details.</p><p>You should have received a copy of the GNU General Public License along with this program.  If not, see <a href="http://www.gnu.org/licenses/">http://www.gnu.org/licenses/</a>.</p><p class="footer"><br><a href="https://www.mathworks.com/products/matlab/">Published with MATLAB&reg; R2022a</a><br></p></div><!--
 ##### SOURCE BEGIN #####
-%% curvePathOrderFix
-% Below is a demonstration of the features of the |curvePathOrderFix| function
+%% curveToEdgeList
+% Below is a demonstration of the features of the |curveToEdgeList| function
 
 %%
 clear; close all; clc;
 
 %% Syntax
-% |[Vf,indFix]=curvePathOrderFix(V);|
+% |[E]=curveToEdgeList(N);|
 
 %% Description 
-% This function unscrambles a scrambles curve using distances. The function
-% assumes that the proper point order can be resolved by choosing the next
-% nearest point. 
-
+% UNDOCUMENTED 
 %% Examples 
 % 
 
-t=linspace(0,2*pi,25)';
+%%
+% Create example curve
+t=linspace(0,2*pi,10)';
+t=t(1:end-1);
+
 V=[cos(t) sin(t) zeros(size(t))];
-V=V(randperm(size(V,1)),:); %Scramble point set
 
-%% 
-% Undo scrambling using |curvePathOrderFix|
+%%
+% Get curve edges
 
-[Vf,indFix]=curvePathOrderFix(V);
+[E]=curveToEdgeList(V)
 
 %%
 % Visualization
 
 cFigure; 
 subplot(1,2,1); hold on;
-title('Scrambled curve');
-plotV(V,'r.-','LineWidth',2,'MarkerSize',25);
+title('Curved plotted using plot command');
+plotV(V,'r-','LineWidth',2,'MarkerSize',25);
 axis tight; axis equal; grid on; box on; view(2); 
 
 subplot(1,2,2); hold on;
-title('Unscrambled curve');
-plotV(Vf,'g.-','LineWidth',2,'MarkerSize',25);
+title('Curved plotted as edges using patch command');
+gpatch(E,V,'none','g',1,2);
 axis tight; axis equal; grid on; box on; view(2); 
 drawnow; 
 
