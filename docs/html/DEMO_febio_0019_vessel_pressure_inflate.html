@@ -6,7 +6,7 @@
    <!--
 This HTML was auto-generated from MATLAB code.
 To make changes, update the MATLAB code and republish this document.
-      --><title>DEMO_febio_0019_vessel_pressure_inflate</title><meta name="generator" content="MATLAB 9.9"><link rel="schema.DC" href="http://purl.org/dc/elements/1.1/"><meta name="DC.date" content="2020-12-11"><meta name="DC.source" content="DEMO_febio_0019_vessel_pressure_inflate.m"><style type="text/css">
+      --><title>DEMO_febio_0019_vessel_pressure_inflate</title><meta name="generator" content="MATLAB 9.12"><link rel="schema.DC" href="http://purl.org/dc/elements/1.1/"><meta name="DC.date" content="2022-03-30"><meta name="DC.source" content="DEMO_febio_0019_vessel_pressure_inflate.m"><style type="text/css">
 html,body,div,span,applet,object,iframe,h1,h2,h3,h4,h5,h6,p,blockquote,pre,a,abbr,acronym,address,big,cite,code,del,dfn,em,font,img,ins,kbd,q,s,samp,small,strike,strong,tt,var,b,u,i,center,dl,dt,dd,ol,ul,li,fieldset,form,label,legend,table,caption,tbody,tfoot,thead,tr,th,td{margin:0;padding:0;border:0;outline:0;font-size:100%;vertical-align:baseline;background:transparent}body{line-height:1}ol,ul{list-style:none}blockquote,q{quotes:none}blockquote:before,blockquote:after,q:before,q:after{content:'';content:none}:focus{outine:0}ins{text-decoration:none}del{text-decoration:line-through}table{border-collapse:collapse;border-spacing:0}
 
 html { min-height:100%; margin-bottom:1px; }
@@ -67,7 +67,7 @@ table td { padding:7px 5px; text-align:left; vertical-align:top; border:1px soli
 
 
 
-  </style></head><body><div class="content"><h1>DEMO_febio_0019_vessel_pressure_inflate</h1><!--introduction--><p>Below is a demonstration for:</p><div><ul><li>Building geometry for a cylindrical vessel with tetrahedral elements</li><li>Defining the boundary conditions</li><li>Coding the febio structure</li><li>Running the model</li><li>Importing and visualizing the displacement results</li></ul></div><!--/introduction--><h2>Contents</h2><div><ul><li><a href="#1">Keywords</a></li><li><a href="#3">Plot settings</a></li><li><a href="#4">Control parameters</a></li><li><a href="#5">Creating model boundary polygons</a></li><li><a href="#7">Creating model boundary surfaces</a></li><li><a href="#9">Tetrahedral meshing of vessel</a></li><li><a href="#12">Defining the boundary conditions</a></li><li><a href="#14">Defining the FEBio input structure</a></li><li><a href="#15">Quick viewing of the FEBio input file structure</a></li><li><a href="#17">Exporting the FEBio input file</a></li><li><a href="#18">Running the FEBio analysis</a></li><li><a href="#19">Import FEBio results</a></li></ul></div><h2 id="1">Keywords</h2><div><ul><li>febio_spec version 3.0</li><li>febio, FEBio</li><li>vessel, cylinder</li><li>prescribed pressure</li><li>tetrahedral elements, tet4</li><li>tube, cylindrical</li><li>static, solid</li><li>hyperelastic, Ogden</li><li>displacement logfile</li><li>stress logfile</li></ul></div><pre class="codeinput">clear; close <span class="string">all</span>; clc;
+  </style></head><body><div class="content"><h1>DEMO_febio_0019_vessel_pressure_inflate</h1><!--introduction--><p>Below is a demonstration for:</p><div><ul><li>Building geometry for a cylindrical vessel with tetrahedral elements</li><li>Defining the boundary conditions</li><li>Coding the febio structure</li><li>Running the model</li><li>Importing and visualizing the displacement results</li></ul></div><!--/introduction--><h2>Contents</h2><div><ul><li><a href="#1">Keywords</a></li><li><a href="#3">Plot settings</a></li><li><a href="#4">Control parameters</a></li><li><a href="#5">Creating model boundary polygons</a></li><li><a href="#6">Creating model boundary surfaces</a></li><li><a href="#11">Defining the boundary conditions</a></li><li><a href="#13">Defining the FEBio input structure</a></li><li><a href="#14">Quick viewing of the FEBio input file structure</a></li><li><a href="#16">Exporting the FEBio input file</a></li><li><a href="#17">Running the FEBio analysis</a></li><li><a href="#18">Import FEBio results</a></li></ul></div><h2 id="1">Keywords</h2><div><ul><li>febio_spec version 3.0</li><li>febio, FEBio</li><li>vessel, cylinder</li><li>prescribed pressure</li><li>tetrahedral elements, tet4</li><li>tube, cylindrical</li><li>static, solid</li><li>hyperelastic, Ogden</li><li>displacement logfile</li><li>stress logfile</li></ul></div><pre class="codeinput">clear; close <span class="string">all</span>; clc;
 </pre><h2 id="3">Plot settings</h2><pre class="codeinput">fontSize=20;
 faceAlpha1=0.8;
 markerSize=40;
@@ -82,20 +82,24 @@ febioFebFileNamePart=<span class="string">'tempModel'</span>;
 febioFebFileName=fullfile(savePath,[febioFebFileNamePart,<span class="string">'.feb'</span>]); <span class="comment">%FEB file name</span>
 febioLogFileName=[febioFebFileNamePart,<span class="string">'.txt'</span>]; <span class="comment">%FEBio log file name</span>
 febioLogFileName_disp=[febioFebFileNamePart,<span class="string">'_disp_out.txt'</span>]; <span class="comment">%Log file name for exporting displacement</span>
+febioLogFileName_stress_prin=[febioFebFileNamePart,<span class="string">'_stress_prin_out.txt'</span>]; <span class="comment">%Log file name for exporting principal stress</span>
 
 <span class="comment">%Specifying geometry parameters</span>
 pointSpacing=1;
-radiusOuter1=10;
+
 radiusInner1=9;
-radiusOuter2=9;
-radiusInner2=7;
-vesselLength=60;
+radiusInner2=10;
+
+radiusOuter1=10;
+radiusOuter2=12;
+
+vesselLength=50;
 
 <span class="comment">%Load</span>
-appliedPressure=5e-3;
+appliedPressure=0.1; <span class="comment">%MPa</span>
 
 <span class="comment">%Material parameter set</span>
-c1=0.03; <span class="comment">%Shear-modulus-like parameter</span>
+c1=1; <span class="comment">%Shear-modulus-like parameter</span>
 m1=2; <span class="comment">%Material parameter setting degree of non-linearity</span>
 k_factor=1e2; <span class="comment">%Bulk modulus factor</span>
 k=c1*k_factor; <span class="comment">%Bulk modulus</span>
@@ -108,17 +112,8 @@ opt_iter=12; <span class="comment">%Optimum number of iterations</span>
 max_retries=10; <span class="comment">%Maximum number of retires</span>
 dtmin=(1/numTimeSteps)/100; <span class="comment">%Minimum time step size</span>
 dtmax=1/numTimeSteps; <span class="comment">%Maximum time step size</span>
-</pre><h2 id="5">Creating model boundary polygons</h2><pre class="codeinput">nRad=round((2*pi*mean([radiusOuter1 radiusOuter2]))/pointSpacing); <span class="comment">%Number of radial steps</span>
-
-t=linspace(0,2*pi,nRad)'; <span class="comment">%Angles</span>
-t=t(1:end-1); <span class="comment">%take away last which equals start</span>
-v1_Outer=[-(vesselLength/2)*ones(size(t)) radiusOuter1*sin(t) radiusOuter1*cos(t)]; <span class="comment">%Circular coordinates</span>
-
-t=linspace(0,2*pi,nRad)'; <span class="comment">%Angles</span>
-t=t(1:end-1); <span class="comment">%take away last which equals start</span>
-v2_Outer=[(vesselLength/2)*ones(size(t)) radiusOuter2*sin(t) radiusOuter2*cos(t)]; <span class="comment">%Circular coordinates</span>
-
-nRad=round((2*pi*mean([radiusInner1 radiusInner2]))/pointSpacing); <span class="comment">%Number of radial steps</span>
+min_residual=1e-20;
+</pre><h2 id="5">Creating model boundary polygons</h2><pre class="codeinput">nRad=round((2*pi*mean([radiusInner1 radiusInner2]))/pointSpacing); <span class="comment">%Number of radial steps</span>
 
 t=linspace(0,2*pi,nRad)'; <span class="comment">%Angles</span>
 t=t(1:end-1); <span class="comment">%take away last which equals start</span>
@@ -127,151 +122,69 @@ v1_Inner=[-(vesselLength/2)*ones(size(t)) radiusInner1*sin(t) radiusInner1*cos(t
 t=linspace(0,2*pi,nRad)'; <span class="comment">%Angles</span>
 t=t(1:end-1); <span class="comment">%take away last which equals start</span>
 v2_Inner=[(vesselLength/2)*ones(size(t)) radiusInner2*sin(t) radiusInner2*cos(t)]; <span class="comment">%Circular coordinates</span>
-</pre><p>Plotting model boundary polygons</p><pre class="codeinput">cFigure;
-hold <span class="string">on</span>;
-title(<span class="string">'Model boundary polygons'</span>,<span class="string">'FontSize'</span>,fontSize);
-plotV(v1_Outer,<span class="string">'r.-'</span>)
-plotV(v1_Inner,<span class="string">'g.-'</span>)
-plotV(v2_Outer,<span class="string">'b.-'</span>)
-plotV(v2_Inner,<span class="string">'y.-'</span>)
-axisGeom(gca,fontSize);
-
-drawnow;
-</pre><img width="100%" height="auto" vspace="5" hspace="5" src="DEMO_febio_0019_vessel_pressure_inflate_01.jpg" alt=""> <h2 id="7">Creating model boundary surfaces</h2><pre class="codeinput"><span class="comment">% controlStructLoft.numSteps=17;</span>
+</pre><h2 id="6">Creating model boundary surfaces</h2><pre class="codeinput"><span class="comment">% controlStructLoft.numSteps=17;</span>
 controlStructLoft.closeLoopOpt=1;
-controlStructLoft.patchType=<span class="string">'tri'</span>;
+controlStructLoft.patchType=<span class="string">'quad'</span>;
 
 <span class="comment">%Meshing outer surface</span>
-[F1,V1]=polyLoftLinear(v1_Outer,v2_Outer,controlStructLoft);
+[F1,V1]=polyLoftLinear(v1_Inner,v2_Inner,controlStructLoft);
 F1=fliplr(F1); <span class="comment">%Invert orientation</span>
+</pre><pre class="codeinput">outerRadii=V1(:,1); <span class="comment">%x</span>
+outerRadii=outerRadii-min(outerRadii(:)); <span class="comment">%[0 - ...]</span>
+outerRadii=outerRadii./max(outerRadii(:)); <span class="comment">%[0 - 1]</span>
+outerRadii=radiusOuter1+(outerRadii.*(radiusOuter2-radiusOuter1)); <span class="comment">%[0 - 1]</span>
 
-<span class="comment">%Meshing inner surface</span>
-[F2,V2]=polyLoftLinear(v1_Inner,v2_Inner,controlStructLoft);
+innerRadii=V1(:,1); <span class="comment">%x</span>
+innerRadii=innerRadii-min(innerRadii(:)); <span class="comment">%[0 - ...]</span>
+innerRadii=innerRadii./max(innerRadii(:)); <span class="comment">%[0 - 1]</span>
+innerRadii=radiusInner1+(innerRadii.*(radiusInner2-radiusInner1)); <span class="comment">%[0 - 1]</span>
 
-<span class="comment">%Meshing left</span>
-[F3,V3]=regionTriMesh3D({v1_Outer,v1_Inner},pointSpacing,0,<span class="string">'linear'</span>);
-F3=fliplr(F3); <span class="comment">%Invert orientation</span>
+wallThickness=outerRadii-innerRadii;
+</pre><p>Plotting model boundary polygons</p><pre class="codeinput">cFigure; hold <span class="string">on</span>;
+title(<span class="string">'Inner surface and polygons'</span>,<span class="string">'FontSize'</span>,fontSize);
+gpatch(F1,V1,outerRadii);
+plotV(v1_Inner,<span class="string">'g.-'</span>,<span class="string">'LineWidth'</span>,3);
+plotV(v2_Inner,<span class="string">'g.-'</span>,<span class="string">'LineWidth'</span>,3);
+axisGeom(gca,fontSize); camlight <span class="string">headlight</span>;
+colormap <span class="string">gjet</span>; colorbar;
+gdrawnow;
+</pre><img width="100%" height="auto" vspace="5" hspace="5" src="DEMO_febio_0019_vessel_pressure_inflate_01.jpg" alt=""> <pre class="codeinput">numSteps=ceil(max(wallThickness)./pointSpacing);
+[E,V,Fp1,Fp2]=patchThick(F1,V1,1,wallThickness,numSteps);
 
-<span class="comment">%Meshing right</span>
-[F4,V4]=regionTriMesh3D({v2_Outer,v2_Inner},pointSpacing,0,<span class="string">'linear'</span>);
-
-<span class="comment">%Merging surface sets</span>
-[Fv,Vv,Cv]=joinElementSets({F1,F2,F3,F4},{V1,V2,V3,V4});
-[Fv,Vv]=mergeVertices(Fv,Vv);
-Fv=fliplr(Fv);
+[F,~,C_type]=element2patch(E,[],<span class="string">'hex8'</span>);
+indBoundary=tesBoundary(F);
+Fb=F(indBoundary,:);
+Cb=C_type(indBoundary,:);
 </pre><p>Plotting model boundary surfaces</p><pre class="codeinput">cFigure;
 hold <span class="string">on</span>;
 title(<span class="string">'Model boundary surfaces'</span>,<span class="string">'FontSize'</span>,fontSize);
 
-gpatch(Fv,Vv,Cv);
-<span class="comment">% patchNormPlot(Fv,Vv);</span>
+gpatch(Fb,V,Cb);
 
-icolorbar;
-colormap(gjet(4));
-
-axisGeom(gca,fontSize);
-camlight <span class="string">headlight</span>;
+axisGeom(gca,fontSize); camlight <span class="string">headlight</span>;
+colormap <span class="string">gjet</span>; icolorbar;
 drawnow;
-</pre><img width="100%" height="auto" vspace="5" hspace="5" src="DEMO_febio_0019_vessel_pressure_inflate_02.jpg" alt=""> <h2 id="9">Tetrahedral meshing of vessel</h2><pre class="codeinput">faceBoundaryMarker=Cv;
-[V_regions]=getInnerPoint(Fv,Vv);
-[regionA]=tetVolMeanEst(Fv,Vv); <span class="comment">%Volume for regular tets</span>
-stringOpt=<span class="string">'-pq1.2AaY'</span>;
-
-inputStruct.stringOpt=stringOpt;
-inputStruct.Faces=Fv;
-inputStruct.Nodes=Vv;
-inputStruct.holePoints=[];
-inputStruct.faceBoundaryMarker=faceBoundaryMarker; <span class="comment">%Face boundary markers</span>
-inputStruct.regionPoints=V_regions; <span class="comment">%region points</span>
-inputStruct.regionA=regionA;
-inputStruct.minRegionMarker=2; <span class="comment">%Minimum region marker</span>
-
-<span class="comment">% Mesh model using tetrahedral elements using tetGen</span>
-[meshOutput]=runTetGen(inputStruct); <span class="comment">%Run tetGen</span>
-</pre><pre class="codeoutput"> 
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
---- TETGEN Tetrahedral meshing --- 11-Dec-2020 12:22:35
- 
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
---- Writing SMESH file --- 11-Dec-2020 12:22:35
-----&gt; Adding node field
-----&gt; Adding facet field
-----&gt; Adding holes specification
-----&gt; Adding region specification
---- Done --- 11-Dec-2020 12:22:35
---- Running TetGen to mesh input boundary--- 11-Dec-2020 12:22:35
-Opening /mnt/data/MATLAB/GIBBON/data/temp/temp.smesh.
-Delaunizing vertices...
-Delaunay seconds:  0.474423
-Creating surface mesh ...
-Surface mesh seconds:  0.013527
-Recovering boundaries...
-Boundary recovery seconds:  0.039334
-Removing exterior tetrahedra ...
-Spreading region attributes.
-Exterior tets removal seconds:  0.01613
-Recovering Delaunayness...
-Delaunay recovery seconds:  0.012089
-Refining mesh...
-Refinement seconds:  0.111095
-Optimizing mesh...
-Optimization seconds:  0.00742
-
-Writing /mnt/data/MATLAB/GIBBON/data/temp/temp.1.node.
-Writing /mnt/data/MATLAB/GIBBON/data/temp/temp.1.ele.
-Writing /mnt/data/MATLAB/GIBBON/data/temp/temp.1.face.
-Writing /mnt/data/MATLAB/GIBBON/data/temp/temp.1.edge.
-
-Output seconds:  0.125806
-Total running seconds:  0.800328
-
-Statistics:
-
-  Input points: 6565
-  Input facets: 13130
-  Input segments: 19695
-  Input holes: 0
-  Input regions: 1
-
-  Mesh points: 9848
-  Mesh tetrahedra: 40525
-  Mesh faces: 87615
-  Mesh faces on exterior boundary: 13130
-  Mesh faces on input facets: 13130
-  Mesh edges on input segments: 19695
-  Steiner points inside domain: 3283
-
---- Done --- 11-Dec-2020 12:22:36
- 
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
---- Importing TetGen files --- 11-Dec-2020 12:22:36
---- Done --- 11-Dec-2020 12:22:36
-</pre><p>Access model element and patch data</p><pre class="codeinput">Fb=meshOutput.facesBoundary;
-Cb=meshOutput.boundaryMarker;
-V=meshOutput.nodes;
-CE=meshOutput.elementMaterialID;
-E=meshOutput.elements;
-</pre><p>Visualizing mesh using <tt>meshView</tt>, see also <tt>anim8</tt></p><pre class="codeinput">meshView(meshOutput,[]);
-</pre><img width="100%" height="auto" vspace="5" hspace="5" src="DEMO_febio_0019_vessel_pressure_inflate_03.jpg" alt=""> <h2 id="12">Defining the boundary conditions</h2><p>The visualization of the model boundary shows colors for each side of the cube. These labels can be used to define boundary conditions.</p><pre class="codeinput"><span class="comment">%Define supported node set</span>
+</pre><img width="100%" height="auto" vspace="5" hspace="5" src="DEMO_febio_0019_vessel_pressure_inflate_02.jpg" alt=""> <h2 id="11">Defining the boundary conditions</h2><p>The visualization of the model boundary shows colors for each side of the cube. These labels can be used to define boundary conditions.</p><pre class="codeinput"><span class="comment">%Define supported node set</span>
 bcSupportList=unique(Fb(ismember(Cb,[3 4]),:)); <span class="comment">%Node set part of selected face</span>
 
-F_pressure=fliplr(Fb(Cb==2,:));
+F_pressure=Fb(Cb==1,:);
 </pre><p>Visualizing boundary conditions. Markers plotted on the semi-transparent model denote the nodes in the various boundary condition lists.</p><pre class="codeinput">hf=cFigure;
 title(<span class="string">'Boundary conditions'</span>,<span class="string">'FontSize'</span>,fontSize);
 xlabel(<span class="string">'X'</span>,<span class="string">'FontSize'</span>,fontSize); ylabel(<span class="string">'Y'</span>,<span class="string">'FontSize'</span>,fontSize); zlabel(<span class="string">'Z'</span>,<span class="string">'FontSize'</span>,fontSize);
 hold <span class="string">on</span>;
 
-gpatch(Fb,V,<span class="string">'kw'</span>,<span class="string">'k'</span>,0.5);
+gpatch(Fb,V,<span class="string">'kw'</span>,<span class="string">'none'</span>,0.5);
 
 hl(1)=plotV(V(bcSupportList,:),<span class="string">'k.'</span>,<span class="string">'MarkerSize'</span>,markerSize);
-hl(2)=gpatch(F_pressure,V,<span class="string">'rw'</span>,<span class="string">'r'</span>,0.5);
+hl(2)=gpatch(F_pressure,V,<span class="string">'rw'</span>,<span class="string">'r'</span>,1);
+patchNormPlot(F_pressure,V);
 
 legend(hl,{<span class="string">'BC support'</span>,<span class="string">'Pressure surface'</span>});
 
 axisGeom(gca,fontSize);
 camlight <span class="string">headlight</span>;
 drawnow;
-</pre><img width="100%" height="auto" vspace="5" hspace="5" src="DEMO_febio_0019_vessel_pressure_inflate_04.jpg" alt=""> <h2 id="14">Defining the FEBio input structure</h2><p>See also <tt>febioStructTemplate</tt> and <tt>febioStruct2xml</tt> and the FEBio user manual.</p><pre class="codeinput"><span class="comment">%Get a template with default settings</span>
+</pre><img width="100%" height="auto" vspace="5" hspace="5" src="DEMO_febio_0019_vessel_pressure_inflate_03.jpg" alt=""> <h2 id="13">Defining the FEBio input structure</h2><p>See also <tt>febioStructTemplate</tt> and <tt>febioStruct2xml</tt> and the FEBio user manual.</p><pre class="codeinput"><span class="comment">%Get a template with default settings</span>
 [febio_spec]=febioStructTemplate;
 
 <span class="comment">%febio_spec version</span>
@@ -286,10 +199,12 @@ febio_spec.Control.time_steps=numTimeSteps;
 febio_spec.Control.step_size=1/numTimeSteps;
 febio_spec.Control.solver.max_refs=max_refs;
 febio_spec.Control.solver.max_ups=max_ups;
+febio_spec.Control.solver.min_residual=min_residual;
 febio_spec.Control.time_stepper.dtmin=dtmin;
 febio_spec.Control.time_stepper.dtmax=dtmax;
 febio_spec.Control.time_stepper.max_retries=max_retries;
 febio_spec.Control.time_stepper.opt_iter=opt_iter;
+
 
 <span class="comment">%Material section</span>
 materialName1=<span class="string">'Material1'</span>;
@@ -311,7 +226,7 @@ febio_spec.Mesh.Nodes{1}.node.VAL=V; <span class="comment">%The nodel coordinate
 <span class="comment">% -&gt; Elements</span>
 partName1=<span class="string">'Part1'</span>;
 febio_spec.Mesh.Elements{1}.ATTR.name=partName1; <span class="comment">%Name of this part</span>
-febio_spec.Mesh.Elements{1}.ATTR.type=<span class="string">'tet4'</span>; <span class="comment">%Element type</span>
+febio_spec.Mesh.Elements{1}.ATTR.type=<span class="string">'hex8'</span>; <span class="comment">%Element type</span>
 febio_spec.Mesh.Elements{1}.elem.ATTR.id=(1:1:size(E,1))'; <span class="comment">%Element id's</span>
 febio_spec.Mesh.Elements{1}.elem.VAL=E; <span class="comment">%The element matrix</span>
 
@@ -358,8 +273,12 @@ febio_spec.Output.logfile.node_data{1}.ATTR.file=febioLogFileName_disp;
 febio_spec.Output.logfile.node_data{1}.ATTR.data=<span class="string">'ux;uy;uz'</span>;
 febio_spec.Output.logfile.node_data{1}.ATTR.delim=<span class="string">','</span>;
 febio_spec.Output.logfile.node_data{1}.VAL=1:size(V,1);
-</pre><h2 id="15">Quick viewing of the FEBio input file structure</h2><p>The <tt>febView</tt> function can be used to view the xml structure in a MATLAB figure window.</p><p><tt>febView(febio_spec); %Viewing the febio file</tt> febView(febio_spec)</p><h2 id="17">Exporting the FEBio input file</h2><p>Exporting the febio_spec structure to an FEBio input file is done using the <tt>febioStruct2xml</tt> function.</p><pre class="codeinput">febioStruct2xml(febio_spec,febioFebFileName); <span class="comment">%Exporting to file and domNode</span>
-</pre><h2 id="18">Running the FEBio analysis</h2><p>To run the analysis defined by the created FEBio input file the <tt>runMonitorFEBio</tt> function is used. The input for this function is a structure defining job settings e.g. the FEBio input file name. The optional output runFlag informs the user if the analysis was run succesfully.</p><pre class="codeinput">febioAnalysis.run_filename=febioFebFileName; <span class="comment">%The input file name</span>
+
+febio_spec.Output.logfile.element_data{1}.ATTR.file=febioLogFileName_stress_prin;
+febio_spec.Output.logfile.element_data{1}.ATTR.data=<span class="string">'s1;s2;s3'</span>;
+febio_spec.Output.logfile.element_data{1}.ATTR.delim=<span class="string">','</span>;
+</pre><h2 id="14">Quick viewing of the FEBio input file structure</h2><p>The <tt>febView</tt> function can be used to view the xml structure in a MATLAB figure window.</p><p><tt>febView(febio_spec); %Viewing the febio file</tt> febView(febio_spec)</p><h2 id="16">Exporting the FEBio input file</h2><p>Exporting the febio_spec structure to an FEBio input file is done using the <tt>febioStruct2xml</tt> function.</p><pre class="codeinput">febioStruct2xml(febio_spec,febioFebFileName); <span class="comment">%Exporting to file and domNode</span>
+</pre><h2 id="17">Running the FEBio analysis</h2><p>To run the analysis defined by the created FEBio input file the <tt>runMonitorFEBio</tt> function is used. The input for this function is a structure defining job settings e.g. the FEBio input file name. The optional output runFlag informs the user if the analysis was run succesfully.</p><pre class="codeinput">febioAnalysis.run_filename=febioFebFileName; <span class="comment">%The input file name</span>
 febioAnalysis.run_logname=febioLogFileName; <span class="comment">%The name for the log file</span>
 febioAnalysis.disp_on=1; <span class="comment">%Display information on the command window</span>
 febioAnalysis.disp_log_on=1; <span class="comment">%Display convergence information in the command window</span>
@@ -371,53 +290,52 @@ febioAnalysis.maxLogCheckTime=10; <span class="comment">%Max log file checking t
 [runFlag]=runMonitorFEBio(febioAnalysis);<span class="comment">%START FEBio NOW!!!!!!!!</span>
 </pre><pre class="codeoutput"> 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
---------&gt;    RUNNING/MONITORING FEBIO JOB    &lt;-------- 11-Dec-2020 12:22:41
+--------&gt;    RUNNING/MONITORING FEBIO JOB    &lt;-------- 30-Mar-2022 11:28:57
 FEBio path: /home/kevin/FEBioStudio/bin/febio3
-# Attempt removal of existing log files                11-Dec-2020 12:22:41
- * Removal succesful                                   11-Dec-2020 12:22:41
-# Attempt removal of existing .xplt files              11-Dec-2020 12:22:41
- * Removal succesful                                   11-Dec-2020 12:22:41
-# Starting FEBio...                                    11-Dec-2020 12:22:41
+# Attempt removal of existing log files                30-Mar-2022 11:28:57
+ * Removal succesful                                   30-Mar-2022 11:28:57
+# Attempt removal of existing .xplt files              30-Mar-2022 11:28:57
+ * Removal succesful                                   30-Mar-2022 11:28:57
+# Starting FEBio...                                    30-Mar-2022 11:28:57
   Max. total analysis time is: 1e+99 s
- * Waiting for log file creation                       11-Dec-2020 12:22:41
+ * Waiting for log file creation                       30-Mar-2022 11:28:57
    Max. wait time: 10 s
- * Log file found.                                     11-Dec-2020 12:22:41
-# Parsing log file...                                  11-Dec-2020 12:22:41
-    number of iterations   : 4                         11-Dec-2020 12:22:43
-    number of reformations : 4                         11-Dec-2020 12:22:43
-------- converged at time : 0.1                        11-Dec-2020 12:22:43
-    number of iterations   : 4                         11-Dec-2020 12:22:44
-    number of reformations : 4                         11-Dec-2020 12:22:44
-------- converged at time : 0.2                        11-Dec-2020 12:22:44
-    number of iterations   : 4                         11-Dec-2020 12:22:46
-    number of reformations : 4                         11-Dec-2020 12:22:46
-------- converged at time : 0.3                        11-Dec-2020 12:22:46
-    number of iterations   : 4                         11-Dec-2020 12:22:48
-    number of reformations : 4                         11-Dec-2020 12:22:48
-------- converged at time : 0.4                        11-Dec-2020 12:22:48
-    number of iterations   : 4                         11-Dec-2020 12:22:49
-    number of reformations : 4                         11-Dec-2020 12:22:49
-------- converged at time : 0.5                        11-Dec-2020 12:22:49
-    number of iterations   : 5                         11-Dec-2020 12:22:51
-    number of reformations : 5                         11-Dec-2020 12:22:51
-------- converged at time : 0.6                        11-Dec-2020 12:22:51
-    number of iterations   : 5                         11-Dec-2020 12:22:54
-    number of reformations : 5                         11-Dec-2020 12:22:54
-------- converged at time : 0.7                        11-Dec-2020 12:22:54
-    number of iterations   : 7                         11-Dec-2020 12:22:57
-    number of reformations : 7                         11-Dec-2020 12:22:57
-------- converged at time : 0.8                        11-Dec-2020 12:22:57
-    number of iterations   : 8                         11-Dec-2020 12:23:00
-    number of reformations : 8                         11-Dec-2020 12:23:00
-------- converged at time : 0.9                        11-Dec-2020 12:23:00
-    number of iterations   : 6                         11-Dec-2020 12:23:03
-    number of reformations : 6                         11-Dec-2020 12:23:03
-------- converged at time : 1                          11-Dec-2020 12:23:03
- Elapsed time : 0:00:22                                11-Dec-2020 12:23:03
+ * Log file found.                                     30-Mar-2022 11:28:57
+# Parsing log file...                                  30-Mar-2022 11:28:57
+    number of iterations   : 3                         30-Mar-2022 11:28:59
+    number of reformations : 3                         30-Mar-2022 11:28:59
+------- converged at time : 0.1                        30-Mar-2022 11:28:59
+    number of iterations   : 3                         30-Mar-2022 11:29:00
+    number of reformations : 3                         30-Mar-2022 11:29:00
+------- converged at time : 0.2                        30-Mar-2022 11:29:00
+    number of iterations   : 3                         30-Mar-2022 11:29:02
+    number of reformations : 3                         30-Mar-2022 11:29:02
+------- converged at time : 0.3                        30-Mar-2022 11:29:02
+    number of iterations   : 3                         30-Mar-2022 11:29:03
+------- converged at time : 0.4                        30-Mar-2022 11:29:03
+    number of iterations   : 3                         30-Mar-2022 11:29:05
+    number of reformations : 3                         30-Mar-2022 11:29:05
+------- converged at time : 0.5                        30-Mar-2022 11:29:05
+    number of iterations   : 3                         30-Mar-2022 11:29:06
+    number of reformations : 3                         30-Mar-2022 11:29:06
+------- converged at time : 0.6                        30-Mar-2022 11:29:06
+    number of iterations   : 3                         30-Mar-2022 11:29:08
+    number of reformations : 3                         30-Mar-2022 11:29:08
+------- converged at time : 0.7                        30-Mar-2022 11:29:08
+    number of iterations   : 3                         30-Mar-2022 11:29:09
+    number of reformations : 3                         30-Mar-2022 11:29:09
+------- converged at time : 0.8                        30-Mar-2022 11:29:09
+    number of iterations   : 3                         30-Mar-2022 11:29:11
+    number of reformations : 3                         30-Mar-2022 11:29:11
+------- converged at time : 0.9                        30-Mar-2022 11:29:11
+    number of iterations   : 3                         30-Mar-2022 11:29:12
+    number of reformations : 3                         30-Mar-2022 11:29:12
+------- converged at time : 1                          30-Mar-2022 11:29:12
+ Elapsed time : 0:00:15                                30-Mar-2022 11:29:12
  N O R M A L   T E R M I N A T I O N
-# Done                                                 11-Dec-2020 12:23:03
+# Done                                                 30-Mar-2022 11:29:13
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-</pre><h2 id="19">Import FEBio results</h2><pre class="codeinput"><span class="keyword">if</span> runFlag==1 <span class="comment">%i.e. a succesful run</span>
+</pre><h2 id="18">Import FEBio results</h2><pre class="codeinput"><span class="keyword">if</span> runFlag==1 <span class="comment">%i.e. a succesful run</span>
 </pre><p>Importing nodal displacements from a log file</p><pre class="codeinput">    dataStruct=importFEBio_logfile(fullfile(savePath,febioLogFileName_disp),1,1);
 
     <span class="comment">%Access data</span>
@@ -426,37 +344,50 @@ FEBio path: /home/kevin/FEBioStudio/bin/febio3
 
     <span class="comment">%Create deformed coordinate set</span>
     V_DEF=N_disp_mat+repmat(V,[1 1 size(N_disp_mat,3)]);
-</pre><p>Plotting the simulated results using <tt>anim8</tt> to visualize and animate deformations</p><pre class="codeinput">    DN_magnitude=sqrt(sum(N_disp_mat(:,:,end).^2,2)); <span class="comment">%Current displacement magnitude</span>
+</pre><p>Importing element principal stresses from a log file</p><pre class="codeinput">    dataStruct=importFEBio_logfile(fullfile(savePath,febioLogFileName_stress_prin),1,1);
+
+    <span class="comment">%Access data</span>
+    E_stress_prin_mat=dataStruct.data;
+    S1_mat=E_stress_prin_mat(:,1,:);
+    S2_mat=E_stress_prin_mat(:,2,:);
+    S3_mat=E_stress_prin_mat(:,3,:);
+    S_vm = sqrt(((S1_mat-S2_mat).^2+(S2_mat-S3_mat).^2+(S3_mat-S1_mat).^2)./2);
+</pre><p>Plotting the simulated results using <tt>anim8</tt> to visualize and animate deformations</p><pre class="codeinput">    [~,CF_S_vm,~]=element2patch(E,S_vm(:,:,end),<span class="string">'hex8'</span>);
+    Cb_S_vm=CF_S_vm(indBoundary,:);
 
     <span class="comment">% Create basic view and store graphics handle to initiate animation</span>
     hf=cFigure; <span class="comment">%Open figure</span>
     gtitle([febioFebFileNamePart,<span class="string">': Press play to animate'</span>]);
-    title(<span class="string">'Displacement magnitude [mm]'</span>,<span class="string">'Interpreter'</span>,<span class="string">'Latex'</span>)
-    hp=gpatch(Fb,V_DEF(:,:,end),DN_magnitude,<span class="string">'k'</span>,1); <span class="comment">%Add graphics object to animate</span>
-    hp.Marker=<span class="string">'.'</span>;
-    hp.MarkerSize=markerSize2;
-    hp.FaceColor=<span class="string">'interp'</span>;
+    title(<span class="string">'Von Mises stres [MPa]'</span>,<span class="string">'Interpreter'</span>,<span class="string">'Latex'</span>)
+    hp=gpatch(Fb,V_DEF(:,:,end),Cb_S_vm,<span class="string">'k'</span>,1); <span class="comment">%Add graphics object to animate</span>
 
     axisGeom(gca,fontSize);
     colormap(gjet(250)); colorbar;
-    caxis([0 max(DN_magnitude)]);
+    caxis([0 max(S_vm(:))]);
     axis(axisLim(V_DEF)); <span class="comment">%Set axis limits statically</span>
     camlight <span class="string">headlight</span>;
 
     <span class="comment">% Set up animation features</span>
     animStruct.Time=timeVec; <span class="comment">%The time vector</span>
     <span class="keyword">for</span> qt=1:1:size(N_disp_mat,3) <span class="comment">%Loop over time increments</span>
-        DN_magnitude=sqrt(sum(N_disp_mat(:,:,qt).^2,2)); <span class="comment">%Current displacement magnitude</span>
+        [~,CF_S_vm,~]=element2patch(E,S_vm(:,:,qt),<span class="string">'hex8'</span>);
+        Cb_S_vm=CF_S_vm(indBoundary,:);
 
         <span class="comment">%Set entries in animation structure</span>
         animStruct.Handles{qt}=[hp hp]; <span class="comment">%Handles of objects to animate</span>
         animStruct.Props{qt}={<span class="string">'Vertices'</span>,<span class="string">'CData'</span>}; <span class="comment">%Properties of objects to animate</span>
-        animStruct.Set{qt}={V_DEF(:,:,qt),DN_magnitude}; <span class="comment">%Property values for to set in order to animate</span>
+        animStruct.Set{qt}={V_DEF(:,:,qt),Cb_S_vm}; <span class="comment">%Property values for to set in order to animate</span>
     <span class="keyword">end</span>
     anim8(hf,animStruct); <span class="comment">%Initiate animation feature</span>
     drawnow;
-</pre><img width="100%" height="auto" vspace="5" hspace="5" src="DEMO_febio_0019_vessel_pressure_inflate_05.jpg" alt=""> <pre class="codeinput"><span class="keyword">end</span>
-</pre><p><img vspace="5" hspace="5" src="gibbVerySmall.gif" alt=""> </p><p><i><b>GIBBON</b></i> <a href="www.gibboncode.org">www.gibboncode.org</a></p><p><i>Kevin Mattheus Moerman</i>, <a href="gibbon.toolbox@gmail.com">gibbon.toolbox@gmail.com</a></p><p><i><b>GIBBON footer text</b></i></p><p>License: <a href="https://github.com/gibbonCode/GIBBON/blob/master/LICENSE">https://github.com/gibbonCode/GIBBON/blob/master/LICENSE</a></p><p>GIBBON: The Geometry and Image-based Bioengineering add-On. A toolbox for image segmentation, image-based modeling, meshing, and finite element analysis.</p><p>Copyright (C) 2006-2020 Kevin Mattheus Moerman</p><p>This program is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.</p><p>This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for more details.</p><p>You should have received a copy of the GNU General Public License along with this program.  If not, see <a href="http://www.gnu.org/licenses/">http://www.gnu.org/licenses/</a>.</p><p class="footer"><br><a href="https://www.mathworks.com/products/matlab/">Published with MATLAB&reg; R2020b</a><br></p></div><!--
+</pre><img width="100%" height="auto" vspace="5" hspace="5" src="DEMO_febio_0019_vessel_pressure_inflate_04.jpg" alt=""> <p>Importing element principal stresses from a log file</p><pre class="codeinput">    dataStruct=importFEBio_logfile(fullfile(savePath,febioLogFileName_stress_prin),1,1);
+
+    <span class="comment">%Access data</span>
+    E_stress_prin_mat=dataStruct.data;
+
+    time_vec=dataStruct.time;
+</pre><pre class="codeinput"><span class="keyword">end</span>
+</pre><p><img vspace="5" hspace="5" src="gibbVerySmall.gif" alt=""> </p><p><i><b>GIBBON</b></i> <a href="www.gibboncode.org">www.gibboncode.org</a></p><p><i>Kevin Mattheus Moerman</i>, <a href="gibbon.toolbox@gmail.com">gibbon.toolbox@gmail.com</a></p><p><i><b>GIBBON footer text</b></i></p><p>License: <a href="https://github.com/gibbonCode/GIBBON/blob/master/LICENSE">https://github.com/gibbonCode/GIBBON/blob/master/LICENSE</a></p><p>GIBBON: The Geometry and Image-based Bioengineering add-On. A toolbox for image segmentation, image-based modeling, meshing, and finite element analysis.</p><p>Copyright (C) 2006-2022 Kevin Mattheus Moerman and the GIBBON contributors</p><p>This program is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.</p><p>This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for more details.</p><p>You should have received a copy of the GNU General Public License along with this program.  If not, see <a href="http://www.gnu.org/licenses/">http://www.gnu.org/licenses/</a>.</p><p class="footer"><br><a href="https://www.mathworks.com/products/matlab/">Published with MATLAB&reg; R2022a</a><br></p></div><!--
 ##### SOURCE BEGIN #####
 %% DEMO_febio_0019_vessel_pressure_inflate
 % Below is a demonstration for:
@@ -502,20 +433,24 @@ febioFebFileNamePart='tempModel';
 febioFebFileName=fullfile(savePath,[febioFebFileNamePart,'.feb']); %FEB file name
 febioLogFileName=[febioFebFileNamePart,'.txt']; %FEBio log file name
 febioLogFileName_disp=[febioFebFileNamePart,'_disp_out.txt']; %Log file name for exporting displacement
+febioLogFileName_stress_prin=[febioFebFileNamePart,'_stress_prin_out.txt']; %Log file name for exporting principal stress
 
 %Specifying geometry parameters
 pointSpacing=1; 
-radiusOuter1=10;
+
 radiusInner1=9;
-radiusOuter2=9;
-radiusInner2=7;
-vesselLength=60;
+radiusInner2=10;
+
+radiusOuter1=10;
+radiusOuter2=12;
+
+vesselLength=50;
 
 %Load
-appliedPressure=5e-3; 
+appliedPressure=0.1; %MPa 
 
 %Material parameter set
-c1=0.03; %Shear-modulus-like parameter
+c1=1; %Shear-modulus-like parameter
 m1=2; %Material parameter setting degree of non-linearity
 k_factor=1e2; %Bulk modulus factor 
 k=c1*k_factor; %Bulk modulus
@@ -528,19 +463,10 @@ opt_iter=12; %Optimum number of iterations
 max_retries=10; %Maximum number of retires
 dtmin=(1/numTimeSteps)/100; %Minimum time step size
 dtmax=1/numTimeSteps; %Maximum time step size
+min_residual=1e-20; 
 
 %% Creating model boundary polygons
 %
-
-nRad=round((2*pi*mean([radiusOuter1 radiusOuter2]))/pointSpacing); %Number of radial steps
-
-t=linspace(0,2*pi,nRad)'; %Angles
-t=t(1:end-1); %take away last which equals start
-v1_Outer=[-(vesselLength/2)*ones(size(t)) radiusOuter1*sin(t) radiusOuter1*cos(t)]; %Circular coordinates
-
-t=linspace(0,2*pi,nRad)'; %Angles
-t=t(1:end-1); %take away last which equals start
-v2_Outer=[(vesselLength/2)*ones(size(t)) radiusOuter2*sin(t) radiusOuter2*cos(t)]; %Circular coordinates
 
 nRad=round((2*pi*mean([radiusInner1 radiusInner2]))/pointSpacing); %Number of radial steps
 
@@ -552,44 +478,51 @@ t=linspace(0,2*pi,nRad)'; %Angles
 t=t(1:end-1); %take away last which equals start
 v2_Inner=[(vesselLength/2)*ones(size(t)) radiusInner2*sin(t) radiusInner2*cos(t)]; %Circular coordinates
 
-%% 
-% Plotting model boundary polygons
-
-cFigure; 
-hold on; 
-title('Model boundary polygons','FontSize',fontSize);
-plotV(v1_Outer,'r.-')
-plotV(v1_Inner,'g.-')
-plotV(v2_Outer,'b.-')
-plotV(v2_Inner,'y.-')
-axisGeom(gca,fontSize);
-
-drawnow;
-
 %% Creating model boundary surfaces
 
 % controlStructLoft.numSteps=17; 
 controlStructLoft.closeLoopOpt=1; 
-controlStructLoft.patchType='tri';
+controlStructLoft.patchType='quad';
 
 %Meshing outer surface
-[F1,V1]=polyLoftLinear(v1_Outer,v2_Outer,controlStructLoft); 
+[F1,V1]=polyLoftLinear(v1_Inner,v2_Inner,controlStructLoft); 
 F1=fliplr(F1); %Invert orientation
 
-%Meshing inner surface
-[F2,V2]=polyLoftLinear(v1_Inner,v2_Inner,controlStructLoft); 
+%%
 
-%Meshing left
-[F3,V3]=regionTriMesh3D({v1_Outer,v1_Inner},pointSpacing,0,'linear');
-F3=fliplr(F3); %Invert orientation
+outerRadii=V1(:,1); %x
+outerRadii=outerRadii-min(outerRadii(:)); %[0 - ...]
+outerRadii=outerRadii./max(outerRadii(:)); %[0 - 1]
+outerRadii=radiusOuter1+(outerRadii.*(radiusOuter2-radiusOuter1)); %[0 - 1]
 
-%Meshing right
-[F4,V4]=regionTriMesh3D({v2_Outer,v2_Inner},pointSpacing,0,'linear');
+innerRadii=V1(:,1); %x
+innerRadii=innerRadii-min(innerRadii(:)); %[0 - ...]
+innerRadii=innerRadii./max(innerRadii(:)); %[0 - 1]
+innerRadii=radiusInner1+(innerRadii.*(radiusInner2-radiusInner1)); %[0 - 1]
 
-%Merging surface sets
-[Fv,Vv,Cv]=joinElementSets({F1,F2,F3,F4},{V1,V2,V3,V4});
-[Fv,Vv]=mergeVertices(Fv,Vv);
-Fv=fliplr(Fv);
+wallThickness=outerRadii-innerRadii;
+
+%% 
+% Plotting model boundary polygons
+
+cFigure; hold on; 
+title('Inner surface and polygons','FontSize',fontSize);
+gpatch(F1,V1,outerRadii);
+plotV(v1_Inner,'g.-','LineWidth',3);
+plotV(v2_Inner,'g.-','LineWidth',3);
+axisGeom(gca,fontSize); camlight headlight; 
+colormap gjet; colorbar; 
+gdrawnow;
+
+%%
+
+numSteps=ceil(max(wallThickness)./pointSpacing);
+[E,V,Fp1,Fp2]=patchThick(F1,V1,1,wallThickness,numSteps);
+
+[F,~,C_type]=element2patch(E,[],'hex8');
+indBoundary=tesBoundary(F);
+Fb=F(indBoundary,:);
+Cb=C_type(indBoundary,:);
 
 %%
 % Plotting model boundary surfaces
@@ -598,47 +531,11 @@ cFigure;
 hold on; 
 title('Model boundary surfaces','FontSize',fontSize);
 
-gpatch(Fv,Vv,Cv);
-% patchNormPlot(Fv,Vv);
+gpatch(Fb,V,Cb);
 
-icolorbar; 
-colormap(gjet(4)); 
-
-axisGeom(gca,fontSize);
-camlight headlight;
+axisGeom(gca,fontSize); camlight headlight;
+colormap gjet; icolorbar; 
 drawnow;
-
-%% Tetrahedral meshing of vessel
-% 
-
-faceBoundaryMarker=Cv;
-[V_regions]=getInnerPoint(Fv,Vv);
-[regionA]=tetVolMeanEst(Fv,Vv); %Volume for regular tets
-stringOpt='-pq1.2AaY';
-
-inputStruct.stringOpt=stringOpt;
-inputStruct.Faces=Fv;
-inputStruct.Nodes=Vv;
-inputStruct.holePoints=[];
-inputStruct.faceBoundaryMarker=faceBoundaryMarker; %Face boundary markers
-inputStruct.regionPoints=V_regions; %region points
-inputStruct.regionA=regionA;
-inputStruct.minRegionMarker=2; %Minimum region marker
-
-% Mesh model using tetrahedral elements using tetGen
-[meshOutput]=runTetGen(inputStruct); %Run tetGen 
-
-%% 
-% Access model element and patch data
-Fb=meshOutput.facesBoundary;
-Cb=meshOutput.boundaryMarker;
-V=meshOutput.nodes;
-CE=meshOutput.elementMaterialID;
-E=meshOutput.elements;
-
-%% 
-% Visualizing mesh using |meshView|, see also |anim8|
-meshView(meshOutput,[]);
 
 %% Defining the boundary conditions
 % The visualization of the model boundary shows colors for each side of the
@@ -647,7 +544,7 @@ meshView(meshOutput,[]);
 %Define supported node set
 bcSupportList=unique(Fb(ismember(Cb,[3 4]),:)); %Node set part of selected face
 
-F_pressure=fliplr(Fb(Cb==2,:));
+F_pressure=Fb(Cb==1,:);
 
 %% 
 % Visualizing boundary conditions. Markers plotted on the semi-transparent
@@ -658,10 +555,11 @@ title('Boundary conditions','FontSize',fontSize);
 xlabel('X','FontSize',fontSize); ylabel('Y','FontSize',fontSize); zlabel('Z','FontSize',fontSize);
 hold on;
 
-gpatch(Fb,V,'kw','k',0.5);
+gpatch(Fb,V,'kw','none',0.5);
 
 hl(1)=plotV(V(bcSupportList,:),'k.','MarkerSize',markerSize);
-hl(2)=gpatch(F_pressure,V,'rw','r',0.5);
+hl(2)=gpatch(F_pressure,V,'rw','r',1);
+patchNormPlot(F_pressure,V);
 
 legend(hl,{'BC support','Pressure surface'});
 
@@ -688,10 +586,12 @@ febio_spec.Control.time_steps=numTimeSteps;
 febio_spec.Control.step_size=1/numTimeSteps;
 febio_spec.Control.solver.max_refs=max_refs;
 febio_spec.Control.solver.max_ups=max_ups;
+febio_spec.Control.solver.min_residual=min_residual;
 febio_spec.Control.time_stepper.dtmin=dtmin;
 febio_spec.Control.time_stepper.dtmax=dtmax; 
 febio_spec.Control.time_stepper.max_retries=max_retries;
 febio_spec.Control.time_stepper.opt_iter=opt_iter;
+
 
 %Material section
 materialName1='Material1';
@@ -713,7 +613,7 @@ febio_spec.Mesh.Nodes{1}.node.VAL=V; %The nodel coordinates
 % -> Elements
 partName1='Part1';
 febio_spec.Mesh.Elements{1}.ATTR.name=partName1; %Name of this part
-febio_spec.Mesh.Elements{1}.ATTR.type='tet4'; %Element type 
+febio_spec.Mesh.Elements{1}.ATTR.type='hex8'; %Element type 
 febio_spec.Mesh.Elements{1}.elem.ATTR.id=(1:1:size(E,1))'; %Element id's
 febio_spec.Mesh.Elements{1}.elem.VAL=E; %The element matrix
 
@@ -761,6 +661,10 @@ febio_spec.Output.logfile.node_data{1}.ATTR.data='ux;uy;uz';
 febio_spec.Output.logfile.node_data{1}.ATTR.delim=',';
 febio_spec.Output.logfile.node_data{1}.VAL=1:size(V,1);
 
+febio_spec.Output.logfile.element_data{1}.ATTR.file=febioLogFileName_stress_prin;
+febio_spec.Output.logfile.element_data{1}.ATTR.data='s1;s2;s3';
+febio_spec.Output.logfile.element_data{1}.ATTR.delim=',';
+
 %% Quick viewing of the FEBio input file structure
 % The |febView| function can be used to view the xml structure in a MATLAB
 % figure window. 
@@ -796,6 +700,7 @@ febioAnalysis.maxLogCheckTime=10; %Max log file checking time
 %% Import FEBio results 
 
 if runFlag==1 %i.e. a succesful run
+
     %%
     % Importing nodal displacements from a log file
     dataStruct=importFEBio_logfile(fullfile(savePath,febioLogFileName_disp),1,1);
@@ -806,41 +711,60 @@ if runFlag==1 %i.e. a succesful run
     
     %Create deformed coordinate set
     V_DEF=N_disp_mat+repmat(V,[1 1 size(N_disp_mat,3)]);
-               
+    
+    %%
+    % Importing element principal stresses from a log file
+    dataStruct=importFEBio_logfile(fullfile(savePath,febioLogFileName_stress_prin),1,1);
+    
+    %Access data
+    E_stress_prin_mat=dataStruct.data;
+    S1_mat=E_stress_prin_mat(:,1,:);
+    S2_mat=E_stress_prin_mat(:,2,:);
+    S3_mat=E_stress_prin_mat(:,3,:);
+    S_vm = sqrt(((S1_mat-S2_mat).^2+(S2_mat-S3_mat).^2+(S3_mat-S1_mat).^2)./2); 
+
     %% 
     % Plotting the simulated results using |anim8| to visualize and animate
     % deformations 
     
-    DN_magnitude=sqrt(sum(N_disp_mat(:,:,end).^2,2)); %Current displacement magnitude
-        
+    [~,CF_S_vm,~]=element2patch(E,S_vm(:,:,end),'hex8');
+    Cb_S_vm=CF_S_vm(indBoundary,:);
+
     % Create basic view and store graphics handle to initiate animation
     hf=cFigure; %Open figure  
     gtitle([febioFebFileNamePart,': Press play to animate']);
-    title('Displacement magnitude [mm]','Interpreter','Latex')
-    hp=gpatch(Fb,V_DEF(:,:,end),DN_magnitude,'k',1); %Add graphics object to animate
-    hp.Marker='.';
-    hp.MarkerSize=markerSize2;
-    hp.FaceColor='interp';
+    title('Von Mises stres [MPa]','Interpreter','Latex')
+    hp=gpatch(Fb,V_DEF(:,:,end),Cb_S_vm,'k',1); %Add graphics object to animate
     
     axisGeom(gca,fontSize); 
     colormap(gjet(250)); colorbar;
-    caxis([0 max(DN_magnitude)]);    
+    caxis([0 max(S_vm(:))]);    
     axis(axisLim(V_DEF)); %Set axis limits statically    
     camlight headlight;        
         
     % Set up animation features
     animStruct.Time=timeVec; %The time vector    
     for qt=1:1:size(N_disp_mat,3) %Loop over time increments        
-        DN_magnitude=sqrt(sum(N_disp_mat(:,:,qt).^2,2)); %Current displacement magnitude
+        [~,CF_S_vm,~]=element2patch(E,S_vm(:,:,qt),'hex8');
+        Cb_S_vm=CF_S_vm(indBoundary,:);
                 
         %Set entries in animation structure
         animStruct.Handles{qt}=[hp hp]; %Handles of objects to animate
         animStruct.Props{qt}={'Vertices','CData'}; %Properties of objects to animate
-        animStruct.Set{qt}={V_DEF(:,:,qt),DN_magnitude}; %Property values for to set in order to animate
+        animStruct.Set{qt}={V_DEF(:,:,qt),Cb_S_vm}; %Property values for to set in order to animate
     end        
     anim8(hf,animStruct); %Initiate animation feature    
     drawnow;
     
+    %%
+    % Importing element principal stresses from a log file
+    dataStruct=importFEBio_logfile(fullfile(savePath,febioLogFileName_stress_prin),1,1);
+    
+    %Access data
+    E_stress_prin_mat=dataStruct.data;
+
+    time_vec=dataStruct.time; 
+
 end
 
 %% 
@@ -861,7 +785,7 @@ end
 % image segmentation, image-based modeling, meshing, and finite element
 % analysis.
 % 
-% Copyright (C) 2006-2020 Kevin Mattheus Moerman
+% Copyright (C) 2006-2022 Kevin Mattheus Moerman and the GIBBON contributors
 % 
 % This program is free software: you can redistribute it and/or modify
 % it under the terms of the GNU General Public License as published by

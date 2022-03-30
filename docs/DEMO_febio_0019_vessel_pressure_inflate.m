@@ -42,20 +42,24 @@ febioFebFileNamePart='tempModel';
 febioFebFileName=fullfile(savePath,[febioFebFileNamePart,'.feb']); %FEB file name
 febioLogFileName=[febioFebFileNamePart,'.txt']; %FEBio log file name
 febioLogFileName_disp=[febioFebFileNamePart,'_disp_out.txt']; %Log file name for exporting displacement
+febioLogFileName_stress_prin=[febioFebFileNamePart,'_stress_prin_out.txt']; %Log file name for exporting principal stress
 
 %Specifying geometry parameters
 pointSpacing=1; 
-radiusOuter1=10;
+
 radiusInner1=9;
-radiusOuter2=9;
-radiusInner2=7;
-vesselLength=60;
+radiusInner2=10;
+
+radiusOuter1=10;
+radiusOuter2=12;
+
+vesselLength=50;
 
 %Load
-appliedPressure=5e-3; 
+appliedPressure=0.1; %MPa 
 
 %Material parameter set
-c1=0.03; %Shear-modulus-like parameter
+c1=1; %Shear-modulus-like parameter
 m1=2; %Material parameter setting degree of non-linearity
 k_factor=1e2; %Bulk modulus factor 
 k=c1*k_factor; %Bulk modulus
@@ -68,19 +72,10 @@ opt_iter=12; %Optimum number of iterations
 max_retries=10; %Maximum number of retires
 dtmin=(1/numTimeSteps)/100; %Minimum time step size
 dtmax=1/numTimeSteps; %Maximum time step size
+min_residual=1e-20; 
 
 %% Creating model boundary polygons
 %
-
-nRad=round((2*pi*mean([radiusOuter1 radiusOuter2]))/pointSpacing); %Number of radial steps
-
-t=linspace(0,2*pi,nRad)'; %Angles
-t=t(1:end-1); %take away last which equals start
-v1_Outer=[-(vesselLength/2)*ones(size(t)) radiusOuter1*sin(t) radiusOuter1*cos(t)]; %Circular coordinates
-
-t=linspace(0,2*pi,nRad)'; %Angles
-t=t(1:end-1); %take away last which equals start
-v2_Outer=[(vesselLength/2)*ones(size(t)) radiusOuter2*sin(t) radiusOuter2*cos(t)]; %Circular coordinates
 
 nRad=round((2*pi*mean([radiusInner1 radiusInner2]))/pointSpacing); %Number of radial steps
 
@@ -92,44 +87,51 @@ t=linspace(0,2*pi,nRad)'; %Angles
 t=t(1:end-1); %take away last which equals start
 v2_Inner=[(vesselLength/2)*ones(size(t)) radiusInner2*sin(t) radiusInner2*cos(t)]; %Circular coordinates
 
-%% 
-% Plotting model boundary polygons
-
-cFigure; 
-hold on; 
-title('Model boundary polygons','FontSize',fontSize);
-plotV(v1_Outer,'r.-')
-plotV(v1_Inner,'g.-')
-plotV(v2_Outer,'b.-')
-plotV(v2_Inner,'y.-')
-axisGeom(gca,fontSize);
-
-drawnow;
-
 %% Creating model boundary surfaces
 
 % controlStructLoft.numSteps=17; 
 controlStructLoft.closeLoopOpt=1; 
-controlStructLoft.patchType='tri';
+controlStructLoft.patchType='quad';
 
 %Meshing outer surface
-[F1,V1]=polyLoftLinear(v1_Outer,v2_Outer,controlStructLoft); 
+[F1,V1]=polyLoftLinear(v1_Inner,v2_Inner,controlStructLoft); 
 F1=fliplr(F1); %Invert orientation
 
-%Meshing inner surface
-[F2,V2]=polyLoftLinear(v1_Inner,v2_Inner,controlStructLoft); 
+%%
 
-%Meshing left
-[F3,V3]=regionTriMesh3D({v1_Outer,v1_Inner},pointSpacing,0,'linear');
-F3=fliplr(F3); %Invert orientation
+outerRadii=V1(:,1); %x
+outerRadii=outerRadii-min(outerRadii(:)); %[0 - ...]
+outerRadii=outerRadii./max(outerRadii(:)); %[0 - 1]
+outerRadii=radiusOuter1+(outerRadii.*(radiusOuter2-radiusOuter1)); %[0 - 1]
 
-%Meshing right
-[F4,V4]=regionTriMesh3D({v2_Outer,v2_Inner},pointSpacing,0,'linear');
+innerRadii=V1(:,1); %x
+innerRadii=innerRadii-min(innerRadii(:)); %[0 - ...]
+innerRadii=innerRadii./max(innerRadii(:)); %[0 - 1]
+innerRadii=radiusInner1+(innerRadii.*(radiusInner2-radiusInner1)); %[0 - 1]
 
-%Merging surface sets
-[Fv,Vv,Cv]=joinElementSets({F1,F2,F3,F4},{V1,V2,V3,V4});
-[Fv,Vv]=mergeVertices(Fv,Vv);
-Fv=fliplr(Fv);
+wallThickness=outerRadii-innerRadii;
+
+%% 
+% Plotting model boundary polygons
+
+cFigure; hold on; 
+title('Inner surface and polygons','FontSize',fontSize);
+gpatch(F1,V1,outerRadii);
+plotV(v1_Inner,'g.-','LineWidth',3);
+plotV(v2_Inner,'g.-','LineWidth',3);
+axisGeom(gca,fontSize); camlight headlight; 
+colormap gjet; colorbar; 
+gdrawnow;
+
+%%
+
+numSteps=ceil(max(wallThickness)./pointSpacing);
+[E,V,Fp1,Fp2]=patchThick(F1,V1,1,wallThickness,numSteps);
+
+[F,~,C_type]=element2patch(E,[],'hex8');
+indBoundary=tesBoundary(F);
+Fb=F(indBoundary,:);
+Cb=C_type(indBoundary,:);
 
 %%
 % Plotting model boundary surfaces
@@ -138,47 +140,11 @@ cFigure;
 hold on; 
 title('Model boundary surfaces','FontSize',fontSize);
 
-gpatch(Fv,Vv,Cv);
-% patchNormPlot(Fv,Vv);
+gpatch(Fb,V,Cb);
 
-icolorbar; 
-colormap(gjet(4)); 
-
-axisGeom(gca,fontSize);
-camlight headlight;
+axisGeom(gca,fontSize); camlight headlight;
+colormap gjet; icolorbar; 
 drawnow;
-
-%% Tetrahedral meshing of vessel
-% 
-
-faceBoundaryMarker=Cv;
-[V_regions]=getInnerPoint(Fv,Vv);
-[regionA]=tetVolMeanEst(Fv,Vv); %Volume for regular tets
-stringOpt='-pq1.2AaY';
-
-inputStruct.stringOpt=stringOpt;
-inputStruct.Faces=Fv;
-inputStruct.Nodes=Vv;
-inputStruct.holePoints=[];
-inputStruct.faceBoundaryMarker=faceBoundaryMarker; %Face boundary markers
-inputStruct.regionPoints=V_regions; %region points
-inputStruct.regionA=regionA;
-inputStruct.minRegionMarker=2; %Minimum region marker
-
-% Mesh model using tetrahedral elements using tetGen
-[meshOutput]=runTetGen(inputStruct); %Run tetGen 
-
-%% 
-% Access model element and patch data
-Fb=meshOutput.facesBoundary;
-Cb=meshOutput.boundaryMarker;
-V=meshOutput.nodes;
-CE=meshOutput.elementMaterialID;
-E=meshOutput.elements;
-
-%% 
-% Visualizing mesh using |meshView|, see also |anim8|
-meshView(meshOutput,[]);
 
 %% Defining the boundary conditions
 % The visualization of the model boundary shows colors for each side of the
@@ -187,7 +153,7 @@ meshView(meshOutput,[]);
 %Define supported node set
 bcSupportList=unique(Fb(ismember(Cb,[3 4]),:)); %Node set part of selected face
 
-F_pressure=fliplr(Fb(Cb==2,:));
+F_pressure=Fb(Cb==1,:);
 
 %% 
 % Visualizing boundary conditions. Markers plotted on the semi-transparent
@@ -198,10 +164,11 @@ title('Boundary conditions','FontSize',fontSize);
 xlabel('X','FontSize',fontSize); ylabel('Y','FontSize',fontSize); zlabel('Z','FontSize',fontSize);
 hold on;
 
-gpatch(Fb,V,'kw','k',0.5);
+gpatch(Fb,V,'kw','none',0.5);
 
 hl(1)=plotV(V(bcSupportList,:),'k.','MarkerSize',markerSize);
-hl(2)=gpatch(F_pressure,V,'rw','r',0.5);
+hl(2)=gpatch(F_pressure,V,'rw','r',1);
+patchNormPlot(F_pressure,V);
 
 legend(hl,{'BC support','Pressure surface'});
 
@@ -228,10 +195,12 @@ febio_spec.Control.time_steps=numTimeSteps;
 febio_spec.Control.step_size=1/numTimeSteps;
 febio_spec.Control.solver.max_refs=max_refs;
 febio_spec.Control.solver.max_ups=max_ups;
+febio_spec.Control.solver.min_residual=min_residual;
 febio_spec.Control.time_stepper.dtmin=dtmin;
 febio_spec.Control.time_stepper.dtmax=dtmax; 
 febio_spec.Control.time_stepper.max_retries=max_retries;
 febio_spec.Control.time_stepper.opt_iter=opt_iter;
+
 
 %Material section
 materialName1='Material1';
@@ -253,7 +222,7 @@ febio_spec.Mesh.Nodes{1}.node.VAL=V; %The nodel coordinates
 % -> Elements
 partName1='Part1';
 febio_spec.Mesh.Elements{1}.ATTR.name=partName1; %Name of this part
-febio_spec.Mesh.Elements{1}.ATTR.type='tet4'; %Element type 
+febio_spec.Mesh.Elements{1}.ATTR.type='hex8'; %Element type 
 febio_spec.Mesh.Elements{1}.elem.ATTR.id=(1:1:size(E,1))'; %Element id's
 febio_spec.Mesh.Elements{1}.elem.VAL=E; %The element matrix
 
@@ -301,6 +270,10 @@ febio_spec.Output.logfile.node_data{1}.ATTR.data='ux;uy;uz';
 febio_spec.Output.logfile.node_data{1}.ATTR.delim=',';
 febio_spec.Output.logfile.node_data{1}.VAL=1:size(V,1);
 
+febio_spec.Output.logfile.element_data{1}.ATTR.file=febioLogFileName_stress_prin;
+febio_spec.Output.logfile.element_data{1}.ATTR.data='s1;s2;s3';
+febio_spec.Output.logfile.element_data{1}.ATTR.delim=',';
+
 %% Quick viewing of the FEBio input file structure
 % The |febView| function can be used to view the xml structure in a MATLAB
 % figure window. 
@@ -336,6 +309,7 @@ febioAnalysis.maxLogCheckTime=10; %Max log file checking time
 %% Import FEBio results 
 
 if runFlag==1 %i.e. a succesful run
+
     %%
     % Importing nodal displacements from a log file
     dataStruct=importFEBio_logfile(fullfile(savePath,febioLogFileName_disp),1,1);
@@ -346,41 +320,60 @@ if runFlag==1 %i.e. a succesful run
     
     %Create deformed coordinate set
     V_DEF=N_disp_mat+repmat(V,[1 1 size(N_disp_mat,3)]);
-               
+    
+    %%
+    % Importing element principal stresses from a log file
+    dataStruct=importFEBio_logfile(fullfile(savePath,febioLogFileName_stress_prin),1,1);
+    
+    %Access data
+    E_stress_prin_mat=dataStruct.data;
+    S1_mat=E_stress_prin_mat(:,1,:);
+    S2_mat=E_stress_prin_mat(:,2,:);
+    S3_mat=E_stress_prin_mat(:,3,:);
+    S_vm = sqrt(((S1_mat-S2_mat).^2+(S2_mat-S3_mat).^2+(S3_mat-S1_mat).^2)./2); 
+
     %% 
     % Plotting the simulated results using |anim8| to visualize and animate
     % deformations 
     
-    DN_magnitude=sqrt(sum(N_disp_mat(:,:,end).^2,2)); %Current displacement magnitude
-        
+    [~,CF_S_vm,~]=element2patch(E,S_vm(:,:,end),'hex8');
+    Cb_S_vm=CF_S_vm(indBoundary,:);
+
     % Create basic view and store graphics handle to initiate animation
     hf=cFigure; %Open figure  
     gtitle([febioFebFileNamePart,': Press play to animate']);
-    title('Displacement magnitude [mm]','Interpreter','Latex')
-    hp=gpatch(Fb,V_DEF(:,:,end),DN_magnitude,'k',1); %Add graphics object to animate
-    hp.Marker='.';
-    hp.MarkerSize=markerSize2;
-    hp.FaceColor='interp';
+    title('Von Mises stres [MPa]','Interpreter','Latex')
+    hp=gpatch(Fb,V_DEF(:,:,end),Cb_S_vm,'k',1); %Add graphics object to animate
     
     axisGeom(gca,fontSize); 
     colormap(gjet(250)); colorbar;
-    caxis([0 max(DN_magnitude)]);    
+    caxis([0 max(S_vm(:))]);    
     axis(axisLim(V_DEF)); %Set axis limits statically    
     camlight headlight;        
         
     % Set up animation features
     animStruct.Time=timeVec; %The time vector    
     for qt=1:1:size(N_disp_mat,3) %Loop over time increments        
-        DN_magnitude=sqrt(sum(N_disp_mat(:,:,qt).^2,2)); %Current displacement magnitude
+        [~,CF_S_vm,~]=element2patch(E,S_vm(:,:,qt),'hex8');
+        Cb_S_vm=CF_S_vm(indBoundary,:);
                 
         %Set entries in animation structure
         animStruct.Handles{qt}=[hp hp]; %Handles of objects to animate
         animStruct.Props{qt}={'Vertices','CData'}; %Properties of objects to animate
-        animStruct.Set{qt}={V_DEF(:,:,qt),DN_magnitude}; %Property values for to set in order to animate
+        animStruct.Set{qt}={V_DEF(:,:,qt),Cb_S_vm}; %Property values for to set in order to animate
     end        
     anim8(hf,animStruct); %Initiate animation feature    
     drawnow;
     
+    %%
+    % Importing element principal stresses from a log file
+    dataStruct=importFEBio_logfile(fullfile(savePath,febioLogFileName_stress_prin),1,1);
+    
+    %Access data
+    E_stress_prin_mat=dataStruct.data;
+
+    time_vec=dataStruct.time; 
+
 end
 
 %% 
