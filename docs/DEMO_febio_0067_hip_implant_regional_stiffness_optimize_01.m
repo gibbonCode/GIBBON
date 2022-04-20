@@ -7,7 +7,7 @@
 
 %% Keywords
 %
-% * febio_spec version 2.5
+% * febio_spec version 3.0
 % * febio, FEBio
 % * beam force loading
 % * force control boundary condition
@@ -143,7 +143,7 @@ opt_iter=6; %Optimum number of iterations
 max_retries=5; %Maximum number of retires
 dtmin=(1/numTimeSteps)/100; %Minimum time step size
 dtmax=1/numTimeSteps; %Maximum time step size
-runMode='external'; %'external' or 'internal'
+runMode='internal'; %'external' or 'internal'
 
 
 
@@ -784,6 +784,7 @@ force_Y=force_Y.*forceTotal(2); %sum now equal to desired
 force_Z=force_Z./sum(force_Z(:)); %sum now equal to 1
 force_Z=force_Z.*forceTotal(3); %sum now equal to desired
 
+force_ball=[force_X(:) force_Y(:) force_Z(:)];
 %%
 cFigure;
 subplot(1,3,1);hold on;
@@ -856,237 +857,202 @@ axisGeom;
 camlight headlight;
 drawnow;
 
+
 %% Defining the FEBio input structure
 % See also |febioStructTemplate| and |febioStruct2xml| and the FEBio user
 % manual.
 
-%Get a template with default settings
+%Get a template with default settings 
 [febio_spec]=febioStructTemplate;
 
-%febio_spec version
-febio_spec.ATTR.version='2.5';
+%febio_spec version 
+febio_spec.ATTR.version='3.0'; 
 
 %Module section
-febio_spec.Module.ATTR.type='solid';
+febio_spec.Module.ATTR.type='solid'; 
 
 %Control section
-febio_spec.Control.analysis.ATTR.type='static';
+febio_spec.Control.analysis='STATIC';
 febio_spec.Control.time_steps=numTimeSteps;
 febio_spec.Control.step_size=1/numTimeSteps;
+febio_spec.Control.solver.max_refs=max_refs;
+febio_spec.Control.solver.max_ups=max_ups;
 febio_spec.Control.time_stepper.dtmin=dtmin;
-febio_spec.Control.time_stepper.dtmax=dtmax;
+febio_spec.Control.time_stepper.dtmax=dtmax; 
 febio_spec.Control.time_stepper.max_retries=max_retries;
 febio_spec.Control.time_stepper.opt_iter=opt_iter;
-febio_spec.Control.max_refs=max_refs;
-febio_spec.Control.max_ups=max_ups;
+
 
 %Material section
+materialName1='Material1';
+febio_spec.Material.material{1}.ATTR.name=materialName1;
 febio_spec.Material.material{1}.ATTR.type='neo-Hookean';
 febio_spec.Material.material{1}.ATTR.id=1;
 febio_spec.Material.material{1}.E=E_youngs1;
 febio_spec.Material.material{1}.v=nu1;
 
+materialName2='Material2';
+febio_spec.Material.material{2}.ATTR.name=materialName2;
 febio_spec.Material.material{2}.ATTR.type='neo-Hookean';
 febio_spec.Material.material{2}.ATTR.id=2;
 febio_spec.Material.material{2}.E=E_youngs2;
 febio_spec.Material.material{2}.v=nu2;
 
+
+
 for q=1:1:numMaterials
+    name_var = strcat( 'Material',num2str(q+2) );
+    materialNameq=sprintf('%s',name_var);
+    febio_spec.Material.material{q+2}.ATTR.name=materialNameq;
     febio_spec.Material.material{q+2}.ATTR.type='neo-Hookean';
     febio_spec.Material.material{q+2}.ATTR.id=q+2;
     febio_spec.Material.material{q+2}.E=E_youngs_implant(q);
     febio_spec.Material.material{q+2}.v=nu_implant;
 end
 
-%Geometry section
+
+
+% Mesh section
 % -> Nodes
-febio_spec.Geometry.Nodes{1}.ATTR.name='nodeSet_all'; %The node set name
-febio_spec.Geometry.Nodes{1}.node.ATTR.id=(1:size(V,1))'; %The node id's
-febio_spec.Geometry.Nodes{1}.node.VAL=V; %The nodel coordinates
+febio_spec.Mesh.Nodes{1}.ATTR.name='Object1'; %The node set name
+febio_spec.Mesh.Nodes{1}.node.ATTR.id=(1:size(V,1))'; %The node id's
+febio_spec.Mesh.Nodes{1}.node.VAL=V; %The nodel coordinates
 
 % -> Elements
-febio_spec.Geometry.Elements{1}.ATTR.type='tet4'; %Element type of this set
-febio_spec.Geometry.Elements{1}.ATTR.mat=1; %material index for this set
-febio_spec.Geometry.Elements{1}.ATTR.name='CorticalBone'; %Name of the element set
-febio_spec.Geometry.Elements{1}.elem.ATTR.id=(1:1:size(E1,1))'; %Element id's
-febio_spec.Geometry.Elements{1}.elem.VAL=E1;
+partName1='CorticalBone';
+febio_spec.Mesh.Elements{1}.ATTR.name=partName1; %Name of this part
+febio_spec.Mesh.Elements{1}.ATTR.type='tet4'; %Element type
+febio_spec.Mesh.Elements{1}.elem.ATTR.id=(1:1:size(E1,1))'; %Element id's
+febio_spec.Mesh.Elements{1}.elem.VAL=E1; %The element matrix
 
-febio_spec.Geometry.Elements{2}.ATTR.type='tet4'; %Element type of this set
-febio_spec.Geometry.Elements{2}.ATTR.mat=2; %material index for this set
-febio_spec.Geometry.Elements{2}.ATTR.name='CancellousBone'; %Name of the element set
-febio_spec.Geometry.Elements{2}.elem.ATTR.id=size(E1,1)+(1:1:size(E2,1))'; %Element id's
-febio_spec.Geometry.Elements{2}.elem.VAL=E2;
+partName2='CancellousBone';
+febio_spec.Mesh.Elements{2}.ATTR.name=partName2; %Name of this part
+febio_spec.Mesh.Elements{2}.ATTR.type='tet4'; %Element type
+febio_spec.Mesh.Elements{2}.elem.ATTR.id=size(E1,1)+(1:1:size(E2,1))'; %Element id's
+febio_spec.Mesh.Elements{2}.elem.VAL=E2; %The element matrix
 
 n=size(E1,1)+size(E2,1)+1;
 for q=1:1:numMaterials
     logicMaterialNow=(elementMaterialID==(q+2));
-    febio_spec.Geometry.Elements{q+2}.ATTR.type='tet4'; %Element type of this set
-    febio_spec.Geometry.Elements{q+2}.ATTR.mat=q+2; %material index for this set
-    febio_spec.Geometry.Elements{q+2}.ATTR.name=['Implant_mat_',num2str(q)]; %Name of the element set
-    febio_spec.Geometry.Elements{q+2}.elem.ATTR.id=(n:1:(n-1+nnz(logicMaterialNow)))'; %Element id's
-    febio_spec.Geometry.Elements{q+2}.elem.VAL=E(logicMaterialNow,:);
+    febio_spec.Mesh.Elements{q+2}.ATTR.type='tet4'; %Element type of this set
+    febio_spec.Mesh.Elements{q+2}.ATTR.mat=q+2; %material index for this set
+    febio_spec.Mesh.Elements{q+2}.ATTR.name=['Implant_mat_',num2str(q)]; %Name of the element set
+    febio_spec.Mesh.Elements{q+2}.elem.ATTR.id=(n:1:(n-1+nnz(logicMaterialNow)))'; %Element id's
+    febio_spec.Mesh.Elements{q+2}.elem.VAL=E(logicMaterialNow,:);
     n=n+nnz(logicMaterialNow);
 end
 
 % -> NodeSets
-febio_spec.Geometry.NodeSet{1}.ATTR.name='bcSupportList';
-febio_spec.Geometry.NodeSet{1}.node.ATTR.id=bcSupportList(:);
+nodeSetName1='bcSupportList';
+nodeSetName2='indicesHeadSurfaceNodes';
+nodeSetName3='indicesAbductor';
+nodeSetName4='indicesVastusLateralis';
+nodeSetName5='indicesVastusMedialis';
 
-febio_spec.Geometry.NodeSet{2}.ATTR.name='indicesHeadSurfaceNodes';
-febio_spec.Geometry.NodeSet{2}.node.ATTR.id=bcPrescribeList(:);
+febio_spec.Mesh.NodeSet{1}.ATTR.name=nodeSetName1;
+febio_spec.Mesh.NodeSet{1}.node.ATTR.id=bcSupportList(:);
 
-febio_spec.Geometry.NodeSet{3}.ATTR.name='indicesAbductor';
-febio_spec.Geometry.NodeSet{3}.node.ATTR.id=bcPrescibeList_abductor(:);
+febio_spec.Mesh.NodeSet{2}.ATTR.name=nodeSetName2;
+febio_spec.Mesh.NodeSet{2}.node.ATTR.id=bcPrescribeList(:);
 
-febio_spec.Geometry.NodeSet{4}.ATTR.name='indicesVastusLateralis';
-febio_spec.Geometry.NodeSet{4}.node.ATTR.id=bcPrescibeList_VastusLateralis(:);
+febio_spec.Mesh.NodeSet{3}.ATTR.name=nodeSetName3;
+febio_spec.Mesh.NodeSet{3}.node.ATTR.id=bcPrescibeList_abductor(:);
+ 
+febio_spec.Mesh.NodeSet{4}.ATTR.name=nodeSetName4;
+febio_spec.Mesh.NodeSet{4}.node.ATTR.id=bcPrescibeList_VastusLateralis(:);
 
-febio_spec.Geometry.NodeSet{5}.ATTR.name='indicesVastusMedialis';
-febio_spec.Geometry.NodeSet{5}.node.ATTR.id=bcPrescibeList_VastusMedialis(:);
+febio_spec.Mesh.NodeSet{5}.ATTR.name=nodeSetName5;
+febio_spec.Mesh.NodeSet{5}.node.ATTR.id=bcPrescibeList_VastusMedialis(:);
+
+%MeshDomains section
+febio_spec.MeshDomains.SolidDomain{1}.ATTR.name=partName1;
+febio_spec.MeshDomains.SolidDomain{1}.ATTR.mat=materialName1;
+
+febio_spec.MeshDomains.SolidDomain{2}.ATTR.name=partName2;
+febio_spec.MeshDomains.SolidDomain{2}.ATTR.mat=materialName2;
+
+    
+for q=1:1:numMaterials
+febio_spec.MeshDomains.SolidDomain{q+2}.ATTR.name=['Implant_mat_',num2str(q)];
+name_var = strcat( 'Material',num2str(q+2) );
+materialNameq=sprintf('%s',name_var);
+febio_spec.MeshDomains.SolidDomain{q+2}.ATTR.mat=materialNameq;
+end
+
 
 %Boundary condition section
 % -> Fix boundary conditions
-febio_spec.Boundary.fix{1}.ATTR.bc='x';
-febio_spec.Boundary.fix{1}.ATTR.node_set=febio_spec.Geometry.NodeSet{1}.ATTR.name;
-febio_spec.Boundary.fix{2}.ATTR.bc='y';
-febio_spec.Boundary.fix{2}.ATTR.node_set=febio_spec.Geometry.NodeSet{1}.ATTR.name;
-febio_spec.Boundary.fix{3}.ATTR.bc='z';
-febio_spec.Boundary.fix{3}.ATTR.node_set=febio_spec.Geometry.NodeSet{1}.ATTR.name;
+febio_spec.Boundary.bc{1}.ATTR.type='fix';
+febio_spec.Boundary.bc{1}.ATTR.node_set=nodeSetName1;
+febio_spec.Boundary.bc{1}.dofs='x,y,z';
 
-febio_spec.MeshData.NodeData{1}.ATTR.name='force_X';
-febio_spec.MeshData.NodeData{1}.ATTR.node_set=febio_spec.Geometry.NodeSet{2}.ATTR.name;
-febio_spec.MeshData.NodeData{1}.node.VAL=force_X;
+
+%MeshData secion
+%-> Node data
+loadDataName1='force_ball';
+febio_spec.MeshData.NodeData{1}.ATTR.name=loadDataName1;
+febio_spec.MeshData.NodeData{1}.ATTR.node_set=nodeSetName2;
+febio_spec.MeshData.NodeData{1}.ATTR.datatype='vec3';
 febio_spec.MeshData.NodeData{1}.node.ATTR.lid=(1:1:numel(bcPrescribeList))';
+febio_spec.MeshData.NodeData{1}.node.VAL=force_ball;
 
-febio_spec.MeshData.NodeData{2}.ATTR.name='force_Y';
-febio_spec.MeshData.NodeData{2}.ATTR.node_set=febio_spec.Geometry.NodeSet{2}.ATTR.name;
-febio_spec.MeshData.NodeData{2}.node.VAL=force_Y;
-febio_spec.MeshData.NodeData{2}.node.ATTR.lid=(1:1:numel(bcPrescribeList))';
+loadDataName2='force_abductor';
+febio_spec.MeshData.NodeData{2}.ATTR.name=loadDataName2;
+febio_spec.MeshData.NodeData{2}.ATTR.node_set=nodeSetName3;
+febio_spec.MeshData.NodeData{2}.ATTR.datatype='vec3';
+febio_spec.MeshData.NodeData{2}.node.ATTR.lid=(1:1:numel(bcPrescibeList_abductor))';
+febio_spec.MeshData.NodeData{2}.node.VAL=forceAbductor_distributed;
 
-febio_spec.MeshData.NodeData{3}.ATTR.name='force_Z';
-febio_spec.MeshData.NodeData{3}.ATTR.node_set=febio_spec.Geometry.NodeSet{2}.ATTR.name;
-febio_spec.MeshData.NodeData{3}.node.VAL=force_Z;
-febio_spec.MeshData.NodeData{3}.node.ATTR.lid=(1:1:numel(bcPrescribeList))';
+loadDataName3='force_VL';
+febio_spec.MeshData.NodeData{3}.ATTR.name=loadDataName3;
+febio_spec.MeshData.NodeData{3}.ATTR.node_set=nodeSetName4;
+febio_spec.MeshData.NodeData{3}.ATTR.datatype='vec3';
+febio_spec.MeshData.NodeData{3}.node.ATTR.lid=(1:1:numel(bcPrescibeList_VastusLateralis))';
+febio_spec.MeshData.NodeData{3}.node.VAL=forceVastusLateralis_distributed;
 
-febio_spec.MeshData.NodeData{4}.ATTR.name='forceAbductor_X';
-febio_spec.MeshData.NodeData{4}.ATTR.node_set=febio_spec.Geometry.NodeSet{3}.ATTR.name;
-febio_spec.MeshData.NodeData{4}.node.VAL=forceAbductor_distributed(:,1);
-febio_spec.MeshData.NodeData{4}.node.ATTR.lid=(1:1:numel(bcPrescibeList_abductor))';
-
-febio_spec.MeshData.NodeData{5}.ATTR.name='forceAbductor_Y';
-febio_spec.MeshData.NodeData{5}.ATTR.node_set=febio_spec.Geometry.NodeSet{3}.ATTR.name;
-febio_spec.MeshData.NodeData{5}.node.VAL=forceAbductor_distributed(:,2);
-febio_spec.MeshData.NodeData{5}.node.ATTR.lid=(1:1:numel(bcPrescibeList_abductor))';
-
-febio_spec.MeshData.NodeData{6}.ATTR.name='forceAbductor_Z';
-febio_spec.MeshData.NodeData{6}.ATTR.node_set=febio_spec.Geometry.NodeSet{3}.ATTR.name;
-febio_spec.MeshData.NodeData{6}.node.VAL=forceAbductor_distributed(:,3);
-febio_spec.MeshData.NodeData{6}.node.ATTR.lid=(1:1:numel(bcPrescibeList_abductor))';
-
-febio_spec.MeshData.NodeData{7}.ATTR.name='forceVL_X';
-febio_spec.MeshData.NodeData{7}.ATTR.node_set=febio_spec.Geometry.NodeSet{4}.ATTR.name;
-febio_spec.MeshData.NodeData{7}.node.VAL=forceVastusLateralis_distributed(:,1);
-febio_spec.MeshData.NodeData{7}.node.ATTR.lid=(1:1:numel(bcPrescibeList_VastusLateralis))';
-
-febio_spec.MeshData.NodeData{8}.ATTR.name='forceVL_Y';
-febio_spec.MeshData.NodeData{8}.ATTR.node_set=febio_spec.Geometry.NodeSet{4}.ATTR.name;
-febio_spec.MeshData.NodeData{8}.node.VAL=forceVastusLateralis_distributed(:,2);
-febio_spec.MeshData.NodeData{8}.node.ATTR.lid=(1:1:numel(bcPrescibeList_VastusLateralis))';
-
-febio_spec.MeshData.NodeData{9}.ATTR.name='forceVL_Z';
-febio_spec.MeshData.NodeData{9}.ATTR.node_set=febio_spec.Geometry.NodeSet{4}.ATTR.name;
-febio_spec.MeshData.NodeData{9}.node.VAL=forceVastusLateralis_distributed(:,3);
-febio_spec.MeshData.NodeData{9}.node.ATTR.lid=(1:1:numel(bcPrescibeList_VastusLateralis))';
-
-febio_spec.MeshData.NodeData{10}.ATTR.name='forceVM_X';
-febio_spec.MeshData.NodeData{10}.ATTR.node_set=febio_spec.Geometry.NodeSet{5}.ATTR.name;
-febio_spec.MeshData.NodeData{10}.node.VAL=forceVastusMedialis_distributed(:,1);
-febio_spec.MeshData.NodeData{10}.node.ATTR.lid=(1:1:numel(bcPrescibeList_VastusMedialis))';
-
-febio_spec.MeshData.NodeData{11}.ATTR.name='forceVM_Y';
-febio_spec.MeshData.NodeData{11}.ATTR.node_set=febio_spec.Geometry.NodeSet{5}.ATTR.name;
-febio_spec.MeshData.NodeData{11}.node.VAL=forceVastusMedialis_distributed(:,2);
-febio_spec.MeshData.NodeData{11}.node.ATTR.lid=(1:1:numel(bcPrescibeList_VastusMedialis))';
-
-febio_spec.MeshData.NodeData{12}.ATTR.name='forceVM_Z';
-febio_spec.MeshData.NodeData{12}.ATTR.node_set=febio_spec.Geometry.NodeSet{5}.ATTR.name;
-febio_spec.MeshData.NodeData{12}.node.VAL=forceVastusMedialis_distributed(:,3);
-febio_spec.MeshData.NodeData{12}.node.ATTR.lid=(1:1:numel(bcPrescibeList_VastusMedialis))';
+loadDataName4='force_VM';
+febio_spec.MeshData.NodeData{4}.ATTR.name=loadDataName4;
+febio_spec.MeshData.NodeData{4}.ATTR.node_set=nodeSetName5;
+febio_spec.MeshData.NodeData{4}.ATTR.datatype='vec3';
+febio_spec.MeshData.NodeData{4}.node.ATTR.lid=(1:1:numel(bcPrescibeList_VastusMedialis))';
+febio_spec.MeshData.NodeData{4}.node.VAL=forceVastusMedialis_distributed;
 
 %Loads section
 % -> Prescribed nodal forces
-febio_spec.Loads.nodal_load{1}.ATTR.bc='x';
-febio_spec.Loads.nodal_load{1}.ATTR.node_set=febio_spec.Geometry.NodeSet{2}.ATTR.name;
-febio_spec.Loads.nodal_load{1}.scale.ATTR.lc=1;
-febio_spec.Loads.nodal_load{1}.scale.VAL=1;
-febio_spec.Loads.nodal_load{1}.value.ATTR.node_data=febio_spec.MeshData.NodeData{1}.ATTR.name;
+febio_spec.Loads.nodal_load{1}.ATTR.name='PrescribedForce1';
+febio_spec.Loads.nodal_load{1}.ATTR.type='nodal_force';
+febio_spec.Loads.nodal_load{1}.ATTR.node_set=nodeSetName2;
+febio_spec.Loads.nodal_load{1}.value.ATTR.lc=1;
+febio_spec.Loads.nodal_load{1}.value.ATTR.type='map';
+febio_spec.Loads.nodal_load{1}.value.VAL=loadDataName1;
 
-febio_spec.Loads.nodal_load{2}.ATTR.bc='y';
-febio_spec.Loads.nodal_load{2}.ATTR.node_set=febio_spec.Geometry.NodeSet{2}.ATTR.name;
-febio_spec.Loads.nodal_load{2}.scale.ATTR.lc=1;
-febio_spec.Loads.nodal_load{2}.scale.VAL=1;
-febio_spec.Loads.nodal_load{2}.value.ATTR.node_data=febio_spec.MeshData.NodeData{2}.ATTR.name;
+febio_spec.Loads.nodal_load{2}.ATTR.name='PrescribedForce2';
+febio_spec.Loads.nodal_load{2}.ATTR.type='nodal_force';
+febio_spec.Loads.nodal_load{2}.ATTR.node_set=nodeSetName3;
+febio_spec.Loads.nodal_load{2}.value.ATTR.lc=1;
+febio_spec.Loads.nodal_load{2}.value.ATTR.type='map';
+febio_spec.Loads.nodal_load{2}.value.VAL=loadDataName2;
 
-febio_spec.Loads.nodal_load{3}.ATTR.bc='z';
-febio_spec.Loads.nodal_load{3}.ATTR.node_set=febio_spec.Geometry.NodeSet{2}.ATTR.name;
-febio_spec.Loads.nodal_load{3}.scale.ATTR.lc=1;
-febio_spec.Loads.nodal_load{3}.scale.VAL=1;
-febio_spec.Loads.nodal_load{3}.value.ATTR.node_data=febio_spec.MeshData.NodeData{3}.ATTR.name;
+febio_spec.Loads.nodal_load{3}.ATTR.name='PrescribedForce3';
+febio_spec.Loads.nodal_load{3}.ATTR.type='nodal_force';
+febio_spec.Loads.nodal_load{3}.ATTR.node_set=nodeSetName4;
+febio_spec.Loads.nodal_load{3}.value.ATTR.lc=1;
+febio_spec.Loads.nodal_load{3}.value.ATTR.type='map';
+febio_spec.Loads.nodal_load{3}.value.VAL=loadDataName3;
 
-febio_spec.Loads.nodal_load{4}.ATTR.bc='x';
-febio_spec.Loads.nodal_load{4}.ATTR.node_set=febio_spec.Geometry.NodeSet{3}.ATTR.name;
-febio_spec.Loads.nodal_load{4}.scale.ATTR.lc=1;
-febio_spec.Loads.nodal_load{4}.scale.VAL=1;
-febio_spec.Loads.nodal_load{4}.value.ATTR.node_data=febio_spec.MeshData.NodeData{4}.ATTR.name;
+febio_spec.Loads.nodal_load{4}.ATTR.name='PrescribedForce4';
+febio_spec.Loads.nodal_load{4}.ATTR.type='nodal_force';
+febio_spec.Loads.nodal_load{4}.ATTR.node_set=nodeSetName5;
+febio_spec.Loads.nodal_load{4}.value.ATTR.lc=1;
+febio_spec.Loads.nodal_load{4}.value.ATTR.type='map';
+febio_spec.Loads.nodal_load{4}.value.VAL=loadDataName2;
 
-febio_spec.Loads.nodal_load{5}.ATTR.bc='y';
-febio_spec.Loads.nodal_load{5}.ATTR.node_set=febio_spec.Geometry.NodeSet{3}.ATTR.name;
-febio_spec.Loads.nodal_load{5}.scale.ATTR.lc=1;
-febio_spec.Loads.nodal_load{5}.scale.VAL=1;
-febio_spec.Loads.nodal_load{5}.value.ATTR.node_data=febio_spec.MeshData.NodeData{5}.ATTR.name;
-
-febio_spec.Loads.nodal_load{6}.ATTR.bc='z';
-febio_spec.Loads.nodal_load{6}.ATTR.node_set=febio_spec.Geometry.NodeSet{3}.ATTR.name;
-febio_spec.Loads.nodal_load{6}.scale.ATTR.lc=1;
-febio_spec.Loads.nodal_load{6}.scale.VAL=1;
-febio_spec.Loads.nodal_load{6}.value.ATTR.node_data=febio_spec.MeshData.NodeData{6}.ATTR.name;
-
-febio_spec.Loads.nodal_load{7}.ATTR.bc='x';
-febio_spec.Loads.nodal_load{7}.ATTR.node_set=febio_spec.Geometry.NodeSet{4}.ATTR.name;
-febio_spec.Loads.nodal_load{7}.scale.ATTR.lc=1;
-febio_spec.Loads.nodal_load{7}.scale.VAL=1;
-febio_spec.Loads.nodal_load{7}.value.ATTR.node_data=febio_spec.MeshData.NodeData{7}.ATTR.name;
-
-febio_spec.Loads.nodal_load{8}.ATTR.bc='y';
-febio_spec.Loads.nodal_load{8}.ATTR.node_set=febio_spec.Geometry.NodeSet{4}.ATTR.name;
-febio_spec.Loads.nodal_load{8}.scale.ATTR.lc=1;
-febio_spec.Loads.nodal_load{8}.scale.VAL=1;
-febio_spec.Loads.nodal_load{8}.value.ATTR.node_data=febio_spec.MeshData.NodeData{8}.ATTR.name;
-
-febio_spec.Loads.nodal_load{9}.ATTR.bc='z';
-febio_spec.Loads.nodal_load{9}.ATTR.node_set=febio_spec.Geometry.NodeSet{4}.ATTR.name;
-febio_spec.Loads.nodal_load{9}.scale.ATTR.lc=1;
-febio_spec.Loads.nodal_load{9}.scale.VAL=1;
-febio_spec.Loads.nodal_load{9}.value.ATTR.node_data=febio_spec.MeshData.NodeData{9}.ATTR.name;
-
-febio_spec.Loads.nodal_load{10}.ATTR.bc='x';
-febio_spec.Loads.nodal_load{10}.ATTR.node_set=febio_spec.Geometry.NodeSet{5}.ATTR.name;
-febio_spec.Loads.nodal_load{10}.scale.ATTR.lc=1;
-febio_spec.Loads.nodal_load{10}.scale.VAL=1;
-febio_spec.Loads.nodal_load{10}.value.ATTR.node_data=febio_spec.MeshData.NodeData{10}.ATTR.name;
-
-febio_spec.Loads.nodal_load{11}.ATTR.bc='y';
-febio_spec.Loads.nodal_load{11}.ATTR.node_set=febio_spec.Geometry.NodeSet{5}.ATTR.name;
-febio_spec.Loads.nodal_load{11}.scale.ATTR.lc=1;
-febio_spec.Loads.nodal_load{11}.scale.VAL=1;
-febio_spec.Loads.nodal_load{11}.value.ATTR.node_data=febio_spec.MeshData.NodeData{11}.ATTR.name;
-
-febio_spec.Loads.nodal_load{12}.ATTR.bc='z';
-febio_spec.Loads.nodal_load{12}.ATTR.node_set=febio_spec.Geometry.NodeSet{5}.ATTR.name;
-febio_spec.Loads.nodal_load{12}.scale.ATTR.lc=1;
-febio_spec.Loads.nodal_load{12}.scale.VAL=1;
-febio_spec.Loads.nodal_load{12}.value.ATTR.node_data=febio_spec.MeshData.NodeData{12}.ATTR.name;
-
+%LoadData section
+% -> load_controller
+febio_spec.LoadData.load_controller{1}.ATTR.id=1;
+febio_spec.LoadData.load_controller{1}.ATTR.type='loadcurve';
+febio_spec.LoadData.load_controller{1}.interpolate='LINEAR';
+febio_spec.LoadData.load_controller{1}.points.point.VAL=[0 0; 1 1];
 
 %Output section
 % -> log file
@@ -1598,7 +1564,7 @@ end
 % image segmentation, image-based modeling, meshing, and finite element
 % analysis.
 % 
-% Copyright (C) 2006-2022 Kevin Mattheus Moerman and the GIBBON contributors
+% Copyright (C) 2006-2021 Kevin Mattheus Moerman and the GIBBON contributors
 % 
 % This program is free software: you can redistribute it and/or modify
 % it under the terms of the GNU General Public License as published by
