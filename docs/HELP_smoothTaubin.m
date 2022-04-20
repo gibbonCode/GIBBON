@@ -15,12 +15,17 @@ clear; close all; clc;
 
 %% 
 
-boxDim=[10 10 10 ];
-pointSpacing=2;
-[F_ori,V_ori]=triBox(boxDim,pointSpacing);
-R=euler2DCM(pi/4*ones(1,3));
-V_ori=V_ori*R;
-
+testCase=1;
+switch testCase
+    case 1
+        boxDim=[10 10 10];
+        pointSpacing=2;
+        [F_ori,V_ori]=triBox(boxDim,pointSpacing);
+        R=euler2DCM(pi/4*ones(1,3));
+        V_ori=V_ori*R;
+    case 2
+        [F_ori,V_ori]=graphicsModels(5);
+end
 %%
 pointSpacing=mean(patchEdgeLengths(F_ori,V_ori));
 
@@ -53,17 +58,14 @@ nSmooth=50;
 
 cFigure;
 subplot(1,2,1);
-gpatch(F_ori,V_ori,'none','k',1,2);
+% gpatch(F_ori,V_ori,'kw','none',0.5);
 gpatch(F_vox,V_vox,'rw','k',1);
-% gpatch(F,Vs,'w','k',1,1);
-axisGeom; camlight headlight; axis off
+axisGeom; camlight headlight; %axis off
 
 subplot(1,2,2);
-gpatch(F_ori,V_ori,'bw','none',0.5);
-% gpatch(F_ori1,V_ori1,'rw','none',0.5);
-% gpatch(F_ori1,V_ori1,'rw','none',0.5);
+gpatch(F_vox,V_vox,'rw','none',0.25);
 gpatch(F_vox,Vs,'w','k',1);
-axisGeom; camlight headlight; axis off
+axisGeom; camlight headlight; %axis off
 
 gdrawnow;
 
