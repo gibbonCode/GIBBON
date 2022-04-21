@@ -152,7 +152,7 @@ for formulationCase=formulationCases
     %% Visualize data
     
     hf=cFigure;
-    ht=suptitle(formulationName);
+    ht=subtitle(formulationName);
     ht.FontSize=fontSizeLabel;
     ht.Interpreter='latex';
     
