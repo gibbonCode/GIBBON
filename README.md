@@ -1,5 +1,5 @@
 
-<img src="docs/html/gibbonLogo.jpg" href="https://gibboncode.org" alt="GIBBON" width="100%">   
+<img src="docs/img/logos/gibbonLogoBanner_1018x300.png" href="https://gibboncode.org" alt="GIBBON" width="100%">   
 
 **Cite GIBBON:** [![DOI](http://joss.theoj.org/papers/10.21105/joss.00506/status.svg)](https://doi.org/10.21105/joss.00506)
 
