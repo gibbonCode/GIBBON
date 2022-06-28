@@ -6,7 +6,7 @@
    <!--
 This HTML was auto-generated from MATLAB code.
 To make changes, update the MATLAB code and republish this document.
-      --><title>DEMO_febio_0001_cube_uniaxial</title><meta name="generator" content="MATLAB 9.9"><link rel="schema.DC" href="http://purl.org/dc/elements/1.1/"><meta name="DC.date" content="2020-12-11"><meta name="DC.source" content="DEMO_febio_0001_cube_uniaxial.m"><style type="text/css">
+      --><title>DEMO_febio_0001_cube_uniaxial</title><meta name="generator" content="MATLAB 9.13"><link rel="schema.DC" href="http://purl.org/dc/elements/1.1/"><meta name="DC.date" content="2022-06-28"><meta name="DC.source" content="DEMO_febio_0001_cube_uniaxial.m"><style type="text/css">
 html,body,div,span,applet,object,iframe,h1,h2,h3,h4,h5,h6,p,blockquote,pre,a,abbr,acronym,address,big,cite,code,del,dfn,em,font,img,ins,kbd,q,s,samp,small,strike,strong,tt,var,b,u,i,center,dl,dt,dd,ol,ul,li,fieldset,form,label,legend,table,caption,tbody,tfoot,thead,tr,th,td{margin:0;padding:0;border:0;outline:0;font-size:100%;vertical-align:baseline;background:transparent}body{line-height:1}ol,ul{list-style:none}blockquote,q{quotes:none}blockquote:before,blockquote:after,q:before,q:after{content:'';content:none}:focus{outine:0}ins{text-decoration:none}del{text-decoration:line-through}table{border-collapse:collapse;border-spacing:0}
 
 html { min-height:100%; margin-bottom:1px; }
@@ -85,6 +85,7 @@ febioLogFileName=[febioFebFileNamePart,<span class="string">'.txt'</span>]; <spa
 febioLogFileName_disp=[febioFebFileNamePart,<span class="string">'_disp_out.txt'</span>]; <span class="comment">%Log file name for exporting displacement</span>
 febioLogFileName_stress=[febioFebFileNamePart,<span class="string">'_stress_out.txt'</span>]; <span class="comment">%Log file name for exporting stress</span>
 febioLogFileName_stress_prin=[febioFebFileNamePart,<span class="string">'_stress_prin_out.txt'</span>]; <span class="comment">%Log file name for exporting principal stress</span>
+febioLogFileName_force=[febioFebFileNamePart,<span class="string">'_force_out.txt'</span>]; <span class="comment">%Log file name for exporting force</span>
 
 <span class="comment">%Specifying dimensions and number of elements</span>
 cubeSize=10;
@@ -97,7 +98,7 @@ numElementsThickness=round(sampleThickness/pointSpacings(2)); <span class="comme
 numElementsHeight=round(sampleHeight/pointSpacings(3)); <span class="comment">%Number of elemens in dir 3</span>
 
 <span class="comment">%Define applied displacement</span>
-appliedStrain=0.4; <span class="comment">%Linear strain (Only used to compute applied stretch)</span>
+appliedStrain=0.3; <span class="comment">%Linear strain (Only used to compute applied stretch)</span>
 loadingOption=<span class="string">'compression'</span>; <span class="comment">% or 'tension'</span>
 <span class="keyword">switch</span> loadingOption
     <span class="keyword">case</span> <span class="string">'compression'</span>
@@ -119,6 +120,7 @@ opt_iter=6; <span class="comment">%Optimum number of iterations</span>
 max_retries=5; <span class="comment">%Maximum number of retires</span>
 dtmin=(1/numTimeSteps)/100; <span class="comment">%Minimum time step size</span>
 dtmax=1/numTimeSteps; <span class="comment">%Maximum time step size</span>
+runMode=<span class="string">'external'</span>;
 </pre><h2 id="5">Creating model geometry and mesh</h2><p>A box is created with tri-linear hexahedral (hex8) elements using the <tt>hexMeshBox</tt> function. The function offers the boundary faces with seperate labels for the top, bottom, left, right, front, and back sides. As such these can be used to define boundary conditions on the exterior.</p><pre class="codeinput"><span class="comment">% Create a box with hexahedral elements</span>
 cubeDimensions=[sampleWidth sampleThickness sampleHeight]; <span class="comment">%Dimensions</span>
 cubeElementNumbers=[numElementsWidth numElementsThickness numElementsHeight]; <span class="comment">%Number of elements</span>
@@ -278,6 +280,10 @@ febio_spec.Output.logfile.node_data{1}.ATTR.file=febioLogFileName_disp;
 febio_spec.Output.logfile.node_data{1}.ATTR.data=<span class="string">'ux;uy;uz'</span>;
 febio_spec.Output.logfile.node_data{1}.ATTR.delim=<span class="string">','</span>;
 
+febio_spec.Output.logfile.node_data{2}.ATTR.file=febioLogFileName_force;
+febio_spec.Output.logfile.node_data{2}.ATTR.data=<span class="string">'Rx;Ry;Rz'</span>;
+febio_spec.Output.logfile.node_data{2}.ATTR.delim=<span class="string">','</span>;
+
 febio_spec.Output.logfile.element_data{1}.ATTR.file=febioLogFileName_stress;
 febio_spec.Output.logfile.element_data{1}.ATTR.data=<span class="string">'sz'</span>;
 febio_spec.Output.logfile.element_data{1}.ATTR.delim=<span class="string">','</span>;
@@ -290,57 +296,57 @@ febio_spec.Output.logfile.element_data{2}.ATTR.delim=<span class="string">','</s
 </pre><h2 id="13">Running the FEBio analysis</h2><p>To run the analysis defined by the created FEBio input file the <tt>runMonitorFEBio</tt> function is used. The input for this function is a structure defining job settings e.g. the FEBio input file name. The optional output runFlag informs the user if the analysis was run succesfully.</p><pre class="codeinput">febioAnalysis.run_filename=febioFebFileName; <span class="comment">%The input file name</span>
 febioAnalysis.run_logname=febioLogFileName; <span class="comment">%The name for the log file</span>
 febioAnalysis.disp_on=1; <span class="comment">%Display information on the command window</span>
-febioAnalysis.runMode=<span class="string">'external'</span>;<span class="comment">%'internal';</span>
+febioAnalysis.runMode=runMode;
 febioAnalysis.maxLogCheckTime=10; <span class="comment">%Max log file checking time</span>
 
 [runFlag]=runMonitorFEBio(febioAnalysis);<span class="comment">%START FEBio NOW!!!!!!!!</span>
 </pre><pre class="codeoutput"> 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
---------&gt;    RUNNING/MONITORING FEBIO JOB    &lt;-------- 11-Dec-2020 12:17:32
+--------&gt;    RUNNING/MONITORING FEBIO JOB    &lt;-------- 28-Jun-2022 08:56:59
 FEBio path: /home/kevin/FEBioStudio/bin/febio3
-# Attempt removal of existing log files                11-Dec-2020 12:17:32
- * Removal succesful                                   11-Dec-2020 12:17:32
-# Attempt removal of existing .xplt files              11-Dec-2020 12:17:32
- * Removal succesful                                   11-Dec-2020 12:17:32
-# Starting FEBio...                                    11-Dec-2020 12:17:32
+# Attempt removal of existing log files                28-Jun-2022 08:56:59
+ * Removal succesful                                   28-Jun-2022 08:56:59
+# Attempt removal of existing .xplt files              28-Jun-2022 08:56:59
+ * Removal succesful                                   28-Jun-2022 08:56:59
+# Starting FEBio...                                    28-Jun-2022 08:56:59
   Max. total analysis time is: Inf s
- * Waiting for log file creation                       11-Dec-2020 12:17:32
+ * Waiting for log file creation                       28-Jun-2022 08:56:59
    Max. wait time: 10 s
- * Log file found.                                     11-Dec-2020 12:17:32
-# Parsing log file...                                  11-Dec-2020 12:17:32
-    number of iterations   : 3                         11-Dec-2020 12:17:32
-    number of reformations : 3                         11-Dec-2020 12:17:32
-------- converged at time : 0.1                        11-Dec-2020 12:17:32
-    number of iterations   : 3                         11-Dec-2020 12:17:32
-    number of reformations : 3                         11-Dec-2020 12:17:32
-------- converged at time : 0.2                        11-Dec-2020 12:17:32
-    number of iterations   : 3                         11-Dec-2020 12:17:32
-    number of reformations : 3                         11-Dec-2020 12:17:32
-------- converged at time : 0.3                        11-Dec-2020 12:17:32
-    number of iterations   : 3                         11-Dec-2020 12:17:32
-    number of reformations : 3                         11-Dec-2020 12:17:32
-------- converged at time : 0.4                        11-Dec-2020 12:17:32
-    number of iterations   : 3                         11-Dec-2020 12:17:32
-    number of reformations : 3                         11-Dec-2020 12:17:32
-------- converged at time : 0.5                        11-Dec-2020 12:17:32
-    number of iterations   : 3                         11-Dec-2020 12:17:32
-    number of reformations : 3                         11-Dec-2020 12:17:32
-------- converged at time : 0.6                        11-Dec-2020 12:17:32
-    number of iterations   : 3                         11-Dec-2020 12:17:32
-    number of reformations : 3                         11-Dec-2020 12:17:32
-------- converged at time : 0.7                        11-Dec-2020 12:17:32
-    number of iterations   : 3                         11-Dec-2020 12:17:32
-    number of reformations : 3                         11-Dec-2020 12:17:32
-------- converged at time : 0.8                        11-Dec-2020 12:17:32
-    number of iterations   : 3                         11-Dec-2020 12:17:32
-    number of reformations : 3                         11-Dec-2020 12:17:32
-------- converged at time : 0.9                        11-Dec-2020 12:17:32
-    number of iterations   : 3                         11-Dec-2020 12:17:32
-    number of reformations : 3                         11-Dec-2020 12:17:32
-------- converged at time : 1                          11-Dec-2020 12:17:32
- Elapsed time : 0:00:00                                11-Dec-2020 12:17:32
+ * Log file found.                                     28-Jun-2022 08:56:59
+# Parsing log file...                                  28-Jun-2022 08:56:59
+    number of iterations   : 3                         28-Jun-2022 08:57:00
+    number of reformations : 3                         28-Jun-2022 08:57:00
+------- converged at time : 0.1                        28-Jun-2022 08:57:00
+    number of iterations   : 3                         28-Jun-2022 08:57:00
+    number of reformations : 3                         28-Jun-2022 08:57:00
+------- converged at time : 0.2                        28-Jun-2022 08:57:00
+    number of iterations   : 3                         28-Jun-2022 08:57:00
+    number of reformations : 3                         28-Jun-2022 08:57:00
+------- converged at time : 0.3                        28-Jun-2022 08:57:00
+    number of iterations   : 3                         28-Jun-2022 08:57:00
+    number of reformations : 3                         28-Jun-2022 08:57:00
+------- converged at time : 0.4                        28-Jun-2022 08:57:00
+    number of iterations   : 3                         28-Jun-2022 08:57:00
+    number of reformations : 3                         28-Jun-2022 08:57:00
+------- converged at time : 0.5                        28-Jun-2022 08:57:00
+    number of iterations   : 3                         28-Jun-2022 08:57:00
+    number of reformations : 3                         28-Jun-2022 08:57:00
+------- converged at time : 0.6                        28-Jun-2022 08:57:00
+    number of iterations   : 3                         28-Jun-2022 08:57:00
+    number of reformations : 3                         28-Jun-2022 08:57:00
+------- converged at time : 0.7                        28-Jun-2022 08:57:00
+    number of iterations   : 3                         28-Jun-2022 08:57:00
+    number of reformations : 3                         28-Jun-2022 08:57:00
+------- converged at time : 0.8                        28-Jun-2022 08:57:00
+    number of iterations   : 3                         28-Jun-2022 08:57:00
+    number of reformations : 3                         28-Jun-2022 08:57:00
+------- converged at time : 0.9                        28-Jun-2022 08:57:00
+    number of iterations   : 3                         28-Jun-2022 08:57:00
+    number of reformations : 3                         28-Jun-2022 08:57:00
+------- converged at time : 1                          28-Jun-2022 08:57:00
+ Elapsed time : 0:00:00                                28-Jun-2022 08:57:00
  N O R M A L   T E R M I N A T I O N
-# Done                                                 11-Dec-2020 12:17:32
+# Done                                                 28-Jun-2022 08:57:00
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 </pre><h2 id="14">Import FEBio results</h2><pre class="codeinput"><span class="keyword">if</span> runFlag==1 <span class="comment">%i.e. a succesful run</span>
 </pre><pre class="codeinput">    <span class="comment">% Importing nodal displacements from a log file</span>
@@ -451,8 +457,24 @@ FEBio path: /home/kevin/FEBioStudio/bin/febio3
     view(2); axis <span class="string">tight</span>;  grid <span class="string">on</span>; axis <span class="string">square</span>; box <span class="string">on</span>;
     set(gca,<span class="string">'FontSize'</span>,fontSize);
     drawnow;
-</pre><img width="100%" height="auto" vspace="5" hspace="5" src="DEMO_febio_0001_cube_uniaxial_06.jpg" alt=""> <pre class="codeinput"><span class="keyword">end</span>
-</pre><p><img vspace="5" hspace="5" src="gibbVerySmall.gif" alt=""> </p><p><i><b>GIBBON</b></i> <a href="www.gibboncode.org">www.gibboncode.org</a></p><p><i>Kevin Mattheus Moerman</i>, <a href="gibbon.toolbox@gmail.com">gibbon.toolbox@gmail.com</a></p><p><i><b>GIBBON footer text</b></i></p><p>License: <a href="https://github.com/gibbonCode/GIBBON/blob/master/LICENSE">https://github.com/gibbonCode/GIBBON/blob/master/LICENSE</a></p><p>GIBBON: The Geometry and Image-based Bioengineering add-On. A toolbox for image segmentation, image-based modeling, meshing, and finite element analysis.</p><p>Copyright (C) 2006-2020 Kevin Mattheus Moerman</p><p>This program is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.</p><p>This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for more details.</p><p>You should have received a copy of the GNU General Public License along with this program.  If not, see <a href="http://www.gnu.org/licenses/">http://www.gnu.org/licenses/</a>.</p><p class="footer"><br><a href="https://www.mathworks.com/products/matlab/">Published with MATLAB&reg; R2020b</a><br></p></div><!--
+</pre><img width="100%" height="auto" vspace="5" hspace="5" src="DEMO_febio_0001_cube_uniaxial_06.jpg" alt=""> <p>Importing nodal forces from a log file</p><pre class="codeinput">    [dataStruct]=importFEBio_logfile(fullfile(savePath,febioLogFileName_force),1,1); <span class="comment">%Nodal forces</span>
+
+    <span class="comment">%Access data</span>
+    timeVec=dataStruct.time;
+    f_sum_x=squeeze(sum(dataStruct.data(bcPrescribeList,1,:),1));
+    f_sum_y=squeeze(sum(dataStruct.data(bcPrescribeList,2,:),1));
+    f_sum_z=squeeze(sum(dataStruct.data(bcPrescribeList,3,:),1));
+</pre><p>Visualize force data</p><pre class="codeinput">    displacementApplied=timeVec.*displacementMagnitude;
+
+    cFigure; hold <span class="string">on</span>;
+    xlabel(<span class="string">'$u$ [mm]'</span>,<span class="string">'Interpreter'</span>,<span class="string">'Latex'</span>);
+    ylabel(<span class="string">'$F_z$ [N]'</span>,<span class="string">'Interpreter'</span>,<span class="string">'Latex'</span>);
+    hp=plot(displacementApplied(:),f_sum_z(:),<span class="string">'b-'</span>,<span class="string">'LineWidth'</span>,3);
+    grid <span class="string">on</span>; box <span class="string">on</span>; axis <span class="string">square</span>; axis <span class="string">tight</span>;
+    set(gca,<span class="string">'FontSize'</span>,fontSize);
+    drawnow;
+</pre><img width="100%" height="auto" vspace="5" hspace="5" src="DEMO_febio_0001_cube_uniaxial_07.jpg" alt=""> <pre class="codeinput"><span class="keyword">end</span>
+</pre><p><img vspace="5" hspace="5" src="gibbVerySmall.gif" alt=""> </p><p><i><b>GIBBON</b></i> <a href="www.gibboncode.org">www.gibboncode.org</a></p><p><i>Kevin Mattheus Moerman</i>, <a href="gibbon.toolbox@gmail.com">gibbon.toolbox@gmail.com</a></p><p><i><b>GIBBON footer text</b></i></p><p>License: <a href="https://github.com/gibbonCode/GIBBON/blob/master/LICENSE">https://github.com/gibbonCode/GIBBON/blob/master/LICENSE</a></p><p>GIBBON: The Geometry and Image-based Bioengineering add-On. A toolbox for image segmentation, image-based modeling, meshing, and finite element analysis.</p><p>Copyright (C) 2006-2022 Kevin Mattheus Moerman and the GIBBON contributors</p><p>This program is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.</p><p>This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for more details.</p><p>You should have received a copy of the GNU General Public License along with this program.  If not, see <a href="http://www.gnu.org/licenses/">http://www.gnu.org/licenses/</a>.</p><p class="footer"><br><a href="https://www.mathworks.com/products/matlab/">Published with MATLAB&reg; R2022b</a><br></p></div><!--
 ##### SOURCE BEGIN #####
 %% DEMO_febio_0001_cube_uniaxial
 % Below is a demonstration for:
@@ -502,6 +524,7 @@ febioLogFileName=[febioFebFileNamePart,'.txt']; %FEBio log file name
 febioLogFileName_disp=[febioFebFileNamePart,'_disp_out.txt']; %Log file name for exporting displacement
 febioLogFileName_stress=[febioFebFileNamePart,'_stress_out.txt']; %Log file name for exporting stress
 febioLogFileName_stress_prin=[febioFebFileNamePart,'_stress_prin_out.txt']; %Log file name for exporting principal stress
+febioLogFileName_force=[febioFebFileNamePart,'_force_out.txt']; %Log file name for exporting force
 
 %Specifying dimensions and number of elements
 cubeSize=10; 
@@ -514,7 +537,7 @@ numElementsThickness=round(sampleThickness/pointSpacings(2)); %Number of elemens
 numElementsHeight=round(sampleHeight/pointSpacings(3)); %Number of elemens in dir 3
 
 %Define applied displacement 
-appliedStrain=0.4; %Linear strain (Only used to compute applied stretch)
+appliedStrain=0.3; %Linear strain (Only used to compute applied stretch)
 loadingOption='compression'; % or 'tension'
 switch loadingOption
     case 'compression'
@@ -536,6 +559,7 @@ opt_iter=6; %Optimum number of iterations
 max_retries=5; %Maximum number of retires
 dtmin=(1/numTimeSteps)/100; %Minimum time step size
 dtmax=1/numTimeSteps; %Maximum time step size
+runMode='external';
 
 %% Creating model geometry and mesh
 % A box is created with tri-linear hexahedral (hex8) elements using the
@@ -721,6 +745,10 @@ febio_spec.Output.logfile.node_data{1}.ATTR.file=febioLogFileName_disp;
 febio_spec.Output.logfile.node_data{1}.ATTR.data='ux;uy;uz';
 febio_spec.Output.logfile.node_data{1}.ATTR.delim=',';
 
+febio_spec.Output.logfile.node_data{2}.ATTR.file=febioLogFileName_force;
+febio_spec.Output.logfile.node_data{2}.ATTR.data='Rx;Ry;Rz';
+febio_spec.Output.logfile.node_data{2}.ATTR.delim=',';
+
 febio_spec.Output.logfile.element_data{1}.ATTR.file=febioLogFileName_stress;
 febio_spec.Output.logfile.element_data{1}.ATTR.data='sz';
 febio_spec.Output.logfile.element_data{1}.ATTR.delim=',';
@@ -753,7 +781,7 @@ febioStruct2xml(febio_spec,febioFebFileName); %Exporting to file and domNode
 febioAnalysis.run_filename=febioFebFileName; %The input file name
 febioAnalysis.run_logname=febioLogFileName; %The name for the log file
 febioAnalysis.disp_on=1; %Display information on the command window
-febioAnalysis.runMode='external';%'internal';
+febioAnalysis.runMode=runMode;
 febioAnalysis.maxLogCheckTime=10; %Max log file checking time
 
 [runFlag]=runMonitorFEBio(febioAnalysis);%START FEBio NOW!!!!!!!!
@@ -900,6 +928,31 @@ if runFlag==1 %i.e. a succesful run
     view(2); axis tight;  grid on; axis square; box on;
     set(gca,'FontSize',fontSize);
     drawnow;
+
+    %%
+    % Importing nodal forces from a log file
+
+    [dataStruct]=importFEBio_logfile(fullfile(savePath,febioLogFileName_force),1,1); %Nodal forces
+
+    %Access data    
+    timeVec=dataStruct.time;
+    f_sum_x=squeeze(sum(dataStruct.data(bcPrescribeList,1,:),1));
+    f_sum_y=squeeze(sum(dataStruct.data(bcPrescribeList,2,:),1));
+    f_sum_z=squeeze(sum(dataStruct.data(bcPrescribeList,3,:),1));
+
+    %%
+    % Visualize force data
+
+    displacementApplied=timeVec.*displacementMagnitude;
+
+    cFigure; hold on;
+    xlabel('$u$ [mm]','Interpreter','Latex');
+    ylabel('$F_z$ [N]','Interpreter','Latex');
+    hp=plot(displacementApplied(:),f_sum_z(:),'b-','LineWidth',3);
+    grid on; box on; axis square; axis tight;
+    set(gca,'FontSize',fontSize);
+    drawnow;
+         
     
 end
 
@@ -921,7 +974,7 @@ end
 % image segmentation, image-based modeling, meshing, and finite element
 % analysis.
 % 
-% Copyright (C) 2006-2020 Kevin Mattheus Moerman
+% Copyright (C) 2006-2022 Kevin Mattheus Moerman and the GIBBON contributors
 % 
 % This program is free software: you can redistribute it and/or modify
 % it under the terms of the GNU General Public License as published by

@@ -57,8 +57,8 @@ latticeType=1;
 elementType='hex8'; %'hex8'
 
 %Define applied displacement
-appliedStrain=0.2; %Linear strain (Only used to compute applied stretch)
-loadingOption='tension'; % or 'tension'
+appliedStrain=0.3; %Linear strain (Only used to compute applied stretch)
+loadingOption='compression'; % or 'tension'
 switch loadingOption
     case 'compression'
         stretchLoad=1-appliedStrain; %The applied stretch for uniaxial loading
@@ -100,11 +100,11 @@ switch latticeType
         V=V./(n-1);
         V=V*sampleSize;
         
-        [indBoundary]=tesBoundary(F,V);
+        [indBoundary]=tesBoundary(F);
         cPar.shrinkFactor=0.15; %Strut sides are formed by shrinking the input mesh faces by this factor
         cPar.meshType='hex'; %desired output mesh type
         cPar.indBoundary=indBoundary; %indices of the boundary faces
-        cPar.hexSplit=1;
+        cPar.hexSplit=2;
         cPar.latticeSide=2; %1=side 1 the edge lattice, 2=side 2 the dual lattice to the edge lattice
         [Es,Vs,Cs]=element2lattice(E,V,cPar); %Get lattice structure
         
@@ -133,21 +133,21 @@ switch latticeType
         [Fs,CsF]=element2patch(Es,Cs); %Patch data for plotting
         
         %Get new boundary set
-        indB=tesBoundary(Fs,Vs);
+        indB=tesBoundary(Fs);
         Fb=Fs(indB,:);
     case 2 %Rhombic dodecahedron mesh ("dual" of octet truss lattice)
         [E,V,C,F,CF]=rhombicDodecahedronMesh(r,nCopies);
         V=V./(n-1);
         V=V*sampleSize;
         
-        [indBoundary]=tesBoundary(F,V);
+        [indBoundary]=tesBoundary(F);
         cPar.shrinkFactor=0.15; %Strut sides are formed by shrinking the input mesh faces by this factor
         cPar.meshType='hex'; %desired output mesh type
         cPar.indBoundary=indBoundary; %indices of the boundary faces
-        cPar.hexSplit=0;
+        cPar.hexSplit=3;
         cPar.latticeSide=1; %1=side 1 the edge lattice, 2=side 2 the dual lattice to the edge lattice
         [Es,Vs,Cs]=element2lattice(E,V,cPar); %Get lattice structure
-        
+   
         logicKeep1=~(Vs(:,1)<=-1e-3);
         logicKeep2=~(Vs(:,2)<=-1e-3);
         logicKeep3=~(Vs(:,3)<=-1e-3);
@@ -166,14 +166,11 @@ switch latticeType
         Cs=Cs(logicKeepEs,:);
         [Es,Vs,indFix]=patchCleanUnused(Es,Vs);
         
-        % [Es,Vs,~,~]=subHex(Es,Vs,1,1);
-        % Cs=repmat(Cs,8,1);
-        
         % Create patch Data for visualization
         [Fs,CsF]=element2patch(Es,Cs); %Patch data for plotting
         
         %Get new boundary set
-        indB=tesBoundary(Fs,Vs);
+        indB=tesBoundary(Fs);
         Fb=Fs(indB,:);
 end
 
@@ -191,14 +188,14 @@ gpatch(F,V,0.5*ones(1,3),'k',0.5);
 axisGeom(gca,fontSize);
 camlight headlight; lighting flat;
 
-Fst=[Fs(:,[1 2 3]); Fs(:,[3 4 1]);];
-indB=tesBoundary(Fst,Vs);
-Fbt=Fst(indB,:);
+% Fst=[Fs(:,[1 2 3]); Fs(:,[3 4 1]);];
+% indB=tesBoundary(Fst,Vs);
+% Fbt=Fst(indB,:);
 
 subplot(1,2,2);
 title('Lattice side 1','fontSize',fontSize)
 hold on;
-gpatch(Fb,Vs,'bw','none',0.5);
+gpatch(Fb,Vs,'bw','k',1);
 % plotV(Vs(Fb(:),:),'r.');
 % patchNormPlot(Fs,Vs);
 axisGeom(gca,fontSize);
@@ -426,8 +423,8 @@ febioAnalysis.runMode=runMode; %Run in external or in matlab terminal
 if runFlag==1 %i.e. a succesful run
     
     % Importing nodal displacements from a log file
-    [time_mat, N_disp_mat,~]=importFEBio_logfile(fullfile(savePath,febioLogFileName_disp)); %Nodal displacements
-    time_mat=[0; time_mat(:)]; %Time
+    [timeVec, N_disp_mat,~]=importFEBio_logfile(fullfile(savePath,febioLogFileName_disp)); %Nodal displacements
+    timeVec=[0; timeVec(:)]; %Time
     
     N_disp_mat=N_disp_mat(:,2:end,:);
     sizImport=size(N_disp_mat);
@@ -443,30 +440,26 @@ if runFlag==1 %i.e. a succesful run
     %     [time_mat, E_stress_mat,~]=importFEBio_logfile(fullfile(savePath,febioLogFileName_stress)); %Nodal forces
     %     time_mat=[0; time_mat(:)]; %Time
     %     stress_cauchy_sim=[0; mean(squeeze(E_stress_mat(:,end,:)),1)'];
-    %%    
+    %% 
     % Importing nodal forces from a log file
     
-    [~, N_force_mat,~]=importFEBio_logfile(fullfile(savePath,febioLogFileName_force)); %Nodal forces
+    [dataStruct]=importFEBio_logfile(fullfile(savePath,febioLogFileName_force),1,1); %Nodal forces
     
-    N_force_mat=N_force_mat(:,2:end,:);
-    sizImport=size(N_force_mat);
-    sizImport(3)=sizImport(3)+1;
-    N_force_mat_n=zeros(sizImport);
-    N_force_mat_n(:,:,2:end)=N_force_mat;
-    N_force_mat=N_force_mat_n;
-    
-    f_sum_z=squeeze(sum(N_force_mat(bcPrescribeList,3,:),1)); 
+    %Access data    
+    timeVec=dataStruct.time;
+    f_sum_x=squeeze(sum(dataStruct.data(bcPrescribeList,1,:),1));
+    f_sum_y=squeeze(sum(dataStruct.data(bcPrescribeList,2,:),1));
+    f_sum_z=squeeze(sum(dataStruct.data(bcPrescribeList,3,:),1));
 
     %% 
     % Visualize force data
     
-    displacementApplied=time_mat.*displacementMagnitude;
-    lambdaApplied=(sampleSize+displacementApplied)./sampleSize;
+    displacementApplied=timeVec.*displacementMagnitude;    
     
     cFigure; hold on; 
-    xlabel('$\lambda$ [.]','Interpreter','Latex');
-    ylabel('$F_z$','Interpreter','Latex');
-    hp=plot(lambdaApplied(:),f_sum_z(:),'b-','LineWidth',3);
+    xlabel('$u$ [mm]','Interpreter','Latex');
+    ylabel('$F_z$ [N]','Interpreter','Latex');
+    hp=plot(displacementApplied(:),f_sum_z(:),'b-','LineWidth',3);
     grid on; box on; axis square; axis tight; 
     set(gca,'FontSize',fontSize);
     drawnow; 
@@ -484,7 +477,7 @@ if runFlag==1 %i.e. a succesful run
     
     axisGeom(gca,fontSize);
     colormap(gjet(250)); colorbar;
-    caxis([0 max(DN_magnitude)]);
+    clim([0 max(DN_magnitude)]);
     axis([min([Vs_def(:,1);Vs(:,1)]) max([Vs_def(:,1);Vs(:,1)])...
         min([Vs_def(:,2);Vs(:,2)]) max([Vs_def(:,2);Vs(:,2)])...
         min([Vs_def(:,3);Vs(:,3)]) max([Vs_def(:,3);Vs(:,3)]) ]); %Set axis limits statically
@@ -492,7 +485,7 @@ if runFlag==1 %i.e. a succesful run
     camlight headlight;
     
     % Set up animation features
-    animStruct.Time=time_mat; %The time vector
+    animStruct.Time=timeVec; %The time vector
     for qt=1:1:size(N_disp_mat,3) %Loop over time increments
         DN=N_disp_mat(:,:,qt); %Current displacement
         DN_magnitude=sqrt(sum(DN.^2,2)); %Current displacement magnitude

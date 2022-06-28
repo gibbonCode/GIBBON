@@ -60,11 +60,11 @@ strutThickness=1; %Set the strut thickness
 
 %Define applied displacement
 appliedStrain=0.3; %Linear strain (Only used to compute applied stretch)
-loadingOption=1; % 1=compression, 2=tension
+loadingOption='compression'; % or 'tension'
 switch loadingOption
-    case 1 %compression
+    case 'compression'
         stretchLoad=1-appliedStrain; %The applied stretch for uniaxial loading
-    case 2 % tension
+    case 'tension'
         stretchLoad=1+appliedStrain; %The applied stretch for uniaxial loading
 end
 displacementMagnitude=(stretchLoad*sampleSize)-sampleSize; %The displacement magnitude
@@ -83,7 +83,7 @@ dtmin=(1/numTimeSteps)/100; %Minimum time step size
 dtmax=(1/numTimeSteps); %Maximum time step size
 min_residual=1e-20;
 symmetric_stiffness=0;
-runMode='internal'; %'internal' or 'external'
+runMode='external'; %'internal' or 'external'
 
 %% Create diamond lattice
 
@@ -282,18 +282,36 @@ if runFlag==1 %i.e. a succesful run
     dataStructForce=importFEBio_logfile(fullfile(savePath,febioLogFileName_force),1,1);     
     F_applied=squeeze(sum(dataStructForce.data(bcPrescribeList,:,:),1))';
         
+    f_sum_x=F_applied(:,1); 
+    f_sum_y=F_applied(:,2); 
+    f_sum_z=F_applied(:,3); 
+    
     %% 
     % Visualize force data
     
     cFigure; hold on; 
-    xlabel('Time [s]'); ylabel('Force [N]');
-    hp1=plot(timeVec,F_applied(:,1),'r-','LineWidth',3);
-    hp2=plot(timeVec,F_applied(:,2),'g-','LineWidth',3);
-    hp3=plot(timeVec,F_applied(:,3),'b-','LineWidth',3);
-    legend([hp1 hp2 hp3],{'F_x','F_y','F_z'});
+    xlabel('Time [s]','Interpreter','Latex'); ylabel('Force [N]','Interpreter','Latex');
+    hp1=plot(timeVec,f_sum_x,'r-','LineWidth',3);
+    hp2=plot(timeVec,f_sum_y,'g-','LineWidth',3);
+    hp3=plot(timeVec,f_sum_z,'b-','LineWidth',3);
+    legend([hp1 hp2 hp3],{'$F_x$','$F_y$','$F_z$'},'Interpreter','Latex');
     grid on; box on; axis square; axis tight; 
     set(gca,'FontSize',fontSize);
     drawnow; 
+
+    %%
+    % Visualize force data
+    
+    displacementApplied=timeVec.*displacementMagnitude;    
+    
+    cFigure; hold on; 
+    xlabel('$u$ [mm]','Interpreter','Latex');
+    ylabel('$F_z$ [N]','Interpreter','Latex');
+    hp=plot(displacementApplied(:),f_sum_z(:),'b-','LineWidth',3);
+    grid on; box on; axis square; axis tight; 
+    set(gca,'FontSize',fontSize);
+    drawnow; 
+         
         
     %%
     % Plotting the simulated results using |anim8| to visualize and animate
@@ -313,7 +331,7 @@ if runFlag==1 %i.e. a succesful run
     
     axisGeom(gca,fontSize);
     colormap(gjet(250)); colorbar;
-    caxis([0 max(DN_magnitude)]);
+    clim([0 max(DN_magnitude)]);
     axis(axisLim(V_DEF)); %Set axis limits statically 
     camlight headlight;
     

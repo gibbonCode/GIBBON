@@ -87,7 +87,7 @@ E=1:8; %Element description of the 8-node cube (hexahedral element)
 [E,V,C]=subHex(E,V); %Subdevide into 8 sub-cubes
 [E,V,C]=hex2tet(E,V,C,1); %Convert to tetrahedral elements
 [F,~]=element2patch(E,C); %Patch data for plotting
-[indBoundary]=tesBoundary(F,V);
+[indBoundary]=tesBoundary(F);
 
 %%
 % Create lattice structure
@@ -112,7 +112,7 @@ end
 % Create patch Data for visualization
 [Fs,CsF]=element2patch(Es,Cs); %Patch data for plotting
 
-indB=tesBoundary(Fs,Vs);
+indB=tesBoundary(Fs);
 Fb=Fs(indB,:);
 
 %%
@@ -341,7 +341,7 @@ febioStruct2xml(febio_spec,febioFebFileName); %Exporting to file and domNode
 febioAnalysis.run_filename=febioFebFileName; %The input file name
 febioAnalysis.run_logname=febioLogFileName; %The name for the log file
 febioAnalysis.disp_on=1; %Display information on the command window
-febioAnalysis.runMode='internal';%'internal';
+febioAnalysis.runMode='external';%'internal';
 
 [runFlag]=runMonitorFEBio(febioAnalysis);%START FEBio NOW!!!!!!!!
 
@@ -434,6 +434,30 @@ if runFlag==1 %i.e. a succesful run
     end        
     anim8(hf,animStruct); %Initiate animation feature    
     drawnow;
+
+        %% 
+    % Importing nodal forces from a log file
+    
+    [dataStruct]=importFEBio_logfile(fullfile(savePath,febioLogFileName_force),1,1); %Nodal forces
+        
+    %Access data    
+    timeVec=dataStruct.time;
+    f_sum_x=squeeze(sum(dataStruct.data(bcPrescribeList,1,:),1));
+    f_sum_y=squeeze(sum(dataStruct.data(bcPrescribeList,2,:),1));
+    f_sum_z=squeeze(sum(dataStruct.data(bcPrescribeList,3,:),1));
+
+    %% 
+    % Visualize force data
+    
+    displacementApplied=timeVec.*displacementMagnitude;    
+    
+    cFigure; hold on; 
+    xlabel('$u$ [mm]','Interpreter','Latex');
+    ylabel('$F_z$ [N]','Interpreter','Latex');
+    hp=plot(displacementApplied(:),f_sum_z(:),'b-','LineWidth',3);
+    grid on; box on; axis square; axis tight; 
+    set(gca,'FontSize',fontSize);
+    drawnow; 
 
 end
 

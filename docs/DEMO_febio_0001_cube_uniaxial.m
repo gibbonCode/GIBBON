@@ -46,6 +46,7 @@ febioLogFileName=[febioFebFileNamePart,'.txt']; %FEBio log file name
 febioLogFileName_disp=[febioFebFileNamePart,'_disp_out.txt']; %Log file name for exporting displacement
 febioLogFileName_stress=[febioFebFileNamePart,'_stress_out.txt']; %Log file name for exporting stress
 febioLogFileName_stress_prin=[febioFebFileNamePart,'_stress_prin_out.txt']; %Log file name for exporting principal stress
+febioLogFileName_force=[febioFebFileNamePart,'_force_out.txt']; %Log file name for exporting force
 
 %Specifying dimensions and number of elements
 cubeSize=10; 
@@ -58,7 +59,7 @@ numElementsThickness=round(sampleThickness/pointSpacings(2)); %Number of elemens
 numElementsHeight=round(sampleHeight/pointSpacings(3)); %Number of elemens in dir 3
 
 %Define applied displacement 
-appliedStrain=0.4; %Linear strain (Only used to compute applied stretch)
+appliedStrain=0.3; %Linear strain (Only used to compute applied stretch)
 loadingOption='compression'; % or 'tension'
 switch loadingOption
     case 'compression'
@@ -266,6 +267,10 @@ febio_spec.Output.logfile.node_data{1}.ATTR.file=febioLogFileName_disp;
 febio_spec.Output.logfile.node_data{1}.ATTR.data='ux;uy;uz';
 febio_spec.Output.logfile.node_data{1}.ATTR.delim=',';
 
+febio_spec.Output.logfile.node_data{2}.ATTR.file=febioLogFileName_force;
+febio_spec.Output.logfile.node_data{2}.ATTR.data='Rx;Ry;Rz';
+febio_spec.Output.logfile.node_data{2}.ATTR.delim=',';
+
 febio_spec.Output.logfile.element_data{1}.ATTR.file=febioLogFileName_stress;
 febio_spec.Output.logfile.element_data{1}.ATTR.data='sz';
 febio_spec.Output.logfile.element_data{1}.ATTR.delim=',';
@@ -445,6 +450,31 @@ if runFlag==1 %i.e. a succesful run
     view(2); axis tight;  grid on; axis square; box on;
     set(gca,'FontSize',fontSize);
     drawnow;
+
+    %%
+    % Importing nodal forces from a log file
+
+    [dataStruct]=importFEBio_logfile(fullfile(savePath,febioLogFileName_force),1,1); %Nodal forces
+
+    %Access data    
+    timeVec=dataStruct.time;
+    f_sum_x=squeeze(sum(dataStruct.data(bcPrescribeList,1,:),1));
+    f_sum_y=squeeze(sum(dataStruct.data(bcPrescribeList,2,:),1));
+    f_sum_z=squeeze(sum(dataStruct.data(bcPrescribeList,3,:),1));
+
+    %%
+    % Visualize force data
+
+    displacementApplied=timeVec.*displacementMagnitude;
+
+    cFigure; hold on;
+    xlabel('$u$ [mm]','Interpreter','Latex');
+    ylabel('$F_z$ [N]','Interpreter','Latex');
+    hp=plot(displacementApplied(:),f_sum_z(:),'b-','LineWidth',3);
+    grid on; box on; axis square; axis tight;
+    set(gca,'FontSize',fontSize);
+    drawnow;
+         
     
 end
 
