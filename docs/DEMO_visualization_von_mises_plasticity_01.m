@@ -15,17 +15,18 @@ colorSet=viridis(3);
 lineWidth1=1;
 lineWidth2=3;
 lineWidthAxis=3;
-f=3;
+f=2;
 
 %% Control parameters
 
-s=1; %Yield stress 
+sy=1; %Yield stress
+tau_octahedral=sy*sqrt(2/3); %Octahedral shear stress = cylinder radius
 
 %% 
 % Create ellipsoids
 t=linspace(0,2*pi,1000); %Angular coordinates
-x=s*cos(t); 
-y=s*sqrt(3).*sin(t);
+x=tau_octahedral*cos(t); 
+y=tau_octahedral*sqrt(3).*sin(t);
 z=zeros(size(x));
 v=[x(:) y(:) z(:)]; %Ellipse coordinates
 
@@ -45,9 +46,9 @@ v23=v*R23_1*R23_2;
 % Creating cylinder data
 
 % Creating input structure
-inputStruct.cylRadius=s;
+inputStruct.cylRadius=tau_octahedral;
 inputStruct.numRadial=250;
-inputStruct.cylHeight=2*sqrt(2)*s;
+inputStruct.cylHeight=2*sqrt(2)*tau_octahedral;
 inputStruct.numHeight=10;
 inputStruct.meshType='quad';
 [F,V,C]=patchcylinder(inputStruct);
@@ -58,13 +59,13 @@ R1=euler2DCM([0 asin(1/sqrt(3)) 0]);
 R2=euler2DCM([0 0 -(45/180)*pi]);
 V=V*R1*R2;
 
-[x1,y1]=meshgrid(-f*s:1:f*s);
+[x1,y1]=meshgrid(-f*sy:1:f*sy);
 z1=zeros(size(x1));
 
-[x2,z2]=meshgrid(-f*s:1:f*s);
+[x2,z2]=meshgrid(-f*sy:1:f*sy);
 y2=zeros(size(x2));
 
-[y3,z3]=meshgrid(-f*s:1:f*s);
+[y3,z3]=meshgrid(-f*sy:1:f*sy);
 x3=zeros(size(y3));
 
 %%
@@ -76,9 +77,9 @@ surf(x1,y1,z1,'EdgeColor','k','faceColor',1*ones(1,3),'EdgeAlpha',0.5,'FaceAlpha
 surf(x2,y2,z2,'EdgeColor','k','faceColor',1*ones(1,3),'EdgeAlpha',0.5,'FaceAlpha',0.1,'LineWidth',lineWidth1);
 surf(x3,y3,z3,'EdgeColor','k','faceColor',1*ones(1,3),'EdgeAlpha',0.5,'FaceAlpha',0.1,'LineWidth',lineWidth1);
 
-h1=quiverVec([0 0 0],[1 0 0],f*s,colorSet(1,:));
-h2=quiverVec([0 0 0],[0 1 0],f*s,colorSet(2,:));
-h3=quiverVec([0 0 0],[0 0 1],f*s,colorSet(3,:));
+h1=quiverVec([0 0 0],[1 0 0],sy,colorSet(1,:));
+h2=quiverVec([0 0 0],[0 1 0],sy,colorSet(2,:));
+h3=quiverVec([0 0 0],[0 0 1],sy,colorSet(3,:));
 
 h5=plotV([-1 -1 -1; 1 1 1],'k--','LineWidth',lineWidth2); %Hydrostatic axis
 
@@ -99,13 +100,13 @@ hAxis.XRuler.SecondCrossoverValue = 0; % X crossover with Z axis
 hAxis.YRuler.SecondCrossoverValue = 0; % Y crossover with Z axis
 hAxis.ZRuler.SecondCrossoverValue = 0; % Z crossover with Y axis
 
-text(0.5+f*s,0,0,'$\sigma_1$','Interpreter','Latex','FontSize',fontSizeText);
-text(0,0.5+f*s,0,'$\sigma_2$','Interpreter','Latex','FontSize',fontSizeText);
-text(0,0,0.5+f*s,'$\sigma_3$','Interpreter','Latex','FontSize',fontSizeText);
+text(0.5+f*sy,0,0,'$\sigma_1$','Interpreter','Latex','FontSize',fontSizeText);
+text(0,0.5+f*sy,0,'$\sigma_2$','Interpreter','Latex','FontSize',fontSizeText);
+text(0,0,0.5+f*sy,'$\sigma_3$','Interpreter','Latex','FontSize',fontSizeText);
 
-xticks(-f*s:1:f*s);
-yticks(-f*s:1:f*s);
-zticks(-f*s:1:f*s);
+xticks(-f*sy:0.5:f*sy);
+yticks(-f*sy:0.5:f*sy);
+zticks(-f*sy:0.5:f*sy);
 
 legend([h1 h2 h3 h4 h5 h6 h7 h8],{'$\sigma_1$ axis','$\sigma_2$ axis','$\sigma_3$ axis',...
                            'Von Mises yield surface',...
@@ -115,7 +116,7 @@ legend([h1 h2 h3 h4 h5 h6 h7 h8],{'$\sigma_1$ axis','$\sigma_2$ axis','$\sigma_3
 
 axis tight; axis equal; axis vis3d; view(3); %box on; 
 camlight headlight; 
-axis(f*s*[-1 1 -1 1 -1 1])
+axis(f*sy*[-1 1 -1 1 -1 1])
 set(gca,'FontSize',fontSizeAxis,'LineWidth',lineWidthAxis);
 gdrawnow;
 

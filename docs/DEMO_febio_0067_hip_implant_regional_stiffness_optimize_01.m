@@ -36,6 +36,13 @@ savePath=fullfile(defaultFolder,'data','temp');
 pathNameSTL=fullfile(defaultFolder,'data','STL');
 loadName_SED=fullfile(savePath,'SED_no_implant.mat');
 
+if exist(loadName_SED,'file')
+    disp('Using data from: DEMO_febio_0062_femur_load_01');
+else
+    warning('This demo requires that you run this demo first: DEMO_febio_0062_femur_load_01. Running DEMO_febio_0062_femur_load_01 now... ')
+    DEMO_febio_0062_femur_load_01
+end
+
 % Defining file names
 febioFebFileNamePart='tempModel';
 febioFebFileName=fullfile(savePath,[febioFebFileNamePart,'.feb']); %FEB file name
@@ -143,9 +150,7 @@ opt_iter=6; %Optimum number of iterations
 max_retries=5; %Maximum number of retires
 dtmin=(1/numTimeSteps)/100; %Minimum time step size
 dtmax=1/numTimeSteps; %Maximum time step size
-runMode='internal'; %'external' or 'internal'
-
-
+runMode='external'; %'external' or 'internal'
 
 %% Import bone model
 [stlStruct] = import_STL(fullfile(pathNameSTL,'femur_iso.stl'));
@@ -174,7 +179,7 @@ F_bone=F_bone(logicSide==0,:);
 [F_bone,V_bone]=patchCleanUnused(F_bone,V_bone);
 
 %Get boundary curve
-Eb=patchBoundary(F_bone,V_bone);
+Eb=patchBoundary(F_bone);
 indCurve=edgeListToCurve(Eb);
 indCurve=indCurve(1:end-1);
 
@@ -228,7 +233,7 @@ P_cut=[0 0 0]-n*stemCut; %Point on plane
 [F_bone_cut,V_bone_cut]=patchCleanUnused(Fc(logicSide,:),Vc);
 C_bone_cut=Cc(logicSide);
 
-Eb=patchBoundary(F_bone_cut,V_bone_cut);
+Eb=patchBoundary(F_bone_cut);
 indCutCurve=edgeListToCurve(Eb);
 indCutCurve=indCutCurve(1:end-1);
 
@@ -328,7 +333,7 @@ logicCut=any(logicRight(F_head),2);
 logicCut=triSurfLogicSharpFix(F_head,logicCut,3);
 F_head=F_head(~logicCut,:);
 [F_head,V_head]=patchCleanUnused(F_head,V_head);
-Eb_head=patchBoundary(F_head,V_head);
+Eb_head=patchBoundary(F_head);
 indB=unique(Eb_head(:));
 [T,P,R] = cart2sph(V_head(:,2),V_head(:,3),V_head(:,1));
 P(indB)=atan2(xc,implantHeadRadius*sin(acos(xc./implantHeadRadius)));
@@ -521,7 +526,7 @@ Ve(:,3)=Ve(:,3)-r*sin(a);
 
 [FL,VL]=joinElementSets({FL,Fe},{VL,Ve});
 [FL,VL]=mergeVertices(FL,VL);
-Eb=patchBoundary(FL,VL);
+Eb=patchBoundary(FL);
 
 cparSmooth.n=numSmoothStepsShaft;
 % cPar.Method='HC';
@@ -1532,29 +1537,6 @@ outputStructure.E_metric=E_metric;
 
 end
 
-%%
-% _*GIBBON footer text*_
-%
-% License: <https://github.com/gibbonCode/GIBBON/blob/master/LICENSE>
-%
-% GIBBON: The Geometry and Image-based Bioengineering add-On. A toolbox for
-% image segmentation, image-based modeling, meshing, and finite element
-% analysis.
-%
-% Copyright (C) 2006-2020 Kevin Mattheus Moerman
-%
-% This program is free software: you can redistribute it and/or modify
-% it under the terms of the GNU General Public License as published by
-% the Free Software Foundation, either version 3 of the License, or
-% (at your option) any later version.
-%
-% This program is distributed in the hope that it will be useful,
-% but WITHOUT ANY WARRANTY; without even the implied warranty of
-% MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-% GNU General Public License for more details.
-%
-% You should have received a copy of the GNU General Public License
-% along with this program.  If not, see <http://www.gnu.org/licenses/>.
 %% 
 % _*GIBBON footer text*_ 
 % 
@@ -1564,7 +1546,7 @@ end
 % image segmentation, image-based modeling, meshing, and finite element
 % analysis.
 % 
-% Copyright (C) 2006-2021 Kevin Mattheus Moerman and the GIBBON contributors
+% Copyright (C) 2006-2022 Kevin Mattheus Moerman and the GIBBON contributors
 % 
 % This program is free software: you can redistribute it and/or modify
 % it under the terms of the GNU General Public License as published by

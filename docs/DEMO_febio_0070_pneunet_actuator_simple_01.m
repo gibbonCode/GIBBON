@@ -127,11 +127,11 @@ logicKeep1=~(CD==0 & CW>3);
 
 E1=E_bar(logicKeep1,:);
 F1=element2patch(E1);
-[indBoundary1]=tesBoundary(F1,V_bar);
+[indBoundary1]=tesBoundary(F1);
 
 logicKeep2=any(ismember(E1,F1(indBoundary1,:)),2);
 F2=element2patch(E1(logicKeep2,:));
-[indBoundary2]=tesBoundary(F2,V_bar);
+[indBoundary2]=tesBoundary(F2);
 
 Fb=F2(indBoundary2,:);
 Cb=7*ones(size(Fb,1),1);

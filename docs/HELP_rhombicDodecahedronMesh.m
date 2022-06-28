@@ -24,7 +24,7 @@ clear; close all; clc;
 %% 
 % Plot settings
 fontSize=15;
-faceAlpha1=1;
+faceAlpha1=0.8;
 
 %% Creating a mesh of rhombic dodecahedra
 

@@ -630,7 +630,7 @@ if runFlag==1 %i.e. a succesful run
     %%
     [FE_face,C_energy_face]=element2patch(E,E_energy(:,:,end),'tet4');
     [CV]=faceToVertexMeasure(FE_face,V,C_energy_face);
-    [indBoundary]=tesBoundary(FE_face,V);
+    [indBoundary]=tesBoundary(FE_face);
     Fb=FE_face(indBoundary,:);
 
     %% Saving strain energy data for comparison in implant demo
@@ -711,7 +711,7 @@ if runFlag==1 %i.e. a succesful run
     
     axisGeom(gca,fontSize); 
     colormap(gjet(250)); colorbar;
-    caxis([0 max(E_energy(:))/25]);    
+    clim([0 max(E_energy(:))/25]);    
     axis(axLim(:)'); %Set axis limits statically    
     camlight headlight;        
     

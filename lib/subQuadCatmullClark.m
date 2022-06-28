@@ -2,10 +2,11 @@ function [varargout]=subQuadCatmullClark(varargin)
 
 % function [Fs,Vs,Cs,CV]=subQuadCatmullClark(F,V,n,fixBoundaryOpt)
 % ------------------------------------------------------------------------
-%
-%
-%
-%
+% 
+% 
+% 
+% Change log: 
+% 2022/04/28 Minor array (Vn) allocation improvement
 % ------------------------------------------------------------------------
 
 %% parse input
@@ -102,7 +103,7 @@ if n>0
         N=sum(logicValid,2);
         Vv=(V_F_mean+2*V_E_mean+(N-3).*V)./N;
         
-        
+        Vn=zeros(numEdges,size(V,2));
         if nnz(logicBoundaryEdges)>0
             %Use normal mid-edge nodes for boundary edges
             Vn(logicBoundaryEdges,:)=Vne(logicBoundaryEdges,:);
@@ -124,13 +125,6 @@ if n>0
         
         Vn(~logicBoundaryEdges,:)=(V(edgeVertexMat(~logicBoundaryEdges,1),:)+V(edgeVertexMat(~logicBoundaryEdges,2),:)+...
             Vm(edgeFaceMat(~logicBoundaryEdges,1),:) + Vm(edgeFaceMat(~logicBoundaryEdges,2),:) )/4;
-        
-%         Uv=(V-Vv);
-%         Un=(Uv(edgeVertexMat(:,1),:) + Uv(edgeVertexMat(:,2),:))/2;
-%         Um=patchCentre(F,Uv);
-%         Un(~logicBoundaryEdges,:)=(Uv(edgeVertexMat(~logicBoundaryEdges,1),:)+Uv(edgeVertexMat(~logicBoundaryEdges,2),:)+...
-%             Um(edgeFaceMat(~logicBoundaryEdges,1),:) + Um(edgeFaceMat(~logicBoundaryEdges,2),:) )/4;
-%         Vs = [V; Vn+Un; Vm+Um]; %Join point sets
 
         Vs = [Vv; Vn; Vm]; %Join point sets
         

@@ -1,7 +1,16 @@
-function Ad=dev(A)
+function [Ad]=dev(A)
+% function [Ad]=dev(A)
+% ------------------------------------------------------------------------
+% This function computes the deviatoric part of the tensor A. 
+%
+%
+% ------------------------------------------------------------------------
 
-I=eye(size(A)); 
-Ad=A-((trace(A)./3)*I);
+%%
+
+Ad=A-sph(A); %Deviatoric part
+
+end
  
 %% 
 % _*GIBBON footer text*_ 

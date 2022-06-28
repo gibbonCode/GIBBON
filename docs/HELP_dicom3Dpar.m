@@ -8,9 +8,29 @@ clear; close all; clc;
 % |[varargout]=dicom3Dpar(D);|
 
 %% Description 
-% UNDOCUMENTED 
+% This function retrieves the voxel size, position, and orientation
+% information from a DICOM file.  
+
 %% Examples 
 % 
+
+%% 
+% Path name for dicom files
+
+defaultFolder = fileparts(fileparts(mfilename('fullpath'))); %Set main folder
+pathName=fullfile(defaultFolder,'data','DICOM','0001_human_calf');
+fileName=fullfile(pathName,'00001.dcm');
+
+%%
+% Get dicom information
+dcmInfo=dicominfo(fileName);
+
+%%
+% Get 3D/geometry information, e.g. voxel size, position, and orientation
+% information. 
+
+[v,OR,r,c]=dicom3Dpar(dcmInfo)
+
 %%
 % 
 % <<gibbVerySmall.gif>>

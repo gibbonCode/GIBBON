@@ -16,7 +16,7 @@ clear; close all; clc;
 
 %% 
 % Plot settings
-fontSize=25;
+fontSize=15;
 faceAlpha1=0.3;
 edgeColor='k';
 lineWidth1=3;
@@ -32,7 +32,6 @@ r=sqrt(2)/2; %Radii, results in a width of 1
 R=euler2DCM([0 0 0.25*pi]);
 V=V*R;
 
-
 %%
 % Plotting results
 cFigure;
@@ -41,9 +40,16 @@ hold on;
 
 gpatch(F,V,faceColor,edgeColor,faceAlpha1,lineWidth1);
 plotV(V,'k.','MarkerSize',markerSize);
-patchAnnotate(F,V,[]);
+patchAnnotate(F,V,[],'fontSize',fontSize);
 axisGeom(gca,fontSize);
-view(-10,25);
+camlight('headlight'); 
+drawnow;
+
+%%
+% Plotting results
+cFigure; hold on;
+gpatch(F,V,'bw',edgeColor,1,lineWidth1);
+axisGeom(gca,fontSize);
 camlight('headlight'); 
 drawnow;
 

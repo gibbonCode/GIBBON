@@ -1,5 +1,13 @@
 function [varargout]=dicom3Dpar(D)
 
+% function [v,OR,r,c]=dicom3Dpar(D)
+% ------------------------------------------------------------------------
+%
+%
+%
+% ------------------------------------------------------------------------
+%%
+
 %Gets the 3D parameters from the DICOM info file
 try
     v=D.PixelSpacing;
@@ -9,7 +17,7 @@ catch
 end
 
 %N.B. TO DO TREAT SPACING/THICKNESS PROPERLY (currently suitable for 3D
-%volumes) 
+%volumes)
 try
     v(3)=D.SpacingBetweenSlices;
 catch
@@ -23,7 +31,7 @@ end
 
 % ORIGIN:
 % The x, y, and z coordinates of the upper left hand corner (center of the
-% first voxel transmitted) of the image, in mm. 
+% first voxel transmitted) of the image, in mm.
 try
     OR=D.ImagePositionPatient;
 catch
@@ -46,7 +54,7 @@ switch nargout
         G.OR=OR;
         G.r=r;
         G.c=c;
-        varargout{1}=G; 
+        varargout{1}=G;
     otherwise
         varargout{1}=v;
         varargout{2}=OR;
@@ -54,27 +62,28 @@ switch nargout
         varargout{4}=c;
 end
 
- 
-%% 
-% _*GIBBON footer text*_ 
-% 
+end
+
+%%
+% _*GIBBON footer text*_
+%
 % License: <https://github.com/gibbonCode/GIBBON/blob/master/LICENSE>
-% 
+%
 % GIBBON: The Geometry and Image-based Bioengineering add-On. A toolbox for
 % image segmentation, image-based modeling, meshing, and finite element
 % analysis.
-% 
+%
 % Copyright (C) 2006-2022 Kevin Mattheus Moerman and the GIBBON contributors
-% 
+%
 % This program is free software: you can redistribute it and/or modify
 % it under the terms of the GNU General Public License as published by
 % the Free Software Foundation, either version 3 of the License, or
 % (at your option) any later version.
-% 
+%
 % This program is distributed in the hope that it will be useful,
 % but WITHOUT ANY WARRANTY; without even the implied warranty of
 % MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 % GNU General Public License for more details.
-% 
+%
 % You should have received a copy of the GNU General Public License
 % along with this program.  If not, see <http://www.gnu.org/licenses/>.

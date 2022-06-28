@@ -8,9 +8,30 @@ clear; close all; clc;
 % |[Xc,Yc]=polycentroid(X,Y);|
 
 %% Description 
-% UNDOCUMENTED 
+% This function computes the centroid of a polygon. 
+%
+% Assumes row vectors or matrices whereby each row describes a polygon with
+% points appearing in the order defining the polygon
+
 %% Examples 
 % 
+
+V=[0 0 0; 1 0 0; 1 1 0; 0 1 0]; 
+
+[Xc,Yc]=polycentroid(V(:,1)',V(:,2)')
+
+%%
+
+F=[1 2 3 4]; %Face
+
+cFigure; hold on; 
+gpatch(F,V,'w','k',0.5);
+plotV(V,'k.','MarkerSize',25)
+plot(Xc,Yc,'r.','MarkerSize',50)
+
+axisGeom; 
+gdrawnow; 
+
 %%
 % 
 % <<gibbVerySmall.gif>>

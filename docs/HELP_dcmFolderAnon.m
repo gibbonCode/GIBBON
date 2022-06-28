@@ -8,9 +8,12 @@ clear; close all; clc;
 % |dcmFolderAnon(pathName,varargin);|
 
 %% Description 
-% UNDOCUMENTED 
+% This function aims to annonymise the dicom data in the folder pathName.
+% See also: |dicomanon|
+
 %% Examples 
 % 
+
 %%
 % 
 % <<gibbVerySmall.gif>>

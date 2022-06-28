@@ -27,6 +27,8 @@ function [varargout]=subTriDual(varargin)
 % 2019/06/12 Rewrote whole function in a different way using most recent
 % tools and capabilities. Code is now much more efficient, handles face or
 % vertex color data, fixes several bugs in old code. 
+% 2022/04/29 Switched to use incenter rather than mean to avoid mesh
+% tangling/inverted elements for sharp input triangles. 
 % ------------------------------------------------------------------------
 
 %% Parse input
@@ -56,20 +58,22 @@ end
 
 % Get connectivity data
 conStruct=patchConnectivity(F(logicFaces,:),V,{'ef','ev'}); %Connectivity structure
-EF=conStruct.edge.face; %Edge-face connectivity
-E=conStruct.edge.vertex; %Edge-vertex connectivity
+EF=conStruct.edge.face; % edge-face connectivity
+E=conStruct.edge.vertex; % edge-vertex connectivity
 
 % Check boundary regions
 logicBoundary=any(EF==0,2);
 indF=EF(logicBoundary,1);
 
-% Create new coordinate array
-VF=patchCentre(F(logicFaces,:),V); %New face centre coordinates
-VT=[V;VF]; %The new vertex array
-
 % Compone new face matrix
 e=E(~logicBoundary,:); %Edge-vertex indices not part of boundary
 ef=EF(~logicBoundary,:); %Edge-face indices not part of boundary
+
+% VF=patchCentre(F(logicFaces,:),V); %New face centre coordinates
+VF=triIncenter(F(logicFaces,:),V);
+
+VT=[V;VF]; %The new vertex array
+
 
 FT=[F(~logicFaces,:);... %The unaltered faces
     e(:,1) ef(:,1)+size(V,1) ef(:,2)+size(V,1);... %New refined face 1 

@@ -11,6 +11,55 @@ clear; close all; clc;
 % UNDOCUMENTED 
 %% Examples 
 % 
+
+%%
+% Plot settings
+
+fontSize=20;
+faceAlpha1=0.8;
+
+%% CREATING A MESHED BOX
+boxDim=2*ones(1,3);
+boxEl=3*ones(1,3);
+[meshStruct]=hexMeshBox(boxDim,boxEl);
+E=meshStruct.E;
+V=meshStruct.V;
+
+%%
+d=eye(3,3);
+d(1,2)=1;
+
+V=V*d;
+
+%%
+
+[A,EE,AE]=dihedralAngles(E,V,'hex8');
+A=180*(A./pi);
+AE=180*(AE./pi);
+
+A_max=max(A,[],2);
+A_min=min(A,[],2);
+
+[F,A_max_F]=element2patch(E,A_max);
+[~,A_min_F]=element2patch(E,A_min);
+%%
+
+cFigure; 
+subplot(1,2,1); hold on;
+title(['Max dihedral angle ',num2str(max(A_max_F))])
+gpatch(F,V,A_max_F,'k',1,1);
+axisGeom; camlight headlight; 
+colormap(gca,gjet(25)); colorbar; 
+clim([min(A(:)) max(A(:))]);
+
+subplot(1,2,2); hold on;
+title(['Min dihedral angle ',num2str(min(A_min_F))])
+gpatch(F,V,A_min_F,'k',1,1);
+axisGeom; camlight headlight; 
+colormap(gca,gjet(25)); colorbar; 
+clim([min(A(:)) max(A(:))]);
+gdrawnow; 
+
 %%
 % 
 % <<gibbVerySmall.gif>>

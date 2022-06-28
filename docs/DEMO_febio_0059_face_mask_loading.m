@@ -102,7 +102,7 @@ fric_coeff=0.5;
 
 %% Load face geometry
 
-testCase=1;
+testCase=2;
 switch testCase
     case 1
         %Load surface model
@@ -143,6 +143,17 @@ nz=vecnormalize(cross(nx,ny));
 nx=vecnormalize(cross(ny,nz));
 
 Q=[nx;ny;nz]';
+
+%%
+
+% cFigure; hold on;
+% gpatch(Ff,Vf,'w','none',1);
+% % plotV(V_markers,'r.','MarkerSize',35);
+% % text(V_markers(:,1)+4,V_markers(:,2),V_markers(:,3),{'1','2','3','4','5','6'},'FontSize',25);
+% % quiverTriad(V_markers(1,:),Q,100);
+% axisGeom; camlight headlight;
+% colormap(spectral(250))
+% gdrawnow; 
 
 %%
 
@@ -277,6 +288,19 @@ gdrawnow;
 %%
 
 cFigure;  hold on;
+gpatch(Ff,Vf,'w','none',0.5);
+% gpatch(Ff(logicCloseFaces,:),Vf,'none','b',1,2);
+plotV(V_markers,'r.','MarkerSize',25);
+plotV(V_rim_points,'k.','MarkerSize',15);
+plotV(V_rim_curve,'k-','LineWidth',3);
+
+axisGeom; camlight headlight;
+colormap(spectral(250))
+gdrawnow;
+
+%%
+
+cFigure;  hold on;
 gpatch(Ff,Vf,'w','none');
 gpatch(Fs,Vs,'w','b');
 % patchNormPlot(Fs,Vs);
@@ -333,9 +357,10 @@ cFigure; hold on;
 gpatch(Ffc,Vf,'w','none',0.5);
 gpatch(Fb,Vb,Cb,'k',0.5);
 
-% gpatch(Fs,Vs,'bw','none',0.5);
-% gpatch(Fs2t,Vs2t_ori,'gw','g',0.5);
-% gpatch(Fs2t,Vs2t,'rw','g',0.5);
+% gpatch(Fs,Vs,'bw','k',1);
+% % gpatch(Fs2t,Vs2t_ori,'gw','g',0.5);
+% gpatch(Fs2t,Vs2t,'rw','k',1);
+% gpatch(Fss,Vss,'gw','k',1);
 
 % patchNormPlot(Fb,Vb);
 axisGeom; camlight headlight;
@@ -351,7 +376,7 @@ Pn=mean(Pn,1);
 
 cFigure; hold on; 
 %gpatch(Ffc,Vf,'w','none',0.5);
-gpatch(Fb,Vb,Cb,'none',0.5);
+gpatch(Fb,Vb,Cb,'k',1);
 plotV(Pn,'r.','MarkerSize',25);
 
 % patchNormPlot(Fb,Vb);
@@ -402,7 +427,7 @@ title('Tetrahedral mesh','FontSize',fontSize);
 optionStruct.hFig=[hf,hs];
 
 meshView(meshOutput,optionStruct);
-
+hold on; plotV(Pn,'r.','MarkerSize',25);
 axisGeom(gca,fontSize); 
 gdrawnow;
 
@@ -424,7 +449,7 @@ Vcd2(:,3)=maskDiscOffset;
 cFigure; hold on;
 gpatch(Fb,V,'w','none',0.5);
 plotV(V_markers,'r.','MarkerSize',50);
-text(V_markers(:,1)+4,V_markers(:,2),V_markers(:,3)+50,{'1','2','3','4','5','6'},'FontSize',65);
+text(V_markers(:,1)+4,V_markers(:,2),V_markers(:,3)+10,{'1','2','3','4','5','6'},'FontSize',25);
 
 plotV(V_rim_points,'k.','MarkerSize',35);
 plotV(V_rim_curve,'k-','LineWidth',6);
@@ -445,11 +470,11 @@ V_rim_curve2=traceToSurf(V_rim_curve2,[0 0 -1],Fb(Cb==1,:),V,optionStructRayTrac
 
 %%
 cFigure; hold on;
-gpatch(Fb(Cb==1,:),Vb,'w','none',0.5);
+gpatch(Fb(Cb==1,:),Vb,'kw','none',0.5);
 
 % patchNormPlot(Fm,Vm);
 plotV(V_markers,'r.','MarkerSize',50);
-text(V_markers(:,1)+4,V_markers(:,2),V_markers(:,3),{'1','2','3','4','5','6'},'FontSize',25);
+text(V_markers(:,1)+2,V_markers(:,2),V_markers(:,3),{'1','2','3','4','5','6'},'FontSize',25);
 plotV(V_rim_points,'k.','MarkerSize',35,'LineWidth',3);
 plotV(V_rim_curve,'k-','LineWidth',3);
 
@@ -487,11 +512,11 @@ Vm=traceToSurf(Vm,Nm,Fb(Cb==1,:),V,optionStructRayTrace);
 
 %%
 cFigure; hold on;
-gpatch(Fb(Cb==1,:),Vb,'w','none',0.5);
+gpatch(Fb(Cb==1,:),Vb,'kw','none',0.5);
 gpatch(Fm,Vm,'rw','k',1,1);
 % patchNormPlot(Fm,Vm);
-plotV(V_markers,'r.','MarkerSize',50);
-text(V_markers(:,1)+4,V_markers(:,2),V_markers(:,3),{'1','2','3','4','5','6'},'FontSize',25);
+% plotV(V_markers,'r.','MarkerSize',50);
+% text(V_markers(:,1)+4,V_markers(:,2),V_markers(:,3),{'1','2','3','4','5','6'},'FontSize',25);
 plotV(V_rim_points,'k.','MarkerSize',35,'LineWidth',3);
 plotV(Vm(indStart_Vm,:),'g-','LineWidth',3);
 plotV(Vm(indEnd_Vm,:),'b-','LineWidth',3);
@@ -519,7 +544,7 @@ indEnd_Vr2=fliplr(indEnd_Vr1);
 %%
 
 cFigure; hold on;
-gpatch(Fb,V,'w','none',0.5);
+gpatch(Fb,V,'kw','none',0.5);
 gpatch(Fm,Vm,'rw','k',1,1);
 gpatch(Fr1,Vr1,'gw','k',1,1);
 gpatch(Fr2,Vr2,'bw','k',1,1);
@@ -553,7 +578,7 @@ indCurve1_Vt=flipud(indCurve1_Vt(:));
 %%
 
 cFigure; hold on;
-gpatch(Fb,V,'w','none',0.5);
+gpatch(Fb,V,'w','none',1);
 gpatch(Fm,Vm,'y','k',0,1);
 gpatch(Ft,Vt,'gw','k',1,1);
 gpatch(Fr1,Vr1,'rw','k',1,1);
@@ -630,13 +655,13 @@ Vc(:,3)=maskDiscOffset;
 %%
 
 cFigure; hold on;
-gpatch(Fb(Cb==1,:),V,'w','none',0.5);
+gpatch(Fb(Cb==1,:),V,'kw','none',0.5);
 gpatch(F_rim,V_rim,'kw','none',1);
 
-gpatch(Fd1,Vd1,'rw','k',0.5);
-gpatch(Fd2,Vd2,'bw','k',0.5);
-gpatch(Fdt,Vdt,'gw','k',0.5);
-gpatch(Fc,Vc,'yw','k',1);
+gpatch(Fd1,Vd1,'rw','none',0.5);
+gpatch(Fd2,Vd2,'bw','none',0.5);
+gpatch(Fdt,Vdt,'gw','none',0.5);
+gpatch(Fc,Vc,'yw','none',0.5);
 
 plotV(V_loft1,'r-','LineWidth',3);
 quiverVec(V_loft1,N1,5,'k');
@@ -775,7 +800,7 @@ F_contact_secondary=fliplr(Fb_contact(logicSecondary,:));
 cFigure; hold on;
 title('Contact sets and normal directions','FontSize',fontSize);
 
-gpatch(Fb,V,'w','none',0.5);
+gpatch(Fb,V,'kw','none',0.5);
 
 hl(1)=gpatch(F_contact_primary,V,'gw','k',1);
 patchNormPlot(F_contact_primary,V);
@@ -800,9 +825,11 @@ bcPrescribeList=unique(Fb_rim(Cb_rim==4,:));
 % Visualize BC's
 
 hf=cFigure; hold on;
-title('Boundary conditions model','FontSize',fontSize);
-gpatch(Fb,V,'w','none',faceAlpha2);
-gpatch(Fb_rim,V,'kw','none',faceAlpha2);
+% title('Boundary conditions model','FontSize',fontSize);
+gpatch(Fb,V,'kw','none',faceAlpha2);
+gpatch(Fb_rim(Cb_rim~=4,:),V,'kw','none',faceAlpha2);
+gpatch(Fb_rim(Cb_rim==4,:),V,'rw','none',1);
+gpatch(Fb(Cb==2,:),V,'kw','none',1);
 hl2(1)=plotV(V(bcPrescribeList,:),'r.','MarkerSize',markerSize2);
 hl2(2)=plotV(V(bcSupportList,:),'k.','MarkerSize',markerSize2);
 legend(hl2,{'BC prescribe','BC support'});
@@ -1052,8 +1079,8 @@ if runFlag==1 %i.e. a succesful run
     gpatch(Ffc,Vf,cMap(1,:),'none',1)
     hp1=gpatch(Fb(Cb==1,:),V_def,CV,'none',1); %Add graphics object to animate
     hp1.FaceColor='Interp';
-    hp2=gpatch(Fb_rim,V_def,'kw','none',0.5); %Add graphics object to animate
-    hp3=gpatch(F_mask,V_mask,'k','none',0.2);
+    hp2=gpatch(Fb_rim,V_def,'w','none',0.25); %Add graphics object to animate
+    hp3=gpatch(F_mask,V_mask,'w','none',0.25);
     
     axisGeom(gca,fontSize); camlight headlight;
     colormap(cMap); colorbar;
@@ -1101,8 +1128,10 @@ for q=1:1:numPoints
         P=P(indMin,:);        
         indFaceIntersect=indFaceIntersect(indMin,:);
     end    
-    V1(q,:)=P;
-    indFacesIntersect(q,:)=indFaceIntersect;
+    if ~isempty(P)
+        V1(q,:)=P;
+        indFacesIntersect(q,:)=indFaceIntersect;
+    end    
 end
 
 varargout{1}=V1;

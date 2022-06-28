@@ -301,9 +301,10 @@ switch cPar.latticeSide
                     
                     if cPar.hexSplit>0
                         [Fn,Vn]=subHex(Fn,Vn,cPar.hexSplit,2);
-                    end                    
-                    Cn=zeros(size(Fn,1),1);
-                    
+                    end                                        
+                    Cn=repmat(1:1:24,size(E,1),1); 
+                    Cn=Cn(:);                    
+                    Cn=repmat(Cn,size(Fn,1)./size(Cn,1),1);                    
             end
         else
             switch elementType

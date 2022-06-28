@@ -8,9 +8,17 @@ clear; close all; clc;
 % |Ad=dev(A);|
 
 %% Description 
-% UNDOCUMENTED 
-%% Examples 
+% Computes the deviatoric part of the tensor A. 
 % 
+% See also |sph|. 
+
+%% Examples 
+%
+
+A=rand(3,3)
+
+Ad=dev(A)
+
 %%
 % 
 % <<gibbVerySmall.gif>>

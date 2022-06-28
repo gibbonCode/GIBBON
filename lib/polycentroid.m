@@ -10,8 +10,8 @@ X=X-meanX*ones(1,size(X,2));
 Y=Y-meanY*ones(1,size(Y,2));
 
 A = polyarea(X',Y');
-Xc=sum((X(:,1:end-1)+X(:,2:end)).*(X(:,1:end-1).*Y(:,2:end)-X(:,2:end).*Y(:,1:end-1)),2)./(6*A(:));
-Yc=sum((Y(:,1:end-1)+Y(:,2:end)).*(X(:,1:end-1).*Y(:,2:end)-X(:,2:end).*Y(:,1:end-1)),2)./(6*A(:));
+Xc=sum((X(:,1:end)+X(:,[2:end 1])).*(X(:,1:end).*Y(:,[2:end 1])-X(:,[2:end 1]).*Y(:,1:end)),2)./(6*A(:));
+Yc=sum((Y(:,1:end)+Y(:,[2:end 1])).*(X(:,1:end).*Y(:,[2:end 1])-X(:,[2:end 1]).*Y(:,1:end)),2)./(6*A(:));
 
 Xc=Xc+meanX;
 Yc=Yc+meanY;

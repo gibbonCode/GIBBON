@@ -127,7 +127,7 @@ ET=[F1 F2]; %hexahedral elements
 VT=[V1;V2]; %Nodes
 
 [FT]=element2patch(ET,[],'hex8');
-indBoundary=tesBoundary(FT,VT);
+indBoundary=tesBoundary(FT);
 Fb=FT(indBoundary,:);
 
 %%
@@ -233,7 +233,7 @@ logicLeftFaces=all(logicLeft(F2),2);
 
 F2_left=F2(logicLeftFaces,:);
 
-Eb_left=patchBoundary(F2_left,VT);
+Eb_left=patchBoundary(F2_left);
 X=VT(:,1);
 X_Eb_left=X(Eb_left);
 logicKeep=all(X_Eb_left>=(0-eps(0)),2);

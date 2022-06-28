@@ -15,7 +15,7 @@ clear; close all; clc;
 
 %% 
 
-testCase=1;
+testCase=2;
 switch testCase
     case 1
         boxDim=[10 10 10];

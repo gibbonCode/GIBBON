@@ -33,36 +33,36 @@ switch nargin
         V=varargin{2};
         C='gw';
         CE='k';
-        A=1;
-        L=[];
+        faceAlpha=1;
+        lineWidth=[];
     case 3
         F=varargin{1};
         V=varargin{2};
         C=varargin{3};
         CE='k';
-        A=1;
-        L=[];
+        faceAlpha=1;
+        lineWidth=[];
     case 4
         F=varargin{1};
         V=varargin{2};
         C=varargin{3};
         CE=varargin{4};
-        A=1;
-        L=[];
+        faceAlpha=1;
+        lineWidth=[];
     case 5
         F=varargin{1};
         V=varargin{2};
         C=varargin{3};
         CE=varargin{4};
-        A=varargin{5};
-        L=[];
+        faceAlpha=varargin{5};
+        lineWidth=[];
     case 6
         F=varargin{1};
         V=varargin{2};
         C=varargin{3};
         CE=varargin{4};
-        A=varargin{5};
-        L=varargin{6};
+        faceAlpha=varargin{5};
+        lineWidth=varargin{6};
     otherwise
         error('Wrong number of input arguments');
 end
@@ -75,8 +75,8 @@ if isempty(CE)
     C='k';
 end
 
-if isempty(A)
-    A=1;
+if isempty(faceAlpha)
+    faceAlpha=1;
 end
 
 if isa(F,'cell') %Assume all entries are cells defining multiple patch data sets
@@ -101,15 +101,15 @@ if isa(F,'cell') %Assume all entries are cells defining multiple patch data sets
             ce=CE;
         end
         
-        if isa(A,'cell')
-            a=A{q};
+        if isa(faceAlpha,'cell')
+            a=faceAlpha{q};
         else
-            a=A;
+            a=faceAlpha;
         end
-        hp(q)=plotPatch(f,v,c,ce,a,L);
+        hp(q)=plotPatch(f,v,c,ce,a,lineWidth);
     end
 else
-    hp=plotPatch(F,V,C,CE,A,L);
+    hp=plotPatch(F,V,C,CE,faceAlpha,lineWidth);
 end
 
 if nargout==1
@@ -119,7 +119,7 @@ end
 end
 
 %%
-function hp=plotPatch(F,V,C,CE,A,L)
+function hp=plotPatch(F,V,C,CE,faceAlpha,lineWidth)
 
 argInPatch.Faces=F;
 argInPatch.Vertices=V;
@@ -214,17 +214,17 @@ else
     error('Invalid edge color data input');
 end
 
-if numel(A)==1 %Plain single alpha
-    argInPatch.FaceAlpha=double(A);
-elseif size(A,2)==1 %Alpha mapping
+if numel(faceAlpha)==1 %Plain single alpha
+    argInPatch.FaceAlpha=double(faceAlpha);
+elseif size(faceAlpha,2)==1 %Alpha mapping
     argInPatch.FaceAlpha='flat';
-    argInPatch.FaceVertexAlphaData=double(A);
+    argInPatch.FaceVertexAlphaData=double(faceAlpha);
 else
     error('Invalid alpha data input');
 end
 
-if ~isempty(L)
-    argInPatch.LineWidth=L;
+if ~isempty(lineWidth)
+    argInPatch.LineWidth=lineWidth;
 end
 
 hp=patch(argInPatch);

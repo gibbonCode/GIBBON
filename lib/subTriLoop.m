@@ -138,8 +138,7 @@ if n>0
             Vv(indBoundaryVertices,:)= 6/8*V(indBoundaryVertices,:) + 1/8*(V(vertexVertexConnectivityBoundary(indBoundaryVertices,1),:)+V(vertexVertexConnectivityBoundary(indBoundaryVertices,2),:));
         end
         
-        %Compute the new edge vertices
-        
+        %Compute the new edge vertices        
         Vn=zeros(numEdges,size(V,2));
         if fixBoundaryOpt==1
             %Use normal mid-edge nodes for boundary edges

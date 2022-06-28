@@ -52,15 +52,12 @@ r=1; %sphere radius
 n=1; %Refinements
 [F,V,~]=geoSphere(n,r);
 
-%%
-
-%%
-% Deriving the dual of the patch data for visualization purposes
-[Vd,Fd]=patch_dual(V,F);
-
 %%    
 % Refine surface region using subTriDual
-[Ft,Vt]=subTriDual(F,V);
+[Ft,Vt,C_type,indIni,C_new]=subTriDual(F,V);
+
+E=patchEdges(Ft,Vt);
+Ed=E(~any(ismember(E,indIni),2),:);
 
 %%
 
@@ -78,13 +75,11 @@ axis off;
 subplot(1,3,2); hold on;
 title('Triangulated dual','FontSize',fontSize);
 
-gpatch(Ft,Vt,'none','k',0,0.25);
+gpatch(Ft,Vt,'w','k',1,0.5);
 
-for i=1:1:numel(Fd)
-    Fs=Fd{i};
-    gpatch(Fs,Vd,'rw','r',1,edgeWidth);
-end
-plotV(Vd,'r.','MarkerSize',markerSize);
+gpatch(Ed,Vt,'none','r',1,edgeWidth);
+plotV(Vt(unique(Ed(:)),:),'r.','MarkerSize',markerSize);
+plotV(Vt(indIni,:),'b.','MarkerSize',markerSize);
 
 axisGeom(gca,fontSize);
 camlight headlight;
@@ -95,12 +90,7 @@ subplot(1,3,3); hold on;
 title('Dual refined','FontSize',fontSize);
 
 gpatch(Ft,Vt,'gw','k',1,edgeWidth);
-% for i=1:1:numel(Fd)
-%     Fs=Fd{i};
-%     hp=gpatch(Fs,Vd,'none','r',1,edgeWidth);    
-% end
-% plotV(Vt,'r.','MarkerSize',markerSize);
-% plotV(Vt(indIni,:),'b.','MarkerSize',markerSize);
+
 plotV(Vt,'g.','MarkerSize',markerSize);
 axisGeom(gca,fontSize);
 camlight headlight;
@@ -145,6 +135,56 @@ camlight headlight;
 colormap gjet;
 drawnow;
 
+%% Showing downside of subTriDual for coarse meshes with sharp angles
+
+m=sphereIm(1); 
+[F,V]=im2patch(m,m>0,'vb');
+[F,V]=quad2tri(F,V,'a');
+[Ft,Vt,~,indIni]=subTriDual(F,V);
+
+E=patchEdges(Ft,Vt);
+Ed=E(~any(ismember(E,indIni),2),:);
+
+%%
+
+%Plotting results
+cFigure;
+subplot(1,3,1); hold on;
+title('Original','FontSize',fontSize);
+gpatch(F,V,'bw','k',1,edgeWidth);
+plotV(V,'b.','MarkerSize',markerSize);
+axisGeom(gca,fontSize);
+camlight headlight;
+ha=axis;
+axis off; 
+
+subplot(1,3,2); hold on;
+title('Triangulated dual','FontSize',fontSize);
+
+gpatch(F,V,'none','b',1,edgeWidth);
+gpatch(Ft,Vt,'w','k',1,0.5);
+
+gpatch(Ed,Vt,'none','r',1,edgeWidth);
+plotV(Vt(unique(Ed(:)),:),'r.','MarkerSize',markerSize);
+plotV(Vt(indIni,:),'b.','MarkerSize',markerSize);
+
+axisGeom(gca,fontSize);
+camlight headlight;
+axis off; 
+axis(ha);
+
+subplot(1,3,3); hold on;
+title('Dual refined','FontSize',fontSize);
+
+gpatch(Ft,Vt,'gw','k',1,edgeWidth);
+
+plotV(Vt,'g.','MarkerSize',markerSize);
+axisGeom(gca,fontSize);
+camlight headlight;
+axis off;
+axis(ha);
+drawnow;
+
 %% Example: Refining a local region of a mesh 
 
 %%
@@ -157,18 +197,18 @@ drawnow;
 
 %%
 % Refine surface using subTriDual
-D=sqrt(sum((V-[32 24 107]).^2,2));
-logicVertices=D<12; %Vertex logic
+D=sqrt(sum((V-[64.9604 49.9194 220.751]).^2,2));
+logicVertices=D<25; %Vertex logic
 logicFaces=any(logicVertices(F),2); %Convert to face logic
 logicFaces=triSurfLogicSharpFix(F,logicFaces,3);
 
 [Ft,Vt,C_type,indIni]=subTriDual(F,V,logicFaces);
 
-%Smoothen newly introduced nodes
-cPar.Method='HC'; %Smoothing method
-cPar.n=50; %Number of iterations
-cPar.RigidConstraints=indIni; %Constrained points
-[Vt]=tesSmooth(Ft,Vt,[],cPar);
+% %Smoothen newly introduced nodes
+% cPar.Method='HC'; %Smoothing method
+% cPar.n=50; %Number of iterations
+% cPar.RigidConstraints=indIni; %Constrained points
+% [Vt]=tesSmooth(Ft,Vt,[],cPar);
 
 %%
 % Plotting input surface model
@@ -185,14 +225,14 @@ axis off;
 
 subplot(1,2,2); hold on;
 gpatch(Ft,Vt,'w','k');
-gpatch(Ft(C_type==2,:),Vt,'gw','k');
+gpatch(Ft(C_type==2,:),Vt,'gw','k',0.5);
 gpatch(Ft(C_type==3,:),Vt,'bw','k');
 axisGeom(gca,fontSize);
 camlight headlight;
 colormap(gca,gjet); %icolorbar;
 view(0,0);zoom(2);
 axis off; 
-drawnow;
+gdrawnow;
 
 %% Example: Refining a local region of a sphere mesh
 

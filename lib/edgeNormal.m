@@ -29,6 +29,7 @@ if nargout>1
     VE=patchCentre(E,V);
     varargout{2}=VE;
 end
+varargout{3}=E;
 
 %%
 %% 

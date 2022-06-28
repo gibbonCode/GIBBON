@@ -1,4 +1,4 @@
-function [A]=dihedralAngles(varargin)
+function [varargout]=dihedralAngles(varargin)
 
 % function [A]=dihedralAngles(E,V,elementType)
 % -----------------------------------------------------------------------
@@ -92,6 +92,23 @@ for q=1:1:size(c,1)
     a(logicAngle)=pi-a(logicAngle);
     A(:,q)=a;
 end
+
+%% Collect output
+
+varargout{1}=A;
+if nargout>1
+    %Create edge array
+    ee=ee';
+    ee=ee(:);
+    EE=reshape(E(:,ee)',2,numel(ee)*size(E,1)/2)';
+    varargout{2}=EE;
+end
+if nargout>2
+    %Create angles for edge array
+    AE=reshape(A',1,numel(A))';
+    varargout{3}=AE;
+end
+
 %% 
 % _*GIBBON footer text*_ 
 % 

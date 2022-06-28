@@ -8,7 +8,7 @@ clear; close all; clc;
 % |[Ep,Et,VT,Ct]=diamondLattice(sampleSize,nRepeat,strutThickness,plotOn);|
 
 %% Description 
-% UNDOCUMENTED 
+% This functions creates element/patch data for the diamond lattice 
 
 %%
 % Plotting settings

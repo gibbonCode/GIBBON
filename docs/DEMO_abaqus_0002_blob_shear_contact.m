@@ -158,7 +158,7 @@ drawnow;
 % 
 
 %Get outer surve of ground surface 
-[Eb]=patchBoundary(Fb(Cb==2,:),V);
+[Eb]=patchBoundary(Fb(Cb==2,:));
 indCurveBottom=edgeListToCurve(Eb);
 indCurveBottom=indCurveBottom(1:end-1);
 
