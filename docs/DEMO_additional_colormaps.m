@@ -17,11 +17,11 @@ s=1;
 Z=exp( -0.5.*((X./s).^2+(Y./s).^2));
 Z=Z./max(Z(:));
 Z(X<0)=-Z(X<0);
-clim=[-1 1];
+colorLim=[-1 1];
 colormapset={'gjet','wjet','graygjet','grayjet',...
     'fire','ice','fireice','warmcold','iwarmcold','blood','bloodbone',...
     'che','wcbp','viridis','magma','inferno','turbo',...
-    'plasma','gviridis','igviridis','kvw','cividis','spectral','ukr'};
+    'plasma','gviridis','igviridis','kvw','cividis','spectral','ukr','flare'};
 
 %% The gibbon color maps
 
@@ -42,7 +42,7 @@ for q=1:1:numel(colormapset)
     axis tight; axis equal; axis xy; box on;
     axis off;
     set(h,'FontSize',fontSize);
-    caxis(clim);
+    clim(colorLim);
 end
 drawnow;
 
