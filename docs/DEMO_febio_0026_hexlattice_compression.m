@@ -221,6 +221,11 @@ set(gca,'FontSize',fontSize);
 % axis off
 drawnow; 
 
+%% Check porosity
+
+vol_lattice=sum(hexVol(Es,Vs)); %Volume of hexahedra
+porosity_lattice=vol_lattice./sampleSize.^3; %Porosity
+
 %% Defining the FEBio input structure
 % See also |febioStructTemplate| and |febioStruct2xml| and the FEBio user
 % manual.

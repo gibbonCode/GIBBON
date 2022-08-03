@@ -55,6 +55,7 @@ febioLogFileName_stiffness=[febioFebFileNamePart,'_stiffness_out.txt']; %Log fil
 sampleSize=10;
 latticeType=1;
 elementType='hex8'; %'hex8'
+strutThickness=0.5;
 
 %Define applied displacement
 appliedStrain=0.3; %Linear strain (Only used to compute applied stretch)
@@ -92,6 +93,8 @@ nCopies=n*ones(1,3); %Number of offset copies
 d=2*r; %Diameter
 w=(n-1)*d; %sampleSize
 
+shrinkFactor=strutThickness./((sampleSize./n).*(sqrt(2)./2));
+
 %% Create lattice
 
 switch latticeType
@@ -101,10 +104,10 @@ switch latticeType
         V=V*sampleSize;
         
         [indBoundary]=tesBoundary(F);
-        cPar.shrinkFactor=0.15; %Strut sides are formed by shrinking the input mesh faces by this factor
+        cPar.shrinkFactor=shrinkFactor; %Strut sides are formed by shrinking the input mesh faces by this factor
         cPar.meshType='hex'; %desired output mesh type
         cPar.indBoundary=indBoundary; %indices of the boundary faces
-        cPar.hexSplit=2;
+        cPar.hexSplit=1;
         cPar.latticeSide=2; %1=side 1 the edge lattice, 2=side 2 the dual lattice to the edge lattice
         [Es,Vs,Cs]=element2lattice(E,V,cPar); %Get lattice structure
         
@@ -292,6 +295,12 @@ legend(hl2,{'BC prescribe','BC support'});
 axisGeom(gca,fontSize);
 camlight headlight;
 drawnow;
+
+%% Check porosity
+% Note it may be better to use the convex hull volume rather than the cube
+% for the octet truss
+vol_lattice=sum(hexVol(Es,Vs)); %Volume of hexahedra
+porosity_lattice=vol_lattice./sampleSize.^3; %Porosity
 
 %% Defining the FEBio input structure
 % See also |febioStructTemplate| and |febioStruct2xml| and the FEBio user

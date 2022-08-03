@@ -53,10 +53,10 @@ febioLogFileName_stress=[febioFebFileNamePart,'_stress_out.txt']; %Log file name
 febioLogFileName_stiffness=[febioFebFileNamePart,'_stiffness_out.txt']; %Log file name for exporting stiffness
 
 %Latticeparameters
-nRepeat=3; %Number of repetitions of the lattice pattern
-sampleSize=30;
+nRepeat=2; %Number of repetitions of the lattice pattern
+sampleSize=10;
 nSubPenta=2;
-strutThickness=1; %Set the strut thickness
+strutThickness=0.5; %Set the strut thickness
 
 %Define applied displacement
 appliedStrain=0.3; %Linear strain (Only used to compute applied stretch)
@@ -125,6 +125,13 @@ legend(hl2,{'BC prescribe','BC support'});
 axisGeom; 
 camlight headlight; 
 drawnow;
+
+%% Check porosity
+
+vol_tet=sum(tetVol(Et,V)); %Volume of tetrahedra
+vol_penta=sum(pentaVol(Ep,V));  %Volume of pentahedra
+vol_lattice=vol_tet+vol_penta; %Total lattice volume
+porosity_lattice=vol_lattice./sampleSize.^3; %Porosity
 
 %% Defining the FEBio input structure
 % See also |febioStructTemplate| and |febioStruct2xml| and the FEBio user

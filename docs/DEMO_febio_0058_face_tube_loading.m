@@ -235,7 +235,6 @@ axisGeom(gca,fontSize);
 camlight headlight;
 drawnow;
 
-fdsafdsa
 %% Define boundary conditions
 
 %Supported nodes
