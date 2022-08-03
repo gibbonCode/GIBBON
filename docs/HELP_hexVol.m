@@ -16,26 +16,28 @@ clear; close all; clc;
 %% Example: Computing the volume of hexahedral elements
 
 %%
-% Create example geometry for a set of 8 hexahedral elements, each with a
-% volume of 1, the summed volume should therefore be 8. 
+% Creating example geometry for a beam
 
-%Creating a single hexahedron
-X=[-1;  1; 1; -1; -1;  1; 1; -1;];
-Y=[-1; -1; 1;  1; -1; -1; 1;  1;];
-Z=[-1; -1;-1; -1;  1;  1; 1;  1;];
-Vh=[X(:) Y(:) Z(:)];
-Eh=1:8; %The hexahedral element
+boxDim=[6 4 4]; %Box dimensions
+boxEl=[5 3 3]; %Number of elements in each direction
+[meshStruct]=hexMeshBox(boxDim,boxEl);
 
-%Subdevided into 8 smaller elements
-[E,V]=subHex(Eh,Vh,1);
+E=meshStruct.E;
+V=meshStruct.V;
+F=meshStruct.F;
+Fb=meshStruct.Fb;
 
 %%
 % Computing the volume 
 [VE]=hexVol(E,V)
 
 %%
-% The summed volume should be 8 for this cube
-sum(VE)
+% The summed volume should match the theoretical 
+volume_theoretical=prod(boxDim);
+volume_total=sum(VE);
+
+disp(['Theoretical volume:',sprintf('%f',volume_theoretical)]);
+disp(['Total volume computed:',sprintf('%f',volume_total)]);
 
 %% 
 % Visualize mesh and face normals
@@ -49,6 +51,7 @@ gpatch(F,V,C,'k',1);
 patchNormPlot(F,V);
 axisGeom; camlight headlight; 
 colormap spectral; colorbar; 
+caxis([0 max(VE)]);
 drawnow; 
 
 %% Example: Handling negative volumes
@@ -79,6 +82,7 @@ gpatch(F,V,C,'k',0.5);
 patchNormPlot(F,V);
 axisGeom; camlight headlight; 
 colormap spectral; colorbar;
+caxis([min(VE) max(VE)]);
 drawnow; 
 
 %% Example: A more complex hex mesh
@@ -115,6 +119,11 @@ gpatch(F,V,C,'k',1);
 axisGeom; camlight headlight; 
 colormap spectral; colorbar;
 drawnow; 
+
+%%
+% 3D cut view
+meshStruct.elementData=VE;
+meshView(meshStruct,[]);
 
 %% 
 %

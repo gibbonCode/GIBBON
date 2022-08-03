@@ -6,8 +6,8 @@
    <!--
 This HTML was auto-generated from MATLAB code.
 To make changes, update the MATLAB code and republish this document.
-      --><title>tetVol</title><meta name="generator" content="MATLAB 9.6"><link rel="schema.DC" href="http://purl.org/dc/elements/1.1/"><meta name="DC.date" content="2019-06-20"><meta name="DC.source" content="HELP_tetVol.m"><style type="text/css">
-html,body,div,span,applet,object,iframe,h1,h2,h3,h4,h5,h6,p,blockquote,pre,a,abbr,acronym,address,big,cite,code,del,dfn,em,font,img,ins,kbd,q,s,samp,small,strike,strong,sub,sup,tt,var,b,u,i,center,dl,dt,dd,ol,ul,li,fieldset,form,label,legend,table,caption,tbody,tfoot,thead,tr,th,td{margin:0;padding:0;border:0;outline:0;font-size:100%;vertical-align:baseline;background:transparent}body{line-height:1}ol,ul{list-style:none}blockquote,q{quotes:none}blockquote:before,blockquote:after,q:before,q:after{content:'';content:none}:focus{outine:0}ins{text-decoration:none}del{text-decoration:line-through}table{border-collapse:collapse;border-spacing:0}
+      --><title>tetVol</title><meta name="generator" content="MATLAB 9.13"><link rel="schema.DC" href="http://purl.org/dc/elements/1.1/"><meta name="DC.date" content="2022-08-03"><meta name="DC.source" content="HELP_tetVol.m"><style type="text/css">
+html,body,div,span,applet,object,iframe,h1,h2,h3,h4,h5,h6,p,blockquote,pre,a,abbr,acronym,address,big,cite,code,del,dfn,em,font,img,ins,kbd,q,s,samp,small,strike,strong,tt,var,b,u,i,center,dl,dt,dd,ol,ul,li,fieldset,form,label,legend,table,caption,tbody,tfoot,thead,tr,th,td{margin:0;padding:0;border:0;outline:0;font-size:100%;vertical-align:baseline;background:transparent}body{line-height:1}ol,ul{list-style:none}blockquote,q{quotes:none}blockquote:before,blockquote:after,q:before,q:after{content:'';content:none}:focus{outine:0}ins{text-decoration:none}del{text-decoration:line-through}table{border-collapse:collapse;border-spacing:0}
 
 html { min-height:100%; margin-bottom:1px; }
 html body { height:100%; margin:0px; font-family:Arial, Helvetica, sans-serif; font-size:10px; color:#000; line-height:140%; background:#fff none; overflow-y:scroll; }
@@ -23,7 +23,7 @@ a:visited { color:#004aa0; text-decoration:none; }
 
 p { padding:0px; margin:0px 0px 20px; }
 img { padding:0px; margin:0px 0px 20px; border:none; }
-p img, pre img, tt img, li img, h1 img, h2 img { margin-bottom:0px; } 
+p img, pre img, tt img, li img, h1 img, h2 img { margin-bottom:0px; }
 
 ul { padding:0px; margin:0px 0px 20px 23px; list-style:square; }
 ul li { padding:0px; margin:0px 0px 7px 0px; }
@@ -52,6 +52,7 @@ span.comment { color:#228B22 }
 span.string { color:#A020F0 }
 span.untermstring { color:#B20000 }
 span.syscmd { color:#B28C00 }
+span.typesection { color:#A0522D }
 
 .footer { width:auto; padding:10px 0px; margin:25px 0px 0px; border-top:1px dotted #878787; font-size:0.8em; line-height:140%; font-style:italic; color:#878787; text-align:left; float:none; }
 .footer p { margin:0px; }
@@ -66,86 +67,74 @@ table td { padding:7px 5px; text-align:left; vertical-align:top; border:1px soli
 
 
 
-  </style></head><body><div class="content"><h1>tetVol</h1><!--introduction--><p>Below is a demonstration of the features of the <tt>tetVol</tt> function</p><!--/introduction--><h2>Contents</h2><div><ul><li><a href="#2">Syntax</a></li><li><a href="#3">Description</a></li><li><a href="#4">Examples</a></li><li><a href="#6">Example: Computing the volume of tetrahedral elements</a></li><li><a href="#10">Visualize mesh and face normals</a></li></ul></div><pre class="codeinput">clear; close <span class="string">all</span>; clc;
+  </style></head><body><div class="content"><h1>tetVol</h1><!--introduction--><p>Below is a demonstration of the features of the <tt>tetVol</tt> function</p><!--/introduction--><h2>Contents</h2><div><ul><li><a href="#2">Syntax</a></li><li><a href="#3">Description</a></li><li><a href="#4">Examples</a></li><li><a href="#6">Example: Computing the volume of tetrahedral elements</a></li><li><a href="#11">Visualize</a></li><li><a href="#13">Example for a mesh containing an inverted element</a></li><li><a href="#14">Visualize</a></li></ul></div><pre class="codeinput">clear; close <span class="string">all</span>; clc;
 </pre><h2 id="2">Syntax</h2><p><tt>[VE,L]=tetVol(E,V);</tt></p><h2 id="3">Description</h2><p>This function computes tetrahedral element volumes. The input is the element description (E) and the nodes (V). The output is the element volumes (always positive) and a logic denoting wheter the element appears to be valid (1) or inverted (0).</p><h2 id="4">Examples</h2><p>Plot settings</p><pre class="codeinput">cMap=gjet(250);
 faceAlpha1=1;
 faceAlpha2=0.65;
 edgeColor1=<span class="string">'none'</span>;
 edgeColor2=<span class="string">'none'</span>;
 fontSize=15;
-</pre><h2 id="6">Example: Computing the volume of tetrahedral elements</h2><p>Create example geometry</p><pre class="codeinput"><span class="comment">%Creating a hexahedron</span>
-X=[-1;  1; 1; -1; -1;  1; 1; -1;];
-Y=[-1; -1; 1;  1; -1; -1; 1;  1;];
-Z=[-1; -1;-1; -1;  1;  1; 1;  1;];
-Vh=[X(:) Y(:) Z(:)];
-Eh=1:8; <span class="comment">%The hexahedral element</span>
+</pre><h2 id="6">Example: Computing the volume of tetrahedral elements</h2><p>Create example geometry</p><pre class="codeinput"><span class="comment">% Creating a meshed box</span>
+boxDim=[2 2 2]; <span class="comment">% Box dimenstions</span>
+pointSpacing=1; <span class="comment">%Approximate point spacing</span>
+[meshStruct]=tetMeshBox(boxDim,pointSpacing);
+</pre><pre class="codeoutput"> 
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+--- TETGEN Tetrahedral meshing --- 03-Aug-2022 15:03:07
+ 
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+--- Writing SMESH file --- 03-Aug-2022 15:03:07
+----&gt; Adding node field
+----&gt; Adding facet field
+----&gt; Adding holes specification
+----&gt; Adding region specification
+--- Done --- 03-Aug-2022 15:03:07
+--- Running TetGen to mesh input boundary--- 03-Aug-2022 15:03:07
+Opening /mnt/data/MATLAB/GIBBON/data/temp/temp.smesh.
+--- Done --- 03-Aug-2022 15:03:07
+ 
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+--- Importing TetGen files --- 03-Aug-2022 15:03:07
+--- Done --- 03-Aug-2022 15:03:07
+</pre><p>Acces output fields</p><pre class="codeinput">E=meshStruct.elements;
+V=meshStruct.nodes;
+Fb=meshStruct.facesBoundary;
+</pre><p>Computing the volume</p><pre class="codeinput">[VE,logicPositive]=tetVol(E,V,0);
+</pre><p>The summed volume should match the theoretical</p><pre class="codeinput">volume_theoretical=prod(boxDim);
+volume_total=sum(VE);
 
-<span class="comment">%Convert to a tetrahedron.</span>
-[E,V]=hex2tet(Eh,Vh,[],2);
+disp([<span class="string">'Theoretical volume:'</span>,sprintf(<span class="string">'%f'</span>,volume_theoretical)]);
+disp([<span class="string">'Total volume computed:'</span>,sprintf(<span class="string">'%f'</span>,volume_total)]);
+</pre><pre class="codeoutput">Theoretical volume:8.000000
+Total volume computed:8.000000
+</pre><h2 id="11">Visualize</h2><pre class="codeinput">[F,CF]=element2patch(E,VE);
+plotLevel=0.5.*mean(VE(:));
 
-<span class="comment">%Create faces data for plotting</span>
-[F,C]=element2patch(E);
-</pre><p>Computing the volume</p><pre class="codeinput">[VE,logicValid]=tetVol(E,V)
-</pre><pre class="codeoutput">
-VE =
-
-    1.3333
-    1.3333
-    1.3333
-    1.3333
-    1.3333
-    1.3333
-
-
-logicValid =
-
-  6&times;1 logical array
-
-   1
-   1
-   1
-   1
-   1
-   1
-
-</pre><p>The summed volume should be 8 for this cube</p><pre class="codeinput">sum(VE)
-</pre><pre class="codeoutput">
-ans =
-
-    8.0000
-
-</pre><h2 id="10">Visualize mesh and face normals</h2><pre class="codeinput">cFigure; hold <span class="string">on</span>;
-gpatch(F,V,<span class="string">'kw'</span>,<span class="string">'k'</span>,0.5);
-patchNormPlot(F,V);
-axisGeom;
-camlight <span class="string">headlight</span>;
+cFigure; hold <span class="string">on</span>;
+gpatch(Fb,V,<span class="string">'w'</span>,<span class="string">'none'</span>,0.25);
+gpatch(F(CF&lt;plotLevel,:),V,CF(CF&lt;plotLevel,:),<span class="string">'k'</span>,0.5);
+<span class="comment">% patchNormPlot(F,V);</span>
+caxis([0 max(VE(:))]);
+axisGeom; camlight <span class="string">headlight</span>;
+colormap <span class="string">spectral</span>; colorbar;
 drawnow;
-</pre><img width="100%" height="auto" vspace="5" hspace="5" src="HELP_tetVol_01.jpg" alt=""> <p>Volumes are always positive but inverted elements have a 0 in the inverted logic. In the example below the first element is inverted which changes the logic to return a 0 for this element.</p><pre class="codeinput">E_inverted=E;
-E_inverted(1,:)=E_inverted(1,[4 1 2 3]);
-[VE,logicValid]=tetVol(E_inverted,V)
-</pre><pre class="codeoutput">
-VE =
+</pre><img width="100%" height="auto" vspace="5" hspace="5" src="HELP_tetVol_01.jpg" alt=""> <p>Visualizing a cut view of the mesh featuring elements coloured towards volume.</p><pre class="codeinput">meshStruct.elementData=VE;
+meshView(meshStruct,[]);
+caxis([0 max(VE(:))]);
+</pre><img width="100%" height="auto" vspace="5" hspace="5" src="HELP_tetVol_02.jpg" alt=""> <h2 id="13">Example for a mesh containing an inverted element</h2><p>Volumes are always positive but inverted elements have a 0 in the inverted logic. In the example below the first element is inverted which changes the logic to return a 0 for this element.</p><pre class="codeinput">E_inverted=E;
+E_inverted(1,:)=E_inverted(1,[4 1 2 3]); <span class="comment">%Invert the first element</span>
+[VE,logicPositive]=tetVol(E_inverted,V,0);
+</pre><h2 id="14">Visualize</h2><pre class="codeinput">[F,CF]=element2patch(E_inverted,VE);
 
-    1.3333
-    1.3333
-    1.3333
-    1.3333
-    1.3333
-    1.3333
-
-
-logicValid =
-
-  6&times;1 logical array
-
-   0
-   1
-   1
-   1
-   1
-   1
-
-</pre><p><img vspace="5" hspace="5" src="gibbVerySmall.gif" alt=""> </p><p><i><b>GIBBON</b></i> <a href="www.gibboncode.org">www.gibboncode.org</a></p><p><i>Kevin Mattheus Moerman</i>, <a href="gibbon.toolbox@gmail.com">gibbon.toolbox@gmail.com</a></p><p><i><b>GIBBON footer text</b></i></p><p>License: <a href="https://github.com/gibbonCode/GIBBON/blob/master/LICENSE">https://github.com/gibbonCode/GIBBON/blob/master/LICENSE</a></p><p>GIBBON: The Geometry and Image-based Bioengineering add-On. A toolbox for image segmentation, image-based modeling, meshing, and finite element analysis.</p><p>Copyright (C) 2019  Kevin Mattheus Moerman</p><p>This program is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.</p><p>This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for more details.</p><p>You should have received a copy of the GNU General Public License along with this program.  If not, see <a href="http://www.gnu.org/licenses/">http://www.gnu.org/licenses/</a>.</p><p class="footer"><br><a href="https://www.mathworks.com/products/matlab/">Published with MATLAB&reg; R2019a</a><br></p></div><!--
+cFigure; hold <span class="string">on</span>;
+gpatch(Fb,V,<span class="string">'w'</span>,<span class="string">'none'</span>,0.25);
+gpatch(F(CF&lt;0,:),V,CF(CF&lt;0),<span class="string">'k'</span>,0.5);
+<span class="comment">% patchNormPlot(F,V);</span>
+caxis([0 max(VE(:))]);
+axisGeom; camlight <span class="string">headlight</span>;
+colormap <span class="string">spectral</span>; colorbar;
+drawnow;
+</pre><img width="100%" height="auto" vspace="5" hspace="5" src="HELP_tetVol_03.jpg" alt=""> <p><img vspace="5" hspace="5" src="gibbVerySmall.gif" alt=""> </p><p><i><b>GIBBON</b></i> <a href="www.gibboncode.org">www.gibboncode.org</a></p><p><i>Kevin Mattheus Moerman</i>, <a href="gibbon.toolbox@gmail.com">gibbon.toolbox@gmail.com</a></p><p><i><b>GIBBON footer text</b></i></p><p>License: <a href="https://github.com/gibbonCode/GIBBON/blob/master/LICENSE">https://github.com/gibbonCode/GIBBON/blob/master/LICENSE</a></p><p>GIBBON: The Geometry and Image-based Bioengineering add-On. A toolbox for image segmentation, image-based modeling, meshing, and finite element analysis.</p><p>Copyright (C) 2006-2022 Kevin Mattheus Moerman and the GIBBON contributors</p><p>This program is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.</p><p>This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for more details.</p><p>You should have received a copy of the GNU General Public License along with this program.  If not, see <a href="http://www.gnu.org/licenses/">http://www.gnu.org/licenses/</a>.</p><p class="footer"><br><a href="https://www.mathworks.com/products/matlab/">Published with MATLAB&reg; R2022b</a><br></p></div><!--
 ##### SOURCE BEGIN #####
 %% tetVol
 % Below is a demonstration of the features of the |tetVol| function
@@ -178,44 +167,72 @@ fontSize=15;
 %%
 % Create example geometry
 
-%Creating a hexahedron
-X=[-1;  1; 1; -1; -1;  1; 1; -1;];
-Y=[-1; -1; 1;  1; -1; -1; 1;  1;];
-Z=[-1; -1;-1; -1;  1;  1; 1;  1;];
-Vh=[X(:) Y(:) Z(:)];
-Eh=1:8; %The hexahedral element
+% Creating a meshed box
+boxDim=[2 2 2]; % Box dimenstions
+pointSpacing=1; %Approximate point spacing
+[meshStruct]=tetMeshBox(boxDim,pointSpacing);
 
-%Convert to a tetrahedron.
-[E,V]=hex2tet(Eh,Vh,[],2);
-
-%Create faces data for plotting
-[F,C]=element2patch(E);
+%%
+% Acces output fields
+E=meshStruct.elements;
+V=meshStruct.nodes;
+Fb=meshStruct.facesBoundary;
 
 %%
 % Computing the volume 
-[VE,logicValid]=tetVol(E,V)
+[VE,logicPositive]=tetVol(E,V,0);
 
 %%
-% The summed volume should be 8 for this cube
-sum(VE)
+% The summed volume should match the theoretical 
+volume_theoretical=prod(boxDim);
+volume_total=sum(VE);
 
-%% Visualize mesh and face normals
+disp(['Theoretical volume:',sprintf('%f',volume_theoretical)]);
+disp(['Total volume computed:',sprintf('%f',volume_total)]);
+
+%% Visualize
+
+[F,CF]=element2patch(E,VE);
+plotLevel=0.5.*mean(VE(:));
 
 cFigure; hold on; 
-gpatch(F,V,'kw','k',0.5);
-patchNormPlot(F,V);
-axisGeom;
-camlight headlight; 
+gpatch(Fb,V,'w','none',0.25);
+gpatch(F(CF<plotLevel,:),V,CF(CF<plotLevel,:),'k',0.5);
+% patchNormPlot(F,V);
+caxis([0 max(VE(:))]);
+axisGeom; camlight headlight; 
+colormap spectral; colorbar;
 drawnow; 
 
 %%
+% Visualizing a cut view of the mesh featuring elements coloured towards
+% volume. 
+
+meshStruct.elementData=VE;
+meshView(meshStruct,[]);
+caxis([0 max(VE(:))]);
+
+%% Example for a mesh containing an inverted element
 % Volumes are always positive but inverted elements have a 0 in the
 % inverted logic. In the example below the first element is inverted which
 % changes the logic to return a 0 for this element. 
 
 E_inverted=E; 
-E_inverted(1,:)=E_inverted(1,[4 1 2 3]);
-[VE,logicValid]=tetVol(E_inverted,V)
+E_inverted(1,:)=E_inverted(1,[4 1 2 3]); %Invert the first element
+[VE,logicPositive]=tetVol(E_inverted,V,0);
+
+%% Visualize
+
+[F,CF]=element2patch(E_inverted,VE);
+
+cFigure; hold on; 
+gpatch(Fb,V,'w','none',0.25);
+gpatch(F(CF<0,:),V,CF(CF<0),'k',0.5);
+% patchNormPlot(F,V);
+caxis([0 max(VE(:))]);
+axisGeom; camlight headlight; 
+colormap spectral; colorbar;
+drawnow; 
 
 %% 
 %
@@ -235,7 +252,7 @@ E_inverted(1,:)=E_inverted(1,[4 1 2 3]);
 % image segmentation, image-based modeling, meshing, and finite element
 % analysis.
 % 
-% Copyright (C) 2019  Kevin Mattheus Moerman
+% Copyright (C) 2006-2022 Kevin Mattheus Moerman and the GIBBON contributors
 % 
 % This program is free software: you can redistribute it and/or modify
 % it under the terms of the GNU General Public License as published by

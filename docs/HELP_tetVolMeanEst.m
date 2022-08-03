@@ -13,7 +13,7 @@ edgeColor=0.25*ones(1,3);
 edgeWidth=1.5;
 patchColor=[1 0.5 0];
 
-%% Estimaging tetrahedral volume based on mean edge length and regular face assumption
+%% Estimating tetrahedral volume based on mean edge length and regular face assumption
 
 % Get a regular tentrahedron
 [V,F]=platonic_solid(1,1);
@@ -23,7 +23,6 @@ VE=tetVol([1 2 3 4],V)
 
 %Estimated volume for regular tets based on mean edge lengths
 [VE_est]=tetVolMeanEst(F,V)
-
 
 %%
 % Plotting model

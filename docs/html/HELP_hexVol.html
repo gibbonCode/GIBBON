@@ -6,7 +6,7 @@
    <!--
 This HTML was auto-generated from MATLAB code.
 To make changes, update the MATLAB code and republish this document.
-      --><title>hexVol</title><meta name="generator" content="MATLAB 9.10"><link rel="schema.DC" href="http://purl.org/dc/elements/1.1/"><meta name="DC.date" content="2021-12-10"><meta name="DC.source" content="HELP_hexVol.m"><style type="text/css">
+      --><title>hexVol</title><meta name="generator" content="MATLAB 9.13"><link rel="schema.DC" href="http://purl.org/dc/elements/1.1/"><meta name="DC.date" content="2022-08-03"><meta name="DC.source" content="HELP_hexVol.m"><style type="text/css">
 html,body,div,span,applet,object,iframe,h1,h2,h3,h4,h5,h6,p,blockquote,pre,a,abbr,acronym,address,big,cite,code,del,dfn,em,font,img,ins,kbd,q,s,samp,small,strike,strong,tt,var,b,u,i,center,dl,dt,dd,ol,ul,li,fieldset,form,label,legend,table,caption,tbody,tfoot,thead,tr,th,td{margin:0;padding:0;border:0;outline:0;font-size:100%;vertical-align:baseline;background:transparent}body{line-height:1}ol,ul{list-style:none}blockquote,q{quotes:none}blockquote:before,blockquote:after,q:before,q:after{content:'';content:none}:focus{outine:0}ins{text-decoration:none}del{text-decoration:line-through}table{border-collapse:collapse;border-spacing:0}
 
 html { min-height:100%; margin-bottom:1px; }
@@ -68,34 +68,71 @@ table td { padding:7px 5px; text-align:left; vertical-align:top; border:1px soli
 
 
   </style></head><body><div class="content"><h1>hexVol</h1><!--introduction--><p>Below is a demonstration of the features of the <tt>hexVol</tt> function</p><!--/introduction--><h2>Contents</h2><div><ul><li><a href="#2">Syntax</a></li><li><a href="#3">Description</a></li><li><a href="#4">Example: Computing the volume of hexahedral elements</a></li><li><a href="#9">Example: Handling negative volumes</a></li><li><a href="#11">Example: A more complex hex mesh</a></li></ul></div><pre class="codeinput">clear; close <span class="string">all</span>; clc;
-</pre><h2 id="2">Syntax</h2><p><tt>[VE,L]=hexVol(E,V,absOpt);</tt></p><h2 id="3">Description</h2><p>This function computes hexahedral element volumes. The input is the element description (E) and the nodes (V). The output is the element volumes (always positive) and a logic denoting wheter the element appears to be valid (1) or inverted (0).</p><h2 id="4">Example: Computing the volume of hexahedral elements</h2><p>Create example geometry for a set of 8 hexahedral elements, each with a volume of 1, the summed volume should therefore be 8.</p><pre class="codeinput"><span class="comment">%Creating a single hexahedron</span>
-X=[-1;  1; 1; -1; -1;  1; 1; -1;];
-Y=[-1; -1; 1;  1; -1; -1; 1;  1;];
-Z=[-1; -1;-1; -1;  1;  1; 1;  1;];
-Vh=[X(:) Y(:) Z(:)];
-Eh=1:8; <span class="comment">%The hexahedral element</span>
+</pre><h2 id="2">Syntax</h2><p><tt>[VE,L]=hexVol(E,V,absOpt);</tt></p><h2 id="3">Description</h2><p>This function computes hexahedral element volumes. The input is the element description (E) and the nodes (V). The output is the element volumes (always positive) and a logic denoting wheter the element appears to be valid (1) or inverted (0).</p><h2 id="4">Example: Computing the volume of hexahedral elements</h2><p>Creating example geometry for a beam</p><pre class="codeinput">boxDim=[6 4 4]; <span class="comment">%Box dimensions</span>
+boxEl=[5 3 3]; <span class="comment">%Number of elements in each direction</span>
+[meshStruct]=hexMeshBox(boxDim,boxEl);
 
-<span class="comment">%Subdevided into 8 smaller elements</span>
-[E,V]=subHex(Eh,Vh,1);
+E=meshStruct.E;
+V=meshStruct.V;
+F=meshStruct.F;
+Fb=meshStruct.Fb;
 </pre><p>Computing the volume</p><pre class="codeinput">[VE]=hexVol(E,V)
 </pre><pre class="codeoutput">
 VE =
 
-     1
-     1
-     1
-     1
-     1
-     1
-     1
-     1
+    2.1333
+    2.1333
+    2.1333
+    2.1333
+    2.1333
+    2.1333
+    2.1333
+    2.1333
+    2.1333
+    2.1333
+    2.1333
+    2.1333
+    2.1333
+    2.1333
+    2.1333
+    2.1333
+    2.1333
+    2.1333
+    2.1333
+    2.1333
+    2.1333
+    2.1333
+    2.1333
+    2.1333
+    2.1333
+    2.1333
+    2.1333
+    2.1333
+    2.1333
+    2.1333
+    2.1333
+    2.1333
+    2.1333
+    2.1333
+    2.1333
+    2.1333
+    2.1333
+    2.1333
+    2.1333
+    2.1333
+    2.1333
+    2.1333
+    2.1333
+    2.1333
+    2.1333
 
-</pre><p>The summed volume should be 8 for this cube</p><pre class="codeinput">sum(VE)
-</pre><pre class="codeoutput">
-ans =
+</pre><p>The summed volume should match the theoretical</p><pre class="codeinput">volume_theoretical=prod(boxDim);
+volume_total=sum(VE);
 
-     8
-
+disp([<span class="string">'Theoretical volume:'</span>,sprintf(<span class="string">'%f'</span>,volume_theoretical)]);
+disp([<span class="string">'Total volume computed:'</span>,sprintf(<span class="string">'%f'</span>,volume_total)]);
+</pre><pre class="codeoutput">Theoretical volume:96.000000
+Total volume computed:96.000000
 </pre><p>Visualize mesh and face normals</p><pre class="codeinput"><span class="comment">%Create patch data for plotting</span>
 [F,C]=element2patch(E,VE);
 
@@ -105,6 +142,7 @@ gpatch(F,V,C,<span class="string">'k'</span>,1);
 patchNormPlot(F,V);
 axisGeom; camlight <span class="string">headlight</span>;
 colormap <span class="string">spectral</span>; colorbar;
+caxis([0 max(VE)]);
 drawnow;
 </pre><img width="100%" height="auto" vspace="5" hspace="5" src="HELP_hexVol_01.jpg" alt=""> <h2 id="9">Example: Handling negative volumes</h2><p>Volumes are made absolute by default. To help detect inverted elements the optional input absOpt can be set to 0 to allow for negative volume output. In addition an output logicPositive can be requested which is true for postive volumes and false for negative volumes.</p><pre class="codeinput">E_inverted=E; <span class="comment">%Copy element set</span>
 E_inverted(1,:)=E_inverted(1,[5:8 1:4]); <span class="comment">%Invert first element</span>
@@ -123,21 +161,95 @@ absOpt =
 
 VE =
 
-     1
-     1
-     1
-     1
-     1
-     1
-     1
-     1
+    2.1333
+    2.1333
+    2.1333
+    2.1333
+    2.1333
+    2.1333
+    2.1333
+    2.1333
+    2.1333
+    2.1333
+    2.1333
+    2.1333
+    2.1333
+    2.1333
+    2.1333
+    2.1333
+    2.1333
+    2.1333
+    2.1333
+    2.1333
+    2.1333
+    2.1333
+    2.1333
+    2.1333
+    2.1333
+    2.1333
+    2.1333
+    2.1333
+    2.1333
+    2.1333
+    2.1333
+    2.1333
+    2.1333
+    2.1333
+    2.1333
+    2.1333
+    2.1333
+    2.1333
+    2.1333
+    2.1333
+    2.1333
+    2.1333
+    2.1333
+    2.1333
+    2.1333
 
 
 logicPositive =
 
-  8&times;1 logical array
+  45&times;1 logical array
 
    0
+   1
+   1
+   1
+   1
+   1
+   1
+   1
+   1
+   1
+   1
+   1
+   1
+   1
+   1
+   1
+   1
+   1
+   1
+   1
+   1
+   1
+   1
+   1
+   1
+   1
+   1
+   1
+   1
+   1
+   1
+   1
+   1
+   1
+   1
+   1
+   1
+   1
    1
    1
    1
@@ -154,21 +266,95 @@ absOpt =
 
 VE =
 
-    -1
-     1
-     1
-     1
-     1
-     1
-     1
-     1
+   -2.1333
+    2.1333
+    2.1333
+    2.1333
+    2.1333
+    2.1333
+    2.1333
+    2.1333
+    2.1333
+    2.1333
+    2.1333
+    2.1333
+    2.1333
+    2.1333
+    2.1333
+    2.1333
+    2.1333
+    2.1333
+    2.1333
+    2.1333
+    2.1333
+    2.1333
+    2.1333
+    2.1333
+    2.1333
+    2.1333
+    2.1333
+    2.1333
+    2.1333
+    2.1333
+    2.1333
+    2.1333
+    2.1333
+    2.1333
+    2.1333
+    2.1333
+    2.1333
+    2.1333
+    2.1333
+    2.1333
+    2.1333
+    2.1333
+    2.1333
+    2.1333
+    2.1333
 
 
 logicPositive =
 
-  8&times;1 logical array
+  45&times;1 logical array
 
    0
+   1
+   1
+   1
+   1
+   1
+   1
+   1
+   1
+   1
+   1
+   1
+   1
+   1
+   1
+   1
+   1
+   1
+   1
+   1
+   1
+   1
+   1
+   1
+   1
+   1
+   1
+   1
+   1
+   1
+   1
+   1
+   1
+   1
+   1
+   1
+   1
+   1
    1
    1
    1
@@ -186,6 +372,7 @@ gpatch(F,V,C,<span class="string">'k'</span>,0.5);
 patchNormPlot(F,V);
 axisGeom; camlight <span class="string">headlight</span>;
 colormap <span class="string">spectral</span>; colorbar;
+caxis([min(VE) max(VE)]);
 drawnow;
 </pre><img width="100%" height="auto" vspace="5" hspace="5" src="HELP_hexVol_02.jpg" alt=""> <h2 id="11">Example: A more complex hex mesh</h2><pre class="codeinput"><span class="comment">%Control settings</span>
 optionStruct.sphereRadius=10;
@@ -215,7 +402,9 @@ gpatch(F,V,C,<span class="string">'k'</span>,1);
 axisGeom; camlight <span class="string">headlight</span>;
 colormap <span class="string">spectral</span>; colorbar;
 drawnow;
-</pre><img width="100%" height="auto" vspace="5" hspace="5" src="HELP_hexVol_03.jpg" alt=""> <p><img vspace="5" hspace="5" src="gibbVerySmall.gif" alt=""> </p><p><i><b>GIBBON</b></i> <a href="www.gibboncode.org">www.gibboncode.org</a></p><p><i>Kevin Mattheus Moerman</i>, <a href="gibbon.toolbox@gmail.com">gibbon.toolbox@gmail.com</a></p><p><i><b>GIBBON footer text</b></i></p><p>License: <a href="https://github.com/gibbonCode/GIBBON/blob/master/LICENSE">https://github.com/gibbonCode/GIBBON/blob/master/LICENSE</a></p><p>GIBBON: The Geometry and Image-based Bioengineering add-On. A toolbox for image segmentation, image-based modeling, meshing, and finite element analysis.</p><p>Copyright (C) 2006-2021 Kevin Mattheus Moerman and the GIBBON contributors</p><p>This program is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.</p><p>This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for more details.</p><p>You should have received a copy of the GNU General Public License along with this program.  If not, see <a href="http://www.gnu.org/licenses/">http://www.gnu.org/licenses/</a>.</p><p class="footer"><br><a href="https://www.mathworks.com/products/matlab/">Published with MATLAB&reg; R2021a</a><br></p></div><!--
+</pre><img width="100%" height="auto" vspace="5" hspace="5" src="HELP_hexVol_03.jpg" alt=""> <p>3D cut view</p><pre class="codeinput">meshStruct.elementData=VE;
+meshView(meshStruct,[]);
+</pre><img width="100%" height="auto" vspace="5" hspace="5" src="HELP_hexVol_04.jpg" alt=""> <p><img vspace="5" hspace="5" src="gibbVerySmall.gif" alt=""> </p><p><i><b>GIBBON</b></i> <a href="www.gibboncode.org">www.gibboncode.org</a></p><p><i>Kevin Mattheus Moerman</i>, <a href="gibbon.toolbox@gmail.com">gibbon.toolbox@gmail.com</a></p><p><i><b>GIBBON footer text</b></i></p><p>License: <a href="https://github.com/gibbonCode/GIBBON/blob/master/LICENSE">https://github.com/gibbonCode/GIBBON/blob/master/LICENSE</a></p><p>GIBBON: The Geometry and Image-based Bioengineering add-On. A toolbox for image segmentation, image-based modeling, meshing, and finite element analysis.</p><p>Copyright (C) 2006-2022 Kevin Mattheus Moerman and the GIBBON contributors</p><p>This program is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.</p><p>This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for more details.</p><p>You should have received a copy of the GNU General Public License along with this program.  If not, see <a href="http://www.gnu.org/licenses/">http://www.gnu.org/licenses/</a>.</p><p class="footer"><br><a href="https://www.mathworks.com/products/matlab/">Published with MATLAB&reg; R2022b</a><br></p></div><!--
 ##### SOURCE BEGIN #####
 %% hexVol
 % Below is a demonstration of the features of the |hexVol| function
@@ -235,26 +424,28 @@ clear; close all; clc;
 %% Example: Computing the volume of hexahedral elements
 
 %%
-% Create example geometry for a set of 8 hexahedral elements, each with a
-% volume of 1, the summed volume should therefore be 8. 
+% Creating example geometry for a beam
 
-%Creating a single hexahedron
-X=[-1;  1; 1; -1; -1;  1; 1; -1;];
-Y=[-1; -1; 1;  1; -1; -1; 1;  1;];
-Z=[-1; -1;-1; -1;  1;  1; 1;  1;];
-Vh=[X(:) Y(:) Z(:)];
-Eh=1:8; %The hexahedral element
+boxDim=[6 4 4]; %Box dimensions
+boxEl=[5 3 3]; %Number of elements in each direction
+[meshStruct]=hexMeshBox(boxDim,boxEl);
 
-%Subdevided into 8 smaller elements
-[E,V]=subHex(Eh,Vh,1);
+E=meshStruct.E;
+V=meshStruct.V;
+F=meshStruct.F;
+Fb=meshStruct.Fb;
 
 %%
 % Computing the volume 
 [VE]=hexVol(E,V)
 
 %%
-% The summed volume should be 8 for this cube
-sum(VE)
+% The summed volume should match the theoretical 
+volume_theoretical=prod(boxDim);
+volume_total=sum(VE);
+
+disp(['Theoretical volume:',sprintf('%f',volume_theoretical)]);
+disp(['Total volume computed:',sprintf('%f',volume_total)]);
 
 %% 
 % Visualize mesh and face normals
@@ -268,6 +459,7 @@ gpatch(F,V,C,'k',1);
 patchNormPlot(F,V);
 axisGeom; camlight headlight; 
 colormap spectral; colorbar; 
+caxis([0 max(VE)]);
 drawnow; 
 
 %% Example: Handling negative volumes
@@ -298,6 +490,7 @@ gpatch(F,V,C,'k',0.5);
 patchNormPlot(F,V);
 axisGeom; camlight headlight; 
 colormap spectral; colorbar;
+caxis([min(VE) max(VE)]);
 drawnow; 
 
 %% Example: A more complex hex mesh
@@ -335,6 +528,11 @@ axisGeom; camlight headlight;
 colormap spectral; colorbar;
 drawnow; 
 
+%%
+% 3D cut view
+meshStruct.elementData=VE;
+meshView(meshStruct,[]);
+
 %% 
 %
 % <<gibbVerySmall.gif>>
@@ -353,7 +551,7 @@ drawnow;
 % image segmentation, image-based modeling, meshing, and finite element
 % analysis.
 % 
-% Copyright (C) 2006-2021 Kevin Mattheus Moerman and the GIBBON contributors
+% Copyright (C) 2006-2022 Kevin Mattheus Moerman and the GIBBON contributors
 % 
 % This program is free software: you can redistribute it and/or modify
 % it under the terms of the GNU General Public License as published by

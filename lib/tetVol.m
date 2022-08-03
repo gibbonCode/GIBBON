@@ -1,6 +1,6 @@
-function [varargout]=tetVol(E,V)
+function [varargout]=tetVol(varargin)
 
-% function VE=tetVol(E,V)
+% function [VE,logicPositive]=tetVol(E,V,absOpt)
 % ------------------------------------------------------------------------
 % Calculates the volume (VE) of the tetrahedral elements specified by the
 % element matrix E and the vertices V.
@@ -10,6 +10,19 @@ function [varargout]=tetVol(E,V)
 % 
 % 2014/09/25
 %-------------------------------------------------------------------------
+
+%% parse input
+
+switch nargin
+    case 2
+        E=varargin{1};
+        V=varargin{2};
+        absOpt=1;
+    case 3        
+        E=varargin{1};
+        V=varargin{2};
+        absOpt=varargin{3};
+end
 
 X=V(:,1); Y=V(:,2); Z=V(:,3);
 XE=X(E); YE=Y(E); ZE=Z(E);
@@ -21,11 +34,20 @@ B=[XE(:,2) YE(:,2) ZE(:,2)];
 C=[XE(:,3) YE(:,3) ZE(:,3)];
 D=[XE(:,4) YE(:,4) ZE(:,4)];
 
-VE=-dot((A-D),cross((B-D),(C-D),2),2)/6;
-logicPositive=VE>0; 
+v=-dot((A-D),cross((B-D),(C-D),2),2)/6;
 
-varargout{1}=abs(VE);
-varargout{2}=logicPositive;
+%% Collect output
+
+if absOpt==1
+    varargout{1}=abs(v);
+else
+    varargout{1}=v;
+end
+
+if nargout>1
+    varargout{2}=v>0;
+end
+
 
 %% 
 % _*GIBBON footer text*_ 

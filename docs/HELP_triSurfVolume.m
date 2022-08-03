@@ -10,7 +10,53 @@ clear; close all; clc;
 %% Description 
 % UNDOCUMENTED 
 %% Examples 
-% 
+
+%% Example 1: Volume of a sphere
+
+%%
+% Creating meshed sphere, note that the discrete nature of the mesh causes
+% the volume to deviate somewhat from the theoretical value. 
+
+r=3; %sphere radius
+n=2; %Refinements   
+[F,V,~]=geoSphere(n,r);
+
+%%
+% Computing the volume
+
+vol_theoretical=(4/3)*pi*r.^3 %Theoretical volume
+vol_surf_est=triSurfVolume(F,V) %estimate based on triangulated surface
+
+%%
+
+cFigure; 
+gpatch(F,V,'gw','k');
+axisGeom; camlight headlight;
+gdrawnow; 
+
+%% Example 2: Volume of a beam 
+
+%%
+% Creating a meshed beam
+
+% Specifying dimensions and number of elements for each direction
+boxDim=[2 1 0.5]; %Width in each direction
+pointSpacing=min(boxDim)/2; %Desired point spacing
+[F,V,faceBoundaryMarker]=triBox(boxDim,pointSpacing); % Using |triBox| to build a triangulated cube
+
+%%
+% Computing the volume
+
+vol_theoretical=prod(boxDim) %Theoretical volume
+vol_surf_est=triSurfVolume(F,V) %estimate based on triangulated surface
+
+%%
+
+cFigure; 
+gpatch(F,V,'gw','k');
+axisGeom; camlight headlight;
+gdrawnow; 
+
 %%
 % 
 % <<gibbVerySmall.gif>>

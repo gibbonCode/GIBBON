@@ -29,44 +29,72 @@ fontSize=15;
 %%
 % Create example geometry
 
-%Creating a hexahedron
-X=[-1;  1; 1; -1; -1;  1; 1; -1;];
-Y=[-1; -1; 1;  1; -1; -1; 1;  1;];
-Z=[-1; -1;-1; -1;  1;  1; 1;  1;];
-Vh=[X(:) Y(:) Z(:)];
-Eh=1:8; %The hexahedral element
+% Creating a meshed box
+boxDim=[2 2 2]; % Box dimenstions
+pointSpacing=1; %Approximate point spacing
+[meshStruct]=tetMeshBox(boxDim,pointSpacing);
 
-%Convert to a tetrahedron.
-[E,V]=hex2tet(Eh,Vh,[],2);
-
-%Create faces data for plotting
-[F,C]=element2patch(E);
+%%
+% Acces output fields
+E=meshStruct.elements;
+V=meshStruct.nodes;
+Fb=meshStruct.facesBoundary;
 
 %%
 % Computing the volume 
-[VE,logicValid]=tetVol(E,V)
+[VE,logicPositive]=tetVol(E,V,0);
 
 %%
-% The summed volume should be 8 for this cube
-sum(VE)
+% The summed volume should match the theoretical 
+volume_theoretical=prod(boxDim);
+volume_total=sum(VE);
 
-%% Visualize mesh and face normals
+disp(['Theoretical volume:',sprintf('%f',volume_theoretical)]);
+disp(['Total volume computed:',sprintf('%f',volume_total)]);
+
+%% Visualize
+
+[F,CF]=element2patch(E,VE);
+plotLevel=0.5.*mean(VE(:));
 
 cFigure; hold on; 
-gpatch(F,V,'kw','k',0.5);
-patchNormPlot(F,V);
-axisGeom;
-camlight headlight; 
+gpatch(Fb,V,'w','none',0.25);
+gpatch(F(CF<plotLevel,:),V,CF(CF<plotLevel,:),'k',0.5);
+% patchNormPlot(F,V);
+caxis([0 max(VE(:))]);
+axisGeom; camlight headlight; 
+colormap spectral; colorbar;
 drawnow; 
 
 %%
+% Visualizing a cut view of the mesh featuring elements coloured towards
+% volume. 
+
+meshStruct.elementData=VE;
+meshView(meshStruct,[]);
+caxis([0 max(VE(:))]);
+
+%% Example for a mesh containing an inverted element
 % Volumes are always positive but inverted elements have a 0 in the
 % inverted logic. In the example below the first element is inverted which
 % changes the logic to return a 0 for this element. 
 
 E_inverted=E; 
-E_inverted(1,:)=E_inverted(1,[4 1 2 3]);
-[VE,logicValid]=tetVol(E_inverted,V)
+E_inverted(1,:)=E_inverted(1,[4 1 2 3]); %Invert the first element
+[VE,logicPositive]=tetVol(E_inverted,V,0);
+
+%% Visualize
+
+[F,CF]=element2patch(E_inverted,VE);
+
+cFigure; hold on; 
+gpatch(Fb,V,'w','none',0.25);
+gpatch(F(CF<0,:),V,CF(CF<0),'k',0.5);
+% patchNormPlot(F,V);
+caxis([0 max(VE(:))]);
+axisGeom; camlight headlight; 
+colormap spectral; colorbar;
+drawnow; 
 
 %% 
 %
