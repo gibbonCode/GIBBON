@@ -17,18 +17,26 @@ function varargout=plotV(V,varargin)
 
 %%
 
-if ~isempty(V)        
-    if size(V,2)==2 %Force 3D
-        V(:,3)=0; %Add zeros for Z if input is 2D
-    end        
-    if nargout==1
-       varargout{1}=plot3(V(:,1),V(:,2),V(:,3),varargin{:}); %Add handle to output        
-    else
-        plot3(V(:,1),V(:,2),V(:,3),varargin{:}); %Just plot        
+if isa(V,'cell') %Recursively loop over cell entries
+    h=gobjects(numel(V));
+    for q=1:1:numel(V)                
+        h(q)=plotV(V{q},varargin{:});
     end
-else %Nothing to plot so return empty handle
-    if nargout==1    
-        varargout{1}=plot3([],[],[]); %Empty "line array" graphics handle
+    varargout{1}=h;
+else
+    if ~isempty(V)
+        if size(V,2)==2 %Force 3D
+            V(:,3)=0; %Add zeros for Z if input is 2D
+        end
+        if nargout==1
+            varargout{1}=plot3(V(:,1),V(:,2),V(:,3),varargin{:}); %Add handle to output
+        else
+            plot3(V(:,1),V(:,2),V(:,3),varargin{:}); %Just plot
+        end
+    else %Nothing to plot so return empty handle
+        if nargout==1
+            varargout{1}=plot3([],[],[]); %Empty "line array" graphics handle
+        end
     end
 end
 
