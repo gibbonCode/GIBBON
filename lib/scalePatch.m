@@ -1,16 +1,15 @@
 function [varargout]=scalePatch(varargin)
 
-% --------------------------------------------------------------------
-% function [Fc,Vc]=scalePatch(F,V,scaleFactor)
+% ------------------------------------------------------------------------
+% function [Fc,Vc]=scalePatch(F,V,scaleFactor,V_scale)
+%
 %
 % CHANGE LOG: 
 % 19/12/2013 Fixed error related to single face entry, see if statement
 % related to size(F,1)
 % 2018/05/07 Created to be similar to patchDetach, which now calls this
 % function
-%
-% --------------------------------------------------------------------
-%%
+% ------------------------------------------------------------------------
 
 %% Parse input
 

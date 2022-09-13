@@ -60,7 +60,7 @@ if exist(febXML,'file')==2
         for qp=1:1:numel(mat_cell{q}.par_names)
             par_data_text=sprintf('%6.7e,',mat_cell{q}.par_values{qp}); %formatted as e.g. 4.4408921e-016
             par_data_text=par_data_text(1:end-1); %because an extra comma is added to the end
-            if iscell(mat_cell{q}.par_names{qp}); %uncoupled solid mixture type entry
+            if iscell(mat_cell{q}.par_names{qp}) %uncoupled solid mixture type entry
                 %here it is assumed that mat_cell{i}.par_names{j}{1:3} refers to
                 %solid, type and parameter.
                 solid_element=mat_FEB_XML.item(mat_id_ind).getElementsByTagName(mat_cell{q}.par_names{qp}{1});

@@ -159,7 +159,7 @@ switch extendMethod
         error('Invalid extrude option provided, use 1-5');
 end
 
-%Create quadrilaterial faces
+%Create quadrilateral faces
 X=linspacen(V1(:,1),V2(:,1),numSteps);
 Y=linspacen(V1(:,2),V2(:,2),numSteps);
 Z=linspacen(V1(:,3),V2(:,3),numSteps);

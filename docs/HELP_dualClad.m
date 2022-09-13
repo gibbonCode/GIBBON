@@ -182,7 +182,7 @@ hp2=gpatch(Fq,Vq,'r','none',1);
 axisGeom;
 camlight headlight;
 colormap(viridis(250));
-caxis([0 1]);
+clim([0 1]);
 drawnow;
 axis off
 axis manual; 

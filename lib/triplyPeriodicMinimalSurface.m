@@ -26,6 +26,7 @@ defaultInputStruct.surfaceCase='g';
 defaultInputStruct.numPeriods=[1 1 1]; 
 defaultInputStruct.levelset=0.5;
 defaultInputStruct.surfaceSide=1;
+defaultInputStruct.phaseShift=0.3*[pi pi pi]; 
 
 %Complete input with default if incomplete
 [inputStruct]=structComplete(inputStruct,defaultInputStruct,1); %Complement provided with default if missing or empty
@@ -37,6 +38,7 @@ isocap= inputStruct.isocap;
 surfaceCase=inputStruct.surfaceCase; 
 numPeriods=inputStruct.numPeriods; 
 levelset=inputStruct.levelset;
+phaseShift=inputStruct.phaseShift; 
 
 if numel(numPeriods)==1
     numPeriods=numPeriods*ones(1,3);
@@ -45,11 +47,11 @@ end
 %% Generation of points
 
 %Define coordinate limits
-xMin=0;
+xMin=0+phaseShift(1);
 xMax=xMin+2*pi*numPeriods(1);
-yMin=0;
+yMin=0+phaseShift(2);
 yMax=yMin+2*pi*numPeriods(2);
-zMin=0;
+zMin=0+phaseShift(3);
 zMax=zMin+2*pi*numPeriods(3);
 
 %Create coordinates

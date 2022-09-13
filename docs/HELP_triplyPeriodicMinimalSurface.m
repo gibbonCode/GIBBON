@@ -39,7 +39,8 @@ inputStruct.anisotropyFactors=[1 1 1];
 inputStruct.isocap=1; %Option to cap the isosurface
 inputStruct.surfaceCase='g'; %Surface type
 inputStruct.numPeriods=[3 3 3]; %Number of periods in each direction
-inputStruct.levelset=0.5; %Isosurface level
+inputStruct.levelset=0; %Isosurface level
+inputStruct.surfaceSide=-1; % 0=both, 1="above" 1, -1="below"
 
 %% 
 % Create triply periodic minimal surface
@@ -61,6 +62,7 @@ C=C(G==indKeep,:); %Trim color data
 
 cFigure; 
 gpatch(F,V,C,'none');
+% patchNormPlot(F,V);
 axisGeom; camlight headlight; 
 colormap gjet; icolorbar;
 gdrawnow;
@@ -72,7 +74,7 @@ inputStruct.anisotropyFactors=[1 1 1];
 inputStruct.isocap=0; %Option to cap the isosurface
 inputStruct.surfaceCase='g'; %Surface type
 inputStruct.numPeriods=[1 1 1]; %Number of periods in each direction
-inputStruct.levelset=0.5; %Isosurface level
+inputStruct.levelset=0; %Isosurface level
 
 %% 
 % Create stochastic structure
