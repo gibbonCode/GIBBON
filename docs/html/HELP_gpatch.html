@@ -6,8 +6,8 @@
    <!--
 This HTML was auto-generated from MATLAB code.
 To make changes, update the MATLAB code and republish this document.
-      --><title>gpatch</title><meta name="generator" content="MATLAB 9.6"><link rel="schema.DC" href="http://purl.org/dc/elements/1.1/"><meta name="DC.date" content="2019-06-20"><meta name="DC.source" content="HELP_gpatch.m"><style type="text/css">
-html,body,div,span,applet,object,iframe,h1,h2,h3,h4,h5,h6,p,blockquote,pre,a,abbr,acronym,address,big,cite,code,del,dfn,em,font,img,ins,kbd,q,s,samp,small,strike,strong,sub,sup,tt,var,b,u,i,center,dl,dt,dd,ol,ul,li,fieldset,form,label,legend,table,caption,tbody,tfoot,thead,tr,th,td{margin:0;padding:0;border:0;outline:0;font-size:100%;vertical-align:baseline;background:transparent}body{line-height:1}ol,ul{list-style:none}blockquote,q{quotes:none}blockquote:before,blockquote:after,q:before,q:after{content:'';content:none}:focus{outine:0}ins{text-decoration:none}del{text-decoration:line-through}table{border-collapse:collapse;border-spacing:0}
+      --><title>gpatch</title><meta name="generator" content="MATLAB 9.13"><link rel="schema.DC" href="http://purl.org/dc/elements/1.1/"><meta name="DC.date" content="2022-09-13"><meta name="DC.source" content="HELP_gpatch.m"><style type="text/css">
+html,body,div,span,applet,object,iframe,h1,h2,h3,h4,h5,h6,p,blockquote,pre,a,abbr,acronym,address,big,cite,code,del,dfn,em,font,img,ins,kbd,q,s,samp,small,strike,strong,tt,var,b,u,i,center,dl,dt,dd,ol,ul,li,fieldset,form,label,legend,table,caption,tbody,tfoot,thead,tr,th,td{margin:0;padding:0;border:0;outline:0;font-size:100%;vertical-align:baseline;background:transparent}body{line-height:1}ol,ul{list-style:none}blockquote,q{quotes:none}blockquote:before,blockquote:after,q:before,q:after{content:'';content:none}:focus{outine:0}ins{text-decoration:none}del{text-decoration:line-through}table{border-collapse:collapse;border-spacing:0}
 
 html { min-height:100%; margin-bottom:1px; }
 html body { height:100%; margin:0px; font-family:Arial, Helvetica, sans-serif; font-size:10px; color:#000; line-height:140%; background:#fff none; overflow-y:scroll; }
@@ -23,7 +23,7 @@ a:visited { color:#004aa0; text-decoration:none; }
 
 p { padding:0px; margin:0px 0px 20px; }
 img { padding:0px; margin:0px 0px 20px; border:none; }
-p img, pre img, tt img, li img, h1 img, h2 img { margin-bottom:0px; } 
+p img, pre img, tt img, li img, h1 img, h2 img { margin-bottom:0px; }
 
 ul { padding:0px; margin:0px 0px 20px 23px; list-style:square; }
 ul li { padding:0px; margin:0px 0px 7px 0px; }
@@ -52,6 +52,7 @@ span.comment { color:#228B22 }
 span.string { color:#A020F0 }
 span.untermstring { color:#B20000 }
 span.syscmd { color:#B28C00 }
+span.typesection { color:#A0522D }
 
 .footer { width:auto; padding:10px 0px; margin:25px 0px 0px; border-top:1px dotted #878787; font-size:0.8em; line-height:140%; font-style:italic; color:#878787; text-align:left; float:none; }
 .footer p { margin:0px; }
@@ -66,7 +67,7 @@ table td { padding:7px 5px; text-align:left; vertical-align:top; border:1px soli
 
 
 
-  </style></head><body><div class="content"><h1>gpatch</h1><!--introduction--><p>Below is a demonstration of the features of the <tt>gpatch</tt> function</p><!--/introduction--><h2>Contents</h2><div><ul><li><a href="#2">Syntax</a></li><li><a href="#3">Description</a></li><li><a href="#4">Examples</a></li><li><a href="#6">Example: Introduction to using <tt>gpatch</tt> for mesh visualization</a></li></ul></div><pre class="codeinput">clear; close <span class="string">all</span>; clc;
+  </style></head><body><div class="content"><h1>gpatch</h1><!--introduction--><p>Below is a demonstration of the features of the <tt>gpatch</tt> function</p><!--/introduction--><h2>Contents</h2><div><ul><li><a href="#2">Syntax</a></li><li><a href="#3">Description</a></li><li><a href="#4">Examples</a></li><li><a href="#6">Example: Introduction to using <tt>gpatch</tt> for mesh visualization</a></li><li><a href="#8">Using <tt>gpatch</tt> with cell arrays containing patch data</a></li></ul></div><pre class="codeinput">clear; close <span class="string">all</span>; clc;
 </pre><h2 id="2">Syntax</h2><p><tt>[hp]=gpatch(F,V,C,CE,A,L)</tt>;</p><h2 id="3">Description</h2><p>This function is a short-hand version of the <tt>patch</tt> command. The inputs for <tt>gpatch</tt> are the faces (F), the vertices (V), the color description (C), the edge color description CE, the transparancy (A), and the edge width (L). The color data descriptions C (or equivalently CE for edges) can be: 1) A string such as 'g' for green 2) A triplet of RGD values e.g. [1 0 0] is blue 3) A nx1 or a mx1 array of colormapped colors (where n=size(F,1) or m=size(V,1)) 4) (simiarl to 3) A nx3 or a mx3 RGB color value array for the faces or vertices respectively.</p><h2 id="4">Examples</h2><p>Create example mesh data</p><pre class="codeinput">[F,V,~]=geoSphere(2,1); <span class="comment">%Faces and vertices</span>
 CV=V(:,1); <span class="comment">%Color information for vertices</span>
 CF=vertexToFaceMeasure(F,CV); <span class="comment">%Color information for faces</span>
@@ -100,7 +101,10 @@ patch(<span class="string">'Faces'</span>,F,<span class="string">'Vertices'</spa
 axisGeom;
 
 drawnow;
-</pre><img width="100%" height="auto" vspace="5" hspace="5" src="HELP_gpatch_01.jpg" alt=""> <p>Using <tt>gpatch</tt> shorthand alternative to <tt>patch</tt></p><pre class="codeinput">cFigure;
+
+<span class="comment">% Using |gpatch| shorthand alternative to |patch|</span>
+
+cFigure;
 subplot(2,3,1);
 title(<span class="string">'Single face and edge color'</span>);
 gpatch(F,V,<span class="string">'r'</span>,<span class="string">'g'</span>,0.5);
@@ -129,7 +133,36 @@ gpatch(F,V,<span class="string">'g'</span>,<span class="string">'none'</span>,CV
 axisGeom;
 
 drawnow;
-</pre><img width="100%" height="auto" vspace="5" hspace="5" src="HELP_gpatch_02.jpg" alt=""> <p><img vspace="5" hspace="5" src="gibbVerySmall.gif" alt=""> </p><p><i><b>GIBBON</b></i> <a href="www.gibboncode.org">www.gibboncode.org</a></p><p><i>Kevin Mattheus Moerman</i>, <a href="gibbon.toolbox@gmail.com">gibbon.toolbox@gmail.com</a></p><p><i><b>GIBBON footer text</b></i></p><p>License: <a href="https://github.com/gibbonCode/GIBBON/blob/master/LICENSE">https://github.com/gibbonCode/GIBBON/blob/master/LICENSE</a></p><p>GIBBON: The Geometry and Image-based Bioengineering add-On. A toolbox for image segmentation, image-based modeling, meshing, and finite element analysis.</p><p>Copyright (C) 2019  Kevin Mattheus Moerman</p><p>This program is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.</p><p>This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for more details.</p><p>You should have received a copy of the GNU General Public License along with this program.  If not, see <a href="http://www.gnu.org/licenses/">http://www.gnu.org/licenses/</a>.</p><p class="footer"><br><a href="https://www.mathworks.com/products/matlab/">Published with MATLAB&reg; R2019a</a><br></p></div><!--
+</pre><img width="100%" height="auto" vspace="5" hspace="5" src="HELP_gpatch_01.jpg" alt=""> <img width="100%" height="auto" vspace="5" hspace="5" src="HELP_gpatch_02.jpg" alt=""> <h2 id="8">Using <tt>gpatch</tt> with cell arrays containing patch data</h2><p>Use of <tt>gpatch</tt> when both the faces and vertices are stored in a cell array</p><pre class="codeinput"><span class="comment">% Create example cell arrays</span>
+[F1,V1]=graphicsModels(1); V1=V1-mean(V1,1); V1=V1./max(V1(:)); V1=V1-1;
+[F2,V2]=graphicsModels(2); V2=V2-mean(V2,1); V2=V2./max(V2(:));
+[F3,V3]=graphicsModels(3); V3=V3-mean(V3,1); V3=V3./max(V3(:)); V3=V3+1;
+F={F1,F2,F3}; <span class="comment">%Cell array containing faces</span>
+V={V1,V2,V3}; <span class="comment">%Cell array containing vertices</span>
+C={ones(size(F1,1),1),2*ones(size(F2,1),1),3*ones(size(F3,1),1)}; <span class="comment">%Cell array containing color labels</span>
+
+cFigure;
+title(<span class="string">'Cell array of patch data'</span>);
+hp=gpatch(F,V,C,<span class="string">'none'</span>,1);
+axisGeom; camlight <span class="string">headlight</span>;
+colormap <span class="string">spectral</span>; icolorbar;
+drawnow;
+</pre><img width="100%" height="auto" vspace="5" hspace="5" src="HELP_gpatch_03.jpg" alt=""> <img width="100%" height="auto" vspace="5" hspace="5" src="HELP_gpatch_04.jpg" alt=""> <p>Use of <tt>gpatch</tt> when only the faces are stored in a cell array</p><pre class="codeinput"><span class="comment">% Create example cell array</span>
+
+[F1,V1]=graphicsModels(1); V1=V1-mean(V1,1); V1=V1./max(V1(:)); V1=V1-1;
+[F2,V2]=graphicsModels(2); V2=V2-mean(V2,1); V2=V2./max(V2(:));
+[F3,V3]=graphicsModels(3); V3=V3-mean(V3,1); V3=V3./max(V3(:)); V3=V3+1;
+F={F1,F2+size(V1,1),F3+size(V1,1)+size(V2,1)}; <span class="comment">%Cell array containing faces</span>
+V=[V1;V2;V3]; <span class="comment">%Normal array containing all vertices</span>
+C={ones(size(F1,1),1),2*ones(size(F2,1),1),3*ones(size(F3,1),1)}; <span class="comment">%Cell array containing color labels</span>
+
+cFigure;
+title(<span class="string">'Cell array of patch data'</span>);
+hp=gpatch(F,V,C,<span class="string">'none'</span>,1);
+axisGeom; camlight <span class="string">headlight</span>;
+colormap <span class="string">spectral</span>; icolorbar;
+drawnow;
+</pre><img width="100%" height="auto" vspace="5" hspace="5" src="HELP_gpatch_05.jpg" alt=""> <p><img vspace="5" hspace="5" src="gibbVerySmall.gif" alt=""> </p><p><i><b>GIBBON</b></i> <a href="www.gibboncode.org">www.gibboncode.org</a></p><p><i>Kevin Mattheus Moerman</i>, <a href="gibbon.toolbox@gmail.com">gibbon.toolbox@gmail.com</a></p><p><i><b>GIBBON footer text</b></i></p><p>License: <a href="https://github.com/gibbonCode/GIBBON/blob/master/LICENSE">https://github.com/gibbonCode/GIBBON/blob/master/LICENSE</a></p><p>GIBBON: The Geometry and Image-based Bioengineering add-On. A toolbox for image segmentation, image-based modeling, meshing, and finite element analysis.</p><p>Copyright (C) 2006-2022 Kevin Mattheus Moerman and the GIBBON contributors</p><p>This program is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.</p><p>This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for more details.</p><p>You should have received a copy of the GNU General Public License along with this program.  If not, see <a href="http://www.gnu.org/licenses/">http://www.gnu.org/licenses/</a>.</p><p class="footer"><br><a href="https://www.mathworks.com/products/matlab/">Published with MATLAB&reg; R2022b</a><br></p></div><!--
 ##### SOURCE BEGIN #####
 %% gpatch
 % Below is a demonstration of the features of the |gpatch| function
@@ -199,7 +232,6 @@ axisGeom;
 
 drawnow; 
 
-%%
 % Using |gpatch| shorthand alternative to |patch|
 
 cFigure; 
@@ -232,6 +264,46 @@ axisGeom;
 
 drawnow; 
 
+%% Using |gpatch| with cell arrays containing patch data
+
+%%
+% Use of |gpatch| when both the faces and vertices are stored in a cell
+% array
+
+% Create example cell arrays
+[F1,V1]=graphicsModels(1); V1=V1-mean(V1,1); V1=V1./max(V1(:)); V1=V1-1;
+[F2,V2]=graphicsModels(2); V2=V2-mean(V2,1); V2=V2./max(V2(:));
+[F3,V3]=graphicsModels(3); V3=V3-mean(V3,1); V3=V3./max(V3(:)); V3=V3+1;
+F={F1,F2,F3}; %Cell array containing faces
+V={V1,V2,V3}; %Cell array containing vertices
+C={ones(size(F1,1),1),2*ones(size(F2,1),1),3*ones(size(F3,1),1)}; %Cell array containing color labels
+
+cFigure; 
+title('Cell array of patch data');
+hp=gpatch(F,V,C,'none',1);
+axisGeom; camlight headlight;
+colormap spectral; icolorbar;
+drawnow;
+
+%%
+% Use of |gpatch| when only the faces are stored in a cell array
+
+% Create example cell array
+
+[F1,V1]=graphicsModels(1); V1=V1-mean(V1,1); V1=V1./max(V1(:)); V1=V1-1;
+[F2,V2]=graphicsModels(2); V2=V2-mean(V2,1); V2=V2./max(V2(:));
+[F3,V3]=graphicsModels(3); V3=V3-mean(V3,1); V3=V3./max(V3(:)); V3=V3+1;
+F={F1,F2+size(V1,1),F3+size(V1,1)+size(V2,1)}; %Cell array containing faces
+V=[V1;V2;V3]; %Normal array containing all vertices
+C={ones(size(F1,1),1),2*ones(size(F2,1),1),3*ones(size(F3,1),1)}; %Cell array containing color labels
+
+cFigure; 
+title('Cell array of patch data');
+hp=gpatch(F,V,C,'none',1);
+axisGeom; camlight headlight;
+colormap spectral; icolorbar;
+drawnow;
+
 %% 
 %
 % <<gibbVerySmall.gif>>
@@ -250,7 +322,7 @@ drawnow;
 % image segmentation, image-based modeling, meshing, and finite element
 % analysis.
 % 
-% Copyright (C) 2019  Kevin Mattheus Moerman
+% Copyright (C) 2006-2022 Kevin Mattheus Moerman and the GIBBON contributors
 % 
 % This program is free software: you can redistribute it and/or modify
 % it under the terms of the GNU General Public License as published by

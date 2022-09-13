@@ -66,7 +66,6 @@ axisGeom;
 
 drawnow; 
 
-%%
 % Using |gpatch| shorthand alternative to |patch|
 
 cFigure; 
@@ -98,6 +97,46 @@ gpatch(F,V,'g','none',CV);
 axisGeom; 
 
 drawnow; 
+
+%% Using |gpatch| with cell arrays containing patch data
+
+%%
+% Use of |gpatch| when both the faces and vertices are stored in a cell
+% array
+
+% Create example cell arrays
+[F1,V1]=graphicsModels(1); V1=V1-mean(V1,1); V1=V1./max(V1(:)); V1=V1-1;
+[F2,V2]=graphicsModels(2); V2=V2-mean(V2,1); V2=V2./max(V2(:));
+[F3,V3]=graphicsModels(3); V3=V3-mean(V3,1); V3=V3./max(V3(:)); V3=V3+1;
+F={F1,F2,F3}; %Cell array containing faces
+V={V1,V2,V3}; %Cell array containing vertices
+C={ones(size(F1,1),1),2*ones(size(F2,1),1),3*ones(size(F3,1),1)}; %Cell array containing color labels
+
+cFigure; 
+title('Cell array of patch data');
+hp=gpatch(F,V,C,'none',1);
+axisGeom; camlight headlight;
+colormap spectral; icolorbar;
+drawnow;
+
+%%
+% Use of |gpatch| when only the faces are stored in a cell array
+
+% Create example cell array
+
+[F1,V1]=graphicsModels(1); V1=V1-mean(V1,1); V1=V1./max(V1(:)); V1=V1-1;
+[F2,V2]=graphicsModels(2); V2=V2-mean(V2,1); V2=V2./max(V2(:));
+[F3,V3]=graphicsModels(3); V3=V3-mean(V3,1); V3=V3./max(V3(:)); V3=V3+1;
+F={F1,F2+size(V1,1),F3+size(V1,1)+size(V2,1)}; %Cell array containing faces
+V=[V1;V2;V3]; %Normal array containing all vertices
+C={ones(size(F1,1),1),2*ones(size(F2,1),1),3*ones(size(F3,1),1)}; %Cell array containing color labels
+
+cFigure; 
+title('Cell array of patch data');
+hp=gpatch(F,V,C,'none',1);
+axisGeom; camlight headlight;
+colormap spectral; icolorbar;
+drawnow;
 
 %% 
 %

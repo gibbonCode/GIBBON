@@ -80,6 +80,7 @@ if isempty(faceAlpha)
 end
 
 if isa(F,'cell') %Assume all entries are cells defining multiple patch data sets
+    hp=gobjects(numel(F),1);
     for q=1:1:numel(F)
         f=F{q};
         
