@@ -1,0 +1,329 @@
+
+<!DOCTYPE html
+  PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html><head>
+      <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+   <!--
+This HTML was auto-generated from MATLAB code.
+To make changes, update the MATLAB code and republish this document.
+      --><title>gedge</title><meta name="generator" content="MATLAB 9.13"><link rel="schema.DC" href="http://purl.org/dc/elements/1.1/"><meta name="DC.date" content="2022-09-13"><meta name="DC.source" content="HELP_gedge.m"><style type="text/css">
+html,body,div,span,applet,object,iframe,h1,h2,h3,h4,h5,h6,p,blockquote,pre,a,abbr,acronym,address,big,cite,code,del,dfn,em,font,img,ins,kbd,q,s,samp,small,strike,strong,tt,var,b,u,i,center,dl,dt,dd,ol,ul,li,fieldset,form,label,legend,table,caption,tbody,tfoot,thead,tr,th,td{margin:0;padding:0;border:0;outline:0;font-size:100%;vertical-align:baseline;background:transparent}body{line-height:1}ol,ul{list-style:none}blockquote,q{quotes:none}blockquote:before,blockquote:after,q:before,q:after{content:'';content:none}:focus{outine:0}ins{text-decoration:none}del{text-decoration:line-through}table{border-collapse:collapse;border-spacing:0}
+
+html { min-height:100%; margin-bottom:1px; }
+html body { height:100%; margin:0px; font-family:Arial, Helvetica, sans-serif; font-size:10px; color:#000; line-height:140%; background:#fff none; overflow-y:scroll; }
+html body td { vertical-align:top; text-align:left; }
+
+h1 { padding:0px; margin:0px 0px 25px; font-family:Arial, Helvetica, sans-serif; font-size:1.5em; color:#d55000; line-height:100%; font-weight:normal; }
+h2 { padding:0px; margin:0px 0px 8px; font-family:Arial, Helvetica, sans-serif; font-size:1.2em; color:#000; font-weight:bold; line-height:140%; border-bottom:1px solid #d6d4d4; display:block; }
+h3 { padding:0px; margin:0px 0px 5px; font-family:Arial, Helvetica, sans-serif; font-size:1.1em; color:#000; font-weight:bold; line-height:140%; }
+
+a { color:#005fce; text-decoration:none; }
+a:hover { color:#005fce; text-decoration:underline; }
+a:visited { color:#004aa0; text-decoration:none; }
+
+p { padding:0px; margin:0px 0px 20px; }
+img { padding:0px; margin:0px 0px 20px; border:none; }
+p img, pre img, tt img, li img, h1 img, h2 img { margin-bottom:0px; }
+
+ul { padding:0px; margin:0px 0px 20px 23px; list-style:square; }
+ul li { padding:0px; margin:0px 0px 7px 0px; }
+ul li ul { padding:5px 0px 0px; margin:0px 0px 7px 23px; }
+ul li ol li { list-style:decimal; }
+ol { padding:0px; margin:0px 0px 20px 0px; list-style:decimal; }
+ol li { padding:0px; margin:0px 0px 7px 23px; list-style-type:decimal; }
+ol li ol { padding:5px 0px 0px; margin:0px 0px 7px 0px; }
+ol li ol li { list-style-type:lower-alpha; }
+ol li ul { padding-top:7px; }
+ol li ul li { list-style:square; }
+
+.content { font-size:1.2em; line-height:140%; padding: 20px; }
+
+pre, code { font-size:12px; }
+tt { font-size: 1.2em; }
+pre { margin:0px 0px 20px; }
+pre.codeinput { padding:10px; border:1px solid #d3d3d3; background:#f7f7f7; }
+pre.codeoutput { padding:10px 11px; margin:0px 0px 20px; color:#4c4c4c; }
+pre.error { color:red; }
+
+@media print { pre.codeinput, pre.codeoutput { word-wrap:break-word; width:100%; } }
+
+span.keyword { color:#0000FF }
+span.comment { color:#228B22 }
+span.string { color:#A020F0 }
+span.untermstring { color:#B20000 }
+span.syscmd { color:#B28C00 }
+span.typesection { color:#A0522D }
+
+.footer { width:auto; padding:10px 0px; margin:25px 0px 0px; border-top:1px dotted #878787; font-size:0.8em; line-height:140%; font-style:italic; color:#878787; text-align:left; float:none; }
+.footer p { margin:0px; }
+.footer a { color:#878787; }
+.footer a:hover { color:#878787; text-decoration:underline; }
+.footer a:visited { color:#878787; }
+
+table th { padding:7px 5px; text-align:left; vertical-align:middle; border: 1px solid #d6d4d4; font-weight:bold; }
+table td { padding:7px 5px; text-align:left; vertical-align:top; border:1px solid #d6d4d4; }
+
+
+
+
+
+  </style></head><body><div class="content"><h1>gedge</h1><!--introduction--><p>Below is a demonstration of the features of the <tt>dihedralAngles</tt> function</p><!--/introduction--><h2>Contents</h2><div><ul><li><a href="#2">Syntax</a></li><li><a href="#3">Description</a></li><li><a href="#4">Examples</a></li><li><a href="#7">Example 1: Visualizing edges in a single color</a></li><li><a href="#8">Example 2: Using colormapping on the edges</a></li><li><a href="#11">Example 3: Specifying edge transparency as well</a></li><li><a href="#12">Example 4: Interpolated colors from vertex (node) data</a></li><li><a href="#14">Example 5: Specifying RGB color data on edges</a></li><li><a href="#16">Example 6: Specifying RGB color data on vertices (nodes)</a></li></ul></div><pre class="codeinput">clear; close <span class="string">all</span>; clc;
+</pre><h2 id="2">Syntax</h2><p><tt>[h]=gedge(E,V,AE,5,AE);</tt></p><h2 id="3">Description</h2><p>The <tt>gedge</tt> function aids in the visualization of edges e.g. of meshes. Edge coloring and transparency can be prescribed.</p><p>SEe also <tt>gpatch</tt>.</p><h2 id="4">Examples</h2><p>Plot settings</p><pre class="codeinput">fontSize=20;
+edgeThickness=5;
+cmap=gjet(250);
+</pre><p>Create example data, mesh data for a hex mesh</p><pre class="codeinput"><span class="comment">%Create mesh for a cube</span>
+boxDim=2*ones(1,3);
+boxEl=1*ones(1,3);
+[meshStruct]=hexMeshBox(boxDim,boxEl);
+Eh=meshStruct.E;
+V=meshStruct.V;
+F=meshStruct.F;
+
+<span class="comment">%Distorting the shape (shear)</span>
+d=eye(3,3); <span class="comment">%Identity</span>
+d(1,2)=1; <span class="comment">%Add shear</span>
+V=V*d; <span class="comment">%Deform</span>
+
+<span class="comment">%Get mesh edges</span>
+E=patchEdges(F,V);
+</pre><h2 id="7">Example 1: Visualizing edges in a single color</h2><pre class="codeinput">cFigure;
+subplot(1,2,1); hold <span class="string">on</span>;
+title(<span class="string">'gpatch visualization of mesh faces and edges'</span>);
+gpatch(F,V,<span class="string">'rw'</span>,<span class="string">'r'</span>,1,edgeThickness);
+axisGeom; camlight <span class="string">headlight</span>;
+
+subplot(1,2,2); hold <span class="string">on</span>;
+title(<span class="string">'gedge visualization of mesh edges only'</span>);
+gedge(E,V,<span class="string">'r'</span>,edgeThickness);
+axisGeom; camlight <span class="string">headlight</span>;
+
+drawnow;
+</pre><img width="100%" height="auto" vspace="5" hspace="5" src="HELP_gedge_01.jpg" alt=""> <h2 id="8">Example 2: Using colormapping on the edges</h2><p>Create example color data on edges, e.g. the mesh dihedral angle</p><pre class="codeinput">[~,E,AE]=dihedralAngles(Eh,V,<span class="string">'hex8'</span>);
+AE=180*(AE./pi);
+</pre><pre class="codeinput">cFigure; hold <span class="string">on</span>;
+title(<span class="string">'Color data on edges'</span>)
+gedge(E,V,AE,edgeThickness);
+axisGeom; camlight <span class="string">headlight</span>;
+colormap(cmap); colorbar;
+gdrawnow;
+</pre><img width="100%" height="auto" vspace="5" hspace="5" src="HELP_gedge_02.jpg" alt=""> <h2 id="11">Example 3: Specifying edge transparency as well</h2><pre class="codeinput">cFigure; hold <span class="string">on</span>;
+title(<span class="string">'Alpha data and color data on edges'</span>)
+gedge(E,V,AE,edgeThickness,AE);
+axisGeom; camlight <span class="string">headlight</span>;
+colormap(cmap); colorbar;
+alim([25 135]);
+gdrawnow;
+</pre><img width="100%" height="auto" vspace="5" hspace="5" src="HELP_gedge_03.jpg" alt=""> <h2 id="12">Example 4: Interpolated colors from vertex (node) data</h2><pre class="codeinput">[F,V]=geoSphere(1,1);
+E=patchEdges(F);
+VE=patchCentre(E,V);
+CE=VE(:,1); <span class="comment">%Example edge color data  = mid-edge x-coordinate</span>
+CV=V(:,1); <span class="comment">%Example vertex color data = x-coordinate</span>
+</pre><pre class="codeinput">cFigure; hold <span class="string">on</span>;
+title(<span class="string">'Color data on vertices'</span>)
+h= gedge(E,V,CV,edgeThickness);
+h.EdgeColor=<span class="string">'interp'</span>; <span class="comment">%Turn on interpolated shading</span>
+axisGeom; camlight <span class="string">headlight</span>;
+colormap(cmap); colorbar;
+gdrawnow;
+</pre><img width="100%" height="auto" vspace="5" hspace="5" src="HELP_gedge_04.jpg" alt=""> <h2 id="14">Example 5: Specifying RGB color data on edges</h2><pre class="codeinput">C_rgb1=cmaperise(CE,gjet(250));
+C_rgb2=cmaperise(CE,viridis(250));
+C_rgb3=cmaperise(CE,spectral(250));
+
+V2=V;
+V2(:,1)=V2(:,1)+2.5;
+V3=V2;
+V3(:,1)=V3(:,1)+2.5;
+</pre><pre class="codeinput">cFigure; hold <span class="string">on</span>;
+title(<span class="string">'RGB data on edges'</span>)
+h1= gedge(E,V ,C_rgb1,edgeThickness);
+h2= gedge(E,V2,C_rgb2,edgeThickness);
+h3= gedge(E,V3,C_rgb3,edgeThickness);
+axisGeom; camlight <span class="string">headlight</span>;
+gdrawnow;
+</pre><img width="100%" height="auto" vspace="5" hspace="5" src="HELP_gedge_05.jpg" alt=""> <h2 id="16">Example 6: Specifying RGB color data on vertices (nodes)</h2><pre class="codeinput">C_rgb1=cmaperise(CV,gjet(250));
+C_rgb2=cmaperise(CV,viridis(250));
+C_rgb3=cmaperise(CV,spectral(250));
+</pre><pre class="codeinput">cFigure; hold <span class="string">on</span>;
+title(<span class="string">'RGB data on vertices (interpolated)'</span>)
+h1= gedge(E,V ,C_rgb1,edgeThickness); h1.EdgeColor=<span class="string">'interp'</span>;
+h2= gedge(E,V2,C_rgb2,edgeThickness); h2.EdgeColor=<span class="string">'interp'</span>;
+h3= gedge(E,V3,C_rgb3,edgeThickness); h3.EdgeColor=<span class="string">'interp'</span>;
+axisGeom; camlight <span class="string">headlight</span>;
+gdrawnow;
+</pre><img width="100%" height="auto" vspace="5" hspace="5" src="HELP_gedge_06.jpg" alt=""> <p><img vspace="5" hspace="5" src="gibbVerySmall.gif" alt=""> </p><p><i><b>GIBBON</b></i> <a href="www.gibboncode.org">www.gibboncode.org</a></p><p><i>Kevin Mattheus Moerman</i>, <a href="gibbon.toolbox@gmail.com">gibbon.toolbox@gmail.com</a></p><p><i><b>GIBBON footer text</b></i></p><p>License: <a href="https://github.com/gibbonCode/GIBBON/blob/master/LICENSE">https://github.com/gibbonCode/GIBBON/blob/master/LICENSE</a></p><p>GIBBON: The Geometry and Image-based Bioengineering add-On. A toolbox for image segmentation, image-based modeling, meshing, and finite element analysis.</p><p>Copyright (C) 2006-2022 Kevin Mattheus Moerman and the GIBBON contributors</p><p>This program is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.</p><p>This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for more details.</p><p>You should have received a copy of the GNU General Public License along with this program.  If not, see <a href="http://www.gnu.org/licenses/">http://www.gnu.org/licenses/</a>.</p><p class="footer"><br><a href="https://www.mathworks.com/products/matlab/">Published with MATLAB&reg; R2022b</a><br></p></div><!--
+##### SOURCE BEGIN #####
+%% gedge
+% Below is a demonstration of the features of the |dihedralAngles| function
+
+%%
+clear; close all; clc;
+
+%% Syntax
+% |[h]=gedge(E,V,AE,5,AE);|
+
+%% Description 
+% The |gedge| function aids in the visualization of edges e.g. of meshes.
+% Edge coloring and transparency can be prescribed. 
+% 
+% SEe also |gpatch|. 
+
+%% Examples 
+% 
+
+%%
+% Plot settings
+fontSize=20;
+edgeThickness=5; 
+cmap=gjet(250);
+
+%%
+% Create example data, mesh data for a hex mesh
+
+%Create mesh for a cube
+boxDim=2*ones(1,3);
+boxEl=1*ones(1,3);
+[meshStruct]=hexMeshBox(boxDim,boxEl);
+Eh=meshStruct.E;
+V=meshStruct.V;
+F=meshStruct.F; 
+
+%Distorting the shape (shear)
+d=eye(3,3); %Identity
+d(1,2)=1; %Add shear
+V=V*d; %Deform
+
+%Get mesh edges
+E=patchEdges(F,V); 
+
+%% Example 1: Visualizing edges in a single color
+
+cFigure; 
+subplot(1,2,1); hold on;
+title('gpatch visualization of mesh faces and edges'); 
+gpatch(F,V,'rw','r',1,edgeThickness);
+axisGeom; camlight headlight; 
+
+subplot(1,2,2); hold on;
+title('gedge visualization of mesh edges only'); 
+gedge(E,V,'r',edgeThickness);
+axisGeom; camlight headlight; 
+
+drawnow; 
+
+%% Example 2: Using colormapping on the edges
+
+%%
+% Create example color data on edges, e.g. the mesh dihedral angle
+
+[~,E,AE]=dihedralAngles(Eh,V,'hex8');
+AE=180*(AE./pi);
+
+%%
+
+cFigure; hold on;
+title('Color data on edges')
+gedge(E,V,AE,edgeThickness);
+axisGeom; camlight headlight; 
+colormap(cmap); colorbar; 
+gdrawnow; 
+
+%% Example 3: Specifying edge transparency as well
+
+cFigure; hold on;
+title('Alpha data and color data on edges')
+gedge(E,V,AE,edgeThickness,AE);
+axisGeom; camlight headlight; 
+colormap(cmap); colorbar; 
+alim([25 135]);
+gdrawnow; 
+
+%% Example 4: Interpolated colors from vertex (node) data
+
+[F,V]=geoSphere(1,1);
+E=patchEdges(F);
+VE=patchCentre(E,V);
+CE=VE(:,1); %Example edge color data  = mid-edge x-coordinate
+CV=V(:,1); %Example vertex color data = x-coordinate
+
+%%
+
+cFigure; hold on;
+title('Color data on vertices')
+h= gedge(E,V,CV,edgeThickness);
+h.EdgeColor='interp'; %Turn on interpolated shading
+axisGeom; camlight headlight; 
+colormap(cmap); colorbar; 
+gdrawnow; 
+
+%% Example 5: Specifying RGB color data on edges
+
+C_rgb1=cmaperise(CE,gjet(250));
+C_rgb2=cmaperise(CE,viridis(250));
+C_rgb3=cmaperise(CE,spectral(250));
+
+V2=V;
+V2(:,1)=V2(:,1)+2.5; 
+V3=V2;
+V3(:,1)=V3(:,1)+2.5; 
+
+%%
+
+cFigure; hold on;
+title('RGB data on edges')
+h1= gedge(E,V ,C_rgb1,edgeThickness);
+h2= gedge(E,V2,C_rgb2,edgeThickness);
+h3= gedge(E,V3,C_rgb3,edgeThickness);
+axisGeom; camlight headlight; 
+gdrawnow; 
+
+%% Example 6: Specifying RGB color data on vertices (nodes)
+
+C_rgb1=cmaperise(CV,gjet(250));
+C_rgb2=cmaperise(CV,viridis(250));
+C_rgb3=cmaperise(CV,spectral(250));
+
+%%
+
+cFigure; hold on;
+title('RGB data on vertices (interpolated)')
+h1= gedge(E,V ,C_rgb1,edgeThickness); h1.EdgeColor='interp';
+h2= gedge(E,V2,C_rgb2,edgeThickness); h2.EdgeColor='interp';
+h3= gedge(E,V3,C_rgb3,edgeThickness); h3.EdgeColor='interp';
+axisGeom; camlight headlight; 
+gdrawnow; 
+
+%%
+% 
+% <<gibbVerySmall.gif>>
+% 
+% _*GIBBON*_ 
+% <www.gibboncode.org>
+% 
+% _Kevin Mattheus Moerman_, <gibbon.toolbox@gmail.com>
+
+%% 
+% _*GIBBON footer text*_ 
+% 
+% License: <https://github.com/gibbonCode/GIBBON/blob/master/LICENSE>
+% 
+% GIBBON: The Geometry and Image-based Bioengineering add-On. A toolbox for
+% image segmentation, image-based modeling, meshing, and finite element
+% analysis.
+% 
+% Copyright (C) 2006-2022 Kevin Mattheus Moerman and the GIBBON contributors
+% 
+% This program is free software: you can redistribute it and/or modify
+% it under the terms of the GNU General Public License as published by
+% the Free Software Foundation, either version 3 of the License, or
+% (at your option) any later version.
+% 
+% This program is distributed in the hope that it will be useful,
+% but WITHOUT ANY WARRANTY; without even the implied warranty of
+% MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+% GNU General Public License for more details.
+% 
+% You should have received a copy of the GNU General Public License
+% along with this program.  If not, see <http://www.gnu.org/licenses/>.
+
+##### SOURCE END #####
+--></body></html>
