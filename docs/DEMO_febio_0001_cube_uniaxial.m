@@ -234,18 +234,22 @@ febio_spec.MeshDomains.SolidDomain.ATTR.mat=materialName1;
 
 %Boundary condition section 
 % -> Fix boundary conditions
+febio_spec.Boundary.bc{1}.ATTR.name='fix_x';
 febio_spec.Boundary.bc{1}.ATTR.type='fix';
 febio_spec.Boundary.bc{1}.ATTR.node_set=nodeSetName1;
 febio_spec.Boundary.bc{1}.dofs='x';
 
+febio_spec.Boundary.bc{2}.ATTR.name='fix_y';
 febio_spec.Boundary.bc{2}.ATTR.type='fix';
 febio_spec.Boundary.bc{2}.ATTR.node_set=nodeSetName2;
 febio_spec.Boundary.bc{2}.dofs='y';
 
+febio_spec.Boundary.bc{3}.ATTR.name='fix_z';
 febio_spec.Boundary.bc{3}.ATTR.type='fix';
 febio_spec.Boundary.bc{3}.ATTR.node_set=nodeSetName3;
 febio_spec.Boundary.bc{3}.dofs='z';
 
+% febio_spec.Boundary.bc{4}.ATTR.name='prescibe_z';
 febio_spec.Boundary.bc{4}.ATTR.type='prescribe';
 febio_spec.Boundary.bc{4}.ATTR.node_set=nodeSetName4;
 febio_spec.Boundary.bc{4}.dof='z';
