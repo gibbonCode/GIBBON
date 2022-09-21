@@ -222,7 +222,7 @@ colormap gjet; icolorbar;
 gdrawnow;
 
 
-%% %% Example 6: Non-cubic specimens
+%% Example 5: Non-cubic specimens
 
 % In this example, we create a spinodoid in the shape of 1/8th of a sphere
 % with radius=1 and centered at (0,0,0). % For this purpose, we first
