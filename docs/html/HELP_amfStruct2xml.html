@@ -1,0 +1,219 @@
+
+<!DOCTYPE html
+  PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html><head>
+      <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+   <!--
+This HTML was auto-generated from MATLAB code.
+To make changes, update the MATLAB code and republish this document.
+      --><title>amfStruct2xml</title><meta name="generator" content="MATLAB 9.13"><link rel="schema.DC" href="http://purl.org/dc/elements/1.1/"><meta name="DC.date" content="2022-09-21"><meta name="DC.source" content="HELP_amfStruct2xml.m"><style type="text/css">
+html,body,div,span,applet,object,iframe,h1,h2,h3,h4,h5,h6,p,blockquote,pre,a,abbr,acronym,address,big,cite,code,del,dfn,em,font,img,ins,kbd,q,s,samp,small,strike,strong,tt,var,b,u,i,center,dl,dt,dd,ol,ul,li,fieldset,form,label,legend,table,caption,tbody,tfoot,thead,tr,th,td{margin:0;padding:0;border:0;outline:0;font-size:100%;vertical-align:baseline;background:transparent}body{line-height:1}ol,ul{list-style:none}blockquote,q{quotes:none}blockquote:before,blockquote:after,q:before,q:after{content:'';content:none}:focus{outine:0}ins{text-decoration:none}del{text-decoration:line-through}table{border-collapse:collapse;border-spacing:0}
+
+html { min-height:100%; margin-bottom:1px; }
+html body { height:100%; margin:0px; font-family:Arial, Helvetica, sans-serif; font-size:10px; color:#000; line-height:140%; background:#fff none; overflow-y:scroll; }
+html body td { vertical-align:top; text-align:left; }
+
+h1 { padding:0px; margin:0px 0px 25px; font-family:Arial, Helvetica, sans-serif; font-size:1.5em; color:#d55000; line-height:100%; font-weight:normal; }
+h2 { padding:0px; margin:0px 0px 8px; font-family:Arial, Helvetica, sans-serif; font-size:1.2em; color:#000; font-weight:bold; line-height:140%; border-bottom:1px solid #d6d4d4; display:block; }
+h3 { padding:0px; margin:0px 0px 5px; font-family:Arial, Helvetica, sans-serif; font-size:1.1em; color:#000; font-weight:bold; line-height:140%; }
+
+a { color:#005fce; text-decoration:none; }
+a:hover { color:#005fce; text-decoration:underline; }
+a:visited { color:#004aa0; text-decoration:none; }
+
+p { padding:0px; margin:0px 0px 20px; }
+img { padding:0px; margin:0px 0px 20px; border:none; }
+p img, pre img, tt img, li img, h1 img, h2 img { margin-bottom:0px; }
+
+ul { padding:0px; margin:0px 0px 20px 23px; list-style:square; }
+ul li { padding:0px; margin:0px 0px 7px 0px; }
+ul li ul { padding:5px 0px 0px; margin:0px 0px 7px 23px; }
+ul li ol li { list-style:decimal; }
+ol { padding:0px; margin:0px 0px 20px 0px; list-style:decimal; }
+ol li { padding:0px; margin:0px 0px 7px 23px; list-style-type:decimal; }
+ol li ol { padding:5px 0px 0px; margin:0px 0px 7px 0px; }
+ol li ol li { list-style-type:lower-alpha; }
+ol li ul { padding-top:7px; }
+ol li ul li { list-style:square; }
+
+.content { font-size:1.2em; line-height:140%; padding: 20px; }
+
+pre, code { font-size:12px; }
+tt { font-size: 1.2em; }
+pre { margin:0px 0px 20px; }
+pre.codeinput { padding:10px; border:1px solid #d3d3d3; background:#f7f7f7; }
+pre.codeoutput { padding:10px 11px; margin:0px 0px 20px; color:#4c4c4c; }
+pre.error { color:red; }
+
+@media print { pre.codeinput, pre.codeoutput { word-wrap:break-word; width:100%; } }
+
+span.keyword { color:#0000FF }
+span.comment { color:#228B22 }
+span.string { color:#A020F0 }
+span.untermstring { color:#B20000 }
+span.syscmd { color:#B28C00 }
+span.typesection { color:#A0522D }
+
+.footer { width:auto; padding:10px 0px; margin:25px 0px 0px; border-top:1px dotted #878787; font-size:0.8em; line-height:140%; font-style:italic; color:#878787; text-align:left; float:none; }
+.footer p { margin:0px; }
+.footer a { color:#878787; }
+.footer a:hover { color:#878787; text-decoration:underline; }
+.footer a:visited { color:#878787; }
+
+table th { padding:7px 5px; text-align:left; vertical-align:middle; border: 1px solid #d6d4d4; font-weight:bold; }
+table td { padding:7px 5px; text-align:left; vertical-align:top; border:1px solid #d6d4d4; }
+
+
+
+
+
+  </style></head><body><div class="content"><h1>amfStruct2xml</h1><!--introduction--><p>Below is a demonstration of the features of the <tt>amfStruct2xml</tt> function</p><!--/introduction--><h2>Contents</h2><div><ul><li><a href="#2">Syntax</a></li><li><a href="#3">Description</a></li><li><a href="#4">Example:</a></li><li><a href="#9">Export xml</a></li><li><a href="#10">zip file</a></li></ul></div><pre class="codeinput">clear; close <span class="string">all</span>; clc;
+</pre><h2 id="2">Syntax</h2><p><tt>[domNode]=amfStruct2xml(amf,fileName,optionStruct);</tt></p><h2 id="3">Description</h2><p>This function provides the basis for coding AMF files.</p><h2 id="4">Example:</h2><p>Create example mesh</p><pre class="codeinput">[F,V]=geoSphere(2,50); <span class="comment">%Faces and vertices</span>
+c=[1 0 0]; <span class="comment">%RGB Color</span>
+
+volume1_Name=<span class="string">'sphere'</span>;
+material1_Name=<span class="string">'sphere material'</span>;
+</pre><pre class="codeinput">cFigure;
+title(<span class="string">'Model to export to AMF'</span>)
+gpatch(F,V,c);
+axisGeom; camlight <span class="string">headlight</span>;
+drawnow;
+</pre><img width="100%" height="auto" vspace="5" hspace="5" src="HELP_amfStruct2xml_01.jpg" alt=""> <p>Define file name</p><pre class="codeinput">defaultFolder = fileparts(fileparts(mfilename(<span class="string">'fullpath'</span>)));
+savePath=fullfile(defaultFolder,<span class="string">'data'</span>,<span class="string">'temp'</span>);
+fileName=fullfile(savePath,<span class="string">'tempModel.amf'</span>);
+</pre><p>Create AMF structure</p><pre class="codeinput"><span class="comment">% Define AMF units and version</span>
+amf.ATTR.unit=<span class="string">'mm'</span>; <span class="comment">%Set units</span>
+amf.ATTR.version=<span class="string">'1.1'</span>; <span class="comment">%Set AMF version</span>
+
+<span class="comment">% Add optional metadata here</span>
+amf.metadata{1}.ATTR.type=<span class="string">'name'</span>;
+amf.metadata{1}.VAL=<span class="string">'Sphere mesh'</span>;
+
+amf.metadata{2}.ATTR.type=<span class="string">'author'</span>;
+amf.metadata{2}.VAL=<span class="string">'GIBBON'</span>;
+
+<span class="comment">% object definition</span>
+
+<span class="comment">%-&gt; vertices</span>
+amf.object{1}.ATTR.id=1;
+<span class="keyword">for</span> q=1:1:size(V,1) <span class="comment">%Loop over all vertices</span>
+    amf.object{1}.mesh.vertices.vertex{q}.coordinates.x=V(q,1);
+    amf.object{1}.mesh.vertices.vertex{q}.coordinates.y=V(q,2);
+    amf.object{1}.mesh.vertices.vertex{q}.coordinates.z=V(q,3);
+<span class="keyword">end</span>
+
+<span class="comment">%-&gt; volume -&gt; triangle</span>
+amf.object{1}.mesh.volume{1}.ATTR.materialid=1;
+amf.object{1}.mesh.volume{1}.metadata{1}.ATTR.type=<span class="string">'name'</span>;
+amf.object{1}.mesh.volume{1}.metadata{1}.VAL=volume1_Name;
+
+<span class="keyword">for</span> q=1:1:size(F,1) <span class="comment">%Loop over all triangles (note zero indexing hence -1)</span>
+    amf.object{1}.mesh.volume{1}.triangle{q}.v1=F(q,1)-1;
+    amf.object{1}.mesh.volume{1}.triangle{q}.v2=F(q,2)-1;
+    amf.object{1}.mesh.volume{1}.triangle{q}.v3=F(q,3)-1;
+<span class="keyword">end</span>
+
+<span class="comment">% material</span>
+amf.material{1}.ATTR.id=1;
+amf.material{1}.metadata.ATTR.type=<span class="string">'name'</span>;
+amf.material{1}.metadata.VAL=material1_Name;
+amf.material{1}.color.r=c(1);
+amf.material{1}.color.g=c(2);
+amf.material{1}.color.b=c(3);
+</pre><h2 id="9">Export xml</h2><pre class="codeinput">amfStruct2xml(amf,fileName);
+</pre><h2 id="10">zip file</h2><pre class="codeinput">[pathName,fileNameClean,c]=fileparts(fileName);
+zipName=fullfile(pathName,[fileNameClean,<span class="string">'.zip'</span>]);
+zip(zipName,fileName);
+movefile(zipName,fileName);
+</pre><p class="footer"><br><a href="https://www.mathworks.com/products/matlab/">Published with MATLAB&reg; R2022b</a><br></p></div><!--
+##### SOURCE BEGIN #####
+%% amfStruct2xml
+% Below is a demonstration of the features of the |amfStruct2xml| function
+
+%%
+clear; close all; clc;
+
+%% Syntax
+% |[domNode]=amfStruct2xml(amf,fileName,optionStruct);|
+
+%% Description
+% This function provides the basis for coding AMF files. 
+
+%% Example:
+
+%%
+% Create example mesh
+
+[F,V]=geoSphere(2,50); %Faces and vertices
+c=[1 0 0]; %RGB Color
+
+volume1_Name='sphere';
+material1_Name='sphere material';
+
+%%
+cFigure; 
+title('Model to export to AMF')
+gpatch(F,V,c); 
+axisGeom; camlight headlight; 
+drawnow; 
+
+%%
+% Define file name
+defaultFolder = fileparts(fileparts(mfilename('fullpath')));
+savePath=fullfile(defaultFolder,'data','temp');
+fileName=fullfile(savePath,'tempModel.amf');
+
+%%
+% Create AMF structure
+
+% Define AMF units and version
+amf.ATTR.unit='mm'; %Set units
+amf.ATTR.version='1.1'; %Set AMF version
+
+% Add optional metadata here
+amf.metadata{1}.ATTR.type='name'; 
+amf.metadata{1}.VAL='Sphere mesh';
+
+amf.metadata{2}.ATTR.type='author';
+amf.metadata{2}.VAL='GIBBON';
+
+% object definition
+
+%-> vertices
+amf.object{1}.ATTR.id=1;
+for q=1:1:size(V,1) %Loop over all vertices
+    amf.object{1}.mesh.vertices.vertex{q}.coordinates.x=V(q,1);
+    amf.object{1}.mesh.vertices.vertex{q}.coordinates.y=V(q,2);
+    amf.object{1}.mesh.vertices.vertex{q}.coordinates.z=V(q,3);
+end
+
+%-> volume -> triangle
+amf.object{1}.mesh.volume{1}.ATTR.materialid=1;
+amf.object{1}.mesh.volume{1}.metadata{1}.ATTR.type='name';
+amf.object{1}.mesh.volume{1}.metadata{1}.VAL=volume1_Name;
+
+for q=1:1:size(F,1) %Loop over all triangles (note zero indexing hence -1)
+    amf.object{1}.mesh.volume{1}.triangle{q}.v1=F(q,1)-1;
+    amf.object{1}.mesh.volume{1}.triangle{q}.v2=F(q,2)-1;
+    amf.object{1}.mesh.volume{1}.triangle{q}.v3=F(q,3)-1;      
+end
+
+% material
+amf.material{1}.ATTR.id=1;
+amf.material{1}.metadata.ATTR.type='name';
+amf.material{1}.metadata.VAL=material1_Name;
+amf.material{1}.color.r=c(1);
+amf.material{1}.color.g=c(2);
+amf.material{1}.color.b=c(3);
+
+%% Export xml
+amfStruct2xml(amf,fileName);
+
+%% zip file
+[pathName,fileNameClean,c]=fileparts(fileName);
+zipName=fullfile(pathName,[fileNameClean,'.zip']);
+zip(zipName,fileName);
+movefile(zipName,fileName);
+
+##### SOURCE END #####
+--></body></html>
