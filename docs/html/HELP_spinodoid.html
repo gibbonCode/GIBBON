@@ -6,7 +6,7 @@
    <!--
 This HTML was auto-generated from MATLAB code.
 To make changes, update the MATLAB code and republish this document.
-      --><title>spinodoid</title><meta name="generator" content="MATLAB 9.9"><link rel="schema.DC" href="http://purl.org/dc/elements/1.1/"><meta name="DC.date" content="2021-07-18"><meta name="DC.source" content="HELP_spinodoid.m"><style type="text/css">
+      --><title>spinodoid</title><meta name="generator" content="MATLAB 9.11"><link rel="schema.DC" href="http://purl.org/dc/elements/1.1/"><meta name="DC.date" content="2022-09-21"><meta name="DC.source" content="HELP_spinodoid.m"><style type="text/css">
 html,body,div,span,applet,object,iframe,h1,h2,h3,h4,h5,h6,p,blockquote,pre,a,abbr,acronym,address,big,cite,code,del,dfn,em,font,img,ins,kbd,q,s,samp,small,strike,strong,tt,var,b,u,i,center,dl,dt,dd,ol,ul,li,fieldset,form,label,legend,table,caption,tbody,tfoot,thead,tr,th,td{margin:0;padding:0;border:0;outline:0;font-size:100%;vertical-align:baseline;background:transparent}body{line-height:1}ol,ul{list-style:none}blockquote,q{quotes:none}blockquote:before,blockquote:after,q:before,q:after{content:'';content:none}:focus{outine:0}ins{text-decoration:none}del{text-decoration:line-through}table{border-collapse:collapse;border-spacing:0}
 
 html { min-height:100%; margin-bottom:1px; }
@@ -67,7 +67,7 @@ table td { padding:7px 5px; text-align:left; vertical-align:top; border:1px soli
 
 
 
-  </style></head><body><div class="content"><h1>spinodoid</h1><!--introduction--><p>Below is a demonstration of the features of the <tt>spinodoid</tt> function</p><!--/introduction--><h2>Contents</h2><div><ul><li><a href="#2">Syntax</a></li><li><a href="#3">Description</a></li><li><a href="#4">Examples</a></li><li><a href="#5">Basic settings</a></li><li><a href="#6">Example 1: Isotropic spinodoid</a></li><li><a href="#7">Example 2: Lamellar spinodoid</a></li><li><a href="#8">Example 3: Columnar spinodoid</a></li><li><a href="#9">Example 4: Cubic spinodoid</a></li><li><a href="#10">Example 5: Spatially-graded spinodoids</a></li></ul></div><pre class="codeinput">clear; close <span class="string">all</span>; clc;
+  </style></head><body><div class="content"><h1>spinodoid</h1><!--introduction--><p>Below is a demonstration of the features of the <tt>spinodoid</tt> function</p><!--/introduction--><h2>Contents</h2><div><ul><li><a href="#2">Syntax</a></li><li><a href="#3">Description</a></li><li><a href="#4">Examples</a></li><li><a href="#5">Basic settings</a></li><li><a href="#6">Example 1: Isotropic spinodoid</a></li><li><a href="#7">Example 2: Lamellar spinodoid</a></li><li><a href="#8">Example 3: Columnar spinodoid</a></li><li><a href="#9">Example 4: Cubic spinodoid</a></li><li><a href="#10">%% Example 6: Non-cubic specimens</a></li><li><a href="#11">Example 6: Spatially-graded spinodoids</a></li></ul></div><pre class="codeinput">clear; close <span class="string">all</span>; clc;
 </pre><h2 id="2">Syntax</h2><p><tt>[F,V,C,GRF,X,Y,Z,levelset]=spinodoid(inputStruct);</tt></p><h2 id="3">Description</h2><p>-----------------------------------------------------------------------</p><p>This function generates Spinodoid microstructures which are non-periodic and stochastic bi-continous microstructures that approximate the topology observed in spinodal decomposition. The microstructures are generated using a Gaussian random field (GRF) and can be made anisotropic by tuning the anisotropy of the GRF.</p><p>To generate spatially-graded spinodoids, check the spatially-graded example below (HELP_spinodoid: example 5)</p><p>Based on / how to cite:</p><p>-----------------------------------------------------------------------</p><p>(1) S. Kumar, S. Tan, L. Zheng, D.M. Kochmann.     Inverse-designed spinodoid metamaterials.     npj Computational Materials, 6 (2020), 73.     <a href="https://doi.org/10.1038/s41524-020-0341-6">https://doi.org/10.1038/s41524-020-0341-6</a></p><p>(2) L. Zheng, S. Kumar, D.M. Kochmann.     Data-driven topology optimization of spinodoid metamaterials with     seamlessly tunable anisotropy.     Computer Methods in Applied Mechanics and Engineering, 383 (2021), 113894.     <a href="https://doi.org/10.1016/j.cma.2021.113894">https://doi.org/10.1016/j.cma.2021.113894</a></p><p>-----------------------------------------------------------------------</p><p>Input structure and default values:</p><p>inputStruct.isocap=true; % option to cap the isosurface</p><p>inputStruct.domainSize=1; % domain size</p><p>inputStruct.resolution=60; % resolution for sampling GRF</p><p>inputStruct.waveNumber=10*pi; % GRF wave number</p><p>inputStruct.numWaves=1000; % number of waves in GRF</p><p>inputStruct.relativeDensity=0.5; % relative density: between [0.3,1]</p><p>inputStruct.thetas=[15 15 15]; % conical half angles (in degrees) along                                xyz axes for controlling the anisotropy.                                Note: each entry must be either 0 or                                between [15,90] degrees.</p><p>inputStruct.R = eye(3); % Rotate the GRF, R must be SO(3)</p><p>inputStruct.ignoreChecks = false; % Ignore checks on parameters if true (not advised)</p><p>The function returns the following:</p><p>F: faces of the surface mesh</p><p>V: vertices of the surfae mesh</p><p>C: color data for the surface mesh</p><p>GRF (3d matrix): Underlying Gaussian random field (GRF) before levelset is applied</p><p>X (3d matrix): X coordinates where GRF is evaluated</p><p>Y (3d matrix): Y coordinates where GRF is evaluated</p><p>Z (3d matrix): Z coordinates where GRF is evaluated leveset (scalar): Levelset applied on GRF to compute the isosurfaces</p><p>-----------------------------------------------------------------------</p><p>Original author: Siddhant Kumar, September 2020</p><p>(contact: <a href="mailto:Sid.Kumar@tudelft.nl">Sid.Kumar@tudelft.nl</a>)</p><p>-----------------------------------------------------------------------</p><h2 id="4">Examples</h2><h2 id="5">Basic settings</h2><pre class="codeinput"><span class="comment">% Random seed</span>
 rng(1)
 
@@ -190,7 +190,45 @@ gpatch(F,V,C,<span class="string">'none'</span>);
 axisGeom; camlight <span class="string">headlight</span>;
 colormap <span class="string">gjet</span>; icolorbar;
 gdrawnow;
-</pre><img width="100%" height="auto" vspace="5" hspace="5" src="HELP_spinodoid_04.jpg" alt=""> <h2 id="10">Example 5: Spatially-graded spinodoids</h2><pre class="codeinput"><span class="comment">% -----------------------------------------------------------------------</span>
+</pre><img width="100%" height="auto" vspace="5" hspace="5" src="HELP_spinodoid_04.jpg" alt=""> <h2 id="10">%% Example 6: Non-cubic specimens</h2><pre class="codeinput"><span class="comment">% In this example, we create a spinodoid in the shape of 1/8th of a sphere</span>
+<span class="comment">% with radius=1 and centered at (0,0,0). % For this purpose, we first</span>
+<span class="comment">% create a function with handle trimDomainFunction (preceeded by @) that</span>
+<span class="comment">% takes as input coordinates (x,y,z) and outputs true if the point lies</span>
+<span class="comment">% inside the domain and false if outside. Note: x,y,z can be matrices and</span>
+<span class="comment">% so all operations should be element-wise (denoted by '.').</span>
+trimDomainFunction = @(x,y,z)(x.^2+y.^2+z.^2 &lt;= 1^2);
+
+
+inputStruct.isocap=true; <span class="comment">% option to cap the isosurface</span>
+inputStruct.domainSize=1; <span class="comment">% domain size</span>
+inputStruct.resolution=100; <span class="comment">% resolution for sampling GRF</span>
+inputStruct.waveNumber=15*pi; <span class="comment">% GRF wave number</span>
+inputStruct.numWaves=1000; <span class="comment">% number of waves in GRF</span>
+inputStruct.relativeDensity=0.5; <span class="comment">% relative density: between [0.3,1]</span>
+inputStruct.thetas=[20 20 20]; <span class="comment">% conical half angles (in degrees) along xyz</span>
+inputStruct.R = eye(3); <span class="comment">% Rotate the GRF, R must be SO(3)</span>
+inputStruct.trimDomainFunction = trimDomainFunction; <span class="comment">% trimDomainFunction</span>
+
+<span class="comment">% Create spinodoid</span>
+[F,V,C]=spinodoid(inputStruct);
+
+<span class="comment">% Using grouping to keep only largest group</span>
+groupOptStruct.outputType=<span class="string">'label'</span>;
+[G,~,groupSize]=tesgroup(F,groupOptStruct); <span class="comment">%Group connected faces</span>
+[~,indKeep]=max(groupSize); <span class="comment">%Index of largest group</span>
+
+<span class="comment">%Keep only largest group</span>
+F=F(G==indKeep,:); <span class="comment">%Trim faces</span>
+C=C(G==indKeep,:); <span class="comment">%Trim color data</span>
+[F,V]=patchCleanUnused(F,V); <span class="comment">%Remove unused nodes</span>
+
+<span class="comment">% Visualize surface</span>
+cFigure;
+gpatch(F,V,C,<span class="string">'none'</span>);
+axisGeom; camlight <span class="string">headlight</span>;
+colormap <span class="string">gjet</span>; icolorbar;
+gdrawnow;
+</pre><img width="100%" height="auto" vspace="5" hspace="5" src="HELP_spinodoid_05.jpg" alt=""> <h2 id="11">Example 6: Spatially-graded spinodoids</h2><pre class="codeinput"><span class="comment">% -----------------------------------------------------------------------</span>
 <span class="comment">% For reference, see Appendix A of the following paper:</span>
 <span class="comment">%  L. Zheng, S. Kumar, D.M. Kochmann.</span>
 <span class="comment">%  Data-driven topology optimization of spinodoid metamaterials with</span>
@@ -327,7 +365,7 @@ colormap <span class="string">gjet</span>; icolorbar;
 gdrawnow;
 
 <span class="keyword">end</span>
-</pre><img width="100%" height="auto" vspace="5" hspace="5" src="HELP_spinodoid_05.jpg" alt=""> <p><img vspace="5" hspace="5" src="gibbVerySmall.gif" alt=""> </p><p><i><b>GIBBON</b></i> <a href="www.gibboncode.org">www.gibboncode.org</a></p><p><i>Kevin Mattheus Moerman</i>, <a href="gibbon.toolbox@gmail.com">gibbon.toolbox@gmail.com</a></p><p><i><b>GIBBON footer text</b></i></p><p>License: <a href="https://github.com/gibbonCode/GIBBON/blob/master/LICENSE">https://github.com/gibbonCode/GIBBON/blob/master/LICENSE</a></p><p>GIBBON: The Geometry and Image-based Bioengineering add-On. A toolbox for image segmentation, image-based modeling, meshing, and finite element analysis.</p><p>Copyright (C) 2006-2021 Kevin Mattheus Moerman and the GIBBON contributors</p><p>This program is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.</p><p>This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for more details.</p><p>You should have received a copy of the GNU General Public License along with this program.  If not, see <a href="http://www.gnu.org/licenses/">http://www.gnu.org/licenses/</a>.</p><p class="footer"><br><a href="https://www.mathworks.com/products/matlab/">Published with MATLAB&reg; R2020b</a><br></p></div><!--
+</pre><img width="100%" height="auto" vspace="5" hspace="5" src="HELP_spinodoid_06.jpg" alt=""> <p><img vspace="5" hspace="5" src="gibbVerySmall.gif" alt=""> </p><p><i><b>GIBBON</b></i> <a href="www.gibboncode.org">www.gibboncode.org</a></p><p><i>Kevin Mattheus Moerman</i>, <a href="gibbon.toolbox@gmail.com">gibbon.toolbox@gmail.com</a></p><p><i><b>GIBBON footer text</b></i></p><p>License: <a href="https://github.com/gibbonCode/GIBBON/blob/master/LICENSE">https://github.com/gibbonCode/GIBBON/blob/master/LICENSE</a></p><p>GIBBON: The Geometry and Image-based Bioengineering add-On. A toolbox for image segmentation, image-based modeling, meshing, and finite element analysis.</p><p>Copyright (C) 2006-2022 Kevin Mattheus Moerman and the GIBBON contributors</p><p>This program is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.</p><p>This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for more details.</p><p>You should have received a copy of the GNU General Public License along with this program.  If not, see <a href="http://www.gnu.org/licenses/">http://www.gnu.org/licenses/</a>.</p><p class="footer"><br><a href="https://www.mathworks.com/products/matlab/">Published with MATLAB&reg; R2021b</a><br></p></div><!--
 ##### SOURCE BEGIN #####
 %% spinodoid
 % Below is a demonstration of the features of the |spinodoid| function
@@ -553,7 +591,49 @@ colormap gjet; icolorbar;
 gdrawnow;
 
 
-%% Example 5: Spatially-graded spinodoids
+%% %% Example 6: Non-cubic specimens
+
+% In this example, we create a spinodoid in the shape of 1/8th of a sphere
+% with radius=1 and centered at (0,0,0). % For this purpose, we first
+% create a function with handle trimDomainFunction (preceeded by @) that
+% takes as input coordinates (x,y,z) and outputs true if the point lies
+% inside the domain and false if outside. Note: x,y,z can be matrices and
+% so all operations should be element-wise (denoted by '.').
+trimDomainFunction = @(x,y,z)(x.^2+y.^2+z.^2 <= 1^2);
+
+
+inputStruct.isocap=true; % option to cap the isosurface
+inputStruct.domainSize=1; % domain size
+inputStruct.resolution=100; % resolution for sampling GRF
+inputStruct.waveNumber=15*pi; % GRF wave number
+inputStruct.numWaves=1000; % number of waves in GRF
+inputStruct.relativeDensity=0.5; % relative density: between [0.3,1]
+inputStruct.thetas=[20 20 20]; % conical half angles (in degrees) along xyz
+inputStruct.R = eye(3); % Rotate the GRF, R must be SO(3)
+inputStruct.trimDomainFunction = trimDomainFunction; % trimDomainFunction
+
+% Create spinodoid
+[F,V,C]=spinodoid(inputStruct);
+
+% Using grouping to keep only largest group
+groupOptStruct.outputType='label';
+[G,~,groupSize]=tesgroup(F,groupOptStruct); %Group connected faces
+[~,indKeep]=max(groupSize); %Index of largest group
+
+%Keep only largest group
+F=F(G==indKeep,:); %Trim faces
+C=C(G==indKeep,:); %Trim color data 
+[F,V]=patchCleanUnused(F,V); %Remove unused nodes
+
+% Visualize surface
+cFigure; 
+gpatch(F,V,C,'none');
+axisGeom; camlight headlight; 
+colormap gjet; icolorbar;
+gdrawnow;
+
+
+%% Example 6: Spatially-graded spinodoids
 
 % REPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASH-
 % For reference, see Appendix A of the following paper:
@@ -693,6 +773,7 @@ gdrawnow;
 
 end
 
+
 %% 
 %
 % <<gibbVerySmall.gif>>
@@ -711,7 +792,7 @@ end
 % image segmentation, image-based modeling, meshing, and finite element
 % analysis.
 % 
-% Copyright (C) 2006-2021 Kevin Mattheus Moerman and the GIBBON contributors
+% Copyright (C) 2006-2022 Kevin Mattheus Moerman and the GIBBON contributors
 % 
 % This program is free software: you can redistribute it and/or modify
 % it under the terms of the GNU General Public License as published by

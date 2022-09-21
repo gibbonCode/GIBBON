@@ -222,7 +222,49 @@ colormap gjet; icolorbar;
 gdrawnow;
 
 
-%% Example 5: Spatially-graded spinodoids
+%% %% Example 6: Non-cubic specimens
+
+% In this example, we create a spinodoid in the shape of 1/8th of a sphere
+% with radius=1 and centered at (0,0,0). % For this purpose, we first
+% create a function with handle trimDomainFunction (preceeded by @) that
+% takes as input coordinates (x,y,z) and outputs true if the point lies
+% inside the domain and false if outside. Note: x,y,z can be matrices and
+% so all operations should be element-wise (denoted by '.').
+trimDomainFunction = @(x,y,z)(x.^2+y.^2+z.^2 <= 1^2);
+
+
+inputStruct.isocap=true; % option to cap the isosurface
+inputStruct.domainSize=1; % domain size
+inputStruct.resolution=100; % resolution for sampling GRF
+inputStruct.waveNumber=15*pi; % GRF wave number
+inputStruct.numWaves=1000; % number of waves in GRF
+inputStruct.relativeDensity=0.5; % relative density: between [0.3,1]
+inputStruct.thetas=[20 20 20]; % conical half angles (in degrees) along xyz
+inputStruct.R = eye(3); % Rotate the GRF, R must be SO(3)
+inputStruct.trimDomainFunction = trimDomainFunction; % trimDomainFunction
+
+% Create spinodoid
+[F,V,C]=spinodoid(inputStruct);
+
+% Using grouping to keep only largest group
+groupOptStruct.outputType='label';
+[G,~,groupSize]=tesgroup(F,groupOptStruct); %Group connected faces
+[~,indKeep]=max(groupSize); %Index of largest group
+
+%Keep only largest group
+F=F(G==indKeep,:); %Trim faces
+C=C(G==indKeep,:); %Trim color data 
+[F,V]=patchCleanUnused(F,V); %Remove unused nodes
+
+% Visualize surface
+cFigure; 
+gpatch(F,V,C,'none');
+axisGeom; camlight headlight; 
+colormap gjet; icolorbar;
+gdrawnow;
+
+
+%% Example 6: Spatially-graded spinodoids
 
 % -----------------------------------------------------------------------
 % For reference, see Appendix A of the following paper:
@@ -361,6 +403,7 @@ colormap gjet; icolorbar;
 gdrawnow;
 
 end
+
 
 %% 
 %

@@ -39,6 +39,23 @@ function [varargout]=spinodoid(inputStruct)
 %                                between [15,90] degrees.
 % inputStruct.R = eye(3); % Rotate the GRF, R must be SO(3)
 % inputStruct.ignoreChecks = false; % Ignore checks on parameters if true (not advised)
+% inputStruct.trimDomainFunction = @doNothing; % A function handle (preceeded by @)
+%                                                that takes in coordinates
+%                                                x,y,z and returns true if
+%                                                the coordinates lie inside
+%                                                a desirable domain and
+%                                                false if outside. The
+%                                                default function
+%                                                doNothing() is defined at
+%                                                the end of this file. For
+%                                                example, if you want to
+%                                                generate a spinodoid
+%                                                sample inside a (1/8th)
+%                                                unit sphere centered at
+%                                                (0,0,0), then
+%                                                trimDomainFunction(x,y,z)
+%                                                should output true if 
+%                                                (x.^2+y.^2+z.^2 <= 1^2).
 %
 %
 % Original author: Siddhant Kumar, September 2020
@@ -65,6 +82,23 @@ defaultInputStruct.thetas=[15 15 0]; % conical half angles (in degrees)
 %                                     either 0 or between [15,90] degrees.
 defaultInputStruct.R = eye(3); % Rotate the GRF, R must be SO(3)
 defaultInputStruct.ignoreChecks = false; % Ignore checks on parameters if true (not advised)
+defaultInputStruct.trimDomainFunction = @doNothing; % A function handle handle (preceeded by @)
+%                                                     that takes in coordinates
+%                                                     x,y,z and returns true if
+%                                                     the coordinates lie inside
+%                                                     a desirable domain and
+%                                                     false if outside. The
+%                                                     default function
+%                                                     doNothing() is defined at
+%                                                     the end of this file. For
+%                                                     example, if you want to
+%                                                     generate a spinodoid
+%                                                     sample inside a (1/8th)
+%                                                     unit sphere centered at
+%                                                     (0,0,0), then
+%                                                     trimDomainFunction(x,y,z)
+%                                                     should output true if 
+%                                                     (x.^2+y.^2+z.^2 <= 1^2).
 
 %Complete input with default if incomplete
 [inputStruct]=structComplete(inputStruct,defaultInputStruct,1); %Complement provided with default if missing or empty
@@ -79,6 +113,7 @@ relativeDensity = inputStruct.relativeDensity; % relative density: [0.3,1]
 thetas= inputStruct.thetas; % conical half angles (in degrees)
 R = inputStruct.R; % Rotate the GRF, R must be SO(3)
 ignoreChecks = inputStruct.ignoreChecks; %Ignore checks on parameter values
+trimDomainFunction = inputStruct.trimDomainFunction; %trimDomainFunction handle
 
 %% Input checks
 if(ignoreChecks)
@@ -190,6 +225,10 @@ for i=1:numWaves
     GRF = GRF+sqrt(2/numWaves)*cos(dotProduct*waveNumber+wavePhases(i));
 end
 
+%% Trim domain
+is_inside_domain = trimDomainFunction(X,Y,Z);
+GRF = GRF + (1-is_inside_domain)*100000000;
+
 %% Apply levelset
 levelset = sqrt(2)*erfinv(2*relativeDensity-1);
 
@@ -250,6 +289,10 @@ varargout{8}=levelset;
 
 end
 
+
+function [var] = doNothing(x,y,z)
+    var = true;
+end
 %% 
 %
 % <<gibbVerySmall.gif>>
