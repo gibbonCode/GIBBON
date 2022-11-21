@@ -65,6 +65,7 @@ if isempty(edgeAlpha)
 end
 
 if isa(E,'cell') %Assume all entries are cells defining multiple patch data sets
+    hp=gobjects(numel(E),1);
     for q=1:1:numel(E)
         e=E{q};
         
