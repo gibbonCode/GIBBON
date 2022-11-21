@@ -102,7 +102,7 @@ fric_coeff=0.5;
 
 %% Load face geometry
 
-testCase=2;
+testCase=1;
 switch testCase
     case 1
         %Load surface model

@@ -416,7 +416,8 @@ objectiveStruct.initialArea=initialArea;
 objectiveStruct.sampleHeight=sampleHeight;
 objectiveStruct.parNormFactors=P; %This will normalize the parameters to ones(size(P))
 objectiveStruct.Pb_struct.xx_c=P; %Parameter constraining centre
-objectiveStruct.Pb_struct.xxlim=[[P(1)/100 2]' [P(1)*100 50]']; %Parameter bounds
+objectiveStruct.Pb_struct.xxlim=[P(1)/100 P(1)*100;...
+                                 2        50      ]; %Parameter bounds
 
 %Optimisation settings
 maxNumberIterations=100; %Maximum number of optimization iterations

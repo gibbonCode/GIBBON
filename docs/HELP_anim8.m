@@ -47,7 +47,7 @@ h_ax=gca; %Store handle for use in animation
 drawnow; 
 
 %%
-%Populate the animaStruct
+%Populate the animStruct
 
 nSteps=25; %Number of animation steps
 
@@ -100,7 +100,7 @@ ax.Clipping = 'off';
 drawnow; 
 
 %%
-%Populate the animaStruct
+%Populate the animStruct
 
 nSteps=25; %Number of animation steps
 
@@ -173,7 +173,7 @@ view(2); axis square; axis tight; grid on; box on;
 drawnow; 
 
 %%
-%Populate the animaStruct
+%Populate the animStruct
 
 %Create the time vector
 animStruct.Time=linspace(0,2*pi,nSteps);
@@ -212,7 +212,7 @@ anim8(hf,animStruct);
 % handle, in this case the handle to patch graphics. 
 
 hf=cFigure; 
-hp=gpatch(F,V,'b');
+hp=gpatch(F,V,'w');
 view(3); axis equal; axis tight; axis vis3d; grid on; box on; 
 camlight headlight; axis off; axis manual; 
 ax=gca;
@@ -220,7 +220,7 @@ ax.Clipping = 'off';
 drawnow; 
 
 %%
-%Populate the animaStruct
+%Populate the animStruct
 
 nSteps=25; %Number of animation steps
 

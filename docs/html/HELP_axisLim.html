@@ -6,7 +6,7 @@
    <!--
 This HTML was auto-generated from MATLAB code.
 To make changes, update the MATLAB code and republish this document.
-      --><title>axisLim</title><meta name="generator" content="MATLAB 9.12"><link rel="schema.DC" href="http://purl.org/dc/elements/1.1/"><meta name="DC.date" content="2022-03-16"><meta name="DC.source" content="HELP_axisLim.m"><style type="text/css">
+      --><title>axisLim</title><meta name="generator" content="MATLAB 9.13"><link rel="schema.DC" href="http://purl.org/dc/elements/1.1/"><meta name="DC.date" content="2022-11-09"><meta name="DC.source" content="HELP_axisLim.m"><style type="text/css">
 html,body,div,span,applet,object,iframe,h1,h2,h3,h4,h5,h6,p,blockquote,pre,a,abbr,acronym,address,big,cite,code,del,dfn,em,font,img,ins,kbd,q,s,samp,small,strike,strong,tt,var,b,u,i,center,dl,dt,dd,ol,ul,li,fieldset,form,label,legend,table,caption,tbody,tfoot,thead,tr,th,td{margin:0;padding:0;border:0;outline:0;font-size:100%;vertical-align:baseline;background:transparent}body{line-height:1}ol,ul{list-style:none}blockquote,q{quotes:none}blockquote:before,blockquote:after,q:before,q:after{content:'';content:none}:focus{outine:0}ins{text-decoration:none}del{text-decoration:line-through}table{border-collapse:collapse;border-spacing:0}
 
 html { min-height:100%; margin-bottom:1px; }
@@ -67,21 +67,94 @@ table td { padding:7px 5px; text-align:left; vertical-align:top; border:1px soli
 
 
 
-  </style></head><body><div class="content"><h1>axisLim</h1><!--introduction--><p>Below is a demonstration of the features of the <tt>axisLim</tt> function</p><!--/introduction--><h2>Contents</h2><div><ul><li><a href="#2">Syntax</a></li><li><a href="#3">Description</a></li><li><a href="#4">Examples</a></li><li><a href="#8">Examples</a></li></ul></div><pre class="codeinput">clear; close <span class="string">all</span>; clc;
-</pre><h2 id="2">Syntax</h2><p><tt>axLim=axisLim(V);</tt></p><h2 id="3">Description</h2><p>This function computes appropiate axis limits for the input vertices V. The vertices may be an k x l x m array, where by by k is the number of vertices, l is the number of dimensions (e.g. 2 or 3), and m is for instance a time (or other) dimension. The function returs axLim which are appropriate axis limits such that the coordinates in V can be displayed appropriately (and in a tight fashion).</p><h2 id="4">Examples</h2><p>Create example data</p><pre class="codeinput">[X,Y,Z]=peaks(25);
-[F,V]=surf2patch(X,Y,Z); <span class="comment">%Get faces and vertices</span>
-</pre><p>Compute appropriate limits</p><pre class="codeinput">axLim=axisLim(V) <span class="comment">%Axis limits for vertices in V</span>
+  </style></head><body><div class="content"><h1>axisLim</h1><!--introduction--><p>Below is a demonstration of the features of the <tt>axisLim</tt> function</p><!--/introduction--><h2>Contents</h2><div><ul><li><a href="#2">Syntax</a></li><li><a href="#3">Description</a></li><li><a href="#4">Examples</a></li><li><a href="#5">Example 1: setting axis limits tightly around a coordinate set in 2D</a></li><li><a href="#9">Example 2: setting axis limits tightly around a coordinate set in 3D</a></li><li><a href="#13">Example 3: setting axis limits tightly around multiple coordinate sets in 3D</a></li><li><a href="#17">Example 3: setting axis limits tightly around multiple coordinate sets with varying dimensions</a></li><li><a href="#21">Example 4: setting axis limits tightly for coordinates over time</a></li></ul></div><pre class="codeinput">clear; close <span class="string">all</span>; clc;
+</pre><h2 id="2">Syntax</h2><p><tt>axLim=axisLim(V);</tt></p><h2 id="3">Description</h2><p>This function computes appropiate axis limits for the input vertices V. The vertices may be an k x l x m array, where by by k is the number of vertices, l is the number of dimensions (e.g. 2 or 3), and m is for instance a time (or other) dimension. The function returs axLim which are appropriate axis limits such that the coordinates in V can be displayed appropriately (and in a tight fashion).</p><h2 id="4">Examples</h2><h2 id="5">Example 1: setting axis limits tightly around a coordinate set in 2D</h2><p>Create example data</p><pre class="codeinput">t=linspace(0,2*pi,250)';
+r=5+2*sin(5*t);
+V=r.*[cos(t) sin(t)];
+</pre><p>Compute appropriate limits</p><pre class="codeinput">axLim=axisLim(V) <span class="comment">%Axis limits for vertices</span>
 </pre><pre class="codeoutput">
 axLim =
 
-   -3.0000    3.0000   -3.0000    3.0000   -6.3265    7.9966
+   -6.6976    6.7000   -5.8390    6.9989
 
-</pre><p>Assign axis limits directly</p><pre class="codeinput">cFigure;
-surf(X,Y,Z);
+</pre><p>Assign axis limits using <tt>axisLim</tt></p><pre class="codeinput">cFigure;
+plot(V(:,1),V(:,2),<span class="string">'b-'</span>);
+axis <span class="string">equal</span>; axis(axisLim(V));
+drawnow;
+</pre><img width="100%" height="auto" vspace="5" hspace="5" src="HELP_axisLim_01.jpg" alt=""> <h2 id="9">Example 2: setting axis limits tightly around a coordinate set in 3D</h2><p>Create example data</p><pre class="codeinput">[F,V]=stanford_bunny;
+</pre><p>Compute appropriate limits</p><pre class="codeinput">axLim=axisLim(V) <span class="comment">%Axis limits for vertices</span>
+</pre><pre class="codeoutput">
+axLim =
+
+  -77.1042   77.6348  -59.4666   60.6226  -77.2629   76.0109
+
+</pre><p>Assign axis limits using <tt>axisLim</tt></p><pre class="codeinput">cFigure;
+gpatch(F,V);
 axisGeom; camlight <span class="string">headlight</span>;
 axis(axisLim(V));
 gdrawnow;
-</pre><img width="100%" height="auto" vspace="5" hspace="5" src="HELP_axisLim_01.jpg" alt=""> <h2 id="8">Examples</h2><p><img vspace="5" hspace="5" src="gibbVerySmall.gif" alt=""> </p><p><i><b>GIBBON</b></i> <a href="www.gibboncode.org">www.gibboncode.org</a></p><p><i>Kevin Mattheus Moerman</i>, <a href="gibbon.toolbox@gmail.com">gibbon.toolbox@gmail.com</a></p><p><i><b>GIBBON footer text</b></i></p><p>License: <a href="https://github.com/gibbonCode/GIBBON/blob/master/LICENSE">https://github.com/gibbonCode/GIBBON/blob/master/LICENSE</a></p><p>GIBBON: The Geometry and Image-based Bioengineering add-On. A toolbox for image segmentation, image-based modeling, meshing, and finite element analysis.</p><p>Copyright (C) 2006-2022 Kevin Mattheus Moerman and the GIBBON contributors</p><p>This program is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.</p><p>This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for more details.</p><p>You should have received a copy of the GNU General Public License along with this program.  If not, see <a href="http://www.gnu.org/licenses/">http://www.gnu.org/licenses/</a>.</p><p class="footer"><br><a href="https://www.mathworks.com/products/matlab/">Published with MATLAB&reg; R2022a</a><br></p></div><!--
+</pre><img width="100%" height="auto" vspace="5" hspace="5" src="HELP_axisLim_02.jpg" alt=""> <h2 id="13">Example 3: setting axis limits tightly around multiple coordinate sets in 3D</h2><p>Create example data</p><pre class="codeinput">[F1,V1]=graphicsModels(3);
+[F2,V2]=graphicsModels(4);
+V2=V2+1;
+</pre><p>Compute appropriate limits</p><pre class="codeinput">axLim=axisLim(V1,V2) <span class="comment">%Axis limits for vertices</span>
+</pre><pre class="codeoutput">
+axLim =
+
+   -1.0247    5.0281   -0.3258    1.8240   -0.6125    2.5817
+
+</pre><p>Assign axis limits using <tt>axisLim</tt></p><pre class="codeinput">cFigure; hold <span class="string">on</span>;
+gpatch(F1,V1,<span class="string">'gw'</span>);
+gpatch(F2,V2,<span class="string">'rw'</span>);
+axisGeom; camlight <span class="string">headlight</span>;
+axis(axisLim(V1,V2));
+gdrawnow;
+</pre><img width="100%" height="auto" vspace="5" hspace="5" src="HELP_axisLim_03.jpg" alt=""> <h2 id="17">Example 3: setting axis limits tightly around multiple coordinate sets with varying dimensions</h2><p>Create example data</p><pre class="codeinput">V1=r.*[cos(t) sin(t)];
+[F2,V2]=geoSphere(2,1);
+</pre><p>Compute appropriate limits</p><pre class="codeinput">axLim=axisLim(V1,V2) <span class="comment">%Axis limits for vertices</span>
+</pre><pre class="codeoutput">
+axLim =
+
+   -6.6976    6.7000   -5.8390    6.9989   -1.0000    1.0000
+
+</pre><p>Assign axis limits using <tt>axisLim</tt></p><pre class="codeinput">cFigure; hold <span class="string">on</span>;
+plot(V1(:,1),V1(:,2),<span class="string">'b-'</span>);
+gpatch(F2,V2,<span class="string">'rw'</span>);
+axisGeom; camlight <span class="string">headlight</span>;
+axis(axisLim(V1,V2));
+gdrawnow;
+</pre><img width="100%" height="auto" vspace="5" hspace="5" src="HELP_axisLim_04.jpg" alt=""> <h2 id="21">Example 4: setting axis limits tightly for coordinates over time</h2><pre class="codeinput">[F,V]=stanford_bunny; <span class="comment">%Some graphics data</span>
+
+nSteps=50;
+t=linspace(0,pi,nSteps)';
+U=[-100*t/pi zeros(nSteps,1) 50*sin(t)];
+
+V_DEF=zeros(size(V,1),3,nSteps);
+<span class="keyword">for</span> q=1:1:nSteps
+    V_DEF(:,:,q)=V+U(q*ones(size(V,1),1),:);
+<span class="keyword">end</span>
+</pre><p>Compute appropriate limits</p><pre class="codeinput">axLim=axisLim(V_DEF) <span class="comment">%Axis limits for vertices</span>
+</pre><pre class="codeoutput">
+axLim =
+
+ -177.1042   77.6348  -59.4666   60.6226  -77.2629  125.9853
+
+</pre><p>Assign axis limits using <tt>axisLim</tt></p><pre class="codeinput">hf=cFigure;
+hp=gpatch(F,V,<span class="string">'gw'</span>);
+axisGeom; camlight <span class="string">headlight</span>;
+axis(axisLim(V_DEF)); <span class="comment">%Set limits to be suitable across time</span>
+drawnow;
+</pre><img width="100%" height="auto" vspace="5" hspace="5" src="HELP_axisLim_05.jpg" alt=""> <p>Use <tt>anim8</tt> to animate the scene</p><pre class="codeinput">animStruct.Time=linspace(0,1,nSteps); <span class="comment">%Time vector</span>
+
+<span class="keyword">for</span> q=1:1:nSteps
+    <span class="comment">%Set entries in animation structure</span>
+    animStruct.Handles{q}=hp; <span class="comment">%Handles of objects to animate</span>
+    animStruct.Props{q}={<span class="string">'Vertices'</span>}; <span class="comment">%Properties of objects to animate</span>
+    animStruct.Set{q}={V_DEF(:,:,q)}; <span class="comment">%Property values for to set in order to animate</span>
+<span class="keyword">end</span>
+
+<span class="comment">% Start |anim8| gui</span>
+anim8(hf,animStruct);
+</pre><img width="100%" height="auto" vspace="5" hspace="5" src="HELP_axisLim_06.jpg" alt=""> <p><img vspace="5" hspace="5" src="gibbVerySmall.gif" alt=""> </p><p><i><b>GIBBON</b></i> <a href="www.gibboncode.org">www.gibboncode.org</a></p><p><i>Kevin Mattheus Moerman</i>, <a href="gibbon.toolbox@gmail.com">gibbon.toolbox@gmail.com</a></p><p><i><b>GIBBON footer text</b></i></p><p>License: <a href="https://github.com/gibbonCode/GIBBON/blob/master/LICENSE">https://github.com/gibbonCode/GIBBON/blob/master/LICENSE</a></p><p>GIBBON: The Geometry and Image-based Bioengineering add-On. A toolbox for image segmentation, image-based modeling, meshing, and finite element analysis.</p><p>Copyright (C) 2006-2022 Kevin Mattheus Moerman and the GIBBON contributors</p><p>This program is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.</p><p>This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for more details.</p><p>You should have received a copy of the GNU General Public License along with this program.  If not, see <a href="http://www.gnu.org/licenses/">http://www.gnu.org/licenses/</a>.</p><p class="footer"><br><a href="https://www.mathworks.com/products/matlab/">Published with MATLAB&reg; R2022b</a><br></p></div><!--
 ##### SOURCE BEGIN #####
 %% axisLim
 % Below is a demonstration of the features of the |axisLim| function
@@ -102,27 +175,128 @@ clear; close all; clc;
 
 %% Examples
 
+%% Example 1: setting axis limits tightly around a coordinate set in 2D
+
 %%
 % Create example data
-
-[X,Y,Z]=peaks(25);
-[F,V]=surf2patch(X,Y,Z); %Get faces and vertices
+t=linspace(0,2*pi,250)'; 
+r=5+2*sin(5*t);
+V=r.*[cos(t) sin(t)];
 
 %%
 % Compute appropriate limits
-axLim=axisLim(V) %Axis limits for vertices in V
+axLim=axisLim(V) %Axis limits for vertices
 
 %%
-% Assign axis limits directly
+% Assign axis limits using |axisLim|
 
 cFigure; 
-surf(X,Y,Z);
+plot(V(:,1),V(:,2),'b-');
+axis equal; axis(axisLim(V));
+drawnow; 
+
+%% Example 2: setting axis limits tightly around a coordinate set in 3D
+
+%%
+% Create example data
+[F,V]=stanford_bunny; 
+
+%%
+% Compute appropriate limits
+axLim=axisLim(V) %Axis limits for vertices
+
+%%
+% Assign axis limits using |axisLim|
+
+cFigure; 
+gpatch(F,V);
 axisGeom; camlight headlight; 
 axis(axisLim(V));
 gdrawnow; 
 
-%% Examples 
-% 
+%% Example 3: setting axis limits tightly around multiple coordinate sets in 3D
+
+%%
+% Create example data
+[F1,V1]=graphicsModels(3); 
+[F2,V2]=graphicsModels(4); 
+V2=V2+1;
+%%
+% Compute appropriate limits
+axLim=axisLim(V1,V2) %Axis limits for vertices
+
+%%
+% Assign axis limits using |axisLim|
+
+cFigure; hold on; 
+gpatch(F1,V1,'gw');
+gpatch(F2,V2,'rw');
+axisGeom; camlight headlight; 
+axis(axisLim(V1,V2));
+gdrawnow; 
+
+%% Example 3: setting axis limits tightly around multiple coordinate sets with varying dimensions
+
+%%
+% Create example data
+V1=r.*[cos(t) sin(t)];
+[F2,V2]=geoSphere(2,1); 
+
+%%
+% Compute appropriate limits
+axLim=axisLim(V1,V2) %Axis limits for vertices
+
+%%
+% Assign axis limits using |axisLim|
+
+cFigure; hold on; 
+plot(V1(:,1),V1(:,2),'b-');
+gpatch(F2,V2,'rw');
+axisGeom; camlight headlight; 
+axis(axisLim(V1,V2));
+gdrawnow; 
+
+%% Example 4: setting axis limits tightly for coordinates over time
+
+[F,V]=stanford_bunny; %Some graphics data
+
+nSteps=50;
+t=linspace(0,pi,nSteps)';
+U=[-100*t/pi zeros(nSteps,1) 50*sin(t)];
+
+V_DEF=zeros(size(V,1),3,nSteps);
+for q=1:1:nSteps
+    V_DEF(:,:,q)=V+U(q*ones(size(V,1),1),:);
+end
+
+%%
+% Compute appropriate limits
+axLim=axisLim(V_DEF) %Axis limits for vertices
+
+%% 
+% Assign axis limits using |axisLim|
+
+hf=cFigure; 
+hp=gpatch(F,V,'gw');
+axisGeom; camlight headlight; 
+axis(axisLim(V_DEF)); %Set limits to be suitable across time
+drawnow; 
+
+%%
+% Use |anim8| to animate the scene
+
+animStruct.Time=linspace(0,1,nSteps); %Time vector
+
+for q=1:1:nSteps    
+    %Set entries in animation structure
+    animStruct.Handles{q}=hp; %Handles of objects to animate
+    animStruct.Props{q}={'Vertices'}; %Properties of objects to animate
+    animStruct.Set{q}={V_DEF(:,:,q)}; %Property values for to set in order to animate
+end
+
+% Start |anim8| gui
+anim8(hf,animStruct);
+
 %%
 % 
 % <<gibbVerySmall.gif>>

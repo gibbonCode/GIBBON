@@ -67,6 +67,7 @@ displacementMagnitude=(stretchLoad*sampleHeight)-sampleHeight; %The displacement
 
 %Material parameter set
 c_spring=1e-3; %Spring "Youngs Modulus" 
+
 c1=c_spring/100000; %Solid shear-modulus-like parameter
 m1=2; %Solid material parameter setting degree of non-linearity
 k=c1; %Solid bulk modulus
