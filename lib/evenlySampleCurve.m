@@ -92,7 +92,7 @@ if spacingFlag==1
     else
         d=max(pathLength(V));
     end
-    n=ceil(d./pointSpacing); %Determine samling point density from point spacing   
+    n=1+ceil(d./pointSpacing); %Determine samling point density from point spacing   
     if n<2
         n=2;
     end
