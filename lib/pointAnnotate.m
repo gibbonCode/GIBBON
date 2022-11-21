@@ -10,6 +10,11 @@ function [varargout]=pointAnnotate(V,nodeIndices,varargin)
 % 2019/08/06 Created
 % ------------------------------------------------------------------------
 
+%% Parse input
+if size(V,2)==2
+    V(:,3)=0; %Force to be 3D
+end
+
 %% Get node indices 
 if isempty(nodeIndices)
     nodeIndices=1:1:size(V,1);
