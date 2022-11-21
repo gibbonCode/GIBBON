@@ -1,20 +1,58 @@
-function axLim=axisLim(V)
+function axLim=axisLim(varargin)
 
-% function axLim=axisLim(V_DEF)
+% function axLim=axisLim(V)
 % ------------------------------------------------------------------------
 % Computes tight axis limits for the input coordinates V. The coordinates
 % may be a 3-dimensional array where the 3rd direction could reflect
 % coordinates as a function of time for instance. 
-% 
+% The function also supports multiple inputs e.g.:
+%
+% axLim=axisLim(V1,V2,V3)
+%
+% In this case the limits are based on all sets simultaneously. Note some
+% may be 3-dimensional arrays (e.g. nx3xm) while others may be 2-dimensional arrays. 
+%
+% 2022/11/08 Updated to allow for multiple coordinate set input
 % ------------------------------------------------------------------------
 %%
 
-try
-    axLim=[min(V,[],[1 3]); max(V,[],[1 3])];
-catch 
-    axLim=[min(min(V,[],1),[],3); max(max(V,[],1),[],3)];
+for q=1:1:nargin %Loop over all coordinate sets
+
+    V=varargin{q};
+
+    try
+        minV=min(V,[],[1 3]);
+        maxV=max(V,[],[1 3]);
+    catch
+        minV=min(min(V,[],1),[],3);
+        maxV=max(max(V,[],1),[],3); 
+    end    
+    
+    if q>1 %Compare to previous                
+        %Check for dimensionality compatibility
+        if numel(minVn)==2 && numel(minV)==3
+            minVn(3)=0;
+            maxVn(3)=0;
+        elseif numel(minV)==2 && numel(minVn)==3
+            minV(3)=0;
+            maxV(3)=0;
+        end
+        minV=min(minV,minVn);
+        maxV=max(maxV,maxVn);
+    end
+    
+    %Keep track of previous
+    minVn=minV;
+    maxVn=maxV;
 end
-axLim=axLim(:)';
+
+logicSame= abs(minV-maxV) < eps(abs(minV-maxV));
+minV(logicSame)=minV(logicSame)-1;
+maxV(logicSame)=maxV(logicSame)+1;
+
+%Create axis limit format
+axLim=[minV(:) maxV(:)]';
+axLim=axLim(:)'; %Format is X X Y Y Z Z
 
 %% 
 % _*GIBBON footer text*_ 
