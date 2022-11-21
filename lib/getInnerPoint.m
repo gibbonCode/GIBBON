@@ -63,6 +63,10 @@ k=k./sum(k(:)); %Normalize kernel
 
 %Convolve interior image with kernel
 ML=convn(double(L_test),k,'same');
+
+% Alternative based on boundary distance transform (slower)
+%ML = bwdist(M==0,'euclidean'); ML(~L_test)=0;
+
 ML(M~=1)=NaN; %Set other sites to NaN
 [~,indInternal]=gnanmax(ML(:)); %Kernel should yield max at "deep" (related to search radius) point
 [I_in,J_in,K_in]=ind2sub(size(M),indInternal); %Convert to subscript coordinates
@@ -77,7 +81,7 @@ if plotOn==1
     
     fontSize=20;
     markerSize1=50;%round(voxelSize*25);
-    faceAlpha1=1;
+    faceAlpha1=0.75;
     faceAlpha2=0.5;
     
     cFigure;    
@@ -120,8 +124,7 @@ varargout{1}=V_inner;
 varargout{2}=M;
 varargout{3}=G;
 varargout{4}=ML;
-
-
+varargout{5}=voxelSize;
  
 %% 
 % _*GIBBON footer text*_ 
