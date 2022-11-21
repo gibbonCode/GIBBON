@@ -26,7 +26,7 @@ defaultInputStruct.surfaceCase='g';
 defaultInputStruct.numPeriods=[1 1 1]; 
 defaultInputStruct.levelset=0.5;
 defaultInputStruct.surfaceSide=1;
-defaultInputStruct.phaseShift=0.3*[pi pi pi]; 
+defaultInputStruct.phaseShift=0.*[pi pi pi]; 
 
 %Complete input with default if incomplete
 [inputStruct]=structComplete(inputStruct,defaultInputStruct,1); %Complement provided with default if missing or empty
