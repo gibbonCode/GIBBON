@@ -16,7 +16,7 @@ clear; close all; clc;
 
 defaultFolder = fileparts(fileparts(mfilename('fullpath')));
 loadPath=fullfile(defaultFolder,'data','OBJ');
-fileName='test.obj';
+fileName=fullfile(loadPath,'test.obj');
 
 [F,V]=import_obj_geom(fileName); 
 

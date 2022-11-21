@@ -5,12 +5,41 @@
 clear; close all; clc;
 
 %% Syntax
-% |[varargout]=pointAnnotate(V,nodeIndices,varargin);|
+% |[ht]=pointAnnotate(V,nodeIndices,varargin);|
 
 %% Description 
-% UNDOCUMENTED 
+% This function adds number labels to a plot at the points specified by V
+% and using the numbers nodeIndices. If nodeIndices is empty then the
+% default numbers are 1:1:size(V,1)
+
+%%
+% Plot settings
+fontSize=40; 
+makerSize=50; 
+
 %% Examples 
 % 
+
+[F,V]=geoSphere(0,1); 
+nodeIndices=1:1:size(V,1); 
+
+%%
+% Creating a plot with annotated points
+
+cFigure; hold on; 
+gpatch(F,V,'bw','k',0.1,1); 
+plotV(V,'k.','MarkerSize',makerSize)
+
+%Annotate the point set
+ht=pointAnnotate(V,nodeIndices,'FontSize',fontSize);
+
+%Modify text using handles
+for q=1:1:numel(ht)
+    ht(q).Color='r';
+end
+axisGeom; camlight headlight; 
+drawnow; 
+
 %%
 % 
 % <<gibbVerySmall.gif>>
