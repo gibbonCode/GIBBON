@@ -301,7 +301,7 @@ switch arrayParseMethod
         
         %Convert to string
         t=sprintf(textFormat,D');
-        
+        t=t(1:end-1); %take away last end of line character \n, would result in empty line in text file
         T_add={t};      
     case 2 %Flexible, handles non-uniform attributes, uses cellfun to "loop"         
         T_add=cell(numArray,1);
