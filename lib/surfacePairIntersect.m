@@ -51,6 +51,10 @@ function [Xi,Yi,Zi]=surfacePairIntersect(X1,Y1,Z1,X2,Y2,Z2,interpMethod)
 % Kevin Mattheus Moerman
 % kevinmoerman@hotmail.com
 % 30/08/2012
+% 
+% Alastair Quinn
+% alastair.quinn@griffith.edu.au
+% 16/01/2023 Updated to work in MATLAB 2018a
 %------------------------------------------------------------------------
 
 %Interpolate to find Z1-coordinates of surface 2 
@@ -72,17 +76,27 @@ D=(Z2_I-Z2);
 %and Y coordinates of the intersection curve(s)
 set(figure,'Visible','off'); %open "invisible figure"
 figureHandle=gcf;
-[~,contourHandle] = contour(X2,Y2,D,[0 0],'Visible','off','LineColor','none'); %The "zero contours" 
+[C,~] = contour(X2,Y2,D,[0 0],'Visible','off','LineColor','none'); %The "zero contours" 
 
-%Get the contour object children (contains coordinates of contours)
-contourChildren=get(contourHandle,'children'); 
+% Get seperate intersection curves from contour()
 
-%Get seperate intersection curves from contour 
-Xi=cell(numel(contourChildren),1); Yi=Xi; Zi=Xi; %Cell arrays for output
-for q=1:1:numel(contourChildren)   
-    contourChild=get(contourChildren(q)); %Get child   
-    xi=contourChild.XData(~isnan(contourChild.XData)); %X coordinate    
-    yi=contourChild.YData(~isnan(contourChild.YData)); %Y coordinate
+% Alastair - not tested for varying contour heights.
+numContours = 0;
+ind = 0;
+lenVec = 0;
+while ~(lenVec + ind >= size(C,2))
+    ind = ind + lenVec + 1;
+    numContours = numContours + 1;
+    lenVec = C(2, ind);
+end
+
+Xi=cell(numContours,1); Yi=Xi; Zi=Xi; %Cell arrays for output
+ind = 1;
+prevInd = 1;
+for q=1:1:numContours
+    lenVec = C(2, ind);
+    xi = C(1, prevInd+1:prevInd+lenVec); %X coordinate  
+    yi = C(2, prevInd+1:prevInd+lenVec); %Y coordinate
     
     %interpolate to obtain the Z-coordinate 
     if strcmp(interpMethod,'natural') || strcmp(interpMethod,'linear') || strcmp(interpMethod,'nearest') %TriScatterdInterp function
@@ -93,8 +107,12 @@ for q=1:1:numel(contourChildren)
         zi=interp2(X1,Y1,Z1,xi,yi,interpMethod); 
     end
     %Store coordinates of current curve component in cell arrays
-    Xi{q,1}=xi; Yi{q,1}=yi; Zi{q,1}=zi; 
+    Xi{q,1}=xi; Yi{q,1}=yi; Zi{q,1}=zi;
+    
+    prevInd = prevInd + lenVec + 1;
+    ind = ind + lenVec + 1;
 end
+
 close(figureHandle); %Close hidden figure
 
 end

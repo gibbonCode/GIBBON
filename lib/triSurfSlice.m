@@ -52,7 +52,7 @@ switch nargin
         C=varargin{3};
         P=varargin{4};
         n=varargin{5};
-        snapTolerance=[];
+        snapTolerance=varargin{6};
         logicExclude=[];
     case 7
         F=varargin{1};
