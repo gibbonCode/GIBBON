@@ -30,18 +30,6 @@ faceAlpha2=0.3;
 markerSize=40;
 lineWidth=3;
 
-%%
-
-r=40;
-r1=r/2.5;
-r2=r/7;
-rm=mean([r1 r2]);
-w=(r1-r2)/20;
-h=r2;
-dx=r/2;
-nRefine=3; %Number of refine steps for hemi-sphere
-volumeFactor=3;
-
 %% Control parameters
 
 % Path names
@@ -57,7 +45,7 @@ febioLogFileName_force=[febioFebFileNamePart,'_force_out.txt']; %Log file name f
 
 %Material parameter set
 c1_1=1e-3; %Shear-modulus-like parameter
-m1_1=6; %Material parameter setting degree of non-linearity
+m1_1=2; %Material parameter setting degree of non-linearity
 k_factor=50; %Bulk modulus factor
 k_1=c1_1*k_factor; %Bulk modulus
 
@@ -71,7 +59,20 @@ dtmin=(1/numTimeSteps)/100; %Minimum time step size
 dtmax=1/numTimeSteps; %Maximum time step size
 symmetric_stiffness=1;
 min_residual=1e-20;
-runMode='internal';%'internal';
+runMode='external';%'internal';
+
+%%
+% Geometry parameters
+
+r=40;
+r1=r/2.5;
+r2=r/7;
+rm=mean([r1 r2]);
+w=(r1-r2)/20;
+h=r2;
+dx=r/2;
+nRefine=3; %Number of refine steps for hemi-sphere
+volumeFactor=3;
 
 %% Create hemi-sphere
 [F,V,C_hemiSphereLabel]=hemiSphereMesh(nRefine,r,1); %Construct hemi-shere mesh
@@ -130,7 +131,7 @@ rCut=[10 20 20];
 nRefineCut=nRefine;
 [Fs,Vs]=geoSphere(nRefineCut,1);
 Fs=fliplr(Fs);
-R_cut1=euler2DCM([0 0 0.*pi]);
+R_cut1=euler2DCM([0 0 0.5*pi]);
 R_cut2=euler2DCM([-0.5*pi -0.1*pi -0.2*pi]);
 R_cut=R_cut1*R_cut2;
 Vs=Vs.*rCut(ones(size(Vs,1),1),:);
@@ -153,7 +154,7 @@ drawnow;
 logicCutVertices=~isnan(regionLabel);
 logicCutFaces=any(logicCutVertices(F),2);
 logicCutFaces=triSurfLogicSharpFix(F,logicCutFaces,3);
-Eb=patchBoundary(F(logicCutFaces,:),V);
+Eb=patchBoundary(F(logicCutFaces,:));
 logicCutFaces=~logicCutFaces & ~any(ismember(F,Eb),2);
 logicCutFaces=triSurfLogicSharpFix(F,logicCutFaces,3);
 
@@ -162,13 +163,13 @@ logicCutVertices=(regionLabel==1);
 logicCutFaces_s=any(logicCutVertices(Fs),2);
 logicCutFaces_s=triSurfLogicSharpFix(Fs,logicCutFaces_s,3);
 
-% Eb=patchBoundary(Fs(logicCutFaces_s,:),Vs);
+% Eb=patchBoundary(Fs(logicCutFaces_s,:));
 % logicCutFaces_s=logicCutFaces_s & ~any(ismember(Fs,Eb),2);
 % logicCutFaces_s=triSurfLogicSharpFix(Fs,logicCutFaces_s,3);
 
 Fs=Fs(logicCutFaces_s,:);
 [Fs,Vs]=patchCleanUnused(Fs,Vs);
-Eb=patchBoundary(Fs,Vs); %Get boundary edges
+Eb=patchBoundary(Fs); %Get boundary edges
 indBoundary=edgeListToCurve(Eb); %Convert boundary edges to a curve list
 indBoundary=indBoundary(1:end-1); %Trim off last point since it is equal to first on a closed loop
 angleThreshold=pi*(120/180); %threshold for self triangulation
@@ -177,11 +178,11 @@ angleThreshold=pi*(120/180); %threshold for self triangulation
 F=F(logicCutFaces,:);
 C_skin_F=C_skin_F(logicCutFaces,:);
 [F,V]=patchCleanUnused(F,V);
-Eb=patchBoundary(F,V);
+Eb=patchBoundary(F);
 ind1=edgeListToCurve(Eb);
 ind1=ind1(1:end-1);
 
-Eb=patchBoundary(Fs,Vs);
+Eb=patchBoundary(Fs);
 ind2=edgeListToCurve(Eb);
 ind2=ind2(1:end-1);
 
@@ -262,7 +263,7 @@ drawnow;
 
 %%
 
-Eb=patchBoundary(Fb(Cb==4,:),V);
+Eb=patchBoundary(Fb(Cb==4,:));
 indRim=edgeListToCurve(Eb);
 indRim=indRim(1:end-1);
 
