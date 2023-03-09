@@ -76,6 +76,7 @@ optionStruct.rayType       = 'ray';
 optionStruct.exclusionType = 'inclusive';
 optionStruct.paired        = 0; 
 P=triSurfRayTrace(V_branch_origin,N_branch_dir,Ft,Vt,optionStruct);
+P=mean(P,1);
 
 %%
 % Visualization250

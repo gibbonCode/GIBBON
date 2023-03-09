@@ -52,7 +52,7 @@ for q=1:1:5
     subplot(2,3,q+1); hold on;
     title(['Converted, method: ',num2str(q)],'FontSize',fontSize);
     gpatch(Fs,Vs,cMap(q+1,:),'k',0.5,edgeWidth);
-%     patchNormPlot(Fs,Vs,0.25);
+    patchNormPlot(Fs,Vs,0.25);
     plotV(Vs,'k.','MarkerSize',markerSize);
     
     colormap(cMap);

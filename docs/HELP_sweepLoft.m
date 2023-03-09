@@ -235,6 +235,24 @@ colormap(gjet(250));
 camlight headlight
 drawnow;
 
+%% Demonstration of indexing into the surface to "pick-out" allong surface curves
+% Visualize loft feature and curves
+
+cFigure; hold on; 
+gpatch(F,V,'w','none',0.5);
+axisGeom;
+colormap(gjet(250));
+camlight headlight
+drawnow;
+
+n=optionStruct.numSteps; %Number of steps along guide curve
+c=gjet(size(V1,1)); %Plotting colors for curves
+for i=1:1:size(V1,1) %Curve number
+    ind=(1+((i-1)*n):i*n); %Indices for curve
+    hp=plotV(V(ind,:),'k-','LineWidth',6); %Visualise curves
+    hp.Color=c(i,:); %Set color
+end
+
 %%
 % 
 % <<gibbVerySmall.gif>>
