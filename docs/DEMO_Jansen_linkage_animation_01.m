@@ -19,9 +19,9 @@ clear; close all; clc;
 
 %% Plot settings
 fontSize=25; 
-lineWidth1=5;
+lineWidth1=8;
 lineWidth2=2;
-markerSize=35;
+markerSize=50;
 
 %%
 
@@ -126,14 +126,14 @@ V(3,2)=sind(a3)*L(4)+V(5,2);
 
 %%
 
-a4=a3+g5_34
+a4=a3+g5_34;
 
 V(4,1)=cosd(a4)*L(5)+V(5,1);
 V(4,2)=sind(a4)*L(5)+V(5,2);
 
 %%
 
-g5_27=acosd((L(11)^2-d25^2-L(7)^2)./(-2*d25*L(7)))
+g5_27=acosd((L(11)^2-d25^2-L(7)^2)./(-2*d25*L(7)));
 
 a7=-(g5_27-a25);
 
