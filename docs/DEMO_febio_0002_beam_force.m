@@ -9,7 +9,7 @@
 
 %% Keywords
 %
-% * febio_spec version 3.0
+% * febio_spec version 4.0
 % * febio, FEBio
 % * beam force loading
 % * force control boundary condition
@@ -53,7 +53,7 @@ numElementsWidth=round(sampleWidth/pointSpacings(1)); %Number of elemens in dir 
 numElementsThickness=round(sampleThickness/pointSpacings(2)); %Number of elemens in dir 2
 numElementsHeight=round(sampleHeight/pointSpacings(3)); %Number of elemens in dir 3
 
-elementType='hex20'; %'hex8'
+elementType='hex20'; %'hex8' or 'hex20'
 
 %Define applied force 
 appliedForce=[0 0 -2e-3]; 
@@ -72,6 +72,8 @@ opt_iter=6; %Optimum number of iterations
 max_retries=5; %Maximum number of retires
 dtmin=(1/numTimeSteps)/100; %Minimum time step size
 dtmax=1/numTimeSteps; %Maximum time step size
+
+runMode='external';% 'internal' or 'external'
 
 %% Creating model geometry and mesh
 % A box is created with tri-linear hexahedral (hex8) elements using the
@@ -159,7 +161,7 @@ drawnow;
 [febio_spec]=febioStructTemplate;
 
 %febio_spec version 
-febio_spec.ATTR.version='3.0'; 
+febio_spec.ATTR.version='4.0'; 
 
 %Module section
 febio_spec.Module.ATTR.type='solid'; 
@@ -169,7 +171,7 @@ febio_spec.Control.analysis='STATIC';
 febio_spec.Control.time_steps=numTimeSteps;
 febio_spec.Control.step_size=1/numTimeSteps;
 febio_spec.Control.solver.max_refs=max_refs;
-febio_spec.Control.solver.max_ups=max_ups;
+febio_spec.Control.solver.qn_method.max_ups=max_ups;
 febio_spec.Control.time_stepper.dtmin=dtmin;
 febio_spec.Control.time_stepper.dtmax=dtmax; 
 febio_spec.Control.time_stepper.max_retries=max_retries;
@@ -202,11 +204,11 @@ febio_spec.Mesh.Elements{1}.elem.VAL=E; %The element matrix
 % -> NodeSets
 nodeSetName1='bcSupportList';
 febio_spec.Mesh.NodeSet{1}.ATTR.name=nodeSetName1;
-febio_spec.Mesh.NodeSet{1}.node.ATTR.id=bcSupportList(:);
+febio_spec.Mesh.NodeSet{1}.VAL=bcSupportList(:)';
 
 nodeSetName2='bcPrescribeList';
 febio_spec.Mesh.NodeSet{2}.ATTR.name=nodeSetName2;
-febio_spec.Mesh.NodeSet{2}.node.ATTR.id=bcPrescribeList(:);
+febio_spec.Mesh.NodeSet{2}.VAL=bcPrescribeList(:)';
 
 %MeshDomains section
 febio_spec.MeshDomains.SolidDomain.ATTR.name=partName1;
@@ -214,39 +216,54 @@ febio_spec.MeshDomains.SolidDomain.ATTR.mat=materialName1;
 
 %Boundary condition section 
 % -> Fix boundary conditions
-febio_spec.Boundary.bc{1}.ATTR.type='fix';
+febio_spec.Boundary.bc{1}.ATTR.name='zero_displacement_xyz';
+febio_spec.Boundary.bc{1}.ATTR.type='zero displacement';
 febio_spec.Boundary.bc{1}.ATTR.node_set=nodeSetName1;
-febio_spec.Boundary.bc{1}.dofs='x,y,z';
+febio_spec.Boundary.bc{1}.x_dof=1;
+febio_spec.Boundary.bc{1}.y_dof=1;
+febio_spec.Boundary.bc{1}.z_dof=1;
 
 %Loads section
 % -> Prescribed nodal forces
-febio_spec.Loads.nodal_load{1}.ATTR.name='PrescribedForceX';
-febio_spec.Loads.nodal_load{1}.ATTR.type='nodal_load';
-febio_spec.Loads.nodal_load{1}.ATTR.node_set=nodeSetName2;
-febio_spec.Loads.nodal_load{1}.dof='x';
-febio_spec.Loads.nodal_load{1}.scale.ATTR.lc=1;
-febio_spec.Loads.nodal_load{1}.scale.VAL=appliedForce(1)/numel(bcPrescribeList);
+nodalLoadType='force';
+switch nodalLoadType
+    case 'load' %Apply same force to each node
+        febio_spec.Loads.nodal_load{1}.ATTR.name='PrescribedForceX';
+        febio_spec.Loads.nodal_load{1}.ATTR.type='nodal_load';
+        febio_spec.Loads.nodal_load{1}.ATTR.node_set=nodeSetName2;
+        febio_spec.Loads.nodal_load{1}.dof='x';
+        febio_spec.Loads.nodal_load{1}.scale.ATTR.lc=1;
+        febio_spec.Loads.nodal_load{1}.scale.VAL=appliedForce(1)/numel(bcPrescribeList);
 
-febio_spec.Loads.nodal_load{2}.ATTR.name='PrescribedForceY';
-febio_spec.Loads.nodal_load{2}.ATTR.type='nodal_load';
-febio_spec.Loads.nodal_load{2}.ATTR.node_set=nodeSetName2;
-febio_spec.Loads.nodal_load{2}.dof='y';
-febio_spec.Loads.nodal_load{2}.scale.ATTR.lc=1;
-febio_spec.Loads.nodal_load{2}.scale.VAL=appliedForce(2)/numel(bcPrescribeList);
+        febio_spec.Loads.nodal_load{2}.ATTR.name='PrescribedForceY';
+        febio_spec.Loads.nodal_load{2}.ATTR.type='nodal_load';
+        febio_spec.Loads.nodal_load{2}.ATTR.node_set=nodeSetName2;
+        febio_spec.Loads.nodal_load{2}.dof='y';
+        febio_spec.Loads.nodal_load{2}.scale.ATTR.lc=1;
+        febio_spec.Loads.nodal_load{2}.scale.VAL=appliedForce(2)/numel(bcPrescribeList);
 
-febio_spec.Loads.nodal_load{3}.ATTR.name='PrescribedForceZ';
-febio_spec.Loads.nodal_load{3}.ATTR.type='nodal_load';
-febio_spec.Loads.nodal_load{3}.ATTR.node_set=nodeSetName2;
-febio_spec.Loads.nodal_load{3}.dof='z';
-febio_spec.Loads.nodal_load{3}.scale.ATTR.lc=1;
-febio_spec.Loads.nodal_load{3}.scale.VAL=appliedForce(3)/numel(bcPrescribeList);
+        febio_spec.Loads.nodal_load{3}.ATTR.name='PrescribedForceZ';
+        febio_spec.Loads.nodal_load{3}.ATTR.type='nodal_load';
+        febio_spec.Loads.nodal_load{3}.ATTR.node_set=nodeSetName2;
+        febio_spec.Loads.nodal_load{3}.dof='z';
+        febio_spec.Loads.nodal_load{3}.scale.ATTR.lc=1;
+        febio_spec.Loads.nodal_load{3}.scale.VAL=appliedForce(3)/numel(bcPrescribeList);
+    case 'force' %Apply a force vector to a collection of nodes (destributed)
+        febio_spec.Loads.nodal_load{1}.ATTR.name='PrescribedForceX';
+        febio_spec.Loads.nodal_load{1}.ATTR.type='nodal_force';
+        febio_spec.Loads.nodal_load{1}.ATTR.node_set=nodeSetName2;        
+        febio_spec.Loads.nodal_load{1}.value.ATTR.lc=1;
+        febio_spec.Loads.nodal_load{1}.value.VAL=appliedForce/numel(bcPrescribeList);
+end
 
 %LoadData section
 % -> load_controller
+febio_spec.LoadData.load_controller{1}.ATTR.name='LC_1';
 febio_spec.LoadData.load_controller{1}.ATTR.id=1;
 febio_spec.LoadData.load_controller{1}.ATTR.type='loadcurve';
 febio_spec.LoadData.load_controller{1}.interpolate='LINEAR';
-febio_spec.LoadData.load_controller{1}.points.point.VAL=[0 0; 1 1];
+%febio_spec.LoadData.load_controller{1}.extend='CONSTANT';
+febio_spec.LoadData.load_controller{1}.points.pt.VAL=[0 0; 1 1];
 
 %Output section 
 % -> log file
@@ -278,7 +295,7 @@ febioStruct2xml(febio_spec,febioFebFileName); %Exporting to file and domNode
 febioAnalysis.run_filename=febioFebFileName; %The input file name
 febioAnalysis.run_logname=febioLogFileName; %The name for the log file
 febioAnalysis.disp_on=1; %Display information on the command window
-febioAnalysis.runMode='external';%'internal';
+febioAnalysis.runMode=runMode;
 
 [runFlag]=runMonitorFEBio(febioAnalysis);%START FEBio NOW!!!!!!!!
 

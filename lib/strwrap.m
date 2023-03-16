@@ -1,8 +1,22 @@
 function str=strwrap(varargin)
 
-% function str=strwrap(str,n,pattern)
+% function str=strwrap(str,n,pattern,replaceOpt)
 %-------------------------------------------------------------------------
+% This function wraps the input string 
+% Example, if the input is: 
+%   str='1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18';
+%   n=8;
+%   pattern=', '
+% Then the output is: 
+% str=    '1, 2, 3, 4, 5, 6, 7, 8, 
+%          9, 10, 11, 12, 13, 14, 15, 
+%          16, 17, 18'
+% I.e. a new line is created every n pattern seperated entries. 
 %
+% Change log: 
+% 2023/03/10: The default behaviour is now set to add a new line character,
+% rather than to replace the pattern by a new line character. The option to
+% switch between these two has been added. 
 %-------------------------------------------------------------------------
 
 %% Parse input
@@ -12,14 +26,22 @@ switch nargin
         str=varargin{1};
         n=[];
         pattern=[];
+        replaceOpt=false;
     case 2
         str=varargin{1};
         n=varargin{2};
         pattern=[];
+        replaceOpt=false;
     case 3
         str=varargin{1};
         n=varargin{2};
         pattern=varargin{3};
+        replaceOpt=false;
+    case 4            
+        str=varargin{1};
+        n=varargin{2};
+        pattern=varargin{3};
+        replaceOpt=varargin{4};
 end
 
 if isempty(n)
@@ -38,9 +60,17 @@ catch %Use old approach
 end
 
 rangeSteps=n:n:N;
-for q=1:1:numel(rangeSteps)
-    str=regexprep(str,pattern,'\n',rangeSteps(q)-(q-1));
+
+%Replace certain occurances of the pattern with a new line symbol
+for q=1:1:numel(rangeSteps)    
+        str=regexprep(str,pattern,'\n',rangeSteps(q)-(q-1));    
 end
+
+%Put the pattern back at these locations if needed
+if replaceOpt==false
+    str=regexprep(str,'\n',[pattern,'\n']);    
+end
+
 %% 
 % _*GIBBON footer text*_ 
 % 
