@@ -10,7 +10,7 @@
 
 %% Keywords
 %
-% * febio_spec version 3.0
+% * febio_spec version 4.0
 % * febio, FEBio
 % * indentation
 % * contact, sliding, sticky, friction
@@ -81,6 +81,8 @@ max_retries=5; %Maximum number of retires
 dtmin=(1/numTimeSteps)/100; %Minimum time step size
 dtmax=1/numTimeSteps; %Maximum time step size
 symmetric_stiffness=0;
+
+runMode='external';% 'internal' or 'external'
 
 %Contact parameters
 contactInitialOffset=0.1;
@@ -216,7 +218,7 @@ drawnow;
 [febio_spec]=febioStructTemplate;
 
 %febio_spec version 
-febio_spec.ATTR.version='3.0'; 
+febio_spec.ATTR.version='4.0'; 
 
 %Module section
 febio_spec.Module.ATTR.type='solid'; 
@@ -226,7 +228,7 @@ febio_spec.Control.analysis='STATIC';
 febio_spec.Control.time_steps=numTimeSteps;
 febio_spec.Control.step_size=1/numTimeSteps;
 febio_spec.Control.solver.max_refs=max_refs;
-febio_spec.Control.solver.max_ups=max_ups;
+febio_spec.Control.solver.qn_method.max_ups=max_ups;
 febio_spec.Control.solver.symmetric_stiffness=symmetric_stiffness;
 febio_spec.Control.time_stepper.dtmin=dtmin;
 febio_spec.Control.time_stepper.dtmax=dtmax; 
@@ -273,7 +275,7 @@ febio_spec.Mesh.Elements{2}.elem.VAL=E2; %The element matrix
 % -> NodeSets
 nodeSetName1='bcSupportList';
 febio_spec.Mesh.NodeSet{1}.ATTR.name=nodeSetName1;
-febio_spec.Mesh.NodeSet{1}.node.ATTR.id=bcSupportList(:);
+febio_spec.Mesh.NodeSet{1}.VAL=mrow(bcSupportList);
 
 %MeshDomains section
 febio_spec.MeshDomains.SolidDomain.ATTR.name=partName1;
@@ -285,41 +287,45 @@ febio_spec.MeshDomains.ShellDomain.ATTR.mat=materialName2;
 % -> Surfaces
 surfaceName1='contactSurface1';
 febio_spec.Mesh.Surface{1}.ATTR.name=surfaceName1;
-febio_spec.Mesh.Surface{1}.tri3.ATTR.id=(1:1:size(F_contact_secondary,1))';
-febio_spec.Mesh.Surface{1}.tri3.VAL=F_contact_secondary;
+febio_spec.Mesh.Surface{1}.quad4.ATTR.id=(1:1:size(F_contact_primary,1))';
+febio_spec.Mesh.Surface{1}.quad4.VAL=F_contact_primary;
 
 surfaceName2='contactSurface2';
 febio_spec.Mesh.Surface{2}.ATTR.name=surfaceName2;
-febio_spec.Mesh.Surface{2}.quad4.ATTR.id=(1:1:size(F_contact_primary,1))';
-febio_spec.Mesh.Surface{2}.quad4.VAL=F_contact_primary;
+febio_spec.Mesh.Surface{2}.tri3.ATTR.id=(1:1:size(F_contact_secondary,1))';
+febio_spec.Mesh.Surface{2}.tri3.VAL=F_contact_secondary;
 
 % -> Surface pairs
 contactPairName='Contact1';
 febio_spec.Mesh.SurfacePair{1}.ATTR.name=contactPairName;
-febio_spec.Mesh.SurfacePair{1}.primary=surfaceName2;
-febio_spec.Mesh.SurfacePair{1}.secondary=surfaceName1;
+febio_spec.Mesh.SurfacePair{1}.primary=surfaceName1;
+febio_spec.Mesh.SurfacePair{1}.secondary=surfaceName2;
 
 %Boundary condition section 
 % -> Fix boundary conditions
-febio_spec.Boundary.bc{1}.ATTR.type='fix';
+febio_spec.Boundary.bc{1}.ATTR.name='zero_displacement_x';
+febio_spec.Boundary.bc{1}.ATTR.type='zero displacement';
 febio_spec.Boundary.bc{1}.ATTR.node_set=nodeSetName1;
-febio_spec.Boundary.bc{1}.dofs='x,y,z';
+febio_spec.Boundary.bc{1}.x_dof=1;
+febio_spec.Boundary.bc{1}.y_dof=1;
+febio_spec.Boundary.bc{1}.z_dof=1;
 
 %Rigid section 
 % ->Rigid body fix boundary conditions
-febio_spec.Rigid.rigid_constraint{1}.ATTR.name='RigidFix_1';
-febio_spec.Rigid.rigid_constraint{1}.ATTR.type='fix';
-febio_spec.Rigid.rigid_constraint{1}.rb=2;
-febio_spec.Rigid.rigid_constraint{1}.dofs='Rx,Ry';
+febio_spec.Rigid.rigid_bc{1}.ATTR.name='RotFix_1';
+febio_spec.Rigid.rigid_bc{1}.ATTR.type='rigid_fixed';
+febio_spec.Rigid.rigid_bc{1}.rb=2;
+febio_spec.Rigid.rigid_bc{1}.Rx_dof=1;
+febio_spec.Rigid.rigid_bc{1}.Ry_dof=1;
 
 % ->Rigid body prescribe boundary conditions
-febio_spec.Rigid.rigid_constraint{2}.ATTR.name='RigidPrescribe';
-febio_spec.Rigid.rigid_constraint{2}.ATTR.type='prescribe';
-febio_spec.Rigid.rigid_constraint{2}.rb=2;
-febio_spec.Rigid.rigid_constraint{2}.dof='Rz';
-febio_spec.Rigid.rigid_constraint{2}.value.ATTR.lc=1;
-febio_spec.Rigid.rigid_constraint{2}.value.VAL=-(sphereDisplacement+contactInitialOffset);
-febio_spec.Rigid.rigid_constraint{2}.relative=0;
+febio_spec.Rigid.rigid_bc{2}.ATTR.name='RigidPrescribe';
+febio_spec.Rigid.rigid_bc{2}.ATTR.type='rigid_displacement';
+febio_spec.Rigid.rigid_bc{2}.rb=2;
+febio_spec.Rigid.rigid_bc{2}.dof='z';
+febio_spec.Rigid.rigid_bc{2}.value.ATTR.lc=1;
+febio_spec.Rigid.rigid_bc{2}.value.VAL=-(sphereDisplacement+contactInitialOffset);
+febio_spec.Rigid.rigid_bc{2}.relative=0;
 
 %Contact section
 febio_spec.Contact.contact{1}.ATTR.type='sliding-elastic';
@@ -334,15 +340,18 @@ febio_spec.Contact.contact{1}.search_tol=0.01;
 febio_spec.Contact.contact{1}.search_radius=0.1*sqrt(sum((max(V,[],1)-min(V,[],1)).^2,2));
 febio_spec.Contact.contact{1}.symmetric_stiffness=0;
 febio_spec.Contact.contact{1}.auto_penalty=1;
+febio_spec.Contact.contact{1}.update_penalty=1;
 febio_spec.Contact.contact{1}.penalty=contactPenalty;
 febio_spec.Contact.contact{1}.fric_coeff=fric_coeff;
 
 %LoadData section
 % -> load_controller
+febio_spec.LoadData.load_controller{1}.ATTR.name='LC_1';
 febio_spec.LoadData.load_controller{1}.ATTR.id=1;
 febio_spec.LoadData.load_controller{1}.ATTR.type='loadcurve';
 febio_spec.LoadData.load_controller{1}.interpolate='LINEAR';
-febio_spec.LoadData.load_controller{1}.points.point.VAL=[0 0; 1 1];
+%febio_spec.LoadData.load_controller{1}.extend='CONSTANT';
+febio_spec.LoadData.load_controller{1}.points.pt.VAL=[0 0; 1 1];
 
 %Output section 
 % -> log file
@@ -355,10 +364,9 @@ febio_spec.Output.logfile.element_data{1}.ATTR.file=febioLogFileName_stress;
 febio_spec.Output.logfile.element_data{1}.ATTR.data='s3';
 febio_spec.Output.logfile.element_data{1}.ATTR.delim=',';
 
-febio_spec.Output.logfile.face_data{1}.ATTR.file=febioLogFileName_contactPressure;
-febio_spec.Output.logfile.face_data{1}.ATTR.data='contact pressure';
-febio_spec.Output.logfile.face_data{1}.ATTR.surface=surfaceName2;
-febio_spec.Output.logfile.face_data{1}.ATTR.delim=',';
+% febio_spec.Output.logfile.face_data{1}.ATTR.file=febioLogFileName_contactPressure;
+% febio_spec.Output.logfile.face_data{1}.ATTR.data='contact pressure';
+% febio_spec.Output.logfile.face_data{1}.ATTR.surface=surfaceName1;
 
 %% Quick viewing of the FEBio input file structure
 % The |febView| function can be used to view the xml structure in a MATLAB
@@ -383,7 +391,7 @@ febioStruct2xml(febio_spec,febioFebFileName); %Exporting to file and domNode
 febioAnalysis.run_filename=febioFebFileName; %The input file name
 febioAnalysis.run_logname=febioLogFileName; %The name for the log file
 febioAnalysis.disp_on=1; %Display information on the command window
-febioAnalysis.runMode='external';%'internal';
+febioAnalysis.runMode=runMode;
 
 [runFlag]=runMonitorFEBio(febioAnalysis);%START FEBio NOW!!!!!!!!
 
@@ -455,35 +463,35 @@ if runFlag==1 %i.e. a succesful run
     drawnow;
     
         %%
-    % Plotting the simulated results using |anim8| to visualize and animate
-    % deformations
-
-    % Create basic view and store graphics handle to initiate animation
-    hf=cFigure; %Open figure
-    gtitle([febioFebFileNamePart,': Press play to animate']);
-    title('$\sigma_{3}$ [MPa]','Interpreter','Latex')
-    gpatch(Fb1,V_DEF(:,:,end),'w','none',0.1);
-    hp=gpatch(F_contact_primary,V_DEF(:,:,end),F_primary_contact_pressure_mat(:,:,1),'k',1); %Add graphics object to animate        
-        
-    hp2=gpatch(E2,V_DEF(:,:,end),'w','none',0.25); %Add graphics object to animate
-    
-    axisGeom(gca,fontSize);
-    colormap(gjet(250)); colorbar;
-    caxis([min(F_primary_contact_pressure_mat(:)) max(F_primary_contact_pressure_mat(:))]);
-    axis(axisLim(V_DEF)); %Set axis limits statically
-    camlight headlight;
-    
-    % Set up animation features
-    animStruct.Time=timeVec; %The time vector
-    for qt=1:1:size(N_disp_mat,3) %Loop over time increments
-        
-        %Set entries in animation structure
-        animStruct.Handles{qt}=[hp hp hp2]; %Handles of objects to animate
-        animStruct.Props{qt}={'Vertices','CData','Vertices'}; %Properties of objects to animate
-        animStruct.Set{qt}={V_DEF(:,:,qt),F_primary_contact_pressure_mat(:,:,qt),V_DEF(:,:,qt)}; %Property values for to set in order to animate
-    end
-    anim8(hf,animStruct); %Initiate animation feature
-    drawnow;
+%     % Plotting the simulated results using |anim8| to visualize and animate
+%     % deformations
+% 
+%     % Create basic view and store graphics handle to initiate animation
+%     hf=cFigure; %Open figure
+%     gtitle([febioFebFileNamePart,': Press play to animate']);
+%     title('$\sigma_{3}$ [MPa]','Interpreter','Latex')
+%     gpatch(Fb1,V_DEF(:,:,end),'w','none',0.1);
+%     hp=gpatch(F_contact_primary,V_DEF(:,:,end),F_primary_contact_pressure_mat(:,:,1),'k',1); %Add graphics object to animate        
+%         
+%     hp2=gpatch(E2,V_DEF(:,:,end),'w','none',0.25); %Add graphics object to animate
+%     
+%     axisGeom(gca,fontSize);
+%     colormap(gjet(250)); colorbar;
+%     caxis([min(F_primary_contact_pressure_mat(:)) max(F_primary_contact_pressure_mat(:))]);
+%     axis(axisLim(V_DEF)); %Set axis limits statically
+%     camlight headlight;
+%     
+%     % Set up animation features
+%     animStruct.Time=timeVec; %The time vector
+%     for qt=1:1:size(N_disp_mat,3) %Loop over time increments
+%         
+%         %Set entries in animation structure
+%         animStruct.Handles{qt}=[hp hp hp2]; %Handles of objects to animate
+%         animStruct.Props{qt}={'Vertices','CData','Vertices'}; %Properties of objects to animate
+%         animStruct.Set{qt}={V_DEF(:,:,qt),F_primary_contact_pressure_mat(:,:,qt),V_DEF(:,:,qt)}; %Property values for to set in order to animate
+%     end
+%     anim8(hf,animStruct); %Initiate animation feature
+%     drawnow;
     
     
 end

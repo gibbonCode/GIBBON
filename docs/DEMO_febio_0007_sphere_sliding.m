@@ -10,7 +10,7 @@
 
 %% Keywords
 %
-% * febio_spec version 3.0
+% * febio_spec version 4.0
 % * febio, FEBio
 % * indentation
 % * contact, sliding, sticky, friction
@@ -81,16 +81,18 @@ opt_iter=25; %Optimum number of iterations
 max_retries=5; %Maximum number of retires
 dtmin=(1/numTimeSteps)/100; %Minimum time step size
 dtmax=1/numTimeSteps; %Maximum time step size
-runMode='external';%'internal';
-min_residual=1e-20;
+symmetric_stiffness=0;
+
+runMode='external';% 'internal' or 'external'
 
 %Contact parameters
 contactInitialOffset=0.1;
 contactPenalty=5;
+fricPenalty=5;
 laugon=0;
 minaug=1;
 maxaug=10;
-fric_coeff=0;
+fric_coeff=0.5;
 
 %% Creating model geometry and mesh
 % A box is created with tri-linear hexahedral (hex8) elements using the
@@ -220,19 +222,18 @@ drawnow;
 [febio_spec]=febioStructTemplate;
 
 %febio_spec version 
-febio_spec.ATTR.version='3.0'; 
+febio_spec.ATTR.version='4.0'; 
 
 %Module section
 febio_spec.Module.ATTR.type='solid'; 
 
-%Create control structure for use by all steps
-febio_spec.Control.analysis='STATIC';
+%Control section
+stepStruct.Control.analysis='STATIC';
 stepStruct.Control.time_steps=numTimeSteps;
 stepStruct.Control.step_size=1/numTimeSteps;
 stepStruct.Control.solver.max_refs=max_refs;
-stepStruct.Control.solver.max_ups=max_ups;
-stepStruct.Control.solver.symmetric_stiffness=0;
-febio_spec.Control.solver.min_residual=min_residual;
+stepStruct.Control.solver.qn_method.max_ups=max_ups;
+stepStruct.Control.solver.symmetric_stiffness=symmetric_stiffness;
 stepStruct.Control.time_stepper.dtmin=dtmin;
 stepStruct.Control.time_stepper.dtmax=dtmax; 
 stepStruct.Control.time_stepper.max_retries=max_retries;
@@ -289,7 +290,7 @@ febio_spec.Mesh.Elements{2}.elem.VAL=E2; %The element matrix
 % -> NodeSets
 nodeSetName1='bcSupportList';
 febio_spec.Mesh.NodeSet{1}.ATTR.name=nodeSetName1;
-febio_spec.Mesh.NodeSet{1}.node.ATTR.id=bcSupportList(:);
+febio_spec.Mesh.NodeSet{1}.VAL=mrow(bcSupportList);
 
 %MeshDomains section
 febio_spec.MeshDomains.SolidDomain.ATTR.name=partName1;
@@ -316,37 +317,40 @@ febio_spec.Mesh.SurfacePair{1}.secondary=surfaceName1;
 
 %Boundary condition section 
 % -> Fix boundary conditions
-febio_spec.Boundary.bc{1}.ATTR.type='fix';
+febio_spec.Boundary.bc{1}.ATTR.name='zero_displacement_x';
+febio_spec.Boundary.bc{1}.ATTR.type='zero displacement';
 febio_spec.Boundary.bc{1}.ATTR.node_set=nodeSetName1;
-febio_spec.Boundary.bc{1}.dofs='x,y,z';
+febio_spec.Boundary.bc{1}.x_dof=1;
+febio_spec.Boundary.bc{1}.y_dof=1;
+febio_spec.Boundary.bc{1}.z_dof=1;
 
 %Rigid section 
 % -> Prescribed rigid body boundary conditions
-febio_spec.Step.step{1}.Rigid.rigid_constraint{1}.ATTR.name='RigidFix_1';
-febio_spec.Step.step{1}.Rigid.rigid_constraint{1}.ATTR.type='fix';
-febio_spec.Step.step{1}.Rigid.rigid_constraint{1}.rb=2;
-febio_spec.Step.step{1}.Rigid.rigid_constraint{1}.dofs='Rx,Ry';
+febio_spec.Step.step{1}.Rigid.rigid_bc{1}.ATTR.name='RigidFix_1';
+febio_spec.Step.step{1}.Rigid.rigid_bc{1}.ATTR.type='rigid_fixed';
+febio_spec.Step.step{1}.Rigid.rigid_bc{1}.rb=2;
+febio_spec.Step.step{1}.Rigid.rigid_bc{1}.Rx_dof=1;
+febio_spec.Step.step{1}.Rigid.rigid_bc{1}.Ry_dof=1;
 
-febio_spec.Step.step{1}.Rigid.rigid_constraint{2}.ATTR.name='RigidPrescribe';
-febio_spec.Step.step{1}.Rigid.rigid_constraint{2}.ATTR.type='prescribe';
-febio_spec.Step.step{1}.Rigid.rigid_constraint{2}.rb=2;
-febio_spec.Step.step{1}.Rigid.rigid_constraint{2}.dof='Rz';
-febio_spec.Step.step{1}.Rigid.rigid_constraint{2}.value.ATTR.lc=1;
-febio_spec.Step.step{1}.Rigid.rigid_constraint{2}.value.VAL=-(sphereIndentationDisplacement+contactInitialOffset);
-febio_spec.Step.step{1}.Rigid.rigid_constraint{2}.relative=0;
+febio_spec.Step.step{1}.Rigid.rigid_bc{2}.ATTR.name='RigidPrescribe';
+febio_spec.Step.step{1}.Rigid.rigid_bc{2}.ATTR.type='rigid_displacement';
+febio_spec.Step.step{1}.Rigid.rigid_bc{2}.rb=2;
+febio_spec.Step.step{1}.Rigid.rigid_bc{2}.dof='z';
+febio_spec.Step.step{1}.Rigid.rigid_bc{2}.value.ATTR.lc=1;
+febio_spec.Step.step{1}.Rigid.rigid_bc{2}.value.VAL=-(sphereIndentationDisplacement+contactInitialOffset);
 
-febio_spec.Step.step{2}.Rigid.rigid_constraint{1}.ATTR.name='RigidFix_1';
-febio_spec.Step.step{2}.Rigid.rigid_constraint{1}.ATTR.type='fix';
-febio_spec.Step.step{2}.Rigid.rigid_constraint{1}.rb=2;
-febio_spec.Step.step{2}.Rigid.rigid_constraint{1}.dofs='Ry,Rz';
+febio_spec.Step.step{2}.Rigid.rigid_bc{1}.ATTR.name='RigidFix_1';
+febio_spec.Step.step{2}.Rigid.rigid_bc{1}.ATTR.type='rigid_fixed';
+febio_spec.Step.step{2}.Rigid.rigid_bc{1}.Ry_dof=1;
+febio_spec.Step.step{2}.Rigid.rigid_bc{1}.Rz_dof=1;
 
-febio_spec.Step.step{2}.Rigid.rigid_constraint{2}.ATTR.name='RigidPrescribe';
-febio_spec.Step.step{2}.Rigid.rigid_constraint{2}.ATTR.type='prescribe';
-febio_spec.Step.step{2}.Rigid.rigid_constraint{2}.rb=2;
-febio_spec.Step.step{2}.Rigid.rigid_constraint{2}.dof='Rx';
-febio_spec.Step.step{2}.Rigid.rigid_constraint{2}.value.ATTR.lc=2;
-febio_spec.Step.step{2}.Rigid.rigid_constraint{2}.value.VAL=sphereSlideDisplacement;
-% febio_spec.Step.step{2}.Rigid.rigid_constraint{2}.relative=1;
+febio_spec.Step.step{2}.Rigid.rigid_bc{2}.ATTR.name='RigidPrescribe';
+febio_spec.Step.step{2}.Rigid.rigid_bc{2}.ATTR.type='rigid_displacement';
+febio_spec.Step.step{2}.Rigid.rigid_bc{2}.rb=2;
+febio_spec.Step.step{2}.Rigid.rigid_bc{2}.dof='x';
+febio_spec.Step.step{2}.Rigid.rigid_bc{2}.value.ATTR.lc=2;
+febio_spec.Step.step{2}.Rigid.rigid_bc{2}.value.VAL=sphereSlideDisplacement;
+febio_spec.Step.step{2}.Rigid.rigid_bc{2}.relative=1;
 
 %Contact section
 febio_spec.Contact.contact{1}.ATTR.type='sliding-elastic';
@@ -361,20 +365,25 @@ febio_spec.Contact.contact{1}.search_tol=0.01;
 febio_spec.Contact.contact{1}.search_radius=0.1*sqrt(sum((max(V,[],1)-min(V,[],1)).^2,2));
 febio_spec.Contact.contact{1}.symmetric_stiffness=0;
 febio_spec.Contact.contact{1}.auto_penalty=1;
+febio_spec.Contact.contact{1}.update_penalty=1;
 febio_spec.Contact.contact{1}.penalty=contactPenalty;
 febio_spec.Contact.contact{1}.fric_coeff=fric_coeff;
 
 %LoadData section
 % -> load_controller
+febio_spec.LoadData.load_controller{1}.ATTR.name='LC_1';
 febio_spec.LoadData.load_controller{1}.ATTR.id=1;
 febio_spec.LoadData.load_controller{1}.ATTR.type='loadcurve';
 febio_spec.LoadData.load_controller{1}.interpolate='LINEAR';
-febio_spec.LoadData.load_controller{1}.points.point.VAL=[0 0; 1 1; 2 1];
+%febio_spec.LoadData.load_controller{1}.extend='CONSTANT';
+febio_spec.LoadData.load_controller{1}.points.pt.VAL=[0 0; 1 1; 2 1];
 
+febio_spec.LoadData.load_controller{2}.ATTR.name='LC_2';
 febio_spec.LoadData.load_controller{2}.ATTR.id=2;
 febio_spec.LoadData.load_controller{2}.ATTR.type='loadcurve';
 febio_spec.LoadData.load_controller{2}.interpolate='LINEAR';
-febio_spec.LoadData.load_controller{2}.points.point.VAL=[0 0; 1 0; 2 1];
+%febio_spec.LoadData.load_controller{2}.extend='CONSTANT';
+febio_spec.LoadData.load_controller{2}.points.pt.VAL=[0 0; 1 0; 2 1];
 
 %Output section 
 % -> log file
