@@ -6,7 +6,7 @@
    <!--
 This HTML was auto-generated from MATLAB code.
 To make changes, update the MATLAB code and republish this document.
-      --><title>DEMO_febio_0006_sphere_indentation</title><meta name="generator" content="MATLAB 9.10"><link rel="schema.DC" href="http://purl.org/dc/elements/1.1/"><meta name="DC.date" content="2021-10-18"><meta name="DC.source" content="DEMO_febio_0006_sphere_indentation.m"><style type="text/css">
+      --><title>DEMO_febio_0006_sphere_indentation</title><meta name="generator" content="MATLAB 9.13"><link rel="schema.DC" href="http://purl.org/dc/elements/1.1/"><meta name="DC.date" content="2023-03-30"><meta name="DC.source" content="DEMO_febio_0006_sphere_indentation.m"><style type="text/css">
 html,body,div,span,applet,object,iframe,h1,h2,h3,h4,h5,h6,p,blockquote,pre,a,abbr,acronym,address,big,cite,code,del,dfn,em,font,img,ins,kbd,q,s,samp,small,strike,strong,tt,var,b,u,i,center,dl,dt,dd,ol,ul,li,fieldset,form,label,legend,table,caption,tbody,tfoot,thead,tr,th,td{margin:0;padding:0;border:0;outline:0;font-size:100%;vertical-align:baseline;background:transparent}body{line-height:1}ol,ul{list-style:none}blockquote,q{quotes:none}blockquote:before,blockquote:after,q:before,q:after{content:'';content:none}:focus{outine:0}ins{text-decoration:none}del{text-decoration:line-through}table{border-collapse:collapse;border-spacing:0}
 
 html { min-height:100%; margin-bottom:1px; }
@@ -67,7 +67,7 @@ table td { padding:7px 5px; text-align:left; vertical-align:top; border:1px soli
 
 
 
-  </style></head><body><div class="content"><h1>DEMO_febio_0006_sphere_indentation</h1><!--introduction--><p>Below is a demonstration for:</p><div><ul><li>Building geometry for a slab with hexahedral elements, and a triangulated sphere.</li><li>Defining the boundary conditions</li><li>Coding the febio structure</li><li>Running the model</li><li>Importing and visualizing the displacement results</li></ul></div><!--/introduction--><h2>Contents</h2><div><ul><li><a href="#1">Keywords</a></li><li><a href="#3">Plot settings</a></li><li><a href="#4">Control parameters</a></li><li><a href="#5">Creating model geometry and mesh</a></li><li><a href="#6">Creating triangulated sphere surface model</a></li><li><a href="#8">Joining node sets</a></li><li><a href="#10">Define contact surfaces</a></li><li><a href="#11">Define boundary conditions</a></li><li><a href="#13">Defining the FEBio input structure</a></li><li><a href="#14">Quick viewing of the FEBio input file structure</a></li><li><a href="#16">Exporting the FEBio input file</a></li><li><a href="#17">Running the FEBio analysis</a></li><li><a href="#18">Import FEBio results</a></li></ul></div><h2 id="1">Keywords</h2><div><ul><li>febio_spec version 3.0</li><li>febio, FEBio</li><li>indentation</li><li>contact, sliding, sticky, friction</li><li>rigid body constraints</li><li>hexahedral elements, hex8</li><li>triangular elements, tri3</li><li>slab, block, rectangular</li><li>sphere</li><li>static, solid</li><li>hyperelastic, Ogden</li><li>displacement logfile</li><li>stress logfile</li></ul></div><pre class="codeinput">clear; close <span class="string">all</span>; clc;
+  </style></head><body><div class="content"><h1>DEMO_febio_0006_sphere_indentation</h1><!--introduction--><p>Below is a demonstration for:</p><div><ul><li>Building geometry for a slab with hexahedral elements, and a triangulated sphere.</li><li>Defining the boundary conditions</li><li>Coding the febio structure</li><li>Running the model</li><li>Importing and visualizing the displacement results</li></ul></div><!--/introduction--><h2>Contents</h2><div><ul><li><a href="#1">Keywords</a></li><li><a href="#3">Plot settings</a></li><li><a href="#4">Control parameters</a></li><li><a href="#5">Creating model geometry and mesh</a></li><li><a href="#6">Creating triangulated sphere surface model</a></li><li><a href="#8">Joining node sets</a></li><li><a href="#10">Define contact surfaces</a></li><li><a href="#11">Define boundary conditions</a></li><li><a href="#13">Defining the FEBio input structure</a></li><li><a href="#14">Quick viewing of the FEBio input file structure</a></li><li><a href="#16">Exporting the FEBio input file</a></li><li><a href="#17">Running the FEBio analysis</a></li><li><a href="#18">Import FEBio results</a></li></ul></div><h2 id="1">Keywords</h2><div><ul><li>febio_spec version 4.0</li><li>febio, FEBio</li><li>indentation</li><li>contact, sliding, sticky, friction</li><li>rigid body constraints</li><li>hexahedral elements, hex8</li><li>triangular elements, tri3</li><li>slab, block, rectangular</li><li>sphere</li><li>static, solid</li><li>hyperelastic, Ogden</li><li>displacement logfile</li><li>stress logfile</li></ul></div><pre class="codeinput">clear; close <span class="string">all</span>; clc;
 </pre><h2 id="3">Plot settings</h2><pre class="codeinput">fontSize=15;
 faceAlpha1=0.8;
 faceAlpha2=0.3;
@@ -117,6 +117,8 @@ max_retries=5; <span class="comment">%Maximum number of retires</span>
 dtmin=(1/numTimeSteps)/100; <span class="comment">%Minimum time step size</span>
 dtmax=1/numTimeSteps; <span class="comment">%Maximum time step size</span>
 symmetric_stiffness=0;
+
+runMode=<span class="string">'external'</span>;<span class="comment">% 'internal' or 'external'</span>
 
 <span class="comment">%Contact parameters</span>
 contactInitialOffset=0.1;
@@ -196,7 +198,7 @@ legend(hl,{<span class="string">'Secondary'</span>,<span class="string">'Primary
 axisGeom(gca,fontSize);
 camlight <span class="string">headlight</span>;
 drawnow;
-</pre><img width="100%" height="auto" vspace="5" hspace="5" src="DEMO_febio_0006_sphere_indentation_03.jpg" alt=""> <h2 id="11">Define boundary conditions</h2><pre class="codeinput"><span class="comment">%Supported nodes</span>
+</pre><img width="100%" height="auto" vspace="5" hspace="5" src="DEMO_febio_0006_sphere_indentation_03.jpg" alt=""> <img width="100%" height="auto" vspace="5" hspace="5" src="DEMO_febio_0006_sphere_indentation_04.jpg" alt=""> <h2 id="11">Define boundary conditions</h2><pre class="codeinput"><span class="comment">%Supported nodes</span>
 logicRigid=Cb1==5;
 Fr=Fb1(logicRigid,:);
 bcSupportList=unique(Fr(:));
@@ -215,11 +217,11 @@ legend(hl2,{<span class="string">'Rigid body sphere'</span>,<span class="string"
 axisGeom(gca,fontSize);
 camlight <span class="string">headlight</span>;
 drawnow;
-</pre><img width="100%" height="auto" vspace="5" hspace="5" src="DEMO_febio_0006_sphere_indentation_04.jpg" alt=""> <h2 id="13">Defining the FEBio input structure</h2><p>See also <tt>febioStructTemplate</tt> and <tt>febioStruct2xml</tt> and the FEBio user manual.</p><pre class="codeinput"><span class="comment">%Get a template with default settings</span>
+</pre><img width="100%" height="auto" vspace="5" hspace="5" src="DEMO_febio_0006_sphere_indentation_05.jpg" alt=""> <img width="100%" height="auto" vspace="5" hspace="5" src="DEMO_febio_0006_sphere_indentation_06.jpg" alt=""> <h2 id="13">Defining the FEBio input structure</h2><p>See also <tt>febioStructTemplate</tt> and <tt>febioStruct2xml</tt> and the FEBio user manual.</p><pre class="codeinput"><span class="comment">%Get a template with default settings</span>
 [febio_spec]=febioStructTemplate;
 
 <span class="comment">%febio_spec version</span>
-febio_spec.ATTR.version=<span class="string">'3.0'</span>;
+febio_spec.ATTR.version=<span class="string">'4.0'</span>;
 
 <span class="comment">%Module section</span>
 febio_spec.Module.ATTR.type=<span class="string">'solid'</span>;
@@ -229,7 +231,7 @@ febio_spec.Control.analysis=<span class="string">'STATIC'</span>;
 febio_spec.Control.time_steps=numTimeSteps;
 febio_spec.Control.step_size=1/numTimeSteps;
 febio_spec.Control.solver.max_refs=max_refs;
-febio_spec.Control.solver.max_ups=max_ups;
+febio_spec.Control.solver.qn_method.max_ups=max_ups;
 febio_spec.Control.solver.symmetric_stiffness=symmetric_stiffness;
 febio_spec.Control.time_stepper.dtmin=dtmin;
 febio_spec.Control.time_stepper.dtmax=dtmax;
@@ -276,7 +278,7 @@ febio_spec.Mesh.Elements{2}.elem.VAL=E2; <span class="comment">%The element matr
 <span class="comment">% -&gt; NodeSets</span>
 nodeSetName1=<span class="string">'bcSupportList'</span>;
 febio_spec.Mesh.NodeSet{1}.ATTR.name=nodeSetName1;
-febio_spec.Mesh.NodeSet{1}.node.ATTR.id=bcSupportList(:);
+febio_spec.Mesh.NodeSet{1}.VAL=mrow(bcSupportList);
 
 <span class="comment">%MeshDomains section</span>
 febio_spec.MeshDomains.SolidDomain.ATTR.name=partName1;
@@ -288,41 +290,45 @@ febio_spec.MeshDomains.ShellDomain.ATTR.mat=materialName2;
 <span class="comment">% -&gt; Surfaces</span>
 surfaceName1=<span class="string">'contactSurface1'</span>;
 febio_spec.Mesh.Surface{1}.ATTR.name=surfaceName1;
-febio_spec.Mesh.Surface{1}.tri3.ATTR.id=(1:1:size(F_contact_secondary,1))';
-febio_spec.Mesh.Surface{1}.tri3.VAL=F_contact_secondary;
+febio_spec.Mesh.Surface{1}.quad4.ATTR.id=(1:1:size(F_contact_primary,1))';
+febio_spec.Mesh.Surface{1}.quad4.VAL=F_contact_primary;
 
 surfaceName2=<span class="string">'contactSurface2'</span>;
 febio_spec.Mesh.Surface{2}.ATTR.name=surfaceName2;
-febio_spec.Mesh.Surface{2}.quad4.ATTR.id=(1:1:size(F_contact_primary,1))';
-febio_spec.Mesh.Surface{2}.quad4.VAL=F_contact_primary;
+febio_spec.Mesh.Surface{2}.tri3.ATTR.id=(1:1:size(F_contact_secondary,1))';
+febio_spec.Mesh.Surface{2}.tri3.VAL=F_contact_secondary;
 
 <span class="comment">% -&gt; Surface pairs</span>
 contactPairName=<span class="string">'Contact1'</span>;
 febio_spec.Mesh.SurfacePair{1}.ATTR.name=contactPairName;
-febio_spec.Mesh.SurfacePair{1}.primary=surfaceName2;
-febio_spec.Mesh.SurfacePair{1}.secondary=surfaceName1;
+febio_spec.Mesh.SurfacePair{1}.primary=surfaceName1;
+febio_spec.Mesh.SurfacePair{1}.secondary=surfaceName2;
 
 <span class="comment">%Boundary condition section</span>
 <span class="comment">% -&gt; Fix boundary conditions</span>
-febio_spec.Boundary.bc{1}.ATTR.type=<span class="string">'fix'</span>;
+febio_spec.Boundary.bc{1}.ATTR.name=<span class="string">'zero_displacement_x'</span>;
+febio_spec.Boundary.bc{1}.ATTR.type=<span class="string">'zero displacement'</span>;
 febio_spec.Boundary.bc{1}.ATTR.node_set=nodeSetName1;
-febio_spec.Boundary.bc{1}.dofs=<span class="string">'x,y,z'</span>;
+febio_spec.Boundary.bc{1}.x_dof=1;
+febio_spec.Boundary.bc{1}.y_dof=1;
+febio_spec.Boundary.bc{1}.z_dof=1;
 
 <span class="comment">%Rigid section</span>
 <span class="comment">% -&gt;Rigid body fix boundary conditions</span>
-febio_spec.Rigid.rigid_constraint{1}.ATTR.name=<span class="string">'RigidFix_1'</span>;
-febio_spec.Rigid.rigid_constraint{1}.ATTR.type=<span class="string">'fix'</span>;
-febio_spec.Rigid.rigid_constraint{1}.rb=2;
-febio_spec.Rigid.rigid_constraint{1}.dofs=<span class="string">'Rx,Ry'</span>;
+febio_spec.Rigid.rigid_bc{1}.ATTR.name=<span class="string">'RotFix_1'</span>;
+febio_spec.Rigid.rigid_bc{1}.ATTR.type=<span class="string">'rigid_fixed'</span>;
+febio_spec.Rigid.rigid_bc{1}.rb=2;
+febio_spec.Rigid.rigid_bc{1}.Rx_dof=1;
+febio_spec.Rigid.rigid_bc{1}.Ry_dof=1;
 
 <span class="comment">% -&gt;Rigid body prescribe boundary conditions</span>
-febio_spec.Rigid.rigid_constraint{2}.ATTR.name=<span class="string">'RigidPrescribe'</span>;
-febio_spec.Rigid.rigid_constraint{2}.ATTR.type=<span class="string">'prescribe'</span>;
-febio_spec.Rigid.rigid_constraint{2}.rb=2;
-febio_spec.Rigid.rigid_constraint{2}.dof=<span class="string">'Rz'</span>;
-febio_spec.Rigid.rigid_constraint{2}.value.ATTR.lc=1;
-febio_spec.Rigid.rigid_constraint{2}.value.VAL=-(sphereDisplacement+contactInitialOffset);
-febio_spec.Rigid.rigid_constraint{2}.relative=0;
+febio_spec.Rigid.rigid_bc{2}.ATTR.name=<span class="string">'RigidPrescribe'</span>;
+febio_spec.Rigid.rigid_bc{2}.ATTR.type=<span class="string">'rigid_displacement'</span>;
+febio_spec.Rigid.rigid_bc{2}.rb=2;
+febio_spec.Rigid.rigid_bc{2}.dof=<span class="string">'z'</span>;
+febio_spec.Rigid.rigid_bc{2}.value.ATTR.lc=1;
+febio_spec.Rigid.rigid_bc{2}.value.VAL=-(sphereDisplacement+contactInitialOffset);
+febio_spec.Rigid.rigid_bc{2}.relative=0;
 
 <span class="comment">%Contact section</span>
 febio_spec.Contact.contact{1}.ATTR.type=<span class="string">'sliding-elastic'</span>;
@@ -337,15 +343,18 @@ febio_spec.Contact.contact{1}.search_tol=0.01;
 febio_spec.Contact.contact{1}.search_radius=0.1*sqrt(sum((max(V,[],1)-min(V,[],1)).^2,2));
 febio_spec.Contact.contact{1}.symmetric_stiffness=0;
 febio_spec.Contact.contact{1}.auto_penalty=1;
+febio_spec.Contact.contact{1}.update_penalty=1;
 febio_spec.Contact.contact{1}.penalty=contactPenalty;
 febio_spec.Contact.contact{1}.fric_coeff=fric_coeff;
 
 <span class="comment">%LoadData section</span>
 <span class="comment">% -&gt; load_controller</span>
+febio_spec.LoadData.load_controller{1}.ATTR.name=<span class="string">'LC_1'</span>;
 febio_spec.LoadData.load_controller{1}.ATTR.id=1;
 febio_spec.LoadData.load_controller{1}.ATTR.type=<span class="string">'loadcurve'</span>;
 febio_spec.LoadData.load_controller{1}.interpolate=<span class="string">'LINEAR'</span>;
-febio_spec.LoadData.load_controller{1}.points.point.VAL=[0 0; 1 1];
+<span class="comment">%febio_spec.LoadData.load_controller{1}.extend='CONSTANT';</span>
+febio_spec.LoadData.load_controller{1}.points.pt.VAL=[0 0; 1 1];
 
 <span class="comment">%Output section</span>
 <span class="comment">% -&gt; log file</span>
@@ -360,62 +369,62 @@ febio_spec.Output.logfile.element_data{1}.ATTR.delim=<span class="string">','</s
 
 febio_spec.Output.logfile.face_data{1}.ATTR.file=febioLogFileName_contactPressure;
 febio_spec.Output.logfile.face_data{1}.ATTR.data=<span class="string">'contact pressure'</span>;
-febio_spec.Output.logfile.face_data{1}.ATTR.surface=surfaceName2;
+febio_spec.Output.logfile.face_data{1}.ATTR.surface=surfaceName1;
 febio_spec.Output.logfile.face_data{1}.ATTR.delim=<span class="string">','</span>;
 </pre><h2 id="14">Quick viewing of the FEBio input file structure</h2><p>The <tt>febView</tt> function can be used to view the xml structure in a MATLAB figure window.</p><p><tt>febView(febio_spec); %Viewing the febio file</tt></p><h2 id="16">Exporting the FEBio input file</h2><p>Exporting the febio_spec structure to an FEBio input file is done using the <tt>febioStruct2xml</tt> function.</p><pre class="codeinput">febioStruct2xml(febio_spec,febioFebFileName); <span class="comment">%Exporting to file and domNode</span>
 </pre><h2 id="17">Running the FEBio analysis</h2><p>To run the analysis defined by the created FEBio input file the <tt>runMonitorFEBio</tt> function is used. The input for this function is a structure defining job settings e.g. the FEBio input file name. The optional output runFlag informs the user if the analysis was run succesfully.</p><pre class="codeinput">febioAnalysis.run_filename=febioFebFileName; <span class="comment">%The input file name</span>
 febioAnalysis.run_logname=febioLogFileName; <span class="comment">%The name for the log file</span>
 febioAnalysis.disp_on=1; <span class="comment">%Display information on the command window</span>
-febioAnalysis.runMode=<span class="string">'external'</span>;<span class="comment">%'internal';</span>
+febioAnalysis.runMode=runMode;
 
 [runFlag]=runMonitorFEBio(febioAnalysis);<span class="comment">%START FEBio NOW!!!!!!!!</span>
 </pre><pre class="codeoutput"> 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
---------&gt;    RUNNING/MONITORING FEBIO JOB    &lt;-------- 18-Oct-2021 12:49:51
-FEBio path: /home/kevin/FEBioStudio/bin/febio3
-# Attempt removal of existing log files                18-Oct-2021 12:49:52
- * Removal succesful                                   18-Oct-2021 12:49:52
-# Attempt removal of existing .xplt files              18-Oct-2021 12:49:52
- * Removal succesful                                   18-Oct-2021 12:49:52
-# Starting FEBio...                                    18-Oct-2021 12:49:52
+--------&gt;    RUNNING/MONITORING FEBIO JOB    &lt;-------- 30-Mar-2023 12:21:50
+FEBio path: /home/kevin/FEBioStudio2/bin/febio4
+# Attempt removal of existing log files                30-Mar-2023 12:21:50
+ * Removal succesful                                   30-Mar-2023 12:21:50
+# Attempt removal of existing .xplt files              30-Mar-2023 12:21:51
+ * Removal succesful                                   30-Mar-2023 12:21:51
+# Starting FEBio...                                    30-Mar-2023 12:21:51
   Max. total analysis time is: Inf s
- * Waiting for log file creation                       18-Oct-2021 12:49:52
+ * Waiting for log file creation                       30-Mar-2023 12:21:51
    Max. wait time: 30 s
- * Log file found.                                     18-Oct-2021 12:49:52
-# Parsing log file...                                  18-Oct-2021 12:49:52
-    number of iterations   : 5                         18-Oct-2021 12:49:53
-    number of reformations : 5                         18-Oct-2021 12:49:53
-------- converged at time : 0.1                        18-Oct-2021 12:49:53
-    number of iterations   : 5                         18-Oct-2021 12:49:54
-    number of reformations : 5                         18-Oct-2021 12:49:54
-------- converged at time : 0.2                        18-Oct-2021 12:49:54
-    number of iterations   : 5                         18-Oct-2021 12:49:54
-    number of reformations : 5                         18-Oct-2021 12:49:54
-------- converged at time : 0.3                        18-Oct-2021 12:49:54
-    number of iterations   : 5                         18-Oct-2021 12:49:55
-    number of reformations : 5                         18-Oct-2021 12:49:55
-------- converged at time : 0.4                        18-Oct-2021 12:49:55
-    number of iterations   : 5                         18-Oct-2021 12:49:56
-    number of reformations : 5                         18-Oct-2021 12:49:56
-------- converged at time : 0.5                        18-Oct-2021 12:49:56
-    number of iterations   : 6                         18-Oct-2021 12:49:57
-    number of reformations : 6                         18-Oct-2021 12:49:57
-------- converged at time : 0.6                        18-Oct-2021 12:49:57
-    number of iterations   : 6                         18-Oct-2021 12:49:58
-    number of reformations : 6                         18-Oct-2021 12:49:58
-------- converged at time : 0.7                        18-Oct-2021 12:49:58
-    number of iterations   : 6                         18-Oct-2021 12:49:59
-    number of reformations : 6                         18-Oct-2021 12:49:59
-------- converged at time : 0.8                        18-Oct-2021 12:49:59
-    number of iterations   : 6                         18-Oct-2021 12:50:00
-    number of reformations : 6                         18-Oct-2021 12:50:00
-------- converged at time : 0.9                        18-Oct-2021 12:50:00
-    number of iterations   : 6                         18-Oct-2021 12:50:01
-    number of reformations : 6                         18-Oct-2021 12:50:01
-------- converged at time : 1                          18-Oct-2021 12:50:01
- Elapsed time : 0:00:09                                18-Oct-2021 12:50:01
+ * Log file found.                                     30-Mar-2023 12:21:51
+# Parsing log file...                                  30-Mar-2023 12:21:51
+    number of iterations   : 5                         30-Mar-2023 12:21:52
+    number of reformations : 5                         30-Mar-2023 12:21:52
+------- converged at time : 0.1                        30-Mar-2023 12:21:52
+    number of iterations   : 5                         30-Mar-2023 12:21:52
+    number of reformations : 5                         30-Mar-2023 12:21:52
+------- converged at time : 0.2                        30-Mar-2023 12:21:52
+    number of iterations   : 5                         30-Mar-2023 12:21:53
+    number of reformations : 5                         30-Mar-2023 12:21:53
+------- converged at time : 0.3                        30-Mar-2023 12:21:53
+    number of iterations   : 5                         30-Mar-2023 12:21:54
+    number of reformations : 5                         30-Mar-2023 12:21:54
+------- converged at time : 0.4                        30-Mar-2023 12:21:54
+    number of iterations   : 5                         30-Mar-2023 12:21:55
+    number of reformations : 5                         30-Mar-2023 12:21:55
+------- converged at time : 0.5                        30-Mar-2023 12:21:55
+    number of iterations   : 6                         30-Mar-2023 12:21:55
+    number of reformations : 6                         30-Mar-2023 12:21:55
+------- converged at time : 0.6                        30-Mar-2023 12:21:55
+    number of iterations   : 6                         30-Mar-2023 12:21:56
+    number of reformations : 6                         30-Mar-2023 12:21:56
+------- converged at time : 0.7                        30-Mar-2023 12:21:56
+    number of iterations   : 6                         30-Mar-2023 12:21:57
+    number of reformations : 6                         30-Mar-2023 12:21:57
+------- converged at time : 0.8                        30-Mar-2023 12:21:57
+    number of iterations   : 6                         30-Mar-2023 12:21:58
+    number of reformations : 6                         30-Mar-2023 12:21:58
+------- converged at time : 0.9                        30-Mar-2023 12:21:58
+    number of iterations   : 6                         30-Mar-2023 12:21:59
+    number of reformations : 6                         30-Mar-2023 12:21:59
+------- converged at time : 1                          30-Mar-2023 12:21:59
+ Elapsed time : 0:00:08                                30-Mar-2023 12:21:59
  N O R M A L   T E R M I N A T I O N
-# Done                                                 18-Oct-2021 12:50:01
+# Done                                                 30-Mar-2023 12:21:59
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 </pre><h2 id="18">Import FEBio results</h2><pre class="codeinput"><span class="keyword">if</span> runFlag==1 <span class="comment">%i.e. a succesful run</span>
 </pre><p>Importing nodal displacements from a log file</p><pre class="codeinput">    dataStruct=importFEBio_logfile(fullfile(savePath,febioLogFileName_disp),1,1);
@@ -433,7 +442,3129 @@ FEBio path: /home/kevin/FEBioStudio/bin/febio3
 </pre><p>Importing contact pressure from a log file</p><pre class="codeinput">    dataStruct=importFEBio_logfile(fullfile(savePath,febioLogFileName_contactPressure),1,1);
 
     <span class="comment">%Access data</span>
-    F_primary_contact_pressure_mat=dataStruct.data;
+    F_primary_contact_pressure_mat=dataStruct.data
+</pre><pre class="codeoutput">
+F_primary_contact_pressure_mat(:,:,1) =
+
+     0
+     0
+     0
+     0
+     0
+     0
+     0
+     0
+     0
+     0
+     0
+     0
+     0
+     0
+     0
+     0
+     0
+     0
+     0
+     0
+     0
+     0
+     0
+     0
+     0
+     0
+     0
+     0
+     0
+     0
+     0
+     0
+     0
+     0
+     0
+     0
+     0
+     0
+     0
+     0
+     0
+     0
+     0
+     0
+     0
+     0
+     0
+     0
+     0
+     0
+     0
+     0
+     0
+     0
+     0
+     0
+     0
+     0
+     0
+     0
+     0
+     0
+     0
+     0
+     0
+     0
+     0
+     0
+     0
+     0
+     0
+     0
+     0
+     0
+     0
+     0
+     0
+     0
+     0
+     0
+     0
+     0
+     0
+     0
+     0
+     0
+     0
+     0
+     0
+     0
+     0
+     0
+     0
+     0
+     0
+     0
+     0
+     0
+     0
+     0
+     0
+     0
+     0
+     0
+     0
+     0
+     0
+     0
+     0
+     0
+     0
+     0
+     0
+     0
+     0
+     0
+     0
+     0
+     0
+     0
+     0
+     0
+     0
+     0
+     0
+     0
+     0
+     0
+     0
+     0
+     0
+     0
+     0
+     0
+     0
+     0
+     0
+     0
+     0
+     0
+     0
+     0
+     0
+     0
+     0
+     0
+     0
+     0
+     0
+     0
+     0
+     0
+     0
+     0
+     0
+     0
+     0
+     0
+     0
+     0
+     0
+     0
+     0
+     0
+     0
+     0
+     0
+     0
+     0
+     0
+     0
+     0
+     0
+     0
+     0
+     0
+     0
+     0
+     0
+     0
+     0
+     0
+     0
+     0
+     0
+     0
+     0
+     0
+     0
+     0
+     0
+     0
+     0
+     0
+     0
+     0
+     0
+     0
+     0
+     0
+     0
+     0
+     0
+     0
+     0
+     0
+     0
+     0
+     0
+     0
+     0
+     0
+     0
+     0
+     0
+     0
+     0
+     0
+     0
+     0
+     0
+     0
+     0
+     0
+     0
+     0
+     0
+     0
+     0
+     0
+     0
+     0
+     0
+     0
+     0
+     0
+     0
+     0
+     0
+     0
+     0
+     0
+     0
+     0
+     0
+     0
+     0
+     0
+     0
+     0
+     0
+     0
+     0
+     0
+     0
+     0
+
+
+F_primary_contact_pressure_mat(:,:,2) =
+
+     0
+     0
+     0
+     0
+     0
+     0
+     0
+     0
+     0
+     0
+     0
+     0
+     0
+     0
+     0
+     0
+     0
+     0
+     0
+     0
+     0
+     0
+     0
+     0
+     0
+     0
+     0
+     0
+     0
+     0
+     0
+     0
+     0
+     0
+     0
+     0
+     0
+     0
+     0
+     0
+     0
+     0
+     0
+     0
+     0
+     0
+     0
+     0
+     0
+     0
+     0
+     0
+     0
+     0
+     0
+     0
+     0
+     0
+     0
+     0
+     0
+     0
+     0
+     0
+     0
+     0
+     0
+     0
+     0
+     0
+     0
+     0
+     0
+     0
+     0
+     0
+     0
+     0
+     0
+     0
+     0
+     0
+     0
+     0
+     0
+     0
+     0
+     0
+     0
+     0
+     0
+     0
+     0
+     0
+     0
+     0
+     0
+     0
+     0
+     0
+     0
+     0
+     0
+     0
+     0
+     0
+     0
+     0
+     0
+     0
+     0
+     0
+     0
+     0
+     0
+     0
+     0
+     0
+     0
+     0
+     0
+     0
+     0
+     0
+     0
+     0
+     0
+     0
+     0
+     0
+     0
+     0
+     0
+     0
+     0
+     0
+     0
+     0
+     0
+     0
+     0
+     0
+     0
+     0
+     0
+     0
+     0
+     0
+     0
+     0
+     0
+     0
+     0
+     0
+     0
+     0
+     0
+     0
+     0
+     0
+     0
+     0
+     0
+     0
+     0
+     0
+     0
+     0
+     0
+     0
+     0
+     0
+     0
+     0
+     0
+     0
+     0
+     0
+     0
+     0
+     0
+     0
+     0
+     0
+     0
+     0
+     0
+     0
+     0
+     0
+     0
+     0
+     0
+     0
+     0
+     0
+     0
+     0
+     0
+     0
+     0
+     0
+     0
+     0
+     0
+     0
+     0
+     0
+     0
+     0
+     0
+     0
+     0
+     0
+     0
+     0
+     0
+     0
+     0
+     0
+     0
+     0
+     0
+     0
+     0
+     0
+     0
+     0
+     0
+     0
+     0
+     0
+     0
+     0
+     0
+     0
+     0
+     0
+     0
+     0
+     0
+     0
+     0
+     0
+     0
+     0
+     0
+     0
+     0
+     0
+     0
+     0
+     0
+     0
+     0
+     0
+
+
+F_primary_contact_pressure_mat(:,:,3) =
+
+   1.0e-03 *
+
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+    0.2759
+    0.2759
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+    0.2759
+    0.2759
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+
+
+F_primary_contact_pressure_mat(:,:,4) =
+
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+    0.0002
+    0.0002
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+    0.0002
+    0.0011
+    0.0011
+    0.0002
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+    0.0002
+    0.0011
+    0.0011
+    0.0002
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+    0.0002
+    0.0002
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+
+
+F_primary_contact_pressure_mat(:,:,5) =
+
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+    0.0001
+    0.0010
+    0.0010
+    0.0001
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+    0.0010
+    0.0014
+    0.0014
+    0.0010
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+    0.0010
+    0.0014
+    0.0014
+    0.0010
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+    0.0001
+    0.0010
+    0.0010
+    0.0001
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+
+
+F_primary_contact_pressure_mat(:,:,6) =
+
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+    0.0001
+    0.0001
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+    0.0008
+    0.0015
+    0.0015
+    0.0008
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+    0.0001
+    0.0015
+    0.0017
+    0.0017
+    0.0015
+    0.0001
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+    0.0001
+    0.0015
+    0.0017
+    0.0017
+    0.0015
+    0.0001
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+    0.0008
+    0.0015
+    0.0015
+    0.0008
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+    0.0001
+    0.0001
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+
+
+F_primary_contact_pressure_mat(:,:,7) =
+
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+    0.0000
+    0.0006
+    0.0006
+    0.0000
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+    0.0000
+    0.0015
+    0.0018
+    0.0018
+    0.0015
+    0.0000
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+    0.0006
+    0.0018
+    0.0022
+    0.0022
+    0.0018
+    0.0006
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+    0.0006
+    0.0018
+    0.0022
+    0.0022
+    0.0018
+    0.0006
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+    0.0000
+    0.0015
+    0.0018
+    0.0018
+    0.0015
+    0.0000
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+    0.0000
+    0.0006
+    0.0006
+    0.0000
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+
+
+F_primary_contact_pressure_mat(:,:,8) =
+
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+    0.0003
+    0.0011
+    0.0011
+    0.0003
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+    0.0003
+    0.0020
+    0.0022
+    0.0022
+    0.0020
+    0.0003
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+    0.0011
+    0.0021
+    0.0026
+    0.0026
+    0.0021
+    0.0011
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+    0.0011
+    0.0021
+    0.0026
+    0.0026
+    0.0021
+    0.0011
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+    0.0003
+    0.0020
+    0.0022
+    0.0022
+    0.0020
+    0.0003
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+    0.0003
+    0.0011
+    0.0011
+    0.0003
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+
+
+F_primary_contact_pressure_mat(:,:,9) =
+
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+    0.0007
+    0.0015
+    0.0015
+    0.0007
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+    0.0006
+    0.0022
+    0.0026
+    0.0026
+    0.0022
+    0.0006
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+    0.0015
+    0.0025
+    0.0030
+    0.0030
+    0.0025
+    0.0015
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+    0.0015
+    0.0025
+    0.0030
+    0.0030
+    0.0025
+    0.0015
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+    0.0006
+    0.0022
+    0.0026
+    0.0026
+    0.0022
+    0.0006
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+    0.0007
+    0.0015
+    0.0015
+    0.0007
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+
+
+F_primary_contact_pressure_mat(:,:,10) =
+
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+    0.0010
+    0.0019
+    0.0019
+    0.0010
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+    0.0010
+    0.0025
+    0.0030
+    0.0030
+    0.0025
+    0.0010
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+    0.0019
+    0.0030
+    0.0036
+    0.0036
+    0.0030
+    0.0019
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+    0.0019
+    0.0030
+    0.0036
+    0.0036
+    0.0030
+    0.0019
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+    0.0010
+    0.0025
+    0.0030
+    0.0030
+    0.0025
+    0.0010
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+    0.0010
+    0.0019
+    0.0019
+    0.0010
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+
+
+F_primary_contact_pressure_mat(:,:,11) =
+
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+    0.0001
+    0.0014
+    0.0023
+    0.0023
+    0.0014
+    0.0001
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+    0.0015
+    0.0028
+    0.0034
+    0.0034
+    0.0028
+    0.0015
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+    0.0022
+    0.0034
+    0.0042
+    0.0042
+    0.0034
+    0.0022
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+    0.0022
+    0.0034
+    0.0042
+    0.0042
+    0.0034
+    0.0022
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+    0.0015
+    0.0028
+    0.0034
+    0.0034
+    0.0028
+    0.0015
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+    0.0001
+    0.0014
+    0.0023
+    0.0023
+    0.0014
+    0.0001
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+
+
+F_primary_contact_pressure_mat(:,:,12) =
+
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+    0.0000
+    0.0000
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+    0.0001
+    0.0017
+    0.0026
+    0.0026
+    0.0017
+    0.0001
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+    0.0017
+    0.0031
+    0.0039
+    0.0039
+    0.0031
+    0.0017
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+    0.0000
+    0.0025
+    0.0039
+    0.0049
+    0.0049
+    0.0039
+    0.0025
+    0.0000
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+    0.0000
+    0.0025
+    0.0039
+    0.0049
+    0.0049
+    0.0039
+    0.0025
+    0.0000
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+    0.0017
+    0.0031
+    0.0039
+    0.0039
+    0.0031
+    0.0017
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+    0.0001
+    0.0017
+    0.0026
+    0.0026
+    0.0017
+    0.0001
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+    0.0000
+    0.0000
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+
 </pre><p>Plotting the simulated results using <tt>anim8</tt> to visualize and animate deformations</p><pre class="codeinput">    [CV]=faceToVertexMeasure(E1,V,E_stress_mat(:,:,end));
 
     <span class="comment">% Create basic view and store graphics handle to initiate animation</span>
@@ -466,7 +3597,7 @@ FEBio path: /home/kevin/FEBioStudio/bin/febio3
     <span class="keyword">end</span>
     anim8(hf,animStruct); <span class="comment">%Initiate animation feature</span>
     drawnow;
-</pre><img width="100%" height="auto" vspace="5" hspace="5" src="DEMO_febio_0006_sphere_indentation_05.jpg" alt=""> <p>Plotting the simulated results using <tt>anim8</tt> to visualize and animate deformations</p><pre class="codeinput">    <span class="comment">% Create basic view and store graphics handle to initiate animation</span>
+</pre><img width="100%" height="auto" vspace="5" hspace="5" src="DEMO_febio_0006_sphere_indentation_07.jpg" alt=""> <img width="100%" height="auto" vspace="5" hspace="5" src="DEMO_febio_0006_sphere_indentation_08.jpg" alt=""> <p>Plotting the simulated results using <tt>anim8</tt> to visualize and animate deformations</p><pre class="codeinput">    <span class="comment">% Create basic view and store graphics handle to initiate animation</span>
     hf=cFigure; <span class="comment">%Open figure</span>
     gtitle([febioFebFileNamePart,<span class="string">': Press play to animate'</span>]);
     title(<span class="string">'$\sigma_{3}$ [MPa]'</span>,<span class="string">'Interpreter'</span>,<span class="string">'Latex'</span>)
@@ -492,8 +3623,8 @@ FEBio path: /home/kevin/FEBioStudio/bin/febio3
     <span class="keyword">end</span>
     anim8(hf,animStruct); <span class="comment">%Initiate animation feature</span>
     drawnow;
-</pre><img width="100%" height="auto" vspace="5" hspace="5" src="DEMO_febio_0006_sphere_indentation_06.jpg" alt=""> <pre class="codeinput"><span class="keyword">end</span>
-</pre><p><img vspace="5" hspace="5" src="gibbVerySmall.gif" alt=""> </p><p><i><b>GIBBON</b></i> <a href="www.gibboncode.org">www.gibboncode.org</a></p><p><i>Kevin Mattheus Moerman</i>, <a href="gibbon.toolbox@gmail.com">gibbon.toolbox@gmail.com</a></p><p><i><b>GIBBON footer text</b></i></p><p>License: <a href="https://github.com/gibbonCode/GIBBON/blob/master/LICENSE">https://github.com/gibbonCode/GIBBON/blob/master/LICENSE</a></p><p>GIBBON: The Geometry and Image-based Bioengineering add-On. A toolbox for image segmentation, image-based modeling, meshing, and finite element analysis.</p><p>Copyright (C) 2006-2021 Kevin Mattheus Moerman and the GIBBON contributors</p><p>This program is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.</p><p>This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for more details.</p><p>You should have received a copy of the GNU General Public License along with this program.  If not, see <a href="http://www.gnu.org/licenses/">http://www.gnu.org/licenses/</a>.</p><p class="footer"><br><a href="https://www.mathworks.com/products/matlab/">Published with MATLAB&reg; R2021a</a><br></p></div><!--
+</pre><img width="100%" height="auto" vspace="5" hspace="5" src="DEMO_febio_0006_sphere_indentation_09.jpg" alt=""> <img width="100%" height="auto" vspace="5" hspace="5" src="DEMO_febio_0006_sphere_indentation_10.jpg" alt=""> <pre class="codeinput"><span class="keyword">end</span>
+</pre><p><img vspace="5" hspace="5" src="gibbVerySmall.gif" alt=""> </p><p><i><b>GIBBON</b></i> <a href="www.gibboncode.org">www.gibboncode.org</a></p><p><i>Kevin Mattheus Moerman</i>, <a href="gibbon.toolbox@gmail.com">gibbon.toolbox@gmail.com</a></p><p><i><b>GIBBON footer text</b></i></p><p>License: <a href="https://github.com/gibbonCode/GIBBON/blob/master/LICENSE">https://github.com/gibbonCode/GIBBON/blob/master/LICENSE</a></p><p>GIBBON: The Geometry and Image-based Bioengineering add-On. A toolbox for image segmentation, image-based modeling, meshing, and finite element analysis.</p><p>Copyright (C) 2006-2022 Kevin Mattheus Moerman and the GIBBON contributors</p><p>This program is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.</p><p>This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for more details.</p><p>You should have received a copy of the GNU General Public License along with this program.  If not, see <a href="http://www.gnu.org/licenses/">http://www.gnu.org/licenses/</a>.</p><p class="footer"><br><a href="https://www.mathworks.com/products/matlab/">Published with MATLAB&reg; R2022b</a><br></p></div><!--
 ##### SOURCE BEGIN #####
 %% DEMO_febio_0006_sphere_indentation
 % Below is a demonstration for:
@@ -507,7 +3638,7 @@ FEBio path: /home/kevin/FEBioStudio/bin/febio3
 
 %% Keywords
 %
-% * febio_spec version 3.0
+% * febio_spec version 4.0
 % * febio, FEBio
 % * indentation
 % * contact, sliding, sticky, friction
@@ -578,6 +3709,8 @@ max_retries=5; %Maximum number of retires
 dtmin=(1/numTimeSteps)/100; %Minimum time step size
 dtmax=1/numTimeSteps; %Maximum time step size
 symmetric_stiffness=0;
+
+runMode='external';% 'internal' or 'external'
 
 %Contact parameters
 contactInitialOffset=0.1;
@@ -713,7 +3846,7 @@ drawnow;
 [febio_spec]=febioStructTemplate;
 
 %febio_spec version 
-febio_spec.ATTR.version='3.0'; 
+febio_spec.ATTR.version='4.0'; 
 
 %Module section
 febio_spec.Module.ATTR.type='solid'; 
@@ -723,7 +3856,7 @@ febio_spec.Control.analysis='STATIC';
 febio_spec.Control.time_steps=numTimeSteps;
 febio_spec.Control.step_size=1/numTimeSteps;
 febio_spec.Control.solver.max_refs=max_refs;
-febio_spec.Control.solver.max_ups=max_ups;
+febio_spec.Control.solver.qn_method.max_ups=max_ups;
 febio_spec.Control.solver.symmetric_stiffness=symmetric_stiffness;
 febio_spec.Control.time_stepper.dtmin=dtmin;
 febio_spec.Control.time_stepper.dtmax=dtmax; 
@@ -770,7 +3903,7 @@ febio_spec.Mesh.Elements{2}.elem.VAL=E2; %The element matrix
 % -> NodeSets
 nodeSetName1='bcSupportList';
 febio_spec.Mesh.NodeSet{1}.ATTR.name=nodeSetName1;
-febio_spec.Mesh.NodeSet{1}.node.ATTR.id=bcSupportList(:);
+febio_spec.Mesh.NodeSet{1}.VAL=mrow(bcSupportList);
 
 %MeshDomains section
 febio_spec.MeshDomains.SolidDomain.ATTR.name=partName1;
@@ -782,41 +3915,45 @@ febio_spec.MeshDomains.ShellDomain.ATTR.mat=materialName2;
 % -> Surfaces
 surfaceName1='contactSurface1';
 febio_spec.Mesh.Surface{1}.ATTR.name=surfaceName1;
-febio_spec.Mesh.Surface{1}.tri3.ATTR.id=(1:1:size(F_contact_secondary,1))';
-febio_spec.Mesh.Surface{1}.tri3.VAL=F_contact_secondary;
+febio_spec.Mesh.Surface{1}.quad4.ATTR.id=(1:1:size(F_contact_primary,1))';
+febio_spec.Mesh.Surface{1}.quad4.VAL=F_contact_primary;
 
 surfaceName2='contactSurface2';
 febio_spec.Mesh.Surface{2}.ATTR.name=surfaceName2;
-febio_spec.Mesh.Surface{2}.quad4.ATTR.id=(1:1:size(F_contact_primary,1))';
-febio_spec.Mesh.Surface{2}.quad4.VAL=F_contact_primary;
+febio_spec.Mesh.Surface{2}.tri3.ATTR.id=(1:1:size(F_contact_secondary,1))';
+febio_spec.Mesh.Surface{2}.tri3.VAL=F_contact_secondary;
 
 % -> Surface pairs
 contactPairName='Contact1';
 febio_spec.Mesh.SurfacePair{1}.ATTR.name=contactPairName;
-febio_spec.Mesh.SurfacePair{1}.primary=surfaceName2;
-febio_spec.Mesh.SurfacePair{1}.secondary=surfaceName1;
+febio_spec.Mesh.SurfacePair{1}.primary=surfaceName1;
+febio_spec.Mesh.SurfacePair{1}.secondary=surfaceName2;
 
 %Boundary condition section 
 % -> Fix boundary conditions
-febio_spec.Boundary.bc{1}.ATTR.type='fix';
+febio_spec.Boundary.bc{1}.ATTR.name='zero_displacement_x';
+febio_spec.Boundary.bc{1}.ATTR.type='zero displacement';
 febio_spec.Boundary.bc{1}.ATTR.node_set=nodeSetName1;
-febio_spec.Boundary.bc{1}.dofs='x,y,z';
+febio_spec.Boundary.bc{1}.x_dof=1;
+febio_spec.Boundary.bc{1}.y_dof=1;
+febio_spec.Boundary.bc{1}.z_dof=1;
 
 %Rigid section 
 % ->Rigid body fix boundary conditions
-febio_spec.Rigid.rigid_constraint{1}.ATTR.name='RigidFix_1';
-febio_spec.Rigid.rigid_constraint{1}.ATTR.type='fix';
-febio_spec.Rigid.rigid_constraint{1}.rb=2;
-febio_spec.Rigid.rigid_constraint{1}.dofs='Rx,Ry';
+febio_spec.Rigid.rigid_bc{1}.ATTR.name='RotFix_1';
+febio_spec.Rigid.rigid_bc{1}.ATTR.type='rigid_fixed';
+febio_spec.Rigid.rigid_bc{1}.rb=2;
+febio_spec.Rigid.rigid_bc{1}.Rx_dof=1;
+febio_spec.Rigid.rigid_bc{1}.Ry_dof=1;
 
 % ->Rigid body prescribe boundary conditions
-febio_spec.Rigid.rigid_constraint{2}.ATTR.name='RigidPrescribe';
-febio_spec.Rigid.rigid_constraint{2}.ATTR.type='prescribe';
-febio_spec.Rigid.rigid_constraint{2}.rb=2;
-febio_spec.Rigid.rigid_constraint{2}.dof='Rz';
-febio_spec.Rigid.rigid_constraint{2}.value.ATTR.lc=1;
-febio_spec.Rigid.rigid_constraint{2}.value.VAL=-(sphereDisplacement+contactInitialOffset);
-febio_spec.Rigid.rigid_constraint{2}.relative=0;
+febio_spec.Rigid.rigid_bc{2}.ATTR.name='RigidPrescribe';
+febio_spec.Rigid.rigid_bc{2}.ATTR.type='rigid_displacement';
+febio_spec.Rigid.rigid_bc{2}.rb=2;
+febio_spec.Rigid.rigid_bc{2}.dof='z';
+febio_spec.Rigid.rigid_bc{2}.value.ATTR.lc=1;
+febio_spec.Rigid.rigid_bc{2}.value.VAL=-(sphereDisplacement+contactInitialOffset);
+febio_spec.Rigid.rigid_bc{2}.relative=0;
 
 %Contact section
 febio_spec.Contact.contact{1}.ATTR.type='sliding-elastic';
@@ -831,15 +3968,18 @@ febio_spec.Contact.contact{1}.search_tol=0.01;
 febio_spec.Contact.contact{1}.search_radius=0.1*sqrt(sum((max(V,[],1)-min(V,[],1)).^2,2));
 febio_spec.Contact.contact{1}.symmetric_stiffness=0;
 febio_spec.Contact.contact{1}.auto_penalty=1;
+febio_spec.Contact.contact{1}.update_penalty=1;
 febio_spec.Contact.contact{1}.penalty=contactPenalty;
 febio_spec.Contact.contact{1}.fric_coeff=fric_coeff;
 
 %LoadData section
 % -> load_controller
+febio_spec.LoadData.load_controller{1}.ATTR.name='LC_1';
 febio_spec.LoadData.load_controller{1}.ATTR.id=1;
 febio_spec.LoadData.load_controller{1}.ATTR.type='loadcurve';
 febio_spec.LoadData.load_controller{1}.interpolate='LINEAR';
-febio_spec.LoadData.load_controller{1}.points.point.VAL=[0 0; 1 1];
+%febio_spec.LoadData.load_controller{1}.extend='CONSTANT';
+febio_spec.LoadData.load_controller{1}.points.pt.VAL=[0 0; 1 1];
 
 %Output section 
 % -> log file
@@ -854,7 +3994,7 @@ febio_spec.Output.logfile.element_data{1}.ATTR.delim=',';
 
 febio_spec.Output.logfile.face_data{1}.ATTR.file=febioLogFileName_contactPressure;
 febio_spec.Output.logfile.face_data{1}.ATTR.data='contact pressure';
-febio_spec.Output.logfile.face_data{1}.ATTR.surface=surfaceName2;
+febio_spec.Output.logfile.face_data{1}.ATTR.surface=surfaceName1;
 febio_spec.Output.logfile.face_data{1}.ATTR.delim=',';
 
 %% Quick viewing of the FEBio input file structure
@@ -880,7 +4020,7 @@ febioStruct2xml(febio_spec,febioFebFileName); %Exporting to file and domNode
 febioAnalysis.run_filename=febioFebFileName; %The input file name
 febioAnalysis.run_logname=febioLogFileName; %The name for the log file
 febioAnalysis.disp_on=1; %Display information on the command window
-febioAnalysis.runMode='external';%'internal';
+febioAnalysis.runMode=runMode;
 
 [runFlag]=runMonitorFEBio(febioAnalysis);%START FEBio NOW!!!!!!!!
 
@@ -909,10 +4049,10 @@ if runFlag==1 %i.e. a succesful run
                 
     %%
     % Importing contact pressure from a log file
-    dataStruct=importFEBio_logfile(fullfile(savePath,febioLogFileName_contactPressure),1,1);     
+    dataStruct=importFEBio_logfile(fullfile(savePath,febioLogFileName_contactPressure),1,1);
     
     %Access data
-    F_primary_contact_pressure_mat=dataStruct.data;
+    F_primary_contact_pressure_mat=dataStruct.data
     
     %%
     % Plotting the simulated results using |anim8| to visualize and animate
@@ -980,8 +4120,7 @@ if runFlag==1 %i.e. a succesful run
         animStruct.Set{qt}={V_DEF(:,:,qt),F_primary_contact_pressure_mat(:,:,qt),V_DEF(:,:,qt)}; %Property values for to set in order to animate
     end
     anim8(hf,animStruct); %Initiate animation feature
-    drawnow;
-    
+    drawnow;    
     
 end
 
@@ -1003,7 +4142,7 @@ end
 % image segmentation, image-based modeling, meshing, and finite element
 % analysis.
 % 
-% Copyright (C) 2006-2021 Kevin Mattheus Moerman and the GIBBON contributors
+% Copyright (C) 2006-2022 Kevin Mattheus Moerman and the GIBBON contributors
 % 
 % This program is free software: you can redistribute it and/or modify
 % it under the terms of the GNU General Public License as published by

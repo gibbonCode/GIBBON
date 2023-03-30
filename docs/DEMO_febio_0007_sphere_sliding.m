@@ -54,7 +54,7 @@ febioLogFileName_stress=[febioFebFileNamePart,'_stress_out.txt']; %Log file name
 sampleHeight=5; %Height
 sampleWidth=sampleHeight*4; %Width 
 sampleThickness=sampleHeight*1; %Thickness 
-pointSpacings=1*ones(1,3); %Desired point spacing between nodes
+pointSpacings=[1 1 1]; %Desired point spacing between nodes
 numElementsWidth=round(sampleWidth/pointSpacings(1)); %Number of elemens in dir 1
 numElementsThickness=round(sampleThickness/pointSpacings(2)); %Number of elemens in dir 2
 numElementsHeight=round(sampleHeight/pointSpacings(3)); %Number of elemens in dir 3
@@ -62,6 +62,7 @@ numElementsHeight=round(sampleHeight/pointSpacings(3)); %Number of elemens in di
 %Sphere parameters
 numRefineStepsSphere=3; 
 sphereRadius=sampleHeight/2;
+sphereMeshType='tri3'; % tri3 or quad4
 
 %Define applied displacement
 sphereIndentationDisplacement=sphereRadius; 
@@ -74,25 +75,29 @@ k_factor=100; %Bulk modulus factor
 k=c1*k_factor; %Bulk modulus
 
 % FEA control settings
-numTimeSteps=10; %Number of time steps desired
-max_refs=40; %Max reforms
+numTimeSteps1=10; %Number of time steps desired
+dtmin1=(1/numTimeSteps1)/100; %Minimum time step size
+dtmax1=1/numTimeSteps1; %Maximum time step size
+
+numTimeSteps2=10; %Number of time steps desired
+dtmin2=(1/numTimeSteps2)/100; %Minimum time step size
+dtmax2=1/numTimeSteps2; %Maximum time step size
+
+max_refs=75; %Max reforms
 max_ups=0; %Set to zero to use full-Newton iterations
-opt_iter=25; %Optimum number of iterations
+opt_iter=20; %Optimum number of iterations
 max_retries=5; %Maximum number of retires
-dtmin=(1/numTimeSteps)/100; %Minimum time step size
-dtmax=1/numTimeSteps; %Maximum time step size
 symmetric_stiffness=0;
 
 runMode='external';% 'internal' or 'external'
 
 %Contact parameters
 contactInitialOffset=0.1;
-contactPenalty=5;
-fricPenalty=5;
+contactPenalty=20;
 laugon=0;
 minaug=1;
 maxaug=10;
-fric_coeff=0.5;
+fric_coeff=0.3;
 
 %% Creating model geometry and mesh
 % A box is created with tri-linear hexahedral (hex8) elements using the
@@ -115,7 +120,12 @@ elementMaterialIndices=ones(size(E1,1),1); %Element material indices
 
 %% Creating triangulated sphere surface model
 
-[E2,V2,~]=geoSphere(numRefineStepsSphere,sphereRadius); 
+switch sphereMeshType
+    case 'tri3'
+        [E2,V2,~]=geoSphere(numRefineStepsSphere,sphereRadius);
+    case 'quad4'
+        [E2,V2]=quadSphere(numRefineStepsSphere,sphereRadius);        
+end
 
 %Offset indentor
 minV2=min(V2,[],1);
@@ -228,26 +238,40 @@ febio_spec.ATTR.version='4.0';
 febio_spec.Module.ATTR.type='solid'; 
 
 %Control section
-stepStruct.Control.analysis='STATIC';
-stepStruct.Control.time_steps=numTimeSteps;
-stepStruct.Control.step_size=1/numTimeSteps;
-stepStruct.Control.solver.max_refs=max_refs;
-stepStruct.Control.solver.qn_method.max_ups=max_ups;
-stepStruct.Control.solver.symmetric_stiffness=symmetric_stiffness;
-stepStruct.Control.time_stepper.dtmin=dtmin;
-stepStruct.Control.time_stepper.dtmax=dtmax; 
-stepStruct.Control.time_stepper.max_retries=max_retries;
-stepStruct.Control.time_stepper.opt_iter=opt_iter;
+stepStruct1.Control.analysis='STATIC';
+stepStruct1.Control.time_steps=numTimeSteps1;
+stepStruct1.Control.step_size=1/numTimeSteps1;
+stepStruct1.Control.solver.max_refs=max_refs;
+stepStruct1.Control.solver.qn_method.max_ups=max_ups;
+stepStruct1.Control.solver.symmetric_stiffness=symmetric_stiffness;
+stepStruct1.Control.time_stepper.dtmin=dtmin1;
+stepStruct1.Control.time_stepper.dtmax=dtmax1; 
+stepStruct1.Control.time_stepper.max_retries=max_retries;
+stepStruct1.Control.time_stepper.opt_iter=opt_iter;
 
 %Add template based default settings to proposed control section
-[stepStruct.Control]=structComplete(stepStruct.Control,febio_spec.Control,1); %Complement provided with default if missing
+[stepStruct1.Control]=structComplete(stepStruct1.Control,febio_spec.Control,1); %Complement provided with default if missing
+
+stepStruct2.Control.analysis='STATIC';
+stepStruct2.Control.time_steps=numTimeSteps2;
+stepStruct2.Control.step_size=1/numTimeSteps2;
+stepStruct2.Control.solver.max_refs=max_refs;
+stepStruct2.Control.solver.qn_method.max_ups=max_ups;
+stepStruct2.Control.solver.symmetric_stiffness=symmetric_stiffness;
+stepStruct2.Control.time_stepper.dtmin=dtmin2;
+stepStruct2.Control.time_stepper.dtmax=dtmax2; 
+stepStruct2.Control.time_stepper.max_retries=max_retries;
+stepStruct2.Control.time_stepper.opt_iter=opt_iter;
+
+%Add template based default settings to proposed control section
+[stepStruct2.Control]=structComplete(stepStruct2.Control,febio_spec.Control,1); %Complement provided with default if missing
 
 %Remove control field (part of template) since step specific control sections are used
 febio_spec=rmfield(febio_spec,'Control'); 
 
-febio_spec.Step.step{1}.Control=stepStruct.Control;
+febio_spec.Step.step{1}.Control=stepStruct1.Control;
 febio_spec.Step.step{1}.ATTR.id=1;
-febio_spec.Step.step{2}.Control=stepStruct.Control;
+febio_spec.Step.step{2}.Control=stepStruct2.Control;
 febio_spec.Step.step{2}.ATTR.id=2;
     
 %Material section
@@ -283,7 +307,7 @@ febio_spec.Mesh.Elements{1}.elem.VAL=E1; %The element matrix
 
 partName2='Part2';
 febio_spec.Mesh.Elements{2}.ATTR.name=partName2; %Name of this part
-febio_spec.Mesh.Elements{2}.ATTR.type='tri3'; %Element type 
+febio_spec.Mesh.Elements{2}.ATTR.type=sphereMeshType; %Element type 
 febio_spec.Mesh.Elements{2}.elem.ATTR.id=size(E1,1)+(1:1:size(E2,1))'; %Element id's
 febio_spec.Mesh.Elements{2}.elem.VAL=E2; %The element matrix
 
@@ -302,8 +326,8 @@ febio_spec.MeshDomains.ShellDomain.ATTR.mat=materialName2;
 % -> Surfaces
 surfaceName1='contactSurface1';
 febio_spec.Mesh.Surface{1}.ATTR.name=surfaceName1;
-febio_spec.Mesh.Surface{1}.tri3.ATTR.id=(1:1:size(F_contact_secondary,1))';
-febio_spec.Mesh.Surface{1}.tri3.VAL=F_contact_secondary;
+febio_spec.Mesh.Surface{1}.(sphereMeshType).ATTR.id=(1:1:size(F_contact_secondary,1))';
+febio_spec.Mesh.Surface{1}.(sphereMeshType).VAL=F_contact_secondary;
 
 surfaceName2='contactSurface2';
 febio_spec.Mesh.Surface{2}.ATTR.name=surfaceName2;
@@ -331,6 +355,9 @@ febio_spec.Step.step{1}.Rigid.rigid_bc{1}.ATTR.type='rigid_fixed';
 febio_spec.Step.step{1}.Rigid.rigid_bc{1}.rb=2;
 febio_spec.Step.step{1}.Rigid.rigid_bc{1}.Rx_dof=1;
 febio_spec.Step.step{1}.Rigid.rigid_bc{1}.Ry_dof=1;
+febio_spec.Step.step{1}.Rigid.rigid_bc{1}.Ru_dof=1;
+febio_spec.Step.step{1}.Rigid.rigid_bc{1}.Rv_dof=1;
+febio_spec.Step.step{1}.Rigid.rigid_bc{1}.Rw_dof=1;
 
 febio_spec.Step.step{1}.Rigid.rigid_bc{2}.ATTR.name='RigidPrescribe';
 febio_spec.Step.step{1}.Rigid.rigid_bc{2}.ATTR.type='rigid_displacement';
@@ -343,6 +370,9 @@ febio_spec.Step.step{2}.Rigid.rigid_bc{1}.ATTR.name='RigidFix_1';
 febio_spec.Step.step{2}.Rigid.rigid_bc{1}.ATTR.type='rigid_fixed';
 febio_spec.Step.step{2}.Rigid.rigid_bc{1}.Ry_dof=1;
 febio_spec.Step.step{2}.Rigid.rigid_bc{1}.Rz_dof=1;
+febio_spec.Step.step{2}.Rigid.rigid_bc{1}.Ru_dof=1;
+febio_spec.Step.step{2}.Rigid.rigid_bc{1}.Rv_dof=1;
+febio_spec.Step.step{2}.Rigid.rigid_bc{1}.Rw_dof=1;
 
 febio_spec.Step.step{2}.Rigid.rigid_bc{2}.ATTR.name='RigidPrescribe';
 febio_spec.Step.step{2}.Rigid.rigid_bc{2}.ATTR.type='rigid_displacement';

@@ -364,9 +364,10 @@ febio_spec.Output.logfile.element_data{1}.ATTR.file=febioLogFileName_stress;
 febio_spec.Output.logfile.element_data{1}.ATTR.data='s3';
 febio_spec.Output.logfile.element_data{1}.ATTR.delim=',';
 
-% febio_spec.Output.logfile.face_data{1}.ATTR.file=febioLogFileName_contactPressure;
-% febio_spec.Output.logfile.face_data{1}.ATTR.data='contact pressure';
-% febio_spec.Output.logfile.face_data{1}.ATTR.surface=surfaceName1;
+febio_spec.Output.logfile.face_data{1}.ATTR.file=febioLogFileName_contactPressure;
+febio_spec.Output.logfile.face_data{1}.ATTR.data='contact pressure';
+febio_spec.Output.logfile.face_data{1}.ATTR.surface=surfaceName1;
+febio_spec.Output.logfile.face_data{1}.ATTR.delim=',';
 
 %% Quick viewing of the FEBio input file structure
 % The |febView| function can be used to view the xml structure in a MATLAB
@@ -420,10 +421,10 @@ if runFlag==1 %i.e. a succesful run
                 
     %%
     % Importing contact pressure from a log file
-    dataStruct=importFEBio_logfile(fullfile(savePath,febioLogFileName_contactPressure),1,1);     
+    dataStruct=importFEBio_logfile(fullfile(savePath,febioLogFileName_contactPressure),1,1);
     
     %Access data
-    F_primary_contact_pressure_mat=dataStruct.data;
+    F_primary_contact_pressure_mat=dataStruct.data
     
     %%
     % Plotting the simulated results using |anim8| to visualize and animate
@@ -463,36 +464,35 @@ if runFlag==1 %i.e. a succesful run
     drawnow;
     
         %%
-%     % Plotting the simulated results using |anim8| to visualize and animate
-%     % deformations
-% 
-%     % Create basic view and store graphics handle to initiate animation
-%     hf=cFigure; %Open figure
-%     gtitle([febioFebFileNamePart,': Press play to animate']);
-%     title('$\sigma_{3}$ [MPa]','Interpreter','Latex')
-%     gpatch(Fb1,V_DEF(:,:,end),'w','none',0.1);
-%     hp=gpatch(F_contact_primary,V_DEF(:,:,end),F_primary_contact_pressure_mat(:,:,1),'k',1); %Add graphics object to animate        
-%         
-%     hp2=gpatch(E2,V_DEF(:,:,end),'w','none',0.25); %Add graphics object to animate
-%     
-%     axisGeom(gca,fontSize);
-%     colormap(gjet(250)); colorbar;
-%     caxis([min(F_primary_contact_pressure_mat(:)) max(F_primary_contact_pressure_mat(:))]);
-%     axis(axisLim(V_DEF)); %Set axis limits statically
-%     camlight headlight;
-%     
-%     % Set up animation features
-%     animStruct.Time=timeVec; %The time vector
-%     for qt=1:1:size(N_disp_mat,3) %Loop over time increments
-%         
-%         %Set entries in animation structure
-%         animStruct.Handles{qt}=[hp hp hp2]; %Handles of objects to animate
-%         animStruct.Props{qt}={'Vertices','CData','Vertices'}; %Properties of objects to animate
-%         animStruct.Set{qt}={V_DEF(:,:,qt),F_primary_contact_pressure_mat(:,:,qt),V_DEF(:,:,qt)}; %Property values for to set in order to animate
-%     end
-%     anim8(hf,animStruct); %Initiate animation feature
-%     drawnow;
+    % Plotting the simulated results using |anim8| to visualize and animate
+    % deformations
+
+    % Create basic view and store graphics handle to initiate animation
+    hf=cFigure; %Open figure
+    gtitle([febioFebFileNamePart,': Press play to animate']);
+    title('$\sigma_{3}$ [MPa]','Interpreter','Latex')
+    gpatch(Fb1,V_DEF(:,:,end),'w','none',0.1);
+    hp=gpatch(F_contact_primary,V_DEF(:,:,end),F_primary_contact_pressure_mat(:,:,1),'k',1); %Add graphics object to animate        
+        
+    hp2=gpatch(E2,V_DEF(:,:,end),'w','none',0.25); %Add graphics object to animate
     
+    axisGeom(gca,fontSize);
+    colormap(gjet(250)); colorbar;
+    caxis([min(F_primary_contact_pressure_mat(:)) max(F_primary_contact_pressure_mat(:))]);
+    axis(axisLim(V_DEF)); %Set axis limits statically
+    camlight headlight;
+    
+    % Set up animation features
+    animStruct.Time=timeVec; %The time vector
+    for qt=1:1:size(N_disp_mat,3) %Loop over time increments
+        
+        %Set entries in animation structure
+        animStruct.Handles{qt}=[hp hp hp2]; %Handles of objects to animate
+        animStruct.Props{qt}={'Vertices','CData','Vertices'}; %Properties of objects to animate
+        animStruct.Set{qt}={V_DEF(:,:,qt),F_primary_contact_pressure_mat(:,:,qt),V_DEF(:,:,qt)}; %Property values for to set in order to animate
+    end
+    anim8(hf,animStruct); %Initiate animation feature
+    drawnow;    
     
 end
 

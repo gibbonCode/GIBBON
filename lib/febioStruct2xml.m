@@ -28,7 +28,7 @@ function [varargout]=febioStruct2xml(varargin)
 defaultOptionStruct.attributeKeyword='ATTR';
 defaultOptionStruct.valueKeyword='VAL';
 defaultOptionStruct.arrayLoopKeywords={'node','elem','face','delem','quad4','quad8','tri3','tri6','tri7','line2','line3','point','pt'};
-defaultOptionStruct.arrayRowWrapKeywords={'NodeSet'};
+defaultOptionStruct.arrayRowWrapKeywords={'NodeSet','node_data','element_data'};
 defaultOptionStruct.rowWrapLength=8;
 
 %Create number to string conversion option structure (used for mat2strIntDouble)
