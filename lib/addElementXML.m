@@ -1,5 +1,7 @@
-function [varargout]=addElementXML(domNode,rootNode,elementName,elementValue)
+function [varargout]=addElementXML(domNode,rootNode,elementName,elementValue,varargin)
 
+
+%%
 try
     elementNode = domNode.createElement(elementName); %create entry
     elementNode = rootNode.appendChild(elementNode); %add entry
@@ -12,8 +14,21 @@ catch
     elementNode = rootNode.appendChild(elementNode); %add entry    
 end
 
-if ~isempty(elementValue)
-    [elementValue]=vec2strIntDouble(elementValue,'%6.7e');
+if ~isempty(elementValue)    
+    %Parse optional option struct input
+    defaultOptionStruct.formatDouble='%6.7e';
+    defaultOptionStruct.formatInteger='%d';
+    defaultOptionStruct.dlmChar=',';
+    defaultOptionStruct.rowWrapLength=[];
+
+    if nargin==5
+        optionStruct=varargin{1};
+        [optionStruct]=structComplete(optionStruct,defaultOptionStruct,1); %Complement provided with default if missing or empty
+    else
+        optionStruct=defaultOptionStruct;
+    end
+
+    [elementValue]=mat2strIntDouble(elementValue,optionStruct);
     elementNode.appendChild(domNode.createTextNode(elementValue)); %append data text child
 end
 

@@ -19,19 +19,38 @@ function [varargout]=febioStruct2xml(varargin)
 % Gracefully handle empty fields e.g. 0x8 element array
 % 2020/11/26 Fixed bug in relation to undefined attributeStruct in
 % febioStruct2xmlStep 
+% For febio_spec 4.0 perhaps we can remove 'point' from the arrayLoopKeywords
+% Check for for febio_spec 4.0
 %------------------------------------------------------------------------
 
 %% Parse input
 
 defaultOptionStruct.attributeKeyword='ATTR';
 defaultOptionStruct.valueKeyword='VAL';
-defaultOptionStruct.arrayLoopKeywords={'node','elem','face','delem','quad4','quad8','tri3','tri6','tri7','line2','line3','point'};
+defaultOptionStruct.arrayLoopKeywords={'node','elem','face','delem','quad4','quad8','tri3','tri6','tri7','line2','line3','point','pt'};
+defaultOptionStruct.arrayRowWrapKeywords={'NodeSet','node_data','element_data'};
+defaultOptionStruct.rowWrapLength=8;
+
+%Create number to string conversion option structure (used for mat2strIntDouble)
+optionStructConv.formatDouble='%6.7e';
+optionStructConv.formatInteger='%d';
+optionStructConv.dlmChar=',';
+optionStructConv.rowWrapLength=[]; %Is altered in code depending on filedname with arrayRowWrapKeywords
+defaultOptionStruct.optionStructConv=optionStructConv; %Add to default option structure
 
 if contains(lower(getFEBioPath),'febio2')
+    warning('febio2 and related febio_spec handling are depricated. Update your codes for the latest FEBio version to avoid future errors.')
     defaultOptionStruct.fieldOrder={'Module','Control','Globals','Material',...
         'Geometry','MeshData','Initial','Boundary',...
         'Loads','Contact','Constraints','Rigid Connectors',...
         'Discrete','LoadData','Output','Parameters'};
+elseif contains(lower(getFEBioPath),'febio3')
+    warning('febio3 and related febio_spec handling are depricated. Update your codes for the latest FEBio version to avoid future errors.')
+    defaultOptionStruct.fieldOrder={...
+        'Module','Control','Globals','Material',...
+        'Mesh','MeshDomains','MeshData','Initial','Boundary',...
+        'Rigid','Loads','Contact','Constraints',...
+        'Discrete','LoadData','Step','Output'};
 else
     defaultOptionStruct.fieldOrder={...
         'Module','Control','Globals','Material',...
@@ -60,6 +79,7 @@ switch nargin
 end
 
 [optionStruct]=structComplete(optionStruct,defaultOptionStruct,1); %Complement provided with default if missing or empty
+
 
 defaultFolder = fileparts(fileparts(mfilename('fullpath')));
 savePath=fullfile(defaultFolder,'data','temp');
@@ -91,7 +111,7 @@ end
 domNode = com.mathworks.xml.XMLUtils.createDocument('febio_spec'); %Create the overall febio_spec field
 
 %% Add comment
-commentString = ['Created using GIBBON, ',datestr(now)];
+commentString = ['Created using GIBBON, ',char(datetime)];
 commentNode = domNode.createComment(commentString);
 rootNode=domNode.getElementsByTagName('febio_spec').item(0);
 rootNode.appendChild(commentNode);
@@ -137,11 +157,19 @@ end
 fieldNameSet = fieldnames(parseStruct);
 attributeStruct=[]; %Initialize as empty
 for q_field=1:1:numel(fieldNameSet) %Loop for all field names
-    
+
     %Get current field names and values
     currentFieldName=fieldNameSet{q_field}; %attribute name or element name
     currentFieldValue=parseStruct.(fieldNameSet{q_field}); %attribute value or element value
-    
+
+    if ~any(strcmp(currentFieldName,{attributeKeyword,valueKeyword}))
+        if any(strcmp(currentFieldName,optionStruct.arrayRowWrapKeywords))
+            optionStruct.optionStructConv.rowWrapLength=optionStruct.rowWrapLength;
+        else
+            optionStruct.optionStructConv.rowWrapLength=[];
+        end
+    end
+
     %Switch behaviour depending on name, i.e. create attribute, assign
     %value (to current entity), or create an element with a value
     switch currentFieldName
@@ -154,12 +182,11 @@ for q_field=1:1:numel(fieldNameSet) %Loop for all field names
                 error('The rootNode is empty, the current attribute appears to lack a parent element');
             end
         case valueKeyword %VALUE
-            %Add the current value to rootNode
-            [domNode]=addElementValueXML(domNode,rootNode,currentFieldValue);
+            %Add the current value to rootNode            
+            [domNode]=addElementValueXML(domNode,rootNode,currentFieldValue,optionStruct.optionStructConv);
         otherwise %ELEMENT
             
-            %Check if the current element tag correspods to one requiring
-            %looping
+            %Check if the current element tag correspods to one requiring looping
             logicArray=any(strcmp(currentFieldName,arrayLoopKeywords));
             
             if logicArray %Check for looping across values
@@ -187,9 +214,9 @@ for q_field=1:1:numel(fieldNameSet) %Loop for all field names
                             for q_array=1:1:numArray %Loop over elements in array
                                 %Add the element and its value
                                 if iscell(arrayDataSet)
-                                    [domNode,elementNode,rootNode]=addElementXML(domNode,rootNode,currentFieldName,arrayDataSet{q_array});
+                                    [domNode,elementNode,rootNode]=addElementXML(domNode,rootNode,currentFieldName,arrayDataSet{q_array},optionStruct.optionStructConv);
                                 else
-                                    [domNode,elementNode,rootNode]=addElementXML(domNode,rootNode,currentFieldName,arrayDataSet(q_array,:));
+                                    [domNode,elementNode,rootNode]=addElementXML(domNode,rootNode,currentFieldName,arrayDataSet(q_array,:),optionStruct.optionStructConv);
                                 end
                                 if ~isempty(fieldNameSetSub) %If attributes exist
                                     for q_fieldSub=1:1:numel(fieldNameSetSub) %loop over all attributes
@@ -234,8 +261,7 @@ for q_field=1:1:numel(fieldNameSet) %Loop for all field names
                     end
                 elseif ~isempty(parseStructSub) %Despite arrayLoopKeywords trigger no values or attributes are to be added, but other fields might exist
                     [domNode,rootNode]=recursiveElementParse(domNode,rootNode,currentFieldName,currentFieldValue,optionStruct,fileName);
-                end
-                
+                end                
             else
                 [domNode,rootNode]=recursiveElementParse(domNode,rootNode,currentFieldName,currentFieldValue,optionStruct,fileName);
             end
@@ -245,16 +271,21 @@ end
 end
 
 function [domNode,rootNode]=recursiveElementParse(domNode,rootNode,currentFieldName,currentFieldValue,optionStruct,fileName)
+if any(strcmp(currentFieldName,optionStruct.arrayRowWrapKeywords))
+    optionStruct.optionStructConv.rowWrapLength=optionStruct.rowWrapLength;
+else
+    optionStruct.optionStructConv.rowWrapLength=[];
+end
 
-if isnumeric(currentFieldValue) || ischar(currentFieldValue)
-    [domNode,~,rootNode]=addElementXML(domNode,rootNode,currentFieldName,currentFieldValue);
-elseif isstruct(currentFieldValue)
-    [domNode,elementNode,rootNode]=addElementXML(domNode,rootNode,currentFieldName,[]); %Create the current element
+if isnumeric(currentFieldValue) || ischar(currentFieldValue)        
+    [domNode,~,rootNode]=addElementXML(domNode,rootNode,currentFieldName,currentFieldValue,optionStruct.optionStructConv);
+elseif isstruct(currentFieldValue)    
+    [domNode,elementNode,rootNode]=addElementXML(domNode,rootNode,currentFieldName,[],optionStruct.optionStructConv); %Create the current element
     [domNode,elementNode]=febioStruct2xmlStep(domNode,elementNode,currentFieldValue,optionStruct,fileName); %Add whatever is nested in here
-elseif iscell(currentFieldValue)
+elseif iscell(currentFieldValue)    
     for q_cell=1:1:numel(currentFieldValue)
         parseStructSub=currentFieldValue{q_cell};
-        [domNode,elementNode,rootNode]=addElementXML(domNode,rootNode,currentFieldName,[]);
+        [domNode,elementNode,rootNode]=addElementXML(domNode,rootNode,currentFieldName,[],optionStruct.optionStructConv);
         [domNode,elementNode]=febioStruct2xmlStep(domNode,elementNode,parseStructSub,optionStruct,fileName); %Add whatever is nested in here
     end
 end
@@ -370,9 +401,8 @@ function [B]=reorderStruct(A,fieldOrder)
 %Start with fieldOrder fields
 fieldNameSet=fieldnames(A);
 for q=1:1:numel(fieldOrder)
-    fieldNameNow=fieldOrder{q};
-    logicFind=strcmp(fieldNameNow,fieldNameSet);
-    if any(logicFind)
+    fieldNameNow=fieldOrder{q};    
+    if any(strcmp(fieldNameNow,fieldNameSet))
         B.(fieldNameNow)=A.(fieldNameNow);
         A=rmfield(A,fieldNameNow);
     end

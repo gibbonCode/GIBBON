@@ -1,6 +1,19 @@
-function [domNode]=addElementValueXML(domNode,elementNode,elementValue)
+function [domNode]=addElementValueXML(domNode,elementNode,elementValue,varargin)
 
-[elementValue]=vec2strIntDouble(elementValue,'%6.7e');
+%Parse optional option struct input
+defaultOptionStruct.formatDouble='%6.7e';
+defaultOptionStruct.formatInteger='%d';
+defaultOptionStruct.dlmChar=',';
+defaultOptionStruct.rowWrapLength=[];
+
+if nargin==4
+    optionStruct=varargin{1};    
+    [optionStruct]=structComplete(optionStruct,defaultOptionStruct,1); %Complement provided with default if missing or empty
+else
+    optionStruct=defaultOptionStruct; 
+end
+
+[elementValue]=mat2strIntDouble(elementValue,optionStruct);
 
 if ischar(elementValue)
     elementNode.appendChild(domNode.createTextNode(elementValue)); %append data text child

@@ -5,14 +5,21 @@ switch nargin
     case 1
         n=varargin{1};
         formatDouble='%6.7e';
+        rowWrapLength=[];
     case 2
         n=varargin{1};
         formatDouble=varargin{2};
+        rowWrapLength=[];
+    case 3
+        n=varargin{1};
+        formatDouble=varargin{2};
+        rowWrapLength=varargin{3};
 end
 
 %%
 
 optionStruct.formatDouble=formatDouble;
+optionStruct.rowWrapLength=rowWrapLength;
 [t]=mat2strIntDouble(n,optionStruct);
 
 %% 

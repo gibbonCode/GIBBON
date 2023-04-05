@@ -1,4 +1,4 @@
-%% DEMO_febio_0001_cube_uniaxial
+%% DEMO_febio_0083_cube_uniaxial_HGO
 % Below is a demonstration for:
 % 
 % * Building geometry for a cube with hexahedral elements
@@ -17,7 +17,7 @@
 % * hexahedral elements, hex8
 % * cube, box, rectangular
 % * static, solid
-% * hyperelastic, Ogden
+% * hyperelastic, HGO
 % * displacement logfile
 % * stress logfile
 
@@ -70,8 +70,7 @@ end
 displacementMagnitude=(stretchLoad*sampleHeight)-sampleHeight; %The displacement magnitude
 
 %Material parameter set
-E_youngs1=0.1; %Material Young's modulus
-nu1=0.4; %Material Poisson's ratio
+materialType='coupled';
 
 % FEA control settings
 numTimeSteps=10; %Number of time steps desired
@@ -192,11 +191,29 @@ febio_spec.Control.time_stepper.opt_iter=opt_iter;
 
 %Material section
 materialName1='Material1';
-febio_spec.Material.material{1}.ATTR.name=materialName1;
-febio_spec.Material.material{1}.ATTR.type='neo-Hookean';
-febio_spec.Material.material{1}.ATTR.id=1;
-febio_spec.Material.material{1}.E=E_youngs1;
-febio_spec.Material.material{1}.v=nu1;
+switch materialType
+    case 'coupled'
+        febio_spec.Material.material{1}.ATTR.name=materialName1;
+        febio_spec.Material.material{1}.ATTR.type='HGO unconstrained';
+        febio_spec.Material.material{1}.ATTR.id=1;
+        febio_spec.Material.material{1}.c=7.64;
+        febio_spec.Material.material{1}.k1=996.6;
+        febio_spec.Material.material{1}.k2=524.6;
+        febio_spec.Material.material{1}.gamma=49.98;
+        febio_spec.Material.material{1}.kappa=0.226;
+        febio_spec.Material.material{1}.k=7.64e3;
+    case 'uncoupled'
+        materialName1='Material1';
+        febio_spec.Material.material{1}.ATTR.name=materialName1;
+        febio_spec.Material.material{1}.ATTR.type='Holzapfel-Gasser-Ogden';
+        febio_spec.Material.material{1}.ATTR.id=1;
+        febio_spec.Material.material{1}.c=7.64;
+        febio_spec.Material.material{1}.k1=996.6;
+        febio_spec.Material.material{1}.k2=524.6;
+        febio_spec.Material.material{1}.gamma=49.98;
+        febio_spec.Material.material{1}.kappa=0.226;
+        febio_spec.Material.material{1}.k=1e5;
+end
 
 % Mesh section
 % -> Nodes

@@ -23,7 +23,7 @@ end
 defaultOptionStruct.formatDouble='%6.7e';
 defaultOptionStruct.formatInteger='%d';
 defaultOptionStruct.dlmChar=',';
-% defaultOptionStruct.forceRow=1;
+defaultOptionStruct.rowWrapLength=[];
 
 %Fix option structure, complete and remove empty values
 [optionStruct]=structComplete(optionStruct,defaultOptionStruct,1); %Complement provided with default if missing or empty
@@ -32,12 +32,14 @@ defaultOptionStruct.dlmChar=',';
 formatDouble=optionStruct.formatDouble;
 formatInteger=optionStruct.formatInteger;
 dlmChar=optionStruct.dlmChar;
+rowWrapLength=optionStruct.rowWrapLength;
 
 %%
   
 % Create character string
 if isnumeric(A) %If it is numeric
-    
+    isrowFlag=isrow(A);
+
     % Alter behaviour based on vector/matrix input
     n=size(A,2);
     A=A'; %transpose
@@ -58,6 +60,10 @@ if isnumeric(A) %If it is numeric
     
     %Take away last end of line character
     t=t(1:end-1);
+
+    if ~isempty(rowWrapLength) && rowWrapLength>0 && isrowFlag
+        t=strwrap(t,rowWrapLength,[dlmChar,' ']);
+    end
 
 elseif ischar(A)
     t=A;

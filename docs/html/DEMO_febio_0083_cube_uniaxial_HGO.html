@@ -6,7 +6,7 @@
    <!--
 This HTML was auto-generated from MATLAB code.
 To make changes, update the MATLAB code and republish this document.
-      --><title>DEMO_febio_0001_cube_uniaxial</title><meta name="generator" content="MATLAB 9.13"><link rel="schema.DC" href="http://purl.org/dc/elements/1.1/"><meta name="DC.date" content="2023-03-30"><meta name="DC.source" content="DEMO_febio_0001_cube_uniaxial.m"><style type="text/css">
+      --><title>DEMO_febio_0083_cube_uniaxial_HGO</title><meta name="generator" content="MATLAB 9.13"><link rel="schema.DC" href="http://purl.org/dc/elements/1.1/"><meta name="DC.date" content="2023-03-31"><meta name="DC.source" content="DEMO_febio_0083_cube_uniaxial_HGO.m"><style type="text/css">
 html,body,div,span,applet,object,iframe,h1,h2,h3,h4,h5,h6,p,blockquote,pre,a,abbr,acronym,address,big,cite,code,del,dfn,em,font,img,ins,kbd,q,s,samp,small,strike,strong,tt,var,b,u,i,center,dl,dt,dd,ol,ul,li,fieldset,form,label,legend,table,caption,tbody,tfoot,thead,tr,th,td{margin:0;padding:0;border:0;outline:0;font-size:100%;vertical-align:baseline;background:transparent}body{line-height:1}ol,ul{list-style:none}blockquote,q{quotes:none}blockquote:before,blockquote:after,q:before,q:after{content:'';content:none}:focus{outine:0}ins{text-decoration:none}del{text-decoration:line-through}table{border-collapse:collapse;border-spacing:0}
 
 html { min-height:100%; margin-bottom:1px; }
@@ -67,7 +67,7 @@ table td { padding:7px 5px; text-align:left; vertical-align:top; border:1px soli
 
 
 
-  </style></head><body><div class="content"><h1>DEMO_febio_0001_cube_uniaxial</h1><!--introduction--><p>Below is a demonstration for:</p><div><ul><li>Building geometry for a cube with hexahedral elements</li><li>Defining the boundary conditions</li><li>Coding the febio structure</li><li>Running the model</li><li>Importing and visualizing the displacement and stress results</li></ul></div><!--/introduction--><h2>Contents</h2><div><ul><li><a href="#1">Keywords</a></li><li><a href="#3">Plot settings</a></li><li><a href="#4">Control parameters</a></li><li><a href="#5">Creating model geometry and mesh</a></li><li><a href="#7">Defining the boundary conditions</a></li><li><a href="#9">Defining the FEBio input structure</a></li><li><a href="#10">Quick viewing of the FEBio input file structure</a></li><li><a href="#12">Exporting the FEBio input file</a></li><li><a href="#13">Running the FEBio analysis</a></li><li><a href="#14">Import FEBio results</a></li></ul></div><h2 id="1">Keywords</h2><div><ul><li>febio_spec version 4.0</li><li>febio, FEBio</li><li>uniaxial loading</li><li>compression, tension, compressive, tensile</li><li>displacement control, displacement boundary condition</li><li>hexahedral elements, hex8</li><li>cube, box, rectangular</li><li>static, solid</li><li>hyperelastic, Ogden</li><li>displacement logfile</li><li>stress logfile</li></ul></div><pre class="codeinput">clear; close <span class="string">all</span>; clc;
+  </style></head><body><div class="content"><h1>DEMO_febio_0083_cube_uniaxial_HGO</h1><!--introduction--><p>Below is a demonstration for:</p><div><ul><li>Building geometry for a cube with hexahedral elements</li><li>Defining the boundary conditions</li><li>Coding the febio structure</li><li>Running the model</li><li>Importing and visualizing the displacement and stress results</li></ul></div><!--/introduction--><h2>Contents</h2><div><ul><li><a href="#1">Keywords</a></li><li><a href="#3">Plot settings</a></li><li><a href="#4">Control parameters</a></li><li><a href="#5">Creating model geometry and mesh</a></li><li><a href="#7">Defining the boundary conditions</a></li><li><a href="#9">Defining the FEBio input structure</a></li><li><a href="#10">Quick viewing of the FEBio input file structure</a></li><li><a href="#12">Exporting the FEBio input file</a></li><li><a href="#13">Running the FEBio analysis</a></li><li><a href="#14">Import FEBio results</a></li></ul></div><h2 id="1">Keywords</h2><div><ul><li>febio_spec version 4.0</li><li>febio, FEBio</li><li>uniaxial loading</li><li>compression, tension, compressive, tensile</li><li>displacement control, displacement boundary condition</li><li>hexahedral elements, hex8</li><li>cube, box, rectangular</li><li>static, solid</li><li>hyperelastic, HGO</li><li>displacement logfile</li><li>stress logfile</li></ul></div><pre class="codeinput">clear; close <span class="string">all</span>; clc;
 </pre><h2 id="3">Plot settings</h2><pre class="codeinput">fontSize=20;
 faceAlpha1=0.8;
 markerSize=40;
@@ -109,8 +109,7 @@ loadingOption=<span class="string">'compression'</span>; <span class="comment">%
 displacementMagnitude=(stretchLoad*sampleHeight)-sampleHeight; <span class="comment">%The displacement magnitude</span>
 
 <span class="comment">%Material parameter set</span>
-E_youngs1=0.1; <span class="comment">%Material Young's modulus</span>
-nu1=0.4; <span class="comment">%Material Poisson's ratio</span>
+materialType=<span class="string">'coupled'</span>;
 
 <span class="comment">% FEA control settings</span>
 numTimeSteps=10; <span class="comment">%Number of time steps desired</span>
@@ -149,7 +148,7 @@ meshView(meshStruct,optionStruct);
 axisGeom(gca,fontSize);
 
 drawnow;
-</pre><img width="100%" height="auto" vspace="5" hspace="5" src="DEMO_febio_0001_cube_uniaxial_01.jpg" alt=""> <h2 id="7">Defining the boundary conditions</h2><p>The visualization of the model boundary shows colors for each side of the cube. These labels can be used to define boundary conditions.</p><pre class="codeinput"><span class="comment">%Define supported node sets</span>
+</pre><img width="100%" height="auto" vspace="5" hspace="5" src="DEMO_febio_0083_cube_uniaxial_HGO_01.jpg" alt=""> <h2 id="7">Defining the boundary conditions</h2><p>The visualization of the model boundary shows colors for each side of the cube. These labels can be used to define boundary conditions.</p><pre class="codeinput"><span class="comment">%Define supported node sets</span>
 logicFace=Cb==1; <span class="comment">%Logic for current face set</span>
 Fr=Fb(logicFace,:); <span class="comment">%The current face set</span>
 bcSupportList_X=unique(Fr(:)); <span class="comment">%Node set part of selected face</span>
@@ -183,7 +182,7 @@ legend(hl,{<span class="string">'BC x support'</span>,<span class="string">'BC y
 axisGeom(gca,fontSize);
 camlight <span class="string">headlight</span>;
 drawnow;
-</pre><img width="100%" height="auto" vspace="5" hspace="5" src="DEMO_febio_0001_cube_uniaxial_02.jpg" alt=""> <h2 id="9">Defining the FEBio input structure</h2><p>See also <tt>febioStructTemplate</tt> and <tt>febioStruct2xml</tt> and the FEBio user manual.</p><pre class="codeinput"><span class="comment">%Get a template with default settings</span>
+</pre><img width="100%" height="auto" vspace="5" hspace="5" src="DEMO_febio_0083_cube_uniaxial_HGO_02.jpg" alt=""> <h2 id="9">Defining the FEBio input structure</h2><p>See also <tt>febioStructTemplate</tt> and <tt>febioStruct2xml</tt> and the FEBio user manual.</p><pre class="codeinput"><span class="comment">%Get a template with default settings</span>
 [febio_spec]=febioStructTemplate;
 
 <span class="comment">%febio_spec version</span>
@@ -205,11 +204,29 @@ febio_spec.Control.time_stepper.opt_iter=opt_iter;
 
 <span class="comment">%Material section</span>
 materialName1=<span class="string">'Material1'</span>;
-febio_spec.Material.material{1}.ATTR.name=materialName1;
-febio_spec.Material.material{1}.ATTR.type=<span class="string">'neo-Hookean'</span>;
-febio_spec.Material.material{1}.ATTR.id=1;
-febio_spec.Material.material{1}.E=E_youngs1;
-febio_spec.Material.material{1}.v=nu1;
+<span class="keyword">switch</span> materialType
+    <span class="keyword">case</span> <span class="string">'coupled'</span>
+        febio_spec.Material.material{1}.ATTR.name=materialName1;
+        febio_spec.Material.material{1}.ATTR.type=<span class="string">'HGO unconstrained'</span>;
+        febio_spec.Material.material{1}.ATTR.id=1;
+        febio_spec.Material.material{1}.c=7.64;
+        febio_spec.Material.material{1}.k1=996.6;
+        febio_spec.Material.material{1}.k2=524.6;
+        febio_spec.Material.material{1}.gamma=49.98;
+        febio_spec.Material.material{1}.kappa=0.226;
+        febio_spec.Material.material{1}.k=7.64e3;
+    <span class="keyword">case</span> <span class="string">'uncoupled'</span>
+        materialName1=<span class="string">'Material1'</span>;
+        febio_spec.Material.material{1}.ATTR.name=materialName1;
+        febio_spec.Material.material{1}.ATTR.type=<span class="string">'Holzapfel-Gasser-Ogden'</span>;
+        febio_spec.Material.material{1}.ATTR.id=1;
+        febio_spec.Material.material{1}.c=7.64;
+        febio_spec.Material.material{1}.k1=996.6;
+        febio_spec.Material.material{1}.k2=524.6;
+        febio_spec.Material.material{1}.gamma=49.98;
+        febio_spec.Material.material{1}.kappa=0.226;
+        febio_spec.Material.material{1}.k=1e5;
+<span class="keyword">end</span>
 
 <span class="comment">% Mesh section</span>
 <span class="comment">% -&gt; Nodes</span>
@@ -318,51 +335,51 @@ febioAnalysis.maxLogCheckTime=10; <span class="comment">%Max log file checking t
 [runFlag]=runMonitorFEBio(febioAnalysis);<span class="comment">%START FEBio NOW!!!!!!!!</span>
 </pre><pre class="codeoutput"> 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
---------&gt;    RUNNING/MONITORING FEBIO JOB    &lt;-------- 30-Mar-2023 08:51:50
+--------&gt;    RUNNING/MONITORING FEBIO JOB    &lt;-------- 31-Mar-2023 10:26:34
 FEBio path: /home/kevin/FEBioStudio2/bin/febio4
-# Attempt removal of existing log files                30-Mar-2023 08:51:50
- * Removal succesful                                   30-Mar-2023 08:51:50
-# Attempt removal of existing .xplt files              30-Mar-2023 08:51:50
- * Removal succesful                                   30-Mar-2023 08:51:50
-# Starting FEBio...                                    30-Mar-2023 08:51:50
+# Attempt removal of existing log files                31-Mar-2023 10:26:34
+ * Removal succesful                                   31-Mar-2023 10:26:34
+# Attempt removal of existing .xplt files              31-Mar-2023 10:26:35
+ * Removal succesful                                   31-Mar-2023 10:26:35
+# Starting FEBio...                                    31-Mar-2023 10:26:35
   Max. total analysis time is: Inf s
- * Waiting for log file creation                       30-Mar-2023 08:51:51
+ * Waiting for log file creation                       31-Mar-2023 10:26:35
    Max. wait time: 10 s
- * Log file found.                                     30-Mar-2023 08:51:51
-# Parsing log file...                                  30-Mar-2023 08:51:51
-    number of iterations   : 3                         30-Mar-2023 08:51:52
-    number of reformations : 3                         30-Mar-2023 08:51:52
-------- converged at time : 0.1                        30-Mar-2023 08:51:52
-    number of iterations   : 3                         30-Mar-2023 08:51:52
-    number of reformations : 3                         30-Mar-2023 08:51:52
-------- converged at time : 0.2                        30-Mar-2023 08:51:52
-    number of iterations   : 3                         30-Mar-2023 08:51:52
-    number of reformations : 3                         30-Mar-2023 08:51:52
-------- converged at time : 0.3                        30-Mar-2023 08:51:52
-    number of iterations   : 3                         30-Mar-2023 08:51:52
-    number of reformations : 3                         30-Mar-2023 08:51:52
-------- converged at time : 0.4                        30-Mar-2023 08:51:52
-    number of iterations   : 3                         30-Mar-2023 08:51:52
-    number of reformations : 3                         30-Mar-2023 08:51:52
-------- converged at time : 0.5                        30-Mar-2023 08:51:52
-    number of iterations   : 3                         30-Mar-2023 08:51:52
-    number of reformations : 3                         30-Mar-2023 08:51:52
-------- converged at time : 0.6                        30-Mar-2023 08:51:52
-    number of iterations   : 3                         30-Mar-2023 08:51:52
-    number of reformations : 3                         30-Mar-2023 08:51:52
-------- converged at time : 0.7                        30-Mar-2023 08:51:52
-    number of iterations   : 3                         30-Mar-2023 08:51:52
-    number of reformations : 3                         30-Mar-2023 08:51:52
-------- converged at time : 0.8                        30-Mar-2023 08:51:52
-    number of iterations   : 3                         30-Mar-2023 08:51:52
-    number of reformations : 3                         30-Mar-2023 08:51:52
-------- converged at time : 0.9                        30-Mar-2023 08:51:52
-    number of iterations   : 3                         30-Mar-2023 08:51:52
-    number of reformations : 3                         30-Mar-2023 08:51:52
-------- converged at time : 1                          30-Mar-2023 08:51:52
- Elapsed time : 0:00:00                                30-Mar-2023 08:51:52
+ * Log file found.                                     31-Mar-2023 10:26:35
+# Parsing log file...                                  31-Mar-2023 10:26:35
+    number of iterations   : 4                         31-Mar-2023 10:26:35
+    number of reformations : 4                         31-Mar-2023 10:26:35
+------- converged at time : 0.1                        31-Mar-2023 10:26:35
+    number of iterations   : 4                         31-Mar-2023 10:26:35
+    number of reformations : 4                         31-Mar-2023 10:26:35
+------- converged at time : 0.2                        31-Mar-2023 10:26:35
+    number of iterations   : 3                         31-Mar-2023 10:26:35
+    number of reformations : 3                         31-Mar-2023 10:26:35
+------- converged at time : 0.3                        31-Mar-2023 10:26:35
+    number of iterations   : 3                         31-Mar-2023 10:26:35
+    number of reformations : 3                         31-Mar-2023 10:26:35
+------- converged at time : 0.4                        31-Mar-2023 10:26:35
+    number of iterations   : 3                         31-Mar-2023 10:26:35
+    number of reformations : 3                         31-Mar-2023 10:26:35
+------- converged at time : 0.5                        31-Mar-2023 10:26:35
+    number of iterations   : 3                         31-Mar-2023 10:26:35
+    number of reformations : 3                         31-Mar-2023 10:26:35
+------- converged at time : 0.6                        31-Mar-2023 10:26:35
+    number of iterations   : 3                         31-Mar-2023 10:26:35
+    number of reformations : 3                         31-Mar-2023 10:26:35
+------- converged at time : 0.7                        31-Mar-2023 10:26:35
+    number of iterations   : 3                         31-Mar-2023 10:26:35
+    number of reformations : 3                         31-Mar-2023 10:26:35
+------- converged at time : 0.8                        31-Mar-2023 10:26:35
+    number of iterations   : 3                         31-Mar-2023 10:26:35
+    number of reformations : 3                         31-Mar-2023 10:26:35
+------- converged at time : 0.9                        31-Mar-2023 10:26:35
+    number of iterations   : 3                         31-Mar-2023 10:26:35
+    number of reformations : 3                         31-Mar-2023 10:26:35
+------- converged at time : 1                          31-Mar-2023 10:26:35
+ Elapsed time : 0:00:00                                31-Mar-2023 10:26:35
  N O R M A L   T E R M I N A T I O N
-# Done                                                 30-Mar-2023 08:51:52
+# Done                                                 31-Mar-2023 10:26:35
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 </pre><h2 id="14">Import FEBio results</h2><pre class="codeinput"><span class="keyword">if</span> runFlag==1 <span class="comment">%i.e. a succesful run</span>
 </pre><pre class="codeinput">    <span class="comment">% Importing nodal displacements from a log file</span>
@@ -405,7 +422,7 @@ FEBio path: /home/kevin/FEBioStudio2/bin/febio4
     <span class="keyword">end</span>
     anim8(hf,animStruct); <span class="comment">%Initiate animation feature</span>
     drawnow;
-</pre><img width="100%" height="auto" vspace="5" hspace="5" src="DEMO_febio_0001_cube_uniaxial_03.jpg" alt=""> <p>Importing element stress from a log file</p><pre class="codeinput">    dataStruct=importFEBio_logfile(fullfile(savePath,febioLogFileName_stress),1,1);
+</pre><img width="100%" height="auto" vspace="5" hspace="5" src="DEMO_febio_0083_cube_uniaxial_HGO_03.jpg" alt=""> <p>Importing element stress from a log file</p><pre class="codeinput">    dataStruct=importFEBio_logfile(fullfile(savePath,febioLogFileName_stress),1,1);
 
     <span class="comment">%Access data</span>
     E_stress_mat=dataStruct.data;
@@ -442,7 +459,7 @@ FEBio path: /home/kevin/FEBioStudio2/bin/febio4
     <span class="keyword">end</span>
     anim8(hf,animStruct); <span class="comment">%Initiate animation feature</span>
     drawnow;
-</pre><img width="100%" height="auto" vspace="5" hspace="5" src="DEMO_febio_0001_cube_uniaxial_04.jpg" alt=""> <p>Calculate metrics to visualize stretch-stress curve</p><pre class="codeinput">    DZ_set=N_disp_mat(bcPrescribeList,end,:); <span class="comment">%Z displacements of the prescribed set</span>
+</pre><img width="100%" height="auto" vspace="5" hspace="5" src="DEMO_febio_0083_cube_uniaxial_HGO_04.jpg" alt=""> <p>Calculate metrics to visualize stretch-stress curve</p><pre class="codeinput">    DZ_set=N_disp_mat(bcPrescribeList,end,:); <span class="comment">%Z displacements of the prescribed set</span>
     DZ_set=mean(DZ_set,1); <span class="comment">%Calculate mean Z displacements across nodes</span>
     stretch_sim=(DZ_set(:)+sampleHeight)./sampleHeight; <span class="comment">%Derive stretch</span>
     stress_cauchy_sim=mean(squeeze(E_stress_mat(:,end,:)),1)';
@@ -456,7 +473,7 @@ FEBio path: /home/kevin/FEBioStudio2/bin/febio4
     view(2); axis <span class="string">tight</span>;  grid <span class="string">on</span>; axis <span class="string">square</span>; box <span class="string">on</span>;
     set(gca,<span class="string">'FontSize'</span>,fontSize);
     drawnow;
-</pre><img width="100%" height="auto" vspace="5" hspace="5" src="DEMO_febio_0001_cube_uniaxial_05.jpg" alt=""> <p>Importing element principal stresses from a log file</p><pre class="codeinput">    dataStruct=importFEBio_logfile(fullfile(savePath,febioLogFileName_stress_prin),1,1);
+</pre><img width="100%" height="auto" vspace="5" hspace="5" src="DEMO_febio_0083_cube_uniaxial_HGO_05.jpg" alt=""> <p>Importing element principal stresses from a log file</p><pre class="codeinput">    dataStruct=importFEBio_logfile(fullfile(savePath,febioLogFileName_stress_prin),1,1);
 
     <span class="comment">%Access data</span>
     E_stress_prin_mat=dataStruct.data;
@@ -473,7 +490,7 @@ FEBio path: /home/kevin/FEBioStudio2/bin/febio4
     view(2); axis <span class="string">tight</span>;  grid <span class="string">on</span>; axis <span class="string">square</span>; box <span class="string">on</span>;
     set(gca,<span class="string">'FontSize'</span>,fontSize);
     drawnow;
-</pre><img width="100%" height="auto" vspace="5" hspace="5" src="DEMO_febio_0001_cube_uniaxial_06.jpg" alt=""> <p>Importing nodal forces from a log file</p><pre class="codeinput">    [dataStruct]=importFEBio_logfile(fullfile(savePath,febioLogFileName_force),1,1); <span class="comment">%Nodal forces</span>
+</pre><img width="100%" height="auto" vspace="5" hspace="5" src="DEMO_febio_0083_cube_uniaxial_HGO_06.jpg" alt=""> <p>Importing nodal forces from a log file</p><pre class="codeinput">    [dataStruct]=importFEBio_logfile(fullfile(savePath,febioLogFileName_force),1,1); <span class="comment">%Nodal forces</span>
 
     <span class="comment">%Access data</span>
     timeVec=dataStruct.time;
@@ -490,10 +507,10 @@ FEBio path: /home/kevin/FEBioStudio2/bin/febio4
     grid <span class="string">on</span>; box <span class="string">on</span>; axis <span class="string">square</span>; axis <span class="string">tight</span>;
     set(gca,<span class="string">'FontSize'</span>,fontSize);
     drawnow;
-</pre><img width="100%" height="auto" vspace="5" hspace="5" src="DEMO_febio_0001_cube_uniaxial_07.jpg" alt=""> <pre class="codeinput"><span class="keyword">end</span>
+</pre><img width="100%" height="auto" vspace="5" hspace="5" src="DEMO_febio_0083_cube_uniaxial_HGO_07.jpg" alt=""> <pre class="codeinput"><span class="keyword">end</span>
 </pre><p><img vspace="5" hspace="5" src="gibbVerySmall.gif" alt=""> </p><p><i><b>GIBBON</b></i> <a href="www.gibboncode.org">www.gibboncode.org</a></p><p><i>Kevin Mattheus Moerman</i>, <a href="gibbon.toolbox@gmail.com">gibbon.toolbox@gmail.com</a></p><p><i><b>GIBBON footer text</b></i></p><p>License: <a href="https://github.com/gibbonCode/GIBBON/blob/master/LICENSE">https://github.com/gibbonCode/GIBBON/blob/master/LICENSE</a></p><p>GIBBON: The Geometry and Image-based Bioengineering add-On. A toolbox for image segmentation, image-based modeling, meshing, and finite element analysis.</p><p>Copyright (C) 2006-2022 Kevin Mattheus Moerman and the GIBBON contributors</p><p>This program is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.</p><p>This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for more details.</p><p>You should have received a copy of the GNU General Public License along with this program.  If not, see <a href="http://www.gnu.org/licenses/">http://www.gnu.org/licenses/</a>.</p><p class="footer"><br><a href="https://www.mathworks.com/products/matlab/">Published with MATLAB&reg; R2022b</a><br></p></div><!--
 ##### SOURCE BEGIN #####
-%% DEMO_febio_0001_cube_uniaxial
+%% DEMO_febio_0083_cube_uniaxial_HGO
 % Below is a demonstration for:
 % 
 % * Building geometry for a cube with hexahedral elements
@@ -512,7 +529,7 @@ FEBio path: /home/kevin/FEBioStudio2/bin/febio4
 % * hexahedral elements, hex8
 % * cube, box, rectangular
 % * static, solid
-% * hyperelastic, Ogden
+% * hyperelastic, HGO
 % * displacement logfile
 % * stress logfile
 
@@ -565,8 +582,7 @@ end
 displacementMagnitude=(stretchLoad*sampleHeight)-sampleHeight; %The displacement magnitude
 
 %Material parameter set
-E_youngs1=0.1; %Material Young's modulus
-nu1=0.4; %Material Poisson's ratio
+materialType='coupled';
 
 % FEA control settings
 numTimeSteps=10; %Number of time steps desired
@@ -687,11 +703,29 @@ febio_spec.Control.time_stepper.opt_iter=opt_iter;
 
 %Material section
 materialName1='Material1';
-febio_spec.Material.material{1}.ATTR.name=materialName1;
-febio_spec.Material.material{1}.ATTR.type='neo-Hookean';
-febio_spec.Material.material{1}.ATTR.id=1;
-febio_spec.Material.material{1}.E=E_youngs1;
-febio_spec.Material.material{1}.v=nu1;
+switch materialType
+    case 'coupled'
+        febio_spec.Material.material{1}.ATTR.name=materialName1;
+        febio_spec.Material.material{1}.ATTR.type='HGO unconstrained';
+        febio_spec.Material.material{1}.ATTR.id=1;
+        febio_spec.Material.material{1}.c=7.64;
+        febio_spec.Material.material{1}.k1=996.6;
+        febio_spec.Material.material{1}.k2=524.6;
+        febio_spec.Material.material{1}.gamma=49.98;
+        febio_spec.Material.material{1}.kappa=0.226;
+        febio_spec.Material.material{1}.k=7.64e3;
+    case 'uncoupled'
+        materialName1='Material1';
+        febio_spec.Material.material{1}.ATTR.name=materialName1;
+        febio_spec.Material.material{1}.ATTR.type='Holzapfel-Gasser-Ogden';
+        febio_spec.Material.material{1}.ATTR.id=1;
+        febio_spec.Material.material{1}.c=7.64;
+        febio_spec.Material.material{1}.k1=996.6;
+        febio_spec.Material.material{1}.k2=524.6;
+        febio_spec.Material.material{1}.gamma=49.98;
+        febio_spec.Material.material{1}.kappa=0.226;
+        febio_spec.Material.material{1}.k=1e5;
+end
 
 % Mesh section
 % -> Nodes
