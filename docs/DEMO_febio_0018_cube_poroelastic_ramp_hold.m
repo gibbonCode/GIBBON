@@ -299,16 +299,16 @@ nodeSetName3='bcSupportList_Z';
 nodeSetName4='bcPrescribeList';
 
 febio_spec.Mesh.NodeSet{1}.ATTR.name=nodeSetName1;
-febio_spec.Mesh.NodeSet{1}.VAL=bcSupportList_X(:)';
+febio_spec.Mesh.NodeSet{1}.VAL=mrow(bcSupportList_X);
 
 febio_spec.Mesh.NodeSet{2}.ATTR.name=nodeSetName2;
-febio_spec.Mesh.NodeSet{2}.VAL=bcSupportList_Y(:)';
+febio_spec.Mesh.NodeSet{2}.VAL=mrow(bcSupportList_Y);
 
 febio_spec.Mesh.NodeSet{3}.ATTR.name=nodeSetName3;
-febio_spec.Mesh.NodeSet{3}.VAL=bcSupportList_Z(:)';
+febio_spec.Mesh.NodeSet{3}.VAL=mrow(bcSupportList_Z);
  
 febio_spec.Mesh.NodeSet{4}.ATTR.name=nodeSetName4;
-febio_spec.Mesh.NodeSet{4}.VAL=bcPrescribeList(:)';
+febio_spec.Mesh.NodeSet{4}.VAL=mrow(bcPrescribeList);
  
 %MeshDomains section
 febio_spec.MeshDomains.SolidDomain.ATTR.name=partName1;
@@ -364,12 +364,10 @@ febio_spec.Output.logfile.ATTR.file=febioLogFileName;
 febio_spec.Output.logfile.node_data{1}.ATTR.file=febioLogFileName_disp;
 febio_spec.Output.logfile.node_data{1}.ATTR.data='ux;uy;uz';
 febio_spec.Output.logfile.node_data{1}.ATTR.delim=',';
-febio_spec.Output.logfile.node_data{1}.VAL=1:size(V,1);
 
 febio_spec.Output.logfile.element_data{1}.ATTR.file=febioLogFileName_stress;
 febio_spec.Output.logfile.element_data{1}.ATTR.data='sz';
 febio_spec.Output.logfile.element_data{1}.ATTR.delim=',';
-febio_spec.Output.logfile.element_data{1}.VAL=1:size(E,1);
 
 febio_spec.Output.plotfile.compression=0;
 %% Quick viewing of the FEBio input file structure

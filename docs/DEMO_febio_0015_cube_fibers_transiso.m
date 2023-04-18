@@ -101,6 +101,8 @@ max_retries=5; %Maximum number of retires
 dtmin=(1/numTimeSteps)/100; %Minimum time step size
 dtmax=1/numTimeSteps; %Maximum time step size
 
+runMode='external'; % 'internal' or 'external'
+
 %% Creating model geometry and mesh
 % A box is created with tri-linear hexahedral (hex8) elements using the
 % |hexMeshBox| function. The function offers the boundary faces with
@@ -249,9 +251,8 @@ switch fiberType
         febio_spec.Material.material{1}.solid{2}.ksi=ksi;
         febio_spec.Material.material{1}.solid{2}.alpha=alphaPar;
         febio_spec.Material.material{1}.solid{2}.beta=beta;      
-        %febio_spec.Material.material{1}.solid{2}.mat_axis.ATTR.type='user';
-        %febio_spec.Material.material{1}.solid{2}.fiber.ATTR.type='user';
-        %febio_spec.Material.material{4}.generation{2}.solid{1}.fiber.VAL='fiber_map';
+        febio_spec.Material.material{1}.solid{2}.fiber.ATTR.type='vector';
+        febio_spec.Material.material{1}.solid{2}.fiber.VAL=[1 0 0];
     case 2
         febio_spec.Material.material{1}.solid{2}.ATTR.type='ellipsoidal fiber distribution';
         febio_spec.Material.material{1}.solid{2}.ksi=ksi;
@@ -278,16 +279,16 @@ nodeSetName3='bcSupportList_Z';
 nodeSetName4='bcPrescribeList';
 
 febio_spec.Mesh.NodeSet{1}.ATTR.name=nodeSetName1;
-febio_spec.Mesh.NodeSet{1}.VAL=bcSupportList_X(:)';
+febio_spec.Mesh.NodeSet{1}.VAL=mrow(bcSupportList_X);
 
 febio_spec.Mesh.NodeSet{2}.ATTR.name=nodeSetName2;
-febio_spec.Mesh.NodeSet{2}.VAL=bcSupportList_Y(:)';
+febio_spec.Mesh.NodeSet{2}.VAL=mrow(bcSupportList_Y);
 
 febio_spec.Mesh.NodeSet{3}.ATTR.name=nodeSetName3;
-febio_spec.Mesh.NodeSet{3}.VAL=bcSupportList_Z(:)';
+febio_spec.Mesh.NodeSet{3}.VAL=mrow(bcSupportList_Z);
  
 febio_spec.Mesh.NodeSet{4}.ATTR.name=nodeSetName4;
-febio_spec.Mesh.NodeSet{4}.VAL=bcPrescribeList(:)';
+febio_spec.Mesh.NodeSet{4}.VAL=mrow(bcPrescribeList);
  
 %MeshDomains section
 febio_spec.MeshDomains.SolidDomain.ATTR.name=partName1;
@@ -351,14 +352,13 @@ febio_spec.Output.logfile.ATTR.file=febioLogFileName;
 febio_spec.Output.logfile.node_data{1}.ATTR.file=febioLogFileName_disp;
 febio_spec.Output.logfile.node_data{1}.ATTR.data='ux;uy;uz';
 febio_spec.Output.logfile.node_data{1}.ATTR.delim=',';
-febio_spec.Output.logfile.node_data{1}.VAL=1:size(V,1);
 
 febio_spec.Output.logfile.element_data{1}.ATTR.file=febioLogFileName_stress;
 febio_spec.Output.logfile.element_data{1}.ATTR.data='s1';
 febio_spec.Output.logfile.element_data{1}.ATTR.delim=',';
-febio_spec.Output.logfile.element_data{1}.VAL=1:size(E,1);
 
 febio_spec.Output.plotfile.compression=0;
+
 %% Quick viewing of the FEBio input file structure
 % The |febView| function can be used to view the xml structure in a MATLAB
 % figure window. 
