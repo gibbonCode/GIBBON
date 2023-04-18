@@ -9,7 +9,7 @@
 
 %% Keywords
 %
-% * febio_spec version 3.0
+% * febio_spec version 4.0
 % * febio, FEBio 
 % * compression, tension, compressive, tensile
 % * displacement control, displacement boundary condition
@@ -82,6 +82,8 @@ opt_iter=6; %Optimum number of iterations
 max_retries=5; %Maximum number of retires
 dtmin=(1/numTimeSteps)/100; %Minimum time step size
 dtmax=1/numTimeSteps; %Maximum time step size
+
+runMode='external';% 'internal' or 'external'
 
 %% Creating model geometry and mesh
 % A box is created with tri-linear hexahedral (hex8) elements using the
@@ -180,7 +182,7 @@ drawnow;
 [febio_spec]=febioStructTemplate;
 
 %febio_spec version 
-febio_spec.ATTR.version='3.0'; 
+febio_spec.ATTR.version='4.0'; 
 
 %Module section
 febio_spec.Module.ATTR.type='solid'; 
@@ -190,7 +192,6 @@ stepStruct.Control.analysis='STATIC';
 stepStruct.Control.time_steps=numTimeSteps;
 stepStruct.Control.step_size=1/numTimeSteps;
 stepStruct.Control.solver.max_refs=max_refs;
-stepStruct.Control.solver.max_ups=max_ups;
 stepStruct.Control.time_stepper.dtmin=dtmin;
 stepStruct.Control.time_stepper.dtmax=dtmax; 
 stepStruct.Control.time_stepper.max_retries=max_retries;
@@ -263,11 +264,11 @@ febio_spec.Mesh.Elements{2}.elem.VAL=E(elementMaterialID==2,:);
 % -> NodeSets
 nodeSetName1='bcSupportList';
 febio_spec.Mesh.NodeSet{1}.ATTR.name=nodeSetName1;
-febio_spec.Mesh.NodeSet{1}.node.ATTR.id=bcSupportList(:);
+febio_spec.Mesh.NodeSet{1}.VAL=bcSupportList(:)';
 
 nodeSetName2='bcPrescribeList';
 febio_spec.Mesh.NodeSet{2}.ATTR.name=nodeSetName2;
-febio_spec.Mesh.NodeSet{2}.node.ATTR.id=bcPrescribeList(:);
+febio_spec.Mesh.NodeSet{2}.VAL=bcPrescribeList(:)';
 
 %MeshDomains section
 febio_spec.MeshDomains.SolidDomain{1}.ATTR.name=partName1;
@@ -278,45 +279,60 @@ febio_spec.MeshDomains.SolidDomain{2}.ATTR.mat=materialName2;
 
 %Boundary condition section 
 % -> Fix boundary conditions
-febio_spec.Boundary.bc{1}.ATTR.type='fix';
+febio_spec.Boundary.bc{1}.ATTR.name='FixedDisplacement01';
+febio_spec.Boundary.bc{1}.ATTR.type='zero displacement';
 febio_spec.Boundary.bc{1}.ATTR.node_set=nodeSetName1;
-febio_spec.Boundary.bc{1}.dofs='x,y,z';
+febio_spec.Boundary.bc{1}.x_dof=1;
+febio_spec.Boundary.bc{1}.y_dof=1;
+febio_spec.Boundary.bc{1}.z_dof=1;
 
 %STEP 1 Tension
-febio_spec.Step.step{1}.Boundary.bc{1}.ATTR.type='prescribe';
+febio_spec.Step.step{1}.Boundary.bc{1}.ATTR.name='bcPrescribeList01';
+febio_spec.Step.step{1}.Boundary.bc{1}.ATTR.type='prescribed displacement';
 febio_spec.Step.step{1}.Boundary.bc{1}.ATTR.node_set=nodeSetName2;
 febio_spec.Step.step{1}.Boundary.bc{1}.dof='z';
-febio_spec.Step.step{1}.Boundary.bc{1}.scale.ATTR.lc=1;
-febio_spec.Step.step{1}.Boundary.bc{1}.scale.VAL=displacementMagnitude;
+febio_spec.Step.step{1}.Boundary.bc{1}.value.ATTR.lc=1;
+febio_spec.Step.step{1}.Boundary.bc{1}.value.VAL=displacementMagnitude;
 febio_spec.Step.step{1}.Boundary.bc{1}.relative=1;
 
-febio_spec.Step.step{1}.Boundary.bc{2}.ATTR.type='fix';
+febio_spec.Step.step{1}.Boundary.bc{2}.ATTR.name='FixedDisplacement02';
+febio_spec.Step.step{1}.Boundary.bc{2}.ATTR.type='zero displacement';
 febio_spec.Step.step{1}.Boundary.bc{2}.ATTR.node_set=nodeSetName2;
-febio_spec.Step.step{1}.Boundary.bc{2}.dofs='x,y';
+febio_spec.Step.step{1}.Boundary.bc{2}.x_dof=1;
+febio_spec.Step.step{1}.Boundary.bc{2}.y_dof=1;
+febio_spec.Step.step{1}.Boundary.bc{2}.z_dof=0;
 
 %STEP 2 Return form tension
-febio_spec.Step.step{2}.Boundary.bc{1}.ATTR.type='prescribe';
+febio_spec.Step.step{2}.Boundary.bc{1}.ATTR.name='bcPrescribeList02';
+febio_spec.Step.step{2}.Boundary.bc{1}.ATTR.type='prescribed displacement';
 febio_spec.Step.step{2}.Boundary.bc{1}.ATTR.node_set=nodeSetName2;
 febio_spec.Step.step{2}.Boundary.bc{1}.dof='z';
-febio_spec.Step.step{2}.Boundary.bc{1}.scale.ATTR.lc=2;
-febio_spec.Step.step{2}.Boundary.bc{1}.scale.VAL=-displacementMagnitude;
+febio_spec.Step.step{2}.Boundary.bc{1}.value.ATTR.lc=2;
+febio_spec.Step.step{2}.Boundary.bc{1}.value.VAL=-displacementMagnitude;
 febio_spec.Step.step{2}.Boundary.bc{1}.relative=1;
 
-febio_spec.Step.step{2}.Boundary.bc{2}.ATTR.type='fix';
+febio_spec.Step.step{2}.Boundary.bc{2}.ATTR.name='FixedDisplacement03';
+febio_spec.Step.step{2}.Boundary.bc{2}.ATTR.type='zero displacement';
 febio_spec.Step.step{2}.Boundary.bc{2}.ATTR.node_set=nodeSetName2;
-febio_spec.Step.step{2}.Boundary.bc{2}.dofs='x,y';
+febio_spec.Step.step{2}.Boundary.bc{2}.x_dof=1;
+febio_spec.Step.step{2}.Boundary.bc{2}.y_dof=1;
+febio_spec.Step.step{2}.Boundary.bc{2}.z_dof=0;
 
 %LoadData section
 % -> load_controller
+febio_spec.LoadData.load_controller{1}.ATTR.name='LC1';
 febio_spec.LoadData.load_controller{1}.ATTR.id=1;
 febio_spec.LoadData.load_controller{1}.ATTR.type='loadcurve';
 febio_spec.LoadData.load_controller{1}.interpolate='LINEAR';
-febio_spec.LoadData.load_controller{1}.points.point.VAL=[0 0; 1 1];
+febio_spec.LoadData.load_controller{1}.extend='CONSTANT';
+febio_spec.LoadData.load_controller{1}.points.pt.VAL=[0 0; 1 1];
 
+febio_spec.LoadData.load_controller{2}.ATTR.name='LC2';
 febio_spec.LoadData.load_controller{2}.ATTR.id=2;
 febio_spec.LoadData.load_controller{2}.ATTR.type='loadcurve';
 febio_spec.LoadData.load_controller{2}.interpolate='LINEAR';
-febio_spec.LoadData.load_controller{2}.points.point.VAL=[1 0; 2 1];
+febio_spec.LoadData.load_controller{2}.extend='CONSTANT';
+febio_spec.LoadData.load_controller{2}.points.pt.VAL=[1 0; 2 1];
 
 %Output section 
 % -> log file
@@ -324,12 +340,12 @@ febio_spec.Output.logfile.ATTR.file=febioLogFileName;
 febio_spec.Output.logfile.node_data{1}.ATTR.file=febioLogFileName_disp;
 febio_spec.Output.logfile.node_data{1}.ATTR.data='ux;uy;uz';
 febio_spec.Output.logfile.node_data{1}.ATTR.delim=',';
-febio_spec.Output.logfile.node_data{1}.VAL=1:size(V,1);
 
 febio_spec.Output.logfile.element_data{1}.ATTR.file=febioLogFileName_strainEnergy;
 febio_spec.Output.logfile.element_data{1}.ATTR.data='sed';
 febio_spec.Output.logfile.element_data{1}.ATTR.delim=',';
-febio_spec.Output.logfile.element_data{1}.VAL=1:size(E,1);
+
+febio_spec.Output.plotfile.compression=0;
 
 %% Quick viewing of the FEBio input file structure
 % The |febView| function can be used to view the xml structure in a MATLAB
@@ -354,7 +370,7 @@ febioStruct2xml(febio_spec,febioFebFileName); %Exporting to file and domNode
 febioAnalysis.run_filename=febioFebFileName; %The input file name
 febioAnalysis.run_logname=febioLogFileName; %The name for the log file
 febioAnalysis.disp_on=1; %Display information on the command window
-febioAnalysis.runMode='external';%'internal';
+febioAnalysis.runMode=runMode;
 
 [runFlag]=runMonitorFEBio(febioAnalysis);%START FEBio NOW!!!!!!!!
 

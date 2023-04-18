@@ -303,7 +303,7 @@ febio_spec.Mesh.SurfacePair{1}.secondary=surfaceName2;
 
 %Boundary condition section 
 % -> Fix boundary conditions
-febio_spec.Boundary.bc{1}.ATTR.name='zero_displacement_x';
+febio_spec.Boundary.bc{1}.ATTR.name='zero_displacement_xyz';
 febio_spec.Boundary.bc{1}.ATTR.type='zero displacement';
 febio_spec.Boundary.bc{1}.ATTR.node_set=nodeSetName1;
 febio_spec.Boundary.bc{1}.x_dof=1;

@@ -303,7 +303,7 @@ if runFlag==1 %i.e. a succesful run
     colormap(gjet(250)); colorbar;
     caxis([0 max(DN_magnitude)]);    
     axis(axisLim(V_DEF)); %Set axis limits statically
-        camlight headlight;        
+    camlight headlight;        
         
     % Set up animation features
     animStruct.Time=timeVec; %The time vector    
