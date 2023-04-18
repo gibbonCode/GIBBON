@@ -6,7 +6,7 @@
    <!--
 This HTML was auto-generated from MATLAB code.
 To make changes, update the MATLAB code and republish this document.
-      --><title>DEMO_febio_0013_disc_pressure_varying</title><meta name="generator" content="MATLAB 9.9"><link rel="schema.DC" href="http://purl.org/dc/elements/1.1/"><meta name="DC.date" content="2020-12-17"><meta name="DC.source" content="DEMO_febio_0013_disc_pressure_varying.m"><style type="text/css">
+      --><title>DEMO_febio_0013_disc_pressure_varying</title><meta name="generator" content="MATLAB 9.13"><link rel="schema.DC" href="http://purl.org/dc/elements/1.1/"><meta name="DC.date" content="2023-04-18"><meta name="DC.source" content="DEMO_febio_0013_disc_pressure_varying.m"><style type="text/css">
 html,body,div,span,applet,object,iframe,h1,h2,h3,h4,h5,h6,p,blockquote,pre,a,abbr,acronym,address,big,cite,code,del,dfn,em,font,img,ins,kbd,q,s,samp,small,strike,strong,tt,var,b,u,i,center,dl,dt,dd,ol,ul,li,fieldset,form,label,legend,table,caption,tbody,tfoot,thead,tr,th,td{margin:0;padding:0;border:0;outline:0;font-size:100%;vertical-align:baseline;background:transparent}body{line-height:1}ol,ul{list-style:none}blockquote,q{quotes:none}blockquote:before,blockquote:after,q:before,q:after{content:'';content:none}:focus{outine:0}ins{text-decoration:none}del{text-decoration:line-through}table{border-collapse:collapse;border-spacing:0}
 
 html { min-height:100%; margin-bottom:1px; }
@@ -67,7 +67,7 @@ table td { padding:7px 5px; text-align:left; vertical-align:top; border:1px soli
 
 
 
-  </style></head><body><div class="content"><h1>DEMO_febio_0013_disc_pressure_varying</h1><!--introduction--><p>Below is a demonstration for:</p><div><ul><li>Building geometry for a thin disc with tetrahedral elements</li><li>Defining the boundary conditions</li><li>Coding the febio structure</li><li>Running the model</li><li>Importing and visualizing the displacement and stress results</li></ul></div><!--/introduction--><h2>Contents</h2><div><ul><li><a href="#1">Keywords</a></li><li><a href="#3">Plot settings</a></li><li><a href="#4">Control parameters</a></li><li><a href="#5">Creating model geometry and mesh</a></li><li><a href="#8">Defining the boundary conditions</a></li><li><a href="#10">Defining the FEBio input structure</a></li><li><a href="#11">Quick viewing of the FEBio input file structure</a></li><li><a href="#13">Exporting the FEBio input file</a></li><li><a href="#14">Running the FEBio analysis</a></li><li><a href="#15">Import FEBio results</a></li></ul></div><h2 id="1">Keywords</h2><div><ul><li>febio_spec version 3.0</li><li>febio, FEBio</li><li>pressure loading, spatially varying pressure, non-constant pressure</li><li>tetrahedral elements, hex4</li><li>tetgen</li><li>disc</li><li>static, solid</li><li>hyperelastic, Ogden</li><li>displacement logfile</li><li>stress logfile</li></ul></div><pre class="codeinput">clear; close <span class="string">all</span>; clc;
+  </style></head><body><div class="content"><h1>DEMO_febio_0013_disc_pressure_varying</h1><!--introduction--><p>Below is a demonstration for:</p><div><ul><li>Building geometry for a thin disc with tetrahedral elements</li><li>Defining the boundary conditions</li><li>Coding the febio structure</li><li>Running the model</li><li>Importing and visualizing the displacement and stress results</li></ul></div><!--/introduction--><h2>Contents</h2><div><ul><li><a href="#1">Keywords</a></li><li><a href="#3">Plot settings</a></li><li><a href="#4">Control parameters</a></li><li><a href="#5">Creating model geometry and mesh</a></li><li><a href="#8">Defining the boundary conditions</a></li><li><a href="#10">Defining the FEBio input structure</a></li><li><a href="#11">Quick viewing of the FEBio input file structure</a></li><li><a href="#13">Exporting the FEBio input file</a></li><li><a href="#14">Running the FEBio analysis</a></li><li><a href="#15">Import FEBio results</a></li></ul></div><h2 id="1">Keywords</h2><div><ul><li>febio_spec version 4.0</li><li>febio, FEBio</li><li>pressure loading, spatially varying pressure, non-constant pressure</li><li>tetrahedral elements, hex4</li><li>tetgen</li><li>disc</li><li>static, solid</li><li>hyperelastic, Ogden</li><li>displacement logfile</li><li>stress logfile</li></ul></div><pre class="codeinput">clear; close <span class="string">all</span>; clc;
 </pre><h2 id="3">Plot settings</h2><pre class="codeinput">fontSize=20;
 faceAlpha1=0.8;
 markerSize=25;
@@ -121,6 +121,8 @@ opt_iter=6; <span class="comment">%Optimum number of iterations</span>
 max_retries=5; <span class="comment">%Maximum number of retires</span>
 dtmin=(1/numTimeSteps)/100; <span class="comment">%Minimum time step size</span>
 dtmax=1/numTimeSteps; <span class="comment">%Maximum time step size</span>
+
+runMode=<span class="string">'external'</span>;<span class="comment">% 'internal' or 'external'</span>
 </pre><h2 id="5">Creating model geometry and mesh</h2><p>The disc is meshed using tetrahedral elements using tetgen</p><pre class="codeinput">inputStruct.stringOpt=<span class="string">'-pq1.2AaY'</span>;
 inputStruct.Faces=Fs;
 inputStruct.Nodes=Vs;
@@ -132,62 +134,66 @@ inputStruct.minRegionMarker=2; <span class="comment">%Minimum region marker</spa
 [meshStruct]=runTetGen(inputStruct); <span class="comment">% Mesh model using tetrahedral elements using tetGen</span>
 </pre><pre class="codeoutput"> 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
---- TETGEN Tetrahedral meshing --- 17-Dec-2020 09:18:23
+--- TETGEN Tetrahedral meshing --- 18-Apr-2023 12:50:05
  
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
---- Writing SMESH file --- 17-Dec-2020 09:18:23
+--- Writing SMESH file --- 18-Apr-2023 12:50:05
 ----&gt; Adding node field
 ----&gt; Adding facet field
 ----&gt; Adding holes specification
 ----&gt; Adding region specification
---- Done --- 17-Dec-2020 09:18:24
---- Running TetGen to mesh input boundary--- 17-Dec-2020 09:18:24
+--- Done --- 18-Apr-2023 12:50:05
+--- Running TetGen to mesh input boundary--- 18-Apr-2023 12:50:05
 Opening /mnt/data/MATLAB/GIBBON/data/temp/temp.smesh.
 Delaunizing vertices...
-Delaunay seconds:  0.036107
+Delaunay seconds:  0.034066
 Creating surface mesh ...
-Surface mesh seconds:  0.005518
+Surface mesh seconds:  0.002672
 Recovering boundaries...
-Boundary recovery seconds:  0.006707
+Boundary recovery seconds:  0.006347
 Removing exterior tetrahedra ...
 Spreading region attributes.
-Exterior tets removal seconds:  0.000927
+Exterior tets removal seconds:  0.00086
 Recovering Delaunayness...
-Delaunay recovery seconds:  0.015794
+Delaunay recovery seconds:  0.015595
 Refining mesh...
-Refinement seconds:  0.030617
-Optimizing mesh...
-Optimization seconds:  0.002009
+  2442 insertions, added 1067 points, 174 tetrahedra in queue.
+  813 insertions, added 37 points, 0 tetrahedra in queue.
+Refinement seconds:  0.03835
+Smoothing vertices...
+Mesh smoothing seconds:  0.037377
+Improving mesh...
+Mesh improvement seconds:  0.00265
 
 Writing /mnt/data/MATLAB/GIBBON/data/temp/temp.1.node.
 Writing /mnt/data/MATLAB/GIBBON/data/temp/temp.1.ele.
 Writing /mnt/data/MATLAB/GIBBON/data/temp/temp.1.face.
 Writing /mnt/data/MATLAB/GIBBON/data/temp/temp.1.edge.
 
-Output seconds:  0.034257
-Total running seconds:  0.132102
+Output seconds:  0.028837
+Total running seconds:  0.16693
 
 Statistics:
 
-  Input points: 1830
-  Input facets: 3656
-  Input segments: 5484
+  Input points: 1832
+  Input facets: 3660
+  Input segments: 5490
   Input holes: 0
   Input regions: 1
 
-  Mesh points: 2880
-  Mesh tetrahedra: 11774
-  Mesh faces: 25376
-  Mesh faces on exterior boundary: 3656
-  Mesh faces on input facets: 3656
-  Mesh edges on input segments: 5484
-  Steiner points inside domain: 1050
+  Mesh points: 2936
+  Mesh tetrahedra: 11933
+  Mesh faces: 25696
+  Mesh faces on exterior boundary: 3660
+  Mesh faces on input facets: 3660
+  Mesh edges on input segments: 5490
+  Steiner points inside domain: 1104
 
---- Done --- 17-Dec-2020 09:18:24
+--- Done --- 18-Apr-2023 12:50:05
  
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
---- Importing TetGen files --- 17-Dec-2020 09:18:24
---- Done --- 17-Dec-2020 09:18:24
+--- Importing TetGen files --- 18-Apr-2023 12:50:05
+--- Done --- 18-Apr-2023 12:50:05
 </pre><p>Access model element and patch data</p><pre class="codeinput">Fb=meshStruct.facesBoundary;
 Cb=meshStruct.boundaryMarker;
 V=meshStruct.nodes;
@@ -238,7 +244,7 @@ drawnow;
 [febio_spec]=febioStructTemplate;
 
 <span class="comment">%febio_spec version</span>
-febio_spec.ATTR.version=<span class="string">'3.0'</span>;
+febio_spec.ATTR.version=<span class="string">'4.0'</span>;
 
 <span class="comment">%Module section</span>
 febio_spec.Module.ATTR.type=<span class="string">'solid'</span>;
@@ -248,7 +254,7 @@ febio_spec.Control.analysis=<span class="string">'STATIC'</span>;
 febio_spec.Control.time_steps=numTimeSteps;
 febio_spec.Control.step_size=1/numTimeSteps;
 febio_spec.Control.solver.max_refs=max_refs;
-febio_spec.Control.solver.max_ups=max_ups;
+febio_spec.Control.solver.qn_method.max_ups=max_ups;
 febio_spec.Control.time_stepper.dtmin=dtmin;
 febio_spec.Control.time_stepper.dtmax=dtmax;
 febio_spec.Control.time_stepper.max_retries=max_retries;
@@ -287,7 +293,7 @@ febio_spec.Mesh.Surface{1}.tri3.VAL=F_pressure;
 <span class="comment">% -&gt; NodeSets</span>
 nodeSetName1=<span class="string">'bcSupportList'</span>;
 febio_spec.Mesh.NodeSet{1}.ATTR.name=nodeSetName1;
-febio_spec.Mesh.NodeSet{1}.node.ATTR.id=bcSupportList(:);
+febio_spec.Mesh.NodeSet{1}.VAL=mrow(bcSupportList);
 
 <span class="comment">%MeshDomains section</span>
 febio_spec.MeshDomains.SolidDomain.ATTR.name=partName1;
@@ -295,9 +301,12 @@ febio_spec.MeshDomains.SolidDomain.ATTR.mat=materialName1;
 
 <span class="comment">%Boundary condition section</span>
 <span class="comment">% -&gt; Fix boundary conditions</span>
-febio_spec.Boundary.bc{1}.ATTR.type=<span class="string">'fix'</span>;
+febio_spec.Boundary.bc{1}.ATTR.name=<span class="string">'FixedDisplacement01'</span>;
+febio_spec.Boundary.bc{1}.ATTR.type=<span class="string">'zero displacement'</span>;
 febio_spec.Boundary.bc{1}.ATTR.node_set=nodeSetName1;
-febio_spec.Boundary.bc{1}.dofs=<span class="string">'x,y,z'</span>;
+febio_spec.Boundary.bc{1}.x_dof=1;
+febio_spec.Boundary.bc{1}.y_dof=1;
+febio_spec.Boundary.bc{1}.z_dof=1;
 
 <span class="comment">%MeshData secion</span>
 <span class="comment">%-&gt; Surface data</span>
@@ -337,10 +346,12 @@ loadDataName1=<span class="string">'LoadData1'</span>;
 
 <span class="comment">%LoadData section</span>
 <span class="comment">% -&gt; load_controller</span>
+febio_spec.LoadData.load_controller{1}.ATTR.name=<span class="string">'LC_1'</span>;
 febio_spec.LoadData.load_controller{1}.ATTR.id=1;
 febio_spec.LoadData.load_controller{1}.ATTR.type=<span class="string">'loadcurve'</span>;
 febio_spec.LoadData.load_controller{1}.interpolate=<span class="string">'LINEAR'</span>;
-febio_spec.LoadData.load_controller{1}.points.point.VAL=[0 0; 1 1];
+<span class="comment">%febio_spec.LoadData.load_controller{1}.extend='CONSTANT';</span>
+febio_spec.LoadData.load_controller{1}.points.pt.VAL=[0 0; 1 1];
 
 <span class="comment">%Output section</span>
 <span class="comment">% -&gt; log file</span>
@@ -348,912 +359,65 @@ febio_spec.Output.logfile.ATTR.file=febioLogFileName;
 febio_spec.Output.logfile.node_data{1}.ATTR.file=febioLogFileName_disp;
 febio_spec.Output.logfile.node_data{1}.ATTR.data=<span class="string">'ux;uy;uz'</span>;
 febio_spec.Output.logfile.node_data{1}.ATTR.delim=<span class="string">','</span>;
-febio_spec.Output.logfile.node_data{1}.VAL=1:size(V,1);
 
 febio_spec.Output.logfile.element_data{1}.ATTR.file=febioLogFileName_stress;
 febio_spec.Output.logfile.element_data{1}.ATTR.data=<span class="string">'s1'</span>;
 febio_spec.Output.logfile.element_data{1}.ATTR.delim=<span class="string">','</span>;
-febio_spec.Output.logfile.element_data{1}.VAL=1:size(E,1);
+
+febio_spec.Output.plotfile.compression=0;
 </pre><h2 id="11">Quick viewing of the FEBio input file structure</h2><p>The <tt>febView</tt> function can be used to view the xml structure in a MATLAB figure window.</p><p><tt>febView(febio_spec); %Viewing the febio file</tt></p><h2 id="13">Exporting the FEBio input file</h2><p>Exporting the febio_spec structure to an FEBio input file is done using the <tt>febioStruct2xml</tt> function.</p><pre class="codeinput">febioStruct2xml(febio_spec,febioFebFileName); <span class="comment">%Exporting to file and domNode</span>
 <span class="comment">% febView(febioFebFileName);</span>
 </pre><h2 id="14">Running the FEBio analysis</h2><p>To run the analysis defined by the created FEBio input file the <tt>runMonitorFEBio</tt> function is used. The input for this function is a structure defining job settings e.g. the FEBio input file name. The optional output runFlag informs the user if the analysis was run succesfully.</p><pre class="codeinput">febioAnalysis.run_filename=febioFebFileName; <span class="comment">%The input file name</span>
 febioAnalysis.run_logname=febioLogFileName; <span class="comment">%The name for the log file</span>
 febioAnalysis.disp_on=1; <span class="comment">%Display information on the command window</span>
-febioAnalysis.runMode=<span class="string">'internal'</span>;<span class="comment">%'internal';</span>
+febioAnalysis.runMode=runMode;
 
 [runFlag]=runMonitorFEBio(febioAnalysis);<span class="comment">%START FEBio NOW!!!!!!!!</span>
 </pre><pre class="codeoutput"> 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
---------&gt;    RUNNING/MONITORING FEBIO JOB    &lt;-------- 17-Dec-2020 09:18:29
-FEBio path: /home/kevin/FEBioStudio/bin/febio3
-# Attempt removal of existing log files                17-Dec-2020 09:18:29
- * Removal succesful                                   17-Dec-2020 09:18:29
-# Attempt removal of existing .xplt files              17-Dec-2020 09:18:29
- * Removal succesful                                   17-Dec-2020 09:18:29
-# Starting FEBio...                                    17-Dec-2020 09:18:29
+--------&gt;    RUNNING/MONITORING FEBIO JOB    &lt;-------- 18-Apr-2023 12:50:11
+FEBio path: /home/kevin/FEBioStudio2/bin/febio4
+# Attempt removal of existing log files                18-Apr-2023 12:50:11
+ * Removal succesful                                   18-Apr-2023 12:50:11
+# Attempt removal of existing .xplt files              18-Apr-2023 12:50:11
+ * Removal succesful                                   18-Apr-2023 12:50:11
+# Starting FEBio...                                    18-Apr-2023 12:50:11
   Max. total analysis time is: Inf s
-
-===========================================================================
-         ________    _________   _______       __     _________            
-        |        |\ |        |\ |       \\    |  |\  /         \\          
-        |    ____|| |    ____|| |    __  ||   |__|| |    ___    ||         
-        |   |\___\| |   |\___\| |   |\_| ||    \_\| |   //  \   ||         
-        |   ||__    |   ||__    |   ||_| ||   |  |\ |  ||    |  ||         
-        |       |\  |       |\  |         \\  |  || |  ||    |  ||         
-        |    ___||  |    ___||  |    ___   || |  || |  ||    |  ||         
-        |   |\__\|  |   |\__\|  |   |\__|  || |  || |  ||    |  ||         
-        |   ||      |   ||___   |   ||__|  || |  || |   \\__/   ||         
-        |   ||      |        |\ |          || |  || |           ||         
-        |___||      |________|| |_________//  |__||  \_________//          
-                                                                           
-      F I N I T E   E L E M E N T S   F O R   B I O M E C H A N I C S      
-                                                                           
-  version 3.1.0
-  FEBio is a registered trademark.                                         
-  copyright (c) 2006-2020 - All rights reserved                            
-                                                                           
-===========================================================================
-
-Default linear solver: pardiso
-Reading file /mnt/data/MATLAB/GIBBON/data/temp/tempModel.feb ...SUCCESS!
-
-Setting parameter "pressure" to : 0
-
- ]0;(0%) tempModel.feb - FEBio 3.1.0  
-===== beginning time step 1 : 0.1 =====
-
-Setting parameter "pressure" to : 0.1
-
-Reforming stiffness matrix: reformation #1
-
-===== reforming stiffness matrix:
-	Nr of equations ........................... : 7794
-	Nr of nonzeroes in stiffness matrix ....... : 148887
- 1
- Nonlinear solution status: time= 0.1
-	stiffness updates             = 0
-	right hand side evaluations   = 3
-	stiffness matrix reformations = 1
-	step from line search         = 0.545521
-	convergence norms :     INITIAL         CURRENT         REQUIRED
-	   residual            6.560848e-07    2.105243e-04    0.000000e+00 
-	   energy              1.230880e-02    1.400077e-03    1.230880e-04 
-	   displacement        1.631704e+03    4.855837e+02    4.855837e-04 
-Reforming stiffness matrix: reformation #2
-
- 2
- Nonlinear solution status: time= 0.1
-	stiffness updates             = 0
-	right hand side evaluations   = 4
-	stiffness matrix reformations = 2
-	step from line search         = 1.000000
-	convergence norms :     INITIAL         CURRENT         REQUIRED
-	   residual            6.560848e-07    1.351961e-05    0.000000e+00 
-	   energy              1.230880e-02    5.335784e-04    1.230880e-04 
-	   displacement        1.631704e+03    1.641225e+02    1.212671e-03 
-Reforming stiffness matrix: reformation #3
-
- 3
- Nonlinear solution status: time= 0.1
-	stiffness updates             = 0
-	right hand side evaluations   = 5
-	stiffness matrix reformations = 3
-	step from line search         = 1.000000
-	convergence norms :     INITIAL         CURRENT         REQUIRED
-	   residual            6.560848e-07    1.825677e-06    0.000000e+00 
-	   energy              1.230880e-02    3.934498e-05    1.230880e-04 
-	   displacement        1.631704e+03    2.591010e+01    1.586617e-03 
-Reforming stiffness matrix: reformation #4
-
- 4
- Nonlinear solution status: time= 0.1
-	stiffness updates             = 0
-	right hand side evaluations   = 6
-	stiffness matrix reformations = 4
-	step from line search         = 1.000000
-	convergence norms :     INITIAL         CURRENT         REQUIRED
-	   residual            6.560848e-07    1.016072e-09    0.000000e+00 
-	   energy              1.230880e-02    5.200896e-07    1.230880e-04 
-	   displacement        1.631704e+03    6.309398e-01    1.649589e-03 
-Reforming stiffness matrix: reformation #5
-
- 5
- Nonlinear solution status: time= 0.1
-	stiffness updates             = 0
-	right hand side evaluations   = 7
-	stiffness matrix reformations = 5
-	step from line search         = 1.000000
-	convergence norms :     INITIAL         CURRENT         REQUIRED
-	   residual            6.560848e-07    2.643798e-14    0.000000e+00 
-	   energy              1.230880e-02    6.100024e-11    1.230880e-04 
-	   displacement        1.631704e+03    2.785961e-03    1.653770e-03 
-Reforming stiffness matrix: reformation #6
-
- 6
- Nonlinear solution status: time= 0.1
-	stiffness updates             = 0
-	right hand side evaluations   = 8
-	stiffness matrix reformations = 6
-	step from line search         = 1.000000
-	convergence norms :     INITIAL         CURRENT         REQUIRED
-	   residual            6.560848e-07    3.884655e-21    0.000000e+00 
-	   energy              1.230880e-02    1.387350e-19    1.230880e-04 
-	   displacement        1.631704e+03    3.192749e-08    1.653770e-03 
-
-convergence summary
-    number of iterations   : 6
-    number of reformations : 6
-
-------- converged at time : 0.1
-
-
-Data Record #1
-===========================================================================
-Step = 1
-Time = 0.1
-Data = ux;uy;uz
-File = /mnt/data/MATLAB/GIBBON/data/temp/tempModel_disp_out.txt
-
-Data Record #2
-===========================================================================
-Step = 1
-Time = 0.1
-Data = s1
-File = /mnt/data/MATLAB/GIBBON/data/temp/tempModel_stress_out.txt
- ]0;(10%) tempModel.feb - FEBio 3.1.0  
-===== beginning time step 2 : 0.2 =====
-
-Setting parameter "pressure" to : 0.2
-
-Reforming stiffness matrix: reformation #1
-
- 1
- Nonlinear solution status: time= 0.2
-	stiffness updates             = 0
-	right hand side evaluations   = 3
-	stiffness matrix reformations = 1
-	step from line search         = 0.559934
-	convergence norms :     INITIAL         CURRENT         REQUIRED
-	   residual            6.626444e-07    2.087672e-04    0.000000e+00 
-	   energy              1.206043e-02    1.300559e-03    1.206043e-04 
-	   displacement        1.549428e+03    4.857859e+02    4.857859e-04 
-Reforming stiffness matrix: reformation #2
-
- 2
- Nonlinear solution status: time= 0.2
-	stiffness updates             = 0
-	right hand side evaluations   = 4
-	stiffness matrix reformations = 2
-	step from line search         = 1.000000
-	convergence norms :     INITIAL         CURRENT         REQUIRED
-	   residual            6.626444e-07    9.456362e-06    0.000000e+00 
-	   energy              1.206043e-02    4.488306e-04    1.206043e-04 
-	   displacement        1.549428e+03    1.402653e+02    1.146245e-03 
-Reforming stiffness matrix: reformation #3
-
- 3
- Nonlinear solution status: time= 0.2
-	stiffness updates             = 0
-	right hand side evaluations   = 5
-	stiffness matrix reformations = 3
-	step from line search         = 1.000000
-	convergence norms :     INITIAL         CURRENT         REQUIRED
-	   residual            6.626444e-07    9.360270e-07    0.000000e+00 
-	   energy              1.206043e-02    2.374715e-05    1.206043e-04 
-	   displacement        1.549428e+03    1.811182e+01    1.447273e-03 
-Reforming stiffness matrix: reformation #4
-
- 4
- Nonlinear solution status: time= 0.2
-	stiffness updates             = 0
-	right hand side evaluations   = 6
-	stiffness matrix reformations = 4
-	step from line search         = 1.000000
-	convergence norms :     INITIAL         CURRENT         REQUIRED
-	   residual            6.626444e-07    1.522817e-10    0.000000e+00 
-	   energy              1.206043e-02    1.429079e-07    1.206043e-04 
-	   displacement        1.549428e+03    2.371102e-01    1.483970e-03 
-Reforming stiffness matrix: reformation #5
-
- 5
- Nonlinear solution status: time= 0.2
-	stiffness updates             = 0
-	right hand side evaluations   = 7
-	stiffness matrix reformations = 5
-	step from line search         = 1.000000
-	convergence norms :     INITIAL         CURRENT         REQUIRED
-	   residual            6.626444e-07    7.017868e-16    0.000000e+00 
-	   energy              1.206043e-02    3.307750e-12    1.206043e-04 
-	   displacement        1.549428e+03    3.714045e-04    1.485393e-03 
-
-convergence summary
-    number of iterations   : 5
-    number of reformations : 5
-
-------- converged at time : 0.2
-
-
-Data Record #1
-===========================================================================
-Step = 2
-Time = 0.2
-Data = ux;uy;uz
-File = /mnt/data/MATLAB/GIBBON/data/temp/tempModel_disp_out.txt
-
-Data Record #2
-===========================================================================
-Step = 2
-Time = 0.2
-Data = s1
-File = /mnt/data/MATLAB/GIBBON/data/temp/tempModel_stress_out.txt
- ]0;(20%) tempModel.feb - FEBio 3.1.0  
-===== beginning time step 3 : 0.3 =====
-
-Setting parameter "pressure" to : 0.3
-
-Reforming stiffness matrix: reformation #1
-
- 1
- Nonlinear solution status: time= 0.3
-	stiffness updates             = 0
-	right hand side evaluations   = 3
-	stiffness matrix reformations = 1
-	step from line search         = 0.606455
-	convergence norms :     INITIAL         CURRENT         REQUIRED
-	   residual            6.756341e-07    2.069292e-04    0.000000e+00 
-	   energy              1.140565e-02    1.049744e-03    1.140565e-04 
-	   displacement        1.342761e+03    4.938511e+02    4.938511e-04 
-Reforming stiffness matrix: reformation #2
-
- 2
- Nonlinear solution status: time= 0.3
-	stiffness updates             = 0
-	right hand side evaluations   = 4
-	stiffness matrix reformations = 2
-	step from line search         = 1.000000
-	convergence norms :     INITIAL         CURRENT         REQUIRED
-	   residual            6.756341e-07    4.316413e-06    0.000000e+00 
-	   energy              1.140565e-02    3.113704e-04    1.140565e-04 
-	   displacement        1.342761e+03    9.784634e+01    1.029522e-03 
-Reforming stiffness matrix: reformation #3
-
- 3
- Nonlinear solution status: time= 0.3
-	stiffness updates             = 0
-	right hand side evaluations   = 5
-	stiffness matrix reformations = 3
-	step from line search         = 1.000000
-	convergence norms :     INITIAL         CURRENT         REQUIRED
-	   residual            6.756341e-07    2.833858e-07    0.000000e+00 
-	   energy              1.140565e-02    8.874961e-06    1.140565e-04 
-	   displacement        1.342761e+03    9.561960e+00    1.233896e-03 
-Reforming stiffness matrix: reformation #4
-
- 4
- Nonlinear solution status: time= 0.3
-	stiffness updates             = 0
-	right hand side evaluations   = 6
-	stiffness matrix reformations = 4
-	step from line search         = 1.000000
-	convergence norms :     INITIAL         CURRENT         REQUIRED
-	   residual            6.756341e-07    4.826462e-12    0.000000e+00 
-	   energy              1.140565e-02    1.359626e-08    1.140565e-04 
-	   displacement        1.342761e+03    3.871479e-02    1.247315e-03 
-Reforming stiffness matrix: reformation #5
-
- 5
- Nonlinear solution status: time= 0.3
-	stiffness updates             = 0
-	right hand side evaluations   = 7
-	stiffness matrix reformations = 5
-	step from line search         = 1.000000
-	convergence norms :     INITIAL         CURRENT         REQUIRED
-	   residual            6.756341e-07    8.716456e-18    0.000000e+00 
-	   energy              1.140565e-02    1.106687e-14    1.140565e-04 
-	   displacement        1.342761e+03    7.367364e-06    1.247405e-03 
-
-convergence summary
-    number of iterations   : 5
-    number of reformations : 5
-
-------- converged at time : 0.3
-
-
-Data Record #1
-===========================================================================
-Step = 3
-Time = 0.3
-Data = ux;uy;uz
-File = /mnt/data/MATLAB/GIBBON/data/temp/tempModel_disp_out.txt
-
-Data Record #2
-===========================================================================
-Step = 3
-Time = 0.3
-Data = s1
-File = /mnt/data/MATLAB/GIBBON/data/temp/tempModel_stress_out.txt
- ]0;(30%) tempModel.feb - FEBio 3.1.0  
-===== beginning time step 4 : 0.4 =====
-
-Setting parameter "pressure" to : 0.4
-
-Reforming stiffness matrix: reformation #1
-
- 1
- Nonlinear solution status: time= 0.4
-	stiffness updates             = 0
-	right hand side evaluations   = 2
-	stiffness matrix reformations = 1
-	step from line search         = 1.000000
-	convergence norms :     INITIAL         CURRENT         REQUIRED
-	   residual            6.935111e-07    9.826278e-04    0.000000e+00 
-	   energy              1.062778e-02    7.942441e-03    1.062778e-04 
-	   displacement        1.117155e+03    1.117155e+03    1.117155e-03 
-Reforming stiffness matrix: reformation #2
-
- 2
- Nonlinear solution status: time= 0.4
-	stiffness updates             = 0
-	right hand side evaluations   = 3
-	stiffness matrix reformations = 2
-	step from line search         = 1.000000
-	convergence norms :     INITIAL         CURRENT         REQUIRED
-	   residual            6.935111e-07    8.255817e-09    0.000000e+00 
-	   energy              1.062778e-02    5.772412e-06    1.062778e-04 
-	   displacement        1.117155e+03    9.890901e-01    1.069474e-03 
-Reforming stiffness matrix: reformation #3
-
- 3
- Nonlinear solution status: time= 0.4
-	stiffness updates             = 0
-	right hand side evaluations   = 4
-	stiffness matrix reformations = 3
-	step from line search         = 1.000000
-	convergence norms :     INITIAL         CURRENT         REQUIRED
-	   residual            6.935111e-07    6.622765e-10    0.000000e+00 
-	   energy              1.062778e-02    1.184349e-08    1.062778e-04 
-	   displacement        1.117155e+03    4.656540e-01    1.027459e-03 
-Reforming stiffness matrix: reformation #4
-
- 4
- Nonlinear solution status: time= 0.4
-	stiffness updates             = 0
-	right hand side evaluations   = 5
-	stiffness matrix reformations = 4
-	step from line search         = 1.000000
-	convergence norms :     INITIAL         CURRENT         REQUIRED
-	   residual            6.935111e-07    1.757025e-16    0.000000e+00 
-	   energy              1.062778e-02    5.516322e-14    1.062778e-04 
-	   displacement        1.117155e+03    9.497625e-05    1.027588e-03 
-
-convergence summary
-    number of iterations   : 4
-    number of reformations : 4
-
-------- converged at time : 0.4
-
-
-Data Record #1
-===========================================================================
-Step = 4
-Time = 0.4
-Data = ux;uy;uz
-File = /mnt/data/MATLAB/GIBBON/data/temp/tempModel_disp_out.txt
-
-Data Record #2
-===========================================================================
-Step = 4
-Time = 0.4
-Data = s1
-File = /mnt/data/MATLAB/GIBBON/data/temp/tempModel_stress_out.txt
- ]0;(40%) tempModel.feb - FEBio 3.1.0  
-===== beginning time step 5 : 0.5 =====
-
-Setting parameter "pressure" to : 0.5
-
-Reforming stiffness matrix: reformation #1
-
- 1
- Nonlinear solution status: time= 0.5
-	stiffness updates             = 0
-	right hand side evaluations   = 2
-	stiffness matrix reformations = 1
-	step from line search         = 1.000000
-	convergence norms :     INITIAL         CURRENT         REQUIRED
-	   residual            7.150052e-07    6.424882e-04    0.000000e+00 
-	   energy              9.909670e-03    5.130960e-03    9.909670e-05 
-	   displacement        9.277275e+02    9.277275e+02    9.277275e-04 
-Reforming stiffness matrix: reformation #2
-
- 2
- Nonlinear solution status: time= 0.5
-	stiffness updates             = 0
-	right hand side evaluations   = 3
-	stiffness matrix reformations = 2
-	step from line search         = 1.000000
-	convergence norms :     INITIAL         CURRENT         REQUIRED
-	   residual            7.150052e-07    3.638928e-09    0.000000e+00 
-	   energy              9.909670e-03    9.497994e-07    9.909670e-05 
-	   displacement        9.277275e+02    1.117559e+00    8.830079e-04 
-Reforming stiffness matrix: reformation #3
-
- 3
- Nonlinear solution status: time= 0.5
-	stiffness updates             = 0
-	right hand side evaluations   = 4
-	stiffness matrix reformations = 3
-	step from line search         = 1.000000
-	convergence norms :     INITIAL         CURRENT         REQUIRED
-	   residual            7.150052e-07    2.000106e-10    0.000000e+00 
-	   energy              9.909670e-03    1.395723e-10    9.909670e-05 
-	   displacement        9.277275e+02    2.594857e-01    8.545748e-04 
-Reforming stiffness matrix: reformation #4
-
- 4
- Nonlinear solution status: time= 0.5
-	stiffness updates             = 0
-	right hand side evaluations   = 5
-	stiffness matrix reformations = 4
-	step from line search         = 1.000000
-	convergence norms :     INITIAL         CURRENT         REQUIRED
-	   residual            7.150052e-07    2.560380e-16    0.000000e+00 
-	   energy              9.909670e-03    4.427032e-14    9.909670e-05 
-	   displacement        9.277275e+02    9.087444e-05    8.547185e-04 
-
-convergence summary
-    number of iterations   : 4
-    number of reformations : 4
-
-------- converged at time : 0.5
-
-
-Data Record #1
-===========================================================================
-Step = 5
-Time = 0.5
-Data = ux;uy;uz
-File = /mnt/data/MATLAB/GIBBON/data/temp/tempModel_disp_out.txt
-
-Data Record #2
-===========================================================================
-Step = 5
-Time = 0.5
-Data = s1
-File = /mnt/data/MATLAB/GIBBON/data/temp/tempModel_stress_out.txt
- ]0;(50%) tempModel.feb - FEBio 3.1.0  
-===== beginning time step 6 : 0.6 =====
-
-Setting parameter "pressure" to : 0.6
-
-Reforming stiffness matrix: reformation #1
-
- 1
- Nonlinear solution status: time= 0.6
-	stiffness updates             = 0
-	right hand side evaluations   = 2
-	stiffness matrix reformations = 1
-	step from line search         = 1.000000
-	convergence norms :     INITIAL         CURRENT         REQUIRED
-	   residual            7.391810e-07    4.380335e-04    0.000000e+00 
-	   energy              9.309286e-03    3.445254e-03    9.309286e-05 
-	   displacement        7.829883e+02    7.829883e+02    7.829883e-04 
-Reforming stiffness matrix: reformation #2
-
- 2
- Nonlinear solution status: time= 0.6
-	stiffness updates             = 0
-	right hand side evaluations   = 3
-	stiffness matrix reformations = 2
-	step from line search         = 1.000000
-	convergence norms :     INITIAL         CURRENT         REQUIRED
-	   residual            7.391810e-07    2.180063e-09    0.000000e+00 
-	   energy              9.309286e-03    8.955842e-08    9.309286e-05 
-	   displacement        7.829883e+02    1.150408e+00    7.441095e-04 
-Reforming stiffness matrix: reformation #3
-
- 3
- Nonlinear solution status: time= 0.6
-	stiffness updates             = 0
-	right hand side evaluations   = 4
-	stiffness matrix reformations = 3
-	step from line search         = 1.000000
-	convergence norms :     INITIAL         CURRENT         REQUIRED
-	   residual            7.391810e-07    5.011097e-11    0.000000e+00 
-	   energy              9.309286e-03    1.234230e-09    9.309286e-05 
-	   displacement        7.829883e+02    1.343752e-01    7.253724e-04 
-Reforming stiffness matrix: reformation #4
-
- 4
- Nonlinear solution status: time= 0.6
-	stiffness updates             = 0
-	right hand side evaluations   = 5
-	stiffness matrix reformations = 4
-	step from line search         = 1.000000
-	convergence norms :     INITIAL         CURRENT         REQUIRED
-	   residual            7.391810e-07    3.115929e-16    0.000000e+00 
-	   energy              9.309286e-03    4.391844e-14    9.309286e-05 
-	   displacement        7.829883e+02    7.795754e-05    7.255449e-04 
-
-convergence summary
-    number of iterations   : 4
-    number of reformations : 4
-
-------- converged at time : 0.6
-
-
-Data Record #1
-===========================================================================
-Step = 6
-Time = 0.6
-Data = ux;uy;uz
-File = /mnt/data/MATLAB/GIBBON/data/temp/tempModel_disp_out.txt
-
-Data Record #2
-===========================================================================
-Step = 6
-Time = 0.6
-Data = s1
-File = /mnt/data/MATLAB/GIBBON/data/temp/tempModel_stress_out.txt
- ]0;(60%) tempModel.feb - FEBio 3.1.0  
-===== beginning time step 7 : 0.7 =====
-
-Setting parameter "pressure" to : 0.7
-
-Reforming stiffness matrix: reformation #1
-
- 1
- Nonlinear solution status: time= 0.7
-	stiffness updates             = 0
-	right hand side evaluations   = 2
-	stiffness matrix reformations = 1
-	step from line search         = 1.000000
-	convergence norms :     INITIAL         CURRENT         REQUIRED
-	   residual            7.655205e-07    3.156210e-04    0.000000e+00 
-	   energy              8.825418e-03    2.437041e-03    8.825418e-05 
-	   displacement        6.749907e+02    6.749907e+02    6.749907e-04 
-Reforming stiffness matrix: reformation #2
-
- 2
- Nonlinear solution status: time= 0.7
-	stiffness updates             = 0
-	right hand side evaluations   = 3
-	stiffness matrix reformations = 2
-	step from line search         = 1.000000
-	convergence norms :     INITIAL         CURRENT         REQUIRED
-	   residual            7.655205e-07    1.534264e-09    0.000000e+00 
-	   energy              8.825418e-03    3.707826e-07    8.825418e-05 
-	   displacement        6.749907e+02    1.154418e+00    6.422386e-04 
-Reforming stiffness matrix: reformation #3
-
- 3
- Nonlinear solution status: time= 0.7
-	stiffness updates             = 0
-	right hand side evaluations   = 4
-	stiffness matrix reformations = 3
-	step from line search         = 1.000000
-	convergence norms :     INITIAL         CURRENT         REQUIRED
-	   residual            7.655205e-07    1.393533e-11    0.000000e+00 
-	   energy              8.825418e-03    7.466577e-10    8.825418e-05 
-	   displacement        6.749907e+02    7.462477e-02    6.293017e-04 
-Reforming stiffness matrix: reformation #4
-
- 4
- Nonlinear solution status: time= 0.7
-	stiffness updates             = 0
-	right hand side evaluations   = 5
-	stiffness matrix reformations = 4
-	step from line search         = 1.000000
-	convergence norms :     INITIAL         CURRENT         REQUIRED
-	   residual            7.655205e-07    3.752631e-16    0.000000e+00 
-	   energy              8.825418e-03    3.649248e-14    8.825418e-05 
-	   displacement        6.749907e+02    6.853441e-05    6.294902e-04 
-
-convergence summary
-    number of iterations   : 4
-    number of reformations : 4
-
-------- converged at time : 0.7
-
-
-Data Record #1
-===========================================================================
-Step = 7
-Time = 0.7
-Data = ux;uy;uz
-File = /mnt/data/MATLAB/GIBBON/data/temp/tempModel_disp_out.txt
-
-Data Record #2
-===========================================================================
-Step = 7
-Time = 0.7
-Data = s1
-File = /mnt/data/MATLAB/GIBBON/data/temp/tempModel_stress_out.txt
- ]0;(70%) tempModel.feb - FEBio 3.1.0  
-===== beginning time step 8 : 0.8 =====
-
-Setting parameter "pressure" to : 0.8
-
-Reforming stiffness matrix: reformation #1
-
- 1
- Nonlinear solution status: time= 0.8
-	stiffness updates             = 0
-	right hand side evaluations   = 2
-	stiffness matrix reformations = 1
-	step from line search         = 1.000000
-	convergence norms :     INITIAL         CURRENT         REQUIRED
-	   residual            7.937196e-07    2.398308e-04    0.000000e+00 
-	   energy              8.438632e-03    1.812885e-03    8.438632e-05 
-	   displacement        5.938915e+02    5.938915e+02    5.938915e-04 
-Reforming stiffness matrix: reformation #2
-
- 2
- Nonlinear solution status: time= 0.8
-	stiffness updates             = 0
-	right hand side evaluations   = 3
-	stiffness matrix reformations = 2
-	step from line search         = 1.000000
-	convergence norms :     INITIAL         CURRENT         REQUIRED
-	   residual            7.937196e-07    1.184228e-09    0.000000e+00 
-	   energy              8.438632e-03    7.850879e-07    8.438632e-05 
-	   displacement        5.938915e+02    1.171198e+00    5.665382e-04 
-Reforming stiffness matrix: reformation #3
-
- 3
- Nonlinear solution status: time= 0.8
-	stiffness updates             = 0
-	right hand side evaluations   = 4
-	stiffness matrix reformations = 3
-	step from line search         = 1.000000
-	convergence norms :     INITIAL         CURRENT         REQUIRED
-	   residual            7.937196e-07    5.048997e-12    0.000000e+00 
-	   energy              8.438632e-03    4.122479e-10    8.438632e-05 
-	   displacement        5.938915e+02    4.778884e-02    5.568358e-04 
-Reforming stiffness matrix: reformation #4
-
- 4
- Nonlinear solution status: time= 0.8
-	stiffness updates             = 0
-	right hand side evaluations   = 5
-	stiffness matrix reformations = 4
-	step from line search         = 1.000000
-	convergence norms :     INITIAL         CURRENT         REQUIRED
-	   residual            7.937196e-07    4.750112e-16    0.000000e+00 
-	   energy              8.438632e-03    3.039492e-14    8.438632e-05 
-	   displacement        5.938915e+02    6.514542e-05    5.570299e-04 
-
-convergence summary
-    number of iterations   : 4
-    number of reformations : 4
-
-------- converged at time : 0.8
-
-
-Data Record #1
-===========================================================================
-Step = 8
-Time = 0.8
-Data = ux;uy;uz
-File = /mnt/data/MATLAB/GIBBON/data/temp/tempModel_disp_out.txt
-
-Data Record #2
-===========================================================================
-Step = 8
-Time = 0.8
-Data = s1
-File = /mnt/data/MATLAB/GIBBON/data/temp/tempModel_stress_out.txt
- ]0;(80%) tempModel.feb - FEBio 3.1.0  
-===== beginning time step 9 : 0.9 =====
-
-Setting parameter "pressure" to : 0.9
-
-Reforming stiffness matrix: reformation #1
-
- 1
- Nonlinear solution status: time= 0.9
-	stiffness updates             = 0
-	right hand side evaluations   = 2
-	stiffness matrix reformations = 1
-	step from line search         = 1.000000
-	convergence norms :     INITIAL         CURRENT         REQUIRED
-	   residual            8.235964e-07    1.907834e-04    0.000000e+00 
-	   energy              8.128412e-03    1.408807e-03    8.128412e-05 
-	   displacement        5.319135e+02    5.319135e+02    5.319135e-04 
-Reforming stiffness matrix: reformation #2
-
- 2
- Nonlinear solution status: time= 0.9
-	stiffness updates             = 0
-	right hand side evaluations   = 3
-	stiffness matrix reformations = 2
-	step from line search         = 1.000000
-	convergence norms :     INITIAL         CURRENT         REQUIRED
-	   residual            8.235964e-07    1.006502e-09    0.000000e+00 
-	   energy              8.128412e-03    1.096311e-06    8.128412e-05 
-	   displacement        5.319135e+02    1.218196e+00    5.090126e-04 
-Reforming stiffness matrix: reformation #3
-
- 3
- Nonlinear solution status: time= 0.9
-	stiffness updates             = 0
-	right hand side evaluations   = 4
-	stiffness matrix reformations = 3
-	step from line search         = 1.000000
-	convergence norms :     INITIAL         CURRENT         REQUIRED
-	   residual            8.235964e-07    2.530315e-12    0.000000e+00 
-	   energy              8.128412e-03    2.564876e-10    8.128412e-05 
-	   displacement        5.319135e+02    3.597247e-02    5.010345e-04 
-Reforming stiffness matrix: reformation #4
-
- 4
- Nonlinear solution status: time= 0.9
-	stiffness updates             = 0
-	right hand side evaluations   = 5
-	stiffness matrix reformations = 4
-	step from line search         = 1.000000
-	convergence norms :     INITIAL         CURRENT         REQUIRED
-	   residual            8.235964e-07    6.379387e-16    0.000000e+00 
-	   energy              8.128412e-03    2.839361e-14    8.128412e-05 
-	   displacement        5.319135e+02    6.763128e-05    5.012287e-04 
-
-convergence summary
-    number of iterations   : 4
-    number of reformations : 4
-
-------- converged at time : 0.9
-
-
-Data Record #1
-===========================================================================
-Step = 9
-Time = 0.9
-Data = ux;uy;uz
-File = /mnt/data/MATLAB/GIBBON/data/temp/tempModel_disp_out.txt
-
-Data Record #2
-===========================================================================
-Step = 9
-Time = 0.9
-Data = s1
-File = /mnt/data/MATLAB/GIBBON/data/temp/tempModel_stress_out.txt
- ]0;(90%) tempModel.feb - FEBio 3.1.0  
-===== beginning time step 10 : 1 =====
-
-Setting parameter "pressure" to : 1
-
-Reforming stiffness matrix: reformation #1
-
- 1
- Nonlinear solution status: time= 1
-	stiffness updates             = 0
-	right hand side evaluations   = 2
-	stiffness matrix reformations = 1
-	step from line search         = 1.000000
-	convergence norms :     INITIAL         CURRENT         REQUIRED
-	   residual            8.550345e-07    1.576339e-04    0.000000e+00 
-	   energy              7.877729e-03    1.135505e-03    7.877729e-05 
-	   displacement        4.835651e+02    4.835651e+02    4.835651e-04 
-Reforming stiffness matrix: reformation #2
-
- 2
- Nonlinear solution status: time= 1
-	stiffness updates             = 0
-	right hand side evaluations   = 3
-	stiffness matrix reformations = 2
-	step from line search         = 1.000000
-	convergence norms :     INITIAL         CURRENT         REQUIRED
-	   residual            8.550345e-07    9.416239e-10    0.000000e+00 
-	   energy              7.877729e-03    1.294410e-06    7.877729e-05 
-	   displacement        4.835651e+02    1.300404e+00    4.642561e-04 
-Reforming stiffness matrix: reformation #3
-
- 3
- Nonlinear solution status: time= 1
-	stiffness updates             = 0
-	right hand side evaluations   = 4
-	stiffness matrix reformations = 3
-	step from line search         = 1.000000
-	convergence norms :     INITIAL         CURRENT         REQUIRED
-	   residual            8.550345e-07    1.723653e-12    0.000000e+00 
-	   energy              7.877729e-03    1.872886e-10    7.877729e-05 
-	   displacement        4.835651e+02    3.131571e-02    4.571281e-04 
-Reforming stiffness matrix: reformation #4
-
- 4
- Nonlinear solution status: time= 1
-	stiffness updates             = 0
-	right hand side evaluations   = 5
-	stiffness matrix reformations = 4
-	step from line search         = 1.000000
-	convergence norms :     INITIAL         CURRENT         REQUIRED
-	   residual            8.550345e-07    9.053577e-16    0.000000e+00 
-	   energy              7.877729e-03    3.070357e-14    7.877729e-05 
-	   displacement        4.835651e+02    7.618258e-05    4.573198e-04 
-
-convergence summary
-    number of iterations   : 4
-    number of reformations : 4
-
-------- converged at time : 1
-
-
-Data Record #1
-===========================================================================
-Step = 10
-Time = 1
-Data = ux;uy;uz
-File = /mnt/data/MATLAB/GIBBON/data/temp/tempModel_disp_out.txt
-
-Data Record #2
-===========================================================================
-Step = 10
-Time = 1
-Data = s1
-File = /mnt/data/MATLAB/GIBBON/data/temp/tempModel_stress_out.txt
- ]0;(100%) tempModel.feb - FEBio 3.1.0  
-
- N O N L I N E A R   I T E R A T I O N   I N F O R M A T I O N
-
-	Number of time steps completed .................... : 10
-
-	Total number of equilibrium iterations ............ : 44
-
-	Average number of equilibrium iterations .......... : 4.4
-
-	Total number of right hand evaluations ............ : 57
-
-	Total number of stiffness reformations ............ : 44
-
-
- L I N E A R   S O L V E R   S T A T S
-
-	Total calls to linear solver ........ : 44
-
-	Avg iterations per solve ............ : 1
-
-	Time in linear solver: 0:00:02
-
- ]0;(0%) tempModel.feb - FEBio 3.1.0  
- Elapsed time : 0:00:04
-
-
+ * Waiting for log file creation                       18-Apr-2023 12:50:11
+   Max. wait time: 30 s
+ * Log file found.                                     18-Apr-2023 12:50:11
+# Parsing log file...                                  18-Apr-2023 12:50:11
+    number of iterations   : 6                         18-Apr-2023 12:50:11
+------- converged at time : 0.1                        18-Apr-2023 12:50:12
+    number of iterations   : 5                         18-Apr-2023 12:50:12
+    number of reformations : 5                         18-Apr-2023 12:50:12
+------- converged at time : 0.2                        18-Apr-2023 12:50:12
+    number of iterations   : 5                         18-Apr-2023 12:50:13
+    number of reformations : 5                         18-Apr-2023 12:50:13
+------- converged at time : 0.3                        18-Apr-2023 12:50:13
+    number of iterations   : 4                         18-Apr-2023 12:50:13
+    number of reformations : 4                         18-Apr-2023 12:50:13
+------- converged at time : 0.4                        18-Apr-2023 12:50:13
+    number of reformations : 4                         18-Apr-2023 12:50:14
+------- converged at time : 0.5                        18-Apr-2023 12:50:14
+    number of iterations   : 4                         18-Apr-2023 12:50:14
+    number of reformations : 4                         18-Apr-2023 12:50:14
+------- converged at time : 0.6                        18-Apr-2023 12:50:14
+    number of iterations   : 4                         18-Apr-2023 12:50:14
+    number of reformations : 4                         18-Apr-2023 12:50:14
+------- converged at time : 0.7                        18-Apr-2023 12:50:14
+    number of iterations   : 4                         18-Apr-2023 12:50:15
+    number of reformations : 4                         18-Apr-2023 12:50:15
+------- converged at time : 0.8                        18-Apr-2023 12:50:15
+    number of iterations   : 4                         18-Apr-2023 12:50:15
+    number of reformations : 4                         18-Apr-2023 12:50:15
+------- converged at time : 0.9                        18-Apr-2023 12:50:15
+    number of iterations   : 4                         18-Apr-2023 12:50:15
+    number of reformations : 4                         18-Apr-2023 12:50:15
+------- converged at time : 1                          18-Apr-2023 12:50:15
+ Elapsed time : 0:00:04                                18-Apr-2023 12:50:15
  N O R M A L   T E R M I N A T I O N
-
- * Log file found.                                     17-Dec-2020 09:18:33
-# Parsing log file...                                  17-Dec-2020 09:18:33
-    number of iterations   : 6                         17-Dec-2020 09:18:34
-    number of reformations : 6                         17-Dec-2020 09:18:34
-------- converged at time : 0.1                        17-Dec-2020 09:18:34
-    number of iterations   : 5                         17-Dec-2020 09:18:34
-    number of reformations : 5                         17-Dec-2020 09:18:34
-------- converged at time : 0.2                        17-Dec-2020 09:18:34
-    number of iterations   : 5                         17-Dec-2020 09:18:34
-    number of reformations : 5                         17-Dec-2020 09:18:34
-------- converged at time : 0.3                        17-Dec-2020 09:18:34
-    number of iterations   : 4                         17-Dec-2020 09:18:34
-    number of reformations : 4                         17-Dec-2020 09:18:34
-------- converged at time : 0.4                        17-Dec-2020 09:18:34
-    number of iterations   : 4                         17-Dec-2020 09:18:34
-    number of reformations : 4                         17-Dec-2020 09:18:34
-------- converged at time : 0.5                        17-Dec-2020 09:18:34
-    number of iterations   : 4                         17-Dec-2020 09:18:34
-    number of reformations : 4                         17-Dec-2020 09:18:34
-------- converged at time : 0.6                        17-Dec-2020 09:18:34
-    number of iterations   : 4                         17-Dec-2020 09:18:34
-    number of reformations : 4                         17-Dec-2020 09:18:34
-------- converged at time : 0.7                        17-Dec-2020 09:18:34
-    number of iterations   : 4                         17-Dec-2020 09:18:34
-    number of reformations : 4                         17-Dec-2020 09:18:34
-------- converged at time : 0.8                        17-Dec-2020 09:18:34
-    number of iterations   : 4                         17-Dec-2020 09:18:34
-    number of reformations : 4                         17-Dec-2020 09:18:34
-------- converged at time : 0.9                        17-Dec-2020 09:18:34
-    number of iterations   : 4                         17-Dec-2020 09:18:34
-    number of reformations : 4                         17-Dec-2020 09:18:34
-------- converged at time : 1                          17-Dec-2020 09:18:34
- Elapsed time : 0:00:04                                17-Dec-2020 09:18:34
- N O R M A L   T E R M I N A T I O N
-# Done                                                 17-Dec-2020 09:18:34
+# Done                                                 18-Apr-2023 12:50:15
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 </pre><h2 id="15">Import FEBio results</h2><pre class="codeinput"><span class="keyword">if</span> runFlag==1 <span class="comment">%i.e. a succesful run</span>
 </pre><p>Importing nodal displacements from a log file</p><pre class="codeinput">    dataStruct=importFEBio_logfile(fullfile(savePath,febioLogFileName_disp),1,1);
@@ -1330,7 +494,7 @@ File = /mnt/data/MATLAB/GIBBON/data/temp/tempModel_stress_out.txt
     anim8(hf,animStruct); <span class="comment">%Initiate animation feature</span>
     drawnow;
 </pre><img width="100%" height="auto" vspace="5" hspace="5" src="DEMO_febio_0013_disc_pressure_varying_04.jpg" alt=""> <pre class="codeinput"><span class="keyword">end</span>
-</pre><p><img vspace="5" hspace="5" src="gibbVerySmall.gif" alt=""> </p><p><i><b>GIBBON</b></i> <a href="www.gibboncode.org">www.gibboncode.org</a></p><p><i>Kevin Mattheus Moerman</i>, <a href="gibbon.toolbox@gmail.com">gibbon.toolbox@gmail.com</a></p><p><i><b>GIBBON footer text</b></i></p><p>License: <a href="https://github.com/gibbonCode/GIBBON/blob/master/LICENSE">https://github.com/gibbonCode/GIBBON/blob/master/LICENSE</a></p><p>GIBBON: The Geometry and Image-based Bioengineering add-On. A toolbox for image segmentation, image-based modeling, meshing, and finite element analysis.</p><p>Copyright (C) 2006-2020 Kevin Mattheus Moerman</p><p>This program is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.</p><p>This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for more details.</p><p>You should have received a copy of the GNU General Public License along with this program.  If not, see <a href="http://www.gnu.org/licenses/">http://www.gnu.org/licenses/</a>.</p><p class="footer"><br><a href="https://www.mathworks.com/products/matlab/">Published with MATLAB&reg; R2020b</a><br></p></div><!--
+</pre><p><img vspace="5" hspace="5" src="gibbVerySmall.gif" alt=""> </p><p><i><b>GIBBON</b></i> <a href="www.gibboncode.org">www.gibboncode.org</a></p><p><i>Kevin Mattheus Moerman</i>, <a href="gibbon.toolbox@gmail.com">gibbon.toolbox@gmail.com</a></p><p><i><b>GIBBON footer text</b></i></p><p>License: <a href="https://github.com/gibbonCode/GIBBON/blob/master/LICENSE">https://github.com/gibbonCode/GIBBON/blob/master/LICENSE</a></p><p>GIBBON: The Geometry and Image-based Bioengineering add-On. A toolbox for image segmentation, image-based modeling, meshing, and finite element analysis.</p><p>Copyright (C) 2006-2022 Kevin Mattheus Moerman and the GIBBON contributors</p><p>This program is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.</p><p>This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for more details.</p><p>You should have received a copy of the GNU General Public License along with this program.  If not, see <a href="http://www.gnu.org/licenses/">http://www.gnu.org/licenses/</a>.</p><p class="footer"><br><a href="https://www.mathworks.com/products/matlab/">Published with MATLAB&reg; R2022b</a><br></p></div><!--
 ##### SOURCE BEGIN #####
 %% DEMO_febio_0013_disc_pressure_varying
 % Below is a demonstration for:
@@ -1343,7 +507,7 @@ File = /mnt/data/MATLAB/GIBBON/data/temp/tempModel_stress_out.txt
 
 %% Keywords
 %
-% * febio_spec version 3.0
+% * febio_spec version 4.0
 % * febio, FEBio
 % * pressure loading, spatially varying pressure, non-constant pressure
 % * tetrahedral elements, hex4
@@ -1415,6 +579,8 @@ opt_iter=6; %Optimum number of iterations
 max_retries=5; %Maximum number of retires
 dtmin=(1/numTimeSteps)/100; %Minimum time step size
 dtmax=1/numTimeSteps; %Maximum time step size
+
+runMode='external';% 'internal' or 'external'
 
 %% Creating model geometry and mesh
 % The disc is meshed using tetrahedral elements using tetgen
@@ -1500,7 +666,7 @@ drawnow;
 [febio_spec]=febioStructTemplate;
 
 %febio_spec version 
-febio_spec.ATTR.version='3.0'; 
+febio_spec.ATTR.version='4.0'; 
 
 %Module section
 febio_spec.Module.ATTR.type='solid'; 
@@ -1510,7 +676,7 @@ febio_spec.Control.analysis='STATIC';
 febio_spec.Control.time_steps=numTimeSteps;
 febio_spec.Control.step_size=1/numTimeSteps;
 febio_spec.Control.solver.max_refs=max_refs;
-febio_spec.Control.solver.max_ups=max_ups;
+febio_spec.Control.solver.qn_method.max_ups=max_ups;
 febio_spec.Control.time_stepper.dtmin=dtmin;
 febio_spec.Control.time_stepper.dtmax=dtmax; 
 febio_spec.Control.time_stepper.max_retries=max_retries;
@@ -1549,7 +715,7 @@ febio_spec.Mesh.Surface{1}.tri3.VAL=F_pressure;
 % -> NodeSets
 nodeSetName1='bcSupportList';
 febio_spec.Mesh.NodeSet{1}.ATTR.name=nodeSetName1;
-febio_spec.Mesh.NodeSet{1}.node.ATTR.id=bcSupportList(:);
+febio_spec.Mesh.NodeSet{1}.VAL=mrow(bcSupportList);
 
 %MeshDomains section
 febio_spec.MeshDomains.SolidDomain.ATTR.name=partName1;
@@ -1557,9 +723,12 @@ febio_spec.MeshDomains.SolidDomain.ATTR.mat=materialName1;
 
 %Boundary condition section 
 % -> Fix boundary conditions
-febio_spec.Boundary.bc{1}.ATTR.type='fix';
+febio_spec.Boundary.bc{1}.ATTR.name='FixedDisplacement01';
+febio_spec.Boundary.bc{1}.ATTR.type='zero displacement';
 febio_spec.Boundary.bc{1}.ATTR.node_set=nodeSetName1;
-febio_spec.Boundary.bc{1}.dofs='x,y,z';
+febio_spec.Boundary.bc{1}.x_dof=1;
+febio_spec.Boundary.bc{1}.y_dof=1;
+febio_spec.Boundary.bc{1}.z_dof=1;
 
 %MeshData secion
 %-> Surface data
@@ -1599,10 +768,12 @@ end
 
 %LoadData section
 % -> load_controller
+febio_spec.LoadData.load_controller{1}.ATTR.name='LC_1';
 febio_spec.LoadData.load_controller{1}.ATTR.id=1;
 febio_spec.LoadData.load_controller{1}.ATTR.type='loadcurve';
 febio_spec.LoadData.load_controller{1}.interpolate='LINEAR';
-febio_spec.LoadData.load_controller{1}.points.point.VAL=[0 0; 1 1];
+%febio_spec.LoadData.load_controller{1}.extend='CONSTANT';
+febio_spec.LoadData.load_controller{1}.points.pt.VAL=[0 0; 1 1];
 
 %Output section 
 % -> log file
@@ -1610,12 +781,12 @@ febio_spec.Output.logfile.ATTR.file=febioLogFileName;
 febio_spec.Output.logfile.node_data{1}.ATTR.file=febioLogFileName_disp;
 febio_spec.Output.logfile.node_data{1}.ATTR.data='ux;uy;uz';
 febio_spec.Output.logfile.node_data{1}.ATTR.delim=',';
-febio_spec.Output.logfile.node_data{1}.VAL=1:size(V,1);
 
 febio_spec.Output.logfile.element_data{1}.ATTR.file=febioLogFileName_stress;
 febio_spec.Output.logfile.element_data{1}.ATTR.data='s1';
 febio_spec.Output.logfile.element_data{1}.ATTR.delim=',';
-febio_spec.Output.logfile.element_data{1}.VAL=1:size(E,1);
+
+febio_spec.Output.plotfile.compression=0;
 
 %% Quick viewing of the FEBio input file structure
 % The |febView| function can be used to view the xml structure in a MATLAB
@@ -1641,7 +812,7 @@ febioStruct2xml(febio_spec,febioFebFileName); %Exporting to file and domNode
 febioAnalysis.run_filename=febioFebFileName; %The input file name
 febioAnalysis.run_logname=febioLogFileName; %The name for the log file
 febioAnalysis.disp_on=1; %Display information on the command window
-febioAnalysis.runMode='internal';%'internal';
+febioAnalysis.runMode=runMode;
 
 [runFlag]=runMonitorFEBio(febioAnalysis);%START FEBio NOW!!!!!!!!
 
@@ -1758,7 +929,7 @@ end
 % image segmentation, image-based modeling, meshing, and finite element
 % analysis.
 % 
-% Copyright (C) 2006-2020 Kevin Mattheus Moerman
+% Copyright (C) 2006-2022 Kevin Mattheus Moerman and the GIBBON contributors
 % 
 % This program is free software: you can redistribute it and/or modify
 % it under the terms of the GNU General Public License as published by
