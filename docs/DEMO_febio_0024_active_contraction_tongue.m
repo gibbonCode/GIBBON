@@ -62,6 +62,8 @@ max_retries=5; %Maximum number of retires
 dtmin=(1/numTimeSteps)/100; %Minimum time step size
 dtmax=1/numTimeSteps; %Maximum time step size
 
+runMode='external';% 'internal' or 'external'
+
 %% Set up geometry for the tongue model
 
 % Import model geometry. This geometry was obtained with permission from the Artisynth project (https://www.artisynth.org/Demo/BiomechanicalTongueModel)
@@ -136,7 +138,7 @@ drawnow;
 [febio_spec]=febioStructTemplate;
 
 %febio_spec version 
-febio_spec.ATTR.version='3.0'; 
+febio_spec.ATTR.version='4.0'; 
 
 %Module section
 febio_spec.Module.ATTR.type='solid'; 
@@ -146,7 +148,7 @@ febio_spec.Control.analysis='STATIC';
 febio_spec.Control.time_steps=numTimeSteps;
 febio_spec.Control.step_size=1/numTimeSteps;
 febio_spec.Control.solver.max_refs=max_refs;
-febio_spec.Control.solver.max_ups=max_ups;
+febio_spec.Control.solver.qn_method.max_ups=max_ups;
 febio_spec.Control.time_stepper.dtmin=dtmin;
 febio_spec.Control.time_stepper.dtmax=dtmax; 
 febio_spec.Control.time_stepper.max_retries=max_retries;
@@ -171,7 +173,8 @@ febio_spec.Material.material{1}.solid{2}.ATTR.type='fiber-exp-pow';
 febio_spec.Material.material{1}.solid{2}.ksi=ksi;
 febio_spec.Material.material{1}.solid{2}.alpha=alphaPar;
 febio_spec.Material.material{1}.solid{2}.beta=beta;
-% febio_spec.Material.material{1}.solid{2}.mat_axis.ATTR.type='user';    
+febio_spec.Material.material{1}.solid{2}.fiber.ATTR.type='vector';
+febio_spec.Material.material{1}.solid{2}.fiber.VAL=[1 0 0];
 
 %The active fiber component
 febio_spec.Material.material{1}.solid{3}.ATTR.type='prescribed uniaxial active contraction';
@@ -194,7 +197,7 @@ febio_spec.Mesh.Elements{1}.elem.VAL=E; %The element matrix
 % -> NodeSets
 nodeSetName1='bcSupportList';
 febio_spec.Mesh.NodeSet{1}.ATTR.name=nodeSetName1;
-febio_spec.Mesh.NodeSet{1}.node.ATTR.id=bcSupportList(:);
+febio_spec.Mesh.NodeSet{1}.VAL=mrow(bcSupportList);
  
 %MeshDomains section
 febio_spec.MeshDomains.SolidDomain.ATTR.name=partName1;
@@ -203,7 +206,7 @@ febio_spec.MeshDomains.SolidDomain.ATTR.mat=materialName1;
 %MeshData section
 % -> ElementData
 febio_spec.MeshData.ElementData{1}.ATTR.elem_set=partName1;
-febio_spec.MeshData.ElementData{1}.ATTR.var='mat_axis';
+febio_spec.MeshData.ElementData{1}.ATTR.type='mat_axis';
 
 for q=1:1:size(E,1)
     febio_spec.MeshData.ElementData{1}.elem{q}.ATTR.lid=q;
@@ -213,16 +216,21 @@ end
 
 %Boundary condition section 
 % -> Fix boundary conditions
-febio_spec.Boundary.bc{1}.ATTR.type='fix';
+febio_spec.Boundary.bc{1}.ATTR.name='zero_displacement_xyz';
+febio_spec.Boundary.bc{1}.ATTR.type='zero displacement';
 febio_spec.Boundary.bc{1}.ATTR.node_set=nodeSetName1;
-febio_spec.Boundary.bc{1}.dofs='x,y,z';
+febio_spec.Boundary.bc{1}.x_dof=1;
+febio_spec.Boundary.bc{1}.y_dof=1;
+febio_spec.Boundary.bc{1}.z_dof=1;
 
 %LoadData section
 % -> load_controller
+febio_spec.LoadData.load_controller{1}.ATTR.name='LC_1';
 febio_spec.LoadData.load_controller{1}.ATTR.id=1;
 febio_spec.LoadData.load_controller{1}.ATTR.type='loadcurve';
 febio_spec.LoadData.load_controller{1}.interpolate='LINEAR';
-febio_spec.LoadData.load_controller{1}.points.point.VAL=[0 0; 1 1];
+%febio_spec.LoadData.load_controller{1}.extend='CONSTANT';
+febio_spec.LoadData.load_controller{1}.points.pt.VAL=[0 0; 1 1];
 
 %Output section 
 % -> log file
@@ -254,7 +262,7 @@ febioStruct2xml(febio_spec,febioFebFileName); %Exporting to file and domNode
 febioAnalysis.run_filename=febioFebFileName; %The input file name
 febioAnalysis.run_logname=febioLogFileName; %The name for the log file
 febioAnalysis.disp_on=1; %Display information on the command window
-febioAnalysis.runMode='internal';%'internal';
+febioAnalysis.runMode=runMode;
 
 [runFlag]=runMonitorFEBio(febioAnalysis);%START FEBio NOW!!!!!!!!
 
