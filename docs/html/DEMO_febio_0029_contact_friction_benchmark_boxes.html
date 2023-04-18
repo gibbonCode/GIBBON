@@ -6,7 +6,7 @@
    <!--
 This HTML was auto-generated from MATLAB code.
 To make changes, update the MATLAB code and republish this document.
-      --><title>DEMO_febio_0029_contact_friction_benchmark_boxes</title><meta name="generator" content="MATLAB 9.9"><link rel="schema.DC" href="http://purl.org/dc/elements/1.1/"><meta name="DC.date" content="2020-12-11"><meta name="DC.source" content="DEMO_febio_0029_contact_friction_benchmark_boxes.m"><style type="text/css">
+      --><title>DEMO_febio_0029_contact_friction_benchmark_boxes</title><meta name="generator" content="MATLAB 9.13"><link rel="schema.DC" href="http://purl.org/dc/elements/1.1/"><meta name="DC.date" content="2023-04-18"><meta name="DC.source" content="DEMO_febio_0029_contact_friction_benchmark_boxes.m"><style type="text/css">
 html,body,div,span,applet,object,iframe,h1,h2,h3,h4,h5,h6,p,blockquote,pre,a,abbr,acronym,address,big,cite,code,del,dfn,em,font,img,ins,kbd,q,s,samp,small,strike,strong,tt,var,b,u,i,center,dl,dt,dd,ol,ul,li,fieldset,form,label,legend,table,caption,tbody,tfoot,thead,tr,th,td{margin:0;padding:0;border:0;outline:0;font-size:100%;vertical-align:baseline;background:transparent}body{line-height:1}ol,ul{list-style:none}blockquote,q{quotes:none}blockquote:before,blockquote:after,q:before,q:after{content:'';content:none}:focus{outine:0}ins{text-decoration:none}del{text-decoration:line-through}table{border-collapse:collapse;border-spacing:0}
 
 html { min-height:100%; margin-bottom:1px; }
@@ -106,6 +106,9 @@ opt_iter=25; <span class="comment">%Optimum number of iterations</span>
 max_retries=10; <span class="comment">%Maximum number of retires</span>
 dtmin=(1/numTimeSteps)/10; <span class="comment">%Minimum time step size</span>
 dtmax=1/numTimeSteps; <span class="comment">%Maximum time step size</span>
+symmetric_stiffness=0;
+
+runMode=<span class="string">'external'</span>;<span class="comment">% 'internal' or 'external'</span>
 
 <span class="comment">%Contact parameters</span>
 contactInitialOffset=0;
@@ -203,7 +206,7 @@ drawnow;
 [febio_spec]=febioStructTemplate;
 
 <span class="comment">%febio_spec version</span>
-febio_spec.ATTR.version=<span class="string">'3.0'</span>;
+febio_spec.ATTR.version=<span class="string">'4.0'</span>;
 
 <span class="comment">%Module section</span>
 febio_spec.Module.ATTR.type=<span class="string">'solid'</span>;
@@ -213,12 +216,13 @@ febio_spec.Control.analysis=<span class="string">'STATIC'</span>;
 febio_spec.Control.time_steps=numTimeSteps;
 febio_spec.Control.step_size=1/numTimeSteps;
 febio_spec.Control.solver.max_refs=max_refs;
-febio_spec.Control.solver.max_ups=max_ups;
-febio_spec.Control.solver.symmetric_stiffness=0;
+febio_spec.Control.solver.qn_method.max_ups=max_ups;
+febio_spec.Control.solver.symmetric_stiffness=symmetric_stiffness;
 febio_spec.Control.time_stepper.dtmin=dtmin;
 febio_spec.Control.time_stepper.dtmax=dtmax;
 febio_spec.Control.time_stepper.max_retries=max_retries;
 febio_spec.Control.time_stepper.opt_iter=opt_iter;
+
 
 <span class="comment">%Material section</span>
 <span class="keyword">for</span> q=1:1:numel(youngsModuli)
@@ -267,7 +271,7 @@ febio_spec.Mesh.Elements{numel(youngsModuli)+1}.elem.VAL=F_rigidBody;
 <span class="comment">% -&gt; NodeSets</span>
 nodeSetName1=<span class="string">'bcSupportList'</span>;
 febio_spec.Mesh.NodeSet{1}.ATTR.name=nodeSetName1;
-febio_spec.Mesh.NodeSet{1}.node.ATTR.id=bcSupportList(:);
+febio_spec.Mesh.NodeSet{1}.VAL=mrow(bcSupportList);
 
 <span class="comment">%MeshDomains section</span>
 <span class="keyword">for</span> q=1:1:numel(youngsModuli)
@@ -314,32 +318,39 @@ surfaceIndices=reshape(1:(2*(numel(youngsModuli)-1)),2,3)'; <span class="comment
 
 <span class="comment">%Boundary condition section</span>
 <span class="comment">% -&gt; Fix boundary conditions</span>
-febio_spec.Boundary.bc{1}.ATTR.type=<span class="string">'fix'</span>;
+febio_spec.Boundary.bc{1}.ATTR.name=<span class="string">'zero_displacement_xyz'</span>;
+febio_spec.Boundary.bc{1}.ATTR.type=<span class="string">'zero displacement'</span>;
 febio_spec.Boundary.bc{1}.ATTR.node_set=nodeSetName1;
-febio_spec.Boundary.bc{1}.dofs=<span class="string">'x,y,z'</span>;
+febio_spec.Boundary.bc{1}.x_dof=1;
+febio_spec.Boundary.bc{1}.y_dof=1;
+febio_spec.Boundary.bc{1}.z_dof=1;
 
-<span class="comment">% %Rigid section</span>
-<span class="comment">% -&gt; Prescribed rigid body boundary conditions</span>
-febio_spec.Rigid.rigid_constraint{1}.ATTR.name=<span class="string">'RigidFix_1'</span>;
-febio_spec.Rigid.rigid_constraint{1}.ATTR.type=<span class="string">'fix'</span>;
-febio_spec.Rigid.rigid_constraint{1}.rb=matIdRigid;
-febio_spec.Rigid.rigid_constraint{1}.dofs=<span class="string">'Rx,Ry,Ru,Rv'</span>;
+<span class="comment">%Rigid section</span>
+<span class="comment">% -&gt;Rigid body fix boundary conditions</span>
+febio_spec.Rigid.rigid_bc{1}.ATTR.name=<span class="string">'RigidFix'</span>;
+febio_spec.Rigid.rigid_bc{1}.ATTR.type=<span class="string">'rigid_fixed'</span>;
+febio_spec.Rigid.rigid_bc{1}.rb=matIdRigid;
+febio_spec.Rigid.rigid_bc{1}.Rx_dof=1;
+febio_spec.Rigid.rigid_bc{1}.Ry_dof=1;
+febio_spec.Rigid.rigid_bc{1}.Ru_dof=1;
+febio_spec.Rigid.rigid_bc{1}.Rv_dof=1;
 
-febio_spec.Rigid.rigid_constraint{2}.ATTR.name=<span class="string">'RigidPrescribe'</span>;
-febio_spec.Rigid.rigid_constraint{2}.ATTR.type=<span class="string">'prescribe'</span>;
-febio_spec.Rigid.rigid_constraint{2}.rb=matIdRigid;
-febio_spec.Rigid.rigid_constraint{2}.dof=<span class="string">'Rz'</span>;
-febio_spec.Rigid.rigid_constraint{2}.value.ATTR.lc=1;
-febio_spec.Rigid.rigid_constraint{2}.value.VAL=prescribedDisplacement_Z;
-febio_spec.Rigid.rigid_constraint{2}.relative=0;
+<span class="comment">% -&gt;Rigid body prescribe boundary conditions</span>
+febio_spec.Rigid.rigid_bc{2}.ATTR.name=<span class="string">'RigidPrescribe_disp'</span>;
+febio_spec.Rigid.rigid_bc{2}.ATTR.type=<span class="string">'rigid_displacement'</span>;
+febio_spec.Rigid.rigid_bc{2}.rb=matIdRigid;
+febio_spec.Rigid.rigid_bc{2}.dof=<span class="string">'z'</span>;
+febio_spec.Rigid.rigid_bc{2}.value.ATTR.lc=1;
+febio_spec.Rigid.rigid_bc{2}.value.VAL=prescribedDisplacement_Z;
+febio_spec.Rigid.rigid_bc{2}.relative=0;
 
-febio_spec.Rigid.rigid_constraint{3}.ATTR.name=<span class="string">'RigidPrescribe'</span>;
-febio_spec.Rigid.rigid_constraint{3}.ATTR.type=<span class="string">'prescribe'</span>;
-febio_spec.Rigid.rigid_constraint{3}.rb=matIdRigid;
-febio_spec.Rigid.rigid_constraint{3}.dof=<span class="string">'Rw'</span>;
-febio_spec.Rigid.rigid_constraint{3}.value.ATTR.lc=1;
-febio_spec.Rigid.rigid_constraint{3}.value.VAL=prescribedRotation_Z;
-febio_spec.Rigid.rigid_constraint{3}.relative=0;
+febio_spec.Rigid.rigid_bc{3}.ATTR.name=<span class="string">'RigidPrescribe_rot'</span>;
+febio_spec.Rigid.rigid_bc{3}.ATTR.type=<span class="string">'rigid_rotation'</span>;
+febio_spec.Rigid.rigid_bc{3}.rb=matIdRigid;
+febio_spec.Rigid.rigid_bc{3}.dof=<span class="string">'Rw'</span>;
+febio_spec.Rigid.rigid_bc{3}.value.ATTR.lc=1;
+febio_spec.Rigid.rigid_bc{3}.value.VAL=prescribedRotation_Z;
+febio_spec.Rigid.rigid_bc{3}.relative=0;
 
 <span class="comment">%Contact section</span>
 <span class="keyword">for</span> q=1:1:numel(youngsModuli)-1
@@ -352,7 +363,7 @@ febio_spec.Rigid.rigid_constraint{3}.relative=0;
     febio_spec.Contact.contact{q}.minaug=1;
     febio_spec.Contact.contact{q}.maxaug=10;
     febio_spec.Contact.contact{q}.search_tol=0.01;
-    febio_spec.Contact.contact{q}.search_radius=1;
+    febio_spec.Contact.contact{q}.search_radius=0.1*sqrt(sum((max(V,[],1)-min(V,[],1)).^2,2));
     febio_spec.Contact.contact{q}.symmetric_stiffness=0;
     <span class="keyword">switch</span> q
         <span class="keyword">case</span> 1
@@ -387,2300 +398,63 @@ febio_spec.Output.logfile.node_data{1}.ATTR.delim=<span class="string">','</span
 febio_spec.Output.logfile.element_data{1}.ATTR.file=febioLogFileName_strainEnergy;
 febio_spec.Output.logfile.element_data{1}.ATTR.data=<span class="string">'sed'</span>;
 febio_spec.Output.logfile.element_data{1}.ATTR.delim=<span class="string">','</span>;
+
+<span class="comment">% Plotfile section</span>
+febio_spec.Output.plotfile.compression=0;
 </pre><h2 id="11">Quick viewing of the FEBio input file structure</h2><p>The <tt>febView</tt> function can be used to view the xml structure in a MATLAB figure window.</p><p><tt>febView(febio_spec); %Viewing the febio file</tt></p><h2 id="13">Exporting the FEBio input file</h2><p>Exporting the febio_spec structure to an FEBio input file is done using the <tt>febioStruct2xml</tt> function.</p><pre class="codeinput">febioStruct2xml(febio_spec,febioFebFileName); <span class="comment">%Exporting to file and domNode</span>
 </pre><h2 id="14">Running the FEBio analysis</h2><p>To run the analysis defined by the created FEBio input file the <tt>runMonitorFEBio</tt> function is used. The input for this function is a structure defining job settings e.g. the FEBio input file name. The optional output runFlag informs the user if the analysis was run succesfully.</p><pre class="codeinput">febioAnalysis.run_filename=febioFebFileName; <span class="comment">%The input file name</span>
 febioAnalysis.run_logname=febioLogFileName; <span class="comment">%The name for the log file</span>
 febioAnalysis.disp_on=1; <span class="comment">%Display information on the command window</span>
-febioAnalysis.runMode=<span class="string">'internal'</span>;<span class="comment">%'internal';</span>
+febioAnalysis.runMode=runMode;
 
 [runFlag]=runMonitorFEBio(febioAnalysis);<span class="comment">%START FEBio NOW!!!!!!!!</span>
 </pre><pre class="codeoutput"> 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
---------&gt;    RUNNING/MONITORING FEBIO JOB    &lt;-------- 11-Dec-2020 12:26:34
-FEBio path: /home/kevin/FEBioStudio/bin/febio3
-# Attempt removal of existing log files                11-Dec-2020 12:26:34
- * Removal succesful                                   11-Dec-2020 12:26:34
-# Attempt removal of existing .xplt files              11-Dec-2020 12:26:34
- * Removal succesful                                   11-Dec-2020 12:26:34
-# Starting FEBio...                                    11-Dec-2020 12:26:34
+--------&gt;    RUNNING/MONITORING FEBIO JOB    &lt;-------- 18-Apr-2023 16:44:00
+FEBio path: /home/kevin/FEBioStudio2/bin/febio4
+# Attempt removal of existing log files                18-Apr-2023 16:44:00
+ * Removal succesful                                   18-Apr-2023 16:44:00
+# Attempt removal of existing .xplt files              18-Apr-2023 16:44:00
+ * Removal succesful                                   18-Apr-2023 16:44:00
+# Starting FEBio...                                    18-Apr-2023 16:44:00
   Max. total analysis time is: Inf s
-
-===========================================================================
-         ________    _________   _______       __     _________            
-        |        |\ |        |\ |       \\    |  |\  /         \\          
-        |    ____|| |    ____|| |    __  ||   |__|| |    ___    ||         
-        |   |\___\| |   |\___\| |   |\_| ||    \_\| |   //  \   ||         
-        |   ||__    |   ||__    |   ||_| ||   |  |\ |  ||    |  ||         
-        |       |\  |       |\  |         \\  |  || |  ||    |  ||         
-        |    ___||  |    ___||  |    ___   || |  || |  ||    |  ||         
-        |   |\__\|  |   |\__\|  |   |\__|  || |  || |  ||    |  ||         
-        |   ||      |   ||___   |   ||__|  || |  || |   \\__/   ||         
-        |   ||      |        |\ |          || |  || |           ||         
-        |___||      |________|| |_________//  |__||  \_________//          
-                                                                           
-      F I N I T E   E L E M E N T S   F O R   B I O M E C H A N I C S      
-                                                                           
-  version 3.1.0
-  FEBio is a registered trademark.                                         
-  copyright (c) 2006-2020 - All rights reserved                            
-                                                                           
-===========================================================================
-
-Default linear solver: pardiso
-Reading file /mnt/data/MATLAB/GIBBON/data/temp/tempModel.feb ...SUCCESS!
-
-Setting parameter "value" to : -0
-Setting parameter "value" to : 0
-
- ]0;(0%) tempModel.feb - FEBio 3.1.0  
-===== beginning time step 1 : 0.1 =====
-
-Setting parameter "value" to : -0.2
-Setting parameter "value" to : 0.15708
-
-Reforming stiffness matrix: reformation #1
-
-===== reforming stiffness matrix:
-	Nr of equations ........................... : 1442
-	Nr of nonzeroes in stiffness matrix ....... : 90466
- 1
- Nonlinear solution status: time= 0.1
-	stiffness updates             = 0
-	right hand side evaluations   = 2
-	stiffness matrix reformations = 1
-	step from line search         = 1.000000
-	convergence norms :     INITIAL         CURRENT         REQUIRED
-	   residual            1.367791e+01    2.742538e-01    0.000000e+00 
-	   energy              3.866442e+00    1.491386e-01    3.866442e-02 
-	   displacement        9.747215e+00    9.747215e+00    9.747215e-06 
-Reforming stiffness matrix: reformation #2
-
-===== reforming stiffness matrix:
-	Nr of equations ........................... : 1442
-	Nr of nonzeroes in stiffness matrix ....... : 90106
- 2
- Nonlinear solution status: time= 0.1
-	stiffness updates             = 0
-	right hand side evaluations   = 3
-	stiffness matrix reformations = 2
-	step from line search         = 1.000000
-	convergence norms :     INITIAL         CURRENT         REQUIRED
-	   residual            1.367791e+01    1.731359e-04    0.000000e+00 
-	   energy              3.866442e+00    1.025304e-03    3.866442e-02 
-	   displacement        9.747215e+00    1.312816e+00    1.248514e-05 
-Reforming stiffness matrix: reformation #3
-
-===== reforming stiffness matrix:
-	Nr of equations ........................... : 1442
-	Nr of nonzeroes in stiffness matrix ....... : 90088
- 3
- Nonlinear solution status: time= 0.1
-	stiffness updates             = 0
-	right hand side evaluations   = 4
-	stiffness matrix reformations = 3
-	step from line search         = 1.000000
-	convergence norms :     INITIAL         CURRENT         REQUIRED
-	   residual            1.367791e+01    4.000738e-05    0.000000e+00 
-	   energy              3.866442e+00    1.454849e-04    3.866442e-02 
-	   displacement        9.747215e+00    7.266750e-01    1.359780e-05 
-Reforming stiffness matrix: reformation #4
-
-===== reforming stiffness matrix:
-	Nr of equations ........................... : 1442
-	Nr of nonzeroes in stiffness matrix ....... : 90304
- 4
- Nonlinear solution status: time= 0.1
-	stiffness updates             = 0
-	right hand side evaluations   = 5
-	stiffness matrix reformations = 4
-	step from line search         = 1.000000
-	convergence norms :     INITIAL         CURRENT         REQUIRED
-	   residual            1.367791e+01    2.192016e-06    0.000000e+00 
-	   energy              3.866442e+00    4.592935e-06    3.866442e-02 
-	   displacement        9.747215e+00    1.904006e-02    1.368127e-05 
-Reforming stiffness matrix: reformation #5
-
-===== reforming stiffness matrix:
-	Nr of equations ........................... : 1442
-	Nr of nonzeroes in stiffness matrix ....... : 90304
- 5
- Nonlinear solution status: time= 0.1
-	stiffness updates             = 0
-	right hand side evaluations   = 6
-	stiffness matrix reformations = 5
-	step from line search         = 1.000000
-	convergence norms :     INITIAL         CURRENT         REQUIRED
-	   residual            1.367791e+01    8.096507e-06    0.000000e+00 
-	   energy              3.866442e+00    2.366702e-09    3.866442e-02 
-	   displacement        9.747215e+00    1.786984e-02    1.403631e-05 
-Reforming stiffness matrix: reformation #6
-
-===== reforming stiffness matrix:
-	Nr of equations ........................... : 1442
-	Nr of nonzeroes in stiffness matrix ....... : 90412
- 6
- Nonlinear solution status: time= 0.1
-	stiffness updates             = 0
-	right hand side evaluations   = 11
-	stiffness matrix reformations = 6
-	step from line search         = 0.158893
-	convergence norms :     INITIAL         CURRENT         REQUIRED
-	   residual            1.367791e+01    8.857182e-06    0.000000e+00 
-	   energy              3.866442e+00    1.208730e-07    3.866442e-02 
-	   displacement        9.747215e+00    1.172464e-05    1.404584e-05 
-
-........................ augmentation # 1
- sliding interface # 1
-                        CURRENT        REQUIRED
-    D multiplier :    1.000000e+00   2.000000e-01
-    maximum gap  :    4.290079e-04       ***
- sliding interface # 2
-                        CURRENT        REQUIRED
-    D multiplier :    1.000000e+00   2.000000e-01
-    maximum gap  :    1.208804e-02       ***
- sliding interface # 3
-                        CURRENT        REQUIRED
-    D multiplier :    1.000000e+00   2.000000e-01
-    maximum gap  :    9.164868e-03       ***
-Reforming stiffness matrix: reformation #1
-
-===== reforming stiffness matrix:
-	Nr of equations ........................... : 1442
-	Nr of nonzeroes in stiffness matrix ....... : 90412
- 7
- Nonlinear solution status: time= 0.1
-	stiffness updates             = 0
-	right hand side evaluations   = 13
-	stiffness matrix reformations = 1
-	step from line search         = 1.000000
-	convergence norms :     INITIAL         CURRENT         REQUIRED
-	   residual            1.367791e+01    1.634935e-05    0.000000e+00 
-	   energy              3.866442e+00    1.942293e-06    3.866442e-02 
-	   displacement        9.747215e+00    9.544420e-03    1.442444e-05 
-Reforming stiffness matrix: reformation #2
-
-===== reforming stiffness matrix:
-	Nr of equations ........................... : 1442
-	Nr of nonzeroes in stiffness matrix ....... : 90412
- 8
- Nonlinear solution status: time= 0.1
-	stiffness updates             = 0
-	right hand side evaluations   = 15
-	stiffness matrix reformations = 2
-	step from line search         = 0.605479
-	convergence norms :     INITIAL         CURRENT         REQUIRED
-	   residual            1.367791e+01    1.255150e-05    0.000000e+00 
-	   energy              3.866442e+00    2.895300e-06    3.866442e-02 
-	   displacement        9.747215e+00    9.123548e-06    1.442778e-05 
-
-........................ augmentation # 2
- sliding interface # 1
-                        CURRENT        REQUIRED
-    D multiplier :    1.996037e-01   2.000000e-01
-    maximum gap  :    4.330622e-04       ***
- sliding interface # 2
-                        CURRENT        REQUIRED
-    D multiplier :    1.696461e-01   2.000000e-01
-    maximum gap  :    2.292249e-03       ***
- sliding interface # 3
-                        CURRENT        REQUIRED
-    D multiplier :    1.699881e-01   2.000000e-01
-    maximum gap  :    1.713429e-03       ***
-
-convergence summary
-    number of iterations   : 8
-    number of reformations : 0
-
-------- converged at time : 0.1
-
-
-Data Record #1
-===========================================================================
-Step = 1
-Time = 0.1
-Data = ux;uy;uz
-File = /mnt/data/MATLAB/GIBBON/data/temp/tempModel_disp_out.txt
-
-Data Record #2
-===========================================================================
-Step = 1
-Time = 0.1
-Data = sed
-File = /mnt/data/MATLAB/GIBBON/data/temp/tempModel_fsed_out.txt
- ]0;(10%) tempModel.feb - FEBio 3.1.0  
-===== beginning time step 2 : 0.2 =====
-
-Setting parameter "value" to : -0.4
-Setting parameter "value" to : 0.314159
-
-Reforming stiffness matrix: reformation #1
-
-===== reforming stiffness matrix:
-	Nr of equations ........................... : 1442
-	Nr of nonzeroes in stiffness matrix ....... : 90412
- 1
- Nonlinear solution status: time= 0.2
-	stiffness updates             = 0
-	right hand side evaluations   = 2
-	stiffness matrix reformations = 1
-	step from line search         = 1.000000
-	convergence norms :     INITIAL         CURRENT         REQUIRED
-	   residual            1.372951e+01    7.156657e-02    0.000000e+00 
-	   energy              3.862375e+00    6.176512e-02    3.862375e-02 
-	   displacement        1.549531e+01    1.549531e+01    1.549531e-05 
-Reforming stiffness matrix: reformation #2
-
-===== reforming stiffness matrix:
-	Nr of equations ........................... : 1442
-	Nr of nonzeroes in stiffness matrix ....... : 90412
- 2
- Nonlinear solution status: time= 0.2
-	stiffness updates             = 0
-	right hand side evaluations   = 3
-	stiffness matrix reformations = 2
-	step from line search         = 1.000000
-	convergence norms :     INITIAL         CURRENT         REQUIRED
-	   residual            1.372951e+01    2.975248e-05    0.000000e+00 
-	   energy              3.862375e+00    1.048163e-04    3.862375e-02 
-	   displacement        1.549531e+01    2.569449e-02    1.540713e-05 
-Reforming stiffness matrix: reformation #3
-
-===== reforming stiffness matrix:
-	Nr of equations ........................... : 1442
-	Nr of nonzeroes in stiffness matrix ....... : 90412
- 3
- Nonlinear solution status: time= 0.2
-	stiffness updates             = 0
-	right hand side evaluations   = 4
-	stiffness matrix reformations = 3
-	step from line search         = 1.000000
-	convergence norms :     INITIAL         CURRENT         REQUIRED
-	   residual            1.372951e+01    2.866018e-05    0.000000e+00 
-	   energy              3.862375e+00    9.258410e-05    3.862375e-02 
-	   displacement        1.549531e+01    1.065807e-01    1.432553e-05 
-Reforming stiffness matrix: reformation #4
-
-===== reforming stiffness matrix:
-	Nr of equations ........................... : 1442
-	Nr of nonzeroes in stiffness matrix ....... : 90268
- 4
- Nonlinear solution status: time= 0.2
-	stiffness updates             = 0
-	right hand side evaluations   = 5
-	stiffness matrix reformations = 4
-	step from line search         = 1.000000
-	convergence norms :     INITIAL         CURRENT         REQUIRED
-	   residual            1.372951e+01    9.462045e-06    0.000000e+00 
-	   energy              3.862375e+00    3.771857e-05    3.862375e-02 
-	   displacement        1.549531e+01    6.023248e-02    1.372384e-05 
-Reforming stiffness matrix: reformation #5
-
-===== reforming stiffness matrix:
-	Nr of equations ........................... : 1442
-	Nr of nonzeroes in stiffness matrix ....... : 89980
- 5
- Nonlinear solution status: time= 0.2
-	stiffness updates             = 0
-	right hand side evaluations   = 6
-	stiffness matrix reformations = 5
-	step from line search         = 1.000000
-	convergence norms :     INITIAL         CURRENT         REQUIRED
-	   residual            1.372951e+01    3.329220e-07    0.000000e+00 
-	   energy              3.862375e+00    5.687928e-06    3.862375e-02 
-	   displacement        1.549531e+01    1.195648e-02    1.388372e-05 
-Reforming stiffness matrix: reformation #6
-
-===== reforming stiffness matrix:
-	Nr of equations ........................... : 1442
-	Nr of nonzeroes in stiffness matrix ....... : 89980
- 6
- Nonlinear solution status: time= 0.2
-	stiffness updates             = 0
-	right hand side evaluations   = 7
-	stiffness matrix reformations = 6
-	step from line search         = 1.000000
-	convergence norms :     INITIAL         CURRENT         REQUIRED
-	   residual            1.372951e+01    3.892098e-08    0.000000e+00 
-	   energy              3.862375e+00    8.534213e-07    3.862375e-02 
-	   displacement        1.549531e+01    1.366696e-02    1.421445e-05 
-Reforming stiffness matrix: reformation #7
-
-===== reforming stiffness matrix:
-	Nr of equations ........................... : 1442
-	Nr of nonzeroes in stiffness matrix ....... : 89980
- 7
- Nonlinear solution status: time= 0.2
-	stiffness updates             = 0
-	right hand side evaluations   = 8
-	stiffness matrix reformations = 7
-	step from line search         = 1.000000
-	convergence norms :     INITIAL         CURRENT         REQUIRED
-	   residual            1.372951e+01    4.003406e-08    0.000000e+00 
-	   energy              3.862375e+00    6.773031e-08    3.862375e-02 
-	   displacement        1.549531e+01    1.499377e-04    1.424547e-05 
-Reforming stiffness matrix: reformation #8
-
-===== reforming stiffness matrix:
-	Nr of equations ........................... : 1442
-	Nr of nonzeroes in stiffness matrix ....... : 89980
- 8
- Nonlinear solution status: time= 0.2
-	stiffness updates             = 0
-	right hand side evaluations   = 9
-	stiffness matrix reformations = 8
-	step from line search         = 1.000000
-	convergence norms :     INITIAL         CURRENT         REQUIRED
-	   residual            1.372951e+01    1.401645e-12    0.000000e+00 
-	   energy              3.862375e+00    2.397734e-10    3.862375e-02 
-	   displacement        1.549531e+01    9.842471e-06    1.425210e-05 
-
-........................ augmentation # 1
- sliding interface # 1
-                        CURRENT        REQUIRED
-    D multiplier :    7.282593e-01   2.000000e-01
-    maximum gap  :    4.867495e-04       ***
- sliding interface # 2
-                        CURRENT        REQUIRED
-    D multiplier :    7.554152e-01   2.000000e-01
-    maximum gap  :    1.569522e-02       ***
- sliding interface # 3
-                        CURRENT        REQUIRED
-    D multiplier :    7.531658e-01   2.000000e-01
-    maximum gap  :    1.447574e-02       ***
-Reforming stiffness matrix: reformation #1
-
-===== reforming stiffness matrix:
-	Nr of equations ........................... : 1442
-	Nr of nonzeroes in stiffness matrix ....... : 89980
- 9
- Nonlinear solution status: time= 0.2
-	stiffness updates             = 0
-	right hand side evaluations   = 11
-	stiffness matrix reformations = 1
-	step from line search         = 1.000000
-	convergence norms :     INITIAL         CURRENT         REQUIRED
-	   residual            1.372951e+01    2.793950e-08    0.000000e+00 
-	   energy              3.862375e+00    2.369296e-07    3.862375e-02 
-	   displacement        1.549531e+01    1.207475e-02    1.460819e-05 
-Reforming stiffness matrix: reformation #2
-
-===== reforming stiffness matrix:
-	Nr of equations ........................... : 1442
-	Nr of nonzeroes in stiffness matrix ....... : 89980
- 10
- Nonlinear solution status: time= 0.2
-	stiffness updates             = 0
-	right hand side evaluations   = 12
-	stiffness matrix reformations = 2
-	step from line search         = 1.000000
-	convergence norms :     INITIAL         CURRENT         REQUIRED
-	   residual            1.372951e+01    2.547937e-12    0.000000e+00 
-	   energy              3.862375e+00    3.816063e-10    3.862375e-02 
-	   displacement        1.549531e+01    1.101621e-05    1.461308e-05 
-
-........................ augmentation # 2
- sliding interface # 1
-                        CURRENT        REQUIRED
-    D multiplier :    1.079328e-01   2.000000e-01
-    maximum gap  :    2.355126e-04       ***
- sliding interface # 2
-                        CURRENT        REQUIRED
-    D multiplier :    1.123740e-01   2.000000e-01
-    maximum gap  :    4.499105e-03       ***
- sliding interface # 3
-                        CURRENT        REQUIRED
-    D multiplier :    1.131039e-01   2.000000e-01
-    maximum gap  :    4.638548e-03       ***
-
-convergence summary
-    number of iterations   : 10
-    number of reformations : 0
-
-------- converged at time : 0.2
-
-
-Data Record #1
-===========================================================================
-Step = 2
-Time = 0.2
-Data = ux;uy;uz
-File = /mnt/data/MATLAB/GIBBON/data/temp/tempModel_disp_out.txt
-
-Data Record #2
-===========================================================================
-Step = 2
-Time = 0.2
-Data = sed
-File = /mnt/data/MATLAB/GIBBON/data/temp/tempModel_fsed_out.txt
- ]0;(20%) tempModel.feb - FEBio 3.1.0  
-===== beginning time step 3 : 0.3 =====
-
-Setting parameter "value" to : -0.6
-Setting parameter "value" to : 0.471239
-
-Reforming stiffness matrix: reformation #1
-
-===== reforming stiffness matrix:
-	Nr of equations ........................... : 1442
-	Nr of nonzeroes in stiffness matrix ....... : 89980
- 1
- Nonlinear solution status: time= 0.3
-	stiffness updates             = 0
-	right hand side evaluations   = 2
-	stiffness matrix reformations = 1
-	step from line search         = 1.000000
-	convergence norms :     INITIAL         CURRENT         REQUIRED
-	   residual            1.378663e+01    7.107802e-02    0.000000e+00 
-	   energy              3.868458e+00    6.153358e-02    3.868458e-02 
-	   displacement        1.552539e+01    1.552539e+01    1.552539e-05 
-Reforming stiffness matrix: reformation #2
-
-===== reforming stiffness matrix:
-	Nr of equations ........................... : 1442
-	Nr of nonzeroes in stiffness matrix ....... : 89980
- 2
- Nonlinear solution status: time= 0.3
-	stiffness updates             = 0
-	right hand side evaluations   = 3
-	stiffness matrix reformations = 2
-	step from line search         = 1.000000
-	convergence norms :     INITIAL         CURRENT         REQUIRED
-	   residual            1.378663e+01    2.589244e-05    0.000000e+00 
-	   energy              3.868458e+00    1.191196e-04    3.868458e-02 
-	   displacement        1.552539e+01    2.591825e-02    1.542160e-05 
-Reforming stiffness matrix: reformation #3
-
-===== reforming stiffness matrix:
-	Nr of equations ........................... : 1442
-	Nr of nonzeroes in stiffness matrix ....... : 89980
- 3
- Nonlinear solution status: time= 0.3
-	stiffness updates             = 0
-	right hand side evaluations   = 4
-	stiffness matrix reformations = 3
-	step from line search         = 1.000000
-	convergence norms :     INITIAL         CURRENT         REQUIRED
-	   residual            1.378663e+01    2.315097e-05    0.000000e+00 
-	   energy              3.868458e+00    8.850630e-05    3.868458e-02 
-	   displacement        1.552539e+01    8.922397e-02    1.442068e-05 
-Reforming stiffness matrix: reformation #4
-
-===== reforming stiffness matrix:
-	Nr of equations ........................... : 1442
-	Nr of nonzeroes in stiffness matrix ....... : 89980
- 4
- Nonlinear solution status: time= 0.3
-	stiffness updates             = 0
-	right hand side evaluations   = 5
-	stiffness matrix reformations = 4
-	step from line search         = 1.000000
-	convergence norms :     INITIAL         CURRENT         REQUIRED
-	   residual            1.378663e+01    5.686674e-06    0.000000e+00 
-	   energy              3.868458e+00    3.700542e-05    3.868458e-02 
-	   displacement        1.552539e+01    4.405405e-02    1.388406e-05 
-Reforming stiffness matrix: reformation #5
-
-===== reforming stiffness matrix:
-	Nr of equations ........................... : 1442
-	Nr of nonzeroes in stiffness matrix ....... : 89836
- 5
- Nonlinear solution status: time= 0.3
-	stiffness updates             = 0
-	right hand side evaluations   = 6
-	stiffness matrix reformations = 5
-	step from line search         = 1.000000
-	convergence norms :     INITIAL         CURRENT         REQUIRED
-	   residual            1.378663e+01    3.245682e-07    0.000000e+00 
-	   energy              3.868458e+00    7.355476e-06    3.868458e-02 
-	   displacement        1.552539e+01    1.040681e-02    1.403341e-05 
-Reforming stiffness matrix: reformation #6
-
-===== reforming stiffness matrix:
-	Nr of equations ........................... : 1442
-	Nr of nonzeroes in stiffness matrix ....... : 89836
- 6
- Nonlinear solution status: time= 0.3
-	stiffness updates             = 0
-	right hand side evaluations   = 7
-	stiffness matrix reformations = 6
-	step from line search         = 1.000000
-	convergence norms :     INITIAL         CURRENT         REQUIRED
-	   residual            1.378663e+01    3.081548e-08    0.000000e+00 
-	   energy              3.868458e+00    9.718461e-07    3.868458e-02 
-	   displacement        1.552539e+01    1.152753e-02    1.435299e-05 
-Reforming stiffness matrix: reformation #7
-
-===== reforming stiffness matrix:
-	Nr of equations ........................... : 1442
-	Nr of nonzeroes in stiffness matrix ....... : 89836
- 7
- Nonlinear solution status: time= 0.3
-	stiffness updates             = 0
-	right hand side evaluations   = 8
-	stiffness matrix reformations = 7
-	step from line search         = 1.000000
-	convergence norms :     INITIAL         CURRENT         REQUIRED
-	   residual            1.378663e+01    2.831920e-10    0.000000e+00 
-	   energy              3.868458e+00    3.986338e-08    3.868458e-02 
-	   displacement        1.552539e+01    2.088577e-04    1.438672e-05 
-Reforming stiffness matrix: reformation #8
-
-===== reforming stiffness matrix:
-	Nr of equations ........................... : 1442
-	Nr of nonzeroes in stiffness matrix ....... : 89836
- 8
- Nonlinear solution status: time= 0.3
-	stiffness updates             = 0
-	right hand side evaluations   = 9
-	stiffness matrix reformations = 8
-	step from line search         = 1.000000
-	convergence norms :     INITIAL         CURRENT         REQUIRED
-	   residual            1.378663e+01    5.129154e-12    0.000000e+00 
-	   energy              3.868458e+00    4.089284e-10    3.868458e-02 
-	   displacement        1.552539e+01    5.024186e-06    1.439329e-05 
-
-........................ augmentation # 1
- sliding interface # 1
-                        CURRENT        REQUIRED
-    D multiplier :    5.561774e-01   2.000000e-01
-    maximum gap  :    5.199298e-04       ***
- sliding interface # 2
-                        CURRENT        REQUIRED
-    D multiplier :    5.643824e-01   2.000000e-01
-    maximum gap  :    2.325903e-02       ***
- sliding interface # 3
-                        CURRENT        REQUIRED
-    D multiplier :    5.745539e-01   2.000000e-01
-    maximum gap  :    1.576988e-02       ***
-Reforming stiffness matrix: reformation #1
-
-===== reforming stiffness matrix:
-	Nr of equations ........................... : 1442
-	Nr of nonzeroes in stiffness matrix ....... : 89836
- 9
- Nonlinear solution status: time= 0.3
-	stiffness updates             = 0
-	right hand side evaluations   = 11
-	stiffness matrix reformations = 1
-	step from line search         = 1.000000
-	convergence norms :     INITIAL         CURRENT         REQUIRED
-	   residual            1.378663e+01    3.402266e-08    0.000000e+00 
-	   energy              3.868458e+00    8.601143e-07    3.868458e-02 
-	   displacement        1.552539e+01    1.492302e-02    1.474261e-05 
-Reforming stiffness matrix: reformation #2
-
-===== reforming stiffness matrix:
-	Nr of equations ........................... : 1442
-	Nr of nonzeroes in stiffness matrix ....... : 89836
- 10
- Nonlinear solution status: time= 0.3
-	stiffness updates             = 0
-	right hand side evaluations   = 12
-	stiffness matrix reformations = 2
-	step from line search         = 1.000000
-	convergence norms :     INITIAL         CURRENT         REQUIRED
-	   residual            1.378663e+01    4.417036e-11    0.000000e+00 
-	   energy              3.868458e+00    9.211630e-09    3.868458e-02 
-	   displacement        1.552539e+01    7.965073e-05    1.477160e-05 
-Reforming stiffness matrix: reformation #3
-
-===== reforming stiffness matrix:
-	Nr of equations ........................... : 1442
-	Nr of nonzeroes in stiffness matrix ....... : 89836
- 11
- Nonlinear solution status: time= 0.3
-	stiffness updates             = 0
-	right hand side evaluations   = 13
-	stiffness matrix reformations = 3
-	step from line search         = 1.000000
-	convergence norms :     INITIAL         CURRENT         REQUIRED
-	   residual            1.378663e+01    1.590331e-12    0.000000e+00 
-	   energy              3.868458e+00    1.156209e-10    3.868458e-02 
-	   displacement        1.552539e+01    2.054930e-06    1.476692e-05 
-
-........................ augmentation # 2
- sliding interface # 1
-                        CURRENT        REQUIRED
-    D multiplier :    8.365813e-02   2.000000e-01
-    maximum gap  :    3.750633e-04       ***
- sliding interface # 2
-                        CURRENT        REQUIRED
-    D multiplier :    9.375903e-02   2.000000e-01
-    maximum gap  :    8.946896e-03       ***
- sliding interface # 3
-                        CURRENT        REQUIRED
-    D multiplier :    1.083743e-01   2.000000e-01
-    maximum gap  :    5.276390e-03       ***
-
-convergence summary
-    number of iterations   : 11
-    number of reformations : 0
-
-------- converged at time : 0.3
-
-
-Data Record #1
-===========================================================================
-Step = 3
-Time = 0.3
-Data = ux;uy;uz
-File = /mnt/data/MATLAB/GIBBON/data/temp/tempModel_disp_out.txt
-
-Data Record #2
-===========================================================================
-Step = 3
-Time = 0.3
-Data = sed
-File = /mnt/data/MATLAB/GIBBON/data/temp/tempModel_fsed_out.txt
- ]0;(30%) tempModel.feb - FEBio 3.1.0  
-===== beginning time step 4 : 0.4 =====
-
-Setting parameter "value" to : -0.8
-Setting parameter "value" to : 0.628319
-
-Reforming stiffness matrix: reformation #1
-
-===== reforming stiffness matrix:
-	Nr of equations ........................... : 1442
-	Nr of nonzeroes in stiffness matrix ....... : 89836
- 1
- Nonlinear solution status: time= 0.4
-	stiffness updates             = 0
-	right hand side evaluations   = 2
-	stiffness matrix reformations = 1
-	step from line search         = 1.000000
-	convergence norms :     INITIAL         CURRENT         REQUIRED
-	   residual            1.384927e+01    7.069645e-02    0.000000e+00 
-	   energy              3.875090e+00    6.138265e-02    3.875090e-02 
-	   displacement        1.556692e+01    1.556692e+01    1.556692e-05 
-Reforming stiffness matrix: reformation #2
-
-===== reforming stiffness matrix:
-	Nr of equations ........................... : 1442
-	Nr of nonzeroes in stiffness matrix ....... : 89836
- 2
- Nonlinear solution status: time= 0.4
-	stiffness updates             = 0
-	right hand side evaluations   = 3
-	stiffness matrix reformations = 2
-	step from line search         = 1.000000
-	convergence norms :     INITIAL         CURRENT         REQUIRED
-	   residual            1.384927e+01    2.456281e-05    0.000000e+00 
-	   energy              3.875090e+00    1.232540e-04    3.875090e-02 
-	   displacement        1.556692e+01    2.684525e-02    1.547466e-05 
-Reforming stiffness matrix: reformation #3
-
-===== reforming stiffness matrix:
-	Nr of equations ........................... : 1442
-	Nr of nonzeroes in stiffness matrix ....... : 89836
- 3
- Nonlinear solution status: time= 0.4
-	stiffness updates             = 0
-	right hand side evaluations   = 4
-	stiffness matrix reformations = 3
-	step from line search         = 1.000000
-	convergence norms :     INITIAL         CURRENT         REQUIRED
-	   residual            1.384927e+01    1.857570e-05    0.000000e+00 
-	   energy              3.875090e+00    8.025522e-05    3.875090e-02 
-	   displacement        1.556692e+01    7.366296e-02    1.455556e-05 
-Reforming stiffness matrix: reformation #4
-
-===== reforming stiffness matrix:
-	Nr of equations ........................... : 1442
-	Nr of nonzeroes in stiffness matrix ....... : 89836
- 4
- Nonlinear solution status: time= 0.4
-	stiffness updates             = 0
-	right hand side evaluations   = 5
-	stiffness matrix reformations = 4
-	step from line search         = 1.000000
-	convergence norms :     INITIAL         CURRENT         REQUIRED
-	   residual            1.384927e+01    4.028553e-06    0.000000e+00 
-	   energy              3.875090e+00    3.711561e-05    3.875090e-02 
-	   displacement        1.556692e+01    3.352283e-02    1.409818e-05 
-Reforming stiffness matrix: reformation #5
-
-===== reforming stiffness matrix:
-	Nr of equations ........................... : 1442
-	Nr of nonzeroes in stiffness matrix ....... : 89836
- 5
- Nonlinear solution status: time= 0.4
-	stiffness updates             = 0
-	right hand side evaluations   = 6
-	stiffness matrix reformations = 5
-	step from line search         = 1.000000
-	convergence norms :     INITIAL         CURRENT         REQUIRED
-	   residual            1.384927e+01    5.645409e-07    0.000000e+00 
-	   energy              3.875090e+00    5.969130e-06    3.875090e-02 
-	   displacement        1.556692e+01    1.017962e-02    1.425149e-05 
-Reforming stiffness matrix: reformation #6
-
-===== reforming stiffness matrix:
-	Nr of equations ........................... : 1442
-	Nr of nonzeroes in stiffness matrix ....... : 90124
- 6
- Nonlinear solution status: time= 0.4
-	stiffness updates             = 0
-	right hand side evaluations   = 7
-	stiffness matrix reformations = 6
-	step from line search         = 1.000000
-	convergence norms :     INITIAL         CURRENT         REQUIRED
-	   residual            1.384927e+01    7.150110e-08    0.000000e+00 
-	   energy              3.875090e+00    1.313751e-06    3.875090e-02 
-	   displacement        1.556692e+01    1.231722e-02    1.460196e-05 
-Reforming stiffness matrix: reformation #7
-
-===== reforming stiffness matrix:
-	Nr of equations ........................... : 1442
-	Nr of nonzeroes in stiffness matrix ....... : 90124
- 7
- Nonlinear solution status: time= 0.4
-	stiffness updates             = 0
-	right hand side evaluations   = 8
-	stiffness matrix reformations = 7
-	step from line search         = 1.000000
-	convergence norms :     INITIAL         CURRENT         REQUIRED
-	   residual            1.384927e+01    6.277791e-10    0.000000e+00 
-	   energy              3.875090e+00    6.589410e-08    3.875090e-02 
-	   displacement        1.556692e+01    1.952805e-04    1.462605e-05 
-Reforming stiffness matrix: reformation #8
-
-===== reforming stiffness matrix:
-	Nr of equations ........................... : 1442
-	Nr of nonzeroes in stiffness matrix ....... : 90124
- 8
- Nonlinear solution status: time= 0.4
-	stiffness updates             = 0
-	right hand side evaluations   = 9
-	stiffness matrix reformations = 8
-	step from line search         = 1.000000
-	convergence norms :     INITIAL         CURRENT         REQUIRED
-	   residual            1.384927e+01    1.958038e-11    0.000000e+00 
-	   energy              3.875090e+00    9.138602e-10    3.875090e-02 
-	   displacement        1.556692e+01    8.591654e-06    1.463519e-05 
-
-........................ augmentation # 1
- sliding interface # 1
-                        CURRENT        REQUIRED
-    D multiplier :    4.462358e-01   2.000000e-01
-    maximum gap  :    6.081182e-04       ***
- sliding interface # 2
-                        CURRENT        REQUIRED
-    D multiplier :    4.592069e-01   2.000000e-01
-    maximum gap  :    3.253026e-02       ***
- sliding interface # 3
-                        CURRENT        REQUIRED
-    D multiplier :    4.639135e-01   2.000000e-01
-    maximum gap  :    1.819428e-02       ***
-Reforming stiffness matrix: reformation #1
-
-===== reforming stiffness matrix:
-	Nr of equations ........................... : 1442
-	Nr of nonzeroes in stiffness matrix ....... : 90124
- 9
- Nonlinear solution status: time= 0.4
-	stiffness updates             = 0
-	right hand side evaluations   = 11
-	stiffness matrix reformations = 1
-	step from line search         = 1.000000
-	convergence norms :     INITIAL         CURRENT         REQUIRED
-	   residual            1.384927e+01    5.430653e-08    0.000000e+00 
-	   energy              3.875090e+00    1.416890e-06    3.875090e-02 
-	   displacement        1.556692e+01    1.809236e-02    1.496665e-05 
-Reforming stiffness matrix: reformation #2
-
-===== reforming stiffness matrix:
-	Nr of equations ........................... : 1442
-	Nr of nonzeroes in stiffness matrix ....... : 90124
- 10
- Nonlinear solution status: time= 0.4
-	stiffness updates             = 0
-	right hand side evaluations   = 12
-	stiffness matrix reformations = 2
-	step from line search         = 1.000000
-	convergence norms :     INITIAL         CURRENT         REQUIRED
-	   residual            1.384927e+01    3.219688e-10    0.000000e+00 
-	   energy              3.875090e+00    3.212740e-08    3.875090e-02 
-	   displacement        1.556692e+01    2.182961e-04    1.501872e-05 
-Reforming stiffness matrix: reformation #3
-
-===== reforming stiffness matrix:
-	Nr of equations ........................... : 1442
-	Nr of nonzeroes in stiffness matrix ....... : 90124
- 11
- Nonlinear solution status: time= 0.4
-	stiffness updates             = 0
-	right hand side evaluations   = 13
-	stiffness matrix reformations = 3
-	step from line search         = 1.000000
-	convergence norms :     INITIAL         CURRENT         REQUIRED
-	   residual            1.384927e+01    1.011039e-11    0.000000e+00 
-	   energy              3.875090e+00    6.255728e-10    3.875090e-02 
-	   displacement        1.556692e+01    6.210837e-06    1.501002e-05 
-
-........................ augmentation # 2
- sliding interface # 1
-                        CURRENT        REQUIRED
-    D multiplier :    7.482333e-02   2.000000e-01
-    maximum gap  :    5.342523e-04       ***
- sliding interface # 2
-                        CURRENT        REQUIRED
-    D multiplier :    8.878561e-02   2.000000e-01
-    maximum gap  :    2.577026e-02       ***
- sliding interface # 3
-                        CURRENT        REQUIRED
-    D multiplier :    1.118375e-01   2.000000e-01
-    maximum gap  :    8.216311e-03       ***
-
-convergence summary
-    number of iterations   : 11
-    number of reformations : 0
-
-------- converged at time : 0.4
-
-
-Data Record #1
-===========================================================================
-Step = 4
-Time = 0.4
-Data = ux;uy;uz
-File = /mnt/data/MATLAB/GIBBON/data/temp/tempModel_disp_out.txt
-
-Data Record #2
-===========================================================================
-Step = 4
-Time = 0.4
-Data = sed
-File = /mnt/data/MATLAB/GIBBON/data/temp/tempModel_fsed_out.txt
- ]0;(40%) tempModel.feb - FEBio 3.1.0  
-===== beginning time step 5 : 0.5 =====
-
-Setting parameter "value" to : -1
-Setting parameter "value" to : 0.785398
-
-Reforming stiffness matrix: reformation #1
-
-===== reforming stiffness matrix:
-	Nr of equations ........................... : 1442
-	Nr of nonzeroes in stiffness matrix ....... : 90124
- 1
- Nonlinear solution status: time= 0.5
-	stiffness updates             = 0
-	right hand side evaluations   = 2
-	stiffness matrix reformations = 1
-	step from line search         = 1.000000
-	convergence norms :     INITIAL         CURRENT         REQUIRED
-	   residual            1.391759e+01    6.995745e-02    0.000000e+00 
-	   energy              3.882674e+00    6.138507e-02    3.882674e-02 
-	   displacement        1.571377e+01    1.571377e+01    1.571377e-05 
-Reforming stiffness matrix: reformation #2
-
-===== reforming stiffness matrix:
-	Nr of equations ........................... : 1442
-	Nr of nonzeroes in stiffness matrix ....... : 90124
- 2
- Nonlinear solution status: time= 0.5
-	stiffness updates             = 0
-	right hand side evaluations   = 3
-	stiffness matrix reformations = 2
-	step from line search         = 1.000000
-	convergence norms :     INITIAL         CURRENT         REQUIRED
-	   residual            1.391759e+01    2.327027e-05    0.000000e+00 
-	   energy              3.882674e+00    1.290455e-04    3.882674e-02 
-	   displacement        1.571377e+01    2.925554e-02    1.558333e-05 
-Reforming stiffness matrix: reformation #3
-
-===== reforming stiffness matrix:
-	Nr of equations ........................... : 1442
-	Nr of nonzeroes in stiffness matrix ....... : 90124
- 3
- Nonlinear solution status: time= 0.5
-	stiffness updates             = 0
-	right hand side evaluations   = 4
-	stiffness matrix reformations = 3
-	step from line search         = 1.000000
-	convergence norms :     INITIAL         CURRENT         REQUIRED
-	   residual            1.391759e+01    1.466761e-05    0.000000e+00 
-	   energy              3.882674e+00    5.236355e-05    3.882674e-02 
-	   displacement        1.571377e+01    5.502889e-02    1.474423e-05 
-Reforming stiffness matrix: reformation #4
-
-===== reforming stiffness matrix:
-	Nr of equations ........................... : 1442
-	Nr of nonzeroes in stiffness matrix ....... : 90124
- 4
- Nonlinear solution status: time= 0.5
-	stiffness updates             = 0
-	right hand side evaluations   = 5
-	stiffness matrix reformations = 4
-	step from line search         = 1.000000
-	convergence norms :     INITIAL         CURRENT         REQUIRED
-	   residual            1.391759e+01    4.096531e-06    0.000000e+00 
-	   energy              3.882674e+00    3.061291e-05    3.882674e-02 
-	   displacement        1.571377e+01    2.359167e-02    1.445554e-05 
-Reforming stiffness matrix: reformation #5
-
-===== reforming stiffness matrix:
-	Nr of equations ........................... : 1442
-	Nr of nonzeroes in stiffness matrix ....... : 90124
- 5
- Nonlinear solution status: time= 0.5
-	stiffness updates             = 0
-	right hand side evaluations   = 6
-	stiffness matrix reformations = 5
-	step from line search         = 1.000000
-	convergence norms :     INITIAL         CURRENT         REQUIRED
-	   residual            1.391759e+01    3.240018e-07    0.000000e+00 
-	   energy              3.882674e+00    6.512825e-06    3.882674e-02 
-	   displacement        1.571377e+01    1.249264e-02    1.472362e-05 
-Reforming stiffness matrix: reformation #6
-
-===== reforming stiffness matrix:
-	Nr of equations ........................... : 1442
-	Nr of nonzeroes in stiffness matrix ....... : 90124
- 6
- Nonlinear solution status: time= 0.5
-	stiffness updates             = 0
-	right hand side evaluations   = 7
-	stiffness matrix reformations = 6
-	step from line search         = 1.000000
-	convergence norms :     INITIAL         CURRENT         REQUIRED
-	   residual            1.391759e+01    5.933850e-08    0.000000e+00 
-	   energy              3.882674e+00    3.561565e-07    3.882674e-02 
-	   displacement        1.571377e+01    2.519803e-03    1.487175e-05 
-Reforming stiffness matrix: reformation #7
-
-===== reforming stiffness matrix:
-	Nr of equations ........................... : 1442
-	Nr of nonzeroes in stiffness matrix ....... : 90124
- 7
- Nonlinear solution status: time= 0.5
-	stiffness updates             = 0
-	right hand side evaluations   = 8
-	stiffness matrix reformations = 7
-	step from line search         = 1.000000
-	convergence norms :     INITIAL         CURRENT         REQUIRED
-	   residual            1.391759e+01    2.050363e-10    0.000000e+00 
-	   energy              3.882674e+00    1.411874e-08    3.882674e-02 
-	   displacement        1.571377e+01    5.424878e-05    1.488453e-05 
-Reforming stiffness matrix: reformation #8
-
-===== reforming stiffness matrix:
-	Nr of equations ........................... : 1442
-	Nr of nonzeroes in stiffness matrix ....... : 90124
- 8
- Nonlinear solution status: time= 0.5
-	stiffness updates             = 0
-	right hand side evaluations   = 9
-	stiffness matrix reformations = 8
-	step from line search         = 1.000000
-	convergence norms :     INITIAL         CURRENT         REQUIRED
-	   residual            1.391759e+01    1.496135e-12    0.000000e+00 
-	   energy              3.882674e+00    1.162764e-10    3.882674e-02 
-	   displacement        1.571377e+01    3.578648e-07    1.488595e-05 
-
-........................ augmentation # 1
- sliding interface # 1
-                        CURRENT        REQUIRED
-    D multiplier :    3.821080e-01   2.000000e-01
-    maximum gap  :    7.836087e-04       ***
- sliding interface # 2
-                        CURRENT        REQUIRED
-    D multiplier :    3.850573e-01   2.000000e-01
-    maximum gap  :    5.322758e-02       ***
- sliding interface # 3
-                        CURRENT        REQUIRED
-    D multiplier :    3.966787e-01   2.000000e-01
-    maximum gap  :    2.103667e-02       ***
-Reforming stiffness matrix: reformation #1
-
-===== reforming stiffness matrix:
-	Nr of equations ........................... : 1442
-	Nr of nonzeroes in stiffness matrix ....... : 90124
- 9
- Nonlinear solution status: time= 0.5
-	stiffness updates             = 0
-	right hand side evaluations   = 11
-	stiffness matrix reformations = 1
-	step from line search         = 1.000000
-	convergence norms :     INITIAL         CURRENT         REQUIRED
-	   residual            1.391759e+01    7.158157e-08    0.000000e+00 
-	   energy              3.882674e+00    2.407945e-06    3.882674e-02 
-	   displacement        1.571377e+01    1.940955e-02    1.529308e-05 
-Reforming stiffness matrix: reformation #2
-
-===== reforming stiffness matrix:
-	Nr of equations ........................... : 1442
-	Nr of nonzeroes in stiffness matrix ....... : 90124
- 10
- Nonlinear solution status: time= 0.5
-	stiffness updates             = 0
-	right hand side evaluations   = 12
-	stiffness matrix reformations = 2
-	step from line search         = 1.000000
-	convergence norms :     INITIAL         CURRENT         REQUIRED
-	   residual            1.391759e+01    6.627326e-10    0.000000e+00 
-	   energy              3.882674e+00    2.377504e-08    3.882674e-02 
-	   displacement        1.571377e+01    9.327122e-05    1.532816e-05 
-Reforming stiffness matrix: reformation #3
-
-===== reforming stiffness matrix:
-	Nr of equations ........................... : 1442
-	Nr of nonzeroes in stiffness matrix ....... : 90124
- 11
- Nonlinear solution status: time= 0.5
-	stiffness updates             = 0
-	right hand side evaluations   = 13
-	stiffness matrix reformations = 3
-	step from line search         = 1.000000
-	convergence norms :     INITIAL         CURRENT         REQUIRED
-	   residual            1.391759e+01    1.295464e-11    0.000000e+00 
-	   energy              3.882674e+00    4.444620e-10    3.882674e-02 
-	   displacement        1.571377e+01    2.822945e-06    1.532180e-05 
-
-........................ augmentation # 2
- sliding interface # 1
-                        CURRENT        REQUIRED
-    D multiplier :    7.013166e-02   2.000000e-01
-    maximum gap  :    7.193985e-04       ***
- sliding interface # 2
-                        CURRENT        REQUIRED
-    D multiplier :    8.290695e-02   2.000000e-01
-    maximum gap  :    4.163317e-02       ***
- sliding interface # 3
-                        CURRENT        REQUIRED
-    D multiplier :    1.132829e-01   2.000000e-01
-    maximum gap  :    8.924762e-03       ***
-
-convergence summary
-    number of iterations   : 11
-    number of reformations : 0
-
-------- converged at time : 0.5
-
-
-Data Record #1
-===========================================================================
-Step = 5
-Time = 0.5
-Data = ux;uy;uz
-File = /mnt/data/MATLAB/GIBBON/data/temp/tempModel_disp_out.txt
-
-Data Record #2
-===========================================================================
-Step = 5
-Time = 0.5
-Data = sed
-File = /mnt/data/MATLAB/GIBBON/data/temp/tempModel_fsed_out.txt
- ]0;(50%) tempModel.feb - FEBio 3.1.0  
-===== beginning time step 6 : 0.6 =====
-
-Setting parameter "value" to : -1.2
-Setting parameter "value" to : 0.942478
-
-Reforming stiffness matrix: reformation #1
-
-===== reforming stiffness matrix:
-	Nr of equations ........................... : 1442
-	Nr of nonzeroes in stiffness matrix ....... : 90124
- 1
- Nonlinear solution status: time= 0.6
-	stiffness updates             = 0
-	right hand side evaluations   = 2
-	stiffness matrix reformations = 1
-	step from line search         = 1.000000
-	convergence norms :     INITIAL         CURRENT         REQUIRED
-	   residual            1.399396e+01    7.028723e-02    0.000000e+00 
-	   energy              3.890319e+00    6.148753e-02    3.890319e-02 
-	   displacement        1.565674e+01    1.565674e+01    1.565674e-05 
-Reforming stiffness matrix: reformation #2
-
-===== reforming stiffness matrix:
-	Nr of equations ........................... : 1442
-	Nr of nonzeroes in stiffness matrix ....... : 89980
- 2
- Nonlinear solution status: time= 0.6
-	stiffness updates             = 0
-	right hand side evaluations   = 3
-	stiffness matrix reformations = 2
-	step from line search         = 1.000000
-	convergence norms :     INITIAL         CURRENT         REQUIRED
-	   residual            1.399396e+01    6.655119e-05    0.000000e+00 
-	   energy              3.890319e+00    1.425114e-04    3.890319e-02 
-	   displacement        1.565674e+01    3.006385e-02    1.555841e-05 
-Reforming stiffness matrix: reformation #3
-
-===== reforming stiffness matrix:
-	Nr of equations ........................... : 1442
-	Nr of nonzeroes in stiffness matrix ....... : 89872
- 3
- Nonlinear solution status: time= 0.6
-	stiffness updates             = 0
-	right hand side evaluations   = 4
-	stiffness matrix reformations = 3
-	step from line search         = 1.000000
-	convergence norms :     INITIAL         CURRENT         REQUIRED
-	   residual            1.399396e+01    9.524786e-06    0.000000e+00 
-	   energy              3.890319e+00    5.345568e-05    3.890319e-02 
-	   displacement        1.565674e+01    2.285860e-02    1.505707e-05 
-Reforming stiffness matrix: reformation #4
-
-===== reforming stiffness matrix:
-	Nr of equations ........................... : 1442
-	Nr of nonzeroes in stiffness matrix ....... : 89836
- 4
- Nonlinear solution status: time= 0.6
-	stiffness updates             = 0
-	right hand side evaluations   = 5
-	stiffness matrix reformations = 4
-	step from line search         = 1.000000
-	convergence norms :     INITIAL         CURRENT         REQUIRED
-	   residual            1.399396e+01    4.930562e-06    0.000000e+00 
-	   energy              3.890319e+00    2.610028e-05    3.890319e-02 
-	   displacement        1.565674e+01    3.347161e-02    1.444514e-05 
-Reforming stiffness matrix: reformation #5
-
-===== reforming stiffness matrix:
-	Nr of equations ........................... : 1442
-	Nr of nonzeroes in stiffness matrix ....... : 89836
- 5
- Nonlinear solution status: time= 0.6
-	stiffness updates             = 0
-	right hand side evaluations   = 6
-	stiffness matrix reformations = 5
-	step from line search         = 1.000000
-	convergence norms :     INITIAL         CURRENT         REQUIRED
-	   residual            1.399396e+01    1.519959e-07    0.000000e+00 
-	   energy              3.890319e+00    2.495970e-06    3.890319e-02 
-	   displacement        1.565674e+01    4.960149e-03    1.425495e-05 
-Reforming stiffness matrix: reformation #6
-
-===== reforming stiffness matrix:
-	Nr of equations ........................... : 1442
-	Nr of nonzeroes in stiffness matrix ....... : 89836
- 6
- Nonlinear solution status: time= 0.6
-	stiffness updates             = 0
-	right hand side evaluations   = 7
-	stiffness matrix reformations = 6
-	step from line search         = 1.000000
-	convergence norms :     INITIAL         CURRENT         REQUIRED
-	   residual            1.399396e+01    7.016713e-09    0.000000e+00 
-	   energy              3.890319e+00    1.342833e-07    3.890319e-02 
-	   displacement        1.565674e+01    5.015671e-04    1.431338e-05 
-Reforming stiffness matrix: reformation #7
-
-===== reforming stiffness matrix:
-	Nr of equations ........................... : 1442
-	Nr of nonzeroes in stiffness matrix ....... : 89836
- 7
- Nonlinear solution status: time= 0.6
-	stiffness updates             = 0
-	right hand side evaluations   = 8
-	stiffness matrix reformations = 7
-	step from line search         = 1.000000
-	convergence norms :     INITIAL         CURRENT         REQUIRED
-	   residual            1.399396e+01    1.027013e-10    0.000000e+00 
-	   energy              3.890319e+00    4.672105e-09    3.890319e-02 
-	   displacement        1.565674e+01    9.369236e-06    1.432067e-05 
-
-........................ augmentation # 1
- sliding interface # 1
-                        CURRENT        REQUIRED
-    D multiplier :    3.361795e-01   2.000000e-01
-    maximum gap  :    9.798969e-04       ***
- sliding interface # 2
-                        CURRENT        REQUIRED
-    D multiplier :    3.361433e-01   2.000000e-01
-    maximum gap  :    4.035880e-02       ***
- sliding interface # 3
-                        CURRENT        REQUIRED
-    D multiplier :    3.387520e-01   2.000000e-01
-    maximum gap  :    2.561466e-02       ***
-Reforming stiffness matrix: reformation #1
-
-===== reforming stiffness matrix:
-	Nr of equations ........................... : 1442
-	Nr of nonzeroes in stiffness matrix ....... : 89836
- 8
- Nonlinear solution status: time= 0.6
-	stiffness updates             = 0
-	right hand side evaluations   = 10
-	stiffness matrix reformations = 1
-	step from line search         = 1.000000
-	convergence norms :     INITIAL         CURRENT         REQUIRED
-	   residual            1.399396e+01    1.279404e-06    0.000000e+00 
-	   energy              3.890319e+00    2.276440e-06    3.890319e-02 
-	   displacement        1.565674e+01    2.227557e-02    1.483895e-05 
-Reforming stiffness matrix: reformation #2
-
-===== reforming stiffness matrix:
-	Nr of equations ........................... : 1442
-	Nr of nonzeroes in stiffness matrix ....... : 89836
- 9
- Nonlinear solution status: time= 0.6
-	stiffness updates             = 0
-	right hand side evaluations   = 11
-	stiffness matrix reformations = 2
-	step from line search         = 1.000000
-	convergence norms :     INITIAL         CURRENT         REQUIRED
-	   residual            1.399396e+01    4.657506e-07    0.000000e+00 
-	   energy              3.890319e+00    3.118476e-08    3.890319e-02 
-	   displacement        1.565674e+01    1.326234e-05    1.482943e-05 
-
-........................ augmentation # 2
- sliding interface # 1
-                        CURRENT        REQUIRED
-    D multiplier :    6.807582e-02   2.000000e-01
-    maximum gap  :    9.313840e-04       ***
- sliding interface # 2
-                        CURRENT        REQUIRED
-    D multiplier :    8.055290e-02   2.000000e-01
-    maximum gap  :    2.611089e-02       ***
- sliding interface # 3
-                        CURRENT        REQUIRED
-    D multiplier :    1.121487e-01   2.000000e-01
-    maximum gap  :    1.903095e-02       ***
-
-convergence summary
-    number of iterations   : 9
-    number of reformations : 0
-
-------- converged at time : 0.6
-
-
-Data Record #1
-===========================================================================
-Step = 6
-Time = 0.6
-Data = ux;uy;uz
-File = /mnt/data/MATLAB/GIBBON/data/temp/tempModel_disp_out.txt
-
-Data Record #2
-===========================================================================
-Step = 6
-Time = 0.6
-Data = sed
-File = /mnt/data/MATLAB/GIBBON/data/temp/tempModel_fsed_out.txt
- ]0;(60%) tempModel.feb - FEBio 3.1.0  
-===== beginning time step 7 : 0.7 =====
-
-Setting parameter "value" to : -1.4
-Setting parameter "value" to : 1.09956
-
-Reforming stiffness matrix: reformation #1
-
-===== reforming stiffness matrix:
-	Nr of equations ........................... : 1442
-	Nr of nonzeroes in stiffness matrix ....... : 89836
- 1
- Nonlinear solution status: time= 0.7
-	stiffness updates             = 0
-	right hand side evaluations   = 2
-	stiffness matrix reformations = 1
-	step from line search         = 1.000000
-	convergence norms :     INITIAL         CURRENT         REQUIRED
-	   residual            1.407865e+01    6.998295e-02    0.000000e+00 
-	   energy              3.899528e+00    6.147595e-02    3.899528e-02 
-	   displacement        1.542189e+01    1.542189e+01    1.542189e-05 
-Reforming stiffness matrix: reformation #2
-
-===== reforming stiffness matrix:
-	Nr of equations ........................... : 1442
-	Nr of nonzeroes in stiffness matrix ....... : 89836
- 2
- Nonlinear solution status: time= 0.7
-	stiffness updates             = 0
-	right hand side evaluations   = 3
-	stiffness matrix reformations = 2
-	step from line search         = 1.000000
-	convergence norms :     INITIAL         CURRENT         REQUIRED
-	   residual            1.407865e+01    1.490659e-04    0.000000e+00 
-	   energy              3.899528e+00    1.430501e-04    3.899528e-02 
-	   displacement        1.542189e+01    4.871917e-02    1.539287e-05 
-Reforming stiffness matrix: reformation #3
-
-===== reforming stiffness matrix:
-	Nr of equations ........................... : 1442
-	Nr of nonzeroes in stiffness matrix ....... : 89836
- 3
- Nonlinear solution status: time= 0.7
-	stiffness updates             = 0
-	right hand side evaluations   = 4
-	stiffness matrix reformations = 3
-	step from line search         = 1.000000
-	convergence norms :     INITIAL         CURRENT         REQUIRED
-	   residual            1.407865e+01    1.043342e-05    0.000000e+00 
-	   energy              3.899528e+00    4.631049e-05    3.899528e-02 
-	   displacement        1.542189e+01    3.502867e-02    1.491312e-05 
-Reforming stiffness matrix: reformation #4
-
-===== reforming stiffness matrix:
-	Nr of equations ........................... : 1442
-	Nr of nonzeroes in stiffness matrix ....... : 89836
- 4
- Nonlinear solution status: time= 0.7
-	stiffness updates             = 0
-	right hand side evaluations   = 5
-	stiffness matrix reformations = 4
-	step from line search         = 1.000000
-	convergence norms :     INITIAL         CURRENT         REQUIRED
-	   residual            1.407865e+01    8.051588e-06    0.000000e+00 
-	   energy              3.899528e+00    9.348680e-06    3.899528e-02 
-	   displacement        1.542189e+01    5.581905e-02    1.427178e-05 
-Reforming stiffness matrix: reformation #5
-
-===== reforming stiffness matrix:
-	Nr of equations ........................... : 1442
-	Nr of nonzeroes in stiffness matrix ....... : 89836
- 5
- Nonlinear solution status: time= 0.7
-	stiffness updates             = 0
-	right hand side evaluations   = 6
-	stiffness matrix reformations = 5
-	step from line search         = 1.000000
-	convergence norms :     INITIAL         CURRENT         REQUIRED
-	   residual            1.407865e+01    3.311314e-07    0.000000e+00 
-	   energy              3.899528e+00    6.463190e-06    3.899528e-02 
-	   displacement        1.542189e+01    1.129308e-02    1.437276e-05 
-Reforming stiffness matrix: reformation #6
-
-===== reforming stiffness matrix:
-	Nr of equations ........................... : 1442
-	Nr of nonzeroes in stiffness matrix ....... : 89836
- 6
- Nonlinear solution status: time= 0.7
-	stiffness updates             = 0
-	right hand side evaluations   = 7
-	stiffness matrix reformations = 6
-	step from line search         = 1.000000
-	convergence norms :     INITIAL         CURRENT         REQUIRED
-	   residual            1.407865e+01    4.720394e-07    0.000000e+00 
-	   energy              3.899528e+00    1.529327e-06    3.899528e-02 
-	   displacement        1.542189e+01    3.952119e-03    1.457231e-05 
-Reforming stiffness matrix: reformation #7
-
-===== reforming stiffness matrix:
-	Nr of equations ........................... : 1442
-	Nr of nonzeroes in stiffness matrix ....... : 89836
- 7
- Nonlinear solution status: time= 0.7
-	stiffness updates             = 0
-	right hand side evaluations   = 8
-	stiffness matrix reformations = 7
-	step from line search         = 1.000000
-	convergence norms :     INITIAL         CURRENT         REQUIRED
-	   residual            1.407865e+01    1.220555e-09    0.000000e+00 
-	   energy              3.899528e+00    3.325177e-08    3.899528e-02 
-	   displacement        1.542189e+01    7.962239e-04    1.458493e-05 
-Reforming stiffness matrix: reformation #8
-
-===== reforming stiffness matrix:
-	Nr of equations ........................... : 1442
-	Nr of nonzeroes in stiffness matrix ....... : 89836
- 8
- Nonlinear solution status: time= 0.7
-	stiffness updates             = 0
-	right hand side evaluations   = 9
-	stiffness matrix reformations = 8
-	step from line search         = 1.000000
-	convergence norms :     INITIAL         CURRENT         REQUIRED
-	   residual            1.407865e+01    2.128851e-11    0.000000e+00 
-	   energy              3.899528e+00    6.333600e-10    3.899528e-02 
-	   displacement        1.542189e+01    4.057340e-06    1.458830e-05 
-
-........................ augmentation # 1
- sliding interface # 1
-                        CURRENT        REQUIRED
-    D multiplier :    3.023910e-01   2.000000e-01
-    maximum gap  :    1.210603e-03       ***
- sliding interface # 2
-                        CURRENT        REQUIRED
-    D multiplier :    3.013086e-01   2.000000e-01
-    maximum gap  :    6.441884e-02       ***
- sliding interface # 3
-                        CURRENT        REQUIRED
-    D multiplier :    2.989577e-01   2.000000e-01
-    maximum gap  :    5.352246e-02       ***
-Reforming stiffness matrix: reformation #1
-
-===== reforming stiffness matrix:
-	Nr of equations ........................... : 1442
-	Nr of nonzeroes in stiffness matrix ....... : 89836
- 9
- Nonlinear solution status: time= 0.7
-	stiffness updates             = 0
-	right hand side evaluations   = 11
-	stiffness matrix reformations = 1
-	step from line search         = 1.000000
-	convergence norms :     INITIAL         CURRENT         REQUIRED
-	   residual            1.407865e+01    4.726196e-06    0.000000e+00 
-	   energy              3.899528e+00    4.376473e-05    3.899528e-02 
-	   displacement        1.542189e+01    2.905052e-02    1.503846e-05 
-Reforming stiffness matrix: reformation #2
-
-===== reforming stiffness matrix:
-	Nr of equations ........................... : 1442
-	Nr of nonzeroes in stiffness matrix ....... : 89836
- 10
- Nonlinear solution status: time= 0.7
-	stiffness updates             = 0
-	right hand side evaluations   = 12
-	stiffness matrix reformations = 2
-	step from line search         = 1.000000
-	convergence norms :     INITIAL         CURRENT         REQUIRED
-	   residual            1.407865e+01    3.680424e-07    0.000000e+00 
-	   energy              3.899528e+00    8.223982e-08    3.899528e-02 
-	   displacement        1.542189e+01    3.107956e-03    1.506440e-05 
-Reforming stiffness matrix: reformation #3
-
-===== reforming stiffness matrix:
-	Nr of equations ........................... : 1442
-	Nr of nonzeroes in stiffness matrix ....... : 89836
- 11
- Nonlinear solution status: time= 0.7
-	stiffness updates             = 0
-	right hand side evaluations   = 13
-	stiffness matrix reformations = 3
-	step from line search         = 1.000000
-	convergence norms :     INITIAL         CURRENT         REQUIRED
-	   residual            1.407865e+01    5.060742e-09    0.000000e+00 
-	   energy              3.899528e+00    7.220753e-08    3.899528e-02 
-	   displacement        1.542189e+01    1.491560e-03    1.505452e-05 
-Reforming stiffness matrix: reformation #4
-
-===== reforming stiffness matrix:
-	Nr of equations ........................... : 1442
-	Nr of nonzeroes in stiffness matrix ....... : 89836
- 12
- Nonlinear solution status: time= 0.7
-	stiffness updates             = 0
-	right hand side evaluations   = 14
-	stiffness matrix reformations = 4
-	step from line search         = 1.000000
-	convergence norms :     INITIAL         CURRENT         REQUIRED
-	   residual            1.407865e+01    2.162149e-11    0.000000e+00 
-	   energy              3.899528e+00    6.502048e-11    3.899528e-02 
-	   displacement        1.542189e+01    1.251531e-05    1.505489e-05 
-
-........................ augmentation # 2
- sliding interface # 1
-                        CURRENT        REQUIRED
-    D multiplier :    7.056416e-02   2.000000e-01
-    maximum gap  :    1.174317e-03       ***
- sliding interface # 2
-                        CURRENT        REQUIRED
-    D multiplier :    9.261554e-02   2.000000e-01
-    maximum gap  :    5.016864e-02       ***
- sliding interface # 3
-                        CURRENT        REQUIRED
-    D multiplier :    9.934294e-02   2.000000e-01
-    maximum gap  :    4.729016e-02       ***
-
-convergence summary
-    number of iterations   : 12
-    number of reformations : 0
-
-------- converged at time : 0.7
-
-
-Data Record #1
-===========================================================================
-Step = 7
-Time = 0.7
-Data = ux;uy;uz
-File = /mnt/data/MATLAB/GIBBON/data/temp/tempModel_disp_out.txt
-
-Data Record #2
-===========================================================================
-Step = 7
-Time = 0.7
-Data = sed
-File = /mnt/data/MATLAB/GIBBON/data/temp/tempModel_fsed_out.txt
- ]0;(70%) tempModel.feb - FEBio 3.1.0  
-===== beginning time step 8 : 0.8 =====
-
-Setting parameter "value" to : -1.6
-Setting parameter "value" to : 1.25664
-
-Reforming stiffness matrix: reformation #1
-
-===== reforming stiffness matrix:
-	Nr of equations ........................... : 1442
-	Nr of nonzeroes in stiffness matrix ....... : 89836
- 1
- Nonlinear solution status: time= 0.8
-	stiffness updates             = 0
-	right hand side evaluations   = 2
-	stiffness matrix reformations = 1
-	step from line search         = 1.000000
-	convergence norms :     INITIAL         CURRENT         REQUIRED
-	   residual            1.417245e+01    7.080185e-02    0.000000e+00 
-	   energy              3.908583e+00    6.232534e-02    3.908583e-02 
-	   displacement        1.580103e+01    1.580103e+01    1.580103e-05 
-Reforming stiffness matrix: reformation #2
-
-===== reforming stiffness matrix:
-	Nr of equations ........................... : 1442
-	Nr of nonzeroes in stiffness matrix ....... : 89692
- 2
- Nonlinear solution status: time= 0.8
-	stiffness updates             = 0
-	right hand side evaluations   = 3
-	stiffness matrix reformations = 2
-	step from line search         = 1.000000
-	convergence norms :     INITIAL         CURRENT         REQUIRED
-	   residual            1.417245e+01    3.839968e-05    0.000000e+00 
-	   energy              3.908583e+00    1.128102e-04    3.908583e-02 
-	   displacement        1.580103e+01    3.717330e-02    1.569019e-05 
-Reforming stiffness matrix: reformation #3
-
-===== reforming stiffness matrix:
-	Nr of equations ........................... : 1442
-	Nr of nonzeroes in stiffness matrix ....... : 89692
- 3
- Nonlinear solution status: time= 0.8
-	stiffness updates             = 0
-	right hand side evaluations   = 4
-	stiffness matrix reformations = 3
-	step from line search         = 1.000000
-	convergence norms :     INITIAL         CURRENT         REQUIRED
-	   residual            1.417245e+01    1.052484e-05    0.000000e+00 
-	   energy              3.908583e+00    4.477827e-05    3.908583e-02 
-	   displacement        1.580103e+01    1.337275e-02    1.541518e-05 
-Reforming stiffness matrix: reformation #4
-
-===== reforming stiffness matrix:
-	Nr of equations ........................... : 1442
-	Nr of nonzeroes in stiffness matrix ....... : 89728
- 4
- Nonlinear solution status: time= 0.8
-	stiffness updates             = 0
-	right hand side evaluations   = 5
-	stiffness matrix reformations = 4
-	step from line search         = 1.000000
-	convergence norms :     INITIAL         CURRENT         REQUIRED
-	   residual            1.417245e+01    2.029971e-05    0.000000e+00 
-	   energy              3.908583e+00    1.294955e-05    3.908583e-02 
-	   displacement        1.580103e+01    2.328075e-02    1.525038e-05 
-Reforming stiffness matrix: reformation #5
-
-===== reforming stiffness matrix:
-	Nr of equations ........................... : 1442
-	Nr of nonzeroes in stiffness matrix ....... : 89260
- 5
- Nonlinear solution status: time= 0.8
-	stiffness updates             = 0
-	right hand side evaluations   = 6
-	stiffness matrix reformations = 5
-	step from line search         = 1.000000
-	convergence norms :     INITIAL         CURRENT         REQUIRED
-	   residual            1.417245e+01    1.743412e-06    0.000000e+00 
-	   energy              3.908583e+00    1.580672e-05    3.908583e-02 
-	   displacement        1.580103e+01    1.725950e-02    1.479022e-05 
-Reforming stiffness matrix: reformation #6
-
-===== reforming stiffness matrix:
-	Nr of equations ........................... : 1442
-	Nr of nonzeroes in stiffness matrix ....... : 89692
- 6
- Nonlinear solution status: time= 0.8
-	stiffness updates             = 0
-	right hand side evaluations   = 7
-	stiffness matrix reformations = 6
-	step from line search         = 1.000000
-	convergence norms :     INITIAL         CURRENT         REQUIRED
-	   residual            1.417245e+01    3.820363e-07    0.000000e+00 
-	   energy              3.908583e+00    1.380609e-06    3.908583e-02 
-	   displacement        1.580103e+01    7.014949e-03    1.507703e-05 
-Reforming stiffness matrix: reformation #7
-
-===== reforming stiffness matrix:
-	Nr of equations ........................... : 1442
-	Nr of nonzeroes in stiffness matrix ....... : 89584
- 7
- Nonlinear solution status: time= 0.8
-	stiffness updates             = 0
-	right hand side evaluations   = 8
-	stiffness matrix reformations = 7
-	step from line search         = 1.000000
-	convergence norms :     INITIAL         CURRENT         REQUIRED
-	   residual            1.417245e+01    1.586720e-07    0.000000e+00 
-	   energy              3.908583e+00    6.559508e-07    3.908583e-02 
-	   displacement        1.580103e+01    4.609157e-04    1.500158e-05 
-Reforming stiffness matrix: reformation #8
-
-===== reforming stiffness matrix:
-	Nr of equations ........................... : 1442
-	Nr of nonzeroes in stiffness matrix ....... : 89692
- 8
- Nonlinear solution status: time= 0.8
-	stiffness updates             = 0
-	right hand side evaluations   = 10
-	stiffness matrix reformations = 8
-	step from line search         = 0.604816
-	convergence norms :     INITIAL         CURRENT         REQUIRED
-	   residual            1.417245e+01    2.077659e-08    0.000000e+00 
-	   energy              3.908583e+00    1.292842e-07    3.908583e-02 
-	   displacement        1.580103e+01    1.981096e-04    1.504800e-05 
-Reforming stiffness matrix: reformation #9
-
-===== reforming stiffness matrix:
-	Nr of equations ........................... : 1442
-	Nr of nonzeroes in stiffness matrix ....... : 89692
- 9
- Nonlinear solution status: time= 0.8
-	stiffness updates             = 0
-	right hand side evaluations   = 13
-	stiffness matrix reformations = 9
-	step from line search         = 0.254227
-	convergence norms :     INITIAL         CURRENT         REQUIRED
-	   residual            1.417245e+01    1.175074e-08    0.000000e+00 
-	   energy              3.908583e+00    1.906418e-08    3.908583e-02 
-	   displacement        1.580103e+01    6.095948e-06    1.505576e-05 
-
-........................ augmentation # 1
- sliding interface # 1
-                        CURRENT        REQUIRED
-    D multiplier :    2.876564e-01   2.000000e-01
-    maximum gap  :    1.481460e-03       ***
- sliding interface # 2
-                        CURRENT        REQUIRED
-    D multiplier :    2.826639e-01   2.000000e-01
-    maximum gap  :    9.335860e-02       ***
- sliding interface # 3
-                        CURRENT        REQUIRED
-    D multiplier :    2.725326e-01   2.000000e-01
-    maximum gap  :    3.369791e-02       ***
-Reforming stiffness matrix: reformation #1
-
-===== reforming stiffness matrix:
-	Nr of equations ........................... : 1442
-	Nr of nonzeroes in stiffness matrix ....... : 89692
- 10
- Nonlinear solution status: time= 0.8
-	stiffness updates             = 0
-	right hand side evaluations   = 15
-	stiffness matrix reformations = 1
-	step from line search         = 1.000000
-	convergence norms :     INITIAL         CURRENT         REQUIRED
-	   residual            1.417245e+01    1.123676e-06    0.000000e+00 
-	   energy              3.908583e+00    4.059168e-06    3.908583e-02 
-	   displacement        1.580103e+01    4.208957e-02    1.602566e-05 
-Reforming stiffness matrix: reformation #2
-
-===== reforming stiffness matrix:
-	Nr of equations ........................... : 1442
-	Nr of nonzeroes in stiffness matrix ....... : 89692
- 11
- Nonlinear solution status: time= 0.8
-	stiffness updates             = 0
-	right hand side evaluations   = 16
-	stiffness matrix reformations = 2
-	step from line search         = 1.000000
-	convergence norms :     INITIAL         CURRENT         REQUIRED
-	   residual            1.417245e+01    1.801265e-08    0.000000e+00 
-	   energy              3.908583e+00    9.531922e-08    3.908583e-02 
-	   displacement        1.580103e+01    8.944029e-04    1.590471e-05 
-Reforming stiffness matrix: reformation #3
-
-===== reforming stiffness matrix:
-	Nr of equations ........................... : 1442
-	Nr of nonzeroes in stiffness matrix ....... : 89692
- 12
- Nonlinear solution status: time= 0.8
-	stiffness updates             = 0
-	right hand side evaluations   = 17
-	stiffness matrix reformations = 3
-	step from line search         = 1.000000
-	convergence norms :     INITIAL         CURRENT         REQUIRED
-	   residual            1.417245e+01    2.284473e-11    0.000000e+00 
-	   energy              3.908583e+00    4.854940e-10    3.908583e-02 
-	   displacement        1.580103e+01    1.150465e-06    1.590408e-05 
-
-........................ augmentation # 2
- sliding interface # 1
-                        CURRENT        REQUIRED
-    D multiplier :    7.820988e-02   2.000000e-01
-    maximum gap  :    1.474937e-03       ***
- sliding interface # 2
-                        CURRENT        REQUIRED
-    D multiplier :    9.005537e-02   2.000000e-01
-    maximum gap  :    7.201410e-02       ***
- sliding interface # 3
-                        CURRENT        REQUIRED
-    D multiplier :    7.952876e-02   2.000000e-01
-    maximum gap  :    1.587162e-02       ***
-
-convergence summary
-    number of iterations   : 12
-    number of reformations : 0
-
-------- converged at time : 0.8
-
-
-Data Record #1
-===========================================================================
-Step = 8
-Time = 0.8
-Data = ux;uy;uz
-File = /mnt/data/MATLAB/GIBBON/data/temp/tempModel_disp_out.txt
-
-Data Record #2
-===========================================================================
-Step = 8
-Time = 0.8
-Data = sed
-File = /mnt/data/MATLAB/GIBBON/data/temp/tempModel_fsed_out.txt
- ]0;(80%) tempModel.feb - FEBio 3.1.0  
-===== beginning time step 9 : 0.9 =====
-
-Setting parameter "value" to : -1.8
-Setting parameter "value" to : 1.41372
-
-Reforming stiffness matrix: reformation #1
-
-===== reforming stiffness matrix:
-	Nr of equations ........................... : 1442
-	Nr of nonzeroes in stiffness matrix ....... : 89692
- 1
- Nonlinear solution status: time= 0.9
-	stiffness updates             = 0
-	right hand side evaluations   = 2
-	stiffness matrix reformations = 1
-	step from line search         = 1.000000
-	convergence norms :     INITIAL         CURRENT         REQUIRED
-	   residual            1.428235e+01    7.252379e-02    0.000000e+00 
-	   energy              3.919359e+00    6.383619e-02    3.919359e-02 
-	   displacement        1.628454e+01    1.628454e+01    1.628454e-05 
-Reforming stiffness matrix: reformation #2
-
-===== reforming stiffness matrix:
-	Nr of equations ........................... : 1442
-	Nr of nonzeroes in stiffness matrix ....... : 89260
- 2
- Nonlinear solution status: time= 0.9
-	stiffness updates             = 0
-	right hand side evaluations   = 3
-	stiffness matrix reformations = 2
-	step from line search         = 1.000000
-	convergence norms :     INITIAL         CURRENT         REQUIRED
-	   residual            1.428235e+01    2.739145e-05    0.000000e+00 
-	   energy              3.919359e+00    1.030795e-04    3.919359e-02 
-	   displacement        1.628454e+01    3.888674e-02    1.623760e-05 
-Reforming stiffness matrix: reformation #3
-
-===== reforming stiffness matrix:
-	Nr of equations ........................... : 1442
-	Nr of nonzeroes in stiffness matrix ....... : 89260
- 3
- Nonlinear solution status: time= 0.9
-	stiffness updates             = 0
-	right hand side evaluations   = 4
-	stiffness matrix reformations = 3
-	step from line search         = 1.000000
-	convergence norms :     INITIAL         CURRENT         REQUIRED
-	   residual            1.428235e+01    1.809615e-05    0.000000e+00 
-	   energy              3.919359e+00    4.757046e-05    3.919359e-02 
-	   displacement        1.628454e+01    2.409135e-02    1.564049e-05 
-Reforming stiffness matrix: reformation #4
-
-===== reforming stiffness matrix:
-	Nr of equations ........................... : 1442
-	Nr of nonzeroes in stiffness matrix ....... : 89260
- 4
- Nonlinear solution status: time= 0.9
-	stiffness updates             = 0
-	right hand side evaluations   = 5
-	stiffness matrix reformations = 4
-	step from line search         = 1.000000
-	convergence norms :     INITIAL         CURRENT         REQUIRED
-	   residual            1.428235e+01    8.502559e-06    0.000000e+00 
-	   energy              3.919359e+00    4.653404e-05    3.919359e-02 
-	   displacement        1.628454e+01    4.611310e-02    1.481145e-05 
-Reforming stiffness matrix: reformation #5
-
-===== reforming stiffness matrix:
-	Nr of equations ........................... : 1442
-	Nr of nonzeroes in stiffness matrix ....... : 89260
- 5
- Nonlinear solution status: time= 0.9
-	stiffness updates             = 0
-	right hand side evaluations   = 6
-	stiffness matrix reformations = 5
-	step from line search         = 1.000000
-	convergence norms :     INITIAL         CURRENT         REQUIRED
-	   residual            1.428235e+01    4.659961e-07    0.000000e+00 
-	   energy              3.919359e+00    4.430132e-06    3.919359e-02 
-	   displacement        1.628454e+01    1.596104e-02    1.431489e-05 
-Reforming stiffness matrix: reformation #6
-
-===== reforming stiffness matrix:
-	Nr of equations ........................... : 1442
-	Nr of nonzeroes in stiffness matrix ....... : 89260
- 6
- Nonlinear solution status: time= 0.9
-	stiffness updates             = 0
-	right hand side evaluations   = 7
-	stiffness matrix reformations = 6
-	step from line search         = 1.000000
-	convergence norms :     INITIAL         CURRENT         REQUIRED
-	   residual            1.428235e+01    3.225593e-08    0.000000e+00 
-	   energy              3.919359e+00    1.381822e-07    3.919359e-02 
-	   displacement        1.628454e+01    1.352767e-03    1.417095e-05 
-Reforming stiffness matrix: reformation #7
-
-===== reforming stiffness matrix:
-	Nr of equations ........................... : 1442
-	Nr of nonzeroes in stiffness matrix ....... : 89260
- 7
- Nonlinear solution status: time= 0.9
-	stiffness updates             = 0
-	right hand side evaluations   = 8
-	stiffness matrix reformations = 7
-	step from line search         = 1.000000
-	convergence norms :     INITIAL         CURRENT         REQUIRED
-	   residual            1.428235e+01    1.538491e-10    0.000000e+00 
-	   energy              3.919359e+00    4.539472e-09    3.919359e-02 
-	   displacement        1.628454e+01    1.063482e-05    1.418071e-05 
-
-........................ augmentation # 1
- sliding interface # 1
-                        CURRENT        REQUIRED
-    D multiplier :    2.718136e-01   2.000000e-01
-    maximum gap  :    1.843170e-03       ***
- sliding interface # 2
-                        CURRENT        REQUIRED
-    D multiplier :    2.482613e-01   2.000000e-01
-    maximum gap  :    7.283337e-02       ***
- sliding interface # 3
-                        CURRENT        REQUIRED
-    D multiplier :    2.329809e-01   2.000000e-01
-    maximum gap  :    5.498031e-02       ***
-Reforming stiffness matrix: reformation #1
-
-===== reforming stiffness matrix:
-	Nr of equations ........................... : 1442
-	Nr of nonzeroes in stiffness matrix ....... : 89260
- 8
- Nonlinear solution status: time= 0.9
-	stiffness updates             = 0
-	right hand side evaluations   = 10
-	stiffness matrix reformations = 1
-	step from line search         = 1.000000
-	convergence norms :     INITIAL         CURRENT         REQUIRED
-	   residual            1.428235e+01    5.088738e-06    0.000000e+00 
-	   energy              3.919359e+00    4.398479e-05    3.919359e-02 
-	   displacement        1.628454e+01    5.103607e-02    1.522144e-05 
-Reforming stiffness matrix: reformation #2
-
-===== reforming stiffness matrix:
-	Nr of equations ........................... : 1442
-	Nr of nonzeroes in stiffness matrix ....... : 89260
- 9
- Nonlinear solution status: time= 0.9
-	stiffness updates             = 0
-	right hand side evaluations   = 11
-	stiffness matrix reformations = 2
-	step from line search         = 1.000000
-	convergence norms :     INITIAL         CURRENT         REQUIRED
-	   residual            1.428235e+01    2.654414e-08    0.000000e+00 
-	   energy              3.919359e+00    1.475280e-07    3.919359e-02 
-	   displacement        1.628454e+01    1.942582e-03    1.508090e-05 
-Reforming stiffness matrix: reformation #3
-
-===== reforming stiffness matrix:
-	Nr of equations ........................... : 1442
-	Nr of nonzeroes in stiffness matrix ....... : 89260
- 10
- Nonlinear solution status: time= 0.9
-	stiffness updates             = 0
-	right hand side evaluations   = 12
-	stiffness matrix reformations = 3
-	step from line search         = 1.000000
-	convergence norms :     INITIAL         CURRENT         REQUIRED
-	   residual            1.428235e+01    5.225418e-11    0.000000e+00 
-	   energy              3.919359e+00    2.893966e-09    3.919359e-02 
-	   displacement        1.628454e+01    3.551213e-06    1.508521e-05 
-
-........................ augmentation # 2
- sliding interface # 1
-                        CURRENT        REQUIRED
-    D multiplier :    8.210253e-02   2.000000e-01
-    maximum gap  :    1.901555e-03       ***
- sliding interface # 2
-                        CURRENT        REQUIRED
-    D multiplier :    8.053644e-02   2.000000e-01
-    maximum gap  :    5.217676e-02       ***
- sliding interface # 3
-                        CURRENT        REQUIRED
-    D multiplier :    8.079116e-02   2.000000e-01
-    maximum gap  :    3.944696e-02       ***
-
-convergence summary
-    number of iterations   : 10
-    number of reformations : 0
-
-------- converged at time : 0.9
-
-
-Data Record #1
-===========================================================================
-Step = 9
-Time = 0.9
-Data = ux;uy;uz
-File = /mnt/data/MATLAB/GIBBON/data/temp/tempModel_disp_out.txt
-
-Data Record #2
-===========================================================================
-Step = 9
-Time = 0.9
-Data = sed
-File = /mnt/data/MATLAB/GIBBON/data/temp/tempModel_fsed_out.txt
- ]0;(90%) tempModel.feb - FEBio 3.1.0  
-===== beginning time step 10 : 1 =====
-
-Setting parameter "value" to : -2
-Setting parameter "value" to : 1.5708
-
-Reforming stiffness matrix: reformation #1
-
-===== reforming stiffness matrix:
-	Nr of equations ........................... : 1442
-	Nr of nonzeroes in stiffness matrix ....... : 89116
- 1
- Nonlinear solution status: time= 1
-	stiffness updates             = 0
-	right hand side evaluations   = 2
-	stiffness matrix reformations = 1
-	step from line search         = 1.000000
-	convergence norms :     INITIAL         CURRENT         REQUIRED
-	   residual            1.440579e+01    7.467898e-02    0.000000e+00 
-	   energy              3.931437e+00    6.549532e-02    3.931437e-02 
-	   displacement        1.649178e+01    1.649178e+01    1.649178e-05 
-Reforming stiffness matrix: reformation #2
-
-===== reforming stiffness matrix:
-	Nr of equations ........................... : 1442
-	Nr of nonzeroes in stiffness matrix ....... : 89260
- 2
- Nonlinear solution status: time= 1
-	stiffness updates             = 0
-	right hand side evaluations   = 3
-	stiffness matrix reformations = 2
-	step from line search         = 1.000000
-	convergence norms :     INITIAL         CURRENT         REQUIRED
-	   residual            1.440579e+01    3.838125e-05    0.000000e+00 
-	   energy              3.931437e+00    9.372912e-05    3.931437e-02 
-	   displacement        1.649178e+01    4.311811e-02    1.646924e-05 
-Reforming stiffness matrix: reformation #3
-
-===== reforming stiffness matrix:
-	Nr of equations ........................... : 1442
-	Nr of nonzeroes in stiffness matrix ....... : 88936
- 3
- Nonlinear solution status: time= 1
-	stiffness updates             = 0
-	right hand side evaluations   = 4
-	stiffness matrix reformations = 3
-	step from line search         = 1.000000
-	convergence norms :     INITIAL         CURRENT         REQUIRED
-	   residual            1.440579e+01    4.074777e-05    0.000000e+00 
-	   energy              3.931437e+00    1.472411e-04    3.931437e-02 
-	   displacement        1.649178e+01    3.884405e-02    1.621063e-05 
-Reforming stiffness matrix: reformation #4
-
-===== reforming stiffness matrix:
-	Nr of equations ........................... : 1442
-	Nr of nonzeroes in stiffness matrix ....... : 88828
- 4
- Nonlinear solution status: time= 1
-	stiffness updates             = 0
-	right hand side evaluations   = 5
-	stiffness matrix reformations = 4
-	step from line search         = 1.000000
-	convergence norms :     INITIAL         CURRENT         REQUIRED
-	   residual            1.440579e+01    2.352940e-06    0.000000e+00 
-	   energy              3.931437e+00    1.385013e-05    3.931437e-02 
-	   displacement        1.649178e+01    1.832352e-02    1.573856e-05 
-Reforming stiffness matrix: reformation #5
-
-===== reforming stiffness matrix:
-	Nr of equations ........................... : 1442
-	Nr of nonzeroes in stiffness matrix ....... : 88828
- 5
- Nonlinear solution status: time= 1
-	stiffness updates             = 0
-	right hand side evaluations   = 6
-	stiffness matrix reformations = 5
-	step from line search         = 1.000000
-	convergence norms :     INITIAL         CURRENT         REQUIRED
-	   residual            1.440579e+01    4.662229e-07    0.000000e+00 
-	   energy              3.931437e+00    2.970978e-06    3.931437e-02 
-	   displacement        1.649178e+01    7.368874e-03    1.538088e-05 
-Reforming stiffness matrix: reformation #6
-
-===== reforming stiffness matrix:
-	Nr of equations ........................... : 1442
-	Nr of nonzeroes in stiffness matrix ....... : 88828
- 6
- Nonlinear solution status: time= 1
-	stiffness updates             = 0
-	right hand side evaluations   = 7
-	stiffness matrix reformations = 6
-	step from line search         = 1.000000
-	convergence norms :     INITIAL         CURRENT         REQUIRED
-	   residual            1.440579e+01    2.309827e-08    0.000000e+00 
-	   energy              3.931437e+00    1.705382e-07    3.931437e-02 
-	   displacement        1.649178e+01    5.786941e-04    1.527525e-05 
-Reforming stiffness matrix: reformation #7
-
-===== reforming stiffness matrix:
-	Nr of equations ........................... : 1442
-	Nr of nonzeroes in stiffness matrix ....... : 88828
- 7
- Nonlinear solution status: time= 1
-	stiffness updates             = 0
-	right hand side evaluations   = 8
-	stiffness matrix reformations = 7
-	step from line search         = 1.000000
-	convergence norms :     INITIAL         CURRENT         REQUIRED
-	   residual            1.440579e+01    8.192243e-11    0.000000e+00 
-	   energy              3.931437e+00    5.441264e-10    3.931437e-02 
-	   displacement        1.649178e+01    1.907754e-06    1.527529e-05 
-
-........................ augmentation # 1
- sliding interface # 1
-                        CURRENT        REQUIRED
-    D multiplier :    2.666090e-01   2.000000e-01
-    maximum gap  :    2.735248e-03       ***
- sliding interface # 2
-                        CURRENT        REQUIRED
-    D multiplier :    2.272713e-01   2.000000e-01
-    maximum gap  :    7.328773e-02       ***
- sliding interface # 3
-                        CURRENT        REQUIRED
-    D multiplier :    2.364452e-01   2.000000e-01
-    maximum gap  :    4.336855e-02       ***
-Reforming stiffness matrix: reformation #1
-
-===== reforming stiffness matrix:
-	Nr of equations ........................... : 1442
-	Nr of nonzeroes in stiffness matrix ....... : 88774
- 8
- Nonlinear solution status: time= 1
-	stiffness updates             = 0
-	right hand side evaluations   = 10
-	stiffness matrix reformations = 1
-	step from line search         = 1.000000
-	convergence norms :     INITIAL         CURRENT         REQUIRED
-	   residual            1.440579e+01    3.073190e-05    0.000000e+00 
-	   energy              3.931437e+00    1.055708e-04    3.931437e-02 
-	   displacement        1.649178e+01    5.658306e-02    1.621688e-05 
-Reforming stiffness matrix: reformation #2
-
-===== reforming stiffness matrix:
-	Nr of equations ........................... : 1442
-	Nr of nonzeroes in stiffness matrix ....... : 88792
- 9
- Nonlinear solution status: time= 1
-	stiffness updates             = 0
-	right hand side evaluations   = 11
-	stiffness matrix reformations = 2
-	step from line search         = 1.000000
-	convergence norms :     INITIAL         CURRENT         REQUIRED
-	   residual            1.440579e+01    1.417484e-07    0.000000e+00 
-	   energy              3.931437e+00    4.003386e-07    3.931437e-02 
-	   displacement        1.649178e+01    1.064711e-03    1.621329e-05 
-Reforming stiffness matrix: reformation #3
-
-===== reforming stiffness matrix:
-	Nr of equations ........................... : 1442
-	Nr of nonzeroes in stiffness matrix ....... : 88900
- 10
- Nonlinear solution status: time= 1
-	stiffness updates             = 0
-	right hand side evaluations   = 12
-	stiffness matrix reformations = 3
-	step from line search         = 1.000000
-	convergence norms :     INITIAL         CURRENT         REQUIRED
-	   residual            1.440579e+01    1.709063e-07    0.000000e+00 
-	   energy              3.931437e+00    4.830125e-07    3.931437e-02 
-	   displacement        1.649178e+01    4.193450e-04    1.613649e-05 
-Reforming stiffness matrix: reformation #4
-
-===== reforming stiffness matrix:
-	Nr of equations ........................... : 1442
-	Nr of nonzeroes in stiffness matrix ....... : 88684
- 11
- Nonlinear solution status: time= 1
-	stiffness updates             = 0
-	right hand side evaluations   = 14
-	stiffness matrix reformations = 4
-	step from line search         = 0.598341
-	convergence norms :     INITIAL         CURRENT         REQUIRED
-	   residual            1.440579e+01    7.902393e-08    0.000000e+00 
-	   energy              3.931437e+00    3.951323e-07    3.931437e-02 
-	   displacement        1.649178e+01    8.478740e-04    1.625378e-05 
-Reforming stiffness matrix: reformation #5
-
-===== reforming stiffness matrix:
-	Nr of equations ........................... : 1442
-	Nr of nonzeroes in stiffness matrix ....... : 88900
- 12
- Nonlinear solution status: time= 1
-	stiffness updates             = 0
-	right hand side evaluations   = 15
-	stiffness matrix reformations = 5
-	step from line search         = 1.000000
-	convergence norms :     INITIAL         CURRENT         REQUIRED
-	   residual            1.440579e+01    1.009791e-07    0.000000e+00 
-	   energy              3.931437e+00    3.531368e-07    3.931437e-02 
-	   displacement        1.649178e+01    7.569482e-04    1.614561e-05 
-Reforming stiffness matrix: reformation #6
-
-===== reforming stiffness matrix:
-	Nr of equations ........................... : 1442
-	Nr of nonzeroes in stiffness matrix ....... : 88792
- 13
- Nonlinear solution status: time= 1
-	stiffness updates             = 0
-	right hand side evaluations   = 17
-	stiffness matrix reformations = 6
-	step from line search         = 0.607986
-	convergence norms :     INITIAL         CURRENT         REQUIRED
-	   residual            1.440579e+01    1.485762e-08    0.000000e+00 
-	   energy              3.931437e+00    8.030620e-08    3.931437e-02 
-	   displacement        1.649178e+01    2.540006e-04    1.620415e-05 
-Reforming stiffness matrix: reformation #7
-
-===== reforming stiffness matrix:
-	Nr of equations ........................... : 1442
-	Nr of nonzeroes in stiffness matrix ....... : 88792
- 14
- Nonlinear solution status: time= 1
-	stiffness updates             = 0
-	right hand side evaluations   = 19
-	stiffness matrix reformations = 7
-	step from line search         = 0.477369
-	convergence norms :     INITIAL         CURRENT         REQUIRED
-	   residual            1.440579e+01    6.084105e-09    0.000000e+00 
-	   energy              3.931437e+00    1.745404e-08    3.931437e-02 
-	   displacement        1.649178e+01    2.062420e-05    1.622016e-05 
-Reforming stiffness matrix: reformation #8
-
-===== reforming stiffness matrix:
-	Nr of equations ........................... : 1442
-	Nr of nonzeroes in stiffness matrix ....... : 88792
- 15
- Nonlinear solution status: time= 1
-	stiffness updates             = 0
-	right hand side evaluations   = 22
-	stiffness matrix reformations = 8
-	step from line search         = 0.212237
-	convergence norms :     INITIAL         CURRENT         REQUIRED
-	   residual            1.440579e+01    4.336110e-09    0.000000e+00 
-	   energy              3.931437e+00    4.132055e-09    3.931437e-02 
-	   displacement        1.649178e+01    1.114623e-06    1.622383e-05 
-
-........................ augmentation # 2
- sliding interface # 1
-                        CURRENT        REQUIRED
-    D multiplier :    6.704345e-02   2.000000e-01
-    maximum gap  :    2.016816e-03       ***
- sliding interface # 2
-                        CURRENT        REQUIRED
-    D multiplier :    7.034585e-02   2.000000e-01
-    maximum gap  :    9.792157e-02       ***
- sliding interface # 3
-                        CURRENT        REQUIRED
-    D multiplier :    8.649055e-02   2.000000e-01
-    maximum gap  :    6.784820e-02       ***
-
-convergence summary
-    number of iterations   : 15
-    number of reformations : 0
-
-------- converged at time : 1
-
-
-Data Record #1
-===========================================================================
-Step = 10
-Time = 1
-Data = ux;uy;uz
-File = /mnt/data/MATLAB/GIBBON/data/temp/tempModel_disp_out.txt
-
-Data Record #2
-===========================================================================
-Step = 10
-Time = 1
-Data = sed
-File = /mnt/data/MATLAB/GIBBON/data/temp/tempModel_fsed_out.txt
- ]0;(100%) tempModel.feb - FEBio 3.1.0  
-
- N O N L I N E A R   I T E R A T I O N   I N F O R M A T I O N
-
-	Number of time steps completed .................... : 10
-
-	Total number of equilibrium iterations ............ : 109
-
-	Average number of equilibrium iterations .......... : 10.9
-
-	Total number of right hand evaluations ............ : 142
-
-	Total number of stiffness reformations ............ : 109
-
-
- L I N E A R   S O L V E R   S T A T S
-
-	Total calls to linear solver ........ : 109
-
-	Avg iterations per solve ............ : 1
-
-	Time in linear solver: 0:00:00
-
- ]0;(0%) tempModel.feb - FEBio 3.1.0  
- Elapsed time : 0:00:03
-
-
+ * Waiting for log file creation                       18-Apr-2023 16:44:00
+   Max. wait time: 30 s
+ * Log file found.                                     18-Apr-2023 16:44:00
+# Parsing log file...                                  18-Apr-2023 16:44:00
+    number of iterations   : 17                        18-Apr-2023 16:44:01
+    number of reformations : 0                         18-Apr-2023 16:44:01
+------- converged at time : 0.1                        18-Apr-2023 16:44:01
+    number of iterations   : 10                        18-Apr-2023 16:44:01
+    number of reformations : 0                         18-Apr-2023 16:44:01
+------- converged at time : 0.2                        18-Apr-2023 16:44:01
+    number of iterations   : 11                        18-Apr-2023 16:44:01
+    number of reformations : 0                         18-Apr-2023 16:44:01
+------- converged at time : 0.3                        18-Apr-2023 16:44:01
+    number of iterations   : 11                        18-Apr-2023 16:44:02
+    number of reformations : 0                         18-Apr-2023 16:44:02
+------- converged at time : 0.4                        18-Apr-2023 16:44:02
+    number of iterations   : 11                        18-Apr-2023 16:44:02
+    number of reformations : 0                         18-Apr-2023 16:44:02
+------- converged at time : 0.5                        18-Apr-2023 16:44:02
+    number of iterations   : 10                        18-Apr-2023 16:44:02
+    number of reformations : 0                         18-Apr-2023 16:44:02
+------- converged at time : 0.6                        18-Apr-2023 16:44:02
+    number of iterations   : 13                        18-Apr-2023 16:44:02
+    number of reformations : 0                         18-Apr-2023 16:44:02
+------- converged at time : 0.7                        18-Apr-2023 16:44:02
+    number of iterations   : 13                        18-Apr-2023 16:44:03
+    number of reformations : 0                         18-Apr-2023 16:44:03
+------- converged at time : 0.8                        18-Apr-2023 16:44:03
+    number of iterations   : 10                        18-Apr-2023 16:44:03
+    number of reformations : 0                         18-Apr-2023 16:44:03
+------- converged at time : 0.9                        18-Apr-2023 16:44:03
+    number of iterations   : 12                        18-Apr-2023 16:44:03
+    number of reformations : 0                         18-Apr-2023 16:44:03
+------- converged at time : 1                          18-Apr-2023 16:44:03
+ Elapsed time : 0:00:03                                18-Apr-2023 16:44:03
  N O R M A L   T E R M I N A T I O N
-
- * Log file found.                                     11-Dec-2020 12:26:38
-# Parsing log file...                                  11-Dec-2020 12:26:38
-    number of iterations   : 8                         11-Dec-2020 12:26:38
-    number of reformations : 0                         11-Dec-2020 12:26:38
-------- converged at time : 0.1                        11-Dec-2020 12:26:38
-    number of iterations   : 10                        11-Dec-2020 12:26:38
-    number of reformations : 0                         11-Dec-2020 12:26:38
-------- converged at time : 0.2                        11-Dec-2020 12:26:38
-    number of iterations   : 11                        11-Dec-2020 12:26:38
-    number of reformations : 0                         11-Dec-2020 12:26:38
-------- converged at time : 0.3                        11-Dec-2020 12:26:38
-    number of iterations   : 11                        11-Dec-2020 12:26:38
-    number of reformations : 0                         11-Dec-2020 12:26:38
-------- converged at time : 0.4                        11-Dec-2020 12:26:38
-    number of iterations   : 11                        11-Dec-2020 12:26:38
-    number of reformations : 0                         11-Dec-2020 12:26:38
-------- converged at time : 0.5                        11-Dec-2020 12:26:38
-    number of iterations   : 9                         11-Dec-2020 12:26:38
-    number of reformations : 0                         11-Dec-2020 12:26:38
-------- converged at time : 0.6                        11-Dec-2020 12:26:38
-    number of iterations   : 12                        11-Dec-2020 12:26:38
-    number of reformations : 0                         11-Dec-2020 12:26:38
-------- converged at time : 0.7                        11-Dec-2020 12:26:38
-    number of iterations   : 12                        11-Dec-2020 12:26:38
-    number of reformations : 0                         11-Dec-2020 12:26:38
-------- converged at time : 0.8                        11-Dec-2020 12:26:38
-    number of iterations   : 10                        11-Dec-2020 12:26:38
-    number of reformations : 0                         11-Dec-2020 12:26:38
-------- converged at time : 0.9                        11-Dec-2020 12:26:38
-    number of iterations   : 15                        11-Dec-2020 12:26:38
-    number of reformations : 0                         11-Dec-2020 12:26:38
-------- converged at time : 1                          11-Dec-2020 12:26:38
- Elapsed time : 0:00:03                                11-Dec-2020 12:26:38
- N O R M A L   T E R M I N A T I O N
-# Done                                                 11-Dec-2020 12:26:38
+# Done                                                 18-Apr-2023 16:44:03
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 </pre><h2 id="15">Import FEBio results</h2><pre class="codeinput"><span class="keyword">if</span> runFlag==1 <span class="comment">%i.e. a succesful run</span>
 </pre><p>Importing nodal displacements from a log file</p><pre class="codeinput">    dataStruct=importFEBio_logfile(fullfile(savePath,febioLogFileName_disp),1,1);
@@ -2727,7 +501,7 @@ File = /mnt/data/MATLAB/GIBBON/data/temp/tempModel_fsed_out.txt
     anim8(hf,animStruct); <span class="comment">%Initiate animation feature</span>
     drawnow;
 </pre><img width="100%" height="auto" vspace="5" hspace="5" src="DEMO_febio_0029_contact_friction_benchmark_boxes_04.jpg" alt=""> <pre class="codeinput"><span class="keyword">end</span>
-</pre><p><img vspace="5" hspace="5" src="gibbVerySmall.gif" alt=""> </p><p><i><b>GIBBON</b></i> <a href="www.gibboncode.org">www.gibboncode.org</a></p><p><i>Kevin Mattheus Moerman</i>, <a href="gibbon.toolbox@gmail.com">gibbon.toolbox@gmail.com</a></p><p><i><b>GIBBON footer text</b></i></p><p>License: <a href="https://github.com/gibbonCode/GIBBON/blob/primary/LICENSE">https://github.com/gibbonCode/GIBBON/blob/primary/LICENSE</a></p><p>GIBBON: The Geometry and Image-based Bioengineering add-On. A toolbox for image segmentation, image-based modeling, meshing, and finite element analysis.</p><p>Copyright (C) 2006-2020 Kevin Mattheus Moerman</p><p>This program is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.</p><p>This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for more details.</p><p>You should have received a copy of the GNU General Public License along with this program.  If not, see <a href="http://www.gnu.org/licenses/">http://www.gnu.org/licenses/</a>.</p><p class="footer"><br><a href="https://www.mathworks.com/products/matlab/">Published with MATLAB&reg; R2020b</a><br></p></div><!--
+</pre><p><img vspace="5" hspace="5" src="gibbVerySmall.gif" alt=""> </p><p><i><b>GIBBON</b></i> <a href="www.gibboncode.org">www.gibboncode.org</a></p><p><i>Kevin Mattheus Moerman</i>, <a href="gibbon.toolbox@gmail.com">gibbon.toolbox@gmail.com</a></p><p><i><b>GIBBON footer text</b></i></p><p>License: <a href="https://github.com/gibbonCode/GIBBON/blob/master/LICENSE">https://github.com/gibbonCode/GIBBON/blob/master/LICENSE</a></p><p>GIBBON: The Geometry and Image-based Bioengineering add-On. A toolbox for image segmentation, image-based modeling, meshing, and finite element analysis.</p><p>Copyright (C) 2006-2022 Kevin Mattheus Moerman and the GIBBON contributors</p><p>This program is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.</p><p>This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for more details.</p><p>You should have received a copy of the GNU General Public License along with this program.  If not, see <a href="http://www.gnu.org/licenses/">http://www.gnu.org/licenses/</a>.</p><p class="footer"><br><a href="https://www.mathworks.com/products/matlab/">Published with MATLAB&reg; R2022b</a><br></p></div><!--
 ##### SOURCE BEGIN #####
 %% DEMO_febio_0029_contact_friction_benchmark_boxes
 % Below is a demonstration for a FEBio demo presented at the FEBio workshop at
@@ -2802,6 +576,9 @@ opt_iter=25; %Optimum number of iterations
 max_retries=10; %Maximum number of retires
 dtmin=(1/numTimeSteps)/10; %Minimum time step size
 dtmax=1/numTimeSteps; %Maximum time step size
+symmetric_stiffness=0;
+
+runMode='external';% 'internal' or 'external'
 
 %Contact parameters
 contactInitialOffset=0;
@@ -2926,7 +703,7 @@ drawnow;
 [febio_spec]=febioStructTemplate;
 
 %febio_spec version 
-febio_spec.ATTR.version='3.0'; 
+febio_spec.ATTR.version='4.0'; 
 
 %Module section
 febio_spec.Module.ATTR.type='solid'; 
@@ -2936,12 +713,13 @@ febio_spec.Control.analysis='STATIC';
 febio_spec.Control.time_steps=numTimeSteps;
 febio_spec.Control.step_size=1/numTimeSteps;
 febio_spec.Control.solver.max_refs=max_refs;
-febio_spec.Control.solver.max_ups=max_ups;
-febio_spec.Control.solver.symmetric_stiffness=0;
+febio_spec.Control.solver.qn_method.max_ups=max_ups;
+febio_spec.Control.solver.symmetric_stiffness=symmetric_stiffness;
 febio_spec.Control.time_stepper.dtmin=dtmin;
 febio_spec.Control.time_stepper.dtmax=dtmax; 
 febio_spec.Control.time_stepper.max_retries=max_retries;
 febio_spec.Control.time_stepper.opt_iter=opt_iter;
+
 
 %Material section
 for q=1:1:numel(youngsModuli)
@@ -2990,7 +768,7 @@ febio_spec.Mesh.Elements{numel(youngsModuli)+1}.elem.VAL=F_rigidBody;
 % -> NodeSets
 nodeSetName1='bcSupportList';
 febio_spec.Mesh.NodeSet{1}.ATTR.name=nodeSetName1;
-febio_spec.Mesh.NodeSet{1}.node.ATTR.id=bcSupportList(:);
+febio_spec.Mesh.NodeSet{1}.VAL=mrow(bcSupportList);
 
 %MeshDomains section
 for q=1:1:numel(youngsModuli)
@@ -3037,32 +815,39 @@ end
 
 %Boundary condition section 
 % -> Fix boundary conditions
-febio_spec.Boundary.bc{1}.ATTR.type='fix';
+febio_spec.Boundary.bc{1}.ATTR.name='zero_displacement_xyz';
+febio_spec.Boundary.bc{1}.ATTR.type='zero displacement';
 febio_spec.Boundary.bc{1}.ATTR.node_set=nodeSetName1;
-febio_spec.Boundary.bc{1}.dofs='x,y,z';
+febio_spec.Boundary.bc{1}.x_dof=1;
+febio_spec.Boundary.bc{1}.y_dof=1;
+febio_spec.Boundary.bc{1}.z_dof=1;
 
-% %Rigid section 
-% -> Prescribed rigid body boundary conditions
-febio_spec.Rigid.rigid_constraint{1}.ATTR.name='RigidFix_1';
-febio_spec.Rigid.rigid_constraint{1}.ATTR.type='fix';
-febio_spec.Rigid.rigid_constraint{1}.rb=matIdRigid;
-febio_spec.Rigid.rigid_constraint{1}.dofs='Rx,Ry,Ru,Rv';
+%Rigid section 
+% ->Rigid body fix boundary conditions
+febio_spec.Rigid.rigid_bc{1}.ATTR.name='RigidFix';
+febio_spec.Rigid.rigid_bc{1}.ATTR.type='rigid_fixed';
+febio_spec.Rigid.rigid_bc{1}.rb=matIdRigid;
+febio_spec.Rigid.rigid_bc{1}.Rx_dof=1;
+febio_spec.Rigid.rigid_bc{1}.Ry_dof=1;
+febio_spec.Rigid.rigid_bc{1}.Ru_dof=1;
+febio_spec.Rigid.rigid_bc{1}.Rv_dof=1;
 
-febio_spec.Rigid.rigid_constraint{2}.ATTR.name='RigidPrescribe';
-febio_spec.Rigid.rigid_constraint{2}.ATTR.type='prescribe';
-febio_spec.Rigid.rigid_constraint{2}.rb=matIdRigid;
-febio_spec.Rigid.rigid_constraint{2}.dof='Rz';
-febio_spec.Rigid.rigid_constraint{2}.value.ATTR.lc=1;
-febio_spec.Rigid.rigid_constraint{2}.value.VAL=prescribedDisplacement_Z;
-febio_spec.Rigid.rigid_constraint{2}.relative=0;
+% ->Rigid body prescribe boundary conditions
+febio_spec.Rigid.rigid_bc{2}.ATTR.name='RigidPrescribe_disp';
+febio_spec.Rigid.rigid_bc{2}.ATTR.type='rigid_displacement';
+febio_spec.Rigid.rigid_bc{2}.rb=matIdRigid;
+febio_spec.Rigid.rigid_bc{2}.dof='z';
+febio_spec.Rigid.rigid_bc{2}.value.ATTR.lc=1;
+febio_spec.Rigid.rigid_bc{2}.value.VAL=prescribedDisplacement_Z;
+febio_spec.Rigid.rigid_bc{2}.relative=0;
 
-febio_spec.Rigid.rigid_constraint{3}.ATTR.name='RigidPrescribe';
-febio_spec.Rigid.rigid_constraint{3}.ATTR.type='prescribe';
-febio_spec.Rigid.rigid_constraint{3}.rb=matIdRigid;
-febio_spec.Rigid.rigid_constraint{3}.dof='Rw';
-febio_spec.Rigid.rigid_constraint{3}.value.ATTR.lc=1;
-febio_spec.Rigid.rigid_constraint{3}.value.VAL=prescribedRotation_Z;
-febio_spec.Rigid.rigid_constraint{3}.relative=0;
+febio_spec.Rigid.rigid_bc{3}.ATTR.name='RigidPrescribe_rot';
+febio_spec.Rigid.rigid_bc{3}.ATTR.type='rigid_rotation';
+febio_spec.Rigid.rigid_bc{3}.rb=matIdRigid;
+febio_spec.Rigid.rigid_bc{3}.dof='Rw';
+febio_spec.Rigid.rigid_bc{3}.value.ATTR.lc=1;
+febio_spec.Rigid.rigid_bc{3}.value.VAL=prescribedRotation_Z;
+febio_spec.Rigid.rigid_bc{3}.relative=0;
 
 %Contact section
 for q=1:1:numel(youngsModuli)-1
@@ -3075,7 +860,7 @@ for q=1:1:numel(youngsModuli)-1
     febio_spec.Contact.contact{q}.minaug=1;
     febio_spec.Contact.contact{q}.maxaug=10;
     febio_spec.Contact.contact{q}.search_tol=0.01;
-    febio_spec.Contact.contact{q}.search_radius=1;    
+    febio_spec.Contact.contact{q}.search_radius=0.1*sqrt(sum((max(V,[],1)-min(V,[],1)).^2,2));  
     febio_spec.Contact.contact{q}.symmetric_stiffness=0;
     switch q
         case 1
@@ -3111,6 +896,9 @@ febio_spec.Output.logfile.element_data{1}.ATTR.file=febioLogFileName_strainEnerg
 febio_spec.Output.logfile.element_data{1}.ATTR.data='sed';
 febio_spec.Output.logfile.element_data{1}.ATTR.delim=',';
 
+% Plotfile section
+febio_spec.Output.plotfile.compression=0;
+
 %% Quick viewing of the FEBio input file structure
 % The |febView| function can be used to view the xml structure in a MATLAB
 % figure window. 
@@ -3134,7 +922,7 @@ febioStruct2xml(febio_spec,febioFebFileName); %Exporting to file and domNode
 febioAnalysis.run_filename=febioFebFileName; %The input file name
 febioAnalysis.run_logname=febioLogFileName; %The name for the log file
 febioAnalysis.disp_on=1; %Display information on the command window
-febioAnalysis.runMode='internal';%'internal';
+febioAnalysis.runMode=runMode;
 
 [runFlag]=runMonitorFEBio(febioAnalysis);%START FEBio NOW!!!!!!!!
 
@@ -3210,13 +998,13 @@ end
 %% 
 % _*GIBBON footer text*_ 
 % 
-% License: <https://github.com/gibbonCode/GIBBON/blob/primary/LICENSE>
+% License: <https://github.com/gibbonCode/GIBBON/blob/master/LICENSE>
 % 
 % GIBBON: The Geometry and Image-based Bioengineering add-On. A toolbox for
 % image segmentation, image-based modeling, meshing, and finite element
 % analysis.
 % 
-% Copyright (C) 2006-2020 Kevin Mattheus Moerman
+% Copyright (C) 2006-2022 Kevin Mattheus Moerman and the GIBBON contributors
 % 
 % This program is free software: you can redistribute it and/or modify
 % it under the terms of the GNU General Public License as published by

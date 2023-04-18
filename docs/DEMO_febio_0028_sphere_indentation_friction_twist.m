@@ -10,7 +10,7 @@
 
 %% Keywords
 %
-% * febio_spec version 3.0
+% * febio_spec version 4.0
 % * febio, FEBio
 % * indentation
 % * contact, sliding, sticky, friction
@@ -78,16 +78,16 @@ k_factor=1e2; %Bulk modulus factor
 k=c1*k_factor; %Bulk modulus
 
 % FEA control settings
-numTimeSteps=15; %Number of time steps desired
+numTimeSteps=10; %Number of time steps desired
 max_refs=25; %Max reforms
 max_ups=0; %Set to zero to use full-Newton iterations
-opt_iter=15; %Optimum number of iterations
+opt_iter=10; %Optimum number of iterations
 max_retries=5; %Maximum number of retires
 dtmin=(1/numTimeSteps)/100; %Minimum time step size
 dtmax=1/numTimeSteps; %Maximum time step size
 symmetric_stiffness=0;
-min_residual=1e-20;
-runMode='external';%'internal';
+
+runMode='external';% 'internal' or 'external'
 
 %Contact parameters
 contactInitialOffset=0.01;
@@ -246,7 +246,7 @@ drawnow;
 [febio_spec]=febioStructTemplate;
 
 %febio_spec version 
-febio_spec.ATTR.version='3.0'; 
+febio_spec.ATTR.version='4.0'; 
 
 %Module section
 febio_spec.Module.ATTR.type='solid'; 
@@ -256,7 +256,7 @@ febio_spec.Control.analysis='STATIC';
 febio_spec.Control.time_steps=numTimeSteps;
 febio_spec.Control.step_size=1/numTimeSteps;
 febio_spec.Control.solver.max_refs=max_refs;
-febio_spec.Control.solver.max_ups=max_ups;
+febio_spec.Control.solver.qn_method.max_ups=max_ups;
 febio_spec.Control.solver.symmetric_stiffness=symmetric_stiffness;
 febio_spec.Control.time_stepper.dtmin=dtmin;
 febio_spec.Control.time_stepper.dtmax=dtmax; 
@@ -303,7 +303,7 @@ febio_spec.Mesh.Elements{2}.elem.VAL=E2; %The element matrix
 % -> NodeSets
 nodeSetName1='bcSupportList';
 febio_spec.Mesh.NodeSet{1}.ATTR.name=nodeSetName1;
-febio_spec.Mesh.NodeSet{1}.node.ATTR.id=bcSupportList(:);
+febio_spec.Mesh.NodeSet{1}.VAL=mrow(bcSupportList);
 
 %MeshDomains section
 febio_spec.MeshDomains.SolidDomain.ATTR.name=partName1;
@@ -330,32 +330,39 @@ febio_spec.Mesh.SurfacePair{1}.secondary=surfaceName1;
 
 %Boundary condition section 
 % -> Fix boundary conditions
-febio_spec.Boundary.bc{1}.ATTR.type='fix';
+febio_spec.Boundary.bc{1}.ATTR.name='zero_displacement_xyz';
+febio_spec.Boundary.bc{1}.ATTR.type='zero displacement';
 febio_spec.Boundary.bc{1}.ATTR.node_set=nodeSetName1;
-febio_spec.Boundary.bc{1}.dofs='x,y,z';
+febio_spec.Boundary.bc{1}.x_dof=1;
+febio_spec.Boundary.bc{1}.y_dof=1;
+febio_spec.Boundary.bc{1}.z_dof=1;
 
 %Rigid section 
-% -> Prescribed rigid body boundary conditions
-febio_spec.Rigid.rigid_constraint{1}.ATTR.name='RigidFix_1';
-febio_spec.Rigid.rigid_constraint{1}.ATTR.type='fix';
-febio_spec.Rigid.rigid_constraint{1}.rb=2;
-febio_spec.Rigid.rigid_constraint{1}.dofs='Rx,Ry,Rv,Ru';
+% ->Rigid body fix boundary conditions
+febio_spec.Rigid.rigid_bc{1}.ATTR.name='RigidFix';
+febio_spec.Rigid.rigid_bc{1}.ATTR.type='rigid_fixed';
+febio_spec.Rigid.rigid_bc{1}.rb=2;
+febio_spec.Rigid.rigid_bc{1}.Rx_dof=1;
+febio_spec.Rigid.rigid_bc{1}.Ry_dof=1;
+febio_spec.Rigid.rigid_bc{1}.Ru_dof=1;
+febio_spec.Rigid.rigid_bc{1}.Rv_dof=1;
 
-febio_spec.Rigid.rigid_constraint{2}.ATTR.name='RigidPrescribe';
-febio_spec.Rigid.rigid_constraint{2}.ATTR.type='prescribe';
-febio_spec.Rigid.rigid_constraint{2}.rb=2;
-febio_spec.Rigid.rigid_constraint{2}.dof='Rz';
-febio_spec.Rigid.rigid_constraint{2}.value.ATTR.lc=1;
-febio_spec.Rigid.rigid_constraint{2}.value.VAL=-(sphereDisplacement+contactInitialOffset);
-febio_spec.Rigid.rigid_constraint{2}.relative=0;
+% ->Rigid body prescribe boundary conditions
+febio_spec.Rigid.rigid_bc{2}.ATTR.name='RigidPrescribe_disp';
+febio_spec.Rigid.rigid_bc{2}.ATTR.type='rigid_displacement';
+febio_spec.Rigid.rigid_bc{2}.rb=2;
+febio_spec.Rigid.rigid_bc{2}.dof='z';
+febio_spec.Rigid.rigid_bc{2}.value.ATTR.lc=1;
+febio_spec.Rigid.rigid_bc{2}.value.VAL=-(sphereDisplacement+contactInitialOffset);
+febio_spec.Rigid.rigid_bc{2}.relative=0;
 
-febio_spec.Rigid.rigid_constraint{3}.ATTR.name='RigidPrescribe';
-febio_spec.Rigid.rigid_constraint{3}.ATTR.type='prescribe';
-febio_spec.Rigid.rigid_constraint{3}.rb=2;
-febio_spec.Rigid.rigid_constraint{3}.dof='Rw';
-febio_spec.Rigid.rigid_constraint{3}.value.ATTR.lc=2;
-febio_spec.Rigid.rigid_constraint{3}.value.VAL=prescribedRotation;
-febio_spec.Rigid.rigid_constraint{3}.relative=0;
+febio_spec.Rigid.rigid_bc{3}.ATTR.name='RigidPrescribe_rot';
+febio_spec.Rigid.rigid_bc{3}.ATTR.type='rigid_rotation';
+febio_spec.Rigid.rigid_bc{3}.rb=2;
+febio_spec.Rigid.rigid_bc{3}.dof='Rw';
+febio_spec.Rigid.rigid_bc{3}.value.ATTR.lc=2;
+febio_spec.Rigid.rigid_bc{3}.value.VAL=prescribedRotation;
+febio_spec.Rigid.rigid_bc{3}.relative=0;
 
 %Contact section
 febio_spec.Contact.contact{1}.ATTR.type='sliding-elastic';
@@ -375,15 +382,19 @@ febio_spec.Contact.contact{1}.fric_coeff=fric_coeff;
 
 %LoadData section
 % -> load_controller
+febio_spec.LoadData.load_controller{1}.ATTR.name='LC_1';
 febio_spec.LoadData.load_controller{1}.ATTR.id=1;
 febio_spec.LoadData.load_controller{1}.ATTR.type='loadcurve';
 febio_spec.LoadData.load_controller{1}.interpolate='LINEAR';
-febio_spec.LoadData.load_controller{1}.points.point.VAL=[0 0; 1 1];
+%febio_spec.LoadData.load_controller{1}.extend='CONSTANT';
+febio_spec.LoadData.load_controller{1}.points.pt.VAL=[0 0; 1 1];
 
+febio_spec.LoadData.load_controller{2}.ATTR.name='LC_1';
 febio_spec.LoadData.load_controller{2}.ATTR.id=2;
 febio_spec.LoadData.load_controller{2}.ATTR.type='loadcurve';
 febio_spec.LoadData.load_controller{2}.interpolate='LINEAR';
-febio_spec.LoadData.load_controller{2}.points.point.VAL=[lcTwist_time(:) lcTwist_mag(:)];
+%febio_spec.LoadData.load_controller{2}.extend='CONSTANT';
+febio_spec.LoadData.load_controller{2}.points.pt.VAL=[lcTwist_time(:) lcTwist_mag(:)];
 
 %Output section 
 % -> log file
@@ -391,11 +402,13 @@ febio_spec.Output.logfile.ATTR.file=febioLogFileName;
 febio_spec.Output.logfile.node_data{1}.ATTR.file=febioLogFileName_disp;
 febio_spec.Output.logfile.node_data{1}.ATTR.data='ux;uy;uz';
 febio_spec.Output.logfile.node_data{1}.ATTR.delim=',';
-febio_spec.Output.logfile.node_data{1}.VAL=1:size(V,1);
 
 febio_spec.Output.logfile.element_data{1}.ATTR.file=febioLogFileName_sed;
 febio_spec.Output.logfile.element_data{1}.ATTR.data='sed';
 febio_spec.Output.logfile.element_data{1}.ATTR.delim=',';
+
+% Plotfile section
+febio_spec.Output.plotfile.compression=0;
 
 %% Quick viewing of the FEBio input file structure
 % The |febView| function can be used to view the xml structure in a MATLAB
