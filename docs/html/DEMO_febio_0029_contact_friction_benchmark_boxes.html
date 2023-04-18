@@ -67,7 +67,7 @@ table td { padding:7px 5px; text-align:left; vertical-align:top; border:1px soli
 
 
 
-  </style></head><body><div class="content"><h1>DEMO_febio_0029_contact_friction_benchmark_boxes</h1><!--introduction--><p>Below is a demonstration for a FEBio demo presented at the FEBio workshop at WCB 2018. Four cubes are stacked on top of each other. Sliding-elastic contact with friction is defined between them. The top cube is forced downwards in a rotation motion thereby compressing the other cubes and also transferring some twist due to frictional forces.</p><p>The demo includes * Building geometry for 4 cubes with hexahedral elements * Defining the boundary conditions * Coding the febio structure * Running the model * Importing and visualizing the displacement results</p><!--/introduction--><h2>Contents</h2><div><ul><li><a href="#1">Keywords</a></li><li><a href="#3">Plot settings</a></li><li><a href="#4">Control parameters</a></li><li><a href="#5">Creating model geometry and mesh</a></li><li><a href="#9">Define boundary conditions</a></li><li><a href="#10">Defining the FEBio input structure</a></li><li><a href="#11">Quick viewing of the FEBio input file structure</a></li><li><a href="#13">Exporting the FEBio input file</a></li><li><a href="#14">Running the FEBio analysis</a></li><li><a href="#15">Import FEBio results</a></li></ul></div><h2 id="1">Keywords</h2><div><ul><li>febio_spec version 3.0</li><li>febio, FEBio</li><li>indentation</li><li>contact, sliding, sliding-elastic, friction</li><li>rigid body constraints</li><li>hexahedral elements, hex8</li><li>quadrilateral elements, quad4</li><li>static, solid</li><li>displacement logfile</li><li>stress logfile</li></ul></div><pre class="codeinput">clear; close <span class="string">all</span>; clc;
+  </style></head><body><div class="content"><h1>DEMO_febio_0029_contact_friction_benchmark_boxes</h1><!--introduction--><p>Below is a demonstration for a FEBio demo presented at the FEBio workshop at WCB 2018. Four cubes are stacked on top of each other. Sliding-elastic contact with friction is defined between them. The top cube is forced downwards in a rotation motion thereby compressing the other cubes and also transferring some twist due to frictional forces.</p><p>The demo includes * Building geometry for 4 cubes with hexahedral elements * Defining the boundary conditions * Coding the febio structure * Running the model * Importing and visualizing the displacement results</p><!--/introduction--><h2>Contents</h2><div><ul><li><a href="#1">Keywords</a></li><li><a href="#3">Plot settings</a></li><li><a href="#4">Control parameters</a></li><li><a href="#5">Creating model geometry and mesh</a></li><li><a href="#9">Define boundary conditions</a></li><li><a href="#10">Defining the FEBio input structure</a></li><li><a href="#11">Quick viewing of the FEBio input file structure</a></li><li><a href="#13">Exporting the FEBio input file</a></li><li><a href="#14">Running the FEBio analysis</a></li><li><a href="#15">Import FEBio results</a></li></ul></div><h2 id="1">Keywords</h2><div><ul><li>febio_spec version 4.0</li><li>febio, FEBio</li><li>indentation</li><li>contact, sliding, sliding-elastic, friction</li><li>rigid body constraints</li><li>hexahedral elements, hex8</li><li>quadrilateral elements, quad4</li><li>static, solid</li><li>displacement logfile</li><li>stress logfile</li></ul></div><pre class="codeinput">clear; close <span class="string">all</span>; clc;
 </pre><h2 id="3">Plot settings</h2><pre class="codeinput">fontSize=15;
 faceAlpha1=0.8;
 faceAlpha2=0.3;
@@ -383,10 +383,12 @@ febio_spec.Rigid.rigid_bc{3}.relative=0;
 
 <span class="comment">%LoadData section</span>
 <span class="comment">% -&gt; load_controller</span>
+febio_spec.LoadData.load_controller{1}.ATTR.name=<span class="string">'LC_1'</span>;
 febio_spec.LoadData.load_controller{1}.ATTR.id=1;
 febio_spec.LoadData.load_controller{1}.ATTR.type=<span class="string">'loadcurve'</span>;
 febio_spec.LoadData.load_controller{1}.interpolate=<span class="string">'LINEAR'</span>;
-febio_spec.LoadData.load_controller{1}.points.point.VAL=[0 0; 1 1];
+<span class="comment">%febio_spec.LoadData.load_controller{1}.extend='CONSTANT';</span>
+febio_spec.LoadData.load_controller{1}.points.pt.VAL=[0 0; 1 1];
 
 <span class="comment">%Output section</span>
 <span class="comment">% -&gt; log file</span>
@@ -410,51 +412,51 @@ febioAnalysis.runMode=runMode;
 [runFlag]=runMonitorFEBio(febioAnalysis);<span class="comment">%START FEBio NOW!!!!!!!!</span>
 </pre><pre class="codeoutput"> 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
---------&gt;    RUNNING/MONITORING FEBIO JOB    &lt;-------- 18-Apr-2023 16:44:00
+--------&gt;    RUNNING/MONITORING FEBIO JOB    &lt;-------- 18-Apr-2023 17:11:22
 FEBio path: /home/kevin/FEBioStudio2/bin/febio4
-# Attempt removal of existing log files                18-Apr-2023 16:44:00
- * Removal succesful                                   18-Apr-2023 16:44:00
-# Attempt removal of existing .xplt files              18-Apr-2023 16:44:00
- * Removal succesful                                   18-Apr-2023 16:44:00
-# Starting FEBio...                                    18-Apr-2023 16:44:00
+# Attempt removal of existing log files                18-Apr-2023 17:11:22
+ * Removal succesful                                   18-Apr-2023 17:11:22
+# Attempt removal of existing .xplt files              18-Apr-2023 17:11:22
+ * Removal succesful                                   18-Apr-2023 17:11:22
+# Starting FEBio...                                    18-Apr-2023 17:11:22
   Max. total analysis time is: Inf s
- * Waiting for log file creation                       18-Apr-2023 16:44:00
+ * Waiting for log file creation                       18-Apr-2023 17:11:22
    Max. wait time: 30 s
- * Log file found.                                     18-Apr-2023 16:44:00
-# Parsing log file...                                  18-Apr-2023 16:44:00
-    number of iterations   : 17                        18-Apr-2023 16:44:01
-    number of reformations : 0                         18-Apr-2023 16:44:01
-------- converged at time : 0.1                        18-Apr-2023 16:44:01
-    number of iterations   : 10                        18-Apr-2023 16:44:01
-    number of reformations : 0                         18-Apr-2023 16:44:01
-------- converged at time : 0.2                        18-Apr-2023 16:44:01
-    number of iterations   : 11                        18-Apr-2023 16:44:01
-    number of reformations : 0                         18-Apr-2023 16:44:01
-------- converged at time : 0.3                        18-Apr-2023 16:44:01
-    number of iterations   : 11                        18-Apr-2023 16:44:02
-    number of reformations : 0                         18-Apr-2023 16:44:02
-------- converged at time : 0.4                        18-Apr-2023 16:44:02
-    number of iterations   : 11                        18-Apr-2023 16:44:02
-    number of reformations : 0                         18-Apr-2023 16:44:02
-------- converged at time : 0.5                        18-Apr-2023 16:44:02
-    number of iterations   : 10                        18-Apr-2023 16:44:02
-    number of reformations : 0                         18-Apr-2023 16:44:02
-------- converged at time : 0.6                        18-Apr-2023 16:44:02
-    number of iterations   : 13                        18-Apr-2023 16:44:02
-    number of reformations : 0                         18-Apr-2023 16:44:02
-------- converged at time : 0.7                        18-Apr-2023 16:44:02
-    number of iterations   : 13                        18-Apr-2023 16:44:03
-    number of reformations : 0                         18-Apr-2023 16:44:03
-------- converged at time : 0.8                        18-Apr-2023 16:44:03
-    number of iterations   : 10                        18-Apr-2023 16:44:03
-    number of reformations : 0                         18-Apr-2023 16:44:03
-------- converged at time : 0.9                        18-Apr-2023 16:44:03
-    number of iterations   : 12                        18-Apr-2023 16:44:03
-    number of reformations : 0                         18-Apr-2023 16:44:03
-------- converged at time : 1                          18-Apr-2023 16:44:03
- Elapsed time : 0:00:03                                18-Apr-2023 16:44:03
+ * Log file found.                                     18-Apr-2023 17:11:22
+# Parsing log file...                                  18-Apr-2023 17:11:22
+    number of iterations   : 17                        18-Apr-2023 17:11:24
+    number of reformations : 0                         18-Apr-2023 17:11:24
+------- converged at time : 0.1                        18-Apr-2023 17:11:24
+    number of iterations   : 10                        18-Apr-2023 17:11:24
+    number of reformations : 0                         18-Apr-2023 17:11:24
+------- converged at time : 0.2                        18-Apr-2023 17:11:24
+    number of iterations   : 11                        18-Apr-2023 17:11:24
+    number of reformations : 0                         18-Apr-2023 17:11:24
+------- converged at time : 0.3                        18-Apr-2023 17:11:24
+    number of iterations   : 11                        18-Apr-2023 17:11:25
+    number of reformations : 0                         18-Apr-2023 17:11:25
+------- converged at time : 0.4                        18-Apr-2023 17:11:25
+    number of iterations   : 11                        18-Apr-2023 17:11:25
+    number of reformations : 0                         18-Apr-2023 17:11:25
+------- converged at time : 0.5                        18-Apr-2023 17:11:25
+    number of iterations   : 10                        18-Apr-2023 17:11:25
+    number of reformations : 0                         18-Apr-2023 17:11:25
+------- converged at time : 0.6                        18-Apr-2023 17:11:25
+    number of iterations   : 13                        18-Apr-2023 17:11:25
+    number of reformations : 0                         18-Apr-2023 17:11:25
+------- converged at time : 0.7                        18-Apr-2023 17:11:25
+    number of iterations   : 13                        18-Apr-2023 17:11:26
+    number of reformations : 0                         18-Apr-2023 17:11:26
+------- converged at time : 0.8                        18-Apr-2023 17:11:26
+    number of iterations   : 10                        18-Apr-2023 17:11:26
+    number of reformations : 0                         18-Apr-2023 17:11:26
+------- converged at time : 0.9                        18-Apr-2023 17:11:26
+    number of iterations   : 12                        18-Apr-2023 17:11:26
+    number of reformations : 0                         18-Apr-2023 17:11:26
+------- converged at time : 1                          18-Apr-2023 17:11:26
+ Elapsed time : 0:00:03                                18-Apr-2023 17:11:26
  N O R M A L   T E R M I N A T I O N
-# Done                                                 18-Apr-2023 16:44:03
+# Done                                                 18-Apr-2023 17:11:26
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 </pre><h2 id="15">Import FEBio results</h2><pre class="codeinput"><span class="keyword">if</span> runFlag==1 <span class="comment">%i.e. a succesful run</span>
 </pre><p>Importing nodal displacements from a log file</p><pre class="codeinput">    dataStruct=importFEBio_logfile(fullfile(savePath,febioLogFileName_disp),1,1);
@@ -519,7 +521,7 @@ FEBio path: /home/kevin/FEBioStudio2/bin/febio4
 
 %% Keywords
 %
-% * febio_spec version 3.0
+% * febio_spec version 4.0
 % * febio, FEBio
 % * indentation
 % * contact, sliding, sliding-elastic, friction
@@ -880,10 +882,12 @@ end
 
 %LoadData section
 % -> load_controller
+febio_spec.LoadData.load_controller{1}.ATTR.name='LC_1';
 febio_spec.LoadData.load_controller{1}.ATTR.id=1;
 febio_spec.LoadData.load_controller{1}.ATTR.type='loadcurve';
 febio_spec.LoadData.load_controller{1}.interpolate='LINEAR';
-febio_spec.LoadData.load_controller{1}.points.point.VAL=[0 0; 1 1];
+%febio_spec.LoadData.load_controller{1}.extend='CONSTANT';
+febio_spec.LoadData.load_controller{1}.points.pt.VAL=[0 0; 1 1];
 
 %Output section 
 % -> log file
