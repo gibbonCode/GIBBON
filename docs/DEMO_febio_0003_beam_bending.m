@@ -199,7 +199,7 @@ febio_spec.Mesh.Surface{1}.quad4.VAL=F_pressure;
 % -> NodeSets
 nodeSetName1='bcSupportList';
 febio_spec.Mesh.NodeSet{1}.ATTR.name=nodeSetName1;
-febio_spec.Mesh.NodeSet{1}.VAL=bcSupportList(:)';
+febio_spec.Mesh.NodeSet{1}.VAL=mrow(bcSupportList);
 
 %MeshDomains section
 febio_spec.MeshDomains.SolidDomain.ATTR.name=partName1;

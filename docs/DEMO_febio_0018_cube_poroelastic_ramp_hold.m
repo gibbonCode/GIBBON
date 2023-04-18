@@ -122,6 +122,8 @@ max_ups=0; %Set to zero to use full-Newton iterations
 opt_iter=6; %Optimum number of iterations
 max_retries=5; %Maximum number of retires
 
+runMode='external';% 'internal' or 'external'
+
 %% Creating model geometry and mesh
 % A box is created with tri-linear hexahedral (hex8) elements using the
 % |hexMeshBox| function. The function offers the boundary faces with
@@ -370,6 +372,7 @@ febio_spec.Output.logfile.element_data{1}.ATTR.data='sz';
 febio_spec.Output.logfile.element_data{1}.ATTR.delim=',';
 
 febio_spec.Output.plotfile.compression=0;
+
 %% Quick viewing of the FEBio input file structure
 % The |febView| function can be used to view the xml structure in a MATLAB
 % figure window. 
@@ -393,7 +396,7 @@ febioStruct2xml(febio_spec,febioFebFileName); %Exporting to file and domNode
 febioAnalysis.run_filename=febioFebFileName; %The input file name
 febioAnalysis.run_logname=febioLogFileName; %The name for the log file
 febioAnalysis.disp_on=1; %Display information on the command window
-febioAnalysis.runMode='external';%'internal';
+febioAnalysis.runMode=runMode;
 
 [runFlag]=runMonitorFEBio(febioAnalysis);%START FEBio NOW!!!!!!!!
 

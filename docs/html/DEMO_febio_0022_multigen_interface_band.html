@@ -6,7 +6,7 @@
    <!--
 This HTML was auto-generated from MATLAB code.
 To make changes, update the MATLAB code and republish this document.
-      --><title>DEMO_febio_0022_multigen_interface_band</title><meta name="generator" content="MATLAB 9.9"><link rel="schema.DC" href="http://purl.org/dc/elements/1.1/"><meta name="DC.date" content="2020-12-11"><meta name="DC.source" content="DEMO_febio_0022_multigen_interface_band.m"><style type="text/css">
+      --><title>DEMO_febio_0022_multigen_interface_band</title><meta name="generator" content="MATLAB 9.13"><link rel="schema.DC" href="http://purl.org/dc/elements/1.1/"><meta name="DC.date" content="2023-04-18"><meta name="DC.source" content="DEMO_febio_0022_multigen_interface_band.m"><style type="text/css">
 html,body,div,span,applet,object,iframe,h1,h2,h3,h4,h5,h6,p,blockquote,pre,a,abbr,acronym,address,big,cite,code,del,dfn,em,font,img,ins,kbd,q,s,samp,small,strike,strong,tt,var,b,u,i,center,dl,dt,dd,ol,ul,li,fieldset,form,label,legend,table,caption,tbody,tfoot,thead,tr,th,td{margin:0;padding:0;border:0;outline:0;font-size:100%;vertical-align:baseline;background:transparent}body{line-height:1}ol,ul{list-style:none}blockquote,q{quotes:none}blockquote:before,blockquote:after,q:before,q:after{content:'';content:none}:focus{outine:0}ins{text-decoration:none}del{text-decoration:line-through}table{border-collapse:collapse;border-spacing:0}
 
 html { min-height:100%; margin-bottom:1px; }
@@ -105,6 +105,8 @@ opt_iter=10; <span class="comment">%Optimum number of iterations</span>
 max_retries=5; <span class="comment">%Maximum number of retires</span>
 dtmin=(1/numTimeSteps)/100; <span class="comment">%Minimum time step size</span>
 dtmax=1/numTimeSteps; <span class="comment">%Maximum time step size</span>
+
+runMode=<span class="string">'external'</span>;<span class="comment">% 'internal' or 'external'</span>
 
 appliedPressure=3e-3; <span class="comment">%pressure value</span>
 
@@ -331,62 +333,69 @@ inputStruct.modelName=modelName;
 </pre><p>Mesh model using tetrahedral elements using tetGen (see: <a href="http://wias-berlin.de/software/tetgen/">http://wias-berlin.de/software/tetgen/</a>)</p><pre class="codeinput">[meshOutput]=runTetGen(inputStruct); <span class="comment">%Run tetGen</span>
 </pre><pre class="codeoutput"> 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
---- TETGEN Tetrahedral meshing --- 11-Dec-2020 12:24:29
+--- TETGEN Tetrahedral meshing --- 18-Apr-2023 15:35:46
  
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
---- Writing SMESH file --- 11-Dec-2020 12:24:29
+--- Writing SMESH file --- 18-Apr-2023 15:35:46
 ----&gt; Adding node field
 ----&gt; Adding facet field
 ----&gt; Adding holes specification
 ----&gt; Adding region specification
---- Done --- 11-Dec-2020 12:24:29
---- Running TetGen to mesh input boundary--- 11-Dec-2020 12:24:29
+--- Done --- 18-Apr-2023 15:35:46
+--- Running TetGen to mesh input boundary--- 18-Apr-2023 15:35:46
 Opening /mnt/data/MATLAB/GIBBON/data/temp/tempModel.smesh.
 Delaunizing vertices...
-Delaunay seconds:  0.014404
+Delaunay seconds:  0.013359
 Creating surface mesh ...
-Surface mesh seconds:  0.002939
+Surface mesh seconds:  0.002156
 Recovering boundaries...
-Boundary recovery seconds:  0.00389
+Boundary recovery seconds:  0.003788
 Removing exterior tetrahedra ...
 Spreading region attributes.
-Exterior tets removal seconds:  0.001627
+Exterior tets removal seconds:  0.001472
 Recovering Delaunayness...
-Delaunay recovery seconds:  0.002201
+Delaunay recovery seconds:  0.002429
 Refining mesh...
-Refinement seconds:  0.059112
-Optimizing mesh...
-Optimization seconds:  0.004763
+  1956 insertions, added 1569 points, 47341 tetrahedra in queue.
+  651 insertions, added 477 points, 56522 tetrahedra in queue.
+  868 insertions, added 552 points, 62664 tetrahedra in queue.
+  1157 insertions, added 444 points, 40125 tetrahedra in queue.
+  1542 insertions, added 162 points, 1308 tetrahedra in queue.
+Refinement seconds:  0.069965
+Smoothing vertices...
+Mesh smoothing seconds:  0.124362
+Improving mesh...
+Mesh improvement seconds:  0.005534
 
 Writing /mnt/data/MATLAB/GIBBON/data/temp/tempModel.1.node.
 Writing /mnt/data/MATLAB/GIBBON/data/temp/tempModel.1.ele.
 Writing /mnt/data/MATLAB/GIBBON/data/temp/tempModel.1.face.
 Writing /mnt/data/MATLAB/GIBBON/data/temp/tempModel.1.edge.
 
-Output seconds:  0.059639
-Total running seconds:  0.148743
+Output seconds:  0.050911
+Total running seconds:  0.274155
 
 Statistics:
 
-  Input points: 1464
-  Input facets: 3002
-  Input segments: 4466
+  Input points: 1468
+  Input facets: 3010
+  Input segments: 4478
   Input holes: 0
   Input regions: 2
 
-  Mesh points: 4581
-  Mesh tetrahedra: 24759
-  Mesh faces: 50871
-  Mesh faces on exterior boundary: 2706
-  Mesh faces on input facets: 3002
-  Mesh edges on input segments: 4466
-  Steiner points inside domain: 3117
+  Mesh points: 4712
+  Mesh tetrahedra: 24781
+  Mesh faces: 50919
+  Mesh faces on exterior boundary: 2714
+  Mesh faces on input facets: 3010
+  Mesh edges on input segments: 4478
+  Steiner points inside domain: 3244
 
---- Done --- 11-Dec-2020 12:24:29
+--- Done --- 18-Apr-2023 15:35:46
  
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
---- Importing TetGen files --- 11-Dec-2020 12:24:29
---- Done --- 11-Dec-2020 12:24:29
+--- Importing TetGen files --- 18-Apr-2023 15:35:46
+--- Done --- 18-Apr-2023 15:35:46
 </pre><h2 id="21">Visualizing mesh</h2><pre class="codeinput">meshView(meshOutput);
 </pre><img width="100%" height="auto" vspace="5" hspace="5" src="DEMO_febio_0022_multigen_interface_band_04.jpg" alt=""> <p>Access model element and patch data</p><pre class="codeinput">F=meshOutput.faces;
 V=meshOutput.nodes;
@@ -433,17 +442,15 @@ E=[E1;E2];
 [febio_spec]=febioStructTemplate;
 
 <span class="comment">%febio_spec version</span>
-febio_spec.ATTR.version=<span class="string">'3.0'</span>;
+febio_spec.ATTR.version=<span class="string">'4.0'</span>;
 
 <span class="comment">%Module section</span>
 febio_spec.Module.ATTR.type=<span class="string">'solid'</span>;
 
 <span class="comment">%Create control structure for use by all steps</span>
-stepStruct.Control.analysis=<span class="string">'STATIC'</span>;
 stepStruct.Control.time_steps=numTimeSteps;
 stepStruct.Control.step_size=1/numTimeSteps;
 stepStruct.Control.solver.max_refs=max_refs;
-stepStruct.Control.solver.max_ups=max_ups;
 stepStruct.Control.time_stepper.dtmin=dtmin;
 stepStruct.Control.time_stepper.dtmax=dtmax;
 stepStruct.Control.time_stepper.max_retries=max_retries;
@@ -516,7 +523,7 @@ febio_spec.Mesh.Elements{2}.elem.VAL=E2;
 <span class="comment">% -&gt; NodeSets</span>
 nodeSetName1=<span class="string">'bcSupportList'</span>;
 febio_spec.Mesh.NodeSet{1}.ATTR.name=nodeSetName1;
-febio_spec.Mesh.NodeSet{1}.node.ATTR.id=bcSupportList(:);
+febio_spec.Mesh.NodeSet{1}.VAL=mrow(bcSupportList);
 
 <span class="comment">% -&gt; Surfaces</span>
 surfaceName1=<span class="string">'LoadedSurface'</span>;
@@ -533,9 +540,12 @@ febio_spec.MeshDomains.SolidDomain{2}.ATTR.mat=materialName2;
 
 <span class="comment">%Boundary condition section</span>
 <span class="comment">% -&gt; Fix boundary conditions</span>
-febio_spec.Boundary.bc{1}.ATTR.type=<span class="string">'fix'</span>;
+febio_spec.Boundary.bc{1}.ATTR.name=<span class="string">'zero_displacement_xyz'</span>;
+febio_spec.Boundary.bc{1}.ATTR.type=<span class="string">'zero displacement'</span>;
 febio_spec.Boundary.bc{1}.ATTR.node_set=nodeSetName1;
-febio_spec.Boundary.bc{1}.dofs=<span class="string">'x,y,z'</span>;
+febio_spec.Boundary.bc{1}.x_dof=1;
+febio_spec.Boundary.bc{1}.y_dof=1;
+febio_spec.Boundary.bc{1}.z_dof=1;
 
 <span class="comment">%Loads section</span>
 <span class="comment">% -&gt; Surface load</span>
@@ -547,10 +557,12 @@ febio_spec.Loads.surface_load{1}.symmetric_stiffness=1;
 
 <span class="comment">%LoadData section</span>
 <span class="comment">% -&gt; load_controller</span>
+febio_spec.LoadData.load_controller{1}.ATTR.name=<span class="string">'LC_1'</span>;
 febio_spec.LoadData.load_controller{1}.ATTR.id=1;
 febio_spec.LoadData.load_controller{1}.ATTR.type=<span class="string">'loadcurve'</span>;
 febio_spec.LoadData.load_controller{1}.interpolate=<span class="string">'LINEAR'</span>;
-febio_spec.LoadData.load_controller{1}.points.point.VAL=[0 0; 1 1; 2 0];
+<span class="comment">%febio_spec.LoadData.load_controller{1}.extend='CONSTANT';</span>
+febio_spec.LoadData.load_controller{1}.points.pt.VAL=[0 0; 1 1; 2 0];
 
 <span class="comment">%Output section</span>
 <span class="comment">% -&gt; log file</span>
@@ -566,62 +578,62 @@ febio_spec.Output.logfile.element_data{1}.ATTR.delim=<span class="string">','</s
 </pre><h2 id="32">Running the FEBio analysis</h2><p>To run the analysis defined by the created FEBio input file the <tt>runMonitorFEBio</tt> function is used. The input for this function is a structure defining job settings e.g. the FEBio input file name. The optional output runFlag informs the user if the analysis was run succesfully.</p><pre class="codeinput">febioAnalysis.run_filename=febioFebFileName; <span class="comment">%The input file name</span>
 febioAnalysis.run_logname=febioLogFileName; <span class="comment">%The name for the log file</span>
 febioAnalysis.disp_on=1; <span class="comment">%Display information on the command window</span>
-febioAnalysis.runMode=<span class="string">'external'</span>;<span class="comment">%'internal';</span>
+febioAnalysis.runMode=runMode;
 
 [runFlag]=runMonitorFEBio(febioAnalysis);<span class="comment">%START FEBio NOW!!!!!!!!</span>
 </pre><pre class="codeoutput"> 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
---------&gt;    RUNNING/MONITORING FEBIO JOB    &lt;-------- 11-Dec-2020 12:24:33
-FEBio path: /home/kevin/FEBioStudio/bin/febio3
-# Attempt removal of existing log files                11-Dec-2020 12:24:33
- * Removal succesful                                   11-Dec-2020 12:24:34
-# Attempt removal of existing .xplt files              11-Dec-2020 12:24:34
- * Removal succesful                                   11-Dec-2020 12:24:34
-# Starting FEBio...                                    11-Dec-2020 12:24:34
+--------&gt;    RUNNING/MONITORING FEBIO JOB    &lt;-------- 18-Apr-2023 15:35:53
+FEBio path: /home/kevin/FEBioStudio2/bin/febio4
+# Attempt removal of existing log files                18-Apr-2023 15:35:53
+ * Removal succesful                                   18-Apr-2023 15:35:53
+# Attempt removal of existing .xplt files              18-Apr-2023 15:35:53
+ * Removal succesful                                   18-Apr-2023 15:35:53
+# Starting FEBio...                                    18-Apr-2023 15:35:53
   Max. total analysis time is: Inf s
- * Waiting for log file creation                       11-Dec-2020 12:24:34
+ * Waiting for log file creation                       18-Apr-2023 15:35:53
    Max. wait time: 30 s
- * Log file found.                                     11-Dec-2020 12:24:34
-# Parsing log file...                                  11-Dec-2020 12:24:34
-    number of iterations   : 4                         11-Dec-2020 12:24:35
-    number of reformations : 4                         11-Dec-2020 12:24:35
-------- converged at time : 0.166667                   11-Dec-2020 12:24:35
-    number of iterations   : 4                         11-Dec-2020 12:24:36
-    number of reformations : 4                         11-Dec-2020 12:24:36
-------- converged at time : 0.333333                   11-Dec-2020 12:24:36
-    number of iterations   : 5                         11-Dec-2020 12:24:37
-    number of reformations : 5                         11-Dec-2020 12:24:37
-------- converged at time : 0.5                        11-Dec-2020 12:24:37
-    number of iterations   : 6                         11-Dec-2020 12:24:39
-    number of reformations : 6                         11-Dec-2020 12:24:39
-------- converged at time : 0.666667                   11-Dec-2020 12:24:39
-    number of iterations   : 6                         11-Dec-2020 12:24:40
-    number of reformations : 6                         11-Dec-2020 12:24:40
-------- converged at time : 0.833333                   11-Dec-2020 12:24:40
-    number of iterations   : 4                         11-Dec-2020 12:24:41
-    number of reformations : 4                         11-Dec-2020 12:24:41
-------- converged at time : 1                          11-Dec-2020 12:24:41
-    number of iterations   : 4                         11-Dec-2020 12:24:42
-    number of reformations : 4                         11-Dec-2020 12:24:42
-------- converged at time : 1.16667                    11-Dec-2020 12:24:42
-    number of iterations   : 4                         11-Dec-2020 12:24:43
-    number of reformations : 4                         11-Dec-2020 12:24:43
-------- converged at time : 1.33333                    11-Dec-2020 12:24:43
-    number of iterations   : 3                         11-Dec-2020 12:24:44
-    number of reformations : 3                         11-Dec-2020 12:24:44
-------- converged at time : 1.5                        11-Dec-2020 12:24:44
-    number of iterations   : 3                         11-Dec-2020 12:24:44
-    number of reformations : 3                         11-Dec-2020 12:24:44
-------- converged at time : 1.66667                    11-Dec-2020 12:24:44
-    number of iterations   : 3                         11-Dec-2020 12:24:45
-    number of reformations : 3                         11-Dec-2020 12:24:45
-------- converged at time : 1.83333                    11-Dec-2020 12:24:45
-    number of iterations   : 3                         11-Dec-2020 12:24:46
-    number of reformations : 3                         11-Dec-2020 12:24:46
-------- converged at time : 2                          11-Dec-2020 12:24:46
- Elapsed time : 0:00:12                                11-Dec-2020 12:24:46
+ * Log file found.                                     18-Apr-2023 15:35:54
+# Parsing log file...                                  18-Apr-2023 15:35:54
+    number of iterations   : 4                         18-Apr-2023 15:35:54
+    number of reformations : 4                         18-Apr-2023 15:35:54
+------- converged at time : 0.166667                   18-Apr-2023 15:35:54
+    number of iterations   : 4                         18-Apr-2023 15:35:55
+    number of reformations : 4                         18-Apr-2023 15:35:55
+------- converged at time : 0.333333                   18-Apr-2023 15:35:55
+    number of iterations   : 5                         18-Apr-2023 15:35:56
+    number of reformations : 5                         18-Apr-2023 15:35:56
+------- converged at time : 0.5                        18-Apr-2023 15:35:56
+    number of iterations   : 6                         18-Apr-2023 15:35:57
+    number of reformations : 6                         18-Apr-2023 15:35:57
+------- converged at time : 0.666667                   18-Apr-2023 15:35:57
+    number of iterations   : 6                         18-Apr-2023 15:35:59
+    number of reformations : 6                         18-Apr-2023 15:35:59
+------- converged at time : 0.833333                   18-Apr-2023 15:35:59
+    number of iterations   : 4                         18-Apr-2023 15:35:59
+    number of reformations : 4                         18-Apr-2023 15:35:59
+------- converged at time : 1                          18-Apr-2023 15:35:59
+    number of iterations   : 4                         18-Apr-2023 15:36:00
+    number of reformations : 4                         18-Apr-2023 15:36:00
+------- converged at time : 1.16667                    18-Apr-2023 15:36:00
+    number of iterations   : 4                         18-Apr-2023 15:36:01
+    number of reformations : 4                         18-Apr-2023 15:36:01
+------- converged at time : 1.33333                    18-Apr-2023 15:36:01
+    number of iterations   : 4                         18-Apr-2023 15:36:02
+    number of reformations : 4                         18-Apr-2023 15:36:02
+------- converged at time : 1.5                        18-Apr-2023 15:36:02
+    number of iterations   : 3                         18-Apr-2023 15:36:03
+    number of reformations : 3                         18-Apr-2023 15:36:03
+------- converged at time : 1.66667                    18-Apr-2023 15:36:03
+    number of iterations   : 3                         18-Apr-2023 15:36:04
+    number of reformations : 3                         18-Apr-2023 15:36:04
+------- converged at time : 1.83333                    18-Apr-2023 15:36:04
+    number of iterations   : 3                         18-Apr-2023 15:36:04
+    number of reformations : 3                         18-Apr-2023 15:36:04
+------- converged at time : 2                          18-Apr-2023 15:36:04
+ Elapsed time : 0:00:11                                18-Apr-2023 15:36:04
  N O R M A L   T E R M I N A T I O N
-# Done                                                 11-Dec-2020 12:24:46
+# Done                                                 18-Apr-2023 15:36:04
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 </pre><h2 id="33">Import FEBio results</h2><pre class="codeinput"><span class="keyword">if</span> runFlag==1 <span class="comment">%i.e. a succesful run</span>
 </pre><p>Importing nodal displacements from a log file</p><pre class="codeinput">    dataStruct=importFEBio_logfile(fullfile(savePath,febioLogFileName_disp),1,1);
@@ -684,7 +696,7 @@ FEBio path: /home/kevin/FEBioStudio/bin/febio3
     anim8(hf,animStruct); <span class="comment">%Initiate animation feature</span>
     drawnow;
 </pre><img width="100%" height="auto" vspace="5" hspace="5" src="DEMO_febio_0022_multigen_interface_band_07.jpg" alt=""> <pre class="codeinput"><span class="keyword">end</span>
-</pre><p><img vspace="5" hspace="5" src="gibbVerySmall.gif" alt=""> </p><p><i><b>GIBBON</b></i> <a href="www.gibboncode.org">www.gibboncode.org</a></p><p><i>Kevin Mattheus Moerman</i>, <a href="gibbon.toolbox@gmail.com">gibbon.toolbox@gmail.com</a></p><p><i><b>GIBBON footer text</b></i></p><p>License: <a href="https://github.com/gibbonCode/GIBBON/blob/master/LICENSE">https://github.com/gibbonCode/GIBBON/blob/master/LICENSE</a></p><p>GIBBON: The Geometry and Image-based Bioengineering add-On. A toolbox for image segmentation, image-based modeling, meshing, and finite element analysis.</p><p>Copyright (C) 2006-2020 Kevin Mattheus Moerman</p><p>This program is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.</p><p>This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for more details.</p><p>You should have received a copy of the GNU General Public License along with this program.  If not, see <a href="http://www.gnu.org/licenses/">http://www.gnu.org/licenses/</a>.</p><p class="footer"><br><a href="https://www.mathworks.com/products/matlab/">Published with MATLAB&reg; R2020b</a><br></p></div><!--
+</pre><p><img vspace="5" hspace="5" src="gibbVerySmall.gif" alt=""> </p><p><i><b>GIBBON</b></i> <a href="www.gibboncode.org">www.gibboncode.org</a></p><p><i>Kevin Mattheus Moerman</i>, <a href="gibbon.toolbox@gmail.com">gibbon.toolbox@gmail.com</a></p><p><i><b>GIBBON footer text</b></i></p><p>License: <a href="https://github.com/gibbonCode/GIBBON/blob/master/LICENSE">https://github.com/gibbonCode/GIBBON/blob/master/LICENSE</a></p><p>GIBBON: The Geometry and Image-based Bioengineering add-On. A toolbox for image segmentation, image-based modeling, meshing, and finite element analysis.</p><p>Copyright (C) 2006-2022 Kevin Mattheus Moerman and the GIBBON contributors</p><p>This program is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.</p><p>This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for more details.</p><p>You should have received a copy of the GNU General Public License along with this program.  If not, see <a href="http://www.gnu.org/licenses/">http://www.gnu.org/licenses/</a>.</p><p class="footer"><br><a href="https://www.mathworks.com/products/matlab/">Published with MATLAB&reg; R2022b</a><br></p></div><!--
 ##### SOURCE BEGIN #####
 %% DEMO_febio_0022_multigen_interface_band
 % Below is a demonstration for:
@@ -754,6 +766,8 @@ opt_iter=10; %Optimum number of iterations
 max_retries=5; %Maximum number of retires
 dtmin=(1/numTimeSteps)/100; %Minimum time step size
 dtmax=1/numTimeSteps; %Maximum time step size
+
+runMode='external';% 'internal' or 'external'
 
 appliedPressure=3e-3; %pressure value
 
@@ -1101,17 +1115,15 @@ E=[E1;E2];
 [febio_spec]=febioStructTemplate;
 
 %febio_spec version 
-febio_spec.ATTR.version='3.0'; 
+febio_spec.ATTR.version='4.0'; 
 
 %Module section
 febio_spec.Module.ATTR.type='solid'; 
 
 %Create control structure for use by all steps
-stepStruct.Control.analysis='STATIC';
 stepStruct.Control.time_steps=numTimeSteps;
 stepStruct.Control.step_size=1/numTimeSteps;
 stepStruct.Control.solver.max_refs=max_refs;
-stepStruct.Control.solver.max_ups=max_ups;
 stepStruct.Control.time_stepper.dtmin=dtmin;
 stepStruct.Control.time_stepper.dtmax=dtmax; 
 stepStruct.Control.time_stepper.max_retries=max_retries;
@@ -1184,7 +1196,7 @@ febio_spec.Mesh.Elements{2}.elem.VAL=E2;
 % -> NodeSets
 nodeSetName1='bcSupportList';
 febio_spec.Mesh.NodeSet{1}.ATTR.name=nodeSetName1;
-febio_spec.Mesh.NodeSet{1}.node.ATTR.id=bcSupportList(:);
+febio_spec.Mesh.NodeSet{1}.VAL=mrow(bcSupportList);
 
 % -> Surfaces
 surfaceName1='LoadedSurface';
@@ -1201,9 +1213,12 @@ febio_spec.MeshDomains.SolidDomain{2}.ATTR.mat=materialName2;
 
 %Boundary condition section 
 % -> Fix boundary conditions
-febio_spec.Boundary.bc{1}.ATTR.type='fix';
+febio_spec.Boundary.bc{1}.ATTR.name='zero_displacement_xyz';
+febio_spec.Boundary.bc{1}.ATTR.type='zero displacement';
 febio_spec.Boundary.bc{1}.ATTR.node_set=nodeSetName1;
-febio_spec.Boundary.bc{1}.dofs='x,y,z';
+febio_spec.Boundary.bc{1}.x_dof=1;
+febio_spec.Boundary.bc{1}.y_dof=1;
+febio_spec.Boundary.bc{1}.z_dof=1;
 
 %Loads section
 % -> Surface load
@@ -1215,10 +1230,12 @@ febio_spec.Loads.surface_load{1}.symmetric_stiffness=1;
         
 %LoadData section
 % -> load_controller
+febio_spec.LoadData.load_controller{1}.ATTR.name='LC_1';
 febio_spec.LoadData.load_controller{1}.ATTR.id=1;
 febio_spec.LoadData.load_controller{1}.ATTR.type='loadcurve';
 febio_spec.LoadData.load_controller{1}.interpolate='LINEAR';
-febio_spec.LoadData.load_controller{1}.points.point.VAL=[0 0; 1 1; 2 0];
+%febio_spec.LoadData.load_controller{1}.extend='CONSTANT';
+febio_spec.LoadData.load_controller{1}.points.pt.VAL=[0 0; 1 1; 2 0];
 
 %Output section 
 % -> log file
@@ -1254,7 +1271,7 @@ febioStruct2xml(febio_spec,febioFebFileName); %Exporting to file and domNode
 febioAnalysis.run_filename=febioFebFileName; %The input file name
 febioAnalysis.run_logname=febioLogFileName; %The name for the log file
 febioAnalysis.disp_on=1; %Display information on the command window
-febioAnalysis.runMode='external';%'internal';
+febioAnalysis.runMode=runMode;
 
 [runFlag]=runMonitorFEBio(febioAnalysis);%START FEBio NOW!!!!!!!!
 
@@ -1352,7 +1369,7 @@ end
 % image segmentation, image-based modeling, meshing, and finite element
 % analysis.
 % 
-% Copyright (C) 2006-2020 Kevin Mattheus Moerman
+% Copyright (C) 2006-2022 Kevin Mattheus Moerman and the GIBBON contributors
 % 
 % This program is free software: you can redistribute it and/or modify
 % it under the terms of the GNU General Public License as published by

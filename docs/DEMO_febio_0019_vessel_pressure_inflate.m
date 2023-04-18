@@ -9,7 +9,7 @@
 
 %% Keywords
 %
-% * febio_spec version 3.0
+% * febio_spec version 4.0
 % * febio, FEBio
 % * vessel, cylinder
 % * prescribed pressure
@@ -68,11 +68,12 @@ k=c1*k_factor; %Bulk modulus
 numTimeSteps=10; %Number of time steps desired
 max_refs=25; %Max reforms
 max_ups=0; %Set to zero to use full-Newton iterations
-opt_iter=12; %Optimum number of iterations
-max_retries=10; %Maximum number of retires
+opt_iter=6; %Optimum number of iterations
+max_retries=5; %Maximum number of retires
 dtmin=(1/numTimeSteps)/100; %Minimum time step size
 dtmax=1/numTimeSteps; %Maximum time step size
-min_residual=1e-20; 
+
+runMode='external';% 'internal' or 'external'
 
 %% Creating model boundary polygons
 %
@@ -184,7 +185,7 @@ drawnow;
 [febio_spec]=febioStructTemplate;
 
 %febio_spec version 
-febio_spec.ATTR.version='3.0'; 
+febio_spec.ATTR.version='4.0'; 
 
 %Module section
 febio_spec.Module.ATTR.type='solid'; 
@@ -194,13 +195,11 @@ febio_spec.Control.analysis='STATIC';
 febio_spec.Control.time_steps=numTimeSteps;
 febio_spec.Control.step_size=1/numTimeSteps;
 febio_spec.Control.solver.max_refs=max_refs;
-febio_spec.Control.solver.max_ups=max_ups;
-febio_spec.Control.solver.min_residual=min_residual;
+febio_spec.Control.solver.qn_method.max_ups=max_ups;
 febio_spec.Control.time_stepper.dtmin=dtmin;
 febio_spec.Control.time_stepper.dtmax=dtmax; 
 febio_spec.Control.time_stepper.max_retries=max_retries;
 febio_spec.Control.time_stepper.opt_iter=opt_iter;
-
 
 %Material section
 materialName1='Material1';
@@ -235,7 +234,7 @@ febio_spec.Mesh.Surface{1}.tri3.VAL=F_pressure;
 % -> NodeSets
 nodeSetName1='bcSupportList';
 febio_spec.Mesh.NodeSet{1}.ATTR.name=nodeSetName1;
-febio_spec.Mesh.NodeSet{1}.node.ATTR.id=bcSupportList(:);
+febio_spec.Mesh.NodeSet{1}.VAL=mrow(bcSupportList);
 
 %MeshDomains section
 febio_spec.MeshDomains.SolidDomain.ATTR.name=partName1;
@@ -243,9 +242,12 @@ febio_spec.MeshDomains.SolidDomain.ATTR.mat=materialName1;
 
 %Boundary condition section 
 % -> Fix boundary conditions
-febio_spec.Boundary.bc{1}.ATTR.type='fix';
+febio_spec.Boundary.bc{1}.ATTR.name='zero_displacement_xyz';
+febio_spec.Boundary.bc{1}.ATTR.type='zero displacement';
 febio_spec.Boundary.bc{1}.ATTR.node_set=nodeSetName1;
-febio_spec.Boundary.bc{1}.dofs='x,y,z';
+febio_spec.Boundary.bc{1}.x_dof=1;
+febio_spec.Boundary.bc{1}.y_dof=1;
+febio_spec.Boundary.bc{1}.z_dof=1;
 
 %Loads section
 % -> Surface load    
@@ -257,10 +259,12 @@ febio_spec.Loads.surface_load{1}.symmetric_stiffness=1;
 
 %LoadData section
 % -> load_controller
+febio_spec.LoadData.load_controller{1}.ATTR.name='LC_1';
 febio_spec.LoadData.load_controller{1}.ATTR.id=1;
 febio_spec.LoadData.load_controller{1}.ATTR.type='loadcurve';
 febio_spec.LoadData.load_controller{1}.interpolate='LINEAR';
-febio_spec.LoadData.load_controller{1}.points.point.VAL=[0 0; 1 1];
+%febio_spec.LoadData.load_controller{1}.extend='CONSTANT';
+febio_spec.LoadData.load_controller{1}.points.pt.VAL=[0 0; 1 1];
 
 %Output section 
 % -> log file
@@ -268,11 +272,12 @@ febio_spec.Output.logfile.ATTR.file=febioLogFileName;
 febio_spec.Output.logfile.node_data{1}.ATTR.file=febioLogFileName_disp;
 febio_spec.Output.logfile.node_data{1}.ATTR.data='ux;uy;uz';
 febio_spec.Output.logfile.node_data{1}.ATTR.delim=',';
-febio_spec.Output.logfile.node_data{1}.VAL=1:size(V,1);
 
 febio_spec.Output.logfile.element_data{1}.ATTR.file=febioLogFileName_stress_prin;
 febio_spec.Output.logfile.element_data{1}.ATTR.data='s1;s2;s3';
 febio_spec.Output.logfile.element_data{1}.ATTR.delim=',';
+
+febio_spec.Output.plotfile.compression=0;
 
 %% Quick viewing of the FEBio input file structure
 % The |febView| function can be used to view the xml structure in a MATLAB
@@ -280,13 +285,13 @@ febio_spec.Output.logfile.element_data{1}.ATTR.delim=',';
 
 %%
 % |febView(febio_spec); %Viewing the febio file|
-% febView(febio_spec)
 
 %% Exporting the FEBio input file
 % Exporting the febio_spec structure to an FEBio input file is done using
 % the |febioStruct2xml| function. 
 
 febioStruct2xml(febio_spec,febioFebFileName); %Exporting to file and domNode
+%system(['gedit ',febioFebFileName,' &']);
 
 %% Running the FEBio analysis
 % To run the analysis defined by the created FEBio input file the
@@ -298,10 +303,7 @@ febioStruct2xml(febio_spec,febioFebFileName); %Exporting to file and domNode
 febioAnalysis.run_filename=febioFebFileName; %The input file name
 febioAnalysis.run_logname=febioLogFileName; %The name for the log file
 febioAnalysis.disp_on=1; %Display information on the command window
-febioAnalysis.disp_log_on=1; %Display convergence information in the command window
-febioAnalysis.runMode='external';%'internal';
-febioAnalysis.t_check=0.25; %Time for checking log file (dont set too small)
-febioAnalysis.maxtpi=1e99; %Max analysis time
+febioAnalysis.runMode=runMode;
 febioAnalysis.maxLogCheckTime=10; %Max log file checking time
 
 [runFlag]=runMonitorFEBio(febioAnalysis);%START FEBio NOW!!!!!!!!
@@ -309,6 +311,7 @@ febioAnalysis.maxLogCheckTime=10; %Max log file checking time
 %% Import FEBio results 
 
 if runFlag==1 %i.e. a succesful run
+    
 
     %%
     % Importing nodal displacements from a log file

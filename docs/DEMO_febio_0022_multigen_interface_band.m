@@ -67,6 +67,8 @@ max_retries=5; %Maximum number of retires
 dtmin=(1/numTimeSteps)/100; %Minimum time step size
 dtmax=1/numTimeSteps; %Maximum time step size
 
+runMode='external';% 'internal' or 'external'
+
 appliedPressure=3e-3; %pressure value
 
 % Geometry parameters
@@ -413,17 +415,15 @@ E=[E1;E2];
 [febio_spec]=febioStructTemplate;
 
 %febio_spec version 
-febio_spec.ATTR.version='3.0'; 
+febio_spec.ATTR.version='4.0'; 
 
 %Module section
 febio_spec.Module.ATTR.type='solid'; 
 
 %Create control structure for use by all steps
-stepStruct.Control.analysis='STATIC';
 stepStruct.Control.time_steps=numTimeSteps;
 stepStruct.Control.step_size=1/numTimeSteps;
 stepStruct.Control.solver.max_refs=max_refs;
-stepStruct.Control.solver.max_ups=max_ups;
 stepStruct.Control.time_stepper.dtmin=dtmin;
 stepStruct.Control.time_stepper.dtmax=dtmax; 
 stepStruct.Control.time_stepper.max_retries=max_retries;
@@ -496,7 +496,7 @@ febio_spec.Mesh.Elements{2}.elem.VAL=E2;
 % -> NodeSets
 nodeSetName1='bcSupportList';
 febio_spec.Mesh.NodeSet{1}.ATTR.name=nodeSetName1;
-febio_spec.Mesh.NodeSet{1}.node.ATTR.id=bcSupportList(:);
+febio_spec.Mesh.NodeSet{1}.VAL=mrow(bcSupportList);
 
 % -> Surfaces
 surfaceName1='LoadedSurface';
@@ -513,9 +513,12 @@ febio_spec.MeshDomains.SolidDomain{2}.ATTR.mat=materialName2;
 
 %Boundary condition section 
 % -> Fix boundary conditions
-febio_spec.Boundary.bc{1}.ATTR.type='fix';
+febio_spec.Boundary.bc{1}.ATTR.name='zero_displacement_xyz';
+febio_spec.Boundary.bc{1}.ATTR.type='zero displacement';
 febio_spec.Boundary.bc{1}.ATTR.node_set=nodeSetName1;
-febio_spec.Boundary.bc{1}.dofs='x,y,z';
+febio_spec.Boundary.bc{1}.x_dof=1;
+febio_spec.Boundary.bc{1}.y_dof=1;
+febio_spec.Boundary.bc{1}.z_dof=1;
 
 %Loads section
 % -> Surface load
@@ -527,10 +530,12 @@ febio_spec.Loads.surface_load{1}.symmetric_stiffness=1;
         
 %LoadData section
 % -> load_controller
+febio_spec.LoadData.load_controller{1}.ATTR.name='LC_1';
 febio_spec.LoadData.load_controller{1}.ATTR.id=1;
 febio_spec.LoadData.load_controller{1}.ATTR.type='loadcurve';
 febio_spec.LoadData.load_controller{1}.interpolate='LINEAR';
-febio_spec.LoadData.load_controller{1}.points.point.VAL=[0 0; 1 1; 2 0];
+%febio_spec.LoadData.load_controller{1}.extend='CONSTANT';
+febio_spec.LoadData.load_controller{1}.points.pt.VAL=[0 0; 1 1; 2 0];
 
 %Output section 
 % -> log file
@@ -566,7 +571,7 @@ febioStruct2xml(febio_spec,febioFebFileName); %Exporting to file and domNode
 febioAnalysis.run_filename=febioFebFileName; %The input file name
 febioAnalysis.run_logname=febioLogFileName; %The name for the log file
 febioAnalysis.disp_on=1; %Display information on the command window
-febioAnalysis.runMode='external';%'internal';
+febioAnalysis.runMode=runMode;
 
 [runFlag]=runMonitorFEBio(febioAnalysis);%START FEBio NOW!!!!!!!!
 
