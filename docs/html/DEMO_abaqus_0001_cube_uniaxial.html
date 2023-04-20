@@ -6,7 +6,7 @@
    <!--
 This HTML was auto-generated from MATLAB code.
 To make changes, update the MATLAB code and republish this document.
-      --><title>DEMO_abaqus_0001_cube_uniaxial</title><meta name="generator" content="MATLAB 9.9"><link rel="schema.DC" href="http://purl.org/dc/elements/1.1/"><meta name="DC.date" content="2020-12-11"><meta name="DC.source" content="DEMO_abaqus_0001_cube_uniaxial.m"><style type="text/css">
+      --><title>DEMO_abaqus_0001_cube_uniaxial</title><meta name="generator" content="MATLAB 9.13"><link rel="schema.DC" href="http://purl.org/dc/elements/1.1/"><meta name="DC.date" content="2023-04-20"><meta name="DC.source" content="DEMO_abaqus_0001_cube_uniaxial.m"><style type="text/css">
 html,body,div,span,applet,object,iframe,h1,h2,h3,h4,h5,h6,p,blockquote,pre,a,abbr,acronym,address,big,cite,code,del,dfn,em,font,img,ins,kbd,q,s,samp,small,strike,strong,tt,var,b,u,i,center,dl,dt,dd,ol,ul,li,fieldset,form,label,legend,table,caption,tbody,tfoot,thead,tr,th,td{margin:0;padding:0;border:0;outline:0;font-size:100%;vertical-align:baseline;background:transparent}body{line-height:1}ol,ul{list-style:none}blockquote,q{quotes:none}blockquote:before,blockquote:after,q:before,q:after{content:'';content:none}:focus{outine:0}ins{text-decoration:none}del{text-decoration:line-through}table{border-collapse:collapse;border-spacing:0}
 
 html { min-height:100%; margin-bottom:1px; }
@@ -265,11 +265,22 @@ abaqus_spec.Step.El_print{2}.VAL=<span class="string">'E'</span>;
 cd(savePath); <span class="comment">%Set new working directory to match save patch</span>
 
 abaqusPath=<span class="string">'abaqus'</span>;<span class="comment">%'/usr/bin/abaqus'; %Abaqus excute command or path</span>
-runFlag=system([abaqusPath,<span class="string">' inp='</span>,abaqusInpFileName,<span class="string">' job='</span>,abaqusInpFileNamePart,<span class="string">' interactive ask_delete=OFF'</span>]);
+runFlag=system([abaqusPath,<span class="string">' inp="'</span>,abaqusInpFileName,<span class="string">'" job='</span>,abaqusInpFileNamePart,<span class="string">' interactive ask_delete=OFF'</span>]);
 
 cd(oldPath); <span class="comment">%Restore working directory</span>
-</pre><pre class="codeoutput">/bin/bash: abaqus: command not found
+</pre><pre class="codeoutput">/bin/bash: line 1: abaqus: command not found
 </pre><h2 id="13">Import and visualize abaqus results</h2><p>Importing the abaqus .dat file</p><pre class="codeinput">[abaqusData]=importAbaqusDat(abaqusDATFileName);
+</pre><pre class="codeoutput error">Error using textscan
+Invalid file identifier. Use fopen to generate a valid file identifier.
+
+Error in txtfile2cell (line 16)
+T=textscan(fid,'%s','delimiter', '\n','Whitespace','');
+
+Error in importAbaqusDat (line 61)
+T=txtfile2cell(fileName);
+
+Error in DEMO_abaqus_0001_cube_uniaxial (line 270)
+[abaqusData]=importAbaqusDat(abaqusDATFileName);
 </pre><h2 id="14">Get element data</h2><pre class="codeinput">E_effectiveStress=zeros(size(E,1),numel(abaqusData.STEP.INCREMENT)+1);
 E_effectiveStrain=zeros(size(E,1),numel(abaqusData.STEP.INCREMENT)+1);
 <span class="keyword">for</span> q=1:1:numel(abaqusData.STEP.INCREMENT)
@@ -360,7 +371,7 @@ animStruct.Time=timeVec; <span class="comment">%The time vector</span>
 <span class="keyword">end</span>
 anim8(hf,animStruct); <span class="comment">%Initiate animation feature</span>
 drawnow;
-</pre><img width="100%" height="auto" vspace="5" hspace="5" src="DEMO_abaqus_0001_cube_uniaxial_03.jpg" alt=""> <p>Plotting the simulated results using <tt>anim8</tt> to visualize and animate deformations</p><pre class="codeinput"><span class="comment">%Getting final nodal coordinates</span>
+</pre><p>Plotting the simulated results using <tt>anim8</tt> to visualize and animate deformations</p><pre class="codeinput"><span class="comment">%Getting final nodal coordinates</span>
 V_def=[abaqusData.STEP(1).INCREMENT(end).nodeOutput.data.COOR1<span class="keyword">...</span>
     abaqusData.STEP(1).INCREMENT(end).nodeOutput.data.COOR2<span class="keyword">...</span>
     abaqusData.STEP(1).INCREMENT(end).nodeOutput.data.COOR3];
@@ -411,7 +422,7 @@ animStruct.Time=timeVec; <span class="comment">%The time vector</span>
 <span class="keyword">end</span>
 anim8(hf,animStruct); <span class="comment">%Initiate animation feature</span>
 drawnow;
-</pre><img width="100%" height="auto" vspace="5" hspace="5" src="DEMO_abaqus_0001_cube_uniaxial_04.jpg" alt=""> <p><img vspace="5" hspace="5" src="gibbVerySmall.gif" alt=""> </p><p><i><b>GIBBON</b></i> <a href="www.gibboncode.org">www.gibboncode.org</a></p><p><i>Kevin Mattheus Moerman</i>, <a href="gibbon.toolbox@gmail.com">gibbon.toolbox@gmail.com</a></p><p><i><b>GIBBON footer text</b></i></p><p>License: <a href="https://github.com/gibbonCode/GIBBON/blob/master/LICENSE">https://github.com/gibbonCode/GIBBON/blob/master/LICENSE</a></p><p>GIBBON: The Geometry and Image-based Bioengineering add-On. A toolbox for image segmentation, image-based modeling, meshing, and finite element analysis.</p><p>Copyright (C) 2006-2020 Kevin Mattheus Moerman</p><p>This program is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.</p><p>This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for more details.</p><p>You should have received a copy of the GNU General Public License along with this program.  If not, see <a href="http://www.gnu.org/licenses/">http://www.gnu.org/licenses/</a>.</p><p class="footer"><br><a href="https://www.mathworks.com/products/matlab/">Published with MATLAB&reg; R2020b</a><br></p></div><!--
+</pre><p><img vspace="5" hspace="5" src="gibbVerySmall.gif" alt=""> </p><p><i><b>GIBBON</b></i> <a href="www.gibboncode.org">www.gibboncode.org</a></p><p><i>Kevin Mattheus Moerman</i>, <a href="gibbon.toolbox@gmail.com">gibbon.toolbox@gmail.com</a></p><p><i><b>GIBBON footer text</b></i></p><p>License: <a href="https://github.com/gibbonCode/GIBBON/blob/master/LICENSE">https://github.com/gibbonCode/GIBBON/blob/master/LICENSE</a></p><p>GIBBON: The Geometry and Image-based Bioengineering add-On. A toolbox for image segmentation, image-based modeling, meshing, and finite element analysis.</p><p>Copyright (C) 2006-2022 Kevin Mattheus Moerman and the GIBBON contributors</p><p>This program is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.</p><p>This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for more details.</p><p>You should have received a copy of the GNU General Public License along with this program.  If not, see <a href="http://www.gnu.org/licenses/">http://www.gnu.org/licenses/</a>.</p><p class="footer"><br><a href="https://www.mathworks.com/products/matlab/">Published with MATLAB&reg; R2022b</a><br></p></div><!--
 ##### SOURCE BEGIN #####
 %% DEMO_abaqus_0001_cube_uniaxial
 % Below is a demonstration for:
@@ -675,7 +686,7 @@ oldPath=pwd; %Get current working directory
 cd(savePath); %Set new working directory to match save patch
 
 abaqusPath='abaqus';%'/usr/bin/abaqus'; %Abaqus excute command or path
-runFlag=system([abaqusPath,' inp=',abaqusInpFileName,' job=',abaqusInpFileNamePart,' interactive ask_delete=OFF']);
+runFlag=system([abaqusPath,' inp="',abaqusInpFileName,'" job=',abaqusInpFileNamePart,' interactive ask_delete=OFF']);
 
 cd(oldPath); %Restore working directory
 
@@ -856,7 +867,7 @@ drawnow;
 % image segmentation, image-based modeling, meshing, and finite element
 % analysis.
 % 
-% Copyright (C) 2006-2020 Kevin Mattheus Moerman
+% Copyright (C) 2006-2022 Kevin Mattheus Moerman and the GIBBON contributors
 % 
 % This program is free software: you can redistribute it and/or modify
 % it under the terms of the GNU General Public License as published by

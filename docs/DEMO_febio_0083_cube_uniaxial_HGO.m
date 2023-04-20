@@ -20,6 +20,7 @@
 % * hyperelastic, HGO
 % * displacement logfile
 % * stress logfile
+% * Fiber mapping
 
 %%
 
@@ -44,8 +45,10 @@ febioFebFileNamePart='tempModel';
 febioFebFileName=fullfile(savePath,[febioFebFileNamePart,'.feb']); %FEB file name
 febioLogFileName=[febioFebFileNamePart,'.txt']; %FEBio log file name
 febioLogFileName_disp=[febioFebFileNamePart,'_disp_out.txt']; %Log file name for exporting displacement
-febioLogFileName_stress=[febioFebFileNamePart,'_stress_out.txt']; %Log file name for exporting stress
-febioLogFileName_stress_prin=[febioFebFileNamePart,'_stress_prin_out.txt']; %Log file name for exporting principal stress
+febioLogFileName_stress=[febioFebFileNamePart,'_stress_out.txt']; %Log file name for exporting stress sigma_z
+febioLogFileName_stretch=[febioFebFileNamePart,'_stretch_out.txt']; %Log file name for exporting stress U_z
+febioLogFileName_stress_prin=[febioFebFileNamePart,'_stress_prin_out.txt']; %Log file name for exporting principal stresses
+febioLogFileName_stretch_prin=[febioFebFileNamePart,'_stretch_prin_out.txt']; %Log file name for exporting principal stretches
 febioLogFileName_force=[febioFebFileNamePart,'_force_out.txt']; %Log file name for exporting force
 
 %Specifying dimensions and number of elements
@@ -82,6 +85,10 @@ dtmin=(1/numTimeSteps)/100; %Minimum time step size
 dtmax=1/numTimeSteps; %Maximum time step size
 
 runMode='external';% 'internal' or 'external'
+
+%Material parameters
+
+alphaFib=45/180*pi; %Fibre angle
 
 %% Creating model geometry and mesh
 % A box is created with tri-linear hexahedral (hex8) elements using the
@@ -126,22 +133,18 @@ drawnow;
 % cube. These labels can be used to define boundary conditions. 
 
 %Define supported node sets
-logicFace=Cb==1; %Logic for current face set
-Fr=Fb(logicFace,:); %The current face set
-bcSupportList_X=unique(Fr(:)); %Node set part of selected face
+FX=Fb(Cb==1,:); %Face orthogonal to X
+FY=Fb(Cb==3,:); %Face orthogonal to Y
+FZ=Fb(Cb==5,:); %Face orthogonal to Z
 
-logicFace=Cb==3; %Logic for current face set
-Fr=Fb(logicFace,:); %The current face set
-bcSupportList_Y=unique(Fr(:)); %Node set part of selected face
-
-logicFace=Cb==5; %Logic for current face set
-Fr=Fb(logicFace,:); %The current face set
-bcSupportList_Z=unique(Fr(:)); %Node set part of selected face
+indAll=1:1:size(V,1);
+bcSupportList_X=indAll(ismember(indAll,FX) & ismember(indAll,FZ)); %Node set part of selected face
+bcSupportList_Y=indAll(ismember(indAll,FY) & ismember(indAll,FZ)); %Node set part of selected face
+bcSupportList_Z=unique(FZ(:)); %Node set part of selected face
 
 %Prescribed displacement nodes
-logicPrescribe=Cb==6; %Logic for current face set
-Fr=Fb(logicPrescribe,:); %The current face set
-bcPrescribeList=unique(Fr(:)); %Node set part of selected face
+F_fix=Fb(Cb==6,:); %The current face set
+bcPrescribeList=unique(F_fix(:)); %Node set part of selected face
 
 %% 
 % Visualizing boundary conditions. Markers plotted on the semi-transparent
@@ -154,12 +157,39 @@ hold on;
 
 gpatch(Fb,V,'kw','k',0.5);
 
-hl(1)=plotV(V(bcSupportList_X,:),'r.','MarkerSize',markerSize);
-hl(2)=plotV(V(bcSupportList_Y,:),'g.','MarkerSize',markerSize);
+hl(1)=plotV(V(bcSupportList_X,:),'r.','MarkerSize',markerSize*2);
+hl(2)=plotV(V(bcSupportList_Y,:),'g.','MarkerSize',markerSize*2);
 hl(3)=plotV(V(bcSupportList_Z,:),'b.','MarkerSize',markerSize);
 hl(4)=plotV(V(bcPrescribeList,:),'k.','MarkerSize',markerSize);
 
 legend(hl,{'BC x support','BC y support','BC z support','BC z prescribe'});
+
+axisGeom(gca,fontSize);
+camlight headlight; 
+drawnow; 
+
+%% DEFINE FIBRE DIRECTIONS
+
+R=euler2DCM([0,-alphaFib,0]);
+e1=(R*[1 0 0]')';
+e1_dir=e1(ones(size(E,1),1),:);
+[e2_dir,e3_dir]=vectorOrthogonalPair(e1_dir);
+
+[VE]=patchCentre(E,V);
+
+%% 
+% Visualizing fiber directions
+
+hf=cFigure;
+title('Fiber directions','FontSize',fontSize);
+hold on;
+
+gpatch(Fb,V,'kw','none',0.25);
+hf(1)=quiverVec(VE,e1_dir,mean(pointSpacings),'r');
+hf(2)=quiverVec(VE,e2_dir,mean(pointSpacings)/2,'g');
+hf(3)=quiverVec(VE,e3_dir,mean(pointSpacings)/2,'b');
+
+legend(hf,{'e1-direction (fiber)','e2-direction','e3-direction'});
 
 axisGeom(gca,fontSize);
 camlight headlight; 
@@ -191,29 +221,20 @@ febio_spec.Control.time_stepper.opt_iter=opt_iter;
 
 %Material section
 materialName1='Material1';
+febio_spec.Material.material{1}.ATTR.name=materialName1;
+febio_spec.Material.material{1}.ATTR.id=1;
 switch materialType
     case 'coupled'
-        febio_spec.Material.material{1}.ATTR.name=materialName1;
         febio_spec.Material.material{1}.ATTR.type='HGO unconstrained';
-        febio_spec.Material.material{1}.ATTR.id=1;
-        febio_spec.Material.material{1}.c=7.64;
-        febio_spec.Material.material{1}.k1=996.6;
-        febio_spec.Material.material{1}.k2=524.6;
-        febio_spec.Material.material{1}.gamma=49.98;
-        febio_spec.Material.material{1}.kappa=0.226;
-        febio_spec.Material.material{1}.k=7.64e3;
     case 'uncoupled'
-        materialName1='Material1';
-        febio_spec.Material.material{1}.ATTR.name=materialName1;
         febio_spec.Material.material{1}.ATTR.type='Holzapfel-Gasser-Ogden';
-        febio_spec.Material.material{1}.ATTR.id=1;
-        febio_spec.Material.material{1}.c=7.64;
-        febio_spec.Material.material{1}.k1=996.6;
-        febio_spec.Material.material{1}.k2=524.6;
-        febio_spec.Material.material{1}.gamma=49.98;
-        febio_spec.Material.material{1}.kappa=0.226;
-        febio_spec.Material.material{1}.k=1e5;
 end
+febio_spec.Material.material{1}.c=7.64;
+febio_spec.Material.material{1}.k1=996.6;
+febio_spec.Material.material{1}.k2=524.6;
+febio_spec.Material.material{1}.gamma=0;
+febio_spec.Material.material{1}.kappa=0.226;
+febio_spec.Material.material{1}.k=7.64e3;
 
 % Mesh section
 % -> Nodes
@@ -249,6 +270,17 @@ febio_spec.Mesh.NodeSet{4}.VAL=mrow(bcPrescribeList);
 %MeshDomains section
 febio_spec.MeshDomains.SolidDomain.ATTR.name=partName1;
 febio_spec.MeshDomains.SolidDomain.ATTR.mat=materialName1;
+
+%MeshData section
+% -> ElementData
+febio_spec.MeshData.ElementData{1}.ATTR.elem_set=partName1;
+febio_spec.MeshData.ElementData{1}.ATTR.type='mat_axis';
+
+for q=1:1:size(E,1)
+    febio_spec.MeshData.ElementData{1}.elem{q}.ATTR.lid=q;
+    febio_spec.MeshData.ElementData{1}.elem{q}.a=e1_dir(q,:);
+    febio_spec.MeshData.ElementData{1}.elem{q}.d=e2_dir(q,:);
+end
 
 %Boundary condition section 
 % -> Fix boundary conditions
@@ -305,12 +337,20 @@ febio_spec.Output.logfile.element_data{1}.ATTR.file=febioLogFileName_stress;
 febio_spec.Output.logfile.element_data{1}.ATTR.data='sz';
 febio_spec.Output.logfile.element_data{1}.ATTR.delim=',';
 
-febio_spec.Output.logfile.element_data{2}.ATTR.file=febioLogFileName_stress_prin;
-febio_spec.Output.logfile.element_data{2}.ATTR.data='s1;s2;s3';
+febio_spec.Output.logfile.element_data{2}.ATTR.file=febioLogFileName_stretch;
+febio_spec.Output.logfile.element_data{2}.ATTR.data='Uz';
 febio_spec.Output.logfile.element_data{2}.ATTR.delim=',';
 
+febio_spec.Output.logfile.element_data{3}.ATTR.file=febioLogFileName_stress_prin;
+febio_spec.Output.logfile.element_data{3}.ATTR.data='s1;s2;s3';
+febio_spec.Output.logfile.element_data{3}.ATTR.delim=',';
+
+febio_spec.Output.logfile.element_data{4}.ATTR.file=febioLogFileName_stretch_prin;
+febio_spec.Output.logfile.element_data{4}.ATTR.data='U1;U2;U3';
+febio_spec.Output.logfile.element_data{4}.ATTR.delim=',';
+
 % Plotfile section
-febio_spec.Output.plotfile.compression=1;
+febio_spec.Output.plotfile.compression=0;
 
 %% Quick viewing of the FEBio input file structure
 % The |febView| function can be used to view the xml structure in a MATLAB
@@ -348,7 +388,7 @@ if runFlag==1 %i.e. a succesful run
     %% 
     
     % Importing nodal displacements from a log file
-    dataStruct=importFEBio_logfile(fullfile(savePath,febioLogFileName_disp),1,1);
+    dataStruct=importFEBio_logfile(fullfile(savePath,febioLogFileName_disp),0,1);
     
     %Access data
     N_disp_mat=dataStruct.data; %Displacement
@@ -392,13 +432,20 @@ if runFlag==1 %i.e. a succesful run
     end        
     anim8(hf,animStruct); %Initiate animation feature    
     drawnow;
-            
+                        
     %%
     % Importing element stress from a log file
-    dataStruct=importFEBio_logfile(fullfile(savePath,febioLogFileName_stress),1,1);
+    dataStruct=importFEBio_logfile(fullfile(savePath,febioLogFileName_stress),0,1);
     
     %Access data
     E_stress_mat=dataStruct.data;
+
+    %%
+    % Importing element stretch from a log file
+    dataStruct=importFEBio_logfile(fullfile(savePath,febioLogFileName_stretch),0,1);
+    
+    %Access data
+    E_stretch_mat=dataStruct.data;
     
     %% 
     % Plotting the simulated results using |anim8| to visualize and animate
@@ -439,15 +486,10 @@ if runFlag==1 %i.e. a succesful run
     drawnow;
     
     %% 
-    % Calculate metrics to visualize stretch-stress curve
+    % Visualize stretch-stress curve
     
-    DZ_set=N_disp_mat(bcPrescribeList,end,:); %Z displacements of the prescribed set
-    DZ_set=mean(DZ_set,1); %Calculate mean Z displacements across nodes
-    stretch_sim=(DZ_set(:)+sampleHeight)./sampleHeight; %Derive stretch
-    stress_cauchy_sim=mean(squeeze(E_stress_mat(:,end,:)),1)';
-    
-    %%    
-    % Visualize stress-stretch curve
+    stretch_sim=squeeze(mean(E_stretch_mat,1)); % Stretch U_z
+    stress_cauchy_sim=squeeze(mean(E_stress_mat,1)); %Cauchy stress sigma_z
     
     cFigure; hold on;    
     title('Uniaxial stress-stretch curve','FontSize',fontSize);
@@ -459,35 +501,11 @@ if runFlag==1 %i.e. a succesful run
     view(2); axis tight;  grid on; axis square; box on; 
     set(gca,'FontSize',fontSize);
     drawnow;
-    
-    %%
-    % Importing element principal stresses from a log file
-    dataStruct=importFEBio_logfile(fullfile(savePath,febioLogFileName_stress_prin),1,1);
-    
-    %Access data
-    E_stress_prin_mat=dataStruct.data;
-    
-    %Compute pressure
-    P = squeeze(-1/3*mean(sum(E_stress_prin_mat,2),1));
-    
-    %%
-    % Visualize pressure-stretch curve
-    
-    cFigure; hold on;
-    title('Pressure-stretch curve','FontSize',fontSize);
-    xlabel('$\lambda$ [.]','FontSize',fontSize,'Interpreter','Latex');
-    ylabel('$p$ [MPa]','FontSize',fontSize,'Interpreter','Latex');
-    
-    plot(stretch_sim(:),P(:),'r-','lineWidth',lineWidth);
-    
-    view(2); axis tight;  grid on; axis square; box on;
-    set(gca,'FontSize',fontSize);
-    drawnow;
 
     %%
     % Importing nodal forces from a log file
 
-    [dataStruct]=importFEBio_logfile(fullfile(savePath,febioLogFileName_force),1,1); %Nodal forces
+    [dataStruct]=importFEBio_logfile(fullfile(savePath,febioLogFileName_force),0,1); %Nodal forces
 
     %Access data    
     timeVec=dataStruct.time;

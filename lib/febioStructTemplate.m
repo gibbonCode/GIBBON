@@ -54,7 +54,7 @@ febio_spec.Control.analysis='STATIC';
 febio_spec.Control.time_steps=10;
 febio_spec.Control.step_size=0.1;
 
-febio_spec.Control.plot_zero_state=1;
+febio_spec.Control.plot_zero_state=1; %Output initial state
 febio_spec.Control.plot_range=[0,-1];
 febio_spec.Control.plot_level='PLOT_MAJOR_ITRS';
 febio_spec.Control.plot_stride=1; 

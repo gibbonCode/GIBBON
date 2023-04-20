@@ -6,7 +6,7 @@
    <!--
 This HTML was auto-generated from MATLAB code.
 To make changes, update the MATLAB code and republish this document.
-      --><title>DEMO_MixedTetHexMeshing</title><meta name="generator" content="MATLAB 9.9"><link rel="schema.DC" href="http://purl.org/dc/elements/1.1/"><meta name="DC.date" content="2020-12-11"><meta name="DC.source" content="DEMO_MixedTetHexMeshing.m"><style type="text/css">
+      --><title>DEMO_MixedTetHexMeshing</title><meta name="generator" content="MATLAB 9.13"><link rel="schema.DC" href="http://purl.org/dc/elements/1.1/"><meta name="DC.date" content="2023-04-20"><meta name="DC.source" content="DEMO_MixedTetHexMeshing.m"><style type="text/css">
 html,body,div,span,applet,object,iframe,h1,h2,h3,h4,h5,h6,p,blockquote,pre,a,abbr,acronym,address,big,cite,code,del,dfn,em,font,img,ins,kbd,q,s,samp,small,strike,strong,tt,var,b,u,i,center,dl,dt,dd,ol,ul,li,fieldset,form,label,legend,table,caption,tbody,tfoot,thead,tr,th,td{margin:0;padding:0;border:0;outline:0;font-size:100%;vertical-align:baseline;background:transparent}body{line-height:1}ol,ul{list-style:none}blockquote,q{quotes:none}blockquote:before,blockquote:after,q:before,q:after{content:'';content:none}:focus{outine:0}ins{text-decoration:none}del{text-decoration:line-through}table{border-collapse:collapse;border-spacing:0}
 
 html { min-height:100%; margin-bottom:1px; }
@@ -214,34 +214,39 @@ meshStruct.modelName=modelName;
 </pre><p>Mesh model using tetrahedral elements using tetGen (see: <a href="http://wias-berlin.de/software/tetgen/">http://wias-berlin.de/software/tetgen/</a>)</p><pre class="codeinput">[meshOutput]=runTetGen(meshStruct); <span class="comment">%Run tetGen</span>
 </pre><pre class="codeoutput"> 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
---- TETGEN Tetrahedral meshing --- 11-Dec-2020 12:15:57
+--- TETGEN Tetrahedral meshing --- 20-Apr-2023 10:34:25
  
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
---- Writing SMESH file --- 11-Dec-2020 12:15:57
+--- Writing SMESH file --- 20-Apr-2023 10:34:25
 ----&gt; Adding node field
 ----&gt; Adding facet field
 ----&gt; Adding holes specification
 ----&gt; Adding region specification
---- Done --- 11-Dec-2020 12:15:57
---- Running TetGen to mesh input boundary--- 11-Dec-2020 12:15:57
+--- Done --- 20-Apr-2023 10:34:25
+--- Running TetGen to mesh input boundary--- 20-Apr-2023 10:34:25
 Opening /mnt/data/MATLAB/GIBBON/data/temp/tetGenModel.smesh.
 Delaunizing vertices...
-Delaunay seconds:  0.041198
+Delaunay seconds:  0.033281
 Creating surface mesh ...
-Surface mesh seconds:  0.005787
+Surface mesh seconds:  0.004077
 Recovering boundaries...
-Boundary recovery seconds:  0.027355
+Boundary recovery seconds:  0.062397
 Removing exterior tetrahedra ...
 Spreading region attributes.
-Exterior tets removal seconds:  0.006977
+Exterior tets removal seconds:  0.004416
 Suppressing Steiner points ...
-Steiner suppression seconds:  1.5e-05
+Steiner suppression seconds:  8e-06
 Recovering Delaunayness...
-Delaunay recovery seconds:  0.011517
+Delaunay recovery seconds:  0.012048
 Refining mesh...
-Refinement seconds:  0.039581
-Optimizing mesh...
-Optimization seconds:  0.003861
+  3644 insertions, added 757 points, 9402 tetrahedra in queue.
+  1213 insertions, added 63 points, 596 tetrahedra in queue.
+  1617 insertions, added 101 points, 2523 tetrahedra in queue.
+Refinement seconds:  0.056307
+Smoothing vertices...
+Mesh smoothing seconds:  0.065863
+Improving mesh...
+Mesh improvement seconds:  0.003643
 Jettisoning redundant points.
 
 Writing /mnt/data/MATLAB/GIBBON/data/temp/tetGenModel.1.node.
@@ -249,8 +254,8 @@ Writing /mnt/data/MATLAB/GIBBON/data/temp/tetGenModel.1.ele.
 Writing /mnt/data/MATLAB/GIBBON/data/temp/tetGenModel.1.face.
 Writing /mnt/data/MATLAB/GIBBON/data/temp/tetGenModel.1.edge.
 
-Output seconds:  0.049431
-Total running seconds:  0.185938
+Output seconds:  0.0384
+Total running seconds:  0.280716
 
 Statistics:
 
@@ -260,19 +265,19 @@ Statistics:
   Input holes: 1
   Input regions: 1
 
-  Mesh points: 3514
-  Mesh tetrahedra: 13888
-  Mesh faces: 30506
+  Mesh points: 3706
+  Mesh tetrahedra: 14930
+  Mesh faces: 32590
   Mesh faces on exterior boundary: 5460
   Mesh faces on input facets: 5460
   Mesh edges on input segments: 8185
-  Steiner points inside domain: 785
+  Steiner points inside domain: 977
 
---- Done --- 11-Dec-2020 12:15:58
+--- Done --- 20-Apr-2023 10:34:26
  
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
---- Importing TetGen files --- 11-Dec-2020 12:15:58
---- Done --- 11-Dec-2020 12:15:58
+--- Importing TetGen files --- 20-Apr-2023 10:34:26
+--- Done --- 20-Apr-2023 10:34:26
 </pre><p>Access model element and patch data</p><pre class="codeinput">F_tet_cut1=meshOutput.faces;
 V_tet=meshOutput.nodes;
 C_tet=meshOutput.faceMaterialID;
@@ -311,7 +316,7 @@ axisGeom(gca,fontSize);
 camlight <span class="string">headlight</span>;
 set(gca,<span class="string">'FontSize'</span>,fontSize);
 drawnow;
-</pre><img width="100%" height="auto" vspace="5" hspace="5" src="DEMO_MixedTetHexMeshing_05.jpg" alt=""> <p>Smoothing meshes</p><pre class="codeinput">cPar.Method=<span class="string">'LAP'</span>;
+</pre><img width="100%" height="auto" vspace="5" hspace="5" src="DEMO_MixedTetHexMeshing_05.jpg" alt=""> <img width="100%" height="auto" vspace="5" hspace="5" src="DEMO_MixedTetHexMeshing_06.jpg" alt=""> <p>Smoothing meshes</p><pre class="codeinput">cPar.Method=<span class="string">'LAP'</span>;
 cPar.n=25;
 cPar.RigidConstraints=indBoundary;
 
@@ -345,7 +350,7 @@ axisGeom(gca,fontSize);
 camlight <span class="string">headlight</span>;
 set(gca,<span class="string">'FontSize'</span>,fontSize);
 drawnow;
-</pre><img width="100%" height="auto" vspace="5" hspace="5" src="DEMO_MixedTetHexMeshing_06.jpg" alt=""> <p>Set up animation</p><pre class="codeinput">nSteps=25; <span class="comment">%Number of animation steps</span>
+</pre><img width="100%" height="auto" vspace="5" hspace="5" src="DEMO_MixedTetHexMeshing_07.jpg" alt=""> <img width="100%" height="auto" vspace="5" hspace="5" src="DEMO_MixedTetHexMeshing_08.jpg" alt=""> <p>Set up animation</p><pre class="codeinput">nSteps=25; <span class="comment">%Number of animation steps</span>
 X=V(:,2);
 XE1=mean(X(E{1}),2);
 XE2=mean(X(E{2}),2);
@@ -370,7 +375,7 @@ cutLevel=linspace(min(X(:)),max(X(:)),nSteps); <span class="comment">%Property t
 
 <span class="comment">%Add animation layer</span>
 anim8(hf,animStruct);
-</pre><img width="100%" height="auto" vspace="5" hspace="5" src="DEMO_MixedTetHexMeshing_07.jpg" alt=""> <p><img vspace="5" hspace="5" src="gibbVerySmall.gif" alt=""> </p><p>GIBBON</p><p>Kevin M. Moerman (<a href="mailto:kevinmoerman@hotmail.com">kevinmoerman@hotmail.com</a>)</p><p><i><b>GIBBON footer text</b></i></p><p>License: <a href="https://github.com/gibbonCode/GIBBON/blob/master/LICENSE">https://github.com/gibbonCode/GIBBON/blob/master/LICENSE</a></p><p>GIBBON: The Geometry and Image-based Bioengineering add-On. A toolbox for image segmentation, image-based modeling, meshing, and finite element analysis.</p><p>Copyright (C) 2006-2020 Kevin Mattheus Moerman</p><p>This program is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.</p><p>This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for more details.</p><p>You should have received a copy of the GNU General Public License along with this program.  If not, see <a href="http://www.gnu.org/licenses/">http://www.gnu.org/licenses/</a>.</p><p class="footer"><br><a href="https://www.mathworks.com/products/matlab/">Published with MATLAB&reg; R2020b</a><br></p></div><!--
+</pre><img width="100%" height="auto" vspace="5" hspace="5" src="DEMO_MixedTetHexMeshing_09.jpg" alt=""> <p><img vspace="5" hspace="5" src="gibbVerySmall.gif" alt=""> </p><p>GIBBON</p><p>Kevin M. Moerman (<a href="mailto:kevinmoerman@hotmail.com">kevinmoerman@hotmail.com</a>)</p><p><i><b>GIBBON footer text</b></i></p><p>License: <a href="https://github.com/gibbonCode/GIBBON/blob/master/LICENSE">https://github.com/gibbonCode/GIBBON/blob/master/LICENSE</a></p><p>GIBBON: The Geometry and Image-based Bioengineering add-On. A toolbox for image segmentation, image-based modeling, meshing, and finite element analysis.</p><p>Copyright (C) 2006-2022 Kevin Mattheus Moerman and the GIBBON contributors</p><p>This program is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.</p><p>This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for more details.</p><p>You should have received a copy of the GNU General Public License along with this program.  If not, see <a href="http://www.gnu.org/licenses/">http://www.gnu.org/licenses/</a>.</p><p class="footer"><br><a href="https://www.mathworks.com/products/matlab/">Published with MATLAB&reg; R2022b</a><br></p></div><!--
 ##### SOURCE BEGIN #####
 %% DEMO_MixedTetHexMeshing
 % Below is a demonstration of how to create a mixed mesh consisting of
@@ -716,7 +721,7 @@ anim8(hf,animStruct);
 % image segmentation, image-based modeling, meshing, and finite element
 % analysis.
 % 
-% Copyright (C) 2006-2020 Kevin Mattheus Moerman
+% Copyright (C) 2006-2022 Kevin Mattheus Moerman and the GIBBON contributors
 % 
 % This program is free software: you can redistribute it and/or modify
 % it under the terms of the GNU General Public License as published by

@@ -6,7 +6,7 @@
    <!--
 This HTML was auto-generated from MATLAB code.
 To make changes, update the MATLAB code and republish this document.
-      --><title>DEMO_febio_0003_beam_bending</title><meta name="generator" content="MATLAB 9.13"><link rel="schema.DC" href="http://purl.org/dc/elements/1.1/"><meta name="DC.date" content="2023-04-18"><meta name="DC.source" content="DEMO_febio_0003_beam_bending.m"><style type="text/css">
+      --><title>DEMO_febio_0003_beam_bending</title><meta name="generator" content="MATLAB 9.13"><link rel="schema.DC" href="http://purl.org/dc/elements/1.1/"><meta name="DC.date" content="2023-04-20"><meta name="DC.source" content="DEMO_febio_0003_beam_bending.m"><style type="text/css">
 html,body,div,span,applet,object,iframe,h1,h2,h3,h4,h5,h6,p,blockquote,pre,a,abbr,acronym,address,big,cite,code,del,dfn,em,font,img,ins,kbd,q,s,samp,small,strike,strong,tt,var,b,u,i,center,dl,dt,dd,ol,ul,li,fieldset,form,label,legend,table,caption,tbody,tfoot,thead,tr,th,td{margin:0;padding:0;border:0;outline:0;font-size:100%;vertical-align:baseline;background:transparent}body{line-height:1}ol,ul{list-style:none}blockquote,q{quotes:none}blockquote:before,blockquote:after,q:before,q:after{content:'';content:none}:focus{outine:0}ins{text-decoration:none}del{text-decoration:line-through}table{border-collapse:collapse;border-spacing:0}
 
 html { min-height:100%; margin-bottom:1px; }
@@ -213,7 +213,7 @@ febio_spec.Mesh.Surface{1}.quad4.VAL=F_pressure;
 <span class="comment">% -&gt; NodeSets</span>
 nodeSetName1=<span class="string">'bcSupportList'</span>;
 febio_spec.Mesh.NodeSet{1}.ATTR.name=nodeSetName1;
-febio_spec.Mesh.NodeSet{1}.VAL=bcSupportList(:)';
+febio_spec.Mesh.NodeSet{1}.VAL=mrow(bcSupportList);
 
 <span class="comment">%MeshDomains section</span>
 febio_spec.MeshDomains.SolidDomain.ATTR.name=partName1;
@@ -253,6 +253,9 @@ febio_spec.Output.logfile.node_data{1}.ATTR.delim=<span class="string">','</span
 febio_spec.Output.logfile.node_data{2}.ATTR.file=febioLogFileName_force;
 febio_spec.Output.logfile.node_data{2}.ATTR.data=<span class="string">'Rx;Ry;Rz'</span>;
 febio_spec.Output.logfile.node_data{2}.ATTR.delim=<span class="string">','</span>;
+
+<span class="comment">% Plotfile section</span>
+febio_spec.Output.plotfile.compression=0;
 </pre><h2 id="10">Quick viewing of the FEBio input file structure</h2><p>The <tt>febView</tt> function can be used to view the xml structure in a MATLAB figure window.</p><p><tt>febView(febio_spec); %Viewing the febio file</tt></p><h2 id="12">Exporting the FEBio input file</h2><p>Exporting the febio_spec structure to an FEBio input file is done using the <tt>febioStruct2xml</tt> function.</p><pre class="codeinput">febioStruct2xml(febio_spec,febioFebFileName); <span class="comment">%Exporting to file and domNode</span>
 </pre><h2 id="13">Running the FEBio analysis</h2><p>To run the analysis defined by the created FEBio input file the <tt>runMonitorFEBio</tt> function is used. The input for this function is a structure defining job settings e.g. the FEBio input file name. The optional output runFlag informs the user if the analysis was run succesfully.</p><pre class="codeinput">febioAnalysis.run_filename=febioFebFileName; <span class="comment">%The input file name</span>
 febioAnalysis.run_logname=febioLogFileName; <span class="comment">%The name for the log file</span>
@@ -263,60 +266,59 @@ febioAnalysis.runMode=runMode;
 [runFlag]=runMonitorFEBio(febioAnalysis);<span class="comment">%START FEBio NOW!!!!!!!!</span>
 </pre><pre class="codeoutput"> 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
---------&gt;    RUNNING/MONITORING FEBIO JOB    &lt;-------- 18-Apr-2023 08:55:59
+--------&gt;    RUNNING/MONITORING FEBIO JOB    &lt;-------- 20-Apr-2023 10:38:00
 FEBio path: /home/kevin/FEBioStudio2/bin/febio4
-# Attempt removal of existing log files                18-Apr-2023 08:55:59
- * Removal succesful                                   18-Apr-2023 08:55:59
-# Attempt removal of existing .xplt files              18-Apr-2023 08:56:00
- * Removal succesful                                   18-Apr-2023 08:56:00
-# Starting FEBio...                                    18-Apr-2023 08:56:00
+# Attempt removal of existing log files                20-Apr-2023 10:38:01
+ * Removal succesful                                   20-Apr-2023 10:38:01
+# Attempt removal of existing .xplt files              20-Apr-2023 10:38:01
+ * Removal succesful                                   20-Apr-2023 10:38:01
+# Starting FEBio...                                    20-Apr-2023 10:38:01
   Max. total analysis time is: Inf s
- * Waiting for log file creation                       18-Apr-2023 08:56:00
+ * Waiting for log file creation                       20-Apr-2023 10:38:01
    Max. wait time: 30 s
- * Log file found.                                     18-Apr-2023 08:56:00
-# Parsing log file...                                  18-Apr-2023 08:56:00
-    number of iterations   : 7                         18-Apr-2023 08:56:00
-    number of reformations : 7                         18-Apr-2023 08:56:00
-------- converged at time : 0.1                        18-Apr-2023 08:56:00
-    number of iterations   : 7                         18-Apr-2023 08:56:00
-    number of reformations : 7                         18-Apr-2023 08:56:00
-------- converged at time : 0.192656                   18-Apr-2023 08:56:00
-    number of iterations   : 6                         18-Apr-2023 08:56:00
-    number of reformations : 6                         18-Apr-2023 08:56:00
-------- converged at time : 0.278513                   18-Apr-2023 08:56:00
-    number of iterations   : 6                         18-Apr-2023 08:56:01
-    number of reformations : 6                         18-Apr-2023 08:56:01
-------- converged at time : 0.36437                    18-Apr-2023 08:56:01
-    number of iterations   : 6                         18-Apr-2023 08:56:01
-    number of reformations : 6                         18-Apr-2023 08:56:01
-------- converged at time : 0.450228                   18-Apr-2023 08:56:01
-    number of iterations   : 6                         18-Apr-2023 08:56:01
-    number of reformations : 6                         18-Apr-2023 08:56:01
-------- converged at time : 0.536085                   18-Apr-2023 08:56:01
-    number of iterations   : 6                         18-Apr-2023 08:56:01
-    number of reformations : 6                         18-Apr-2023 08:56:01
-------- converged at time : 0.621942                   18-Apr-2023 08:56:01
-    number of iterations   : 6                         18-Apr-2023 08:56:01
-    number of reformations : 6                         18-Apr-2023 08:56:01
-------- converged at time : 0.707799                   18-Apr-2023 08:56:01
-    number of iterations   : 6                         18-Apr-2023 08:56:01
-    number of reformations : 6                         18-Apr-2023 08:56:01
-------- converged at time : 0.793656                   18-Apr-2023 08:56:01
-    number of iterations   : 6                         18-Apr-2023 08:56:01
-    number of reformations : 6                         18-Apr-2023 08:56:01
-------- converged at time : 0.879513                   18-Apr-2023 08:56:01
-    number of iterations   : 6                         18-Apr-2023 08:56:01
-    number of reformations : 6                         18-Apr-2023 08:56:01
-------- converged at time : 0.96537                    18-Apr-2023 08:56:01
-    number of iterations   : 4                         18-Apr-2023 08:56:01
-    number of reformations : 4                         18-Apr-2023 08:56:01
-------- converged at time : 1                          18-Apr-2023 08:56:01
- Elapsed time : 0:00:02                                18-Apr-2023 08:56:01
+ * Log file found.                                     20-Apr-2023 10:38:01
+# Parsing log file...                                  20-Apr-2023 10:38:01
+    number of iterations   : 7                         20-Apr-2023 10:38:01
+    number of reformations : 7                         20-Apr-2023 10:38:01
+------- converged at time : 0.1                        20-Apr-2023 10:38:01
+    number of iterations   : 7                         20-Apr-2023 10:38:01
+    number of reformations : 7                         20-Apr-2023 10:38:01
+------- converged at time : 0.192656                   20-Apr-2023 10:38:01
+    number of iterations   : 6                         20-Apr-2023 10:38:01
+    number of reformations : 6                         20-Apr-2023 10:38:01
+------- converged at time : 0.278513                   20-Apr-2023 10:38:01
+    number of iterations   : 6                         20-Apr-2023 10:38:02
+    number of reformations : 6                         20-Apr-2023 10:38:02
+------- converged at time : 0.36437                    20-Apr-2023 10:38:02
+    number of iterations   : 6                         20-Apr-2023 10:38:02
+    number of reformations : 6                         20-Apr-2023 10:38:02
+------- converged at time : 0.450228                   20-Apr-2023 10:38:02
+    number of iterations   : 6                         20-Apr-2023 10:38:02
+    number of reformations : 6                         20-Apr-2023 10:38:02
+------- converged at time : 0.536085                   20-Apr-2023 10:38:02
+    number of iterations   : 6                         20-Apr-2023 10:38:02
+    number of reformations : 6                         20-Apr-2023 10:38:02
+------- converged at time : 0.621942                   20-Apr-2023 10:38:02
+    number of iterations   : 6                         20-Apr-2023 10:38:02
+------- converged at time : 0.707799                   20-Apr-2023 10:38:02
+    number of iterations   : 6                         20-Apr-2023 10:38:02
+    number of reformations : 6                         20-Apr-2023 10:38:02
+------- converged at time : 0.793656                   20-Apr-2023 10:38:02
+    number of iterations   : 6                         20-Apr-2023 10:38:02
+    number of reformations : 6                         20-Apr-2023 10:38:02
+------- converged at time : 0.879513                   20-Apr-2023 10:38:02
+    number of iterations   : 6                         20-Apr-2023 10:38:02
+    number of reformations : 6                         20-Apr-2023 10:38:02
+------- converged at time : 0.96537                    20-Apr-2023 10:38:02
+    number of iterations   : 4                         20-Apr-2023 10:38:02
+    number of reformations : 4                         20-Apr-2023 10:38:02
+------- converged at time : 1                          20-Apr-2023 10:38:02
+ Elapsed time : 0:00:02                                20-Apr-2023 10:38:02
  N O R M A L   T E R M I N A T I O N
-# Done                                                 18-Apr-2023 08:56:01
+# Done                                                 20-Apr-2023 10:38:02
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 </pre><h2 id="14">Import FEBio results</h2><pre class="codeinput"><span class="keyword">if</span> runFlag==1 <span class="comment">%i.e. a succesful run</span>
-</pre><p>Importing nodal displacements from a log file</p><pre class="codeinput">    dataStruct=importFEBio_logfile(fullfile(savePath,febioLogFileName_disp),1,1);
+</pre><p>Importing nodal displacements from a log file</p><pre class="codeinput">    dataStruct=importFEBio_logfile(fullfile(savePath,febioLogFileName_disp),0,1);
 
     <span class="comment">%Access data</span>
     N_disp_mat=dataStruct.data; <span class="comment">%Displacement</span>
@@ -340,7 +342,7 @@ FEBio path: /home/kevin/FEBioStudio2/bin/febio4
     colormap(gjet(250)); colorbar;
     caxis([0 max(DN_magnitude)]);
     axis(axisLim(V_DEF)); <span class="comment">%Set axis limits statically</span>
-        camlight <span class="string">headlight</span>;
+    camlight <span class="string">headlight</span>;
 
     <span class="comment">% Set up animation features</span>
     animStruct.Time=timeVec; <span class="comment">%The time vector</span>
@@ -558,7 +560,7 @@ febio_spec.Mesh.Surface{1}.quad4.VAL=F_pressure;
 % -> NodeSets
 nodeSetName1='bcSupportList';
 febio_spec.Mesh.NodeSet{1}.ATTR.name=nodeSetName1;
-febio_spec.Mesh.NodeSet{1}.VAL=bcSupportList(:)';
+febio_spec.Mesh.NodeSet{1}.VAL=mrow(bcSupportList);
 
 %MeshDomains section
 febio_spec.MeshDomains.SolidDomain.ATTR.name=partName1;
@@ -599,6 +601,9 @@ febio_spec.Output.logfile.node_data{2}.ATTR.file=febioLogFileName_force;
 febio_spec.Output.logfile.node_data{2}.ATTR.data='Rx;Ry;Rz';
 febio_spec.Output.logfile.node_data{2}.ATTR.delim=',';
 
+% Plotfile section
+febio_spec.Output.plotfile.compression=0;
+
 %% Quick viewing of the FEBio input file structure
 % The |febView| function can be used to view the xml structure in a MATLAB
 % figure window. 
@@ -633,7 +638,7 @@ if runFlag==1 %i.e. a succesful run
     
     %% 
     % Importing nodal displacements from a log file
-    dataStruct=importFEBio_logfile(fullfile(savePath,febioLogFileName_disp),1,1);
+    dataStruct=importFEBio_logfile(fullfile(savePath,febioLogFileName_disp),0,1);
     
     %Access data
     N_disp_mat=dataStruct.data; %Displacement
@@ -662,7 +667,7 @@ if runFlag==1 %i.e. a succesful run
     colormap(gjet(250)); colorbar;
     caxis([0 max(DN_magnitude)]);    
     axis(axisLim(V_DEF)); %Set axis limits statically
-        camlight headlight;        
+    camlight headlight;        
         
     % Set up animation features
     animStruct.Time=timeVec; %The time vector    

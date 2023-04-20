@@ -6,7 +6,7 @@
    <!--
 This HTML was auto-generated from MATLAB code.
 To make changes, update the MATLAB code and republish this document.
-      --><title>DEMO_febio_0083_cube_uniaxial_HGO</title><meta name="generator" content="MATLAB 9.13"><link rel="schema.DC" href="http://purl.org/dc/elements/1.1/"><meta name="DC.date" content="2023-03-31"><meta name="DC.source" content="DEMO_febio_0083_cube_uniaxial_HGO.m"><style type="text/css">
+      --><title>DEMO_febio_0083_cube_uniaxial_HGO</title><meta name="generator" content="MATLAB 9.13"><link rel="schema.DC" href="http://purl.org/dc/elements/1.1/"><meta name="DC.date" content="2023-04-20"><meta name="DC.source" content="DEMO_febio_0083_cube_uniaxial_HGO.m"><style type="text/css">
 html,body,div,span,applet,object,iframe,h1,h2,h3,h4,h5,h6,p,blockquote,pre,a,abbr,acronym,address,big,cite,code,del,dfn,em,font,img,ins,kbd,q,s,samp,small,strike,strong,tt,var,b,u,i,center,dl,dt,dd,ol,ul,li,fieldset,form,label,legend,table,caption,tbody,tfoot,thead,tr,th,td{margin:0;padding:0;border:0;outline:0;font-size:100%;vertical-align:baseline;background:transparent}body{line-height:1}ol,ul{list-style:none}blockquote,q{quotes:none}blockquote:before,blockquote:after,q:before,q:after{content:'';content:none}:focus{outine:0}ins{text-decoration:none}del{text-decoration:line-through}table{border-collapse:collapse;border-spacing:0}
 
 html { min-height:100%; margin-bottom:1px; }
@@ -67,7 +67,7 @@ table td { padding:7px 5px; text-align:left; vertical-align:top; border:1px soli
 
 
 
-  </style></head><body><div class="content"><h1>DEMO_febio_0083_cube_uniaxial_HGO</h1><!--introduction--><p>Below is a demonstration for:</p><div><ul><li>Building geometry for a cube with hexahedral elements</li><li>Defining the boundary conditions</li><li>Coding the febio structure</li><li>Running the model</li><li>Importing and visualizing the displacement and stress results</li></ul></div><!--/introduction--><h2>Contents</h2><div><ul><li><a href="#1">Keywords</a></li><li><a href="#3">Plot settings</a></li><li><a href="#4">Control parameters</a></li><li><a href="#5">Creating model geometry and mesh</a></li><li><a href="#7">Defining the boundary conditions</a></li><li><a href="#9">Defining the FEBio input structure</a></li><li><a href="#10">Quick viewing of the FEBio input file structure</a></li><li><a href="#12">Exporting the FEBio input file</a></li><li><a href="#13">Running the FEBio analysis</a></li><li><a href="#14">Import FEBio results</a></li></ul></div><h2 id="1">Keywords</h2><div><ul><li>febio_spec version 4.0</li><li>febio, FEBio</li><li>uniaxial loading</li><li>compression, tension, compressive, tensile</li><li>displacement control, displacement boundary condition</li><li>hexahedral elements, hex8</li><li>cube, box, rectangular</li><li>static, solid</li><li>hyperelastic, HGO</li><li>displacement logfile</li><li>stress logfile</li></ul></div><pre class="codeinput">clear; close <span class="string">all</span>; clc;
+  </style></head><body><div class="content"><h1>DEMO_febio_0083_cube_uniaxial_HGO</h1><!--introduction--><p>Below is a demonstration for:</p><div><ul><li>Building geometry for a cube with hexahedral elements</li><li>Defining the boundary conditions</li><li>Coding the febio structure</li><li>Running the model</li><li>Importing and visualizing the displacement and stress results</li></ul></div><!--/introduction--><h2>Contents</h2><div><ul><li><a href="#1">Keywords</a></li><li><a href="#3">Plot settings</a></li><li><a href="#4">Control parameters</a></li><li><a href="#5">Creating model geometry and mesh</a></li><li><a href="#7">Defining the boundary conditions</a></li><li><a href="#9">DEFINE FIBRE DIRECTIONS</a></li><li><a href="#11">Defining the FEBio input structure</a></li><li><a href="#12">Quick viewing of the FEBio input file structure</a></li><li><a href="#14">Exporting the FEBio input file</a></li><li><a href="#15">Running the FEBio analysis</a></li><li><a href="#16">Import FEBio results</a></li></ul></div><h2 id="1">Keywords</h2><div><ul><li>febio_spec version 4.0</li><li>febio, FEBio</li><li>uniaxial loading</li><li>compression, tension, compressive, tensile</li><li>displacement control, displacement boundary condition</li><li>hexahedral elements, hex8</li><li>cube, box, rectangular</li><li>static, solid</li><li>hyperelastic, HGO</li><li>displacement logfile</li><li>stress logfile</li><li>Fiber mapping</li></ul></div><pre class="codeinput">clear; close <span class="string">all</span>; clc;
 </pre><h2 id="3">Plot settings</h2><pre class="codeinput">fontSize=20;
 faceAlpha1=0.8;
 markerSize=40;
@@ -83,8 +83,10 @@ febioFebFileNamePart=<span class="string">'tempModel'</span>;
 febioFebFileName=fullfile(savePath,[febioFebFileNamePart,<span class="string">'.feb'</span>]); <span class="comment">%FEB file name</span>
 febioLogFileName=[febioFebFileNamePart,<span class="string">'.txt'</span>]; <span class="comment">%FEBio log file name</span>
 febioLogFileName_disp=[febioFebFileNamePart,<span class="string">'_disp_out.txt'</span>]; <span class="comment">%Log file name for exporting displacement</span>
-febioLogFileName_stress=[febioFebFileNamePart,<span class="string">'_stress_out.txt'</span>]; <span class="comment">%Log file name for exporting stress</span>
-febioLogFileName_stress_prin=[febioFebFileNamePart,<span class="string">'_stress_prin_out.txt'</span>]; <span class="comment">%Log file name for exporting principal stress</span>
+febioLogFileName_stress=[febioFebFileNamePart,<span class="string">'_stress_out.txt'</span>]; <span class="comment">%Log file name for exporting stress sigma_z</span>
+febioLogFileName_stretch=[febioFebFileNamePart,<span class="string">'_stretch_out.txt'</span>]; <span class="comment">%Log file name for exporting stress U_z</span>
+febioLogFileName_stress_prin=[febioFebFileNamePart,<span class="string">'_stress_prin_out.txt'</span>]; <span class="comment">%Log file name for exporting principal stresses</span>
+febioLogFileName_stretch_prin=[febioFebFileNamePart,<span class="string">'_stretch_prin_out.txt'</span>]; <span class="comment">%Log file name for exporting principal stretches</span>
 febioLogFileName_force=[febioFebFileNamePart,<span class="string">'_force_out.txt'</span>]; <span class="comment">%Log file name for exporting force</span>
 
 <span class="comment">%Specifying dimensions and number of elements</span>
@@ -121,6 +123,10 @@ dtmin=(1/numTimeSteps)/100; <span class="comment">%Minimum time step size</span>
 dtmax=1/numTimeSteps; <span class="comment">%Maximum time step size</span>
 
 runMode=<span class="string">'external'</span>;<span class="comment">% 'internal' or 'external'</span>
+
+<span class="comment">%Material parameters</span>
+
+alphaFib=45/180*pi; <span class="comment">%Fibre angle</span>
 </pre><h2 id="5">Creating model geometry and mesh</h2><p>A box is created with tri-linear hexahedral (hex8) elements using the <tt>hexMeshBox</tt> function. The function offers the boundary faces with seperate labels for the top, bottom, left, right, front, and back sides. As such these can be used to define boundary conditions on the exterior.</p><pre class="codeinput"><span class="comment">% Create a box with hexahedral elements</span>
 cubeDimensions=[sampleWidth sampleThickness sampleHeight]; <span class="comment">%Dimensions</span>
 cubeElementNumbers=[numElementsWidth numElementsThickness numElementsHeight]; <span class="comment">%Number of elements</span>
@@ -149,22 +155,18 @@ axisGeom(gca,fontSize);
 
 drawnow;
 </pre><img width="100%" height="auto" vspace="5" hspace="5" src="DEMO_febio_0083_cube_uniaxial_HGO_01.jpg" alt=""> <h2 id="7">Defining the boundary conditions</h2><p>The visualization of the model boundary shows colors for each side of the cube. These labels can be used to define boundary conditions.</p><pre class="codeinput"><span class="comment">%Define supported node sets</span>
-logicFace=Cb==1; <span class="comment">%Logic for current face set</span>
-Fr=Fb(logicFace,:); <span class="comment">%The current face set</span>
-bcSupportList_X=unique(Fr(:)); <span class="comment">%Node set part of selected face</span>
+FX=Fb(Cb==1,:); <span class="comment">%Face orthogonal to X</span>
+FY=Fb(Cb==3,:); <span class="comment">%Face orthogonal to Y</span>
+FZ=Fb(Cb==5,:); <span class="comment">%Face orthogonal to Z</span>
 
-logicFace=Cb==3; <span class="comment">%Logic for current face set</span>
-Fr=Fb(logicFace,:); <span class="comment">%The current face set</span>
-bcSupportList_Y=unique(Fr(:)); <span class="comment">%Node set part of selected face</span>
-
-logicFace=Cb==5; <span class="comment">%Logic for current face set</span>
-Fr=Fb(logicFace,:); <span class="comment">%The current face set</span>
-bcSupportList_Z=unique(Fr(:)); <span class="comment">%Node set part of selected face</span>
+indAll=1:1:size(V,1);
+bcSupportList_X=indAll(ismember(indAll,FX) &amp; ismember(indAll,FZ)); <span class="comment">%Node set part of selected face</span>
+bcSupportList_Y=indAll(ismember(indAll,FY) &amp; ismember(indAll,FZ)); <span class="comment">%Node set part of selected face</span>
+bcSupportList_Z=unique(FZ(:)); <span class="comment">%Node set part of selected face</span>
 
 <span class="comment">%Prescribed displacement nodes</span>
-logicPrescribe=Cb==6; <span class="comment">%Logic for current face set</span>
-Fr=Fb(logicPrescribe,:); <span class="comment">%The current face set</span>
-bcPrescribeList=unique(Fr(:)); <span class="comment">%Node set part of selected face</span>
+F_fix=Fb(Cb==6,:); <span class="comment">%The current face set</span>
+bcPrescribeList=unique(F_fix(:)); <span class="comment">%Node set part of selected face</span>
 </pre><p>Visualizing boundary conditions. Markers plotted on the semi-transparent model denote the nodes in the various boundary condition lists.</p><pre class="codeinput">hf=cFigure;
 title(<span class="string">'Boundary conditions'</span>,<span class="string">'FontSize'</span>,fontSize);
 xlabel(<span class="string">'X'</span>,<span class="string">'FontSize'</span>,fontSize); ylabel(<span class="string">'Y'</span>,<span class="string">'FontSize'</span>,fontSize); zlabel(<span class="string">'Z'</span>,<span class="string">'FontSize'</span>,fontSize);
@@ -172,8 +174,8 @@ hold <span class="string">on</span>;
 
 gpatch(Fb,V,<span class="string">'kw'</span>,<span class="string">'k'</span>,0.5);
 
-hl(1)=plotV(V(bcSupportList_X,:),<span class="string">'r.'</span>,<span class="string">'MarkerSize'</span>,markerSize);
-hl(2)=plotV(V(bcSupportList_Y,:),<span class="string">'g.'</span>,<span class="string">'MarkerSize'</span>,markerSize);
+hl(1)=plotV(V(bcSupportList_X,:),<span class="string">'r.'</span>,<span class="string">'MarkerSize'</span>,markerSize*2);
+hl(2)=plotV(V(bcSupportList_Y,:),<span class="string">'g.'</span>,<span class="string">'MarkerSize'</span>,markerSize*2);
 hl(3)=plotV(V(bcSupportList_Z,:),<span class="string">'b.'</span>,<span class="string">'MarkerSize'</span>,markerSize);
 hl(4)=plotV(V(bcPrescribeList,:),<span class="string">'k.'</span>,<span class="string">'MarkerSize'</span>,markerSize);
 
@@ -182,7 +184,27 @@ legend(hl,{<span class="string">'BC x support'</span>,<span class="string">'BC y
 axisGeom(gca,fontSize);
 camlight <span class="string">headlight</span>;
 drawnow;
-</pre><img width="100%" height="auto" vspace="5" hspace="5" src="DEMO_febio_0083_cube_uniaxial_HGO_02.jpg" alt=""> <h2 id="9">Defining the FEBio input structure</h2><p>See also <tt>febioStructTemplate</tt> and <tt>febioStruct2xml</tt> and the FEBio user manual.</p><pre class="codeinput"><span class="comment">%Get a template with default settings</span>
+</pre><img width="100%" height="auto" vspace="5" hspace="5" src="DEMO_febio_0083_cube_uniaxial_HGO_02.jpg" alt=""> <h2 id="9">DEFINE FIBRE DIRECTIONS</h2><pre class="codeinput">R=euler2DCM([0,-alphaFib,0]);
+e1=(R*[1 0 0]')';
+e1_dir=e1(ones(size(E,1),1),:);
+[e2_dir,e3_dir]=vectorOrthogonalPair(e1_dir);
+
+[VE]=patchCentre(E,V);
+</pre><p>Visualizing fiber directions</p><pre class="codeinput">hf=cFigure;
+title(<span class="string">'Fiber directions'</span>,<span class="string">'FontSize'</span>,fontSize);
+hold <span class="string">on</span>;
+
+gpatch(Fb,V,<span class="string">'kw'</span>,<span class="string">'none'</span>,0.25);
+hf(1)=quiverVec(VE,e1_dir,mean(pointSpacings),<span class="string">'r'</span>);
+hf(2)=quiverVec(VE,e2_dir,mean(pointSpacings)/2,<span class="string">'g'</span>);
+hf(3)=quiverVec(VE,e3_dir,mean(pointSpacings)/2,<span class="string">'b'</span>);
+
+legend(hf,{<span class="string">'e1-direction (fiber)'</span>,<span class="string">'e2-direction'</span>,<span class="string">'e3-direction'</span>});
+
+axisGeom(gca,fontSize);
+camlight <span class="string">headlight</span>;
+drawnow;
+</pre><img width="100%" height="auto" vspace="5" hspace="5" src="DEMO_febio_0083_cube_uniaxial_HGO_03.jpg" alt=""> <h2 id="11">Defining the FEBio input structure</h2><p>See also <tt>febioStructTemplate</tt> and <tt>febioStruct2xml</tt> and the FEBio user manual.</p><pre class="codeinput"><span class="comment">%Get a template with default settings</span>
 [febio_spec]=febioStructTemplate;
 
 <span class="comment">%febio_spec version</span>
@@ -204,29 +226,20 @@ febio_spec.Control.time_stepper.opt_iter=opt_iter;
 
 <span class="comment">%Material section</span>
 materialName1=<span class="string">'Material1'</span>;
+febio_spec.Material.material{1}.ATTR.name=materialName1;
+febio_spec.Material.material{1}.ATTR.id=1;
 <span class="keyword">switch</span> materialType
     <span class="keyword">case</span> <span class="string">'coupled'</span>
-        febio_spec.Material.material{1}.ATTR.name=materialName1;
         febio_spec.Material.material{1}.ATTR.type=<span class="string">'HGO unconstrained'</span>;
-        febio_spec.Material.material{1}.ATTR.id=1;
-        febio_spec.Material.material{1}.c=7.64;
-        febio_spec.Material.material{1}.k1=996.6;
-        febio_spec.Material.material{1}.k2=524.6;
-        febio_spec.Material.material{1}.gamma=49.98;
-        febio_spec.Material.material{1}.kappa=0.226;
-        febio_spec.Material.material{1}.k=7.64e3;
     <span class="keyword">case</span> <span class="string">'uncoupled'</span>
-        materialName1=<span class="string">'Material1'</span>;
-        febio_spec.Material.material{1}.ATTR.name=materialName1;
         febio_spec.Material.material{1}.ATTR.type=<span class="string">'Holzapfel-Gasser-Ogden'</span>;
-        febio_spec.Material.material{1}.ATTR.id=1;
-        febio_spec.Material.material{1}.c=7.64;
-        febio_spec.Material.material{1}.k1=996.6;
-        febio_spec.Material.material{1}.k2=524.6;
-        febio_spec.Material.material{1}.gamma=49.98;
-        febio_spec.Material.material{1}.kappa=0.226;
-        febio_spec.Material.material{1}.k=1e5;
 <span class="keyword">end</span>
+febio_spec.Material.material{1}.c=7.64;
+febio_spec.Material.material{1}.k1=996.6;
+febio_spec.Material.material{1}.k2=524.6;
+febio_spec.Material.material{1}.gamma=0;
+febio_spec.Material.material{1}.kappa=0.226;
+febio_spec.Material.material{1}.k=7.64e3;
 
 <span class="comment">% Mesh section</span>
 <span class="comment">% -&gt; Nodes</span>
@@ -262,6 +275,17 @@ febio_spec.Mesh.NodeSet{4}.VAL=mrow(bcPrescribeList);
 <span class="comment">%MeshDomains section</span>
 febio_spec.MeshDomains.SolidDomain.ATTR.name=partName1;
 febio_spec.MeshDomains.SolidDomain.ATTR.mat=materialName1;
+
+<span class="comment">%MeshData section</span>
+<span class="comment">% -&gt; ElementData</span>
+febio_spec.MeshData.ElementData{1}.ATTR.elem_set=partName1;
+febio_spec.MeshData.ElementData{1}.ATTR.type=<span class="string">'mat_axis'</span>;
+
+<span class="keyword">for</span> q=1:1:size(E,1)
+    febio_spec.MeshData.ElementData{1}.elem{q}.ATTR.lid=q;
+    febio_spec.MeshData.ElementData{1}.elem{q}.a=e1_dir(q,:);
+    febio_spec.MeshData.ElementData{1}.elem{q}.d=e2_dir(q,:);
+<span class="keyword">end</span>
 
 <span class="comment">%Boundary condition section</span>
 <span class="comment">% -&gt; Fix boundary conditions</span>
@@ -318,15 +342,23 @@ febio_spec.Output.logfile.element_data{1}.ATTR.file=febioLogFileName_stress;
 febio_spec.Output.logfile.element_data{1}.ATTR.data=<span class="string">'sz'</span>;
 febio_spec.Output.logfile.element_data{1}.ATTR.delim=<span class="string">','</span>;
 
-febio_spec.Output.logfile.element_data{2}.ATTR.file=febioLogFileName_stress_prin;
-febio_spec.Output.logfile.element_data{2}.ATTR.data=<span class="string">'s1;s2;s3'</span>;
+febio_spec.Output.logfile.element_data{2}.ATTR.file=febioLogFileName_stretch;
+febio_spec.Output.logfile.element_data{2}.ATTR.data=<span class="string">'Uz'</span>;
 febio_spec.Output.logfile.element_data{2}.ATTR.delim=<span class="string">','</span>;
 
+febio_spec.Output.logfile.element_data{3}.ATTR.file=febioLogFileName_stress_prin;
+febio_spec.Output.logfile.element_data{3}.ATTR.data=<span class="string">'s1;s2;s3'</span>;
+febio_spec.Output.logfile.element_data{3}.ATTR.delim=<span class="string">','</span>;
+
+febio_spec.Output.logfile.element_data{4}.ATTR.file=febioLogFileName_stretch_prin;
+febio_spec.Output.logfile.element_data{4}.ATTR.data=<span class="string">'U1;U2;U3'</span>;
+febio_spec.Output.logfile.element_data{4}.ATTR.delim=<span class="string">','</span>;
+
 <span class="comment">% Plotfile section</span>
-febio_spec.Output.plotfile.compression=1;
-</pre><h2 id="10">Quick viewing of the FEBio input file structure</h2><p>The <tt>febView</tt> function can be used to view the xml structure in a MATLAB figure window.</p><p><tt>febView(febio_spec); %Viewing the febio file</tt></p><h2 id="12">Exporting the FEBio input file</h2><p>Exporting the febio_spec structure to an FEBio input file is done using the <tt>febioStruct2xml</tt> function.</p><pre class="codeinput">febioStruct2xml(febio_spec,febioFebFileName); <span class="comment">%Exporting to file and domNode</span>
+febio_spec.Output.plotfile.compression=0;
+</pre><h2 id="12">Quick viewing of the FEBio input file structure</h2><p>The <tt>febView</tt> function can be used to view the xml structure in a MATLAB figure window.</p><p><tt>febView(febio_spec); %Viewing the febio file</tt></p><h2 id="14">Exporting the FEBio input file</h2><p>Exporting the febio_spec structure to an FEBio input file is done using the <tt>febioStruct2xml</tt> function.</p><pre class="codeinput">febioStruct2xml(febio_spec,febioFebFileName); <span class="comment">%Exporting to file and domNode</span>
 <span class="comment">%system(['gedit ',febioFebFileName,' &amp;']);</span>
-</pre><h2 id="13">Running the FEBio analysis</h2><p>To run the analysis defined by the created FEBio input file the <tt>runMonitorFEBio</tt> function is used. The input for this function is a structure defining job settings e.g. the FEBio input file name. The optional output runFlag informs the user if the analysis was run succesfully.</p><pre class="codeinput">febioAnalysis.run_filename=febioFebFileName; <span class="comment">%The input file name</span>
+</pre><h2 id="15">Running the FEBio analysis</h2><p>To run the analysis defined by the created FEBio input file the <tt>runMonitorFEBio</tt> function is used. The input for this function is a structure defining job settings e.g. the FEBio input file name. The optional output runFlag informs the user if the analysis was run succesfully.</p><pre class="codeinput">febioAnalysis.run_filename=febioFebFileName; <span class="comment">%The input file name</span>
 febioAnalysis.run_logname=febioLogFileName; <span class="comment">%The name for the log file</span>
 febioAnalysis.disp_on=1; <span class="comment">%Display information on the command window</span>
 febioAnalysis.runMode=runMode;
@@ -335,55 +367,55 @@ febioAnalysis.maxLogCheckTime=10; <span class="comment">%Max log file checking t
 [runFlag]=runMonitorFEBio(febioAnalysis);<span class="comment">%START FEBio NOW!!!!!!!!</span>
 </pre><pre class="codeoutput"> 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
---------&gt;    RUNNING/MONITORING FEBIO JOB    &lt;-------- 31-Mar-2023 10:26:34
+--------&gt;    RUNNING/MONITORING FEBIO JOB    &lt;-------- 20-Apr-2023 10:53:55
 FEBio path: /home/kevin/FEBioStudio2/bin/febio4
-# Attempt removal of existing log files                31-Mar-2023 10:26:34
- * Removal succesful                                   31-Mar-2023 10:26:34
-# Attempt removal of existing .xplt files              31-Mar-2023 10:26:35
- * Removal succesful                                   31-Mar-2023 10:26:35
-# Starting FEBio...                                    31-Mar-2023 10:26:35
+# Attempt removal of existing log files                20-Apr-2023 10:53:55
+ * Removal succesful                                   20-Apr-2023 10:53:55
+# Attempt removal of existing .xplt files              20-Apr-2023 10:53:55
+ * Removal succesful                                   20-Apr-2023 10:53:55
+# Starting FEBio...                                    20-Apr-2023 10:53:55
   Max. total analysis time is: Inf s
- * Waiting for log file creation                       31-Mar-2023 10:26:35
+ * Waiting for log file creation                       20-Apr-2023 10:53:55
    Max. wait time: 10 s
- * Log file found.                                     31-Mar-2023 10:26:35
-# Parsing log file...                                  31-Mar-2023 10:26:35
-    number of iterations   : 4                         31-Mar-2023 10:26:35
-    number of reformations : 4                         31-Mar-2023 10:26:35
-------- converged at time : 0.1                        31-Mar-2023 10:26:35
-    number of iterations   : 4                         31-Mar-2023 10:26:35
-    number of reformations : 4                         31-Mar-2023 10:26:35
-------- converged at time : 0.2                        31-Mar-2023 10:26:35
-    number of iterations   : 3                         31-Mar-2023 10:26:35
-    number of reformations : 3                         31-Mar-2023 10:26:35
-------- converged at time : 0.3                        31-Mar-2023 10:26:35
-    number of iterations   : 3                         31-Mar-2023 10:26:35
-    number of reformations : 3                         31-Mar-2023 10:26:35
-------- converged at time : 0.4                        31-Mar-2023 10:26:35
-    number of iterations   : 3                         31-Mar-2023 10:26:35
-    number of reformations : 3                         31-Mar-2023 10:26:35
-------- converged at time : 0.5                        31-Mar-2023 10:26:35
-    number of iterations   : 3                         31-Mar-2023 10:26:35
-    number of reformations : 3                         31-Mar-2023 10:26:35
-------- converged at time : 0.6                        31-Mar-2023 10:26:35
-    number of iterations   : 3                         31-Mar-2023 10:26:35
-    number of reformations : 3                         31-Mar-2023 10:26:35
-------- converged at time : 0.7                        31-Mar-2023 10:26:35
-    number of iterations   : 3                         31-Mar-2023 10:26:35
-    number of reformations : 3                         31-Mar-2023 10:26:35
-------- converged at time : 0.8                        31-Mar-2023 10:26:35
-    number of iterations   : 3                         31-Mar-2023 10:26:35
-    number of reformations : 3                         31-Mar-2023 10:26:35
-------- converged at time : 0.9                        31-Mar-2023 10:26:35
-    number of iterations   : 3                         31-Mar-2023 10:26:35
-    number of reformations : 3                         31-Mar-2023 10:26:35
-------- converged at time : 1                          31-Mar-2023 10:26:35
- Elapsed time : 0:00:00                                31-Mar-2023 10:26:35
+ * Log file found.                                     20-Apr-2023 10:53:55
+# Parsing log file...                                  20-Apr-2023 10:53:55
+    number of iterations   : 6                         20-Apr-2023 10:53:56
+    number of reformations : 6                         20-Apr-2023 10:53:56
+------- converged at time : 0.1                        20-Apr-2023 10:53:56
+    number of iterations   : 3                         20-Apr-2023 10:53:56
+    number of reformations : 3                         20-Apr-2023 10:53:56
+------- converged at time : 0.2                        20-Apr-2023 10:53:56
+    number of iterations   : 3                         20-Apr-2023 10:53:56
+    number of reformations : 3                         20-Apr-2023 10:53:56
+------- converged at time : 0.3                        20-Apr-2023 10:53:56
+    number of iterations   : 3                         20-Apr-2023 10:53:56
+    number of reformations : 3                         20-Apr-2023 10:53:56
+------- converged at time : 0.4                        20-Apr-2023 10:53:56
+    number of iterations   : 5                         20-Apr-2023 10:53:56
+    number of reformations : 5                         20-Apr-2023 10:53:56
+------- converged at time : 0.5                        20-Apr-2023 10:53:56
+    number of iterations   : 4                         20-Apr-2023 10:53:56
+    number of reformations : 4                         20-Apr-2023 10:53:56
+------- converged at time : 0.6                        20-Apr-2023 10:53:56
+    number of iterations   : 4                         20-Apr-2023 10:53:56
+    number of reformations : 4                         20-Apr-2023 10:53:56
+------- converged at time : 0.7                        20-Apr-2023 10:53:56
+    number of iterations   : 4                         20-Apr-2023 10:53:56
+    number of reformations : 4                         20-Apr-2023 10:53:56
+------- converged at time : 0.8                        20-Apr-2023 10:53:56
+    number of iterations   : 4                         20-Apr-2023 10:53:56
+    number of reformations : 4                         20-Apr-2023 10:53:56
+------- converged at time : 0.9                        20-Apr-2023 10:53:56
+    number of iterations   : 4                         20-Apr-2023 10:53:56
+    number of reformations : 4                         20-Apr-2023 10:53:56
+------- converged at time : 1                          20-Apr-2023 10:53:56
+ Elapsed time : 0:00:00                                20-Apr-2023 10:53:56
  N O R M A L   T E R M I N A T I O N
-# Done                                                 31-Mar-2023 10:26:35
+# Done                                                 20-Apr-2023 10:53:56
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-</pre><h2 id="14">Import FEBio results</h2><pre class="codeinput"><span class="keyword">if</span> runFlag==1 <span class="comment">%i.e. a succesful run</span>
+</pre><h2 id="16">Import FEBio results</h2><pre class="codeinput"><span class="keyword">if</span> runFlag==1 <span class="comment">%i.e. a succesful run</span>
 </pre><pre class="codeinput">    <span class="comment">% Importing nodal displacements from a log file</span>
-    dataStruct=importFEBio_logfile(fullfile(savePath,febioLogFileName_disp),1,1);
+    dataStruct=importFEBio_logfile(fullfile(savePath,febioLogFileName_disp),0,1);
 
     <span class="comment">%Access data</span>
     N_disp_mat=dataStruct.data; <span class="comment">%Displacement</span>
@@ -422,10 +454,14 @@ FEBio path: /home/kevin/FEBioStudio2/bin/febio4
     <span class="keyword">end</span>
     anim8(hf,animStruct); <span class="comment">%Initiate animation feature</span>
     drawnow;
-</pre><img width="100%" height="auto" vspace="5" hspace="5" src="DEMO_febio_0083_cube_uniaxial_HGO_03.jpg" alt=""> <p>Importing element stress from a log file</p><pre class="codeinput">    dataStruct=importFEBio_logfile(fullfile(savePath,febioLogFileName_stress),1,1);
+</pre><img width="100%" height="auto" vspace="5" hspace="5" src="DEMO_febio_0083_cube_uniaxial_HGO_04.jpg" alt=""> <p>Importing element stress from a log file</p><pre class="codeinput">    dataStruct=importFEBio_logfile(fullfile(savePath,febioLogFileName_stress),0,1);
 
     <span class="comment">%Access data</span>
     E_stress_mat=dataStruct.data;
+</pre><p>Importing element stretch from a log file</p><pre class="codeinput">    dataStruct=importFEBio_logfile(fullfile(savePath,febioLogFileName_stretch),0,1);
+
+    <span class="comment">%Access data</span>
+    E_stretch_mat=dataStruct.data;
 </pre><p>Plotting the simulated results using <tt>anim8</tt> to visualize and animate deformations</p><pre class="codeinput">    [CV]=faceToVertexMeasure(E,V,E_stress_mat(:,:,end));
 
     <span class="comment">% Create basic view and store graphics handle to initiate animation</span>
@@ -459,11 +495,10 @@ FEBio path: /home/kevin/FEBioStudio2/bin/febio4
     <span class="keyword">end</span>
     anim8(hf,animStruct); <span class="comment">%Initiate animation feature</span>
     drawnow;
-</pre><img width="100%" height="auto" vspace="5" hspace="5" src="DEMO_febio_0083_cube_uniaxial_HGO_04.jpg" alt=""> <p>Calculate metrics to visualize stretch-stress curve</p><pre class="codeinput">    DZ_set=N_disp_mat(bcPrescribeList,end,:); <span class="comment">%Z displacements of the prescribed set</span>
-    DZ_set=mean(DZ_set,1); <span class="comment">%Calculate mean Z displacements across nodes</span>
-    stretch_sim=(DZ_set(:)+sampleHeight)./sampleHeight; <span class="comment">%Derive stretch</span>
-    stress_cauchy_sim=mean(squeeze(E_stress_mat(:,end,:)),1)';
-</pre><p>Visualize stress-stretch curve</p><pre class="codeinput">    cFigure; hold <span class="string">on</span>;
+</pre><img width="100%" height="auto" vspace="5" hspace="5" src="DEMO_febio_0083_cube_uniaxial_HGO_05.jpg" alt=""> <p>Visualize stretch-stress curve</p><pre class="codeinput">    stretch_sim=squeeze(mean(E_stretch_mat,1)); <span class="comment">% Stretch U_z</span>
+    stress_cauchy_sim=squeeze(mean(E_stress_mat,1)); <span class="comment">%Cauchy stress sigma_z</span>
+
+    cFigure; hold <span class="string">on</span>;
     title(<span class="string">'Uniaxial stress-stretch curve'</span>,<span class="string">'FontSize'</span>,fontSize);
     xlabel(<span class="string">'$\lambda$ [.]'</span>,<span class="string">'FontSize'</span>,fontSize,<span class="string">'Interpreter'</span>,<span class="string">'Latex'</span>);
     ylabel(<span class="string">'$\sigma_{zz}$ [MPa]'</span>,<span class="string">'FontSize'</span>,fontSize,<span class="string">'Interpreter'</span>,<span class="string">'Latex'</span>);
@@ -473,24 +508,7 @@ FEBio path: /home/kevin/FEBioStudio2/bin/febio4
     view(2); axis <span class="string">tight</span>;  grid <span class="string">on</span>; axis <span class="string">square</span>; box <span class="string">on</span>;
     set(gca,<span class="string">'FontSize'</span>,fontSize);
     drawnow;
-</pre><img width="100%" height="auto" vspace="5" hspace="5" src="DEMO_febio_0083_cube_uniaxial_HGO_05.jpg" alt=""> <p>Importing element principal stresses from a log file</p><pre class="codeinput">    dataStruct=importFEBio_logfile(fullfile(savePath,febioLogFileName_stress_prin),1,1);
-
-    <span class="comment">%Access data</span>
-    E_stress_prin_mat=dataStruct.data;
-
-    <span class="comment">%Compute pressure</span>
-    P = squeeze(-1/3*mean(sum(E_stress_prin_mat,2),1));
-</pre><p>Visualize pressure-stretch curve</p><pre class="codeinput">    cFigure; hold <span class="string">on</span>;
-    title(<span class="string">'Pressure-stretch curve'</span>,<span class="string">'FontSize'</span>,fontSize);
-    xlabel(<span class="string">'$\lambda$ [.]'</span>,<span class="string">'FontSize'</span>,fontSize,<span class="string">'Interpreter'</span>,<span class="string">'Latex'</span>);
-    ylabel(<span class="string">'$p$ [MPa]'</span>,<span class="string">'FontSize'</span>,fontSize,<span class="string">'Interpreter'</span>,<span class="string">'Latex'</span>);
-
-    plot(stretch_sim(:),P(:),<span class="string">'r-'</span>,<span class="string">'lineWidth'</span>,lineWidth);
-
-    view(2); axis <span class="string">tight</span>;  grid <span class="string">on</span>; axis <span class="string">square</span>; box <span class="string">on</span>;
-    set(gca,<span class="string">'FontSize'</span>,fontSize);
-    drawnow;
-</pre><img width="100%" height="auto" vspace="5" hspace="5" src="DEMO_febio_0083_cube_uniaxial_HGO_06.jpg" alt=""> <p>Importing nodal forces from a log file</p><pre class="codeinput">    [dataStruct]=importFEBio_logfile(fullfile(savePath,febioLogFileName_force),1,1); <span class="comment">%Nodal forces</span>
+</pre><img width="100%" height="auto" vspace="5" hspace="5" src="DEMO_febio_0083_cube_uniaxial_HGO_06.jpg" alt=""> <p>Importing nodal forces from a log file</p><pre class="codeinput">    [dataStruct]=importFEBio_logfile(fullfile(savePath,febioLogFileName_force),0,1); <span class="comment">%Nodal forces</span>
 
     <span class="comment">%Access data</span>
     timeVec=dataStruct.time;
@@ -532,6 +550,7 @@ FEBio path: /home/kevin/FEBioStudio2/bin/febio4
 % * hyperelastic, HGO
 % * displacement logfile
 % * stress logfile
+% * Fiber mapping
 
 %%
 
@@ -556,8 +575,10 @@ febioFebFileNamePart='tempModel';
 febioFebFileName=fullfile(savePath,[febioFebFileNamePart,'.feb']); %FEB file name
 febioLogFileName=[febioFebFileNamePart,'.txt']; %FEBio log file name
 febioLogFileName_disp=[febioFebFileNamePart,'_disp_out.txt']; %Log file name for exporting displacement
-febioLogFileName_stress=[febioFebFileNamePart,'_stress_out.txt']; %Log file name for exporting stress
-febioLogFileName_stress_prin=[febioFebFileNamePart,'_stress_prin_out.txt']; %Log file name for exporting principal stress
+febioLogFileName_stress=[febioFebFileNamePart,'_stress_out.txt']; %Log file name for exporting stress sigma_z
+febioLogFileName_stretch=[febioFebFileNamePart,'_stretch_out.txt']; %Log file name for exporting stress U_z
+febioLogFileName_stress_prin=[febioFebFileNamePart,'_stress_prin_out.txt']; %Log file name for exporting principal stresses
+febioLogFileName_stretch_prin=[febioFebFileNamePart,'_stretch_prin_out.txt']; %Log file name for exporting principal stretches
 febioLogFileName_force=[febioFebFileNamePart,'_force_out.txt']; %Log file name for exporting force
 
 %Specifying dimensions and number of elements
@@ -594,6 +615,10 @@ dtmin=(1/numTimeSteps)/100; %Minimum time step size
 dtmax=1/numTimeSteps; %Maximum time step size
 
 runMode='external';% 'internal' or 'external'
+
+%Material parameters
+
+alphaFib=45/180*pi; %Fibre angle
 
 %% Creating model geometry and mesh
 % A box is created with tri-linear hexahedral (hex8) elements using the
@@ -638,22 +663,18 @@ drawnow;
 % cube. These labels can be used to define boundary conditions. 
 
 %Define supported node sets
-logicFace=Cb==1; %Logic for current face set
-Fr=Fb(logicFace,:); %The current face set
-bcSupportList_X=unique(Fr(:)); %Node set part of selected face
+FX=Fb(Cb==1,:); %Face orthogonal to X
+FY=Fb(Cb==3,:); %Face orthogonal to Y
+FZ=Fb(Cb==5,:); %Face orthogonal to Z
 
-logicFace=Cb==3; %Logic for current face set
-Fr=Fb(logicFace,:); %The current face set
-bcSupportList_Y=unique(Fr(:)); %Node set part of selected face
-
-logicFace=Cb==5; %Logic for current face set
-Fr=Fb(logicFace,:); %The current face set
-bcSupportList_Z=unique(Fr(:)); %Node set part of selected face
+indAll=1:1:size(V,1);
+bcSupportList_X=indAll(ismember(indAll,FX) & ismember(indAll,FZ)); %Node set part of selected face
+bcSupportList_Y=indAll(ismember(indAll,FY) & ismember(indAll,FZ)); %Node set part of selected face
+bcSupportList_Z=unique(FZ(:)); %Node set part of selected face
 
 %Prescribed displacement nodes
-logicPrescribe=Cb==6; %Logic for current face set
-Fr=Fb(logicPrescribe,:); %The current face set
-bcPrescribeList=unique(Fr(:)); %Node set part of selected face
+F_fix=Fb(Cb==6,:); %The current face set
+bcPrescribeList=unique(F_fix(:)); %Node set part of selected face
 
 %% 
 % Visualizing boundary conditions. Markers plotted on the semi-transparent
@@ -666,12 +687,39 @@ hold on;
 
 gpatch(Fb,V,'kw','k',0.5);
 
-hl(1)=plotV(V(bcSupportList_X,:),'r.','MarkerSize',markerSize);
-hl(2)=plotV(V(bcSupportList_Y,:),'g.','MarkerSize',markerSize);
+hl(1)=plotV(V(bcSupportList_X,:),'r.','MarkerSize',markerSize*2);
+hl(2)=plotV(V(bcSupportList_Y,:),'g.','MarkerSize',markerSize*2);
 hl(3)=plotV(V(bcSupportList_Z,:),'b.','MarkerSize',markerSize);
 hl(4)=plotV(V(bcPrescribeList,:),'k.','MarkerSize',markerSize);
 
 legend(hl,{'BC x support','BC y support','BC z support','BC z prescribe'});
+
+axisGeom(gca,fontSize);
+camlight headlight; 
+drawnow; 
+
+%% DEFINE FIBRE DIRECTIONS
+
+R=euler2DCM([0,-alphaFib,0]);
+e1=(R*[1 0 0]')';
+e1_dir=e1(ones(size(E,1),1),:);
+[e2_dir,e3_dir]=vectorOrthogonalPair(e1_dir);
+
+[VE]=patchCentre(E,V);
+
+%% 
+% Visualizing fiber directions
+
+hf=cFigure;
+title('Fiber directions','FontSize',fontSize);
+hold on;
+
+gpatch(Fb,V,'kw','none',0.25);
+hf(1)=quiverVec(VE,e1_dir,mean(pointSpacings),'r');
+hf(2)=quiverVec(VE,e2_dir,mean(pointSpacings)/2,'g');
+hf(3)=quiverVec(VE,e3_dir,mean(pointSpacings)/2,'b');
+
+legend(hf,{'e1-direction (fiber)','e2-direction','e3-direction'});
 
 axisGeom(gca,fontSize);
 camlight headlight; 
@@ -703,29 +751,20 @@ febio_spec.Control.time_stepper.opt_iter=opt_iter;
 
 %Material section
 materialName1='Material1';
+febio_spec.Material.material{1}.ATTR.name=materialName1;
+febio_spec.Material.material{1}.ATTR.id=1;
 switch materialType
     case 'coupled'
-        febio_spec.Material.material{1}.ATTR.name=materialName1;
         febio_spec.Material.material{1}.ATTR.type='HGO unconstrained';
-        febio_spec.Material.material{1}.ATTR.id=1;
-        febio_spec.Material.material{1}.c=7.64;
-        febio_spec.Material.material{1}.k1=996.6;
-        febio_spec.Material.material{1}.k2=524.6;
-        febio_spec.Material.material{1}.gamma=49.98;
-        febio_spec.Material.material{1}.kappa=0.226;
-        febio_spec.Material.material{1}.k=7.64e3;
     case 'uncoupled'
-        materialName1='Material1';
-        febio_spec.Material.material{1}.ATTR.name=materialName1;
         febio_spec.Material.material{1}.ATTR.type='Holzapfel-Gasser-Ogden';
-        febio_spec.Material.material{1}.ATTR.id=1;
-        febio_spec.Material.material{1}.c=7.64;
-        febio_spec.Material.material{1}.k1=996.6;
-        febio_spec.Material.material{1}.k2=524.6;
-        febio_spec.Material.material{1}.gamma=49.98;
-        febio_spec.Material.material{1}.kappa=0.226;
-        febio_spec.Material.material{1}.k=1e5;
 end
+febio_spec.Material.material{1}.c=7.64;
+febio_spec.Material.material{1}.k1=996.6;
+febio_spec.Material.material{1}.k2=524.6;
+febio_spec.Material.material{1}.gamma=0;
+febio_spec.Material.material{1}.kappa=0.226;
+febio_spec.Material.material{1}.k=7.64e3;
 
 % Mesh section
 % -> Nodes
@@ -761,6 +800,17 @@ febio_spec.Mesh.NodeSet{4}.VAL=mrow(bcPrescribeList);
 %MeshDomains section
 febio_spec.MeshDomains.SolidDomain.ATTR.name=partName1;
 febio_spec.MeshDomains.SolidDomain.ATTR.mat=materialName1;
+
+%MeshData section
+% -> ElementData
+febio_spec.MeshData.ElementData{1}.ATTR.elem_set=partName1;
+febio_spec.MeshData.ElementData{1}.ATTR.type='mat_axis';
+
+for q=1:1:size(E,1)
+    febio_spec.MeshData.ElementData{1}.elem{q}.ATTR.lid=q;
+    febio_spec.MeshData.ElementData{1}.elem{q}.a=e1_dir(q,:);
+    febio_spec.MeshData.ElementData{1}.elem{q}.d=e2_dir(q,:);
+end
 
 %Boundary condition section 
 % -> Fix boundary conditions
@@ -817,12 +867,20 @@ febio_spec.Output.logfile.element_data{1}.ATTR.file=febioLogFileName_stress;
 febio_spec.Output.logfile.element_data{1}.ATTR.data='sz';
 febio_spec.Output.logfile.element_data{1}.ATTR.delim=',';
 
-febio_spec.Output.logfile.element_data{2}.ATTR.file=febioLogFileName_stress_prin;
-febio_spec.Output.logfile.element_data{2}.ATTR.data='s1;s2;s3';
+febio_spec.Output.logfile.element_data{2}.ATTR.file=febioLogFileName_stretch;
+febio_spec.Output.logfile.element_data{2}.ATTR.data='Uz';
 febio_spec.Output.logfile.element_data{2}.ATTR.delim=',';
 
+febio_spec.Output.logfile.element_data{3}.ATTR.file=febioLogFileName_stress_prin;
+febio_spec.Output.logfile.element_data{3}.ATTR.data='s1;s2;s3';
+febio_spec.Output.logfile.element_data{3}.ATTR.delim=',';
+
+febio_spec.Output.logfile.element_data{4}.ATTR.file=febioLogFileName_stretch_prin;
+febio_spec.Output.logfile.element_data{4}.ATTR.data='U1;U2;U3';
+febio_spec.Output.logfile.element_data{4}.ATTR.delim=',';
+
 % Plotfile section
-febio_spec.Output.plotfile.compression=1;
+febio_spec.Output.plotfile.compression=0;
 
 %% Quick viewing of the FEBio input file structure
 % The |febView| function can be used to view the xml structure in a MATLAB
@@ -860,7 +918,7 @@ if runFlag==1 %i.e. a succesful run
     %% 
     
     % Importing nodal displacements from a log file
-    dataStruct=importFEBio_logfile(fullfile(savePath,febioLogFileName_disp),1,1);
+    dataStruct=importFEBio_logfile(fullfile(savePath,febioLogFileName_disp),0,1);
     
     %Access data
     N_disp_mat=dataStruct.data; %Displacement
@@ -904,13 +962,20 @@ if runFlag==1 %i.e. a succesful run
     end        
     anim8(hf,animStruct); %Initiate animation feature    
     drawnow;
-            
+                        
     %%
     % Importing element stress from a log file
-    dataStruct=importFEBio_logfile(fullfile(savePath,febioLogFileName_stress),1,1);
+    dataStruct=importFEBio_logfile(fullfile(savePath,febioLogFileName_stress),0,1);
     
     %Access data
     E_stress_mat=dataStruct.data;
+
+    %%
+    % Importing element stretch from a log file
+    dataStruct=importFEBio_logfile(fullfile(savePath,febioLogFileName_stretch),0,1);
+    
+    %Access data
+    E_stretch_mat=dataStruct.data;
     
     %% 
     % Plotting the simulated results using |anim8| to visualize and animate
@@ -951,15 +1016,10 @@ if runFlag==1 %i.e. a succesful run
     drawnow;
     
     %% 
-    % Calculate metrics to visualize stretch-stress curve
+    % Visualize stretch-stress curve
     
-    DZ_set=N_disp_mat(bcPrescribeList,end,:); %Z displacements of the prescribed set
-    DZ_set=mean(DZ_set,1); %Calculate mean Z displacements across nodes
-    stretch_sim=(DZ_set(:)+sampleHeight)./sampleHeight; %Derive stretch
-    stress_cauchy_sim=mean(squeeze(E_stress_mat(:,end,:)),1)';
-    
-    %%    
-    % Visualize stress-stretch curve
+    stretch_sim=squeeze(mean(E_stretch_mat,1)); % Stretch U_z
+    stress_cauchy_sim=squeeze(mean(E_stress_mat,1)); %Cauchy stress sigma_z
     
     cFigure; hold on;    
     title('Uniaxial stress-stretch curve','FontSize',fontSize);
@@ -971,35 +1031,11 @@ if runFlag==1 %i.e. a succesful run
     view(2); axis tight;  grid on; axis square; box on; 
     set(gca,'FontSize',fontSize);
     drawnow;
-    
-    %%
-    % Importing element principal stresses from a log file
-    dataStruct=importFEBio_logfile(fullfile(savePath,febioLogFileName_stress_prin),1,1);
-    
-    %Access data
-    E_stress_prin_mat=dataStruct.data;
-    
-    %Compute pressure
-    P = squeeze(-1/3*mean(sum(E_stress_prin_mat,2),1));
-    
-    %%
-    % Visualize pressure-stretch curve
-    
-    cFigure; hold on;
-    title('Pressure-stretch curve','FontSize',fontSize);
-    xlabel('$\lambda$ [.]','FontSize',fontSize,'Interpreter','Latex');
-    ylabel('$p$ [MPa]','FontSize',fontSize,'Interpreter','Latex');
-    
-    plot(stretch_sim(:),P(:),'r-','lineWidth',lineWidth);
-    
-    view(2); axis tight;  grid on; axis square; box on;
-    set(gca,'FontSize',fontSize);
-    drawnow;
 
     %%
     % Importing nodal forces from a log file
 
-    [dataStruct]=importFEBio_logfile(fullfile(savePath,febioLogFileName_force),1,1); %Nodal forces
+    [dataStruct]=importFEBio_logfile(fullfile(savePath,febioLogFileName_force),0,1); %Nodal forces
 
     %Access data    
     timeVec=dataStruct.time;

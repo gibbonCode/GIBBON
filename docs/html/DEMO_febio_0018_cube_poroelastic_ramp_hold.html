@@ -6,7 +6,7 @@
    <!--
 This HTML was auto-generated from MATLAB code.
 To make changes, update the MATLAB code and republish this document.
-      --><title>DEMO_febio_0018_cube_poroelastic_ramp_hold</title><meta name="generator" content="MATLAB 9.13"><link rel="schema.DC" href="http://purl.org/dc/elements/1.1/"><meta name="DC.date" content="2023-04-18"><meta name="DC.source" content="DEMO_febio_0018_cube_poroelastic_ramp_hold.m"><style type="text/css">
+      --><title>DEMO_febio_0018_cube_poroelastic_ramp_hold</title><meta name="generator" content="MATLAB 9.13"><link rel="schema.DC" href="http://purl.org/dc/elements/1.1/"><meta name="DC.date" content="2023-04-20"><meta name="DC.source" content="DEMO_febio_0018_cube_poroelastic_ramp_hold.m"><style type="text/css">
 html,body,div,span,applet,object,iframe,h1,h2,h3,h4,h5,h6,p,blockquote,pre,a,abbr,acronym,address,big,cite,code,del,dfn,em,font,img,ins,kbd,q,s,samp,small,strike,strong,tt,var,b,u,i,center,dl,dt,dd,ol,ul,li,fieldset,form,label,legend,table,caption,tbody,tfoot,thead,tr,th,td{margin:0;padding:0;border:0;outline:0;font-size:100%;vertical-align:baseline;background:transparent}body{line-height:1}ol,ul{list-style:none}blockquote,q{quotes:none}blockquote:before,blockquote:after,q:before,q:after{content:'';content:none}:focus{outine:0}ins{text-decoration:none}del{text-decoration:line-through}table{border-collapse:collapse;border-spacing:0}
 
 html { min-height:100%; margin-bottom:1px; }
@@ -155,6 +155,8 @@ max_refs=25; <span class="comment">%Max reforms</span>
 max_ups=0; <span class="comment">%Set to zero to use full-Newton iterations</span>
 opt_iter=6; <span class="comment">%Optimum number of iterations</span>
 max_retries=5; <span class="comment">%Maximum number of retires</span>
+
+runMode=<span class="string">'external'</span>;<span class="comment">% 'internal' or 'external'</span>
 </pre><h2 id="5">Creating model geometry and mesh</h2><p>A box is created with tri-linear hexahedral (hex8) elements using the <tt>hexMeshBox</tt> function. The function offers the boundary faces with seperate labels for the top, bottom, left, right, front, and back sides. As such these can be used to define boundary conditions on the exterior.</p><pre class="codeinput"><span class="comment">% Create a box with hexahedral elements</span>
 cubeDimensions=[sampleWidth sampleThickness sampleHeight]; <span class="comment">%Dimensions</span>
 cubeElementNumbers=[numElementsWidth numElementsThickness numElementsHeight]; <span class="comment">%Number of elements</span>
@@ -382,329 +384,328 @@ febio_spec.Output.plotfile.compression=0;
 </pre><h2 id="13">Running the FEBio analysis</h2><p>To run the analysis defined by the created FEBio input file the <tt>runMonitorFEBio</tt> function is used. The input for this function is a structure defining job settings e.g. the FEBio input file name. The optional output runFlag informs the user if the analysis was run succesfully.</p><pre class="codeinput">febioAnalysis.run_filename=febioFebFileName; <span class="comment">%The input file name</span>
 febioAnalysis.run_logname=febioLogFileName; <span class="comment">%The name for the log file</span>
 febioAnalysis.disp_on=1; <span class="comment">%Display information on the command window</span>
-febioAnalysis.runMode=<span class="string">'external'</span>;<span class="comment">%'internal';</span>
+febioAnalysis.runMode=runMode;
 
 [runFlag]=runMonitorFEBio(febioAnalysis);<span class="comment">%START FEBio NOW!!!!!!!!</span>
 </pre><pre class="codeoutput"> 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
---------&gt;    RUNNING/MONITORING FEBIO JOB    &lt;-------- 18-Apr-2023 12:22:49
+--------&gt;    RUNNING/MONITORING FEBIO JOB    &lt;-------- 20-Apr-2023 10:42:34
 FEBio path: /home/kevin/FEBioStudio2/bin/febio4
-# Attempt removal of existing log files                18-Apr-2023 12:22:49
- * Removal succesful                                   18-Apr-2023 12:22:49
-# Attempt removal of existing .xplt files              18-Apr-2023 12:22:49
- * Removal succesful                                   18-Apr-2023 12:22:50
-# Starting FEBio...                                    18-Apr-2023 12:22:50
+# Attempt removal of existing log files                20-Apr-2023 10:42:34
+ * Removal succesful                                   20-Apr-2023 10:42:34
+# Attempt removal of existing .xplt files              20-Apr-2023 10:42:35
+ * Removal succesful                                   20-Apr-2023 10:42:35
+# Starting FEBio...                                    20-Apr-2023 10:42:35
   Max. total analysis time is: Inf s
- * Waiting for log file creation                       18-Apr-2023 12:22:50
+ * Waiting for log file creation                       20-Apr-2023 10:42:35
    Max. wait time: 30 s
- * Log file found.                                     18-Apr-2023 12:22:50
-# Parsing log file...                                  18-Apr-2023 12:22:50
-    number of iterations   : 3                         18-Apr-2023 12:22:50
-    number of reformations : 3                         18-Apr-2023 12:22:50
-------- converged at time : 0.002                      18-Apr-2023 12:22:50
-    number of iterations   : 3                         18-Apr-2023 12:22:50
-    number of reformations : 3                         18-Apr-2023 12:22:50
-------- converged at time : 0.004                      18-Apr-2023 12:22:50
-    number of iterations   : 3                         18-Apr-2023 12:22:50
-    number of reformations : 3                         18-Apr-2023 12:22:50
-------- converged at time : 0.006                      18-Apr-2023 12:22:50
-    number of iterations   : 3                         18-Apr-2023 12:22:50
-    number of reformations : 3                         18-Apr-2023 12:22:50
-------- converged at time : 0.008                      18-Apr-2023 12:22:50
-    number of iterations   : 3                         18-Apr-2023 12:22:50
-    number of reformations : 3                         18-Apr-2023 12:22:50
-------- converged at time : 0.01                       18-Apr-2023 12:22:50
-    number of iterations   : 3                         18-Apr-2023 12:22:50
-    number of reformations : 3                         18-Apr-2023 12:22:50
-------- converged at time : 0.012                      18-Apr-2023 12:22:50
-    number of iterations   : 3                         18-Apr-2023 12:22:50
-    number of reformations : 3                         18-Apr-2023 12:22:50
-------- converged at time : 0.014                      18-Apr-2023 12:22:50
-    number of iterations   : 3                         18-Apr-2023 12:22:50
-    number of reformations : 3                         18-Apr-2023 12:22:50
-------- converged at time : 0.016                      18-Apr-2023 12:22:50
-    number of iterations   : 3                         18-Apr-2023 12:22:50
-    number of reformations : 3                         18-Apr-2023 12:22:50
-------- converged at time : 0.018                      18-Apr-2023 12:22:50
-    number of iterations   : 3                         18-Apr-2023 12:22:51
-    number of reformations : 3                         18-Apr-2023 12:22:51
-------- converged at time : 0.02                       18-Apr-2023 12:22:51
-    number of iterations   : 3                         18-Apr-2023 12:22:51
-    number of reformations : 3                         18-Apr-2023 12:22:51
-------- converged at time : 0.022                      18-Apr-2023 12:22:51
-    number of iterations   : 3                         18-Apr-2023 12:22:51
-    number of reformations : 3                         18-Apr-2023 12:22:51
-------- converged at time : 0.024                      18-Apr-2023 12:22:51
-    number of iterations   : 3                         18-Apr-2023 12:22:51
-    number of reformations : 3                         18-Apr-2023 12:22:51
-------- converged at time : 0.026                      18-Apr-2023 12:22:51
-    number of iterations   : 3                         18-Apr-2023 12:22:51
-    number of reformations : 3                         18-Apr-2023 12:22:51
-------- converged at time : 0.028                      18-Apr-2023 12:22:51
-    number of iterations   : 3                         18-Apr-2023 12:22:51
-    number of reformations : 3                         18-Apr-2023 12:22:51
-------- converged at time : 0.03                       18-Apr-2023 12:22:51
-    number of iterations   : 3                         18-Apr-2023 12:22:51
-    number of reformations : 3                         18-Apr-2023 12:22:51
-------- converged at time : 0.032                      18-Apr-2023 12:22:51
-    number of iterations   : 3                         18-Apr-2023 12:22:51
-    number of reformations : 3                         18-Apr-2023 12:22:51
-------- converged at time : 0.034                      18-Apr-2023 12:22:51
-    number of iterations   : 3                         18-Apr-2023 12:22:51
-    number of reformations : 3                         18-Apr-2023 12:22:51
-------- converged at time : 0.036                      18-Apr-2023 12:22:51
-    number of iterations   : 3                         18-Apr-2023 12:22:51
-    number of reformations : 3                         18-Apr-2023 12:22:51
-------- converged at time : 0.038                      18-Apr-2023 12:22:51
-    number of iterations   : 3                         18-Apr-2023 12:22:51
-    number of reformations : 3                         18-Apr-2023 12:22:51
-------- converged at time : 0.04                       18-Apr-2023 12:22:51
-    number of iterations   : 3                         18-Apr-2023 12:22:51
-    number of reformations : 3                         18-Apr-2023 12:22:51
-------- converged at time : 0.042                      18-Apr-2023 12:22:51
-    number of iterations   : 3                         18-Apr-2023 12:22:51
-    number of reformations : 3                         18-Apr-2023 12:22:51
-------- converged at time : 0.044                      18-Apr-2023 12:22:51
-    number of iterations   : 3                         18-Apr-2023 12:22:51
-    number of reformations : 3                         18-Apr-2023 12:22:51
-------- converged at time : 0.046                      18-Apr-2023 12:22:51
-    number of iterations   : 3                         18-Apr-2023 12:22:51
-    number of reformations : 3                         18-Apr-2023 12:22:51
-------- converged at time : 0.048                      18-Apr-2023 12:22:51
-    number of iterations   : 3                         18-Apr-2023 12:22:51
-    number of reformations : 3                         18-Apr-2023 12:22:51
-------- converged at time : 0.05                       18-Apr-2023 12:22:51
-    number of iterations   : 3                         18-Apr-2023 12:22:51
-    number of reformations : 3                         18-Apr-2023 12:22:51
-------- converged at time : 0.052                      18-Apr-2023 12:22:51
-    number of iterations   : 3                         18-Apr-2023 12:22:51
-    number of reformations : 3                         18-Apr-2023 12:22:51
-------- converged at time : 0.054                      18-Apr-2023 12:22:51
-    number of iterations   : 3                         18-Apr-2023 12:22:51
-    number of reformations : 3                         18-Apr-2023 12:22:51
-------- converged at time : 0.056                      18-Apr-2023 12:22:51
-    number of iterations   : 3                         18-Apr-2023 12:22:52
-    number of reformations : 3                         18-Apr-2023 12:22:52
-------- converged at time : 0.058                      18-Apr-2023 12:22:52
-    number of iterations   : 3                         18-Apr-2023 12:22:52
-    number of reformations : 3                         18-Apr-2023 12:22:52
-------- converged at time : 0.06                       18-Apr-2023 12:22:52
-    number of iterations   : 3                         18-Apr-2023 12:22:52
-    number of reformations : 3                         18-Apr-2023 12:22:52
-------- converged at time : 0.062                      18-Apr-2023 12:22:52
-    number of iterations   : 3                         18-Apr-2023 12:22:52
-    number of reformations : 3                         18-Apr-2023 12:22:52
-------- converged at time : 0.064                      18-Apr-2023 12:22:52
-    number of iterations   : 3                         18-Apr-2023 12:22:52
-    number of reformations : 3                         18-Apr-2023 12:22:52
-------- converged at time : 0.066                      18-Apr-2023 12:22:52
-    number of iterations   : 3                         18-Apr-2023 12:22:52
-    number of reformations : 3                         18-Apr-2023 12:22:52
-------- converged at time : 0.068                      18-Apr-2023 12:22:52
-    number of iterations   : 3                         18-Apr-2023 12:22:52
-    number of reformations : 3                         18-Apr-2023 12:22:52
-------- converged at time : 0.07                       18-Apr-2023 12:22:52
-    number of iterations   : 3                         18-Apr-2023 12:22:52
-    number of reformations : 3                         18-Apr-2023 12:22:52
-------- converged at time : 0.072                      18-Apr-2023 12:22:52
-    number of iterations   : 3                         18-Apr-2023 12:22:52
-    number of reformations : 3                         18-Apr-2023 12:22:52
-------- converged at time : 0.074                      18-Apr-2023 12:22:52
-    number of iterations   : 3                         18-Apr-2023 12:22:52
-    number of reformations : 3                         18-Apr-2023 12:22:52
-------- converged at time : 0.076                      18-Apr-2023 12:22:52
-    number of iterations   : 3                         18-Apr-2023 12:22:52
-    number of reformations : 3                         18-Apr-2023 12:22:52
-------- converged at time : 0.078                      18-Apr-2023 12:22:52
-    number of iterations   : 3                         18-Apr-2023 12:22:52
-    number of reformations : 3                         18-Apr-2023 12:22:52
-------- converged at time : 0.08                       18-Apr-2023 12:22:52
-    number of iterations   : 3                         18-Apr-2023 12:22:52
-    number of reformations : 3                         18-Apr-2023 12:22:52
-------- converged at time : 0.082                      18-Apr-2023 12:22:52
-    number of iterations   : 3                         18-Apr-2023 12:22:52
-    number of reformations : 3                         18-Apr-2023 12:22:52
-------- converged at time : 0.084                      18-Apr-2023 12:22:52
-    number of iterations   : 3                         18-Apr-2023 12:22:52
-    number of reformations : 3                         18-Apr-2023 12:22:52
-------- converged at time : 0.086                      18-Apr-2023 12:22:52
-    number of iterations   : 3                         18-Apr-2023 12:22:52
-    number of reformations : 3                         18-Apr-2023 12:22:52
-------- converged at time : 0.088                      18-Apr-2023 12:22:52
-    number of iterations   : 3                         18-Apr-2023 12:22:52
-    number of reformations : 3                         18-Apr-2023 12:22:52
-------- converged at time : 0.09                       18-Apr-2023 12:22:52
-    number of iterations   : 3                         18-Apr-2023 12:22:52
-    number of reformations : 3                         18-Apr-2023 12:22:52
-------- converged at time : 0.092                      18-Apr-2023 12:22:52
-    number of iterations   : 3                         18-Apr-2023 12:22:53
-    number of reformations : 3                         18-Apr-2023 12:22:53
-------- converged at time : 0.094                      18-Apr-2023 12:22:53
-    number of iterations   : 3                         18-Apr-2023 12:22:53
-    number of reformations : 3                         18-Apr-2023 12:22:53
-------- converged at time : 0.096                      18-Apr-2023 12:22:53
-    number of iterations   : 3                         18-Apr-2023 12:22:53
-    number of reformations : 3                         18-Apr-2023 12:22:53
-------- converged at time : 0.098                      18-Apr-2023 12:22:53
-    number of iterations   : 3                         18-Apr-2023 12:22:53
-    number of reformations : 3                         18-Apr-2023 12:22:53
-------- converged at time : 0.1                        18-Apr-2023 12:22:53
-    number of iterations   : 3                         18-Apr-2023 12:22:53
-    number of reformations : 3                         18-Apr-2023 12:22:53
-------- converged at time : 0.12                       18-Apr-2023 12:22:53
-    number of iterations   : 3                         18-Apr-2023 12:22:53
-    number of reformations : 3                         18-Apr-2023 12:22:53
-------- converged at time : 0.14                       18-Apr-2023 12:22:53
-    number of iterations   : 3                         18-Apr-2023 12:22:53
-    number of reformations : 3                         18-Apr-2023 12:22:53
-------- converged at time : 0.16                       18-Apr-2023 12:22:53
-    number of iterations   : 3                         18-Apr-2023 12:22:53
-    number of reformations : 3                         18-Apr-2023 12:22:53
-------- converged at time : 0.18                       18-Apr-2023 12:22:53
-    number of iterations   : 3                         18-Apr-2023 12:22:53
-    number of reformations : 3                         18-Apr-2023 12:22:53
-------- converged at time : 0.2                        18-Apr-2023 12:22:53
-    number of iterations   : 3                         18-Apr-2023 12:22:53
-    number of reformations : 3                         18-Apr-2023 12:22:53
-------- converged at time : 0.22                       18-Apr-2023 12:22:53
-    number of iterations   : 3                         18-Apr-2023 12:22:53
-    number of reformations : 3                         18-Apr-2023 12:22:53
-------- converged at time : 0.24                       18-Apr-2023 12:22:53
-    number of iterations   : 3                         18-Apr-2023 12:22:53
-    number of reformations : 3                         18-Apr-2023 12:22:53
-------- converged at time : 0.26                       18-Apr-2023 12:22:53
-    number of iterations   : 3                         18-Apr-2023 12:22:53
-    number of reformations : 3                         18-Apr-2023 12:22:53
-------- converged at time : 0.28                       18-Apr-2023 12:22:53
-    number of iterations   : 3                         18-Apr-2023 12:22:53
-    number of reformations : 3                         18-Apr-2023 12:22:53
-------- converged at time : 0.3                        18-Apr-2023 12:22:53
-    number of iterations   : 3                         18-Apr-2023 12:22:53
-    number of reformations : 3                         18-Apr-2023 12:22:53
-------- converged at time : 0.32                       18-Apr-2023 12:22:53
-    number of iterations   : 3                         18-Apr-2023 12:22:53
-    number of reformations : 3                         18-Apr-2023 12:22:53
-------- converged at time : 0.34                       18-Apr-2023 12:22:53
-    number of iterations   : 3                         18-Apr-2023 12:22:53
-    number of reformations : 3                         18-Apr-2023 12:22:53
-------- converged at time : 0.36                       18-Apr-2023 12:22:53
-    number of iterations   : 3                         18-Apr-2023 12:22:53
-    number of reformations : 3                         18-Apr-2023 12:22:53
-------- converged at time : 0.38                       18-Apr-2023 12:22:53
-    number of iterations   : 3                         18-Apr-2023 12:22:53
-    number of reformations : 3                         18-Apr-2023 12:22:53
-------- converged at time : 0.4                        18-Apr-2023 12:22:53
-    number of iterations   : 3                         18-Apr-2023 12:22:53
-    number of reformations : 3                         18-Apr-2023 12:22:53
-------- converged at time : 0.42                       18-Apr-2023 12:22:53
-    number of iterations   : 3                         18-Apr-2023 12:22:54
-    number of reformations : 3                         18-Apr-2023 12:22:54
-------- converged at time : 0.44                       18-Apr-2023 12:22:54
-    number of iterations   : 3                         18-Apr-2023 12:22:54
-    number of reformations : 3                         18-Apr-2023 12:22:54
-------- converged at time : 0.46                       18-Apr-2023 12:22:54
-    number of iterations   : 3                         18-Apr-2023 12:22:54
-    number of reformations : 3                         18-Apr-2023 12:22:54
-------- converged at time : 0.48                       18-Apr-2023 12:22:54
-    number of iterations   : 3                         18-Apr-2023 12:22:54
-    number of reformations : 3                         18-Apr-2023 12:22:54
-------- converged at time : 0.5                        18-Apr-2023 12:22:54
-    number of iterations   : 3                         18-Apr-2023 12:22:54
-    number of reformations : 3                         18-Apr-2023 12:22:54
-------- converged at time : 0.52                       18-Apr-2023 12:22:54
-    number of iterations   : 3                         18-Apr-2023 12:22:54
-    number of reformations : 3                         18-Apr-2023 12:22:54
-------- converged at time : 0.54                       18-Apr-2023 12:22:54
-    number of iterations   : 3                         18-Apr-2023 12:22:54
-    number of reformations : 3                         18-Apr-2023 12:22:54
-------- converged at time : 0.56                       18-Apr-2023 12:22:54
-    number of iterations   : 3                         18-Apr-2023 12:22:54
-    number of reformations : 3                         18-Apr-2023 12:22:54
-------- converged at time : 0.58                       18-Apr-2023 12:22:54
-    number of iterations   : 3                         18-Apr-2023 12:22:54
-    number of reformations : 3                         18-Apr-2023 12:22:54
-------- converged at time : 0.6                        18-Apr-2023 12:22:54
-    number of iterations   : 3                         18-Apr-2023 12:22:54
-    number of reformations : 3                         18-Apr-2023 12:22:54
-------- converged at time : 0.62                       18-Apr-2023 12:22:54
-    number of iterations   : 3                         18-Apr-2023 12:22:54
-    number of reformations : 3                         18-Apr-2023 12:22:54
-------- converged at time : 0.64                       18-Apr-2023 12:22:54
-    number of iterations   : 2                         18-Apr-2023 12:22:54
-    number of reformations : 2                         18-Apr-2023 12:22:54
-------- converged at time : 0.66                       18-Apr-2023 12:22:54
-    number of iterations   : 2                         18-Apr-2023 12:22:54
-    number of reformations : 2                         18-Apr-2023 12:22:54
-------- converged at time : 0.68                       18-Apr-2023 12:22:54
-    number of iterations   : 2                         18-Apr-2023 12:22:54
-    number of reformations : 2                         18-Apr-2023 12:22:54
-------- converged at time : 0.7                        18-Apr-2023 12:22:54
-    number of iterations   : 2                         18-Apr-2023 12:22:54
-    number of reformations : 2                         18-Apr-2023 12:22:54
-------- converged at time : 0.72                       18-Apr-2023 12:22:54
-    number of iterations   : 2                         18-Apr-2023 12:22:54
-    number of reformations : 2                         18-Apr-2023 12:22:54
-------- converged at time : 0.74                       18-Apr-2023 12:22:54
-    number of iterations   : 2                         18-Apr-2023 12:22:54
-    number of reformations : 2                         18-Apr-2023 12:22:54
-------- converged at time : 0.76                       18-Apr-2023 12:22:54
-    number of iterations   : 2                         18-Apr-2023 12:22:54
-    number of reformations : 2                         18-Apr-2023 12:22:54
-------- converged at time : 0.78                       18-Apr-2023 12:22:54
-    number of iterations   : 2                         18-Apr-2023 12:22:54
-    number of reformations : 2                         18-Apr-2023 12:22:54
-------- converged at time : 0.8                        18-Apr-2023 12:22:54
-    number of iterations   : 2                         18-Apr-2023 12:22:54
-    number of reformations : 2                         18-Apr-2023 12:22:54
-------- converged at time : 0.82                       18-Apr-2023 12:22:54
-    number of iterations   : 2                         18-Apr-2023 12:22:54
-    number of reformations : 2                         18-Apr-2023 12:22:54
-------- converged at time : 0.84                       18-Apr-2023 12:22:54
-    number of iterations   : 2                         18-Apr-2023 12:22:54
-    number of reformations : 2                         18-Apr-2023 12:22:54
-------- converged at time : 0.86                       18-Apr-2023 12:22:54
-    number of iterations   : 2                         18-Apr-2023 12:22:54
-    number of reformations : 2                         18-Apr-2023 12:22:54
-------- converged at time : 0.88                       18-Apr-2023 12:22:54
-    number of iterations   : 2                         18-Apr-2023 12:22:54
-    number of reformations : 2                         18-Apr-2023 12:22:54
-------- converged at time : 0.9                        18-Apr-2023 12:22:54
-    number of iterations   : 2                         18-Apr-2023 12:22:54
-    number of reformations : 2                         18-Apr-2023 12:22:54
-------- converged at time : 0.92                       18-Apr-2023 12:22:54
-    number of iterations   : 2                         18-Apr-2023 12:22:54
-    number of reformations : 2                         18-Apr-2023 12:22:54
-------- converged at time : 0.94                       18-Apr-2023 12:22:54
-    number of iterations   : 2                         18-Apr-2023 12:22:55
-    number of reformations : 2                         18-Apr-2023 12:22:55
-------- converged at time : 0.96                       18-Apr-2023 12:22:55
-    number of iterations   : 2                         18-Apr-2023 12:22:55
-    number of reformations : 2                         18-Apr-2023 12:22:55
-------- converged at time : 0.98                       18-Apr-2023 12:22:55
-    number of iterations   : 2                         18-Apr-2023 12:22:55
-    number of reformations : 2                         18-Apr-2023 12:22:55
-------- converged at time : 1                          18-Apr-2023 12:22:55
-    number of iterations   : 2                         18-Apr-2023 12:22:55
-    number of reformations : 2                         18-Apr-2023 12:22:55
-------- converged at time : 1.02                       18-Apr-2023 12:22:55
-    number of iterations   : 2                         18-Apr-2023 12:22:55
-    number of reformations : 2                         18-Apr-2023 12:22:55
-------- converged at time : 1.04                       18-Apr-2023 12:22:55
-    number of iterations   : 2                         18-Apr-2023 12:22:55
-    number of reformations : 2                         18-Apr-2023 12:22:55
-------- converged at time : 1.06                       18-Apr-2023 12:22:55
-    number of iterations   : 2                         18-Apr-2023 12:22:55
-    number of reformations : 2                         18-Apr-2023 12:22:55
-------- converged at time : 1.08                       18-Apr-2023 12:22:55
-    number of iterations   : 2                         18-Apr-2023 12:22:55
-    number of reformations : 2                         18-Apr-2023 12:22:55
-------- converged at time : 1.1                        18-Apr-2023 12:22:55
- Elapsed time : 0:00:05                                18-Apr-2023 12:22:55
+ * Log file found.                                     20-Apr-2023 10:42:35
+# Parsing log file...                                  20-Apr-2023 10:42:35
+    number of iterations   : 3                         20-Apr-2023 10:42:35
+    number of reformations : 3                         20-Apr-2023 10:42:35
+------- converged at time : 0.002                      20-Apr-2023 10:42:35
+    number of iterations   : 3                         20-Apr-2023 10:42:35
+    number of reformations : 3                         20-Apr-2023 10:42:35
+------- converged at time : 0.004                      20-Apr-2023 10:42:35
+    number of iterations   : 3                         20-Apr-2023 10:42:35
+    number of reformations : 3                         20-Apr-2023 10:42:35
+------- converged at time : 0.006                      20-Apr-2023 10:42:35
+    number of iterations   : 3                         20-Apr-2023 10:42:35
+    number of reformations : 3                         20-Apr-2023 10:42:35
+------- converged at time : 0.008                      20-Apr-2023 10:42:35
+    number of iterations   : 3                         20-Apr-2023 10:42:35
+    number of reformations : 3                         20-Apr-2023 10:42:35
+------- converged at time : 0.01                       20-Apr-2023 10:42:35
+    number of iterations   : 3                         20-Apr-2023 10:42:35
+    number of reformations : 3                         20-Apr-2023 10:42:35
+------- converged at time : 0.012                      20-Apr-2023 10:42:35
+    number of iterations   : 3                         20-Apr-2023 10:42:35
+    number of reformations : 3                         20-Apr-2023 10:42:35
+------- converged at time : 0.014                      20-Apr-2023 10:42:35
+    number of iterations   : 3                         20-Apr-2023 10:42:36
+    number of reformations : 3                         20-Apr-2023 10:42:36
+------- converged at time : 0.016                      20-Apr-2023 10:42:36
+    number of iterations   : 3                         20-Apr-2023 10:42:36
+    number of reformations : 3                         20-Apr-2023 10:42:36
+------- converged at time : 0.018                      20-Apr-2023 10:42:36
+    number of iterations   : 3                         20-Apr-2023 10:42:36
+    number of reformations : 3                         20-Apr-2023 10:42:36
+------- converged at time : 0.02                       20-Apr-2023 10:42:36
+    number of iterations   : 3                         20-Apr-2023 10:42:36
+    number of reformations : 3                         20-Apr-2023 10:42:36
+------- converged at time : 0.022                      20-Apr-2023 10:42:36
+    number of iterations   : 3                         20-Apr-2023 10:42:36
+    number of reformations : 3                         20-Apr-2023 10:42:36
+------- converged at time : 0.024                      20-Apr-2023 10:42:36
+    number of iterations   : 3                         20-Apr-2023 10:42:36
+    number of reformations : 3                         20-Apr-2023 10:42:36
+------- converged at time : 0.026                      20-Apr-2023 10:42:36
+    number of iterations   : 3                         20-Apr-2023 10:42:36
+    number of reformations : 3                         20-Apr-2023 10:42:36
+------- converged at time : 0.028                      20-Apr-2023 10:42:36
+    number of iterations   : 3                         20-Apr-2023 10:42:36
+    number of reformations : 3                         20-Apr-2023 10:42:36
+------- converged at time : 0.03                       20-Apr-2023 10:42:36
+    number of iterations   : 3                         20-Apr-2023 10:42:36
+    number of reformations : 3                         20-Apr-2023 10:42:36
+------- converged at time : 0.032                      20-Apr-2023 10:42:36
+    number of iterations   : 3                         20-Apr-2023 10:42:36
+    number of reformations : 3                         20-Apr-2023 10:42:36
+------- converged at time : 0.034                      20-Apr-2023 10:42:36
+    number of iterations   : 3                         20-Apr-2023 10:42:36
+    number of reformations : 3                         20-Apr-2023 10:42:36
+------- converged at time : 0.036                      20-Apr-2023 10:42:36
+    number of iterations   : 3                         20-Apr-2023 10:42:36
+    number of reformations : 3                         20-Apr-2023 10:42:36
+------- converged at time : 0.038                      20-Apr-2023 10:42:36
+    number of iterations   : 3                         20-Apr-2023 10:42:36
+    number of reformations : 3                         20-Apr-2023 10:42:36
+------- converged at time : 0.04                       20-Apr-2023 10:42:36
+    number of iterations   : 3                         20-Apr-2023 10:42:36
+    number of reformations : 3                         20-Apr-2023 10:42:36
+------- converged at time : 0.042                      20-Apr-2023 10:42:36
+    number of iterations   : 3                         20-Apr-2023 10:42:36
+    number of reformations : 3                         20-Apr-2023 10:42:36
+------- converged at time : 0.044                      20-Apr-2023 10:42:36
+    number of iterations   : 3                         20-Apr-2023 10:42:36
+    number of reformations : 3                         20-Apr-2023 10:42:36
+------- converged at time : 0.046                      20-Apr-2023 10:42:36
+    number of iterations   : 3                         20-Apr-2023 10:42:36
+    number of reformations : 3                         20-Apr-2023 10:42:36
+------- converged at time : 0.048                      20-Apr-2023 10:42:36
+    number of iterations   : 3                         20-Apr-2023 10:42:36
+    number of reformations : 3                         20-Apr-2023 10:42:36
+------- converged at time : 0.05                       20-Apr-2023 10:42:36
+    number of iterations   : 3                         20-Apr-2023 10:42:37
+    number of reformations : 3                         20-Apr-2023 10:42:37
+------- converged at time : 0.052                      20-Apr-2023 10:42:37
+    number of iterations   : 3                         20-Apr-2023 10:42:37
+    number of reformations : 3                         20-Apr-2023 10:42:37
+------- converged at time : 0.054                      20-Apr-2023 10:42:37
+    number of iterations   : 3                         20-Apr-2023 10:42:37
+    number of reformations : 3                         20-Apr-2023 10:42:37
+------- converged at time : 0.056                      20-Apr-2023 10:42:37
+    number of iterations   : 3                         20-Apr-2023 10:42:37
+    number of reformations : 3                         20-Apr-2023 10:42:37
+------- converged at time : 0.058                      20-Apr-2023 10:42:37
+    number of iterations   : 3                         20-Apr-2023 10:42:37
+    number of reformations : 3                         20-Apr-2023 10:42:37
+------- converged at time : 0.06                       20-Apr-2023 10:42:37
+    number of iterations   : 3                         20-Apr-2023 10:42:37
+    number of reformations : 3                         20-Apr-2023 10:42:37
+------- converged at time : 0.062                      20-Apr-2023 10:42:37
+    number of iterations   : 3                         20-Apr-2023 10:42:37
+    number of reformations : 3                         20-Apr-2023 10:42:37
+------- converged at time : 0.064                      20-Apr-2023 10:42:37
+    number of iterations   : 3                         20-Apr-2023 10:42:37
+    number of reformations : 3                         20-Apr-2023 10:42:37
+------- converged at time : 0.066                      20-Apr-2023 10:42:37
+    number of iterations   : 3                         20-Apr-2023 10:42:37
+    number of reformations : 3                         20-Apr-2023 10:42:37
+------- converged at time : 0.068                      20-Apr-2023 10:42:37
+    number of iterations   : 3                         20-Apr-2023 10:42:37
+    number of reformations : 3                         20-Apr-2023 10:42:37
+------- converged at time : 0.07                       20-Apr-2023 10:42:37
+    number of iterations   : 3                         20-Apr-2023 10:42:37
+    number of reformations : 3                         20-Apr-2023 10:42:37
+------- converged at time : 0.072                      20-Apr-2023 10:42:37
+    number of iterations   : 3                         20-Apr-2023 10:42:37
+    number of reformations : 3                         20-Apr-2023 10:42:37
+------- converged at time : 0.074                      20-Apr-2023 10:42:37
+    number of iterations   : 3                         20-Apr-2023 10:42:37
+    number of reformations : 3                         20-Apr-2023 10:42:37
+------- converged at time : 0.076                      20-Apr-2023 10:42:37
+    number of iterations   : 3                         20-Apr-2023 10:42:37
+    number of reformations : 3                         20-Apr-2023 10:42:37
+------- converged at time : 0.078                      20-Apr-2023 10:42:37
+    number of iterations   : 3                         20-Apr-2023 10:42:37
+    number of reformations : 3                         20-Apr-2023 10:42:37
+------- converged at time : 0.08                       20-Apr-2023 10:42:37
+    number of iterations   : 3                         20-Apr-2023 10:42:37
+    number of reformations : 3                         20-Apr-2023 10:42:37
+------- converged at time : 0.082                      20-Apr-2023 10:42:37
+    number of iterations   : 3                         20-Apr-2023 10:42:37
+    number of reformations : 3                         20-Apr-2023 10:42:37
+------- converged at time : 0.084                      20-Apr-2023 10:42:37
+    number of iterations   : 3                         20-Apr-2023 10:42:37
+    number of reformations : 3                         20-Apr-2023 10:42:37
+------- converged at time : 0.086                      20-Apr-2023 10:42:37
+    number of iterations   : 3                         20-Apr-2023 10:42:37
+    number of reformations : 3                         20-Apr-2023 10:42:37
+------- converged at time : 0.088                      20-Apr-2023 10:42:37
+    number of iterations   : 3                         20-Apr-2023 10:42:38
+    number of reformations : 3                         20-Apr-2023 10:42:38
+------- converged at time : 0.09                       20-Apr-2023 10:42:38
+    number of iterations   : 3                         20-Apr-2023 10:42:38
+    number of reformations : 3                         20-Apr-2023 10:42:38
+------- converged at time : 0.092                      20-Apr-2023 10:42:38
+    number of iterations   : 3                         20-Apr-2023 10:42:38
+    number of reformations : 3                         20-Apr-2023 10:42:38
+------- converged at time : 0.094                      20-Apr-2023 10:42:38
+    number of iterations   : 3                         20-Apr-2023 10:42:38
+    number of reformations : 3                         20-Apr-2023 10:42:38
+------- converged at time : 0.096                      20-Apr-2023 10:42:38
+    number of iterations   : 3                         20-Apr-2023 10:42:38
+    number of reformations : 3                         20-Apr-2023 10:42:38
+------- converged at time : 0.098                      20-Apr-2023 10:42:38
+    number of iterations   : 3                         20-Apr-2023 10:42:38
+    number of reformations : 3                         20-Apr-2023 10:42:38
+------- converged at time : 0.1                        20-Apr-2023 10:42:38
+    number of iterations   : 3                         20-Apr-2023 10:42:38
+    number of reformations : 3                         20-Apr-2023 10:42:38
+------- converged at time : 0.12                       20-Apr-2023 10:42:38
+    number of iterations   : 3                         20-Apr-2023 10:42:38
+    number of reformations : 3                         20-Apr-2023 10:42:38
+------- converged at time : 0.14                       20-Apr-2023 10:42:38
+    number of iterations   : 3                         20-Apr-2023 10:42:38
+    number of reformations : 3                         20-Apr-2023 10:42:38
+------- converged at time : 0.16                       20-Apr-2023 10:42:38
+    number of iterations   : 3                         20-Apr-2023 10:42:38
+    number of reformations : 3                         20-Apr-2023 10:42:38
+------- converged at time : 0.18                       20-Apr-2023 10:42:38
+    number of iterations   : 3                         20-Apr-2023 10:42:38
+    number of reformations : 3                         20-Apr-2023 10:42:38
+------- converged at time : 0.2                        20-Apr-2023 10:42:38
+    number of iterations   : 3                         20-Apr-2023 10:42:38
+    number of reformations : 3                         20-Apr-2023 10:42:38
+------- converged at time : 0.22                       20-Apr-2023 10:42:38
+    number of iterations   : 3                         20-Apr-2023 10:42:38
+    number of reformations : 3                         20-Apr-2023 10:42:38
+------- converged at time : 0.24                       20-Apr-2023 10:42:38
+    number of iterations   : 3                         20-Apr-2023 10:42:38
+    number of reformations : 3                         20-Apr-2023 10:42:38
+------- converged at time : 0.26                       20-Apr-2023 10:42:38
+    number of iterations   : 3                         20-Apr-2023 10:42:38
+    number of reformations : 3                         20-Apr-2023 10:42:38
+------- converged at time : 0.28                       20-Apr-2023 10:42:38
+    number of iterations   : 3                         20-Apr-2023 10:42:38
+    number of reformations : 3                         20-Apr-2023 10:42:38
+------- converged at time : 0.3                        20-Apr-2023 10:42:38
+    number of iterations   : 3                         20-Apr-2023 10:42:38
+    number of reformations : 3                         20-Apr-2023 10:42:38
+------- converged at time : 0.32                       20-Apr-2023 10:42:38
+    number of iterations   : 3                         20-Apr-2023 10:42:38
+    number of reformations : 3                         20-Apr-2023 10:42:38
+------- converged at time : 0.34                       20-Apr-2023 10:42:38
+    number of iterations   : 3                         20-Apr-2023 10:42:38
+    number of reformations : 3                         20-Apr-2023 10:42:38
+------- converged at time : 0.36                       20-Apr-2023 10:42:38
+    number of iterations   : 3                         20-Apr-2023 10:42:38
+    number of reformations : 3                         20-Apr-2023 10:42:38
+------- converged at time : 0.38                       20-Apr-2023 10:42:38
+    number of iterations   : 3                         20-Apr-2023 10:42:38
+    number of reformations : 3                         20-Apr-2023 10:42:38
+------- converged at time : 0.4                        20-Apr-2023 10:42:38
+    number of iterations   : 3                         20-Apr-2023 10:42:38
+    number of reformations : 3                         20-Apr-2023 10:42:38
+------- converged at time : 0.42                       20-Apr-2023 10:42:38
+    number of iterations   : 3                         20-Apr-2023 10:42:39
+    number of reformations : 3                         20-Apr-2023 10:42:39
+------- converged at time : 0.44                       20-Apr-2023 10:42:39
+    number of iterations   : 3                         20-Apr-2023 10:42:39
+    number of reformations : 3                         20-Apr-2023 10:42:39
+------- converged at time : 0.46                       20-Apr-2023 10:42:39
+    number of iterations   : 3                         20-Apr-2023 10:42:39
+    number of reformations : 3                         20-Apr-2023 10:42:39
+------- converged at time : 0.48                       20-Apr-2023 10:42:39
+    number of iterations   : 3                         20-Apr-2023 10:42:39
+    number of reformations : 3                         20-Apr-2023 10:42:39
+------- converged at time : 0.5                        20-Apr-2023 10:42:39
+    number of iterations   : 3                         20-Apr-2023 10:42:39
+    number of reformations : 3                         20-Apr-2023 10:42:39
+------- converged at time : 0.52                       20-Apr-2023 10:42:39
+    number of iterations   : 3                         20-Apr-2023 10:42:39
+    number of reformations : 3                         20-Apr-2023 10:42:39
+------- converged at time : 0.54                       20-Apr-2023 10:42:39
+    number of iterations   : 3                         20-Apr-2023 10:42:39
+    number of reformations : 3                         20-Apr-2023 10:42:39
+------- converged at time : 0.56                       20-Apr-2023 10:42:39
+    number of iterations   : 3                         20-Apr-2023 10:42:39
+    number of reformations : 3                         20-Apr-2023 10:42:39
+------- converged at time : 0.58                       20-Apr-2023 10:42:39
+    number of iterations   : 3                         20-Apr-2023 10:42:39
+    number of reformations : 3                         20-Apr-2023 10:42:39
+------- converged at time : 0.6                        20-Apr-2023 10:42:39
+    number of iterations   : 3                         20-Apr-2023 10:42:39
+    number of reformations : 3                         20-Apr-2023 10:42:39
+------- converged at time : 0.62                       20-Apr-2023 10:42:39
+    number of iterations   : 3                         20-Apr-2023 10:42:39
+    number of reformations : 3                         20-Apr-2023 10:42:39
+------- converged at time : 0.64                       20-Apr-2023 10:42:39
+    number of iterations   : 2                         20-Apr-2023 10:42:39
+    number of reformations : 2                         20-Apr-2023 10:42:39
+------- converged at time : 0.66                       20-Apr-2023 10:42:39
+    number of iterations   : 2                         20-Apr-2023 10:42:39
+    number of reformations : 2                         20-Apr-2023 10:42:39
+------- converged at time : 0.68                       20-Apr-2023 10:42:39
+    number of iterations   : 2                         20-Apr-2023 10:42:39
+    number of reformations : 2                         20-Apr-2023 10:42:39
+------- converged at time : 0.7                        20-Apr-2023 10:42:39
+    number of iterations   : 2                         20-Apr-2023 10:42:39
+    number of reformations : 2                         20-Apr-2023 10:42:39
+------- converged at time : 0.72                       20-Apr-2023 10:42:39
+    number of iterations   : 2                         20-Apr-2023 10:42:39
+    number of reformations : 2                         20-Apr-2023 10:42:39
+------- converged at time : 0.74                       20-Apr-2023 10:42:39
+    number of iterations   : 2                         20-Apr-2023 10:42:39
+    number of reformations : 2                         20-Apr-2023 10:42:39
+------- converged at time : 0.76                       20-Apr-2023 10:42:39
+    number of iterations   : 2                         20-Apr-2023 10:42:39
+    number of reformations : 2                         20-Apr-2023 10:42:39
+------- converged at time : 0.78                       20-Apr-2023 10:42:39
+    number of iterations   : 2                         20-Apr-2023 10:42:39
+    number of reformations : 2                         20-Apr-2023 10:42:39
+------- converged at time : 0.8                        20-Apr-2023 10:42:39
+    number of iterations   : 2                         20-Apr-2023 10:42:39
+    number of reformations : 2                         20-Apr-2023 10:42:39
+------- converged at time : 0.82                       20-Apr-2023 10:42:39
+    number of iterations   : 2                         20-Apr-2023 10:42:39
+    number of reformations : 2                         20-Apr-2023 10:42:39
+------- converged at time : 0.84                       20-Apr-2023 10:42:39
+    number of iterations   : 2                         20-Apr-2023 10:42:39
+    number of reformations : 2                         20-Apr-2023 10:42:39
+------- converged at time : 0.86                       20-Apr-2023 10:42:39
+    number of iterations   : 2                         20-Apr-2023 10:42:39
+    number of reformations : 2                         20-Apr-2023 10:42:39
+------- converged at time : 0.88                       20-Apr-2023 10:42:39
+    number of iterations   : 2                         20-Apr-2023 10:42:39
+    number of reformations : 2                         20-Apr-2023 10:42:39
+------- converged at time : 0.9                        20-Apr-2023 10:42:39
+    number of iterations   : 2                         20-Apr-2023 10:42:39
+    number of reformations : 2                         20-Apr-2023 10:42:39
+------- converged at time : 0.92                       20-Apr-2023 10:42:39
+    number of iterations   : 2                         20-Apr-2023 10:42:39
+    number of reformations : 2                         20-Apr-2023 10:42:39
+------- converged at time : 0.94                       20-Apr-2023 10:42:39
+    number of iterations   : 2                         20-Apr-2023 10:42:39
+    number of reformations : 2                         20-Apr-2023 10:42:39
+------- converged at time : 0.96                       20-Apr-2023 10:42:39
+    number of iterations   : 2                         20-Apr-2023 10:42:39
+    number of reformations : 2                         20-Apr-2023 10:42:39
+------- converged at time : 0.98                       20-Apr-2023 10:42:39
+    number of iterations   : 2                         20-Apr-2023 10:42:39
+    number of reformations : 2                         20-Apr-2023 10:42:39
+------- converged at time : 1                          20-Apr-2023 10:42:39
+    number of iterations   : 2                         20-Apr-2023 10:42:39
+------- converged at time : 1.02                       20-Apr-2023 10:42:40
+    number of iterations   : 2                         20-Apr-2023 10:42:40
+    number of reformations : 2                         20-Apr-2023 10:42:40
+------- converged at time : 1.04                       20-Apr-2023 10:42:40
+    number of iterations   : 2                         20-Apr-2023 10:42:40
+    number of reformations : 2                         20-Apr-2023 10:42:40
+------- converged at time : 1.06                       20-Apr-2023 10:42:40
+    number of iterations   : 2                         20-Apr-2023 10:42:40
+    number of reformations : 2                         20-Apr-2023 10:42:40
+------- converged at time : 1.08                       20-Apr-2023 10:42:40
+    number of iterations   : 2                         20-Apr-2023 10:42:40
+    number of reformations : 2                         20-Apr-2023 10:42:40
+------- converged at time : 1.1                        20-Apr-2023 10:42:40
+ Elapsed time : 0:00:05                                20-Apr-2023 10:42:40
  N O R M A L   T E R M I N A T I O N
-# Done                                                 18-Apr-2023 12:22:55
+# Done                                                 20-Apr-2023 10:42:40
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 </pre><h2 id="14">Import FEBio results</h2><pre class="codeinput"><span class="keyword">if</span> runFlag==1 <span class="comment">%i.e. a succesful run</span>
-</pre><p>Importing nodal displacements from a log file</p><pre class="codeinput">    dataStruct=importFEBio_logfile(fullfile(savePath,febioLogFileName_disp),1,1);
+</pre><p>Importing nodal displacements from a log file</p><pre class="codeinput">    dataStruct=importFEBio_logfile(fullfile(savePath,febioLogFileName_disp),0,1);
 
     <span class="comment">%Access data</span>
     N_disp_mat=dataStruct.data; <span class="comment">%Displacement</span>
@@ -742,7 +743,7 @@ FEBio path: /home/kevin/FEBioStudio2/bin/febio4
     <span class="keyword">end</span>
     anim8(hf,animStruct); <span class="comment">%Initiate animation feature</span>
     drawnow;
-</pre><img width="100%" height="auto" vspace="5" hspace="5" src="DEMO_febio_0018_cube_poroelastic_ramp_hold_03.jpg" alt=""> <p>Importing element stress from a log file</p><pre class="codeinput">    dataStruct=importFEBio_logfile(fullfile(savePath,febioLogFileName_stress),1,1);
+</pre><img width="100%" height="auto" vspace="5" hspace="5" src="DEMO_febio_0018_cube_poroelastic_ramp_hold_03.jpg" alt=""> <p>Importing element stress from a log file</p><pre class="codeinput">    dataStruct=importFEBio_logfile(fullfile(savePath,febioLogFileName_stress),0,1);
 
     <span class="comment">%Access data</span>
     E_stress_mat=dataStruct.data;
@@ -919,6 +920,8 @@ max_refs=25; %Max reforms
 max_ups=0; %Set to zero to use full-Newton iterations
 opt_iter=6; %Optimum number of iterations
 max_retries=5; %Maximum number of retires
+
+runMode='external';% 'internal' or 'external'
 
 %% Creating model geometry and mesh
 % A box is created with tri-linear hexahedral (hex8) elements using the
@@ -1168,6 +1171,7 @@ febio_spec.Output.logfile.element_data{1}.ATTR.data='sz';
 febio_spec.Output.logfile.element_data{1}.ATTR.delim=',';
 
 febio_spec.Output.plotfile.compression=0;
+
 %% Quick viewing of the FEBio input file structure
 % The |febView| function can be used to view the xml structure in a MATLAB
 % figure window. 
@@ -1191,7 +1195,7 @@ febioStruct2xml(febio_spec,febioFebFileName); %Exporting to file and domNode
 febioAnalysis.run_filename=febioFebFileName; %The input file name
 febioAnalysis.run_logname=febioLogFileName; %The name for the log file
 febioAnalysis.disp_on=1; %Display information on the command window
-febioAnalysis.runMode='external';%'internal';
+febioAnalysis.runMode=runMode;
 
 [runFlag]=runMonitorFEBio(febioAnalysis);%START FEBio NOW!!!!!!!!
 
@@ -1202,7 +1206,7 @@ if runFlag==1 %i.e. a succesful run
     
     %% 
     % Importing nodal displacements from a log file
-    dataStruct=importFEBio_logfile(fullfile(savePath,febioLogFileName_disp),1,1);
+    dataStruct=importFEBio_logfile(fullfile(savePath,febioLogFileName_disp),0,1);
     
     %Access data
     N_disp_mat=dataStruct.data; %Displacement
@@ -1248,7 +1252,7 @@ if runFlag==1 %i.e. a succesful run
             
     %%
     % Importing element stress from a log file
-    dataStruct=importFEBio_logfile(fullfile(savePath,febioLogFileName_stress),1,1);
+    dataStruct=importFEBio_logfile(fullfile(savePath,febioLogFileName_stress),0,1);
     
     %Access data
     E_stress_mat=dataStruct.data;

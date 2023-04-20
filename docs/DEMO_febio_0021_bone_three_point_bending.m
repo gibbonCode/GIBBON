@@ -591,7 +591,7 @@ if runFlag==1 %i.e. a succesful run
     
     %% 
     % Importing nodal displacements from a log file
-    dataStruct=importFEBio_logfile(fullfile(savePath,febioLogFileName_disp),1,1);
+    dataStruct=importFEBio_logfile(fullfile(savePath,febioLogFileName_disp),0,1);
     
     %Access data
     N_disp_mat=dataStruct.data; %Displacement
@@ -602,7 +602,7 @@ if runFlag==1 %i.e. a succesful run
 
     %%
     % Importing element stress from a log file
-    dataStruct=importFEBio_logfile(fullfile(savePath,febioLogFileName_stress),1,1);
+    dataStruct=importFEBio_logfile(fullfile(savePath,febioLogFileName_stress),0,1);
     
     %Access data
     E_stress_mat=dataStruct.data;
@@ -644,7 +644,7 @@ if runFlag==1 %i.e. a succesful run
     
     %%
     % Importing rigidbody force data from a log file
-    dataStruct=importFEBio_logfile(fullfile(savePath,febioLogFileName_force),1,1);
+    dataStruct=importFEBio_logfile(fullfile(savePath,febioLogFileName_force),0,1);
     
     %Access data
     Force_mat=dataStruct.data;

@@ -44,8 +44,10 @@ febioFebFileNamePart='tempModel';
 febioFebFileName=fullfile(savePath,[febioFebFileNamePart,'.feb']); %FEB file name
 febioLogFileName=[febioFebFileNamePart,'.txt']; %FEBio log file name
 febioLogFileName_disp=[febioFebFileNamePart,'_disp_out.txt']; %Log file name for exporting displacement
-febioLogFileName_stress=[febioFebFileNamePart,'_stress_out.txt']; %Log file name for exporting stress
-febioLogFileName_stress_prin=[febioFebFileNamePart,'_stress_prin_out.txt']; %Log file name for exporting principal stress
+febioLogFileName_stress=[febioFebFileNamePart,'_stress_out.txt']; %Log file name for exporting stress sigma_z
+febioLogFileName_stretch=[febioFebFileNamePart,'_stretch_out.txt']; %Log file name for exporting stress U_z
+febioLogFileName_stress_prin=[febioFebFileNamePart,'_stress_prin_out.txt']; %Log file name for exporting principal stresses
+febioLogFileName_stretch_prin=[febioFebFileNamePart,'_stretch_prin_out.txt']; %Log file name for exporting principal stretches
 febioLogFileName_force=[febioFebFileNamePart,'_force_out.txt']; %Log file name for exporting force
 
 %Specifying dimensions and number of elements
@@ -288,12 +290,20 @@ febio_spec.Output.logfile.element_data{1}.ATTR.file=febioLogFileName_stress;
 febio_spec.Output.logfile.element_data{1}.ATTR.data='sz';
 febio_spec.Output.logfile.element_data{1}.ATTR.delim=',';
 
-febio_spec.Output.logfile.element_data{2}.ATTR.file=febioLogFileName_stress_prin;
-febio_spec.Output.logfile.element_data{2}.ATTR.data='s1;s2;s3';
+febio_spec.Output.logfile.element_data{2}.ATTR.file=febioLogFileName_stretch;
+febio_spec.Output.logfile.element_data{2}.ATTR.data='Uz';
 febio_spec.Output.logfile.element_data{2}.ATTR.delim=',';
 
+febio_spec.Output.logfile.element_data{3}.ATTR.file=febioLogFileName_stress_prin;
+febio_spec.Output.logfile.element_data{3}.ATTR.data='s1;s2;s3';
+febio_spec.Output.logfile.element_data{3}.ATTR.delim=',';
+
+febio_spec.Output.logfile.element_data{4}.ATTR.file=febioLogFileName_stretch_prin;
+febio_spec.Output.logfile.element_data{4}.ATTR.data='U1;U2;U3';
+febio_spec.Output.logfile.element_data{4}.ATTR.delim=',';
+
 % Plotfile section
-febio_spec.Output.plotfile.compression=1;
+febio_spec.Output.plotfile.compression=0;
 
 %% Quick viewing of the FEBio input file structure
 % The |febView| function can be used to view the xml structure in a MATLAB
@@ -331,7 +341,7 @@ if runFlag==1 %i.e. a succesful run
     %% 
     
     % Importing nodal displacements from a log file
-    dataStruct=importFEBio_logfile(fullfile(savePath,febioLogFileName_disp),1,1);
+    dataStruct=importFEBio_logfile(fullfile(savePath,febioLogFileName_disp),0,1);
     
     %Access data
     N_disp_mat=dataStruct.data; %Displacement
@@ -378,11 +388,18 @@ if runFlag==1 %i.e. a succesful run
             
     %%
     % Importing element stress from a log file
-    dataStruct=importFEBio_logfile(fullfile(savePath,febioLogFileName_stress),1,1);
+    dataStruct=importFEBio_logfile(fullfile(savePath,febioLogFileName_stress),0,1);
     
     %Access data
     E_stress_mat=dataStruct.data;
+
+    %%
+    % Importing element stretch from a log file
+    dataStruct=importFEBio_logfile(fullfile(savePath,febioLogFileName_stretch),0,1);
     
+    %Access data
+    E_stretch_mat=dataStruct.data;
+
     %% 
     % Plotting the simulated results using |anim8| to visualize and animate
     % deformations 
@@ -420,17 +437,12 @@ if runFlag==1 %i.e. a succesful run
     end        
     anim8(hf,animStruct); %Initiate animation feature    
     drawnow;
-    
+
     %% 
-    % Calculate metrics to visualize stretch-stress curve
+    % Visualize stretch-stress curve
     
-    DZ_set=N_disp_mat(bcPrescribeList,end,:); %Z displacements of the prescribed set
-    DZ_set=mean(DZ_set,1); %Calculate mean Z displacements across nodes
-    stretch_sim=(DZ_set(:)+sampleHeight)./sampleHeight; %Derive stretch
-    stress_cauchy_sim=mean(squeeze(E_stress_mat(:,end,:)),1)';
-    
-    %%    
-    % Visualize stress-stretch curve
+    stretch_sim=squeeze(mean(E_stretch_mat,1)); % Stretch U_z
+    stress_cauchy_sim=squeeze(mean(E_stress_mat,1)); %Cauchy stress sigma_z
     
     cFigure; hold on;    
     title('Uniaxial stress-stretch curve','FontSize',fontSize);
@@ -445,7 +457,7 @@ if runFlag==1 %i.e. a succesful run
     
     %%
     % Importing element principal stresses from a log file
-    dataStruct=importFEBio_logfile(fullfile(savePath,febioLogFileName_stress_prin),1,1);
+    dataStruct=importFEBio_logfile(fullfile(savePath,febioLogFileName_stress_prin),0,1);
     
     %Access data
     E_stress_prin_mat=dataStruct.data;
@@ -470,7 +482,7 @@ if runFlag==1 %i.e. a succesful run
     %%
     % Importing nodal forces from a log file
 
-    [dataStruct]=importFEBio_logfile(fullfile(savePath,febioLogFileName_force),1,1); %Nodal forces
+    [dataStruct]=importFEBio_logfile(fullfile(savePath,febioLogFileName_force),0,1); %Nodal forces
 
     %Access data    
     timeVec=dataStruct.time;
@@ -490,8 +502,7 @@ if runFlag==1 %i.e. a succesful run
     hp=plot(displacementApplied(:),f_sum_z(:),'b-','LineWidth',3);
     grid on; box on; axis square; axis tight;
     set(gca,'FontSize',fontSize);
-    drawnow;
-         
+    drawnow;         
     
 end
 

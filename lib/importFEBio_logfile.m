@@ -1,10 +1,16 @@
 function [varargout]=importFEBio_logfile(varargin)
 
-% function [TIME, DATA, Data_label]=importFEBio_logfile(import_name)
+% function [dataStruct]=importFEBio_logfile(fileNameImport,addZeroInitialOpt,removeIndicesOpt)
 % ------------------------------------------------------------------------
-%
+% This function imports the febio log file defined by fileNameImport. The
+% output consists of a structure with the following fields: 
+% dataStruct.time -> The time vector, an nx1 vector where n is the number of time outputs from FEBio
+% dataStruct.data -> The 3D data array, a k*m*n array where n is the number
+% of time outputs from FEBio, k is the number of elements/nodes for the
+% requested output, and m is the number of ouput components e.g. m=3 if a
+% triplet of principal stresses is requested.  
 % 
-% Data format:
+% Log file data format:
 %
 %   *Title:
 %   *Step  = 1
@@ -36,7 +42,10 @@ function [varargout]=importFEBio_logfile(varargin)
 %   1, -5.01378, 0, 0
 %   2, -5.01378, 0, 1.24313
 %   3, -5.01378, 0, 2.48626
-
+% 
+% 2023/04/20: Updated to throw warning for addZeroInitialOpt=1, since FEBio
+% outputs initial state now too. Also zeros are not always appropriate as
+% initial values, e.g. for stretches. 
 % ------------------------------------------------------------------------
 
 %% Parse input
@@ -54,6 +63,10 @@ switch nargin
         fileNameImport=varargin{1};
         addZeroInitialOpt=varargin{2};
         removeIndicesOpt=varargin{3};
+end
+
+if addZeroInitialOpt==1
+    warning('FEBio can now output an initial state. Using addZeroInitialOpt=1 is no longer recommended. Furthermore, adding an initial state with zeros may not be appropriate, e.g. for stretches, which start as 1')
 end
 
 %% Loading .txt file into cell array
