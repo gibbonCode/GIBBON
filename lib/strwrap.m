@@ -17,6 +17,7 @@ function str=strwrap(varargin)
 % 2023/03/10: The default behaviour is now set to add a new line character,
 % rather than to replace the pattern by a new line character. The option to
 % switch between these two has been added. 
+% 2023/04/20: Improved speed of replacement of nth occurance by newline
 %-------------------------------------------------------------------------
 
 %% Parse input
@@ -53,18 +54,22 @@ if isempty(pattern)
 end
 
 %%
-try %Use count as introduced in R2016b
-    N = count(str,pattern); 
-catch %Use old approach
-    N = numel(strfind(str,pattern));
-end
 
-rangeSteps=n:n:N;
+% try %Use count as introduced in R2016b
+%     N = count(str,pattern); 
+% catch %Use old approach
+%     N = numel(strfind(str,pattern));
+% end
+% 
+% rangeSteps=n:n:N;
+% 
+% %Replace certain occurances of the pattern with a new line symbol
+% for q=1:1:numel(rangeSteps)    
+%         str=regexprep(str,pattern,'\n',rangeSteps(q)-(q-1));    
+% end
 
-%Replace certain occurances of the pattern with a new line symbol
-for q=1:1:numel(rangeSteps)    
-        str=regexprep(str,pattern,'\n',rangeSteps(q)-(q-1));    
-end
+ind=strfind(str,pattern);
+str(ind(n:n:end))=newline;
 
 %Put the pattern back at these locations if needed
 if replaceOpt==false
