@@ -10,7 +10,7 @@
 
 %% Keywords
 %
-% * febio_spec version 3.0
+% * febio_spec version 4.0
 % * febio, FEBio
 % * indentation
 % * contact, sliding, sticky, friction
@@ -396,7 +396,7 @@ gdrawnow;
 [febio_spec]=febioStructTemplate;
 
 %febio_spec version 
-febio_spec.ATTR.version='3.0'; 
+febio_spec.ATTR.version='4.0'; 
 
 %Module section
 febio_spec.Module.ATTR.type='solid'; 
@@ -406,9 +406,8 @@ febio_spec.Control.analysis='STATIC';
 febio_spec.Control.time_steps=numTimeSteps;
 febio_spec.Control.step_size=1/numTimeSteps;
 febio_spec.Control.solver.max_refs=max_refs;
-febio_spec.Control.solver.max_ups=max_ups;
+febio_spec.Control.solver.qn_method.max_ups=max_ups;
 febio_spec.Control.solver.symmetric_stiffness=symmetric_stiffness;
-febio_spec.Control.solver.min_residual=min_residual;
 febio_spec.Control.time_stepper.dtmin=dtmin;
 febio_spec.Control.time_stepper.dtmax=dtmax; 
 febio_spec.Control.time_stepper.max_retries=max_retries;
@@ -496,7 +495,7 @@ febio_spec.MeshDomains.ShellDomain{2}.ATTR.mat=materialName4;
 % -> NodeSets
 nodeSetName1='bcSupportList';
 febio_spec.Mesh.NodeSet{1}.ATTR.name=nodeSetName1;
-febio_spec.Mesh.NodeSet{1}.node.ATTR.id=bcSupportList(:);
+febio_spec.Mesh.NodeSet{1}.VAL=mrow(bcSupportList);
 
 % -> Surfaces
 surfaceName1='contactSurface1';
@@ -525,63 +524,79 @@ febio_spec.Mesh.SurfacePair{2}.secondary=surfaceName2;
 
 %Boundary condition section 
 % -> Fix boundary conditions
-febio_spec.Boundary.bc{1}.ATTR.type='fix';
+febio_spec.Boundary.bc{1}.ATTR.name='zero_displacement_xyz';
+febio_spec.Boundary.bc{1}.ATTR.type='zero displacement';
 febio_spec.Boundary.bc{1}.ATTR.node_set=nodeSetName1;
-febio_spec.Boundary.bc{1}.dofs='x,y,z';
+febio_spec.Boundary.bc{1}.x_dof=1;
+febio_spec.Boundary.bc{1}.y_dof=1;
+febio_spec.Boundary.bc{1}.z_dof=1;
 
 %Rigid section 
-% -> Prescribed rigid body boundary conditions
-febio_spec.Rigid.rigid_constraint{1}.ATTR.name='RotFix_1';
-febio_spec.Rigid.rigid_constraint{1}.ATTR.type='fix';
-febio_spec.Rigid.rigid_constraint{1}.rb=3;
-febio_spec.Rigid.rigid_constraint{1}.dofs='Ru,Rv,Rw';
+% ->Rigid body fix boundary conditions
+febio_spec.Rigid.rigid_bc{1}.ATTR.name='RigidFixRot_RB3';
+febio_spec.Rigid.rigid_bc{1}.ATTR.type='rigid_fixed';
+febio_spec.Rigid.rigid_bc{1}.rb=3;
+febio_spec.Rigid.rigid_bc{1}.Ru_dof=1;
+febio_spec.Rigid.rigid_bc{1}.Rv_dof=1;
+febio_spec.Rigid.rigid_bc{1}.Rw_dof=1;
 
-febio_spec.Rigid.rigid_constraint{2}.ATTR.name='TranslationPrescribe_1_x';
-febio_spec.Rigid.rigid_constraint{2}.ATTR.type='prescribe';
-febio_spec.Rigid.rigid_constraint{2}.rb=3;
-febio_spec.Rigid.rigid_constraint{2}.dof='Rx';
-febio_spec.Rigid.rigid_constraint{2}.value.ATTR.lc=1;
-febio_spec.Rigid.rigid_constraint{2}.value.VAL=plateDisplacement_XYZ(1);
+febio_spec.Rigid.rigid_bc{2}.ATTR.name='RigidFixRot_RB4';
+febio_spec.Rigid.rigid_bc{2}.ATTR.type='rigid_fixed';
+febio_spec.Rigid.rigid_bc{2}.rb=4;
+febio_spec.Rigid.rigid_bc{2}.Ru_dof=1;
+febio_spec.Rigid.rigid_bc{2}.Rv_dof=1;
+febio_spec.Rigid.rigid_bc{2}.Rw_dof=1;
 
-febio_spec.Rigid.rigid_constraint{3}.ATTR.name='TranslationPrescribe_1_y';
-febio_spec.Rigid.rigid_constraint{3}.ATTR.type='prescribe';
-febio_spec.Rigid.rigid_constraint{3}.rb=3;
-febio_spec.Rigid.rigid_constraint{3}.dof='Ry';
-febio_spec.Rigid.rigid_constraint{3}.value.ATTR.lc=1;
-febio_spec.Rigid.rigid_constraint{3}.value.VAL=plateDisplacement_XYZ(2);
+% ->Rigid body prescribe boundary conditions
+febio_spec.Rigid.rigid_bc{3}.ATTR.name='RigidPrescribe_X_RB3';
+febio_spec.Rigid.rigid_bc{3}.ATTR.type='rigid_displacement';
+febio_spec.Rigid.rigid_bc{3}.rb=3;
+febio_spec.Rigid.rigid_bc{3}.dof='x';
+febio_spec.Rigid.rigid_bc{3}.value.ATTR.lc=1;
+febio_spec.Rigid.rigid_bc{3}.value.VAL=plateDisplacement_XYZ(1);
+febio_spec.Rigid.rigid_bc{3}.relative=0;
 
-febio_spec.Rigid.rigid_constraint{4}.ATTR.name='TranslationPrescribe_1_z';
-febio_spec.Rigid.rigid_constraint{4}.ATTR.type='prescribe';
-febio_spec.Rigid.rigid_constraint{4}.rb=3;
-febio_spec.Rigid.rigid_constraint{4}.dof='Rz';
-febio_spec.Rigid.rigid_constraint{4}.value.ATTR.lc=1;
-febio_spec.Rigid.rigid_constraint{4}.value.VAL=plateDisplacement_XYZ(3);
+febio_spec.Rigid.rigid_bc{4}.ATTR.name='RigidPrescribe_Y_RB3';
+febio_spec.Rigid.rigid_bc{4}.ATTR.type='rigid_displacement';
+febio_spec.Rigid.rigid_bc{4}.rb=3;
+febio_spec.Rigid.rigid_bc{4}.dof='y';
+febio_spec.Rigid.rigid_bc{4}.value.ATTR.lc=1;
+febio_spec.Rigid.rigid_bc{4}.value.VAL=plateDisplacement_XYZ(2);
+febio_spec.Rigid.rigid_bc{4}.relative=0;
 
-febio_spec.Rigid.rigid_constraint{5}.ATTR.name='RotFix_2';
-febio_spec.Rigid.rigid_constraint{5}.ATTR.type='fix';
-febio_spec.Rigid.rigid_constraint{5}.rb=4;
-febio_spec.Rigid.rigid_constraint{5}.dofs='Ru,Rv,Rw';
+febio_spec.Rigid.rigid_bc{5}.ATTR.name='RigidPrescribe_Z_RB3';
+febio_spec.Rigid.rigid_bc{5}.ATTR.type='rigid_displacement';
+febio_spec.Rigid.rigid_bc{5}.rb=3;
+febio_spec.Rigid.rigid_bc{5}.dof='z';
+febio_spec.Rigid.rigid_bc{5}.value.ATTR.lc=1;
+febio_spec.Rigid.rigid_bc{5}.value.VAL=plateDisplacement_XYZ(3);
+febio_spec.Rigid.rigid_bc{5}.relative=0;
 
-febio_spec.Rigid.rigid_constraint{6}.ATTR.name='TranslationPrescribe_2_x';
-febio_spec.Rigid.rigid_constraint{6}.ATTR.type='prescribe';
-febio_spec.Rigid.rigid_constraint{6}.rb=4;
-febio_spec.Rigid.rigid_constraint{6}.dof='Rx';
-febio_spec.Rigid.rigid_constraint{6}.value.ATTR.lc=1;
-febio_spec.Rigid.rigid_constraint{6}.value.VAL=-plateDisplacement_XYZ(1);
 
-febio_spec.Rigid.rigid_constraint{7}.ATTR.name='TranslationPrescribe_2_y';
-febio_spec.Rigid.rigid_constraint{7}.ATTR.type='prescribe';
-febio_spec.Rigid.rigid_constraint{7}.rb=4;
-febio_spec.Rigid.rigid_constraint{7}.dof='Ry';
-febio_spec.Rigid.rigid_constraint{7}.value.ATTR.lc=1;
-febio_spec.Rigid.rigid_constraint{7}.value.VAL=-plateDisplacement_XYZ(2);
+febio_spec.Rigid.rigid_bc{6}.ATTR.name='RigidPrescribe_X_RB4';
+febio_spec.Rigid.rigid_bc{6}.ATTR.type='rigid_displacement';
+febio_spec.Rigid.rigid_bc{6}.rb=4;
+febio_spec.Rigid.rigid_bc{6}.dof='x';
+febio_spec.Rigid.rigid_bc{6}.value.ATTR.lc=1;
+febio_spec.Rigid.rigid_bc{6}.value.VAL=-plateDisplacement_XYZ(1);
+febio_spec.Rigid.rigid_bc{6}.relative=0;
 
-febio_spec.Rigid.rigid_constraint{8}.ATTR.name='TranslationPrescribe_2_z';
-febio_spec.Rigid.rigid_constraint{8}.ATTR.type='prescribe';
-febio_spec.Rigid.rigid_constraint{8}.rb=4;
-febio_spec.Rigid.rigid_constraint{8}.dof='Rz';
-febio_spec.Rigid.rigid_constraint{8}.value.ATTR.lc=1;
-febio_spec.Rigid.rigid_constraint{8}.value.VAL=-plateDisplacement_XYZ(3);
+febio_spec.Rigid.rigid_bc{7}.ATTR.name='RigidPrescribe_Y_RB4';
+febio_spec.Rigid.rigid_bc{7}.ATTR.type='rigid_displacement';
+febio_spec.Rigid.rigid_bc{7}.rb=4;
+febio_spec.Rigid.rigid_bc{7}.dof='y';
+febio_spec.Rigid.rigid_bc{7}.value.ATTR.lc=1;
+febio_spec.Rigid.rigid_bc{7}.value.VAL=-plateDisplacement_XYZ(2);
+febio_spec.Rigid.rigid_bc{7}.relative=0;
+
+febio_spec.Rigid.rigid_bc{8}.ATTR.name='RigidPrescribe_Z_RB4';
+febio_spec.Rigid.rigid_bc{8}.ATTR.type='rigid_displacement';
+febio_spec.Rigid.rigid_bc{8}.rb=4;
+febio_spec.Rigid.rigid_bc{8}.dof='z';
+febio_spec.Rigid.rigid_bc{8}.value.ATTR.lc=1;
+febio_spec.Rigid.rigid_bc{8}.value.VAL=-plateDisplacement_XYZ(3);
+febio_spec.Rigid.rigid_bc{8}.relative=0;
+
 
 %Contact section
 for q=1:1:2  
@@ -603,10 +618,12 @@ end
 
 %LoadData section
 % -> load_controller
+febio_spec.LoadData.load_controller{1}.ATTR.name='LC_1';
 febio_spec.LoadData.load_controller{1}.ATTR.id=1;
 febio_spec.LoadData.load_controller{1}.ATTR.type='loadcurve';
 febio_spec.LoadData.load_controller{1}.interpolate='LINEAR';
-febio_spec.LoadData.load_controller{1}.points.point.VAL=[0 0; 1 1];
+%febio_spec.LoadData.load_controller{1}.extend='CONSTANT';
+febio_spec.LoadData.load_controller{1}.points.pt.VAL=[0 0; 1 1];
 
 %Output section
 % -> log file
@@ -619,6 +636,9 @@ febio_spec.Output.logfile.rigid_body_data{1}.ATTR.file=febioLogFileName_force;
 febio_spec.Output.logfile.rigid_body_data{1}.ATTR.data='Fx;Fy;Fz';
 febio_spec.Output.logfile.rigid_body_data{1}.ATTR.delim=',';
 febio_spec.Output.logfile.rigid_body_data{1}.VAL=[3 4]; 
+
+% Plotfile section
+febio_spec.Output.plotfile.compression=0;
 
 %% Quick viewing of the FEBio input file structure
 % The |febView| function can be used to view the xml structure in a MATLAB
@@ -652,7 +672,7 @@ febioAnalysis.runMode=runMode;
 if runFlag==1 %i.e. a succesful run
     
     % Importing nodal displacements from a log file
-    dataStructDisp=importFEBio_logfile(fullfile(savePath,febioLogFileName_disp),1,1);
+    dataStructDisp=importFEBio_logfile(fullfile(savePath,febioLogFileName_disp),0,1);
     
     %Access data
     N_disp_mat=dataStructDisp.data; %Displacement
@@ -663,7 +683,7 @@ if runFlag==1 %i.e. a succesful run
     
     %% Import rigid body reaction forces
     
-    dataStructForce=importFEBio_logfile(fullfile(savePath,febioLogFileName_force),1,1);    
+    dataStructForce=importFEBio_logfile(fullfile(savePath,febioLogFileName_force),0,1);    
     forcePlate1=squeeze(dataStructForce.data(1,:,:))';
     forcePlate2=squeeze(dataStructForce.data(2,:,:))';
     

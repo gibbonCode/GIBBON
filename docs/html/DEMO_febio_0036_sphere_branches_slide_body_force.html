@@ -6,7 +6,7 @@
    <!--
 This HTML was auto-generated from MATLAB code.
 To make changes, update the MATLAB code and republish this document.
-      --><title>DEMO_febio_0036_sphere_branches_slide_body_force</title><meta name="generator" content="MATLAB 9.10"><link rel="schema.DC" href="http://purl.org/dc/elements/1.1/"><meta name="DC.date" content="2022-02-25"><meta name="DC.source" content="DEMO_febio_0036_sphere_branches_slide_body_force.m"><style type="text/css">
+      --><title>DEMO_febio_0036_sphere_branches_slide_body_force</title><meta name="generator" content="MATLAB 9.13"><link rel="schema.DC" href="http://purl.org/dc/elements/1.1/"><meta name="DC.date" content="2023-04-20"><meta name="DC.source" content="DEMO_febio_0036_sphere_branches_slide_body_force.m"><style type="text/css">
 html,body,div,span,applet,object,iframe,h1,h2,h3,h4,h5,h6,p,blockquote,pre,a,abbr,acronym,address,big,cite,code,del,dfn,em,font,img,ins,kbd,q,s,samp,small,strike,strong,tt,var,b,u,i,center,dl,dt,dd,ol,ul,li,fieldset,form,label,legend,table,caption,tbody,tfoot,thead,tr,th,td{margin:0;padding:0;border:0;outline:0;font-size:100%;vertical-align:baseline;background:transparent}body{line-height:1}ol,ul{list-style:none}blockquote,q{quotes:none}blockquote:before,blockquote:after,q:before,q:after{content:'';content:none}:focus{outine:0}ins{text-decoration:none}del{text-decoration:line-through}table{border-collapse:collapse;border-spacing:0}
 
 html { min-height:100%; margin-bottom:1px; }
@@ -67,7 +67,7 @@ table td { padding:7px 5px; text-align:left; vertical-align:top; border:1px soli
 
 
 
-  </style></head><body><div class="content"><h1>DEMO_febio_0036_sphere_branches_slide_body_force</h1><!--introduction--><p>Below is a demonstration for:</p><div><ul><li>Building geometry for a spherical blob with hexahedral elements which is pushed through a branched network. This demo consists off:</li><li>Defining the boundary conditions</li><li>Coding the febio structure</li><li>Running the model</li><li>Importing and visualizing the displacement results</li></ul></div><!--/introduction--><h2>Contents</h2><div><ul><li><a href="#1">Keywords</a></li><li><a href="#3">Plot settings</a></li><li><a href="#4">Control parameters</a></li><li><a href="#5">Define branch curves</a></li><li><a href="#18">Shift branch set</a></li><li><a href="#19">Join model node sets</a></li><li><a href="#21">Get contact surfaces</a></li><li><a href="#23">Defining the FEBio input structure</a></li><li><a href="#24">Quick viewing of the FEBio input file structure</a></li><li><a href="#26">Exporting the FEBio input file</a></li><li><a href="#27">Running the FEBio analysis</a></li><li><a href="#28">Import FEBio results</a></li></ul></div><h2 id="1">Keywords</h2><div><ul><li>febio_spec version 3.0</li><li>febio, FEBio</li><li>blood clot</li><li>contact, sliding, friction</li><li>rigid body constraints</li><li>hexahedral elements, hex8</li><li>quadrilaterl elements, quad4</li><li>shell elements</li><li>sphere</li><li>hyperelastic, Ogden</li><li>displacement logfile</li><li>stress logfile</li></ul></div><pre class="codeinput">clear; close <span class="string">all</span>; clc;
+  </style></head><body><div class="content"><h1>DEMO_febio_0036_sphere_branches_slide_body_force</h1><!--introduction--><p>Below is a demonstration for:</p><div><ul><li>Building geometry for a spherical blob with hexahedral elements which is pushed through a branched network. This demo consists off:</li><li>Defining the boundary conditions</li><li>Coding the febio structure</li><li>Running the model</li><li>Importing and visualizing the displacement results</li></ul></div><!--/introduction--><h2>Contents</h2><div><ul><li><a href="#1">Keywords</a></li><li><a href="#3">Plot settings</a></li><li><a href="#4">Control parameters</a></li><li><a href="#5">Define branch curves</a></li><li><a href="#18">Shift branch set</a></li><li><a href="#19">Join model node sets</a></li><li><a href="#21">Get contact surfaces</a></li><li><a href="#23">Defining the FEBio input structure</a></li><li><a href="#24">Quick viewing of the FEBio input file structure</a></li><li><a href="#26">Exporting the FEBio input file</a></li><li><a href="#27">Running the FEBio analysis</a></li><li><a href="#28">Import FEBio results</a></li></ul></div><h2 id="1">Keywords</h2><div><ul><li>febio_spec version 4.0</li><li>febio, FEBio</li><li>blood clot</li><li>contact, sliding, friction</li><li>rigid body constraints</li><li>hexahedral elements, hex8</li><li>quadrilaterl elements, quad4</li><li>shell elements</li><li>sphere</li><li>hyperelastic, Ogden</li><li>displacement logfile</li><li>stress logfile</li></ul></div><pre class="codeinput">clear; close <span class="string">all</span>; clc;
 </pre><h2 id="3">Plot settings</h2><pre class="codeinput">fontSize=15;
 faceAlpha1=0.8;
 faceAlpha2=0.3;
@@ -109,6 +109,7 @@ materialDensity=1e-9*20000; <span class="comment">%Density</span>
 <span class="comment">% FEA control settings</span>
 timeTotal=2; <span class="comment">%Total simulation time</span>
 numTimeSteps=10; <span class="comment">%Number of time steps desired</span>
+step_size=timeTotal/numTimeSteps;
 max_refs=25; <span class="comment">%Max reforms</span>
 max_ups=0; <span class="comment">%Set to zero to use full-Newton iterations</span>
 opt_iter=15; <span class="comment">%Optimum number of iterations</span>
@@ -366,7 +367,7 @@ drawnow;
 [febio_spec]=febioStructTemplate;
 
 <span class="comment">%febio_spec version</span>
-febio_spec.ATTR.version=<span class="string">'3.0'</span>;
+febio_spec.ATTR.version=<span class="string">'4.0'</span>;
 
 <span class="comment">%Module section</span>
 febio_spec.Module.ATTR.type=<span class="string">'solid'</span>;
@@ -374,9 +375,9 @@ febio_spec.Module.ATTR.type=<span class="string">'solid'</span>;
 <span class="comment">%Control section</span>
 febio_spec.Control.analysis=analysisType;
 febio_spec.Control.time_steps=numTimeSteps;
-febio_spec.Control.step_size=timeTotal/numTimeSteps;
+febio_spec.Control.step_size=step_size;
 febio_spec.Control.solver.max_refs=max_refs;
-febio_spec.Control.solver.max_ups=max_ups;
+febio_spec.Control.solver.qn_method.max_ups=max_ups;
 febio_spec.Control.solver.symmetric_stiffness=symmetric_stiffness;
 febio_spec.Control.time_stepper.dtmin=dtmin;
 febio_spec.Control.time_stepper.dtmax=dtmax;
@@ -471,13 +472,17 @@ febio_spec.Loads.body_load.ATTR.type=<span class="string">'const'</span>;
 febio_spec.Loads.body_load.x.ATTR.lc=1;
 febio_spec.Loads.body_load.x.VAL=bodyLoadMagnitude;
 
-
 <span class="comment">%Rigid section</span>
-<span class="comment">% -&gt; Prescribed rigid body boundary conditions</span>
-febio_spec.Rigid.rigid_constraint{1}.ATTR.name=<span class="string">'RigidFix_1'</span>;
-febio_spec.Rigid.rigid_constraint{1}.ATTR.type=<span class="string">'fix'</span>;
-febio_spec.Rigid.rigid_constraint{1}.rb=2;
-febio_spec.Rigid.rigid_constraint{1}.dofs=<span class="string">'Rx,Ry,Rz,Ru,Rv,Rw'</span>;
+<span class="comment">% -&gt;Rigid body fix boundary conditions</span>
+febio_spec.Rigid.rigid_bc{1}.ATTR.name=<span class="string">'RigidFix_1'</span>;
+febio_spec.Rigid.rigid_bc{1}.ATTR.type=<span class="string">'rigid_fixed'</span>;
+febio_spec.Rigid.rigid_bc{1}.rb=2;
+febio_spec.Rigid.rigid_bc{1}.Rx_dof=1;
+febio_spec.Rigid.rigid_bc{1}.Ry_dof=1;
+febio_spec.Rigid.rigid_bc{1}.Rz_dof=1;
+febio_spec.Rigid.rigid_bc{1}.Ru_dof=1;
+febio_spec.Rigid.rigid_bc{1}.Rv_dof=1;
+febio_spec.Rigid.rigid_bc{1}.Rw_dof=1;
 
 <span class="comment">%Contact section</span>
 febio_spec.Contact.contact{1}.ATTR.type=<span class="string">'sliding-elastic'</span>;
@@ -495,12 +500,15 @@ febio_spec.Contact.contact{1}.auto_penalty=1;
 febio_spec.Contact.contact{1}.penalty=contactPenalty;
 febio_spec.Contact.contact{1}.fric_coeff=fric_coeff;
 
+
 <span class="comment">%LoadData section</span>
 <span class="comment">% -&gt; load_controller</span>
+febio_spec.LoadData.load_controller{1}.ATTR.name=<span class="string">'LC_1'</span>;
 febio_spec.LoadData.load_controller{1}.ATTR.id=1;
 febio_spec.LoadData.load_controller{1}.ATTR.type=<span class="string">'loadcurve'</span>;
 febio_spec.LoadData.load_controller{1}.interpolate=<span class="string">'LINEAR'</span>;
-febio_spec.LoadData.load_controller{1}.points.point.VAL=[0 0; 1 1];
+<span class="comment">%febio_spec.LoadData.load_controller{1}.extend='CONSTANT';</span>
+febio_spec.LoadData.load_controller{1}.points.pt.VAL=[0 0; 1 1];
 
 <span class="comment">%Output section</span>
 <span class="comment">% -&gt; log file</span>
@@ -508,6 +516,9 @@ febio_spec.Output.logfile.ATTR.file=febioLogFileName;
 febio_spec.Output.logfile.node_data{1}.ATTR.file=febioLogFileName_disp;
 febio_spec.Output.logfile.node_data{1}.ATTR.data=<span class="string">'ux;uy;uz'</span>;
 febio_spec.Output.logfile.node_data{1}.ATTR.delim=<span class="string">','</span>;
+
+<span class="comment">% Plotfile section</span>
+febio_spec.Output.plotfile.compression=0;
 </pre><h2 id="24">Quick viewing of the FEBio input file structure</h2><p>The <tt>febView</tt> function can be used to view the xml structure in a MATLAB figure window.</p><p><tt>febView(febio_spec); %Viewing the febio file</tt></p><h2 id="26">Exporting the FEBio input file</h2><p>Exporting the febio_spec structure to an FEBio input file is done using the <tt>febioStruct2xml</tt> function.</p><pre class="codeinput">febioStruct2xml(febio_spec,febioFebFileName); <span class="comment">%Exporting to file and domNode</span>
 </pre><h2 id="27">Running the FEBio analysis</h2><p>To run the analysis defined by the created FEBio input file the <tt>runMonitorFEBio</tt> function is used. The input for this function is a structure defining job settings e.g. the FEBio input file name. The optional output runFlag informs the user if the analysis was run succesfully.</p><pre class="codeinput">febioAnalysis.run_filename=febioFebFileName; <span class="comment">%The input file name</span>
 febioAnalysis.run_logname=febioLogFileName; <span class="comment">%The name for the log file</span>
@@ -517,80 +528,72 @@ febioAnalysis.runMode=runMode;
 [runFlag]=runMonitorFEBio(febioAnalysis);<span class="comment">%START FEBio NOW!!!!!!!!</span>
 </pre><pre class="codeoutput"> 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
---------&gt;    RUNNING/MONITORING FEBIO JOB    &lt;-------- 25-Feb-2022 15:33:48
-FEBio path: /home/kevin/FEBioStudio/bin/febio3
-# Attempt removal of existing log files                25-Feb-2022 15:33:48
- * Removal succesful                                   25-Feb-2022 15:33:48
-# Attempt removal of existing .xplt files              25-Feb-2022 15:33:48
- * Removal succesful                                   25-Feb-2022 15:33:48
-# Starting FEBio...                                    25-Feb-2022 15:33:48
+--------&gt;    RUNNING/MONITORING FEBIO JOB    &lt;-------- 20-Apr-2023 18:02:40
+FEBio path: /home/kevin/FEBioStudio2/bin/febio4
+# Attempt removal of existing log files                20-Apr-2023 18:02:40
+ * Removal succesful                                   20-Apr-2023 18:02:40
+# Attempt removal of existing .xplt files              20-Apr-2023 18:02:40
+ * Removal succesful                                   20-Apr-2023 18:02:40
+# Starting FEBio...                                    20-Apr-2023 18:02:40
   Max. total analysis time is: Inf s
- * Waiting for log file creation                       25-Feb-2022 15:33:48
+ * Waiting for log file creation                       20-Apr-2023 18:02:40
    Max. wait time: 30 s
- * Log file found.                                     25-Feb-2022 15:33:48
-# Parsing log file...                                  25-Feb-2022 15:33:48
-    number of iterations   : 4                         25-Feb-2022 15:33:49
-    number of reformations : 4                         25-Feb-2022 15:33:49
-------- converged at time : 0.2                        25-Feb-2022 15:33:49
-    number of iterations   : 6                         25-Feb-2022 15:33:49
-    number of reformations : 6                         25-Feb-2022 15:33:49
-    number of iterations   : 6                         25-Feb-2022 15:33:50
-    number of reformations : 6                         25-Feb-2022 15:33:50
-------- converged at time : 0.6                        25-Feb-2022 15:33:50
-    number of iterations   : 7                         25-Feb-2022 15:33:51
-    number of reformations : 7                         25-Feb-2022 15:33:51
-------- converged at time : 0.8                        25-Feb-2022 15:33:51
-    number of iterations   : 7                         25-Feb-2022 15:33:52
-    number of reformations : 7                         25-Feb-2022 15:33:52
-------- converged at time : 1                          25-Feb-2022 15:33:52
-    number of iterations   : 9                         25-Feb-2022 15:33:53
-    number of reformations : 9                         25-Feb-2022 15:33:53
-------- converged at time : 1.2                        25-Feb-2022 15:33:53
-    number of iterations   : 8                         25-Feb-2022 15:33:54
-    number of reformations : 8                         25-Feb-2022 15:33:54
-------- converged at time : 1.33333                    25-Feb-2022 15:33:54
-    number of iterations   : 7                         25-Feb-2022 15:33:56
-    number of reformations : 7                         25-Feb-2022 15:33:56
-------- converged at time : 1.38222                    25-Feb-2022 15:33:56
-    number of iterations   : 7                         25-Feb-2022 15:33:58
-    number of reformations : 7                         25-Feb-2022 15:33:58
-------- converged at time : 1.44815                    25-Feb-2022 15:33:58
-    number of iterations   : 7                         25-Feb-2022 15:33:59
-    number of reformations : 7                         25-Feb-2022 15:33:59
-------- converged at time : 1.52543                    25-Feb-2022 15:33:59
-    number of iterations   : 6                         25-Feb-2022 15:34:01
-    number of reformations : 6                         25-Feb-2022 15:34:01
-------- converged at time : 1.57635                    25-Feb-2022 15:34:01
-    number of iterations   : 7                         25-Feb-2022 15:34:02
-    number of reformations : 7                         25-Feb-2022 15:34:02
-------- converged at time : 1.64362                    25-Feb-2022 15:34:02
-    number of iterations   : 7                         25-Feb-2022 15:34:03
-    number of reformations : 7                         25-Feb-2022 15:34:03
-------- converged at time : 1.72181                    25-Feb-2022 15:34:03
-    number of iterations   : 5                         25-Feb-2022 15:34:05
-    number of reformations : 5                         25-Feb-2022 15:34:05
-------- converged at time : 1.75599                    25-Feb-2022 15:34:05
-    number of iterations   : 6                         25-Feb-2022 15:34:05
-    number of reformations : 6                         25-Feb-2022 15:34:05
-------- converged at time : 1.82333                    25-Feb-2022 15:34:05
-    number of iterations   : 6                         25-Feb-2022 15:34:06
-    number of reformations : 6                         25-Feb-2022 15:34:06
-------- converged at time : 1.90156                    25-Feb-2022 15:34:06
-    number of iterations   : 5                         25-Feb-2022 15:34:08
-    number of reformations : 5                         25-Feb-2022 15:34:08
-------- converged at time : 1.93438                    25-Feb-2022 15:34:08
-    number of iterations   : 5                         25-Feb-2022 15:34:09
-    number of reformations : 5                         25-Feb-2022 15:34:09
-------- converged at time : 1.96719                    25-Feb-2022 15:34:09
-    number of iterations   : 5                         25-Feb-2022 15:34:10
-    number of reformations : 5                         25-Feb-2022 15:34:10
-------- converged at time : 2                          25-Feb-2022 15:34:10
- Elapsed time : 0:00:22                                25-Feb-2022 15:34:10
+ * Log file found.                                     20-Apr-2023 18:02:40
+# Parsing log file...                                  20-Apr-2023 18:02:40
+    number of iterations   : 4                         20-Apr-2023 18:02:41
+    number of reformations : 4                         20-Apr-2023 18:02:41
+------- converged at time : 0.2                        20-Apr-2023 18:02:41
+    number of iterations   : 6                         20-Apr-2023 18:02:42
+    number of reformations : 6                         20-Apr-2023 18:02:42
+------- converged at time : 0.4                        20-Apr-2023 18:02:42
+    number of iterations   : 6                         20-Apr-2023 18:02:43
+    number of reformations : 6                         20-Apr-2023 18:02:43
+------- converged at time : 0.6                        20-Apr-2023 18:02:43
+    number of iterations   : 7                         20-Apr-2023 18:02:43
+    number of reformations : 7                         20-Apr-2023 18:02:43
+------- converged at time : 0.8                        20-Apr-2023 18:02:43
+    number of iterations   : 7                         20-Apr-2023 18:02:44
+    number of reformations : 7                         20-Apr-2023 18:02:44
+------- converged at time : 1                          20-Apr-2023 18:02:44
+    number of iterations   : 8                         20-Apr-2023 18:02:45
+    number of reformations : 8                         20-Apr-2023 18:02:45
+------- converged at time : 1.2                        20-Apr-2023 18:02:45
+    number of iterations   : 9                         20-Apr-2023 18:02:47
+    number of reformations : 9                         20-Apr-2023 18:02:47
+------- converged at time : 1.36667                    20-Apr-2023 18:02:47
+    number of iterations   : 7                         20-Apr-2023 18:02:49
+    number of reformations : 7                         20-Apr-2023 18:02:49
+------- converged at time : 1.42444                    20-Apr-2023 18:02:49
+    number of iterations   : 8                         20-Apr-2023 18:02:51
+    number of reformations : 8                         20-Apr-2023 18:02:51
+------- converged at time : 1.48193                    20-Apr-2023 18:02:51
+    number of iterations   : 9                         20-Apr-2023 18:02:53
+    number of reformations : 9                         20-Apr-2023 18:02:53
+------- converged at time : 1.56791                    20-Apr-2023 18:02:53
+    number of iterations   : 6                         20-Apr-2023 18:02:55
+    number of reformations : 6                         20-Apr-2023 18:02:55
+------- converged at time : 1.64044                    20-Apr-2023 18:02:55
+    number of iterations   : 8                         20-Apr-2023 18:02:56
+    number of reformations : 8                         20-Apr-2023 18:02:56
+------- converged at time : 1.72212                    20-Apr-2023 18:02:56
+    number of iterations   : 6                         20-Apr-2023 18:02:57
+    number of reformations : 6                         20-Apr-2023 18:02:57
+------- converged at time : 1.82747                    20-Apr-2023 18:02:57
+    number of iterations   : 6                         20-Apr-2023 18:02:58
+    number of reformations : 6                         20-Apr-2023 18:02:58
+------- converged at time : 1.93103                    20-Apr-2023 18:02:58
+    number of iterations   : 6                         20-Apr-2023 18:02:59
+    number of reformations : 6                         20-Apr-2023 18:02:59
+------- converged at time : 1.98851                    20-Apr-2023 18:02:59
+    number of iterations   : 4                         20-Apr-2023 18:02:59
+    number of reformations : 4                         20-Apr-2023 18:02:59
+------- converged at time : 2                          20-Apr-2023 18:02:59
+ Elapsed time : 0:00:18                                20-Apr-2023 18:02:59
  N O R M A L   T E R M I N A T I O N
-# Done                                                 25-Feb-2022 15:34:10
+# Done                                                 20-Apr-2023 18:02:59
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 </pre><h2 id="28">Import FEBio results</h2><pre class="codeinput"><span class="keyword">if</span> 1<span class="comment">%runFlag==1 %i.e. a succesful run</span>
-</pre><p>Importing nodal displacements from a log file</p><pre class="codeinput">    dataStruct=importFEBio_logfile(fullfile(savePath,febioLogFileName_disp),1,1);
+</pre><p>Importing nodal displacements from a log file</p><pre class="codeinput">    dataStruct=importFEBio_logfile(fullfile(savePath,febioLogFileName_disp),0,1);
 
     <span class="comment">%Access data</span>
     N_disp_mat=dataStruct.data; <span class="comment">%Displacement</span>
@@ -627,7 +630,7 @@ FEBio path: /home/kevin/FEBioStudio/bin/febio3
     anim8(hf,animStruct); <span class="comment">%Initiate animation feature</span>
     drawnow;
 </pre><img width="100%" height="auto" vspace="5" hspace="5" src="DEMO_febio_0036_sphere_branches_slide_body_force_09.jpg" alt=""> <pre class="codeinput"><span class="keyword">end</span>
-</pre><p><img vspace="5" hspace="5" src="gibbVerySmall.gif" alt=""> </p><p><i><b>GIBBON</b></i> <a href="www.gibboncode.org">www.gibboncode.org</a></p><p><i>Kevin Mattheus Moerman</i>, <a href="gibbon.toolbox@gmail.com">gibbon.toolbox@gmail.com</a></p><p><i><b>GIBBON footer text</b></i></p><p>License: <a href="https://github.com/gibbonCode/GIBBON/blob/master/LICENSE">https://github.com/gibbonCode/GIBBON/blob/master/LICENSE</a></p><p>GIBBON: The Geometry and Image-based Bioengineering add-On. A toolbox for image segmentation, image-based modeling, meshing, and finite element analysis.</p><p>Copyright (C) 2006-2022 Kevin Mattheus Moerman and the GIBBON contributors</p><p>This program is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.</p><p>This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for more details.</p><p>You should have received a copy of the GNU General Public License along with this program.  If not, see <a href="http://www.gnu.org/licenses/">http://www.gnu.org/licenses/</a>.</p><p class="footer"><br><a href="https://www.mathworks.com/products/matlab/">Published with MATLAB&reg; R2021a</a><br></p></div><!--
+</pre><p><img vspace="5" hspace="5" src="gibbVerySmall.gif" alt=""> </p><p><i><b>GIBBON</b></i> <a href="www.gibboncode.org">www.gibboncode.org</a></p><p><i>Kevin Mattheus Moerman</i>, <a href="gibbon.toolbox@gmail.com">gibbon.toolbox@gmail.com</a></p><p><i><b>GIBBON footer text</b></i></p><p>License: <a href="https://github.com/gibbonCode/GIBBON/blob/master/LICENSE">https://github.com/gibbonCode/GIBBON/blob/master/LICENSE</a></p><p>GIBBON: The Geometry and Image-based Bioengineering add-On. A toolbox for image segmentation, image-based modeling, meshing, and finite element analysis.</p><p>Copyright (C) 2006-2022 Kevin Mattheus Moerman and the GIBBON contributors</p><p>This program is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.</p><p>This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for more details.</p><p>You should have received a copy of the GNU General Public License along with this program.  If not, see <a href="http://www.gnu.org/licenses/">http://www.gnu.org/licenses/</a>.</p><p class="footer"><br><a href="https://www.mathworks.com/products/matlab/">Published with MATLAB&reg; R2022b</a><br></p></div><!--
 ##### SOURCE BEGIN #####
 %% DEMO_febio_0036_sphere_branches_slide_body_force
 % Below is a demonstration for:
@@ -642,7 +645,7 @@ FEBio path: /home/kevin/FEBioStudio/bin/febio3
 
 %% Keywords
 %
-% * febio_spec version 3.0
+% * febio_spec version 4.0
 % * febio, FEBio
 % * blood clot
 % * contact, sliding, friction
@@ -704,6 +707,7 @@ materialDensity=1e-9*20000; %Density
 % FEA control settings
 timeTotal=2; %Total simulation time
 numTimeSteps=10; %Number of time steps desired
+step_size=timeTotal/numTimeSteps;
 max_refs=25; %Max reforms
 max_ups=0; %Set to zero to use full-Newton iterations
 opt_iter=15; %Optimum number of iterations
@@ -1022,7 +1026,7 @@ drawnow;
 [febio_spec]=febioStructTemplate;
 
 %febio_spec version 
-febio_spec.ATTR.version='3.0'; 
+febio_spec.ATTR.version='4.0'; 
 
 %Module section
 febio_spec.Module.ATTR.type='solid'; 
@@ -1030,9 +1034,9 @@ febio_spec.Module.ATTR.type='solid';
 %Control section
 febio_spec.Control.analysis=analysisType;
 febio_spec.Control.time_steps=numTimeSteps;
-febio_spec.Control.step_size=timeTotal/numTimeSteps;
+febio_spec.Control.step_size=step_size;
 febio_spec.Control.solver.max_refs=max_refs;
-febio_spec.Control.solver.max_ups=max_ups;
+febio_spec.Control.solver.qn_method.max_ups=max_ups;
 febio_spec.Control.solver.symmetric_stiffness=symmetric_stiffness;
 febio_spec.Control.time_stepper.dtmin=dtmin;
 febio_spec.Control.time_stepper.dtmax=dtmax; 
@@ -1127,13 +1131,17 @@ febio_spec.Loads.body_load.ATTR.type='const';
 febio_spec.Loads.body_load.x.ATTR.lc=1;
 febio_spec.Loads.body_load.x.VAL=bodyLoadMagnitude;
       
-
 %Rigid section 
-% -> Prescribed rigid body boundary conditions
-febio_spec.Rigid.rigid_constraint{1}.ATTR.name='RigidFix_1';
-febio_spec.Rigid.rigid_constraint{1}.ATTR.type='fix';
-febio_spec.Rigid.rigid_constraint{1}.rb=2;
-febio_spec.Rigid.rigid_constraint{1}.dofs='Rx,Ry,Rz,Ru,Rv,Rw';
+% ->Rigid body fix boundary conditions
+febio_spec.Rigid.rigid_bc{1}.ATTR.name='RigidFix_1';
+febio_spec.Rigid.rigid_bc{1}.ATTR.type='rigid_fixed';
+febio_spec.Rigid.rigid_bc{1}.rb=2;
+febio_spec.Rigid.rigid_bc{1}.Rx_dof=1;
+febio_spec.Rigid.rigid_bc{1}.Ry_dof=1;
+febio_spec.Rigid.rigid_bc{1}.Rz_dof=1;
+febio_spec.Rigid.rigid_bc{1}.Ru_dof=1;
+febio_spec.Rigid.rigid_bc{1}.Rv_dof=1;
+febio_spec.Rigid.rigid_bc{1}.Rw_dof=1;
 
 %Contact section
 febio_spec.Contact.contact{1}.ATTR.type='sliding-elastic';
@@ -1151,12 +1159,15 @@ febio_spec.Contact.contact{1}.auto_penalty=1;
 febio_spec.Contact.contact{1}.penalty=contactPenalty;
 febio_spec.Contact.contact{1}.fric_coeff=fric_coeff;
 
+
 %LoadData section
 % -> load_controller
+febio_spec.LoadData.load_controller{1}.ATTR.name='LC_1';
 febio_spec.LoadData.load_controller{1}.ATTR.id=1;
 febio_spec.LoadData.load_controller{1}.ATTR.type='loadcurve';
 febio_spec.LoadData.load_controller{1}.interpolate='LINEAR';
-febio_spec.LoadData.load_controller{1}.points.point.VAL=[0 0; 1 1];
+%febio_spec.LoadData.load_controller{1}.extend='CONSTANT';
+febio_spec.LoadData.load_controller{1}.points.pt.VAL=[0 0; 1 1];
 
 %Output section 
 % -> log file
@@ -1164,6 +1175,9 @@ febio_spec.Output.logfile.ATTR.file=febioLogFileName;
 febio_spec.Output.logfile.node_data{1}.ATTR.file=febioLogFileName_disp;
 febio_spec.Output.logfile.node_data{1}.ATTR.data='ux;uy;uz';
 febio_spec.Output.logfile.node_data{1}.ATTR.delim=',';
+
+% Plotfile section
+febio_spec.Output.plotfile.compression=0;
 
 %% Quick viewing of the FEBio input file structure
 % The |febView| function can be used to view the xml structure in a MATLAB
@@ -1199,7 +1213,7 @@ if 1%runFlag==1 %i.e. a succesful run
        
     %%
     % Importing nodal displacements from a log file
-    dataStruct=importFEBio_logfile(fullfile(savePath,febioLogFileName_disp),1,1);
+    dataStruct=importFEBio_logfile(fullfile(savePath,febioLogFileName_disp),0,1);
     
     %Access data
     N_disp_mat=dataStruct.data; %Displacement

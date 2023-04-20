@@ -9,7 +9,7 @@
 
 %% Keywords
 %
-% * febio_spec version 3.0
+% * febio_spec version 4.0
 % * febio, FEBio
 % * compression, tension, compressive, tensile
 % * displacement control, displacement boundary condition
@@ -82,6 +82,7 @@ dtmin=(1/numTimeSteps)/100; %Minimum time step size
 dtmax=(1/numTimeSteps); %Maximum time step size
 min_residual=1e-20;
 symmetric_stiffness=0;
+
 runMode='external'; %'internal' or 'external'
 
 %%
@@ -127,7 +128,7 @@ switch latticeType
         
         Es=Es(logicKeepEs,:);
         Cs=Cs(logicKeepEs,:);
-        [Es,Vs,indFix]=patchCleanUnused(Es,Vs);
+%         [Es,Vs,indFix]=patchCleanUnused(Es,Vs);
         
         % [Es,Vs,~,~]=subHex(Es,Vs,1,1);
         % Cs=repmat(Cs,8,1);
@@ -185,26 +186,30 @@ end
 
 cFigure;
 hs=subplot(1,2,1);
-title('The input mesh','fontSize',fontSize)
 hold on;
-gpatch(F,V,0.5*ones(1,3),'k',0.5);
+title('The input mesh','fontSize',fontSize)
+gpatch(F,V,'w','k',0.25);
 axisGeom(gca,fontSize);
-camlight headlight; lighting flat;
+camlight headlight; 
 
 % Fst=[Fs(:,[1 2 3]); Fs(:,[3 4 1]);];
 % indB=tesBoundary(Fst,Vs);
 % Fbt=Fst(indB,:);
 
 subplot(1,2,2);
-title('Lattice side 1','fontSize',fontSize)
 hold on;
-gpatch(Fb,Vs,'bw','k',1);
+title('Lattice side 1','fontSize',fontSize)
+% gpatch(F,V,'w','k',0.25);
+% logicKeep=~ismember(CsF,[1 2 3 4]);
+% gpatch(Fs(logicKeep,:),Vs,CsF(logicKeep),'k',1);
+gpatch(Fs,Vs,CsF,'k',1);
 % plotV(Vs(Fb(:),:),'r.');
 % patchNormPlot(Fs,Vs);
 axisGeom(gca,fontSize);
-camlight headlight; lighting flat;
-
+% camlight headlight; lighting flat;
+colormap spectral; icolorbar
 drawnow;
+
 
 %% DEFINE BC's
 
@@ -310,7 +315,7 @@ porosity_lattice=vol_lattice./sampleSize.^3; %Porosity
 [febio_spec]=febioStructTemplate;
 
 %febio_spec version 
-febio_spec.ATTR.version='3.0'; 
+febio_spec.ATTR.version='4.0'; 
 
 %Module section
 febio_spec.Module.ATTR.type='solid'; 
@@ -320,7 +325,7 @@ febio_spec.Control.analysis='STATIC';
 febio_spec.Control.time_steps=numTimeSteps;
 febio_spec.Control.step_size=1/numTimeSteps;
 febio_spec.Control.solver.max_refs=max_refs;
-febio_spec.Control.solver.max_ups=max_ups;
+febio_spec.Control.solver.qn_method.max_ups=max_ups;
 febio_spec.Control.time_stepper.dtmin=dtmin;
 febio_spec.Control.time_stepper.dtmax=dtmax; 
 febio_spec.Control.time_stepper.max_retries=max_retries;
@@ -350,39 +355,49 @@ febio_spec.Mesh.Elements{1}.elem.VAL=Es; %The element matrix
 % -> NodeSets
 nodeSetName1='bcSupportList';
 febio_spec.Mesh.NodeSet{1}.ATTR.name=nodeSetName1;
-febio_spec.Mesh.NodeSet{1}.node.ATTR.id=bcSupportList(:);
+febio_spec.Mesh.NodeSet{1}.VAL=mrow(bcSupportList);
 
 nodeSetName2='bcPrescribeList';
 febio_spec.Mesh.NodeSet{2}.ATTR.name=nodeSetName2;
-febio_spec.Mesh.NodeSet{2}.node.ATTR.id=bcPrescribeList(:);
+febio_spec.Mesh.NodeSet{2}.VAL=mrow(bcPrescribeList);
 
 %MeshDomains section
 febio_spec.MeshDomains.SolidDomain.ATTR.name=partName1;
 febio_spec.MeshDomains.SolidDomain.ATTR.mat=materialName1;
 
-%Boundary condition section 
+%Boundary condition section
 % -> Fix boundary conditions
-febio_spec.Boundary.bc{1}.ATTR.type='fix';
+febio_spec.Boundary.bc{1}.ATTR.name='FixedDisplacement01';
+febio_spec.Boundary.bc{1}.ATTR.type='zero displacement';
 febio_spec.Boundary.bc{1}.ATTR.node_set=nodeSetName1;
-febio_spec.Boundary.bc{1}.dofs='x,y,z';
+febio_spec.Boundary.bc{1}.x_dof=1;
+febio_spec.Boundary.bc{1}.y_dof=1;
+febio_spec.Boundary.bc{1}.z_dof=1;
 
-febio_spec.Boundary.bc{2}.ATTR.type='fix';
+febio_spec.Boundary.bc{2}.ATTR.name='FixedDisplacement02';
+febio_spec.Boundary.bc{2}.ATTR.type='zero displacement';
 febio_spec.Boundary.bc{2}.ATTR.node_set=nodeSetName2;
-febio_spec.Boundary.bc{2}.dofs='x,y';
+febio_spec.Boundary.bc{2}.x_dof=1;
+febio_spec.Boundary.bc{2}.y_dof=1;
+febio_spec.Boundary.bc{2}.z_dof=0;
 
-febio_spec.Boundary.bc{3}.ATTR.type='prescribe';
+% -> Prescribed boundary conditions
+febio_spec.Boundary.bc{3}.ATTR.name='bcPrescribeList';
+febio_spec.Boundary.bc{3}.ATTR.type='prescribed displacement';
 febio_spec.Boundary.bc{3}.ATTR.node_set=nodeSetName2;
 febio_spec.Boundary.bc{3}.dof='z';
-febio_spec.Boundary.bc{3}.scale.ATTR.lc=1;
-febio_spec.Boundary.bc{3}.scale.VAL=displacementMagnitude;
+febio_spec.Boundary.bc{3}.value.ATTR.lc=1;
+febio_spec.Boundary.bc{3}.value.VAL=displacementMagnitude;
 febio_spec.Boundary.bc{3}.relative=0;
 
 %LoadData section
 % -> load_controller
+febio_spec.LoadData.load_controller{1}.ATTR.name='LC_1';
 febio_spec.LoadData.load_controller{1}.ATTR.id=1;
 febio_spec.LoadData.load_controller{1}.ATTR.type='loadcurve';
 febio_spec.LoadData.load_controller{1}.interpolate='LINEAR';
-febio_spec.LoadData.load_controller{1}.points.point.VAL=[0 0; 1 1];
+%febio_spec.LoadData.load_controller{1}.extend='CONSTANT';
+febio_spec.LoadData.load_controller{1}.points.pt.VAL=[0 0; 1 1];
 
 %Output section
 % -> log file
@@ -395,10 +410,12 @@ febio_spec.Output.logfile.node_data{2}.ATTR.file=febioLogFileName_force;
 febio_spec.Output.logfile.node_data{2}.ATTR.data='Rx;Ry;Rz';
 febio_spec.Output.logfile.node_data{2}.ATTR.delim=',';
 
-% febio_spec.Output.logfile.element_data{1}.ATTR.file=febioLogFileName_stress;
-% febio_spec.Output.logfile.element_data{1}.ATTR.data='sz';
-% febio_spec.Output.logfile.element_data{1}.ATTR.delim=',';
-% febio_spec.Output.logfile.element_data{1}.VAL=1:size(Es,1);
+febio_spec.Output.logfile.element_data{1}.ATTR.file=febioLogFileName_stress;
+febio_spec.Output.logfile.element_data{1}.ATTR.data='s1;s2;s3';
+febio_spec.Output.logfile.element_data{1}.ATTR.delim=',';
+
+% Plotfile section
+febio_spec.Output.plotfile.compression=0;
 
 %% Quick viewing of the FEBio input file structure
 % The |febView| function can be used to view the xml structure in a MATLAB
@@ -445,14 +462,10 @@ if runFlag==1 %i.e. a succesful run
     DN_magnitude=sqrt(sum(DN(:,3).^2,2));
     Vs_def=Vs+DN;
     
-    %     % Importing element stress from a log file
-    %     [time_mat, E_stress_mat,~]=importFEBio_logfile(fullfile(savePath,febioLogFileName_stress)); %Nodal forces
-    %     time_mat=[0; time_mat(:)]; %Time
-    %     stress_cauchy_sim=[0; mean(squeeze(E_stress_mat(:,end,:)),1)'];
     %% 
     % Importing nodal forces from a log file
     
-    [dataStruct]=importFEBio_logfile(fullfile(savePath,febioLogFileName_force),1,1); %Nodal forces
+    [dataStruct]=importFEBio_logfile(fullfile(savePath,febioLogFileName_force),0,1); %Nodal forces
     
     %Access data    
     timeVec=dataStruct.time;

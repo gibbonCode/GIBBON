@@ -6,7 +6,7 @@
    <!--
 This HTML was auto-generated from MATLAB code.
 To make changes, update the MATLAB code and republish this document.
-      --><title>DEMO_febio_0042_inverse_FEA_cube_uniaxial</title><meta name="generator" content="MATLAB 9.9"><link rel="schema.DC" href="http://purl.org/dc/elements/1.1/"><meta name="DC.date" content="2020-12-17"><meta name="DC.source" content="DEMO_febio_0042_inverse_FEA_cube_uniaxial.m"><style type="text/css">
+      --><title>DEMO_febio_0042_inverse_FEA_cube_uniaxial</title><meta name="generator" content="MATLAB 9.13"><link rel="schema.DC" href="http://purl.org/dc/elements/1.1/"><meta name="DC.date" content="2023-04-20"><meta name="DC.source" content="DEMO_febio_0042_inverse_FEA_cube_uniaxial.m"><style type="text/css">
 html,body,div,span,applet,object,iframe,h1,h2,h3,h4,h5,h6,p,blockquote,pre,a,abbr,acronym,address,big,cite,code,del,dfn,em,font,img,ins,kbd,q,s,samp,small,strike,strong,tt,var,b,u,i,center,dl,dt,dd,ol,ul,li,fieldset,form,label,legend,table,caption,tbody,tfoot,thead,tr,th,td{margin:0;padding:0;border:0;outline:0;font-size:100%;vertical-align:baseline;background:transparent}body{line-height:1}ol,ul{list-style:none}blockquote,q{quotes:none}blockquote:before,blockquote:after,q:before,q:after{content:'';content:none}:focus{outine:0}ins{text-decoration:none}del{text-decoration:line-through}table{border-collapse:collapse;border-spacing:0}
 
 html { min-height:100%; margin-bottom:1px; }
@@ -67,7 +67,7 @@ table td { padding:7px 5px; text-align:left; vertical-align:top; border:1px soli
 
 
 
-  </style></head><body><div class="content"><h1>DEMO_febio_0042_inverse_FEA_cube_uniaxial</h1><!--introduction--><p>Below is a demonstration for: 1) Inverse FEA based material parameter optimisation</p><!--/introduction--><h2>Contents</h2><div><ul><li><a href="#3">Control parameters</a></li><li><a href="#4">SIMULATE EXPERIMENTAL DATA</a></li><li><a href="#5">CREATING MESHED BOX</a></li><li><a href="#7">DEFINE BC's</a></li><li><a href="#9">Defining the FEBio input structure</a></li><li><a href="#10">Quick viewing of the FEBio input file structure</a></li><li><a href="#12">Exporting the FEBio input file</a></li><li><a href="#13">Running the FEBio analysis</a></li><li><a href="#14">Import FEBio results</a></li><li><a href="#22">Create structures for optimization</a></li><li><a href="#23">start optimization</a></li><li><a href="#25">Unnormalize and constrain parameters</a></li><li><a href="#30">Unnormalize and constrain parameters</a></li><li><a href="#31">Setting material parameters</a></li><li><a href="#32">START FEBio</a></li></ul></div><pre class="codeinput">clear; close <span class="string">all</span>; clc;
+  </style></head><body><div class="content"><h1>DEMO_febio_0042_inverse_FEA_cube_uniaxial</h1><!--introduction--><p>Below is a demonstration for:</p><div><ul><li>Inverse FEA based material parameter optimisation for uniaxial compression</li></ul></div><!--/introduction--><h2>Contents</h2><div><ul><li><a href="#1">Keywords</a></li><li><a href="#4">Control parameters</a></li><li><a href="#5">SIMULATE EXPERIMENTAL DATA</a></li><li><a href="#6">CREATING MESHED BOX</a></li><li><a href="#8">DEFINE BC's</a></li><li><a href="#10">Defining the FEBio input structure</a></li><li><a href="#11">Quick viewing of the FEBio input file structure</a></li><li><a href="#13">Exporting the FEBio input file</a></li><li><a href="#14">Running the FEBio analysis</a></li><li><a href="#15">Import FEBio results</a></li><li><a href="#25">Create structures for optimization</a></li><li><a href="#26">start optimization</a></li><li><a href="#28">Unnormalize and constrain parameters</a></li><li><a href="#33">Unnormalize and constrain parameters</a></li><li><a href="#34">Setting material parameters</a></li><li><a href="#35">START FEBio</a></li></ul></div><h2 id="1">Keywords</h2><div><ul><li>febio_spec version 4.0</li><li>febio, FEBio</li><li>hexahedral elements, hex8</li><li>static, solid</li><li>hyperelastic, Ogden</li><li>displacement logfile</li><li>stress logfile</li></ul></div><pre class="codeinput">clear; close <span class="string">all</span>; clc;
 </pre><p>Plot settings</p><pre class="codeinput">fontSize=20;
 faceAlpha1=0.8;
 faceAlpha2=1;
@@ -78,17 +78,18 @@ markerSize2=50;
 lineWidth=5;
 lineWidth2=3;
 cMap=viridis(20);
-</pre><h2 id="3">Control parameters</h2><pre class="codeinput"><span class="comment">% Path names</span>
+</pre><h2 id="4">Control parameters</h2><pre class="codeinput"><span class="comment">% Path names</span>
 defaultFolder = fileparts(fileparts(mfilename(<span class="string">'fullpath'</span>)));
 savePath=fullfile(defaultFolder,<span class="string">'data'</span>,<span class="string">'temp'</span>);
 
 <span class="comment">% Defining file names</span>
 febioFebFileNamePart=<span class="string">'tempModel'</span>;
 febioFebFileName=fullfile(savePath,[febioFebFileNamePart,<span class="string">'.feb'</span>]); <span class="comment">%FEB file name</span>
-febioLogFileName=fullfile(savePath,[febioFebFileNamePart,<span class="string">'.txt'</span>]); <span class="comment">%FEBio log file name</span>
+febioLogFileName=[febioFebFileNamePart,<span class="string">'.txt'</span>]; <span class="comment">%FEBio log file name</span>
 febioLogFileName_disp=[febioFebFileNamePart,<span class="string">'_disp_out.txt'</span>]; <span class="comment">%Log file name for exporting displacement</span>
 febioLogFileName_force=[febioFebFileNamePart,<span class="string">'_force_out.txt'</span>]; <span class="comment">%Log file name for exporting force</span>
-febioLogFileName_stress=[febioFebFileNamePart,<span class="string">'_stress_out.txt'</span>]; <span class="comment">%Log file name for exporting stress</span>
+febioLogFileName_stress=[febioFebFileNamePart,<span class="string">'_stress_out.txt'</span>]; <span class="comment">%Log file name for exporting stress sigma_z</span>
+febioLogFileName_stretch=[febioFebFileNamePart,<span class="string">'_stretch_out.txt'</span>]; <span class="comment">%Log file name for exporting stretch U_z</span>
 
 <span class="comment">%Specifying dimensions and number of elements</span>
 sampleWidth=10;
@@ -124,7 +125,9 @@ opt_iter=6; <span class="comment">%Optimum number of iterations</span>
 max_retries=5; <span class="comment">%Maximum number of retires</span>
 dtmin=(1/numTimeSteps)/100; <span class="comment">%Minimum time step size</span>
 dtmax=1/numTimeSteps; <span class="comment">%Maximum time step size</span>
-</pre><h2 id="4">SIMULATE EXPERIMENTAL DATA</h2><pre class="codeinput"><span class="comment">%Basic set</span>
+
+runMode=<span class="string">'external'</span>;<span class="comment">% 'internal' or 'external'</span>
+</pre><h2 id="5">SIMULATE EXPERIMENTAL DATA</h2><pre class="codeinput"><span class="comment">%Basic set</span>
 stress_cauchy_exp=1/1000*[-0.606636933451196;-0.594598753306976;-0.582704841004989;-0.571357405135258;-0.560202987257958;-0.549116632489736;-0.538518403222691;-0.528087294560408;-0.518193056737126;-0.508206114096577;-0.498701595140669;-0.489855637164223;-0.480813541456146;-0.472386398119889;-0.463619435755875;-0.455563887366101;-0.447492483369391;-0.439573886089611;-0.432050298442763;-0.424607647116797;-0.416804189884078;-0.410387298955262;-0.402977977822379;-0.396396657790034;-0.389210485373911;-0.383000553144204;-0.376675743693335;-0.370668858911072;-0.364731155035823;-0.358344772157269;-0.352790185960043;-0.346625957990168;-0.340956058045645;-0.335892515500584;-0.330212348100342;-0.325153422018813;-0.319890421672462;-0.315056500840712;-0.310859570288282;-0.305563240532117;-0.301114864342368;-0.295807178919732;-0.291944875824590;-0.287799721606394;-0.282704271932097;-0.279560319546267;-0.273953092186896;-0.271205596632553;-0.266019580975468;-0.261921529885230;-0.259473236771767;-0.254229845700605;-0.251227010966108;-0.246731599709182;-0.243347463269765;-0.240668206009318;-0.235904450179518;-0.233443491646300;-0.229240342796589;-0.226328455230997;-0.222574693739149;-0.219690552720043;-0.215908110296801;-0.213462994691799;-0.209402262394587;-0.206143135063048;-0.204259473767410;-0.200271046174199;-0.198497342254049;-0.194018107075590;-0.190682588685824;-0.190178278993820;-0.184939186637633;-0.184540226448861;-0.179325520197559;-0.177302998325867;-0.174896317893232;-0.170891038492450;-0.170506389072493;-0.165503062182587;-0.164964944739691;-0.160899776454826;-0.158388071874370;-0.156732253086585;-0.152865980799647;-0.151886036142296;-0.147064551962397;-0.146636586148680;-0.143247545748075;-0.139910407552933;-0.139643630040939;-0.135175245456319;-0.134411814767664;-0.131535143940800;-0.127943005303573;-0.127499404828055;-0.123718865018965;-0.123269655840332;-0.118450118919226;-0.117869603457104;-0.114259063948408;-0.111845005007273;-0.110782903827826;-0.106815200840467;-0.108112322079051;-0.103218831561054;-0.103859461792770;-0.100330051927225;-0.0988503888488038;-0.0984110683795259;-0.0920373613042230;-0.0944900398318279;-0.0908054642234128;-0.0873647791392896;-0.0857302637239363;-0.0832930518728098;-0.0811377337125286;-0.0801419455213994;-0.0773146108678843;-0.0750524119380378;-0.0737660915109812;-0.0711063097725948;-0.0689106003957611;-0.0662015603338655;-0.0637907034798034;-0.0622238776663924;-0.0587129121234732;-0.0590737570248270;-0.0542752113831988;-0.0539468997803651;-0.0504474583208646;-0.0479308792263506;-0.0474997497002284;-0.0422136232687380;-0.0419340474843669;-0.0383206523546593;-0.0353822402853126;-0.0342394575632298;-0.0296092241247699;-0.0290386117855990;-0.0252785740102147;-0.0211393477778685;-0.0210232271972257;-0.0149625128602809;-0.0150455267730763;-0.00925788965002460;-0.00559693887219605;-0.00235368730112040;0.00439939147625970;0.00280776088737496];
 stretch_exp=[0.700330019000000;0.702340563275168;0.704351107550336;0.706361651825503;0.708372196100671;0.710382740375839;0.712393284651007;0.714403828926175;0.716414373201342;0.718424917476510;0.720435461751678;0.722446006026846;0.724456550302013;0.726467094577181;0.728477638852349;0.730488183127517;0.732498727402685;0.734509271677852;0.736519815953020;0.738530360228188;0.740540904503356;0.742551448778524;0.744561993053691;0.746572537328859;0.748583081604027;0.750593625879195;0.752604170154362;0.754614714429530;0.756625258704698;0.758635802979866;0.760646347255034;0.762656891530201;0.764667435805369;0.766677980080537;0.768688524355705;0.770699068630873;0.772709612906040;0.774720157181208;0.776730701456376;0.778741245731544;0.780751790006711;0.782762334281879;0.784772878557047;0.786783422832215;0.788793967107383;0.790804511382550;0.792815055657718;0.794825599932886;0.796836144208054;0.798846688483222;0.800857232758389;0.802867777033557;0.804878321308725;0.806888865583893;0.808899409859060;0.810909954134228;0.812920498409396;0.814931042684564;0.816941586959732;0.818952131234899;0.820962675510067;0.822973219785235;0.824983764060403;0.826994308335570;0.829004852610738;0.831015396885906;0.833025941161074;0.835036485436242;0.837047029711409;0.839057573986577;0.841068118261745;0.843078662536913;0.845089206812081;0.847099751087248;0.849110295362416;0.851120839637584;0.853131383912752;0.855141928187920;0.857152472463087;0.859163016738255;0.861173561013423;0.863184105288591;0.865194649563758;0.867205193838926;0.869215738114094;0.871226282389262;0.873236826664430;0.875247370939597;0.877257915214765;0.879268459489933;0.881279003765101;0.883289548040269;0.885300092315436;0.887310636590604;0.889321180865772;0.891331725140940;0.893342269416107;0.895352813691275;0.897363357966443;0.899373902241611;0.901384446516779;0.903394990791946;0.905405535067114;0.907416079342282;0.909426623617450;0.911437167892617;0.913447712167785;0.915458256442953;0.917468800718121;0.919479344993289;0.921489889268456;0.923500433543624;0.925510977818792;0.927521522093960;0.929532066369128;0.931542610644295;0.933553154919463;0.935563699194631;0.937574243469799;0.939584787744967;0.941595332020134;0.943605876295302;0.945616420570470;0.947626964845638;0.949637509120805;0.951648053395973;0.953658597671141;0.955669141946309;0.957679686221477;0.959690230496644;0.961700774771812;0.963711319046980;0.965721863322148;0.967732407597316;0.969742951872483;0.971753496147651;0.973764040422819;0.975774584697987;0.977785128973154;0.979795673248322;0.981806217523490;0.983816761798658;0.985827306073826;0.987837850348993;0.989848394624161;0.991858938899329;0.993869483174497;0.995880027449664;0.997890571724832;0.999901116000000];
 
@@ -140,7 +143,7 @@ stretch_exp=stretch_exp_n;
 <span class="comment">%Add noise</span>
 stdNoise=0.01; <span class="comment">%Standard deviation in units of stress</span>
 stress_cauchy_exp_n=stress_cauchy_exp_n+stdNoise.*randn(size(stress_cauchy_exp_n));
-</pre><h2 id="5">CREATING MESHED BOX</h2><pre class="codeinput"><span class="comment">%Create box 1</span>
+</pre><h2 id="6">CREATING MESHED BOX</h2><pre class="codeinput"><span class="comment">%Create box 1</span>
 boxDim=[sampleWidth sampleThickness sampleHeight]; <span class="comment">%Dimensions</span>
 boxEl=[numElementsWidth numElementsThickness numElementsHeight]; <span class="comment">%Number of elements</span>
 [box1]=hexMeshBox(boxDim,boxEl);
@@ -161,7 +164,7 @@ gpatch(Fb,V,faceBoundaryMarker,<span class="string">'k'</span>,0.5);
 colormap(gjet(6)); icolorbar;
 axisGeom(gca,fontSize);
 drawnow;
-</pre><img width="100%" height="auto" vspace="5" hspace="5" src="DEMO_febio_0042_inverse_FEA_cube_uniaxial_01.jpg" alt=""> <h2 id="7">DEFINE BC's</h2><pre class="codeinput"><span class="comment">%Define supported node sets</span>
+</pre><img width="100%" height="auto" vspace="5" hspace="5" src="DEMO_febio_0042_inverse_FEA_cube_uniaxial_01.jpg" alt=""> <h2 id="8">DEFINE BC's</h2><pre class="codeinput"><span class="comment">%Define supported node sets</span>
 logicFace=faceBoundaryMarker==1;
 Fr=Fb(logicFace,:);
 bcSupportList_X=unique(Fr(:));
@@ -189,11 +192,11 @@ plotV(V(bcPrescribeList,:),<span class="string">'k.'</span>,<span class="string"
 
 axisGeom(gca,fontSize);
 drawnow;
-</pre><img width="100%" height="auto" vspace="5" hspace="5" src="DEMO_febio_0042_inverse_FEA_cube_uniaxial_02.jpg" alt=""> <h2 id="9">Defining the FEBio input structure</h2><p>See also <tt>febioStructTemplate</tt> and <tt>febioStruct2xml</tt> and the FEBio user manual.</p><pre class="codeinput"><span class="comment">%Get a template with default settings</span>
+</pre><img width="100%" height="auto" vspace="5" hspace="5" src="DEMO_febio_0042_inverse_FEA_cube_uniaxial_02.jpg" alt=""> <h2 id="10">Defining the FEBio input structure</h2><p>See also <tt>febioStructTemplate</tt> and <tt>febioStruct2xml</tt> and the FEBio user manual.</p><pre class="codeinput"><span class="comment">%Get a template with default settings</span>
 [febio_spec]=febioStructTemplate;
 
 <span class="comment">%febio_spec version</span>
-febio_spec.ATTR.version=<span class="string">'3.0'</span>;
+febio_spec.ATTR.version=<span class="string">'4.0'</span>;
 
 <span class="comment">%Module section</span>
 febio_spec.Module.ATTR.type=<span class="string">'solid'</span>;
@@ -203,7 +206,7 @@ febio_spec.Control.analysis=<span class="string">'STATIC'</span>;
 febio_spec.Control.time_steps=numTimeSteps;
 febio_spec.Control.step_size=1/numTimeSteps;
 febio_spec.Control.solver.max_refs=max_refs;
-febio_spec.Control.solver.max_ups=max_ups;
+febio_spec.Control.solver.qn_method.max_ups=max_ups;
 febio_spec.Control.time_stepper.dtmin=dtmin;
 febio_spec.Control.time_stepper.dtmax=dtmax;
 febio_spec.Control.time_stepper.max_retries=max_retries;
@@ -240,16 +243,16 @@ nodeSetName3=<span class="string">'bcSupportList_Z'</span>;
 nodeSetName4=<span class="string">'bcPrescribeList'</span>;
 
 febio_spec.Mesh.NodeSet{1}.ATTR.name=nodeSetName1;
-febio_spec.Mesh.NodeSet{1}.node.ATTR.id=bcSupportList_X(:);
+febio_spec.Mesh.NodeSet{1}.VAL=mrow(bcSupportList_X);
 
 febio_spec.Mesh.NodeSet{2}.ATTR.name=nodeSetName2;
-febio_spec.Mesh.NodeSet{2}.node.ATTR.id=bcSupportList_Y(:);
+febio_spec.Mesh.NodeSet{2}.VAL=mrow(bcSupportList_Y);
 
 febio_spec.Mesh.NodeSet{3}.ATTR.name=nodeSetName3;
-febio_spec.Mesh.NodeSet{3}.node.ATTR.id=bcSupportList_Z(:);
+febio_spec.Mesh.NodeSet{3}.VAL=mrow(bcSupportList_Z);
 
 febio_spec.Mesh.NodeSet{4}.ATTR.name=nodeSetName4;
-febio_spec.Mesh.NodeSet{4}.node.ATTR.id=bcPrescribeList(:);
+febio_spec.Mesh.NodeSet{4}.VAL=mrow(bcPrescribeList);
 
 <span class="comment">%MeshDomains section</span>
 febio_spec.MeshDomains.SolidDomain.ATTR.name=partName1;
@@ -257,31 +260,43 @@ febio_spec.MeshDomains.SolidDomain.ATTR.mat=materialName1;
 
 <span class="comment">%Boundary condition section</span>
 <span class="comment">% -&gt; Fix boundary conditions</span>
-febio_spec.Boundary.bc{1}.ATTR.type=<span class="string">'fix'</span>;
+febio_spec.Boundary.bc{1}.ATTR.name=<span class="string">'zero_displacement_x'</span>;
+febio_spec.Boundary.bc{1}.ATTR.type=<span class="string">'zero displacement'</span>;
 febio_spec.Boundary.bc{1}.ATTR.node_set=nodeSetName1;
-febio_spec.Boundary.bc{1}.dofs=<span class="string">'x'</span>;
+febio_spec.Boundary.bc{1}.x_dof=1;
+febio_spec.Boundary.bc{1}.y_dof=0;
+febio_spec.Boundary.bc{1}.z_dof=0;
 
-febio_spec.Boundary.bc{2}.ATTR.type=<span class="string">'fix'</span>;
+febio_spec.Boundary.bc{2}.ATTR.name=<span class="string">'zero_displacement_y'</span>;
+febio_spec.Boundary.bc{2}.ATTR.type=<span class="string">'zero displacement'</span>;
 febio_spec.Boundary.bc{2}.ATTR.node_set=nodeSetName2;
-febio_spec.Boundary.bc{2}.dofs=<span class="string">'y'</span>;
+febio_spec.Boundary.bc{2}.x_dof=0;
+febio_spec.Boundary.bc{2}.y_dof=1;
+febio_spec.Boundary.bc{2}.z_dof=0;
 
-febio_spec.Boundary.bc{3}.ATTR.type=<span class="string">'fix'</span>;
+febio_spec.Boundary.bc{3}.ATTR.name=<span class="string">'zero_displacement_z'</span>;
+febio_spec.Boundary.bc{3}.ATTR.type=<span class="string">'zero displacement'</span>;
 febio_spec.Boundary.bc{3}.ATTR.node_set=nodeSetName3;
-febio_spec.Boundary.bc{3}.dofs=<span class="string">'z'</span>;
+febio_spec.Boundary.bc{3}.x_dof=0;
+febio_spec.Boundary.bc{3}.y_dof=0;
+febio_spec.Boundary.bc{3}.z_dof=1;
 
-febio_spec.Boundary.bc{4}.ATTR.type=<span class="string">'prescribe'</span>;
+febio_spec.Boundary.bc{4}.ATTR.name=<span class="string">'prescibed_displacement_z'</span>;
+febio_spec.Boundary.bc{4}.ATTR.type=<span class="string">'prescribed displacement'</span>;
 febio_spec.Boundary.bc{4}.ATTR.node_set=nodeSetName4;
 febio_spec.Boundary.bc{4}.dof=<span class="string">'z'</span>;
-febio_spec.Boundary.bc{4}.scale.ATTR.lc=1;
-febio_spec.Boundary.bc{4}.scale.VAL=displacementMagnitude;
+febio_spec.Boundary.bc{4}.value.ATTR.lc=1;
+febio_spec.Boundary.bc{4}.value.VAL=displacementMagnitude;
 febio_spec.Boundary.bc{4}.relative=0;
 
 <span class="comment">%LoadData section</span>
 <span class="comment">% -&gt; load_controller</span>
+febio_spec.LoadData.load_controller{1}.ATTR.name=<span class="string">'LC_1'</span>;
 febio_spec.LoadData.load_controller{1}.ATTR.id=1;
 febio_spec.LoadData.load_controller{1}.ATTR.type=<span class="string">'loadcurve'</span>;
 febio_spec.LoadData.load_controller{1}.interpolate=<span class="string">'LINEAR'</span>;
-febio_spec.LoadData.load_controller{1}.points.point.VAL=[0 0; 1 1];
+<span class="comment">%febio_spec.LoadData.load_controller{1}.extend='CONSTANT';</span>
+febio_spec.LoadData.load_controller{1}.points.pt.VAL=[0 0; 1 1];
 
 <span class="comment">%Output section</span>
 <span class="comment">% -&gt; log file</span>
@@ -289,74 +304,81 @@ febio_spec.Output.logfile.ATTR.file=febioLogFileName;
 febio_spec.Output.logfile.node_data{1}.ATTR.file=febioLogFileName_disp;
 febio_spec.Output.logfile.node_data{1}.ATTR.data=<span class="string">'ux;uy;uz'</span>;
 febio_spec.Output.logfile.node_data{1}.ATTR.delim=<span class="string">','</span>;
-febio_spec.Output.logfile.node_data{1}.VAL=1:size(V,1);
 
 febio_spec.Output.logfile.node_data{2}.ATTR.file=febioLogFileName_force;
 febio_spec.Output.logfile.node_data{2}.ATTR.data=<span class="string">'Rx;Ry;Rz'</span>;
 febio_spec.Output.logfile.node_data{2}.ATTR.delim=<span class="string">','</span>;
-febio_spec.Output.logfile.node_data{2}.VAL=1:size(V,1);
 
 febio_spec.Output.logfile.element_data{1}.ATTR.file=febioLogFileName_stress;
 febio_spec.Output.logfile.element_data{1}.ATTR.data=<span class="string">'sz'</span>;
 febio_spec.Output.logfile.element_data{1}.ATTR.delim=<span class="string">','</span>;
-febio_spec.Output.logfile.element_data{1}.VAL=1:size(E,1);
-</pre><h2 id="10">Quick viewing of the FEBio input file structure</h2><p>The <tt>febView</tt> function can be used to view the xml structure in a MATLAB figure window.</p><p><tt>febView(febio_spec); %Viewing the febio file</tt></p><h2 id="12">Exporting the FEBio input file</h2><p>Exporting the febio_spec structure to an FEBio input file is done using the <tt>febioStruct2xml</tt> function.</p><pre class="codeinput">febioStruct2xml(febio_spec,febioFebFileName); <span class="comment">%Exporting to file and domNode</span>
-</pre><h2 id="13">Running the FEBio analysis</h2><p>To run the analysis defined by the created FEBio input file the <tt>runMonitorFEBio</tt> function is used. The input for this function is a structure defining job settings e.g. the FEBio input file name. The optional output runFlag informs the user if the analysis was run succesfully.</p><pre class="codeinput">febioAnalysis.run_filename=febioFebFileName; <span class="comment">%The input file name</span>
+
+febio_spec.Output.logfile.element_data{2}.ATTR.file=febioLogFileName_stretch;
+febio_spec.Output.logfile.element_data{2}.ATTR.data=<span class="string">'Uz'</span>;
+febio_spec.Output.logfile.element_data{2}.ATTR.delim=<span class="string">','</span>;
+
+<span class="comment">% Plotfile section</span>
+febio_spec.Output.plotfile.compression=0;
+</pre><h2 id="11">Quick viewing of the FEBio input file structure</h2><p>The <tt>febView</tt> function can be used to view the xml structure in a MATLAB figure window.</p><p><tt>febView(febio_spec); %Viewing the febio file</tt></p><h2 id="13">Exporting the FEBio input file</h2><p>Exporting the febio_spec structure to an FEBio input file is done using the <tt>febioStruct2xml</tt> function.</p><pre class="codeinput">febioStruct2xml(febio_spec,febioFebFileName); <span class="comment">%Exporting to file and domNode</span>
+<span class="comment">%system(['gedit ',febioFebFileName,' &amp;']);</span>
+</pre><h2 id="14">Running the FEBio analysis</h2><p>To run the analysis defined by the created FEBio input file the <tt>runMonitorFEBio</tt> function is used. The input for this function is a structure defining job settings e.g. the FEBio input file name. The optional output runFlag informs the user if the analysis was run succesfully.</p><pre class="codeinput">febioAnalysis.run_filename=febioFebFileName; <span class="comment">%The input file name</span>
 febioAnalysis.run_logname=febioLogFileName; <span class="comment">%The name for the log file</span>
 febioAnalysis.disp_on=1; <span class="comment">%Display information on the command window</span>
-febioAnalysis.runMode=<span class="string">'external'</span>;<span class="comment">%'internal';</span>
+febioAnalysis.runMode=runMode;
+febioAnalysis.maxLogCheckTime=10; <span class="comment">%Max log file checking time</span>
 
 [runFlag]=runMonitorFEBio(febioAnalysis);<span class="comment">%START FEBio NOW!!!!!!!!</span>
 </pre><pre class="codeoutput"> 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
---------&gt;    RUNNING/MONITORING FEBIO JOB    &lt;-------- 17-Dec-2020 15:37:24
-FEBio path: /home/kevin/FEBioStudio/bin/febio3
-# Attempt removal of existing log files                17-Dec-2020 15:37:24
- * Removal succesful                                   17-Dec-2020 15:37:24
-# Attempt removal of existing .xplt files              17-Dec-2020 15:37:24
- * Removal succesful                                   17-Dec-2020 15:37:24
-# Starting FEBio...                                    17-Dec-2020 15:37:24
+--------&gt;    RUNNING/MONITORING FEBIO JOB    &lt;-------- 20-Apr-2023 18:06:30
+FEBio path: /home/kevin/FEBioStudio2/bin/febio4
+# Attempt removal of existing log files                20-Apr-2023 18:06:30
+ * Removal succesful                                   20-Apr-2023 18:06:30
+# Attempt removal of existing .xplt files              20-Apr-2023 18:06:30
+ * Removal succesful                                   20-Apr-2023 18:06:30
+# Starting FEBio...                                    20-Apr-2023 18:06:30
   Max. total analysis time is: Inf s
- * Waiting for log file creation                       17-Dec-2020 15:37:24
-   Max. wait time: 30 s
- * Log file found.                                     17-Dec-2020 15:37:24
-# Parsing log file...                                  17-Dec-2020 15:37:24
-    number of iterations   : 3                         17-Dec-2020 15:37:25
-    number of reformations : 3                         17-Dec-2020 15:37:25
-------- converged at time : 0.1                        17-Dec-2020 15:37:25
-    number of iterations   : 3                         17-Dec-2020 15:37:25
-    number of reformations : 3                         17-Dec-2020 15:37:25
-------- converged at time : 0.2                        17-Dec-2020 15:37:25
-    number of iterations   : 3                         17-Dec-2020 15:37:25
-    number of reformations : 3                         17-Dec-2020 15:37:25
-------- converged at time : 0.3                        17-Dec-2020 15:37:25
-    number of iterations   : 3                         17-Dec-2020 15:37:25
-    number of reformations : 3                         17-Dec-2020 15:37:25
-------- converged at time : 0.4                        17-Dec-2020 15:37:25
-    number of iterations   : 3                         17-Dec-2020 15:37:25
-    number of reformations : 3                         17-Dec-2020 15:37:25
-------- converged at time : 0.5                        17-Dec-2020 15:37:25
-    number of iterations   : 3                         17-Dec-2020 15:37:25
-    number of reformations : 3                         17-Dec-2020 15:37:25
-------- converged at time : 0.6                        17-Dec-2020 15:37:25
-    number of iterations   : 3                         17-Dec-2020 15:37:25
-    number of reformations : 3                         17-Dec-2020 15:37:25
-------- converged at time : 0.7                        17-Dec-2020 15:37:25
-    number of iterations   : 3                         17-Dec-2020 15:37:25
-    number of reformations : 3                         17-Dec-2020 15:37:25
-------- converged at time : 0.8                        17-Dec-2020 15:37:25
-    number of iterations   : 3                         17-Dec-2020 15:37:25
-    number of reformations : 3                         17-Dec-2020 15:37:25
-------- converged at time : 0.9                        17-Dec-2020 15:37:25
-    number of iterations   : 3                         17-Dec-2020 15:37:25
-    number of reformations : 3                         17-Dec-2020 15:37:25
-------- converged at time : 1                          17-Dec-2020 15:37:25
- Elapsed time : 0:00:00                                17-Dec-2020 15:37:25
+ * Waiting for log file creation                       20-Apr-2023 18:06:31
+   Max. wait time: 10 s
+ * Log file found.                                     20-Apr-2023 18:06:31
+# Parsing log file...                                  20-Apr-2023 18:06:31
+    number of iterations   : 3                         20-Apr-2023 18:06:31
+    number of reformations : 3                         20-Apr-2023 18:06:31
+------- converged at time : 0.1                        20-Apr-2023 18:06:31
+    number of iterations   : 3                         20-Apr-2023 18:06:31
+    number of reformations : 3                         20-Apr-2023 18:06:31
+------- converged at time : 0.2                        20-Apr-2023 18:06:31
+    number of iterations   : 3                         20-Apr-2023 18:06:31
+    number of reformations : 3                         20-Apr-2023 18:06:31
+------- converged at time : 0.3                        20-Apr-2023 18:06:31
+    number of iterations   : 3                         20-Apr-2023 18:06:31
+    number of reformations : 3                         20-Apr-2023 18:06:31
+------- converged at time : 0.4                        20-Apr-2023 18:06:31
+    number of iterations   : 3                         20-Apr-2023 18:06:31
+    number of reformations : 3                         20-Apr-2023 18:06:31
+------- converged at time : 0.5                        20-Apr-2023 18:06:31
+    number of iterations   : 3                         20-Apr-2023 18:06:31
+    number of reformations : 3                         20-Apr-2023 18:06:31
+------- converged at time : 0.6                        20-Apr-2023 18:06:31
+    number of iterations   : 3                         20-Apr-2023 18:06:31
+    number of reformations : 3                         20-Apr-2023 18:06:31
+------- converged at time : 0.7                        20-Apr-2023 18:06:31
+    number of iterations   : 3                         20-Apr-2023 18:06:31
+    number of reformations : 3                         20-Apr-2023 18:06:31
+------- converged at time : 0.8                        20-Apr-2023 18:06:31
+    number of iterations   : 3                         20-Apr-2023 18:06:31
+    number of reformations : 3                         20-Apr-2023 18:06:31
+------- converged at time : 0.9                        20-Apr-2023 18:06:31
+    number of iterations   : 3                         20-Apr-2023 18:06:31
+    number of reformations : 3                         20-Apr-2023 18:06:31
+------- converged at time : 1                          20-Apr-2023 18:06:31
+ Elapsed time : 0:00:00                                20-Apr-2023 18:06:31
  N O R M A L   T E R M I N A T I O N
-# Done                                                 17-Dec-2020 15:37:25
+# Done                                                 20-Apr-2023 18:06:31
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-</pre><h2 id="14">Import FEBio results</h2><pre class="codeinput"><span class="keyword">if</span> runFlag==1 <span class="comment">%i.e. a succesful run</span>
-</pre><p>Importing nodal displacements from a log file</p><pre class="codeinput">    dataStruct=importFEBio_logfile(fullfile(savePath,febioLogFileName_disp),1,1);
+</pre><h2 id="15">Import FEBio results</h2><pre class="codeinput"><span class="keyword">if</span> runFlag==1 <span class="comment">%i.e. a succesful run</span>
+</pre><pre class="codeinput">    <span class="comment">% Importing nodal displacements from a log file</span>
+    dataStruct=importFEBio_logfile(fullfile(savePath,febioLogFileName_disp),0,1);
 
     <span class="comment">%Access data</span>
     N_disp_mat=dataStruct.data; <span class="comment">%Displacement</span>
@@ -364,19 +386,53 @@ FEBio path: /home/kevin/FEBioStudio/bin/febio3
 
     <span class="comment">%Create deformed coordinate set</span>
     V_DEF=N_disp_mat+repmat(V,[1 1 size(N_disp_mat,3)]);
-</pre><p>Importing element stress from a log file</p><pre class="codeinput">    dataStruct=importFEBio_logfile(fullfile(savePath,febioLogFileName_stress),1,1);
-
-    <span class="comment">%Access data</span>
-    E_stress_mat=dataStruct.data;
-
-    stress_cauchy_sim=mean(squeeze(E_stress_mat(:,end,:)),1)';
-</pre><p>Plotting the simulated results using <tt>anim8</tt> to visualize and animate deformations</p><pre class="codeinput">    [CV]=faceToVertexMeasure(E,V,E_stress_mat(:,:,end));
+</pre><p>Plotting the simulated results using <tt>anim8</tt> to visualize and animate deformations</p><pre class="codeinput">    DN_magnitude=sqrt(sum(N_disp_mat(:,:,end).^2,2)); <span class="comment">%Current displacement magnitude</span>
 
     <span class="comment">% Create basic view and store graphics handle to initiate animation</span>
     hf=cFigure; <span class="comment">%Open figure</span>
     gtitle([febioFebFileNamePart,<span class="string">': Press play to animate'</span>]);
+    title(<span class="string">'Displacement magnitude [mm]'</span>,<span class="string">'Interpreter'</span>,<span class="string">'Latex'</span>)
+    hp=gpatch(Fb,V_DEF(:,:,end),DN_magnitude,<span class="string">'k'</span>,1,2); <span class="comment">%Add graphics object to animate</span>
+    hp.Marker=<span class="string">'.'</span>;
+    hp.MarkerSize=markerSize2;
+    hp.FaceColor=<span class="string">'interp'</span>;
+    gpatch(Fb,V,0.5*ones(1,3),<span class="string">'none'</span>,0.25); <span class="comment">%A static graphics object</span>
+
+    axisGeom(gca,fontSize);
+    colormap(cMap); colorbar;
+    caxis([0 max(DN_magnitude)]); caxis <span class="string">manual</span>;
+    axis(axisLim(V_DEF)); <span class="comment">%Set axis limits statically</span>
+    view(140,30);
+    camlight <span class="string">headlight</span>;
+
+    <span class="comment">% Set up animation features</span>
+    animStruct.Time=timeVec; <span class="comment">%The time vector</span>
+    <span class="keyword">for</span> qt=1:1:size(N_disp_mat,3) <span class="comment">%Loop over time increments</span>
+        DN_magnitude=sqrt(sum(N_disp_mat(:,:,qt).^2,2)); <span class="comment">%Current displacement magnitude</span>
+
+        <span class="comment">%Set entries in animation structure</span>
+        animStruct.Handles{qt}=[hp hp]; <span class="comment">%Handles of objects to animate</span>
+        animStruct.Props{qt}={<span class="string">'Vertices'</span>,<span class="string">'CData'</span>}; <span class="comment">%Properties of objects to animate</span>
+        animStruct.Set{qt}={V_DEF(:,:,qt),DN_magnitude}; <span class="comment">%Property values for to set in order to animate</span>
+    <span class="keyword">end</span>
+    anim8(hf,animStruct); <span class="comment">%Initiate animation feature</span>
+    drawnow;
+</pre><img width="100%" height="auto" vspace="5" hspace="5" src="DEMO_febio_0042_inverse_FEA_cube_uniaxial_03.jpg" alt=""> <p>Importing element stress from a log file</p><pre class="codeinput">    dataStruct=importFEBio_logfile(fullfile(savePath,febioLogFileName_stress),0,1);
+
+    <span class="comment">%Access data</span>
+    E_stress_mat=dataStruct.data;
+</pre><p>Importing element stretch from a log file</p><pre class="codeinput">    dataStruct=importFEBio_logfile(fullfile(savePath,febioLogFileName_stretch),0,1);
+
+    <span class="comment">%Access data</span>
+    E_stretch_mat=dataStruct.data;
+</pre><p>Plotting the simulated results using <tt>anim8</tt> to visualize and animate deformations</p><pre class="codeinput">    [CV]=faceToVertexMeasure(E,V,E_stress_mat(:,:,end));
+
+    <span class="comment">% Create basic view and store graphics handle to initiate animation</span>
+    hf=cFigure; <span class="comment">%Open figure  /usr/local/MATLAB/R2020a/bin/glnxa64/jcef_helper: symbol lookup error: /lib/x86_64-linux-gnu/libpango-1.0.so.0: undefined symbol: g_ptr_array_copy</span>
+
+    gtitle([febioFebFileNamePart,<span class="string">': Press play to animate'</span>]);
     title(<span class="string">'$\sigma_{zz}$ [MPa]'</span>,<span class="string">'Interpreter'</span>,<span class="string">'Latex'</span>)
-    hp=gpatch(Fb,V_DEF(:,:,end),CV,<span class="string">'k'</span>,1); <span class="comment">%Add graphics object to animate</span>
+    hp=gpatch(Fb,V_DEF(:,:,end),CV,<span class="string">'k'</span>,1,2); <span class="comment">%Add graphics object to animate</span>
     hp.Marker=<span class="string">'.'</span>;
     hp.MarkerSize=markerSize2;
     hp.FaceColor=<span class="string">'interp'</span>;
@@ -402,12 +458,8 @@ FEBio path: /home/kevin/FEBioStudio/bin/febio3
     <span class="keyword">end</span>
     anim8(hf,animStruct); <span class="comment">%Initiate animation feature</span>
     drawnow;
-</pre><img width="100%" height="auto" vspace="5" hspace="5" src="DEMO_febio_0042_inverse_FEA_cube_uniaxial_03.jpg" alt=""> <p>Calculate the simulated applied uniaxial stretch</p><pre class="codeinput">    DZ_set=N_disp_mat(bcPrescribeList,end,:); <span class="comment">%Z displacements of the prescribed set</span>
-    DZ_set=mean(DZ_set,1); <span class="comment">%Calculate mean Z displacements across nodes</span>
-    stretch_sim=(DZ_set(:)+sampleHeight)./sampleHeight; <span class="comment">%Derive stretch</span>
-
-    <span class="comment">%Interpolate experiment onto simulated points</span>
-    stress_cauchy_exp_sim = interp1(stretch_exp,stress_cauchy_exp,stretch_sim,<span class="string">'pchip'</span>);
+</pre><img width="100%" height="auto" vspace="5" hspace="5" src="DEMO_febio_0042_inverse_FEA_cube_uniaxial_04.jpg" alt=""> <p>Visualize stretch-stress curve</p><pre class="codeinput">    stretch_sim=squeeze(mean(E_stretch_mat,1)); <span class="comment">% Stretch U_z</span>
+    stress_cauchy_sim=squeeze(mean(E_stress_mat,1)); <span class="comment">%Cauchy stress sigma_z</span>
 </pre><p>Visualize stress-stretch curve</p><pre class="codeinput">    cFigure; hold <span class="string">on</span>;
     title(<span class="string">'Stretch stress curves optimisation'</span>,<span class="string">'FontSize'</span>,fontSize);
     xlabel(<span class="string">'\lambda Stretch [.]'</span>,<span class="string">'FontSize'</span>,fontSize); ylabel(<span class="string">'\sigma Cauchy stress [MPa]'</span>,<span class="string">'FontSize'</span>,fontSize); zlabel(<span class="string">'Z'</span>,<span class="string">'FontSize'</span>,fontSize); hold <span class="string">on</span>;
@@ -418,8 +470,8 @@ FEBio path: /home/kevin/FEBioStudio/bin/febio3
     legend(Hn,{<span class="string">'Experiment'</span>,<span class="string">'Simulation'</span>},<span class="string">'Location'</span>,<span class="string">'northwest'</span>);
     set(gca,<span class="string">'FontSize'</span>,fontSize);
     drawnow;
-</pre><img width="100%" height="auto" vspace="5" hspace="5" src="DEMO_febio_0042_inverse_FEA_cube_uniaxial_04.jpg" alt=""> <pre class="codeinput"><span class="keyword">end</span>
-</pre><h2 id="22">Create structures for optimization</h2><pre class="codeinput"><span class="comment">% Material structure</span>
+</pre><img width="100%" height="auto" vspace="5" hspace="5" src="DEMO_febio_0042_inverse_FEA_cube_uniaxial_05.jpg" alt=""> <pre class="codeinput"><span class="keyword">end</span>
+</pre><h2 id="25">Create structures for optimization</h2><pre class="codeinput"><span class="comment">% Material structure</span>
 mat_struct.id=1; <span class="comment">%Material id</span>
 mat_struct.par_names={<span class="string">'c1'</span>,<span class="string">'m1'</span>,<span class="string">'c2'</span>,<span class="string">'m2'</span>,<span class="string">'k'</span>}; <span class="comment">%Parameter names</span>
 mat_struct.par_values={c1_ini m1_ini c1_ini -m1_ini k_ini}; <span class="comment">%Parameter values</span>
@@ -431,7 +483,6 @@ febioAnalysis.disp_log_on=0;
 
 <span class="comment">%What should be known to the objective function:</span>
 objectiveStruct.h=Hn(2);
-objectiveStruct.bcPrescribeList=bcPrescribeList;
 objectiveStruct.stretch_exp=stretch_exp;
 objectiveStruct.stress_cauchy_exp=stress_cauchy_exp;
 objectiveStruct.febioAnalysis=febioAnalysis;
@@ -439,11 +490,10 @@ objectiveStruct.febio_spec=febio_spec;
 objectiveStruct.febioFebFileName=febioFebFileName;
 objectiveStruct.mat_struct=mat_struct;
 objectiveStruct.k_factor=k_factor;
-objectiveStruct.initialArea=initialArea;
-objectiveStruct.sampleHeight=sampleHeight;
 objectiveStruct.parNormFactors=P; <span class="comment">%This will normalize the parameters to ones(size(P))</span>
 objectiveStruct.Pb_struct.xx_c=P; <span class="comment">%Parameter constraining centre</span>
-objectiveStruct.Pb_struct.xxlim=[[P(1)/100 2]' [P(1)*100 50]']; <span class="comment">%Parameter bounds</span>
+objectiveStruct.Pb_struct.xxlim=[P(1)/100 P(1)*100;<span class="keyword">...</span>
+                                 2        50      ]; <span class="comment">%Parameter bounds</span>
 
 <span class="comment">%Optimisation settings</span>
 maxNumberIterations=100; <span class="comment">%Maximum number of optimization iterations</span>
@@ -455,10 +505,10 @@ displayTypeIterations=<span class="string">'iter'</span>;
 objectiveStruct.method=2;
 
 <span class="comment">%File names of output files</span>
-output_names.displacement=fullfile(savePath,febioLogFileName_disp);
 output_names.stress=fullfile(savePath,febioLogFileName_stress);
+output_names.stretch=fullfile(savePath,febioLogFileName_stretch);
 objectiveStruct.run_output_names=output_names;
-</pre><h2 id="23">start optimization</h2><pre class="codeinput">Pn=P./objectiveStruct.parNormFactors;
+</pre><h2 id="26">start optimization</h2><pre class="codeinput">Pn=P./objectiveStruct.parNormFactors;
 
 <span class="keyword">switch</span> objectiveStruct.method
     <span class="keyword">case</span> 1 <span class="comment">%fminsearch and Nelder-Mead</span>
@@ -483,7 +533,7 @@ objectiveStruct.run_output_names=output_names;
         [Pn_opt,OPT_out.resnorm,OPT_out.residual]= lsqnonlin(@(Pn) objectiveFunctionIFEA(Pn,objectiveStruct),Pn,[],[],OPT_options);
 <span class="keyword">end</span>
 </pre><pre class="codeinput">[Fopt,OPT_stats_out]=objectiveFunctionIFEA(Pn_opt,objectiveStruct);
-</pre><h2 id="25">Unnormalize and constrain parameters</h2><pre class="codeinput">P_opt=Pn_opt.*objectiveStruct.parNormFactors; <span class="comment">%Scale back, undo normalization</span>
+</pre><h2 id="28">Unnormalize and constrain parameters</h2><pre class="codeinput">P_opt=Pn_opt.*objectiveStruct.parNormFactors; <span class="comment">%Scale back, undo normalization</span>
 
 <span class="comment">%Constraining parameters</span>
 <span class="keyword">for</span> q=1:1:numel(P)
@@ -492,7 +542,7 @@ objectiveStruct.run_output_names=output_names;
 
 disp_text=sprintf(<span class="string">'%6.16e,'</span>,P_opt); disp_text=disp_text(1:end-1);
 disp([<span class="string">'P_opt='</span>,disp_text]);
-</pre><pre class="codeoutput">P_opt=2.8909803100950356e-04,6.0065568086266028e+00
+</pre><pre class="codeoutput">P_opt=2.8909803100947472e-04,6.0065568086691297e+00
 </pre><pre class="codeinput">cFigure; hold <span class="string">on</span>;
 title(<span class="string">'Stretch stress curves optimised'</span>,<span class="string">'FontSize'</span>,fontSize);
 xlabel(<span class="string">'\lambda Stretch [.]'</span>,<span class="string">'FontSize'</span>,fontSize); ylabel(<span class="string">'\sigma Cauchy stress [MPa]'</span>,<span class="string">'FontSize'</span>,fontSize); zlabel(<span class="string">'Z'</span>,<span class="string">'FontSize'</span>,fontSize); hold <span class="string">on</span>;
@@ -501,20 +551,20 @@ Hn(1)=plot(stretch_exp,stress_cauchy_exp,<span class="string">'k-'</span>,<span 
 Hn(2)=plot(OPT_stats_out.stretch_sim,OPT_stats_out.stress_cauchy_sim,<span class="string">'r.-'</span>,<span class="string">'lineWidth'</span>,lineWidth2,<span class="string">'markerSize'</span>,markerSize2);
 
 legend(Hn,{<span class="string">'Experiment'</span>,<span class="string">'Simulation'</span>},<span class="string">'Location'</span>,<span class="string">'northwest'</span>);
-view(2); axis <span class="string">tight</span>;  grid <span class="string">on</span>;
+view(2); axis <span class="string">tight</span>;  grid <span class="string">on</span>; axis <span class="string">square</span>; axis <span class="string">manual</span>;
 set(gca,<span class="string">'FontSize'</span>,fontSize);
 drawnow;
-</pre><img width="100%" height="auto" vspace="5" hspace="5" src="DEMO_febio_0042_inverse_FEA_cube_uniaxial_43.jpg" alt=""> <pre class="codeinput"><span class="keyword">function</span> [Fopt,OPT_stats_out]=objectiveFunctionIFEA(Pn,objectiveStruct)
+</pre><img width="100%" height="auto" vspace="5" hspace="5" src="DEMO_febio_0042_inverse_FEA_cube_uniaxial_37.jpg" alt=""> <pre class="codeinput"><span class="keyword">function</span> [Fopt,OPT_stats_out]=objectiveFunctionIFEA(Pn,objectiveStruct)
 </pre><pre class="codeinput">febioFebFileName=objectiveStruct.febioFebFileName;
 febio_spec=objectiveStruct.febio_spec;
-</pre><h2 id="30">Unnormalize and constrain parameters</h2><pre class="codeinput">P=Pn.*objectiveStruct.parNormFactors; <span class="comment">%Scale back, undo normalization</span>
+</pre><h2 id="33">Unnormalize and constrain parameters</h2><pre class="codeinput">P=Pn.*objectiveStruct.parNormFactors; <span class="comment">%Scale back, undo normalization</span>
 P_in=P; <span class="comment">%Proposed P</span>
 
 <span class="comment">%Constraining parameters</span>
 <span class="keyword">for</span> q=1:1:numel(P)
     [P(q)]=boxconstrain(P(q),objectiveStruct.Pb_struct.xxlim(q,1),objectiveStruct.Pb_struct.xxlim(q,2),objectiveStruct.Pb_struct.xx_c(q));
 <span class="keyword">end</span>
-</pre><h2 id="31">Setting material parameters</h2><pre class="codeinput"><span class="comment">%Acces material parameters</span>
+</pre><h2 id="34">Setting material parameters</h2><pre class="codeinput"><span class="comment">%Acces material parameters</span>
 mat_struct=objectiveStruct.mat_struct;
 mat_struct.par_values={P(1) P(2) P(1) -P(2) P(1)*objectiveStruct.k_factor};
 
@@ -564,188 +614,147 @@ Proposed        : 6.4424588822879520e-04 3.0297096282129830e+00
 Set (constr.)   : 6.4424588828054590e-04 3.0297096242559047e+00 
 Done
 </pre><pre class="codeoutput">SETTING MATERIAL PARAMETERS...
-Proposed (norm.): 9.9330917958767151e-01 9.9895423478642398e-01 
-Proposed        : 6.4033108609365202e-04 2.9968627043592719e+00 
-Set (constr.)   : 6.4033115176239123e-04 2.9968627146523050e+00 
+Proposed (norm.): 9.9330917958765852e-01 9.9895423478642398e-01 
+Proposed        : 6.4033108609364367e-04 2.9968627043592719e+00 
+Set (constr.)   : 6.4033115176238289e-04 2.9968627146523050e+00 
 Done
 </pre><pre class="codeoutput">SETTING MATERIAL PARAMETERS...
-Proposed (norm.): 1.0033091795876714e+00 9.9895423478642398e-01 
-Proposed        : 6.4677752894601195e-04 2.9968627043592719e+00 
-Set (constr.)   : 6.4677752894521745e-04 2.9968627146523050e+00 
+Proposed (norm.): 1.0033091795876585e+00 9.9895423478642398e-01 
+Proposed        : 6.4677752894600361e-04 2.9968627043592719e+00 
+Set (constr.)   : 6.4677752894520910e-04 2.9968627146523050e+00 
 Done
 </pre><pre class="codeoutput">SETTING MATERIAL PARAMETERS...
-Proposed (norm.): 9.9330917958767151e-01 1.0089542347864240e+00 
-Proposed        : 6.4033108609365202e-04 3.0268627043592717e+00 
-Set (constr.)   : 6.4033115176239123e-04 3.0268627014342293e+00 
+Proposed (norm.): 9.9330917958765852e-01 1.0089542347864240e+00 
+Proposed        : 6.4033108609364367e-04 3.0268627043592717e+00 
+Set (constr.)   : 6.4033115176238289e-04 3.0268627014342293e+00 
 Done
 </pre><pre class="codeoutput">SETTING MATERIAL PARAMETERS...
-Proposed (norm.): 9.4169235373075622e-01 9.9106873757110681e-01 
-Proposed        : 6.0705659428296975e-04 2.9732062127133205e+00 
-Set (constr.)   : 6.0709999559492437e-04 2.9732126226887687e+00 
+Proposed (norm.): 9.4169235373070859e-01 9.9106873757105618e-01 
+Proposed        : 6.0705659428293907e-04 2.9732062127131687e+00 
+Set (constr.)   : 6.0709999559489369e-04 2.9732126226886169e+00 
 Done
 </pre><pre class="codeoutput">SETTING MATERIAL PARAMETERS...
-Proposed (norm.): 9.5169235373075622e-01 9.9106873757110681e-01 
-Proposed        : 6.1350303713532980e-04 2.9732062127133205e+00 
-Set (constr.)   : 6.1352772950119653e-04 2.9732126226887687e+00 
+Proposed (norm.): 9.5169235373070860e-01 9.9106873757105618e-01 
+Proposed        : 6.1350303713529912e-04 2.9732062127131687e+00 
+Set (constr.)   : 6.1352772950116596e-04 2.9732126226886169e+00 
 Done
 </pre><pre class="codeoutput">SETTING MATERIAL PARAMETERS...
-Proposed (norm.): 9.4169235373075622e-01 1.0010687375711067e+00 
-Proposed        : 6.0705659428296975e-04 3.0032062127133203e+00 
-Set (constr.)   : 6.0709999559492437e-04 3.0032062127083470e+00 
+Proposed (norm.): 9.4169235373070859e-01 1.0010687375710561e+00 
+Proposed        : 6.0705659428293907e-04 3.0032062127131685e+00 
+Set (constr.)   : 6.0709999559489369e-04 3.0032062127081951e+00 
 Done
 </pre><pre class="codeoutput">SETTING MATERIAL PARAMETERS...
-Proposed (norm.): 7.5376621666691257e-01 9.6884319671811436e-01 
-Proposed        : 4.8591108397828575e-04 2.9065295901543431e+00 
-Set (constr.)   : 4.8910525924295446e-04 2.9068008504130627e+00 
+Proposed (norm.): 7.5376621666686616e-01 9.6884319671806196e-01 
+Proposed        : 4.8591108397825583e-04 2.9065295901541859e+00 
+Set (constr.)   : 4.8910525924292627e-04 2.9068008504129068e+00 
 Done
 </pre><pre class="codeoutput">SETTING MATERIAL PARAMETERS...
-Proposed (norm.): 7.6376621666691258e-01 9.6884319671811436e-01 
-Proposed        : 4.9235752683064575e-04 2.9065295901543431e+00 
-Set (constr.)   : 4.9518355627028890e-04 2.9068008504130627e+00 
+Proposed (norm.): 7.6376621666686617e-01 9.6884319671806196e-01 
+Proposed        : 4.9235752683061582e-04 2.9065295901541859e+00 
+Set (constr.)   : 4.9518355627026049e-04 2.9068008504129068e+00 
 Done
 </pre><pre class="codeoutput">SETTING MATERIAL PARAMETERS...
-Proposed (norm.): 7.5376621666691257e-01 9.7884319671811437e-01 
-Proposed        : 4.8591108397828575e-04 2.9365295901543433e+00 
-Set (constr.)   : 4.8910525924295446e-04 2.9366146830708457e+00 
+Proposed (norm.): 7.5376621666686616e-01 9.7884319671806197e-01 
+Proposed        : 4.8591108397825583e-04 2.9365295901541861e+00 
+Set (constr.)   : 4.8910525924292627e-04 2.9366146830706890e+00 
 Done
 </pre><pre class="codeoutput">SETTING MATERIAL PARAMETERS...
-Proposed (norm.): 6.3381239446683113e-01 1.0097124215606168e+00 
-Proposed        : 4.0858353800478803e-04 3.0291372646818502e+00 
-Set (constr.)   : 4.1879091583216157e-04 3.0291372609490970e+00 
+Proposed (norm.): 6.3381239446679150e-01 1.0097124215594753e+00 
+Proposed        : 4.0858353800476245e-04 3.0291372646784258e+00 
+Set (constr.)   : 4.1879091583213912e-04 3.0291372609456726e+00 
 Done
 </pre><pre class="codeoutput">SETTING MATERIAL PARAMETERS...
-Proposed (norm.): 6.4381239446683114e-01 1.0097124215606168e+00 
-Proposed        : 4.1502998085714803e-04 3.0291372646818502e+00 
-Set (constr.)   : 4.2445004430372241e-04 3.0291372609490970e+00 
+Proposed (norm.): 6.4381239446679150e-01 1.0097124215594753e+00 
+Proposed        : 4.1502998085712244e-04 3.0291372646784258e+00 
+Set (constr.)   : 4.2445004430369986e-04 3.0291372609456726e+00 
 Done
 </pre><pre class="codeoutput">SETTING MATERIAL PARAMETERS...
-Proposed (norm.): 6.3381239446683113e-01 1.0198095457762231e+00 
-Proposed        : 4.0858353800478803e-04 3.0594286373286694e+00 
-Set (constr.)   : 4.1879091583216157e-04 3.0594286056570645e+00 
+Proposed (norm.): 6.3381239446679150e-01 1.0198095457750700e+00 
+Proposed        : 4.0858353800476245e-04 3.0594286373252100e+00 
+Set (constr.)   : 4.1879091583213912e-04 3.0594286056536051e+00 
 Done
 </pre><pre class="codeoutput">SETTING MATERIAL PARAMETERS...
-Proposed (norm.): 5.7633128093699082e-01 1.3718081475912673e+00 
-Proposed        : 3.7152866665877472e-04 4.1154244427738025e+00 
-Set (constr.)   : 3.8706433944294143e-04 4.1152150770083313e+00 
+Proposed (norm.): 5.7633128093670272e-01 1.3718081475904587e+00 
+Proposed        : 3.7152866665858899e-04 4.1154244427713760e+00 
+Set (constr.)   : 3.8706433944278590e-04 4.1152150770059066e+00 
 Done
 </pre><pre class="codeoutput">SETTING MATERIAL PARAMETERS...
-Proposed (norm.): 5.8633128093699083e-01 1.3718081475912673e+00 
-Proposed        : 3.7797510951113476e-04 4.1154244427738025e+00 
-Set (constr.)   : 3.9248258017598168e-04 4.1152150770083313e+00 
+Proposed (norm.): 5.8633128093670273e-01 1.3718081475904587e+00 
+Proposed        : 3.7797510951094904e-04 4.1154244427713760e+00 
+Set (constr.)   : 3.9248258017582496e-04 4.1152150770059066e+00 
 Done
 </pre><pre class="codeoutput">SETTING MATERIAL PARAMETERS...
-Proposed (norm.): 5.7633128093699082e-01 1.3855262290671799e+00 
-Proposed        : 3.7152866665877472e-04 4.1565786872015398e+00 
-Set (constr.)   : 3.8706433944294143e-04 4.1563452858310477e+00 
+Proposed (norm.): 5.7633128093670272e-01 1.3855262290663632e+00 
+Proposed        : 3.7152866665858899e-04 4.1565786871990902e+00 
+Set (constr.)   : 3.8706433944278590e-04 4.1563452858285999e+00 
 Done
 </pre><pre class="codeoutput">SETTING MATERIAL PARAMETERS...
-Proposed (norm.): 4.7018609794645994e-01 1.9767061026861710e+00 
-Proposed        : 3.0310278103859954e-04 5.9301183080585131e+00 
-Set (constr.)   : 3.3236147055874706e-04 5.9263280929777906e+00 
+Proposed (norm.): 4.7018609794676103e-01 1.9767061026985306e+00 
+Proposed        : 3.0310278103879362e-04 5.9301183080955919e+00 
+Set (constr.)   : 3.3236147055889468e-04 5.9263280930147264e+00 
 Done
 </pre><pre class="codeoutput">SETTING MATERIAL PARAMETERS...
-Proposed (norm.): 4.8018609794645994e-01 1.9767061026861710e+00 
-Proposed        : 3.0954922389095954e-04 5.9301183080585131e+00 
-Set (constr.)   : 3.3728860231646904e-04 5.9263280929777906e+00 
+Proposed (norm.): 4.8018609794676104e-01 1.9767061026985306e+00 
+Proposed        : 3.0954922389115361e-04 5.9301183080955919e+00 
+Set (constr.)   : 3.3728860231661801e-04 5.9263280930147264e+00 
 Done
 </pre><pre class="codeoutput">SETTING MATERIAL PARAMETERS...
-Proposed (norm.): 4.7018609794645994e-01 1.9964731637130326e+00 
-Proposed        : 3.0310278103859954e-04 5.9894194911390981e+00 
-Set (constr.)   : 3.3236147055874706e-04 5.9853947179465727e+00 
+Proposed (norm.): 4.7018609794676103e-01 1.9964731637255160e+00 
+Proposed        : 3.0310278103879362e-04 5.9894194911765481e+00 
+Set (constr.)   : 3.3236147055889468e-04 5.9853947179838727e+00 
 Done
 </pre><pre class="codeoutput">SETTING MATERIAL PARAMETERS...
-Proposed (norm.): 4.4898899893165756e-01 2.0006046438595479e+00 
-Proposed        : 2.8943819229512556e-04 6.0018139315786438e+00 
-Set (constr.)   : 3.2207795763271817e-04 5.9977389438732605e+00 
+Proposed (norm.): 4.4898899893170313e-01 2.0006046438732068e+00 
+Proposed        : 2.8943819229515494e-04 6.0018139316196208e+00 
+Set (constr.)   : 3.2207795763274007e-04 5.9977389439140705e+00 
 Done
 </pre><pre class="codeoutput">SETTING MATERIAL PARAMETERS...
-Proposed (norm.): 4.5898899893165757e-01 2.0006046438595479e+00 
-Proposed        : 2.9588463514748555e-04 6.0018139315786438e+00 
-Set (constr.)   : 3.2690203990449741e-04 5.9977389438732605e+00 
+Proposed (norm.): 4.5898899893170314e-01 2.0006046438732068e+00 
+Proposed        : 2.9588463514751493e-04 6.0018139316196208e+00 
+Set (constr.)   : 3.2690203990451964e-04 5.9977389439140705e+00 
 Done
 </pre><pre class="codeoutput">SETTING MATERIAL PARAMETERS...
-Proposed (norm.): 4.4898899893165756e-01 2.0206106902981436e+00 
-Proposed        : 2.8943819229512556e-04 6.0618320708944307e+00 
-Set (constr.)   : 3.2207795763271817e-04 6.0575080226745985e+00 
+Proposed (norm.): 4.4898899893170313e-01 2.0206106903119387e+00 
+Proposed        : 2.8943819229515494e-04 6.0618320709358162e+00 
+Set (constr.)   : 3.2207795763274007e-04 6.0575080227158091e+00 
 Done
 </pre><pre class="codeoutput">SETTING MATERIAL PARAMETERS...
-Proposed (norm.): 4.4846132608414685e-01 2.0021856028755343e+00 
-Proposed        : 2.8909803100950356e-04 6.0065568086266028e+00 
-Set (constr.)   : 3.2182476308115552e-04 6.0024624959919954e+00 
+Proposed (norm.): 4.4846132608410211e-01 2.0021856028897100e+00 
+Proposed        : 2.8909803100947472e-04 6.0065568086691297e+00 
+Set (constr.)   : 3.2182476308113405e-04 6.0024624960343491e+00 
 Done
 </pre><pre class="codeoutput">SETTING MATERIAL PARAMETERS...
-Proposed (norm.): 4.5846132608414686e-01 2.0021856028755343e+00 
-Proposed        : 2.9554447386186355e-04 6.0065568086266028e+00 
-Set (constr.)   : 3.2664626526405566e-04 6.0024624959919954e+00 
+Proposed (norm.): 4.5846132608410212e-01 2.0021856028897100e+00 
+Proposed        : 2.9554447386183471e-04 6.0065568086691297e+00 
+Set (constr.)   : 3.2664626526403403e-04 6.0024624960343491e+00 
 Done
 </pre><pre class="codeoutput">SETTING MATERIAL PARAMETERS...
-Proposed (norm.): 4.4846132608414685e-01 2.0222074589042895e+00 
-Proposed        : 2.8909803100950356e-04 6.0666223767128686e+00 
-Set (constr.)   : 3.2182476308115552e-04 6.0622780245633567e+00 
+Proposed (norm.): 4.4846132608410211e-01 2.0222074589186070e+00 
+Proposed        : 2.8909803100947472e-04 6.0666223767558209e+00 
+Set (constr.)   : 3.2182476308113405e-04 6.0622780246061279e+00 
 Done
 </pre><pre class="codeoutput">SETTING MATERIAL PARAMETERS...
-Proposed (norm.): 4.4844855138894157e-01 2.0022420990145022e+00 
-Proposed        : 2.8908979587524382e-04 6.0067262970435067e+00 
-Set (constr.)   : 3.2181863505998819e-04 6.0026312926991370e+00 
+Proposed (norm.): 4.4846132608410211e-01 2.0021856028897100e+00 
+Proposed        : 2.8909803100947472e-04 6.0065568086691297e+00 
+Set (constr.)   : 3.2182476308113405e-04 6.0024624960343491e+00 
 Done
-</pre><pre class="codeoutput">SETTING MATERIAL PARAMETERS...
-Proposed (norm.): 4.4844856272493222e-01 2.0022420491331996e+00 
-Proposed        : 2.8908980318292541e-04 6.0067261473995988e+00 
-Set (constr.)   : 3.2181864049782728e-04 6.0026311436659832e+00 
-Done
-</pre><pre class="codeoutput">SETTING MATERIAL PARAMETERS...
-Proposed (norm.): 4.4844867499321606e-01 2.0022415551234474e+00 
-Proposed        : 2.8908987555603303e-04 6.0067246653703421e+00 
-Set (constr.)   : 3.2181869435257427e-04 6.0026296676854649e+00 
-Done
-</pre><pre class="codeoutput">SETTING MATERIAL PARAMETERS...
-Proposed (norm.): 4.4844969826723685e-01 2.0022370524371902e+00 
-Proposed        : 2.8909053520378275e-04 6.0067111573115710e+00 
-Set (constr.)   : 3.2181918521422687e-04 6.0026162147580688e+00 
-Done
-</pre><pre class="codeoutput">SETTING MATERIAL PARAMETERS...
-Proposed (norm.): 4.4845491106607105e-01 2.0022141139506830e+00 
-Proposed        : 2.8909389560476128e-04 6.0066423418520491e+00 
-Set (constr.)   : 3.2182168578704664e-04 6.0025476801521744e+00 
-Done
-</pre><pre class="codeoutput">SETTING MATERIAL PARAMETERS...
-Proposed (norm.): 4.4846019815551269e-01 2.0021908357203575e+00 
-Proposed        : 2.8909730389675540e-04 6.0065725071610725e+00 
-Set (constr.)   : 3.2182422201058078e-04 6.0024781304614638e+00 
-Done
-</pre><pre class="codeoutput">SETTING MATERIAL PARAMETERS...
-Proposed (norm.): 4.4846123542004929e-01 2.0021861809790122e+00 
-Proposed        : 2.8909797256341119e-04 6.0065585429370367e+00 
-Set (constr.)   : 3.2182471958930699e-04 6.0024642232248198e+00 
-Done
-</pre><pre class="codeoutput">SETTING MATERIAL PARAMETERS...
-Proposed (norm.): 4.4846132608414685e-01 2.0021856028755343e+00 
-Proposed        : 2.8909803100950356e-04 6.0065568086266028e+00 
-Set (constr.)   : 3.2182476308115552e-04 6.0024624959919954e+00 
-Done
-</pre><h2 id="32">START FEBio</h2><pre class="codeinput">[runFlag]=runMonitorFEBio(objectiveStruct.febioAnalysis);
+</pre><h2 id="35">START FEBio</h2><pre class="codeinput">[runFlag]=runMonitorFEBio(objectiveStruct.febioAnalysis);
 
 <span class="comment">%pause(0.1);</span>
 
-bcPrescribeList=objectiveStruct.bcPrescribeList;
-sampleHeight=objectiveStruct.sampleHeight;
 stretch_exp=objectiveStruct.stretch_exp;
 stress_cauchy_exp=objectiveStruct.stress_cauchy_exp;
 
 <span class="keyword">if</span> runFlag==1
 
-    <span class="comment">%Importing displacement</span>
-    [~,N_disp_mat,~]=importFEBio_logfile(objectiveStruct.run_output_names.displacement,1,1);
+    <span class="comment">% Importing element stress from a log file</span>
+    [~, E_stress_mat,~]=importFEBio_logfile(objectiveStruct.run_output_names.stress,0,1);
 
     <span class="comment">% Importing element stress from a log file</span>
-    [~, E_stress_mat,~]=importFEBio_logfile(objectiveStruct.run_output_names.stress,1,1);
-    stress_cauchy_sim=mean(squeeze(E_stress_mat(:,end,:)),1)';
+    [~, E_stretch_mat,~]=importFEBio_logfile(objectiveStruct.run_output_names.stretch,0,1);
 
-    <span class="comment">%Derive applied stretch</span>
-    DZ_set=N_disp_mat(bcPrescribeList,end,:); <span class="comment">%Final nodal displacements</span>
-    DZ_set=mean(DZ_set,1);
-    stretch_sim=(DZ_set+sampleHeight)./sampleHeight;
-    stretch_sim=stretch_sim(:);
+    stretch_sim=squeeze(mean(E_stretch_mat,1)); <span class="comment">% Stretch U_z</span>
+    stress_cauchy_sim=squeeze(mean(E_stress_mat,1)); <span class="comment">%Cauchy stress sigma_z</span>
 
     <span class="keyword">if</span> ~isempty(objectiveStruct.h)
         objectiveStruct.h.XData=stretch_sim;
@@ -780,7 +789,7 @@ stress_cauchy_exp=objectiveStruct.stress_cauchy_exp;
     <span class="keyword">end</span>
     OPT_stats_out=[];
 <span class="keyword">end</span>
-</pre><img width="100%" height="auto" vspace="5" hspace="5" src="DEMO_febio_0042_inverse_FEA_cube_uniaxial_05.jpg" alt=""> <img width="100%" height="auto" vspace="5" hspace="5" src="DEMO_febio_0042_inverse_FEA_cube_uniaxial_06.jpg" alt=""> <img width="100%" height="auto" vspace="5" hspace="5" src="DEMO_febio_0042_inverse_FEA_cube_uniaxial_07.jpg" alt=""> <img width="100%" height="auto" vspace="5" hspace="5" src="DEMO_febio_0042_inverse_FEA_cube_uniaxial_08.jpg" alt=""> <img width="100%" height="auto" vspace="5" hspace="5" src="DEMO_febio_0042_inverse_FEA_cube_uniaxial_09.jpg" alt=""> <img width="100%" height="auto" vspace="5" hspace="5" src="DEMO_febio_0042_inverse_FEA_cube_uniaxial_10.jpg" alt=""> <img width="100%" height="auto" vspace="5" hspace="5" src="DEMO_febio_0042_inverse_FEA_cube_uniaxial_11.jpg" alt=""> <img width="100%" height="auto" vspace="5" hspace="5" src="DEMO_febio_0042_inverse_FEA_cube_uniaxial_12.jpg" alt=""> <img width="100%" height="auto" vspace="5" hspace="5" src="DEMO_febio_0042_inverse_FEA_cube_uniaxial_13.jpg" alt=""> <img width="100%" height="auto" vspace="5" hspace="5" src="DEMO_febio_0042_inverse_FEA_cube_uniaxial_14.jpg" alt=""> <img width="100%" height="auto" vspace="5" hspace="5" src="DEMO_febio_0042_inverse_FEA_cube_uniaxial_15.jpg" alt=""> <img width="100%" height="auto" vspace="5" hspace="5" src="DEMO_febio_0042_inverse_FEA_cube_uniaxial_16.jpg" alt=""> <img width="100%" height="auto" vspace="5" hspace="5" src="DEMO_febio_0042_inverse_FEA_cube_uniaxial_17.jpg" alt=""> <img width="100%" height="auto" vspace="5" hspace="5" src="DEMO_febio_0042_inverse_FEA_cube_uniaxial_18.jpg" alt=""> <img width="100%" height="auto" vspace="5" hspace="5" src="DEMO_febio_0042_inverse_FEA_cube_uniaxial_19.jpg" alt=""> <img width="100%" height="auto" vspace="5" hspace="5" src="DEMO_febio_0042_inverse_FEA_cube_uniaxial_20.jpg" alt=""> <img width="100%" height="auto" vspace="5" hspace="5" src="DEMO_febio_0042_inverse_FEA_cube_uniaxial_21.jpg" alt=""> <img width="100%" height="auto" vspace="5" hspace="5" src="DEMO_febio_0042_inverse_FEA_cube_uniaxial_22.jpg" alt=""> <img width="100%" height="auto" vspace="5" hspace="5" src="DEMO_febio_0042_inverse_FEA_cube_uniaxial_23.jpg" alt=""> <img width="100%" height="auto" vspace="5" hspace="5" src="DEMO_febio_0042_inverse_FEA_cube_uniaxial_24.jpg" alt=""> <img width="100%" height="auto" vspace="5" hspace="5" src="DEMO_febio_0042_inverse_FEA_cube_uniaxial_25.jpg" alt=""> <img width="100%" height="auto" vspace="5" hspace="5" src="DEMO_febio_0042_inverse_FEA_cube_uniaxial_26.jpg" alt=""> <img width="100%" height="auto" vspace="5" hspace="5" src="DEMO_febio_0042_inverse_FEA_cube_uniaxial_27.jpg" alt=""> <img width="100%" height="auto" vspace="5" hspace="5" src="DEMO_febio_0042_inverse_FEA_cube_uniaxial_28.jpg" alt=""> <img width="100%" height="auto" vspace="5" hspace="5" src="DEMO_febio_0042_inverse_FEA_cube_uniaxial_29.jpg" alt=""> <img width="100%" height="auto" vspace="5" hspace="5" src="DEMO_febio_0042_inverse_FEA_cube_uniaxial_30.jpg" alt=""> <img width="100%" height="auto" vspace="5" hspace="5" src="DEMO_febio_0042_inverse_FEA_cube_uniaxial_31.jpg" alt=""> <img width="100%" height="auto" vspace="5" hspace="5" src="DEMO_febio_0042_inverse_FEA_cube_uniaxial_32.jpg" alt=""> <img width="100%" height="auto" vspace="5" hspace="5" src="DEMO_febio_0042_inverse_FEA_cube_uniaxial_33.jpg" alt=""> <img width="100%" height="auto" vspace="5" hspace="5" src="DEMO_febio_0042_inverse_FEA_cube_uniaxial_34.jpg" alt=""> <img width="100%" height="auto" vspace="5" hspace="5" src="DEMO_febio_0042_inverse_FEA_cube_uniaxial_35.jpg" alt=""> <img width="100%" height="auto" vspace="5" hspace="5" src="DEMO_febio_0042_inverse_FEA_cube_uniaxial_36.jpg" alt=""> <img width="100%" height="auto" vspace="5" hspace="5" src="DEMO_febio_0042_inverse_FEA_cube_uniaxial_37.jpg" alt=""> <img width="100%" height="auto" vspace="5" hspace="5" src="DEMO_febio_0042_inverse_FEA_cube_uniaxial_38.jpg" alt=""> <img width="100%" height="auto" vspace="5" hspace="5" src="DEMO_febio_0042_inverse_FEA_cube_uniaxial_39.jpg" alt=""> <img width="100%" height="auto" vspace="5" hspace="5" src="DEMO_febio_0042_inverse_FEA_cube_uniaxial_40.jpg" alt=""> <img width="100%" height="auto" vspace="5" hspace="5" src="DEMO_febio_0042_inverse_FEA_cube_uniaxial_41.jpg" alt=""> <img width="100%" height="auto" vspace="5" hspace="5" src="DEMO_febio_0042_inverse_FEA_cube_uniaxial_42.jpg" alt=""> <pre class="codeinput"><span class="keyword">end</span>
+</pre><img width="100%" height="auto" vspace="5" hspace="5" src="DEMO_febio_0042_inverse_FEA_cube_uniaxial_06.jpg" alt=""> <img width="100%" height="auto" vspace="5" hspace="5" src="DEMO_febio_0042_inverse_FEA_cube_uniaxial_07.jpg" alt=""> <img width="100%" height="auto" vspace="5" hspace="5" src="DEMO_febio_0042_inverse_FEA_cube_uniaxial_08.jpg" alt=""> <img width="100%" height="auto" vspace="5" hspace="5" src="DEMO_febio_0042_inverse_FEA_cube_uniaxial_09.jpg" alt=""> <img width="100%" height="auto" vspace="5" hspace="5" src="DEMO_febio_0042_inverse_FEA_cube_uniaxial_10.jpg" alt=""> <img width="100%" height="auto" vspace="5" hspace="5" src="DEMO_febio_0042_inverse_FEA_cube_uniaxial_11.jpg" alt=""> <img width="100%" height="auto" vspace="5" hspace="5" src="DEMO_febio_0042_inverse_FEA_cube_uniaxial_12.jpg" alt=""> <img width="100%" height="auto" vspace="5" hspace="5" src="DEMO_febio_0042_inverse_FEA_cube_uniaxial_13.jpg" alt=""> <img width="100%" height="auto" vspace="5" hspace="5" src="DEMO_febio_0042_inverse_FEA_cube_uniaxial_14.jpg" alt=""> <img width="100%" height="auto" vspace="5" hspace="5" src="DEMO_febio_0042_inverse_FEA_cube_uniaxial_15.jpg" alt=""> <img width="100%" height="auto" vspace="5" hspace="5" src="DEMO_febio_0042_inverse_FEA_cube_uniaxial_16.jpg" alt=""> <img width="100%" height="auto" vspace="5" hspace="5" src="DEMO_febio_0042_inverse_FEA_cube_uniaxial_17.jpg" alt=""> <img width="100%" height="auto" vspace="5" hspace="5" src="DEMO_febio_0042_inverse_FEA_cube_uniaxial_18.jpg" alt=""> <img width="100%" height="auto" vspace="5" hspace="5" src="DEMO_febio_0042_inverse_FEA_cube_uniaxial_19.jpg" alt=""> <img width="100%" height="auto" vspace="5" hspace="5" src="DEMO_febio_0042_inverse_FEA_cube_uniaxial_20.jpg" alt=""> <img width="100%" height="auto" vspace="5" hspace="5" src="DEMO_febio_0042_inverse_FEA_cube_uniaxial_21.jpg" alt=""> <img width="100%" height="auto" vspace="5" hspace="5" src="DEMO_febio_0042_inverse_FEA_cube_uniaxial_22.jpg" alt=""> <img width="100%" height="auto" vspace="5" hspace="5" src="DEMO_febio_0042_inverse_FEA_cube_uniaxial_23.jpg" alt=""> <img width="100%" height="auto" vspace="5" hspace="5" src="DEMO_febio_0042_inverse_FEA_cube_uniaxial_24.jpg" alt=""> <img width="100%" height="auto" vspace="5" hspace="5" src="DEMO_febio_0042_inverse_FEA_cube_uniaxial_25.jpg" alt=""> <img width="100%" height="auto" vspace="5" hspace="5" src="DEMO_febio_0042_inverse_FEA_cube_uniaxial_26.jpg" alt=""> <img width="100%" height="auto" vspace="5" hspace="5" src="DEMO_febio_0042_inverse_FEA_cube_uniaxial_27.jpg" alt=""> <img width="100%" height="auto" vspace="5" hspace="5" src="DEMO_febio_0042_inverse_FEA_cube_uniaxial_28.jpg" alt=""> <img width="100%" height="auto" vspace="5" hspace="5" src="DEMO_febio_0042_inverse_FEA_cube_uniaxial_29.jpg" alt=""> <img width="100%" height="auto" vspace="5" hspace="5" src="DEMO_febio_0042_inverse_FEA_cube_uniaxial_30.jpg" alt=""> <img width="100%" height="auto" vspace="5" hspace="5" src="DEMO_febio_0042_inverse_FEA_cube_uniaxial_31.jpg" alt=""> <img width="100%" height="auto" vspace="5" hspace="5" src="DEMO_febio_0042_inverse_FEA_cube_uniaxial_32.jpg" alt=""> <img width="100%" height="auto" vspace="5" hspace="5" src="DEMO_febio_0042_inverse_FEA_cube_uniaxial_33.jpg" alt=""> <img width="100%" height="auto" vspace="5" hspace="5" src="DEMO_febio_0042_inverse_FEA_cube_uniaxial_34.jpg" alt=""> <img width="100%" height="auto" vspace="5" hspace="5" src="DEMO_febio_0042_inverse_FEA_cube_uniaxial_35.jpg" alt=""> <img width="100%" height="auto" vspace="5" hspace="5" src="DEMO_febio_0042_inverse_FEA_cube_uniaxial_36.jpg" alt=""> <pre class="codeinput"><span class="keyword">end</span>
 </pre><pre class="codeoutput">
                                         First-Order                    Norm of 
  Iteration  Func-count    Residual       optimality      Lambda           step
@@ -794,17 +803,29 @@ stress_cauchy_exp=objectiveStruct.stress_cauchy_exp;
      7          24     1.30793e-08        2.59e-07        1e-09        0.61414
      8          27     8.91615e-09        2.73e-09        1e-10      0.0319446
      9          30     8.91549e-09        5.99e-12        1e-11     0.00166669
-    10          37                                                  5.8517e-07
 
-Local minimum possible.
-lsqnonlin stopped because the relative size of the current step is less than
-the value of the step size tolerance.
+Local minimum found.
 
-</pre><p><img vspace="5" hspace="5" src="gibbVerySmall.gif" alt=""> </p><p><i><b>GIBBON</b></i> <a href="www.gibboncode.org">www.gibboncode.org</a></p><p><i>Kevin Mattheus Moerman</i>, <a href="gibbon.toolbox@gmail.com">gibbon.toolbox@gmail.com</a></p><p><i><b>GIBBON footer text</b></i></p><p>License: <a href="https://github.com/gibbonCode/GIBBON/blob/master/LICENSE">https://github.com/gibbonCode/GIBBON/blob/master/LICENSE</a></p><p>GIBBON: The Geometry and Image-based Bioengineering add-On. A toolbox for image segmentation, image-based modeling, meshing, and finite element analysis.</p><p>Copyright (C) 2006-2020 Kevin Mattheus Moerman</p><p>This program is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.</p><p>This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for more details.</p><p>You should have received a copy of the GNU General Public License along with this program.  If not, see <a href="http://www.gnu.org/licenses/">http://www.gnu.org/licenses/</a>.</p><p class="footer"><br><a href="https://www.mathworks.com/products/matlab/">Published with MATLAB&reg; R2020b</a><br></p></div><!--
+Optimization completed because the size of the gradient is less than
+1e-4 times the value of the function tolerance.
+
+</pre><p><img vspace="5" hspace="5" src="gibbVerySmall.gif" alt=""> </p><p><i><b>GIBBON</b></i> <a href="www.gibboncode.org">www.gibboncode.org</a></p><p><i>Kevin Mattheus Moerman</i>, <a href="gibbon.toolbox@gmail.com">gibbon.toolbox@gmail.com</a></p><p><i><b>GIBBON footer text</b></i></p><p>License: <a href="https://github.com/gibbonCode/GIBBON/blob/master/LICENSE">https://github.com/gibbonCode/GIBBON/blob/master/LICENSE</a></p><p>GIBBON: The Geometry and Image-based Bioengineering add-On. A toolbox for image segmentation, image-based modeling, meshing, and finite element analysis.</p><p>Copyright (C) 2006-2022 Kevin Mattheus Moerman and the GIBBON contributors</p><p>This program is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.</p><p>This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for more details.</p><p>You should have received a copy of the GNU General Public License along with this program.  If not, see <a href="http://www.gnu.org/licenses/">http://www.gnu.org/licenses/</a>.</p><p class="footer"><br><a href="https://www.mathworks.com/products/matlab/">Published with MATLAB&reg; R2022b</a><br></p></div><!--
 ##### SOURCE BEGIN #####
 %% DEMO_febio_0042_inverse_FEA_cube_uniaxial
-% Below is a demonstration for: 
-% 1) Inverse FEA based material parameter optimisation 
+% Below is a demonstration for:
+% 
+% * Inverse FEA based material parameter optimisation for uniaxial
+% compression
+
+%% Keywords
+%
+% * febio_spec version 4.0
+% * febio, FEBio
+% * hexahedral elements, hex8
+% * static, solid
+% * hyperelastic, Ogden
+% * displacement logfile
+% * stress logfile
 
 %%
 
@@ -832,10 +853,11 @@ savePath=fullfile(defaultFolder,'data','temp');
 % Defining file names
 febioFebFileNamePart='tempModel';
 febioFebFileName=fullfile(savePath,[febioFebFileNamePart,'.feb']); %FEB file name
-febioLogFileName=fullfile(savePath,[febioFebFileNamePart,'.txt']); %FEBio log file name
+febioLogFileName=[febioFebFileNamePart,'.txt']; %FEBio log file name
 febioLogFileName_disp=[febioFebFileNamePart,'_disp_out.txt']; %Log file name for exporting displacement
 febioLogFileName_force=[febioFebFileNamePart,'_force_out.txt']; %Log file name for exporting force
-febioLogFileName_stress=[febioFebFileNamePart,'_stress_out.txt']; %Log file name for exporting stress
+febioLogFileName_stress=[febioFebFileNamePart,'_stress_out.txt']; %Log file name for exporting stress sigma_z
+febioLogFileName_stretch=[febioFebFileNamePart,'_stretch_out.txt']; %Log file name for exporting stretch U_z
 
 %Specifying dimensions and number of elements
 sampleWidth=10;
@@ -871,6 +893,8 @@ opt_iter=6; %Optimum number of iterations
 max_retries=5; %Maximum number of retires
 dtmin=(1/numTimeSteps)/100; %Minimum time step size
 dtmax=1/numTimeSteps; %Maximum time step size
+
+runMode='external';% 'internal' or 'external'
 
 %% SIMULATE EXPERIMENTAL DATA
 
@@ -960,7 +984,7 @@ drawnow;
 [febio_spec]=febioStructTemplate;
 
 %febio_spec version 
-febio_spec.ATTR.version='3.0'; 
+febio_spec.ATTR.version='4.0'; 
 
 %Module section
 febio_spec.Module.ATTR.type='solid'; 
@@ -970,7 +994,7 @@ febio_spec.Control.analysis='STATIC';
 febio_spec.Control.time_steps=numTimeSteps;
 febio_spec.Control.step_size=1/numTimeSteps;
 febio_spec.Control.solver.max_refs=max_refs;
-febio_spec.Control.solver.max_ups=max_ups;
+febio_spec.Control.solver.qn_method.max_ups=max_ups;
 febio_spec.Control.time_stepper.dtmin=dtmin;
 febio_spec.Control.time_stepper.dtmax=dtmax; 
 febio_spec.Control.time_stepper.max_retries=max_retries;
@@ -1007,16 +1031,16 @@ nodeSetName3='bcSupportList_Z';
 nodeSetName4='bcPrescribeList';
 
 febio_spec.Mesh.NodeSet{1}.ATTR.name=nodeSetName1;
-febio_spec.Mesh.NodeSet{1}.node.ATTR.id=bcSupportList_X(:);
+febio_spec.Mesh.NodeSet{1}.VAL=mrow(bcSupportList_X);
 
 febio_spec.Mesh.NodeSet{2}.ATTR.name=nodeSetName2;
-febio_spec.Mesh.NodeSet{2}.node.ATTR.id=bcSupportList_Y(:);
+febio_spec.Mesh.NodeSet{2}.VAL=mrow(bcSupportList_Y);
 
 febio_spec.Mesh.NodeSet{3}.ATTR.name=nodeSetName3;
-febio_spec.Mesh.NodeSet{3}.node.ATTR.id=bcSupportList_Z(:);
- 
+febio_spec.Mesh.NodeSet{3}.VAL=mrow(bcSupportList_Z);
+
 febio_spec.Mesh.NodeSet{4}.ATTR.name=nodeSetName4;
-febio_spec.Mesh.NodeSet{4}.node.ATTR.id=bcPrescribeList(:);
+febio_spec.Mesh.NodeSet{4}.VAL=mrow(bcPrescribeList);
 
 %MeshDomains section
 febio_spec.MeshDomains.SolidDomain.ATTR.name=partName1;
@@ -1024,31 +1048,43 @@ febio_spec.MeshDomains.SolidDomain.ATTR.mat=materialName1;
 
 %Boundary condition section 
 % -> Fix boundary conditions
-febio_spec.Boundary.bc{1}.ATTR.type='fix';
+febio_spec.Boundary.bc{1}.ATTR.name='zero_displacement_x';
+febio_spec.Boundary.bc{1}.ATTR.type='zero displacement';
 febio_spec.Boundary.bc{1}.ATTR.node_set=nodeSetName1;
-febio_spec.Boundary.bc{1}.dofs='x';
+febio_spec.Boundary.bc{1}.x_dof=1;
+febio_spec.Boundary.bc{1}.y_dof=0;
+febio_spec.Boundary.bc{1}.z_dof=0;
 
-febio_spec.Boundary.bc{2}.ATTR.type='fix';
+febio_spec.Boundary.bc{2}.ATTR.name='zero_displacement_y';
+febio_spec.Boundary.bc{2}.ATTR.type='zero displacement';
 febio_spec.Boundary.bc{2}.ATTR.node_set=nodeSetName2;
-febio_spec.Boundary.bc{2}.dofs='y';
+febio_spec.Boundary.bc{2}.x_dof=0;
+febio_spec.Boundary.bc{2}.y_dof=1;
+febio_spec.Boundary.bc{2}.z_dof=0;
 
-febio_spec.Boundary.bc{3}.ATTR.type='fix';
+febio_spec.Boundary.bc{3}.ATTR.name='zero_displacement_z';
+febio_spec.Boundary.bc{3}.ATTR.type='zero displacement';
 febio_spec.Boundary.bc{3}.ATTR.node_set=nodeSetName3;
-febio_spec.Boundary.bc{3}.dofs='z';
+febio_spec.Boundary.bc{3}.x_dof=0;
+febio_spec.Boundary.bc{3}.y_dof=0;
+febio_spec.Boundary.bc{3}.z_dof=1;
 
-febio_spec.Boundary.bc{4}.ATTR.type='prescribe';
+febio_spec.Boundary.bc{4}.ATTR.name='prescibed_displacement_z';
+febio_spec.Boundary.bc{4}.ATTR.type='prescribed displacement';
 febio_spec.Boundary.bc{4}.ATTR.node_set=nodeSetName4;
 febio_spec.Boundary.bc{4}.dof='z';
-febio_spec.Boundary.bc{4}.scale.ATTR.lc=1;
-febio_spec.Boundary.bc{4}.scale.VAL=displacementMagnitude;
+febio_spec.Boundary.bc{4}.value.ATTR.lc=1;
+febio_spec.Boundary.bc{4}.value.VAL=displacementMagnitude;
 febio_spec.Boundary.bc{4}.relative=0;
 
 %LoadData section
 % -> load_controller
+febio_spec.LoadData.load_controller{1}.ATTR.name='LC_1';
 febio_spec.LoadData.load_controller{1}.ATTR.id=1;
 febio_spec.LoadData.load_controller{1}.ATTR.type='loadcurve';
 febio_spec.LoadData.load_controller{1}.interpolate='LINEAR';
-febio_spec.LoadData.load_controller{1}.points.point.VAL=[0 0; 1 1];
+%febio_spec.LoadData.load_controller{1}.extend='CONSTANT';
+febio_spec.LoadData.load_controller{1}.points.pt.VAL=[0 0; 1 1];
 
 %Output section 
 % -> log file
@@ -1056,17 +1092,21 @@ febio_spec.Output.logfile.ATTR.file=febioLogFileName;
 febio_spec.Output.logfile.node_data{1}.ATTR.file=febioLogFileName_disp;
 febio_spec.Output.logfile.node_data{1}.ATTR.data='ux;uy;uz';
 febio_spec.Output.logfile.node_data{1}.ATTR.delim=',';
-febio_spec.Output.logfile.node_data{1}.VAL=1:size(V,1);
 
 febio_spec.Output.logfile.node_data{2}.ATTR.file=febioLogFileName_force;
 febio_spec.Output.logfile.node_data{2}.ATTR.data='Rx;Ry;Rz';
 febio_spec.Output.logfile.node_data{2}.ATTR.delim=',';
-febio_spec.Output.logfile.node_data{2}.VAL=1:size(V,1);
 
 febio_spec.Output.logfile.element_data{1}.ATTR.file=febioLogFileName_stress;
 febio_spec.Output.logfile.element_data{1}.ATTR.data='sz';
 febio_spec.Output.logfile.element_data{1}.ATTR.delim=',';
-febio_spec.Output.logfile.element_data{1}.VAL=1:size(E,1);
+
+febio_spec.Output.logfile.element_data{2}.ATTR.file=febioLogFileName_stretch;
+febio_spec.Output.logfile.element_data{2}.ATTR.data='Uz';
+febio_spec.Output.logfile.element_data{2}.ATTR.delim=',';
+
+% Plotfile section
+febio_spec.Output.plotfile.compression=0;
 
 %% Quick viewing of the FEBio input file structure
 % The |febView| function can be used to view the xml structure in a MATLAB
@@ -1080,6 +1120,7 @@ febio_spec.Output.logfile.element_data{1}.VAL=1:size(E,1);
 % the |febioStruct2xml| function. 
 
 febioStruct2xml(febio_spec,febioFebFileName); %Exporting to file and domNode
+%system(['gedit ',febioFebFileName,' &']);
 
 %% Running the FEBio analysis
 % To run the analysis defined by the created FEBio input file the
@@ -1091,7 +1132,8 @@ febioStruct2xml(febio_spec,febioFebFileName); %Exporting to file and domNode
 febioAnalysis.run_filename=febioFebFileName; %The input file name
 febioAnalysis.run_logname=febioLogFileName; %The name for the log file
 febioAnalysis.disp_on=1; %Display information on the command window
-febioAnalysis.runMode='external';%'internal';
+febioAnalysis.runMode=runMode;
+febioAnalysis.maxLogCheckTime=10; %Max log file checking time
 
 [runFlag]=runMonitorFEBio(febioAnalysis);%START FEBio NOW!!!!!!!!
 
@@ -1100,8 +1142,9 @@ febioAnalysis.runMode='external';%'internal';
 if runFlag==1 %i.e. a succesful run
     
     %% 
+    
     % Importing nodal displacements from a log file
-    dataStruct=importFEBio_logfile(fullfile(savePath,febioLogFileName_disp),1,1);
+    dataStruct=importFEBio_logfile(fullfile(savePath,febioLogFileName_disp),0,1);
     
     %Access data
     N_disp_mat=dataStruct.data; %Displacement
@@ -1109,16 +1152,57 @@ if runFlag==1 %i.e. a succesful run
     
     %Create deformed coordinate set
     V_DEF=N_disp_mat+repmat(V,[1 1 size(N_disp_mat,3)]);
-
+               
+    %% 
+    % Plotting the simulated results using |anim8| to visualize and animate
+    % deformations 
+    
+    DN_magnitude=sqrt(sum(N_disp_mat(:,:,end).^2,2)); %Current displacement magnitude
+        
+    % Create basic view and store graphics handle to initiate animation
+    hf=cFigure; %Open figure  
+    gtitle([febioFebFileNamePart,': Press play to animate']);
+    title('Displacement magnitude [mm]','Interpreter','Latex')
+    hp=gpatch(Fb,V_DEF(:,:,end),DN_magnitude,'k',1,2); %Add graphics object to animate
+    hp.Marker='.';
+    hp.MarkerSize=markerSize2;
+    hp.FaceColor='interp';
+    gpatch(Fb,V,0.5*ones(1,3),'none',0.25); %A static graphics object
+    
+    axisGeom(gca,fontSize); 
+    colormap(cMap); colorbar;
+    caxis([0 max(DN_magnitude)]); caxis manual;   
+    axis(axisLim(V_DEF)); %Set axis limits statically    
+    view(140,30);
+    camlight headlight;        
+        
+    % Set up animation features
+    animStruct.Time=timeVec; %The time vector    
+    for qt=1:1:size(N_disp_mat,3) %Loop over time increments        
+        DN_magnitude=sqrt(sum(N_disp_mat(:,:,qt).^2,2)); %Current displacement magnitude
+                
+        %Set entries in animation structure
+        animStruct.Handles{qt}=[hp hp]; %Handles of objects to animate
+        animStruct.Props{qt}={'Vertices','CData'}; %Properties of objects to animate
+        animStruct.Set{qt}={V_DEF(:,:,qt),DN_magnitude}; %Property values for to set in order to animate
+    end        
+    anim8(hf,animStruct); %Initiate animation feature    
+    drawnow;
+            
     %%
     % Importing element stress from a log file
-    dataStruct=importFEBio_logfile(fullfile(savePath,febioLogFileName_stress),1,1);
+    dataStruct=importFEBio_logfile(fullfile(savePath,febioLogFileName_stress),0,1);
     
     %Access data
     E_stress_mat=dataStruct.data;
+
+    %%
+    % Importing element stretch from a log file
+    dataStruct=importFEBio_logfile(fullfile(savePath,febioLogFileName_stretch),0,1);
     
-    stress_cauchy_sim=mean(squeeze(E_stress_mat(:,end,:)),1)';
-    
+    %Access data
+    E_stretch_mat=dataStruct.data;
+
     %% 
     % Plotting the simulated results using |anim8| to visualize and animate
     % deformations 
@@ -1126,10 +1210,11 @@ if runFlag==1 %i.e. a succesful run
     [CV]=faceToVertexMeasure(E,V,E_stress_mat(:,:,end));
     
     % Create basic view and store graphics handle to initiate animation
-    hf=cFigure; %Open figure  
+    hf=cFigure; %Open figure  /usr/local/MATLAB/R2020a/bin/glnxa64/jcef_helper: symbol lookup error: /lib/x86_64-linux-gnu/libpango-1.0.so.0: undefined symbol: g_ptr_array_copy
+
     gtitle([febioFebFileNamePart,': Press play to animate']);
     title('$\sigma_{zz}$ [MPa]','Interpreter','Latex')
-    hp=gpatch(Fb,V_DEF(:,:,end),CV,'k',1); %Add graphics object to animate
+    hp=gpatch(Fb,V_DEF(:,:,end),CV,'k',1,2); %Add graphics object to animate
     hp.Marker='.';
     hp.MarkerSize=markerSize2;
     hp.FaceColor='interp';
@@ -1155,16 +1240,12 @@ if runFlag==1 %i.e. a succesful run
     end        
     anim8(hf,animStruct); %Initiate animation feature    
     drawnow;
-    
+
     %% 
-    % Calculate the simulated applied uniaxial stretch
+    % Visualize stretch-stress curve
     
-    DZ_set=N_disp_mat(bcPrescribeList,end,:); %Z displacements of the prescribed set
-    DZ_set=mean(DZ_set,1); %Calculate mean Z displacements across nodes
-    stretch_sim=(DZ_set(:)+sampleHeight)./sampleHeight; %Derive stretch
-    
-    %Interpolate experiment onto simulated points
-    stress_cauchy_exp_sim = interp1(stretch_exp,stress_cauchy_exp,stretch_sim,'pchip');
+    stretch_sim=squeeze(mean(E_stretch_mat,1)); % Stretch U_z
+    stress_cauchy_sim=squeeze(mean(E_stress_mat,1)); %Cauchy stress sigma_z
 
     %%    
     % Visualize stress-stretch curve
@@ -1196,7 +1277,6 @@ febioAnalysis.disp_log_on=0;
 
 %What should be known to the objective function:
 objectiveStruct.h=Hn(2);
-objectiveStruct.bcPrescribeList=bcPrescribeList;
 objectiveStruct.stretch_exp=stretch_exp;
 objectiveStruct.stress_cauchy_exp=stress_cauchy_exp;
 objectiveStruct.febioAnalysis=febioAnalysis;
@@ -1204,11 +1284,10 @@ objectiveStruct.febio_spec=febio_spec;
 objectiveStruct.febioFebFileName=febioFebFileName;
 objectiveStruct.mat_struct=mat_struct;
 objectiveStruct.k_factor=k_factor;
-objectiveStruct.initialArea=initialArea;
-objectiveStruct.sampleHeight=sampleHeight;
 objectiveStruct.parNormFactors=P; %This will normalize the parameters to ones(size(P))
 objectiveStruct.Pb_struct.xx_c=P; %Parameter constraining centre
-objectiveStruct.Pb_struct.xxlim=[[P(1)/100 2]' [P(1)*100 50]']; %Parameter bounds
+objectiveStruct.Pb_struct.xxlim=[P(1)/100 P(1)*100;...
+                                 2        50      ]; %Parameter bounds
 
 %Optimisation settings
 maxNumberIterations=100; %Maximum number of optimization iterations
@@ -1220,8 +1299,8 @@ displayTypeIterations='iter';
 objectiveStruct.method=2; 
 
 %File names of output files
-output_names.displacement=fullfile(savePath,febioLogFileName_disp);
 output_names.stress=fullfile(savePath,febioLogFileName_stress);
+output_names.stretch=fullfile(savePath,febioLogFileName_stretch);
 objectiveStruct.run_output_names=output_names;
 
 %% start optimization
@@ -1276,7 +1355,7 @@ Hn(1)=plot(stretch_exp,stress_cauchy_exp,'k-','lineWidth',lineWidth);
 Hn(2)=plot(OPT_stats_out.stretch_sim,OPT_stats_out.stress_cauchy_sim,'r.-','lineWidth',lineWidth2,'markerSize',markerSize2);
 
 legend(Hn,{'Experiment','Simulation'},'Location','northwest');
-view(2); axis tight;  grid on; 
+view(2); axis tight;  grid on; axis square; axis manual;
 set(gca,'FontSize',fontSize);
 drawnow;
 
@@ -1327,25 +1406,19 @@ disp('Done')
 
 %pause(0.1); 
 
-bcPrescribeList=objectiveStruct.bcPrescribeList;
-sampleHeight=objectiveStruct.sampleHeight;
 stretch_exp=objectiveStruct.stretch_exp;
 stress_cauchy_exp=objectiveStruct.stress_cauchy_exp;
 
 if runFlag==1    
-    
-    %Importing displacement
-    [~,N_disp_mat,~]=importFEBio_logfile(objectiveStruct.run_output_names.displacement,1,1);
 
     % Importing element stress from a log file
-    [~, E_stress_mat,~]=importFEBio_logfile(objectiveStruct.run_output_names.stress,1,1);
-    stress_cauchy_sim=mean(squeeze(E_stress_mat(:,end,:)),1)';
-    
-    %Derive applied stretch
-    DZ_set=N_disp_mat(bcPrescribeList,end,:); %Final nodal displacements
-    DZ_set=mean(DZ_set,1);
-    stretch_sim=(DZ_set+sampleHeight)./sampleHeight;
-    stretch_sim=stretch_sim(:);
+    [~, E_stress_mat,~]=importFEBio_logfile(objectiveStruct.run_output_names.stress,0,1);
+
+    % Importing element stress from a log file
+    [~, E_stretch_mat,~]=importFEBio_logfile(objectiveStruct.run_output_names.stretch,0,1);
+
+    stretch_sim=squeeze(mean(E_stretch_mat,1)); % Stretch U_z
+    stress_cauchy_sim=squeeze(mean(E_stress_mat,1)); %Cauchy stress sigma_z
     
     if ~isempty(objectiveStruct.h)
         objectiveStruct.h.XData=stretch_sim;
@@ -1401,7 +1474,7 @@ end
 % image segmentation, image-based modeling, meshing, and finite element
 % analysis.
 % 
-% Copyright (C) 2006-2020 Kevin Mattheus Moerman
+% Copyright (C) 2006-2022 Kevin Mattheus Moerman and the GIBBON contributors
 % 
 % This program is free software: you can redistribute it and/or modify
 % it under the terms of the GNU General Public License as published by

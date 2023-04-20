@@ -11,7 +11,7 @@
 
 %% Keywords
 %
-% * febio_spec version 3.0
+% * febio_spec version 4.0
 % * febio, FEBio
 % * indentation
 % * contact, sliding, friction
@@ -55,27 +55,26 @@ pointSpacing=0.4;
 % Ground plate parameters
 tubeRadius=0.8*sphereRadius; 
 inletRadius=tubeRadius/3;
-tubeLength=sphereRadius*5; 
+tubeLength=sphereRadius*6; 
 
 % Material parameter set
 materialType=1; 
-c1=1e-3; %Shear-modulus-like parameter
+c1=0.1e-3; %Shear-modulus-like parameter
 m1=2; %Material parameter setting degree of non-linearity
 k_factor=10; %Bulk modulus factor 
 k=c1*k_factor; %Bulk modulus
 g1=2; %Viscoelastic QLV proportional coefficient
 t1=150; %Viscoelastic QLV time coefficient
 
-%Setting material density (set artificially high in effort to dampen
-%oscilations and increase body force). 
-materialDensity=1e-9*10000; %Density
+%Setting material density
+materialDensity=1e-9; %Density
 
 % FEA control settings
-timeTotal=2; %Total simulation time
-numTimeSteps=10; %Number of time steps desired
-max_refs=25; %Max reforms
+timeTotal=1; %Total simulation time
+numTimeSteps=40; %Number of time steps desired
+max_refs=20; %Max reforms
 max_ups=0; %Set to zero to use full-Newton iterations
-opt_iter=15; %Optimum number of iterations
+opt_iter=6; %Optimum number of iterations
 max_retries=5; %Maximum number of retires
 dtmin=(timeTotal/numTimeSteps)/100; %Minimum time step size
 dtmax=timeTotal/(numTimeSteps); %Maximum time step size
@@ -83,9 +82,11 @@ symmetric_stiffness=0;
 min_residual=1e-20;
 analysisType='DYNAMIC';
 
+runMode='external';% 'internal' or 'external'
+
 %Contact parameters
 contactPenalty=50;
-fric_coeff=0.5; 
+fric_coeff=0.25; 
 laugon=0;
 minaug=1;
 maxaug=10;
@@ -94,7 +95,7 @@ maxaug=10;
 sphereVolume=4/3*(pi*sphereRadius^3); %Sphere Volume in mm^3
 sphereMass=sphereVolume.*materialDensity; %Sphere mass in tonne
 sphereSectionArea=pi*sphereRadius^2;
-bodyLoadMagnitude=9.81*sphereMass*1000;
+bodyLoadMagnitude=(9.81*sphereMass*1000)*6500000;
 
 forceBodyLoad=sphereMass.*bodyLoadMagnitude;
 stressBodyLoad=forceBodyLoad/sphereSectionArea;
@@ -159,19 +160,14 @@ cPar.w=[1 0 0];
 [F_tube,V_tube]=polyRevolve(V_curve_tube,cPar);
 V_tube(:,1)=V_tube(:,1)-sphereRadius;
 
-c=1;
+d=0.1; %Tube placement increment/tolerance
 while 1
-    [D,indMin]=minDist(V_tube,V_blob);
-    [~,indMinMin]=min(D);
-    d=V_tube(indMinMin,1)-V_blob(indMin(indMinMin),1);
-    V_tube(:,1)=V_tube(:,1)-d(1);
-    if c>1
-        if abs(d-dp)<0.001
-            break
-        end
+    R=sqrt(sum(V_tube.^2,2)); %Get current radii    
+    if min(R)<sphereRadius %If the tube is in the sphere space
+        break
+    else %If not in sphere space
+        V_tube(:,1)=V_tube(:,1)+d; %Shift a bit
     end
-    c=c+1;
-    dp=d;
 end
 center_of_mass_tube=mean(V_tube,1);
 
@@ -231,7 +227,7 @@ drawnow;
 [febio_spec]=febioStructTemplate;
 
 %febio_spec version 
-febio_spec.ATTR.version='3.0'; 
+febio_spec.ATTR.version='4.0'; 
 
 %Module section
 febio_spec.Module.ATTR.type='solid'; 
@@ -241,7 +237,7 @@ febio_spec.Control.analysis=analysisType;
 febio_spec.Control.time_steps=numTimeSteps;
 febio_spec.Control.step_size=timeTotal/numTimeSteps;
 febio_spec.Control.solver.max_refs=max_refs;
-febio_spec.Control.solver.max_ups=max_ups;
+febio_spec.Control.solver.qn_method.max_ups=max_ups;
 febio_spec.Control.solver.symmetric_stiffness=symmetric_stiffness;
 febio_spec.Control.time_stepper.dtmin=dtmin;
 febio_spec.Control.time_stepper.dtmax=dtmax; 
@@ -334,14 +330,22 @@ febio_spec.MeshDomains.ShellDomain.ATTR.mat=materialName2;
 febio_spec.Loads.body_load.ATTR.type='const';
 febio_spec.Loads.body_load.x.ATTR.lc=1;
 febio_spec.Loads.body_load.x.VAL=bodyLoadMagnitude;
-      
+febio_spec.Loads.body_load.y.ATTR.lc=1;
+febio_spec.Loads.body_load.y.VAL=0;
+febio_spec.Loads.body_load.z.ATTR.lc=1;
+febio_spec.Loads.body_load.z.VAL=0;
 
 %Rigid section 
-% -> Prescribed rigid body boundary conditions
-febio_spec.Rigid.rigid_constraint{1}.ATTR.name='RigidFix_1';
-febio_spec.Rigid.rigid_constraint{1}.ATTR.type='fix';
-febio_spec.Rigid.rigid_constraint{1}.rb=2;
-febio_spec.Rigid.rigid_constraint{1}.dofs='Rx,Ry,Rz,Ru,Rv,Rw';
+% ->Rigid body fix boundary conditions
+febio_spec.Rigid.rigid_bc{1}.ATTR.name='RigidFix_1';
+febio_spec.Rigid.rigid_bc{1}.ATTR.type='rigid_fixed';
+febio_spec.Rigid.rigid_bc{1}.rb=2;
+febio_spec.Rigid.rigid_bc{1}.Rx_dof=1;
+febio_spec.Rigid.rigid_bc{1}.Ry_dof=1;
+febio_spec.Rigid.rigid_bc{1}.Rz_dof=1;
+febio_spec.Rigid.rigid_bc{1}.Ru_dof=1;
+febio_spec.Rigid.rigid_bc{1}.Rv_dof=1;
+febio_spec.Rigid.rigid_bc{1}.Rw_dof=1;
 
 %Contact section
 febio_spec.Contact.contact{1}.ATTR.type='sliding-elastic';
@@ -361,17 +365,23 @@ febio_spec.Contact.contact{1}.fric_coeff=fric_coeff;
 
 %LoadData section
 % -> load_controller
+febio_spec.LoadData.load_controller{1}.ATTR.name='LC1';
 febio_spec.LoadData.load_controller{1}.ATTR.id=1;
 febio_spec.LoadData.load_controller{1}.ATTR.type='loadcurve';
 febio_spec.LoadData.load_controller{1}.interpolate='LINEAR';
-febio_spec.LoadData.load_controller{1}.points.point.VAL=[0 0; 1 1];
+%febio_spec.LoadData.load_controller{1}.extend='CONSTANT';
+febio_spec.LoadData.load_controller{1}.points.pt.VAL=[0 0; 1 1];
 
-%Output section
+%Output section 
 % -> log file
 febio_spec.Output.logfile.ATTR.file=febioLogFileName;
 febio_spec.Output.logfile.node_data{1}.ATTR.file=febioLogFileName_disp;
 febio_spec.Output.logfile.node_data{1}.ATTR.data='ux;uy;uz';
 febio_spec.Output.logfile.node_data{1}.ATTR.delim=',';
+febio_spec.Output.logfile.node_data{1}.VAL=1:size(V,1);
+
+% Plotfile section
+febio_spec.Output.plotfile.compression=0;
 
 %% Quick viewing of the FEBio input file structure
 % The |febView| function can be used to view the xml structure in a MATLAB
@@ -396,7 +406,7 @@ febioStruct2xml(febio_spec,febioFebFileName); %Exporting to file and domNode
 febioAnalysis.run_filename=febioFebFileName; %The input file name
 febioAnalysis.run_logname=febioLogFileName; %The name for the log file
 febioAnalysis.disp_on=1; %Display information on the command window
-febioAnalysis.runMode='external';%'internal';
+febioAnalysis.runMode=runMode;
 
 [runFlag]=runMonitorFEBio(febioAnalysis);%START FEBio NOW!!!!!!!!
 
@@ -406,7 +416,7 @@ if runFlag==1 %i.e. a succesful run
     
     %%
     % Importing nodal displacements from a log file
-    dataStruct=importFEBio_logfile(fullfile(savePath,febioLogFileName_disp),1,1);
+    dataStruct=importFEBio_logfile(fullfile(savePath,febioLogFileName_disp),0,1);
     
     %Access data
     N_disp_mat=dataStruct.data; %Displacement

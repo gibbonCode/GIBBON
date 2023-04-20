@@ -209,8 +209,10 @@ febio_spec.Boundary.bc{1}.z_dof=1;
 switch bodyLoadType
     case 'const'
         febio_spec.Loads.body_load.ATTR.type='const';
+        febio_spec.Loads.body_load.x.ATTR.lc=1;
         febio_spec.Loads.body_load.x.VAL=0;
-        febio_spec.Loads.body_load.y.VAL=0;
+        febio_spec.Loads.body_load.y.ATTR.lc=1;
+        febio_spec.Loads.body_load.y.VAL=0;        
         febio_spec.Loads.body_load.z.ATTR.lc=1;
         febio_spec.Loads.body_load.z.VAL=10e-5;
     case 'non-const'
@@ -229,7 +231,7 @@ febio_spec.LoadData.load_controller{1}.ATTR.name='LC1';
 febio_spec.LoadData.load_controller{1}.ATTR.id=1;
 febio_spec.LoadData.load_controller{1}.ATTR.type='loadcurve';
 febio_spec.LoadData.load_controller{1}.interpolate='LINEAR';
-febio_spec.LoadData.load_controller{1}.extend='CONSTANT';
+%febio_spec.LoadData.load_controller{1}.extend='CONSTANT';
 febio_spec.LoadData.load_controller{1}.points.pt.VAL=[0 0; 1 1];
 
 %Output section 

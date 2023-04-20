@@ -9,7 +9,7 @@
 
 %% Keywords
 %
-% * febio_spec version 3.0
+% * febio_spec version 4.0
 % * febio, FEBio
 % * probe
 % * rigid body constraints
@@ -36,6 +36,7 @@ markerSize2=30;
 edgeWidth=2; 
 edgeColor='k';
 faceAlpha1=1; 
+cMap=spectral(250);
 
 %% Control parameters
 
@@ -79,6 +80,8 @@ opt_iter=6; %Optimum number of iterations
 max_retries=5; %Maximum number of retires
 dtmin=(1/numTimeSteps)/100; %Minimum time step size
 dtmax=1/numTimeSteps; %Maximum time step size
+
+runMode='external';% 'internal' or 'external'
 
 %% Build probe
 
@@ -251,7 +254,7 @@ drawnow;
 [febio_spec]=febioStructTemplate;
 
 %febio_spec version 
-febio_spec.ATTR.version='3.0'; 
+febio_spec.ATTR.version='4.0'; 
 
 %Module section
 febio_spec.Module.ATTR.type='solid'; 
@@ -260,7 +263,6 @@ febio_spec.Module.ATTR.type='solid';
 stepStruct.Control.time_steps=numTimeSteps;
 stepStruct.Control.step_size=1/numTimeSteps;
 stepStruct.Control.solver.max_refs=max_refs;
-stepStruct.Control.solver.max_ups=max_ups;
 stepStruct.Control.time_stepper.dtmin=dtmin;
 stepStruct.Control.time_stepper.dtmax=dtmax; 
 stepStruct.Control.time_stepper.max_retries=max_retries;
@@ -305,57 +307,79 @@ nodeSetName1='bcSupportList';
 nodeSetName2='bcPrescribeList';
 
 febio_spec.Mesh.NodeSet{1}.ATTR.name=nodeSetName1;
-febio_spec.Mesh.NodeSet{1}.node.ATTR.id=bcSupportList(:);
+febio_spec.Mesh.NodeSet{1}.VAL=mrow(bcSupportList);
 
 febio_spec.Mesh.NodeSet{2}.ATTR.name=nodeSetName2;
-febio_spec.Mesh.NodeSet{2}.node.ATTR.id=bcPrescribeList(:);
+febio_spec.Mesh.NodeSet{2}.VAL=mrow(bcPrescribeList);
  
 %MeshDomains section
 febio_spec.MeshDomains.SolidDomain.ATTR.name=partName1;
 febio_spec.MeshDomains.SolidDomain.ATTR.mat=materialName1;
 
 %Boundary condition section 
-%-> Fix boundary conditions
-febio_spec.Boundary.bc{1}.ATTR.type='fix';
+% -> Fix boundary conditions
+febio_spec.Boundary.bc{1}.ATTR.name='zero_displacement_xyz';
+febio_spec.Boundary.bc{1}.ATTR.type='zero displacement';
 febio_spec.Boundary.bc{1}.ATTR.node_set=nodeSetName1;
-febio_spec.Boundary.bc{1}.dofs='x,y,z';
+febio_spec.Boundary.bc{1}.x_dof=1;
+febio_spec.Boundary.bc{1}.y_dof=1;
+febio_spec.Boundary.bc{1}.z_dof=1;
+
+febio_spec.Boundary.bc{2}.ATTR.name='zero_displacement_xz';
+febio_spec.Boundary.bc{2}.ATTR.type='zero displacement';
+febio_spec.Boundary.bc{2}.ATTR.node_set=nodeSetName2;
+febio_spec.Boundary.bc{2}.x_dof=0;
+febio_spec.Boundary.bc{2}.y_dof=1;
+febio_spec.Boundary.bc{2}.z_dof=1;
 
 % -> Prescribe boundary conditions
 %STEP 1 Up/down
-febio_spec.Step.step{1}.Boundary.bc{1}.ATTR.type='prescribe';
+febio_spec.Step.step{1}.Boundary.bc{1}.ATTR.name='bcPrescribeList1';
+febio_spec.Step.step{1}.Boundary.bc{1}.ATTR.type='prescribed displacement';
 febio_spec.Step.step{1}.Boundary.bc{1}.ATTR.node_set=nodeSetName2;
 febio_spec.Step.step{1}.Boundary.bc{1}.dof='z';
-febio_spec.Step.step{1}.Boundary.bc{1}.scale.ATTR.lc=1;
-febio_spec.Step.step{1}.Boundary.bc{1}.scale.VAL=displacementMagnitude;
+febio_spec.Step.step{1}.Boundary.bc{1}.value.ATTR.lc=1;
+febio_spec.Step.step{1}.Boundary.bc{1}.value.VAL=displacementMagnitude;
 febio_spec.Step.step{1}.Boundary.bc{1}.relative=1;
 
-febio_spec.Step.step{1}.Boundary.bc{2}.ATTR.type='fix';
+febio_spec.Step.step{1}.Boundary.bc{2}.ATTR.name='FixedDisplacement21';
+febio_spec.Step.step{1}.Boundary.bc{2}.ATTR.type='zero displacement';
 febio_spec.Step.step{1}.Boundary.bc{2}.ATTR.node_set=nodeSetName2;
-febio_spec.Step.step{1}.Boundary.bc{2}.dofs='x,y';
+febio_spec.Step.step{1}.Boundary.bc{2}.x_dof=1;
+febio_spec.Step.step{1}.Boundary.bc{2}.y_dof=1;
+febio_spec.Step.step{1}.Boundary.bc{2}.z_dof=0;
 
-%STEP 2 Sideways
-febio_spec.Step.step{2}.Boundary.bc{1}.ATTR.type='prescribe';
+%STEP 2 Left/right
+febio_spec.Step.step{2}.Boundary.bc{1}.ATTR.name='bcPrescribeList2';
+febio_spec.Step.step{2}.Boundary.bc{1}.ATTR.type='prescribed displacement';
 febio_spec.Step.step{2}.Boundary.bc{1}.ATTR.node_set=nodeSetName2;
 febio_spec.Step.step{2}.Boundary.bc{1}.dof='x';
-febio_spec.Step.step{2}.Boundary.bc{1}.scale.ATTR.lc=2;
-febio_spec.Step.step{2}.Boundary.bc{1}.scale.VAL=displacementMagnitude;
+febio_spec.Step.step{2}.Boundary.bc{1}.value.ATTR.lc=2;
+febio_spec.Step.step{2}.Boundary.bc{1}.value.VAL=displacementMagnitude;
 febio_spec.Step.step{2}.Boundary.bc{1}.relative=1;
 
-febio_spec.Step.step{2}.Boundary.bc{2}.ATTR.type='fix';
+febio_spec.Step.step{2}.Boundary.bc{2}.ATTR.name='FixedDisplacement22';
+febio_spec.Step.step{2}.Boundary.bc{2}.ATTR.type='zero displacement';
 febio_spec.Step.step{2}.Boundary.bc{2}.ATTR.node_set=nodeSetName2;
-febio_spec.Step.step{2}.Boundary.bc{2}.dofs='y,z';
+febio_spec.Step.step{2}.Boundary.bc{2}.x_dof=0;
+febio_spec.Step.step{2}.Boundary.bc{2}.y_dof=1;
+febio_spec.Step.step{2}.Boundary.bc{2}.z_dof=1;
 
 %LoadData section
 % -> load_controller
 febio_spec.LoadData.load_controller{1}.ATTR.id=1;
+febio_spec.LoadData.load_controller{1}.ATTR.name='LC1';
 febio_spec.LoadData.load_controller{1}.ATTR.type='loadcurve';
 febio_spec.LoadData.load_controller{1}.interpolate='LINEAR';
-febio_spec.LoadData.load_controller{1}.points.point.VAL=[0 0; 0.25 1; 0.5 0; 0.75 -1; 1 0];
+febio_spec.LoadData.load_controller{1}.extend='CONSTANT';
+febio_spec.LoadData.load_controller{1}.points.pt.VAL=[0 0; 0.25 1; 0.5 0; 0.75 -1; 1 0];
 
 febio_spec.LoadData.load_controller{2}.ATTR.id=2;
+febio_spec.LoadData.load_controller{2}.ATTR.name='LC2';
 febio_spec.LoadData.load_controller{2}.ATTR.type='loadcurve';
 febio_spec.LoadData.load_controller{2}.interpolate='LINEAR';
-febio_spec.LoadData.load_controller{2}.points.point.VAL=[1 0; 1.25 1; 1.5 0; 1.75 -1; 2 0];
+febio_spec.LoadData.load_controller{2}.extend='CONSTANT';
+febio_spec.LoadData.load_controller{2}.points.pt.VAL=[0 0; 1 0; 1.25 1; 1.5 0; 1.75 -1; 2 0];
 
 %Output section 
 % -> log file
@@ -371,6 +395,9 @@ febio_spec.Output.logfile.node_data{2}.ATTR.delim=',';
 febio_spec.Output.logfile.element_data{1}.ATTR.file=febioLogFileName_strain;
 febio_spec.Output.logfile.element_data{1}.ATTR.data='E1;E2;E3';
 febio_spec.Output.logfile.element_data{1}.ATTR.delim=',';
+
+% Plotfile section
+febio_spec.Output.plotfile.compression=0;
 
 %% Quick viewing of the FEBio input file structure
 % The |febView| function can be used to view the xml structure in a MATLAB
@@ -395,7 +422,7 @@ febioStruct2xml(febio_spec,febioFebFileName); %Exporting to file and domNode
 febioAnalysis.run_filename=febioFebFileName; %The input file name
 febioAnalysis.run_logname=febioLogFileName; %The name for the log file
 febioAnalysis.disp_on=1; %Display information on the command window
-febioAnalysis.runMode='external';%'internal' or 'external';
+febioAnalysis.runMode=runMode;
 
 [runFlag]=runMonitorFEBio(febioAnalysis);%START FEBio NOW!!!!!!!!
 
@@ -403,91 +430,69 @@ febioAnalysis.runMode='external';%'internal' or 'external';
 
 if runFlag==1 %i.e. a succesful run
     
+ %% 
     % Importing nodal displacements from a log file
-    [time_mat, N_disp_mat,~]=importFEBio_logfile(fullfile(savePath,febioLogFileName_disp)); %Nodal displacements    
-    time_mat=[0; time_mat(:)]; %Time
+    dataStruct=importFEBio_logfile(fullfile(savePath,febioLogFileName_disp),0,1);
     
-    N_disp_mat=N_disp_mat(:,2:end,:);
-    sizImport=size(N_disp_mat);
-    sizImport(3)=sizImport(3)+1;
-    N_disp_mat_n=zeros(sizImport);
-    N_disp_mat_n(:,:,2:end)=N_disp_mat;
-    N_disp_mat=N_disp_mat_n;
+    %Access data
+    N_disp_mat=dataStruct.data; %Displacement
+    timeVec=dataStruct.time; %Time
     
-    DN_MAG=sqrt(sum(N_disp_mat.^2,2));
-    DN=N_disp_mat(:,:,end);
-    DN_magnitude=sqrt(sum(DN(:,3).^2,2));
-    V_def=V+DN;
+    %Create deformed coordinate set
     V_DEF=N_disp_mat+repmat(V,[1 1 size(N_disp_mat,3)]);
-    X_DEF=V_DEF(:,1,:);
-    Y_DEF=V_DEF(:,2,:);
-    Z_DEF=V_DEF(:,3,:);
-    [CF_def]=vertexToFaceMeasure(Fb,DN_magnitude);
-    
+            
      %%
     % Importing element data from a log file
-    [~,E_data,~]=importFEBio_logfile(fullfile(savePath,febioLogFileName_strain)); %Element data
-    
-    %Remove nodal index column
-    E_data=E_data(:,2:end,:);
-    
-    E_data=sqrt(0.5*( (E_data(:,1,:)-E_data(:,2,:)).^2 + (E_data(:,2,:)-E_data(:,3,:)).^2 + (E_data(:,3,:)-E_data(:,1,:)).^2 ));
-        
-    %Add initial state i.e. zero 
-    sizImport=size(E_data); 
-    sizImport(3)=sizImport(3)+1;
-    E_data_mat_n=zeros(sizImport);
-    E_data_mat_n(:,:,2:end)=E_data;
-    E_data=E_data_mat_n;
-        
-    VE=patchCentre(E,V);
-    logicCutElements=VE(:,2)>=0;
-    
-    [F_cut,CF_cut_data]=element2patch(E(logicCutElements,:),E_data(logicCutElements,:,1));
-    [indBoundary]=tesBoundary(F_cut);
-    
-    CV=faceToVertexMeasure(F_cut(indBoundary,:),V,CF_cut_data(indBoundary,:));
-    
+   dataStruct=importFEBio_logfile(fullfile(savePath,febioLogFileName_strain),0,1); %Element data
+    E_data_mat=dataStruct.data;
+    E_VM=sqrt(0.5*( (E_data_mat(:,1,:)-E_data_mat(:,2,:)).^2 + ...
+                    (E_data_mat(:,2,:)-E_data_mat(:,3,:)).^2 + ...
+                    (E_data_mat(:,3,:)-E_data_mat(:,1,:)).^2 ));
+      
     %% 
     % Plotting the simulated results using |anim8| to visualize and animate
     % deformations 
     
+    VE=patchCentre(E,V);
+    logicCutElements=VE(:,2)<=0;
+    
+    [F_cut,CF_cut_data]=element2patch(E(logicCutElements,:),E_VM(logicCutElements,:,end));
+    [indBoundary]=tesBoundary(F_cut);
+    
+    CV=faceToVertexMeasure(F_cut(indBoundary,:),V,CF_cut_data(indBoundary,:));
+    
     % Create basic view and store graphics handle to initiate animation
-    hf=cFigure; %Open figure      
+    hf=cFigure; %Open figure  /usr/local/MATLAB/R2020a/bin/glnxa64/jcef_helper: symbol lookup error: /lib/x86_64-linux-gnu/libpango-1.0.so.0: undefined symbol: g_ptr_array_copy
+
     gtitle([febioFebFileNamePart,': Press play to animate']);
-%     subplot(1,2,1);    
-    hp1=gpatch(Fb,V_def,'kw','none',0.25); %Add graphics object to animate
-    hp2=gpatch(F_cut(indBoundary,:),V_def,CV,'k',1); %Add graphics object to animate
+    title('$\sigma_{zz}$ [MPa]','Interpreter','Latex')
+    hp1=gpatch(Fb,V_DEF(:,:,end),'kw','none',0.25); %Add graphics object to animate
+    hp2=gpatch(F_cut(indBoundary,:),V_DEF(:,:,end),CV,'k',1); %Add graphics object to animate
     hp2.FaceColor='interp';
-%     gpatch(Fb,V,0.5*ones(1,3),'k',0.25); %A static graphics object    
-    colormap(gjet(250)); colorbar;
-    caxis([0 max(E_data(:))/3]);
-    axisGeom(gca,fontSize);
-    axis([min(X_DEF(:)) max(X_DEF(:)) min(Y_DEF(:)) max(Y_DEF(:)) min(Z_DEF(:)) max(Z_DEF(:))]);
-    axis manual; 
-    camlight headlight;   
+
+    gpatch(Fb,V,0.5*ones(1,3),'none',0.25); %A static graphics object
     
-    drawnow;     
-    
+    axisGeom(gca,fontSize); 
+    colormap(cMap); colorbar;
+    caxis([0 max(E_VM(:))/3]);    
+    axis(axisLim(V_DEF)); %Set axis limits statically    
+    view(140,30);
+    camlight headlight;        
+        
     % Set up animation features
-    animStruct.Time=time_mat; %The time vector    
+    animStruct.Time=timeVec; %The time vector    
     for qt=1:1:size(N_disp_mat,3) %Loop over time increments        
-        DN=N_disp_mat(:,:,qt); %Current displacement
-        DN_magnitude=sqrt(sum(DN.^2,2)); %Current displacement magnitude
-        V_def=V+DN; %Current nodal coordinates
-%         [CF_def]=vertexToFaceMeasure(Fb,DN_magnitude); %Current color data to use
-    
-        [~,CF_cut_data]=element2patch(E(logicCutElements,:),E_data(logicCutElements,:,qt));
+        [F_cut,CF_cut_data]=element2patch(E(logicCutElements,:),E_VM(logicCutElements,:,qt));
         CV=faceToVertexMeasure(F_cut(indBoundary,:),V,CF_cut_data(indBoundary,:));
         
         %Set entries in animation structure
         animStruct.Handles{qt}=[hp1 hp2 hp2]; %Handles of objects to animate
         animStruct.Props{qt}={'Vertices','Vertices','CData'}; %Properties of objects to animate
-        animStruct.Set{qt}={V_def,V_def,CV}; %Property values for to set in order to animate
+        animStruct.Set{qt}={V_DEF(:,:,qt),V_DEF(:,:,qt),CV}; %Property values for to set in order to animate
     end        
     anim8(hf,animStruct); %Initiate animation feature    
     drawnow;
-       
+    
 end
 
 %% 

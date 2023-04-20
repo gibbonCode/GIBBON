@@ -12,7 +12,7 @@
 
 %% Keywords
 %
-% * febio_spec version 3.0
+% * febio_spec version 4.0
 % * febio, FEBio
 % * shoe insole
 % * contact, sliding, friction
@@ -199,7 +199,7 @@ F2=F2(logicFaces,:); %The faces to keep
 [F2,V2]=patchCleanUnused(F2,V2); %Remove unused points
 
 %Attempt to self triangulate potentially jagged edge
-Eb=patchBoundary(F2,V2); %Get boundary edges
+Eb=patchBoundary(F2); %Get boundary edges
 indBoundary=edgeListToCurve(Eb); %Convert boundary edges to a curve list
 indBoundary=indBoundary(1:end-1); %Trim off last point since it is equal to first on a closed loop
 angleThreshold=pi*(120/180); %threshold for self triangulation
@@ -353,7 +353,7 @@ drawnow;
 [F_sole_top,V_sole_top]=regionTriMesh2D({V_sole_curve(:,[1 2])},pointSpacingSole,0,0);
 V_sole_top(:,3)=mean(V_sole_curve(:,3));
 
-Eb=patchBoundary(F_sole_top,V_sole_top);
+Eb=patchBoundary(F_sole_top);
 indBoundary=unique(Eb(:));
 
 %Get z-coordinate
@@ -568,7 +568,6 @@ title('Material levels','FontSize',fontSize);
 gpatch(Fb_foot(Cb_foot==1,:),V,'kw','none',1);
 gpatch(Fb_foot(Cb_foot~=1,:),V,'w','none',0.5);
 
-
 for q=1:1:numel(F_E_sole)
     gpatch(F_E_sole{q},V,C_F_E_sole{q},'k',1);
 end
@@ -598,25 +597,24 @@ E_youngs_elem=E_youngs_set(elementMaterialID);
 % See also |febioStructTemplate| and |febioStruct2xml| and the FEBio user
 % manual.
 
-%Get a template with default settings
+%Get a template with default settings 
 [febio_spec]=febioStructTemplate;
 
-%febio_spec version
-febio_spec.ATTR.version='3.0';
+%febio_spec version 
+febio_spec.ATTR.version='4.0'; 
 
 %Module section
-febio_spec.Module.ATTR.type='solid';
+febio_spec.Module.ATTR.type='solid'; 
 
 %Control section
 febio_spec.Control.analysis='STATIC';
 febio_spec.Control.time_steps=numTimeSteps;
 febio_spec.Control.step_size=1/numTimeSteps;
 febio_spec.Control.solver.max_refs=max_refs;
-febio_spec.Control.solver.max_ups=max_ups;
+febio_spec.Control.solver.qn_method.max_ups=max_ups;
 febio_spec.Control.solver.symmetric_stiffness=symmetric_stiffness;
-% febio_spec.Control.solver.min_residual=min_residual;
 febio_spec.Control.time_stepper.dtmin=dtmin;
-febio_spec.Control.time_stepper.dtmax=dtmax;
+febio_spec.Control.time_stepper.dtmax=dtmax; 
 febio_spec.Control.time_stepper.max_retries=max_retries;
 febio_spec.Control.time_stepper.opt_iter=opt_iter;
 
@@ -675,10 +673,10 @@ nodeSetName1='bcSupportList';
 nodeSetName2='bcPrescribeList';
 
 febio_spec.Mesh.NodeSet{1}.ATTR.name=nodeSetName1;
-febio_spec.Mesh.NodeSet{1}.node.ATTR.id=bcSupportList(:);
+febio_spec.Mesh.NodeSet{1}.VAL=mrow(bcSupportList);
 
 febio_spec.Mesh.NodeSet{2}.ATTR.name=nodeSetName2;
-febio_spec.Mesh.NodeSet{2}.node.ATTR.id=bcPrescribeList(:);
+febio_spec.Mesh.NodeSet{2}.VAL=mrow(bcPrescribeList);
 
 % -> Surfaces
 surfaceName1='contactSurface1';
@@ -714,27 +712,34 @@ febio_spec.MeshDomains.ShellDomain.ATTR.mat=materialName2;
 febio_spec.MeshDomains.SolidDomain{2}.ATTR.name=partName3;
 febio_spec.MeshDomains.SolidDomain{2}.ATTR.mat=materialName3;
 
-%Boundary condition section
+%Boundary condition section 
 % -> Fix boundary conditions
-febio_spec.Boundary.bc{1}.ATTR.type='fix';
+febio_spec.Boundary.bc{1}.ATTR.name='zero_displacement_xyz';
+febio_spec.Boundary.bc{1}.ATTR.type='zero displacement';
 febio_spec.Boundary.bc{1}.ATTR.node_set=nodeSetName1;
-febio_spec.Boundary.bc{1}.dofs='x,y,z';
+febio_spec.Boundary.bc{1}.x_dof=1;
+febio_spec.Boundary.bc{1}.y_dof=1;
+febio_spec.Boundary.bc{1}.z_dof=1;
 
-%Rigid section
+%Rigid section 
 % ->Rigid body fix boundary conditions
-febio_spec.Rigid.rigid_constraint{1}.ATTR.name='RigidFix_1';
-febio_spec.Rigid.rigid_constraint{1}.ATTR.type='fix';
-febio_spec.Rigid.rigid_constraint{1}.rb=2;
-febio_spec.Rigid.rigid_constraint{1}.dofs='Rx,Ry';
+febio_spec.Rigid.rigid_bc{1}.ATTR.name='RigidFix';
+febio_spec.Rigid.rigid_bc{1}.ATTR.type='rigid_fixed';
+febio_spec.Rigid.rigid_bc{1}.rb=2;
+febio_spec.Rigid.rigid_bc{1}.Rx_dof=1;
+febio_spec.Rigid.rigid_bc{1}.Ry_dof=1;
+febio_spec.Rigid.rigid_bc{1}.Ru_dof=1;
+febio_spec.Rigid.rigid_bc{1}.Rv_dof=1;
+febio_spec.Rigid.rigid_bc{1}.Rw_dof=1;
 
 % ->Rigid body prescribe boundary conditions
-febio_spec.Rigid.rigid_constraint{2}.ATTR.name='RigidPrescribe';
-febio_spec.Rigid.rigid_constraint{2}.ATTR.type='prescribe';
-febio_spec.Rigid.rigid_constraint{2}.rb=2;
-febio_spec.Rigid.rigid_constraint{2}.dof='Rz';
-febio_spec.Rigid.rigid_constraint{2}.value.ATTR.lc=1;
-febio_spec.Rigid.rigid_constraint{2}.value.VAL=displacementMagnitude;
-febio_spec.Rigid.rigid_constraint{2}.relative=0;
+febio_spec.Rigid.rigid_bc{2}.ATTR.name='RigidPrescribe';
+febio_spec.Rigid.rigid_bc{2}.ATTR.type='rigid_displacement';
+febio_spec.Rigid.rigid_bc{2}.rb=2;
+febio_spec.Rigid.rigid_bc{2}.dof='z';
+febio_spec.Rigid.rigid_bc{2}.value.ATTR.lc=1;
+febio_spec.Rigid.rigid_bc{2}.value.VAL=displacementMagnitude;
+febio_spec.Rigid.rigid_bc{2}.relative=0;
 
 %Contact section
 febio_spec.Contact.contact{1}.ATTR.type='sliding-elastic';
@@ -754,10 +759,12 @@ febio_spec.Contact.contact{1}.fric_coeff=fric_coeff;
 
 %LoadData section
 % -> load_controller
+febio_spec.LoadData.load_controller{1}.ATTR.name='LC_1';
 febio_spec.LoadData.load_controller{1}.ATTR.id=1;
 febio_spec.LoadData.load_controller{1}.ATTR.type='loadcurve';
 febio_spec.LoadData.load_controller{1}.interpolate='LINEAR';
-febio_spec.LoadData.load_controller{1}.points.point.VAL=[0 0; 1 1];
+%febio_spec.LoadData.load_controller{1}.extend='CONSTANT';
+febio_spec.LoadData.load_controller{1}.points.pt.VAL=[0 0; 1 1];
 
 %Output section
 % -> log file
@@ -776,6 +783,10 @@ febio_spec.Output.logfile.element_data{1}.ATTR.file=febioLogFileName_strainEnerg
 febio_spec.Output.logfile.element_data{1}.ATTR.data='sed';
 febio_spec.Output.logfile.element_data{1}.ATTR.delim=',';
 febio_spec.Output.logfile.element_data{1}.VAL=1:size(E_foot,1);
+
+% Plotfile section
+febio_spec.Output.plotfile.compression=0;
+
 
 %% Quick viewing of the FEBio input file structure
 % The |febView| function can be used to view the xml structure in a MATLAB
@@ -833,7 +844,7 @@ elseif optimizeForceOption==1
         end
         
         %% Importing rigid body reaction forces from a log file
-        dataStructForce=importFEBio_logfile(fullfile(savePath,febioLogFileName_force),1,1);
+        dataStructForce=importFEBio_logfile(fullfile(savePath,febioLogFileName_force),0,1);
         F_reaction=squeeze(dataStructForce.data(1,:,:))';
         timeVec=dataStructForce.time;
         Fz_final=F_reaction(end,3);
@@ -876,7 +887,7 @@ end
 
 %% Import rigid body reaction forces
 
-dataStructForce=importFEBio_logfile(fullfile(savePath,febioLogFileName_force),1,1);
+dataStructForce=importFEBio_logfile(fullfile(savePath,febioLogFileName_force),0,1);
 F_reaction=squeeze(dataStructForce.data(1,:,:))';
 timeVec=dataStructForce.time;
 
@@ -893,7 +904,7 @@ drawnow;
 %%
 % Importing nodal displacements from a log file
 
-dataStructDisp=importFEBio_logfile(fullfile(savePath,febioLogFileName_disp),1,1);
+dataStructDisp=importFEBio_logfile(fullfile(savePath,febioLogFileName_disp),0,1);
 
 %Access data
 N_disp_mat=dataStructDisp.data; %Displacement
@@ -904,13 +915,13 @@ V_DEF=N_disp_mat+repmat(V,[1 1 size(N_disp_mat,3)]);
 
 %%
 % Importing element strain energies from a log file
-dataStructEnergy=importFEBio_logfile(fullfile(savePath,febioLogFileName_strainEnergy),1,1);
+dataStructEnergy=importFEBio_logfile(fullfile(savePath,febioLogFileName_strainEnergy),0,1);
 
 E_energy=dataStructEnergy.data(:,1,:);
 
 [FE_foot,C_energy_foot]=element2patch(E_foot,E_energy(:,:,end));
 %     [FE_foot,C_energy_foot]=element2patch(E_foot,E_energy(1:size(E_foot,1),:,1));
-indBoundaryFacesFoot=tesBoundary(FE_foot,V);
+indBoundaryFacesFoot=tesBoundary(FE_foot);
 
 %%  Plot animation
 % Plotting the simulated results using |anim8| to visualize and animate
@@ -955,29 +966,6 @@ drawnow;
 %
 % _Kevin Mattheus Moerman_, <gibbon.toolbox@gmail.com>
 
-%%
-% _*GIBBON footer text*_
-%
-% License: <https://github.com/gibbonCode/GIBBON/blob/master/LICENSE>
-%
-% GIBBON: The Geometry and Image-based Bioengineering add-On. A toolbox for
-% image segmentation, image-based modeling, meshing, and finite element
-% analysis.
-%
-% Copyright (C) 2006-2021 Kevin Mattheus Moerman and the GIBBON contributors
-%
-% This program is free software: you can redistribute it and/or modify
-% it under the terms of the GNU General Public License as published by
-% the Free Software Foundation, either version 3 of the License, or
-% (at your option) any later version.
-%
-% This program is distributed in the hope that it will be useful,
-% but WITHOUT ANY WARRANTY; without even the implied warranty of
-% MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-% GNU General Public License for more details.
-%
-% You should have received a copy of the GNU General Public License
-% along with this program.  If not, see <http://www.gnu.org/licenses/>.
 %% 
 % _*GIBBON footer text*_ 
 % 

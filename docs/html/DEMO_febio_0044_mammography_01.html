@@ -6,7 +6,7 @@
    <!--
 This HTML was auto-generated from MATLAB code.
 To make changes, update the MATLAB code and republish this document.
-      --><title>DEMO_febio_0044_mammography_01.m</title><meta name="generator" content="MATLAB 9.10"><link rel="schema.DC" href="http://purl.org/dc/elements/1.1/"><meta name="DC.date" content="2022-02-25"><meta name="DC.source" content="DEMO_febio_0044_mammography_01.m"><style type="text/css">
+      --><title>DEMO_febio_0044_mammography_01.m</title><meta name="generator" content="MATLAB 9.13"><link rel="schema.DC" href="http://purl.org/dc/elements/1.1/"><meta name="DC.date" content="2023-04-20"><meta name="DC.source" content="DEMO_febio_0044_mammography_01.m"><style type="text/css">
 html,body,div,span,applet,object,iframe,h1,h2,h3,h4,h5,h6,p,blockquote,pre,a,abbr,acronym,address,big,cite,code,del,dfn,em,font,img,ins,kbd,q,s,samp,small,strike,strong,tt,var,b,u,i,center,dl,dt,dd,ol,ul,li,fieldset,form,label,legend,table,caption,tbody,tfoot,thead,tr,th,td{margin:0;padding:0;border:0;outline:0;font-size:100%;vertical-align:baseline;background:transparent}body{line-height:1}ol,ul{list-style:none}blockquote,q{quotes:none}blockquote:before,blockquote:after,q:before,q:after{content:'';content:none}:focus{outine:0}ins{text-decoration:none}del{text-decoration:line-through}table{border-collapse:collapse;border-spacing:0}
 
 html { min-height:100%; margin-bottom:1px; }
@@ -67,7 +67,7 @@ table td { padding:7px 5px; text-align:left; vertical-align:top; border:1px soli
 
 
 
-  </style></head><body><div class="content"><h1>DEMO_febio_0044_mammography_01.m</h1><!--introduction--><p>Below is a demonstration for:</p><div><ul><li>Building geometry for a slab with hexahedral elements, and a triangulated sphere.</li><li>Defining the boundary conditions</li><li>Coding the febio structure</li><li>Running the model</li><li>Importing and visualizing the displacement results</li></ul></div><!--/introduction--><h2>Contents</h2><div><ul><li><a href="#1">Keywords</a></li><li><a href="#3">Plot settings</a></li><li><a href="#4">Control parameters</a></li><li><a href="#5">Create hemi-sphere</a></li><li><a href="#6">Change shape of hemi-sphere to create basic breast model</a></li><li><a href="#9">Rotate model</a></li><li><a href="#14">Get interior points</a></li><li><a href="#18">Visualizing mesh using <tt>meshView</tt>, see also <tt>anim8</tt></a></li><li><a href="#19">Split element sets</a></li><li><a href="#20">Building plate models</a></li><li><a href="#21">Joining node sets</a></li><li><a href="#25">Define contact surfaces</a></li><li><a href="#26">Define boundary conditions</a></li><li><a href="#28">Defining the FEBio input structure</a></li><li><a href="#29">Quick viewing of the FEBio input file structure</a></li><li><a href="#31">Exporting the FEBio input file</a></li><li><a href="#32">Running the FEBio analysis</a></li><li><a href="#33">Import FEBio results</a></li><li><a href="#35">Import rigid body reaction forces</a></li></ul></div><h2 id="1">Keywords</h2><div><ul><li>febio_spec version 3.0</li><li>febio, FEBio</li><li>indentation</li><li>contact, sliding, sticky, friction</li><li>rigid body constraints</li><li>tetrahedral elements, tet8</li><li>triangular elements, tri3</li><li>static, solid</li><li>hyperelastic, Ogden</li><li>displacement logfile</li><li>stress logfile</li></ul></div><pre class="codeinput">clear; close <span class="string">all</span>; clc;
+  </style></head><body><div class="content"><h1>DEMO_febio_0044_mammography_01.m</h1><!--introduction--><p>Below is a demonstration for:</p><div><ul><li>Building geometry for a slab with hexahedral elements, and a triangulated sphere.</li><li>Defining the boundary conditions</li><li>Coding the febio structure</li><li>Running the model</li><li>Importing and visualizing the displacement results</li></ul></div><!--/introduction--><h2>Contents</h2><div><ul><li><a href="#1">Keywords</a></li><li><a href="#3">Plot settings</a></li><li><a href="#4">Control parameters</a></li><li><a href="#5">Create hemi-sphere</a></li><li><a href="#6">Change shape of hemi-sphere to create basic breast model</a></li><li><a href="#9">Rotate model</a></li><li><a href="#14">Get interior points</a></li><li><a href="#18">Visualizing mesh using <tt>meshView</tt>, see also <tt>anim8</tt></a></li><li><a href="#19">Split element sets</a></li><li><a href="#20">Building plate models</a></li><li><a href="#21">Joining node sets</a></li><li><a href="#25">Define contact surfaces</a></li><li><a href="#26">Define boundary conditions</a></li><li><a href="#28">Defining the FEBio input structure</a></li><li><a href="#29">Quick viewing of the FEBio input file structure</a></li><li><a href="#31">Exporting the FEBio input file</a></li><li><a href="#32">Running the FEBio analysis</a></li><li><a href="#33">Import FEBio results</a></li><li><a href="#35">Import rigid body reaction forces</a></li></ul></div><h2 id="1">Keywords</h2><div><ul><li>febio_spec version 4.0</li><li>febio, FEBio</li><li>indentation</li><li>contact, sliding, sticky, friction</li><li>rigid body constraints</li><li>tetrahedral elements, tet4</li><li>triangular elements, tri3</li><li>static, solid</li><li>hyperelastic, Ogden</li><li>displacement logfile</li><li>stress logfile</li></ul></div><pre class="codeinput">clear; close <span class="string">all</span>; clc;
 </pre><h2 id="3">Plot settings</h2><pre class="codeinput">fontSize=15;
 faceAlpha1=0.8;
 faceAlpha2=0.3;
@@ -236,65 +236,65 @@ CE=meshOutput.elementMaterialID;
 E=meshOutput.elements;
 </pre><pre class="codeoutput"> 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
---- TETGEN Tetrahedral meshing --- 25-Feb-2022 15:39:30
+--- TETGEN Tetrahedral meshing --- 20-Apr-2023 18:08:19
  
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
---- Writing SMESH file --- 25-Feb-2022 15:39:30
+--- Writing SMESH file --- 20-Apr-2023 18:08:19
 ----&gt; Adding node field
 ----&gt; Adding facet field
 ----&gt; Adding holes specification
 ----&gt; Adding region specification
---- Done --- 25-Feb-2022 15:39:30
---- Running TetGen to mesh input boundary--- 25-Feb-2022 15:39:30
+--- Done --- 20-Apr-2023 18:08:19
+--- Running TetGen to mesh input boundary--- 20-Apr-2023 18:08:19
 Opening /mnt/data/MATLAB/GIBBON/data/temp/temp.smesh.
 Delaunizing vertices...
-Delaunay seconds:  0.032268
+Delaunay seconds:  0.025983
 Creating surface mesh ...
-Surface mesh seconds:  0.003062
+Surface mesh seconds:  0.003053
 Recovering boundaries...
-Boundary recovery seconds:  0.007576
+Boundary recovery seconds:  0.00582
 Removing exterior tetrahedra ...
 Spreading region attributes.
-Exterior tets removal seconds:  0.002469
+Exterior tets removal seconds:  0.001592
 Recovering Delaunayness...
-Delaunay recovery seconds:  0.008284
+Delaunay recovery seconds:  0.007475
 Refining mesh...
-  2731 insertions, added 2711 points, 81679 tetrahedra in queue.
-Refinement seconds:  0.081031
+  2728 insertions, added 2696 points, 81280 tetrahedra in queue.
+Refinement seconds:  0.078644
 Smoothing vertices...
-Mesh smoothing seconds:  0.149995
+Mesh smoothing seconds:  0.129975
 Improving mesh...
-Mesh improvement seconds:  0.006117
+Mesh improvement seconds:  0.00538
 
 Writing /mnt/data/MATLAB/GIBBON/data/temp/temp.1.node.
 Writing /mnt/data/MATLAB/GIBBON/data/temp/temp.1.ele.
 Writing /mnt/data/MATLAB/GIBBON/data/temp/temp.1.face.
 Writing /mnt/data/MATLAB/GIBBON/data/temp/temp.1.edge.
 
-Output seconds:  0.07103
-Total running seconds:  0.362072
+Output seconds:  0.064965
+Total running seconds:  0.323075
 
 Statistics:
 
-  Input points: 2049
-  Input facets: 4090
-  Input segments: 6135
+  Input points: 2047
+  Input facets: 4086
+  Input segments: 6129
   Input holes: 0
   Input regions: 2
 
-  Mesh points: 5291
-  Mesh tetrahedra: 26510
-  Mesh faces: 54905
-  Mesh faces on exterior boundary: 3770
-  Mesh faces on input facets: 4090
-  Mesh edges on input segments: 6135
-  Steiner points inside domain: 3242
+  Mesh points: 5320
+  Mesh tetrahedra: 26755
+  Mesh faces: 55393
+  Mesh faces on exterior boundary: 3766
+  Mesh faces on input facets: 4086
+  Mesh edges on input segments: 6129
+  Steiner points inside domain: 3273
 
---- Done --- 25-Feb-2022 15:39:30
+--- Done --- 20-Apr-2023 18:08:19
  
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
---- Importing TetGen files --- 25-Feb-2022 15:39:30
---- Done --- 25-Feb-2022 15:39:30
+--- Importing TetGen files --- 20-Apr-2023 18:08:19
+--- Done --- 20-Apr-2023 18:08:19
 </pre><pre class="codeinput">Q=euler2DCM([loadAngle 0 0]);
 V=V*Q;
 </pre><pre class="codeinput">cFigure; hold <span class="string">on</span>;
@@ -424,7 +424,7 @@ gdrawnow;
 [febio_spec]=febioStructTemplate;
 
 <span class="comment">%febio_spec version</span>
-febio_spec.ATTR.version=<span class="string">'3.0'</span>;
+febio_spec.ATTR.version=<span class="string">'4.0'</span>;
 
 <span class="comment">%Module section</span>
 febio_spec.Module.ATTR.type=<span class="string">'solid'</span>;
@@ -434,9 +434,8 @@ febio_spec.Control.analysis=<span class="string">'STATIC'</span>;
 febio_spec.Control.time_steps=numTimeSteps;
 febio_spec.Control.step_size=1/numTimeSteps;
 febio_spec.Control.solver.max_refs=max_refs;
-febio_spec.Control.solver.max_ups=max_ups;
+febio_spec.Control.solver.qn_method.max_ups=max_ups;
 febio_spec.Control.solver.symmetric_stiffness=symmetric_stiffness;
-febio_spec.Control.solver.min_residual=min_residual;
 febio_spec.Control.time_stepper.dtmin=dtmin;
 febio_spec.Control.time_stepper.dtmax=dtmax;
 febio_spec.Control.time_stepper.max_retries=max_retries;
@@ -524,7 +523,7 @@ febio_spec.MeshDomains.ShellDomain{2}.ATTR.mat=materialName4;
 <span class="comment">% -&gt; NodeSets</span>
 nodeSetName1=<span class="string">'bcSupportList'</span>;
 febio_spec.Mesh.NodeSet{1}.ATTR.name=nodeSetName1;
-febio_spec.Mesh.NodeSet{1}.node.ATTR.id=bcSupportList(:);
+febio_spec.Mesh.NodeSet{1}.VAL=mrow(bcSupportList);
 
 <span class="comment">% -&gt; Surfaces</span>
 surfaceName1=<span class="string">'contactSurface1'</span>;
@@ -553,63 +552,79 @@ febio_spec.Mesh.SurfacePair{2}.secondary=surfaceName2;
 
 <span class="comment">%Boundary condition section</span>
 <span class="comment">% -&gt; Fix boundary conditions</span>
-febio_spec.Boundary.bc{1}.ATTR.type=<span class="string">'fix'</span>;
+febio_spec.Boundary.bc{1}.ATTR.name=<span class="string">'zero_displacement_xyz'</span>;
+febio_spec.Boundary.bc{1}.ATTR.type=<span class="string">'zero displacement'</span>;
 febio_spec.Boundary.bc{1}.ATTR.node_set=nodeSetName1;
-febio_spec.Boundary.bc{1}.dofs=<span class="string">'x,y,z'</span>;
+febio_spec.Boundary.bc{1}.x_dof=1;
+febio_spec.Boundary.bc{1}.y_dof=1;
+febio_spec.Boundary.bc{1}.z_dof=1;
 
 <span class="comment">%Rigid section</span>
-<span class="comment">% -&gt; Prescribed rigid body boundary conditions</span>
-febio_spec.Rigid.rigid_constraint{1}.ATTR.name=<span class="string">'RotFix_1'</span>;
-febio_spec.Rigid.rigid_constraint{1}.ATTR.type=<span class="string">'fix'</span>;
-febio_spec.Rigid.rigid_constraint{1}.rb=3;
-febio_spec.Rigid.rigid_constraint{1}.dofs=<span class="string">'Ru,Rv,Rw'</span>;
+<span class="comment">% -&gt;Rigid body fix boundary conditions</span>
+febio_spec.Rigid.rigid_bc{1}.ATTR.name=<span class="string">'RigidFixRot_RB3'</span>;
+febio_spec.Rigid.rigid_bc{1}.ATTR.type=<span class="string">'rigid_fixed'</span>;
+febio_spec.Rigid.rigid_bc{1}.rb=3;
+febio_spec.Rigid.rigid_bc{1}.Ru_dof=1;
+febio_spec.Rigid.rigid_bc{1}.Rv_dof=1;
+febio_spec.Rigid.rigid_bc{1}.Rw_dof=1;
 
-febio_spec.Rigid.rigid_constraint{2}.ATTR.name=<span class="string">'TranslationPrescribe_1_x'</span>;
-febio_spec.Rigid.rigid_constraint{2}.ATTR.type=<span class="string">'prescribe'</span>;
-febio_spec.Rigid.rigid_constraint{2}.rb=3;
-febio_spec.Rigid.rigid_constraint{2}.dof=<span class="string">'Rx'</span>;
-febio_spec.Rigid.rigid_constraint{2}.value.ATTR.lc=1;
-febio_spec.Rigid.rigid_constraint{2}.value.VAL=plateDisplacement_XYZ(1);
+febio_spec.Rigid.rigid_bc{2}.ATTR.name=<span class="string">'RigidFixRot_RB4'</span>;
+febio_spec.Rigid.rigid_bc{2}.ATTR.type=<span class="string">'rigid_fixed'</span>;
+febio_spec.Rigid.rigid_bc{2}.rb=4;
+febio_spec.Rigid.rigid_bc{2}.Ru_dof=1;
+febio_spec.Rigid.rigid_bc{2}.Rv_dof=1;
+febio_spec.Rigid.rigid_bc{2}.Rw_dof=1;
 
-febio_spec.Rigid.rigid_constraint{3}.ATTR.name=<span class="string">'TranslationPrescribe_1_y'</span>;
-febio_spec.Rigid.rigid_constraint{3}.ATTR.type=<span class="string">'prescribe'</span>;
-febio_spec.Rigid.rigid_constraint{3}.rb=3;
-febio_spec.Rigid.rigid_constraint{3}.dof=<span class="string">'Ry'</span>;
-febio_spec.Rigid.rigid_constraint{3}.value.ATTR.lc=1;
-febio_spec.Rigid.rigid_constraint{3}.value.VAL=plateDisplacement_XYZ(2);
+<span class="comment">% -&gt;Rigid body prescribe boundary conditions</span>
+febio_spec.Rigid.rigid_bc{3}.ATTR.name=<span class="string">'RigidPrescribe_X_RB3'</span>;
+febio_spec.Rigid.rigid_bc{3}.ATTR.type=<span class="string">'rigid_displacement'</span>;
+febio_spec.Rigid.rigid_bc{3}.rb=3;
+febio_spec.Rigid.rigid_bc{3}.dof=<span class="string">'x'</span>;
+febio_spec.Rigid.rigid_bc{3}.value.ATTR.lc=1;
+febio_spec.Rigid.rigid_bc{3}.value.VAL=plateDisplacement_XYZ(1);
+febio_spec.Rigid.rigid_bc{3}.relative=0;
 
-febio_spec.Rigid.rigid_constraint{4}.ATTR.name=<span class="string">'TranslationPrescribe_1_z'</span>;
-febio_spec.Rigid.rigid_constraint{4}.ATTR.type=<span class="string">'prescribe'</span>;
-febio_spec.Rigid.rigid_constraint{4}.rb=3;
-febio_spec.Rigid.rigid_constraint{4}.dof=<span class="string">'Rz'</span>;
-febio_spec.Rigid.rigid_constraint{4}.value.ATTR.lc=1;
-febio_spec.Rigid.rigid_constraint{4}.value.VAL=plateDisplacement_XYZ(3);
+febio_spec.Rigid.rigid_bc{4}.ATTR.name=<span class="string">'RigidPrescribe_Y_RB3'</span>;
+febio_spec.Rigid.rigid_bc{4}.ATTR.type=<span class="string">'rigid_displacement'</span>;
+febio_spec.Rigid.rigid_bc{4}.rb=3;
+febio_spec.Rigid.rigid_bc{4}.dof=<span class="string">'y'</span>;
+febio_spec.Rigid.rigid_bc{4}.value.ATTR.lc=1;
+febio_spec.Rigid.rigid_bc{4}.value.VAL=plateDisplacement_XYZ(2);
+febio_spec.Rigid.rigid_bc{4}.relative=0;
 
-febio_spec.Rigid.rigid_constraint{5}.ATTR.name=<span class="string">'RotFix_2'</span>;
-febio_spec.Rigid.rigid_constraint{5}.ATTR.type=<span class="string">'fix'</span>;
-febio_spec.Rigid.rigid_constraint{5}.rb=4;
-febio_spec.Rigid.rigid_constraint{5}.dofs=<span class="string">'Ru,Rv,Rw'</span>;
+febio_spec.Rigid.rigid_bc{5}.ATTR.name=<span class="string">'RigidPrescribe_Z_RB3'</span>;
+febio_spec.Rigid.rigid_bc{5}.ATTR.type=<span class="string">'rigid_displacement'</span>;
+febio_spec.Rigid.rigid_bc{5}.rb=3;
+febio_spec.Rigid.rigid_bc{5}.dof=<span class="string">'z'</span>;
+febio_spec.Rigid.rigid_bc{5}.value.ATTR.lc=1;
+febio_spec.Rigid.rigid_bc{5}.value.VAL=plateDisplacement_XYZ(3);
+febio_spec.Rigid.rigid_bc{5}.relative=0;
 
-febio_spec.Rigid.rigid_constraint{6}.ATTR.name=<span class="string">'TranslationPrescribe_2_x'</span>;
-febio_spec.Rigid.rigid_constraint{6}.ATTR.type=<span class="string">'prescribe'</span>;
-febio_spec.Rigid.rigid_constraint{6}.rb=4;
-febio_spec.Rigid.rigid_constraint{6}.dof=<span class="string">'Rx'</span>;
-febio_spec.Rigid.rigid_constraint{6}.value.ATTR.lc=1;
-febio_spec.Rigid.rigid_constraint{6}.value.VAL=-plateDisplacement_XYZ(1);
 
-febio_spec.Rigid.rigid_constraint{7}.ATTR.name=<span class="string">'TranslationPrescribe_2_y'</span>;
-febio_spec.Rigid.rigid_constraint{7}.ATTR.type=<span class="string">'prescribe'</span>;
-febio_spec.Rigid.rigid_constraint{7}.rb=4;
-febio_spec.Rigid.rigid_constraint{7}.dof=<span class="string">'Ry'</span>;
-febio_spec.Rigid.rigid_constraint{7}.value.ATTR.lc=1;
-febio_spec.Rigid.rigid_constraint{7}.value.VAL=-plateDisplacement_XYZ(2);
+febio_spec.Rigid.rigid_bc{6}.ATTR.name=<span class="string">'RigidPrescribe_X_RB4'</span>;
+febio_spec.Rigid.rigid_bc{6}.ATTR.type=<span class="string">'rigid_displacement'</span>;
+febio_spec.Rigid.rigid_bc{6}.rb=4;
+febio_spec.Rigid.rigid_bc{6}.dof=<span class="string">'x'</span>;
+febio_spec.Rigid.rigid_bc{6}.value.ATTR.lc=1;
+febio_spec.Rigid.rigid_bc{6}.value.VAL=-plateDisplacement_XYZ(1);
+febio_spec.Rigid.rigid_bc{6}.relative=0;
 
-febio_spec.Rigid.rigid_constraint{8}.ATTR.name=<span class="string">'TranslationPrescribe_2_z'</span>;
-febio_spec.Rigid.rigid_constraint{8}.ATTR.type=<span class="string">'prescribe'</span>;
-febio_spec.Rigid.rigid_constraint{8}.rb=4;
-febio_spec.Rigid.rigid_constraint{8}.dof=<span class="string">'Rz'</span>;
-febio_spec.Rigid.rigid_constraint{8}.value.ATTR.lc=1;
-febio_spec.Rigid.rigid_constraint{8}.value.VAL=-plateDisplacement_XYZ(3);
+febio_spec.Rigid.rigid_bc{7}.ATTR.name=<span class="string">'RigidPrescribe_Y_RB4'</span>;
+febio_spec.Rigid.rigid_bc{7}.ATTR.type=<span class="string">'rigid_displacement'</span>;
+febio_spec.Rigid.rigid_bc{7}.rb=4;
+febio_spec.Rigid.rigid_bc{7}.dof=<span class="string">'y'</span>;
+febio_spec.Rigid.rigid_bc{7}.value.ATTR.lc=1;
+febio_spec.Rigid.rigid_bc{7}.value.VAL=-plateDisplacement_XYZ(2);
+febio_spec.Rigid.rigid_bc{7}.relative=0;
+
+febio_spec.Rigid.rigid_bc{8}.ATTR.name=<span class="string">'RigidPrescribe_Z_RB4'</span>;
+febio_spec.Rigid.rigid_bc{8}.ATTR.type=<span class="string">'rigid_displacement'</span>;
+febio_spec.Rigid.rigid_bc{8}.rb=4;
+febio_spec.Rigid.rigid_bc{8}.dof=<span class="string">'z'</span>;
+febio_spec.Rigid.rigid_bc{8}.value.ATTR.lc=1;
+febio_spec.Rigid.rigid_bc{8}.value.VAL=-plateDisplacement_XYZ(3);
+febio_spec.Rigid.rigid_bc{8}.relative=0;
+
 
 <span class="comment">%Contact section</span>
 <span class="keyword">for</span> q=1:1:2
@@ -631,10 +646,12 @@ febio_spec.Rigid.rigid_constraint{8}.value.VAL=-plateDisplacement_XYZ(3);
 
 <span class="comment">%LoadData section</span>
 <span class="comment">% -&gt; load_controller</span>
+febio_spec.LoadData.load_controller{1}.ATTR.name=<span class="string">'LC_1'</span>;
 febio_spec.LoadData.load_controller{1}.ATTR.id=1;
 febio_spec.LoadData.load_controller{1}.ATTR.type=<span class="string">'loadcurve'</span>;
 febio_spec.LoadData.load_controller{1}.interpolate=<span class="string">'LINEAR'</span>;
-febio_spec.LoadData.load_controller{1}.points.point.VAL=[0 0; 1 1];
+<span class="comment">%febio_spec.LoadData.load_controller{1}.extend='CONSTANT';</span>
+febio_spec.LoadData.load_controller{1}.points.pt.VAL=[0 0; 1 1];
 
 <span class="comment">%Output section</span>
 <span class="comment">% -&gt; log file</span>
@@ -647,6 +664,9 @@ febio_spec.Output.logfile.rigid_body_data{1}.ATTR.file=febioLogFileName_force;
 febio_spec.Output.logfile.rigid_body_data{1}.ATTR.data=<span class="string">'Fx;Fy;Fz'</span>;
 febio_spec.Output.logfile.rigid_body_data{1}.ATTR.delim=<span class="string">','</span>;
 febio_spec.Output.logfile.rigid_body_data{1}.VAL=[3 4];
+
+<span class="comment">% Plotfile section</span>
+febio_spec.Output.plotfile.compression=0;
 </pre><h2 id="29">Quick viewing of the FEBio input file structure</h2><p>The <tt>febView</tt> function can be used to view the xml structure in a MATLAB figure window.</p><p><tt>febView(febio_spec); %Viewing the febio file</tt></p><h2 id="31">Exporting the FEBio input file</h2><p>Exporting the febio_spec structure to an FEBio input file is done using the <tt>febioStruct2xml</tt> function.</p><pre class="codeinput">febioStruct2xml(febio_spec,febioFebFileName); <span class="comment">%Exporting to file and domNode</span>
 </pre><h2 id="32">Running the FEBio analysis</h2><p>To run the analysis defined by the created FEBio input file the <tt>runMonitorFEBio</tt> function is used. The input for this function is a structure defining job settings e.g. the FEBio input file name. The optional output runFlag informs the user if the analysis was run succesfully.</p><pre class="codeinput">febioAnalysis.run_filename=febioFebFileName; <span class="comment">%The input file name</span>
 febioAnalysis.run_logname=febioLogFileName; <span class="comment">%The name for the log file</span>
@@ -656,55 +676,58 @@ febioAnalysis.runMode=runMode;
 [runFlag]=runMonitorFEBio(febioAnalysis);<span class="comment">%START FEBio NOW!!!!!!!!</span>
 </pre><pre class="codeoutput"> 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
---------&gt;    RUNNING/MONITORING FEBIO JOB    &lt;-------- 25-Feb-2022 15:39:44
-FEBio path: /home/kevin/FEBioStudio/bin/febio3
-# Attempt removal of existing log files                25-Feb-2022 15:39:44
- * Removal succesful                                   25-Feb-2022 15:39:44
-# Attempt removal of existing .xplt files              25-Feb-2022 15:39:44
- * Removal succesful                                   25-Feb-2022 15:39:44
-# Starting FEBio...                                    25-Feb-2022 15:39:44
+--------&gt;    RUNNING/MONITORING FEBIO JOB    &lt;-------- 20-Apr-2023 18:08:32
+FEBio path: /home/kevin/FEBioStudio2/bin/febio4
+# Attempt removal of existing log files                20-Apr-2023 18:08:32
+ * Removal succesful                                   20-Apr-2023 18:08:32
+# Attempt removal of existing .xplt files              20-Apr-2023 18:08:32
+ * Removal succesful                                   20-Apr-2023 18:08:32
+# Starting FEBio...                                    20-Apr-2023 18:08:32
   Max. total analysis time is: Inf s
- * Waiting for log file creation                       25-Feb-2022 15:39:44
+ * Waiting for log file creation                       20-Apr-2023 18:08:33
    Max. wait time: 30 s
- * Log file found.                                     25-Feb-2022 15:39:45
-# Parsing log file...                                  25-Feb-2022 15:39:45
-    number of iterations   : 9                         25-Feb-2022 15:39:49
-    number of reformations : 9                         25-Feb-2022 15:39:49
-------- converged at time : 0.1                        25-Feb-2022 15:39:49
-    number of iterations   : 8                         25-Feb-2022 15:39:52
-    number of reformations : 8                         25-Feb-2022 15:39:52
-------- converged at time : 0.2                        25-Feb-2022 15:39:52
-    number of iterations   : 8                         25-Feb-2022 15:39:56
-    number of reformations : 8                         25-Feb-2022 15:39:56
-------- converged at time : 0.3                        25-Feb-2022 15:39:56
-    number of iterations   : 9                         25-Feb-2022 15:40:00
-    number of reformations : 9                         25-Feb-2022 15:40:00
-------- converged at time : 0.4                        25-Feb-2022 15:40:00
-    number of iterations   : 9                         25-Feb-2022 15:40:04
-    number of reformations : 9                         25-Feb-2022 15:40:04
-------- converged at time : 0.5                        25-Feb-2022 15:40:04
-    number of iterations   : 8                         25-Feb-2022 15:40:08
-    number of reformations : 8                         25-Feb-2022 15:40:08
-------- converged at time : 0.6                        25-Feb-2022 15:40:08
-    number of iterations   : 10                        25-Feb-2022 15:40:12
-    number of reformations : 10                        25-Feb-2022 15:40:12
-------- converged at time : 0.7                        25-Feb-2022 15:40:12
-    number of iterations   : 8                         25-Feb-2022 15:40:16
-    number of reformations : 8                         25-Feb-2022 15:40:16
-------- converged at time : 0.8                        25-Feb-2022 15:40:16
-    number of iterations   : 8                         25-Feb-2022 15:40:19
-    number of reformations : 8                         25-Feb-2022 15:40:19
-------- converged at time : 0.9                        25-Feb-2022 15:40:19
-    number of iterations   : 9                         25-Feb-2022 15:40:23
-    number of reformations : 9                         25-Feb-2022 15:40:23
-------- converged at time : 1                          25-Feb-2022 15:40:23
- Elapsed time : 0:00:38                                25-Feb-2022 15:40:23
+ * Log file found.                                     20-Apr-2023 18:08:33
+# Parsing log file...                                  20-Apr-2023 18:08:33
+    number of iterations   : 9                         20-Apr-2023 18:08:37
+    number of reformations : 9                         20-Apr-2023 18:08:37
+------- converged at time : 0.1                        20-Apr-2023 18:08:37
+    number of iterations   : 8                         20-Apr-2023 18:08:40
+    number of reformations : 8                         20-Apr-2023 18:08:40
+------- converged at time : 0.2                        20-Apr-2023 18:08:40
+    number of iterations   : 9                         20-Apr-2023 18:08:44
+    number of reformations : 9                         20-Apr-2023 18:08:44
+------- converged at time : 0.3                        20-Apr-2023 18:08:44
+    number of iterations   : 10                        20-Apr-2023 18:08:48
+    number of reformations : 10                        20-Apr-2023 18:08:48
+------- converged at time : 0.4                        20-Apr-2023 18:08:48
+    number of iterations   : 8                         20-Apr-2023 18:08:51
+    number of reformations : 8                         20-Apr-2023 18:08:51
+------- converged at time : 0.5                        20-Apr-2023 18:08:51
+    number of iterations   : 8                         20-Apr-2023 18:08:55
+    number of reformations : 8                         20-Apr-2023 18:08:55
+------- converged at time : 0.6                        20-Apr-2023 18:08:55
+    number of iterations   : 9                         20-Apr-2023 18:08:59
+    number of reformations : 9                         20-Apr-2023 18:08:59
+------- converged at time : 0.7                        20-Apr-2023 18:08:59
+    number of iterations   : 8                         20-Apr-2023 18:09:03
+    number of reformations : 8                         20-Apr-2023 18:09:03
+------- converged at time : 0.8                        20-Apr-2023 18:09:03
+    number of iterations   : 9                         20-Apr-2023 18:09:07
+    number of reformations : 9                         20-Apr-2023 18:09:07
+------- converged at time : 0.9                        20-Apr-2023 18:09:07
+    number of iterations   : 10                        20-Apr-2023 18:09:20
+    number of reformations : 10                        20-Apr-2023 18:09:20
+------- converged at time : 0.966667                   20-Apr-2023 18:09:20
+    number of iterations   : 12                        20-Apr-2023 18:09:26
+    number of reformations : 12                        20-Apr-2023 18:09:26
+------- converged at time : 1                          20-Apr-2023 18:09:26
+ Elapsed time : 0:00:53                                20-Apr-2023 18:09:26
  N O R M A L   T E R M I N A T I O N
-# Done                                                 25-Feb-2022 15:40:23
+# Done                                                 20-Apr-2023 18:09:26
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-</pre><img width="100%" height="auto" vspace="5" hspace="5" src="DEMO_febio_0044_mammography_01_10.jpg" alt=""> <h2 id="33">Import FEBio results</h2><pre class="codeinput"><span class="keyword">if</span> runFlag==1 <span class="comment">%i.e. a succesful run</span>
+</pre><h2 id="33">Import FEBio results</h2><pre class="codeinput"><span class="keyword">if</span> runFlag==1 <span class="comment">%i.e. a succesful run</span>
 </pre><pre class="codeinput">    <span class="comment">% Importing nodal displacements from a log file</span>
-    dataStructDisp=importFEBio_logfile(fullfile(savePath,febioLogFileName_disp),1,1);
+    dataStructDisp=importFEBio_logfile(fullfile(savePath,febioLogFileName_disp),0,1);
 
     <span class="comment">%Access data</span>
     N_disp_mat=dataStructDisp.data; <span class="comment">%Displacement</span>
@@ -712,7 +735,7 @@ FEBio path: /home/kevin/FEBioStudio/bin/febio3
 
     <span class="comment">%Create deformed coordinate set</span>
     V_DEF=N_disp_mat+repmat(V,[1 1 size(N_disp_mat,3)]);
-</pre><h2 id="35">Import rigid body reaction forces</h2><pre class="codeinput">    dataStructForce=importFEBio_logfile(fullfile(savePath,febioLogFileName_force),1,1);
+</pre><h2 id="35">Import rigid body reaction forces</h2><pre class="codeinput">    dataStructForce=importFEBio_logfile(fullfile(savePath,febioLogFileName_force),0,1);
     forcePlate1=squeeze(dataStructForce.data(1,:,:))';
     forcePlate2=squeeze(dataStructForce.data(2,:,:))';
 </pre><p>Visualize reaction forces</p><pre class="codeinput">    cFigure;
@@ -736,7 +759,7 @@ FEBio path: /home/kevin/FEBioStudio/bin/febio3
     axis <span class="string">tight</span>; axis <span class="string">square</span>; grid <span class="string">on</span>; box <span class="string">on</span>;
     set(gca,<span class="string">'FontSize'</span>,fontSize);
     drawnow;
-</pre><img width="100%" height="auto" vspace="5" hspace="5" src="DEMO_febio_0044_mammography_01_11.jpg" alt=""> <p>Visualize Z-force of top plate</p><pre class="codeinput">    forceTop_Z=forcePlate2(:,3);
+</pre><img width="100%" height="auto" vspace="5" hspace="5" src="DEMO_febio_0044_mammography_01_10.jpg" alt=""> <p>Visualize Z-force of top plate</p><pre class="codeinput">    forceTop_Z=forcePlate2(:,3);
 
     cFigure; hold <span class="string">on</span>;
     title(<span class="string">'Top plate'</span>);
@@ -746,7 +769,7 @@ FEBio path: /home/kevin/FEBioStudio/bin/febio3
     axis <span class="string">tight</span>; axis <span class="string">square</span>; grid <span class="string">on</span>; box <span class="string">on</span>;
     set(gca,<span class="string">'FontSize'</span>,fontSize);
     drawnow;
-</pre><img width="100%" height="auto" vspace="5" hspace="5" src="DEMO_febio_0044_mammography_01_12.jpg" alt=""> <p>Plotting the simulated results using <tt>anim8</tt> to visualize and animate deformations</p><pre class="codeinput">    DN_magnitude=sqrt(sum(N_disp_mat(:,:,end).^2,2)); <span class="comment">%Current displacement magnitude</span>
+</pre><img width="100%" height="auto" vspace="5" hspace="5" src="DEMO_febio_0044_mammography_01_11.jpg" alt=""> <p>Plotting the simulated results using <tt>anim8</tt> to visualize and animate deformations</p><pre class="codeinput">    DN_magnitude=sqrt(sum(N_disp_mat(:,:,end).^2,2)); <span class="comment">%Current displacement magnitude</span>
 
     <span class="comment">% Create basic view and store graphics handle to initiate animation</span>
     hf=cFigure; <span class="comment">%Open figure</span>
@@ -774,8 +797,8 @@ FEBio path: /home/kevin/FEBioStudio/bin/febio3
     <span class="keyword">end</span>
     anim8(hf,animStruct); <span class="comment">%Initiate animation feature</span>
     gdrawnow;
-</pre><img width="100%" height="auto" vspace="5" hspace="5" src="DEMO_febio_0044_mammography_01_13.jpg" alt=""> <pre class="codeinput"><span class="keyword">end</span>
-</pre><p><img vspace="5" hspace="5" src="gibbVerySmall.gif" alt=""> </p><p><i><b>GIBBON</b></i> <a href="www.gibboncode.org">www.gibboncode.org</a></p><p><i>Kevin Mattheus Moerman</i>, <a href="gibbon.toolbox@gmail.com">gibbon.toolbox@gmail.com</a></p><p><i><b>GIBBON footer text</b></i></p><p>License: <a href="https://github.com/gibbonCode/GIBBON/blob/master/LICENSE">https://github.com/gibbonCode/GIBBON/blob/master/LICENSE</a></p><p>GIBBON: The Geometry and Image-based Bioengineering add-On. A toolbox for image segmentation, image-based modeling, meshing, and finite element analysis.</p><p>Copyright (C) 2006-2022 Kevin Mattheus Moerman and the GIBBON contributors</p><p>This program is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.</p><p>This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for more details.</p><p>You should have received a copy of the GNU General Public License along with this program.  If not, see <a href="http://www.gnu.org/licenses/">http://www.gnu.org/licenses/</a>.</p><p class="footer"><br><a href="https://www.mathworks.com/products/matlab/">Published with MATLAB&reg; R2021a</a><br></p></div><!--
+</pre><img width="100%" height="auto" vspace="5" hspace="5" src="DEMO_febio_0044_mammography_01_12.jpg" alt=""> <pre class="codeinput"><span class="keyword">end</span>
+</pre><p><img vspace="5" hspace="5" src="gibbVerySmall.gif" alt=""> </p><p><i><b>GIBBON</b></i> <a href="www.gibboncode.org">www.gibboncode.org</a></p><p><i>Kevin Mattheus Moerman</i>, <a href="gibbon.toolbox@gmail.com">gibbon.toolbox@gmail.com</a></p><p><i><b>GIBBON footer text</b></i></p><p>License: <a href="https://github.com/gibbonCode/GIBBON/blob/master/LICENSE">https://github.com/gibbonCode/GIBBON/blob/master/LICENSE</a></p><p>GIBBON: The Geometry and Image-based Bioengineering add-On. A toolbox for image segmentation, image-based modeling, meshing, and finite element analysis.</p><p>Copyright (C) 2006-2022 Kevin Mattheus Moerman and the GIBBON contributors</p><p>This program is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.</p><p>This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for more details.</p><p>You should have received a copy of the GNU General Public License along with this program.  If not, see <a href="http://www.gnu.org/licenses/">http://www.gnu.org/licenses/</a>.</p><p class="footer"><br><a href="https://www.mathworks.com/products/matlab/">Published with MATLAB&reg; R2022b</a><br></p></div><!--
 ##### SOURCE BEGIN #####
 %% DEMO_febio_0044_mammography_01.m
 % Below is a demonstration for:
@@ -789,12 +812,12 @@ FEBio path: /home/kevin/FEBioStudio/bin/febio3
 
 %% Keywords
 %
-% * febio_spec version 3.0
+% * febio_spec version 4.0
 % * febio, FEBio
 % * indentation
 % * contact, sliding, sticky, friction
 % * rigid body constraints
-% * tetrahedral elements, tet8
+% * tetrahedral elements, tet4
 % * triangular elements, tri3
 % * static, solid
 % * hyperelastic, Ogden
@@ -1175,7 +1198,7 @@ gdrawnow;
 [febio_spec]=febioStructTemplate;
 
 %febio_spec version 
-febio_spec.ATTR.version='3.0'; 
+febio_spec.ATTR.version='4.0'; 
 
 %Module section
 febio_spec.Module.ATTR.type='solid'; 
@@ -1185,9 +1208,8 @@ febio_spec.Control.analysis='STATIC';
 febio_spec.Control.time_steps=numTimeSteps;
 febio_spec.Control.step_size=1/numTimeSteps;
 febio_spec.Control.solver.max_refs=max_refs;
-febio_spec.Control.solver.max_ups=max_ups;
+febio_spec.Control.solver.qn_method.max_ups=max_ups;
 febio_spec.Control.solver.symmetric_stiffness=symmetric_stiffness;
-febio_spec.Control.solver.min_residual=min_residual;
 febio_spec.Control.time_stepper.dtmin=dtmin;
 febio_spec.Control.time_stepper.dtmax=dtmax; 
 febio_spec.Control.time_stepper.max_retries=max_retries;
@@ -1275,7 +1297,7 @@ febio_spec.MeshDomains.ShellDomain{2}.ATTR.mat=materialName4;
 % -> NodeSets
 nodeSetName1='bcSupportList';
 febio_spec.Mesh.NodeSet{1}.ATTR.name=nodeSetName1;
-febio_spec.Mesh.NodeSet{1}.node.ATTR.id=bcSupportList(:);
+febio_spec.Mesh.NodeSet{1}.VAL=mrow(bcSupportList);
 
 % -> Surfaces
 surfaceName1='contactSurface1';
@@ -1304,63 +1326,79 @@ febio_spec.Mesh.SurfacePair{2}.secondary=surfaceName2;
 
 %Boundary condition section 
 % -> Fix boundary conditions
-febio_spec.Boundary.bc{1}.ATTR.type='fix';
+febio_spec.Boundary.bc{1}.ATTR.name='zero_displacement_xyz';
+febio_spec.Boundary.bc{1}.ATTR.type='zero displacement';
 febio_spec.Boundary.bc{1}.ATTR.node_set=nodeSetName1;
-febio_spec.Boundary.bc{1}.dofs='x,y,z';
+febio_spec.Boundary.bc{1}.x_dof=1;
+febio_spec.Boundary.bc{1}.y_dof=1;
+febio_spec.Boundary.bc{1}.z_dof=1;
 
 %Rigid section 
-% -> Prescribed rigid body boundary conditions
-febio_spec.Rigid.rigid_constraint{1}.ATTR.name='RotFix_1';
-febio_spec.Rigid.rigid_constraint{1}.ATTR.type='fix';
-febio_spec.Rigid.rigid_constraint{1}.rb=3;
-febio_spec.Rigid.rigid_constraint{1}.dofs='Ru,Rv,Rw';
+% ->Rigid body fix boundary conditions
+febio_spec.Rigid.rigid_bc{1}.ATTR.name='RigidFixRot_RB3';
+febio_spec.Rigid.rigid_bc{1}.ATTR.type='rigid_fixed';
+febio_spec.Rigid.rigid_bc{1}.rb=3;
+febio_spec.Rigid.rigid_bc{1}.Ru_dof=1;
+febio_spec.Rigid.rigid_bc{1}.Rv_dof=1;
+febio_spec.Rigid.rigid_bc{1}.Rw_dof=1;
 
-febio_spec.Rigid.rigid_constraint{2}.ATTR.name='TranslationPrescribe_1_x';
-febio_spec.Rigid.rigid_constraint{2}.ATTR.type='prescribe';
-febio_spec.Rigid.rigid_constraint{2}.rb=3;
-febio_spec.Rigid.rigid_constraint{2}.dof='Rx';
-febio_spec.Rigid.rigid_constraint{2}.value.ATTR.lc=1;
-febio_spec.Rigid.rigid_constraint{2}.value.VAL=plateDisplacement_XYZ(1);
+febio_spec.Rigid.rigid_bc{2}.ATTR.name='RigidFixRot_RB4';
+febio_spec.Rigid.rigid_bc{2}.ATTR.type='rigid_fixed';
+febio_spec.Rigid.rigid_bc{2}.rb=4;
+febio_spec.Rigid.rigid_bc{2}.Ru_dof=1;
+febio_spec.Rigid.rigid_bc{2}.Rv_dof=1;
+febio_spec.Rigid.rigid_bc{2}.Rw_dof=1;
 
-febio_spec.Rigid.rigid_constraint{3}.ATTR.name='TranslationPrescribe_1_y';
-febio_spec.Rigid.rigid_constraint{3}.ATTR.type='prescribe';
-febio_spec.Rigid.rigid_constraint{3}.rb=3;
-febio_spec.Rigid.rigid_constraint{3}.dof='Ry';
-febio_spec.Rigid.rigid_constraint{3}.value.ATTR.lc=1;
-febio_spec.Rigid.rigid_constraint{3}.value.VAL=plateDisplacement_XYZ(2);
+% ->Rigid body prescribe boundary conditions
+febio_spec.Rigid.rigid_bc{3}.ATTR.name='RigidPrescribe_X_RB3';
+febio_spec.Rigid.rigid_bc{3}.ATTR.type='rigid_displacement';
+febio_spec.Rigid.rigid_bc{3}.rb=3;
+febio_spec.Rigid.rigid_bc{3}.dof='x';
+febio_spec.Rigid.rigid_bc{3}.value.ATTR.lc=1;
+febio_spec.Rigid.rigid_bc{3}.value.VAL=plateDisplacement_XYZ(1);
+febio_spec.Rigid.rigid_bc{3}.relative=0;
 
-febio_spec.Rigid.rigid_constraint{4}.ATTR.name='TranslationPrescribe_1_z';
-febio_spec.Rigid.rigid_constraint{4}.ATTR.type='prescribe';
-febio_spec.Rigid.rigid_constraint{4}.rb=3;
-febio_spec.Rigid.rigid_constraint{4}.dof='Rz';
-febio_spec.Rigid.rigid_constraint{4}.value.ATTR.lc=1;
-febio_spec.Rigid.rigid_constraint{4}.value.VAL=plateDisplacement_XYZ(3);
+febio_spec.Rigid.rigid_bc{4}.ATTR.name='RigidPrescribe_Y_RB3';
+febio_spec.Rigid.rigid_bc{4}.ATTR.type='rigid_displacement';
+febio_spec.Rigid.rigid_bc{4}.rb=3;
+febio_spec.Rigid.rigid_bc{4}.dof='y';
+febio_spec.Rigid.rigid_bc{4}.value.ATTR.lc=1;
+febio_spec.Rigid.rigid_bc{4}.value.VAL=plateDisplacement_XYZ(2);
+febio_spec.Rigid.rigid_bc{4}.relative=0;
 
-febio_spec.Rigid.rigid_constraint{5}.ATTR.name='RotFix_2';
-febio_spec.Rigid.rigid_constraint{5}.ATTR.type='fix';
-febio_spec.Rigid.rigid_constraint{5}.rb=4;
-febio_spec.Rigid.rigid_constraint{5}.dofs='Ru,Rv,Rw';
+febio_spec.Rigid.rigid_bc{5}.ATTR.name='RigidPrescribe_Z_RB3';
+febio_spec.Rigid.rigid_bc{5}.ATTR.type='rigid_displacement';
+febio_spec.Rigid.rigid_bc{5}.rb=3;
+febio_spec.Rigid.rigid_bc{5}.dof='z';
+febio_spec.Rigid.rigid_bc{5}.value.ATTR.lc=1;
+febio_spec.Rigid.rigid_bc{5}.value.VAL=plateDisplacement_XYZ(3);
+febio_spec.Rigid.rigid_bc{5}.relative=0;
 
-febio_spec.Rigid.rigid_constraint{6}.ATTR.name='TranslationPrescribe_2_x';
-febio_spec.Rigid.rigid_constraint{6}.ATTR.type='prescribe';
-febio_spec.Rigid.rigid_constraint{6}.rb=4;
-febio_spec.Rigid.rigid_constraint{6}.dof='Rx';
-febio_spec.Rigid.rigid_constraint{6}.value.ATTR.lc=1;
-febio_spec.Rigid.rigid_constraint{6}.value.VAL=-plateDisplacement_XYZ(1);
 
-febio_spec.Rigid.rigid_constraint{7}.ATTR.name='TranslationPrescribe_2_y';
-febio_spec.Rigid.rigid_constraint{7}.ATTR.type='prescribe';
-febio_spec.Rigid.rigid_constraint{7}.rb=4;
-febio_spec.Rigid.rigid_constraint{7}.dof='Ry';
-febio_spec.Rigid.rigid_constraint{7}.value.ATTR.lc=1;
-febio_spec.Rigid.rigid_constraint{7}.value.VAL=-plateDisplacement_XYZ(2);
+febio_spec.Rigid.rigid_bc{6}.ATTR.name='RigidPrescribe_X_RB4';
+febio_spec.Rigid.rigid_bc{6}.ATTR.type='rigid_displacement';
+febio_spec.Rigid.rigid_bc{6}.rb=4;
+febio_spec.Rigid.rigid_bc{6}.dof='x';
+febio_spec.Rigid.rigid_bc{6}.value.ATTR.lc=1;
+febio_spec.Rigid.rigid_bc{6}.value.VAL=-plateDisplacement_XYZ(1);
+febio_spec.Rigid.rigid_bc{6}.relative=0;
 
-febio_spec.Rigid.rigid_constraint{8}.ATTR.name='TranslationPrescribe_2_z';
-febio_spec.Rigid.rigid_constraint{8}.ATTR.type='prescribe';
-febio_spec.Rigid.rigid_constraint{8}.rb=4;
-febio_spec.Rigid.rigid_constraint{8}.dof='Rz';
-febio_spec.Rigid.rigid_constraint{8}.value.ATTR.lc=1;
-febio_spec.Rigid.rigid_constraint{8}.value.VAL=-plateDisplacement_XYZ(3);
+febio_spec.Rigid.rigid_bc{7}.ATTR.name='RigidPrescribe_Y_RB4';
+febio_spec.Rigid.rigid_bc{7}.ATTR.type='rigid_displacement';
+febio_spec.Rigid.rigid_bc{7}.rb=4;
+febio_spec.Rigid.rigid_bc{7}.dof='y';
+febio_spec.Rigid.rigid_bc{7}.value.ATTR.lc=1;
+febio_spec.Rigid.rigid_bc{7}.value.VAL=-plateDisplacement_XYZ(2);
+febio_spec.Rigid.rigid_bc{7}.relative=0;
+
+febio_spec.Rigid.rigid_bc{8}.ATTR.name='RigidPrescribe_Z_RB4';
+febio_spec.Rigid.rigid_bc{8}.ATTR.type='rigid_displacement';
+febio_spec.Rigid.rigid_bc{8}.rb=4;
+febio_spec.Rigid.rigid_bc{8}.dof='z';
+febio_spec.Rigid.rigid_bc{8}.value.ATTR.lc=1;
+febio_spec.Rigid.rigid_bc{8}.value.VAL=-plateDisplacement_XYZ(3);
+febio_spec.Rigid.rigid_bc{8}.relative=0;
+
 
 %Contact section
 for q=1:1:2  
@@ -1382,10 +1420,12 @@ end
 
 %LoadData section
 % -> load_controller
+febio_spec.LoadData.load_controller{1}.ATTR.name='LC_1';
 febio_spec.LoadData.load_controller{1}.ATTR.id=1;
 febio_spec.LoadData.load_controller{1}.ATTR.type='loadcurve';
 febio_spec.LoadData.load_controller{1}.interpolate='LINEAR';
-febio_spec.LoadData.load_controller{1}.points.point.VAL=[0 0; 1 1];
+%febio_spec.LoadData.load_controller{1}.extend='CONSTANT';
+febio_spec.LoadData.load_controller{1}.points.pt.VAL=[0 0; 1 1];
 
 %Output section
 % -> log file
@@ -1398,6 +1438,9 @@ febio_spec.Output.logfile.rigid_body_data{1}.ATTR.file=febioLogFileName_force;
 febio_spec.Output.logfile.rigid_body_data{1}.ATTR.data='Fx;Fy;Fz';
 febio_spec.Output.logfile.rigid_body_data{1}.ATTR.delim=',';
 febio_spec.Output.logfile.rigid_body_data{1}.VAL=[3 4]; 
+
+% Plotfile section
+febio_spec.Output.plotfile.compression=0;
 
 %% Quick viewing of the FEBio input file structure
 % The |febView| function can be used to view the xml structure in a MATLAB
@@ -1431,7 +1474,7 @@ febioAnalysis.runMode=runMode;
 if runFlag==1 %i.e. a succesful run
     
     % Importing nodal displacements from a log file
-    dataStructDisp=importFEBio_logfile(fullfile(savePath,febioLogFileName_disp),1,1);
+    dataStructDisp=importFEBio_logfile(fullfile(savePath,febioLogFileName_disp),0,1);
     
     %Access data
     N_disp_mat=dataStructDisp.data; %Displacement
@@ -1442,7 +1485,7 @@ if runFlag==1 %i.e. a succesful run
     
     %% Import rigid body reaction forces
     
-    dataStructForce=importFEBio_logfile(fullfile(savePath,febioLogFileName_force),1,1);    
+    dataStructForce=importFEBio_logfile(fullfile(savePath,febioLogFileName_force),0,1);    
     forcePlate1=squeeze(dataStructForce.data(1,:,:))';
     forcePlate2=squeeze(dataStructForce.data(2,:,:))';
     

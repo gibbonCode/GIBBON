@@ -1,4 +1,4 @@
-%% DEMO_febio_0083_cube_uniaxial_HGO
+%% DEMO_febio_0038_cube_uniaxial_HGO
 % Below is a demonstration for:
 % 
 % * Building geometry for a cube with hexahedral elements
