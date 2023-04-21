@@ -387,7 +387,6 @@ febio_spec.Control.time_stepper.dtmax=dtmax;
 febio_spec.Control.time_stepper.max_retries=max_retries;
 febio_spec.Control.time_stepper.opt_iter=opt_iter;
 
-
 %Material section
 materialName1='Material1';
 febio_spec.Material.material{1}.ATTR.name=materialName1;
@@ -459,17 +458,6 @@ febio_spec.Boundary.bc{1}.x_dof=1;
 febio_spec.Boundary.bc{1}.y_dof=1;
 febio_spec.Boundary.bc{1}.z_dof=1;
 
-%Rigid section 
-% ->Rigid body fix boundary conditions
-% febio_spec.Rigid.rigid_bc{1}.ATTR.name='RigidFix';
-% febio_spec.Rigid.rigid_bc{1}.ATTR.type='rigid_fixed';
-% febio_spec.Rigid.rigid_bc{1}.rb=3;
-% febio_spec.Rigid.rigid_bc{1}.Rx_dof=1;
-% febio_spec.Rigid.rigid_bc{1}.Ry_dof=1;
-% febio_spec.Rigid.rigid_bc{1}.Ru_dof=1;
-% febio_spec.Rigid.rigid_bc{1}.Rv_dof=1;
-% febio_spec.Rigid.rigid_bc{1}.Rw_dof=1;
-
 % ->Rigid body prescribe boundary conditions
 febio_spec.Rigid.rigid_load{1}.ATTR.name='RigidPrescribedForce';
 febio_spec.Rigid.rigid_load{1}.ATTR.type='rigid_force';
@@ -494,7 +482,6 @@ febio_spec.Output.logfile.ATTR.file=febioLogFileName;
 febio_spec.Output.logfile.node_data{1}.ATTR.file=febioLogFileName_disp;
 febio_spec.Output.logfile.node_data{1}.ATTR.data='ux;uy;uz';
 febio_spec.Output.logfile.node_data{1}.ATTR.delim=',';
-febio_spec.Output.logfile.node_data{1}.VAL=1:size(V,1);
 
 febio_spec.Output.logfile.rigid_body_data{1}.ATTR.file=febioLogFileName_force;
 febio_spec.Output.logfile.rigid_body_data{1}.ATTR.data='Fx;Fy;Fz';
