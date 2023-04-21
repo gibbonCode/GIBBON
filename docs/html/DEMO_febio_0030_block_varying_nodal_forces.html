@@ -6,7 +6,7 @@
    <!--
 This HTML was auto-generated from MATLAB code.
 To make changes, update the MATLAB code and republish this document.
-      --><title>DEMO_febio_0030_block_varying_nodal_forces</title><meta name="generator" content="MATLAB 9.13"><link rel="schema.DC" href="http://purl.org/dc/elements/1.1/"><meta name="DC.date" content="2023-04-20"><meta name="DC.source" content="DEMO_febio_0030_block_varying_nodal_forces.m"><style type="text/css">
+      --><title>DEMO_febio_0030_block_varying_nodal_forces</title><meta name="generator" content="MATLAB 9.13"><link rel="schema.DC" href="http://purl.org/dc/elements/1.1/"><meta name="DC.date" content="2023-04-21"><meta name="DC.source" content="DEMO_febio_0030_block_varying_nodal_forces.m"><style type="text/css">
 html,body,div,span,applet,object,iframe,h1,h2,h3,h4,h5,h6,p,blockquote,pre,a,abbr,acronym,address,big,cite,code,del,dfn,em,font,img,ins,kbd,q,s,samp,small,strike,strong,tt,var,b,u,i,center,dl,dt,dd,ol,ul,li,fieldset,form,label,legend,table,caption,tbody,tfoot,thead,tr,th,td{margin:0;padding:0;border:0;outline:0;font-size:100%;vertical-align:baseline;background:transparent}body{line-height:1}ol,ul{list-style:none}blockquote,q{quotes:none}blockquote:before,blockquote:after,q:before,q:after{content:'';content:none}:focus{outine:0}ins{text-decoration:none}del{text-decoration:line-through}table{border-collapse:collapse;border-spacing:0}
 
 html { min-height:100%; margin-bottom:1px; }
@@ -93,7 +93,7 @@ numElementsThickness=round(sampleThickness/pointSpacings(2)); <span class="comme
 numElementsHeight=round(sampleHeight/pointSpacings(3)); <span class="comment">%Number of elemens in dir 3</span>
 
 <span class="comment">%Define applied displacement</span>
-forceMax=1e-2; <span class="comment">%Note more nodes = more force overall</span>
+forceMaxMag=1e-2; <span class="comment">%Note more nodes = more force overall</span>
 
 <span class="comment">%Material parameter set</span>
 c1=1e-3; <span class="comment">%Shear-modulus-like parameter</span>
@@ -146,8 +146,14 @@ bcPrescribeList=unique(Fb(Cb==6,:)); <span class="comment">%Node set part of sel
 
 <span class="comment">%Create example spatially varying force</span>
 s=sampleWidth/4; <span class="comment">%"standard deviation"</span>
-forceData=forceMax*exp(-0.5.*((V(bcPrescribeList,1)./s).^2+(V(bcPrescribeList,2)./s).^2)); <span class="comment">%Gaussian variation</span>
-forceData=forceData.*sin(2*pi*(V(bcPrescribeList,2)/sampleWidth)); <span class="comment">%Sinusoidal modulation</span>
+forceData=zeros(numel(bcPrescribeList),3);
+forceData(:,1)=0.5*sin(2*pi*(V(bcPrescribeList,2)/sampleWidth)); <span class="comment">%Sinusoidal varation</span>
+forceData(:,2)=0.5;
+forceData(:,3)=1;
+forceData=forceData.*exp(-0.5.*((V(bcPrescribeList,1)./s).^2+(V(bcPrescribeList,2)./s).^2)); <span class="comment">%Gaussian modulation</span>
+
+forceData=forceData./max(sqrt(sum(forceData.^2,2)));
+forceData=forceData.*forceMaxMag;
 </pre><p>Visualizing boundary conditions. Markers plotted on the semi-transparent model denote the nodes in the various boundary condition lists.</p><pre class="codeinput">hf=cFigure;
 title(<span class="string">'Boundary conditions'</span>,<span class="string">'FontSize'</span>,fontSize);
 xlabel(<span class="string">'X'</span>,<span class="string">'FontSize'</span>,fontSize); ylabel(<span class="string">'Y'</span>,<span class="string">'FontSize'</span>,fontSize); zlabel(<span class="string">'Z'</span>,<span class="string">'FontSize'</span>,fontSize);
@@ -156,12 +162,13 @@ hold <span class="string">on</span>;
 gpatch(Fb,V,<span class="string">'kw'</span>,<span class="string">'k'</span>,0.5);
 
 hl(1)=plotV(V(bcSupportList,:),<span class="string">'k.'</span>,<span class="string">'MarkerSize'</span>,markerSize);
-hl(2)=scatterV(V(bcPrescribeList,:),75,forceData,<span class="string">'filled'</span>);
+<span class="comment">% hl(2)=scatterV(V(bcPrescribeList,:),75,forceData,'filled');</span>
+hl(2)=quiverVec(V(bcPrescribeList,:),forceData,mean(pointSpacings),sqrt(sum(forceData.^2,2)));
 
 legend(hl,{<span class="string">'BC fix support'</span>,<span class="string">'BC prescribed force'</span>});
 
 axisGeom(gca,fontSize);
-colorbar; colormap(warmcold(250)); caxis([-forceMax forceMax]);
+colorbar; colormap(warmcold(250)); caxis([0 forceMaxMag]);
 camlight <span class="string">headlight</span>;
 drawnow;
 </pre><img width="100%" height="auto" vspace="5" hspace="5" src="DEMO_febio_0030_block_varying_nodal_forces_02.jpg" alt=""> <h2 id="9">Defining the FEBio input structure</h2><p>See also <tt>febioStructTemplate</tt> and <tt>febioStruct2xml</tt> and the FEBio user manual.</p><pre class="codeinput"><span class="comment">%Get a template with default settings</span>
@@ -232,22 +239,31 @@ febio_spec.Boundary.bc{1}.z_dof=1;
 
 <span class="comment">%MeshData secion</span>
 <span class="comment">%-&gt; Node data</span>
-loadDataName1=<span class="string">'nodal_load_Z'</span>;
+loadDataName1=<span class="string">'nodal_forces'</span>;
 febio_spec.MeshData.NodeData{1}.ATTR.name=loadDataName1;
 febio_spec.MeshData.NodeData{1}.ATTR.node_set=nodeSetName2;
-febio_spec.MeshData.NodeData{1}.ATTR.datatype=<span class="string">'scalar'</span>;
+febio_spec.MeshData.NodeData{1}.ATTR.data_type=<span class="string">'vec3'</span>;
 febio_spec.MeshData.NodeData{1}.node.ATTR.lid=(1:1:numel(bcPrescribeList))';
-febio_spec.MeshData.NodeData{1}.node.VAL=forceData(:);
+febio_spec.MeshData.NodeData{1}.node.VAL=forceData;
+
+<span class="comment">% %Loads section</span>
+<span class="comment">% % -&gt; Prescribed nodal forces</span>
+<span class="comment">% febio_spec.Loads.nodal_load{1}.ATTR.name='PrescribedForceZ';</span>
+<span class="comment">% febio_spec.Loads.nodal_load{1}.ATTR.type='nodal_load';</span>
+<span class="comment">% febio_spec.Loads.nodal_load{1}.ATTR.node_set=nodeSetName2;</span>
+<span class="comment">% febio_spec.Loads.nodal_load{1}.dof='z';</span>
+<span class="comment">% febio_spec.Loads.nodal_load{1}.scale.ATTR.lc=1;</span>
+<span class="comment">% febio_spec.Loads.nodal_load{1}.scale.ATTR.type='map';</span>
+<span class="comment">% febio_spec.Loads.nodal_load{1}.scale.VAL=loadDataName1;</span>
 
 <span class="comment">%Loads section</span>
 <span class="comment">% -&gt; Prescribed nodal forces</span>
 febio_spec.Loads.nodal_load{1}.ATTR.name=<span class="string">'PrescribedForceZ'</span>;
-febio_spec.Loads.nodal_load{1}.ATTR.type=<span class="string">'nodal_load'</span>;
+febio_spec.Loads.nodal_load{1}.ATTR.type=<span class="string">'nodal_force'</span>;
 febio_spec.Loads.nodal_load{1}.ATTR.node_set=nodeSetName2;
-febio_spec.Loads.nodal_load{1}.dof=<span class="string">'z'</span>;
-febio_spec.Loads.nodal_load{1}.scale.ATTR.lc=1;
-febio_spec.Loads.nodal_load{1}.scale.ATTR.type=<span class="string">'map'</span>;
-febio_spec.Loads.nodal_load{1}.scale.VAL=loadDataName1;
+febio_spec.Loads.nodal_load{1}.value.ATTR.lc=1;
+febio_spec.Loads.nodal_load{1}.value.ATTR.type=<span class="string">'map'</span>;
+febio_spec.Loads.nodal_load{1}.value.VAL=loadDataName1;
 
 <span class="comment">%LoadData section</span>
 <span class="comment">% -&gt; load_controller</span>
@@ -276,51 +292,51 @@ febioAnalysis.runMode=runMode;
 [runFlag]=runMonitorFEBio(febioAnalysis);<span class="comment">%START FEBio NOW!!!!!!!!</span>
 </pre><pre class="codeoutput"> 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
---------&gt;    RUNNING/MONITORING FEBIO JOB    &lt;-------- 20-Apr-2023 10:47:15
+--------&gt;    RUNNING/MONITORING FEBIO JOB    &lt;-------- 21-Apr-2023 10:14:37
 FEBio path: /home/kevin/FEBioStudio2/bin/febio4
-# Attempt removal of existing log files                20-Apr-2023 10:47:15
- * Removal succesful                                   20-Apr-2023 10:47:16
-# Attempt removal of existing .xplt files              20-Apr-2023 10:47:16
- * Removal succesful                                   20-Apr-2023 10:47:16
-# Starting FEBio...                                    20-Apr-2023 10:47:16
+# Attempt removal of existing log files                21-Apr-2023 10:14:37
+ * Removal succesful                                   21-Apr-2023 10:14:37
+# Attempt removal of existing .xplt files              21-Apr-2023 10:14:38
+ * Removal succesful                                   21-Apr-2023 10:14:38
+# Starting FEBio...                                    21-Apr-2023 10:14:38
   Max. total analysis time is: Inf s
- * Waiting for log file creation                       20-Apr-2023 10:47:16
+ * Waiting for log file creation                       21-Apr-2023 10:14:38
    Max. wait time: 30 s
- * Log file found.                                     20-Apr-2023 10:47:16
-# Parsing log file...                                  20-Apr-2023 10:47:16
-    number of iterations   : 3                         20-Apr-2023 10:47:16
-    number of reformations : 3                         20-Apr-2023 10:47:16
-------- converged at time : 0.1                        20-Apr-2023 10:47:16
-    number of iterations   : 3                         20-Apr-2023 10:47:16
-    number of reformations : 3                         20-Apr-2023 10:47:16
-------- converged at time : 0.2                        20-Apr-2023 10:47:16
-    number of iterations   : 3                         20-Apr-2023 10:47:16
-    number of reformations : 3                         20-Apr-2023 10:47:16
-------- converged at time : 0.3                        20-Apr-2023 10:47:16
-    number of iterations   : 3                         20-Apr-2023 10:47:16
-    number of reformations : 3                         20-Apr-2023 10:47:16
-------- converged at time : 0.4                        20-Apr-2023 10:47:16
-    number of iterations   : 3                         20-Apr-2023 10:47:16
-    number of reformations : 3                         20-Apr-2023 10:47:16
-------- converged at time : 0.5                        20-Apr-2023 10:47:16
-    number of iterations   : 3                         20-Apr-2023 10:47:16
-    number of reformations : 3                         20-Apr-2023 10:47:16
-------- converged at time : 0.6                        20-Apr-2023 10:47:16
-    number of iterations   : 3                         20-Apr-2023 10:47:16
-    number of reformations : 3                         20-Apr-2023 10:47:16
-------- converged at time : 0.7                        20-Apr-2023 10:47:16
-    number of iterations   : 3                         20-Apr-2023 10:47:17
-    number of reformations : 3                         20-Apr-2023 10:47:17
-------- converged at time : 0.8                        20-Apr-2023 10:47:17
-    number of iterations   : 3                         20-Apr-2023 10:47:17
-    number of reformations : 3                         20-Apr-2023 10:47:17
-------- converged at time : 0.9                        20-Apr-2023 10:47:17
-    number of iterations   : 3                         20-Apr-2023 10:47:17
-    number of reformations : 3                         20-Apr-2023 10:47:17
-------- converged at time : 1                          20-Apr-2023 10:47:17
- Elapsed time : 0:00:01                                20-Apr-2023 10:47:17
+ * Log file found.                                     21-Apr-2023 10:14:38
+# Parsing log file...                                  21-Apr-2023 10:14:38
+    number of iterations   : 3                         21-Apr-2023 10:14:38
+    number of reformations : 3                         21-Apr-2023 10:14:38
+------- converged at time : 0.1                        21-Apr-2023 10:14:38
+    number of iterations   : 3                         21-Apr-2023 10:14:38
+    number of reformations : 3                         21-Apr-2023 10:14:38
+------- converged at time : 0.2                        21-Apr-2023 10:14:38
+    number of iterations   : 3                         21-Apr-2023 10:14:38
+    number of reformations : 3                         21-Apr-2023 10:14:38
+------- converged at time : 0.3                        21-Apr-2023 10:14:38
+    number of iterations   : 3                         21-Apr-2023 10:14:38
+    number of reformations : 3                         21-Apr-2023 10:14:38
+------- converged at time : 0.4                        21-Apr-2023 10:14:38
+    number of iterations   : 3                         21-Apr-2023 10:14:39
+    number of reformations : 3                         21-Apr-2023 10:14:39
+------- converged at time : 0.5                        21-Apr-2023 10:14:39
+    number of iterations   : 3                         21-Apr-2023 10:14:39
+    number of reformations : 3                         21-Apr-2023 10:14:39
+------- converged at time : 0.6                        21-Apr-2023 10:14:39
+    number of iterations   : 3                         21-Apr-2023 10:14:39
+    number of reformations : 3                         21-Apr-2023 10:14:39
+------- converged at time : 0.7                        21-Apr-2023 10:14:39
+    number of iterations   : 3                         21-Apr-2023 10:14:39
+    number of reformations : 3                         21-Apr-2023 10:14:39
+------- converged at time : 0.8                        21-Apr-2023 10:14:39
+    number of iterations   : 3                         21-Apr-2023 10:14:39
+    number of reformations : 3                         21-Apr-2023 10:14:39
+------- converged at time : 0.9                        21-Apr-2023 10:14:39
+    number of iterations   : 3                         21-Apr-2023 10:14:39
+    number of reformations : 3                         21-Apr-2023 10:14:39
+------- converged at time : 1                          21-Apr-2023 10:14:39
+ Elapsed time : 0:00:01                                21-Apr-2023 10:14:39
  N O R M A L   T E R M I N A T I O N
-# Done                                                 20-Apr-2023 10:47:17
+# Done                                                 21-Apr-2023 10:14:39
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 </pre><h2 id="14">Import FEBio results</h2><pre class="codeinput"><span class="keyword">if</span> runFlag==1 <span class="comment">%i.e. a succesful run</span>
 </pre><p>Importing nodal displacements from a log file</p><pre class="codeinput">    dataStruct=importFEBio_logfile(fullfile(savePath,febioLogFileName_disp),0,1);
@@ -418,7 +434,7 @@ numElementsThickness=round(sampleThickness/pointSpacings(2)); %Number of elemens
 numElementsHeight=round(sampleHeight/pointSpacings(3)); %Number of elemens in dir 3
 
 %Define applied displacement 
-forceMax=1e-2; %Note more nodes = more force overall
+forceMaxMag=1e-2; %Note more nodes = more force overall
 
 %Material parameter set
 c1=1e-3; %Shear-modulus-like parameter
@@ -487,8 +503,14 @@ bcPrescribeList=unique(Fb(Cb==6,:)); %Node set part of selected face
 
 %Create example spatially varying force
 s=sampleWidth/4; %"standard deviation"
-forceData=forceMax*exp(-0.5.*((V(bcPrescribeList,1)./s).^2+(V(bcPrescribeList,2)./s).^2)); %Gaussian variation
-forceData=forceData.*sin(2*pi*(V(bcPrescribeList,2)/sampleWidth)); %Sinusoidal modulation
+forceData=zeros(numel(bcPrescribeList),3);
+forceData(:,1)=0.5*sin(2*pi*(V(bcPrescribeList,2)/sampleWidth)); %Sinusoidal varation
+forceData(:,2)=0.5;
+forceData(:,3)=1;
+forceData=forceData.*exp(-0.5.*((V(bcPrescribeList,1)./s).^2+(V(bcPrescribeList,2)./s).^2)); %Gaussian modulation
+
+forceData=forceData./max(sqrt(sum(forceData.^2,2)));
+forceData=forceData.*forceMaxMag;
 
 %% 
 % Visualizing boundary conditions. Markers plotted on the semi-transparent
@@ -502,12 +524,13 @@ hold on;
 gpatch(Fb,V,'kw','k',0.5);
 
 hl(1)=plotV(V(bcSupportList,:),'k.','MarkerSize',markerSize);
-hl(2)=scatterV(V(bcPrescribeList,:),75,forceData,'filled');
+% hl(2)=scatterV(V(bcPrescribeList,:),75,forceData,'filled');
+hl(2)=quiverVec(V(bcPrescribeList,:),forceData,mean(pointSpacings),sqrt(sum(forceData.^2,2)));
 
 legend(hl,{'BC fix support','BC prescribed force'});
 
 axisGeom(gca,fontSize);
-colorbar; colormap(warmcold(250)); caxis([-forceMax forceMax]);
+colorbar; colormap(warmcold(250)); caxis([0 forceMaxMag]);
 camlight headlight; 
 drawnow; 
 
@@ -583,22 +606,31 @@ febio_spec.Boundary.bc{1}.z_dof=1;
 
 %MeshData secion
 %-> Node data
-loadDataName1='nodal_load_Z';
+loadDataName1='nodal_forces';
 febio_spec.MeshData.NodeData{1}.ATTR.name=loadDataName1;
 febio_spec.MeshData.NodeData{1}.ATTR.node_set=nodeSetName2;
-febio_spec.MeshData.NodeData{1}.ATTR.datatype='scalar';
+febio_spec.MeshData.NodeData{1}.ATTR.data_type='vec3';
 febio_spec.MeshData.NodeData{1}.node.ATTR.lid=(1:1:numel(bcPrescribeList))';
-febio_spec.MeshData.NodeData{1}.node.VAL=forceData(:);
+febio_spec.MeshData.NodeData{1}.node.VAL=forceData;
+
+% %Loads section
+% % -> Prescribed nodal forces
+% febio_spec.Loads.nodal_load{1}.ATTR.name='PrescribedForceZ';
+% febio_spec.Loads.nodal_load{1}.ATTR.type='nodal_load';
+% febio_spec.Loads.nodal_load{1}.ATTR.node_set=nodeSetName2;
+% febio_spec.Loads.nodal_load{1}.dof='z';
+% febio_spec.Loads.nodal_load{1}.scale.ATTR.lc=1;
+% febio_spec.Loads.nodal_load{1}.scale.ATTR.type='map';
+% febio_spec.Loads.nodal_load{1}.scale.VAL=loadDataName1;
 
 %Loads section
 % -> Prescribed nodal forces
 febio_spec.Loads.nodal_load{1}.ATTR.name='PrescribedForceZ';
-febio_spec.Loads.nodal_load{1}.ATTR.type='nodal_load';
+febio_spec.Loads.nodal_load{1}.ATTR.type='nodal_force';
 febio_spec.Loads.nodal_load{1}.ATTR.node_set=nodeSetName2;
-febio_spec.Loads.nodal_load{1}.dof='z';
-febio_spec.Loads.nodal_load{1}.scale.ATTR.lc=1;
-febio_spec.Loads.nodal_load{1}.scale.ATTR.type='map';
-febio_spec.Loads.nodal_load{1}.scale.VAL=loadDataName1;
+febio_spec.Loads.nodal_load{1}.value.ATTR.lc=1;
+febio_spec.Loads.nodal_load{1}.value.ATTR.type='map';
+febio_spec.Loads.nodal_load{1}.value.VAL=loadDataName1;
 
 %LoadData section
 % -> load_controller

@@ -10,7 +10,7 @@
 
 %% Keywords
 %
-% * febio_spec version 3.0
+% * febio_spec version 4.0
 % * febio, FEBio
 % * Surgery
 % * Breast, soft tissue
@@ -26,7 +26,7 @@ clear; close all; clc;
 %% Plot settings
 fontSize=15;
 faceAlpha1=0.8;
-faceAlpha2=0.3;
+faceAlpha2=0.5;
 markerSize=40;
 lineWidth=3;
 
@@ -59,6 +59,7 @@ dtmin=(1/numTimeSteps)/100; %Minimum time step size
 dtmax=1/numTimeSteps; %Maximum time step size
 symmetric_stiffness=1;
 min_residual=1e-20;
+
 runMode='external';%'internal';
 
 %%
@@ -301,6 +302,7 @@ V_stitchGoal=patchCentre(indStitchPair,V_stitch);
 
 u1=V_stitchGoal-V_stitch(indStitchOrigin,:);
 u2=V_stitchGoal-V_stitch(indStitchEnd,:);
+u=[u1;u2];
 
 %%
 
@@ -323,6 +325,7 @@ bcSupportList=unique(Fr(:));
 
 bcPrescribeList1=indPresribeStitch(indStitchOrigin);
 bcPrescribeList2=indPresribeStitch(indStitchEnd);
+bcPrescribeList=[bcPrescribeList1(:); bcPrescribeList2(:);];
 
 %%
 % Visualize BC's
@@ -331,12 +334,11 @@ title('Boundary conditions model','FontSize',fontSize);
 xlabel('X','FontSize',fontSize); ylabel('Y','FontSize',fontSize); zlabel('Z','FontSize',fontSize);
 hold on;
 
-gpatch(Fb,V,'kw','none',faceAlpha2);
+gpatch(Fb,V,'w','none',faceAlpha2);
 
 hl2(1)=plotV(V(bcSupportList,:),'k.','MarkerSize',markerSize);
-hl2(2)=plotV(V(bcPrescribeList1,:),'r.','MarkerSize',markerSize);
-hl2(3)=plotV(V(bcPrescribeList2,:),'g.','MarkerSize',markerSize);
-
+hl2(2)=plotV(V(bcPrescribeList,:),'r.','MarkerSize',markerSize);
+hl2(3)=quiverVec(V(bcPrescribeList,:),u);
 legend(hl2,{'BC support','BC Prescribe 1','BC Prescribe 2'});
 
 axisGeom(gca,fontSize);
@@ -347,24 +349,23 @@ drawnow;
 % See also |febioStructTemplate| and |febioStruct2xml| and the FEBio user
 % manual.
 
-%Get a template with default settings
+%Get a template with default settings 
 [febio_spec]=febioStructTemplate;
 
-%febio_spec version
-febio_spec.ATTR.version='3.0';
+%febio_spec version 
+febio_spec.ATTR.version='4.0'; 
 
 %Module section
-febio_spec.Module.ATTR.type='solid';
+febio_spec.Module.ATTR.type='solid'; 
 
 %Control section
 febio_spec.Control.analysis='STATIC';
 febio_spec.Control.time_steps=numTimeSteps;
 febio_spec.Control.step_size=1/numTimeSteps;
 febio_spec.Control.solver.max_refs=max_refs;
-febio_spec.Control.solver.max_ups=max_ups;
-febio_spec.Control.solver.symmetric_stiffness=symmetric_stiffness;
+febio_spec.Control.solver.qn_method.max_ups=max_ups;
 febio_spec.Control.time_stepper.dtmin=dtmin;
-febio_spec.Control.time_stepper.dtmax=dtmax;
+febio_spec.Control.time_stepper.dtmax=dtmax; 
 febio_spec.Control.time_stepper.max_retries=max_retries;
 febio_spec.Control.time_stepper.opt_iter=opt_iter;
 
@@ -395,15 +396,11 @@ febio_spec.Mesh.Elements{1}.elem.VAL=E; %The element matrix
 % -> NodeSets
 nodeSetName1='bcSupportList';
 febio_spec.Mesh.NodeSet{1}.ATTR.name=nodeSetName1;
-febio_spec.Mesh.NodeSet{1}.node.ATTR.id=bcSupportList(:);
+febio_spec.Mesh.NodeSet{1}.VAL=mrow(bcSupportList);
 
-nodeSetPrescribeName1='bcPrescribeList1';
-febio_spec.Mesh.NodeSet{2}.ATTR.name=nodeSetPrescribeName1;
-febio_spec.Mesh.NodeSet{2}.node.ATTR.id=bcPrescribeList1(:);
-
-nodeSetPrescribeName2='bcPrescribeList2';
-febio_spec.Mesh.NodeSet{3}.ATTR.name=nodeSetPrescribeName2;
-febio_spec.Mesh.NodeSet{3}.node.ATTR.id=bcPrescribeList2(:);
+nodeSetName2='bcPrescribeList';
+febio_spec.Mesh.NodeSet{2}.ATTR.name=nodeSetName2;
+febio_spec.Mesh.NodeSet{2}.VAL=mrow(bcPrescribeList);
 
 %MeshDomains section
 febio_spec.MeshDomains.SolidDomain{1}.ATTR.name=partName1;
@@ -411,69 +408,56 @@ febio_spec.MeshDomains.SolidDomain{1}.ATTR.mat=materialName1;
 
 %MeshData secion
 %-> Node data
-dof_names='xyz';
+dofs='xyz';
 for q=1:1:3
-    c=1+(q-1)*2; %Current index
-    
-    febio_spec.MeshData.NodeData{c}.ATTR.name=['nodal_displacement_1_',dof_names(q)];
-    febio_spec.MeshData.NodeData{c}.ATTR.node_set=nodeSetPrescribeName1;
-    febio_spec.MeshData.NodeData{c}.ATTR.datatype='scalar';
-    febio_spec.MeshData.NodeData{c}.node.ATTR.lid=(1:1:numel(bcPrescribeList1))';
-    febio_spec.MeshData.NodeData{c}.node.VAL=u1(:,q);
-    
-    febio_spec.MeshData.NodeData{c+1}.ATTR.name=['nodal_displacement_2_',dof_names(q)];
-    febio_spec.MeshData.NodeData{c+1}.ATTR.node_set=nodeSetPrescribeName2;
-    febio_spec.MeshData.NodeData{c+1}.ATTR.datatype='scalar';
-    febio_spec.MeshData.NodeData{c+1}.node.ATTR.lid=(1:1:numel(bcPrescribeList2))';
-    febio_spec.MeshData.NodeData{c+1}.node.VAL=u2(:,q);
+    bcDataName=['nodal_disp_',dofs(q)];
+    febio_spec.MeshData.NodeData{q}.ATTR.name=bcDataName;
+    febio_spec.MeshData.NodeData{q}.ATTR.node_set=nodeSetName2;
+    febio_spec.MeshData.NodeData{q}.ATTR.datatype='scalar';
+    febio_spec.MeshData.NodeData{q}.node.ATTR.lid=(1:1:numel(bcPrescribeList))';
+    febio_spec.MeshData.NodeData{q}.node.VAL=u(:,q);
 end
 
-%Boundary condition section
+%Boundary condition section 
 % -> Fix boundary conditions
-febio_spec.Boundary.bc{1}.ATTR.type='fix';
+febio_spec.Boundary.bc{1}.ATTR.name='zero_displacement_xyz';
+febio_spec.Boundary.bc{1}.ATTR.type='zero displacement';
 febio_spec.Boundary.bc{1}.ATTR.node_set=nodeSetName1;
-febio_spec.Boundary.bc{1}.dofs='x,y,z';
+febio_spec.Boundary.bc{1}.x_dof=1;
+febio_spec.Boundary.bc{1}.y_dof=1;
+febio_spec.Boundary.bc{1}.z_dof=1;
 
-% -> Prescribe boundary conditions
-dof_names='xyz';
 for q=1:1:3
-    c=1+1+(q-1)*2; %Current index
-    febio_spec.Boundary.bc{c}.ATTR.type='prescribe';
-    febio_spec.Boundary.bc{c}.ATTR.node_set=nodeSetPrescribeName1;
-    febio_spec.Boundary.bc{c}.dof=dof_names(q);
-    febio_spec.Boundary.bc{c}.scale.ATTR.lc=1;
-    febio_spec.Boundary.bc{c}.scale.ATTR.type='map';
-    febio_spec.Boundary.bc{c}.scale.VAL=['nodal_displacement_1_',dof_names(q)];
-    febio_spec.Boundary.bc{c}.relative=0;
-    
-    febio_spec.Boundary.bc{c+1}.ATTR.type='prescribe';
-    febio_spec.Boundary.bc{c+1}.ATTR.node_set=nodeSetPrescribeName2;
-    febio_spec.Boundary.bc{c+1}.dof=dof_names(q);
-    febio_spec.Boundary.bc{c+1}.scale.ATTR.lc=1;
-    febio_spec.Boundary.bc{c+1}.scale.ATTR.type='map';
-    febio_spec.Boundary.bc{c+1}.scale.VAL=['nodal_displacement_2_',dof_names(q)];
-    febio_spec.Boundary.bc{c+1}.relative=0;
+    ind=numel(febio_spec.Boundary.bc)+1;
+    bcDataName=['nodal_disp_',dofs(q)];
+    febio_spec.Boundary.bc{ind}.ATTR.name=['prescibed_displacement_',dofs(q)];
+    febio_spec.Boundary.bc{ind}.ATTR.type='prescribed displacement';
+    febio_spec.Boundary.bc{ind}.ATTR.node_set=nodeSetName2;
+    febio_spec.Boundary.bc{ind}.dof=dofs(q);
+    febio_spec.Boundary.bc{ind}.value.ATTR.lc=1;
+    febio_spec.Boundary.bc{ind}.value.ATTR.type='map';
+    febio_spec.Boundary.bc{ind}.value.VAL=bcDataName;
+    febio_spec.Boundary.bc{ind}.relative=0;
 end
 
 %LoadData section
 % -> load_controller
+febio_spec.LoadData.load_controller{1}.ATTR.name='LC_1';
 febio_spec.LoadData.load_controller{1}.ATTR.id=1;
 febio_spec.LoadData.load_controller{1}.ATTR.type='loadcurve';
 febio_spec.LoadData.load_controller{1}.interpolate='LINEAR';
-febio_spec.LoadData.load_controller{1}.points.point.VAL=[0 0; 1 1];
+%febio_spec.LoadData.load_controller{1}.extend='CONSTANT';
+febio_spec.LoadData.load_controller{1}.points.pt.VAL=[0 0; 1 1];
 
-%Output section
+%Output section 
 % -> log file
 febio_spec.Output.logfile.ATTR.file=febioLogFileName;
 febio_spec.Output.logfile.node_data{1}.ATTR.file=febioLogFileName_disp;
 febio_spec.Output.logfile.node_data{1}.ATTR.data='ux;uy;uz';
 febio_spec.Output.logfile.node_data{1}.ATTR.delim=',';
-febio_spec.Output.logfile.node_data{1}.VAL=1:size(V,1);
 
-febio_spec.Output.logfile.node_data{2}.ATTR.file=febioLogFileName_force;
-febio_spec.Output.logfile.node_data{2}.ATTR.data='Rx;Ry;Rz';
-febio_spec.Output.logfile.node_data{2}.ATTR.delim=',';
-febio_spec.Output.logfile.node_data{2}.VAL=1:size(V,1);
+% Plotfile section
+febio_spec.Output.plotfile.compression=0;
 
 %% Quick viewing of the FEBio input file structure
 % The |febView| function can be used to view the xml structure in a MATLAB
@@ -562,8 +546,7 @@ if runFlag==1 %i.e. a succesful run
         animStruct.Set{qt}={V_def,DN_magnitude}; %Property values for to set in order to animate
     end
     anim8(hf,animStruct); %Initiate animation feature
-    drawnow;
-    
+    drawnow;    
     
 end
 

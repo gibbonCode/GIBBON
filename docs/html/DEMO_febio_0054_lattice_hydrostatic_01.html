@@ -6,7 +6,7 @@
    <!--
 This HTML was auto-generated from MATLAB code.
 To make changes, update the MATLAB code and republish this document.
-      --><title>DEMO_febio_0054_lattice_hydrostatic_01</title><meta name="generator" content="MATLAB 9.10"><link rel="schema.DC" href="http://purl.org/dc/elements/1.1/"><meta name="DC.date" content="2021-09-09"><meta name="DC.source" content="DEMO_febio_0054_lattice_hydrostatic_01.m"><style type="text/css">
+      --><title>DEMO_febio_0054_lattice_hydrostatic_01</title><meta name="generator" content="MATLAB 9.13"><link rel="schema.DC" href="http://purl.org/dc/elements/1.1/"><meta name="DC.date" content="2023-04-21"><meta name="DC.source" content="DEMO_febio_0054_lattice_hydrostatic_01.m"><style type="text/css">
 html,body,div,span,applet,object,iframe,h1,h2,h3,h4,h5,h6,p,blockquote,pre,a,abbr,acronym,address,big,cite,code,del,dfn,em,font,img,ins,kbd,q,s,samp,small,strike,strong,tt,var,b,u,i,center,dl,dt,dd,ol,ul,li,fieldset,form,label,legend,table,caption,tbody,tfoot,thead,tr,th,td{margin:0;padding:0;border:0;outline:0;font-size:100%;vertical-align:baseline;background:transparent}body{line-height:1}ol,ul{list-style:none}blockquote,q{quotes:none}blockquote:before,blockquote:after,q:before,q:after{content:'';content:none}:focus{outine:0}ins{text-decoration:none}del{text-decoration:line-through}table{border-collapse:collapse;border-spacing:0}
 
 html { min-height:100%; margin-bottom:1px; }
@@ -67,7 +67,7 @@ table td { padding:7px 5px; text-align:left; vertical-align:top; border:1px soli
 
 
 
-  </style></head><body><div class="content"><h1>DEMO_febio_0054_lattice_hydrostatic_01</h1><!--introduction--><p>Below is a demonstration for:</p><div><ul><li>Building geometry for a cube with hexahedral elements</li><li>Defining the boundary conditions</li><li>Coding the febio structure</li><li>Running the model</li><li>Importing and visualizing the displacement and stress results</li></ul></div><!--/introduction--><h2>Contents</h2><div><ul><li><a href="#1">Keywords</a></li><li><a href="#3">Plot settings</a></li><li><a href="#4">Control parameters</a></li><li><a href="#6">Create lattice</a></li><li><a href="#8">DEFINE BC's</a></li><li><a href="#9">Smoothing lattice</a></li><li><a href="#12">Defining the FEBio input structure</a></li><li><a href="#13">Quick viewing of the FEBio input file structure</a></li><li><a href="#15">Exporting the FEBio input file</a></li><li><a href="#16">Running the FEBio analysis</a></li><li><a href="#17">Import FEBio results</a></li></ul></div><h2 id="1">Keywords</h2><div><ul><li>febio_spec version 3.0</li><li>febio, FEBio</li><li>uniaxial loading</li><li>compression, tension, compressive, tensile</li><li>displacement control, displacement boundary condition</li><li>hexahedral elements, hex8</li><li>cube, box, rectangular</li><li>static, solid</li><li>hyperelastic, Ogden</li><li>displacement logfile</li><li>stress logfile</li></ul></div><pre class="codeinput">clear; close <span class="string">all</span>; clc;
+  </style></head><body><div class="content"><h1>DEMO_febio_0054_lattice_hydrostatic_01</h1><!--introduction--><p>Below is a demonstration for:</p><div><ul><li>Building geometry for a cube with hexahedral elements</li><li>Defining the boundary conditions</li><li>Coding the febio structure</li><li>Running the model</li><li>Importing and visualizing the displacement and stress results</li></ul></div><!--/introduction--><h2>Contents</h2><div><ul><li><a href="#1">Keywords</a></li><li><a href="#3">Plot settings</a></li><li><a href="#4">Control parameters</a></li><li><a href="#6">Create lattice</a></li><li><a href="#8">DEFINE BC's</a></li><li><a href="#9">Smoothing lattice</a></li><li><a href="#12">Defining the FEBio input structure</a></li><li><a href="#13">Quick viewing of the FEBio input file structure</a></li><li><a href="#15">Exporting the FEBio input file</a></li><li><a href="#16">Running the FEBio analysis</a></li><li><a href="#17">Import FEBio results</a></li></ul></div><h2 id="1">Keywords</h2><div><ul><li>febio_spec version 4.0</li><li>febio, FEBio</li><li>uniaxial loading</li><li>compression, tension, compressive, tensile</li><li>displacement control, displacement boundary condition</li><li>hexahedral elements, hex8</li><li>cube, box, rectangular</li><li>static, solid</li><li>hyperelastic, Ogden</li><li>displacement logfile</li><li>stress logfile</li></ul></div><pre class="codeinput">clear; close <span class="string">all</span>; clc;
 </pre><h2 id="3">Plot settings</h2><p>Plot settings</p><pre class="codeinput">fontSize=15;
 faceAlpha1=0.8;
 faceAlpha2=1;
@@ -103,15 +103,15 @@ m1=2;
 k=50*c1;
 
 <span class="comment">% FEA control settings</span>
-numTimeSteps=50; <span class="comment">%Number of time steps desired</span>
+numTimeSteps=25; <span class="comment">%Number of time steps desired</span>
 max_refs=50; <span class="comment">%Max reforms</span>
 max_ups=0; <span class="comment">%Set to zero to use full-Newton iterations</span>
-opt_iter=25; <span class="comment">%Optimum number of iterations</span>
+opt_iter=6; <span class="comment">%Optimum number of iterations</span>
 max_retries=5; <span class="comment">%Maximum number of retires</span>
 dtmin=(1/numTimeSteps)/100; <span class="comment">%Minimum time step size</span>
 dtmax=(1/numTimeSteps); <span class="comment">%Maximum time step size</span>
 min_residual=1e-20;
-symmetric_stiffness=0;
+
 runMode=<span class="string">'external'</span>;
 </pre><pre class="codeinput"><span class="comment">%Specifying dimensions and number of elements</span>
 r=0.5; <span class="comment">%Radii, results in a width of 1</span>
@@ -125,7 +125,7 @@ w=(n-1)*d; <span class="comment">%sampleSize</span>
         Vr=Vr./(n-1);
         Vr=Vr*sampleSize;
 
-        [indBoundary]=tesBoundary(Fr,Vr);
+        [indBoundary]=tesBoundary(Fr);
         cPar.shrinkFactor=0.15; <span class="comment">%Strut sides are formed by shrinking the input mesh faces by this factor</span>
         cPar.meshType=<span class="string">'hex'</span>; <span class="comment">%desired output mesh type</span>
         cPar.indBoundary=indBoundary; <span class="comment">%indices of the boundary faces</span>
@@ -158,14 +158,14 @@ w=(n-1)*d; <span class="comment">%sampleSize</span>
         [Fs,CsF]=element2patch(E,C); <span class="comment">%Patch data for plotting</span>
 
         <span class="comment">%Get new boundary set</span>
-        indB=tesBoundary(Fs,V);
+        indB=tesBoundary(Fs);
         Fb=Fs(indB,:);
     <span class="keyword">case</span> 2 <span class="comment">%Rhombic dodecahedron mesh ("dual" of octet truss lattice)</span>
         [Er,Vr,Cr,Fr,CFr]=rhombicDodecahedronMesh(r,nCopies);
         Vr=Vr./(n-1);
         Vr=Vr*sampleSize;
 
-        [indBoundary]=tesBoundary(Fr,Vr);
+        [indBoundary]=tesBoundary(Fr);
         cPar.shrinkFactor=0.15; <span class="comment">%Strut sides are formed by shrinking the input mesh faces by this factor</span>
         cPar.meshType=<span class="string">'hex'</span>; <span class="comment">%desired output mesh type</span>
         cPar.indBoundary=indBoundary; <span class="comment">%indices of the boundary faces</span>
@@ -198,7 +198,7 @@ w=(n-1)*d; <span class="comment">%sampleSize</span>
         [Fs,CsF]=element2patch(E,C); <span class="comment">%Patch data for plotting</span>
 
         <span class="comment">%Get new boundary set</span>
-        indB=tesBoundary(Fs,V);
+        indB=tesBoundary(Fs);
         Fb=Fs(indB,:);
     <span class="keyword">case</span> 3
         boxDim=sampleSize*[1 1 1];
@@ -210,7 +210,7 @@ w=(n-1)*d; <span class="comment">%sampleSize</span>
         Vr=Vr-minV(ones(size(Vr,1),1),:); <span class="comment">%Set corner as origin</span>
         [Er,Vr,~]=hex2tet(Er,Vr,[],1); <span class="comment">%Convert to tetrahedral elements</span>
         [Fr,Cr]=element2patch(Er,[]); <span class="comment">%Patch data for plotting</span>
-        [indBoundary]=tesBoundary(Fr,Vr);
+        [indBoundary]=tesBoundary(Fr);
 
         <span class="comment">% Create lattice structure</span>
         controlParameter.latticeSide=1;
@@ -225,7 +225,7 @@ w=(n-1)*d; <span class="comment">%sampleSize</span>
         <span class="comment">% Create patch Data for visualization</span>
         [Fs,CsF]=element2patch(E,C); <span class="comment">%Patch data for plotting</span>
 
-        indB=tesBoundary(Fs,V);
+        indB=tesBoundary(Fs);
         Fb=Fs(indB,:);
 <span class="keyword">end</span>
 </pre><p>Visualizing input mesh and lattic structures</p><pre class="codeinput">cFigure;
@@ -325,7 +325,7 @@ drawnow;
 [febio_spec]=febioStructTemplate;
 
 <span class="comment">%febio_spec version</span>
-febio_spec.ATTR.version=<span class="string">'3.0'</span>;
+febio_spec.ATTR.version=<span class="string">'4.0'</span>;
 
 <span class="comment">%Module section</span>
 febio_spec.Module.ATTR.type=<span class="string">'solid'</span>;
@@ -335,8 +335,7 @@ febio_spec.Control.analysis=<span class="string">'STATIC'</span>;
 febio_spec.Control.time_steps=numTimeSteps;
 febio_spec.Control.step_size=1/numTimeSteps;
 febio_spec.Control.solver.max_refs=max_refs;
-febio_spec.Control.solver.max_ups=max_ups;
-febio_spec.Control.solver.symmetric_stiffness=symmetric_stiffness;
+febio_spec.Control.solver.qn_method.max_ups=max_ups;
 febio_spec.Control.time_stepper.dtmin=dtmin;
 febio_spec.Control.time_stepper.dtmax=dtmax;
 febio_spec.Control.time_stepper.max_retries=max_retries;
@@ -370,7 +369,7 @@ febio_spec.Mesh.Elements{1}.elem.VAL=E; <span class="comment">%The element matri
 <span class="comment">% -&gt; NodeSets</span>
 <span class="keyword">for</span> q=1:1:numel(bcPrescribeListCell)
     febio_spec.Mesh.NodeSet{q}.ATTR.name=[<span class="string">'bcPrescribeList_'</span>,num2str(q)];
-    febio_spec.Mesh.NodeSet{q}.node.ATTR.id=bcPrescribeListCell{q}';
+    febio_spec.Mesh.NodeSet{q}.VAL=mrow(bcPrescribeListCell{q});
 <span class="keyword">end</span>
 
 <span class="comment">%MeshDomains section</span>
@@ -384,20 +383,23 @@ directionStringSet={<span class="string">'x'</span>,<span class="string">'x'</sp
 displacementMagnitudeDir=[1 -1 1 -1 1 -1];
 <span class="keyword">for</span> q=1:1:numel(bcPrescribeListCell)
     nodeSetName=febio_spec.Mesh.NodeSet{q}.ATTR.name;
-    febio_spec.Boundary.bc{q}.ATTR.type=<span class="string">'prescribe'</span>;
+    febio_spec.Boundary.bc{q}.ATTR.name=[<span class="string">'prescibed_displacement_'</span>,directionStringSet{q}];
+    febio_spec.Boundary.bc{q}.ATTR.type=<span class="string">'prescribed displacement'</span>;
     febio_spec.Boundary.bc{q}.ATTR.node_set=nodeSetName;
     febio_spec.Boundary.bc{q}.dof=directionStringSet{q};
-    febio_spec.Boundary.bc{q}.scale.ATTR.lc=1;
-    febio_spec.Boundary.bc{q}.scale.VAL=displacementMagnitudeDir(q).*displacementMagnitude;
+    febio_spec.Boundary.bc{q}.value.ATTR.lc=1;
+    febio_spec.Boundary.bc{q}.value.VAL=displacementMagnitudeDir(q).*displacementMagnitude;
     febio_spec.Boundary.bc{q}.relative=0;
 <span class="keyword">end</span>
 
 <span class="comment">%LoadData section</span>
 <span class="comment">% -&gt; load_controller</span>
+febio_spec.LoadData.load_controller{1}.ATTR.name=<span class="string">'LC_1'</span>;
 febio_spec.LoadData.load_controller{1}.ATTR.id=1;
 febio_spec.LoadData.load_controller{1}.ATTR.type=<span class="string">'loadcurve'</span>;
 febio_spec.LoadData.load_controller{1}.interpolate=<span class="string">'LINEAR'</span>;
-febio_spec.LoadData.load_controller{1}.points.point.VAL=[0 0; 1 1];
+<span class="comment">%febio_spec.LoadData.load_controller{1}.extend='CONSTANT';</span>
+febio_spec.LoadData.load_controller{1}.points.pt.VAL=[0 0; 1 1];
 
 <span class="comment">%Output section</span>
 <span class="comment">% -&gt; log file</span>
@@ -414,6 +416,9 @@ febio_spec.Output.logfile.node_data{2}.ATTR.delim=<span class="string">','</span
 febio_spec.Output.logfile.element_data{1}.ATTR.file=febioLogFileName_stress;
 febio_spec.Output.logfile.element_data{1}.ATTR.data=<span class="string">'sz'</span>;
 febio_spec.Output.logfile.element_data{1}.ATTR.delim=<span class="string">','</span>;
+
+<span class="comment">% Plotfile section</span>
+febio_spec.Output.plotfile.compression=0;
 </pre><h2 id="13">Quick viewing of the FEBio input file structure</h2><p>The <tt>febView</tt> function can be used to view the xml structure in a MATLAB figure window.</p><p><tt>febView(febio_spec); %Viewing the febio file</tt></p><h2 id="15">Exporting the FEBio input file</h2><p>Exporting the febio_spec structure to an FEBio input file is done using the <tt>febioStruct2xml</tt> function.</p><pre class="codeinput">febioStruct2xml(febio_spec,febioFebFileName); <span class="comment">%Exporting to file and domNode</span>
 <span class="comment">%system(['gedit ',febioFebFileName,' &amp;']);</span>
 </pre><h2 id="16">Running the FEBio analysis</h2><p>To run the analysis defined by the created FEBio input file the <tt>runMonitorFEBio</tt> function is used. The input for this function is a structure defining job settings e.g. the FEBio input file name. The optional output runFlag informs the user if the analysis was run succesfully.</p><pre class="codeinput">febioAnalysis.run_filename=febioFebFileName; <span class="comment">%The input file name</span>
@@ -425,181 +430,129 @@ febioAnalysis.maxLogCheckTime=10; <span class="comment">%Max log file checking t
 [runFlag]=runMonitorFEBio(febioAnalysis);<span class="comment">%START FEBio NOW!!!!!!!!</span>
 </pre><pre class="codeoutput"> 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
---------&gt;    RUNNING/MONITORING FEBIO JOB    &lt;-------- 09-Sep-2021 17:05:28
-FEBio path: /home/kevin/FEBioStudio/bin/febio3
-# Attempt removal of existing log files                09-Sep-2021 17:05:28
- * Removal succesful                                   09-Sep-2021 17:05:28
-# Attempt removal of existing .xplt files              09-Sep-2021 17:05:28
- * Removal succesful                                   09-Sep-2021 17:05:28
-# Starting FEBio...                                    09-Sep-2021 17:05:28
+--------&gt;    RUNNING/MONITORING FEBIO JOB    &lt;-------- 21-Apr-2023 11:44:07
+FEBio path: /home/kevin/FEBioStudio2/bin/febio4
+# Attempt removal of existing log files                21-Apr-2023 11:44:07
+ * Removal succesful                                   21-Apr-2023 11:44:07
+# Attempt removal of existing .xplt files              21-Apr-2023 11:44:07
+ * Removal succesful                                   21-Apr-2023 11:44:07
+# Starting FEBio...                                    21-Apr-2023 11:44:07
   Max. total analysis time is: Inf s
- * Waiting for log file creation                       09-Sep-2021 17:05:28
+ * Waiting for log file creation                       21-Apr-2023 11:44:07
    Max. wait time: 10 s
- * Log file found.                                     09-Sep-2021 17:05:29
-# Parsing log file...                                  09-Sep-2021 17:05:29
-    number of iterations   : 2                         09-Sep-2021 17:05:30
-    number of reformations : 2                         09-Sep-2021 17:05:30
-------- converged at time : 0.02                       09-Sep-2021 17:05:30
-    number of iterations   : 2                         09-Sep-2021 17:05:31
-    number of reformations : 2                         09-Sep-2021 17:05:31
-------- converged at time : 0.04                       09-Sep-2021 17:05:31
-    number of iterations   : 2                         09-Sep-2021 17:05:33
-    number of reformations : 2                         09-Sep-2021 17:05:33
-------- converged at time : 0.06                       09-Sep-2021 17:05:33
-    number of iterations   : 31                        09-Sep-2021 17:05:48
-    number of reformations : 31                        09-Sep-2021 17:05:48
-------- converged at time : 0.08                       09-Sep-2021 17:05:48
-    number of iterations   : 12                        09-Sep-2021 17:05:57
-    number of reformations : 12                        09-Sep-2021 17:05:57
-------- converged at time : 0.0949841                  09-Sep-2021 17:05:57
-    number of iterations   : 12                        09-Sep-2021 17:06:04
-    number of reformations : 12                        09-Sep-2021 17:06:04
-------- converged at time : 0.110971                   09-Sep-2021 17:06:04
-    number of iterations   : 16                        09-Sep-2021 17:06:12
-    number of reformations : 16                        09-Sep-2021 17:06:12
-------- converged at time : 0.127761                   09-Sep-2021 17:06:12
-    number of iterations   : 5                         09-Sep-2021 17:06:15
-    number of reformations : 5                         09-Sep-2021 17:06:15
-------- converged at time : 0.145193                   09-Sep-2021 17:06:15
-    number of iterations   : 4                         09-Sep-2021 17:06:17
-    number of reformations : 4                         09-Sep-2021 17:06:17
-------- converged at time : 0.163139                   09-Sep-2021 17:06:17
-    number of iterations   : 4                         09-Sep-2021 17:06:19
-    number of reformations : 4                         09-Sep-2021 17:06:19
-------- converged at time : 0.181495                   09-Sep-2021 17:06:19
-    number of iterations   : 4                         09-Sep-2021 17:06:21
-    number of reformations : 4                         09-Sep-2021 17:06:21
-------- converged at time : 0.20018                    09-Sep-2021 17:06:21
-    number of iterations   : 4                         09-Sep-2021 17:06:24
-    number of reformations : 4                         09-Sep-2021 17:06:24
-------- converged at time : 0.219128                   09-Sep-2021 17:06:24
-    number of iterations   : 7                         09-Sep-2021 17:06:28
-    number of reformations : 7                         09-Sep-2021 17:06:28
-------- converged at time : 0.238287                   09-Sep-2021 17:06:28
-    number of iterations   : 5                         09-Sep-2021 17:06:31
-    number of reformations : 5                         09-Sep-2021 17:06:31
-------- converged at time : 0.257613                   09-Sep-2021 17:06:31
-    number of iterations   : 4                         09-Sep-2021 17:06:33
-    number of reformations : 4                         09-Sep-2021 17:06:33
-------- converged at time : 0.277075                   09-Sep-2021 17:06:33
-    number of iterations   : 6                         09-Sep-2021 17:06:36
-    number of reformations : 6                         09-Sep-2021 17:06:36
-------- converged at time : 0.296644                   09-Sep-2021 17:06:36
-    number of iterations   : 9                         09-Sep-2021 17:06:41
-    number of reformations : 9                         09-Sep-2021 17:06:41
-------- converged at time : 0.316299                   09-Sep-2021 17:06:41
-    number of iterations   : 5                         09-Sep-2021 17:06:44
-    number of reformations : 5                         09-Sep-2021 17:06:44
-------- converged at time : 0.336024                   09-Sep-2021 17:06:44
-    number of iterations   : 4                         09-Sep-2021 17:06:46
-    number of reformations : 4                         09-Sep-2021 17:06:46
-------- converged at time : 0.355803                   09-Sep-2021 17:06:46
-    number of iterations   : 4                         09-Sep-2021 17:06:50
-    number of reformations : 4                         09-Sep-2021 17:06:50
-------- converged at time : 0.375626                   09-Sep-2021 17:06:50
-    number of iterations   : 4                         09-Sep-2021 17:06:52
-    number of reformations : 4                         09-Sep-2021 17:06:52
-------- converged at time : 0.395485                   09-Sep-2021 17:06:52
-    number of iterations   : 4                         09-Sep-2021 17:06:55
-    number of reformations : 4                         09-Sep-2021 17:06:55
-------- converged at time : 0.415372                   09-Sep-2021 17:06:55
-    number of iterations   : 4                         09-Sep-2021 17:06:57
-    number of reformations : 4                         09-Sep-2021 17:06:57
-------- converged at time : 0.435282                   09-Sep-2021 17:06:57
-    number of iterations   : 4                         09-Sep-2021 17:07:00
-    number of reformations : 4                         09-Sep-2021 17:07:00
-------- converged at time : 0.45521                    09-Sep-2021 17:07:00
-    number of iterations   : 4                         09-Sep-2021 17:07:02
-    number of reformations : 4                         09-Sep-2021 17:07:02
-------- converged at time : 0.475152                   09-Sep-2021 17:07:02
-    number of iterations   : 4                         09-Sep-2021 17:07:05
-    number of reformations : 4                         09-Sep-2021 17:07:05
-------- converged at time : 0.495106                   09-Sep-2021 17:07:05
-    number of iterations   : 4                         09-Sep-2021 17:07:07
-    number of reformations : 4                         09-Sep-2021 17:07:07
-------- converged at time : 0.515069                   09-Sep-2021 17:07:07
-    number of iterations   : 3                         09-Sep-2021 17:07:09
-    number of reformations : 3                         09-Sep-2021 17:07:09
-------- converged at time : 0.535039                   09-Sep-2021 17:07:09
-    number of iterations   : 3                         09-Sep-2021 17:07:11
-    number of reformations : 3                         09-Sep-2021 17:07:11
-------- converged at time : 0.555015                   09-Sep-2021 17:07:11
-    number of iterations   : 3                         09-Sep-2021 17:07:13
-    number of reformations : 3                         09-Sep-2021 17:07:13
-------- converged at time : 0.574996                   09-Sep-2021 17:07:13
-    number of iterations   : 3                         09-Sep-2021 17:07:14
-    number of reformations : 3                         09-Sep-2021 17:07:14
-------- converged at time : 0.594981                   09-Sep-2021 17:07:14
-    number of iterations   : 3                         09-Sep-2021 17:07:16
-    number of reformations : 3                         09-Sep-2021 17:07:16
-------- converged at time : 0.614969                   09-Sep-2021 17:07:16
-    number of iterations   : 3                         09-Sep-2021 17:07:18
-    number of reformations : 3                         09-Sep-2021 17:07:18
-------- converged at time : 0.634959                   09-Sep-2021 17:07:18
-    number of iterations   : 3                         09-Sep-2021 17:07:20
-    number of reformations : 3                         09-Sep-2021 17:07:20
-------- converged at time : 0.654952                   09-Sep-2021 17:07:20
-    number of iterations   : 3                         09-Sep-2021 17:07:22
-    number of reformations : 3                         09-Sep-2021 17:07:22
-------- converged at time : 0.674945                   09-Sep-2021 17:07:22
-    number of iterations   : 3                         09-Sep-2021 17:07:24
-    number of reformations : 3                         09-Sep-2021 17:07:24
-------- converged at time : 0.69494                    09-Sep-2021 17:07:24
-    number of iterations   : 3                         09-Sep-2021 17:07:26
-    number of reformations : 3                         09-Sep-2021 17:07:26
-------- converged at time : 0.714936                   09-Sep-2021 17:07:26
-    number of iterations   : 3                         09-Sep-2021 17:07:28
-    number of reformations : 3                         09-Sep-2021 17:07:28
-------- converged at time : 0.734933                   09-Sep-2021 17:07:28
-    number of iterations   : 3                         09-Sep-2021 17:07:30
-    number of reformations : 3                         09-Sep-2021 17:07:30
-------- converged at time : 0.754931                   09-Sep-2021 17:07:30
-    number of iterations   : 3                         09-Sep-2021 17:07:32
-    number of reformations : 3                         09-Sep-2021 17:07:32
-------- converged at time : 0.774929                   09-Sep-2021 17:07:32
-    number of iterations   : 3                         09-Sep-2021 17:07:34
-    number of reformations : 3                         09-Sep-2021 17:07:34
-------- converged at time : 0.794927                   09-Sep-2021 17:07:34
-    number of iterations   : 3                         09-Sep-2021 17:07:36
-    number of reformations : 3                         09-Sep-2021 17:07:36
-------- converged at time : 0.814926                   09-Sep-2021 17:07:36
-    number of iterations   : 3                         09-Sep-2021 17:07:38
-    number of reformations : 3                         09-Sep-2021 17:07:38
-------- converged at time : 0.834925                   09-Sep-2021 17:07:38
-    number of iterations   : 3                         09-Sep-2021 17:07:40
-    number of reformations : 3                         09-Sep-2021 17:07:40
-------- converged at time : 0.854924                   09-Sep-2021 17:07:40
-    number of iterations   : 3                         09-Sep-2021 17:07:42
-    number of reformations : 3                         09-Sep-2021 17:07:42
-------- converged at time : 0.874923                   09-Sep-2021 17:07:42
-    number of iterations   : 3                         09-Sep-2021 17:07:44
-    number of reformations : 3                         09-Sep-2021 17:07:44
-------- converged at time : 0.894923                   09-Sep-2021 17:07:44
-    number of iterations   : 3                         09-Sep-2021 17:07:46
-    number of reformations : 3                         09-Sep-2021 17:07:46
-------- converged at time : 0.914922                   09-Sep-2021 17:07:46
-    number of iterations   : 3                         09-Sep-2021 17:07:48
-    number of reformations : 3                         09-Sep-2021 17:07:48
-------- converged at time : 0.934922                   09-Sep-2021 17:07:48
-    number of iterations   : 3                         09-Sep-2021 17:07:50
-    number of reformations : 3                         09-Sep-2021 17:07:50
-------- converged at time : 0.954922                   09-Sep-2021 17:07:50
-    number of iterations   : 3                         09-Sep-2021 17:07:51
-    number of reformations : 3                         09-Sep-2021 17:07:51
-------- converged at time : 0.974921                   09-Sep-2021 17:07:51
-    number of iterations   : 3                         09-Sep-2021 17:07:54
-    number of reformations : 3                         09-Sep-2021 17:07:54
-------- converged at time : 0.994921                   09-Sep-2021 17:07:54
-    number of iterations   : 2                         09-Sep-2021 17:07:56
-    number of reformations : 2                         09-Sep-2021 17:07:56
-------- converged at time : 1                          09-Sep-2021 17:07:56
- Elapsed time : 0:02:26                                09-Sep-2021 17:07:56
+ * Log file found.                                     21-Apr-2023 11:44:07
+# Parsing log file...                                  21-Apr-2023 11:44:07
+    number of iterations   : 2                         21-Apr-2023 11:44:08
+    number of reformations : 2                         21-Apr-2023 11:44:08
+------- converged at time : 0.04                       21-Apr-2023 11:44:08
+    number of iterations   : 32                        21-Apr-2023 11:44:19
+    number of reformations : 32                        21-Apr-2023 11:44:19
+------- converged at time : 0.08                       21-Apr-2023 11:44:19
+    number of iterations   : 11                        21-Apr-2023 11:44:23
+    number of reformations : 11                        21-Apr-2023 11:44:23
+------- converged at time : 0.0975473                  21-Apr-2023 11:44:23
+    number of iterations   : 11                        21-Apr-2023 11:44:27
+    number of reformations : 11                        21-Apr-2023 11:44:27
+------- converged at time : 0.110611                   21-Apr-2023 11:44:27
+    number of iterations   : 8                         21-Apr-2023 11:44:31
+    number of reformations : 8                         21-Apr-2023 11:44:31
+------- converged at time : 0.118739                   21-Apr-2023 11:44:31
+    number of iterations   : 6                         21-Apr-2023 11:44:34
+    number of reformations : 6                         21-Apr-2023 11:44:34
+------- converged at time : 0.125831                   21-Apr-2023 11:44:34
+    number of iterations   : 5                         21-Apr-2023 11:44:35
+    number of reformations : 5                         21-Apr-2023 11:44:35
+------- converged at time : 0.132924                   21-Apr-2023 11:44:35
+    number of iterations   : 4                         21-Apr-2023 11:44:37
+    number of reformations : 4                         21-Apr-2023 11:44:37
+------- converged at time : 0.143157                   21-Apr-2023 11:44:37
+    number of iterations   : 4                         21-Apr-2023 11:44:38
+    number of reformations : 4                         21-Apr-2023 11:44:38
+------- converged at time : 0.159343                   21-Apr-2023 11:44:38
+    number of iterations   : 4                         21-Apr-2023 11:44:40
+    number of reformations : 4                         21-Apr-2023 11:44:40
+------- converged at time : 0.180292                   21-Apr-2023 11:44:40
+    number of iterations   : 4                         21-Apr-2023 11:44:42
+    number of reformations : 4                         21-Apr-2023 11:44:42
+------- converged at time : 0.205052                   21-Apr-2023 11:44:42
+    number of iterations   : 8                         21-Apr-2023 11:44:45
+    number of reformations : 8                         21-Apr-2023 11:44:45
+------- converged at time : 0.232859                   21-Apr-2023 11:44:45
+    number of iterations   : 6                         21-Apr-2023 11:44:47
+    number of reformations : 6                         21-Apr-2023 11:44:47
+------- converged at time : 0.256995                   21-Apr-2023 11:44:47
+    number of iterations   : 5                         21-Apr-2023 11:44:49
+    number of reformations : 5                         21-Apr-2023 11:44:49
+------- converged at time : 0.28113                    21-Apr-2023 11:44:49
+    number of iterations   : 9                         21-Apr-2023 11:44:52
+    number of reformations : 9                         21-Apr-2023 11:44:52
+------- converged at time : 0.30678                    21-Apr-2023 11:44:52
+    number of iterations   : 4                         21-Apr-2023 11:44:54
+    number of reformations : 4                         21-Apr-2023 11:44:54
+------- converged at time : 0.327797                   21-Apr-2023 11:44:54
+    number of iterations   : 4                         21-Apr-2023 11:44:55
+    number of reformations : 4                         21-Apr-2023 11:44:55
+------- converged at time : 0.35261                    21-Apr-2023 11:44:55
+    number of iterations   : 4                         21-Apr-2023 11:44:57
+    number of reformations : 4                         21-Apr-2023 11:44:57
+------- converged at time : 0.38046                    21-Apr-2023 11:44:57
+    number of iterations   : 4                         21-Apr-2023 11:44:58
+    number of reformations : 4                         21-Apr-2023 11:44:58
+------- converged at time : 0.41074                    21-Apr-2023 11:44:58
+    number of iterations   : 4                         21-Apr-2023 11:45:00
+    number of reformations : 4                         21-Apr-2023 11:45:00
+------- converged at time : 0.442965                   21-Apr-2023 11:45:00
+    number of iterations   : 4                         21-Apr-2023 11:45:02
+    number of reformations : 4                         21-Apr-2023 11:45:02
+------- converged at time : 0.476744                   21-Apr-2023 11:45:02
+    number of iterations   : 4                         21-Apr-2023 11:45:03
+    number of reformations : 4                         21-Apr-2023 11:45:03
+------- converged at time : 0.511768                   21-Apr-2023 11:45:03
+    number of iterations   : 4                         21-Apr-2023 11:45:05
+    number of reformations : 4                         21-Apr-2023 11:45:05
+------- converged at time : 0.547787                   21-Apr-2023 11:45:05
+    number of iterations   : 4                         21-Apr-2023 11:45:07
+    number of reformations : 4                         21-Apr-2023 11:45:07
+------- converged at time : 0.584602                   21-Apr-2023 11:45:07
+    number of iterations   : 4                         21-Apr-2023 11:45:08
+    number of reformations : 4                         21-Apr-2023 11:45:08
+------- converged at time : 0.622054                   21-Apr-2023 11:45:08
+    number of iterations   : 4                         21-Apr-2023 11:45:10
+    number of reformations : 4                         21-Apr-2023 11:45:10
+------- converged at time : 0.660015                   21-Apr-2023 11:45:10
+    number of iterations   : 4                         21-Apr-2023 11:45:11
+    number of reformations : 4                         21-Apr-2023 11:45:11
+------- converged at time : 0.698385                   21-Apr-2023 11:45:11
+    number of iterations   : 4                         21-Apr-2023 11:45:13
+    number of reformations : 4                         21-Apr-2023 11:45:13
+------- converged at time : 0.73708                    21-Apr-2023 11:45:13
+    number of reformations : 4                         21-Apr-2023 11:45:15
+------- converged at time : 0.776037                   21-Apr-2023 11:45:15
+    number of iterations   : 4                         21-Apr-2023 11:45:16
+    number of reformations : 4                         21-Apr-2023 11:45:16
+------- converged at time : 0.815202                   21-Apr-2023 11:45:16
+    number of iterations   : 4                         21-Apr-2023 11:45:18
+    number of reformations : 4                         21-Apr-2023 11:45:18
+------- converged at time : 0.854534                   21-Apr-2023 11:45:18
+    number of iterations   : 4                         21-Apr-2023 11:45:19
+    number of reformations : 4                         21-Apr-2023 11:45:19
+------- converged at time : 0.893999                   21-Apr-2023 11:45:19
+    number of iterations   : 4                         21-Apr-2023 11:45:21
+    number of reformations : 4                         21-Apr-2023 11:45:21
+------- converged at time : 0.933572                   21-Apr-2023 11:45:21
+    number of iterations   : 4                         21-Apr-2023 11:45:22
+    number of reformations : 4                         21-Apr-2023 11:45:22
+------- converged at time : 0.97323                    21-Apr-2023 11:45:22
+    number of iterations   : 3                         21-Apr-2023 11:45:24
+    number of reformations : 3                         21-Apr-2023 11:45:24
+------- converged at time : 1                          21-Apr-2023 11:45:24
+ Elapsed time : 0:01:17                                21-Apr-2023 11:45:24
  N O R M A L   T E R M I N A T I O N
-# Done                                                 09-Sep-2021 17:07:56
+# Done                                                 21-Apr-2023 11:45:24
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 </pre><h2 id="17">Import FEBio results</h2><pre class="codeinput"><span class="keyword">if</span> runFlag==1 <span class="comment">%i.e. a succesful run</span>
 </pre><pre class="codeinput">    <span class="comment">% Importing nodal displacements from a log file</span>
-    dataStruct=importFEBio_logfile(fullfile(savePath,febioLogFileName_disp),1,1);
+    dataStruct=importFEBio_logfile(fullfile(savePath,febioLogFileName_disp),0,1);
 
     <span class="comment">%Access data</span>
     N_disp_mat=dataStruct.data; <span class="comment">%Displacement</span>
@@ -608,7 +561,7 @@ FEBio path: /home/kevin/FEBioStudio/bin/febio3
     <span class="comment">%Create deformed coordinate set</span>
     V_DEF=N_disp_mat+repmat(V,[1 1 size(N_disp_mat,3)]);
 </pre><pre class="codeinput">    <span class="comment">% Importing nodal forces</span>
-    dataStruct=importFEBio_logfile(fullfile(savePath,febioLogFileName_force),1,1);
+    dataStruct=importFEBio_logfile(fullfile(savePath,febioLogFileName_force),0,1);
     N_force_mat=dataStruct.data;
 
     indicesSide=bcPrescribeListCell{1};
@@ -652,7 +605,7 @@ FEBio path: /home/kevin/FEBioStudio/bin/febio3
     anim8(hf,animStruct); <span class="comment">%Initiate animation feature</span>
     drawnow;
 </pre><img width="100%" height="auto" vspace="5" hspace="5" src="DEMO_febio_0054_lattice_hydrostatic_01_05.jpg" alt=""> <pre class="codeinput"><span class="keyword">end</span>
-</pre><p><img vspace="5" hspace="5" src="gibbVerySmall.gif" alt=""> </p><p><i><b>GIBBON</b></i> <a href="www.gibboncode.org">www.gibboncode.org</a></p><p><i>Kevin Mattheus Moerman</i>, <a href="gibbon.toolbox@gmail.com">gibbon.toolbox@gmail.com</a></p><p><i><b>GIBBON footer text</b></i></p><p>License: <a href="https://github.com/gibbonCode/GIBBON/blob/master/LICENSE">https://github.com/gibbonCode/GIBBON/blob/master/LICENSE</a></p><p>GIBBON: The Geometry and Image-based Bioengineering add-On. A toolbox for image segmentation, image-based modeling, meshing, and finite element analysis.</p><p>Copyright (C) 2006-2021 Kevin Mattheus Moerman and the GIBBON contributors</p><p>This program is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.</p><p>This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for more details.</p><p>You should have received a copy of the GNU General Public License along with this program.  If not, see <a href="http://www.gnu.org/licenses/">http://www.gnu.org/licenses/</a>.</p><p class="footer"><br><a href="https://www.mathworks.com/products/matlab/">Published with MATLAB&reg; R2021a</a><br></p></div><!--
+</pre><p><img vspace="5" hspace="5" src="gibbVerySmall.gif" alt=""> </p><p><i><b>GIBBON</b></i> <a href="www.gibboncode.org">www.gibboncode.org</a></p><p><i>Kevin Mattheus Moerman</i>, <a href="gibbon.toolbox@gmail.com">gibbon.toolbox@gmail.com</a></p><p><i><b>GIBBON footer text</b></i></p><p>License: <a href="https://github.com/gibbonCode/GIBBON/blob/master/LICENSE">https://github.com/gibbonCode/GIBBON/blob/master/LICENSE</a></p><p>GIBBON: The Geometry and Image-based Bioengineering add-On. A toolbox for image segmentation, image-based modeling, meshing, and finite element analysis.</p><p>Copyright (C) 2006-2022 Kevin Mattheus Moerman and the GIBBON contributors</p><p>This program is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.</p><p>This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for more details.</p><p>You should have received a copy of the GNU General Public License along with this program.  If not, see <a href="http://www.gnu.org/licenses/">http://www.gnu.org/licenses/</a>.</p><p class="footer"><br><a href="https://www.mathworks.com/products/matlab/">Published with MATLAB&reg; R2022b</a><br></p></div><!--
 ##### SOURCE BEGIN #####
 %% DEMO_febio_0054_lattice_hydrostatic_01
 % Below is a demonstration for:
@@ -665,7 +618,7 @@ FEBio path: /home/kevin/FEBioStudio/bin/febio3
 
 %% Keywords
 %
-% * febio_spec version 3.0
+% * febio_spec version 4.0
 % * febio, FEBio
 % * uniaxial loading
 % * compression, tension, compressive, tensile
@@ -721,15 +674,15 @@ m1=2;
 k=50*c1;
 
 % FEA control settings
-numTimeSteps=50; %Number of time steps desired
+numTimeSteps=25; %Number of time steps desired
 max_refs=50; %Max reforms
 max_ups=0; %Set to zero to use full-Newton iterations
-opt_iter=25; %Optimum number of iterations
+opt_iter=6; %Optimum number of iterations
 max_retries=5; %Maximum number of retires
 dtmin=(1/numTimeSteps)/100; %Minimum time step size
 dtmax=(1/numTimeSteps); %Maximum time step size
 min_residual=1e-20;
-symmetric_stiffness=0;
+
 runMode='external';
 
 %%
@@ -749,7 +702,7 @@ switch latticeType
         Vr=Vr./(n-1);
         Vr=Vr*sampleSize;
         
-        [indBoundary]=tesBoundary(Fr,Vr);
+        [indBoundary]=tesBoundary(Fr);
         cPar.shrinkFactor=0.15; %Strut sides are formed by shrinking the input mesh faces by this factor
         cPar.meshType='hex'; %desired output mesh type
         cPar.indBoundary=indBoundary; %indices of the boundary faces
@@ -782,14 +735,14 @@ switch latticeType
         [Fs,CsF]=element2patch(E,C); %Patch data for plotting
         
         %Get new boundary set
-        indB=tesBoundary(Fs,V);
+        indB=tesBoundary(Fs);
         Fb=Fs(indB,:);
     case 2 %Rhombic dodecahedron mesh ("dual" of octet truss lattice)
         [Er,Vr,Cr,Fr,CFr]=rhombicDodecahedronMesh(r,nCopies);
         Vr=Vr./(n-1);
         Vr=Vr*sampleSize;
         
-        [indBoundary]=tesBoundary(Fr,Vr);
+        [indBoundary]=tesBoundary(Fr);
         cPar.shrinkFactor=0.15; %Strut sides are formed by shrinking the input mesh faces by this factor
         cPar.meshType='hex'; %desired output mesh type
         cPar.indBoundary=indBoundary; %indices of the boundary faces
@@ -822,7 +775,7 @@ switch latticeType
         [Fs,CsF]=element2patch(E,C); %Patch data for plotting
         
         %Get new boundary set
-        indB=tesBoundary(Fs,V);
+        indB=tesBoundary(Fs);
         Fb=Fs(indB,:);
     case 3
         boxDim=sampleSize*[1 1 1];
@@ -834,7 +787,7 @@ switch latticeType
         Vr=Vr-minV(ones(size(Vr,1),1),:); %Set corner as origin
         [Er,Vr,~]=hex2tet(Er,Vr,[],1); %Convert to tetrahedral elements
         [Fr,Cr]=element2patch(Er,[]); %Patch data for plotting
-        [indBoundary]=tesBoundary(Fr,Vr);
+        [indBoundary]=tesBoundary(Fr);
         
         % Create lattice structure
         controlParameter.latticeSide=1;
@@ -849,7 +802,7 @@ switch latticeType
         % Create patch Data for visualization
         [Fs,CsF]=element2patch(E,C); %Patch data for plotting
         
-        indB=tesBoundary(Fs,V);
+        indB=tesBoundary(Fs);
         Fb=Fs(indB,:);
 end
 %%
@@ -971,7 +924,7 @@ drawnow;
 [febio_spec]=febioStructTemplate;
 
 %febio_spec version 
-febio_spec.ATTR.version='3.0'; 
+febio_spec.ATTR.version='4.0'; 
 
 %Module section
 febio_spec.Module.ATTR.type='solid'; 
@@ -981,8 +934,7 @@ febio_spec.Control.analysis='STATIC';
 febio_spec.Control.time_steps=numTimeSteps;
 febio_spec.Control.step_size=1/numTimeSteps;
 febio_spec.Control.solver.max_refs=max_refs;
-febio_spec.Control.solver.max_ups=max_ups;
-febio_spec.Control.solver.symmetric_stiffness=symmetric_stiffness;
+febio_spec.Control.solver.qn_method.max_ups=max_ups;
 febio_spec.Control.time_stepper.dtmin=dtmin;
 febio_spec.Control.time_stepper.dtmax=dtmax; 
 febio_spec.Control.time_stepper.max_retries=max_retries;
@@ -1016,7 +968,7 @@ febio_spec.Mesh.Elements{1}.elem.VAL=E; %The element matrix
 % -> NodeSets
 for q=1:1:numel(bcPrescribeListCell)   
     febio_spec.Mesh.NodeSet{q}.ATTR.name=['bcPrescribeList_',num2str(q)];
-    febio_spec.Mesh.NodeSet{q}.node.ATTR.id=bcPrescribeListCell{q}';
+    febio_spec.Mesh.NodeSet{q}.VAL=mrow(bcPrescribeListCell{q});
 end
 
 %MeshDomains section
@@ -1028,22 +980,25 @@ febio_spec.MeshDomains.SolidDomain.ATTR.mat=materialName1;
 % -> Prescribe boundary conditions
 directionStringSet={'x','x','y','y','z','z'};
 displacementMagnitudeDir=[1 -1 1 -1 1 -1];
-for q=1:1:numel(bcPrescribeListCell)   
+for q=1:1:numel(bcPrescribeListCell)
     nodeSetName=febio_spec.Mesh.NodeSet{q}.ATTR.name;
-    febio_spec.Boundary.bc{q}.ATTR.type='prescribe';
+    febio_spec.Boundary.bc{q}.ATTR.name=['prescibed_displacement_',directionStringSet{q}];
+    febio_spec.Boundary.bc{q}.ATTR.type='prescribed displacement';
     febio_spec.Boundary.bc{q}.ATTR.node_set=nodeSetName;
     febio_spec.Boundary.bc{q}.dof=directionStringSet{q};
-    febio_spec.Boundary.bc{q}.scale.ATTR.lc=1;
-    febio_spec.Boundary.bc{q}.scale.VAL=displacementMagnitudeDir(q).*displacementMagnitude;
+    febio_spec.Boundary.bc{q}.value.ATTR.lc=1;
+    febio_spec.Boundary.bc{q}.value.VAL=displacementMagnitudeDir(q).*displacementMagnitude;
     febio_spec.Boundary.bc{q}.relative=0;
 end
 
 %LoadData section
 % -> load_controller
+febio_spec.LoadData.load_controller{1}.ATTR.name='LC_1';
 febio_spec.LoadData.load_controller{1}.ATTR.id=1;
 febio_spec.LoadData.load_controller{1}.ATTR.type='loadcurve';
 febio_spec.LoadData.load_controller{1}.interpolate='LINEAR';
-febio_spec.LoadData.load_controller{1}.points.point.VAL=[0 0; 1 1];
+%febio_spec.LoadData.load_controller{1}.extend='CONSTANT';
+febio_spec.LoadData.load_controller{1}.points.pt.VAL=[0 0; 1 1];
 
 %Output section
 % -> log file
@@ -1060,6 +1015,9 @@ febio_spec.Output.logfile.node_data{2}.ATTR.delim=',';
 febio_spec.Output.logfile.element_data{1}.ATTR.file=febioLogFileName_stress;
 febio_spec.Output.logfile.element_data{1}.ATTR.data='sz';
 febio_spec.Output.logfile.element_data{1}.ATTR.delim=',';
+
+% Plotfile section
+febio_spec.Output.plotfile.compression=0;
 
 %% Quick viewing of the FEBio input file structure
 % The |febView| function can be used to view the xml structure in a MATLAB
@@ -1097,7 +1055,7 @@ if runFlag==1 %i.e. a succesful run
     %%
     
     % Importing nodal displacements from a log file
-    dataStruct=importFEBio_logfile(fullfile(savePath,febioLogFileName_disp),1,1);
+    dataStruct=importFEBio_logfile(fullfile(savePath,febioLogFileName_disp),0,1);
     
     %Access data
     N_disp_mat=dataStruct.data; %Displacement
@@ -1109,7 +1067,7 @@ if runFlag==1 %i.e. a succesful run
     %%
     
     % Importing nodal forces
-    dataStruct=importFEBio_logfile(fullfile(savePath,febioLogFileName_force),1,1);
+    dataStruct=importFEBio_logfile(fullfile(savePath,febioLogFileName_force),0,1);
     N_force_mat=dataStruct.data;
     
     indicesSide=bcPrescribeListCell{1};
@@ -1181,7 +1139,7 @@ end
 % image segmentation, image-based modeling, meshing, and finite element
 % analysis.
 % 
-% Copyright (C) 2006-2021 Kevin Mattheus Moerman and the GIBBON contributors
+% Copyright (C) 2006-2022 Kevin Mattheus Moerman and the GIBBON contributors
 % 
 % This program is free software: you can redistribute it and/or modify
 % it under the terms of the GNU General Public License as published by

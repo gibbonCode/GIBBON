@@ -191,7 +191,7 @@ abaqus_spec.surface_interaction{1}.CSTM=', '; %Line with just comma
 
 %Wrap to max width of 8 entries
 t=vec2strIntDouble([0.2, 0.2, 0.05, 0.05,150,1000,0.0],'%6.7e');
-t=strwrap(t,8,', '); 
+t=strwrap(t,8,', ',1); 
 abaqus_spec.surface_interaction{1}.VAL=t;
 
 %%

@@ -60,7 +60,7 @@ drawnow;
 
 %% Output of the singular value decomposition data data
 
-[R_fit,S,U]=pointSetPrincipalDir(V)
+[R_fit,S,U]=pointSetPrincipalDir(V);
 
 %% 
 %

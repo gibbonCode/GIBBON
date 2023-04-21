@@ -772,7 +772,6 @@ febio_spec.Output.logfile.ATTR.file=febioLogFileName;
 febio_spec.Output.logfile.node_data{1}.ATTR.file=febioLogFileName_disp;
 febio_spec.Output.logfile.node_data{1}.ATTR.data='ux;uy;uz';
 febio_spec.Output.logfile.node_data{1}.ATTR.delim=',';
-febio_spec.Output.logfile.node_data{1}.VAL=1:size(V,1);
 
 febio_spec.Output.logfile.rigid_body_data{1}.ATTR.file=febioLogFileName_force;
 febio_spec.Output.logfile.rigid_body_data{1}.ATTR.data='Fx;Fy;Fz';
@@ -782,11 +781,9 @@ febio_spec.Output.logfile.rigid_body_data{1}.VAL=2;
 febio_spec.Output.logfile.element_data{1}.ATTR.file=febioLogFileName_strainEnergy;
 febio_spec.Output.logfile.element_data{1}.ATTR.data='sed';
 febio_spec.Output.logfile.element_data{1}.ATTR.delim=',';
-febio_spec.Output.logfile.element_data{1}.VAL=1:size(E_foot,1);
 
 % Plotfile section
 febio_spec.Output.plotfile.compression=0;
-
 
 %% Quick viewing of the FEBio input file structure
 % The |febView| function can be used to view the xml structure in a MATLAB

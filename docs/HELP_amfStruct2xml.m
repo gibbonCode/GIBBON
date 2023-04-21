@@ -15,7 +15,7 @@ clear; close all; clc;
 %%
 % Create example mesh
 
-[F,V]=geoSphere(2,50); %Faces and vertices
+[F,V]=geoSphere(3,50); %Faces and vertices
 c=[1 0 0]; %RGB Color
 
 volume1_Name='sphere';
@@ -37,6 +37,8 @@ fileName=fullfile(savePath,'tempModel.amf');
 %%
 % Create AMF structure
 
+tic 
+
 % Define AMF units and version
 amf.ATTR.unit='mm'; %Set units
 amf.ATTR.version='1.1'; %Set AMF version
@@ -49,14 +51,26 @@ amf.metadata{2}.ATTR.type='author';
 amf.metadata{2}.VAL='GIBBON';
 
 % object definition
-
-%-> vertices
 amf.object{1}.ATTR.id=1;
+
+% -> vertices
 for q=1:1:size(V,1) %Loop over all vertices
     amf.object{1}.mesh.vertices.vertex{q}.coordinates.x=V(q,1);
     amf.object{1}.mesh.vertices.vertex{q}.coordinates.y=V(q,2);
     amf.object{1}.mesh.vertices.vertex{q}.coordinates.z=V(q,3);
 end
+
+% amf.object{1}.mesh.vertices.VAL=V;
+% numTextFormat='%6.7e';
+% amf.object{1}.mesh.vertices.TFORM=['<vertex> <coordinates> <x>',numTextFormat,'</x> <y>',numTextFormat,'</y> <z>',numTextFormat,'</z> </coordinates> </vertex>','\n'];
+
+%<vertex> <coordinates> <x>1.6095873e-15</x> <y>-2.6286556e+01</y> <z>-4.2532540e+01</z> </coordinates> </vertex>
+% numTextFormat='%6.7e';
+% textFormat=['<vertex> <coordinates> <x>',numTextFormat,'</x> <y>',numTextFormat,'</y> <z>',numTextFormat,'</z> </coordinates> </vertex>','\n'];
+% t=sprintf(textFormat,V')
+% 
+% dfsdf
+
 
 %-> volume -> triangle
 amf.object{1}.mesh.volume{1}.ATTR.materialid=1;
@@ -80,8 +94,12 @@ amf.material{1}.color.b=c(3);
 %% Export xml
 amfStruct2xml(amf,fileName);
 
+
+t=toc 
+
 %% zip file
-[pathName,fileNameClean,c]=fileparts(fileName);
-zipName=fullfile(pathName,[fileNameClean,'.zip']);
-zip(zipName,fileName);
-movefile(zipName,fileName);
+
+% [pathName,fileNameClean,c]=fileparts(fileName);
+% zipName=fullfile(pathName,[fileNameClean,'.zip']);
+% zip(zipName,fileName);
+% movefile(zipName,fileName);

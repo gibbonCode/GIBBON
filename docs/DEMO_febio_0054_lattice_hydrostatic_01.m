@@ -9,7 +9,7 @@
 
 %% Keywords
 %
-% * febio_spec version 3.0
+% * febio_spec version 4.0
 % * febio, FEBio
 % * uniaxial loading
 % * compression, tension, compressive, tensile
@@ -65,15 +65,15 @@ m1=2;
 k=50*c1;
 
 % FEA control settings
-numTimeSteps=50; %Number of time steps desired
+numTimeSteps=25; %Number of time steps desired
 max_refs=50; %Max reforms
 max_ups=0; %Set to zero to use full-Newton iterations
-opt_iter=25; %Optimum number of iterations
+opt_iter=6; %Optimum number of iterations
 max_retries=5; %Maximum number of retires
 dtmin=(1/numTimeSteps)/100; %Minimum time step size
 dtmax=(1/numTimeSteps); %Maximum time step size
 min_residual=1e-20;
-symmetric_stiffness=0;
+
 runMode='external';
 
 %%
@@ -93,7 +93,7 @@ switch latticeType
         Vr=Vr./(n-1);
         Vr=Vr*sampleSize;
         
-        [indBoundary]=tesBoundary(Fr,Vr);
+        [indBoundary]=tesBoundary(Fr);
         cPar.shrinkFactor=0.15; %Strut sides are formed by shrinking the input mesh faces by this factor
         cPar.meshType='hex'; %desired output mesh type
         cPar.indBoundary=indBoundary; %indices of the boundary faces
@@ -126,14 +126,14 @@ switch latticeType
         [Fs,CsF]=element2patch(E,C); %Patch data for plotting
         
         %Get new boundary set
-        indB=tesBoundary(Fs,V);
+        indB=tesBoundary(Fs);
         Fb=Fs(indB,:);
     case 2 %Rhombic dodecahedron mesh ("dual" of octet truss lattice)
         [Er,Vr,Cr,Fr,CFr]=rhombicDodecahedronMesh(r,nCopies);
         Vr=Vr./(n-1);
         Vr=Vr*sampleSize;
         
-        [indBoundary]=tesBoundary(Fr,Vr);
+        [indBoundary]=tesBoundary(Fr);
         cPar.shrinkFactor=0.15; %Strut sides are formed by shrinking the input mesh faces by this factor
         cPar.meshType='hex'; %desired output mesh type
         cPar.indBoundary=indBoundary; %indices of the boundary faces
@@ -166,7 +166,7 @@ switch latticeType
         [Fs,CsF]=element2patch(E,C); %Patch data for plotting
         
         %Get new boundary set
-        indB=tesBoundary(Fs,V);
+        indB=tesBoundary(Fs);
         Fb=Fs(indB,:);
     case 3
         boxDim=sampleSize*[1 1 1];
@@ -178,7 +178,7 @@ switch latticeType
         Vr=Vr-minV(ones(size(Vr,1),1),:); %Set corner as origin
         [Er,Vr,~]=hex2tet(Er,Vr,[],1); %Convert to tetrahedral elements
         [Fr,Cr]=element2patch(Er,[]); %Patch data for plotting
-        [indBoundary]=tesBoundary(Fr,Vr);
+        [indBoundary]=tesBoundary(Fr);
         
         % Create lattice structure
         controlParameter.latticeSide=1;
@@ -193,7 +193,7 @@ switch latticeType
         % Create patch Data for visualization
         [Fs,CsF]=element2patch(E,C); %Patch data for plotting
         
-        indB=tesBoundary(Fs,V);
+        indB=tesBoundary(Fs);
         Fb=Fs(indB,:);
 end
 %%
@@ -315,7 +315,7 @@ drawnow;
 [febio_spec]=febioStructTemplate;
 
 %febio_spec version 
-febio_spec.ATTR.version='3.0'; 
+febio_spec.ATTR.version='4.0'; 
 
 %Module section
 febio_spec.Module.ATTR.type='solid'; 
@@ -325,8 +325,7 @@ febio_spec.Control.analysis='STATIC';
 febio_spec.Control.time_steps=numTimeSteps;
 febio_spec.Control.step_size=1/numTimeSteps;
 febio_spec.Control.solver.max_refs=max_refs;
-febio_spec.Control.solver.max_ups=max_ups;
-febio_spec.Control.solver.symmetric_stiffness=symmetric_stiffness;
+febio_spec.Control.solver.qn_method.max_ups=max_ups;
 febio_spec.Control.time_stepper.dtmin=dtmin;
 febio_spec.Control.time_stepper.dtmax=dtmax; 
 febio_spec.Control.time_stepper.max_retries=max_retries;
@@ -360,7 +359,7 @@ febio_spec.Mesh.Elements{1}.elem.VAL=E; %The element matrix
 % -> NodeSets
 for q=1:1:numel(bcPrescribeListCell)   
     febio_spec.Mesh.NodeSet{q}.ATTR.name=['bcPrescribeList_',num2str(q)];
-    febio_spec.Mesh.NodeSet{q}.node.ATTR.id=bcPrescribeListCell{q}';
+    febio_spec.Mesh.NodeSet{q}.VAL=mrow(bcPrescribeListCell{q});
 end
 
 %MeshDomains section
@@ -372,22 +371,25 @@ febio_spec.MeshDomains.SolidDomain.ATTR.mat=materialName1;
 % -> Prescribe boundary conditions
 directionStringSet={'x','x','y','y','z','z'};
 displacementMagnitudeDir=[1 -1 1 -1 1 -1];
-for q=1:1:numel(bcPrescribeListCell)   
+for q=1:1:numel(bcPrescribeListCell)
     nodeSetName=febio_spec.Mesh.NodeSet{q}.ATTR.name;
-    febio_spec.Boundary.bc{q}.ATTR.type='prescribe';
+    febio_spec.Boundary.bc{q}.ATTR.name=['prescibed_displacement_',directionStringSet{q}];
+    febio_spec.Boundary.bc{q}.ATTR.type='prescribed displacement';
     febio_spec.Boundary.bc{q}.ATTR.node_set=nodeSetName;
     febio_spec.Boundary.bc{q}.dof=directionStringSet{q};
-    febio_spec.Boundary.bc{q}.scale.ATTR.lc=1;
-    febio_spec.Boundary.bc{q}.scale.VAL=displacementMagnitudeDir(q).*displacementMagnitude;
+    febio_spec.Boundary.bc{q}.value.ATTR.lc=1;
+    febio_spec.Boundary.bc{q}.value.VAL=displacementMagnitudeDir(q).*displacementMagnitude;
     febio_spec.Boundary.bc{q}.relative=0;
 end
 
 %LoadData section
 % -> load_controller
+febio_spec.LoadData.load_controller{1}.ATTR.name='LC_1';
 febio_spec.LoadData.load_controller{1}.ATTR.id=1;
 febio_spec.LoadData.load_controller{1}.ATTR.type='loadcurve';
 febio_spec.LoadData.load_controller{1}.interpolate='LINEAR';
-febio_spec.LoadData.load_controller{1}.points.point.VAL=[0 0; 1 1];
+%febio_spec.LoadData.load_controller{1}.extend='CONSTANT';
+febio_spec.LoadData.load_controller{1}.points.pt.VAL=[0 0; 1 1];
 
 %Output section
 % -> log file
@@ -404,6 +406,9 @@ febio_spec.Output.logfile.node_data{2}.ATTR.delim=',';
 febio_spec.Output.logfile.element_data{1}.ATTR.file=febioLogFileName_stress;
 febio_spec.Output.logfile.element_data{1}.ATTR.data='sz';
 febio_spec.Output.logfile.element_data{1}.ATTR.delim=',';
+
+% Plotfile section
+febio_spec.Output.plotfile.compression=0;
 
 %% Quick viewing of the FEBio input file structure
 % The |febView| function can be used to view the xml structure in a MATLAB
@@ -441,7 +446,7 @@ if runFlag==1 %i.e. a succesful run
     %%
     
     % Importing nodal displacements from a log file
-    dataStruct=importFEBio_logfile(fullfile(savePath,febioLogFileName_disp),1,1);
+    dataStruct=importFEBio_logfile(fullfile(savePath,febioLogFileName_disp),0,1);
     
     %Access data
     N_disp_mat=dataStruct.data; %Displacement
@@ -453,7 +458,7 @@ if runFlag==1 %i.e. a succesful run
     %%
     
     % Importing nodal forces
-    dataStruct=importFEBio_logfile(fullfile(savePath,febioLogFileName_force),1,1);
+    dataStruct=importFEBio_logfile(fullfile(savePath,febioLogFileName_force),0,1);
     N_force_mat=dataStruct.data;
     
     indicesSide=bcPrescribeListCell{1};

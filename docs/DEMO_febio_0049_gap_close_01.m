@@ -284,6 +284,7 @@ febio_spec.Boundary.bc{3}.ATTR.type='prescribed displacement';
 febio_spec.Boundary.bc{3}.ATTR.node_set=nodeSetName2;
 febio_spec.Boundary.bc{3}.dof='z';
 febio_spec.Boundary.bc{3}.value.ATTR.lc=1;
+febio_spec.Boundary.bc{3}.value.ATTR.type='map';
 febio_spec.Boundary.bc{3}.value.VAL=bcDataName1;
 febio_spec.Boundary.bc{3}.relative=0;
 

@@ -61,7 +61,7 @@ logicLattice_V=V(:,2)<-4.5;
 logicLattice_E=all(logicLattice_V(E),2);
 
 FT_other_all=element2patch(E(~logicLattice_E,:),V);
-indB=tesBoundary(FT_other_all,V);
+indB=tesBoundary(FT_other_all);
 FT_other=FT_other_all(indB,:);
 
 cladOpt=1;

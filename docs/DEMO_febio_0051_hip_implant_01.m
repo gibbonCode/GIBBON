@@ -5,7 +5,7 @@
 
 %% Keywords
 %
-% * febio_spec version 3.0
+% * febio_spec version 4.0
 % * febio, FEBio
 % * parameterised hip creation 
 % * Tetrahedral meshing, tet4
@@ -41,7 +41,7 @@ febioLogFileName_stress=[febioFebFileNamePart,'_stress_out.txt']; %Log file name
 febioLogFileName_strainEnergy=[febioFebFileNamePart,'_energy_out.txt']; %Log file name for exporting strain energy density
 
 %Define applied force 
-forceBody=(80*9.81)/2;
+forceBody=-(120*9.81)/2;
 
 %Material parameters (MPa if spatial units are mm)
 % Cortical bone
@@ -61,7 +61,7 @@ max_retries=5; %Maximum number of retires
 dtmin=(1/numTimeSteps)/100; %Minimum time step size
 dtmax=1/numTimeSteps; %Maximum time step size
 symmetric_stiffness=1;
-runMode='internal'; %'external' or 'internal'
+runMode='external'; %'external' or 'internal'
 
 %%
 n1=[1 0 0];
@@ -371,7 +371,7 @@ drawnow;
 [febio_spec]=febioStructTemplate;
 
 %febio_spec version 
-febio_spec.ATTR.version='3.0'; 
+febio_spec.ATTR.version='4.0'; 
 
 %Module section
 febio_spec.Module.ATTR.type='solid'; 
@@ -381,13 +381,11 @@ febio_spec.Control.analysis='STATIC';
 febio_spec.Control.time_steps=numTimeSteps;
 febio_spec.Control.step_size=1/numTimeSteps;
 febio_spec.Control.solver.max_refs=max_refs;
-febio_spec.Control.solver.max_ups=max_ups;
-febio_spec.Control.solver.symmetric_stiffness=symmetric_stiffness;
+febio_spec.Control.solver.qn_method.max_ups=max_ups;
 febio_spec.Control.time_stepper.dtmin=dtmin;
 febio_spec.Control.time_stepper.dtmax=dtmax; 
 febio_spec.Control.time_stepper.max_retries=max_retries;
 febio_spec.Control.time_stepper.opt_iter=opt_iter;
-
 
 %Material section
 materialName1='Material1';
@@ -409,7 +407,7 @@ febio_spec.Material.material{3}.ATTR.name=materialName3;
 febio_spec.Material.material{3}.ATTR.type='rigid body';
 febio_spec.Material.material{3}.ATTR.id=3;
 febio_spec.Material.material{3}.density=1;
-febio_spec.Material.material{3}.center_of_mass=mean(V_implant,1);
+febio_spec.Material.material{3}.center_of_mass=[0 0 0];
 
 %Mesh section
 % -> Nodes
@@ -439,7 +437,7 @@ febio_spec.Mesh.Elements{3}.elem.VAL=F_implant; %The element matrix
 % -> NodeSets
 nodeSetName1='bcSupportList';
 febio_spec.Mesh.NodeSet{1}.ATTR.name=nodeSetName1;
-febio_spec.Mesh.NodeSet{1}.node.ATTR.id=bcSupportList(:);
+febio_spec.Mesh.NodeSet{1}.VAL=mrow(bcSupportList);
 
 %MeshDomains section
 febio_spec.MeshDomains.SolidDomain{1}.ATTR.name=partName1;
@@ -453,31 +451,41 @@ febio_spec.MeshDomains.ShellDomain{1}.ATTR.mat=materialName3;
 
 %Boundary condition section 
 % -> Fix boundary conditions
-febio_spec.Boundary.bc{1}.ATTR.type='fix';
+febio_spec.Boundary.bc{1}.ATTR.name='zero_displacement_xyz';
+febio_spec.Boundary.bc{1}.ATTR.type='zero displacement';
 febio_spec.Boundary.bc{1}.ATTR.node_set=nodeSetName1;
-febio_spec.Boundary.bc{1}.dofs='x,y,z';
+febio_spec.Boundary.bc{1}.x_dof=1;
+febio_spec.Boundary.bc{1}.y_dof=1;
+febio_spec.Boundary.bc{1}.z_dof=1;
 
 %Rigid section 
 % ->Rigid body fix boundary conditions
-febio_spec.Rigid.rigid_constraint{1}.ATTR.name='RigidFix_1';
-febio_spec.Rigid.rigid_constraint{1}.ATTR.type='fix';
-febio_spec.Rigid.rigid_constraint{1}.rb=3;
-febio_spec.Rigid.rigid_constraint{1}.dofs='Rx,Ry';
+% febio_spec.Rigid.rigid_bc{1}.ATTR.name='RigidFix';
+% febio_spec.Rigid.rigid_bc{1}.ATTR.type='rigid_fixed';
+% febio_spec.Rigid.rigid_bc{1}.rb=3;
+% febio_spec.Rigid.rigid_bc{1}.Rx_dof=1;
+% febio_spec.Rigid.rigid_bc{1}.Ry_dof=1;
+% febio_spec.Rigid.rigid_bc{1}.Ru_dof=1;
+% febio_spec.Rigid.rigid_bc{1}.Rv_dof=1;
+% febio_spec.Rigid.rigid_bc{1}.Rw_dof=1;
 
 % ->Rigid body prescribe boundary conditions
-febio_spec.Rigid.rigid_constraint{2}.ATTR.name='RigidPrescribe';
-febio_spec.Rigid.rigid_constraint{2}.ATTR.type='force';
-febio_spec.Rigid.rigid_constraint{2}.rb=3;
-febio_spec.Rigid.rigid_constraint{2}.dof='Rz';
-febio_spec.Rigid.rigid_constraint{2}.value.ATTR.lc=1;
-febio_spec.Rigid.rigid_constraint{2}.value.VAL=forceBody;
+febio_spec.Rigid.rigid_load{1}.ATTR.name='RigidPrescribedForce';
+febio_spec.Rigid.rigid_load{1}.ATTR.type='rigid_force';
+febio_spec.Rigid.rigid_load{1}.rb=3;
+febio_spec.Rigid.rigid_load{1}.dof='Rz';
+febio_spec.Rigid.rigid_load{1}.value.ATTR.lc=1;
+febio_spec.Rigid.rigid_load{1}.value.VAL=forceBody;
+febio_spec.Rigid.rigid_load{1}.load_type=0;
 
 %LoadData section
 % -> load_controller
+febio_spec.LoadData.load_controller{1}.ATTR.name='LC_1';
 febio_spec.LoadData.load_controller{1}.ATTR.id=1;
 febio_spec.LoadData.load_controller{1}.ATTR.type='loadcurve';
 febio_spec.LoadData.load_controller{1}.interpolate='LINEAR';
-febio_spec.LoadData.load_controller{1}.points.point.VAL=[0 0; 1 1];
+%febio_spec.LoadData.load_controller{1}.extend='CONSTANT';
+febio_spec.LoadData.load_controller{1}.points.pt.VAL=[0 0; 1 1];
 
 %Output section 
 % -> log file
@@ -485,7 +493,6 @@ febio_spec.Output.logfile.ATTR.file=febioLogFileName;
 febio_spec.Output.logfile.node_data{1}.ATTR.file=febioLogFileName_disp;
 febio_spec.Output.logfile.node_data{1}.ATTR.data='ux;uy;uz';
 febio_spec.Output.logfile.node_data{1}.ATTR.delim=',';
-febio_spec.Output.logfile.node_data{1}.VAL=1:size(V,1);
 
 febio_spec.Output.logfile.rigid_body_data{1}.ATTR.file=febioLogFileName_force;
 febio_spec.Output.logfile.rigid_body_data{1}.ATTR.data='Fx;Fy;Fz';
@@ -495,12 +502,15 @@ febio_spec.Output.logfile.rigid_body_data{1}.VAL=3; %Rigid body material id
 febio_spec.Output.logfile.element_data{1}.ATTR.file=febioLogFileName_stress;
 febio_spec.Output.logfile.element_data{1}.ATTR.data='s1;s2;s3';
 febio_spec.Output.logfile.element_data{1}.ATTR.delim=',';
-febio_spec.Output.logfile.element_data{1}.VAL=1:1:size(E_solid,1); %Rigid body material id
+febio_spec.Output.logfile.element_data{2}.VAL=1:1:size(E_solid,1);
 
 febio_spec.Output.logfile.element_data{2}.ATTR.file=febioLogFileName_strainEnergy;
 febio_spec.Output.logfile.element_data{2}.ATTR.data='sed';
 febio_spec.Output.logfile.element_data{2}.ATTR.delim=',';
 febio_spec.Output.logfile.element_data{2}.VAL=1:1:size(E_solid,1);
+
+% Plotfile section
+febio_spec.Output.plotfile.compression=0;
 
 %% Quick viewing of the FEBio input file structure
 % The |febView| function can be used to view the xml structure in a MATLAB
@@ -525,11 +535,7 @@ febioStruct2xml(febio_spec,febioFebFileName); %Exporting to file and domNode
 febioAnalysis.run_filename=febioFebFileName; %The input file name
 febioAnalysis.run_logname=febioLogFileName; %The name for the log file
 febioAnalysis.disp_on=1; %Display information on the command window
-febioAnalysis.disp_log_on=1; %Display convergence information in the command window
-febioAnalysis.runMode=runMode;%'internal';
-febioAnalysis.t_check=0.25; %Time for checking log file (dont set too small)
-febioAnalysis.maxtpi=1e99; %Max analysis time
-febioAnalysis.maxLogCheckTime=10; %Max log file checking time
+febioAnalysis.runMode=runMode;
 
 [runFlag]=runMonitorFEBio(febioAnalysis);%START FEBio NOW!!!!!!!!
 
@@ -538,7 +544,7 @@ febioAnalysis.maxLogCheckTime=10; %Max log file checking time
 if runFlag==1 %i.e. a succesful run
     
     % Importing nodal displacements from a log file
-    [time_mat, N_disp_mat,~]=importFEBio_logfile(fullfile(savePath,febioLogFileName_disp)); %Nodal displacements    
+    [time_mat, N_disp_mat,~]=importFEBio_logfile(fullfile(savePath,febioLogFileName_disp),0,1); %Nodal displacements    
     time_mat=[0; time_mat(:)]; %Time
 
     N_disp_mat=N_disp_mat(:,2:end,:);

@@ -53,7 +53,7 @@ numElementsThickness=round(sampleThickness/pointSpacings(2)); %Number of elemens
 numElementsHeight=round(sampleHeight/pointSpacings(3)); %Number of elemens in dir 3
 
 %Define applied displacement 
-forceMax=1e-2; %Note more nodes = more force overall
+forceMaxMag=1e-2; %Note more nodes = more force overall
 
 %Material parameter set
 c1=1e-3; %Shear-modulus-like parameter
@@ -122,8 +122,14 @@ bcPrescribeList=unique(Fb(Cb==6,:)); %Node set part of selected face
 
 %Create example spatially varying force
 s=sampleWidth/4; %"standard deviation"
-forceData=forceMax*exp(-0.5.*((V(bcPrescribeList,1)./s).^2+(V(bcPrescribeList,2)./s).^2)); %Gaussian variation
-forceData=forceData.*sin(2*pi*(V(bcPrescribeList,2)/sampleWidth)); %Sinusoidal modulation
+forceData=zeros(numel(bcPrescribeList),3);
+forceData(:,1)=0.5*sin(2*pi*(V(bcPrescribeList,2)/sampleWidth)); %Sinusoidal varation
+forceData(:,2)=0.5;
+forceData(:,3)=1;
+forceData=forceData.*exp(-0.5.*((V(bcPrescribeList,1)./s).^2+(V(bcPrescribeList,2)./s).^2)); %Gaussian modulation
+
+forceData=forceData./max(sqrt(sum(forceData.^2,2)));
+forceData=forceData.*forceMaxMag;
 
 %% 
 % Visualizing boundary conditions. Markers plotted on the semi-transparent
@@ -137,12 +143,13 @@ hold on;
 gpatch(Fb,V,'kw','k',0.5);
 
 hl(1)=plotV(V(bcSupportList,:),'k.','MarkerSize',markerSize);
-hl(2)=scatterV(V(bcPrescribeList,:),75,forceData,'filled');
+% hl(2)=scatterV(V(bcPrescribeList,:),75,forceData,'filled');
+hl(2)=quiverVec(V(bcPrescribeList,:),forceData,mean(pointSpacings),sqrt(sum(forceData.^2,2)));
 
 legend(hl,{'BC fix support','BC prescribed force'});
 
 axisGeom(gca,fontSize);
-colorbar; colormap(warmcold(250)); caxis([-forceMax forceMax]);
+colorbar; colormap(warmcold(250)); caxis([0 forceMaxMag]);
 camlight headlight; 
 drawnow; 
 
@@ -218,22 +225,31 @@ febio_spec.Boundary.bc{1}.z_dof=1;
 
 %MeshData secion
 %-> Node data
-loadDataName1='nodal_load_Z';
+loadDataName1='nodal_forces';
 febio_spec.MeshData.NodeData{1}.ATTR.name=loadDataName1;
 febio_spec.MeshData.NodeData{1}.ATTR.node_set=nodeSetName2;
-febio_spec.MeshData.NodeData{1}.ATTR.datatype='scalar';
+febio_spec.MeshData.NodeData{1}.ATTR.data_type='vec3';
 febio_spec.MeshData.NodeData{1}.node.ATTR.lid=(1:1:numel(bcPrescribeList))';
-febio_spec.MeshData.NodeData{1}.node.VAL=forceData(:);
+febio_spec.MeshData.NodeData{1}.node.VAL=forceData;
+
+% %Loads section
+% % -> Prescribed nodal forces
+% febio_spec.Loads.nodal_load{1}.ATTR.name='PrescribedForceZ';
+% febio_spec.Loads.nodal_load{1}.ATTR.type='nodal_load';
+% febio_spec.Loads.nodal_load{1}.ATTR.node_set=nodeSetName2;
+% febio_spec.Loads.nodal_load{1}.dof='z';
+% febio_spec.Loads.nodal_load{1}.scale.ATTR.lc=1;
+% febio_spec.Loads.nodal_load{1}.scale.ATTR.type='map';
+% febio_spec.Loads.nodal_load{1}.scale.VAL=loadDataName1;
 
 %Loads section
 % -> Prescribed nodal forces
 febio_spec.Loads.nodal_load{1}.ATTR.name='PrescribedForceZ';
-febio_spec.Loads.nodal_load{1}.ATTR.type='nodal_load';
+febio_spec.Loads.nodal_load{1}.ATTR.type='nodal_force';
 febio_spec.Loads.nodal_load{1}.ATTR.node_set=nodeSetName2;
-febio_spec.Loads.nodal_load{1}.dof='z';
-febio_spec.Loads.nodal_load{1}.scale.ATTR.lc=1;
-febio_spec.Loads.nodal_load{1}.scale.ATTR.type='map';
-febio_spec.Loads.nodal_load{1}.scale.VAL=loadDataName1;
+febio_spec.Loads.nodal_load{1}.value.ATTR.lc=1;
+febio_spec.Loads.nodal_load{1}.value.ATTR.type='map';
+febio_spec.Loads.nodal_load{1}.value.VAL=loadDataName1;
 
 %LoadData section
 % -> load_controller
