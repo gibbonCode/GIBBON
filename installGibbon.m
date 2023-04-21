@@ -131,11 +131,11 @@ pause(0.5);
 hTextStatement.String='Please provide the full path to the FEBio executable. Leave blank if FEBio is not needed.';
 
 if ispc
-    hTextInfoStringDefault='On Windows likely similar to: C:\Program Files\FEBioStudio\febio\FEBio3.exe';
+    hTextInfoStringDefault='On Windows likely similar to: C:\Program Files\FEBioStudio2\febio\FEBio4.exe';
 elseif ismac
-    hTextInfoStringDefault='On MacOS likely similar to: /users/userName/Applications/FEBioStudio/FEBioStudio/Contents/MacOS/febio3';
+    hTextInfoStringDefault='On MacOS likely similar to: /Applications/FEBioStudio/FEBioStudio.app/Contents/MacOS/febio4';
 else
-    hTextInfoStringDefault='On Linux likely similar to: /home/userName/FEBioStudio/bin/febio3';
+    hTextInfoStringDefault='On Linux likely similar to: /home/userName/FEBioStudio2/bin/febio4';
 end
 
 hTextInfo1 = uicontrol(hf,'Style','text','String',hTextInfoStringDefault,...
