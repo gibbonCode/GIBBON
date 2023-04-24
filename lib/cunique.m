@@ -43,17 +43,16 @@ switch typeOpt
         varargout{3}=reshape(ind2,[size(A,1) 1]);        
 end
 
-if nargout==4
-    [subInd] = ind2subn(size(A_uni),ind2);
-%     Ac=accumarray(subInd,ones(numel(ind2),1),[size(A_uni,1),1]);
-    Ac=accumarray(subInd,ones(numel(ind2),1),size(A_uni));
-    switch typeOpt
-        case 1
-            Ac=reshape(Ac(ind2),size(A));            
-        case 2      
-            Ac=reshape(Ac(ind2),[size(A,1) 1]);            
+if nargout==4            
+    Ac=accumarray(ind2,1,[length(ind1) 1]);
+    Ac=Ac(ind2);
+    if typeOpt==1 && size(Ac,1)~=size(A,1)
+        Ac=reshape(Ac,size(A));
     end
+
     varargout{4}=Ac;
+end
+
 end
 
 %% 
