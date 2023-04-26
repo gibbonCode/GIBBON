@@ -24,7 +24,13 @@ else
     end
 end
 
-[hFig]=xmlView(fileName,viewerOpt);
+warning('febView no longer works in the latest MATLAB releases, defaulting to use edit function until resolved')
+
+edit(fileName);
+hFig=[];
+
+% [hFig]=xmlView(fileName,viewerOpt);
+
 if nargout>0
     varargout{1}=hFig;
 end

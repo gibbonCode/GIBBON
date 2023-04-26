@@ -252,7 +252,7 @@ fileName=fullfile(savePath,'tempModel.inp');
 
 %% View the inp file
 %
-textView(fileName);
+edit(fileName);
 
 %% 
 %

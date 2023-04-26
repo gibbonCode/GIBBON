@@ -35,31 +35,38 @@ end
 
 %%
 
-switch viewerOpt
-    case 1 %View in figure window
-        %Open figure
-        figStruct.Name=fileName;
-        hFig = cFigure(figStruct); 
-        
-        %Remove tool and menu bars
-        ht = findobj(allchild(hFig),'flat','Type','uitoolbar');
-        delete(ht);
-        ht = findobj(allchild(hFig),'flat','Type','uimenu');
-        delete(ht);
-        
-        %Create browser
-        browser = com.mathworks.mlwidgets.html.HTMLBrowserPanel;        
-        browser.setCurrentLocation(fileName);
-        
-        %Embed browser
-        posPanel = getpixelposition(hFig,true);
-        [~,browserContainer] = javacomponent(browser,[1,1,max(posPanel(3)-1,1),max(posPanel(4)-1,1)],hFig);
-        set(browserContainer,'Units','normalized');
-        drawnow;
-    case 2 %Browser viewer
-%         [~,hFig]=web(fileName);%,'-new');
-        hFig=web(fileName);%,'-new');
-end
+
+warning('xmlView no longer works in the latest MATLAB releases, defaulting to use edit function until resolved')
+
+edit(fileName);
+hFig=[];
+
+% OLD needing fixing: 
+% switch viewerOpt
+%     case 1 %View in figure window
+%         %Open figure
+%         figStruct.Name=fileName;
+%         hFig = cFigure(figStruct); 
+%         
+%         %Remove tool and menu bars
+%         ht = findobj(allchild(hFig),'flat','Type','uitoolbar');
+%         delete(ht);
+%         ht = findobj(allchild(hFig),'flat','Type','uimenu');
+%         delete(ht);
+%         
+%         %Create browser
+%         browser = com.mathworks.mlwidgets.html.HTMLBrowserPanel;        
+%         browser.setCurrentLocation(fileName);
+%         
+%         %Embed browser
+%         posPanel = getpixelposition(hFig,true);
+%         [~,browserContainer] = javacomponent(browser,[1,1,max(posPanel(3)-1,1),max(posPanel(4)-1,1)],hFig);
+%         set(browserContainer,'Units','normalized');
+%         drawnow;
+%     case 2 %Browser viewer
+% %         [~,hFig]=web(fileName);%,'-new');
+%         hFig=web(fileName);%,'-new');
+% end
 
 if nargout==1
     varargout{1}=hFig;

@@ -144,7 +144,6 @@ febio_spec.Material.material{1}.c1=1;
 febio_spec.Material.material{1}.m1=6;
 febio_spec.Material.material{1}.k=100;
 
-
 %%
 % A visco-elastic material
 
@@ -292,7 +291,7 @@ optionStruct.arrayParseMethod=1;
 %% Viewing the FEBio input file
 % The |febView| command can be used to render an XML file in a figure
 % window. Alternatively the |textView| command can be used:
-h=febView(fileName,2);
+h=febView(fileName,1);
 
 %% 
 %
