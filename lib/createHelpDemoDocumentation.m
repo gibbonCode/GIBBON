@@ -36,27 +36,27 @@ T_top(3,1)={['    <tocitem target="',startFile,'">The GIBBON Toolbox']};
 %GETTING STARTED SECTION
 T_start=cell(3,1);
 T_start{1}='        <tocitem target="GettingStarted.html" image="HelpIcon.GETTING_STARTED">Getting Started';
-T_start{2}=['            <tocitem target="',startFile,'">',startFile(1:end-5),'</tocitem>',startFile(1:end-4)];
+T_start{2}=['            <tocitem target="','GettingStarted.html','">','Getting started','</tocitem>'];
 T_start{3}='        </tocitem>';
 
 %FUNCTION HELP
 T_help=cell(numHelpFiles+2,1);
 T_help{1}='        <tocitem target="funclist.html" image="HelpIcon.FUNCTION">Functions';
 for q=1:1:numHelpFiles
-    currentFile=helpFiles{q};
-    currentName=currentFile(1:end-5);
-    T_help{q+1}=['            <tocitem target="',currentFile,'">',currentName(6:end),'</tocitem>',currentName];
+    currentFile=helpFiles{q};    
+    [~,currentName,~]=fileparts(currentFile);    
+    T_help{q+1}=['            <tocitem target="',currentFile,'">',currentName(6:end),'</tocitem>'];
 end
 T_help{end}='        </tocitem>';
 
 
 %DEMO EXAMPLES
 T_demo=cell(numDemoFiles+2,1);
-T_demo{1}='        <tocitem target="gibbonExampes.html" image="HelpIcon.EXAMPLES">Examples';
+T_demo{1}='        <tocitem target="gibbonExampes.html" image="HelpIcon.EXAMPLES">DEMOS and Examples';
 for q=1:1:numDemoFiles
-    currentFile=demoFiles{q};
-    currentName=currentFile(1:end-5);
-    T_demo{q+1}=['            <tocitem target="',currentFile,'">',currentName(6:end),'</tocitem>',currentName];
+    currentFile=demoFiles{q};    
+    [~,currentName,~]=fileparts(currentFile);
+    T_demo{q+1}=['            <tocitem target="',currentFile,'">',currentName(6:end),'</tocitem>'];
 end
 T_demo{end}='        </tocitem>';
 
