@@ -232,19 +232,9 @@ febio_spec.MeshData.NodeData{1}.ATTR.data_type='vec3';
 febio_spec.MeshData.NodeData{1}.node.ATTR.lid=(1:1:numel(bcPrescribeList))';
 febio_spec.MeshData.NodeData{1}.node.VAL=forceData;
 
-% %Loads section
-% % -> Prescribed nodal forces
-% febio_spec.Loads.nodal_load{1}.ATTR.name='PrescribedForceZ';
-% febio_spec.Loads.nodal_load{1}.ATTR.type='nodal_load';
-% febio_spec.Loads.nodal_load{1}.ATTR.node_set=nodeSetName2;
-% febio_spec.Loads.nodal_load{1}.dof='z';
-% febio_spec.Loads.nodal_load{1}.scale.ATTR.lc=1;
-% febio_spec.Loads.nodal_load{1}.scale.ATTR.type='map';
-% febio_spec.Loads.nodal_load{1}.scale.VAL=loadDataName1;
-
 %Loads section
 % -> Prescribed nodal forces
-febio_spec.Loads.nodal_load{1}.ATTR.name='PrescribedForceZ';
+febio_spec.Loads.nodal_load{1}.ATTR.name='PrescribedForce';
 febio_spec.Loads.nodal_load{1}.ATTR.type='nodal_force';
 febio_spec.Loads.nodal_load{1}.ATTR.node_set=nodeSetName2;
 febio_spec.Loads.nodal_load{1}.value.ATTR.lc=1;

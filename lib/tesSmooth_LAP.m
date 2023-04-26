@@ -80,8 +80,7 @@ for qIter=1:nMax
         if abs(1-SSQD_ratio)<=SSQD_Tol
            break %STOP SMOOTHING LOOP IF TOLERANCE IS REACHED 
         end
-    end
-    
+    end    
 end
  
 %% 

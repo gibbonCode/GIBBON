@@ -5,12 +5,101 @@
 clear; close all; clc;
 
 %% Syntax
-% |[P]=patchSmooth(F,V,IND_V,cPar);|
+% |[P]=patchSmooth(F,V,IND_V,optionStruct);|
 
 %% Description 
-% UNDOCUMENTED 
+% This function can smoothen the input surface surface data specified by
+% the faces F and the nodal/vertex data V. V is typically an nx3 vertex
+% coordinate array, where n is the number of vertices. However V may
+% represent a general nxm array where m>0. m=1 for instance for scalar
+% nodal data, examples include vertex quantities such as displacement
+% magnitude and temperature. 
+
 %% Examples 
 % 
+%%
+% Plot settings
+
+fontSize=15;
+cMap=gjet(250);
+
+%% Example 1: Smoothing a triangulated surface
+
+%%
+
+% Creating example data 
+[F,V]=stanford_bunny; %Some graphics data
+V_true=V; 
+
+% Add noise
+V_noisy=V+5*randn(size(V));
+
+%%
+% Smoothen using |patchSmooth|. 
+% Two methods are shown here, 'LAP', which refers to Laplacian Smoothing,
+% and 'HC' which refers to Humphreys-Classes smoothing
+
+%Set number of iterations to use
+smoothParameters.n=25; %Number of iterations
+
+%Smooth using Laplacian smoothing method
+smoothParameters.Method='LAP';%Smooting method
+V_smooth1=patchSmooth(F,V_noisy,[],smoothParameters);
+
+%Smooth using HC method
+smoothParameters.Method='HC'; %Smoothing method
+V_smooth2=patchSmooth(F,V_noisy,[],smoothParameters);
+
+%% 
+% Visualization to compare smoothening methods
+
+cFigure; 
+
+subplot(2,2,1); hold on; 
+title('True surface','FontSize',fontSize);
+gpatch(F,V,'w','k',1);
+axisGeom(gca,fontSize); camlight headlight;
+
+subplot(2,2,2); hold on; 
+title('Noisy surface','FontSize',fontSize);
+gpatch(F,V_noisy,'w','k',1);
+axisGeom(gca,fontSize); camlight headlight;
+
+subplot(2,2,3); hold on; 
+title('Laplacian smoothed noisy surface','FontSize',fontSize);
+gpatch(F,V,'w','none',0.5);
+gpatch(F,V_smooth1,'rw','k',1);
+axisGeom(gca,fontSize); camlight headlight;
+
+subplot(2,2,4); hold on; 
+title('Humpreys-Classes smoothed noisy surface','FontSize',fontSize);
+gpatch(F,V,'w','none',0.5);
+gpatch(F,V_smooth2,'rw','k',1);
+axisGeom(gca,fontSize); camlight headlight;
+
+drawnow;
+
+%% 
+
+indRigid=find(V(:,1)>mean(V(:,1))); 
+
+%Smooth with constraints
+smoothParameters.n=25; %Number of iterations
+smoothParameters.Method='HC'; %Smoothing method
+smoothParameters.RigidConstraints=indRigid; %Vertices to not keep constant
+V_smooth_con=patchSmooth(F,V_noisy,[],smoothParameters);
+
+%% 
+% Visualization to compare smoothening methods
+
+cFigure; hold on; 
+title('Constrained smoothing','FontSize',fontSize);
+gpatch(F,V,'w','none',0.5);
+gpatch(F,V_smooth_con,'rw','k',1);
+plotV(V_smooth_con(indRigid,:),'b.','MarkerSize',25)
+axisGeom(gca,fontSize); camlight headlight;
+drawnow;
+
 %%
 % 
 % <<gibbVerySmall.gif>>

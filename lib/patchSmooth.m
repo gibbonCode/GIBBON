@@ -1,26 +1,24 @@
-function [P]=patchSmooth(F,V,IND_V,cPar)
+function [P]=patchSmooth(F,V,IND_V,optionStruct)
 
-% function [P]=patchSmooth(F,V,IND_V,cPar)
+% function [P]=patchSmooth(F,V,IND_V,optionStruct)
 % ------------------------------------------------------------------------
 %
 %
 % Kevin Mattheus Moerman
-% kevinmoerman@hotmail.com
 % 2014/06/02
+% 2023/04/26 Switch to use structComplete for input handling, which is
+% clearer and more concise
 %------------------------------------------------------------------------
 
 %%
 
-%Get/set method
-if isfield(cPar,'Method')
-    smoothMethod=cPar.Method;
-else
-    smoothMethod='LAP'; %DEFAULT
-end
+%Set default structure
+defaultOptionStruct.n=1; %Number of smoothing iterations
+defaultOptionStruct.Method='LAP'; %Smoothing method
+defaultOptionStruct.RigidConstraints=[]; %Indicices for nodes to hold on to
 
-if ~isfield(cPar,'n')
-    cPar.n=1; %DEFAULT
-end
+%Complement input with default if missing
+[optionStruct]=structComplete(optionStruct,defaultOptionStruct,1);
 
 if isempty(IND_V)
     [~,IND_V]=patchIND(F,V,2);
@@ -34,15 +32,18 @@ if isempty(IND_V)
 %         C=patchConnectivity(F,V,'vv');
 %         IND_V=C.vertex.vertex;
 %     end
-
 end
+
+%%
+
+smoothMethod=optionStruct.Method;
 
 %Smooth
 switch smoothMethod
     case 'LAP' %Laplacian
-        [P]=tesSmooth_LAP(F,V,IND_V,cPar);
+        [P]=tesSmooth_LAP(F,V,IND_V,optionStruct);
     case 'HC' %Humphreys Classes
-        [P]=tesSmooth_HC(F,V,IND_V,cPar);
+        [P]=tesSmooth_HC(F,V,IND_V,optionStruct);
     case 'tLAP' %Tangent Laplacian       
         
         %Invert face orientation if required
@@ -52,12 +53,12 @@ switch smoothMethod
         end
         
         %Set control parameters for Laplacian smoothening iterations
-        cPar_t=cPar;
-        cPar_t.n=1;
-        cPar_t.Tolerance=[];
+        optionStruct_t=optionStruct;
+        optionStruct_t.n=1;
+        optionStruct_t.Tolerance=[];
         P=V;
-        for q=1:1:cPar.n
-            [Ps]=tesSmooth_LAP(F,P,IND_V,cPar_t);  %The Laplacian smoothened coordinate set
+        for q=1:1:optionStruct.n
+            [Ps]=tesSmooth_LAP(F,P,IND_V,optionStruct_t);  %The Laplacian smoothened coordinate set
             D=Ps-P; %smoothening intended displacement vectors
             [Dt]=patchVectorTangent(F,P,D,[]); %Tangential component of displacement
             P=P+Dt; %Displace mesh
@@ -72,12 +73,12 @@ switch smoothMethod
         end
         
         %Set control parameters for Laplacian smoothening iterations
-        cPar_t=cPar;
-        cPar_t.n=1;
-        cPar_t.Tolerance=[];
+        optionStruct_t=optionStruct;
+        optionStruct_t.n=1;
+        optionStruct_t.Tolerance=[];
         P=V;
-        for q=1:1:cPar.n
-            [Ps]=tesSmooth_HC(F,P,IND_V,cPar_t);  %The smoothened coordinate set
+        for q=1:1:optionStruct.n
+            [Ps]=tesSmooth_HC(F,P,IND_V,optionStruct_t);  %The smoothened coordinate set
             D=Ps-P; %smoothening intended displacement vectors
             [Dt]=patchVectorTangent(F,P,D,[]); %Tangential component of displacement
             P=P+Dt; %Displace mesh
@@ -86,9 +87,6 @@ switch smoothMethod
     otherwise
         error('Invalid smooth method specified');        
 end
-
-
-
  
 %% 
 % _*GIBBON footer text*_ 
