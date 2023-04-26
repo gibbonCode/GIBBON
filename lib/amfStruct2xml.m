@@ -9,6 +9,9 @@ function [varargout]=amfStruct2xml(varargin)
 % Kevin Mattheus Moerman
 % gibbon.toolbox@gmail.com
 %
+% TO DO: 
+% * Avoid looping over entries like nodes
+%
 % 2022/09/21 Created based on febioStruct2xml
 %------------------------------------------------------------------------
 
@@ -16,7 +19,7 @@ function [varargout]=amfStruct2xml(varargin)
 
 defaultOptionStruct.attributeKeyword='ATTR';
 defaultOptionStruct.valueKeyword='VAL';
-defaultOptionStruct.arrayLoopKeywords={''};
+defaultOptionStruct.arrayLoopKeywords={'vertices'};
 
 defaultOptionStruct.fieldOrder={'metadata','object','material'};
 
@@ -65,6 +68,7 @@ domNode = com.mathworks.xml.XMLUtils.createDocument('amf'); %Create the overall 
 % rootNode.appendChild(commentNode);
 
 rootNode=domNode.getElementsByTagName('amf').item(0);
+
 %% Reorder fields
 [parseStruct]=reorderStruct(parseStruct,optionStruct.fieldOrder);
 
@@ -131,7 +135,8 @@ for q_field=1:1:numel(fieldNameSet) %Loop for all field names
             %looping
             logicArray=any(strcmp(currentFieldName,arrayLoopKeywords));
             
-            if logicArray %Check for looping across values
+            if logicArray %Check for looping across values               
+
                 parseStructSub=currentFieldValue; %The current element should be a structure
                 if isfield(parseStructSub,valueKeyword) %if the structure contains a fielname which mathes the value keyword
                     arrayDataSet=parseStructSub.(valueKeyword); %Get the array of data
@@ -232,6 +237,7 @@ end
 
 %%
 
+
 function [domNode,rootNode]=textModeElementAttributeParse(domNode,rootNode,currentFieldName,attributeStruct,arrayDataSet,numArray,fieldNameSetSub,fileName,arrayParseMethod)
 
 switch arrayParseMethod
@@ -270,7 +276,7 @@ switch arrayParseMethod
         
         %Convert to string
         t=sprintf(textFormat,D');
-        
+        t=t(1:end-1); %take away last end of line character \n, would result in empty line in text file
         T_add={t};      
     case 2 %Flexible, handles non-uniform attributes, uses cellfun to "loop"         
         T_add=cell(numArray,1);

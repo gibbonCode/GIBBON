@@ -37,8 +37,6 @@ fileName=fullfile(savePath,'tempModel.amf');
 %%
 % Create AMF structure
 
-tic 
-
 % Define AMF units and version
 amf.ATTR.unit='mm'; %Set units
 amf.ATTR.version='1.1'; %Set AMF version
@@ -68,9 +66,6 @@ end
 % numTextFormat='%6.7e';
 % textFormat=['<vertex> <coordinates> <x>',numTextFormat,'</x> <y>',numTextFormat,'</y> <z>',numTextFormat,'</z> </coordinates> </vertex>','\n'];
 % t=sprintf(textFormat,V')
-% 
-% dfsdf
-
 
 %-> volume -> triangle
 amf.object{1}.mesh.volume{1}.ATTR.materialid=1;
@@ -93,9 +88,6 @@ amf.material{1}.color.b=c(3);
 
 %% Export xml
 amfStruct2xml(amf,fileName);
-
-
-t=toc 
 
 %% zip file
 
