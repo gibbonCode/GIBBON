@@ -150,7 +150,8 @@ Fec2=reshape(Fec(:,2),[size(F,2),size(Fec,1)/size(F,2)])';
 
 switch cPar.latticeSide
     case 1
-        if strcmp(cPar.meshType,'hex')
+        if strcmp(cPar.meshType,'hex')       
+
             switch elementType
                 case 'tet4'
                     ind1=(1:size(E,1));
@@ -354,7 +355,7 @@ switch cPar.latticeSide
         
     case 2
         %%
-        if strcmp(cPar.meshType,'hex')
+        if strcmp(cPar.meshType,'hex')        
             switch elementType
                 case 'tet4'                    
                     switch cPar.hexMethod
@@ -370,15 +371,16 @@ switch cPar.latticeSide
                                 [Fn,Vn]=subHex(Fn,Vn,cPar.hexSplit,3);
                             end
                             Cn=zeros(size(Fn,1),1);
-                        case 2
+                        case 2                  
                             [Fcq,Vcq]=tri2quad(Fc,Vc);
                             [Fccq,Vccq]=tri2quad(Fcc,Vcc);                            
                             [Es,Vs]=tet2hex(Ecc,Vcc);
                             Vn=[Vcq;Vccq;Vs];
                             Es=Es+size(Vcq,1)+size(Vccq,1);
                             El=[Fccq+size(Vcq,1) Fcq];
-                            El=El(:,[1 5 6 2 4 8 7 3]);
+                            El=El(:,[1 5 6 2 4 8 7 3]);                
                             if cPar.hexSplit>0
+
                                 [El,Vl]=patchCleanUnused(El,Vn);
                                 [Es,Vs]=patchCleanUnused(Es,Vn);
                                 [El,Vl]=subHex(El,Vl,cPar.hexSplit,3);
@@ -457,10 +459,15 @@ switch cPar.latticeSide
                         Fcc(ind12,:) Fc(ind12,:);... %12
                         ];
                     
+%                     c=repmat((1:1:12),numel(ind1),1);
+%                     c=c(:);
                     if cPar.hexSplit>0
                         [Fn,Vn]=subHex(Fn,Vn,cPar.hexSplit,2);
+%                         c=repmat(c,size(Fn,1)./numel(c),1);
                     end
+%                     Cn=[c(:); zeros(4*size(E1,1),1)];
                     Cn=[zeros(size(Fn,1),1);ones(4*size(E1,1),1)];                    
+                   
                     Fn=[Fn;E1;E2;E3;E4];
                     
             end
