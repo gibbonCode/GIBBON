@@ -50,7 +50,7 @@ febioLogFileName_stretch=[febioFebFileNamePart,'_stretch_out.txt']; %Log file na
 sampleWidth=10;
 sampleThickness=10; 
 sampleHeight=10;
-pointSpacings=3*ones(1,3);
+pointSpacings=10*ones(1,3);
 initialArea=sampleWidth*sampleThickness;
 
 numElementsWidth=round(sampleWidth/pointSpacings(1));
