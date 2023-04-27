@@ -5,7 +5,7 @@
 clear; close all; clc;
 
 %% Syntax
-% |[Ep,Et,VT,Ct]=diamondLattice(sampleSize,nRepeat,strutThickness,plotOn);|
+% |[Ep,Et,VT]=diamondLattice(sampleSize,nRepeat,strutThickness,latticePhaseType);|
 
 %% Description 
 % This functions creates element/patch data for the diamond lattice 
@@ -29,24 +29,25 @@ nRepeat=3; %Number of repetitions of the lattice pattern
 sampleSize=30;
 nSubPenta=1;
 strutThickness=2; %Set the strut thickness
+latticePhaseType=1;  % 1 = "bubble" centred, 2 = vertex centred, 3 = nested
 
 %% Create diamond lattice
 
-[Ep,Et,VT,Ct]=diamondLattice(sampleSize,nRepeat,strutThickness,0);
+[Ep,Et,VT]=diamondLattice(sampleSize,nRepeat,strutThickness,latticePhaseType);
 [Ep,VT]=subPenta(Ep,VT,nSubPenta,3); %Sub-divide pentahedra
-% strutThicknessCheck=mean(patchEdgeLengths(Fp{1},VT));
 
 %Get element faces for visualization
 Fp=element2patch(Ep,[],'penta6');
 Ft=element2patch(Et,[],'tet4');
+% strutThicknessCheck=mean(patchEdgeLengths(Fp{1},VT))
 
 %% 
 % Visualization
 
 cFigure; 
 subplot(1,2,1); hold on; 
-gpatch(Fp,VT,'bw','none',1);
-gpatch(Ft,VT,'bw','none',1);
+gpatch(Fp,VT,'bw','k',1);
+gpatch(Ft,VT,'bw','k',1);
 axisGeom; camlight headlight; 
 
 subplot(1,2,2); hold on; 
@@ -59,21 +60,14 @@ drawnow;
 
 %% Build refined and smooth triangulated surface mesh
 
-Fpt=[Fp{2}(:,[1 2 3]);Fp{2}(:,[3 4 1])];
+Fpt=[Fp{1}; Fp{2}(:,[1 2 3]);Fp{2}(:,[3 4 1])];
 FT=[Fpt;Ft];
 [FT,VT]=patchCleanUnused(FT,VT);
-indB=tesBoundary(FT);
 
-[FT,VT]=patchCleanUnused(FT(indB,:),VT);
+FTs=sort(FT,2);
+[A_uni,ind1,ind2,Ac]=cunique(FTs,'rows');
 
-[C]=patchConnectivity(FT,VT,{'ev','ef','fe'});
-conEdgeFace=C.edge.face;
-logicInvalid=sum(conEdgeFace>0,2)>2;
-E=C.edge.vertex; 
-
-logicKeep=~all(ismember(C.face.edge,find(logicInvalid)),2);
-
-[FT,VT]=patchCleanUnused(FT(logicKeep,:),VT);
+[FT,VT]=patchCleanUnused(FT(Ac==1,:),VT);
 
 CT=zeros(size(FT,1),1);
 for q=1:1:3
@@ -83,6 +77,16 @@ for q=1:1:3
     CT(all(XF <(min(X(:))+eps(min(X(:)))),2))=max(CT(:))+1;
 end
 
+% %%
+% % Visualization
+% 
+% cFigure; hold on; 
+% gpatch(FT,VT,CT,'k',1);
+% axisGeom; camlight headlight; 
+% colormap gjet; icolorbar;
+% drawnow;
+
+%% 
 % Refine using Loop-subdivision
 n=2;
 logicConstrain=(CT>0); %Logic for faces to subdivide linearly
@@ -100,8 +104,16 @@ faceBoundaryMarker_sub2=CT(indNotConstrain(Cs2)); %Get boundary markers for refi
 [Fs,Vs]=patchCleanUnused(Fs,Vs); 
 [Fs,Vs]=mergeVertices(Fs,Vs);
 
+%Fix boundary faces
+dir=[1 1 2 2 3 3];
+for q=1:1:6
+    ind=unique(FT(CT==q,:));
+    ind_s=unique(Fs(Cs==q,:));
+    Vs(ind_s,dir(q))=mean(VT(ind,dir(q)));
+end
+
 %%
-% Visualisation
+% Visualization
 
 cFigure; hold on; 
 gpatch(Fs,Vs,Cs,'k',1);

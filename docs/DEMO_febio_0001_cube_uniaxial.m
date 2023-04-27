@@ -56,9 +56,9 @@ sampleWidth=cubeSize; %Width
 sampleThickness=cubeSize; %Thickness 
 sampleHeight=cubeSize; %Height
 pointSpacings=2*ones(1,3); %Desired point spacing between nodes
-numElementsWidth=round(sampleWidth/pointSpacings(1)); %Number of elemens in dir 1
-numElementsThickness=round(sampleThickness/pointSpacings(2)); %Number of elemens in dir 2
-numElementsHeight=round(sampleHeight/pointSpacings(3)); %Number of elemens in dir 3
+numElementsWidth=round(sampleWidth/pointSpacings(1)); %Number of elements in dir 1
+numElementsThickness=round(sampleThickness/pointSpacings(2)); %Number of elements in dir 2
+numElementsHeight=round(sampleHeight/pointSpacings(3)); %Number of elements in dir 3
 
 %Define applied displacement 
 appliedStrain=0.3; %Linear strain (Only used to compute applied stretch)

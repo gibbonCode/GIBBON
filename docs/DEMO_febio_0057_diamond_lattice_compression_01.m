@@ -52,11 +52,12 @@ febioLogFileName_force=[febioFebFileNamePart,'_force_out.txt']; %Log file name f
 febioLogFileName_stress=[febioFebFileNamePart,'_stress_out.txt']; %Log file name for exporting stress
 febioLogFileName_stiffness=[febioFebFileNamePart,'_stiffness_out.txt']; %Log file name for exporting stiffness
 
-%Latticeparameters
-nRepeat=2; %Number of repetitions of the lattice pattern
-sampleSize=10;
-nSubPenta=2;
-strutThickness=0.5; %Set the strut thickness
+%Geometry parameters
+sampleSize=10; 
+nRepeat=3;
+strutThickness=0.3; %Set the strut thickness
+nSubPenta=2; %Number of subdivisions of the pentahedra in length direction
+latticePhaseType=1;  % 1 = "bubble" centred, 2 = vertex centred, 3 = nested
 
 %Define applied displacement
 appliedStrain=0.3; %Linear strain (Only used to compute applied stretch)
@@ -75,25 +76,26 @@ nu1=0.4; %Material Poisson's ratio
 
 % FEA control settings
 numTimeSteps=10; %Number of time steps desired
-max_refs=50; %Max reforms
+max_refs=25; %Max reforms
 max_ups=0; %Set to zero to use full-Newton iterations
-opt_iter=10; %Optimum number of iterations
+opt_iter=6; %Optimum number of iterations
 max_retries=5; %Maximum number of retires
 dtmin=(1/numTimeSteps)/100; %Minimum time step size
-dtmax=(1/numTimeSteps); %Maximum time step size
-min_residual=1e-20;
-symmetric_stiffness=0;
-runMode='external'; %'internal' or 'external'
+dtmax=1/numTimeSteps; %Maximum time step size
+
+runMode='external';% 'internal' or 'external'
 
 %% Create diamond lattice
 
-[Ep,Et,V,Ct]=diamondLattice(sampleSize,nRepeat,strutThickness,0);
+[Ep,Et,V]=diamondLattice(sampleSize,nRepeat,strutThickness,latticePhaseType);
 [Ep,V]=subPenta(Ep,V,nSubPenta,3); %Sub-divide pentahedra
-% strutThicknessCheck=mean(patchEdgeLengths(Fp{1},VT));
 
-%Get element faces for visualization
-Fp=element2patch(Ep,[],'penta6');
-Ft=element2patch(Et,[],'tet4');
+%%
+% Visualization of lattice meshes
+
+% Convert tetrahedra and pentahedra to faces
+[Ft]=element2patch(Et,[],'tet4');
+[Fp]=element2patch(Ep,[],'penta6');
 
 %%
 
@@ -141,7 +143,7 @@ porosity_lattice=vol_lattice./sampleSize.^3; %Porosity
 [febio_spec]=febioStructTemplate;
 
 %febio_spec version 
-febio_spec.ATTR.version='3.0'; 
+febio_spec.ATTR.version='4.0'; 
 
 %Module section
 febio_spec.Module.ATTR.type='solid'; 
@@ -151,7 +153,7 @@ febio_spec.Control.analysis='STATIC';
 febio_spec.Control.time_steps=numTimeSteps;
 febio_spec.Control.step_size=1/numTimeSteps;
 febio_spec.Control.solver.max_refs=max_refs;
-febio_spec.Control.solver.max_ups=max_ups;
+febio_spec.Control.solver.qn_method.max_ups=max_ups;
 febio_spec.Control.time_stepper.dtmin=dtmin;
 febio_spec.Control.time_stepper.dtmax=dtmax; 
 febio_spec.Control.time_stepper.max_retries=max_retries;
@@ -187,11 +189,11 @@ febio_spec.Mesh.Elements{2}.elem.VAL=Et; %The element matrix
 % -> NodeSets
 nodeSetName1='bcSupportList';
 febio_spec.Mesh.NodeSet{1}.ATTR.name=nodeSetName1;
-febio_spec.Mesh.NodeSet{1}.node.ATTR.id=bcSupportList(:);
+febio_spec.Mesh.NodeSet{1}.VAL=mrow(bcSupportList);
 
 nodeSetName2='bcPrescribeList';
 febio_spec.Mesh.NodeSet{2}.ATTR.name=nodeSetName2;
-febio_spec.Mesh.NodeSet{2}.node.ATTR.id=bcPrescribeList(:);
+febio_spec.Mesh.NodeSet{2}.VAL=mrow(bcPrescribeList);
 
 %MeshDomains section
 febio_spec.MeshDomains.SolidDomain{1}.ATTR.name=partName1;
@@ -202,27 +204,36 @@ febio_spec.MeshDomains.SolidDomain{2}.ATTR.mat=materialName1;
 
 %Boundary condition section 
 % -> Fix boundary conditions
-febio_spec.Boundary.bc{1}.ATTR.type='fix';
+febio_spec.Boundary.bc{1}.ATTR.name='zero_displacement_xyz';
+febio_spec.Boundary.bc{1}.ATTR.type='zero displacement';
 febio_spec.Boundary.bc{1}.ATTR.node_set=nodeSetName1;
-febio_spec.Boundary.bc{1}.dofs='x,y,z';
+febio_spec.Boundary.bc{1}.x_dof=1;
+febio_spec.Boundary.bc{1}.y_dof=1;
+febio_spec.Boundary.bc{1}.z_dof=1;
 
-febio_spec.Boundary.bc{2}.ATTR.type='fix';
+febio_spec.Boundary.bc{2}.ATTR.name='zero_displacement_xy';
+febio_spec.Boundary.bc{2}.ATTR.type='zero displacement';
 febio_spec.Boundary.bc{2}.ATTR.node_set=nodeSetName2;
-febio_spec.Boundary.bc{2}.dofs='x,y';
+febio_spec.Boundary.bc{2}.x_dof=1;
+febio_spec.Boundary.bc{2}.y_dof=1;
+febio_spec.Boundary.bc{2}.z_dof=0;
 
-febio_spec.Boundary.bc{3}.ATTR.type='prescribe';
+febio_spec.Boundary.bc{3}.ATTR.name='prescibed_displacement_z';
+febio_spec.Boundary.bc{3}.ATTR.type='prescribed displacement';
 febio_spec.Boundary.bc{3}.ATTR.node_set=nodeSetName2;
 febio_spec.Boundary.bc{3}.dof='z';
-febio_spec.Boundary.bc{3}.scale.ATTR.lc=1;
-febio_spec.Boundary.bc{3}.scale.VAL=displacementMagnitude;
+febio_spec.Boundary.bc{3}.value.ATTR.lc=1;
+febio_spec.Boundary.bc{3}.value.VAL=displacementMagnitude;
 febio_spec.Boundary.bc{3}.relative=0;
 
 %LoadData section
 % -> load_controller
+febio_spec.LoadData.load_controller{1}.ATTR.name='LC_1';
 febio_spec.LoadData.load_controller{1}.ATTR.id=1;
 febio_spec.LoadData.load_controller{1}.ATTR.type='loadcurve';
 febio_spec.LoadData.load_controller{1}.interpolate='LINEAR';
-febio_spec.LoadData.load_controller{1}.points.point.VAL=[0 0; 1 1];
+%febio_spec.LoadData.load_controller{1}.extend='CONSTANT';
+febio_spec.LoadData.load_controller{1}.points.pt.VAL=[0 0; 1 1];
 
 %Output section
 % -> log file
@@ -230,12 +241,13 @@ febio_spec.Output.logfile.ATTR.file=febioLogFileName;
 febio_spec.Output.logfile.node_data{1}.ATTR.file=febioLogFileName_disp;
 febio_spec.Output.logfile.node_data{1}.ATTR.data='ux;uy;uz';
 febio_spec.Output.logfile.node_data{1}.ATTR.delim=',';
-febio_spec.Output.logfile.node_data{1}.VAL=1:size(V,1);
 
 febio_spec.Output.logfile.node_data{2}.ATTR.file=febioLogFileName_force;
 febio_spec.Output.logfile.node_data{2}.ATTR.data='Rx;Ry;Rz';
 febio_spec.Output.logfile.node_data{2}.ATTR.delim=',';
-febio_spec.Output.logfile.node_data{2}.VAL=1:size(V,1);
+
+% Plotfile section
+febio_spec.Output.plotfile.compression=0;
 
 %% Quick viewing of the FEBio input file structure
 % The |febView| function can be used to view the xml structure in a MATLAB
@@ -255,15 +267,12 @@ febioStruct2xml(febio_spec,febioFebFileName); %Exporting to file and domNode
 % |runMonitorFEBio| function is used. The input for this function is a
 % structure defining job settings e.g. the FEBio input file name. The
 % optional output runFlag informs the user if the analysis was run
-% succesfully.
+% succesfully. 
 
 febioAnalysis.run_filename=febioFebFileName; %The input file name
 febioAnalysis.run_logname=febioLogFileName; %The name for the log file
 febioAnalysis.disp_on=1; %Display information on the command window
-febioAnalysis.disp_log_on=1; %Display convergence information in the command window
-febioAnalysis.runMode=runMode; %Run in external or in matlab terminal
-febioAnalysis.t_check=0.25; %Time for checking log file (dont set too small)
-febioAnalysis.maxtpi=1e99; %Max analysis time
+febioAnalysis.runMode=runMode;
 febioAnalysis.maxLogCheckTime=10; %Max log file checking time
 
 [runFlag]=runMonitorFEBio(febioAnalysis);%START FEBio NOW!!!!!!!!
@@ -275,7 +284,7 @@ if runFlag==1 %i.e. a succesful run
     %% 
     
     % Importing nodal displacements from a log file
-    dataStruct=importFEBio_logfile(fullfile(savePath,febioLogFileName_disp),1,1);
+    dataStruct=importFEBio_logfile(fullfile(savePath,febioLogFileName_disp),0,1);
     
     %Access data
     N_disp_mat=dataStruct.data; %Displacement
@@ -286,7 +295,7 @@ if runFlag==1 %i.e. a succesful run
         
     %%    
     % Importing nodal forces from a log file
-    dataStructForce=importFEBio_logfile(fullfile(savePath,febioLogFileName_force),1,1);     
+    dataStructForce=importFEBio_logfile(fullfile(savePath,febioLogFileName_force),0,1);     
     F_applied=squeeze(sum(dataStructForce.data(bcPrescribeList,:,:),1))';
         
     f_sum_x=F_applied(:,1); 
@@ -305,20 +314,6 @@ if runFlag==1 %i.e. a succesful run
     grid on; box on; axis square; axis tight; 
     set(gca,'FontSize',fontSize);
     drawnow; 
-
-    %%
-    % Visualize force data
-    
-    displacementApplied=timeVec.*displacementMagnitude;    
-    
-    cFigure; hold on; 
-    xlabel('$u$ [mm]','Interpreter','Latex');
-    ylabel('$F_z$ [N]','Interpreter','Latex');
-    hp=plot(displacementApplied(:),f_sum_z(:),'b-','LineWidth',3);
-    grid on; box on; axis square; axis tight; 
-    set(gca,'FontSize',fontSize);
-    drawnow; 
-         
         
     %%
     % Plotting the simulated results using |anim8| to visualize and animate

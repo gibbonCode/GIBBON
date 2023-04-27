@@ -1,6 +1,6 @@
 function [varargout]=subTriLoop(varargin)
 
-% function [Fs,Vs,Cs,CV]=subTriLoop(F,V,n,fixBoundaryOpt)
+% function [Fs,Vs,Cs,CV]=subTriLoop(F,V,n,fixBoundaryOpt,logicFixedFaces)
 % ------------------------------------------------------------------------
 %
 %
