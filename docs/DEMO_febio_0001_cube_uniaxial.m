@@ -338,8 +338,7 @@ febioAnalysis.maxLogCheckTime=10; %Max log file checking time
 
 if runFlag==1 %i.e. a succesful run
     
-    %% 
-    
+    %%     
     % Importing nodal displacements from a log file
     dataStruct=importFEBio_logfile(fullfile(savePath,febioLogFileName_disp),0,1);
     

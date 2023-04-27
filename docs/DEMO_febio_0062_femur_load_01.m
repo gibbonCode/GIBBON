@@ -6,7 +6,7 @@
 
 %% Keywords
 %
-% * febio_spec version 3.0
+% * febio_spec version 4.0
 % * febio, FEBio
 % * beam force loading
 % * force control boundary condition
@@ -274,7 +274,7 @@ Vr=V*Q';
 Vr=Vr+p;
 logicHeadNodes=Vr(:,3)<0;
 logicHeadFaces=all(logicHeadNodes(Fb),2);
-bcPrescribeList=unique(Fb(logicHeadFaces,:));
+bcPrescribeList_head=unique(Fb(logicHeadFaces,:));
 
 %%
 % Visualize femoral head nodes for prescribed force boundary conditions
@@ -282,7 +282,7 @@ cFigure;
 hold on;
 gpatch(Fb,V,'w','k',1);
 gpatch(f,v,'r','k',0.5);
-plotV(V(bcPrescribeList,:),'r.','markerSize',15)
+plotV(V(bcPrescribeList_head,:),'r.','markerSize',15)
 axisGeom; camlight headlight;
 drawnow;
 
@@ -296,16 +296,16 @@ FX=[forceTotal(1) 0 0]; %X force vector
 FY=[0 forceTotal(2) 0]; %Y force vector
 FZ=[0 0 forceTotal(3)]; %Z force vector
 
-wx=dot(N(bcPrescribeList,:),FX(ones(numel(bcPrescribeList),1),:),2);
-wy=dot(N(bcPrescribeList,:),FY(ones(numel(bcPrescribeList),1),:),2);
-wz=dot(N(bcPrescribeList,:),FZ(ones(numel(bcPrescribeList),1),:),2);
+wx=dot(N(bcPrescribeList_head,:),FX(ones(numel(bcPrescribeList_head),1),:),2);
+wy=dot(N(bcPrescribeList_head,:),FY(ones(numel(bcPrescribeList_head),1),:),2);
+wz=dot(N(bcPrescribeList_head,:),FZ(ones(numel(bcPrescribeList_head),1),:),2);
 
 %Force zero
 wx(wx>0)=0; wy(wy>0)=0; wz(wz>0)=0;
 
-force_X=forceTotal(1).*ones(numel(bcPrescribeList),1).*wx;
-force_Y=forceTotal(2).*ones(numel(bcPrescribeList),1).*wy;
-force_Z=forceTotal(3).*ones(numel(bcPrescribeList),1).*wz;
+force_X=forceTotal(1).*ones(numel(bcPrescribeList_head),1).*wx;
+force_Y=forceTotal(2).*ones(numel(bcPrescribeList_head),1).*wy;
+force_Z=forceTotal(3).*ones(numel(bcPrescribeList_head),1).*wz;
 
 force_X=force_X./sum(force_X(:)); %sum now equal to 1
 force_X=force_X.*forceTotal(1); %sum now equal to desired
@@ -316,7 +316,7 @@ force_Y=force_Y.*forceTotal(2); %sum now equal to desired
 force_Z=force_Z./sum(force_Z(:)); %sum now equal to 1
 force_Z=force_Z.*forceTotal(3); %sum now equal to desired
 
-force_ball=[force_X(:) force_Y(:) force_Z(:)];
+force_head=[force_X(:) force_Y(:) force_Z(:)];
 
 %%
 cFigure; 
@@ -325,7 +325,7 @@ title('F_x');
 gpatch(Fb,V,'w','none',0.5);
 quiverVec([0 0 0],FX,100,'k');
 % scatterV(V(indicesHeadNodes,:),15)
-quiverVec(V(bcPrescribeList,:),N(bcPrescribeList,:),10,force_X);
+quiverVec(V(bcPrescribeList_head,:),N(bcPrescribeList_head,:),10,force_X);
 axisGeom; camlight headlight;
 colormap(gca,gjet(250)); colorbar; 
 
@@ -334,7 +334,7 @@ title('F_y');
 gpatch(Fb,V,'w','none',0.5);
 quiverVec([0 0 0],FY,100,'k');
 % scatterV(V(indicesHeadNodes,:),15)
-quiverVec(V(bcPrescribeList,:),N(bcPrescribeList,:),10,force_Y);
+quiverVec(V(bcPrescribeList_head,:),N(bcPrescribeList_head,:),10,force_Y);
 axisGeom; camlight headlight;
 colormap(gca,gjet(250)); colorbar; 
 
@@ -343,7 +343,7 @@ title('F_z');
 gpatch(Fb,V,'w','none',0.5);
 quiverVec([0 0 0],FZ,100,'k');
 % scatterV(V(indicesHeadNodes,:),15)
-quiverVec(V(bcPrescribeList,:),N(bcPrescribeList,:),10,force_Z);
+quiverVec(V(bcPrescribeList_head,:),N(bcPrescribeList_head,:),10,force_Z);
 axisGeom; camlight headlight;
 colormap(gca,gjet(250)); colorbar; 
 
@@ -374,6 +374,46 @@ forceVastusLateralis_distributed=forceVastusLateralis.*ones(numel(bcPrescibeList
 
 forceVastusMedialis_distributed=forceVastusMedialis.*ones(numel(bcPrescibeList_VastusMedialis),1)./numel(bcPrescibeList_VastusMedialis);
 
+%% Defining prescribed forces
+
+
+bcPrescribeList=[bcPrescribeList_head(:);...
+                 bcPrescibeList_abductor(:);...
+                 bcPrescibeList_VastusLateralis(:);...
+                 bcPrescibeList_VastusMedialis(:)];
+
+forceData=[force_head;...
+           forceAbductor_distributed;...
+           forceVastusLateralis_distributed;...
+           forceVastusMedialis_distributed]; 
+
+%%
+
+cFigure; 
+subplot(1,3,1);hold on;
+title('F_x');
+gpatch(Fb,V,'w','none',0.5);
+quiverVec(V(bcPrescribeList,:),forceData,10,forceData(:,1));
+axisGeom; camlight headlight;
+colormap(gca,gjet(250)); colorbar; 
+
+subplot(1,3,2);hold on;
+title('F_y');
+gpatch(Fb,V,'w','none',0.5);
+quiverVec(V(bcPrescribeList,:),forceData,10,forceData(:,2));
+axisGeom; camlight headlight;
+colormap(gca,gjet(250)); colorbar; 
+
+subplot(1,3,3);hold on;
+title('F_z');
+gpatch(Fb,V,'w','none',0.5);
+
+quiverVec(V(bcPrescribeList,:),forceData,10,forceData(:,3));
+axisGeom; camlight headlight;
+colormap(gca,gjet(250)); colorbar; 
+
+drawnow;
+
 %% Visualizing boundary conditions
 
 F_bottomSupport=Fb(Cb==2,:);
@@ -383,10 +423,8 @@ cFigure; hold on;
 gpatch(Fb,V,'kw','none',0.7);
 hl(1)=plotV(V(bcSupportList,:),'k.','MarkerSize',25);
 hl(2)=plotV(V(bcPrescribeList,:),'r.','MarkerSize',25);
-hl(3)=plotV(V(bcPrescibeList_abductor,:),'g.','MarkerSize',25);
-hl(4)=plotV(V(bcPrescibeList_VastusLateralis,:),'b.','MarkerSize',25);
-hl(5)=plotV(V(bcPrescibeList_VastusMedialis,:),'g.','MarkerSize',25);
-legend(hl,{'BC support','BC force prescribe','MAP abductor','MAP Vastus Lateralis','MAP Vastus Medialis'});
+
+legend(hl,{'BC support','BC prescribed forces'});
 axisGeom; 
 camlight headlight;
 drawnow;
@@ -399,7 +437,7 @@ drawnow;
 [febio_spec]=febioStructTemplate;
 
 %febio_spec version 
-febio_spec.ATTR.version='3.0'; 
+febio_spec.ATTR.version='4.0'; 
 
 %Module section
 febio_spec.Module.ATTR.type='solid'; 
@@ -409,7 +447,7 @@ febio_spec.Control.analysis='STATIC';
 febio_spec.Control.time_steps=numTimeSteps;
 febio_spec.Control.step_size=1/numTimeSteps;
 febio_spec.Control.solver.max_refs=max_refs;
-febio_spec.Control.solver.max_ups=max_ups;
+febio_spec.Control.solver.qn_method.max_ups=max_ups;
 febio_spec.Control.time_stepper.dtmin=dtmin;
 febio_spec.Control.time_stepper.dtmax=dtmax; 
 febio_spec.Control.time_stepper.max_retries=max_retries;
@@ -458,19 +496,10 @@ nodeSetName4='indicesVastusLateralis';
 nodeSetName5='indicesVastusMedialis';
 
 febio_spec.Mesh.NodeSet{1}.ATTR.name=nodeSetName1;
-febio_spec.Mesh.NodeSet{1}.node.ATTR.id=bcSupportList(:);
+febio_spec.Mesh.NodeSet{1}.VAL=mrow(bcSupportList);
 
 febio_spec.Mesh.NodeSet{2}.ATTR.name=nodeSetName2;
-febio_spec.Mesh.NodeSet{2}.node.ATTR.id=bcPrescribeList(:);
-
-febio_spec.Mesh.NodeSet{3}.ATTR.name=nodeSetName3;
-febio_spec.Mesh.NodeSet{3}.node.ATTR.id=bcPrescibeList_abductor(:);
- 
-febio_spec.Mesh.NodeSet{4}.ATTR.name=nodeSetName4;
-febio_spec.Mesh.NodeSet{4}.node.ATTR.id=bcPrescibeList_VastusLateralis(:);
-
-febio_spec.Mesh.NodeSet{5}.ATTR.name=nodeSetName5;
-febio_spec.Mesh.NodeSet{5}.node.ATTR.id=bcPrescibeList_VastusMedialis(:);
+febio_spec.Mesh.NodeSet{2}.VAL=mrow(bcPrescribeList);
 
 %MeshDomains section
 febio_spec.MeshDomains.SolidDomain{1}.ATTR.name=partName1;
@@ -481,77 +510,48 @@ febio_spec.MeshDomains.SolidDomain{2}.ATTR.mat=materialName2;
 
 %Boundary condition section 
 % -> Fix boundary conditions
-febio_spec.Boundary.bc{1}.ATTR.type='fix';
+febio_spec.Boundary.bc{1}.ATTR.name='zero_displacement_xyz';
+febio_spec.Boundary.bc{1}.ATTR.type='zero displacement';
 febio_spec.Boundary.bc{1}.ATTR.node_set=nodeSetName1;
-febio_spec.Boundary.bc{1}.dofs='x,y,z';
-
+febio_spec.Boundary.bc{1}.x_dof=1;
+febio_spec.Boundary.bc{1}.y_dof=1;
+febio_spec.Boundary.bc{1}.z_dof=1;
 
 %MeshData secion
 %-> Node data
-loadDataName1='force_ball';
+loadDataName1='nodal_forces';
+febio_spec.MeshData.NodeData{1}.ATTR.name=loadDataName1;
+febio_spec.MeshData.NodeData{1}.ATTR.node_set=nodeSetName2;
+febio_spec.MeshData.NodeData{1}.ATTR.data_type='vec3';
+febio_spec.MeshData.NodeData{1}.node.ATTR.lid=(1:1:numel(bcPrescribeList))';
+febio_spec.MeshData.NodeData{1}.node.VAL=forceData;
+
+%MeshData secion
+%-> Node data
+loadDataName1='forceData';
 febio_spec.MeshData.NodeData{1}.ATTR.name=loadDataName1;
 febio_spec.MeshData.NodeData{1}.ATTR.node_set=nodeSetName2;
 febio_spec.MeshData.NodeData{1}.ATTR.datatype='vec3';
 febio_spec.MeshData.NodeData{1}.node.ATTR.lid=(1:1:numel(bcPrescribeList))';
-febio_spec.MeshData.NodeData{1}.node.VAL=force_ball;
-
-loadDataName2='force_abductor';
-febio_spec.MeshData.NodeData{2}.ATTR.name=loadDataName2;
-febio_spec.MeshData.NodeData{2}.ATTR.node_set=nodeSetName3;
-febio_spec.MeshData.NodeData{2}.ATTR.datatype='vec3';
-febio_spec.MeshData.NodeData{2}.node.ATTR.lid=(1:1:numel(bcPrescibeList_abductor))';
-febio_spec.MeshData.NodeData{2}.node.VAL=forceAbductor_distributed;
-
-loadDataName3='force_VL';
-febio_spec.MeshData.NodeData{3}.ATTR.name=loadDataName3;
-febio_spec.MeshData.NodeData{3}.ATTR.node_set=nodeSetName4;
-febio_spec.MeshData.NodeData{3}.ATTR.datatype='vec3';
-febio_spec.MeshData.NodeData{3}.node.ATTR.lid=(1:1:numel(bcPrescibeList_VastusLateralis))';
-febio_spec.MeshData.NodeData{3}.node.VAL=forceVastusLateralis_distributed;
-
-loadDataName4='force_VM';
-febio_spec.MeshData.NodeData{4}.ATTR.name=loadDataName4;
-febio_spec.MeshData.NodeData{4}.ATTR.node_set=nodeSetName5;
-febio_spec.MeshData.NodeData{4}.ATTR.datatype='vec3';
-febio_spec.MeshData.NodeData{4}.node.ATTR.lid=(1:1:numel(bcPrescibeList_VastusMedialis))';
-febio_spec.MeshData.NodeData{4}.node.VAL=forceVastusMedialis_distributed;
+febio_spec.MeshData.NodeData{1}.node.VAL=forceData;
 
 %Loads section
 % -> Prescribed nodal forces
-febio_spec.Loads.nodal_load{1}.ATTR.name='PrescribedForce1';
+febio_spec.Loads.nodal_load{1}.ATTR.name='PrescribedForce';
 febio_spec.Loads.nodal_load{1}.ATTR.type='nodal_force';
 febio_spec.Loads.nodal_load{1}.ATTR.node_set=nodeSetName2;
 febio_spec.Loads.nodal_load{1}.value.ATTR.lc=1;
 febio_spec.Loads.nodal_load{1}.value.ATTR.type='map';
 febio_spec.Loads.nodal_load{1}.value.VAL=loadDataName1;
 
-febio_spec.Loads.nodal_load{2}.ATTR.name='PrescribedForce2';
-febio_spec.Loads.nodal_load{2}.ATTR.type='nodal_force';
-febio_spec.Loads.nodal_load{2}.ATTR.node_set=nodeSetName3;
-febio_spec.Loads.nodal_load{2}.value.ATTR.lc=1;
-febio_spec.Loads.nodal_load{2}.value.ATTR.type='map';
-febio_spec.Loads.nodal_load{2}.value.VAL=loadDataName2;
-
-febio_spec.Loads.nodal_load{3}.ATTR.name='PrescribedForce3';
-febio_spec.Loads.nodal_load{3}.ATTR.type='nodal_force';
-febio_spec.Loads.nodal_load{3}.ATTR.node_set=nodeSetName4;
-febio_spec.Loads.nodal_load{3}.value.ATTR.lc=1;
-febio_spec.Loads.nodal_load{3}.value.ATTR.type='map';
-febio_spec.Loads.nodal_load{3}.value.VAL=loadDataName3;
-
-febio_spec.Loads.nodal_load{4}.ATTR.name='PrescribedForce4';
-febio_spec.Loads.nodal_load{4}.ATTR.type='nodal_force';
-febio_spec.Loads.nodal_load{4}.ATTR.node_set=nodeSetName5;
-febio_spec.Loads.nodal_load{4}.value.ATTR.lc=1;
-febio_spec.Loads.nodal_load{4}.value.ATTR.type='map';
-febio_spec.Loads.nodal_load{4}.value.VAL=loadDataName2;
-
 %LoadData section
 % -> load_controller
+febio_spec.LoadData.load_controller{1}.ATTR.name='LC_1';
 febio_spec.LoadData.load_controller{1}.ATTR.id=1;
 febio_spec.LoadData.load_controller{1}.ATTR.type='loadcurve';
 febio_spec.LoadData.load_controller{1}.interpolate='LINEAR';
-febio_spec.LoadData.load_controller{1}.points.point.VAL=[0 0; 1 1];
+%febio_spec.LoadData.load_controller{1}.extend='CONSTANT';
+febio_spec.LoadData.load_controller{1}.points.pt.VAL=[0 0; 1 1];
 
 %Output section 
 % -> log file
@@ -591,7 +591,7 @@ febioStruct2xml(febio_spec,febioFebFileName); %Exporting to file and domNode
 febioAnalysis.run_filename=febioFebFileName; %The input file name
 febioAnalysis.run_logname=febioLogFileName; %The name for the log file
 febioAnalysis.disp_on=1; %Display information on the command window
-febioAnalysis.runMode=runMode;%'internal';
+febioAnalysis.runMode=runMode;
 
 [runFlag]=runMonitorFEBio(febioAnalysis);%START FEBio NOW!!!!!!!!
 
@@ -599,39 +599,23 @@ febioAnalysis.runMode=runMode;%'internal';
 
 if runFlag==1 %i.e. a succesful run
     
-    % Importing nodal displacement from a log file
-    [time_mat, N_disp_mat,~]=importFEBio_logfile(fullfile(savePath,febioLogFileName_disp)); %Nodal displacement    
-    time_mat=[0; time_mat(:)]; %Time
-
-    N_disp_mat=N_disp_mat(:,2:end,:);
-    sizImport=size(N_disp_mat);
-    sizImport(3)=sizImport(3)+1;
-    N_disp_mat_n=zeros(sizImport);
-    N_disp_mat_n(:,:,2:end)=N_disp_mat;
-    N_disp_mat=N_disp_mat_n;
-    DN=N_disp_mat(:,:,end);
-    DN_magnitude=sqrt(sum(DN(:,3).^2,2));
-    V_DEF=N_disp_mat+repmat(V,[1 1 size(N_disp_mat,3)]);    
+    %%     
+    % Importing nodal displacements from a log file
+    dataStruct=importFEBio_logfile(fullfile(savePath,febioLogFileName_disp),0,1);
+    
+    %Access data
+    N_disp_mat=dataStruct.data; %Displacement
+    timeVec=dataStruct.time; %Time
+    
+    %Create deformed coordinate set
+    V_DEF=N_disp_mat+repmat(V,[1 1 size(N_disp_mat,3)]);
 
     %%
     % Importing element strain energies from a log file
-    [~,E_energy,~]=importFEBio_logfile(fullfile(savePath,febioLogFileName_strainEnergy)); %Element strain energy
-    
-    %Remove nodal index column
-    E_energy=E_energy(:,2:end,:);
-    
-    %Add initial state i.e. zero energy
-    sizImport=size(E_energy);
-    sizImport(3)=sizImport(3)+1;
-    E_energy_mat_n=zeros(sizImport);
-    E_energy_mat_n(:,:,2:end)=E_energy;
-    E_energy=E_energy_mat_n;
-   
-    %%
-    [FE_face,C_energy_face]=element2patch(E,E_energy(:,:,end),'tet4');
-    [CV]=faceToVertexMeasure(FE_face,V,C_energy_face);
-    [indBoundary]=tesBoundary(FE_face);
-    Fb=FE_face(indBoundary,:);
+    dataStruct=importFEBio_logfile(fullfile(savePath,febioLogFileName_strainEnergy),0,1); %Element strain energy
+        
+    %Access data
+    E_energy=dataStruct.data;
 
     %% Saving strain energy data for comparison in implant demo
     
@@ -699,9 +683,9 @@ if runFlag==1 %i.e. a succesful run
     %% 
     % Plotting the simulated results using |anim8| to visualize and animate
     % deformations 
-    
-    axLim=[min(min(V_DEF,[],3),[],1); max(max(V_DEF,[],3),[],1)];
-    
+            
+    [CV]=faceToVertexMeasure(E,V,E_energy(:,:,end));
+
     % Create basic view and store graphics handle to initiate animation
     hf=cFigure; %Open figure  
     title('Strain energy density')
@@ -712,16 +696,14 @@ if runFlag==1 %i.e. a succesful run
     axisGeom(gca,fontSize); 
     colormap(gjet(250)); colorbar;
     clim([0 max(E_energy(:))/25]);    
-    axis(axLim(:)'); %Set axis limits statically    
+    axis(axisLim(V_DEF)); %Set axis limits statically
     camlight headlight;        
     
     % Set up animation features
-    animStruct.Time=time_mat; %The time vector    
+    animStruct.Time=timeVec; %The time vector    
     for qt=1:1:size(N_disp_mat,3) %Loop over time increments        
-        DN=N_disp_mat(:,:,qt); %Current displacancellousBone
-
-        [FE_face,C_energy_face]=element2patch(E,E_energy(:,:,qt),'tet4');
-        [CV]=faceToVertexMeasure(FE_face,V,C_energy_face);
+        
+        [CV]=faceToVertexMeasure(E,V,E_energy(:,:,qt));
         
         %Set entries in animation structure
         animStruct.Handles{qt}=[hp1 hp1]; %Handles of objects to animate

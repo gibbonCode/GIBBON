@@ -9,7 +9,7 @@
 
 %% Keywords
 %
-% * febio_spec version 3.0
+% * febio_spec version 4.0
 % * febio, FEBio
 % * spine, vertebra, disc
 % * contact, sliding, friction
@@ -73,6 +73,7 @@ dtmin=(1/numTimeSteps)/100; %Minimum time step size
 dtmax=1/numTimeSteps; %Maximum time step size
 symmetric_stiffness=0;
 min_residual=1e-20;
+
 runMode='external';
 
 %Boundary condition parameters
@@ -412,7 +413,7 @@ gdrawnow;
 [febio_spec]=febioStructTemplate;
 
 %febio_spec version 
-febio_spec.ATTR.version='3.0'; 
+febio_spec.ATTR.version='4.0'; 
 
 %Module section
 febio_spec.Module.ATTR.type='solid'; 
@@ -422,7 +423,7 @@ febio_spec.Control.analysis='STATIC';
 febio_spec.Control.time_steps=numTimeSteps;
 febio_spec.Control.step_size=1/numTimeSteps;
 febio_spec.Control.solver.max_refs=max_refs;
-febio_spec.Control.solver.max_ups=max_ups;
+febio_spec.Control.solver.qn_method.max_ups=max_ups;
 febio_spec.Control.time_stepper.dtmin=dtmin;
 febio_spec.Control.time_stepper.dtmax=dtmax; 
 febio_spec.Control.time_stepper.max_retries=max_retries;
@@ -490,49 +491,61 @@ febio_spec.MeshDomains.ShellDomain{2}.ATTR.mat=materialName3;
 
 %Rigid section 
 % ->Rigid body fix boundary conditions
-febio_spec.Rigid.rigid_constraint{1}.ATTR.name='RigidFix_1';
-febio_spec.Rigid.rigid_constraint{1}.ATTR.type='fix';
-febio_spec.Rigid.rigid_constraint{1}.rb=2;
-febio_spec.Rigid.rigid_constraint{1}.dofs='Rx,Ry,Rz,Ru,Rv,Rw';
+febio_spec.Rigid.rigid_bc{1}.ATTR.name='RigidFix1';
+febio_spec.Rigid.rigid_bc{1}.ATTR.type='rigid_fixed';
+febio_spec.Rigid.rigid_bc{1}.rb=2;
+febio_spec.Rigid.rigid_bc{1}.Rx_dof=1;
+febio_spec.Rigid.rigid_bc{1}.Ry_dof=1;
+febio_spec.Rigid.rigid_bc{1}.Rz_dof=1;
+febio_spec.Rigid.rigid_bc{1}.Ru_dof=1;
+febio_spec.Rigid.rigid_bc{1}.Rv_dof=1;
+febio_spec.Rigid.rigid_bc{1}.Rw_dof=1;
 
-febio_spec.Rigid.rigid_constraint{2}.ATTR.name='RigidFix_1';
-febio_spec.Rigid.rigid_constraint{2}.ATTR.type='fix';
-febio_spec.Rigid.rigid_constraint{2}.rb=3;
-febio_spec.Rigid.rigid_constraint{2}.dofs='Rx,Ry,Ru,Rv,Rw';
+febio_spec.Rigid.rigid_bc{2}.ATTR.name='RigidFix2';
+febio_spec.Rigid.rigid_bc{2}.ATTR.type='rigid_fixed';
+febio_spec.Rigid.rigid_bc{2}.rb=3;
+febio_spec.Rigid.rigid_bc{2}.Rx_dof=1;
+febio_spec.Rigid.rigid_bc{2}.Ry_dof=1;
+febio_spec.Rigid.rigid_bc{2}.Ru_dof=1;
+febio_spec.Rigid.rigid_bc{2}.Rv_dof=1;
+febio_spec.Rigid.rigid_bc{2}.Rw_dof=1;
 
 % ->Rigid body prescribe boundary conditions
-febio_spec.Rigid.rigid_constraint{3}.ATTR.name='RigidPrescribe';
-febio_spec.Rigid.rigid_constraint{3}.ATTR.type='prescribe';
-febio_spec.Rigid.rigid_constraint{3}.rb=3;
-febio_spec.Rigid.rigid_constraint{3}.dof='Rz';
-febio_spec.Rigid.rigid_constraint{3}.value.ATTR.lc=1;
-febio_spec.Rigid.rigid_constraint{3}.value.VAL=displacementMagnitude;
-febio_spec.Rigid.rigid_constraint{3}.relative=0;
+febio_spec.Rigid.rigid_bc{3}.ATTR.name='RigidPrescribe';
+febio_spec.Rigid.rigid_bc{3}.ATTR.type='rigid_displacement';
+febio_spec.Rigid.rigid_bc{3}.rb=3;
+febio_spec.Rigid.rigid_bc{3}.dof='z';
+febio_spec.Rigid.rigid_bc{3}.value.ATTR.lc=1;
+febio_spec.Rigid.rigid_bc{3}.value.VAL=displacementMagnitude;
+febio_spec.Rigid.rigid_bc{3}.relative=0;
 
 %LoadData section
 % -> load_controller
+febio_spec.LoadData.load_controller{1}.ATTR.name='LC_1';
 febio_spec.LoadData.load_controller{1}.ATTR.id=1;
 febio_spec.LoadData.load_controller{1}.ATTR.type='loadcurve';
 febio_spec.LoadData.load_controller{1}.interpolate='LINEAR';
-febio_spec.LoadData.load_controller{1}.points.point.VAL=[0 0; 1 1];
+%febio_spec.LoadData.load_controller{1}.extend='CONSTANT';
+febio_spec.LoadData.load_controller{1}.points.pt.VAL=[0 0; 1 1];
 
-%Output section
+%Output section 
 % -> log file
 febio_spec.Output.logfile.ATTR.file=febioLogFileName;
 febio_spec.Output.logfile.node_data{1}.ATTR.file=febioLogFileName_disp;
 febio_spec.Output.logfile.node_data{1}.ATTR.data='ux;uy;uz';
 febio_spec.Output.logfile.node_data{1}.ATTR.delim=',';
-febio_spec.Output.logfile.node_data{1}.VAL=1:size(V,1);
 
-febio_spec.Output.logfile.rigid_body_data{1}.ATTR.file=febioLogFileName_force;
-febio_spec.Output.logfile.rigid_body_data{1}.ATTR.data='Fx;Fy;Fz';
-febio_spec.Output.logfile.rigid_body_data{1}.ATTR.delim=',';
-febio_spec.Output.logfile.rigid_body_data{1}.VAL=2; %Rigid body material id
+febio_spec.Output.logfile.node_data{2}.ATTR.file=febioLogFileName_force;
+febio_spec.Output.logfile.node_data{2}.ATTR.data='Rx;Ry;Rz';
+febio_spec.Output.logfile.node_data{2}.ATTR.delim=',';
 
 febio_spec.Output.logfile.element_data{1}.ATTR.file=febioLogFileName_strainEnergy;
 febio_spec.Output.logfile.element_data{1}.ATTR.data='sed';
 febio_spec.Output.logfile.element_data{1}.ATTR.delim=',';
-febio_spec.Output.logfile.element_data{1}.VAL=1:size(E_disc,1);
+febio_spec.Output.logfile.element_data{1}.VAL=1:1:size(E_disc,1);
+
+% Plotfile section
+febio_spec.Output.plotfile.compression=0;
 
 %% Quick viewing of the FEBio input file structure
 % The |febView| function can be used to view the xml structure in a MATLAB
@@ -567,7 +580,7 @@ if runFlag==1 %i.e. a succesful run
     
     %% 
     % Importing nodal displacements from a log file
-    dataStruct=importFEBio_logfile(fullfile(savePath,febioLogFileName_disp),1,1);
+    dataStruct=importFEBio_logfile(fullfile(savePath,febioLogFileName_disp),0,1);
     
     %Access data
     N_disp_mat=dataStruct.data; %Displacement
@@ -578,7 +591,7 @@ if runFlag==1 %i.e. a succesful run
             
     %%
     % Importing element stress from a log file
-    dataStruct=importFEBio_logfile(fullfile(savePath,febioLogFileName_strainEnergy),1,1);     
+    dataStruct=importFEBio_logfile(fullfile(savePath,febioLogFileName_strainEnergy),0,1);     
     
     %Access data
     E_sed_mat=dataStruct.data;
@@ -601,8 +614,8 @@ if runFlag==1 %i.e. a succesful run
     hp2=gpatch([E1;E2],V_DEF(:,:,end),'w','none',0.5); %Add graphics object to animate    
     
     axisGeom(gca,fontSize);
-    colormap(flipud(gjet(250))); colorbar;
-    caxis([min(E_sed_mat(:)) max(E_sed_mat(:))]);
+    colormap(gjet(250)); colorbar;
+    caxis([0 max(E_sed_mat(:))/10]);
     axis(axisLim(V_DEF)); %Set axis limits statically
     camlight headlight;
     

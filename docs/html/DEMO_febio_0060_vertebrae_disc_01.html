@@ -6,7 +6,7 @@
    <!--
 This HTML was auto-generated from MATLAB code.
 To make changes, update the MATLAB code and republish this document.
-      --><title>DEMO_febio_0060_vertebrae_disc_01</title><meta name="generator" content="MATLAB 9.10"><link rel="schema.DC" href="http://purl.org/dc/elements/1.1/"><meta name="DC.date" content="2022-02-17"><meta name="DC.source" content="DEMO_febio_0060_vertebrae_disc_01.m"><style type="text/css">
+      --><title>DEMO_febio_0060_vertebrae_disc_01</title><meta name="generator" content="MATLAB 9.13"><link rel="schema.DC" href="http://purl.org/dc/elements/1.1/"><meta name="DC.date" content="2023-04-27"><meta name="DC.source" content="DEMO_febio_0060_vertebrae_disc_01.m"><style type="text/css">
 html,body,div,span,applet,object,iframe,h1,h2,h3,h4,h5,h6,p,blockquote,pre,a,abbr,acronym,address,big,cite,code,del,dfn,em,font,img,ins,kbd,q,s,samp,small,strike,strong,tt,var,b,u,i,center,dl,dt,dd,ol,ul,li,fieldset,form,label,legend,table,caption,tbody,tfoot,thead,tr,th,td{margin:0;padding:0;border:0;outline:0;font-size:100%;vertical-align:baseline;background:transparent}body{line-height:1}ol,ul{list-style:none}blockquote,q{quotes:none}blockquote:before,blockquote:after,q:before,q:after{content:'';content:none}:focus{outine:0}ins{text-decoration:none}del{text-decoration:line-through}table{border-collapse:collapse;border-spacing:0}
 
 html { min-height:100%; margin-bottom:1px; }
@@ -67,7 +67,7 @@ table td { padding:7px 5px; text-align:left; vertical-align:top; border:1px soli
 
 
 
-  </style></head><body><div class="content"><h1>DEMO_febio_0060_vertebrae_disc_01</h1><!--introduction--><p>Below is a demonstration for:</p><div><ul><li>Building triangulated surface geometry for a spine segment</li><li>Defining the boundary conditions</li><li>Coding the febio structure</li><li>Running the model</li><li>Importing and visualizing results</li></ul></div><!--/introduction--><h2>Contents</h2><div><ul><li><a href="#1">Keywords</a></li><li><a href="#4">Control parameters</a></li><li><a href="#5">Get vertebra bone model</a></li><li><a href="#6">Remeshing</a></li><li><a href="#7">Find top and bottom surface</a></li><li><a href="#9">Get top and bottom boundary curves</a></li><li><a href="#10">Resample meshes so curves end up with the same number of points</a></li><li><a href="#11">Fix curve order</a></li><li><a href="#17">Mesh disc with tetrahedral elements</a></li><li><a href="#28">Joining node sets</a></li><li><a href="#29">Define boundary conditions</a></li><li><a href="#31">Defining the FEBio input structure</a></li><li><a href="#32">Quick viewing of the FEBio input file structure</a></li><li><a href="#34">Exporting the FEBio input file</a></li><li><a href="#35">Running the FEBio analysis</a></li><li><a href="#36">Import FEBio results</a></li></ul></div><h2 id="1">Keywords</h2><div><ul><li>febio_spec version 3.0</li><li>febio, FEBio</li><li>spine, vertebra, disc</li><li>contact, sliding, friction</li><li>tetrahedral elements, tet4</li><li>hexahedral elements, hex8</li><li>static, solid</li><li>hyperelastic, Ogden</li><li>displacement logfile</li></ul></div><pre class="codeinput">clear; close <span class="string">all</span>; clc;
+  </style></head><body><div class="content"><h1>DEMO_febio_0060_vertebrae_disc_01</h1><!--introduction--><p>Below is a demonstration for:</p><div><ul><li>Building triangulated surface geometry for a spine segment</li><li>Defining the boundary conditions</li><li>Coding the febio structure</li><li>Running the model</li><li>Importing and visualizing results</li></ul></div><!--/introduction--><h2>Contents</h2><div><ul><li><a href="#1">Keywords</a></li><li><a href="#4">Control parameters</a></li><li><a href="#5">Get vertebra bone model</a></li><li><a href="#6">Remeshing</a></li><li><a href="#7">Find top and bottom surface</a></li><li><a href="#9">Get top and bottom boundary curves</a></li><li><a href="#10">Resample meshes so curves end up with the same number of points</a></li><li><a href="#11">Fix curve order</a></li><li><a href="#17">Mesh disc with tetrahedral elements</a></li><li><a href="#28">Joining node sets</a></li><li><a href="#29">Define boundary conditions</a></li><li><a href="#31">Defining the FEBio input structure</a></li><li><a href="#32">Quick viewing of the FEBio input file structure</a></li><li><a href="#34">Exporting the FEBio input file</a></li><li><a href="#35">Running the FEBio analysis</a></li><li><a href="#36">Import FEBio results</a></li></ul></div><h2 id="1">Keywords</h2><div><ul><li>febio_spec version 4.0</li><li>febio, FEBio</li><li>spine, vertebra, disc</li><li>contact, sliding, friction</li><li>tetrahedral elements, tet4</li><li>hexahedral elements, hex8</li><li>static, solid</li><li>hyperelastic, Ogden</li><li>displacement logfile</li></ul></div><pre class="codeinput">clear; close <span class="string">all</span>; clc;
 </pre><p>Plot settings</p><pre class="codeinput">fontSize=15;
 faceAlpha1=1;
 faceAlpha2=0.3;
@@ -113,6 +113,7 @@ dtmin=(1/numTimeSteps)/100; <span class="comment">%Minimum time step size</span>
 dtmax=1/numTimeSteps; <span class="comment">%Maximum time step size</span>
 symmetric_stiffness=0;
 min_residual=1e-20;
+
 runMode=<span class="string">'external'</span>;
 
 <span class="comment">%Boundary condition parameters</span>
@@ -127,45 +128,45 @@ optionStructRemesh.disp_on=1; <span class="comment">% Turn off command window te
 [F1,V1]=ggremesh(F1,V1,optionStructRemesh);
 </pre><pre class="codeoutput"> 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-------&gt;  Geogram/vorpalite for resmeshing  &lt;------ 17-Feb-2022 10:16:43
-# Export mesh input file.                          17-Feb-2022 10:16:43
-# Run Geomgram/vorpalite.                          17-Feb-2022 10:16:43
+------&gt;  Geogram/vorpalite for resmeshing  &lt;------ 27-Apr-2023 16:51:09
+# Export mesh input file.                          27-Apr-2023 16:51:09
+# Run Geomgram/vorpalite.                          27-Apr-2023 16:51:09
  ______________________________________________________________________________ 
 |                                                                              |
 | o-[config      ] Configuration file name:geogram.ini                         |
-|                  Home directory:/root                                        |
+|                  Home directory:/home/kevin                                  |
 | o-[I/O         ] Output = /mnt/data/MATLAB/GIBBON/data/temp/temp_out.obj     |
 |                  Loading file /mnt/data/MATLAB/GIBBON/data/temp/temp.obj...  |
 |                  (FP64) nb_v:7500 nb_e:0 nb_f:15000 nb_b:0 tri:1 dim:3       |
 |                  Attributes on vertices: point[3]                            |
-| o-[Load        ] Elapsed time: 0 s                                           |
+| o-[Load        ] Elapsed time: 0.01 s                                        |
    ___________________________
  _/ =====[preprocessing]===== \________________________________________________
 |                                                                              |
 | o-[CmdLine     ] using pre:epsilon=0(0%)                                     |
+|                  using pre:max_hole_area=100                                 |
 |                  using pre:min_comp_area=369.182(3%)                         |
 | o-[Components  ] Nb connected components=1                                   |
 |                  Mesh does not have small connected component (good)         |
-| o-[CmdLine     ] using pre:max_hole_area=100                                 |
 | o-[Validate    ] Mesh does not have 0-area facets (good)                     |
 | o-[CmdLine     ] using pre:margin=0(0%)                                      |
 | o-[Pre         ] Elapsed time: 0 s                                           |
    _______________________
  _/ =====[remeshing]===== \____________________________________________________
 |                                                                              |
-||| o-[Newton      ] Elapsed time: 0.26s                                         |
+||| o-[Newton      ] Elapsed time: 0.18s                                         |
 | o-[Remesh      ] Computing RVD...                                            |
 | o-[Validate    ] (FP64) nb_v:1580 nb_e:0 nb_f:3160 nb_b:0 tri:1 dim:3        |
 |                  Attributes on vertices: point[3]                            |
-| o-[Remesh      ] Elapsed time: 0.32 s                                        |
+| o-[Remesh      ] Elapsed time: 0.25 s                                        |
    ____________________________
  _/ =====[postprocessing]===== \_______________________________________________
 |                                                                              |
-| o-[CmdLine     ] using post:min_comp_area=357.414(3%)                        |
+| o-[CmdLine     ] using post:min_comp_area=369.677(3%)                        |
 | o-[Components  ] Nb connected components=1                                   |
 |                  Mesh does not have small connected component (good)         |
 | o-[CmdLine     ] using post:max_hole_area=100                                |
-|                  using post:max_deg3_dist=0.121185(0.10000000000000001%)     |
+|                  using post:max_deg3_dist=0.122894(0.10000000000000001%)     |
 | o-[Degree3     ] Does not have any degree 3 vertex (good)                    |
 | o-[Post        ] Elapsed time: 0 s                                           |
    ____________________
@@ -175,11 +176,11 @@ optionStructRemesh.disp_on=1; <span class="comment">% Turn off command window te
 |                  Attributes on vertices: point[3]                            |
 | o-[I/O         ] Saving file /mnt/data/MATLAB/GIBBON/data/temp/temp_out.obj. |
 |                  ..                                                          |
-| o-[Total time  ] Elapsed time: 0.49 s                                        |
+| o-[Total time  ] Elapsed time: 0.44 s                                        |
 \______________________________________________________________________________/
-# Importing remeshed geometry.                     17-Feb-2022 10:16:43
-# Removing temporary files.                        17-Feb-2022 10:16:43
-# Done!                                            17-Feb-2022 10:16:43
+# Importing remeshed geometry.                     27-Apr-2023 16:51:09
+# Removing temporary files.                        27-Apr-2023 16:51:10
+# Done!                                            27-Apr-2023 16:51:10
 </pre><h2 id="7">Find top and bottom surface</h2><p>The below is a very basic hardcoded approach to finding (approximately) the top and bottom surfaces where the intevertebral discs would attached to the vertebra. The "detection" is based on the angle elements face with respect to the z-axis, and the distance from the origin (which lies in the middle in terms of the z-direction and in the centre of the disc attachement area in terms of the xy-direction).</p><pre class="codeinput">angularThreshold=(25/180)*pi;
 distanceThreshold=26;
 
@@ -334,65 +335,65 @@ inputStruct.regionA=tetVolMeanEst(Fd,Vd)*volumeFactorDisc; <span class="comment"
 </pre><p>Mesh model using tetrahedral elements using tetGen</p><pre class="codeinput">[meshOutput]=runTetGen(inputStruct); <span class="comment">%Run tetGen</span>
 </pre><pre class="codeoutput"> 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
---- TETGEN Tetrahedral meshing --- 17-Feb-2022 10:16:51
+--- TETGEN Tetrahedral meshing --- 27-Apr-2023 16:51:16
  
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
---- Writing SMESH file --- 17-Feb-2022 10:16:51
+--- Writing SMESH file --- 27-Apr-2023 16:51:16
 ----&gt; Adding node field
 ----&gt; Adding facet field
 ----&gt; Adding holes specification
 ----&gt; Adding region specification
---- Done --- 17-Feb-2022 10:16:51
---- Running TetGen to mesh input boundary--- 17-Feb-2022 10:16:51
+--- Done --- 27-Apr-2023 16:51:17
+--- Running TetGen to mesh input boundary--- 27-Apr-2023 16:51:17
 Opening /mnt/data/MATLAB/GIBBON/data/temp/temp.smesh.
 Delaunizing vertices...
-Delaunay seconds:  0.001533
+Delaunay seconds:  0.001373
 Creating surface mesh ...
-Surface mesh seconds:  0.000758
+Surface mesh seconds:  0.000537
 Recovering boundaries...
-Boundary recovery seconds:  0.000808
+Boundary recovery seconds:  0.000744
 Removing exterior tetrahedra ...
 Spreading region attributes.
-Exterior tets removal seconds:  0.000521
+Exterior tets removal seconds:  0.000479
 Recovering Delaunayness...
-Delaunay recovery seconds:  0.000711
+Delaunay recovery seconds:  0.00041
 Refining mesh...
-  513 insertions, added 320 points, 204 tetrahedra in queue.
-Refinement seconds:  0.010527
+  515 insertions, added 310 points, 246 tetrahedra in queue.
+Refinement seconds:  0.008608
 Smoothing vertices...
-Mesh smoothing seconds:  0.012762
+Mesh smoothing seconds:  0.012225
 Improving mesh...
-Mesh improvement seconds:  0.000646
+Mesh improvement seconds:  0.000696
 
 Writing /mnt/data/MATLAB/GIBBON/data/temp/temp.1.node.
 Writing /mnt/data/MATLAB/GIBBON/data/temp/temp.1.ele.
 Writing /mnt/data/MATLAB/GIBBON/data/temp/temp.1.face.
 Writing /mnt/data/MATLAB/GIBBON/data/temp/temp.1.edge.
 
-Output seconds:  0.009349
-Total running seconds:  0.037715
+Output seconds:  0.007349
+Total running seconds:  0.032498
 
 Statistics:
 
-  Input points: 385
-  Input facets: 766
-  Input segments: 1149
+  Input points: 387
+  Input facets: 770
+  Input segments: 1155
   Input holes: 0
   Input regions: 1
 
-  Mesh points: 713
-  Mesh tetrahedra: 3094
-  Mesh faces: 6571
-  Mesh faces on exterior boundary: 766
-  Mesh faces on input facets: 766
-  Mesh edges on input segments: 1149
-  Steiner points inside domain: 328
+  Mesh points: 707
+  Mesh tetrahedra: 3056
+  Mesh faces: 6497
+  Mesh faces on exterior boundary: 770
+  Mesh faces on input facets: 770
+  Mesh edges on input segments: 1155
+  Steiner points inside domain: 320
 
---- Done --- 17-Feb-2022 10:16:51
+--- Done --- 27-Apr-2023 16:51:17
  
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
---- Importing TetGen files --- 17-Feb-2022 10:16:51
---- Done --- 17-Feb-2022 10:16:51
+--- Importing TetGen files --- 27-Apr-2023 16:51:17
+--- Done --- 27-Apr-2023 16:51:17
 </pre><p>Access model element and patch data</p><pre class="codeinput">Fb_disc=meshOutput.facesBoundary; <span class="comment">%Boundary faces of the disc</span>
 Cb_disc=meshOutput.boundaryMarker; <span class="comment">%Boundary marker/color data for the disc</span>
 V_disc=meshOutput.nodes; <span class="comment">%The vertices/nodes</span>
@@ -479,7 +480,7 @@ gdrawnow;
 [febio_spec]=febioStructTemplate;
 
 <span class="comment">%febio_spec version</span>
-febio_spec.ATTR.version=<span class="string">'3.0'</span>;
+febio_spec.ATTR.version=<span class="string">'4.0'</span>;
 
 <span class="comment">%Module section</span>
 febio_spec.Module.ATTR.type=<span class="string">'solid'</span>;
@@ -489,7 +490,7 @@ febio_spec.Control.analysis=<span class="string">'STATIC'</span>;
 febio_spec.Control.time_steps=numTimeSteps;
 febio_spec.Control.step_size=1/numTimeSteps;
 febio_spec.Control.solver.max_refs=max_refs;
-febio_spec.Control.solver.max_ups=max_ups;
+febio_spec.Control.solver.qn_method.max_ups=max_ups;
 febio_spec.Control.time_stepper.dtmin=dtmin;
 febio_spec.Control.time_stepper.dtmax=dtmax;
 febio_spec.Control.time_stepper.max_retries=max_retries;
@@ -557,31 +558,42 @@ febio_spec.MeshDomains.ShellDomain{2}.ATTR.mat=materialName3;
 
 <span class="comment">%Rigid section</span>
 <span class="comment">% -&gt;Rigid body fix boundary conditions</span>
-febio_spec.Rigid.rigid_constraint{1}.ATTR.name=<span class="string">'RigidFix_1'</span>;
-febio_spec.Rigid.rigid_constraint{1}.ATTR.type=<span class="string">'fix'</span>;
-febio_spec.Rigid.rigid_constraint{1}.rb=2;
-febio_spec.Rigid.rigid_constraint{1}.dofs=<span class="string">'Rx,Ry,Rz,Ru,Rv,Rw'</span>;
+febio_spec.Rigid.rigid_bc{1}.ATTR.name=<span class="string">'RigidFix1'</span>;
+febio_spec.Rigid.rigid_bc{1}.ATTR.type=<span class="string">'rigid_fixed'</span>;
+febio_spec.Rigid.rigid_bc{1}.rb=2;
+febio_spec.Rigid.rigid_bc{1}.Rx_dof=1;
+febio_spec.Rigid.rigid_bc{1}.Ry_dof=1;
+febio_spec.Rigid.rigid_bc{1}.Rz_dof=1;
+febio_spec.Rigid.rigid_bc{1}.Ru_dof=1;
+febio_spec.Rigid.rigid_bc{1}.Rv_dof=1;
+febio_spec.Rigid.rigid_bc{1}.Rw_dof=1;
 
-febio_spec.Rigid.rigid_constraint{2}.ATTR.name=<span class="string">'RigidFix_1'</span>;
-febio_spec.Rigid.rigid_constraint{2}.ATTR.type=<span class="string">'fix'</span>;
-febio_spec.Rigid.rigid_constraint{2}.rb=3;
-febio_spec.Rigid.rigid_constraint{2}.dofs=<span class="string">'Rx,Ry,Ru,Rv,Rw'</span>;
+febio_spec.Rigid.rigid_bc{2}.ATTR.name=<span class="string">'RigidFix2'</span>;
+febio_spec.Rigid.rigid_bc{2}.ATTR.type=<span class="string">'rigid_fixed'</span>;
+febio_spec.Rigid.rigid_bc{2}.rb=3;
+febio_spec.Rigid.rigid_bc{2}.Rx_dof=1;
+febio_spec.Rigid.rigid_bc{2}.Ry_dof=1;
+febio_spec.Rigid.rigid_bc{2}.Ru_dof=1;
+febio_spec.Rigid.rigid_bc{2}.Rv_dof=1;
+febio_spec.Rigid.rigid_bc{2}.Rw_dof=1;
 
 <span class="comment">% -&gt;Rigid body prescribe boundary conditions</span>
-febio_spec.Rigid.rigid_constraint{3}.ATTR.name=<span class="string">'RigidPrescribe'</span>;
-febio_spec.Rigid.rigid_constraint{3}.ATTR.type=<span class="string">'prescribe'</span>;
-febio_spec.Rigid.rigid_constraint{3}.rb=3;
-febio_spec.Rigid.rigid_constraint{3}.dof=<span class="string">'Rz'</span>;
-febio_spec.Rigid.rigid_constraint{3}.value.ATTR.lc=1;
-febio_spec.Rigid.rigid_constraint{3}.value.VAL=displacementMagnitude;
-febio_spec.Rigid.rigid_constraint{3}.relative=0;
+febio_spec.Rigid.rigid_bc{3}.ATTR.name=<span class="string">'RigidPrescribe'</span>;
+febio_spec.Rigid.rigid_bc{3}.ATTR.type=<span class="string">'rigid_displacement'</span>;
+febio_spec.Rigid.rigid_bc{3}.rb=3;
+febio_spec.Rigid.rigid_bc{3}.dof=<span class="string">'z'</span>;
+febio_spec.Rigid.rigid_bc{3}.value.ATTR.lc=1;
+febio_spec.Rigid.rigid_bc{3}.value.VAL=displacementMagnitude;
+febio_spec.Rigid.rigid_bc{3}.relative=0;
 
 <span class="comment">%LoadData section</span>
 <span class="comment">% -&gt; load_controller</span>
+febio_spec.LoadData.load_controller{1}.ATTR.name=<span class="string">'LC_1'</span>;
 febio_spec.LoadData.load_controller{1}.ATTR.id=1;
 febio_spec.LoadData.load_controller{1}.ATTR.type=<span class="string">'loadcurve'</span>;
 febio_spec.LoadData.load_controller{1}.interpolate=<span class="string">'LINEAR'</span>;
-febio_spec.LoadData.load_controller{1}.points.point.VAL=[0 0; 1 1];
+<span class="comment">%febio_spec.LoadData.load_controller{1}.extend='CONSTANT';</span>
+febio_spec.LoadData.load_controller{1}.points.pt.VAL=[0 0; 1 1];
 
 <span class="comment">%Output section</span>
 <span class="comment">% -&gt; log file</span>
@@ -589,17 +601,18 @@ febio_spec.Output.logfile.ATTR.file=febioLogFileName;
 febio_spec.Output.logfile.node_data{1}.ATTR.file=febioLogFileName_disp;
 febio_spec.Output.logfile.node_data{1}.ATTR.data=<span class="string">'ux;uy;uz'</span>;
 febio_spec.Output.logfile.node_data{1}.ATTR.delim=<span class="string">','</span>;
-febio_spec.Output.logfile.node_data{1}.VAL=1:size(V,1);
 
-febio_spec.Output.logfile.rigid_body_data{1}.ATTR.file=febioLogFileName_force;
-febio_spec.Output.logfile.rigid_body_data{1}.ATTR.data=<span class="string">'Fx;Fy;Fz'</span>;
-febio_spec.Output.logfile.rigid_body_data{1}.ATTR.delim=<span class="string">','</span>;
-febio_spec.Output.logfile.rigid_body_data{1}.VAL=2; <span class="comment">%Rigid body material id</span>
+febio_spec.Output.logfile.node_data{2}.ATTR.file=febioLogFileName_force;
+febio_spec.Output.logfile.node_data{2}.ATTR.data=<span class="string">'Rx;Ry;Rz'</span>;
+febio_spec.Output.logfile.node_data{2}.ATTR.delim=<span class="string">','</span>;
 
 febio_spec.Output.logfile.element_data{1}.ATTR.file=febioLogFileName_strainEnergy;
 febio_spec.Output.logfile.element_data{1}.ATTR.data=<span class="string">'sed'</span>;
 febio_spec.Output.logfile.element_data{1}.ATTR.delim=<span class="string">','</span>;
-febio_spec.Output.logfile.element_data{1}.VAL=1:size(E_disc,1);
+febio_spec.Output.logfile.element_data{1}.VAL=1:1:size(E_disc,1);
+
+<span class="comment">% Plotfile section</span>
+febio_spec.Output.plotfile.compression=0;
 </pre><h2 id="32">Quick viewing of the FEBio input file structure</h2><p>The <tt>febView</tt> function can be used to view the xml structure in a MATLAB figure window.</p><p><tt>febView(febio_spec); %Viewing the febio file</tt></p><h2 id="34">Exporting the FEBio input file</h2><p>Exporting the febio_spec structure to an FEBio input file is done using the <tt>febioStruct2xml</tt> function.</p><pre class="codeinput">febioStruct2xml(febio_spec,febioFebFileName); <span class="comment">%Exporting to file and domNode</span>
 </pre><h2 id="35">Running the FEBio analysis</h2><p>To run the analysis defined by the created FEBio input file the <tt>runMonitorFEBio</tt> function is used. The input for this function is a structure defining job settings e.g. the FEBio input file name. The optional output runFlag informs the user if the analysis was run succesfully.</p><pre class="codeinput">febioAnalysis.run_filename=febioFebFileName; <span class="comment">%The input file name</span>
 febioAnalysis.run_logname=febioLogFileName; <span class="comment">%The name for the log file</span>
@@ -609,54 +622,54 @@ febioAnalysis.runMode=runMode;<span class="comment">%'internal';</span>
 [runFlag]=runMonitorFEBio(febioAnalysis);<span class="comment">%START FEBio NOW!!!!!!!!</span>
 </pre><pre class="codeoutput"> 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
---------&gt;    RUNNING/MONITORING FEBIO JOB    &lt;-------- 17-Feb-2022 10:17:00
-FEBio path: /home/kevin/FEBioStudio/bin/febio3
-# Attempt removal of existing log files                17-Feb-2022 10:17:00
- * Removal succesful                                   17-Feb-2022 10:17:00
-# Attempt removal of existing .xplt files              17-Feb-2022 10:17:00
- * Removal succesful                                   17-Feb-2022 10:17:00
-# Starting FEBio...                                    17-Feb-2022 10:17:00
+--------&gt;    RUNNING/MONITORING FEBIO JOB    &lt;-------- 27-Apr-2023 16:51:26
+FEBio path: /home/kevin/FEBioStudio2/bin/febio4
+# Attempt removal of existing log files                27-Apr-2023 16:51:26
+ * Removal succesful                                   27-Apr-2023 16:51:26
+# Attempt removal of existing .xplt files              27-Apr-2023 16:51:26
+ * Removal succesful                                   27-Apr-2023 16:51:26
+# Starting FEBio...                                    27-Apr-2023 16:51:26
   Max. total analysis time is: Inf s
- * Waiting for log file creation                       17-Feb-2022 10:17:00
+ * Waiting for log file creation                       27-Apr-2023 16:51:26
    Max. wait time: 30 s
- * Log file found.                                     17-Feb-2022 10:17:00
-# Parsing log file...                                  17-Feb-2022 10:17:00
-    number of iterations   : 3                         17-Feb-2022 10:17:01
-    number of reformations : 3                         17-Feb-2022 10:17:01
-------- converged at time : 0.1                        17-Feb-2022 10:17:01
-    number of iterations   : 3                         17-Feb-2022 10:17:01
-    number of reformations : 3                         17-Feb-2022 10:17:01
-------- converged at time : 0.2                        17-Feb-2022 10:17:01
-    number of iterations   : 3                         17-Feb-2022 10:17:01
-    number of reformations : 3                         17-Feb-2022 10:17:01
-------- converged at time : 0.3                        17-Feb-2022 10:17:01
-    number of iterations   : 3                         17-Feb-2022 10:17:01
-    number of reformations : 3                         17-Feb-2022 10:17:01
-------- converged at time : 0.4                        17-Feb-2022 10:17:01
-    number of iterations   : 3                         17-Feb-2022 10:17:01
-    number of reformations : 3                         17-Feb-2022 10:17:01
-------- converged at time : 0.5                        17-Feb-2022 10:17:01
-    number of iterations   : 3                         17-Feb-2022 10:17:01
-    number of reformations : 3                         17-Feb-2022 10:17:01
-------- converged at time : 0.6                        17-Feb-2022 10:17:01
-    number of iterations   : 3                         17-Feb-2022 10:17:01
-    number of reformations : 3                         17-Feb-2022 10:17:01
-------- converged at time : 0.7                        17-Feb-2022 10:17:01
-    number of iterations   : 3                         17-Feb-2022 10:17:02
-    number of reformations : 3                         17-Feb-2022 10:17:02
-------- converged at time : 0.8                        17-Feb-2022 10:17:02
-    number of iterations   : 3                         17-Feb-2022 10:17:02
-    number of reformations : 3                         17-Feb-2022 10:17:02
-------- converged at time : 0.9                        17-Feb-2022 10:17:02
-    number of iterations   : 3                         17-Feb-2022 10:17:02
-    number of reformations : 3                         17-Feb-2022 10:17:02
-------- converged at time : 1                          17-Feb-2022 10:17:02
- Elapsed time : 0:00:01                                17-Feb-2022 10:17:02
+ * Log file found.                                     27-Apr-2023 16:51:26
+# Parsing log file...                                  27-Apr-2023 16:51:26
+    number of iterations   : 3                         27-Apr-2023 16:51:27
+    number of reformations : 3                         27-Apr-2023 16:51:27
+------- converged at time : 0.1                        27-Apr-2023 16:51:27
+    number of iterations   : 3                         27-Apr-2023 16:51:27
+    number of reformations : 3                         27-Apr-2023 16:51:27
+------- converged at time : 0.2                        27-Apr-2023 16:51:27
+    number of iterations   : 3                         27-Apr-2023 16:51:27
+    number of reformations : 3                         27-Apr-2023 16:51:27
+------- converged at time : 0.3                        27-Apr-2023 16:51:27
+    number of iterations   : 3                         27-Apr-2023 16:51:28
+    number of reformations : 3                         27-Apr-2023 16:51:28
+------- converged at time : 0.4                        27-Apr-2023 16:51:28
+    number of iterations   : 3                         27-Apr-2023 16:51:28
+    number of reformations : 3                         27-Apr-2023 16:51:28
+------- converged at time : 0.5                        27-Apr-2023 16:51:28
+    number of iterations   : 3                         27-Apr-2023 16:51:28
+    number of reformations : 3                         27-Apr-2023 16:51:28
+------- converged at time : 0.6                        27-Apr-2023 16:51:28
+    number of iterations   : 3                         27-Apr-2023 16:51:28
+    number of reformations : 3                         27-Apr-2023 16:51:28
+------- converged at time : 0.7                        27-Apr-2023 16:51:28
+    number of iterations   : 3                         27-Apr-2023 16:51:28
+    number of reformations : 3                         27-Apr-2023 16:51:28
+------- converged at time : 0.8                        27-Apr-2023 16:51:28
+    number of iterations   : 3                         27-Apr-2023 16:51:28
+    number of reformations : 3                         27-Apr-2023 16:51:28
+------- converged at time : 0.9                        27-Apr-2023 16:51:28
+    number of iterations   : 3                         27-Apr-2023 16:51:28
+    number of reformations : 3                         27-Apr-2023 16:51:28
+------- converged at time : 1                          27-Apr-2023 16:51:28
+ Elapsed time : 0:00:02                                27-Apr-2023 16:51:28
  N O R M A L   T E R M I N A T I O N
-# Done                                                 17-Feb-2022 10:17:02
+# Done                                                 27-Apr-2023 16:51:28
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 </pre><h2 id="36">Import FEBio results</h2><pre class="codeinput"><span class="keyword">if</span> runFlag==1 <span class="comment">%i.e. a succesful run</span>
-</pre><p>Importing nodal displacements from a log file</p><pre class="codeinput">    dataStruct=importFEBio_logfile(fullfile(savePath,febioLogFileName_disp),1,1);
+</pre><p>Importing nodal displacements from a log file</p><pre class="codeinput">    dataStruct=importFEBio_logfile(fullfile(savePath,febioLogFileName_disp),0,1);
 
     <span class="comment">%Access data</span>
     N_disp_mat=dataStruct.data; <span class="comment">%Displacement</span>
@@ -664,7 +677,7 @@ FEBio path: /home/kevin/FEBioStudio/bin/febio3
 
     <span class="comment">%Create deformed coordinate set</span>
     V_DEF=N_disp_mat+repmat(V,[1 1 size(N_disp_mat,3)]);
-</pre><p>Importing element stress from a log file</p><pre class="codeinput">    dataStruct=importFEBio_logfile(fullfile(savePath,febioLogFileName_strainEnergy),1,1);
+</pre><p>Importing element stress from a log file</p><pre class="codeinput">    dataStruct=importFEBio_logfile(fullfile(savePath,febioLogFileName_strainEnergy),0,1);
 
     <span class="comment">%Access data</span>
     E_sed_mat=dataStruct.data;
@@ -682,8 +695,8 @@ FEBio path: /home/kevin/FEBioStudio/bin/febio3
     hp2=gpatch([E1;E2],V_DEF(:,:,end),<span class="string">'w'</span>,<span class="string">'none'</span>,0.5); <span class="comment">%Add graphics object to animate</span>
 
     axisGeom(gca,fontSize);
-    colormap(flipud(gjet(250))); colorbar;
-    caxis([min(E_sed_mat(:)) max(E_sed_mat(:))]);
+    colormap(gjet(250)); colorbar;
+    caxis([0 max(E_sed_mat(:))/10]);
     axis(axisLim(V_DEF)); <span class="comment">%Set axis limits statically</span>
     camlight <span class="string">headlight</span>;
 
@@ -722,7 +735,7 @@ cPar.Method=<span class="string">'HC'</span>;
 cPar.RigidConstraints=indRigid;
 [V1]=patchSmooth(F1,V1,[],cPar);
 <span class="keyword">end</span>
-</pre><p><img vspace="5" hspace="5" src="gibbVerySmall.gif" alt=""> </p><p><i><b>GIBBON</b></i> <a href="www.gibboncode.org">www.gibboncode.org</a></p><p><i>Kevin Mattheus Moerman</i>, <a href="gibbon.toolbox@gmail.com">gibbon.toolbox@gmail.com</a></p><p><i><b>GIBBON footer text</b></i></p><p>License: <a href="https://github.com/gibbonCode/GIBBON/blob/master/LICENSE">https://github.com/gibbonCode/GIBBON/blob/master/LICENSE</a></p><p>GIBBON: The Geometry and Image-based Bioengineering add-On. A toolbox for image segmentation, image-based modeling, meshing, and finite element analysis.</p><p>Copyright (C) 2006-2021 Kevin Mattheus Moerman and the GIBBON contributors</p><p>This program is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.</p><p>This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for more details.</p><p>You should have received a copy of the GNU General Public License along with this program.  If not, see <a href="http://www.gnu.org/licenses/">http://www.gnu.org/licenses/</a>.</p><p class="footer"><br><a href="https://www.mathworks.com/products/matlab/">Published with MATLAB&reg; R2021a</a><br></p></div><!--
+</pre><p><img vspace="5" hspace="5" src="gibbVerySmall.gif" alt=""> </p><p><i><b>GIBBON</b></i> <a href="www.gibboncode.org">www.gibboncode.org</a></p><p><i>Kevin Mattheus Moerman</i>, <a href="gibbon.toolbox@gmail.com">gibbon.toolbox@gmail.com</a></p><p><i><b>GIBBON footer text</b></i></p><p>License: <a href="https://github.com/gibbonCode/GIBBON/blob/master/LICENSE">https://github.com/gibbonCode/GIBBON/blob/master/LICENSE</a></p><p>GIBBON: The Geometry and Image-based Bioengineering add-On. A toolbox for image segmentation, image-based modeling, meshing, and finite element analysis.</p><p>Copyright (C) 2006-2022 Kevin Mattheus Moerman and the GIBBON contributors</p><p>This program is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.</p><p>This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for more details.</p><p>You should have received a copy of the GNU General Public License along with this program.  If not, see <a href="http://www.gnu.org/licenses/">http://www.gnu.org/licenses/</a>.</p><p class="footer"><br><a href="https://www.mathworks.com/products/matlab/">Published with MATLAB&reg; R2022b</a><br></p></div><!--
 ##### SOURCE BEGIN #####
 %% DEMO_febio_0060_vertebrae_disc_01
 % Below is a demonstration for:
@@ -735,7 +748,7 @@ cPar.RigidConstraints=indRigid;
 
 %% Keywords
 %
-% * febio_spec version 3.0
+% * febio_spec version 4.0
 % * febio, FEBio
 % * spine, vertebra, disc
 % * contact, sliding, friction
@@ -799,6 +812,7 @@ dtmin=(1/numTimeSteps)/100; %Minimum time step size
 dtmax=1/numTimeSteps; %Maximum time step size
 symmetric_stiffness=0;
 min_residual=1e-20;
+
 runMode='external';
 
 %Boundary condition parameters
@@ -1138,7 +1152,7 @@ gdrawnow;
 [febio_spec]=febioStructTemplate;
 
 %febio_spec version 
-febio_spec.ATTR.version='3.0'; 
+febio_spec.ATTR.version='4.0'; 
 
 %Module section
 febio_spec.Module.ATTR.type='solid'; 
@@ -1148,7 +1162,7 @@ febio_spec.Control.analysis='STATIC';
 febio_spec.Control.time_steps=numTimeSteps;
 febio_spec.Control.step_size=1/numTimeSteps;
 febio_spec.Control.solver.max_refs=max_refs;
-febio_spec.Control.solver.max_ups=max_ups;
+febio_spec.Control.solver.qn_method.max_ups=max_ups;
 febio_spec.Control.time_stepper.dtmin=dtmin;
 febio_spec.Control.time_stepper.dtmax=dtmax; 
 febio_spec.Control.time_stepper.max_retries=max_retries;
@@ -1216,49 +1230,61 @@ febio_spec.MeshDomains.ShellDomain{2}.ATTR.mat=materialName3;
 
 %Rigid section 
 % ->Rigid body fix boundary conditions
-febio_spec.Rigid.rigid_constraint{1}.ATTR.name='RigidFix_1';
-febio_spec.Rigid.rigid_constraint{1}.ATTR.type='fix';
-febio_spec.Rigid.rigid_constraint{1}.rb=2;
-febio_spec.Rigid.rigid_constraint{1}.dofs='Rx,Ry,Rz,Ru,Rv,Rw';
+febio_spec.Rigid.rigid_bc{1}.ATTR.name='RigidFix1';
+febio_spec.Rigid.rigid_bc{1}.ATTR.type='rigid_fixed';
+febio_spec.Rigid.rigid_bc{1}.rb=2;
+febio_spec.Rigid.rigid_bc{1}.Rx_dof=1;
+febio_spec.Rigid.rigid_bc{1}.Ry_dof=1;
+febio_spec.Rigid.rigid_bc{1}.Rz_dof=1;
+febio_spec.Rigid.rigid_bc{1}.Ru_dof=1;
+febio_spec.Rigid.rigid_bc{1}.Rv_dof=1;
+febio_spec.Rigid.rigid_bc{1}.Rw_dof=1;
 
-febio_spec.Rigid.rigid_constraint{2}.ATTR.name='RigidFix_1';
-febio_spec.Rigid.rigid_constraint{2}.ATTR.type='fix';
-febio_spec.Rigid.rigid_constraint{2}.rb=3;
-febio_spec.Rigid.rigid_constraint{2}.dofs='Rx,Ry,Ru,Rv,Rw';
+febio_spec.Rigid.rigid_bc{2}.ATTR.name='RigidFix2';
+febio_spec.Rigid.rigid_bc{2}.ATTR.type='rigid_fixed';
+febio_spec.Rigid.rigid_bc{2}.rb=3;
+febio_spec.Rigid.rigid_bc{2}.Rx_dof=1;
+febio_spec.Rigid.rigid_bc{2}.Ry_dof=1;
+febio_spec.Rigid.rigid_bc{2}.Ru_dof=1;
+febio_spec.Rigid.rigid_bc{2}.Rv_dof=1;
+febio_spec.Rigid.rigid_bc{2}.Rw_dof=1;
 
 % ->Rigid body prescribe boundary conditions
-febio_spec.Rigid.rigid_constraint{3}.ATTR.name='RigidPrescribe';
-febio_spec.Rigid.rigid_constraint{3}.ATTR.type='prescribe';
-febio_spec.Rigid.rigid_constraint{3}.rb=3;
-febio_spec.Rigid.rigid_constraint{3}.dof='Rz';
-febio_spec.Rigid.rigid_constraint{3}.value.ATTR.lc=1;
-febio_spec.Rigid.rigid_constraint{3}.value.VAL=displacementMagnitude;
-febio_spec.Rigid.rigid_constraint{3}.relative=0;
+febio_spec.Rigid.rigid_bc{3}.ATTR.name='RigidPrescribe';
+febio_spec.Rigid.rigid_bc{3}.ATTR.type='rigid_displacement';
+febio_spec.Rigid.rigid_bc{3}.rb=3;
+febio_spec.Rigid.rigid_bc{3}.dof='z';
+febio_spec.Rigid.rigid_bc{3}.value.ATTR.lc=1;
+febio_spec.Rigid.rigid_bc{3}.value.VAL=displacementMagnitude;
+febio_spec.Rigid.rigid_bc{3}.relative=0;
 
 %LoadData section
 % -> load_controller
+febio_spec.LoadData.load_controller{1}.ATTR.name='LC_1';
 febio_spec.LoadData.load_controller{1}.ATTR.id=1;
 febio_spec.LoadData.load_controller{1}.ATTR.type='loadcurve';
 febio_spec.LoadData.load_controller{1}.interpolate='LINEAR';
-febio_spec.LoadData.load_controller{1}.points.point.VAL=[0 0; 1 1];
+%febio_spec.LoadData.load_controller{1}.extend='CONSTANT';
+febio_spec.LoadData.load_controller{1}.points.pt.VAL=[0 0; 1 1];
 
-%Output section
+%Output section 
 % -> log file
 febio_spec.Output.logfile.ATTR.file=febioLogFileName;
 febio_spec.Output.logfile.node_data{1}.ATTR.file=febioLogFileName_disp;
 febio_spec.Output.logfile.node_data{1}.ATTR.data='ux;uy;uz';
 febio_spec.Output.logfile.node_data{1}.ATTR.delim=',';
-febio_spec.Output.logfile.node_data{1}.VAL=1:size(V,1);
 
-febio_spec.Output.logfile.rigid_body_data{1}.ATTR.file=febioLogFileName_force;
-febio_spec.Output.logfile.rigid_body_data{1}.ATTR.data='Fx;Fy;Fz';
-febio_spec.Output.logfile.rigid_body_data{1}.ATTR.delim=',';
-febio_spec.Output.logfile.rigid_body_data{1}.VAL=2; %Rigid body material id
+febio_spec.Output.logfile.node_data{2}.ATTR.file=febioLogFileName_force;
+febio_spec.Output.logfile.node_data{2}.ATTR.data='Rx;Ry;Rz';
+febio_spec.Output.logfile.node_data{2}.ATTR.delim=',';
 
 febio_spec.Output.logfile.element_data{1}.ATTR.file=febioLogFileName_strainEnergy;
 febio_spec.Output.logfile.element_data{1}.ATTR.data='sed';
 febio_spec.Output.logfile.element_data{1}.ATTR.delim=',';
-febio_spec.Output.logfile.element_data{1}.VAL=1:size(E_disc,1);
+febio_spec.Output.logfile.element_data{1}.VAL=1:1:size(E_disc,1);
+
+% Plotfile section
+febio_spec.Output.plotfile.compression=0;
 
 %% Quick viewing of the FEBio input file structure
 % The |febView| function can be used to view the xml structure in a MATLAB
@@ -1293,7 +1319,7 @@ if runFlag==1 %i.e. a succesful run
     
     %% 
     % Importing nodal displacements from a log file
-    dataStruct=importFEBio_logfile(fullfile(savePath,febioLogFileName_disp),1,1);
+    dataStruct=importFEBio_logfile(fullfile(savePath,febioLogFileName_disp),0,1);
     
     %Access data
     N_disp_mat=dataStruct.data; %Displacement
@@ -1304,7 +1330,7 @@ if runFlag==1 %i.e. a succesful run
             
     %%
     % Importing element stress from a log file
-    dataStruct=importFEBio_logfile(fullfile(savePath,febioLogFileName_strainEnergy),1,1);     
+    dataStruct=importFEBio_logfile(fullfile(savePath,febioLogFileName_strainEnergy),0,1);     
     
     %Access data
     E_sed_mat=dataStruct.data;
@@ -1327,8 +1353,8 @@ if runFlag==1 %i.e. a succesful run
     hp2=gpatch([E1;E2],V_DEF(:,:,end),'w','none',0.5); %Add graphics object to animate    
     
     axisGeom(gca,fontSize);
-    colormap(flipud(gjet(250))); colorbar;
-    caxis([min(E_sed_mat(:)) max(E_sed_mat(:))]);
+    colormap(gjet(250)); colorbar;
+    caxis([0 max(E_sed_mat(:))/10]);
     axis(axisLim(V_DEF)); %Set axis limits statically
     camlight headlight;
     
@@ -1389,7 +1415,7 @@ end
 % image segmentation, image-based modeling, meshing, and finite element
 % analysis.
 % 
-% Copyright (C) 2006-2021 Kevin Mattheus Moerman and the GIBBON contributors
+% Copyright (C) 2006-2022 Kevin Mattheus Moerman and the GIBBON contributors
 % 
 % This program is free software: you can redistribute it and/or modify
 % it under the terms of the GNU General Public License as published by

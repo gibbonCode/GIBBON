@@ -10,7 +10,7 @@
 
 %% Keywords
 %
-% * febio_spec version 3.0
+% * febio_spec version 4.0
 % * febio, FEBio
 % * indentation
 % * contact, sliding, sticky, friction
@@ -82,6 +82,7 @@ dtmin=(1/numTimeSteps)/100; %Minimum time step size
 dtmax=1/numTimeSteps; %Maximum time step size
 symmetric_stiffness=1;
 min_residual=1e-20;
+
 runMode='external';
 
 tissueDensity=1e-9; %ton/mm^3
@@ -167,6 +168,7 @@ gdrawnow;
 tissueMass=tissueDensity.*surfaceVolume;
 tissueMass_kg=tissueMass.*1000;
 bodyForceMagnitude=tissueMass.*gravityConstant;
+gravityVector=[0 0 bodyForceMagnitude];
 
 %%
 % Get interior points
@@ -276,7 +278,7 @@ gdrawnow;
 [febio_spec]=febioStructTemplate;
 
 %febio_spec version 
-febio_spec.ATTR.version='3.0'; 
+febio_spec.ATTR.version='4.0'; 
 
 %Module section
 febio_spec.Module.ATTR.type='solid'; 
@@ -286,9 +288,8 @@ febio_spec.Control.analysis='STATIC';
 febio_spec.Control.time_steps=numTimeSteps;
 febio_spec.Control.step_size=1/numTimeSteps;
 febio_spec.Control.solver.max_refs=max_refs;
-febio_spec.Control.solver.max_ups=max_ups;
+febio_spec.Control.solver.qn_method.max_ups=max_ups;
 febio_spec.Control.solver.symmetric_stiffness=symmetric_stiffness;
-febio_spec.Control.solver.min_residual=min_residual;
 febio_spec.Control.time_stepper.dtmin=dtmin;
 febio_spec.Control.time_stepper.dtmax=dtmax; 
 febio_spec.Control.time_stepper.max_retries=max_retries;
@@ -344,38 +345,50 @@ febio_spec.MeshDomains.SolidDomain{2}.ATTR.mat=materialName2;
 % -> NodeSets
 nodeSetName1='bcSupportList';
 febio_spec.Mesh.NodeSet{1}.ATTR.name=nodeSetName1;
-febio_spec.Mesh.NodeSet{1}.node.ATTR.id=bcSupportList(:);
-
-%Define loads        
-febio_spec.Loads.body_load.ATTR.type='const';
-febio_spec.Loads.body_load.z.ATTR.lc=1;
-febio_spec.Loads.body_load.z.VAL=bodyForceMagnitude;
+febio_spec.Mesh.NodeSet{1}.VAL=mrow(bcSupportList);
 
 %Boundary condition section 
 % -> Fix boundary conditions
-febio_spec.Boundary.bc{1}.ATTR.type='fix';
+febio_spec.Boundary.bc{1}.ATTR.name='zero_displacement_xyz';
+febio_spec.Boundary.bc{1}.ATTR.type='zero displacement';
 febio_spec.Boundary.bc{1}.ATTR.node_set=nodeSetName1;
-febio_spec.Boundary.bc{1}.dofs='x,y,z';
+febio_spec.Boundary.bc{1}.x_dof=1;
+febio_spec.Boundary.bc{1}.y_dof=1;
+febio_spec.Boundary.bc{1}.z_dof=1;
+
+%Loads section
+% -> Body load        
+febio_spec.Loads.body_load{1}.ATTR.type='const';
+febio_spec.Loads.body_load{1}.x.ATTR.lc=1;
+febio_spec.Loads.body_load{1}.x.VAL=gravityVector(1);
+febio_spec.Loads.body_load{1}.y.ATTR.lc=1;
+febio_spec.Loads.body_load{1}.y.VAL=gravityVector(2);
+febio_spec.Loads.body_load{1}.z.ATTR.lc=1;
+febio_spec.Loads.body_load{1}.z.VAL=gravityVector(3);
 
 %LoadData section
 % -> load_controller
+febio_spec.LoadData.load_controller{1}.ATTR.name='LC_1';
 febio_spec.LoadData.load_controller{1}.ATTR.id=1;
 febio_spec.LoadData.load_controller{1}.ATTR.type='loadcurve';
 febio_spec.LoadData.load_controller{1}.interpolate='LINEAR';
-febio_spec.LoadData.load_controller{1}.points.point.VAL=[0 0; 1 1];
+%febio_spec.LoadData.load_controller{1}.extend='CONSTANT';
+febio_spec.LoadData.load_controller{1}.points.pt.VAL=[0 0; 1 1];
 
-%Output section
+%Output section 
 % -> log file
 febio_spec.Output.logfile.ATTR.file=febioLogFileName;
 febio_spec.Output.logfile.node_data{1}.ATTR.file=febioLogFileName_disp;
 febio_spec.Output.logfile.node_data{1}.ATTR.data='ux;uy;uz';
 febio_spec.Output.logfile.node_data{1}.ATTR.delim=',';
-febio_spec.Output.logfile.node_data{1}.VAL=1:size(V,1);
 
 febio_spec.Output.logfile.element_data{1}.ATTR.file=febioLogFileName_strainEnergy;
 febio_spec.Output.logfile.element_data{1}.ATTR.data='sed';
 febio_spec.Output.logfile.element_data{1}.ATTR.delim=',';
 febio_spec.Output.logfile.element_data{1}.VAL=1:(size(E1,1)+size(E2,1));
+
+% Plotfile section
+febio_spec.Output.plotfile.compression=0;
 
 %% Quick viewing of the FEBio input file structure
 % The |febView| function can be used to view the xml structure in a MATLAB
@@ -412,65 +425,59 @@ febioAnalysis.maxLogCheckTime=10; %Max log file checking time
 
 if runFlag==1 %i.e. a succesful run
     
+    %%     
     % Importing nodal displacements from a log file
-    [time_mat, N_disp_mat,~]=importFEBio_logfile(fullfile(savePath,febioLogFileName_disp)); %Nodal displacements
-    time_mat=[0; time_mat(:)]; %Time
+    dataStruct=importFEBio_logfile(fullfile(savePath,febioLogFileName_disp),0,1);
     
-    N_disp_mat=N_disp_mat(:,2:end,:);
-    sizImport=size(N_disp_mat);
-    sizImport(3)=sizImport(3)+1;
-    N_disp_mat_n=zeros(sizImport);
-    N_disp_mat_n(:,:,2:end)=N_disp_mat;
-    N_disp_mat=N_disp_mat_n;    
-    DN_magnitude_all=sqrt(sum(N_disp_mat.^2,2));
-    DN_magnitude=DN_magnitude_all(:,end);
-    V_def=V+N_disp_mat(:,:,end);
+    %Access data
+    N_disp_mat=dataStruct.data; %Displacement
+    timeVec=dataStruct.time; %Time
+    
+    %Create deformed coordinate set
     V_DEF=N_disp_mat+repmat(V,[1 1 size(N_disp_mat,3)]);
-    X_DEF=V_DEF(:,1,:);
-    Y_DEF=V_DEF(:,2,:);
-    Z_DEF=V_DEF(:,3,:);
         
     %%
     % Plotting the simulated results using |anim8| to visualize and animate
     % deformations
     
+    DN_magnitude=sqrt(sum(N_disp_mat(:,:,end).^2,2)); %Current displacement magnitude
+
     % Create basic view and store graphics handle to initiate animation
     hf=cFigure; %Open figure
     gtitle([febioFebFileNamePart,': Press play to animate']);
-    hp1=gpatch(Fb,V_def,DN_magnitude,'none',0.5); %Add graphics object to animate
+    hp1=gpatch(Fb,V_DEF(:,:,end),DN_magnitude,'none',0.5); %Add graphics object to animate
     hp1.FaceColor='Interp';
-    hp2=gpatch(Fb(Cb==3,:),V_def,'kw','none',1); %Add graphics object to animate
+    hp2=gpatch(Fb(Cb==3,:),V_DEF(:,:,end),'kw','none',1); %Add graphics object to animate
     
     axisGeom(gca,fontSize);
     colormap(gjet(250)); colorbar;
-    caxis([0 max(DN_magnitude_all(:))]);
-    axis([min(X_DEF(:)) max(X_DEF(:)) min(Y_DEF(:)) max(Y_DEF(:)) min(Z_DEF(:)) max(Z_DEF(:))]);
+    caxis([0 max(DN_magnitude(:))]);
+    axis(axisLim(V_DEF)); %Set axis limits statically
     camlight headlight;
     
     % Set up animation features
-    animStruct.Time=time_mat; %The time vector
+    animStruct.Time=timeVec; %The time vector
     for qt=1:1:size(N_disp_mat,3) %Loop over time increments
-        DN_magnitude=DN_magnitude_all(:,qt); %Current displacement magnitude
-        V_def=V+N_disp_mat(:,:,qt); %Current nodal coordinates
-                    
+        DN_magnitude=sqrt(sum(N_disp_mat(:,:,qt).^2,2)); %Current displacement magnitude
+                            
         %Set entries in animation structure
         animStruct.Handles{qt}=[hp1 hp1 hp2]; %Handles of objects to animate
         animStruct.Props{qt}={'Vertices','CData','Vertices'}; %Properties of objects to animate
-        animStruct.Set{qt}={V_def,DN_magnitude,V_def}; %Property values for to set in order to animate
+        animStruct.Set{qt}={V_DEF(:,:,qt),DN_magnitude,V_DEF(:,:,qt)}; %Property values for to set in order to animate
     end
     anim8(hf,animStruct); %Initiate animation feature
     gdrawnow;
        
     %%
 %     
-%     [M,G,bwLabels]=patch2Im(Fb,V_def,Cb,1);
+%     [M,G,bwLabels]=patch2Im(Fb,V_DEF(:,:,end),Cb,1);
 %     M(M==1)=0.25;
 %     M(M==3)=1;
 %     M(M==0)=0.1;
 %     M=M+0.25*rand(size(M));
 %     voxelSize=G.voxelSize;
 %     imOrigin=G.origin;
-%     Vp=mean(V_def(Fb(Cb==3,:),:),1)-imOrigin;
+%     Vp=mean(V_DEF(Fb(Cb==3,:),:,end),1)-imOrigin;
 %     [i,j,k]=cart2im(Vp(:,1),Vp(:,2),Vp(:,3),voxelSize*ones(1,3));
 %     L_plot=false(size(M));
 %     L_plot(round(i),:,:)=1;
@@ -483,12 +490,12 @@ if runFlag==1 %i.e. a succesful run
 %  
 %     hf=cFigure;
 % 
-%     hp1=gpatch(Fb,V_def,'bw','none',0.35);
+%     hp1=gpatch(Fb,V_DEF(:,:,end),'w','none',0.25);
 %     hp2=gpatch(Fm,Vm,Cm,'none',1);
 %     
 %     colormap(gca,gray(250)); colorbar; caxis([0 1]);    
 %     axisGeom(gca,fontSize);
-%     axis([min(X_DEF(:)) max(X_DEF(:)) min(Y_DEF(:)) max(Y_DEF(:)) min(Z_DEF(:)) max(Z_DEF(:))]);
+%     axis(axisLim(V_DEF)); %Set axis limits statically
 %     camlight('headlight');
 %     gdrawnow;
 %     
@@ -508,7 +515,7 @@ if runFlag==1 %i.e. a succesful run
 %         
 %         voxelSize=G.voxelSize;
 %         imOrigin=G.origin;
-%         Vp=mean(V_def(Fb(Cb==3,:),:),1)-imOrigin;
+%         Vp=mean(V_DEF(Fb(Cb==3,:),:,qt),1)-imOrigin;
 %         [i,j,k]=cart2im(Vp(:,1),Vp(:,2),Vp(:,3),voxelSize*ones(1,3));
 %         L_plot=false(size(M));
 %         L_plot(round(i),:,:)=1;
@@ -522,11 +529,10 @@ if runFlag==1 %i.e. a succesful run
 %         %Set entries in animation structure
 %         animStruct.Handles{qt}=[hp1 hp2 hp2 hp2]; %Handles of objects to animate
 %         animStruct.Props{qt}={'Vertices','Faces','Vertices','CData'}; %Properties of objects to animate
-%         animStruct.Set{qt}={V_def,Fm,Vm,Cm}; %Property values for to set in order to animate
+%         animStruct.Set{qt}={V_DEF(:,:,qt),Fm,Vm,Cm}; %Property values for to set in order to animate
 %     end
 %     anim8(hf,animStruct); %Initiate animation feature
-%     gdrawnow;
-%     
+%     gdrawnow;    
     
 end
 
