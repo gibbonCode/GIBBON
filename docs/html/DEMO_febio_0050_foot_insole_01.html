@@ -6,7 +6,7 @@
    <!--
 This HTML was auto-generated from MATLAB code.
 To make changes, update the MATLAB code and republish this document.
-      --><title>DEMO_febio_0050_foot_insole_01</title><meta name="generator" content="MATLAB 9.13"><link rel="schema.DC" href="http://purl.org/dc/elements/1.1/"><meta name="DC.date" content="2023-04-21"><meta name="DC.source" content="DEMO_febio_0050_foot_insole_01.m"><style type="text/css">
+      --><title>DEMO_febio_0050_foot_insole_01</title><meta name="generator" content="MATLAB 9.13"><link rel="schema.DC" href="http://purl.org/dc/elements/1.1/"><meta name="DC.date" content="2023-04-27"><meta name="DC.source" content="DEMO_febio_0050_foot_insole_01.m"><style type="text/css">
 html,body,div,span,applet,object,iframe,h1,h2,h3,h4,h5,h6,p,blockquote,pre,a,abbr,acronym,address,big,cite,code,del,dfn,em,font,img,ins,kbd,q,s,samp,small,strike,strong,tt,var,b,u,i,center,dl,dt,dd,ol,ul,li,fieldset,form,label,legend,table,caption,tbody,tfoot,thead,tr,th,td{margin:0;padding:0;border:0;outline:0;font-size:100%;vertical-align:baseline;background:transparent}body{line-height:1}ol,ul{list-style:none}blockquote,q{quotes:none}blockquote:before,blockquote:after,q:before,q:after{content:'';content:none}:focus{outine:0}ins{text-decoration:none}del{text-decoration:line-through}table{border-collapse:collapse;border-spacing:0}
 
 html { min-height:100%; margin-bottom:1px; }
@@ -85,7 +85,7 @@ febioFebFileName=fullfile(savePath,[febioFebFileNamePart,<span class="string">'.
 febioLogFileName=fullfile(savePath,[febioFebFileNamePart,<span class="string">'.txt'</span>]); <span class="comment">%FEBio log file name</span>
 febioLogFileName_disp=[febioFebFileNamePart,<span class="string">'_disp_out.txt'</span>]; <span class="comment">%Log file name for exporting displacement</span>
 febioLogFileName_force=[febioFebFileNamePart,<span class="string">'_force_out.txt'</span>]; <span class="comment">%Log file name for exporting force</span>
-febioLogFileName_strainEnergy=[febioFebFileNamePart,<span class="string">'_energy_out.txt'</span>]; <span class="comment">%Log file name for exporting strain energy density</span>
+febioLogFileName_sed=[febioFebFileNamePart,<span class="string">'_energy_out.txt'</span>]; <span class="comment">%Log file name for exporting strain energy density</span>
 
 <span class="comment">% Surface model file names</span>
 fileNameBones=fullfile(loadPathSurfaces,<span class="string">'Foot_bulk.stl'</span>);
@@ -262,44 +262,44 @@ inputStruct.regionA=tetVolMeanEst(F2,V2)*volumeFactor; <span class="comment">%Vo
 </pre><p>Mesh model using tetrahedral elements using tetGen</p><pre class="codeinput">[meshOutput]=runTetGen(inputStruct); <span class="comment">%Run tetGen</span>
 </pre><pre class="codeoutput"> 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
---- TETGEN Tetrahedral meshing --- 21-Apr-2023 10:18:11
+--- TETGEN Tetrahedral meshing --- 27-Apr-2023 16:18:02
  
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
---- Writing SMESH file --- 21-Apr-2023 10:18:11
+--- Writing SMESH file --- 27-Apr-2023 16:18:02
 ----&gt; Adding node field
 ----&gt; Adding facet field
 ----&gt; Adding holes specification
 ----&gt; Adding region specification
---- Done --- 21-Apr-2023 10:18:12
---- Running TetGen to mesh input boundary--- 21-Apr-2023 10:18:12
+--- Done --- 27-Apr-2023 16:18:02
+--- Running TetGen to mesh input boundary--- 27-Apr-2023 16:18:02
 Opening /mnt/data/MATLAB/GIBBON/data/temp/temp.smesh.
 Delaunizing vertices...
-Delaunay seconds:  0.031182
+Delaunay seconds:  0.031735
 Creating surface mesh ...
-Surface mesh seconds:  0.012063
+Surface mesh seconds:  0.012355
 Recovering boundaries...
-Boundary recovery seconds:  0.02726
+Boundary recovery seconds:  0.025781
 Removing exterior tetrahedra ...
 Spreading region attributes.
-Exterior tets removal seconds:  0.018912
+Exterior tets removal seconds:  0.01477
 Recovering Delaunayness...
-Delaunay recovery seconds:  0.012948
+Delaunay recovery seconds:  0.011781
 Refining mesh...
   8715 insertions, added 4033 points, 82895 tetrahedra in queue.
   2902 insertions, added 229 points, 0 tetrahedra in queue.
-Refinement seconds:  0.186623
+Refinement seconds:  0.189777
 Smoothing vertices...
-Mesh smoothing seconds:  0.234576
+Mesh smoothing seconds:  0.233285
 Improving mesh...
-Mesh improvement seconds:  0.010439
+Mesh improvement seconds:  0.010192
 
 Writing /mnt/data/MATLAB/GIBBON/data/temp/temp.1.node.
 Writing /mnt/data/MATLAB/GIBBON/data/temp/temp.1.ele.
 Writing /mnt/data/MATLAB/GIBBON/data/temp/temp.1.face.
 Writing /mnt/data/MATLAB/GIBBON/data/temp/temp.1.edge.
 
-Output seconds:  0.122267
-Total running seconds:  0.656863
+Output seconds:  0.122931
+Total running seconds:  0.65311
 
 Statistics:
 
@@ -317,11 +317,11 @@ Statistics:
   Mesh edges on input segments: 19602
   Steiner points inside domain: 4404
 
---- Done --- 21-Apr-2023 10:18:13
+--- Done --- 27-Apr-2023 16:18:03
  
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
---- Importing TetGen files --- 21-Apr-2023 10:18:13
---- Done --- 21-Apr-2023 10:18:13
+--- Importing TetGen files --- 27-Apr-2023 16:18:03
+--- Done --- 27-Apr-2023 16:18:03
 </pre><p>Access model element and patch data</p><pre class="codeinput">Fb_foot=meshOutput.facesBoundary; <span class="comment">%Boundary faces of the foot</span>
 Cb_foot=meshOutput.boundaryMarker; <span class="comment">%Boundary marker/color data for the foot</span>
 V_foot=meshOutput.nodes; <span class="comment">%The vertices/nodes</span>
@@ -719,7 +719,7 @@ febio_spec.Output.logfile.rigid_body_data{1}.ATTR.data=<span class="string">'Fx;
 febio_spec.Output.logfile.rigid_body_data{1}.ATTR.delim=<span class="string">','</span>;
 febio_spec.Output.logfile.rigid_body_data{1}.VAL=2;
 
-febio_spec.Output.logfile.element_data{1}.ATTR.file=febioLogFileName_strainEnergy;
+febio_spec.Output.logfile.element_data{1}.ATTR.file=febioLogFileName_sed;
 febio_spec.Output.logfile.element_data{1}.ATTR.data=<span class="string">'sed'</span>;
 febio_spec.Output.logfile.element_data{1}.ATTR.delim=<span class="string">','</span>;
 
@@ -737,57 +737,57 @@ febioAnalysis.runMode=runMode;
     <span class="keyword">end</span>
 </pre><pre class="codeoutput"> 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
---------&gt;    RUNNING/MONITORING FEBIO JOB    &lt;-------- 21-Apr-2023 10:18:35
+--------&gt;    RUNNING/MONITORING FEBIO JOB    &lt;-------- 27-Apr-2023 16:18:25
 FEBio path: /home/kevin/FEBioStudio2/bin/febio4
-# Attempt removal of existing log files                21-Apr-2023 10:18:35
- * Removal succesful                                   21-Apr-2023 10:18:35
-# Attempt removal of existing .xplt files              21-Apr-2023 10:18:35
- * Removal succesful                                   21-Apr-2023 10:18:35
-# Starting FEBio...                                    21-Apr-2023 10:18:35
+# Attempt removal of existing log files                27-Apr-2023 16:18:25
+ * Removal succesful                                   27-Apr-2023 16:18:25
+# Attempt removal of existing .xplt files              27-Apr-2023 16:18:26
+ * Removal succesful                                   27-Apr-2023 16:18:26
+# Starting FEBio...                                    27-Apr-2023 16:18:26
   Max. total analysis time is: Inf s
- * Waiting for log file creation                       21-Apr-2023 10:18:35
+ * Waiting for log file creation                       27-Apr-2023 16:18:26
    Max. wait time: 30 s
- * Log file found.                                     21-Apr-2023 10:18:36
-# Parsing log file...                                  21-Apr-2023 10:18:36
-    number of iterations   : 1                         21-Apr-2023 10:18:37
-    number of reformations : 1                         21-Apr-2023 10:18:37
-------- converged at time : 0.1                        21-Apr-2023 10:18:37
-    number of iterations   : 4                         21-Apr-2023 10:18:41
-    number of reformations : 4                         21-Apr-2023 10:18:41
-------- converged at time : 0.2                        21-Apr-2023 10:18:41
-    number of iterations   : 5                         21-Apr-2023 10:18:45
-    number of reformations : 5                         21-Apr-2023 10:18:45
-------- converged at time : 0.3                        21-Apr-2023 10:18:45
-    number of iterations   : 5                         21-Apr-2023 10:18:49
-    number of reformations : 5                         21-Apr-2023 10:18:49
-------- converged at time : 0.4                        21-Apr-2023 10:18:49
-    number of iterations   : 16                        21-Apr-2023 10:19:00
-    number of reformations : 16                        21-Apr-2023 10:19:00
-------- converged at time : 0.5                        21-Apr-2023 10:19:00
-    number of iterations   : 6                         21-Apr-2023 10:19:05
-    number of reformations : 6                         21-Apr-2023 10:19:05
-------- converged at time : 0.579266                   21-Apr-2023 10:19:05
-    number of iterations   : 9                         21-Apr-2023 10:19:12
-    number of reformations : 9                         21-Apr-2023 10:19:12
-------- converged at time : 0.662679                   21-Apr-2023 10:19:12
-    number of iterations   : 6                         21-Apr-2023 10:19:18
-    number of reformations : 6                         21-Apr-2023 10:19:18
-------- converged at time : 0.74699                    21-Apr-2023 10:19:18
-    number of iterations   : 8                         21-Apr-2023 10:19:24
-    number of reformations : 8                         21-Apr-2023 10:19:24
-------- converged at time : 0.834438                   21-Apr-2023 10:19:24
-    number of iterations   : 15                        21-Apr-2023 10:19:36
-    number of reformations : 15                        21-Apr-2023 10:19:36
-------- converged at time : 0.923368                   21-Apr-2023 10:19:36
-    number of iterations   : 12                        21-Apr-2023 10:19:46
-    number of reformations : 12                        21-Apr-2023 10:19:46
-------- converged at time : 0.996162                   21-Apr-2023 10:19:46
-    number of iterations   : 7                         21-Apr-2023 10:19:52
-    number of reformations : 7                         21-Apr-2023 10:19:52
-------- converged at time : 1                          21-Apr-2023 10:19:52
- Elapsed time : 0:01:17                                21-Apr-2023 10:19:53
+ * Log file found.                                     27-Apr-2023 16:18:26
+# Parsing log file...                                  27-Apr-2023 16:18:26
+    number of iterations   : 1                         27-Apr-2023 16:18:27
+    number of reformations : 1                         27-Apr-2023 16:18:27
+------- converged at time : 0.1                        27-Apr-2023 16:18:27
+    number of iterations   : 4                         27-Apr-2023 16:18:31
+    number of reformations : 4                         27-Apr-2023 16:18:31
+------- converged at time : 0.2                        27-Apr-2023 16:18:31
+    number of iterations   : 5                         27-Apr-2023 16:18:35
+    number of reformations : 5                         27-Apr-2023 16:18:35
+------- converged at time : 0.3                        27-Apr-2023 16:18:35
+    number of iterations   : 5                         27-Apr-2023 16:18:39
+    number of reformations : 5                         27-Apr-2023 16:18:39
+------- converged at time : 0.4                        27-Apr-2023 16:18:39
+    number of iterations   : 16                        27-Apr-2023 16:18:50
+    number of reformations : 16                        27-Apr-2023 16:18:50
+------- converged at time : 0.5                        27-Apr-2023 16:18:50
+    number of iterations   : 6                         27-Apr-2023 16:18:55
+    number of reformations : 6                         27-Apr-2023 16:18:55
+------- converged at time : 0.579266                   27-Apr-2023 16:18:55
+    number of iterations   : 9                         27-Apr-2023 16:19:02
+    number of reformations : 9                         27-Apr-2023 16:19:02
+------- converged at time : 0.662679                   27-Apr-2023 16:19:02
+    number of iterations   : 6                         27-Apr-2023 16:19:07
+    number of reformations : 6                         27-Apr-2023 16:19:07
+------- converged at time : 0.74699                    27-Apr-2023 16:19:07
+    number of iterations   : 8                         27-Apr-2023 16:19:14
+    number of reformations : 8                         27-Apr-2023 16:19:14
+------- converged at time : 0.834438                   27-Apr-2023 16:19:14
+    number of iterations   : 15                        27-Apr-2023 16:19:27
+    number of reformations : 15                        27-Apr-2023 16:19:27
+------- converged at time : 0.923368                   27-Apr-2023 16:19:27
+    number of iterations   : 12                        27-Apr-2023 16:19:37
+    number of reformations : 12                        27-Apr-2023 16:19:37
+------- converged at time : 0.996162                   27-Apr-2023 16:19:37
+    number of iterations   : 7                         27-Apr-2023 16:19:43
+    number of reformations : 7                         27-Apr-2023 16:19:43
+------- converged at time : 1                          27-Apr-2023 16:19:43
+ Elapsed time : 0:01:17                                27-Apr-2023 16:19:44
  N O R M A L   T E R M I N A T I O N
-# Done                                                 21-Apr-2023 10:19:53
+# Done                                                 27-Apr-2023 16:19:44
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 </pre><pre class="codeinput"><span class="keyword">elseif</span> optimizeForceOption==1
 
@@ -845,18 +845,17 @@ timeVec=dataStructDisp.time; <span class="comment">%Time</span>
 
 <span class="comment">%Create deformed coordinate set</span>
 V_DEF=N_disp_mat+repmat(V,[1 1 size(N_disp_mat,3)]);
-</pre><p>Importing element strain energies from a log file</p><pre class="codeinput">dataStructEnergy=importFEBio_logfile(fullfile(savePath,febioLogFileName_strainEnergy),0,1);
+</pre><p>Importing element stress from a log file</p><pre class="codeinput">dataStruct=importFEBio_logfile(fullfile(savePath,febioLogFileName_sed),0,1);
 
-E_energy=dataStructEnergy.data(:,1,:);
+<span class="comment">%Access data</span>
+E_sed_mat=dataStruct.data;
+</pre><h2 id="71">Plot animation</h2><p>Plotting the simulated results using <tt>anim8</tt> to visualize and animate deformations</p><pre class="codeinput">[CV]=faceToVertexMeasure(E_foot,V,E_sed_mat(:,:,end));
 
-[FE_foot,C_energy_foot]=element2patch(E_foot,E_energy(:,:,end));
-<span class="comment">%     [FE_foot,C_energy_foot]=element2patch(E_foot,E_energy(1:size(E_foot,1),:,1));</span>
-indBoundaryFacesFoot=tesBoundary(FE_foot);
-</pre><h2 id="71">Plot animation</h2><p>Plotting the simulated results using <tt>anim8</tt> to visualize and animate deformations</p><pre class="codeinput"><span class="comment">% Create basic view and store graphics handle to initiate animation</span>
+<span class="comment">% Create basic view and store graphics handle to initiate animation</span>
 hf=cFigure; hold <span class="string">on</span>; <span class="comment">%Open figure</span>
 gtitle([febioFebFileNamePart,<span class="string">': Press play to animate'</span>]);
-CV=faceToVertexMeasure(FE_foot(indBoundaryFacesFoot,:),V_DEF(:,:,end),C_energy_foot(indBoundaryFacesFoot));
-hp1=gpatch(FE_foot(indBoundaryFacesFoot,:),V_DEF(:,:,end),CV,<span class="string">'k'</span>,1); <span class="comment">%Add graphics object to animate</span>
+
+hp1=gpatch(Fb_foot,V_DEF(:,:,end),CV,<span class="string">'k'</span>,1); <span class="comment">%Add graphics object to animate</span>
 hp1.FaceColor=<span class="string">'Interp'</span>;
 hp2=gpatch(F_E_sole{1},V_DEF(:,:,end),<span class="string">'kw'</span>,<span class="string">'none'</span>,0.25); <span class="comment">%Add graphics object to animate</span>
 
@@ -864,15 +863,15 @@ axisGeom(gca,fontSize);
 colormap(gjet(250)); colorbar;
 <span class="comment">% caxis([0 max(C_energy_foot)/100]);</span>
 caxis([0 maxLevelColorbar_SED]);
-axis(axisLim(V_DEF)); <span class="comment">%Set axis limits statically  view([-40 -40]);</span>
+axis(axisLim(V_DEF)); <span class="comment">%Set axis limits statically</span>
+view([-40 -40]);
 camlight <span class="string">headlight</span>;
 
 <span class="comment">% Set up animation features</span>
 animStruct.Time=timeVec; <span class="comment">%The time vector</span>
 <span class="keyword">for</span> qt=1:1:size(V_DEF,3) <span class="comment">%Loop over time increments</span>
 
-    [FE_foot,C_energy_foot]=element2patch(E_foot,E_energy(:,:,qt));
-    CV=faceToVertexMeasure(FE_foot(indBoundaryFacesFoot,:),V_DEF(:,:,qt),C_energy_foot(indBoundaryFacesFoot));
+    [CV]=faceToVertexMeasure(E_foot,V,E_sed_mat(:,:,qt));
 
     <span class="comment">%Set entries in animation structure</span>
     animStruct.Handles{qt}=[hp1 hp1 hp2]; <span class="comment">%Handles of objects to animate</span>
@@ -933,7 +932,7 @@ febioFebFileName=fullfile(savePath,[febioFebFileNamePart,'.feb']); %FEB file nam
 febioLogFileName=fullfile(savePath,[febioFebFileNamePart,'.txt']); %FEBio log file name
 febioLogFileName_disp=[febioFebFileNamePart,'_disp_out.txt']; %Log file name for exporting displacement
 febioLogFileName_force=[febioFebFileNamePart,'_force_out.txt']; %Log file name for exporting force
-febioLogFileName_strainEnergy=[febioFebFileNamePart,'_energy_out.txt']; %Log file name for exporting strain energy density
+febioLogFileName_sed=[febioFebFileNamePart,'_energy_out.txt']; %Log file name for exporting strain energy density
 
 % Surface model file names
 fileNameBones=fullfile(loadPathSurfaces,'Foot_bulk.stl');
@@ -1663,7 +1662,7 @@ febio_spec.Output.logfile.rigid_body_data{1}.ATTR.data='Fx;Fy;Fz';
 febio_spec.Output.logfile.rigid_body_data{1}.ATTR.delim=',';
 febio_spec.Output.logfile.rigid_body_data{1}.VAL=2;
 
-febio_spec.Output.logfile.element_data{1}.ATTR.file=febioLogFileName_strainEnergy;
+febio_spec.Output.logfile.element_data{1}.ATTR.file=febioLogFileName_sed;
 febio_spec.Output.logfile.element_data{1}.ATTR.data='sed';
 febio_spec.Output.logfile.element_data{1}.ATTR.delim=',';
 
@@ -1796,24 +1795,23 @@ timeVec=dataStructDisp.time; %Time
 V_DEF=N_disp_mat+repmat(V,[1 1 size(N_disp_mat,3)]);
 
 %%
-% Importing element strain energies from a log file
-dataStructEnergy=importFEBio_logfile(fullfile(savePath,febioLogFileName_strainEnergy),0,1);
+% Importing element stress from a log file
+dataStruct=importFEBio_logfile(fullfile(savePath,febioLogFileName_sed),0,1);
 
-E_energy=dataStructEnergy.data(:,1,:);
-
-[FE_foot,C_energy_foot]=element2patch(E_foot,E_energy(:,:,end));
-%     [FE_foot,C_energy_foot]=element2patch(E_foot,E_energy(1:size(E_foot,1),:,1));
-indBoundaryFacesFoot=tesBoundary(FE_foot);
+%Access data
+E_sed_mat=dataStruct.data;
 
 %%  Plot animation
 % Plotting the simulated results using |anim8| to visualize and animate
 % deformations
 
+[CV]=faceToVertexMeasure(E_foot,V,E_sed_mat(:,:,end));
+
 % Create basic view and store graphics handle to initiate animation
 hf=cFigure; hold on; %Open figure
 gtitle([febioFebFileNamePart,': Press play to animate']);
-CV=faceToVertexMeasure(FE_foot(indBoundaryFacesFoot,:),V_DEF(:,:,end),C_energy_foot(indBoundaryFacesFoot));
-hp1=gpatch(FE_foot(indBoundaryFacesFoot,:),V_DEF(:,:,end),CV,'k',1); %Add graphics object to animate
+
+hp1=gpatch(Fb_foot,V_DEF(:,:,end),CV,'k',1); %Add graphics object to animate
 hp1.FaceColor='Interp';
 hp2=gpatch(F_E_sole{1},V_DEF(:,:,end),'kw','none',0.25); %Add graphics object to animate
 
@@ -1821,16 +1819,16 @@ axisGeom(gca,fontSize);
 colormap(gjet(250)); colorbar;
 % caxis([0 max(C_energy_foot)/100]);
 caxis([0 maxLevelColorbar_SED]);
-axis(axisLim(V_DEF)); %Set axis limits statically  view([-40 -40]);
+axis(axisLim(V_DEF)); %Set axis limits statically  
+view([-40 -40]);
 camlight headlight;
 
 % Set up animation features
 animStruct.Time=timeVec; %The time vector
 for qt=1:1:size(V_DEF,3) %Loop over time increments    
     
-    [FE_foot,C_energy_foot]=element2patch(E_foot,E_energy(:,:,qt));
-    CV=faceToVertexMeasure(FE_foot(indBoundaryFacesFoot,:),V_DEF(:,:,qt),C_energy_foot(indBoundaryFacesFoot));
-    
+    [CV]=faceToVertexMeasure(E_foot,V,E_sed_mat(:,:,qt));
+
     %Set entries in animation structure
     animStruct.Handles{qt}=[hp1 hp1 hp2]; %Handles of objects to animate
     animStruct.Props{qt}={'Vertices','CData','Vertices'}; %Properties of objects to animate

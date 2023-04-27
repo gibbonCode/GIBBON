@@ -48,7 +48,7 @@ febioFebFileName=fullfile(savePath,[febioFebFileNamePart,'.feb']); %FEB file nam
 febioLogFileName=fullfile(savePath,[febioFebFileNamePart,'.txt']); %FEBio log file name
 febioLogFileName_disp=[febioFebFileNamePart,'_disp_out.txt']; %Log file name for exporting displacement
 febioLogFileName_force=[febioFebFileNamePart,'_force_out.txt']; %Log file name for exporting force
-febioLogFileName_strainEnergy=[febioFebFileNamePart,'_energy_out.txt']; %Log file name for exporting strain energy density
+febioLogFileName_sed=[febioFebFileNamePart,'_energy_out.txt']; %Log file name for exporting strain energy density
 
 % Surface model file names
 fileNameBones=fullfile(loadPathSurfaces,'Foot_bulk.stl');
@@ -778,7 +778,7 @@ febio_spec.Output.logfile.rigid_body_data{1}.ATTR.data='Fx;Fy;Fz';
 febio_spec.Output.logfile.rigid_body_data{1}.ATTR.delim=',';
 febio_spec.Output.logfile.rigid_body_data{1}.VAL=2;
 
-febio_spec.Output.logfile.element_data{1}.ATTR.file=febioLogFileName_strainEnergy;
+febio_spec.Output.logfile.element_data{1}.ATTR.file=febioLogFileName_sed;
 febio_spec.Output.logfile.element_data{1}.ATTR.data='sed';
 febio_spec.Output.logfile.element_data{1}.ATTR.delim=',';
 
@@ -911,24 +911,23 @@ timeVec=dataStructDisp.time; %Time
 V_DEF=N_disp_mat+repmat(V,[1 1 size(N_disp_mat,3)]);
 
 %%
-% Importing element strain energies from a log file
-dataStructEnergy=importFEBio_logfile(fullfile(savePath,febioLogFileName_strainEnergy),0,1);
+% Importing element stress from a log file
+dataStruct=importFEBio_logfile(fullfile(savePath,febioLogFileName_sed),0,1);
 
-E_energy=dataStructEnergy.data(:,1,:);
-
-[FE_foot,C_energy_foot]=element2patch(E_foot,E_energy(:,:,end));
-%     [FE_foot,C_energy_foot]=element2patch(E_foot,E_energy(1:size(E_foot,1),:,1));
-indBoundaryFacesFoot=tesBoundary(FE_foot);
+%Access data
+E_sed_mat=dataStruct.data;
 
 %%  Plot animation
 % Plotting the simulated results using |anim8| to visualize and animate
 % deformations
 
+[CV]=faceToVertexMeasure(E_foot,V,E_sed_mat(:,:,end));
+
 % Create basic view and store graphics handle to initiate animation
 hf=cFigure; hold on; %Open figure
 gtitle([febioFebFileNamePart,': Press play to animate']);
-CV=faceToVertexMeasure(FE_foot(indBoundaryFacesFoot,:),V_DEF(:,:,end),C_energy_foot(indBoundaryFacesFoot));
-hp1=gpatch(FE_foot(indBoundaryFacesFoot,:),V_DEF(:,:,end),CV,'k',1); %Add graphics object to animate
+
+hp1=gpatch(Fb_foot,V_DEF(:,:,end),CV,'k',1); %Add graphics object to animate
 hp1.FaceColor='Interp';
 hp2=gpatch(F_E_sole{1},V_DEF(:,:,end),'kw','none',0.25); %Add graphics object to animate
 
@@ -936,16 +935,16 @@ axisGeom(gca,fontSize);
 colormap(gjet(250)); colorbar;
 % caxis([0 max(C_energy_foot)/100]);
 caxis([0 maxLevelColorbar_SED]);
-axis(axisLim(V_DEF)); %Set axis limits statically  view([-40 -40]);
+axis(axisLim(V_DEF)); %Set axis limits statically  
+view([-40 -40]);
 camlight headlight;
 
 % Set up animation features
 animStruct.Time=timeVec; %The time vector
 for qt=1:1:size(V_DEF,3) %Loop over time increments    
     
-    [FE_foot,C_energy_foot]=element2patch(E_foot,E_energy(:,:,qt));
-    CV=faceToVertexMeasure(FE_foot(indBoundaryFacesFoot,:),V_DEF(:,:,qt),C_energy_foot(indBoundaryFacesFoot));
-    
+    [CV]=faceToVertexMeasure(E_foot,V,E_sed_mat(:,:,qt));
+
     %Set entries in animation structure
     animStruct.Handles{qt}=[hp1 hp1 hp2]; %Handles of objects to animate
     animStruct.Props{qt}={'Vertices','CData','Vertices'}; %Properties of objects to animate
