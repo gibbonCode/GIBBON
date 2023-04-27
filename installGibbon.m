@@ -135,7 +135,7 @@ if ispc
 elseif ismac
     hTextInfoStringDefault='On MacOS likely similar to: /Applications/FEBioStudio/FEBioStudio.app/Contents/MacOS/febio4';
 else
-    hTextInfoStringDefault='On Linux likely similar to: /home/userName/FEBioStudio2/bin/febio4';
+    hTextInfoStringDefault='On Linux likely similar to: /home/<UserName>/FEBioStudio/bin/febio4';
 end
 
 hTextInfo1 = uicontrol(hf,'Style','text','String',hTextInfoStringDefault,...
