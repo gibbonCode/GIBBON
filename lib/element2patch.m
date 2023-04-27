@@ -39,21 +39,23 @@ end
 numNodes=size(E,2);
 
 if isempty(elementType) %have to assume defaults    
-    switch numNodes             
-        case 8 %Hexahedral elements
-            elementType='hex8';            
-        case 20 %Hexahedral elements
-            elementType='hex20';
-        case 4 %Linear tets
-            elementType='tet4';
-        case 10 %Quadratic tets
-            elementType='tet10';
-        case 6 %Quadratic triangles
-            elementType='tri6';
+    switch numNodes                        
         case 3
             elementType='tri3';
+        case 4 %Linear tets
+            elementType='tet4';
+        case 5
+            elementType='pyra5';
+        case 6 %Quadratic triangles
+            elementType='tri6';
+        case 8 %Hexahedral elements
+            elementType='hex8'; 
+        case 10 %Quadratic tets
+            elementType='tet10';
         case 14
             elementType='rhomdo14';
+        case 20 %Hexahedral elements
+            elementType='hex20';
         otherwise            
             elementType='unknown';
     end    
@@ -63,6 +65,23 @@ end
 %%
 
 switch elementType
+    case 'pyra5'
+        F_tri=[E(:,[5 2 1]);... %face 1
+               E(:,[5 3 2]);... %face 2
+               E(:,[5 4 3]);... %face 3
+               E(:,[5 1 4]);... %face 4           
+                ]; 
+
+        F_quad=[E(:,[1 2 3 4])]; %face 5                
+            
+        F={F_tri,F_quad};
+        
+        C_tri=repmat(C,4,1);
+        C_quad=C;
+        C={C_tri,C_quad};
+        CF_tri  = [1*ones(size(E,1),1); 2*ones(size(E,1),1); 3*ones(size(E,1),1); 4*ones(size(E,1),1);];
+        CF_quad = 5*ones(size(E,1),1);
+        CF={CF_tri,CF_quad};
     case 'octa6'
         faceIndicesPattern=[5 2 1;...
                             5 3 2;...
