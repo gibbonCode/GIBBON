@@ -1074,7 +1074,7 @@ if runFlag==1 %i.e. a succesful run
     
     axisGeom(gca,fontSize); camlight headlight;
     colormap(cMap); colorbar;
-    caxis([0 max(E_sed_mat(:))/10]);
+    caxis([0 max(E_sed_mat(:))/20]);
     axis(axisLim(V_DEF)); %Set axis limits statically    
     axis tight; 
     

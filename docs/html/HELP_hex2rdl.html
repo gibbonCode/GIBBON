@@ -1,0 +1,258 @@
+
+<!DOCTYPE html
+  PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html><head>
+      <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+   <!--
+This HTML was auto-generated from MATLAB code.
+To make changes, update the MATLAB code and republish this document.
+      --><title>hex2rdl</title><meta name="generator" content="MATLAB 9.14"><link rel="schema.DC" href="http://purl.org/dc/elements/1.1/"><meta name="DC.date" content="2023-04-28"><meta name="DC.source" content="HELP_hex2rdl.m"><style type="text/css">
+html,body,div,span,applet,object,iframe,h1,h2,h3,h4,h5,h6,p,blockquote,pre,a,abbr,acronym,address,big,cite,code,del,dfn,em,font,img,ins,kbd,q,s,samp,small,strike,strong,tt,var,b,u,i,center,dl,dt,dd,ol,ul,li,fieldset,form,label,legend,table,caption,tbody,tfoot,thead,tr,th,td{margin:0;padding:0;border:0;outline:0;font-size:100%;vertical-align:baseline;background:transparent}body{line-height:1}ol,ul{list-style:none}blockquote,q{quotes:none}blockquote:before,blockquote:after,q:before,q:after{content:'';content:none}:focus{outine:0}ins{text-decoration:none}del{text-decoration:line-through}table{border-collapse:collapse;border-spacing:0}
+
+html { min-height:100%; margin-bottom:1px; }
+html body { height:100%; margin:0px; font-family:Arial, Helvetica, sans-serif; font-size:10px; color:#000; line-height:140%; background:#fff none; overflow-y:scroll; }
+html body td { vertical-align:top; text-align:left; }
+
+h1 { padding:0px; margin:0px 0px 25px; font-family:Arial, Helvetica, sans-serif; font-size:1.5em; color:#d55000; line-height:100%; font-weight:normal; }
+h2 { padding:0px; margin:0px 0px 8px; font-family:Arial, Helvetica, sans-serif; font-size:1.2em; color:#000; font-weight:bold; line-height:140%; border-bottom:1px solid #d6d4d4; display:block; }
+h3 { padding:0px; margin:0px 0px 5px; font-family:Arial, Helvetica, sans-serif; font-size:1.1em; color:#000; font-weight:bold; line-height:140%; }
+
+a { color:#005fce; text-decoration:none; }
+a:hover { color:#005fce; text-decoration:underline; }
+a:visited { color:#004aa0; text-decoration:none; }
+
+p { padding:0px; margin:0px 0px 20px; }
+img { padding:0px; margin:0px 0px 20px; border:none; }
+p img, pre img, tt img, li img, h1 img, h2 img { margin-bottom:0px; }
+
+ul { padding:0px; margin:0px 0px 20px 23px; list-style:square; }
+ul li { padding:0px; margin:0px 0px 7px 0px; }
+ul li ul { padding:5px 0px 0px; margin:0px 0px 7px 23px; }
+ul li ol li { list-style:decimal; }
+ol { padding:0px; margin:0px 0px 20px 0px; list-style:decimal; }
+ol li { padding:0px; margin:0px 0px 7px 23px; list-style-type:decimal; }
+ol li ol { padding:5px 0px 0px; margin:0px 0px 7px 0px; }
+ol li ol li { list-style-type:lower-alpha; }
+ol li ul { padding-top:7px; }
+ol li ul li { list-style:square; }
+
+.content { font-size:1.2em; line-height:140%; padding: 20px; }
+
+pre, code { font-size:12px; }
+tt { font-size: 1.2em; }
+pre { margin:0px 0px 20px; }
+pre.codeinput { padding:10px; border:1px solid #d3d3d3; background:#f7f7f7; }
+pre.codeoutput { padding:10px 11px; margin:0px 0px 20px; color:#4c4c4c; }
+pre.error { color:red; }
+
+@media print { pre.codeinput, pre.codeoutput { word-wrap:break-word; width:100%; } }
+
+span.keyword { color:#0000FF }
+span.comment { color:#228B22 }
+span.string { color:#A020F0 }
+span.untermstring { color:#B20000 }
+span.syscmd { color:#B28C00 }
+span.typesection { color:#A0522D }
+
+.footer { width:auto; padding:10px 0px; margin:25px 0px 0px; border-top:1px dotted #878787; font-size:0.8em; line-height:140%; font-style:italic; color:#878787; text-align:left; float:none; }
+.footer p { margin:0px; }
+.footer a { color:#878787; }
+.footer a:hover { color:#878787; text-decoration:underline; }
+.footer a:visited { color:#878787; }
+
+table th { padding:7px 5px; text-align:left; vertical-align:middle; border: 1px solid #d6d4d4; font-weight:bold; }
+table td { padding:7px 5px; text-align:left; vertical-align:top; border:1px solid #d6d4d4; }
+
+
+
+
+
+  </style></head><body><div class="content"><h1>hex2rdl</h1><!--introduction--><p>Below is a demonstration of the features of the <tt>hex2rdl</tt> function</p><!--/introduction--><h2>Contents</h2><div><ul><li><a href="#1">Syntax</a></li><li><a href="#2">Description</a></li><li><a href="#5">Examples</a></li><li><a href="#6">EXAMPLE 1: Converting a hexahedral element to tetrahedral elements</a></li></ul></div><h2 id="1">Syntax</h2><p><tt>[Ep,Et,Vs]=hex2rdl(Eh,V,inputStruct);</tt></p><h2 id="2">Description</h2><p>This function creates rhombic-dodecahedron lattices and diamond lattices from hexahedral input meshes.</p><pre class="codeinput">clear; close <span class="string">all</span>; clc;
+</pre><p>Plot settings</p><pre class="codeinput">fontSize=25;
+faceAlpha1=0.25;
+edgeWidth=3;
+markerSize=25;
+cMap=gjet(6);
+</pre><h2 id="5">Examples</h2><h2 id="6">EXAMPLE 1: Converting a hexahedral element to tetrahedral elements</h2><p>Creating an example hexahedral element set</p><pre class="codeinput">testCase=2;
+<span class="keyword">switch</span> testCase
+    <span class="keyword">case</span> 1 <span class="comment">%Cube</span>
+        V=[0 0 0; 1 0 0; 1 1 0; 0 1 0; 0 0 1; 1 0 1; 1 1 1; 0 1 1;]-0.5; <span class="comment">%nodes</span>
+        Eh=1:8; <span class="comment">%Element</span>
+    <span class="keyword">case</span> 2 <span class="comment">%Subdivided cube</span>
+        V=[0 0 0; 1 0 0; 1 1 0; 0 1 0; 0 0 1; 1 0 1; 1 1 1; 0 1 1;]-0.5; <span class="comment">%nodes</span>
+        Eh=1:8; <span class="comment">%Element</span>
+        [Eh,V]=subHex(Eh,V,1);
+    <span class="keyword">case</span> 3 <span class="comment">%Sphere hex mesh</span>
+        sphereRadius=2;
+
+        <span class="comment">%Creating sphere mesh</span>
+        optionStructSphereHexMesh.sphereRadius=sphereRadius;
+        optionStructSphereHexMesh.coreRadius=sphereRadius/3;
+        optionStructSphereHexMesh.numElementsMantel=2;
+        optionStructSphereHexMesh.numElementsCore=4;
+        optionStructSphereHexMesh.makeHollow=0;
+        optionStructSphereHexMesh.outputStructType=2;
+        [meshStruct]=hexMeshSphere(optionStructSphereHexMesh);
+
+        <span class="comment">% Access model element and patch data</span>
+        V=meshStruct.nodes;
+        Eh=meshStruct.elements;
+<span class="keyword">end</span>
+nSubPenta=1;
+</pre><pre class="codeinput">strutThickness=0.1;
+
+F=element2patch(Eh,V);
+d=mean(patchEdgeLengths(F,V));
+
+shrinkFactor=strutThickness./(d.*(sqrt(2)./2));
+
+inputStruct.latticePhaseType=1; <span class="comment">% 1 = "bubble" centred, 2 = vertex centred, 3 = nested</span>
+inputStruct.latticeType=2; <span class="comment">% rhombic-dodecahedron (1) or Diamond (2)</span>
+inputStruct.shrinkFactor=shrinkFactor;
+inputStruct.removeNonConnected=1;
+
+[Ep,Et,VT]=hex2rdl(Eh,V,inputStruct); <span class="comment">%Create the mesh</span>
+[Ep,VT]=subPenta(Ep,VT,nSubPenta,3); <span class="comment">%Sub-divide pentahedra</span>
+</pre><p>Visualization of lattice meshes</p><pre class="codeinput"><span class="comment">% Convert tetrahedra and pentahedra to faces</span>
+[Ft]=element2patch(Et,[],<span class="string">'tet4'</span>);
+[Fp]=element2patch(Ep,[],<span class="string">'penta6'</span>);
+
+<span class="comment">% Convert original hexahedra to faces</span>
+[Fh]=element2patch(Eh,[],<span class="string">'hex8'</span>);
+</pre><pre class="codeinput">cFigure; hold <span class="string">on</span>;
+hp1=gpatch(Fh,V,<span class="string">'w'</span>,<span class="string">'k'</span>,0.25,edgeWidth);
+hp2=gpatch(Ft,VT,<span class="string">'bw'</span>,<span class="string">'k'</span>,1,1); <span class="comment">% Color for flip type</span>
+hp3=gpatch(Fp,VT,<span class="string">'gw'</span>,<span class="string">'k'</span>,1,1);
+legend([hp1 hp2 hp3(1)],{<span class="string">'Input hex mesh'</span>,<span class="string">'Tetrahedra'</span>,<span class="string">'Pentahedra'</span>});
+axisGeom(gca,fontSize); camlight <span class="string">headlight</span>;
+gdrawnow;
+</pre><img width="100%" height="auto" vspace="5" hspace="5" src="HELP_hex2rdl_01.jpg" alt=""> <p><img vspace="5" hspace="5" src="gibbVerySmall.gif" alt=""> </p><p><i><b>GIBBON</b></i> <a href="www.gibboncode.org">www.gibboncode.org</a></p><p><i>Kevin Mattheus Moerman</i>, <a href="gibbon.toolbox@gmail.com">gibbon.toolbox@gmail.com</a></p><p><i><b>GIBBON footer text</b></i></p><p>License: <a href="https://github.com/gibbonCode/GIBBON/blob/master/LICENSE">https://github.com/gibbonCode/GIBBON/blob/master/LICENSE</a></p><p>GIBBON: The Geometry and Image-based Bioengineering add-On. A toolbox for image segmentation, image-based modeling, meshing, and finite element analysis.</p><p>Copyright (C) 2006-2022 Kevin Mattheus Moerman and the GIBBON contributors</p><p>This program is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.</p><p>This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for more details.</p><p>You should have received a copy of the GNU General Public License along with this program.  If not, see <a href="http://www.gnu.org/licenses/">http://www.gnu.org/licenses/</a>.</p><p class="footer"><br><a href="https://www.mathworks.com/products/matlab/">Published with MATLAB&reg; R2023a</a><br></p></div><!--
+##### SOURCE BEGIN #####
+%% hex2rdl
+% Below is a demonstration of the features of the |hex2rdl| function
+
+%% Syntax
+% |[Ep,Et,Vs]=hex2rdl(Eh,V,inputStruct);|
+
+%% Description
+% This function creates rhombic-dodecahedron lattices and diamond lattices
+% from hexahedral input meshes. 
+
+%%
+clear; close all; clc;
+
+%%
+% Plot settings
+fontSize=25;
+faceAlpha1=0.25;
+edgeWidth=3;
+markerSize=25;
+cMap=gjet(6);
+
+%% Examples
+%
+
+%% EXAMPLE 1: Converting a hexahedral element to tetrahedral elements
+
+%%
+% Creating an example hexahedral element set
+
+testCase=2;
+switch testCase
+    case 1 %Cube
+        V=[0 0 0; 1 0 0; 1 1 0; 0 1 0; 0 0 1; 1 0 1; 1 1 1; 0 1 1;]-0.5; %nodes
+        Eh=1:8; %Element
+    case 2 %Subdivided cube
+        V=[0 0 0; 1 0 0; 1 1 0; 0 1 0; 0 0 1; 1 0 1; 1 1 1; 0 1 1;]-0.5; %nodes
+        Eh=1:8; %Element
+        [Eh,V]=subHex(Eh,V,1);
+    case 3 %Sphere hex mesh
+        sphereRadius=2;
+
+        %Creating sphere mesh
+        optionStructSphereHexMesh.sphereRadius=sphereRadius;
+        optionStructSphereHexMesh.coreRadius=sphereRadius/3;
+        optionStructSphereHexMesh.numElementsMantel=2;
+        optionStructSphereHexMesh.numElementsCore=4;
+        optionStructSphereHexMesh.makeHollow=0;
+        optionStructSphereHexMesh.outputStructType=2;
+        [meshStruct]=hexMeshSphere(optionStructSphereHexMesh);
+
+        % Access model element and patch data        
+        V=meshStruct.nodes;
+        Eh=meshStruct.elements;
+end
+nSubPenta=1;
+%%
+
+strutThickness=0.1; 
+
+F=element2patch(Eh,V);
+d=mean(patchEdgeLengths(F,V));
+
+shrinkFactor=strutThickness./(d.*(sqrt(2)./2));
+
+inputStruct.latticePhaseType=1; % 1 = "bubble" centred, 2 = vertex centred, 3 = nested
+inputStruct.latticeType=2; % rhombic-dodecahedron (1) or Diamond (2)
+inputStruct.shrinkFactor=shrinkFactor; 
+inputStruct.removeNonConnected=1;
+
+[Ep,Et,VT]=hex2rdl(Eh,V,inputStruct); %Create the mesh 
+[Ep,VT]=subPenta(Ep,VT,nSubPenta,3); %Sub-divide pentahedra
+
+%%
+% Visualization of lattice meshes
+
+% Convert tetrahedra and pentahedra to faces
+[Ft]=element2patch(Et,[],'tet4');
+[Fp]=element2patch(Ep,[],'penta6');
+
+% Convert original hexahedra to faces 
+[Fh]=element2patch(Eh,[],'hex8');
+
+%%
+
+%%
+cFigure; hold on;
+hp1=gpatch(Fh,V,'w','k',0.25,edgeWidth);
+hp2=gpatch(Ft,VT,'bw','k',1,1); % Color for flip type
+hp3=gpatch(Fp,VT,'gw','k',1,1);
+legend([hp1 hp2 hp3(1)],{'Input hex mesh','Tetrahedra','Pentahedra'});
+axisGeom(gca,fontSize); camlight headlight; 
+gdrawnow;
+
+%%
+%
+% <<gibbVerySmall.gif>>
+%
+% _*GIBBON*_
+% <www.gibboncode.org>
+%
+% _Kevin Mattheus Moerman_, <gibbon.toolbox@gmail.com>
+
+%%
+% _*GIBBON footer text*_
+%
+% License: <https://github.com/gibbonCode/GIBBON/blob/master/LICENSE>
+%
+% GIBBON: The Geometry and Image-based Bioengineering add-On. A toolbox for
+% image segmentation, image-based modeling, meshing, and finite element
+% analysis.
+%
+% Copyright (C) 2006-2022 Kevin Mattheus Moerman and the GIBBON contributors
+%
+% This program is free software: you can redistribute it and/or modify
+% it under the terms of the GNU General Public License as published by
+% the Free Software Foundation, either version 3 of the License, or
+% (at your option) any later version.
+%
+% This program is distributed in the hope that it will be useful,
+% but WITHOUT ANY WARRANTY; without even the implied warranty of
+% MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+% GNU General Public License for more details.
+%
+% You should have received a copy of the GNU General Public License
+% along with this program.  If not, see <http://www.gnu.org/licenses/>.
+
+##### SOURCE END #####
+--></body></html>

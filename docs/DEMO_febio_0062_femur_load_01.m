@@ -487,17 +487,12 @@ febio_spec.Mesh.Elements{2}.ATTR.type='tet4'; %Element type
 febio_spec.Mesh.Elements{2}.elem.ATTR.id=size(E1,1)+(1:1:size(E2,1))'; %Element id's
 febio_spec.Mesh.Elements{2}.elem.VAL=E2; %The element matrix
 
-
 % -> NodeSets
 nodeSetName1='bcSupportList';
-nodeSetName2='indicesHeadSurfaceNodes';
-nodeSetName3='indicesAbductor';
-nodeSetName4='indicesVastusLateralis';
-nodeSetName5='indicesVastusMedialis';
-
 febio_spec.Mesh.NodeSet{1}.ATTR.name=nodeSetName1;
 febio_spec.Mesh.NodeSet{1}.VAL=mrow(bcSupportList);
 
+nodeSetName2='bcPrescribeList';
 febio_spec.Mesh.NodeSet{2}.ATTR.name=nodeSetName2;
 febio_spec.Mesh.NodeSet{2}.VAL=mrow(bcPrescribeList);
 
@@ -567,6 +562,9 @@ febio_spec.Output.logfile.element_data{1}.ATTR.delim=',';
 febio_spec.Output.logfile.element_data{2}.ATTR.file=febioLogFileName_strainEnergy;
 febio_spec.Output.logfile.element_data{2}.ATTR.data='sed';
 febio_spec.Output.logfile.element_data{2}.ATTR.delim=',';
+
+% Plotfile section
+febio_spec.Output.plotfile.compression=0;
 
 %% Quick viewing of the FEBio input file structure
 % The |febView| function can be used to view the xml structure in a MATLAB

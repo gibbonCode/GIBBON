@@ -7,7 +7,7 @@
 
 %% Keywords
 %
-% * febio_spec version 3.0
+% * febio_spec version 4.0
 % * febio, FEBio
 % * tension, tensile
 % * displacement control, displacement boundary condition
@@ -227,7 +227,7 @@ drawnow;
 [febio_spec]=febioStructTemplate;
 
 %febio_spec version 
-febio_spec.ATTR.version='3.0'; 
+febio_spec.ATTR.version='4.0'; 
 
 %Module section
 febio_spec.Module.ATTR.type='solid'; 
@@ -236,7 +236,6 @@ febio_spec.Module.ATTR.type='solid';
 stepStruct.Control.time_steps=numTimeSteps;
 stepStruct.Control.step_size=1/numTimeSteps;
 stepStruct.Control.solver.max_refs=max_refs;
-stepStruct.Control.solver.max_ups=max_ups;
 stepStruct.Control.time_stepper.dtmin=dtmin;
 stepStruct.Control.time_stepper.dtmax=dtmax; 
 stepStruct.Control.time_stepper.max_retries=max_retries;
@@ -280,216 +279,212 @@ febio_spec.Mesh.Elements{1}.elem.VAL=E; %The element matrix
 % -> NodeSets
 nodeSetName1='bcPrescribeList1';
 febio_spec.Mesh.NodeSet{1}.ATTR.name=nodeSetName1;
-febio_spec.Mesh.NodeSet{1}.node.ATTR.id=bcPrescribeList1(:);
+febio_spec.Mesh.NodeSet{1}.VAL=mrow(bcPrescribeList1);
 
 nodeSetName2='bcPrescribeList2';
 febio_spec.Mesh.NodeSet{2}.ATTR.name=nodeSetName2;
-febio_spec.Mesh.NodeSet{2}.node.ATTR.id=bcPrescribeList2(:);
+febio_spec.Mesh.NodeSet{2}.VAL=mrow(bcPrescribeList2);
 
 nodeSetName3='bcPrescribeList3';
 febio_spec.Mesh.NodeSet{3}.ATTR.name=nodeSetName3;
-febio_spec.Mesh.NodeSet{3}.node.ATTR.id=bcPrescribeList3(:);
+febio_spec.Mesh.NodeSet{3}.VAL=mrow(bcPrescribeList3);
 
 nodeSetName4='bcPrescribeList4';
 febio_spec.Mesh.NodeSet{4}.ATTR.name=nodeSetName4;
-febio_spec.Mesh.NodeSet{4}.node.ATTR.id=bcPrescribeList4(:);
+febio_spec.Mesh.NodeSet{4}.VAL=mrow(bcPrescribeList4);
 
 %MeshDomains section
 febio_spec.MeshDomains.SolidDomain.ATTR.name=partName1;
 febio_spec.MeshDomains.SolidDomain.ATTR.mat=materialName1;
 
 %Boundary condition section 
-%STEP 1: Clamping compression
+
+%STEP 1: Clamping compression -------------------------------------------
 %Set 1
-febio_spec.Step.step{1}.Boundary.bc{1}.ATTR.type='prescribe';
+
+% Set 1 compression
+febio_spec.Step.step{1}.Boundary.bc{1}.ATTR.name='bcPrescribeList01_01';
+febio_spec.Step.step{1}.Boundary.bc{1}.ATTR.type='prescribed displacement';
 febio_spec.Step.step{1}.Boundary.bc{1}.ATTR.node_set=nodeSetName1;
-febio_spec.Step.step{1}.Boundary.bc{1}.dof='x';
-febio_spec.Step.step{1}.Boundary.bc{1}.scale.ATTR.lc=1;
-febio_spec.Step.step{1}.Boundary.bc{1}.scale.VAL=0;
+febio_spec.Step.step{1}.Boundary.bc{1}.dof='y';
+febio_spec.Step.step{1}.Boundary.bc{1}.value.ATTR.lc=1;
+febio_spec.Step.step{1}.Boundary.bc{1}.value.VAL=clampCompressiveDisplacement;
 febio_spec.Step.step{1}.Boundary.bc{1}.relative=1;
 
-febio_spec.Step.step{1}.Boundary.bc{2}.ATTR.type='prescribe';
+febio_spec.Step.step{1}.Boundary.bc{2}.ATTR.name='FixedDisplacement01_01';
+febio_spec.Step.step{1}.Boundary.bc{2}.ATTR.type='zero displacement';
 febio_spec.Step.step{1}.Boundary.bc{2}.ATTR.node_set=nodeSetName1;
-febio_spec.Step.step{1}.Boundary.bc{2}.dof='y';
-febio_spec.Step.step{1}.Boundary.bc{2}.scale.ATTR.lc=1;
-febio_spec.Step.step{1}.Boundary.bc{2}.scale.VAL=clampCompressiveDisplacement;
-febio_spec.Step.step{1}.Boundary.bc{2}.relative=1;
+febio_spec.Step.step{1}.Boundary.bc{2}.x_dof=1;
+febio_spec.Step.step{1}.Boundary.bc{2}.y_dof=0;
+febio_spec.Step.step{1}.Boundary.bc{2}.z_dof=1;
 
-febio_spec.Step.step{1}.Boundary.bc{3}.ATTR.type='prescribe';
-febio_spec.Step.step{1}.Boundary.bc{3}.ATTR.node_set=nodeSetName1;
-febio_spec.Step.step{1}.Boundary.bc{3}.dof='z';
-febio_spec.Step.step{1}.Boundary.bc{3}.scale.ATTR.lc=1;
-febio_spec.Step.step{1}.Boundary.bc{3}.scale.VAL=0;
+% Set 2 compression
+febio_spec.Step.step{1}.Boundary.bc{3}.ATTR.name='bcPrescribeList02_01';
+febio_spec.Step.step{1}.Boundary.bc{3}.ATTR.type='prescribed displacement';
+febio_spec.Step.step{1}.Boundary.bc{3}.ATTR.node_set=nodeSetName2;
+febio_spec.Step.step{1}.Boundary.bc{3}.dof='y';
+febio_spec.Step.step{1}.Boundary.bc{3}.value.ATTR.lc=1;
+febio_spec.Step.step{1}.Boundary.bc{3}.value.VAL=-clampCompressiveDisplacement;
 febio_spec.Step.step{1}.Boundary.bc{3}.relative=1;
 
-%Set 2
-febio_spec.Step.step{1}.Boundary.bc{4}.ATTR.type='prescribe';
+febio_spec.Step.step{1}.Boundary.bc{4}.ATTR.name='FixedDisplacement02_01';
+febio_spec.Step.step{1}.Boundary.bc{4}.ATTR.type='zero displacement';
 febio_spec.Step.step{1}.Boundary.bc{4}.ATTR.node_set=nodeSetName2;
-febio_spec.Step.step{1}.Boundary.bc{4}.dof='x';
-febio_spec.Step.step{1}.Boundary.bc{4}.scale.ATTR.lc=1;
-febio_spec.Step.step{1}.Boundary.bc{4}.scale.VAL=0;
-febio_spec.Step.step{1}.Boundary.bc{4}.relative=1;
+febio_spec.Step.step{1}.Boundary.bc{4}.x_dof=1;
+febio_spec.Step.step{1}.Boundary.bc{4}.y_dof=0;
+febio_spec.Step.step{1}.Boundary.bc{4}.z_dof=1;
 
-febio_spec.Step.step{1}.Boundary.bc{5}.ATTR.type='prescribe';
-febio_spec.Step.step{1}.Boundary.bc{5}.ATTR.node_set=nodeSetName2;
+% Set 3 compression
+febio_spec.Step.step{1}.Boundary.bc{5}.ATTR.name='bcPrescribeList03_01';
+febio_spec.Step.step{1}.Boundary.bc{5}.ATTR.type='prescribed displacement';
+febio_spec.Step.step{1}.Boundary.bc{5}.ATTR.node_set=nodeSetName3;
 febio_spec.Step.step{1}.Boundary.bc{5}.dof='y';
-febio_spec.Step.step{1}.Boundary.bc{5}.scale.ATTR.lc=1;
-febio_spec.Step.step{1}.Boundary.bc{5}.scale.VAL=-clampCompressiveDisplacement;
+febio_spec.Step.step{1}.Boundary.bc{5}.value.ATTR.lc=1;
+febio_spec.Step.step{1}.Boundary.bc{5}.value.VAL=-clampCompressiveDisplacement;
 febio_spec.Step.step{1}.Boundary.bc{5}.relative=1;
 
-febio_spec.Step.step{1}.Boundary.bc{6}.ATTR.type='prescribe';
-febio_spec.Step.step{1}.Boundary.bc{6}.ATTR.node_set=nodeSetName2;
-febio_spec.Step.step{1}.Boundary.bc{6}.dof='z';
-febio_spec.Step.step{1}.Boundary.bc{6}.scale.ATTR.lc=1;
-febio_spec.Step.step{1}.Boundary.bc{6}.scale.VAL=0;
-febio_spec.Step.step{1}.Boundary.bc{6}.relative=1;
+febio_spec.Step.step{1}.Boundary.bc{6}.ATTR.name='FixedDisplacement03_01';
+febio_spec.Step.step{1}.Boundary.bc{6}.ATTR.type='zero displacement';
+febio_spec.Step.step{1}.Boundary.bc{6}.ATTR.node_set=nodeSetName3;
+febio_spec.Step.step{1}.Boundary.bc{6}.x_dof=1;
+febio_spec.Step.step{1}.Boundary.bc{6}.y_dof=0;
+febio_spec.Step.step{1}.Boundary.bc{6}.z_dof=1;
 
-%Set 3
-febio_spec.Step.step{1}.Boundary.bc{7}.ATTR.type='prescribe';
-febio_spec.Step.step{1}.Boundary.bc{7}.ATTR.node_set=nodeSetName3;
-febio_spec.Step.step{1}.Boundary.bc{7}.dof='x';
-febio_spec.Step.step{1}.Boundary.bc{7}.scale.ATTR.lc=1;
-febio_spec.Step.step{1}.Boundary.bc{7}.scale.VAL=0;
+% Set 4 compression
+febio_spec.Step.step{1}.Boundary.bc{7}.ATTR.name='bcPrescribeList04_01';
+febio_spec.Step.step{1}.Boundary.bc{7}.ATTR.type='prescribed displacement';
+febio_spec.Step.step{1}.Boundary.bc{7}.ATTR.node_set=nodeSetName4;
+febio_spec.Step.step{1}.Boundary.bc{7}.dof='y';
+febio_spec.Step.step{1}.Boundary.bc{7}.value.ATTR.lc=1;
+febio_spec.Step.step{1}.Boundary.bc{7}.value.VAL=clampCompressiveDisplacement;
 febio_spec.Step.step{1}.Boundary.bc{7}.relative=1;
 
-febio_spec.Step.step{1}.Boundary.bc{8}.ATTR.type='prescribe';
-febio_spec.Step.step{1}.Boundary.bc{8}.ATTR.node_set=nodeSetName3;
-febio_spec.Step.step{1}.Boundary.bc{8}.dof='y';
-febio_spec.Step.step{1}.Boundary.bc{8}.scale.ATTR.lc=1;
-febio_spec.Step.step{1}.Boundary.bc{8}.scale.VAL=-clampCompressiveDisplacement;
-febio_spec.Step.step{1}.Boundary.bc{8}.relative=1;
+febio_spec.Step.step{1}.Boundary.bc{8}.ATTR.name='FixedDisplacement04_01';
+febio_spec.Step.step{1}.Boundary.bc{8}.ATTR.type='zero displacement';
+febio_spec.Step.step{1}.Boundary.bc{8}.ATTR.node_set=nodeSetName4;
+febio_spec.Step.step{1}.Boundary.bc{8}.x_dof=1;
+febio_spec.Step.step{1}.Boundary.bc{8}.y_dof=0;
+febio_spec.Step.step{1}.Boundary.bc{8}.z_dof=1;
 
-febio_spec.Step.step{1}.Boundary.bc{9}.ATTR.type='prescribe';
-febio_spec.Step.step{1}.Boundary.bc{9}.ATTR.node_set=nodeSetName3;
-febio_spec.Step.step{1}.Boundary.bc{9}.dof='z';
-febio_spec.Step.step{1}.Boundary.bc{9}.scale.ATTR.lc=1;
-febio_spec.Step.step{1}.Boundary.bc{9}.scale.VAL=0;
-febio_spec.Step.step{1}.Boundary.bc{9}.relative=1;
+%STEP 2 Tension -------------------------------------------
 
-%Set 4
-febio_spec.Step.step{1}.Boundary.bc{10}.ATTR.type='prescribe';
-febio_spec.Step.step{1}.Boundary.bc{10}.ATTR.node_set=nodeSetName4;
-febio_spec.Step.step{1}.Boundary.bc{10}.dof='x';
-febio_spec.Step.step{1}.Boundary.bc{10}.scale.ATTR.lc=1;
-febio_spec.Step.step{1}.Boundary.bc{10}.scale.VAL=0;
-febio_spec.Step.step{1}.Boundary.bc{10}.relative=1;
-
-febio_spec.Step.step{1}.Boundary.bc{11}.ATTR.type='prescribe';
-febio_spec.Step.step{1}.Boundary.bc{11}.ATTR.node_set=nodeSetName4;
-febio_spec.Step.step{1}.Boundary.bc{11}.dof='y';
-febio_spec.Step.step{1}.Boundary.bc{11}.scale.ATTR.lc=1;
-febio_spec.Step.step{1}.Boundary.bc{11}.scale.VAL=clampCompressiveDisplacement;
-febio_spec.Step.step{1}.Boundary.bc{11}.relative=1;
-
-febio_spec.Step.step{1}.Boundary.bc{12}.ATTR.type='prescribe';
-febio_spec.Step.step{1}.Boundary.bc{12}.ATTR.node_set=nodeSetName4;
-febio_spec.Step.step{1}.Boundary.bc{12}.dof='z';
-febio_spec.Step.step{1}.Boundary.bc{12}.scale.ATTR.lc=1;
-febio_spec.Step.step{1}.Boundary.bc{12}.scale.VAL=0;
-febio_spec.Step.step{1}.Boundary.bc{12}.relative=1;
-
-%STEP 2 Tension
-%Set 1
-febio_spec.Step.step{2}.Boundary.bc{1}.ATTR.type='prescribe';
+% Set 1 tension
+febio_spec.Step.step{2}.Boundary.bc{1}.ATTR.name='bcPrescribeList01_02';
+febio_spec.Step.step{2}.Boundary.bc{1}.ATTR.type='prescribed displacement';
 febio_spec.Step.step{2}.Boundary.bc{1}.ATTR.node_set=nodeSetName1;
 febio_spec.Step.step{2}.Boundary.bc{1}.dof='x';
-febio_spec.Step.step{2}.Boundary.bc{1}.scale.ATTR.lc=2;
-febio_spec.Step.step{2}.Boundary.bc{1}.scale.VAL=0;
+febio_spec.Step.step{2}.Boundary.bc{1}.value.ATTR.lc=1;
+febio_spec.Step.step{2}.Boundary.bc{1}.value.VAL=0;
 febio_spec.Step.step{2}.Boundary.bc{1}.relative=1;
 
-febio_spec.Step.step{2}.Boundary.bc{2}.ATTR.type='prescribe';
+febio_spec.Step.step{2}.Boundary.bc{2}.ATTR.name='bcPrescribeList02_02';
+febio_spec.Step.step{2}.Boundary.bc{2}.ATTR.type='prescribed displacement';
 febio_spec.Step.step{2}.Boundary.bc{2}.ATTR.node_set=nodeSetName1;
 febio_spec.Step.step{2}.Boundary.bc{2}.dof='y';
-febio_spec.Step.step{2}.Boundary.bc{2}.scale.ATTR.lc=2;
-febio_spec.Step.step{2}.Boundary.bc{2}.scale.VAL=0;
+febio_spec.Step.step{2}.Boundary.bc{2}.value.ATTR.lc=1;
+febio_spec.Step.step{2}.Boundary.bc{2}.value.VAL=0;
 febio_spec.Step.step{2}.Boundary.bc{2}.relative=1;
 
-febio_spec.Step.step{2}.Boundary.bc{3}.ATTR.type='prescribe';
+febio_spec.Step.step{2}.Boundary.bc{3}.ATTR.name='bcPrescribeList03_02';
+febio_spec.Step.step{2}.Boundary.bc{3}.ATTR.type='prescribed displacement';
 febio_spec.Step.step{2}.Boundary.bc{3}.ATTR.node_set=nodeSetName1;
 febio_spec.Step.step{2}.Boundary.bc{3}.dof='z';
-febio_spec.Step.step{2}.Boundary.bc{3}.scale.ATTR.lc=2;
-febio_spec.Step.step{2}.Boundary.bc{3}.scale.VAL=clampTensionDisplacement;
+febio_spec.Step.step{2}.Boundary.bc{3}.value.ATTR.lc=2;
+febio_spec.Step.step{2}.Boundary.bc{3}.value.VAL=clampTensionDisplacement;
 febio_spec.Step.step{2}.Boundary.bc{3}.relative=1;
 
-%Set 2
-febio_spec.Step.step{2}.Boundary.bc{4}.ATTR.type='prescribe';
+% Set 2 tension
+febio_spec.Step.step{2}.Boundary.bc{4}.ATTR.name='bcPrescribeList04_02';
+febio_spec.Step.step{2}.Boundary.bc{4}.ATTR.type='prescribed displacement';
 febio_spec.Step.step{2}.Boundary.bc{4}.ATTR.node_set=nodeSetName2;
 febio_spec.Step.step{2}.Boundary.bc{4}.dof='x';
-febio_spec.Step.step{2}.Boundary.bc{4}.scale.ATTR.lc=2;
-febio_spec.Step.step{2}.Boundary.bc{4}.scale.VAL=0;
+febio_spec.Step.step{2}.Boundary.bc{4}.value.ATTR.lc=1;
+febio_spec.Step.step{2}.Boundary.bc{4}.value.VAL=0;
 febio_spec.Step.step{2}.Boundary.bc{4}.relative=1;
 
-febio_spec.Step.step{2}.Boundary.bc{5}.ATTR.type='prescribe';
+febio_spec.Step.step{2}.Boundary.bc{5}.ATTR.name='bcPrescribeList05_02';
+febio_spec.Step.step{2}.Boundary.bc{5}.ATTR.type='prescribed displacement';
 febio_spec.Step.step{2}.Boundary.bc{5}.ATTR.node_set=nodeSetName2;
 febio_spec.Step.step{2}.Boundary.bc{5}.dof='y';
-febio_spec.Step.step{2}.Boundary.bc{5}.scale.ATTR.lc=2;
-febio_spec.Step.step{2}.Boundary.bc{5}.scale.VAL=0;
+febio_spec.Step.step{2}.Boundary.bc{5}.value.ATTR.lc=1;
+febio_spec.Step.step{2}.Boundary.bc{5}.value.VAL=0;
 febio_spec.Step.step{2}.Boundary.bc{5}.relative=1;
 
-febio_spec.Step.step{2}.Boundary.bc{6}.ATTR.type='prescribe';
+febio_spec.Step.step{2}.Boundary.bc{6}.ATTR.name='bcPrescribeList06_02';
+febio_spec.Step.step{2}.Boundary.bc{6}.ATTR.type='prescribed displacement';
 febio_spec.Step.step{2}.Boundary.bc{6}.ATTR.node_set=nodeSetName2;
 febio_spec.Step.step{2}.Boundary.bc{6}.dof='z';
-febio_spec.Step.step{2}.Boundary.bc{6}.scale.ATTR.lc=2;
-febio_spec.Step.step{2}.Boundary.bc{6}.scale.VAL=clampTensionDisplacement;
+febio_spec.Step.step{2}.Boundary.bc{6}.value.ATTR.lc=2;
+febio_spec.Step.step{2}.Boundary.bc{6}.value.VAL=clampTensionDisplacement;
 febio_spec.Step.step{2}.Boundary.bc{6}.relative=1;
 
-%Set 3
-febio_spec.Step.step{2}.Boundary.bc{7}.ATTR.type='prescribe';
+% Set 3 tension
+febio_spec.Step.step{2}.Boundary.bc{7}.ATTR.name='bcPrescribeList07_02';
+febio_spec.Step.step{2}.Boundary.bc{7}.ATTR.type='prescribed displacement';
 febio_spec.Step.step{2}.Boundary.bc{7}.ATTR.node_set=nodeSetName3;
 febio_spec.Step.step{2}.Boundary.bc{7}.dof='x';
-febio_spec.Step.step{2}.Boundary.bc{7}.scale.ATTR.lc=2;
-febio_spec.Step.step{2}.Boundary.bc{7}.scale.VAL=0;
+febio_spec.Step.step{2}.Boundary.bc{7}.value.ATTR.lc=1;
+febio_spec.Step.step{2}.Boundary.bc{7}.value.VAL=0;
 febio_spec.Step.step{2}.Boundary.bc{7}.relative=1;
 
-febio_spec.Step.step{2}.Boundary.bc{8}.ATTR.type='prescribe';
+febio_spec.Step.step{2}.Boundary.bc{8}.ATTR.name='bcPrescribeList08_02';
+febio_spec.Step.step{2}.Boundary.bc{8}.ATTR.type='prescribed displacement';
 febio_spec.Step.step{2}.Boundary.bc{8}.ATTR.node_set=nodeSetName3;
 febio_spec.Step.step{2}.Boundary.bc{8}.dof='y';
-febio_spec.Step.step{2}.Boundary.bc{8}.scale.ATTR.lc=2;
-febio_spec.Step.step{2}.Boundary.bc{8}.scale.VAL=0;
+febio_spec.Step.step{2}.Boundary.bc{8}.value.ATTR.lc=1;
+febio_spec.Step.step{2}.Boundary.bc{8}.value.VAL=0;
 febio_spec.Step.step{2}.Boundary.bc{8}.relative=1;
 
-febio_spec.Step.step{2}.Boundary.bc{9}.ATTR.type='prescribe';
+febio_spec.Step.step{2}.Boundary.bc{9}.ATTR.name='bcPrescribeList09_02';
+febio_spec.Step.step{2}.Boundary.bc{9}.ATTR.type='prescribed displacement';
 febio_spec.Step.step{2}.Boundary.bc{9}.ATTR.node_set=nodeSetName3;
 febio_spec.Step.step{2}.Boundary.bc{9}.dof='z';
-febio_spec.Step.step{2}.Boundary.bc{9}.scale.ATTR.lc=2;
-febio_spec.Step.step{2}.Boundary.bc{9}.scale.VAL=0;
+febio_spec.Step.step{2}.Boundary.bc{9}.value.ATTR.lc=1;
+febio_spec.Step.step{2}.Boundary.bc{9}.value.VAL=0;
 febio_spec.Step.step{2}.Boundary.bc{9}.relative=1;
 
-%Set 4
-febio_spec.Step.step{2}.Boundary.bc{10}.ATTR.type='prescribe';
+% Set 4 tension
+febio_spec.Step.step{2}.Boundary.bc{10}.ATTR.name='bcPrescribeList10_02';
+febio_spec.Step.step{2}.Boundary.bc{10}.ATTR.type='prescribed displacement';
 febio_spec.Step.step{2}.Boundary.bc{10}.ATTR.node_set=nodeSetName4;
 febio_spec.Step.step{2}.Boundary.bc{10}.dof='x';
-febio_spec.Step.step{2}.Boundary.bc{10}.scale.ATTR.lc=2;
-febio_spec.Step.step{2}.Boundary.bc{10}.scale.VAL=0;
+febio_spec.Step.step{2}.Boundary.bc{10}.value.ATTR.lc=1;
+febio_spec.Step.step{2}.Boundary.bc{10}.value.VAL=0;
 febio_spec.Step.step{2}.Boundary.bc{10}.relative=1;
 
-febio_spec.Step.step{2}.Boundary.bc{11}.ATTR.type='prescribe';
+febio_spec.Step.step{2}.Boundary.bc{11}.ATTR.name='bcPrescribeList11_02';
+febio_spec.Step.step{2}.Boundary.bc{11}.ATTR.type='prescribed displacement';
 febio_spec.Step.step{2}.Boundary.bc{11}.ATTR.node_set=nodeSetName4;
 febio_spec.Step.step{2}.Boundary.bc{11}.dof='y';
-febio_spec.Step.step{2}.Boundary.bc{11}.scale.ATTR.lc=2;
-febio_spec.Step.step{2}.Boundary.bc{11}.scale.VAL=0;
+febio_spec.Step.step{2}.Boundary.bc{11}.value.ATTR.lc=1;
+febio_spec.Step.step{2}.Boundary.bc{11}.value.VAL=0;
 febio_spec.Step.step{2}.Boundary.bc{11}.relative=1;
 
-febio_spec.Step.step{2}.Boundary.bc{12}.ATTR.type='prescribe';
+febio_spec.Step.step{2}.Boundary.bc{12}.ATTR.name='bcPrescribeList12_02';
+febio_spec.Step.step{2}.Boundary.bc{12}.ATTR.type='prescribed displacement';
 febio_spec.Step.step{2}.Boundary.bc{12}.ATTR.node_set=nodeSetName4;
 febio_spec.Step.step{2}.Boundary.bc{12}.dof='z';
-febio_spec.Step.step{2}.Boundary.bc{12}.scale.ATTR.lc=2;
-febio_spec.Step.step{2}.Boundary.bc{12}.scale.VAL=0;
+febio_spec.Step.step{2}.Boundary.bc{12}.value.ATTR.lc=1;
+febio_spec.Step.step{2}.Boundary.bc{12}.value.VAL=0;
 febio_spec.Step.step{2}.Boundary.bc{12}.relative=1;
 
-
-%LoadData section
 %LoadData section
 % -> load_controller
+febio_spec.LoadData.load_controller{1}.ATTR.name='LC_1';
 febio_spec.LoadData.load_controller{1}.ATTR.id=1;
 febio_spec.LoadData.load_controller{1}.ATTR.type='loadcurve';
 febio_spec.LoadData.load_controller{1}.interpolate='LINEAR';
-febio_spec.LoadData.load_controller{1}.points.point.VAL=[0 0; 1 1];
+%febio_spec.LoadData.load_controller{1}.extend='CONSTANT';
+febio_spec.LoadData.load_controller{1}.points.pt.VAL=[0 0; 1 1; 2 1];
 
+%LoadData section
+% -> load_controller
+febio_spec.LoadData.load_controller{2}.ATTR.name='LC_2';
 febio_spec.LoadData.load_controller{2}.ATTR.id=2;
 febio_spec.LoadData.load_controller{2}.ATTR.type='loadcurve';
 febio_spec.LoadData.load_controller{2}.interpolate='LINEAR';
-febio_spec.LoadData.load_controller{2}.points.point.VAL=[0 0; 1 0; 2 1];
+%febio_spec.LoadData.load_controller{2}.extend='CONSTANT';
+febio_spec.LoadData.load_controller{2}.points.pt.VAL=[0 0; 1 0; 2 1];
 
 %Output section
 % -> log file
@@ -497,12 +492,13 @@ febio_spec.Output.logfile.ATTR.file=febioLogFileName;
 febio_spec.Output.logfile.node_data{1}.ATTR.file=febioLogFileName_disp;
 febio_spec.Output.logfile.node_data{1}.ATTR.data='ux;uy;uz';
 febio_spec.Output.logfile.node_data{1}.ATTR.delim=',';
-febio_spec.Output.logfile.node_data{1}.VAL=1:size(V,1);
 
 febio_spec.Output.logfile.element_data{1}.ATTR.file=febioLogFileName_strain;
 febio_spec.Output.logfile.element_data{1}.ATTR.data='Ez';
 febio_spec.Output.logfile.element_data{1}.ATTR.delim=',';
-febio_spec.Output.logfile.element_data{1}.VAL=1:1:size(E,1);
+
+% Plotfile section
+febio_spec.Output.plotfile.compression=0;
 
 %% Quick viewing of the FEBio input file structure
 % The |febView| function can be used to view the xml structure in a MATLAB
@@ -539,7 +535,7 @@ if runFlag==1 %i.e. a succesful run
     %%     
     % Importing nodal displacements from a log file
 
-    dataStruct=importFEBio_logfile(fullfile(savePath,febioLogFileName_disp),1,1);
+    dataStruct=importFEBio_logfile(fullfile(savePath,febioLogFileName_disp),0,1);
     
     %Access data
     N_disp_mat=dataStruct.data; %Displacement
@@ -551,7 +547,7 @@ if runFlag==1 %i.e. a succesful run
     
     %%
     % Importing element strain data from a log file
-    dataStruct=importFEBio_logfile(fullfile(savePath,febioLogFileName_strain),1,1);
+    dataStruct=importFEBio_logfile(fullfile(savePath,febioLogFileName_strain),0,1);
     
     %Access data
     E_strain=dataStruct.data;
