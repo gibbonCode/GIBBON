@@ -11,7 +11,7 @@ P= ((1./(S.*sqrt(2*pi))).*exp(-1.*((M-sqrt((A^2)+(S^2))).^2./(2.*(S.^2))))).*(M>
 % image segmentation, image-based modeling, meshing, and finite element
 % analysis.
 % 
-% Copyright (C) 2006-2022 Kevin Mattheus Moerman and the GIBBON contributors
+% Copyright (C) 2006-2023 Kevin Mattheus Moerman and the GIBBON contributors
 % 
 % This program is free software: you can redistribute it and/or modify
 % it under the terms of the GNU General Public License as published by

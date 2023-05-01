@@ -479,7 +479,7 @@ if runFlag==1 %i.e. a succesful run
     
     axisGeom(gca,fontSize); 
     colormap(gjet(250)); colorbar;
-    caxis([0 max(E_energy(:))/20]);    
+    caxis([0 max(E_energy(:))/10]);    
     axis(axisLim(V_DEF)); %Set axis limits statically    
     camlight headlight;    
     
@@ -517,7 +517,7 @@ end
 % image segmentation, image-based modeling, meshing, and finite element
 % analysis.
 % 
-% Copyright (C) 2006-2022 Kevin Mattheus Moerman and the GIBBON contributors
+% Copyright (C) 2006-2023 Kevin Mattheus Moerman and the GIBBON contributors
 % 
 % This program is free software: you can redistribute it and/or modify
 % it under the terms of the GNU General Public License as published by
