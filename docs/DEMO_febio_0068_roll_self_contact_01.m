@@ -10,7 +10,7 @@
 
 %% Keywords
 %
-% * febio_spec version 3.0
+% * febio_spec version 4.0
 % * febio, FEBio
 % * indentation
 % * contact, sliding, friction
@@ -100,6 +100,7 @@ contactPenalty1=5;
 laugon1=0;
 minaug1=1;
 maxaug1=10;
+% fric_coeff1=0;
 
 contactPenalty2=0.1;
 laugon2=0;
@@ -286,30 +287,38 @@ gdrawnow;
 [febio_spec]=febioStructTemplate;
 
 %febio_spec version 
-febio_spec.ATTR.version='3.0'; 
+febio_spec.ATTR.version='4.0'; 
 
 %Module section
 febio_spec.Module.ATTR.type='solid'; 
 
-%Create control structure for use by all steps
+%Control section
+stepStruct1.Control.analysis='STATIC';
 stepStruct1.Control.time_steps=numTimeSteps1;
 stepStruct1.Control.step_size=1/numTimeSteps1;
 stepStruct1.Control.solver.max_refs=max_refs1;
-stepStruct1.Control.solver.max_ups=max_ups1;
+stepStruct1.Control.solver.qn_method.max_ups=max_ups1;
+stepStruct1.Control.solver.symmetric_stiffness=symmetric_stiffness1;
 stepStruct1.Control.time_stepper.dtmin=dtmin1;
 stepStruct1.Control.time_stepper.dtmax=dtmax1; 
 stepStruct1.Control.time_stepper.max_retries=max_retries1;
 stepStruct1.Control.time_stepper.opt_iter=opt_iter1;
+
+%Add template based default settings to proposed control section
 [stepStruct1.Control]=structComplete(stepStruct1.Control,febio_spec.Control,1); %Complement provided with default if missing
 
+stepStruct2.Control.analysis='STATIC';
 stepStruct2.Control.time_steps=numTimeSteps2;
 stepStruct2.Control.step_size=1/numTimeSteps2;
 stepStruct2.Control.solver.max_refs=max_refs2;
-stepStruct2.Control.solver.max_ups=max_ups2;
+stepStruct2.Control.solver.qn_method.max_ups=max_ups2;
+stepStruct2.Control.solver.symmetric_stiffness=symmetric_stiffness2;
 stepStruct2.Control.time_stepper.dtmin=dtmin2;
 stepStruct2.Control.time_stepper.dtmax=dtmax2; 
 stepStruct2.Control.time_stepper.max_retries=max_retries2;
 stepStruct2.Control.time_stepper.opt_iter=opt_iter2;
+
+%Add template based default settings to proposed control section
 [stepStruct2.Control]=structComplete(stepStruct2.Control,febio_spec.Control,1); %Complement provided with default if missing
 
 %Remove control field (part of template) since step specific control sections are used
@@ -360,11 +369,11 @@ febio_spec.Mesh.Elements{2}.elem.VAL=E2; %The element matrix
 % -> NodeSets
 nodeSetName1='bcSupportList_1';
 febio_spec.Mesh.NodeSet{1}.ATTR.name=nodeSetName1;
-febio_spec.Mesh.NodeSet{1}.node.ATTR.id=bcSupportList_1(:);
+febio_spec.Mesh.NodeSet{1}.VAL=mrow(bcSupportList_1);
 
 nodeSetName2='bcSupportList_2';
 febio_spec.Mesh.NodeSet{2}.ATTR.name=nodeSetName2;
-febio_spec.Mesh.NodeSet{2}.node.ATTR.id=bcSupportList_X(:);
+febio_spec.Mesh.NodeSet{2}.VAL=mrow(bcSupportList_X);
 
 % -> Surfaces
 surfaceName1='contactSurface1';
@@ -407,13 +416,19 @@ febio_spec.MeshDomains.ShellDomain.ATTR.mat=materialName2;
 
 %Boundary condition section 
 % -> Fix boundary conditions
-febio_spec.Boundary.bc{1}.ATTR.type='fix';
+febio_spec.Boundary.bc{1}.ATTR.name='zero_displacement_xz';
+febio_spec.Boundary.bc{1}.ATTR.type='zero displacement';
 febio_spec.Boundary.bc{1}.ATTR.node_set=nodeSetName1;
-febio_spec.Boundary.bc{1}.dofs='x,z';
+febio_spec.Boundary.bc{1}.x_dof=1;
+febio_spec.Boundary.bc{1}.y_dof=0;
+febio_spec.Boundary.bc{1}.z_dof=1;
 
-febio_spec.Boundary.bc{2}.ATTR.type='fix';
+febio_spec.Boundary.bc{2}.ATTR.name='zero_displacement_x';
+febio_spec.Boundary.bc{2}.ATTR.type='zero displacement';
 febio_spec.Boundary.bc{2}.ATTR.node_set=nodeSetName2;
-febio_spec.Boundary.bc{2}.dofs='x';
+febio_spec.Boundary.bc{2}.x_dof=1;
+febio_spec.Boundary.bc{2}.y_dof=0;
+febio_spec.Boundary.bc{2}.z_dof=0;
 
 %Loads section 
 febio_spec.Step.step{1}.Loads.surface_load{1}.ATTR.type='pressure';
@@ -430,24 +445,34 @@ febio_spec.Step.step{2}.Loads.surface_load{1}.symmetric_stiffness=1;
 
 %Rigid section 
 % ->Rigid body fix boundary conditions
-febio_spec.Step.step{1}.Rigid.rigid_constraint{1}.ATTR.name='RigidFix_1';
-febio_spec.Step.step{1}.Rigid.rigid_constraint{1}.ATTR.type='fix';
-febio_spec.Step.step{1}.Rigid.rigid_constraint{1}.rb=2;
-febio_spec.Step.step{1}.Rigid.rigid_constraint{1}.dofs='Rx,Ry,Rz,Ru,Rv,Rw';
+febio_spec.Step.step{1}.Rigid.rigid_bc{1}.ATTR.name='RigidFix';
+febio_spec.Step.step{1}.Rigid.rigid_bc{1}.ATTR.type='rigid_fixed';
+febio_spec.Step.step{1}.Rigid.rigid_bc{1}.rb=2;
+febio_spec.Step.step{1}.Rigid.rigid_bc{1}.Rx_dof=1;
+febio_spec.Step.step{1}.Rigid.rigid_bc{1}.Ry_dof=1;
+febio_spec.Step.step{1}.Rigid.rigid_bc{1}.Rz_dof=1;
+febio_spec.Step.step{1}.Rigid.rigid_bc{1}.Ru_dof=1;
+febio_spec.Step.step{1}.Rigid.rigid_bc{1}.Rv_dof=1;
+febio_spec.Step.step{1}.Rigid.rigid_bc{1}.Rw_dof=1;
 
-febio_spec.Step.step{2}.Rigid.rigid_constraint{1}.ATTR.name='RigidFix_2';
-febio_spec.Step.step{2}.Rigid.rigid_constraint{1}.ATTR.type='fix';
-febio_spec.Step.step{2}.Rigid.rigid_constraint{1}.rb=2;
-febio_spec.Step.step{2}.Rigid.rigid_constraint{1}.dofs='Rx,Ry,Rz,Rv,Rw';
+febio_spec.Step.step{2}.Rigid.rigid_bc{1}.ATTR.name='RigidFix';
+febio_spec.Step.step{2}.Rigid.rigid_bc{1}.ATTR.type='rigid_fixed';
+febio_spec.Step.step{2}.Rigid.rigid_bc{1}.rb=2;
+febio_spec.Step.step{2}.Rigid.rigid_bc{1}.Rx_dof=1;
+febio_spec.Step.step{2}.Rigid.rigid_bc{1}.Ry_dof=1;
+febio_spec.Step.step{2}.Rigid.rigid_bc{1}.Rz_dof=1;
+febio_spec.Step.step{2}.Rigid.rigid_bc{1}.Ru_dof=0;
+febio_spec.Step.step{2}.Rigid.rigid_bc{1}.Rv_dof=1;
+febio_spec.Step.step{2}.Rigid.rigid_bc{1}.Rw_dof=1;
 
 % ->Rigid body prescribe boundary conditions
-febio_spec.Step.step{2}.Rigid.rigid_constraint{2}.ATTR.name='RigidPrescribe1';
-febio_spec.Step.step{2}.Rigid.rigid_constraint{2}.ATTR.type='prescribe';
-febio_spec.Step.step{2}.Rigid.rigid_constraint{2}.rb=2;
-febio_spec.Step.step{2}.Rigid.rigid_constraint{2}.dof='Ru';
-febio_spec.Step.step{2}.Rigid.rigid_constraint{2}.value.ATTR.lc=2;
-febio_spec.Step.step{2}.Rigid.rigid_constraint{2}.value.VAL=prescribedRotation;
-febio_spec.Step.step{2}.Rigid.rigid_constraint{2}.relative=0;
+febio_spec.Step.step{2}.Rigid.rigid_bc{2}.ATTR.name='RigidPrescribe_rot';
+febio_spec.Step.step{2}.Rigid.rigid_bc{2}.ATTR.type='rigid_rotation';
+febio_spec.Step.step{2}.Rigid.rigid_bc{2}.rb=2;
+febio_spec.Step.step{2}.Rigid.rigid_bc{2}.dof='Ru';
+febio_spec.Step.step{2}.Rigid.rigid_bc{2}.value.ATTR.lc=2;
+febio_spec.Step.step{2}.Rigid.rigid_bc{2}.value.VAL=prescribedRotation;
+febio_spec.Step.step{2}.Rigid.rigid_bc{2}.relative=0;
 
 %Contact section
 % febio_spec.Step.step{2}.Contact.contact{1}.ATTR.type='sliding-elastic';
@@ -495,15 +520,19 @@ febio_spec.Step.step{2}.Contact.contact{2}.fric_coeff=fric_coeff2;
 
 %LoadData section
 % -> load_controller
+febio_spec.LoadData.load_controller{1}.ATTR.name='LC_1';
 febio_spec.LoadData.load_controller{1}.ATTR.id=1;
 febio_spec.LoadData.load_controller{1}.ATTR.type='loadcurve';
 febio_spec.LoadData.load_controller{1}.interpolate='LINEAR';
-febio_spec.LoadData.load_controller{1}.points.point.VAL=[0 0; 1 1; 2 1];
+%febio_spec.LoadData.load_controller{1}.extend='CONSTANT';
+febio_spec.LoadData.load_controller{1}.points.pt.VAL=[0 0; 1 1; 2 1];
 
+febio_spec.LoadData.load_controller{2}.ATTR.name='LC_2';
 febio_spec.LoadData.load_controller{2}.ATTR.id=2;
 febio_spec.LoadData.load_controller{2}.ATTR.type='loadcurve';
 febio_spec.LoadData.load_controller{2}.interpolate='LINEAR';
-febio_spec.LoadData.load_controller{2}.points.point.VAL=[0 0; 1 0; 2 1];
+%febio_spec.LoadData.load_controller{2}.extend='CONSTANT';
+febio_spec.LoadData.load_controller{2}.points.pt.VAL=[0 0; 1 0; 2 1];
 
 %Output section 
 % -> log file
@@ -511,7 +540,9 @@ febio_spec.Output.logfile.ATTR.file=febioLogFileName;
 febio_spec.Output.logfile.node_data{1}.ATTR.file=febioLogFileName_disp;
 febio_spec.Output.logfile.node_data{1}.ATTR.data='ux;uy;uz';
 febio_spec.Output.logfile.node_data{1}.ATTR.delim=',';
-febio_spec.Output.logfile.node_data{1}.VAL=1:size(V,1);
+
+% Plotfile section
+febio_spec.Output.plotfile.compression=0;
 
 
 %% Quick viewing of the FEBio input file structure
@@ -547,7 +578,7 @@ if runFlag==1 %i.e. a succesful run
     
     %% 
     % Importing nodal displacements from a log file
-    dataStruct=importFEBio_logfile(fullfile(savePath,febioLogFileName_disp),1,1);
+    dataStruct=importFEBio_logfile(fullfile(savePath,febioLogFileName_disp),0,1);
     
     %Access data
     N_disp_mat=dataStruct.data; %Displacement

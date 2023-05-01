@@ -6,8 +6,8 @@
    <!--
 This HTML was auto-generated from MATLAB code.
 To make changes, update the MATLAB code and republish this document.
-      --><title>DEMO_febio_0070_pneunet_actuator_simple_01</title><meta name="generator" content="MATLAB 9.8"><link rel="schema.DC" href="http://purl.org/dc/elements/1.1/"><meta name="DC.date" content="2020-09-01"><meta name="DC.source" content="DEMO_febio_0070_pneunet_actuator_simple_01.m"><style type="text/css">
-html,body,div,span,applet,object,iframe,h1,h2,h3,h4,h5,h6,p,blockquote,pre,a,abbr,acronym,address,big,cite,code,del,dfn,em,font,img,ins,kbd,q,s,samp,small,strike,strong,sub,sup,tt,var,b,u,i,center,dl,dt,dd,ol,ul,li,fieldset,form,label,legend,table,caption,tbody,tfoot,thead,tr,th,td{margin:0;padding:0;border:0;outline:0;font-size:100%;vertical-align:baseline;background:transparent}body{line-height:1}ol,ul{list-style:none}blockquote,q{quotes:none}blockquote:before,blockquote:after,q:before,q:after{content:'';content:none}:focus{outine:0}ins{text-decoration:none}del{text-decoration:line-through}table{border-collapse:collapse;border-spacing:0}
+      --><title>DEMO_febio_0070_pneunet_actuator_simple_01</title><meta name="generator" content="MATLAB 9.14"><link rel="schema.DC" href="http://purl.org/dc/elements/1.1/"><meta name="DC.date" content="2023-05-01"><meta name="DC.source" content="DEMO_febio_0070_pneunet_actuator_simple_01.m"><style type="text/css">
+html,body,div,span,applet,object,iframe,h1,h2,h3,h4,h5,h6,p,blockquote,pre,a,abbr,acronym,address,big,cite,code,del,dfn,em,font,img,ins,kbd,q,s,samp,small,strike,strong,tt,var,b,u,i,center,dl,dt,dd,ol,ul,li,fieldset,form,label,legend,table,caption,tbody,tfoot,thead,tr,th,td{margin:0;padding:0;border:0;outline:0;font-size:100%;vertical-align:baseline;background:transparent}body{line-height:1}ol,ul{list-style:none}blockquote,q{quotes:none}blockquote:before,blockquote:after,q:before,q:after{content:'';content:none}:focus{outine:0}ins{text-decoration:none}del{text-decoration:line-through}table{border-collapse:collapse;border-spacing:0}
 
 html { min-height:100%; margin-bottom:1px; }
 html body { height:100%; margin:0px; font-family:Arial, Helvetica, sans-serif; font-size:10px; color:#000; line-height:140%; background:#fff none; overflow-y:scroll; }
@@ -67,7 +67,7 @@ table td { padding:7px 5px; text-align:left; vertical-align:top; border:1px soli
 
 
 
-  </style></head><body><div class="content"><h1>DEMO_febio_0070_pneunet_actuator_simple_01</h1><!--introduction--><p>Below is a demonstration for:</p><div><ul><li>Building geometry for a simple pneunet actuator</li><li>Defining the boundary conditions</li><li>Coding the febio structure</li><li>Running the model</li><li>Importing and visualizing the displacement and stress results</li></ul></div><!--/introduction--><h2>Contents</h2><div><ul><li><a href="#1">Keywords</a></li><li><a href="#3">Plot settings</a></li><li><a href="#4">Control parameters</a></li><li><a href="#6">Removed unused nodes and clean up index matrices</a></li><li><a href="#8">Defining the boundary conditions</a></li><li><a href="#10">Defining the FEBio input structure</a></li><li><a href="#11">Quick viewing of the FEBio input file structure</a></li><li><a href="#13">Exporting the FEBio input file</a></li><li><a href="#14">Running the FEBio analysis</a></li><li><a href="#15">Import FEBio results</a></li></ul></div><h2 id="1">Keywords</h2><div><ul><li>febio_spec version 2.5</li><li>febio, FEBio</li><li>pressure loading</li><li>hexahedral elements, hex8</li><li>pneunet actuator</li><li>soft robotic</li><li>static, solid</li><li>hyperelastic, Ogden</li><li>displacement logfile</li><li>stress logfile</li></ul></div><pre class="codeinput">clear; close <span class="string">all</span>; clc;
+  </style></head><body><div class="content"><h1>DEMO_febio_0070_pneunet_actuator_simple_01</h1><!--introduction--><p>Below is a demonstration for:</p><div><ul><li>Building geometry for a simple pneunet actuator</li><li>Defining the boundary conditions</li><li>Coding the febio structure</li><li>Running the model</li><li>Importing and visualizing the displacement and stress results</li></ul></div><!--/introduction--><h2>Contents</h2><div><ul><li><a href="#1">Keywords</a></li><li><a href="#3">Plot settings</a></li><li><a href="#4">Control parameters</a></li><li><a href="#7">Defining the boundary conditions</a></li><li><a href="#11">Defining the FEBio input structure</a></li><li><a href="#12">Quick viewing of the FEBio input file structure</a></li><li><a href="#14">Exporting the FEBio input file</a></li><li><a href="#15">Running the FEBio analysis</a></li><li><a href="#16">Import FEBio results</a></li></ul></div><h2 id="1">Keywords</h2><div><ul><li>febio_spec version 4.0</li><li>febio, FEBio</li><li>pressure loading</li><li>hexahedral elements, hex8</li><li>pneunet actuator</li><li>soft robotic</li><li>static, solid</li><li>hyperelastic, Ogden</li><li>displacement logfile</li><li>stress logfile</li></ul></div><pre class="codeinput">clear; close <span class="string">all</span>; clc;
 </pre><h2 id="3">Plot settings</h2><pre class="codeinput">fontSize=20;
 faceAlpha1=0.8;
 markerSize=40;
@@ -85,19 +85,24 @@ febioLogFileName_disp=[febioFebFileNamePart,<span class="string">'_disp_out.txt'
 febioLogFileName_stress=[febioFebFileNamePart,<span class="string">'_stress_out.txt'</span>]; <span class="comment">%Log file name for exporting force</span>
 
 <span class="comment">%Load</span>
-pressureValue=1e-4;
+appliedPressure=0.5;
 
 <span class="comment">%Material parameter set</span>
-c1=1e-3; <span class="comment">%Shear-modulus-like parameter</span>
+k_factor=50; <span class="comment">%Bulk modulus factor</span>
+
+c1=1; <span class="comment">%Shear-modulus-like parameter</span>
 m1=2; <span class="comment">%Material parameter setting degree of non-linearity</span>
-k_factor=100; <span class="comment">%Bulk modulus factor</span>
-k=c1*k_factor; <span class="comment">%Bulk modulus</span>
+k1=c1*k_factor; <span class="comment">%Bulk modulus</span>
+
+c2=50*c1; <span class="comment">%Shear-modulus-like parameter</span>
+m2=2; <span class="comment">%Material parameter setting degree of non-linearity</span>
+k2=c2*k_factor; <span class="comment">%Bulk modulus</span>
 
 <span class="comment">% FEA control settings</span>
-numTimeSteps=50; <span class="comment">%Number of time steps desired</span>
-max_refs=50; <span class="comment">%Max reforms</span>
+numTimeSteps=40; <span class="comment">%Number of time steps desired</span>
+opt_iter=35; <span class="comment">%Optimum number of iterations</span>
+max_refs=opt_iter*2; <span class="comment">%Max reforms</span>
 max_ups=0; <span class="comment">%Set to zero to use full-Newton iterations</span>
-opt_iter=25; <span class="comment">%Optimum number of iterations</span>
 max_retries=5; <span class="comment">%Maximum number of retires</span>
 dtmin=(1/numTimeSteps)/100; <span class="comment">%Minimum time step size</span>
 dtmax=(1/numTimeSteps)*2; <span class="comment">%Maximum time step size</span>
@@ -105,27 +110,33 @@ dtmax=(1/numTimeSteps)*2; <span class="comment">%Maximum time step size</span>
 runMode=<span class="string">'external'</span>;<span class="comment">%'internal';</span>
 </pre><pre class="codeinput">pointSpacing=1;
 
+periodSize=6;
 numPeriods=8;
-numSteps=7;
-periodSize=pointSpacing.*numSteps;
+heightFactor=1.5; <span class="comment">%To scale height wrt period size</span>
+widthFactor=1; <span class="comment">%To scale width wrt period size</span>
 
-numElementsLength=((numPeriods-1)*numSteps)+(numSteps-1);
+numElementsPeriod=ceil(periodSize./pointSpacing);
+<span class="keyword">if</span> numElementsPeriod&lt;4
+    numElementsPeriod=4;
+<span class="keyword">end</span>
+
+numElementsLength=((numPeriods-1)*numElementsPeriod)+(numElementsPeriod-1);
 modelLength=numElementsLength.*pointSpacing;
+modelHeight_X=periodSize*heightFactor;
+modelWidth_Y=periodSize*widthFactor;
 
-modelWidth_X=periodSize*1.2;
-numElementsWidth_X=ceil(modelWidth_X./pointSpacing);
-<span class="keyword">if</span> numElementsWidth_X&lt;6
-    numElementsWidth_X=6;
+numElementsHeight_X=ceil(modelHeight_X./pointSpacing);
+<span class="keyword">if</span> numElementsHeight_X&lt;6
+    numElementsHeight_X=6;
 <span class="keyword">end</span>
 
-modelWidth_Y=periodSize*2;
 numElementsWidth_Y=ceil(modelWidth_Y./pointSpacing);
-<span class="keyword">if</span> numElementsWidth_Y&lt;3
-    numElementsWidth_Y=3;
+<span class="keyword">if</span> numElementsWidth_Y&lt;1
+    numElementsWidth_Y=1;
 <span class="keyword">end</span>
 
-boxDim=[modelWidth_X modelWidth_Y modelLength];
-boxEl=[numElementsWidth_X numElementsWidth_Y numElementsLength];
+boxDim=[modelHeight_X modelWidth_Y modelLength];
+boxEl=[numElementsHeight_X numElementsWidth_Y numElementsLength];
 
 [meshStruct]=hexMeshBox(boxDim,boxEl);
 
@@ -145,19 +156,19 @@ CZ=round((CZ.*(numElementsLength-1)))+1;
 CW=VE_bar(:,1);
 CW=CW-min(CW);
 CW=CW./max(CW);
-CW=round((CW.*(numElementsWidth_X-1)))+1;
+CW=round((CW.*(numElementsHeight_X-1)))+1;
 
-CD=rem(CZ,numSteps);
+CD=rem(CZ,numElementsPeriod);
 
 logicKeep1=~(CD==0 &amp; CW&gt;3);
 
 E1=E_bar(logicKeep1,:);
 F1=element2patch(E1);
-[indBoundary1]=tesBoundary(F1,V_bar);
+[indBoundary1]=tesBoundary(F1);
 
 logicKeep2=any(ismember(E1,F1(indBoundary1,:)),2);
 F2=element2patch(E1(logicKeep2,:));
-[indBoundary2]=tesBoundary(F2,V_bar);
+[indBoundary2]=tesBoundary(F2);
 
 Fb=F2(indBoundary2,:);
 Cb=7*ones(size(Fb,1),1);
@@ -168,7 +179,10 @@ Cb=7*ones(size(Fb,1),1);
     Cb(logicNow)=q;
 <span class="keyword">end</span>
 Cb(~any(ismember(Fb,F1(indBoundary1,:)),2))=0;
-</pre><h2 id="6">Removed unused nodes and clean up index matrices</h2><pre class="codeinput">[E,V,indFix2]=patchCleanUnused(E1(logicKeep2,:),V_bar);
+
+<span class="comment">% Remove unused nodes and clean up index matrices</span>
+
+[E,V,indFix2]=patchCleanUnused(E1(logicKeep2,:),V_bar);
 Fb=indFix2(Fb);
 F=indFix2(F2);
 </pre><pre class="codeinput">cFigure;
@@ -177,7 +191,7 @@ axisGeom;
 colormap(turbo(250)); icolorbar;
 camlight <span class="string">headlight</span>;
 gdrawnow;
-</pre><img width="100%" height="auto" vspace="5" hspace="5" src="DEMO_febio_0070_pneunet_actuator_simple_01_01.jpg" alt=""> <h2 id="8">Defining the boundary conditions</h2><p>The visualization of the model boundary shows colors for each side of the disc. These labels can be used to define boundary conditions.</p><pre class="codeinput"><span class="comment">%Define supported node sets</span>
+</pre><img width="100%" height="auto" vspace="5" hspace="5" src="DEMO_febio_0070_pneunet_actuator_simple_01_01.jpg" alt=""> <h2 id="7">Defining the boundary conditions</h2><p>The visualization of the model boundary shows colors for each side of the disc. These labels can be used to define boundary conditions.</p><pre class="codeinput"><span class="comment">%Define supported node sets</span>
 bcSupportList=unique(Fb(Cb==5,:)); <span class="comment">%Node set part of selected face</span>
 
 <span class="comment">%Get pressure faces</span>
@@ -198,71 +212,125 @@ legend(hl,{<span class="string">'BC full support'</span>,<span class="string">'P
 axisGeom(gca,fontSize);
 camlight <span class="string">headlight</span>;
 gdrawnow;
-</pre><img width="100%" height="auto" vspace="5" hspace="5" src="DEMO_febio_0070_pneunet_actuator_simple_01_02.jpg" alt=""> <h2 id="10">Defining the FEBio input structure</h2><p>See also <tt>febioStructTemplate</tt> and <tt>febioStruct2xml</tt> and the FEBio user manual.</p><pre class="codeinput"><span class="comment">%Get a template with default settings</span>
+</pre><img width="100%" height="auto" vspace="5" hspace="5" src="DEMO_febio_0070_pneunet_actuator_simple_01_02.jpg" alt=""> <pre class="codeinput">indicesInnerSurface=unique(Fb(Cb==1,:));
+logicElementsInner=any(ismember(E,indicesInnerSurface),2);
+
+E1=E(~logicElementsInner,:); <span class="comment">%Other elements</span>
+E2=E(logicElementsInner,:); <span class="comment">%Inner element layer</span>
+E=[E1;E2];
+
+[F1]=element2patch(E1);
+[F2]=element2patch(E2);
+</pre><pre class="codeinput">cFigure; hold <span class="string">on</span>;
+gpatch(F1,V,<span class="string">'bw'</span>,<span class="string">'k'</span>,0.5);
+gpatch(F2,V,<span class="string">'rw'</span>,<span class="string">'k'</span>,0.5);
+plotV(V(indicesInnerSurface,:),<span class="string">'k.'</span>,<span class="string">'MarkerSize'</span>,markerSize);
+axisGeom;
+colormap(turbo(250)); icolorbar;
+camlight <span class="string">headlight</span>;
+gdrawnow;
+</pre><img width="100%" height="auto" vspace="5" hspace="5" src="DEMO_febio_0070_pneunet_actuator_simple_01_03.jpg" alt=""> <h2 id="11">Defining the FEBio input structure</h2><p>See also <tt>febioStructTemplate</tt> and <tt>febioStruct2xml</tt> and the FEBio user manual.</p><pre class="codeinput"><span class="comment">%Get a template with default settings</span>
 [febio_spec]=febioStructTemplate;
 
 <span class="comment">%febio_spec version</span>
-febio_spec.ATTR.version=<span class="string">'2.5'</span>;
+febio_spec.ATTR.version=<span class="string">'4.0'</span>;
 
 <span class="comment">%Module section</span>
 febio_spec.Module.ATTR.type=<span class="string">'solid'</span>;
 
 <span class="comment">%Control section</span>
-febio_spec.Control.analysis.ATTR.type=<span class="string">'static'</span>;
+febio_spec.Control.analysis=<span class="string">'STATIC'</span>;
 febio_spec.Control.time_steps=numTimeSteps;
 febio_spec.Control.step_size=1/numTimeSteps;
+febio_spec.Control.solver.max_refs=max_refs;
+febio_spec.Control.solver.qn_method.max_ups=max_ups;
 febio_spec.Control.time_stepper.dtmin=dtmin;
 febio_spec.Control.time_stepper.dtmax=dtmax;
 febio_spec.Control.time_stepper.max_retries=max_retries;
 febio_spec.Control.time_stepper.opt_iter=opt_iter;
-febio_spec.Control.max_refs=max_refs;
-febio_spec.Control.max_ups=max_ups;
 
 <span class="comment">%Material section</span>
+materialName1=<span class="string">'Material1'</span>;
+febio_spec.Material.material{1}.ATTR.name=materialName1;
 febio_spec.Material.material{1}.ATTR.type=<span class="string">'Ogden'</span>;
 febio_spec.Material.material{1}.ATTR.id=1;
 febio_spec.Material.material{1}.c1=c1;
 febio_spec.Material.material{1}.m1=m1;
 febio_spec.Material.material{1}.c2=c1;
 febio_spec.Material.material{1}.m2=-m1;
-febio_spec.Material.material{1}.k=k;
+febio_spec.Material.material{1}.k=k1;
 
-<span class="comment">%Geometry section</span>
+materialName2=<span class="string">'Material2'</span>;
+febio_spec.Material.material{2}.ATTR.name=materialName2;
+febio_spec.Material.material{2}.ATTR.type=<span class="string">'Ogden'</span>;
+febio_spec.Material.material{2}.ATTR.id=2;
+febio_spec.Material.material{2}.c1=c2;
+febio_spec.Material.material{2}.m1=m2;
+febio_spec.Material.material{2}.c2=c2;
+febio_spec.Material.material{2}.m2=-m2;
+febio_spec.Material.material{2}.k=k2;
+
+<span class="comment">%Mesh section</span>
 <span class="comment">% -&gt; Nodes</span>
-febio_spec.Geometry.Nodes{1}.ATTR.name=<span class="string">'nodeSet_all'</span>; <span class="comment">%The node set name</span>
-febio_spec.Geometry.Nodes{1}.node.ATTR.id=(1:size(V,1))'; <span class="comment">%The node id's</span>
-febio_spec.Geometry.Nodes{1}.node.VAL=V; <span class="comment">%The nodel coordinates</span>
+febio_spec.Mesh.Nodes{1}.ATTR.name=<span class="string">'nodeSet_all'</span>; <span class="comment">%The node set name</span>
+febio_spec.Mesh.Nodes{1}.node.ATTR.id=(1:size(V,1))'; <span class="comment">%The node id's</span>
+febio_spec.Mesh.Nodes{1}.node.VAL=V; <span class="comment">%The nodel coordinates</span>
 
 <span class="comment">% -&gt; Elements</span>
-febio_spec.Geometry.Elements{1}.ATTR.type=<span class="string">'hex8'</span>; <span class="comment">%Element type of this set</span>
-febio_spec.Geometry.Elements{1}.ATTR.mat=1; <span class="comment">%material index for this set</span>
-febio_spec.Geometry.Elements{1}.ATTR.name=<span class="string">'pneunet'</span>; <span class="comment">%Name of the element set</span>
-febio_spec.Geometry.Elements{1}.elem.ATTR.id=(1:1:size(E,1))'; <span class="comment">%Element id's</span>
-febio_spec.Geometry.Elements{1}.elem.VAL=E;
+partName1=<span class="string">'Part1'</span>;
+febio_spec.Mesh.Elements{1}.ATTR.name=partName1; <span class="comment">%Name of this part</span>
+febio_spec.Mesh.Elements{1}.ATTR.type=<span class="string">'hex8'</span>; <span class="comment">%Element type</span>
+febio_spec.Mesh.Elements{1}.elem.ATTR.id=(1:1:size(E1,1))'; <span class="comment">%Element id's</span>
+febio_spec.Mesh.Elements{1}.elem.VAL=E1; <span class="comment">%The element matrix</span>
 
-<span class="comment">% -&gt; NodeSets</span>
-febio_spec.Geometry.NodeSet{1}.ATTR.name=<span class="string">'bcSupportList'</span>;
-febio_spec.Geometry.NodeSet{1}.node.ATTR.id=bcSupportList(:);
+partName2=<span class="string">'Part2'</span>;
+febio_spec.Mesh.Elements{2}.ATTR.name=partName2; <span class="comment">%Name of this part</span>
+febio_spec.Mesh.Elements{2}.ATTR.type=<span class="string">'hex8'</span>; <span class="comment">%Element type</span>
+febio_spec.Mesh.Elements{2}.elem.ATTR.id=size(E1,1)+(1:1:size(E2,1))'; <span class="comment">%Element id's</span>
+febio_spec.Mesh.Elements{2}.elem.VAL=E2; <span class="comment">%The element matrix</span>
 
 <span class="comment">% -&gt; Surfaces</span>
-febio_spec.Geometry.Surface{1}.ATTR.name=<span class="string">'Pressure_surface'</span>;
-febio_spec.Geometry.Surface{1}.quad4.ATTR.lid=(1:size(F_pressure,1))';
-febio_spec.Geometry.Surface{1}.quad4.VAL=F_pressure;
+surfaceName1=<span class="string">'LoadedSurface'</span>;
+febio_spec.Mesh.Surface{1}.ATTR.name=surfaceName1;
+febio_spec.Mesh.Surface{1}.quad4.ATTR.id=(1:1:size(F_pressure,1))';
+febio_spec.Mesh.Surface{1}.quad4.VAL=F_pressure;
+
+<span class="comment">% -&gt; NodeSets</span>
+nodeSetName1=<span class="string">'bcSupportList'</span>;
+febio_spec.Mesh.NodeSet{1}.ATTR.name=nodeSetName1;
+febio_spec.Mesh.NodeSet{1}.VAL=mrow(bcSupportList);
+
+<span class="comment">%MeshDomains section</span>
+febio_spec.MeshDomains.SolidDomain{1}.ATTR.name=partName1;
+febio_spec.MeshDomains.SolidDomain{1}.ATTR.mat=materialName1;
+febio_spec.MeshDomains.SolidDomain{2}.ATTR.name=partName2;
+febio_spec.MeshDomains.SolidDomain{2}.ATTR.mat=materialName2;
 
 <span class="comment">%Boundary condition section</span>
 <span class="comment">% -&gt; Fix boundary conditions</span>
-febio_spec.Boundary.fix{1}.ATTR.bc=<span class="string">'x'</span>;
-febio_spec.Boundary.fix{1}.ATTR.node_set=febio_spec.Geometry.NodeSet{1}.ATTR.name;
-febio_spec.Boundary.fix{2}.ATTR.bc=<span class="string">'y'</span>;
-febio_spec.Boundary.fix{2}.ATTR.node_set=febio_spec.Geometry.NodeSet{1}.ATTR.name;
-febio_spec.Boundary.fix{3}.ATTR.bc=<span class="string">'z'</span>;
-febio_spec.Boundary.fix{3}.ATTR.node_set=febio_spec.Geometry.NodeSet{1}.ATTR.name;
+febio_spec.Boundary.bc{1}.ATTR.name=<span class="string">'zero_displacement_xyz'</span>;
+febio_spec.Boundary.bc{1}.ATTR.type=<span class="string">'zero displacement'</span>;
+febio_spec.Boundary.bc{1}.ATTR.node_set=nodeSetName1;
+febio_spec.Boundary.bc{1}.x_dof=1;
+febio_spec.Boundary.bc{1}.y_dof=1;
+febio_spec.Boundary.bc{1}.z_dof=1;
 
-<span class="comment">%Loads</span>
+<span class="comment">%Loads section</span>
+<span class="comment">% -&gt; Surface load</span>
 febio_spec.Loads.surface_load{1}.ATTR.type=<span class="string">'pressure'</span>;
-febio_spec.Loads.surface_load{1}.ATTR.surface=febio_spec.Geometry.Surface{1}.ATTR.name;
-febio_spec.Loads.surface_load{1}.pressure.VAL=pressureValue;
+febio_spec.Loads.surface_load{1}.ATTR.surface=surfaceName1;
 febio_spec.Loads.surface_load{1}.pressure.ATTR.lc=1;
+febio_spec.Loads.surface_load{1}.pressure.VAL=appliedPressure;
+febio_spec.Loads.surface_load{1}.symmetric_stiffness=1;
+5
+<span class="comment">%LoadData section</span>
+<span class="comment">% -&gt; load_controller</span>
+febio_spec.LoadData.load_controller{1}.ATTR.name=<span class="string">'LC_1'</span>;
+febio_spec.LoadData.load_controller{1}.ATTR.id=1;
+febio_spec.LoadData.load_controller{1}.ATTR.type=<span class="string">'loadcurve'</span>;
+febio_spec.LoadData.load_controller{1}.interpolate=<span class="string">'LINEAR'</span>;
+<span class="comment">%febio_spec.LoadData.load_controller{1}.extend='CONSTANT';</span>
+febio_spec.LoadData.load_controller{1}.points.pt.VAL=[0 0; 1 1];
 
 <span class="comment">%Output section</span>
 <span class="comment">% -&gt; log file</span>
@@ -276,59 +344,123 @@ febio_spec.Output.logfile.element_data{1}.ATTR.file=febioLogFileName_stress;
 febio_spec.Output.logfile.element_data{1}.ATTR.data=<span class="string">'s1'</span>;
 febio_spec.Output.logfile.element_data{1}.ATTR.delim=<span class="string">','</span>;
 febio_spec.Output.logfile.element_data{1}.VAL=1:size(E,1);
-</pre><h2 id="11">Quick viewing of the FEBio input file structure</h2><p>The <tt>febView</tt> function can be used to view the xml structure in a MATLAB figure window.</p><p><tt>febView(febio_spec); %Viewing the febio file</tt></p><h2 id="13">Exporting the FEBio input file</h2><p>Exporting the febio_spec structure to an FEBio input file is done using the <tt>febioStruct2xml</tt> function.</p><pre class="codeinput">febioStruct2xml(febio_spec,febioFebFileName); <span class="comment">%Exporting to file and domNode</span>
+
+<span class="comment">% Plotfile section</span>
+febio_spec.Output.plotfile.compression=0;
+</pre><pre class="codeoutput">
+ans =
+
+     5
+
+</pre><h2 id="12">Quick viewing of the FEBio input file structure</h2><p>The <tt>febView</tt> function can be used to view the xml structure in a MATLAB figure window.</p><p><tt>febView(febio_spec); %Viewing the febio file</tt></p><h2 id="14">Exporting the FEBio input file</h2><p>Exporting the febio_spec structure to an FEBio input file is done using the <tt>febioStruct2xml</tt> function.</p><pre class="codeinput">febioStruct2xml(febio_spec,febioFebFileName); <span class="comment">%Exporting to file and domNode</span>
 <span class="comment">% febView(febioFebFileName);</span>
-</pre><h2 id="14">Running the FEBio analysis</h2><p>To run the analysis defined by the created FEBio input file the <tt>runMonitorFEBio</tt> function is used. The input for this function is a structure defining job settings e.g. the FEBio input file name. The optional output runFlag informs the user if the analysis was run succesfully.</p><pre class="codeinput">febioAnalysis.run_filename=febioFebFileName; <span class="comment">%The input file name</span>
+</pre><h2 id="15">Running the FEBio analysis</h2><p>To run the analysis defined by the created FEBio input file the <tt>runMonitorFEBio</tt> function is used. The input for this function is a structure defining job settings e.g. the FEBio input file name. The optional output runFlag informs the user if the analysis was run succesfully.</p><pre class="codeinput">febioAnalysis.run_filename=febioFebFileName; <span class="comment">%The input file name</span>
 febioAnalysis.run_logname=febioLogFileName; <span class="comment">%The name for the log file</span>
 febioAnalysis.disp_on=1; <span class="comment">%Display information on the command window</span>
-febioAnalysis.disp_log_on=1; <span class="comment">%Display convergence information in the command window</span>
 febioAnalysis.runMode=runMode;
-febioAnalysis.t_check=0.25; <span class="comment">%Time for checking log file (dont set too small)</span>
-febioAnalysis.maxtpi=1e99; <span class="comment">%Max analysis time</span>
-febioAnalysis.maxLogCheckTime=10; <span class="comment">%Max log file checking time</span>
 
 [runFlag]=runMonitorFEBio(febioAnalysis);<span class="comment">%START FEBio NOW!!!!!!!!</span>
 </pre><pre class="codeoutput"> 
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
---- STARTING FEBIO JOB --- 01-Sep-2020 12:49:22
-Waiting for log file...
-Proceeding to check log file...01-Sep-2020 12:49:22
-------- converged at time : 0.02
-------- converged at time : 0.0382748
-------- converged at time : 0.0565497
-------- converged at time : 0.0757494
-------- converged at time : 0.096322
-------- converged at time : 0.118177
-------- converged at time : 0.141229
-------- converged at time : 0.165401
-------- converged at time : 0.191014
-------- converged at time : 0.217937
-------- converged at time : 0.246052
-------- converged at time : 0.275249
-------- converged at time : 0.30543
-------- converged at time : 0.336506
-------- converged at time : 0.368394
-------- converged at time : 0.401022
-------- converged at time : 0.434136
-------- converged at time : 0.467877
-------- converged at time : 0.502032
-------- converged at time : 0.536572
-------- converged at time : 0.571344
-------- converged at time : 0.60634
-------- converged at time : 0.641548
-------- converged at time : 0.67696
-------- converged at time : 0.712568
-------- converged at time : 0.748465
-------- converged at time : 0.784633
-------- converged at time : 0.821055
-------- converged at time : 0.857712
-------- converged at time : 0.894764
-------- converged at time : 0.932164
-------- converged at time : 0.969871
-------- converged at time : 1
---- Done --- 01-Sep-2020 12:51:50
-</pre><h2 id="15">Import FEBio results</h2><pre class="codeinput"><span class="keyword">if</span> runFlag==1 <span class="comment">%i.e. a succesful run</span>
-</pre><p>Importing nodal displacements from a log file</p><pre class="codeinput">    dataStruct=importFEBio_logfile(fullfile(savePath,febioLogFileName_disp),1,1);
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+--------&gt;    RUNNING/MONITORING FEBIO JOB    &lt;-------- 01-May-2023 09:13:55
+FEBio path: /home/kevin/FEBioStudio/bin/febio4
+# Attempt removal of existing log files                01-May-2023 09:13:55
+ * Removal succesful                                   01-May-2023 09:13:55
+# Attempt removal of existing .xplt files              01-May-2023 09:13:55
+ * Removal succesful                                   01-May-2023 09:13:55
+# Starting FEBio...                                    01-May-2023 09:13:55
+  Max. total analysis time is: Inf s
+ * Waiting for log file creation                       01-May-2023 09:13:55
+   Max. wait time: 30 s
+ * Log file found.                                     01-May-2023 09:13:55
+# Parsing log file...                                  01-May-2023 09:13:55
+    number of iterations   : 20                        01-May-2023 09:13:56
+    number of reformations : 20                        01-May-2023 09:13:56
+------- converged at time : 0.025                      01-May-2023 09:13:56
+    number of iterations   : 21                        01-May-2023 09:13:57
+    number of reformations : 21                        01-May-2023 09:13:57
+------- converged at time : 0.055                      01-May-2023 09:13:57
+    number of iterations   : 23                        01-May-2023 09:13:58
+    number of reformations : 23                        01-May-2023 09:13:58
+------- converged at time : 0.089                      01-May-2023 09:13:58
+    number of iterations   : 25                        01-May-2023 09:13:59
+    number of reformations : 25                        01-May-2023 09:13:59
+------- converged at time : 0.1262                     01-May-2023 09:13:59
+    number of iterations   : 25                        01-May-2023 09:14:00
+    number of reformations : 25                        01-May-2023 09:14:00
+------- converged at time : 0.165745                   01-May-2023 09:14:00
+    number of iterations   : 25                        01-May-2023 09:14:01
+    number of reformations : 25                        01-May-2023 09:14:01
+------- converged at time : 0.207206                   01-May-2023 09:14:01
+    number of iterations   : 27                        01-May-2023 09:14:02
+    number of reformations : 27                        01-May-2023 09:14:02
+------- converged at time : 0.250231                   01-May-2023 09:14:02
+    number of iterations   : 27                        01-May-2023 09:14:03
+    number of reformations : 27                        01-May-2023 09:14:03
+------- converged at time : 0.294223                   01-May-2023 09:14:03
+    number of iterations   : 29                        01-May-2023 09:14:04
+    number of reformations : 29                        01-May-2023 09:14:04
+------- converged at time : 0.339047                   01-May-2023 09:14:04
+    number of iterations   : 30                        01-May-2023 09:14:05
+    number of reformations : 30                        01-May-2023 09:14:05
+------- converged at time : 0.384381                   01-May-2023 09:14:05
+    number of iterations   : 31                        01-May-2023 09:14:06
+    number of reformations : 31                        01-May-2023 09:14:06
+------- converged at time : 0.430089                   01-May-2023 09:14:06
+    number of iterations   : 31                        01-May-2023 09:14:08
+    number of reformations : 31                        01-May-2023 09:14:08
+------- converged at time : 0.476066                   01-May-2023 09:14:08
+    number of iterations   : 33                        01-May-2023 09:14:09
+    number of reformations : 33                        01-May-2023 09:14:09
+------- converged at time : 0.522294                   01-May-2023 09:14:09
+    number of iterations   : 30                        01-May-2023 09:14:10
+    number of reformations : 30                        01-May-2023 09:14:10
+------- converged at time : 0.560912                   01-May-2023 09:14:10
+    number of iterations   : 32                        01-May-2023 09:14:12
+    number of reformations : 32                        01-May-2023 09:14:12
+------- converged at time : 0.600441                   01-May-2023 09:14:12
+    number of iterations   : 34                        01-May-2023 09:14:13
+    number of reformations : 34                        01-May-2023 09:14:13
+------- converged at time : 0.64045                    01-May-2023 09:14:13
+    number of iterations   : 35                        01-May-2023 09:14:14
+    number of reformations : 35                        01-May-2023 09:14:14
+------- converged at time : 0.680605                   01-May-2023 09:14:14
+    number of iterations   : 35                        01-May-2023 09:14:16
+    number of reformations : 35                        01-May-2023 09:14:16
+------- converged at time : 0.714068                   01-May-2023 09:14:16
+    number of iterations   : 35                        01-May-2023 09:14:17
+    number of reformations : 35                        01-May-2023 09:14:17
+------- converged at time : 0.747531                   01-May-2023 09:14:17
+    number of iterations   : 35                        01-May-2023 09:14:18
+    number of reformations : 35                        01-May-2023 09:14:18
+------- converged at time : 0.780993                   01-May-2023 09:14:18
+    number of iterations   : 36                        01-May-2023 09:14:20
+    number of reformations : 36                        01-May-2023 09:14:20
+------- converged at time : 0.814456                   01-May-2023 09:14:20
+    number of iterations   : 35                        01-May-2023 09:14:21
+    number of reformations : 35                        01-May-2023 09:14:21
+------- converged at time : 0.847454                   01-May-2023 09:14:21
+    number of iterations   : 36                        01-May-2023 09:14:23
+    number of reformations : 36                        01-May-2023 09:14:23
+------- converged at time : 0.880452                   01-May-2023 09:14:23
+    number of iterations   : 35                        01-May-2023 09:14:24
+    number of reformations : 35                        01-May-2023 09:14:24
+------- converged at time : 0.912992                   01-May-2023 09:14:24
+    number of iterations   : 33                        01-May-2023 09:14:25
+    number of reformations : 33                        01-May-2023 09:14:25
+------- converged at time : 0.945532                   01-May-2023 09:14:25
+    number of iterations   : 31                        01-May-2023 09:14:27
+    number of reformations : 31                        01-May-2023 09:14:27
+------- converged at time : 0.973083                   01-May-2023 09:14:27
+    number of iterations   : 27                        01-May-2023 09:14:28
+    number of reformations : 27                        01-May-2023 09:14:28
+------- converged at time : 1                          01-May-2023 09:14:28
+ Elapsed time : 0:00:32                                01-May-2023 09:14:28
+ N O R M A L   T E R M I N A T I O N
+# Done                                                 01-May-2023 09:14:28
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+</pre><h2 id="16">Import FEBio results</h2><pre class="codeinput"><span class="keyword">if</span> runFlag==1 <span class="comment">%i.e. a succesful run</span>
+</pre><p>Importing nodal displacements from a log file</p><pre class="codeinput">    dataStruct=importFEBio_logfile(fullfile(savePath,febioLogFileName_disp),0,1);
 
     <span class="comment">%Access data</span>
     N_disp_mat=dataStruct.data; <span class="comment">%Displacement</span>
@@ -365,7 +497,7 @@ Proceeding to check log file...01-Sep-2020 12:49:22
     <span class="keyword">end</span>
     anim8(hf,animStruct); <span class="comment">%Initiate animation feature</span>
     drawnow;
-</pre><img width="100%" height="auto" vspace="5" hspace="5" src="DEMO_febio_0070_pneunet_actuator_simple_01_03.jpg" alt=""> <p>Importing element stress from a log file</p><pre class="codeinput">    dataStruct=importFEBio_logfile(fullfile(savePath,febioLogFileName_stress),1,1);
+</pre><img width="100%" height="auto" vspace="5" hspace="5" src="DEMO_febio_0070_pneunet_actuator_simple_01_04.jpg" alt=""> <p>Importing element stress from a log file</p><pre class="codeinput">    dataStruct=importFEBio_logfile(fullfile(savePath,febioLogFileName_stress),0,1);
 
     <span class="comment">%Access data</span>
     E_stress_mat=dataStruct.data;
@@ -401,398 +533,501 @@ Proceeding to check log file...01-Sep-2020 12:49:22
     <span class="keyword">end</span>
     anim8(hf,animStruct); <span class="comment">%Initiate animation feature</span>
     drawnow;
-</pre><img width="100%" height="auto" vspace="5" hspace="5" src="DEMO_febio_0070_pneunet_actuator_simple_01_04.jpg" alt=""> <pre class="codeinput"><span class="keyword">end</span>
-</pre><p class="footer"><br><a href="https://www.mathworks.com/products/matlab/">Published with MATLAB&reg; R2020a</a><br></p></div><!--
+</pre><img width="100%" height="auto" vspace="5" hspace="5" src="DEMO_febio_0070_pneunet_actuator_simple_01_05.jpg" alt=""> <pre class="codeinput"><span class="keyword">end</span>
+</pre><p><img vspace="5" hspace="5" src="gibbVerySmall.gif" alt=""> </p><p><i><b>GIBBON</b></i> <a href="www.gibboncode.org">www.gibboncode.org</a></p><p><i>Kevin Mattheus Moerman</i>, <a href="gibbon.toolbox@gmail.com">gibbon.toolbox@gmail.com</a></p><p><i><b>GIBBON footer text</b></i></p><p>License: <a href="https://github.com/gibbonCode/GIBBON/blob/master/LICENSE">https://github.com/gibbonCode/GIBBON/blob/master/LICENSE</a></p><p>GIBBON: The Geometry and Image-based Bioengineering add-On. A toolbox for image segmentation, image-based modeling, meshing, and finite element analysis.</p><p>Copyright (C) 2006-2022 Kevin Mattheus Moerman and the GIBBON contributors</p><p>This program is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.</p><p>This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for more details.</p><p>You should have received a copy of the GNU General Public License along with this program.  If not, see <a href="http://www.gnu.org/licenses/">http://www.gnu.org/licenses/</a>.</p><p class="footer"><br><a href="https://www.mathworks.com/products/matlab/">Published with MATLAB&reg; R2023a</a><br></p></div><!--
 ##### SOURCE BEGIN #####
-%% DEMO_febio_0070_pneunet_actuator_simple_01
-% Below is a demonstration for:
-% 
-% * Building geometry for a simple pneunet actuator
-% * Defining the boundary conditions 
-% * Coding the febio structure
-% * Running the model
-% * Importing and visualizing the displacement and stress results
-
-%% Keywords
-%
-% * febio_spec version 2.5
-% * febio, FEBio
-% * pressure loading
-% * hexahedral elements, hex8
-% * pneunet actuator
-% * soft robotic
-% * static, solid
-% * hyperelastic, Ogden
-% * displacement logfile
-% * stress logfile
-
-%%
-
-clear; close all; clc;
-
-%% Plot settings
-fontSize=20;
-faceAlpha1=0.8;
-markerSize=40;
-markerSize2=20;
-lineWidth=3;
-
-%% Control parameters
-
-% Path names
-defaultFolder = fileparts(fileparts(mfilename('fullpath')));
-savePath=fullfile(defaultFolder,'data','temp');
-
-% Defining file names
-febioFebFileNamePart='tempModel';
-febioFebFileName=fullfile(savePath,[febioFebFileNamePart,'.feb']); %FEB file name
-febioLogFileName=fullfile(savePath,[febioFebFileNamePart,'.txt']); %FEBio log file name
-febioLogFileName_disp=[febioFebFileNamePart,'_disp_out.txt']; %Log file name for exporting displacement
-febioLogFileName_stress=[febioFebFileNamePart,'_stress_out.txt']; %Log file name for exporting force
-
-%Load
-pressureValue=1e-4; 
-
-%Material parameter set
-c1=1e-3; %Shear-modulus-like parameter
-m1=2; %Material parameter setting degree of non-linearity
-k_factor=100; %Bulk modulus factor 
-k=c1*k_factor; %Bulk modulus
-
-% FEA control settings
-numTimeSteps=50; %Number of time steps desired
-max_refs=50; %Max reforms
-max_ups=0; %Set to zero to use full-Newton iterations
-opt_iter=25; %Optimum number of iterations
-max_retries=5; %Maximum number of retires
-dtmin=(1/numTimeSteps)/100; %Minimum time step size
-dtmax=(1/numTimeSteps)*2; %Maximum time step size
-
-runMode='external';%'internal';
-
-%%
-
-pointSpacing=1;
-
-numPeriods=8; 
-numSteps=7; 
-periodSize=pointSpacing.*numSteps;
-
-numElementsLength=((numPeriods-1)*numSteps)+(numSteps-1);
-modelLength=numElementsLength.*pointSpacing;
-
-modelWidth_X=periodSize*1.2;
-numElementsWidth_X=ceil(modelWidth_X./pointSpacing);
-if numElementsWidth_X<6
-    numElementsWidth_X=6; 
-end
-
-modelWidth_Y=periodSize*2;
-numElementsWidth_Y=ceil(modelWidth_Y./pointSpacing);
-if numElementsWidth_Y<3
-    numElementsWidth_Y=3; 
-end
-
-boxDim=[modelWidth_X modelWidth_Y modelLength];
-boxEl=[numElementsWidth_X numElementsWidth_Y numElementsLength];
-
-[meshStruct]=hexMeshBox(boxDim,boxEl);
-
-E_bar=meshStruct.E;
-V_bar=meshStruct.V;
-F_bar=meshStruct.F;
-Fb_bar=meshStruct.Fb;
-Cb_bar=meshStruct.faceBoundaryMarker;
-
-VE_bar=patchCentre(E_bar,V_bar); 
-
-CZ=VE_bar(:,3);
-CZ=CZ-min(CZ); 
-CZ=CZ./max(CZ); 
-CZ=round((CZ.*(numElementsLength-1)))+1;
-
-CW=VE_bar(:,1);
-CW=CW-min(CW); 
-CW=CW./max(CW); 
-CW=round((CW.*(numElementsWidth_X-1)))+1;
-
-CD=rem(CZ,numSteps); 
-
-logicKeep1=~(CD==0 & CW>3);
-
-E1=E_bar(logicKeep1,:);
-F1=element2patch(E1);
-[indBoundary1]=tesBoundary(F1,V_bar);
-
-logicKeep2=any(ismember(E1,F1(indBoundary1,:)),2);
-F2=element2patch(E1(logicKeep2,:));
-[indBoundary2]=tesBoundary(F2,V_bar);
-
-Fb=F2(indBoundary2,:);
-Cb=7*ones(size(Fb,1),1);
-
-for q=1:1:6
-    F_Cb1=Fb_bar(Cb_bar==q,:);
-    logicNow=all(ismember(Fb,F_Cb1),2);
-    Cb(logicNow)=q;
-end
-Cb(~any(ismember(Fb,F1(indBoundary1,:)),2))=0;
-
-%% Removed unused nodes and clean up index matrices
- 
-[E,V,indFix2]=patchCleanUnused(E1(logicKeep2,:),V_bar);
-Fb=indFix2(Fb);
-F=indFix2(F2);
-
-%%
-
-cFigure; 
-gpatch(Fb,V,Cb,'k',0.5);
-axisGeom; 
-colormap(turbo(250)); icolorbar; 
-camlight headlight; 
-gdrawnow; 
-
-%% Defining the boundary conditions
-% The visualization of the model boundary shows colors for each side of the
-% disc. These labels can be used to define boundary conditions. 
-
-%Define supported node sets
-bcSupportList=unique(Fb(Cb==5,:)); %Node set part of selected face
-
-%Get pressure faces
-F_pressure=Fb(Cb==0,:); 
-
-%% 
-% Visualizing boundary conditions. Markers plotted on the semi-transparent
-% model denote the nodes in the various boundary condition lists. 
-
-hf=cFigure;
-title('Boundary conditions','FontSize',fontSize);
-xlabel('X','FontSize',fontSize); ylabel('Y','FontSize',fontSize); zlabel('Z','FontSize',fontSize);
-hold on;
-
-gpatch(Fb,V,'w','none',0.5);
-
-hl(1)=plotV(V(bcSupportList,:),'k.','MarkerSize',markerSize);
-hl(2)=gpatch(F_pressure,V,'r','k',1);
-
-patchNormPlot(F_pressure,V);
-legend(hl,{'BC full support','Pressure surface'});
-
-axisGeom(gca,fontSize);
-camlight headlight; 
-gdrawnow; 
-
-%% Defining the FEBio input structure
-% See also |febioStructTemplate| and |febioStruct2xml| and the FEBio user
-% manual.
-
-%Get a template with default settings 
-[febio_spec]=febioStructTemplate;
-
-%febio_spec version 
-febio_spec.ATTR.version='2.5'; 
-
-%Module section
-febio_spec.Module.ATTR.type='solid'; 
-
-%Control section
-febio_spec.Control.analysis.ATTR.type='static';
-febio_spec.Control.time_steps=numTimeSteps;
-febio_spec.Control.step_size=1/numTimeSteps;
-febio_spec.Control.time_stepper.dtmin=dtmin;
-febio_spec.Control.time_stepper.dtmax=dtmax; 
-febio_spec.Control.time_stepper.max_retries=max_retries;
-febio_spec.Control.time_stepper.opt_iter=opt_iter;
-febio_spec.Control.max_refs=max_refs;
-febio_spec.Control.max_ups=max_ups;
-
-%Material section
-febio_spec.Material.material{1}.ATTR.type='Ogden';
-febio_spec.Material.material{1}.ATTR.id=1;
-febio_spec.Material.material{1}.c1=c1;
-febio_spec.Material.material{1}.m1=m1;
-febio_spec.Material.material{1}.c2=c1;
-febio_spec.Material.material{1}.m2=-m1;
-febio_spec.Material.material{1}.k=k;
-
-%Geometry section
-% -> Nodes
-febio_spec.Geometry.Nodes{1}.ATTR.name='nodeSet_all'; %The node set name
-febio_spec.Geometry.Nodes{1}.node.ATTR.id=(1:size(V,1))'; %The node id's
-febio_spec.Geometry.Nodes{1}.node.VAL=V; %The nodel coordinates
-
-% -> Elements
-febio_spec.Geometry.Elements{1}.ATTR.type='hex8'; %Element type of this set
-febio_spec.Geometry.Elements{1}.ATTR.mat=1; %material index for this set 
-febio_spec.Geometry.Elements{1}.ATTR.name='pneunet'; %Name of the element set
-febio_spec.Geometry.Elements{1}.elem.ATTR.id=(1:1:size(E,1))'; %Element id's
-febio_spec.Geometry.Elements{1}.elem.VAL=E;
-
-% -> NodeSets
-febio_spec.Geometry.NodeSet{1}.ATTR.name='bcSupportList';
-febio_spec.Geometry.NodeSet{1}.node.ATTR.id=bcSupportList(:);
-
-% -> Surfaces
-febio_spec.Geometry.Surface{1}.ATTR.name='Pressure_surface';
-febio_spec.Geometry.Surface{1}.quad4.ATTR.lid=(1:size(F_pressure,1))';
-febio_spec.Geometry.Surface{1}.quad4.VAL=F_pressure;
-
-%Boundary condition section 
-% -> Fix boundary conditions
-febio_spec.Boundary.fix{1}.ATTR.bc='x';
-febio_spec.Boundary.fix{1}.ATTR.node_set=febio_spec.Geometry.NodeSet{1}.ATTR.name;
-febio_spec.Boundary.fix{2}.ATTR.bc='y';
-febio_spec.Boundary.fix{2}.ATTR.node_set=febio_spec.Geometry.NodeSet{1}.ATTR.name;
-febio_spec.Boundary.fix{3}.ATTR.bc='z';
-febio_spec.Boundary.fix{3}.ATTR.node_set=febio_spec.Geometry.NodeSet{1}.ATTR.name;
-
-%Loads
-febio_spec.Loads.surface_load{1}.ATTR.type='pressure';
-febio_spec.Loads.surface_load{1}.ATTR.surface=febio_spec.Geometry.Surface{1}.ATTR.name;
-febio_spec.Loads.surface_load{1}.pressure.VAL=pressureValue;
-febio_spec.Loads.surface_load{1}.pressure.ATTR.lc=1;
-
-%Output section 
-% -> log file
-febio_spec.Output.logfile.ATTR.file=febioLogFileName;
-febio_spec.Output.logfile.node_data{1}.ATTR.file=febioLogFileName_disp;
-febio_spec.Output.logfile.node_data{1}.ATTR.data='ux;uy;uz';
-febio_spec.Output.logfile.node_data{1}.ATTR.delim=',';
-febio_spec.Output.logfile.node_data{1}.VAL=1:size(V,1);
-
-febio_spec.Output.logfile.element_data{1}.ATTR.file=febioLogFileName_stress;
-febio_spec.Output.logfile.element_data{1}.ATTR.data='s1';
-febio_spec.Output.logfile.element_data{1}.ATTR.delim=',';
-febio_spec.Output.logfile.element_data{1}.VAL=1:size(E,1);
-
-%% Quick viewing of the FEBio input file structure
-% The |febView| function can be used to view the xml structure in a MATLAB
-% figure window. 
-
-%%
-% |febView(febio_spec); %Viewing the febio file|
-
-%% Exporting the FEBio input file
-% Exporting the febio_spec structure to an FEBio input file is done using
-% the |febioStruct2xml| function. 
-
-febioStruct2xml(febio_spec,febioFebFileName); %Exporting to file and domNode
-% febView(febioFebFileName); 
-
-%% Running the FEBio analysis
-% To run the analysis defined by the created FEBio input file the
-% |runMonitorFEBio| function is used. The input for this function is a
-% structure defining job settings e.g. the FEBio input file name. The
-% optional output runFlag informs the user if the analysis was run
-% succesfully. 
-
-febioAnalysis.run_filename=febioFebFileName; %The input file name
-febioAnalysis.run_logname=febioLogFileName; %The name for the log file
-febioAnalysis.disp_on=1; %Display information on the command window
-febioAnalysis.disp_log_on=1; %Display convergence information in the command window
-febioAnalysis.runMode=runMode;
-febioAnalysis.t_check=0.25; %Time for checking log file (dont set too small)
-febioAnalysis.maxtpi=1e99; %Max analysis time
-febioAnalysis.maxLogCheckTime=10; %Max log file checking time
-
-[runFlag]=runMonitorFEBio(febioAnalysis);%START FEBio NOW!!!!!!!!
-
-%% Import FEBio results 
-
-if runFlag==1 %i.e. a succesful run
-    
-     %% 
-    % Importing nodal displacements from a log file
-    dataStruct=importFEBio_logfile(fullfile(savePath,febioLogFileName_disp),1,1);
-    
-    %Access data
-    N_disp_mat=dataStruct.data; %Displacement
-    timeVec=dataStruct.time; %Time
-    
-    %Create deformed coordinate set
-    V_DEF=N_disp_mat+repmat(V,[1 1 size(N_disp_mat,3)]);
-               
-    %% 
-    % Plotting the simulated results using |anim8| to visualize and animate
-    % deformations 
-    
-    DN_magnitude=sqrt(sum(N_disp_mat(:,:,end).^2,2)); %Current displacement magnitude
-        
-    % Create basic view and store graphics handle to initiate animation
-    hf=cFigure; %Open figure  
-    gtitle([febioFebFileNamePart,': Press play to animate']);
-    title('Displacement magnitude [mm]','Interpreter','Latex')
-    hp=gpatch(Fb,V_DEF(:,:,end),DN_magnitude,'k',1); %Add graphics object to animate
-%     hp.Marker='.';
-%     hp.MarkerSize=markerSize2;
-    hp.FaceColor='interp';
-    
-    axisGeom(gca,fontSize); 
-    colormap(gjet(250)); colorbar;
-    caxis([0 max(DN_magnitude)]);    
-    axis(axisLim(V_DEF)); %Set axis limits statically    
-    camlight headlight;        
-        
-    % Set up animation features
-    animStruct.Time=timeVec; %The time vector    
-    for qt=1:1:size(N_disp_mat,3) %Loop over time increments        
-        DN_magnitude=sqrt(sum(N_disp_mat(:,:,qt).^2,2)); %Current displacement magnitude
-                
-        %Set entries in animation structure
-        animStruct.Handles{qt}=[hp hp]; %Handles of objects to animate
-        animStruct.Props{qt}={'Vertices','CData'}; %Properties of objects to animate
-        animStruct.Set{qt}={V_DEF(:,:,qt),DN_magnitude}; %Property values for to set in order to animate
-    end        
-    anim8(hf,animStruct); %Initiate animation feature    
-    drawnow;
-            
-    %%
-    % Importing element stress from a log file
-    dataStruct=importFEBio_logfile(fullfile(savePath,febioLogFileName_stress),1,1);
-    
-    %Access data
-    E_stress_mat=dataStruct.data;
-    
-    E_stress_mat(isnan(E_stress_mat))=0;
-    
-    %% 
-    % Plotting the simulated results using |anim8| to visualize and animate
-    % deformations 
-    
-    [CV]=faceToVertexMeasure(E,V,E_stress_mat(:,:,end));
-    
-    % Create basic view and store graphics handle to initiate animation
-    hf=cFigure; %Open figure  
-    gtitle([febioFebFileNamePart,': Press play to animate']);
-    title('$\sigma_{1}$ [MPa]','Interpreter','Latex')
-    hp=gpatch(Fb,V_DEF(:,:,end),CV,'k',1); %Add graphics object to animate
-%     hp.Marker='.';
-%     hp.MarkerSize=markerSize2;
-    hp.FaceColor='interp';
-    
-    axisGeom(gca,fontSize); 
-    colormap(gjet(250)); colorbar;
-    caxis([min(E_stress_mat(:)) max(E_stress_mat(:))]);    
-    axis(axisLim(V_DEF)); %Set axis limits statically    
-    camlight headlight;        
-        
-    % Set up animation features
-    animStruct.Time=timeVec; %The time vector    
-    for qt=1:1:size(N_disp_mat,3) %Loop over time increments        
-        
-        [CV]=faceToVertexMeasure(E,V,E_stress_mat(:,:,qt));
-        
-        %Set entries in animation structure
-        animStruct.Handles{qt}=[hp hp]; %Handles of objects to animate
-        animStruct.Props{qt}={'Vertices','CData'}; %Properties of objects to animate
-        animStruct.Set{qt}={V_DEF(:,:,qt),CV}; %Property values for to set in order to animate
-    end        
-    anim8(hf,animStruct); %Initiate animation feature    
-    drawnow;
-    
-end
+%% DEMO_febio_0070_pneunet_actuator_simple_01
+% Below is a demonstration for:
+% 
+% * Building geometry for a simple pneunet actuator
+% * Defining the boundary conditions 
+% * Coding the febio structure
+% * Running the model
+% * Importing and visualizing the displacement and stress results
+
+%% Keywords
+%
+% * febio_spec version 4.0
+% * febio, FEBio
+% * pressure loading
+% * hexahedral elements, hex8
+% * pneunet actuator
+% * soft robotic
+% * static, solid
+% * hyperelastic, Ogden
+% * displacement logfile
+% * stress logfile
+
+%%
+
+clear; close all; clc;
+
+%% Plot settings
+fontSize=20;
+faceAlpha1=0.8;
+markerSize=40;
+markerSize2=20;
+lineWidth=3;
+
+%% Control parameters
+
+% Path names
+defaultFolder = fileparts(fileparts(mfilename('fullpath')));
+savePath=fullfile(defaultFolder,'data','temp');
+
+% Defining file names
+febioFebFileNamePart='tempModel';
+febioFebFileName=fullfile(savePath,[febioFebFileNamePart,'.feb']); %FEB file name
+febioLogFileName=fullfile(savePath,[febioFebFileNamePart,'.txt']); %FEBio log file name
+febioLogFileName_disp=[febioFebFileNamePart,'_disp_out.txt']; %Log file name for exporting displacement
+febioLogFileName_stress=[febioFebFileNamePart,'_stress_out.txt']; %Log file name for exporting force
+
+%Load
+appliedPressure=0.5; 
+
+%Material parameter set
+k_factor=50; %Bulk modulus factor 
+
+c1=1; %Shear-modulus-like parameter
+m1=2; %Material parameter setting degree of non-linearity
+k1=c1*k_factor; %Bulk modulus
+
+c2=50*c1; %Shear-modulus-like parameter
+m2=2; %Material parameter setting degree of non-linearity
+k2=c2*k_factor; %Bulk modulus
+
+% FEA control settings
+numTimeSteps=40; %Number of time steps desired
+opt_iter=35; %Optimum number of iterations
+max_refs=opt_iter*2; %Max reforms
+max_ups=0; %Set to zero to use full-Newton iterations
+max_retries=5; %Maximum number of retires
+dtmin=(1/numTimeSteps)/100; %Minimum time step size
+dtmax=(1/numTimeSteps)*2; %Maximum time step size
+
+runMode='external';%'internal';
+
+%%
+
+pointSpacing=1;
+
+periodSize=6; 
+numPeriods=8; 
+heightFactor=1.5; %To scale height wrt period size
+widthFactor=1; %To scale width wrt period size
+
+numElementsPeriod=ceil(periodSize./pointSpacing);
+if numElementsPeriod<4
+    numElementsPeriod=4; 
+end
+
+numElementsLength=((numPeriods-1)*numElementsPeriod)+(numElementsPeriod-1);
+modelLength=numElementsLength.*pointSpacing;
+modelHeight_X=periodSize*heightFactor;
+modelWidth_Y=periodSize*widthFactor;
+
+numElementsHeight_X=ceil(modelHeight_X./pointSpacing);
+if numElementsHeight_X<6
+    numElementsHeight_X=6; 
+end
+
+numElementsWidth_Y=ceil(modelWidth_Y./pointSpacing);
+if numElementsWidth_Y<1 
+    numElementsWidth_Y=1; 
+end
+
+boxDim=[modelHeight_X modelWidth_Y modelLength];
+boxEl=[numElementsHeight_X numElementsWidth_Y numElementsLength];
+
+[meshStruct]=hexMeshBox(boxDim,boxEl);
+
+E_bar=meshStruct.E;
+V_bar=meshStruct.V;
+F_bar=meshStruct.F;
+Fb_bar=meshStruct.Fb;
+Cb_bar=meshStruct.faceBoundaryMarker;
+
+VE_bar=patchCentre(E_bar,V_bar); 
+
+CZ=VE_bar(:,3);
+CZ=CZ-min(CZ); 
+CZ=CZ./max(CZ); 
+CZ=round((CZ.*(numElementsLength-1)))+1;
+
+CW=VE_bar(:,1);
+CW=CW-min(CW); 
+CW=CW./max(CW); 
+CW=round((CW.*(numElementsHeight_X-1)))+1;
+
+CD=rem(CZ,numElementsPeriod); 
+
+logicKeep1=~(CD==0 & CW>3);
+
+E1=E_bar(logicKeep1,:);
+F1=element2patch(E1);
+[indBoundary1]=tesBoundary(F1);
+
+logicKeep2=any(ismember(E1,F1(indBoundary1,:)),2);
+F2=element2patch(E1(logicKeep2,:));
+[indBoundary2]=tesBoundary(F2);
+
+Fb=F2(indBoundary2,:);
+Cb=7*ones(size(Fb,1),1);
+
+for q=1:1:6
+    F_Cb1=Fb_bar(Cb_bar==q,:);
+    logicNow=all(ismember(Fb,F_Cb1),2);
+    Cb(logicNow)=q;
+end
+Cb(~any(ismember(Fb,F1(indBoundary1,:)),2))=0;
+
+% Remove unused nodes and clean up index matrices
+ 
+[E,V,indFix2]=patchCleanUnused(E1(logicKeep2,:),V_bar);
+Fb=indFix2(Fb);
+F=indFix2(F2);
+
+%%
+
+cFigure; 
+gpatch(Fb,V,Cb,'k',0.5);
+axisGeom; 
+colormap(turbo(250)); icolorbar; 
+camlight headlight; 
+gdrawnow; 
+
+%% Defining the boundary conditions
+% The visualization of the model boundary shows colors for each side of the
+% disc. These labels can be used to define boundary conditions. 
+
+%Define supported node sets
+bcSupportList=unique(Fb(Cb==5,:)); %Node set part of selected face
+
+%Get pressure faces
+F_pressure=Fb(Cb==0,:); 
+
+%% 
+% Visualizing boundary conditions. Markers plotted on the semi-transparent
+% model denote the nodes in the various boundary condition lists. 
+
+hf=cFigure;
+title('Boundary conditions','FontSize',fontSize);
+xlabel('X','FontSize',fontSize); ylabel('Y','FontSize',fontSize); zlabel('Z','FontSize',fontSize);
+hold on;
+
+gpatch(Fb,V,'w','none',0.5);
+
+hl(1)=plotV(V(bcSupportList,:),'k.','MarkerSize',markerSize);
+hl(2)=gpatch(F_pressure,V,'r','k',1);
+
+patchNormPlot(F_pressure,V);
+legend(hl,{'BC full support','Pressure surface'});
+
+axisGeom(gca,fontSize);
+camlight headlight; 
+gdrawnow; 
+
+%%
+
+indicesInnerSurface=unique(Fb(Cb==1,:));
+logicElementsInner=any(ismember(E,indicesInnerSurface),2);
+
+E1=E(~logicElementsInner,:); %Other elements
+E2=E(logicElementsInner,:); %Inner element layer
+E=[E1;E2];
+
+[F1]=element2patch(E1);
+[F2]=element2patch(E2);
+
+%%
+
+cFigure; hold on; 
+gpatch(F1,V,'bw','k',0.5);
+gpatch(F2,V,'rw','k',0.5);
+plotV(V(indicesInnerSurface,:),'k.','MarkerSize',markerSize);
+axisGeom; 
+colormap(turbo(250)); icolorbar; 
+camlight headlight; 
+gdrawnow; 
+
+%% Defining the FEBio input structure
+% See also |febioStructTemplate| and |febioStruct2xml| and the FEBio user
+% manual.
+
+%Get a template with default settings 
+[febio_spec]=febioStructTemplate;
+
+%febio_spec version 
+febio_spec.ATTR.version='4.0'; 
+
+%Module section
+febio_spec.Module.ATTR.type='solid'; 
+
+%Control section
+febio_spec.Control.analysis='STATIC';
+febio_spec.Control.time_steps=numTimeSteps;
+febio_spec.Control.step_size=1/numTimeSteps;
+febio_spec.Control.solver.max_refs=max_refs;
+febio_spec.Control.solver.qn_method.max_ups=max_ups;
+febio_spec.Control.time_stepper.dtmin=dtmin;
+febio_spec.Control.time_stepper.dtmax=dtmax; 
+febio_spec.Control.time_stepper.max_retries=max_retries;
+febio_spec.Control.time_stepper.opt_iter=opt_iter;
+
+%Material section
+materialName1='Material1';
+febio_spec.Material.material{1}.ATTR.name=materialName1;
+febio_spec.Material.material{1}.ATTR.type='Ogden';
+febio_spec.Material.material{1}.ATTR.id=1;
+febio_spec.Material.material{1}.c1=c1;
+febio_spec.Material.material{1}.m1=m1;
+febio_spec.Material.material{1}.c2=c1;
+febio_spec.Material.material{1}.m2=-m1;
+febio_spec.Material.material{1}.k=k1;
+
+materialName2='Material2';
+febio_spec.Material.material{2}.ATTR.name=materialName2;
+febio_spec.Material.material{2}.ATTR.type='Ogden';
+febio_spec.Material.material{2}.ATTR.id=2;
+febio_spec.Material.material{2}.c1=c2;
+febio_spec.Material.material{2}.m1=m2;
+febio_spec.Material.material{2}.c2=c2;
+febio_spec.Material.material{2}.m2=-m2;
+febio_spec.Material.material{2}.k=k2;
+
+%Mesh section
+% -> Nodes
+febio_spec.Mesh.Nodes{1}.ATTR.name='nodeSet_all'; %The node set name
+febio_spec.Mesh.Nodes{1}.node.ATTR.id=(1:size(V,1))'; %The node id's
+febio_spec.Mesh.Nodes{1}.node.VAL=V; %The nodel coordinates
+
+% -> Elements
+partName1='Part1';
+febio_spec.Mesh.Elements{1}.ATTR.name=partName1; %Name of this part
+febio_spec.Mesh.Elements{1}.ATTR.type='hex8'; %Element type 
+febio_spec.Mesh.Elements{1}.elem.ATTR.id=(1:1:size(E1,1))'; %Element id's
+febio_spec.Mesh.Elements{1}.elem.VAL=E1; %The element matrix
+
+partName2='Part2';
+febio_spec.Mesh.Elements{2}.ATTR.name=partName2; %Name of this part
+febio_spec.Mesh.Elements{2}.ATTR.type='hex8'; %Element type 
+febio_spec.Mesh.Elements{2}.elem.ATTR.id=size(E1,1)+(1:1:size(E2,1))'; %Element id's
+febio_spec.Mesh.Elements{2}.elem.VAL=E2; %The element matrix
+
+% -> Surfaces
+surfaceName1='LoadedSurface';
+febio_spec.Mesh.Surface{1}.ATTR.name=surfaceName1;
+febio_spec.Mesh.Surface{1}.quad4.ATTR.id=(1:1:size(F_pressure,1))';
+febio_spec.Mesh.Surface{1}.quad4.VAL=F_pressure;
+
+% -> NodeSets
+nodeSetName1='bcSupportList';
+febio_spec.Mesh.NodeSet{1}.ATTR.name=nodeSetName1;
+febio_spec.Mesh.NodeSet{1}.VAL=mrow(bcSupportList);
+
+%MeshDomains section
+febio_spec.MeshDomains.SolidDomain{1}.ATTR.name=partName1;
+febio_spec.MeshDomains.SolidDomain{1}.ATTR.mat=materialName1;
+febio_spec.MeshDomains.SolidDomain{2}.ATTR.name=partName2;
+febio_spec.MeshDomains.SolidDomain{2}.ATTR.mat=materialName2;
+
+%Boundary condition section 
+% -> Fix boundary conditions
+febio_spec.Boundary.bc{1}.ATTR.name='zero_displacement_xyz';
+febio_spec.Boundary.bc{1}.ATTR.type='zero displacement';
+febio_spec.Boundary.bc{1}.ATTR.node_set=nodeSetName1;
+febio_spec.Boundary.bc{1}.x_dof=1;
+febio_spec.Boundary.bc{1}.y_dof=1;
+febio_spec.Boundary.bc{1}.z_dof=1;
+
+%Loads section
+% -> Surface load
+febio_spec.Loads.surface_load{1}.ATTR.type='pressure';
+febio_spec.Loads.surface_load{1}.ATTR.surface=surfaceName1;
+febio_spec.Loads.surface_load{1}.pressure.ATTR.lc=1;
+febio_spec.Loads.surface_load{1}.pressure.VAL=appliedPressure;
+febio_spec.Loads.surface_load{1}.symmetric_stiffness=1;
+5
+%LoadData section
+% -> load_controller
+febio_spec.LoadData.load_controller{1}.ATTR.name='LC_1';
+febio_spec.LoadData.load_controller{1}.ATTR.id=1;
+febio_spec.LoadData.load_controller{1}.ATTR.type='loadcurve';
+febio_spec.LoadData.load_controller{1}.interpolate='LINEAR';
+%febio_spec.LoadData.load_controller{1}.extend='CONSTANT';
+febio_spec.LoadData.load_controller{1}.points.pt.VAL=[0 0; 1 1];
+
+%Output section 
+% -> log file
+febio_spec.Output.logfile.ATTR.file=febioLogFileName;
+febio_spec.Output.logfile.node_data{1}.ATTR.file=febioLogFileName_disp;
+febio_spec.Output.logfile.node_data{1}.ATTR.data='ux;uy;uz';
+febio_spec.Output.logfile.node_data{1}.ATTR.delim=',';
+febio_spec.Output.logfile.node_data{1}.VAL=1:size(V,1);
+
+febio_spec.Output.logfile.element_data{1}.ATTR.file=febioLogFileName_stress;
+febio_spec.Output.logfile.element_data{1}.ATTR.data='s1';
+febio_spec.Output.logfile.element_data{1}.ATTR.delim=',';
+febio_spec.Output.logfile.element_data{1}.VAL=1:size(E,1);
+
+% Plotfile section
+febio_spec.Output.plotfile.compression=0;
+
+%% Quick viewing of the FEBio input file structure
+% The |febView| function can be used to view the xml structure in a MATLAB
+% figure window. 
+
+%%
+% |febView(febio_spec); %Viewing the febio file|
+
+%% Exporting the FEBio input file
+% Exporting the febio_spec structure to an FEBio input file is done using
+% the |febioStruct2xml| function. 
+
+febioStruct2xml(febio_spec,febioFebFileName); %Exporting to file and domNode
+% febView(febioFebFileName); 
+
+%% Running the FEBio analysis
+% To run the analysis defined by the created FEBio input file the
+% |runMonitorFEBio| function is used. The input for this function is a
+% structure defining job settings e.g. the FEBio input file name. The
+% optional output runFlag informs the user if the analysis was run
+% succesfully. 
+
+febioAnalysis.run_filename=febioFebFileName; %The input file name
+febioAnalysis.run_logname=febioLogFileName; %The name for the log file
+febioAnalysis.disp_on=1; %Display information on the command window
+febioAnalysis.runMode=runMode;
+
+[runFlag]=runMonitorFEBio(febioAnalysis);%START FEBio NOW!!!!!!!!
+
+%% Import FEBio results 
+
+if runFlag==1 %i.e. a succesful run
+    
+     %% 
+    % Importing nodal displacements from a log file
+    dataStruct=importFEBio_logfile(fullfile(savePath,febioLogFileName_disp),0,1);
+    
+    %Access data
+    N_disp_mat=dataStruct.data; %Displacement
+    timeVec=dataStruct.time; %Time
+    
+    %Create deformed coordinate set
+    V_DEF=N_disp_mat+repmat(V,[1 1 size(N_disp_mat,3)]);
+               
+    %% 
+    % Plotting the simulated results using |anim8| to visualize and animate
+    % deformations 
+    
+    DN_magnitude=sqrt(sum(N_disp_mat(:,:,end).^2,2)); %Current displacement magnitude
+        
+    % Create basic view and store graphics handle to initiate animation
+    hf=cFigure; %Open figure  
+    gtitle([febioFebFileNamePart,': Press play to animate']);
+    title('Displacement magnitude [mm]','Interpreter','Latex')
+    hp=gpatch(Fb,V_DEF(:,:,end),DN_magnitude,'k',1); %Add graphics object to animate
+%     hp.Marker='.';
+%     hp.MarkerSize=markerSize2;
+    hp.FaceColor='interp';
+    
+    axisGeom(gca,fontSize); 
+    colormap(gjet(250)); colorbar;
+    caxis([0 max(DN_magnitude)]);    
+    axis(axisLim(V_DEF)); %Set axis limits statically    
+    camlight headlight;        
+        
+    % Set up animation features
+    animStruct.Time=timeVec; %The time vector    
+    for qt=1:1:size(N_disp_mat,3) %Loop over time increments        
+        DN_magnitude=sqrt(sum(N_disp_mat(:,:,qt).^2,2)); %Current displacement magnitude
+                
+        %Set entries in animation structure
+        animStruct.Handles{qt}=[hp hp]; %Handles of objects to animate
+        animStruct.Props{qt}={'Vertices','CData'}; %Properties of objects to animate
+        animStruct.Set{qt}={V_DEF(:,:,qt),DN_magnitude}; %Property values for to set in order to animate
+    end        
+    anim8(hf,animStruct); %Initiate animation feature    
+    drawnow;
+            
+    %%
+    % Importing element stress from a log file
+    dataStruct=importFEBio_logfile(fullfile(savePath,febioLogFileName_stress),0,1);
+    
+    %Access data
+    E_stress_mat=dataStruct.data;
+    
+    E_stress_mat(isnan(E_stress_mat))=0;
+    
+    %% 
+    % Plotting the simulated results using |anim8| to visualize and animate
+    % deformations 
+    
+    [CV]=faceToVertexMeasure(E,V,E_stress_mat(:,:,end));
+    
+    % Create basic view and store graphics handle to initiate animation
+    hf=cFigure; %Open figure  
+    gtitle([febioFebFileNamePart,': Press play to animate']);
+    title('$\sigma_{1}$ [MPa]','Interpreter','Latex')
+    hp=gpatch(Fb,V_DEF(:,:,end),CV,'k',1); %Add graphics object to animate
+%     hp.Marker='.';
+%     hp.MarkerSize=markerSize2;
+    hp.FaceColor='interp';
+    
+    axisGeom(gca,fontSize); 
+    colormap(gjet(250)); colorbar;
+    caxis([min(E_stress_mat(:)) max(E_stress_mat(:))]);    
+    axis(axisLim(V_DEF)); %Set axis limits statically    
+    camlight headlight;        
+        
+    % Set up animation features
+    animStruct.Time=timeVec; %The time vector    
+    for qt=1:1:size(N_disp_mat,3) %Loop over time increments        
+        
+        [CV]=faceToVertexMeasure(E,V,E_stress_mat(:,:,qt));
+        
+        %Set entries in animation structure
+        animStruct.Handles{qt}=[hp hp]; %Handles of objects to animate
+        animStruct.Props{qt}={'Vertices','CData'}; %Properties of objects to animate
+        animStruct.Set{qt}={V_DEF(:,:,qt),CV}; %Property values for to set in order to animate
+    end        
+    anim8(hf,animStruct); %Initiate animation feature    
+    drawnow;
+    
+end
+
+%% 
+%
+% <<gibbVerySmall.gif>>
+% 
+% _*GIBBON*_ 
+% <www.gibboncode.org>
+% 
+% _Kevin Mattheus Moerman_, <gibbon.toolbox@gmail.com>
+ 
+%% 
+% _*GIBBON footer text*_ 
+% 
+% License: <https://github.com/gibbonCode/GIBBON/blob/master/LICENSE>
+% 
+% GIBBON: The Geometry and Image-based Bioengineering add-On. A toolbox for
+% image segmentation, image-based modeling, meshing, and finite element
+% analysis.
+% 
+% Copyright (C) 2006-2022 Kevin Mattheus Moerman and the GIBBON contributors
+% 
+% This program is free software: you can redistribute it and/or modify
+% it under the terms of the GNU General Public License as published by
+% the Free Software Foundation, either version 3 of the License, or
+% (at your option) any later version.
+% 
+% This program is distributed in the hope that it will be useful,
+% but WITHOUT ANY WARRANTY; without even the implied warranty of
+% MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+% GNU General Public License for more details.
+% 
+% You should have received a copy of the GNU General Public License
+% along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 ##### SOURCE END #####
 --></body></html>

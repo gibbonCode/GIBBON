@@ -122,28 +122,21 @@ E_youngs2=1500; %Youngs modulus
 nu2=0.25; %Poissons ratio
 
 %Youngs moduli for implant
-numMaterialLevels=10;
 E_youngs_min=15000;
 E_youngs_max=110000;
 nu_implant=0.3; %Poissons ratio
 
-%Range of Youngs moduli used in implant
-E_youngs_range=linspace(E_youngs_min,E_youngs_max,numMaterialLevels);
-
 switch optimType
-    case 1 %homogeneous
-        
-        % Optimal value: 9.6256964745084420e+04
-        
+    case 1 %homogeneous (no spatial variation)               
         paramContraints=[E_youngs_min E_youngs_max];
         paramInitial=mean([E_youngs_min E_youngs_max]); %Initial parameters
-    case 2 %Spat. var.
+    case 2 %Spatially varying according to map
         paramContraints=[E_youngs_min E_youngs_max; E_youngs_min E_youngs_max];
         paramInitial=mean([E_youngs_min E_youngs_max])*ones(1,2); %Initial parameters
 end
 
 % FEA control settings
-numTimeSteps=10; %Number of time steps desired
+numTimeSteps=5; %Number of time steps desired
 max_refs=25; %Max reforms
 max_ups=0; %Set to zero to use full-Newton iterations
 opt_iter=6; %Optimum number of iterations
@@ -625,9 +618,9 @@ CE=meshOutput.elementMaterialID; %Element material or region id
 Fb=meshOutput.facesBoundary; %The boundary faces
 Cb=meshOutput.boundaryMarker; %The boundary markers
 
-%% Define material regions in bone
+%% Define material regions
 
-logicImplantElements=CE==-3;
+logicImplantElements = (CE==-3);
 
 %Bone Element Regions
 indBoundary=unique(Fb(Cb==1,:));
@@ -636,63 +629,61 @@ logicCorticalNodes=DE<=corticalThickness;
 logicCorticalElements=any(logicCorticalNodes(E),2) & ~logicImplantElements ;
 logicCancellousElements=~logicCorticalElements & ~logicImplantElements;
 
-%
-excludeLabels=6;
+E1=E(logicCorticalElements,:);
+E2=E(logicCancellousElements,:);
+E3=E(logicImplantElements,:);
+E=[E1;E2;E3]; %Recollect set in this order
+
+logicBoneElements = false(size(E,1),1);
+logicBoneElements (1:size(E1,1)+size(E2,1))=1; 
+
+%% Define implant spatialy varying parameters
+
+E_12=[E1;E2]; %Element collection for both bone types
+VE_12=patchCentre(E_12,V); %Centre coordinates for bone elements
+
+%Compute distance to boundary
+VE_implant=patchCentre(E3,V);
+
+%Get list for nodes at the head/shaft/neck 
+excludeLabels=[4 5 6];
 logicExcludeImplant=ismember(Cb,excludeLabels);
 indExcludeImplant=unique(Fb(logicExcludeImplant,:));
 D_exclude=minDist(V,V(indExcludeImplant,:));
 indExclude=find(D_exclude<=distanceExclude);
 
-%Find implant boundary nodes
+%Find implant shaft boundary nodes
 boundaryLabels=7;%[4 5 6 7];
-logicBoundaryImplant=ismember(Cb,boundaryLabels);
-indBoundaryImplant=unique(Fb(logicBoundaryImplant,:));
-indBoundaryImplant=indBoundaryImplant(~ismember(indBoundaryImplant,indExclude));
+logicShaftBoundaryImplant=ismember(Cb,boundaryLabels);
+indShaftBoundaryImplant=unique(Fb(logicShaftBoundaryImplant,:));
 
-%Compute distance to boundary
-VE_implant=patchCentre(E(logicImplantElements,:),V);
+% Remove indices too close to exclude set
+indShaftBoundaryImplant=indShaftBoundaryImplant(~ismember(indShaftBoundaryImplant,indExclude));
 
-%Use distance to define desired stiffness
-W=minDist(VE_implant,V(indBoundaryImplant,:));
-W=W./implantLayerThickness; %At thickness lever it is 1 now
-W(W>1)=1; %Range is now [0 1]
-E_youngs_desired=(W.*(E_youngs_max-E_youngs_min))+E_youngs_min;
+%Use distance to define Youngs moduli map
+[indUni,ind1,ind2]=unique(E3); %Get unique 
+WU=minDist(V(indUni,:),V(indShaftBoundaryImplant,:)); %Distance to shaft boundary
+WU=WU./implantLayerThickness; %At thickness level it is 1 now
+WU(WU>1)=1; %Range is now [0 1] %At or further than thickness level it is now 1 
+WV=zeros(size(V,1),1);
+WV(indUni)=WU;
+W=min(WV(E3),[],2); %Take min. distance so boundary elements become zero
 
-%Snap to nearest available materials
-[~,elementMaterialID_implant]=minDist(E_youngs_desired(:),E_youngs_range(:));
-E3=E(logicImplantElements,:);
-
-%Sorting elements according to material label
-[elementMaterialID_implant,indSortElements]=sort(elementMaterialID_implant);
-E3=E3(indSortElements,:);
-
-%Removing unused materials
-[materidIDsUsed,~,elementMaterialID_implant]=unique(elementMaterialID_implant(:));
-E_youngs_implant=E_youngs_range(materidIDsUsed);
-numMaterials=numel(materidIDsUsed);
-
-%Shift material ids since implant materials come after two bone types
-elementMaterialID_implant=elementMaterialID_implant+2;
-
-%%
-E1=E(logicCorticalElements,:);
-E2=E(logicCancellousElements,:);
-
-E=[E1;E2;E3;];
-
-elementMaterialID=[ones(size(E1,1),1); 2*ones(size(E2,1),1); elementMaterialID_implant(:)];
-logicBoneElements=ismember(elementMaterialID,[1 2]);
-E_12=E(logicBoneElements,:); %Only bone elements
-VE_12=patchCentre(E_12,V); %Centre coordinates for bone elements
-
-meshOutput.elements=E;
-meshOutput.elementMaterialID=elementMaterialID;
+% Define initial Youngs moduli variation
+E_youngs_implant=(W.*(E_youngs_max-E_youngs_min))+E_youngs_min; 
 
 %% Visualizing solid mesh
 
+% Alter structure for visualization
+meshOutput.elements=E3;
+meshOutput.elementData=W;
+
 hFig=cFigure; hold on;
+title('Slice view of Youngs modulus variation map')
+
 optionStruct.hFig=hFig;
 meshView(meshOutput,optionStruct);
+caxis([0 1]);
 axisGeom;
 drawnow;
 
@@ -746,8 +737,7 @@ Vr=V*Q';
 Vr=Vr+p;
 logicHeadNodes=Vr(:,3)<0;
 logicHeadFaces=all(logicHeadNodes(Fb),2);
-bcPrescribeList=unique(Fb(logicHeadFaces,:));
-
+bcPrescribeList_head=unique(Fb(logicHeadFaces,:));
 
 %%
 % Visualize femoral head nodes for prescribed force boundary conditions
@@ -755,7 +745,7 @@ cFigure;
 hold on;
 gpatch(Fb,V,'w','k',1);
 gpatch(f,v,'r','k',0.5);
-plotV(V(bcPrescribeList,:),'r.','markerSize',15)
+plotV(V(bcPrescribeList_head,:),'r.','markerSize',15)
 axisGeom; camlight headlight;
 drawnow;
 
@@ -769,16 +759,16 @@ FX=[forceTotal(1) 0 0]; %X force vector
 FY=[0 forceTotal(2) 0]; %Y force vector
 FZ=[0 0 forceTotal(3)]; %Z force vector
 
-wx=dot(N(bcPrescribeList,:),FX(ones(numel(bcPrescribeList),1),:),2);
-wy=dot(N(bcPrescribeList,:),FY(ones(numel(bcPrescribeList),1),:),2);
-wz=dot(N(bcPrescribeList,:),FZ(ones(numel(bcPrescribeList),1),:),2);
+wx=dot(N(bcPrescribeList_head,:),FX(ones(numel(bcPrescribeList_head),1),:),2);
+wy=dot(N(bcPrescribeList_head,:),FY(ones(numel(bcPrescribeList_head),1),:),2);
+wz=dot(N(bcPrescribeList_head,:),FZ(ones(numel(bcPrescribeList_head),1),:),2);
 
 %Force zero
 wx(wx>0)=0; wy(wy>0)=0; wz(wz>0)=0;
 
-force_X=forceTotal(1).*ones(numel(bcPrescribeList),1).*wx;
-force_Y=forceTotal(2).*ones(numel(bcPrescribeList),1).*wy;
-force_Z=forceTotal(3).*ones(numel(bcPrescribeList),1).*wz;
+force_X=forceTotal(1).*ones(numel(bcPrescribeList_head),1).*wx;
+force_Y=forceTotal(2).*ones(numel(bcPrescribeList_head),1).*wy;
+force_Z=forceTotal(3).*ones(numel(bcPrescribeList_head),1).*wz;
 
 force_X=force_X./sum(force_X(:)); %sum now equal to 1
 force_X=force_X.*forceTotal(1); %sum now equal to desired
@@ -789,7 +779,8 @@ force_Y=force_Y.*forceTotal(2); %sum now equal to desired
 force_Z=force_Z./sum(force_Z(:)); %sum now equal to 1
 force_Z=force_Z.*forceTotal(3); %sum now equal to desired
 
-force_ball=[force_X(:) force_Y(:) force_Z(:)];
+force_head=[force_X(:) force_Y(:) force_Z(:)];
+
 %%
 cFigure;
 subplot(1,3,1);hold on;
@@ -797,7 +788,7 @@ title('F_x');
 gpatch(Fb,V,'w','none',0.5);
 quiverVec([0 0 0],FX,100,'k');
 % scatterV(V(indicesHeadNodes,:),15)
-quiverVec(V(bcPrescribeList,:),N(bcPrescribeList,:),10,force_X);
+quiverVec(V(bcPrescribeList_head,:),N(bcPrescribeList_head,:),10,force_X);
 axisGeom; camlight headlight;
 colormap(gca,gjet(250)); colorbar;
 
@@ -806,7 +797,7 @@ title('F_y');
 gpatch(Fb,V,'w','none',0.5);
 quiverVec([0 0 0],FY,100,'k');
 % scatterV(V(indicesHeadNodes,:),15)
-quiverVec(V(bcPrescribeList,:),N(bcPrescribeList,:),10,force_Y);
+quiverVec(V(bcPrescribeList_head,:),N(bcPrescribeList_head,:),10,force_Y);
 axisGeom; camlight headlight;
 colormap(gca,gjet(250)); colorbar;
 
@@ -815,7 +806,7 @@ title('F_z');
 gpatch(Fb,V,'w','none',0.5);
 quiverVec([0 0 0],FZ,100,'k');
 % scatterV(V(indicesHeadNodes,:),15)
-quiverVec(V(bcPrescribeList,:),N(bcPrescribeList,:),10,force_Z);
+quiverVec(V(bcPrescribeList_head,:),N(bcPrescribeList_head,:),10,force_Z);
 axisGeom; camlight headlight;
 colormap(gca,gjet(250)); colorbar;
 
@@ -845,20 +836,57 @@ forceAbductor_distributed=forceAbductor.*ones(numel(bcPrescibeList_abductor),1).
 forceVastusLateralis_distributed=forceVastusLateralis.*ones(numel(bcPrescibeList_VastusLateralis),1)./numel(bcPrescibeList_VastusLateralis);
 
 forceVastusMedialis_distributed=forceVastusMedialis.*ones(numel(bcPrescibeList_VastusMedialis),1)./numel(bcPrescibeList_VastusMedialis);
+
+%% Defining prescribed forces
+
+
+bcPrescribeList=[bcPrescribeList_head(:);...
+                 bcPrescibeList_abductor(:);...
+                 bcPrescibeList_VastusLateralis(:);...
+                 bcPrescibeList_VastusMedialis(:)];
+
+forceData=[force_head;...
+           forceAbductor_distributed;...
+           forceVastusLateralis_distributed;...
+           forceVastusMedialis_distributed]; 
+%%
+
+cFigure; 
+subplot(1,3,1);hold on;
+title('F_x');
+gpatch(Fb,V,'w','none',0.5);
+quiverVec(V(bcPrescribeList,:),forceData,10,forceData(:,1));
+axisGeom; camlight headlight;
+colormap(gca,gjet(250)); colorbar; 
+
+subplot(1,3,2);hold on;
+title('F_y');
+gpatch(Fb,V,'w','none',0.5);
+quiverVec(V(bcPrescribeList,:),forceData,10,forceData(:,2));
+axisGeom; camlight headlight;
+colormap(gca,gjet(250)); colorbar; 
+
+subplot(1,3,3);hold on;
+title('F_z');
+gpatch(Fb,V,'w','none',0.5);
+
+quiverVec(V(bcPrescribeList,:),forceData,10,forceData(:,3));
+axisGeom; camlight headlight;
+colormap(gca,gjet(250)); colorbar; 
+
+
 %% Visualizing boundary conditions
 
 F_bottomSupport=Fb(Cb==2,:);
 bcSupportList=unique(F_bottomSupport(:));
-hFig=cFigure; hold on;
-gpatch(Fb,V,'kw','none',0.25);
-clear hl;
+
+cFigure; hold on;
+gpatch(Fb,V,'kw','none',0.7);
 hl(1)=plotV(V(bcSupportList,:),'k.','MarkerSize',25);
 hl(2)=plotV(V(bcPrescribeList,:),'r.','MarkerSize',25);
-hl(3)=plotV(V(bcPrescibeList_abductor,:),'g.','MarkerSize',25);
-hl(4)=plotV(V(bcPrescibeList_VastusLateralis,:),'b.','MarkerSize',25);
-hl(5)=plotV(V(bcPrescibeList_VastusMedialis,:),'g.','MarkerSize',25);
-legend(hl,{'BC support','BC force prescribe','MAP abductor','MAP Vastus Lateralis','MAP Vastus Medialis'});
-axisGeom;
+
+legend(hl,{'BC support','BC prescribed forces'});
+axisGeom; 
 camlight headlight;
 drawnow;
 
@@ -871,7 +899,7 @@ drawnow;
 [febio_spec]=febioStructTemplate;
 
 %febio_spec version 
-febio_spec.ATTR.version='3.0'; 
+febio_spec.ATTR.version='4.0'; 
 
 %Module section
 febio_spec.Module.ATTR.type='solid'; 
@@ -881,12 +909,11 @@ febio_spec.Control.analysis='STATIC';
 febio_spec.Control.time_steps=numTimeSteps;
 febio_spec.Control.step_size=1/numTimeSteps;
 febio_spec.Control.solver.max_refs=max_refs;
-febio_spec.Control.solver.max_ups=max_ups;
+febio_spec.Control.solver.qn_method.max_ups=max_ups;
 febio_spec.Control.time_stepper.dtmin=dtmin;
 febio_spec.Control.time_stepper.dtmax=dtmax; 
 febio_spec.Control.time_stepper.max_retries=max_retries;
 febio_spec.Control.time_stepper.opt_iter=opt_iter;
-
 
 %Material section
 materialName1='Material1';
@@ -903,19 +930,14 @@ febio_spec.Material.material{2}.ATTR.id=2;
 febio_spec.Material.material{2}.E=E_youngs2;
 febio_spec.Material.material{2}.v=nu2;
 
-
-
-for q=1:1:numMaterials
-    name_var = strcat( 'Material',num2str(q+2) );
-    materialNameq=sprintf('%s',name_var);
-    febio_spec.Material.material{q+2}.ATTR.name=materialNameq;
-    febio_spec.Material.material{q+2}.ATTR.type='neo-Hookean';
-    febio_spec.Material.material{q+2}.ATTR.id=q+2;
-    febio_spec.Material.material{q+2}.E=E_youngs_implant(q);
-    febio_spec.Material.material{q+2}.v=nu_implant;
-end
-
-
+materialName3='Material3';
+dataMapName1='MaterialParameterMap1';
+febio_spec.Material.material{3}.ATTR.name=materialName3;
+febio_spec.Material.material{3}.ATTR.type='neo-Hookean';
+febio_spec.Material.material{3}.ATTR.id=3;
+febio_spec.Material.material{3}.E.ATTR.type='map'; %Calls for mapping of parameter
+febio_spec.Material.material{3}.E.VAL=dataMapName1; %Calls for mapping of parameter
+febio_spec.Material.material{3}.v=nu_implant; 
 
 % Mesh section
 % -> Nodes
@@ -936,38 +958,27 @@ febio_spec.Mesh.Elements{2}.ATTR.type='tet4'; %Element type
 febio_spec.Mesh.Elements{2}.elem.ATTR.id=size(E1,1)+(1:1:size(E2,1))'; %Element id's
 febio_spec.Mesh.Elements{2}.elem.VAL=E2; %The element matrix
 
-n=size(E1,1)+size(E2,1)+1;
-for q=1:1:numMaterials
-    logicMaterialNow=(elementMaterialID==(q+2));
-    febio_spec.Mesh.Elements{q+2}.ATTR.type='tet4'; %Element type of this set
-    febio_spec.Mesh.Elements{q+2}.ATTR.mat=q+2; %material index for this set
-    febio_spec.Mesh.Elements{q+2}.ATTR.name=['Implant_mat_',num2str(q)]; %Name of the element set
-    febio_spec.Mesh.Elements{q+2}.elem.ATTR.id=(n:1:(n-1+nnz(logicMaterialNow)))'; %Element id's
-    febio_spec.Mesh.Elements{q+2}.elem.VAL=E(logicMaterialNow,:);
-    n=n+nnz(logicMaterialNow);
-end
+partName3='Implant';
+febio_spec.Mesh.Elements{3}.ATTR.name=partName3; %Name of this part
+febio_spec.Mesh.Elements{3}.ATTR.type='tet4'; %Element type
+febio_spec.Mesh.Elements{3}.elem.ATTR.id=size(E1,1)+size(E2,1)+(1:1:size(E3,1))'; %Element id's
+febio_spec.Mesh.Elements{3}.elem.VAL=E3; %The element matrix
+
+%MeshData secion
+%-> Element data       
+febio_spec.MeshData.ElementData{1}.ATTR.name=dataMapName1;
+febio_spec.MeshData.ElementData{1}.ATTR.elem_set=partName3;
+febio_spec.MeshData.ElementData{1}.elem.ATTR.lid=(1:1:size(E3,1))';
+febio_spec.MeshData.ElementData{1}.elem.VAL=E_youngs_implant;
 
 % -> NodeSets
 nodeSetName1='bcSupportList';
-nodeSetName2='indicesHeadSurfaceNodes';
-nodeSetName3='indicesAbductor';
-nodeSetName4='indicesVastusLateralis';
-nodeSetName5='indicesVastusMedialis';
-
 febio_spec.Mesh.NodeSet{1}.ATTR.name=nodeSetName1;
-febio_spec.Mesh.NodeSet{1}.node.ATTR.id=bcSupportList(:);
+febio_spec.Mesh.NodeSet{1}.VAL=mrow(bcSupportList);
 
+nodeSetName2='bcPrescribeList';
 febio_spec.Mesh.NodeSet{2}.ATTR.name=nodeSetName2;
-febio_spec.Mesh.NodeSet{2}.node.ATTR.id=bcPrescribeList(:);
-
-febio_spec.Mesh.NodeSet{3}.ATTR.name=nodeSetName3;
-febio_spec.Mesh.NodeSet{3}.node.ATTR.id=bcPrescibeList_abductor(:);
- 
-febio_spec.Mesh.NodeSet{4}.ATTR.name=nodeSetName4;
-febio_spec.Mesh.NodeSet{4}.node.ATTR.id=bcPrescibeList_VastusLateralis(:);
-
-febio_spec.Mesh.NodeSet{5}.ATTR.name=nodeSetName5;
-febio_spec.Mesh.NodeSet{5}.node.ATTR.id=bcPrescibeList_VastusMedialis(:);
+febio_spec.Mesh.NodeSet{2}.VAL=mrow(bcPrescribeList);
 
 %MeshDomains section
 febio_spec.MeshDomains.SolidDomain{1}.ATTR.name=partName1;
@@ -976,106 +987,71 @@ febio_spec.MeshDomains.SolidDomain{1}.ATTR.mat=materialName1;
 febio_spec.MeshDomains.SolidDomain{2}.ATTR.name=partName2;
 febio_spec.MeshDomains.SolidDomain{2}.ATTR.mat=materialName2;
 
-    
-for q=1:1:numMaterials
-febio_spec.MeshDomains.SolidDomain{q+2}.ATTR.name=['Implant_mat_',num2str(q)];
-name_var = strcat( 'Material',num2str(q+2) );
-materialNameq=sprintf('%s',name_var);
-febio_spec.MeshDomains.SolidDomain{q+2}.ATTR.mat=materialNameq;
-end
+febio_spec.MeshDomains.SolidDomain{3}.ATTR.name=partName3;
+febio_spec.MeshDomains.SolidDomain{3}.ATTR.mat=materialName3;
 
-
-%Boundary condition section
+%Boundary condition section 
 % -> Fix boundary conditions
-febio_spec.Boundary.bc{1}.ATTR.type='fix';
+febio_spec.Boundary.bc{1}.ATTR.name='zero_displacement_xyz';
+febio_spec.Boundary.bc{1}.ATTR.type='zero displacement';
 febio_spec.Boundary.bc{1}.ATTR.node_set=nodeSetName1;
-febio_spec.Boundary.bc{1}.dofs='x,y,z';
-
+febio_spec.Boundary.bc{1}.x_dof=1;
+febio_spec.Boundary.bc{1}.y_dof=1;
+febio_spec.Boundary.bc{1}.z_dof=1;
 
 %MeshData secion
 %-> Node data
-loadDataName1='force_ball';
+loadDataName1='nodal_forces';
+febio_spec.MeshData.NodeData{1}.ATTR.name=loadDataName1;
+febio_spec.MeshData.NodeData{1}.ATTR.node_set=nodeSetName2;
+febio_spec.MeshData.NodeData{1}.ATTR.data_type='vec3';
+febio_spec.MeshData.NodeData{1}.node.ATTR.lid=(1:1:numel(bcPrescribeList))';
+febio_spec.MeshData.NodeData{1}.node.VAL=forceData;
+
+%MeshData secion
+%-> Node data
+loadDataName1='forceData';
 febio_spec.MeshData.NodeData{1}.ATTR.name=loadDataName1;
 febio_spec.MeshData.NodeData{1}.ATTR.node_set=nodeSetName2;
 febio_spec.MeshData.NodeData{1}.ATTR.datatype='vec3';
 febio_spec.MeshData.NodeData{1}.node.ATTR.lid=(1:1:numel(bcPrescribeList))';
-febio_spec.MeshData.NodeData{1}.node.VAL=force_ball;
-
-loadDataName2='force_abductor';
-febio_spec.MeshData.NodeData{2}.ATTR.name=loadDataName2;
-febio_spec.MeshData.NodeData{2}.ATTR.node_set=nodeSetName3;
-febio_spec.MeshData.NodeData{2}.ATTR.datatype='vec3';
-febio_spec.MeshData.NodeData{2}.node.ATTR.lid=(1:1:numel(bcPrescibeList_abductor))';
-febio_spec.MeshData.NodeData{2}.node.VAL=forceAbductor_distributed;
-
-loadDataName3='force_VL';
-febio_spec.MeshData.NodeData{3}.ATTR.name=loadDataName3;
-febio_spec.MeshData.NodeData{3}.ATTR.node_set=nodeSetName4;
-febio_spec.MeshData.NodeData{3}.ATTR.datatype='vec3';
-febio_spec.MeshData.NodeData{3}.node.ATTR.lid=(1:1:numel(bcPrescibeList_VastusLateralis))';
-febio_spec.MeshData.NodeData{3}.node.VAL=forceVastusLateralis_distributed;
-
-loadDataName4='force_VM';
-febio_spec.MeshData.NodeData{4}.ATTR.name=loadDataName4;
-febio_spec.MeshData.NodeData{4}.ATTR.node_set=nodeSetName5;
-febio_spec.MeshData.NodeData{4}.ATTR.datatype='vec3';
-febio_spec.MeshData.NodeData{4}.node.ATTR.lid=(1:1:numel(bcPrescibeList_VastusMedialis))';
-febio_spec.MeshData.NodeData{4}.node.VAL=forceVastusMedialis_distributed;
+febio_spec.MeshData.NodeData{1}.node.VAL=forceData;
 
 %Loads section
 % -> Prescribed nodal forces
-febio_spec.Loads.nodal_load{1}.ATTR.name='PrescribedForce1';
+febio_spec.Loads.nodal_load{1}.ATTR.name='PrescribedForce';
 febio_spec.Loads.nodal_load{1}.ATTR.type='nodal_force';
 febio_spec.Loads.nodal_load{1}.ATTR.node_set=nodeSetName2;
 febio_spec.Loads.nodal_load{1}.value.ATTR.lc=1;
 febio_spec.Loads.nodal_load{1}.value.ATTR.type='map';
 febio_spec.Loads.nodal_load{1}.value.VAL=loadDataName1;
 
-febio_spec.Loads.nodal_load{2}.ATTR.name='PrescribedForce2';
-febio_spec.Loads.nodal_load{2}.ATTR.type='nodal_force';
-febio_spec.Loads.nodal_load{2}.ATTR.node_set=nodeSetName3;
-febio_spec.Loads.nodal_load{2}.value.ATTR.lc=1;
-febio_spec.Loads.nodal_load{2}.value.ATTR.type='map';
-febio_spec.Loads.nodal_load{2}.value.VAL=loadDataName2;
-
-febio_spec.Loads.nodal_load{3}.ATTR.name='PrescribedForce3';
-febio_spec.Loads.nodal_load{3}.ATTR.type='nodal_force';
-febio_spec.Loads.nodal_load{3}.ATTR.node_set=nodeSetName4;
-febio_spec.Loads.nodal_load{3}.value.ATTR.lc=1;
-febio_spec.Loads.nodal_load{3}.value.ATTR.type='map';
-febio_spec.Loads.nodal_load{3}.value.VAL=loadDataName3;
-
-febio_spec.Loads.nodal_load{4}.ATTR.name='PrescribedForce4';
-febio_spec.Loads.nodal_load{4}.ATTR.type='nodal_force';
-febio_spec.Loads.nodal_load{4}.ATTR.node_set=nodeSetName5;
-febio_spec.Loads.nodal_load{4}.value.ATTR.lc=1;
-febio_spec.Loads.nodal_load{4}.value.ATTR.type='map';
-febio_spec.Loads.nodal_load{4}.value.VAL=loadDataName2;
-
 %LoadData section
 % -> load_controller
+febio_spec.LoadData.load_controller{1}.ATTR.name='LC_1';
 febio_spec.LoadData.load_controller{1}.ATTR.id=1;
 febio_spec.LoadData.load_controller{1}.ATTR.type='loadcurve';
 febio_spec.LoadData.load_controller{1}.interpolate='LINEAR';
-febio_spec.LoadData.load_controller{1}.points.point.VAL=[0 0; 1 1];
+%febio_spec.LoadData.load_controller{1}.extend='CONSTANT';
+febio_spec.LoadData.load_controller{1}.points.pt.VAL=[0 0; 1 1];
 
-%Output section
+%Output section 
 % -> log file
 febio_spec.Output.logfile.ATTR.file=febioLogFileName;
 febio_spec.Output.logfile.node_data{1}.ATTR.file=febioLogFileName_disp;
 febio_spec.Output.logfile.node_data{1}.ATTR.data='ux;uy;uz';
 febio_spec.Output.logfile.node_data{1}.ATTR.delim=',';
-febio_spec.Output.logfile.node_data{1}.VAL=1:size(V,1);
 
 febio_spec.Output.logfile.element_data{1}.ATTR.file=febioLogFileName_stress;
 febio_spec.Output.logfile.element_data{1}.ATTR.data='s1;s2;s3';
 febio_spec.Output.logfile.element_data{1}.ATTR.delim=',';
-febio_spec.Output.logfile.element_data{1}.VAL=1:1:size(E,1); %only bone
 
 febio_spec.Output.logfile.element_data{2}.ATTR.file=febioLogFileName_strainEnergy;
 febio_spec.Output.logfile.element_data{2}.ATTR.data='sed';
 febio_spec.Output.logfile.element_data{2}.ATTR.delim=',';
-febio_spec.Output.logfile.element_data{2}.VAL=1:1:size(E,1);
+
+% Plotfile section
+febio_spec.Output.plotfile.compression=0;
 
 %% Create structures for optimization
 
@@ -1090,12 +1066,9 @@ drawnow
 %Febio analysis information
 febioAnalysis.run_filename=febioFebFileName; %The input file name
 febioAnalysis.run_logname=febioLogFileName; %The name for the log file
-febioAnalysis.runMode=runMode;%'internal';
-febioAnalysis.t_check=0.25; %Time for checking log file (dont set too small)
-febioAnalysis.maxtpi=1e99; %Max analysis time
-febioAnalysis.maxLogCheckTime=10; %Max log file checking time
-febioAnalysis.disp_on=1;
-febioAnalysis.disp_log_on=1;
+febioAnalysis.disp_on=1; %Display information on the command window
+febioAnalysis.runMode=runMode;
+febioAnalysis.maxLogCheckTime=120; %Max log file checking time
 
 %Compute comparison metric
 objCompareMetric=interpFuncMetric(VE_12);
@@ -1110,8 +1083,7 @@ objectiveStruct.Pb_struct.xxlim=paramContraints; %Parameter bounds
 objectiveStruct.method=optimMethod;
 objectiveStruct.objCompareMetric=objCompareMetric;
 objectiveStruct.logFileImportName=fullfile(savePath,febioLogFileName_strainEnergy);
-objectiveStruct.numMaterialLevels=numMaterialLevels;
-objectiveStruct.materidIDsUsed=materidIDsUsed;
+objectiveStruct.W=W; %Material variation map
 objectiveStruct.logicBoneElements=logicBoneElements;
 objectiveStruct.optimType=optimType;
 objectiveStruct.hp=hp;
@@ -1159,7 +1131,7 @@ switch evalMode
             [paramFinal(q)]=boxconstrain(paramFinal(q),objectiveStruct.Pb_struct.xxlim(q,1),objectiveStruct.Pb_struct.xxlim(q,2),objectiveStruct.Pb_struct.xx_c(q));
         end
         
-        disp_text=sprintf('%6.16e,',P_opt); disp_text=disp_text(1:end-1);
+        disp_text=sprintf('%6.16e,',paramFinal); disp_text=disp_text(1:end-1);
         disp(['paramFinal=',disp_text]);
         
 end
@@ -1174,7 +1146,7 @@ E_metric=outputStructure.E_metric;
 
 %%
 % Importing nodal displacements from a log file
-dataStruct=importFEBio_logfile(fullfile(savePath,febioLogFileName_disp),1,1);
+dataStruct=importFEBio_logfile(fullfile(savePath,febioLogFileName_disp),0,1);
 
 %Access data
 N_disp_mat=dataStruct.data; %Displacement
@@ -1185,13 +1157,13 @@ V_DEF=N_disp_mat+repmat(V,[1 1 size(N_disp_mat,3)]);
 
 %%
 % Importing element strain energies from a log file
-dataStruct=importFEBio_logfile(fullfile(savePath,febioLogFileName_strainEnergy),1,1);
+dataStruct=importFEBio_logfile(fullfile(savePath,febioLogFileName_strainEnergy),0,1);
 
 %Access data
 E_energy=dataStruct.data;
 
 %% Importing element stress from a log file
-dataStruct=importFEBio_logfile(fullfile(savePath,febioLogFileName_stress),1,1);
+dataStruct=importFEBio_logfile(fullfile(savePath,febioLogFileName_stress),0,1);
 
 %Access data
 E_stress_mat=dataStruct.data;
@@ -1323,7 +1295,7 @@ P=mean(V,1); %Point on plane
 [logicAt,logicAbove,logicBelow]=meshCleave(E_12,V,P,n);
 
 % Get faces and matching color data for visualization
-[F_cleave,CF_cleave]=element2patch(E_12(logicAt,:),C_data(logicAt));
+[F_cleave,CF_cleave]=element2patch(E_12(logicAbove,:),C_data(logicAbove));
 
 hf=cFigure; hold on;
 title('Principal stress 3');
@@ -1346,10 +1318,10 @@ animStruct.Time=linspace(0,1,nSteps);
 y=linspace(min(V(:,2)),max(V(:,2)),nSteps);
 for q=1:1:nSteps
     
-    logicAt=meshCleave(E_12,V,[0 y(q) 0],n,[1 0]);
+    [logicAt,logicAbove,logicBelow]=meshCleave(E_12,V,[0 y(q) 0],n,[1 0]);
     
     % Get faces and matching color data for cleaves elements
-    [F_cleave,CF_cleave]=element2patch(E_12(logicAt,:),C_data(logicAt));
+    [F_cleave,CF_cleave]=element2patch(E_12(logicAbove,:),C_data(logicAbove));
     
     %Set entries in animation structure
     animStruct.Handles{q}=[hp1 hp1]; %Handles of objects to animate
@@ -1451,11 +1423,10 @@ function [Fopt,outputStructure]=objectiveFunction(Pn,objectiveStruct)
 febioFebFileName=objectiveStruct.febioFebFileName;
 febio_spec=objectiveStruct.febio_spec;
 febioAnalysis=objectiveStruct.febioAnalysis;
-numMaterialLevels=objectiveStruct.numMaterialLevels;
-materidIDsUsed=objectiveStruct.materidIDsUsed;
 logFileImportName=objectiveStruct.logFileImportName;
 objCompareMetric=objectiveStruct.objCompareMetric;
 logicBoneElements=objectiveStruct.logicBoneElements;
+W=objectiveStruct.W;
 hp=objectiveStruct.hp;
 optimType=objectiveStruct.optimType;
 
@@ -1476,21 +1447,16 @@ disp(['Proposed (norm.): ',sprintf(repmat('%6.16e ',[1,numel(Pn)]),Pn)]);
 disp(['Proposed        : ',sprintf(repmat('%6.16e ',[1,numel(P_in)]),P_in)]);
 disp(['Set (constr.)   : ',sprintf(repmat('%6.16e ',[1,numel(P)]),P)]);
 
-%Range of Youngs moduli used in implant
+% Define Youngs moduli variation
 switch optimType
     case 1 %homogeneous
-        E_youngs_range=P(1)*ones(1,numMaterialLevels);
+        E_youngs_implant=P(1)*ones(numel(W),1);
     case 2 %Spat. var.
-        E_youngs_range=linspace(P(1),P(2),numMaterialLevels);
+       E_youngs_implant=(W.*(E_youngs_max-E_youngs_min))+E_youngs_min; 
 end
 
-E_youngs_implant=E_youngs_range(materidIDsUsed);
-numMaterials=numel(materidIDsUsed);
-
-%Adjust material parameters
-for q=1:1:numMaterials
-    febio_spec.Material.material{q+2}.E=E_youngs_implant(q);
-end
+%Adjust material parameter map
+febio_spec.MeshData.ElementData{1}.elem.VAL=E_youngs_implant;
 
 %Export changes to feb file
 febioStruct2xml(febio_spec,febioFebFileName); %Exporting to file and domNode
@@ -1503,7 +1469,7 @@ disp('Done')
 
 if runFlag==1
     % import optimization metric
-    dataStruct=importFEBio_logfile(logFileImportName,1,1);
+    dataStruct=importFEBio_logfile(logFileImportName,0,1);
     
     %Access data for last time step
     E_metric=dataStruct.data(logicBoneElements,:,end);

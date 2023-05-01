@@ -60,9 +60,9 @@ opt_iter=12; %Optimum number of iterations
 max_retries=25; %Maximum number of retires
 dtmin=(1/numTimeSteps)/100; %Minimum time step size
 dtmax=1/numTimeSteps; %Maximum time step size
-
 min_residual=1e-20;
 symmetric_stiffness=0;
+
 runMode='external'; %'internal' or 'external'
 
 %% Computing derived parameters
@@ -553,7 +553,7 @@ if runFlag==1 %i.e. a succesful run
     E_strain=dataStruct.data;
     
     [F,CF]=element2patch(E,E_strain(:,:,end));
-    CF_V=faceToVertexMeasure(F,V,CF);
+    CV=faceToVertexMeasure(F,V,CF);
 
     E_strain_middle_mean=squeeze(mean(E_strain(logicMiddleElements,:,:),1));
 
@@ -561,18 +561,18 @@ if runFlag==1 %i.e. a succesful run
     gripStrainLinear=double(timeVec>1).*(timeVec-1).*appliedLinearStrain; 
     gripStrain=1/2*((gripStrainLinear+1).^2-1); %Green-Lagrange strain
     maxGridStrain=max(abs(gripStrain));
+
       %%
     % Plotting the simulated results using |anim8| to visualize and animate
     % deformations
-    
-    axLim=[min(min(V_DEF,[],3),[],1); max(max(V_DEF,[],3),[],1)];
+        
     indBc=[bcPrescribeList1;bcPrescribeList2;bcPrescribeList3;bcPrescribeList4;];
     
     % Create basic view and store graphics handle to initiate animation
     hf=cFigure; hold on;%Open figure
     gtitle([febioFebFileNamePart,': Press play to animate']);
     title('$E_{zz}$','Interpreter','Latex')
-    hp1=gpatch(Fb,V_DEF(:,:,end),CF_V,'k',1);
+    hp1=gpatch(Fb,V_DEF(:,:,end),CV,'k',1);
     hp1.FaceColor='interp';
     hp2=plotV(V(indBc,:),'k.','MarkerSize',25);
     
@@ -580,22 +580,19 @@ if runFlag==1 %i.e. a succesful run
     colormap(warmcold(250)); hc=colorbar;
     caxis([-maxGridStrain maxGridStrain]);
     hc.Ticks=linspace(-maxGridStrain,maxGridStrain,7);
-    axis(axLim(:)'); %Set axis limits statically
+    axis(axisLim(V_DEF)); %Set axis limits statically    
 
     camlight headlight; axis off;
    
     % Set up animation features
     animStruct.Time=timeVec; %The time vector
-    for qt=1:1:size(N_disp_mat,3) %Loop over time increments
-        V_def=V+N_disp_mat(:,:,qt); %Current nodal coordinates
-        
-        [~,CF]=element2patch(E,E_strain(:,:,qt));
-        CF_V=faceToVertexMeasure(F,V,CF);
-        
+    for qt=1:1:size(N_disp_mat,3) %Loop over time increments                
+        CV=faceToVertexMeasure(E,V,E_strain(:,:,qt));
+
         %Set entries in animation structure
         animStruct.Handles{qt}=[hp1 hp1 hp2 hp2 hp2]; %Handles of objects to animate
         animStruct.Props{qt}={'Vertices','CData','XData','YData','ZData'}; %Properties of objects to animate
-        animStruct.Set{qt}={V_def,CF_V,V_def(indBc,1),V_def(indBc,2),V_def(indBc,3)}; %Property values for to set in order to animate
+        animStruct.Set{qt}={V_DEF(:,:,qt),CV,V_DEF(indBc,1,qt),V_DEF(indBc,2,qt),V_DEF(indBc,3,qt)}; %Property values for to set in order to animate
     end
     anim8(hf,animStruct); %Initiate animation feature
     gdrawnow;
@@ -611,9 +608,9 @@ if runFlag==1 %i.e. a succesful run
     subplot(1,2,1); hold on;
     title('$E_{zz}$','Interpreter','Latex');
     gtitle([febioFebFileNamePart,': Press play to animate']);
-    hp1=gpatch(Fb,V_DEF(:,:,end),CF_V,'none',1,0.5); hp1.FaceColor='interp';
+    hp1=gpatch(Fb,V_DEF(:,:,end),CV,'none',1,0.5); hp1.FaceColor='interp';
     hp2=plotV(V_DEF(indBc,:,end),'k.','MarkerSize',1);    
-    hp3=gpatch(FM,V_DEF(:,:,end),CF_V,'k',1,2); hp3.FaceColor='interp';
+    hp3=gpatch(FM,V_DEF(:,:,end),CV,'k',1,2); hp3.FaceColor='interp';
     
     colormap(warmcold(250)); hc=colorbar;
     caxis([-maxGridStrain maxGridStrain]);
@@ -636,13 +633,12 @@ if runFlag==1 %i.e. a succesful run
     for qt=1:1:size(N_disp_mat,3) %Loop over time increments
         V_def=V_DEF(:,:,qt); %Current nodal coordinates
         
-        [~,CF]=element2patch(E,E_strain(:,:,qt));
-        CF_V=faceToVertexMeasure(F,V,CF);
+        CV=faceToVertexMeasure(E,V,E_strain(:,:,qt));
         
         %Set entries in animation structure
         animStruct.Handles{qt}=[hp1 hp1 hp2 hp2 hp2 hp3 hp3 hp4 hp4 hp5 hp5]; %Handles of objects to animate
         animStruct.Props{qt}={'Vertices','CData','XData','YData','ZData','Vertices','CData','XData','YData','XData','YData'}; %Properties of objects to animate
-        animStruct.Set{qt}={V_def,CF_V,V_def(indBc,1),V_def(indBc,2),V_def(indBc,3),V_def,CF_V,timeVec(qt),E_strain_middle_mean(qt),timeVec(qt),gripStrain(qt)}; %Property values for to set in order to animate
+        animStruct.Set{qt}={V_def,CV,V_def(indBc,1),V_def(indBc,2),V_def(indBc,3),V_def,CV,timeVec(qt),E_strain_middle_mean(qt),timeVec(qt),gripStrain(qt)}; %Property values for to set in order to animate
     end
     anim8(hf,animStruct); %Initiate animation feature
     drawnow;

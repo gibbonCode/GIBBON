@@ -344,8 +344,10 @@ febio_spec.Rigid.rigid_bc{1}.ATTR.type='rigid_fixed';
 febio_spec.Rigid.rigid_bc{1}.rb=2;
 febio_spec.Rigid.rigid_bc{1}.Rx_dof=1;
 febio_spec.Rigid.rigid_bc{1}.Ry_dof=1;
+febio_spec.Rigid.rigid_bc{1}.Rz_dof=0;
 febio_spec.Rigid.rigid_bc{1}.Ru_dof=1;
 febio_spec.Rigid.rigid_bc{1}.Rv_dof=1;
+febio_spec.Rigid.rigid_bc{1}.Rw_dof=0;
 
 % ->Rigid body prescribe boundary conditions
 febio_spec.Rigid.rigid_bc{2}.ATTR.name='RigidPrescribe_disp';

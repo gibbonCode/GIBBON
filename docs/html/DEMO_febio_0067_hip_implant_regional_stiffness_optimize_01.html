@@ -1,0 +1,3458 @@
+
+<!DOCTYPE html
+  PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html><head>
+      <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+   <!--
+This HTML was auto-generated from MATLAB code.
+To make changes, update the MATLAB code and republish this document.
+      --><title>DEMO_febio_0067_hip_implant_regional_stiffness_optimize_01.m</title><meta name="generator" content="MATLAB 9.14"><link rel="schema.DC" href="http://purl.org/dc/elements/1.1/"><meta name="DC.date" content="2023-05-01"><meta name="DC.source" content="DEMO_febio_0067_hip_implant_regional_stiffness_optimize_01.m"><style type="text/css">
+html,body,div,span,applet,object,iframe,h1,h2,h3,h4,h5,h6,p,blockquote,pre,a,abbr,acronym,address,big,cite,code,del,dfn,em,font,img,ins,kbd,q,s,samp,small,strike,strong,tt,var,b,u,i,center,dl,dt,dd,ol,ul,li,fieldset,form,label,legend,table,caption,tbody,tfoot,thead,tr,th,td{margin:0;padding:0;border:0;outline:0;font-size:100%;vertical-align:baseline;background:transparent}body{line-height:1}ol,ul{list-style:none}blockquote,q{quotes:none}blockquote:before,blockquote:after,q:before,q:after{content:'';content:none}:focus{outine:0}ins{text-decoration:none}del{text-decoration:line-through}table{border-collapse:collapse;border-spacing:0}
+
+html { min-height:100%; margin-bottom:1px; }
+html body { height:100%; margin:0px; font-family:Arial, Helvetica, sans-serif; font-size:10px; color:#000; line-height:140%; background:#fff none; overflow-y:scroll; }
+html body td { vertical-align:top; text-align:left; }
+
+h1 { padding:0px; margin:0px 0px 25px; font-family:Arial, Helvetica, sans-serif; font-size:1.5em; color:#d55000; line-height:100%; font-weight:normal; }
+h2 { padding:0px; margin:0px 0px 8px; font-family:Arial, Helvetica, sans-serif; font-size:1.2em; color:#000; font-weight:bold; line-height:140%; border-bottom:1px solid #d6d4d4; display:block; }
+h3 { padding:0px; margin:0px 0px 5px; font-family:Arial, Helvetica, sans-serif; font-size:1.1em; color:#000; font-weight:bold; line-height:140%; }
+
+a { color:#005fce; text-decoration:none; }
+a:hover { color:#005fce; text-decoration:underline; }
+a:visited { color:#004aa0; text-decoration:none; }
+
+p { padding:0px; margin:0px 0px 20px; }
+img { padding:0px; margin:0px 0px 20px; border:none; }
+p img, pre img, tt img, li img, h1 img, h2 img { margin-bottom:0px; }
+
+ul { padding:0px; margin:0px 0px 20px 23px; list-style:square; }
+ul li { padding:0px; margin:0px 0px 7px 0px; }
+ul li ul { padding:5px 0px 0px; margin:0px 0px 7px 23px; }
+ul li ol li { list-style:decimal; }
+ol { padding:0px; margin:0px 0px 20px 0px; list-style:decimal; }
+ol li { padding:0px; margin:0px 0px 7px 23px; list-style-type:decimal; }
+ol li ol { padding:5px 0px 0px; margin:0px 0px 7px 0px; }
+ol li ol li { list-style-type:lower-alpha; }
+ol li ul { padding-top:7px; }
+ol li ul li { list-style:square; }
+
+.content { font-size:1.2em; line-height:140%; padding: 20px; }
+
+pre, code { font-size:12px; }
+tt { font-size: 1.2em; }
+pre { margin:0px 0px 20px; }
+pre.codeinput { padding:10px; border:1px solid #d3d3d3; background:#f7f7f7; }
+pre.codeoutput { padding:10px 11px; margin:0px 0px 20px; color:#4c4c4c; }
+pre.error { color:red; }
+
+@media print { pre.codeinput, pre.codeoutput { word-wrap:break-word; width:100%; } }
+
+span.keyword { color:#0000FF }
+span.comment { color:#228B22 }
+span.string { color:#A020F0 }
+span.untermstring { color:#B20000 }
+span.syscmd { color:#B28C00 }
+span.typesection { color:#A0522D }
+
+.footer { width:auto; padding:10px 0px; margin:25px 0px 0px; border-top:1px dotted #878787; font-size:0.8em; line-height:140%; font-style:italic; color:#878787; text-align:left; float:none; }
+.footer p { margin:0px; }
+.footer a { color:#878787; }
+.footer a:hover { color:#878787; text-decoration:underline; }
+.footer a:visited { color:#878787; }
+
+table th { padding:7px 5px; text-align:left; vertical-align:middle; border: 1px solid #d6d4d4; font-weight:bold; }
+table td { padding:7px 5px; text-align:left; vertical-align:top; border:1px solid #d6d4d4; }
+
+
+
+
+
+  </style></head><body><div class="content"><h1>DEMO_febio_0067_hip_implant_regional_stiffness_optimize_01.m</h1><!--introduction--><p>Below is a demonstration for:</p><div><ul><li>Importing bone geometry</li><li>Building geometry for a custom hip implant</li><li>Evaluating the implant using FEA</li></ul></div><!--/introduction--><h2>Contents</h2><div><ul><li><a href="#1">Keywords</a></li><li><a href="#3">Plot settings</a></li><li><a href="#4">Control parameters</a></li><li><a href="#5">Import bone model</a></li><li><a href="#6">Compute derived control parameters</a></li><li><a href="#7">Cut bone end off</a></li><li><a href="#9">Cut femoral head off</a></li><li><a href="#11">Add inner bone surface for implant to rest on (will attach to collar)</a></li><li><a href="#13">Create implant spherical head</a></li><li><a href="#16">Build colar</a></li><li><a href="#18">Build neck</a></li><li><a href="#20">Define shaft</a></li><li><a href="#22">Join bone and implant surfaces</a></li><li><a href="#24">Create tetrahedral elements for both regions</a></li><li><a href="#29">Define material regions</a></li><li><a href="#30">Define implant spatialy varying parameters</a></li><li><a href="#31">Visualizing solid mesh</a></li><li><a href="#32">Load SED data from non-implant model and form interpolation function</a></li><li><a href="#35">Find femoral head</a></li><li><a href="#37">Work out force distribution on femoral head surface nodes</a></li><li><a href="#39">Marking muscle locations</a></li><li><a href="#40">Muscle force definition</a></li><li><a href="#41">Defining prescribed forces</a></li><li><a href="#43">Visualizing boundary conditions</a></li><li><a href="#44">Defining the FEBio input structure</a></li><li><a href="#45">Create structures for optimization</a></li><li><a href="#47">Unnormalize and constrain parameters</a></li><li><a href="#49">Access ouput data from optimization run</a></li><li><a href="#50">Import FEBio results</a></li><li><a href="#53">Importing element stress from a log file</a></li><li><a href="#58">simulated results using <tt>anim8</tt> to visualize and animate</a></li><li><a href="#59">simulated results using <tt>anim8</tt> to visualize and animate</a></li><li><a href="#62">Process input</a></li><li><a href="#63">Unnormalize and constrain parameters</a></li><li><a href="#64">Setting material parameters</a></li><li><a href="#65">START FEBio</a></li><li><a href="#66">Update plot</a></li><li><a href="#67">Collect output</a></li></ul></div><h2 id="1">Keywords</h2><div><ul><li>febio_spec version 3.0</li><li>febio, FEBio</li><li>beam force loading</li><li>force control boundary condition</li><li>tetrahedral elements, tet4</li><li>static, solid</li><li>hyperelastic, Ogden</li><li>displacement logfile</li><li>stress logfile</li></ul></div><pre class="codeinput">clear; close <span class="string">all</span>; clc;
+</pre><h2 id="3">Plot settings</h2><pre class="codeinput">fontSize=20;
+faceAlpha1=0.8;
+markerSize=40;
+markerSize2=20;
+lineWidth=3;
+</pre><h2 id="4">Control parameters</h2><pre class="codeinput"><span class="comment">% Path names</span>
+defaultFolder = fileparts(fileparts(mfilename(<span class="string">'fullpath'</span>)));
+savePath=fullfile(defaultFolder,<span class="string">'data'</span>,<span class="string">'temp'</span>);
+pathNameSTL=fullfile(defaultFolder,<span class="string">'data'</span>,<span class="string">'STL'</span>);
+loadName_SED=fullfile(savePath,<span class="string">'SED_no_implant.mat'</span>);
+
+<span class="keyword">if</span> exist(loadName_SED,<span class="string">'file'</span>)
+    disp(<span class="string">'Using data from: DEMO_febio_0062_femur_load_01'</span>);
+<span class="keyword">else</span>
+    warning(<span class="string">'This demo requires that you run this demo first: DEMO_febio_0062_femur_load_01. Running DEMO_febio_0062_femur_load_01 now... '</span>)
+    DEMO_febio_0062_femur_load_01
+<span class="keyword">end</span>
+
+<span class="comment">% Defining file names</span>
+febioFebFileNamePart=<span class="string">'tempModel'</span>;
+febioFebFileName=fullfile(savePath,[febioFebFileNamePart,<span class="string">'.feb'</span>]); <span class="comment">%FEB file name</span>
+febioLogFileName=fullfile(savePath,[febioFebFileNamePart,<span class="string">'.txt'</span>]); <span class="comment">%FEBio log file name</span>
+febioLogFileName_disp=[febioFebFileNamePart,<span class="string">'_disp_out.txt'</span>]; <span class="comment">%Log file name for exporting displacancellousBone</span>
+febioLogFileName_force=[febioFebFileNamePart,<span class="string">'_force_out.txt'</span>]; <span class="comment">%Log file name for exporting force</span>
+febioLogFileName_strainEnergy=[febioFebFileNamePart,<span class="string">'_energy_out.txt'</span>]; <span class="comment">%Log file name for exporting strain energy density</span>
+febioLogFileName_stress=[febioFebFileNamePart,<span class="string">'_stress_out.txt'</span>]; <span class="comment">%Log file name for exporting stress</span>
+
+<span class="comment">%Optimisation settings</span>
+maxNumberIterations=100; <span class="comment">%Maximum number of optimization iterations</span>
+maxNumberFunctionEvaluations=maxNumberIterations*10; <span class="comment">%Maximum number of function evaluations, N.B. multiple evaluations are used per iteration</span>
+functionTolerance=1e-6; <span class="comment">%Tolerance on objective function value</span>
+parameterTolerance=1e-6; <span class="comment">%Tolerance on parameter variation</span>
+displayTypeIterations=<span class="string">'iter'</span>;
+optimMethod=2; <span class="comment">%1=NelderMead, 2=Levenberg-Marquardt</span>
+evalMode=2; <span class="comment">%1=test run, 2=optimization</span>
+optimType=1; <span class="comment">%1=homogenous, 2=spat.var</span>
+
+<span class="comment">%Geometric parameters</span>
+distanceCut=250; <span class="comment">%Distance from femur to cut bone at</span>
+corticalThickness=3; <span class="comment">%Thickness used for cortical material definition</span>
+volumeFactors=[2 2]; <span class="comment">%Factor to scale desired volume for interior elements w.r.t. boundary elements</span>
+implantLayerThickness=6; <span class="comment">%Thickness used for implant region definition</span>
+distanceExclude=10;
+
+stemCut=32;
+numSmoothStepsCutBottom=5;
+numSmoothStepsCutFemur=25;
+implantOffset=5;
+implantOffsetCollar=2;
+implantHeadRadius=20;
+implantStickRadius=10;
+implantCollarThickness=3;
+implantShaftLengthFraction=1/4;
+
+numLoftGuideSlicesShaft=8;
+numSmoothStepsShaft=20;
+
+<span class="comment">%Define applied force</span>
+forceTotal=[-405 -246 -1717.5]; <span class="comment">%x,y,z force in Newton</span>
+
+forceAbductor=[564.831 -132.696 704.511];
+forceVastusLateralis_Walking=[-7.857 -161.505 -811.017];
+forceVastusLateralis_StairClimbing=[-19.206 -195.552 -1,179.423];
+forceVastusMedialis_StairClimbing=[-76.824 -345.708 -2,331.783];
+forceVM_inactive=[0 0 0];
+
+n=1;
+<span class="keyword">switch</span> n
+    <span class="keyword">case</span> 1
+        forceVastusLateralis=forceVastusLateralis_Walking;
+        forceVastusMedialis=forceVM_inactive;
+    <span class="keyword">case</span> 2
+        forceVastusLateralis=forceVastusLateralis_StairClimbing;
+        forceVastusMedialis=forceVastusMedialis_StairClimbing;
+    <span class="keyword">otherwise</span>
+        forceVastusLateralis=forceVastusLateralis_StairClimbing;
+        forceVastusMedialis=forceVastusMedialis_StairClimbing;
+<span class="keyword">end</span>
+
+<span class="comment">% Distance markers and scaling factor</span>
+zLevelWidthMeasure = -75;
+zLevelFCML = -395;
+scaleFactorSize=1;
+distanceMuscleAttachAbductor=15;
+distanceMuscleVastusLateralis=10;
+distanceMuscleAttachVastusMedialis=10;
+
+<span class="comment">%Material parameters (MPa if spatial units are mm)</span>
+<span class="comment">% Cortical bone</span>
+E_youngs1=17000; <span class="comment">%Youngs modulus</span>
+nu1=0.3; <span class="comment">%Poissons ratio</span>
+
+<span class="comment">% Cancellous bone</span>
+E_youngs2=1500; <span class="comment">%Youngs modulus</span>
+nu2=0.25; <span class="comment">%Poissons ratio</span>
+
+<span class="comment">%Youngs moduli for implant</span>
+E_youngs_min=15000;
+E_youngs_max=110000;
+nu_implant=0.3; <span class="comment">%Poissons ratio</span>
+
+<span class="keyword">switch</span> optimType
+    <span class="keyword">case</span> 1 <span class="comment">%homogeneous (no spatial variation)</span>
+        paramContraints=[E_youngs_min E_youngs_max];
+        paramInitial=mean([E_youngs_min E_youngs_max]); <span class="comment">%Initial parameters</span>
+    <span class="keyword">case</span> 2 <span class="comment">%Spatially varying according to map</span>
+        paramContraints=[E_youngs_min E_youngs_max; E_youngs_min E_youngs_max];
+        paramInitial=mean([E_youngs_min E_youngs_max])*ones(1,2); <span class="comment">%Initial parameters</span>
+<span class="keyword">end</span>
+
+<span class="comment">% FEA control settings</span>
+numTimeSteps=5; <span class="comment">%Number of time steps desired</span>
+max_refs=25; <span class="comment">%Max reforms</span>
+max_ups=0; <span class="comment">%Set to zero to use full-Newton iterations</span>
+opt_iter=6; <span class="comment">%Optimum number of iterations</span>
+max_retries=5; <span class="comment">%Maximum number of retires</span>
+dtmin=(1/numTimeSteps)/100; <span class="comment">%Minimum time step size</span>
+dtmax=1/numTimeSteps; <span class="comment">%Maximum time step size</span>
+runMode=<span class="string">'external'</span>; <span class="comment">%'external' or 'internal'</span>
+</pre><pre class="codeoutput">Using data from: DEMO_febio_0062_femur_load_01
+</pre><h2 id="5">Import bone model</h2><pre class="codeinput">[stlStruct] = import_STL(fullfile(pathNameSTL,<span class="string">'femur_iso.stl'</span>));
+F_bone=stlStruct.solidFaces{1}; <span class="comment">%Faces</span>
+V_bone=stlStruct.solidVertices{1}; <span class="comment">%Vertices</span>
+V_bone=V_bone.*1000;
+[F_bone,V_bone]=mergeVertices(F_bone,V_bone); <span class="comment">% Merging nodes</span>
+Q1=euler2DCM([0 0 0.065*pi]);
+V_bone=V_bone*Q1;
+Q2=euler2DCM([-0.5*pi 0 0]);
+V_bone=V_bone*Q2;
+Q3=euler2DCM([0 0 0.36*pi]);
+V_bone=V_bone*Q3;
+</pre><h2 id="6">Compute derived control parameters</h2><pre class="codeinput">pointSpacing=mean(patchEdgeLengths(F_bone,V_bone)); <span class="comment">%Points spacing of bone surface</span>
+snapTolerance=mean(patchEdgeLengths(F_bone,V_bone))/100; <span class="comment">%Tolerance for surface slicing</span>
+femurHeight=max(V_bone(:,3))-min(V_bone(:,3)); <span class="comment">%Height of the femur</span>
+shaftDepthFromHead=femurHeight.*implantShaftLengthFraction;
+</pre><h2 id="7">Cut bone end off</h2><pre class="codeinput"><span class="comment">%Cut bone</span>
+[F_bone,V_bone,~,logicSide,~]=triSurfSlice(F_bone,V_bone,[],[0 0 -distanceCut],[0 0 1]);
+F_bone=F_bone(logicSide==0,:);
+[F_bone,V_bone]=patchCleanUnused(F_bone,V_bone);
+
+<span class="comment">%Get boundary curve</span>
+Eb=patchBoundary(F_bone);
+indCurve=edgeListToCurve(Eb);
+indCurve=indCurve(1:end-1);
+
+<span class="comment">%Smooth curve edges</span>
+cparSmooth.n=numSmoothStepsCutBottom;
+cparSmooth.Method=<span class="string">'HC'</span>;
+[V_Eb_smooth]=patchSmooth(Eb,V_bone(:,[1 2]),[],cparSmooth);
+V_bone(indCurve,[1 2])=V_Eb_smooth(indCurve,:);
+
+<span class="comment">%Smooth mesh at curve</span>
+clear <span class="string">cparSmooth</span>
+cparSmooth.n=numSmoothStepsCutBottom;
+cparSmooth.Method=<span class="string">'HC'</span>;
+cparSmooth.RigidConstraints=indCurve;
+[V_bone]=patchSmooth(F_bone,V_bone,[],cparSmooth);
+
+<span class="comment">%Mesh the bottom curfaces</span>
+[F_bone2,V_bone2]=regionTriMesh3D({V_bone(indCurve,:)},pointSpacing,0,<span class="string">'linear'</span>);
+<span class="keyword">if</span> dot(mean(patchNormal(F_bone2,V_bone2)),[0 0 1])&gt;0
+    F_bone2=fliplr(F_bone2);
+<span class="keyword">end</span>
+
+<span class="comment">%Join cut bone with bottom to created a single node shared closed surface</span>
+[F_bone,V_bone,C_bone]=joinElementSets({F_bone,F_bone2},{V_bone,V_bone2});
+[F_bone,V_bone]=mergeVertices(F_bone,V_bone);
+</pre><p>Visualize cut surface</p><pre class="codeinput">cFigure; hold <span class="string">on</span>;
+title(<span class="string">'The bone surface'</span>);
+gpatch(F_bone,V_bone,<span class="string">'bw'</span>,<span class="string">'k'</span>,1);
+axisGeom;
+camlight <span class="string">headlight</span>;
+gdrawnow;
+</pre><img width="100%" height="auto" vspace="5" hspace="5" src="DEMO_febio_0067_hip_implant_regional_stiffness_optimize_01_01.jpg" alt=""> <h2 id="9">Cut femoral head off</h2><pre class="codeinput"><span class="comment">%Set-up orientation and location of cutting plane</span>
+n=vecnormalize([0 0 1]); <span class="comment">%Normal direction to plane</span>
+Q1=euler2DCM([0 -(63/180)*pi 0]);
+Q2=euler2DCM([0 0 (32/180)*pi]);
+Q=Q1*Q2;
+n=n*Q;
+P_cut=[0 0 0]-n*stemCut; <span class="comment">%Point on plane</span>
+
+<span class="comment">%Slicing surface</span>
+[Fc,Vc,Cc,logicSide,~]=triSurfSlice(F_bone,V_bone,C_bone,P_cut,n,snapTolerance);
+
+<span class="comment">%Compose isolated cut geometry and boundary curves</span>
+[F_bone_cut,V_bone_cut]=patchCleanUnused(Fc(logicSide,:),Vc);
+C_bone_cut=Cc(logicSide);
+
+Eb=patchBoundary(F_bone_cut);
+indCutCurve=edgeListToCurve(Eb);
+indCutCurve=indCutCurve(1:end-1);
+
+<span class="comment">%Smoothing cut</span>
+logicTouch=any(ismember(F_bone_cut,indCutCurve),2);
+indTouch=unique(F_bone_cut(logicTouch,:));
+logicTouch=any(ismember(F_bone_cut,indTouch),2);
+indRigid=unique(F_bone_cut(~logicTouch,:));
+indRigid=unique([indRigid(:);indCutCurve(:)]);
+
+clear <span class="string">cparSmooth</span>
+cparSmooth.n=numSmoothStepsCutFemur;
+cparSmooth.RigidConstraints=indRigid;
+[V_bone_cut]=patchSmooth(F_bone_cut,V_bone_cut,[],cparSmooth);
+
+clear <span class="string">cparSmooth</span>
+cparSmooth.n=numSmoothStepsCutFemur;
+[VEb]=patchSmooth(Eb,V_bone_cut,[],cparSmooth);
+V_bone_cut(indCutCurve,:)=VEb(indCutCurve,:);
+
+<span class="comment">%Get curve points and centre coordinate</span>
+V_bone_cut_curve=V_bone_cut(indCutCurve,:);
+PA=mean(V_bone_cut_curve,1); <span class="comment">%Mean of cut curve (middle of cut)</span>
+</pre><p>Visualize cut surface</p><pre class="codeinput">cFigure; hold <span class="string">on</span>;
+title(<span class="string">'The cut bone surface'</span>);
+gpatch(F_bone_cut,V_bone_cut,<span class="string">'bw'</span>,<span class="string">'k'</span>,1);
+plotV(V_bone_cut_curve,<span class="string">'r.-'</span>,<span class="string">'MarkerSize'</span>,25,<span class="string">'LineWidth'</span>,3)
+axisGeom;
+camlight <span class="string">headlight</span>;
+gdrawnow;
+</pre><img width="100%" height="auto" vspace="5" hspace="5" src="DEMO_febio_0067_hip_implant_regional_stiffness_optimize_01_02.jpg" alt=""> <h2 id="11">Add inner bone surface for implant to rest on (will attach to collar)</h2><pre class="codeinput"><span class="comment">%Define collar curve</span>
+V_collar_1=V_bone_cut_curve;
+V_collar_1=V_collar_1-PA;
+
+d=sqrt(sum(V_collar_1.^2,2));
+shrinkFactor=(min(d(:))-implantOffsetCollar)./min(d(:));
+V_collar_1=V_collar_1.*shrinkFactor;
+V_collar_1=V_collar_1+PA;
+V_collar_1=evenlySpaceCurve(V_collar_1,pointSpacing,<span class="string">'pchip'</span>,1);
+
+<span class="comment">% Mesh cut bone top (space between collar curve and bone cut curve)</span>
+[F_bone_top,V_bone_top]=regionTriMesh3D({V_bone_cut_curve,V_collar_1},[],0,<span class="string">'linear'</span>);
+nTop=mean(patchNormal(F_bone_top,V_bone_top),1);
+<span class="keyword">if</span> dot(nTop,n)&lt;0
+    F_bone_top=fliplr(F_bone_top);
+<span class="keyword">end</span>
+
+<span class="comment">% Join and merge geometry</span>
+[F_bone_cut,V_bone_cut,C_bone_cut]=joinElementSets({F_bone_cut,F_bone_top},{V_bone_cut,V_bone_top},{C_bone_cut,max(C_bone_cut(:))+ones(size(F_bone_top,1),1)});
+[F_bone_cut,V_bone_cut]=mergeVertices(F_bone_cut,V_bone_cut);
+</pre><p>Visualize bone with meshed top</p><pre class="codeinput">cFigure; hold <span class="string">on</span>;
+title(<span class="string">'The cut bone surface with meshed top'</span>);
+gpatch(F_bone_cut,V_bone_cut,C_bone_cut,<span class="string">'k'</span>,1);
+
+plotV(V_bone_cut_curve,<span class="string">'r.-'</span>,<span class="string">'MarkerSize'</span>,15,<span class="string">'LineWidth'</span>,2)
+plotV(V_collar_1,<span class="string">'g.-'</span>,<span class="string">'MarkerSize'</span>,15,<span class="string">'LineWidth'</span>,2)
+axisGeom; icolorbar;
+camlight <span class="string">headlight</span>;
+gdrawnow;
+</pre><img width="100%" height="auto" vspace="5" hspace="5" src="DEMO_febio_0067_hip_implant_regional_stiffness_optimize_01_03.jpg" alt=""> <h2 id="13">Create implant spherical head</h2><pre class="codeinput"><span class="comment">% Create sphere use will loop to define increasingly fine sphere</span>
+<span class="comment">% triangulations untill the point spacing of the sphere is smaller or equal</span>
+<span class="comment">% to the bone point spacing.</span>
+
+nRef=1;
+<span class="keyword">while</span> 1
+    [F_head,V_head]=geoSphere(nRef,implantHeadRadius);
+    pointSpacingNow=mean(patchEdgeLengths(F_head,V_head));
+    <span class="keyword">if</span> pointSpacingNow&lt;=pointSpacing
+        <span class="keyword">break</span>
+    <span class="keyword">else</span>
+        nRef=nRef+1;
+    <span class="keyword">end</span>
+<span class="keyword">end</span>
+</pre><p>Cutting the sphere</p><pre class="codeinput"><span class="comment">% Define ball cutting coordinate</span>
+xc=cos(asin(implantStickRadius/implantHeadRadius))*implantHeadRadius;
+
+logicRight=V_head(:,1)&gt;xc;
+logicCut=any(logicRight(F_head),2);
+logicCut=triSurfLogicSharpFix(F_head,logicCut,3);
+F_head=F_head(~logicCut,:);
+[F_head,V_head]=patchCleanUnused(F_head,V_head);
+Eb_head=patchBoundary(F_head);
+indB=unique(Eb_head(:));
+[T,P,R] = cart2sph(V_head(:,2),V_head(:,3),V_head(:,1));
+P(indB)=atan2(xc,implantHeadRadius*sin(acos(xc./implantHeadRadius)));
+[V_head(:,2),V_head(:,3),V_head(:,1)] = sph2cart(T,P,R);
+
+indHeadHole=edgeListToCurve(Eb_head);
+indHeadHole=indHeadHole(1:end-1);
+
+pointSpacingHead=mean(sqrt(sum(diff(V_head(indHeadHole,:),1,1).^2,2)));
+
+<span class="comment">%Reorient ball</span>
+nd=vecnormalize(-PA); <span class="comment">%Vector pointing to mean of cut curve</span>
+Q=vecPair2Rot(nd,[0 0 1]); <span class="comment">%Rotation matrix for ball</span>
+Q3=euler2DCM([0 -0.5*pi 0]);
+V_head=V_head*Q3;
+V_head=V_head*Q;
+</pre><p>Visualize head</p><pre class="codeinput">cFigure; hold <span class="string">on</span>;
+title(<span class="string">'The implant head surface'</span>);
+gpatch(F_bone_cut,V_bone_cut,<span class="string">'w'</span>,<span class="string">'none'</span>,0.5);
+gpatch(F_head,V_head,<span class="string">'bw'</span>,<span class="string">'k'</span>,1);
+axisGeom; camlight <span class="string">headlight</span>;
+gdrawnow;
+</pre><img width="100%" height="auto" vspace="5" hspace="5" src="DEMO_febio_0067_hip_implant_regional_stiffness_optimize_01_04.jpg" alt=""> <h2 id="16">Build colar</h2><pre class="codeinput"><span class="comment">%Create color offset curve</span>
+V_colarTop=V_collar_1;
+ve=[V_colarTop(2:end,:); V_colarTop(1,:)]-V_colarTop;
+
+vd=vecnormalize(cross(n(ones(size(ve,1),1),:),ve));
+<span class="comment">% vn2(:,1)=vn2(:,1)+collarThickness.*n;</span>
+V_colarTop=V_colarTop+implantCollarThickness.*n;
+
+nc=ceil((pi*implantCollarThickness/2)/pointSpacingHead);
+<span class="keyword">if</span> nc&lt;4
+    nc=4;
+<span class="keyword">end</span>
+vc=linspacen(V_collar_1,V_colarTop,nc);
+X=squeeze(vc(:,1,:));
+Y=squeeze(vc(:,2,:));
+Z=squeeze(vc(:,3,:));
+t=repmat(linspace(-1,1,nc),size(Z,1),1);
+a=acos(t);
+X=X+implantCollarThickness/2.*sin(a).*repmat(vd(:,1),1,nc);
+Y=Y+implantCollarThickness/2.*sin(a).*repmat(vd(:,2),1,nc);
+Z=Z+implantCollarThickness/2.*sin(a).*repmat(vd(:,3),1,nc);
+
+[F_collar,V_collar]=grid2patch(X,Y,Z,[],[1 0 0]);
+[F_collar,V_collar]=quad2tri(F_collar,V_collar,<span class="string">'a'</span>);
+
+indTopCollar=size(V_collar,1)+1-size(V_collar_1,1):size(V_collar,1);
+Eb_collar=[indTopCollar(:) [indTopCollar(2:end)'; indTopCollar(1)]];
+</pre><p>Visualize collar</p><pre class="codeinput">cFigure; hold <span class="string">on</span>;
+title(<span class="string">'The implant collar/rim'</span>);
+gpatch(F_bone_cut,V_bone_cut,<span class="string">'w'</span>,<span class="string">'none'</span>,0.5);
+gpatch(F_head,V_head,<span class="string">'w'</span>,<span class="string">'none'</span>,0.5);
+gpatch(F_collar,V_collar,<span class="string">'bw'</span>,<span class="string">'k'</span>,1);
+axisGeom; camlight <span class="string">headlight</span>;
+gdrawnow;
+</pre><img width="100%" height="auto" vspace="5" hspace="5" src="DEMO_febio_0067_hip_implant_regional_stiffness_optimize_01_05.jpg" alt=""> <h2 id="18">Build neck</h2><pre class="codeinput"><span class="keyword">if</span> size(Eb_head,1)&lt;size(Eb_collar,1)
+    numEdgesNeeded=size(Eb_collar,1);
+    [F_head,V_head,Eb_head,~]=triSurfSplitBoundary(F_head,V_head,Eb_head,numEdgesNeeded,[]);
+<span class="keyword">elseif</span> size(Eb_collar,1)&lt;size(Eb_head,1)
+    numEdgesNeeded=size(Eb_head,1);
+    [F_collar,V_collar,Eb_collar,~]=triSurfSplitBoundary(F_collar,V_collar,Eb_collar,numEdgesNeeded,[]);
+<span class="keyword">end</span>
+indTopCollar=edgeListToCurve(Eb_collar); indTopCollar=indTopCollar(1:end-1);
+indHeadHole=edgeListToCurve(Eb_head); indHeadHole=indHeadHole(1:end-1);
+
+[~,indStart]=minDist(V_collar(indTopCollar(1),:),V_head(indHeadHole,:));
+
+<span class="keyword">if</span> indStart&gt;1
+    indHeadHole=[indHeadHole(indStart:end) indHeadHole(1:indStart-1)];
+<span class="keyword">end</span>
+
+d1=sum((V_head(indHeadHole,:)-V_collar(indTopCollar,:)).^2,2);
+d2=sum((V_head(indHeadHole,:)-V_collar(flip(indTopCollar),:)).^2,2);
+<span class="keyword">if</span> max(d2(:))&lt;max(d1(:))
+    indTopCollar=flip(indTopCollar);
+<span class="keyword">end</span>
+
+cParLoft.closeLoopOpt=1;
+cParLoft.patchType=<span class="string">'tri_slash'</span>;
+[F_neck,V_neck,indNeckStart,indNeckEnd]=polyLoftLinear(V_collar(indTopCollar,:),V_head(indHeadHole,:),cParLoft);
+</pre><p>Visualize collar</p><pre class="codeinput">cFigure; hold <span class="string">on</span>;
+title(<span class="string">'The implant neck'</span>);
+gpatch(F_bone_cut,V_bone_cut,<span class="string">'w'</span>,<span class="string">'none'</span>,0.5);
+gpatch(F_head,V_head,<span class="string">'w'</span>,<span class="string">'none'</span>,0.5);
+gpatch(F_collar,V_collar,<span class="string">'w'</span>,<span class="string">'none'</span>,0.5);
+gpatch(F_neck,V_neck,<span class="string">'rw'</span>,<span class="string">'k'</span>,1);
+axisGeom; camlight <span class="string">headlight</span>;
+gdrawnow;
+</pre><img width="100%" height="auto" vspace="5" hspace="5" src="DEMO_febio_0067_hip_implant_regional_stiffness_optimize_01_06.jpg" alt=""> <h2 id="20">Define shaft</h2><pre class="codeinput"><span class="comment">%Find lowest point on collar curve</span>
+[~,indMin]=min(V_collar_1(:,3));
+PB=V_collar_1(indMin,:);
+
+<span class="comment">%Define a normalized vector pointing from PA to PB</span>
+m=vecnormalize(PB-PA);
+
+<span class="comment">%Define based point for slicing</span>
+f=shaftDepthFromHead./abs(m(3));
+P=PA+f*m;
+
+<span class="comment">%Define normal directions for slicing (go linearly from n to z-dir)</span>
+nn=linspacen(n,[0 0 1],numLoftGuideSlicesShaft)';
+
+
+numPointsRadial=size(V_collar_1,1);
+Vp=V_collar_1;
+FL=[];
+VL=Vp;
+[~,indStart]=max(VL(:,1));
+<span class="keyword">if</span> indStart&gt;1
+    VL=[VL(indStart:end,:); VL(1:indStart-1,:)];
+<span class="keyword">end</span>
+R1=vecPair2Rot(n,[0 0 1]);
+e=[(1:numPointsRadial)' [(2:numPointsRadial)';1]];
+V_start=VL(1,:);
+t=linspace(0,2*pi,numPointsRadial+1); t=t(1:end-1);
+VC=cell(numLoftGuideSlicesShaft,1);
+VC{1}=V_collar_1;
+<span class="keyword">for</span> q=2:1:numLoftGuideSlicesShaft
+
+    Rn=vecPair2Rot(nn(q,:),[0 0 1]);
+
+    [~,Vqc,~,~,Ebc]=triSurfSlice(F_bone,V_bone,[],P,nn(q,:),snapTolerance);
+    indCutCurveNow=edgeListToCurve(Ebc);
+    indCutCurveNow=indCutCurveNow(1:end-1);
+    P2=mean(Vqc(indCutCurveNow,:),1);
+
+    <span class="keyword">if</span> P2(3)&gt;-50
+        Vp=V_collar_1-PA;
+        Vp=Vp*R1';
+        Vp=Vp*Rn;
+    <span class="keyword">else</span>
+        Vp=Vqc(indCutCurveNow,:);
+        Vp=Vp-P2;
+        d=sqrt(sum(Vp.^2,2));
+        shrinkFactor=(min(d(:))-implantOffset)./min(d(:));
+        Vp=Vp.*shrinkFactor;
+    <span class="keyword">end</span>
+
+    Vp=Vp+P2;
+    Vp=evenlySampleCurve(Vp,numPointsRadial,0.01,1);
+
+    [~,indStart]=max(Vp(:,1));
+    <span class="keyword">if</span> indStart&gt;1
+        Vp=[Vp(indStart:end,:); Vp(1:indStart-1,:)];
+    <span class="keyword">end</span>
+
+    f=[e+(q-2)*numPointsRadial fliplr(e)+(q-1)*numPointsRadial];
+
+    FL=[FL;f];
+    VL=[VL;Vp];
+
+    V_start=Vp(1,:);
+    VC{q}=Vqc(indCutCurveNow,:);
+<span class="keyword">end</span>
+
+[Fe,Ve]=regionTriMesh3D({Vp},[],0,<span class="string">'linear'</span>);
+ne=mean(patchNormal(Fe,Ve),1);
+<span class="keyword">if</span> dot(ne,[0 0 1])&gt;0
+    Fe=fliplr(Fe);
+<span class="keyword">end</span>
+d=minDist(Ve,Vp);
+r=max(d(:));
+d=d./max(d(:));
+a=acos(1-d);
+Ve(:,3)=Ve(:,3)-r*sin(a);
+[FL,VL]=subQuad(FL,VL,3,3);
+[FL,VL]=quad2tri(FL,VL,<span class="string">'a'</span>);
+
+[FL,VL]=joinElementSets({FL,Fe},{VL,Ve});
+[FL,VL]=mergeVertices(FL,VL);
+Eb=patchBoundary(FL);
+
+cparSmooth.n=numSmoothStepsShaft;
+<span class="comment">% cPar.Method='HC';</span>
+cparSmooth.RigidConstraints=unique(Eb(:));
+VL=patchSmooth(FL,VL,[],cparSmooth);
+
+<span class="comment">% Join and merge surfaces</span>
+[F_implant,V_implant,C_implant]=joinElementSets({F_head,F_neck,F_collar,FL},{V_head,V_neck,V_collar,VL});
+[F_implant,V_implant]=mergeVertices(F_implant,V_implant);
+</pre><p>Visualize implant</p><pre class="codeinput">cFigure; hold <span class="string">on</span>;
+title(<span class="string">'Completed implant surface'</span>);
+gpatch(F_bone_cut,V_bone_cut,<span class="string">'w'</span>,<span class="string">'none'</span>,0.5);
+gpatch(F_implant,V_implant,C_implant,<span class="string">'none'</span>,1);
+
+<span class="keyword">for</span> q=1:1:numLoftGuideSlicesShaft
+    Vpp=VC{q};
+    plotV(Vpp([1:size(Vpp,1) 1],:),<span class="string">'k-'</span>,<span class="string">'LineWidth'</span>,4);
+<span class="keyword">end</span>
+
+axisGeom; camlight <span class="string">headlight</span>;
+colormap(gjet(250)); icolorbar;
+gdrawnow;
+</pre><img width="100%" height="auto" vspace="5" hspace="5" src="DEMO_febio_0067_hip_implant_regional_stiffness_optimize_01_07.jpg" alt=""> <h2 id="22">Join bone and implant surfaces</h2><pre class="codeinput">[F,V,C]=joinElementSets({F_bone_cut,F_implant},{V_bone_cut,V_implant},{C_bone_cut,C_implant+max(C_bone_cut(:))});
+[F,V]=mergeVertices(F,V);
+</pre><p>Visualized merged set</p><pre class="codeinput">cFigure; hold <span class="string">on</span>;
+gpatch(F,V,C,<span class="string">'none'</span>,0.5);
+axisGeom; camlight <span class="string">headlight</span>;
+colormap(gjet(250)); icolorbar;
+gdrawnow;
+</pre><img width="100%" height="auto" vspace="5" hspace="5" src="DEMO_febio_0067_hip_implant_regional_stiffness_optimize_01_08.jpg" alt=""> <h2 id="24">Create tetrahedral elements for both regions</h2><p>Define interior points</p><pre class="codeinput">logicRegion1=ismember(C,[1 2 3 7]); <span class="comment">%Bone region is defined by bone+shaft surfaces</span>
+V_region1=getInnerPoint(F(logicRegion1,:),V);
+
+logicRegion2=ismember(C,4:7); <span class="comment">%Logic for implant faces</span>
+V_region2=getInnerPoint(F(logicRegion2,:),V);
+
+V_regions=[V_region1; V_region2];
+</pre><p>Visualize mesh regions and interior points</p><pre class="codeinput">cFigure;
+subplot(1,2,1); hold <span class="string">on</span>;
+title(<span class="string">'Mesh region 1'</span>);
+gpatch(F(logicRegion1,:),V,<span class="string">'w'</span>,<span class="string">'none'</span>,0.5);
+plotV(V_region1,<span class="string">'k.'</span>,<span class="string">'MarkerSize'</span>,25);
+axisGeom; camlight <span class="string">headlight</span>;
+
+subplot(1,2,2); hold <span class="string">on</span>;
+title(<span class="string">'Mesh region 2'</span>);
+gpatch(F(logicRegion2,:),V,<span class="string">'w'</span>,<span class="string">'none'</span>,0.5);
+plotV(V_region2,<span class="string">'k.'</span>,<span class="string">'MarkerSize'</span>,25);
+axisGeom; camlight <span class="string">headlight</span>;
+
+gdrawnow;
+</pre><img width="100%" height="auto" vspace="5" hspace="5" src="DEMO_febio_0067_hip_implant_regional_stiffness_optimize_01_09.jpg" alt=""> <p>Mesh using TetGen</p><pre class="codeinput">regionTetVolumes=volumeFactors.*tetVolMeanEst(F,V);
+
+<span class="comment">%Create tetgen input structure</span>
+inputStruct.stringOpt=<span class="string">'-pq1.2AaY'</span>; <span class="comment">%Options for tetgen</span>
+inputStruct.Faces=F; <span class="comment">%Boundary faces</span>
+inputStruct.Nodes=V; <span class="comment">%Nodes of boundary</span>
+inputStruct.faceBoundaryMarker=C;
+inputStruct.regionPoints=V_regions; <span class="comment">%Interior points for regions</span>
+inputStruct.holePoints=[]; <span class="comment">%Interior points for holes</span>
+inputStruct.regionA=regionTetVolumes; <span class="comment">%Desired tetrahedral volume for each region</span>
+
+<span class="comment">% Mesh model using tetrahedral elements using tetGen</span>
+[meshOutput]=runTetGen(inputStruct); <span class="comment">%Run tetGen</span>
+</pre><pre class="codeoutput"> 
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+--- TETGEN Tetrahedral meshing --- 01-May-2023 08:25:01
+ 
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+--- Writing SMESH file --- 01-May-2023 08:25:01
+----&gt; Adding node field
+----&gt; Adding facet field
+----&gt; Adding holes specification
+----&gt; Adding region specification
+--- Done --- 01-May-2023 08:25:01
+--- Running TetGen to mesh input boundary--- 01-May-2023 08:25:01
+Opening /home/kevin/GIBBON/data/temp/temp.smesh.
+Delaunizing vertices...
+Delaunay seconds:  0.020573
+Creating surface mesh ...
+Surface mesh seconds:  0.004204
+Recovering boundaries...
+Boundary recovery seconds:  0.008144
+Removing exterior tetrahedra ...
+Spreading region attributes.
+Exterior tets removal seconds:  0.003921
+Recovering Delaunayness...
+Delaunay recovery seconds:  0.006474
+Refining mesh...
+  6679 insertions, added 5728 points, 197840 tetrahedra in queue.
+  2224 insertions, added 1564 points, 211485 tetrahedra in queue.
+  2964 insertions, added 1320 points, 85537 tetrahedra in queue.
+Refinement seconds:  0.139152
+Smoothing vertices...
+Mesh smoothing seconds:  0.21203
+Improving mesh...
+Mesh improvement seconds:  0.008257
+
+Writing /home/kevin/GIBBON/data/temp/temp.1.node.
+Writing /home/kevin/GIBBON/data/temp/temp.1.ele.
+Writing /home/kevin/GIBBON/data/temp/temp.1.face.
+Writing /home/kevin/GIBBON/data/temp/temp.1.edge.
+
+Output seconds:  0.033158
+Total running seconds:  0.436159
+
+Statistics:
+
+  Input points: 5011
+  Input facets: 10046
+  Input segments: 15054
+  Input holes: 0
+  Input regions: 2
+
+  Mesh points: 13953
+  Mesh tetrahedra: 75470
+  Mesh faces: 154199
+  Mesh faces on exterior boundary: 6518
+  Mesh faces on input facets: 10046
+  Mesh edges on input segments: 15054
+  Steiner points inside domain: 8942
+
+--- Done --- 01-May-2023 08:25:01
+ 
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+--- Importing TetGen files --- 01-May-2023 08:25:01
+--- Done --- 01-May-2023 08:25:01
+</pre><p>Access mesh output structure</p><pre class="codeinput">E=meshOutput.elements; <span class="comment">%The elements</span>
+V=meshOutput.nodes; <span class="comment">%The vertices or nodes</span>
+CE=meshOutput.elementMaterialID; <span class="comment">%Element material or region id</span>
+Fb=meshOutput.facesBoundary; <span class="comment">%The boundary faces</span>
+Cb=meshOutput.boundaryMarker; <span class="comment">%The boundary markers</span>
+</pre><h2 id="29">Define material regions</h2><pre class="codeinput">logicImplantElements = (CE==-3);
+
+<span class="comment">%Bone Element Regions</span>
+indBoundary=unique(Fb(Cb==1,:));
+DE=minDist(V,V(indBoundary,:));
+logicCorticalNodes=DE&lt;=corticalThickness;
+logicCorticalElements=any(logicCorticalNodes(E),2) &amp; ~logicImplantElements ;
+logicCancellousElements=~logicCorticalElements &amp; ~logicImplantElements;
+
+E1=E(logicCorticalElements,:);
+E2=E(logicCancellousElements,:);
+E3=E(logicImplantElements,:);
+E=[E1;E2;E3]; <span class="comment">%Recollect set in this order</span>
+
+logicBoneElements = false(size(E,1),1);
+logicBoneElements (1:size(E1,1)+size(E2,1))=1;
+</pre><h2 id="30">Define implant spatialy varying parameters</h2><pre class="codeinput">E_12=[E1;E2]; <span class="comment">%Element collection for both bone types</span>
+VE_12=patchCentre(E_12,V); <span class="comment">%Centre coordinates for bone elements</span>
+
+<span class="comment">%Compute distance to boundary</span>
+VE_implant=patchCentre(E3,V);
+
+<span class="comment">%Get list for nodes at the head/shaft/neck</span>
+excludeLabels=[4 5 6];
+logicExcludeImplant=ismember(Cb,excludeLabels);
+indExcludeImplant=unique(Fb(logicExcludeImplant,:));
+D_exclude=minDist(V,V(indExcludeImplant,:));
+indExclude=find(D_exclude&lt;=distanceExclude);
+
+<span class="comment">%Find implant shaft boundary nodes</span>
+boundaryLabels=7;<span class="comment">%[4 5 6 7];</span>
+logicShaftBoundaryImplant=ismember(Cb,boundaryLabels);
+indShaftBoundaryImplant=unique(Fb(logicShaftBoundaryImplant,:));
+
+<span class="comment">% Remove indices too close to exclude set</span>
+indShaftBoundaryImplant=indShaftBoundaryImplant(~ismember(indShaftBoundaryImplant,indExclude));
+
+<span class="comment">%Use distance to define Youngs moduli map</span>
+[indUni,ind1,ind2]=unique(E3); <span class="comment">%Get unique</span>
+WU=minDist(V(indUni,:),V(indShaftBoundaryImplant,:)); <span class="comment">%Distance to shaft boundary</span>
+WU=WU./implantLayerThickness; <span class="comment">%At thickness level it is 1 now</span>
+WU(WU&gt;1)=1; <span class="comment">%Range is now [0 1] %At or further than thickness level it is now 1</span>
+WV=zeros(size(V,1),1);
+WV(indUni)=WU;
+W=min(WV(E3),[],2); <span class="comment">%Take min. distance so boundary elements become zero</span>
+
+<span class="comment">% Define initial Youngs moduli variation</span>
+E_youngs_implant=(W.*(E_youngs_max-E_youngs_min))+E_youngs_min;
+</pre><h2 id="31">Visualizing solid mesh</h2><pre class="codeinput"><span class="comment">% Alter structure for visualization</span>
+meshOutput.elements=E3;
+meshOutput.elementData=W;
+
+hFig=cFigure; hold <span class="string">on</span>;
+title(<span class="string">'Slice view of Youngs modulus variation map'</span>)
+
+optionStruct.hFig=hFig;
+meshView(meshOutput,optionStruct);
+caxis([0 1]);
+axisGeom;
+drawnow;
+</pre><img width="100%" height="auto" vspace="5" hspace="5" src="DEMO_febio_0067_hip_implant_regional_stiffness_optimize_01_10.jpg" alt=""> <h2 id="32">Load SED data from non-implant model and form interpolation function</h2><pre class="codeinput">outputStruct=load(loadName_SED);
+
+<span class="comment">%Data without implant</span>
+Fb_p = outputStruct.boundaryFaces;
+V_p  = outputStruct.nodes;
+VE_p = outputStruct.elementCenters;
+E_energy_p = outputStruct.SED;
+W_p=E_energy_p(:,:,end);
+
+<span class="comment">% Construct interpolation function</span>
+interpFuncMetric=scatteredInterpolant(VE_p,W_p,<span class="string">'natural'</span>,<span class="string">'linear'</span>);
+</pre><pre class="codeinput">cFigure; hold <span class="string">on</span>;
+gpatch(Fb,V,<span class="string">'rw'</span>,<span class="string">'none'</span>,0.5); <span class="comment">%Add graphics object to animate</span>
+gpatch(Fb_p,V_p,<span class="string">'bw'</span>,<span class="string">'none'</span>,0.5); <span class="comment">%Add graphics object to animate</span>
+axisGeom(gca,fontSize);
+camlight <span class="string">headlight</span>;
+drawnow;
+</pre><img width="100%" height="auto" vspace="5" hspace="5" src="DEMO_febio_0067_hip_implant_regional_stiffness_optimize_01_11.jpg" alt=""> <p>Visualize solid mesh</p><pre class="codeinput">hf=cFigure; hold <span class="string">on</span>;
+title(<span class="string">'Tetrahedral mesh'</span>,<span class="string">'FontSize'</span>,fontSize);
+<span class="comment">% Visualizing using |meshView|</span>
+optionStruct.hFig=hf;
+meshView(meshOutput,optionStruct);
+
+axisGeom(gca,fontSize);
+gdrawnow;
+</pre><img width="100%" height="auto" vspace="5" hspace="5" src="DEMO_febio_0067_hip_implant_regional_stiffness_optimize_01_12.jpg" alt=""> <h2 id="35">Find femoral head</h2><pre class="codeinput">w=100;
+f=[1 2 3 4];
+v=w*[-1 -1 0; -1 1 0; 1 1 0; 1 -1 0];
+
+p=[0 0 0];
+Q=euler2DCM([0 (150/180)*pi 0]);
+v=v*Q;
+v=v+p;
+
+Vr=V*Q';
+Vr=Vr+p;
+logicHeadNodes=Vr(:,3)&lt;0;
+logicHeadFaces=all(logicHeadNodes(Fb),2);
+bcPrescribeList_head=unique(Fb(logicHeadFaces,:));
+</pre><p>Visualize femoral head nodes for prescribed force boundary conditions</p><pre class="codeinput">cFigure;
+hold <span class="string">on</span>;
+gpatch(Fb,V,<span class="string">'w'</span>,<span class="string">'k'</span>,1);
+gpatch(f,v,<span class="string">'r'</span>,<span class="string">'k'</span>,0.5);
+plotV(V(bcPrescribeList_head,:),<span class="string">'r.'</span>,<span class="string">'markerSize'</span>,15)
+axisGeom; camlight <span class="string">headlight</span>;
+drawnow;
+</pre><img width="100%" height="auto" vspace="5" hspace="5" src="DEMO_febio_0067_hip_implant_regional_stiffness_optimize_01_13.jpg" alt=""> <h2 id="37">Work out force distribution on femoral head surface nodes</h2><p>This is based on surface normal directions. Forces are assumed to only be able to act in a compressive sense on the bone.</p><pre class="codeinput">[~,~,N]=patchNormal(fliplr(Fb),V); <span class="comment">%Nodal normal directions</span>
+
+FX=[forceTotal(1) 0 0]; <span class="comment">%X force vector</span>
+FY=[0 forceTotal(2) 0]; <span class="comment">%Y force vector</span>
+FZ=[0 0 forceTotal(3)]; <span class="comment">%Z force vector</span>
+
+wx=dot(N(bcPrescribeList_head,:),FX(ones(numel(bcPrescribeList_head),1),:),2);
+wy=dot(N(bcPrescribeList_head,:),FY(ones(numel(bcPrescribeList_head),1),:),2);
+wz=dot(N(bcPrescribeList_head,:),FZ(ones(numel(bcPrescribeList_head),1),:),2);
+
+<span class="comment">%Force zero</span>
+wx(wx&gt;0)=0; wy(wy&gt;0)=0; wz(wz&gt;0)=0;
+
+force_X=forceTotal(1).*ones(numel(bcPrescribeList_head),1).*wx;
+force_Y=forceTotal(2).*ones(numel(bcPrescribeList_head),1).*wy;
+force_Z=forceTotal(3).*ones(numel(bcPrescribeList_head),1).*wz;
+
+force_X=force_X./sum(force_X(:)); <span class="comment">%sum now equal to 1</span>
+force_X=force_X.*forceTotal(1); <span class="comment">%sum now equal to desired</span>
+
+force_Y=force_Y./sum(force_Y(:)); <span class="comment">%sum now equal to 1</span>
+force_Y=force_Y.*forceTotal(2); <span class="comment">%sum now equal to desired</span>
+
+force_Z=force_Z./sum(force_Z(:)); <span class="comment">%sum now equal to 1</span>
+force_Z=force_Z.*forceTotal(3); <span class="comment">%sum now equal to desired</span>
+
+force_head=[force_X(:) force_Y(:) force_Z(:)];
+</pre><pre class="codeinput">cFigure;
+subplot(1,3,1);hold <span class="string">on</span>;
+title(<span class="string">'F_x'</span>);
+gpatch(Fb,V,<span class="string">'w'</span>,<span class="string">'none'</span>,0.5);
+quiverVec([0 0 0],FX,100,<span class="string">'k'</span>);
+<span class="comment">% scatterV(V(indicesHeadNodes,:),15)</span>
+quiverVec(V(bcPrescribeList_head,:),N(bcPrescribeList_head,:),10,force_X);
+axisGeom; camlight <span class="string">headlight</span>;
+colormap(gca,gjet(250)); colorbar;
+
+subplot(1,3,2);hold <span class="string">on</span>;
+title(<span class="string">'F_y'</span>);
+gpatch(Fb,V,<span class="string">'w'</span>,<span class="string">'none'</span>,0.5);
+quiverVec([0 0 0],FY,100,<span class="string">'k'</span>);
+<span class="comment">% scatterV(V(indicesHeadNodes,:),15)</span>
+quiverVec(V(bcPrescribeList_head,:),N(bcPrescribeList_head,:),10,force_Y);
+axisGeom; camlight <span class="string">headlight</span>;
+colormap(gca,gjet(250)); colorbar;
+
+subplot(1,3,3);hold <span class="string">on</span>;
+title(<span class="string">'F_z'</span>);
+gpatch(Fb,V,<span class="string">'w'</span>,<span class="string">'none'</span>,0.5);
+quiverVec([0 0 0],FZ,100,<span class="string">'k'</span>);
+<span class="comment">% scatterV(V(indicesHeadNodes,:),15)</span>
+quiverVec(V(bcPrescribeList_head,:),N(bcPrescribeList_head,:),10,force_Z);
+axisGeom; camlight <span class="string">headlight</span>;
+colormap(gca,gjet(250)); colorbar;
+
+drawnow;
+</pre><img width="100%" height="auto" vspace="5" hspace="5" src="DEMO_febio_0067_hip_implant_regional_stiffness_optimize_01_14.jpg" alt=""> <h2 id="39">Marking muscle locations</h2><pre class="codeinput">P_abductor_find = [-69.771045288206111 8.185179717034659 -5.575329878303917]; <span class="comment">%Coordinate at centre of muscle attachment</span>
+[~,indAbductor]=minDist(P_abductor_find,V); <span class="comment">%Node number of point at centre of attachment</span>
+dAbductor=meshDistMarch(Fb,V,indAbductor); <span class="comment">%Distance (on mesh) from attachement centre</span>
+bcPrescibeList_abductor=find(dAbductor&lt;=distanceMuscleAttachAbductor); <span class="comment">%Node numbers for attachment site</span>
+
+P_VastusLateralis_find = [-58.763839901506827 19.145444610053566 -51.005278396808819]; <span class="comment">%Coordinate at centre of muscle attachment</span>
+[~,indVastusLateralis]=minDist(P_VastusLateralis_find,V); <span class="comment">%Node number of point at centre of attachment</span>
+dVastusLateralis=meshDistMarch(Fb,V,indVastusLateralis); <span class="comment">%Distance (on mesh) from attachement centre</span>
+bcPrescibeList_VastusLateralis=find(dVastusLateralis&lt;=distanceMuscleVastusLateralis); <span class="comment">%Node numbers for attachment site</span>
+
+
+P_VastusMedialis_find = [-18.533631492778085 9.501312355952791 -85.666499329588035]; <span class="comment">%Coordinate at centre of muscle attachment</span>
+[~,indVastusMedialis]=minDist(P_VastusMedialis_find,V); <span class="comment">%Node number of point at centre of attachment</span>
+dVastusMedialis=meshDistMarch(Fb,V,indVastusMedialis); <span class="comment">%Distance (on mesh) from attachement centre</span>
+bcPrescibeList_VastusMedialis=find(dVastusMedialis&lt;=distanceMuscleAttachVastusMedialis); <span class="comment">%Node numbers for attachment site</span>
+</pre><h2 id="40">Muscle force definition</h2><pre class="codeinput">forceAbductor_distributed=forceAbductor.*ones(numel(bcPrescibeList_abductor),1)./numel(bcPrescibeList_abductor);
+
+forceVastusLateralis_distributed=forceVastusLateralis.*ones(numel(bcPrescibeList_VastusLateralis),1)./numel(bcPrescibeList_VastusLateralis);
+
+forceVastusMedialis_distributed=forceVastusMedialis.*ones(numel(bcPrescibeList_VastusMedialis),1)./numel(bcPrescibeList_VastusMedialis);
+</pre><h2 id="41">Defining prescribed forces</h2><pre class="codeinput">bcPrescribeList=[bcPrescribeList_head(:);<span class="keyword">...</span>
+                 bcPrescibeList_abductor(:);<span class="keyword">...</span>
+                 bcPrescibeList_VastusLateralis(:);<span class="keyword">...</span>
+                 bcPrescibeList_VastusMedialis(:)];
+
+forceData=[force_head;<span class="keyword">...</span>
+           forceAbductor_distributed;<span class="keyword">...</span>
+           forceVastusLateralis_distributed;<span class="keyword">...</span>
+           forceVastusMedialis_distributed];
+</pre><pre class="codeinput">cFigure;
+subplot(1,3,1);hold <span class="string">on</span>;
+title(<span class="string">'F_x'</span>);
+gpatch(Fb,V,<span class="string">'w'</span>,<span class="string">'none'</span>,0.5);
+quiverVec(V(bcPrescribeList,:),forceData,10,forceData(:,1));
+axisGeom; camlight <span class="string">headlight</span>;
+colormap(gca,gjet(250)); colorbar;
+
+subplot(1,3,2);hold <span class="string">on</span>;
+title(<span class="string">'F_y'</span>);
+gpatch(Fb,V,<span class="string">'w'</span>,<span class="string">'none'</span>,0.5);
+quiverVec(V(bcPrescribeList,:),forceData,10,forceData(:,2));
+axisGeom; camlight <span class="string">headlight</span>;
+colormap(gca,gjet(250)); colorbar;
+
+subplot(1,3,3);hold <span class="string">on</span>;
+title(<span class="string">'F_z'</span>);
+gpatch(Fb,V,<span class="string">'w'</span>,<span class="string">'none'</span>,0.5);
+
+quiverVec(V(bcPrescribeList,:),forceData,10,forceData(:,3));
+axisGeom; camlight <span class="string">headlight</span>;
+colormap(gca,gjet(250)); colorbar;
+</pre><img width="100%" height="auto" vspace="5" hspace="5" src="DEMO_febio_0067_hip_implant_regional_stiffness_optimize_01_15.jpg" alt=""> <h2 id="43">Visualizing boundary conditions</h2><pre class="codeinput">F_bottomSupport=Fb(Cb==2,:);
+bcSupportList=unique(F_bottomSupport(:));
+
+cFigure; hold <span class="string">on</span>;
+gpatch(Fb,V,<span class="string">'kw'</span>,<span class="string">'none'</span>,0.7);
+hl(1)=plotV(V(bcSupportList,:),<span class="string">'k.'</span>,<span class="string">'MarkerSize'</span>,25);
+hl(2)=plotV(V(bcPrescribeList,:),<span class="string">'r.'</span>,<span class="string">'MarkerSize'</span>,25);
+
+legend(hl,{<span class="string">'BC support'</span>,<span class="string">'BC prescribed forces'</span>});
+axisGeom;
+camlight <span class="string">headlight</span>;
+drawnow;
+</pre><img width="100%" height="auto" vspace="5" hspace="5" src="DEMO_febio_0067_hip_implant_regional_stiffness_optimize_01_16.jpg" alt=""> <h2 id="44">Defining the FEBio input structure</h2><p>See also <tt>febioStructTemplate</tt> and <tt>febioStruct2xml</tt> and the FEBio user manual.</p><pre class="codeinput"><span class="comment">%Get a template with default settings</span>
+[febio_spec]=febioStructTemplate;
+
+<span class="comment">%febio_spec version</span>
+febio_spec.ATTR.version=<span class="string">'4.0'</span>;
+
+<span class="comment">%Module section</span>
+febio_spec.Module.ATTR.type=<span class="string">'solid'</span>;
+
+<span class="comment">%Control section</span>
+febio_spec.Control.analysis=<span class="string">'STATIC'</span>;
+febio_spec.Control.time_steps=numTimeSteps;
+febio_spec.Control.step_size=1/numTimeSteps;
+febio_spec.Control.solver.max_refs=max_refs;
+febio_spec.Control.solver.qn_method.max_ups=max_ups;
+febio_spec.Control.time_stepper.dtmin=dtmin;
+febio_spec.Control.time_stepper.dtmax=dtmax;
+febio_spec.Control.time_stepper.max_retries=max_retries;
+febio_spec.Control.time_stepper.opt_iter=opt_iter;
+
+<span class="comment">%Material section</span>
+materialName1=<span class="string">'Material1'</span>;
+febio_spec.Material.material{1}.ATTR.name=materialName1;
+febio_spec.Material.material{1}.ATTR.type=<span class="string">'neo-Hookean'</span>;
+febio_spec.Material.material{1}.ATTR.id=1;
+febio_spec.Material.material{1}.E=E_youngs1;
+febio_spec.Material.material{1}.v=nu1;
+
+materialName2=<span class="string">'Material2'</span>;
+febio_spec.Material.material{2}.ATTR.name=materialName2;
+febio_spec.Material.material{2}.ATTR.type=<span class="string">'neo-Hookean'</span>;
+febio_spec.Material.material{2}.ATTR.id=2;
+febio_spec.Material.material{2}.E=E_youngs2;
+febio_spec.Material.material{2}.v=nu2;
+
+materialName3=<span class="string">'Material3'</span>;
+dataMapName1=<span class="string">'MaterialParameterMap1'</span>;
+febio_spec.Material.material{3}.ATTR.name=materialName3;
+febio_spec.Material.material{3}.ATTR.type=<span class="string">'neo-Hookean'</span>;
+febio_spec.Material.material{3}.ATTR.id=3;
+febio_spec.Material.material{3}.E.ATTR.type=<span class="string">'map'</span>; <span class="comment">%Calls for mapping of parameter</span>
+febio_spec.Material.material{3}.E.VAL=dataMapName1; <span class="comment">%Calls for mapping of parameter</span>
+febio_spec.Material.material{3}.v=nu_implant;
+
+<span class="comment">% Mesh section</span>
+<span class="comment">% -&gt; Nodes</span>
+febio_spec.Mesh.Nodes{1}.ATTR.name=<span class="string">'Object1'</span>; <span class="comment">%The node set name</span>
+febio_spec.Mesh.Nodes{1}.node.ATTR.id=(1:size(V,1))'; <span class="comment">%The node id's</span>
+febio_spec.Mesh.Nodes{1}.node.VAL=V; <span class="comment">%The nodel coordinates</span>
+
+<span class="comment">% -&gt; Elements</span>
+partName1=<span class="string">'CorticalBone'</span>;
+febio_spec.Mesh.Elements{1}.ATTR.name=partName1; <span class="comment">%Name of this part</span>
+febio_spec.Mesh.Elements{1}.ATTR.type=<span class="string">'tet4'</span>; <span class="comment">%Element type</span>
+febio_spec.Mesh.Elements{1}.elem.ATTR.id=(1:1:size(E1,1))'; <span class="comment">%Element id's</span>
+febio_spec.Mesh.Elements{1}.elem.VAL=E1; <span class="comment">%The element matrix</span>
+
+partName2=<span class="string">'CancellousBone'</span>;
+febio_spec.Mesh.Elements{2}.ATTR.name=partName2; <span class="comment">%Name of this part</span>
+febio_spec.Mesh.Elements{2}.ATTR.type=<span class="string">'tet4'</span>; <span class="comment">%Element type</span>
+febio_spec.Mesh.Elements{2}.elem.ATTR.id=size(E1,1)+(1:1:size(E2,1))'; <span class="comment">%Element id's</span>
+febio_spec.Mesh.Elements{2}.elem.VAL=E2; <span class="comment">%The element matrix</span>
+
+partName3=<span class="string">'Implant'</span>;
+febio_spec.Mesh.Elements{3}.ATTR.name=partName3; <span class="comment">%Name of this part</span>
+febio_spec.Mesh.Elements{3}.ATTR.type=<span class="string">'tet4'</span>; <span class="comment">%Element type</span>
+febio_spec.Mesh.Elements{3}.elem.ATTR.id=size(E1,1)+size(E2,1)+(1:1:size(E3,1))'; <span class="comment">%Element id's</span>
+febio_spec.Mesh.Elements{3}.elem.VAL=E3; <span class="comment">%The element matrix</span>
+
+<span class="comment">%MeshData secion</span>
+<span class="comment">%-&gt; Element data</span>
+febio_spec.MeshData.ElementData{1}.ATTR.name=dataMapName1;
+febio_spec.MeshData.ElementData{1}.ATTR.elem_set=partName3;
+febio_spec.MeshData.ElementData{1}.elem.ATTR.lid=(1:1:size(E3,1))';
+febio_spec.MeshData.ElementData{1}.elem.VAL=E_youngs_implant;
+
+<span class="comment">% -&gt; NodeSets</span>
+nodeSetName1=<span class="string">'bcSupportList'</span>;
+febio_spec.Mesh.NodeSet{1}.ATTR.name=nodeSetName1;
+febio_spec.Mesh.NodeSet{1}.VAL=mrow(bcSupportList);
+
+nodeSetName2=<span class="string">'bcPrescribeList'</span>;
+febio_spec.Mesh.NodeSet{2}.ATTR.name=nodeSetName2;
+febio_spec.Mesh.NodeSet{2}.VAL=mrow(bcPrescribeList);
+
+<span class="comment">%MeshDomains section</span>
+febio_spec.MeshDomains.SolidDomain{1}.ATTR.name=partName1;
+febio_spec.MeshDomains.SolidDomain{1}.ATTR.mat=materialName1;
+
+febio_spec.MeshDomains.SolidDomain{2}.ATTR.name=partName2;
+febio_spec.MeshDomains.SolidDomain{2}.ATTR.mat=materialName2;
+
+febio_spec.MeshDomains.SolidDomain{3}.ATTR.name=partName3;
+febio_spec.MeshDomains.SolidDomain{3}.ATTR.mat=materialName3;
+
+<span class="comment">%Boundary condition section</span>
+<span class="comment">% -&gt; Fix boundary conditions</span>
+febio_spec.Boundary.bc{1}.ATTR.name=<span class="string">'zero_displacement_xyz'</span>;
+febio_spec.Boundary.bc{1}.ATTR.type=<span class="string">'zero displacement'</span>;
+febio_spec.Boundary.bc{1}.ATTR.node_set=nodeSetName1;
+febio_spec.Boundary.bc{1}.x_dof=1;
+febio_spec.Boundary.bc{1}.y_dof=1;
+febio_spec.Boundary.bc{1}.z_dof=1;
+
+<span class="comment">%MeshData secion</span>
+<span class="comment">%-&gt; Node data</span>
+loadDataName1=<span class="string">'nodal_forces'</span>;
+febio_spec.MeshData.NodeData{1}.ATTR.name=loadDataName1;
+febio_spec.MeshData.NodeData{1}.ATTR.node_set=nodeSetName2;
+febio_spec.MeshData.NodeData{1}.ATTR.data_type=<span class="string">'vec3'</span>;
+febio_spec.MeshData.NodeData{1}.node.ATTR.lid=(1:1:numel(bcPrescribeList))';
+febio_spec.MeshData.NodeData{1}.node.VAL=forceData;
+
+<span class="comment">%MeshData secion</span>
+<span class="comment">%-&gt; Node data</span>
+loadDataName1=<span class="string">'forceData'</span>;
+febio_spec.MeshData.NodeData{1}.ATTR.name=loadDataName1;
+febio_spec.MeshData.NodeData{1}.ATTR.node_set=nodeSetName2;
+febio_spec.MeshData.NodeData{1}.ATTR.datatype=<span class="string">'vec3'</span>;
+febio_spec.MeshData.NodeData{1}.node.ATTR.lid=(1:1:numel(bcPrescribeList))';
+febio_spec.MeshData.NodeData{1}.node.VAL=forceData;
+
+<span class="comment">%Loads section</span>
+<span class="comment">% -&gt; Prescribed nodal forces</span>
+febio_spec.Loads.nodal_load{1}.ATTR.name=<span class="string">'PrescribedForce'</span>;
+febio_spec.Loads.nodal_load{1}.ATTR.type=<span class="string">'nodal_force'</span>;
+febio_spec.Loads.nodal_load{1}.ATTR.node_set=nodeSetName2;
+febio_spec.Loads.nodal_load{1}.value.ATTR.lc=1;
+febio_spec.Loads.nodal_load{1}.value.ATTR.type=<span class="string">'map'</span>;
+febio_spec.Loads.nodal_load{1}.value.VAL=loadDataName1;
+
+<span class="comment">%LoadData section</span>
+<span class="comment">% -&gt; load_controller</span>
+febio_spec.LoadData.load_controller{1}.ATTR.name=<span class="string">'LC_1'</span>;
+febio_spec.LoadData.load_controller{1}.ATTR.id=1;
+febio_spec.LoadData.load_controller{1}.ATTR.type=<span class="string">'loadcurve'</span>;
+febio_spec.LoadData.load_controller{1}.interpolate=<span class="string">'LINEAR'</span>;
+<span class="comment">%febio_spec.LoadData.load_controller{1}.extend='CONSTANT';</span>
+febio_spec.LoadData.load_controller{1}.points.pt.VAL=[0 0; 1 1];
+
+<span class="comment">%Output section</span>
+<span class="comment">% -&gt; log file</span>
+febio_spec.Output.logfile.ATTR.file=febioLogFileName;
+febio_spec.Output.logfile.node_data{1}.ATTR.file=febioLogFileName_disp;
+febio_spec.Output.logfile.node_data{1}.ATTR.data=<span class="string">'ux;uy;uz'</span>;
+febio_spec.Output.logfile.node_data{1}.ATTR.delim=<span class="string">','</span>;
+
+febio_spec.Output.logfile.element_data{1}.ATTR.file=febioLogFileName_stress;
+febio_spec.Output.logfile.element_data{1}.ATTR.data=<span class="string">'s1;s2;s3'</span>;
+febio_spec.Output.logfile.element_data{1}.ATTR.delim=<span class="string">','</span>;
+
+febio_spec.Output.logfile.element_data{2}.ATTR.file=febioLogFileName_strainEnergy;
+febio_spec.Output.logfile.element_data{2}.ATTR.data=<span class="string">'sed'</span>;
+febio_spec.Output.logfile.element_data{2}.ATTR.delim=<span class="string">','</span>;
+
+<span class="comment">% Plotfile section</span>
+febio_spec.Output.plotfile.compression=0;
+</pre><h2 id="45">Create structures for optimization</h2><pre class="codeinput"><span class="comment">%Initialize progress figure</span>
+cFigure; hold <span class="string">on</span>;
+xlabel(<span class="string">'Function evaluation count'</span>); ylabel(<span class="string">'SSQD'</span>);
+hp=plot(0,nan,<span class="string">'r.-'</span>,<span class="string">'MarkerSize'</span>,25,<span class="string">'LineWidth'</span>,2);
+axis <span class="string">tight</span>; axis <span class="string">square</span>; grid <span class="string">on</span>; box;
+set(gca,<span class="string">'FontSize'</span>,fontSize);
+drawnow
+
+<span class="comment">%Febio analysis information</span>
+febioAnalysis.run_filename=febioFebFileName; <span class="comment">%The input file name</span>
+febioAnalysis.run_logname=febioLogFileName; <span class="comment">%The name for the log file</span>
+febioAnalysis.disp_on=1; <span class="comment">%Display information on the command window</span>
+febioAnalysis.runMode=runMode;
+febioAnalysis.maxLogCheckTime=120; <span class="comment">%Max log file checking time</span>
+
+<span class="comment">%Compute comparison metric</span>
+objCompareMetric=interpFuncMetric(VE_12);
+
+<span class="comment">%What should be known to the objective function:</span>
+objectiveStruct.febioAnalysis=febioAnalysis;
+objectiveStruct.febio_spec=febio_spec;
+objectiveStruct.febioFebFileName=febioFebFileName;
+objectiveStruct.parNormFactors=paramInitial; <span class="comment">%This will normalize the parameters to ones(size(P))</span>
+objectiveStruct.Pb_struct.xx_c=paramInitial; <span class="comment">%Parameter constraining centre</span>
+objectiveStruct.Pb_struct.xxlim=paramContraints; <span class="comment">%Parameter bounds</span>
+objectiveStruct.method=optimMethod;
+objectiveStruct.objCompareMetric=objCompareMetric;
+objectiveStruct.logFileImportName=fullfile(savePath,febioLogFileName_strainEnergy);
+objectiveStruct.W=W; <span class="comment">%Material variation map</span>
+objectiveStruct.logicBoneElements=logicBoneElements;
+objectiveStruct.optimType=optimType;
+objectiveStruct.hp=hp;
+
+paramNow=paramInitial;
+Pn=paramNow./objectiveStruct.parNormFactors;
+
+<span class="keyword">switch</span> evalMode
+    <span class="keyword">case</span> 1 <span class="comment">%Run once using initial</span>
+        [Fopt,outputStructure]=objectiveFunction(Pn,objectiveStruct);
+        Pn_opt=Pn;
+    <span class="keyword">case</span> 2 <span class="comment">%optimization</span>
+</pre><pre class="codeinput">        <span class="keyword">switch</span> objectiveStruct.method
+            <span class="keyword">case</span> 1 <span class="comment">%fminsearch and Nelder-Mead</span>
+                OPT_options=optimset(<span class="string">'fminsearch'</span>); <span class="comment">% 'Nelder-Mead simplex direct search'</span>
+                OPT_options = optimset(OPT_options,<span class="string">'MaxFunEvals'</span>,maxNumberFunctionEvaluations,<span class="keyword">...</span>
+                    <span class="string">'MaxIter'</span>,maxNumberIterations,<span class="keyword">...</span>
+                    <span class="string">'TolFun'</span>,functionTolerance,<span class="keyword">...</span>
+                    <span class="string">'TolX'</span>,parameterTolerance,<span class="keyword">...</span>
+                    <span class="string">'Display'</span>,displayTypeIterations,<span class="keyword">...</span>
+                    <span class="string">'FinDiffRelStep'</span>,1e-2,<span class="keyword">...</span>
+                    <span class="string">'DiffMaxChange'</span>,0.5);
+                [Pn_opt,OPT_out.fval,OPT_out.exitflag,OPT_out.output]= fminsearch(@(Pn) objectiveFunction(Pn,objectiveStruct),Pn,OPT_options);
+            <span class="keyword">case</span> 2 <span class="comment">%lsqnonlin and Levenberg-Marquardt</span>
+                OPT_options = optimoptions(@lsqnonlin,<span class="string">'Algorithm'</span>,<span class="string">'levenberg-marquardt'</span>);
+                OPT_options = optimoptions(OPT_options,<span class="string">'MaxFunEvals'</span>,maxNumberFunctionEvaluations,<span class="keyword">...</span>
+                    <span class="string">'MaxIter'</span>,maxNumberIterations,<span class="keyword">...</span>
+                    <span class="string">'TolFun'</span>,functionTolerance,<span class="keyword">...</span>
+                    <span class="string">'TolX'</span>,parameterTolerance,<span class="keyword">...</span>
+                    <span class="string">'Display'</span>,displayTypeIterations,<span class="keyword">...</span>
+                    <span class="string">'FinDiffRelStep'</span>,1e-2,<span class="keyword">...</span>
+                    <span class="string">'DiffMaxChange'</span>,0.5);
+                [Pn_opt,OPT_out.resnorm,OPT_out.residual]= lsqnonlin(@(Pn) objectiveFunction(Pn,objectiveStruct),Pn,[],[],OPT_options);
+        <span class="keyword">end</span>
+
+        <span class="comment">%Run one more time for optimal parameters</span>
+        [Fopt,outputStructure]=objectiveFunction(Pn_opt,objectiveStruct);
+</pre><h2 id="47">Unnormalize and constrain parameters</h2><pre class="codeinput">        paramFinal=Pn_opt.*objectiveStruct.parNormFactors; <span class="comment">%Scale back, undo normalization</span>
+
+        <span class="comment">%Constraining parameters</span>
+        <span class="keyword">for</span> q=1:1:numel(paramFinal)
+            [paramFinal(q)]=boxconstrain(paramFinal(q),objectiveStruct.Pb_struct.xxlim(q,1),objectiveStruct.Pb_struct.xxlim(q,2),objectiveStruct.Pb_struct.xx_c(q));
+        <span class="keyword">end</span>
+
+        disp_text=sprintf(<span class="string">'%6.16e,'</span>,paramFinal); disp_text=disp_text(1:end-1);
+        disp([<span class="string">'paramFinal='</span>,disp_text]);
+</pre><pre class="codeoutput">paramFinal=7.7467227252681128e+04
+</pre><pre class="codeinput"><span class="keyword">end</span>
+</pre><h2 id="49">Access ouput data from optimization run</h2><pre class="codeinput">differenceData=outputStructure.differenceData;
+differenceData_SSQD=outputStructure.differenceData_SSQD;
+E_metric=outputStructure.E_metric;
+</pre><h2 id="50">Import FEBio results</h2><p>Importing nodal displacements from a log file</p><pre class="codeinput">dataStruct=importFEBio_logfile(fullfile(savePath,febioLogFileName_disp),0,1);
+
+<span class="comment">%Access data</span>
+N_disp_mat=dataStruct.data; <span class="comment">%Displacement</span>
+timeVec=dataStruct.time; <span class="comment">%Time</span>
+
+<span class="comment">%Create deformed coordinate set</span>
+V_DEF=N_disp_mat+repmat(V,[1 1 size(N_disp_mat,3)]);
+</pre><p>Importing element strain energies from a log file</p><pre class="codeinput">dataStruct=importFEBio_logfile(fullfile(savePath,febioLogFileName_strainEnergy),0,1);
+
+<span class="comment">%Access data</span>
+E_energy=dataStruct.data;
+</pre><h2 id="53">Importing element stress from a log file</h2><pre class="codeinput">dataStruct=importFEBio_logfile(fullfile(savePath,febioLogFileName_stress),0,1);
+
+<span class="comment">%Access data</span>
+E_stress_mat=dataStruct.data;
+</pre><pre class="codeinput">cFigure;
+
+subplot(1,3,1); hold <span class="string">on</span>;
+title(<span class="string">'Full bone data'</span>);
+gpatch(Fb_p,V_p,<span class="string">'w'</span>,<span class="string">'none'</span>,0.5); <span class="comment">%Add graphics object to animate</span>
+scatterV(VE_12,50,objCompareMetric,<span class="string">'filled'</span>);
+axisGeom(gca,fontSize); colormap(gjet(250)); colorbar;
+camlight <span class="string">headlight</span>;
+
+subplot(1,3,2); hold <span class="string">on</span>;
+title(<span class="string">'Implant data'</span>);
+gpatch(Fb,V,<span class="string">'w'</span>,<span class="string">'none'</span>,0.5); <span class="comment">%Add graphics object to animate</span>
+scatterV(VE_12,25,E_metric,<span class="string">'filled'</span>);
+axisGeom(gca,fontSize); colormap(gjet(250)); colorbar;
+camlight <span class="string">headlight</span>;
+
+subplot(1,3,3); hold <span class="string">on</span>;
+title(<span class="string">'Difference data'</span>);
+gpatch(Fb,V,<span class="string">'w'</span>,<span class="string">'none'</span>,0.5); <span class="comment">%Add graphics object to animate</span>
+<span class="comment">%     gpatch(Fb_p,V_p,'w','none',0.5); %Add graphics object to animate</span>
+
+scatterV(VE_12,25,differenceData,<span class="string">'filled'</span>);
+
+axisGeom(gca,fontSize); colormap(gjet(250)); colorbar;
+camlight <span class="string">headlight</span>;
+drawnow;
+</pre><img width="100%" height="auto" vspace="5" hspace="5" src="DEMO_febio_0067_hip_implant_regional_stiffness_optimize_01_30.jpg" alt=""> <pre class="codeinput">C_data=differenceData;
+
+n=[0 1 0]; <span class="comment">%Normal direction to plane</span>
+P=mean(V,1); <span class="comment">%Point on plane</span>
+[logicAt,logicAbove,logicBelow]=meshCleave(E_12,V,P,n);
+
+<span class="comment">% Get faces and matching color data for visualization</span>
+[F_cleave,CF_cleave]=element2patch(E_12(logicAbove,:),C_data(logicAbove));
+
+hf=cFigure; hold <span class="string">on</span>;
+title(<span class="string">'Difference data'</span>);
+gpatch(Fb,V,<span class="string">'w'</span>,<span class="string">'none'</span>,0.1); <span class="comment">%Add graphics object to animate</span>
+
+hp1=gpatch(F_cleave,V,CF_cleave,<span class="string">'k'</span>,1);
+axisGeom(gca,fontSize);
+colormap(warmcold(250));
+caxis([-(max(abs(C_data))) (max(abs(C_data)))]/2);
+colorbar; axis <span class="string">manual</span>;
+camlight <span class="string">headligth</span>;
+gdrawnow;
+
+nSteps=25; <span class="comment">%Number of animation steps</span>
+
+<span class="comment">%Create the time vector</span>
+animStruct.Time=linspace(0,1,nSteps);
+
+<span class="comment">%The vector lengths</span>
+y=linspace(min(V(:,2)),max(V(:,2)),nSteps);
+<span class="keyword">for</span> q=1:1:nSteps
+
+    [logicAt,logicAbove,logicBelow]=meshCleave(E_12,V,[0 y(q) 0],n,[1 0]);
+
+    <span class="comment">% Get faces and matching color data for cleaves elements</span>
+    [F_cleave,CF_cleave]=element2patch(E_12(logicAbove,:),C_data(logicAbove));
+
+    <span class="comment">%Set entries in animation structure</span>
+    animStruct.Handles{q}=[hp1 hp1]; <span class="comment">%Handles of objects to animate</span>
+    animStruct.Props{q}={<span class="string">'Faces'</span>,<span class="string">'CData'</span>}; <span class="comment">%Properties of objects to animate</span>
+    animStruct.Set{q}={F_cleave,CF_cleave}; <span class="comment">%Property values for to set in order to animate</span>
+<span class="keyword">end</span>
+anim8(hf,animStruct);
+</pre><img width="100%" height="auto" vspace="5" hspace="5" src="DEMO_febio_0067_hip_implant_regional_stiffness_optimize_01_31.jpg" alt=""> <pre class="codeinput">C_data=E_stress_mat(logicBoneElements,1,end);
+
+n=[0 1 0]; <span class="comment">%Normal direction to plane</span>
+P=mean(V,1); <span class="comment">%Point on plane</span>
+[logicAt,logicAbove,logicBelow]=meshCleave(E_12,V,P,n);
+
+<span class="comment">% Get faces and matching color data for visualization</span>
+[F_cleave,CF_cleave]=element2patch(E_12(logicAbove,:),C_data(logicAbove));
+
+hf=cFigure; hold <span class="string">on</span>;
+title(<span class="string">'Principal stress 1'</span>);
+gpatch(Fb,V,<span class="string">'w'</span>,<span class="string">'none'</span>,0.1); <span class="comment">%Add graphics object to animate</span>
+
+hp1=gpatch(F_cleave,V,CF_cleave,<span class="string">'k'</span>,1);
+axisGeom(gca,fontSize);
+colormap(gjet(250));
+caxis([min(C_data) max(C_data)]);
+colorbar; axis <span class="string">manual</span>;
+camlight <span class="string">headligth</span>;
+gdrawnow;
+
+nSteps=25; <span class="comment">%Number of animation steps</span>
+
+<span class="comment">%Create the time vector</span>
+animStruct.Time=linspace(0,1,nSteps);
+
+<span class="comment">%The vector lengths</span>
+y=linspace(min(V(:,2)),max(V(:,2)),nSteps);
+<span class="keyword">for</span> q=1:1:nSteps
+
+    [logicAt,logicAbove,logicBelow]=meshCleave(E_12,V,[0 y(q) 0],n,[1 0]);
+
+    <span class="comment">% Get faces and matching color data for cleaves elements</span>
+    [F_cleave,CF_cleave]=element2patch(E_12(logicAbove,:),C_data(logicAbove));
+
+    <span class="comment">%Set entries in animation structure</span>
+    animStruct.Handles{q}=[hp1 hp1]; <span class="comment">%Handles of objects to animate</span>
+    animStruct.Props{q}={<span class="string">'Faces'</span>,<span class="string">'CData'</span>}; <span class="comment">%Properties of objects to animate</span>
+    animStruct.Set{q}={F_cleave,CF_cleave}; <span class="comment">%Property values for to set in order to animate</span>
+<span class="keyword">end</span>
+anim8(hf,animStruct);
+</pre><img width="100%" height="auto" vspace="5" hspace="5" src="DEMO_febio_0067_hip_implant_regional_stiffness_optimize_01_32.jpg" alt=""> <pre class="codeinput">C_data=E_stress_mat(logicBoneElements,3,end);
+
+n=[0 1 0]; <span class="comment">%Normal direction to plane</span>
+P=mean(V,1); <span class="comment">%Point on plane</span>
+[logicAt,logicAbove,logicBelow]=meshCleave(E_12,V,P,n);
+
+<span class="comment">% Get faces and matching color data for visualization</span>
+[F_cleave,CF_cleave]=element2patch(E_12(logicAbove,:),C_data(logicAbove));
+
+hf=cFigure; hold <span class="string">on</span>;
+title(<span class="string">'Principal stress 3'</span>);
+gpatch(Fb,V,<span class="string">'w'</span>,<span class="string">'none'</span>,0.1); <span class="comment">%Add graphics object to animate</span>
+
+hp1=gpatch(F_cleave,V,CF_cleave,<span class="string">'k'</span>,1);
+axisGeom(gca,fontSize);
+colormap(gjet(250));
+caxis([min(C_data) max(C_data)]);
+colorbar; axis <span class="string">manual</span>;
+camlight <span class="string">headligth</span>;
+gdrawnow;
+
+nSteps=25; <span class="comment">%Number of animation steps</span>
+
+<span class="comment">%Create the time vector</span>
+animStruct.Time=linspace(0,1,nSteps);
+
+<span class="comment">%The vector lengths</span>
+y=linspace(min(V(:,2)),max(V(:,2)),nSteps);
+<span class="keyword">for</span> q=1:1:nSteps
+
+    [logicAt,logicAbove,logicBelow]=meshCleave(E_12,V,[0 y(q) 0],n,[1 0]);
+
+    <span class="comment">% Get faces and matching color data for cleaves elements</span>
+    [F_cleave,CF_cleave]=element2patch(E_12(logicAbove,:),C_data(logicAbove));
+
+    <span class="comment">%Set entries in animation structure</span>
+    animStruct.Handles{q}=[hp1 hp1]; <span class="comment">%Handles of objects to animate</span>
+    animStruct.Props{q}={<span class="string">'Faces'</span>,<span class="string">'CData'</span>}; <span class="comment">%Properties of objects to animate</span>
+    animStruct.Set{q}={F_cleave,CF_cleave}; <span class="comment">%Property values for to set in order to animate</span>
+<span class="keyword">end</span>
+anim8(hf,animStruct);
+</pre><img width="100%" height="auto" vspace="5" hspace="5" src="DEMO_febio_0067_hip_implant_regional_stiffness_optimize_01_33.jpg" alt=""> <h2 id="58">simulated results using <tt>anim8</tt> to visualize and animate</h2><p>deformations</p><pre class="codeinput">[FE_face,C_energy_face]=element2patch(E_12,E_energy(logicBoneElements,:,end),<span class="string">'tet4'</span>);
+[CV]=faceToVertexMeasure(FE_face,V,C_energy_face);
+[indBoundary]=tesBoundary(FE_face,V);
+Fb_energy=FE_face(indBoundary,:);
+
+axLim=[min(min(V_DEF,[],3),[],1); max(max(V_DEF,[],3),[],1)];
+
+<span class="comment">% Create basic view and store graphics handle to initiate animation</span>
+hf=cFigure; <span class="comment">%Open figure</span>
+title(<span class="string">'Strain energy density'</span>)
+gtitle([febioFebFileNamePart,<span class="string">': Press play to animate'</span>]);
+
+hp1=gpatch(Fb(Cb&gt;3,:),V_DEF(:,:,end),<span class="string">'w'</span>,<span class="string">'none'</span>,0.5); <span class="comment">%Add graphics object to animate</span>
+hp2=gpatch(Fb_energy,V_DEF(:,:,end),CV,<span class="string">'k'</span>,1); <span class="comment">%Add graphics object to animate</span>
+hp2.FaceColor=<span class="string">'Interp'</span>;
+
+axisGeom(gca,fontSize);
+colormap(gjet(250)); colorbar;
+caxis([0 max(E_energy(:))/25]);
+axis(axLim(:)'); <span class="comment">%Set axis limits statically</span>
+camlight <span class="string">headlight</span>;
+
+<span class="comment">% Set up animation features</span>
+animStruct.Time=timeVec; <span class="comment">%The time vector</span>
+<span class="keyword">for</span> qt=1:1:size(N_disp_mat,3) <span class="comment">%Loop over time increments</span>
+    DN=N_disp_mat(:,:,qt); <span class="comment">%Current disp</span>
+
+    [FE_face,C_energy_face]=element2patch(E_12,E_energy(logicBoneElements,:,qt),<span class="string">'tet4'</span>);
+    [CV]=faceToVertexMeasure(FE_face,V,C_energy_face);
+
+    <span class="comment">%Set entries in animation structure</span>
+    animStruct.Handles{qt}=[hp1 hp2 hp2]; <span class="comment">%Handles of objects to animate</span>
+    animStruct.Props{qt}={<span class="string">'Vertices'</span>,<span class="string">'Vertices'</span>,<span class="string">'CData'</span>}; <span class="comment">%Properties of objects to animate</span>
+    animStruct.Set{qt}={V_DEF(:,:,qt),V_DEF(:,:,qt),CV}; <span class="comment">%Property values for to set in order to animate</span>
+<span class="keyword">end</span>
+anim8(hf,animStruct); <span class="comment">%Initiate animation feature</span>
+drawnow;
+</pre><pre class="codeoutput">Warning: Second input (vertices) no longer required. Update code to avoid
+future error. 
+</pre><img width="100%" height="auto" vspace="5" hspace="5" src="DEMO_febio_0067_hip_implant_regional_stiffness_optimize_01_34.jpg" alt=""> <h2 id="59">simulated results using <tt>anim8</tt> to visualize and animate</h2><p>deformations</p><pre class="codeinput">prinComp=3;
+
+[FE_face,C_stress_face]=element2patch(E_12,E_stress_mat(logicBoneElements,prinComp,end),<span class="string">'tet4'</span>);
+[CV]=faceToVertexMeasure(FE_face,V,C_stress_face);
+[indBoundary]=tesBoundary(FE_face,V);
+Fb_stress=FE_face(indBoundary,:);
+
+axLim=[min(min(V_DEF,[],3),[],1); max(max(V_DEF,[],3),[],1)];
+
+<span class="comment">% Create basic view and store graphics handle to initiate animation</span>
+hf=cFigure; <span class="comment">%Open figure</span>
+title([<span class="string">'Principal stress '</span>,num2str(prinComp)])
+gtitle([febioFebFileNamePart,<span class="string">': Press play to animate'</span>]);
+hp1=gpatch(Fb(Cb&gt;3,:),V_DEF(:,:,end),<span class="string">'w'</span>,<span class="string">'none'</span>,0.5); <span class="comment">%Add graphics object to animate</span>
+hp2=gpatch(Fb_stress,V_DEF(:,:,end),CV,<span class="string">'k'</span>,1); <span class="comment">%Add graphics object to animate</span>
+hp2.FaceColor=<span class="string">'Interp'</span>;
+
+axisGeom(gca,fontSize);
+colormap(gjet(250)); colorbar;
+caxis([min(E_stress_mat(:,prinComp,end)) max(E_stress_mat(:,prinComp,end))]/2);
+
+axis(axLim(:)'); <span class="comment">%Set axis limits statically</span>
+camlight <span class="string">headlight</span>;
+
+<span class="comment">% Set up animation features</span>
+animStruct.Time=timeVec; <span class="comment">%The time vector</span>
+<span class="keyword">for</span> qt=1:1:size(N_disp_mat,3) <span class="comment">%Loop over time increments</span>
+    DN=N_disp_mat(:,:,qt); <span class="comment">%Current disp</span>
+
+    [FE_face,C_stress_face]=element2patch(E_12,E_stress_mat(logicBoneElements,prinComp,qt),<span class="string">'tet4'</span>);
+    [CV]=faceToVertexMeasure(FE_face,V,C_stress_face);
+
+    <span class="comment">%Set entries in animation structure</span>
+    animStruct.Handles{qt}=[hp1 hp2 hp2]; <span class="comment">%Handles of objects to animate</span>
+    animStruct.Props{qt}={<span class="string">'Vertices'</span>,<span class="string">'Vertices'</span>,<span class="string">'CData'</span>}; <span class="comment">%Properties of objects to animate</span>
+    animStruct.Set{qt}={V_DEF(:,:,qt),V_DEF(:,:,qt),CV}; <span class="comment">%Property values for to set in order to animate</span>
+<span class="keyword">end</span>
+anim8(hf,animStruct); <span class="comment">%Initiate animation feature</span>
+drawnow;
+</pre><pre class="codeoutput">Warning: Second input (vertices) no longer required. Update code to avoid
+future error. 
+</pre><img width="100%" height="auto" vspace="5" hspace="5" src="DEMO_febio_0067_hip_implant_regional_stiffness_optimize_01_35.jpg" alt=""> <pre class="codeinput"><span class="keyword">function</span> [Fopt,outputStructure]=objectiveFunction(Pn,objectiveStruct)
+</pre><h2 id="62">Process input</h2><pre class="codeinput">febioFebFileName=objectiveStruct.febioFebFileName;
+febio_spec=objectiveStruct.febio_spec;
+febioAnalysis=objectiveStruct.febioAnalysis;
+logFileImportName=objectiveStruct.logFileImportName;
+objCompareMetric=objectiveStruct.objCompareMetric;
+logicBoneElements=objectiveStruct.logicBoneElements;
+W=objectiveStruct.W;
+hp=objectiveStruct.hp;
+optimType=objectiveStruct.optimType;
+</pre><h2 id="63">Unnormalize and constrain parameters</h2><pre class="codeinput">P=Pn.*objectiveStruct.parNormFactors; <span class="comment">%Scale back, undo normalization</span>
+P_in=P; <span class="comment">%Proposed P</span>
+
+<span class="comment">%Constraining parameters</span>
+<span class="keyword">for</span> q=1:1:numel(P)
+    [P(q)]=boxconstrain(P(q),objectiveStruct.Pb_struct.xxlim(q,1),objectiveStruct.Pb_struct.xxlim(q,2),objectiveStruct.Pb_struct.xx_c(q));
+<span class="keyword">end</span>
+</pre><h2 id="64">Setting material parameters</h2><pre class="codeinput">disp(<span class="string">'SETTING MATERIAL PARAMETERS...'</span>);
+disp([<span class="string">'Proposed (norm.): '</span>,sprintf(repmat(<span class="string">'%6.16e '</span>,[1,numel(Pn)]),Pn)]);
+disp([<span class="string">'Proposed        : '</span>,sprintf(repmat(<span class="string">'%6.16e '</span>,[1,numel(P_in)]),P_in)]);
+disp([<span class="string">'Set (constr.)   : '</span>,sprintf(repmat(<span class="string">'%6.16e '</span>,[1,numel(P)]),P)]);
+
+<span class="comment">% Define Youngs moduli variation</span>
+<span class="keyword">switch</span> optimType
+    <span class="keyword">case</span> 1 <span class="comment">%homogeneous</span>
+        E_youngs_implant=P(1)*ones(numel(W),1);
+    <span class="keyword">case</span> 2 <span class="comment">%Spat. var.</span>
+       E_youngs_implant=(W.*(E_youngs_max-E_youngs_min))+E_youngs_min;
+<span class="keyword">end</span>
+
+<span class="comment">%Adjust material parameter map</span>
+febio_spec.MeshData.ElementData{1}.elem.VAL=E_youngs_implant;
+
+<span class="comment">%Export changes to feb file</span>
+febioStruct2xml(febio_spec,febioFebFileName); <span class="comment">%Exporting to file and domNode</span>
+
+disp(<span class="string">'Done'</span>)
+</pre><pre class="codeoutput">SETTING MATERIAL PARAMETERS...
+Proposed (norm.): 1.0000000000000000e+00 
+Proposed        : 6.2500000000000000e+04 
+Set (constr.)   : 6.2500000000000000e+04 
+Done
+</pre><pre class="codeoutput">SETTING MATERIAL PARAMETERS...
+Proposed (norm.): 1.0100000000000000e+00 
+Proposed        : 6.3125000000000000e+04 
+Set (constr.)   : 6.3124963933707266e+04 
+Done
+</pre><pre class="codeoutput">SETTING MATERIAL PARAMETERS...
+Proposed (norm.): 1.2383346031538691e+00 
+Proposed        : 7.7395912697116815e+04 
+Set (constr.)   : 7.6926079241548563e+04 
+Done
+</pre><pre class="codeoutput">SETTING MATERIAL PARAMETERS...
+Proposed (norm.): 1.2507179491854079e+00 
+Proposed        : 7.8169871824087997e+04 
+Set (constr.)   : 7.7625128850101697e+04 
+Done
+</pre><pre class="codeoutput">SETTING MATERIAL PARAMETERS...
+Proposed (norm.): 1.2481334425370063e+00 
+Proposed        : 7.8008340158562889e+04 
+Set (constr.)   : 7.7479818687479274e+04 
+Done
+</pre><pre class="codeoutput">SETTING MATERIAL PARAMETERS...
+Proposed (norm.): 1.2606147769623763e+00 
+Proposed        : 7.8788423560148527e+04 
+Set (constr.)   : 7.8178636899609264e+04 
+Done
+</pre><pre class="codeoutput">SETTING MATERIAL PARAMETERS...
+Proposed (norm.): 1.2467706298375723e+00 
+Proposed        : 7.7923164364848271e+04 
+Set (constr.)   : 7.7403070719132898e+04 
+Done
+</pre><pre class="codeoutput">SETTING MATERIAL PARAMETERS...
+Proposed (norm.): 1.2467768479214638e+00 
+Proposed        : 7.7923552995091493e+04 
+Set (constr.)   : 7.7403421092358578e+04 
+Done
+</pre><pre class="codeoutput">SETTING MATERIAL PARAMETERS...
+Proposed (norm.): 1.2468360441135866e+00 
+Proposed        : 7.7927252757099166e+04 
+Set (constr.)   : 7.7406756557270724e+04 
+Done
+</pre><pre class="codeoutput">SETTING MATERIAL PARAMETERS...
+Proposed (norm.): 1.2472301873928999e+00 
+Proposed        : 7.7951886712056250e+04 
+Set (constr.)   : 7.7428960771041486e+04 
+Done
+</pre><pre class="codeoutput">SETTING MATERIAL PARAMETERS...
+Proposed (norm.): 1.2479097510776958e+00 
+Proposed        : 7.7994359442355984e+04 
+Set (constr.)   : 7.7467227252681128e+04 
+Done
+</pre><pre class="codeoutput">SETTING MATERIAL PARAMETERS...
+Proposed (norm.): 1.2603888485884727e+00 
+Proposed        : 7.8774303036779544e+04 
+Set (constr.)   : 7.8166053580535765e+04 
+Done
+</pre><pre class="codeoutput">SETTING MATERIAL PARAMETERS...
+Proposed (norm.): 1.2479097510776958e+00 
+Proposed        : 7.7994359442355984e+04 
+Set (constr.)   : 7.7467227252681128e+04 
+Done
+</pre><h2 id="65">START FEBio</h2><pre class="codeinput">[runFlag]=runMonitorFEBio(febioAnalysis);
+
+<span class="keyword">if</span> runFlag==1
+    <span class="comment">% import optimization metric</span>
+    dataStruct=importFEBio_logfile(logFileImportName,0,1);
+
+    <span class="comment">%Access data for last time step</span>
+    E_metric=dataStruct.data(logicBoneElements,:,end);
+
+    <span class="comment">%Difference between cases</span>
+    differenceData=E_metric-objCompareMetric;
+<span class="keyword">else</span> <span class="comment">%Output NaN</span>
+    differenceData=nan(size(objCompareMetric));
+<span class="keyword">end</span>
+
+differenceData_SSQD=sum(differenceData(:).^2); <span class="comment">%Sum of squared differences</span>
+
+<span class="keyword">switch</span> objectiveStruct.method
+    <span class="keyword">case</span> 1
+        Fopt=differenceData_SSQD; <span class="comment">%Use sum of squared differences</span>
+    <span class="keyword">case</span> 2
+        Fopt=differenceData(:); <span class="comment">%Differences</span>
+<span class="keyword">end</span>
+</pre><pre class="codeoutput"> 
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+--------&gt;    RUNNING/MONITORING FEBIO JOB    &lt;-------- 01-May-2023 08:25:14
+FEBio path: /home/kevin/FEBioStudio/bin/febio4
+# Attempt removal of existing log files                01-May-2023 08:25:14
+ * Removal succesful                                   01-May-2023 08:25:14
+# Attempt removal of existing .xplt files              01-May-2023 08:25:14
+ * Removal succesful                                   01-May-2023 08:25:14
+# Starting FEBio...                                    01-May-2023 08:25:14
+  Max. total analysis time is: Inf s
+ * Waiting for log file creation                       01-May-2023 08:25:14
+   Max. wait time: 120 s
+ * Log file found.                                     01-May-2023 08:25:15
+# Parsing log file...                                  01-May-2023 08:25:15
+    number of iterations   : 4                         01-May-2023 08:25:18
+    number of reformations : 4                         01-May-2023 08:25:18
+------- converged at time : 0.2                        01-May-2023 08:25:18
+    number of iterations   : 4                         01-May-2023 08:25:20
+    number of reformations : 4                         01-May-2023 08:25:20
+------- converged at time : 0.4                        01-May-2023 08:25:20
+    number of iterations   : 4                         01-May-2023 08:25:20
+    number of reformations : 4                         01-May-2023 08:25:20
+------- converged at time : 0.6                        01-May-2023 08:25:20
+    number of iterations   : 4                         01-May-2023 08:25:22
+    number of reformations : 4                         01-May-2023 08:25:22
+------- converged at time : 0.8                        01-May-2023 08:25:22
+    number of iterations   : 4                         01-May-2023 08:25:23
+    number of reformations : 4                         01-May-2023 08:25:23
+------- converged at time : 1                          01-May-2023 08:25:23
+ Elapsed time : 0:00:08                                01-May-2023 08:25:23
+ N O R M A L   T E R M I N A T I O N
+# Done                                                 01-May-2023 08:25:23
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+</pre><pre class="codeoutput"> 
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+--------&gt;    RUNNING/MONITORING FEBIO JOB    &lt;-------- 01-May-2023 08:25:25
+FEBio path: /home/kevin/FEBioStudio/bin/febio4
+# Attempt removal of existing log files                01-May-2023 08:25:25
+ * Removal succesful                                   01-May-2023 08:25:25
+# Attempt removal of existing .xplt files              01-May-2023 08:25:25
+ * Removal succesful                                   01-May-2023 08:25:25
+# Starting FEBio...                                    01-May-2023 08:25:25
+  Max. total analysis time is: Inf s
+ * Waiting for log file creation                       01-May-2023 08:25:26
+   Max. wait time: 120 s
+ * Log file found.                                     01-May-2023 08:25:26
+# Parsing log file...                                  01-May-2023 08:25:26
+    number of iterations   : 4                         01-May-2023 08:25:29
+    number of reformations : 4                         01-May-2023 08:25:29
+------- converged at time : 0.2                        01-May-2023 08:25:29
+    number of iterations   : 4                         01-May-2023 08:25:31
+    number of reformations : 4                         01-May-2023 08:25:31
+------- converged at time : 0.4                        01-May-2023 08:25:31
+    number of iterations   : 4                         01-May-2023 08:25:31
+    number of reformations : 4                         01-May-2023 08:25:31
+------- converged at time : 0.6                        01-May-2023 08:25:31
+    number of iterations   : 4                         01-May-2023 08:25:34
+    number of reformations : 4                         01-May-2023 08:25:34
+------- converged at time : 0.8                        01-May-2023 08:25:34
+    number of iterations   : 4                         01-May-2023 08:25:35
+    number of reformations : 4                         01-May-2023 08:25:35
+------- converged at time : 1                          01-May-2023 08:25:35
+ Elapsed time : 0:00:09                                01-May-2023 08:25:35
+ N O R M A L   T E R M I N A T I O N
+# Done                                                 01-May-2023 08:25:35
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+</pre><pre class="codeoutput"> 
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+--------&gt;    RUNNING/MONITORING FEBIO JOB    &lt;-------- 01-May-2023 08:25:37
+FEBio path: /home/kevin/FEBioStudio/bin/febio4
+# Attempt removal of existing log files                01-May-2023 08:25:37
+ * Removal succesful                                   01-May-2023 08:25:37
+# Attempt removal of existing .xplt files              01-May-2023 08:25:37
+ * Removal succesful                                   01-May-2023 08:25:37
+# Starting FEBio...                                    01-May-2023 08:25:37
+  Max. total analysis time is: Inf s
+ * Waiting for log file creation                       01-May-2023 08:25:38
+   Max. wait time: 120 s
+ * Log file found.                                     01-May-2023 08:25:38
+# Parsing log file...                                  01-May-2023 08:25:38
+    number of iterations   : 4                         01-May-2023 08:25:41
+    number of reformations : 4                         01-May-2023 08:25:41
+------- converged at time : 0.2                        01-May-2023 08:25:41
+    number of iterations   : 4                         01-May-2023 08:25:43
+    number of reformations : 4                         01-May-2023 08:25:43
+------- converged at time : 0.4                        01-May-2023 08:25:43
+    number of iterations   : 4                         01-May-2023 08:25:43
+    number of reformations : 4                         01-May-2023 08:25:43
+------- converged at time : 0.6                        01-May-2023 08:25:43
+    number of iterations   : 4                         01-May-2023 08:25:45
+    number of reformations : 4                         01-May-2023 08:25:45
+------- converged at time : 0.8                        01-May-2023 08:25:45
+    number of iterations   : 4                         01-May-2023 08:25:46
+    number of reformations : 4                         01-May-2023 08:25:46
+------- converged at time : 1                          01-May-2023 08:25:46
+ Elapsed time : 0:00:08                                01-May-2023 08:25:46
+ N O R M A L   T E R M I N A T I O N
+# Done                                                 01-May-2023 08:25:46
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+</pre><pre class="codeoutput"> 
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+--------&gt;    RUNNING/MONITORING FEBIO JOB    &lt;-------- 01-May-2023 08:25:48
+FEBio path: /home/kevin/FEBioStudio/bin/febio4
+# Attempt removal of existing log files                01-May-2023 08:25:48
+ * Removal succesful                                   01-May-2023 08:25:48
+# Attempt removal of existing .xplt files              01-May-2023 08:25:48
+ * Removal succesful                                   01-May-2023 08:25:48
+# Starting FEBio...                                    01-May-2023 08:25:48
+  Max. total analysis time is: Inf s
+ * Waiting for log file creation                       01-May-2023 08:25:49
+   Max. wait time: 120 s
+ * Log file found.                                     01-May-2023 08:25:49
+# Parsing log file...                                  01-May-2023 08:25:49
+    number of iterations   : 4                         01-May-2023 08:25:52
+    number of reformations : 4                         01-May-2023 08:25:52
+------- converged at time : 0.2                        01-May-2023 08:25:52
+    number of iterations   : 4                         01-May-2023 08:25:54
+    number of reformations : 4                         01-May-2023 08:25:54
+------- converged at time : 0.4                        01-May-2023 08:25:54
+    number of iterations   : 4                         01-May-2023 08:25:54
+    number of reformations : 4                         01-May-2023 08:25:54
+------- converged at time : 0.6                        01-May-2023 08:25:54
+    number of iterations   : 4                         01-May-2023 08:25:56
+    number of reformations : 4                         01-May-2023 08:25:56
+------- converged at time : 0.8                        01-May-2023 08:25:56
+    number of iterations   : 4                         01-May-2023 08:25:57
+    number of reformations : 4                         01-May-2023 08:25:57
+------- converged at time : 1                          01-May-2023 08:25:57
+ Elapsed time : 0:00:08                                01-May-2023 08:25:57
+ N O R M A L   T E R M I N A T I O N
+# Done                                                 01-May-2023 08:25:57
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+</pre><pre class="codeoutput"> 
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+--------&gt;    RUNNING/MONITORING FEBIO JOB    &lt;-------- 01-May-2023 08:25:59
+FEBio path: /home/kevin/FEBioStudio/bin/febio4
+# Attempt removal of existing log files                01-May-2023 08:25:59
+ * Removal succesful                                   01-May-2023 08:25:59
+# Attempt removal of existing .xplt files              01-May-2023 08:25:59
+ * Removal succesful                                   01-May-2023 08:25:59
+# Starting FEBio...                                    01-May-2023 08:25:59
+  Max. total analysis time is: Inf s
+ * Waiting for log file creation                       01-May-2023 08:25:59
+   Max. wait time: 120 s
+ * Log file found.                                     01-May-2023 08:26:00
+# Parsing log file...                                  01-May-2023 08:26:00
+    number of iterations   : 4                         01-May-2023 08:26:03
+    number of reformations : 4                         01-May-2023 08:26:03
+------- converged at time : 0.2                        01-May-2023 08:26:03
+    number of iterations   : 4                         01-May-2023 08:26:05
+    number of reformations : 4                         01-May-2023 08:26:05
+------- converged at time : 0.4                        01-May-2023 08:26:05
+    number of iterations   : 4                         01-May-2023 08:26:05
+    number of reformations : 4                         01-May-2023 08:26:05
+------- converged at time : 0.6                        01-May-2023 08:26:05
+    number of iterations   : 4                         01-May-2023 08:26:07
+    number of reformations : 4                         01-May-2023 08:26:07
+------- converged at time : 0.8                        01-May-2023 08:26:07
+    number of iterations   : 4                         01-May-2023 08:26:08
+    number of reformations : 4                         01-May-2023 08:26:08
+------- converged at time : 1                          01-May-2023 08:26:08
+ Elapsed time : 0:00:08                                01-May-2023 08:26:08
+ N O R M A L   T E R M I N A T I O N
+# Done                                                 01-May-2023 08:26:08
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+</pre><pre class="codeoutput"> 
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+--------&gt;    RUNNING/MONITORING FEBIO JOB    &lt;-------- 01-May-2023 08:26:10
+FEBio path: /home/kevin/FEBioStudio/bin/febio4
+# Attempt removal of existing log files                01-May-2023 08:26:10
+ * Removal succesful                                   01-May-2023 08:26:10
+# Attempt removal of existing .xplt files              01-May-2023 08:26:10
+ * Removal succesful                                   01-May-2023 08:26:10
+# Starting FEBio...                                    01-May-2023 08:26:10
+  Max. total analysis time is: Inf s
+ * Waiting for log file creation                       01-May-2023 08:26:10
+   Max. wait time: 120 s
+ * Log file found.                                     01-May-2023 08:26:11
+# Parsing log file...                                  01-May-2023 08:26:11
+    number of iterations   : 4                         01-May-2023 08:26:14
+    number of reformations : 4                         01-May-2023 08:26:14
+------- converged at time : 0.2                        01-May-2023 08:26:14
+    number of iterations   : 4                         01-May-2023 08:26:16
+    number of reformations : 4                         01-May-2023 08:26:16
+------- converged at time : 0.4                        01-May-2023 08:26:16
+    number of iterations   : 4                         01-May-2023 08:26:16
+    number of reformations : 4                         01-May-2023 08:26:16
+------- converged at time : 0.6                        01-May-2023 08:26:16
+    number of iterations   : 4                         01-May-2023 08:26:18
+    number of reformations : 4                         01-May-2023 08:26:18
+------- converged at time : 0.8                        01-May-2023 08:26:18
+    number of iterations   : 4                         01-May-2023 08:26:19
+    number of reformations : 4                         01-May-2023 08:26:19
+------- converged at time : 1                          01-May-2023 08:26:19
+ Elapsed time : 0:00:08                                01-May-2023 08:26:19
+ N O R M A L   T E R M I N A T I O N
+# Done                                                 01-May-2023 08:26:19
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+</pre><pre class="codeoutput"> 
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+--------&gt;    RUNNING/MONITORING FEBIO JOB    &lt;-------- 01-May-2023 08:26:21
+FEBio path: /home/kevin/FEBioStudio/bin/febio4
+# Attempt removal of existing log files                01-May-2023 08:26:21
+ * Removal succesful                                   01-May-2023 08:26:21
+# Attempt removal of existing .xplt files              01-May-2023 08:26:21
+ * Removal succesful                                   01-May-2023 08:26:21
+# Starting FEBio...                                    01-May-2023 08:26:21
+  Max. total analysis time is: Inf s
+ * Waiting for log file creation                       01-May-2023 08:26:22
+   Max. wait time: 120 s
+ * Log file found.                                     01-May-2023 08:26:22
+# Parsing log file...                                  01-May-2023 08:26:22
+    number of iterations   : 4                         01-May-2023 08:26:25
+    number of reformations : 4                         01-May-2023 08:26:25
+------- converged at time : 0.2                        01-May-2023 08:26:25
+    number of iterations   : 4                         01-May-2023 08:26:27
+    number of reformations : 4                         01-May-2023 08:26:27
+------- converged at time : 0.4                        01-May-2023 08:26:27
+    number of iterations   : 4                         01-May-2023 08:26:27
+    number of reformations : 4                         01-May-2023 08:26:27
+------- converged at time : 0.6                        01-May-2023 08:26:27
+    number of iterations   : 4                         01-May-2023 08:26:30
+    number of reformations : 4                         01-May-2023 08:26:30
+------- converged at time : 0.8                        01-May-2023 08:26:30
+    number of iterations   : 4                         01-May-2023 08:26:30
+    number of reformations : 4                         01-May-2023 08:26:30
+------- converged at time : 1                          01-May-2023 08:26:30
+ Elapsed time : 0:00:08                                01-May-2023 08:26:30
+ N O R M A L   T E R M I N A T I O N
+# Done                                                 01-May-2023 08:26:30
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+</pre><pre class="codeoutput"> 
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+--------&gt;    RUNNING/MONITORING FEBIO JOB    &lt;-------- 01-May-2023 08:26:33
+FEBio path: /home/kevin/FEBioStudio/bin/febio4
+# Attempt removal of existing log files                01-May-2023 08:26:33
+ * Removal succesful                                   01-May-2023 08:26:33
+# Attempt removal of existing .xplt files              01-May-2023 08:26:33
+ * Removal succesful                                   01-May-2023 08:26:33
+# Starting FEBio...                                    01-May-2023 08:26:33
+  Max. total analysis time is: Inf s
+ * Waiting for log file creation                       01-May-2023 08:26:33
+   Max. wait time: 120 s
+ * Log file found.                                     01-May-2023 08:26:34
+# Parsing log file...                                  01-May-2023 08:26:34
+    number of iterations   : 4                         01-May-2023 08:26:36
+    number of reformations : 4                         01-May-2023 08:26:36
+------- converged at time : 0.2                        01-May-2023 08:26:36
+    number of iterations   : 4                         01-May-2023 08:26:38
+    number of reformations : 4                         01-May-2023 08:26:38
+------- converged at time : 0.4                        01-May-2023 08:26:38
+    number of iterations   : 4                         01-May-2023 08:26:38
+    number of reformations : 4                         01-May-2023 08:26:38
+------- converged at time : 0.6                        01-May-2023 08:26:38
+    number of iterations   : 4                         01-May-2023 08:26:41
+    number of reformations : 4                         01-May-2023 08:26:41
+------- converged at time : 0.8                        01-May-2023 08:26:41
+    number of iterations   : 4                         01-May-2023 08:26:42
+    number of reformations : 4                         01-May-2023 08:26:42
+------- converged at time : 1                          01-May-2023 08:26:42
+ Elapsed time : 0:00:08                                01-May-2023 08:26:42
+ N O R M A L   T E R M I N A T I O N
+# Done                                                 01-May-2023 08:26:42
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+</pre><pre class="codeoutput"> 
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+--------&gt;    RUNNING/MONITORING FEBIO JOB    &lt;-------- 01-May-2023 08:26:44
+FEBio path: /home/kevin/FEBioStudio/bin/febio4
+# Attempt removal of existing log files                01-May-2023 08:26:44
+ * Removal succesful                                   01-May-2023 08:26:44
+# Attempt removal of existing .xplt files              01-May-2023 08:26:44
+ * Removal succesful                                   01-May-2023 08:26:44
+# Starting FEBio...                                    01-May-2023 08:26:44
+  Max. total analysis time is: Inf s
+ * Waiting for log file creation                       01-May-2023 08:26:45
+   Max. wait time: 120 s
+ * Log file found.                                     01-May-2023 08:26:45
+# Parsing log file...                                  01-May-2023 08:26:45
+    number of iterations   : 4                         01-May-2023 08:26:48
+    number of reformations : 4                         01-May-2023 08:26:48
+------- converged at time : 0.2                        01-May-2023 08:26:48
+    number of iterations   : 4                         01-May-2023 08:26:50
+    number of reformations : 4                         01-May-2023 08:26:50
+------- converged at time : 0.4                        01-May-2023 08:26:50
+    number of iterations   : 4                         01-May-2023 08:26:50
+    number of reformations : 4                         01-May-2023 08:26:50
+------- converged at time : 0.6                        01-May-2023 08:26:50
+    number of iterations   : 4                         01-May-2023 08:26:53
+    number of reformations : 4                         01-May-2023 08:26:53
+------- converged at time : 0.8                        01-May-2023 08:26:53
+    number of iterations   : 4                         01-May-2023 08:26:53
+    number of reformations : 4                         01-May-2023 08:26:53
+------- converged at time : 1                          01-May-2023 08:26:53
+ Elapsed time : 0:00:08                                01-May-2023 08:26:53
+ N O R M A L   T E R M I N A T I O N
+# Done                                                 01-May-2023 08:26:53
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+</pre><pre class="codeoutput"> 
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+--------&gt;    RUNNING/MONITORING FEBIO JOB    &lt;-------- 01-May-2023 08:26:56
+FEBio path: /home/kevin/FEBioStudio/bin/febio4
+# Attempt removal of existing log files                01-May-2023 08:26:56
+ * Removal succesful                                   01-May-2023 08:26:56
+# Attempt removal of existing .xplt files              01-May-2023 08:26:56
+ * Removal succesful                                   01-May-2023 08:26:56
+# Starting FEBio...                                    01-May-2023 08:26:56
+  Max. total analysis time is: Inf s
+ * Waiting for log file creation                       01-May-2023 08:26:56
+   Max. wait time: 120 s
+ * Log file found.                                     01-May-2023 08:26:57
+# Parsing log file...                                  01-May-2023 08:26:57
+    number of iterations   : 4                         01-May-2023 08:27:00
+    number of reformations : 4                         01-May-2023 08:27:00
+------- converged at time : 0.2                        01-May-2023 08:27:00
+    number of iterations   : 4                         01-May-2023 08:27:02
+    number of reformations : 4                         01-May-2023 08:27:02
+------- converged at time : 0.4                        01-May-2023 08:27:02
+    number of iterations   : 4                         01-May-2023 08:27:02
+    number of reformations : 4                         01-May-2023 08:27:02
+------- converged at time : 0.6                        01-May-2023 08:27:02
+    number of iterations   : 4                         01-May-2023 08:27:05
+    number of reformations : 4                         01-May-2023 08:27:05
+------- converged at time : 0.8                        01-May-2023 08:27:05
+    number of iterations   : 4                         01-May-2023 08:27:06
+    number of reformations : 4                         01-May-2023 08:27:06
+------- converged at time : 1                          01-May-2023 08:27:06
+ Elapsed time : 0:00:09                                01-May-2023 08:27:06
+ N O R M A L   T E R M I N A T I O N
+# Done                                                 01-May-2023 08:27:06
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+</pre><pre class="codeoutput"> 
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+--------&gt;    RUNNING/MONITORING FEBIO JOB    &lt;-------- 01-May-2023 08:27:08
+FEBio path: /home/kevin/FEBioStudio/bin/febio4
+# Attempt removal of existing log files                01-May-2023 08:27:08
+ * Removal succesful                                   01-May-2023 08:27:08
+# Attempt removal of existing .xplt files              01-May-2023 08:27:08
+ * Removal succesful                                   01-May-2023 08:27:08
+# Starting FEBio...                                    01-May-2023 08:27:08
+  Max. total analysis time is: Inf s
+ * Waiting for log file creation                       01-May-2023 08:27:09
+   Max. wait time: 120 s
+ * Log file found.                                     01-May-2023 08:27:09
+# Parsing log file...                                  01-May-2023 08:27:09
+    number of iterations   : 4                         01-May-2023 08:27:12
+    number of reformations : 4                         01-May-2023 08:27:12
+------- converged at time : 0.2                        01-May-2023 08:27:12
+    number of iterations   : 4                         01-May-2023 08:27:14
+    number of reformations : 4                         01-May-2023 08:27:14
+------- converged at time : 0.4                        01-May-2023 08:27:14
+    number of iterations   : 4                         01-May-2023 08:27:14
+    number of reformations : 4                         01-May-2023 08:27:14
+------- converged at time : 0.6                        01-May-2023 08:27:14
+    number of iterations   : 4                         01-May-2023 08:27:17
+    number of reformations : 4                         01-May-2023 08:27:17
+------- converged at time : 0.8                        01-May-2023 08:27:17
+    number of iterations   : 4                         01-May-2023 08:27:17
+    number of reformations : 4                         01-May-2023 08:27:17
+------- converged at time : 1                          01-May-2023 08:27:17
+ Elapsed time : 0:00:08                                01-May-2023 08:27:17
+ N O R M A L   T E R M I N A T I O N
+# Done                                                 01-May-2023 08:27:17
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+</pre><pre class="codeoutput"> 
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+--------&gt;    RUNNING/MONITORING FEBIO JOB    &lt;-------- 01-May-2023 08:27:20
+FEBio path: /home/kevin/FEBioStudio/bin/febio4
+# Attempt removal of existing log files                01-May-2023 08:27:20
+ * Removal succesful                                   01-May-2023 08:27:20
+# Attempt removal of existing .xplt files              01-May-2023 08:27:20
+ * Removal succesful                                   01-May-2023 08:27:20
+# Starting FEBio...                                    01-May-2023 08:27:20
+  Max. total analysis time is: Inf s
+ * Waiting for log file creation                       01-May-2023 08:27:20
+   Max. wait time: 120 s
+ * Log file found.                                     01-May-2023 08:27:21
+# Parsing log file...                                  01-May-2023 08:27:21
+    number of iterations   : 4                         01-May-2023 08:27:23
+    number of reformations : 4                         01-May-2023 08:27:23
+------- converged at time : 0.2                        01-May-2023 08:27:23
+    number of iterations   : 4                         01-May-2023 08:27:25
+    number of reformations : 4                         01-May-2023 08:27:25
+------- converged at time : 0.4                        01-May-2023 08:27:25
+    number of iterations   : 4                         01-May-2023 08:27:25
+    number of reformations : 4                         01-May-2023 08:27:25
+------- converged at time : 0.6                        01-May-2023 08:27:25
+    number of iterations   : 4                         01-May-2023 08:27:28
+    number of reformations : 4                         01-May-2023 08:27:28
+------- converged at time : 0.8                        01-May-2023 08:27:28
+    number of iterations   : 4                         01-May-2023 08:27:29
+    number of reformations : 4                         01-May-2023 08:27:29
+------- converged at time : 1                          01-May-2023 08:27:29
+ Elapsed time : 0:00:08                                01-May-2023 08:27:29
+ N O R M A L   T E R M I N A T I O N
+# Done                                                 01-May-2023 08:27:29
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+</pre><pre class="codeoutput"> 
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+--------&gt;    RUNNING/MONITORING FEBIO JOB    &lt;-------- 01-May-2023 08:27:31
+FEBio path: /home/kevin/FEBioStudio/bin/febio4
+# Attempt removal of existing log files                01-May-2023 08:27:31
+ * Removal succesful                                   01-May-2023 08:27:31
+# Attempt removal of existing .xplt files              01-May-2023 08:27:31
+ * Removal succesful                                   01-May-2023 08:27:31
+# Starting FEBio...                                    01-May-2023 08:27:31
+  Max. total analysis time is: Inf s
+ * Waiting for log file creation                       01-May-2023 08:27:32
+   Max. wait time: 120 s
+ * Log file found.                                     01-May-2023 08:27:32
+# Parsing log file...                                  01-May-2023 08:27:32
+    number of iterations   : 4                         01-May-2023 08:27:35
+    number of reformations : 4                         01-May-2023 08:27:35
+------- converged at time : 0.2                        01-May-2023 08:27:35
+    number of iterations   : 4                         01-May-2023 08:27:37
+    number of reformations : 4                         01-May-2023 08:27:37
+------- converged at time : 0.4                        01-May-2023 08:27:37
+    number of iterations   : 4                         01-May-2023 08:27:37
+    number of reformations : 4                         01-May-2023 08:27:37
+------- converged at time : 0.6                        01-May-2023 08:27:37
+    number of iterations   : 4                         01-May-2023 08:27:40
+    number of reformations : 4                         01-May-2023 08:27:40
+------- converged at time : 0.8                        01-May-2023 08:27:40
+    number of iterations   : 4                         01-May-2023 08:27:41
+    number of reformations : 4                         01-May-2023 08:27:41
+------- converged at time : 1                          01-May-2023 08:27:41
+ Elapsed time : 0:00:08                                01-May-2023 08:27:41
+ N O R M A L   T E R M I N A T I O N
+# Done                                                 01-May-2023 08:27:41
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+</pre><h2 id="66">Update plot</h2><pre class="codeinput">hp.XData=[hp.XData hp.XData(end)+1];
+hp.YData=[hp.YData differenceData_SSQD];
+drawnow;
+</pre><img width="100%" height="auto" vspace="5" hspace="5" src="DEMO_febio_0067_hip_implant_regional_stiffness_optimize_01_17.jpg" alt=""> <img width="100%" height="auto" vspace="5" hspace="5" src="DEMO_febio_0067_hip_implant_regional_stiffness_optimize_01_18.jpg" alt=""> <img width="100%" height="auto" vspace="5" hspace="5" src="DEMO_febio_0067_hip_implant_regional_stiffness_optimize_01_19.jpg" alt=""> <img width="100%" height="auto" vspace="5" hspace="5" src="DEMO_febio_0067_hip_implant_regional_stiffness_optimize_01_20.jpg" alt=""> <img width="100%" height="auto" vspace="5" hspace="5" src="DEMO_febio_0067_hip_implant_regional_stiffness_optimize_01_21.jpg" alt=""> <img width="100%" height="auto" vspace="5" hspace="5" src="DEMO_febio_0067_hip_implant_regional_stiffness_optimize_01_22.jpg" alt=""> <img width="100%" height="auto" vspace="5" hspace="5" src="DEMO_febio_0067_hip_implant_regional_stiffness_optimize_01_23.jpg" alt=""> <img width="100%" height="auto" vspace="5" hspace="5" src="DEMO_febio_0067_hip_implant_regional_stiffness_optimize_01_24.jpg" alt=""> <img width="100%" height="auto" vspace="5" hspace="5" src="DEMO_febio_0067_hip_implant_regional_stiffness_optimize_01_25.jpg" alt=""> <img width="100%" height="auto" vspace="5" hspace="5" src="DEMO_febio_0067_hip_implant_regional_stiffness_optimize_01_26.jpg" alt=""> <img width="100%" height="auto" vspace="5" hspace="5" src="DEMO_febio_0067_hip_implant_regional_stiffness_optimize_01_27.jpg" alt=""> <img width="100%" height="auto" vspace="5" hspace="5" src="DEMO_febio_0067_hip_implant_regional_stiffness_optimize_01_28.jpg" alt=""> <img width="100%" height="auto" vspace="5" hspace="5" src="DEMO_febio_0067_hip_implant_regional_stiffness_optimize_01_29.jpg" alt=""> <h2 id="67">Collect output</h2><pre class="codeinput">outputStructure.differenceData=differenceData;
+outputStructure.differenceData_SSQD=differenceData_SSQD;
+outputStructure.E_metric=E_metric;
+</pre><pre class="codeinput"><span class="keyword">end</span>
+</pre><pre class="codeoutput">
+                                        First-order                     Norm of 
+ Iteration  Func-count      Resnorm      optimality       Lambda           step
+     0           2          10.0415          0.0917         0.01
+     1           4          10.0216         0.00199        0.001       0.238335
+     2           6          10.0216        0.000268       0.0001     0.00979884
+     3          12          10.0216        0.000217            1    0.000223691
+
+Local minimum possible.
+
+lsqnonlin stopped because the final change in the sum of squares relative to 
+its initial value is less than the value of the function tolerance.
+
+</pre><p><i><b>GIBBON footer text</b></i></p><p>License: <a href="https://github.com/gibbonCode/GIBBON/blob/master/LICENSE">https://github.com/gibbonCode/GIBBON/blob/master/LICENSE</a></p><p>GIBBON: The Geometry and Image-based Bioengineering add-On. A toolbox for image segmentation, image-based modeling, meshing, and finite element analysis.</p><p>Copyright (C) 2006-2022 Kevin Mattheus Moerman and the GIBBON contributors</p><p>This program is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.</p><p>This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for more details.</p><p>You should have received a copy of the GNU General Public License along with this program.  If not, see <a href="http://www.gnu.org/licenses/">http://www.gnu.org/licenses/</a>.</p><p class="footer"><br><a href="https://www.mathworks.com/products/matlab/">Published with MATLAB&reg; R2023a</a><br></p></div><!--
+##### SOURCE BEGIN #####
+%% DEMO_febio_0067_hip_implant_regional_stiffness_optimize_01.m
+% Below is a demonstration for:
+%
+% * Importing bone geometry
+% * Building geometry for a custom hip implant
+% * Evaluating the implant using FEA
+
+%% Keywords
+%
+% * febio_spec version 3.0
+% * febio, FEBio
+% * beam force loading
+% * force control boundary condition
+% * tetrahedral elements, tet4
+% * static, solid
+% * hyperelastic, Ogden
+% * displacement logfile
+% * stress logfile
+
+%%
+
+clear; close all; clc;
+
+%% Plot settings
+fontSize=20;
+faceAlpha1=0.8;
+markerSize=40;
+markerSize2=20;
+lineWidth=3;
+
+%% Control parameters
+
+% Path names
+defaultFolder = fileparts(fileparts(mfilename('fullpath')));
+savePath=fullfile(defaultFolder,'data','temp');
+pathNameSTL=fullfile(defaultFolder,'data','STL');
+loadName_SED=fullfile(savePath,'SED_no_implant.mat');
+
+if exist(loadName_SED,'file')
+    disp('Using data from: DEMO_febio_0062_femur_load_01');
+else
+    warning('This demo requires that you run this demo first: DEMO_febio_0062_femur_load_01. Running DEMO_febio_0062_femur_load_01 now... ')
+    DEMO_febio_0062_femur_load_01
+end
+
+% Defining file names
+febioFebFileNamePart='tempModel';
+febioFebFileName=fullfile(savePath,[febioFebFileNamePart,'.feb']); %FEB file name
+febioLogFileName=fullfile(savePath,[febioFebFileNamePart,'.txt']); %FEBio log file name
+febioLogFileName_disp=[febioFebFileNamePart,'_disp_out.txt']; %Log file name for exporting displacancellousBone
+febioLogFileName_force=[febioFebFileNamePart,'_force_out.txt']; %Log file name for exporting force
+febioLogFileName_strainEnergy=[febioFebFileNamePart,'_energy_out.txt']; %Log file name for exporting strain energy density
+febioLogFileName_stress=[febioFebFileNamePart,'_stress_out.txt']; %Log file name for exporting stress
+
+%Optimisation settings
+maxNumberIterations=100; %Maximum number of optimization iterations
+maxNumberFunctionEvaluations=maxNumberIterations*10; %Maximum number of function evaluations, N.B. multiple evaluations are used per iteration
+functionTolerance=1e-6; %Tolerance on objective function value
+parameterTolerance=1e-6; %Tolerance on parameter variation
+displayTypeIterations='iter';
+optimMethod=2; %1=NelderMead, 2=Levenberg-Marquardt
+evalMode=2; %1=test run, 2=optimization
+optimType=1; %1=homogenous, 2=spat.var
+
+%Geometric parameters
+distanceCut=250; %Distance from femur to cut bone at
+corticalThickness=3; %Thickness used for cortical material definition
+volumeFactors=[2 2]; %Factor to scale desired volume for interior elements w.r.t. boundary elements
+implantLayerThickness=6; %Thickness used for implant region definition
+distanceExclude=10;
+
+stemCut=32;
+numSmoothStepsCutBottom=5;
+numSmoothStepsCutFemur=25;
+implantOffset=5;
+implantOffsetCollar=2;
+implantHeadRadius=20;
+implantStickRadius=10;
+implantCollarThickness=3;
+implantShaftLengthFraction=1/4;
+
+numLoftGuideSlicesShaft=8;
+numSmoothStepsShaft=20;
+
+%Define applied force
+forceTotal=[-405 -246 -1717.5]; %x,y,z force in Newton
+
+forceAbductor=[564.831 -132.696 704.511];
+forceVastusLateralis_Walking=[-7.857 -161.505 -811.017];
+forceVastusLateralis_StairClimbing=[-19.206 -195.552 -1,179.423];
+forceVastusMedialis_StairClimbing=[-76.824 -345.708 -2,331.783];
+forceVM_inactive=[0 0 0];
+
+n=1;
+switch n
+    case 1
+        forceVastusLateralis=forceVastusLateralis_Walking;
+        forceVastusMedialis=forceVM_inactive;
+    case 2
+        forceVastusLateralis=forceVastusLateralis_StairClimbing;
+        forceVastusMedialis=forceVastusMedialis_StairClimbing;
+    otherwise
+        forceVastusLateralis=forceVastusLateralis_StairClimbing;
+        forceVastusMedialis=forceVastusMedialis_StairClimbing;
+end
+
+% Distance markers and scaling factor
+zLevelWidthMeasure = -75;
+zLevelFCML = -395;
+scaleFactorSize=1;
+distanceMuscleAttachAbductor=15;
+distanceMuscleVastusLateralis=10;
+distanceMuscleAttachVastusMedialis=10;
+
+%Material parameters (MPa if spatial units are mm)
+% Cortical bone
+E_youngs1=17000; %Youngs modulus
+nu1=0.3; %Poissons ratio
+
+% Cancellous bone
+E_youngs2=1500; %Youngs modulus
+nu2=0.25; %Poissons ratio
+
+%Youngs moduli for implant
+E_youngs_min=15000;
+E_youngs_max=110000;
+nu_implant=0.3; %Poissons ratio
+
+switch optimType
+    case 1 %homogeneous (no spatial variation)               
+        paramContraints=[E_youngs_min E_youngs_max];
+        paramInitial=mean([E_youngs_min E_youngs_max]); %Initial parameters
+    case 2 %Spatially varying according to map
+        paramContraints=[E_youngs_min E_youngs_max; E_youngs_min E_youngs_max];
+        paramInitial=mean([E_youngs_min E_youngs_max])*ones(1,2); %Initial parameters
+end
+
+% FEA control settings
+numTimeSteps=5; %Number of time steps desired
+max_refs=25; %Max reforms
+max_ups=0; %Set to zero to use full-Newton iterations
+opt_iter=6; %Optimum number of iterations
+max_retries=5; %Maximum number of retires
+dtmin=(1/numTimeSteps)/100; %Minimum time step size
+dtmax=1/numTimeSteps; %Maximum time step size
+runMode='external'; %'external' or 'internal'
+
+%% Import bone model
+[stlStruct] = import_STL(fullfile(pathNameSTL,'femur_iso.stl'));
+F_bone=stlStruct.solidFaces{1}; %Faces
+V_bone=stlStruct.solidVertices{1}; %Vertices
+V_bone=V_bone.*1000;
+[F_bone,V_bone]=mergeVertices(F_bone,V_bone); % Merging nodes
+Q1=euler2DCM([0 0 0.065*pi]);
+V_bone=V_bone*Q1;
+Q2=euler2DCM([-0.5*pi 0 0]);
+V_bone=V_bone*Q2;
+Q3=euler2DCM([0 0 0.36*pi]);
+V_bone=V_bone*Q3;
+
+%% Compute derived control parameters
+pointSpacing=mean(patchEdgeLengths(F_bone,V_bone)); %Points spacing of bone surface
+snapTolerance=mean(patchEdgeLengths(F_bone,V_bone))/100; %Tolerance for surface slicing
+femurHeight=max(V_bone(:,3))-min(V_bone(:,3)); %Height of the femur
+shaftDepthFromHead=femurHeight.*implantShaftLengthFraction;
+
+%% Cut bone end off
+
+%Cut bone
+[F_bone,V_bone,~,logicSide,~]=triSurfSlice(F_bone,V_bone,[],[0 0 -distanceCut],[0 0 1]);
+F_bone=F_bone(logicSide==0,:);
+[F_bone,V_bone]=patchCleanUnused(F_bone,V_bone);
+
+%Get boundary curve
+Eb=patchBoundary(F_bone);
+indCurve=edgeListToCurve(Eb);
+indCurve=indCurve(1:end-1);
+
+%Smooth curve edges
+cparSmooth.n=numSmoothStepsCutBottom;
+cparSmooth.Method='HC';
+[V_Eb_smooth]=patchSmooth(Eb,V_bone(:,[1 2]),[],cparSmooth);
+V_bone(indCurve,[1 2])=V_Eb_smooth(indCurve,:);
+
+%Smooth mesh at curve
+clear cparSmooth
+cparSmooth.n=numSmoothStepsCutBottom;
+cparSmooth.Method='HC';
+cparSmooth.RigidConstraints=indCurve;
+[V_bone]=patchSmooth(F_bone,V_bone,[],cparSmooth);
+
+%Mesh the bottom curfaces
+[F_bone2,V_bone2]=regionTriMesh3D({V_bone(indCurve,:)},pointSpacing,0,'linear');
+if dot(mean(patchNormal(F_bone2,V_bone2)),[0 0 1])>0
+    F_bone2=fliplr(F_bone2);
+end
+
+%Join cut bone with bottom to created a single node shared closed surface
+[F_bone,V_bone,C_bone]=joinElementSets({F_bone,F_bone2},{V_bone,V_bone2});
+[F_bone,V_bone]=mergeVertices(F_bone,V_bone);
+
+%%
+% Visualize cut surface
+
+cFigure; hold on;
+title('The bone surface');
+gpatch(F_bone,V_bone,'bw','k',1);
+axisGeom;
+camlight headlight;
+gdrawnow;
+
+%% Cut femoral head off
+
+%Set-up orientation and location of cutting plane
+n=vecnormalize([0 0 1]); %Normal direction to plane
+Q1=euler2DCM([0 -(63/180)*pi 0]);
+Q2=euler2DCM([0 0 (32/180)*pi]);
+Q=Q1*Q2;
+n=n*Q;
+P_cut=[0 0 0]-n*stemCut; %Point on plane
+
+%Slicing surface
+[Fc,Vc,Cc,logicSide,~]=triSurfSlice(F_bone,V_bone,C_bone,P_cut,n,snapTolerance);
+
+%Compose isolated cut geometry and boundary curves
+[F_bone_cut,V_bone_cut]=patchCleanUnused(Fc(logicSide,:),Vc);
+C_bone_cut=Cc(logicSide);
+
+Eb=patchBoundary(F_bone_cut);
+indCutCurve=edgeListToCurve(Eb);
+indCutCurve=indCutCurve(1:end-1);
+
+%Smoothing cut
+logicTouch=any(ismember(F_bone_cut,indCutCurve),2);
+indTouch=unique(F_bone_cut(logicTouch,:));
+logicTouch=any(ismember(F_bone_cut,indTouch),2);
+indRigid=unique(F_bone_cut(~logicTouch,:));
+indRigid=unique([indRigid(:);indCutCurve(:)]);
+
+clear cparSmooth
+cparSmooth.n=numSmoothStepsCutFemur;
+cparSmooth.RigidConstraints=indRigid;
+[V_bone_cut]=patchSmooth(F_bone_cut,V_bone_cut,[],cparSmooth);
+
+clear cparSmooth
+cparSmooth.n=numSmoothStepsCutFemur;
+[VEb]=patchSmooth(Eb,V_bone_cut,[],cparSmooth);
+V_bone_cut(indCutCurve,:)=VEb(indCutCurve,:);
+
+%Get curve points and centre coordinate
+V_bone_cut_curve=V_bone_cut(indCutCurve,:);
+PA=mean(V_bone_cut_curve,1); %Mean of cut curve (middle of cut)
+
+%%
+% Visualize cut surface
+
+cFigure; hold on;
+title('The cut bone surface');
+gpatch(F_bone_cut,V_bone_cut,'bw','k',1);
+plotV(V_bone_cut_curve,'r.-','MarkerSize',25,'LineWidth',3)
+axisGeom;
+camlight headlight;
+gdrawnow;
+
+%% Add inner bone surface for implant to rest on (will attach to collar)
+
+%Define collar curve
+V_collar_1=V_bone_cut_curve;
+V_collar_1=V_collar_1-PA;
+
+d=sqrt(sum(V_collar_1.^2,2));
+shrinkFactor=(min(d(:))-implantOffsetCollar)./min(d(:));
+V_collar_1=V_collar_1.*shrinkFactor;
+V_collar_1=V_collar_1+PA;
+V_collar_1=evenlySpaceCurve(V_collar_1,pointSpacing,'pchip',1);
+
+% Mesh cut bone top (space between collar curve and bone cut curve)
+[F_bone_top,V_bone_top]=regionTriMesh3D({V_bone_cut_curve,V_collar_1},[],0,'linear');
+nTop=mean(patchNormal(F_bone_top,V_bone_top),1);
+if dot(nTop,n)<0
+    F_bone_top=fliplr(F_bone_top);
+end
+
+% Join and merge geometry
+[F_bone_cut,V_bone_cut,C_bone_cut]=joinElementSets({F_bone_cut,F_bone_top},{V_bone_cut,V_bone_top},{C_bone_cut,max(C_bone_cut(:))+ones(size(F_bone_top,1),1)});
+[F_bone_cut,V_bone_cut]=mergeVertices(F_bone_cut,V_bone_cut);
+
+%%
+% Visualize bone with meshed top
+
+cFigure; hold on;
+title('The cut bone surface with meshed top');
+gpatch(F_bone_cut,V_bone_cut,C_bone_cut,'k',1);
+
+plotV(V_bone_cut_curve,'r.-','MarkerSize',15,'LineWidth',2)
+plotV(V_collar_1,'g.-','MarkerSize',15,'LineWidth',2)
+axisGeom; icolorbar;
+camlight headlight;
+gdrawnow;
+
+%% Create implant spherical head
+
+% Create sphere use will loop to define increasingly fine sphere
+% triangulations untill the point spacing of the sphere is smaller or equal
+% to the bone point spacing.
+
+nRef=1;
+while 1
+    [F_head,V_head]=geoSphere(nRef,implantHeadRadius);
+    pointSpacingNow=mean(patchEdgeLengths(F_head,V_head));
+    if pointSpacingNow<=pointSpacing
+        break
+    else
+        nRef=nRef+1;
+    end
+end
+
+%%
+% Cutting the sphere
+
+% Define ball cutting coordinate
+xc=cos(asin(implantStickRadius/implantHeadRadius))*implantHeadRadius;
+
+logicRight=V_head(:,1)>xc;
+logicCut=any(logicRight(F_head),2);
+logicCut=triSurfLogicSharpFix(F_head,logicCut,3);
+F_head=F_head(~logicCut,:);
+[F_head,V_head]=patchCleanUnused(F_head,V_head);
+Eb_head=patchBoundary(F_head);
+indB=unique(Eb_head(:));
+[T,P,R] = cart2sph(V_head(:,2),V_head(:,3),V_head(:,1));
+P(indB)=atan2(xc,implantHeadRadius*sin(acos(xc./implantHeadRadius)));
+[V_head(:,2),V_head(:,3),V_head(:,1)] = sph2cart(T,P,R);
+
+indHeadHole=edgeListToCurve(Eb_head);
+indHeadHole=indHeadHole(1:end-1);
+
+pointSpacingHead=mean(sqrt(sum(diff(V_head(indHeadHole,:),1,1).^2,2)));
+
+%Reorient ball
+nd=vecnormalize(-PA); %Vector pointing to mean of cut curve
+Q=vecPair2Rot(nd,[0 0 1]); %Rotation matrix for ball
+Q3=euler2DCM([0 -0.5*pi 0]);
+V_head=V_head*Q3;
+V_head=V_head*Q;
+
+%%
+% Visualize head
+
+cFigure; hold on;
+title('The implant head surface');
+gpatch(F_bone_cut,V_bone_cut,'w','none',0.5);
+gpatch(F_head,V_head,'bw','k',1);
+axisGeom; camlight headlight;
+gdrawnow;
+
+%% Build colar
+
+%Create color offset curve
+V_colarTop=V_collar_1;
+ve=[V_colarTop(2:end,:); V_colarTop(1,:)]-V_colarTop;
+
+vd=vecnormalize(cross(n(ones(size(ve,1),1),:),ve));
+% vn2(:,1)=vn2(:,1)+collarThickness.*n;
+V_colarTop=V_colarTop+implantCollarThickness.*n;
+
+nc=ceil((pi*implantCollarThickness/2)/pointSpacingHead);
+if nc<4
+    nc=4;
+end
+vc=linspacen(V_collar_1,V_colarTop,nc);
+X=squeeze(vc(:,1,:));
+Y=squeeze(vc(:,2,:));
+Z=squeeze(vc(:,3,:));
+t=repmat(linspace(-1,1,nc),size(Z,1),1);
+a=acos(t);
+X=X+implantCollarThickness/2.*sin(a).*repmat(vd(:,1),1,nc);
+Y=Y+implantCollarThickness/2.*sin(a).*repmat(vd(:,2),1,nc);
+Z=Z+implantCollarThickness/2.*sin(a).*repmat(vd(:,3),1,nc);
+
+[F_collar,V_collar]=grid2patch(X,Y,Z,[],[1 0 0]);
+[F_collar,V_collar]=quad2tri(F_collar,V_collar,'a');
+
+indTopCollar=size(V_collar,1)+1-size(V_collar_1,1):size(V_collar,1);
+Eb_collar=[indTopCollar(:) [indTopCollar(2:end)'; indTopCollar(1)]];
+
+%%
+% Visualize collar
+
+cFigure; hold on;
+title('The implant collar/rim');
+gpatch(F_bone_cut,V_bone_cut,'w','none',0.5);
+gpatch(F_head,V_head,'w','none',0.5);
+gpatch(F_collar,V_collar,'bw','k',1);
+axisGeom; camlight headlight;
+gdrawnow;
+
+%% Build neck
+
+if size(Eb_head,1)<size(Eb_collar,1)
+    numEdgesNeeded=size(Eb_collar,1);
+    [F_head,V_head,Eb_head,~]=triSurfSplitBoundary(F_head,V_head,Eb_head,numEdgesNeeded,[]);
+elseif size(Eb_collar,1)<size(Eb_head,1)
+    numEdgesNeeded=size(Eb_head,1);
+    [F_collar,V_collar,Eb_collar,~]=triSurfSplitBoundary(F_collar,V_collar,Eb_collar,numEdgesNeeded,[]);
+end
+indTopCollar=edgeListToCurve(Eb_collar); indTopCollar=indTopCollar(1:end-1);
+indHeadHole=edgeListToCurve(Eb_head); indHeadHole=indHeadHole(1:end-1);
+
+[~,indStart]=minDist(V_collar(indTopCollar(1),:),V_head(indHeadHole,:));
+
+if indStart>1
+    indHeadHole=[indHeadHole(indStart:end) indHeadHole(1:indStart-1)];
+end
+
+d1=sum((V_head(indHeadHole,:)-V_collar(indTopCollar,:)).^2,2);
+d2=sum((V_head(indHeadHole,:)-V_collar(flip(indTopCollar),:)).^2,2);
+if max(d2(:))<max(d1(:))
+    indTopCollar=flip(indTopCollar);
+end
+
+cParLoft.closeLoopOpt=1;
+cParLoft.patchType='tri_slash';
+[F_neck,V_neck,indNeckStart,indNeckEnd]=polyLoftLinear(V_collar(indTopCollar,:),V_head(indHeadHole,:),cParLoft);
+
+%%
+% Visualize collar
+
+cFigure; hold on;
+title('The implant neck');
+gpatch(F_bone_cut,V_bone_cut,'w','none',0.5);
+gpatch(F_head,V_head,'w','none',0.5);
+gpatch(F_collar,V_collar,'w','none',0.5);
+gpatch(F_neck,V_neck,'rw','k',1);
+axisGeom; camlight headlight;
+gdrawnow;
+
+%% Define shaft
+
+%Find lowest point on collar curve
+[~,indMin]=min(V_collar_1(:,3));
+PB=V_collar_1(indMin,:);
+
+%Define a normalized vector pointing from PA to PB
+m=vecnormalize(PB-PA);
+
+%Define based point for slicing
+f=shaftDepthFromHead./abs(m(3));
+P=PA+f*m;
+
+%Define normal directions for slicing (go linearly from n to z-dir)
+nn=linspacen(n,[0 0 1],numLoftGuideSlicesShaft)';
+
+
+numPointsRadial=size(V_collar_1,1);
+Vp=V_collar_1;
+FL=[];
+VL=Vp;
+[~,indStart]=max(VL(:,1));
+if indStart>1
+    VL=[VL(indStart:end,:); VL(1:indStart-1,:)];
+end
+R1=vecPair2Rot(n,[0 0 1]);
+e=[(1:numPointsRadial)' [(2:numPointsRadial)';1]];
+V_start=VL(1,:);
+t=linspace(0,2*pi,numPointsRadial+1); t=t(1:end-1);
+VC=cell(numLoftGuideSlicesShaft,1);
+VC{1}=V_collar_1;
+for q=2:1:numLoftGuideSlicesShaft
+    
+    Rn=vecPair2Rot(nn(q,:),[0 0 1]);
+    
+    [~,Vqc,~,~,Ebc]=triSurfSlice(F_bone,V_bone,[],P,nn(q,:),snapTolerance);
+    indCutCurveNow=edgeListToCurve(Ebc);
+    indCutCurveNow=indCutCurveNow(1:end-1);
+    P2=mean(Vqc(indCutCurveNow,:),1);
+    
+    if P2(3)>-50
+        Vp=V_collar_1-PA;
+        Vp=Vp*R1';
+        Vp=Vp*Rn;
+    else
+        Vp=Vqc(indCutCurveNow,:);
+        Vp=Vp-P2;
+        d=sqrt(sum(Vp.^2,2));
+        shrinkFactor=(min(d(:))-implantOffset)./min(d(:));
+        Vp=Vp.*shrinkFactor;
+    end
+    
+    Vp=Vp+P2;
+    Vp=evenlySampleCurve(Vp,numPointsRadial,0.01,1);
+    
+    [~,indStart]=max(Vp(:,1));
+    if indStart>1
+        Vp=[Vp(indStart:end,:); Vp(1:indStart-1,:)];
+    end
+    
+    f=[e+(q-2)*numPointsRadial fliplr(e)+(q-1)*numPointsRadial];
+    
+    FL=[FL;f];
+    VL=[VL;Vp];
+    
+    V_start=Vp(1,:);
+    VC{q}=Vqc(indCutCurveNow,:);
+end
+
+[Fe,Ve]=regionTriMesh3D({Vp},[],0,'linear');
+ne=mean(patchNormal(Fe,Ve),1);
+if dot(ne,[0 0 1])>0
+    Fe=fliplr(Fe);
+end
+d=minDist(Ve,Vp);
+r=max(d(:));
+d=d./max(d(:));
+a=acos(1-d);
+Ve(:,3)=Ve(:,3)-r*sin(a);
+[FL,VL]=subQuad(FL,VL,3,3);
+[FL,VL]=quad2tri(FL,VL,'a');
+
+[FL,VL]=joinElementSets({FL,Fe},{VL,Ve});
+[FL,VL]=mergeVertices(FL,VL);
+Eb=patchBoundary(FL);
+
+cparSmooth.n=numSmoothStepsShaft;
+% cPar.Method='HC';
+cparSmooth.RigidConstraints=unique(Eb(:));
+VL=patchSmooth(FL,VL,[],cparSmooth);
+
+% Join and merge surfaces
+[F_implant,V_implant,C_implant]=joinElementSets({F_head,F_neck,F_collar,FL},{V_head,V_neck,V_collar,VL});
+[F_implant,V_implant]=mergeVertices(F_implant,V_implant);
+
+%%
+% Visualize implant
+
+cFigure; hold on;
+title('Completed implant surface');
+gpatch(F_bone_cut,V_bone_cut,'w','none',0.5);
+gpatch(F_implant,V_implant,C_implant,'none',1);
+
+for q=1:1:numLoftGuideSlicesShaft
+    Vpp=VC{q};
+    plotV(Vpp([1:size(Vpp,1) 1],:),'k-','LineWidth',4);
+end
+
+axisGeom; camlight headlight;
+colormap(gjet(250)); icolorbar;
+gdrawnow;
+
+%% Join bone and implant surfaces
+
+[F,V,C]=joinElementSets({F_bone_cut,F_implant},{V_bone_cut,V_implant},{C_bone_cut,C_implant+max(C_bone_cut(:))});
+[F,V]=mergeVertices(F,V);
+
+%%
+% Visualized merged set
+
+cFigure; hold on;
+gpatch(F,V,C,'none',0.5);
+axisGeom; camlight headlight;
+colormap(gjet(250)); icolorbar;
+gdrawnow;
+
+%% Create tetrahedral elements for both regions
+
+%%
+% Define interior points
+
+logicRegion1=ismember(C,[1 2 3 7]); %Bone region is defined by bone+shaft surfaces
+V_region1=getInnerPoint(F(logicRegion1,:),V);
+
+logicRegion2=ismember(C,4:7); %Logic for implant faces
+V_region2=getInnerPoint(F(logicRegion2,:),V);
+
+V_regions=[V_region1; V_region2];
+
+%%
+% Visualize mesh regions and interior points
+
+cFigure;
+subplot(1,2,1); hold on;
+title('Mesh region 1');
+gpatch(F(logicRegion1,:),V,'w','none',0.5);
+plotV(V_region1,'k.','MarkerSize',25);
+axisGeom; camlight headlight;
+
+subplot(1,2,2); hold on;
+title('Mesh region 2');
+gpatch(F(logicRegion2,:),V,'w','none',0.5);
+plotV(V_region2,'k.','MarkerSize',25);
+axisGeom; camlight headlight;
+
+gdrawnow;
+
+%%
+% Mesh using TetGen
+
+regionTetVolumes=volumeFactors.*tetVolMeanEst(F,V);
+
+%Create tetgen input structure
+inputStruct.stringOpt='-pq1.2AaY'; %Options for tetgen
+inputStruct.Faces=F; %Boundary faces
+inputStruct.Nodes=V; %Nodes of boundary
+inputStruct.faceBoundaryMarker=C;
+inputStruct.regionPoints=V_regions; %Interior points for regions
+inputStruct.holePoints=[]; %Interior points for holes
+inputStruct.regionA=regionTetVolumes; %Desired tetrahedral volume for each region
+
+% Mesh model using tetrahedral elements using tetGen
+[meshOutput]=runTetGen(inputStruct); %Run tetGen
+
+%%
+% Access mesh output structure
+
+E=meshOutput.elements; %The elements
+V=meshOutput.nodes; %The vertices or nodes
+CE=meshOutput.elementMaterialID; %Element material or region id
+Fb=meshOutput.facesBoundary; %The boundary faces
+Cb=meshOutput.boundaryMarker; %The boundary markers
+
+%% Define material regions
+
+logicImplantElements = (CE==-3);
+
+%Bone Element Regions
+indBoundary=unique(Fb(Cb==1,:));
+DE=minDist(V,V(indBoundary,:));
+logicCorticalNodes=DE<=corticalThickness;
+logicCorticalElements=any(logicCorticalNodes(E),2) & ~logicImplantElements ;
+logicCancellousElements=~logicCorticalElements & ~logicImplantElements;
+
+E1=E(logicCorticalElements,:);
+E2=E(logicCancellousElements,:);
+E3=E(logicImplantElements,:);
+E=[E1;E2;E3]; %Recollect set in this order
+
+logicBoneElements = false(size(E,1),1);
+logicBoneElements (1:size(E1,1)+size(E2,1))=1; 
+
+%% Define implant spatialy varying parameters
+
+E_12=[E1;E2]; %Element collection for both bone types
+VE_12=patchCentre(E_12,V); %Centre coordinates for bone elements
+
+%Compute distance to boundary
+VE_implant=patchCentre(E3,V);
+
+%Get list for nodes at the head/shaft/neck 
+excludeLabels=[4 5 6];
+logicExcludeImplant=ismember(Cb,excludeLabels);
+indExcludeImplant=unique(Fb(logicExcludeImplant,:));
+D_exclude=minDist(V,V(indExcludeImplant,:));
+indExclude=find(D_exclude<=distanceExclude);
+
+%Find implant shaft boundary nodes
+boundaryLabels=7;%[4 5 6 7];
+logicShaftBoundaryImplant=ismember(Cb,boundaryLabels);
+indShaftBoundaryImplant=unique(Fb(logicShaftBoundaryImplant,:));
+
+% Remove indices too close to exclude set
+indShaftBoundaryImplant=indShaftBoundaryImplant(~ismember(indShaftBoundaryImplant,indExclude));
+
+%Use distance to define Youngs moduli map
+[indUni,ind1,ind2]=unique(E3); %Get unique 
+WU=minDist(V(indUni,:),V(indShaftBoundaryImplant,:)); %Distance to shaft boundary
+WU=WU./implantLayerThickness; %At thickness level it is 1 now
+WU(WU>1)=1; %Range is now [0 1] %At or further than thickness level it is now 1 
+WV=zeros(size(V,1),1);
+WV(indUni)=WU;
+W=min(WV(E3),[],2); %Take min. distance so boundary elements become zero
+
+% Define initial Youngs moduli variation
+E_youngs_implant=(W.*(E_youngs_max-E_youngs_min))+E_youngs_min; 
+
+%% Visualizing solid mesh
+
+% Alter structure for visualization
+meshOutput.elements=E3;
+meshOutput.elementData=W;
+
+hFig=cFigure; hold on;
+title('Slice view of Youngs modulus variation map')
+
+optionStruct.hFig=hFig;
+meshView(meshOutput,optionStruct);
+caxis([0 1]);
+axisGeom;
+drawnow;
+
+%% Load SED data from non-implant model and form interpolation function
+
+outputStruct=load(loadName_SED);
+
+%Data without implant
+Fb_p = outputStruct.boundaryFaces;
+V_p  = outputStruct.nodes;
+VE_p = outputStruct.elementCenters;
+E_energy_p = outputStruct.SED;
+W_p=E_energy_p(:,:,end);
+
+% Construct interpolation function
+interpFuncMetric=scatteredInterpolant(VE_p,W_p,'natural','linear');
+
+%%
+
+cFigure; hold on;
+gpatch(Fb,V,'rw','none',0.5); %Add graphics object to animate
+gpatch(Fb_p,V_p,'bw','none',0.5); %Add graphics object to animate
+axisGeom(gca,fontSize);
+camlight headlight;
+drawnow;
+
+%%
+% Visualize solid mesh
+
+hf=cFigure; hold on;
+title('Tetrahedral mesh','FontSize',fontSize);
+% Visualizing using |meshView|
+optionStruct.hFig=hf;
+meshView(meshOutput,optionStruct);
+
+axisGeom(gca,fontSize);
+gdrawnow;
+
+%% Find femoral head
+
+w=100;
+f=[1 2 3 4];
+v=w*[-1 -1 0; -1 1 0; 1 1 0; 1 -1 0];
+
+p=[0 0 0];
+Q=euler2DCM([0 (150/180)*pi 0]);
+v=v*Q;
+v=v+p;
+
+Vr=V*Q';
+Vr=Vr+p;
+logicHeadNodes=Vr(:,3)<0;
+logicHeadFaces=all(logicHeadNodes(Fb),2);
+bcPrescribeList_head=unique(Fb(logicHeadFaces,:));
+
+%%
+% Visualize femoral head nodes for prescribed force boundary conditions
+cFigure;
+hold on;
+gpatch(Fb,V,'w','k',1);
+gpatch(f,v,'r','k',0.5);
+plotV(V(bcPrescribeList_head,:),'r.','markerSize',15)
+axisGeom; camlight headlight;
+drawnow;
+
+%% Work out force distribution on femoral head surface nodes
+% This is based on surface normal directions. Forces are assumed to only be
+% able to act in a compressive sense on the bone.
+
+[~,~,N]=patchNormal(fliplr(Fb),V); %Nodal normal directions
+
+FX=[forceTotal(1) 0 0]; %X force vector
+FY=[0 forceTotal(2) 0]; %Y force vector
+FZ=[0 0 forceTotal(3)]; %Z force vector
+
+wx=dot(N(bcPrescribeList_head,:),FX(ones(numel(bcPrescribeList_head),1),:),2);
+wy=dot(N(bcPrescribeList_head,:),FY(ones(numel(bcPrescribeList_head),1),:),2);
+wz=dot(N(bcPrescribeList_head,:),FZ(ones(numel(bcPrescribeList_head),1),:),2);
+
+%Force zero
+wx(wx>0)=0; wy(wy>0)=0; wz(wz>0)=0;
+
+force_X=forceTotal(1).*ones(numel(bcPrescribeList_head),1).*wx;
+force_Y=forceTotal(2).*ones(numel(bcPrescribeList_head),1).*wy;
+force_Z=forceTotal(3).*ones(numel(bcPrescribeList_head),1).*wz;
+
+force_X=force_X./sum(force_X(:)); %sum now equal to 1
+force_X=force_X.*forceTotal(1); %sum now equal to desired
+
+force_Y=force_Y./sum(force_Y(:)); %sum now equal to 1
+force_Y=force_Y.*forceTotal(2); %sum now equal to desired
+
+force_Z=force_Z./sum(force_Z(:)); %sum now equal to 1
+force_Z=force_Z.*forceTotal(3); %sum now equal to desired
+
+force_head=[force_X(:) force_Y(:) force_Z(:)];
+
+%%
+cFigure;
+subplot(1,3,1);hold on;
+title('F_x');
+gpatch(Fb,V,'w','none',0.5);
+quiverVec([0 0 0],FX,100,'k');
+% scatterV(V(indicesHeadNodes,:),15)
+quiverVec(V(bcPrescribeList_head,:),N(bcPrescribeList_head,:),10,force_X);
+axisGeom; camlight headlight;
+colormap(gca,gjet(250)); colorbar;
+
+subplot(1,3,2);hold on;
+title('F_y');
+gpatch(Fb,V,'w','none',0.5);
+quiverVec([0 0 0],FY,100,'k');
+% scatterV(V(indicesHeadNodes,:),15)
+quiverVec(V(bcPrescribeList_head,:),N(bcPrescribeList_head,:),10,force_Y);
+axisGeom; camlight headlight;
+colormap(gca,gjet(250)); colorbar;
+
+subplot(1,3,3);hold on;
+title('F_z');
+gpatch(Fb,V,'w','none',0.5);
+quiverVec([0 0 0],FZ,100,'k');
+% scatterV(V(indicesHeadNodes,:),15)
+quiverVec(V(bcPrescribeList_head,:),N(bcPrescribeList_head,:),10,force_Z);
+axisGeom; camlight headlight;
+colormap(gca,gjet(250)); colorbar;
+
+drawnow;
+
+%% Marking muscle locations
+
+P_abductor_find = [-69.771045288206111 8.185179717034659 -5.575329878303917]; %Coordinate at centre of muscle attachment
+[~,indAbductor]=minDist(P_abductor_find,V); %Node number of point at centre of attachment
+dAbductor=meshDistMarch(Fb,V,indAbductor); %Distance (on mesh) from attachement centre
+bcPrescibeList_abductor=find(dAbductor<=distanceMuscleAttachAbductor); %Node numbers for attachment site
+
+P_VastusLateralis_find = [-58.763839901506827 19.145444610053566 -51.005278396808819]; %Coordinate at centre of muscle attachment
+[~,indVastusLateralis]=minDist(P_VastusLateralis_find,V); %Node number of point at centre of attachment
+dVastusLateralis=meshDistMarch(Fb,V,indVastusLateralis); %Distance (on mesh) from attachement centre
+bcPrescibeList_VastusLateralis=find(dVastusLateralis<=distanceMuscleVastusLateralis); %Node numbers for attachment site
+
+
+P_VastusMedialis_find = [-18.533631492778085 9.501312355952791 -85.666499329588035]; %Coordinate at centre of muscle attachment
+[~,indVastusMedialis]=minDist(P_VastusMedialis_find,V); %Node number of point at centre of attachment
+dVastusMedialis=meshDistMarch(Fb,V,indVastusMedialis); %Distance (on mesh) from attachement centre
+bcPrescibeList_VastusMedialis=find(dVastusMedialis<=distanceMuscleAttachVastusMedialis); %Node numbers for attachment site
+
+%%  Muscle force definition
+forceAbductor_distributed=forceAbductor.*ones(numel(bcPrescibeList_abductor),1)./numel(bcPrescibeList_abductor);
+
+forceVastusLateralis_distributed=forceVastusLateralis.*ones(numel(bcPrescibeList_VastusLateralis),1)./numel(bcPrescibeList_VastusLateralis);
+
+forceVastusMedialis_distributed=forceVastusMedialis.*ones(numel(bcPrescibeList_VastusMedialis),1)./numel(bcPrescibeList_VastusMedialis);
+
+%% Defining prescribed forces
+
+
+bcPrescribeList=[bcPrescribeList_head(:);...
+                 bcPrescibeList_abductor(:);...
+                 bcPrescibeList_VastusLateralis(:);...
+                 bcPrescibeList_VastusMedialis(:)];
+
+forceData=[force_head;...
+           forceAbductor_distributed;...
+           forceVastusLateralis_distributed;...
+           forceVastusMedialis_distributed]; 
+%%
+
+cFigure; 
+subplot(1,3,1);hold on;
+title('F_x');
+gpatch(Fb,V,'w','none',0.5);
+quiverVec(V(bcPrescribeList,:),forceData,10,forceData(:,1));
+axisGeom; camlight headlight;
+colormap(gca,gjet(250)); colorbar; 
+
+subplot(1,3,2);hold on;
+title('F_y');
+gpatch(Fb,V,'w','none',0.5);
+quiverVec(V(bcPrescribeList,:),forceData,10,forceData(:,2));
+axisGeom; camlight headlight;
+colormap(gca,gjet(250)); colorbar; 
+
+subplot(1,3,3);hold on;
+title('F_z');
+gpatch(Fb,V,'w','none',0.5);
+
+quiverVec(V(bcPrescribeList,:),forceData,10,forceData(:,3));
+axisGeom; camlight headlight;
+colormap(gca,gjet(250)); colorbar; 
+
+
+%% Visualizing boundary conditions
+
+F_bottomSupport=Fb(Cb==2,:);
+bcSupportList=unique(F_bottomSupport(:));
+
+cFigure; hold on;
+gpatch(Fb,V,'kw','none',0.7);
+hl(1)=plotV(V(bcSupportList,:),'k.','MarkerSize',25);
+hl(2)=plotV(V(bcPrescribeList,:),'r.','MarkerSize',25);
+
+legend(hl,{'BC support','BC prescribed forces'});
+axisGeom; 
+camlight headlight;
+drawnow;
+
+
+%% Defining the FEBio input structure
+% See also |febioStructTemplate| and |febioStruct2xml| and the FEBio user
+% manual.
+
+%Get a template with default settings 
+[febio_spec]=febioStructTemplate;
+
+%febio_spec version 
+febio_spec.ATTR.version='4.0'; 
+
+%Module section
+febio_spec.Module.ATTR.type='solid'; 
+
+%Control section
+febio_spec.Control.analysis='STATIC';
+febio_spec.Control.time_steps=numTimeSteps;
+febio_spec.Control.step_size=1/numTimeSteps;
+febio_spec.Control.solver.max_refs=max_refs;
+febio_spec.Control.solver.qn_method.max_ups=max_ups;
+febio_spec.Control.time_stepper.dtmin=dtmin;
+febio_spec.Control.time_stepper.dtmax=dtmax; 
+febio_spec.Control.time_stepper.max_retries=max_retries;
+febio_spec.Control.time_stepper.opt_iter=opt_iter;
+
+%Material section
+materialName1='Material1';
+febio_spec.Material.material{1}.ATTR.name=materialName1;
+febio_spec.Material.material{1}.ATTR.type='neo-Hookean';
+febio_spec.Material.material{1}.ATTR.id=1;
+febio_spec.Material.material{1}.E=E_youngs1;
+febio_spec.Material.material{1}.v=nu1;
+
+materialName2='Material2';
+febio_spec.Material.material{2}.ATTR.name=materialName2;
+febio_spec.Material.material{2}.ATTR.type='neo-Hookean';
+febio_spec.Material.material{2}.ATTR.id=2;
+febio_spec.Material.material{2}.E=E_youngs2;
+febio_spec.Material.material{2}.v=nu2;
+
+materialName3='Material3';
+dataMapName1='MaterialParameterMap1';
+febio_spec.Material.material{3}.ATTR.name=materialName3;
+febio_spec.Material.material{3}.ATTR.type='neo-Hookean';
+febio_spec.Material.material{3}.ATTR.id=3;
+febio_spec.Material.material{3}.E.ATTR.type='map'; %Calls for mapping of parameter
+febio_spec.Material.material{3}.E.VAL=dataMapName1; %Calls for mapping of parameter
+febio_spec.Material.material{3}.v=nu_implant; 
+
+% Mesh section
+% -> Nodes
+febio_spec.Mesh.Nodes{1}.ATTR.name='Object1'; %The node set name
+febio_spec.Mesh.Nodes{1}.node.ATTR.id=(1:size(V,1))'; %The node id's
+febio_spec.Mesh.Nodes{1}.node.VAL=V; %The nodel coordinates
+
+% -> Elements
+partName1='CorticalBone';
+febio_spec.Mesh.Elements{1}.ATTR.name=partName1; %Name of this part
+febio_spec.Mesh.Elements{1}.ATTR.type='tet4'; %Element type
+febio_spec.Mesh.Elements{1}.elem.ATTR.id=(1:1:size(E1,1))'; %Element id's
+febio_spec.Mesh.Elements{1}.elem.VAL=E1; %The element matrix
+
+partName2='CancellousBone';
+febio_spec.Mesh.Elements{2}.ATTR.name=partName2; %Name of this part
+febio_spec.Mesh.Elements{2}.ATTR.type='tet4'; %Element type
+febio_spec.Mesh.Elements{2}.elem.ATTR.id=size(E1,1)+(1:1:size(E2,1))'; %Element id's
+febio_spec.Mesh.Elements{2}.elem.VAL=E2; %The element matrix
+
+partName3='Implant';
+febio_spec.Mesh.Elements{3}.ATTR.name=partName3; %Name of this part
+febio_spec.Mesh.Elements{3}.ATTR.type='tet4'; %Element type
+febio_spec.Mesh.Elements{3}.elem.ATTR.id=size(E1,1)+size(E2,1)+(1:1:size(E3,1))'; %Element id's
+febio_spec.Mesh.Elements{3}.elem.VAL=E3; %The element matrix
+
+%MeshData secion
+%-> Element data       
+febio_spec.MeshData.ElementData{1}.ATTR.name=dataMapName1;
+febio_spec.MeshData.ElementData{1}.ATTR.elem_set=partName3;
+febio_spec.MeshData.ElementData{1}.elem.ATTR.lid=(1:1:size(E3,1))';
+febio_spec.MeshData.ElementData{1}.elem.VAL=E_youngs_implant;
+
+% -> NodeSets
+nodeSetName1='bcSupportList';
+febio_spec.Mesh.NodeSet{1}.ATTR.name=nodeSetName1;
+febio_spec.Mesh.NodeSet{1}.VAL=mrow(bcSupportList);
+
+nodeSetName2='bcPrescribeList';
+febio_spec.Mesh.NodeSet{2}.ATTR.name=nodeSetName2;
+febio_spec.Mesh.NodeSet{2}.VAL=mrow(bcPrescribeList);
+
+%MeshDomains section
+febio_spec.MeshDomains.SolidDomain{1}.ATTR.name=partName1;
+febio_spec.MeshDomains.SolidDomain{1}.ATTR.mat=materialName1;
+
+febio_spec.MeshDomains.SolidDomain{2}.ATTR.name=partName2;
+febio_spec.MeshDomains.SolidDomain{2}.ATTR.mat=materialName2;
+
+febio_spec.MeshDomains.SolidDomain{3}.ATTR.name=partName3;
+febio_spec.MeshDomains.SolidDomain{3}.ATTR.mat=materialName3;
+
+%Boundary condition section 
+% -> Fix boundary conditions
+febio_spec.Boundary.bc{1}.ATTR.name='zero_displacement_xyz';
+febio_spec.Boundary.bc{1}.ATTR.type='zero displacement';
+febio_spec.Boundary.bc{1}.ATTR.node_set=nodeSetName1;
+febio_spec.Boundary.bc{1}.x_dof=1;
+febio_spec.Boundary.bc{1}.y_dof=1;
+febio_spec.Boundary.bc{1}.z_dof=1;
+
+%MeshData secion
+%-> Node data
+loadDataName1='nodal_forces';
+febio_spec.MeshData.NodeData{1}.ATTR.name=loadDataName1;
+febio_spec.MeshData.NodeData{1}.ATTR.node_set=nodeSetName2;
+febio_spec.MeshData.NodeData{1}.ATTR.data_type='vec3';
+febio_spec.MeshData.NodeData{1}.node.ATTR.lid=(1:1:numel(bcPrescribeList))';
+febio_spec.MeshData.NodeData{1}.node.VAL=forceData;
+
+%MeshData secion
+%-> Node data
+loadDataName1='forceData';
+febio_spec.MeshData.NodeData{1}.ATTR.name=loadDataName1;
+febio_spec.MeshData.NodeData{1}.ATTR.node_set=nodeSetName2;
+febio_spec.MeshData.NodeData{1}.ATTR.datatype='vec3';
+febio_spec.MeshData.NodeData{1}.node.ATTR.lid=(1:1:numel(bcPrescribeList))';
+febio_spec.MeshData.NodeData{1}.node.VAL=forceData;
+
+%Loads section
+% -> Prescribed nodal forces
+febio_spec.Loads.nodal_load{1}.ATTR.name='PrescribedForce';
+febio_spec.Loads.nodal_load{1}.ATTR.type='nodal_force';
+febio_spec.Loads.nodal_load{1}.ATTR.node_set=nodeSetName2;
+febio_spec.Loads.nodal_load{1}.value.ATTR.lc=1;
+febio_spec.Loads.nodal_load{1}.value.ATTR.type='map';
+febio_spec.Loads.nodal_load{1}.value.VAL=loadDataName1;
+
+%LoadData section
+% -> load_controller
+febio_spec.LoadData.load_controller{1}.ATTR.name='LC_1';
+febio_spec.LoadData.load_controller{1}.ATTR.id=1;
+febio_spec.LoadData.load_controller{1}.ATTR.type='loadcurve';
+febio_spec.LoadData.load_controller{1}.interpolate='LINEAR';
+%febio_spec.LoadData.load_controller{1}.extend='CONSTANT';
+febio_spec.LoadData.load_controller{1}.points.pt.VAL=[0 0; 1 1];
+
+%Output section 
+% -> log file
+febio_spec.Output.logfile.ATTR.file=febioLogFileName;
+febio_spec.Output.logfile.node_data{1}.ATTR.file=febioLogFileName_disp;
+febio_spec.Output.logfile.node_data{1}.ATTR.data='ux;uy;uz';
+febio_spec.Output.logfile.node_data{1}.ATTR.delim=',';
+
+febio_spec.Output.logfile.element_data{1}.ATTR.file=febioLogFileName_stress;
+febio_spec.Output.logfile.element_data{1}.ATTR.data='s1;s2;s3';
+febio_spec.Output.logfile.element_data{1}.ATTR.delim=',';
+
+febio_spec.Output.logfile.element_data{2}.ATTR.file=febioLogFileName_strainEnergy;
+febio_spec.Output.logfile.element_data{2}.ATTR.data='sed';
+febio_spec.Output.logfile.element_data{2}.ATTR.delim=',';
+
+% Plotfile section
+febio_spec.Output.plotfile.compression=0;
+
+%% Create structures for optimization
+
+%Initialize progress figure
+cFigure; hold on;
+xlabel('Function evaluation count'); ylabel('SSQD');
+hp=plot(0,nan,'r.-','MarkerSize',25,'LineWidth',2);
+axis tight; axis square; grid on; box;
+set(gca,'FontSize',fontSize);
+drawnow
+
+%Febio analysis information
+febioAnalysis.run_filename=febioFebFileName; %The input file name
+febioAnalysis.run_logname=febioLogFileName; %The name for the log file
+febioAnalysis.disp_on=1; %Display information on the command window
+febioAnalysis.runMode=runMode;
+febioAnalysis.maxLogCheckTime=120; %Max log file checking time
+
+%Compute comparison metric
+objCompareMetric=interpFuncMetric(VE_12);
+
+%What should be known to the objective function:
+objectiveStruct.febioAnalysis=febioAnalysis;
+objectiveStruct.febio_spec=febio_spec;
+objectiveStruct.febioFebFileName=febioFebFileName;
+objectiveStruct.parNormFactors=paramInitial; %This will normalize the parameters to ones(size(P))
+objectiveStruct.Pb_struct.xx_c=paramInitial; %Parameter constraining centre
+objectiveStruct.Pb_struct.xxlim=paramContraints; %Parameter bounds
+objectiveStruct.method=optimMethod;
+objectiveStruct.objCompareMetric=objCompareMetric;
+objectiveStruct.logFileImportName=fullfile(savePath,febioLogFileName_strainEnergy);
+objectiveStruct.W=W; %Material variation map
+objectiveStruct.logicBoneElements=logicBoneElements;
+objectiveStruct.optimType=optimType;
+objectiveStruct.hp=hp;
+
+paramNow=paramInitial;
+Pn=paramNow./objectiveStruct.parNormFactors;
+
+switch evalMode
+    case 1 %Run once using initial
+        [Fopt,outputStructure]=objectiveFunction(Pn,objectiveStruct);
+        Pn_opt=Pn;
+    case 2 %optimization        
+        switch objectiveStruct.method
+            case 1 %fminsearch and Nelder-Mead
+                OPT_options=optimset('fminsearch'); % 'Nelder-Mead simplex direct search'
+                OPT_options = optimset(OPT_options,'MaxFunEvals',maxNumberFunctionEvaluations,...
+                    'MaxIter',maxNumberIterations,...
+                    'TolFun',functionTolerance,...
+                    'TolX',parameterTolerance,...
+                    'Display',displayTypeIterations,...
+                    'FinDiffRelStep',1e-2,...
+                    'DiffMaxChange',0.5);
+                [Pn_opt,OPT_out.fval,OPT_out.exitflag,OPT_out.output]= fminsearch(@(Pn) objectiveFunction(Pn,objectiveStruct),Pn,OPT_options);
+            case 2 %lsqnonlin and Levenberg-Marquardt
+                OPT_options = optimoptions(@lsqnonlin,'Algorithm','levenberg-marquardt');
+                OPT_options = optimoptions(OPT_options,'MaxFunEvals',maxNumberFunctionEvaluations,...
+                    'MaxIter',maxNumberIterations,...
+                    'TolFun',functionTolerance,...
+                    'TolX',parameterTolerance,...
+                    'Display',displayTypeIterations,...
+                    'FinDiffRelStep',1e-2,...
+                    'DiffMaxChange',0.5);
+                [Pn_opt,OPT_out.resnorm,OPT_out.residual]= lsqnonlin(@(Pn) objectiveFunction(Pn,objectiveStruct),Pn,[],[],OPT_options);
+        end
+        
+        %Run one more time for optimal parameters
+        [Fopt,outputStructure]=objectiveFunction(Pn_opt,objectiveStruct);
+        
+        %% Unnormalize and constrain parameters
+        
+        paramFinal=Pn_opt.*objectiveStruct.parNormFactors; %Scale back, undo normalization
+        
+        %Constraining parameters        
+        for q=1:1:numel(paramFinal)
+            [paramFinal(q)]=boxconstrain(paramFinal(q),objectiveStruct.Pb_struct.xxlim(q,1),objectiveStruct.Pb_struct.xxlim(q,2),objectiveStruct.Pb_struct.xx_c(q));
+        end
+        
+        disp_text=sprintf('%6.16e,',paramFinal); disp_text=disp_text(1:end-1);
+        disp(['paramFinal=',disp_text]);
+        
+end
+
+%% Access ouput data from optimization run
+
+differenceData=outputStructure.differenceData;
+differenceData_SSQD=outputStructure.differenceData_SSQD;
+E_metric=outputStructure.E_metric;
+
+%% Import FEBio results
+
+%%
+% Importing nodal displacements from a log file
+dataStruct=importFEBio_logfile(fullfile(savePath,febioLogFileName_disp),0,1);
+
+%Access data
+N_disp_mat=dataStruct.data; %Displacement
+timeVec=dataStruct.time; %Time
+
+%Create deformed coordinate set
+V_DEF=N_disp_mat+repmat(V,[1 1 size(N_disp_mat,3)]);
+
+%%
+% Importing element strain energies from a log file
+dataStruct=importFEBio_logfile(fullfile(savePath,febioLogFileName_strainEnergy),0,1);
+
+%Access data
+E_energy=dataStruct.data;
+
+%% Importing element stress from a log file
+dataStruct=importFEBio_logfile(fullfile(savePath,febioLogFileName_stress),0,1);
+
+%Access data
+E_stress_mat=dataStruct.data;
+
+%%
+
+cFigure;
+
+subplot(1,3,1); hold on;
+title('Full bone data');
+gpatch(Fb_p,V_p,'w','none',0.5); %Add graphics object to animate
+scatterV(VE_12,50,objCompareMetric,'filled');
+axisGeom(gca,fontSize); colormap(gjet(250)); colorbar;
+camlight headlight;
+
+subplot(1,3,2); hold on;
+title('Implant data');
+gpatch(Fb,V,'w','none',0.5); %Add graphics object to animate
+scatterV(VE_12,25,E_metric,'filled');
+axisGeom(gca,fontSize); colormap(gjet(250)); colorbar;
+camlight headlight;
+
+subplot(1,3,3); hold on;
+title('Difference data');
+gpatch(Fb,V,'w','none',0.5); %Add graphics object to animate
+%     gpatch(Fb_p,V_p,'w','none',0.5); %Add graphics object to animate
+
+scatterV(VE_12,25,differenceData,'filled');
+
+axisGeom(gca,fontSize); colormap(gjet(250)); colorbar;
+camlight headlight;
+drawnow;
+
+%%
+
+C_data=differenceData;
+
+n=[0 1 0]; %Normal direction to plane
+P=mean(V,1); %Point on plane
+[logicAt,logicAbove,logicBelow]=meshCleave(E_12,V,P,n);
+
+% Get faces and matching color data for visualization
+[F_cleave,CF_cleave]=element2patch(E_12(logicAbove,:),C_data(logicAbove));
+
+hf=cFigure; hold on;
+title('Difference data');
+gpatch(Fb,V,'w','none',0.1); %Add graphics object to animate
+
+hp1=gpatch(F_cleave,V,CF_cleave,'k',1);
+axisGeom(gca,fontSize);
+colormap(warmcold(250));
+caxis([-(max(abs(C_data))) (max(abs(C_data)))]/2);
+colorbar; axis manual;
+camlight headligth;
+gdrawnow;
+
+nSteps=25; %Number of animation steps
+
+%Create the time vector
+animStruct.Time=linspace(0,1,nSteps);
+
+%The vector lengths
+y=linspace(min(V(:,2)),max(V(:,2)),nSteps);
+for q=1:1:nSteps
+    
+    [logicAt,logicAbove,logicBelow]=meshCleave(E_12,V,[0 y(q) 0],n,[1 0]);
+    
+    % Get faces and matching color data for cleaves elements
+    [F_cleave,CF_cleave]=element2patch(E_12(logicAbove,:),C_data(logicAbove));
+    
+    %Set entries in animation structure
+    animStruct.Handles{q}=[hp1 hp1]; %Handles of objects to animate
+    animStruct.Props{q}={'Faces','CData'}; %Properties of objects to animate
+    animStruct.Set{q}={F_cleave,CF_cleave}; %Property values for to set in order to animate
+end
+anim8(hf,animStruct);
+
+
+%%
+
+C_data=E_stress_mat(logicBoneElements,1,end);
+
+n=[0 1 0]; %Normal direction to plane
+P=mean(V,1); %Point on plane
+[logicAt,logicAbove,logicBelow]=meshCleave(E_12,V,P,n);
+
+% Get faces and matching color data for visualization
+[F_cleave,CF_cleave]=element2patch(E_12(logicAbove,:),C_data(logicAbove));
+
+hf=cFigure; hold on;
+title('Principal stress 1');
+gpatch(Fb,V,'w','none',0.1); %Add graphics object to animate
+
+hp1=gpatch(F_cleave,V,CF_cleave,'k',1);
+axisGeom(gca,fontSize);
+colormap(gjet(250));
+caxis([min(C_data) max(C_data)]);
+colorbar; axis manual;
+camlight headligth;
+gdrawnow;
+
+nSteps=25; %Number of animation steps
+
+%Create the time vector
+animStruct.Time=linspace(0,1,nSteps);
+
+%The vector lengths
+y=linspace(min(V(:,2)),max(V(:,2)),nSteps);
+for q=1:1:nSteps
+    
+    [logicAt,logicAbove,logicBelow]=meshCleave(E_12,V,[0 y(q) 0],n,[1 0]);
+    
+    % Get faces and matching color data for cleaves elements
+    [F_cleave,CF_cleave]=element2patch(E_12(logicAbove,:),C_data(logicAbove));
+    
+    %Set entries in animation structure
+    animStruct.Handles{q}=[hp1 hp1]; %Handles of objects to animate
+    animStruct.Props{q}={'Faces','CData'}; %Properties of objects to animate
+    animStruct.Set{q}={F_cleave,CF_cleave}; %Property values for to set in order to animate
+end
+anim8(hf,animStruct);
+
+%%
+
+C_data=E_stress_mat(logicBoneElements,3,end);
+
+n=[0 1 0]; %Normal direction to plane
+P=mean(V,1); %Point on plane
+[logicAt,logicAbove,logicBelow]=meshCleave(E_12,V,P,n);
+
+% Get faces and matching color data for visualization
+[F_cleave,CF_cleave]=element2patch(E_12(logicAbove,:),C_data(logicAbove));
+
+hf=cFigure; hold on;
+title('Principal stress 3');
+gpatch(Fb,V,'w','none',0.1); %Add graphics object to animate
+
+hp1=gpatch(F_cleave,V,CF_cleave,'k',1);
+axisGeom(gca,fontSize);
+colormap(gjet(250));
+caxis([min(C_data) max(C_data)]);
+colorbar; axis manual;
+camlight headligth;
+gdrawnow;
+
+nSteps=25; %Number of animation steps
+
+%Create the time vector
+animStruct.Time=linspace(0,1,nSteps);
+
+%The vector lengths
+y=linspace(min(V(:,2)),max(V(:,2)),nSteps);
+for q=1:1:nSteps
+    
+    [logicAt,logicAbove,logicBelow]=meshCleave(E_12,V,[0 y(q) 0],n,[1 0]);
+    
+    % Get faces and matching color data for cleaves elements
+    [F_cleave,CF_cleave]=element2patch(E_12(logicAbove,:),C_data(logicAbove));
+    
+    %Set entries in animation structure
+    animStruct.Handles{q}=[hp1 hp1]; %Handles of objects to animate
+    animStruct.Props{q}={'Faces','CData'}; %Properties of objects to animate
+    animStruct.Set{q}={F_cleave,CF_cleave}; %Property values for to set in order to animate
+end
+anim8(hf,animStruct);
+
+%% simulated results using |anim8| to visualize and animate
+% deformations
+
+[FE_face,C_energy_face]=element2patch(E_12,E_energy(logicBoneElements,:,end),'tet4');
+[CV]=faceToVertexMeasure(FE_face,V,C_energy_face);
+[indBoundary]=tesBoundary(FE_face,V);
+Fb_energy=FE_face(indBoundary,:);
+
+axLim=[min(min(V_DEF,[],3),[],1); max(max(V_DEF,[],3),[],1)];
+
+% Create basic view and store graphics handle to initiate animation
+hf=cFigure; %Open figure
+title('Strain energy density')
+gtitle([febioFebFileNamePart,': Press play to animate']);
+
+hp1=gpatch(Fb(Cb>3,:),V_DEF(:,:,end),'w','none',0.5); %Add graphics object to animate
+hp2=gpatch(Fb_energy,V_DEF(:,:,end),CV,'k',1); %Add graphics object to animate
+hp2.FaceColor='Interp';
+
+axisGeom(gca,fontSize);
+colormap(gjet(250)); colorbar;
+caxis([0 max(E_energy(:))/25]);
+axis(axLim(:)'); %Set axis limits statically
+camlight headlight;
+
+% Set up animation features
+animStruct.Time=timeVec; %The time vector
+for qt=1:1:size(N_disp_mat,3) %Loop over time increments
+    DN=N_disp_mat(:,:,qt); %Current disp
+    
+    [FE_face,C_energy_face]=element2patch(E_12,E_energy(logicBoneElements,:,qt),'tet4');
+    [CV]=faceToVertexMeasure(FE_face,V,C_energy_face);
+    
+    %Set entries in animation structure
+    animStruct.Handles{qt}=[hp1 hp2 hp2]; %Handles of objects to animate
+    animStruct.Props{qt}={'Vertices','Vertices','CData'}; %Properties of objects to animate
+    animStruct.Set{qt}={V_DEF(:,:,qt),V_DEF(:,:,qt),CV}; %Property values for to set in order to animate
+end
+anim8(hf,animStruct); %Initiate animation feature
+drawnow;
+
+%% simulated results using |anim8| to visualize and animate
+% deformations
+
+prinComp=3;
+
+[FE_face,C_stress_face]=element2patch(E_12,E_stress_mat(logicBoneElements,prinComp,end),'tet4');
+[CV]=faceToVertexMeasure(FE_face,V,C_stress_face);
+[indBoundary]=tesBoundary(FE_face,V);
+Fb_stress=FE_face(indBoundary,:);
+
+axLim=[min(min(V_DEF,[],3),[],1); max(max(V_DEF,[],3),[],1)];
+
+% Create basic view and store graphics handle to initiate animation
+hf=cFigure; %Open figure
+title(['Principal stress ',num2str(prinComp)])
+gtitle([febioFebFileNamePart,': Press play to animate']);
+hp1=gpatch(Fb(Cb>3,:),V_DEF(:,:,end),'w','none',0.5); %Add graphics object to animate
+hp2=gpatch(Fb_stress,V_DEF(:,:,end),CV,'k',1); %Add graphics object to animate
+hp2.FaceColor='Interp';
+
+axisGeom(gca,fontSize);
+colormap(gjet(250)); colorbar;
+caxis([min(E_stress_mat(:,prinComp,end)) max(E_stress_mat(:,prinComp,end))]/2);
+
+axis(axLim(:)'); %Set axis limits statically
+camlight headlight;
+
+% Set up animation features
+animStruct.Time=timeVec; %The time vector
+for qt=1:1:size(N_disp_mat,3) %Loop over time increments
+    DN=N_disp_mat(:,:,qt); %Current disp
+    
+    [FE_face,C_stress_face]=element2patch(E_12,E_stress_mat(logicBoneElements,prinComp,qt),'tet4');
+    [CV]=faceToVertexMeasure(FE_face,V,C_stress_face);
+    
+    %Set entries in animation structure
+    animStruct.Handles{qt}=[hp1 hp2 hp2]; %Handles of objects to animate
+    animStruct.Props{qt}={'Vertices','Vertices','CData'}; %Properties of objects to animate
+    animStruct.Set{qt}={V_DEF(:,:,qt),V_DEF(:,:,qt),CV}; %Property values for to set in order to animate
+end
+anim8(hf,animStruct); %Initiate animation feature
+drawnow;
+
+%%
+
+function [Fopt,outputStructure]=objectiveFunction(Pn,objectiveStruct)
+
+%% Process input
+
+febioFebFileName=objectiveStruct.febioFebFileName;
+febio_spec=objectiveStruct.febio_spec;
+febioAnalysis=objectiveStruct.febioAnalysis;
+logFileImportName=objectiveStruct.logFileImportName;
+objCompareMetric=objectiveStruct.objCompareMetric;
+logicBoneElements=objectiveStruct.logicBoneElements;
+W=objectiveStruct.W;
+hp=objectiveStruct.hp;
+optimType=objectiveStruct.optimType;
+
+%% Unnormalize and constrain parameters
+
+P=Pn.*objectiveStruct.parNormFactors; %Scale back, undo normalization
+P_in=P; %Proposed P
+
+%Constraining parameters
+for q=1:1:numel(P)
+    [P(q)]=boxconstrain(P(q),objectiveStruct.Pb_struct.xxlim(q,1),objectiveStruct.Pb_struct.xxlim(q,2),objectiveStruct.Pb_struct.xx_c(q));
+end
+
+%% Setting material parameters
+
+disp('SETTING MATERIAL PARAMETERS...');
+disp(['Proposed (norm.): ',sprintf(repmat('%6.16e ',[1,numel(Pn)]),Pn)]);
+disp(['Proposed        : ',sprintf(repmat('%6.16e ',[1,numel(P_in)]),P_in)]);
+disp(['Set (constr.)   : ',sprintf(repmat('%6.16e ',[1,numel(P)]),P)]);
+
+% Define Youngs moduli variation
+switch optimType
+    case 1 %homogeneous
+        E_youngs_implant=P(1)*ones(numel(W),1);
+    case 2 %Spat. var.
+       E_youngs_implant=(W.*(E_youngs_max-E_youngs_min))+E_youngs_min; 
+end
+
+%Adjust material parameter map
+febio_spec.MeshData.ElementData{1}.elem.VAL=E_youngs_implant;
+
+%Export changes to feb file
+febioStruct2xml(febio_spec,febioFebFileName); %Exporting to file and domNode
+
+disp('Done')
+
+%% START FEBio
+
+[runFlag]=runMonitorFEBio(febioAnalysis);
+
+if runFlag==1
+    % import optimization metric
+    dataStruct=importFEBio_logfile(logFileImportName,0,1);
+    
+    %Access data for last time step
+    E_metric=dataStruct.data(logicBoneElements,:,end);
+    
+    %Difference between cases
+    differenceData=E_metric-objCompareMetric;
+else %Output NaN
+    differenceData=nan(size(objCompareMetric));
+end
+
+differenceData_SSQD=sum(differenceData(:).^2); %Sum of squared differences
+
+switch objectiveStruct.method
+    case 1
+        Fopt=differenceData_SSQD; %Use sum of squared differences
+    case 2
+        Fopt=differenceData(:); %Differences
+end
+
+%% Update plot
+
+hp.XData=[hp.XData hp.XData(end)+1];
+hp.YData=[hp.YData differenceData_SSQD];
+drawnow; 
+
+%% Collect output
+
+outputStructure.differenceData=differenceData;
+outputStructure.differenceData_SSQD=differenceData_SSQD;
+outputStructure.E_metric=E_metric;
+
+end
+
+%% 
+% _*GIBBON footer text*_ 
+% 
+% License: <https://github.com/gibbonCode/GIBBON/blob/master/LICENSE>
+% 
+% GIBBON: The Geometry and Image-based Bioengineering add-On. A toolbox for
+% image segmentation, image-based modeling, meshing, and finite element
+% analysis.
+% 
+% Copyright (C) 2006-2022 Kevin Mattheus Moerman and the GIBBON contributors
+% 
+% This program is free software: you can redistribute it and/or modify
+% it under the terms of the GNU General Public License as published by
+% the Free Software Foundation, either version 3 of the License, or
+% (at your option) any later version.
+% 
+% This program is distributed in the hope that it will be useful,
+% but WITHOUT ANY WARRANTY; without even the implied warranty of
+% MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+% GNU General Public License for more details.
+% 
+% You should have received a copy of the GNU General Public License
+% along with this program.  If not, see <http://www.gnu.org/licenses/>.
+
+##### SOURCE END #####
+--></body></html>

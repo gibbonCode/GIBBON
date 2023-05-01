@@ -6,8 +6,8 @@
    <!--
 This HTML was auto-generated from MATLAB code.
 To make changes, update the MATLAB code and republish this document.
-      --><title>DEMO_febio_0066_clamp_tension_test_friction</title><meta name="generator" content="MATLAB 9.8"><link rel="schema.DC" href="http://purl.org/dc/elements/1.1/"><meta name="DC.date" content="2020-08-10"><meta name="DC.source" content="DEMO_febio_0066_clamp_tension_test_friction.m"><style type="text/css">
-html,body,div,span,applet,object,iframe,h1,h2,h3,h4,h5,h6,p,blockquote,pre,a,abbr,acronym,address,big,cite,code,del,dfn,em,font,img,ins,kbd,q,s,samp,small,strike,strong,sub,sup,tt,var,b,u,i,center,dl,dt,dd,ol,ul,li,fieldset,form,label,legend,table,caption,tbody,tfoot,thead,tr,th,td{margin:0;padding:0;border:0;outline:0;font-size:100%;vertical-align:baseline;background:transparent}body{line-height:1}ol,ul{list-style:none}blockquote,q{quotes:none}blockquote:before,blockquote:after,q:before,q:after{content:'';content:none}:focus{outine:0}ins{text-decoration:none}del{text-decoration:line-through}table{border-collapse:collapse;border-spacing:0}
+      --><title>DEMO_febio_0066_clamp_tension_test_friction</title><meta name="generator" content="MATLAB 9.14"><link rel="schema.DC" href="http://purl.org/dc/elements/1.1/"><meta name="DC.date" content="2023-04-30"><meta name="DC.source" content="DEMO_febio_0066_clamp_tension_test_friction.m"><style type="text/css">
+html,body,div,span,applet,object,iframe,h1,h2,h3,h4,h5,h6,p,blockquote,pre,a,abbr,acronym,address,big,cite,code,del,dfn,em,font,img,ins,kbd,q,s,samp,small,strike,strong,tt,var,b,u,i,center,dl,dt,dd,ol,ul,li,fieldset,form,label,legend,table,caption,tbody,tfoot,thead,tr,th,td{margin:0;padding:0;border:0;outline:0;font-size:100%;vertical-align:baseline;background:transparent}body{line-height:1}ol,ul{list-style:none}blockquote,q{quotes:none}blockquote:before,blockquote:after,q:before,q:after{content:'';content:none}:focus{outine:0}ins{text-decoration:none}del{text-decoration:line-through}table{border-collapse:collapse;border-spacing:0}
 
 html { min-height:100%; margin-bottom:1px; }
 html body { height:100%; margin:0px; font-family:Arial, Helvetica, sans-serif; font-size:10px; color:#000; line-height:140%; background:#fff none; overflow-y:scroll; }
@@ -67,7 +67,7 @@ table td { padding:7px 5px; text-align:left; vertical-align:top; border:1px soli
 
 
 
-  </style></head><body><div class="content"><h1>DEMO_febio_0066_clamp_tension_test_friction</h1><!--introduction--><p>Below is a demonstration for: 1) The creation of an FEBio model for clamped tensile testing 2) The use of multiple steps 4) Running an FEBio job with MATLAB 5) Importing FEBio results into MATLAB</p><!--/introduction--><h2>Contents</h2><div><ul><li><a href="#1">Keywords</a></li><li><a href="#3">Plot settings</a></li><li><a href="#4">Control parameters</a></li><li><a href="#5">Computing derived parameters</a></li><li><a href="#6">Creating strip region</a></li><li><a href="#8">Define rigid clamping surfaces</a></li><li><a href="#10">Join node sets</a></li><li><a href="#13">Defining the FEBio input structure</a></li><li><a href="#14">Quick viewing of the FEBio input file structure</a></li><li><a href="#16">Exporting the FEBio input file</a></li><li><a href="#17">Running the FEBio analysis</a></li><li><a href="#18">Import FEBio results</a></li></ul></div><h2 id="1">Keywords</h2><div><ul><li>febio_spec version 2.5</li><li>febio, FEBio</li><li>tension, tensile</li><li>displacement control, displacement boundary condition</li><li>Hexahedral hex8</li><li>static, solid</li><li>hyperelastic, Ogden</li><li>displacement logfile</li><li>stress logfile</li></ul></div><pre class="codeinput">clear; close <span class="string">all</span>; clc;
+  </style></head><body><div class="content"><h1>DEMO_febio_0066_clamp_tension_test_friction</h1><!--introduction--><p>Below is a demonstration for: 1) The creation of an FEBio model for clamped tensile testing 2) The use of multiple steps 4) Running an FEBio job with MATLAB 5) Importing FEBio results into MATLAB</p><!--/introduction--><h2>Contents</h2><div><ul><li><a href="#1">Keywords</a></li><li><a href="#3">Plot settings</a></li><li><a href="#4">Control parameters</a></li><li><a href="#5">Computing derived parameters</a></li><li><a href="#6">Creating strip region</a></li><li><a href="#8">Define rigid clamping surfaces</a></li><li><a href="#10">Join node sets</a></li><li><a href="#13">Get logic for middle elements (to help investigate strain in the middle)</a></li><li><a href="#15">Defining the FEBio input structure</a></li><li><a href="#16">Quick viewing of the FEBio input file structure</a></li><li><a href="#18">Exporting the FEBio input file</a></li><li><a href="#19">Running the FEBio analysis</a></li><li><a href="#20">Import FEBio results</a></li><li><a href="#24">Compute grimp implied strain</a></li></ul></div><h2 id="1">Keywords</h2><div><ul><li>febio_spec version 4.0</li><li>febio, FEBio</li><li>tension, tensile</li><li>displacement control, displacement boundary condition</li><li>Hexahedral hex8</li><li>static, solid</li><li>hyperelastic, Ogden</li><li>displacement logfile</li><li>stress logfile</li></ul></div><pre class="codeinput">clear; close <span class="string">all</span>; clc;
 </pre><h2 id="3">Plot settings</h2><pre class="codeinput">fontSize=25;
 </pre><h2 id="4">Control parameters</h2><pre class="codeinput"><span class="comment">% Path names</span>
 defaultFolder = fileparts(fileparts(mfilename(<span class="string">'fullpath'</span>)));
@@ -81,18 +81,18 @@ febioLogFileName_disp=[febioFebFileNamePart,<span class="string">'_disp_out.txt'
 febioLogFileName_strain=[febioFebFileNamePart,<span class="string">'_energy_out.txt'</span>]; <span class="comment">%Log file name for exporting strain energy density</span>
 
 <span class="comment">%Specifying dimensions and number of elements</span>
-pointSpacingStrip=1;
+pointSpacing=1;
 sampleWidth=10;
 sampleThickness=2;
+sampleClampedHeight=sampleWidth;
 sampleGripGripHeight=sampleWidth.*2;
-sampleClampedHeight=10;
+appliedLinearStrain=0.3;
+clampCompressiveLinearStrain=0.3;
 
-pointSpacingClamp=pointSpacingStrip/2;
+pointSpacingClamp=pointSpacing;
 clampExtendAmount=sampleWidth/2;
 
-tensileStrain=0.3;
-clampCompressiveStrain=0.3;
-initialSpacing=pointSpacingStrip/10;
+initialSpacing=0;<span class="comment">%pointSpacing/10;</span>
 
 <span class="comment">%Initial material parameter set</span>
 c1=1e-3;
@@ -101,37 +101,40 @@ k_factor=100;
 k=c1*k_factor;
 
 <span class="comment">% FEA control settings</span>
-numTimeSteps=10; <span class="comment">%Number of time steps desired</span>
+numTimeSteps=20; <span class="comment">%Number of time steps desired</span>
 max_refs=25; <span class="comment">%Max reforms</span>
 max_ups=0; <span class="comment">%Set to zero to use full-Newton iterations</span>
-opt_iter=12; <span class="comment">%Optimum number of iterations</span>
+opt_iter=6; <span class="comment">%Optimum number of iterations</span>
 max_retries=25; <span class="comment">%Maximum number of retires</span>
 dtmin=(1/numTimeSteps)/100; <span class="comment">%Minimum time step size</span>
 dtmax=1/numTimeSteps; <span class="comment">%Maximum time step size</span>
-
 min_residual=1e-20;
 symmetric_stiffness=0;
+
 runMode=<span class="string">'external'</span>; <span class="comment">%'internal' or 'external'</span>
 
 <span class="comment">%Contact parameters</span>
 contactPenalty=10;
+contactType=<span class="string">'sliding-elastic'</span>; <span class="comment">% 'sticky'</span>
 laugon=0;
 minaug=1;
 maxaug=10;
-fric_coeff=0.5;
+fric_coeff=1;
 </pre><h2 id="5">Computing derived parameters</h2><pre class="codeinput">sampleHeight=sampleGripGripHeight+2*sampleClampedHeight;
-numElementsWidthStrip=ceil(sampleWidth/pointSpacingStrip);
+
+numElementsWidthStrip=ceil(sampleWidth/pointSpacing);
 numElementsWidthStrip=numElementsWidthStrip+iseven(numElementsWidthStrip); <span class="comment">%Force uneven so there is a middle element</span>
-numElementsThicknessStrip=ceil(round(sampleThickness/pointSpacingStrip));
-numElementsHeightStrip=ceil(round(sampleHeight/pointSpacingStrip));
+numElementsThicknessStrip=ceil(round(sampleThickness/pointSpacing));
+numElementsHeightStrip=ceil(round(sampleHeight/pointSpacing));
+numElementsHeightStrip=numElementsHeightStrip+iseven(numElementsHeightStrip); <span class="comment">%Force uneven so there is a middle element</span>
 
 clampWidth=sampleWidth+(2*clampExtendAmount);
 clampHeight=sampleClampedHeight+(clampExtendAmount);
 numElementsWidthClamp=ceil(clampWidth/pointSpacingClamp);
 numElementsHeightClamp=ceil(clampHeight/pointSpacingClamp);
 
-clampCompressiveDisplacement=(sampleThickness.*clampCompressiveStrain)/2+initialSpacing;
-clampTensionDisplacement=(sampleGripGripHeight.*tensileStrain);
+clampCompressiveDisplacement=((sampleThickness.*clampCompressiveLinearStrain)/2)+initialSpacing;
+clampTensionDisplacement=(sampleGripGripHeight.*appliedLinearStrain);
 </pre><h2 id="6">Creating strip region</h2><p>The region consists of three "boxes" which define the upper and lower clamped regions as well as the central region.</p><pre class="codeinput"><span class="comment">%Create box 1</span>
 boxDim=[sampleWidth sampleThickness sampleHeight]; <span class="comment">%Dimensions</span>
 boxElem=[numElementsWidthStrip numElementsThicknessStrip numElementsHeightStrip]; <span class="comment">%Number of elements</span>
@@ -201,39 +204,59 @@ title(<span class="string">'Complete model'</span>,<span class="string">'FontSiz
 gpatch(Fb,V,<span class="string">'kw'</span>,<span class="string">'none'</span>,0.25);
 
 gpatch(Fb1,V,<span class="string">'cw'</span>,<span class="string">'k'</span>,1);
-gpatch(Fb2,V,<span class="string">'kw'</span>,<span class="string">'k'</span>,1);
 patchNormPlot(Fb1,V);
+
+gpatch(Fb2,V,<span class="string">'kw'</span>,<span class="string">'k'</span>,1);
 patchNormPlot(Fb2,V);
 
 gpatch(Fc1,V,<span class="string">'rw'</span>,<span class="string">'k'</span>,1);
+patchNormPlot(Fc1,V);
+
 gpatch(Fc2,V,<span class="string">'gw'</span>,<span class="string">'k'</span>,1);
+patchNormPlot(Fc2,V);
+
 gpatch(Fc3,V,<span class="string">'bw'</span>,<span class="string">'k'</span>,1);
+patchNormPlot(Fc3,V);
+
 gpatch(Fc4,V,<span class="string">'yw'</span>,<span class="string">'k'</span>,1);
+patchNormPlot(Fc4,V);
 
 axisGeom(gca,fontSize);
 camlight <span class="string">headlight</span>;
 drawnow;
-</pre><img width="100%" height="auto" vspace="5" hspace="5" src="DEMO_febio_0066_clamp_tension_test_friction_03.jpg" alt=""> <h2 id="13">Defining the FEBio input structure</h2><p>See also <tt>febioStructTemplate</tt> and <tt>febioStruct2xml</tt> and the FEBio user manual.</p><pre class="codeinput"><span class="comment">%Get a template with default settings</span>
+</pre><img width="100%" height="auto" vspace="5" hspace="5" src="DEMO_febio_0066_clamp_tension_test_friction_03.jpg" alt=""> <h2 id="13">Get logic for middle elements (to help investigate strain in the middle)</h2><pre class="codeinput">searchTol=pointSpacing/1000;
+VE=patchCentre(E,V);
+logicMiddleElements= VE(:,3)&lt;searchTol &amp; VE(:,3)&gt;-searchTol;
+
+[FM]=element2patch(E(logicMiddleElements,:),[],<span class="string">'hex8'</span>);
+</pre><pre class="codeinput">cFigure; hold <span class="string">on</span>;
+gpatch(Fb,V,<span class="string">'kw'</span>,<span class="string">'k'</span>,0.25);
+
+gpatch(FM,V,<span class="string">'rw'</span>,<span class="string">'k'</span>,1);
+
+<span class="comment">% hp(1)=plotV(V(bcPrescribeList1,:),'r.','MarkerSize',25);</span>
+<span class="comment">% legend(hp,{'Node set 1','Node set 2','Node set 3','Node set 4'})</span>
+axisGeom(gca,fontSize);
+camlight <span class="string">headlight</span>;
+drawnow;
+</pre><img width="100%" height="auto" vspace="5" hspace="5" src="DEMO_febio_0066_clamp_tension_test_friction_04.jpg" alt=""> <h2 id="15">Defining the FEBio input structure</h2><p>See also <tt>febioStructTemplate</tt> and <tt>febioStruct2xml</tt> and the FEBio user manual.</p><pre class="codeinput"><span class="comment">%Get a template with default settings</span>
 [febio_spec]=febioStructTemplate;
 
 <span class="comment">%febio_spec version</span>
-febio_spec.ATTR.version=<span class="string">'2.5'</span>;
+febio_spec.ATTR.version=<span class="string">'4.0'</span>;
 
 <span class="comment">%Module section</span>
 febio_spec.Module.ATTR.type=<span class="string">'solid'</span>;
 
 <span class="comment">%Create control structure for use by all steps</span>
-stepStruct.Control.analysis.ATTR.type=<span class="string">'static'</span>;
 stepStruct.Control.time_steps=numTimeSteps;
 stepStruct.Control.step_size=1/numTimeSteps;
+stepStruct.Control.solver.max_refs=max_refs;
 stepStruct.Control.time_stepper.dtmin=dtmin;
 stepStruct.Control.time_stepper.dtmax=dtmax;
 stepStruct.Control.time_stepper.max_retries=max_retries;
 stepStruct.Control.time_stepper.opt_iter=opt_iter;
-stepStruct.Control.max_refs=max_refs;
-stepStruct.Control.max_ups=max_ups;
-stepStruct.Control.symmetric_stiffness=symmetric_stiffness;
-stepStruct.Control.min_residual=min_residual;
+stepStruct.Control.solver.symmetric_stiffness=symmetric_stiffness;
 
 <span class="comment">%Add template based default settings to proposed control section</span>
 [stepStruct.Control]=structComplete(stepStruct.Control,febio_spec.Control,1); <span class="comment">%Complement provided with default if missing</span>
@@ -241,14 +264,15 @@ stepStruct.Control.min_residual=min_residual;
 <span class="comment">%Remove control field (part of template) since step specific control sections are used</span>
 febio_spec=rmfield(febio_spec,<span class="string">'Control'</span>);
 
-febio_spec.Step{1}.ATTR.id=1;
-febio_spec.Step{1}.Control=stepStruct.Control;
-febio_spec.Step{2}.ATTR.id=2;
-febio_spec.Step{2}.Control=stepStruct.Control;
+febio_spec.Step.step{1}.Control=stepStruct.Control;
+febio_spec.Step.step{1}.ATTR.id=1;
+febio_spec.Step.step{2}.Control=stepStruct.Control;
+febio_spec.Step.step{2}.ATTR.id=2;
 
 <span class="comment">%Material section</span>
+materialName1=<span class="string">'Material1'</span>;
+febio_spec.Material.material{1}.ATTR.name=materialName1;
 febio_spec.Material.material{1}.ATTR.id=1;
-febio_spec.Material.material{1}.ATTR.name=<span class="string">'Normal material'</span>;
 febio_spec.Material.material{1}.ATTR.type=<span class="string">'Ogden'</span>;
 febio_spec.Material.material{1}.c1=c1;
 febio_spec.Material.material{1}.m1=m1;
@@ -256,21 +280,29 @@ febio_spec.Material.material{1}.c2=c1;
 febio_spec.Material.material{1}.m2=-m1;
 febio_spec.Material.material{1}.k=k;
 
+materialName2=<span class="string">'Material2'</span>;
+febio_spec.Material.material{2}.ATTR.name=materialName2;
 febio_spec.Material.material{2}.ATTR.type=<span class="string">'rigid body'</span>;
 febio_spec.Material.material{2}.ATTR.id=2;
 febio_spec.Material.material{2}.density=1;
 febio_spec.Material.material{2}.center_of_mass=mean(Vc1,1);
 
+materialName3=<span class="string">'Material3'</span>;
+febio_spec.Material.material{3}.ATTR.name=materialName3;
 febio_spec.Material.material{3}.ATTR.type=<span class="string">'rigid body'</span>;
 febio_spec.Material.material{3}.ATTR.id=3;
 febio_spec.Material.material{3}.density=1;
 febio_spec.Material.material{3}.center_of_mass=mean(Vc2,1);
 
+materialName4=<span class="string">'Material4'</span>;
+febio_spec.Material.material{4}.ATTR.name=materialName4;
 febio_spec.Material.material{4}.ATTR.type=<span class="string">'rigid body'</span>;
 febio_spec.Material.material{4}.ATTR.id=4;
 febio_spec.Material.material{4}.density=1;
 febio_spec.Material.material{4}.center_of_mass=mean(Vc3,1);
 
+materialName5=<span class="string">'Material5'</span>;
+febio_spec.Material.material{5}.ATTR.name=materialName5;
 febio_spec.Material.material{5}.ATTR.type=<span class="string">'rigid body'</span>;
 febio_spec.Material.material{5}.ATTR.id=5;
 febio_spec.Material.material{5}.density=1;
@@ -278,65 +310,86 @@ febio_spec.Material.material{5}.center_of_mass=mean(Vc4,1);
 
 <span class="comment">%Geometry section</span>
 <span class="comment">% -&gt; Nodes</span>
-febio_spec.Geometry.Nodes{1}.ATTR.name=<span class="string">'nodeSet_all'</span>; <span class="comment">%The node set name</span>
-febio_spec.Geometry.Nodes{1}.node.ATTR.id=(1:size(V,1))'; <span class="comment">%The node id's</span>
-febio_spec.Geometry.Nodes{1}.node.VAL=V; <span class="comment">%The nodel coordinates</span>
+febio_spec.Mesh.Nodes{1}.ATTR.name=<span class="string">'nodeSet_all'</span>; <span class="comment">%The node set name</span>
+febio_spec.Mesh.Nodes{1}.node.ATTR.id=mcol(1:size(V,1)); <span class="comment">%The node id's</span>
+febio_spec.Mesh.Nodes{1}.node.VAL=V; <span class="comment">%The nodel coordinates</span>
 
 <span class="comment">% -&gt; Elements</span>
-febio_spec.Geometry.Elements{1}.ATTR.type=<span class="string">'hex8'</span>; <span class="comment">%Element type of this set</span>
-febio_spec.Geometry.Elements{1}.ATTR.mat=1; <span class="comment">%material index for this set</span>
-febio_spec.Geometry.Elements{1}.ATTR.name=<span class="string">'Strip'</span>; <span class="comment">%Name of the element set</span>
-febio_spec.Geometry.Elements{1}.elem.VAL=E;
-febio_spec.Geometry.Elements{1}.elem.ATTR.id=(1:size(E,1))'; <span class="comment">%Element material id's</span>
+partName1=<span class="string">'Part1_strip'</span>;
+febio_spec.Mesh.Elements{1}.ATTR.name=partName1; <span class="comment">%Name of the element set</span>
+febio_spec.Mesh.Elements{1}.ATTR.type=<span class="string">'hex8'</span>; <span class="comment">%Element type of this set</span>
+febio_spec.Mesh.Elements{1}.ATTR.mat=1; <span class="comment">%material index for this set</span>
+febio_spec.Mesh.Elements{1}.elem.VAL=E;
+febio_spec.Mesh.Elements{1}.elem.ATTR.id=mcol(1:size(E,1)); <span class="comment">%Element material id's</span>
 
-febio_spec.Geometry.Elements{2}.ATTR.type=<span class="string">'quad4'</span>; <span class="comment">%Element type of this set</span>
-febio_spec.Geometry.Elements{2}.ATTR.mat=2; <span class="comment">%material index for this set</span>
-febio_spec.Geometry.Elements{2}.ATTR.name=<span class="string">'Grip1'</span>; <span class="comment">%Name of the element set</span>
-febio_spec.Geometry.Elements{2}.elem.VAL=Fc1;
-febio_spec.Geometry.Elements{2}.elem.ATTR.id=size(E,1)+(1:size(Fc1,1))'; <span class="comment">%Element material id's</span>
+partName2=<span class="string">'Part2_Grip1'</span>;
+febio_spec.Mesh.Elements{2}.ATTR.name=partName2; <span class="comment">%Name of the element set</span>
+febio_spec.Mesh.Elements{2}.ATTR.type=<span class="string">'quad4'</span>; <span class="comment">%Element type of this set</span>
+febio_spec.Mesh.Elements{2}.ATTR.mat=2; <span class="comment">%material index for this set</span>
+febio_spec.Mesh.Elements{2}.elem.VAL=Fc1;
+febio_spec.Mesh.Elements{2}.elem.ATTR.id=size(E,1)+mcol(1:size(Fc1,1)); <span class="comment">%Element material id's</span>
 
-febio_spec.Geometry.Elements{3}.ATTR.type=<span class="string">'quad4'</span>; <span class="comment">%Element type of this set</span>
-febio_spec.Geometry.Elements{3}.ATTR.mat=3; <span class="comment">%material index for this set</span>
-febio_spec.Geometry.Elements{3}.ATTR.name=<span class="string">'Grip2'</span>; <span class="comment">%Name of the element set</span>
-febio_spec.Geometry.Elements{3}.elem.VAL=Fc2;
-febio_spec.Geometry.Elements{3}.elem.ATTR.id=size(E,1)+size(Fc1,1)+(1:size(Fc2,1))'; <span class="comment">%Element material id's</span>
+partName3=<span class="string">'Part3_Grip2'</span>;
+febio_spec.Mesh.Elements{3}.ATTR.name=partName3; <span class="comment">%Name of the element set</span>
+febio_spec.Mesh.Elements{3}.ATTR.type=<span class="string">'quad4'</span>; <span class="comment">%Element type of this set</span>
+febio_spec.Mesh.Elements{3}.ATTR.mat=3; <span class="comment">%material index for this set</span>
+febio_spec.Mesh.Elements{3}.elem.VAL=Fc2;
+febio_spec.Mesh.Elements{3}.elem.ATTR.id=size(E,1)+size(Fc1,1)+mcol(1:size(Fc2,1)); <span class="comment">%Element material id's</span>
 
-febio_spec.Geometry.Elements{4}.ATTR.type=<span class="string">'quad4'</span>; <span class="comment">%Element type of this set</span>
-febio_spec.Geometry.Elements{4}.ATTR.mat=4; <span class="comment">%material index for this set</span>
-febio_spec.Geometry.Elements{4}.ATTR.name=<span class="string">'Grip3'</span>; <span class="comment">%Name of the element set</span>
-febio_spec.Geometry.Elements{4}.elem.VAL=Fc3;
-febio_spec.Geometry.Elements{4}.elem.ATTR.id=size(E,1)+2*size(Fc1,1)+(1:size(Fc3,1))'; <span class="comment">%Element material id's</span>
+partName4=<span class="string">'Part4_Grip3'</span>;
+febio_spec.Mesh.Elements{4}.ATTR.name=partName4; <span class="comment">%Name of the element set</span>
+febio_spec.Mesh.Elements{4}.ATTR.type=<span class="string">'quad4'</span>; <span class="comment">%Element type of this set</span>
+febio_spec.Mesh.Elements{4}.ATTR.mat=4; <span class="comment">%material index for this set</span>
+febio_spec.Mesh.Elements{4}.elem.VAL=Fc3;
+febio_spec.Mesh.Elements{4}.elem.ATTR.id=size(E,1)+2*size(Fc1,1)+mcol(1:size(Fc3,1)); <span class="comment">%Element material id's</span>
 
-febio_spec.Geometry.Elements{5}.ATTR.type=<span class="string">'quad4'</span>; <span class="comment">%Element type of this set</span>
-febio_spec.Geometry.Elements{5}.ATTR.mat=5; <span class="comment">%material index for this set</span>
-febio_spec.Geometry.Elements{5}.ATTR.name=<span class="string">'Grip4'</span>; <span class="comment">%Name of the element set</span>
-febio_spec.Geometry.Elements{5}.elem.VAL=Fc4;
-febio_spec.Geometry.Elements{5}.elem.ATTR.id=size(E,1)+3*size(Fc1,1)+(1:size(Fc4,1))'; <span class="comment">%Element material id's</span>
+partName5=<span class="string">'Part5_Grip4'</span>;
+febio_spec.Mesh.Elements{5}.ATTR.name=partName5; <span class="comment">%Name of the element set</span>
+febio_spec.Mesh.Elements{5}.ATTR.type=<span class="string">'quad4'</span>; <span class="comment">%Element type of this set</span>
+febio_spec.Mesh.Elements{5}.ATTR.mat=5; <span class="comment">%material index for this set</span>
+febio_spec.Mesh.Elements{5}.elem.VAL=Fc4;
+febio_spec.Mesh.Elements{5}.elem.ATTR.id=size(E,1)+3*size(Fc1,1)+mcol(1:size(Fc4,1)); <span class="comment">%Element material id's</span>
+
+<span class="comment">%MeshDomains section</span>
+febio_spec.MeshDomains.SolidDomain.ATTR.name=partName1;
+febio_spec.MeshDomains.SolidDomain.ATTR.mat=materialName1;
+
+febio_spec.MeshDomains.ShellDomain{1}.ATTR.name=partName2;
+febio_spec.MeshDomains.ShellDomain{1}.ATTR.mat=materialName2;
+
+febio_spec.MeshDomains.ShellDomain{2}.ATTR.name=partName3;
+febio_spec.MeshDomains.ShellDomain{2}.ATTR.mat=materialName3;
+
+febio_spec.MeshDomains.ShellDomain{3}.ATTR.name=partName4;
+febio_spec.MeshDomains.ShellDomain{3}.ATTR.mat=materialName4;
+
+febio_spec.MeshDomains.ShellDomain{4}.ATTR.name=partName5;
+febio_spec.MeshDomains.ShellDomain{4}.ATTR.mat=materialName5;
 
 <span class="comment">% -&gt; Surfaces</span>
-febio_spec.Geometry.Surface{1}.ATTR.name=<span class="string">'contact_master1'</span>;
-febio_spec.Geometry.Surface{1}.quad4.ATTR.lid=(1:1:size(Fc1,1))';
-febio_spec.Geometry.Surface{1}.quad4.VAL=Fc1;
+febio_spec.Mesh.Surface{1}.ATTR.name=<span class="string">'contact_secondary1'</span>;
+febio_spec.Mesh.Surface{1}.quad4.ATTR.id=mcol(1:1:size(Fc1,1));
+febio_spec.Mesh.Surface{1}.quad4.VAL=Fc1;
 
-febio_spec.Geometry.Surface{2}.ATTR.name=<span class="string">'contact_master2'</span>;
-febio_spec.Geometry.Surface{2}.quad4.ATTR.lid=(1:1:size(Fc2,1))';
-febio_spec.Geometry.Surface{2}.quad4.VAL=Fc2;
+febio_spec.Mesh.Surface{2}.ATTR.name=<span class="string">'contact_secondary2'</span>;
+febio_spec.Mesh.Surface{2}.quad4.ATTR.id=mcol(1:1:size(Fc2,1));
+febio_spec.Mesh.Surface{2}.quad4.VAL=Fc2;
 
-febio_spec.Geometry.Surface{3}.ATTR.name=<span class="string">'contact_master3'</span>;
-febio_spec.Geometry.Surface{3}.quad4.ATTR.lid=(1:1:size(Fc3,1))';
-febio_spec.Geometry.Surface{3}.quad4.VAL=Fc3;
+febio_spec.Mesh.Surface{3}.ATTR.name=<span class="string">'contact_secondary3'</span>;
+febio_spec.Mesh.Surface{3}.quad4.ATTR.id=mcol(1:1:size(Fc3,1));
+febio_spec.Mesh.Surface{3}.quad4.VAL=Fc3;
 
-febio_spec.Geometry.Surface{4}.ATTR.name=<span class="string">'contact_master4'</span>;
-febio_spec.Geometry.Surface{4}.quad4.ATTR.lid=(1:1:size(Fc4,1))';
-febio_spec.Geometry.Surface{4}.quad4.VAL=Fc4;
+febio_spec.Mesh.Surface{4}.ATTR.name=<span class="string">'contact_secondary4'</span>;
+febio_spec.Mesh.Surface{4}.quad4.ATTR.id=mcol(1:1:size(Fc4,1));
+febio_spec.Mesh.Surface{4}.quad4.VAL=Fc4;
 
-febio_spec.Geometry.Surface{5}.ATTR.name=<span class="string">'contact_slave1'</span>;
-febio_spec.Geometry.Surface{5}.quad4.ATTR.lid=(1:1:size(Fb1,1))';
-febio_spec.Geometry.Surface{5}.quad4.VAL=Fb1;
+febio_spec.Mesh.Surface{5}.ATTR.name=<span class="string">'contact_primary1'</span>;
+febio_spec.Mesh.Surface{5}.quad4.ATTR.id=mcol(1:1:size(Fb1,1));
+febio_spec.Mesh.Surface{5}.quad4.VAL=Fb1;
 
-febio_spec.Geometry.Surface{6}.ATTR.name=<span class="string">'contact_slave2'</span>;
-febio_spec.Geometry.Surface{6}.quad4.ATTR.lid=(1:1:size(Fb2,1))';
-febio_spec.Geometry.Surface{6}.quad4.VAL=Fb2;
+febio_spec.Mesh.Surface{6}.ATTR.name=<span class="string">'contact_primary2'</span>;
+febio_spec.Mesh.Surface{6}.quad4.ATTR.id=mcol(1:1:size(Fb2,1));
+febio_spec.Mesh.Surface{6}.quad4.VAL=Fb2;
 
 <span class="comment">% -&gt; Surface pairs</span>
 <span class="keyword">for</span> q=1:1:4
@@ -345,136 +398,129 @@ febio_spec.Geometry.Surface{6}.quad4.VAL=Fb2;
     <span class="keyword">else</span>
         indStrip=6;
     <span class="keyword">end</span>
-    febio_spec.Geometry.SurfacePair{q}.ATTR.name=[<span class="string">'Contact_'</span>,num2str(q)];
-    febio_spec.Geometry.SurfacePair{q}.master.ATTR.surface=febio_spec.Geometry.Surface{q}.ATTR.name;
-    febio_spec.Geometry.SurfacePair{q}.slave.ATTR.surface=febio_spec.Geometry.Surface{indStrip}.ATTR.name;
+    febio_spec.Mesh.SurfacePair{q}.ATTR.name=[<span class="string">'Contact_'</span>,num2str(q)];
+    febio_spec.Mesh.SurfacePair{q}.primary=febio_spec.Mesh.Surface{indStrip}.ATTR.name;
+    febio_spec.Mesh.SurfacePair{q}.secondary=febio_spec.Mesh.Surface{q}.ATTR.name;
 <span class="keyword">end</span>
 
-<span class="comment">%Boundary condition section</span>
-<span class="comment">% -&gt; Prescribe boundary conditions</span>
-<span class="comment">%STEP 1 Clamp compression</span>
+<span class="comment">%Rigid section</span>
 
-<span class="comment">%Set 1</span>
-<span class="comment">% -&gt; Prescribed boundary conditions on the rigid body</span>
-febio_spec.Step{1}.Boundary.rigid_body{1}.ATTR.mat=2;
-febio_spec.Step{1}.Boundary.rigid_body{1}.fixed{1}.ATTR.bc=<span class="string">'x'</span>;
-febio_spec.Step{1}.Boundary.rigid_body{1}.fixed{2}.ATTR.bc=<span class="string">'z'</span>;
-febio_spec.Step{1}.Boundary.rigid_body{1}.fixed{3}.ATTR.bc=<span class="string">'Rx'</span>;
-febio_spec.Step{1}.Boundary.rigid_body{1}.fixed{4}.ATTR.bc=<span class="string">'Ry'</span>;
-febio_spec.Step{1}.Boundary.rigid_body{1}.fixed{5}.ATTR.bc=<span class="string">'Rz'</span>;
-febio_spec.Step{1}.Boundary.rigid_body{1}.prescribed.ATTR.bc=<span class="string">'y'</span>;
-febio_spec.Step{1}.Boundary.rigid_body{1}.prescribed.ATTR.lc=1;
-febio_spec.Step{1}.Boundary.rigid_body{1}.prescribed.VAL=-clampCompressiveDisplacement;
+rbIds=[2 3 4 5]; <span class="comment">%Rigid body ids</span>
+s=[-1 1 -1 1]; <span class="comment">%sign/multiplier</span>
+bcId=0;
+<span class="keyword">for</span> q=1:1:numel(rbIds)
 
-febio_spec.Step{1}.Boundary.rigid_body{2}.ATTR.mat=3;
-febio_spec.Step{1}.Boundary.rigid_body{2}.fixed{1}.ATTR.bc=<span class="string">'x'</span>;
-febio_spec.Step{1}.Boundary.rigid_body{2}.fixed{2}.ATTR.bc=<span class="string">'z'</span>;
-febio_spec.Step{1}.Boundary.rigid_body{2}.fixed{3}.ATTR.bc=<span class="string">'Rx'</span>;
-febio_spec.Step{1}.Boundary.rigid_body{2}.fixed{4}.ATTR.bc=<span class="string">'Ry'</span>;
-febio_spec.Step{1}.Boundary.rigid_body{2}.fixed{5}.ATTR.bc=<span class="string">'Rz'</span>;
-febio_spec.Step{1}.Boundary.rigid_body{2}.prescribed.ATTR.bc=<span class="string">'y'</span>;
-febio_spec.Step{1}.Boundary.rigid_body{2}.prescribed.ATTR.lc=1;
-febio_spec.Step{1}.Boundary.rigid_body{2}.prescribed.VAL=clampCompressiveDisplacement;
+    bcId=bcId+1;
 
-febio_spec.Step{1}.Boundary.rigid_body{3}.ATTR.mat=4;
-febio_spec.Step{1}.Boundary.rigid_body{3}.fixed{1}.ATTR.bc=<span class="string">'x'</span>;
-febio_spec.Step{1}.Boundary.rigid_body{3}.fixed{2}.ATTR.bc=<span class="string">'z'</span>;
-febio_spec.Step{1}.Boundary.rigid_body{3}.fixed{3}.ATTR.bc=<span class="string">'Rx'</span>;
-febio_spec.Step{1}.Boundary.rigid_body{3}.fixed{4}.ATTR.bc=<span class="string">'Ry'</span>;
-febio_spec.Step{1}.Boundary.rigid_body{3}.fixed{5}.ATTR.bc=<span class="string">'Rz'</span>;
-febio_spec.Step{1}.Boundary.rigid_body{3}.prescribed.ATTR.bc=<span class="string">'y'</span>;
-febio_spec.Step{1}.Boundary.rigid_body{3}.prescribed.ATTR.lc=1;
-febio_spec.Step{1}.Boundary.rigid_body{3}.prescribed.VAL=-clampCompressiveDisplacement;
+    <span class="comment">% -&gt;Rigid body fix boundary conditions</span>
+    febio_spec.Step.step{1}.Rigid.rigid_bc{bcId}.ATTR.name=[<span class="string">'RigidFix_rb'</span>,num2str(rbIds(q)),<span class="string">'_01'</span>];
+    febio_spec.Step.step{1}.Rigid.rigid_bc{bcId}.ATTR.type=<span class="string">'rigid_fixed'</span>;
+    febio_spec.Step.step{1}.Rigid.rigid_bc{bcId}.rb=rbIds(q);
+    febio_spec.Step.step{1}.Rigid.rigid_bc{bcId}.Rx_dof=1;
+    <span class="comment">%febio_spec.Step.step{1}.Rigid.rigid_bc{bcId}.Ry_dof=1;</span>
+    febio_spec.Step.step{1}.Rigid.rigid_bc{bcId}.Rz_dof=1;
+    febio_spec.Step.step{1}.Rigid.rigid_bc{bcId}.Ru_dof=1;
+    febio_spec.Step.step{1}.Rigid.rigid_bc{bcId}.Rv_dof=1;
+    febio_spec.Step.step{1}.Rigid.rigid_bc{bcId}.Rw_dof=1;
 
-febio_spec.Step{1}.Boundary.rigid_body{4}.ATTR.mat=5;
-febio_spec.Step{1}.Boundary.rigid_body{4}.fixed{1}.ATTR.bc=<span class="string">'x'</span>;
-febio_spec.Step{1}.Boundary.rigid_body{4}.fixed{2}.ATTR.bc=<span class="string">'z'</span>;
-febio_spec.Step{1}.Boundary.rigid_body{4}.fixed{3}.ATTR.bc=<span class="string">'Rx'</span>;
-febio_spec.Step{1}.Boundary.rigid_body{4}.fixed{4}.ATTR.bc=<span class="string">'Ry'</span>;
-febio_spec.Step{1}.Boundary.rigid_body{4}.fixed{5}.ATTR.bc=<span class="string">'Rz'</span>;
-febio_spec.Step{1}.Boundary.rigid_body{4}.prescribed.ATTR.bc=<span class="string">'y'</span>;
-febio_spec.Step{1}.Boundary.rigid_body{4}.prescribed.ATTR.lc=1;
-febio_spec.Step{1}.Boundary.rigid_body{4}.prescribed.VAL=clampCompressiveDisplacement;
+    bcId=bcId+1;
 
-<span class="comment">%STEP 2 Tension</span>
-<span class="comment">%Set 1</span>
-febio_spec.Step{2}.Boundary.rigid_body{1}.ATTR.mat=2;
-febio_spec.Step{2}.Boundary.rigid_body{1}.fixed{1}.ATTR.bc=<span class="string">'x'</span>;
-febio_spec.Step{2}.Boundary.rigid_body{1}.fixed{2}.ATTR.bc=<span class="string">'y'</span>;
-febio_spec.Step{2}.Boundary.rigid_body{1}.fixed{3}.ATTR.bc=<span class="string">'Rx'</span>;
-febio_spec.Step{2}.Boundary.rigid_body{1}.fixed{4}.ATTR.bc=<span class="string">'Ry'</span>;
-febio_spec.Step{2}.Boundary.rigid_body{1}.fixed{5}.ATTR.bc=<span class="string">'Rz'</span>;
-febio_spec.Step{2}.Boundary.rigid_body{1}.prescribed.ATTR.bc=<span class="string">'z'</span>;
-febio_spec.Step{2}.Boundary.rigid_body{1}.prescribed.ATTR.lc=2;
-febio_spec.Step{2}.Boundary.rigid_body{1}.prescribed.VAL=clampTensionDisplacement;
+    <span class="comment">% -&gt;Rigid body prescribe boundary conditions</span>
+    febio_spec.Step.step{1}.Rigid.rigid_bc{bcId}.ATTR.name=[<span class="string">'RigidPrescribe_rb'</span>,num2str(rbIds(q)),<span class="string">'_01'</span>];
+    febio_spec.Step.step{1}.Rigid.rigid_bc{bcId}.ATTR.type=<span class="string">'rigid_displacement'</span>;
+    febio_spec.Step.step{1}.Rigid.rigid_bc{bcId}.rb=rbIds(q);
+    febio_spec.Step.step{1}.Rigid.rigid_bc{bcId}.dof=<span class="string">'y'</span>;
+    febio_spec.Step.step{1}.Rigid.rigid_bc{bcId}.value.ATTR.lc=1;
+    febio_spec.Step.step{1}.Rigid.rigid_bc{bcId}.value.VAL=s(q).*clampCompressiveDisplacement;
+    febio_spec.Step.step{1}.Rigid.rigid_bc{bcId}.relative=0;
 
-febio_spec.Step{2}.Boundary.rigid_body{2}.ATTR.mat=3;
-febio_spec.Step{2}.Boundary.rigid_body{2}.fixed{1}.ATTR.bc=<span class="string">'x'</span>;
-febio_spec.Step{2}.Boundary.rigid_body{2}.fixed{2}.ATTR.bc=<span class="string">'y'</span>;
-febio_spec.Step{2}.Boundary.rigid_body{2}.fixed{3}.ATTR.bc=<span class="string">'Rx'</span>;
-febio_spec.Step{2}.Boundary.rigid_body{2}.fixed{4}.ATTR.bc=<span class="string">'Ry'</span>;
-febio_spec.Step{2}.Boundary.rigid_body{2}.fixed{5}.ATTR.bc=<span class="string">'Rz'</span>;
-febio_spec.Step{2}.Boundary.rigid_body{2}.prescribed.ATTR.bc=<span class="string">'z'</span>;
-febio_spec.Step{2}.Boundary.rigid_body{2}.prescribed.ATTR.lc=2;
-febio_spec.Step{2}.Boundary.rigid_body{2}.prescribed.VAL=clampTensionDisplacement;
+<span class="keyword">end</span>
 
-febio_spec.Step{2}.Boundary.rigid_body{3}.ATTR.mat=4;
-febio_spec.Step{2}.Boundary.rigid_body{3}.fixed{1}.ATTR.bc=<span class="string">'x'</span>;
-febio_spec.Step{2}.Boundary.rigid_body{3}.fixed{2}.ATTR.bc=<span class="string">'y'</span>;
-febio_spec.Step{2}.Boundary.rigid_body{3}.fixed{3}.ATTR.bc=<span class="string">'Rx'</span>;
-febio_spec.Step{2}.Boundary.rigid_body{3}.fixed{4}.ATTR.bc=<span class="string">'Ry'</span>;
-febio_spec.Step{2}.Boundary.rigid_body{3}.fixed{5}.ATTR.bc=<span class="string">'Rz'</span>;
-febio_spec.Step{2}.Boundary.rigid_body{3}.prescribed.ATTR.bc=<span class="string">'z'</span>;
-febio_spec.Step{2}.Boundary.rigid_body{3}.prescribed.ATTR.lc=2;
-febio_spec.Step{2}.Boundary.rigid_body{3}.prescribed.VAL=-clampTensionDisplacement;
+rbIds=[2 3 4 5]; <span class="comment">%Rigid body ids</span>
+s=[1 1 0 0]; <span class="comment">%sign/multiplier</span>
+bcId=0;
+<span class="keyword">for</span> q=1:1:numel(rbIds)
 
-febio_spec.Step{2}.Boundary.rigid_body{4}.ATTR.mat=5;
-febio_spec.Step{2}.Boundary.rigid_body{4}.fixed{1}.ATTR.bc=<span class="string">'x'</span>;
-febio_spec.Step{2}.Boundary.rigid_body{4}.fixed{2}.ATTR.bc=<span class="string">'y'</span>;
-febio_spec.Step{2}.Boundary.rigid_body{4}.fixed{3}.ATTR.bc=<span class="string">'Rx'</span>;
-febio_spec.Step{2}.Boundary.rigid_body{4}.fixed{4}.ATTR.bc=<span class="string">'Ry'</span>;
-febio_spec.Step{2}.Boundary.rigid_body{4}.fixed{5}.ATTR.bc=<span class="string">'Rz'</span>;
-febio_spec.Step{2}.Boundary.rigid_body{4}.prescribed.ATTR.bc=<span class="string">'z'</span>;
-febio_spec.Step{2}.Boundary.rigid_body{4}.prescribed.ATTR.lc=2;
-febio_spec.Step{2}.Boundary.rigid_body{4}.prescribed.VAL=-clampTensionDisplacement;
+    bcId=bcId+1;
+
+    <span class="comment">% -&gt;Rigid body fix boundary conditions</span>
+    febio_spec.Step.step{2}.Rigid.rigid_bc{bcId}.ATTR.name=[<span class="string">'RigidFix_rb'</span>,num2str(rbIds(q)),<span class="string">'_02'</span>];
+    febio_spec.Step.step{2}.Rigid.rigid_bc{bcId}.ATTR.type=<span class="string">'rigid_fixed'</span>;
+    febio_spec.Step.step{2}.Rigid.rigid_bc{bcId}.rb=rbIds(q);
+    febio_spec.Step.step{2}.Rigid.rigid_bc{bcId}.Rx_dof=1;
+    febio_spec.Step.step{2}.Rigid.rigid_bc{bcId}.Ry_dof=1;
+    <span class="comment">%febio_spec.Step.step{2}.Rigid.rigid_bc{bcId}.Rz_dof=1;</span>
+    febio_spec.Step.step{2}.Rigid.rigid_bc{bcId}.Ru_dof=1;
+    febio_spec.Step.step{2}.Rigid.rigid_bc{bcId}.Rv_dof=1;
+    febio_spec.Step.step{2}.Rigid.rigid_bc{bcId}.Rw_dof=1;
+
+    bcId=bcId+1;
+
+    <span class="comment">% -&gt;Rigid body prescribe boundary conditions</span>
+    febio_spec.Step.step{2}.Rigid.rigid_bc{bcId}.ATTR.name=[<span class="string">'RigidPrescribe_rb'</span>,num2str(rbIds(q)),<span class="string">'_02'</span>];
+    febio_spec.Step.step{2}.Rigid.rigid_bc{bcId}.ATTR.type=<span class="string">'rigid_displacement'</span>;
+    febio_spec.Step.step{2}.Rigid.rigid_bc{bcId}.rb=rbIds(q);
+    febio_spec.Step.step{2}.Rigid.rigid_bc{bcId}.dof=<span class="string">'z'</span>;
+    febio_spec.Step.step{2}.Rigid.rigid_bc{bcId}.value.ATTR.lc=2;
+    febio_spec.Step.step{2}.Rigid.rigid_bc{bcId}.value.VAL=s(q).*clampTensionDisplacement;
+    febio_spec.Step.step{2}.Rigid.rigid_bc{bcId}.relative=1;
+
+<span class="keyword">end</span>
 
 <span class="comment">%Contact section</span>
 <span class="keyword">for</span> q=1:1:4
-<span class="comment">%     febio_spec.Contact.contact{q}.ATTR.surface_pair=febio_spec.Geometry.SurfacePair{q}.ATTR.name;</span>
-<span class="comment">%     febio_spec.Contact.contact{q}.ATTR.type='sticky';</span>
-<span class="comment">%     febio_spec.Contact.contact{q}.penalty=100;</span>
-<span class="comment">%     febio_spec.Contact.contact{q}.laugon=0;</span>
-<span class="comment">%     febio_spec.Contact.contact{q}.tolerance=0.1;</span>
-<span class="comment">%     febio_spec.Contact.contact{q}.minaug=0;</span>
-<span class="comment">%     febio_spec.Contact.contact{q}.maxaug=10;</span>
-<span class="comment">%     febio_spec.Contact.contact{q}.snap_tol=0;</span>
-<span class="comment">%     febio_spec.Contact.contact{q}.max_traction=0;</span>
-<span class="comment">%     febio_spec.Contact.contact{q}.search_tolerance=0.1;</span>
-febio_spec.Contact.contact{q}.ATTR.surface_pair=febio_spec.Geometry.SurfacePair{q}.ATTR.name;
-febio_spec.Contact.contact{q}.ATTR.type=<span class="string">'sliding-elastic'</span>;
-febio_spec.Contact.contact{q}.two_pass=1;
-febio_spec.Contact.contact{q}.laugon=laugon;
-febio_spec.Contact.contact{q}.tolerance=0.2;
-febio_spec.Contact.contact{q}.gaptol=0;
-febio_spec.Contact.contact{q}.minaug=minaug;
-febio_spec.Contact.contact{q}.maxaug=maxaug;
-febio_spec.Contact.contact{q}.search_tol=0.01;
-febio_spec.Contact.contact{q}.search_radius=0.1;
-febio_spec.Contact.contact{q}.symmetric_stiffness=0;
-febio_spec.Contact.contact{q}.auto_penalty=1;
-febio_spec.Contact.contact{q}.penalty=contactPenalty;
-febio_spec.Contact.contact{q}.fric_coeff=fric_coeff;
+    <span class="comment">%Contact section</span>
+    <span class="keyword">switch</span> contactType
+        <span class="keyword">case</span> <span class="string">'sliding-elastic'</span>
+            febio_spec.Contact.contact{q}.ATTR.type=contactType;
+            febio_spec.Contact.contact{q}.ATTR.surface_pair=febio_spec.Mesh.SurfacePair{q}.ATTR.name;
+            febio_spec.Contact.contact{q}.two_pass=0;
+            febio_spec.Contact.contact{q}.laugon=laugon;
+            febio_spec.Contact.contact{q}.tolerance=0.2;
+            febio_spec.Contact.contact{q}.gaptol=0;
+            febio_spec.Contact.contact{q}.minaug=minaug;
+            febio_spec.Contact.contact{q}.maxaug=maxaug;
+            febio_spec.Contact.contact{q}.search_tol=0.01;
+            febio_spec.Contact.contact{q}.search_radius=0.1*sqrt(sum((max(V,[],1)-min(V,[],1)).^2,2));
+            febio_spec.Contact.contact{q}.symmetric_stiffness=0;
+            febio_spec.Contact.contact{q}.auto_penalty=1;
+            febio_spec.Contact.contact{q}.update_penalty=1;
+            febio_spec.Contact.contact{q}.penalty=contactPenalty;
+            febio_spec.Contact.contact{q}.fric_coeff=fric_coeff;
+        <span class="keyword">case</span> <span class="string">'sticky'</span>
+            febio_spec.Contact.contact{q}.ATTR.type=contactType;
+            febio_spec.Contact.contact{q}.ATTR.surface_pair=febio_spec.Mesh.SurfacePair{q}.ATTR.name;
 
+            febio_spec.Contact.contact{q}.penalty=contactPenalty;
+
+            febio_spec.Contact.contact{q}.laugon=laugon;
+            febio_spec.Contact.contact{q}.minaug=minaug;
+            febio_spec.Contact.contact{q}.maxaug=maxaug;
+            febio_spec.Contact.contact{q}.tolerance=0.2;
+
+            febio_spec.Contact.contact{q}.search_tolerance=0.01;
+            febio_spec.Contact.contact{q}.max_traction=0;
+            febio_spec.Contact.contact{q}.snap_tol=0.01;
+    <span class="keyword">end</span>
 <span class="keyword">end</span>
 
 <span class="comment">%LoadData section</span>
-febio_spec.LoadData.loadcurve{1}.ATTR.id=1;
-febio_spec.LoadData.loadcurve{1}.ATTR.type=<span class="string">'linear'</span>;
-febio_spec.LoadData.loadcurve{1}.point.VAL=[0 0; 1 1; 2 1];
+<span class="comment">% -&gt; load_controller</span>
+febio_spec.LoadData.load_controller{1}.ATTR.name=<span class="string">'LC_1'</span>;
+febio_spec.LoadData.load_controller{1}.ATTR.id=1;
+febio_spec.LoadData.load_controller{1}.ATTR.type=<span class="string">'loadcurve'</span>;
+febio_spec.LoadData.load_controller{1}.interpolate=<span class="string">'LINEAR'</span>;
+<span class="comment">%febio_spec.LoadData.load_controller{1}.extend='CONSTANT';</span>
+febio_spec.LoadData.load_controller{1}.points.pt.VAL=[0 0; 1 1; 2 1];
 
-febio_spec.LoadData.loadcurve{2}.ATTR.id=2;
-febio_spec.LoadData.loadcurve{2}.ATTR.type=<span class="string">'linear'</span>;
-febio_spec.LoadData.loadcurve{2}.point.VAL=[0 0; 1 0; 2 1];
+<span class="comment">%LoadData section</span>
+<span class="comment">% -&gt; load_controller</span>
+febio_spec.LoadData.load_controller{2}.ATTR.name=<span class="string">'LC_2'</span>;
+febio_spec.LoadData.load_controller{2}.ATTR.id=2;
+febio_spec.LoadData.load_controller{2}.ATTR.type=<span class="string">'loadcurve'</span>;
+febio_spec.LoadData.load_controller{2}.interpolate=<span class="string">'LINEAR'</span>;
+<span class="comment">%febio_spec.LoadData.load_controller{2}.extend='CONSTANT';</span>
+febio_spec.LoadData.load_controller{2}.points.pt.VAL=[0 0; 1 0; 2 1];
 
 <span class="comment">%Output section</span>
 <span class="comment">% -&gt; log file</span>
@@ -482,14 +528,16 @@ febio_spec.Output.logfile.ATTR.file=febioLogFileName;
 febio_spec.Output.logfile.node_data{1}.ATTR.file=febioLogFileName_disp;
 febio_spec.Output.logfile.node_data{1}.ATTR.data=<span class="string">'ux;uy;uz'</span>;
 febio_spec.Output.logfile.node_data{1}.ATTR.delim=<span class="string">','</span>;
-febio_spec.Output.logfile.node_data{1}.VAL=1:size(V,1);
 
 febio_spec.Output.logfile.element_data{1}.ATTR.file=febioLogFileName_strain;
 febio_spec.Output.logfile.element_data{1}.ATTR.data=<span class="string">'Ez'</span>;
 febio_spec.Output.logfile.element_data{1}.ATTR.delim=<span class="string">','</span>;
 febio_spec.Output.logfile.element_data{1}.VAL=1:1:size(E,1);
-</pre><h2 id="14">Quick viewing of the FEBio input file structure</h2><p>The <tt>febView</tt> function can be used to view the xml structure in a MATLAB figure window.</p><p><tt>febView(febio_spec); %Viewing the febio file</tt></p><h2 id="16">Exporting the FEBio input file</h2><p>Exporting the febio_spec structure to an FEBio input file is done using the <tt>febioStruct2xml</tt> function.</p><pre class="codeinput">febioStruct2xml(febio_spec,febioFebFileName); <span class="comment">%Exporting to file and domNode</span>
-</pre><h2 id="17">Running the FEBio analysis</h2><p>To run the analysis defined by the created FEBio input file the <tt>runMonitorFEBio</tt> function is used. The input for this function is a structure defining job settings e.g. the FEBio input file name. The optional output runFlag informs the user if the analysis was run succesfully.</p><pre class="codeinput">febioAnalysis.run_filename=febioFebFileName; <span class="comment">%The input file name</span>
+
+<span class="comment">% Plotfile section</span>
+febio_spec.Output.plotfile.compression=0;
+</pre><h2 id="16">Quick viewing of the FEBio input file structure</h2><p>The <tt>febView</tt> function can be used to view the xml structure in a MATLAB figure window.</p><p><tt>febView(febio_spec); %Viewing the febio file</tt></p><h2 id="18">Exporting the FEBio input file</h2><p>Exporting the febio_spec structure to an FEBio input file is done using the <tt>febioStruct2xml</tt> function.</p><pre class="codeinput">febioStruct2xml(febio_spec,febioFebFileName); <span class="comment">%Exporting to file and domNode</span>
+</pre><h2 id="19">Running the FEBio analysis</h2><p>To run the analysis defined by the created FEBio input file the <tt>runMonitorFEBio</tt> function is used. The input for this function is a structure defining job settings e.g. the FEBio input file name. The optional output runFlag informs the user if the analysis was run succesfully.</p><pre class="codeinput">febioAnalysis.run_filename=febioFebFileName; <span class="comment">%The input file name</span>
 febioAnalysis.run_logname=febioLogFileName; <span class="comment">%The name for the log file</span>
 febioAnalysis.disp_on=1; <span class="comment">%Display information on the command window</span>
 febioAnalysis.disp_log_on=1; <span class="comment">%Display convergence information in the command window</span>
@@ -500,91 +548,246 @@ febioAnalysis.maxLogCheckTime=10; <span class="comment">%Max log file checking t
 
 [runFlag]=runMonitorFEBio(febioAnalysis);<span class="comment">%START FEBio NOW!!!!!!!!</span>
 </pre><pre class="codeoutput"> 
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
---- STARTING FEBIO JOB --- 10-Aug-2020 10:32:43
-Waiting for log file...
-Proceeding to check log file...10-Aug-2020 10:32:44
-------- converged at time : 0.1
-------- converged at time : 0.2
-------- converged at time : 0.3
-------- converged at time : 0.4
-------- converged at time : 0.5
-------- converged at time : 0.6
-------- converged at time : 0.7
-------- converged at time : 0.8
-------- converged at time : 0.9
-------- converged at time : 1
-------- converged at time : 1.1
-------- converged at time : 1.2
-------- converged at time : 1.3
-------- converged at time : 1.4
-------- converged at time : 1.5
-------- converged at time : 1.6
-------- converged at time : 1.7
-------- converged at time : 1.8
-------- converged at time : 1.9
-------- converged at time : 2
---- Done --- 10-Aug-2020 10:32:59
-</pre><h2 id="18">Import FEBio results</h2><pre class="codeinput"><span class="keyword">if</span> runFlag==1 <span class="comment">%i.e. a succesful run</span>
-</pre><p>Importing nodal displacements from a log file</p><pre class="codeinput">    [time_mat, N_disp_mat,~]=importFEBio_logfile(fullfile(savePath,febioLogFileName_disp)); <span class="comment">%Nodal displacements</span>
-    time_mat=[0; time_mat(:)]; <span class="comment">%Time</span>
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+--------&gt;    RUNNING/MONITORING FEBIO JOB    &lt;-------- 30-Apr-2023 08:48:11
+FEBio path: /home/kevin/FEBioStudio/bin/febio4
+# Attempt removal of existing log files                30-Apr-2023 08:48:11
+ * Removal succesful                                   30-Apr-2023 08:48:11
+# Attempt removal of existing .xplt files              30-Apr-2023 08:48:11
+ * Removal succesful                                   30-Apr-2023 08:48:11
+# Starting FEBio...                                    30-Apr-2023 08:48:11
+  Max. total analysis time is: 1e+99 s
+ * Waiting for log file creation                       30-Apr-2023 08:48:11
+   Max. wait time: 10 s
+ * Log file found.                                     30-Apr-2023 08:48:11
+# Parsing log file...                                  30-Apr-2023 08:48:11
+    number of iterations   : 4                         30-Apr-2023 08:48:11
+    number of reformations : 4                         30-Apr-2023 08:48:11
+------- converged at time : 0.05                       30-Apr-2023 08:48:11
+    number of iterations   : 4                         30-Apr-2023 08:48:11
+    number of reformations : 4                         30-Apr-2023 08:48:11
+------- converged at time : 0.1                        30-Apr-2023 08:48:11
+    number of iterations   : 4                         30-Apr-2023 08:48:11
+    number of reformations : 4                         30-Apr-2023 08:48:11
+------- converged at time : 0.15                       30-Apr-2023 08:48:11
+    number of iterations   : 5                         30-Apr-2023 08:48:12
+    number of reformations : 5                         30-Apr-2023 08:48:12
+------- converged at time : 0.2                        30-Apr-2023 08:48:12
+    number of iterations   : 7                         30-Apr-2023 08:48:12
+    number of reformations : 7                         30-Apr-2023 08:48:12
+------- converged at time : 0.25                       30-Apr-2023 08:48:12
+    number of iterations   : 4                         30-Apr-2023 08:48:12
+    number of reformations : 4                         30-Apr-2023 08:48:12
+------- converged at time : 0.296328                   30-Apr-2023 08:48:12
+    number of iterations   : 4                         30-Apr-2023 08:48:12
+    number of reformations : 4                         30-Apr-2023 08:48:12
+------- converged at time : 0.343391                   30-Apr-2023 08:48:12
+    number of iterations   : 4                         30-Apr-2023 08:48:13
+    number of reformations : 4                         30-Apr-2023 08:48:13
+------- converged at time : 0.391041                   30-Apr-2023 08:48:13
+    number of iterations   : 4                         30-Apr-2023 08:48:13
+    number of reformations : 4                         30-Apr-2023 08:48:13
+------- converged at time : 0.439161                   30-Apr-2023 08:48:13
+    number of iterations   : 4                         30-Apr-2023 08:48:13
+    number of reformations : 4                         30-Apr-2023 08:48:13
+------- converged at time : 0.487657                   30-Apr-2023 08:48:13
+    number of iterations   : 4                         30-Apr-2023 08:48:13
+    number of reformations : 4                         30-Apr-2023 08:48:13
+------- converged at time : 0.536453                   30-Apr-2023 08:48:13
+    number of iterations   : 5                         30-Apr-2023 08:48:13
+    number of reformations : 5                         30-Apr-2023 08:48:13
+------- converged at time : 0.585491                   30-Apr-2023 08:48:13
+    number of iterations   : 11                        30-Apr-2023 08:48:14
+    number of reformations : 11                        30-Apr-2023 08:48:14
+------- converged at time : 0.63462                    30-Apr-2023 08:48:14
+    number of iterations   : 4                         30-Apr-2023 08:48:14
+    number of reformations : 4                         30-Apr-2023 08:48:14
+------- converged at time : 0.671035                   30-Apr-2023 08:48:14
+    number of iterations   : 5                         30-Apr-2023 08:48:14
+    number of reformations : 5                         30-Apr-2023 08:48:14
+------- converged at time : 0.710167                   30-Apr-2023 08:48:14
+    number of iterations   : 4                         30-Apr-2023 08:48:14
+    number of reformations : 4                         30-Apr-2023 08:48:14
+------- converged at time : 0.750337                   30-Apr-2023 08:48:14
+    number of iterations   : 6                         30-Apr-2023 08:48:15
+    number of reformations : 6                         30-Apr-2023 08:48:15
+------- converged at time : 0.792472                   30-Apr-2023 08:48:15
+    number of iterations   : 5                         30-Apr-2023 08:48:15
+    number of reformations : 5                         30-Apr-2023 08:48:15
+------- converged at time : 0.834608                   30-Apr-2023 08:48:15
+    number of iterations   : 5                         30-Apr-2023 08:48:15
+    number of reformations : 5                         30-Apr-2023 08:48:15
+------- converged at time : 0.877494                   30-Apr-2023 08:48:15
+    number of iterations   : 5                         30-Apr-2023 08:48:15
+    number of reformations : 5                         30-Apr-2023 08:48:15
+------- converged at time : 0.921059                   30-Apr-2023 08:48:15
+    number of iterations   : 6                         30-Apr-2023 08:48:16
+    number of reformations : 6                         30-Apr-2023 08:48:16
+------- converged at time : 0.965238                   30-Apr-2023 08:48:16
+    number of iterations   : 6                         30-Apr-2023 08:48:16
+    number of reformations : 6                         30-Apr-2023 08:48:16
+------- converged at time : 1                          30-Apr-2023 08:48:16
+    number of iterations   : 4                         30-Apr-2023 08:48:16
+    number of reformations : 4                         30-Apr-2023 08:48:16
+------- converged at time : 1.05                       30-Apr-2023 08:48:16
+    number of iterations   : 6                         30-Apr-2023 08:48:16
+    number of reformations : 6                         30-Apr-2023 08:48:16
+------- converged at time : 1.1                        30-Apr-2023 08:48:16
+    number of iterations   : 10                        30-Apr-2023 08:48:17
+    number of reformations : 10                        30-Apr-2023 08:48:17
+------- converged at time : 1.15                       30-Apr-2023 08:48:17
+    number of iterations   : 5                         30-Apr-2023 08:48:17
+    number of reformations : 5                         30-Apr-2023 08:48:17
+------- converged at time : 1.18884                    30-Apr-2023 08:48:17
+    number of iterations   : 4                         30-Apr-2023 08:48:17
+    number of reformations : 4                         30-Apr-2023 08:48:17
+------- converged at time : 1.22875                    30-Apr-2023 08:48:17
+    number of iterations   : 4                         30-Apr-2023 08:48:17
+    number of reformations : 4                         30-Apr-2023 08:48:17
+------- converged at time : 1.27068                    30-Apr-2023 08:48:17
+    number of iterations   : 3                         30-Apr-2023 08:48:18
+    number of reformations : 3                         30-Apr-2023 08:48:18
+------- converged at time : 1.31422                    30-Apr-2023 08:48:18
+    number of iterations   : 3                         30-Apr-2023 08:48:18
+    number of reformations : 3                         30-Apr-2023 08:48:18
+------- converged at time : 1.35905                    30-Apr-2023 08:48:18
+    number of iterations   : 3                         30-Apr-2023 08:48:18
+    number of reformations : 3                         30-Apr-2023 08:48:18
+------- converged at time : 1.40492                    30-Apr-2023 08:48:18
+    number of iterations   : 3                         30-Apr-2023 08:48:18
+    number of reformations : 3                         30-Apr-2023 08:48:18
+------- converged at time : 1.45161                    30-Apr-2023 08:48:18
+    number of iterations   : 3                         30-Apr-2023 08:48:18
+    number of reformations : 3                         30-Apr-2023 08:48:18
+------- converged at time : 1.49896                    30-Apr-2023 08:48:18
+    number of iterations   : 3                         30-Apr-2023 08:48:18
+    number of reformations : 3                         30-Apr-2023 08:48:18
+------- converged at time : 1.54685                    30-Apr-2023 08:48:18
+    number of iterations   : 3                         30-Apr-2023 08:48:18
+    number of reformations : 3                         30-Apr-2023 08:48:18
+------- converged at time : 1.59515                    30-Apr-2023 08:48:18
+    number of iterations   : 3                         30-Apr-2023 08:48:19
+    number of reformations : 3                         30-Apr-2023 08:48:19
+------- converged at time : 1.6438                     30-Apr-2023 08:48:19
+    number of iterations   : 3                         30-Apr-2023 08:48:19
+    number of reformations : 3                         30-Apr-2023 08:48:19
+------- converged at time : 1.69271                    30-Apr-2023 08:48:19
+    number of iterations   : 4                         30-Apr-2023 08:48:19
+    number of reformations : 4                         30-Apr-2023 08:48:19
+------- converged at time : 1.74185                    30-Apr-2023 08:48:19
+    number of iterations   : 4                         30-Apr-2023 08:48:19
+    number of reformations : 4                         30-Apr-2023 08:48:19
+------- converged at time : 1.79115                    30-Apr-2023 08:48:19
+    number of iterations   : 4                         30-Apr-2023 08:48:19
+    number of reformations : 4                         30-Apr-2023 08:48:19
+------- converged at time : 1.8406                     30-Apr-2023 08:48:19
+    number of iterations   : 4                         30-Apr-2023 08:48:20
+    number of reformations : 4                         30-Apr-2023 08:48:20
+------- converged at time : 1.89016                    30-Apr-2023 08:48:20
+    number of iterations   : 4                         30-Apr-2023 08:48:20
+    number of reformations : 4                         30-Apr-2023 08:48:20
+------- converged at time : 1.9398                     30-Apr-2023 08:48:20
+    number of iterations   : 4                         30-Apr-2023 08:48:20
+    number of reformations : 4                         30-Apr-2023 08:48:20
+------- converged at time : 1.98952                    30-Apr-2023 08:48:20
+    number of iterations   : 4                         30-Apr-2023 08:48:20
+    number of reformations : 4                         30-Apr-2023 08:48:20
+------- converged at time : 2                          30-Apr-2023 08:48:20
+ Elapsed time : 0:00:09                                30-Apr-2023 08:48:20
+ N O R M A L   T E R M I N A T I O N
+# Done                                                 30-Apr-2023 08:48:20
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+</pre><h2 id="20">Import FEBio results</h2><pre class="codeinput"><span class="keyword">if</span> runFlag==1 <span class="comment">%i.e. a succesful run</span>
+</pre><p>Importing nodal displacements from a log file</p><pre class="codeinput">    dataStruct=importFEBio_logfile(fullfile(savePath,febioLogFileName_disp),0,1);
 
-    N_disp_mat=N_disp_mat(:,2:end,:);
-    sizImport=size(N_disp_mat);
-    sizImport(3)=sizImport(3)+1;
-    N_disp_mat_n=zeros(sizImport);
-    N_disp_mat_n(:,:,2:end)=N_disp_mat;
-    N_disp_mat=N_disp_mat_n;
-    DN=N_disp_mat(:,:,end);
-    DN_magnitude=sqrt(sum(DN(:,3).^2,2));
+    <span class="comment">%Access data</span>
+    N_disp_mat=dataStruct.data; <span class="comment">%Displacement</span>
+    timeVec=dataStruct.time; <span class="comment">%Time</span>
+
+    <span class="comment">%Create deformed coordinate set</span>
     V_DEF=N_disp_mat+repmat(V,[1 1 size(N_disp_mat,3)]);
-</pre><p>Importing element strain energies from a log file</p><pre class="codeinput">    [~,E_strain,~]=importFEBio_logfile(fullfile(savePath,febioLogFileName_strain)); <span class="comment">%Element strain energy</span>
+</pre><p>Importing element strain data from a log file</p><pre class="codeinput">    dataStruct=importFEBio_logfile(fullfile(savePath,febioLogFileName_strain),0,1);
 
-    <span class="comment">%Remove nodal index column</span>
-    E_strain=E_strain(:,2:end,:);
+    <span class="comment">%Access data</span>
+    E_strain=dataStruct.data;
 
-    <span class="comment">%Add initial state i.e. zero energy</span>
-    sizImport=size(E_strain);
-    sizImport(3)=sizImport(3)+1;
-    E_energy_mat_n=zeros(sizImport);
-    E_energy_mat_n(:,:,2:end)=E_strain;
-    E_strain=E_energy_mat_n;
+    [F,CF]=element2patch(E,E_strain(:,:,end));
+    CV=faceToVertexMeasure(F,V,CF);
 
-    [F,CF]=element2patch(E,E_strain(:,:,1));
-    CF_V=faceToVertexMeasure(F,V,CF);
-</pre><p>Plotting the simulated results using <tt>anim8</tt> to visualize and animate deformations</p><pre class="codeinput">    axLim=[min(min(V_DEF,[],3),[],1); max(max(V_DEF,[],3),[],1)];
-
-    <span class="comment">% Create basic view and store graphics handle to initiate animation</span>
+    E_strain_middle_mean=squeeze(mean(E_strain(logicMiddleElements,:,:),1));
+</pre><h2 id="24">Compute grimp implied strain</h2><pre class="codeinput">    gripStrainLinear=double(timeVec&gt;1).*(timeVec-1).*appliedLinearStrain;
+    gripStrain=1/2*((gripStrainLinear+1).^2-1); <span class="comment">%Green-Lagrange strain</span>
+    maxGridStrain=max(abs(gripStrain));
+</pre><p>Plotting the simulated results using <tt>anim8</tt> to visualize and animate deformations</p><pre class="codeinput">    <span class="comment">% Create basic view and store graphics handle to initiate animation</span>
     hf=cFigure; hold <span class="string">on</span>;<span class="comment">%Open figure</span>
     gtitle([febioFebFileNamePart,<span class="string">': Press play to animate'</span>]);
-    hp1=gpatch(Fb,V_DEF(:,:,end),CF_V,<span class="string">'k'</span>,1);
+    title(<span class="string">'$E_{zz}$'</span>,<span class="string">'Interpreter'</span>,<span class="string">'Latex'</span>)
+    hp1=gpatch(Fb,V_DEF(:,:,end),CV,<span class="string">'k'</span>,1);
     hp1.FaceColor=<span class="string">'interp'</span>;
-    hp2=gpatch(Fc,V_DEF(:,:,end),<span class="string">'kw'</span>,<span class="string">'none'</span>,0.5);
-<span class="comment">%     patchNormPlot(Fc,V);</span>
+    hp2=gpatch(Fc,V_DEF(:,:,end),<span class="string">'w'</span>,<span class="string">'none'</span>,0.5);
+
     axisGeom(gca,fontSize);
-    colormap(warmcold(250)); colorbar;
-    caxis([-tensileStrain tensileStrain]);
-    axis(axLim(:)'); <span class="comment">%Set axis limits statically</span>
+    colormap(warmcold(250)); hc=colorbar;
+    caxis([-maxGridStrain maxGridStrain]);
+    hc.Ticks=linspace(-maxGridStrain,maxGridStrain,7);
+    axis(axisLim(V_DEF)); <span class="comment">%Set axis limits statically</span>
 
     camlight <span class="string">headlight</span>; axis <span class="string">off</span>;
 
     <span class="comment">% Set up animation features</span>
-    animStruct.Time=time_mat; <span class="comment">%The time vector</span>
+    animStruct.Time=timeVec; <span class="comment">%The time vector</span>
     <span class="keyword">for</span> qt=1:1:size(N_disp_mat,3) <span class="comment">%Loop over time increments</span>
-        V_def=V+N_disp_mat(:,:,qt); <span class="comment">%Current nodal coordinates</span>
 
-        [~,CF]=element2patch(E,E_strain(:,:,qt));
-        CF_V=faceToVertexMeasure(F,V,CF);
+        CV=faceToVertexMeasure(E,V,E_strain(:,:,qt));
 
         <span class="comment">%Set entries in animation structure</span>
         animStruct.Handles{qt}=[hp1 hp1 hp2]; <span class="comment">%Handles of objects to animate</span>
         animStruct.Props{qt}={<span class="string">'Vertices'</span>,<span class="string">'CData'</span>,<span class="string">'Vertices'</span>}; <span class="comment">%Properties of objects to animate</span>
-        animStruct.Set{qt}={V_def,CF_V,V_def}; <span class="comment">%Property values for to set in order to animate</span>
+        animStruct.Set{qt}={V_DEF(:,:,qt),CV,V_DEF(:,:,qt)}; <span class="comment">%Property values for to set in order to animate</span>
     <span class="keyword">end</span>
     anim8(hf,animStruct); <span class="comment">%Initiate animation feature</span>
     gdrawnow;
-</pre><img width="100%" height="auto" vspace="5" hspace="5" src="DEMO_febio_0066_clamp_tension_test_friction_04.jpg" alt=""> <pre class="codeinput"><span class="keyword">end</span>
-</pre><p><img vspace="5" hspace="5" src="gibbVerySmall.gif" alt=""> </p><p><i><b>GIBBON</b></i> <a href="www.gibboncode.org">www.gibboncode.org</a></p><p><i>Kevin Mattheus Moerman</i>, <a href="gibbon.toolbox@gmail.com">gibbon.toolbox@gmail.com</a></p><p><i><b>GIBBON footer text</b></i></p><p>License: <a href="https://github.com/gibbonCode/GIBBON/blob/master/LICENSE">https://github.com/gibbonCode/GIBBON/blob/master/LICENSE</a></p><p>GIBBON: The Geometry and Image-based Bioengineering add-On. A toolbox for image segmentation, image-based modeling, meshing, and finite element analysis.</p><p>Copyright (C) 2006-2020 Kevin Mattheus Moerman</p><p>This program is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.</p><p>This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for more details.</p><p>You should have received a copy of the GNU General Public License along with this program.  If not, see <a href="http://www.gnu.org/licenses/">http://www.gnu.org/licenses/</a>.</p><p class="footer"><br><a href="https://www.mathworks.com/products/matlab/">Published with MATLAB&reg; R2020a</a><br></p></div><!--
+</pre><img width="100%" height="auto" vspace="5" hspace="5" src="DEMO_febio_0066_clamp_tension_test_friction_05.jpg" alt=""> <p>Plotting the simulated results using <tt>anim8</tt> to visualize and animate deformations</p><pre class="codeinput">    <span class="comment">% Create basic view and store graphics handle to initiate animation</span>
+    hf=cFigure;
+    subplot(1,2,1); hold <span class="string">on</span>;
+    title(<span class="string">'$E_{zz}$'</span>,<span class="string">'Interpreter'</span>,<span class="string">'Latex'</span>);
+    gtitle([febioFebFileNamePart,<span class="string">': Press play to animate'</span>]);
+    hp1=gpatch(Fb,V_DEF(:,:,end),CV,<span class="string">'none'</span>,1,0.5); hp1.FaceColor=<span class="string">'interp'</span>;
+    hp2=gpatch(Fc,V_DEF(:,:,end),<span class="string">'w'</span>,<span class="string">'none'</span>,0.5);
+    hp3=gpatch(FM,V_DEF(:,:,end),CV,<span class="string">'k'</span>,1,2); hp3.FaceColor=<span class="string">'interp'</span>;
+
+    colormap(warmcold(250)); hc=colorbar;
+    caxis([-maxGridStrain maxGridStrain]);
+    hc.Ticks=linspace(-maxGridStrain,maxGridStrain,7);
+    axisGeom(gca,fontSize); camlight <span class="string">headlight</span>;
+    axis(axisLim(V_DEF)); <span class="comment">%Set axis limits statically</span>
+    view(0,0); axis <span class="string">off</span>;
+
+    subplot(1,2,2); hold <span class="string">on</span>;
+    xlabel(<span class="string">'Time (s)'</span>); ylabel(<span class="string">'$E_{zz}$'</span>,<span class="string">'Interpreter'</span>,<span class="string">'Latex'</span>);
+    hpl4=plot(timeVec,E_strain_middle_mean,<span class="string">'g.-'</span>,<span class="string">'LineWidth'</span>,3);
+    hpl5=plot(timeVec,gripStrain,<span class="string">'r.-'</span>,<span class="string">'LineWidth'</span>,3);
+    hp4=plot(timeVec(end),E_strain_middle_mean(end),<span class="string">'g.'</span>,<span class="string">'MarkerSize'</span>,50);
+    hp5=plot(timeVec(end),gripStrain(end),<span class="string">'r.'</span>,<span class="string">'MarkerSize'</span>,50);
+    legend([hpl4 hpl5],{<span class="string">'True strain $E_{zz}$'</span>,<span class="string">'"Intended applied" strain $E_{zz}$'</span>},<span class="string">'Location'</span>,<span class="string">'NorthOutside'</span>,<span class="string">'Interpreter'</span>,<span class="string">'Latex'</span>);
+    axis <span class="string">tight</span>; box <span class="string">on</span>; grid <span class="string">on</span>; set(gca,<span class="string">'FontSize'</span>,fontSize);
+
+    <span class="comment">% Set up animation features</span>
+    animStruct.Time=timeVec; <span class="comment">%The time vector</span>
+    <span class="keyword">for</span> qt=1:1:size(N_disp_mat,3) <span class="comment">%Loop over time increments</span>
+        <span class="comment">% [F,CF]=element2patch(E,E_strain(:,:,qt));</span>
+        <span class="comment">% CV=faceToVertexMeasure(F,V,CF);</span>
+        CV=faceToVertexMeasure(E,V,E_strain(:,:,qt));
+
+        <span class="comment">%Set entries in animation structure</span>
+        animStruct.Handles{qt}=[hp1 hp1 hp2 hp3 hp3 hp4 hp4 hp5 hp5]; <span class="comment">%Handles of objects to animate</span>
+        animStruct.Props{qt}={<span class="string">'Vertices'</span>,<span class="string">'CData'</span>,<span class="string">'Vertices'</span>,<span class="string">'Vertices'</span>,<span class="string">'CData'</span>,<span class="string">'XData'</span>,<span class="string">'YData'</span>,<span class="string">'XData'</span>,<span class="string">'YData'</span>}; <span class="comment">%Properties of objects to animate</span>
+        animStruct.Set{qt}={V_DEF(:,:,qt),CV,V_DEF(:,:,qt),V_DEF(:,:,qt),CV,timeVec(qt),E_strain_middle_mean(qt),timeVec(qt),gripStrain(qt)}; <span class="comment">%Property values for to set in order to animate</span>
+    <span class="keyword">end</span>
+    anim8(hf,animStruct); <span class="comment">%Initiate animation feature</span>
+    drawnow;
+</pre><img width="100%" height="auto" vspace="5" hspace="5" src="DEMO_febio_0066_clamp_tension_test_friction_06.jpg" alt=""> <pre class="codeinput"><span class="keyword">end</span>
+</pre><p><img vspace="5" hspace="5" src="gibbVerySmall.gif" alt=""> </p><p><i><b>GIBBON</b></i> <a href="www.gibboncode.org">www.gibboncode.org</a></p><p><i>Kevin Mattheus Moerman</i>, <a href="gibbon.toolbox@gmail.com">gibbon.toolbox@gmail.com</a></p><p><i><b>GIBBON footer text</b></i></p><p>License: <a href="https://github.com/gibbonCode/GIBBON/blob/master/LICENSE">https://github.com/gibbonCode/GIBBON/blob/master/LICENSE</a></p><p>GIBBON: The Geometry and Image-based Bioengineering add-On. A toolbox for image segmentation, image-based modeling, meshing, and finite element analysis.</p><p>Copyright (C) 2006-2022 Kevin Mattheus Moerman and the GIBBON contributors</p><p>This program is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.</p><p>This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for more details.</p><p>You should have received a copy of the GNU General Public License along with this program.  If not, see <a href="http://www.gnu.org/licenses/">http://www.gnu.org/licenses/</a>.</p><p class="footer"><br><a href="https://www.mathworks.com/products/matlab/">Published with MATLAB&reg; R2023a</a><br></p></div><!--
 ##### SOURCE BEGIN #####
 %% DEMO_febio_0066_clamp_tension_test_friction
 % Below is a demonstration for: 
@@ -595,7 +798,7 @@ Proceeding to check log file...10-Aug-2020 10:32:44
 
 %% Keywords
 %
-% * febio_spec version 2.5
+% * febio_spec version 4.0
 % * febio, FEBio
 % * tension, tensile
 % * displacement control, displacement boundary condition
@@ -626,18 +829,18 @@ febioLogFileName_disp=[febioFebFileNamePart,'_disp_out.txt']; %Log file name for
 febioLogFileName_strain=[febioFebFileNamePart,'_energy_out.txt']; %Log file name for exporting strain energy density
 
 %Specifying dimensions and number of elements
-pointSpacingStrip=1; 
+pointSpacing=1; 
 sampleWidth=10;
 sampleThickness=2; 
+sampleClampedHeight=sampleWidth;
 sampleGripGripHeight=sampleWidth.*2;
-sampleClampedHeight=10;
+appliedLinearStrain=0.3;
+clampCompressiveLinearStrain=0.3;
 
-pointSpacingClamp=pointSpacingStrip/2; 
+pointSpacingClamp=pointSpacing; 
 clampExtendAmount=sampleWidth/2;
 
-tensileStrain=0.3;
-clampCompressiveStrain=0.3;
-initialSpacing=pointSpacingStrip/10;
+initialSpacing=0;%pointSpacing/10;
 
 %Initial material parameter set
 c1=1e-3;
@@ -646,39 +849,42 @@ k_factor=100;
 k=c1*k_factor;
 
 % FEA control settings
-numTimeSteps=10; %Number of time steps desired
+numTimeSteps=20; %Number of time steps desired
 max_refs=25; %Max reforms
 max_ups=0; %Set to zero to use full-Newton iterations
-opt_iter=12; %Optimum number of iterations
+opt_iter=6; %Optimum number of iterations
 max_retries=25; %Maximum number of retires
 dtmin=(1/numTimeSteps)/100; %Minimum time step size
 dtmax=1/numTimeSteps; %Maximum time step size
-
 min_residual=1e-20;
 symmetric_stiffness=0;
+
 runMode='external'; %'internal' or 'external'
 
 %Contact parameters
 contactPenalty=10;
+contactType='sliding-elastic'; % 'sticky'
 laugon=0;
 minaug=1;
 maxaug=10;
-fric_coeff=0.5;
+fric_coeff=1;
 
 %% Computing derived parameters
 sampleHeight=sampleGripGripHeight+2*sampleClampedHeight;
-numElementsWidthStrip=ceil(sampleWidth/pointSpacingStrip);
+
+numElementsWidthStrip=ceil(sampleWidth/pointSpacing);
 numElementsWidthStrip=numElementsWidthStrip+iseven(numElementsWidthStrip); %Force uneven so there is a middle element
-numElementsThicknessStrip=ceil(round(sampleThickness/pointSpacingStrip));
-numElementsHeightStrip=ceil(round(sampleHeight/pointSpacingStrip));
+numElementsThicknessStrip=ceil(round(sampleThickness/pointSpacing));
+numElementsHeightStrip=ceil(round(sampleHeight/pointSpacing));
+numElementsHeightStrip=numElementsHeightStrip+iseven(numElementsHeightStrip); %Force uneven so there is a middle element
 
 clampWidth=sampleWidth+(2*clampExtendAmount);
 clampHeight=sampleClampedHeight+(clampExtendAmount);
 numElementsWidthClamp=ceil(clampWidth/pointSpacingClamp);
 numElementsHeightClamp=ceil(clampHeight/pointSpacingClamp);
 
-clampCompressiveDisplacement=(sampleThickness.*clampCompressiveStrain)/2+initialSpacing;
-clampTensionDisplacement=(sampleGripGripHeight.*tensileStrain);
+clampCompressiveDisplacement=((sampleThickness.*clampCompressiveLinearStrain)/2)+initialSpacing;
+clampTensionDisplacement=(sampleGripGripHeight.*appliedLinearStrain);
 
 %% Creating strip region
 % The region consists of three "boxes" which define the upper and lower
@@ -773,15 +979,43 @@ title('Complete model','FontSize',fontSize);
 gpatch(Fb,V,'kw','none',0.25);
 
 gpatch(Fb1,V,'cw','k',1);
-gpatch(Fb2,V,'kw','k',1);
 patchNormPlot(Fb1,V);
+
+gpatch(Fb2,V,'kw','k',1);
 patchNormPlot(Fb2,V);
 
 gpatch(Fc1,V,'rw','k',1);
-gpatch(Fc2,V,'gw','k',1);
-gpatch(Fc3,V,'bw','k',1);
-gpatch(Fc4,V,'yw','k',1);
+patchNormPlot(Fc1,V);
 
+gpatch(Fc2,V,'gw','k',1);
+patchNormPlot(Fc2,V);
+
+gpatch(Fc3,V,'bw','k',1);
+patchNormPlot(Fc3,V);
+
+gpatch(Fc4,V,'yw','k',1);
+patchNormPlot(Fc4,V);
+
+axisGeom(gca,fontSize);
+camlight headlight;
+drawnow; 
+
+%% Get logic for middle elements (to help investigate strain in the middle)
+
+searchTol=pointSpacing/1000; 
+VE=patchCentre(E,V);
+logicMiddleElements= VE(:,3)<searchTol & VE(:,3)>-searchTol;
+
+[FM]=element2patch(E(logicMiddleElements,:),[],'hex8');
+
+%%
+cFigure; hold on;
+gpatch(Fb,V,'kw','k',0.25);
+
+gpatch(FM,V,'rw','k',1);
+
+% hp(1)=plotV(V(bcPrescribeList1,:),'r.','MarkerSize',25);
+% legend(hp,{'Node set 1','Node set 2','Node set 3','Node set 4'})
 axisGeom(gca,fontSize);
 camlight headlight;
 drawnow; 
@@ -790,27 +1024,24 @@ drawnow;
 % See also |febioStructTemplate| and |febioStruct2xml| and the FEBio user
 % manual.
 
-%Get a template with default settings
+%Get a template with default settings 
 [febio_spec]=febioStructTemplate;
 
-%febio_spec version
-febio_spec.ATTR.version='2.5';
+%febio_spec version 
+febio_spec.ATTR.version='4.0'; 
 
 %Module section
-febio_spec.Module.ATTR.type='solid';
+febio_spec.Module.ATTR.type='solid'; 
 
 %Create control structure for use by all steps
-stepStruct.Control.analysis.ATTR.type='static';
 stepStruct.Control.time_steps=numTimeSteps;
 stepStruct.Control.step_size=1/numTimeSteps;
+stepStruct.Control.solver.max_refs=max_refs;
 stepStruct.Control.time_stepper.dtmin=dtmin;
 stepStruct.Control.time_stepper.dtmax=dtmax; 
 stepStruct.Control.time_stepper.max_retries=max_retries;
 stepStruct.Control.time_stepper.opt_iter=opt_iter;
-stepStruct.Control.max_refs=max_refs;
-stepStruct.Control.max_ups=max_ups;
-stepStruct.Control.symmetric_stiffness=symmetric_stiffness;
-stepStruct.Control.min_residual=min_residual;
+stepStruct.Control.solver.symmetric_stiffness=symmetric_stiffness;
 
 %Add template based default settings to proposed control section
 [stepStruct.Control]=structComplete(stepStruct.Control,febio_spec.Control,1); %Complement provided with default if missing
@@ -818,14 +1049,15 @@ stepStruct.Control.min_residual=min_residual;
 %Remove control field (part of template) since step specific control sections are used
 febio_spec=rmfield(febio_spec,'Control'); 
 
-febio_spec.Step{1}.ATTR.id=1;
-febio_spec.Step{1}.Control=stepStruct.Control;
-febio_spec.Step{2}.ATTR.id=2;
-febio_spec.Step{2}.Control=stepStruct.Control;
+febio_spec.Step.step{1}.Control=stepStruct.Control;
+febio_spec.Step.step{1}.ATTR.id=1;
+febio_spec.Step.step{2}.Control=stepStruct.Control;
+febio_spec.Step.step{2}.ATTR.id=2;
 
 %Material section
+materialName1='Material1';
+febio_spec.Material.material{1}.ATTR.name=materialName1;
 febio_spec.Material.material{1}.ATTR.id=1;
-febio_spec.Material.material{1}.ATTR.name='Normal material';
 febio_spec.Material.material{1}.ATTR.type='Ogden';
 febio_spec.Material.material{1}.c1=c1;
 febio_spec.Material.material{1}.m1=m1;
@@ -833,21 +1065,29 @@ febio_spec.Material.material{1}.c2=c1;
 febio_spec.Material.material{1}.m2=-m1;
 febio_spec.Material.material{1}.k=k;
 
+materialName2='Material2';
+febio_spec.Material.material{2}.ATTR.name=materialName2;
 febio_spec.Material.material{2}.ATTR.type='rigid body';
 febio_spec.Material.material{2}.ATTR.id=2;
 febio_spec.Material.material{2}.density=1;
 febio_spec.Material.material{2}.center_of_mass=mean(Vc1,1);
 
+materialName3='Material3';
+febio_spec.Material.material{3}.ATTR.name=materialName3;
 febio_spec.Material.material{3}.ATTR.type='rigid body';
 febio_spec.Material.material{3}.ATTR.id=3;
 febio_spec.Material.material{3}.density=1;
 febio_spec.Material.material{3}.center_of_mass=mean(Vc2,1);
 
+materialName4='Material4';
+febio_spec.Material.material{4}.ATTR.name=materialName4;
 febio_spec.Material.material{4}.ATTR.type='rigid body';
 febio_spec.Material.material{4}.ATTR.id=4;
 febio_spec.Material.material{4}.density=1;
 febio_spec.Material.material{4}.center_of_mass=mean(Vc3,1);
 
+materialName5='Material5';
+febio_spec.Material.material{5}.ATTR.name=materialName5;
 febio_spec.Material.material{5}.ATTR.type='rigid body';
 febio_spec.Material.material{5}.ATTR.id=5;
 febio_spec.Material.material{5}.density=1;
@@ -855,65 +1095,86 @@ febio_spec.Material.material{5}.center_of_mass=mean(Vc4,1);
 
 %Geometry section
 % -> Nodes
-febio_spec.Geometry.Nodes{1}.ATTR.name='nodeSet_all'; %The node set name
-febio_spec.Geometry.Nodes{1}.node.ATTR.id=(1:size(V,1))'; %The node id's
-febio_spec.Geometry.Nodes{1}.node.VAL=V; %The nodel coordinates
+febio_spec.Mesh.Nodes{1}.ATTR.name='nodeSet_all'; %The node set name
+febio_spec.Mesh.Nodes{1}.node.ATTR.id=mcol(1:size(V,1)); %The node id's
+febio_spec.Mesh.Nodes{1}.node.VAL=V; %The nodel coordinates
 
 % -> Elements
-febio_spec.Geometry.Elements{1}.ATTR.type='hex8'; %Element type of this set
-febio_spec.Geometry.Elements{1}.ATTR.mat=1; %material index for this set 
-febio_spec.Geometry.Elements{1}.ATTR.name='Strip'; %Name of the element set
-febio_spec.Geometry.Elements{1}.elem.VAL=E;
-febio_spec.Geometry.Elements{1}.elem.ATTR.id=(1:size(E,1))'; %Element material id's
+partName1='Part1_strip';
+febio_spec.Mesh.Elements{1}.ATTR.name=partName1; %Name of the element set
+febio_spec.Mesh.Elements{1}.ATTR.type='hex8'; %Element type of this set
+febio_spec.Mesh.Elements{1}.ATTR.mat=1; %material index for this set 
+febio_spec.Mesh.Elements{1}.elem.VAL=E;
+febio_spec.Mesh.Elements{1}.elem.ATTR.id=mcol(1:size(E,1)); %Element material id's
 
-febio_spec.Geometry.Elements{2}.ATTR.type='quad4'; %Element type of this set
-febio_spec.Geometry.Elements{2}.ATTR.mat=2; %material index for this set 
-febio_spec.Geometry.Elements{2}.ATTR.name='Grip1'; %Name of the element set
-febio_spec.Geometry.Elements{2}.elem.VAL=Fc1;
-febio_spec.Geometry.Elements{2}.elem.ATTR.id=size(E,1)+(1:size(Fc1,1))'; %Element material id's
+partName2='Part2_Grip1';
+febio_spec.Mesh.Elements{2}.ATTR.name=partName2; %Name of the element set
+febio_spec.Mesh.Elements{2}.ATTR.type='quad4'; %Element type of this set
+febio_spec.Mesh.Elements{2}.ATTR.mat=2; %material index for this set 
+febio_spec.Mesh.Elements{2}.elem.VAL=Fc1;
+febio_spec.Mesh.Elements{2}.elem.ATTR.id=size(E,1)+mcol(1:size(Fc1,1)); %Element material id's
 
-febio_spec.Geometry.Elements{3}.ATTR.type='quad4'; %Element type of this set
-febio_spec.Geometry.Elements{3}.ATTR.mat=3; %material index for this set 
-febio_spec.Geometry.Elements{3}.ATTR.name='Grip2'; %Name of the element set
-febio_spec.Geometry.Elements{3}.elem.VAL=Fc2;
-febio_spec.Geometry.Elements{3}.elem.ATTR.id=size(E,1)+size(Fc1,1)+(1:size(Fc2,1))'; %Element material id's
+partName3='Part3_Grip2';
+febio_spec.Mesh.Elements{3}.ATTR.name=partName3; %Name of the element set
+febio_spec.Mesh.Elements{3}.ATTR.type='quad4'; %Element type of this set
+febio_spec.Mesh.Elements{3}.ATTR.mat=3; %material index for this set 
+febio_spec.Mesh.Elements{3}.elem.VAL=Fc2;
+febio_spec.Mesh.Elements{3}.elem.ATTR.id=size(E,1)+size(Fc1,1)+mcol(1:size(Fc2,1)); %Element material id's
 
-febio_spec.Geometry.Elements{4}.ATTR.type='quad4'; %Element type of this set
-febio_spec.Geometry.Elements{4}.ATTR.mat=4; %material index for this set 
-febio_spec.Geometry.Elements{4}.ATTR.name='Grip3'; %Name of the element set
-febio_spec.Geometry.Elements{4}.elem.VAL=Fc3;
-febio_spec.Geometry.Elements{4}.elem.ATTR.id=size(E,1)+2*size(Fc1,1)+(1:size(Fc3,1))'; %Element material id's
+partName4='Part4_Grip3';
+febio_spec.Mesh.Elements{4}.ATTR.name=partName4; %Name of the element set
+febio_spec.Mesh.Elements{4}.ATTR.type='quad4'; %Element type of this set
+febio_spec.Mesh.Elements{4}.ATTR.mat=4; %material index for this set 
+febio_spec.Mesh.Elements{4}.elem.VAL=Fc3;
+febio_spec.Mesh.Elements{4}.elem.ATTR.id=size(E,1)+2*size(Fc1,1)+mcol(1:size(Fc3,1)); %Element material id's
 
-febio_spec.Geometry.Elements{5}.ATTR.type='quad4'; %Element type of this set
-febio_spec.Geometry.Elements{5}.ATTR.mat=5; %material index for this set 
-febio_spec.Geometry.Elements{5}.ATTR.name='Grip4'; %Name of the element set
-febio_spec.Geometry.Elements{5}.elem.VAL=Fc4;
-febio_spec.Geometry.Elements{5}.elem.ATTR.id=size(E,1)+3*size(Fc1,1)+(1:size(Fc4,1))'; %Element material id's
+partName5='Part5_Grip4';
+febio_spec.Mesh.Elements{5}.ATTR.name=partName5; %Name of the element set
+febio_spec.Mesh.Elements{5}.ATTR.type='quad4'; %Element type of this set
+febio_spec.Mesh.Elements{5}.ATTR.mat=5; %material index for this set 
+febio_spec.Mesh.Elements{5}.elem.VAL=Fc4;
+febio_spec.Mesh.Elements{5}.elem.ATTR.id=size(E,1)+3*size(Fc1,1)+mcol(1:size(Fc4,1)); %Element material id's
+
+%MeshDomains section
+febio_spec.MeshDomains.SolidDomain.ATTR.name=partName1;
+febio_spec.MeshDomains.SolidDomain.ATTR.mat=materialName1;
+
+febio_spec.MeshDomains.ShellDomain{1}.ATTR.name=partName2;
+febio_spec.MeshDomains.ShellDomain{1}.ATTR.mat=materialName2;
+
+febio_spec.MeshDomains.ShellDomain{2}.ATTR.name=partName3;
+febio_spec.MeshDomains.ShellDomain{2}.ATTR.mat=materialName3;
+
+febio_spec.MeshDomains.ShellDomain{3}.ATTR.name=partName4;
+febio_spec.MeshDomains.ShellDomain{3}.ATTR.mat=materialName4;
+
+febio_spec.MeshDomains.ShellDomain{4}.ATTR.name=partName5;
+febio_spec.MeshDomains.ShellDomain{4}.ATTR.mat=materialName5;
 
 % -> Surfaces
-febio_spec.Geometry.Surface{1}.ATTR.name='contact_master1';
-febio_spec.Geometry.Surface{1}.quad4.ATTR.lid=(1:1:size(Fc1,1))';
-febio_spec.Geometry.Surface{1}.quad4.VAL=Fc1;
+febio_spec.Mesh.Surface{1}.ATTR.name='contact_secondary1';
+febio_spec.Mesh.Surface{1}.quad4.ATTR.id=mcol(1:1:size(Fc1,1));
+febio_spec.Mesh.Surface{1}.quad4.VAL=Fc1;
 
-febio_spec.Geometry.Surface{2}.ATTR.name='contact_master2';
-febio_spec.Geometry.Surface{2}.quad4.ATTR.lid=(1:1:size(Fc2,1))';
-febio_spec.Geometry.Surface{2}.quad4.VAL=Fc2;
+febio_spec.Mesh.Surface{2}.ATTR.name='contact_secondary2';
+febio_spec.Mesh.Surface{2}.quad4.ATTR.id=mcol(1:1:size(Fc2,1));
+febio_spec.Mesh.Surface{2}.quad4.VAL=Fc2;
 
-febio_spec.Geometry.Surface{3}.ATTR.name='contact_master3';
-febio_spec.Geometry.Surface{3}.quad4.ATTR.lid=(1:1:size(Fc3,1))';
-febio_spec.Geometry.Surface{3}.quad4.VAL=Fc3;
+febio_spec.Mesh.Surface{3}.ATTR.name='contact_secondary3';
+febio_spec.Mesh.Surface{3}.quad4.ATTR.id=mcol(1:1:size(Fc3,1));
+febio_spec.Mesh.Surface{3}.quad4.VAL=Fc3;
 
-febio_spec.Geometry.Surface{4}.ATTR.name='contact_master4';
-febio_spec.Geometry.Surface{4}.quad4.ATTR.lid=(1:1:size(Fc4,1))';
-febio_spec.Geometry.Surface{4}.quad4.VAL=Fc4;
+febio_spec.Mesh.Surface{4}.ATTR.name='contact_secondary4';
+febio_spec.Mesh.Surface{4}.quad4.ATTR.id=mcol(1:1:size(Fc4,1));
+febio_spec.Mesh.Surface{4}.quad4.VAL=Fc4;
 
-febio_spec.Geometry.Surface{5}.ATTR.name='contact_slave1';
-febio_spec.Geometry.Surface{5}.quad4.ATTR.lid=(1:1:size(Fb1,1))';
-febio_spec.Geometry.Surface{5}.quad4.VAL=Fb1;
+febio_spec.Mesh.Surface{5}.ATTR.name='contact_primary1';
+febio_spec.Mesh.Surface{5}.quad4.ATTR.id=mcol(1:1:size(Fb1,1));
+febio_spec.Mesh.Surface{5}.quad4.VAL=Fb1;
 
-febio_spec.Geometry.Surface{6}.ATTR.name='contact_slave2';
-febio_spec.Geometry.Surface{6}.quad4.ATTR.lid=(1:1:size(Fb2,1))';
-febio_spec.Geometry.Surface{6}.quad4.VAL=Fb2;
+febio_spec.Mesh.Surface{6}.ATTR.name='contact_primary2';
+febio_spec.Mesh.Surface{6}.quad4.ATTR.id=mcol(1:1:size(Fb2,1));
+febio_spec.Mesh.Surface{6}.quad4.VAL=Fb2;
 
 % -> Surface pairs
 for q=1:1:4
@@ -922,136 +1183,129 @@ for q=1:1:4
     else
         indStrip=6;
     end    
-    febio_spec.Geometry.SurfacePair{q}.ATTR.name=['Contact_',num2str(q)];
-    febio_spec.Geometry.SurfacePair{q}.master.ATTR.surface=febio_spec.Geometry.Surface{q}.ATTR.name;
-    febio_spec.Geometry.SurfacePair{q}.slave.ATTR.surface=febio_spec.Geometry.Surface{indStrip}.ATTR.name;    
+    febio_spec.Mesh.SurfacePair{q}.ATTR.name=['Contact_',num2str(q)];
+    febio_spec.Mesh.SurfacePair{q}.primary=febio_spec.Mesh.Surface{indStrip}.ATTR.name;
+    febio_spec.Mesh.SurfacePair{q}.secondary=febio_spec.Mesh.Surface{q}.ATTR.name;        
 end
 
-%Boundary condition section 
-% -> Prescribe boundary conditions
-%STEP 1 Clamp compression
+%Rigid section 
 
-%Set 1
-% -> Prescribed boundary conditions on the rigid body
-febio_spec.Step{1}.Boundary.rigid_body{1}.ATTR.mat=2;
-febio_spec.Step{1}.Boundary.rigid_body{1}.fixed{1}.ATTR.bc='x';
-febio_spec.Step{1}.Boundary.rigid_body{1}.fixed{2}.ATTR.bc='z';
-febio_spec.Step{1}.Boundary.rigid_body{1}.fixed{3}.ATTR.bc='Rx';
-febio_spec.Step{1}.Boundary.rigid_body{1}.fixed{4}.ATTR.bc='Ry';
-febio_spec.Step{1}.Boundary.rigid_body{1}.fixed{5}.ATTR.bc='Rz';
-febio_spec.Step{1}.Boundary.rigid_body{1}.prescribed.ATTR.bc='y';
-febio_spec.Step{1}.Boundary.rigid_body{1}.prescribed.ATTR.lc=1;
-febio_spec.Step{1}.Boundary.rigid_body{1}.prescribed.VAL=-clampCompressiveDisplacement;
+rbIds=[2 3 4 5]; %Rigid body ids
+s=[-1 1 -1 1]; %sign/multiplier
+bcId=0;
+for q=1:1:numel(rbIds)
+    
+    bcId=bcId+1;
 
-febio_spec.Step{1}.Boundary.rigid_body{2}.ATTR.mat=3;
-febio_spec.Step{1}.Boundary.rigid_body{2}.fixed{1}.ATTR.bc='x';
-febio_spec.Step{1}.Boundary.rigid_body{2}.fixed{2}.ATTR.bc='z';
-febio_spec.Step{1}.Boundary.rigid_body{2}.fixed{3}.ATTR.bc='Rx';
-febio_spec.Step{1}.Boundary.rigid_body{2}.fixed{4}.ATTR.bc='Ry';
-febio_spec.Step{1}.Boundary.rigid_body{2}.fixed{5}.ATTR.bc='Rz';
-febio_spec.Step{1}.Boundary.rigid_body{2}.prescribed.ATTR.bc='y';
-febio_spec.Step{1}.Boundary.rigid_body{2}.prescribed.ATTR.lc=1;
-febio_spec.Step{1}.Boundary.rigid_body{2}.prescribed.VAL=clampCompressiveDisplacement;
+    % ->Rigid body fix boundary conditions
+    febio_spec.Step.step{1}.Rigid.rigid_bc{bcId}.ATTR.name=['RigidFix_rb',num2str(rbIds(q)),'_01'];
+    febio_spec.Step.step{1}.Rigid.rigid_bc{bcId}.ATTR.type='rigid_fixed';
+    febio_spec.Step.step{1}.Rigid.rigid_bc{bcId}.rb=rbIds(q);
+    febio_spec.Step.step{1}.Rigid.rigid_bc{bcId}.Rx_dof=1;
+    %febio_spec.Step.step{1}.Rigid.rigid_bc{bcId}.Ry_dof=1;
+    febio_spec.Step.step{1}.Rigid.rigid_bc{bcId}.Rz_dof=1;
+    febio_spec.Step.step{1}.Rigid.rigid_bc{bcId}.Ru_dof=1;
+    febio_spec.Step.step{1}.Rigid.rigid_bc{bcId}.Rv_dof=1;
+    febio_spec.Step.step{1}.Rigid.rigid_bc{bcId}.Rw_dof=1;
 
-febio_spec.Step{1}.Boundary.rigid_body{3}.ATTR.mat=4;
-febio_spec.Step{1}.Boundary.rigid_body{3}.fixed{1}.ATTR.bc='x';
-febio_spec.Step{1}.Boundary.rigid_body{3}.fixed{2}.ATTR.bc='z';
-febio_spec.Step{1}.Boundary.rigid_body{3}.fixed{3}.ATTR.bc='Rx';
-febio_spec.Step{1}.Boundary.rigid_body{3}.fixed{4}.ATTR.bc='Ry';
-febio_spec.Step{1}.Boundary.rigid_body{3}.fixed{5}.ATTR.bc='Rz';
-febio_spec.Step{1}.Boundary.rigid_body{3}.prescribed.ATTR.bc='y';
-febio_spec.Step{1}.Boundary.rigid_body{3}.prescribed.ATTR.lc=1;
-febio_spec.Step{1}.Boundary.rigid_body{3}.prescribed.VAL=-clampCompressiveDisplacement;
+    bcId=bcId+1;
 
-febio_spec.Step{1}.Boundary.rigid_body{4}.ATTR.mat=5;
-febio_spec.Step{1}.Boundary.rigid_body{4}.fixed{1}.ATTR.bc='x';
-febio_spec.Step{1}.Boundary.rigid_body{4}.fixed{2}.ATTR.bc='z';
-febio_spec.Step{1}.Boundary.rigid_body{4}.fixed{3}.ATTR.bc='Rx';
-febio_spec.Step{1}.Boundary.rigid_body{4}.fixed{4}.ATTR.bc='Ry';
-febio_spec.Step{1}.Boundary.rigid_body{4}.fixed{5}.ATTR.bc='Rz';
-febio_spec.Step{1}.Boundary.rigid_body{4}.prescribed.ATTR.bc='y';
-febio_spec.Step{1}.Boundary.rigid_body{4}.prescribed.ATTR.lc=1;
-febio_spec.Step{1}.Boundary.rigid_body{4}.prescribed.VAL=clampCompressiveDisplacement;
+    % ->Rigid body prescribe boundary conditions
+    febio_spec.Step.step{1}.Rigid.rigid_bc{bcId}.ATTR.name=['RigidPrescribe_rb',num2str(rbIds(q)),'_01'];
+    febio_spec.Step.step{1}.Rigid.rigid_bc{bcId}.ATTR.type='rigid_displacement';
+    febio_spec.Step.step{1}.Rigid.rigid_bc{bcId}.rb=rbIds(q);
+    febio_spec.Step.step{1}.Rigid.rigid_bc{bcId}.dof='y';
+    febio_spec.Step.step{1}.Rigid.rigid_bc{bcId}.value.ATTR.lc=1;
+    febio_spec.Step.step{1}.Rigid.rigid_bc{bcId}.value.VAL=s(q).*clampCompressiveDisplacement;
+    febio_spec.Step.step{1}.Rigid.rigid_bc{bcId}.relative=0;
 
-%STEP 2 Tension
-%Set 1
-febio_spec.Step{2}.Boundary.rigid_body{1}.ATTR.mat=2;
-febio_spec.Step{2}.Boundary.rigid_body{1}.fixed{1}.ATTR.bc='x';
-febio_spec.Step{2}.Boundary.rigid_body{1}.fixed{2}.ATTR.bc='y';
-febio_spec.Step{2}.Boundary.rigid_body{1}.fixed{3}.ATTR.bc='Rx';
-febio_spec.Step{2}.Boundary.rigid_body{1}.fixed{4}.ATTR.bc='Ry';
-febio_spec.Step{2}.Boundary.rigid_body{1}.fixed{5}.ATTR.bc='Rz';
-febio_spec.Step{2}.Boundary.rigid_body{1}.prescribed.ATTR.bc='z';
-febio_spec.Step{2}.Boundary.rigid_body{1}.prescribed.ATTR.lc=2;
-febio_spec.Step{2}.Boundary.rigid_body{1}.prescribed.VAL=clampTensionDisplacement;
+end
 
-febio_spec.Step{2}.Boundary.rigid_body{2}.ATTR.mat=3;
-febio_spec.Step{2}.Boundary.rigid_body{2}.fixed{1}.ATTR.bc='x';
-febio_spec.Step{2}.Boundary.rigid_body{2}.fixed{2}.ATTR.bc='y';
-febio_spec.Step{2}.Boundary.rigid_body{2}.fixed{3}.ATTR.bc='Rx';
-febio_spec.Step{2}.Boundary.rigid_body{2}.fixed{4}.ATTR.bc='Ry';
-febio_spec.Step{2}.Boundary.rigid_body{2}.fixed{5}.ATTR.bc='Rz';
-febio_spec.Step{2}.Boundary.rigid_body{2}.prescribed.ATTR.bc='z';
-febio_spec.Step{2}.Boundary.rigid_body{2}.prescribed.ATTR.lc=2;
-febio_spec.Step{2}.Boundary.rigid_body{2}.prescribed.VAL=clampTensionDisplacement;
+rbIds=[2 3 4 5]; %Rigid body ids
+s=[1 1 0 0]; %sign/multiplier
+bcId=0;
+for q=1:1:numel(rbIds)
+    
+    bcId=bcId+1;
 
-febio_spec.Step{2}.Boundary.rigid_body{3}.ATTR.mat=4;
-febio_spec.Step{2}.Boundary.rigid_body{3}.fixed{1}.ATTR.bc='x';
-febio_spec.Step{2}.Boundary.rigid_body{3}.fixed{2}.ATTR.bc='y';
-febio_spec.Step{2}.Boundary.rigid_body{3}.fixed{3}.ATTR.bc='Rx';
-febio_spec.Step{2}.Boundary.rigid_body{3}.fixed{4}.ATTR.bc='Ry';
-febio_spec.Step{2}.Boundary.rigid_body{3}.fixed{5}.ATTR.bc='Rz';
-febio_spec.Step{2}.Boundary.rigid_body{3}.prescribed.ATTR.bc='z';
-febio_spec.Step{2}.Boundary.rigid_body{3}.prescribed.ATTR.lc=2;
-febio_spec.Step{2}.Boundary.rigid_body{3}.prescribed.VAL=-clampTensionDisplacement;
+    % ->Rigid body fix boundary conditions
+    febio_spec.Step.step{2}.Rigid.rigid_bc{bcId}.ATTR.name=['RigidFix_rb',num2str(rbIds(q)),'_02'];
+    febio_spec.Step.step{2}.Rigid.rigid_bc{bcId}.ATTR.type='rigid_fixed';
+    febio_spec.Step.step{2}.Rigid.rigid_bc{bcId}.rb=rbIds(q);
+    febio_spec.Step.step{2}.Rigid.rigid_bc{bcId}.Rx_dof=1;
+    febio_spec.Step.step{2}.Rigid.rigid_bc{bcId}.Ry_dof=1;
+    %febio_spec.Step.step{2}.Rigid.rigid_bc{bcId}.Rz_dof=1;
+    febio_spec.Step.step{2}.Rigid.rigid_bc{bcId}.Ru_dof=1;
+    febio_spec.Step.step{2}.Rigid.rigid_bc{bcId}.Rv_dof=1;
+    febio_spec.Step.step{2}.Rigid.rigid_bc{bcId}.Rw_dof=1;
 
-febio_spec.Step{2}.Boundary.rigid_body{4}.ATTR.mat=5;
-febio_spec.Step{2}.Boundary.rigid_body{4}.fixed{1}.ATTR.bc='x';
-febio_spec.Step{2}.Boundary.rigid_body{4}.fixed{2}.ATTR.bc='y';
-febio_spec.Step{2}.Boundary.rigid_body{4}.fixed{3}.ATTR.bc='Rx';
-febio_spec.Step{2}.Boundary.rigid_body{4}.fixed{4}.ATTR.bc='Ry';
-febio_spec.Step{2}.Boundary.rigid_body{4}.fixed{5}.ATTR.bc='Rz';
-febio_spec.Step{2}.Boundary.rigid_body{4}.prescribed.ATTR.bc='z';
-febio_spec.Step{2}.Boundary.rigid_body{4}.prescribed.ATTR.lc=2;
-febio_spec.Step{2}.Boundary.rigid_body{4}.prescribed.VAL=-clampTensionDisplacement;
+    bcId=bcId+1;
+
+    % ->Rigid body prescribe boundary conditions
+    febio_spec.Step.step{2}.Rigid.rigid_bc{bcId}.ATTR.name=['RigidPrescribe_rb',num2str(rbIds(q)),'_02'];
+    febio_spec.Step.step{2}.Rigid.rigid_bc{bcId}.ATTR.type='rigid_displacement';
+    febio_spec.Step.step{2}.Rigid.rigid_bc{bcId}.rb=rbIds(q);
+    febio_spec.Step.step{2}.Rigid.rigid_bc{bcId}.dof='z';
+    febio_spec.Step.step{2}.Rigid.rigid_bc{bcId}.value.ATTR.lc=2;
+    febio_spec.Step.step{2}.Rigid.rigid_bc{bcId}.value.VAL=s(q).*clampTensionDisplacement;
+    febio_spec.Step.step{2}.Rigid.rigid_bc{bcId}.relative=1;
+
+end
 
 %Contact section
 for q=1:1:4
-%     febio_spec.Contact.contact{q}.ATTR.surface_pair=febio_spec.Geometry.SurfacePair{q}.ATTR.name;
-%     febio_spec.Contact.contact{q}.ATTR.type='sticky';
-%     febio_spec.Contact.contact{q}.penalty=100;
-%     febio_spec.Contact.contact{q}.laugon=0;
-%     febio_spec.Contact.contact{q}.tolerance=0.1;
-%     febio_spec.Contact.contact{q}.minaug=0;
-%     febio_spec.Contact.contact{q}.maxaug=10;
-%     febio_spec.Contact.contact{q}.snap_tol=0;
-%     febio_spec.Contact.contact{q}.max_traction=0;
-%     febio_spec.Contact.contact{q}.search_tolerance=0.1;
-febio_spec.Contact.contact{q}.ATTR.surface_pair=febio_spec.Geometry.SurfacePair{q}.ATTR.name;
-febio_spec.Contact.contact{q}.ATTR.type='sliding-elastic';
-febio_spec.Contact.contact{q}.two_pass=1;
-febio_spec.Contact.contact{q}.laugon=laugon;
-febio_spec.Contact.contact{q}.tolerance=0.2;
-febio_spec.Contact.contact{q}.gaptol=0;
-febio_spec.Contact.contact{q}.minaug=minaug;
-febio_spec.Contact.contact{q}.maxaug=maxaug;
-febio_spec.Contact.contact{q}.search_tol=0.01;
-febio_spec.Contact.contact{q}.search_radius=0.1;
-febio_spec.Contact.contact{q}.symmetric_stiffness=0;
-febio_spec.Contact.contact{q}.auto_penalty=1;
-febio_spec.Contact.contact{q}.penalty=contactPenalty;
-febio_spec.Contact.contact{q}.fric_coeff=fric_coeff;
+    %Contact section
+    switch contactType
+        case 'sliding-elastic'
+            febio_spec.Contact.contact{q}.ATTR.type=contactType;
+            febio_spec.Contact.contact{q}.ATTR.surface_pair=febio_spec.Mesh.SurfacePair{q}.ATTR.name;
+            febio_spec.Contact.contact{q}.two_pass=0;
+            febio_spec.Contact.contact{q}.laugon=laugon;
+            febio_spec.Contact.contact{q}.tolerance=0.2;
+            febio_spec.Contact.contact{q}.gaptol=0;
+            febio_spec.Contact.contact{q}.minaug=minaug;
+            febio_spec.Contact.contact{q}.maxaug=maxaug;
+            febio_spec.Contact.contact{q}.search_tol=0.01;
+            febio_spec.Contact.contact{q}.search_radius=0.1*sqrt(sum((max(V,[],1)-min(V,[],1)).^2,2));
+            febio_spec.Contact.contact{q}.symmetric_stiffness=0;
+            febio_spec.Contact.contact{q}.auto_penalty=1;
+            febio_spec.Contact.contact{q}.update_penalty=1;
+            febio_spec.Contact.contact{q}.penalty=contactPenalty;
+            febio_spec.Contact.contact{q}.fric_coeff=fric_coeff;
+        case 'sticky'
+            febio_spec.Contact.contact{q}.ATTR.type=contactType;
+            febio_spec.Contact.contact{q}.ATTR.surface_pair=febio_spec.Mesh.SurfacePair{q}.ATTR.name;
+                        
+            febio_spec.Contact.contact{q}.penalty=contactPenalty;              
 
+            febio_spec.Contact.contact{q}.laugon=laugon;
+            febio_spec.Contact.contact{q}.minaug=minaug;
+            febio_spec.Contact.contact{q}.maxaug=maxaug;
+            febio_spec.Contact.contact{q}.tolerance=0.2;
+
+            febio_spec.Contact.contact{q}.search_tolerance=0.01;
+            febio_spec.Contact.contact{q}.max_traction=0;
+            febio_spec.Contact.contact{q}.snap_tol=0.01;   
+    end
 end
 
 %LoadData section
-febio_spec.LoadData.loadcurve{1}.ATTR.id=1;
-febio_spec.LoadData.loadcurve{1}.ATTR.type='linear';
-febio_spec.LoadData.loadcurve{1}.point.VAL=[0 0; 1 1; 2 1];
+% -> load_controller
+febio_spec.LoadData.load_controller{1}.ATTR.name='LC_1';
+febio_spec.LoadData.load_controller{1}.ATTR.id=1;
+febio_spec.LoadData.load_controller{1}.ATTR.type='loadcurve';
+febio_spec.LoadData.load_controller{1}.interpolate='LINEAR';
+%febio_spec.LoadData.load_controller{1}.extend='CONSTANT';
+febio_spec.LoadData.load_controller{1}.points.pt.VAL=[0 0; 1 1; 2 1];
 
-febio_spec.LoadData.loadcurve{2}.ATTR.id=2;
-febio_spec.LoadData.loadcurve{2}.ATTR.type='linear';
-febio_spec.LoadData.loadcurve{2}.point.VAL=[0 0; 1 0; 2 1];
+%LoadData section
+% -> load_controller
+febio_spec.LoadData.load_controller{2}.ATTR.name='LC_2';
+febio_spec.LoadData.load_controller{2}.ATTR.id=2;
+febio_spec.LoadData.load_controller{2}.ATTR.type='loadcurve';
+febio_spec.LoadData.load_controller{2}.interpolate='LINEAR';
+%febio_spec.LoadData.load_controller{2}.extend='CONSTANT';
+febio_spec.LoadData.load_controller{2}.points.pt.VAL=[0 0; 1 0; 2 1];
 
 %Output section
 % -> log file
@@ -1059,12 +1313,14 @@ febio_spec.Output.logfile.ATTR.file=febioLogFileName;
 febio_spec.Output.logfile.node_data{1}.ATTR.file=febioLogFileName_disp;
 febio_spec.Output.logfile.node_data{1}.ATTR.data='ux;uy;uz';
 febio_spec.Output.logfile.node_data{1}.ATTR.delim=',';
-febio_spec.Output.logfile.node_data{1}.VAL=1:size(V,1);
 
 febio_spec.Output.logfile.element_data{1}.ATTR.file=febioLogFileName_strain;
 febio_spec.Output.logfile.element_data{1}.ATTR.data='Ez';
 febio_spec.Output.logfile.element_data{1}.ATTR.delim=',';
 febio_spec.Output.logfile.element_data{1}.VAL=1:1:size(E,1);
+
+% Plotfile section
+febio_spec.Output.plotfile.compression=0;
 
 %% Quick viewing of the FEBio input file structure
 % The |febView| function can be used to view the xml structure in a MATLAB
@@ -1101,73 +1357,113 @@ febioAnalysis.maxLogCheckTime=10; %Max log file checking time
 
 if runFlag==1 %i.e. a succesful run
     
-    %%
+    %%     
     % Importing nodal displacements from a log file
-    [time_mat, N_disp_mat,~]=importFEBio_logfile(fullfile(savePath,febioLogFileName_disp)); %Nodal displacements
-    time_mat=[0; time_mat(:)]; %Time
+
+    dataStruct=importFEBio_logfile(fullfile(savePath,febioLogFileName_disp),0,1);
     
-    N_disp_mat=N_disp_mat(:,2:end,:);
-    sizImport=size(N_disp_mat);
-    sizImport(3)=sizImport(3)+1;
-    N_disp_mat_n=zeros(sizImport);
-    N_disp_mat_n(:,:,2:end)=N_disp_mat;
-    N_disp_mat=N_disp_mat_n;
-    DN=N_disp_mat(:,:,end);
-    DN_magnitude=sqrt(sum(DN(:,3).^2,2));
-    V_DEF=N_disp_mat+repmat(V,[1 1 size(N_disp_mat,3)]); 
+    %Access data
+    N_disp_mat=dataStruct.data; %Displacement
+    timeVec=dataStruct.time; %Time
+    
+    %Create deformed coordinate set
+    V_DEF=N_disp_mat+repmat(V,[1 1 size(N_disp_mat,3)]);
+
     
     %%
-    % Importing element strain energies from a log file
-    [~,E_strain,~]=importFEBio_logfile(fullfile(savePath,febioLogFileName_strain)); %Element strain energy
+    % Importing element strain data from a log file
+    dataStruct=importFEBio_logfile(fullfile(savePath,febioLogFileName_strain),0,1);
     
-    %Remove nodal index column
-    E_strain=E_strain(:,2:end,:);
+    %Access data
+    E_strain=dataStruct.data;
     
-    %Add initial state i.e. zero energy
-    sizImport=size(E_strain); 
-    sizImport(3)=sizImport(3)+1;
-    E_energy_mat_n=zeros(sizImport);
-    E_energy_mat_n(:,:,2:end)=E_strain;
-    E_strain=E_energy_mat_n;
-    
-    [F,CF]=element2patch(E,E_strain(:,:,1));
-    CF_V=faceToVertexMeasure(F,V,CF);
-    
-    %%
+    [F,CF]=element2patch(E,E_strain(:,:,end));
+    CV=faceToVertexMeasure(F,V,CF);
+
+    E_strain_middle_mean=squeeze(mean(E_strain(logicMiddleElements,:,:),1));
+
+    %% Compute grimp implied strain
+    gripStrainLinear=double(timeVec>1).*(timeVec-1).*appliedLinearStrain; 
+    gripStrain=1/2*((gripStrainLinear+1).^2-1); %Green-Lagrange strain
+    maxGridStrain=max(abs(gripStrain));
+
+      %%
     % Plotting the simulated results using |anim8| to visualize and animate
     % deformations
     
-    axLim=[min(min(V_DEF,[],3),[],1); max(max(V_DEF,[],3),[],1)];
-        
     % Create basic view and store graphics handle to initiate animation
     hf=cFigure; hold on;%Open figure
     gtitle([febioFebFileNamePart,': Press play to animate']);
-    hp1=gpatch(Fb,V_DEF(:,:,end),CF_V,'k',1);
+    title('$E_{zz}$','Interpreter','Latex')
+    hp1=gpatch(Fb,V_DEF(:,:,end),CV,'k',1);
     hp1.FaceColor='interp';
-    hp2=gpatch(Fc,V_DEF(:,:,end),'kw','none',0.5);
-%     patchNormPlot(Fc,V);
+    hp2=gpatch(Fc,V_DEF(:,:,end),'w','none',0.5);
+    
     axisGeom(gca,fontSize);
-    colormap(warmcold(250)); colorbar;
-    caxis([-tensileStrain tensileStrain]);
-    axis(axLim(:)'); %Set axis limits statically
+    colormap(warmcold(250)); hc=colorbar;
+    caxis([-maxGridStrain maxGridStrain]);
+    hc.Ticks=linspace(-maxGridStrain,maxGridStrain,7);
+    axis(axisLim(V_DEF)); %Set axis limits statically    
 
     camlight headlight; axis off;
    
     % Set up animation features
-    animStruct.Time=time_mat; %The time vector
+    animStruct.Time=timeVec; %The time vector
     for qt=1:1:size(N_disp_mat,3) %Loop over time increments
-        V_def=V+N_disp_mat(:,:,qt); %Current nodal coordinates
-        
-        [~,CF]=element2patch(E,E_strain(:,:,qt));
-        CF_V=faceToVertexMeasure(F,V,CF);
+       
+        CV=faceToVertexMeasure(E,V,E_strain(:,:,qt));
         
         %Set entries in animation structure
         animStruct.Handles{qt}=[hp1 hp1 hp2]; %Handles of objects to animate
         animStruct.Props{qt}={'Vertices','CData','Vertices'}; %Properties of objects to animate
-        animStruct.Set{qt}={V_def,CF_V,V_def}; %Property values for to set in order to animate
+        animStruct.Set{qt}={V_DEF(:,:,qt),CV,V_DEF(:,:,qt)}; %Property values for to set in order to animate
     end
     anim8(hf,animStruct); %Initiate animation feature
     gdrawnow;
+
+    %%
+    % Plotting the simulated results using |anim8| to visualize and animate
+    % deformations
+    
+    % Create basic view and store graphics handle to initiate animation
+    hf=cFigure; 
+    subplot(1,2,1); hold on;
+    title('$E_{zz}$','Interpreter','Latex');
+    gtitle([febioFebFileNamePart,': Press play to animate']);
+    hp1=gpatch(Fb,V_DEF(:,:,end),CV,'none',1,0.5); hp1.FaceColor='interp';
+    hp2=gpatch(Fc,V_DEF(:,:,end),'w','none',0.5);
+    hp3=gpatch(FM,V_DEF(:,:,end),CV,'k',1,2); hp3.FaceColor='interp';
+    
+    colormap(warmcold(250)); hc=colorbar;
+    caxis([-maxGridStrain maxGridStrain]);
+    hc.Ticks=linspace(-maxGridStrain,maxGridStrain,7);    
+    axisGeom(gca,fontSize); camlight headlight; 
+    axis(axisLim(V_DEF)); %Set axis limits statically
+    view(0,0); axis off;
+   
+    subplot(1,2,2); hold on;    
+    xlabel('Time (s)'); ylabel('$E_{zz}$','Interpreter','Latex');
+    hpl4=plot(timeVec,E_strain_middle_mean,'g.-','LineWidth',3);
+    hpl5=plot(timeVec,gripStrain,'r.-','LineWidth',3);
+    hp4=plot(timeVec(end),E_strain_middle_mean(end),'g.','MarkerSize',50);
+    hp5=plot(timeVec(end),gripStrain(end),'r.','MarkerSize',50);
+    legend([hpl4 hpl5],{'True strain $E_{zz}$','"Intended applied" strain $E_{zz}$'},'Location','NorthOutside','Interpreter','Latex');
+    axis tight; box on; grid on; set(gca,'FontSize',fontSize);
+
+    % Set up animation features
+    animStruct.Time=timeVec; %The time vector
+    for qt=1:1:size(N_disp_mat,3) %Loop over time increments
+        % [F,CF]=element2patch(E,E_strain(:,:,qt));
+        % CV=faceToVertexMeasure(F,V,CF);
+        CV=faceToVertexMeasure(E,V,E_strain(:,:,qt));
+
+        %Set entries in animation structure
+        animStruct.Handles{qt}=[hp1 hp1 hp2 hp3 hp3 hp4 hp4 hp5 hp5]; %Handles of objects to animate
+        animStruct.Props{qt}={'Vertices','CData','Vertices','Vertices','CData','XData','YData','XData','YData'}; %Properties of objects to animate
+        animStruct.Set{qt}={V_DEF(:,:,qt),CV,V_DEF(:,:,qt),V_DEF(:,:,qt),CV,timeVec(qt),E_strain_middle_mean(qt),timeVec(qt),gripStrain(qt)}; %Property values for to set in order to animate
+    end
+    anim8(hf,animStruct); %Initiate animation feature
+    drawnow;
        
 end
 
@@ -1189,7 +1485,7 @@ end
 % image segmentation, image-based modeling, meshing, and finite element
 % analysis.
 % 
-% Copyright (C) 2006-2020 Kevin Mattheus Moerman
+% Copyright (C) 2006-2022 Kevin Mattheus Moerman and the GIBBON contributors
 % 
 % This program is free software: you can redistribute it and/or modify
 % it under the terms of the GNU General Public License as published by
@@ -1203,7 +1499,6 @@ end
 % 
 % You should have received a copy of the GNU General Public License
 % along with this program.  If not, see <http://www.gnu.org/licenses/>.
-
 
 ##### SOURCE END #####
 --></body></html>
