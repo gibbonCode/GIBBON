@@ -9,7 +9,7 @@
 
 %% Keywords
 %
-% * febio_spec version 3.0
+% * febio_spec version 4.0
 % * febio, FEBio
 % * perfect osmometer
 % * hexahedral elements, hex8
@@ -75,6 +75,7 @@ opt_iter=25; %Optimum number of iterations
 max_retries=5; %Maximum number of retires
 dtmin=(1/numTimeSteps)/100; %Minimum time step size
 dtmax=1/numTimeSteps; %Maximum time step size
+
 runMode='external';
 
 %% Creating model geometry and mesh
@@ -156,30 +157,32 @@ drawnow;
 %Get a template with default settings 
 [febio_spec]=febioStructTemplate;
 
-%Set globals/constants
-febio_spec.Globals.Constants.R=8.314e-6; 
-febio_spec.Globals.Constants.T=310;
-
 %febio_spec version 
-febio_spec.ATTR.version='3.0'; 
+febio_spec.ATTR.version='4.0'; 
 
 %Module section
 febio_spec.Module.ATTR.type='biphasic'; 
 
 %Control section
-febio_spec.Control.analysis='STATIC';
+febio_spec.Control.analysis='STEADY-STATE';
 febio_spec.Control.time_steps=numTimeSteps;
 febio_spec.Control.step_size=1/numTimeSteps;
 febio_spec.Control.solver.max_refs=max_refs;
-febio_spec.Control.solver.max_ups=max_ups;
+febio_spec.Control.solver.qn_method.max_ups=max_ups;
 febio_spec.Control.time_stepper.dtmin=dtmin;
-febio_spec.Control.time_stepper.max_retries=max_retries;
-febio_spec.Control.time_stepper.opt_iter=opt_iter;
-
-%Use must-points by specifying 
+% febio_spec.Control.time_stepper.dtmax=dtmax; 
 febio_spec.Control.time_stepper=rmfield(febio_spec.Control.time_stepper,'dtmax'); %Remove existing template dtmax definition
 febio_spec.Control.time_stepper.dtmax.ATTR.lc=1; %Set load curve id for dtmax
 febio_spec.Control.time_stepper.dtmax.VAL=1; %Set value
+febio_spec.Control.time_stepper.max_retries=max_retries;
+febio_spec.Control.time_stepper.opt_iter=opt_iter;
+
+%Set globals/constants
+febio_spec.Globals.Constants.R=8.314e-6; 
+febio_spec.Globals.Constants.T=310;
+
+febio_spec.Output.plotfile.var{end+1}.ATTR.type='fluid pressure';
+febio_spec.Output.plotfile.var{end+1}.ATTR.type='effective fluid pressure';
 
 %Material section
 materialName1='Material1';
@@ -253,7 +256,7 @@ febio_spec.Mesh.Elements{2}.elem.VAL=E2; %The element matrix
 nodeSetName1='bcSupportList';
 
 febio_spec.Mesh.NodeSet{1}.ATTR.name=nodeSetName1;
-febio_spec.Mesh.NodeSet{1}.node.ATTR.id=bcSupportList(:);
+febio_spec.Mesh.NodeSet{1}.VAL=mrow(bcSupportList);
 
 %MeshDomains section
 febio_spec.MeshDomains.SolidDomain{1}.ATTR.name=partName1;
@@ -264,26 +267,32 @@ febio_spec.MeshDomains.SolidDomain{2}.ATTR.mat=materialName2;
 
 %Boundary condition section 
 % -> Fix boundary conditions
-febio_spec.Boundary.bc{1}.ATTR.type='fix';
+febio_spec.Boundary.bc{1}.ATTR.name='zero_displacement_x';
+febio_spec.Boundary.bc{1}.ATTR.type='zero displacement';
 febio_spec.Boundary.bc{1}.ATTR.node_set=nodeSetName1;
-febio_spec.Boundary.bc{1}.dofs='x,y,z';
+febio_spec.Boundary.bc{1}.x_dof=1;
+febio_spec.Boundary.bc{1}.y_dof=1;
+febio_spec.Boundary.bc{1}.z_dof=1;
 
 %LoadData section
 % -> load_controller
+febio_spec.LoadData.load_controller{1}.ATTR.name='LC_1';
 febio_spec.LoadData.load_controller{1}.ATTR.id=1;
 febio_spec.LoadData.load_controller{1}.ATTR.type='loadcurve';
 febio_spec.LoadData.load_controller{1}.interpolate='STEP';
-febio_spec.LoadData.load_controller{1}.points.point.VAL=[0 dtmax; 0.25 dtmax; 0.5 dtmax; 0.75 dtmax; 1 dtmax];
+febio_spec.LoadData.load_controller{1}.points.pt.VAL=[0 dtmax; 0.2 dtmax; 0.4 dtmax; 0.6 dtmax; 0.8 dtmax; 1 dtmax];
 
+febio_spec.LoadData.load_controller{2}.ATTR.name='LC_2';
 febio_spec.LoadData.load_controller{2}.ATTR.id=2;
 febio_spec.LoadData.load_controller{2}.ATTR.type='loadcurve';
 febio_spec.LoadData.load_controller{2}.interpolate='LINEAR';
-febio_spec.LoadData.load_controller{2}.points.point.VAL=[0 bosm_ini; 0.25 bosm_ini+bosm_diff_amp; 0.5 bosm_ini; 0.75 bosm_ini-bosm_diff_amp; 1 bosm_ini];
+febio_spec.LoadData.load_controller{2}.points.pt.VAL=[0 bosm_ini; 0.25 bosm_ini+bosm_diff_amp; 0.5 bosm_ini; 0.75 bosm_ini-bosm_diff_amp; 1 bosm_ini];
 
+febio_spec.LoadData.load_controller{3}.ATTR.name='LC_3';
 febio_spec.LoadData.load_controller{3}.ATTR.id=3;
 febio_spec.LoadData.load_controller{3}.ATTR.type='loadcurve';
 febio_spec.LoadData.load_controller{3}.interpolate='LINEAR';
-febio_spec.LoadData.load_controller{3}.points.point.VAL=[0 bosm_ini; 0.25 bosm_ini-bosm_diff_amp; 0.5 bosm_ini; 0.75 bosm_ini+bosm_diff_amp; 1 bosm_ini];
+febio_spec.LoadData.load_controller{3}.points.pt.VAL=[0 bosm_ini; 0.25 bosm_ini-bosm_diff_amp; 0.5 bosm_ini; 0.75 bosm_ini+bosm_diff_amp; 1 bosm_ini];
 
 %Output section 
 % -> log file
@@ -299,6 +308,9 @@ febio_spec.Output.logfile.element_data{1}.ATTR.delim=',';
 febio_spec.Output.logfile.element_data{2}.ATTR.file=febioLogFileName_stress_prin;
 febio_spec.Output.logfile.element_data{2}.ATTR.data='s1;s2;s3';
 febio_spec.Output.logfile.element_data{2}.ATTR.delim=',';
+
+% Plotfile section
+febio_spec.Output.plotfile.compression=0;
 
 %% Quick viewing of the FEBio input file structure
 % The |febView| function can be used to view the xml structure in a MATLAB
@@ -336,7 +348,7 @@ if runFlag==1 %i.e. a succesful run
     %% 
     
     % Importing nodal displacements from a log file
-    dataStruct=importFEBio_logfile(fullfile(savePath,febioLogFileName_disp),1,1);
+    dataStruct=importFEBio_logfile(fullfile(savePath,febioLogFileName_disp),0,1);
     
     %Access data
     N_disp_mat=dataStruct.data; %Displacement
@@ -383,7 +395,7 @@ if runFlag==1 %i.e. a succesful run
             
     %%
     % Importing element stress from a log file
-    dataStruct=importFEBio_logfile(fullfile(savePath,febioLogFileName_vol),1,1);
+    dataStruct=importFEBio_logfile(fullfile(savePath,febioLogFileName_vol),0,1);
     
     %Access data
     E_J_mat=dataStruct.data;

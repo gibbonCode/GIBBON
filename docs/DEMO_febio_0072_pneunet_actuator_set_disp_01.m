@@ -9,7 +9,7 @@
 
 %% Keywords
 %
-% * febio_spec version 3.0
+% * febio_spec version 4.0
 % * febio, FEBio
 % * pressure loading
 % * hexahedral elements, hex8
@@ -71,7 +71,7 @@ max_retries=5; %Maximum number of retires
 dtmin=(1/numTimeSteps)/100; %Minimum time step size
 dtmax=(1/numTimeSteps)*4; %Maximum time step size
 
-runMode='internal';%'internal';
+runMode='external';%'internal';
 
 %%
 
@@ -290,17 +290,15 @@ gdrawnow;
 [febio_spec]=febioStructTemplate;
 
 %febio_spec version 
-febio_spec.ATTR.version='3.0'; 
+febio_spec.ATTR.version='4.0'; 
 
 %Module section
 febio_spec.Module.ATTR.type='solid'; 
 
 %Create control structure for use by all steps
-stepStruct.Control.analysis='STATIC';
 stepStruct.Control.time_steps=numTimeSteps;
 stepStruct.Control.step_size=1/numTimeSteps;
 stepStruct.Control.solver.max_refs=max_refs;
-stepStruct.Control.solver.max_ups=max_ups;
 stepStruct.Control.time_stepper.dtmin=dtmin;
 stepStruct.Control.time_stepper.dtmax=dtmax; 
 stepStruct.Control.time_stepper.max_retries=max_retries;
@@ -388,7 +386,7 @@ febio_spec.Mesh.Surface{2}.quad4.VAL=F_pressure2;
 % -> NodeSets
 nodeSetName1='bcSupportList';
 febio_spec.Mesh.NodeSet{1}.ATTR.name=nodeSetName1;
-febio_spec.Mesh.NodeSet{1}.node.ATTR.id=bcSupportList(:);
+febio_spec.Mesh.NodeSet{1}.VAL=mrow(bcSupportList);
 
 %MeshDomains section
 febio_spec.MeshDomains.SolidDomain{1}.ATTR.name=partName1;
@@ -400,10 +398,20 @@ febio_spec.MeshDomains.ShellDomain.ATTR.mat=materialName3;
 
 %Boundary condition section 
 % -> Fix boundary conditions
-febio_spec.Boundary.bc{1}.ATTR.type='fix';
+febio_spec.Boundary.bc{1}.ATTR.name='zero_displacement_xyz';
+febio_spec.Boundary.bc{1}.ATTR.type='zero displacement';
 febio_spec.Boundary.bc{1}.ATTR.node_set=nodeSetName1;
-febio_spec.Boundary.bc{1}.dofs='x,y,z';
+febio_spec.Boundary.bc{1}.x_dof=1;
+febio_spec.Boundary.bc{1}.y_dof=1;
+febio_spec.Boundary.bc{1}.z_dof=1;
 
+% -> Fix boundary conditions
+febio_spec.Boundary.bc{1}.ATTR.name='zero_displacement_xyz';
+febio_spec.Boundary.bc{1}.ATTR.type='zero displacement';
+febio_spec.Boundary.bc{1}.ATTR.node_set=nodeSetName1;
+febio_spec.Boundary.bc{1}.x_dof=1;
+febio_spec.Boundary.bc{1}.y_dof=1;
+febio_spec.Boundary.bc{1}.z_dof=1;
 %Loads section
 % -> Surface load
 febio_spec.Loads.surface_load{1}.ATTR.type='pressure';
@@ -420,57 +428,57 @@ febio_spec.Loads.surface_load{2}.symmetric_stiffness=1;
 
 %Rigid section 
 % ->Rigid body fix boundary conditions
-febio_spec.Rigid.rigid_constraint{1}.ATTR.name='RigidFix_1';
-febio_spec.Rigid.rigid_constraint{1}.ATTR.type='fix';
-febio_spec.Rigid.rigid_constraint{1}.rb=3;
-febio_spec.Rigid.rigid_constraint{1}.dofs='Ry';
+febio_spec.Rigid.rigid_bc{1}.ATTR.name=['RigidFix_0',num2str(q)];
+febio_spec.Rigid.rigid_bc{1}.ATTR.type='rigid_fixed';
+febio_spec.Rigid.rigid_bc{1}.rb=3;
+febio_spec.Rigid.rigid_bc{1}.Rx_dof=0;
+febio_spec.Rigid.rigid_bc{1}.Ry_dof=1;
+febio_spec.Rigid.rigid_bc{1}.Rz_dof=0;
+febio_spec.Rigid.rigid_bc{1}.Ru_dof=0;
+febio_spec.Rigid.rigid_bc{1}.Rv_dof=0;
+febio_spec.Rigid.rigid_bc{1}.Rw_dof=0;
 
 % ->Rigid body prescribe boundary conditions
-febio_spec.Step.step{2}.Rigid.rigid_constraint{1}.ATTR.name='RigidPrescribe';
-febio_spec.Step.step{2}.Rigid.rigid_constraint{1}.ATTR.type='prescribe';
-febio_spec.Step.step{2}.Rigid.rigid_constraint{1}.rb=3;
-febio_spec.Step.step{2}.Rigid.rigid_constraint{1}.dof='Rx';
-febio_spec.Step.step{2}.Rigid.rigid_constraint{1}.value.ATTR.lc=2;
-febio_spec.Step.step{2}.Rigid.rigid_constraint{1}.value.VAL=prescribedDisplacement_X;
-febio_spec.Step.step{2}.Rigid.rigid_constraint{1}.relative=1;
-
-febio_spec.Step.step{3}.Rigid.rigid_constraint{1}.ATTR.name='RigidPrescribe';
-febio_spec.Step.step{3}.Rigid.rigid_constraint{1}.ATTR.type='prescribe';
-febio_spec.Step.step{3}.Rigid.rigid_constraint{1}.rb=3;
-febio_spec.Step.step{3}.Rigid.rigid_constraint{1}.dof='Rx';
-febio_spec.Step.step{3}.Rigid.rigid_constraint{1}.value.ATTR.lc=3;
-febio_spec.Step.step{3}.Rigid.rigid_constraint{1}.value.VAL=-prescribedDisplacement_X;
-febio_spec.Step.step{3}.Rigid.rigid_constraint{1}.relative=1;
-
-febio_spec.Step.step{4}.Rigid.rigid_constraint{1}.ATTR.name='RigidPrescribe';
-febio_spec.Step.step{4}.Rigid.rigid_constraint{1}.ATTR.type='prescribe';
-febio_spec.Step.step{4}.Rigid.rigid_constraint{1}.rb=3;
-febio_spec.Step.step{4}.Rigid.rigid_constraint{1}.dof='Rx';
-febio_spec.Step.step{4}.Rigid.rigid_constraint{1}.value.ATTR.lc=4;
-febio_spec.Step.step{4}.Rigid.rigid_constraint{1}.value.VAL=-prescribedDisplacement_X;
-febio_spec.Step.step{4}.Rigid.rigid_constraint{1}.relative=1;
+s=[1 -1 -1];
+for q=2:1:4
+    febio_spec.Step.step{q}.Rigid.rigid_bc{1}.ATTR.name=['RigidPrescribe_0',num2str(q)];
+    febio_spec.Step.step{q}.Rigid.rigid_bc{1}.ATTR.type='rigid_displacement';
+    febio_spec.Step.step{q}.Rigid.rigid_bc{1}.rb=3;
+    febio_spec.Step.step{q}.Rigid.rigid_bc{1}.dof='x';
+    febio_spec.Step.step{q}.Rigid.rigid_bc{1}.value.ATTR.lc=q;
+    febio_spec.Step.step{q}.Rigid.rigid_bc{1}.value.VAL=s(q-1).*prescribedDisplacement_X;
+    febio_spec.Step.step{q}.Rigid.rigid_bc{1}.relative=1;
+end
 
 %LoadData section
 % -> load_controller
+febio_spec.LoadData.load_controller{1}.ATTR.name='LC_1';
 febio_spec.LoadData.load_controller{1}.ATTR.id=1;
 febio_spec.LoadData.load_controller{1}.ATTR.type='loadcurve';
 febio_spec.LoadData.load_controller{1}.interpolate='LINEAR';
-febio_spec.LoadData.load_controller{1}.points.point.VAL=[0 0; 1 1; 2 1; 3 1; 4 1];
+%febio_spec.LoadData.load_controller{1}.extend='CONSTANT';
+febio_spec.LoadData.load_controller{1}.points.pt.VAL=[0 0; 1 1; 2 1; 3 1; 4 1];
 
+febio_spec.LoadData.load_controller{2}.ATTR.name='LC_2';
 febio_spec.LoadData.load_controller{2}.ATTR.id=2;
 febio_spec.LoadData.load_controller{2}.ATTR.type='loadcurve';
 febio_spec.LoadData.load_controller{2}.interpolate='LINEAR';
-febio_spec.LoadData.load_controller{2}.points.point.VAL=[0 0; 1 0; 2 1;];
+%febio_spec.LoadData.load_controller{2}.extend='CONSTANT';
+febio_spec.LoadData.load_controller{2}.points.pt.VAL=[0 0; 1 0; 2 1;];
 
+febio_spec.LoadData.load_controller{3}.ATTR.name='LC_3';
 febio_spec.LoadData.load_controller{3}.ATTR.id=3;
 febio_spec.LoadData.load_controller{3}.ATTR.type='loadcurve';
 febio_spec.LoadData.load_controller{3}.interpolate='LINEAR';
-febio_spec.LoadData.load_controller{3}.points.point.VAL=[0 0; 1 0; 2 0; 3 1];
+%febio_spec.LoadData.load_controller{3}.extend='CONSTANT';
+febio_spec.LoadData.load_controller{3}.points.pt.VAL=[0 0; 1 0; 2 0; 3 1];
 
+febio_spec.LoadData.load_controller{4}.ATTR.name='LC_4';
 febio_spec.LoadData.load_controller{4}.ATTR.id=4;
 febio_spec.LoadData.load_controller{4}.ATTR.type='loadcurve';
 febio_spec.LoadData.load_controller{4}.interpolate='LINEAR';
-febio_spec.LoadData.load_controller{4}.points.point.VAL=[0 0; 1 0; 2 0; 3 0; 4 1];
+%febio_spec.LoadData.load_controller{4}.extend='CONSTANT';
+febio_spec.LoadData.load_controller{4}.points.pt.VAL=[0 0; 1 0; 2 0; 3 0; 4 1];
 
 %Output section 
 % -> log file
@@ -523,7 +531,7 @@ if runFlag==1 %i.e. a succesful run
     
      %% 
     % Importing nodal displacements from a log file
-    dataStruct=importFEBio_logfile(fullfile(savePath,febioLogFileName_disp),1,1);
+    dataStruct=importFEBio_logfile(fullfile(savePath,febioLogFileName_disp),0,1);
     
     %Access data
     N_disp_mat=dataStruct.data; %Displacement
@@ -534,7 +542,7 @@ if runFlag==1 %i.e. a succesful run
            
     %% 
     % Importing nodal displacements from a log file
-    dataStructForce=importFEBio_logfile(fullfile(savePath,febioLogFileName_force),1,1);
+    dataStructForce=importFEBio_logfile(fullfile(savePath,febioLogFileName_force),0,1);
     timeData=dataStructForce.time(:);
     forceData=dataStructForce.data(:);
     
@@ -619,7 +627,7 @@ if runFlag==1 %i.e. a succesful run
             
     %%
     % Importing element stress from a log file
-    dataStruct=importFEBio_logfile(fullfile(savePath,febioLogFileName_stress),1,1);
+    dataStruct=importFEBio_logfile(fullfile(savePath,febioLogFileName_stress),0,1);
     
     %Access data
     E_stress_mat=dataStruct.data;
@@ -662,7 +670,6 @@ if runFlag==1 %i.e. a succesful run
     drawnow;
     
 end
-
 
 %% 
 %

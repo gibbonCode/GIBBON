@@ -1,3 +1,24 @@
+%% DEMO_febio_0078_actuator_perfect_osmometer_01
+% Below is a demonstration for:
+% 
+% * Building geometry for a cube with hexahedral elements
+% * Defining the boundary conditions 
+% * Coding the febio structure
+% * Running the model
+% * Importing and visualizing the displacement and stress results
+
+%% Keywords
+%
+% * febio_spec version 4.0
+% * febio, FEBio
+% * tire mesh
+% * tetrahedral elements, tet4
+% * static, solid
+% * displacement logfile
+% * stress logfile
+
+%%
+
 clear; close all; clc;
 
 %%
@@ -480,6 +501,7 @@ axisGeom(gca,fontSize);
 camlight headlight;
 drawnow;
 
+
 %% Defining the FEBio input structure
 % See also |febioStructTemplate| and |febioStruct2xml| and the FEBio user
 % manual.
@@ -488,19 +510,15 @@ drawnow;
 [febio_spec]=febioStructTemplate;
 
 %febio_spec version 
-febio_spec.ATTR.version='3.0'; 
+febio_spec.ATTR.version='4.0'; 
 
 %Module section
 febio_spec.Module.ATTR.type='solid'; 
 
 %Create control structure for use by all steps
-febio_spec.Control.analysis='STATIC';
 stepStruct.Control.time_steps=numTimeSteps;
 stepStruct.Control.step_size=1/numTimeSteps;
 stepStruct.Control.solver.max_refs=max_refs;
-stepStruct.Control.solver.max_ups=max_ups;
-stepStruct.Control.solver.symmetric_stiffness=0;
-febio_spec.Control.solver.min_residual=min_residual;
 stepStruct.Control.time_stepper.dtmin=dtmin;
 stepStruct.Control.time_stepper.dtmax=dtmax; 
 stepStruct.Control.time_stepper.max_retries=max_retries;
@@ -557,7 +575,7 @@ febio_spec.Mesh.Elements{2}.elem.VAL=Eg; %The element matrix
 % -> NodeSets
 nodeSetName1='bcSupportList';
 febio_spec.Mesh.NodeSet{1}.ATTR.name=nodeSetName1;
-febio_spec.Mesh.NodeSet{1}.node.ATTR.id=bcSupportList(:);
+febio_spec.Mesh.NodeSet{1}.VAL=mrow(bcSupportList);
 
 %MeshDomains section
 febio_spec.MeshDomains.SolidDomain.ATTR.name=partName1;
@@ -584,37 +602,48 @@ febio_spec.Mesh.SurfacePair{1}.secondary=surfaceName1;
 
 %Boundary condition section 
 % -> Fix boundary conditions
-febio_spec.Boundary.bc{1}.ATTR.type='fix';
+febio_spec.Boundary.bc{1}.ATTR.name='zero_displacement_xyz';
+febio_spec.Boundary.bc{1}.ATTR.type='zero displacement';
 febio_spec.Boundary.bc{1}.ATTR.node_set=nodeSetName1;
-febio_spec.Boundary.bc{1}.dofs='x,y,z';
+febio_spec.Boundary.bc{1}.x_dof=1;
+febio_spec.Boundary.bc{1}.y_dof=1;
+febio_spec.Boundary.bc{1}.z_dof=1;
 
 %Rigid section 
 % -> Prescribed rigid body boundary conditions
-febio_spec.Step.step{1}.Rigid.rigid_constraint{1}.ATTR.name='RigidFix_1';
-febio_spec.Step.step{1}.Rigid.rigid_constraint{1}.ATTR.type='fix';
-febio_spec.Step.step{1}.Rigid.rigid_constraint{1}.rb=2;
-febio_spec.Step.step{1}.Rigid.rigid_constraint{1}.dofs='Rx,Ry';
+febio_spec.Step.step{1}.Rigid.rigid_bc{1}.ATTR.name='RigidFix_1';
+febio_spec.Step.step{1}.Rigid.rigid_bc{1}.ATTR.type='rigid_fixed';
+febio_spec.Step.step{1}.Rigid.rigid_bc{1}.rb=2;
+febio_spec.Step.step{1}.Rigid.rigid_bc{1}.Rx_dof=1;
+febio_spec.Step.step{1}.Rigid.rigid_bc{1}.Ry_dof=1;
+febio_spec.Step.step{1}.Rigid.rigid_bc{1}.Rz_dof=0;
+febio_spec.Step.step{1}.Rigid.rigid_bc{1}.Ru_dof=1;
+febio_spec.Step.step{1}.Rigid.rigid_bc{1}.Rv_dof=1;
+febio_spec.Step.step{1}.Rigid.rigid_bc{1}.Rw_dof=1;
 
-febio_spec.Step.step{1}.Rigid.rigid_constraint{2}.ATTR.name='RigidPrescribe';
-febio_spec.Step.step{1}.Rigid.rigid_constraint{2}.ATTR.type='prescribe';
-febio_spec.Step.step{1}.Rigid.rigid_constraint{2}.rb=2;
-febio_spec.Step.step{1}.Rigid.rigid_constraint{2}.dof='Rz';
-febio_spec.Step.step{1}.Rigid.rigid_constraint{2}.value.ATTR.lc=1;
-febio_spec.Step.step{1}.Rigid.rigid_constraint{2}.value.VAL=(displacementVert+contactInitialOffset);
-febio_spec.Step.step{1}.Rigid.rigid_constraint{2}.relative=0;
+febio_spec.Step.step{1}.Rigid.rigid_bc{2}.ATTR.name='RigidPrescribe';
+febio_spec.Step.step{1}.Rigid.rigid_bc{2}.ATTR.type='rigid_displacement';
+febio_spec.Step.step{1}.Rigid.rigid_bc{2}.rb=2;
+febio_spec.Step.step{1}.Rigid.rigid_bc{2}.dof='z';
+febio_spec.Step.step{1}.Rigid.rigid_bc{2}.value.ATTR.lc=1;
+febio_spec.Step.step{1}.Rigid.rigid_bc{2}.value.VAL=(displacementVert+contactInitialOffset);
 
-febio_spec.Step.step{2}.Rigid.rigid_constraint{1}.ATTR.name='RigidFix_1';
-febio_spec.Step.step{2}.Rigid.rigid_constraint{1}.ATTR.type='fix';
-febio_spec.Step.step{2}.Rigid.rigid_constraint{1}.rb=2;
-febio_spec.Step.step{2}.Rigid.rigid_constraint{1}.dofs='Ry,Rz,Ru,Rv,Rw';
+febio_spec.Step.step{2}.Rigid.rigid_bc{1}.ATTR.name='RigidFix_1';
+febio_spec.Step.step{2}.Rigid.rigid_bc{1}.ATTR.type='rigid_fixed';
+febio_spec.Step.step{2}.Rigid.rigid_bc{1}.Rx_dof=0;
+febio_spec.Step.step{2}.Rigid.rigid_bc{1}.Ry_dof=1;
+febio_spec.Step.step{2}.Rigid.rigid_bc{1}.Rz_dof=1;
+febio_spec.Step.step{2}.Rigid.rigid_bc{1}.Ru_dof=1;
+febio_spec.Step.step{2}.Rigid.rigid_bc{1}.Rv_dof=1;
+febio_spec.Step.step{2}.Rigid.rigid_bc{1}.Rw_dof=1;
 
-febio_spec.Step.step{2}.Rigid.rigid_constraint{2}.ATTR.name='RigidPrescribe';
-febio_spec.Step.step{2}.Rigid.rigid_constraint{2}.ATTR.type='prescribe';
-febio_spec.Step.step{2}.Rigid.rigid_constraint{2}.rb=2;
-febio_spec.Step.step{2}.Rigid.rigid_constraint{2}.dof='Rx';
-febio_spec.Step.step{2}.Rigid.rigid_constraint{2}.value.ATTR.lc=2;
-febio_spec.Step.step{2}.Rigid.rigid_constraint{2}.value.VAL=displacementHor;
-% febio_spec.Step.step{2}.Rigid.rigid_constraint{2}.relative=1;
+febio_spec.Step.step{2}.Rigid.rigid_bc{2}.ATTR.name='RigidPrescribe';
+febio_spec.Step.step{2}.Rigid.rigid_bc{2}.ATTR.type='rigid_displacement';
+febio_spec.Step.step{2}.Rigid.rigid_bc{2}.rb=2;
+febio_spec.Step.step{2}.Rigid.rigid_bc{2}.dof='x';
+febio_spec.Step.step{2}.Rigid.rigid_bc{2}.value.ATTR.lc=2;
+febio_spec.Step.step{2}.Rigid.rigid_bc{2}.value.VAL=displacementHor;
+febio_spec.Step.step{2}.Rigid.rigid_bc{2}.relative=1;
 
 %Contact section
 febio_spec.Contact.contact{1}.ATTR.type='sliding-elastic';
@@ -634,15 +663,19 @@ febio_spec.Contact.contact{1}.fric_coeff=fric_coeff;
 
 %LoadData section
 % -> load_controller
+febio_spec.LoadData.load_controller{1}.ATTR.name='LC_1';
 febio_spec.LoadData.load_controller{1}.ATTR.id=1;
 febio_spec.LoadData.load_controller{1}.ATTR.type='loadcurve';
 febio_spec.LoadData.load_controller{1}.interpolate='LINEAR';
-febio_spec.LoadData.load_controller{1}.points.point.VAL=[0 0; 1 1; 2 1];
+%febio_spec.LoadData.load_controller{1}.extend='CONSTANT';
+febio_spec.LoadData.load_controller{1}.points.pt.VAL=[0 0; 1 1; 2 1];
 
+febio_spec.LoadData.load_controller{2}.ATTR.name='LC_2';
 febio_spec.LoadData.load_controller{2}.ATTR.id=2;
 febio_spec.LoadData.load_controller{2}.ATTR.type='loadcurve';
 febio_spec.LoadData.load_controller{2}.interpolate='LINEAR';
-febio_spec.LoadData.load_controller{2}.points.point.VAL=[0 0; 1 0; 2 1];
+%febio_spec.LoadData.load_controller{2}.extend='CONSTANT';
+febio_spec.LoadData.load_controller{2}.points.pt.VAL=[0 0; 1 0; 2 1];
 
 %Output section 
 % -> log file
@@ -650,17 +683,17 @@ febio_spec.Output.logfile.ATTR.file=febioLogFileName;
 febio_spec.Output.logfile.node_data{1}.ATTR.file=febioLogFileName_disp;
 febio_spec.Output.logfile.node_data{1}.ATTR.data='ux;uy;uz';
 febio_spec.Output.logfile.node_data{1}.ATTR.delim=',';
-febio_spec.Output.logfile.node_data{1}.VAL=1:size(V,1);
 
 febio_spec.Output.logfile.node_data{2}.ATTR.file=febioLogFileName_force;
 febio_spec.Output.logfile.node_data{2}.ATTR.data='Rx;Ry;Rz';
 febio_spec.Output.logfile.node_data{2}.ATTR.delim=',';
-febio_spec.Output.logfile.node_data{2}.VAL=1:size(V,1);
 
 febio_spec.Output.logfile.element_data{1}.ATTR.file=febioLogFileName_sed;
 febio_spec.Output.logfile.element_data{1}.ATTR.data='sed';
 febio_spec.Output.logfile.element_data{1}.ATTR.delim=',';
-febio_spec.Output.logfile.element_data{1}.VAL=1:size(E,1);
+
+% Plotfile section
+febio_spec.Output.plotfile.compression=0;
 
 %% Quick viewing of the FEBio input file structure
 % The |febView| function can be used to view the xml structure in a MATLAB
@@ -695,7 +728,7 @@ if runFlag==1 %i.e. a succesful run
     
     %% 
     % Importing nodal displacements from a log file
-    dataStruct=importFEBio_logfile(fullfile(savePath,febioLogFileName_disp),1,1);
+    dataStruct=importFEBio_logfile(fullfile(savePath,febioLogFileName_disp),0,1);
     
     %Access data
     N_disp_mat=dataStruct.data; %Displacement
@@ -706,7 +739,7 @@ if runFlag==1 %i.e. a succesful run
             
     %%
     % Importing element stress from a log file
-    dataStruct=importFEBio_logfile(fullfile(savePath,febioLogFileName_sed),1,1);     
+    dataStruct=importFEBio_logfile(fullfile(savePath,febioLogFileName_sed),0,1);     
     
     %Access data
     E_sed_mat=dataStruct.data;
