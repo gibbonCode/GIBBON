@@ -27,7 +27,7 @@ numSmoothStepsTransition=10;
 nRefineAttachmentSite=4;
 numGrowStepsRefine=1;
 csapsSmoothPar=0.99; %Cubic smoothening spline smoothening parameter
-distGrow=0.21;
+distGrow=0.2;
 stepSizeTooCloseFix=0.1;
 distanceTooClose=0.1;
 fixOverlapOpt=0;
@@ -161,19 +161,75 @@ axisGeom(gca,fontSize);
 view(viewSpec);
 drawnow;
 
+
+%Visualization
+cFigure; hold on;
+
+gpatch(FL,VL,'w','none',0.5);
+gpatch(FS,VS,'w','none',0.5);
+
+
+plotV(VL(indCurve_L,:),'g.-','MarkerSize',25,'LineWidth',3);
+plotV(VS(indCurve_S,:),'g.-','MarkerSize',25,'LineWidth',3);
+
+plotV(VL(indCurve_L(1),:),'b.-','MarkerSize',25,'LineWidth',3);
+plotV(VS(indCurve_S(1),:),'r.-','MarkerSize',25,'LineWidth',3);
+
+camlight headlight;
+axisGeom(gca,fontSize);
+view(viewSpec);
+drawnow;
+
 %% Reorder curves
-[~,indMin]=minDist(VL(indCurve_L(1),:),VS(indCurve_S,:));
+%[~,indMin]=minDist(VL(indCurve_L(1),:),VS(indCurve_S,:));
+
+p_origin=VS(indCurve_S(1),:);%Ray origin
+nr=[-1 0 0]; %Ray vector
+
+optionStruct.tolEps        = 1e-6;
+optionStruct.triSide       = 1;
+optionStruct.rayType       = 'ray';
+optionStruct.exclusionType = 'inclusive';
+optionStruct.paired        = 0; 
+
+[P,indIntersect,d,TUV]=triSurfRayTrace(p_origin,nr,FL,VL,optionStruct);
+[~,indMin]=minDist(P,VL(indCurve_L,:));
+
+p_end=p_origin+nr; 
+
+cFigure; hold on;
+title([optionStruct.rayType,' / triSide: ',num2str(optionStruct.triSide)])
+gpatch(FL,VL,'w','k',0.5);
+gpatch(FS,VS,'w','k',0.5);
+
+gpatch(FL(indIntersect(:,2),:),VL,'kw','k',1,1);
+quiverVec(p_origin,nr,[],'b');  
+
+plotV(P,'r.','MarkerSize',25);
+plotV(VL(indCurve_L,:),'g.-','MarkerSize',25,'LineWidth',3);
+
+plotV(VS(indCurve_S,:),'g.-','MarkerSize',25,'LineWidth',3);
+plotV(VS(indCurve_S(1),:),'r.-','MarkerSize',25,'LineWidth',3);
+plotV(VL(indCurve_L(indMin),:),'y.-','MarkerSize',25,'LineWidth',3);
+
+
+axisGeom(gca,fontSize); axis off;
+camlight headlight;
+drawnow;
+
 
 if indMin>1
-    indCurve_S=[indCurve_S(indMin:end) indCurve_S(1:indMin-1)];
+    indCurve_L=[indCurve_L(indMin:end) indCurve_L(1:indMin-1)];
 end
 
 D1=sum(sqrt(sum((VL(indCurve_L,:)-VS(indCurve_S,:)).^2,2)));
 D2=sum(sqrt(sum((VL(indCurve_L,:)-VS(flip(indCurve_S),:)).^2,2)));
 
 if D2<D1
-    indCurve_S=flip(indCurve_S);
+   indCurve_L=flip(indCurve_L);
 end
+
+
 
 %% Construction of Ligament 
 [~,~,NLv]=patchNormal(FL,VL);
