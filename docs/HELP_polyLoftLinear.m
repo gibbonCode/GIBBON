@@ -1,4 +1,4 @@
-%% polyExtrude
+%% polyLoftLinear
 % Below is a demonstration of the features of the |polyLoftLinear| function
 
 %% Syntax
