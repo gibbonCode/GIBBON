@@ -47,6 +47,7 @@ febio_spec.ATTR.version='4.0';
 
 %% Module section
 febio_spec.Module.ATTR.type='solid'; %Use default set
+% febio_spec.Module.units='SI'; %Set unit system
 
 %% Control section
 
