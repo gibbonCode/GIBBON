@@ -24,12 +24,13 @@ function [V]=filletCurve(V,r,np,closedLoopOpt)
 % kevinmoerman@hotmail.com
 % 2014/03/19
 % 2017/06/03 Fixed bug in relation to angles being 0 or 180 degrees
+% 2023/05/08 Extended to allow for multiple radii to be specified
+% 2023/05/08 Extended to allow for zero radius (skips fillet)
 %------------------------------------------------------------------------
 
-%%
+%% Parse input
 
 angleTolerance=1e-3;
-%%
 
 %Cope with 2D input
 if size(V,2)==2
@@ -39,32 +40,47 @@ else
     nDim=3;
 end
 
+if numel(r)==1
+    r=r.*ones(size(V,1),1);
+end
+
+%%
 numPoints=size(V,1);
 if numPoints>2
     numSteps=numPoints-2;
     indStart=1;
     for q=1:1:numSteps
-        [Vr]=filletEdgeSet(V(indStart:indStart+2,:),r,np,angleTolerance);
-        V=[V(1:indStart,:);Vr;V(indStart+2:end,:)];
-        indStart=indStart+size(Vr,1);
+        if r(q+1)>0
+            Vr=filletEdgeSet(V(indStart:indStart+2,:),r(q+1),np,angleTolerance);
+            V=[V(1:indStart,:);Vr;V(indStart+2:end,:)];
+            indStart=indStart+size(Vr,1);
+        else
+            indStart=indStart+1;
+        end
     end
 else
     error('Input curve V has too few points!');
 end
 
 if closedLoopOpt==1
-    V_closed=[V(end-1:end,:); V(1,:);];
-    [Vr]=filletEdgeSet(V_closed,r,np,angleTolerance);
-    V=[V(1:end-1,:); Vr];
-    
-    V_closed=[V(end,:); V(1:2,:);];
-    [Vr]=filletEdgeSet(V_closed,r,np,angleTolerance);
-    V=[Vr; V(2:end,:); ];
+    if r(end)>0
+        V_closed=[V(end-1:end,:); V(1,:);];
+        [Vr]=filletEdgeSet(V_closed,r(end),np,angleTolerance);
+        V=[V(1:end-1,:); Vr];
+    end
+
+    if r(1)>0
+        V_closed=[V(end,:); V(1:2,:);];
+        [Vr]=filletEdgeSet(V_closed,r(1),np,angleTolerance);
+        V=[Vr; V(2:end,:); ];
+    end
 end
 
+%Remove 3rd dimension when 2D input was provided
 if nDim==2
     V=V(:,1:2);
 end
+
 end
 
 function [Vr]=filletEdgeSet(V,r,np,angleTolerance)

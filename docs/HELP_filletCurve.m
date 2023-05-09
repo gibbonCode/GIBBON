@@ -23,100 +23,150 @@ lineWidth2=5;
 lineWidth3=2;
 faceAlpha=0.5;
 
-%% Example: Filleting a curve in 3D
+%% Example 1: Filleting a non-closed curve in 2D
 
 %%
 % Simulating a curve with sharp features
-Vt=[0 0 0; 10 0 0; 5 10 0; 10 0 10; 0 10 10; ];
+Vt=2*[-1 -1; -1 1 ; 1 1; 1 -1]; %A square
 
 %%
+%Setting control parameters
+r=1; %Fillet radius
+np=25; %Number of points used to construct each fillet edge
+closedLoopOption=0; %Use 1 if curve represents a closed loop but containes unique points
+VN=filletCurve(Vt,r,np,closedLoopOption);
+
+%%
+% Plotting results
+cFigure; hold on;
+title('A filleted curve','FontSize',fontSize);
+xlabel('X','FontSize',fontSize); ylabel('Y','FontSize',fontSize); zlabel('Z','FontSize',fontSize);
+
+hp1=plotV(Vt,'k.-.','lineWidth',lineWidth1,'MarkerSize',markerSize1);
+hp2=plotV(VN,'r.-','lineWidth',lineWidth2);
+legend([hp1 hp2],{'Input','Filleted'});
+axisGeom(gca,fontSize);
+drawnow;
+
+%% Example 2: Filleting a closed curve in 2D
+
+%%
+%Setting control parameters
+r=0.5; %Fillet radius
+np=25; %Number of points used to construct each fillet edge
+closedLoopOption=1; %Use 1 if curve represents a closed loop but containes unique points
+VN=filletCurve(Vt,r,np,closedLoopOption);
+
+%%
+% Plotting results
+cFigure; hold on;
+title('A filleted curve','FontSize',fontSize);
+xlabel('X','FontSize',fontSize); ylabel('Y','FontSize',fontSize); zlabel('Z','FontSize',fontSize);
+
+hp1=plotV(Vt,'k.-.','lineWidth',lineWidth1,'MarkerSize',markerSize1);
+hp2=plotV(VN,'r.-','lineWidth',lineWidth2);
+legend([hp1 hp2],{'Input','Filleted'});
+axisGeom(gca,fontSize);
+drawnow;
+
+%% Example 3: Using multiple-radii
+
+%%
+%Setting control parameters
+r=[0.5 1.5 0 0.75]; %Fillet radii for each point
+np=25; %Number of points used to construct each fillet edge
+closedLoopOption=1; %Use 1 if curve represents a closed loop but containes unique points
+VN=filletCurve(Vt,r,np,closedLoopOption);
+
+%%
+% Plotting results
+cFigure; hold on;
+title('A filleted curve','FontSize',fontSize);
+xlabel('X','FontSize',fontSize); ylabel('Y','FontSize',fontSize); zlabel('Z','FontSize',fontSize);
+
+hp1=plotV(Vt,'k.-.','lineWidth',lineWidth1,'MarkerSize',markerSize1);
+hp2=plotV(VN,'r.-','lineWidth',lineWidth2);
+legend([hp1 hp2],{'Input','Filleted'});
+axisGeom(gca,fontSize); view(2);
+drawnow;
+
+%% Example 4: Filleting a curve in 3D
+
+%%
+% Simulating a curve with sharp features
+Vt=[0 0 0; 10 0 0; 0 10 0; 10 10 10; 10 10 0; ];
+
+%
 %Setting control parameters
 r=2; %Fillet radius
 np=25; %Number of points used to construct each fillet edge
 closedLoopOption=0; %Use 1 if curve represents a closed loop but containes unique points
-[VN]=filletCurve(Vt,r,np,closedLoopOption);
+VN=filletCurve(Vt,r,np,closedLoopOption);
 
-%%
+%
 % Plotting results
-hf1=cFigure;
+cFigure; hold on;
 title('A filleted curve','FontSize',fontSize);
 xlabel('X','FontSize',fontSize);ylabel('Y','FontSize',fontSize); zlabel('Z','FontSize',fontSize);
-hold on;
 
-plotV(Vt,'k.-.','lineWidth',lineWidth1,'MarkerSize',markerSize1);
-plotV(VN,'r.-','lineWidth',lineWidth2);
-
-axis equal; view(3); axis tight;  grid on;  set(gca,'FontSize',fontSize);
+hp1=plotV(Vt,'k.-.','lineWidth',lineWidth1,'MarkerSize',markerSize1);
+hp2=plotV(VN,'r.-','lineWidth',lineWidth2);
+legend([hp1 hp2],{'Input','Filleted'});
+axisGeom(gca,fontSize); 
 drawnow;
 
-%% Example: Filleting a closed curve in 3D
-closedLoopOption=1; 
-[VN]=filletCurve(Vt,r,np,closedLoopOption);
-
-%%
-% Plotting results
-hf2=cFigure;
-title('A filleted curve based on closed end conditions','FontSize',fontSize);
-xlabel('X','FontSize',fontSize);ylabel('Y','FontSize',fontSize); zlabel('Z','FontSize',fontSize);
-hold on;
-
-plotV(Vt,'k.-.','lineWidth',lineWidth1,'MarkerSize',markerSize1);
-plotV([Vt(1,:);Vt(end,:)],'g.-.','lineWidth',lineWidth1,'MarkerSize',markerSize1);
-plotV(VN,'r.-','lineWidth',lineWidth2);
-
-axis equal; view(3); axis tight;  grid on;  set(gca,'FontSize',fontSize);
-drawnow;
-
-%% Example: Extruding a filleted curve for CAD like model building
+%% Example 5: Extruding a filleted curve for CAD like model building
 
 %Sketching side profile
-x=[0 0 5 15 15];
-y=[0 4 9 10 0];
-V=10*[x(:) y(:)];
+Vt=[0 0 0; 10 0 0; 10 10 0; 20 15 0];
 
 %Fillet sketch
-r=15; %Fillet radius
-np=50; %Number of points used to construct each fillet edge
+r=[0 2 4 0]; %Fillet radius
+np=25; %Number of points used to construct each fillet edge
 closedLoopOption=0; %Use 1 if curve represents a closed loop but containes unique points
-[Vc]=filletCurve(V,r,np,closedLoopOption);
+[Vc]=filletCurve(Vt,r,np,closedLoopOption);
+
+pointSpacing=1;
+Vc=evenlySpaceCurve(Vc,pointSpacing,'pchip',0);
 
 %%
 % Plotting sketch
-hf1=cFigure;
+cFigure; hold on;
 title('The side profile sketch','FontSize',fontSize);
 xlabel('X','FontSize',fontSize);ylabel('Y','FontSize',fontSize); zlabel('Z','FontSize',fontSize);
-hold on;
 
-plotV(V,'k.-.','lineWidth',lineWidth1,'MarkerSize',markerSize1);
-plotV(Vc,'r-','lineWidth',lineWidth2,'MarkerSize',markerSize1);
-
-axis equal; view(2); axis tight;  grid on;  set(gca,'FontSize',fontSize);
+hp1=plotV(Vt,'k.-.','lineWidth',lineWidth1,'MarkerSize',markerSize1);
+hp2=plotV(Vc,'r.-','lineWidth',lineWidth2);
+legend([hp1 hp2],{'Input','Filleted'});
+axisGeom(gca,fontSize); view(2);
 drawnow;
 
 %%
 % Extruding model
-cPar.pointSpacing=10;
-cPar.depth=85; 
+cPar.depth=20; 
 cPar.patchType='tri'; 
 cPar.dir=0;
 cPar.n=[0 0 1];
 cPar.closeLoopOpt=0; 
-
+numSteps=round(cPar.depth./pointSpacing);
+numSteps=numSteps+double(iseven(numSteps)); %Force uneven
+cPar.numSteps=numSteps;
 [F_tri,V_tri]=polyExtrude(Vc,cPar);
 
 %% 
 % Plotting meshed model
 hf2=cFigure;
-title('The extruded model mesh','FontSize',fontSize);
+title('The extruded surface mesh','FontSize',fontSize);
 xlabel('X','FontSize',fontSize);ylabel('Y','FontSize',fontSize); zlabel('Z','FontSize',fontSize);
 hold on;
 
-hp=patch('faces',F_tri,'Vertices',V_tri);
-
-set(hp,'FaceColor','g','EdgeColor','k','FaceAlpha',1);
-camlight headlight;
+hp1=plotV(Vc,'r.-','lineWidth',lineWidth2);
+hp2=gpatch(F_tri,V_tri,'gw');
+legend([hp1 hp2],{'Input curve','Extruded surface'});
 axis equal; view(3); axis tight;  grid on;  set(gca,'FontSize',fontSize);
+axisGeom(gca,fontSize); view(30,30); camlight headlight; 
 drawnow;
+
 
 %% 
 %

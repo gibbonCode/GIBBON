@@ -1,5 +1,13 @@
 function [varargout]=polyExtrude(Vc,controlParameterStruct)
 
+% function [varargout]=polyExtrude(Vc,controlParameterStruct)
+% ------------------------------------------------------------------------
+% The polyExtrude function can be used to extrude a polygon to obtain a
+% surface. 
+% 
+% 2023/05/08: Added function comments
+% ------------------------------------------------------------------------
+
 %% COMPUTE CURVE LENGTH
 D=max(pathLength(Vc)); %Compute curve length for point sampling
 numPoints=size(Vc,1);

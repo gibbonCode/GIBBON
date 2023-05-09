@@ -156,6 +156,9 @@ if ischar(C) %Plain single color
     if strcmp(C,'mw')
         argInPatch.FaceColor=[1 0.5 1];
     end
+    if strcmp(C,'o') %Orange
+        argInPatch.FaceColor=orange;
+    end
 elseif size(C,2)==1
     argInPatch.FaceColor='flat';
     argInPatch.CData=double(C);

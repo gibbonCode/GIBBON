@@ -6,8 +6,8 @@
    <!--
 This HTML was auto-generated from MATLAB code.
 To make changes, update the MATLAB code and republish this document.
-      --><title>filletCurve</title><meta name="generator" content="MATLAB 9.6"><link rel="schema.DC" href="http://purl.org/dc/elements/1.1/"><meta name="DC.date" content="2019-06-20"><meta name="DC.source" content="HELP_filletCurve.m"><style type="text/css">
-html,body,div,span,applet,object,iframe,h1,h2,h3,h4,h5,h6,p,blockquote,pre,a,abbr,acronym,address,big,cite,code,del,dfn,em,font,img,ins,kbd,q,s,samp,small,strike,strong,sub,sup,tt,var,b,u,i,center,dl,dt,dd,ol,ul,li,fieldset,form,label,legend,table,caption,tbody,tfoot,thead,tr,th,td{margin:0;padding:0;border:0;outline:0;font-size:100%;vertical-align:baseline;background:transparent}body{line-height:1}ol,ul{list-style:none}blockquote,q{quotes:none}blockquote:before,blockquote:after,q:before,q:after{content:'';content:none}:focus{outine:0}ins{text-decoration:none}del{text-decoration:line-through}table{border-collapse:collapse;border-spacing:0}
+      --><title>filletCurve</title><meta name="generator" content="MATLAB 9.14"><link rel="schema.DC" href="http://purl.org/dc/elements/1.1/"><meta name="DC.date" content="2023-05-08"><meta name="DC.source" content="HELP_filletCurve.m"><style type="text/css">
+html,body,div,span,applet,object,iframe,h1,h2,h3,h4,h5,h6,p,blockquote,pre,a,abbr,acronym,address,big,cite,code,del,dfn,em,font,img,ins,kbd,q,s,samp,small,strike,strong,tt,var,b,u,i,center,dl,dt,dd,ol,ul,li,fieldset,form,label,legend,table,caption,tbody,tfoot,thead,tr,th,td{margin:0;padding:0;border:0;outline:0;font-size:100%;vertical-align:baseline;background:transparent}body{line-height:1}ol,ul{list-style:none}blockquote,q{quotes:none}blockquote:before,blockquote:after,q:before,q:after{content:'';content:none}:focus{outine:0}ins{text-decoration:none}del{text-decoration:line-through}table{border-collapse:collapse;border-spacing:0}
 
 html { min-height:100%; margin-bottom:1px; }
 html body { height:100%; margin:0px; font-family:Arial, Helvetica, sans-serif; font-size:10px; color:#000; line-height:140%; background:#fff none; overflow-y:scroll; }
@@ -23,7 +23,7 @@ a:visited { color:#004aa0; text-decoration:none; }
 
 p { padding:0px; margin:0px 0px 20px; }
 img { padding:0px; margin:0px 0px 20px; border:none; }
-p img, pre img, tt img, li img, h1 img, h2 img { margin-bottom:0px; } 
+p img, pre img, tt img, li img, h1 img, h2 img { margin-bottom:0px; }
 
 ul { padding:0px; margin:0px 0px 20px 23px; list-style:square; }
 ul li { padding:0px; margin:0px 0px 7px 0px; }
@@ -52,6 +52,7 @@ span.comment { color:#228B22 }
 span.string { color:#A020F0 }
 span.untermstring { color:#B20000 }
 span.syscmd { color:#B28C00 }
+span.typesection { color:#A0522D }
 
 .footer { width:auto; padding:10px 0px; margin:25px 0px 0px; border-top:1px dotted #878787; font-size:0.8em; line-height:140%; font-style:italic; color:#878787; text-align:left; float:none; }
 .footer p { margin:0px; }
@@ -66,82 +67,117 @@ table td { padding:7px 5px; text-align:left; vertical-align:top; border:1px soli
 
 
 
-  </style></head><body><div class="content"><h1>filletCurve</h1><!--introduction--><p>Below is a demonstration of the features of the <tt>filletCurve</tt> function</p><!--/introduction--><h2>Contents</h2><div><ul><li><a href="#1">Syntax</a></li><li><a href="#2">Description</a></li><li><a href="#3">Examples</a></li><li><a href="#6">Example: Filleting a curve in 3D</a></li><li><a href="#10">Example: Filleting a closed curve in 3D</a></li><li><a href="#12">Example: Extruding a filleted curve for CAD like model building</a></li></ul></div><h2 id="1">Syntax</h2><p><tt>[VN]=filletCurve(Vt,r,np,closedLoopOption);</tt></p><h2 id="2">Description</h2><p>This function fillets a curve based on the input radius r using np points per fillet arc. If closedLoopOpt==1 then closed end conditions are used such that the end and start regions are also filleted.</p><h2 id="3">Examples</h2><pre class="codeinput">clear; close <span class="string">all</span>; clc;
+  </style></head><body><div class="content"><h1>filletCurve</h1><!--introduction--><p>Below is a demonstration of the features of the <tt>filletCurve</tt> function</p><!--/introduction--><h2>Contents</h2><div><ul><li><a href="#1">Syntax</a></li><li><a href="#2">Description</a></li><li><a href="#3">Examples</a></li><li><a href="#6">Example 1: Filleting a non-closed curve in 2D</a></li><li><a href="#10">Example 2: Filleting a closed curve in 2D</a></li><li><a href="#13">Example 3: Using multiple-radii</a></li><li><a href="#16">Example 4: Filleting a curve in 3D</a></li><li><a href="#18">Example 5: Extruding a filleted curve for CAD like model building</a></li></ul></div><h2 id="1">Syntax</h2><p><tt>[VN]=filletCurve(Vt,r,np,closedLoopOption);</tt></p><h2 id="2">Description</h2><p>This function fillets a curve based on the input radius r using np points per fillet arc. If closedLoopOpt==1 then closed end conditions are used such that the end and start regions are also filleted.</p><h2 id="3">Examples</h2><pre class="codeinput">clear; close <span class="string">all</span>; clc;
 </pre><p>Plot settings</p><pre class="codeinput">fontSize=15;
 markerSize1=45;
 lineWidth1=2;
 lineWidth2=5;
 lineWidth3=2;
 faceAlpha=0.5;
-</pre><h2 id="6">Example: Filleting a curve in 3D</h2><p>Simulating a curve with sharp features</p><pre class="codeinput">Vt=[0 0 0; 10 0 0; 5 10 0; 10 0 10; 0 10 10; ];
+</pre><h2 id="6">Example 1: Filleting a non-closed curve in 2D</h2><p>Simulating a curve with sharp features</p><pre class="codeinput">Vt=2*[-1 -1; -1 1 ; 1 1; 1 -1]; <span class="comment">%A square</span>
 </pre><pre class="codeinput"><span class="comment">%Setting control parameters</span>
+r=1; <span class="comment">%Fillet radius</span>
+np=25; <span class="comment">%Number of points used to construct each fillet edge</span>
+closedLoopOption=0; <span class="comment">%Use 1 if curve represents a closed loop but containes unique points</span>
+VN=filletCurve(Vt,r,np,closedLoopOption);
+</pre><p>Plotting results</p><pre class="codeinput">cFigure; hold <span class="string">on</span>;
+title(<span class="string">'A filleted curve'</span>,<span class="string">'FontSize'</span>,fontSize);
+xlabel(<span class="string">'X'</span>,<span class="string">'FontSize'</span>,fontSize); ylabel(<span class="string">'Y'</span>,<span class="string">'FontSize'</span>,fontSize); zlabel(<span class="string">'Z'</span>,<span class="string">'FontSize'</span>,fontSize);
+
+hp1=plotV(Vt,<span class="string">'k.-.'</span>,<span class="string">'lineWidth'</span>,lineWidth1,<span class="string">'MarkerSize'</span>,markerSize1);
+hp2=plotV(VN,<span class="string">'r.-'</span>,<span class="string">'lineWidth'</span>,lineWidth2);
+legend([hp1 hp2],{<span class="string">'Input'</span>,<span class="string">'Filleted'</span>});
+axisGeom(gca,fontSize);
+drawnow;
+</pre><img width="100%" height="auto" vspace="5" hspace="5" src="HELP_filletCurve_01.jpg" alt=""> <h2 id="10">Example 2: Filleting a closed curve in 2D</h2><pre class="codeinput"><span class="comment">%Setting control parameters</span>
+r=0.5; <span class="comment">%Fillet radius</span>
+np=25; <span class="comment">%Number of points used to construct each fillet edge</span>
+closedLoopOption=1; <span class="comment">%Use 1 if curve represents a closed loop but containes unique points</span>
+VN=filletCurve(Vt,r,np,closedLoopOption);
+</pre><p>Plotting results</p><pre class="codeinput">cFigure; hold <span class="string">on</span>;
+title(<span class="string">'A filleted curve'</span>,<span class="string">'FontSize'</span>,fontSize);
+xlabel(<span class="string">'X'</span>,<span class="string">'FontSize'</span>,fontSize); ylabel(<span class="string">'Y'</span>,<span class="string">'FontSize'</span>,fontSize); zlabel(<span class="string">'Z'</span>,<span class="string">'FontSize'</span>,fontSize);
+
+hp1=plotV(Vt,<span class="string">'k.-.'</span>,<span class="string">'lineWidth'</span>,lineWidth1,<span class="string">'MarkerSize'</span>,markerSize1);
+hp2=plotV(VN,<span class="string">'r.-'</span>,<span class="string">'lineWidth'</span>,lineWidth2);
+legend([hp1 hp2],{<span class="string">'Input'</span>,<span class="string">'Filleted'</span>});
+axisGeom(gca,fontSize);
+drawnow;
+</pre><img width="100%" height="auto" vspace="5" hspace="5" src="HELP_filletCurve_02.jpg" alt=""> <img width="100%" height="auto" vspace="5" hspace="5" src="HELP_filletCurve_03.jpg" alt=""> <h2 id="13">Example 3: Using multiple-radii</h2><pre class="codeinput"><span class="comment">%Setting control parameters</span>
+r=[0.5 1.5 0 0.75]; <span class="comment">%Fillet radii for each point</span>
+np=25; <span class="comment">%Number of points used to construct each fillet edge</span>
+closedLoopOption=1; <span class="comment">%Use 1 if curve represents a closed loop but containes unique points</span>
+VN=filletCurve(Vt,r,np,closedLoopOption);
+</pre><p>Plotting results</p><pre class="codeinput">cFigure; hold <span class="string">on</span>;
+title(<span class="string">'A filleted curve'</span>,<span class="string">'FontSize'</span>,fontSize);
+xlabel(<span class="string">'X'</span>,<span class="string">'FontSize'</span>,fontSize); ylabel(<span class="string">'Y'</span>,<span class="string">'FontSize'</span>,fontSize); zlabel(<span class="string">'Z'</span>,<span class="string">'FontSize'</span>,fontSize);
+
+hp1=plotV(Vt,<span class="string">'k.-.'</span>,<span class="string">'lineWidth'</span>,lineWidth1,<span class="string">'MarkerSize'</span>,markerSize1);
+hp2=plotV(VN,<span class="string">'r.-'</span>,<span class="string">'lineWidth'</span>,lineWidth2);
+legend([hp1 hp2],{<span class="string">'Input'</span>,<span class="string">'Filleted'</span>});
+axisGeom(gca,fontSize); view(2);
+drawnow;
+</pre><img width="100%" height="auto" vspace="5" hspace="5" src="HELP_filletCurve_04.jpg" alt=""> <img width="100%" height="auto" vspace="5" hspace="5" src="HELP_filletCurve_05.jpg" alt=""> <h2 id="16">Example 4: Filleting a curve in 3D</h2><p>Simulating a curve with sharp features</p><pre class="codeinput">Vt=[0 0 0; 10 0 0; 0 10 0; 10 10 10; 10 10 0; ];
+
+<span class="comment">%</span>
+<span class="comment">%Setting control parameters</span>
 r=2; <span class="comment">%Fillet radius</span>
 np=25; <span class="comment">%Number of points used to construct each fillet edge</span>
 closedLoopOption=0; <span class="comment">%Use 1 if curve represents a closed loop but containes unique points</span>
-[VN]=filletCurve(Vt,r,np,closedLoopOption);
-</pre><p>Plotting results</p><pre class="codeinput">hf1=cFigure;
+VN=filletCurve(Vt,r,np,closedLoopOption);
+
+<span class="comment">%</span>
+<span class="comment">% Plotting results</span>
+cFigure; hold <span class="string">on</span>;
 title(<span class="string">'A filleted curve'</span>,<span class="string">'FontSize'</span>,fontSize);
 xlabel(<span class="string">'X'</span>,<span class="string">'FontSize'</span>,fontSize);ylabel(<span class="string">'Y'</span>,<span class="string">'FontSize'</span>,fontSize); zlabel(<span class="string">'Z'</span>,<span class="string">'FontSize'</span>,fontSize);
-hold <span class="string">on</span>;
 
-plotV(Vt,<span class="string">'k.-.'</span>,<span class="string">'lineWidth'</span>,lineWidth1,<span class="string">'MarkerSize'</span>,markerSize1);
-plotV(VN,<span class="string">'r.-'</span>,<span class="string">'lineWidth'</span>,lineWidth2);
-
-axis <span class="string">equal</span>; view(3); axis <span class="string">tight</span>;  grid <span class="string">on</span>;  set(gca,<span class="string">'FontSize'</span>,fontSize);
+hp1=plotV(Vt,<span class="string">'k.-.'</span>,<span class="string">'lineWidth'</span>,lineWidth1,<span class="string">'MarkerSize'</span>,markerSize1);
+hp2=plotV(VN,<span class="string">'r.-'</span>,<span class="string">'lineWidth'</span>,lineWidth2);
+legend([hp1 hp2],{<span class="string">'Input'</span>,<span class="string">'Filleted'</span>});
+axisGeom(gca,fontSize);
 drawnow;
-</pre><img width="100%" height="auto" vspace="5" hspace="5" src="HELP_filletCurve_01.jpg" alt=""> <h2 id="10">Example: Filleting a closed curve in 3D</h2><pre class="codeinput">closedLoopOption=1;
-[VN]=filletCurve(Vt,r,np,closedLoopOption);
-</pre><p>Plotting results</p><pre class="codeinput">hf2=cFigure;
-title(<span class="string">'A filleted curve based on closed end conditions'</span>,<span class="string">'FontSize'</span>,fontSize);
-xlabel(<span class="string">'X'</span>,<span class="string">'FontSize'</span>,fontSize);ylabel(<span class="string">'Y'</span>,<span class="string">'FontSize'</span>,fontSize); zlabel(<span class="string">'Z'</span>,<span class="string">'FontSize'</span>,fontSize);
-hold <span class="string">on</span>;
-
-plotV(Vt,<span class="string">'k.-.'</span>,<span class="string">'lineWidth'</span>,lineWidth1,<span class="string">'MarkerSize'</span>,markerSize1);
-plotV([Vt(1,:);Vt(end,:)],<span class="string">'g.-.'</span>,<span class="string">'lineWidth'</span>,lineWidth1,<span class="string">'MarkerSize'</span>,markerSize1);
-plotV(VN,<span class="string">'r.-'</span>,<span class="string">'lineWidth'</span>,lineWidth2);
-
-axis <span class="string">equal</span>; view(3); axis <span class="string">tight</span>;  grid <span class="string">on</span>;  set(gca,<span class="string">'FontSize'</span>,fontSize);
-drawnow;
-</pre><img width="100%" height="auto" vspace="5" hspace="5" src="HELP_filletCurve_02.jpg" alt=""> <h2 id="12">Example: Extruding a filleted curve for CAD like model building</h2><pre class="codeinput"><span class="comment">%Sketching side profile</span>
-x=[0 0 5 15 15];
-y=[0 4 9 10 0];
-V=10*[x(:) y(:)];
+</pre><img width="100%" height="auto" vspace="5" hspace="5" src="HELP_filletCurve_06.jpg" alt=""> <h2 id="18">Example 5: Extruding a filleted curve for CAD like model building</h2><pre class="codeinput"><span class="comment">%Sketching side profile</span>
+Vt=[0 0 0; 10 0 0; 10 10 0; 20 15 0];
 
 <span class="comment">%Fillet sketch</span>
-r=15; <span class="comment">%Fillet radius</span>
-np=50; <span class="comment">%Number of points used to construct each fillet edge</span>
+r=[0 2 4 0]; <span class="comment">%Fillet radius</span>
+np=25; <span class="comment">%Number of points used to construct each fillet edge</span>
 closedLoopOption=0; <span class="comment">%Use 1 if curve represents a closed loop but containes unique points</span>
-[Vc]=filletCurve(V,r,np,closedLoopOption);
-</pre><p>Plotting sketch</p><pre class="codeinput">hf1=cFigure;
+[Vc]=filletCurve(Vt,r,np,closedLoopOption);
+
+pointSpacing=1;
+Vc=evenlySpaceCurve(Vc,pointSpacing,<span class="string">'pchip'</span>,0);
+</pre><p>Plotting sketch</p><pre class="codeinput">cFigure; hold <span class="string">on</span>;
 title(<span class="string">'The side profile sketch'</span>,<span class="string">'FontSize'</span>,fontSize);
 xlabel(<span class="string">'X'</span>,<span class="string">'FontSize'</span>,fontSize);ylabel(<span class="string">'Y'</span>,<span class="string">'FontSize'</span>,fontSize); zlabel(<span class="string">'Z'</span>,<span class="string">'FontSize'</span>,fontSize);
-hold <span class="string">on</span>;
 
-plotV(V,<span class="string">'k.-.'</span>,<span class="string">'lineWidth'</span>,lineWidth1,<span class="string">'MarkerSize'</span>,markerSize1);
-plotV(Vc,<span class="string">'r-'</span>,<span class="string">'lineWidth'</span>,lineWidth2,<span class="string">'MarkerSize'</span>,markerSize1);
-
-axis <span class="string">equal</span>; view(2); axis <span class="string">tight</span>;  grid <span class="string">on</span>;  set(gca,<span class="string">'FontSize'</span>,fontSize);
+hp1=plotV(Vt,<span class="string">'k.-.'</span>,<span class="string">'lineWidth'</span>,lineWidth1,<span class="string">'MarkerSize'</span>,markerSize1);
+hp2=plotV(Vc,<span class="string">'r.-'</span>,<span class="string">'lineWidth'</span>,lineWidth2);
+legend([hp1 hp2],{<span class="string">'Input'</span>,<span class="string">'Filleted'</span>});
+axisGeom(gca,fontSize); view(2);
 drawnow;
-</pre><img width="100%" height="auto" vspace="5" hspace="5" src="HELP_filletCurve_03.jpg" alt=""> <p>Extruding model</p><pre class="codeinput">cPar.pointSpacing=10;
-cPar.depth=85;
+</pre><img width="100%" height="auto" vspace="5" hspace="5" src="HELP_filletCurve_07.jpg" alt=""> <img width="100%" height="auto" vspace="5" hspace="5" src="HELP_filletCurve_08.jpg" alt=""> <p>Extruding model</p><pre class="codeinput">cPar.depth=20;
 cPar.patchType=<span class="string">'tri'</span>;
 cPar.dir=0;
 cPar.n=[0 0 1];
 cPar.closeLoopOpt=0;
-
+numSteps=round(cPar.depth./pointSpacing);
+numSteps=numSteps+double(iseven(numSteps)); <span class="comment">%Force uneven</span>
+cPar.numSteps=numSteps;
 [F_tri,V_tri]=polyExtrude(Vc,cPar);
 </pre><p>Plotting meshed model</p><pre class="codeinput">hf2=cFigure;
-title(<span class="string">'The extruded model mesh'</span>,<span class="string">'FontSize'</span>,fontSize);
+title(<span class="string">'The extruded surface mesh'</span>,<span class="string">'FontSize'</span>,fontSize);
 xlabel(<span class="string">'X'</span>,<span class="string">'FontSize'</span>,fontSize);ylabel(<span class="string">'Y'</span>,<span class="string">'FontSize'</span>,fontSize); zlabel(<span class="string">'Z'</span>,<span class="string">'FontSize'</span>,fontSize);
 hold <span class="string">on</span>;
 
-hp=patch(<span class="string">'faces'</span>,F_tri,<span class="string">'Vertices'</span>,V_tri);
-
-set(hp,<span class="string">'FaceColor'</span>,<span class="string">'g'</span>,<span class="string">'EdgeColor'</span>,<span class="string">'k'</span>,<span class="string">'FaceAlpha'</span>,1);
-camlight <span class="string">headlight</span>;
+hp1=plotV(Vc,<span class="string">'r.-'</span>,<span class="string">'lineWidth'</span>,lineWidth2);
+hp2=gpatch(F_tri,V_tri,<span class="string">'gw'</span>);
+legend([hp1 hp2],{<span class="string">'Input curve'</span>,<span class="string">'Extruded surface'</span>});
 axis <span class="string">equal</span>; view(3); axis <span class="string">tight</span>;  grid <span class="string">on</span>;  set(gca,<span class="string">'FontSize'</span>,fontSize);
+axisGeom(gca,fontSize); view(30,30); camlight <span class="string">headlight</span>;
 drawnow;
-</pre><img width="100%" height="auto" vspace="5" hspace="5" src="HELP_filletCurve_04.jpg" alt=""> <p><img vspace="5" hspace="5" src="gibbVerySmall.gif" alt=""> </p><p><i><b>GIBBON</b></i> <a href="www.gibboncode.org">www.gibboncode.org</a></p><p><i>Kevin Mattheus Moerman</i>, <a href="gibbon.toolbox@gmail.com">gibbon.toolbox@gmail.com</a></p><p><i><b>GIBBON footer text</b></i></p><p>License: <a href="https://github.com/gibbonCode/GIBBON/blob/master/LICENSE">https://github.com/gibbonCode/GIBBON/blob/master/LICENSE</a></p><p>GIBBON: The Geometry and Image-based Bioengineering add-On. A toolbox for image segmentation, image-based modeling, meshing, and finite element analysis.</p><p>Copyright (C) 2019  Kevin Mattheus Moerman</p><p>This program is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.</p><p>This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for more details.</p><p>You should have received a copy of the GNU General Public License along with this program.  If not, see <a href="http://www.gnu.org/licenses/">http://www.gnu.org/licenses/</a>.</p><p class="footer"><br><a href="https://www.mathworks.com/products/matlab/">Published with MATLAB&reg; R2019a</a><br></p></div><!--
+</pre><img width="100%" height="auto" vspace="5" hspace="5" src="HELP_filletCurve_09.jpg" alt=""> <p><img vspace="5" hspace="5" src="gibbVerySmall.gif" alt=""> </p><p><i><b>GIBBON</b></i> <a href="www.gibboncode.org">www.gibboncode.org</a></p><p><i>Kevin Mattheus Moerman</i>, <a href="gibbon.toolbox@gmail.com">gibbon.toolbox@gmail.com</a></p><p><i><b>GIBBON footer text</b></i></p><p>License: <a href="https://github.com/gibbonCode/GIBBON/blob/master/LICENSE">https://github.com/gibbonCode/GIBBON/blob/master/LICENSE</a></p><p>GIBBON: The Geometry and Image-based Bioengineering add-On. A toolbox for image segmentation, image-based modeling, meshing, and finite element analysis.</p><p>Copyright (C) 2006-2023 Kevin Mattheus Moerman and the GIBBON contributors</p><p>This program is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.</p><p>This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for more details.</p><p>You should have received a copy of the GNU General Public License along with this program.  If not, see <a href="http://www.gnu.org/licenses/">http://www.gnu.org/licenses/</a>.</p><p class="footer"><br><a href="https://www.mathworks.com/products/matlab/">Published with MATLAB&reg; R2023a</a><br></p></div><!--
 ##### SOURCE BEGIN #####
 %% filletCurve
 % Below is a demonstration of the features of the |filletCurve| function
@@ -168,100 +204,150 @@ lineWidth2=5;
 lineWidth3=2;
 faceAlpha=0.5;
 
-%% Example: Filleting a curve in 3D
+%% Example 1: Filleting a non-closed curve in 2D
 
 %%
 % Simulating a curve with sharp features
-Vt=[0 0 0; 10 0 0; 5 10 0; 10 0 10; 0 10 10; ];
+Vt=2*[-1 -1; -1 1 ; 1 1; 1 -1]; %A square
 
 %%
+%Setting control parameters
+r=1; %Fillet radius
+np=25; %Number of points used to construct each fillet edge
+closedLoopOption=0; %Use 1 if curve represents a closed loop but containes unique points
+VN=filletCurve(Vt,r,np,closedLoopOption);
+
+%%
+% Plotting results
+cFigure; hold on;
+title('A filleted curve','FontSize',fontSize);
+xlabel('X','FontSize',fontSize); ylabel('Y','FontSize',fontSize); zlabel('Z','FontSize',fontSize);
+
+hp1=plotV(Vt,'k.-.','lineWidth',lineWidth1,'MarkerSize',markerSize1);
+hp2=plotV(VN,'r.-','lineWidth',lineWidth2);
+legend([hp1 hp2],{'Input','Filleted'});
+axisGeom(gca,fontSize);
+drawnow;
+
+%% Example 2: Filleting a closed curve in 2D
+
+%%
+%Setting control parameters
+r=0.5; %Fillet radius
+np=25; %Number of points used to construct each fillet edge
+closedLoopOption=1; %Use 1 if curve represents a closed loop but containes unique points
+VN=filletCurve(Vt,r,np,closedLoopOption);
+
+%%
+% Plotting results
+cFigure; hold on;
+title('A filleted curve','FontSize',fontSize);
+xlabel('X','FontSize',fontSize); ylabel('Y','FontSize',fontSize); zlabel('Z','FontSize',fontSize);
+
+hp1=plotV(Vt,'k.-.','lineWidth',lineWidth1,'MarkerSize',markerSize1);
+hp2=plotV(VN,'r.-','lineWidth',lineWidth2);
+legend([hp1 hp2],{'Input','Filleted'});
+axisGeom(gca,fontSize);
+drawnow;
+
+%% Example 3: Using multiple-radii
+
+%%
+%Setting control parameters
+r=[0.5 1.5 0 0.75]; %Fillet radii for each point
+np=25; %Number of points used to construct each fillet edge
+closedLoopOption=1; %Use 1 if curve represents a closed loop but containes unique points
+VN=filletCurve(Vt,r,np,closedLoopOption);
+
+%%
+% Plotting results
+cFigure; hold on;
+title('A filleted curve','FontSize',fontSize);
+xlabel('X','FontSize',fontSize); ylabel('Y','FontSize',fontSize); zlabel('Z','FontSize',fontSize);
+
+hp1=plotV(Vt,'k.-.','lineWidth',lineWidth1,'MarkerSize',markerSize1);
+hp2=plotV(VN,'r.-','lineWidth',lineWidth2);
+legend([hp1 hp2],{'Input','Filleted'});
+axisGeom(gca,fontSize); view(2);
+drawnow;
+
+%% Example 4: Filleting a curve in 3D
+
+%%
+% Simulating a curve with sharp features
+Vt=[0 0 0; 10 0 0; 0 10 0; 10 10 10; 10 10 0; ];
+
+%
 %Setting control parameters
 r=2; %Fillet radius
 np=25; %Number of points used to construct each fillet edge
 closedLoopOption=0; %Use 1 if curve represents a closed loop but containes unique points
-[VN]=filletCurve(Vt,r,np,closedLoopOption);
+VN=filletCurve(Vt,r,np,closedLoopOption);
 
-%%
+%
 % Plotting results
-hf1=cFigure;
+cFigure; hold on;
 title('A filleted curve','FontSize',fontSize);
 xlabel('X','FontSize',fontSize);ylabel('Y','FontSize',fontSize); zlabel('Z','FontSize',fontSize);
-hold on;
 
-plotV(Vt,'k.-.','lineWidth',lineWidth1,'MarkerSize',markerSize1);
-plotV(VN,'r.-','lineWidth',lineWidth2);
-
-axis equal; view(3); axis tight;  grid on;  set(gca,'FontSize',fontSize);
+hp1=plotV(Vt,'k.-.','lineWidth',lineWidth1,'MarkerSize',markerSize1);
+hp2=plotV(VN,'r.-','lineWidth',lineWidth2);
+legend([hp1 hp2],{'Input','Filleted'});
+axisGeom(gca,fontSize); 
 drawnow;
 
-%% Example: Filleting a closed curve in 3D
-closedLoopOption=1; 
-[VN]=filletCurve(Vt,r,np,closedLoopOption);
-
-%%
-% Plotting results
-hf2=cFigure;
-title('A filleted curve based on closed end conditions','FontSize',fontSize);
-xlabel('X','FontSize',fontSize);ylabel('Y','FontSize',fontSize); zlabel('Z','FontSize',fontSize);
-hold on;
-
-plotV(Vt,'k.-.','lineWidth',lineWidth1,'MarkerSize',markerSize1);
-plotV([Vt(1,:);Vt(end,:)],'g.-.','lineWidth',lineWidth1,'MarkerSize',markerSize1);
-plotV(VN,'r.-','lineWidth',lineWidth2);
-
-axis equal; view(3); axis tight;  grid on;  set(gca,'FontSize',fontSize);
-drawnow;
-
-%% Example: Extruding a filleted curve for CAD like model building
+%% Example 5: Extruding a filleted curve for CAD like model building
 
 %Sketching side profile
-x=[0 0 5 15 15];
-y=[0 4 9 10 0];
-V=10*[x(:) y(:)];
+Vt=[0 0 0; 10 0 0; 10 10 0; 20 15 0];
 
 %Fillet sketch
-r=15; %Fillet radius
-np=50; %Number of points used to construct each fillet edge
+r=[0 2 4 0]; %Fillet radius
+np=25; %Number of points used to construct each fillet edge
 closedLoopOption=0; %Use 1 if curve represents a closed loop but containes unique points
-[Vc]=filletCurve(V,r,np,closedLoopOption);
+[Vc]=filletCurve(Vt,r,np,closedLoopOption);
+
+pointSpacing=1;
+Vc=evenlySpaceCurve(Vc,pointSpacing,'pchip',0);
 
 %%
 % Plotting sketch
-hf1=cFigure;
+cFigure; hold on;
 title('The side profile sketch','FontSize',fontSize);
 xlabel('X','FontSize',fontSize);ylabel('Y','FontSize',fontSize); zlabel('Z','FontSize',fontSize);
-hold on;
 
-plotV(V,'k.-.','lineWidth',lineWidth1,'MarkerSize',markerSize1);
-plotV(Vc,'r-','lineWidth',lineWidth2,'MarkerSize',markerSize1);
-
-axis equal; view(2); axis tight;  grid on;  set(gca,'FontSize',fontSize);
+hp1=plotV(Vt,'k.-.','lineWidth',lineWidth1,'MarkerSize',markerSize1);
+hp2=plotV(Vc,'r.-','lineWidth',lineWidth2);
+legend([hp1 hp2],{'Input','Filleted'});
+axisGeom(gca,fontSize); view(2);
 drawnow;
 
 %%
 % Extruding model
-cPar.pointSpacing=10;
-cPar.depth=85; 
+cPar.depth=20; 
 cPar.patchType='tri'; 
 cPar.dir=0;
 cPar.n=[0 0 1];
 cPar.closeLoopOpt=0; 
-
+numSteps=round(cPar.depth./pointSpacing);
+numSteps=numSteps+double(iseven(numSteps)); %Force uneven
+cPar.numSteps=numSteps;
 [F_tri,V_tri]=polyExtrude(Vc,cPar);
 
 %% 
 % Plotting meshed model
 hf2=cFigure;
-title('The extruded model mesh','FontSize',fontSize);
+title('The extruded surface mesh','FontSize',fontSize);
 xlabel('X','FontSize',fontSize);ylabel('Y','FontSize',fontSize); zlabel('Z','FontSize',fontSize);
 hold on;
 
-hp=patch('faces',F_tri,'Vertices',V_tri);
-
-set(hp,'FaceColor','g','EdgeColor','k','FaceAlpha',1);
-camlight headlight;
+hp1=plotV(Vc,'r.-','lineWidth',lineWidth2);
+hp2=gpatch(F_tri,V_tri,'gw');
+legend([hp1 hp2],{'Input curve','Extruded surface'});
 axis equal; view(3); axis tight;  grid on;  set(gca,'FontSize',fontSize);
+axisGeom(gca,fontSize); view(30,30); camlight headlight; 
 drawnow;
+
 
 %% 
 %
@@ -281,7 +367,7 @@ drawnow;
 % image segmentation, image-based modeling, meshing, and finite element
 % analysis.
 % 
-% Copyright (C) 2019  Kevin Mattheus Moerman
+% Copyright (C) 2006-2023 Kevin Mattheus Moerman and the GIBBON contributors
 % 
 % This program is free software: you can redistribute it and/or modify
 % it under the terms of the GNU General Public License as published by
