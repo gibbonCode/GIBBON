@@ -2,7 +2,7 @@
 % Below is a demonstration for:
 % 
 % * Inverse FEA based material parameter optimisation 
-% * febio_spec version 3.0
+% * febio_spec version 4.0
 % * febio, FEBio
 % * hexahedral elements, hex8
 % * static, solid
@@ -119,6 +119,9 @@ displacementMagnitude=0.6030;
 matname = fullfile(loadPathMatProp,'Viscoelastic_properties.mat');
 load(matname);
 
+V_time=[0;V_time];
+lc=[0;lc];
+V_load=[0;V_load];
 cFigure; 
 title('Viscoelastic region','fontSize',fontSize); 
 hold on;
@@ -127,6 +130,7 @@ ylabel('Load rate','FontSize',fontSize);
 plot(V_time,lc,'k.-','LineWidth',3);
 set(gca,'FontSize',fontSize);
 camlight headlight;
+drawnow;
 
 [M,I]=max(lc);
 time_load=V_time(1:I);
@@ -166,7 +170,7 @@ plot(time_load,lc_load,'r.-','LineWidth',3);
 plot(time_unload,lc_unload,'k.-','LineWidth',3);
 set(gca,'FontSize',fontSize);
 camlight headlight;
-
+drawnow;
 
 %% DEFINE BC's
 %Supported nodes
@@ -198,7 +202,7 @@ drawnow;
 [febio_spec]=febioStructTemplate;
 
 %febio_spec version 
-febio_spec.ATTR.version='3.0'; 
+febio_spec.ATTR.version='4.0'; 
 
 %Module section
 febio_spec.Module.ATTR.type='solid'; 
@@ -211,7 +215,7 @@ febio_spec.Step.step{1}.Control.analysis=analysisType;
 febio_spec.Step.step{1}.Control.time_steps=numTimeSteps1;
 febio_spec.Step.step{1}.Control.step_size=t_step1;
 febio_spec.Step.step{1}.Control.solver.max_refs=max_refs;
-febio_spec.Step.step{1}.Control.solver.max_ups=max_ups;
+febio_spec.Step.step{1}.Control.solver.qn_method.max_ups=max_ups;
 febio_spec.Step.step{1}.Control.time_stepper.dtmin=dtmin1;
 febio_spec.Step.step{1}.Control.time_stepper.dtmax=dtmax1; 
 febio_spec.Step.step{1}.Control.time_stepper.max_retries=max_retries;
@@ -223,7 +227,7 @@ febio_spec.Step.step{2}.Control.analysis=analysisType;
 febio_spec.Step.step{2}.Control.time_steps=numTimeSteps2;
 febio_spec.Step.step{2}.Control.step_size=t_step2;
 febio_spec.Step.step{2}.Control.solver.max_refs=max_refs;
-febio_spec.Step.step{2}.Control.solver.max_ups=max_ups;
+febio_spec.Step.step{2}.Control.solver.qn_method.max_ups=max_ups;
 febio_spec.Step.step{2}.Control.time_stepper.dtmin=dtmin2;
 febio_spec.Step.step{2}.Control.time_stepper.dtmax=dtmax2; 
 febio_spec.Step.step{2}.Control.time_stepper.max_retries=max_retries;
@@ -260,7 +264,6 @@ febio_spec.Mesh.Nodes{1}.node.VAL=V; %The nodel coordinates
 % % -> Elements
 partName1='Part1';
 febio_spec.Mesh.Elements{1}.ATTR.name=partName1; %Name of the element set
-febio_spec.Mesh.Elements{1}.ATTR.mat=1; %material index for this set 
 febio_spec.Mesh.Elements{1}.ATTR.type='hex8'; %Element type of this set
 febio_spec.Mesh.Elements{1}.elem.ATTR.id=(1:1:size(E,1))'; %Element id's
 febio_spec.Mesh.Elements{1}.elem.VAL=E;
@@ -276,46 +279,41 @@ nodeSetName1='bcSupportList';
 nodeSetName2='bcPrescribeList';
 
 febio_spec.Mesh.NodeSet{1}.ATTR.name=nodeSetName1;
-febio_spec.Mesh.NodeSet{1}.node.ATTR.id=bcRigidList(:);
+febio_spec.Mesh.NodeSet{1}.VAL=mrow(bcRigidList(:));
 % 
 febio_spec.Mesh.NodeSet{2}.ATTR.name=nodeSetName2;
-febio_spec.Mesh.NodeSet{2}.node.ATTR.id=bcPrescribeList(:);
+febio_spec.Mesh.NodeSet{2}.VAL=mrow(bcPrescribeList(:));
 % 
 % %Boundary condition section 
 % % -> Fix boundary conditions
-febio_spec.Boundary.bc{1}.ATTR.type='fix';
+febio_spec.Boundary.bc{1}.ATTR.name='zero_displacement_xyz';
+febio_spec.Boundary.bc{1}.ATTR.type='zero displacement';
 febio_spec.Boundary.bc{1}.ATTR.node_set=nodeSetName1;
-febio_spec.Boundary.bc{1}.dofs='x';
+febio_spec.Boundary.bc{1}.x_dof=1;
+febio_spec.Boundary.bc{1}.y_dof=1;
+febio_spec.Boundary.bc{1}.z_dof=1;
 
-febio_spec.Boundary.bc{2}.ATTR.type='fix';
-febio_spec.Boundary.bc{2}.ATTR.node_set=nodeSetName1;
-febio_spec.Boundary.bc{2}.dofs='y';
+febio_spec.Boundary.bc{2}.ATTR.name='zero_displacement_xy';
+febio_spec.Boundary.bc{2}.ATTR.type='zero displacement';
+febio_spec.Boundary.bc{2}.ATTR.node_set=nodeSetName2;
+febio_spec.Boundary.bc{2}.x_dof=1;
+febio_spec.Boundary.bc{2}.y_dof=1;
 
-febio_spec.Boundary.bc{3}.ATTR.type='fix';
-febio_spec.Boundary.bc{3}.ATTR.node_set=nodeSetName1;
-febio_spec.Boundary.bc{3}.dofs='z';
-
-febio_spec.Boundary.bc{4}.ATTR.type='fix';
-febio_spec.Boundary.bc{4}.ATTR.node_set=nodeSetName2;
-febio_spec.Boundary.bc{4}.dofs='x';
-
-febio_spec.Boundary.bc{5}.ATTR.type='fix';
-febio_spec.Boundary.bc{5}.ATTR.node_set=nodeSetName2;
-febio_spec.Boundary.bc{5}.dofs='y';
-
-febio_spec.Boundary.bc{6}.ATTR.type='prescribe';
-febio_spec.Boundary.bc{6}.ATTR.node_set=nodeSetName2;
-febio_spec.Boundary.bc{6}.dof='z';
-febio_spec.Boundary.bc{6}.scale.ATTR.lc=1;
-febio_spec.Boundary.bc{6}.scale.VAL=displacementMagnitude;
-febio_spec.Boundary.bc{6}.relative=0;
+febio_spec.Boundary.bc{3}.ATTR.name='prescibed_displacement_z';
+febio_spec.Boundary.bc{3}.ATTR.type='prescribed displacement';
+febio_spec.Boundary.bc{3}.ATTR.node_set=nodeSetName2;
+febio_spec.Boundary.bc{3}.dof='z';
+febio_spec.Boundary.bc{3}.value.ATTR.lc=1;
+febio_spec.Boundary.bc{3}.value.VAL=displacementMagnitude;
+febio_spec.Boundary.bc{3}.relative=0;
 
 %LoadData section
 % -> load_controller
+febio_spec.LoadData.load_controller{1}.ATTR.name='LC_1';
 febio_spec.LoadData.load_controller{1}.ATTR.id=1;
 febio_spec.LoadData.load_controller{1}.ATTR.type='loadcurve';
 febio_spec.LoadData.load_controller{1}.interpolate='LINEAR';
-febio_spec.LoadData.load_controller{1}.points.point.VAL=[0 0;time_load lc_load;time_unload lc_unload];
+febio_spec.LoadData.load_controller{1}.points.pt.VAL=[0 0;time_load lc_load;time_unload lc_unload];
 
 %Output section 
 % -> log file
@@ -645,14 +643,17 @@ if runFlag==1
     time_sim=time_mat;
     load_sim=FZ_set*objectiveStruct.NumStrands; %Multiply force by number of strands
     
+    time_sim=time_sim(2:end);
+    load_sim=load_sim(2:end);
+    
     if ~isempty(objectiveStruct.h)
         objectiveStruct.h.XData=time_sim;
         objectiveStruct.h.YData=load_sim;
         drawnow;
     end
 
-    load_sim_exp = interp1(time_sim,load_sim,time_exp,'pchip');
 
+    load_sim_exp = interp1(time_sim,load_sim,time_exp,'pchip');   
     %Derive Fopt
     loadDev=load_exp-load_sim_exp;
    
