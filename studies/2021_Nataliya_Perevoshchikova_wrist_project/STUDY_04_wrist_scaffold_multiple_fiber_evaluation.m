@@ -9,7 +9,7 @@
 %  be derived. This data formed the input for detailed finite element analysis, enabling computational of scaffold 
 %  stress and strain distributions, which are key predictors of scaffold structural integrity.
 %___________________________________________________________________________________________________________________________
-% * febio_spec version 3.0
+% * febio_spec version 4.0
 % * febio, FEBio
 % * hexahedral elements, hex8
 % * static, solid
@@ -364,7 +364,7 @@ febioLogFileName_stress=[febioFebFileNamePart,'_stress_out.txt']; %Log file name
 [febio_spec]=febioStructTemplate;
 
 %febio_spec version 
-febio_spec.ATTR.version='3.0'; 
+febio_spec.ATTR.version='4.0'; 
 
 %Module section
 febio_spec.Module.ATTR.type='solid'; 
@@ -378,7 +378,7 @@ febio_spec.Control.time_stepper.dtmax=dtmax;
 febio_spec.Control.time_stepper.max_retries=max_retries;
 febio_spec.Control.time_stepper.opt_iter=opt_iter;
 febio_spec.Control.solver.max_refs=max_refs;
-febio_spec.Control.solver.max_ups=max_ups;
+febio_spec.Control.solver.qn_method.max_ups=max_ups;
 febio_spec.Control.solver.min_residual=min_residual;
 
 
@@ -580,254 +580,259 @@ end
 %Boundary conditions
 %Rigid section 
 % %Start and End
-febio_spec.Rigid.rigid_constraint{1}.ATTR.name='Rigid_Lunate_X';
-febio_spec.Rigid.rigid_constraint{1}.ATTR.type='prescribe';
-febio_spec.Rigid.rigid_constraint{1}.rb=2;
-febio_spec.Rigid.rigid_constraint{1}.dof='Rx';
-febio_spec.Rigid.rigid_constraint{1}.value.ATTR.lc=1;
-febio_spec.Rigid.rigid_constraint{1}.value.VAL=Mag_val;
-febio_spec.Rigid.rigid_constraint{1}.relative=0;
+febio_spec.Rigid.rigid_bc{1}.ATTR.name='Rigid_Lunate_X';
+febio_spec.Rigid.rigid_bc{1}.ATTR.type='rigid_displacement';
+febio_spec.Rigid.rigid_bc{1}.rb=2;
+febio_spec.Rigid.rigid_bc{1}.dof='x';
+febio_spec.Rigid.rigid_bc{1}.value.ATTR.lc=1;
+febio_spec.Rigid.rigid_bc{1}.value.VAL=Mag_val;
+febio_spec.Rigid.rigid_bc{1}.relative=0;
 
-febio_spec.Rigid.rigid_constraint{2}.ATTR.name='Rigid_Lunate_Y';
-febio_spec.Rigid.rigid_constraint{2}.ATTR.type='prescribe';
-febio_spec.Rigid.rigid_constraint{2}.rb=2;
-febio_spec.Rigid.rigid_constraint{2}.dof='Ry';
-febio_spec.Rigid.rigid_constraint{2}.value.ATTR.lc=2;
-febio_spec.Rigid.rigid_constraint{2}.value.VAL=Mag_val;
-febio_spec.Rigid.rigid_constraint{2}.relative=0;
+febio_spec.Rigid.rigid_bc{2}.ATTR.name='Rigid_Lunate_Y';
+febio_spec.Rigid.rigid_bc{2}.ATTR.type='rigid_displacement';
+febio_spec.Rigid.rigid_bc{2}.rb=2;
+febio_spec.Rigid.rigid_bc{2}.dof='y';
+febio_spec.Rigid.rigid_bc{2}.value.ATTR.lc=2;
+febio_spec.Rigid.rigid_bc{2}.value.VAL=Mag_val;
+febio_spec.Rigid.rigid_bc{2}.relative=0;
 
-febio_spec.Rigid.rigid_constraint{3}.ATTR.name='Rigid_Lunate_Z';
-febio_spec.Rigid.rigid_constraint{3}.ATTR.type='prescribe';
-febio_spec.Rigid.rigid_constraint{3}.rb=2;
-febio_spec.Rigid.rigid_constraint{3}.dof='Rz';
-febio_spec.Rigid.rigid_constraint{3}.value.ATTR.lc=3;
-febio_spec.Rigid.rigid_constraint{3}.value.VAL=Mag_val;
-febio_spec.Rigid.rigid_constraint{3}.relative=0;
+febio_spec.Rigid.rigid_bc{3}.ATTR.name='Rigid_Lunate_Z';
+febio_spec.Rigid.rigid_bc{3}.ATTR.type='rigid_displacement';
+febio_spec.Rigid.rigid_bc{3}.rb=2;
+febio_spec.Rigid.rigid_bc{3}.dof='z';
+febio_spec.Rigid.rigid_bc{3}.value.ATTR.lc=3;
+febio_spec.Rigid.rigid_bc{3}.value.VAL=Mag_val;
+febio_spec.Rigid.rigid_bc{3}.relative=0;
 
-febio_spec.Rigid.rigid_constraint{4}.ATTR.name='Rigid_Lunate_Ru';
-febio_spec.Rigid.rigid_constraint{4}.ATTR.type='prescribe';
-febio_spec.Rigid.rigid_constraint{4}.rb=2;
-febio_spec.Rigid.rigid_constraint{4}.dof='Ru';
-febio_spec.Rigid.rigid_constraint{4}.value.ATTR.lc=4;
-febio_spec.Rigid.rigid_constraint{4}.value.VAL=Mag_val;
-febio_spec.Rigid.rigid_constraint{4}.relative=0;
+febio_spec.Rigid.rigid_bc{4}.ATTR.name='Rigid_Lunate_Ru';
+febio_spec.Rigid.rigid_bc{4}.ATTR.type='rigid_rotation';
+febio_spec.Rigid.rigid_bc{4}.rb=2;
+febio_spec.Rigid.rigid_bc{4}.dof='Ru';
+febio_spec.Rigid.rigid_bc{4}.value.ATTR.lc=4;
+febio_spec.Rigid.rigid_bc{4}.value.VAL=Mag_val;
+febio_spec.Rigid.rigid_bc{4}.relative=0;
 
-febio_spec.Rigid.rigid_constraint{5}.ATTR.name='Rigid_Lunate_Rv';
-febio_spec.Rigid.rigid_constraint{5}.ATTR.type='prescribe';
-febio_spec.Rigid.rigid_constraint{5}.rb=2;
-febio_spec.Rigid.rigid_constraint{5}.dof='Rv';
-febio_spec.Rigid.rigid_constraint{5}.value.ATTR.lc=5;
-febio_spec.Rigid.rigid_constraint{5}.value.VAL=Mag_val;
-febio_spec.Rigid.rigid_constraint{5}.relative=0;
+febio_spec.Rigid.rigid_bc{5}.ATTR.name='Rigid_Lunate_Rv';
+febio_spec.Rigid.rigid_bc{5}.ATTR.type='rigid_rotation';
+febio_spec.Rigid.rigid_bc{5}.rb=2;
+febio_spec.Rigid.rigid_bc{5}.dof='Rv';
+febio_spec.Rigid.rigid_bc{5}.value.ATTR.lc=5;
+febio_spec.Rigid.rigid_bc{5}.value.VAL=Mag_val;
+febio_spec.Rigid.rigid_bc{5}.relative=0;
 
-febio_spec.Rigid.rigid_constraint{6}.ATTR.name='Rigid_Lunate_Rw';
-febio_spec.Rigid.rigid_constraint{6}.ATTR.type='prescribe';
-febio_spec.Rigid.rigid_constraint{6}.rb=2;
-febio_spec.Rigid.rigid_constraint{6}.dof='Rw';
-febio_spec.Rigid.rigid_constraint{6}.value.ATTR.lc=6;
-febio_spec.Rigid.rigid_constraint{6}.value.VAL=Mag_val;
-febio_spec.Rigid.rigid_constraint{6}.relative=0;
+febio_spec.Rigid.rigid_bc{6}.ATTR.name='Rigid_Lunate_Rw';
+febio_spec.Rigid.rigid_bc{6}.ATTR.type='rigid_rotation';
+febio_spec.Rigid.rigid_bc{6}.rb=2;
+febio_spec.Rigid.rigid_bc{6}.dof='Rw';
+febio_spec.Rigid.rigid_bc{6}.value.ATTR.lc=6;
+febio_spec.Rigid.rigid_bc{6}.value.VAL=Mag_val;
+febio_spec.Rigid.rigid_bc{6}.relative=0;
 
-febio_spec.Rigid.rigid_constraint{7}.ATTR.name='Rigid_Scaphoid_X';
-febio_spec.Rigid.rigid_constraint{7}.ATTR.type='prescribe';
-febio_spec.Rigid.rigid_constraint{7}.rb=3;
-febio_spec.Rigid.rigid_constraint{7}.dof='Rx';
-febio_spec.Rigid.rigid_constraint{7}.value.ATTR.lc=7;
-febio_spec.Rigid.rigid_constraint{7}.value.VAL=Mag_val;
-febio_spec.Rigid.rigid_constraint{7}.relative=0;
+febio_spec.Rigid.rigid_bc{7}.ATTR.name='Rigid_Scaphoid_X';
+febio_spec.Rigid.rigid_bc{7}.ATTR.type='rigid_displacement';
+febio_spec.Rigid.rigid_bc{7}.rb=3;
+febio_spec.Rigid.rigid_bc{7}.dof='x';
+febio_spec.Rigid.rigid_bc{7}.value.ATTR.lc=7;
+febio_spec.Rigid.rigid_bc{7}.value.VAL=Mag_val;
+febio_spec.Rigid.rigid_bc{7}.relative=0;
 
-febio_spec.Rigid.rigid_constraint{8}.ATTR.name='Rigid_Scaphoid_Y';
-febio_spec.Rigid.rigid_constraint{8}.ATTR.type='prescribe';
-febio_spec.Rigid.rigid_constraint{8}.rb=3;
-febio_spec.Rigid.rigid_constraint{8}.dof='Ry';
-febio_spec.Rigid.rigid_constraint{8}.value.ATTR.lc=8;
-febio_spec.Rigid.rigid_constraint{8}.value.VAL=Mag_val;
-febio_spec.Rigid.rigid_constraint{8}.relative=0;
+febio_spec.Rigid.rigid_bc{8}.ATTR.name='Rigid_Scaphoid_Y';
+febio_spec.Rigid.rigid_bc{8}.ATTR.type='rigid_displacement';
+febio_spec.Rigid.rigid_bc{8}.rb=3;
+febio_spec.Rigid.rigid_bc{8}.dof='y';
+febio_spec.Rigid.rigid_bc{8}.value.ATTR.lc=8;
+febio_spec.Rigid.rigid_bc{8}.value.VAL=Mag_val;
+febio_spec.Rigid.rigid_bc{8}.relative=0;
 
-febio_spec.Rigid.rigid_constraint{9}.ATTR.name='Rigid_Scaphoid_Z';
-febio_spec.Rigid.rigid_constraint{9}.ATTR.type='prescribe';
-febio_spec.Rigid.rigid_constraint{9}.rb=3;
-febio_spec.Rigid.rigid_constraint{9}.dof='Rz';
-febio_spec.Rigid.rigid_constraint{9}.value.ATTR.lc=9;
-febio_spec.Rigid.rigid_constraint{9}.value.VAL=Mag_val;
-febio_spec.Rigid.rigid_constraint{9}.relative=0;
+febio_spec.Rigid.rigid_bc{9}.ATTR.name='Rigid_Scaphoid_Z';
+febio_spec.Rigid.rigid_bc{9}.ATTR.type='rigid_displacement';
+febio_spec.Rigid.rigid_bc{9}.rb=3;
+febio_spec.Rigid.rigid_bc{9}.dof='z';
+febio_spec.Rigid.rigid_bc{9}.value.ATTR.lc=9;
+febio_spec.Rigid.rigid_bc{9}.value.VAL=Mag_val;
+febio_spec.Rigid.rigid_bc{9}.relative=0;
 
-febio_spec.Rigid.rigid_constraint{10}.ATTR.name='Rigid_Scaphoid_RX';
-febio_spec.Rigid.rigid_constraint{10}.ATTR.type='prescribe';
-febio_spec.Rigid.rigid_constraint{10}.rb=3;
-febio_spec.Rigid.rigid_constraint{10}.dof='Ru';
-febio_spec.Rigid.rigid_constraint{10}.value.ATTR.lc=10;
-febio_spec.Rigid.rigid_constraint{10}.value.VAL=Mag_val;
-febio_spec.Rigid.rigid_constraint{10}.relative=0;
+febio_spec.Rigid.rigid_bc{10}.ATTR.name='Rigid_Scaphoid_RX';
+febio_spec.Rigid.rigid_bc{10}.ATTR.type='rigid_rotation';
+febio_spec.Rigid.rigid_bc{10}.rb=3;
+febio_spec.Rigid.rigid_bc{10}.dof='Ru';
+febio_spec.Rigid.rigid_bc{10}.value.ATTR.lc=10;
+febio_spec.Rigid.rigid_bc{10}.value.VAL=Mag_val;
+febio_spec.Rigid.rigid_bc{10}.relative=0;
 
-febio_spec.Rigid.rigid_constraint{11}.ATTR.name='Rigid_Scaphoid_RY';
-febio_spec.Rigid.rigid_constraint{11}.ATTR.type='prescribe';
-febio_spec.Rigid.rigid_constraint{11}.rb=3;
-febio_spec.Rigid.rigid_constraint{11}.dof='Rv';
-febio_spec.Rigid.rigid_constraint{11}.value.ATTR.lc=11;
-febio_spec.Rigid.rigid_constraint{11}.value.VAL=Mag_val;
-febio_spec.Rigid.rigid_constraint{11}.relative=0;
+febio_spec.Rigid.rigid_bc{11}.ATTR.name='Rigid_Scaphoid_RY';
+febio_spec.Rigid.rigid_bc{11}.ATTR.type='rigid_rotation';
+febio_spec.Rigid.rigid_bc{11}.rb=3;
+febio_spec.Rigid.rigid_bc{11}.dof='Rv';
+febio_spec.Rigid.rigid_bc{11}.value.ATTR.lc=11;
+febio_spec.Rigid.rigid_bc{11}.value.VAL=Mag_val;
+febio_spec.Rigid.rigid_bc{11}.relative=0;
 
-febio_spec.Rigid.rigid_constraint{12}.ATTR.name='Rigid_Scaphoid_RZ';
-febio_spec.Rigid.rigid_constraint{12}.ATTR.type='prescribe';
-febio_spec.Rigid.rigid_constraint{12}.rb=3;
-febio_spec.Rigid.rigid_constraint{12}.dof='Rw';
-febio_spec.Rigid.rigid_constraint{12}.value.ATTR.lc=12;
-febio_spec.Rigid.rigid_constraint{12}.value.VAL=Mag_val;
-febio_spec.Rigid.rigid_constraint{12}.relative=0;
+febio_spec.Rigid.rigid_bc{12}.ATTR.name='Rigid_Scaphoid_RZ';
+febio_spec.Rigid.rigid_bc{12}.ATTR.type='rigid_rotation';
+febio_spec.Rigid.rigid_bc{12}.rb=3;
+febio_spec.Rigid.rigid_bc{12}.dof='Rw';
+febio_spec.Rigid.rigid_bc{12}.value.ATTR.lc=12;
+febio_spec.Rigid.rigid_bc{12}.value.VAL=Mag_val;
+febio_spec.Rigid.rigid_bc{12}.relative=0;
 
 % % -> Prescribed boundary conditions on the rigid body bones
-febio_spec.Rigid.rigid_constraint{13}.ATTR.name='Rigid_Lunate_side_X';
-febio_spec.Rigid.rigid_constraint{13}.ATTR.type='prescribe';
-febio_spec.Rigid.rigid_constraint{13}.rb=4;
-febio_spec.Rigid.rigid_constraint{13}.dof='Rx';
-febio_spec.Rigid.rigid_constraint{13}.value.ATTR.lc=1;
-febio_spec.Rigid.rigid_constraint{13}.value.VAL=Mag_val;
-febio_spec.Rigid.rigid_constraint{13}.relative=0;
+febio_spec.Rigid.rigid_bc{13}.ATTR.name='Rigid_Lunate_side_X';
+febio_spec.Rigid.rigid_bc{13}.ATTR.type='rigid_displacement';
+febio_spec.Rigid.rigid_bc{13}.rb=4;
+febio_spec.Rigid.rigid_bc{13}.dof='x';
+febio_spec.Rigid.rigid_bc{13}.value.ATTR.lc=1;
+febio_spec.Rigid.rigid_bc{13}.value.VAL=Mag_val;
+febio_spec.Rigid.rigid_bc{13}.relative=0;
 
-febio_spec.Rigid.rigid_constraint{14}.ATTR.name='Rigid_Lunate_side_Y';
-febio_spec.Rigid.rigid_constraint{14}.ATTR.type='prescribe';
-febio_spec.Rigid.rigid_constraint{14}.rb=4;
-febio_spec.Rigid.rigid_constraint{14}.dof='Ry';
-febio_spec.Rigid.rigid_constraint{14}.value.ATTR.lc=2;
-febio_spec.Rigid.rigid_constraint{14}.value.VAL=Mag_val;
-febio_spec.Rigid.rigid_constraint{14}.relative=0;
+febio_spec.Rigid.rigid_bc{14}.ATTR.name='Rigid_Lunate_side_Y';
+febio_spec.Rigid.rigid_bc{14}.ATTR.type='rigid_displacement';
+febio_spec.Rigid.rigid_bc{14}.rb=4;
+febio_spec.Rigid.rigid_bc{14}.dof='y';
+febio_spec.Rigid.rigid_bc{14}.value.ATTR.lc=2;
+febio_spec.Rigid.rigid_bc{14}.value.VAL=Mag_val;
+febio_spec.Rigid.rigid_bc{14}.relative=0;
 
-febio_spec.Rigid.rigid_constraint{15}.ATTR.name='Rigid_Lunate_side_Z';
-febio_spec.Rigid.rigid_constraint{15}.ATTR.type='prescribe';
-febio_spec.Rigid.rigid_constraint{15}.rb=4;
-febio_spec.Rigid.rigid_constraint{15}.dof='Rz';
-febio_spec.Rigid.rigid_constraint{15}.value.ATTR.lc=3;
-febio_spec.Rigid.rigid_constraint{15}.value.VAL=Mag_val;
-febio_spec.Rigid.rigid_constraint{15}.relative=0;
+febio_spec.Rigid.rigid_bc{15}.ATTR.name='Rigid_Lunate_side_Z';
+febio_spec.Rigid.rigid_bc{15}.ATTR.type='rigid_displacement';
+febio_spec.Rigid.rigid_bc{15}.rb=4;
+febio_spec.Rigid.rigid_bc{15}.dof='z';
+febio_spec.Rigid.rigid_bc{15}.value.ATTR.lc=3;
+febio_spec.Rigid.rigid_bc{15}.value.VAL=Mag_val;
+febio_spec.Rigid.rigid_bc{15}.relative=0;
 
-febio_spec.Rigid.rigid_constraint{16}.ATTR.name='Rigid_Lunate_side_RX';
-febio_spec.Rigid.rigid_constraint{16}.ATTR.type='prescribe';
-febio_spec.Rigid.rigid_constraint{16}.rb=4;
-febio_spec.Rigid.rigid_constraint{16}.dof='Ru';
-febio_spec.Rigid.rigid_constraint{16}.value.ATTR.lc=4;
-febio_spec.Rigid.rigid_constraint{16}.value.VAL=Mag_val;
-febio_spec.Rigid.rigid_constraint{16}.relative=0;
+febio_spec.Rigid.rigid_bc{16}.ATTR.name='Rigid_Lunate_side_RX';
+febio_spec.Rigid.rigid_bc{16}.ATTR.type='rigid_rotation';
+febio_spec.Rigid.rigid_bc{16}.rb=4;
+febio_spec.Rigid.rigid_bc{16}.dof='Ru';
+febio_spec.Rigid.rigid_bc{16}.value.ATTR.lc=4;
+febio_spec.Rigid.rigid_bc{16}.value.VAL=Mag_val;
+febio_spec.Rigid.rigid_bc{16}.relative=0;
 
-febio_spec.Rigid.rigid_constraint{17}.ATTR.name='Rigid_Lunate_side_RY';
-febio_spec.Rigid.rigid_constraint{17}.ATTR.type='prescribe';
-febio_spec.Rigid.rigid_constraint{17}.rb=4;
-febio_spec.Rigid.rigid_constraint{17}.dof='Rv';
-febio_spec.Rigid.rigid_constraint{17}.value.ATTR.lc=5;
-febio_spec.Rigid.rigid_constraint{17}.value.VAL=Mag_val;
-febio_spec.Rigid.rigid_constraint{17}.relative=0;
+febio_spec.Rigid.rigid_bc{17}.ATTR.name='Rigid_Lunate_side_RY';
+febio_spec.Rigid.rigid_bc{17}.ATTR.type='rigid_rotation';
+febio_spec.Rigid.rigid_bc{17}.rb=4;
+febio_spec.Rigid.rigid_bc{17}.dof='Rv';
+febio_spec.Rigid.rigid_bc{17}.value.ATTR.lc=5;
+febio_spec.Rigid.rigid_bc{17}.value.VAL=Mag_val;
+febio_spec.Rigid.rigid_bc{17}.relative=0;
 
-febio_spec.Rigid.rigid_constraint{18}.ATTR.name='Rigid_Lunate_side_RZ';
-febio_spec.Rigid.rigid_constraint{18}.ATTR.type='prescribe';
-febio_spec.Rigid.rigid_constraint{18}.rb=4;
-febio_spec.Rigid.rigid_constraint{18}.dof='Rw';
-febio_spec.Rigid.rigid_constraint{18}.value.ATTR.lc=6;
-febio_spec.Rigid.rigid_constraint{18}.value.VAL=Mag_val;
-febio_spec.Rigid.rigid_constraint{18}.relative=0;
+febio_spec.Rigid.rigid_bc{18}.ATTR.name='Rigid_Lunate_side_RZ';
+febio_spec.Rigid.rigid_bc{18}.ATTR.type='rigid_rotation';
+febio_spec.Rigid.rigid_bc{18}.rb=4;
+febio_spec.Rigid.rigid_bc{18}.dof='Rw';
+febio_spec.Rigid.rigid_bc{18}.value.ATTR.lc=6;
+febio_spec.Rigid.rigid_bc{18}.value.VAL=Mag_val;
+febio_spec.Rigid.rigid_bc{18}.relative=0;
 
 % %Scaphoid
-febio_spec.Rigid.rigid_constraint{19}.ATTR.name='Rigid_Scaphoid_side_X';
-febio_spec.Rigid.rigid_constraint{19}.ATTR.type='prescribe';
-febio_spec.Rigid.rigid_constraint{19}.rb=5;
-febio_spec.Rigid.rigid_constraint{19}.dof='Rx';
-febio_spec.Rigid.rigid_constraint{19}.value.ATTR.lc=7;
-febio_spec.Rigid.rigid_constraint{19}.value.VAL=Mag_val;
-febio_spec.Rigid.rigid_constraint{19}.relative=0;
+febio_spec.Rigid.rigid_bc{19}.ATTR.name='Rigid_Scaphoid_side_X';
+febio_spec.Rigid.rigid_bc{19}.ATTR.type='rigid_displacement';
+febio_spec.Rigid.rigid_bc{19}.rb=5;
+febio_spec.Rigid.rigid_bc{19}.dof='x';
+febio_spec.Rigid.rigid_bc{19}.value.ATTR.lc=7;
+febio_spec.Rigid.rigid_bc{19}.value.VAL=Mag_val;
+febio_spec.Rigid.rigid_bc{19}.relative=0;
 
-febio_spec.Rigid.rigid_constraint{20}.ATTR.name='Rigid_Scaphoid_side_Y';
-febio_spec.Rigid.rigid_constraint{20}.ATTR.type='prescribe';
-febio_spec.Rigid.rigid_constraint{20}.rb=5;
-febio_spec.Rigid.rigid_constraint{20}.dof='Ry';
-febio_spec.Rigid.rigid_constraint{20}.value.ATTR.lc=8;
-febio_spec.Rigid.rigid_constraint{20}.value.VAL=Mag_val;
-febio_spec.Rigid.rigid_constraint{20}.relative=0;
+febio_spec.Rigid.rigid_bc{20}.ATTR.name='Rigid_Scaphoid_side_Y';
+febio_spec.Rigid.rigid_bc{20}.ATTR.type='rigid_displacement';
+febio_spec.Rigid.rigid_bc{20}.rb=5;
+febio_spec.Rigid.rigid_bc{20}.dof='y';
+febio_spec.Rigid.rigid_bc{20}.value.ATTR.lc=8;
+febio_spec.Rigid.rigid_bc{20}.value.VAL=Mag_val;
+febio_spec.Rigid.rigid_bc{20}.relative=0;
 
-febio_spec.Rigid.rigid_constraint{21}.ATTR.name='Rigid_Scaphoid_side_Z';
-febio_spec.Rigid.rigid_constraint{21}.ATTR.type='prescribe';
-febio_spec.Rigid.rigid_constraint{21}.rb=5;
-febio_spec.Rigid.rigid_constraint{21}.dof='Rz';
-febio_spec.Rigid.rigid_constraint{21}.value.ATTR.lc=9;
-febio_spec.Rigid.rigid_constraint{21}.value.VAL=Mag_val;
-febio_spec.Rigid.rigid_constraint{21}.relative=0;
+febio_spec.Rigid.rigid_bc{21}.ATTR.name='Rigid_Scaphoid_side_Z';
+febio_spec.Rigid.rigid_bc{21}.ATTR.type='rigid_displacement';
+febio_spec.Rigid.rigid_bc{21}.rb=5;
+febio_spec.Rigid.rigid_bc{21}.dof='z';
+febio_spec.Rigid.rigid_bc{21}.value.ATTR.lc=9;
+febio_spec.Rigid.rigid_bc{21}.value.VAL=Mag_val;
+febio_spec.Rigid.rigid_bc{21}.relative=0;
 
-febio_spec.Rigid.rigid_constraint{22}.ATTR.name='Rigid_Scaphoid_side_RX';
-febio_spec.Rigid.rigid_constraint{22}.ATTR.type='prescribe';
-febio_spec.Rigid.rigid_constraint{22}.rb=5;
-febio_spec.Rigid.rigid_constraint{22}.dof='Ru';
-febio_spec.Rigid.rigid_constraint{22}.value.ATTR.lc=10;
-febio_spec.Rigid.rigid_constraint{22}.value.VAL=Mag_val;
-febio_spec.Rigid.rigid_constraint{22}.relative=0;
+febio_spec.Rigid.rigid_bc{22}.ATTR.name='Rigid_Scaphoid_side_RX';
+febio_spec.Rigid.rigid_bc{22}.ATTR.type='rigid_rotation';
+febio_spec.Rigid.rigid_bc{22}.rb=5;
+febio_spec.Rigid.rigid_bc{22}.dof='Ru';
+febio_spec.Rigid.rigid_bc{22}.value.ATTR.lc=10;
+febio_spec.Rigid.rigid_bc{22}.value.VAL=Mag_val;
+febio_spec.Rigid.rigid_bc{22}.relative=0;
 
-febio_spec.Rigid.rigid_constraint{23}.ATTR.name='Rigid_Scaphoid_side_RY';
-febio_spec.Rigid.rigid_constraint{23}.ATTR.type='prescribe';
-febio_spec.Rigid.rigid_constraint{23}.rb=5;
-febio_spec.Rigid.rigid_constraint{23}.dof='Rv';
-febio_spec.Rigid.rigid_constraint{23}.value.ATTR.lc=11;
-febio_spec.Rigid.rigid_constraint{23}.value.VAL=Mag_val;
-febio_spec.Rigid.rigid_constraint{23}.relative=0;
+febio_spec.Rigid.rigid_bc{23}.ATTR.name='Rigid_Scaphoid_side_RY';
+febio_spec.Rigid.rigid_bc{23}.ATTR.type='rigid_rotation';
+febio_spec.Rigid.rigid_bc{23}.rb=5;
+febio_spec.Rigid.rigid_bc{23}.dof='Rv';
+febio_spec.Rigid.rigid_bc{23}.value.ATTR.lc=11;
+febio_spec.Rigid.rigid_bc{23}.value.VAL=Mag_val;
+febio_spec.Rigid.rigid_bc{23}.relative=0;
 
-febio_spec.Rigid.rigid_constraint{24}.ATTR.name='Rigid_Scaphoid_side_RZ';
-febio_spec.Rigid.rigid_constraint{24}.ATTR.type='prescribe';
-febio_spec.Rigid.rigid_constraint{24}.rb=5;
-febio_spec.Rigid.rigid_constraint{24}.dof='Rw';
-febio_spec.Rigid.rigid_constraint{24}.value.ATTR.lc=12;
-febio_spec.Rigid.rigid_constraint{24}.value.VAL=Mag_val;
-febio_spec.Rigid.rigid_constraint{24}.relative=0;
+febio_spec.Rigid.rigid_bc{24}.ATTR.name='Rigid_Scaphoid_side_RZ';
+febio_spec.Rigid.rigid_bc{24}.ATTR.type='rigid_rotation';
+febio_spec.Rigid.rigid_bc{24}.rb=5;
+febio_spec.Rigid.rigid_bc{24}.dof='Rw';
+febio_spec.Rigid.rigid_bc{24}.value.ATTR.lc=12;
+febio_spec.Rigid.rigid_bc{24}.value.VAL=Mag_val;
+febio_spec.Rigid.rigid_bc{24}.relative=0;
 
 %%Capitate
-febio_spec.Rigid.rigid_constraint{25}.ATTR.name='Rigid_Capitate_X';
-febio_spec.Rigid.rigid_constraint{25}.ATTR.type='prescribe';
-febio_spec.Rigid.rigid_constraint{25}.rb=6;
-febio_spec.Rigid.rigid_constraint{25}.dof='Rx';
-febio_spec.Rigid.rigid_constraint{25}.value.ATTR.lc=13;
-febio_spec.Rigid.rigid_constraint{25}.value.VAL=Mag_val;
-febio_spec.Rigid.rigid_constraint{25}.relative=0;
+febio_spec.Rigid.rigid_bc{25}.ATTR.name='Rigid_Capitate_X';
+febio_spec.Rigid.rigid_bc{25}.ATTR.type='rigid_displacement';
+febio_spec.Rigid.rigid_bc{25}.rb=6;
+febio_spec.Rigid.rigid_bc{25}.dof='x';
+febio_spec.Rigid.rigid_bc{25}.value.ATTR.lc=13;
+febio_spec.Rigid.rigid_bc{25}.value.VAL=Mag_val;
+febio_spec.Rigid.rigid_bc{25}.relative=0;
 
-febio_spec.Rigid.rigid_constraint{26}.ATTR.name='Rigid_Capitate_Y';
-febio_spec.Rigid.rigid_constraint{26}.ATTR.type='prescribe';
-febio_spec.Rigid.rigid_constraint{26}.rb=6;
-febio_spec.Rigid.rigid_constraint{26}.dof='Ry';
-febio_spec.Rigid.rigid_constraint{26}.value.ATTR.lc=14;
-febio_spec.Rigid.rigid_constraint{26}.value.VAL=Mag_val;
-febio_spec.Rigid.rigid_constraint{26}.relative=0;
+febio_spec.Rigid.rigid_bc{26}.ATTR.name='Rigid_Capitate_Y';
+febio_spec.Rigid.rigid_bc{26}.ATTR.type='rigid_displacement';
+febio_spec.Rigid.rigid_bc{26}.rb=6;
+febio_spec.Rigid.rigid_bc{26}.dof='y';
+febio_spec.Rigid.rigid_bc{26}.value.ATTR.lc=14;
+febio_spec.Rigid.rigid_bc{26}.value.VAL=Mag_val;
+febio_spec.Rigid.rigid_bc{26}.relative=0;
 
-febio_spec.Rigid.rigid_constraint{27}.ATTR.name='Rigid_Capitate_Z';
-febio_spec.Rigid.rigid_constraint{27}.ATTR.type='prescribe';
-febio_spec.Rigid.rigid_constraint{27}.rb=6;
-febio_spec.Rigid.rigid_constraint{27}.dof='Rz';
-febio_spec.Rigid.rigid_constraint{27}.value.ATTR.lc=15;
-febio_spec.Rigid.rigid_constraint{27}.value.VAL=Mag_val;
-febio_spec.Rigid.rigid_constraint{27}.relative=0;
+febio_spec.Rigid.rigid_bc{27}.ATTR.name='Rigid_Capitate_Z';
+febio_spec.Rigid.rigid_bc{27}.ATTR.type='rigid_displacement';
+febio_spec.Rigid.rigid_bc{27}.rb=6;
+febio_spec.Rigid.rigid_bc{27}.dof='z';
+febio_spec.Rigid.rigid_bc{27}.value.ATTR.lc=15;
+febio_spec.Rigid.rigid_bc{27}.value.VAL=Mag_val;
+febio_spec.Rigid.rigid_bc{27}.relative=0;
 
-febio_spec.Rigid.rigid_constraint{28}.ATTR.name='Rigid_Capitate_RX';
-febio_spec.Rigid.rigid_constraint{28}.ATTR.type='prescribe';
-febio_spec.Rigid.rigid_constraint{28}.rb=6;
-febio_spec.Rigid.rigid_constraint{28}.dof='Ru';
-febio_spec.Rigid.rigid_constraint{28}.value.ATTR.lc=16;
-febio_spec.Rigid.rigid_constraint{28}.value.VAL=Mag_val;
-febio_spec.Rigid.rigid_constraint{28}.relative=0;
+febio_spec.Rigid.rigid_bc{28}.ATTR.name='Rigid_Capitate_RX';
+febio_spec.Rigid.rigid_bc{28}.ATTR.type='rigid_rotation';
+febio_spec.Rigid.rigid_bc{28}.rb=6;
+febio_spec.Rigid.rigid_bc{28}.dof='Ru';
+febio_spec.Rigid.rigid_bc{28}.value.ATTR.lc=16;
+febio_spec.Rigid.rigid_bc{28}.value.VAL=Mag_val;
+febio_spec.Rigid.rigid_bc{28}.relative=0;
 
-febio_spec.Rigid.rigid_constraint{29}.ATTR.name='Rigid_Capitate_RY';
-febio_spec.Rigid.rigid_constraint{29}.ATTR.type='prescribe';
-febio_spec.Rigid.rigid_constraint{29}.rb=6;
-febio_spec.Rigid.rigid_constraint{29}.dof='Rv';
-febio_spec.Rigid.rigid_constraint{29}.value.ATTR.lc=17;
-febio_spec.Rigid.rigid_constraint{29}.value.VAL=Mag_val;
-febio_spec.Rigid.rigid_constraint{29}.relative=0;
+febio_spec.Rigid.rigid_bc{29}.ATTR.name='Rigid_Capitate_RY';
+febio_spec.Rigid.rigid_bc{29}.ATTR.type='rigid_rotation';
+febio_spec.Rigid.rigid_bc{29}.rb=6;
+febio_spec.Rigid.rigid_bc{29}.dof='Rv';
+febio_spec.Rigid.rigid_bc{29}.value.ATTR.lc=17;
+febio_spec.Rigid.rigid_bc{29}.value.VAL=Mag_val;
+febio_spec.Rigid.rigid_bc{29}.relative=0;
 
-febio_spec.Rigid.rigid_constraint{30}.ATTR.name='Rigid_Capitate_RZ';
-febio_spec.Rigid.rigid_constraint{30}.ATTR.type='prescribe';
-febio_spec.Rigid.rigid_constraint{30}.rb=6;
-febio_spec.Rigid.rigid_constraint{30}.dof='Rw';
-febio_spec.Rigid.rigid_constraint{30}.value.ATTR.lc=18;
-febio_spec.Rigid.rigid_constraint{30}.value.VAL=Mag_val;
-febio_spec.Rigid.rigid_constraint{30}.relative=0;
+febio_spec.Rigid.rigid_bc{30}.ATTR.name='Rigid_Capitate_RZ';
+febio_spec.Rigid.rigid_bc{30}.ATTR.type='rigid_rotation';
+febio_spec.Rigid.rigid_bc{30}.rb=6;
+febio_spec.Rigid.rigid_bc{30}.dof='Rw';
+febio_spec.Rigid.rigid_bc{30}.value.ATTR.lc=18;
+febio_spec.Rigid.rigid_bc{30}.value.VAL=Mag_val;
+febio_spec.Rigid.rigid_bc{30}.relative=0;
 
 % %Radius
-febio_spec.Rigid.rigid_constraint{31}.ATTR.name='Rigid_Radiuas';
-febio_spec.Rigid.rigid_constraint{31}.ATTR.type='fix';
-febio_spec.Rigid.rigid_constraint{31}.rb=7;
-febio_spec.Rigid.rigid_constraint{31}.dofs='Rx,Ry,Rz,Ru,Rv,Rw';
+febio_spec.Rigid.rigid_bc{31}.ATTR.name='Rigid_Radiuas';
+febio_spec.Rigid.rigid_bc{31}.ATTR.type='rigid_fixed';
+febio_spec.Rigid.rigid_bc{31}.rb=7;
+febio_spec.Rigid.rigid_bc{31}.Rx_dof=1;
+febio_spec.Rigid.rigid_bc{31}.Ry_dof=1;
+febio_spec.Rigid.rigid_bc{31}.Ry_dof=0;
+febio_spec.Rigid.rigid_bc{31}.Ru_dof=1;
+febio_spec.Rigid.rigid_bc{31}.Rv_dof=1;
+febio_spec.Rigid.rigid_bc{31}.Rw_dof=1;
 
 k=1;
 for i=1:numTimeSteps+1
@@ -946,97 +951,116 @@ for i=1:numTimeSteps+1
 end
 
 %Lunate
+febio_spec.LoadData.load_controller{1}.ATTR.name='LC_1';
 febio_spec.LoadData.load_controller{1}.ATTR.id=1;
 febio_spec.LoadData.load_controller{1}.ATTR.type='loadcurve';
 febio_spec.LoadData.load_controller{1}.interpolate='LINEAR';
-febio_spec.LoadData.load_controller{1}.points.point.VAL=Mat_X_Lunate;
+febio_spec.LoadData.load_controller{1}.points.pt.VAL=Mat_X_Lunate;
 
+febio_spec.LoadData.load_controller{2}.ATTR.name='LC_2';
 febio_spec.LoadData.load_controller{2}.ATTR.id=2;
 febio_spec.LoadData.load_controller{2}.ATTR.type='loadcurve';
 febio_spec.LoadData.load_controller{2}.interpolate='LINEAR';
-febio_spec.LoadData.load_controller{2}.points.point.VAL=Mat_Y_Lunate;
+febio_spec.LoadData.load_controller{2}.points.pt.VAL=Mat_Y_Lunate;
 
+febio_spec.LoadData.load_controller{3}.ATTR.name='LC_3';
 febio_spec.LoadData.load_controller{3}.ATTR.id=3;
 febio_spec.LoadData.load_controller{3}.ATTR.type='loadcurve';
 febio_spec.LoadData.load_controller{3}.interpolate='LINEAR';
-febio_spec.LoadData.load_controller{3}.points.point.VAL=Mat_Z_Lunate;
+febio_spec.LoadData.load_controller{3}.points.pt.VAL=Mat_Z_Lunate;
 
+febio_spec.LoadData.load_controller{4}.ATTR.name='LC_4';
 febio_spec.LoadData.load_controller{4}.ATTR.id=4;
 febio_spec.LoadData.load_controller{4}.ATTR.type='loadcurve';
 febio_spec.LoadData.load_controller{4}.interpolate='LINEAR';
-febio_spec.LoadData.load_controller{4}.points.point.VAL=Mat_RX_Lunate;
+febio_spec.LoadData.load_controller{4}.points.pt.VAL=Mat_RX_Lunate;
 
+febio_spec.LoadData.load_controller{5}.ATTR.name='LC_5';
 febio_spec.LoadData.load_controller{5}.ATTR.id=5;
 febio_spec.LoadData.load_controller{5}.ATTR.type='loadcurve';
 febio_spec.LoadData.load_controller{5}.interpolate='LINEAR';
-febio_spec.LoadData.load_controller{5}.points.point.VAL=Mat_RY_Lunate;
+febio_spec.LoadData.load_controller{5}.points.pt.VAL=Mat_RY_Lunate;
 
+febio_spec.LoadData.load_controller{6}.ATTR.name='LC_6';
 febio_spec.LoadData.load_controller{6}.ATTR.id=6;
 febio_spec.LoadData.load_controller{6}.ATTR.type='loadcurve';
 febio_spec.LoadData.load_controller{6}.interpolate='LINEAR';
-febio_spec.LoadData.load_controller{6}.points.point.VAL=Mat_RZ_Lunate;
+febio_spec.LoadData.load_controller{6}.points.pt.VAL=Mat_RZ_Lunate;
 
 % %Scaphoid   
+febio_spec.LoadData.load_controller{7}.ATTR.name='LC_7';
 febio_spec.LoadData.load_controller{7}.ATTR.id=7;
 febio_spec.LoadData.load_controller{7}.ATTR.type='loadcurve';
 febio_spec.LoadData.load_controller{7}.interpolate='LINEAR';
-febio_spec.LoadData.load_controller{7}.points.point.VAL=Mat_X_Scaphoid;
+febio_spec.LoadData.load_controller{7}.points.pt.VAL=Mat_X_Scaphoid;
 
+febio_spec.LoadData.load_controller{8}.ATTR.name='LC_8';
 febio_spec.LoadData.load_controller{8}.ATTR.id=8;
 febio_spec.LoadData.load_controller{8}.ATTR.type='loadcurve';
 febio_spec.LoadData.load_controller{8}.interpolate='LINEAR';
-febio_spec.LoadData.load_controller{8}.points.point.VAL=Mat_Y_Scaphoid;
+febio_spec.LoadData.load_controller{8}.points.pt.VAL=Mat_Y_Scaphoid;
 
+febio_spec.LoadData.load_controller{9}.ATTR.name='LC_9';
 febio_spec.LoadData.load_controller{9}.ATTR.id=9;
 febio_spec.LoadData.load_controller{9}.ATTR.type='loadcurve';
 febio_spec.LoadData.load_controller{9}.interpolate='LINEAR';
-febio_spec.LoadData.load_controller{9}.points.point.VAL=Mat_Z_Scaphoid;
+febio_spec.LoadData.load_controller{9}.points.pt.VAL=Mat_Z_Scaphoid;
 
+febio_spec.LoadData.load_controller{10}.ATTR.name='LC_10';
 febio_spec.LoadData.load_controller{10}.ATTR.id=10;
 febio_spec.LoadData.load_controller{10}.ATTR.type='loadcurve';
 febio_spec.LoadData.load_controller{10}.interpolate='LINEAR';
-febio_spec.LoadData.load_controller{10}.points.point.VAL=Mat_RX_Scaphoid;
+febio_spec.LoadData.load_controller{10}.points.pt.VAL=Mat_RX_Scaphoid;
 
+febio_spec.LoadData.load_controller{11}.ATTR.name='LC_11';
 febio_spec.LoadData.load_controller{11}.ATTR.id=11;
 febio_spec.LoadData.load_controller{11}.ATTR.type='loadcurve';
 febio_spec.LoadData.load_controller{11}.interpolate='LINEAR';
-febio_spec.LoadData.load_controller{11}.points.point.VAL=Mat_RY_Scaphoid;
-       
+febio_spec.LoadData.load_controller{11}.points.pt.VAL=Mat_RY_Scaphoid;
+
+febio_spec.LoadData.load_controller{12}.ATTR.name='LC_12';
 febio_spec.LoadData.load_controller{12}.ATTR.id=12;
 febio_spec.LoadData.load_controller{12}.ATTR.type='loadcurve';
 febio_spec.LoadData.load_controller{12}.interpolate='LINEAR';
-febio_spec.LoadData.load_controller{12}.points.point.VAL=Mat_RZ_Scaphoid;
+febio_spec.LoadData.load_controller{12}.points.pt.VAL=Mat_RZ_Scaphoid;
 
 % %Capitate
+febio_spec.LoadData.load_controller{13}.ATTR.name='LC_13';
 febio_spec.LoadData.load_controller{13}.ATTR.id=13;
 febio_spec.LoadData.load_controller{13}.ATTR.type='loadcurve';
 febio_spec.LoadData.load_controller{13}.interpolate='LINEAR';
-febio_spec.LoadData.load_controller{13}.points.point.VAL=Mat_X_Capitate;
+febio_spec.LoadData.load_controller{13}.points.pt.VAL=Mat_X_Capitate;
 
+febio_spec.LoadData.load_controller{14}.ATTR.name='LC_14';
 febio_spec.LoadData.load_controller{14}.ATTR.id=14;
 febio_spec.LoadData.load_controller{14}.ATTR.type='loadcurve';
 febio_spec.LoadData.load_controller{14}.interpolate='LINEAR';
-febio_spec.LoadData.load_controller{14}.points.point.VAL=Mat_Y_Capitate;
+febio_spec.LoadData.load_controller{14}.points.pt.VAL=Mat_Y_Capitate;
 
+febio_spec.LoadData.load_controller{15}.ATTR.name='LC_15';
 febio_spec.LoadData.load_controller{15}.ATTR.id=15;
 febio_spec.LoadData.load_controller{15}.ATTR.type='loadcurve';
 febio_spec.LoadData.load_controller{15}.interpolate='LINEAR';
-febio_spec.LoadData.load_controller{15}.points.point.VAL=Mat_Z_Capitate;
+febio_spec.LoadData.load_controller{15}.points.pt.VAL=Mat_Z_Capitate;
 
+febio_spec.LoadData.load_controller{16}.ATTR.name='LC_16';
 febio_spec.LoadData.load_controller{16}.ATTR.id=16;
 febio_spec.LoadData.load_controller{16}.ATTR.type='loadcurve';
 febio_spec.LoadData.load_controller{16}.interpolate='LINEAR';
-febio_spec.LoadData.load_controller{16}.points.point.VAL=Mat_RX_Capitate;
+febio_spec.LoadData.load_controller{16}.points.pt.VAL=Mat_RX_Capitate;
 
+febio_spec.LoadData.load_controller{17}.ATTR.name='LC_17';
 febio_spec.LoadData.load_controller{17}.ATTR.id=17;
 febio_spec.LoadData.load_controller{17}.ATTR.type='loadcurve';
 febio_spec.LoadData.load_controller{17}.interpolate='LINEAR';
-febio_spec.LoadData.load_controller{17}.points.point.VAL=Mat_RY_Capitate;
- 
+febio_spec.LoadData.load_controller{17}.points.pt.VAL=Mat_RY_Capitate;
+
+febio_spec.LoadData.load_controller{18}.ATTR.name='LC_18';
 febio_spec.LoadData.load_controller{18}.ATTR.id=18;
 febio_spec.LoadData.load_controller{18}.ATTR.type='loadcurve';
 febio_spec.LoadData.load_controller{18}.interpolate='LINEAR';
-febio_spec.LoadData.load_controller{18}.points.point.VAL=Mat_RZ_Capitate;
+febio_spec.LoadData.load_controller{18}.points.pt.VAL=Mat_RZ_Capitate;
+
 
 febio_spec.Output.logfile.ATTR.file=febioLogFileName;
 febio_spec.Output.logfile.node_data{1}.ATTR.file=febioLogFileName_disp;
