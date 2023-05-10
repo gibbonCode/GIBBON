@@ -2,7 +2,7 @@
 % Below is a demonstration for:
 % 
 % * Inverse FEA based material parameter optimisation 
-% * febio_spec version 3.0
+% * febio_spec version 4.0
 % * febio, FEBio
 % * hexahedral elements, hex8
 % * static, solid
@@ -203,7 +203,7 @@ drawnow;
 [febio_spec]=febioStructTemplate;
 
 %febio_spec version 
-febio_spec.ATTR.version='3.0'; 
+febio_spec.ATTR.version='4.0'; 
 
 %Module section
 febio_spec.Module.ATTR.type='solid'; 
@@ -212,12 +212,12 @@ febio_spec.Module.ATTR.type='solid';
 febio_spec.Control.analysis='STATIC';
 febio_spec.Control.time_steps=numTimeSteps;
 febio_spec.Control.step_size=tStep;
+febio_spec.Control.solver.max_refs=max_refs;
+febio_spec.Control.solver.qn_method.max_ups=max_ups;
 febio_spec.Control.time_stepper.dtmin=dtmin;
 febio_spec.Control.time_stepper.dtmax=dtmax; 
 febio_spec.Control.time_stepper.max_retries=max_retries;
 febio_spec.Control.time_stepper.opt_iter=opt_iter;
-febio_spec.Control.solver.max_refs=max_refs;
-febio_spec.Control.solver.max_ups=max_ups;
 
 %Material section
 materialName1='Material1';
@@ -248,10 +248,10 @@ nodeSetName1='bcSupportList';
 nodeSetName2='bcPrescribeList_Z';
 
 febio_spec.Mesh.NodeSet{1}.ATTR.name=nodeSetName1;
-febio_spec.Mesh.NodeSet{1}.node.ATTR.id=bcRigidList(:);
+febio_spec.Mesh.NodeSet{1}.VAL=mrow(bcRigidList(:));
 
 febio_spec.Mesh.NodeSet{2}.ATTR.name=nodeSetName2;
-febio_spec.Mesh.NodeSet{2}.node.ATTR.id=bcPrescribeList(:);
+febio_spec.Mesh.NodeSet{2}.VAL=mrow(bcPrescribeList(:));
 
 %MeshDomains section
 febio_spec.MeshDomains.SolidDomain.ATTR.name=partName1;
@@ -259,41 +259,35 @@ febio_spec.MeshDomains.SolidDomain.ATTR.mat=materialName1;
 
 %Boundary condition section 
 % -> Fix boundary conditions
-febio_spec.Boundary.bc{1}.ATTR.type='fix';
+febio_spec.Boundary.bc{1}.ATTR.name='zero_displacement_xyz';
+febio_spec.Boundary.bc{1}.ATTR.type='zero displacement';
 febio_spec.Boundary.bc{1}.ATTR.node_set=nodeSetName1;
-febio_spec.Boundary.bc{1}.dofs='x';
+febio_spec.Boundary.bc{1}.x_dof=1;
+febio_spec.Boundary.bc{1}.y_dof=1;
+febio_spec.Boundary.bc{1}.z_dof=1;
 
-febio_spec.Boundary.bc{2}.ATTR.type='fix';
-febio_spec.Boundary.bc{2}.ATTR.node_set=nodeSetName1;
-febio_spec.Boundary.bc{2}.dofs='y';
-
-febio_spec.Boundary.bc{3}.ATTR.type='fix';
-febio_spec.Boundary.bc{3}.ATTR.node_set=nodeSetName1;
-febio_spec.Boundary.bc{3}.dofs='z';
-
-febio_spec.Boundary.bc{4}.ATTR.type='fix';
-febio_spec.Boundary.bc{4}.ATTR.node_set=nodeSetName2;
-febio_spec.Boundary.bc{4}.dofs='x';
-
-febio_spec.Boundary.bc{5}.ATTR.type='fix';
-febio_spec.Boundary.bc{5}.ATTR.node_set=nodeSetName2;
-febio_spec.Boundary.bc{5}.dofs='y';
+febio_spec.Boundary.bc{2}.ATTR.name='zero_displacement_xy';
+febio_spec.Boundary.bc{2}.ATTR.type='zero displacement';
+febio_spec.Boundary.bc{2}.ATTR.node_set=nodeSetName2;
+febio_spec.Boundary.bc{2}.x_dof=1;
+febio_spec.Boundary.bc{2}.y_dof=1;
 
 % -> Prescribe boundary conditions
-febio_spec.Boundary.bc{6}.ATTR.type='prescribe';
-febio_spec.Boundary.bc{6}.ATTR.node_set=nodeSetName2;
-febio_spec.Boundary.bc{6}.dof='z';
-febio_spec.Boundary.bc{6}.scale.ATTR.lc=1;
-febio_spec.Boundary.bc{6}.scale.VAL=1;
-febio_spec.Boundary.bc{6}.relative=0;
-
+febio_spec.Boundary.bc{3}.ATTR.name='prescibed_displacement_z';
+febio_spec.Boundary.bc{3}.ATTR.type='prescribed displacement';
+febio_spec.Boundary.bc{3}.ATTR.node_set=nodeSetName2;
+febio_spec.Boundary.bc{3}.dof='z';
+febio_spec.Boundary.bc{3}.value.ATTR.lc=1;
+febio_spec.Boundary.bc{3}.value.VAL=1;
+febio_spec.Boundary.bc{3}.relative=0;
 
 %LoadData section
 % -> load_controller
+febio_spec.LoadData.load_controller{1}.ATTR.name='LC_1';
 febio_spec.LoadData.load_controller{1}.ATTR.id=1;
 febio_spec.LoadData.load_controller{1}.ATTR.type='loadcurve';
 febio_spec.LoadData.load_controller{1}.interpolate='LINEAR';
-febio_spec.LoadData.load_controller{1}.points.point.VAL=[0 0; timeEnd displacementMagnitude];
+febio_spec.LoadData.load_controller{1}.points.pt.VAL=[0 0; timeEnd displacementMagnitude];
 
 
 %Output section 
@@ -340,7 +334,6 @@ febioAnalysis.disp_on=1; %Display information on the command window
 febioAnalysis.runMode='internal';%external';
 
 [runFlag]=runMonitorFEBio(febioAnalysis);%START FEBio NOW!!!!!!!!
-
 
 %% Import FEBio results 
 
