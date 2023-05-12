@@ -28,9 +28,9 @@ cParSmoothMain.Method='HC';
 %%
 % Path names
 defaultFolder = fileparts(fileparts(mfilename('fullpath')));
-savePath=fullfile(defaultFolder,'2021_Nataliya_Perevoshchikova_wrist_project','data','temp');
-loadPathSurface=fullfile(defaultFolder,'2021_Nataliya_Perevoshchikova_wrist_project','data','STL');
-loadPathMotion=fullfile(defaultFolder,'2021_Nataliya_Perevoshchikova_wrist_project','data','motion');
+savePath=fullfile(defaultFolder,'2021_Nataliya_Perevoshchikova_wrist_project','data_triplane','temp');
+loadPathSurface=fullfile(defaultFolder,'2021_Nataliya_Perevoshchikova_wrist_project','data_triplane','STL');
+loadPathMotion=fullfile(defaultFolder,'2021_Nataliya_Perevoshchikova_wrist_project','data_triplane','motion');
 
 %% Building a quadrilateral circular mesh
 d=0.35;

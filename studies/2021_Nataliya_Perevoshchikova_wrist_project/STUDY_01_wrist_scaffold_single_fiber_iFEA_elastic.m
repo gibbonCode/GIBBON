@@ -21,8 +21,8 @@ lineWidth=3;
 %% Control parameters
 % Path names
 defaultFolder = fileparts(fileparts(mfilename('fullpath')));
-savePath=fullfile(defaultFolder,'2021_Nataliya_Perevoshchikova_wrist_project','data','temp');
-loadPathMatProp=fullfile(defaultFolder,'2021_Nataliya_Perevoshchikova_wrist_project','data','mat_prop','PCL');
+savePath=fullfile(defaultFolder,'2021_Nataliya_Perevoshchikova_wrist_project','data_triplane','temp');
+loadPathMatProp=fullfile(defaultFolder,'2021_Nataliya_Perevoshchikova_wrist_project','data_triplane','mat_prop','PCL');
 
 %%
 % Building a quadrilateral circular mesh

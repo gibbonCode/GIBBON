@@ -48,7 +48,7 @@ cParSmoothTransition.Method='HC';
 
 % Surface model file names
 defaultFolder = fileparts(fileparts(mfilename('fullpath')));
-loadPathSurfaces=fullfile(defaultFolder,'2021_Nataliya_Perevoshchikova_wrist_project','data','STL');
+loadPathSurfaces=fullfile(defaultFolder,'2021_Nataliya_Perevoshchikova_wrist_project','data_triplane','STL');
 
 %Load geometries
 matname = fullfile(loadPathSurfaces,'Temp.mat');
