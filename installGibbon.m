@@ -154,7 +154,7 @@ hf.UserData.uihandles.hTextInput1=hTextInput1;
 %% Create push button
 hf.UserData.pathDefinitionsDone=0;
 
-hBrowseButton = uicontrol('Style', 'pushbutton', 'String', 'Browse','Position',[W hf.Position(4)-W*4.5   5*W round(W/1.5)],'Callback',{@getDir,{hf}},'FontSize',12);
+hBrowseButton = uicontrol('Style', 'pushbutton', 'String', 'Browse','Position',[W hf.Position(4)-W*4.5   5*W round(W/1.5)],'Callback',{@getFEBioExecPath,{hf}},'FontSize',12);
 hf.UserData.uihandles.hBrowseButton=hBrowseButton;
 
 hconfirmButton = uicontrol('Style', 'pushbutton', 'String', 'Confirm path','Position',[W hf.Position(4)-W*5.5   5*W round(W/1.5)],'Callback',{@setThirdpartyPaths,{hf}},'FontSize',12);
@@ -275,14 +275,14 @@ end
 
 %% Browse to path
 
-function getDir(~,~,inputCell)
+function getFEBioExecPath(~,~,inputCell)
 
 hf=inputCell{1};
-selPath=uigetdir;
-if selPath==0 %Selection was cancelled
+[fileName,filePath]=uigetfile('*','Select the FEBio executable file');
+if fileName==0 %Selection was cancelled
     hf.UserData.uihandles.hTextInput1.String='';
 else %Selection was made
-    hf.UserData.uihandles.hTextInput1.String=selPath;
+    hf.UserData.uihandles.hTextInput1.String=fullfile(filePath,fileName);
 end
 drawnow; 
 
