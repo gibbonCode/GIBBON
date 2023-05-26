@@ -11,12 +11,36 @@ function installGibbon
 gibbonPath=fileparts(mfilename('fullpath')); %Get the GIBBON path
 addpath(fullfile(gibbonPath,'lib')); %Add gibbon lib path so gibbon functions used here are known
 
-%% Settings
+%% Control parameters
 
 W=60; %Scrollbar width
 squareSizeMax=1200;
 
+%% Set GIBBON settings
+
+s=settings;
+
+if hasGroup(s,'GIBBON') %Prior GIBBON settings group exists -> Check for setting
+    if ~hasSetting(s.GIBBON,'vcw_profile') %Prior vcw_profile setting exists -> Update setting        
+        addSetting(s.GIBBON,'vcw_profile'); % Add vcw_profile setting
+        s.GIBBON.vcw_profile.PersonalValue='CAD'; %Make setting as personal setting
+    end
+else %No GIBBON settings at all -> Make group and setting
+    addGroup(s,'GIBBON'); % Add GIBBON settings group
+    addSetting(s.GIBBON,'vcw_profile'); % Add vcw_profile setting    
+    s.GIBBON.vcw_profile.PersonalValue='CAD'; %Make setting as personal setting    
+end
+
+try  
+    profileNameVCW=s.GIBBON.vcw_profile.PersonalValue; %Make setting as personal setting
+catch
+    profileNameVCW='CAD';
+    s.GIBBON.vcw_profile.PersonalValue=profileNameVCW; %Make setting as personal setting
+end
+
 %% Open figure
+
+close all; 
 
 %Force groot units to be pixels
 graphicalRoot=groot;
@@ -78,23 +102,33 @@ hTextStatement = uicontrol(hf,'Style','text','String',top_statement,...
 
 hf.UserData.uihandles.hTextStatement=hTextStatement;
 
-%% Add image
+%% Load images
 
-imagePath=fullfile(gibbonPath,'docs','img','GIBBON_overview.jpg');
-M=importdata(imagePath);
+imagePath=fullfile(gibbonPath,'docs','img');
+
+M_overview=importdata(fullfile(imagePath,'GIBBON_overview.jpg'));
+M_febio=importdata(fullfile(imagePath,'febio_banner.jpg'));
+M_vcw=importdata(fullfile(imagePath,'viewControlConfiguration.jpg'));
+
+hf.UserData.gibbonOverviewImage=M_overview;
+hf.UserData.febioBanner=M_febio;
+hf.UserData.viewControlImage=M_vcw;
+
+%% Prepare axis and add GIBBON overview image
 
 figure(hf);
-image(M);
+hImage=image(hf.UserData.gibbonOverviewImage);
 axis tight; axis equal; axis off;
 hAxis=gca;
-
 hAxis.Units='pixels';
+
 % [left bottom width height]
 axisHeight=hf.Position(4)-7*W;
 axisWidth=hf.Position(3)-2*W;
 hAxis.Position=[round((hf.Position(3)-axisWidth)/2) round((hf.Position(4)-axisHeight))-6*W axisWidth axisHeight];
 
 hf.UserData.uihandles.hAxis=hAxis;
+hf.UserData.hImage=hImage;
 
 %%
 drawnow;
@@ -128,6 +162,10 @@ pause(0.5);
 
 %% Add FEBio path
 
+delete(hf.UserData.hImage);
+hf.UserData.hImage=image(hf.UserData.febioBanner);
+axis tight; axis equal; axis off;
+
 hTextStatement.String='Please provide the full path to the FEBio executable. Leave blank if FEBio is not needed.';
 
 if ispc
@@ -160,9 +198,33 @@ hf.UserData.uihandles.hBrowseButton=hBrowseButton;
 hconfirmButton = uicontrol('Style', 'pushbutton', 'String', 'Confirm path','Position',[W hf.Position(4)-W*5.5   5*W round(W/1.5)],'Callback',{@setThirdpartyPaths,{hf}},'FontSize',12);
 hf.UserData.uihandles.hconfirmButton=hconfirmButton;
 
-%% Wait for path definitions to be set
+% Wait for path definitions to be set
 
 while hf.UserData.pathDefinitionsDone==0
+    pause(0.1);
+end
+
+%% Add image
+
+hf.UserData.VCWOptionDone=0;
+
+indCurrent=find(strcmp(profileNameVCW,{'CAD','febio','touchpad'}));
+
+hf.UserData.uihandles.hTextStatement.String=['Set+test view control widget button mapping profile. Current setting: ',profileNameVCW];
+
+delete(hf.UserData.hImage);
+hf.UserData.hImage=image(hf.UserData.viewControlImage);
+axis tight; axis equal; axis off;
+
+hVCWSelect = uicontrol('Style', 'popupmenu', 'String', {'CAD','febio','touchpad'},'Value',indCurrent,'Position',[W hf.Position(4)-W*3.5   5*W round(W/1.5)],'Callback',{@setVCWOption,{hf}},'FontSize',12);
+hf.UserData.uihandles.hVCWSelect=hVCWSelect;
+
+hconfirmButton = uicontrol('Style', 'pushbutton', 'String', 'Confirm view profile','Position',[W hf.Position(4)-W*4.5   5*W round(W/1.5)],'Callback',{@VCWOptionDone,{hf}},'FontSize',12);
+hf.UserData.uihandles.hconfirmButton=hconfirmButton;
+
+createTestFigure(hf,profileNameVCW);
+
+while hf.UserData.VCWOptionDone==0
     pause(0.1);
 end
 
@@ -245,7 +307,7 @@ if ~isempty(t)
     setFEBioPath(t); %Set FEBio path in config file
 end
 
-%Clean-up guid components
+%Clean-up guide components
 delete(hf.UserData.uihandles.hTextInfo1)
 hf.UserData.uihandles=rmfield(hf.UserData.uihandles,'hTextInfo1');
 delete(hf.UserData.uihandles.hTextInput1)
@@ -273,7 +335,7 @@ hf.UserData.pathDefinitionsDone=1;
 
 end
 
-%% Browse to path
+%% Browse to exec file
 
 function getFEBioExecPath(~,~,inputCell)
 
@@ -285,6 +347,67 @@ else %Selection was made
     hf.UserData.uihandles.hTextInput1.String=fullfile(filePath,fileName);
 end
 drawnow; 
+
+end
+
+
+%% Set VCW option
+
+function setVCWOption(~,~,inputCell)
+
+hf=inputCell{1};
+
+s=hf.UserData.uihandles.hVCWSelect.String;
+profileNameVCW=s{hf.UserData.uihandles.hVCWSelect.Value};
+setViewProfile(profileNameVCW);
+
+hf.UserData.uihandles.hTextStatement.String=['Set+test view control widget button mapping profile. Current setting: ',profileNameVCW];
+
+createTestFigure(hf,profileNameVCW); 
+
+end
+
+function VCWOptionDone(~,~,inputCell)
+
+hf=inputCell{1};
+
+hf.UserData.uihandles.hTextStatement.String='Done, setting view control profile';
+drawnow;
+
+hf.UserData.VCWOptionDone=1;
+
+%Clean-up guide components
+hf.UserData.uihandles.hTextStatement.String='';
+delete(hf.UserData.uihandles.hVCWSelect); %Delete toggle input
+delete(hf.UserData.uihandles.hconfirmButton); %Delete confirm button
+
+if isfield(hf.UserData,'hf2')
+    close(hf.UserData.hf2);
+end
+
+delete(hf.UserData.hImage);
+hf.UserData.hImage=image(hf.UserData.gibbonOverviewImage);
+axis tight; axis equal; axis off;
+
+end
+
+function createTestFigure(hf,profileNameVCW)
+
+if isfield(hf.UserData,'hf2')
+    close(hf.UserData.hf2);
+end
+[F,V]=graphicsModels(12); 
+[F,V]=subTriLoop(F,V,2);
+[~,~,~,C,~,~] = patchCurvature(F,V);
+CV=faceToVertexMeasure(F,V,C); %Vertex data for interpolated shading
+
+hf.UserData.hf2=figure; hold on; 
+s=['Testing VCW profile: ',profileNameVCW];
+title(s,'FontSize',25); hf.UserData.hf2.Name=s;
+vcw(hf.UserData.hf2,profileNameVCW);
+hp=gpatch(F,V,CV,'none'); hp.FaceColor='interp';
+colormap(spectral(250));
+axisGeom; camlight headlight; gdrawnow; 
 
 end
 

@@ -45,8 +45,6 @@ if contains(lower(FEBioPathSpec),'febio2')
 end
 
 end
-
-
  
 %% 
 % _*GIBBON footer text*_ 

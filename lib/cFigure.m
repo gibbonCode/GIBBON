@@ -78,7 +78,9 @@ defaultFigStruct.Color='w';
 defaultFigStruct.ScreenScale=0.85; %Figure size is based on scaled screensize
 defaultFigStruct.Clipping='off';
 defaultFigStruct.efw=1;
-defaultFigStruct.vcw={'pan','rot','zoom','zoom'};
+defaultFigStruct.vcw=[]; %As per value set by user
+% defaultFigStruct.vcw={'pan','rot','zoom','zoom'}; %default/CAD
+% defaultFigStruct.vcw={'rot','zoom','pan','zoom'}; %touchpad
 
 switch nargin
     case 0
@@ -174,7 +176,7 @@ end
 
 %% Check for activation of vcw
 
-if isa(vcwOpt,'cell') %Allow enabling of vcw mode    
+if isa(vcwOpt,'cell') || isempty(vcwOpt) %Allow enabling of vcw mode        
     hp=vcw(hf,vcwOpt);
     hf.UserData.cFigure.Handles.vcw=hp;
 end

@@ -78,10 +78,10 @@ function [varargout]=vcw(varargin)
 switch nargin
     case 0
         hf = gcf;
-        buttonOpt = {'pan','rot','zoom','zoom'};
+        buttonOpt = [];
     case 1
         hf=varargin{1};
-        buttonOpt = {'pan','rot','zoom','zoom'};
+        buttonOpt = [];
     case 2
         hf=varargin{1};
         buttonOpt=varargin{2};
@@ -89,9 +89,37 @@ switch nargin
         error('Wrong number of input arguments');
 end
 
-if ~ishandle(hf)
-    buttonOpt=hf;
-    hf = gcf;
+%Check if hf is a figure handle
+if ~isa(hf,'matlab.ui.Figure')
+    hf = gcf; %Use current figure (opens new if none exist)
+end
+
+%Check view profile option (button mappings)
+if ~isa(buttonOpt,'cell')
+    if isempty(buttonOpt)
+        %default if settings not found
+        vcw_profile='CAD';
+    
+        %Check if profile can be updated from settings
+        settingSet=settings;
+        if hasGroup(settingSet,'GIBBON') %Prior GIBBON settings group exists -> Check for setting
+            if hasSetting(settingSet.GIBBON,'vcw_profile') %Prior vcw_profile setting exists -> Update setting
+                vcw_profile=settingSet.GIBBON.vcw_profile.PersonalValue;
+            end
+        end
+    elseif isa(buttonOpt,'char')
+        vcw_profile=buttonOpt; %Assume it defines a view profile
+    end
+
+    %Set button mapping according to profile
+    switch vcw_profile
+        case {'CAD','default'}
+            buttonOpt = {'pan','rot','zoom','zoom'};
+        case 'febio'
+            buttonOpt = {'rot','pan','zoom','zoom'};
+        case 'touchpad'
+            buttonOpt = {'rot','zoom','pan','zoom'};
+    end
 end
 
 %% Initialise button and button/keypress wait
