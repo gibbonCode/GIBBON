@@ -47,6 +47,7 @@ function patch2obj(varargin)
 %
 % Change log:
 % 2020/05/26 Created
+% 2023/05/23 Fixed bug in MTL file text line
 % ------------------------------------------------------------------------
 
 %% parse input
@@ -99,7 +100,7 @@ mtlStructDefault.Ka=[1 1 1];
 mtlStructDefault.Kd=[1 1 1];
 mtlStructDefault.Ks=[0 0 0];
 mtlStructDefault.illum=1;
-mtlStructDefault.Ns=0;
+mtlStructDefault.Ns=10;
 mtlStructDefault.Ni=1.45;
 mtlStruct=structComplete(mtlStruct,mtlStructDefault,1); %Complement provided with default if missing or empty
 
@@ -210,7 +211,7 @@ if colorTextureOutput
     %% Add mtl file description
     fprintf(fid,'%s\n','# ---------------------------------------------------');
     fprintf(fid,'%s\n','# Specify MTL file to use');
-    fprintf(fid,['%s\n','mtllib ',mtlName]);
+    fprintf(fid,'%s\n',['mtllib ',mtlName]);
     
     %% Add vertices
     [fid]=addVertices(fid,V,formatDouble);

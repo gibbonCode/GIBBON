@@ -84,9 +84,6 @@ switch testCase
         cMap=viridis(250); %Define colormap
 end
 
-
-
-
 %Define file name
 gibbonFolder = fileparts(fileparts(mfilename('fullpath')));
 savePath=fullfile(gibbonFolder,'data','OBJ');
