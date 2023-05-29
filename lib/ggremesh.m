@@ -23,11 +23,8 @@ function [Fn,Vn]=ggremesh(varargin)
 % optionStruct.pointSpacing=4
 %
 %
-% Geogram website:
-% http://alice.loria.fr/index.php/software/4-library/75-geogram.html 
+% Geogram GitHub repository: https://github.com/BrunoLevy/geogram
 % 
-% Geogram license: 
-% http://alice.loria.fr/software/geogram/doc/html/geogram_license.html
 %
 % Lévy B., Bonneel N. (2013) Variational Anisotropic Surface Meshing with
 % Voronoi Parallel Linear Enumeration. In: Jiao X., Weill JC. (eds)
