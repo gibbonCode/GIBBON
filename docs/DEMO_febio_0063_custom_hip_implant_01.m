@@ -9,7 +9,7 @@
 %
 % * febio_spec version 4.0
 % * febio, FEBio
-% * beam force loading
+% * femur force loading
 % * force control boundary condition
 % * tetrahedral elements, tet4
 % * static, solid
@@ -922,15 +922,6 @@ loadDataName1='nodal_forces';
 febio_spec.MeshData.NodeData{1}.ATTR.name=loadDataName1;
 febio_spec.MeshData.NodeData{1}.ATTR.node_set=nodeSetName2;
 febio_spec.MeshData.NodeData{1}.ATTR.data_type='vec3';
-febio_spec.MeshData.NodeData{1}.node.ATTR.lid=(1:1:numel(bcPrescribeList))';
-febio_spec.MeshData.NodeData{1}.node.VAL=forceData;
-
-%MeshData secion
-%-> Node data
-loadDataName1='forceData';
-febio_spec.MeshData.NodeData{1}.ATTR.name=loadDataName1;
-febio_spec.MeshData.NodeData{1}.ATTR.node_set=nodeSetName2;
-febio_spec.MeshData.NodeData{1}.ATTR.datatype='vec3';
 febio_spec.MeshData.NodeData{1}.node.ATTR.lid=(1:1:numel(bcPrescribeList))';
 febio_spec.MeshData.NodeData{1}.node.VAL=forceData;
 

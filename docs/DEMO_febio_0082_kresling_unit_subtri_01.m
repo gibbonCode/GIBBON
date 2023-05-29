@@ -483,17 +483,13 @@ if runFlag==1 %i.e. a succesful run
     dataStruct=importFEBio_logfile(fullfile(savePath,febioLogFileName_stress_prin),0,1);
 
     %Access data
-    E_stress_mat=dataStruct.data;
-
-    E_stress_mat_VM=sqrt(( (E_stress_mat(:,1,:)-E_stress_mat(:,2,:)).^2 + ...
-        (E_stress_mat(:,2,:)-E_stress_mat(:,3,:)).^2 + ...
-        (E_stress_mat(:,1,:)-E_stress_mat(:,3,:)).^2  )/2); %Von Mises stress
+    E_stress_VM=prin2effective(dataStruct.data,'stress'); %Von Mises stress
 
     %%
     % Plotting the simulated results using |anim8| to visualize and animate
     % deformations
 
-    [CV]=faceToVertexMeasure(E,V,E_stress_mat_VM(:,:,end));
+    [CV]=faceToVertexMeasure(E,V,E_stress_VM(:,:,end));
 
     % Create basic view and store graphics handle to initiate animation
     hf=cFigure; %Open figure  /usr/local/MATLAB/R2020a/bin/glnxa64/jcef_helper: symbol lookup error: /lib/x86_64-linux-gnu/libpango-1.0.so.0: undefined symbol: g_ptr_array_copy
@@ -508,7 +504,7 @@ if runFlag==1 %i.e. a succesful run
 
     axisGeom(gca,fontSize);
     colormap(cMap); colorbar;
-    caxis([min(E_stress_mat_VM(:)) max(E_stress_mat_VM(:))/2]);
+    caxis([min(E_stress_VM(:)) max(E_stress_VM(:))/2]);
     axis(axisLim(V_DEF)); %Set axis limits statically
     view(140,30);
     camlight headlight;
@@ -517,7 +513,7 @@ if runFlag==1 %i.e. a succesful run
     animStruct.Time=timeVec; %The time vector
     for qt=1:1:size(N_disp_mat,3) %Loop over time increments
 
-        [CV]=faceToVertexMeasure(E,V,E_stress_mat_VM(:,:,qt));
+        [CV]=faceToVertexMeasure(E,V,E_stress_VM(:,:,qt));
 
         %Set entries in animation structure
         animStruct.Handles{qt}=[hp1(1) hp1(1) hp1(2) hp1(2) hp2]; %Handles of objects to animate

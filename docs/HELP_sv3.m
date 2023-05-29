@@ -5,7 +5,7 @@
 clear; close all; clc;
 
 %% Syntax
-% |[varargout]=sv3(varargin);|
+% |[hf]=sv3(M,v,optionStruct);|
 
 %% Description 
 % 3D slice viewer

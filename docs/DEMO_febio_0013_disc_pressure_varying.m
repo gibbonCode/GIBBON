@@ -55,17 +55,12 @@ switch loadCase
         loadType='traction'; 
 end
 
-%Specifying dimensions and number of elements
-pointSpacing=1; 
-inputStruct.cylRadius=30;
-inputStruct.numRadial=round((inputStruct.cylRadius*pi)/pointSpacing);
-inputStruct.cylHeight=3;
-inputStruct.numHeight=round(inputStruct.cylHeight/pointSpacing);
-inputStruct.meshType='tri';
-inputStruct.closeOpt=1;
+elementType='penta6'; % 'penta6' or 'tet4'
 
-% Derive patch data for a cylinder
-[Fs,Vs,Cs]=patchcylinder(inputStruct); 
+%Specifying dimensions and number of elements
+pointSpacing=1.5; 
+discRadius=30;
+discHeight=2;
 
 %Material parameter set
 c1=1e-3; %Shear-modulus-like parameter
@@ -84,55 +79,106 @@ dtmax=1/numTimeSteps; %Maximum time step size
 
 runMode='external';% 'internal' or 'external'
 
+
 %% Creating model geometry and mesh
-% The disc is meshed using tetrahedral elements using tetgen
 
-inputStruct.stringOpt='-pq1.2AaY';
-inputStruct.Faces=Fs;
-inputStruct.Nodes=Vs;
-inputStruct.holePoints=[];
-inputStruct.faceBoundaryMarker=Cs; %Face boundary markers
-inputStruct.regionPoints=getInnerPoint(Fs,Vs); %region points
-inputStruct.regionA=tetVolMeanEst(Fs,Vs); %Volume for regular tets
-inputStruct.minRegionMarker=2; %Minimum region marker
-[meshStruct]=runTetGen(inputStruct); % Mesh model using tetrahedral elements using tetGen 
+switch elementType
+    case 'tet4'
+        % Derive patch data for a disc
+        inputStruct.cylRadius=discRadius;
+        inputStruct.numRadial=ceil((discRadius*2*pi)/pointSpacing);
+        inputStruct.cylHeight=discHeight;
+        inputStruct.numHeight=ceil(discHeight/pointSpacing);
+        inputStruct.meshType='tri';
+        inputStruct.closeOpt=1;
 
-%% 
-% Access model element and patch data
-Fb=meshStruct.facesBoundary;
-Cb=meshStruct.boundaryMarker;
-V=meshStruct.nodes;
-CE=meshStruct.elementMaterialID;
-E=meshStruct.elements;
+        [Fs,Vs,Cs]=patchcylinder(inputStruct);
 
-%% 
-% Plotting model boundary surfaces and a cut view
+        % The disc is meshed with tetrahedral elements using tetgen
+        inputStruct.stringOpt='-pq1.2AaY';
+        inputStruct.Faces=Fs;
+        inputStruct.Nodes=Vs;
+        inputStruct.holePoints=[];
+        inputStruct.faceBoundaryMarker=Cs; %Face boundary markers
+        inputStruct.regionPoints=getInnerPoint(Fs,Vs); %region points
+        inputStruct.regionA=tetVolMeanEst(Fs,Vs); %Volume for regular tets
+        inputStruct.minRegionMarker=2; %Minimum region marker
+        [meshStruct]=runTetGen(inputStruct); % Mesh model using tetrahedral elements using tetGen
 
-hFig=cFigure; 
-subplot(1,2,1); hold on; 
-title('Model boundary surfaces and labels','FontSize',fontSize);
-gpatch(Fb,V,Cb,'k',faceAlpha1); 
-colormap(gjet(6)); icolorbar;
-axisGeom(gca,fontSize);
+        % Access model element and patch data
+        Fb=meshStruct.facesBoundary;
+        Cb=meshStruct.boundaryMarker;
+        V=meshStruct.nodes;
+        CE=meshStruct.elementMaterialID;
+        E=meshStruct.elements;
 
-hs=subplot(1,2,2); hold on; 
-title('Cut view of solid mesh','FontSize',fontSize);
-optionStruct.hFig=[hFig hs];
-meshView(meshStruct,optionStruct);
-axisGeom(gca,fontSize);
-drawnow;
+        %%
+        % Visualize mesh
 
-%% Defining the boundary conditions
-% The visualization of the model boundary shows colors for each side of the
-% disc. These labels can be used to define boundary conditions. 
+        hFig=cFigure;
+        subplot(1,2,1); hold on;
+        title('Model boundary surfaces and labels','FontSize',fontSize);
+        gpatch(Fb,V,Cb,'k',faceAlpha1);
+        colormap(gjet(6)); icolorbar;
+        axisGeom(gca,fontSize);
 
-%Define supported node sets
-bcSupportList=unique(Fb(Cb==1,:)); %Node set part of selected face
+        hs=subplot(1,2,2); hold on;
+        title('Cut view of solid mesh','FontSize',fontSize);
+        optionStruct.hFig=[hFig hs];
+        meshView(meshStruct,optionStruct);
+        axisGeom(gca,fontSize);
+        drawnow;
 
-%Define pressure surface
-F_pressure=fliplr(Fb(Cb==2,:)); %The top face set
+        %% Defining the boundary conditions
+        % The visualization of the model boundary shows colors for each side of the
+        % disc. These labels can be used to define boundary conditions.
 
-%Create spatially varying pressure
+        %Define supported node sets
+        bcSupportList=unique(Fb(Cb==1,:)); %Node set part of selected face
+
+        %Define pressure surface
+        F_pressure=fliplr(Fb(Cb==2,:)); %The top face set
+
+    case 'penta6'
+        nc=ceil((2*pi*discRadius)./pointSpacing); %Number of points in circumference
+        t=linspace(0,2*pi,nc+1)'; 
+        t=t(1:end-1);
+        regionTriMeshinputStructure.regionCell={discRadius.*[cos(t) sin(t)]};
+        regionTriMeshinputStructure.pointSpacing=pointSpacing;
+        regionTriMeshinputStructure.resampleCurveOpt=0;
+        [Fc,Vc]=regionTriMesh2D(regionTriMeshinputStructure);
+        
+        numHeight=ceil(discHeight/pointSpacing);
+        [E,V,F1,F2]=patchThick(Fc,Vc,1,discHeight,numHeight);
+
+        F=element2patch(E,[],elementType);
+        indB=tesBoundary(F);
+
+        Fb= {F{1}(indB{1},:), F{2}(indB{2},:)};
+ 
+        %%
+        % Visualize mesh
+
+        cFigure; 
+        gpatch(F,V,'o','k',0.5); 
+        patchNormPlot(F,V);
+        axisGeom(gca,fontSize); camlight headlight; 
+        gdrawnow; 
+
+        %% Defining the boundary conditions
+        % The visualization of the model boundary shows colors for each side of the
+        % disc. These labels can be used to define boundary conditions.
+
+        %Define supported node sets
+        bcSupportList=unique(Fb{2}); %Node set part of selected face
+
+        %Define pressure surface
+        F_pressure=F2; %The top face set
+
+end
+
+%% Create spatially varying pressure
+
 X=V(:,1); 
 C_pressure=mean(X(F_pressure),2); %Initialize as X-coordinate
 C_pressure=C_pressure-min(C_pressure(:)); %Subtract minimum so range is 0-..
@@ -204,7 +250,7 @@ febio_spec.Mesh.Nodes{1}.node.VAL=V; %The nodel coordinates
 % -> Elements
 partName1='Part1';
 febio_spec.Mesh.Elements{1}.ATTR.name=partName1; %Name of this part
-febio_spec.Mesh.Elements{1}.ATTR.type='tet4'; %Element type 
+febio_spec.Mesh.Elements{1}.ATTR.type=elementType; %Element type 
 febio_spec.Mesh.Elements{1}.elem.ATTR.id=(1:1:size(E,1))'; %Element id's
 febio_spec.Mesh.Elements{1}.elem.VAL=E; %The element matrix
 
@@ -239,13 +285,13 @@ switch loadType
     case 'pressure'            
         febio_spec.MeshData.SurfaceData.ATTR.name=loadDataName1;
         febio_spec.MeshData.SurfaceData.ATTR.surface=surfaceName1;
-        febio_spec.MeshData.SurfaceData.ATTR.datatype='scalar';
+        febio_spec.MeshData.SurfaceData.ATTR.data_type='scalar';
         febio_spec.MeshData.SurfaceData.face.ATTR.lid=(1:1:numel(C_pressure))';
         febio_spec.MeshData.SurfaceData.face.VAL=C_pressure;        
     case 'traction'
         febio_spec.MeshData.SurfaceData.ATTR.name=loadDataName1;
         febio_spec.MeshData.SurfaceData.ATTR.surface=surfaceName1;
-        febio_spec.MeshData.SurfaceData.ATTR.datatype='vec3';
+        febio_spec.MeshData.SurfaceData.ATTR.data_type='vec3';
         febio_spec.MeshData.SurfaceData.face.ATTR.lid=(1:1:numel(C_pressure))';
         febio_spec.MeshData.SurfaceData.face.VAL=[zeros(size(C_pressure)) zeros(size(C_pressure)) -C_pressure];          
 end 
@@ -344,9 +390,20 @@ if runFlag==1 %i.e. a succesful run
     gtitle([febioFebFileNamePart,': Press play to animate']);
     title('Displacement magnitude [mm]','Interpreter','Latex')
     hp=gpatch(Fb,V_DEF(:,:,end),DN_magnitude,'k',1); %Add graphics object to animate
-    hp.Marker='.';
-    hp.MarkerSize=markerSize2;
-    hp.FaceColor='interp';
+
+    switch elementType
+        case 'tet4'
+            hp.Marker='.';
+            hp.MarkerSize=markerSize2;
+            hp.FaceColor='interp';
+        case 'penta6'
+            hp(1).Marker='.';
+            hp(1).MarkerSize=markerSize2;
+            hp(1).FaceColor='interp';
+            hp(2).Marker='.';
+            hp(2).MarkerSize=markerSize2;
+            hp(2).FaceColor='interp';
+    end
     
     axisGeom(gca,fontSize); 
     colormap(gjet(250)); colorbar;
@@ -360,9 +417,16 @@ if runFlag==1 %i.e. a succesful run
         DN_magnitude=sqrt(sum(N_disp_mat(:,:,qt).^2,2)); %Current displacement magnitude
                 
         %Set entries in animation structure
-        animStruct.Handles{qt}=[hp hp]; %Handles of objects to animate
-        animStruct.Props{qt}={'Vertices','CData'}; %Properties of objects to animate
-        animStruct.Set{qt}={V_DEF(:,:,qt),DN_magnitude}; %Property values for to set in order to animate
+        switch elementType
+            case 'tet4'
+                animStruct.Handles{qt}=[hp hp]; %Handles of objects to animate
+                animStruct.Props{qt}={'Vertices','CData'}; %Properties of objects to animate
+                animStruct.Set{qt}={V_DEF(:,:,qt),DN_magnitude}; %Property values for to set in order to animate
+            case 'penta6'
+                animStruct.Handles{qt}=[hp(1) hp(1) hp(2) hp(2)]; %Handles of objects to animate
+                animStruct.Props{qt}={'Vertices','CData','Vertices','CData'}; %Properties of objects to animate
+                animStruct.Set{qt}={V_DEF(:,:,qt),DN_magnitude,V_DEF(:,:,qt),DN_magnitude}; %Property values for to set in order to animate
+        end
     end        
     anim8(hf,animStruct); %Initiate animation feature    
     drawnow;
@@ -387,9 +451,20 @@ if runFlag==1 %i.e. a succesful run
     gtitle([febioFebFileNamePart,': Press play to animate']);
     title('$\sigma_{1}$ [MPa]','Interpreter','Latex')
     hp=gpatch(Fb,V_DEF(:,:,end),CV,'k',1); %Add graphics object to animate
-    hp.Marker='.';
-    hp.MarkerSize=markerSize2;
-    hp.FaceColor='interp';
+
+    switch elementType
+        case 'tet4'
+            hp.Marker='.';
+            hp.MarkerSize=markerSize2;
+            hp.FaceColor='interp';
+        case 'penta6'
+            hp(1).Marker='.';
+            hp(1).MarkerSize=markerSize2;
+            hp(1).FaceColor='interp';
+            hp(2).Marker='.';
+            hp(2).MarkerSize=markerSize2;
+            hp(2).FaceColor='interp';
+    end
     
     axisGeom(gca,fontSize); 
     colormap(gjet(250)); colorbar;
@@ -403,10 +478,18 @@ if runFlag==1 %i.e. a succesful run
         
         [CV]=faceToVertexMeasure(E,V,E_stress_mat(:,:,qt));
         
+
         %Set entries in animation structure
-        animStruct.Handles{qt}=[hp hp]; %Handles of objects to animate
-        animStruct.Props{qt}={'Vertices','CData'}; %Properties of objects to animate
-        animStruct.Set{qt}={V_DEF(:,:,qt),CV}; %Property values for to set in order to animate
+        switch elementType
+            case 'tet4'
+                animStruct.Handles{qt}=[hp hp]; %Handles of objects to animate
+                animStruct.Props{qt}={'Vertices','CData'}; %Properties of objects to animate
+                animStruct.Set{qt}={V_DEF(:,:,qt),CV}; %Property values for to set in order to animate
+            case 'penta6'
+                animStruct.Handles{qt}=[hp(1) hp(1) hp(2) hp(2)]; %Handles of objects to animate
+                animStruct.Props{qt}={'Vertices','CData','Vertices','CData'}; %Properties of objects to animate
+                animStruct.Set{qt}={V_DEF(:,:,qt),CV,V_DEF(:,:,qt),CV}; %Property values for to set in order to animate
+        end
     end        
     anim8(hf,animStruct); %Initiate animation feature    
     drawnow;

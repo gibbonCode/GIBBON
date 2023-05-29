@@ -12,8 +12,8 @@ faceAlpha1=1;
 edgeColor=0.25*ones(1,3);
 edgeWidth=2;
 
-%% Creating a solid hexahedral mesh sphere 
-% Creating a solid hexahedral mesh sphere
+%% Creating a heme-sphere hexahedral mesh
+% Creating a  heme-sphere hexahedral mesh
 
 %Control settings
 optionStruct.sphereRadius=1;

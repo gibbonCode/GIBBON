@@ -6,7 +6,7 @@
    <!--
 This HTML was auto-generated from MATLAB code.
 To make changes, update the MATLAB code and republish this document.
-      --><title>DEMO_febio_0067_hip_implant_regional_stiffness_optimize_01.m</title><meta name="generator" content="MATLAB 9.14"><link rel="schema.DC" href="http://purl.org/dc/elements/1.1/"><meta name="DC.date" content="2023-05-01"><meta name="DC.source" content="DEMO_febio_0067_hip_implant_regional_stiffness_optimize_01.m"><style type="text/css">
+      --><title>DEMO_febio_0067_hip_implant_regional_stiffness_optimize_01.m</title><meta name="generator" content="MATLAB 9.14"><link rel="schema.DC" href="http://purl.org/dc/elements/1.1/"><meta name="DC.date" content="2023-05-29"><meta name="DC.source" content="DEMO_febio_0067_hip_implant_regional_stiffness_optimize_01.m"><style type="text/css">
 html,body,div,span,applet,object,iframe,h1,h2,h3,h4,h5,h6,p,blockquote,pre,a,abbr,acronym,address,big,cite,code,del,dfn,em,font,img,ins,kbd,q,s,samp,small,strike,strong,tt,var,b,u,i,center,dl,dt,dd,ol,ul,li,fieldset,form,label,legend,table,caption,tbody,tfoot,thead,tr,th,td{margin:0;padding:0;border:0;outline:0;font-size:100%;vertical-align:baseline;background:transparent}body{line-height:1}ol,ul{list-style:none}blockquote,q{quotes:none}blockquote:before,blockquote:after,q:before,q:after{content:'';content:none}:focus{outine:0}ins{text-decoration:none}del{text-decoration:line-through}table{border-collapse:collapse;border-spacing:0}
 
 html { min-height:100%; margin-bottom:1px; }
@@ -67,7 +67,7 @@ table td { padding:7px 5px; text-align:left; vertical-align:top; border:1px soli
 
 
 
-  </style></head><body><div class="content"><h1>DEMO_febio_0067_hip_implant_regional_stiffness_optimize_01.m</h1><!--introduction--><p>Below is a demonstration for:</p><div><ul><li>Importing bone geometry</li><li>Building geometry for a custom hip implant</li><li>Evaluating the implant using FEA</li></ul></div><!--/introduction--><h2>Contents</h2><div><ul><li><a href="#1">Keywords</a></li><li><a href="#3">Plot settings</a></li><li><a href="#4">Control parameters</a></li><li><a href="#5">Import bone model</a></li><li><a href="#6">Compute derived control parameters</a></li><li><a href="#7">Cut bone end off</a></li><li><a href="#9">Cut femoral head off</a></li><li><a href="#11">Add inner bone surface for implant to rest on (will attach to collar)</a></li><li><a href="#13">Create implant spherical head</a></li><li><a href="#16">Build colar</a></li><li><a href="#18">Build neck</a></li><li><a href="#20">Define shaft</a></li><li><a href="#22">Join bone and implant surfaces</a></li><li><a href="#24">Create tetrahedral elements for both regions</a></li><li><a href="#29">Define material regions</a></li><li><a href="#30">Define implant spatialy varying parameters</a></li><li><a href="#31">Visualizing solid mesh</a></li><li><a href="#32">Load SED data from non-implant model and form interpolation function</a></li><li><a href="#35">Find femoral head</a></li><li><a href="#37">Work out force distribution on femoral head surface nodes</a></li><li><a href="#39">Marking muscle locations</a></li><li><a href="#40">Muscle force definition</a></li><li><a href="#41">Defining prescribed forces</a></li><li><a href="#43">Visualizing boundary conditions</a></li><li><a href="#44">Defining the FEBio input structure</a></li><li><a href="#45">Create structures for optimization</a></li><li><a href="#47">Unnormalize and constrain parameters</a></li><li><a href="#49">Access ouput data from optimization run</a></li><li><a href="#50">Import FEBio results</a></li><li><a href="#53">Importing element stress from a log file</a></li><li><a href="#58">simulated results using <tt>anim8</tt> to visualize and animate</a></li><li><a href="#59">simulated results using <tt>anim8</tt> to visualize and animate</a></li><li><a href="#62">Process input</a></li><li><a href="#63">Unnormalize and constrain parameters</a></li><li><a href="#64">Setting material parameters</a></li><li><a href="#65">START FEBio</a></li><li><a href="#66">Update plot</a></li><li><a href="#67">Collect output</a></li></ul></div><h2 id="1">Keywords</h2><div><ul><li>febio_spec version 3.0</li><li>febio, FEBio</li><li>beam force loading</li><li>force control boundary condition</li><li>tetrahedral elements, tet4</li><li>static, solid</li><li>hyperelastic, Ogden</li><li>displacement logfile</li><li>stress logfile</li></ul></div><pre class="codeinput">clear; close <span class="string">all</span>; clc;
+  </style></head><body><div class="content"><h1>DEMO_febio_0067_hip_implant_regional_stiffness_optimize_01.m</h1><!--introduction--><p>Below is a demonstration for:</p><div><ul><li>Importing bone geometry</li><li>Building geometry for a custom hip implant</li><li>Evaluating the implant using FEA</li></ul></div><!--/introduction--><h2>Contents</h2><div><ul><li><a href="#1">Keywords</a></li><li><a href="#3">Plot settings</a></li><li><a href="#4">Control parameters</a></li><li><a href="#5">Import bone model</a></li><li><a href="#6">Compute derived control parameters</a></li><li><a href="#7">Cut bone end off</a></li><li><a href="#9">Cut femoral head off</a></li><li><a href="#11">Add inner bone surface for implant to rest on (will attach to collar)</a></li><li><a href="#13">Create implant spherical head</a></li><li><a href="#16">Build colar</a></li><li><a href="#18">Build neck</a></li><li><a href="#20">Define shaft</a></li><li><a href="#22">Join bone and implant surfaces</a></li><li><a href="#24">Create tetrahedral elements for both regions</a></li><li><a href="#29">Define material regions</a></li><li><a href="#30">Define implant spatialy varying parameters</a></li><li><a href="#31">Visualizing solid mesh</a></li><li><a href="#32">Load SED data from non-implant model and form interpolation function</a></li><li><a href="#35">Find femoral head</a></li><li><a href="#37">Work out force distribution on femoral head surface nodes</a></li><li><a href="#39">Marking muscle locations</a></li><li><a href="#40">Muscle force definition</a></li><li><a href="#41">Defining prescribed forces</a></li><li><a href="#43">Visualizing boundary conditions</a></li><li><a href="#44">Defining the FEBio input structure</a></li><li><a href="#45">Create structures for optimization</a></li><li><a href="#47">Unnormalize and constrain parameters</a></li><li><a href="#49">Access ouput data from optimization run</a></li><li><a href="#50">Import FEBio results</a></li><li><a href="#53">Importing element stress from a log file</a></li><li><a href="#58">simulated results using <tt>anim8</tt> to visualize and animate</a></li><li><a href="#59">simulated results using <tt>anim8</tt> to visualize and animate</a></li><li><a href="#62">Process input</a></li><li><a href="#63">Unnormalize and constrain parameters</a></li><li><a href="#64">Setting material parameters</a></li><li><a href="#65">START FEBio</a></li><li><a href="#66">Update plot</a></li><li><a href="#67">Collect output</a></li></ul></div><h2 id="1">Keywords</h2><div><ul><li>febio_spec version 4.0</li><li>febio, FEBio</li><li>femur force loading</li><li>force control boundary condition</li><li>tetrahedral elements, tet4</li><li>static, solid</li><li>hyperelastic, Ogden</li><li>displacement logfile</li><li>stress logfile</li></ul></div><pre class="codeinput">clear; close <span class="string">all</span>; clc;
 </pre><h2 id="3">Plot settings</h2><pre class="codeinput">fontSize=20;
 faceAlpha1=0.8;
 markerSize=40;
@@ -576,45 +576,45 @@ inputStruct.regionA=regionTetVolumes; <span class="comment">%Desired tetrahedral
 [meshOutput]=runTetGen(inputStruct); <span class="comment">%Run tetGen</span>
 </pre><pre class="codeoutput"> 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
---- TETGEN Tetrahedral meshing --- 01-May-2023 08:25:01
+--- TETGEN Tetrahedral meshing --- 29-May-2023 10:41:55
  
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
---- Writing SMESH file --- 01-May-2023 08:25:01
+--- Writing SMESH file --- 29-May-2023 10:41:55
 ----&gt; Adding node field
 ----&gt; Adding facet field
 ----&gt; Adding holes specification
 ----&gt; Adding region specification
---- Done --- 01-May-2023 08:25:01
---- Running TetGen to mesh input boundary--- 01-May-2023 08:25:01
-Opening /home/kevin/GIBBON/data/temp/temp.smesh.
+--- Done --- 29-May-2023 10:41:55
+--- Running TetGen to mesh input boundary--- 29-May-2023 10:41:55
+Opening /home/kevin/DATA/Code/matlab/GIBBON/data/temp/temp.smesh.
 Delaunizing vertices...
-Delaunay seconds:  0.020573
+Delaunay seconds:  0.020846
 Creating surface mesh ...
-Surface mesh seconds:  0.004204
+Surface mesh seconds:  0.00465
 Recovering boundaries...
-Boundary recovery seconds:  0.008144
+Boundary recovery seconds:  0.008862
 Removing exterior tetrahedra ...
 Spreading region attributes.
-Exterior tets removal seconds:  0.003921
+Exterior tets removal seconds:  0.004045
 Recovering Delaunayness...
-Delaunay recovery seconds:  0.006474
+Delaunay recovery seconds:  0.006719
 Refining mesh...
   6679 insertions, added 5728 points, 197840 tetrahedra in queue.
   2224 insertions, added 1564 points, 211485 tetrahedra in queue.
   2964 insertions, added 1320 points, 85537 tetrahedra in queue.
-Refinement seconds:  0.139152
+Refinement seconds:  0.149878
 Smoothing vertices...
-Mesh smoothing seconds:  0.21203
+Mesh smoothing seconds:  0.2545
 Improving mesh...
-Mesh improvement seconds:  0.008257
+Mesh improvement seconds:  0.008903
 
-Writing /home/kevin/GIBBON/data/temp/temp.1.node.
-Writing /home/kevin/GIBBON/data/temp/temp.1.ele.
-Writing /home/kevin/GIBBON/data/temp/temp.1.face.
-Writing /home/kevin/GIBBON/data/temp/temp.1.edge.
+Writing /home/kevin/DATA/Code/matlab/GIBBON/data/temp/temp.1.node.
+Writing /home/kevin/DATA/Code/matlab/GIBBON/data/temp/temp.1.ele.
+Writing /home/kevin/DATA/Code/matlab/GIBBON/data/temp/temp.1.face.
+Writing /home/kevin/DATA/Code/matlab/GIBBON/data/temp/temp.1.edge.
 
-Output seconds:  0.033158
-Total running seconds:  0.436159
+Output seconds:  0.034009
+Total running seconds:  0.492737
 
 Statistics:
 
@@ -632,11 +632,11 @@ Statistics:
   Mesh edges on input segments: 15054
   Steiner points inside domain: 8942
 
---- Done --- 01-May-2023 08:25:01
+--- Done --- 29-May-2023 10:41:55
  
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
---- Importing TetGen files --- 01-May-2023 08:25:01
---- Done --- 01-May-2023 08:25:01
+--- Importing TetGen files --- 29-May-2023 10:41:55
+--- Done --- 29-May-2023 10:41:55
 </pre><p>Access mesh output structure</p><pre class="codeinput">E=meshOutput.elements; <span class="comment">%The elements</span>
 V=meshOutput.nodes; <span class="comment">%The vertices or nodes</span>
 CE=meshOutput.elementMaterialID; <span class="comment">%Element material or region id</span>
@@ -980,15 +980,6 @@ febio_spec.MeshData.NodeData{1}.ATTR.data_type=<span class="string">'vec3'</span
 febio_spec.MeshData.NodeData{1}.node.ATTR.lid=(1:1:numel(bcPrescribeList))';
 febio_spec.MeshData.NodeData{1}.node.VAL=forceData;
 
-<span class="comment">%MeshData secion</span>
-<span class="comment">%-&gt; Node data</span>
-loadDataName1=<span class="string">'forceData'</span>;
-febio_spec.MeshData.NodeData{1}.ATTR.name=loadDataName1;
-febio_spec.MeshData.NodeData{1}.ATTR.node_set=nodeSetName2;
-febio_spec.MeshData.NodeData{1}.ATTR.datatype=<span class="string">'vec3'</span>;
-febio_spec.MeshData.NodeData{1}.node.ATTR.lid=(1:1:numel(bcPrescribeList))';
-febio_spec.MeshData.NodeData{1}.node.VAL=forceData;
-
 <span class="comment">%Loads section</span>
 <span class="comment">% -&gt; Prescribed nodal forces</span>
 febio_spec.Loads.nodal_load{1}.ATTR.name=<span class="string">'PrescribedForce'</span>;
@@ -1099,7 +1090,7 @@ Pn=paramNow./objectiveStruct.parNormFactors;
 
         disp_text=sprintf(<span class="string">'%6.16e,'</span>,paramFinal); disp_text=disp_text(1:end-1);
         disp([<span class="string">'paramFinal='</span>,disp_text]);
-</pre><pre class="codeoutput">paramFinal=7.7467227252681128e+04
+</pre><pre class="codeoutput">paramFinal=7.7467227201276095e+04
 </pre><pre class="codeinput"><span class="keyword">end</span>
 </pre><h2 id="49">Access ouput data from optimization run</h2><pre class="codeinput">differenceData=outputStructure.differenceData;
 differenceData_SSQD=outputStructure.differenceData_SSQD;
@@ -1306,8 +1297,8 @@ animStruct.Time=timeVec; <span class="comment">%The time vector</span>
 <span class="keyword">end</span>
 anim8(hf,animStruct); <span class="comment">%Initiate animation feature</span>
 drawnow;
-</pre><pre class="codeoutput">Warning: Second input (vertices) no longer required. Update code to avoid
-future error. 
+</pre><pre class="codeoutput">Warning: Second input (vertices) no longer required. Update code to avoid future
+error. 
 </pre><img width="100%" height="auto" vspace="5" hspace="5" src="DEMO_febio_0067_hip_implant_regional_stiffness_optimize_01_34.jpg" alt=""> <h2 id="59">simulated results using <tt>anim8</tt> to visualize and animate</h2><p>deformations</p><pre class="codeinput">prinComp=3;
 
 [FE_face,C_stress_face]=element2patch(E_12,E_stress_mat(logicBoneElements,prinComp,end),<span class="string">'tet4'</span>);
@@ -1347,8 +1338,8 @@ animStruct.Time=timeVec; <span class="comment">%The time vector</span>
 <span class="keyword">end</span>
 anim8(hf,animStruct); <span class="comment">%Initiate animation feature</span>
 drawnow;
-</pre><pre class="codeoutput">Warning: Second input (vertices) no longer required. Update code to avoid
-future error. 
+</pre><pre class="codeoutput">Warning: Second input (vertices) no longer required. Update code to avoid future
+error. 
 </pre><img width="100%" height="auto" vspace="5" hspace="5" src="DEMO_febio_0067_hip_implant_regional_stiffness_optimize_01_35.jpg" alt=""> <pre class="codeinput"><span class="keyword">function</span> [Fopt,outputStructure]=objectiveFunction(Pn,objectiveStruct)
 </pre><h2 id="62">Process input</h2><pre class="codeinput">febioFebFileName=objectiveStruct.febioFebFileName;
 febio_spec=objectiveStruct.febio_spec;
@@ -1397,59 +1388,59 @@ Proposed        : 6.3125000000000000e+04
 Set (constr.)   : 6.3124963933707266e+04 
 Done
 </pre><pre class="codeoutput">SETTING MATERIAL PARAMETERS...
-Proposed (norm.): 1.2383346031538691e+00 
-Proposed        : 7.7395912697116815e+04 
-Set (constr.)   : 7.6926079241548563e+04 
+Proposed (norm.): 1.2383346017999650e+00 
+Proposed        : 7.7395912612497807e+04 
+Set (constr.)   : 7.6926079164734634e+04 
 Done
 </pre><pre class="codeoutput">SETTING MATERIAL PARAMETERS...
-Proposed (norm.): 1.2507179491854079e+00 
-Proposed        : 7.8169871824087997e+04 
-Set (constr.)   : 7.7625128850101697e+04 
+Proposed (norm.): 1.2507179478179646e+00 
+Proposed        : 7.8169871738622795e+04 
+Set (constr.)   : 7.7625128773302131e+04 
 Done
 </pre><pre class="codeoutput">SETTING MATERIAL PARAMETERS...
-Proposed (norm.): 1.2481334425370063e+00 
-Proposed        : 7.8008340158562889e+04 
-Set (constr.)   : 7.7479818687479274e+04 
+Proposed (norm.): 1.2481334418691081e+00 
+Proposed        : 7.8008340116819265e+04 
+Set (constr.)   : 7.7479818649887253e+04 
 Done
 </pre><pre class="codeoutput">SETTING MATERIAL PARAMETERS...
-Proposed (norm.): 1.2606147769623763e+00 
-Proposed        : 7.8788423560148527e+04 
-Set (constr.)   : 7.8178636899609264e+04 
+Proposed (norm.): 1.2606147762877993e+00 
+Proposed        : 7.8788423517987452e+04 
+Set (constr.)   : 7.8178636862041662e+04 
 Done
 </pre><pre class="codeoutput">SETTING MATERIAL PARAMETERS...
-Proposed (norm.): 1.2467706298375723e+00 
-Proposed        : 7.7923164364848271e+04 
-Set (constr.)   : 7.7403070719132898e+04 
+Proposed (norm.): 1.2467706276771602e+00 
+Proposed        : 7.7923164229822505e+04 
+Set (constr.)   : 7.7403070597398852e+04 
 Done
 </pre><pre class="codeoutput">SETTING MATERIAL PARAMETERS...
-Proposed (norm.): 1.2467768479214638e+00 
-Proposed        : 7.7923552995091493e+04 
-Set (constr.)   : 7.7403421092358578e+04 
+Proposed (norm.): 1.2467768457678536e+00 
+Proposed        : 7.7923552860490847e+04 
+Set (constr.)   : 7.7403420971008425e+04 
 Done
 </pre><pre class="codeoutput">SETTING MATERIAL PARAMETERS...
-Proposed (norm.): 1.2468360441135866e+00 
-Proposed        : 7.7927252757099166e+04 
-Set (constr.)   : 7.7406756557270724e+04 
+Proposed (norm.): 1.2468360420247255e+00 
+Proposed        : 7.7927252626545349e+04 
+Set (constr.)   : 7.7406756439574761e+04 
 Done
 </pre><pre class="codeoutput">SETTING MATERIAL PARAMETERS...
-Proposed (norm.): 1.2472301873928999e+00 
-Proposed        : 7.7951886712056250e+04 
-Set (constr.)   : 7.7428960771041486e+04 
+Proposed (norm.): 1.2472301857353481e+00 
+Proposed        : 7.7951886608459259e+04 
+Set (constr.)   : 7.7428960677677882e+04 
 Done
 </pre><pre class="codeoutput">SETTING MATERIAL PARAMETERS...
-Proposed (norm.): 1.2479097510776958e+00 
-Proposed        : 7.7994359442355984e+04 
-Set (constr.)   : 7.7467227252681128e+04 
+Proposed (norm.): 1.2479097501645513e+00 
+Proposed        : 7.7994359385284450e+04 
+Set (constr.)   : 7.7467227201276095e+04 
 Done
 </pre><pre class="codeoutput">SETTING MATERIAL PARAMETERS...
-Proposed (norm.): 1.2603888485884727e+00 
-Proposed        : 7.8774303036779544e+04 
-Set (constr.)   : 7.8166053580535765e+04 
+Proposed (norm.): 1.2603888476661969e+00 
+Proposed        : 7.8774302979137297e+04 
+Set (constr.)   : 7.8166053529163604e+04 
 Done
 </pre><pre class="codeoutput">SETTING MATERIAL PARAMETERS...
-Proposed (norm.): 1.2479097510776958e+00 
-Proposed        : 7.7994359442355984e+04 
-Set (constr.)   : 7.7467227252681128e+04 
+Proposed (norm.): 1.2479097501645513e+00 
+Proposed        : 7.7994359385284450e+04 
+Set (constr.)   : 7.7467227201276095e+04 
 Done
 </pre><h2 id="65">START FEBio</h2><pre class="codeinput">[runFlag]=runMonitorFEBio(febioAnalysis);
 
@@ -1476,432 +1467,432 @@ differenceData_SSQD=sum(differenceData(:).^2); <span class="comment">%Sum of squ
 <span class="keyword">end</span>
 </pre><pre class="codeoutput"> 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
---------&gt;    RUNNING/MONITORING FEBIO JOB    &lt;-------- 01-May-2023 08:25:14
+--------&gt;    RUNNING/MONITORING FEBIO JOB    &lt;-------- 29-May-2023 10:42:11
 FEBio path: /home/kevin/FEBioStudio/bin/febio4
-# Attempt removal of existing log files                01-May-2023 08:25:14
- * Removal succesful                                   01-May-2023 08:25:14
-# Attempt removal of existing .xplt files              01-May-2023 08:25:14
- * Removal succesful                                   01-May-2023 08:25:14
-# Starting FEBio...                                    01-May-2023 08:25:14
+# Attempt removal of existing log files                29-May-2023 10:42:11
+ * Removal succesful                                   29-May-2023 10:42:11
+# Attempt removal of existing .xplt files              29-May-2023 10:42:11
+ * Removal succesful                                   29-May-2023 10:42:11
+# Starting FEBio...                                    29-May-2023 10:42:11
   Max. total analysis time is: Inf s
- * Waiting for log file creation                       01-May-2023 08:25:14
+ * Waiting for log file creation                       29-May-2023 10:42:11
    Max. wait time: 120 s
- * Log file found.                                     01-May-2023 08:25:15
-# Parsing log file...                                  01-May-2023 08:25:15
-    number of iterations   : 4                         01-May-2023 08:25:18
-    number of reformations : 4                         01-May-2023 08:25:18
-------- converged at time : 0.2                        01-May-2023 08:25:18
-    number of iterations   : 4                         01-May-2023 08:25:20
-    number of reformations : 4                         01-May-2023 08:25:20
-------- converged at time : 0.4                        01-May-2023 08:25:20
-    number of iterations   : 4                         01-May-2023 08:25:20
-    number of reformations : 4                         01-May-2023 08:25:20
-------- converged at time : 0.6                        01-May-2023 08:25:20
-    number of iterations   : 4                         01-May-2023 08:25:22
-    number of reformations : 4                         01-May-2023 08:25:22
-------- converged at time : 0.8                        01-May-2023 08:25:22
-    number of iterations   : 4                         01-May-2023 08:25:23
-    number of reformations : 4                         01-May-2023 08:25:23
-------- converged at time : 1                          01-May-2023 08:25:23
- Elapsed time : 0:00:08                                01-May-2023 08:25:23
+ * Log file found.                                     29-May-2023 10:42:11
+# Parsing log file...                                  29-May-2023 10:42:11
+    number of iterations   : 4                         29-May-2023 10:42:14
+    number of reformations : 4                         29-May-2023 10:42:14
+------- converged at time : 0.2                        29-May-2023 10:42:14
+    number of iterations   : 4                         29-May-2023 10:42:16
+    number of reformations : 4                         29-May-2023 10:42:16
+------- converged at time : 0.4                        29-May-2023 10:42:16
+    number of iterations   : 4                         29-May-2023 10:42:16
+    number of reformations : 4                         29-May-2023 10:42:16
+------- converged at time : 0.6                        29-May-2023 10:42:16
+    number of iterations   : 4                         29-May-2023 10:42:18
+    number of reformations : 4                         29-May-2023 10:42:18
+------- converged at time : 0.8                        29-May-2023 10:42:18
+    number of iterations   : 4                         29-May-2023 10:42:19
+    number of reformations : 4                         29-May-2023 10:42:19
+------- converged at time : 1                          29-May-2023 10:42:19
+ Elapsed time : 0:00:08                                29-May-2023 10:42:19
  N O R M A L   T E R M I N A T I O N
-# Done                                                 01-May-2023 08:25:23
+# Done                                                 29-May-2023 10:42:19
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 </pre><pre class="codeoutput"> 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
---------&gt;    RUNNING/MONITORING FEBIO JOB    &lt;-------- 01-May-2023 08:25:25
+--------&gt;    RUNNING/MONITORING FEBIO JOB    &lt;-------- 29-May-2023 10:42:22
 FEBio path: /home/kevin/FEBioStudio/bin/febio4
-# Attempt removal of existing log files                01-May-2023 08:25:25
- * Removal succesful                                   01-May-2023 08:25:25
-# Attempt removal of existing .xplt files              01-May-2023 08:25:25
- * Removal succesful                                   01-May-2023 08:25:25
-# Starting FEBio...                                    01-May-2023 08:25:25
+# Attempt removal of existing log files                29-May-2023 10:42:22
+ * Removal succesful                                   29-May-2023 10:42:22
+# Attempt removal of existing .xplt files              29-May-2023 10:42:22
+ * Removal succesful                                   29-May-2023 10:42:22
+# Starting FEBio...                                    29-May-2023 10:42:22
   Max. total analysis time is: Inf s
- * Waiting for log file creation                       01-May-2023 08:25:26
+ * Waiting for log file creation                       29-May-2023 10:42:23
    Max. wait time: 120 s
- * Log file found.                                     01-May-2023 08:25:26
-# Parsing log file...                                  01-May-2023 08:25:26
-    number of iterations   : 4                         01-May-2023 08:25:29
-    number of reformations : 4                         01-May-2023 08:25:29
-------- converged at time : 0.2                        01-May-2023 08:25:29
-    number of iterations   : 4                         01-May-2023 08:25:31
-    number of reformations : 4                         01-May-2023 08:25:31
-------- converged at time : 0.4                        01-May-2023 08:25:31
-    number of iterations   : 4                         01-May-2023 08:25:31
-    number of reformations : 4                         01-May-2023 08:25:31
-------- converged at time : 0.6                        01-May-2023 08:25:31
-    number of iterations   : 4                         01-May-2023 08:25:34
-    number of reformations : 4                         01-May-2023 08:25:34
-------- converged at time : 0.8                        01-May-2023 08:25:34
-    number of iterations   : 4                         01-May-2023 08:25:35
-    number of reformations : 4                         01-May-2023 08:25:35
-------- converged at time : 1                          01-May-2023 08:25:35
- Elapsed time : 0:00:09                                01-May-2023 08:25:35
+ * Log file found.                                     29-May-2023 10:42:23
+# Parsing log file...                                  29-May-2023 10:42:23
+    number of iterations   : 4                         29-May-2023 10:42:26
+    number of reformations : 4                         29-May-2023 10:42:26
+------- converged at time : 0.2                        29-May-2023 10:42:26
+    number of iterations   : 4                         29-May-2023 10:42:28
+    number of reformations : 4                         29-May-2023 10:42:28
+------- converged at time : 0.4                        29-May-2023 10:42:28
+    number of iterations   : 4                         29-May-2023 10:42:28
+    number of reformations : 4                         29-May-2023 10:42:28
+------- converged at time : 0.6                        29-May-2023 10:42:28
+    number of iterations   : 4                         29-May-2023 10:42:30
+    number of reformations : 4                         29-May-2023 10:42:30
+------- converged at time : 0.8                        29-May-2023 10:42:30
+    number of iterations   : 4                         29-May-2023 10:42:31
+    number of reformations : 4                         29-May-2023 10:42:31
+------- converged at time : 1                          29-May-2023 10:42:31
+ Elapsed time : 0:00:08                                29-May-2023 10:42:31
  N O R M A L   T E R M I N A T I O N
-# Done                                                 01-May-2023 08:25:35
+# Done                                                 29-May-2023 10:42:31
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 </pre><pre class="codeoutput"> 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
---------&gt;    RUNNING/MONITORING FEBIO JOB    &lt;-------- 01-May-2023 08:25:37
+--------&gt;    RUNNING/MONITORING FEBIO JOB    &lt;-------- 29-May-2023 10:42:34
 FEBio path: /home/kevin/FEBioStudio/bin/febio4
-# Attempt removal of existing log files                01-May-2023 08:25:37
- * Removal succesful                                   01-May-2023 08:25:37
-# Attempt removal of existing .xplt files              01-May-2023 08:25:37
- * Removal succesful                                   01-May-2023 08:25:37
-# Starting FEBio...                                    01-May-2023 08:25:37
+# Attempt removal of existing log files                29-May-2023 10:42:34
+ * Removal succesful                                   29-May-2023 10:42:34
+# Attempt removal of existing .xplt files              29-May-2023 10:42:34
+ * Removal succesful                                   29-May-2023 10:42:34
+# Starting FEBio...                                    29-May-2023 10:42:34
   Max. total analysis time is: Inf s
- * Waiting for log file creation                       01-May-2023 08:25:38
+ * Waiting for log file creation                       29-May-2023 10:42:34
    Max. wait time: 120 s
- * Log file found.                                     01-May-2023 08:25:38
-# Parsing log file...                                  01-May-2023 08:25:38
-    number of iterations   : 4                         01-May-2023 08:25:41
-    number of reformations : 4                         01-May-2023 08:25:41
-------- converged at time : 0.2                        01-May-2023 08:25:41
-    number of iterations   : 4                         01-May-2023 08:25:43
-    number of reformations : 4                         01-May-2023 08:25:43
-------- converged at time : 0.4                        01-May-2023 08:25:43
-    number of iterations   : 4                         01-May-2023 08:25:43
-    number of reformations : 4                         01-May-2023 08:25:43
-------- converged at time : 0.6                        01-May-2023 08:25:43
-    number of iterations   : 4                         01-May-2023 08:25:45
-    number of reformations : 4                         01-May-2023 08:25:45
-------- converged at time : 0.8                        01-May-2023 08:25:45
-    number of iterations   : 4                         01-May-2023 08:25:46
-    number of reformations : 4                         01-May-2023 08:25:46
-------- converged at time : 1                          01-May-2023 08:25:46
- Elapsed time : 0:00:08                                01-May-2023 08:25:46
+ * Log file found.                                     29-May-2023 10:42:35
+# Parsing log file...                                  29-May-2023 10:42:35
+    number of iterations   : 4                         29-May-2023 10:42:37
+    number of reformations : 4                         29-May-2023 10:42:37
+------- converged at time : 0.2                        29-May-2023 10:42:37
+    number of iterations   : 4                         29-May-2023 10:42:40
+    number of reformations : 4                         29-May-2023 10:42:40
+------- converged at time : 0.4                        29-May-2023 10:42:40
+    number of iterations   : 4                         29-May-2023 10:42:40
+    number of reformations : 4                         29-May-2023 10:42:40
+------- converged at time : 0.6                        29-May-2023 10:42:40
+    number of iterations   : 4                         29-May-2023 10:42:42
+    number of reformations : 4                         29-May-2023 10:42:42
+------- converged at time : 0.8                        29-May-2023 10:42:42
+    number of iterations   : 4                         29-May-2023 10:42:43
+    number of reformations : 4                         29-May-2023 10:42:43
+------- converged at time : 1                          29-May-2023 10:42:43
+ Elapsed time : 0:00:09                                29-May-2023 10:42:43
  N O R M A L   T E R M I N A T I O N
-# Done                                                 01-May-2023 08:25:46
+# Done                                                 29-May-2023 10:42:43
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 </pre><pre class="codeoutput"> 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
---------&gt;    RUNNING/MONITORING FEBIO JOB    &lt;-------- 01-May-2023 08:25:48
+--------&gt;    RUNNING/MONITORING FEBIO JOB    &lt;-------- 29-May-2023 10:42:46
 FEBio path: /home/kevin/FEBioStudio/bin/febio4
-# Attempt removal of existing log files                01-May-2023 08:25:48
- * Removal succesful                                   01-May-2023 08:25:48
-# Attempt removal of existing .xplt files              01-May-2023 08:25:48
- * Removal succesful                                   01-May-2023 08:25:48
-# Starting FEBio...                                    01-May-2023 08:25:48
+# Attempt removal of existing log files                29-May-2023 10:42:46
+ * Removal succesful                                   29-May-2023 10:42:46
+# Attempt removal of existing .xplt files              29-May-2023 10:42:47
+ * Removal succesful                                   29-May-2023 10:42:47
+# Starting FEBio...                                    29-May-2023 10:42:47
   Max. total analysis time is: Inf s
- * Waiting for log file creation                       01-May-2023 08:25:49
+ * Waiting for log file creation                       29-May-2023 10:42:47
    Max. wait time: 120 s
- * Log file found.                                     01-May-2023 08:25:49
-# Parsing log file...                                  01-May-2023 08:25:49
-    number of iterations   : 4                         01-May-2023 08:25:52
-    number of reformations : 4                         01-May-2023 08:25:52
-------- converged at time : 0.2                        01-May-2023 08:25:52
-    number of iterations   : 4                         01-May-2023 08:25:54
-    number of reformations : 4                         01-May-2023 08:25:54
-------- converged at time : 0.4                        01-May-2023 08:25:54
-    number of iterations   : 4                         01-May-2023 08:25:54
-    number of reformations : 4                         01-May-2023 08:25:54
-------- converged at time : 0.6                        01-May-2023 08:25:54
-    number of iterations   : 4                         01-May-2023 08:25:56
-    number of reformations : 4                         01-May-2023 08:25:56
-------- converged at time : 0.8                        01-May-2023 08:25:56
-    number of iterations   : 4                         01-May-2023 08:25:57
-    number of reformations : 4                         01-May-2023 08:25:57
-------- converged at time : 1                          01-May-2023 08:25:57
- Elapsed time : 0:00:08                                01-May-2023 08:25:57
+ * Log file found.                                     29-May-2023 10:42:47
+# Parsing log file...                                  29-May-2023 10:42:47
+    number of iterations   : 4                         29-May-2023 10:42:50
+    number of reformations : 4                         29-May-2023 10:42:50
+------- converged at time : 0.2                        29-May-2023 10:42:50
+    number of iterations   : 4                         29-May-2023 10:42:52
+    number of reformations : 4                         29-May-2023 10:42:52
+------- converged at time : 0.4                        29-May-2023 10:42:52
+    number of iterations   : 4                         29-May-2023 10:42:52
+    number of reformations : 4                         29-May-2023 10:42:52
+------- converged at time : 0.6                        29-May-2023 10:42:52
+    number of iterations   : 4                         29-May-2023 10:42:54
+    number of reformations : 4                         29-May-2023 10:42:54
+------- converged at time : 0.8                        29-May-2023 10:42:54
+    number of iterations   : 4                         29-May-2023 10:42:55
+    number of reformations : 4                         29-May-2023 10:42:55
+------- converged at time : 1                          29-May-2023 10:42:55
+ Elapsed time : 0:00:08                                29-May-2023 10:42:55
  N O R M A L   T E R M I N A T I O N
-# Done                                                 01-May-2023 08:25:57
+# Done                                                 29-May-2023 10:42:55
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 </pre><pre class="codeoutput"> 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
---------&gt;    RUNNING/MONITORING FEBIO JOB    &lt;-------- 01-May-2023 08:25:59
+--------&gt;    RUNNING/MONITORING FEBIO JOB    &lt;-------- 29-May-2023 10:42:58
 FEBio path: /home/kevin/FEBioStudio/bin/febio4
-# Attempt removal of existing log files                01-May-2023 08:25:59
- * Removal succesful                                   01-May-2023 08:25:59
-# Attempt removal of existing .xplt files              01-May-2023 08:25:59
- * Removal succesful                                   01-May-2023 08:25:59
-# Starting FEBio...                                    01-May-2023 08:25:59
+# Attempt removal of existing log files                29-May-2023 10:42:58
+ * Removal succesful                                   29-May-2023 10:42:58
+# Attempt removal of existing .xplt files              29-May-2023 10:42:58
+ * Removal succesful                                   29-May-2023 10:42:58
+# Starting FEBio...                                    29-May-2023 10:42:58
   Max. total analysis time is: Inf s
- * Waiting for log file creation                       01-May-2023 08:25:59
+ * Waiting for log file creation                       29-May-2023 10:42:58
    Max. wait time: 120 s
- * Log file found.                                     01-May-2023 08:26:00
-# Parsing log file...                                  01-May-2023 08:26:00
-    number of iterations   : 4                         01-May-2023 08:26:03
-    number of reformations : 4                         01-May-2023 08:26:03
-------- converged at time : 0.2                        01-May-2023 08:26:03
-    number of iterations   : 4                         01-May-2023 08:26:05
-    number of reformations : 4                         01-May-2023 08:26:05
-------- converged at time : 0.4                        01-May-2023 08:26:05
-    number of iterations   : 4                         01-May-2023 08:26:05
-    number of reformations : 4                         01-May-2023 08:26:05
-------- converged at time : 0.6                        01-May-2023 08:26:05
-    number of iterations   : 4                         01-May-2023 08:26:07
-    number of reformations : 4                         01-May-2023 08:26:07
-------- converged at time : 0.8                        01-May-2023 08:26:07
-    number of iterations   : 4                         01-May-2023 08:26:08
-    number of reformations : 4                         01-May-2023 08:26:08
-------- converged at time : 1                          01-May-2023 08:26:08
- Elapsed time : 0:00:08                                01-May-2023 08:26:08
+ * Log file found.                                     29-May-2023 10:42:59
+# Parsing log file...                                  29-May-2023 10:42:59
+    number of iterations   : 4                         29-May-2023 10:43:02
+    number of reformations : 4                         29-May-2023 10:43:02
+------- converged at time : 0.2                        29-May-2023 10:43:02
+    number of iterations   : 4                         29-May-2023 10:43:04
+    number of reformations : 4                         29-May-2023 10:43:04
+------- converged at time : 0.4                        29-May-2023 10:43:04
+    number of iterations   : 4                         29-May-2023 10:43:04
+    number of reformations : 4                         29-May-2023 10:43:04
+------- converged at time : 0.6                        29-May-2023 10:43:04
+    number of iterations   : 4                         29-May-2023 10:43:07
+    number of reformations : 4                         29-May-2023 10:43:07
+------- converged at time : 0.8                        29-May-2023 10:43:07
+    number of iterations   : 4                         29-May-2023 10:43:08
+    number of reformations : 4                         29-May-2023 10:43:08
+------- converged at time : 1                          29-May-2023 10:43:08
+ Elapsed time : 0:00:09                                29-May-2023 10:43:08
  N O R M A L   T E R M I N A T I O N
-# Done                                                 01-May-2023 08:26:08
+# Done                                                 29-May-2023 10:43:08
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 </pre><pre class="codeoutput"> 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
---------&gt;    RUNNING/MONITORING FEBIO JOB    &lt;-------- 01-May-2023 08:26:10
+--------&gt;    RUNNING/MONITORING FEBIO JOB    &lt;-------- 29-May-2023 10:43:11
 FEBio path: /home/kevin/FEBioStudio/bin/febio4
-# Attempt removal of existing log files                01-May-2023 08:26:10
- * Removal succesful                                   01-May-2023 08:26:10
-# Attempt removal of existing .xplt files              01-May-2023 08:26:10
- * Removal succesful                                   01-May-2023 08:26:10
-# Starting FEBio...                                    01-May-2023 08:26:10
+# Attempt removal of existing log files                29-May-2023 10:43:11
+ * Removal succesful                                   29-May-2023 10:43:11
+# Attempt removal of existing .xplt files              29-May-2023 10:43:11
+ * Removal succesful                                   29-May-2023 10:43:11
+# Starting FEBio...                                    29-May-2023 10:43:11
   Max. total analysis time is: Inf s
- * Waiting for log file creation                       01-May-2023 08:26:10
+ * Waiting for log file creation                       29-May-2023 10:43:11
    Max. wait time: 120 s
- * Log file found.                                     01-May-2023 08:26:11
-# Parsing log file...                                  01-May-2023 08:26:11
-    number of iterations   : 4                         01-May-2023 08:26:14
-    number of reformations : 4                         01-May-2023 08:26:14
-------- converged at time : 0.2                        01-May-2023 08:26:14
-    number of iterations   : 4                         01-May-2023 08:26:16
-    number of reformations : 4                         01-May-2023 08:26:16
-------- converged at time : 0.4                        01-May-2023 08:26:16
-    number of iterations   : 4                         01-May-2023 08:26:16
-    number of reformations : 4                         01-May-2023 08:26:16
-------- converged at time : 0.6                        01-May-2023 08:26:16
-    number of iterations   : 4                         01-May-2023 08:26:18
-    number of reformations : 4                         01-May-2023 08:26:18
-------- converged at time : 0.8                        01-May-2023 08:26:18
-    number of iterations   : 4                         01-May-2023 08:26:19
-    number of reformations : 4                         01-May-2023 08:26:19
-------- converged at time : 1                          01-May-2023 08:26:19
- Elapsed time : 0:00:08                                01-May-2023 08:26:19
+ * Log file found.                                     29-May-2023 10:43:12
+# Parsing log file...                                  29-May-2023 10:43:12
+    number of iterations   : 4                         29-May-2023 10:43:15
+    number of reformations : 4                         29-May-2023 10:43:15
+------- converged at time : 0.2                        29-May-2023 10:43:15
+    number of iterations   : 4                         29-May-2023 10:43:17
+    number of reformations : 4                         29-May-2023 10:43:17
+------- converged at time : 0.4                        29-May-2023 10:43:17
+    number of iterations   : 4                         29-May-2023 10:43:17
+    number of reformations : 4                         29-May-2023 10:43:17
+------- converged at time : 0.6                        29-May-2023 10:43:17
+    number of iterations   : 4                         29-May-2023 10:43:20
+    number of reformations : 4                         29-May-2023 10:43:20
+------- converged at time : 0.8                        29-May-2023 10:43:20
+    number of iterations   : 4                         29-May-2023 10:43:21
+    number of reformations : 4                         29-May-2023 10:43:21
+------- converged at time : 1                          29-May-2023 10:43:21
+ Elapsed time : 0:00:09                                29-May-2023 10:43:21
  N O R M A L   T E R M I N A T I O N
-# Done                                                 01-May-2023 08:26:19
+# Done                                                 29-May-2023 10:43:21
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 </pre><pre class="codeoutput"> 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
---------&gt;    RUNNING/MONITORING FEBIO JOB    &lt;-------- 01-May-2023 08:26:21
+--------&gt;    RUNNING/MONITORING FEBIO JOB    &lt;-------- 29-May-2023 10:43:23
 FEBio path: /home/kevin/FEBioStudio/bin/febio4
-# Attempt removal of existing log files                01-May-2023 08:26:21
- * Removal succesful                                   01-May-2023 08:26:21
-# Attempt removal of existing .xplt files              01-May-2023 08:26:21
- * Removal succesful                                   01-May-2023 08:26:21
-# Starting FEBio...                                    01-May-2023 08:26:21
+# Attempt removal of existing log files                29-May-2023 10:43:23
+ * Removal succesful                                   29-May-2023 10:43:24
+# Attempt removal of existing .xplt files              29-May-2023 10:43:24
+ * Removal succesful                                   29-May-2023 10:43:24
+# Starting FEBio...                                    29-May-2023 10:43:24
   Max. total analysis time is: Inf s
- * Waiting for log file creation                       01-May-2023 08:26:22
+ * Waiting for log file creation                       29-May-2023 10:43:24
    Max. wait time: 120 s
- * Log file found.                                     01-May-2023 08:26:22
-# Parsing log file...                                  01-May-2023 08:26:22
-    number of iterations   : 4                         01-May-2023 08:26:25
-    number of reformations : 4                         01-May-2023 08:26:25
-------- converged at time : 0.2                        01-May-2023 08:26:25
-    number of iterations   : 4                         01-May-2023 08:26:27
-    number of reformations : 4                         01-May-2023 08:26:27
-------- converged at time : 0.4                        01-May-2023 08:26:27
-    number of iterations   : 4                         01-May-2023 08:26:27
-    number of reformations : 4                         01-May-2023 08:26:27
-------- converged at time : 0.6                        01-May-2023 08:26:27
-    number of iterations   : 4                         01-May-2023 08:26:30
-    number of reformations : 4                         01-May-2023 08:26:30
-------- converged at time : 0.8                        01-May-2023 08:26:30
-    number of iterations   : 4                         01-May-2023 08:26:30
-    number of reformations : 4                         01-May-2023 08:26:30
-------- converged at time : 1                          01-May-2023 08:26:30
- Elapsed time : 0:00:08                                01-May-2023 08:26:30
+ * Log file found.                                     29-May-2023 10:43:24
+# Parsing log file...                                  29-May-2023 10:43:24
+    number of iterations   : 4                         29-May-2023 10:43:27
+    number of reformations : 4                         29-May-2023 10:43:27
+------- converged at time : 0.2                        29-May-2023 10:43:27
+    number of iterations   : 4                         29-May-2023 10:43:29
+    number of reformations : 4                         29-May-2023 10:43:29
+------- converged at time : 0.4                        29-May-2023 10:43:29
+    number of iterations   : 4                         29-May-2023 10:43:29
+    number of reformations : 4                         29-May-2023 10:43:29
+------- converged at time : 0.6                        29-May-2023 10:43:29
+    number of iterations   : 4                         29-May-2023 10:43:32
+    number of reformations : 4                         29-May-2023 10:43:32
+------- converged at time : 0.8                        29-May-2023 10:43:32
+    number of iterations   : 4                         29-May-2023 10:43:33
+    number of reformations : 4                         29-May-2023 10:43:33
+------- converged at time : 1                          29-May-2023 10:43:33
+ Elapsed time : 0:00:09                                29-May-2023 10:43:33
  N O R M A L   T E R M I N A T I O N
-# Done                                                 01-May-2023 08:26:30
+# Done                                                 29-May-2023 10:43:33
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 </pre><pre class="codeoutput"> 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
---------&gt;    RUNNING/MONITORING FEBIO JOB    &lt;-------- 01-May-2023 08:26:33
+--------&gt;    RUNNING/MONITORING FEBIO JOB    &lt;-------- 29-May-2023 10:43:36
 FEBio path: /home/kevin/FEBioStudio/bin/febio4
-# Attempt removal of existing log files                01-May-2023 08:26:33
- * Removal succesful                                   01-May-2023 08:26:33
-# Attempt removal of existing .xplt files              01-May-2023 08:26:33
- * Removal succesful                                   01-May-2023 08:26:33
-# Starting FEBio...                                    01-May-2023 08:26:33
+# Attempt removal of existing log files                29-May-2023 10:43:36
+ * Removal succesful                                   29-May-2023 10:43:36
+# Attempt removal of existing .xplt files              29-May-2023 10:43:36
+ * Removal succesful                                   29-May-2023 10:43:36
+# Starting FEBio...                                    29-May-2023 10:43:36
   Max. total analysis time is: Inf s
- * Waiting for log file creation                       01-May-2023 08:26:33
+ * Waiting for log file creation                       29-May-2023 10:43:36
    Max. wait time: 120 s
- * Log file found.                                     01-May-2023 08:26:34
-# Parsing log file...                                  01-May-2023 08:26:34
-    number of iterations   : 4                         01-May-2023 08:26:36
-    number of reformations : 4                         01-May-2023 08:26:36
-------- converged at time : 0.2                        01-May-2023 08:26:36
-    number of iterations   : 4                         01-May-2023 08:26:38
-    number of reformations : 4                         01-May-2023 08:26:38
-------- converged at time : 0.4                        01-May-2023 08:26:38
-    number of iterations   : 4                         01-May-2023 08:26:38
-    number of reformations : 4                         01-May-2023 08:26:38
-------- converged at time : 0.6                        01-May-2023 08:26:38
-    number of iterations   : 4                         01-May-2023 08:26:41
-    number of reformations : 4                         01-May-2023 08:26:41
-------- converged at time : 0.8                        01-May-2023 08:26:41
-    number of iterations   : 4                         01-May-2023 08:26:42
-    number of reformations : 4                         01-May-2023 08:26:42
-------- converged at time : 1                          01-May-2023 08:26:42
- Elapsed time : 0:00:08                                01-May-2023 08:26:42
+ * Log file found.                                     29-May-2023 10:43:37
+# Parsing log file...                                  29-May-2023 10:43:37
+    number of iterations   : 4                         29-May-2023 10:43:39
+    number of reformations : 4                         29-May-2023 10:43:39
+------- converged at time : 0.2                        29-May-2023 10:43:39
+    number of iterations   : 4                         29-May-2023 10:43:41
+    number of reformations : 4                         29-May-2023 10:43:41
+------- converged at time : 0.4                        29-May-2023 10:43:41
+    number of iterations   : 4                         29-May-2023 10:43:41
+    number of reformations : 4                         29-May-2023 10:43:41
+------- converged at time : 0.6                        29-May-2023 10:43:41
+    number of iterations   : 4                         29-May-2023 10:43:44
+    number of reformations : 4                         29-May-2023 10:43:44
+------- converged at time : 0.8                        29-May-2023 10:43:44
+    number of iterations   : 4                         29-May-2023 10:43:45
+    number of reformations : 4                         29-May-2023 10:43:45
+------- converged at time : 1                          29-May-2023 10:43:45
+ Elapsed time : 0:00:09                                29-May-2023 10:43:45
  N O R M A L   T E R M I N A T I O N
-# Done                                                 01-May-2023 08:26:42
+# Done                                                 29-May-2023 10:43:45
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 </pre><pre class="codeoutput"> 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
---------&gt;    RUNNING/MONITORING FEBIO JOB    &lt;-------- 01-May-2023 08:26:44
+--------&gt;    RUNNING/MONITORING FEBIO JOB    &lt;-------- 29-May-2023 10:43:48
 FEBio path: /home/kevin/FEBioStudio/bin/febio4
-# Attempt removal of existing log files                01-May-2023 08:26:44
- * Removal succesful                                   01-May-2023 08:26:44
-# Attempt removal of existing .xplt files              01-May-2023 08:26:44
- * Removal succesful                                   01-May-2023 08:26:44
-# Starting FEBio...                                    01-May-2023 08:26:44
+# Attempt removal of existing log files                29-May-2023 10:43:48
+ * Removal succesful                                   29-May-2023 10:43:48
+# Attempt removal of existing .xplt files              29-May-2023 10:43:48
+ * Removal succesful                                   29-May-2023 10:43:48
+# Starting FEBio...                                    29-May-2023 10:43:48
   Max. total analysis time is: Inf s
- * Waiting for log file creation                       01-May-2023 08:26:45
+ * Waiting for log file creation                       29-May-2023 10:43:49
    Max. wait time: 120 s
- * Log file found.                                     01-May-2023 08:26:45
-# Parsing log file...                                  01-May-2023 08:26:45
-    number of iterations   : 4                         01-May-2023 08:26:48
-    number of reformations : 4                         01-May-2023 08:26:48
-------- converged at time : 0.2                        01-May-2023 08:26:48
-    number of iterations   : 4                         01-May-2023 08:26:50
-    number of reformations : 4                         01-May-2023 08:26:50
-------- converged at time : 0.4                        01-May-2023 08:26:50
-    number of iterations   : 4                         01-May-2023 08:26:50
-    number of reformations : 4                         01-May-2023 08:26:50
-------- converged at time : 0.6                        01-May-2023 08:26:50
-    number of iterations   : 4                         01-May-2023 08:26:53
-    number of reformations : 4                         01-May-2023 08:26:53
-------- converged at time : 0.8                        01-May-2023 08:26:53
-    number of iterations   : 4                         01-May-2023 08:26:53
-    number of reformations : 4                         01-May-2023 08:26:53
-------- converged at time : 1                          01-May-2023 08:26:53
- Elapsed time : 0:00:08                                01-May-2023 08:26:53
+ * Log file found.                                     29-May-2023 10:43:49
+# Parsing log file...                                  29-May-2023 10:43:49
+    number of iterations   : 4                         29-May-2023 10:43:53
+    number of reformations : 4                         29-May-2023 10:43:53
+------- converged at time : 0.2                        29-May-2023 10:43:53
+    number of iterations   : 4                         29-May-2023 10:43:55
+    number of reformations : 4                         29-May-2023 10:43:55
+------- converged at time : 0.4                        29-May-2023 10:43:55
+    number of iterations   : 4                         29-May-2023 10:43:55
+    number of reformations : 4                         29-May-2023 10:43:55
+------- converged at time : 0.6                        29-May-2023 10:43:55
+    number of iterations   : 4                         29-May-2023 10:43:57
+    number of reformations : 4                         29-May-2023 10:43:57
+------- converged at time : 0.8                        29-May-2023 10:43:57
+    number of iterations   : 4                         29-May-2023 10:43:58
+    number of reformations : 4                         29-May-2023 10:43:58
+------- converged at time : 1                          29-May-2023 10:43:58
+ Elapsed time : 0:00:09                                29-May-2023 10:43:58
  N O R M A L   T E R M I N A T I O N
-# Done                                                 01-May-2023 08:26:53
+# Done                                                 29-May-2023 10:43:58
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 </pre><pre class="codeoutput"> 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
---------&gt;    RUNNING/MONITORING FEBIO JOB    &lt;-------- 01-May-2023 08:26:56
+--------&gt;    RUNNING/MONITORING FEBIO JOB    &lt;-------- 29-May-2023 10:44:01
 FEBio path: /home/kevin/FEBioStudio/bin/febio4
-# Attempt removal of existing log files                01-May-2023 08:26:56
- * Removal succesful                                   01-May-2023 08:26:56
-# Attempt removal of existing .xplt files              01-May-2023 08:26:56
- * Removal succesful                                   01-May-2023 08:26:56
-# Starting FEBio...                                    01-May-2023 08:26:56
+# Attempt removal of existing log files                29-May-2023 10:44:01
+ * Removal succesful                                   29-May-2023 10:44:01
+# Attempt removal of existing .xplt files              29-May-2023 10:44:01
+ * Removal succesful                                   29-May-2023 10:44:01
+# Starting FEBio...                                    29-May-2023 10:44:01
   Max. total analysis time is: Inf s
- * Waiting for log file creation                       01-May-2023 08:26:56
+ * Waiting for log file creation                       29-May-2023 10:44:01
    Max. wait time: 120 s
- * Log file found.                                     01-May-2023 08:26:57
-# Parsing log file...                                  01-May-2023 08:26:57
-    number of iterations   : 4                         01-May-2023 08:27:00
-    number of reformations : 4                         01-May-2023 08:27:00
-------- converged at time : 0.2                        01-May-2023 08:27:00
-    number of iterations   : 4                         01-May-2023 08:27:02
-    number of reformations : 4                         01-May-2023 08:27:02
-------- converged at time : 0.4                        01-May-2023 08:27:02
-    number of iterations   : 4                         01-May-2023 08:27:02
-    number of reformations : 4                         01-May-2023 08:27:02
-------- converged at time : 0.6                        01-May-2023 08:27:02
-    number of iterations   : 4                         01-May-2023 08:27:05
-    number of reformations : 4                         01-May-2023 08:27:05
-------- converged at time : 0.8                        01-May-2023 08:27:05
-    number of iterations   : 4                         01-May-2023 08:27:06
-    number of reformations : 4                         01-May-2023 08:27:06
-------- converged at time : 1                          01-May-2023 08:27:06
- Elapsed time : 0:00:09                                01-May-2023 08:27:06
+ * Log file found.                                     29-May-2023 10:44:02
+# Parsing log file...                                  29-May-2023 10:44:02
+    number of iterations   : 4                         29-May-2023 10:44:05
+    number of reformations : 4                         29-May-2023 10:44:05
+------- converged at time : 0.2                        29-May-2023 10:44:05
+    number of iterations   : 4                         29-May-2023 10:44:07
+    number of reformations : 4                         29-May-2023 10:44:07
+------- converged at time : 0.4                        29-May-2023 10:44:07
+    number of iterations   : 4                         29-May-2023 10:44:07
+    number of reformations : 4                         29-May-2023 10:44:07
+------- converged at time : 0.6                        29-May-2023 10:44:07
+    number of iterations   : 4                         29-May-2023 10:44:10
+    number of reformations : 4                         29-May-2023 10:44:10
+------- converged at time : 0.8                        29-May-2023 10:44:10
+    number of iterations   : 4                         29-May-2023 10:44:11
+    number of reformations : 4                         29-May-2023 10:44:11
+------- converged at time : 1                          29-May-2023 10:44:11
+ Elapsed time : 0:00:09                                29-May-2023 10:44:11
  N O R M A L   T E R M I N A T I O N
-# Done                                                 01-May-2023 08:27:06
+# Done                                                 29-May-2023 10:44:11
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 </pre><pre class="codeoutput"> 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
---------&gt;    RUNNING/MONITORING FEBIO JOB    &lt;-------- 01-May-2023 08:27:08
+--------&gt;    RUNNING/MONITORING FEBIO JOB    &lt;-------- 29-May-2023 10:44:14
 FEBio path: /home/kevin/FEBioStudio/bin/febio4
-# Attempt removal of existing log files                01-May-2023 08:27:08
- * Removal succesful                                   01-May-2023 08:27:08
-# Attempt removal of existing .xplt files              01-May-2023 08:27:08
- * Removal succesful                                   01-May-2023 08:27:08
-# Starting FEBio...                                    01-May-2023 08:27:08
+# Attempt removal of existing log files                29-May-2023 10:44:14
+ * Removal succesful                                   29-May-2023 10:44:14
+# Attempt removal of existing .xplt files              29-May-2023 10:44:14
+ * Removal succesful                                   29-May-2023 10:44:14
+# Starting FEBio...                                    29-May-2023 10:44:14
   Max. total analysis time is: Inf s
- * Waiting for log file creation                       01-May-2023 08:27:09
+ * Waiting for log file creation                       29-May-2023 10:44:14
    Max. wait time: 120 s
- * Log file found.                                     01-May-2023 08:27:09
-# Parsing log file...                                  01-May-2023 08:27:09
-    number of iterations   : 4                         01-May-2023 08:27:12
-    number of reformations : 4                         01-May-2023 08:27:12
-------- converged at time : 0.2                        01-May-2023 08:27:12
-    number of iterations   : 4                         01-May-2023 08:27:14
-    number of reformations : 4                         01-May-2023 08:27:14
-------- converged at time : 0.4                        01-May-2023 08:27:14
-    number of iterations   : 4                         01-May-2023 08:27:14
-    number of reformations : 4                         01-May-2023 08:27:14
-------- converged at time : 0.6                        01-May-2023 08:27:14
-    number of iterations   : 4                         01-May-2023 08:27:17
-    number of reformations : 4                         01-May-2023 08:27:17
-------- converged at time : 0.8                        01-May-2023 08:27:17
-    number of iterations   : 4                         01-May-2023 08:27:17
-    number of reformations : 4                         01-May-2023 08:27:17
-------- converged at time : 1                          01-May-2023 08:27:17
- Elapsed time : 0:00:08                                01-May-2023 08:27:17
+ * Log file found.                                     29-May-2023 10:44:14
+# Parsing log file...                                  29-May-2023 10:44:14
+    number of iterations   : 4                         29-May-2023 10:44:17
+    number of reformations : 4                         29-May-2023 10:44:17
+------- converged at time : 0.2                        29-May-2023 10:44:17
+    number of iterations   : 4                         29-May-2023 10:44:19
+    number of reformations : 4                         29-May-2023 10:44:19
+------- converged at time : 0.4                        29-May-2023 10:44:19
+    number of iterations   : 4                         29-May-2023 10:44:19
+    number of reformations : 4                         29-May-2023 10:44:19
+------- converged at time : 0.6                        29-May-2023 10:44:19
+    number of iterations   : 4                         29-May-2023 10:44:22
+    number of reformations : 4                         29-May-2023 10:44:22
+------- converged at time : 0.8                        29-May-2023 10:44:22
+    number of iterations   : 4                         29-May-2023 10:44:24
+    number of reformations : 4                         29-May-2023 10:44:24
+------- converged at time : 1                          29-May-2023 10:44:24
+ Elapsed time : 0:00:09                                29-May-2023 10:44:24
  N O R M A L   T E R M I N A T I O N
-# Done                                                 01-May-2023 08:27:17
+# Done                                                 29-May-2023 10:44:24
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 </pre><pre class="codeoutput"> 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
---------&gt;    RUNNING/MONITORING FEBIO JOB    &lt;-------- 01-May-2023 08:27:20
+--------&gt;    RUNNING/MONITORING FEBIO JOB    &lt;-------- 29-May-2023 10:44:27
 FEBio path: /home/kevin/FEBioStudio/bin/febio4
-# Attempt removal of existing log files                01-May-2023 08:27:20
- * Removal succesful                                   01-May-2023 08:27:20
-# Attempt removal of existing .xplt files              01-May-2023 08:27:20
- * Removal succesful                                   01-May-2023 08:27:20
-# Starting FEBio...                                    01-May-2023 08:27:20
+# Attempt removal of existing log files                29-May-2023 10:44:27
+ * Removal succesful                                   29-May-2023 10:44:27
+# Attempt removal of existing .xplt files              29-May-2023 10:44:27
+ * Removal succesful                                   29-May-2023 10:44:27
+# Starting FEBio...                                    29-May-2023 10:44:27
   Max. total analysis time is: Inf s
- * Waiting for log file creation                       01-May-2023 08:27:20
+ * Waiting for log file creation                       29-May-2023 10:44:27
    Max. wait time: 120 s
- * Log file found.                                     01-May-2023 08:27:21
-# Parsing log file...                                  01-May-2023 08:27:21
-    number of iterations   : 4                         01-May-2023 08:27:23
-    number of reformations : 4                         01-May-2023 08:27:23
-------- converged at time : 0.2                        01-May-2023 08:27:23
-    number of iterations   : 4                         01-May-2023 08:27:25
-    number of reformations : 4                         01-May-2023 08:27:25
-------- converged at time : 0.4                        01-May-2023 08:27:25
-    number of iterations   : 4                         01-May-2023 08:27:25
-    number of reformations : 4                         01-May-2023 08:27:25
-------- converged at time : 0.6                        01-May-2023 08:27:25
-    number of iterations   : 4                         01-May-2023 08:27:28
-    number of reformations : 4                         01-May-2023 08:27:28
-------- converged at time : 0.8                        01-May-2023 08:27:28
-    number of iterations   : 4                         01-May-2023 08:27:29
-    number of reformations : 4                         01-May-2023 08:27:29
-------- converged at time : 1                          01-May-2023 08:27:29
- Elapsed time : 0:00:08                                01-May-2023 08:27:29
+ * Log file found.                                     29-May-2023 10:44:28
+# Parsing log file...                                  29-May-2023 10:44:28
+    number of iterations   : 4                         29-May-2023 10:44:31
+    number of reformations : 4                         29-May-2023 10:44:31
+------- converged at time : 0.2                        29-May-2023 10:44:31
+    number of iterations   : 4                         29-May-2023 10:44:33
+    number of reformations : 4                         29-May-2023 10:44:33
+------- converged at time : 0.4                        29-May-2023 10:44:33
+    number of iterations   : 4                         29-May-2023 10:44:33
+    number of reformations : 4                         29-May-2023 10:44:33
+------- converged at time : 0.6                        29-May-2023 10:44:33
+    number of iterations   : 4                         29-May-2023 10:44:36
+    number of reformations : 4                         29-May-2023 10:44:36
+------- converged at time : 0.8                        29-May-2023 10:44:36
+    number of iterations   : 4                         29-May-2023 10:44:37
+    number of reformations : 4                         29-May-2023 10:44:37
+------- converged at time : 1                          29-May-2023 10:44:37
+ Elapsed time : 0:00:09                                29-May-2023 10:44:37
  N O R M A L   T E R M I N A T I O N
-# Done                                                 01-May-2023 08:27:29
+# Done                                                 29-May-2023 10:44:37
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 </pre><pre class="codeoutput"> 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
---------&gt;    RUNNING/MONITORING FEBIO JOB    &lt;-------- 01-May-2023 08:27:31
+--------&gt;    RUNNING/MONITORING FEBIO JOB    &lt;-------- 29-May-2023 10:44:40
 FEBio path: /home/kevin/FEBioStudio/bin/febio4
-# Attempt removal of existing log files                01-May-2023 08:27:31
- * Removal succesful                                   01-May-2023 08:27:31
-# Attempt removal of existing .xplt files              01-May-2023 08:27:31
- * Removal succesful                                   01-May-2023 08:27:31
-# Starting FEBio...                                    01-May-2023 08:27:31
+# Attempt removal of existing log files                29-May-2023 10:44:40
+ * Removal succesful                                   29-May-2023 10:44:40
+# Attempt removal of existing .xplt files              29-May-2023 10:44:40
+ * Removal succesful                                   29-May-2023 10:44:40
+# Starting FEBio...                                    29-May-2023 10:44:40
   Max. total analysis time is: Inf s
- * Waiting for log file creation                       01-May-2023 08:27:32
+ * Waiting for log file creation                       29-May-2023 10:44:41
    Max. wait time: 120 s
- * Log file found.                                     01-May-2023 08:27:32
-# Parsing log file...                                  01-May-2023 08:27:32
-    number of iterations   : 4                         01-May-2023 08:27:35
-    number of reformations : 4                         01-May-2023 08:27:35
-------- converged at time : 0.2                        01-May-2023 08:27:35
-    number of iterations   : 4                         01-May-2023 08:27:37
-    number of reformations : 4                         01-May-2023 08:27:37
-------- converged at time : 0.4                        01-May-2023 08:27:37
-    number of iterations   : 4                         01-May-2023 08:27:37
-    number of reformations : 4                         01-May-2023 08:27:37
-------- converged at time : 0.6                        01-May-2023 08:27:37
-    number of iterations   : 4                         01-May-2023 08:27:40
-    number of reformations : 4                         01-May-2023 08:27:40
-------- converged at time : 0.8                        01-May-2023 08:27:40
-    number of iterations   : 4                         01-May-2023 08:27:41
-    number of reformations : 4                         01-May-2023 08:27:41
-------- converged at time : 1                          01-May-2023 08:27:41
- Elapsed time : 0:00:08                                01-May-2023 08:27:41
+ * Log file found.                                     29-May-2023 10:44:41
+# Parsing log file...                                  29-May-2023 10:44:41
+    number of iterations   : 4                         29-May-2023 10:44:44
+    number of reformations : 4                         29-May-2023 10:44:44
+------- converged at time : 0.2                        29-May-2023 10:44:44
+    number of iterations   : 4                         29-May-2023 10:44:46
+    number of reformations : 4                         29-May-2023 10:44:46
+------- converged at time : 0.4                        29-May-2023 10:44:46
+    number of iterations   : 4                         29-May-2023 10:44:46
+    number of reformations : 4                         29-May-2023 10:44:46
+------- converged at time : 0.6                        29-May-2023 10:44:46
+    number of iterations   : 4                         29-May-2023 10:44:49
+    number of reformations : 4                         29-May-2023 10:44:49
+------- converged at time : 0.8                        29-May-2023 10:44:49
+    number of iterations   : 4                         29-May-2023 10:44:50
+    number of reformations : 4                         29-May-2023 10:44:50
+------- converged at time : 1                          29-May-2023 10:44:50
+ Elapsed time : 0:00:08                                29-May-2023 10:44:50
  N O R M A L   T E R M I N A T I O N
-# Done                                                 01-May-2023 08:27:41
+# Done                                                 29-May-2023 10:44:50
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 </pre><h2 id="66">Update plot</h2><pre class="codeinput">hp.XData=[hp.XData hp.XData(end)+1];
 hp.YData=[hp.YData differenceData_SSQD];
@@ -1916,14 +1907,14 @@ outputStructure.E_metric=E_metric;
      0           2          10.0415          0.0917         0.01
      1           4          10.0216         0.00199        0.001       0.238335
      2           6          10.0216        0.000268       0.0001     0.00979884
-     3          12          10.0216        0.000217            1    0.000223691
+     3          12          10.0216        0.000217            1    0.000223692
 
 Local minimum possible.
 
 lsqnonlin stopped because the final change in the sum of squares relative to 
 its initial value is less than the value of the function tolerance.
 
-</pre><p><i><b>GIBBON footer text</b></i></p><p>License: <a href="https://github.com/gibbonCode/GIBBON/blob/master/LICENSE">https://github.com/gibbonCode/GIBBON/blob/master/LICENSE</a></p><p>GIBBON: The Geometry and Image-based Bioengineering add-On. A toolbox for image segmentation, image-based modeling, meshing, and finite element analysis.</p><p>Copyright (C) 2006-2022 Kevin Mattheus Moerman and the GIBBON contributors</p><p>This program is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.</p><p>This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for more details.</p><p>You should have received a copy of the GNU General Public License along with this program.  If not, see <a href="http://www.gnu.org/licenses/">http://www.gnu.org/licenses/</a>.</p><p class="footer"><br><a href="https://www.mathworks.com/products/matlab/">Published with MATLAB&reg; R2023a</a><br></p></div><!--
+</pre><p><i><b>GIBBON footer text</b></i></p><p>License: <a href="https://github.com/gibbonCode/GIBBON/blob/master/LICENSE">https://github.com/gibbonCode/GIBBON/blob/master/LICENSE</a></p><p>GIBBON: The Geometry and Image-based Bioengineering add-On. A toolbox for image segmentation, image-based modeling, meshing, and finite element analysis.</p><p>Copyright (C) 2006-2023 Kevin Mattheus Moerman and the GIBBON contributors</p><p>This program is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.</p><p>This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for more details.</p><p>You should have received a copy of the GNU General Public License along with this program.  If not, see <a href="http://www.gnu.org/licenses/">http://www.gnu.org/licenses/</a>.</p><p class="footer"><br><a href="https://www.mathworks.com/products/matlab/">Published with MATLAB&reg; R2023a</a><br></p></div><!--
 ##### SOURCE BEGIN #####
 %% DEMO_febio_0067_hip_implant_regional_stiffness_optimize_01.m
 % Below is a demonstration for:
@@ -1934,9 +1925,9 @@ its initial value is less than the value of the function tolerance.
 
 %% Keywords
 %
-% * febio_spec version 3.0
+% * febio_spec version 4.0
 % * febio, FEBio
-% * beam force loading
+% * femur force loading
 % * force control boundary condition
 % * tetrahedral elements, tet4
 % * static, solid
@@ -2935,15 +2926,6 @@ febio_spec.MeshData.NodeData{1}.ATTR.data_type='vec3';
 febio_spec.MeshData.NodeData{1}.node.ATTR.lid=(1:1:numel(bcPrescribeList))';
 febio_spec.MeshData.NodeData{1}.node.VAL=forceData;
 
-%MeshData secion
-%-> Node data
-loadDataName1='forceData';
-febio_spec.MeshData.NodeData{1}.ATTR.name=loadDataName1;
-febio_spec.MeshData.NodeData{1}.ATTR.node_set=nodeSetName2;
-febio_spec.MeshData.NodeData{1}.ATTR.datatype='vec3';
-febio_spec.MeshData.NodeData{1}.node.ATTR.lid=(1:1:numel(bcPrescribeList))';
-febio_spec.MeshData.NodeData{1}.node.VAL=forceData;
-
 %Loads section
 % -> Prescribed nodal forces
 febio_spec.Loads.nodal_load{1}.ATTR.name='PrescribedForce';
@@ -3439,7 +3421,7 @@ end
 % image segmentation, image-based modeling, meshing, and finite element
 % analysis.
 % 
-% Copyright (C) 2006-2022 Kevin Mattheus Moerman and the GIBBON contributors
+% Copyright (C) 2006-2023 Kevin Mattheus Moerman and the GIBBON contributors
 % 
 % This program is free software: you can redistribute it and/or modify
 % it under the terms of the GNU General Public License as published by

@@ -413,7 +413,7 @@ for q=1:1:3
     bcDataName=['nodal_disp_',dofs(q)];
     febio_spec.MeshData.NodeData{q}.ATTR.name=bcDataName;
     febio_spec.MeshData.NodeData{q}.ATTR.node_set=nodeSetName2;
-    febio_spec.MeshData.NodeData{q}.ATTR.datatype='scalar';
+    febio_spec.MeshData.NodeData{q}.ATTR.data_type='scalar';
     febio_spec.MeshData.NodeData{q}.node.ATTR.lid=(1:1:numel(bcPrescribeList))';
     febio_spec.MeshData.NodeData{q}.node.VAL=u(:,q);
 end

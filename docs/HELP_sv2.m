@@ -5,12 +5,24 @@
 clear; close all; clc;
 
 %% Syntax
-% |hf=sv2(varargin);|
+% |[hf]=sv2(M,V,viewOpt);|
 
 %% Description 
-% UNDOCUMENTED 
-%% Examples 
-% 
+% Multi-2D slice viewer
+
+%% Example: Visualizing MRI data
+
+%% 
+% Example image data
+load mri;
+M=squeeze(D); %example image data set
+v=2./[1,1,.4]; %example voxel size
+
+%%
+% Using |sv3|
+
+hf=sv2(M,v);
+
 %%
 % 
 % <<gibbVerySmall.gif>>

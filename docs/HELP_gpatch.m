@@ -61,7 +61,7 @@ axisGeom;
 
 subplot(2,3,5);
 title('alpha mapping');
-patch('Faces',F,'Vertices',V,'FaceColor','g','FaceVertexAlphaData',CV,'EdgeColor','none','FaceAlpha','flat');
+patch('Faces',F,'Vertices',V,'FaceColor','g','FaceVertexAlphaData',CV,'EdgeColor','k','FaceAlpha','flat');
 axisGeom; 
 
 drawnow; 
@@ -93,7 +93,7 @@ axisGeom;
 
 subplot(2,3,5);
 title('alpha mapping');
-gpatch(F,V,'g','none',CV);
+gpatch(F,V,'g','k',CV);
 axisGeom; 
 
 drawnow; 

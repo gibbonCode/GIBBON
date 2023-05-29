@@ -6,7 +6,7 @@
    <!--
 This HTML was auto-generated from MATLAB code.
 To make changes, update the MATLAB code and republish this document.
-      --><title>DEMO_febio_0052_breast_gap_close_01.m</title><meta name="generator" content="MATLAB 9.13"><link rel="schema.DC" href="http://purl.org/dc/elements/1.1/"><meta name="DC.date" content="2023-04-21"><meta name="DC.source" content="DEMO_febio_0052_breast_gap_close_01.m"><style type="text/css">
+      --><title>DEMO_febio_0052_breast_gap_close_01.m</title><meta name="generator" content="MATLAB 9.14"><link rel="schema.DC" href="http://purl.org/dc/elements/1.1/"><meta name="DC.date" content="2023-05-29"><meta name="DC.source" content="DEMO_febio_0052_breast_gap_close_01.m"><style type="text/css">
 html,body,div,span,applet,object,iframe,h1,h2,h3,h4,h5,h6,p,blockquote,pre,a,abbr,acronym,address,big,cite,code,del,dfn,em,font,img,ins,kbd,q,s,samp,small,strike,strong,tt,var,b,u,i,center,dl,dt,dd,ol,ul,li,fieldset,form,label,legend,table,caption,tbody,tfoot,thead,tr,th,td{margin:0;padding:0;border:0;outline:0;font-size:100%;vertical-align:baseline;background:transparent}body{line-height:1}ol,ul{list-style:none}blockquote,q{quotes:none}blockquote:before,blockquote:after,q:before,q:after{content:'';content:none}:focus{outine:0}ins{text-decoration:none}del{text-decoration:line-through}table{border-collapse:collapse;border-spacing:0}
 
 html { min-height:100%; margin-bottom:1px; }
@@ -259,43 +259,43 @@ CE=meshOutput.elementMaterialID;
 E=meshOutput.elements;
 </pre><pre class="codeoutput"> 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
---- TETGEN Tetrahedral meshing --- 21-Apr-2023 11:27:10
+--- TETGEN Tetrahedral meshing --- 29-May-2023 10:35:21
  
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
---- Writing SMESH file --- 21-Apr-2023 11:27:10
+--- Writing SMESH file --- 29-May-2023 10:35:21
 ----&gt; Adding node field
 ----&gt; Adding facet field
 ----&gt; Adding holes specification
 ----&gt; Adding region specification
---- Done --- 21-Apr-2023 11:27:10
---- Running TetGen to mesh input boundary--- 21-Apr-2023 11:27:10
-Opening /mnt/data/MATLAB/GIBBON/data/temp/temp.smesh.
+--- Done --- 29-May-2023 10:35:21
+--- Running TetGen to mesh input boundary--- 29-May-2023 10:35:21
+Opening /home/kevin/DATA/Code/matlab/GIBBON/data/temp/temp.smesh.
 Delaunizing vertices...
-Delaunay seconds:  0.019719
+Delaunay seconds:  0.007858
 Creating surface mesh ...
-Surface mesh seconds:  0.004589
+Surface mesh seconds:  0.001577
 Recovering boundaries...
-Boundary recovery seconds:  0.008384
+Boundary recovery seconds:  0.003583
 Removing exterior tetrahedra ...
 Spreading region attributes.
-Exterior tets removal seconds:  0.002332
+Exterior tets removal seconds:  0.001359
 Recovering Delaunayness...
-Delaunay recovery seconds:  0.002904
+Delaunay recovery seconds:  0.001545
 Refining mesh...
   2765 insertions, added 2709 points, 69556 tetrahedra in queue.
-Refinement seconds:  0.07757
+Refinement seconds:  0.036278
 Smoothing vertices...
-Mesh smoothing seconds:  0.151063
+Mesh smoothing seconds:  0.0655
 Improving mesh...
-Mesh improvement seconds:  0.005308
+Mesh improvement seconds:  0.002662
 
-Writing /mnt/data/MATLAB/GIBBON/data/temp/temp.1.node.
-Writing /mnt/data/MATLAB/GIBBON/data/temp/temp.1.ele.
-Writing /mnt/data/MATLAB/GIBBON/data/temp/temp.1.face.
-Writing /mnt/data/MATLAB/GIBBON/data/temp/temp.1.edge.
+Writing /home/kevin/DATA/Code/matlab/GIBBON/data/temp/temp.1.node.
+Writing /home/kevin/DATA/Code/matlab/GIBBON/data/temp/temp.1.ele.
+Writing /home/kevin/DATA/Code/matlab/GIBBON/data/temp/temp.1.face.
+Writing /home/kevin/DATA/Code/matlab/GIBBON/data/temp/temp.1.edge.
 
-Output seconds:  0.053407
-Total running seconds:  0.32549
+Output seconds:  0.010982
+Total running seconds:  0.13147
 
 Statistics:
 
@@ -313,11 +313,11 @@ Statistics:
   Mesh edges on input segments: 6219
   Steiner points inside domain: 3013
 
---- Done --- 21-Apr-2023 11:27:11
+--- Done --- 29-May-2023 10:35:21
  
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
---- Importing TetGen files --- 21-Apr-2023 11:27:11
---- Done --- 21-Apr-2023 11:27:11
+--- Importing TetGen files --- 29-May-2023 10:35:21
+--- Done --- 29-May-2023 10:35:21
 </pre><pre class="codeinput">cFigure; hold <span class="string">on</span>;
 hp=gpatch(Fb,V,Cb,<span class="string">'none'</span>,0.5);
 axisGeom; view([-140,16]);
@@ -455,7 +455,7 @@ dofs=<span class="string">'xyz'</span>;
     bcDataName=[<span class="string">'nodal_disp_'</span>,dofs(q)];
     febio_spec.MeshData.NodeData{q}.ATTR.name=bcDataName;
     febio_spec.MeshData.NodeData{q}.ATTR.node_set=nodeSetName2;
-    febio_spec.MeshData.NodeData{q}.ATTR.datatype=<span class="string">'scalar'</span>;
+    febio_spec.MeshData.NodeData{q}.ATTR.data_type=<span class="string">'scalar'</span>;
     febio_spec.MeshData.NodeData{q}.node.ATTR.lid=(1:1:numel(bcPrescribeList))';
     febio_spec.MeshData.NodeData{q}.node.VAL=u(:,q);
 <span class="keyword">end</span>
@@ -513,70 +513,74 @@ febioAnalysis.maxLogCheckTime=10; <span class="comment">%Max log file checking t
 [runFlag]=runMonitorFEBio(febioAnalysis);<span class="comment">%START FEBio NOW!!!!!!!!</span>
 </pre><pre class="codeoutput"> 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
---------&gt;    RUNNING/MONITORING FEBIO JOB    &lt;-------- 21-Apr-2023 11:27:18
-FEBio path: /home/kevin/FEBioStudio2/bin/febio4
-# Attempt removal of existing log files                21-Apr-2023 11:27:18
- * Removal succesful                                   21-Apr-2023 11:27:18
-# Attempt removal of existing .xplt files              21-Apr-2023 11:27:18
- * Removal succesful                                   21-Apr-2023 11:27:18
-# Starting FEBio...                                    21-Apr-2023 11:27:18
+--------&gt;    RUNNING/MONITORING FEBIO JOB    &lt;-------- 29-May-2023 10:35:24
+FEBio path: /home/kevin/FEBioStudio/bin/febio4
+# Attempt removal of existing log files                29-May-2023 10:35:24
+ * Removal succesful                                   29-May-2023 10:35:24
+# Attempt removal of existing .xplt files              29-May-2023 10:35:24
+ * Removal succesful                                   29-May-2023 10:35:24
+# Starting FEBio...                                    29-May-2023 10:35:24
   Max. total analysis time is: 1e+99 s
- * Waiting for log file creation                       21-Apr-2023 11:27:18
+ * Waiting for log file creation                       29-May-2023 10:35:24
    Max. wait time: 10 s
- * Log file found.                                     21-Apr-2023 11:27:18
-# Parsing log file...                                  21-Apr-2023 11:27:18
-    number of iterations   : 3                         21-Apr-2023 11:27:20
-    number of reformations : 3                         21-Apr-2023 11:27:20
-------- converged at time : 0.0666667                  21-Apr-2023 11:27:20
-    number of iterations   : 3                         21-Apr-2023 11:27:20
-    number of reformations : 3                         21-Apr-2023 11:27:20
-------- converged at time : 0.133333                   21-Apr-2023 11:27:20
-    number of iterations   : 3                         21-Apr-2023 11:27:21
-    number of reformations : 3                         21-Apr-2023 11:27:21
-------- converged at time : 0.2                        21-Apr-2023 11:27:21
-    number of iterations   : 3                         21-Apr-2023 11:27:22
-    number of reformations : 3                         21-Apr-2023 11:27:22
-    number of iterations   : 3                         21-Apr-2023 11:27:22
-    number of reformations : 3                         21-Apr-2023 11:27:22
-------- converged at time : 0.333333                   21-Apr-2023 11:27:22
-    number of iterations   : 3                         21-Apr-2023 11:27:23
-    number of reformations : 3                         21-Apr-2023 11:27:23
-------- converged at time : 0.4                        21-Apr-2023 11:27:23
-    number of reformations : 3                         21-Apr-2023 11:27:24
-------- converged at time : 0.466667                   21-Apr-2023 11:27:24
-    number of iterations   : 3                         21-Apr-2023 11:27:25
-    number of reformations : 3                         21-Apr-2023 11:27:25
-------- converged at time : 0.533333                   21-Apr-2023 11:27:25
-    number of iterations   : 4                         21-Apr-2023 11:27:26
-    number of reformations : 4                         21-Apr-2023 11:27:26
-------- converged at time : 0.6                        21-Apr-2023 11:27:26
-    number of iterations   : 4                         21-Apr-2023 11:27:27
-    number of reformations : 4                         21-Apr-2023 11:27:27
-------- converged at time : 0.666667                   21-Apr-2023 11:27:27
-    number of reformations : 11                        21-Apr-2023 11:27:33
-------- converged at time : 0.711111                   21-Apr-2023 11:27:33
-    number of iterations   : 5                         21-Apr-2023 11:27:35
-    number of reformations : 5                         21-Apr-2023 11:27:35
-    number of iterations   : 4                         21-Apr-2023 11:27:36
-    number of reformations : 4                         21-Apr-2023 11:27:36
-------- converged at time : 0.800777                   21-Apr-2023 11:27:36
-    number of iterations   : 4                         21-Apr-2023 11:27:37
-    number of reformations : 4                         21-Apr-2023 11:27:37
-------- converged at time : 0.851918                   21-Apr-2023 11:27:37
-    number of iterations   : 4                         21-Apr-2023 11:27:38
-    number of reformations : 4                         21-Apr-2023 11:27:38
-------- converged at time : 0.906164                   21-Apr-2023 11:27:38
-    number of iterations   : 4                         21-Apr-2023 11:27:40
-    number of reformations : 4                         21-Apr-2023 11:27:40
-------- converged at time : 0.962894                   21-Apr-2023 11:27:40
-    number of iterations   : 4                         21-Apr-2023 11:27:41
-    number of reformations : 4                         21-Apr-2023 11:27:41
-------- converged at time : 1                          21-Apr-2023 11:27:41
- Elapsed time : 0:00:22                                21-Apr-2023 11:27:41
+ * Log file found.                                     29-May-2023 10:35:25
+# Parsing log file...                                  29-May-2023 10:35:25
+    number of iterations   : 3                         29-May-2023 10:35:25
+    number of reformations : 3                         29-May-2023 10:35:25
+------- converged at time : 0.0666667                  29-May-2023 10:35:25
+    number of iterations   : 3                         29-May-2023 10:35:25
+    number of reformations : 3                         29-May-2023 10:35:25
+------- converged at time : 0.133333                   29-May-2023 10:35:25
+    number of iterations   : 3                         29-May-2023 10:35:26
+    number of reformations : 3                         29-May-2023 10:35:26
+------- converged at time : 0.2                        29-May-2023 10:35:26
+    number of iterations   : 3                         29-May-2023 10:35:26
+    number of reformations : 3                         29-May-2023 10:35:26
+------- converged at time : 0.266667                   29-May-2023 10:35:26
+    number of iterations   : 3                         29-May-2023 10:35:27
+    number of reformations : 3                         29-May-2023 10:35:27
+------- converged at time : 0.333333                   29-May-2023 10:35:27
+    number of iterations   : 3                         29-May-2023 10:35:27
+    number of reformations : 3                         29-May-2023 10:35:27
+------- converged at time : 0.4                        29-May-2023 10:35:27
+    number of iterations   : 3                         29-May-2023 10:35:27
+    number of reformations : 3                         29-May-2023 10:35:27
+------- converged at time : 0.466667                   29-May-2023 10:35:27
+    number of iterations   : 3                         29-May-2023 10:35:27
+    number of reformations : 3                         29-May-2023 10:35:27
+------- converged at time : 0.533333                   29-May-2023 10:35:27
+    number of iterations   : 4                         29-May-2023 10:35:28
+    number of reformations : 4                         29-May-2023 10:35:28
+------- converged at time : 0.6                        29-May-2023 10:35:28
+    number of iterations   : 4                         29-May-2023 10:35:28
+    number of reformations : 4                         29-May-2023 10:35:28
+------- converged at time : 0.666667                   29-May-2023 10:35:28
+    number of iterations   : 11                        29-May-2023 10:35:30
+    number of reformations : 11                        29-May-2023 10:35:30
+------- converged at time : 0.711111                   29-May-2023 10:35:30
+    number of iterations   : 5                         29-May-2023 10:35:31
+    number of reformations : 5                         29-May-2023 10:35:31
+------- converged at time : 0.753518                   29-May-2023 10:35:31
+    number of iterations   : 4                         29-May-2023 10:35:32
+    number of reformations : 4                         29-May-2023 10:35:32
+------- converged at time : 0.800777                   29-May-2023 10:35:32
+    number of iterations   : 4                         29-May-2023 10:35:32
+    number of reformations : 4                         29-May-2023 10:35:32
+------- converged at time : 0.851918                   29-May-2023 10:35:32
+    number of iterations   : 4                         29-May-2023 10:35:32
+    number of reformations : 4                         29-May-2023 10:35:32
+------- converged at time : 0.906164                   29-May-2023 10:35:32
+    number of iterations   : 4                         29-May-2023 10:35:32
+    number of reformations : 4                         29-May-2023 10:35:32
+------- converged at time : 0.962894                   29-May-2023 10:35:32
+    number of iterations   : 4                         29-May-2023 10:35:33
+    number of reformations : 4                         29-May-2023 10:35:33
+------- converged at time : 1                          29-May-2023 10:35:33
+ Elapsed time : 0:00:08                                29-May-2023 10:35:33
  N O R M A L   T E R M I N A T I O N
-# Done                                                 21-Apr-2023 11:27:41
+# Done                                                 29-May-2023 10:35:33
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-</pre><img width="100%" height="auto" vspace="5" hspace="5" src="DEMO_febio_0052_breast_gap_close_01_08.jpg" alt=""> <h2 id="29">Import FEBio results</h2><pre class="codeinput"><span class="keyword">if</span> runFlag==1 <span class="comment">%i.e. a succesful run</span>
+</pre><h2 id="29">Import FEBio results</h2><pre class="codeinput"><span class="keyword">if</span> runFlag==1 <span class="comment">%i.e. a succesful run</span>
 </pre><pre class="codeinput">    <span class="comment">% Importing nodal displacements from a log file</span>
     [time_mat, N_disp_mat,~]=importFEBio_logfile(fullfile(savePath,febioLogFileName_disp)); <span class="comment">%Nodal displacements</span>
     time_mat=[0; time_mat(:)]; <span class="comment">%Time</span>
@@ -625,8 +629,8 @@ FEBio path: /home/kevin/FEBioStudio2/bin/febio4
     <span class="keyword">end</span>
     anim8(hf,animStruct); <span class="comment">%Initiate animation feature</span>
     drawnow;
-</pre><img width="100%" height="auto" vspace="5" hspace="5" src="DEMO_febio_0052_breast_gap_close_01_09.jpg" alt=""> <pre class="codeinput"><span class="keyword">end</span>
-</pre><p><img vspace="5" hspace="5" src="gibbVerySmall.gif" alt=""> </p><p><i><b>GIBBON</b></i> <a href="www.gibboncode.org">www.gibboncode.org</a></p><p><i>Kevin Mattheus Moerman</i>, <a href="gibbon.toolbox@gmail.com">gibbon.toolbox@gmail.com</a></p><p><i><b>GIBBON footer text</b></i></p><p>License: <a href="https://github.com/gibbonCode/GIBBON/blob/master/LICENSE">https://github.com/gibbonCode/GIBBON/blob/master/LICENSE</a></p><p>GIBBON: The Geometry and Image-based Bioengineering add-On. A toolbox for image segmentation, image-based modeling, meshing, and finite element analysis.</p><p>Copyright (C) 2006-2021 Kevin Mattheus Moerman and the GIBBON contributors</p><p>This program is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.</p><p>This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for more details.</p><p>You should have received a copy of the GNU General Public License along with this program.  If not, see <a href="http://www.gnu.org/licenses/">http://www.gnu.org/licenses/</a>.</p><p><i><b>GIBBON footer text</b></i></p><p>License: <a href="https://github.com/gibbonCode/GIBBON/blob/master/LICENSE">https://github.com/gibbonCode/GIBBON/blob/master/LICENSE</a></p><p>GIBBON: The Geometry and Image-based Bioengineering add-On. A toolbox for image segmentation, image-based modeling, meshing, and finite element analysis.</p><p>Copyright (C) 2006-2022 Kevin Mattheus Moerman and the GIBBON contributors</p><p>This program is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.</p><p>This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for more details.</p><p>You should have received a copy of the GNU General Public License along with this program.  If not, see <a href="http://www.gnu.org/licenses/">http://www.gnu.org/licenses/</a>.</p><p class="footer"><br><a href="https://www.mathworks.com/products/matlab/">Published with MATLAB&reg; R2022b</a><br></p></div><!--
+</pre><img width="100%" height="auto" vspace="5" hspace="5" src="DEMO_febio_0052_breast_gap_close_01_08.jpg" alt=""> <pre class="codeinput"><span class="keyword">end</span>
+</pre><p><img vspace="5" hspace="5" src="gibbVerySmall.gif" alt=""> </p><p><i><b>GIBBON</b></i> <a href="www.gibboncode.org">www.gibboncode.org</a></p><p><i>Kevin Mattheus Moerman</i>, <a href="gibbon.toolbox@gmail.com">gibbon.toolbox@gmail.com</a></p><p><i><b>GIBBON footer text</b></i></p><p>License: <a href="https://github.com/gibbonCode/GIBBON/blob/master/LICENSE">https://github.com/gibbonCode/GIBBON/blob/master/LICENSE</a></p><p>GIBBON: The Geometry and Image-based Bioengineering add-On. A toolbox for image segmentation, image-based modeling, meshing, and finite element analysis.</p><p>Copyright (C) 2006-2021 Kevin Mattheus Moerman and the GIBBON contributors</p><p>This program is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.</p><p>This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for more details.</p><p>You should have received a copy of the GNU General Public License along with this program.  If not, see <a href="http://www.gnu.org/licenses/">http://www.gnu.org/licenses/</a>.</p><p><i><b>GIBBON footer text</b></i></p><p>License: <a href="https://github.com/gibbonCode/GIBBON/blob/master/LICENSE">https://github.com/gibbonCode/GIBBON/blob/master/LICENSE</a></p><p>GIBBON: The Geometry and Image-based Bioengineering add-On. A toolbox for image segmentation, image-based modeling, meshing, and finite element analysis.</p><p>Copyright (C) 2006-2023 Kevin Mattheus Moerman and the GIBBON contributors</p><p>This program is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.</p><p>This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for more details.</p><p>You should have received a copy of the GNU General Public License along with this program.  If not, see <a href="http://www.gnu.org/licenses/">http://www.gnu.org/licenses/</a>.</p><p class="footer"><br><a href="https://www.mathworks.com/products/matlab/">Published with MATLAB&reg; R2023a</a><br></p></div><!--
 ##### SOURCE BEGIN #####
 %% DEMO_febio_0052_breast_gap_close_01.m
 % Below is a demonstration for:
@@ -1043,7 +1047,7 @@ for q=1:1:3
     bcDataName=['nodal_disp_',dofs(q)];
     febio_spec.MeshData.NodeData{q}.ATTR.name=bcDataName;
     febio_spec.MeshData.NodeData{q}.ATTR.node_set=nodeSetName2;
-    febio_spec.MeshData.NodeData{q}.ATTR.datatype='scalar';
+    febio_spec.MeshData.NodeData{q}.ATTR.data_type='scalar';
     febio_spec.MeshData.NodeData{q}.node.ATTR.lid=(1:1:numel(bcPrescribeList))';
     febio_spec.MeshData.NodeData{q}.node.VAL=u(:,q);
 end
@@ -1221,7 +1225,7 @@ end
 % image segmentation, image-based modeling, meshing, and finite element
 % analysis.
 % 
-% Copyright (C) 2006-2022 Kevin Mattheus Moerman and the GIBBON contributors
+% Copyright (C) 2006-2023 Kevin Mattheus Moerman and the GIBBON contributors
 % 
 % This program is free software: you can redistribute it and/or modify
 % it under the terms of the GNU General Public License as published by

@@ -474,7 +474,7 @@ if runFlag==1 %i.e. a succesful run
     % Create basic view and store graphics handle to initiate animation
     hf=cFigure; %Open figure
     gtitle([febioFebFileNamePart,': Press play to animate']);
-    title('$\sigma_{3}$ [MPa]','Interpreter','Latex')
+    title('Contact pressure [MPa]','Interpreter','Latex')
     gpatch(Fb1,V_DEF(:,:,end),'w','none',0.1);
     hp=gpatch(F_contact_primary,V_DEF(:,:,end),F_primary_contact_pressure_mat(:,:,1),'k',1); %Add graphics object to animate        
         
