@@ -18,7 +18,10 @@ clear; close all; clc;
 fontSize=20;
 faceAlpha1=0.8;
 
-%% CREATING A MESHED BOX
+%% Example 1: Studing dihedral angles for a basic hexahedral mesh
+
+%%
+% Create mesh for a box
 boxDim=2*ones(1,3);
 boxEl=3*ones(1,3);
 [meshStruct]=hexMeshBox(boxDim,boxEl);
@@ -26,9 +29,9 @@ E=meshStruct.E;
 V=meshStruct.V;
 
 %%
+% Deformed into a sheared cube
 d=eye(3,3);
 d(1,2)=1;
-
 V=V*d;
 
 %%
@@ -42,6 +45,7 @@ A_min=min(A,[],2);
 
 [F,A_max_F]=element2patch(E,A_max);
 [~,A_min_F]=element2patch(E,A_min);
+
 %%
 
 cFigure; 
@@ -59,6 +63,64 @@ axisGeom; camlight headlight;
 colormap(gca,gjet(25)); colorbar; 
 clim([min(A(:)) max(A(:))]);
 gdrawnow; 
+
+%% Example 2: 
+
+% Creating a  heme-sphere hexahedral mesh
+
+%Control settings
+optionStruct.sphereRadius=1;
+optionStruct.coreRadius=optionStruct.sphereRadius/2;
+optionStruct.numElementsMantel=6;
+optionStruct.numElementsCore=optionStruct.numElementsMantel*2;
+optionStruct.outputStructType=2;
+optionStruct.makeHollow=0;
+optionStruct.cParSmooth.n=25;
+
+
+% %Creating sphere
+[meshStruct]=hexMeshHemiSphere(optionStruct);
+
+% Access model element and patch data
+Fb=meshStruct.facesBoundary;
+Cb=meshStruct.boundaryMarker;
+V=meshStruct.nodes;
+E=meshStruct.elements;
+
+%%
+
+[A,EE,AE]=dihedralAngles(E,V,'hex8');
+A=180*(A./pi);
+AE=180*(AE./pi);
+
+A_max=max(A,[],2);
+A_min=min(A,[],2);
+
+%%
+% Visualize mesh
+
+hFig=cFigure; hold on; 
+title('$A_{min}$','FontSize',fontSize,'Interpreter','latex');
+
+gpatch(Fb,V,'kw','none',0.25); %Boundary as transparent
+
+optionStruct.hFig=hFig;
+meshStruct.elementData=A_min;
+meshView(meshStruct,optionStruct);
+axisGeom(gca,fontSize);
+gdrawnow; 
+
+
+hFig=cFigure; hold on; 
+title('$A_{max}$','FontSize',fontSize,'Interpreter','latex');
+gpatch(Fb,V,'kw','none',0.25);
+
+optionStruct.hFig=hFig;
+meshStruct.elementData=A_max;
+meshView(meshStruct,optionStruct);
+
+axisGeom(gca,fontSize);
+drawnow; 
 
 %%
 % 
