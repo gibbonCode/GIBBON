@@ -101,7 +101,7 @@ cFigure; hold on;
 title('Deformed triangulation and cell mesh');
 hp1=gpatch(Fs,Vs,'w','k',1,edgeWidth);
 hp2=gpatch(Fd,Vd,'bw','b',0.25,edgeWidth);
-legend([hp1 hp2],{'Input triangulation','Cell mesh'},'Location','NorthOutside');
+% legend([hp1 hp2],{'Input triangulation','Cell mesh'},'Location','NorthOutside');
 axis equal tight;
 set(gca,'FontSize',fontSize)
 drawnow;
@@ -135,7 +135,7 @@ cFigure; hold on;
 title('Undeformed geometry'); 
 hp1=gpatch(Fs,Vs,'w','k',1,edgeWidth);
 hp2=gpatch(Fds,Vds,'bw','b',0.5,edgeWidth);
-legend([hp1 hp2],{'Triangulation','Shrunk cell mesh'},'Location','NorthOutside');
+% legend([hp1 hp2],{'Triangulation','Shrunk cell mesh'},'Location','NorthOutside');
 axis equal tight;
 set(gca,'FontSize',fontSize)
 drawnow;

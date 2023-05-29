@@ -37,10 +37,11 @@ plotColors=gjet(4);
 %% Control parameters
 
 %Ray tracing settings
-rayTraceOptionStruct.eps      = 1e-6;
-rayTraceOptionStruct.triangle = 'two sided';
-rayTraceOptionStruct.ray      = 'ray';
-rayTraceOptionStruct.border   = 'normal';
+rayTraceOptionStruct.tolEps         = 1e-6;
+rayTraceOptionStruct.triSide        = -1;
+rayTraceOptionStruct.rayType        = 'line';
+rayTraceOptionStruct.exclusionType  = 'inclusive';
+rayTraceOptionStruct.paired         = 0;
 
 nErode=2; %Number of erosion steps
 
@@ -62,7 +63,7 @@ switch testCase
         [Fs,Vs]=graphicsModels(5);
         Vs=Vs*1000;
         [Fs,Vs]=triSurfRemoveThreeConnect(Fs,Vs);
-        voxelSize=3; % The output image voxel size.
+        voxelSize=2; % The output image voxel size.
     case 3
         [Fs,Vs]=stanford_bunny;
         voxelSize=2;
@@ -136,7 +137,7 @@ E_hex=indFix(E_hex);
 V_hex=V_hex+imOrigin(ones(size(V_hex,1),1),:);
 
 %Get mesh boundary faces
-indBoundaryFaces=tesBoundary(F_hex,V_hex);
+indBoundaryFaces=tesBoundary(F_hex);
 Fb=F_hex(indBoundaryFaces,:);
 indBoundaryNodes=unique(Fb(:));
 
@@ -150,13 +151,13 @@ cFigure;
 title('Visualizing pillowing process','FontSize',fontSize);
 hold on;
 
-gpatch(Fb,V_hex,'rw','k',1,2);
-hp=gpatch(Fq,Vq,'gw','k',1,2);
+gpatch(Fb,V_hex,'gw','k',1,1);
+hp=gpatch(Fq,Vq,'rw','k',0.75,1);
 gpatch(Fs,Vs,'w','none',0.25);
-
+% patchNormPlot(Fq,Vq)
+% patchNormPlot(Fs,Vs)
 axisGeom(gca,fontSize); camlight headlight
 gdrawnow;
-
 
 %% Use ray-tracing and mesh pillowing to form outer mesh layer
 
@@ -178,7 +179,7 @@ for q=1:1:numStepsRayUpdate
     [~,~,Nq]=patchNormal(Fq,Vqr);
     [Nq]=patchSmooth(Fq,Nq,[],cParNorm);
     
-    [Vqr]=rayTraceOut(Vqr,-Nq,Fs,Vs,rayTraceOptionStruct,voxelSize*4);
+    [Vqr]=rayTraceOut(Vqr-((voxelSize/100)*Nq),Nq,Fs,Vs,rayTraceOptionStruct,dMax);
        
     set(hp,'Vertices',Vqr);
     drawnow;
@@ -222,6 +223,38 @@ meshView(meshStruct,meshViewOptionStruct);
 
 %%
 
+
+[A,EE,AE]=dihedralAngles(E,V,'hex8');
+A=180*(A./pi);
+AE=180*(AE./pi);
+
+A_max=max(A,[],2);
+A_min=min(A,[],2);
+
+[F,A_max_F]=element2patch(E,A_max);
+[~,A_min_F]=element2patch(E,A_min);
+
+%%
+
+cFigure; 
+subplot(1,2,1); hold on;
+title(['Max dihedral angle ',num2str(max(A_max_F))])
+gpatch(F,V,A_max_F,'k',1,1);
+axisGeom; camlight headlight; 
+colormap(gca,gjet(25)); colorbar; 
+clim([min(A(:)) max(A(:))]);
+
+subplot(1,2,2); hold on;
+title(['Min dihedral angle ',num2str(min(A_min_F))])
+gpatch(F,V,A_min_F,'k',1,1);
+axisGeom; camlight headlight; 
+colormap(gca,gjet(25)); colorbar; 
+clim([min(A(:)) max(A(:))]);
+gdrawnow; 
+
+
+%%
+
 function [V1r]=rayTraceOut(V1,N1,F2,V2,optStruct,dMax)
 
 V1r=V1;
@@ -230,17 +263,14 @@ hw=waitbar(0,['Ray tracing...',100,'%']);
 for q=1:1:numSteps
     v1=V1(q,:);
     n1=N1(q,:);
-    [V_intersect,L_intersect,~] = triangleRayIntersection(v1(ones(size(F2,1),1),:),n1(ones(size(F2,1),1),:),V2,F2,optStruct);
-    V_intersect=V_intersect(L_intersect,:);
+    [V_intersect,~,d_intersect]=triSurfRayTrace(v1,dMax*n1,F2,V2,optStruct);
     if ~isempty(V_intersect)
-        d=distND(v1,V_intersect);
-        [~,indMin]=min(d,[],2);
+        d=abs(d_intersect);
+        [~,indMin]=min(d);
         V_now=V_intersect(indMin,:);
-        dNow=sqrt(sum((V1r(q,:)-V_now).^2,2));
-        if dNow<=dMax
-            V1r(q,:)=V_now;
-        end
+        V1r(q,:)=V_now;
     end
+
     waitbar(q/numSteps,hw,['Ray tracing...',num2str(round(100.*q/numSteps)),'%']);
 end
 close(hw);
