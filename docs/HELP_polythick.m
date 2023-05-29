@@ -5,12 +5,65 @@
 clear; close all; clc;
 
 %% Syntax
-% |[varargout]=polythick(varargin);|
+% |[Xu Yu Xl Yl]=polythick(x,y,t,nSteps,resampleFactor);|
 
 %% Description 
-% UNDOCUMENTED 
+% This function thickens a polygon defined by x, y. It generates the upper
+% (Xu, Yu) and lower (Xl, Yl) coordinates depending on the thickness t. 
+%
+% The slope is calculated at each coordinate and points are copied upwards
+% and downwards (thickening) orthogonal to the local slope.
+
 %% Examples 
 % 
+
+%%
+% Plot settings
+markerSize=15;
+lineWidth=2; 
+fontSize=25; 
+
+%% Example 1: Thickening a curve
+
+x=linspace(0,2*pi,25)';
+y=sin(x);
+t=0.25;
+nSteps=5;
+resampleFactor=1; 
+
+[xu,yu,xl,yl]=polythick(x,y,t,nSteps,resampleFactor);
+
+%%
+
+cFigure;  hold on; 
+plot(x,y,'g.-','MarkerSize',markerSize,'LineWidth',lineWidth);
+plot(xu,yu,'r.-','MarkerSize',markerSize,'LineWidth',lineWidth);
+plot(xl,yl,'b.-','MarkerSize',markerSize,'LineWidth',lineWidth);
+axis equal; axis tight; grid on; box on; 
+set(gca,'FontSize',fontSize)
+drawnow; 
+
+%% Example 2: Thickening a curve with curvature
+
+x=linspace(0,2*pi,25)';
+y=5*sin(x);
+t=0.25;
+nSteps=5;
+resampleFactor=5; %Upsample to sample high curvature region better
+interpMethod='pchip';
+
+[xu,yu,xl,yl]=polythick(x,y,t,nSteps,resampleFactor,interpMethod);
+
+%%
+
+cFigure;  hold on; 
+plot(x,y,'g.-','MarkerSize',markerSize,'LineWidth',lineWidth);
+plot(xu,yu,'r.-','MarkerSize',markerSize,'LineWidth',lineWidth);
+plot(xl,yl,'b.-','MarkerSize',markerSize,'LineWidth',lineWidth);
+axis equal; axis tight; grid on; box on; 
+set(gca,'FontSize',fontSize)
+drawnow; 
+
 %%
 % 
 % <<gibbVerySmall.gif>>

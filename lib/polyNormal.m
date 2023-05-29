@@ -1,6 +1,6 @@
-function [varargout]=polyNormal(V_poly)
+function [varargout]=polyNormal(varargin)
 
-% [N,Vn,Nv]=polyNormal(V_poly)
+% [N,VN]=polyNormal(V_poly)
 % ------------------------------------------------------------------------
 % Normals directions are derived based on cross product of curve segments
 % with the outware z-direction. A horizontal and clockwise curve segment
@@ -13,51 +13,96 @@ function [varargout]=polyNormal(V_poly)
 % 2017/03/16 Created
 %------------------------------------------------------------------------
 
+%% Parse input
+
+defaultOptionStruct.closeLoopOpt=false;
+defaultOptionStruct.type='vertex'; % 'vertex'/'node' or 'segment'/'edge' 
+defaultOptionStruct.zDir=[0 0 1];
+
+switch nargin
+    case 1
+        V=varargin{1};
+        optionStruct=defaultOptionStruct;
+    case 2
+        V=varargin{1};
+        optionStruct=varargin{2};
+end
+
+[optionStruct]=structComplete(optionStruct,defaultOptionStruct,1);
+
+zDir=vecnormalize(optionStruct.zDir);
+if size(zDir,1)<size(V,1)
+    zDir=zDir(ones(size(V,1),1),:); % Extend to match V
+end
+closeLoopOpt=optionStruct.closeLoopOpt;
+typeOpt=optionStruct.type;
+
+%%
+nd=size(V,2);
+if nd==2 %Cope with 2D
+    V(:,3)=0;
+end
+
 %%
 
-zDir=[0 0 1];
-
-if size(V_poly,2)==2 %Cope with 2D
-    V_poly(:,3)=0;
+switch typeOpt
+    case {'segment','edge'}
+        if closeLoopOpt
+            V(end+1,:)=V(1,:);
+            zDir(end+1,:)=zDir(1,:);
+        end
+        U  = V(2:end,:)-V(1:end-1,:);
+        ZN = (zDir(1:end-1,:)+zDir(2:end,:))/2;
+        N  = vecnormalize(cross(ZN,U));
+        VN = (V(1:end-1,:)+V(2:end,:))/2;
+    case {'node','vertex'}
+        if closeLoopOpt                   
+            U = [V(2:end,:)-V(1:end-1,:); V(1,:)-V(end,:)];
+            U = [U(1,:)+U(end,:); (U(1:end-1,:)+U(2:end,:))]./2; %Central difference         
+        else
+            U = V(2:end,:)-V(1:end-1,:);
+            U = [U(1,:); (U(1:end-1,:)+U(2:end,:))/2; U(end,:)]; %Central difference         
+        end
+        N = cross(zDir,U);
+        N = vecnormalize(N);
+        VN=V;
 end
 
-[Vn,U]=polyDerivative(V_poly,1);
-N=cross(zDir(ones(size(U,1),1),:),U);
-N=vecnormalize(N);
+if nd==2 %Remove 3rd dimension from vectors and coordinates for 2D input
+    N=N(:,[1 2]);
+    VN=VN(:,[1 2]);
+end
 
-varargout{1}=N(:,[1 2]); 
-varargout{2}=Vn(:,[1 2]); 
-
-if nargout==3
-    [~,U]=polyDerivative(V_poly,3);
-    Nv=cross(zDir(ones(size(U,1),1),:),U);
-    Nv=vecnormalize(Nv);
-    varargout{3}=Nv(:,[1 2]);
+%% Collect output
+varargout{1}=N; 
+if nargout==2
+    varargout{2}=VN;
 end
 
 end
 
-function [V,U]=polyDerivative(Vg,dirOpt)
-
-switch dirOpt
-    case 1 %Forward
-        V=(Vg(1:end-1,:)+Vg(2:end,:))/2;
-        U=diff(Vg,1,1);        
-    case 2 %Backward
-        V=(Vg(1:end-1,:)+Vg(2:end,:))/2;
-        U=flipud(diff(flipud(Vg),1,1));        
-    case 3 %Central
-        V=Vg;
-        Uf=[diff(Vg,1,1); nan(1,size(Vg,2))];
-        Ub=-[nan(1,size(Vg,2)); flipud(diff(flipud(Vg),1,1))];
-        U=Uf;
-        U(:,:,2)=Ub;
-        U=gnanmean(U,3);        
-end
-U=vecnormalize(U);
-
-end
+% function [V,U]=polyDerivative(Vg,dirOpt)
+% 
+% switch dirOpt
+%     case 1 %Forward
+%         V=(Vg(1:end-1,:)+Vg(2:end,:))/2;
+%         U=diff(Vg,1,1);        
+%     case 2 %Backward
+%         V=(Vg(1:end-1,:)+Vg(2:end,:))/2;
+%         U=flipud(diff(flipud(Vg),1,1));        
+%     case 3 %Central
+%         V=Vg;
+%         Uf=[diff(Vg,1,1); nan(1,size(Vg,2))];
+%         Ub=-[nan(1,size(Vg,2)); flipud(diff(flipud(Vg),1,1))];
+%         U=Uf;
+%         U(:,:,2)=Ub;
+%         U=gnanmean(U,3);        
+% end
+% U=vecnormalize(U);
+% 
+% end
  
+
 %% 
 % _*GIBBON footer text*_ 
 % 

@@ -25,37 +25,57 @@ switch nargin
         t=[];
         nSteps=[];
         resampleFactor=3;
+        interpMethod='pchip';
     case 3
         x=varargin{1};
         y=varargin{2};
         t=varargin{3};
         nSteps=[];
         resampleFactor=3;
+        interpMethod='pchip';
     case 4
         x=varargin{1};
         y=varargin{2};
         t=varargin{3};
         nSteps=varargin{4};
         resampleFactor=3;
+        interpMethod='pchip';
     case 5
         x=varargin{1};
         y=varargin{2};
         t=varargin{3};
         nSteps=varargin{4};
         resampleFactor=varargin{5};
+        interpMethod='pchip';
+    case 6
+        x=varargin{1};
+        y=varargin{2};
+        t=varargin{3};
+        nSteps=varargin{4};
+        resampleFactor=varargin{5};
+        interpMethod=varargin{6};
 end
 
 %%
+
+% Set up curve
 V_curve=[x(:) y(:)];
 V_curve(:,3)=0;
 
-D=sqrt(sum(diff(V_curve,1,1).^2,2));
+% Compute potentially missing quantities
 if isempty(t)
+    D=sqrt(sum(diff(V_curve,1,1).^2,2));
     t=mean(D);
 end
 
 if isempty(nSteps)
+    D=sqrt(sum(diff(V_curve,1,1).^2,2));
     nSteps=ceil(4*(t./mean(D)));
+end
+
+%Resample curve if needed
+if resampleFactor>1
+    [V_curve] = evenlySampleCurve(V_curve,size(V_curve,1)*resampleFactor,interpMethod,0);    
 end
 
 %%
@@ -63,21 +83,15 @@ V_curve1=V_curve;
 V_curve2=V_curve;
 
 for q=1:1:nSteps
-
-    [~,~,N]=polyNormal(V_curve1);
-    N(:,3)=0;
+    N=polyNormal(V_curve1);    
     V_curve1=V_curve1-(t/2/nSteps)*N;    
     
-    [~,~,N]=polyNormal(V_curve2);
-    N(:,3)=0;
+    N=polyNormal(V_curve2);    
     V_curve2=V_curve2+(t/2/nSteps)*N;    
     
-    [V_curve1] = evenlySampleCurve(V_curve1,size(V_curve,1)*resampleFactor,'linear',0);
-    [V_curve2] = evenlySampleCurve(V_curve2,size(V_curve,1)*resampleFactor,'linear',0);
+    [V_curve1] = evenlySampleCurve(V_curve1,size(V_curve,1),interpMethod,0);
+    [V_curve2] = evenlySampleCurve(V_curve2,size(V_curve,1),interpMethod,0);
 end
-
-[V_curve1] = evenlySampleCurve(V_curve1,size(V_curve,1),'linear',0);
-[V_curve2] = evenlySampleCurve(V_curve2,size(V_curve,1),'linear',0);
 
 X1=V_curve1(:,1);
 Y1=V_curve1(:,2);

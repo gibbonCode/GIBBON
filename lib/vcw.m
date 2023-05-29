@@ -64,6 +64,8 @@ function [varargout]=vcw(varargin)
 % versions
 % 2020/05/11 Removed need for global variable
 % 2020/05/11 Fixed bug in scrolling
+% 2023/05/29 Added linked mouse based view manipulation using space key,
+% removed ALT based linking. 
 %
 % TO DO: 1) Improved handling of colorbars. Currently requires colorbar
 % locations to be set to 'manual' for vcw. However this causes the figure
@@ -162,7 +164,8 @@ if isempty(hp) %If vcw button is not present create one and wait for key/button 
     hf.UserData.vcw.buttonHandle=hp; %The vcw button handle
     hf.UserData.vcw.colorbarHandles=[];
     hf.UserData.vcw.colorbarLocSet={};
-    
+    hf.UserData.vcw.linkedOn=-1;
+
     %% Wait for start using key-press
     
     set(hf,'KeyPressFcn', {@keyPress_wait,buttonOpt,hp,hf},'BusyAction','cancel');
@@ -305,7 +308,8 @@ set(hf, 'WindowButtonDownFcn', {@mousedown, {str2func(['vcw_' buttonOpt{1}]), st
 end
 
 %%
-function keypress(src, eventData,buttonOpt,hp,hf)
+
+function keypress(~, eventData,buttonOpt,hp,hf)
 
 cax = overobj2('axes');
 if isempty(cax)
@@ -328,97 +332,29 @@ if ismember('control', eventData.Modifier)
     step = step * 4; %Increase speed
 end
 
-mnemOff=1;
-if ismember('alt', eventData.Modifier)
-    linkedOn=1;
-    % Try to turn off menu Mnemonics
-    try
-        warning off; %Stop jframe warning
-        jFrame = get(handle(hf),'JavaFrame');
-        jMenuBar=jFrame.fHG2Client.getMenuBar;
-        for q=0:1:jMenuBar.getComponentCount-1
-            jComp=jMenuBar.getComponent(q);
-            jComp.setMnemonic(' ');
-        end
-        mnemOff=1;
-        warning on;
-    catch
-        %Remove toolbar when ALT is pressed (QUICK FIX)
-        mnemOff=0;
-        set(hf,'MenuBar','none');
-        t = uitoolbar;
-        set(t,'Tag','emptyBar_vcw');
-    end
-else
-    linkedOn=0;
-end
+% Check for linked view option
+linkedOn=hf.UserData.vcw.linkedOn;
 
 % Key input options
 switch eventData.Key
+    case 'space'
+        hf.UserData.vcw.linkedOn=hf.UserData.vcw.linkedOn*-1; %Invert sign
     case 'leftarrow' % Pan left
-        if linkedOn==1
-            for h = findobj(hf, 'Type', 'axes', '-depth', 1)'
-                vcw_pan([], [step 0], h, hf);
-            end
-        else
-            vcw_pan([], [step 0], cax, hf);
-        end
+        vcw_pan([], [step 0], cax, hf);
     case 'rightarrow' % Pan right
-        if linkedOn==1
-            for h = findobj(hf, 'Type', 'axes', '-depth', 1)'
-                vcw_pan([], [-step 0], h, hf);
-            end
-        else
-            vcw_pan([], [-step 0], cax, hf);
-        end
+        vcw_pan([], [-step 0], cax, hf);
     case 'downarrow' % Pan down
-        if linkedOn==1
-            for h = findobj(hf, 'Type', 'axes', '-depth', 1)'
-                vcw_pan([], [0 step], h, hf);
-            end
-        else
-            vcw_pan([], [0 step], cax, hf);
-        end
+        vcw_pan([], [0 step], cax, hf);
     case 'uparrow' % Pan up
-        if linkedOn==1
-            for h = findobj(hf, 'Type', 'axes', '-depth', 1)'
-                vcw_pan([], [0 -step], h, hf);
-            end
-        else
-            vcw_pan([], [0 -step], cax, hf);
-        end
+        vcw_pan([], [0 -step], cax, hf);
     case 'x' % Rotate around x
-        if linkedOn==1
-            for h = findobj(hf, 'Type', 'axes', '-depth', 1)'
-                vcw_rot([], [0 step], h, hf);
-            end
-        else
-            vcw_rot([], [0 step], cax, hf);
-        end
+        vcw_rot([], [0 step], cax, hf);
     case 'y' % Rotate around y
-        if linkedOn==1
-            for h = findobj(hf, 'Type', 'axes', '-depth', 1)'
-                vcw_rot([], [step 0], h, hf);
-            end
-        else
-            vcw_rot([], [step 0], cax, hf);
-        end
+        vcw_rot([], [step 0], cax, hf);
     case 'z' % Rotate around z
-        if linkedOn==1
-            for h = findobj(hf, 'Type', 'axes', '-depth', 1)'
-                vcw_rotz([], [0 step], h, hf);
-            end
-        else
-            vcw_rotz([], [0 step], cax, hf);
-        end
+        vcw_rotz([], [0 step], cax, hf);
     case 'm' % Magnify/zoom (positive or negative)
-        if linkedOn==1
-            for h = findobj(hf, 'Type', 'axes', '-depth', 1)'
-                vcw_zoom([], [0 -step],h, hf);
-            end
-        else
-            vcw_zoom([], [0 -step], cax, hf);
-        end
+        vcw_zoom([], [0 -step], cax, hf);
     case 't' % top view
         if linkedOn==1
             for h = findobj(hf, 'Type', 'axes', '-depth', 1)'
@@ -515,30 +451,27 @@ switch eventData.Key
             'm = Zoom/magnify',...
             'Hold down SHIFT to change direction of change for key input based rotation/pan/zoom',...
             'Hold down CTRL to use x4 speed of change  for key input based rotation/pan/zoom',...
-            'Hold down ALT to link manipulations for all figure axes for key input based rotation/pan/zoom',...
+            'space = switches on/off linked view mode',...
             'f,h,t,b,l,r = Set front, hind, top, bottom, left, or right view respectively',...
+            '3 = 3D isometric view 1',...
+            '4 = 3D isometric view 2',...
             's = Store current view states as default (return to default using d)',...
             'd = Restore/reset to default view',...
             'v = activate/deactivate vcw mode',...
             'i = Display help information',...
             'The key inputs and mouse scroll work in the axis defined by mouse pointer location (overobj)',...
             'The mouse inputs (other than scroll) work in current axis (e.g. gca) irrespective of point location',...
+            'v = toggle vcw widget on/off',...
             '------------------------------------------------------------------------',...
             };
         helpButton = questdlg(msgText,'Help for vcw','OK','OK');
     case 'v' % Quit vcw mode
+        hf.UserData.vcw.linkedOn=-1; %Turn linking off again
         quit_vcw([],[],{hf,buttonOpt,hp});
     otherwise
         % quit_vcw(hf,buttonOpt,hp);
 end
 
-if mnemOff==0
-    set(hf,'MenuBar','figure');
-    h1 = findobj(hf,'Tag','emptyBar_vcw');
-    if ~isempty(h1)
-        delete(h1);
-    end
-end
 end
 
 %%
@@ -552,6 +485,9 @@ if isempty(cax)
     return;
 end
 
+% Check for linked view option
+linkedOn=hf.UserData.vcw.linkedOn;
+
 % checkAxisLimits(hf);
 
 switch get(hf, 'SelectionType')
@@ -560,8 +496,16 @@ switch get(hf, 'SelectionType')
     case 'alt' % Right hand button
         method = funcs{3};
     case 'open' % Double click
-        caxUserDataStruct=cax.UserData;
-        camview(cax,caxUserDataStruct.defaultView);
+        caxUserDataStructCax=cax.UserData;        
+        if linkedOn==1
+            for h = findobj(hf, 'Type', 'axes', '-depth', 1)'    
+                caxUserDataStruct=h.UserData; 
+                camview(h,caxUserDataStruct.defaultView);
+            end
+        else
+            camview(cax,caxUserDataStructCax.defaultView);
+        end
+
         return;
     otherwise
         method = funcs{1};
@@ -676,21 +620,38 @@ end
 
 % Figure manipulation functions
 function vcw_rot(s, d, cax, hf)
+linkedOn=hf.UserData.vcw.linkedOn;
 d = check_vals(s,d,hf);
 try
     % Rotate XYt
-    camorbit(cax, d(1), d(2), 'camera', [0 0 1]);
+    if linkedOn>0
+        for h = findobj(hf, 'Type', 'axes', '-depth', 1)'            
+            camorbit(h, d(1), d(2), 'camera', [0 0 1]);
+        end
+    else
+        camorbit(cax, d(1), d(2), 'camera', [0 0 1]);
+    end
+    axes(cax)
 catch
     % Error, so release mouse down
     mouseup([],[],hf);
 end
+
 end
 
 function vcw_rotz(s, d, cax, hf)
+linkedOn=hf.UserData.vcw.linkedOn;
 d = check_vals(s,d,hf);
 try
     % Rotate Z
-    camroll(cax, d(2));
+    if linkedOn>0
+        for h = findobj(hf, 'Type', 'axes', '-depth', 1)'            
+            camroll(h, d(2));
+        end
+    else
+        camroll(cax, d(2));
+    end
+    axes(cax)
 catch
     % Error, so release mouse down
     mouseup([],[],hf);
@@ -698,11 +659,19 @@ end
 end
 
 function vcw_zoom(s, d, cax, hf)
+linkedOn=hf.UserData.vcw.linkedOn;
 d = check_vals(s,d,hf);
 % Zoom
 d = (1 - 0.01 * sign(d(2))) ^ abs(d(2));
 try
-    camzoom(cax, d);
+    if linkedOn>0
+        for h = findobj(hf, 'Type', 'axes', '-depth', 1)'            
+            camzoom(h, d);
+        end
+        axes(cax)
+    else
+        camzoom(cax, d);
+    end
 catch
     % Error, so release mouse down
     mouseup([],[],hf);
@@ -710,11 +679,19 @@ end
 end
 
 function vcw_zoomz(s, d, cax, hf)
+linkedOn=hf.UserData.vcw.linkedOn;
 d = check_vals(s,d,hf);
 % Zoom by moving towards the camera
 d = (1 - 0.01 * sign(d(2))) ^ abs(d(2)) - 1;
 try
-    camdolly(cax, 0, 0, d, 'fixtarget', 'camera');
+    if linkedOn>0
+        for h = findobj(hf, 'Type', 'axes', '-depth', 1)'            
+            camdolly(h, 0, 0, d, 'fixtarget', 'camera');
+        end
+        axes(cax)
+    else
+        camdolly(cax, 0, 0, d, 'fixtarget', 'camera');
+    end
 catch
     % Error, so release mouse down
     mouseup([],[],hf);
@@ -722,10 +699,18 @@ end
 end
 
 function vcw_pan(s, d, cax, hf)
+linkedOn=hf.UserData.vcw.linkedOn;
 d = check_vals(s,d,hf);
 try
     % Pan
-    camdolly(cax, d(1), d(2), 0, 'movetarget', 'pixels');
+    if linkedOn>0
+        for h = findobj(hf, 'Type', 'axes', '-depth', 1)'            
+            camdolly(h, d(1), d(2), 0, 'movetarget', 'pixels');
+        end
+        axes(cax)
+    else
+        camdolly(cax, d(1), d(2), 0, 'movetarget', 'pixels');
+    end
 catch
     % Error, so release mouse down
     mouseup([],[],hf);
@@ -803,30 +788,6 @@ end
 
 end
 
-
-%%
-% _*GIBBON footer text*_
-%
-% License: <https://github.com/gibbonCode/GIBBON/blob/master/LICENSE>
-%
-% GIBBON: The Geometry and Image-based Bioengineering add-On. A toolbox for
-% image segmentation, image-based modeling, meshing, and finite element
-% analysis.
-%
-% Copyright (C) 2006-2020 Kevin Mattheus Moerman
-%
-% This program is free software: you can redistribute it and/or modify
-% it under the terms of the GNU General Public License as published by
-% the Free Software Foundation, either version 3 of the License, or
-% (at your option) any later version.
-%
-% This program is distributed in the hope that it will be useful,
-% but WITHOUT ANY WARRANTY; without even the implied warranty of
-% MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-% GNU General Public License for more details.
-%
-% You should have received a copy of the GNU General Public License
-% along with this program.  If not, see <http://www.gnu.org/licenses/>.
 %% 
 % _*GIBBON footer text*_ 
 % 

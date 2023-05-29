@@ -52,6 +52,11 @@ numHeight=optionStruct.numHeight;
 meshType=optionStruct.meshType;
 closeOpt=optionStruct.closeOpt;
 
+if numHeight<2
+    warning('numHeight invalid (<2), using the required minimum of 2 instead');
+    numHeight=2; %override 
+end
+
 %% Create cylinder
 
 t=linspace(0,2*pi,numRadial+1);
