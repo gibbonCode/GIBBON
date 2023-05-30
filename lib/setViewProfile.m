@@ -2,9 +2,12 @@ function setViewProfile(profileName)
 
 % function setViewProfile(profileName)
 % -----------------------------------------------------------------------
-% This function sets the vcw profile
+% This function sets the view profile used by vcw. 
 % 
-% -----------------------------------------------------------------------
+% See also: getViewProfile, vcw
+% 
+% 2023/05/25 Created by Kevin Moerman
+% ------------------------------------------------------------------------
 
 %% Parse input
 

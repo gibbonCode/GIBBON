@@ -1,16 +1,30 @@
-%% febioStructTemplate_v2p5
-% Below is a demonstration of the features of the |febioStructTemplate_v2p5| function
+%% mrow
+% Below is a demonstration of the features of the |mrow| function
 
 %%
 clear; close all; clc;
 
 %% Syntax
-% |[outputStruct]=febioStructTemplate_v2p5(varargin);|
+% |[b]=mrow(a);|
 
 %% Description 
-% UNDOCUMENTED 
+% This function converts the input array a to a row array b. 
+
 %% Examples 
 % 
+
+%% Example 1: Converting a single column array to a single row array
+
+a=[1; 2; 3; 4] %A column
+
+b=mrow(a) %A row
+
+%% Example 2: Converting a general array to a single row array
+
+a=rand(2,3) %A column
+
+b=mrow(a) %A row
+
 %%
 % 
 % <<gibbVerySmall.gif>>

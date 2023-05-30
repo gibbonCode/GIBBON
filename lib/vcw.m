@@ -99,16 +99,8 @@ end
 %Check view profile option (button mappings)
 if ~isa(buttonOpt,'cell')
     if isempty(buttonOpt)
-        %default if settings not found
-        vcw_profile='CAD';
-    
-        %Check if profile can be updated from settings
-        settingSet=settings;
-        if hasGroup(settingSet,'GIBBON') %Prior GIBBON settings group exists -> Check for setting
-            if hasSetting(settingSet.GIBBON,'vcw_profile') %Prior vcw_profile setting exists -> Update setting
-                vcw_profile=settingSet.GIBBON.vcw_profile.PersonalValue;
-            end
-        end
+        % Get current view profile (uses default if none is set)
+        vcw_profile=getViewProfile;        
     elseif isa(buttonOpt,'char')
         vcw_profile=buttonOpt; %Assume it defines a view profile
     end

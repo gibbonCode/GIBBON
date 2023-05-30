@@ -79,8 +79,6 @@ defaultFigStruct.ScreenScale=0.85; %Figure size is based on scaled screensize
 defaultFigStruct.Clipping='off';
 defaultFigStruct.efw=1;
 defaultFigStruct.vcw=[]; %As per value set by user
-% defaultFigStruct.vcw={'pan','rot','zoom','zoom'}; %default/CAD
-% defaultFigStruct.vcw={'rot','zoom','pan','zoom'}; %touchpad
 
 switch nargin
     case 0

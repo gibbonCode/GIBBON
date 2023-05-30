@@ -1,35 +1,51 @@
-function [P]=triIncenter(F,V)
+%% triIncenter
+% Below is a demonstration of the features of the |triIncenter| function
 
-% function [P]=triIncenter(F,V)
-% ------------------------------------------------------------------------
-% Computes the triangle incenter for the triangles defined by the face
-% array F and the vertex array V. 
+%%
+clear; close all; clc;
+
+%% Syntax
+% |[P]=triIncenter(F,V);|
+
+%% Description 
+% This function computes the incentres P for the input triangulation
+% definced by the faces F and vertices V. 
+
+%% Examples 
 % 
-% Change log: 
-% 2022/04/28 Created
-% ------------------------------------------------------------------------
+
+%%
+% Plot settings for examples
+markerSize=15; 
+
+%% Example 1: Computing incenters for an exampe triangulated mesh
+%
+
+% Get vertices and faces for example geometry
+[F,V]=stanford_bunny;
+
+%%
+% Use |triIncenter| to compute the incentres
+
+[P]=triIncenter(F,V);
 
 %%
 
-try %Try to use triangulation method
-    warning('off','MATLAB:triangulation:PtsNotInTriWarnId');
-    TR=triangulation(F,V);
-    P=incenter(TR);
-    warning('on','MATLAB:triangulation:PtsNotInTriWarnId');
-catch %Use custom approach instead
-    a=sqrt( sum( (V(F(:,2),:)-V(F(:,3),:)).^2 ,2) );
-    b=sqrt( sum( (V(F(:,1),:)-V(F(:,3),:)).^2 ,2) );
-    c=sqrt( sum( (V(F(:,1),:)-V(F(:,2),:)).^2 ,2) );
+cFigure; hold on; 
+gpatch(F,V,'w','o',1,1);
+hp=plotV(P,'r.','MarkerSize',markerSize);
+legend(hp,'Triangle incenters');
+axisGeom; camlight headlight;
+gdrawnow; 
 
-    P=zeros(size(F,1),size(V,2));
-    ABC=[a b c];
-    sABC=sum(ABC,2);
-    for q=1:1:size(V,2)
-        X=V(:,q);
-        P(:,q)=sum(X(F).*ABC,2)./sABC;
-    end
-end
-
+%%
+% 
+% <<gibbVerySmall.gif>>
+% 
+% _*GIBBON*_ 
+% <www.gibboncode.org>
+% 
+% _Kevin Mattheus Moerman_, <gibbon.toolbox@gmail.com>
 %% 
 % _*GIBBON footer text*_ 
 % 

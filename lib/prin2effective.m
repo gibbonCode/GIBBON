@@ -1,11 +1,14 @@
-function D_eff=prin2effective(varargin)
+function [D_eff]=prin2effective(varargin)
 
-% function D_eff=prin2effective(D1,D2,D3,typeFlag)
+% function [D_eff]=prin2effective(D1,D2,D3,typeFlag)
 % ------------------------------------------------------------------------
-% Computes the effective/Von Mises stress or strain based on the input
-% principal components. 
+% This function computes the effective/Von Mises stress or strain based on
+% the input principal components. If typeFlag='stress' then the von Mises
+% stress is computer. If typeflag='strain' the effective strain is
+% computed. 
 % 
 % 2023/05/11: Created
+% 2023/05/30: Added documentation/description
 % ------------------------------------------------------------------------
 
 %% Parse input
