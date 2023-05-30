@@ -72,6 +72,9 @@ switch modelID
         % Thutmose. Released under creative commons license. 
         fileName=fullfile(pathName,'nefertiti_high.mat');
         meshData=load(fileName);
+    case {14,'ear_simple'}
+        fileName=fullfile(pathName,'ear_simple.mat');
+        meshData=load(fileName);
 end
 
 F=meshData.F;
