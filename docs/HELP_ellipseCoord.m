@@ -8,9 +8,43 @@ clear; close all; clc;
 % |[V]=ellipseCoord(A,t);|
 
 %% Description 
-% UNDOCUMENTED 
+% Calculates ellipse coordinates for the angles in t based on the vector A
+% which defines the centre coordinates, the radii and the angle
+% respectively. 
+
 %% Examples 
 % 
+
+%Define example input data
+
+%Angles
+t=linspace(0,2*pi);
+
+%Centre coordinates
+xc=2;
+yc=2; 
+
+%Radii
+r1=1;
+r2=2;
+
+%Orientation angle
+a=0.25*pi; 
+
+%Compose A
+A=[xc yc r1 r2 a];
+
+%Compute ellipse coordinates
+V=ellipseCoord(A,t);
+
+%%
+% Visualize ellipse
+
+cFigure; 
+plotV(V,'r.-','MarkerSize',25,'LineWidth',3);
+axisGeom; view(2);
+drawnow; 
+
 %%
 % 
 % <<gibbVerySmall.gif>>

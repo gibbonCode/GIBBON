@@ -11,16 +11,6 @@ if any(L)
     VI(L,:)=F(XI(L,:));
 end
 
-
-
-
-
-
-
-
-
-
-
  
 %% 
 % _*GIBBON footer text*_ 

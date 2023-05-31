@@ -8,9 +8,48 @@ clear; close all; clc;
 % |[D_out]=disp2strain(Ux, Uy, Uz, v, strain_type);|
 
 %% Description 
-% UNDOCUMENTED 
+% Computes deformation metrics (including strains) for the meshgrid
+% formatted displacement arrays Ux, Uy, and Uz, based on the point spacing
+% v and strain_type requested. 
+
 %% Examples 
-% 
+
+n=5;
+r=linspace(0,1,n); 
+v=mean(diff(r))*ones(1,3);
+[X1,Y1,Z1]=meshgrid(r);
+
+%Stretches
+l1=1.1; l2=0.7; l3=1.5; 
+
+%Scale/stretch coordinates
+X2=X1.*l1; Y2=Y1.*l2; Z2=Z1.*l3;
+
+%Get displacements 
+Ux=X2-X1; Uy=Y2-Y1; Uz=Z2-Z1;
+
+%%
+% Compute deformation data from displacements
+
+% 1 = Biot (linear) strain tensor
+% 2 = Hencky (logarithmic/natural) strain tensor
+% 3 = Green-Lagrange strain tensor
+strain_type=1; 
+[D_out]=disp2strain(Ux, Uy, Uz, v, strain_type)
+
+%%
+
+cFigure; 
+subplot(1,2,1); hold on; 
+plot3(X1(:),Y1(:),Z1(:),'k.','MarkerSize',25); 
+axisGeom; 
+
+subplot(1,2,2); hold on; 
+plot3(X2(:),Y2(:),Z2(:),'r.','MarkerSize',25); 
+axisGeom; 
+
+gdrawnow;
+
 %%
 % 
 % <<gibbVerySmall.gif>>

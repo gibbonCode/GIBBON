@@ -8,9 +8,20 @@ clear; close all; clc;
 % |[D]=distND(V1,V2);|
 
 %% Description 
-% UNDOCUMENTED 
+% A multidimensional Euclidian distance computation for the input vertices
+% V1 and V2. 
+
 %% Examples 
 % 
+
+%Create points sets to compare
+V1=rand(12,3); 
+V2=rand(5,3); 
+
+%%
+% Compute all distances
+D=distND(V1,V2)
+
 %%
 % 
 % <<gibbVerySmall.gif>>

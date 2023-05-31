@@ -8,9 +8,81 @@ clear; close all; clc;
 % |[I,J,K]=MRcart2im(Xc,Yc,Zc,v,OR,r,c);|
 
 %% Description 
-% UNDOCUMENTED 
+
 %% Examples 
 % 
+
+defaultFolder = fileparts(fileparts(mfilename('fullpath'))); %Set main folder
+pathName=fullfile(defaultFolder,'data','DICOM','0001_human_calf');
+loadName=fullfile(pathName,'IMDAT','IMDAT.mat');
+
+IMDAT_struct=load(loadName); %The image data structure
+G = IMDAT_struct.G; %Geometric/spatial information
+OR = G.OR; %Origin location
+v = G.v; %The voxel size
+r = G.r; %Row direction
+c = G.c; %Column direction
+M = IMDAT_struct.type_1; %The image data
+siz = IMDAT_struct.ImageSize;
+
+%%
+
+
+%%
+
+L_plot=false(size(M));
+L_plot(round(siz(1)/2),:,:)=1;
+L_plot(:,round(siz(2)/2),:)=1;
+L_plot(:,:,1)=1;
+L_plot(:,:,end)=1;
+% L_plot(:,:,round(siz(3)/2))=1;
+
+[F,V_XYZ_reg,C]=im2patch(M,L_plot,'vb',v);
+
+V_IJK=cart2im(V_XYZ_reg(:,[1 2 3]),v);
+
+%%
+I=V_IJK(:,1);
+J=V_IJK(:,2);
+K=V_IJK(:,3);
+
+[Xc,Yc,Zc]=im2MRcart(I,J,K,v,OR,r,c);
+
+V_XYZ_real=[Xc Yc Zc];
+
+s=cross(c',r')'; %Determine s => slice direction vector
+
+%%
+
+[Ic,Jc,Kc]=MRcart2im(Xc,Yc,Zc,v,OR,r,c);
+
+V_reg_check=im2cart(Ic,Jc,Kc,v);
+
+%%
+
+cFigure; 
+subplot(1,2,1); hold on; 
+title('Regular system (no tilt/shift)');
+gpatch(F,V_XYZ_reg,C,'none'); 
+plotV(V_reg_check,'r.','MarkerSize',5);
+colormap gray; 
+axisGeom; camlight headlight; 
+
+subplot(1,2,2); hold on; 
+title('Real world scanner coordinates');
+gpatch(F,V_XYZ_real,C,'none'); 
+plotV(OR([2 1 3])','y.','MarkerSize',50)
+quiverVec(OR([2 1 3])',r([2 1 3])',50,'r');
+quiverVec(OR([2 1 3])',c([2 1 3])',50,'g');
+quiverVec(OR([2 1 3])',s([2 1 3])',50,'b');
+colormap gray; 
+axisGeom; camlight headlight; 
+
+gdrawnow; 
+
+%%
+
+
 %%
 % 
 % <<gibbVerySmall.gif>>

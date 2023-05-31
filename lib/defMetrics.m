@@ -1,5 +1,13 @@
 function [D_out]=defMetrics(F_cell,strain_type)
 
+% function [D_out]=defMetrics(F_cell,strain_type)
+% ------------------------------------------------------------------------
+%
+%
+% ------------------------------------------------------------------------
+
+%%
+
 siz=size(F_cell);
 
 if length(siz)==2
@@ -34,7 +42,7 @@ Qeig=F_cell;
 %% Looping to save memory
 
 %Looping to save memory
-for q=1:1:numel(F_cell);
+for q=1:1:numel(F_cell)
     
     Fijk=F_cell{q}; %The deformation gradient tensor
     Cijk=Fijk'*Fijk; %The right Cauchy Green tensor
@@ -48,9 +56,9 @@ for q=1:1:numel(F_cell);
         Up_ijk=sqrt(Lpsq_ijk); %Right stretch tensor in principal space
         Cp{q}=Lpsq_ijk;
         switch strain_type
-            case 1 %Principal infinitesimal strain tensor
+            case 1 %Principal Biot strain tensor
                 Ep_ijk=(Up_ijk)-1;
-            case 2 %Principal logarithmic strain tensor
+            case 2 %Principal logarithmic/Hencky/natural strain tensor
                 Ep_ijk=log(Up_ijk);
             case 3 %Principal Green-Lagrange strain tensor
                 Ep_ijk=0.5.*((Up_ijk.^2)-1);

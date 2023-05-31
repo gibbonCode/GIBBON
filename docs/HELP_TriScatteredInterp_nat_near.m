@@ -8,7 +8,7 @@ clear; close all; clc;
 % |[VI,L]=TriScatteredInterp_nat_near(X,V,XI);|
 
 %% Description 
-% UNDOCUMENTED 
+% DEPRICATED
 %% Examples 
 % 
 %%

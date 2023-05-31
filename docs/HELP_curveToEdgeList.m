@@ -8,21 +8,48 @@ clear; close all; clc;
 % |[E]=curveToEdgeList(N);|
 
 %% Description 
-% UNDOCUMENTED 
+% This function creates an edge array E for the input curve defined by N.
+% The input parameter N can be of the following type: 
+% * A single scalar
+% In this case it is assumed N defines the number of points on the curve
+% * An nxm array representing n points and m dimensions, in this case it is
+% assumed N represents the vertex array for the curve
+% * A row or column array, in this case it is assumed that N defines the
+% indices for the points defining the curve. 
+% 
+% If closeCurveOpt=1 it is assumed the start and end of the curve should be
+% attached. 
+%
 %% Examples 
 % 
 
 %%
-% Create example curve
-t=linspace(0,2*pi,10)';
-t=t(1:end-1);
+% Plot settings
+lineWidth=2; 
+markerSize=15; 
+fontSize=15; 
 
-V=[cos(t) sin(t) zeros(size(t))];
+%% Example 1: Creating an edge array for a curve
+%%
+% Create example curve data
+
+t=linspace(0,2*pi,12)';
+t=t(1:end-1);
+V=[cos(t) sin(t) zeros(size(t))]; %Curve vertices
+n=size(V,1); %Number of points in curve
+ind=1:1:n; %Curve point indices
 
 %%
-% Get curve edges
+% Get curve edge array
 
+% Use vertices
 [E]=curveToEdgeList(V)
+
+% Use number of points
+[E]=curveToEdgeList(n)
+
+% Use curve indices
+[E]=curveToEdgeList(ind)
 
 %%
 % Visualization
@@ -30,13 +57,37 @@ V=[cos(t) sin(t) zeros(size(t))];
 cFigure; 
 subplot(1,2,1); hold on;
 title('Curved plotted using plot command');
-plotV(V,'r-','LineWidth',2,'MarkerSize',25);
+plotV(V,'r.-','LineWidth',lineWidth,'MarkerSize',markerSize);
 axis tight; axis equal; grid on; box on; view(2); 
-
+set(gca,'FontSize',fontSize);
 subplot(1,2,2); hold on;
-title('Curved plotted as edges using patch command');
-gpatch(E,V,'none','g',1,2);
+title('Curved plotted as edges using gedge command');
+gedge(E,V,'g',2);
 axis tight; axis equal; grid on; box on; view(2); 
+set(gca,'FontSize',fontSize);
+drawnow; 
+
+%% Example 2: Using closeCurveOpt
+%%
+% Use closeCurveOpt
+
+closeCurveOpt=1;
+[E]=curveToEdgeList(ind,closeCurveOpt)
+
+%%
+% Visualization
+
+cFigure; 
+subplot(1,2,1); hold on;
+title('Curved plotted using plot command');
+plotV(V([1:end 1],:),'r.-','LineWidth',lineWidth,'MarkerSize',markerSize);
+axis tight; axis equal; grid on; box on; view(2); 
+set(gca,'FontSize',fontSize);
+subplot(1,2,2); hold on;
+title('Curved plotted as edges using gedge command');
+gedge(E,V,'g',2);
+axis tight; axis equal; grid on; box on; view(2); 
+set(gca,'FontSize',fontSize);
 drawnow; 
 
 %%

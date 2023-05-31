@@ -8,9 +8,20 @@ clear; close all; clc;
 % |[F,V]=elephant;|
 
 %% Description 
-% UNDOCUMENTED 
+% Outputs the faces F and vertices V for an elephant triangulated surface mesh 
+% 
+% See also: |graphicsModels|
+
 %% Examples 
 % 
+
+[F,V]=elephant;
+
+%%
+cFigure; 
+gpatch(F,V)
+axisGeom; camlight headlight;  
+drawnow; 
 %%
 % 
 % <<gibbVerySmall.gif>>

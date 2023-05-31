@@ -8,7 +8,8 @@ clear; close all; clc;
 % |[F,C]=element2faces(E,C);|
 
 %% Description 
-% UNDOCUMENTED 
+% DEPRICATED - > use |element2patch| instead 
+
 %% Examples 
 % 
 %%

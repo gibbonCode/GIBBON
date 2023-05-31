@@ -1,24 +1,50 @@
-function [E]=curveToEdgeList(N)
+function [E]=curveToEdgeList(varargin)
 
-% function [E]=curveToEdgeList(N)
+% function [E]=curveToEdgeList(V,closedCurveOpt)
 % ------------------------------------------------------------------------
-%
+% This function creates an edge array E for the input curve defined by N.
+% The input parameter N can be of the following type: 
+% * A single scalar
+% In this case it is assumed N defines the number of points on the curve
+% * An nxm array representing n points and m dimensions, in this case it is
+% assumed N represents the vertex array for the curve
+% * A row or column array, in this case it is assumed that N defines the
+% indices for the points defining the curve. 
+% 
+% If closeCurveOpt=1 it is assumed the start and end of the curve should be
+% attached. 
+% 
+% 2023/05/31 Updated description and input handling. Added closed curve
+% option. 
 % ------------------------------------------------------------------------
 
-%%
+%% Parse input
 
-if numel(N)==1 %the size of the list is specified
-    indList=(1:1:N)';
-elseif ismatrix(N) %ordered vertices are provided
-    indList=(1:1:size(N,1))';
-else %The indices are provided
-    indList=N(:);
+switch nargin
+    case 1
+        N=varargin{1}; 
+        closedCurveOpt=0;
+    case 2
+        N=varargin{1}; 
+        closedCurveOpt=varargin{2};
 end
 
-%%
+%Check input type
+if numel(N)==1 %the size of the list is specified
+    indList=(1:1:N)';
+elseif isvector(N) %The indices are provided
+    indList=mcol(N);
+else %ordered vertices are provided
+   indList=(1:1:size(N,1))';
+end
 
+%Deal with closed curve option
+if closedCurveOpt
+    indList(end+1)=indList(1);
+end
+
+%% Create edge array
 E=[indList(1:end-1) indList(2:end)];
-
 
 %% 
 % _*GIBBON footer text*_ 

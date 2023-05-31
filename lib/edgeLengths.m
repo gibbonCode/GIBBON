@@ -1,6 +1,18 @@
-function D=edgeLengths(E,V)
+function [D]=edgeLengths(E,V)
 
+% function [D]=edgeLengths(E,V)
+% ------------------------------------------------------------------------
+% This function computes the edge lengths D for the edges defined by the
+% input edges array E and the vertices V. 
+%
+% See also: |patchEdgeLengths|
+% ------------------------------------------------------------------------
+
+%%
+
+%Compute edge lengths
 D=sqrt(sum((V(E(:,1),:)-V(E(:,2),:)).^2,2));
+
 %% 
 % _*GIBBON footer text*_ 
 % 

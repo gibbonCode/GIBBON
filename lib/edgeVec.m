@@ -2,6 +2,11 @@ function [varargout]=edgeVec(E,V)
 
 % function [N,Vp,Nv]=edgeVec(E,V)
 % ------------------------------------------------------------------------
+% Computes the edge vectors for the input edges defined by the edge array E
+% and the vertices V. The ouput is the allong edge unit vectors N. Other
+% optional outputs include the edge vector origins Vp, and the vertex edge
+% unit vectors. The latter are an average of both edges connected to the
+% vertex. 
 %
 % ------------------------------------------------------------------------
 

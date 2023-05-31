@@ -1,6 +1,6 @@
-function [DI]=TriScatteredInterp_ND(DT,D,XI,InterpMethod)
+function [DI]=TriScatteredInterp_ND(P,U,Pi,interpMethod)
 
-% function [DI]=TriScatteredInterp_ND(DT,D,XI,InterpMethod)
+% function [DI]=TriScatteredInterp_ND(P,U,Pi,interpMethod)
 % ------------------------------------------------------------------------
 %
 %
@@ -9,18 +9,20 @@ function [DI]=TriScatteredInterp_ND(DT,D,XI,InterpMethod)
 
 %%
 
-if ~isa(DT,'DelaunayTri') %if DT is not a delaunay tesselation
-    DT=delaunayTriangulation(DT); %assuming DT are coordinates, replace by Delaunay tesselation
+%Deal with older Delaunay type input
+if isa(P,'DelaunayTri') || isa(P,'delaunayTriangulation') %if DT is not a delaunay tesselation
+    P=P.Points; %Override as just the points
 end
 
-DI=nan(size(XI,1),size(D,2)); %Allocate DI
-for q=1:size(D,2)% loop over dimensions
-    switch InterpMethod
+%Process interpolation for each dimension
+DI=nan(size(Pi,1),size(U,2)); %Allocate DI
+for q=1:size(U,2)% loop over dimensions
+    switch interpMethod
         case 'nat_near' %natural in chull, neirest outside chull
-            [DI(:,q),~]=TriScatteredInterp_nat_near(DT,D(:,q),XI);
+            [DI(:,q),~]=TriScatteredInterp_nat_near(P,U(:,q),Pi);
         otherwise %TriScatterInterp can handle other methods
-            F = scatteredInterpolant(DT,D(:,q),InterpMethod); %Construct interpolator
-            DI(:,q)=F(XI); %Interpolate
+            F = scatteredInterpolant(P,U(:,q),interpMethod); %Construct interpolator
+            DI(:,q)=F(Pi); %Interpolate
     end
 end
 

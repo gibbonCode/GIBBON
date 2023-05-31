@@ -1,8 +1,13 @@
 function C=dyadicProduct(A,B,r)
 
-%Computes dyadic products of two second order tensors yielding a
-%fourth-order tensor. See Curnier et al. 1994 and Ateshian et al. 2009
+% function C=dyadicProduct(A,B,r)
+% ------------------------------------------------------------------------
+% Computes dyadic products of two second order tensors yielding a
+% fourth-order tensor. See Curnier et al. 1994 and Ateshian et al. 2009
+%
+% ------------------------------------------------------------------------
 
+%%
 %Setting up the Fourth order tensor
 siz4=3.*ones(1,4);
 siz2=3.*ones(1,2);

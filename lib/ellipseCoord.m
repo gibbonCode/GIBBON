@@ -2,7 +2,7 @@ function [V]=ellipseCoord(A,t)
 
 % function [V]=ellipseCoord(A,t)
 % ------------------------------------------------------------------------
-% Calculates ellipse coordiantes for the angles in t based on the vector A
+% Calculates ellipse coordinates for the angles in t based on the vector A
 % which defines the centre coordinates, the radii and the angle
 % respectively. 
 %

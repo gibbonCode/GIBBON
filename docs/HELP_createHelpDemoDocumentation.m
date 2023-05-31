@@ -8,7 +8,12 @@ clear; close all; clc;
 % |createHelpDemoDocumentation;|
 
 %% Description 
-% UNDOCUMENTED 
+% This function helps to process published help/demo files as integrated
+% documentation for MATLAB. This function is used by |installGibbon| to
+% increate the documentation at the point of installation. If documentation
+% requires updating (e.g. if changes are made) then calling this function
+% will update the integrated documentation. 
+
 %% Examples 
 % 
 %%

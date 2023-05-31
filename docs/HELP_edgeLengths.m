@@ -5,12 +5,42 @@
 clear; close all; clc;
 
 %% Syntax
-% |D=edgeLengths(E,V);|
+% |[D]=edgeLengths(E,V);|
 
 %% Description 
-% UNDOCUMENTED 
+% This function computes the edge lengths D for the edges defined by the
+% input edges array E and the vertices V. 
+%
+% See also: |patchEdgeLengths|
+
 %% Examples 
 % 
+
+%%
+% Create example data 
+
+%Create an ellipsoid from a sphere mesh (so there are various edge lengths)
+[F,V]=geoSphere(1,1); %Geodesic sphere mesh
+V(:,1)=2*V(:,1); %Stretch into ellipsoid
+
+%Get edge array 
+E=patchEdges(F,V);
+
+%%
+% Compute edge lenths
+D=edgeLengths(E,V);
+
+%%
+% VisualiZing edge length data
+
+cFigure; hold on; 
+title('Edge lengths');
+gpatch(F,V,'w','none');
+gedge(E,V,D,2)
+axisGeom; camlight headligth; 
+colormap gjet; colorbar; 
+drawnow; 
+
 %%
 % 
 % <<gibbVerySmall.gif>>

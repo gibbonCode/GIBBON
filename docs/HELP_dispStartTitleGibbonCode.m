@@ -8,9 +8,15 @@ clear; close all; clc;
 % |dispStartTitleGibbonCode(msgText);|
 
 %% Description 
-% UNDOCUMENTED 
+% A simple code to output a string to say the input string msgText as well
+% as the current time/date. Useful to add at the start of particlar
+% scripts.
+
 %% Examples 
 % 
+
+dispStartTitleGibbonCode('Starting some analysis')
+
 %%
 % 
 % <<gibbVerySmall.gif>>

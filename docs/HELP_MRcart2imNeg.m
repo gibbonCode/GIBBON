@@ -8,7 +8,8 @@ clear; close all; clc;
 % |[I,J,K]=MRcart2imNeg(Xc,Yc,Zc,v,OR,rn,cn);|
 
 %% Description 
-% UNDOCUMENTED 
+% DEPRICATED
+
 %% Examples 
 % 
 %%

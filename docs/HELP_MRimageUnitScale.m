@@ -8,7 +8,7 @@ clear; close all; clc;
 % |[Nr,Nr_units]=MRimageUnitScale(N,N_info);|
 
 %% Description 
-% UNDOCUMENTED 
+% DEPRICATED 
 %% Examples 
 % 
 %%

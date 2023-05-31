@@ -8,9 +8,64 @@ clear; close all; clc;
 % |H=errorbarC_XY(x,y,em,ep,w,C,d);|
 
 %% Description 
-% UNDOCUMENTED 
+% Visualizes colormapped arror bars. 
+
 %% Examples 
-% 
+%
+
+%%
+%
+cMap=gjet(25);
+markerSize=50; 
+lineWidth1=3;
+lineWidth2=5;
+
+%%
+n=25;
+x=linspace(0,2*pi,n)';
+y=sin(x);
+
+eUpper=0.05+0.5*rand(size(x)); %Lower deviation
+eLower=eUpper; %Upper deviation
+w=0.2; %Width 
+
+cData=eUpper;
+C=cmaperise(cData,gjet(n),[min(cData) max(cData)]);
+
+%%
+
+d=1; 
+
+%%
+
+cFigure; hold on; 
+plot(x,y,'k.-','MarkerSize',markerSize,'LineWidth',lineWidth1);
+
+H=errorbarC_XY(x,y,eUpper,eLower,w,C,d);
+set(H,'LineWidth',lineWidth2);
+
+axis tight; axis equal; box on; grid on; 
+set(gca,'FontSize',20); 
+colormap(cMap)
+drawnow; 
+
+%%
+
+d=2; 
+
+%%
+
+cFigure; hold on; 
+plot(x,y,'k.-','MarkerSize',markerSize,'LineWidth',lineWidth1);
+
+H=errorbarC_XY(x,y,eUpper,eLower,w,C,d);
+set(H,'LineWidth',lineWidth2);
+
+axis tight; axis equal; box on; grid on; 
+set(gca,'FontSize',20); 
+colormap(cMap)
+drawnow; 
+
 %%
 % 
 % <<gibbVerySmall.gif>>

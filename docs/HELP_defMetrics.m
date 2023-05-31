@@ -8,9 +8,36 @@ clear; close all; clc;
 % |[D_out]=defMetrics(F_cell,strain_type);|
 
 %% Description 
-% UNDOCUMENTED 
+% Computes various deformation metrics using the input cell array F_cell
+% which contains deformation gradient tensors.
+
 %% Examples 
 % 
+
+F_uni = [1.5 0.0 0.0;...
+         0.0 1.0 0.0;...
+         0.0 0.0 1.0];
+
+F_shear=[1.0 0.5 0.0;...
+         0.0 1.0 0.0;...
+         0.0 0.0 1.0];
+
+F_hydro=[1.5 0.0 0.0;...
+         0.0 1.0 0.0;...
+         0.0 0.0 1.0];
+
+F_rand=1+0.25*(rand(3,3)-0.5);
+
+F_cell={F_uni,F_shear,F_hydro,F_rand};
+
+% 1 = Biot (linear) strain tensor
+% 2 = Hencky (logarithmic/natural) strain tensor
+% 3 = Green-Lagrange strain tensor
+strain_type=2; 
+[D_out]=defMetrics(F_cell,strain_type);
+
+D_out
+
 %%
 % 
 % <<gibbVerySmall.gif>>

@@ -8,9 +8,14 @@ clear; close all; clc;
 % |dispDoneGibbonCode;|
 
 %% Description 
-% UNDOCUMENTED 
+% A simple code to output a string to say 'done' as well as the current
+% time/date. Useful to add at the end of particlar scripts. 
+
 %% Examples 
 % 
+
+dispDoneGibbonCode
+
 %%
 % 
 % <<gibbVerySmall.gif>>

@@ -30,9 +30,11 @@ Eyx=Emaxp; Eyy=Emaxp; Eyz=Emaxp;
 Ezx=Emaxp; Ezy=Emaxp; Ezz=Emaxp;
 
 %Looping to save memory
-for i=1:1:size(UG,1);
-    for j=1:1:size(UG,2);
-        for k=1:1:size(UG,3);
+for i=1:1:size(UG,1)
+    for j=1:1:size(UG,2)
+        for k=1:1:size(UG,3)
+            UG{i,j,k}
+            
             Fijk=UG{i,j,k}+I_unity;
             F(i,j,k)={Fijk};
             Cijk=Fijk'*Fijk; %The right Cauchy Green tensor

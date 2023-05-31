@@ -8,9 +8,45 @@ clear; close all; clc;
 % |[V]=ellipseCoord3(e,t);|
 
 %% Description 
-% UNDOCUMENTED 
+% Calculates ellipse coordinates for the angles in t based on the input
+% structure e which contains the following fields: 
+% radii, a 2x1 array
+% axes, a 3x3 rotation matrix
+% centre the ellipse centre coordinates
+
 %% Examples 
 % 
+
+%Define example input data
+
+%Angles
+t=linspace(0,2*pi);
+
+%Centre coordinates
+Vc=[2 2 2];
+
+%Radii
+r=[1 2];
+
+%Rotation matrix
+Q=euler2DCM([0 -0.25*pi 0.25*pi]); 
+
+%Compose input structure
+e.centre=Vc; 
+e.radii=r;
+e.axes=Q;
+
+%Compute ellipse coordinates
+V=ellipseCoord3(e,t);
+
+%%
+% Visualize ellipse
+
+cFigure; 
+plotV(V,'r.-','MarkerSize',25,'LineWidth',3);
+axisGeom;
+drawnow; 
+
 %%
 % 
 % <<gibbVerySmall.gif>>

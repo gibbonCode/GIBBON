@@ -6,7 +6,7 @@
    <!--
 This HTML was auto-generated from MATLAB code.
 To make changes, update the MATLAB code and republish this document.
-      --><title>curveToEdgeList</title><meta name="generator" content="MATLAB 9.12"><link rel="schema.DC" href="http://purl.org/dc/elements/1.1/"><meta name="DC.date" content="2022-03-21"><meta name="DC.source" content="HELP_curveToEdgeList.m"><style type="text/css">
+      --><title>curveToEdgeList</title><meta name="generator" content="MATLAB 9.14"><link rel="schema.DC" href="http://purl.org/dc/elements/1.1/"><meta name="DC.date" content="2023-05-31"><meta name="DC.source" content="HELP_curveToEdgeList.m"><style type="text/css">
 html,body,div,span,applet,object,iframe,h1,h2,h3,h4,h5,h6,p,blockquote,pre,a,abbr,acronym,address,big,cite,code,del,dfn,em,font,img,ins,kbd,q,s,samp,small,strike,strong,tt,var,b,u,i,center,dl,dt,dd,ol,ul,li,fieldset,form,label,legend,table,caption,tbody,tfoot,thead,tr,th,td{margin:0;padding:0;border:0;outline:0;font-size:100%;vertical-align:baseline;background:transparent}body{line-height:1}ol,ul{list-style:none}blockquote,q{quotes:none}blockquote:before,blockquote:after,q:before,q:after{content:'';content:none}:focus{outine:0}ins{text-decoration:none}del{text-decoration:line-through}table{border-collapse:collapse;border-spacing:0}
 
 html { min-height:100%; margin-bottom:1px; }
@@ -67,12 +67,23 @@ table td { padding:7px 5px; text-align:left; vertical-align:top; border:1px soli
 
 
 
-  </style></head><body><div class="content"><h1>curveToEdgeList</h1><!--introduction--><p>Below is a demonstration of the features of the <tt>curveToEdgeList</tt> function</p><!--/introduction--><h2>Contents</h2><div><ul><li><a href="#2">Syntax</a></li><li><a href="#3">Description</a></li><li><a href="#4">Examples</a></li></ul></div><pre class="codeinput">clear; close <span class="string">all</span>; clc;
-</pre><h2 id="2">Syntax</h2><p><tt>[E]=curveToEdgeList(N);</tt></p><h2 id="3">Description</h2><p>UNDOCUMENTED</p><h2 id="4">Examples</h2><p>Create example curve</p><pre class="codeinput">t=linspace(0,2*pi,10)';
+  </style></head><body><div class="content"><h1>curveToEdgeList</h1><!--introduction--><p>Below is a demonstration of the features of the <tt>curveToEdgeList</tt> function</p><!--/introduction--><h2>Contents</h2><div><ul><li><a href="#2">Syntax</a></li><li><a href="#3">Description</a></li><li><a href="#4">Examples</a></li><li><a href="#6">Example 1: Creating an edge array for a curve</a></li><li><a href="#10">Example 2: Using closeCurveOpt</a></li></ul></div><pre class="codeinput">clear; close <span class="string">all</span>; clc;
+</pre><h2 id="2">Syntax</h2><p><tt>[E]=curveToEdgeList(N);</tt></p><h2 id="3">Description</h2><p>This function creates an edge array E for the input curve defined by N. The input parameter N can be of the following type: * A single scalar In this case it is assumed N defines the number of points on the curve * An nxm array representing n points and m dimensions, in this case it is assumed N represents the vertex array for the curve * A row or column array, in this case it is assumed that N defines the indices for the points defining the curve.</p><p>If closeCurveOpt=1 it is assumed the start and end of the curve should be attached.</p><h2 id="4">Examples</h2><p>Plot settings</p><pre class="codeinput">lineWidth=2;
+markerSize=15;
+fontSize=15;
+</pre><h2 id="6">Example 1: Creating an edge array for a curve</h2><p>Create example curve data</p><pre class="codeinput">t=linspace(0,2*pi,12)';
 t=t(1:end-1);
+V=[cos(t) sin(t) zeros(size(t))]; <span class="comment">%Curve vertices</span>
+n=size(V,1); <span class="comment">%Number of points in curve</span>
+ind=1:1:n; <span class="comment">%Curve point indices</span>
+</pre><p>Get curve edge array</p><pre class="codeinput"><span class="comment">% Use vertices</span>
+[E]=curveToEdgeList(V)
 
-V=[cos(t) sin(t) zeros(size(t))];
-</pre><p>Get curve edges</p><pre class="codeinput">[E]=curveToEdgeList(V)
+<span class="comment">% Use number of points</span>
+[E]=curveToEdgeList(n)
+
+<span class="comment">% Use curve indices</span>
+[E]=curveToEdgeList(ind)
 </pre><pre class="codeoutput">
 E =
 
@@ -84,19 +95,79 @@ E =
      6     7
      7     8
      8     9
+     9    10
+    10    11
+
+
+E =
+
+     1     2
+     2     3
+     3     4
+     4     5
+     5     6
+     6     7
+     7     8
+     8     9
+     9    10
+    10    11
+
+
+E =
+
+     1     2
+     2     3
+     3     4
+     4     5
+     5     6
+     6     7
+     7     8
+     8     9
+     9    10
+    10    11
 
 </pre><p>Visualization</p><pre class="codeinput">cFigure;
 subplot(1,2,1); hold <span class="string">on</span>;
 title(<span class="string">'Curved plotted using plot command'</span>);
-plotV(V,<span class="string">'r-'</span>,<span class="string">'LineWidth'</span>,2,<span class="string">'MarkerSize'</span>,25);
+plotV(V,<span class="string">'r.-'</span>,<span class="string">'LineWidth'</span>,lineWidth,<span class="string">'MarkerSize'</span>,markerSize);
 axis <span class="string">tight</span>; axis <span class="string">equal</span>; grid <span class="string">on</span>; box <span class="string">on</span>; view(2);
-
+set(gca,<span class="string">'FontSize'</span>,fontSize);
 subplot(1,2,2); hold <span class="string">on</span>;
-title(<span class="string">'Curved plotted as edges using patch command'</span>);
-gpatch(E,V,<span class="string">'none'</span>,<span class="string">'g'</span>,1,2);
+title(<span class="string">'Curved plotted as edges using gedge command'</span>);
+gedge(E,V,<span class="string">'g'</span>,2);
 axis <span class="string">tight</span>; axis <span class="string">equal</span>; grid <span class="string">on</span>; box <span class="string">on</span>; view(2);
+set(gca,<span class="string">'FontSize'</span>,fontSize);
 drawnow;
-</pre><img width="100%" height="auto" vspace="5" hspace="5" src="HELP_curveToEdgeList_01.jpg" alt=""> <p><img vspace="5" hspace="5" src="gibbVerySmall.gif" alt=""> </p><p><i><b>GIBBON</b></i> <a href="www.gibboncode.org">www.gibboncode.org</a></p><p><i>Kevin Mattheus Moerman</i>, <a href="gibbon.toolbox@gmail.com">gibbon.toolbox@gmail.com</a></p><p><i><b>GIBBON footer text</b></i></p><p>License: <a href="https://github.com/gibbonCode/GIBBON/blob/master/LICENSE">https://github.com/gibbonCode/GIBBON/blob/master/LICENSE</a></p><p>GIBBON: The Geometry and Image-based Bioengineering add-On. A toolbox for image segmentation, image-based modeling, meshing, and finite element analysis.</p><p>Copyright (C) 2006-2022 Kevin Mattheus Moerman and the GIBBON contributors</p><p>This program is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.</p><p>This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for more details.</p><p>You should have received a copy of the GNU General Public License along with this program.  If not, see <a href="http://www.gnu.org/licenses/">http://www.gnu.org/licenses/</a>.</p><p class="footer"><br><a href="https://www.mathworks.com/products/matlab/">Published with MATLAB&reg; R2022a</a><br></p></div><!--
+</pre><img width="100%" height="auto" vspace="5" hspace="5" src="HELP_curveToEdgeList_01.jpg" alt=""> <h2 id="10">Example 2: Using closeCurveOpt</h2><p>Use closeCurveOpt</p><pre class="codeinput">closeCurveOpt=1;
+[E]=curveToEdgeList(ind,closeCurveOpt)
+</pre><pre class="codeoutput">
+E =
+
+     1     2
+     2     3
+     3     4
+     4     5
+     5     6
+     6     7
+     7     8
+     8     9
+     9    10
+    10    11
+    11     1
+
+</pre><p>Visualization</p><pre class="codeinput">cFigure;
+subplot(1,2,1); hold <span class="string">on</span>;
+title(<span class="string">'Curved plotted using plot command'</span>);
+plotV(V([1:end 1],:),<span class="string">'r.-'</span>,<span class="string">'LineWidth'</span>,lineWidth,<span class="string">'MarkerSize'</span>,markerSize);
+axis <span class="string">tight</span>; axis <span class="string">equal</span>; grid <span class="string">on</span>; box <span class="string">on</span>; view(2);
+set(gca,<span class="string">'FontSize'</span>,fontSize);
+subplot(1,2,2); hold <span class="string">on</span>;
+title(<span class="string">'Curved plotted as edges using gedge command'</span>);
+gedge(E,V,<span class="string">'g'</span>,2);
+axis <span class="string">tight</span>; axis <span class="string">equal</span>; grid <span class="string">on</span>; box <span class="string">on</span>; view(2);
+set(gca,<span class="string">'FontSize'</span>,fontSize);
+drawnow;
+</pre><img width="100%" height="auto" vspace="5" hspace="5" src="HELP_curveToEdgeList_02.jpg" alt=""> <img width="100%" height="auto" vspace="5" hspace="5" src="HELP_curveToEdgeList_03.jpg" alt=""> <p><img vspace="5" hspace="5" src="gibbVerySmall.gif" alt=""> </p><p><i><b>GIBBON</b></i> <a href="www.gibboncode.org">www.gibboncode.org</a></p><p><i>Kevin Mattheus Moerman</i>, <a href="gibbon.toolbox@gmail.com">gibbon.toolbox@gmail.com</a></p><p><i><b>GIBBON footer text</b></i></p><p>License: <a href="https://github.com/gibbonCode/GIBBON/blob/master/LICENSE">https://github.com/gibbonCode/GIBBON/blob/master/LICENSE</a></p><p>GIBBON: The Geometry and Image-based Bioengineering add-On. A toolbox for image segmentation, image-based modeling, meshing, and finite element analysis.</p><p>Copyright (C) 2006-2023 Kevin Mattheus Moerman and the GIBBON contributors</p><p>This program is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.</p><p>This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for more details.</p><p>You should have received a copy of the GNU General Public License along with this program.  If not, see <a href="http://www.gnu.org/licenses/">http://www.gnu.org/licenses/</a>.</p><p class="footer"><br><a href="https://www.mathworks.com/products/matlab/">Published with MATLAB&reg; R2023a</a><br></p></div><!--
 ##### SOURCE BEGIN #####
 %% curveToEdgeList
 % Below is a demonstration of the features of the |curveToEdgeList| function
@@ -108,21 +179,48 @@ clear; close all; clc;
 % |[E]=curveToEdgeList(N);|
 
 %% Description 
-% UNDOCUMENTED 
+% This function creates an edge array E for the input curve defined by N.
+% The input parameter N can be of the following type: 
+% * A single scalar
+% In this case it is assumed N defines the number of points on the curve
+% * An nxm array representing n points and m dimensions, in this case it is
+% assumed N represents the vertex array for the curve
+% * A row or column array, in this case it is assumed that N defines the
+% indices for the points defining the curve. 
+% 
+% If closeCurveOpt=1 it is assumed the start and end of the curve should be
+% attached. 
+%
 %% Examples 
 % 
 
 %%
-% Create example curve
-t=linspace(0,2*pi,10)';
-t=t(1:end-1);
+% Plot settings
+lineWidth=2; 
+markerSize=15; 
+fontSize=15; 
 
-V=[cos(t) sin(t) zeros(size(t))];
+%% Example 1: Creating an edge array for a curve
+%%
+% Create example curve data
+
+t=linspace(0,2*pi,12)';
+t=t(1:end-1);
+V=[cos(t) sin(t) zeros(size(t))]; %Curve vertices
+n=size(V,1); %Number of points in curve
+ind=1:1:n; %Curve point indices
 
 %%
-% Get curve edges
+% Get curve edge array
 
+% Use vertices
 [E]=curveToEdgeList(V)
+
+% Use number of points
+[E]=curveToEdgeList(n)
+
+% Use curve indices
+[E]=curveToEdgeList(ind)
 
 %%
 % Visualization
@@ -130,13 +228,37 @@ V=[cos(t) sin(t) zeros(size(t))];
 cFigure; 
 subplot(1,2,1); hold on;
 title('Curved plotted using plot command');
-plotV(V,'r-','LineWidth',2,'MarkerSize',25);
+plotV(V,'r.-','LineWidth',lineWidth,'MarkerSize',markerSize);
 axis tight; axis equal; grid on; box on; view(2); 
-
+set(gca,'FontSize',fontSize);
 subplot(1,2,2); hold on;
-title('Curved plotted as edges using patch command');
-gpatch(E,V,'none','g',1,2);
+title('Curved plotted as edges using gedge command');
+gedge(E,V,'g',2);
 axis tight; axis equal; grid on; box on; view(2); 
+set(gca,'FontSize',fontSize);
+drawnow; 
+
+%% Example 2: Using closeCurveOpt
+%%
+% Use closeCurveOpt
+
+closeCurveOpt=1;
+[E]=curveToEdgeList(ind,closeCurveOpt)
+
+%%
+% Visualization
+
+cFigure; 
+subplot(1,2,1); hold on;
+title('Curved plotted using plot command');
+plotV(V([1:end 1],:),'r.-','LineWidth',lineWidth,'MarkerSize',markerSize);
+axis tight; axis equal; grid on; box on; view(2); 
+set(gca,'FontSize',fontSize);
+subplot(1,2,2); hold on;
+title('Curved plotted as edges using gedge command');
+gedge(E,V,'g',2);
+axis tight; axis equal; grid on; box on; view(2); 
+set(gca,'FontSize',fontSize);
 drawnow; 
 
 %%
@@ -156,7 +278,7 @@ drawnow;
 % image segmentation, image-based modeling, meshing, and finite element
 % analysis.
 % 
-% Copyright (C) 2006-2022 Kevin Mattheus Moerman and the GIBBON contributors
+% Copyright (C) 2006-2023 Kevin Mattheus Moerman and the GIBBON contributors
 % 
 % This program is free software: you can redistribute it and/or modify
 % it under the terms of the GNU General Public License as published by

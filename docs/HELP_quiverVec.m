@@ -26,7 +26,7 @@ clear; close all; clc;
 
 %%
 % Plot settings
-cMap=jet(250);
+cMap=viridis(250);
 fontSize=15;
 
 %% Example for multidimensional image data: colormap driven vectors
@@ -51,6 +51,7 @@ quiverVec(P,V,C,C);
 colormap(cMap); colorbar;
 axisGeom(gca,fontSize);
 camlight headlight; lighting flat
+clim([1 3])
 drawnow;
 
 
@@ -67,12 +68,12 @@ Cn=Vn(:,1); %Color data
 
 cFigure;
 
-gpatch(F,V,0.5*ones(1,3),'none');
+gpatch(F,V,'w','none');
 quiverVec(Vn,N,0.5,Cn);
 
 colormap(cMap); colorbar;
 axisGeom(gca,fontSize);
-camlight headlight; lighting flat
+camlight headlight; 
 drawnow;
 
 %% 

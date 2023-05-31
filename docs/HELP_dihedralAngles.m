@@ -5,10 +5,16 @@
 clear; close all; clc;
 
 %% Syntax
-% |[A]=dihedralAngles(varargin);|
+% | [A]=dihedralAngles(E,V,elementType);|
 
 %% Description 
-% UNDOCUMENTED 
+% This function computes the dihedral angles A for the input elements
+% defined by E, the element nodal connectivity matrix, and V, the node or
+% vertex coordinate matrix. The output array A contains the same number of
+% rows as E (a row for each element), and contains m columns where m is the
+% number of edges for this type of element (e.g. 12 for a hexahedral element
+% or 6 for a tetrahedral element). 
+
 %% Examples 
 % 
 

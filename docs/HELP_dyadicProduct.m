@@ -8,9 +8,29 @@ clear; close all; clc;
 % |C=dyadicProduct(A,B,r);|
 
 %% Description 
-% UNDOCUMENTED 
+% Computes dyadic products of two second order tensors yielding a
+% fourth-order tensor. See Curnier et al. 1994 and Ateshian et al. 2009
+
 %% Examples 
 % 
+
+%% Example 1: Constructing fourth-order stiffness tensors
+
+%%
+% Creating the stiffness tensor for Hooke's law of linear elasticity
+
+%Constructing 4th order base tensor set
+I=eye(3,3); %The 2nd order identity tensor
+II1=dyadicProduct(I,I,1) %4th order base tensor 1                                                                
+II3=dyadicProduct(I,I,3) %4th order base tensor 3
+
+%Parameters for Hooke's law
+mu=1; %The shear modulus
+lambda=5; %The lambda lame parameter
+
+%Construct 4th order stiffness tensor
+C=lambda.*II1+2.*mu.*II3 
+
 %%
 % 
 % <<gibbVerySmall.gif>>

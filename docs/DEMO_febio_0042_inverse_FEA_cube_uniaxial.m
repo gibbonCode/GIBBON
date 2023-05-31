@@ -457,8 +457,6 @@ mat_struct.id=1; %Material id
 mat_struct.par_names={'c1','m1','c2','m2','k'}; %Parameter names
 mat_struct.par_values={c1_ini m1_ini c1_ini -m1_ini k_ini}; %Parameter values
 
-% docNode=set_mat_par_FEBIO(FEB_struct.run_filename,FEB_struct.run_filename,{mat_struct});
-
 febioAnalysis.disp_on=0; 
 febioAnalysis.disp_log_on=0; 
 

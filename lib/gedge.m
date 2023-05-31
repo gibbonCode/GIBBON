@@ -130,7 +130,10 @@ if ischar(CE) %Plain single color
     end
     if strcmp(CE,'mw')
         argInPatch.EdgeColor=[1 0.5 1];
-    end    
+    end  
+    if strcmp(CE,'o')
+        argInPatch.EdgeColor=orange;
+    end  
 elseif size(CE,2)==1    
     if size(CE,1)>1
         if size(CE,1)==size(E,1)

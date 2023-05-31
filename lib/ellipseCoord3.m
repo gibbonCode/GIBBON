@@ -1,5 +1,17 @@
 function [V]=ellipseCoord3(e,t)
 
+% function [V]=ellipseCoord3(e,t)
+% ------------------------------------------------------------------------
+% Calculates ellipse coordinates for the angles in t based on the input
+% structure e which contains the following fields: 
+% radii, a 2x1 array
+% axes, a 3x3 rotation matrix
+% centre the ellipse centre coordinates% 
+% 
+% ------------------------------------------------------------------------
+
+%%
+
 V=[e.radii(1).*cos(t(:)) e.radii(2).*sin(t(:)) zeros(numel(t),1)];
 V=(e.axes*V')';
 V=V+e.centre(ones(numel(t),1),:);

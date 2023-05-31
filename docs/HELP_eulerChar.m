@@ -8,9 +8,20 @@ clear; close all; clc;
 % |[eulerVal]=eulerChar(F,V);|
 
 %% Description 
-% UNDOCUMENTED 
+% Computes in Euler characteristic for the input mesh defined by the faces
+% F and the vertices V. 
+
 %% Examples 
 % 
+
+%%
+% Example geometry
+[F,V]=geoSphere(1,1);
+
+%%
+% Evaluate Euler characteristic
+[eulerVal]=eulerChar(F,V)
+
 %%
 % 
 % <<gibbVerySmall.gif>>
