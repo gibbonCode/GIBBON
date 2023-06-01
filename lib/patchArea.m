@@ -15,12 +15,25 @@ function [A]=patchArea(F,V)
 % 2011/04/12
 % 2021/09/13 Updated to use more efficient patchEdgeCrossProduct method
 % 2021/09/14 Renamed to patchArea
+% 2023/06/01 Added cell input support
 %------------------------------------------------------------------------
 
 %%
 
-C=patchEdgeCrossProduct(F,V);
-A=sqrt(sum(C.^2,2));
+if isa(F,'cell') %Multi-patch type, e.g. cell for triangles, quads, etc. 
+    A=F; % Copy F to allocate A
+    for q=1:1:numel(F) %Loop over cell entries
+        if isa(V,'cell') %If V is also a cell we assume it is paired with entries in F
+            A{q}=patchArea(F{q},V{q}); 
+        else %Only F is a cell so we can just loop over face sets
+            A{q}=patchArea(F{q},V);
+        end
+    end
+else
+    C=patchEdgeCrossProduct(F,V);
+    A=sqrt(sum(C.^2,2));
+end
+
  
 %% 
 % _*GIBBON footer text*_ 

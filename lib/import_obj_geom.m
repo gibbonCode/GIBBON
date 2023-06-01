@@ -3,78 +3,58 @@ function [F,V]=import_obj_geom(fileName)
 % function [F,V]=import_obj_geom(fileName)
 % -----------------------------------------------------------------------
 % This function imports only the geometry data from the obj file defined by
-% fileName. 
+% fileName. A single body is assumed. 
 %
 % Change log: 
 % 2021/04/30 KMM: Fixed bug relating to / symbols for faces 
 % 2021/04/30 KMM: Speeded up by using single cellfun based loop
+% 2023/06/01 KMM: Improved speed, added handling of mixed face types 
 % -----------------------------------------------------------------------
 
-%% Import file to a cell array
-T=txtfile2cell(fileName);
+%% Import text into string array
 
-%% Parse cell array for face entries to keep only vertex index 
-% i.e. each of these: 
-% f v1/vt1 v2/vt2 v3/vt3 ...
-% f v1/vt1/vn1 v2/vt2/vn2 v3/vt3/vn3 ...
-% f v1//vn1 v2//vn2 v3//vn3 ...
-% Becomes: 
-% v1 v2 v3 ...
+S_OBJ = readlines(fileName);
 
-T=regexprep(T,'/+[0-9]+|f.', ''); %Remove / signs and anything after up to next space
+%% Get logic for different text components
 
-%% Get faces and vertices
+% Find lines to exclude
+Lc=contains(S_OBJ,'# ');
+L_mtl=contains(S_OBJ,'mtllib');
+L_mat=contains(S_OBJ,'usemtl');
+L_exc = Lc | L_mtl | L_mat; %Exclude logic
 
-[FC,VC]=cellfun(@(t) parseLineFun(t),T,'UniformOutput',0);
-F=cell2mat(FC); %Faces
-V=cell2mat(VC); %Vertices
+%Create vertex and face logics
+Lv=contains(S_OBJ,'v ') & ~L_exc;
+Lf=contains(S_OBJ,'f ') & ~L_exc;
 
+%% Get vertices
+
+nVertices = nnz(Lv);
+V=zeros(nVertices,3);
+s=S_OBJ(Lv);
+for q=1:1:nVertices
+    V(q,:)=sscanf(s(q),'v %f %f %f')';
 end
 
-%%
+%% Get faces
 
-function [f,v]=parseLineFun(t)
-
-if numel(t)>2
-    switch t(1:2)
-        case 'v '
-            f=[];
-            v=sscanf(t,'v %f %f %f')';
-        otherwise
-            f=sscanf(t,'%d')';
-            v=[];
-    end
-else
-    f=[];
-    v=[];
+nFaces = nnz(Lf); 
+FC=repmat({zeros(1,3)},nFaces,1);  %Allocate cell array for triangles (with vertex/normal data) for the moment (multiple face types may occur)
+nf=zeros(nFaces,1);
+s=S_OBJ(Lf);
+sf=regexprep(s,'/+[0-9]+|f', ' '); %Remove f and get just face vertex indices
+for q=1:1:nFaces
+    FC{q}=sscanf(sf(q),'%d')';    
+    nf(q)=numel(FC{q});
 end
 
+faceTypeSet=unique(nf);
+numFaceTypes=numel(faceTypeSet);
+F=cell(numFaceTypes,1);
+for q=1:1:numFaceTypes
+    logicNow = nf==faceTypeSet(q);
+    F{q}=cell2mat(FC(logicNow));
 end
-
-%% Slower alternative
-% 
-% T=txtfile2cell(fileName);
-% 
-% n=numel(T);
-% V=nan(n,3);
-% c=true(1,1);
-% for q=1:1:n
-% %     t=strtrim(T{q}); %Text without preceeding/trailing spaces    
-% t=T{q};
-%     if strcmp(t(1:2),'v ')
-%         V(q,:)=sscanf(t,'v %f %f %f');
-%     elseif strcmp(t(1:2),'f ')
-%         t=regexprep(t,'/+[0-9]+|f.', '');
-%         f=sscanf(t,'%d');
-%         if c==1
-%             F=nan(n,numel(f));
-%         end
-%         F(q,:)=f;
-%     end    
-% end
-% F=F(~isnan(F(:,1)),:);
-% V=V(~isnan(V(:,1)),:);
-%%
 
 %% 
 % _*GIBBON footer text*_ 

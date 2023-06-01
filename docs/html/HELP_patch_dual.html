@@ -6,7 +6,7 @@
    <!--
 This HTML was auto-generated from MATLAB code.
 To make changes, update the MATLAB code and republish this document.
-      --><title>patch_dual</title><meta name="generator" content="MATLAB 9.10"><link rel="schema.DC" href="http://purl.org/dc/elements/1.1/"><meta name="DC.date" content="2021-06-30"><meta name="DC.source" content="HELP_patch_dual.m"><style type="text/css">
+      --><title>patch_dual</title><meta name="generator" content="MATLAB 9.14"><link rel="schema.DC" href="http://purl.org/dc/elements/1.1/"><meta name="DC.date" content="2023-06-01"><meta name="DC.source" content="HELP_patch_dual.m"><style type="text/css">
 html,body,div,span,applet,object,iframe,h1,h2,h3,h4,h5,h6,p,blockquote,pre,a,abbr,acronym,address,big,cite,code,del,dfn,em,font,img,ins,kbd,q,s,samp,small,strike,strong,tt,var,b,u,i,center,dl,dt,dd,ol,ul,li,fieldset,form,label,legend,table,caption,tbody,tfoot,thead,tr,th,td{margin:0;padding:0;border:0;outline:0;font-size:100%;vertical-align:baseline;background:transparent}body{line-height:1}ol,ul{list-style:none}blockquote,q{quotes:none}blockquote:before,blockquote:after,q:before,q:after{content:'';content:none}:focus{outine:0}ins{text-decoration:none}del{text-decoration:line-through}table{border-collapse:collapse;border-spacing:0}
 
 html { min-height:100%; margin-bottom:1px; }
@@ -73,8 +73,7 @@ plotColor1=0.25.*ones(1,3);
 plotColor2=0.75.*ones(1,3);
 edgeWidth=2;
 markerSize=25;
-cmap1=gjet(250);
-cmap2=autumn(250);
+cMap=gjet(250);
 </pre><h2 id="6">Example 1: Computing the dual of a surface triangulation</h2><p>Creating example triangulation (circle filled triangle)</p><pre class="codeinput"><span class="comment">%Boundary and mesh parameters</span>
 ns=50; <span class="comment">%Number of points on outer boundary (defines how well the circle is sampled)</span>
 rOut=2; <span class="comment">%Outer radius of circular boundary</span>
@@ -102,7 +101,7 @@ gpatch(F,V,V(:,3),plotColor1,0.9,edgeWidth);
 gpatch(Fd,Vd,<span class="string">'none'</span>,plotColor2,1,edgeWidth);
 axisGeom(gca,fontSize);
 camlight <span class="string">headlight</span>;
-colormap(cmap1);
+colormap(cMap);
 drawnow;
 </pre><img width="100%" height="auto" vspace="5" hspace="5" src="HELP_patch_dual_01.jpg" alt=""> <h2 id="9">Example 2: Methods for handling the boundary</h2><pre class="codeinput"><span class="comment">%Boundary 1</span>
 ns=150;
@@ -139,7 +138,7 @@ title(<span class="string">'Edge compensation 0 (off)'</span>);
 gpatch(F,V,<span class="string">'rw'</span>,<span class="string">'r'</span>,0.5);
 gpatch(Fd0,Vd0,<span class="string">'none'</span>,<span class="string">'b'</span>,1);
 axisGeom(gca,fontSize);
-colormap(cmap2);
+colormap(cMap);
 view(2);
 
 subplot(1,3,2); hold <span class="string">on</span>;
@@ -147,7 +146,6 @@ title(<span class="string">'Edge compensation 1'</span>);
 gpatch(F,V,<span class="string">'rw'</span>,<span class="string">'r'</span>,0.5);
 gpatch(Fd1,Vd1,<span class="string">'none'</span>,<span class="string">'b'</span>,1);
 axisGeom(gca,fontSize);
-colormap(cmap2);
 view(2);
 
 subplot(1,3,3); hold <span class="string">on</span>;
@@ -155,29 +153,30 @@ title(<span class="string">'Edge compensation 2'</span>);
 gpatch(F,V,<span class="string">'rw'</span>,<span class="string">'r'</span>,0.5);
 gpatch(Fd2,Vd2,<span class="string">'none'</span>,<span class="string">'b'</span>,1);
 axisGeom(gca,fontSize);
-colormap(cmap2);
 view(2);
 
 drawnow;
-</pre><img width="100%" height="auto" vspace="5" hspace="5" src="HELP_patch_dual_02.jpg" alt=""> <h2 id="12">Example 3: The "Buckminster Fuller" dome triangulation and its dual</h2><p>The patch_dual function assumes that a valid and appropriate dual exists for the input patch data specified by F and V (faces and vertices). If they are not appropriate the output may for instance not form an enclosing shape or output faces may not be planar.</p><pre class="codeinput"><span class="comment">%Defining geodesic dome triangulation</span>
+</pre><img width="100%" height="auto" vspace="5" hspace="5" src="HELP_patch_dual_02.jpg" alt=""> <img width="100%" height="auto" vspace="5" hspace="5" src="HELP_patch_dual_03.jpg" alt=""> <h2 id="12">Example 3: The "Buckminster Fuller" dome triangulation and its dual</h2><p>The patch_dual function assumes that a valid and appropriate dual exists for the input patch data specified by F and V (faces and vertices). If they are not appropriate the output may for instance not form an enclosing shape or output faces may not be planar.</p><pre class="codeinput"><span class="comment">%Defining geodesic dome triangulation</span>
 r=1; <span class="comment">%sphere radius</span>
-n=2; <span class="comment">%Refinements</span>
+n=3; <span class="comment">%Refinements</span>
 [F,V,~]=geoSphere(n,r);
 
 <span class="comment">%Deriving the dual of the patch</span>
 [Vd,Fd]=patch_dual(V,F);
+
+Ad=patchArea(Fd,Vd);
 </pre><pre class="codeinput"><span class="comment">%Plotting results</span>
 
 cFigure; hold <span class="string">on</span>;
-gpatch(F,V,<span class="string">'none'</span>,<span class="string">'r'</span>,1,edgeWidth);
-plotV(V,<span class="string">'r.'</span>,<span class="string">'MarkerSize'</span>,markerSize);
-gpatch(Fd,Vd,<span class="string">'bw'</span>,<span class="string">'b'</span>,0.9,edgeWidth);
-plotV(Vd,<span class="string">'b.'</span>,<span class="string">'MarkerSize'</span>,markerSize);
+<span class="comment">% gpatch(F,V,'none','w',1,0.5);</span>
+<span class="comment">% plotV(V,'k.','MarkerSize',markerSize);</span>
+gpatch(Fd,Vd,Ad,<span class="string">'k'</span>,1,edgeWidth);
+<span class="comment">% plotV(Vd,'k.','MarkerSize',markerSize);</span>
 axisGeom(gca,fontSize);
-camlight <span class="string">headlight</span>;
-colormap(cmap2);
+axisGeom(gca,fontSize); camlight <span class="string">headlight</span>;
+colormap(cMap); colorbar;
 drawnow;
-</pre><img width="100%" height="auto" vspace="5" hspace="5" src="HELP_patch_dual_03.jpg" alt=""> <h2 id="14">Example 4: Bunny</h2><pre class="codeinput"><span class="comment">%Defining geodesic dome triangulation</span>
+</pre><img width="100%" height="auto" vspace="5" hspace="5" src="HELP_patch_dual_04.jpg" alt=""> <h2 id="14">Example 4: Bunny</h2><pre class="codeinput"><span class="comment">%Defining geodesic dome triangulation</span>
 [F,V]=stanford_bunny;
 
 <span class="comment">%Deriving the dual of the patch</span>
@@ -190,9 +189,9 @@ gpatch(Fd,Vd,<span class="string">'w'</span>,<span class="string">'b'</span>,0.9
 <span class="comment">% patchNormPlot(Fd,Vd);</span>
 axisGeom(gca,fontSize);
 camlight <span class="string">headlight</span>;
-colormap(cmap2);
+
 drawnow;
-</pre><img width="100%" height="auto" vspace="5" hspace="5" src="HELP_patch_dual_04.jpg" alt=""> <p><img vspace="5" hspace="5" src="gibbVerySmall.gif" alt=""> </p><p><i><b>GIBBON</b></i> <a href="www.gibboncode.org">www.gibboncode.org</a></p><p><i>Kevin Mattheus Moerman</i>, <a href="gibbon.toolbox@gmail.com">gibbon.toolbox@gmail.com</a></p><p><i><b>GIBBON footer text</b></i></p><p>License: <a href="https://github.com/gibbonCode/GIBBON/blob/master/LICENSE">https://github.com/gibbonCode/GIBBON/blob/master/LICENSE</a></p><p>GIBBON: The Geometry and Image-based Bioengineering add-On. A toolbox for image segmentation, image-based modeling, meshing, and finite element analysis.</p><p>Copyright (C) 2006-2021 Kevin Mattheus Moerman and the GIBBON contributors</p><p>This program is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.</p><p>This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for more details.</p><p>You should have received a copy of the GNU General Public License along with this program.  If not, see <a href="http://www.gnu.org/licenses/">http://www.gnu.org/licenses/</a>.</p><p class="footer"><br><a href="https://www.mathworks.com/products/matlab/">Published with MATLAB&reg; R2021a</a><br></p></div><!--
+</pre><img width="100%" height="auto" vspace="5" hspace="5" src="HELP_patch_dual_05.jpg" alt=""> <img width="100%" height="auto" vspace="5" hspace="5" src="HELP_patch_dual_06.jpg" alt=""> <p><img vspace="5" hspace="5" src="gibbVerySmall.gif" alt=""> </p><p><i><b>GIBBON</b></i> <a href="www.gibboncode.org">www.gibboncode.org</a></p><p><i>Kevin Mattheus Moerman</i>, <a href="gibbon.toolbox@gmail.com">gibbon.toolbox@gmail.com</a></p><p><i><b>GIBBON footer text</b></i></p><p>License: <a href="https://github.com/gibbonCode/GIBBON/blob/master/LICENSE">https://github.com/gibbonCode/GIBBON/blob/master/LICENSE</a></p><p>GIBBON: The Geometry and Image-based Bioengineering add-On. A toolbox for image segmentation, image-based modeling, meshing, and finite element analysis.</p><p>Copyright (C) 2006-2023 Kevin Mattheus Moerman and the GIBBON contributors</p><p>This program is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.</p><p>This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for more details.</p><p>You should have received a copy of the GNU General Public License along with this program.  If not, see <a href="http://www.gnu.org/licenses/">http://www.gnu.org/licenses/</a>.</p><p class="footer"><br><a href="https://www.mathworks.com/products/matlab/">Published with MATLAB&reg; R2023a</a><br></p></div><!--
 ##### SOURCE BEGIN #####
 %% patch_dual
 % Below is a demonstration of the features of the |patch_dual| function
@@ -216,8 +215,7 @@ plotColor1=0.25.*ones(1,3);
 plotColor2=0.75.*ones(1,3);
 edgeWidth=2;
 markerSize=25;
-cmap1=gjet(250);
-cmap2=autumn(250);
+cMap=gjet(250);
 
 %% Example 1: Computing the dual of a surface triangulation
 
@@ -253,7 +251,7 @@ gpatch(F,V,V(:,3),plotColor1,0.9,edgeWidth);
 gpatch(Fd,Vd,'none',plotColor2,1,edgeWidth);
 axisGeom(gca,fontSize);
 camlight headlight;
-colormap(cmap1);
+colormap(cMap);
 drawnow;
 
 %% Example 2: Methods for handling the boundary 
@@ -300,7 +298,7 @@ title('Edge compensation 0 (off)');
 gpatch(F,V,'rw','r',0.5);
 gpatch(Fd0,Vd0,'none','b',1);
 axisGeom(gca,fontSize);
-colormap(cmap2);
+colormap(cMap);
 view(2);
 
 subplot(1,3,2); hold on;
@@ -308,7 +306,6 @@ title('Edge compensation 1');
 gpatch(F,V,'rw','r',0.5);
 gpatch(Fd1,Vd1,'none','b',1);
 axisGeom(gca,fontSize);
-colormap(cmap2);
 view(2);
 
 subplot(1,3,3); hold on;
@@ -316,7 +313,6 @@ title('Edge compensation 2');
 gpatch(F,V,'rw','r',0.5);
 gpatch(Fd2,Vd2,'none','b',1);
 axisGeom(gca,fontSize);
-colormap(cmap2);
 view(2);
 
 drawnow;
@@ -329,25 +325,26 @@ drawnow;
 
 %Defining geodesic dome triangulation
 r=1; %sphere radius
-n=2; %Refinements
+n=3; %Refinements
 [F,V,~]=geoSphere(n,r);
 
 %Deriving the dual of the patch
 [Vd,Fd]=patch_dual(V,F);
 
+Ad=patchArea(Fd,Vd);
+
 %%
 %Plotting results
 
 cFigure; hold on;
-gpatch(F,V,'none','r',1,edgeWidth);
-plotV(V,'r.','MarkerSize',markerSize);
-gpatch(Fd,Vd,'bw','b',0.9,edgeWidth);
-plotV(Vd,'b.','MarkerSize',markerSize);
+% gpatch(F,V,'none','w',1,0.5);
+% plotV(V,'k.','MarkerSize',markerSize);
+gpatch(Fd,Vd,Ad,'k',1,edgeWidth);
+% plotV(Vd,'k.','MarkerSize',markerSize);
 axisGeom(gca,fontSize);
-camlight headlight;
-colormap(cmap2);
+axisGeom(gca,fontSize); camlight headlight;
+colormap(cMap); colorbar; 
 drawnow;
-
 
 %% Example 4: Bunny
 
@@ -366,7 +363,7 @@ gpatch(Fd,Vd,'w','b',0.9,edgeWidth);
 % patchNormPlot(Fd,Vd);
 axisGeom(gca,fontSize);
 camlight headlight;
-colormap(cmap2);
+
 drawnow;
 
 %%
@@ -387,7 +384,7 @@ drawnow;
 % image segmentation, image-based modeling, meshing, and finite element
 % analysis.
 % 
-% Copyright (C) 2006-2021 Kevin Mattheus Moerman and the GIBBON contributors
+% Copyright (C) 2006-2023 Kevin Mattheus Moerman and the GIBBON contributors
 % 
 % This program is free software: you can redistribute it and/or modify
 % it under the terms of the GNU General Public License as published by

@@ -8,9 +8,37 @@ clear; close all; clc;
 % |export_off(fileName,F,V);|
 
 %% Description 
-% UNDOCUMENTED 
+
 %% Examples 
 % 
+
+%% Exporting a triangulated mesh
+
+%%
+% Example dta 
+[F,V]=geoSphere(2,2);
+
+%%
+% Define file name
+
+gibbonFolder = fileparts(fileparts(mfilename('fullpath')));
+savePath=fullfile(gibbonFolder,'data','OFF');
+fileName=fullfile(savePath,'test.off');
+
+%%
+% Exporting to .off file
+
+export_off(fileName,F,V);
+
+%%
+% Visualize surface 
+
+cFigure; 
+title('Exported model for .off file')
+gpatch(F,V,'o','k');
+axisGeom; camlight headlight; 
+gdrawnow; 
+ 
 %%
 % 
 % <<gibbVerySmall.gif>>

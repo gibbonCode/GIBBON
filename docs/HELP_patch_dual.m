@@ -20,8 +20,7 @@ plotColor1=0.25.*ones(1,3);
 plotColor2=0.75.*ones(1,3);
 edgeWidth=2;
 markerSize=25;
-cmap1=gjet(250);
-cmap2=autumn(250);
+cMap=gjet(250);
 
 %% Example 1: Computing the dual of a surface triangulation
 
@@ -57,7 +56,7 @@ gpatch(F,V,V(:,3),plotColor1,0.9,edgeWidth);
 gpatch(Fd,Vd,'none',plotColor2,1,edgeWidth);
 axisGeom(gca,fontSize);
 camlight headlight;
-colormap(cmap1);
+colormap(cMap);
 drawnow;
 
 %% Example 2: Methods for handling the boundary 
@@ -104,7 +103,7 @@ title('Edge compensation 0 (off)');
 gpatch(F,V,'rw','r',0.5);
 gpatch(Fd0,Vd0,'none','b',1);
 axisGeom(gca,fontSize);
-colormap(cmap2);
+colormap(cMap);
 view(2);
 
 subplot(1,3,2); hold on;
@@ -112,7 +111,6 @@ title('Edge compensation 1');
 gpatch(F,V,'rw','r',0.5);
 gpatch(Fd1,Vd1,'none','b',1);
 axisGeom(gca,fontSize);
-colormap(cmap2);
 view(2);
 
 subplot(1,3,3); hold on;
@@ -120,7 +118,6 @@ title('Edge compensation 2');
 gpatch(F,V,'rw','r',0.5);
 gpatch(Fd2,Vd2,'none','b',1);
 axisGeom(gca,fontSize);
-colormap(cmap2);
 view(2);
 
 drawnow;
@@ -133,25 +130,26 @@ drawnow;
 
 %Defining geodesic dome triangulation
 r=1; %sphere radius
-n=2; %Refinements
+n=3; %Refinements
 [F,V,~]=geoSphere(n,r);
 
 %Deriving the dual of the patch
 [Vd,Fd]=patch_dual(V,F);
 
+Ad=patchArea(Fd,Vd);
+
 %%
 %Plotting results
 
 cFigure; hold on;
-gpatch(F,V,'none','r',1,edgeWidth);
-plotV(V,'r.','MarkerSize',markerSize);
-gpatch(Fd,Vd,'bw','b',0.9,edgeWidth);
-plotV(Vd,'b.','MarkerSize',markerSize);
+% gpatch(F,V,'none','w',1,0.5);
+% plotV(V,'k.','MarkerSize',markerSize);
+gpatch(Fd,Vd,Ad,'k',1,edgeWidth);
+% plotV(Vd,'k.','MarkerSize',markerSize);
 axisGeom(gca,fontSize);
-camlight headlight;
-colormap(cmap2);
+axisGeom(gca,fontSize); camlight headlight;
+colormap(cMap); colorbar; 
 drawnow;
-
 
 %% Example 4: Bunny
 
@@ -170,7 +168,7 @@ gpatch(Fd,Vd,'w','b',0.9,edgeWidth);
 % patchNormPlot(Fd,Vd);
 axisGeom(gca,fontSize);
 camlight headlight;
-colormap(cmap2);
+
 drawnow;
 
 %%
