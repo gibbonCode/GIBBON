@@ -42,8 +42,21 @@ ij_M=objStruct.ij_M;
 m=objStruct.m;
 
 %%
-
 hf=cFigure;
+subplot(2,2,1); hold on; 
+title('Texture image');
+image(m);
+axis tight; axis square; 
+
+subplot(2,2,3); hold on; 
+title('Geometry');
+gpatch(F,V,'w','none');
+axisGeom; camlight headlight;
+drawnow;
+
+%%
+% hf=cFigure;
+subplot(2,2,[2,4]); hold on; 
 hp=gpatch(F,V,C,'none');
 
 axisGeom; %camlight headlight;

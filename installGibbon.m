@@ -396,17 +396,20 @@ function createTestFigure(hf,profileNameVCW)
 if isfield(hf.UserData,'hf2')
     close(hf.UserData.hf2);
 end
-[F,V]=graphicsModels(12); 
-[F,V]=subTriLoop(F,V,2);
-[~,~,~,C,~,~] = patchCurvature(F,V);
-CV=faceToVertexMeasure(F,V,C); %Vertex data for interpolated shading
+
+gibbonPath=fileparts(mfilename('fullpath')); %Get the GIBBON path
+fileName=fullfile(gibbonPath,'data','OBJ','gibbon.obj');
+
+objStruct=import_obj(fileName);
+F=objStruct.F;
+V=objStruct.V;
+C=objStruct.C;
 
 hf.UserData.hf2=figure; hold on; 
 s=['Testing VCW profile: ',profileNameVCW];
 title(s,'FontSize',25); hf.UserData.hf2.Name=s;
 vcw(hf.UserData.hf2,profileNameVCW);
-hp=gpatch(F,V,CV,'none'); hp.FaceColor='interp';
-colormap(spectral(250));
+hp=gpatch(F,V,C,'none'); 
 axisGeom; camlight headlight; gdrawnow; 
 
 end
